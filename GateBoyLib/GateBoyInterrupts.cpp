@@ -23,11 +23,11 @@ void GateBoyInterrupts::read_intf(GateBoyCpuBus& cpu_bus) {
   /* p02.NEJY*/ NEJY_FF0F_L3p.tp_latchp(_ROLO_FF0F_RDn, UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
   /* p02.NUTY*/ NUTY_FF0F_L4p.tp_latchp(_ROLO_FF0F_RDn, ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
 
-  /*#p02.NELA*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_POLA_FF0F_RDp, MATY_FF0F_L0p.qn_new());
-  /*#p02.NABO*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_POLA_FF0F_RDp, MOPO_FF0F_L1p.qn_new());
-  /*#p02.ROVA*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_POLA_FF0F_RDp, PAVY_FF0F_L2p.qn_new());
-  /*#p02.PADO*/ cpu_bus.BUS_CPU_D03p.tri6_pn(_POLA_FF0F_RDp, NEJY_FF0F_L3p.qn_new());
-  /*#p02.PEGY*/ cpu_bus.BUS_CPU_D04p.tri6_pn(_POLA_FF0F_RDp, NUTY_FF0F_L4p.qn_new());
+  /*#p02.NELA_IF0_TO_CD0*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_POLA_FF0F_RDp, MATY_FF0F_L0p.qn_new());
+  /*#p02.NABO_IF1_TO_CD1*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_POLA_FF0F_RDp, MOPO_FF0F_L1p.qn_new());
+  /*#p02.ROVA_IF2_TO_CD2*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_POLA_FF0F_RDp, PAVY_FF0F_L2p.qn_new());
+  /*#p02.PADO_IF3_TO_CD3*/ cpu_bus.BUS_CPU_D03p.tri6_pn(_POLA_FF0F_RDp, NEJY_FF0F_L3p.qn_new());
+  /*#p02.PEGY_IF4_TO_CD4*/ cpu_bus.BUS_CPU_D04p.tri6_pn(_POLA_FF0F_RDp, NUTY_FF0F_L4p.qn_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

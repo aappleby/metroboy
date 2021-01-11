@@ -32,14 +32,14 @@
 void GateBoySerial::read_sb(GateBoyCpuBus& cpu_bus)
 {
   /* p06.UFEG*/ wire _UFEG_FF01_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SANO_FF00_FF03p(), cpu_bus.TOLA_A01n(), cpu_bus.BUS_CPU_A00p.qp_new());
-  /*#p06.CUGY*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_UFEG_FF01_RDp, CUBA_SER_DATA0.qn_new());
-  /* p06.DUDE*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_UFEG_FF01_RDp, DEGU_SER_DATA1.qn_new());
-  /* p06.DETU*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_UFEG_FF01_RDp, DYRA_SER_DATA2.qn_new());
-  /* p06.DASO*/ cpu_bus.BUS_CPU_D03p.tri6_pn(_UFEG_FF01_RDp, DOJO_SER_DATA3.qn_new());
-  /* p06.DAME*/ cpu_bus.BUS_CPU_D04p.tri6_pn(_UFEG_FF01_RDp, DOVU_SER_DATA4.qn_new());
-  /* p06.EVOK*/ cpu_bus.BUS_CPU_D05p.tri6_pn(_UFEG_FF01_RDp, EJAB_SER_DATA5.qn_new());
-  /* p06.EFAB*/ cpu_bus.BUS_CPU_D06p.tri6_pn(_UFEG_FF01_RDp, EROD_SER_DATA6.qn_new());
-  /*#p06.ETAK*/ cpu_bus.BUS_CPU_D07p.tri6_pn(_UFEG_FF01_RDp, EDER_SER_DATA7.qn_new());
+  /*#p06.CUGY_SD0_TO_CD0*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_UFEG_FF01_RDp, CUBA_SER_DATA0.qn_new());
+  /* p06.DUDE_SD1_TO_CD1*/ cpu_bus.BUS_CPU_D01p.tri6_pn(_UFEG_FF01_RDp, DEGU_SER_DATA1.qn_new());
+  /* p06.DETU_SD2_TO_CD2*/ cpu_bus.BUS_CPU_D02p.tri6_pn(_UFEG_FF01_RDp, DYRA_SER_DATA2.qn_new());
+  /* p06.DASO_SD3_TO_CD3*/ cpu_bus.BUS_CPU_D03p.tri6_pn(_UFEG_FF01_RDp, DOJO_SER_DATA3.qn_new());
+  /* p06.DAME_SD4_TO_CD4*/ cpu_bus.BUS_CPU_D04p.tri6_pn(_UFEG_FF01_RDp, DOVU_SER_DATA4.qn_new());
+  /* p06.EVOK_SD5_TO_CD5*/ cpu_bus.BUS_CPU_D05p.tri6_pn(_UFEG_FF01_RDp, EJAB_SER_DATA5.qn_new());
+  /* p06.EFAB_SD6_TO_CD6*/ cpu_bus.BUS_CPU_D06p.tri6_pn(_UFEG_FF01_RDp, EROD_SER_DATA6.qn_new());
+  /*#p06.ETAK_SD7_TO_CD7*/ cpu_bus.BUS_CPU_D07p.tri6_pn(_UFEG_FF01_RDp, EDER_SER_DATA7.qn_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -47,8 +47,8 @@ void GateBoySerial::read_sb(GateBoyCpuBus& cpu_bus)
 void GateBoySerial::read_sc(GateBoyCpuBus& cpu_bus)
 {
   /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_bus.TEDO_CPU_RDp, cpu_bus.SANO_FF00_FF03p(), cpu_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TOVY_A00n());
-  /* p06.CORE*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_UCOM_FF02_RDp, CULY_SER_DIR.qn_new());
-  /* p06.ELUV*/ cpu_bus.BUS_CPU_D07p.tri6_pn(_UCOM_FF02_RDp, ETAF_SER_RUNNING.qn_new());
+  /* p06.CORE_SER0_TO_CD0*/ cpu_bus.BUS_CPU_D00p.tri6_pn(_UCOM_FF02_RDp, CULY_SER_DIR.qn_new());
+  /* p06.ELUV_SER1_TO_CD1*/ cpu_bus.BUS_CPU_D07p.tri6_pn(_UCOM_FF02_RDp, ETAF_SER_RUNNING.qn_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -18,12 +18,12 @@ void GateBoyJoypad::read(GateBoyCpuBus& cpu_bus) {
   /* p05.KEJA*/ KEJA_JOYP_L2n.tp_latchn(_BYZO_FF00_RDn, PIN_65_JOY_P12.qp_new());
   /* p05.KOLO*/ KOLO_JOYP_L3n.tp_latchn(_BYZO_FF00_RDn, PIN_64_JOY_P13.qp_new());
 
-  /* p05.KEMA*/ cpu_bus.BUS_CPU_D00p.tri6_nn(_BYZO_FF00_RDn, KEVU_JOYP_L0n.qp_new());
-  /* p05.KURO*/ cpu_bus.BUS_CPU_D01p.tri6_nn(_BYZO_FF00_RDn, KAPA_JOYP_L1n.qp_new());
-  /* p05.KUVE*/ cpu_bus.BUS_CPU_D02p.tri6_nn(_BYZO_FF00_RDn, KEJA_JOYP_L2n.qp_new());
-  /* p05.JEKU*/ cpu_bus.BUS_CPU_D03p.tri6_nn(_BYZO_FF00_RDn, KOLO_JOYP_L3n.qp_new());
-  /* p05.KOCE*/ cpu_bus.BUS_CPU_D04p.tri6_nn(_BYZO_FF00_RDn, KELY_JOYP_UDLRp.qn_new());
-  /* p05.CUDY*/ cpu_bus.BUS_CPU_D05p.tri6_nn(_BYZO_FF00_RDn, COFY_JOYP_ABCSp.qn_new());
+  /* p05.KEMA_JOY0_TO_CD0*/ cpu_bus.BUS_CPU_D00p.tri6_nn(_BYZO_FF00_RDn, KEVU_JOYP_L0n.qp_new());
+  /* p05.KURO_JOY1_TO_CD1*/ cpu_bus.BUS_CPU_D01p.tri6_nn(_BYZO_FF00_RDn, KAPA_JOYP_L1n.qp_new());
+  /* p05.KUVE_JOY2_TO_CD2*/ cpu_bus.BUS_CPU_D02p.tri6_nn(_BYZO_FF00_RDn, KEJA_JOYP_L2n.qp_new());
+  /* p05.JEKU_JOY3_TO_CD3*/ cpu_bus.BUS_CPU_D03p.tri6_nn(_BYZO_FF00_RDn, KOLO_JOYP_L3n.qp_new());
+  /* p05.KOCE_JOY4_TO_CD4*/ cpu_bus.BUS_CPU_D04p.tri6_nn(_BYZO_FF00_RDn, KELY_JOYP_UDLRp.qn_new());
+  /* p05.CUDY_JOY5_TO_CD5*/ cpu_bus.BUS_CPU_D05p.tri6_nn(_BYZO_FF00_RDn, COFY_JOYP_ABCSp.qn_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

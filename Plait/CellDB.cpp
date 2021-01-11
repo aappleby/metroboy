@@ -15,36 +15,6 @@
 
 using namespace std;
 
-// foo.bar.baz. foo.bar.baz._
-#define MATCH_CELL_TAG_PREFIX "^(?:\\w+\\.)*_?"
-
-// ASDF, ASDFq, ASDFn
-#define MATCH_CELL_TAG        "[A-Z]{4}[a-z]?"
-
-// PIN_12
-#define MATCH_PIN_TAG         "PIN_[0-9]{2}"
-
-// SIG_WHATEVER
-#define MATCH_SIG_TAG         "SIG_\\w+"
-
-// BUS_WHATEVER
-#define MATCH_BUS_TAG         "BUS_\\w+"
-
-// stuff.foo.bar.baz
-#define MATCH_CELL_TAG_SUFFIX "(?:\\.[^.]+)*"
-
-// literal /* at start of line
-#define MATCH_COMMENT_BEGIN_LINE   R"(^\/\*)"
-// literal */ at end of line
-#define MATCH_COMMENT_END_LINE     R"(\*\/$)"
-
-#define MATCH_WHITESPACE R"(\s*)"
-#define MATCH_PAGE_TAG   R"(p[0-9]{2})"
-
-#define CAPTURE_PIN_TAG      "(" MATCH_PIN_TAG  ")"
-#define CAPTURE_PAGE_TAG     "(" MATCH_PAGE_TAG ")"
-#define CAPTURE_VERIFIED_TAG "(.?)"
-
 NLOHMANN_JSON_SERIALIZE_ENUM( DieCellType, {
   {DieCellType::UNKNOWN, "UNKNOWN"},
   {DieCellType::PIN_IN,  "PIN_IN"},
@@ -506,10 +476,16 @@ bool DieDB::parse_dir(const std::string& path) {
   // Postprocess the cells.
 
   for (auto& [tag, cell] : cell_map) {
+    if (cell->name.empty()) {
+      printf("Cell %s needs a name\n", cell->tag.c_str());
+      cell->name = cell->tag;
+    }
+
     if (cell->cell_type == DieCellType::TRIBUF) {
       // Tribufs don't get names, add the tag as the default name.
-      CHECK_P(cell->name.empty());
-      cell->name = cell->tag;
+      //CHECK_P(cell->name.empty());
+      //cell->name = cell->tag;
+      //CHECK_N(cell->name.empty());
     }
 
     if (cell->cell_type == DieCellType::PIN_IN) {
@@ -585,15 +561,21 @@ bool DieDB::parse_line(const std::string& line) {
   smatch matches;
   if (regex_match(line, matches, tagged_line_regex)) {
 
-    std::string tag;
     std::string page;
+    std::string tag;
+    std::string name;
 
-    if (parse_tag(matches[1].str(), page, tag)) {
+    if (parse_tag(matches[1].str(), page, tag, name)) {
       auto cell = get_or_create_cell(tag);
       CHECK_P(cell->page.empty() || cell->page == page);
       cell->page = page;
+
+      if (!name.empty() && name != tag) {
+        CHECK_P(cell->name.empty() || cell->name == name);
+        cell->name = name;
+      }
+
       result &= parse_rest(*cell, matches[2].str());
-      if (tag == "SLDKFJSKLDF") printf("x");
     }
     else {
       printf("Could not parse line : \"%s\"\n", line.c_str());
@@ -694,8 +676,29 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
 // /* p00.ABCD*/
 // /*p00.ABCD*/
 
-bool DieDB::parse_tag(const std::string& tag_comment, std::string& page_out, std::string& tag_out) {
-  //static regex pin_tag (R"(^\/\*(.?)(PIN_[0-9]{2})\s*\*\/$)");
+// literal /* at start of line
+#define MATCH_COMMENT_BEGIN_LINE   R"(^\/\*)"
+#define CAPTURE_VERIFIED_TAG "(.?)"
+// foo.bar.baz. foo.bar.baz._
+#define MATCH_CELL_TAG_PREFIX "^(?:\\w+\\.)*_?"
+// ASDF, ASDFq, ASDFn
+#define MATCH_CELL_TAG        "[A-Z]{4}[a-z]?"
+// PIN_12
+#define MATCH_PIN_TAG         "PIN_[0-9]{2}"
+// SIG_WHATEVER
+#define MATCH_SIG_TAG         "SIG_\\w+"
+// BUS_WHATEVER
+#define MATCH_BUS_TAG         "BUS_\\w+"
+// stuff.foo.bar.baz
+#define MATCH_CELL_TAG_SUFFIX "(?:\\.[^.]+)*"
+// literal */ at end of line
+#define MATCH_COMMENT_END_LINE     R"(\*\/$)"
+#define MATCH_WHITESPACE R"(\s*)"
+#define MATCH_PAGE_TAG   R"(p[0-9]{2})"
+#define CAPTURE_PIN_TAG      "(" MATCH_PIN_TAG  ")"
+#define CAPTURE_PAGE_TAG     "(" MATCH_PAGE_TAG ")"
+
+bool DieDB::parse_tag(const std::string& tag_comment, std::string& page_out, std::string& tag_out, std::string& name_out) {
 
   static regex pin_tag(
     MATCH_COMMENT_BEGIN_LINE
@@ -724,7 +727,8 @@ bool DieDB::parse_tag(const std::string& tag_comment, std::string& page_out, std
   }
   else if (regex_match(tag_comment,  match, cell_tag)) {
     page_out = match[2].str();
-    tag_out = match[3].str();
+    tag_out  = match[3].str().substr(0, 4);
+    name_out = match[3].str();
     return true;
   }
   else {

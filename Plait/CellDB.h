@@ -133,7 +133,7 @@ struct DieDB {
   bool parse_pin_name(DieCell& c, const std::string& pin_name);
   bool parse_sig_name(DieCell& c, const std::string& sig_name);
 
-  bool parse_tag(const std::string& tag_comment, std::string& page_out, std::string& tag_out);
+  bool parse_tag(const std::string& tag_comment, std::string& page_out, std::string& tag_out, std::string& name_out);
   bool parse_reg_type(DieCell& c, const std::string& type);
   bool parse_cell_gate(DieCell& c, const std::string& type);
 

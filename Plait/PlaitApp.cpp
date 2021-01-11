@@ -43,25 +43,28 @@ int main(int argc, char** argv) {
   (void)argv;
   int ret = 0;
 
-  //const char* die_db_file = "gameboy.die_db.json";
+  const char* die_db_file = "gameboy.die_db.json";
+  (void)die_db_file;
 
   PlaitApp* app = new PlaitApp();
 
-#if 1
+#if 0
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
   printf("Done\n\n");
 
   {
     printf("Saving cell db\n");
-    std::ostringstream stream_out;
-    app->die_db.save_json(stream_out);
+    //std::ostringstream stream_out;
+    //app->die_db.save_json(stream_out);
+    app->die_db.save_json(die_db_file);
     printf("Done\n\n");
 
     printf("Loading gameboy.die_db.json\n");
-    std::istringstream stream_in(stream_out.str());
     app->die_db.clear();
-    app->die_db.load_json(stream_in);
+    //std::istringstream stream_in(stream_out.str());
+    //app->die_db.load_json(stream_in);
+    app->die_db.load_json(die_db_file);
     printf("Done\n\n");
   }
 

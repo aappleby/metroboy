@@ -63,7 +63,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ABEM",
+      "name": "ABEM_HILO_TO_VA00",
       "next_ports": [
         "qp"
       ],
@@ -293,7 +293,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ACOT",
+      "name": "ACOT_VD5_TO_ODA5",
       "next_ports": [
         "qp"
       ],
@@ -382,7 +382,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ADYB",
+      "name": "ADYB_STORE8_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -444,7 +444,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AFEB",
+      "name": "AFEB_MX01_TO_VA01",
       "next_ports": [
         "qp"
       ],
@@ -459,7 +459,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AFEN",
+      "name": "AFEN_STORE8_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -505,7 +505,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AFOZ",
+      "name": "AFOZ_STORE2_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -585,7 +585,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AGAG",
+      "name": "AGAG_SPL2_TO_VA03",
       "next_ports": [
         "qp"
       ],
@@ -633,7 +633,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AGYK",
+      "name": "AGYK_VD5_TO_ODB5",
       "next_ports": [
         "qp"
       ],
@@ -648,7 +648,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AHAC",
+      "name": "AHAC_STORE8_GET_L4",
       "next_ports": [
         "qp"
       ],
@@ -705,7 +705,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AHUM",
+      "name": "AHUM_STORE1_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -720,7 +720,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AJAL",
+      "name": "AJAL_STORE0_GET_L4",
       "next_ports": [
         "qp"
       ],
@@ -735,7 +735,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AJAN",
+      "name": "AJAN_MX04_TO_VA04",
       "next_ports": [
         "qp"
       ],
@@ -867,7 +867,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AKYH",
+      "name": "AKYH_STORE8_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -899,7 +899,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ALEL",
+      "name": "ALEL_MX02_TO_VA02",
       "next_ports": [
         "qp"
       ],
@@ -1079,7 +1079,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AMUH",
+      "name": "AMUH_VD2_TO_ODB2",
       "next_ports": [
         "qp"
       ],
@@ -1127,7 +1127,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AMUV",
+      "name": "AMUV_BMAP_TO_VA10",
       "next_ports": [
         "qp"
       ],
@@ -1234,7 +1234,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ANUM",
+      "name": "ANUM_VD7_TO_ODB7",
       "next_ports": [
         "qp"
       ],
@@ -1325,7 +1325,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "APOB",
+      "name": "APOB_STORE8_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -1340,7 +1340,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "APOC",
+      "name": "APOC_STORE8_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -1371,7 +1371,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "APON",
+      "name": "APON_STORE2_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -1481,7 +1481,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "APYV",
+      "name": "APYV_STORE8_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -1496,7 +1496,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ARAS",
+      "name": "ARAS_SPL1_TO_VA02",
       "next_ports": [
         "qp"
       ],
@@ -1648,7 +1648,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ARYN",
+      "name": "ARYN_VD4_TO_ODA4",
       "next_ports": [
         "qp"
       ],
@@ -1767,7 +1767,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ASOX",
+      "name": "ASOX_VD2_TO_ODA2",
       "next_ports": [
         "qp"
       ],
@@ -1797,7 +1797,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ASUM",
+      "name": "ASUM_HILO_TO_VA00",
       "next_ports": [
         "qp"
       ],
@@ -1947,7 +1947,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ATER",
+      "name": "ATER_VD7_TO_ODA7",
       "next_ports": [
         "qp"
       ],
@@ -2085,7 +2085,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AVEB",
+      "name": "AVEB_VD1_TO_ODB1",
       "next_ports": [
         "qp"
       ],
@@ -2176,7 +2176,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AWAT",
+      "name": "AWAT_STORE5_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -2250,7 +2250,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AXEC",
+      "name": "AXEC_STORE2_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -2265,7 +2265,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AXEP",
+      "name": "AXEP_MX00_TO_VA00",
       "next_ports": [
         "qp"
       ],
@@ -2280,7 +2280,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AXER",
+      "name": "AXER_VD1_TO_ODA1",
       "next_ports": [
         "qp"
       ],
@@ -2370,7 +2370,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "AZOZ",
+      "name": "AZOZ_VD4_TO_ODB4",
       "next_ports": [
         "qp"
       ],
@@ -2444,7 +2444,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BACE",
+      "name": "BACE_STORE5_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -2459,7 +2459,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BACO",
+      "name": "BACO_STORE1_GET_L4",
       "next_ports": [
         "qp"
       ],
@@ -2667,7 +2667,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BAPE",
+      "name": "BAPE_ED7_TO_ODA7",
       "next_ports": [
         "qp"
       ],
@@ -2698,7 +2698,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BASA",
+      "name": "BASA_ED2_TO_ODA2",
       "next_ports": [
         "qp"
       ],
@@ -2727,7 +2727,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BASY",
+      "name": "BASY_ED6_TO_ODA6",
       "next_ports": [
         "qp"
       ],
@@ -2775,7 +2775,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BAXE",
+      "name": "BAXE_SPL0_TO_VA01",
       "next_ports": [
         "qp"
       ],
@@ -2806,7 +2806,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BAXU",
+      "name": "BAXU_ED4_TO_ODB4",
       "next_ports": [
         "qp"
       ],
@@ -2835,7 +2835,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BAZU",
+      "name": "BAZU_STORE8_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -2954,7 +2954,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BEFE",
+      "name": "BEFE_STORE1_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -3091,7 +3091,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BEMO",
+      "name": "BEMO_STORE1_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -3184,7 +3184,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BETU",
+      "name": "BETU_ED2_TO_ODB2",
       "next_ports": [
         "qp"
       ],
@@ -3199,7 +3199,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BETY",
+      "name": "BETY_STORE1_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -3229,7 +3229,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BEVY",
+      "name": "BEVY_STORE4_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -3306,7 +3306,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BODU",
+      "name": "BODU_STORE5_GET_L4",
       "next_ports": [
         "qp"
       ],
@@ -3421,7 +3421,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BOMO",
+      "name": "BOMO_ED1_TO_ODA1",
       "next_ports": [
         "qp"
       ],
@@ -3451,7 +3451,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BOSO",
+      "name": "BOSO_STORE8_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -3497,7 +3497,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BOVE",
+      "name": "BOVE_STORE4_GET_L4",
       "next_ports": [
         "qp"
       ],
@@ -3558,7 +3558,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BUBO",
+      "name": "BUBO_ED1_TO_ODB1",
       "next_ports": [
         "qp"
       ],
@@ -3573,7 +3573,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BUCE",
+      "name": "BUCE_STORE4_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -3674,7 +3674,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BUHU",
+      "name": "BUHU_ED5_TO_ODB5",
       "next_ports": [
         "qp"
       ],
@@ -3689,7 +3689,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BUJA",
+      "name": "BUJA_STORE5_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -3704,7 +3704,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BUJY",
+      "name": "BUJY_STORE8_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -3747,7 +3747,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BUKY",
+      "name": "BUKY_STORE0_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -3778,7 +3778,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BUMA",
+      "name": "BUMA_ED4_TO_ODA4",
       "next_ports": [
         "qp"
       ],
@@ -3824,7 +3824,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BUPY",
+      "name": "BUPY_ED5_TO_ODA5",
       "next_ports": [
         "qp"
       ],
@@ -3853,7 +3853,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BUSE",
+      "name": "BUSE_VD6_TO_ODB6",
       "next_ports": [
         "qp"
       ],
@@ -5511,7 +5511,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BYDO",
+      "name": "BYDO_STORE4_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -5632,7 +5632,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BYME",
+      "name": "BYME_STORE9_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -5661,7 +5661,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BYNY",
+      "name": "BYNY_ED6_TO_ODB6",
       "next_ports": [
         "qp"
       ],
@@ -5676,7 +5676,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BYPY",
+      "name": "BYPY_ED7_TO_ODB7",
       "next_ports": [
         "qp"
       ],
@@ -5691,7 +5691,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "BYRO",
+      "name": "BYRO_STORE1_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -5961,7 +5961,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CAKO",
+      "name": "CAKO_ED3_TO_ODA3",
       "next_ports": [
         "qp"
       ],
@@ -6070,7 +6070,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CASE",
+      "name": "CASE_MY01_TO_VA06",
       "next_ports": [
         "qp"
       ],
@@ -6085,7 +6085,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CASY",
+      "name": "CASY_SCX7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -6100,7 +6100,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CATA",
+      "name": "CATA_SCX5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -6191,7 +6191,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CAWO",
+      "name": "CAWO_STORE9_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -6265,7 +6265,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CEDU",
+      "name": "CEDU_SCX4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -6297,7 +6297,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CEGA",
+      "name": "CEGA_STORE_L2",
       "next_ports": [
         "qp"
       ],
@@ -6312,7 +6312,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CEGY",
+      "name": "CEGY_STORE1_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -6388,7 +6388,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CELU",
+      "name": "CELU_STORE1_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -6467,7 +6467,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CETA",
+      "name": "CETA_MY03_TO_VA08",
       "next_ports": [
         "qp"
       ],
@@ -6482,7 +6482,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CETU",
+      "name": "CETU_VD3_TO_ODA3",
       "next_ports": [
         "qp"
       ],
@@ -6540,7 +6540,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "COFO",
+      "name": "COFO_VD3_TO_ODB3",
       "next_ports": [
         "qp"
       ],
@@ -6589,7 +6589,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "COHO",
+      "name": "COHO_STORE9_GET_L4",
       "next_ports": [
         "qp"
       ],
@@ -6665,7 +6665,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "COLY",
+      "name": "COLY_MX03_TO_VA03",
       "next_ports": [
         "qp"
       ],
@@ -6727,7 +6727,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "CORE",
+      "name": "CORE_SER0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -6802,7 +6802,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "COVE",
+      "name": "COVE_BMAP_TO_VA11",
       "next_ports": [
         "qp"
       ],
@@ -6817,7 +6817,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "COXO",
+      "name": "COXO_BMAP_TO_VA12",
       "next_ports": [
         "qp"
       ],
@@ -6850,7 +6850,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CUBE",
+      "name": "CUBE_STORE2_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -6865,7 +6865,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CUBO",
+      "name": "CUBO_STORE1_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -6880,7 +6880,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CUCA",
+      "name": "CUCA_STORE_L1",
       "next_ports": [
         "qp"
       ],
@@ -6895,7 +6895,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CUCU",
+      "name": "CUCU_STORE_L0",
       "next_ports": [
         "qp"
       ],
@@ -6910,7 +6910,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CUDY",
+      "name": "CUDY_JOY5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -6988,7 +6988,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CUGA",
+      "name": "CUGA_SCX2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -7020,7 +7020,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "CUGY",
+      "name": "CUGY_SD0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -7035,7 +7035,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CUJE",
+      "name": "CUJE_VD6_TO_ODA6",
       "next_ports": [
         "qp"
       ],
@@ -7128,7 +7128,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CUSA",
+      "name": "CUSA_SCY4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -7177,7 +7177,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CUVU",
+      "name": "CUVU_STORE2_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -7259,7 +7259,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CYBY",
+      "name": "CYBY_STORE1_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -7383,7 +7383,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CYME",
+      "name": "CYME_ED3_TO_ODB3",
       "next_ports": [
         "qp"
       ],
@@ -7398,7 +7398,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CYPO",
+      "name": "CYPO_MY02_TO_VA07",
       "next_ports": [
         "qp"
       ],
@@ -7443,7 +7443,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "CYRO",
+      "name": "CYRO_STORE2_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -7569,7 +7569,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DAFE",
+      "name": "DAFE_MY04_TO_VA09",
       "next_ports": [
         "qp"
       ],
@@ -7630,7 +7630,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DAHU",
+      "name": "DAHU_TLY1_TO_VA02",
       "next_ports": [
         "qp"
       ],
@@ -7709,7 +7709,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DALO",
+      "name": "DALO_STORE5_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -7724,7 +7724,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DALY",
+      "name": "DALY_STORE5_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -7756,7 +7756,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "DAME",
+      "name": "DAME_SD4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -7771,7 +7771,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DAMU",
+      "name": "DAMU_DA04_TO_VA04",
       "next_ports": [
         "qp"
       ],
@@ -7817,7 +7817,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "DASO",
+      "name": "DASO_SD3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -7849,7 +7849,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DAVA",
+      "name": "DAVA_DA05_TO_VA05",
       "next_ports": [
         "qp"
       ],
@@ -8173,7 +8173,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "DETU",
+      "name": "DETU_SD2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -8203,7 +8203,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "DEVE",
+      "name": "DEVE_OLB_TO_CBD5",
       "next_ports": [
         "qp"
       ],
@@ -8284,7 +8284,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DEZU",
+      "name": "DEZU_STORE3_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -8333,7 +8333,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DOBO",
+      "name": "DOBO_STORE5_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -8363,7 +8363,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DODE",
+      "name": "DODE_TLY2_TO_VA03",
       "next_ports": [
         "qp"
       ],
@@ -8442,7 +8442,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DONY",
+      "name": "DONY_STORE3_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -8506,7 +8506,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DOWA",
+      "name": "DOWA_STORE3_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -8521,7 +8521,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DOXE",
+      "name": "DOXE_SCX6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -8581,7 +8581,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "DUDE",
+      "name": "DUDE_SD1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -8626,7 +8626,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DUHO",
+      "name": "DUHO_MY00_TO_VA05",
       "next_ports": [
         "qp"
       ],
@@ -8767,7 +8767,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DUVE",
+      "name": "DUVE_DA09_TO_VA09",
       "next_ports": [
         "qp"
       ],
@@ -8782,7 +8782,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DUZA",
+      "name": "DUZA_STORE5_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -8955,7 +8955,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DYGO",
+      "name": "DYGO_STORE3_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -9058,7 +9058,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "DYNY",
+      "name": "DYNY_STORE5_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -9091,7 +9091,7 @@
       "cell_type": "TRIBUF",
       "doc": "// sprites always in low half of tile store",
       "gate": "tri6_nn",
-      "name": "DYSO",
+      "name": "DYSO_BANK_TO_VA12",
       "next_ports": [
         "qp"
       ],
@@ -9262,7 +9262,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ECAL",
+      "name": "ECAL_DA00_TO_VA00",
       "next_ports": [
         "qp"
       ],
@@ -9340,7 +9340,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EDOL",
+      "name": "EDOL_DMA5_TO_OA5",
       "next_ports": [
         "qp"
       ],
@@ -9355,7 +9355,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EDOS",
+      "name": "EDOS_SCX0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -9399,7 +9399,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "EFAB",
+      "name": "EFAB_SD6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -9460,7 +9460,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EFUD",
+      "name": "EFUD_STORE3_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -9525,7 +9525,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EGEZ",
+      "name": "EGEZ_DA01_TO_VA01",
       "next_ports": [
         "qp"
       ],
@@ -9734,7 +9734,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EKOB",
+      "name": "EKOB_SCX1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -9779,7 +9779,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ELEP",
+      "name": "ELEP_STORE7_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -9809,7 +9809,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ELUG",
+      "name": "ELUG_DMA4_TO_OA4",
       "next_ports": [
         "qp"
       ],
@@ -9824,7 +9824,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ELUV",
+      "name": "ELUV_SER1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -9839,7 +9839,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ELYC",
+      "name": "ELYC_STORE6_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -9966,7 +9966,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ENAP",
+      "name": "ENAP_STORE3_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -10075,7 +10075,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ERAF",
+      "name": "ERAF_DA10_TO_VA10",
       "next_ports": [
         "qp"
       ],
@@ -10107,7 +10107,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EREW",
+      "name": "EREW_DA07_TO_VA07",
       "next_ports": [
         "qp"
       ],
@@ -10189,7 +10189,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ETAD",
+      "name": "ETAD_STORE7_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -10221,7 +10221,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ETAK",
+      "name": "ETAK_SD7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -10269,7 +10269,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ETEG",
+      "name": "ETEG_DA06_TO_VA06",
       "next_ports": [
         "qp"
       ],
@@ -10300,7 +10300,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EVAD",
+      "name": "EVAD_TLY0_TO_VA01",
       "next_ports": [
         "qp"
       ],
@@ -10315,7 +10315,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EVAX",
+      "name": "EVAX_DA08_TO_VA08",
       "next_ports": [
         "qp"
       ],
@@ -10330,7 +10330,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "EVOK",
+      "name": "EVOK_SD5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -10345,7 +10345,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EVYT",
+      "name": "EVYT_STORE7_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -10455,7 +10455,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EXYF",
+      "name": "EXYF_DA12_TO_VA12",
       "next_ports": [
         "qp"
       ],
@@ -10470,7 +10470,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "EZOC",
+      "name": "EZOC_STORE6_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -10502,7 +10502,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FABY",
+      "name": "FABY_FETCH2_TO_OA4",
       "next_ports": [
         "qp"
       ],
@@ -10517,7 +10517,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FACO",
+      "name": "FACO_FETCH3_TO_OA5",
       "next_ports": [
         "qp"
       ],
@@ -10563,7 +10563,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FAGO",
+      "name": "FAGO_DMA2_TO_OA2",
       "next_ports": [
         "qp"
       ],
@@ -10609,7 +10609,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FAKU",
+      "name": "FAKU_SCAN3_TO_OA5",
       "next_ports": [
         "qp"
       ],
@@ -10638,7 +10638,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FAMU",
+      "name": "FAMU_SPL3_TO_VA04",
       "next_ports": [
         "qp"
       ],
@@ -10875,7 +10875,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FESA",
+      "name": "FESA_DMA1_TO_OA1",
       "next_ports": [
         "qp"
       ],
@@ -10939,7 +10939,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FETU",
+      "name": "FETU_DMA7_TO_OA7",
       "next_ports": [
         "qp"
       ],
@@ -10969,7 +10969,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FEVU",
+      "name": "FEVU_CA4_TO_OA4",
       "next_ports": [
         "qp"
       ],
@@ -11001,7 +11001,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FOBY",
+      "name": "FOBY_CA7_TO_OA7",
       "next_ports": [
         "qp"
       ],
@@ -11033,7 +11033,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FODO",
+      "name": "FODO_DMA0_TO_OA0",
       "next_ports": [
         "qp"
       ],
@@ -11320,7 +11320,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FUGU",
+      "name": "FUGU_FETCH4_TO_OA6",
       "next_ports": [
         "qp"
       ],
@@ -11335,7 +11335,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FUGY",
+      "name": "FUGY_ODA1_TO_VA05",
       "next_ports": [
         "qp"
       ],
@@ -11350,7 +11350,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FUHE",
+      "name": "FUHE_DA02_TO_VA02",
       "next_ports": [
         "qp"
       ],
@@ -11473,7 +11473,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FUSY",
+      "name": "FUSY_DA11_TO_VA11",
       "next_ports": [
         "qp"
       ],
@@ -11488,7 +11488,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FUTO",
+      "name": "FUTO_SCAN2_TO_OA4",
       "next_ports": [
         "qp"
       ],
@@ -11610,7 +11610,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FYDU",
+      "name": "FYDU_DMA6_TO_OA6",
       "next_ports": [
         "qp"
       ],
@@ -11641,7 +11641,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FYKE",
+      "name": "FYKE_FETCH5_TO_OA7",
       "next_ports": [
         "qp"
       ],
@@ -11656,7 +11656,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FYKY",
+      "name": "FYKY_DMA3_TO_OA3",
       "next_ports": [
         "qp"
       ],
@@ -11705,7 +11705,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "FYRA",
+      "name": "FYRA_OLB_TO_CBD7",
       "next_ports": [
         "qp"
       ],
@@ -11768,7 +11768,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "FYZY",
+      "name": "FYZY_DA03_TO_VA03",
       "next_ports": [
         "qp"
       ],
@@ -11933,7 +11933,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GAMA",
+      "name": "GAMA_SCAN4_TO_OA6",
       "next_ports": [
         "qp"
       ],
@@ -11977,7 +11977,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GARO",
+      "name": "GARO_CA0_TO_OA0",
       "next_ports": [
         "qp"
       ],
@@ -12007,7 +12007,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GATE",
+      "name": "GATE_STORE9_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -12054,7 +12054,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GAVO",
+      "name": "GAVO_ODA2_TO_VA06",
       "next_ports": [
         "qp"
       ],
@@ -12120,7 +12120,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GECA",
+      "name": "GECA_FETCHX_TO_OA0",
       "next_ports": [
         "qp"
       ],
@@ -12180,7 +12180,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GEFY",
+      "name": "GEFY_SCANX_TO_OA0",
       "next_ports": [
         "qp"
       ],
@@ -12210,7 +12210,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GEGU",
+      "name": "GEGU_ODA6_TO_VA10",
       "next_ports": [
         "qp"
       ],
@@ -12270,7 +12270,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GEMA",
+      "name": "GEMA_SCAN1_TO_OA3",
       "next_ports": [
         "qp"
       ],
@@ -12299,7 +12299,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GERA",
+      "name": "GERA_CA5_TO_OA5",
       "next_ports": [
         "qp"
       ],
@@ -12388,7 +12388,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GOBA",
+      "name": "GOBA_SCY1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -12403,7 +12403,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GOBY",
+      "name": "GOBY_SCAN5_TO_OA7",
       "next_ports": [
         "qp"
       ],
@@ -12418,7 +12418,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GODO",
+      "name": "GODO_SCY3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -12433,7 +12433,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GOFO",
+      "name": "GOFO_STORE0_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -12542,7 +12542,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GONU",
+      "name": "GONU_SCY2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -12605,7 +12605,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GOSE",
+      "name": "GOSE_CA2_TO_OA2",
       "next_ports": [
         "qp"
       ],
@@ -12654,7 +12654,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GOTU",
+      "name": "GOTU_ODA5_TO_VA09",
       "next_ports": [
         "qp"
       ],
@@ -12825,7 +12825,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GUNE",
+      "name": "GUNE_SCY6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -12868,7 +12868,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GUSE",
+      "name": "GUSE_SCAN0_TO_OA2",
       "next_ports": [
         "qp"
       ],
@@ -12986,7 +12986,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GYBU",
+      "name": "GYBU_FETCH0_TO_OA2",
       "next_ports": [
         "qp"
       ],
@@ -13089,7 +13089,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GYKA",
+      "name": "GYKA_FETCH1_TO_OA3",
       "next_ports": [
         "qp"
       ],
@@ -13210,7 +13210,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GYZA",
+      "name": "GYZA_SCY7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -13225,7 +13225,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "GYZO",
+      "name": "GYZO_SCY5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -13254,7 +13254,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "JEKU",
+      "name": "JEKU_JOY3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -13392,7 +13392,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "KEMA",
+      "name": "KEMA_JOY0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -13455,7 +13455,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "KOCE",
+      "name": "KOCE_JOY4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -13576,7 +13576,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "KURO",
+      "name": "KURO_JOY1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -13591,7 +13591,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "KUVE",
+      "name": "KUVE_JOY2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -13663,7 +13663,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LACE",
+      "name": "LACE_BGP4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -13754,7 +13754,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LAJU",
+      "name": "LAJU_OBP10_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -13934,7 +13934,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LARY",
+      "name": "LARY_BGP7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -14069,7 +14069,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LEBA",
+      "name": "LEBA_OBP16_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -14263,7 +14263,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LELU",
+      "name": "LELU_OBP17_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -14326,7 +14326,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LEPA",
+      "name": "LEPA_OBP11_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -14521,7 +14521,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LOBE",
+      "name": "LOBE_BGP3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -14566,7 +14566,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LODE",
+      "name": "LODE_OBP12_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -14596,7 +14596,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LODY",
+      "name": "LODY_BGP6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -14639,7 +14639,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LOKA",
+      "name": "LOKA_WY3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -14684,7 +14684,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LOLE",
+      "name": "LOLE_WX3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -14924,7 +14924,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LOVA",
+      "name": "LOVA_WX0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -15177,7 +15177,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LUGA",
+      "name": "LUGA_OBP15_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -15266,7 +15266,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LUKY",
+      "name": "LUKY_OBP14_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -15536,7 +15536,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LYCO",
+      "name": "LYCO_LY2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -15626,7 +15626,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LYKA",
+      "name": "LYKA_BGP5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -15794,7 +15794,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "LYZA",
+      "name": "LYZA_OBP13_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -15967,7 +15967,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "MARA",
+      "name": "MARA_WX7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -16204,7 +16204,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "MEGA",
+      "name": "MEGA_WY4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -16295,7 +16295,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "MELE",
+      "name": "MELE_WX4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -16370,7 +16370,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "MERA",
+      "name": "MERA_WY7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -16752,7 +16752,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "MOKO",
+      "name": "MOKO_WX2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -17017,7 +17017,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "MUFE",
+      "name": "MUFE_WX5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -17078,7 +17078,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "MUKA",
+      "name": "MUKA_WX1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -17153,7 +17153,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "MULY",
+      "name": "MULY_WX6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -17742,7 +17742,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "NABO",
+      "name": "NABO_IF1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -18093,7 +18093,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "NELA",
+      "name": "NELA_IF0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -18475,7 +18475,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "NOLA",
+      "name": "NOLA_TMA2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -18936,7 +18936,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "NUVY",
+      "name": "NUVY_DMA7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -19338,7 +19338,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "PABA",
+      "name": "PABA_BGP1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -19384,7 +19384,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "PADO",
+      "name": "PADO_IF3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -19589,7 +19589,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "PANE",
+      "name": "PANE_DMA3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -19635,7 +19635,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "PARE",
+      "name": "PARE_DMA4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -19930,7 +19930,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "PEGY",
+      "name": "PEGY_IF4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -19945,7 +19945,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "PELA",
+      "name": "PELA_WY5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -21069,7 +21069,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "PODA",
+      "name": "PODA_WY1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -21084,7 +21084,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "POFO",
+      "name": "POFO_STAT4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -21220,7 +21220,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "POLO",
+      "name": "POLO_WY6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -21235,7 +21235,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "POLY",
+      "name": "POLY_DMA0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -21358,7 +21358,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "POTE",
+      "name": "POTE_STAT6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -21516,7 +21516,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "PUFY",
+      "name": "PUFY_LYC7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -21674,7 +21674,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "PUNU",
+      "name": "PUNU_WY0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -21703,7 +21703,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "PUSO",
+      "name": "PUSO_TIMA7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -21810,7 +21810,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "PUZO",
+      "name": "PUZO_STAT3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -21893,7 +21893,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "PYGU",
+      "name": "PYGU_WY2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -22039,7 +22039,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "PYRE",
+      "name": "PYRE_TMA1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -22176,7 +22176,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RACE",
+      "name": "RACE_LYC4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -22222,7 +22222,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RACY",
+      "name": "RACY_TIMA1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -22387,7 +22387,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RAJU",
+      "name": "RAJU_VD3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -22432,7 +22432,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RAKU",
+      "name": "RAKU_VP7_TO_VD7",
       "next_ports": [
         "qp"
       ],
@@ -22479,7 +22479,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RALY",
+      "name": "RALY_DMA5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -22584,7 +22584,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RARO",
+      "name": "RARO_BGP0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -22704,7 +22704,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RAVY",
+      "name": "RAVY_TIMA2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -22780,7 +22780,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RAZU",
+      "name": "RAZU_LYC2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -22795,7 +22795,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "REBA",
+      "name": "REBA_VP1_TO_VD1",
       "next_ports": [
         "qp"
       ],
@@ -22825,7 +22825,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "REDO",
+      "name": "REDO_BGP2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -22854,7 +22854,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "REDY",
+      "name": "REDY_LYC3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -23038,7 +23038,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "REMA",
+      "name": "REMA_DMA2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -23053,7 +23053,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "REMO",
+      "name": "REMO_VP3_TO_VD3",
       "next_ports": [
         "qp"
       ],
@@ -23172,7 +23172,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RESE",
+      "name": "RESE_CA09_TO_VA09",
       "next_ports": [
         "qp"
       ],
@@ -23187,7 +23187,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RESO",
+      "name": "RESO_TEMP_TO_VA09",
       "next_ports": [
         "qp"
       ],
@@ -23202,7 +23202,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RESU",
+      "name": "RESU_DMA6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -23232,7 +23232,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RETA",
+      "name": "RETA_VP6_TO_VD6",
       "next_ports": [
         "qp"
       ],
@@ -23247,7 +23247,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RETU",
+      "name": "RETU_LYC0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -23262,7 +23262,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "REVA",
+      "name": "REVA_TMA6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -23335,7 +23335,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "REXU",
+      "name": "REXU_VD5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -23364,7 +23364,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ROCE",
+      "name": "ROCE_VP4_TO_VD4",
       "next_ports": [
         "qp"
       ],
@@ -23422,7 +23422,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RODY",
+      "name": "RODY_VP0_TO_VD0",
       "next_ports": [
         "qp"
       ],
@@ -23451,7 +23451,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ROFO",
+      "name": "ROFO_DMA1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -23512,7 +23512,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ROHA",
+      "name": "ROHA_TEMP_TO_VA08",
       "next_ports": [
         "qp"
       ],
@@ -23714,7 +23714,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ROPU",
+      "name": "ROPU_VP5_TO_VD5",
       "next_ports": [
         "qp"
       ],
@@ -23850,7 +23850,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ROTA",
+      "name": "ROTA_VD1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -23865,7 +23865,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ROTE",
+      "name": "ROTE_TAC1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -23894,7 +23894,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ROVA",
+      "name": "ROVA_IF2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -23923,7 +23923,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "ROWU",
+      "name": "ROWU_TIMA6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -24156,7 +24156,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RUGA",
+      "name": "RUGA_VD0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -24236,7 +24236,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "RUJO",
+      "name": "RUJO_CD5_TO_VD5",
       "next_ports": [
         "qp"
       ],
@@ -24324,7 +24324,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RUMO",
+      "name": "RUMO_CA12_TO_VA12",
       "next_ports": [
         "qp"
       ],
@@ -24428,7 +24428,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RUPY",
+      "name": "RUPY_VD6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -24457,7 +24457,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RUSA",
+      "name": "RUSA_TEMP_TO_VA07",
       "next_ports": [
         "qp"
       ],
@@ -24472,7 +24472,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RUSE",
+      "name": "RUSE_CA10_TO_VA10",
       "next_ports": [
         "qp"
       ],
@@ -24564,7 +24564,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RUVO",
+      "name": "RUVO_EL1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -24637,7 +24637,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RYBU",
+      "name": "RYBU_VD2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -24710,7 +24710,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RYDO",
+      "name": "RYDO_VP2_TO_VD2",
       "next_ports": [
         "qp"
       ],
@@ -24891,7 +24891,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RYKO",
+      "name": "RYKO_EL2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -24937,7 +24937,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "RYLA",
+      "name": "RYLA_TAC0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -24981,7 +24981,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RYMA",
+      "name": "RYMA_EL0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -25011,7 +25011,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RYNA",
+      "name": "RYNA_CA11_TO_VA11",
       "next_ports": [
         "qp"
       ],
@@ -25116,7 +25116,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "RYSU",
+      "name": "RYSU_CA08_TO_VA08",
       "next_ports": [
         "qp"
       ],
@@ -25284,7 +25284,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "SAFO",
+      "name": "SAFO_EL5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -25437,7 +25437,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SALU",
+      "name": "SALU_TMA3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -25562,7 +25562,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SAPU",
+      "name": "SAPU_TMA7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -25657,7 +25657,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "SASY",
+      "name": "SASY_STAT5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -25722,7 +25722,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SAWA",
+      "name": "SAWA_DIV12_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -25969,7 +25969,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SEGO",
+      "name": "SEGO_STAT2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -26028,7 +26028,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "SEKE",
+      "name": "SEKE_CD4_TO_VD4",
       "next_ports": [
         "qp"
       ],
@@ -26226,7 +26226,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SEPU",
+      "name": "SEPU_DIV11_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -26316,7 +26316,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SETE",
+      "name": "SETE_TMA0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -26363,7 +26363,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "SEVU",
+      "name": "SEVU_EL6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -26408,7 +26408,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SEZU",
+      "name": "SEZU_TEMP_TO_VA05",
       "next_ports": [
         "qp"
       ],
@@ -27150,7 +27150,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SOKU",
+      "name": "SOKU_TIMA0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -27241,7 +27241,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SOMU",
+      "name": "SOMU_TIMA4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -27366,7 +27366,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SOSY",
+      "name": "SOSY_TIMA3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -27398,7 +27398,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "SOTE",
+      "name": "SOTE_CD3_TO_VD3",
       "next_ports": [
         "qp"
       ],
@@ -27430,7 +27430,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SOTU",
+      "name": "SOTU_TMA5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -27807,7 +27807,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SUPE",
+      "name": "SUPE_TAC2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -27822,7 +27822,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SUPO",
+      "name": "SUPO_TMA4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -27867,7 +27867,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SURO",
+      "name": "SURO_TIMA5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -27930,7 +27930,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SUVO",
+      "name": "SUVO_TEMP_TO_VA10",
       "next_ports": [
         "qp"
       ],
@@ -27962,7 +27962,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "SUZA",
+      "name": "SUZA_CD7_TO_VD7",
       "next_ports": [
         "qp"
       ],
@@ -28202,7 +28202,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "SYPU",
+      "name": "SYPU_BOOT_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -28534,7 +28534,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "TAJU",
+      "name": "TAJU_EL7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -28582,7 +28582,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "TAKU",
+      "name": "TAKU_DIV07_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -28751,7 +28751,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "TATU",
+      "name": "TATU_DIV13_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -28794,7 +28794,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "TAVO",
+      "name": "TAVO_EL3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -28809,7 +28809,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "TAWU",
+      "name": "TAWU_DIV06_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -28892,7 +28892,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "TEBY",
+      "name": "TEBY_STAT0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -29134,7 +29134,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "TEME",
+      "name": "TEME_CD0_TO_VD0",
       "next_ports": [
         "qp"
       ],
@@ -29149,7 +29149,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "TEMU",
+      "name": "TEMU_DIV08_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -29207,7 +29207,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "TEPE",
+      "name": "TEPE_EL4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -29394,7 +29394,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "TEWU",
+      "name": "TEWU_CD1_TO_VD1",
       "next_ports": [
         "qp"
       ],
@@ -29485,7 +29485,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "TOBO",
+      "name": "TOBO_TEMP_TO_VA11",
       "next_ports": [
         "qp"
       ],
@@ -29560,7 +29560,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "TOFA",
+      "name": "TOFA_CD6_TO_VD6",
       "next_ports": [
         "qp"
       ],
@@ -29622,7 +29622,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "TOKU",
+      "name": "TOKU_VD7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -30359,7 +30359,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "TUSE",
+      "name": "TUSE_DIV09_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -30615,7 +30615,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "TYGO",
+      "name": "TYGO_CD2_TO_VD2",
       "next_ports": [
         "qp"
       ],
@@ -30646,7 +30646,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "TYJA",
+      "name": "TYJA_VD4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -31370,7 +31370,7 @@
       "cell_type": "TRIBUF",
       "doc": "// Schematic wrong, UPUG/SEPU driving D5/D4",
       "gate": "tri6_pn",
-      "name": "UPUG",
+      "name": "UPUG_DIV10_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -31592,7 +31592,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VACE",
+      "name": "VACE_WY05_TO_VA07",
       "next_ports": [
         "qp"
       ],
@@ -31624,7 +31624,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VAFE",
+      "name": "VAFE_LYC6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -31657,7 +31657,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VAHA",
+      "name": "VAHA_LCDC6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -31723,7 +31723,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "VAPY",
+      "name": "VAPY_TEMP_TO_VA04",
       "next_ports": [
         "qp"
       ],
@@ -31814,7 +31814,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VATO",
+      "name": "VATO_LCDC5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -31861,7 +31861,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VAZU",
+      "name": "VAZU_LYC5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -31890,7 +31890,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VEGA",
+      "name": "VEGA_LY0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -31905,7 +31905,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VEHA",
+      "name": "VEHA_WY04_TO_VA06",
       "next_ports": [
         "qp"
       ],
@@ -31920,7 +31920,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "VEJY",
+      "name": "VEJY_TEMP_TO_VA06",
       "next_ports": [
         "qp"
       ],
@@ -32028,7 +32028,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VEVY",
+      "name": "VEVY_WMAP_TO_VA10",
       "next_ports": [
         "qp"
       ],
@@ -32058,7 +32058,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VEZA",
+      "name": "VEZA_WMAP_TO_VA11",
       "next_ports": [
         "qp"
       ],
@@ -32150,7 +32150,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VOGU",
+      "name": "VOGU_WMAP_TO_VA12",
       "next_ports": [
         "qp"
       ],
@@ -32165,7 +32165,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VOJO",
+      "name": "VOJO_LYC1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -32180,7 +32180,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VOKE",
+      "name": "VOKE_LCDC4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -32324,7 +32324,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VOVO",
+      "name": "VOVO_WY06_TO_VA08",
       "next_ports": [
         "qp"
       ],
@@ -32403,7 +32403,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VULO",
+      "name": "VULO_WY07_TO_VA09",
       "next_ports": [
         "qp"
       ],
@@ -32512,7 +32512,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "VURY",
+      "name": "VURY_BANK_TO_VA12",
       "next_ports": [
         "qp"
       ],
@@ -32661,7 +32661,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VYNE",
+      "name": "VYNE_LY4_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -32754,7 +32754,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "VYTO",
+      "name": "VYTO_WY03_TO_VA05",
       "next_ports": [
         "qp"
       ],
@@ -32817,7 +32817,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WABA",
+      "name": "WABA_STORE7_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -32846,7 +32846,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WABO",
+      "name": "WABO_STORE6_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -32861,7 +32861,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WABU",
+      "name": "WABU_STORE7_GET_L4",
       "next_ports": [
         "qp"
       ],
@@ -32876,7 +32876,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WACU",
+      "name": "WACU_CA1_TO_OA1",
       "next_ports": [
         "qp"
       ],
@@ -32966,7 +32966,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WAGA",
+      "name": "WAGA_STORE5_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -33014,7 +33014,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WAJA",
+      "name": "WAJA_STORE4_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -33029,7 +33029,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WAKO",
+      "name": "WAKO_STORE7_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -33093,7 +33093,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WAMA",
+      "name": "WAMA_LY5_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -33122,7 +33122,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WANA",
+      "name": "WANA_STORE7_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -33167,7 +33167,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WAPE",
+      "name": "WAPE_CA3_TO_OA3",
       "next_ports": [
         "qp"
       ],
@@ -33199,7 +33199,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WARE",
+      "name": "WARE_SCY0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -33229,7 +33229,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WASA",
+      "name": "WASA_ED0_TO_ODA0",
       "next_ports": [
         "qp"
       ],
@@ -33290,7 +33290,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WATO",
+      "name": "WATO_STORE6_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -33305,7 +33305,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WAVO",
+      "name": "WAVO_LY6_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -33338,7 +33338,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WAWE",
+      "name": "WAWE_WNY1_TO_VA02",
       "next_ports": [
         "qp"
       ],
@@ -33353,7 +33353,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WAXA",
+      "name": "WAXA_CA6_TO_OA6",
       "next_ports": [
         "qp"
       ],
@@ -33368,7 +33368,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WAXE",
+      "name": "WAXE_STORE7_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -33585,7 +33585,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WEHE",
+      "name": "WEHE_STORE0_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -33615,7 +33615,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WEJO",
+      "name": "WEJO_ED0_TO_ODB0",
       "next_ports": [
         "qp"
       ],
@@ -33718,7 +33718,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WENU",
+      "name": "WENU_STORE_L3",
       "next_ports": [
         "qp"
       ],
@@ -33761,7 +33761,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WEPY",
+      "name": "WEPY_STORE4_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -33790,7 +33790,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WERE",
+      "name": "WERE_STORE2_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -33819,7 +33819,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WERU",
+      "name": "WERU_STORE4_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -33989,7 +33989,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WEZA",
+      "name": "WEZA_STORE_I5",
       "next_ports": [
         "qp"
       ],
@@ -34004,7 +34004,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WEZE",
+      "name": "WEZE_LY7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -34036,7 +34036,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WOCY",
+      "name": "WOCY_STORE6_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -34178,7 +34178,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WOJY",
+      "name": "WOJY_LY3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -34208,7 +34208,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WOKO",
+      "name": "WOKO_STORE0_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -34254,7 +34254,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WOLU",
+      "name": "WOLU_WNY2_TO_VA03",
       "next_ports": [
         "qp"
       ],
@@ -34319,7 +34319,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WONY",
+      "name": "WONY_SCX3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -34439,7 +34439,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WOWA",
+      "name": "WOWA_VD0_TO_ODB0",
       "next_ports": [
         "qp"
       ],
@@ -34469,7 +34469,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WOXY",
+      "name": "WOXY_STORE4_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -34499,7 +34499,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUCO",
+      "name": "WUCO_STORE_I4",
       "next_ports": [
         "qp"
       ],
@@ -34528,7 +34528,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUDO",
+      "name": "WUDO_WNY0_TO_VA01",
       "next_ports": [
         "qp"
       ],
@@ -34596,7 +34596,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_pn",
-      "name": "WUGA",
+      "name": "WUGA_STAT1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -34676,7 +34676,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUJU",
+      "name": "WUJU_WX07_TO_VA04",
       "next_ports": [
         "qp"
       ],
@@ -34691,7 +34691,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUKA",
+      "name": "WUKA_LCDC3_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -34750,7 +34750,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WULE",
+      "name": "WULE_CD2_TO_ODA2",
       "next_ports": [
         "qp"
       ],
@@ -34793,7 +34793,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUNE",
+      "name": "WUNE_ODA4_TO_VA08",
       "next_ports": [
         "qp"
       ],
@@ -34957,7 +34957,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUVA",
+      "name": "WUVA_LY1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -34989,7 +34989,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUWE",
+      "name": "WUWE_SCANX_TO_OA1",
       "next_ports": [
         "qp"
       ],
@@ -35004,7 +35004,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUXE",
+      "name": "WUXE_STORE2_GET_L4",
       "next_ports": [
         "qp"
       ],
@@ -35019,7 +35019,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUXU",
+      "name": "WUXU_STORE4_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -35063,7 +35063,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUZU",
+      "name": "WUZU_VD0_TO_ODA0",
       "next_ports": [
         "qp"
       ],
@@ -35078,7 +35078,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WUZY",
+      "name": "WUZY_STORE_I0",
       "next_ports": [
         "qp"
       ],
@@ -35139,7 +35139,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WYDA",
+      "name": "WYDA_STORE_I3",
       "next_ports": [
         "qp"
       ],
@@ -35171,7 +35171,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WYDU",
+      "name": "WYDU_FETCHX_TO_OA1",
       "next_ports": [
         "qp"
       ],
@@ -35204,7 +35204,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WYGA",
+      "name": "WYGA_ODA3_TO_VA07",
       "next_ports": [
         "qp"
       ],
@@ -35219,7 +35219,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WYGO",
+      "name": "WYGO_STORE7_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -35268,7 +35268,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WYJU",
+      "name": "WYJU_LCDC2_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -35317,7 +35317,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WYKY",
+      "name": "WYKY_CD2_TO_ODB2",
       "next_ports": [
         "qp"
       ],
@@ -35429,7 +35429,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WYPO",
+      "name": "WYPO_LCDC0_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -35458,7 +35458,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WYSE",
+      "name": "WYSE_STORE_I1",
       "next_ports": [
         "qp"
       ],
@@ -35523,7 +35523,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "WYWY",
+      "name": "WYWY_STORE6_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -35630,7 +35630,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "XABU",
+      "name": "XABU_OLA_TO_CBD6",
       "next_ports": [
         "qp"
       ],
@@ -35645,7 +35645,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "XACA",
+      "name": "XACA_OLB_TO_CBD0",
       "next_ports": [
         "qp"
       ],
@@ -35768,7 +35768,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "XAGU",
+      "name": "XAGU_OLB_TO_CBD1",
       "next_ports": [
         "qp"
       ],
@@ -35798,7 +35798,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XAHE",
+      "name": "XAHE_WX05_TO_VA02",
       "next_ports": [
         "qp"
       ],
@@ -35856,7 +35856,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XAJU",
+      "name": "XAJU_OBP04_TO_CD4",
       "next_ports": [
         "qp"
       ],
@@ -35904,7 +35904,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XAKY",
+      "name": "XAKY_CA00_TO_VA00",
       "next_ports": [
         "qp"
       ],
@@ -35966,7 +35966,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XAMO",
+      "name": "XAMO_WX04_TO_VA01",
       "next_ports": [
         "qp"
       ],
@@ -36068,7 +36068,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XARY",
+      "name": "XARY_OBP00_TO_CD0",
       "next_ports": [
         "qp"
       ],
@@ -36172,7 +36172,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XAWO",
+      "name": "XAWO_OBP07_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -36187,7 +36187,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XAXA",
+      "name": "XAXA_OBP06_TO_CD6",
       "next_ports": [
         "qp"
       ],
@@ -36277,7 +36277,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XEBU",
+      "name": "XEBU_LCDC7_TO_CD7",
       "next_ports": [
         "qp"
       ],
@@ -36292,7 +36292,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XECA",
+      "name": "XECA_CA04_TO_VA04",
       "next_ports": [
         "qp"
       ],
@@ -36460,7 +36460,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XEHE",
+      "name": "XEHE_ODA7_TO_VA11",
       "next_ports": [
         "qp"
       ],
@@ -36492,7 +36492,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XEJA",
+      "name": "XEJA_WX03_TO_VA00",
       "next_ports": [
         "qp"
       ],
@@ -36539,7 +36539,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "XELE",
+      "name": "XELE_OLA_TO_CBD1",
       "next_ports": [
         "qp"
       ],
@@ -36702,7 +36702,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "XEPU",
+      "name": "XEPU_OLB_TO_CBD2",
       "next_ports": [
         "qp"
       ],
@@ -36748,7 +36748,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XERO",
+      "name": "XERO_LCDC1_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -36859,7 +36859,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XOBA",
+      "name": "XOBA_CA05_TO_VA05",
       "next_ports": [
         "qp"
       ],
@@ -36891,7 +36891,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XOBO",
+      "name": "XOBO_OBP05_TO_CD5",
       "next_ports": [
         "qp"
       ],
@@ -36952,7 +36952,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XODY",
+      "name": "XODY_CA03_TO_VA03",
       "next_ports": [
         "qp"
       ],
@@ -37026,7 +37026,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XOKE",
+      "name": "XOKE_OBP01_TO_CD1",
       "next_ports": [
         "qp"
       ],
@@ -37168,7 +37168,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XONU",
+      "name": "XONU_HILO_TO_VA00",
       "next_ports": [
         "qp"
       ],
@@ -37183,7 +37183,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XOPO",
+      "name": "XOPO_CA06_TO_VA06",
       "next_ports": [
         "qp"
       ],
@@ -37376,7 +37376,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XUBY",
+      "name": "XUBY_OBP03_TO_CD3",
       "next_ports": [
         "qp"
       ],
@@ -37678,7 +37678,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XULO",
+      "name": "XULO_WX06_TO_VA03",
       "next_ports": [
         "qp"
       ],
@@ -37693,7 +37693,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "XUNA",
+      "name": "XUNA_OLB_TO_CBD4",
       "next_ports": [
         "qp"
       ],
@@ -37708,7 +37708,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XUNO",
+      "name": "XUNO_OBP02_TO_CD2",
       "next_ports": [
         "qp"
       ],
@@ -37890,7 +37890,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "XUVO",
+      "name": "XUVO_OLA_TO_CBD3",
       "next_ports": [
         "qp"
       ],
@@ -37922,7 +37922,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XUXU",
+      "name": "XUXU_CA01_TO_VA01",
       "next_ports": [
         "qp"
       ],
@@ -37971,7 +37971,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XYBO",
+      "name": "XYBO_CA07_TO_VA07",
       "next_ports": [
         "qp"
       ],
@@ -38049,7 +38049,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "XYGU",
+      "name": "XYGU_OLB_TO_CBD3",
       "next_ports": [
         "qp"
       ],
@@ -38249,7 +38249,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XYNE",
+      "name": "XYNE_CA02_TO_VA02",
       "next_ports": [
         "qp"
       ],
@@ -38294,7 +38294,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XYRA",
+      "name": "XYRA_STORE9_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -38309,7 +38309,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XYRE",
+      "name": "XYRE_STORE4_GET_I3",
       "next_ports": [
         "qp"
       ],
@@ -38353,7 +38353,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "XYTO",
+      "name": "XYTO_CD6_TO_ODB6",
       "next_ports": [
         "qp"
       ],
@@ -38522,7 +38522,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "YBUK",
+      "name": "YBUK_STORE6_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -38680,7 +38680,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "YFAP",
+      "name": "YFAP_OLA_TO_CBD0",
       "next_ports": [
         "qp"
       ],
@@ -38835,7 +38835,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "YHAL",
+      "name": "YHAL_STORE9_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -38865,7 +38865,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "YJEM",
+      "name": "YJEM_STORE3_GET_L4",
       "next_ports": [
         "qp"
       ],
@@ -38913,7 +38913,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "YKOZ",
+      "name": "YKOZ_STORE6_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -39121,7 +39121,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "YNEV",
+      "name": "YNEV_STORE9_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -39168,7 +39168,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "YPON",
+      "name": "YPON_OLA_TO_CBD2",
       "next_ports": [
         "qp"
       ],
@@ -39183,7 +39183,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "YPOZ",
+      "name": "YPOZ_STORE7_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -39244,7 +39244,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "YRAD",
+      "name": "YRAD_STORE9_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -39371,7 +39371,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "YTUX",
+      "name": "YTUX_OLA_TO_CBD7",
       "next_ports": [
         "qp"
       ],
@@ -39522,7 +39522,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "YVUC",
+      "name": "YVUC_CD6_TO_ODA6",
       "next_ports": [
         "qp"
       ],
@@ -39585,7 +39585,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "YWAV",
+      "name": "YWAV_STORE3_GET_L3",
       "next_ports": [
         "qp"
       ],
@@ -39600,7 +39600,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "YWEG",
+      "name": "YWEG_OLA_TO_CBD5",
       "next_ports": [
         "qp"
       ],
@@ -39741,7 +39741,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZABY",
+      "name": "ZABY_STORE2_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -39833,7 +39833,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZAJA",
+      "name": "ZAJA_CD3_TO_ODB3",
       "next_ports": [
         "qp"
       ],
@@ -39880,7 +39880,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZAKY",
+      "name": "ZAKY_CD1_TO_ODA1",
       "next_ports": [
         "qp"
       ],
@@ -39912,7 +39912,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZAMY",
+      "name": "ZAMY_CD0_TO_ODB0",
       "next_ports": [
         "qp"
       ],
@@ -39956,7 +39956,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZARO",
+      "name": "ZARO_STORE9_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -39986,7 +39986,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZATO",
+      "name": "ZATO_CD5_TO_ODA5",
       "next_ports": [
         "qp"
       ],
@@ -40001,7 +40001,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZAVE",
+      "name": "ZAVE_STORE0_GET_I2",
       "next_ports": [
         "qp"
       ],
@@ -40016,7 +40016,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZAXA",
+      "name": "ZAXA_CD0_TO_ODA0",
       "next_ports": [
         "qp"
       ],
@@ -40092,7 +40092,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZECE",
+      "name": "ZECE_STORE0_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -40139,7 +40139,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZEDY",
+      "name": "ZEDY_STORE0_GET_L1",
       "next_ports": [
         "qp"
       ],
@@ -40169,7 +40169,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "ZEHA",
+      "name": "ZEHA_OLB_TO_CBD6",
       "next_ports": [
         "qp"
       ],
@@ -40275,7 +40275,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZETU",
+      "name": "ZETU_STORE0_GET_I0",
       "next_ports": [
         "qp"
       ],
@@ -40290,7 +40290,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZEXE",
+      "name": "ZEXE_STORE3_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -40411,7 +40411,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZOJY",
+      "name": "ZOJY_STORE9_GET_I1",
       "next_ports": [
         "qp"
       ],
@@ -40505,7 +40505,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZOPU",
+      "name": "ZOPU_CD1_TO_ODB1",
       "next_ports": [
         "qp"
       ],
@@ -40537,7 +40537,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZOZO",
+      "name": "ZOZO_CD3_TO_ODA3",
       "next_ports": [
         "qp"
       ],
@@ -40584,7 +40584,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZUDO",
+      "name": "ZUDO_STORE6_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -40614,7 +40614,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZUFE",
+      "name": "ZUFE_CD7_TO_ODA7",
       "next_ports": [
         "qp"
       ],
@@ -40629,7 +40629,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZUFO",
+      "name": "ZUFO_CD4_TO_ODA4",
       "next_ports": [
         "qp"
       ],
@@ -40644,7 +40644,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZUGA",
+      "name": "ZUGA_CD4_TO_ODB4",
       "next_ports": [
         "qp"
       ],
@@ -40659,7 +40659,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZUKE",
+      "name": "ZUKE_STORE2_GET_L2",
       "next_ports": [
         "qp"
       ],
@@ -40706,7 +40706,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZUMO",
+      "name": "ZUMO_CD5_TO_ODB5",
       "next_ports": [
         "qp"
       ],
@@ -40721,7 +40721,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZUMU",
+      "name": "ZUMU_STORE0_GET_L0",
       "next_ports": [
         "qp"
       ],
@@ -40893,7 +40893,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZYFA",
+      "name": "ZYFA_CD7_TO_ODB7",
       "next_ports": [
         "qp"
       ],
@@ -40971,7 +40971,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZYPO",
+      "name": "ZYPO_STORE3_GET_L5",
       "next_ports": [
         "qp"
       ],
@@ -41001,7 +41001,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri10_np",
-      "name": "ZYSA",
+      "name": "ZYSA_OLA_TO_CBD4",
       "next_ports": [
         "qp"
       ],
@@ -41016,7 +41016,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZYSU",
+      "name": "ZYSU_STORE_I2",
       "next_ports": [
         "qp"
       ],
@@ -41031,7 +41031,7 @@
       "cell_type": "TRIBUF",
       "doc": "",
       "gate": "tri6_nn",
-      "name": "ZYTO",
+      "name": "ZYTO_STORE6_GET_L4",
       "next_ports": [
         "qp"
       ],

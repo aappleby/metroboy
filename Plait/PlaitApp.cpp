@@ -15,6 +15,7 @@
 #include <deque>
 #include <algorithm>
 #include <filesystem>
+#include <sstream>
 
 //#include <windows.h>
 
@@ -31,6 +32,8 @@ static std::map<ToolMode, std::string> tool_to_string = {
   {ToolMode::PLACE_ANCHOR,    "PLACE_ANCHOR"},
   {ToolMode::PAN_VIEW,        "PAN_VIEW"},
   {ToolMode::MENU_OPTION,     "MENU_OPTION"},
+  {ToolMode::SPLIT_CELL,      "SPLIT_CELL"},
+  {ToolMode::MERGE_CELL,      "MERGE_CELL"},
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -40,27 +43,66 @@ int main(int argc, char** argv) {
   (void)argv;
   int ret = 0;
 
+  //const char* die_db_file = "gameboy.die_db.json";
+
   PlaitApp* app = new PlaitApp();
 
-#if 0
+#if 1
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
-  printf("Saving cell db\n");
-  app->die_db.save_json("gameboy.die_db.json");
-  printf("Done\n");
-  printf("Loading gameboy.die_db.json\n");
-  app->die_db.clear();
-  app->die_db.load_json("gameboy.die_db.json");
-  printf("Done\n");
+  printf("Done\n\n");
+
+  {
+    printf("Saving cell db\n");
+    std::ostringstream stream_out;
+    app->die_db.save_json(stream_out);
+    printf("Done\n\n");
+
+    printf("Loading gameboy.die_db.json\n");
+    std::istringstream stream_in(stream_out.str());
+    app->die_db.clear();
+    app->die_db.load_json(stream_in);
+    printf("Done\n\n");
+  }
+
+  /*
+  {
+    printf("Loading gameboy.plait.json\n");
+    app->plait.load_json("gameboy.plait.json", app->die_db);
+    printf("Done\n\n");
+
+
+    printf("Saving plait\n");
+    //std::ostringstream stream_out;
+    app->plait.save_json("gameboy.plait_hax.json");
+    printf("Done\n\n");
+
+    printf("Loading plait\n");
+    //std::istringstream stream_in(stream_out.str());
+    app->plait.clear();
+    app->plait.load_json("gameboy.plait_hax.json", app->die_db);
+    printf("Done\n\n");
+  }
+  */
+
 #else
   printf("Loading gameboy.die_db.json\n");
   app->die_db.clear();
   app->die_db.load_json("gameboy.die_db.json");
-  printf("Tag map size %zd\n", app->die_db.tag_to_cell.size());
-  printf("Done\n");
+  printf("Done\n\n");
 
   printf("Loading gameboy.plait.json\n");
   app->plait.load_json("gameboy.plait.json", app->die_db);
+  printf("Done\n\n");
+
+
+  size_t total_nodes = 0;
+  for (auto& [tag, plait_cell] : app->plait.cell_map) {
+    total_nodes += plait_cell->nodes.size();
+  }
+  printf("Total cells %zd\n", app->plait.cell_map.size());
+  printf("Total nodes %zd\n", total_nodes);
+  printf("Total edges %zd\n", app->plait.trace_map.size());
 
   AppHost* app_host = new AppHost(app);
   ret = app_host->app_main(argc, argv);
@@ -155,7 +197,7 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
 
   tex = create_texture_u32(4, 4, pix);
 
-  for (auto& [tag, cell] : plait.tag_to_cell) {
+  for (auto& [tag, cell] : plait.cell_map) {
     for (auto node : cell->nodes) {
       node->color = 0xFFFF00FF;
 
@@ -200,7 +242,7 @@ PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool igno
   (void)ignore_clicked;
   (void)ignore_hovered;
 
-  for (auto& [tag, cell] : plait.tag_to_cell) {
+  for (auto& [tag, cell] : plait.cell_map) {
     for (auto node : cell->nodes) {
       if ((node == clicked_node) && ignore_clicked) continue;
       dvec2 node_pos = node->get_pos_abs_new();
@@ -229,7 +271,7 @@ void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback ca
 
   const dvec2 node_size = {128,64};
 
-  for (auto& [tag, plait_cell] : plait.tag_to_cell) {
+  for (auto& [tag, plait_cell] : plait.cell_map) {
     for (auto node : plait_cell->nodes) {
       dvec2 nmin = node->get_pos_abs_new();
       dvec2 nmax = node->get_pos_abs_new() + node_size;
@@ -504,6 +546,56 @@ void PlaitApp::event_ghost_region(SDL_Event event) {
 
 //--------------------------------------------------------------------------------
 
+void PlaitApp::event_split_cell(SDL_Event event) {
+  switch(event.type) {
+  case SDL_MOUSEBUTTONDOWN: {
+    if (event.button.button & SDL_BUTTON_LMASK) {
+      commit_selection();
+      clear_selection();
+      if (clicked_node) {
+        plait.split_node(clicked_node);
+        clicked_node = nullptr;
+      }
+    }
+    break;
+  }
+  case SDL_KEYUP: {
+    int key = event.key.keysym.scancode;
+    if (key == SDL_SCANCODE_Z) {
+      current_tool = ToolMode::NONE;
+    }
+    break;
+  }
+  }
+}
+
+//--------------------------------------------------------------------------------
+
+void PlaitApp::event_merge_cell(SDL_Event event) {
+  switch(event.type) {
+  case SDL_MOUSEBUTTONDOWN: {
+    if (event.button.button & SDL_BUTTON_LMASK) {
+      commit_selection();
+      clear_selection();
+      if (clicked_node) {
+        plait.merge_node(clicked_node);
+        clicked_node = nullptr;
+      }
+    }
+    break;
+  }
+  case SDL_KEYUP: {
+    int key = event.key.keysym.scancode;
+    if (key == SDL_SCANCODE_X) {
+      current_tool = ToolMode::NONE;
+    }
+    break;
+  }
+  }
+}
+
+//--------------------------------------------------------------------------------
+
 void PlaitApp::event_pan_view(SDL_Event event) {
   bool was_drag = length(click_pos_screen - mouse_pos_screen) > 3;
 
@@ -555,6 +647,8 @@ void PlaitApp::event_drag_nodes(SDL_Event event) {
 void PlaitApp::event_place_anchor(SDL_Event event) {
   switch(event.type) {
   case SDL_MOUSEBUTTONDOWN: {
+    commit_selection();
+    clear_selection();
     if (event.button.button & SDL_BUTTON_LMASK) {
       for (auto node : node_selection) {
         node->set_anchor(clicked_node);
@@ -616,6 +710,8 @@ void PlaitApp::event_select_tool(SDL_Event event) {
     if (key == SDL_SCANCODE_D)     new_tool = ToolMode::LOCK_REGION;
     if (key == SDL_SCANCODE_F)     new_tool = ToolMode::UNLOCK_REGION;
     if (key == SDL_SCANCODE_Q)     new_tool = ToolMode::GHOST_REGION;
+    if (key == SDL_SCANCODE_Z)     new_tool = ToolMode::SPLIT_CELL;
+    if (key == SDL_SCANCODE_X)     new_tool = ToolMode::MERGE_CELL;
     if (key == SDL_SCANCODE_LALT)  new_tool = ToolMode::MENU_OPTION;
     if (key == SDL_SCANCODE_LCTRL) new_tool = ToolMode::SELECT_REGION;
 
@@ -697,6 +793,8 @@ void PlaitApp::app_update(double delta_time) {
     case ToolMode::LOCK_REGION:    event_lock_region(event); break;
     case ToolMode::UNLOCK_REGION:  event_unlock_region(event); break;
     case ToolMode::GHOST_REGION:   event_ghost_region(event); break;
+    case ToolMode::SPLIT_CELL:     event_split_cell(event); break;
+    case ToolMode::MERGE_CELL:     event_merge_cell(event); break;
     case ToolMode::PLACE_ANCHOR:   event_place_anchor(event); break;
     case ToolMode::PAN_VIEW:       event_pan_view(event); break;
     case ToolMode::MENU_OPTION:    event_menu_option(event); break;
@@ -803,7 +901,82 @@ void PlaitApp::app_update(double delta_time) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::draw_edge(PlaitEdge* edge) {
+void PlaitApp::draw_node(PlaitNode* node) {
+  const auto& view = view_control.view_snap;
+
+  dvec2 node_pos_old = node->get_pos_abs_old();
+  dvec2 node_pos_new = node->get_pos_abs_new();
+
+  const dvec2 node_size = {128,64};
+  const dvec2 port_size = {4,4};
+
+  bool node_visible = true;
+  if (node_pos_new.x > view.max.x) node_visible = false;
+  if (node_pos_new.y > view.max.y) node_visible = false;
+  if (node_pos_new.x + node_size.x < view.min.x) node_visible = false;
+  if (node_pos_new.y + node_size.y < view.min.y) node_visible = false;
+
+  //----------------------------------------
+
+  // Node outline
+  if (node_visible) {
+    uint32_t color = 0xFF808080;
+    if (node->selected) color = 0xFFCCCCCC;
+    //if (node->floating) color = 0xFF0000FF;
+    if (node->name != "default") color = 0xFFFF00FF;
+
+    outline_painter.push_box(node_pos_new, node_pos_new + node_size, color);
+  }
+
+  // Node fill
+  if (node_visible && !node->ghost) {
+    box_painter.push_corner_size(
+      node_pos_new + dvec2(4,4),
+      node_size - dvec2(8,8),
+      node == hovered_node ? node->color + COL_HINT3 : node->color);
+  }
+
+  // Node text
+  if (node_visible) {
+    text_painter.add_text_at(node->plait_cell->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
+    text_painter.add_text_at(node->plait_cell->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
+    if (node->locked) text_painter.add_text_at("LOCKED", float(node_pos_new.x + 8), float(node_pos_new.y + 40));
+  }
+
+
+  // Node input port(s)
+  if (node_visible) {
+    size_t prev_port_count = node->plait_cell->die_cell->prev_ports.size();
+    double prev_stride = (node_size.y) / (prev_port_count + 1);
+
+    for (size_t i = 0; i < prev_port_count; i++) {
+      dvec2 port_pos = node_pos_new + dvec2(0, prev_stride * (i + 1));
+      port_painter.push_center_size(port_pos, port_size, 0xCC008000);
+    }
+  }
+
+  // Node output port(s)
+  if (node_visible) {
+    size_t next_port_count = node->plait_cell->die_cell->next_ports.size();
+    double next_stride = (node_size.y) / (next_port_count + 1);
+
+    for (size_t i = 0; i < next_port_count; i++) {
+      dvec2 port_pos = node_pos_new + dvec2(node_size.x, next_stride * (i + 1));
+      port_painter.push_center_size(port_pos, port_size, 0xCC000080);
+    }
+  }
+
+  // Anchor edge
+  if (node_visible && show_anchors && node->anchored()) {
+    dvec2 center_a = node->get_anchor()->get_pos_abs_new() + node_size / 2.0;
+    dvec2 center_b = node->get_pos_abs_new() + node_size / 2.0;
+    edge_painter.push(center_a, 0x80FFFFFF, center_b, 0x80FF4040);
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void PlaitApp::draw_edge(PlaitTrace* edge) {
   const dvec2 node_size = {128,64};
 
   auto prev_node = edge->prev_node;
@@ -830,92 +1003,16 @@ void PlaitApp::draw_edge(PlaitEdge* edge) {
     }
   }
 
-  size_t prev_port_count = prev_node->next_ports.size();
-  size_t next_port_count = next_node->prev_edges.size();
+  size_t prev_port_count = prev_node->plait_cell->die_cell->next_ports.size();
+  size_t next_port_count = next_node->plait_cell->die_cell->prev_ports.size();
 
   double stride_a = (node_size.y) / (prev_port_count + 1);
   double stride_b = (node_size.y) / (next_port_count + 1);
 
-  dvec2 port_prev = prev_pos_new + dvec2(node_size.x, stride_a * (edge->prev_port + 1));
-  dvec2 port_next = next_pos_new + dvec2(0,           stride_b * (edge->next_port + 1));
+  dvec2 port_prev = prev_pos_new + dvec2(node_size.x, stride_a * (edge->prev_port_index + 1));
+  dvec2 port_next = next_pos_new + dvec2(0,           stride_b * (edge->next_port_index + 1));
 
   edge_painter.push(port_prev, color_a, port_next, color_b);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-void PlaitApp::draw_node(PlaitNode* node) {
-  const auto& view = view_control.view_snap;
-
-  dvec2 node_pos_old = node->get_pos_abs_old();
-  dvec2 node_pos_new = node->get_pos_abs_new();
-
-  const dvec2 node_size = {128,64};
-  const dvec2 port_size = {4,4};
-
-  bool node_visible = true;
-  if (node_pos_old.x > view.max.x) node_visible = false;
-  if (node_pos_old.y > view.max.y) node_visible = false;
-  if (node_pos_old.x + node_size.x < view.min.x) node_visible = false;
-  if (node_pos_old.y + node_size.y < view.min.y) node_visible = false;
-
-  //----------------------------------------
-
-  // Node outline
-  if (node_visible) {
-    uint32_t color = 0xFF808080;
-    if (node->selected) color = 0xFFCCCCCC;
-    //if (node->floating) color = 0xFF0000FF;
-
-    outline_painter.push_box(node_pos_new, node_pos_new + node_size, color);
-  }
-
-  // Node fill
-  if (node_visible && !node->ghost) {
-    box_painter.push_corner_size(
-      node_pos_new + dvec2(4,4),
-      node_size - dvec2(8,8),
-      node == hovered_node ? node->color + COL_HINT3 : node->color);
-  }
-
-  // Node text
-  if (node_visible) {
-    text_painter.add_text_at(node->plait_cell->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
-    text_painter.add_text_at(node->plait_cell->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
-    if (node->locked) text_painter.add_text_at("LOCKED", float(node_pos_new.x + 8), float(node_pos_new.y + 40));
-  }
-
-  // Node input port(s)
-  if (node_visible) {
-    double prev_stride = (node_size.y) / (node->prev_edges.size() + 1);
-
-    for (size_t i = 0; i < node->prev_edges.size(); i++) {
-      dvec2 port_pos = node_pos_new + dvec2(0, prev_stride * (i + 1));
-      port_painter.push_center_size(port_pos, port_size, 0xCC008000);
-    }
-  }
-
-  // Node output port(s)
-  if (node_visible) {
-    double next_stride = (node_size.y) / (node->next_ports.size() + 1);
-
-    for (size_t i = 0; i < node->next_ports.size(); i++) {
-      dvec2 port_pos = node_pos_new + dvec2(node_size.x, next_stride * (i + 1));
-      port_painter.push_center_size(port_pos, port_size, 0xCC000080);
-    }
-  }
-
-  // Edges connected to the inputs of this node
-  if (show_edges && !node->ghost) {
-    for (auto edge : node->prev_edges) draw_edge(edge);
-  }
-
-  // Anchor edge
-  if (node_visible && show_anchors && node->anchored()) {
-    dvec2 center_a = node->get_anchor()->get_pos_abs_new() + node_size / 2.0;
-    dvec2 center_b = node->get_pos_abs_new() + node_size / 2.0;
-    edge_painter.push(center_a, 0x80FFFFFF, center_b, 0x80FF4040);
-  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -944,7 +1041,7 @@ void PlaitApp::app_render_frame() {
 
   // Unselected nodes
   {
-    for (auto& [tag, plait_cell] : plait.tag_to_cell) {
+    for (auto& [tag, plait_cell] : plait.cell_map) {
       for (auto node : plait_cell->nodes) {
         if (!node->selected) draw_node(node);
       }
@@ -954,6 +1051,12 @@ void PlaitApp::app_render_frame() {
     port_painter.render(view_control.view_snap, 0, 0, 1);
     edge_painter.render(view_control.view_snap, 0, 0, 1);
     text_painter.render(view_control.view_snap, 0, 0, 1);
+  }
+
+  // All traces
+
+  for (auto& [trace_key, trace] : plait.trace_map) {
+    draw_edge(trace);
   }
 
   // Selected nodes

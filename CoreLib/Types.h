@@ -50,7 +50,8 @@ static const char* phase_names[] = {
 
 constexpr uint64_t HASH_INIT = 0x12345678;
 uint64_t mix(uint64_t h);
-uint64_t hash_states(void* blob, int len);
+uint64_t hash_blob(void* blob, size_t len);
+uint64_t hash_blob(uint64_t h, void* blob, size_t len);
 
 double timestamp();
 

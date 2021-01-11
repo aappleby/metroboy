@@ -40,7 +40,7 @@ public:
 
 //private:
 
-  const int max_text_bytes = 1024 * 1024;
+  const int max_text_bytes = 1024 * 1024 * 4;
   const int bytes_per_glyph = 16;
   const int max_glyphs = max_text_bytes / bytes_per_glyph;
 

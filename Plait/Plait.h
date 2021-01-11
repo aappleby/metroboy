@@ -4,49 +4,99 @@
 #include "glm/glm/glm.hpp"
 
 #include <vector>
+#include <iostream>
 
 using namespace glm;
 
 struct PlaitCell;
 struct PlaitNode;
-struct PlaitPath;
-struct PlaitEdge;
+struct PlaitTrace;
 
-struct PlaitPath {
-  std::string cell_tag;
-  std::string node_name;
-  std::string port_name;
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+struct Plait {
+  void clear();
+
+  void save_json(const char* filename);
+  void save_json(std::ostream& stream);
+
+  void load_json(const char* filename, DieDB& die_db);
+  void load_json(std::istream& stream, DieDB& die_db);
+
+  void split_node(PlaitNode* root_node);
+  void merge_node(PlaitNode* root_node);
+  void swap_anchors(PlaitNode* old_node, PlaitNode* new_node);
+  void swap_edges  (PlaitNode* old_node, PlaitNode* new_prev, PlaitNode* new_next);
+
+  void check_dead(PlaitNode* node);
+
+  std::map<std::string, PlaitCell*>  cell_map;
+  std::map<std::string, PlaitTrace*> trace_map;
+
+
+  /*
+  PlaitCell* get_or_create_node(const std::string& tag, DieDB& die_db) {
+    auto cell = die_db.cell_map[tag];
+    if (!cell) {
+      printf("Tag \"%s\" not in cell db\n", tag.c_str());
+      return nullptr;
+    }
+
+    auto node = cell_map[tag];
+    if (node) return node;
+
+    node = new PlaitCell();
+    node->die_cell = cell;
+    cell_map[tag] = node;
+    return node;
+  }
+  */
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-struct PlaitPortIndex {
-  PlaitNode* node;
-  int port;
-};
+struct PlaitCell {
+  ~PlaitCell();
 
-struct PlaitEdge {
-  PlaitNode* prev_node;
-  int prev_port;
-  PlaitNode* next_node;
-  int next_port;
+  int get_prev_port_index(const std::string& port_name) const {
+    return die_cell->get_prev_port_index(port_name);
+  }
+
+  int get_next_port_index(const std::string& port_name) const {
+    return die_cell->get_next_port_index(port_name);
+  }
+
+  const char* tag() const  { return die_cell ? die_cell->tag.c_str()  : "<no_tag>"; }
+  const char* name() const { return die_cell ? die_cell->name.c_str() : "<no_cell>"; }
+  const char* gate() const { return die_cell ? die_cell->gate.c_str() : "<no_gate>"; }
+
+  PlaitNode* find_node(const std::string& name) const;
+
+  // Serialized
+  std::vector<PlaitNode*> nodes;
+
+  // Not serialized
+  DieCell* die_cell = nullptr;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct PlaitNode {
-  PlaitNode(PlaitCell* _cell, const std::string& _name)
-  :plait_cell(_cell), name(_name)
-  {
-  }
+
+  //----------------------------------------
+  // Serialized
 
   std::string name;
-  PlaitCell* plait_cell;
-
   bool locked = 0;
   dvec2 pos_abs = {0,0};
   dvec2 pos_rel = {0,0};
   std::string anchor_tag;
+  int anchor_index = -1;
+
+  //----------------------------------------
+  // Not serialized
+
+  PlaitCell* plait_cell = nullptr;
   PlaitNode* anchor = nullptr;
   bool pinned = 1;
   int  mark = 0;
@@ -55,25 +105,7 @@ struct PlaitNode {
   dvec2 spring_force = {0,0};
   uint32_t color = 0xFFFF00FF;
 
-  std::vector<std::string> prev_ports;
-  std::vector<std::string> next_ports;
-
-  std::vector<PlaitEdge*> prev_edges;
-  std::vector<PlaitEdge*> next_edges;
-
-  int find_prev_port(const std::string& port_name) {
-    for (auto i = 0; i < prev_ports.size(); i++) {
-      if (prev_ports[i] == port_name) return i;
-    }
-    return -1;
-  }
-
-  int find_next_port(const std::string& port_name) {
-    for (auto i = 0; i < next_ports.size(); i++) {
-      if (next_ports[i] == port_name) return i;
-    }
-    return -1;
-  }
+  //----------------------------------------
 
   bool  anchored() { return anchor != nullptr; }
   bool  anchored_to(PlaitNode* target);
@@ -155,67 +187,22 @@ struct PlaitNode {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-struct PlaitCell {
-  PlaitCell(const DieCell* _cell) {
-    die_cell = _cell;
-  }
+struct PlaitTrace {
+  //----------------------------------------
+  // Serialized
 
-  PlaitNode* add_node(const std::string& name) {
-    auto node = new PlaitNode(this, name);
-    nodes.push_back(node);
-    return node;
-  }
+  std::string prev_node_name;
+  std::string next_node_name;
 
-  PlaitPortIndex find_prev_port(const std::string& port) {
-    for (auto node : nodes) {
-      int port_index = node->find_prev_port(port);
-      if (port_index >= 0) return {node, port_index};
-    }
-    return {nullptr, -1};
-  }
+  //----------------------------------------
+  // Not serialized
 
-  PlaitPortIndex find_next_port(const std::string& port) {
-    for (auto node : nodes) {
-      int port_index = node->find_next_port(port);
-      if (port_index >= 0) return {node, port_index};
-    }
-    return {nullptr, -1};
-  }
+  DieTrace* die_trace = nullptr;
+  PlaitNode* prev_node = nullptr;
+  PlaitNode* next_node = nullptr;
 
-  const char* tag() const  { return die_cell ? die_cell->tag.c_str()  : "<no_tag>"; }
-  const char* name() const { return die_cell ? die_cell->name.c_str() : "<no_cell>"; }
-  const char* gate() const { return die_cell ? die_cell->gate.c_str() : "<no_gate>"; }
-
-  const DieCell* die_cell = nullptr;
-  std::vector<PlaitNode*> nodes;
-  //std::vector<PlaitCell*>  prev_cells;
-};
-
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-struct Plait {
-  void save_json(const char* filename);
-  void load_json(const char* filename, DieDB& die_db);
-
-  void split_node(PlaitNode* node);
-
-  std::map<std::string, PlaitCell*> tag_to_cell;
-  std::vector<PlaitEdge*> edges;
-
-  PlaitCell* get_or_create_node(const std::string& tag, DieDB& die_db) {
-    auto cell = die_db.tag_to_cell[tag];
-    if (!cell) {
-      printf("Tag \"%s\" not in cell db\n", tag.c_str());
-      return nullptr;
-    }
-
-    auto node = tag_to_cell[tag];
-    if (node) return node;
-
-    node = new PlaitCell(cell);
-    tag_to_cell[tag] = node;
-    return node;
-  }
+  int prev_port_index;
+  int next_port_index;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

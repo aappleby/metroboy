@@ -10,13 +10,16 @@ uint64_t mix(uint64_t h) {
   return _byteswap_uint64(h * 0xff51afd7ed558ccd);
 }
 
-uint64_t hash_states(void* blob, int len) {
+uint64_t hash_blob(uint64_t h, void* blob, size_t len) {
   uint8_t* base = (uint8_t*)blob;
-  uint64_t h = HASH_INIT;
-  for (int i = 0; i < len; i++) {
-    h = mix(h ^ (base[i] & 0x0F));
+  for (auto i = 0; i < len; i++) {
+    h = mix(h ^ base[i]);
   }
   return h;
+}
+
+uint64_t hash_blob(void* blob, size_t len) {
+  return hash_blob(HASH_INIT, blob, len);
 }
 
 static const uint64_t app_start = []() {

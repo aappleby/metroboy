@@ -29,7 +29,7 @@ public:
 
 private:
 
-  const int max_line_bytes = 65536 * 4;
+  const int max_line_bytes = 65536 * 8;
 
   uint32_t line_prog = 0;
 

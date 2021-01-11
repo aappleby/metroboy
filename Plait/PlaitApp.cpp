@@ -101,7 +101,9 @@ int main(int argc, char** argv) {
 
   size_t total_nodes = 0;
   for (auto& [tag, plait_cell] : app->plait.cell_map) {
-    total_nodes += plait_cell->nodes.size();
+    //total_nodes += plait_cell->nodes.size();
+    total_nodes += plait_cell->prev_node ? 1 : 0;
+    total_nodes += plait_cell->next_node ? 1 : 0;
   }
   printf("Total cells %zd\n", app->plait.cell_map.size());
   printf("Total nodes %zd\n", total_nodes);
@@ -117,22 +119,8 @@ int main(int argc, char** argv) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-PlaitApp::~PlaitApp() {
-};
-
-const char* PlaitApp::app_get_title() {
-  return "PlaitApp";
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-void PlaitApp::app_init(int screen_w, int screen_h) {
-  view_control.init(screen_w, screen_h);
-
-#if 1
+PlaitApp::PlaitApp() {
   auto& n2c = node_type_to_color;
-
-  //n2c[""]      = 0xFF008000;
 
   n2c["not1"]  = COL_MID_GREY;
 
@@ -173,7 +161,49 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
   n2c["mux2p"] = COL_ROSE + COL_HINT1;
   n2c["amux2"] = COL_ROSE;
   n2c["amux4"] = COL_ROSE;
-#endif
+}
+
+PlaitApp::~PlaitApp() {
+}
+
+const char* PlaitApp::app_get_title() {
+  return "PlaitApp";
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void PlaitApp::paint_node(PlaitNode* node) {
+  node->color = 0xFFFF00FF;
+
+  auto cell_type = node->plait_cell->die_cell->cell_type;
+  if (cell_type == DieCellType::PIN_IN)  node->color = COL_PALE_RED;
+  if (cell_type == DieCellType::PIN_OUT) node->color = COL_PALE_GREEN;
+  if (cell_type == DieCellType::PIN_IO)  node->color = COL_PALE_YELLOW;
+
+  if (cell_type == DieCellType::SIG_IN)  node->color = COL_MID_RED;
+  if (cell_type == DieCellType::SIG_OUT) node->color = COL_MID_GREEN;
+
+  if (cell_type == DieCellType::BUS)     node->color = COL_DARK_GREY;
+  if (cell_type == DieCellType::DFF)     node->color = COL_DARK_YELLOW;
+  if (cell_type == DieCellType::LATCH)   node->color = COL_ORANGE;
+  if (cell_type == DieCellType::TRIBUF)  node->color = COL_MID_YELLOW;
+  if (cell_type == DieCellType::ADDER)   node->color = COL_MID_TEAL;
+
+  if (cell_type == DieCellType::LOGIC) {
+    auto it = node_type_to_color.find(node->plait_cell->gate());
+    if (it != node_type_to_color.end()) {
+      node->color = (*it).second;
+    }
+    else {
+      printf("Could not pick a color for %s\n", node->plait_cell->gate());
+    }
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void PlaitApp::app_init(int screen_w, int screen_h) {
+  view_control.init(screen_w, screen_h);
 
   check_gl_error();
   box_painter.init();
@@ -201,33 +231,8 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
   tex = create_texture_u32(4, 4, pix);
 
   for (auto& [tag, cell] : plait.cell_map) {
-    for (auto node : cell->nodes) {
-      node->color = 0xFFFF00FF;
-
-      auto cell_type = cell->die_cell->cell_type;
-      if (cell_type == DieCellType::PIN_IN)  node->color = COL_PALE_RED;
-      if (cell_type == DieCellType::PIN_OUT) node->color = COL_PALE_GREEN;
-      if (cell_type == DieCellType::PIN_IO)  node->color = COL_PALE_YELLOW;
-
-      if (cell_type == DieCellType::SIG_IN)  node->color = COL_MID_RED;
-      if (cell_type == DieCellType::SIG_OUT) node->color = COL_MID_GREEN;
-
-      if (cell_type == DieCellType::BUS)     node->color = COL_DARK_GREY;
-      if (cell_type == DieCellType::DFF)     node->color = COL_DARK_YELLOW;
-      if (cell_type == DieCellType::LATCH)   node->color = COL_ORANGE;
-      if (cell_type == DieCellType::TRIBUF)  node->color = COL_MID_YELLOW;
-      if (cell_type == DieCellType::ADDER)   node->color = COL_MID_TEAL;
-
-      if (cell_type == DieCellType::LOGIC) {
-        auto it = node_type_to_color.find(cell->gate());
-        if (it != node_type_to_color.end()) {
-          node->color = (*it).second;
-        }
-        else {
-          printf("Could not pick a color for %s\n", cell->gate());
-        }
-      }
-    }
+    paint_node(cell->prev_node);
+    paint_node(cell->next_node);
   }
 
   printf("Init done %f\n", timestamp());
@@ -245,8 +250,8 @@ PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool igno
   (void)ignore_clicked;
   (void)ignore_hovered;
 
-  for (auto& [tag, cell] : plait.cell_map) {
-    for (auto node : cell->nodes) {
+  for (auto& [tag, plait_cell] : plait.cell_map) {
+    for (auto node : {plait_cell->prev_node, plait_cell->next_node}) {
       if ((node == clicked_node) && ignore_clicked) continue;
       dvec2 node_pos = node->get_pos_abs_new();
 
@@ -275,7 +280,7 @@ void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback ca
   const dvec2 node_size = {128,64};
 
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    for (auto node : plait_cell->nodes) {
+    for (auto node : {plait_cell->prev_node, plait_cell->next_node}) {
       dvec2 nmin = node->get_pos_abs_new();
       dvec2 nmax = node->get_pos_abs_new() + node_size;
 
@@ -1045,8 +1050,12 @@ void PlaitApp::app_render_frame() {
   // Unselected nodes
   {
     for (auto& [tag, plait_cell] : plait.cell_map) {
-      for (auto node : plait_cell->nodes) {
-        if (!node->selected) draw_node(node);
+      auto prev = plait_cell->prev_node;
+      auto next = plait_cell->next_node;
+
+      if (!prev->selected) draw_node(prev);
+      if (next != prev) {
+        if (!next->selected) draw_node(next);
       }
     }
     outline_painter.render(view_control.view_snap, 0, 0, 1);

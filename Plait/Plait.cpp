@@ -39,46 +39,50 @@ void PlaitNode::set_anchor(PlaitNode* new_anchor) {
 }
 
 PlaitNode* PlaitCell::find_node(const std::string& name) const {
-  for(auto node : nodes) {
-    if (node->name == name) return node;
+  if (name == "default") {
+    CHECK_P(prev_node == next_node);
+    return prev_node;
   }
-  return nullptr;
+  else {
+    if (name == "prev") return prev_node;
+    if (name == "next") return next_node;
+    return nullptr;
+  }
+
 }
 
 void Plait::split_node(PlaitNode* root_node) {
   auto plait_cell = root_node->plait_cell;
-  CHECK_N(plait_cell->nodes.empty());
-  if (plait_cell->nodes.size() > 1) return;
-  if (plait_cell->nodes[0]->name != "default") return;
+  if (plait_cell->next_node != plait_cell->prev_node) return;
+  if (plait_cell->prev_node != root_node) return;
 
   printf("Splitting cell %s\n", plait_cell->die_cell->tag.c_str());
 
   root_node->set_anchor(nullptr);
 
-  auto node_prev = new PlaitNode();
-  auto node_next = new PlaitNode();
+  auto new_prev_node = new PlaitNode();
+  auto new_next_node = new PlaitNode();
 
-  node_prev->name = "prev";
-  node_prev->pos_abs = root_node->pos_abs;
-  node_prev->pos_rel = root_node->pos_rel;
-  node_prev->pos_rel.x += 64;
-  node_prev->pos_abs.x += 64;
-  node_prev->plait_cell = root_node->plait_cell;
-  node_prev->color = root_node->color;
+  new_prev_node->name = "prev";
+  new_prev_node->pos_abs = root_node->pos_abs;
+  new_prev_node->pos_rel = root_node->pos_rel;
+  new_prev_node->pos_rel.x += 64;
+  new_prev_node->pos_abs.x += 64;
+  new_prev_node->plait_cell = root_node->plait_cell;
+  new_prev_node->color = root_node->color;
 
-  node_next->name = "next";
-  node_next->pos_abs = root_node->pos_abs;
-  node_next->pos_rel = root_node->pos_rel;
-  node_next->pos_rel.x -= 64;
-  node_next->pos_abs.x -= 64;
-  node_next->plait_cell = root_node->plait_cell;
-  node_next->color = root_node->color;
+  new_next_node->name = "next";
+  new_next_node->pos_abs = root_node->pos_abs;
+  new_next_node->pos_rel = root_node->pos_rel;
+  new_next_node->pos_rel.x -= 64;
+  new_next_node->pos_abs.x -= 64;
+  new_next_node->plait_cell = root_node->plait_cell;
+  new_next_node->color = root_node->color;
 
-  plait_cell->nodes.clear();
-  plait_cell->nodes.push_back(node_prev);
-  plait_cell->nodes.push_back(node_next);
+  plait_cell->prev_node = new_prev_node;
+  plait_cell->next_node = new_next_node;
 
-  swap_edges(root_node, node_prev, node_next);
+  swap_edges(root_node, new_prev_node, new_next_node);
   swap_anchors(root_node, nullptr);
 
   delete root_node;
@@ -86,10 +90,11 @@ void Plait::split_node(PlaitNode* root_node) {
 
 void Plait::swap_anchors(PlaitNode* old_node, PlaitNode* new_node) {
   for (auto& [tag, plait_cell] : cell_map) {
-    for (auto node : plait_cell->nodes) {
-      if (node->anchor == old_node) {
-        node->set_anchor(new_node);
-      }
+    if (plait_cell->prev_node->anchor == old_node) {
+      plait_cell->prev_node->set_anchor(new_node);
+    }
+    if (plait_cell->next_node->anchor == old_node) {
+      plait_cell->next_node->set_anchor(new_node);
     }
   }
 }
@@ -112,29 +117,34 @@ void Plait::swap_edges(PlaitNode* old_node, PlaitNode* new_prev, PlaitNode* new_
 
 void Plait::merge_node(PlaitNode* root_node) {
   auto plait_cell = root_node->plait_cell;
-  if (plait_cell->nodes.size() == 1) return;
+  if (plait_cell->prev_node == plait_cell->next_node) return;
+
+  PlaitNode* dead_node = nullptr;
+
+  if (plait_cell->prev_node == root_node) {
+    dead_node = plait_cell->next_node;
+    plait_cell->next_node = root_node;
+  }
+  else if (plait_cell->next_node == root_node) {
+    dead_node = plait_cell->prev_node;
+    plait_cell->prev_node = root_node;
+  }
+  else {
+    CHECK_P(false);
+  }
 
   root_node->name = "default";
+  swap_anchors(dead_node, root_node);
+  swap_edges(dead_node, root_node, root_node);
 
-  auto old_nodes = plait_cell->nodes;
-  plait_cell->nodes = {root_node};
-
-  for (auto node : old_nodes) {
-    if (node == root_node) continue;
-    swap_anchors(node, root_node);
-    swap_edges(node, root_node, root_node);
-
-    check_dead(node);
-    delete node;
-  }
+  check_dead(dead_node);
+  delete dead_node;
 }
 
 void Plait::check_dead(PlaitNode* dead_node) {
   for (auto& [tag, plait_cell] : cell_map) {
-    for (auto node : plait_cell->nodes) {
-      CHECK_P(node != dead_node);
-      CHECK_P(node->anchor != dead_node);
-    }
+    CHECK_P(plait_cell->prev_node != dead_node);
+    CHECK_P(plait_cell->next_node != dead_node);
   }
 
   for (auto& [trace_key, plait_trace] : trace_map) {
@@ -187,7 +197,8 @@ void Plait::check_dead(PlaitNode* dead_node) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 PlaitCell::~PlaitCell() {
-  for (auto& node : nodes) delete node;
+  delete prev_node;
+  delete next_node;
 }
 
 void Plait::clear() {
@@ -204,51 +215,71 @@ void Plait::clear() {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void from_json(const nlohmann::json& j, PlaitNode*& node) {
-  node = new PlaitNode();
+void from_json(const nlohmann::json& j, PlaitNode*& plait_node) {
+  plait_node = new PlaitNode();
 
-  node->name         = j.value("name", "default");
-  node->locked       = j.value("locked", false);
-  node->pos_rel.x    = j.value("pos_rel_x", 0.0);
-  node->pos_rel.y    = j.value("pos_rel_y", 0.0);
-  node->pos_abs.x    = j.value("pos_abs_x", 0.0);
-  node->pos_abs.y    = j.value("pos_abs_y", 0.0);
-  node->anchor_tag   = j.value("anchor_tag", "");
-  node->anchor_index = j.value("anchor_index", 0);
+  plait_node->name         = j.value("name", "default");
+  plait_node->locked       = j.value("locked", false);
+  plait_node->pos_rel.x    = j.value("pos_rel_x", 0.0);
+  plait_node->pos_rel.y    = j.value("pos_rel_y", 0.0);
+  plait_node->pos_abs.x    = j.value("pos_abs_x", 0.0);
+  plait_node->pos_abs.y    = j.value("pos_abs_y", 0.0);
+  plait_node->anchor_tag   = j.value("anchor_tag", "");
+  plait_node->anchor_index = j.value("anchor_index", 0);
 }
 
-void from_json(const nlohmann::json& j, PlaitTrace*& trace) {
-  trace = new PlaitTrace();
+void from_json(const nlohmann::json& j, PlaitTrace*& plait_trace) {
+  plait_trace = new PlaitTrace();
 
-  trace->prev_node_name = j["prev_node_name"];
-  trace->next_node_name = j["next_node_name"];
+  plait_trace->prev_node_name = j["prev_node_name"];
+  plait_trace->next_node_name = j["next_node_name"];
 }
 
-void from_json(const nlohmann::json& j, PlaitCell*& cell) {
-  cell = new PlaitCell();
-  j["nodes"].get_to(cell->nodes);
+void from_json(const nlohmann::json& j, PlaitCell*& plait_cell) {
+  plait_cell = new PlaitCell();
+
+  // FIXME
+  std::vector<PlaitNode*> nodes;
+  j["nodes"].get_to(nodes);
+
+  for (auto i = 0; i < nodes.size(); i++) {
+    if (nodes[i]->name == "default")  {
+      plait_cell->prev_node = nodes[i];
+      plait_cell->next_node = nodes[i];
+    }
+    if (nodes[i]->name == "prev") plait_cell->prev_node = nodes[i];
+    if (nodes[i]->name == "next") plait_cell->next_node = nodes[i];
+  }
+
+  if (plait_cell->next_node == nullptr) plait_cell->next_node = plait_cell->prev_node;
+
+  plait_cell->prev_node->plait_cell = plait_cell;
+  plait_cell->next_node->plait_cell = plait_cell;
 }
 
 //----------------------------------------
 
-void to_json(nlohmann::json& j, const PlaitNode* node) {
-  j["name"]         = node->name;
-  j["locked"]       = node->locked;
-  j["pos_rel_x"]    = node->pos_rel.x;
-  j["pos_rel_y"]    = node->pos_rel.y;
-  j["pos_abs_x"]    = node->pos_abs.x;
-  j["pos_abs_y"]    = node->pos_abs.y;
-  j["anchor_tag"]   = node->anchor_tag;
-  j["anchor_index"] = node->anchor_index;
+void to_json(nlohmann::json& j, const PlaitNode* plait_node) {
+  j["name"]         = plait_node->name;
+  j["locked"]       = plait_node->locked;
+  j["pos_rel_x"]    = plait_node->pos_rel.x;
+  j["pos_rel_y"]    = plait_node->pos_rel.y;
+  j["pos_abs_x"]    = plait_node->pos_abs.x;
+  j["pos_abs_y"]    = plait_node->pos_abs.y;
+  j["anchor_tag"]   = plait_node->anchor_tag;
+  j["anchor_index"] = plait_node->anchor_index;
 }
 
-void to_json(nlohmann::json& j, const PlaitTrace* trace) {
-  j["prev_node_name"] = trace->prev_node->name;
-  j["next_node_name"] = trace->next_node->name;
+void to_json(nlohmann::json& j, const PlaitTrace* plait_trace) {
+  j["prev_node_name"] = plait_trace->prev_node->name;
+  j["next_node_name"] = plait_trace->next_node->name;
 }
 
-void to_json(nlohmann::json& j, const PlaitCell* cell) {
-  j["nodes"] = cell->nodes;
+void to_json(nlohmann::json& j, const PlaitCell* plait_cell) {
+  std::vector<PlaitNode*> nodes;
+  nodes.push_back(plait_cell->prev_node);
+  if (plait_cell->next_node) nodes.push_back(plait_cell->next_node);
+  j["nodes"] = nodes;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -264,7 +295,8 @@ void Plait::save_json(std::ostream& stream) {
 
   // FIXME this shouldn't be here
   for (auto& [tag, cell] : cell_map) {
-    for (auto& node : cell->nodes) node->commit_pos();
+    if (cell->prev_node) cell->prev_node->commit_pos();
+    if (cell->next_node) cell->next_node->commit_pos();
   }
 
   json jroot;
@@ -302,10 +334,6 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     CHECK_P(die_cell);
     plait_cell->die_cell = die_cell;
     die_cell->plait_cell = plait_cell;
-
-    for (auto& node : plait_cell->nodes) {
-      node->plait_cell = plait_cell;
-    }
   }
 
   // Hook up plait_trace pointers.
@@ -321,16 +349,6 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     plait_trace->prev_node = prev_cell->find_node(plait_trace->prev_node_name);
     plait_trace->next_node = next_cell->find_node(plait_trace->next_node_name);
 
-    if (plait_trace->prev_node == nullptr) {
-      printf("Fixing broken prev_node link for %s\n", die_trace->prev_tag.c_str());
-      plait_trace->prev_node = prev_cell->nodes[0];
-      plait_trace->prev_node_name = prev_cell->nodes[0]->name;
-    }
-    if (plait_trace->next_node == nullptr) {
-      printf("Fixing broken next_node link for %s\n", die_trace->prev_tag.c_str());
-      plait_trace->next_node = next_cell->nodes[0];
-      plait_trace->next_node_name = next_cell->nodes[0]->name;
-    }
     CHECK_P(plait_trace->prev_node);
     CHECK_P(plait_trace->next_node);
 
@@ -343,12 +361,10 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
   // Hook up anchor pointers.
 
   for (auto& [tag, plait_cell] : cell_map) {
-    for (auto& node : plait_cell->nodes) {
-      if (node->anchor_tag.empty()) continue;
-      auto anchor_cell = cell_map[node->anchor_tag];
+    if (!plait_cell->prev_node->anchor_tag.empty()) {
+      auto anchor_cell = cell_map[plait_cell->prev_node->anchor_tag];
       CHECK_P(anchor_cell);
-      CHECK_P(node->anchor_index < anchor_cell->nodes.size());
-      node->anchor = anchor_cell->nodes[node->anchor_index];
+      plait_cell->prev_node->anchor = anchor_cell->prev_node;
     }
   }
 
@@ -359,17 +375,16 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
 
     printf("Did not load node for tag \"%s\", creating default node\n", tag.c_str());
 
-    auto plait_cell = new PlaitCell();
-    plait_cell->die_cell = die_cell;
+    auto new_node = new PlaitNode();
+    new_node->name = "default";
 
-    PlaitNode* node = new PlaitNode();
-    node->name = "default";
+    auto new_cell = new PlaitCell();
+    new_cell->die_cell = die_cell;
+    new_cell->prev_node = new_node;
+    new_cell->next_node = new_node;
 
-    plait_cell->nodes.push_back(node);
-
-    die_cell->plait_cell = plait_cell;
-
-    cell_map[tag] = plait_cell;
+    die_cell->plait_cell = new_cell;
+    cell_map[tag] = new_cell;
   }
 
   // Fill in missing edges.
@@ -381,8 +396,8 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
 
     auto prev_cell = cell_map[die_trace->prev_tag];
     auto next_cell = cell_map[die_trace->next_tag];
-    auto prev_node = prev_cell->nodes[0];
-    auto next_node = next_cell->nodes[0];
+    auto prev_node = prev_cell->next_node;
+    auto next_node = next_cell->prev_node;
     auto prev_port_index = prev_cell->get_next_port_index(die_trace->prev_port);
     auto next_port_index = next_cell->get_prev_port_index(die_trace->next_port);
 
@@ -406,6 +421,15 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     die_trace->plait_trace = plait_trace;
 
     trace_map[die_trace->to_key()] = plait_trace;
+  }
+
+  // Sanity checks
+
+  for (auto& [tag, plait_cell] : cell_map) {
+    CHECK_P(plait_cell->prev_node);
+    CHECK_P(plait_cell->next_node);
+    CHECK_P(plait_cell->prev_node->plait_cell == plait_cell);
+    CHECK_P(plait_cell->next_node->plait_cell == plait_cell);
   }
 
   for (auto& [trace_key, plait_trace] : trace_map) {

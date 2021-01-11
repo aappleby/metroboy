@@ -73,7 +73,10 @@ struct PlaitCell {
   PlaitNode* find_node(const std::string& name) const;
 
   // Serialized
-  std::vector<PlaitNode*> nodes;
+  PlaitNode* prev_node;
+  PlaitNode* next_node;
+
+  std::map<std::string, PlaitNode*> tag_nodes;
 
   // Not serialized
   DieCell* die_cell = nullptr;

@@ -41,6 +41,7 @@ enum class ToolMode {
 
 class PlaitApp : public App {
 public:
+  PlaitApp();
   ~PlaitApp() override;
 
   void on_key_up();
@@ -67,6 +68,7 @@ public:
   void revert_selection();
   void clear_selection();
 
+  void paint_node(PlaitNode* node);
   PlaitNode* pick_node(dvec2 pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered);
 
   void  draw_node(PlaitNode* node);

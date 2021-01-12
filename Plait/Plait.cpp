@@ -15,9 +15,6 @@ void from_json(const nlohmann::json& j, PlaitTrace*& plait_trace) {
 }
 
 void to_json(nlohmann::json& j, const PlaitTrace* plait_trace) {
-  //if (plait_trace->input_node->plait_cell->die_cell->tag == "TAKA") __debugbreak();
-  //if (plait_trace->output_node->plait_cell->die_cell->tag == "TAKA") __debugbreak();
-
   j["input_cell"]  = plait_trace->input_node->plait_cell->die_cell->tag;
   j["input_node"]  = plait_trace->input_node->name;
   j["output_cell"] = plait_trace->output_node->plait_cell->die_cell->tag;

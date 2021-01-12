@@ -79,14 +79,14 @@ struct PlaitNode {
   // Not serialized
 
   PlaitCell* plait_cell = nullptr;
-  bool ghost = 0;
+  bool ghosted = 0;
   bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   uint32_t color = 0xFFFF00FF;
 
   //----------------------------------------
 
   void dump(Dumper& d);
-  void toggle_ghost()        { ghost = !ghost; }
+  void toggle_ghosted()      { ghosted = !ghosted; }
 
   dvec2 get_pos_old() const  { return pos_old; }
   dvec2 get_pos_new() const  { return pos_new; }

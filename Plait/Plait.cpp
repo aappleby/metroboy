@@ -6,60 +6,38 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void to_json(nlohmann::json& j, const PlaitTrace* plait_trace) {
-  j["prev_node_name"] = plait_trace->prev_node->name;
-  j["next_node_name"] = plait_trace->next_node->name;
-}
-
 void from_json(const nlohmann::json& j, PlaitTrace*& plait_trace) {
   plait_trace = new PlaitTrace();
   plait_trace->prev_node_name = j["prev_node_name"];
   plait_trace->next_node_name = j["next_node_name"];
 
-  if (plait_trace->prev_node_name == "default") {
+  if (plait_trace->prev_node_name == "") {
     plait_trace->prev_node_name = "root";
   }
 
-  if (plait_trace->prev_node_name == "prev") {
-    plait_trace->prev_node_name = "root";
+  if (plait_trace->next_node_name == "") {
+    plait_trace->next_node_name = "root";
   }
+}
+
+void to_json(nlohmann::json& j, const PlaitTrace* plait_trace) {
+  j["prev_node_name"] = plait_trace->prev_node->name;
+  j["next_node_name"] = plait_trace->next_node->name;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void to_json(nlohmann::json& j, const PlaitNode* plait_node) {
-  j["name"]         = plait_node->name;
-  j["pos_abs_x"]    = plait_node->pos_new.x;
-  j["pos_abs_y"]    = plait_node->pos_new.y;
-}
-
 void from_json(const nlohmann::json& j, PlaitNode*& plait_node) {
   plait_node = new PlaitNode();
 
-  plait_node->name         = j.value("name", "<bad_node_name>");
-  plait_node->pos_new.x    = j.value("pos_abs_x", 0.0);
-  plait_node->pos_new.y    = j.value("pos_abs_y", 0.0);
-
+  plait_node->pos_new.x    = j.value("pos_x", 0.0);
+  plait_node->pos_new.y    = j.value("pos_y", 0.0);
   plait_node->pos_old = plait_node->pos_new;
+}
 
-  /*
-  if (plait_node->name == "prev") {
-    plait_node->name = "root";
-  }
-  else if (plait_node->name == "default") {
-    plait_node->name = "root";
-  }
-  else {
-    CHECK_P(plait_node->name == "next");
-  }
-  */
-
-  if (plait_node->name == "next") {
-    plait_node->name = "root";
-  }
-  if (plait_node->name == "default") {
-    plait_node->name = "root";
-  }
+void to_json(nlohmann::json& j, const PlaitNode* plait_node) {
+  j["pos_x"]    = plait_node->pos_new.x;
+  j["pos_y"]    = plait_node->pos_new.y;
 }
 
 void PlaitNode::dump(Dumper& d) {
@@ -70,25 +48,16 @@ void PlaitNode::dump(Dumper& d) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void to_json(nlohmann::json& j, const PlaitCell* plait_cell) {
-  std::vector<PlaitNode*> nodes;
-  for (auto& [name, node] : plait_cell->nodes) {
-    j["nodes"] = node;
-  }
+void from_json(const nlohmann::json& j, PlaitCell*& plait_cell) {
+  plait_cell = new PlaitCell();
+
+  j["nodes"].get_to(plait_cell->nodes);
 }
 
 //----------------------------------------
 
-void from_json(const nlohmann::json& j, PlaitCell*& plait_cell) {
-  plait_cell = new PlaitCell();
-
-  // FIXME
-  std::vector<PlaitNode*> nodes;
-  j["nodes"].get_to(nodes);
-
-  for (auto i = 0; i < nodes.size(); i++) {
-    plait_cell->nodes[nodes[i]->name] = nodes[i];
-  }
+void to_json(nlohmann::json& j, const PlaitCell* plait_cell) {
+  j["nodes"] = plait_cell->nodes;
 }
 
 //--------------------------------------------------------------------------------
@@ -296,6 +265,7 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     die_cell->plait_cell = plait_cell;
 
     for (auto& [name, node] : plait_cell->nodes) {
+      node->name = name;
       node->plait_cell = plait_cell;
     }
   }
@@ -374,6 +344,12 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     die_trace->plait_trace = plait_trace;
 
     trace_map[die_trace->to_key()] = plait_trace;
+  }
+
+  // HACK merge everything
+
+  for (auto& [tag, plait_cell] : cell_map) {
+    merge_node(plait_cell->find_node("root"));
   }
 
   // Sanity checks

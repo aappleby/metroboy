@@ -58,6 +58,8 @@ public:
   typedef std::function<void(PlaitCell*)> NodeGroupCallback;
   typedef std::function<void(PlaitNode*)>      NodeCallback;
 
+  bool contains_node(dvec2 corner_a, dvec2 corner_b, PlaitNode* node);
+
   void apply_region_node (dvec2 corner_a, dvec2 corner_b, NodeCallback callback);
 
   void select_region(dvec2 corner_a, dvec2 corner_b);
@@ -69,7 +71,9 @@ public:
   void clear_selection();
 
   void paint_node(PlaitNode* node);
-  PlaitNode* pick_node(dvec2 pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered);
+
+  bool hit_node(dvec2 _mouse_pos, PlaitNode* node);
+  PlaitNode* pick_node(dvec2 pos);
 
   void  draw_node(PlaitNode* node);
   void  draw_edge(PlaitTrace* node);

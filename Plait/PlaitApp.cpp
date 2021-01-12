@@ -101,7 +101,8 @@ int main(int argc, char** argv) {
 
   size_t total_nodes = 0;
   for (auto& [tag, plait_cell] : app->plait.cell_map) {
-    total_nodes += plait_cell->nodes.size();
+    total_nodes++;
+    total_nodes += plait_cell->leaf_nodes.size();
   }
   printf("Total cells %zd\n", app->plait.cell_map.size());
   printf("Total nodes %zd\n", total_nodes);
@@ -229,8 +230,9 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
   tex = create_texture_u32(4, 4, pix);
 
   for (auto& [tag, cell] : plait.cell_map) {
-    for (auto& [name, node] : cell->nodes) {
-      paint_node(node);
+    paint_node(cell->root_node);
+    for (auto& [name, leaf] : cell->leaf_nodes) {
+      paint_node(leaf);
     }
   }
 
@@ -244,25 +246,29 @@ void PlaitApp::app_close() {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool ignore_clicked, bool ignore_hovered) {
-  (void)ignore_selected;
-  (void)ignore_clicked;
-  (void)ignore_hovered;
+bool PlaitApp::hit_node(dvec2 _mouse_pos, PlaitNode* node) {
+   dvec2 node_pos = node->get_pos_new();
+  int width = 128;
+  int height = 64;
 
+  if (_mouse_pos.x >= node_pos.x &&
+      _mouse_pos.y >= node_pos.y &&
+      _mouse_pos.x <= node_pos.x + width &&
+      _mouse_pos.y <= node_pos.y + height) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos) {
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    for (auto& [name, node] : plait_cell->nodes) {
-      if ((node == clicked_node) && ignore_clicked) continue;
-      dvec2 node_pos = node->get_pos_new();
 
-      int width = 128;
-      int height = 64;
+    if (hit_node(_mouse_pos, plait_cell->root_node)) return plait_cell->root_node;
 
-      if (_mouse_pos.x >= node_pos.x &&
-          _mouse_pos.y >= node_pos.y &&
-          _mouse_pos.x <= node_pos.x + width &&
-          _mouse_pos.y <= node_pos.y + height) {
-        return node;
-      }
+    for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+      if (hit_node(_mouse_pos, leaf)) return leaf;
     }
   }
 
@@ -271,24 +277,31 @@ PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos, bool ignore_selected, bool igno
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback callback) {
+bool PlaitApp::contains_node(dvec2 corner_a, dvec2 corner_b, PlaitNode* node) {
+  const dvec2 node_size = {128,64};
 
   dvec2 rmin = min(corner_a, corner_b);
   dvec2 rmax = max(corner_a, corner_b);
 
-  const dvec2 node_size = {128,64};
+  dvec2 nmin = node->get_pos_new();
+  dvec2 nmax = node->get_pos_new() + node_size;
 
+  if (nmax.x < rmin.x) return false;
+  if (nmax.y < rmin.y) return false;
+  if (nmin.x > rmax.x) return false;
+  if (nmin.y > rmax.y) return false;
+  return true;
+}
+
+void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback callback) {
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    for (auto& [name, node] : plait_cell->nodes) {
-      dvec2 nmin = node->get_pos_new();
-      dvec2 nmax = node->get_pos_new() + node_size;
-
-      if (nmin.x < rmin.x) continue;
-      if (nmin.y < rmin.y) continue;
-      if (nmax.x > rmax.x) continue;
-      if (nmax.y > rmax.y) continue;
-
-      callback(node);
+    if (contains_node(corner_a, corner_b, plait_cell->root_node)) {
+      callback(plait_cell->root_node);
+    }
+    for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+      if (contains_node(corner_a, corner_b, leaf)) {
+        callback(leaf);
+      }
     }
   }
 }
@@ -379,8 +392,11 @@ void PlaitApp::event_menu_option(SDL_Event event) {
   case SDL_KEYDOWN: {
     int key = event.key.keysym.scancode;
     if (key == SDL_SCANCODE_S) {
-      printf("Saving plait\n");
-      plait.save_json("gameboy.plait.json");
+      const char* filename = "gameboy.plait.json";
+      printf("Saving plait %s\n", filename);
+      commit_selection();
+      clear_selection();
+      plait.save_json(filename);
     }
     break;
   }
@@ -437,7 +453,7 @@ void PlaitApp::event_ghost_region(SDL_Event event) {
   case SDL_MOUSEBUTTONUP: {
     if (event.button.button & SDL_BUTTON_LMASK) {
       auto callback = [this](PlaitNode* node) {
-        node->toggle_ghost();
+        node->toggle_ghosted();
       };
       apply_region_node(click_pos_world, mouse_pos_world, callback);
     }
@@ -664,7 +680,7 @@ void PlaitApp::app_update(double delta_time) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_MOUSEBUTTONDOWN && (event.button.button & SDL_BUTTON_LMASK)) {
-      clicked_node = pick_node(mouse_pos_world, /*ignore_selected*/ false, /*ignore_clicked*/ true, /*ignore_hovered*/ false);
+      clicked_node = pick_node(mouse_pos_world);
       click_pos_screen = mouse_pos_screen;
       click_pos_world = mouse_pos_world;
     }
@@ -692,7 +708,7 @@ void PlaitApp::app_update(double delta_time) {
   }
 
   if (current_tool != ToolMode::IMGUI) {
-    hovered_node = pick_node(mouse_pos_world, /*ignore_selected*/ false, /*ignore_clicked*/ true, /*ignore_hovered*/ false);
+    hovered_node = pick_node(mouse_pos_world);
   }
   else {
     hovered_node = nullptr;
@@ -810,7 +826,7 @@ void PlaitApp::draw_node(PlaitNode* node) {
   }
 
   // Node fill
-  if (node_visible && !node->ghost) {
+  if (node_visible && !node->ghosted) {
     box_painter.push_corner_size(
       node_pos_new + dvec2(4,4),
       node_size - dvec2(8,8),
@@ -854,7 +870,7 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
 
   auto output_node = edge->output_node;
   auto input_node  = edge->input_node;
-  if (output_node->ghost || input_node->ghost) return;
+  if (output_node->ghosted || input_node->ghosted) return;
 
   auto output_pos_new = output_node->get_pos_new();
   auto input_pos_new  = input_node->get_pos_new();
@@ -915,8 +931,10 @@ void PlaitApp::app_render_frame() {
   // Unselected nodes
   {
     for (auto& [tag, plait_cell] : plait.cell_map) {
-      for (auto& [name, node] : plait_cell->nodes) {
-        if (!node->selected) draw_node(node);
+      if (!plait_cell->root_node->selected) draw_node(plait_cell->root_node);
+
+      for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+        if (!leaf->selected) draw_node(leaf);
       }
     }
     outline_painter.render(view_control.view_snap, 0, 0, 1);

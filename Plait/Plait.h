@@ -20,7 +20,6 @@ struct Plait {
   void split_node(PlaitNode* root_node);
   void merge_node(PlaitNode* root_node);
 
-  void swap_input_edges (PlaitNode* old_node, PlaitNode* new_node);
   void swap_output_edges(PlaitNode* old_node, PlaitNode* new_node);
 
   void check_dead(PlaitNode* node);
@@ -54,11 +53,12 @@ struct PlaitCell {
   const char* name() const { return die_cell ? die_cell->long_name.c_str() : "<no_cell>"; }
   const char* gate() const { return die_cell ? die_cell->gate.c_str() : "<no_gate>"; }
 
-  void       add_node(PlaitNode* node);
-  PlaitNode* find_node(const std::string& name) const;
+  void       add_leaf_node(PlaitNode* node);
+  PlaitNode* find_leaf_node(const std::string& name) const;
 
   // Serialized
-  std::map<std::string, PlaitNode*> nodes;
+  PlaitNode* root_node;
+  std::map<std::string, PlaitNode*> leaf_nodes;
 
   // Not serialized
   DieCell* die_cell = nullptr;

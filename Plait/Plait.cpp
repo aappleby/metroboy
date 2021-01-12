@@ -336,29 +336,36 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
 
     printf("Did not load plait trace for die trace \"%s\", creating default trace\n", die_trace->to_key().c_str());
 
-    auto prev_cell = cell_map[die_trace->output_tag];
-    auto next_cell = cell_map[die_trace->input_tag];
-    auto input_node = prev_cell->nodes["root"];
-    auto output_node = next_cell->nodes["root"];
-    auto input_port_index = prev_cell->get_output_index(die_trace->output_port);
-    auto output_port_index = next_cell->get_input_index(die_trace->input_port);
+    auto output_cell = cell_map[die_trace->output_tag];
+    auto output_node = output_cell->nodes["root"];
+    auto output_port_index = output_cell->get_output_index(die_trace->output_port);
 
-    CHECK_P(prev_cell);
-    CHECK_P(next_cell);
-    CHECK_P(input_node);
+    auto input_cell = cell_map[die_trace->input_tag];
+    auto input_node = input_cell->nodes["root"];
+    auto input_port_index = input_cell->get_input_index(die_trace->input_port);
+
+    CHECK_P(output_cell);
     CHECK_P(output_node);
-    CHECK_P(input_port_index >= 0);
     CHECK_P(output_port_index >= 0);
+
+    CHECK_P(input_cell);
+    CHECK_P(input_node);
+    CHECK_P(input_port_index >= 0);
 
     auto plait_trace = new PlaitTrace();
 
-    plait_trace->input_node_name = input_node->name;
+    plait_trace->output_cell_name = output_cell->tag();
     plait_trace->output_node_name = output_node->name;
+
+    plait_trace->input_cell_name = input_node->name;
+    plait_trace->input_node_name = input_node->name;
+
     plait_trace->die_trace = die_trace;
-    plait_trace->input_node = input_node;
     plait_trace->output_node = output_node;
-    plait_trace->input_port_index = prev_cell->get_output_index(die_trace->output_port);
-    plait_trace->output_port_index = next_cell->get_input_index(die_trace->input_port);
+    plait_trace->input_node = input_node;
+
+    plait_trace->output_port_index = output_cell->get_input_index(die_trace->output_port);
+    plait_trace->input_port_index  = input_cell->get_output_index(die_trace->input_port);
 
     die_trace->plait_trace = plait_trace;
 
@@ -385,54 +392,18 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
   }
 
   for (auto& [trace_key, plait_trace] : trace_map) {
-    CHECK_P(plait_trace->input_node);
+    CHECK_P(plait_trace->die_trace);
     CHECK_P(plait_trace->output_node);
+    CHECK_P(plait_trace->input_node);
 
     CHECK_P(plait_trace->output_cell_name == plait_trace->die_trace->output_tag);
-    CHECK_P(plait_trace->input_cell_name  == plait_trace->die_trace->input_tag);
-    //CHECK_P(plait_trace->next_node->name == "root");
+    CHECK_P(plait_trace->output_node_name == plait_trace->output_node->name);
+
+    CHECK_P(plait_trace->input_cell_name == plait_trace->die_trace->input_tag);
+    CHECK_P(plait_trace->input_node_name == plait_trace->input_node->name);
+
+    CHECK_P(plait_trace->die_trace->plait_trace == plait_trace);
   }
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#if 0
-  void update_rank1() {
-    mark = 1;
-    rank = 0;
-    for(auto p : prev) {node
-      if (p->mark) continue;
-      if (p->rank == -1) p->update_rank1();
-      if (p->rank >= rank) {
-        rank = p->rank + 1;
-      }
-    }
-    mark = 0;
-  }
-
-  void update_rank2() {
-    if (prev.empty() && next.empty()) {
-      rank = 0;
-    }
-    else if (prev.empty()) {
-      int min_next = 1000000;
-      for (auto n : next) if (n->rank < min_next) min_next = n->rank;
-      rank = min_next - 1;
-    }
-    else if (next.empty()) {
-      int max_prev = -1;
-      for (auto p : prev) if (p->rank > max_prev) max_prev = p->rank;
-      rank = max_prev + 1;
-    }
-    else {
-      int max_prev = -1;
-      for (auto p : prev) if (p->rank > max_prev) max_prev = p->rank;
-      int min_next = 1000000;
-      for (auto n : next) if (n->rank < min_next) min_next = n->rank;
-
-      rank = (max_prev + min_next) / 2;
-    }
-  }
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

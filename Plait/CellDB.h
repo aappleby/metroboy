@@ -41,7 +41,7 @@ struct DieCell {
   void* plait_cell = nullptr;
   int mark = 0;
 
-  int get_prev_port_index(const std::string& port_name) const {
+  int get_input_index(const std::string& port_name) const {
     for (auto i = 0; i < prev_ports.size(); i++) {
       if (prev_ports[i] == port_name) return i;
     }
@@ -49,7 +49,7 @@ struct DieCell {
     return -1;
   }
 
-  int get_next_port_index(const std::string& port_name) const {
+  int get_output_index(const std::string& port_name) const {
     for (auto i = 0; i < next_ports.size(); i++) {
       if (next_ports[i] == port_name) return i;
     }

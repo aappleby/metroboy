@@ -19,7 +19,9 @@ struct Plait {
 
   void split_node(PlaitNode* root_node);
   void merge_node(PlaitNode* root_node);
-  void swap_edges(PlaitNode* old_node, PlaitNode* new_prev, PlaitNode* new_next);
+
+  void swap_input_edges (PlaitNode* old_node, PlaitNode* new_node);
+  void swap_output_edges(PlaitNode* old_node, PlaitNode* new_node);
 
   void check_dead(PlaitNode* node);
 
@@ -40,12 +42,12 @@ struct PlaitCell {
 
   void dump(Dumper& d);
 
-  int get_prev_port_index(const std::string& port_name) const {
-    return die_cell->get_prev_port_index(port_name);
+  int get_input_index(const std::string& port_name) const {
+    return die_cell->get_input_index(port_name);
   }
 
-  int get_next_port_index(const std::string& port_name) const {
-    return die_cell->get_next_port_index(port_name);
+  int get_output_index(const std::string& port_name) const {
+    return die_cell->get_output_index(port_name);
   }
 
   const char* tag() const  { return die_cell ? die_cell->tag.c_str()  : "<no_tag>"; }
@@ -77,8 +79,6 @@ struct PlaitNode {
   // Not serialized
 
   PlaitCell* plait_cell = nullptr;
-  PlaitNode* anchor = nullptr;
-  int  mark = 0;
   bool ghost = 0;
   bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   uint32_t color = 0xFFFF00FF;
@@ -103,18 +103,21 @@ struct PlaitTrace {
   //----------------------------------------
   // Serialized
 
-  std::string prev_node_name;
-  std::string next_node_name;
+  std::string output_cell_name;
+  std::string output_node_name;
+
+  std::string input_cell_name;
+  std::string input_node_name;
 
   //----------------------------------------
   // Not serialized
 
   DieTrace* die_trace = nullptr;
-  PlaitNode* prev_node = nullptr;
-  PlaitNode* next_node = nullptr;
+  PlaitNode* output_node = nullptr;
+  PlaitNode* input_node  = nullptr;
 
-  int prev_port_index;
-  int next_port_index;
+  int output_port_index;
+  int input_port_index;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

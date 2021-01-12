@@ -372,12 +372,6 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     trace_map[die_trace->to_key()] = plait_trace;
   }
 
-  // HACK merge everything
-
-  for (auto& [tag, plait_cell] : cell_map) {
-    merge_node(plait_cell->find_node("root"));
-  }
-
   // Sanity checks
 
   for (auto& [tag, plait_cell] : cell_map) {

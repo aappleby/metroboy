@@ -227,28 +227,28 @@ std::map<string, DieCellType> decl_to_cell_type = {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void to_json(nlohmann::json& j, const DieCell* c) {
-  j["cell_type"]  = c->cell_type;
-  j["page"]       = c->page;
-  j["tag"]        = c->tag;
-  j["gate"]       = c->gate;
-  j["name"]       = c->name;
-  j["doc"]        = c->doc;
-  j["prev_ports"] = c->input_ports;
-  j["next_ports"] = c->output_ports;
-}
-
 void from_json(const nlohmann::json& j, DieCell*& c) {
   c = new DieCell();
 
-  c->cell_type  = j.value("cell_type",  DieCellType::UNKNOWN);
-  c->page       = j.value("page",       "<no_page>");
-  c->tag        = j.value("tag",        "<no_tag>");
-  c->gate       = j.value("gate",       "<no_gate>");
-  c->name       = j.value("name",       "<no_name>");
-  c->doc        = j.value("doc",        "<no_doc>");
-  c->input_ports = j.value("prev_ports", std::vector<std::string>());
-  c->output_ports = j.value("next_ports", std::vector<std::string>());
+  c->cell_type    = j.value("cell_type",    DieCellType::UNKNOWN);
+  c->page         = j.value("page",         "<no_page>");
+  c->tag          = j.value("tag",          "<no_tag>");
+  c->gate         = j.value("gate",         "<no_gate>");
+  c->long_name    = j.value("long_name",    "<no_name>");
+  c->doc          = j.value("doc",          "<no_doc>");
+  c->input_ports  = j.value("input_ports",  std::vector<std::string>());
+  c->output_ports = j.value("output_ports", std::vector<std::string>());
+}
+
+void to_json(nlohmann::json& j, const DieCell* c) {
+  j["cell_type"]    = c->cell_type;
+  j["page"]         = c->page;
+  j["tag"]          = c->tag;
+  j["gate"]         = c->gate;
+  j["long_name"]    = c->long_name;
+  j["doc"]          = c->doc;
+  j["input_ports"]  = c->input_ports;
+  j["output_ports"] = c->output_ports;
 }
 
 //--------------------------------------------------------------------------------
@@ -274,7 +274,7 @@ void DieCell::sanity_check() const {
   CHECK_N(tag.empty());
   CHECK_N(gate.empty());
 
-  if (name.empty()) {
+  if (long_name.empty()) {
     printf("No name for tag %s\n", tag.c_str());
   }
 
@@ -349,18 +349,18 @@ void DieDB::clear() {
 //--------------------------------------------------------------------------------
 
 void to_json(nlohmann::json& j, const DieTrace* t) {
-  j["prev_tag"]  = t->output_tag;
-  j["prev_port"] = t->output_port;
-  j["next_tag"]  = t->input_tag;
-  j["next_port"] = t->input_port;
+  j["output_cell"] = t->output_tag;
+  j["output_port"] = t->output_port;
+  j["input_cell"]  = t->input_tag;
+  j["input_port"]  = t->input_port;
 }
 
 void from_json(const nlohmann::json& j, DieTrace*& t) {
   t = new DieTrace();
-  j["prev_tag"] .get_to(t->output_tag);
-  j["prev_port"].get_to(t->output_port);
-  j["next_tag"] .get_to(t->input_tag);
-  j["next_port"].get_to(t->input_port);
+  j["output_cell"].get_to(t->output_tag);
+  j["output_port"].get_to(t->output_port);
+  j["input_cell"] .get_to(t->input_tag);
+  j["input_port"] .get_to(t->input_port);
 }
 
 //----------------------------------------
@@ -476,9 +476,9 @@ bool DieDB::parse_dir(const std::string& path) {
   // Postprocess the cells.
 
   for (auto& [tag, cell] : cell_map) {
-    if (cell->name.empty()) {
+    if (cell->long_name.empty()) {
       printf("Cell %s needs a name\n", cell->tag.c_str());
-      cell->name = cell->tag;
+      cell->long_name = cell->tag;
     }
 
     if (cell->cell_type == DieCellType::TRIBUF) {
@@ -571,8 +571,8 @@ bool DieDB::parse_line(const std::string& line) {
       cell->page = page;
 
       if (!name.empty() && name != tag) {
-        CHECK_P(cell->name.empty() || cell->name == name);
-        cell->name = name;
+        CHECK_P(cell->long_name.empty() || cell->long_name == name);
+        cell->long_name = name;
       }
 
       result &= parse_rest(*cell, matches[2].str());
@@ -977,8 +977,8 @@ bool DieDB::parse_cell_name(DieCell& c, const string& name) {
 
   if (base_name.size()) {
     base_name = trim_name(base_name);
-    CHECK_P(c.name.empty() || c.name == base_name);
-    c.name = base_name;
+    CHECK_P(c.long_name.empty() || c.long_name == base_name);
+    c.long_name = base_name;
     return true;
   }
   else {
@@ -1026,8 +1026,8 @@ bool DieDB::parse_pin_name(DieCell& c, const string& pin_name) {
 
   smatch match;
   if (regex_match(pin_name, match, valid_pin_name)) {
-    CHECK_P(c.name.empty());
-    c.name = trim_name(match[1].str());
+    CHECK_P(c.long_name.empty());
+    c.long_name = trim_name(match[1].str());
     return true;
   } else {
     printf("Could not parse pin name %s\n", pin_name.c_str());
@@ -1042,8 +1042,8 @@ bool DieDB::parse_sig_name(DieCell& c, const string& sig_name) {
 
   smatch match;
   if (regex_match(sig_name, match, valid_pin_name)) {
-    CHECK_P(c.name.empty());
-    c.name = trim_name(match[1].str());
+    CHECK_P(c.long_name.empty());
+    c.long_name = trim_name(match[1].str());
     return true;
   } else {
     printf("Could not parse sig name %s\n", sig_name.c_str());

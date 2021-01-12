@@ -144,8 +144,6 @@ void Plait::split_node(PlaitNode* root_node) {
   plait_cell->add_node(new_output_node);
 
   swap_output_edges(root_node, new_output_node);
-
-  delete root_node;
 }
 
 //--------------------------------------------------------------------------------

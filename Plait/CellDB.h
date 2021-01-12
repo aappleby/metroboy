@@ -33,7 +33,7 @@ struct DieCell {
   std::string page;
   std::string tag;
   std::string gate;
-  std::string name;
+  std::string long_name;
   std::string doc;
 
   std::vector<std::string> input_ports;

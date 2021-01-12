@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
   printf("Done\n\n");
 
   {
-    printf("Saving cell db\n");
+    printf("Saving gameboy.die_db.json\n");
     //std::ostringstream stream_out;
     //app->die_db.save_json(stream_out);
     app->die_db.save_json(die_db_file);

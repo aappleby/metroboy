@@ -78,12 +78,9 @@ public:
   void event_imgui        (SDL_Event event);
   void event_drag_nodes   (SDL_Event event);
   void event_select_region(SDL_Event event);
-  void event_lock_region  (SDL_Event event);
-  void event_unlock_region(SDL_Event event);
   void event_ghost_region (SDL_Event event);
   void event_split_cell   (SDL_Event event);
   void event_merge_cell   (SDL_Event event);
-  void event_place_anchor (SDL_Event event);
   void event_pan_view     (SDL_Event event);
   void event_menu_option  (SDL_Event event);
 

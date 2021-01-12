@@ -297,18 +297,18 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     auto die_trace = die_db.trace_map[trace_key];
     CHECK_P(die_trace);
 
-    auto prev_cell = cell_map[die_trace->prev_tag];
-    auto next_cell = cell_map[die_trace->next_tag];
+    auto output_cell = cell_map[die_trace->output_tag];
+    auto input_cell  = cell_map[die_trace->input_tag];
 
     plait_trace->die_trace = die_trace;
-    plait_trace->input_node = prev_cell->find_node(plait_trace->input_node_name);
-    plait_trace->output_node = next_cell->find_node(plait_trace->output_node_name);
+    plait_trace->output_node = output_cell->find_node(plait_trace->output_node_name);
+    plait_trace->input_node  = input_cell->find_node(plait_trace->input_node_name);
 
     CHECK_P(plait_trace->input_node);
     CHECK_P(plait_trace->output_node);
 
-    plait_trace->input_port_index = prev_cell->get_output_index(die_trace->prev_port);
-    plait_trace->output_port_index = next_cell->get_input_index(die_trace->next_port);
+    plait_trace->output_port_index = output_cell->get_output_index(die_trace->output_port);
+    plait_trace->input_port_index  = input_cell->get_input_index(die_trace->input_port);
 
     die_trace->plait_trace = plait_trace;
   }
@@ -338,12 +338,12 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
 
     printf("Did not load plait trace for die trace \"%s\", creating default trace\n", die_trace->to_key().c_str());
 
-    auto prev_cell = cell_map[die_trace->prev_tag];
-    auto next_cell = cell_map[die_trace->next_tag];
+    auto prev_cell = cell_map[die_trace->output_tag];
+    auto next_cell = cell_map[die_trace->input_tag];
     auto input_node = prev_cell->nodes["root"];
     auto output_node = next_cell->nodes["root"];
-    auto input_port_index = prev_cell->get_output_index(die_trace->prev_port);
-    auto output_port_index = next_cell->get_input_index(die_trace->next_port);
+    auto input_port_index = prev_cell->get_output_index(die_trace->output_port);
+    auto output_port_index = next_cell->get_input_index(die_trace->input_port);
 
     CHECK_P(prev_cell);
     CHECK_P(next_cell);
@@ -359,8 +359,8 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     plait_trace->die_trace = die_trace;
     plait_trace->input_node = input_node;
     plait_trace->output_node = output_node;
-    plait_trace->input_port_index = prev_cell->get_output_index(die_trace->prev_port);
-    plait_trace->output_port_index = next_cell->get_input_index(die_trace->next_port);
+    plait_trace->input_port_index = prev_cell->get_output_index(die_trace->output_port);
+    plait_trace->output_port_index = next_cell->get_input_index(die_trace->input_port);
 
     die_trace->plait_trace = plait_trace;
 
@@ -389,6 +389,9 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
   for (auto& [trace_key, plait_trace] : trace_map) {
     CHECK_P(plait_trace->input_node);
     CHECK_P(plait_trace->output_node);
+
+    CHECK_P(plait_trace->output_cell_name == plait_trace->die_trace->output_tag);
+    CHECK_P(plait_trace->input_cell_name  == plait_trace->die_trace->input_tag);
     //CHECK_P(plait_trace->next_node->name == "root");
   }
 }

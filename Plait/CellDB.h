@@ -36,22 +36,22 @@ struct DieCell {
   std::string name;
   std::string doc;
 
-  std::vector<std::string> prev_ports;
-  std::vector<std::string> next_ports;
+  std::vector<std::string> input_ports;
+  std::vector<std::string> output_ports;
   void* plait_cell = nullptr;
   int mark = 0;
 
   int get_input_index(const std::string& port_name) const {
-    for (auto i = 0; i < prev_ports.size(); i++) {
-      if (prev_ports[i] == port_name) return i;
+    for (auto i = 0; i < input_ports.size(); i++) {
+      if (input_ports[i] == port_name) return i;
     }
     printf("no prev port for %s\n", port_name.c_str());
     return -1;
   }
 
   int get_output_index(const std::string& port_name) const {
-    for (auto i = 0; i < next_ports.size(); i++) {
-      if (next_ports[i] == port_name) return i;
+    for (auto i = 0; i < output_ports.size(); i++) {
+      if (output_ports[i] == port_name) return i;
     }
     printf("no next port for %s\n", port_name.c_str());
     return -1;
@@ -61,29 +61,29 @@ struct DieCell {
 //------------------------------------------------------------------------------------------------------------------------
 
 struct DieTrace {
-  std::string prev_tag;
-  std::string prev_port;
-  std::string next_tag;
-  std::string next_port;
+  std::string output_tag;
+  std::string output_port;
+  std::string input_tag;
+  std::string input_port;
   void* plait_trace = nullptr;
 
   bool operator < (const DieTrace& e) const {
-    if (prev_tag  > e.prev_tag)  return false;
-    if (prev_tag  < e.prev_tag)  return true;
-    if (prev_port > e.prev_port) return false;
-    if (prev_port < e.prev_port) return true;
-    if (next_tag  > e.next_tag)  return false;
-    if (next_tag  < e.next_tag)  return true;
-    if (next_port > e.next_port) return false;
-    if (next_port < e.next_port) return true;
+    if (output_tag  > e.output_tag)  return false;
+    if (output_tag  < e.output_tag)  return true;
+    if (output_port > e.output_port) return false;
+    if (output_port < e.output_port) return true;
+    if (input_tag  > e.input_tag)  return false;
+    if (input_tag  < e.input_tag)  return true;
+    if (input_port > e.input_port) return false;
+    if (input_port < e.input_port) return true;
     return false;
   }
 
   bool operator == (const DieTrace& e) const {
-    if (prev_tag  != e.prev_tag)  return false;
-    if (prev_port != e.prev_port) return false;
-    if (next_tag  != e.next_tag)  return false;
-    if (next_port != e.next_port) return false;
+    if (output_tag  != e.output_tag)  return false;
+    if (output_port != e.output_port) return false;
+    if (input_tag  != e.input_tag)  return false;
+    if (input_port != e.input_port) return false;
     return true;
   }
 
@@ -95,14 +95,14 @@ struct DieTrace {
     printf("%zd\n", arrow);
     printf("%zd\n", second_dot);
 
-    prev_tag  = key.substr(0,              first_dot  - 0);
-    prev_port = key.substr(first_dot + 1,  arrow      - (first_dot + 1));
-    next_tag  = key.substr(arrow + 4,      second_dot - (arrow + 4));
-    next_port = key.substr(second_dot + 1, key.size() - (second_dot + 1));
+    output_tag  = key.substr(0,              first_dot  - 0);
+    output_port = key.substr(first_dot + 1,  arrow      - (first_dot + 1));
+    input_tag  = key.substr(arrow + 4,      second_dot - (arrow + 4));
+    input_port = key.substr(second_dot + 1, key.size() - (second_dot + 1));
   }
 
   std::string to_key() const {
-    return prev_tag + "." + prev_port + " -> " + next_tag + "." + next_port;
+    return output_tag + "." + output_port + " -> " + input_tag + "." + input_port;
   }
 };
 

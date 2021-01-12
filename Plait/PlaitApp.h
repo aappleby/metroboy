@@ -33,8 +33,9 @@ enum class ToolMode {
   PLACE_ANCHOR,
   PAN_VIEW,
   MENU_OPTION,
-  SPLIT_CELL,
-  MERGE_CELL,
+  CREATE_LEAF,
+  DELETE_LEAF,
+  LINK_LEAF,
 };
 
 //-----------------------------------------------------------------------------
@@ -75,7 +76,8 @@ public:
   bool hit_node(dvec2 _mouse_pos, PlaitNode* node);
   PlaitNode* pick_node(dvec2 pos);
 
-  void  draw_node(PlaitNode* node);
+  void  draw_node_fill(PlaitNode* node);
+  void  draw_node_outline(PlaitNode* node);
   void  draw_edge(PlaitTrace* node);
 
   void event_select_tool  (SDL_Event event);
@@ -83,10 +85,12 @@ public:
   void event_drag_nodes   (SDL_Event event);
   void event_select_region(SDL_Event event);
   void event_ghost_region (SDL_Event event);
-  void event_split_cell   (SDL_Event event);
-  void event_merge_cell   (SDL_Event event);
   void event_pan_view     (SDL_Event event);
   void event_menu_option  (SDL_Event event);
+
+  void event_create_leaf  (SDL_Event event);
+  void event_delete_leaf  (SDL_Event event);
+  void event_link_leaf    (SDL_Event event);
 
   //----------------------------------------
 

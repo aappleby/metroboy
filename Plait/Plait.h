@@ -17,8 +17,10 @@ struct PlaitTrace;
 struct Plait {
   void clear();
 
-  void split_node(PlaitNode* root_node);
-  void merge_node(PlaitNode* root_node);
+  void spawn_leaf_node (PlaitNode* root_node);
+  void delete_leaf_node(PlaitNode* dead_leaf);
+  void link_leaf(PlaitNode* leaf_node, PlaitNode* target_node);
+  void delete_leaves(PlaitNode* node);
 
   void swap_output_edges(PlaitNode* old_node, PlaitNode* new_node);
 
@@ -56,7 +58,9 @@ struct PlaitCell {
 
   void       add_leaf_node(PlaitNode* node);
   PlaitNode* find_leaf_node(const std::string& name) const;
-  PlaitNode* spawn_leaf_node(uint32_t guid);
+  PlaitNode* spawn_leaf_node(uint32_t guid, PlaitNode* neighbor);
+
+  bool selected() { return selected_node_count > 0; }
 
   // Serialized
   PlaitNode* root_node;
@@ -64,6 +68,7 @@ struct PlaitCell {
 
   // Not serialized
   DieCell* die_cell = nullptr;
+  int selected_node_count = 0;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -82,10 +87,27 @@ struct PlaitNode {
 
   PlaitCell* plait_cell = nullptr;
   bool ghosted = 0;
-  bool selected = 0; // need this because we don't want a log(n) lookup per node per frame...
   uint32_t color = 0xFFFF00FF;
 
   //----------------------------------------
+
+  bool selected() {
+    return _selected;
+  }
+
+  void select() {
+    if (!_selected) {
+      plait_cell->selected_node_count++;
+      _selected = true;
+    }
+  }
+
+  void deselect() {
+    if (_selected) {
+      plait_cell->selected_node_count--;
+      _selected = false;
+    }
+  }
 
   void dump(Dumper& d);
   void toggle_ghosted()      { ghosted = !ghosted; }
@@ -97,6 +119,11 @@ struct PlaitNode {
 
   void commit_pos()          { pos_old = pos_new; }
   void revert_pos()          { pos_new = pos_old; }
+
+private:
+
+  bool _selected = false;
+
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -32,7 +32,7 @@ public:
 
 private:
 
-  const int max_box_bytes = 65536 * 4;
+  const int max_box_bytes = 65536 * 16;
 
   uint32_t  box_prog = 0;
   uint32_t  box_ubo = 0;

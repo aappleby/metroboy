@@ -106,15 +106,15 @@ PlaitNode* PlaitCell::find_leaf_node(const std::string& name) const {
 
 //--------------------------------------------------------------------------------
 
-PlaitNode* PlaitCell::spawn_leaf_node(uint32_t guid) {
+PlaitNode* PlaitCell::spawn_leaf_node(uint32_t guid, PlaitNode* neighbor) {
   auto new_leaf = new PlaitNode();
 
   char buf[256];
   sprintf_s(buf, 256, "leaf_%08x", guid);
 
   new_leaf->name = buf;
-  new_leaf->pos_new = root_node->pos_old + dvec2(128, 0);
-  new_leaf->pos_old = root_node->pos_old + dvec2(128, 0);
+  new_leaf->pos_new = neighbor->pos_old + dvec2(128, 0);
+  new_leaf->pos_old = neighbor->pos_old + dvec2(128, 0);
   new_leaf->color   = root_node->color;
 
   leaf_nodes[new_leaf->name] = new_leaf;
@@ -139,35 +139,54 @@ void Plait::clear() {
 
 //--------------------------------------------------------------------------------
 
-void Plait::split_node(PlaitNode* node) {
-  auto plait_cell = node->plait_cell;
-  if (!plait_cell->leaf_nodes.empty()) return;
-
-  printf("Splitting cell %s\n", plait_cell->die_cell->tag.c_str());
-
+void Plait::spawn_leaf_node(PlaitNode* node) {
   guid = mix(guid);
-
-  auto new_leaf = plait_cell->spawn_leaf_node(guid);
-  (void)new_leaf;
-  //swap_output_edges(plait_cell->root_node, new_leaf);
+  node->plait_cell->spawn_leaf_node(guid, node);
 }
 
 //--------------------------------------------------------------------------------
 
-void Plait::merge_node(PlaitNode* node) {
-  auto plait_cell = node->plait_cell;
-  auto root_node = plait_cell->root_node;
+void Plait::delete_leaf_node(PlaitNode* dead_leaf) {
+  if (dead_leaf->name == "root") return;
 
-  if (plait_cell->leaf_nodes.empty()) return;
+  auto plait_cell = dead_leaf->plait_cell;
+  plait_cell->leaf_nodes.erase(dead_leaf->name);
 
-  std::map<std::string, PlaitNode*> dead_leaves;
+  swap_output_edges(dead_leaf, plait_cell->root_node);
+  check_dead(dead_leaf);
+  delete dead_leaf;
+}
+
+//--------------------------------------------------------------------------------
+
+void Plait::delete_leaves(PlaitNode* root_node) {
+  if (root_node->name != "root") return;
+  auto plait_cell = root_node->plait_cell;
+
+  auto dead_leaves = decltype(plait_cell->leaf_nodes)();
   dead_leaves.swap(plait_cell->leaf_nodes);
 
   for (auto& [name, dead_leaf] : dead_leaves) {
-    if (dead_leaf == root_node) continue;
-    swap_output_edges(dead_leaf, root_node);
+    swap_output_edges(dead_leaf, plait_cell->root_node);
     check_dead(dead_leaf);
     delete dead_leaf;
+  }
+}
+
+//--------------------------------------------------------------------------------
+
+void Plait::link_leaf(PlaitNode* leaf_node, PlaitNode* target_node) {
+  if (leaf_node->name == "root") return;
+  if (target_node->name != "root") return;
+
+  for (auto& [trace_key, plait_trace] : trace_map) {
+    // Find the matching trace
+    if (plait_trace->output_node->plait_cell != leaf_node->plait_cell) continue;
+    if (plait_trace->input_node->plait_cell != target_node->plait_cell) continue;
+
+    // Reconnect it to the new leaf
+    plait_trace->output_node_name = leaf_node->name;
+    plait_trace->output_node = leaf_node;
   }
 }
 
@@ -223,6 +242,7 @@ void Plait::save_json(std::ostream& stream) {
   json jroot;
   jroot["cells"] = cell_map;
   jroot["traces"] = trace_map;
+  jroot["guid"] = guid;
 
   stream << jroot.dump(2);
 }
@@ -246,7 +266,7 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
 
   jroot["cells"].get_to(cell_map);
   jroot["traces"].get_to(trace_map);
-  guid = jroot.value("guid", 0x00000001);
+  jroot["guid"].get_to(guid);
 
   // Hook up plait_cell pointers.
 

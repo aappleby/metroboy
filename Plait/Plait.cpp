@@ -15,10 +15,13 @@ void from_json(const nlohmann::json& j, PlaitTrace*& plait_trace) {
 }
 
 void to_json(nlohmann::json& j, const PlaitTrace* plait_trace) {
-  j["output_cell"]  = plait_trace->input_node->plait_cell->die_cell->tag;
-  j["output_node"]  = plait_trace->input_node->name;
-  j["input_cell"] = plait_trace->output_node->plait_cell->die_cell->tag;
-  j["input_node"] = plait_trace->output_node->name;
+  //if (plait_trace->input_node->plait_cell->die_cell->tag == "TAKA") __debugbreak();
+  //if (plait_trace->output_node->plait_cell->die_cell->tag == "TAKA") __debugbreak();
+
+  j["input_cell"]  = plait_trace->input_node->plait_cell->die_cell->tag;
+  j["input_node"]  = plait_trace->input_node->name;
+  j["output_cell"] = plait_trace->output_node->plait_cell->die_cell->tag;
+  j["output_node"] = plait_trace->output_node->name;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -210,13 +213,25 @@ void Plait::check_dead(PlaitNode* dead_node) {
 
 //--------------------------------------------------------------------------------
 
-//----------------------------------------
-
-
 void Plait::save_json(const char* filename) {
   printf("Saving plait %s\n", filename);
+
+  using namespace nlohmann;
+
+  // FIXME this shouldn't be here
+  for (auto& [tag, cell] : cell_map) {
+    for (auto& [name, node] : cell->nodes) {
+      node->commit_pos();
+    }
+  }
+
+  json jroot;
+
+  jroot["cells"] = cell_map;
+  jroot["traces"] = trace_map;
+
   std::ofstream stream(filename);
-  save_json(stream);
+  stream << jroot.dump(2);
 }
 
 //----------------------------------------

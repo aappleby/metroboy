@@ -32,6 +32,7 @@ struct Plait {
 
   std::map<std::string, PlaitCell*>  cell_map;
   std::map<std::string, PlaitTrace*> trace_map;
+  uint32_t guid = 0x00000001;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -55,6 +56,7 @@ struct PlaitCell {
 
   void       add_leaf_node(PlaitNode* node);
   PlaitNode* find_leaf_node(const std::string& name) const;
+  PlaitNode* spawn_leaf_node(uint32_t guid);
 
   // Serialized
   PlaitNode* root_node;

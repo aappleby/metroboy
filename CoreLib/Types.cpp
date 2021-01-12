@@ -6,6 +6,10 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+uint32_t mix(uint32_t h) {
+  return _byteswap_ulong(h * 0xed558ccd);
+}
+
 uint64_t mix(uint64_t h) {
   return _byteswap_uint64(h * 0xff51afd7ed558ccd);
 }

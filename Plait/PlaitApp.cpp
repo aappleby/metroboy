@@ -864,12 +864,14 @@ void PlaitApp::draw_node_outline(PlaitNode* node) {
 
     if (node->selected() || node->plait_cell->selected_node_count) {
       color = node->selected() ? COL_PALE_GREY : COL_PALE_YELLOW;
-      outline_painter.push_box(node_pos_new - dvec2( 0, 0), node_pos_new + node_size + dvec2( 0, 0), color);
-      outline_painter.push_box(node_pos_new - dvec2( 8, 8), node_pos_new + node_size + dvec2( 8, 8), color);
-      outline_painter.push_box(node_pos_new - dvec2(16,16), node_pos_new + node_size + dvec2(16,16), color);
+      //outline_painter.push_box(node_pos_new - dvec2( 0, 0), node_pos_new + node_size + dvec2( 0, 0), color);
+      //outline_painter.push_box(node_pos_new - dvec2( 8, 8), node_pos_new + node_size + dvec2( 8, 8), color);
+      //outline_painter.push_box(node_pos_new - dvec2(16,16), node_pos_new + node_size + dvec2(16,16), color);
+      box_painter.push_corner_size(node_pos_new + dvec2(2,2), node_size - dvec2(4,4), color);
     }
     else {
-      outline_painter.push_box(node_pos_new, node_pos_new + node_size, color);
+      //outline_painter.push_box(node_pos_new, node_pos_new + node_size, color);
+      box_painter.push_corner_size(node_pos_new+ dvec2(2,2), node_size - dvec2(4,4), color);
     }
   }
 }
@@ -1019,8 +1021,6 @@ void PlaitApp::app_render_frame() {
       draw_node_outline(leaf);
     }
   }
-
-  outline_painter.render(view_control.view_snap, 0, 0, 1);
 
   // Unselected node fills
 

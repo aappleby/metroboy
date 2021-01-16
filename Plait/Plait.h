@@ -11,6 +11,16 @@ using namespace glm;
 struct PlaitCell;
 struct PlaitNode;
 struct PlaitTrace;
+struct PlaitLabel;
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+struct PlaitLabel {
+  std::string text;
+  dvec2 pos_old;
+  dvec2 pos_new;
+  double scale;
+};
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -34,7 +44,14 @@ struct Plait {
 
   std::map<std::string, PlaitCell*>  cell_map;
   std::map<std::string, PlaitTrace*> trace_map;
-  uint32_t guid = 0x00000001;
+  std::vector<PlaitLabel*> labels;
+
+  uint32_t new_guid() {
+    _guid = mix(_guid);
+    return _guid;
+  }
+
+  uint32_t _guid = 0x00000001;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -58,7 +75,7 @@ struct PlaitCell {
 
   void       add_leaf_node(PlaitNode* node);
   PlaitNode* find_leaf_node(const std::string& name) const;
-  PlaitNode* spawn_leaf_node(uint32_t guid, PlaitNode* neighbor);
+  PlaitNode* spawn_leaf_node(PlaitNode* neighbor, uint32_t guid);
 
   bool selected() { return selected_node_count > 0; }
 

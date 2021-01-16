@@ -309,7 +309,7 @@ void GateBoyApp::app_render_frame() {
   gb->joypad.dump(d);
   d("\n");
 
-  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
@@ -341,7 +341,7 @@ void GateBoyApp::app_render_frame() {
   d("\n");
   */
 
-  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
@@ -370,7 +370,7 @@ void GateBoyApp::app_render_frame() {
   gb->oam_bus.dump(d);
   d("\n");
 
-  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
@@ -429,7 +429,7 @@ void GateBoyApp::app_render_frame() {
   gb->tile_fetcher.dump(d);
   d("\n");
 
-  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
@@ -448,7 +448,7 @@ void GateBoyApp::app_render_frame() {
   gb->sprite_store.dump(d);
   d("\n");
 
-  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
@@ -481,7 +481,7 @@ void GateBoyApp::app_render_frame() {
     assembler.disassemble(code, code_size, code_base, pc, 34, d, /*collapse_nops*/ false);
   }
 
-  text_painter.render(view, d.s.c_str(), cursor_x, cursor_y);
+  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
@@ -503,7 +503,7 @@ void GateBoyApp::app_render_frame() {
     d("\n");
   }
   d("\n");
-  text_painter.render(view, d.s.c_str(), 42 * 32 - 16, 10 * 32);
+  text_painter.render_string(view, d.s.c_str(), 42 * 32 - 16, 10 * 32);
   d.clear();
 
   //----------------------------------------
@@ -590,13 +590,13 @@ void GateBoyApp::app_render_frame() {
     phase_names[phase_total & 7],
     show_golden ? "GOLDEN IMAGE " : "");
   //d("Sim time %f, sim ratio %f, frame time %f\n", sim_time_smooth, sim_ratio, frame_time_smooth);
-  text_painter.render(view, d.s, gb_x, gb_y + 144 * 2);
+  text_painter.render_string(view, d.s, gb_x, gb_y + 144 * 2);
   d.clear();
 
   // Probe dump
 
   gb->probes.dump(d, draw_passes);
-  text_painter.render(view, d.s, 42 * 32 - 16, 19 * 32 - 24);
+  text_painter.render_string(view, d.s, 42 * 32 - 16, 19 * 32 - 24);
   d.clear();
 
   frame_count++;

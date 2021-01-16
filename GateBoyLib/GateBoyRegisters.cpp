@@ -656,8 +656,8 @@ void SpritePixB::store_sprite_pix(SpritePix sprite_pix_old, wire PUCO_STORE_SPRI
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void WinMapX::tock(const GateBoyResetDebug& rst, wire TEVO_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF9 WYMO_LCDC_WINENn, wire XAHY_LINE_RSTn) {
-  /* p27.VETU*/ wire _VETU_WIN_MAPp = and2(TEVO_FETCH_TRIGp, PORE_WIN_MODEp);
+void WinMapX::tock(const GateBoyResetDebug& rst, wire TEVO_WIN_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF9 WYMO_LCDC_WINENn, wire XAHY_LINE_RSTn) {
+  /* p27.VETU*/ wire _VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp);
   /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn, rst.XAPO_VID_RSTn());
   /* p27.XACO*/ wire _XACO_WIN_RSTn = not1(_XOFO_WIN_RSTp);
   /* p27.WYKA*/ WYKA_WIN_X3.dff17(_VETU_WIN_MAPp,       _XACO_WIN_RSTn, WYKA_WIN_X3.qn_old());

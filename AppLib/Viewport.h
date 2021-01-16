@@ -23,6 +23,10 @@ struct Viewport {
   double sx() const { return screen_size.x; }
   double sy() const { return screen_size.y; }
 
+  dvec2 center() {
+    return (max + min) * 0.5;
+  }
+
   dvec2 worldToScreen(dvec2 v) const;
   dvec2 screenToWorld(dvec2 v) const;
 

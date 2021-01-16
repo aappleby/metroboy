@@ -238,6 +238,7 @@ void from_json(const nlohmann::json& j, DieCell*& c) {
   c->doc          = j.value("doc",          "<no_doc>");
   c->input_ports  = j.value("input_ports",  std::vector<std::string>());
   c->output_ports = j.value("output_ports", std::vector<std::string>());
+  c->fanout       = j.value("fanout",       0);
 }
 
 void to_json(nlohmann::json& j, const DieCell* c) {
@@ -249,6 +250,7 @@ void to_json(nlohmann::json& j, const DieCell* c) {
   j["doc"]          = c->doc;
   j["input_ports"]  = c->input_ports;
   j["output_ports"] = c->output_ports;
+  j["fanout"]       = c->fanout;
 }
 
 //--------------------------------------------------------------------------------
@@ -460,6 +462,8 @@ bool DieDB::parse_dir(const std::string& path) {
   }
 #else
 
+  // FIXME scan headers before source
+
   for (const auto& entry : filesystem::directory_iterator(path)) {
     if (entry.is_regular_file()) {
       static regex src_names(R"(^GateBoy\w*\.(cpp|h)$)");
@@ -517,6 +521,12 @@ bool DieDB::parse_dir(const std::string& path) {
     CHECK_P(cell_type_to_out_ports.contains(cell->cell_type));
     CHECK_P(cell->output_ports.empty());
     cell->output_ports = cell_type_to_out_ports[cell->cell_type];
+
+    CHECK_P(cell->fanout == 0);
+  }
+
+  for (auto& [trace_key, trace] : trace_map) {
+    cell_map[trace->output_tag]->fanout++;
   }
 
   sanity_check();

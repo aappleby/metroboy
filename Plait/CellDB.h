@@ -38,6 +38,9 @@ struct DieCell {
 
   std::vector<std::string> input_ports;
   std::vector<std::string> output_ports;
+
+  int fanout = 0;
+
   void* plait_cell = nullptr;
   int mark = 0;
 

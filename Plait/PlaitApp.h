@@ -26,6 +26,7 @@ enum class ToolMode {
   NONE,
   IMGUI,
   DRAG_NODE,
+  DRAG_LABEL,
   SELECT_REGION,
   LOCK_REGION,
   UNLOCK_REGION,
@@ -74,15 +75,18 @@ public:
   void paint_node(PlaitNode* node);
 
   bool hit_node(dvec2 _mouse_pos, PlaitNode* node);
+
+  PlaitLabel*     pick_label(dvec2 pos);
   PlaitNode* pick_node(dvec2 pos);
 
-  void  draw_node_fill(PlaitNode* node);
-  void  draw_node_outline(PlaitNode* node);
-  void  draw_edge(PlaitTrace* node);
+  void draw_node_fill(PlaitNode* node);
+  void draw_node_outline(PlaitNode* node);
+  void draw_edge(PlaitTrace* node);
 
   void event_select_tool  (SDL_Event event);
   void event_imgui        (SDL_Event event);
   void event_drag_nodes   (SDL_Event event);
+  void event_drag_label   (SDL_Event event);
   void event_select_region(SDL_Event event);
   void event_ghost_region (SDL_Event event);
   void event_pan_view     (SDL_Event event);
@@ -122,15 +126,13 @@ public:
   bool show_edges = true;
   bool show_anchors = true;
 
-  //std::set<NodeGroup*> group_selection;
-  std::set<PlaitNode*>      node_selection;
+  std::set<PlaitNode*> node_selection;
 
-  PlaitNode*      clicked_node = nullptr;
-  //NodeGroup* clicked_group = nullptr;
-  dvec2      clicked_offset = {0,0};
-
-  //NodeGroup* hovered_group = nullptr;
-  PlaitNode*      hovered_node = nullptr;
+  PlaitLabel* clicked_label = nullptr;
+  dvec2       clicked_label_offset = {0,0};
+  PlaitNode*  clicked_node = nullptr;
+  dvec2       clicked_node_offset = {0,0};
+  PlaitNode*  hovered_node = nullptr;
 };
 
 //-----------------------------------------------------------------------------

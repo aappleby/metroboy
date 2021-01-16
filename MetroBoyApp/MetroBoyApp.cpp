@@ -313,7 +313,7 @@ void MetroBoyApp::app_render_ui() {
     gb->cart.dump(d);
     gb->joypad.dump(d);
     gb->serial.dump(d);
-    text_painter.render(view, d.s, (float)column, 0);
+    text_painter.render_string(view, d.s, (float)column, 0);
     d.clear();
     column += 32 * 7;
   }
@@ -322,21 +322,21 @@ void MetroBoyApp::app_render_ui() {
     gb->spu.dump(d);
     gb->zram.dump(d);
     gb->oam.dump(d);
-    text_painter.render(view, d.s, (float)column, 0);
+    text_painter.render_string(view, d.s, (float)column, 0);
     d.clear();
     column += 32 * 7;
   }
 
   if (1) {
     gb->ppu.dump(d);
-    text_painter.render(view, d.s, (float)column, 0);
+    text_painter.render_string(view, d.s, (float)column, 0);
     d.clear();
     column += 32 * 7;
   }
 
   if (1) {
     gb->dump_disasm(d);
-    text_painter.render(view, d.s, (float)column, 0);
+    text_painter.render_string(view, d.s, (float)column, 0);
     d.clear();
     column += 32 * 7;
   }
@@ -356,7 +356,7 @@ void MetroBoyApp::app_render_ui() {
 
   text_painter.dprintf("Sim time %f, sim ratio %f\n", sim_time, sim_ratio);
   text_painter.dprintf("Frame time %f\n", frame_time);
-  text_painter.render(view, float(view.screen_size.x - 320), float(view.screen_size.y - 64));
+  text_painter.render_buf(view, float(view.screen_size.x - 320), float(view.screen_size.y - 64));
 
 
     /*

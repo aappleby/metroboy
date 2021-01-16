@@ -51,8 +51,8 @@ void main() {
     return;
   }
 
-  int world_x = int(world_pos.x);
-  int world_y = int(world_pos.y);
+  int world_x = int(floor(world_pos.x));
+  int world_y = int(floor(world_pos.y));
 
   bool bx = (((world_x >> 5) & 1) == 0);
   bool by = (((world_y >> 5) & 1) == 0);

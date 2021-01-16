@@ -6,6 +6,24 @@
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+void from_json(const nlohmann::json& j, PlaitLabel*& plait_label) {
+  plait_label = new PlaitLabel();
+  plait_label->text      = j["text"];
+  plait_label->pos_old.x = j["pos_x"];
+  plait_label->pos_old.y = j["pos_y"];
+  plait_label->scale     = j["scale"];
+  plait_label->pos_new = plait_label->pos_old;
+}
+
+void to_json(nlohmann::json& j, const PlaitLabel* plait_label) {
+  j["text"]  = plait_label->text;
+  j["pos_x"] = plait_label->pos_old.x;
+  j["pos_y"] = plait_label->pos_old.y;
+  j["scale"] = plait_label->scale;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 void from_json(const nlohmann::json& j, PlaitTrace*& plait_trace) {
   plait_trace = new PlaitTrace();
   plait_trace->input_cell_name  = j["input_cell"];
@@ -106,7 +124,7 @@ PlaitNode* PlaitCell::find_leaf_node(const std::string& name) const {
 
 //--------------------------------------------------------------------------------
 
-PlaitNode* PlaitCell::spawn_leaf_node(uint32_t guid, PlaitNode* neighbor) {
+PlaitNode* PlaitCell::spawn_leaf_node(PlaitNode* neighbor, uint32_t guid) {
   auto new_leaf = new PlaitNode();
 
   char buf[256];
@@ -140,8 +158,7 @@ void Plait::clear() {
 //--------------------------------------------------------------------------------
 
 void Plait::spawn_leaf_node(PlaitNode* node) {
-  guid = mix(guid);
-  node->plait_cell->spawn_leaf_node(guid, node);
+  node->plait_cell->spawn_leaf_node(node, new_guid());
 }
 
 //--------------------------------------------------------------------------------
@@ -225,9 +242,10 @@ void Plait::save_json(const char* filename) {
 
   json jroot;
 
-  jroot["cells"] = cell_map;
+  jroot["cells"]  = cell_map;
   jroot["traces"] = trace_map;
-  jroot["guid"] = guid;
+  jroot["labels"] = labels;
+  jroot["guid"]   = _guid;
 
   std::ofstream stream(filename);
   stream << jroot.dump(2);
@@ -240,9 +258,10 @@ void Plait::save_json(std::ostream& stream) {
   using namespace nlohmann;
 
   json jroot;
-  jroot["cells"] = cell_map;
+  jroot["cells"]  = cell_map;
   jroot["traces"] = trace_map;
-  jroot["guid"] = guid;
+  jroot["labels"] = labels;
+  jroot["guid"]   = _guid;
 
   stream << jroot.dump(2);
 }
@@ -264,9 +283,10 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
   json jroot;
   stream >> jroot;
 
-  jroot["cells"].get_to(cell_map);
+  jroot["cells"] .get_to(cell_map);
   jroot["traces"].get_to(trace_map);
-  jroot["guid"].get_to(guid);
+  jroot["labels"].get_to(labels);
+  jroot["guid"]  .get_to(_guid);
 
   // Hook up plait_cell pointers.
 

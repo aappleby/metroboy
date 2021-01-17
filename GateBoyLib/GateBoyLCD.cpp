@@ -9,18 +9,18 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 wire GateBoyLCD::ATEJ_LINE_RSTp_old() const {
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(CATU_LINE_P000p.qp_old());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_old = or_and3(ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, ABEZ_VID_RSTn_old()); // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_old = not1(_BYHA_LINE_TRIGn_old);
+  /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(CATU_START_SCANNING.qp_old());
+  /* p28.BYHA*/ wire _BYHA_LINE_RSTn_old = or_and3(ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, ABEZ_VID_RSTn_old()); // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_old = not1(_BYHA_LINE_RSTn_old);
   return bit(_ATEJ_LINE_RSTp_old);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 wire GateBoyLCD::ATEJ_LINE_RSTp_new() const {
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(CATU_LINE_P000p.qp_new());
-  /* p28.BYHA*/ wire _BYHA_LINE_TRIGn_new = or_and3(ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n_new, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_new = not1(_BYHA_LINE_TRIGn_new);
+  /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(CATU_START_SCANNING.qp_new());
+  /* p28.BYHA*/ wire _BYHA_LINE_RSTn_new = or_and3(ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n_new, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
+  /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_new = not1(_BYHA_LINE_RSTn_new);
   return bit(_ATEJ_LINE_RSTp_new);
 }
 
@@ -40,8 +40,8 @@ void GateBoyLCD::tock(
   /*#p21.SELA*/ wire _SELA_LINE_P908p_old = not1(_PURE_LINE_ENDn_old);
   /*#p29.ALES*/ wire _ALES_y144n_old = not1(XYVO_y144p_old);
   /*#p29.ABOV*/ wire _ABOV_LINE_P908p_old = and2(_SELA_LINE_P908p_old, _ALES_y144n_old);
-  /*#p28.ANEL*/ ANEL_LINE_P002p.dff17(clk.AWOH_xxCDxxGH(), rst.ABEZ_VID_RSTn(),  CATU_LINE_P000p.qp_old());
-  /*#p29.CATU*/ CATU_LINE_P000p.dff17(clk.XUPY_ABxxEFxx(), rst.ABEZ_VID_RSTn(), _ABOV_LINE_P908p_old);
+  /*#p28.ANEL*/ ANEL_LINE_P002p.dff17(clk.AWOH_xxCDxxGH(), rst.ABEZ_VID_RSTn(),  CATU_START_SCANNING.qp_old());
+  /*#p29.CATU*/ CATU_START_SCANNING.dff17(clk.XUPY_ABxxEFxx(), rst.ABEZ_VID_RSTn(), _ABOV_LINE_P908p_old);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ void GateBoyLCD::set_pin_flip(GateBoyResetDebug& rst, DFF17  TULU_DIV07p, DFF9 X
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyLCD::set_pin_vsync(GateBoyResetDebug& rst) {
-  /*#p24.MEDA*/ MEDA_VSYNC_OUTn.dff17(reg_lx.NYPE_x113p.qn_new(), rst.LYFE_VID_RSTn(), reg_ly.NERU_y000p());
+  /*#p24.MEDA*/ MEDA_VSYNC_OUTn.dff17(reg_lx.NYPE_x113p.qn_new(), rst.LYFE_VID_RSTn(), reg_ly.NERU_VSYNCp());
   /*#p24.MURE*/ wire _MURE_VSYNC = not1(MEDA_VSYNC_OUTn.qp_new());
   /*PIN_57*/ PIN_57_LCD_VSYNC.pin_out_dp(_MURE_VSYNC);
 }

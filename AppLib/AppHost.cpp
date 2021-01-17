@@ -236,7 +236,14 @@ int AppHost::app_main(int, char**) {
     //check_gl_error();
 
     app->end_frame();
-    SDL_GL_SwapWindow((SDL_Window*)window);
+
+    {
+      //double time_start = timestamp();
+      SDL_GL_SwapWindow((SDL_Window*)window);
+      //double time_swap = timestamp() - time_start;
+      //printf("time_swap %f\n", time_swap * 1000.0);
+    }
+
     SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
   }
 

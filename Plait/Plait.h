@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AppLib/Viewport.h"
 #include "Plait/CellDB.h"
 #include "glm/glm/glm.hpp"
 
@@ -137,9 +138,16 @@ struct PlaitNode {
   void commit_pos()          { pos_old = pos_new; }
   void revert_pos()          { pos_new = pos_old; }
 
-private:
+  void update_visibility(const Viewport& view) {
+    visible = true;
+    if (pos_new.x > view.max.x) visible = false;
+    if (pos_new.y > view.max.y) visible = false;
+    if (pos_new.x + 128 < view.min.x) visible = false;
+    if (pos_new.y + 64  < view.min.y) visible = false;
+  }
 
   bool _selected = false;
+  bool visible = false;
 
 };
 

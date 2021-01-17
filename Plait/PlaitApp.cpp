@@ -51,11 +51,19 @@ int main(int argc, char** argv) {
 
   PlaitApp* app = new PlaitApp();
 
-#if 0
+#if 1
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
   printf("Done\n\n");
+#else
+  printf("Loading gameboy.die_db.json\n");
+  app->die_db.clear();
+  app->die_db.load_json("gameboy.die_db.json");
+  printf("Done\n\n");
+#endif
 
+
+#if 0
   {
     printf("Saving gameboy.die_db.json\n");
     //std::ostringstream stream_out;
@@ -92,10 +100,6 @@ int main(int argc, char** argv) {
   */
 
 #else
-  printf("Loading gameboy.die_db.json\n");
-  app->die_db.clear();
-  app->die_db.load_json("gameboy.die_db.json");
-  printf("Done\n\n");
 
   printf("Loading gameboy.plait.json\n");
   app->plait.load_json("gameboy.plait.json", app->die_db);
@@ -744,7 +748,9 @@ void PlaitApp::event_select_tool(SDL_Event event) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::app_update(double delta_time) {
-  (void)delta_time;
+  time_delta = delta_time;
+
+  double time_start = timestamp();
 
   {
     int mouse_x = 0, mouse_y = 0;
@@ -767,6 +773,18 @@ void PlaitApp::app_update(double delta_time) {
       clicked_node = pick_node(mouse_pos_world);
       click_pos_screen = mouse_pos_screen;
       click_pos_world = mouse_pos_world;
+    }
+
+    if (event.type == SDL_KEYDOWN) {
+      int key = event.key.keysym.scancode;
+
+      if (key == SDL_SCANCODE_DELETE) {
+        if (clicked_label) {
+          plait.labels.erase(std::find(plait.labels.begin(), plait.labels.end(), clicked_label));
+          delete clicked_label;
+          clicked_label = nullptr;
+        }
+      }
     }
 
 
@@ -886,68 +904,49 @@ void PlaitApp::app_update(double delta_time) {
     node->spring_force = {0,0};
   }
 #endif
+
+  time_update = timestamp() - time_start;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::draw_node_outline(PlaitNode* node) {
-  const auto& view = view_control.view_snap;
-
   dvec2 node_pos_old = node->get_pos_old();
   dvec2 node_pos_new = node->get_pos_new();
 
   const dvec2 node_size = {128,64};
 
-  bool node_visible = true;
-  if (node_pos_new.x > view.max.x) node_visible = false;
-  if (node_pos_new.y > view.max.y) node_visible = false;
-  if (node_pos_new.x + node_size.x < view.min.x) node_visible = false;
-  if (node_pos_new.y + node_size.y < view.min.y) node_visible = false;
-
   //----------------------------------------
 
-  if (node_visible) {
-
-    if (node->plait_cell->selected_node_count) {
-      uint32_t color = node->selected() ? 0xFFFFFFFF : 0xFF88CCFF;
-      box_painter.push_corner_size(node_pos_new, node_size, color);
-      box_painter.push_corner_size(node_pos_new + dvec2(2,2), node_size - dvec2(4,4), 0xFF000000);
+  if (node->plait_cell->selected_node_count) {
+    uint32_t color = node->selected() ? 0xFFFFFFFF : 0xFF88CCFF;
+    box_painter.push_corner_size(node_pos_new, node_size, color);
+    box_painter.push_corner_size(node_pos_new + dvec2(2,2), node_size - dvec2(4,4), 0xFF000000);
+  }
+  else {
+    uint32_t color = COL_DARK_GREY;
+    if (node->plait_cell->leaf_nodes.size()) {
+      color = (node->name == "root") ? 0xFF408040 : 0xFF804040;
     }
-    else {
-      uint32_t color = COL_DARK_GREY;
-      if (node->plait_cell->leaf_nodes.size()) {
-        color = (node->name == "root") ? 0xFF408040 : 0xFF804040;
-      }
 
-      box_painter.push_corner_size(node_pos_new, node_size, color);
-      box_painter.push_corner_size(node_pos_new+ dvec2(2,2), node_size - dvec2(4,4), 0xFF000000);
-    }
+    box_painter.push_corner_size(node_pos_new, node_size, color);
+    box_painter.push_corner_size(node_pos_new+ dvec2(2,2), node_size - dvec2(4,4), 0xFF000000);
   }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::draw_node_fill(PlaitNode* node) {
-  const auto& view = view_control.view_snap;
-
+void PlaitApp::draw_node_fill(PlaitNode* node, bool draw_detail) {
   dvec2 node_pos_old = node->get_pos_old();
   dvec2 node_pos_new = node->get_pos_new();
 
   const dvec2 node_size = {128,64};
   const dvec2 port_size = {4,4};
 
-  bool node_visible = true;
-  if (node_pos_new.x > view.max.x) node_visible = false;
-  if (node_pos_new.y > view.max.y) node_visible = false;
-  if (node_pos_new.x + node_size.x < view.min.x) node_visible = false;
-  if (node_pos_new.y + node_size.y < view.min.y) node_visible = false;
-
-  if (!node_visible) return;
-
   //----------------------------------------
   // Node fill
 
-  if (node_visible && !node->ghosted) {
+  if (!node->ghosted) {
     uint32_t color = node == hovered_node ? node->color + COL_HINT3 : node->color;
     if (node->pos_new.x < node->plait_cell->root_node->pos_new.x) {
       if (node->plait_cell->die_cell->cell_type == DieCellType::DFF) {
@@ -963,19 +962,16 @@ void PlaitApp::draw_node_fill(PlaitNode* node) {
     box_painter.push_corner_size(node_pos_new + dvec2(4,4), node_size - dvec2(8,8), color);
   }
 
-  //----------------------------------------
-  // Node text
+  if (draw_detail) {
+    //----------------------------------------
+    // Node text
 
-  if (node_visible) {
     text_painter.add_text_at(node->plait_cell->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
     text_painter.add_text_at(node->plait_cell->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
-  }
 
+    //----------------------------------------
+    // Node input port(s)
 
-  //----------------------------------------
-  // Node input port(s)
-
-  if (node_visible) {
     size_t prev_port_count = node->plait_cell->die_cell->input_ports.size();
     double prev_stride = (node_size.y) / (prev_port_count + 1);
 
@@ -983,12 +979,10 @@ void PlaitApp::draw_node_fill(PlaitNode* node) {
       dvec2 port_pos = node_pos_new + dvec2(2, prev_stride * (i + 1));
       port_painter.push_center_size(port_pos, port_size, 0xCC008000);
     }
-  }
 
-  //----------------------------------------
-  // Node output port(s)
+    //----------------------------------------
+    // Node output port(s)
 
-  if (node_visible) {
     size_t next_port_count = node->plait_cell->die_cell->output_ports.size();
     double next_stride = (node_size.y) / (next_port_count + 1);
 
@@ -1006,6 +1000,9 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
 
   auto output_node = edge->output_node;
   auto input_node  = edge->input_node;
+
+  if (!output_node->visible && !input_node->visible) return;
+
   if (output_node->ghosted || input_node->ghosted) return;
 
   auto output_pos_new = output_node->get_pos_new();
@@ -1045,12 +1042,24 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
 
 void PlaitApp::app_render_frame() {
 
-  grid_painter.render(view_control.view_snap);
+  double time_start = timestamp();
 
   const dvec2 node_size = {128,64};
 
   //----------------------------------------
   // Grid layer
+
+  grid_painter.render(view_control.view_snap);
+
+  //----------------------------------------
+  // Visibility
+
+  for (auto& [tag, plait_cell] : plait.cell_map) {
+    plait_cell->root_node->update_visibility(view_control.view_snap);
+    for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+      leaf->update_visibility(view_control.view_snap);
+    }
+  }
 
   //----------------------------------------
   // Node layer
@@ -1059,27 +1068,32 @@ void PlaitApp::app_render_frame() {
 
   for (auto node : node_selection) {
     dvec2 node_pos_old = node->get_pos_old();
-    outline_painter.push_box(node_pos_old, node_pos_old + node_size, 0xFF404040);
+    if (node->visible) outline_painter.push_box(node_pos_old, node_pos_old + node_size, 0xFF404040);
   }
   outline_painter.render(view_control.view_snap, 0, 0, 1);
 
   // Node outlines
 
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    draw_node_outline(plait_cell->root_node);
+    if (plait_cell->root_node->visible) draw_node_outline(plait_cell->root_node);
 
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      draw_node_outline(leaf);
+      if (leaf->visible) draw_node_outline(leaf);
     }
   }
 
   // Unselected node fills
 
+  bool draw_detail = view_control.view_snap.get_zoom() >= -2;
+  //bool draw_detail = true;
+
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    if (!plait_cell->root_node->selected()) draw_node_fill(plait_cell->root_node);
+    if (!plait_cell->root_node->selected() && plait_cell->root_node->visible) {
+      draw_node_fill(plait_cell->root_node, draw_detail);
+    }
 
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      if (!leaf->selected()) draw_node_fill(leaf);
+      if (!leaf->selected() && leaf->visible) draw_node_fill(leaf, draw_detail);
     }
   }
   box_painter.render(view_control.view_snap, 0, 0, 1);
@@ -1099,7 +1113,7 @@ void PlaitApp::app_render_frame() {
   // Selected node fills
 
   for (auto node: node_selection) {
-    draw_node_fill(node);
+    draw_node_fill(node, draw_detail);
   }
   box_painter.render(view_control.view_snap, 0, 0, 1);
   port_painter.render(view_control.view_snap, 0, 0, 1);
@@ -1186,11 +1200,15 @@ void PlaitApp::app_render_frame() {
   text_painter.render_buf(view_control.view_snap, 0, 0);
 
   frame_count++;
+
+  time_render = timestamp() - time_start;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::app_render_ui() {
+
+  double time_start = timestamp();
 
   // Draw selection info
   {
@@ -1202,6 +1220,10 @@ void PlaitApp::app_render_ui() {
     d("Clicked node  : %s\n", clicked_node  ? clicked_node->plait_cell->name() : "<none>");
     d("Hovered node  : %s\n", hovered_node  ? hovered_node->plait_cell->name() : "<none>");
     d("Clicked label : %s\n", clicked_label ? clicked_label->text.c_str() : "<none>");
+    d("Delta time        : %f\n", 1000.0 * time_delta);
+    d("Update time       : %f\n", 1000.0 * time_update);
+    d("Graph render time : %f\n", 1000.0 * time_render);
+    d("UI render time    : %f\n", 1000.0 * time_ui);
 
     if (hovered_node) {
       hovered_node->plait_cell->dump(d);
@@ -1239,6 +1261,8 @@ void PlaitApp::app_render_ui() {
     }
     ImGui::End();
   }
+
+  time_ui = timestamp() - time_start;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -79,7 +79,7 @@ public:
   PlaitLabel*     pick_label(dvec2 pos);
   PlaitNode* pick_node(dvec2 pos);
 
-  void draw_node_fill(PlaitNode* node);
+  void draw_node_fill(PlaitNode* node, bool draw_detail);
   void draw_node_outline(PlaitNode* node);
   void draw_edge(PlaitTrace* node);
 
@@ -127,6 +127,11 @@ public:
   bool show_anchors = true;
 
   std::set<PlaitNode*> node_selection;
+
+  double time_update = 0;
+  double time_render = 0;
+  double time_ui = 0;
+  double time_delta = 0;
 
   PlaitLabel* clicked_label = nullptr;
   dvec2       clicked_label_offset = {0,0};

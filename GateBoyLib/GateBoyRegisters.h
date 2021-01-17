@@ -216,9 +216,9 @@ struct RegLY {
   void read(GateBoyCpuBus& cpu_bus);
   void tock2(GateBoyResetDebug& rst, RegLX& reg_lx);
 
-  wire NERU_y000p() const {
-    /*#p24.NERU*/ wire _NERU_y000p = nor8(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(), MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
-    return _NERU_y000p;
+  wire NERU_VSYNCp() const {
+    /*#p24.NERU*/ wire _NERU_VSYNCp = nor8(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(), MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
+    return _NERU_VSYNCp;
   }
 
   /*#p21.XYVO*/ wire XYVO_y144p_old() const { return and2(LOVU_LY4p.qp_old(), LAFO_LY7p.qp_old()); } // 128 + 16 = 144

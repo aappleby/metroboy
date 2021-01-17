@@ -14,7 +14,7 @@ struct GateBoyLCD {
     reg_ly.reset_to_cart();
     reg_lyc.reset_to_cart();
 
-    CATU_LINE_P000p.reset(1, 0);
+    CATU_START_SCANNING.reset(1, 0);
     ANEL_LINE_P002p.reset(0, 0);
     POPU_VBLANKp.reset(0, 1);
     SYGU_LINE_STROBE.reset(1, 0);
@@ -91,7 +91,7 @@ struct GateBoyLCD {
   void update_lcd_pipe();
 
   void dump(Dumper& d) {
-    d.dump_bitp("CATU_LINE_P000p     : ", CATU_LINE_P000p.state);
+    d.dump_bitp("CATU_START_SCANNING     : ", CATU_START_SCANNING.state);
     d.dump_bitp("ANEL_LINE_P002p     : ", ANEL_LINE_P002p.state);
     d.dump_bitp("POPU_VBLANKp        : ", POPU_VBLANKp.state);
     d.dump_bitp("SYGU_LINE_STROBE    : ", SYGU_LINE_STROBE.state);
@@ -123,7 +123,7 @@ struct GateBoyLCD {
   RegLYC reg_lyc;
 
   // H deltas are due to reg writes
-  /*p29.CATU*/ DFF17 CATU_LINE_P000p;  // Axxxxxxx
+  /*p29.CATU*/ DFF17 CATU_START_SCANNING;  // Axxxxxxx
   /*p28.ANEL*/ DFF17 ANEL_LINE_P002p;  // xxCxxxxx
   /*p21.POPU*/ DFF17 POPU_VBLANKp;     // xxCxxxxH
 

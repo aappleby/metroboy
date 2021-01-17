@@ -609,7 +609,7 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p28.ASEN*/ wire ASEN_SCAN_DONE_TRIGp = or2(rst.ATAR_VID_RSTp(), AVAP_SCAN_DONE_TRIGp);
 
     /*#p29.CENO*/ sprite_scanner.CENO_SCANNINGp.dff17(clk.XUPY_ABxxEFxx(), rst.ABEZ_VID_RSTn(),  sprite_scanner.BESU_SCANNINGp.qp_old());
-    /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGp.nor_latch(lcd.CATU_LINE_P000p.qp_new(), ASEN_SCAN_DONE_TRIGp);
+    /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGp.nor_latch(lcd.CATU_START_SCANNING.qp_new(), ASEN_SCAN_DONE_TRIGp);
     sprite_scanner.tock(clk.XUPY_ABxxEFxx(), lcd.ANOM_LINE_RSTn_new());
   }
 

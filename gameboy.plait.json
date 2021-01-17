@@ -4201,8 +4201,8 @@
     "BUS_CPU_D07p": {
       "core": {
         "name": "core",
-        "pos_x": 16320.0,
-        "pos_y": -3376.0
+        "pos_x": 16288.0,
+        "pos_y": -3136.0
       },
       "leaves": {
         "leaf_0336b83a": {
@@ -4286,7 +4286,13 @@
           "pos_y": -3088.0
         }
       },
-      "roots": {}
+      "roots": {
+        "root_689390c6": {
+          "name": "root_689390c6",
+          "pos_x": 15856.0,
+          "pos_y": -3008.0
+        }
+      }
     },
     "BUS_OAM_A00n": {
       "core": {
@@ -11632,8 +11638,8 @@
       "leaves": {
         "leaf_40286041": {
           "name": "leaf_40286041",
-          "pos_x": 16064.0,
-          "pos_y": -3376.0
+          "pos_x": 15680.0,
+          "pos_y": -3024.0
         }
       },
       "roots": {}
@@ -32813,7 +32819,7 @@
       "roots": {}
     }
   },
-  "guid": 3618955528,
+  "guid": 1754501318,
   "labels": [
     {
       "pos_x": 9552.0,
@@ -47297,7 +47303,7 @@
     },
     "LELU.qp -> BUS_CPU_D07p.arg11": {
       "input_cell": "BUS_CPU_D07p",
-      "input_node": "core",
+      "input_node": "root_689390c6",
       "output_cell": "LELU",
       "output_node": "leaf_40286041"
     },

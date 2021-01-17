@@ -384,6 +384,9 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
 
     plait_cell->core_node->plait_cell = plait_cell;
 
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      root->plait_cell = plait_cell;
+    }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       leaf->plait_cell = plait_cell;
     }
@@ -405,7 +408,12 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     else {
       plait_trace->output_node = output_cell->find_leaf_node(plait_trace->output_node_name);
     }
-    plait_trace->input_node  = input_cell->core_node;
+    if (plait_trace->input_node_name == "core") {
+      plait_trace->input_node  = input_cell->core_node;
+    }
+    else {
+      plait_trace->input_node = input_cell->find_root_node(plait_trace->input_node_name);
+    }
 
     CHECK_P(plait_trace->input_node);
     CHECK_P(plait_trace->output_node);

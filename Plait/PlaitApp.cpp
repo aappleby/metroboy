@@ -649,7 +649,7 @@ void PlaitApp::event_create_leaf(SDL_Event event) {
   }
   case SDL_KEYUP: {
     int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_Z) {
+    if (key == SDL_SCANCODE_X) {
       current_tool = ToolMode::NONE;
     }
     break;
@@ -701,7 +701,7 @@ void PlaitApp::event_delete_node(SDL_Event event) {
   }
   case SDL_KEYUP: {
     int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_X) {
+    if (key == SDL_SCANCODE_V) {
       current_tool = ToolMode::NONE;
     }
     break;
@@ -825,7 +825,7 @@ void PlaitApp::app_update(double delta_time) {
     case ToolMode::DRAG_LABEL:     event_drag_label(event); break;
     case ToolMode::SELECT_REGION:  event_select_region(event); break;
     case ToolMode::GHOST_REGION:   event_ghost_region(event); break;
-    case ToolMode::CREATE_ROOT:    event_create_leaf(event); break;
+    case ToolMode::CREATE_ROOT:    event_create_root(event); break;
     case ToolMode::CREATE_LEAF:    event_create_leaf(event); break;
     case ToolMode::LINK_NODE:      event_link_node(event); break;
     case ToolMode::DELETE_NODE:    event_delete_node(event); break;

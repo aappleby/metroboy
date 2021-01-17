@@ -212,10 +212,10 @@ void Plait::delete_roots(PlaitNode* core_node) {
   if (core_node->name != "core") return;
   auto plait_cell = core_node->plait_cell;
 
-  auto dead_leaves = decltype(plait_cell->root_nodes)();
-  dead_leaves.swap(plait_cell->root_nodes);
+  auto dead_roots = decltype(plait_cell->root_nodes)();
+  dead_roots.swap(plait_cell->root_nodes);
 
-  for (auto& [name, dead_root] : dead_leaves) {
+  for (auto& [name, dead_root] : dead_roots) {
     swap_input_edges(dead_root, plait_cell->core_node);
     check_dead(dead_root);
     delete dead_root;

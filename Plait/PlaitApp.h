@@ -28,15 +28,15 @@ enum class ToolMode {
   DRAG_NODE,
   DRAG_LABEL,
   SELECT_REGION,
-  LOCK_REGION,
-  UNLOCK_REGION,
   GHOST_REGION,
-  PLACE_ANCHOR,
+
+  CREATE_ROOT,
+  CREATE_LEAF,
+  LINK_NODE,
+  DELETE_NODE,
+
   PAN_VIEW,
   MENU_OPTION,
-  CREATE_LEAF,
-  DELETE_LEAF,
-  LINK_LEAF,
 };
 
 //-----------------------------------------------------------------------------
@@ -83,18 +83,24 @@ public:
   void draw_node_outline(PlaitNode* node);
   void draw_edge(PlaitTrace* node);
 
+  //----------------------------------------
+
   void event_select_tool  (SDL_Event event);
   void event_imgui        (SDL_Event event);
+
   void event_drag_nodes   (SDL_Event event);
   void event_drag_label   (SDL_Event event);
+
   void event_select_region(SDL_Event event);
   void event_ghost_region (SDL_Event event);
+
+  void event_create_root  (SDL_Event event);
+  void event_create_leaf  (SDL_Event event);
+  void event_link_node    (SDL_Event event);
+  void event_delete_node  (SDL_Event event);
+
   void event_pan_view     (SDL_Event event);
   void event_menu_option  (SDL_Event event);
-
-  void event_create_leaf  (SDL_Event event);
-  void event_delete_leaf  (SDL_Event event);
-  void event_link_leaf    (SDL_Event event);
 
   //----------------------------------------
 

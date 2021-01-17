@@ -24,19 +24,20 @@ using namespace std;
 static std::map<ToolMode, std::string> tool_to_string = {
   {ToolMode::NONE,            "NONE"},
   {ToolMode::IMGUI,           "IMGUI"},
+
   {ToolMode::DRAG_NODE,       "DRAG_NODE"},
   {ToolMode::DRAG_LABEL,      "DRAG_LABEL"},
+
   {ToolMode::SELECT_REGION,   "SELECT_REGION"},
-  {ToolMode::LOCK_REGION,     "LOCK_REGION"},
-  {ToolMode::UNLOCK_REGION,   "UNLOCK_REGION"},
   {ToolMode::GHOST_REGION,    "GHOST_REGION"},
-  {ToolMode::PLACE_ANCHOR,    "PLACE_ANCHOR"},
+
+  {ToolMode::CREATE_ROOT,     "CREATE_ROOT"},
+  {ToolMode::CREATE_LEAF,     "CREATE_LEAF"},
+  {ToolMode::DELETE_NODE,     "DELETE_NODE"},
+  {ToolMode::LINK_NODE,       "LINK_NODE"},
+
   {ToolMode::PAN_VIEW,        "PAN_VIEW"},
   {ToolMode::MENU_OPTION,     "MENU_OPTION"},
-
-  {ToolMode::CREATE_LEAF,     "CREATE_LEAF"},
-  {ToolMode::DELETE_LEAF,     "DELETE_LEAF"},
-  {ToolMode::LINK_LEAF,       "LINK_LEAF"},
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -238,6 +239,9 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
 
   for (auto& [tag, cell] : plait.cell_map) {
     paint_node(cell->core_node);
+    for (auto& [name, root] : cell->root_nodes) {
+      paint_node(root);
+    }
     for (auto& [name, leaf] : cell->leaf_nodes) {
       paint_node(leaf);
     }
@@ -273,7 +277,9 @@ PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos) {
   for (auto& [tag, plait_cell] : plait.cell_map) {
 
     if (hit_node(_mouse_pos, plait_cell->core_node)) return plait_cell->core_node;
-
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      if (hit_node(_mouse_pos, root)) return root;
+    }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (hit_node(_mouse_pos, leaf)) return leaf;
     }
@@ -318,6 +324,11 @@ void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback ca
   for (auto& [tag, plait_cell] : plait.cell_map) {
     if (contains_node(corner_a, corner_b, plait_cell->core_node)) {
       callback(plait_cell->core_node);
+    }
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      if (contains_node(corner_a, corner_b, root)) {
+        callback(root);
+      }
     }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (contains_node(corner_a, corner_b, leaf)) {
@@ -599,6 +610,30 @@ void PlaitApp::event_imgui(SDL_Event event) {
 
 //--------------------------------------------------------------------------------
 
+void PlaitApp::event_create_root(SDL_Event event) {
+  switch(event.type) {
+  case SDL_MOUSEBUTTONDOWN: {
+    if (event.button.button & SDL_BUTTON_LMASK) {
+      commit_selection();
+      clear_selection();
+      if (clicked_node) {
+        plait.spawn_root_node(clicked_node);
+        clicked_node = nullptr;
+      }
+    }
+    break;
+  }
+  case SDL_KEYUP: {
+    int key = event.key.keysym.scancode;
+    if (key == SDL_SCANCODE_Z) {
+      current_tool = ToolMode::NONE;
+    }
+    break;
+  }
+  }
+}
+
+
 void PlaitApp::event_create_leaf(SDL_Event event) {
   switch(event.type) {
   case SDL_MOUSEBUTTONDOWN: {
@@ -624,7 +659,32 @@ void PlaitApp::event_create_leaf(SDL_Event event) {
 
 //--------------------------------------------------------------------------------
 
-void PlaitApp::event_delete_leaf(SDL_Event event) {
+void PlaitApp::event_link_node(SDL_Event event) {
+  switch(event.type) {
+  case SDL_MOUSEBUTTONDOWN: {
+    if (event.button.button & SDL_BUTTON_LMASK) {
+      if (clicked_node) {
+        for (auto leaf_node : node_selection) {
+          plait.link_nodes(leaf_node, clicked_node);
+        }
+      }
+      clicked_node = nullptr;
+    }
+    break;
+  }
+  case SDL_KEYUP: {
+    int key = event.key.keysym.scancode;
+    if (key == SDL_SCANCODE_C) {
+      current_tool = ToolMode::NONE;
+    }
+    break;
+  }
+  }
+}
+
+//--------------------------------------------------------------------------------
+
+void PlaitApp::event_delete_node(SDL_Event event) {
   switch(event.type) {
   case SDL_MOUSEBUTTONDOWN: {
     if (event.button.button & SDL_BUTTON_LMASK) {
@@ -649,31 +709,6 @@ void PlaitApp::event_delete_leaf(SDL_Event event) {
   }
 }
 
-//--------------------------------------------------------------------------------
-
-void PlaitApp::event_link_leaf(SDL_Event event) {
-  switch(event.type) {
-  case SDL_MOUSEBUTTONDOWN: {
-    if (event.button.button & SDL_BUTTON_LMASK) {
-      if (clicked_node) {
-        for (auto leaf_node : node_selection) {
-          plait.link_nodes(leaf_node, clicked_node);
-        }
-      }
-      clicked_node = nullptr;
-    }
-    break;
-  }
-  case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_C) {
-      current_tool = ToolMode::NONE;
-    }
-    break;
-  }
-  }
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::event_select_tool(SDL_Event event) {
@@ -683,13 +718,11 @@ void PlaitApp::event_select_tool(SDL_Event event) {
 
     if (key == SDL_SCANCODE_E) show_edges = !show_edges;
 
-    if (key == SDL_SCANCODE_A)     new_tool = ToolMode::PLACE_ANCHOR;
-    if (key == SDL_SCANCODE_D)     new_tool = ToolMode::LOCK_REGION;
-    if (key == SDL_SCANCODE_F)     new_tool = ToolMode::UNLOCK_REGION;
     if (key == SDL_SCANCODE_Q)     new_tool = ToolMode::GHOST_REGION;
-    if (key == SDL_SCANCODE_Z)     new_tool = ToolMode::CREATE_LEAF;
-    if (key == SDL_SCANCODE_X)     new_tool = ToolMode::DELETE_LEAF;
-    if (key == SDL_SCANCODE_C)     new_tool = ToolMode::LINK_LEAF;
+    if (key == SDL_SCANCODE_Z)     new_tool = ToolMode::CREATE_ROOT;
+    if (key == SDL_SCANCODE_X)     new_tool = ToolMode::CREATE_LEAF;
+    if (key == SDL_SCANCODE_C)     new_tool = ToolMode::LINK_NODE;
+    if (key == SDL_SCANCODE_V)     new_tool = ToolMode::DELETE_NODE;
     if (key == SDL_SCANCODE_LALT)  new_tool = ToolMode::MENU_OPTION;
     if (key == SDL_SCANCODE_LCTRL) new_tool = ToolMode::SELECT_REGION;
 
@@ -792,11 +825,12 @@ void PlaitApp::app_update(double delta_time) {
     case ToolMode::DRAG_LABEL:     event_drag_label(event); break;
     case ToolMode::SELECT_REGION:  event_select_region(event); break;
     case ToolMode::GHOST_REGION:   event_ghost_region(event); break;
+    case ToolMode::CREATE_ROOT:    event_create_leaf(event); break;
     case ToolMode::CREATE_LEAF:    event_create_leaf(event); break;
-    case ToolMode::DELETE_LEAF:    event_delete_leaf(event); break;
+    case ToolMode::LINK_NODE:      event_link_node(event); break;
+    case ToolMode::DELETE_NODE:    event_delete_node(event); break;
     case ToolMode::PAN_VIEW:       event_pan_view(event); break;
     case ToolMode::MENU_OPTION:    event_menu_option(event); break;
-    case ToolMode::LINK_LEAF:      event_link_leaf(event); break;
     default: {
       printf("Bad tool!\n");
       __debugbreak();
@@ -1053,6 +1087,9 @@ void PlaitApp::app_render_frame() {
 
   for (auto& [tag, plait_cell] : plait.cell_map) {
     plait_cell->core_node->update_visibility(view_control.view_snap);
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      root->update_visibility(view_control.view_snap);
+    }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       leaf->update_visibility(view_control.view_snap);
     }
@@ -1074,6 +1111,9 @@ void PlaitApp::app_render_frame() {
   for (auto& [tag, plait_cell] : plait.cell_map) {
     if (plait_cell->core_node->visible) draw_node_outline(plait_cell->core_node);
 
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      if (root->visible) draw_node_outline(root);
+    }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (leaf->visible) draw_node_outline(leaf);
     }
@@ -1088,7 +1128,9 @@ void PlaitApp::app_render_frame() {
     if (!plait_cell->core_node->selected() && plait_cell->core_node->visible) {
       draw_node_fill(plait_cell->core_node, draw_detail);
     }
-
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      if (!root->selected() && root->visible) draw_node_fill(root, draw_detail);
+    }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (!leaf->selected() && leaf->visible) draw_node_fill(leaf, draw_detail);
     }
@@ -1125,38 +1167,58 @@ void PlaitApp::app_render_frame() {
 
     if (plait_cell->core_node->ghosted) continue;
 
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      auto core_center = plait_cell->core_node->pos_new + dvec2(64, 32);
+      auto root_center = root->pos_new + dvec2(64, 32);
+      bool backwards = (root_center.x > core_center.x) && !wrap_edge;
+      uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;
+      uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF0000;
+
+      if (plait_cell->core_node->selected() || root->selected() || backwards) {
+        edge_painter.push(core_center, color_a, root_center, color_b);
+      }
+    }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      auto root_center = plait_cell->core_node->pos_new + dvec2(64, 32);
+      auto core_center = plait_cell->core_node->pos_new + dvec2(64, 32);
       auto leaf_center = leaf->pos_new + dvec2(64, 32);
-      bool backwards = (leaf_center.x < root_center.x) && !wrap_edge;
+      bool backwards = (leaf_center.x < core_center.x) && !wrap_edge;
       uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;
       uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF0000;
 
       if (plait_cell->core_node->selected() || leaf->selected() || backwards) {
-        edge_painter.push(root_center, color_a, leaf_center, color_b);
+        edge_painter.push(core_center, color_a, leaf_center, color_b);
       }
     }
   }
 
   /*
-  // Roots with only one branch
+  // Cores with only one branch
   for (auto& [tag, plait_cell] : plait.cell_map) {
+    if (plait_cell->core_node->ghosted) continue;
     if (plait_cell->die_cell->cell_type == DieCellType::DFF) continue;
     if (plait_cell->die_cell->cell_type == DieCellType::BUS) continue;
     if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) continue;
     if (plait_cell->die_cell->cell_type == DieCellType::TRIBUF) continue;
 
     if (plait_cell->leaf_nodes.size() != 1 || plait_cell->die_cell->fanout != 1) continue;
-    if (plait_cell->core_node->ghosted) continue;
 
+    //for (auto& [name, root] : plait_cell->root_nodes) {
+    //  auto core_center = plait_cell->core_node->pos_new + dvec2(64, 32);
+    //  auto root_center = root->pos_new + dvec2(64, 32);
+    //  bool backwards = (root_center.x > core_center.x);
+    //  uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;
+    //  uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF0000;
+    //
+    //  edge_painter.push(core_center, color_a, root_center, color_b);
+    //}
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      auto root_center = plait_cell->core_node->pos_new + dvec2(64, 32);
+      auto core_center = plait_cell->core_node->pos_new + dvec2(64, 32);
       auto leaf_center = leaf->pos_new + dvec2(64, 32);
-      bool backwards = (leaf_center.x < root_center.x);
+      bool backwards = (leaf_center.x < core_center.x);
       uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;
       uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF0000;
 
-      edge_painter.push(root_center, color_a, leaf_center, color_b);
+      edge_painter.push(core_center, color_a, leaf_center, color_b);
     }
   }
   */
@@ -1166,22 +1228,11 @@ void PlaitApp::app_render_frame() {
   //----------------------------------------
   // UI layer
 
-  // Draw in-progress anchor edges
-
-  if (current_tool == ToolMode::PLACE_ANCHOR) {
-    for (auto selected_node : node_selection) {
-      edge_painter.push(mouse_pos_world, 0xFFFFFFFF, selected_node->get_pos_new() + node_size * 0.5, 0xFFFF8080);
-    }
-    edge_painter.render(view_control.view_snap, 0, 0, 1);
-  }
-
   // Draw selection rect
 
   if (mouse_buttons & SDL_BUTTON_LMASK) {
     uint32_t sel_color = 0x00000000;
     if (current_tool == ToolMode::SELECT_REGION) sel_color = 0xFFFFFFFF;
-    if (current_tool == ToolMode::LOCK_REGION)   sel_color = 0xFF00FFFF;
-    if (current_tool == ToolMode::UNLOCK_REGION) sel_color = 0xFFFFFF00;
     if (current_tool == ToolMode::GHOST_REGION)  sel_color = 0xFFFF0040;
 
     if (sel_color) {

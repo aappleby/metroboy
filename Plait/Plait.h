@@ -28,7 +28,7 @@ struct PlaitLabel {
 struct Plait {
   void clear();
 
-  void spawn_leaf_node (PlaitNode* root_node);
+  void spawn_leaf_node (PlaitNode* core_node);
   void delete_leaf_node(PlaitNode* dead_leaf);
   void link_leaf(PlaitNode* leaf_node, PlaitNode* target_node);
   void delete_leaves(PlaitNode* node);
@@ -81,7 +81,7 @@ struct PlaitCell {
   bool selected() { return selected_node_count > 0; }
 
   // Serialized
-  PlaitNode* root_node;
+  PlaitNode* core_node;
   std::map<std::string, PlaitNode*> leaf_nodes;
 
   // Not serialized

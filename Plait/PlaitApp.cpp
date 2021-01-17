@@ -237,7 +237,7 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
   tex = create_texture_u32(4, 4, pix);
 
   for (auto& [tag, cell] : plait.cell_map) {
-    paint_node(cell->root_node);
+    paint_node(cell->core_node);
     for (auto& [name, leaf] : cell->leaf_nodes) {
       paint_node(leaf);
     }
@@ -272,7 +272,7 @@ bool PlaitApp::hit_node(dvec2 _mouse_pos, PlaitNode* node) {
 PlaitNode* PlaitApp::pick_node(dvec2 _mouse_pos) {
   for (auto& [tag, plait_cell] : plait.cell_map) {
 
-    if (hit_node(_mouse_pos, plait_cell->root_node)) return plait_cell->root_node;
+    if (hit_node(_mouse_pos, plait_cell->core_node)) return plait_cell->core_node;
 
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (hit_node(_mouse_pos, leaf)) return leaf;
@@ -316,8 +316,8 @@ bool PlaitApp::contains_node(dvec2 corner_a, dvec2 corner_b, PlaitNode* node) {
 
 void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback callback) {
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    if (contains_node(corner_a, corner_b, plait_cell->root_node)) {
-      callback(plait_cell->root_node);
+    if (contains_node(corner_a, corner_b, plait_cell->core_node)) {
+      callback(plait_cell->core_node);
     }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (contains_node(corner_a, corner_b, leaf)) {
@@ -631,7 +631,7 @@ void PlaitApp::event_delete_leaf(SDL_Event event) {
       commit_selection();
       clear_selection();
       if (clicked_node) {
-        if (clicked_node->name == "root") {
+        if (clicked_node->name == "core") {
           plait.delete_leaves(clicked_node);
         }
         else {
@@ -926,7 +926,7 @@ void PlaitApp::draw_node_outline(PlaitNode* node) {
   else {
     uint32_t color = COL_DARK_GREY;
     if (node->plait_cell->leaf_nodes.size()) {
-      color = (node->name == "root") ? 0xFF408040 : 0xFF804040;
+      color = (node->name == "core") ? 0xFF408040 : 0xFF804040;
     }
 
     box_painter.push_corner_size(node_pos_new, node_size, color);
@@ -948,7 +948,7 @@ void PlaitApp::draw_node_fill(PlaitNode* node, bool draw_detail) {
 
   if (!node->ghosted) {
     uint32_t color = node == hovered_node ? node->color + COL_HINT3 : node->color;
-    if (node->pos_new.x < node->plait_cell->root_node->pos_new.x) {
+    if (node->pos_new.x < node->plait_cell->core_node->pos_new.x) {
       if (node->plait_cell->die_cell->cell_type == DieCellType::DFF) {
       }
       else if (node->plait_cell->die_cell->cell_type == DieCellType::BUS) {
@@ -1055,7 +1055,7 @@ void PlaitApp::app_render_frame() {
   // Visibility
 
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    plait_cell->root_node->update_visibility(view_control.view_snap);
+    plait_cell->core_node->update_visibility(view_control.view_snap);
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       leaf->update_visibility(view_control.view_snap);
     }
@@ -1075,7 +1075,7 @@ void PlaitApp::app_render_frame() {
   // Node outlines
 
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    if (plait_cell->root_node->visible) draw_node_outline(plait_cell->root_node);
+    if (plait_cell->core_node->visible) draw_node_outline(plait_cell->core_node);
 
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (leaf->visible) draw_node_outline(leaf);
@@ -1088,8 +1088,8 @@ void PlaitApp::app_render_frame() {
   //bool draw_detail = true;
 
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    if (!plait_cell->root_node->selected() && plait_cell->root_node->visible) {
-      draw_node_fill(plait_cell->root_node, draw_detail);
+    if (!plait_cell->core_node->selected() && plait_cell->core_node->visible) {
+      draw_node_fill(plait_cell->core_node, draw_detail);
     }
 
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
@@ -1126,16 +1126,16 @@ void PlaitApp::app_render_frame() {
     if (plait_cell->die_cell->cell_type == DieCellType::BUS) wrap_edge = true;
     if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) wrap_edge = true;
 
-    if (plait_cell->root_node->ghosted) continue;
+    if (plait_cell->core_node->ghosted) continue;
 
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      auto root_center = plait_cell->root_node->pos_new + dvec2(64, 32);
+      auto root_center = plait_cell->core_node->pos_new + dvec2(64, 32);
       auto leaf_center = leaf->pos_new + dvec2(64, 32);
       bool backwards = (leaf_center.x < root_center.x) && !wrap_edge;
       uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;
       uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF0000;
 
-      if (plait_cell->root_node->selected() || leaf->selected() || backwards) {
+      if (plait_cell->core_node->selected() || leaf->selected() || backwards) {
         edge_painter.push(root_center, color_a, leaf_center, color_b);
       }
     }
@@ -1150,10 +1150,10 @@ void PlaitApp::app_render_frame() {
     if (plait_cell->die_cell->cell_type == DieCellType::TRIBUF) continue;
 
     if (plait_cell->leaf_nodes.size() != 1 || plait_cell->die_cell->fanout != 1) continue;
-    if (plait_cell->root_node->ghosted) continue;
+    if (plait_cell->core_node->ghosted) continue;
 
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      auto root_center = plait_cell->root_node->pos_new + dvec2(64, 32);
+      auto root_center = plait_cell->core_node->pos_new + dvec2(64, 32);
       auto leaf_center = leaf->pos_new + dvec2(64, 32);
       bool backwards = (leaf_center.x < root_center.x);
       uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;

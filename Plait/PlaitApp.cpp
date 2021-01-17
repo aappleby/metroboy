@@ -631,11 +631,8 @@ void PlaitApp::event_delete_leaf(SDL_Event event) {
       commit_selection();
       clear_selection();
       if (clicked_node) {
-        if (clicked_node->name == "core") {
-          plait.delete_leaves(clicked_node);
-        }
-        else {
-          plait.delete_leaf_node(clicked_node);
+        if (clicked_node->name != "core") {
+          plait.delete_node(clicked_node);
         }
         clicked_node = nullptr;
       }
@@ -660,7 +657,7 @@ void PlaitApp::event_link_leaf(SDL_Event event) {
     if (event.button.button & SDL_BUTTON_LMASK) {
       if (clicked_node) {
         for (auto leaf_node : node_selection) {
-          plait.link_leaf(leaf_node, clicked_node);
+          plait.link_nodes(leaf_node, clicked_node);
         }
       }
       clicked_node = nullptr;

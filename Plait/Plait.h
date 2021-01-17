@@ -28,13 +28,16 @@ struct PlaitLabel {
 struct Plait {
   void clear();
 
+  void spawn_root_node (PlaitNode* core_node);
   void spawn_leaf_node (PlaitNode* core_node);
-  void delete_leaf_node(PlaitNode* dead_leaf);
-  void link_leaf(PlaitNode* leaf_node, PlaitNode* target_node);
+  void delete_roots(PlaitNode* node);
   void delete_leaves(PlaitNode* node);
 
+  void link_nodes(PlaitNode* node_a, PlaitNode* node_b);
+  void swap_input_edges(PlaitNode* old_node, PlaitNode* new_node);
   void swap_output_edges(PlaitNode* old_node, PlaitNode* new_node);
 
+  void delete_node(PlaitNode* dead_leaf);
   void check_dead(PlaitNode* node);
 
   void save_json(const char* filename);
@@ -74,14 +77,20 @@ struct PlaitCell {
   const char* name() const { return die_cell ? die_cell->long_name.c_str() : "<no_cell>"; }
   const char* gate() const { return die_cell ? die_cell->gate.c_str() : "<no_gate>"; }
 
+  void       add_root_node(PlaitNode* node);
   void       add_leaf_node(PlaitNode* node);
+
+  PlaitNode* find_root_node(const std::string& name) const;
   PlaitNode* find_leaf_node(const std::string& name) const;
+
+  PlaitNode* spawn_root_node(PlaitNode* neighbor, uint32_t guid);
   PlaitNode* spawn_leaf_node(PlaitNode* neighbor, uint32_t guid);
 
   bool selected() { return selected_node_count > 0; }
 
   // Serialized
   PlaitNode* core_node;
+  std::map<std::string, PlaitNode*> root_nodes;
   std::map<std::string, PlaitNode*> leaf_nodes;
 
   // Not serialized

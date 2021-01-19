@@ -204,7 +204,7 @@ void GateBoyOamBus::dma_to_addr_bus(GateBoyDMA& dma) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyOamBus::sprite_index_to_addr_bus(const GateBoyDMA& dma, const SpriteStore& sprite_store, NorLatch XYMU_RENDERINGn){
+void GateBoyOamBus::sprite_index_to_addr_bus(const GateBoyDMA& dma, const GateBoySpriteStore& sprite_store, NorLatch XYMU_RENDERINGn){
   SigIn SIG_VCC = 1;
   // OAM address from sprite fetcher
   /* p28.AJON*/ wire _AJON_RENDERINGp = and2(dma.BOGE_DMA_RUNNINGn(), XYMU_RENDERINGn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma

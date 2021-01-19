@@ -29,7 +29,7 @@ struct GateBoyOamBus {
   void ext_to_data_bus (const GateBoyDMA& dma, const GateBoyExtBus& ext_bus);
   void vram_to_data_bus(const GateBoyDMA& dma, const GateBoyVramBus& vram_bus);
   void dma_to_addr_bus(GateBoyDMA& dma);
-  void sprite_index_to_addr_bus(const GateBoyDMA& dma, const SpriteStore& sprite_store, NorLatch XYMU_RENDERINGn);
+  void sprite_index_to_addr_bus(const GateBoyDMA& dma, const GateBoySpriteStore& sprite_store, NorLatch XYMU_RENDERINGn);
   void scan_index_to_addr_bus(SpriteScanner& sprite_scanner, wire ACYL_SCANNINGp);
   void cpu_to_addr_bus(GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGn, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
   void cpu_to_data_bus(GateBoyClock& clk, GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGp, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);

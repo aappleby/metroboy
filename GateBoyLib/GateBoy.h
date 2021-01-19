@@ -158,6 +158,9 @@ struct GateBoy {
   //----------
   // CPU interface
 
+  /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
+  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
+
   GateBoyCpuBus  cpu_bus;
   GateBoyExtBus  ext_bus;
   GateBoyVramBus vram_bus;
@@ -176,7 +179,7 @@ struct GateBoy {
 
   //----------
 
-  SpriteStore   sprite_store;
+  GateBoySpriteStore   sprite_store;
   SpriteScanner sprite_scanner;
   SpriteFetcher sprite_fetcher;
   TileFetcher   tile_fetcher;

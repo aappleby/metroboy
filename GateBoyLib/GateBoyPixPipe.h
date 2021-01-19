@@ -135,11 +135,8 @@ struct FineScroll {
 
 struct PPURegisters {
   void reset_to_cart() {
-    VOGA_HBLANKp.reset(0, 1);
   }
 
-  /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
-  /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
 };
 
 //------------------------------------------------------------------------------------------------------------------------

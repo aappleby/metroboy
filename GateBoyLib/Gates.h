@@ -951,7 +951,7 @@ struct GateBoyTimer;
 struct GateBoyVramBus;
 
 struct SpriteScanner;
-struct SpriteStore;
+struct GateBoySpriteStore;
 struct FineScroll;
 struct SpritePix;
 struct PixCount;

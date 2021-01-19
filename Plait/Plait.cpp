@@ -125,7 +125,7 @@ PlaitNode* PlaitCell::find_root_node(const std::string& name) const {
 
   auto it = root_nodes.find(name);
   if (it == root_nodes.end()) {
-    CHECK_P(false);
+    //CHECK_P(false);
     return nullptr;
   }
   else {
@@ -138,7 +138,7 @@ PlaitNode* PlaitCell::find_leaf_node(const std::string& name) const {
 
   auto it = leaf_nodes.find(name);
   if (it == leaf_nodes.end()) {
-    CHECK_P(false);
+    //CHECK_P(false);
     return nullptr;
   }
   else {
@@ -250,6 +250,7 @@ void Plait::link_nodes(PlaitNode* node_a, PlaitNode* node_b) {
       }
     }
 
+    /*
     if (plait_trace->output_node->plait_cell == node_b->plait_cell) {
       if (plait_trace->input_node->plait_cell == node_a->plait_cell) {
         plait_trace->output_node_name = node_b->name;
@@ -258,6 +259,7 @@ void Plait::link_nodes(PlaitNode* node_a, PlaitNode* node_b) {
         plait_trace->input_node = node_a;
       }
     }
+    */
   }
 }
 
@@ -402,17 +404,41 @@ void Plait::load_json(std::istream& stream, DieDB& die_db) {
     auto input_cell  = cell_map[die_trace->input_tag];
 
     plait_trace->die_trace = die_trace;
+
     if (plait_trace->output_node_name == "core") {
       plait_trace->output_node = output_cell->core_node;
     }
     else {
       plait_trace->output_node = output_cell->find_leaf_node(plait_trace->output_node_name);
     }
+
     if (plait_trace->input_node_name == "core") {
       plait_trace->input_node  = input_cell->core_node;
     }
     else {
       plait_trace->input_node = input_cell->find_root_node(plait_trace->input_node_name);
+    }
+
+    if (!plait_trace->output_node) {
+      printf("Could not link %s.%s -> %s.%s, resetting link\n",
+        output_cell->name(),
+        plait_trace->output_node_name.c_str(),
+        input_cell->name(),
+        plait_trace->input_node_name.c_str());
+
+      plait_trace->output_node_name = "core";
+      plait_trace->output_node = input_cell->core_node;
+    }
+
+    if (!plait_trace->input_node) {
+      printf("Could not link %s.%s -> %s.%s, resetting link\n",
+        output_cell->name(),
+        plait_trace->output_node_name.c_str(),
+        input_cell->name(),
+        plait_trace->input_node_name.c_str());
+
+      plait_trace->input_node_name = "core";
+      plait_trace->input_node = input_cell->core_node;
     }
 
     CHECK_P(plait_trace->input_node);

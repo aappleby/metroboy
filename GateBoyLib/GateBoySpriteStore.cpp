@@ -5,7 +5,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::reset_to_cart() {
+void GateBoySpriteStore::reset_to_cart() {
   BUS_SPR_I0.reset(0);
   BUS_SPR_I1.reset(0);
   BUS_SPR_I2.reset(1);
@@ -18,13 +18,6 @@ void SpriteStore::reset_to_cart() {
   BUS_SPR_L2.reset(1);
   BUS_SPR_L3.reset(1);
 
-  XADU_SPRITE_IDX0p.reset(1, 0);
-  XEDY_SPRITE_IDX1p.reset(1, 0);
-  ZUZE_SPRITE_IDX2p.reset(1, 1);
-  XOBE_SPRITE_IDX3p.reset(1, 0);
-  YDUF_SPRITE_IDX4p.reset(1, 1);
-  XECU_SPRITE_IDX5p.reset(1, 0);
-
   DEZY_COUNT_CLKp.reset(1, 1);
   BESE_SPRITE_COUNT0.reset(1, 0);
   CUXY_SPRITE_COUNT1.reset(1, 0);
@@ -34,7 +27,7 @@ void SpriteStore::reset_to_cart() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::update_count(wire XAPO_VID_RSTn, wire ZEME_AxCxExGx, wire ATEJ_LINE_RSTp, wire _DYTY_STORE_CLKp) {
+void GateBoySpriteStore::update_count(wire XAPO_VID_RSTn, wire ZEME_AxCxExGx, wire ATEJ_LINE_RSTp, wire _DYTY_STORE_CLKp) {
   // Sprite store counter. The sprite count clock stops ticking once we have 10 sprites.
   // Sprite Y matcher. This is using an adder as a subtracter by inverting the first input.
 
@@ -55,7 +48,7 @@ void SpriteStore::update_count(wire XAPO_VID_RSTn, wire ZEME_AxCxExGx, wire ATEJ
 
 //------------------------------------------------------------------------------------------------------------------------
 
-SpriteStoreFlag SpriteStore::get_store_flags(wire _DYTY_STORE_CLKp) {
+SpriteStoreFlag GateBoySpriteStore::get_store_flags(wire _DYTY_STORE_CLKp) {
   /* p29.EDEN*/ wire _EDEN_SPRITE_COUNT0n_new = not1(BESE_SPRITE_COUNT0.qp_new());
   /* p29.CYPY*/ wire _CYPY_SPRITE_COUNT1n_new = not1(CUXY_SPRITE_COUNT1.qp_new());
   /* p29.CAPE*/ wire _CAPE_SPRITE_COUNT2n_new = not1(BEGO_SPRITE_COUNT2.qp_new());
@@ -115,7 +108,7 @@ SpriteStoreFlag SpriteStore::get_store_flags(wire _DYTY_STORE_CLKp) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-SpriteMatchFlag SpriteStore::get_match_flags_old(wire _AROR_MATCH_ENp_old, const PixCount& _pix_count) {
+SpriteMatchFlag GateBoySpriteStore::get_match_flags_old(wire _AROR_MATCH_ENp_old, const PixCount& _pix_count) {
   /*#p21.ACAM*/ wire ACAM_PX0n_old = not1(_pix_count.XEHO_PX0p.qp_old());
   /* p21.AZUB*/ wire AZUB_PX1n_old = not1(_pix_count.SAVY_PX1p.qp_old());
   /* p21.AMEL*/ wire AMEL_PX2n_old = not1(_pix_count.XODU_PX2p.qp_old());
@@ -263,7 +256,7 @@ SpriteMatchFlag SpriteStore::get_match_flags_old(wire _AROR_MATCH_ENp_old, const
 
 //------------------------------------------------------------------------------------------------------------------------
 
-SpriteMatchFlag SpriteStore::get_match_flags_new(wire _AROR_MATCH_ENp_new, const PixCount& _pix_count) {
+SpriteMatchFlag GateBoySpriteStore::get_match_flags_new(wire _AROR_MATCH_ENp_new, const PixCount& _pix_count) {
   /*#p21.ACAM*/ wire ACAM_PX0n = not1(_pix_count.XEHO_PX0p.qp_new());
   /* p21.AZUB*/ wire AZUB_PX1n = not1(_pix_count.SAVY_PX1p.qp_new());
   /* p21.AMEL*/ wire AMEL_PX2n = not1(_pix_count.XODU_PX2p.qp_new());
@@ -411,7 +404,7 @@ SpriteMatchFlag SpriteStore::get_match_flags_new(wire _AROR_MATCH_ENp_new, const
 
 //------------------------------------------------------------------------------------------------------------------------
 
-SpriteFirstMatch SpriteStore::get_first_match(SpriteMatchFlag match_flag) const {
+SpriteFirstMatch GateBoySpriteStore::get_first_match(SpriteMatchFlag match_flag) const {
   SigIn SIG_GND = 0;
   /* p29.WEFU*/ wire _WEFU_STORE0_MATCH = not1(match_flag.YDUG_STORE0_MATCHn);
   /* p29.GAJA*/ wire _GAJA_STORE1_MATCH = not1(match_flag.DYDU_STORE1_MATCHn);
@@ -461,7 +454,7 @@ SpriteFirstMatch SpriteStore::get_first_match(SpriteMatchFlag match_flag) const 
 //------------------------------------------------------------------------------------------------------------------------
 // Sprite store output tribuf driver. The store regs are set during scan, so it's safe to read the old values here.
 
-void SpriteStore::get_sprite(SpriteFirstMatch first_match) {
+void GateBoySpriteStore::get_sprite(SpriteFirstMatch first_match) {
 
   /* p29.FURO*/ wire _FURO_SPRITE0_GETn = not1(first_match.GUVA_SPRITE0_GETp);
   /* p29.DYDO*/ wire _DYDO_SPRITE1_GETn = not1(first_match.ENUT_SPRITE1_GETp);
@@ -587,7 +580,7 @@ void SpriteStore::get_sprite(SpriteFirstMatch first_match) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::store_sprite_x(SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag) {
+void GateBoySpriteStore::store_sprite_x(SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag) {
   // Sprite store X resetter. This has to happen before the match check.
   /* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(_ABAK_LINE_RSTp);
   /* p29.DYBA*/ wire _DYBA_LINE_RSTp = not1(_BYVA_LINE_RSTn);
@@ -740,7 +733,7 @@ void SpriteStore::store_sprite_x(SpriteStoreFlag store_flag, const OamTempB& oam
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::store_sprite_index(SpriteStoreFlag store_flag) {
+void GateBoySpriteStore::store_sprite_index(SpriteStoreFlag store_flag) {
   /* p29.GENY*/ wire _GENY_STORE0_CLKp = not1(store_flag.DYHU_STORE0_CLKn);
   /* p29.BYVY*/ wire _BYVY_STORE1_CLKp = not1(store_flag.BUCO_STORE1_CLKn);
   /* p29.BUZY*/ wire _BUZY_STORE2_CLKp = not1(store_flag.GYFO_STORE2_CLKn);
@@ -825,7 +818,7 @@ void SpriteStore::store_sprite_index(SpriteStoreFlag store_flag) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag) {
+void GateBoySpriteStore::store_sprite_line(SpriteStoreFlag store_flag) {
   /* p29.ENOB*/ wire _ENOB_STORE0_CLKp = not1(store_flag.DYHU_STORE0_CLKn);
   /* p29.AHOF*/ wire _AHOF_STORE1_CLKp = not1(store_flag.BUCO_STORE1_CLKn);
   /* p29.FUKE*/ wire _FUKE_STORE2_CLKp = not1(store_flag.GYFO_STORE2_CLKn);
@@ -890,35 +883,7 @@ void SpriteStore::store_sprite_line(SpriteStoreFlag store_flag) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::oam_addr_to_sprite_index(const GateBoyOamBus& oam_bus, wire WUDA_xxCDxxGH, NorLatch XYMU_RENDERINGn, DFF17 CENO_SCANNINGn) {
-  SigIn SIG_VCC = 1;
-  /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(oam_bus.BUS_OAM_A02n.qp_old());
-  /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(oam_bus.BUS_OAM_A03n.qp_old());
-  /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1(oam_bus.BUS_OAM_A04n.qp_old());
-  /* p28.YMEV*/ wire _YMEV_OAM_A5p_old = not1(oam_bus.BUS_OAM_A05n.qp_old());
-  /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1(oam_bus.BUS_OAM_A06n.qp_old());
-  /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1(oam_bus.BUS_OAM_A07n.qp_old());
-
-  // Sprite store grabs the sprite index off the _old_ oam address bus
-  /* p30.XADU*/ XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH, SIG_VCC, _YFOT_OAM_A2p_old);
-  /* p30.XEDY*/ XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH, SIG_VCC, _YFOC_OAM_A3p_old);
-  /* p30.ZUZE*/ ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH, SIG_VCC, _YVOM_OAM_A4p_old);
-  /* p30.XOBE*/ XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH, SIG_VCC, _YMEV_OAM_A5p_old);
-  /* p30.YDUF*/ YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH, SIG_VCC, _XEMU_OAM_A6p_old);
-  /* p30.XECU*/ XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH, SIG_VCC, _YZET_OAM_A7p_old);
-
-  /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
-  /*#p30.WUZY_STORE_I0*/ BUS_SPR_I0.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XADU_SPRITE_IDX0p.qn_new());
-  /* p30.WYSE_STORE_I1*/ BUS_SPR_I1.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XEDY_SPRITE_IDX1p.qn_new());
-  /* p30.ZYSU_STORE_I2*/ BUS_SPR_I2.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, ZUZE_SPRITE_IDX2p.qn_new());
-  /* p30.WYDA_STORE_I3*/ BUS_SPR_I3.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XOBE_SPRITE_IDX3p.qn_new());
-  /* p30.WUCO_STORE_I4*/ BUS_SPR_I4.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, YDUF_SPRITE_IDX4p.qn_new());
-  /* p30.WEZA_STORE_I5*/ BUS_SPR_I5.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, XECU_SPRITE_IDX5p.qn_new());
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void SpriteStore::ly_to_sprite_line(wire FEPO_STORE_MATCHp, const RegLY& reg_ly, const OamTempA& oam_temp_a) {
+void GateBoySpriteStore::ly_to_sprite_line(wire FEPO_STORE_MATCHp, const RegLY& reg_ly, const OamTempA& oam_temp_a) {
   SigIn SIG_GND = 0;
 
   /*#p29.EBOS*/ wire EBOS_LY0n = not1(reg_ly.MUWY_LY0p.qp_new());
@@ -944,8 +909,8 @@ void SpriteStore::ly_to_sprite_line(wire FEPO_STORE_MATCHp, const RegLY& reg_ly,
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void SpriteStore::dump(Dumper& d) {
-  d.dump_slice2p("SPRITE INDEX   : ", &XADU_SPRITE_IDX0p.state, 6);
+void GateBoySpriteStore::dump(Dumper& d) {
+  //d.dump_slice2p("SPRITE INDEX   : ", &XADU_SPRITE_IDX0p.state, 6);
   d.dump_slice2p("SPRITE COUNT   : ", &BESE_SPRITE_COUNT0, 4);
   d.dump_bitp   ("DEZY_STORE_ENn : ", DEZY_COUNT_CLKp.state);
   d("\n");

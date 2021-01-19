@@ -124,7 +124,7 @@ void GateBoyVramBus::tile_to_addr(const BGScrollY scroll_y, const WinLineY win_l
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyVramBus::sprite_to_addr(const SpriteStore& sprite_store, const OamTempA& oam_temp_a, const OamTempB& oam_temp_b, wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, NorLatch XYMU_RENDERINGn, DFF9 XYMO_LCDC_SPSIZEn) {
+void GateBoyVramBus::sprite_to_addr(const GateBoySpriteStore& sprite_store, const OamTempA& oam_temp_a, const OamTempB& oam_temp_b, wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, NorLatch XYMU_RENDERINGn, DFF9 XYMO_LCDC_SPSIZEn) {
   SigIn SIG_GND = 0;
 
   /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1(oam_temp_b.YZOS_OAM_DB6p.qp_new());

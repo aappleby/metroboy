@@ -967,7 +967,7 @@ void PlaitApp::draw_node_outline(PlaitNode* node) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::draw_node_fill(PlaitNode* node, bool draw_detail) {
+void PlaitApp::draw_node_fill(PlaitNode* node, uint32_t color, bool draw_detail) {
   dvec2 node_pos_old = node->get_pos_old();
   dvec2 node_pos_new = node->get_pos_new();
 
@@ -978,18 +978,6 @@ void PlaitApp::draw_node_fill(PlaitNode* node, bool draw_detail) {
   // Node fill
 
   if (!node->ghosted) {
-    uint32_t color = node == hovered_node ? node->color + COL_HINT3 : node->color;
-    if (node->pos_new.x < node->plait_cell->core_node->pos_new.x) {
-      if (node->plait_cell->die_cell->cell_type == DieCellType::DFF) {
-      }
-      else if (node->plait_cell->die_cell->cell_type == DieCellType::BUS) {
-      }
-      else if (node->plait_cell->die_cell->cell_type == DieCellType::PIN_IO) {
-      }
-      else {
-        color = 0xFF0000FF;
-      }
-    }
     box_painter.push_corner_size(node_pos_new + dvec2(4,4), node_size - dvec2(8,8), color);
   }
 
@@ -999,6 +987,10 @@ void PlaitApp::draw_node_fill(PlaitNode* node, bool draw_detail) {
 
     text_painter.add_text_at(node->plait_cell->name(), float(node_pos_new.x + 8), float(node_pos_new.y + 8));
     text_painter.add_text_at(node->plait_cell->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
+
+    char buf[256];
+    sprintf_s(buf, 256, "%zd : %zd", node->plait_cell->root_nodes.size(), node->plait_cell->leaf_nodes.size());
+    text_painter.add_text_at(buf, float(node_pos_new.x + 8), float(node_pos_new.y + 40));
 
     //----------------------------------------
     // Node input port(s)
@@ -1032,7 +1024,7 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
   auto output_node = edge->output_node;
   auto input_node  = edge->input_node;
 
-  if (!output_node->visible && !input_node->visible) return;
+  //if (!output_node->visible && !input_node->visible) return;
 
   if (output_node->ghosted || input_node->ghosted) return;
 
@@ -1126,13 +1118,16 @@ void PlaitApp::app_render_frame() {
 
   for (auto& [tag, plait_cell] : plait.cell_map) {
     if (!plait_cell->core_node->selected() && plait_cell->core_node->visible) {
-      draw_node_fill(plait_cell->core_node, draw_detail);
+      uint32_t color = plait_cell->core_node == hovered_node ? plait_cell->core_node->color + COL_HINT3 : plait_cell->core_node->color;
+      draw_node_fill(plait_cell->core_node, color, draw_detail);
     }
     for (auto& [name, root] : plait_cell->root_nodes) {
-      if (!root->selected() && root->visible) draw_node_fill(root, draw_detail);
+      uint32_t color = root == hovered_node ? root->color + COL_HINT3 : root->color;
+      if (!root->selected() && root->visible) draw_node_fill(root, color, draw_detail);
     }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      if (!leaf->selected() && leaf->visible) draw_node_fill(leaf, draw_detail);
+      uint32_t color = leaf == hovered_node ? leaf->color + COL_HINT3 : leaf->color;
+      if (!leaf->selected() && leaf->visible) draw_node_fill(leaf, color, draw_detail);
     }
   }
   box_painter.render(view_control.view_snap, 0, 0, 1);
@@ -1152,7 +1147,8 @@ void PlaitApp::app_render_frame() {
   // Selected node fills
 
   for (auto node: node_selection) {
-    draw_node_fill(node, draw_detail);
+    uint32_t color = node == hovered_node ? node->color + COL_HINT3 : node->color;
+    draw_node_fill(node, color, draw_detail);
   }
   box_painter.render(view_control.view_snap, 0, 0, 1);
   port_painter.render(view_control.view_snap, 0, 0, 1);
@@ -1160,32 +1156,43 @@ void PlaitApp::app_render_frame() {
 
   // Branches
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    bool wrap_edge = false;
-    if (plait_cell->die_cell->cell_type == DieCellType::DFF) wrap_edge = true;
-    if (plait_cell->die_cell->cell_type == DieCellType::BUS) wrap_edge = true;
-    if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) wrap_edge = true;
-
+    //if (plait_cell->die_cell->cell_type == DieCellType::TRIBUF) continue;
+    //if (plait_cell->die_cell->cell_type == DieCellType::BUS) continue;
+    //if (plait_cell->die_cell->cell_type == DieCellType::DFF) continue;
+    //if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) continue;
     if (plait_cell->core_node->ghosted) continue;
 
+    bool wrap_ok = false;
+    if (plait_cell->die_cell->cell_type == DieCellType::BUS)    wrap_ok = true;
+    if (plait_cell->die_cell->cell_type == DieCellType::DFF)    wrap_ok = true;
+    if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) wrap_ok = true;
+
+    bool always_draw = false;
+    //if (plait_cell->die_cell->cell_type == DieCellType::LATCH) always_draw = true;
+    //if (plait_cell->die_cell->cell_type == DieCellType::LOGIC) always_draw = true;
+    //if (plait_cell->die_cell->cell_type == DieCellType::ADDER) always_draw = true;
+
     for (auto& [name, root] : plait_cell->root_nodes) {
+      if (root->ghosted) continue;
       auto core_center = plait_cell->core_node->pos_new + dvec2(64, 32);
       auto root_center = root->pos_new + dvec2(64, 32);
-      bool backwards = (root_center.x > core_center.x) && !wrap_edge;
-      uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;
-      uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF0000;
+      bool backwards = (root_center.x > core_center.x) && !wrap_ok;
+      uint32_t color_a = backwards ? 0xFF0000FF : 0xFFFFFF00;
+      uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF00FF;
 
-      if (plait_cell->core_node->selected() || root->selected() || backwards) {
+      if ((plait_cell->core_node->selected() ^ root->selected()) || backwards || always_draw) {
         edge_painter.push(core_center, color_a, root_center, color_b);
       }
     }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+      if (leaf->ghosted) continue;
       auto core_center = plait_cell->core_node->pos_new + dvec2(64, 32);
       auto leaf_center = leaf->pos_new + dvec2(64, 32);
-      bool backwards = (leaf_center.x < core_center.x) && !wrap_edge;
-      uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;
-      uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF0000;
+      bool backwards = (leaf_center.x < core_center.x) && !wrap_ok;
+      uint32_t color_a = backwards ? 0xFF0000FF : 0xFFFFFF00;
+      uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF00FF;
 
-      if (plait_cell->core_node->selected() || leaf->selected() || backwards) {
+      if ((plait_cell->core_node->selected() ^ leaf->selected()) || backwards || always_draw) {
         edge_painter.push(core_center, color_a, leaf_center, color_b);
       }
     }

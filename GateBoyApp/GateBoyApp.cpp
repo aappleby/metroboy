@@ -403,7 +403,7 @@ void GateBoyApp::app_render_frame() {
   d.dump_bitn   ("RAVO_LD1n  : ", gb->pix_pipes.RAVO_LD1n.get_state());
 
   d("\n");
-  d.dump_bitp("XYMU_RENDERINGn        : ", gb->ppu_reg.XYMU_RENDERINGn.state);
+  d.dump_bitp("XYMU_RENDERINGn        : ", gb->XYMU_RENDERINGn.state);
   d.dump_bitp("PYNU_WIN_MODE_Ap       : ", gb->win_reg.PYNU_WIN_MODE_Ap.state);
   d.dump_bitp("PUKU_WIN_HITn          : ", gb->win_reg.PUKU_WIN_HITn.get_state());
   d.dump_bitp("RYDY_WIN_HITp          : ", gb->win_reg.RYDY_WIN_HITp.get_state());
@@ -422,7 +422,7 @@ void GateBoyApp::app_render_frame() {
   d.dump_bitp("NYZE_FINE_MATCH_B      : ", gb->fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn : ", gb->fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
   d.dump_bitp("RUPO_LYC_MATCH_LATCHn  : ", gb->reg_stat.RUPO_LYC_MATCHn.state);
-  d.dump_bitp("VOGA_HBLANKp           : ", gb->ppu_reg.VOGA_HBLANKp.state);
+  d.dump_bitp("VOGA_HBLANKp           : ", gb->VOGA_HBLANKp.state);
   d("\n");
 
   d("\002===== Tile Fetch =====\001\n");

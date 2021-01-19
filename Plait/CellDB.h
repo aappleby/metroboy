@@ -36,8 +36,10 @@ struct DieCell {
   std::string long_name;
   std::string doc;
 
+  std::vector<std::string> bus_ports;
   std::vector<std::string> input_ports;
   std::vector<std::string> output_ports;
+
 
   int fanout = 0;
 
@@ -47,6 +49,9 @@ struct DieCell {
   int get_input_index(const std::string& port_name) const {
     for (auto i = 0; i < input_ports.size(); i++) {
       if (input_ports[i] == port_name) return i;
+    }
+    for (auto i = 0; i < bus_ports.size(); i++) {
+      if (bus_ports[i] == port_name) return i;
     }
     printf("no prev port for %s\n", port_name.c_str());
     return -1;
@@ -67,8 +72,10 @@ struct DieTrace {
   std::string output_tag;
   std::string output_port;
   std::string input_tag;
-  std::string input_port;
-  void* plait_trace = nullptr;
+  std::string input_port_old;
+  std::string input_port_new;
+
+  //void* plait_trace = nullptr;
 
   bool operator < (const DieTrace& e) const {
     if (output_tag  > e.output_tag)  return false;
@@ -77,8 +84,8 @@ struct DieTrace {
     if (output_port < e.output_port) return true;
     if (input_tag  > e.input_tag)  return false;
     if (input_tag  < e.input_tag)  return true;
-    if (input_port > e.input_port) return false;
-    if (input_port < e.input_port) return true;
+    if (input_port_old > e.input_port_old) return false;
+    if (input_port_old < e.input_port_old) return true;
     return false;
   }
 
@@ -86,26 +93,32 @@ struct DieTrace {
     if (output_tag  != e.output_tag)  return false;
     if (output_port != e.output_port) return false;
     if (input_tag  != e.input_tag)  return false;
-    if (input_port != e.input_port) return false;
+    if (input_port_old != e.input_port_old) return false;
     return true;
   }
 
+  /*
   void from_key(const std::string& key) {
     auto first_dot = key.find('.');
     auto arrow = key.find(" -> ");
     auto second_dot = key.find('.', first_dot + 1);
-    printf("%zd\n", first_dot);
-    printf("%zd\n", arrow);
-    printf("%zd\n", second_dot);
+    //printf("%zd\n", first_dot);
+    //printf("%zd\n", arrow);
+    //printf("%zd\n", second_dot);
 
     output_tag  = key.substr(0,              first_dot  - 0);
     output_port = key.substr(first_dot + 1,  arrow      - (first_dot + 1));
     input_tag  = key.substr(arrow + 4,      second_dot - (arrow + 4));
-    input_port = key.substr(second_dot + 1, key.size() - (second_dot + 1));
+    input_port_old = key.substr(second_dot + 1, key.size() - (second_dot + 1));
+  }
+  */
+
+  std::string to_key_old() const {
+    return output_tag + "." + output_port + " -> " + input_tag + "." + input_port_old;
   }
 
-  std::string to_key() const {
-    return output_tag + "." + output_port + " -> " + input_tag + "." + input_port;
+  std::string to_key_new() const {
+    return output_tag + "." + output_port + " -> " + input_tag + "." + input_port_new;
   }
 };
 
@@ -161,7 +174,10 @@ struct DieDB {
 
   std::map<std::string, DieCell*> cell_map;
 
-  std::map<std::string, DieTrace*> trace_map;
+  //std::vector<DieTrace*> traces;
+  std::set<DieTrace> traces;
+
+  //std::map<std::string, DieTrace*> trace_map_old;
 
   int total_lines = 0;
   int total_tagged_lines = 0;

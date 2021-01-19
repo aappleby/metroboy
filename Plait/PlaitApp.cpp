@@ -52,17 +52,10 @@ int main(int argc, char** argv) {
 
   PlaitApp* app = new PlaitApp();
 
-#if 1
+#if 0
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
   printf("Done\n\n");
-#else
-  printf("Loading gameboy.die_db.json\n");
-  app->die_db.clear();
-  app->die_db.load_json("gameboy.die_db.json");
-  printf("Done\n\n");
-#endif
-
 
 #if 0
   {
@@ -79,31 +72,54 @@ int main(int argc, char** argv) {
     app->die_db.load_json(die_db_file);
     printf("Done\n\n");
   }
-
-  /*
-  {
-    printf("Loading gameboy.plait.json\n");
-    app->plait.load_json("gameboy.plait.json", app->die_db);
-    printf("Done\n\n");
-
-
-    printf("Saving plait\n");
-    //std::ostringstream stream_out;
-    app->plait.save_json("gameboy.plait_hax.json");
-    printf("Done\n\n");
-
-    printf("Loading plait\n");
-    //std::istringstream stream_in(stream_out.str());
-    app->plait.clear();
-    app->plait.load_json("gameboy.plait_hax.json", app->die_db);
-    printf("Done\n\n");
-  }
-  */
+#endif
 
 #else
+  printf("Loading gameboy.die_db.json\n");
+  app->die_db.clear();
+  app->die_db.load_json("gameboy.die_db.json");
+  printf("Done\n\n");
+#endif
+
+
+#if 0
+  {
+    printf("Loading gameboy.plait.json\n");
+    {
+      nlohmann::json jroot;
+      std::ifstream("gameboy.plait.json") >> jroot;
+      app->plait.from_json(jroot, app->die_db);
+    }
+    printf("Done\n\n");
+
+
+    printf("Saving gameboy.plait_hax.json\n");
+    {
+      nlohmann::json jroot;
+      app->plait.to_json(jroot);
+      std::ofstream("gameboy.plait_hax.json") << jroot.dump(2);
+    }
+    printf("Done\n\n");
+
+    printf("Loading gameboy.plait_hax.json\n");
+    {
+      app->plait.clear();
+      nlohmann::json jroot;
+      std::ifstream("gameboy.plait_hax.json") >> jroot;
+      app->plait.from_json(jroot, app->die_db);
+    }
+    printf("Done\n\n");
+  }
+#endif
+
+#if 1
 
   printf("Loading gameboy.plait.json\n");
-  app->plait.load_json("gameboy.plait.json", app->die_db);
+  {
+    nlohmann::json jroot;
+    std::ifstream("gameboy.plait.json") >> jroot;
+    app->plait.from_json(jroot, app->die_db);
+  }
   printf("Done\n\n");
 
 
@@ -114,7 +130,7 @@ int main(int argc, char** argv) {
   }
   printf("Total cells %zd\n", app->plait.cell_map.size());
   printf("Total nodes %zd\n", total_nodes);
-  printf("Total edges %zd\n", app->plait.trace_map.size());
+  printf("Total edges %zd\n", app->plait.traces.size());
 
   AppHost* app_host = new AppHost(app);
   ret = app_host->app_main(argc, argv);
@@ -428,7 +444,10 @@ void PlaitApp::event_menu_option(SDL_Event event) {
       printf("Saving plait %s\n", filename);
       commit_selection();
       clear_selection();
-      plait.save_json(filename);
+
+      nlohmann::json jroot;
+      plait.to_json(jroot);
+      std::ofstream(filename) << jroot.dump(2);
     }
     break;
   }
@@ -1142,8 +1161,9 @@ void PlaitApp::app_render_frame() {
   // All traces
 
   if (show_edges) {
-    for (auto& [trace_key, trace] : plait.trace_map) {
-      draw_edge(trace);
+    //for (auto& [trace_key, trace] : plait.trace_map_old) {
+    for (auto& plait_trace : plait.traces) {
+      draw_edge(plait_trace);
     }
   }
 

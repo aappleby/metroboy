@@ -3,6 +3,7 @@
 #include "AppLib/Viewport.h"
 #include "Plait/CellDB.h"
 #include "glm/glm/glm.hpp"
+#include "json/single_include/nlohmann/json.hpp"
 
 #include <vector>
 #include <iostream>
@@ -26,6 +27,9 @@ struct PlaitLabel {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 struct Plait {
+  void from_json(nlohmann::json& jroot, DieDB& die_db);
+  void to_json(nlohmann::json& jroot);
+
   void clear();
 
   void spawn_root_node (PlaitNode* core_node);
@@ -40,14 +44,15 @@ struct Plait {
   void delete_node(PlaitNode* dead_leaf);
   void check_dead(PlaitNode* node);
 
-  void save_json(const char* filename);
-  void save_json(std::ostream& stream);
-
-  void load_json(const char* filename, DieDB& die_db);
-  void load_json(std::istream& stream, DieDB& die_db);
+  //void save_json(const char* filename);
+  //void save_json(std::ostream& stream);
+  //void load_json(const char* filename, DieDB& die_db);
+  //void load_json(std::istream& stream, DieDB& die_db);
 
   std::map<std::string, PlaitCell*>  cell_map;
-  std::map<std::string, PlaitTrace*> trace_map;
+  //std::map<std::string, PlaitTrace*> trace_map_old;
+  //std::map<std::string, PlaitTrace*> trace_map_new;
+  std::vector<PlaitTrace*> traces;
   std::vector<PlaitLabel*> labels;
 
   uint32_t new_guid() {
@@ -65,13 +70,13 @@ struct PlaitCell {
 
   void dump(Dumper& d);
 
-  int get_input_index(const std::string& port_name) const {
-    return die_cell->get_input_index(port_name);
-  }
+  //int get_input_index(const std::string& port_name) const {
+  //  return die_cell->get_input_index(port_name);
+  //}
 
-  int get_output_index(const std::string& port_name) const {
-    return die_cell->get_output_index(port_name);
-  }
+  //int get_output_index(const std::string& port_name) const {
+  //  return die_cell->get_output_index(port_name);
+  //}
 
   const char* tag() const  { return die_cell ? die_cell->tag.c_str()  : "<no_tag>"; }
   const char* name() const { return die_cell ? die_cell->long_name.c_str() : "<no_cell>"; }
@@ -166,16 +171,18 @@ struct PlaitTrace {
   //----------------------------------------
   // Serialized
 
-  std::string output_cell_name;
-  std::string output_node_name;
+  //std::string output_cell_name;
+  //std::string output_node_name;
+  //std::string output_port_name;
 
-  std::string input_cell_name;
-  std::string input_node_name;
+  //std::string input_cell_name;
+  //std::string input_node_name;
+  //std::string input_port_name;
 
   //----------------------------------------
   // Not serialized
 
-  DieTrace* die_trace = nullptr;
+  const DieTrace* die_trace = nullptr;
   PlaitNode* output_node = nullptr;
   PlaitNode* input_node  = nullptr;
 

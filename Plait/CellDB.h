@@ -39,7 +39,6 @@ struct DieCell {
   std::vector<std::string> input_ports;
   std::vector<std::string> output_ports;
 
-
   int fanout = 0;
 
   void* plait_cell = nullptr;
@@ -166,7 +165,7 @@ struct DieDB {
   std::map<std::string, DieCell*> cell_map;
 
   //std::vector<DieTrace*> traces;
-  std::set<DieTrace> traces;
+  std::vector<DieTrace> traces;
 
   //std::map<std::string, DieTrace*> trace_map_old;
 

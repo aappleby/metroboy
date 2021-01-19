@@ -56,7 +56,7 @@ struct SpriteMatchFlag {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct SpriteStore {
+struct GateBoySpriteStore {
   void reset_to_cart();
 
   void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp);
@@ -72,7 +72,6 @@ struct SpriteStore {
   void store_sprite_line (SpriteStoreFlag store_flag);
   void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
 
-  void oam_addr_to_sprite_index(const GateBoyOamBus& oam_bus, wire WUDA_xxCDxxGH, NorLatch XYMU_RENDERINGn, DFF17 CENO_SCANNINGn);
   void ly_to_sprite_line(wire FEPO_STORE_MATCHp, const RegLY& reg_ly, const OamTempA& oam_temp_a);
 
   void dump(Dumper& d);
@@ -91,16 +90,6 @@ struct SpriteStore {
   /*BUS_SPR_L1*/ Bus BUS_SPR_L1; // AxCxExGx
   /*BUS_SPR_L2*/ Bus BUS_SPR_L2; // AxCxExGx
   /*BUS_SPR_L3*/ Bus BUS_SPR_L3; // AxCxExGx
-
-  //----------------------------------------
-  // Sprite index latch selects which store to write
-
-  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p; // AxxxExxx
-  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p; // AxxxExxx
-  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p; // AxxxExxx
-  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p; // AxxxExxx
-  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p; // AxxxExxx
-  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p; // AxxxExxx
 
   //----------------------------------------
   // Sprite counter tracks how many sprites have been selected for this line.

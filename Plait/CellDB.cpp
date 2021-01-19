@@ -482,6 +482,10 @@ bool DieDB::parse_dir(const std::string& path) {
   // Postprocess the cells.
 
   for (auto& [tag, cell] : cell_map) {
+    std::sort(cell->input_ports.begin(), cell->input_ports.end());
+    std::sort(cell->output_ports.begin(), cell->output_ports.end());
+
+
     if (cell->long_name.empty()) {
       printf("Cell %s needs a name\n", cell->tag.c_str());
       cell->long_name = cell->tag;
@@ -526,6 +530,11 @@ bool DieDB::parse_dir(const std::string& path) {
 
     CHECK_P(cell->fanout == 0);
   }
+
+  // Postprocess the traces
+
+  std::sort(traces.begin(), traces.end());
+  traces.erase(std::unique(traces.begin(), traces.end()), traces.end());
 
   //for (auto& [trace_key, trace] : trace_map_old) {
   for (auto& trace : traces) {
@@ -930,7 +939,7 @@ bool DieDB::parse_cell_arglist(DieCell& die_cell, const string& arglist_c) {
     };
 
     //trace_map_old[trace->to_key_old()] = trace;
-    traces.insert(trace);
+    traces.push_back(trace);
 
     i++;
   }
@@ -1020,7 +1029,7 @@ bool DieDB::parse_tribuf_bus_target(DieCell& c, const string& bus_name) {
       c.tag
     };
 
-    traces.insert(bus_trace);
+    traces.push_back(bus_trace);
     //trace_map_old[trace->to_key_old()] = trace;
 
     return true;

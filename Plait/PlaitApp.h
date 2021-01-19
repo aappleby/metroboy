@@ -79,7 +79,7 @@ public:
   PlaitLabel*     pick_label(dvec2 pos);
   PlaitNode* pick_node(dvec2 pos);
 
-  void draw_node_fill(PlaitNode* node, bool draw_detail);
+  void draw_node_fill(PlaitNode* node, uint32_t color, bool draw_detail);
   void draw_node_outline(PlaitNode* node);
   void draw_edge(PlaitTrace* node);
 

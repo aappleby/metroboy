@@ -132,7 +132,7 @@ PlaitNode* PlaitCell::find_root_node(const std::string& name) const {
 
   auto it = root_nodes.find(name);
   if (it == root_nodes.end()) {
-    CHECK_P(false);
+    //CHECK_P(false);
     return nullptr;
   }
   else {
@@ -145,7 +145,7 @@ PlaitNode* PlaitCell::find_leaf_node(const std::string& name) const {
 
   auto it = leaf_nodes.find(name);
   if (it == leaf_nodes.end()) {
-    CHECK_P(false);
+    //CHECK_P(false);
     return nullptr;
   }
   else {
@@ -259,6 +259,7 @@ void Plait::link_nodes(PlaitNode* node_a, PlaitNode* node_b) {
       }
     }
 
+    /*
     if (plait_trace->output_node->plait_cell == node_b->plait_cell) {
       if (plait_trace->input_node->plait_cell == node_a->plait_cell) {
         //plait_trace->output_node_name = node_b->name;
@@ -267,6 +268,7 @@ void Plait::link_nodes(PlaitNode* node_a, PlaitNode* node_b) {
         plait_trace->input_node = node_a;
       }
     }
+    */
   }
 }
 
@@ -433,6 +435,19 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
     plait_trace->input_node        = plait_input_cell->find_root_node(input_node);
     plait_trace->output_port_index = plait_output_cell->die_cell->get_output_index(die_trace->output_port);
     plait_trace->input_port_index  = plait_input_cell->die_cell->get_input_index(die_trace->input_port);
+
+    if (!plait_trace->output_node || !plait_trace->input_node) {
+      printf("Could not link %s.%s.%s -> %s.%s.%s, resetting link\n",
+        output_cell.c_str(),
+        output_node.c_str(),
+        output_port.c_str(),
+        input_cell.c_str(),
+        input_node.c_str(),
+        input_port.c_str());
+
+      plait_trace->output_node = plait_input_cell->core_node;
+      plait_trace->input_node  = plait_input_cell->core_node;
+    }
 
     CHECK_P(plait_trace->input_node);
     CHECK_P(plait_trace->output_node);

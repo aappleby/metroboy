@@ -4334,31 +4334,31 @@
       "fanout": 24,
       "gate": "bus",
       "input_ports": [
-        "SYPU",
-        "POLY",
-        "RYMA",
-        "NELA",
-        "KEMA",
-        "YFAP",
-        "XACA",
-        "WYPO",
-        "TEBY",
-        "WARE",
-        "EDOS",
-        "VEGA",
-        "RETU",
-        "RARO",
-        "XARY",
-        "LAJU",
-        "PUNU",
-        "LOVA",
-        "CUGY",
         "CORE",
-        "TAWU",
-        "SOKU",
-        "SETE",
+        "CUGY",
+        "EDOS",
+        "KEMA",
+        "LAJU",
+        "LOVA",
+        "NELA",
+        "POLY",
+        "PUNU",
+        "RARO",
+        "RETU",
+        "RUGA",
         "RYLA",
-        "RUGA"
+        "RYMA",
+        "SETE",
+        "SOKU",
+        "SYPU",
+        "TAWU",
+        "TEBY",
+        "VEGA",
+        "WARE",
+        "WYPO",
+        "XACA",
+        "XARY",
+        "YFAP"
       ],
       "long_name": "BUS_CPU_D00p",
       "output_ports": [
@@ -4373,29 +4373,29 @@
       "fanout": 22,
       "gate": "bus",
       "input_ports": [
-        "ROFO",
-        "RUVO",
-        "NABO",
-        "KURO",
-        "XELE",
-        "XAGU",
-        "XERO",
-        "WUGA",
-        "GOBA",
-        "EKOB",
-        "WUVA",
-        "VOJO",
-        "PABA",
-        "XOKE",
-        "LEPA",
-        "PODA",
-        "MUKA",
         "DUDE",
-        "TAKU",
-        "RACY",
+        "EKOB",
+        "GOBA",
+        "KURO",
+        "LEPA",
+        "MUKA",
+        "NABO",
+        "PABA",
+        "PODA",
         "PYRE",
+        "RACY",
+        "ROFO",
+        "ROTA",
         "ROTE",
-        "ROTA"
+        "RUVO",
+        "TAKU",
+        "VOJO",
+        "WUGA",
+        "WUVA",
+        "XAGU",
+        "XELE",
+        "XERO",
+        "XOKE"
       ],
       "long_name": "BUS_CPU_D01p",
       "output_ports": [
@@ -4410,29 +4410,29 @@
       "fanout": 22,
       "gate": "bus",
       "input_ports": [
-        "REMA",
-        "RYKO",
-        "ROVA",
-        "KUVE",
-        "YPON",
-        "XEPU",
-        "WYJU",
-        "SEGO",
-        "GONU",
         "CUGA",
+        "DETU",
+        "GONU",
+        "KUVE",
+        "LODE",
         "LYCO",
+        "MOKO",
+        "NOLA",
+        "PYGU",
+        "RAVY",
         "RAZU",
         "REDO",
-        "XUNO",
-        "LODE",
-        "PYGU",
-        "MOKO",
-        "DETU",
-        "TEMU",
-        "RAVY",
-        "NOLA",
+        "REMA",
+        "ROVA",
+        "RYBU",
+        "RYKO",
+        "SEGO",
         "SUPE",
-        "RYBU"
+        "TEMU",
+        "WYJU",
+        "XEPU",
+        "XUNO",
+        "YPON"
       ],
       "long_name": "BUS_CPU_D02p",
       "output_ports": [
@@ -4447,28 +4447,28 @@
       "fanout": 22,
       "gate": "bus",
       "input_ports": [
-        "PANE",
-        "TAVO",
-        "PADO",
-        "JEKU",
-        "XUVO",
-        "XYGU",
-        "WUKA",
-        "PUZO",
+        "DASO",
         "GODO",
-        "WONY",
-        "WOJY",
-        "REDY",
+        "JEKU",
         "LOBE",
-        "XUBY",
-        "LYZA",
         "LOKA",
         "LOLE",
-        "DASO",
-        "TUSE",
-        "SOSY",
+        "LYZA",
+        "PADO",
+        "PANE",
+        "PUZO",
+        "RAJU",
+        "REDY",
         "SALU",
-        "RAJU"
+        "SOSY",
+        "TAVO",
+        "TUSE",
+        "WOJY",
+        "WONY",
+        "WUKA",
+        "XUBY",
+        "XUVO",
+        "XYGU"
       ],
       "long_name": "BUS_CPU_D03p",
       "output_ports": [
@@ -4483,28 +4483,28 @@
       "fanout": 23,
       "gate": "bus",
       "input_ports": [
-        "PARE",
-        "TEPE",
-        "PEGY",
-        "KOCE",
-        "ZYSA",
-        "XUNA",
-        "VOKE",
-        "POFO",
-        "CUSA",
         "CEDU",
-        "VYNE",
-        "RACE",
+        "CUSA",
+        "DAME",
+        "KOCE",
         "LACE",
-        "XAJU",
         "LUKY",
         "MEGA",
         "MELE",
-        "DAME",
-        "UPUG",
+        "PARE",
+        "PEGY",
+        "POFO",
+        "RACE",
         "SOMU",
         "SUPO",
-        "TYJA"
+        "TEPE",
+        "TYJA",
+        "UPUG",
+        "VOKE",
+        "VYNE",
+        "XAJU",
+        "XUNA",
+        "ZYSA"
       ],
       "long_name": "BUS_CPU_D04p",
       "output_ports": [
@@ -4519,27 +4519,27 @@
       "fanout": 21,
       "gate": "bus",
       "input_ports": [
-        "RALY",
-        "SAFO",
-        "CUDY",
-        "YWEG",
-        "DEVE",
-        "VATO",
-        "SASY",
-        "GYZO",
         "CATA",
-        "WAMA",
-        "VAZU",
-        "LYKA",
-        "XOBO",
-        "LUGA",
-        "PELA",
-        "MUFE",
+        "CUDY",
+        "DEVE",
         "EVOK",
+        "GYZO",
+        "LUGA",
+        "LYKA",
+        "MUFE",
+        "PELA",
+        "RALY",
+        "REXU",
+        "SAFO",
+        "SASY",
         "SEPU",
-        "SURO",
         "SOTU",
-        "REXU"
+        "SURO",
+        "VATO",
+        "VAZU",
+        "WAMA",
+        "XOBO",
+        "YWEG"
       ],
       "long_name": "BUS_CPU_D05p",
       "output_ports": [
@@ -4554,26 +4554,26 @@
       "fanout": 20,
       "gate": "bus",
       "input_ports": [
-        "RESU",
-        "SEVU",
-        "XABU",
-        "ZEHA",
-        "VAHA",
-        "POTE",
-        "GUNE",
         "DOXE",
-        "WAVO",
-        "VAFE",
-        "LODY",
-        "XAXA",
-        "LEBA",
-        "POLO",
-        "MULY",
         "EFAB",
-        "SAWA",
-        "ROWU",
+        "GUNE",
+        "LEBA",
+        "LODY",
+        "MULY",
+        "POLO",
+        "POTE",
+        "RESU",
         "REVA",
-        "RUPY"
+        "ROWU",
+        "RUPY",
+        "SAWA",
+        "SEVU",
+        "VAFE",
+        "VAHA",
+        "WAVO",
+        "XABU",
+        "XAXA",
+        "ZEHA"
       ],
       "long_name": "BUS_CPU_D06p",
       "output_ports": [
@@ -4588,26 +4588,26 @@
       "fanout": 20,
       "gate": "bus",
       "input_ports": [
-        "NUVY",
-        "TAJU",
-        "YTUX",
-        "FYRA",
-        "XEBU",
-        "GYZA",
         "CASY",
-        "WEZE",
-        "PUFY",
-        "LARY",
-        "XAWO",
-        "LELU",
-        "MERA",
-        "MARA",
-        "ETAK",
         "ELUV",
-        "TATU",
+        "ETAK",
+        "FYRA",
+        "GYZA",
+        "LARY",
+        "LELU",
+        "MARA",
+        "MERA",
+        "NUVY",
+        "PUFY",
         "PUSO",
         "SAPU",
-        "TOKU"
+        "TAJU",
+        "TATU",
+        "TOKU",
+        "WEZE",
+        "XAWO",
+        "XEBU",
+        "YTUX"
       ],
       "long_name": "BUS_CPU_D07p",
       "output_ports": [
@@ -4623,9 +4623,9 @@
       "gate": "bus",
       "input_ports": [
         "FODO",
+        "GARO",
         "GECA",
-        "GEFY",
-        "GARO"
+        "GEFY"
       ],
       "long_name": "BUS_OAM_A00n",
       "output_ports": [
@@ -4641,9 +4641,9 @@
       "gate": "bus",
       "input_ports": [
         "FESA",
-        "WYDU",
+        "WACU",
         "WUWE",
-        "WACU"
+        "WYDU"
       ],
       "long_name": "BUS_OAM_A01n",
       "output_ports": [
@@ -4659,9 +4659,9 @@
       "gate": "bus",
       "input_ports": [
         "FAGO",
-        "GYBU",
+        "GOSE",
         "GUSE",
-        "GOSE"
+        "GYBU"
       ],
       "long_name": "BUS_OAM_A02n",
       "output_ports": [
@@ -4677,8 +4677,8 @@
       "gate": "bus",
       "input_ports": [
         "FYKY",
-        "GYKA",
         "GEMA",
+        "GYKA",
         "WAPE"
       ],
       "long_name": "BUS_OAM_A03n",
@@ -4696,8 +4696,8 @@
       "input_ports": [
         "ELUG",
         "FABY",
-        "FUTO",
-        "FEVU"
+        "FEVU",
+        "FUTO"
       ],
       "long_name": "BUS_OAM_A04n",
       "output_ports": [
@@ -4730,8 +4730,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "FYDU",
         "FUGU",
+        "FYDU",
         "GAMA",
         "WAXA"
       ],
@@ -4749,9 +4749,9 @@
       "gate": "bus",
       "input_ports": [
         "FETU",
+        "FOBY",
         "FYKE",
-        "GOBY",
-        "FOBY"
+        "GOBY"
       ],
       "long_name": "BUS_OAM_A07n",
       "output_ports": [
@@ -4783,8 +4783,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BOMO",
         "AXER",
+        "BOMO",
         "ZAKY"
       ],
       "long_name": "BUS_OAM_DA01n",
@@ -4800,8 +4800,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BASA",
         "ASOX",
+        "BASA",
         "WULE"
       ],
       "long_name": "BUS_OAM_DA02n",
@@ -4834,8 +4834,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BUMA",
         "ARYN",
+        "BUMA",
         "ZUFO"
       ],
       "long_name": "BUS_OAM_DA04n",
@@ -4851,8 +4851,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BUPY",
         "ACOT",
+        "BUPY",
         "ZATO"
       ],
       "long_name": "BUS_OAM_DA05n",
@@ -4885,8 +4885,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BAPE",
         "ATER",
+        "BAPE",
         "ZUFE"
       ],
       "long_name": "BUS_OAM_DA07n",
@@ -4919,8 +4919,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BUBO",
         "AVEB",
+        "BUBO",
         "ZOPU"
       ],
       "long_name": "BUS_OAM_DB01n",
@@ -4936,8 +4936,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BETU",
         "AMUH",
+        "BETU",
         "WYKY"
       ],
       "long_name": "BUS_OAM_DB02n",
@@ -4953,8 +4953,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "CYME",
         "COFO",
+        "CYME",
         "ZAJA"
       ],
       "long_name": "BUS_OAM_DB03n",
@@ -4970,8 +4970,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BAXU",
         "AZOZ",
+        "BAXU",
         "ZUGA"
       ],
       "long_name": "BUS_OAM_DB04n",
@@ -4987,8 +4987,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BUHU",
         "AGYK",
+        "BUHU",
         "ZUMO"
       ],
       "long_name": "BUS_OAM_DB05n",
@@ -5004,8 +5004,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BYNY",
         "BUSE",
+        "BYNY",
         "XYTO"
       ],
       "long_name": "BUS_OAM_DB06n",
@@ -5021,8 +5021,8 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "BYPY",
         "ANUM",
+        "BYPY",
         "ZYFA"
       ],
       "long_name": "BUS_OAM_DB07n",
@@ -5038,17 +5038,17 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
-        "ZETU",
-        "CUBO",
-        "CUBE",
-        "ENAP",
-        "WUXU",
-        "DOBO",
-        "WATO",
-        "WAKO",
         "APOC",
+        "CUBE",
+        "CUBO",
+        "DOBO",
+        "ENAP",
+        "WAKO",
+        "WATO",
+        "WUXU",
+        "WUZY",
         "ZARO",
-        "WUZY"
+        "ZETU"
       ],
       "long_name": "BUS_SPR_I0",
       "output_ports": [
@@ -5063,17 +5063,17 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
-        "ZECE",
-        "CELU",
         "AFOZ",
-        "DYGO",
-        "WEPY",
-        "DYNY",
-        "WYWY",
-        "WYGO",
         "AKYH",
-        "ZOJY",
-        "WYSE"
+        "CELU",
+        "DYGO",
+        "DYNY",
+        "WEPY",
+        "WYGO",
+        "WYSE",
+        "WYWY",
+        "ZECE",
+        "ZOJY"
       ],
       "long_name": "BUS_SPR_I1",
       "output_ports": [
@@ -5088,16 +5088,16 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
-        "ZAVE",
-        "CEGY",
-        "APON",
-        "DOWA",
-        "WERU",
-        "WAGA",
-        "EZOC",
-        "ELEP",
         "AFEN",
+        "APON",
+        "CEGY",
+        "DOWA",
+        "ELEP",
+        "EZOC",
+        "WAGA",
+        "WERU",
         "YNEV",
+        "ZAVE",
         "ZYSU"
       ],
       "long_name": "BUS_SPR_I2",
@@ -5113,17 +5113,17 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
-        "WOKO",
+        "APYV",
         "BETY",
         "CUVU",
         "DONY",
-        "XYRE",
         "DUZA",
-        "WABO",
         "ETAD",
-        "APYV",
+        "WABO",
+        "WOKO",
+        "WYDA",
         "XYRA",
-        "WYDA"
+        "XYRE"
       ],
       "long_name": "BUS_SPR_I3",
       "output_ports": [
@@ -5138,17 +5138,17 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
-        "ZUMU",
+        "APOB",
         "CYBY",
         "CYRO",
-        "EFUD",
-        "WOXY",
         "DALY",
+        "EFUD",
         "ELYC",
         "WABA",
-        "APOB",
+        "WOXY",
+        "WUCO",
         "YRAD",
-        "WUCO"
+        "ZUMU"
       ],
       "long_name": "BUS_SPR_I4",
       "output_ports": [
@@ -5163,17 +5163,17 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
-        "ZEDY",
-        "BEMO",
-        "AXEC",
-        "DEZU",
-        "WAJA",
-        "DALO",
-        "WOCY",
-        "EVYT",
         "ADYB",
+        "AXEC",
+        "BEMO",
+        "DALO",
+        "DEZU",
+        "EVYT",
+        "WAJA",
+        "WEZA",
+        "WOCY",
         "YHAL",
-        "WEZA"
+        "ZEDY"
       ],
       "long_name": "BUS_SPR_I5",
       "output_ports": [
@@ -5188,17 +5188,17 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
-        "WEHE",
-        "BYRO",
-        "ZUKE",
-        "ZEXE",
-        "BUCE",
         "BACE",
-        "YBUK",
-        "WAXE",
         "BOSO",
+        "BUCE",
         "BYME",
-        "CUCU"
+        "BYRO",
+        "CUCU",
+        "WAXE",
+        "WEHE",
+        "YBUK",
+        "ZEXE",
+        "ZUKE"
       ],
       "long_name": "BUS_SPR_L0",
       "output_ports": [
@@ -5213,17 +5213,17 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
-        "BUKY",
         "AHUM",
-        "WERE",
-        "YWAV",
+        "BAZU",
         "BEVY",
         "BUJA",
+        "BUKY",
+        "CUCA",
+        "GATE",
+        "WERE",
         "YKOZ",
         "YPOZ",
-        "BAZU",
-        "GATE",
-        "CUCA"
+        "YWAV"
       ],
       "long_name": "BUS_SPR_L1",
       "output_ports": [
@@ -5238,17 +5238,17 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
+        "AHAC",
         "AJAL",
         "BACO",
+        "BODU",
+        "BOVE",
+        "CEGA",
+        "COHO",
+        "WABU",
         "WUXE",
         "YJEM",
-        "BOVE",
-        "BODU",
-        "ZYTO",
-        "WABU",
-        "AHAC",
-        "COHO",
-        "CEGA"
+        "ZYTO"
       ],
       "long_name": "BUS_SPR_L2",
       "output_ports": [
@@ -5263,17 +5263,17 @@
       "fanout": 11,
       "gate": "bus",
       "input_ports": [
-        "GOFO",
-        "BEFE",
-        "ZABY",
-        "ZYPO",
-        "BYDO",
         "AWAT",
-        "ZUDO",
-        "WANA",
+        "BEFE",
         "BUJY",
+        "BYDO",
         "CAWO",
-        "WENU"
+        "GOFO",
+        "WANA",
+        "WENU",
+        "ZABY",
+        "ZUDO",
+        "ZYPO"
       ],
       "long_name": "BUS_SPR_L3",
       "output_ports": [
@@ -5288,13 +5288,13 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "XAKY",
-        "ECAL",
-        "AXEP",
-        "XEJA",
+        "ABEM",
         "ASUM",
-        "XONU",
-        "ABEM"
+        "AXEP",
+        "ECAL",
+        "XAKY",
+        "XEJA",
+        "XONU"
       ],
       "long_name": "BUS_VRAM_A00n",
       "output_ports": [
@@ -5309,13 +5309,13 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "XUXU",
-        "EGEZ",
         "AFEB",
-        "XAMO",
+        "BAXE",
+        "EGEZ",
         "EVAD",
         "WUDO",
-        "BAXE"
+        "XAMO",
+        "XUXU"
       ],
       "long_name": "BUS_VRAM_A01n",
       "output_ports": [
@@ -5330,13 +5330,13 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "XYNE",
-        "FUHE",
         "ALEL",
-        "XAHE",
+        "ARAS",
         "DAHU",
+        "FUHE",
         "WAWE",
-        "ARAS"
+        "XAHE",
+        "XYNE"
       ],
       "long_name": "BUS_VRAM_A02n",
       "output_ports": [
@@ -5351,13 +5351,13 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "XODY",
-        "FYZY",
+        "AGAG",
         "COLY",
-        "XULO",
         "DODE",
+        "FYZY",
         "WOLU",
-        "AGAG"
+        "XODY",
+        "XULO"
       ],
       "long_name": "BUS_VRAM_A03n",
       "output_ports": [
@@ -5372,12 +5372,12 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "XECA",
-        "DAMU",
         "AJAN",
-        "WUJU",
+        "DAMU",
+        "FAMU",
         "VAPY",
-        "FAMU"
+        "WUJU",
+        "XECA"
       ],
       "long_name": "BUS_VRAM_A04n",
       "output_ports": [
@@ -5392,12 +5392,12 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "XOBA",
         "DAVA",
         "DUHO",
-        "VYTO",
+        "FUGY",
         "SEZU",
-        "FUGY"
+        "VYTO",
+        "XOBA"
       ],
       "long_name": "BUS_VRAM_A05n",
       "output_ports": [
@@ -5412,12 +5412,12 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "XOPO",
-        "ETEG",
         "CASE",
+        "ETEG",
+        "GAVO",
         "VEHA",
         "VEJY",
-        "GAVO"
+        "XOPO"
       ],
       "long_name": "BUS_VRAM_A06n",
       "output_ports": [
@@ -5432,12 +5432,12 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "XYBO",
-        "EREW",
         "CYPO",
-        "VACE",
+        "EREW",
         "RUSA",
-        "WYGA"
+        "VACE",
+        "WYGA",
+        "XYBO"
       ],
       "long_name": "BUS_VRAM_A07n",
       "output_ports": [
@@ -5452,11 +5452,11 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "RYSU",
-        "EVAX",
         "CETA",
-        "VOVO",
+        "EVAX",
         "ROHA",
+        "RYSU",
+        "VOVO",
         "WUNE"
       ],
       "long_name": "BUS_VRAM_A08n",
@@ -5472,12 +5472,12 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "RESE",
-        "DUVE",
         "DAFE",
-        "VULO",
+        "DUVE",
+        "GOTU",
+        "RESE",
         "RESO",
-        "GOTU"
+        "VULO"
       ],
       "long_name": "BUS_VRAM_A09n",
       "output_ports": [
@@ -5492,12 +5492,12 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "RUSE",
-        "ERAF",
         "AMUV",
-        "VEVY",
+        "ERAF",
+        "GEGU",
+        "RUSE",
         "SUVO",
-        "GEGU"
+        "VEVY"
       ],
       "long_name": "BUS_VRAM_A10n",
       "output_ports": [
@@ -5512,11 +5512,11 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "RYNA",
-        "FUSY",
         "COVE",
-        "VEZA",
+        "FUSY",
+        "RYNA",
         "TOBO",
+        "VEZA",
         "XEHE"
       ],
       "long_name": "BUS_VRAM_A11n",
@@ -5532,12 +5532,12 @@
       "fanout": 1,
       "gate": "bus",
       "input_ports": [
-        "RUMO",
-        "EXYF",
         "COXO",
+        "DYSO",
+        "EXYF",
+        "RUMO",
         "VOGU",
-        "VURY",
-        "DYSO"
+        "VURY"
       ],
       "long_name": "BUS_VRAM_A12n",
       "output_ports": [
@@ -5552,8 +5552,8 @@
       "fanout": 9,
       "gate": "bus",
       "input_ports": [
-        "TEME",
-        "RODY"
+        "RODY",
+        "TEME"
       ],
       "long_name": "BUS_VRAM_D00p",
       "output_ports": [
@@ -5568,8 +5568,8 @@
       "fanout": 9,
       "gate": "bus",
       "input_ports": [
-        "TEWU",
-        "REBA"
+        "REBA",
+        "TEWU"
       ],
       "long_name": "BUS_VRAM_D01p",
       "output_ports": [
@@ -5584,8 +5584,8 @@
       "fanout": 9,
       "gate": "bus",
       "input_ports": [
-        "TYGO",
-        "RYDO"
+        "RYDO",
+        "TYGO"
       ],
       "long_name": "BUS_VRAM_D02p",
       "output_ports": [
@@ -5600,8 +5600,8 @@
       "fanout": 9,
       "gate": "bus",
       "input_ports": [
-        "SOTE",
-        "REMO"
+        "REMO",
+        "SOTE"
       ],
       "long_name": "BUS_VRAM_D03p",
       "output_ports": [
@@ -5616,8 +5616,8 @@
       "fanout": 9,
       "gate": "bus",
       "input_ports": [
-        "SEKE",
-        "ROCE"
+        "ROCE",
+        "SEKE"
       ],
       "long_name": "BUS_VRAM_D04p",
       "output_ports": [
@@ -5632,8 +5632,8 @@
       "fanout": 9,
       "gate": "bus",
       "input_ports": [
-        "RUJO",
-        "ROPU"
+        "ROPU",
+        "RUJO"
       ],
       "long_name": "BUS_VRAM_D05p",
       "output_ports": [
@@ -5648,8 +5648,8 @@
       "fanout": 9,
       "gate": "bus",
       "input_ports": [
-        "TOFA",
-        "RETA"
+        "RETA",
+        "TOFA"
       ],
       "long_name": "BUS_VRAM_D06p",
       "output_ports": [
@@ -5664,8 +5664,8 @@
       "fanout": 9,
       "gate": "bus",
       "input_ports": [
-        "SUZA",
-        "RAKU"
+        "RAKU",
+        "SUZA"
       ],
       "long_name": "BUS_VRAM_D07p",
       "output_ports": [
@@ -6830,7 +6830,7 @@
         "RSTn",
         "Dp"
       ],
-      "long_name": "CENO_SCANNINGp",
+      "long_name": "CENO_SCANNINGn",
       "output_ports": [
         "qp",
         "qn"

@@ -139,6 +139,8 @@ void GateBoy::reset_to_bootrom(bool fastboot)
 void GateBoy::reset_to_cart() {
   reset_to_bootrom(true);
 
+  VOGA_HBLANKp.reset(0, 1);
+
   cpu_bus.reset_to_cart();
   oam_bus.reset_to_cart();
   ext_bus.reset_to_cart();
@@ -433,17 +435,14 @@ void GateBoy::tock_slow(int pass_index) {
   //-----------------------------------------------------------------------------
   // We need the sprite match result from the previous cycle, so we recalculate it here. :/
 
-  /* p29.CEHA*/ wire _CEHA_SCANNINGp_old  = not1(sprite_scanner.CENO_SCANNINGp.qn_old());
+  /* p29.CEHA*/ wire _CEHA_SCANNINGp_old  = not1(sprite_scanner.CENO_SCANNINGn.qn_old());
   /*#p29.BYJO*/ wire _BYJO_SCANNINGn_old  = not1(_CEHA_SCANNINGp_old);
-  /*#p29.AZEM*/ wire _AZEM_RENDERINGp_old = and2(ppu_reg.XYMU_RENDERINGn.qn_old(), _BYJO_SCANNINGn_old);
+  /*#p29.AZEM*/ wire _AZEM_RENDERINGp_old = and2(XYMU_RENDERINGn.qn_old(), _BYJO_SCANNINGn_old);
   /*#p29.AROR*/ wire _AROR_MATCH_ENp_old  = and2(_AZEM_RENDERINGp_old, reg_lcdc.XYLO_LCDC_SPENn.qn_old());
 
   SpriteMatchFlag old_match = sprite_store.get_match_flags_old(_AROR_MATCH_ENp_old, pix_count);
 
   SpriteFirstMatch old_first_match = sprite_store.get_first_match(old_match);
-
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn_old = not1(old_match.FEPO_STORE_MATCHp());
-  /*#p21.WODU*/ wire WODU_HBLANKp_old = and2(XENA_STORE_MATCHn_old, pix_count.XANO_PX167p_old());
 
   wire TAVE_PRELOAD_DONE_TRIGp_old = tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_old();
 
@@ -469,7 +468,7 @@ void GateBoy::tock_slow(int pass_index) {
   wire XYVO_y144p_old = lcd.reg_ly.XYVO_y144p_old();
   auto RUTU_x113p_old = lcd.reg_lx.RUTU_x113p;
 
-  wire FETO_SCAN_DONEp_old = sprite_scanner.FETO_SCAN_DONEp_old();
+  //wire FETO_SCAN_DONEp_old = sprite_scanner.FETO_SCAN_DONEp_old();
 
   /* p27.SUHA*/ wire _SUHA_SCX_FINE_MATCHp_old = xnor2(reg_scx.DATY_SCX0n.qn_old(), fine_scroll.RYKU_FINE_CNT0.qp_old());
   /* p27.SYBY*/ wire _SYBY_SCX_FINE_MATCHp_old = xnor2(reg_scx.DUZU_SCX1n.qn_old(), fine_scroll.ROGA_FINE_CNT1.qp_old());
@@ -592,39 +591,33 @@ void GateBoy::tock_slow(int pass_index) {
 
   lcd.tock(rst, clk, XYVO_y144p_old, RUTU_x113p_old);
 
-  /*#p21.VOGA*/ ppu_reg.VOGA_HBLANKp.dff17(clk.ALET_xBxDxFxH(), lcd.TADY_LINE_RSTn_new(), WODU_HBLANKp_old);
-
   // DMA has to tock early
   dma.tock(rst, clk, cpu_bus);
 
   //----------------------------------------
   // Sprite scanner
 
-  {
-    /*#p29.DOBA*/ sprite_scanner.DOBA_SCAN_DONE_Bp.dff17(clk.ALET_xBxDxFxH(), lcd.BAGY_LINE_RSTn_new(), sprite_scanner.BYBA_SCAN_DONE_Ap.qp_old());
-    /*#p29.BYBA*/ sprite_scanner.BYBA_SCAN_DONE_Ap.dff17(clk.XUPY_ABxxEFxx(), lcd.BAGY_LINE_RSTn_new(), FETO_SCAN_DONEp_old);
+  /*#p21.XENA*/ wire XENA_STORE_MATCHn_old = not1(old_match.FEPO_STORE_MATCHp());
+  /*#p21.WODU*/ wire WODU_HBLANKp_old = and2(XENA_STORE_MATCHn_old, pix_count.XANO_PX167p_old());
 
-    /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new(), lcd.BALU_LINE_RSTp_new(), sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new());
-    /*#p29.AVAP*/ wire AVAP_SCAN_DONE_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
-    /*#p28.ASEN*/ wire ASEN_SCAN_DONE_TRIGp = or2(rst.ATAR_VID_RSTp(), AVAP_SCAN_DONE_TRIGp);
+  sprite_scanner.tock(rst, clk, lcd, sprite_store, oam_bus, XYMU_RENDERINGn);
 
-    /*#p29.CENO*/ sprite_scanner.CENO_SCANNINGp.dff17(clk.XUPY_ABxxEFxx(), rst.ABEZ_VID_RSTn(),  sprite_scanner.BESU_SCANNINGp.qp_old());
-    /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGp.nor_latch(lcd.CATU_START_SCANNING.qp_new(), ASEN_SCAN_DONE_TRIGp);
-    sprite_scanner.tock(clk.XUPY_ABxxEFxx(), lcd.ANOM_LINE_RSTn_new());
-  }
-
-
-
+  /*#p21.VOGA*/ VOGA_HBLANKp.dff17(clk.ALET_xBxDxFxH(), lcd.TADY_LINE_RSTn_new(), WODU_HBLANKp_old);
+  /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(rst.TOFU_VID_RSTp(), VOGA_HBLANKp.qp_new());
   /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new(), lcd.BALU_LINE_RSTp_new(), sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new());
   /*#p29.AVAP*/ wire AVAP_SCAN_DONE_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
   /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma.BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.qp_new());
+  /*#p21.XYMU*/ XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, AVAP_SCAN_DONE_TRIGp);
+
+
+
+
+
 
   {
-    /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(rst.TOFU_VID_RSTp(), ppu_reg.VOGA_HBLANKp.qp_new());
-    /*#p21.XYMU*/ ppu_reg.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, AVAP_SCAN_DONE_TRIGp);
-    tile_fetcher._XYMU_RENDERINGn = ppu_reg.XYMU_RENDERINGn;
+    tile_fetcher._XYMU_RENDERINGn = XYMU_RENDERINGn;
   }
-  /* p24.LOBY*/ wire LOBY_RENDERINGn = not1(ppu_reg.XYMU_RENDERINGn.qn_new());
+  /* p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
 
   {
     /* p27.REPU*/ wire _REPU_VBLANKp = or2(lcd.PARU_VBLANKp(), rst.PYRY_VID_RSTp());
@@ -638,7 +631,7 @@ void GateBoy::tock_slow(int pass_index) {
     /* p24.NAFY*/ wire _NAFY_WIN_MODE_TRIGn = nor2(win_reg.MOSU_WIN_MODE_TRIGp_new(), LOBY_RENDERINGn);
 
     // vvvvv
-    /* p24.PYGO*/ tile_fetcher.PYGO_FETCH_DONEp.dff17(clk.ALET_xBxDxFxH(), ppu_reg.XYMU_RENDERINGn.qn_new(),     tile_fetcher.PORY_FETCH_DONEp.qp_old());
+    /* p24.PYGO*/ tile_fetcher.PYGO_FETCH_DONEp.dff17(clk.ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(),     tile_fetcher.PORY_FETCH_DONEp.qp_old());
     /* p24.PORY*/ tile_fetcher.PORY_FETCH_DONEp.dff17(clk.MYVO_AxCxExGx(), _NAFY_WIN_MODE_TRIGn, tile_fetcher.NYKA_FETCH_DONEp.qp_old());
     /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.dff17(clk.ALET_xBxDxFxH(), _NAFY_WIN_MODE_TRIGn, LYRY_BFETCH_DONEp_old);
     /* p24.POKY*/ tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(tile_fetcher.PYGO_FETCH_DONEp.qp_new(), LOBY_RENDERINGn);
@@ -658,7 +651,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   // vvvvvvvvvv
   {
-    sprite_fetcher.tock(rst, clk, ppu_reg.XYMU_RENDERINGn, lcd.ATEJ_LINE_RSTp_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new(), TEKY_SFETCH_REQp_old);
+    sprite_fetcher.tock(rst, clk, XYMU_RENDERINGn, lcd.ATEJ_LINE_RSTp_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new(), TEKY_SFETCH_REQp_old);
 
     oam_bus.latch_to_temp_a(clk, cpu_bus, ACYL_SCANNINGp, dma.MATU_DMA_RUNNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
     oam_bus.latch_to_temp_b(clk, cpu_bus, ACYL_SCANNINGp, dma.MATU_DMA_RUNNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
@@ -688,10 +681,10 @@ void GateBoy::tock_slow(int pass_index) {
   //^^^^^
 
   {
-    /*#p27.NYZE*/ fine_scroll.NYZE_SCX_FINE_MATCH_B.dff17(clk.MOXE_AxCxExGx(), ppu_reg.XYMU_RENDERINGn.qn_new(), fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_old());
-    /*#p27.PUXA*/ fine_scroll.PUXA_SCX_FINE_MATCH_A.dff17(ROXO_CLKPIPE_odd, ppu_reg.XYMU_RENDERINGn.qn_new(), _POHU_SCX_FINE_MATCHp_old);
+    /*#p27.NYZE*/ fine_scroll.NYZE_SCX_FINE_MATCH_B.dff17(clk.MOXE_AxCxExGx(), XYMU_RENDERINGn.qn_new(), fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_old());
+    /*#p27.PUXA*/ fine_scroll.PUXA_SCX_FINE_MATCH_A.dff17(ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), _POHU_SCX_FINE_MATCHp_old);
     /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_new(), fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_new());
-    /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(ppu_reg.XYMU_RENDERINGn.qn_new());
+    /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
 
     /*#p27.ROXY*/ fine_scroll.ROXY_FINE_SCROLL_DONEn.nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCH_TRIGp);
   }
@@ -699,19 +692,18 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p24.SACU*/ wire SACU_CLKPIPE_evn = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
   pix_count.tock(lcd.TADY_LINE_RSTn_new(), SACU_CLKPIPE_evn);
 
-  /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(ppu_reg.XYMU_RENDERINGn.qn_new(), sprite_scanner.BYJO_SCANNINGn());
+  /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), sprite_scanner.BYJO_SCANNINGn());
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
   SpriteMatchFlag sprite_match = sprite_store.get_match_flags_new(_AROR_MATCH_ENp, pix_count);
   {
     SpriteFirstMatch first_match = sprite_store.get_first_match(sprite_match);
     sprite_store.get_sprite(first_match);
-    sprite_store.oam_addr_to_sprite_index(oam_bus, clk.WUDA_xxCDxxGH(), ppu_reg.XYMU_RENDERINGn, sprite_scanner.CENO_SCANNINGp);
     sprite_store.ly_to_sprite_line(sprite_match.FEPO_STORE_MATCHp(), lcd.reg_ly, oam_bus.oam_temp_a);
   }
   /*#p21.WODU*/ wire WODU_HBLANKp = and2(sprite_match.XENA_STORE_MATCHn(), pix_count.XANO_PX167p_new()); // WODU goes high on odd, cleared on H
 
   {
-    /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B.dff17(clk.ALET_xBxDxFxH(), ppu_reg.XYMU_RENDERINGn.qn_new(), RYFA_WIN_FETCHn_A_old.qp_old());
+    /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B.dff17(clk.ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), RYFA_WIN_FETCHn_A_old.qp_old());
 
     /* p27.ROCO*/ wire _ROCO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
     /* p27.PYCO*/ win_reg.PYCO_WIN_MATCHp.dff17(_ROCO_CLKPIPE_odd, rst.XAPO_VID_RSTn(), _NUKO_WX_MATCHp_old);
@@ -719,14 +711,14 @@ void GateBoy::tock_slow(int pass_index) {
     /* p27.SOVY*/ win_reg.SOVY_WIN_HITp.dff17(clk.ALET_xBxDxFxH(), rst.XAPO_VID_RSTn(), RYDY_WIN_HITp_old);
 
     /* p27.PANY*/ wire _PANY_WIN_FETCHn_old = nor2(_NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old);
-    /* p27.RYFA*/ win_reg.RYFA_WIN_FETCHn_A.dff17(SEGU_CLKPIPE_evn, ppu_reg.XYMU_RENDERINGn.qn_new(), _PANY_WIN_FETCHn_old);
+    /* p27.RYFA*/ win_reg.RYFA_WIN_FETCHn_A.dff17(SEGU_CLKPIPE_evn, XYMU_RENDERINGn.qn_new(), _PANY_WIN_FETCHn_old);
   }
 
   /* p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(win_reg.SEKO_WIN_FETCH_TRIGp_new(), win_reg.SUZU_WIN_FIRST_TILEne_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new()); // Schematic wrong, this is OR
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(AVAP_SCAN_DONE_TRIGp, win_reg.MOSU_WIN_MODE_TRIGp_new(), TEVO_WIN_FETCH_TRIGp);
-  tile_fetcher.tock(clk, vram_bus, ppu_reg.XYMU_RENDERINGn, NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
+  tile_fetcher.tock(clk, vram_bus, XYMU_RENDERINGn, NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
 
-  fine_scroll.tock(ppu_reg.XYMU_RENDERINGn, TYFA_CLKPIPE_odd, TEVO_WIN_FETCH_TRIGp);
+  fine_scroll.tock(XYMU_RENDERINGn, TYFA_CLKPIPE_odd, TEVO_WIN_FETCH_TRIGp);
 
   {
     sprite_fetcher.sprite_pix_a.store_sprite_pix(sprite_pix_old, sprite_fetcher.XADO_STORE_SPRITE_An());
@@ -758,7 +750,7 @@ void GateBoy::tock_slow(int pass_index) {
   // LCD
 
   {
-    /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(rst.TOFU_VID_RSTp(), ppu_reg.VOGA_HBLANKp.qp_new());
+    ///*#p21.WEGO*/ wire WEGO_HBLANKp = or2(rst.TOFU_VID_RSTp(), VOGA_HBLANKp.qp_new());
 
     lcd.PIN_50_LCD_DATA1.reset_for_pass();
     lcd.PIN_51_LCD_DATA0.reset_for_pass();
@@ -773,7 +765,7 @@ void GateBoy::tock_slow(int pass_index) {
     lcd.set_pin_ctrl(rst, clk);
     lcd.set_pin_flip(rst, div.TULU_DIV07p, reg_lcdc.XONA_LCDC_LCDENn);
     lcd.set_pin_vsync(rst);
-    lcd.set_pin_hsync(rst, TYFA_CLKPIPE_odd, ppu_reg.XYMU_RENDERINGn, XYDO_PX3p_old, AVAP_SCAN_DONE_TRIGp);
+    lcd.set_pin_hsync(rst, TYFA_CLKPIPE_odd, XYMU_RENDERINGn, XYDO_PX3p_old, AVAP_SCAN_DONE_TRIGp);
     lcd.set_pin_latch(div, reg_lcdc);
     lcd.set_pin_clock(pix_count, fine_scroll, WEGO_HBLANKp, SACU_CLKPIPE_evn);
 
@@ -835,12 +827,12 @@ void GateBoy::tock_slow(int pass_index) {
     vram_bus.reset_buses();
 
 
-    /*#p25.ROPY*/ wire _ROPY_RENDERINGn = not1(ppu_reg.XYMU_RENDERINGn.qn_new());
+    /*#p25.ROPY*/ wire _ROPY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
     /*#p25.SERE*/ wire _SERE_CPU_VRAM_RDp = and2(cpu_bus.TOLE_CPU_VRAM_RDp(), _ROPY_RENDERINGn);
 
 
-    //vram_bus.cpu_addr_to_vram_addr(cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.LUFA_DMA_VRAMp());
-    vram_bus.cpu_addr_to_vram_addr(cpu_bus, ppu_reg.XYMU_RENDERINGn, dma.LUFA_DMA_VRAMp());
+    //vram_bus.cpu_addr_to_vram_addr(cpu_bus, XYMU_RENDERINGn.qn_new(), dma.LUFA_DMA_VRAMp());
+    vram_bus.cpu_addr_to_vram_addr(cpu_bus, XYMU_RENDERINGn, dma.LUFA_DMA_VRAMp());
     vram_bus.dma_addr_to_vram_addr(dma);
 
     auto scroll_x = BGScrollX::add(pix_count, reg_scx);
@@ -856,8 +848,8 @@ void GateBoy::tock_slow(int pass_index) {
 
     //vram_bus.tile_to_addr(scroll_y, win_line_y, tile_fetcher.tile_temp_b, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn.qn_new(), win_reg.PORE_WIN_MODEp(), win_reg.AXAD_WIN_MODEn());
     vram_bus.tile_to_addr(scroll_y, win_line_y, tile_fetcher.tile_temp_b, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn, win_reg.PORE_WIN_MODEp(), win_reg.AXAD_WIN_MODEn());
-    //vram_bus.sprite_to_addr(sprite_store, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), ppu_reg.XYMU_RENDERINGn.qn_new(), reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
-    vram_bus.sprite_to_addr(sprite_store, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), ppu_reg.XYMU_RENDERINGn, reg_lcdc.XYMO_LCDC_SPSIZEn);
+    //vram_bus.sprite_to_addr(sprite_store, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), XYMU_RENDERINGn.qn_new(), reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
+    vram_bus.sprite_to_addr(sprite_store, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), XYMU_RENDERINGn, reg_lcdc.XYMO_LCDC_SPSIZEn);
     vram_bus.addr_to_pins();
 
     vram_bus.cpu_data_to_bus_data(cpu_bus, _SERE_CPU_VRAM_RDp, cpu_bus.SALE_CPU_VRAM_WRn());
@@ -865,8 +857,8 @@ void GateBoy::tock_slow(int pass_index) {
 
     vram_bus.set_pin_cs(rst.TUTO_VRAM_DBGp(), _SERE_CPU_VRAM_RDp, dma.LUFA_DMA_VRAMp(), tile_fetcher.LENA_BFETCHINGp(), sprite_fetcher.TEXY_SFETCHINGp());
     vram_bus.set_pin_wr(rst.TUTO_VRAM_DBGp(), _SERE_CPU_VRAM_RDp, cpu_bus.TUJA_CPU_VRAM_WRp());
-    //vram_bus.set_pin_oe(rst.TUTO_VRAM_DBGp(), cpu_bus.SALE_CPU_VRAM_WRn(), dma.LUFA_DMA_VRAMp(), ppu_reg.XYMU_RENDERINGn.qn_new(), tile_fetcher.LONY_FETCHINGp.qp_new(), sprite_fetcher.SOHO_SPR_VRAM_RDp());
-    vram_bus.set_pin_oe(rst.TUTO_VRAM_DBGp(), cpu_bus.SALE_CPU_VRAM_WRn(), dma.LUFA_DMA_VRAMp(), ppu_reg.XYMU_RENDERINGn, tile_fetcher.LONY_FETCHINGp, sprite_fetcher.SOHO_SPR_VRAM_RDp());
+    //vram_bus.set_pin_oe(rst.TUTO_VRAM_DBGp(), cpu_bus.SALE_CPU_VRAM_WRn(), dma.LUFA_DMA_VRAMp(), XYMU_RENDERINGn.qn_new(), tile_fetcher.LONY_FETCHINGp.qp_new(), sprite_fetcher.SOHO_SPR_VRAM_RDp());
+    vram_bus.set_pin_oe(rst.TUTO_VRAM_DBGp(), cpu_bus.SALE_CPU_VRAM_WRn(), dma.LUFA_DMA_VRAMp(), XYMU_RENDERINGn, tile_fetcher.LONY_FETCHINGp, sprite_fetcher.SOHO_SPR_VRAM_RDp());
 
     vram_bus.read_vram(vid_ram);
     vram_bus.write_vram(vid_ram);
@@ -907,24 +899,24 @@ void GateBoy::tock_slow(int pass_index) {
     oam_bus.BUS_OAM_DB07n.reset_for_pass();
 
     oam_bus.dma_to_addr_bus(dma);
-    //oam_bus.sprite_index_to_addr_bus(dma, sprite_store, ppu_reg.XYMU_RENDERINGn.qn_new());
-    oam_bus.sprite_index_to_addr_bus(dma, sprite_store, ppu_reg.XYMU_RENDERINGn);
+    //oam_bus.sprite_index_to_addr_bus(dma, sprite_store, XYMU_RENDERINGn.qn_new());
+    oam_bus.sprite_index_to_addr_bus(dma, sprite_store, XYMU_RENDERINGn);
     oam_bus.scan_index_to_addr_bus(sprite_scanner, ACYL_SCANNINGp);
-    //oam_bus.cpu_to_addr_bus(cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
-    oam_bus.cpu_to_addr_bus(cpu_bus, ppu_reg.XYMU_RENDERINGn, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp);
+    //oam_bus.cpu_to_addr_bus(cpu_bus, XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
+    oam_bus.cpu_to_addr_bus(cpu_bus, XYMU_RENDERINGn, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp);
     oam_bus.ext_to_data_bus(dma, ext_bus);
     oam_bus.vram_to_data_bus(dma, vram_bus);
-    //oam_bus.cpu_to_data_bus(clk, cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
-    oam_bus.cpu_to_data_bus(clk, cpu_bus, ppu_reg.XYMU_RENDERINGn, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp);
+    //oam_bus.cpu_to_data_bus(clk, cpu_bus, XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
+    oam_bus.cpu_to_data_bus(clk, cpu_bus, XYMU_RENDERINGn, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp);
     //oam_bus.set_pin_clk(clk, cpu_bus, dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
     oam_bus.set_pin_clk(clk, cpu_bus, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
-    //oam_bus.set_pin_wr (rst, clk, cpu_bus, ppu_reg.XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
-    oam_bus.set_pin_wr (rst, clk, cpu_bus, ppu_reg.XYMU_RENDERINGn, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp);
+    //oam_bus.set_pin_wr (rst, clk, cpu_bus, XYMU_RENDERINGn.qn_new(), dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp);
+    oam_bus.set_pin_wr (rst, clk, cpu_bus, XYMU_RENDERINGn, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp);
     oam_bus.set_pin_oe (clk, cpu_bus, ACYL_SCANNINGp, sprite_fetcher.XUJA_SPR_OAM_LATCHn());
     oam_bus.tock(cpu_bus, clk.XOCE_xBCxxFGx(), ACYL_SCANNINGp, sprite_fetcher.XUJA_SPR_OAM_LATCHn(), oam_ram);
     oam_bus.latch_bus(cpu_bus, ACYL_SCANNINGp, clk.XOCE_xBCxxFGx(), sprite_fetcher.XUJA_SPR_OAM_LATCHn());
-    //oam_bus.latch_to_cpu(cpu_bus, dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp, ppu_reg.XYMU_RENDERINGn.qn_new());
-    oam_bus.latch_to_cpu(cpu_bus, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp, ppu_reg.XYMU_RENDERINGn);
+    //oam_bus.latch_to_cpu(cpu_bus, dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp, XYMU_RENDERINGn.qn_new());
+    oam_bus.latch_to_cpu(cpu_bus, dma.MATU_DMA_RUNNINGp, ACYL_SCANNINGp, XYMU_RENDERINGn);
   }
 
   //----------------------------------------
@@ -944,7 +936,7 @@ void GateBoy::tock_slow(int pass_index) {
   {
     interrupts.read_ie(cpu_bus);
     interrupts.read_intf(cpu_bus);
-    reg_stat.read(cpu_bus, ACYL_SCANNINGp, ppu_reg.XYMU_RENDERINGn, lcd.PARU_VBLANKp());
+    reg_stat.read(cpu_bus, ACYL_SCANNINGp, XYMU_RENDERINGn, lcd.PARU_VBLANKp());
     joypad.read(cpu_bus);
     reg_scx.read(cpu_bus);
     reg_scy.read(cpu_bus);

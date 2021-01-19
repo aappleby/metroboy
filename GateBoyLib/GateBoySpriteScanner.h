@@ -6,7 +6,7 @@
 struct SpriteScanner {
   void reset_to_cart() {
     BESU_SCANNINGp.reset(0);
-    CENO_SCANNINGp.reset(1, 0);
+    CENO_SCANNINGn.reset(1, 0);
     BYBA_SCAN_DONE_Ap.reset(1, 1);
     DOBA_SCAN_DONE_Bp.reset(0, 1);
     YFEL_SCAN0.reset(1, 1);
@@ -15,6 +15,13 @@ struct SpriteScanner {
     ELYN_SCAN3.reset(0, 0);
     FAHA_SCAN4.reset(1, 0);
     FONY_SCAN5.reset(1, 1);
+
+    XADU_SPRITE_IDX0p.reset(1, 0);
+    XEDY_SPRITE_IDX1p.reset(1, 0);
+    ZUZE_SPRITE_IDX2p.reset(1, 1);
+    XOBE_SPRITE_IDX3p.reset(1, 0);
+    YDUF_SPRITE_IDX4p.reset(1, 1);
+    XECU_SPRITE_IDX5p.reset(1, 0);
   }
 
   wire FETO_SCAN_DONEp_old() const {
@@ -44,21 +51,26 @@ struct SpriteScanner {
     return _AVAP_SCAN_DONE_TRIGp_new;
   }
 
-  /* p29.CEHA*/ wire CEHA_SCANNINGp() const { return not1(CENO_SCANNINGp.qn_new()); }
+  /* p29.CEHA*/ wire CEHA_SCANNINGp() const { return not1(CENO_SCANNINGn.qn_new()); }
   /*#p29.BYJO*/ wire BYJO_SCANNINGn() const { return not1(CEHA_SCANNINGp()); }
 
-  void tock(wire XUPY_ABxxEFxx, wire ANOM_LINE_RSTn);
+  void tock(GateBoyResetDebug& rst,
+            GateBoyClock& clk,
+            GateBoyLCD& lcd,
+            GateBoySpriteStore& sprite_store,
+            GateBoyOamBus& oam_bus,
+            NorLatch XYMU_RENDERINGn);
 
   void dump(Dumper& d) {
     d.dump_slice2p("SCAN INDEX     : ", &YFEL_SCAN0, 6);
     d.dump_bitp   ("BESU_SCANNINGp : ", BESU_SCANNINGp.state);
-    d.dump_bitp   ("CENO_SCANNINGp : ", CENO_SCANNINGp.state);
+    d.dump_bitp   ("CENO_SCANNINGp : ", CENO_SCANNINGn.state);
     d.dump_bitp   ("BYBA_SCAN_DONE_Ap : ", BYBA_SCAN_DONE_Ap.state);
     d.dump_bitp   ("DOBA_SCAN_DONE_Bp : ", DOBA_SCAN_DONE_Bp.state);
   }
 
   /*p28.BESU*/ NorLatch BESU_SCANNINGp; // Axxxxxxx
-  /*p29.CENO*/ DFF17 CENO_SCANNINGp;    // xxxxExxx
+  /*p29.CENO*/ DFF17 CENO_SCANNINGn;    // xxxxExxx
   /*p29.BYBA*/ DFF17 BYBA_SCAN_DONE_Ap; // Axxxxxxx
   /*p29.DOBA*/ DFF17 DOBA_SCAN_DONE_Bp; // ABxxxxxx Cleared on A, set on B
 
@@ -68,6 +80,17 @@ struct SpriteScanner {
   /*p28.ELYN*/ DFF17 ELYN_SCAN3;        // Axxxxxxx
   /*p28.FAHA*/ DFF17 FAHA_SCAN4;        // Axxxxxxx
   /*p28.FONY*/ DFF17 FONY_SCAN5;        // Axxxxxxx
+
+  //----------------------------------------
+  // Sprite index latch selects which store to write
+
+  /*p30.XADU*/ DFF13 XADU_SPRITE_IDX0p; // AxxxExxx
+  /*p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p; // AxxxExxx
+  /*p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p; // AxxxExxx
+  /*p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p; // AxxxExxx
+  /*p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p; // AxxxExxx
+  /*p30.XECU*/ DFF13 XECU_SPRITE_IDX5p; // AxxxExxx
+
 };
 
 //------------------------------------------------------------------------------------------------------------------------

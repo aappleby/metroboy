@@ -236,7 +236,6 @@ void from_json(const nlohmann::json& j, DieCell*& c) {
   c->gate         = j.value("gate",         "<no_gate>");
   c->long_name    = j.value("long_name",    "<no_name>");
   c->doc          = j.value("doc",          "<no_doc>");
-  c->bus_ports    = j.value("bus_ports",    std::vector<std::string>());
   c->input_ports  = j.value("input_ports",  std::vector<std::string>());
   c->output_ports = j.value("output_ports", std::vector<std::string>());
   c->fanout       = j.value("fanout",       0);
@@ -249,7 +248,6 @@ void to_json(nlohmann::json& j, const DieCell* c) {
   j["gate"]         = c->gate;
   j["long_name"]    = c->long_name;
   j["doc"]          = c->doc;
-  j["bus_ports"]    = c->bus_ports;
   j["input_ports"]  = c->input_ports;
   j["output_ports"] = c->output_ports;
   j["fanout"]       = c->fanout;
@@ -355,19 +353,17 @@ void DieDB::clear() {
 //--------------------------------------------------------------------------------
 
 void to_json(nlohmann::json& j, const DieTrace& t) {
-  j["output_cell"]    = t.output_tag;
-  j["output_port"]    = t.output_port;
-  j["input_cell"]     = t.input_tag;
-  j["input_port_old"] = t.input_port_old;
-  j["input_port_new"] = t.input_port_new;
+  j["output_cell"] = t.output_tag;
+  j["output_port"] = t.output_port;
+  j["input_cell"]  = t.input_tag;
+  j["input_port"]  = t.input_port;
 }
 
 void from_json(const nlohmann::json& j, DieTrace& t) {
-  j["output_cell"]    .get_to(t.output_tag);
-  j["output_port"]    .get_to(t.output_port);
-  j["input_cell"]     .get_to(t.input_tag);
-  j["input_port_old"] .get_to(t.input_port_old);
-  j["input_port_new"] .get_to(t.input_port_new);
+  j["output_cell"] .get_to(t.output_tag);
+  j["output_port"] .get_to(t.output_port);
+  j["input_cell"]  .get_to(t.input_tag);
+  j["input_port"]  .get_to(t.input_port);
 }
 
 //----------------------------------------
@@ -423,7 +419,6 @@ void DieDB::sanity_check() {
     cell->mark = 0;
   }
 
-  //for (const auto& [trace_key, trace] : trace_map_old) {
   for (const auto& trace : traces) {
     auto prev_cell = cell_map[trace.output_tag];
     auto next_cell = cell_map[trace.input_tag];
@@ -438,10 +433,7 @@ void DieDB::sanity_check() {
                       prev_cell->output_ports.end(),
                       trace.output_port) != prev_cell->output_ports.end());
 
-    CHECK_P(
-      std::find(next_cell->input_ports.begin(), next_cell->input_ports.end(), trace.input_port_old) != next_cell->input_ports.end() ||
-      std::find(next_cell->input_ports.begin(), next_cell->input_ports.end(), trace.input_port_new) != next_cell->input_ports.end()
-    );
+    CHECK_P(std::find(next_cell->input_ports.begin(), next_cell->input_ports.end(), trace.input_port) != next_cell->input_ports.end());
 
     prev_cell->mark++;
     next_cell->mark++;
@@ -933,9 +925,7 @@ bool DieDB::parse_cell_arglist(DieCell& die_cell, const string& arglist_c) {
     DieTrace trace = {
       output_tag,
       output_port,
-
       die_cell.tag,
-      input_ports[i],
       input_ports[i]
     };
 
@@ -1021,18 +1011,12 @@ bool DieDB::parse_tribuf_bus_target(DieCell& c, const string& bus_name) {
     std::string bus = match[1].str();
     DieCell* bus_cell = get_or_create_cell(bus);
 
-    size_t new_port_index = bus_cell->input_ports.size();
-    char new_port_name[256];
-    sprintf_s(new_port_name, 256, "arg%02zd", new_port_index);
-
-    bus_cell->bus_ports.push_back(c.tag);
-    bus_cell->input_ports.push_back(new_port_name);
+    bus_cell->input_ports.push_back(c.tag);
 
     DieTrace bus_trace = {
       c.tag,
       "qp",
       bus_cell->tag,
-      new_port_name,
       c.tag
     };
 

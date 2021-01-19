@@ -345,18 +345,14 @@ void Plait::to_json(nlohmann::json& jroot) {
   auto& jtraces = jroot["traces"];
 
   for (auto plait_trace : traces) {
-    //to_json(jtraces[plait_trace->die_trace->to_key_new()], plait_trace);
-    auto& j = jtraces[plait_trace->die_trace->to_key_new()];
+    auto& j = jtraces[plait_trace->die_trace->to_key()];
     j["output_cell"] = plait_trace->output_node->plait_cell->die_cell->tag;
     j["output_node"] = plait_trace->output_node->name;
     j["output_port"] = plait_trace->die_trace->output_port;
     j["input_cell"]  = plait_trace->input_node->plait_cell->die_cell->tag;
     j["input_node"]  = plait_trace->input_node->name;
-    j["input_port"]  = plait_trace->die_trace->input_port_new;
+    j["input_port"]  = plait_trace->die_trace->input_port;
   }
-
-  //std::ofstream stream(filename);
-  //stream << jroot.dump(2);
 }
 
 //----------------------------------------
@@ -365,9 +361,6 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   using namespace nlohmann;
 
   CHECK_P(cell_map.empty());
-
-  //json jroot;
-  //stream >> jroot;
 
   jroot["cells"] .get_to(cell_map);
 
@@ -394,15 +387,11 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   jroot["guid"]  .get_to(_guid);
 
 
-  //jroot["traces"].get_to(trace_map_old);
-
-  std::map<std::string, const DieTrace*> trace_map_old;
-  std::map<std::string, const DieTrace*> trace_map_new;
+  std::map<std::string, const DieTrace*> trace_map;
   std::map<const DieTrace*, bool> trace_used;
 
   for (auto& die_trace : die_db.traces) {
-    trace_map_old[die_trace.to_key_old()] = &die_trace;
-    trace_map_new[die_trace.to_key_new()] = &die_trace;
+    trace_map[die_trace.to_key()] = &die_trace;
   }
 
 
@@ -427,13 +416,12 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
 
 
     const DieTrace* die_trace = nullptr;
-    if (trace_map_old.contains(trace_key)) die_trace = trace_map_old[trace_key];
-    if (trace_map_new.contains(trace_key)) die_trace = trace_map_new[trace_key];
+    if (trace_map.contains(trace_key)) die_trace = trace_map[trace_key];
 
     CHECK_P(die_trace);
 
     if (output_port.empty()) output_port = die_trace->output_port;
-    if (input_port.empty()) input_port = die_trace->input_port_new;
+    if (input_port.empty()) input_port = die_trace->input_port;
 
     trace_used[die_trace] = true;
     auto plait_output_cell = cell_map[die_trace->output_tag];
@@ -444,7 +432,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
     plait_trace->output_node       = plait_output_cell->find_leaf_node(output_node);
     plait_trace->input_node        = plait_input_cell->find_root_node(input_node);
     plait_trace->output_port_index = plait_output_cell->die_cell->get_output_index(die_trace->output_port);
-    plait_trace->input_port_index  = plait_input_cell->die_cell->get_input_index(die_trace->input_port_new);
+    plait_trace->input_port_index  = plait_input_cell->die_cell->get_input_index(die_trace->input_port);
 
     CHECK_P(plait_trace->input_node);
     CHECK_P(plait_trace->output_node);
@@ -476,7 +464,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   for (auto& die_trace : die_db.traces) {
     if (trace_used[&die_trace]) continue;
 
-    printf("Did not load plait trace for die trace \"%s\", creating default trace\n", die_trace.to_key_new().c_str());
+    printf("Did not load plait trace for die trace \"%s\", creating default trace\n", die_trace.to_key().c_str());
 
     auto output_cell = cell_map[die_trace.output_tag];
     auto output_node = output_cell->core_node;
@@ -484,7 +472,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
 
     auto input_cell = cell_map[die_trace.input_tag];
     auto input_node = input_cell->core_node;
-    auto input_port_index = input_cell->die_cell->get_input_index(die_trace.input_port_old);
+    auto input_port_index = input_cell->die_cell->get_input_index(die_trace.input_port);
 
     CHECK_P(output_cell);
     CHECK_P(output_node);
@@ -496,22 +484,12 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
 
     auto plait_trace = new PlaitTrace();
 
-    //plait_trace->output_cell_name = output_cell->tag();
-    //plait_trace->output_node_name = output_node->name;
-
-    //plait_trace->input_cell_name = input_node->name;
-    //plait_trace->input_node_name = input_node->name;
-
     plait_trace->die_trace = &die_trace;
     plait_trace->output_node = output_node;
     plait_trace->input_node = input_node;
+    plait_trace->output_port_index = output_port_index;
+    plait_trace->input_port_index  = input_port_index;
 
-    plait_trace->output_port_index = output_cell->die_cell->get_input_index(die_trace.output_port);
-    plait_trace->input_port_index  = input_cell->die_cell->get_output_index(die_trace.input_port_old);
-
-    //die_trace->plait_trace = plait_trace;
-
-    //trace_map_old[die_trace->to_key_old()] = plait_trace;
     traces.push_back(plait_trace);
   }
 

@@ -715,8 +715,7 @@ void GateBoy::tock_slow(int pass_index) {
     set_lcd_pin_hsync(TYFA_CLKPIPE_odd, XYDO_PX3p_old);
     set_lcd_pin_latch();
 
-    /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(TOFU_VID_RSTp(), VOGA_HBLANKp.qp_new());
-    set_lcd_pin_clock(WEGO_HBLANKp, SACU_CLKPIPE_evn);
+    set_lcd_pin_clock(SACU_CLKPIPE_evn);
 
     update_lcd_pipe();
     update_framebuffer();
@@ -775,11 +774,6 @@ void GateBoy::tock_slow(int pass_index) {
   {
     vram_bus.reset_buses();
 
-
-    /*#p25.ROPY*/ wire _ROPY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
-    /*#p25.SERE*/ wire _SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), _ROPY_RENDERINGn);
-
-
     cpu_addr_to_vram_addr();
     dma_addr_to_vram_addr();
 
@@ -795,18 +789,18 @@ void GateBoy::tock_slow(int pass_index) {
     sprite_to_vram_addr();
     vram_addr_to_pins();
 
-    cpu_data_to_vram_bus_data(_SERE_CPU_VRAM_RDp);
-    vram_bus_data_to_pins(_SERE_CPU_VRAM_RDp);
+    cpu_data_to_vram_bus_data();
+    vram_bus_data_to_pins();
 
-    set_vram_pin_cs(_SERE_CPU_VRAM_RDp);
-    set_vram_pin_wr(_SERE_CPU_VRAM_RDp);
+    set_vram_pin_cs();
+    set_vram_pin_wr();
     set_vram_pin_oe();
 
     read_vram();
     write_vram();
 
-    vram_pins_to_data_bus(_SERE_CPU_VRAM_RDp);
-    vram_data_bus_to_cpu_bus(_SERE_CPU_VRAM_RDp);
+    vram_pins_to_data_bus();
+    vram_data_bus_to_cpu_bus();
   }
 
   //----------------------------------------
@@ -820,11 +814,11 @@ void GateBoy::tock_slow(int pass_index) {
     ext_to_oam_data_bus();
     vram_to_oam_data_bus();
     cpu_to_oam_data_bus();
-    set_oam_pin_clk(XUJY_OAM_CLKENp());
+    set_oam_pin_clk();
     set_oam_pin_wr ();
-    set_oam_pin_oe (XUJA_SPR_OAM_LATCHn());
-    tock_oam_bus(XUJA_SPR_OAM_LATCHn());
-    latch_oam_data_bus(XUJA_SPR_OAM_LATCHn());
+    set_oam_pin_oe ();
+    tock_oam_bus();
+    latch_oam_data_bus();
     oam_latch_to_cpu();
   }
 
@@ -835,7 +829,7 @@ void GateBoy::tock_slow(int pass_index) {
     tock_timer();
     reg_stat_tock();
     reg_joy_tock2();
-    tock_interrupts(PURE_LINE_ENDn(), timer.MOBA_TIMER_OVERFLOWp, WODU_HBLANKp);
+    tock_interrupts(WODU_HBLANKp);
   }
 
   //----------------------------------------

@@ -116,9 +116,9 @@ void GateBoy::set_lcd_pin_latch() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::set_lcd_pin_clock(wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn) {
+void GateBoy::set_lcd_pin_clock(wire SACU_CLKPIPE_evn) {
   /*#p21.XAJO*/ wire _XAJO_X_009p = and2(pix_count.XEHO_PX0p.qp_new(), pix_count.XYDO_PX3p.qp_new());
-  /*#p21.WUSA*/ lcd.WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009p, WEGO_HBLANKp);
+  /*#p21.WUSA*/ lcd.WUSA_LCD_CLOCK_GATE.nor_latch(_XAJO_X_009p, WEGO_HBLANKp());
   /*#p21.TOBA*/ wire _TOBA_LCD_CLOCK = and2(lcd.WUSA_LCD_CLOCK_GATE.qp_new(), SACU_CLKPIPE_evn);
   /*#p21.SEMU*/ wire _SEMU_LCD_CLOCK = or2(_TOBA_LCD_CLOCK, POVA_FINE_MATCH_TRIGp());
   /*#p21.RYPO*/ wire _RYPO_LCD_CLOCK = not1(_SEMU_LCD_CLOCK);

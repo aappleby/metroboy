@@ -170,7 +170,7 @@ struct GateBoy {
   void reg_stat_write();
   void reg_stat_tock();
 
-  void tock_interrupts(wire PURE_LINE_ENDn, DFF17 MOBA_TIMER_OVERFLOWp, wire WODU_HBLANKp);
+  void tock_interrupts(wire WODU_HBLANKp);
   void read_intf();
   void read_ie();
   void write_ie();
@@ -277,11 +277,11 @@ struct GateBoy {
   void scan_index_to_oam_addr_bus();
   void cpu_to_oam_addr_bus();
   void cpu_to_oam_data_bus();
-  void set_oam_pin_clk(wire XUJY_OAM_CLKENp);
+  void set_oam_pin_clk();
   void set_oam_pin_wr();
-  void set_oam_pin_oe(wire XUJA_SPR_OAM_LATCHn);
-  void tock_oam_bus(wire XUJA_SPR_OAM_LATCHn);
-  void latch_oam_data_bus(wire XUJA_SPR_OAM_LATCHn);
+  void set_oam_pin_oe();
+  void tock_oam_bus();
+  void latch_oam_data_bus();
   void oam_latch_to_cpu();
 
   void oam_latch_to_temp_a();
@@ -299,15 +299,15 @@ struct GateBoy {
   void tile_to_vram_addr(const BGScrollY scroll_y);
   void sprite_to_vram_addr();
   void vram_addr_to_pins();
-  void cpu_data_to_vram_bus_data(wire SERE_CPU_VRAM_RDp);
-  void vram_bus_data_to_pins(wire SERE_CPU_VRAM_RDp);
-  void set_vram_pin_cs(wire SERE_CPU_VRAM_RDp);
-  void set_vram_pin_wr(wire SERE_CPU_VRAM_RDp);
+  void cpu_data_to_vram_bus_data();
+  void vram_bus_data_to_pins();
+  void set_vram_pin_cs();
+  void set_vram_pin_wr();
   void set_vram_pin_oe();
   void read_vram();
   void write_vram();
-  void vram_pins_to_data_bus(wire SERE_CPU_VRAM_RDp);
-  void vram_data_bus_to_cpu_bus(wire SERE_CPU_VRAM_RDp);
+  void vram_pins_to_data_bus();
+  void vram_data_bus_to_cpu_bus();
 
   void read_zram();
   void write_zram();
@@ -329,7 +329,7 @@ struct GateBoy {
   void set_lcd_pin_hsync(wire TYFA_CLKPIPE_odd, DFF17 XYDO_PX3p_old);
   void set_lcd_pin_data(wire REMY_LD0n, wire RAVO_LD1n);
   void set_lcd_pin_latch();
-  void set_lcd_pin_clock(wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn);
+  void set_lcd_pin_clock(wire SACU_CLKPIPE_evn);
   void update_lcd_pipe();
 
   void tock_bgw_pipe(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
@@ -339,6 +339,10 @@ struct GateBoy {
   void tock_pix_output();
 
   void tock_fine_scroll(wire TYFA_CLKPIPE_odd, wire TEVO_WIN_FETCH_TRIGp);
+
+  /*#p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(XYMU_RENDERINGn.qn_new()); }
+  /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp() const { return and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn()); }
+  /*#p21.WEGO*/ wire WEGO_HBLANKp() const { return or2(TOFU_VID_RSTp(), VOGA_HBLANKp.qp_new()); }
 
   //----------------------------------------
 
@@ -508,7 +512,7 @@ struct GateBoy {
   /* p08.LEVO*/ wire LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
   /* p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), cpu_bus.APOV_CPU_WRp); }
 
-  wire TOLE_CPU_VRAM_RDp()
+  wire TOLE_CPU_VRAM_RDp() const
   {
    // Ignoring debug for now
     ///*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
@@ -522,7 +526,7 @@ struct GateBoy {
     return _TOLE_CPU_VRAM_RDp;
   }
 
-  wire SALE_CPU_VRAM_WRn()
+  wire SALE_CPU_VRAM_WRn() const
   {
     // Ignoring debug for now
     ///*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = nand2(SOSE_ADDR_VRAMp(), SIG_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_CPU_WRp

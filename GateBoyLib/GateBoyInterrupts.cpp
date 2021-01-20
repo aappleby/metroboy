@@ -55,7 +55,7 @@ void GateBoy::write_ie()
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_interrupts(wire PURE_LINE_ENDn, DFF17 MOBA_TIMER_OVERFLOWp, wire WODU_HBLANKp)
+void GateBoy::tock_interrupts(wire WODU_HBLANKp)
 {
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
@@ -64,7 +64,7 @@ void GateBoy::tock_interrupts(wire PURE_LINE_ENDn, DFF17 MOBA_TIMER_OVERFLOWp, w
   // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
   /*#p21.TOLU*/ wire _TOLU_VBLANKn   = not1(PARU_VBLANKp());
-  /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(PURE_LINE_ENDn);
+  /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(PURE_LINE_ENDn());
   /*#p21.TAPA*/ wire _TAPA_INT_OAM   = and2(_TOLU_VBLANKn, _SELA_LINE_P908p);
   /*#p21.TARU*/ wire _TARU_INT_HBL   = and2(WODU_HBLANKp, _TOLU_VBLANKn);
   // polarity?
@@ -110,11 +110,11 @@ void GateBoy::tock_interrupts(wire PURE_LINE_ENDn, DFF17 MOBA_TIMER_OVERFLOWp, w
   /* p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  _ALUR_SYS_RSTn);
 
   SigIn SIG_VCC = 1;
-  /* p02.LOPE*/ interrupts.LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp,             _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, SIG_VCC);
-  /* p02.LALU*/ interrupts.LALU_FF0F_D1p.dff22(_VOTY_INT_STATp,               _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, SIG_VCC);
-  /* p02.NYBO*/ interrupts.NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp.qp_new(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, SIG_VCC);
-  /* p02.UBUL*/ interrupts.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, SIG_VCC);
-  /* p02.ULAK*/ interrupts.ULAK_FF0F_D4p.dff22(ASOK_INT_JOYp(),               _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, SIG_VCC);
+  /* p02.LOPE*/ interrupts.LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp,                   _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, SIG_VCC);
+  /* p02.LALU*/ interrupts.LALU_FF0F_D1p.dff22(_VOTY_INT_STATp,                     _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, SIG_VCC);
+  /* p02.NYBO*/ interrupts.NYBO_FF0F_D2p.dff22(timer.MOBA_TIMER_OVERFLOWp.qp_new(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, SIG_VCC);
+  /* p02.UBUL*/ interrupts.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(),       _TOME_FF0F_SET3n, _TUNY_FF0F_RST3n, SIG_VCC);
+  /* p02.ULAK*/ interrupts.ULAK_FF0F_D4p.dff22(ASOK_INT_JOYp(),                     _TOGA_FF0F_SET4n, _TYME_FF0F_RST4n, SIG_VCC);
 
   /*SIG_CPU_INT_VBLANK*/ interrupts.SIG_CPU_INT_VBLANK.sig_out(interrupts.LOPE_FF0F_D0p.qp_new());
   /*SIG_CPU_INT_STAT  */ interrupts.SIG_CPU_INT_STAT  .sig_out(interrupts.LALU_FF0F_D1p.qp_new());

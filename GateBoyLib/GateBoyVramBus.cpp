@@ -201,9 +201,9 @@ void GateBoy::vram_addr_to_pins() {
 //------------------------------------------------------------------------------------------------------------------------
 // PIN_VRAM_D driver
 
-void GateBoy::cpu_data_to_vram_bus_data(wire SERE_CPU_VRAM_RDp) {
+void GateBoy::cpu_data_to_vram_bus_data() {
   /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
-  /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, _RUVY_CPU_VRAM_WRp);
+  /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp(), _RUVY_CPU_VRAM_WRp);
 
   /*#p25.RYJE*/ wire _RYJE_CBD_TO_VPDn = not1(_SAZO_CBD_TO_VPDp);
   /*#p25.REVO*/ wire _REVO_CBD_TO_VPDp = not1(_RYJE_CBD_TO_VPDn);
@@ -220,9 +220,9 @@ void GateBoy::cpu_data_to_vram_bus_data(wire SERE_CPU_VRAM_RDp) {
   /* p25.SUZA_CD7_TO_VD7*/ new_bus.BUS_VRAM_D07p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D07p.qp_new());
 }
 
-void GateBoy::vram_bus_data_to_pins(wire SERE_CPU_VRAM_RDp) {
+void GateBoy::vram_bus_data_to_pins() {
   /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
-  /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, _RUVY_CPU_VRAM_WRp);
+  /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp(), _RUVY_CPU_VRAM_WRp);
 
   /*#p25.RYJE*/ wire _RYJE_CBD_TO_VPDn = not1(_SAZO_CBD_TO_VPDp);
   /*#p25.REVO*/ wire _REVO_CBD_TO_VPDp = not1(_RYJE_CBD_TO_VPDn);
@@ -284,8 +284,8 @@ void GateBoy::vram_bus_data_to_pins(wire SERE_CPU_VRAM_RDp) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::set_vram_pin_cs(wire SERE_CPU_VRAM_RDp) {
-  /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA_BFETCHINGp(), LUFA_DMA_VRAMp(), TEXY_SFETCHINGp(), SERE_CPU_VRAM_RDp);
+void GateBoy::set_vram_pin_cs() {
+  /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA_BFETCHINGp(), LUFA_DMA_VRAMp(), TEXY_SFETCHINGp(), SERE_CPU_VRAM_RDp());
 
   /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp());
   /* p25.TODE*/ wire _TODE_MCSn_A = and2(_SUTU_MCSn, _RACO_DBG_VRAMn);
@@ -296,12 +296,12 @@ void GateBoy::set_vram_pin_cs(wire SERE_CPU_VRAM_RDp) {
   /*PIN_43*/ vram_bus.PIN_43_VRAM_CSn.pin_out_hilo(_SOKY_MCSp_A, _SETY_MCSp_D); // FIXME not actually using this pin, but we should
 }
 
-void GateBoy::set_vram_pin_wr(wire SERE_CPU_VRAM_RDp) {
+void GateBoy::set_vram_pin_wr() {
   SigIn SIG_VCC = 1;
   ///* p25.SUDO*/ wire _SUDO_MWRp = not1(/*vram_bus.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
   /* p25.SUDO*/ wire _SUDO_MWRp = not1(SIG_VCC); // Ignoring debug stuff for now
   /* p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp(), _SUDO_MWRp, TUJA_CPU_VRAM_WRp());
-  /* p25.SOHY*/ wire _SOHY_MWRn   = nand2(_TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp);
+  /* p25.SOHY*/ wire _SOHY_MWRn   = nand2(_TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp());
 
   /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp());
   /* p25.TAXY*/ wire _TAXY_MWRn_A = and2(_SOHY_MWRn, _RACO_DBG_VRAMn);
@@ -361,9 +361,9 @@ void GateBoy::write_vram() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::vram_pins_to_data_bus(wire SERE_CPU_VRAM_RDp) {
+void GateBoy::vram_pins_to_data_bus() {
   /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
-  /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, _RUVY_CPU_VRAM_WRp);
+  /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp(), _RUVY_CPU_VRAM_WRp);
 
   /*#p25.RYJE*/ wire _RYJE_CBD_TO_VPDn = not1(_SAZO_CBD_TO_VPDp);
   /*#p25.REVO*/ wire _REVO_CBD_TO_VPDp = not1(_RYJE_CBD_TO_VPDn);
@@ -382,7 +382,7 @@ void GateBoy::vram_pins_to_data_bus(wire SERE_CPU_VRAM_RDp) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::vram_data_bus_to_cpu_bus(wire SERE_CPU_VRAM_RDp) {
+void GateBoy::vram_data_bus_to_cpu_bus() {
   /* p25.RERY*/ wire _RERY_VBUS_D0n = not1(new_bus.BUS_VRAM_D00p.qp_new());
   /* p25.RUNA*/ wire _RUNA_VBUS_D1n = not1(new_bus.BUS_VRAM_D01p.qp_new());
   /* p25.RONA*/ wire _RONA_VBUS_D2n = not1(new_bus.BUS_VRAM_D02p.qp_new());
@@ -392,7 +392,7 @@ void GateBoy::vram_data_bus_to_cpu_bus(wire SERE_CPU_VRAM_RDp) {
   /* p25.RABO*/ wire _RABO_VBUS_D6n = not1(new_bus.BUS_VRAM_D06p.qp_new());
   /* p25.SAME*/ wire _SAME_VBUS_D7n = not1(new_bus.BUS_VRAM_D07p.qp_new());
 
-  /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRAM_RDp, LEKO_CPU_RDp());
+  /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRAM_RDp(), LEKO_CPU_RDp());
   /* p25.SEBY*/ wire _SEBY_VBD_TO_CBDp = not1(_TYVY_VBD_TO_CBDn);
 
   /*#p25.RUGA_VD0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_SEBY_VBD_TO_CBDp, _RERY_VBUS_D0n);

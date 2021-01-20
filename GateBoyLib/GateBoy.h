@@ -257,6 +257,60 @@ struct GateBoy {
   void read_ext_to_pins();
   void write_pins_to_ext();
 
+  wire BOGE_DMA_RUNNINGn() const;
+  wire DUGA_DMA_RUNNINGn() const;
+  wire LUMA_DMA_CARTp() const;
+  wire LUFA_DMA_VRAMp() const;
+  void reg_dma_write();
+  void reg_dma_tock();
+  void reg_dma_read();
+
+  wire ACYL_SCANNINGp();
+  wire AVAP_SCAN_DONE_TRIGp();
+  void tock_sprite_scanner();
+  void ext_to_oam_data_bus();
+  void vram_to_oam_data_bus();
+
+  void dma_to_oam_addr_bus();
+  void sprite_index_to_oam_addr_bus();
+  void scan_index_to_oam_addr_bus();
+  void cpu_to_oam_addr_bus();
+  void cpu_to_oam_data_bus();
+  void set_oam_pin_clk(wire XUJY_OAM_CLKENp);
+  void set_oam_pin_wr();
+  void set_oam_pin_oe(wire XUJA_SPR_OAM_LATCHn);
+  void tock_oam_bus(wire XUJA_SPR_OAM_LATCHn);
+  void latch_oam_data_bus(wire XUJA_SPR_OAM_LATCHn);
+  void oam_latch_to_cpu();
+
+  void oam_latch_to_temp_a(wire XUJY_OAM_CLKENp);
+  void oam_latch_to_temp_b(wire XUJY_OAM_CLKENp);
+
+  void reg_sb_read();
+  void reg_sc_read();
+  void serial_tock1();
+  void serial_tock2();
+
+  void cpu_addr_to_vram_addr();
+  void dma_addr_to_vram_addr();
+  void scroll_to_vram_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, DFF9 XAFO_LCDC_BGMAPn);
+  void win_to_vram_addr(wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, DFF9 WOKY_LCDC_WINMAPn);
+  void tile_to_vram_addr(const BGScrollY scroll_y, wire NETA_BGW_TILE_READp, wire XUHA_FETCH_HILOp, DFF9 WEXU_LCDC_BGTILEn, wire PORE_WIN_MODEp, wire AXAD_WIN_MODEn);
+  void sprite_to_vram_addr(wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, DFF9 XYMO_LCDC_SPSIZEn);
+  void vram_addr_to_pins();
+  void cpu_data_to_vram_bus_data(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
+  void vram_bus_data_to_pins(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
+  void set_vram_pin_cs(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire LUFA_DMA_VRAMp, wire LENA_BFETCHINGp, wire TEXY_SFETCHINGp);
+  void set_vram_pin_wr(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire TUJA_CPU_VRAM_WRp);
+  void set_vram_pin_oe(wire TUTO_VRAM_DBGp, wire SALE_CPU_VRAM_WRn, wire LUFA_DMA_VRAMp, NandLatch LONY_BFETCHINGp, wire SOHO_SPR_VRAM_RDp);
+  void read_vram();
+  void write_vram();
+  void vram_pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
+  void vram_data_bus_to_cpu_bus(wire SERE_CPU_VRAM_RDp);
+
+  void read_zram();
+  void write_zram();
+
   //-----------------------------------------------------------------------------
 
   GateBoyBuses old_bus;

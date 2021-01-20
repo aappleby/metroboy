@@ -7,22 +7,6 @@
 
 struct GateBoyDMA {
 
-  void write_dma_sync(GateBoyCpuBus& cpu_bus, const GateBoyBuses& new_bus);
-  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, const GateBoyBuses& new_bus);
-  void read_dma(GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus);
-
-  wire LUMA_DMA_CARTp() const;
-  wire LUFA_DMA_VRAMp() const;
-
-  wire BOGE_DMA_RUNNINGn() const {
-    /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp.qp_new());
-    return BOGE_DMA_RUNNINGn;
-  }
-  wire DUGA_DMA_RUNNINGn() const {
-    /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn = not1(MATU_DMA_RUNNINGp.qp_new());
-    return DUGA_DMA_RUNNINGn;
-  }
-
   void dump(Dumper& d) {
     d.dump_slice2p("DMA_A_LOW  : ", &NAKY_DMA_A00p, 8);
     d.dump_slice2n("DMA_A_HIGH : ", &NAFA_DMA_A08n, 8);

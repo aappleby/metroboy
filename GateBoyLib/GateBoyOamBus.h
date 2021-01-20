@@ -13,23 +13,6 @@ struct GateBoyOamBus {
     oam_temp_b.reset_to_cart();
   }
 
-  void latch_bus(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire XOCE_xBCxxFGx, wire XUJA_SPR_OAM_LATCHn);
-  void latch_to_cpu(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, NorLatch XYMU_RENDERINGn);
-  void latch_to_temp_a(GateBoyBuses& new_bus, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, DFF17 MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
-  void latch_to_temp_b(GateBoyBuses& new_bus, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, DFF17 MATU_DMA_RUNNINGp, wire XUJY_OAM_CLKENp);
-  void ext_to_data_bus (GateBoyBuses& new_bus, const GateBoyDMA& dma, const GateBoyExtBus& ext_bus);
-  void vram_to_data_bus(GateBoyBuses& new_bus, const GateBoyDMA& dma, const GateBoyVramBus& vram_bus);
-  void dma_to_addr_bus(GateBoyBuses& new_bus, GateBoyDMA& dma);
-  void sprite_index_to_addr_bus(GateBoyBuses& new_bus, const GateBoyDMA& dma, const GateBoySpriteStore& sprite_store, NorLatch XYMU_RENDERINGn);
-  void scan_index_to_addr_bus(GateBoyBuses& new_bus, SpriteScanner& sprite_scanner, wire ACYL_SCANNINGp);
-  void cpu_to_addr_bus(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGn, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
-  void cpu_to_data_bus(GateBoyBuses& new_bus, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGp, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
-  void set_pin_clk(GateBoyBuses& new_bus, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp, wire XUJY_OAM_CLKENp);
-  void set_pin_wr (GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGn, DFF17 MATU_DMA_RUNNINGp, wire ACYL_SCANNINGp);
-  void set_pin_oe (GateBoyBuses& new_bus, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, wire XUJA_SPR_OAM_LATCHn);
-
-  void tock(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus, wire XOCE_xBCxxFGx, wire ACYL_SCANNINGp, wire XUJA_SPR_OAM_LATCHn, uint8_t* oam_ram);
-
   void dump(Dumper& d) {
     d.dump_bitp   ("MAKA_LATCH_EXTp  : ", MAKA_LATCH_EXTp.state);
     d.dump_bitp   ("WUJE_CPU_OAM_WRn : ", WUJE_CPU_OAM_WRn.state);

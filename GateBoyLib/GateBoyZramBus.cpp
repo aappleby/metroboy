@@ -1,6 +1,6 @@
 #include "GateBoyLib/GateBoyZramBus.h"
 
-#include "GateBoyLib/GateBoyCpuBus.h"
+#include "GateBoyLib/GateBoy.h"
 
 // ZRAM control signals are
 // clk_reg.SIG_CPU_BUKE_AxxxxxGH
@@ -11,7 +11,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyZramBus::read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus, uint8_t* zero_ram)
+void GateBoy::read_zram()
 {
   uint16_t addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
@@ -29,16 +29,16 @@ void GateBoyZramBus::read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus, uint8_t
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyZramBus::write(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus, uint8_t* zero_ram)
+void GateBoy::write_zram()
 {
   uint16_t addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   wire clk_new = bit(~cpu_bus.TAPU_CPU_WRp);
-  if (bit(~clk_old) && clk_new && CSp) {
+  if (bit(~zram_bus.clk_old) && clk_new && CSp) {
     zero_ram[addr & 0x007F] = (uint8_t)BitBase::pack_old(8, &new_bus.BUS_CPU_D00p);
   }
-  clk_old = clk_new;
+  zram_bus.clk_old = clk_new;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -53,26 +53,6 @@ struct GateBoyVramBus {
     PIN_25_VRAM_D07.reset_for_pass();
   }
 
-  void cpu_addr_to_vram_addr(GateBoyBuses& new_bus, const GateBoyCpuBus& cpu_bus, NorLatch XYMU_RENDERINGn, wire LUFA_DMA_VRAMp);
-  void dma_addr_to_vram_addr(GateBoyBuses& new_bus, const GateBoyDMA& dma);
-  void scroll_to_addr(GateBoyBuses& new_bus, BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, DFF9 XAFO_LCDC_BGMAPn);
-  void win_to_addr(GateBoyBuses& new_bus, const WinMapX& win_map_x, const WinLineY& win_line_y, wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, DFF9 WOKY_LCDC_WINMAPn);
-  void tile_to_addr(GateBoyBuses& new_bus, const BGScrollY scroll_y, const WinLineY win_line_y, const TileTempB tile_temp_b, wire NETA_BGW_TILE_READp, wire XUHA_FETCH_HILOp, DFF9 WEXU_LCDC_BGTILEn, wire PORE_WIN_MODEp, wire AXAD_WIN_MODEn);
-  void sprite_to_addr(GateBoyBuses& new_bus, const GateBoySpriteStore& sprite_store, const OamTempA& oam_temp_a, const OamTempB& oam_temp_b, wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, NorLatch XYMU_RENDERINGp, DFF9 XYMO_LCDC_SPSIZEn);
-  void addr_to_pins(GateBoyBuses& new_bus);
-  void cpu_data_to_bus_data(GateBoyBuses& new_bus, const GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
-  void bus_data_to_pins(GateBoyBuses& new_bus, wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
-
-  void set_pin_cs(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire LUFA_DMA_VRAMp, wire LENA_BFETCHINGp, wire TEXY_SFETCHINGp);
-  void set_pin_wr(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire TUJA_CPU_VRAM_WRp);
-  void set_pin_oe(wire TUTO_VRAM_DBGp, wire SALE_CPU_VRAM_WRn, wire LUFA_DMA_VRAMp, NorLatch XYMU_RENDERINGn, NandLatch LONY_BFETCHINGp, wire SOHO_SPR_VRAM_RDp);
-
-  void read_vram(const uint8_t* vid_ram);
-  void write_vram(uint8_t* vid_ram);
-
-  void pins_to_data_bus(GateBoyBuses& new_bus, wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn);
-  void data_bus_to_cpu_bus(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus, wire SERE_CPU_VRAM_RDp);
-
   void dump(Dumper& d) {
     d.dump_bitp   ("PIN_43_VRAM_CSn  : ", PIN_43_VRAM_CSn.state);
     d.dump_bitp   ("PIN_45_VRAM_OEn  : ", PIN_45_VRAM_OEn.state);

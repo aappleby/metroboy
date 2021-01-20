@@ -95,13 +95,13 @@ void GateBoy::reg_joy_tock2()
 
   /* p02.KERY*/ wire _KERY_ANY_BUTTONp = or4(joy.PIN_64_JOY_P13.qp_new(), joy.PIN_65_JOY_P12.qp_new(), joy.PIN_66_JOY_P11.qp_new(), joy.PIN_67_JOY_P10.qp_new());
 
-  /* p02.AWOB*/ joy.AWOB_WAKE_CPU.tp_latchn(clk.BOGA_Axxxxxxx(), _KERY_ANY_BUTTONp);
+  /* p02.AWOB*/ joy.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), _KERY_ANY_BUTTONp);
   /*SIG_CPU_WAKE*/ joy.SIG_CPU_WAKE.sig_out(joy.AWOB_WAKE_CPU.qp_new());
 
-  /* p02.APUG*/ joy.APUG_JP_GLITCH3.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), joy.AGEM_JP_GLITCH2.qp_old());
-  /* p02.AGEM*/ joy.AGEM_JP_GLITCH2.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), joy.ACEF_JP_GLITCH1.qp_old());
-  /* p02.ACEF*/ joy.ACEF_JP_GLITCH1.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), joy.BATU_JP_GLITCH0.qp_old());
-  /* p02.BATU*/ joy.BATU_JP_GLITCH0.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
+  /* p02.APUG*/ joy.APUG_JP_GLITCH3.dff17(BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), joy.AGEM_JP_GLITCH2.qp_old());
+  /* p02.AGEM*/ joy.AGEM_JP_GLITCH2.dff17(BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), joy.ACEF_JP_GLITCH1.qp_old());
+  /* p02.ACEF*/ joy.ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), joy.BATU_JP_GLITCH0.qp_old());
+  /* p02.BATU*/ joy.BATU_JP_GLITCH0.dff17(BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), _KERY_ANY_BUTTONp);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

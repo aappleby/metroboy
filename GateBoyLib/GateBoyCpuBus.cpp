@@ -51,7 +51,7 @@ void GateBoy::set_cpu_pins()
   /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(cpu_bus.SIG_CPU_RDp);
   /* p07.TEDO*/ cpu_bus.TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
 
-  /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(clk.ADAR_ABCxxxxH(), clk.ATYP_ABCDxxxx());
+  /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(ADAR_ABCxxxxH(), ATYP_ABCDxxxx());
   /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(cpu_bus.SIG_CPU_WRp, _AFAS_xxxxEFGx);
   /* p01.APOV*/ cpu_bus.APOV_CPU_WRp = not1(_AREV_CPU_WRn);
 

@@ -33,7 +33,7 @@ wire GateBoy::LUFA_DMA_VRAMp() const {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::reg_dma_write() {
-  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(cpu_bus.CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
+  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
   /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
   /*#p04.NAFA*/ dma.NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D00p.qp_old());
   /* p04.PYNE*/ dma.PYNE_DMA_A09n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D01p.qp_old());
@@ -49,10 +49,10 @@ void GateBoy::reg_dma_write() {
 
 void GateBoy::reg_dma_tock()
 {
-  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(cpu_bus.CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
+  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
   /*#p04.LUPA*/ wire _LUPA_DMA_TRIG_old = nor2(LAVY_FF46_WRp, dma.LYXE_DMA_LATCHp.qn_old());
-  /*#p04.LENE*/ dma.LENE_DMA_TRIG_d4.dff17(clk.MOPA_xxxxEFGH(), rst.CUNU_SYS_RSTn(), dma.LUVY_DMA_TRIG_d0.qp_old());
-  /*#p04.LUVY*/ dma.LUVY_DMA_TRIG_d0.dff17(clk.UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG_old);
+  /*#p04.LENE*/ dma.LENE_DMA_TRIG_d4.dff17(MOPA_xxxxEFGH(), rst.CUNU_SYS_RSTn(), dma.LUVY_DMA_TRIG_d0.qp_old());
+  /*#p04.LUVY*/ dma.LUVY_DMA_TRIG_d0.dff17(UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG_old);
 
   /*#p04.LOKO*/ wire _LOKO_DMA_RSTp = nand2(dma.LENE_DMA_TRIG_d4.qn_new(), rst.CUNU_SYS_RSTn());
   /*#p04.LYXE*/ dma.LYXE_DMA_LATCHp.nor_latch(LAVY_FF46_WRp, _LOKO_DMA_RSTp);
@@ -62,15 +62,15 @@ void GateBoy::reg_dma_tock()
   /*#p04.NAVO*/ wire _NAVO_DMA_DONEn_old = nand6(dma.NAKY_DMA_A00p.qp_old(), dma.PYRO_DMA_A01p.qp_old(), dma.NEFY_DMA_A02p.qp_old(), dma.MUTY_DMA_A03p.qp_old(), dma.NYKO_DMA_A04p.qp_old(), dma.MUGU_DMA_A07p.qp_old()); // 128+16+8+4+2+1 = 159
   /*#p04.NOLO*/ wire _NOLO_DMA_DONEp_old = not1(_NAVO_DMA_DONEn_old);
 
-  /*#p04.MYTE*/ dma.MYTE_DMA_DONE.dff17(clk.MOPA_xxxxEFGH(), _LAPA_DMA_RSTn, _NOLO_DMA_DONEp_old);
+  /*#p04.MYTE*/ dma.MYTE_DMA_DONE.dff17(MOPA_xxxxEFGH(), _LAPA_DMA_RSTn, _NOLO_DMA_DONEp_old);
 
-  /*#p04.MATU*/ dma.MATU_DMA_RUNNINGp.dff17(clk.UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), dma.LOKY_DMA_LATCHp);
+  /*#p04.MATU*/ dma.MATU_DMA_RUNNINGp.dff17(UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), dma.LOKY_DMA_LATCHp);
 
   /* p04.LARA*/ dma.LARA_DMA_LATCHn = nand3(dma.LOKY_DMA_LATCHp, dma.MYTE_DMA_DONE.qn_any(), rst.CUNU_SYS_RSTn());
   /*#p04.LOKY*/ dma.LOKY_DMA_LATCHp = nand2(dma.LARA_DMA_LATCHn, dma.LENE_DMA_TRIG_d4.qn_any());
   /* p04.LARA*/ dma.LARA_DMA_LATCHn = nand3(dma.LOKY_DMA_LATCHp, dma.MYTE_DMA_DONE.qn_any(), rst.CUNU_SYS_RSTn());
 
-  /*#p04.META*/ wire _META_DMA_CLKp = and2(clk.UVYT_ABCDxxxx(), dma.LOKY_DMA_LATCHp);
+  /*#p04.META*/ wire _META_DMA_CLKp = and2(UVYT_ABCDxxxx(), dma.LOKY_DMA_LATCHp);
   /*#p04.NAKY*/ dma.NAKY_DMA_A00p.dff17(_META_DMA_CLKp,             _LAPA_DMA_RSTn, dma.NAKY_DMA_A00p.qn_old());
   /*#p04.PYRO*/ dma.PYRO_DMA_A01p.dff17(dma.NAKY_DMA_A00p.qn_new(), _LAPA_DMA_RSTn, dma.PYRO_DMA_A01p.qn_old());
   /* p04.NEFY*/ dma.NEFY_DMA_A02p.dff17(dma.PYRO_DMA_A01p.qn_new(), _LAPA_DMA_RSTn, dma.NEFY_DMA_A02p.qn_old());
@@ -84,7 +84,7 @@ void GateBoy::reg_dma_tock()
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::reg_dma_read() {
-  /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(cpu_bus.ASOT_CPU_RDp(), new_bus.XEDA_FF46p());
+  /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(ASOT_CPU_RDp(), new_bus.XEDA_FF46p());
   /*#p04.NYGO*/ wire NYGO_FF46_RDn = not1(MOLU_FF46_RDp);
   /*#p04.PUSY*/ wire PUSY_FF46_RDp = not1(NYGO_FF46_RDn);
   /*#p04.POLY_DMA0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(PUSY_FF46_RDp, dma.NAFA_DMA_A08n.qp_new());

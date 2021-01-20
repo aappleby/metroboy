@@ -949,6 +949,7 @@ struct GateBoyTileFetcher;
 struct GateBoyDiv;
 struct GateBoyTimer;
 struct GateBoyVramBus;
+struct GateBoyPins;
 
 struct SpriteScanner;
 struct GateBoySpriteStore;

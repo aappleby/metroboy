@@ -905,7 +905,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(top.clk.SIG_CPU_BUKE_AxxxxxGH.qp_old(), 0b10000011);
     EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH.qp_old(), 0b01111111);
     EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx.qp_old(), 0b10000000);
-    EXPECT_CLK(top.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
+    EXPECT_CLK(top.pins.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
     gb.next_phase();
   }
 
@@ -975,7 +975,7 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.clk.PIN_75_CLK_OUT.ext_c();
+      char CLK = gb.pins.PIN_75_CLK_OUT.ext_c();
       char WRn = gb.ext_bus.PIN_78_WRn.ext_c();
       char RDn = gb.ext_bus.PIN_79_RDn.ext_c();
       char CSn = gb.ext_bus.PIN_80_CSn.ext_c();
@@ -1098,7 +1098,7 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.clk.PIN_75_CLK_OUT.ext_c();
+      char CLK = gb.pins.PIN_75_CLK_OUT.ext_c();
       char WRn = gb.ext_bus.PIN_78_WRn.ext_c();
       char RDn = gb.ext_bus.PIN_79_RDn.ext_c();
       char CSn = gb.ext_bus.PIN_80_CSn.ext_c();
@@ -1269,7 +1269,7 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.clk.PIN_75_CLK_OUT.ext_c();
+      char CLK = gb.pins.PIN_75_CLK_OUT.ext_c();
       char WRn = gb.ext_bus.PIN_78_WRn.ext_c();
       char RDn = gb.ext_bus.PIN_79_RDn.ext_c();
       char CSn = gb.ext_bus.PIN_80_CSn.ext_c();

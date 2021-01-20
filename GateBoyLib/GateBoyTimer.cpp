@@ -10,9 +10,9 @@
 void GateBoy::reg_div_tock()
 {
   /* p01.TAPE*/ wire _TAPE_FF04_WRp = and4(cpu_bus.TAPU_CPU_WRp, new_bus.RYFO_FF04_FF07p(), new_bus.TOLA_A01n(), new_bus.TOVY_A00n());
-  /* p01.UFOL*/ wire _UFOL_DIV_RSTn = nor3(clk.UCOB_CLKBADp(), rst.PIN_71_RST.qp_new(), _TAPE_FF04_WRp);
+  /* p01.UFOL*/ wire _UFOL_DIV_RSTn = nor3(UCOB_CLKBADp(), rst.PIN_71_RST.qp_new(), _TAPE_FF04_WRp);
 
-  /* p01.UKUP*/ div.UKUP_DIV00p.dff17(clk.BOGA_Axxxxxxx(),      _UFOL_DIV_RSTn, div.UKUP_DIV00p.qn_old());
+  /* p01.UKUP*/ div.UKUP_DIV00p.dff17(BOGA_Axxxxxxx(),          _UFOL_DIV_RSTn, div.UKUP_DIV00p.qn_old());
   /* p01.UFOR*/ div.UFOR_DIV01p.dff17(div.UKUP_DIV00p.qn_any(), _UFOL_DIV_RSTn, div.UFOR_DIV01p.qn_old());
   /* p01.UNER*/ div.UNER_DIV02p.dff17(div.UFOR_DIV01p.qn_any(), _UFOL_DIV_RSTn, div.UNER_DIV02p.qn_old());
   /*#p01.TERO*/ div.TERO_DIV03p.dff17(div.UNER_DIV02p.qn_any(), _UFOL_DIV_RSTn, div.TERO_DIV03p.qn_old());
@@ -115,14 +115,14 @@ void GateBoy::tock_timer()
 {
 
   /*#p03.MERY*/ wire _MERY_TIMER_OVERFLOWp_old = nor2(timer.NUGA_TIMA7p.qp_old(), timer.NYDU_TIMA7p_DELAY.qn_old());
-  /*#p03.MOBA*/ timer.MOBA_TIMER_OVERFLOWp.dff17(clk.BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), _MERY_TIMER_OVERFLOWp_old);
+  /*#p03.MOBA*/ timer.MOBA_TIMER_OVERFLOWp.dff17(BOGA_Axxxxxxx(), rst.ALUR_SYS_RSTn(), _MERY_TIMER_OVERFLOWp_old);
 
   /*#p03.TOPE*/ wire _TOPE_FF05_WRn = nand4(cpu_bus.TAPU_CPU_WRp, new_bus.RYFO_FF04_FF07p(),  new_bus.TOLA_A01n(), new_bus.BUS_CPU_A00p.qp_new());
   /*#p03.MUZU*/ wire _MUZU_CPU_LOAD_TIMAn  = or2(cpu_bus.SIG_CPU_LATCH_EXT, _TOPE_FF05_WRn);
   /*#p03.MEKE*/ wire _MEKE_TIMER_OVERFLOWn = not1(timer.MOBA_TIMER_OVERFLOWp.qp_new());
   /*#p03.MEXU*/ wire _MEXU_TIMA_LOADp      = nand3(_MUZU_CPU_LOAD_TIMAn, rst.ALUR_SYS_RSTn(), _MEKE_TIMER_OVERFLOWn);
   /*#p03.MUGY*/ wire _MUGY_TIMA_MAX_RSTn   = not1(_MEXU_TIMA_LOADp);
-  /*#p03.NYDU*/ timer.NYDU_TIMA7p_DELAY.dff17(clk.BOGA_Axxxxxxx(), _MUGY_TIMA_MAX_RSTn, timer.NUGA_TIMA7p.qp_old());
+  /*#p03.NYDU*/ timer.NYDU_TIMA7p_DELAY.dff17(BOGA_Axxxxxxx(), _MUGY_TIMA_MAX_RSTn, timer.NUGA_TIMA7p.qp_old());
 
   /*#p03.UBOT*/ wire _UBOT_DIV01n = not1(div.UFOR_DIV01p.qp_new());
   /*#p03.UVYR*/ wire _UVYR_DIV03n = not1(div.TERO_DIV03p.qp_new());

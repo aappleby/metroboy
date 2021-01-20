@@ -60,7 +60,7 @@
 
 void GateBoy::copy_cpu_addr_to_addr_latch()
 {
-  /* p08.LOXO*/ wire _LOXO_HOLDn = and_or3(rst.MULE_MODE_DBG1n(), cpu_bus.TEXO_ADDR_VRAMn(new_bus), rst.UMUT_MODE_DBG1p());
+  /* p08.LOXO*/ wire _LOXO_HOLDn = and_or3(rst.MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn(), rst.UMUT_MODE_DBG1p());
   /* p08.LASY*/ wire _LASY_HOLDp = not1(_LOXO_HOLDn);
   /* p08.MATE*/ wire _MATE_HOLDn = not1(_LASY_HOLDp);
   /* p08.ALOR*/ ext_bus.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.tp_latchn(_MATE_HOLDn, new_bus.BUS_CPU_A00p.qp_new());
@@ -149,7 +149,7 @@ void GateBoy::copy_addr_latch_to_pins()
   /*PIN_15*/ ext_bus.PIN_15_A14.pin_out_hilo(_PUHE, _PAHY);
 
   // A15 is "special"
-  /* p08.SOBY*/ wire _SOBY_A15n = nor2 (new_bus.BUS_CPU_A15p.qp_new(), cpu_bus.TUTU_READ_BOOTROMp(new_bus));
+  /* p08.SOBY*/ wire _SOBY_A15n = nor2 (new_bus.BUS_CPU_A15p.qp_new(), TUTU_READ_BOOTROMp());
   /* p08.SEPY*/ wire _SEPY_A15p = nand2(cpu_bus.ABUZ_EXT_RAM_CS_CLK, _SOBY_A15n);
   /* p08.TAZY*/ wire _TAZY_A15p = mux2p (LUMA_DMA_CARTp(), dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
   /* p08.SUZE*/ wire _SUZE_A15n = nand2(_TAZY_A15p, rst.RYCA_MODE_DBG2n());
@@ -161,7 +161,7 @@ void GateBoy::copy_addr_latch_to_pins()
 
 void GateBoy::copy_pins_to_data_latch()
 {
-  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.SIG_CPU_RDp, cpu_bus.TEXO_ADDR_VRAMn(new_bus), cpu_bus.SIG_CPU_LATCH_EXT);
+  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.SIG_CPU_RDp, TEXO_ADDR_VRAMn(), cpu_bus.SIG_CPU_LATCH_EXT);
   /*#p08.SOMA*/ ext_bus.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(_LAVO_HOLDn, ext_bus.PIN_17_D00.qp_new());
   /* p08.RONY*/ ext_bus.ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(_LAVO_HOLDn, ext_bus.PIN_18_D01.qp_new());
   /* p08.RAXY*/ ext_bus.ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latchn(_LAVO_HOLDn, ext_bus.PIN_19_D02.qp_new());
@@ -176,7 +176,7 @@ void GateBoy::copy_pins_to_data_latch()
 
 void GateBoy::copy_data_latch_to_cpu_bus()
 {
-  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.SIG_CPU_RDp, cpu_bus.TEXO_ADDR_VRAMn(new_bus), cpu_bus.SIG_CPU_LATCH_EXT);
+  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.SIG_CPU_RDp, TEXO_ADDR_VRAMn(), cpu_bus.SIG_CPU_LATCH_EXT);
   /*#p08.RYMA_EL0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_LAVO_HOLDn, ext_bus.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
   /* p08.RUVO_EL1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_LAVO_HOLDn, ext_bus.ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
   /* p08.RYKO_EL2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_LAVO_HOLDn, ext_bus.ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
@@ -194,11 +194,11 @@ void GateBoy::copy_cpu_data_to_pins()
   // FIXME So does this mean that if the CPU writes to the external new_bus during dma, that data
   // will actually end up in oam?
 
-  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(cpu_bus.TEXO_ADDR_VRAMn(new_bus), rst.UMUT_MODE_DBG1p());
-  /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.SIG_CPU_RDp, cpu_bus.LEVO_ADDR_VRAMn(new_bus), cpu_bus.SIG_CPU_WRp);
+  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn(), rst.UMUT_MODE_DBG1p());
+  /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.SIG_CPU_RDp, LEVO_ADDR_VRAMn(), cpu_bus.SIG_CPU_WRp);
   /* p08.LYWE*/ wire _LYWE = not1(_LAGU);
   /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
-  /* p08.RORU*/ wire _RORU_CBD_TO_EPDn = mux2p(rst.UNOR_MODE_DBG2p(), cpu_bus.REDU_CPU_RDn(), _MOTY_CPU_EXT_RD);
+  /* p08.RORU*/ wire _RORU_CBD_TO_EPDn = mux2p(rst.UNOR_MODE_DBG2p(), REDU_CPU_RDn(), _MOTY_CPU_EXT_RD);
   /* p08.LULA*/ wire _LULA_CBD_TO_EPDp = not1(_RORU_CBD_TO_EPDn);
 
   /* p25.RUXA*/ wire _RUXA = nand2(new_bus.BUS_CPU_D00p.qp_new(), _LULA_CBD_TO_EPDp);
@@ -233,10 +233,10 @@ void GateBoy::copy_cpu_data_to_pins()
 
 void GateBoy::set_ext_control_pins()
 {
-  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(cpu_bus.TEXO_ADDR_VRAMn(new_bus), rst.UMUT_MODE_DBG1p());
+  /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn(), rst.UMUT_MODE_DBG1p());
 
   {
-    /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.SIG_CPU_RDp, cpu_bus.LEVO_ADDR_VRAMn(new_bus), cpu_bus.SIG_CPU_WRp);
+    /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.SIG_CPU_RDp, LEVO_ADDR_VRAMn(), cpu_bus.SIG_CPU_WRp);
     /* p08.LYWE*/ wire _LYWE = not1(_LAGU);
     /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
     /* p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(LUMA_DMA_CARTp(), _MOTY_CPU_EXT_RD);
@@ -246,7 +246,7 @@ void GateBoy::set_ext_control_pins()
   }
 
   {
-    /* p08.NEVY*/ wire _NEVY = or2(cpu_bus.MEXO_CPU_WRn(), _MOCA_DBG_EXT_RD);
+    /* p08.NEVY*/ wire _NEVY = or2(MEXO_CPU_WRn(), _MOCA_DBG_EXT_RD);
     /* p08.PUVA*/ wire _PUVA_EXT_WRn = or2(_NEVY, LUMA_DMA_CARTp());
     /* p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_WRn, rst.TOVA_MODE_DBG2n());
     /* p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, rst.UNOR_MODE_DBG2p());

@@ -8,8 +8,6 @@
 struct GateBoyLCD {
 
   void reset_to_cart() {
-    _XODO_VID_RSTp.reset(0);
-
     reg_lx.reset_to_cart();
     reg_ly.reset_to_cart();
     reg_lyc.reset_to_cart();
@@ -41,54 +39,6 @@ struct GateBoyLCD {
     //memset(lcd_pipe_hi, 0x02, sizeof(lcd_pipe_hi));
   }
 
-  wire ATEJ_LINE_RSTp_old() const;
-  /* p27.XAHY*/ wire XAHY_LINE_RSTn_old() const { return not1(ATEJ_LINE_RSTp_old()); }
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_old() const { return nor2(ATEJ_LINE_RSTp_old(), ATAR_VID_RSTp_old()); }
-  /* p28.ABAK*/ wire ABAK_LINE_RSTp_old() const { return  or2(ATEJ_LINE_RSTp_old(), AMYG_VID_RSTp_old()); }
-  /*#p29.BALU*/ wire BALU_LINE_RSTp_old() const { return not1(ANOM_LINE_RSTn_old()); }
-  /* p28.BYVA*/ wire BYVA_LINE_RSTn_old() const { return not1(ABAK_LINE_RSTp_old()); }
-  /* p29.DYBA*/ wire DYBA_LINE_RSTp_old() const { return not1(BYVA_LINE_RSTn_old()); }
-  /*#p29.BAGY*/ wire BAGY_LINE_RSTn_old() const { return not1(BALU_LINE_RSTp_old()); }
-  /* p21.TADY*/ wire TADY_LINE_RSTn_old() const { return nor2(ATEJ_LINE_RSTp_old(), TOFU_VID_RSTp_old()); }
-
-  wire ATEJ_LINE_RSTp_new() const;
-  /* p27.XAHY*/ wire XAHY_LINE_RSTn_new() const { return not1(ATEJ_LINE_RSTp_new()); }
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp_new(), ATAR_VID_RSTp()); }
-  /* p28.ABAK*/ wire ABAK_LINE_RSTp_new() const { return  or2(ATEJ_LINE_RSTp_new(), AMYG_VID_RSTp()); }
-  /*#p29.BALU*/ wire BALU_LINE_RSTp_new() const { return not1(ANOM_LINE_RSTn_new()); }
-  /* p28.BYVA*/ wire BYVA_LINE_RSTn_new() const { return not1(ABAK_LINE_RSTp_new()); }
-  /* p29.DYBA*/ wire DYBA_LINE_RSTp_new() const { return not1(BYVA_LINE_RSTn_new()); }
-  /*#p29.BAGY*/ wire BAGY_LINE_RSTn_new() const { return not1(BALU_LINE_RSTp_new()); }
-  /* p21.TADY*/ wire TADY_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp_new(), TOFU_VID_RSTp()); }
-
-  /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(POPU_VBLANKp.qn_new()); }
-
-  /* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(_XODO_VID_RSTp); }
-  /* p01.TOFU*/ wire TOFU_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*#p01.ATAR*/ wire ATAR_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
-
-  /* p01.XAPO*/ wire XAPO_VID_RSTn_old() const { return not1(_XODO_VID_RSTp); }
-  /* p01.TOFU*/ wire TOFU_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
-  /*#p01.ATAR*/ wire ATAR_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
-  /* p01.AMYG*/ wire AMYG_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
-  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn_old() const { return not1(ATAR_VID_RSTp_old()); }
-
-  void tock(
-    GateBoyResetDebug& rst,
-    GateBoyClock& clk,
-    wire XYVO_y144p_old,
-    DFF17 RUTU_x113p_old);
-
-  void set_pin_data(wire REMY_LD0n, wire RAVO_LD1n);
-  void set_pin_flip(GateBoyResetDebug& rst, DFF17 TULU_DIV07p, DFF9 XONA_LCDC_LCDENn);
-  void set_pin_vsync(GateBoyResetDebug& rst);
-  void set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, NorLatch XYMU_RENDERINGn, DFF17 XYDO_PX3p, wire AVAP_SCAN_DONE_TRIGp);
-  void set_pin_latch(GateBoyDiv& div, RegLCDC& reg_lcdc);
-  void set_pin_clock(PixCount& pix_count, FineScroll& fine_scroll, wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn);
-  void update_lcd_pipe();
-
   void dump(Dumper& d) {
     d.dump_bitp("CATU_START_SCANNING     : ", CATU_START_SCANNING.state);
     d.dump_bitp("ANEL_LINE_P002p     : ", ANEL_LINE_P002p.state);
@@ -114,8 +64,6 @@ struct GateBoyLCD {
     d.dump_bitp("PIN_53_LCD_CLOCK     : ", PIN_53_LCD_CLOCK.state);
     d.dump_bitp("PIN_57_LCD_VSYNC     : ", PIN_57_LCD_VSYNC.state);
   }
-
-  Gate _XODO_VID_RSTp;
 
   RegLX  reg_lx;
   RegLY  reg_ly;

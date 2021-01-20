@@ -392,7 +392,7 @@ void GateBoy::vram_data_bus_to_cpu_bus(wire SERE_CPU_VRAM_RDp) {
   /* p25.RABO*/ wire _RABO_VBUS_D6n = not1(new_bus.BUS_VRAM_D06p.qp_new());
   /* p25.SAME*/ wire _SAME_VBUS_D7n = not1(new_bus.BUS_VRAM_D07p.qp_new());
 
-  /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRAM_RDp, cpu_bus.LEKO_CPU_RDp());
+  /* p25.TYVY*/ wire _TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRAM_RDp, LEKO_CPU_RDp());
   /* p25.SEBY*/ wire _SEBY_VBD_TO_CBDp = not1(_TYVY_VBD_TO_CBDn);
 
   /*#p25.RUGA_VD0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_SEBY_VBD_TO_CBDp, _RERY_VBUS_D0n);

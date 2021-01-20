@@ -57,7 +57,7 @@ void GateBoy::serial_tock1()
   serial.PIN_70_SOUT.reset_for_pass();
 
   /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(new_bus.TOVY_A00n(), new_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TAPU_CPU_WRp, new_bus.SANO_FF00_FF03p());
-  /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
+  /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(_UWAM_FF02_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
 
   /*#p01.UVYN*/ wire _UVYN_DIV05n = not1(div.TAMA_DIV05p.qp_new());
   /*#p06.COTY*/ serial.COTY_SER_CLK.dff17(_UVYN_DIV05n, _UWAM_FF02_WRn, serial.COTY_SER_CLK.qn_old()); // schematic wrong, clock is UVYN
@@ -71,7 +71,7 @@ void GateBoy::serial_tock1()
     /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUNNING.qn_any());
 
     {
-      /* p06.CARO*/ wire _CARO_SER_RSTn = and2(_UWAM_FF02_WRn, rst.ALUR_SYS_RSTn());
+      /* p06.CARO*/ wire _CARO_SER_RSTn = and2(_UWAM_FF02_WRn, ALUR_SYS_RSTn());
       /*#p06.CAFA*/ serial.CAFA_SER_CNT0.dff17_any(_DAWA_SER_CLK,                 _CARO_SER_RSTn, serial.CAFA_SER_CNT0.qn_any());
       /*#p06.CYLO*/ serial.CYLO_SER_CNT1.dff17_any(serial.CAFA_SER_CNT0.qn_any(), _CARO_SER_RSTn, serial.CYLO_SER_CNT1.qn_any());
       /*#p06.CYDE*/ serial.CYDE_SER_CNT2.dff17_any(serial.CYLO_SER_CNT1.qn_any(), _CARO_SER_RSTn, serial.CYDE_SER_CNT2.qn_any());
@@ -80,7 +80,7 @@ void GateBoy::serial_tock1()
 
     {
       /*#p06.COBA*/ wire _COBA_SER_CNT3n = not1(serial.CALY_SER_CNT3.qp_any());
-      /*#p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, rst.ALUR_SYS_RSTn());
+      /*#p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, ALUR_SYS_RSTn());
       /*#p06.ETAF*/ serial.ETAF_SER_RUNNING.dff17_any(_UWAM_FF02_WRn, _CABY_XFER_RESET, new_bus.BUS_CPU_D07p.qp_old());
     }
 
@@ -100,7 +100,7 @@ void GateBoy::serial_tock1()
     /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_new());
     /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUNNING.qn_new());
     /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
-    /*#p06.ELYS*/ serial.ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, rst.ALUR_SYS_RSTn(), serial.EDER_SER_DATA7.qp_old());
+    /*#p06.ELYS*/ serial.ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, ALUR_SYS_RSTn(), serial.EDER_SER_DATA7.qp_old());
     ///* p05.KENA*/ wire _KENA = mux2n(KUKO_DBG_FF00_D6, ELYS_SER_OUT.qp_new(), FF60_0); // FIXME hacking out debug stuff
     /*PIN_70*/ serial.PIN_70_SOUT.pin_out_dp(serial.ELYS_SER_OUT.qp_new());
   }
@@ -123,14 +123,14 @@ void GateBoy::serial_tock2() {
   serial.PIN_69_SIN.pin_in_dp(1);
 
   /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_bus.TAPU_CPU_WRp, new_bus.SANO_FF00_FF03p(), new_bus.TOLA_A01n(),   new_bus.BUS_CPU_A00p.qp_new());
-  /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D00p.qp_new(), rst.ALUR_SYS_RSTn());
-  /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D01p.qp_new(), rst.ALUR_SYS_RSTn());
-  /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D02p.qp_new(), rst.ALUR_SYS_RSTn());
-  /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D03p.qp_new(), rst.ALUR_SYS_RSTn());
-  /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D04p.qp_new(), rst.ALUR_SYS_RSTn());
-  /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D05p.qp_new(), rst.ALUR_SYS_RSTn());
-  /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D06p.qp_new(), rst.ALUR_SYS_RSTn());
-  /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D07p.qp_new(), rst.ALUR_SYS_RSTn());
+  /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D00p.qp_new(), ALUR_SYS_RSTn());
+  /* p06.DUMO*/ wire _DUMO_SER_DATA1_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D01p.qp_new(), ALUR_SYS_RSTn());
+  /* p06.DYBO*/ wire _DYBO_SER_DATA2_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D02p.qp_new(), ALUR_SYS_RSTn());
+  /* p06.DAJU*/ wire _DAJU_SER_DATA3_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D03p.qp_new(), ALUR_SYS_RSTn());
+  /* p06.DYLY*/ wire _DYLY_SER_DATA4_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D04p.qp_new(), ALUR_SYS_RSTn());
+  /* p06.EHUJ*/ wire _EHUJ_SER_DATA5_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D05p.qp_new(), ALUR_SYS_RSTn());
+  /* p06.EFAK*/ wire _EFAK_SER_DATA6_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D06p.qp_new(), ALUR_SYS_RSTn());
+  /* p06.EGUV*/ wire _EGUV_SER_DATA7_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D07p.qp_new(), ALUR_SYS_RSTn());
 
   /* p06.DAKU*/ wire _DAKU_FF01_WRp = not1(_URYS_FF01_WRn);
   /* p06.CUFU*/ wire _CUFU_SER_DATA0_SETn = nand2(new_bus.BUS_CPU_D00p.qp_new(), _DAKU_FF01_WRp);

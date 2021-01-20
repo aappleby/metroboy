@@ -75,7 +75,7 @@ void GateBoy::tock_interrupts(wire PARU_VBLANKp, wire PURE_LINE_ENDn, DFF17 MOBA
   /*#p21.VOTY*/ wire _VOTY_INT_STATp   = not1(_TUVA_INT_STATn);
 
 
-  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(rst.AVOR_SYS_RSTp());
+  /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp());
   /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_bus.TAPU_CPU_WRp, new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
 
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)

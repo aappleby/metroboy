@@ -22,13 +22,6 @@
 
 struct SpriteDeltaY {
 
-  wire GESE_SCAN_MATCH_Yp(DFF9 XYMO_LCDC_SPSIZEn) {
-    /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH_new = or2(XYMO_LCDC_SPSIZEn.qn_new(), GYKY_YDIFF3.sum);
-    /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, WUHU_YDIFF7.carry, _GOVU_SPSIZE_MATCH_new);
-    /* p29.GESE*/ wire _GESE_SCAN_MATCH_Yp_new = not1(_WOTA_SCAN_MATCH_Yn_new);
-    return _GESE_SCAN_MATCH_Yp_new;
-  }
-
   /* p29.DEGE*/ Gate DEGE_SPRITE_DELTA0;
   /* p29.DABY*/ Gate DABY_SPRITE_DELTA1;
   /* p29.DABU*/ Gate DABU_SPRITE_DELTA2;
@@ -55,18 +48,6 @@ struct PixCount {
     TUKY_PX5p.reset(1, 1);
     TAKO_PX6p.reset(1, 0);
     SYBE_PX7p.reset(1, 1);
-  }
-
-  wire XANO_PX167p_old() const {
-    /*#p21.XUGU*/ wire _XUGU_PX167n_old = nand5(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old(), XODU_PX2p.qp_old(), TUKY_PX5p.qp_old(), SYBE_PX7p.qp_old()); // 128 + 32 + 4 + 2 + 1 = 167
-    /*#p21.XANO*/ wire _XANO_PX167p_old = not1(_XUGU_PX167n_old);
-    return _XANO_PX167p_old;
-  }
-
-  wire XANO_PX167p_new() const {
-    /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(XEHO_PX0p.qp_new(), SAVY_PX1p.qp_new(), XODU_PX2p.qp_new(), TUKY_PX5p.qp_new(), SYBE_PX7p.qp_new()); // 128 + 32 + 4 + 2 + 1 = 167
-    /*#p21.XANO*/ wire _XANO_PX167p = not1(_XUGU_PX167n);
-    return _XANO_PX167p;
   }
 
   int get_old() { return BitBase::pack_old(8, &XEHO_PX0p); }
@@ -221,14 +202,6 @@ struct RegLY {
   uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &MUWY_LY0p); }
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &MUWY_LY0p); }
 
-  wire NERU_VSYNCp() const {
-    /*#p24.NERU*/ wire _NERU_VSYNCp = nor8(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(), MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
-    return _NERU_VSYNCp;
-  }
-
-  /*#p21.XYVO*/ wire XYVO_y144p_old() const { return and2(LOVU_LY4p.qp_old(), LAFO_LY7p.qp_old()); } // 128 + 16 = 144
-  /*#p21.XYVO*/ wire XYVO_y144p_new() const { return and2(LOVU_LY4p.qp_new(), LAFO_LY7p.qp_new()); } // 128 + 16 = 144
-
   /*p21.MYTA*/ DFF17 MYTA_y153p; // xxCxxxxH
 
   /*p21.MUWY*/ DFF17 MUWY_LY0p;  // xxCxxxGx Ticks on G, reset on C
@@ -259,23 +232,6 @@ struct RegLX {
 
   uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &SAXO_LX0p); }
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &SAXO_LX0p); }
-
-  wire PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(RUTU_x113p.qp_new());
-    return _PURE_LINE_ENDn;
-  }
-
-  //wire NYPE_x113p_new() const { return NYPE_x113p.qp_new(); }
-  //wire NYPE_x113n_new() const { return NYPE_x113p.qn_new(); }
-  //
-  //wire RUTU_x113p_old() const { return RUTU_x113p.qp_old(); }
-  //wire RUTU_x113n_old() const { return RUTU_x113p.qn_old(); }
-  //
-  //wire RUTU_x113p_new() const { return RUTU_x113p.qp_new(); }
-  //wire RUTU_x113n_new() const { return RUTU_x113p.qn_new(); }
-
-  /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1(RUTU_x113p.qp_old()); }
-  /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1(RUTU_x113p.qp_new()); }
 
   /*p21.RUTU*/ DFF17 RUTU_x113p;  // xxxxxxGx
   /*p21.NYPE*/ DFF17 NYPE_x113p;  // xxCxxxxx

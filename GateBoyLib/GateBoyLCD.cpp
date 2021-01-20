@@ -24,20 +24,20 @@ wire GateBoy::ATEJ_LINE_RSTp_new() const {
 
 void GateBoy::tock_lcd(wire XYVO_y144p_old, DFF17 RUTU_x113p_old)
 {
-  /*#p21.POPU*/ lcd.POPU_VBLANKp.dff17(lcd.reg_lx.NYPE_x113p.qp_new(), rst.LYFE_VID_RSTn(), XYVO_y144p_old);
+  /*#p21.POPU*/ lcd.POPU_VBLANKp.dff17(lcd.reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
 
   /*#p21.PURE*/ wire _PURE_LINE_ENDn_old = not1(RUTU_x113p_old.qp_old());
   /*#p21.SELA*/ wire _SELA_LINE_P908p_old = not1(_PURE_LINE_ENDn_old);
   /*#p29.ALES*/ wire _ALES_y144n_old = not1(XYVO_y144p_old);
   /*#p29.ABOV*/ wire _ABOV_LINE_P908p_old = and2(_SELA_LINE_P908p_old, _ALES_y144n_old);
-  /*#p28.ANEL*/ lcd.ANEL_LINE_P002p.dff17(AWOH_xxCDxxGH(), rst.ABEZ_VID_RSTn(),  lcd.CATU_START_SCANNING.qp_old());
-  /*#p29.CATU*/ lcd.CATU_START_SCANNING.dff17(XUPY_ABxxEFxx(), rst.ABEZ_VID_RSTn(), _ABOV_LINE_P908p_old);
+  /*#p28.ANEL*/ lcd.ANEL_LINE_P002p.dff17(AWOH_xxCDxxGH(), ABEZ_VID_RSTn(),  lcd.CATU_START_SCANNING.qp_old());
+  /*#p29.CATU*/ lcd.CATU_START_SCANNING.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), _ABOV_LINE_P908p_old);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::set_lcd_pin_ctrl() {
-  /*#p21.SYGU*/ lcd.SYGU_LINE_STROBE.dff17(SONO_ABxxxxGH(), rst.LYFE_VID_RSTn(), TEGY_STROBE());
+  /*#p21.SYGU*/ lcd.SYGU_LINE_STROBE.dff17(SONO_ABxxxxGH(), LYFE_VID_RSTn(), TEGY_STROBE());
   /*#p21.RYNO*/ wire _RYNO = or2(lcd.SYGU_LINE_STROBE.qp_new(), lcd.reg_lx.RUTU_x113p.qp_new());
   /*#p21.POGU*/ wire _POGU = not1(_RYNO);
   /*PIN_52*/ lcd.PIN_52_LCD_CNTRL.pin_out_dp(_POGU);
@@ -47,8 +47,8 @@ void GateBoy::set_lcd_pin_ctrl() {
 // if LCDC_ENn, PIN_56_LCD_FLIPS = 4k div clock. Otherwise PIN_LCD_FLIPS = xor(LINE_evn,FRAME_evn)
 
 void GateBoy::set_lcd_pin_flip(DFF17  TULU_DIV07p, DFF9 XONA_LCDC_LCDENn) {
-  /*#p24.LUCA*/ lcd.LUCA_LINE_EVENp .dff17(lcd.reg_lx.LOFU_x113n_new(), rst.LYFE_VID_RSTn(), lcd.LUCA_LINE_EVENp.qn_old());
-  /*#p21.NAPO*/ lcd.NAPO_FRAME_EVENp.dff17(lcd.POPU_VBLANKp.qp_new(),   rst.LYFE_VID_RSTn(), lcd.NAPO_FRAME_EVENp.qn_old());
+  /*#p24.LUCA*/ lcd.LUCA_LINE_EVENp .dff17(LOFU_x113n_new(), LYFE_VID_RSTn(), lcd.LUCA_LINE_EVENp.qn_old());
+  /*#p21.NAPO*/ lcd.NAPO_FRAME_EVENp.dff17(lcd.POPU_VBLANKp.qp_new(),   LYFE_VID_RSTn(), lcd.NAPO_FRAME_EVENp.qn_old());
 
   /*#p24.MAGU*/ wire _MAGU = xor2(lcd.NAPO_FRAME_EVENp.qp_new(), lcd.LUCA_LINE_EVENp.qn_new());
   /*#p24.MECO*/ wire _MECO = not1(_MAGU);
@@ -64,7 +64,7 @@ void GateBoy::set_lcd_pin_flip(DFF17  TULU_DIV07p, DFF9 XONA_LCDC_LCDENn) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::set_lcd_pin_vsync() {
-  /*#p24.MEDA*/ lcd.MEDA_VSYNC_OUTn.dff17(lcd.reg_lx.NYPE_x113p.qn_new(), rst.LYFE_VID_RSTn(), lcd.reg_ly.NERU_VSYNCp());
+  /*#p24.MEDA*/ lcd.MEDA_VSYNC_OUTn.dff17(lcd.reg_lx.NYPE_x113p.qn_new(), LYFE_VID_RSTn(), NERU_VSYNCp());
   /*#p24.MURE*/ wire _MURE_VSYNC = not1(lcd.MEDA_VSYNC_OUTn.qp_new());
   /*PIN_57*/ lcd.PIN_57_LCD_VSYNC.pin_out_dp(_MURE_VSYNC);
 }
@@ -85,10 +85,10 @@ void GateBoy::set_lcd_pin_hsync(wire TYFA_CLKPIPE_odd, DFF17 XYDO_PX3p_old) {
 
   // LCD horizontal sync pin latch
   /*#p24.POME*/ lcd.POME = nor2(AVAP_SCAN_DONE_TRIGp(), lcd.POFY);
-  /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), lcd.POME);
+  /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), lcd.POME);
   /*#p24.POFY*/ lcd.POFY = not1(lcd.RUJU);
   /*#p24.POME*/ lcd.POME = nor2(AVAP_SCAN_DONE_TRIGp(), lcd.POFY);
-  /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), rst.TOFU_VID_RSTp(), lcd.POME);
+  /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), lcd.POME);
   /*#p24.POFY*/ lcd.POFY = not1(lcd.RUJU);
 
   /*#p24.RUZE*/ wire _RUZE_HSYNCn = not1(lcd.POFY);
@@ -106,7 +106,7 @@ void GateBoy::set_lcd_pin_data(wire REMY_LD0n, wire RAVO_LD1n) {
 
 void GateBoy::set_lcd_pin_latch() {
   /* p01.UMEK*/ wire _UMEK_DIV06n = not1(div.UGOT_DIV06p.qp_new());
-  /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(lcd.reg_lx.PURE_LINE_ENDn());
+  /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(PURE_LINE_ENDn());
   /*#p24.UMOB*/ wire _UMOB_DIV_06p = not1(_UMEK_DIV06n);
   /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(reg_lcdc.XONA_LCDC_LCDENn.qn_new());
   /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(reg_lcdc.XONA_LCDC_LCDENn.qn_new(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, _UMOB_DIV_06p);

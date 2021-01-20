@@ -24,10 +24,10 @@ void GateBoy::tock_clocks() {
   DFF9 _ALEF_AxxxxFGHp_old = clk.ALEF_AxxxxFGHp;
   DFF9 _APUK_ABxxxxGHp_old = clk.APUK_ABxxxxGHp;
 
-  /* p01.AFUR*/ clk.AFUR_xxxxEFGHp.dff9(_ATAN_AxCxExGx, rst.UPOJ_MODE_PRODn(), _ADYK_ABCxxxxHp_old.qp_old());
-  /* p01.ALEF*/ clk.ALEF_AxxxxFGHp.dff9(_ATAL_xBxDxFxH, rst.UPOJ_MODE_PRODn(), _AFUR_xxxxEFGHp_old.qn_old());
-  /* p01.APUK*/ clk.APUK_ABxxxxGHp.dff9(_ATAN_AxCxExGx, rst.UPOJ_MODE_PRODn(), _ALEF_AxxxxFGHp_old.qn_old());
-  /* p01.ADYK*/ clk.ADYK_ABCxxxxHp.dff9(_ATAL_xBxDxFxH, rst.UPOJ_MODE_PRODn(), _APUK_ABxxxxGHp_old.qn_old());
+  /* p01.AFUR*/ clk.AFUR_xxxxEFGHp.dff9(_ATAN_AxCxExGx, UPOJ_MODE_PRODn(), _ADYK_ABCxxxxHp_old.qp_old());
+  /* p01.ALEF*/ clk.ALEF_AxxxxFGHp.dff9(_ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), _AFUR_xxxxEFGHp_old.qn_old());
+  /* p01.APUK*/ clk.APUK_ABxxxxGHp.dff9(_ATAN_AxCxExGx, UPOJ_MODE_PRODn(), _ALEF_AxxxxFGHp_old.qn_old());
+  /* p01.ADYK*/ clk.ADYK_ABCxxxxHp.dff9(_ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), _APUK_ABxxxxGHp_old.qn_old());
 
   /*PIN_75*/ pins.PIN_75_CLK_OUT.pin_out_dp(BUDE_xxxxEFGH());
   /*SIG_CPU_BOWA_Axxxxxxx*/ clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
@@ -43,9 +43,9 @@ void GateBoy::tock_clocks() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_vid_clocks() {
-  /* p29.WOSU*/ clk.WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),            rst.XAPO_VID_RSTn(), clk.WUVU_ABxxEFxx.qn_old());
-  /* p29.WUVU*/ clk.WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),            rst.XAPO_VID_RSTn(), clk.WUVU_ABxxEFxx.qn_old());
-  /* p21.VENA*/ clk.VENA_xxCDEFxx.dff17(clk.WUVU_ABxxEFxx.qn_new(), rst.XAPO_VID_RSTn(), clk.VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
+  /* p29.WOSU*/ clk.WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),            XAPO_VID_RSTn(), clk.WUVU_ABxxEFxx.qn_old());
+  /* p29.WUVU*/ clk.WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),            XAPO_VID_RSTn(), clk.WUVU_ABxxEFxx.qn_old());
+  /* p21.VENA*/ clk.VENA_xxCDEFxx.dff17(clk.WUVU_ABxxEFxx.qn_new(), XAPO_VID_RSTn(), clk.VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
 }
 
 //------------------------------------------------------------------------------------------------------------------------

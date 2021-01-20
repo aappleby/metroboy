@@ -283,7 +283,7 @@ void GateBoy::set_oam_pin_wr()
   /*#p28.AJUJ*/ wire _AJUJ_OAM_BUSYn   = nor3(dma.MATU_DMA_RUNNINGp.qp_new(), ACYL_SCANNINGp(), _AJON_RENDERINGp);
   /*#p28.AMAB*/ wire _AMAB_CPU_OAM_ENp = and2(new_bus.SARO_ADDR_OAMp(), _AJUJ_OAM_BUSYn); // def and
 
-  /* p04.MAKA*/ oam_bus.MAKA_LATCH_EXTp.dff17(ZEME_AxCxExGx(), rst.AVOR_SYS_RSTp(), CATY_LATCH_EXTp());
+  /* p04.MAKA*/ oam_bus.MAKA_LATCH_EXTp.dff17(ZEME_AxCxExGx(), AVOR_SYS_RSTp(), CATY_LATCH_EXTp());
 
   /* p04.NAXY*/ wire _NAXY_DMA_OAM_WRp = nor2(UVYT_ABCDxxxx(), oam_bus.MAKA_LATCH_EXTp.qp_new()); // def nor2
   /* p04.POWU*/ wire _POWU_DMA_OAM_WRp = and2(dma.MATU_DMA_RUNNINGp.qp_new(), _NAXY_DMA_OAM_WRp); // def and

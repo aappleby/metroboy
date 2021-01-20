@@ -342,6 +342,40 @@ struct GateBoy {
 
   //----------------------------------------
 
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(rst.AFER_SYS_RSTp.qp_new(), rst.ASOL_POR_DONEn.qp_new()); }
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
+  /*#p01.DULA*/ wire DULA_SYS_RSTp() const { return not1(ALUR_SYS_RSTn()); }
+  /*#p01.CUNU*/ wire CUNU_SYS_RSTn() const { return not1(DULA_SYS_RSTp()); }
+  /*#p01.XORE*/ wire XORE_SYS_RSTp() const { return not1(CUNU_SYS_RSTn()); }
+  /* p01.XEBE*/ wire XEBE_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
+  /*#p01.WALU*/ wire WALU_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
+  /* p01.WESY*/ wire WESY_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
+  /* p01.XARE*/ wire XARE_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
+  /* p03.MULO*/ wire MULO_SYS_RSTn() const { return not1(ALUR_SYS_RSTn()); }
+
+  /* p01.XODO*/ wire XODO_VID_RSTp() const { return nand2(XEBE_SYS_RSTn(), rst._XONA_LCDC_LCDENn.qn_new()); }
+  /* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(XODO_VID_RSTp()); }
+  /* p01.LYHA*/ wire LYHA_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+  /* p01.LYFE*/ wire LYFE_VID_RSTn() const { return not1(LYHA_VID_RSTp()); }
+  /* p01.TOFU*/ wire TOFU_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+  /* p01.ROSY*/ wire ROSY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+  /*#p01.ATAR*/ wire ATAR_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
+  /* p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+  /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+
+  /* p07.UBET*/ wire UBETp()           const { return not1(rst.PIN_77_T1.qp_new()); }
+  /* p07.UVAR*/ wire UVARp()           const { return not1(rst.PIN_76_T2.qp_new()); }
+  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(rst.PIN_77_T1.qp_new(), UVARp()); }
+  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(rst.PIN_76_T2.qp_new(), UBETp()); }
+  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), rst.PIN_71_RST.qp_new()); }
+  /* p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
+  /* p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
+  /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
+  /* p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), rst.SOTO_DBG_VRAMp.qn_new()); }
+
+  //----------------------------------------
+
   /* p28.ATEJ*/ wire ATEJ_LINE_RSTp_old() const;
   /* p27.XAHY*/ wire XAHY_LINE_RSTn_old() const { return not1(ATEJ_LINE_RSTp_old()); }
   /*#p28.ANOM*/ wire ANOM_LINE_RSTn_old() const { return nor2(ATEJ_LINE_RSTp_old(), ATAR_VID_RSTp_old()); }
@@ -364,13 +398,13 @@ struct GateBoy {
 
   /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(lcd.POPU_VBLANKp.qn_new()); }
 
-  /* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(rst.XODO_VID_RSTp()); }
-  /* p01.TOFU*/ wire TOFU_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*#p01.ATAR*/ wire ATAR_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
+  ///* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(XODO_VID_RSTp()); }
+  ///* p01.TOFU*/ wire TOFU_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+  ///*#p01.ATAR*/ wire ATAR_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+  ///* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+  ///*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
 
-  /* p01.XAPO*/ wire XAPO_VID_RSTn_old() const { return not1(rst.XODO_VID_RSTp()); }
+  /* p01.XAPO*/ wire XAPO_VID_RSTn_old() const { return not1(XODO_VID_RSTp()); }
   /* p01.TOFU*/ wire TOFU_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
   /*#p01.ATAR*/ wire ATAR_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
   /* p01.AMYG*/ wire AMYG_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
@@ -570,6 +604,50 @@ struct GateBoy {
   }
 
 
+  wire GESE_SCAN_MATCH_Yp(SpriteDeltaY& delta, DFF9 XYMO_LCDC_SPSIZEn) {
+    /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH_new = or2(XYMO_LCDC_SPSIZEn.qn_new(), delta.GYKY_YDIFF3.sum);
+    /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(delta.GACE_SPRITE_DELTA4, delta.GUVU_SPRITE_DELTA5, delta.GYDA_SPRITE_DELTA6, delta.GEWY_SPRITE_DELTA7, delta.WUHU_YDIFF7.carry, _GOVU_SPSIZE_MATCH_new);
+    /* p29.GESE*/ wire _GESE_SCAN_MATCH_Yp_new = not1(_WOTA_SCAN_MATCH_Yn_new);
+    return _GESE_SCAN_MATCH_Yp_new;
+  }
+
+  wire XANO_PX167p_old() const {
+    /*#p21.XUGU*/ wire _XUGU_PX167n_old = nand5(pix_count.XEHO_PX0p.qp_old(), pix_count.SAVY_PX1p.qp_old(), pix_count.XODU_PX2p.qp_old(), pix_count.TUKY_PX5p.qp_old(), pix_count.SYBE_PX7p.qp_old()); // 128 + 32 + 4 + 2 + 1 = 167
+    /*#p21.XANO*/ wire _XANO_PX167p_old = not1(_XUGU_PX167n_old);
+    return _XANO_PX167p_old;
+  }
+
+  wire XANO_PX167p_new() const {
+    /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(pix_count.XEHO_PX0p.qp_new(), pix_count.SAVY_PX1p.qp_new(), pix_count.XODU_PX2p.qp_new(), pix_count.TUKY_PX5p.qp_new(), pix_count.SYBE_PX7p.qp_new()); // 128 + 32 + 4 + 2 + 1 = 167
+    /*#p21.XANO*/ wire _XANO_PX167p = not1(_XUGU_PX167n);
+    return _XANO_PX167p;
+  }
+
+  wire NERU_VSYNCp() const {
+    /*#p24.NERU*/ wire _NERU_VSYNCp = nor8(lcd.reg_ly.LAFO_LY7p.qp_new(), lcd.reg_ly.LOVU_LY4p.qp_new(), lcd.reg_ly.LYDO_LY3p.qp_new(), lcd.reg_ly.MUWY_LY0p.qp_new(), lcd.reg_ly.MYRO_LY1p.qp_new(), lcd.reg_ly.LEXA_LY2p.qp_new(), lcd.reg_ly.LEMA_LY5p.qp_new(), lcd.reg_ly.MATO_LY6p.qp_new());
+    return _NERU_VSYNCp;
+  }
+
+  /*#p21.XYVO*/ wire XYVO_y144p_old() const { return and2(lcd.reg_ly.LOVU_LY4p.qp_old(), lcd.reg_ly.LAFO_LY7p.qp_old()); } // 128 + 16 = 144
+  /*#p21.XYVO*/ wire XYVO_y144p_new() const { return and2(lcd.reg_ly.LOVU_LY4p.qp_new(), lcd.reg_ly.LAFO_LY7p.qp_new()); } // 128 + 16 = 144
+
+  wire PURE_LINE_ENDn() const {
+    /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(lcd.reg_lx.RUTU_x113p.qp_new());
+    return _PURE_LINE_ENDn;
+  }
+
+  //wire NYPE_x113p_new() const { return NYPE_x113p.qp_new(); }
+  //wire NYPE_x113n_new() const { return NYPE_x113p.qn_new(); }
+  //
+  //wire RUTU_x113p_old() const { return RUTU_x113p.qp_old(); }
+  //wire RUTU_x113n_old() const { return RUTU_x113p.qn_old(); }
+  //
+  //wire RUTU_x113p_new() const { return RUTU_x113p.qp_new(); }
+  //wire RUTU_x113n_new() const { return RUTU_x113p.qn_new(); }
+
+  /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1(lcd.reg_lx.RUTU_x113p.qp_old()); }
+  /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1(lcd.reg_lx.RUTU_x113p.qp_new()); }
+
   //-----------------------------------------------------------------------------
 
   GateBoyBuses old_bus;
@@ -624,7 +702,6 @@ struct GateBoy {
   WindowRegisters win_reg;
   FineScroll      fine_scroll;
 
-  PPURegisters ppu_reg;
   PixCount     pix_count;
   PixelPipes   pix_pipes;
   GateBoyLCD   lcd;

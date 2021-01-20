@@ -311,6 +311,18 @@ struct GateBoy {
   void read_zram();
   void write_zram();
 
+  void update_count(wire XAPO_VID_RSTn, wire ZEME_AxCxExGx, wire ATEJ_LINE_RSTp, wire _DYTY_STORE_CLKp);
+  SpriteStoreFlag get_store_flags(wire _DYTY_STORE_CLKp);
+  SpriteMatchFlag get_match_flags_old(wire _AROR_MATCH_ENp_old);
+  SpriteMatchFlag get_match_flags_new(wire _AROR_MATCH_ENp_new);
+  SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
+  void get_sprite(SpriteFirstMatch first_match);
+  void store_sprite_x(SpriteStoreFlag store_flag, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
+  void store_sprite_index(SpriteStoreFlag store_flag);
+  void store_sprite_line(SpriteStoreFlag store_flag);
+  void ly_to_sprite_line(wire FEPO_STORE_MATCHp);
+
+
   //-----------------------------------------------------------------------------
 
   GateBoyBuses old_bus;

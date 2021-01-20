@@ -61,21 +61,6 @@ struct SpriteMatchFlag {
 struct GateBoySpriteStore {
   void reset_to_cart();
 
-  void update_count(wire XODO_VID_RSTp, wire ATAL_xBxDxFxH, wire ATEJ_LINE_TRIGp, wire _DYTY_STORE_CLKp);
-
-  SpriteStoreFlag  get_store_flags(wire _DYTY_STORE_CLKp);
-  SpriteMatchFlag  get_match_flags_old(wire _AROR_MATCH_ENp_old, const PixCount& _pix_count_old);
-  SpriteMatchFlag  get_match_flags_new(wire _AROR_MATCH_ENp, const PixCount& _pix_count);
-  SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
-
-  void get_sprite(SpriteFirstMatch first_match, GateBoyBuses& new_bus);
-
-  void store_sprite_index(GateBoyBuses& new_bus, SpriteStoreFlag store_flag);
-  void store_sprite_line (GateBoyBuses& new_bus, SpriteStoreFlag store_flag);
-  void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
-
-  void ly_to_sprite_line(GateBoyBuses& new_bus, const RegLY& reg_ly, const OamTempA& oam_temp_a, wire FEPO_STORE_MATCHp);
-
   void dump(Dumper& d);
 
   //----------------------------------------

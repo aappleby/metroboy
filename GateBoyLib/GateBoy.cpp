@@ -441,9 +441,9 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p29.AZEM*/ wire _AZEM_RENDERINGp_old = and2(XYMU_RENDERINGn.qn_old(), _BYJO_SCANNINGn_old);
   /*#p29.AROR*/ wire _AROR_MATCH_ENp_old  = and2(_AZEM_RENDERINGp_old, reg_lcdc.XYLO_LCDC_SPENn.qn_old());
 
-  SpriteMatchFlag old_match = sprite_store.get_match_flags_old(_AROR_MATCH_ENp_old, pix_count);
+  SpriteMatchFlag old_match = get_match_flags_old(_AROR_MATCH_ENp_old);
 
-  SpriteFirstMatch old_first_match = sprite_store.get_first_match(old_match);
+  SpriteFirstMatch old_first_match = get_first_match(old_match);
 
   wire TAVE_PRELOAD_DONE_TRIGp_old = tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_old();
 
@@ -633,11 +633,11 @@ void GateBoy::tock_slow(int pass_index) {
 
     /* p29.CARE*/ wire _CARE_COUNT_CLKn = and3(clk.XOCE_xBCxxFGx(), sprite_scanner.CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /* p29.DYTY*/ wire _DYTY_COUNT_CLKp = not1(_CARE_COUNT_CLKn);
-    sprite_store.update_count(rst.XAPO_VID_RSTn(), clk.ZEME_AxCxExGx(), lcd.ATEJ_LINE_RSTp_new(), _DYTY_COUNT_CLKp);
-    SpriteStoreFlag store_flag = sprite_store.get_store_flags(_DYTY_COUNT_CLKp);
-    sprite_store.store_sprite_x(store_flag, oam_temp_b_old, lcd.ABAK_LINE_RSTp_new(), sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), old_first_match);
-    sprite_store.store_sprite_index(new_bus, store_flag);
-    sprite_store.store_sprite_line (new_bus, store_flag);
+    update_count(rst.XAPO_VID_RSTn(), clk.ZEME_AxCxExGx(), lcd.ATEJ_LINE_RSTp_new(), _DYTY_COUNT_CLKp);
+    SpriteStoreFlag store_flag = get_store_flags(_DYTY_COUNT_CLKp);
+    store_sprite_x(store_flag, lcd.ABAK_LINE_RSTp_new(), sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), old_first_match);
+    store_sprite_index(store_flag);
+    store_sprite_line (store_flag);
   }
   //^^^^^
 
@@ -655,11 +655,11 @@ void GateBoy::tock_slow(int pass_index) {
 
   /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), sprite_scanner.BYJO_SCANNINGn());
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
-  SpriteMatchFlag sprite_match = sprite_store.get_match_flags_new(_AROR_MATCH_ENp, pix_count);
+  SpriteMatchFlag sprite_match = get_match_flags_new(_AROR_MATCH_ENp);
   {
-    SpriteFirstMatch first_match = sprite_store.get_first_match(sprite_match);
-    sprite_store.get_sprite(first_match, new_bus);
-    sprite_store.ly_to_sprite_line(new_bus, lcd.reg_ly, oam_bus.oam_temp_a, sprite_match.FEPO_STORE_MATCHp());
+    SpriteFirstMatch first_match = get_first_match(sprite_match);
+    get_sprite(first_match);
+    ly_to_sprite_line(sprite_match.FEPO_STORE_MATCHp());
   }
   /*#p21.WODU*/ wire WODU_HBLANKp = and2(sprite_match.XENA_STORE_MATCHn(), pix_count.XANO_PX167p_new()); // WODU goes high on odd, cleared on H
 

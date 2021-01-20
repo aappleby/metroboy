@@ -615,7 +615,6 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
 
-
   // vvvvvvvvvv
   {
     tock_sprite_fetcher(TEKY_SFETCH_REQp_old);

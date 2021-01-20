@@ -1,6 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#include "GateBoyLib/GateBoyBuses.h"
+
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteFirstMatch {
@@ -66,30 +68,15 @@ struct GateBoySpriteStore {
   SpriteMatchFlag  get_match_flags_new(wire _AROR_MATCH_ENp, const PixCount& _pix_count);
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
 
-  void get_sprite(SpriteFirstMatch first_match);
+  void get_sprite(SpriteFirstMatch first_match, GateBoyBuses& new_bus);
 
-  void store_sprite_index(SpriteStoreFlag store_flag);
-  void store_sprite_line (SpriteStoreFlag store_flag);
+  void store_sprite_index(GateBoyBuses& new_bus, SpriteStoreFlag store_flag);
+  void store_sprite_line (GateBoyBuses& new_bus, SpriteStoreFlag store_flag);
   void store_sprite_x    (SpriteStoreFlag store_flag, const OamTempB& oam_temp_b, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
 
-  void ly_to_sprite_line(wire FEPO_STORE_MATCHp, const RegLY& reg_ly, const OamTempA& oam_temp_a);
+  void ly_to_sprite_line(GateBoyBuses& new_bus, const RegLY& reg_ly, const OamTempA& oam_temp_a, wire FEPO_STORE_MATCHp);
 
   void dump(Dumper& d);
-
-  //----------------------------------------
-  // Sprite store index/line tristate buses
-
-  /*BUS_SPR_I0*/ Bus BUS_SPR_I0; // AxCxExGx
-  /*BUS_SPR_I1*/ Bus BUS_SPR_I1; // AxCxExGx
-  /*BUS_SPR_I2*/ Bus BUS_SPR_I2; // AxCxExGx
-  /*BUS_SPR_I3*/ Bus BUS_SPR_I3; // AxCxExGx
-  /*BUS_SPR_I4*/ Bus BUS_SPR_I4; // AxCxExGx
-  /*BUS_SPR_I5*/ Bus BUS_SPR_I5; // AxCxExGx
-
-  /*BUS_SPR_L0*/ Bus BUS_SPR_L0; // AxCxExGx
-  /*BUS_SPR_L1*/ Bus BUS_SPR_L1; // AxCxExGx
-  /*BUS_SPR_L2*/ Bus BUS_SPR_L2; // AxCxExGx
-  /*BUS_SPR_L3*/ Bus BUS_SPR_L3; // AxCxExGx
 
   //----------------------------------------
   // Sprite counter tracks how many sprites have been selected for this line.

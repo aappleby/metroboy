@@ -19,6 +19,7 @@
     <ClCompile Include="BusDump.cpp" />
     <ClCompile Include="GateBoy.cpp" />
     <ClCompile Include="GateBoyBootrom.cpp" />
+    <ClCompile Include="GateBoyBuses.cpp" />
     <ClCompile Include="GateBoyClocks.cpp" />
     <ClCompile Include="GateBoyCpuBus.cpp" />
     <ClCompile Include="GateBoyDMA.cpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="BusDump.h" />
     <ClInclude Include="GateBoy.h" />
     <ClInclude Include="GateBoyBootrom.h" />
+    <ClInclude Include="GateBoyBuses.h" />
     <ClInclude Include="GateBoyCpuBus.h" />
     <ClInclude Include="GateBoyRegisters.h" />
     <ClInclude Include="GateBoyResetDebug.h" />

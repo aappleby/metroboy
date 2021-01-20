@@ -198,7 +198,7 @@ struct DFF : public BitBase {
 
 //-----------------------------------------------------------------------------
 // 8-rung register with no reset, inverting input, and dual outputs. Used by
-// sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
+// sprite store, bg pix a, spr pix a/b, dma hi, new_bus mux sprite temp
 
 // DFF8_01 |o------O | << CLKn
 // DFF8_02 |====O====| << Dn

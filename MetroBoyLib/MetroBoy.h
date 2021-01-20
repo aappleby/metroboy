@@ -46,7 +46,7 @@ struct MetroBoy {
   MetroBoyVRAM    vram;
   MetroBoyOAM     oam;
   MetroBoyZRAM    zram;
-  MetroBoyJoypad  joypad;
+  MetroBoyJoypad  joy;
   MetroBoySerial  serial;
   MetroBoyPPU     ppu;
   MetroBoySPU     spu;

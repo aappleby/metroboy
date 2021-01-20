@@ -1,6 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#include "GateBoyLib/GateBoyBuses.h"
+
 // Bottom-level registers that don't have dependencies on anything else.
 
 // #define ADDR_LCDC        0xFF40
@@ -92,8 +94,6 @@ struct BGScrollY {
 //-----------------------------------------------------------------------------
 
 struct SpritePix {
-  static SpritePix flip(GateBoyVramBus& vram_bus, wire TEXY_SFETCHINGp, DFF8n BAXO_OAM_DB5p);
-
   wire PUTE_FLIP0p;
   wire PELO_FLIP1p;
   wire PONO_FLIP2p;
@@ -119,9 +119,6 @@ struct RegLCDC {
     XONA_LCDC_LCDENn .reset(1, 0);
   }
 
-  void read(GateBoyCpuBus& cpu_bus);
-  void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
   /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn;   // xxxxxxxH
   /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn;   // xxxxxxxH
   /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn; // xxxxxxxH
@@ -145,10 +142,6 @@ struct RegStat {
     RUPO_LYC_MATCHn.reset(0);
   }
 
-  void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-  void tock(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, const RegLYC& reg_lyc);
-  void read(GateBoyCpuBus& cpu_bus, wire ACYL_SCANNINGp, NorLatch XYMU_RENDERINGn, wire PARU_VBLANKp);
-
   /*p21.RUPO*/ NorLatch RUPO_LYC_MATCHn;       // xxCxxxxx
 
   /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn; // xxxxxxxH
@@ -162,10 +155,10 @@ struct RegStat {
 
 struct RegSCY {
 
-  void read (GateBoyCpuBus& cpu_bus);
-  void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+  void read (GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
+  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
-  // FF42 - SCY -> vram bus
+  // FF42 - SCY -> vram new_bus
   /*p23.GAVE*/ DFF9 GAVE_SCY0n;          // xxxxxxxH
   /*p23.FYMO*/ DFF9 FYMO_SCY1n;          // xxxxxxxH
   /*p23.FEZU*/ DFF9 FEZU_SCY2n;          // xxxxxxxH
@@ -181,8 +174,8 @@ struct RegSCY {
 
 struct RegSCX {
 
-  void read (GateBoyCpuBus& cpu_bus);
-  void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+  void read (GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
+  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
   /*p23.DATY*/ DFF9 DATY_SCX0n;          // xxxxxxxH
   /*p23.DUZU*/ DFF9 DUZU_SCX1n;          // xxxxxxxH
@@ -213,8 +206,8 @@ struct RegLY {
   uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &MUWY_LY0p); }
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &MUWY_LY0p); }
 
-  void read(GateBoyCpuBus& cpu_bus);
-  void tock2(GateBoyResetDebug& rst, RegLX& reg_lx);
+  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
+  void tock2(GateBoyBuses& new_bus, GateBoyResetDebug& rst, RegLX& reg_lx);
 
   wire NERU_VSYNCp() const {
     /*#p24.NERU*/ wire _NERU_VSYNCp = nor8(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(), MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
@@ -306,8 +299,8 @@ struct RegLYC {
 
   uint8_t get() const { return (uint8_t)BitBase::pack_oldn(8, &SYRY_LYC0n); }
 
-  void read (GateBoyCpuBus& cpu_bus);
-  void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+  void read (GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
+  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
   void tock2(GateBoyResetDebug& rst, GateBoyClock& clk, const RegLY& reg_ly);
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
@@ -337,8 +330,8 @@ struct RegBGP {
     MENA_BGP_D7n.reset(1, 0);
   }
 
-  void read(GateBoyCpuBus& cpu_bus);
-  void write_sync(GateBoyCpuBus& cpu_bus);
+  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
+  void write(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
 
   /*p36.PAVO*/ DFF8p PAVO_BGP_D0n; // xxxxxxxH
   /*p36.NUSY*/ DFF8p NUSY_BGP_D1n; // xxxxxxxH
@@ -354,8 +347,8 @@ struct RegBGP {
 // FF48 - OBP0
 
 struct RegOBP0 {
-  void read(GateBoyCpuBus& cpu_bus);
-  void write_sync(GateBoyCpuBus& cpu_bus);
+  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
+  void write(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
 
   /*p36.XUFU*/ DFF8p XUFU_OBP0_D0n; // xxxxxxxH
   /*p36.XUKY*/ DFF8p XUKY_OBP0_D1n; // xxxxxxxH
@@ -371,8 +364,8 @@ struct RegOBP0 {
 // FF49 - OBP1
 
 struct RegOBP1 {
-  void read(GateBoyCpuBus& cpu_bus);
-  void write_sync(GateBoyCpuBus& cpu_bus);
+  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
+  void write(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
 
   /*p36.MOXY*/ DFF8p MOXY_OBP1_D0n; // xxxxxxxH
   /*p36.LAWO*/ DFF8p LAWO_OBP1_D1n; // xxxxxxxH
@@ -401,8 +394,8 @@ struct RegWY {
 
   int get() const { return BitBase::pack_oldn(8, &NESO_WY0n); }
 
-  void read(GateBoyCpuBus& cpu_bus);
-  void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
+  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
   /*p23.NESO*/ DFF9 NESO_WY0n; // xxxxxxxH
   /*p23.NYRO*/ DFF9 NYRO_WY1n; // xxxxxxxH
@@ -431,8 +424,8 @@ struct RegWX {
 
   int get() const { return BitBase::pack_oldn(8, &MYPA_WX0n); }
 
-  void read(GateBoyCpuBus& cpu_bus);
-  void write_sync(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
+  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
   /*p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
   /*p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH
@@ -550,7 +543,7 @@ struct OamTempB {
 
 struct TileTempA {
 
-  void store_vram_data(const GateBoyVramBus& vram_bus, wire LOMA_LATCH_TILE_DAn);
+  void store_vram_data(GateBoyBuses& new_bus, const GateBoyVramBus& vram_bus, wire LOMA_LATCH_TILE_DAn);
 
   void dump(Dumper& d) {
     d.dump_slice2n("Tile Temp A : ", &LEGU_TILE_DA0n, 8);
@@ -569,7 +562,7 @@ struct TileTempA {
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
-  void store_vram_data(const GateBoyVramBus& vram_bus, wire _LABU_LATCH_TILE_DBn);
+  void store_vram_data(GateBoyBuses& new_bus, const GateBoyVramBus& vram_bus, wire _LABU_LATCH_TILE_DBn);
 
   void dump(Dumper& d) {
     d.dump_slice2p("Tile Temp B : ", &RAWU_TILE_DB0p, 8);

@@ -218,12 +218,12 @@ void MetroBoyApp::app_update(double /*delta*/) {
 
   if (runmode == RUN_FAST) {
     gb.clear_history();
-    gb->joypad.set(~buttons);
+    gb->joy.set(~buttons);
     step_cycle(MCYCLES_PER_FRAME * 8);
   }
   else if (runmode == RUN_SYNC) {
     gb.clear_history();
-    gb->joypad.set(~buttons);
+    gb->joy.set(~buttons);
     sync_to_vblank();
 
     //audio_begin();
@@ -311,7 +311,7 @@ void MetroBoyApp::app_render_ui() {
     gb->timer.dump(d);
     gb->dma.dump(d);
     gb->cart.dump(d);
-    gb->joypad.dump(d);
+    gb->joy.dump(d);
     gb->serial.dump(d);
     text_painter.render_string(view, d.s, (float)column, 0);
     d.clear();

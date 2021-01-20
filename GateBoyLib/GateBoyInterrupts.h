@@ -1,6 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#include "GateBoyLib/GateBoyBuses.h"
+
 //------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyInterrupts {
@@ -8,22 +10,6 @@ struct GateBoyInterrupts {
     LOPE_FF0F_D0p.reset(1, 1);
     SIG_CPU_INT_VBLANK.reset(1);
   }
-
-  void read_intf(GateBoyCpuBus& cpu_bus);
-  void read_ie(GateBoyCpuBus& cpu_bus);
-  void write_ie(const GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
-  void tock(
-    const GateBoyResetDebug& rst,
-    GateBoyCpuBus& cpu_bus,
-    const GateBoyJoypad& joypad,
-    const RegStat& reg_stat,
-    const RegLYC& reg_lyc,
-    const GateBoySerial& serial,
-    wire PARU_VBLANKp,
-    wire PURE_LINE_ENDn,
-    DFF17 MOBA_TIMER_OVERFLOWp,
-    wire WODU_HBLANKp);
 
   void dump(Dumper& d) {
     d.dump_slice2p("FF0F IF : ", &LOPE_FF0F_D0p.state, 5);
@@ -87,13 +73,13 @@ struct GateBoyInterrupts {
   /*SIG_CPU_INT_STAT  */ SigOut SIG_CPU_INT_STAT  ;    // bottom right port PORTB_07: <- P02.LALU, stat int
   /*SIG_CPU_INT_TIMER */ SigOut SIG_CPU_INT_TIMER ;    // bottom right port PORTB_11: <- P02.NYBO, timer int
   /*SIG_CPU_INT_SERIAL*/ SigOut SIG_CPU_INT_SERIAL;    // bottom right port PORTB_15: <- P02.UBUL, serial int
-  /*SIG_CPU_INT_JOYPAD*/ SigOut SIG_CPU_INT_JOYPAD;    // bottom right port PORTB_19: <- P02.ULAK, joypad int
+  /*SIG_CPU_INT_JOYPAD*/ SigOut SIG_CPU_INT_JOYPAD;    // bottom right port PORTB_19: <- P02.ULAK, joy int
 
   /*SIG_CPU_ACK_VBLANK*/ SigIn  SIG_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
   /*SIG_CPU_ACK_STAT  */ SigIn  SIG_CPU_ACK_STAT  ;    // bottom right port PORTB_05: -> P02.LEJA, stat int ack
   /*SIG_CPU_ACK_TIMER */ SigIn  SIG_CPU_ACK_TIMER ;    // bottom right port PORTB_09: -> P02.LESA, timer int ack
   /*SIG_CPU_ACK_SERIAL*/ SigIn  SIG_CPU_ACK_SERIAL;    // bottom right port PORTB_13: -> P02.LUFE, serial int ack
-  /*SIG_CPU_ACK_JOYPAD*/ SigIn  SIG_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joypad int ack
+  /*SIG_CPU_ACK_JOYPAD*/ SigIn  SIG_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joy int ack
 };
 
 //------------------------------------------------------------------------------------------------------------------------

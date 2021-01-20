@@ -77,7 +77,7 @@ std::map<std::string, std::vector<std::string>> gate_to_in_ports = {
   {"sig_in", {}},
   {"sig_out", {"Dp"}},
 
-  // bus is special, it has a variable number of inputs
+  // new_bus is special, it has a variable number of inputs
 
   {"dff9",      {"CLKp", "SETn", "Dp"}},
   {"dff22",     {"CLKp", "SETn", "RSTn", "Dp"}},
@@ -661,7 +661,7 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
     // parse the tribuf first
     result &= parse_cell_def(c, match[2].str());
 
-    // so we can add it as an input to the bus.
+    // so we can add it as an input to the new_bus.
     result &= parse_tribuf_bus_target(c, match[1].str());
   }
   else if (regex_match(rest, match, pin_call)) {
@@ -1017,8 +1017,8 @@ bool DieDB::parse_tribuf_bus_target(DieCell& c, const string& bus_name) {
 
   smatch match;
   if (regex_match(bus_name, match, valid_bus_name)) {
-    std::string bus = match[1].str();
-    DieCell* bus_cell = get_or_create_cell(bus);
+    std::string new_bus = match[1].str();
+    DieCell* bus_cell = get_or_create_cell(new_bus);
 
     bus_cell->input_ports.push_back(c.tag);
 

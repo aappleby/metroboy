@@ -27,24 +27,24 @@ wire GateBoyDMA::LUFA_DMA_VRAMp() const {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyDMA::write_dma_sync(GateBoyCpuBus& cpu_bus) {
-  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(cpu_bus.CUPA_CPU_WRp(), cpu_bus.XEDA_FF46p());
+void GateBoyDMA::write_dma_sync(GateBoyCpuBus& cpu_bus, const GateBoyBuses& new_bus) {
+  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(cpu_bus.CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
   /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
-  /*#p04.NAFA*/ NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D00p.qp_old());
-  /* p04.PYNE*/ PYNE_DMA_A09n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D01p.qp_old());
-  /* p04.PARA*/ PARA_DMA_A10n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D02p.qp_old());
-  /* p04.NYDO*/ NYDO_DMA_A11n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D03p.qp_old());
-  /* p04.NYGY*/ NYGY_DMA_A12n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D04p.qp_old());
-  /* p04.PULA*/ PULA_DMA_A13n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D05p.qp_old());
-  /* p04.POKU*/ POKU_DMA_A14n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D06p.qp_old());
-  /* p04.MARU*/ MARU_DMA_A15n.dff8p(LORU_FF46_WRn, cpu_bus.BUS_CPU_D07p.qp_old());
+  /*#p04.NAFA*/ NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D00p.qp_old());
+  /* p04.PYNE*/ PYNE_DMA_A09n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D01p.qp_old());
+  /* p04.PARA*/ PARA_DMA_A10n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D02p.qp_old());
+  /* p04.NYDO*/ NYDO_DMA_A11n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D03p.qp_old());
+  /* p04.NYGY*/ NYGY_DMA_A12n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D04p.qp_old());
+  /* p04.PULA*/ PULA_DMA_A13n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D05p.qp_old());
+  /* p04.POKU*/ POKU_DMA_A14n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D06p.qp_old());
+  /* p04.MARU*/ MARU_DMA_A15n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus)
+void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, const GateBoyBuses& new_bus)
 {
-  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(cpu_bus.CUPA_CPU_WRp(), cpu_bus.XEDA_FF46p());
+  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(cpu_bus.CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
   /*#p04.LUPA*/ wire _LUPA_DMA_TRIG_old = nor2(LAVY_FF46_WRp, LYXE_DMA_LATCHp.qn_old());
   /*#p04.LENE*/ LENE_DMA_TRIG_d4.dff17(clk.MOPA_xxxxEFGH(), rst.CUNU_SYS_RSTn(), LUVY_DMA_TRIG_d0.qp_old());
   /*#p04.LUVY*/ LUVY_DMA_TRIG_d0.dff17(clk.UVYT_ABCDxxxx(), rst.CUNU_SYS_RSTn(), _LUPA_DMA_TRIG_old);
@@ -78,18 +78,18 @@ void GateBoyDMA::tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& 
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyDMA::read_dma(GateBoyCpuBus& cpu_bus) {
-  /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(cpu_bus.ASOT_CPU_RDp(), cpu_bus.XEDA_FF46p());
+void GateBoyDMA::read_dma(GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus) {
+  /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(cpu_bus.ASOT_CPU_RDp(), new_bus.XEDA_FF46p());
   /*#p04.NYGO*/ wire NYGO_FF46_RDn = not1(MOLU_FF46_RDp);
   /*#p04.PUSY*/ wire PUSY_FF46_RDp = not1(NYGO_FF46_RDn);
-  /*#p04.POLY_DMA0_TO_CD0*/ cpu_bus.BUS_CPU_D00p.tri6_pn(PUSY_FF46_RDp, NAFA_DMA_A08n.qp_new());
-  /* p04.ROFO_DMA1_TO_CD1*/ cpu_bus.BUS_CPU_D01p.tri6_pn(PUSY_FF46_RDp, PYNE_DMA_A09n.qp_new());
-  /* p04.REMA_DMA2_TO_CD2*/ cpu_bus.BUS_CPU_D02p.tri6_pn(PUSY_FF46_RDp, PARA_DMA_A10n.qp_new());
-  /* p04.PANE_DMA3_TO_CD3*/ cpu_bus.BUS_CPU_D03p.tri6_pn(PUSY_FF46_RDp, NYDO_DMA_A11n.qp_new());
-  /* p04.PARE_DMA4_TO_CD4*/ cpu_bus.BUS_CPU_D04p.tri6_pn(PUSY_FF46_RDp, NYGY_DMA_A12n.qp_new());
-  /* p04.RALY_DMA5_TO_CD5*/ cpu_bus.BUS_CPU_D05p.tri6_pn(PUSY_FF46_RDp, PULA_DMA_A13n.qp_new());
-  /* p04.RESU_DMA6_TO_CD6*/ cpu_bus.BUS_CPU_D06p.tri6_pn(PUSY_FF46_RDp, POKU_DMA_A14n.qp_new());
-  /* p04.NUVY_DMA7_TO_CD7*/ cpu_bus.BUS_CPU_D07p.tri6_pn(PUSY_FF46_RDp, MARU_DMA_A15n.qp_new());
+  /*#p04.POLY_DMA0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(PUSY_FF46_RDp, NAFA_DMA_A08n.qp_new());
+  /* p04.ROFO_DMA1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_pn(PUSY_FF46_RDp, PYNE_DMA_A09n.qp_new());
+  /* p04.REMA_DMA2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_pn(PUSY_FF46_RDp, PARA_DMA_A10n.qp_new());
+  /* p04.PANE_DMA3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_pn(PUSY_FF46_RDp, NYDO_DMA_A11n.qp_new());
+  /* p04.PARE_DMA4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_pn(PUSY_FF46_RDp, NYGY_DMA_A12n.qp_new());
+  /* p04.RALY_DMA5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_pn(PUSY_FF46_RDp, PULA_DMA_A13n.qp_new());
+  /* p04.RESU_DMA6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_pn(PUSY_FF46_RDp, POKU_DMA_A14n.qp_new());
+  /* p04.NUVY_DMA7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_pn(PUSY_FF46_RDp, MARU_DMA_A15n.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

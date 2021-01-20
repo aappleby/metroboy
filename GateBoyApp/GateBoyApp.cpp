@@ -306,7 +306,7 @@ void GateBoyApp::app_render_frame() {
   d("\n");
 
   d("\002===== Joypad =====\001\n");
-  gb->joypad.dump(d);
+  gb->joy.dump(d);
   d("\n");
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);

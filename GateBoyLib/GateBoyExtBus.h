@@ -1,6 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#include "GateBoyLib/GateBoyBuses.h"
+
 struct GateBoyDMA;
 struct GateBoyResetDebug;
 
@@ -103,20 +105,22 @@ struct GateBoyExtBus {
   void copy_addr_latch_to_pins(
     const GateBoyResetDebug& rst,
     const GateBoyCpuBus& cpu_bus,
-    const GateBoyDMA& dma
+    const GateBoyDMA& dma,
+    const GateBoyBuses& new_bus
   );
 
-  void copy_pins_to_data_latch(const GateBoyCpuBus& cpu_bus);
-  void copy_data_latch_to_cpu_bus(GateBoyCpuBus& cpu_bus);
-  void copy_cpu_data_to_pins(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus);
+  void copy_pins_to_data_latch(const GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus);
+  void copy_data_latch_to_cpu_bus(GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus);
+  void copy_cpu_data_to_pins(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus);
 
   void set_control_pins(
     const GateBoyResetDebug& rst,
     const GateBoyCpuBus& cpu_bus,
-    const GateBoyDMA& dma
+    const GateBoyDMA& dma,
+    const GateBoyBuses& new_bus
   );
 
-  void copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus);
+  void copy_cpu_addr_to_addr_latch(const GateBoyResetDebug& rst, const GateBoyCpuBus& cpu_bus, const GateBoyBuses& new_bus);
   void read_ext_to_pins (const uint8_t* cart_buf, const uint8_t* cart_ram, const uint8_t* ext_ram);
   void write_pins_to_ext(uint8_t* cart_ram, uint8_t* ext_ram);
 

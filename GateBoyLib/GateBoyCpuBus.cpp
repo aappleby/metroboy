@@ -6,82 +6,11 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyCpuBus::reset_to_bootrom() {
-  BUS_CPU_D00p.reset(1);
-  BUS_CPU_D01p.reset(1);
-  BUS_CPU_D02p.reset(1);
-  BUS_CPU_D03p.reset(1);
-  BUS_CPU_D04p.reset(1);
-  BUS_CPU_D05p.reset(1);
-  BUS_CPU_D06p.reset(1);
-  BUS_CPU_D07p.reset(1);
 }
 
 void GateBoyCpuBus::reset_to_cart() {
   TEPU_BOOT_BITn_h.reset(1, 1);
   SIG_CPU_BOOTp.reset(0);
-
-  BUS_CPU_A00p.reset(0);
-  BUS_CPU_A01p.reset(0);
-  BUS_CPU_A02p.reset(0);
-  BUS_CPU_A03p.reset(0);
-  BUS_CPU_A04p.reset(1);
-  BUS_CPU_A05p.reset(0);
-  BUS_CPU_A06p.reset(1);
-  BUS_CPU_A07p.reset(0);
-  BUS_CPU_A08p.reset(0);
-  BUS_CPU_A09p.reset(0);
-  BUS_CPU_A10p.reset(0);
-  BUS_CPU_A11p.reset(0);
-  BUS_CPU_A12p.reset(0);
-  BUS_CPU_A13p.reset(0);
-  BUS_CPU_A14p.reset(0);
-  BUS_CPU_A15p.reset(0);
-
-  BUS_CPU_D00p.reset(1);
-  BUS_CPU_D01p.reset(1);
-  BUS_CPU_D02p.reset(1);
-  BUS_CPU_D03p.reset(1);
-  BUS_CPU_D04p.reset(1);
-  BUS_CPU_D05p.reset(1);
-  BUS_CPU_D06p.reset(1);
-  BUS_CPU_D07p.reset(1);
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoyCpuBus::set_addr(int phase_total, Req bus_req_new)
-{
-  uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
-  BUS_CPU_A00p.set((bus_addr_new >>  0) & 1);
-  BUS_CPU_A01p.set((bus_addr_new >>  1) & 1);
-  BUS_CPU_A02p.set((bus_addr_new >>  2) & 1);
-  BUS_CPU_A03p.set((bus_addr_new >>  3) & 1);
-  BUS_CPU_A04p.set((bus_addr_new >>  4) & 1);
-  BUS_CPU_A05p.set((bus_addr_new >>  5) & 1);
-  BUS_CPU_A06p.set((bus_addr_new >>  6) & 1);
-  BUS_CPU_A07p.set((bus_addr_new >>  7) & 1);
-  BUS_CPU_A08p.set((bus_addr_new >>  8) & 1);
-  BUS_CPU_A09p.set((bus_addr_new >>  9) & 1);
-  BUS_CPU_A10p.set((bus_addr_new >> 10) & 1);
-  BUS_CPU_A11p.set((bus_addr_new >> 11) & 1);
-  BUS_CPU_A12p.set((bus_addr_new >> 12) & 1);
-  BUS_CPU_A13p.set((bus_addr_new >> 13) & 1);
-  BUS_CPU_A14p.set((bus_addr_new >> 14) & 1);
-  BUS_CPU_A15p.set((bus_addr_new >> 15) & 1);
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoyCpuBus::set_data(int phase_total, Req bus_req_new) {
-  wire bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
-  BUS_CPU_D00p.tri(bus_oe_new, (bus_req_new.data_lo >> 0) & 1);
-  BUS_CPU_D01p.tri(bus_oe_new, (bus_req_new.data_lo >> 1) & 1);
-  BUS_CPU_D02p.tri(bus_oe_new, (bus_req_new.data_lo >> 2) & 1);
-  BUS_CPU_D03p.tri(bus_oe_new, (bus_req_new.data_lo >> 3) & 1);
-  BUS_CPU_D04p.tri(bus_oe_new, (bus_req_new.data_lo >> 4) & 1);
-  BUS_CPU_D05p.tri(bus_oe_new, (bus_req_new.data_lo >> 5) & 1);
-  BUS_CPU_D06p.tri(bus_oe_new, (bus_req_new.data_lo >> 6) & 1);
-  BUS_CPU_D07p.tri(bus_oe_new, (bus_req_new.data_lo >> 7) & 1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -89,6 +18,7 @@ void GateBoyCpuBus::set_data(int phase_total, Req bus_req_new) {
 void GateBoyCpuBus::set_pins(
   const GateBoyResetDebug& rst,
   const GateBoyClock& clk,
+  const GateBoyBuses& new_bus,
   int phase_total,
   Req bus_req_new)
 {
@@ -117,7 +47,7 @@ void GateBoyCpuBus::set_pins(
 
   // Data has to be driven on EFGH or we fail the wave tests
 
-  /*SIG_CPU_ADDR_HIp*/ SIG_CPU_ADDR_HIp.sig_out(SYRO_FE00_FFFF());
+  /*SIG_CPU_ADDR_HIp*/ SIG_CPU_ADDR_HIp.sig_out(new_bus.SYRO_FE00_FFFF());
   /*SIG_CPU_UNOR_DBG*/ SIG_CPU_UNOR_DBG.sig_out(rst.UNOR_MODE_DBG2p());
   /*SIG_CPU_UMUT_DBG*/ SIG_CPU_UMUT_DBG.sig_out(rst.UMUT_MODE_DBG1p());
 

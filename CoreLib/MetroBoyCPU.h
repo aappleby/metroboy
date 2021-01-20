@@ -86,12 +86,12 @@ struct MetroBoyCPU {
 #pragma warning(disable : 4201)
 #pragma warning(disable : 26495)
 
-  // right "addr" bus           low side     high side
+  // right "addr" new_bus           low side     high side
   union { uint16_t pc; struct { uint8_t pcl; uint8_t pch; }; };
   union { uint16_t sp; struct { uint8_t spl; uint8_t sph; }; };
   union { uint16_t xy; struct { uint8_t xyl; uint8_t xyh; }; };
 
-  // left "data" bus            low side     high side
+  // left "data" new_bus            low side     high side
   union { uint16_t bc; struct { uint8_t   c; uint8_t   b; }; };
   union { uint16_t de; struct { uint8_t   e; uint8_t   d; }; };
   union { uint16_t hl; struct { uint8_t   l; uint8_t   h; }; };

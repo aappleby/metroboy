@@ -966,7 +966,7 @@ int GateBoyTests::test_ext_bus() {
     const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
 
     const char* D00_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // Scope trace w/ extra pulldown resistor patched in so we can see when
-    const char* D01_WAVE = "^^111111 ^1110000 ^^000000 ^^000000 ^^^^^^^^"; // the pullups are the only thing driving the bus.
+    const char* D01_WAVE = "^^111111 ^1110000 ^^000000 ^^000000 ^^^^^^^^"; // the pullups are the only thing driving the new_bus.
     const char* D02_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // #
     const char* D03_WAVE = "^^000000 ^1110000 ^^111111 ^^111111 ^^^^^^^^"; // #
     const char* D04_WAVE = "^^111111 ^1111111 ^^111111 ^^111111 ^^^^^^^^"; // #
@@ -1216,7 +1216,7 @@ int GateBoyTests::test_ext_bus() {
     }
 
     // The glitch pulse causes the ext address latch to latch even though the
-    // 0xFFxx addresses are _not_ external, so the address shows up on the bus.
+    // 0xFFxx addresses are _not_ external, so the address shows up on the new_bus.
 
     //                                xxxxxxx x
     const char* A00_WAVE = "11111111 10000000 00000000 01111111 11111111";

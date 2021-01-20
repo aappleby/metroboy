@@ -1,13 +1,15 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#include "GateBoyLib/GateBoyBuses.h"
+
 //------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyDMA {
 
-  void write_dma_sync(GateBoyCpuBus& cpu_bus);
-  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus);
-  void read_dma(GateBoyCpuBus& cpu_bus);
+  void write_dma_sync(GateBoyCpuBus& cpu_bus, const GateBoyBuses& new_bus);
+  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, const GateBoyBuses& new_bus);
+  void read_dma(GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus);
 
   wire LUMA_DMA_CARTp() const;
   wire LUFA_DMA_VRAMp() const;

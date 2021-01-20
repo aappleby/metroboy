@@ -1,6 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#include "GateBoyLib/GateBoyBuses.h"
+
 //-----------------------------------------------------------------------------
 
 struct GateBoySerial {
@@ -8,11 +10,11 @@ struct GateBoySerial {
     COTY_SER_CLK.reset(0, 0);
   }
 
-  void tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div);
-  void tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
+  void tock1(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyDiv& div, GateBoyBuses& new_bus);
+  void tock2(GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus);
 
-  void read_sb(GateBoyCpuBus& cpu_bus);
-  void read_sc(GateBoyCpuBus& cpu_bus);
+  void read_sb(GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus);
+  void read_sc(GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus);
 
   /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING; // xxxxxxxH ?
   /*p06.CULY*/ DFF17 CULY_SER_DIR;    // AxxxDxxH ?

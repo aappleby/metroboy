@@ -7,6 +7,7 @@
 #include "GateBoyLib/Probe.h"
 
 #include "GateBoyLib/GateBoyBootrom.h"
+#include "GateBoyLib/GateBoyBuses.h"
 #include "GateBoyLib/GateBoyTimer.h"
 #include "GateBoyLib/GateBoyLCD.h"
 #include "GateBoyLib/GateBoyDMA.h"
@@ -150,13 +151,47 @@ struct GateBoy {
   }
 
   //-----------------------------------------------------------------------------
+
+  void read_boot_bit();
+  void write_boot_bit_sync();
+  void read_bootrom();
+
+  void reg_lcdc_read();
+  void reg_lcdc_write();
+
+  void reg_joy_read();
+  void reg_joy_write();
+  void reg_joy_tock2();
+
+  /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new()); }
+
+  void reg_stat_read(wire ACYL_SCANNINGp, wire PARU_VBLANKp);
+  void reg_stat_write();
+  void reg_stat_tock();
+
+  void tock_interrupts(wire PARU_VBLANKp, wire PURE_LINE_ENDn, DFF17 MOBA_TIMER_OVERFLOWp, wire WODU_HBLANKp);
+  void read_intf();
+  void read_ie();
+  void write_ie();
+
+  void tock_clocks();
+  void tock_vid_clocks();
+
+  SpritePix flip_sprite_pix(wire TEXY_SFETCHINGp, DFF8n BAXO_OAM_DB5p);
+
+  //-----------------------------------------------------------------------------
+
+  GateBoyBuses old_bus;
+
+  //-----------------------------------------------------------------------------
   // All the SOC registers, pins, buses. Everything in this section should derive
   // from BitBase.
 
   uint64_t sentinel1 = SENTINEL1;
 
   //----------
-  // CPU interface
+
+  GateBoyBuses new_bus;
 
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
@@ -174,7 +209,7 @@ struct GateBoy {
   GateBoyTimer      timer;
   GateBoyDMA        dma;
   GateBoyInterrupts interrupts;
-  GateBoyJoypad     joypad;
+  GateBoyJoypad     joy;
   GateBoySerial     serial;
 
   //----------

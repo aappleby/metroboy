@@ -1,6 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#include "GateBoyLib/GateBoyBuses.h"
+
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteScanner {
@@ -51,15 +53,21 @@ struct SpriteScanner {
     return _AVAP_SCAN_DONE_TRIGp_new;
   }
 
+  wire ACYL_SCANNINGp(GateBoyDMA& dma);
+  wire AVAP_SCAN_DONE_TRIGp(GateBoyLCD& lcd);
+
   /* p29.CEHA*/ wire CEHA_SCANNINGp() const { return not1(CENO_SCANNINGn.qn_new()); }
   /*#p29.BYJO*/ wire BYJO_SCANNINGn() const { return not1(CEHA_SCANNINGp()); }
 
-  void tock(GateBoyResetDebug& rst,
-            GateBoyClock& clk,
-            GateBoyLCD& lcd,
-            GateBoySpriteStore& sprite_store,
-            GateBoyOamBus& oam_bus,
-            NorLatch XYMU_RENDERINGn);
+  void tock(
+    GateBoyBuses& new_bus,
+    GateBoyResetDebug& rst,
+    GateBoyClock& clk,
+    GateBoyLCD& lcd,
+    GateBoySpriteStore& sprite_store,
+    GateBoyOamBus& oam_bus,
+    DFF17& VOGA_HBLANKp,
+    NorLatch& XYMU_RENDERINGn);
 
   void dump(Dumper& d) {
     d.dump_slice2p("SCAN INDEX     : ", &YFEL_SCAN0, 6);

@@ -22,7 +22,7 @@ void MetroBoy::reset_to_cart(uint8_t* new_rom, size_t new_rom_size) {
   spu.reset_to_cart();
   timer.reset_to_cart();
   vram.reset_to_cart();
-  joypad.reset_to_cart();
+  joy.reset_to_cart();
   serial.reset_to_cart();
   zram.reset_to_cart();
 
@@ -54,7 +54,7 @@ void MetroBoy::reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size) {
   spu.reset_to_cart();
   timer.reset_to_cart();
   vram.reset_to_cart();
-  joypad.reset_to_cart();
+  joy.reset_to_cart();
   serial.reset_to_cart();
   zram.reset_to_cart();
 
@@ -85,7 +85,7 @@ void MetroBoy::next_phase() {
     ibus_ack = { 0 };
     ppu.   tick(phase_total, ibus_req, ibus_ack);
     serial.tick(phase_total, ibus_req, ibus_ack);
-    joypad.tick(phase_total, ibus_req, ibus_ack);
+    joy.tick(phase_total, ibus_req, ibus_ack);
     zram.  tick(phase_total, ibus_req, ibus_ack);
     spu.   tick(phase_total, ibus_req, ibus_ack);
     boot.  tick(phase_total, ibus_req, ibus_ack);
@@ -140,7 +140,7 @@ void MetroBoy::next_phase() {
 
   timer. tock(phase_total, ibus_req);
   serial.tock(phase_total, ibus_req);
-  joypad.tock(phase_total, ibus_req);
+  joy.tock(phase_total, ibus_req);
   boot.  tock(phase_total, ibus_req);
   zram.  tock(phase_total, ibus_req);
   spu.   tock(phase_total, ibus_req);
@@ -149,7 +149,7 @@ void MetroBoy::next_phase() {
   cart.  tock(phase_total, ebus_req);
   vram.  tock(phase_total, vbus_req);
   oam.   tock(phase_total, obus_req);
-  ints.  tock(phase_total, ibus_req, cpu.int_ack, ppu.vblank_int, ppu.stat_int, timer.timer_int, /*serial_int*/ 0, joypad.get() != 0xFF);
+  ints.  tock(phase_total, ibus_req, cpu.int_ack, ppu.vblank_int, ppu.stat_int, timer.timer_int, /*serial_int*/ 0, joy.get() != 0xFF);
 
   //----------
 

@@ -172,7 +172,7 @@ void P14_Ch2Regs_tick(const Gameboy& a,
 
     /*
     // wat?
-    if (b.ch2.HUMA) next.bus.set_data(
+    if (b.ch2.HUMA) next.new_bus.set_data(
       b.ch2.GOJY
     );
     */

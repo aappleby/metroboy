@@ -734,6 +734,38 @@ struct GateBoy {
     return _SOHO_SPR_VRAM_RDp;
   }
 
+  //-----------------------------------------------------------------------------
+
+  wire FETO_SCAN_DONEp_old() const {
+    /*#p28.FETO*/ wire _FETO_SCAN_DONEp_old = and4(sprite_scanner.YFEL_SCAN0.qp_old(), sprite_scanner.WEWY_SCAN1.qp_old(), sprite_scanner.GOSO_SCAN2.qp_old(), sprite_scanner.FONY_SCAN5.qp_old()); // 32 + 4 + 2 + 1 = 39
+    return _FETO_SCAN_DONEp_old;
+  }
+
+  wire FETO_SCAN_DONEp_new() const {
+    /*#p28.FETO*/ wire _FETO_SCAN_DONEp_new = and4(sprite_scanner.YFEL_SCAN0.qp_new(), sprite_scanner.WEWY_SCAN1.qp_new(), sprite_scanner.GOSO_SCAN2.qp_new(), sprite_scanner.FONY_SCAN5.qp_new()); // 32 + 4 + 2 + 1 = 39
+    return _FETO_SCAN_DONEp_new;
+  }
+
+  wire FETO_SCAN_DONEp_any() const {
+    /*#p28.FETO*/ wire _FETO_SCAN_DONEp_any = and4(sprite_scanner.YFEL_SCAN0.qp_any(), sprite_scanner.WEWY_SCAN1.qp_any(), sprite_scanner.GOSO_SCAN2.qp_any(), sprite_scanner.FONY_SCAN5.qp_any()); // 32 + 4 + 2 + 1 = 39
+    return _FETO_SCAN_DONEp_any;
+  }
+
+  wire AVAP_SCAN_DONE_TRIGp_old(wire BALU_LINE_RSTp) const {
+    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_old = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_old(), BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_Ap.qn_old());
+    /*#p29.AVAP*/ wire _AVAP_SCAN_DONE_TRIGp_old = not1(_BEBU_SCAN_DONE_TRIGn_old);
+    return _AVAP_SCAN_DONE_TRIGp_old;
+  }
+
+  wire AVAP_SCAN_DONE_TRIGp_new(wire BALU_LINE_RSTp) const {
+    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_new = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new());
+    /*#p29.AVAP*/ wire _AVAP_SCAN_DONE_TRIGp_new = not1(_BEBU_SCAN_DONE_TRIGn_new);
+    return _AVAP_SCAN_DONE_TRIGp_new;
+  }
+
+  /* p29.CEHA*/ wire CEHA_SCANNINGp() const { return not1(sprite_scanner.CENO_SCANNINGn.qn_new()); }
+  /*#p29.BYJO*/ wire BYJO_SCANNINGn() const { return not1(CEHA_SCANNINGp()); }
+
 
   //-----------------------------------------------------------------------------
 

@@ -447,7 +447,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old(), SUZU_WIN_FIRST_TILEne_old(), TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
 
-  wire AVAP_SCAN_DONE_TRIGp_old = sprite_scanner.AVAP_SCAN_DONE_TRIGp_old(BALU_LINE_RSTp_old());
+  wire AVAP_SCAN_DONE_TRIGp_old = this->AVAP_SCAN_DONE_TRIGp_old(BALU_LINE_RSTp_old());
 
   wire NYXU_BFETCH_RSTn_old = nor3(AVAP_SCAN_DONE_TRIGp_old, MOSU_WIN_MODE_TRIGp_old(), TEVO_WIN_FETCH_TRIGp_old);
 
@@ -625,7 +625,7 @@ void GateBoy::tock_slow(int pass_index) {
     SpriteDeltaY delta = sub_sprite_y();
     wire _GESE_SCAN_MATCH_Yp = GESE_SCAN_MATCH_Yp(delta, reg_lcdc.XYMO_LCDC_SPSIZEn);
 
-    /* p29.CARE*/ wire _CARE_COUNT_CLKn = and3(XOCE_xBCxxFGx(), sprite_scanner.CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
+    /* p29.CARE*/ wire _CARE_COUNT_CLKn = and3(XOCE_xBCxxFGx(), CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /* p29.DYTY*/ wire _DYTY_COUNT_CLKp = not1(_CARE_COUNT_CLKn);
     update_count(XAPO_VID_RSTn(), ZEME_AxCxExGx(), ATEJ_LINE_RSTp_new(), _DYTY_COUNT_CLKp);
     SpriteStoreFlag store_flag = get_store_flags(_DYTY_COUNT_CLKp);
@@ -647,7 +647,7 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p24.SACU*/ wire SACU_CLKPIPE_evn = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
   tock_pix_counter(TADY_LINE_RSTn_new(), SACU_CLKPIPE_evn);
 
-  /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), sprite_scanner.BYJO_SCANNINGn());
+  /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn());
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
   SpriteMatchFlag sprite_match = get_match_flags_new(_AROR_MATCH_ENp);
   {

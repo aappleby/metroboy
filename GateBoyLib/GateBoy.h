@@ -209,6 +209,45 @@ struct GateBoy {
   void reg_tac_write();
   void tock_timer();
 
+  void tock_pix_counter(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn);
+
+  BGScrollX add_scx();
+  BGScrollY add_scy();
+
+  void reg_scy_read();
+  void reg_scy_write();
+
+  void reg_scx_read();
+  void reg_scx_write();
+
+  void reg_ly_read();
+  void reg_ly_write();
+  void reg_ly_tock2();
+
+  wire TEGY_STROBE() const;
+  void reg_lx_tock();
+  void reg_lyc_read();
+  void reg_lyc_write();
+  void reg_lyc_tock2();
+
+  void store_tile_temp_a(wire LOMA_LATCH_TILE_DAn);
+  void store_tile_temp_b(wire LABU_LATCH_TILE_DBn);
+
+  void store_sprite_pix_a(SpritePix sprite_pix_old, wire XADO_STORE_SPRITE_An);
+  void store_sprite_pix_b(SpritePix sprite_pix_old, wire PUCO_STORE_SPRITE_Bn);
+
+  void tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF9 WYMO_LCDC_WINENn, wire XAHY_LINE_RSTn);
+  void tock_win_map_y(wire PORE_WIN_MODEp, wire PARU_VBLANKp);
+
+  void tock_tile_fetcher(wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
+
+  wire LOMA_LATCH_TILE_DAn() const;
+  wire LABU_LATCH_TILE_DBn() const;
+
+  void tock_reset(DFF17 UPOF_DIV15p);
+
+  void set_lcd_pin_ctrl();
+
   //-----------------------------------------------------------------------------
 
   GateBoyBuses old_bus;
@@ -257,7 +296,7 @@ struct GateBoy {
   RegWX   reg_wx;
 
   WinMapX         win_map_x;
-  WinLineY        win_line_y;
+  WinLineY        win_map_y;
   WindowRegisters win_reg;
   FineScroll      fine_scroll;
 

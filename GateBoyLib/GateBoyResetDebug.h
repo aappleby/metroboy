@@ -53,8 +53,12 @@ struct GateBoyResetDebug {
   /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
   /* p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
 
-  void tock(const GateBoyClock& clk, DFF17 UPOF_DIV15p);
-  void set_signals(DFF9 XONA_LCDC_LCDENp);
+  void set_signals(DFF9 XONA_LCDC_LCDENn)
+  {
+    //_XONA_LCDC_LCDENp.set(XONA_LCDC_LCDENp);
+    _XONA_LCDC_LCDENn = XONA_LCDC_LCDENn;
+  }
+
 
   void dump(Dumper& d) {
     d.dump_bitp("TUBO_WAITINGp  : ", TUBO_WAITINGp.state);

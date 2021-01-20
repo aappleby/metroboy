@@ -6,10 +6,6 @@
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {
-  void tock(GateBoyBuses& new_bus, GateBoyClock& clk, const GateBoyVramBus& vram_bus, NorLatch XYMU_RENDERINGn, wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
-
-  wire LOMA_LATCH_TILE_DAn() const;
-  wire LABU_LATCH_TILE_DBn() const;
 
   /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const { return not1(POKY_PRELOAD_LATCHp.qp_new()); }
 

@@ -387,7 +387,7 @@ void GateBoyApp::app_render_frame() {
   d.dump_slice2n("FF4A WY    : ", &gb->reg_wy.NESO_WY0n, 8);
   d.dump_slice2n("FF4B WX    : ", &gb->reg_wx.MYPA_WX0n, 8);
   d.dump_slice2p("WIN MAP X  : ", &gb->win_map_x.WYKA_WIN_X3, 5);
-  d.dump_slice2p("WIN LINE Y : ", &gb->win_line_y.VYNO_WIN_Y0, 8);
+  d.dump_slice2p("WIN MAP Y  : ", &gb->win_map_y.VYNO_WIN_Y0, 8);
   d.dump_bitp   ("RUPO_LYC_MATCHn     : ", gb->reg_stat.RUPO_LYC_MATCHn.state);
   d("\n");
 

@@ -1,10 +1,6 @@
 #include "GateBoyLib/GateBoyLCD.h"
 
-#include "GateBoyLib/GateBoyResetDebug.h"
-#include "GateBoyLib/GateBoyClocks.h"
-#include "GateBoyLib/GateBoyCpuBus.h"
-#include "GateBoyLib/GateBoyTimer.h"
-#include "GateBoyLib/GateBoyPixPipe.h"
+#include "GateBoyLib/GateBoy.h"
 
 //------------------------------------------------------------------------------------------------------------------------
 
@@ -46,11 +42,11 @@ void GateBoyLCD::tock(
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoyLCD::set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk) {
-  /*#p21.SYGU*/ SYGU_LINE_STROBE.dff17(clk.SONO_ABxxxxGH(), rst.LYFE_VID_RSTn(), reg_lx.TEGY_STROBE());
-  /*#p21.RYNO*/ wire _RYNO = or2(SYGU_LINE_STROBE.qp_new(), reg_lx.RUTU_x113p.qp_new());
+void GateBoy::set_lcd_pin_ctrl() {
+  /*#p21.SYGU*/ lcd.SYGU_LINE_STROBE.dff17(clk.SONO_ABxxxxGH(), rst.LYFE_VID_RSTn(), TEGY_STROBE());
+  /*#p21.RYNO*/ wire _RYNO = or2(lcd.SYGU_LINE_STROBE.qp_new(), lcd.reg_lx.RUTU_x113p.qp_new());
   /*#p21.POGU*/ wire _POGU = not1(_RYNO);
-  /*PIN_52*/ PIN_52_LCD_CNTRL.pin_out_dp(_POGU);
+  /*PIN_52*/ lcd.PIN_52_LCD_CNTRL.pin_out_dp(_POGU);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

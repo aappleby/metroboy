@@ -82,7 +82,6 @@ struct GateBoyLCD {
     DFF17 RUTU_x113p_old);
 
   void set_pin_data(wire REMY_LD0n, wire RAVO_LD1n);
-  void set_pin_ctrl(GateBoyResetDebug& rst, GateBoyClock& clk);
   void set_pin_flip(GateBoyResetDebug& rst, DFF17 TULU_DIV07p, DFF9 XONA_LCDC_LCDENn);
   void set_pin_vsync(GateBoyResetDebug& rst);
   void set_pin_hsync(GateBoyResetDebug& rst, wire TYFA_CLKPIPE_odd, NorLatch XYMU_RENDERINGn, DFF17 XYDO_PX3p, wire AVAP_SCAN_DONE_TRIGp);

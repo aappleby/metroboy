@@ -292,8 +292,8 @@ struct GateBoyOffsets {
   const int o_reg_wy         = offsetof(GateBoy, reg_wy  );
   const int o_reg_wx         = offsetof(GateBoy, reg_wx  );
 
-  const int o_win_map_x      = offsetof(GateBoy, win_map_x  );
-  const int o_win_line_y     = offsetof(GateBoy, win_line_y );
+  const int o_win_map_x      = offsetof(GateBoy, win_map_x);
+  const int o_win_map_y      = offsetof(GateBoy, win_map_y);
   const int o_win_reg        = offsetof(GateBoy, win_reg    );
   const int o_fine_scroll    = offsetof(GateBoy, fine_scroll);
 
@@ -525,22 +525,21 @@ void GateBoy::tock_slow(int pass_index) {
 
   reg_div_tock();
 
-  DFF17 div_trigger = bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p;
-  rst.tock(clk, div_trigger);
+  tock_reset(bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p);
 
   reg_lcdc_write(); // LCDC. Has to be near the top as it controls the video reset signal
 
   rst.set_signals(reg_lcdc.XONA_LCDC_LCDENn);
   tock_vid_clocks();
 
-  lcd.reg_lyc.tock2(rst, clk, lcd.reg_ly);
+  reg_lyc_tock2();
 
   // Sync writes to registers
   {
     reg_joy_write();
-    reg_scx.write(old_bus, rst, cpu_bus);
-    reg_scy.write(old_bus, rst, cpu_bus);
-    lcd.reg_lyc.write(old_bus, rst, cpu_bus); // must be before reg_ly.tock()
+    reg_scx_write();
+    reg_scy_write();
+    reg_lyc_write(); // must be before reg_ly.tock()
     reg_stat_write();
     reg_tma_write();
     reg_tac_write();
@@ -566,8 +565,8 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(rst.UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH);
   /*#p01.ABUZ*/ cpu_bus.ABUZ_EXT_RAM_CS_CLK = not1(_AWOD_ABxxxxxx);
 
-  lcd.reg_lx.tock(rst, clk);
-  lcd.reg_ly.tock2(new_bus, rst, lcd.reg_lx);
+  reg_lx_tock();
+  reg_ly_tock2();
 
   lcd.tock(rst, clk, XYVO_y144p_old, RUTU_x113p_old);
 
@@ -654,7 +653,7 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   /*#p24.SACU*/ wire SACU_CLKPIPE_evn = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
-  pix_count.tock(lcd.TADY_LINE_RSTn_new(), SACU_CLKPIPE_evn);
+  tock_pix_counter(lcd.TADY_LINE_RSTn_new(), SACU_CLKPIPE_evn);
 
   /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), sprite_scanner.BYJO_SCANNINGn());
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
@@ -680,13 +679,13 @@ void GateBoy::tock_slow(int pass_index) {
 
   /* p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(win_reg.SEKO_WIN_FETCH_TRIGp_new(), win_reg.SUZU_WIN_FIRST_TILEne_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new()); // Schematic wrong, this is OR
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(AVAP_SCAN_DONE_TRIGp, win_reg.MOSU_WIN_MODE_TRIGp_new(), TEVO_WIN_FETCH_TRIGp);
-  tile_fetcher.tock(new_bus, clk, vram_bus, XYMU_RENDERINGn, NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
+  tock_tile_fetcher(NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
 
   fine_scroll.tock(XYMU_RENDERINGn, TYFA_CLKPIPE_odd, TEVO_WIN_FETCH_TRIGp);
 
   {
-    sprite_fetcher.sprite_pix_a.store_sprite_pix(sprite_pix_old, sprite_fetcher.XADO_STORE_SPRITE_An());
-    sprite_fetcher.sprite_pix_b.store_sprite_pix(sprite_pix_old, sprite_fetcher.PUCO_STORE_SPRITE_Bn());
+    store_sprite_pix_a(sprite_pix_old, sprite_fetcher.XADO_STORE_SPRITE_An());
+    store_sprite_pix_b(sprite_pix_old, sprite_fetcher.PUCO_STORE_SPRITE_Bn());
   }
 
 
@@ -726,7 +725,7 @@ void GateBoy::tock_slow(int pass_index) {
     lcd.PIN_57_LCD_VSYNC.reset_for_pass();
 
     lcd.set_pin_data(pix_pipes.REMY_LD0n, pix_pipes.RAVO_LD1n);
-    lcd.set_pin_ctrl(rst, clk);
+    set_lcd_pin_ctrl();
     lcd.set_pin_flip(rst, div.TULU_DIV07p, reg_lcdc.XONA_LCDC_LCDENn);
     lcd.set_pin_vsync(rst);
     lcd.set_pin_hsync(rst, TYFA_CLKPIPE_odd, XYMU_RENDERINGn, XYDO_PX3p_old, AVAP_SCAN_DONE_TRIGp);
@@ -800,15 +799,15 @@ void GateBoy::tock_slow(int pass_index) {
     vram_bus.cpu_addr_to_vram_addr(new_bus, cpu_bus, XYMU_RENDERINGn, dma.LUFA_DMA_VRAMp());
     vram_bus.dma_addr_to_vram_addr(new_bus, dma);
 
-    auto scroll_x = BGScrollX::add(pix_count, reg_scx);
-    auto scroll_y = BGScrollY::add(lcd.reg_ly, reg_scy);
+    auto scroll_x = add_scx();
+    auto scroll_y = add_scy();
     vram_bus.scroll_to_addr(new_bus, scroll_x, scroll_y, tile_fetcher.POTU_BGW_MAP_READp(), win_reg.AXAD_WIN_MODEn(), reg_lcdc.XAFO_LCDC_BGMAPn);
 
-    win_map_x.tock(rst, TEVO_WIN_FETCH_TRIGp, win_reg.PORE_WIN_MODEp(), reg_lcdc.WYMO_LCDC_WINENn, lcd.XAHY_LINE_RSTn_new());
-    win_line_y.tock(rst, win_reg.PORE_WIN_MODEp(), lcd.PARU_VBLANKp());
-    vram_bus.win_to_addr(new_bus, win_map_x, win_line_y, tile_fetcher.POTU_BGW_MAP_READp(), win_reg.PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn);
+    tock_win_map_x(TEVO_WIN_FETCH_TRIGp, win_reg.PORE_WIN_MODEp(), reg_lcdc.WYMO_LCDC_WINENn, lcd.XAHY_LINE_RSTn_new());
+    tock_win_map_y(win_reg.PORE_WIN_MODEp(), lcd.PARU_VBLANKp());
+    vram_bus.win_to_addr(new_bus, win_map_x, win_map_y, tile_fetcher.POTU_BGW_MAP_READp(), win_reg.PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn);
 
-    vram_bus.tile_to_addr(new_bus, scroll_y, win_line_y, tile_fetcher.tile_temp_b, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn, win_reg.PORE_WIN_MODEp(), win_reg.AXAD_WIN_MODEn());
+    vram_bus.tile_to_addr(new_bus, scroll_y, win_map_y, tile_fetcher.tile_temp_b, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn, win_reg.PORE_WIN_MODEp(), win_reg.AXAD_WIN_MODEn());
     vram_bus.sprite_to_addr(new_bus, sprite_store, oam_bus.oam_temp_a, oam_bus.oam_temp_b, sprite_fetcher.XUQU_SPRITE_AB(), sprite_fetcher.SAKY_SFETCHn(), XYMU_RENDERINGn, reg_lcdc.XYMO_LCDC_SPSIZEn);
     vram_bus.addr_to_pins(new_bus);
 
@@ -863,8 +862,8 @@ void GateBoy::tock_slow(int pass_index) {
     read_intf();
     reg_stat_read(ACYL_SCANNINGp, lcd.PARU_VBLANKp());
     reg_joy_read();
-    reg_scx.read(new_bus, cpu_bus);
-    reg_scy.read(new_bus, cpu_bus);
+    reg_scx_read();
+    reg_scy_read();
     dma.read_dma(cpu_bus, new_bus);
     serial.read_sb(cpu_bus, new_bus);
     serial.read_sc(cpu_bus, new_bus);
@@ -875,8 +874,8 @@ void GateBoy::tock_slow(int pass_index) {
     reg_tma_read();
     reg_tac_read();
     reg_lcdc_read();
-    lcd.reg_lyc.read(new_bus, cpu_bus);
-    lcd.reg_ly.read(new_bus, cpu_bus);
+    reg_lyc_read();
+    reg_ly_read();
     reg_wy_read();
     reg_wx_read();
     reg_bgp_read();

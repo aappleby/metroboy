@@ -22,7 +22,12 @@
 
 struct SpriteDeltaY {
 
-  wire GESE_SCAN_MATCH_Yp(DFF9 XYMO_LCDC_SPSIZEn);
+  wire GESE_SCAN_MATCH_Yp(DFF9 XYMO_LCDC_SPSIZEn) {
+    /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH_new = or2(XYMO_LCDC_SPSIZEn.qn_new(), GYKY_YDIFF3.sum);
+    /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, WUHU_YDIFF7.carry, _GOVU_SPSIZE_MATCH_new);
+    /* p29.GESE*/ wire _GESE_SCAN_MATCH_Yp_new = not1(_WOTA_SCAN_MATCH_Yn_new);
+    return _GESE_SCAN_MATCH_Yp_new;
+  }
 
   /* p29.DEGE*/ Gate DEGE_SPRITE_DELTA0;
   /* p29.DABY*/ Gate DABY_SPRITE_DELTA1;
@@ -41,10 +46,28 @@ struct SpriteDeltaY {
 // Pixel counter
 
 struct PixCount {
-  void reset_to_cart();
-  void tock(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn);
-  wire XANO_PX167p_old() const;
-  wire XANO_PX167p_new() const;
+  void reset_to_cart() {
+    XEHO_PX0p.reset(1, 1);
+    SAVY_PX1p.reset(1, 1);
+    XODU_PX2p.reset(1, 1);
+    XYDO_PX3p.reset(1, 0);
+    TUHU_PX4p.reset(1, 0);
+    TUKY_PX5p.reset(1, 1);
+    TAKO_PX6p.reset(1, 0);
+    SYBE_PX7p.reset(1, 1);
+  }
+
+  wire XANO_PX167p_old() const {
+    /*#p21.XUGU*/ wire _XUGU_PX167n_old = nand5(XEHO_PX0p.qp_old(), SAVY_PX1p.qp_old(), XODU_PX2p.qp_old(), TUKY_PX5p.qp_old(), SYBE_PX7p.qp_old()); // 128 + 32 + 4 + 2 + 1 = 167
+    /*#p21.XANO*/ wire _XANO_PX167p_old = not1(_XUGU_PX167n_old);
+    return _XANO_PX167p_old;
+  }
+
+  wire XANO_PX167p_new() const {
+    /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(XEHO_PX0p.qp_new(), SAVY_PX1p.qp_new(), XODU_PX2p.qp_new(), TUKY_PX5p.qp_new(), SYBE_PX7p.qp_new()); // 128 + 32 + 4 + 2 + 1 = 167
+    /*#p21.XANO*/ wire _XANO_PX167p = not1(_XUGU_PX167n);
+    return _XANO_PX167p;
+  }
 
   int get_old() { return BitBase::pack_old(8, &XEHO_PX0p); }
   int get_new() { return BitBase::pack_new(8, &XEHO_PX0p); }
@@ -62,7 +85,7 @@ struct PixCount {
 //-----------------------------------------------------------------------------
 
 struct BGScrollX {
-  static BGScrollX add(PixCount& pix_count, RegSCX reg_scx);
+  //static BGScrollX add(PixCount& pix_count, RegSCX reg_scx);
 
   Adder ATAD_TILE_X0;
   Adder BEHU_TILE_X1;
@@ -77,7 +100,7 @@ struct BGScrollX {
 //-----------------------------------------------------------------------------
 
 struct BGScrollY {
-  static BGScrollY add(RegLY& reg_ly, RegSCY& reg_scy);
+  //static BGScrollY add(RegLY& reg_ly, RegSCY& reg_scy);
 
   Adder FAFO_TILE_Y0;
   Adder EMUX_TILE_Y1;
@@ -153,9 +176,6 @@ struct RegStat {
 
 struct RegSCY {
 
-  void read (GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
   // FF42 - SCY -> vram new_bus
   /*p23.GAVE*/ DFF9 GAVE_SCY0n;          // xxxxxxxH
   /*p23.FYMO*/ DFF9 FYMO_SCY1n;          // xxxxxxxH
@@ -171,9 +191,6 @@ struct RegSCY {
 // FF43 SCX
 
 struct RegSCX {
-
-  void read (GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
   /*p23.DATY*/ DFF9 DATY_SCX0n;          // xxxxxxxH
   /*p23.DUZU*/ DFF9 DUZU_SCX1n;          // xxxxxxxH
@@ -203,9 +220,6 @@ struct RegLY {
 
   uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &MUWY_LY0p); }
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &MUWY_LY0p); }
-
-  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void tock2(GateBoyBuses& new_bus, GateBoyResetDebug& rst, RegLX& reg_lx);
 
   wire NERU_VSYNCp() const {
     /*#p24.NERU*/ wire _NERU_VSYNCp = nor8(LAFO_LY7p.qp_new(), LOVU_LY4p.qp_new(), LYDO_LY3p.qp_new(), MUWY_LY0p.qp_new(), MYRO_LY1p.qp_new(), LEXA_LY2p.qp_new(), LEMA_LY5p.qp_new(), MATO_LY6p.qp_new());
@@ -251,8 +265,6 @@ struct RegLX {
     return _PURE_LINE_ENDn;
   }
 
-  wire TEGY_STROBE() const;
-
   //wire NYPE_x113p_new() const { return NYPE_x113p.qp_new(); }
   //wire NYPE_x113n_new() const { return NYPE_x113p.qn_new(); }
   //
@@ -264,8 +276,6 @@ struct RegLX {
 
   /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1(RUTU_x113p.qp_old()); }
   /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1(RUTU_x113p.qp_new()); }
-
-  void tock(GateBoyResetDebug& rst, GateBoyClock& clk);
 
   /*p21.RUTU*/ DFF17 RUTU_x113p;  // xxxxxxGx
   /*p21.NYPE*/ DFF17 NYPE_x113p;  // xxCxxxxx
@@ -296,10 +306,6 @@ struct RegLYC {
   }
 
   uint8_t get() const { return (uint8_t)BitBase::pack_oldn(8, &SYRY_LYC0n); }
-
-  void read (GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-  void tock2(GateBoyResetDebug& rst, GateBoyClock& clk, const RegLY& reg_ly);
 
   /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
 
@@ -526,8 +532,6 @@ struct OamTempB {
 
 struct TileTempA {
 
-  void store_vram_data(GateBoyBuses& new_bus, const GateBoyVramBus& vram_bus, wire LOMA_LATCH_TILE_DAn);
-
   void dump(Dumper& d) {
     d.dump_slice2n("Tile Temp A : ", &LEGU_TILE_DA0n, 8);
   }
@@ -545,8 +549,6 @@ struct TileTempA {
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
-  void store_vram_data(GateBoyBuses& new_bus, const GateBoyVramBus& vram_bus, wire _LABU_LATCH_TILE_DBn);
-
   void dump(Dumper& d) {
     d.dump_slice2p("Tile Temp B : ", &RAWU_TILE_DB0p, 8);
   }
@@ -564,8 +566,6 @@ struct TileTempB {
 //-----------------------------------------------------------------------------
 
 struct SpritePixA {
-  void store_sprite_pix(SpritePix sprite_pix_old, wire XADO_STORE_SPRITE_An);
-
   void dump(Dumper& d) {
     d.dump_slice2n("Sprite Temp A : ", &REWO_SPRITE_DA0n, 8);
   }
@@ -583,8 +583,6 @@ struct SpritePixA {
 //-----------------------------------------------------------------------------
 
 struct SpritePixB {
-  void store_sprite_pix(SpritePix sprite_pix_old, wire PUCO_STORE_SPRITE_Bn);
-
   void dump(Dumper& d) {
     d.dump_slice2n("Sprite Temp B : ", &PEFO_SPRITE_DB0n, 8);
   }
@@ -603,8 +601,6 @@ struct SpritePixB {
 //-----------------------------------------------------------------------------
 
 struct WinMapX {
-  void tock(const GateBoyResetDebug& rst, wire TEVO_WIN_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF9 WYMO_LCDC_WINENn, wire XAHY_LINE_RSTn);
-
   void dump(Dumper& d) {
     d.dump_slice2p("Win Map X : ", &WYKA_WIN_X3, 5);
   }
@@ -620,8 +616,6 @@ struct WinMapX {
 //-----------------------------------------------------------------------------
 
 struct WinLineY {
-  void tock(const GateBoyResetDebug& rst, wire PORE_WIN_MODEp, wire PARU_VBLANKp);
-
   void dump(Dumper& d) {
     d.dump_slice2p("Win Line Y : ", &VYNO_WIN_Y0, 8);
   }

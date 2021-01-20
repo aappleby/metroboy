@@ -447,7 +447,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old(), SUZU_WIN_FIRST_TILEne_old(), TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
 
-  wire AVAP_SCAN_DONE_TRIGp_old = this->AVAP_SCAN_DONE_TRIGp_old(BALU_LINE_RSTp_old());
+  wire AVAP_SCAN_DONE_TRIGp_old = this->AVAP_SCAN_DONE_TRIGp_old();
 
   wire NYXU_BFETCH_RSTn_old = nor3(AVAP_SCAN_DONE_TRIGp_old, MOSU_WIN_MODE_TRIGp_old(), TEVO_WIN_FETCH_TRIGp_old);
 
@@ -629,7 +629,7 @@ void GateBoy::tock_slow(int pass_index) {
     /* p29.DYTY*/ wire _DYTY_COUNT_CLKp = not1(_CARE_COUNT_CLKn);
     update_count(XAPO_VID_RSTn(), ZEME_AxCxExGx(), ATEJ_LINE_RSTp_new(), _DYTY_COUNT_CLKp);
     SpriteStoreFlag store_flag = get_store_flags(_DYTY_COUNT_CLKp);
-    store_sprite_x(store_flag, ABAK_LINE_RSTp_new(), WUTY_SFETCH_DONE_TRIGp(), old_first_match);
+    store_sprite_x(store_flag, ABAK_LINE_RSTp_new(), old_first_match);
     store_sprite_index(store_flag);
     store_sprite_line (store_flag);
   }
@@ -676,8 +676,8 @@ void GateBoy::tock_slow(int pass_index) {
   tock_fine_scroll(TYFA_CLKPIPE_odd, TEVO_WIN_FETCH_TRIGp);
 
   {
-    store_sprite_pix_a(sprite_pix_old, XADO_STORE_SPRITE_An());
-    store_sprite_pix_b(sprite_pix_old, PUCO_STORE_SPRITE_Bn());
+    store_sprite_pix_a(sprite_pix_old);
+    store_sprite_pix_b(sprite_pix_old);
   }
 
 
@@ -687,9 +687,9 @@ void GateBoy::tock_slow(int pass_index) {
 
   {
     tock_bgw_pipe   (SACU_CLKPIPE_evn, NYXU_BFETCH_RSTn);
-    tock_mask_pipe  (WUTY_SFETCH_DONE_TRIGp(), SACU_CLKPIPE_evn);
-    tock_pal_pipe   (WUTY_SFETCH_DONE_TRIGp(), SACU_CLKPIPE_evn);
-    tock_sprite_pipe(WUTY_SFETCH_DONE_TRIGp(),SACU_CLKPIPE_evn);
+    tock_mask_pipe  (SACU_CLKPIPE_evn);
+    tock_pal_pipe   (SACU_CLKPIPE_evn);
+    tock_sprite_pipe(SACU_CLKPIPE_evn);
     tock_pix_output ();
   }
 
@@ -788,7 +788,7 @@ void GateBoy::tock_slow(int pass_index) {
     scroll_to_vram_addr(scroll_x, scroll_y, POTU_BGW_MAP_READp(), AXAD_WIN_MODEn(), reg_lcdc.XAFO_LCDC_BGMAPn);
 
     tock_win_map_x(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp(), reg_lcdc.WYMO_LCDC_WINENn, XAHY_LINE_RSTn_new());
-    tock_win_map_y(PORE_WIN_MODEp(), PARU_VBLANKp());
+    tock_win_map_y(PORE_WIN_MODEp());
     win_to_vram_addr(POTU_BGW_MAP_READp(), PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn);
 
     tile_to_vram_addr(scroll_y, NETA_BGW_TILE_READp(), XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn, PORE_WIN_MODEp(), AXAD_WIN_MODEn());
@@ -835,7 +835,7 @@ void GateBoy::tock_slow(int pass_index) {
     tock_timer();
     reg_stat_tock();
     reg_joy_tock2();
-    tock_interrupts(PARU_VBLANKp(), PURE_LINE_ENDn(), timer.MOBA_TIMER_OVERFLOWp, WODU_HBLANKp);
+    tock_interrupts(PURE_LINE_ENDn(), timer.MOBA_TIMER_OVERFLOWp, WODU_HBLANKp);
   }
 
   //----------------------------------------
@@ -844,7 +844,7 @@ void GateBoy::tock_slow(int pass_index) {
   {
     read_ie();
     read_intf();
-    reg_stat_read(ACYL_SCANNINGp(), PARU_VBLANKp());
+    reg_stat_read();
     reg_joy_read();
     reg_scx_read();
     reg_scy_read();

@@ -166,11 +166,11 @@ struct GateBoy {
 
   /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new()); }
 
-  void reg_stat_read(wire ACYL_SCANNINGp, wire PARU_VBLANKp);
+  void reg_stat_read();
   void reg_stat_write();
   void reg_stat_tock();
 
-  void tock_interrupts(wire PARU_VBLANKp, wire PURE_LINE_ENDn, DFF17 MOBA_TIMER_OVERFLOWp, wire WODU_HBLANKp);
+  void tock_interrupts(wire PURE_LINE_ENDn, DFF17 MOBA_TIMER_OVERFLOWp, wire WODU_HBLANKp);
   void read_intf();
   void read_ie();
   void write_ie();
@@ -231,14 +231,14 @@ struct GateBoy {
   void reg_lyc_write();
   void reg_lyc_tock2();
 
-  void store_tile_temp_a(wire LOMA_LATCH_TILE_DAn);
-  void store_tile_temp_b(wire LABU_LATCH_TILE_DBn);
+  void store_tile_temp_a();
+  void store_tile_temp_b();
 
-  void store_sprite_pix_a(SpritePix sprite_pix_old, wire XADO_STORE_SPRITE_An);
-  void store_sprite_pix_b(SpritePix sprite_pix_old, wire PUCO_STORE_SPRITE_Bn);
+  void store_sprite_pix_a(SpritePix sprite_pix_old);
+  void store_sprite_pix_b(SpritePix sprite_pix_old);
 
   void tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF9 WYMO_LCDC_WINENn, wire XAHY_LINE_RSTn);
-  void tock_win_map_y(wire PORE_WIN_MODEp, wire PARU_VBLANKp);
+  void tock_win_map_y(wire PORE_WIN_MODEp);
 
   void tock_tile_fetcher(wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
 
@@ -318,7 +318,7 @@ struct GateBoy {
   SpriteMatchFlag get_match_flags_new(wire _AROR_MATCH_ENp_new);
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
   void get_sprite(SpriteFirstMatch first_match);
-  void store_sprite_x(SpriteStoreFlag store_flag, wire _ABAK_LINE_RSTp, wire WUTY_SFETCH_DONE_TRIGp, SpriteFirstMatch sprite_flag);
+  void store_sprite_x(SpriteStoreFlag store_flag, wire _ABAK_LINE_RSTp, SpriteFirstMatch sprite_flag);
   void store_sprite_index(SpriteStoreFlag store_flag);
   void store_sprite_line(SpriteStoreFlag store_flag);
   void ly_to_sprite_line(wire FEPO_STORE_MATCHp);
@@ -333,9 +333,9 @@ struct GateBoy {
   void update_lcd_pipe();
 
   void tock_bgw_pipe(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
-  void tock_sprite_pipe(wire WUTY_SFETCH_DONE_TRIGp, wire SACU_CLKPIPE_evn);
-  void tock_mask_pipe(wire WUTY_SFETCH_DONE_TRIGp, wire SACU_CLKPIPE_evn);
-  void tock_pal_pipe(wire WUTY_SFETCH_DONE_TRIGp, wire SACU_CLKPIPE_evn);
+  void tock_sprite_pipe(wire SACU_CLKPIPE_evn);
+  void tock_mask_pipe(wire SACU_CLKPIPE_evn);
+  void tock_pal_pipe(wire SACU_CLKPIPE_evn);
   void tock_pix_output();
 
   void tock_fine_scroll(wire TYFA_CLKPIPE_odd, wire TEVO_WIN_FETCH_TRIGp);
@@ -751,14 +751,14 @@ struct GateBoy {
     return _FETO_SCAN_DONEp_any;
   }
 
-  wire AVAP_SCAN_DONE_TRIGp_old(wire BALU_LINE_RSTp) const {
-    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_old = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_old(), BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_Ap.qn_old());
+  wire AVAP_SCAN_DONE_TRIGp_old() const {
+    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_old = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_old(), BALU_LINE_RSTp_old(), sprite_scanner.BYBA_SCAN_DONE_Ap.qn_old());
     /*#p29.AVAP*/ wire _AVAP_SCAN_DONE_TRIGp_old = not1(_BEBU_SCAN_DONE_TRIGn_old);
     return _AVAP_SCAN_DONE_TRIGp_old;
   }
 
-  wire AVAP_SCAN_DONE_TRIGp_new(wire BALU_LINE_RSTp) const {
-    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_new = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new());
+  wire AVAP_SCAN_DONE_TRIGp_new() const {
+    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_new = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp_new(), sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new());
     /*#p29.AVAP*/ wire _AVAP_SCAN_DONE_TRIGp_new = not1(_BEBU_SCAN_DONE_TRIGn_new);
     return _AVAP_SCAN_DONE_TRIGp_new;
   }

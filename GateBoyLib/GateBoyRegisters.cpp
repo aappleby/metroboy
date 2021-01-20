@@ -184,10 +184,10 @@ void GateBoy::reg_lcdc_write()
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::reg_stat_read(wire ACYL_SCANNINGp, wire PARU_VBLANKp)
+void GateBoy::reg_stat_read()
 {
-  /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
-  /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp, XYMU_RENDERINGn.qn_new()); // die NOR
+  /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp());   // die NOR
+  /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp(), XYMU_RENDERINGn.qn_new()); // die NOR
   /* p21.TOBE*/ wire _TOBE_FF41_RDp = and2(ASOT_CPU_RDp(), new_bus.VARY_FF41p());
   /* p21.VAVE*/ wire _VAVE_FF41_RDn = not1(_TOBE_FF41_RDp);
   /*#p21.TEBY_STAT0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);
@@ -563,58 +563,58 @@ void GateBoy::reg_wx_write() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::store_tile_temp_a(wire LOMA_LATCH_TILE_DAn)
+void GateBoy::store_tile_temp_a()
 {
-  /* p32.LEGU*/ tile_fetcher.tile_temp_a.LEGU_TILE_DA0n.dff8p(LOMA_LATCH_TILE_DAn, new_bus.BUS_VRAM_D00p.qp_old());
-  /* p32.NUDU*/ tile_fetcher.tile_temp_a.NUDU_TILE_DA1n.dff8p(LOMA_LATCH_TILE_DAn, new_bus.BUS_VRAM_D01p.qp_old());
-  /* p32.MUKU*/ tile_fetcher.tile_temp_a.MUKU_TILE_DA2n.dff8p(LOMA_LATCH_TILE_DAn, new_bus.BUS_VRAM_D02p.qp_old());
-  /* p32.LUZO*/ tile_fetcher.tile_temp_a.LUZO_TILE_DA3n.dff8p(LOMA_LATCH_TILE_DAn, new_bus.BUS_VRAM_D03p.qp_old());
-  /* p32.MEGU*/ tile_fetcher.tile_temp_a.MEGU_TILE_DA4n.dff8p(LOMA_LATCH_TILE_DAn, new_bus.BUS_VRAM_D04p.qp_old());
-  /* p32.MYJY*/ tile_fetcher.tile_temp_a.MYJY_TILE_DA5n.dff8p(LOMA_LATCH_TILE_DAn, new_bus.BUS_VRAM_D05p.qp_old());
-  /* p32.NASA*/ tile_fetcher.tile_temp_a.NASA_TILE_DA6n.dff8p(LOMA_LATCH_TILE_DAn, new_bus.BUS_VRAM_D06p.qp_old());
-  /* p32.NEFO*/ tile_fetcher.tile_temp_a.NEFO_TILE_DA7n.dff8p(LOMA_LATCH_TILE_DAn, new_bus.BUS_VRAM_D07p.qp_old());
+  /* p32.LEGU*/ tile_fetcher.tile_temp_a.LEGU_TILE_DA0n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D00p.qp_old());
+  /* p32.NUDU*/ tile_fetcher.tile_temp_a.NUDU_TILE_DA1n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D01p.qp_old());
+  /* p32.MUKU*/ tile_fetcher.tile_temp_a.MUKU_TILE_DA2n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D02p.qp_old());
+  /* p32.LUZO*/ tile_fetcher.tile_temp_a.LUZO_TILE_DA3n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D03p.qp_old());
+  /* p32.MEGU*/ tile_fetcher.tile_temp_a.MEGU_TILE_DA4n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D04p.qp_old());
+  /* p32.MYJY*/ tile_fetcher.tile_temp_a.MYJY_TILE_DA5n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D05p.qp_old());
+  /* p32.NASA*/ tile_fetcher.tile_temp_a.NASA_TILE_DA6n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D06p.qp_old());
+  /* p32.NEFO*/ tile_fetcher.tile_temp_a.NEFO_TILE_DA7n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::store_tile_temp_b(wire LABU_LATCH_TILE_DBn)
+void GateBoy::store_tile_temp_b()
 {
   SigIn SIG_VCC = 1;
   // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
-  /* p32.RAWU*/ tile_fetcher.tile_temp_b.RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, new_bus.BUS_VRAM_D00p.qp_old());
-  /* p32.POZO*/ tile_fetcher.tile_temp_b.POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, new_bus.BUS_VRAM_D01p.qp_old());
-  /* p32.PYZO*/ tile_fetcher.tile_temp_b.PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, new_bus.BUS_VRAM_D02p.qp_old());
-  /* p32.POXA*/ tile_fetcher.tile_temp_b.POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, new_bus.BUS_VRAM_D03p.qp_old());
-  /* p32.PULO*/ tile_fetcher.tile_temp_b.PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, new_bus.BUS_VRAM_D04p.qp_old());
-  /* p32.POJU*/ tile_fetcher.tile_temp_b.POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, new_bus.BUS_VRAM_D05p.qp_old());
-  /* p32.POWY*/ tile_fetcher.tile_temp_b.POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, new_bus.BUS_VRAM_D06p.qp_old());
-  /* p32.PYJU*/ tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC, new_bus.BUS_VRAM_D07p.qp_old());
+  /* p32.RAWU*/ tile_fetcher.tile_temp_b.RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D00p.qp_old());
+  /* p32.POZO*/ tile_fetcher.tile_temp_b.POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D01p.qp_old());
+  /* p32.PYZO*/ tile_fetcher.tile_temp_b.PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D02p.qp_old());
+  /* p32.POXA*/ tile_fetcher.tile_temp_b.POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D03p.qp_old());
+  /* p32.PULO*/ tile_fetcher.tile_temp_b.PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D04p.qp_old());
+  /* p32.POJU*/ tile_fetcher.tile_temp_b.POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D05p.qp_old());
+  /* p32.POWY*/ tile_fetcher.tile_temp_b.POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D06p.qp_old());
+  /* p32.PYJU*/ tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::store_sprite_pix_a(SpritePix sprite_pix_old, wire XADO_STORE_SPRITE_An) {
-  /* p33.REWO*/ sprite_fetcher.sprite_pix_a.REWO_SPRITE_DA0n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PUTE_FLIP0p);
-  /* p33.PEBA*/ sprite_fetcher.sprite_pix_a.PEBA_SPRITE_DA1n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PELO_FLIP1p);
-  /* p33.MOFO*/ sprite_fetcher.sprite_pix_a.MOFO_SPRITE_DA2n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PONO_FLIP2p);
-  /* p33.PUDU*/ sprite_fetcher.sprite_pix_a.PUDU_SPRITE_DA3n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.POBE_FLIP3p);
-  /* p33.SAJA*/ sprite_fetcher.sprite_pix_a.SAJA_SPRITE_DA4n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PACY_FLIP4p);
-  /* p33.SUNY*/ sprite_fetcher.sprite_pix_a.SUNY_SPRITE_DA5n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PUGU_FLIP5p);
-  /* p33.SEMO*/ sprite_fetcher.sprite_pix_a.SEMO_SPRITE_DA6n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PAWE_FLIP6p);
-  /* p33.SEGA*/ sprite_fetcher.sprite_pix_a.SEGA_SPRITE_DA7n.dff8n(XADO_STORE_SPRITE_An, sprite_pix_old.PULY_FLIP7p);
+void GateBoy::store_sprite_pix_a(SpritePix sprite_pix_old) {
+  /* p33.REWO*/ sprite_fetcher.sprite_pix_a.REWO_SPRITE_DA0n.dff8n(XADO_STORE_SPRITE_An(), sprite_pix_old.PUTE_FLIP0p);
+  /* p33.PEBA*/ sprite_fetcher.sprite_pix_a.PEBA_SPRITE_DA1n.dff8n(XADO_STORE_SPRITE_An(), sprite_pix_old.PELO_FLIP1p);
+  /* p33.MOFO*/ sprite_fetcher.sprite_pix_a.MOFO_SPRITE_DA2n.dff8n(XADO_STORE_SPRITE_An(), sprite_pix_old.PONO_FLIP2p);
+  /* p33.PUDU*/ sprite_fetcher.sprite_pix_a.PUDU_SPRITE_DA3n.dff8n(XADO_STORE_SPRITE_An(), sprite_pix_old.POBE_FLIP3p);
+  /* p33.SAJA*/ sprite_fetcher.sprite_pix_a.SAJA_SPRITE_DA4n.dff8n(XADO_STORE_SPRITE_An(), sprite_pix_old.PACY_FLIP4p);
+  /* p33.SUNY*/ sprite_fetcher.sprite_pix_a.SUNY_SPRITE_DA5n.dff8n(XADO_STORE_SPRITE_An(), sprite_pix_old.PUGU_FLIP5p);
+  /* p33.SEMO*/ sprite_fetcher.sprite_pix_a.SEMO_SPRITE_DA6n.dff8n(XADO_STORE_SPRITE_An(), sprite_pix_old.PAWE_FLIP6p);
+  /* p33.SEGA*/ sprite_fetcher.sprite_pix_a.SEGA_SPRITE_DA7n.dff8n(XADO_STORE_SPRITE_An(), sprite_pix_old.PULY_FLIP7p);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::store_sprite_pix_b(SpritePix sprite_pix_old, wire PUCO_STORE_SPRITE_Bn) {
-  /* p33.PEFO*/ sprite_fetcher.sprite_pix_b.PEFO_SPRITE_DB0n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PUTE_FLIP0p);
-  /* p33.ROKA*/ sprite_fetcher.sprite_pix_b.ROKA_SPRITE_DB1n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PELO_FLIP1p);
-  /* p33.MYTU*/ sprite_fetcher.sprite_pix_b.MYTU_SPRITE_DB2n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PONO_FLIP2p);
-  /* p33.RAMU*/ sprite_fetcher.sprite_pix_b.RAMU_SPRITE_DB3n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.POBE_FLIP3p);
-  /* p33.SELE*/ sprite_fetcher.sprite_pix_b.SELE_SPRITE_DB4n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PACY_FLIP4p);
-  /* p33.SUTO*/ sprite_fetcher.sprite_pix_b.SUTO_SPRITE_DB5n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PUGU_FLIP5p);
-  /* p33.RAMA*/ sprite_fetcher.sprite_pix_b.RAMA_SPRITE_DB6n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PAWE_FLIP6p);
-  /* p33.RYDU*/ sprite_fetcher.sprite_pix_b.RYDU_SPRITE_DB7n.dff8n(PUCO_STORE_SPRITE_Bn, sprite_pix_old.PULY_FLIP7p);
+void GateBoy::store_sprite_pix_b(SpritePix sprite_pix_old) {
+  /* p33.PEFO*/ sprite_fetcher.sprite_pix_b.PEFO_SPRITE_DB0n.dff8n(PUCO_STORE_SPRITE_Bn(), sprite_pix_old.PUTE_FLIP0p);
+  /* p33.ROKA*/ sprite_fetcher.sprite_pix_b.ROKA_SPRITE_DB1n.dff8n(PUCO_STORE_SPRITE_Bn(), sprite_pix_old.PELO_FLIP1p);
+  /* p33.MYTU*/ sprite_fetcher.sprite_pix_b.MYTU_SPRITE_DB2n.dff8n(PUCO_STORE_SPRITE_Bn(), sprite_pix_old.PONO_FLIP2p);
+  /* p33.RAMU*/ sprite_fetcher.sprite_pix_b.RAMU_SPRITE_DB3n.dff8n(PUCO_STORE_SPRITE_Bn(), sprite_pix_old.POBE_FLIP3p);
+  /* p33.SELE*/ sprite_fetcher.sprite_pix_b.SELE_SPRITE_DB4n.dff8n(PUCO_STORE_SPRITE_Bn(), sprite_pix_old.PACY_FLIP4p);
+  /* p33.SUTO*/ sprite_fetcher.sprite_pix_b.SUTO_SPRITE_DB5n.dff8n(PUCO_STORE_SPRITE_Bn(), sprite_pix_old.PUGU_FLIP5p);
+  /* p33.RAMA*/ sprite_fetcher.sprite_pix_b.RAMA_SPRITE_DB6n.dff8n(PUCO_STORE_SPRITE_Bn(), sprite_pix_old.PAWE_FLIP6p);
+  /* p33.RYDU*/ sprite_fetcher.sprite_pix_b.RYDU_SPRITE_DB7n.dff8n(PUCO_STORE_SPRITE_Bn(), sprite_pix_old.PULY_FLIP7p);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -633,10 +633,10 @@ void GateBoy::tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_win_map_y(wire PORE_WIN_MODEp, wire PARU_VBLANKp) {
+void GateBoy::tock_win_map_y(wire PORE_WIN_MODEp) {
   // Every time we leave win mode we increment win_y
   /* p27.WAZY*/ wire _WAZY_WIN_MODEn = not1(PORE_WIN_MODEp);
-  /* p27.REPU*/ wire _REPU_VBLANKp   = or2(PARU_VBLANKp, PYRY_VID_RSTp());
+  /* p27.REPU*/ wire _REPU_VBLANKp   = or2(PARU_VBLANKp(), PYRY_VID_RSTp());
   /* p27.SYNY*/ wire _SYNY_VBLANKn   = not1(_REPU_VBLANKp);
   /* p27.VYNO*/ win_map_y.VYNO_WIN_Y0.dff17(_WAZY_WIN_MODEn,                _SYNY_VBLANKn, win_map_y.VYNO_WIN_Y0.qn_old());
   /* p27.VUJO*/ win_map_y.VUJO_WIN_Y1.dff17(win_map_y.VYNO_WIN_Y0.qn_new(), _SYNY_VBLANKn, win_map_y.VUJO_WIN_Y1.qn_old());

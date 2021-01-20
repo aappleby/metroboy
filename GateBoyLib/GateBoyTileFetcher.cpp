@@ -21,8 +21,8 @@ void GateBoy::tock_tile_fetcher(wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_ol
   /* p27.LONY*/ tile_fetcher.LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, _LURY_BG_FETCH_DONEn);
   /* p27.LYZUtile_fetcher.*/ tile_fetcher._LYZU_BFETCH_S0p_D1.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), tile_fetcher._LAXU_BFETCH_S0p.qp_new());
 
-  store_tile_temp_a(LOMA_LATCH_TILE_DAn());
-  store_tile_temp_b(LABU_LATCH_TILE_DBn());
+  store_tile_temp_a();
+  store_tile_temp_b();
 }
 
 //------------------------------------------------------------------------------------------------------------------------

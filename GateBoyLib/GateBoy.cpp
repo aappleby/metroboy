@@ -443,7 +443,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   SpriteFirstMatch old_first_match = get_first_match(old_match);
 
-  wire TAVE_PRELOAD_DONE_TRIGp_old = tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_old();
+  wire TAVE_PRELOAD_DONE_TRIGp_old = this->TAVE_PRELOAD_DONE_TRIGp_old();
 
   wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old(), SUZU_WIN_FIRST_TILEne_old(), TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
 
@@ -454,7 +454,7 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.MOCE*/ wire MOCE_BFETCH_DONEn_old = nand3(tile_fetcher._LAXU_BFETCH_S0p.qp_old(), tile_fetcher._NYVA_BFETCH_S2p.qp_old(), NYXU_BFETCH_RSTn_old);
   /* p27.LYRY*/ wire LYRY_BFETCH_DONEp_old = not1(MOCE_BFETCH_DONEn_old);
 
-  /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(old_match.FEPO_STORE_MATCHp(), TUKU_WIN_HITn_old(), LYRY_BFETCH_DONEp_old, SOWO_SFETCH_RUNNINGn_old());
+  /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(FEPO_STORE_MATCHp(old_match), TUKU_WIN_HITn_old(), LYRY_BFETCH_DONEp_old, SOWO_SFETCH_RUNNINGn_old());
 
   auto WYMO_LCDC_WINENn_old = reg_lcdc.WYMO_LCDC_WINENn;
 
@@ -570,7 +570,7 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Sprite scanner
 
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn_old = not1(old_match.FEPO_STORE_MATCHp());
+  /*#p21.XENA*/ wire XENA_STORE_MATCHn_old = not1(FEPO_STORE_MATCHp(old_match));
   /*#p21.WODU*/ wire WODU_HBLANKp_old = and2(XENA_STORE_MATCHn_old, XANO_PX167p_old());
   /*#p21.VOGA*/ VOGA_HBLANKp.dff17(ALET_xBxDxFxH(), TADY_LINE_RSTn_new(), WODU_HBLANKp_old);
 
@@ -610,14 +610,14 @@ void GateBoy::tock_slow(int pass_index) {
 
   }
 
-  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(old_match.FEPO_STORE_MATCHp(), WODU_HBLANKp_old, MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(FEPO_STORE_MATCHp(old_match), WODU_HBLANKp_old, MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
   /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn_new(), tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
 
   // vvvvvvvvvv
   {
-    tock_sprite_fetcher(ATEJ_LINE_RSTp_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new(), TEKY_SFETCH_REQp_old);
+    tock_sprite_fetcher(ATEJ_LINE_RSTp_new(), TAVE_PRELOAD_DONE_TRIGp_new(), TEKY_SFETCH_REQp_old);
 
     oam_latch_to_temp_a(XUJY_OAM_CLKENp());
     oam_latch_to_temp_b(XUJY_OAM_CLKENp());
@@ -653,9 +653,9 @@ void GateBoy::tock_slow(int pass_index) {
   {
     SpriteFirstMatch first_match = get_first_match(sprite_match);
     get_sprite(first_match);
-    ly_to_sprite_line(sprite_match.FEPO_STORE_MATCHp());
+    ly_to_sprite_line(FEPO_STORE_MATCHp(sprite_match));
   }
-  /*#p21.WODU*/ wire WODU_HBLANKp = and2(sprite_match.XENA_STORE_MATCHn(), XANO_PX167p_new()); // WODU goes high on odd, cleared on H
+  /*#p21.WODU*/ wire WODU_HBLANKp = and2(XENA_STORE_MATCHn(sprite_match), XANO_PX167p_new()); // WODU goes high on odd, cleared on H
 
   {
     /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), RYFA_WIN_FETCHn_A_old.qp_old());
@@ -669,7 +669,7 @@ void GateBoy::tock_slow(int pass_index) {
     /* p27.RYFA*/ win_reg.RYFA_WIN_FETCHn_A.dff17(SEGU_CLKPIPE_evn, XYMU_RENDERINGn.qn_new(), _PANY_WIN_FETCHn_old);
   }
 
-  /* p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp_new(), SUZU_WIN_FIRST_TILEne_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new()); // Schematic wrong, this is OR
+  /* p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp_new(), SUZU_WIN_FIRST_TILEne_new(), TAVE_PRELOAD_DONE_TRIGp_new()); // Schematic wrong, this is OR
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(AVAP_SCAN_DONE_TRIGp(), MOSU_WIN_MODE_TRIGp_new(), TEVO_WIN_FETCH_TRIGp);
   tock_tile_fetcher(NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
 
@@ -785,20 +785,20 @@ void GateBoy::tock_slow(int pass_index) {
 
     auto scroll_x = add_scx();
     auto scroll_y = add_scy();
-    scroll_to_vram_addr(scroll_x, scroll_y, tile_fetcher.POTU_BGW_MAP_READp(), AXAD_WIN_MODEn(), reg_lcdc.XAFO_LCDC_BGMAPn);
+    scroll_to_vram_addr(scroll_x, scroll_y, POTU_BGW_MAP_READp(), AXAD_WIN_MODEn(), reg_lcdc.XAFO_LCDC_BGMAPn);
 
     tock_win_map_x(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp(), reg_lcdc.WYMO_LCDC_WINENn, XAHY_LINE_RSTn_new());
     tock_win_map_y(PORE_WIN_MODEp(), PARU_VBLANKp());
-    win_to_vram_addr(tile_fetcher.POTU_BGW_MAP_READp(), PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn);
+    win_to_vram_addr(POTU_BGW_MAP_READp(), PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn);
 
-    tile_to_vram_addr(scroll_y, tile_fetcher.NETA_BGW_TILE_READp(), tile_fetcher.XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn, PORE_WIN_MODEp(), AXAD_WIN_MODEn());
+    tile_to_vram_addr(scroll_y, NETA_BGW_TILE_READp(), XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn, PORE_WIN_MODEp(), AXAD_WIN_MODEn());
     sprite_to_vram_addr(XUQU_SPRITE_AB(), SAKY_SFETCHn(), reg_lcdc.XYMO_LCDC_SPSIZEn);
     vram_addr_to_pins();
 
     cpu_data_to_vram_bus_data(_SERE_CPU_VRAM_RDp, SALE_CPU_VRAM_WRn());
     vram_bus_data_to_pins(_SERE_CPU_VRAM_RDp, SALE_CPU_VRAM_WRn());
 
-    set_vram_pin_cs(TUTO_VRAM_DBGp(), _SERE_CPU_VRAM_RDp, LUFA_DMA_VRAMp(), tile_fetcher.LENA_BFETCHINGp(), TEXY_SFETCHINGp());
+    set_vram_pin_cs(TUTO_VRAM_DBGp(), _SERE_CPU_VRAM_RDp, LUFA_DMA_VRAMp(), LENA_BFETCHINGp(), TEXY_SFETCHINGp());
     set_vram_pin_wr(TUTO_VRAM_DBGp(), _SERE_CPU_VRAM_RDp, TUJA_CPU_VRAM_WRp());
     set_vram_pin_oe(TUTO_VRAM_DBGp(), SALE_CPU_VRAM_WRn(), LUFA_DMA_VRAMp(), tile_fetcher.LONY_FETCHINGp, SOHO_SPR_VRAM_RDp());
 

@@ -767,6 +767,53 @@ struct GateBoy {
   /*#p29.BYJO*/ wire BYJO_SCANNINGn() const { return not1(CEHA_SCANNINGp()); }
 
 
+  wire FEPO_STORE_MATCHp(SpriteMatchFlag& flag) const {
+    /* p29.FEFY*/ wire _FEFY_STORE_MATCHp = nand5(flag.XAGE_STORE4_MATCHn, flag.YLOZ_STORE3_MATCHn, flag.DEGO_STORE2_MATCHn, flag.DYDU_STORE1_MATCHn, flag.YDUG_STORE0_MATCHn);
+    /* p29.FOVE*/ wire _FOVE_STORE_MATCHp = nand5(flag.YGEM_STORE9_MATCHn, flag.EFYL_STORE8_MATCHn, flag.DYKA_STORE7_MATCHn, flag.YBEZ_STORE6_MATCHn, flag.EGOM_STORE5_MATCHn);
+    /* p29.FEPO*/ wire _FEPO_STORE_MATCHp = or2(_FEFY_STORE_MATCHp, _FOVE_STORE_MATCHp);
+    return _FEPO_STORE_MATCHp;
+  }
+
+  //-----------------------------------------------------------------------------
+
+  /*#p21.XENA*/ wire XENA_STORE_MATCHn(SpriteMatchFlag& flag) const { return not1(FEPO_STORE_MATCHp(flag)); }
+
+  /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const { return not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new()); }
+
+  wire TAVE_PRELOAD_DONE_TRIGp_old() const {
+    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_old      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_old());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_old = nand4(XYMU_RENDERINGn.qn_old(), _ROMO_PRELOAD_DONEn_old, tile_fetcher.NYKA_FETCH_DONEp.qp_old(), tile_fetcher.PORY_FETCH_DONEp.qp_old());
+    /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_old = not1(_SUVU_PRELOAD_DONE_TRIGn_old);
+    return _TAVE_PRELOAD_DONE_TRIGp_old;
+  }
+
+  wire TAVE_PRELOAD_DONE_TRIGp_new() const {
+    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_new      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
+    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new = nand4(XYMU_RENDERINGn.qn_new(), _ROMO_PRELOAD_DONEn_new, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
+    /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_new = not1(_SUVU_PRELOAD_DONE_TRIGn_new);
+    return _TAVE_PRELOAD_DONE_TRIGp_new;
+  }
+
+  ///* p27.MOCE*/ wire MOCE_BFETCH_DONEn_old(wire NYXU_BFETCH_RSTn_old) const { return nand3(_LAXU_BFETCH_S0p.qp_old(), _NYVA_BFETCH_S2p.qp_old(), NYXU_BFETCH_RSTn_old); }
+  ///* p27.LYRY*/ wire LYRY_BFETCH_DONEp_old(wire NYXU_BFETCH_RSTn_old) const { return not1(MOCE_BFETCH_DONEn_old(NYXU_BFETCH_RSTn_old)); }
+
+  ///* p27.MOCE*/ wire MOCE_BFETCH_DONEn_new(wire NYXU_BFETCH_RSTn_new) const { return nand3(_LAXU_BFETCH_S0p.qp_new(), _NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn_new); }
+  ///* p27.LYRY*/ wire LYRY_BFETCH_DONEp_new(wire NYXU_BFETCH_RSTn_new) const { return not1(MOCE_BFETCH_DONEn_new(NYXU_BFETCH_RSTn_new)); }
+
+  ///* p27.MOCE*/ wire MOCE_BFETCH_DONEn_any(wire NYXU_BFETCH_RSTn_new) const { return nand3(_LAXU_BFETCH_S0p.qp_any(), _NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn_new); }
+  ///* p27.LYRY*/ wire LYRY_BFETCH_DONEp_any(wire NYXU_BFETCH_RSTn_new) const { return not1(MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn_new)); }
+
+  /* p27.LUSU*/ wire LUSU_FETCHINGn()      const { return not1(tile_fetcher.LONY_FETCHINGp.qp_new()); }
+  /* p27.LENA*/ wire LENA_BFETCHINGp()     const { return not1(LUSU_FETCHINGn()); }
+  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n()     const { return not1(tile_fetcher._MESU_BFETCH_S1p.qp_new()); }
+  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n()     const { return not1(tile_fetcher._NYVA_BFETCH_S2p.qp_new()); }
+  /* p27.NOGU*/ wire NOGU_BFETCH_01p()     const { return nand2(NAKO_BFETCH_S1n(), NOFU_BFETCH_S2n()); }
+  /* p27.NENY*/ wire NENY_BFETCH_01n()     const { return not1(NOGU_BFETCH_01p()); }
+  /* p27.POTU*/ wire POTU_BGW_MAP_READp()  const { return and2(LENA_BFETCHINGp(), NENY_BFETCH_01n()); }
+  /* p27.NETA*/ wire NETA_BGW_TILE_READp() const { return and2(LENA_BFETCHINGp(), NOGU_BFETCH_01p()); }
+  /*#p27.XUHA*/ wire XUHA_FETCH_HILOp()    const { return not1(NOFU_BFETCH_S2n()); }
+
+
   //-----------------------------------------------------------------------------
 
   GateBoyBuses old_bus;

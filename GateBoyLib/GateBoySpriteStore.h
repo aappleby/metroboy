@@ -34,16 +34,6 @@ struct SpriteStoreFlag {
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteMatchFlag {
-
-  wire FEPO_STORE_MATCHp() const {
-    /* p29.FEFY*/ wire _FEFY_STORE_MATCHp = nand5(XAGE_STORE4_MATCHn, YLOZ_STORE3_MATCHn, DEGO_STORE2_MATCHn, DYDU_STORE1_MATCHn, YDUG_STORE0_MATCHn);
-    /* p29.FOVE*/ wire _FOVE_STORE_MATCHp = nand5(YGEM_STORE9_MATCHn, EFYL_STORE8_MATCHn, DYKA_STORE7_MATCHn, YBEZ_STORE6_MATCHn, EGOM_STORE5_MATCHn);
-    /* p29.FEPO*/ wire _FEPO_STORE_MATCHp = or2(_FEFY_STORE_MATCHp, _FOVE_STORE_MATCHp);
-    return _FEPO_STORE_MATCHp;
-  }
-
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn() const { return not1(FEPO_STORE_MATCHp()); }
-
   /* p29.YDUG*/ Gate YDUG_STORE0_MATCHn;
   /* p29.DYDU*/ Gate DYDU_STORE1_MATCHn;
   /* p29.DEGO*/ Gate DEGO_STORE2_MATCHn;

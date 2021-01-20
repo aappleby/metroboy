@@ -35,14 +35,14 @@ wire GateBoy::LUFA_DMA_VRAMp() const {
 void GateBoy::reg_dma_write() {
   /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
   /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
-  /*#p04.NAFA*/ dma.NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D00p.qp_old());
-  /* p04.PYNE*/ dma.PYNE_DMA_A09n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D01p.qp_old());
-  /* p04.PARA*/ dma.PARA_DMA_A10n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D02p.qp_old());
-  /* p04.NYDO*/ dma.NYDO_DMA_A11n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D03p.qp_old());
-  /* p04.NYGY*/ dma.NYGY_DMA_A12n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D04p.qp_old());
-  /* p04.PULA*/ dma.PULA_DMA_A13n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D05p.qp_old());
-  /* p04.POKU*/ dma.POKU_DMA_A14n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D06p.qp_old());
-  /* p04.MARU*/ dma.MARU_DMA_A15n.dff8p(LORU_FF46_WRn, new_bus.BUS_CPU_D07p.qp_old());
+  /*#p04.NAFA*/ dma.NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, old_bus.BUS_CPU_D00p.qp_old());
+  /* p04.PYNE*/ dma.PYNE_DMA_A09n.dff8p(LORU_FF46_WRn, old_bus.BUS_CPU_D01p.qp_old());
+  /* p04.PARA*/ dma.PARA_DMA_A10n.dff8p(LORU_FF46_WRn, old_bus.BUS_CPU_D02p.qp_old());
+  /* p04.NYDO*/ dma.NYDO_DMA_A11n.dff8p(LORU_FF46_WRn, old_bus.BUS_CPU_D03p.qp_old());
+  /* p04.NYGY*/ dma.NYGY_DMA_A12n.dff8p(LORU_FF46_WRn, old_bus.BUS_CPU_D04p.qp_old());
+  /* p04.PULA*/ dma.PULA_DMA_A13n.dff8p(LORU_FF46_WRn, old_bus.BUS_CPU_D05p.qp_old());
+  /* p04.POKU*/ dma.POKU_DMA_A14n.dff8p(LORU_FF46_WRn, old_bus.BUS_CPU_D06p.qp_old());
+  /* p04.MARU*/ dma.MARU_DMA_A15n.dff8p(LORU_FF46_WRn, old_bus.BUS_CPU_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

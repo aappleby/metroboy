@@ -22,20 +22,24 @@ uint64_t commit_and_hash(void* blob, size_t size) {
   uint8_t* base = (uint8_t*)blob;
   bool bad_bits = false;
 
+#ifdef CHECK_DIRTY_BIT
   for (size_t i = 0; i < size; i++) {
     uint8_t s = base[i];
-
-#ifdef CHECK_DIRTY_BIT
     if ((s & 0xF0) != 0xE0) {
       LOG_Y("Bit %d not dirty after sim pass!\n", i);
       bad_bits = true;
     }
+  }
+  ASSERT_N(bad_bits);
 #endif
+
+  for (size_t i = 0; i < size; i++) {
+    uint8_t s = base[i];
+
     combine_hash(h, (s & 0b11));
     base[i] = (s & 0b00001111) | 0b00010000;
   }
 
-  ASSERT_N(bad_bits);
 #endif
 
   return h;

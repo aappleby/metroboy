@@ -27,12 +27,12 @@ void GateBoy::tock_sprite_scanner() {
   /*#p29.CENO*/ sprite_scanner.CENO_SCANNINGn.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(),  sprite_scanner.BESU_SCANNINGp.qp_old());
   /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGp.nor_latch(lcd.CATU_START_SCANNING.qp_new(), ASEN_SCAN_DONE_TRIGp);
 
-  /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(new_bus.BUS_OAM_A02n.qp_old());
-  /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(new_bus.BUS_OAM_A03n.qp_old());
-  /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1(new_bus.BUS_OAM_A04n.qp_old());
-  /* p28.YMEV*/ wire _YMEV_OAM_A5p_old = not1(new_bus.BUS_OAM_A05n.qp_old());
-  /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1(new_bus.BUS_OAM_A06n.qp_old());
-  /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1(new_bus.BUS_OAM_A07n.qp_old());
+  /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(old_bus.BUS_OAM_A02n.qp_old());
+  /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(old_bus.BUS_OAM_A03n.qp_old());
+  /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1(old_bus.BUS_OAM_A04n.qp_old());
+  /* p28.YMEV*/ wire _YMEV_OAM_A5p_old = not1(old_bus.BUS_OAM_A05n.qp_old());
+  /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1(old_bus.BUS_OAM_A06n.qp_old());
+  /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1(old_bus.BUS_OAM_A07n.qp_old());
 
   // Sprite store grabs the sprite index off the _old_ oam address new_bus
   /* p30.XADU*/ sprite_scanner.XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH(), SIG_VCC, _YFOT_OAM_A2p_old);

@@ -110,10 +110,19 @@ struct GateBoy {
   }
 
   void set_old_bits() {
-    uint8_t* b = reg_begin();
-    size_t s = reg_end() - reg_begin();
-    for (size_t i = 0; i < s; i++) {
-      b[i] |= 0b00010000;
+    {
+      uint8_t* b = (uint8_t*)&old_bus;
+      size_t s = sizeof(old_bus);
+      for (size_t i = 0; i < s; i++) {
+        b[i] |= 0b00010000;
+      }
+    }
+    {
+      uint8_t* b = reg_begin();
+      size_t s = reg_end() - reg_begin();
+      for (size_t i = 0; i < s; i++) {
+        b[i] |= 0b00010000;
+      }
     }
   }
 
@@ -408,7 +417,14 @@ struct GateBoy {
   ///* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   ///*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
 
-  /* p01.XAPO*/ wire XAPO_VID_RSTn_old() const { return not1(XODO_VID_RSTp()); }
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp_old() const { return or2(rst.AFER_SYS_RSTp.qp_old(), rst.ASOL_POR_DONEn.qp_old()); }
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn_old() const { return not1(AVOR_SYS_RSTp_old()); }
+  /*#p01.DULA*/ wire DULA_SYS_RSTp_old() const { return not1(ALUR_SYS_RSTn_old()); }
+  /*#p01.CUNU*/ wire CUNU_SYS_RSTn_old() const { return not1(DULA_SYS_RSTp_old()); }
+  /*#p01.XORE*/ wire XORE_SYS_RSTp_old() const { return not1(CUNU_SYS_RSTn_old()); }
+  /* p01.XEBE*/ wire XEBE_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
+  /* p01.XODO*/ wire XODO_VID_RSTp_old() const { return nand2(XEBE_SYS_RSTn_old(), rst._XONA_LCDC_LCDENn.qn_old()); }
+  /* p01.XAPO*/ wire XAPO_VID_RSTn_old() const { return not1(XODO_VID_RSTp_old()); }
   /* p01.TOFU*/ wire TOFU_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
   /*#p01.ATAR*/ wire ATAR_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
   /* p01.AMYG*/ wire AMYG_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }

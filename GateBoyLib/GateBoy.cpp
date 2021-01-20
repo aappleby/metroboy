@@ -580,9 +580,6 @@ void GateBoy::tock_slow(int pass_index) {
 
 
 
-  {
-    tile_fetcher._XYMU_RENDERINGn = XYMU_RENDERINGn;
-  }
   /* p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
 
   {
@@ -620,7 +617,6 @@ void GateBoy::tock_slow(int pass_index) {
     tock_sprite_fetcher(TEKY_SFETCH_REQp_old);
 
     oam_latch_to_temp_a();
-    oam_latch_to_temp_b();
 
     SpriteDeltaY delta = sub_sprite_y();
     wire _GESE_SCAN_MATCH_Yp = GESE_SCAN_MATCH_Yp(delta, reg_lcdc.XYMO_LCDC_SPSIZEn);
@@ -630,8 +626,12 @@ void GateBoy::tock_slow(int pass_index) {
     update_count(_DYTY_COUNT_CLKp);
     SpriteStoreFlag store_flag = get_store_flags(_DYTY_COUNT_CLKp);
     store_sprite_x(store_flag, old_first_match);
-    store_sprite_index(store_flag);
+
+
+    store_sprite_index(store_flag); // this needs old oam temp b, which is tocked in oam_latch_to_temp_b()
     store_sprite_line (store_flag);
+
+    oam_latch_to_temp_b();
   }
   //^^^^^
 

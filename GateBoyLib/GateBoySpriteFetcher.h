@@ -23,8 +23,6 @@ struct SpriteFetcher {
     d.dump_slice2n("Temp B : ", &sprite_pix_b.PEFO_SPRITE_DB0n, 8);
   }
 
-  NorLatch _XYMU_RENDERINGn;
-
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp; // ABCDEFGH Set on odd, cleared on even
   /*p27.SOBU*/ DFF17 SOBU_SFETCH_REQp;         // xBxDxFxH
   /*p27.SUDA*/ DFF17 SUDA_SFETCH_REQp;         // AxBxExGx

@@ -83,14 +83,14 @@ void GateBoy::reg_tma_read() {
 
 void GateBoy::reg_tma_write() {
   /* p03.TYJU*/ wire _TYJU_FF06_WRn = nand4(cpu_bus.TAPU_CPU_WRp, new_bus.RYFO_FF04_FF07p(), new_bus.BUS_CPU_A01p.qp_new(), new_bus.TOVY_A00n());
-  /* p03.SABU*/ timer.SABU_TMA0p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
-  /* p03.NYKE*/ timer.NYKE_TMA1p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D01p.qp_old());
-  /* p03.MURU*/ timer.MURU_TMA2p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D02p.qp_old());
-  /* p03.TYVA*/ timer.TYVA_TMA3p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D03p.qp_old());
-  /* p03.TYRU*/ timer.TYRU_TMA4p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D04p.qp_old());
-  /* p03.SUFY*/ timer.SUFY_TMA5p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D05p.qp_old());
-  /* p03.PETO*/ timer.PETO_TMA6p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D06p.qp_old());
-  /* p03.SETA*/ timer.SETA_TMA7p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D07p.qp_old());
+  /* p03.SABU*/ timer.SABU_TMA0p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
+  /* p03.NYKE*/ timer.NYKE_TMA1p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
+  /* p03.MURU*/ timer.MURU_TMA2p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
+  /* p03.TYVA*/ timer.TYVA_TMA3p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D03p.qp_old());
+  /* p03.TYRU*/ timer.TYRU_TMA4p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
+  /* p03.SUFY*/ timer.SUFY_TMA5p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
+  /* p03.PETO*/ timer.PETO_TMA6p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D06p.qp_old());
+  /* p03.SETA*/ timer.SETA_TMA7p.dff17(_TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D07p.qp_old());
 
 }
 
@@ -103,9 +103,9 @@ void GateBoy::reg_tac_read() {
 
 void GateBoy::reg_tac_write() {
   /* p03.SARA*/ wire _SARA_FF07_WRn = nand4(cpu_bus.TAPU_CPU_WRp, new_bus.RYFO_FF04_FF07p(), new_bus.BUS_CPU_A01p.qp_new(), new_bus.BUS_CPU_A00p.qp_new());
-  /* p03.SOPU*/ timer.SOPU_TAC0p.dff17(_SARA_FF07_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
-  /* p03.SAMY*/ timer.SAMY_TAC1p.dff17(_SARA_FF07_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D01p.qp_old());
-  /* p03.SABO*/ timer.SABO_TAC2p.dff17(_SARA_FF07_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D02p.qp_old());
+  /* p03.SOPU*/ timer.SOPU_TAC0p.dff17(_SARA_FF07_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
+  /* p03.SAMY*/ timer.SAMY_TAC1p.dff17(_SARA_FF07_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
+  /* p03.SABO*/ timer.SABO_TAC2p.dff17(_SARA_FF07_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
 
 }
 

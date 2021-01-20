@@ -131,14 +131,14 @@ BGScrollY GateBoy::add_scy() {
 
 SpritePix GateBoy::flip_sprite_pix(wire TEXY_SFETCHINGp, DFF8n BAXO_OAM_DB5p) {
   /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(BAXO_OAM_DB5p.qp_old(), TEXY_SFETCHINGp);
-  /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D07p.qp_old(), new_bus.BUS_VRAM_D00p.qp_old());
-  /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D06p.qp_old(), new_bus.BUS_VRAM_D01p.qp_old());
-  /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D05p.qp_old(), new_bus.BUS_VRAM_D02p.qp_old());
-  /* p33.POBE*/ wire _POBE_FLIP3p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D04p.qp_old(), new_bus.BUS_VRAM_D03p.qp_old());
-  /* p33.PACY*/ wire _PACY_FLIP4p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D03p.qp_old(), new_bus.BUS_VRAM_D04p.qp_old());
-  /* p33.PUGU*/ wire _PUGU_FLIP5p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D02p.qp_old(), new_bus.BUS_VRAM_D05p.qp_old());
-  /* p33.PAWE*/ wire _PAWE_FLIP6p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D01p.qp_old(), new_bus.BUS_VRAM_D06p.qp_old());
-  /* p33.PULY*/ wire _PULY_FLIP7p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D00p.qp_old(), new_bus.BUS_VRAM_D07p.qp_old());
+  /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D07p.qp_old(), old_bus.BUS_VRAM_D00p.qp_old());
+  /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D06p.qp_old(), old_bus.BUS_VRAM_D01p.qp_old());
+  /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D05p.qp_old(), old_bus.BUS_VRAM_D02p.qp_old());
+  /* p33.POBE*/ wire _POBE_FLIP3p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D04p.qp_old(), old_bus.BUS_VRAM_D03p.qp_old());
+  /* p33.PACY*/ wire _PACY_FLIP4p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D03p.qp_old(), old_bus.BUS_VRAM_D04p.qp_old());
+  /* p33.PUGU*/ wire _PUGU_FLIP5p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D02p.qp_old(), old_bus.BUS_VRAM_D05p.qp_old());
+  /* p33.PAWE*/ wire _PAWE_FLIP6p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D01p.qp_old(), old_bus.BUS_VRAM_D06p.qp_old());
+  /* p33.PULY*/ wire _PULY_FLIP7p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D00p.qp_old(), old_bus.BUS_VRAM_D07p.qp_old());
 
   return {
     _PUTE_FLIP0p,
@@ -237,14 +237,14 @@ void GateBoy::reg_scy_read() {
 void GateBoy::reg_scy_write() {
   /* p23.BEDY*/ wire _BEDY_FF42_WRp = and2(CUPA_CPU_WRp(), new_bus.XARO_FF42p());
   /* p23.CAVO*/ wire _CAVO_FF42_WRn = not1(_BEDY_FF42_WRp);
-  /* p23.GAVE*/ reg_scy.GAVE_SCY0n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
-  /* p23.FYMO*/ reg_scy.FYMO_SCY1n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D01p.qp_old());
-  /* p23.FEZU*/ reg_scy.FEZU_SCY2n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D02p.qp_old());
-  /* p23.FUJO*/ reg_scy.FUJO_SCY3n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D03p.qp_old());
-  /* p23.DEDE*/ reg_scy.DEDE_SCY4n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D04p.qp_old());
-  /* p23.FOTY*/ reg_scy.FOTY_SCY5n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D05p.qp_old());
-  /* p23.FOHA*/ reg_scy.FOHA_SCY6n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D06p.qp_old());
-  /* p23.FUNY*/ reg_scy.FUNY_SCY7n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D07p.qp_old());
+  /* p23.GAVE*/ reg_scy.GAVE_SCY0n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
+  /* p23.FYMO*/ reg_scy.FYMO_SCY1n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
+  /* p23.FEZU*/ reg_scy.FEZU_SCY2n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
+  /* p23.FUJO*/ reg_scy.FUJO_SCY3n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D03p.qp_old());
+  /* p23.DEDE*/ reg_scy.DEDE_SCY4n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
+  /* p23.FOTY*/ reg_scy.FOTY_SCY5n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
+  /* p23.FOHA*/ reg_scy.FOHA_SCY6n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D06p.qp_old());
+  /* p23.FUNY*/ reg_scy.FUNY_SCY7n.dff9(_CAVO_FF42_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -265,14 +265,14 @@ void GateBoy::reg_scx_read() {
 void GateBoy::reg_scx_write() {
   /* p23.ARUR*/ wire _ARUR_FF43_WRp = and2(CUPA_CPU_WRp(), new_bus.XAVY_FF43p());
   /* p23.AMUN*/ wire _AMUN_FF43_WRn = not1(_ARUR_FF43_WRp);
-  /* p23.DATY*/ reg_scx.DATY_SCX0n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
-  /* p23.DUZU*/ reg_scx.DUZU_SCX1n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D01p.qp_old());
-  /* p23.CYXU*/ reg_scx.CYXU_SCX2n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D02p.qp_old());
-  /* p23.GUBO*/ reg_scx.GUBO_SCX3n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D03p.qp_old());
-  /* p23.BEMY*/ reg_scx.BEMY_SCX4n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D04p.qp_old());
-  /* p23.CUZY*/ reg_scx.CUZY_SCX5n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D05p.qp_old());
-  /* p23.CABU*/ reg_scx.CABU_SCX6n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D06p.qp_old());
-  /* p23.BAKE*/ reg_scx.BAKE_SCX7n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), new_bus.BUS_CPU_D07p.qp_old());
+  /* p23.DATY*/ reg_scx.DATY_SCX0n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
+  /* p23.DUZU*/ reg_scx.DUZU_SCX1n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
+  /* p23.CYXU*/ reg_scx.CYXU_SCX2n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
+  /* p23.GUBO*/ reg_scx.GUBO_SCX3n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D03p.qp_old());
+  /* p23.BEMY*/ reg_scx.BEMY_SCX4n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
+  /* p23.CUZY*/ reg_scx.CUZY_SCX5n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
+  /* p23.CABU*/ reg_scx.CABU_SCX6n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D06p.qp_old());
+  /* p23.BAKE*/ reg_scx.BAKE_SCX7n.dff9(_AMUN_FF43_WRn, CUNU_SYS_RSTn(), old_bus.BUS_CPU_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -375,14 +375,14 @@ void GateBoy::reg_lyc_write()
 {
   /* p23.XUFA*/ wire _XUFA_FF45_WRn = and2(CUPA_CPU_WRp(), new_bus.XAYU_FF45p());
   /* p23.WANE*/ wire _WANE_FF45_WRp = not1(_XUFA_FF45_WRn);
-  /* p23.SYRY*/ lcd.reg_lyc.SYRY_LYC0n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
-  /* p23.VUCE*/ lcd.reg_lyc.VUCE_LYC1n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), new_bus.BUS_CPU_D01p.qp_old());
-  /* p23.SEDY*/ lcd.reg_lyc.SEDY_LYC2n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), new_bus.BUS_CPU_D02p.qp_old());
-  /* p23.SALO*/ lcd.reg_lyc.SALO_LYC3n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), new_bus.BUS_CPU_D03p.qp_old());
-  /* p23.SOTA*/ lcd.reg_lyc.SOTA_LYC4n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), new_bus.BUS_CPU_D04p.qp_old());
-  /* p23.VAFA*/ lcd.reg_lyc.VAFA_LYC5n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), new_bus.BUS_CPU_D05p.qp_old());
-  /* p23.VEVO*/ lcd.reg_lyc.VEVO_LYC6n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), new_bus.BUS_CPU_D06p.qp_old());
-  /* p23.RAHA*/ lcd.reg_lyc.RAHA_LYC7n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), new_bus.BUS_CPU_D07p.qp_old());
+  /* p23.SYRY*/ lcd.reg_lyc.SYRY_LYC0n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
+  /* p23.VUCE*/ lcd.reg_lyc.VUCE_LYC1n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
+  /* p23.SEDY*/ lcd.reg_lyc.SEDY_LYC2n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
+  /* p23.SALO*/ lcd.reg_lyc.SALO_LYC3n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D03p.qp_old());
+  /* p23.SOTA*/ lcd.reg_lyc.SOTA_LYC4n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
+  /* p23.VAFA*/ lcd.reg_lyc.VAFA_LYC5n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
+  /* p23.VEVO*/ lcd.reg_lyc.VEVO_LYC6n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D06p.qp_old());
+  /* p23.RAHA*/ lcd.reg_lyc.RAHA_LYC7n.dff9(_WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D07p.qp_old());
 }
 
 void GateBoy::reg_lyc_tock2()
@@ -427,14 +427,14 @@ void GateBoy::reg_bgp_write()
   /* p36.VELY*/ wire _VELY_FF47_WRp = and2(CUPA_CPU_WRp(), new_bus.WERA_FF47p());
   /* p36.TEPO*/ wire _TEPO_FF47_WRp = not1(_VELY_FF47_WRp);
 
-  /*#p36.PAVO*/ pix_pipes.reg_bgp.PAVO_BGP_D0n.dff8p(_TEPO_FF47_WRp, new_bus.BUS_CPU_D00p.qp_old());
-  /* p36.NUSY*/ pix_pipes.reg_bgp.NUSY_BGP_D1n.dff8p(_TEPO_FF47_WRp, new_bus.BUS_CPU_D01p.qp_old());
-  /* p36.PYLU*/ pix_pipes.reg_bgp.PYLU_BGP_D2n.dff8p(_TEPO_FF47_WRp, new_bus.BUS_CPU_D02p.qp_old());
-  /* p36.MAXY*/ pix_pipes.reg_bgp.MAXY_BGP_D3n.dff8p(_TEPO_FF47_WRp, new_bus.BUS_CPU_D03p.qp_old());
-  /* p36.MUKE*/ pix_pipes.reg_bgp.MUKE_BGP_D4n.dff8p(_TEPO_FF47_WRp, new_bus.BUS_CPU_D04p.qp_old());
-  /* p36.MORU*/ pix_pipes.reg_bgp.MORU_BGP_D5n.dff8p(_TEPO_FF47_WRp, new_bus.BUS_CPU_D05p.qp_old());
-  /* p36.MOGY*/ pix_pipes.reg_bgp.MOGY_BGP_D6n.dff8p(_TEPO_FF47_WRp, new_bus.BUS_CPU_D06p.qp_old());
-  /* p36.MENA*/ pix_pipes.reg_bgp.MENA_BGP_D7n.dff8p(_TEPO_FF47_WRp, new_bus.BUS_CPU_D07p.qp_old());
+  /*#p36.PAVO*/ pix_pipes.reg_bgp.PAVO_BGP_D0n.dff8p(_TEPO_FF47_WRp, old_bus.BUS_CPU_D00p.qp_old());
+  /* p36.NUSY*/ pix_pipes.reg_bgp.NUSY_BGP_D1n.dff8p(_TEPO_FF47_WRp, old_bus.BUS_CPU_D01p.qp_old());
+  /* p36.PYLU*/ pix_pipes.reg_bgp.PYLU_BGP_D2n.dff8p(_TEPO_FF47_WRp, old_bus.BUS_CPU_D02p.qp_old());
+  /* p36.MAXY*/ pix_pipes.reg_bgp.MAXY_BGP_D3n.dff8p(_TEPO_FF47_WRp, old_bus.BUS_CPU_D03p.qp_old());
+  /* p36.MUKE*/ pix_pipes.reg_bgp.MUKE_BGP_D4n.dff8p(_TEPO_FF47_WRp, old_bus.BUS_CPU_D04p.qp_old());
+  /* p36.MORU*/ pix_pipes.reg_bgp.MORU_BGP_D5n.dff8p(_TEPO_FF47_WRp, old_bus.BUS_CPU_D05p.qp_old());
+  /* p36.MOGY*/ pix_pipes.reg_bgp.MOGY_BGP_D6n.dff8p(_TEPO_FF47_WRp, old_bus.BUS_CPU_D06p.qp_old());
+  /* p36.MENA*/ pix_pipes.reg_bgp.MENA_BGP_D7n.dff8p(_TEPO_FF47_WRp, old_bus.BUS_CPU_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -461,14 +461,14 @@ void GateBoy::reg_obp0_write()
   /* p36.XOMA*/ wire _XOMA_FF48_WRp = and2(CUPA_CPU_WRp(), new_bus.XAYO_FF48p());
   /* p36.XELO*/ wire _XELO_FF48_WRn = not1(_XOMA_FF48_WRp);
 
-  /* p36.XUFU*/ pix_pipes.reg_obp0.XUFU_OBP0_D0n.dff8p(_XELO_FF48_WRn, new_bus.BUS_CPU_D00p.qp_old());
-  /* p36.XUKY*/ pix_pipes.reg_obp0.XUKY_OBP0_D1n.dff8p(_XELO_FF48_WRn, new_bus.BUS_CPU_D01p.qp_old());
-  /* p36.XOVA*/ pix_pipes.reg_obp0.XOVA_OBP0_D2n.dff8p(_XELO_FF48_WRn, new_bus.BUS_CPU_D02p.qp_old());
-  /* p36.XALO*/ pix_pipes.reg_obp0.XALO_OBP0_D3n.dff8p(_XELO_FF48_WRn, new_bus.BUS_CPU_D03p.qp_old());
-  /* p36.XERU*/ pix_pipes.reg_obp0.XERU_OBP0_D4n.dff8p(_XELO_FF48_WRn, new_bus.BUS_CPU_D04p.qp_old());
-  /* p36.XYZE*/ pix_pipes.reg_obp0.XYZE_OBP0_D5n.dff8p(_XELO_FF48_WRn, new_bus.BUS_CPU_D05p.qp_old());
-  /* p36.XUPO*/ pix_pipes.reg_obp0.XUPO_OBP0_D6n.dff8p(_XELO_FF48_WRn, new_bus.BUS_CPU_D06p.qp_old());
-  /* p36.XANA*/ pix_pipes.reg_obp0.XANA_OBP0_D7n.dff8p(_XELO_FF48_WRn, new_bus.BUS_CPU_D07p.qp_old());
+  /* p36.XUFU*/ pix_pipes.reg_obp0.XUFU_OBP0_D0n.dff8p(_XELO_FF48_WRn, old_bus.BUS_CPU_D00p.qp_old());
+  /* p36.XUKY*/ pix_pipes.reg_obp0.XUKY_OBP0_D1n.dff8p(_XELO_FF48_WRn, old_bus.BUS_CPU_D01p.qp_old());
+  /* p36.XOVA*/ pix_pipes.reg_obp0.XOVA_OBP0_D2n.dff8p(_XELO_FF48_WRn, old_bus.BUS_CPU_D02p.qp_old());
+  /* p36.XALO*/ pix_pipes.reg_obp0.XALO_OBP0_D3n.dff8p(_XELO_FF48_WRn, old_bus.BUS_CPU_D03p.qp_old());
+  /* p36.XERU*/ pix_pipes.reg_obp0.XERU_OBP0_D4n.dff8p(_XELO_FF48_WRn, old_bus.BUS_CPU_D04p.qp_old());
+  /* p36.XYZE*/ pix_pipes.reg_obp0.XYZE_OBP0_D5n.dff8p(_XELO_FF48_WRn, old_bus.BUS_CPU_D05p.qp_old());
+  /* p36.XUPO*/ pix_pipes.reg_obp0.XUPO_OBP0_D6n.dff8p(_XELO_FF48_WRn, old_bus.BUS_CPU_D06p.qp_old());
+  /* p36.XANA*/ pix_pipes.reg_obp0.XANA_OBP0_D7n.dff8p(_XELO_FF48_WRn, old_bus.BUS_CPU_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -493,14 +493,14 @@ void GateBoy::reg_obp1_write()
   /* p36.MYXE*/ wire _MYXE_FF49_WRp = and2(CUPA_CPU_WRp(), new_bus.TEGO_FF49p());
   /* p36.LEHO*/ wire _LEHO_FF49_WRn = not1(_MYXE_FF49_WRp);
 
-  /* p36.MOXY*/ pix_pipes.reg_obp1.MOXY_OBP1_D0n.dff8p(_LEHO_FF49_WRn, new_bus.BUS_CPU_D00p.qp_old());
-  /* p36.LAWO*/ pix_pipes.reg_obp1.LAWO_OBP1_D1n.dff8p(_LEHO_FF49_WRn, new_bus.BUS_CPU_D01p.qp_old());
-  /* p36.MOSA*/ pix_pipes.reg_obp1.MOSA_OBP1_D2n.dff8p(_LEHO_FF49_WRn, new_bus.BUS_CPU_D02p.qp_old());
-  /* p36.LOSE*/ pix_pipes.reg_obp1.LOSE_OBP1_D3n.dff8p(_LEHO_FF49_WRn, new_bus.BUS_CPU_D03p.qp_old());
-  /* p36.LUNE*/ pix_pipes.reg_obp1.LUNE_OBP1_D4n.dff8p(_LEHO_FF49_WRn, new_bus.BUS_CPU_D04p.qp_old());
-  /* p36.LUGU*/ pix_pipes.reg_obp1.LUGU_OBP1_D5n.dff8p(_LEHO_FF49_WRn, new_bus.BUS_CPU_D05p.qp_old());
-  /* p36.LEPU*/ pix_pipes.reg_obp1.LEPU_OBP1_D6n.dff8p(_LEHO_FF49_WRn, new_bus.BUS_CPU_D06p.qp_old());
-  /* p36.LUXO*/ pix_pipes.reg_obp1.LUXO_OBP1_D7n.dff8p(_LEHO_FF49_WRn, new_bus.BUS_CPU_D07p.qp_old());
+  /* p36.MOXY*/ pix_pipes.reg_obp1.MOXY_OBP1_D0n.dff8p(_LEHO_FF49_WRn, old_bus.BUS_CPU_D00p.qp_old());
+  /* p36.LAWO*/ pix_pipes.reg_obp1.LAWO_OBP1_D1n.dff8p(_LEHO_FF49_WRn, old_bus.BUS_CPU_D01p.qp_old());
+  /* p36.MOSA*/ pix_pipes.reg_obp1.MOSA_OBP1_D2n.dff8p(_LEHO_FF49_WRn, old_bus.BUS_CPU_D02p.qp_old());
+  /* p36.LOSE*/ pix_pipes.reg_obp1.LOSE_OBP1_D3n.dff8p(_LEHO_FF49_WRn, old_bus.BUS_CPU_D03p.qp_old());
+  /* p36.LUNE*/ pix_pipes.reg_obp1.LUNE_OBP1_D4n.dff8p(_LEHO_FF49_WRn, old_bus.BUS_CPU_D04p.qp_old());
+  /* p36.LUGU*/ pix_pipes.reg_obp1.LUGU_OBP1_D5n.dff8p(_LEHO_FF49_WRn, old_bus.BUS_CPU_D05p.qp_old());
+  /* p36.LEPU*/ pix_pipes.reg_obp1.LEPU_OBP1_D6n.dff8p(_LEHO_FF49_WRn, old_bus.BUS_CPU_D06p.qp_old());
+  /* p36.LUXO*/ pix_pipes.reg_obp1.LUXO_OBP1_D7n.dff8p(_LEHO_FF49_WRn, old_bus.BUS_CPU_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -509,14 +509,14 @@ void GateBoy::reg_wy_write()
 {
   /* p23.WEKO*/ wire _WEKO_FF4A_WRp = and2(CUPA_CPU_WRp(), new_bus.VYGA_FF4Ap());
   /* p23.VEFU*/ wire _VEFU_FF4A_WRn = not1(_WEKO_FF4A_WRp);
-  /* p23.NESO*/ reg_wy.NESO_WY0n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
-  /* p23.NYRO*/ reg_wy.NYRO_WY1n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D01p.qp_old());
-  /* p23.NAGA*/ reg_wy.NAGA_WY2n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D02p.qp_old());
-  /* p23.MELA*/ reg_wy.MELA_WY3n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D03p.qp_old());
-  /* p23.NULO*/ reg_wy.NULO_WY4n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D04p.qp_old());
-  /* p23.NENE*/ reg_wy.NENE_WY5n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D05p.qp_old());
-  /* p23.NUKA*/ reg_wy.NUKA_WY6n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D06p.qp_old());
-  /* p23.NAFU*/ reg_wy.NAFU_WY7n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D07p.qp_old());
+  /* p23.NESO*/ reg_wy.NESO_WY0n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
+  /* p23.NYRO*/ reg_wy.NYRO_WY1n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
+  /* p23.NAGA*/ reg_wy.NAGA_WY2n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
+  /* p23.MELA*/ reg_wy.MELA_WY3n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D03p.qp_old());
+  /* p23.NULO*/ reg_wy.NULO_WY4n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
+  /* p23.NENE*/ reg_wy.NENE_WY5n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
+  /* p23.NUKA*/ reg_wy.NUKA_WY6n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D06p.qp_old());
+  /* p23.NAFU*/ reg_wy.NAFU_WY7n.dff9(_VEFU_FF4A_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D07p.qp_old());
 }
 
 void GateBoy::reg_wy_read()
@@ -551,28 +551,28 @@ void GateBoy::reg_wx_read() {
 void GateBoy::reg_wx_write() {
   /* p23.WUZA*/ wire _WUZA_FF4B_WRp = and2(CUPA_CPU_WRp(), new_bus.VUMY_FF4Bp());
   /* p23.VOXU*/ wire _VOXU_FF4B_WRn = not1(_WUZA_FF4B_WRp);
-  /* p23.MYPA*/ reg_wx.MYPA_WX0n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
-  /* p23.NOFE*/ reg_wx.NOFE_WX1n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D01p.qp_old());
-  /* p23.NOKE*/ reg_wx.NOKE_WX2n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D02p.qp_old());
-  /* p23.MEBY*/ reg_wx.MEBY_WX3n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D03p.qp_old());
-  /* p23.MYPU*/ reg_wx.MYPU_WX4n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D04p.qp_old());
-  /* p23.MYCE*/ reg_wx.MYCE_WX5n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D05p.qp_old());
-  /* p23.MUVO*/ reg_wx.MUVO_WX6n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D06p.qp_old());
-  /* p23.NUKU*/ reg_wx.NUKU_WX7n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), new_bus.BUS_CPU_D07p.qp_old());
+  /* p23.MYPA*/ reg_wx.MYPA_WX0n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
+  /* p23.NOFE*/ reg_wx.NOFE_WX1n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
+  /* p23.NOKE*/ reg_wx.NOKE_WX2n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
+  /* p23.MEBY*/ reg_wx.MEBY_WX3n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D03p.qp_old());
+  /* p23.MYPU*/ reg_wx.MYPU_WX4n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
+  /* p23.MYCE*/ reg_wx.MYCE_WX5n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
+  /* p23.MUVO*/ reg_wx.MUVO_WX6n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D06p.qp_old());
+  /* p23.NUKU*/ reg_wx.NUKU_WX7n.dff9(_VOXU_FF4B_WRn, WALU_SYS_RSTn(), old_bus.BUS_CPU_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::store_tile_temp_a()
 {
-  /* p32.LEGU*/ tile_fetcher.tile_temp_a.LEGU_TILE_DA0n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D00p.qp_old());
-  /* p32.NUDU*/ tile_fetcher.tile_temp_a.NUDU_TILE_DA1n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D01p.qp_old());
-  /* p32.MUKU*/ tile_fetcher.tile_temp_a.MUKU_TILE_DA2n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D02p.qp_old());
-  /* p32.LUZO*/ tile_fetcher.tile_temp_a.LUZO_TILE_DA3n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D03p.qp_old());
-  /* p32.MEGU*/ tile_fetcher.tile_temp_a.MEGU_TILE_DA4n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D04p.qp_old());
-  /* p32.MYJY*/ tile_fetcher.tile_temp_a.MYJY_TILE_DA5n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D05p.qp_old());
-  /* p32.NASA*/ tile_fetcher.tile_temp_a.NASA_TILE_DA6n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D06p.qp_old());
-  /* p32.NEFO*/ tile_fetcher.tile_temp_a.NEFO_TILE_DA7n.dff8p(LOMA_LATCH_TILE_DAn(), new_bus.BUS_VRAM_D07p.qp_old());
+  /* p32.LEGU*/ tile_fetcher.tile_temp_a.LEGU_TILE_DA0n.dff8p(LOMA_LATCH_TILE_DAn(), old_bus.BUS_VRAM_D00p.qp_old());
+  /* p32.NUDU*/ tile_fetcher.tile_temp_a.NUDU_TILE_DA1n.dff8p(LOMA_LATCH_TILE_DAn(), old_bus.BUS_VRAM_D01p.qp_old());
+  /* p32.MUKU*/ tile_fetcher.tile_temp_a.MUKU_TILE_DA2n.dff8p(LOMA_LATCH_TILE_DAn(), old_bus.BUS_VRAM_D02p.qp_old());
+  /* p32.LUZO*/ tile_fetcher.tile_temp_a.LUZO_TILE_DA3n.dff8p(LOMA_LATCH_TILE_DAn(), old_bus.BUS_VRAM_D03p.qp_old());
+  /* p32.MEGU*/ tile_fetcher.tile_temp_a.MEGU_TILE_DA4n.dff8p(LOMA_LATCH_TILE_DAn(), old_bus.BUS_VRAM_D04p.qp_old());
+  /* p32.MYJY*/ tile_fetcher.tile_temp_a.MYJY_TILE_DA5n.dff8p(LOMA_LATCH_TILE_DAn(), old_bus.BUS_VRAM_D05p.qp_old());
+  /* p32.NASA*/ tile_fetcher.tile_temp_a.NASA_TILE_DA6n.dff8p(LOMA_LATCH_TILE_DAn(), old_bus.BUS_VRAM_D06p.qp_old());
+  /* p32.NEFO*/ tile_fetcher.tile_temp_a.NEFO_TILE_DA7n.dff8p(LOMA_LATCH_TILE_DAn(), old_bus.BUS_VRAM_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -581,14 +581,14 @@ void GateBoy::store_tile_temp_b()
 {
   SigIn SIG_VCC = 1;
   // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
-  /* p32.RAWU*/ tile_fetcher.tile_temp_b.RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D00p.qp_old());
-  /* p32.POZO*/ tile_fetcher.tile_temp_b.POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D01p.qp_old());
-  /* p32.PYZO*/ tile_fetcher.tile_temp_b.PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D02p.qp_old());
-  /* p32.POXA*/ tile_fetcher.tile_temp_b.POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D03p.qp_old());
-  /* p32.PULO*/ tile_fetcher.tile_temp_b.PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D04p.qp_old());
-  /* p32.POJU*/ tile_fetcher.tile_temp_b.POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D05p.qp_old());
-  /* p32.POWY*/ tile_fetcher.tile_temp_b.POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D06p.qp_old());
-  /* p32.PYJU*/ tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, new_bus.BUS_VRAM_D07p.qp_old());
+  /* p32.RAWU*/ tile_fetcher.tile_temp_b.RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D00p.qp_old());
+  /* p32.POZO*/ tile_fetcher.tile_temp_b.POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D01p.qp_old());
+  /* p32.PYZO*/ tile_fetcher.tile_temp_b.PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D02p.qp_old());
+  /* p32.POXA*/ tile_fetcher.tile_temp_b.POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D03p.qp_old());
+  /* p32.PULO*/ tile_fetcher.tile_temp_b.PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D04p.qp_old());
+  /* p32.POJU*/ tile_fetcher.tile_temp_b.POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D05p.qp_old());
+  /* p32.POWY*/ tile_fetcher.tile_temp_b.POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D06p.qp_old());
+  /* p32.PYJU*/ tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D07p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

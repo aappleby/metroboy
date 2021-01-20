@@ -57,7 +57,7 @@ void GateBoy::serial_tock1()
   serial.PIN_70_SOUT.reset_for_pass();
 
   /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(new_bus.TOVY_A00n(), new_bus.BUS_CPU_A01p.qp_new(), cpu_bus.TAPU_CPU_WRp, new_bus.SANO_FF00_FF03p());
-  /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(_UWAM_FF02_WRn, ALUR_SYS_RSTn(), new_bus.BUS_CPU_D00p.qp_old());
+  /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(_UWAM_FF02_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
 
   /*#p01.UVYN*/ wire _UVYN_DIV05n = not1(div.TAMA_DIV05p.qp_new());
   /*#p06.COTY*/ serial.COTY_SER_CLK.dff17(_UVYN_DIV05n, _UWAM_FF02_WRn, serial.COTY_SER_CLK.qn_old()); // schematic wrong, clock is UVYN
@@ -81,7 +81,7 @@ void GateBoy::serial_tock1()
     {
       /*#p06.COBA*/ wire _COBA_SER_CNT3n = not1(serial.CALY_SER_CNT3.qp_any());
       /*#p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, ALUR_SYS_RSTn());
-      /*#p06.ETAF*/ serial.ETAF_SER_RUNNING.dff17_any(_UWAM_FF02_WRn, _CABY_XFER_RESET, new_bus.BUS_CPU_D07p.qp_old());
+      /*#p06.ETAF*/ serial.ETAF_SER_RUNNING.dff17_any(_UWAM_FF02_WRn, _CABY_XFER_RESET, old_bus.BUS_CPU_D07p.qp_old());
     }
 
     {

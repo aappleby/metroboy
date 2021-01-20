@@ -22,8 +22,6 @@ struct TileFetcher {
     d.dump_slice2p("Temp B : ", &tile_temp_b.RAWU_TILE_DB0p, 8);
   }
 
-  NorLatch _XYMU_RENDERINGn;
-
   /*p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp; // xBxDxFxG
   /*p27.LONY*/ NandLatch LONY_FETCHINGp;      // Usually changes on even. Changes on odd phase at end of line if we're in a window?
 

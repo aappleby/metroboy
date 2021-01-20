@@ -636,6 +636,8 @@ struct GateBoy {
     return _PURE_LINE_ENDn;
   }
 
+  //-----------------------------------------------------------------------------
+
   //wire NYPE_x113p_new() const { return NYPE_x113p.qp_new(); }
   //wire NYPE_x113n_new() const { return NYPE_x113p.qn_new(); }
   //
@@ -647,6 +649,91 @@ struct GateBoy {
 
   /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1(lcd.reg_lx.RUTU_x113p.qp_old()); }
   /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1(lcd.reg_lx.RUTU_x113p.qp_new()); }
+
+
+  /* p29.SAKY*/ wire SAKY_SFETCHn_old() const { return nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_old(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_old()); }
+
+  /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new()); }
+
+  wire TEXY_SFETCHINGp_old() const {
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_old());
+    /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn_old(), _TEPA_RENDERINGp); // def or
+    /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
+    return _TEXY_SFETCHINGp;
+  }
+
+  wire TEXY_SFETCHINGp() const {
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_new());
+    /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn(), _TEPA_RENDERINGp); // def or
+    /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
+    return _TEXY_SFETCHINGp;
+  }
+
+  /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_old() const { return not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_old()); }
+  /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_new() const { return not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_new()); }
+
+  /* p29.TYTU*/ wire TYTU_SFETCH_S0n() const { return not1(sprite_fetcher.TOXE_SFETCH_S0p.qp_new()); }
+
+  wire TUVO_PPU_OAM_RDp() const {
+    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_new());
+    /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp = nor3(_TEPA_RENDERINGp, sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.TESE_SFETCH_S2p.qp_new());
+    return _TUVO_PPU_OAM_RDp;
+  }
+
+  wire TACU_SPR_SEQ_5_TRIG() const {
+    /* p29.TACU*/ wire _TACU_SPR_SEQ_5_TRIG = nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n());
+    return _TACU_SPR_SEQ_5_TRIG;
+  }
+
+  wire XUJY_OAM_CLKENp() const {
+    /* p25.VAPE*/ wire _VAPE_OAM_CLKENn = and2(TUVO_PPU_OAM_RDp(), TACU_SPR_SEQ_5_TRIG());
+    /* p25.XUJY*/ wire _XUJY_OAM_CLKENp = not1(_VAPE_OAM_CLKENn);
+    return _XUJY_OAM_CLKENp;
+  }
+
+
+  wire XUJA_SPR_OAM_LATCHn() const {
+    /* p28.WEFY*/ wire _WEFY_SPR_READp = and2(TUVO_PPU_OAM_RDp(), sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
+    /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(_WEFY_SPR_READp);
+    return _XUJA_SPR_OAM_LATCHn;
+  }
+
+  wire WUTY_SFETCH_DONE_TRIGp() const {
+    /* p29.TYNO*/ wire _TYNO = nand3(sprite_fetcher.TOXE_SFETCH_S0p.qp_new(), sprite_fetcher.SEBA_SFETCH_S1p_D5.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
+    /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn = or2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qn_new(), _TYNO);
+    /* p29.WUTY*/ wire _WUTY_SFETCH_DONE_TRIGp = not1(_VUSA_SPRITE_DONEn);
+    return _WUTY_SFETCH_DONE_TRIGp;
+  }
+
+  wire SYCU_SFETCH_S0pe() const {
+    /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
+    /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor3(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
+    return _SYCU_SFETCH_S0pe;
+  }
+
+  wire XADO_STORE_SPRITE_An() const {
+    /*#p29.TOPU*/ wire _TOPU_STORE_SPRITE_Ap = and2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), SYCU_SFETCH_S0pe());
+    /*#p29.VYWA*/ wire _VYWA_STORE_SPRITE_An = not1(_TOPU_STORE_SPRITE_Ap);
+    /*#p29.WENY*/ wire _WENY_STORE_SPRITE_Ap = not1(_VYWA_STORE_SPRITE_An);
+    /*#p29.XADO*/ wire _XADO_STORE_SPRITE_An = not1(_WENY_STORE_SPRITE_Ap);
+    return _XADO_STORE_SPRITE_An;
+  }
+
+  wire PUCO_STORE_SPRITE_Bn() const {
+    /*#p29.RACA*/ wire _RACA_STORE_SPRITE_Bp = and2(sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new(), SYCU_SFETCH_S0pe());
+    /*#p29.PEBY*/ wire _PEBY_STORE_SPRITE_Bn = not1(_RACA_STORE_SPRITE_Bp);
+    /*#p29.NYBE*/ wire _NYBE_STORE_SPRITE_Bp = not1(_PEBY_STORE_SPRITE_Bn);
+    /*#p29.PUCO*/ wire _PUCO_STORE_SPRITE_Bn = not1(_NYBE_STORE_SPRITE_Bp);
+    return _PUCO_STORE_SPRITE_Bn;
+  }
+
+  /*#p29.XUQU*/ wire XUQU_SPRITE_AB() const { return not1(sprite_fetcher.VONU_SFETCH_S1p_D4.qn_new()); }
+
+  wire SOHO_SPR_VRAM_RDp() const {
+    /* p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and2(TACU_SPR_SEQ_5_TRIG(), TEXY_SFETCHINGp());
+    return _SOHO_SPR_VRAM_RDp;
+  }
+
 
   //-----------------------------------------------------------------------------
 

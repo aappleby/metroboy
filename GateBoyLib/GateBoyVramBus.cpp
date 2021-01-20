@@ -45,9 +45,9 @@ void GateBoy::dma_addr_to_vram_addr() {
 //------------------------------------------------------------------------------------------------------------------------
 // BG map read address
 
-void GateBoy::scroll_to_vram_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire POTU_BGW_MAP_READp, wire AXAD_WIN_MODEn, DFF9 XAFO_LCDC_BGMAPn) {
+void GateBoy::scroll_to_vram_addr(BGScrollX scroll_x, BGScrollY scroll_y) {
   SigIn SIG_VCC = 1;
-  /* p26.ACEN*/ wire _ACEN_BG_MAP_READp = and2(POTU_BGW_MAP_READp, AXAD_WIN_MODEn);
+  /* p26.ACEN*/ wire _ACEN_BG_MAP_READp = and2(POTU_BGW_MAP_READp(), AXAD_WIN_MODEn());
   /* p26.BAFY*/ wire _BAFY_BG_MAP_READn = not1(_ACEN_BG_MAP_READp);
   /* p26.AXEP_MX00_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_BAFY_BG_MAP_READn,  scroll_x.BABE_MAP_X0.sum);
   /* p26.AFEB_MX01_TO_VA01*/ new_bus.BUS_VRAM_A01n.tri6_nn(_BAFY_BG_MAP_READn,  scroll_x.ABOD_MAP_X1.sum);
@@ -59,7 +59,7 @@ void GateBoy::scroll_to_vram_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire P
   /* p26.CYPO_MY02_TO_VA07*/ new_bus.BUS_VRAM_A07n.tri6_nn(_BAFY_BG_MAP_READn,  scroll_y.DABA_MAP_Y2.sum);
   /* p26.CETA_MY03_TO_VA08*/ new_bus.BUS_VRAM_A08n.tri6_nn(_BAFY_BG_MAP_READn,  scroll_y.EFYK_MAP_Y3.sum);
   /* p26.DAFE_MY04_TO_VA09*/ new_bus.BUS_VRAM_A09n.tri6_nn(_BAFY_BG_MAP_READn,  scroll_y.EJOK_MAP_Y4.sum);
-  /*#p26.AMUV_BMAP_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_nn(_BAFY_BG_MAP_READn, XAFO_LCDC_BGMAPn.qn_new());
+  /*#p26.AMUV_BMAP_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_nn(_BAFY_BG_MAP_READn, reg_lcdc.XAFO_LCDC_BGMAPn.qn_new());
   /* p26.COVE_BMAP_TO_VA11*/ new_bus.BUS_VRAM_A11n.tri6_nn(_BAFY_BG_MAP_READn, SIG_VCC);
   /* p26.COXO_BMAP_TO_VA12*/ new_bus.BUS_VRAM_A12n.tri6_nn(_BAFY_BG_MAP_READn, SIG_VCC);
 }
@@ -68,9 +68,9 @@ void GateBoy::scroll_to_vram_addr(BGScrollX scroll_x, BGScrollY scroll_y, wire P
 // Win map read address
 
 
-void GateBoy::win_to_vram_addr(wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, DFF9 WOKY_LCDC_WINMAPn) {
+void GateBoy::win_to_vram_addr() {
   SigIn SIG_VCC = 1;
-  /*#p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and2(POTU_BGW_MAP_READp, PORE_WIN_MODEp);
+  /*#p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and2(POTU_BGW_MAP_READp(), PORE_WIN_MODEp());
   /*#p25.WUKO*/ wire _WUKO_WIN_MAP_READn = not1(_XEZE_WIN_MAP_READp);
   /*#p27.XEJA_WX03_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_WUKO_WIN_MAP_READn, win_map_x.WYKA_WIN_X3.qp_new());
   /* p27.XAMO_WX04_TO_VA01*/ new_bus.BUS_VRAM_A01n.tri6_nn(_WUKO_WIN_MAP_READn, win_map_x.WODY_WIN_X4.qp_new());
@@ -82,7 +82,7 @@ void GateBoy::win_to_vram_addr(wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, DFF
   /* p27.VACE_WY05_TO_VA07*/ new_bus.BUS_VRAM_A07n.tri6_nn(_WUKO_WIN_MAP_READn, win_map_y.TOZO_WIN_Y5.qp_new());
   /* p27.VOVO_WY06_TO_VA08*/ new_bus.BUS_VRAM_A08n.tri6_nn(_WUKO_WIN_MAP_READn, win_map_y.TATE_WIN_Y6.qp_new());
   /* p27.VULO_WY07_TO_VA09*/ new_bus.BUS_VRAM_A09n.tri6_nn(_WUKO_WIN_MAP_READn, win_map_y.TEKE_WIN_Y7.qp_new());
-  /*#p27.VEVY_WMAP_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_nn(_WUKO_WIN_MAP_READn, WOKY_LCDC_WINMAPn.qn_new());
+  /*#p27.VEVY_WMAP_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_nn(_WUKO_WIN_MAP_READn, reg_lcdc.WOKY_LCDC_WINMAPn.qn_new());
   /* p27.VEZA_WMAP_TO_VA11*/ new_bus.BUS_VRAM_A11n.tri6_nn(_WUKO_WIN_MAP_READn, SIG_VCC);
   /* p27.VOGU_WMAP_TO_VA12*/ new_bus.BUS_VRAM_A12n.tri6_nn(_WUKO_WIN_MAP_READn, SIG_VCC);
 }
@@ -90,53 +90,53 @@ void GateBoy::win_to_vram_addr(wire POTU_BGW_MAP_READp, wire PORE_WIN_MODEp, DFF
 //------------------------------------------------------------------------------------------------------------------------
 // BG/Win tile read address
 
-void GateBoy::tile_to_vram_addr(const BGScrollY scroll_y, wire NETA_BGW_TILE_READp, wire XUHA_FETCH_HILOp, DFF9 WEXU_LCDC_BGTILEn, wire PORE_WIN_MODEp, wire AXAD_WIN_MODEn) {
-  /* p26.ASUL*/ wire _ASUL_BG_TILE_READp =  and2(NETA_BGW_TILE_READp, AXAD_WIN_MODEn);
+void GateBoy::tile_to_vram_addr(const BGScrollY scroll_y) {
+  /* p26.ASUL*/ wire _ASUL_BG_TILE_READp =  and2(NETA_BGW_TILE_READp(), AXAD_WIN_MODEn());
   /* p26.BEJE*/ wire _BEJE_BG_TILE_READn = not1(_ASUL_BG_TILE_READp);
-  /* p25.XUCY*/ wire _XUCY_WIN_TILE_READn = nand2(NETA_BGW_TILE_READp, PORE_WIN_MODEp);
+  /* p25.XUCY*/ wire _XUCY_WIN_TILE_READn = nand2(NETA_BGW_TILE_READp(), PORE_WIN_MODEp());
 
-  /*#p26.ASUM_HILO_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_BEJE_BG_TILE_READn, XUHA_FETCH_HILOp);
+  /*#p26.ASUM_HILO_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_BEJE_BG_TILE_READn, XUHA_FETCH_HILOp());
   /* p26.EVAD_TLY0_TO_VA01*/ new_bus.BUS_VRAM_A01n.tri6_nn(_BEJE_BG_TILE_READn, scroll_y.FAFO_TILE_Y0.sum);
   /* p26.DAHU_TLY1_TO_VA02*/ new_bus.BUS_VRAM_A02n.tri6_nn(_BEJE_BG_TILE_READn, scroll_y.EMUX_TILE_Y1.sum);
   /* p26.DODE_TLY2_TO_VA03*/ new_bus.BUS_VRAM_A03n.tri6_nn(_BEJE_BG_TILE_READn, scroll_y.ECAB_TILE_Y2.sum);
 
-  /*#p25.XONU_HILO_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_XUCY_WIN_TILE_READn, XUHA_FETCH_HILOp);
+  /*#p25.XONU_HILO_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_XUCY_WIN_TILE_READn, XUHA_FETCH_HILOp());
   /*#p25.WUDO_WNY0_TO_VA01*/ new_bus.BUS_VRAM_A01n.tri6_nn(_XUCY_WIN_TILE_READn, win_map_y.VYNO_WIN_Y0.qp_new());
   /*#p25.WAWE_WNY1_TO_VA02*/ new_bus.BUS_VRAM_A02n.tri6_nn(_XUCY_WIN_TILE_READn, win_map_y.VUJO_WIN_Y1.qp_new());
   /*#p25.WOLU_WNY2_TO_VA03*/ new_bus.BUS_VRAM_A03n.tri6_nn(_XUCY_WIN_TILE_READn, win_map_y.VYMU_WIN_Y2.qp_new());
 
-  /*#p25.VAPY_TEMP_TO_VA04*/ new_bus.BUS_VRAM_A04n.tri6_pn(NETA_BGW_TILE_READp, tile_fetcher.tile_temp_b.RAWU_TILE_DB0p.qp_new());
-  /*#p25.SEZU_TEMP_TO_VA05*/ new_bus.BUS_VRAM_A05n.tri6_pn(NETA_BGW_TILE_READp, tile_fetcher.tile_temp_b.POZO_TILE_DB1p.qp_new());
-  /*#p25.VEJY_TEMP_TO_VA06*/ new_bus.BUS_VRAM_A06n.tri6_pn(NETA_BGW_TILE_READp, tile_fetcher.tile_temp_b.PYZO_TILE_DB2p.qp_new());
-  /*#p25.RUSA_TEMP_TO_VA07*/ new_bus.BUS_VRAM_A07n.tri6_pn(NETA_BGW_TILE_READp, tile_fetcher.tile_temp_b.POXA_TILE_DB3p.qp_new());
-  /*#p25.ROHA_TEMP_TO_VA08*/ new_bus.BUS_VRAM_A08n.tri6_pn(NETA_BGW_TILE_READp, tile_fetcher.tile_temp_b.PULO_TILE_DB4p.qp_new());
-  /*#p25.RESO_TEMP_TO_VA09*/ new_bus.BUS_VRAM_A09n.tri6_pn(NETA_BGW_TILE_READp, tile_fetcher.tile_temp_b.POJU_TILE_DB5p.qp_new());
-  /*#p25.SUVO_TEMP_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_pn(NETA_BGW_TILE_READp, tile_fetcher.tile_temp_b.POWY_TILE_DB6p.qp_new());
-  /*#p25.TOBO_TEMP_TO_VA11*/ new_bus.BUS_VRAM_A11n.tri6_pn(NETA_BGW_TILE_READp, tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.qp_new());
+  /*#p25.VAPY_TEMP_TO_VA04*/ new_bus.BUS_VRAM_A04n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.RAWU_TILE_DB0p.qp_new());
+  /*#p25.SEZU_TEMP_TO_VA05*/ new_bus.BUS_VRAM_A05n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.POZO_TILE_DB1p.qp_new());
+  /*#p25.VEJY_TEMP_TO_VA06*/ new_bus.BUS_VRAM_A06n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.PYZO_TILE_DB2p.qp_new());
+  /*#p25.RUSA_TEMP_TO_VA07*/ new_bus.BUS_VRAM_A07n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.POXA_TILE_DB3p.qp_new());
+  /*#p25.ROHA_TEMP_TO_VA08*/ new_bus.BUS_VRAM_A08n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.PULO_TILE_DB4p.qp_new());
+  /*#p25.RESO_TEMP_TO_VA09*/ new_bus.BUS_VRAM_A09n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.POJU_TILE_DB5p.qp_new());
+  /*#p25.SUVO_TEMP_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.POWY_TILE_DB6p.qp_new());
+  /*#p25.TOBO_TEMP_TO_VA11*/ new_bus.BUS_VRAM_A11n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.qp_new());
 
-  /*#p25.VUZA*/ wire _VUZA_TILE_BANKp = nor2(tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.qp_new(), WEXU_LCDC_BGTILEn.qn_new());
-  /*#p25.VURY_BANK_TO_VA12*/ new_bus.BUS_VRAM_A12n.tri6_pn(NETA_BGW_TILE_READp, _VUZA_TILE_BANKp);
+  /*#p25.VUZA*/ wire _VUZA_TILE_BANKp = nor2(tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.qp_new(), reg_lcdc.WEXU_LCDC_BGTILEn.qn_new());
+  /*#p25.VURY_BANK_TO_VA12*/ new_bus.BUS_VRAM_A12n.tri6_pn(NETA_BGW_TILE_READp(), _VUZA_TILE_BANKp);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::sprite_to_vram_addr(wire XUQU_SPRITE_AB, wire SAKY_SFETCHn, DFF9 XYMO_LCDC_SPSIZEn) {
+void GateBoy::sprite_to_vram_addr() {
   SigIn SIG_GND = 0;
 
   /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1(oam_bus.oam_temp_b.YZOS_OAM_DB6p.qp_new());
-  /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not1(XYMO_LCDC_SPSIZEn.qn_new());
+  /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not1(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
 
   /*#p29.CYVU*/ wire _CYVU_L0 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L0.qp_new());
   /*#p29.BORE*/ wire _BORE_L1 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L1.qp_new());
   /*#p29.BUVY*/ wire _BUVY_L2 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L2.qp_new());
   /*#p29.WAGO*/ wire _WAGO_L3 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L3.qp_new());
-  /*#p29.GEJY*/ wire _GEJY_L3 = amux2(oam_bus.oam_temp_a.XUSO_OAM_DA0p.qp_new(), _FUFO_LCDC_SPSIZEn, XYMO_LCDC_SPSIZEn.qn_new(), _WAGO_L3);
+  /*#p29.GEJY*/ wire _GEJY_L3 = amux2(oam_bus.oam_temp_a.XUSO_OAM_DA0p.qp_new(), _FUFO_LCDC_SPSIZEn, reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), _WAGO_L3);
 
   /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_new());
-  /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn, _TEPA_RENDERINGp); // def or
+  /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn(), _TEPA_RENDERINGp); // def or
   /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
   /* p29.ABON*/ wire _ABON_SFETCHINGn = not1(_TEXY_SFETCHINGp);
-  /* p29.ABEM_HILO_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_ABON_SFETCHINGn, XUQU_SPRITE_AB);
+  /* p29.ABEM_HILO_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_ABON_SFETCHINGn, XUQU_SPRITE_AB());
   /* p29.BAXE_SPL0_TO_VA01*/ new_bus.BUS_VRAM_A01n.tri6_nn(_ABON_SFETCHINGn, _CYVU_L0);
   /* p29.ARAS_SPL1_TO_VA02*/ new_bus.BUS_VRAM_A02n.tri6_nn(_ABON_SFETCHINGn, _BORE_L1);
   /* p29.AGAG_SPL2_TO_VA03*/ new_bus.BUS_VRAM_A03n.tri6_nn(_ABON_SFETCHINGn, _BUVY_L2);
@@ -201,8 +201,8 @@ void GateBoy::vram_addr_to_pins() {
 //------------------------------------------------------------------------------------------------------------------------
 // PIN_VRAM_D driver
 
-void GateBoy::cpu_data_to_vram_bus_data(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn) {
-  /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn);
+void GateBoy::cpu_data_to_vram_bus_data(wire SERE_CPU_VRAM_RDp) {
+  /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
   /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, _RUVY_CPU_VRAM_WRp);
 
   /*#p25.RYJE*/ wire _RYJE_CBD_TO_VPDn = not1(_SAZO_CBD_TO_VPDp);
@@ -220,8 +220,8 @@ void GateBoy::cpu_data_to_vram_bus_data(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VR
   /* p25.SUZA_CD7_TO_VD7*/ new_bus.BUS_VRAM_D07p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D07p.qp_new());
 }
 
-void GateBoy::vram_bus_data_to_pins(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn) {
-  /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn);
+void GateBoy::vram_bus_data_to_pins(wire SERE_CPU_VRAM_RDp) {
+  /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
   /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, _RUVY_CPU_VRAM_WRp);
 
   /*#p25.RYJE*/ wire _RYJE_CBD_TO_VPDn = not1(_SAZO_CBD_TO_VPDp);
@@ -284,46 +284,46 @@ void GateBoy::vram_bus_data_to_pins(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_W
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::set_vram_pin_cs(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire LUFA_DMA_VRAMp, wire LENA_BFETCHINGp, wire TEXY_SFETCHINGp) {
-  /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA_BFETCHINGp, LUFA_DMA_VRAMp, TEXY_SFETCHINGp, SERE_CPU_VRAM_RDp);
+void GateBoy::set_vram_pin_cs(wire SERE_CPU_VRAM_RDp) {
+  /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA_BFETCHINGp(), LUFA_DMA_VRAMp(), TEXY_SFETCHINGp(), SERE_CPU_VRAM_RDp);
 
-  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp);
+  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp());
   /* p25.TODE*/ wire _TODE_MCSn_A = and2(_SUTU_MCSn, _RACO_DBG_VRAMn);
-  /* p25.SEWO*/ wire _SEWO_MCSn_D =  or2(_SUTU_MCSn, TUTO_VRAM_DBGp);
+  /* p25.SEWO*/ wire _SEWO_MCSn_D =  or2(_SUTU_MCSn, TUTO_VRAM_DBGp());
   /* p25.SOKY*/ wire _SOKY_MCSp_A = not1(_TODE_MCSn_A);
   /* p25.SETY*/ wire _SETY_MCSp_D = not1(_SEWO_MCSn_D);
 
   /*PIN_43*/ vram_bus.PIN_43_VRAM_CSn.pin_out_hilo(_SOKY_MCSp_A, _SETY_MCSp_D); // FIXME not actually using this pin, but we should
 }
 
-void GateBoy::set_vram_pin_wr(wire TUTO_VRAM_DBGp, wire SERE_CPU_VRAM_RDp, wire TUJA_CPU_VRAM_WRp) {
+void GateBoy::set_vram_pin_wr(wire SERE_CPU_VRAM_RDp) {
   SigIn SIG_VCC = 1;
   ///* p25.SUDO*/ wire _SUDO_MWRp = not1(/*vram_bus.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
   /* p25.SUDO*/ wire _SUDO_MWRp = not1(SIG_VCC); // Ignoring debug stuff for now
-  /* p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp, _SUDO_MWRp, TUJA_CPU_VRAM_WRp);
+  /* p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp(), _SUDO_MWRp, TUJA_CPU_VRAM_WRp());
   /* p25.SOHY*/ wire _SOHY_MWRn   = nand2(_TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp);
 
-  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp);
+  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp());
   /* p25.TAXY*/ wire _TAXY_MWRn_A = and2(_SOHY_MWRn, _RACO_DBG_VRAMn);
-  /* p25.SOFY*/ wire _SOFY_MWRn_D =  or2(_SOHY_MWRn, TUTO_VRAM_DBGp);
+  /* p25.SOFY*/ wire _SOFY_MWRn_D =  or2(_SOHY_MWRn, TUTO_VRAM_DBGp());
   /* p25.SYSY*/ wire _SYSY_MWRp_A = not1(_TAXY_MWRn_A);
   /* p25.RAGU*/ wire _RAGU_MWRp_D = not1(_SOFY_MWRn_D);
 
   /*PIN_49*/ vram_bus.PIN_49_VRAM_WRn.pin_out_hilo(_SYSY_MWRp_A, _RAGU_MWRp_D);
 }
 
-void GateBoy::set_vram_pin_oe(wire TUTO_VRAM_DBGp, wire SALE_CPU_VRAM_WRn, wire LUFA_DMA_VRAMp, NandLatch LONY_BFETCHINGp, wire SOHO_SPR_VRAM_RDp) {
-  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn = nor2(LUFA_DMA_VRAMp, XYMU_RENDERINGn.qn_new());
-  /* p25.RYLU*/ wire _RYLU_CPU_VRAM_RDn = nand2(SALE_CPU_VRAM_WRn, _XANE_VRAM_LOCKn);
-  /* p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not1(SOHO_SPR_VRAM_RDp);
-  /* p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not1(LONY_BFETCHINGp.qp_new());
-  /* p25.APAM*/ wire _APAM_DMA_VRAMn    = not1(LUFA_DMA_VRAMp);
+void GateBoy::set_vram_pin_oe() {
+  /*#p25.XANE*/ wire _XANE_VRAM_LOCKn = nor2(LUFA_DMA_VRAMp(), XYMU_RENDERINGn.qn_new());
+  /* p25.RYLU*/ wire _RYLU_CPU_VRAM_RDn = nand2(SALE_CPU_VRAM_WRn(), _XANE_VRAM_LOCKn);
+  /* p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not1(SOHO_SPR_VRAM_RDp());
+  /* p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not1(tile_fetcher.LONY_FETCHINGp.qp_new());
+  /* p25.APAM*/ wire _APAM_DMA_VRAMn    = not1(LUFA_DMA_VRAMp());
 
   /* p25.RACU*/ wire _RACU_MOEn   = and4(_RYLU_CPU_VRAM_RDn, _RAWA_SPR_VRAM_RDn, _MYMA_BGW_VRAM_RDn, _APAM_DMA_VRAMn); // def and
 
-  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp);
+  /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp());
   /* p25.SEMA*/ wire _SEMA_MOEn_A = and2(_RACU_MOEn, _RACO_DBG_VRAMn);
-  /* p25.RUTE*/ wire _RUTE_MOEn_D =  or2(_RACU_MOEn, TUTO_VRAM_DBGp); // schematic wrong, second input is RACU
+  /* p25.RUTE*/ wire _RUTE_MOEn_D =  or2(_RACU_MOEn, TUTO_VRAM_DBGp()); // schematic wrong, second input is RACU
   /* p25.REFO*/ wire _REFO_MOEn_A = not1(_SEMA_MOEn_A);
   /* p25.SAHA*/ wire _SAHA_MOEn_D = not1(_RUTE_MOEn_D);
   /*PIN_45*/ vram_bus.PIN_45_VRAM_OEn.pin_out_hilo(_REFO_MOEn_A, _SAHA_MOEn_D);
@@ -361,8 +361,8 @@ void GateBoy::write_vram() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::vram_pins_to_data_bus(wire SERE_CPU_VRAM_RDp, wire SALE_CPU_VRAM_WRn) {
-  /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn);
+void GateBoy::vram_pins_to_data_bus(wire SERE_CPU_VRAM_RDp) {
+  /*#p25.RUVY*/ wire _RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
   /*#p25.SAZO*/ wire _SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, _RUVY_CPU_VRAM_WRp);
 
   /*#p25.RYJE*/ wire _RYJE_CBD_TO_VPDn = not1(_SAZO_CBD_TO_VPDp);

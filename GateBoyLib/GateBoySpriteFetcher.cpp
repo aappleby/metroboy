@@ -15,7 +15,7 @@ void SpriteFetcher::reset_to_cart() {
   SEBA_SFETCH_S1p_D5.reset(1, 0);
 }
 
-void GateBoy::tock_sprite_fetcher(wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old) {
+void GateBoy::tock_sprite_fetcher(wire TEKY_SFETCH_REQp_old) {
   SigIn SIG_VCC = 1;
 
   /* p27.SUDA*/ sprite_fetcher.SUDA_SFETCH_REQp.dff17(LAPE_AxCxExGx(), SIG_VCC, sprite_fetcher.SOBU_SFETCH_REQp.qp_old());
@@ -27,7 +27,7 @@ void GateBoy::tock_sprite_fetcher(wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TR
   /*#p29.TOBU*/ sprite_fetcher.TOBU_SFETCH_S1p_D2.dff17(TAVA_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), sprite_fetcher.TULY_SFETCH_S1p.qp_old());
 
   /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(sprite_fetcher.SOBU_SFETCH_REQp.qp_new(), sprite_fetcher.SUDA_SFETCH_REQp.qn_new());
-  /*#p27.SECA*/ wire _SECA_SFETCH_RSTn = nor3(_RYCE_SFETCH_TRIGp, ROSY_VID_RSTp(), ATEJ_LINE_RSTp);
+  /*#p27.SECA*/ wire _SECA_SFETCH_RSTn = nor3(_RYCE_SFETCH_TRIGp, ROSY_VID_RSTp(), ATEJ_LINE_RSTp_new());
 
   // Feedback loop
   for (int feedback = 0; feedback < 2; feedback++) {
@@ -38,6 +38,6 @@ void GateBoy::tock_sprite_fetcher(wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TR
     /*#p29.TESE*/ sprite_fetcher.TESE_SFETCH_S2p.dff17_any(sprite_fetcher.TULY_SFETCH_S1p.qn_any(), _SECA_SFETCH_RSTn, sprite_fetcher.TESE_SFETCH_S2p.qn_any());
   }
 
-  /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SFETCH_DONE_TRIGp(), TAVE_PRELOAD_DONE_TRIGp); // def nor
+  /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SFETCH_DONE_TRIGp(), TAVE_PRELOAD_DONE_TRIGp_new()); // def nor
   /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RSTn, _VEKU_SFETCH_RUNNING_RSTn);
 }

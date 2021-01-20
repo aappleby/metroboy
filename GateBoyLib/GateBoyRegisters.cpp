@@ -51,7 +51,7 @@ SpriteDeltaY GateBoy::sub_sprite_y() {
 //-----------------------------------------------------------------------------
 // Pixel counter
 
-void GateBoy::tock_pix_counter(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {
+void GateBoy::tock_pix_counter(wire SACU_CLKPIPE_evn) {
   // Pixel counter, has carry lookahead because this can increment every tcycle
   /* p21.RYBO*/ wire RYBO_old = xor2(pix_count.XEHO_PX0p.qp_old(), pix_count.SAVY_PX1p.qp_old()); // XOR layout 1, feet facing gnd, this should def be regular xor
   /* p21.XUKE*/ wire XUKE_old = and2(pix_count.XEHO_PX0p.qp_old(), pix_count.SAVY_PX1p.qp_old());
@@ -59,10 +59,10 @@ void GateBoy::tock_pix_counter(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {
   /* p21.XEGY*/ wire XEGY_old = xor2(pix_count.XODU_PX2p.qp_old(), XUKE_old); // feet facing gnd
   /* p21.XORA*/ wire XORA_old = xor2(pix_count.XYDO_PX3p.qp_old(), XYLE_old); // feet facing gnd
 
-  /* p21.XEHO*/ pix_count.XEHO_PX0p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, pix_count.XEHO_PX0p.qn_old());
-  /* p21.SAVY*/ pix_count.SAVY_PX1p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, RYBO_old);
-  /* p21.XODU*/ pix_count.XODU_PX2p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XEGY_old);
-  /* p21.XYDO*/ pix_count.XYDO_PX3p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XORA_old);
+  /* p21.XEHO*/ pix_count.XEHO_PX0p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), pix_count.XEHO_PX0p.qn_old());
+  /* p21.SAVY*/ pix_count.SAVY_PX1p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), RYBO_old);
+  /* p21.XODU*/ pix_count.XODU_PX2p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), XEGY_old);
+  /* p21.XYDO*/ pix_count.XYDO_PX3p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), XORA_old);
 
   /* p24.TOCA*/ wire TOCA_new = not1(pix_count.XYDO_PX3p.qp_new());
   /* p21.SAKE*/ wire SAKE_old = xor2(pix_count.TUHU_PX4p.qp_old(), pix_count.TUKY_PX5p.qp_old());
@@ -71,10 +71,10 @@ void GateBoy::tock_pix_counter(wire TADY_LINE_RSTn, wire SACU_CLKPIPE_evn) {
   /* p21.TYGE*/ wire TYGE_old = xor2(pix_count.TAKO_PX6p.qp_old(), TYBA_old);
   /* p21.ROKU*/ wire ROKU_old = xor2(pix_count.SYBE_PX7p.qp_old(), SURY_old); // derp
 
-  /* p21.TUHU*/ pix_count.TUHU_PX4p.dff17(TOCA_new, TADY_LINE_RSTn, pix_count.TUHU_PX4p.qn_old());
-  /* p21.TUKY*/ pix_count.TUKY_PX5p.dff17(TOCA_new, TADY_LINE_RSTn, SAKE_old); // this is a doc
-  /* p21.TAKO*/ pix_count.TAKO_PX6p.dff17(TOCA_new, TADY_LINE_RSTn, TYGE_old);
-  /* p21.SYBE*/ pix_count.SYBE_PX7p.dff17(TOCA_new, TADY_LINE_RSTn, ROKU_old);
+  /* p21.TUHU*/ pix_count.TUHU_PX4p.dff17(TOCA_new, TADY_LINE_RSTn_new(), pix_count.TUHU_PX4p.qn_old());
+  /* p21.TUKY*/ pix_count.TUKY_PX5p.dff17(TOCA_new, TADY_LINE_RSTn_new(), SAKE_old); // this is a doc
+  /* p21.TAKO*/ pix_count.TAKO_PX6p.dff17(TOCA_new, TADY_LINE_RSTn_new(), TYGE_old);
+  /* p21.SYBE*/ pix_count.SYBE_PX7p.dff17(TOCA_new, TADY_LINE_RSTn_new(), ROKU_old);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -619,9 +619,9 @@ void GateBoy::store_sprite_pix_b(SpritePix sprite_pix_old) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF9 WYMO_LCDC_WINENn, wire XAHY_LINE_RSTn) {
-  /* p27.VETU*/ wire _VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp);
-  /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn, XAPO_VID_RSTn());
+void GateBoy::tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp) {
+  /* p27.VETU*/ wire _VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp());
+  /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn_new(), XAPO_VID_RSTn());
   /* p27.XACO*/ wire _XACO_WIN_RSTn = not1(_XOFO_WIN_RSTp);
   /* p27.WYKA*/ win_map_x.WYKA_WIN_X3.dff17(_VETU_WIN_MAPp,                 _XACO_WIN_RSTn, win_map_x.WYKA_WIN_X3.qn_old());
   /* p27.WODY*/ win_map_x.WODY_WIN_X4.dff17(win_map_x.WYKA_WIN_X3.qn_new(), _XACO_WIN_RSTn, win_map_x.WODY_WIN_X4.qn_old());
@@ -633,9 +633,9 @@ void GateBoy::tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp, wire PORE_WIN_MODEp, DFF
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_win_map_y(wire PORE_WIN_MODEp) {
+void GateBoy::tock_win_map_y() {
   // Every time we leave win mode we increment win_y
-  /* p27.WAZY*/ wire _WAZY_WIN_MODEn = not1(PORE_WIN_MODEp);
+  /* p27.WAZY*/ wire _WAZY_WIN_MODEn = not1(PORE_WIN_MODEp());
   /* p27.REPU*/ wire _REPU_VBLANKp   = or2(PARU_VBLANKp(), PYRY_VID_RSTp());
   /* p27.SYNY*/ wire _SYNY_VBLANKn   = not1(_REPU_VBLANKp);
   /* p27.VYNO*/ win_map_y.VYNO_WIN_Y0.dff17(_WAZY_WIN_MODEn,                _SYNY_VBLANKn, win_map_y.VYNO_WIN_Y0.qn_old());

@@ -14,16 +14,16 @@ void GateBoySpriteStore::reset_to_cart() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::update_count(wire XAPO_VID_RSTn, wire ZEME_AxCxExGx, wire ATEJ_LINE_RSTp, wire _DYTY_STORE_CLKp) {
+void GateBoy::update_count(wire _DYTY_STORE_CLKp) {
   // Sprite store counter. The sprite count clock stops ticking once we have 10 sprites.
   // Sprite Y matcher. This is using an adder as a subtracter by inverting the first input.
 
-  /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn = not1(ATEJ_LINE_RSTp);
+  /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn = not1(ATEJ_LINE_RSTp_new());
 
   for (int feedback = 0; feedback < 2; feedback++) {
     /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL_new = and2(sprite_store.CUXY_SPRITE_COUNT1.qp_any(), sprite_store.DYBE_SPRITE_COUNT3.qp_any());
 
-    /* p29.DEZY*/ sprite_store.DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx, XAPO_VID_RSTn, _DYTY_STORE_CLKp);
+    /* p29.DEZY*/ sprite_store.DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx(), XAPO_VID_RSTn(), _DYTY_STORE_CLKp);
     /*#p29.CAKE*/ wire _CAKE_COUNT_CLKp_new = or2(_BAKY_SPRITES_FULL_new, sprite_store.DEZY_COUNT_CLKp.qp_any());
 
     /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17_any(_CAKE_COUNT_CLKp_new,                     _AZYB_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn_any());
@@ -567,9 +567,9 @@ void GateBoy::get_sprite(SpriteFirstMatch first_match) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::store_sprite_x(SpriteStoreFlag store_flag, wire _ABAK_LINE_RSTp, SpriteFirstMatch sprite_flag) {
+void GateBoy::store_sprite_x(SpriteStoreFlag store_flag, SpriteFirstMatch sprite_flag) {
   // Sprite store X resetter. This has to happen before the match check.
-  /* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(_ABAK_LINE_RSTp);
+  /* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(ABAK_LINE_RSTp_new());
   /* p29.DYBA*/ wire _DYBA_LINE_RSTp = not1(_BYVA_LINE_RSTn);
 
   /* p29.EBOJ*/ sprite_store.EBOJ_STORE0_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.GUVA_SPRITE0_GETp);

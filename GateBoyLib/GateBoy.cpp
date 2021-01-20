@@ -617,19 +617,19 @@ void GateBoy::tock_slow(int pass_index) {
 
   // vvvvvvvvvv
   {
-    tock_sprite_fetcher(ATEJ_LINE_RSTp_new(), TAVE_PRELOAD_DONE_TRIGp_new(), TEKY_SFETCH_REQp_old);
+    tock_sprite_fetcher(TEKY_SFETCH_REQp_old);
 
-    oam_latch_to_temp_a(XUJY_OAM_CLKENp());
-    oam_latch_to_temp_b(XUJY_OAM_CLKENp());
+    oam_latch_to_temp_a();
+    oam_latch_to_temp_b();
 
     SpriteDeltaY delta = sub_sprite_y();
     wire _GESE_SCAN_MATCH_Yp = GESE_SCAN_MATCH_Yp(delta, reg_lcdc.XYMO_LCDC_SPSIZEn);
 
     /* p29.CARE*/ wire _CARE_COUNT_CLKn = and3(XOCE_xBCxxFGx(), CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /* p29.DYTY*/ wire _DYTY_COUNT_CLKp = not1(_CARE_COUNT_CLKn);
-    update_count(XAPO_VID_RSTn(), ZEME_AxCxExGx(), ATEJ_LINE_RSTp_new(), _DYTY_COUNT_CLKp);
+    update_count(_DYTY_COUNT_CLKp);
     SpriteStoreFlag store_flag = get_store_flags(_DYTY_COUNT_CLKp);
-    store_sprite_x(store_flag, ABAK_LINE_RSTp_new(), old_first_match);
+    store_sprite_x(store_flag, old_first_match);
     store_sprite_index(store_flag);
     store_sprite_line (store_flag);
   }
@@ -645,7 +645,7 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   /*#p24.SACU*/ wire SACU_CLKPIPE_evn = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
-  tock_pix_counter(TADY_LINE_RSTn_new(), SACU_CLKPIPE_evn);
+  tock_pix_counter(SACU_CLKPIPE_evn);
 
   /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn());
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
@@ -785,27 +785,27 @@ void GateBoy::tock_slow(int pass_index) {
 
     auto scroll_x = add_scx();
     auto scroll_y = add_scy();
-    scroll_to_vram_addr(scroll_x, scroll_y, POTU_BGW_MAP_READp(), AXAD_WIN_MODEn(), reg_lcdc.XAFO_LCDC_BGMAPn);
+    scroll_to_vram_addr(scroll_x, scroll_y);
 
-    tock_win_map_x(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp(), reg_lcdc.WYMO_LCDC_WINENn, XAHY_LINE_RSTn_new());
-    tock_win_map_y(PORE_WIN_MODEp());
-    win_to_vram_addr(POTU_BGW_MAP_READp(), PORE_WIN_MODEp(), reg_lcdc.WOKY_LCDC_WINMAPn);
+    tock_win_map_x(TEVO_WIN_FETCH_TRIGp);
+    tock_win_map_y();
+    win_to_vram_addr();
 
-    tile_to_vram_addr(scroll_y, NETA_BGW_TILE_READp(), XUHA_FETCH_HILOp(), reg_lcdc.WEXU_LCDC_BGTILEn, PORE_WIN_MODEp(), AXAD_WIN_MODEn());
-    sprite_to_vram_addr(XUQU_SPRITE_AB(), SAKY_SFETCHn(), reg_lcdc.XYMO_LCDC_SPSIZEn);
+    tile_to_vram_addr(scroll_y);
+    sprite_to_vram_addr();
     vram_addr_to_pins();
 
-    cpu_data_to_vram_bus_data(_SERE_CPU_VRAM_RDp, SALE_CPU_VRAM_WRn());
-    vram_bus_data_to_pins(_SERE_CPU_VRAM_RDp, SALE_CPU_VRAM_WRn());
+    cpu_data_to_vram_bus_data(_SERE_CPU_VRAM_RDp);
+    vram_bus_data_to_pins(_SERE_CPU_VRAM_RDp);
 
-    set_vram_pin_cs(TUTO_VRAM_DBGp(), _SERE_CPU_VRAM_RDp, LUFA_DMA_VRAMp(), LENA_BFETCHINGp(), TEXY_SFETCHINGp());
-    set_vram_pin_wr(TUTO_VRAM_DBGp(), _SERE_CPU_VRAM_RDp, TUJA_CPU_VRAM_WRp());
-    set_vram_pin_oe(TUTO_VRAM_DBGp(), SALE_CPU_VRAM_WRn(), LUFA_DMA_VRAMp(), tile_fetcher.LONY_FETCHINGp, SOHO_SPR_VRAM_RDp());
+    set_vram_pin_cs(_SERE_CPU_VRAM_RDp);
+    set_vram_pin_wr(_SERE_CPU_VRAM_RDp);
+    set_vram_pin_oe();
 
     read_vram();
     write_vram();
 
-    vram_pins_to_data_bus(_SERE_CPU_VRAM_RDp, SALE_CPU_VRAM_WRn());
+    vram_pins_to_data_bus(_SERE_CPU_VRAM_RDp);
     vram_data_bus_to_cpu_bus(_SERE_CPU_VRAM_RDp);
   }
 

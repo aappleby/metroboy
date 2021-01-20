@@ -179,6 +179,36 @@ struct GateBoy {
 
   SpritePix flip_sprite_pix(wire TEXY_SFETCHINGp, DFF8n BAXO_OAM_DB5p);
 
+  SpriteDeltaY sub_sprite_y();
+
+  void tock_sprite_fetcher(wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old);
+
+  void set_cpu_pins();
+
+  void reg_wy_read();
+  void reg_wy_write();
+
+  void reg_wx_read();
+  void reg_wx_write();
+
+  void reg_bgp_read();
+  void reg_bgp_write();
+
+  void reg_obp0_read();
+  void reg_obp0_write();
+
+  void reg_obp1_read();
+  void reg_obp1_write();
+
+  void reg_div_tock();
+  void reg_div_read();
+  void reg_tima_read();
+  void reg_tma_read();
+  void reg_tma_write();
+  void reg_tac_read();
+  void reg_tac_write();
+  void tock_timer();
+
   //-----------------------------------------------------------------------------
 
   GateBoyBuses old_bus;

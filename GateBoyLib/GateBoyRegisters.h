@@ -22,8 +22,6 @@
 
 struct SpriteDeltaY {
 
-  static SpriteDeltaY sub(const OamTempA& oam_temp_a, const RegLY& reg_ly);
-
   wire GESE_SCAN_MATCH_Yp(DFF9 XYMO_LCDC_SPSIZEn);
 
   /* p29.DEGE*/ Gate DEGE_SPRITE_DELTA0;
@@ -330,9 +328,6 @@ struct RegBGP {
     MENA_BGP_D7n.reset(1, 0);
   }
 
-  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-
   /*p36.PAVO*/ DFF8p PAVO_BGP_D0n; // xxxxxxxH
   /*p36.NUSY*/ DFF8p NUSY_BGP_D1n; // xxxxxxxH
   /*p36.PYLU*/ DFF8p PYLU_BGP_D2n; // xxxxxxxH
@@ -347,9 +342,6 @@ struct RegBGP {
 // FF48 - OBP0
 
 struct RegOBP0 {
-  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-
   /*p36.XUFU*/ DFF8p XUFU_OBP0_D0n; // xxxxxxxH
   /*p36.XUKY*/ DFF8p XUKY_OBP0_D1n; // xxxxxxxH
   /*p36.XOVA*/ DFF8p XOVA_OBP0_D2n; // xxxxxxxH
@@ -364,9 +356,6 @@ struct RegOBP0 {
 // FF49 - OBP1
 
 struct RegOBP1 {
-  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-
   /*p36.MOXY*/ DFF8p MOXY_OBP1_D0n; // xxxxxxxH
   /*p36.LAWO*/ DFF8p LAWO_OBP1_D1n; // xxxxxxxH
   /*p36.MOSA*/ DFF8p MOSA_OBP1_D2n; // xxxxxxxH
@@ -394,9 +383,6 @@ struct RegWY {
 
   int get() const { return BitBase::pack_oldn(8, &NESO_WY0n); }
 
-  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
   /*p23.NESO*/ DFF9 NESO_WY0n; // xxxxxxxH
   /*p23.NYRO*/ DFF9 NYRO_WY1n; // xxxxxxxH
   /*p23.NAGA*/ DFF9 NAGA_WY2n; // xxxxxxxH
@@ -423,9 +409,6 @@ struct RegWX {
   }
 
   int get() const { return BitBase::pack_oldn(8, &MYPA_WX0n); }
-
-  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
 
   /*p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
   /*p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH

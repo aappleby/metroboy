@@ -54,9 +54,6 @@ struct GateBoyDiv {
     UPOF_DIV15p.state = ((div_a >> 15) & 1) | ((div_b >> 15) & 2);
   }
 
-  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, GateBoyCpuBus& cpu_bus, GateBoyBuses& new_bus);
-  void read(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-
   void dump(Dumper& d) {
     d.dump_slice2p("DIV16 : ", &UKUP_DIV00p, 16);
     d.dump_slice2p("FF04 DIV  : ", &UGOT_DIV06p, 8);
@@ -87,22 +84,6 @@ struct GateBoyTimer {
   int get_tima() const { return BitBase::pack_old(8,  &REGA_TIMA0p); }
   int get_tma() const  { return BitBase::pack_old(8,  &SABU_TMA0p); }
   int get_tac() const  { return BitBase::pack_old(3,  &SOPU_TAC0p); }
-
-  void read_tima(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  //void write_tima_async(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
-  void read_tma(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write_tma_sync(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
-  void read_tac(GateBoyBuses& new_bus, GateBoyCpuBus& cpu_bus);
-  void write_tac_sync(GateBoyBuses& new_bus, GateBoyResetDebug& rst, GateBoyCpuBus& cpu_bus);
-
-  void tock2(
-    GateBoyResetDebug& rst,
-    GateBoyClock& clk,
-    GateBoyCpuBus& cpu_bus,
-    const GateBoyDiv& div,
-    GateBoyBuses& new_bus);
 
   void force_set_tima(uint8_t tima) {
     uint16_t tima_a = tima;

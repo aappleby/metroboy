@@ -7,13 +7,6 @@ struct GateBoyCpuBus {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  void set_pins(
-    const GateBoyResetDebug& rst,
-    const GateBoyClock& clk,
-    const GateBoyBuses& new_bus,
-    int phase_total,
-    Req bus_req_new);
-
   void dump(Dumper& d) {
     d.dump_bitp   ("SIG_CPU_RDp       : ", SIG_CPU_RDp.get_state());
     d.dump_bitp   ("SIG_CPU_WRp       : ", SIG_CPU_WRp.get_state());

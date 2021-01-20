@@ -521,9 +521,9 @@ void GateBoy::tock_slow(int pass_index) {
   tock_clocks();
 
   new_bus.set_addr(int(phase_total), bus_req_new);
-  cpu_bus.set_pins(rst, clk, new_bus, int(phase_total), bus_req_new);
+  set_cpu_pins();
 
-  div.tock(rst, clk, cpu_bus, new_bus);
+  reg_div_tock();
 
   DFF17 div_trigger = bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p;
   rst.tock(clk, div_trigger);
@@ -542,15 +542,15 @@ void GateBoy::tock_slow(int pass_index) {
     reg_scy.write(old_bus, rst, cpu_bus);
     lcd.reg_lyc.write(old_bus, rst, cpu_bus); // must be before reg_ly.tock()
     reg_stat_write();
-    timer.write_tma_sync(old_bus, rst, cpu_bus);
-    timer.write_tac_sync(old_bus, rst, cpu_bus);
+    reg_tma_write();
+    reg_tac_write();
     write_boot_bit_sync();
     dma.write_dma_sync(cpu_bus, new_bus);
-    reg_wy.write(new_bus, rst, cpu_bus);
-    reg_wx.write(new_bus, rst, cpu_bus);
-    pix_pipes.reg_bgp.write(new_bus, cpu_bus);
-    pix_pipes.reg_obp0.write(new_bus, cpu_bus);
-    pix_pipes.reg_obp1.write(new_bus, cpu_bus);
+    reg_wy_write();
+    reg_wx_write();
+    reg_bgp_write();
+    reg_obp0_write();
+    reg_obp1_write();
     write_ie();
     zram_bus.write(new_bus, cpu_bus, zero_ram);
   }
@@ -626,12 +626,12 @@ void GateBoy::tock_slow(int pass_index) {
 
   // vvvvvvvvvv
   {
-    sprite_fetcher.tock(rst, clk, XYMU_RENDERINGn, lcd.ATEJ_LINE_RSTp_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new(), TEKY_SFETCH_REQp_old);
+    tock_sprite_fetcher(lcd.ATEJ_LINE_RSTp_new(), tile_fetcher.TAVE_PRELOAD_DONE_TRIGp_new(), TEKY_SFETCH_REQp_old);
 
     oam_bus.latch_to_temp_a(new_bus, clk, cpu_bus, ACYL_SCANNINGp, dma.MATU_DMA_RUNNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
     oam_bus.latch_to_temp_b(new_bus, clk, cpu_bus, ACYL_SCANNINGp, dma.MATU_DMA_RUNNINGp, sprite_fetcher.XUJY_OAM_CLKENp());
 
-    SpriteDeltaY delta = SpriteDeltaY::sub(oam_bus.oam_temp_a, lcd.reg_ly);
+    SpriteDeltaY delta = sub_sprite_y();
     wire _GESE_SCAN_MATCH_Yp = delta.GESE_SCAN_MATCH_Yp(reg_lcdc.XYMO_LCDC_SPSIZEn);
 
     /* p29.CARE*/ wire _CARE_COUNT_CLKn = and3(clk.XOCE_xBCxxFGx(), sprite_scanner.CEHA_SCANNINGp(), _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
@@ -849,7 +849,7 @@ void GateBoy::tock_slow(int pass_index) {
   // Misc tocks
   {
     serial.tock2(rst, cpu_bus, new_bus);
-    timer.tock2(rst, clk, cpu_bus, div, new_bus);
+    tock_timer();
     reg_stat_tock();
     reg_joy_tock2();
     tock_interrupts(lcd.PARU_VBLANKp(), lcd.reg_lx.PURE_LINE_ENDn(), timer.MOBA_TIMER_OVERFLOWp, WODU_HBLANKp);
@@ -868,20 +868,20 @@ void GateBoy::tock_slow(int pass_index) {
     dma.read_dma(cpu_bus, new_bus);
     serial.read_sb(cpu_bus, new_bus);
     serial.read_sc(cpu_bus, new_bus);
-    div.read(new_bus, cpu_bus);
+    reg_div_read();
     read_bootrom();
     read_boot_bit();
-    timer.read_tima(new_bus, cpu_bus);
-    timer.read_tma(new_bus, cpu_bus);
-    timer.read_tac(new_bus, cpu_bus);
+    reg_tima_read();
+    reg_tma_read();
+    reg_tac_read();
     reg_lcdc_read();
     lcd.reg_lyc.read(new_bus, cpu_bus);
     lcd.reg_ly.read(new_bus, cpu_bus);
-    reg_wy.read(new_bus, cpu_bus);
-    reg_wx.read(new_bus, cpu_bus);
-    pix_pipes.reg_bgp.read(new_bus, cpu_bus);
-    pix_pipes.reg_obp0.read(new_bus, cpu_bus);
-    pix_pipes.reg_obp1.read(new_bus, cpu_bus);
+    reg_wy_read();
+    reg_wx_read();
+    reg_bgp_read();
+    reg_obp0_read();
+    reg_obp1_read();
     zram_bus.read(new_bus, cpu_bus, zero_ram);
   }
 }

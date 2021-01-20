@@ -8,8 +8,6 @@
 struct SpriteFetcher {
   void reset_to_cart();
 
-  void tock(GateBoyResetDebug& rst, GateBoyClock& clk, NorLatch XYMU_RENDERINGn, wire ATEJ_LINE_RSTp, wire TAVE_PRELOAD_DONE_TRIGp, wire TEKY_SFETCH_REQp_old);
-
   /* p29.SAKY*/ wire SAKY_SFETCHn_old() const { return nor2(TULY_SFETCH_S1p.qp_old(), VONU_SFETCH_S1p_D4.qp_old()); }
 
   /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(TULY_SFETCH_S1p.qp_new(), VONU_SFETCH_S1p_D4.qp_new()); }

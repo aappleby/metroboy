@@ -773,16 +773,16 @@ void GateBoy::tock_slow(int pass_index) {
     ext_bus.PIN_23_D06.state = 0b00100000;
     ext_bus.PIN_24_D07.state = 0b00100000;
 
-    ext_bus.set_control_pins(rst, cpu_bus, dma, new_bus);
-    ext_bus.copy_cpu_addr_to_addr_latch(rst, cpu_bus, new_bus);
-    ext_bus.copy_addr_latch_to_pins(rst, cpu_bus, dma, new_bus);
+    set_ext_control_pins();
+    copy_cpu_addr_to_addr_latch();
+    copy_addr_latch_to_pins();
 
-    ext_bus.copy_cpu_data_to_pins(rst, cpu_bus, new_bus);
-    ext_bus.read_ext_to_pins(cart_buf, cart_ram, int_ram);
+    copy_cpu_data_to_pins();
+    read_ext_to_pins();
 
-    ext_bus.write_pins_to_ext(cart_ram, int_ram);
-    ext_bus.copy_pins_to_data_latch(cpu_bus, new_bus);
-    ext_bus.copy_data_latch_to_cpu_bus(cpu_bus, new_bus);
+    write_pins_to_ext();
+    copy_pins_to_data_latch();
+    copy_data_latch_to_cpu_bus();
   }
 
   //----------------------------------------

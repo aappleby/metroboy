@@ -248,6 +248,15 @@ struct GateBoy {
 
   void set_lcd_pin_ctrl();
 
+  void copy_cpu_addr_to_addr_latch();
+  void copy_addr_latch_to_pins();
+  void copy_pins_to_data_latch();
+  void copy_data_latch_to_cpu_bus();
+  void copy_cpu_data_to_pins();
+  void set_ext_control_pins();
+  void read_ext_to_pins();
+  void write_pins_to_ext();
+
   //-----------------------------------------------------------------------------
 
   GateBoyBuses old_bus;

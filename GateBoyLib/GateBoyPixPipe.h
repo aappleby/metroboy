@@ -31,16 +31,6 @@ struct WindowRegisters {
 
 struct FineScroll {
 
-  wire ROZE_FINE_COUNT_7n_old() {
-    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_old = nand3(RUBU_FINE_CNT2.qp_old(), ROGA_FINE_CNT1.qp_old(), RYKU_FINE_CNT0.qp_old());
-    return _ROZE_FINE_COUNT_7n_old;
-  }
-
-  wire POVA_FINE_MATCH_TRIGp() {
-    /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp = and2(PUXA_SCX_FINE_MATCH_A.qp_new(), NYZE_SCX_FINE_MATCH_B.qn_new());
-    return _POVA_FINE_MATCH_TRIGp;
-  }
-
   /*p27.RYKU*/ DFF17 RYKU_FINE_CNT0;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
   /*p27.ROGA*/ DFF17 ROGA_FINE_CNT1;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
   /*p27.RUBU*/ DFF17 RUBU_FINE_CNT2;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.

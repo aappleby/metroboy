@@ -485,8 +485,6 @@ void GateBoy::tock_slow(int pass_index) {
 
   auto oam_temp_b_old = oam_bus.oam_temp_b;
 
-  auto ROZE_FINE_COUNT_7n_old = fine_scroll.ROZE_FINE_COUNT_7n_old();
-
   SpritePix sprite_pix_old = flip_sprite_pix(sprite_fetcher.TEXY_SFETCHINGp_old(), BAXO_OAM_DB5p_old);
 
   //-----------------------------------------------------------------------------
@@ -669,7 +667,7 @@ void GateBoy::tock_slow(int pass_index) {
 
     /* p27.SOVY*/ win_reg.SOVY_WIN_HITp.dff17(ALET_xBxDxFxH(), rst.XAPO_VID_RSTn(), RYDY_WIN_HITp_old);
 
-    /* p27.PANY*/ wire _PANY_WIN_FETCHn_old = nor2(_NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old);
+    /* p27.PANY*/ wire _PANY_WIN_FETCHn_old = nor2(_NUKO_WX_MATCHp_old, ROZE_FINE_COUNT_7n_old());
     /* p27.RYFA*/ win_reg.RYFA_WIN_FETCHn_A.dff17(SEGU_CLKPIPE_evn, XYMU_RENDERINGn.qn_new(), _PANY_WIN_FETCHn_old);
   }
 

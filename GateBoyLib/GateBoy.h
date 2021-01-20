@@ -557,6 +557,18 @@ struct GateBoy {
   /* p27.PORE*/ wire PORE_WIN_MODEp() const { return not1(NOCU_WIN_MODEn()); }
   /* p26.AXAD*/ wire AXAD_WIN_MODEn() const { return not1(PORE_WIN_MODEp()); }
 
+  //-----------------------------------------------------------------------------
+
+  wire ROZE_FINE_COUNT_7n_old() {
+    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_old = nand3(fine_scroll.RUBU_FINE_CNT2.qp_old(), fine_scroll.ROGA_FINE_CNT1.qp_old(), fine_scroll.RYKU_FINE_CNT0.qp_old());
+    return _ROZE_FINE_COUNT_7n_old;
+  }
+
+  wire POVA_FINE_MATCH_TRIGp() {
+    /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_new(), fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_new());
+    return _POVA_FINE_MATCH_TRIGp;
+  }
+
 
   //-----------------------------------------------------------------------------
 

@@ -14,15 +14,6 @@ struct OamTempB;
 
 struct WindowRegisters {
 
-  void tock(
-    GateBoyResetDebug& rst,
-    GateBoyClock& clk,
-    wire XYMU_RENDERINGp,
-    wire TYFA_CLKPIPE_odd,
-    wire NUKO_WX_MATCHp_old,
-    wire ROZE_FINE_COUNT_7n_old,
-    wire RYDY_WIN_HITp_old);
-
   wire NUNY_WIN_MODE_TRIGp_old() const {
     /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp_old = and2(PYNU_WIN_MODE_Ap.qp_old(), NOPA_WIN_MODE_Bp.qn_old());
     return _NUNY_WIN_MODE_TRIGp_old;
@@ -93,24 +84,6 @@ struct WindowRegisters {
 
 struct FineScroll {
 
-  void tock(NorLatch XYMU_RENDERINGn, wire TYFA_CLKPIPE_odd, wire TEVO_WIN_FETCH_TRIGp) {
-    // Fine match counter. Registers are only read as old, so this can go down as far in the list as needed.
-
-    /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
-    /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
-
-    /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
-    /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, TEVO_WIN_FETCH_TRIGp);
-
-    for (int feedback = 0; feedback < 2; feedback++) {
-      /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(RUBU_FINE_CNT2.qp_any(), ROGA_FINE_CNT1.qp_any(), RYKU_FINE_CNT0.qp_any());
-      /*#p27.PECU*/ wire _PECU_FINE_CLK = nand2(_ROXO_CLKPIPE_odd, _ROZE_FINE_COUNT_7n);
-      /*#p27.RYKU*/ RYKU_FINE_CNT0.dff17_any(_PECU_FINE_CLK,           _PASO_FINE_RST, RYKU_FINE_CNT0.qn_any());
-      /*#p27.ROGA*/ ROGA_FINE_CNT1.dff17_any(RYKU_FINE_CNT0.qn_any(), _PASO_FINE_RST, ROGA_FINE_CNT1.qn_any());
-      /*#p27.RUBU*/ RUBU_FINE_CNT2.dff17_any(ROGA_FINE_CNT1.qn_any(), _PASO_FINE_RST, RUBU_FINE_CNT2.qn_any());
-    }
-  }
-
   wire ROZE_FINE_COUNT_7n_old() {
     /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_old = nand3(RUBU_FINE_CNT2.qp_old(), ROGA_FINE_CNT1.qp_old(), RYKU_FINE_CNT0.qp_old());
     return _ROZE_FINE_COUNT_7n_old;
@@ -155,34 +128,6 @@ struct PixelPipes {
     REMY_LD0n.reset(1);
     RAVO_LD1n.reset(1);
   }
-
-  void tock_bgw_pipe(
-    TileTempA& tile_temp_a,
-    TileTempB& tile_temp_b,
-    wire SACU_CLKPIPE_evn,
-    wire NYXU_BFETCH_RSTn);
-
-  void tock_sprite_pipe(
-    SpritePixA& sprite_pix_a,
-    SpritePixB& sprite_pix_b,
-    wire WUTY_SFETCH_DONE_TRIGp,
-    wire SACU_CLKPIPE_evn);
-
-  void tock_mask_pipe(
-    OamTempB& oam_temp_b,
-    wire WUTY_SFETCH_DONE_TRIGp,
-    wire SACU_CLKPIPE_evn);
-
-  void tock_pal_pipe(
-    OamTempB& oam_temp_b,
-    wire WUTY_SFETCH_DONE_TRIGp,
-    wire SACU_CLKPIPE_evn);
-
-  void tock_pix_output(
-    RegLCDC& reg_lcdc,
-    RegBGP  _reg_bgp,
-    RegOBP0 _reg_obp0,
-    RegOBP1 _reg_obp1);
 
   RegBGP  reg_bgp;
   RegOBP0 reg_obp0;

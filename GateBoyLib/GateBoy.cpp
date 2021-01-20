@@ -677,7 +677,7 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(AVAP_SCAN_DONE_TRIGp(), win_reg.MOSU_WIN_MODE_TRIGp_new(), TEVO_WIN_FETCH_TRIGp);
   tock_tile_fetcher(NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
 
-  fine_scroll.tock(XYMU_RENDERINGn, TYFA_CLKPIPE_odd, TEVO_WIN_FETCH_TRIGp);
+  tock_fine_scroll(TYFA_CLKPIPE_odd, TEVO_WIN_FETCH_TRIGp);
 
   {
     store_sprite_pix_a(sprite_pix_old, sprite_fetcher.XADO_STORE_SPRITE_An());
@@ -690,19 +690,11 @@ void GateBoy::tock_slow(int pass_index) {
   // Pixel pipes
 
   {
-    pix_pipes.tock_bgw_pipe   (tile_fetcher.tile_temp_a, tile_fetcher.tile_temp_b, SACU_CLKPIPE_evn, NYXU_BFETCH_RSTn);
-    pix_pipes.tock_mask_pipe  (oam_bus.oam_temp_b, sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), SACU_CLKPIPE_evn);
-    pix_pipes.tock_pal_pipe   (oam_bus.oam_temp_b, sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), SACU_CLKPIPE_evn);
-    pix_pipes.tock_sprite_pipe(sprite_fetcher.sprite_pix_a, sprite_fetcher.sprite_pix_b, sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(),SACU_CLKPIPE_evn);
-    pix_pipes.tock_pix_output(
-      reg_lcdc,
-      //old_reg_bgp,
-      //old_reg_obp0,
-      //old_reg_obp1
-      pix_pipes.reg_bgp,
-      pix_pipes.reg_obp0,
-      pix_pipes.reg_obp1
-    );
+    tock_bgw_pipe   (SACU_CLKPIPE_evn, NYXU_BFETCH_RSTn);
+    tock_mask_pipe  (sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), SACU_CLKPIPE_evn);
+    tock_pal_pipe   (sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(), SACU_CLKPIPE_evn);
+    tock_sprite_pipe(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp(),SACU_CLKPIPE_evn);
+    tock_pix_output ();
   }
 
   //----------------------------------------

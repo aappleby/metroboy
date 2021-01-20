@@ -332,6 +332,14 @@ struct GateBoy {
   void set_lcd_pin_clock(wire WEGO_HBLANKp, wire SACU_CLKPIPE_evn);
   void update_lcd_pipe();
 
+  void tock_bgw_pipe(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
+  void tock_sprite_pipe(wire WUTY_SFETCH_DONE_TRIGp, wire SACU_CLKPIPE_evn);
+  void tock_mask_pipe(wire WUTY_SFETCH_DONE_TRIGp, wire SACU_CLKPIPE_evn);
+  void tock_pal_pipe(wire WUTY_SFETCH_DONE_TRIGp, wire SACU_CLKPIPE_evn);
+  void tock_pix_output();
+
+  void tock_fine_scroll(wire TYFA_CLKPIPE_odd, wire TEVO_WIN_FETCH_TRIGp);
+
   //----------------------------------------
 
   /* p28.ATEJ*/ wire ATEJ_LINE_RSTp_old() const;

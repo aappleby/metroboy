@@ -504,6 +504,62 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
+  wire NUNY_WIN_MODE_TRIGp_old() const {
+    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp_old = and2(win_reg.PYNU_WIN_MODE_Ap.qp_old(), win_reg.NOPA_WIN_MODE_Bp.qn_old());
+    return _NUNY_WIN_MODE_TRIGp_old;
+  }
+  /* p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn_old() const { return not1(NUNY_WIN_MODE_TRIGp_old()); }
+  /* p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp_old() const { return not1(NYFO_WIN_MODE_TRIGn_old()); }
+
+  wire NUNY_WIN_MODE_TRIGp_new() const {
+    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp_new = and2(win_reg.PYNU_WIN_MODE_Ap.qp_new(), win_reg.NOPA_WIN_MODE_Bp.qn_new());
+    return _NUNY_WIN_MODE_TRIGp_new;
+  }
+  /* p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn_new() const { return not1(NUNY_WIN_MODE_TRIGp_new()); }
+  /* p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp_new() const { return not1(NYFO_WIN_MODE_TRIGn_new()); }
+
+
+  wire SUZU_WIN_FIRST_TILEne_old() const {
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_old = not1(win_reg.RYDY_WIN_HITp);
+    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_old = nand2(_SYLO_WIN_HITn_old, win_reg.SOVY_WIN_HITp.qp_old());
+    /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_old = not1(_TUXY_WIN_FIRST_TILEne_old);
+    return _SUZU_WIN_FIRST_TILEne_old;
+  }
+
+  wire SUZU_WIN_FIRST_TILEne_new() const {
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_new = not1(win_reg.RYDY_WIN_HITp);
+    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_new = nand2(_SYLO_WIN_HITn_new, win_reg.SOVY_WIN_HITp.qp_new());
+    /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_new = not1(_TUXY_WIN_FIRST_TILEne_new);
+    return _SUZU_WIN_FIRST_TILEne_new;
+  }
+
+  wire SEKO_WIN_FETCH_TRIGp_old() const {
+    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp_old = nor2(win_reg.RYFA_WIN_FETCHn_A.qn_old(), win_reg.RENE_WIN_FETCHn_B.qp_old());
+    return _SEKO_WIN_FETCH_TRIGp_old;
+  }
+
+  wire SEKO_WIN_FETCH_TRIGp_new() const {
+    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp_new = nor2(win_reg.RYFA_WIN_FETCHn_A.qn_new(), win_reg.RENE_WIN_FETCHn_B.qp_new());
+    return _SEKO_WIN_FETCH_TRIGp_new;
+  }
+
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn_old() const { return not1(win_reg.RYDY_WIN_HITp); }
+  /*#p24.TOMU*/ wire TOMU_WIN_HITp_old() const { return not1(SYLO_WIN_HITn_old()); }
+  /* p27.TUKU*/ wire TUKU_WIN_HITn_old() const { return not1(TOMU_WIN_HITp_old()); }
+  /*#p24.SOCY*/ wire SOCY_WIN_HITn_old() const { return not1(TOMU_WIN_HITp_old()); }
+
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn_new() const { return not1(win_reg.RYDY_WIN_HITp); }
+  /*#p24.TOMU*/ wire TOMU_WIN_HITp_new() const { return not1(SYLO_WIN_HITn_new()); }
+  /* p27.TUKU*/ wire TUKU_WIN_HITn_new() const { return not1(TOMU_WIN_HITp_new()); }
+  /*#p24.SOCY*/ wire SOCY_WIN_HITn_new() const { return not1(TOMU_WIN_HITp_new()); }
+
+  /*#p27.NOCU*/ wire NOCU_WIN_MODEn() const { return not1(win_reg.PYNU_WIN_MODE_Ap.qp_new()); }
+  /* p27.PORE*/ wire PORE_WIN_MODEp() const { return not1(NOCU_WIN_MODEn()); }
+  /* p26.AXAD*/ wire AXAD_WIN_MODEn() const { return not1(PORE_WIN_MODEp()); }
+
+
+  //-----------------------------------------------------------------------------
+
   GateBoyBuses old_bus;
 
   //-----------------------------------------------------------------------------

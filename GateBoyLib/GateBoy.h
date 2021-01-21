@@ -106,7 +106,23 @@ struct GateBoy {
   uint8_t* reg_end()   { return (uint8_t*)(&sentinel2); }
 
   int64_t commit_and_hash() {
-    return ::commit_and_hash(reg_begin(), reg_end() - reg_begin());
+    int64_t hash = 0;
+#ifdef USE_HASH
+    {
+      uint8_t* a = (uint8_t*)(&sentinel1);
+      uint8_t* b = (uint8_t*)(&sentinel2);
+      hash = hash_blob2(a, b - a);
+    }
+#endif
+
+#ifdef USE_COMMIT
+    {
+      uint8_t* a = reg_begin();
+      uint8_t* b = reg_end();
+      commit_blob(a, b - a);
+    }
+#endif
+    return hash;
   }
 
   void set_old_bits() {
@@ -835,10 +851,6 @@ struct GateBoy {
 
 
   //-----------------------------------------------------------------------------
-
-  GateBoyBuses old_bus;
-
-  //-----------------------------------------------------------------------------
   // All the SOC registers, pins, buses. Everything in this section should derive
   // from BitBase.
 
@@ -847,7 +859,6 @@ struct GateBoy {
   //----------
 
   GateBoyPins pins;
-
   GateBoyBuses new_bus;
 
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
@@ -859,7 +870,6 @@ struct GateBoy {
   GateBoyOamBus  oam_bus;
   GateBoyZramBus zram_bus;
 
-  //----------
   GateBoyResetDebug rst;
   GateBoyClock      clk;
   GateBoyDiv        div;
@@ -868,8 +878,6 @@ struct GateBoy {
   GateBoyInterrupts interrupts;
   GateBoyJoypad     joy;
   GateBoySerial     serial;
-
-  //----------
 
   GateBoySpriteStore   sprite_store;
   SpriteScanner sprite_scanner;
@@ -895,6 +903,8 @@ struct GateBoy {
   //----------
 
   uint64_t sentinel2 = SENTINEL2;
+
+  GateBoyBuses old_bus;
 
   //-----------------------------------------------------------------------------
   // Control stuff

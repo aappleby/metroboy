@@ -26,8 +26,11 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
-  failures += t.test_reset_cart_vs_dump();
-  failures += t.test_fastboot_vs_slowboot();
+#ifdef USE_COMMIT
+  //failures += t.test_reset_cart_vs_dump();
+#endif
+
+  //failures += t.test_fastboot_vs_slowboot();
   //failures += t.test_bootrom();
 
   failures += t.test_clk();

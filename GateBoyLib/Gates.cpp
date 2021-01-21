@@ -13,40 +13,35 @@ void combine_hash(uint64_t& a, uint64_t b) {
 
 //-----------------------------------------------------------------------------
 
-uint64_t commit_and_hash(void* blob, size_t size) {
+uint64_t hash_blob2(void* blob, size_t size) {
   (void)blob;
   (void)size;
 
-#ifdef CHECK_DIRTY_BIT
-  {
-    uint8_t* base = (uint8_t*)blob;
-    bool bad_bits = false;
-    for (size_t i = 0; i < size; i++) {
-      uint8_t s = base[i];
-      if ((s & 0xF0) != 0xE0) {
-        LOG_Y("Bit %d not dirty after sim pass!\n", i);
-        bad_bits = true;
-      }
-    }
-    ASSERT_N(bad_bits);
+  uint64_t h = HASH_INIT;
+  uint8_t* base = (uint8_t*)blob;
+  for (size_t i = 0; i < size; i++) {
+    combine_hash(h, base[i]);
   }
-#endif
+  return h;
+}
 
-#ifdef USE_HASH
-  {
-    uint64_t h = HASH_INIT;
-    uint8_t* base = (uint8_t*)blob;
-    for (size_t i = 0; i < size; i++) {
-      uint8_t s = base[i];
+void commit_blob(void* blob, size_t size) {
+  (void)blob;
+  (void)size;
 
-      combine_hash(h, (s & 0b11));
-      base[i] = (s & 0b00001111) | 0b00010000;
+  uint8_t* base = (uint8_t*)blob;
+  bool bad_bits = false;
+  for (size_t i = 0; i < size; i++) {
+    uint8_t s = base[i];
+
+    if ((s & 0xF0) != 0xE0) {
+      LOG_Y("Bit %d not dirty after sim pass!\n", i);
+      bad_bits = true;
     }
-    return h;
+
+    base[i] = (s & 0b00001111) | 0b00010000;
   }
-#else
-  return 0;
-#endif
+  ASSERT_N(bad_bits);
 }
 
 //-----------------------------------------------------------------------------

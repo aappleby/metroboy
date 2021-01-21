@@ -375,20 +375,16 @@ void GateBoy::next_phase() {
   //----------------------------------------
   // Run one pass of our simulation.
 
-  uint8_t* blob_begin = ((uint8_t*)&sentinel1) + sizeof(sentinel1);
-  uint8_t* blob_end   = ((uint8_t*)&sentinel2);
-
   probes.begin_pass(0);
   probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
 
   tock_slow(0);
 
 #ifdef CHECK_SINGLE_PASS
-  uint64_t pass_hash_old = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
+  uint64_t hash_old = commit_and_hash();
 
   static GateBoy gb_old;
   memcpy(&gb_old, this, sizeof(GateBoy));
-  //gb_old = *this;
 
   tock_slow(1);
   auto& gb_new = *this;
@@ -396,10 +392,10 @@ void GateBoy::next_phase() {
 
   probes.end_pass(true);
 
-  uint64_t phase_hash_new = ::commit_and_hash(blob_begin, int(blob_end - blob_begin));
+  uint64_t hash_new = commit_and_hash();
 
 #ifdef CHECK_SINGLE_PASS
-  if (pass_hash_old != phase_hash_new) {
+  if (hash_old != hash_new) {
     LOG_Y("Sim not stable after second pass!\n");
 
     int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
@@ -415,8 +411,6 @@ void GateBoy::next_phase() {
     }
 
     printf("\n");
-
-    //ASSERT_P(false);
   }
 #endif
 
@@ -426,7 +420,7 @@ void GateBoy::next_phase() {
   // Done, move to the next phase.
 
   bus_req_old = bus_req_new;
-  phase_hash = phase_hash_new;
+  phase_hash = hash_new;
   combine_hash(cumulative_hash, phase_hash);
 }
 
@@ -434,6 +428,8 @@ void GateBoy::next_phase() {
 
 void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
+
+  const_cast<GateBoyBuses&>(old_bus) = new_bus;
 
   /*SIG_VCC*/ SigIn SIG_VCC;
   /*SIG_GND*/ SigIn SIG_GND;
@@ -496,7 +492,6 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
-  const_cast<GateBoyBuses&>(old_bus) = new_bus;
   new_bus.reset_for_pass();
 
   //-----------------------------------------------------------------------------

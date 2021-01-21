@@ -5,12 +5,9 @@
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b);
-uint64_t commit_and_hash(void* blob, size_t size);
 
-template<typename T>
-inline uint64_t commit_and_hash(T& obj) {
-  return commit_and_hash(&obj, sizeof(T));
-}
+uint64_t hash_blob2(void* blob, size_t size);
+void     commit_blob(void* blob, size_t size);
 
 //-----------------------------------------------------------------------------
 

@@ -3,16 +3,16 @@
 #include "GateBoyLib/GateBoy.h"
 
 void SpriteFetcher::reset_to_cart() {
-  TAKA_SFETCH_RUNNINGp.reset(0);
-  SOBU_SFETCH_REQp  .reset(0, 0);
-  SUDA_SFETCH_REQp  .reset(1, 0);
-  TOXE_SFETCH_S0p   .reset(1, 1);
-  TULY_SFETCH_S1p   .reset(0, 0);
-  TESE_SFETCH_S2p   .reset(1, 1);
-  TYFO_SFETCH_S0p_D1.reset(1, 1);
-  TOBU_SFETCH_S1p_D2.reset(0, 0);
-  VONU_SFETCH_S1p_D4.reset(0, 0);
-  SEBA_SFETCH_S1p_D5.reset(1, 0);
+  TAKA_SFETCH_RUNNINGp.state = 0b00011000;
+  SOBU_SFETCH_REQp.state = 0b00011000;
+  SUDA_SFETCH_REQp.state = 0b00011010;
+  TOXE_SFETCH_S0p.state = 0b00011011;
+  TULY_SFETCH_S1p.state = 0b00011000;
+  TESE_SFETCH_S2p.state = 0b00011011;
+  TYFO_SFETCH_S0p_D1.state = 0b00011011;
+  TOBU_SFETCH_S1p_D2.state = 0b00011000;
+  VONU_SFETCH_S1p_D4.state = 0b00011000;
+  SEBA_SFETCH_S1p_D5.state = 0b00011010;
 }
 
 void GateBoy::tock_sprite_fetcher(wire TEKY_SFETCH_REQp_old) {

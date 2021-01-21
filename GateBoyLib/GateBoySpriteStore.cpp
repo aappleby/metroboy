@@ -5,11 +5,11 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoySpriteStore::reset_to_cart() {
-  DEZY_COUNT_CLKp.reset(1, 1);
-  BESE_SPRITE_COUNT0.reset(1, 0);
-  CUXY_SPRITE_COUNT1.reset(1, 0);
-  BEGO_SPRITE_COUNT2.reset(1, 0);
-  DYBE_SPRITE_COUNT3.reset(1, 0);
+  DEZY_COUNT_CLKp.state = 0b00011011;
+  BESE_SPRITE_COUNT0.state = 0b00011010;
+  CUXY_SPRITE_COUNT1.state = 0b00011010;
+  BEGO_SPRITE_COUNT2.state = 0b00011010;
+  DYBE_SPRITE_COUNT3.state = 0b00011010;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

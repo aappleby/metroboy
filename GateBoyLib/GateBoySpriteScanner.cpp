@@ -34,7 +34,7 @@ void GateBoy::tock_sprite_scanner() {
   /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1(old_bus.BUS_OAM_A06n.qp_old());
   /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1(old_bus.BUS_OAM_A07n.qp_old());
 
-  // Sprite store grabs the sprite index off the _old_ oam address new_bus
+  // Sprite store grabs the sprite index off the _old_ oam address bus
   /* p30.XADU*/ sprite_scanner.XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH(), SIG_VCC, _YFOT_OAM_A2p_old);
   /* p30.XEDY*/ sprite_scanner.XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH(), SIG_VCC, _YFOC_OAM_A3p_old);
   /* p30.ZUZE*/ sprite_scanner.ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH(), SIG_VCC, _YVOM_OAM_A4p_old);

@@ -10,14 +10,14 @@ struct GateBoyResetDebug;
 
 struct ExtDataLatch {
   void reset_to_cart() {
-    SOMA_EXT_DATA_LATCH_D0n.reset(0);
-    RONY_EXT_DATA_LATCH_D1n.reset(0);
-    RAXY_EXT_DATA_LATCH_D2n.reset(0);
-    SELO_EXT_DATA_LATCH_D3n.reset(0);
-    SODY_EXT_DATA_LATCH_D4n.reset(0);
-    SAGO_EXT_DATA_LATCH_D5n.reset(0);
-    RUPA_EXT_DATA_LATCH_D6n.reset(0);
-    SAZY_EXT_DATA_LATCH_D7n.reset(0);
+    SOMA_EXT_DATA_LATCH_D0n.state = 0b00011000;
+    RONY_EXT_DATA_LATCH_D1n.state = 0b00011000;
+    RAXY_EXT_DATA_LATCH_D2n.state = 0b00011000;
+    SELO_EXT_DATA_LATCH_D3n.state = 0b00011000;
+    SODY_EXT_DATA_LATCH_D4n.state = 0b00011000;
+    SAGO_EXT_DATA_LATCH_D5n.state = 0b00011000;
+    RUPA_EXT_DATA_LATCH_D6n.state = 0b00011000;
+    SAZY_EXT_DATA_LATCH_D7n.state = 0b00011000;
   }
 
   /*p08.SOMA*/ TpLatch SOMA_EXT_DATA_LATCH_D0n; // AxCxExxx
@@ -34,21 +34,21 @@ struct ExtDataLatch {
 
 struct ExtAddrLatch {
   void reset_to_cart() {
-    ALOR_EXT_ADDR_LATCH_00p.reset(1);
-    APUR_EXT_ADDR_LATCH_01p.reset(0);
-    ALYR_EXT_ADDR_LATCH_02p.reset(1);
-    ARET_EXT_ADDR_LATCH_03p.reset(1);
-    AVYS_EXT_ADDR_LATCH_04p.reset(0);
-    ATEV_EXT_ADDR_LATCH_05p.reset(0);
-    AROS_EXT_ADDR_LATCH_06p.reset(1);
-    ARYM_EXT_ADDR_LATCH_07p.reset(0);
-    LUNO_EXT_ADDR_LATCH_08p.reset(0);
-    LYSA_EXT_ADDR_LATCH_09p.reset(0);
-    PATE_EXT_ADDR_LATCH_10p.reset(0);
-    LUMY_EXT_ADDR_LATCH_11p.reset(0);
-    LOBU_EXT_ADDR_LATCH_12p.reset(0);
-    LONU_EXT_ADDR_LATCH_13p.reset(0);
-    NYRE_EXT_ADDR_LATCH_14p.reset(0);
+    ALOR_EXT_ADDR_LATCH_00p.state = 0b00011001;
+    APUR_EXT_ADDR_LATCH_01p.state = 0b00011000;
+    ALYR_EXT_ADDR_LATCH_02p.state = 0b00011001;
+    ARET_EXT_ADDR_LATCH_03p.state = 0b00011001;
+    AVYS_EXT_ADDR_LATCH_04p.state = 0b00011000;
+    ATEV_EXT_ADDR_LATCH_05p.state = 0b00011000;
+    AROS_EXT_ADDR_LATCH_06p.state = 0b00011001;
+    ARYM_EXT_ADDR_LATCH_07p.state = 0b00011000;
+    LUNO_EXT_ADDR_LATCH_08p.state = 0b00011000;
+    LYSA_EXT_ADDR_LATCH_09p.state = 0b00011000;
+    PATE_EXT_ADDR_LATCH_10p.state = 0b00011000;
+    LUMY_EXT_ADDR_LATCH_11p.state = 0b00011000;
+    LOBU_EXT_ADDR_LATCH_12p.state = 0b00011000;
+    LONU_EXT_ADDR_LATCH_13p.state = 0b00011000;
+    NYRE_EXT_ADDR_LATCH_14p.state = 0b00011000;
   }
 
   /*p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx
@@ -72,34 +72,36 @@ struct ExtAddrLatch {
 
 struct GateBoyExtBus {
   void reset_to_cart() {
+    PIN_01_A00.state = 0b00011000;
+    PIN_02_A01.state = 0b00011001;
+    PIN_03_A02.state = 0b00011000;
+    PIN_04_A03.state = 0b00011000;
+    PIN_05_A04.state = 0b00011001;
+    PIN_06_A05.state = 0b00011001;
+    PIN_07_A06.state = 0b00011000;
+    PIN_08_A07.state = 0b00011001;
+    PIN_09_A08.state = 0b00011001;
+    PIN_10_A09.state = 0b00011001;
+    PIN_11_A10.state = 0b00011001;
+    PIN_12_A11.state = 0b00011001;
+    PIN_13_A12.state = 0b00011001;
+    PIN_14_A13.state = 0b00011001;
+    PIN_15_A14.state = 0b00011001;
+    PIN_16_A15.state = 0b00011000;
+    PIN_17_D00.state = 0b00010100;
+    PIN_18_D01.state = 0b00010100;
+    PIN_19_D02.state = 0b00010100;
+    PIN_20_D03.state = 0b00010100;
+    PIN_21_D04.state = 0b00010100;
+    PIN_22_D05.state = 0b00010100;
+    PIN_23_D06.state = 0b00010100;
+    PIN_24_D07.state = 0b00010100;
+    PIN_80_CSn.state = 0b00011000;
+    PIN_79_RDn.state = 0b00011001;
+    PIN_78_WRn.state = 0b00011000;
+
     ext_addr_latch.reset_to_cart();
     ext_data_latch.reset_to_cart();
-
-    PIN_01_A00.reset(0);
-    PIN_02_A01.reset(1);
-    PIN_03_A02.reset(0);
-    PIN_04_A03.reset(0);
-    PIN_05_A04.reset(1);
-    PIN_06_A05.reset(1);
-    PIN_07_A06.reset(0);
-    PIN_08_A07.reset(1);
-    PIN_09_A08.reset(1);
-    PIN_10_A09.reset(1);
-    PIN_11_A10.reset(1);
-    PIN_12_A11.reset(1);
-    PIN_13_A12.reset(1);
-    PIN_14_A13.reset(1);
-    PIN_15_A14.reset(1);
-    PIN_16_A15.reset(0);
-
-    PIN_17_D00.reset(0);
-    PIN_18_D01.reset(0);
-    PIN_19_D02.reset(0);
-    PIN_20_D03.reset(0);
-    PIN_21_D04.reset(0);
-    PIN_22_D05.reset(0);
-    PIN_23_D06.reset(0);
-    PIN_24_D07.reset(0);
   }
 
   void dump(Dumper& d) {

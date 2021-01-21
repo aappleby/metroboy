@@ -26,14 +26,11 @@ int main(int argc, char** argv) {
 
   auto start = timestamp();
 
-#if 1
+  failures += t.test_reset_cart_vs_dump();
+  failures += t.test_fastboot_vs_slowboot();
   //failures += t.test_bootrom();
-#ifdef RUN_SLOW_TESTS
-  //failures += t.test_fastboot_vs_slowboot();
-#endif
-  //failures += t.test_reset_cart_vs_dump();
 
-  //failures += t.test_clk();
+  failures += t.test_clk();
   failures += t.test_regs();
   failures += t.test_mem();
   failures += t.test_dma();
@@ -55,7 +52,6 @@ int main(int argc, char** argv) {
   failures += t.test_micro_window();
   failures += t.test_micro_ppu();
   failures += t.test_micro_dma();
-#endif
 
   auto finish = timestamp();
 
@@ -69,8 +65,7 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-int diff(uint8_t mask,
-         const char* name_a, void* blob_a, int start_a, int end_a,
+int diff(const char* name_a, void* blob_a, int start_a, int end_a,
          const char* name_b, void* blob_b, int start_b, int end_b) {
   TEST_START();
   int size_a = end_a - start_a;
@@ -88,8 +83,8 @@ int diff(uint8_t mask,
     int ia = start_a + i;
     int ib = start_b + i;
 
-    int byte_a = bytes_a[ia] & mask;
-    int byte_b = bytes_b[ib] & mask;
+    int byte_a = bytes_a[ia];
+    int byte_b = bytes_b[ib];
 
     EXPECT_EQ(byte_a, byte_b,
               "%s != %s @ %5d : %s[%5d] = 0x%02x, %s[%5d] = 0x%02x\n",
@@ -165,8 +160,7 @@ int GateBoyTests::test_fastboot_vs_slowboot() {
   int start = 0;
   int end   = offsetof(GateBoy, sentinel3);
 
-  uint8_t mask = 0b00000011;
-  failures += diff(mask, "fastboot", &gb1, start, end, "slowboot", &gb2, start, end);
+  failures += diff("fastboot", &gb1, start, end, "slowboot", &gb2, start, end);
 
   TEST_END();
 }
@@ -197,8 +191,7 @@ int GateBoyTests::test_reset_cart_vs_dump() {
   int start = 0;
   int end   = offsetof(GateBoy, sentinel3);
 
-  uint8_t mask = 0b00000011;
-  failures += diff(mask, "dump", &gb1, start, end, "reset_to_cart", &gb2, start, end);
+  failures += diff("dump", &gb1, start, end, "reset_to_cart", &gb2, start, end);
 
   TEST_END();
 }

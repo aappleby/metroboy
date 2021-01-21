@@ -191,7 +191,7 @@ void GateBoy::copy_data_latch_to_cpu_bus()
 
 void GateBoy::copy_cpu_data_to_pins()
 {
-  // FIXME So does this mean that if the CPU writes to the external new_bus during dma, that data
+  // FIXME So does this mean that if the CPU writes to the external bus during dma, that data
   // will actually end up in oam?
 
   /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn(), UMUT_MODE_DBG1p());

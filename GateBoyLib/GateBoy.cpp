@@ -63,6 +63,9 @@ void GateBoy::reset_to_bootrom(bool fastboot)
 
   memset(this, 0, sizeof(*this));
 
+  old_bus.reset_to_bootrom();
+  new_bus.reset_to_bootrom();
+
   boot_buf  = _boot_buf;
   boot_size = _boot_size;
   cart_buf  = _cart_buf;
@@ -72,8 +75,6 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   sentinel2 = SENTINEL2;
   sentinel3 = SENTINEL3;
   sentinel4 = SENTINEL4;
-
-  cpu_bus.reset_to_bootrom();
 
   set_old_bits();
   sys_fastboot = fastboot;
@@ -126,9 +127,9 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   sys_cpu_en = true;
 
   if (fastboot) {
-    div.TERO_DIV03p.state = 0b00010010;
-    div.UNYK_DIV04p.state = 0b00010010;
-    div.UPOF_DIV15p.state = 0b00010011;
+    div.TERO_DIV03p.state = 0b00011010;
+    div.UNYK_DIV04p.state = 0b00011010;
+    div.UPOF_DIV15p.state = 0b00011011;
   }
 
   memset(framebuffer, 4, sizeof(framebuffer));
@@ -139,8 +140,10 @@ void GateBoy::reset_to_bootrom(bool fastboot)
 void GateBoy::reset_to_cart() {
   reset_to_bootrom(true);
 
-  VOGA_HBLANKp.reset(0, 1);
+  VOGA_HBLANKp.state = 0b00011001;
 
+  old_bus.reset_to_cart_old();
+  new_bus.reset_to_cart_new();
   cpu_bus.reset_to_cart();
   oam_bus.reset_to_cart();
   ext_bus.reset_to_cart();
@@ -156,7 +159,11 @@ void GateBoy::reset_to_cart() {
   reg_stat.reset_to_cart();
   pix_count.reset_to_cart();
   pix_pipes.reset_to_cart();
+  dma.reset_to_cart();
   pix_pipes.reg_bgp.reset_to_cart();
+  pix_pipes.reg_obp0.reset_to_cart();
+  pix_pipes.reg_obp1.reset_to_cart();
+
   reg_lcdc.reset_to_cart();
   lcd.reset_to_cart();
 
@@ -261,6 +268,8 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 //------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyOffsets {
+  const int o_old_bus        = offsetof(GateBoy, old_bus);
+  const int o_new_bus        = offsetof(GateBoy, new_bus);
   const int o_cpu_bus        = offsetof(GateBoy, cpu_bus);
   const int o_ext_bus        = offsetof(GateBoy, ext_bus);
   const int o_vram_bus       = offsetof(GateBoy, vram_bus);

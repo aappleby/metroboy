@@ -12,31 +12,26 @@ struct GateBoyLCD {
     reg_ly.reset_to_cart();
     reg_lyc.reset_to_cart();
 
-    CATU_START_SCANNING.reset(1, 0);
-    ANEL_LINE_P002p.reset(0, 0);
-    POPU_VBLANKp.reset(0, 1);
-    SYGU_LINE_STROBE.reset(1, 0);
-    MEDA_VSYNC_OUTn.reset(1, 1);
-    LUCA_LINE_EVENp.reset(1, 1);
-    NAPO_FRAME_EVENp.reset(1, 0);
-    RUJU.reset(1);
-    POFY.reset(0);
-    POME.reset(1);
-    PAHO_X_8_SYNC.reset(1, 0);
-    WUSA_LCD_CLOCK_GATE.reset(0);
-    PIN_50_LCD_DATA1.reset(1);
-    PIN_51_LCD_DATA0.reset(1);
-    PIN_54_LCD_HSYNC.reset(1);
-    PIN_56_LCD_FLIPS.reset(1);
-    PIN_52_LCD_CNTRL.reset(1);
-    PIN_55_LCD_LATCH.reset(1);
-    PIN_53_LCD_CLOCK.reset(1);
-    PIN_57_LCD_VSYNC.reset(0);
-
-    //lcd_pix_lo.reset_to_cart(REG_D0C0);
-    //lcd_pix_hi.reset_to_cart(REG_D0C0);
-    //memset(lcd_pipe_lo, 0x02, sizeof(lcd_pipe_lo));
-    //memset(lcd_pipe_hi, 0x02, sizeof(lcd_pipe_hi));
+    CATU_START_SCANNING.state = 0b00011010;
+    ANEL_LINE_P002p.state = 0b00011000;
+    POPU_VBLANKp.state = 0b00011001;
+    SYGU_LINE_STROBE.state = 0b00011010;
+    MEDA_VSYNC_OUTn.state = 0b00011011;
+    LUCA_LINE_EVENp.state = 0b00011011;
+    NAPO_FRAME_EVENp.state = 0b00011010;
+    RUJU.state = 0b00011001;
+    POFY.state = 0b00011000;
+    POME.state = 0b00011001;
+    PAHO_X_8_SYNC.state = 0b00011000;
+    WUSA_LCD_CLOCK_GATE.state = 0b00011000;
+    PIN_50_LCD_DATA1.state = 0b00011000;
+    PIN_51_LCD_DATA0.state = 0b00011000;
+    PIN_54_LCD_HSYNC.state = 0b00011001;
+    PIN_56_LCD_FLIPS.state = 0b00011001;
+    PIN_52_LCD_CNTRL.state = 0b00011001;
+    PIN_55_LCD_LATCH.state = 0b00011001;
+    PIN_53_LCD_CLOCK.state = 0b00011001;
+    PIN_57_LCD_VSYNC.state = 0b00011000;
   }
 
   void dump(Dumper& d) {

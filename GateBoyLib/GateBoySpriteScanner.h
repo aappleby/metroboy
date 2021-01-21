@@ -7,23 +7,22 @@
 
 struct SpriteScanner {
   void reset_to_cart() {
-    BESU_SCANNINGp.reset(0);
-    CENO_SCANNINGn.reset(1, 0);
-    BYBA_SCAN_DONE_Ap.reset(1, 1);
-    DOBA_SCAN_DONE_Bp.reset(0, 1);
-    YFEL_SCAN0.reset(1, 1);
-    WEWY_SCAN1.reset(0, 1);
-    GOSO_SCAN2.reset(0, 1);
-    ELYN_SCAN3.reset(0, 0);
-    FAHA_SCAN4.reset(1, 0);
-    FONY_SCAN5.reset(1, 1);
-
-    XADU_SPRITE_IDX0p.reset(1, 0);
-    XEDY_SPRITE_IDX1p.reset(1, 0);
-    ZUZE_SPRITE_IDX2p.reset(1, 1);
-    XOBE_SPRITE_IDX3p.reset(1, 0);
-    YDUF_SPRITE_IDX4p.reset(1, 1);
-    XECU_SPRITE_IDX5p.reset(1, 0);
+    BESU_SCANNINGp.state = 0b00011000;
+    CENO_SCANNINGn.state = 0b00011010;
+    BYBA_SCAN_DONE_Ap.state = 0b00011011;
+    DOBA_SCAN_DONE_Bp.state = 0b00011001;
+    YFEL_SCAN0.state = 0b00011011;
+    WEWY_SCAN1.state = 0b00011001;
+    GOSO_SCAN2.state = 0b00011001;
+    ELYN_SCAN3.state = 0b00011000;
+    FAHA_SCAN4.state = 0b00011010;
+    FONY_SCAN5.state = 0b00011011;
+    XADU_SPRITE_IDX0p.state = 0b00011010;
+    XEDY_SPRITE_IDX1p.state = 0b00011010;
+    ZUZE_SPRITE_IDX2p.state = 0b00011011;
+    XOBE_SPRITE_IDX3p.state = 0b00011010;
+    YDUF_SPRITE_IDX4p.state = 0b00011011;
+    XECU_SPRITE_IDX5p.state = 0b00011010;
   }
 
   void dump(Dumper& d) {

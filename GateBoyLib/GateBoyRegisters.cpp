@@ -130,7 +130,9 @@ BGScrollY GateBoy::add_scy() {
 //------------------------------------------------------------------------------------------------------------------------
 
 SpritePix GateBoy::flip_sprite_pix(wire TEXY_SFETCHINGp, DFF8n BAXO_OAM_DB5p) {
-  /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(BAXO_OAM_DB5p.qp_old(), TEXY_SFETCHINGp);
+  auto baxo = BAXO_OAM_DB5p.qp_old();
+
+  /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(baxo, TEXY_SFETCHINGp);
   /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D07p.qp_old(), old_bus.BUS_VRAM_D00p.qp_old());
   /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D06p.qp_old(), old_bus.BUS_VRAM_D01p.qp_old());
   /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X_old, old_bus.BUS_VRAM_D05p.qp_old(), old_bus.BUS_VRAM_D02p.qp_old());
@@ -303,7 +305,6 @@ void GateBoy::reg_ly_read()
 
 void GateBoy::reg_ly_tock2()
 {
-  (void)new_bus;
   /*#p21.NOKO*/ wire _NOKO_y153p_old = and4(lcd.reg_ly.LAFO_LY7p.qp_old(), lcd.reg_ly.LOVU_LY4p.qp_old(), lcd.reg_ly.LYDO_LY3p.qp_old(), lcd.reg_ly.MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
   /*#p21.MYTA*/ lcd.reg_ly.MYTA_y153p.dff17(lcd.reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), _NOKO_y153p_old);
 

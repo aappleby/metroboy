@@ -36,7 +36,7 @@ void GateBoy::write_zram()
 
   wire clk_new = bit(~cpu_bus.TAPU_CPU_WRp);
   if (bit(~zram_bus.clk_old) && clk_new && CSp) {
-    zero_ram[addr & 0x007F] = (uint8_t)BitBase::pack_old(8, &new_bus.BUS_CPU_D00p);
+    zero_ram[addr & 0x007F] = (uint8_t)BitBase::pack_old(8, &old_bus.BUS_CPU_D00p);
   }
   zram_bus.clk_old = clk_new;
 }

@@ -96,7 +96,7 @@ static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 
 //-----------------------------------------------------------------------------
 
-struct Gate : private BitBase {
+struct Gate : public BitBase {
   Gate() { state = 0; }
   Gate(wire D) { state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D); }
 
@@ -119,7 +119,7 @@ struct Gate : private BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct SigIn : private BitBase {
+struct SigIn : public BitBase {
   SigIn() { state = 0; }
   SigIn(wire D) { state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D); }
 
@@ -136,7 +136,7 @@ struct SigIn : private BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct SigOut : private BitBase {
+struct SigOut : public BitBase {
   uint8_t get_state() const { return state; }
 
   using BitBase::qp_new;
@@ -198,7 +198,7 @@ struct DFF : public BitBase {
 
 //-----------------------------------------------------------------------------
 // 8-rung register with no reset, inverting input, and dual outputs. Used by
-// sprite store, bg pix a, spr pix a/b, dma hi, new_bus mux sprite temp
+// sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
 
 // DFF8_01 |o------O | << CLKn
 // DFF8_02 |====O====| << Dn

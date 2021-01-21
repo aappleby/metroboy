@@ -45,16 +45,17 @@ struct FineScroll {
 struct PixelPipes {
 
   void reset_to_cart() {
-    VEZO_MASK_PIPE_0.reset(1, 1);
-    WURU_MASK_PIPE_1.reset(1, 1);
-    VOSA_MASK_PIPE_2.reset(1, 1);
-    WYFU_MASK_PIPE_3.reset(1, 1);
-    XETE_MASK_PIPE_4.reset(1, 1);
-    WODA_MASK_PIPE_5.reset(1, 1);
-    VUMO_MASK_PIPE_6.reset(1, 1);
-    VAVA_MASK_PIPE_7.reset(1, 1);
-    REMY_LD0n.reset(1);
-    RAVO_LD1n.reset(1);
+    VEZO_MASK_PIPE_0.state = 0b00011011;
+    WURU_MASK_PIPE_1.state = 0b00011011;
+    VOSA_MASK_PIPE_2.state = 0b00011011;
+    WYFU_MASK_PIPE_3.state = 0b00011011;
+    XETE_MASK_PIPE_4.state = 0b00011011;
+    WODA_MASK_PIPE_5.state = 0b00011011;
+    VUMO_MASK_PIPE_6.state = 0b00011011;
+    VAVA_MASK_PIPE_7.state = 0b00011011;
+
+    REMY_LD0n.state = 0b00011000;
+    RAVO_LD1n.state = 0b00011000;
   }
 
   RegBGP  reg_bgp;

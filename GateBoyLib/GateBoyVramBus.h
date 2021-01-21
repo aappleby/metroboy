@@ -9,19 +9,30 @@
 struct GateBoyVramBus {
 
   void reset_to_cart() {
-    PIN_34_VRAM_A00.reset(1);
-    PIN_35_VRAM_A01.reset(1);
-    PIN_36_VRAM_A02.reset(1);
-    PIN_37_VRAM_A03.reset(1);
-    PIN_38_VRAM_A04.reset(0);
-    PIN_39_VRAM_A05.reset(1);
-    PIN_40_VRAM_A06.reset(0);
-    PIN_41_VRAM_A07.reset(1);
-    PIN_48_VRAM_A08.reset(1);
-    PIN_47_VRAM_A09.reset(1);
-    PIN_44_VRAM_A10.reset(1);
-    PIN_46_VRAM_A11.reset(1);
-    PIN_42_VRAM_A12.reset(1);
+    PIN_43_VRAM_CSn.state = 0b00011000;
+    PIN_45_VRAM_OEn.state = 0b00011001;
+    PIN_49_VRAM_WRn.state = 0b00011000;
+    PIN_34_VRAM_A00.state = 0b00011001;
+    PIN_35_VRAM_A01.state = 0b00011001;
+    PIN_36_VRAM_A02.state = 0b00011001;
+    PIN_37_VRAM_A03.state = 0b00011001;
+    PIN_38_VRAM_A04.state = 0b00011000;
+    PIN_39_VRAM_A05.state = 0b00011001;
+    PIN_40_VRAM_A06.state = 0b00011000;
+    PIN_41_VRAM_A07.state = 0b00011001;
+    PIN_48_VRAM_A08.state = 0b00011001;
+    PIN_47_VRAM_A09.state = 0b00011001;
+    PIN_44_VRAM_A10.state = 0b00011001;
+    PIN_46_VRAM_A11.state = 0b00011001;
+    PIN_42_VRAM_A12.state = 0b00011001;
+    PIN_33_VRAM_D00.state = 0b00011101;
+    PIN_31_VRAM_D01.state = 0b00011101;
+    PIN_30_VRAM_D02.state = 0b00011101;
+    PIN_29_VRAM_D03.state = 0b00011101;
+    PIN_28_VRAM_D04.state = 0b00011101;
+    PIN_27_VRAM_D05.state = 0b00011101;
+    PIN_26_VRAM_D06.state = 0b00011101;
+    PIN_25_VRAM_D07.state = 0b00011101;
   }
 
   void reset_buses() {

@@ -8,8 +8,8 @@ void GateBoyCpuBus::reset_to_bootrom() {
 }
 
 void GateBoyCpuBus::reset_to_cart() {
-  TEPU_BOOT_BITn_h.reset(1, 1);
-  SIG_CPU_BOOTp.reset(0);
+  TEPU_BOOT_BITn_h.state = 0b00011011;
+  SIG_CPU_BOOTp.state = 0b00011000;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

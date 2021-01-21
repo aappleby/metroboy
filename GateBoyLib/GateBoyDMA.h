@@ -7,6 +7,32 @@
 
 struct GateBoyDMA {
 
+  void reset_to_cart() {
+    NAKY_DMA_A00p.state = 0b00011000;
+    PYRO_DMA_A01p.state = 0b00011010;
+    NEFY_DMA_A02p.state = 0b00011010;
+    MUTY_DMA_A03p.state = 0b00011010;
+    NYKO_DMA_A04p.state = 0b00011010;
+    PYLO_DMA_A05p.state = 0b00011010;
+    NUTO_DMA_A06p.state = 0b00011010;
+    MUGU_DMA_A07p.state = 0b00011010;
+    NAFA_DMA_A08n.state = 0b00011010;
+    PYNE_DMA_A09n.state = 0b00011010;
+    PARA_DMA_A10n.state = 0b00011010;
+    NYDO_DMA_A11n.state = 0b00011010;
+    NYGY_DMA_A12n.state = 0b00011010;
+    PULA_DMA_A13n.state = 0b00011010;
+    POKU_DMA_A14n.state = 0b00011010;
+    MARU_DMA_A15n.state = 0b00011010;
+    MATU_DMA_RUNNINGp.state = 0b00011010;
+    LYXE_DMA_LATCHp.state = 0b00011000;
+    MYTE_DMA_DONE.state = 0b00011000;
+    LUVY_DMA_TRIG_d0.state = 0b00011010;
+    LENE_DMA_TRIG_d4.state = 0b00011000;
+    LARA_DMA_LATCHn.state = 0b00011001;
+    LOKY_DMA_LATCHp.state = 0b00011000;
+  }
+
   void dump(Dumper& d) {
     d.dump_slice2p("DMA_A_LOW  : ", &NAKY_DMA_A00p, 8);
     d.dump_slice2n("DMA_A_HIGH : ", &NAFA_DMA_A08n, 8);

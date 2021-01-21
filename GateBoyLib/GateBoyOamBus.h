@@ -11,6 +11,15 @@ struct GateBoyOamBus {
     oam_latch_b.reset_to_cart();
     oam_temp_a.reset_to_cart();
     oam_temp_b.reset_to_cart();
+
+    MAKA_LATCH_EXTp.state  = 0b00011010;
+    WUJE_CPU_OAM_WRn.state = 0b00011001;
+    SIG_OAM_CLKn.state  = 0b00011001;
+    SIG_OAM_WRn_A.state = 0b00011001;
+    SIG_OAM_WRn_B.state = 0b00011001;
+    SIG_OAM_OEn.state   = 0b00011001;
+    old_oam_clk.state   = 0b00011000;
+
   }
 
   void dump(Dumper& d) {

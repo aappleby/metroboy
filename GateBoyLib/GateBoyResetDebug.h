@@ -5,20 +5,18 @@
 
 struct GateBoyResetDebug {
   void reset_to_cart() {
-    PIN_71_RST.reset(0);
-    PIN_77_T1.reset(0);
-    PIN_76_T2.reset(0);
-
-    TUBO_WAITINGp.reset(0);
-    ASOL_POR_DONEn.reset(0);
-    AFER_SYS_RSTp.reset(1, 0);
-    SOTO_DBG_VRAMp.reset(1, 0);
-
-    _XONA_LCDC_LCDENn.reset(0, 0);
-    SIG_CPU_EXT_CLKGOOD.reset(1);
-    SIG_CPU_EXT_RESETp.reset(0);
-    SIG_CPU_STARTp.reset(0);
-    SIG_CPU_INT_RESETp.reset(0);
+    _XONA_LCDC_LCDENn.state = 0b00011010;
+    PIN_71_RST.state = 0b00011000;
+    PIN_77_T1.state = 0b00011000;
+    PIN_76_T2.state = 0b00011000;
+    TUBO_WAITINGp.state = 0b00011000;
+    ASOL_POR_DONEn.state = 0b00011000;
+    AFER_SYS_RSTp.state = 0b00011010;
+    SOTO_DBG_VRAMp.state = 0b00011010;
+    SIG_CPU_EXT_CLKGOOD.state = 0b00011001;
+    SIG_CPU_EXT_RESETp.state = 0b00011000;
+    SIG_CPU_STARTp.state = 0b00011000;
+    SIG_CPU_INT_RESETp.state = 0b00011000;
   }
 
   void set_signals(DFF9 XONA_LCDC_LCDENn)

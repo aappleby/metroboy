@@ -301,10 +301,7 @@ struct GateBoy {
   void oam_latch_to_temp_a();
   void oam_latch_to_temp_b();
 
-  void reg_sb_read();
-  void reg_sc_read();
-  void serial_tock1();
-  void serial_tock2();
+  void tock_serial();
 
   void cpu_addr_to_vram_addr();
   void dma_addr_to_vram_addr();

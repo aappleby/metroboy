@@ -550,8 +550,6 @@ void GateBoy::tock_slow(int pass_index) {
     write_zram();
   }
 
-  serial_tock1();
-
   {
     new_bus.set_data(int(phase_total), bus_req_new);
 
@@ -827,7 +825,8 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Misc tocks
   {
-    serial_tock2();
+    tock_serial();
+
     tock_timer();
     reg_stat_tock();
     tock_joypad();
@@ -844,8 +843,6 @@ void GateBoy::tock_slow(int pass_index) {
     reg_scx_read();
     reg_scy_read();
     reg_dma_read();
-    reg_sb_read();
-    reg_sc_read();
     reg_div_read();
     read_bootrom();
     read_boot_bit();

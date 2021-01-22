@@ -126,19 +126,10 @@ struct GateBoy {
   }
 
   void set_old_bits() {
-    {
-      uint8_t* b = (uint8_t*)&old_bus;
-      size_t s = sizeof(old_bus);
-      for (size_t i = 0; i < s; i++) {
-        b[i] |= 0b00010000;
-      }
-    }
-    {
-      uint8_t* b = reg_begin();
-      size_t s = reg_end() - reg_begin();
-      for (size_t i = 0; i < s; i++) {
-        b[i] |= 0b00010000;
-      }
+    uint8_t* b = reg_begin();
+    size_t s = reg_end() - reg_begin();
+    for (size_t i = 0; i < s; i++) {
+      b[i] |= 0b00010000;
     }
   }
 
@@ -185,9 +176,7 @@ struct GateBoy {
   void reg_lcdc_read();
   void reg_lcdc_write();
 
-  void reg_joy_read();
-  void reg_joy_write();
-  void reg_joy_tock2();
+  void tock_joypad();
 
   /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new()); }
 

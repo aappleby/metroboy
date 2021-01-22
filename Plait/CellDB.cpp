@@ -457,10 +457,8 @@ bool DieDB::parse_dir(const std::string& path) {
   bool result = true;
 #if 0
   {
-    string line = R"(  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND);)";
-    Cell c;
-    parse_line(c, line);
-    c.dump(d);
+    string line = R"(  /* p28.ATEJ*/ wire ATEJ_LINE_RSTp_old() const;)";
+    parse_line(line);
   }
 #else
 
@@ -519,7 +517,13 @@ bool DieDB::parse_dir(const std::string& path) {
     }
 
     if (cell->cell_type != DieCellType::BUS) {
+
+      if (!gate_to_in_ports.contains(cell->gate)) {
+        printf("bad cell \"%s\"\n", cell->tag.c_str());
+        printf("bad gate \"%s\"\n", cell->gate.c_str());
+      }
       CHECK_P(gate_to_in_ports.contains(cell->gate));
+
       CHECK_P(cell->input_ports.empty());
       cell->input_ports = gate_to_in_ports[cell->gate];
     }
@@ -619,7 +623,8 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
   static regex member_assign(R"(^(?:\w+\.)*(\w+)\s*=\s*(.+;).*)");
   static regex local_decl(R"(^wire\s+(\w+)\s*=\s*(.*)$)");
   static regex auto_decl (R"(^auto\s+(\w+)\s*=\s*(.*)$)");
-  static regex func_decl(R"(^(inline\s+)?wire\s+(\w+)\s*.*\{\s*return\s*(.*)\}.*)");
+  static regex func_decl(R"(^wire\s+(\w+)\(.*\) const;.*$)");
+  static regex inline_func_decl(R"(^(?:inline\s+)?wire\s+(\w+)\s*.*\{\s*return\s*(.*)\}.*)");
   static regex wire_decl(R"(^wire\s*(\w+);.*$)");
   static regex signal_decl(R"(^Signal\s*(\w+);.*$)");
   static regex tri_call(R"(^(.*)\.\s*(tri\w+\(.*$))");
@@ -646,8 +651,11 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
     result &= parse_cell_def(c, match[2].str());
   }
   else if (regex_match(rest, match, func_decl)) {
-    result &= parse_cell_name(c, match[2].str());
-    result &= parse_cell_def(c, match[3].str());
+    result &= parse_cell_name(c, match[1].str());
+  }
+  else if (regex_match(rest, match, inline_func_decl)) {
+    result &= parse_cell_name(c, match[1].str());
+    result &= parse_cell_def(c, match[2].str());
   }
   else if (regex_match(rest, match, wire_decl)) {
     printf("are we using this?");
@@ -825,7 +833,7 @@ bool DieDB::parse_cell_arg(const std::string& arg, std::string& tag_out, std::st
     "^"
     "(?:\\w+\\.)*"
     "([A-Z]{4})\\w+"
-    "\\(\\)"
+    "\\(\\w*\\)"
     "$"
   );
 

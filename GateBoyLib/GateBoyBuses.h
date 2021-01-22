@@ -17,88 +17,85 @@ struct GateBoyBuses {
   }
 
   void reset_to_cart_old() {
-    BUS_CPU_A00p.state = 0b00011100;
-    BUS_CPU_A01p.state = 0b00011100;
-    BUS_CPU_A02p.state = 0b00011100;
-    BUS_CPU_A03p.state = 0b00011100;
-    BUS_CPU_A04p.state = 0b00011101;
-    BUS_CPU_A05p.state = 0b00011100;
-    BUS_CPU_A06p.state = 0b00011101;
-    BUS_CPU_A07p.state = 0b00011100;
-    BUS_CPU_A08p.state = 0b00011101;
-    BUS_CPU_A09p.state = 0b00011101;
-    BUS_CPU_A10p.state = 0b00011101;
-    BUS_CPU_A11p.state = 0b00011101;
-    BUS_CPU_A12p.state = 0b00011101;
-    BUS_CPU_A13p.state = 0b00011101;
-    BUS_CPU_A14p.state = 0b00011101;
-    BUS_CPU_A15p.state = 0b00011101;
-    BUS_CPU_D00p.state = 0b00011101;
-    BUS_CPU_D01p.state = 0b00011100;
-    BUS_CPU_D02p.state = 0b00011100;
-    BUS_CPU_D03p.state = 0b00011100;
-    BUS_CPU_D04p.state = 0b00011100;
-    BUS_CPU_D05p.state = 0b00011100;
-    BUS_CPU_D06p.state = 0b00011100;
-    BUS_CPU_D07p.state = 0b00011100;
-
-    BUS_SPR_I0.state = 0b00011100;
-    BUS_SPR_I1.state = 0b00011100;
-    BUS_SPR_I2.state = 0b00011101;
-    BUS_SPR_I3.state = 0b00011100;
-    BUS_SPR_I4.state = 0b00011101;
-    BUS_SPR_I5.state = 0b00011100;
-    BUS_SPR_L0.state = 0b00011101;
-    BUS_SPR_L1.state = 0b00011101;
-    BUS_SPR_L2.state = 0b00011101;
-    BUS_SPR_L3.state = 0b00011101;
-
-    BUS_OAM_A00n.state  = 0b00011101;
-    BUS_OAM_A01n.state  = 0b00011101;
-    BUS_OAM_A02n.state  = 0b00011101;
-    BUS_OAM_A03n.state  = 0b00011101;
-    BUS_OAM_A04n.state  = 0b00011100;
-    BUS_OAM_A05n.state  = 0b00011101;
-    BUS_OAM_A06n.state  = 0b00011100;
-    BUS_OAM_A07n.state  = 0b00011101;
-    BUS_OAM_DA00n.state = 0b00011100;
-    BUS_OAM_DA01n.state = 0b00011101;
-    BUS_OAM_DA02n.state = 0b00011101;
-    BUS_OAM_DA03n.state = 0b00011101;
-    BUS_OAM_DA04n.state = 0b00011101;
-    BUS_OAM_DA05n.state = 0b00011101;
-    BUS_OAM_DA06n.state = 0b00011101;
-    BUS_OAM_DA07n.state = 0b00011101;
-    BUS_OAM_DB00n.state = 0b00011100;
-    BUS_OAM_DB01n.state = 0b00011101;
-    BUS_OAM_DB02n.state = 0b00011101;
-    BUS_OAM_DB03n.state = 0b00011101;
-    BUS_OAM_DB04n.state = 0b00011101;
-    BUS_OAM_DB05n.state = 0b00011101;
-    BUS_OAM_DB06n.state = 0b00011101;
-    BUS_OAM_DB07n.state = 0b00011101;
-
-    BUS_VRAM_A00n.state = 0b00011101;
-    BUS_VRAM_A01n.state = 0b00011101;
-    BUS_VRAM_A02n.state = 0b00011101;
-    BUS_VRAM_A03n.state = 0b00011101;
-    BUS_VRAM_A04n.state = 0b00011100;
-    BUS_VRAM_A05n.state = 0b00011101;
-    BUS_VRAM_A06n.state = 0b00011100;
-    BUS_VRAM_A07n.state = 0b00011101;
-    BUS_VRAM_A08n.state = 0b00011100;
-    BUS_VRAM_A09n.state = 0b00011100;
-    BUS_VRAM_A10n.state = 0b00011100;
-    BUS_VRAM_A11n.state = 0b00011100;
-    BUS_VRAM_A12n.state = 0b00011100;
-    BUS_VRAM_D00p.state = 0b00011100;
-    BUS_VRAM_D01p.state = 0b00011100;
-    BUS_VRAM_D02p.state = 0b00011100;
-    BUS_VRAM_D03p.state = 0b00011100;
-    BUS_VRAM_D04p.state = 0b00011100;
-    BUS_VRAM_D05p.state = 0b00011100;
-    BUS_VRAM_D06p.state = 0b00011100;
-    BUS_VRAM_D07p.state = 0b00011100;
+    BUS_CPU_A00p.state = 0b11101100;
+    BUS_CPU_A01p.state = 0b11101100;
+    BUS_CPU_A02p.state = 0b11101100;
+    BUS_CPU_A03p.state = 0b11101100;
+    BUS_CPU_A04p.state = 0b11101101;
+    BUS_CPU_A05p.state = 0b11101100;
+    BUS_CPU_A06p.state = 0b11101101;
+    BUS_CPU_A07p.state = 0b11101100;
+    BUS_CPU_A08p.state = 0b11101100;
+    BUS_CPU_A09p.state = 0b11101100;
+    BUS_CPU_A10p.state = 0b11101100;
+    BUS_CPU_A11p.state = 0b11101100;
+    BUS_CPU_A12p.state = 0b11101100;
+    BUS_CPU_A13p.state = 0b11101100;
+    BUS_CPU_A14p.state = 0b11101100;
+    BUS_CPU_A15p.state = 0b11101100;
+    BUS_CPU_D00p.state = 0b11100101;
+    BUS_CPU_D01p.state = 0b11100101;
+    BUS_CPU_D02p.state = 0b11100101;
+    BUS_CPU_D03p.state = 0b11100101;
+    BUS_CPU_D04p.state = 0b11100101;
+    BUS_CPU_D05p.state = 0b11100101;
+    BUS_CPU_D06p.state = 0b11100101;
+    BUS_CPU_D07p.state = 0b11100101;
+    BUS_SPR_I0.state = 0b11101100;
+    BUS_SPR_I1.state = 0b11101100;
+    BUS_SPR_I2.state = 0b11101101;
+    BUS_SPR_I3.state = 0b11101100;
+    BUS_SPR_I4.state = 0b11101101;
+    BUS_SPR_I5.state = 0b11101100;
+    BUS_SPR_L0.state = 0b11101101;
+    BUS_SPR_L1.state = 0b11101101;
+    BUS_SPR_L2.state = 0b11101101;
+    BUS_SPR_L3.state = 0b11101101;
+    BUS_OAM_A00n.state = 0b11101101;
+    BUS_OAM_A01n.state = 0b11101101;
+    BUS_OAM_A02n.state = 0b11101101;
+    BUS_OAM_A03n.state = 0b11101101;
+    BUS_OAM_A04n.state = 0b11101100;
+    BUS_OAM_A05n.state = 0b11101101;
+    BUS_OAM_A06n.state = 0b11101100;
+    BUS_OAM_A07n.state = 0b11101101;
+    BUS_OAM_DA00n.state = 0b11101100;
+    BUS_OAM_DA01n.state = 0b11101100;
+    BUS_OAM_DA02n.state = 0b11101100;
+    BUS_OAM_DA03n.state = 0b11101100;
+    BUS_OAM_DA04n.state = 0b11101100;
+    BUS_OAM_DA05n.state = 0b11101100;
+    BUS_OAM_DA06n.state = 0b11101100;
+    BUS_OAM_DA07n.state = 0b11101100;
+    BUS_OAM_DB00n.state = 0b11101100;
+    BUS_OAM_DB01n.state = 0b11101100;
+    BUS_OAM_DB02n.state = 0b11101100;
+    BUS_OAM_DB03n.state = 0b11101100;
+    BUS_OAM_DB04n.state = 0b11101100;
+    BUS_OAM_DB05n.state = 0b11101100;
+    BUS_OAM_DB06n.state = 0b11101100;
+    BUS_OAM_DB07n.state = 0b11101100;
+    BUS_VRAM_A00n.state = 0b11101101;
+    BUS_VRAM_A01n.state = 0b11101101;
+    BUS_VRAM_A02n.state = 0b11101101;
+    BUS_VRAM_A03n.state = 0b11101101;
+    BUS_VRAM_A04n.state = 0b11101100;
+    BUS_VRAM_A05n.state = 0b11101101;
+    BUS_VRAM_A06n.state = 0b11101100;
+    BUS_VRAM_A07n.state = 0b11101101;
+    BUS_VRAM_A08n.state = 0b11101101;
+    BUS_VRAM_A09n.state = 0b11101101;
+    BUS_VRAM_A10n.state = 0b11101101;
+    BUS_VRAM_A11n.state = 0b11101101;
+    BUS_VRAM_A12n.state = 0b11101101;
+    BUS_VRAM_D00p.state = 0b11101100;
+    BUS_VRAM_D01p.state = 0b11101100;
+    BUS_VRAM_D02p.state = 0b11101100;
+    BUS_VRAM_D03p.state = 0b11101100;
+    BUS_VRAM_D04p.state = 0b11101100;
+    BUS_VRAM_D05p.state = 0b11101100;
+    BUS_VRAM_D06p.state = 0b11101100;
+    BUS_VRAM_D07p.state = 0b11101100;
   }
 
   void reset_to_cart_new() {
@@ -325,8 +322,6 @@ struct GateBoyBuses {
   /* p07.TONA*/ wire TONA_A08n         () const { return not1(BUS_CPU_A08p.qp_any()); }
   /*#p08.SORE*/ wire SORE_A15n         () const { return not1(BUS_CPU_A15p.qp_any()); }
   /* p06.SEFY*/ wire SEFY_A02n         () const { return not1(BUS_CPU_A02p.qp_any()); }
-  /* p10.BYKO*/ wire BYKO_A05n         () const { return not1(BUS_CPU_A05p.qp_any()); }
-  /* p10.AKUG*/ wire AKUG_A06n         () const { return not1(BUS_CPU_A06p.qp_any()); }
   /* p08.SOGY*/ wire SOGY_A14n         () const { return not1(BUS_CPU_A14p.qp_any()); }
 
   /* p22.WADO*/ wire WADO_A00p         () const { return not1(XOLA_A00n()); }
@@ -344,11 +339,9 @@ struct GateBoyBuses {
   /* p06.SARE*/ wire SARE_XX00_XX07p   () const { return nor5(BUS_CPU_A07p.qp_any(), BUS_CPU_A06p.qp_any(), BUS_CPU_A05p.qp_any(), BUS_CPU_A04p.qp_any(), BUS_CPU_A03p.qp_any()); }
   /* p03.RYFO*/ wire RYFO_FF04_FF07p   () const { return and3(SYKE_ADDR_HIp(), BUS_CPU_A02p.qp_any(), SARE_XX00_XX07p()); }
 
-  /* p10.AMUS*/ wire AMUS_XX_0xx00000p () const { return nor6(BUS_CPU_A00p.qp_any(), BUS_CPU_A01p.qp_any(), BUS_CPU_A02p.qp_any(), BUS_CPU_A03p.qp_any(), BUS_CPU_A04p.qp_any(), BUS_CPU_A07p.qp_any()); }
   /* p07.SAPA*/ wire SAPA_XX_xxxx1111p () const { return and4(BUS_CPU_A00p.qp_any(), BUS_CPU_A01p.qp_any(), BUS_CPU_A02p.qp_any(), BUS_CPU_A03p.qp_any()); }
   /* p07.SEMY*/ wire SEMY_XX_0000xxxxp () const { return nor4(BUS_CPU_A07p.qp_any(), BUS_CPU_A06p.qp_any(), BUS_CPU_A05p.qp_any(), BUS_CPU_A04p.qp_any()); }
   /* p06.SANO*/ wire SANO_FF00_FF03p   () const { return and3(SARE_XX00_XX07p(), SEFY_A02n(), SYKE_ADDR_HIp()); }
-  /* p10.ANAP*/ wire ANAP_FF_0xx00000  () const { return and2(SYKE_ADDR_HIp(), AMUS_XX_0xx00000p()); }
   /* p08.TUMA*/ wire TUMA_A000_BFFFp   () const { return and3(BUS_CPU_A13p.qp_any(), SOGY_A14n(), BUS_CPU_A15p.qp_any()); }
   /* p08.TYNU*/ wire TYNU_A000_FFFFp   () const { return and_or3(BUS_CPU_A15p.qp_any(), BUS_CPU_A14p.qp_any(), TUMA_A000_BFFFp()); }
   /* p28.ADAH*/ wire ADAH_FE00_FEFFn   () const { return not1(SARO_ADDR_OAMp()); }

@@ -5,7 +5,8 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 wire GateBoy::ACYL_SCANNINGp() {
-  /*#p28.ACYL*/ return and2(BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.qp_new());
+  /*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.qp_new());
+  return ACYL_SCANNINGp;
 }
 
 wire GateBoy::AVAP_SCAN_DONE_TRIGp() {

@@ -144,6 +144,7 @@ void GateBoy::reset_to_cart() {
 
   old_bus.reset_to_cart_old();
   new_bus.reset_to_cart_new();
+
   cpu_bus.reset_to_cart();
   oam_bus.reset_to_cart();
   ext_bus.reset_to_cart();
@@ -383,11 +384,11 @@ void GateBoy::next_phase() {
 #ifdef CHECK_SINGLE_PASS
   uint64_t hash_old = commit_and_hash();
 
-  static GateBoy gb_old;
-  memcpy(&gb_old, this, sizeof(GateBoy));
+  static GateBoy gb1;
+  memcpy(&gb1, this, sizeof(GateBoy));
 
   tock_slow(1);
-  auto& gb_new = *this;
+  auto& gb2 = *this;
 #endif
 
   probes.end_pass(true);
@@ -401,8 +402,8 @@ void GateBoy::next_phase() {
     int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
     int end   = offsetof(GateBoy, sentinel2);
 
-    uint8_t* blob_old = (uint8_t*)&gb_old;
-    uint8_t* blob_new = (uint8_t*)&gb_new;
+    uint8_t* blob_old = (uint8_t*)&gb1;
+    uint8_t* blob_new = (uint8_t*)&gb2;
 
     for (int i = start; i < end; i++) {
       if (blob_old[i] != blob_new[i]) {
@@ -428,8 +429,6 @@ void GateBoy::next_phase() {
 
 void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
-
-  const_cast<GateBoyBuses&>(old_bus) = new_bus;
 
   /*SIG_VCC*/ SigIn SIG_VCC;
   /*SIG_GND*/ SigIn SIG_GND;
@@ -534,7 +533,6 @@ void GateBoy::tock_slow(int pass_index) {
 
   // Sync writes to registers
   {
-    reg_joy_write();
     reg_scx_write();
     reg_scy_write();
     reg_lyc_write(); // must be before reg_ly.tock()
@@ -832,7 +830,7 @@ void GateBoy::tock_slow(int pass_index) {
     serial_tock2();
     tock_timer();
     reg_stat_tock();
-    reg_joy_tock2();
+    tock_joypad();
     tock_interrupts(WODU_HBLANKp);
   }
 
@@ -843,7 +841,6 @@ void GateBoy::tock_slow(int pass_index) {
     read_ie();
     read_intf();
     reg_stat_read();
-    reg_joy_read();
     reg_scx_read();
     reg_scy_read();
     reg_dma_read();
@@ -865,6 +862,8 @@ void GateBoy::tock_slow(int pass_index) {
     reg_obp1_read();
     read_zram();
   }
+
+  const_cast<GateBoyBuses&>(old_bus) = new_bus;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

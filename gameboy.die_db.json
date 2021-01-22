@@ -1190,7 +1190,7 @@
         "e",
         "f"
       ],
-      "long_name": "AMUS_XX_0xx00000p",
+      "long_name": "AMUS_XX_0xx00000",
       "output_ports": [
         "qp"
       ],

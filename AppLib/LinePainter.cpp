@@ -29,8 +29,11 @@ float remap(float x, float a1, float a2, float b1, float b2) {
 }
 
 void main() {
-  gl_Position = vec4(remap(line_vtx.x, viewport.x, viewport.z, -1.0,  1.0),
-                     remap(line_vtx.y, viewport.y, viewport.w,  1.0, -1.0),
+  float lx = line_vtx.x + origin.x;
+  float ly = line_vtx.y + origin.y;
+
+  gl_Position = vec4(remap(lx, viewport.x, viewport.z, -1.0,  1.0),
+                     remap(ly, viewport.y, viewport.w,  1.0, -1.0),
                      0.0,
                      1.0);
 }
@@ -47,10 +50,14 @@ void main() {
 #endif
 )";
 
+static uint32_t line_prog = 0;
+
 //-----------------------------------------------------------------------------
 
 void LinePainter::init() {
-  line_prog = create_shader("line_glsl", line_glsl);
+  if (!line_prog) {
+    line_prog = create_shader("line_glsl", line_glsl);
+  }
 
   line_data_u32 = new uint32_t[max_line_bytes / sizeof(uint32_t)];
   line_data_f32 = reinterpret_cast<float*>(line_data_u32);
@@ -66,7 +73,11 @@ void LinePainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void LinePainter::render(Viewport view, double x, double y, float scale) {
+void LinePainter::update_buf() {
+  update_vbo(line_vbo, line_end * 4, line_data_u32);
+}
+
+void LinePainter::render_at(Viewport view, double x, double y, float scale) {
   if (line_end == 0) return;
 
   bind_shader(line_prog);
@@ -85,9 +96,18 @@ void LinePainter::render(Viewport view, double x, double y, float scale) {
 
   int vert_count = line_end / 3;
 
-  update_vbo(line_vbo, line_end * 4, line_data_u32);
   glDrawArrays(GL_LINES, 0, vert_count);
+}
+
+void LinePainter::reset() {
   inst_begin = line_end = 0;
+}
+
+
+void LinePainter::render(Viewport view, double x, double y, float scale) {
+  update_buf();
+  render_at(view, x, y, scale);
+  reset();
 }
 
 //-----------------------------------------------------------------------------

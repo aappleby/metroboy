@@ -53,8 +53,6 @@ void main() {
   float corner_x = float((gl_VertexID >> 0) & 1);
   float corner_y = float((gl_VertexID >> 1) & 1);
 
-  float glyph_x = glyph_pos.x;
-  float glyph_y = glyph_pos.y;
   float col     = float((glyph_idx >> 0) & 0x1F);
   float row     = float((glyph_idx >> 5) & 0x07);
 
@@ -65,17 +63,16 @@ void main() {
   glyph_tcy = remap(glyph_tcy, 0.0, atlas_height, 0.0, 1.0);
 
   tc_glyph = vec2(glyph_tcx, glyph_tcy);
-  //fg_col = palette[fg_style];
   fg_col = glyph_col;
 
 
   //----------
 
-  //float glyph_scale_x = origin.z;
-  //float glyph_scale_y = origin.w;
   float glyph_scale_x = glyph_pos.z;
   float glyph_scale_y = glyph_pos.z;
 
+  float glyph_x = glyph_pos.x;
+  float glyph_y = glyph_pos.y;
   float quad_x = glyph_x + (corner_x * glyph_size_x) * glyph_scale_x + origin.x;
   float quad_y = glyph_y + (corner_y * glyph_size_y) * glyph_scale_y + origin.y;
 
@@ -101,10 +98,14 @@ void main() {
 #endif
 )";
 
+static uint32_t text_prog = 0;
+
 //-----------------------------------------------------------------------------
 
 void TextPainter::init() {
-  text_prog = create_shader("text_glsl", text_glsl);
+  if (!text_prog) {
+    text_prog = create_shader("text_glsl", text_glsl);
+  }
 
   set_pal(0, 0.4f, 0.4f, 0.4f, 1.0f); // grey
   set_pal(1, 0.8f, 0.8f, 0.8f, 1.0f); // white
@@ -142,7 +143,11 @@ void TextPainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::render_buf(Viewport view, double x, double y) {
+void TextPainter::update_buf() {
+  update_vbo(text_vbo, glyph_count * bytes_per_glyph, text_data_u32);
+}
+
+void TextPainter::render_at(Viewport view, double x, double y) {
   if (glyph_count == 0) return;
 
   bind_shader(text_prog);
@@ -165,14 +170,21 @@ void TextPainter::render_buf(Viewport view, double x, double y) {
 
   bind_vao(text_vao);
 
-  update_vbo(text_vbo, glyph_count * bytes_per_glyph, text_data_u32);
-
   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, glyph_count);
+}
 
+void TextPainter::reset() {
   text_x = 0;
   text_y = 0;
   glyph_count = 0;
   buf_cursor = 0;
+}
+
+
+void TextPainter::render(Viewport view, double x, double y) {
+  update_buf();
+  render_at(view, x, y);
+  reset();
 }
 
 //-----------------------------------------------------------------------------
@@ -247,6 +259,19 @@ void TextPainter::add_text_at(const char* s, double x, double y, double scale) {
       push_char(cursor_x, cursor_y, scale, c, palette[fg_pal]);
       cursor_x += glyph_size_x * scale;
     }
+  }
+}
+
+void TextPainter::add_text_at_simple(const char* s, double x, double y) {
+  double cursor_x = x;
+  double cursor_y = y;
+
+  uint32_t color = palette[fg_pal];
+
+  for(; *s; s++) {
+    int c = *s;
+    push_char(cursor_x, cursor_y, 1.0, c, color);
+    cursor_x += glyph_size_x;
   }
 }
 

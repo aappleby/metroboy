@@ -26,7 +26,6 @@ private:
 
   uint32_t grid_vao = 0;
   uint32_t grid_vbo = 0;
-  uint32_t grid_prog = 0;
   uint32_t grid_ubo = 0;
   GridUniforms grid_uniforms;
 };

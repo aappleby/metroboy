@@ -361,8 +361,6 @@ struct GateBoyBuses {
   /* p22.WYBO*/ wire WYBO_FF47n        () const { return nand5(WERO_ADDR_PPUp(), WADO_A00p(), WESA_A01p(), WALO_A02p(), XERA_A03n()); }
   /* p22.WETA*/ wire WETA_FF48n        () const { return nand5(WERO_ADDR_PPUp(), XOLA_A00n(), XENO_A01n(), XUSY_A02n(), WEPO_A03p()); }
   /* p22.VAMA*/ wire VAMA_FF49n        () const { return nand5(WERO_ADDR_PPUp(), WADO_A00p(), XENO_A01n(), XUSY_A02n(), WEPO_A03p()); }
-  /* p22.WYVO*/ wire WYVO_FF4An        () const { return nand5(WERO_ADDR_PPUp(), XOLA_A00n(), WESA_A01p(), XUSY_A02n(), WEPO_A03p()); }
-  /* p22.WAGE*/ wire WAGE_FF4Bn        () const { return nand5(WERO_ADDR_PPUp(), WADO_A00p(), WESA_A01p(), XUSY_A02n(), WEPO_A03p()); }
 
   /* p22.VOCA*/ wire VOCA_FF40p        () const { return not1(WORU_FF40n()); }
   /* p22.VARY*/ wire VARY_FF41p        () const { return not1(WOFA_FF41n()); }
@@ -374,8 +372,6 @@ struct GateBoyBuses {
   /* p22.WERA*/ wire WERA_FF47p        () const { return not1(WYBO_FF47n()); }
   /* p22.XAYO*/ wire XAYO_FF48p        () const { return not1(WETA_FF48n()); }
   /* p22.TEGO*/ wire TEGO_FF49p        () const { return not1(VAMA_FF49n()); }
-  /* p22.VYGA*/ wire VYGA_FF4Ap        () const { return not1(WYVO_FF4An()); }
-  /* p22.VUMY*/ wire VUMY_FF4Bp        () const { return not1(WAGE_FF4Bn()); }
 
   /* p22.WUTU*/ wire WUTU_ADDR_PPUn    () const { return nand3(SYKE_ADDR_HIp(), BUS_CPU_A06p.qp_any(), XALY_0x00xxxx()); }
   /* p22.WERO*/ wire WERO_ADDR_PPUp    () const { return not1(WUTU_ADDR_PPUn()); }

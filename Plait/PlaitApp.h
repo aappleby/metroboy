@@ -79,7 +79,9 @@ public:
   PlaitLabel*     pick_label(dvec2 pos);
   PlaitNode* pick_node(dvec2 pos);
 
-  void draw_node_fill(PlaitNode* node, uint32_t color, bool draw_detail);
+  void draw_node_fill(PlaitNode* node, uint32_t color);
+  void draw_node_ports(PlaitNode* node);
+  void draw_node_text(PlaitNode* node);
   void draw_node_outline(PlaitNode* node);
   void draw_edge(PlaitTrace* node);
 
@@ -115,17 +117,22 @@ public:
   GridPainter grid_painter;
   LinePainter edge_painter;
   LinePainter outline_painter;
-  TextPainter text_painter;
+  TextPainter node_text_painter;
   BoxPainter  box_painter;
   BoxPainter  port_painter;
   Blitter     blitter;
+  TextPainter ui_text_painter;
+
   int tex = 0;
 
   uint32_t mouse_buttons = 0;
+
   dvec2 mouse_pos_screen = {0,0};
   dvec2 mouse_pos_world  = {0,0};
+  dvec2 mouse_pos_wrap   = {0,0};
+
   dvec2 click_pos_screen = {0,0};
-  dvec2 click_pos_world  = {0,0};
+  dvec2 click_pos_wrap   = {0,0};
 
   int frame_count = 0;
 

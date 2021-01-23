@@ -19,8 +19,6 @@ struct BlitUniforms {
 //-----------------------------------------------------------------------------
 
 const char* blit_glsl = R"(
-uniform sampler2D tex;
-
 
 layout(std140) uniform BlitUniforms
 {
@@ -67,6 +65,8 @@ void main() {
 in  vec2 ftex;
 out vec4 frag;
 
+uniform sampler2D tex;
+
 void main() {
   if (bool(solid)) {
     frag = blit_col;
@@ -82,6 +82,8 @@ void main() {
 #endif
 
 )";
+
+static uint32_t blit_prog = 0;
 
 //-----------------------------------------------------------------------------
 
@@ -101,7 +103,10 @@ void Blitter::init() {
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
   blit_ubo = create_ubo(sizeof(BlitUniforms));
-  blit_prog = create_shader("blit_glsl", blit_glsl);
+
+  if (!blit_prog) {
+    blit_prog = create_shader("blit_glsl", blit_glsl);
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -111,7 +116,7 @@ void Blitter::blit(Viewport view,
                    int sx, int sy, int sw, int sh,
                    int dx, int dy, int dw, int dh) {
   BlitUniforms blit_uniforms;
-  
+
   blit_uniforms.viewport = {
     (float)view.min.x,
     (float)view.min.y,
@@ -126,7 +131,7 @@ void Blitter::blit(Viewport view,
 
   blit_uniforms.solid = 0;
   blit_uniforms.mono = 0;
-  
+
   update_ubo(blit_ubo, sizeof(blit_uniforms), &blit_uniforms);
 
   bind_shader(blit_prog);
@@ -144,7 +149,7 @@ void Blitter::blit_mono(Viewport view,
                         int sx, int sy, int sw, int sh,
                         int dx, int dy, int dw, int dh) {
   BlitUniforms blit_uniforms;
-  
+
   blit_uniforms.viewport = {
     (float)view.min.x,
     (float)view.min.y,

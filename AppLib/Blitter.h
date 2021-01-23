@@ -25,7 +25,6 @@ public:
   uint32_t blit_vao = 0;
   uint32_t blit_vbo = 0;
   uint32_t blit_ubo = 0;
-  uint32_t blit_prog = 0;
 };
 
 //-----------------------------------------------------------------------------

@@ -462,10 +462,6 @@ void GateBoy::tock_slow(int pass_index) {
 
   auto WYMO_LCDC_WINENn_old = reg_lcdc.WYMO_LCDC_WINENn;
 
-  wire _ROGE_WY_MATCHp_old = ROGE_WY_MATCHp_old(reg_wy, lcd.reg_ly, WYMO_LCDC_WINENn_old);
-  auto REJO_WY_MATCH_LATCHp_old = win_reg.REJO_WY_MATCH_LATCHp;
-  wire _NUKO_WX_MATCHp_old = NUKO_WX_MATCHp_old(pix_count, reg_wx, REJO_WY_MATCH_LATCHp_old); // FIXME old/new?
-
   wire XYVO_y144p_old = this->XYVO_y144p_old();
   auto RUTU_x113p_old = lcd.reg_lx.RUTU_x113p;
 
@@ -539,7 +535,6 @@ void GateBoy::tock_slow(int pass_index) {
     reg_stat_write();
     reg_tma_write();
     reg_tac_write();
-    write_boot_bit_sync();
     reg_dma_write();
     reg_wy_write();
     reg_wx_write();
@@ -576,6 +571,8 @@ void GateBoy::tock_slow(int pass_index) {
 
   tock_sprite_scanner();
 
+  reg_stat_tock();
+  reg_stat_read();
 
 
 
@@ -583,14 +580,6 @@ void GateBoy::tock_slow(int pass_index) {
   /* p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
 
   {
-    /* p27.REPU*/ wire _REPU_VBLANKp = or2(PARU_VBLANKp(), PYRY_VID_RSTp());
-    /* p27.SARY*/ win_reg.SARY_WY_MATCHp.dff17(TALU_xxCDEFxx(), XAPO_VID_RSTn(), _ROGE_WY_MATCHp_old);
-    /* p27.REJO*/ win_reg.REJO_WY_MATCH_LATCHp.nor_latch(win_reg.SARY_WY_MATCHp.qp_new(), _REPU_VBLANKp);
-    /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn_new(), XAPO_VID_RSTn());
-    /* p27.NUNU*/ win_reg.NUNU_WIN_MATCHp.dff17(MEHE_AxCxExGx(), XAPO_VID_RSTn(), win_reg.PYCO_WIN_MATCHp.qp_old());
-    /* p27.PYNU*/ win_reg.PYNU_WIN_MODE_Ap.nor_latch(win_reg.NUNU_WIN_MATCHp.qp_new(), XOFO_WIN_RSTp);
-    /* p27.NOPA*/ win_reg.NOPA_WIN_MODE_Bp.dff17(ALET_xBxDxFxH(), XAPO_VID_RSTn(), win_reg.PYNU_WIN_MODE_Ap.qp_new());
-
     /* p24.NAFY*/ wire _NAFY_WIN_MODE_TRIGn = nor2(MOSU_WIN_MODE_TRIGp_new(), LOBY_RENDERINGn);
 
     // vvvvv
@@ -679,8 +668,6 @@ void GateBoy::tock_slow(int pass_index) {
     store_sprite_pix_a(sprite_pix_old);
     store_sprite_pix_b(sprite_pix_old);
   }
-
-
 
   //----------------------------------------
   // Pixel pipes
@@ -824,14 +811,13 @@ void GateBoy::tock_slow(int pass_index) {
 
   //----------------------------------------
   // Misc tocks
-  {
-    tock_serial();
 
-    tock_timer();
-    reg_stat_tock();
-    tock_joypad();
-    tock_interrupts(WODU_HBLANKp);
-  }
+  tock_serial();
+  tock_timer();
+
+  tock_joypad();
+  tock_interrupts(WODU_HBLANKp);
+  tock_bootrom();
 
   //----------------------------------------
   // Async reads
@@ -839,13 +825,10 @@ void GateBoy::tock_slow(int pass_index) {
   {
     read_ie();
     read_intf();
-    reg_stat_read();
     reg_scx_read();
     reg_scy_read();
     reg_dma_read();
     reg_div_read();
-    read_bootrom();
-    read_boot_bit();
     reg_tima_read();
     reg_tma_read();
     reg_tac_read();

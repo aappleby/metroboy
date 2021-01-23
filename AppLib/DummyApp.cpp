@@ -50,7 +50,7 @@ void DummyApp::app_render_frame() {
 
   static int count = 0;
   text_painter.dprintf("Hello World %d\n", count++);
-  text_painter.render_buf(view, 0, 0);
+  text_painter.render(view, 0, 0);
 
   blitter.blit(view, tex, 128, 128, 32, 32);
 }

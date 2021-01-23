@@ -356,7 +356,7 @@ void MetroBoyApp::app_render_ui() {
 
   text_painter.dprintf("Sim time %f, sim ratio %f\n", sim_time, sim_ratio);
   text_painter.dprintf("Frame time %f\n", frame_time);
-  text_painter.render_buf(view, float(view.screen_size.x - 320), float(view.screen_size.y - 64));
+  text_painter.render(view, float(view.screen_size.x - 320), float(view.screen_size.y - 64));
 
 
     /*

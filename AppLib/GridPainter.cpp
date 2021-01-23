@@ -24,14 +24,16 @@ layout(std140) uniform GridUniforms
 
 #ifdef _VERTEX_
 
-layout(location = 0) in  vec2 vert_pos;
-out vec2 world_pos; // interpolating this is going to lose precision...
+out vec2 world_pos;
 
 void main() {
-  world_pos.x = vert_pos.x * viewport.w + viewport.x;
-  world_pos.y = vert_pos.y * viewport.h + viewport.y;
+  float x = gl_VertexID == 1 ? 2.0 : 0.0;
+  float y = gl_VertexID == 2 ? 2.0 : 0.0;
 
-  gl_Position = vec4(2.0 * vert_pos.x - 1.0, -2.0 * vert_pos.y + 1.0, 1.0, 1.0);
+  world_pos.x = x * viewport.w + viewport.x;
+  world_pos.y = y * viewport.h + viewport.y;
+
+  gl_Position = vec4(2.0 * x - 1.0, -2.0 * y + 1.0, 1.0, 1.0);
 }
 
 #endif
@@ -42,14 +44,6 @@ in  vec2 world_pos;
 out vec4 frag_col;
 
 void main() {
-
-  if (world_pos.x < -32768.0 ||
-      world_pos.x >  32768.0 ||
-      world_pos.y < -32768.0 ||
-      world_pos.y >  32768.0) {
-    frag_col = vec4(0.0, 0.0, 0.1, 1.0);
-    return;
-  }
 
   int world_x = int(floor(world_pos.x));
   int world_y = int(floor(world_pos.y));
@@ -66,26 +60,23 @@ void main() {
   frag_col.g = b ? ga : gb;
   frag_col.b = b ? ga : gb;
   frag_col.a = 1.0;
+
+  if (world_pos.x < -32768.0) frag_col.rgb *= 0.9;
+  if (world_pos.x >  32768.0) frag_col.rgb *= 1.1;
 }
 
 #endif
 
 )";
 
+static uint32_t grid_prog = 0;
+
 //-----------------------------------------------------------------------------
 
 void GridPainter::init() {
-  grid_prog = create_shader("grid_glsl", grid_glsl);
-
-  float quad[] = {
-     0,  0,  1,  0,  1,  1,
-     0,  0,  1,  1,  0,  1,
-  };
-
-  grid_vao = create_vao();
-  grid_vbo = create_vbo(sizeof(quad), quad);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+  if (!grid_prog) {
+    grid_prog = create_shader("grid_glsl", grid_glsl);
+  }
 
   grid_ubo = create_ubo(sizeof(GridUniforms));
 }
@@ -101,9 +92,7 @@ void GridPainter::render(Viewport view) {
   update_ubo(grid_ubo, sizeof(grid_uniforms), &grid_uniforms);
   bind_ubo(grid_prog, "GridUniforms", 0, grid_ubo);
 
-  bind_vao(grid_vao);
-
-  glDrawArrays(GL_TRIANGLES, 0, 6);
+  glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 //-----------------------------------------------------------------------------

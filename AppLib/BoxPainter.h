@@ -28,13 +28,18 @@ public:
                        color);
   }
 
+  void update_buf();
+  void render_at(Viewport view, double x, double y, float scale = 1.0f);
+  void reset();
+
   void render(Viewport view, double x, double y, float scale = 1.0f);
 
 private:
 
+  int gate_tex;
+
   const int max_box_bytes = 65536 * 16;
 
-  uint32_t  box_prog = 0;
   uint32_t  box_ubo = 0;
   uint32_t  box_vao = 0;
   uint32_t  box_vbo = 0;

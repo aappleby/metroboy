@@ -24,14 +24,20 @@ public:
   void add_text_at(const char* s, uint32_t color, double x, double y, double scale);
   void add_text_at(const char* s, double x, double y, double scale = 1.0);
 
+  void add_text_at_simple(const char* s, double x, double y);
+
   void add_string(const std::string& text, double scale = 1.0);
   void dprintf(const char* format, ...);
 
-  void render_buf(Viewport view, double x, double y);
+  void update_buf();
+  void render_at(Viewport view, double x, double y);
+  void reset();
+
+  void render(Viewport view, double x, double y);
 
   void render_string(Viewport view, const std::string& text, double x, double y, double scale = 1.0) {
     add_string(text, scale);
-    render_buf(view, x, y);
+    render(view, x, y);
   }
 
   void newline() { add_char(1, '\n'); }
@@ -48,7 +54,6 @@ private:
 
   vec4 bg_col;
 
-  uint32_t text_prog = 0;
   uint32_t font_tex = 0;
   uint64_t font_ptr = 0;
 

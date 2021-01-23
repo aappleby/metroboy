@@ -153,15 +153,18 @@ struct PlaitNode {
   void revert_pos()          { pos_new = pos_old; }
 
   void update_visibility(const Viewport& view) {
+    (void)view;
     visible = true;
+    /*
     if (pos_new.x > view.max.x) visible = false;
     if (pos_new.y > view.max.y) visible = false;
     if (pos_new.x + 128 < view.min.x) visible = false;
     if (pos_new.y + 64  < view.min.y) visible = false;
+    */
   }
 
   bool _selected = false;
-  bool visible = false;
+  bool visible = true;
 
 };
 

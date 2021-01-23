@@ -42,6 +42,7 @@
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="DummyApp.cpp" />
     <ClCompile Include="DumpPainter.cpp" />
+    <ClCompile Include="GatePix.cpp" />
     <ClCompile Include="GBBlitter.cpp" />
     <ClCompile Include="GLBase.cpp" />
     <ClCompile Include="GridPainter.cpp" />

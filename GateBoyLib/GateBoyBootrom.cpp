@@ -4,23 +4,17 @@
 
 //--------------------------------------------------------------------------------
 
-void GateBoy::read_boot_bit()
+void GateBoy::tock_bootrom()
 {
   /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_bus.TEDO_CPU_RDp, new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
   /* p07.SYPU_BOOT_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TEXE_FF50_RDp, cpu_bus.TEPU_BOOT_BITn_h.qp_new());
-}
 
-void GateBoy::write_boot_bit_sync()
-{
   /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_bus.TAPU_CPU_WRp, new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
   // FF50 - disable bootrom bit
 
   /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(old_bus.BUS_CPU_D00p.qp_old(), cpu_bus.TEPU_BOOT_BITn_h.qp_old());
   /* p07.TEPU*/ cpu_bus.TEPU_BOOT_BITn_h.dff17(_TUGE_FF50_WRn, ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
-}
 
-void GateBoy::read_bootrom()
-{
   // BOOT -> CBD
   // this is kind of a hack
   uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);

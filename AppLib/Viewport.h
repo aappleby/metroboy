@@ -78,6 +78,42 @@ struct ViewController {
       view_target = view_snap;
       view_smooth = view_snap;
     }
+
+    if (view_target.ox() > 32768 && view_smooth.ox() > 32768 && view_snap.ox() > 32768) {
+      view_target.min.x -= 65536;
+      view_target.max.x -= 65536;
+      view_smooth.min.x -= 65536;
+      view_smooth.max.x -= 65536;
+      view_snap.min.x -= 65536;
+      view_snap.max.x -= 65536;
+    }
+
+    if (view_target.ox() < -32768 && view_smooth.ox() < -32768 && view_snap.ox() < -32768) {
+      view_target.min.x += 65536;
+      view_target.max.x += 65536;
+      view_smooth.min.x += 65536;
+      view_smooth.max.x += 65536;
+      view_snap.min.x += 65536;
+      view_snap.max.x += 65536;
+    }
+
+    if (view_target.oy() > 32768 && view_smooth.oy() > 32768 && view_snap.oy() > 32768) {
+      view_target.min.y -= 65536;
+      view_target.max.y -= 65536;
+      view_smooth.min.y -= 65536;
+      view_smooth.max.y -= 65536;
+      view_snap.min.y -= 65536;
+      view_snap.max.y -= 65536;
+    }
+
+    if (view_target.oy() < -32768 && view_smooth.oy() < -32768 && view_snap.oy() < -32768) {
+      view_target.min.y += 65536;
+      view_target.max.y += 65536;
+      view_smooth.min.y += 65536;
+      view_smooth.max.y += 65536;
+      view_snap.min.y += 65536;
+      view_snap.max.y += 65536;
+    }
   }
 
   void pop_view() {

@@ -66,19 +66,19 @@ const uint32_t COL_DARK_RED     = 0x00444488;
 const uint32_t COL_MID_RED      = 0x004444CC;
 
 const uint32_t COL_DARK_GREEN   = 0x00448844;
-const uint32_t COL_DARK_YELLOW  = 0x00448888;
+const uint32_t COL_PALE_BROWN   = 0x005DA2A2;
 const uint32_t COL_ORANGE       = 0x004488CC;
 
 const uint32_t COL_MID_GREEN    = 0x0044CC44;
 const uint32_t COL_LIME         = 0x0044CC88;
-const uint32_t COL_MID_YELLOW   = 0x0044CCCC;
+const uint32_t COL_MID_YELLOW   = 0x0066CCCC;
 
 const uint32_t COL_DARK_BLUE    = 0x00884444;
 const uint32_t COL_DARK_MAGENTA = 0x00884488;
 const uint32_t COL_ROSE         = 0x008844CC;
 
 const uint32_t COL_DARK_TEAL    = 0x00888844;
-const uint32_t COL_MID_GREY     = 0x00888888;
+const uint32_t COL_MID_GREY     = 0x00999999;
 const uint32_t COL_PALE_RED     = 0x008888CC;
 
 const uint32_t COL_MINT         = 0x0088CC44;

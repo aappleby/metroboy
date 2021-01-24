@@ -41,7 +41,7 @@ public:
 
 private:
 
-  const int max_line_bytes = 65536 * 8;
+  const int max_line_bytes = 16 * 1024 * 1024;
 
   int inst_begin = 0;
   int line_end = 0;

@@ -117,7 +117,7 @@ public:
   GridPainter grid_painter;
   LinePainter edge_painter;
   LinePainter outline_painter;
-  TextPainter node_text_painter;
+  TextPainter text_painter;
   BoxPainter  box_painter;
   BoxPainter  port_painter;
   Blitter     blitter;
@@ -132,6 +132,7 @@ public:
   dvec2 mouse_pos_wrap   = {0,0};
 
   dvec2 click_pos_screen = {0,0};
+  dvec2 click_pos_world  = {0,0};
   dvec2 click_pos_wrap   = {0,0};
 
   int frame_count = 0;

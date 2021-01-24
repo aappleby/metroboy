@@ -149,8 +149,18 @@ struct PlaitNode {
   void  set_pos_new(dvec2 p) { pos_new = p; }
   void  move(dvec2 delta)    { pos_new += delta; }
 
-  void commit_pos()          { pos_old = pos_new; }
-  void revert_pos()          { pos_new = pos_old; }
+  void commit_pos()          {
+    pos_old = pos_new;
+    while(pos_old.x >  32768) pos_old.x -= 65536;
+    while(pos_old.x < -32768) pos_old.x += 65536;
+    while(pos_old.y >  32768) pos_old.y -= 65536;
+    while(pos_old.y < -32768) pos_old.y += 65536;
+    pos_new = pos_old;
+
+  }
+  void revert_pos() {
+    pos_new = pos_old;
+  }
 
   void update_visibility(const Viewport& view) {
     (void)view;

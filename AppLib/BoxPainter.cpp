@@ -40,12 +40,6 @@ void main() {
 
   box_tc.y += (1.0 / 32.0) * float(symbol);
 
-  float dtx = 1.0 / 24.0;
-  float dty = 1.0 / 512.0;
-
-  box_tc.x += dtx * 0.5;
-  box_tc.y += dty * 0.5;
-
   float quad_x = box_pos.x + box_pos.z * corner_x;
   float quad_y = box_pos.y + box_pos.w * corner_y;
 
@@ -101,9 +95,15 @@ void BoxPainter::init() {
 
   box_ubo = create_ubo(sizeof(BoxUniforms));
 
-  uint8_t* dst_pix = new uint8_t[24 * 512];
-  for (int i = 0; i < 24 * 512; i++) dst_pix[i] = gate_pix[i] == '#' ? 0x00 : 0xFF;
-  gate_tex = create_texture_u8(24, 512, dst_pix);
+  uint8_t* dst_pix = new uint8_t[16 * 512];
+  for (int i = 0; i < 16 * 512; i++) {
+    uint8_t c = gate_pix[i];
+    if      (c == '#') c = 0x00;
+    else if (c == '=') c = 0x80;
+    else               c = 0xFF;
+    dst_pix[i] = c;
+  }
+  gate_tex = create_texture_u8(16, 512, dst_pix);
   delete [] dst_pix;
 }
 

@@ -76,35 +76,32 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   dma.POKU_DMA_A14n.state = 0b00011010;
   dma.MARU_DMA_A15n.state = 0b00011010;
 
-  pix_pipes.reg_bgp.PAVO_BGP_D0n.state = 0b00011010;
-  pix_pipes.reg_bgp.NUSY_BGP_D1n.state = 0b00011010;
-  pix_pipes.reg_bgp.PYLU_BGP_D2n.state = 0b00011010;
-  pix_pipes.reg_bgp.MAXY_BGP_D3n.state = 0b00011010;
-  pix_pipes.reg_bgp.MUKE_BGP_D4n.state = 0b00011010;
-  pix_pipes.reg_bgp.MORU_BGP_D5n.state = 0b00011010;
-  pix_pipes.reg_bgp.MOGY_BGP_D6n.state = 0b00011010;
-  pix_pipes.reg_bgp.MENA_BGP_D7n.state = 0b00011010;
+  reg_bgp.PAVO_BGP_D0n.state = 0b00011010;
+  reg_bgp.NUSY_BGP_D1n.state = 0b00011010;
+  reg_bgp.PYLU_BGP_D2n.state = 0b00011010;
+  reg_bgp.MAXY_BGP_D3n.state = 0b00011010;
+  reg_bgp.MUKE_BGP_D4n.state = 0b00011010;
+  reg_bgp.MORU_BGP_D5n.state = 0b00011010;
+  reg_bgp.MOGY_BGP_D6n.state = 0b00011010;
+  reg_bgp.MENA_BGP_D7n.state = 0b00011010;
 
-  pix_pipes.reg_obp0.XUFU_OBP0_D0n.state = 0b00011010;
-  pix_pipes.reg_obp0.XUKY_OBP0_D1n.state = 0b00011010;
-  pix_pipes.reg_obp0.XOVA_OBP0_D2n.state = 0b00011010;
-  pix_pipes.reg_obp0.XALO_OBP0_D3n.state = 0b00011010;
-  pix_pipes.reg_obp0.XERU_OBP0_D4n.state = 0b00011010;
-  pix_pipes.reg_obp0.XYZE_OBP0_D5n.state = 0b00011010;
-  pix_pipes.reg_obp0.XUPO_OBP0_D6n.state = 0b00011010;
-  pix_pipes.reg_obp0.XANA_OBP0_D7n.state = 0b00011010;
+  reg_obp0.XUFU_OBP0_D0n.state = 0b00011010;
+  reg_obp0.XUKY_OBP0_D1n.state = 0b00011010;
+  reg_obp0.XOVA_OBP0_D2n.state = 0b00011010;
+  reg_obp0.XALO_OBP0_D3n.state = 0b00011010;
+  reg_obp0.XERU_OBP0_D4n.state = 0b00011010;
+  reg_obp0.XYZE_OBP0_D5n.state = 0b00011010;
+  reg_obp0.XUPO_OBP0_D6n.state = 0b00011010;
+  reg_obp0.XANA_OBP0_D7n.state = 0b00011010;
 
-  pix_pipes.reg_obp1.MOXY_OBP1_D0n.state = 0b00011010;
-  pix_pipes.reg_obp1.LAWO_OBP1_D1n.state = 0b00011010;
-  pix_pipes.reg_obp1.MOSA_OBP1_D2n.state = 0b00011010;
-  pix_pipes.reg_obp1.LOSE_OBP1_D3n.state = 0b00011010;
-  pix_pipes.reg_obp1.LUNE_OBP1_D4n.state = 0b00011010;
-  pix_pipes.reg_obp1.LUGU_OBP1_D5n.state = 0b00011010;
-  pix_pipes.reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
-  pix_pipes.reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
-
-  //old_bus.reset_to_bootrom();
-  //new_bus.reset_to_bootrom();
+  reg_obp1.MOXY_OBP1_D0n.state = 0b00011010;
+  reg_obp1.LAWO_OBP1_D1n.state = 0b00011010;
+  reg_obp1.MOSA_OBP1_D2n.state = 0b00011010;
+  reg_obp1.LOSE_OBP1_D3n.state = 0b00011010;
+  reg_obp1.LUNE_OBP1_D4n.state = 0b00011010;
+  reg_obp1.LUGU_OBP1_D5n.state = 0b00011010;
+  reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
+  reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
 
   boot_buf  = _boot_buf;
   boot_size = _boot_size;
@@ -191,6 +188,10 @@ void GateBoy::reset_to_cart() {
   oam_bus.reset_to_cart();
   ext_bus.reset_to_cart();
   vram_bus.reset_to_cart();
+
+  ext_addr_latch.reset_to_cart();
+  ext_data_latch.reset_to_cart();
+
   rst.reset_to_cart();
   clk.reset_to_cart();
   div.reset_to_cart();
@@ -203,12 +204,16 @@ void GateBoy::reset_to_cart() {
   pix_count.reset_to_cart();
   pix_pipes.reset_to_cart();
   dma.reset_to_cart();
-  pix_pipes.reg_bgp.reset_to_cart();
-  pix_pipes.reg_obp0.reset_to_cart();
-  pix_pipes.reg_obp1.reset_to_cart();
+  reg_bgp.reset_to_cart();
+  reg_obp0.reset_to_cart();
+  reg_obp1.reset_to_cart();
 
   reg_lcdc.reset_to_cart();
   lcd.reset_to_cart();
+
+  reg_lx.reset_to_cart();
+  reg_ly.reset_to_cart();
+  reg_lyc.reset_to_cart();
 
   check_state_old_and_driven_or_pullup();
 
@@ -504,12 +509,12 @@ void GateBoy::tock_slow(int pass_index) {
 
   auto WYMO_LCDC_WINENn_old = reg_lcdc.WYMO_LCDC_WINENn;
 
-  wire _ROGE_WY_MATCHp_old = ROGE_WY_MATCHp_old(reg_wy, lcd.reg_ly, WYMO_LCDC_WINENn_old);
+  wire _ROGE_WY_MATCHp_old = ROGE_WY_MATCHp_old(reg_wy, reg_ly, WYMO_LCDC_WINENn_old);
   auto REJO_WY_MATCH_LATCHp_old = win_reg.REJO_WY_MATCH_LATCHp;
   wire _NUKO_WX_MATCHp_old = NUKO_WX_MATCHp_old(pix_count, reg_wx, REJO_WY_MATCH_LATCHp_old); // FIXME old/new?
 
   wire XYVO_y144p_old = this->XYVO_y144p_old();
-  auto RUTU_x113p_old = lcd.reg_lx.RUTU_x113p;
+  auto RUTU_x113p_old = reg_lx.RUTU_x113p;
 
   //wire FETO_SCAN_DONEp_old = sprite_scanner.FETO_SCAN_DONEp_old();
 
@@ -910,7 +915,7 @@ void GateBoy::tock_slow(int pass_index) {
 void GateBoy::update_framebuffer()
 {
   int lcd_x = pix_count.get_new() - 8;
-  int lcd_y = lcd.reg_ly.get_new();
+  int lcd_y = reg_ly.get_new();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
     uint8_t p0 = bit(lcd.PIN_51_LCD_DATA0.qp_new());

@@ -58,10 +58,6 @@ struct PixelPipes {
     RAVO_LD1n.state = 0b00011000;
   }
 
-  RegBGP  reg_bgp;
-  RegOBP0 reg_obp0;
-  RegOBP1 reg_obp1;
-
   /*p32.MYDE*/ DFF22 MYDE_BGW_PIPE_A0; // AxCxExGx
   /*p32.NOZO*/ DFF22 NOZO_BGW_PIPE_A1; // AxCxExGx
   /*p32.MOJU*/ DFF22 MOJU_BGW_PIPE_A2; // AxCxExGx

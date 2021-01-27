@@ -48,7 +48,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 1
+#if 0
   // regenerate post-bootrom dump
   gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
   gb_thread.reset_to_bootrom();
@@ -109,7 +109,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   gb_thread.gb->run_phases(120);
 #endif
 
-#if 0
+#if 1
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
@@ -351,13 +351,13 @@ void GateBoyApp::app_render_frame() {
 
   d("\002===== LCD =====\001\n");
   gb->lcd.dump(d);
-  d.dump_slice2p("LX         : ", &gb->lcd.reg_lx.SAXO_LX0p.state,  7);
-  d.dump_slice2p("FF44 LY    : ", &gb->lcd.reg_ly.MUWY_LY0p.state,  8);
-  d.dump_slice2n("FF45 LYC   : ", &gb->lcd.reg_lyc.SYRY_LYC0n.state, 8);
-  d.dump_bitp   ("MYTA_y153p          : ", gb->lcd.reg_ly.MYTA_y153p.state);
-  d.dump_bitp   ("RUTU_LINE_P910p     : ", gb->lcd.reg_lx.RUTU_x113p.state);
-  d.dump_bitp   ("NYPE_LINE_P002p     : ", gb->lcd.reg_lx.NYPE_x113p.state);
-  d.dump_bitp   ("ROPO_LY_MATCH_SYNCp : ", gb->lcd.reg_lyc.ROPO_LY_MATCH_SYNCp.state);
+  d.dump_slice2p("LX         : ", &gb->reg_lx.SAXO_LX0p.state,  7);
+  d.dump_slice2p("FF44 LY    : ", &gb->reg_ly.MUWY_LY0p.state,  8);
+  d.dump_slice2n("FF45 LYC   : ", &gb->reg_lyc.SYRY_LYC0n.state, 8);
+  d.dump_bitp   ("MYTA_y153p          : ", gb->reg_ly.MYTA_y153p.state);
+  d.dump_bitp   ("RUTU_LINE_P910p     : ", gb->reg_lx.RUTU_x113p.state);
+  d.dump_bitp   ("NYPE_LINE_P002p     : ", gb->reg_lx.NYPE_x113p.state);
+  d.dump_bitp   ("ROPO_LY_MATCH_SYNCp : ", gb->reg_lyc.ROPO_LY_MATCH_SYNCp.state);
   d("\n");
 
   d("\002===== EXT Bus =====\001\n");
@@ -383,9 +383,9 @@ void GateBoyApp::app_render_frame() {
   gb->reg_stat.dump(d);
   d.dump_slice2n("FF42 SCY   : ", &gb->reg_scy.GAVE_SCY0n, 8);
   d.dump_slice2n("FF43 SCX   : ", &gb->reg_scx.DATY_SCX0n, 8);
-  d.dump_slice2n("FF47 BGP   : ", &gb->pix_pipes.reg_bgp.PAVO_BGP_D0n, 8);
-  d.dump_slice2n("FF48 OBP0  : ", &gb->pix_pipes.reg_obp0.XUFU_OBP0_D0n, 8);
-  d.dump_slice2n("FF49 OBP1  : ", &gb->pix_pipes.reg_obp1.MOXY_OBP1_D0n, 8);
+  d.dump_slice2n("FF47 BGP   : ", &gb->reg_bgp.PAVO_BGP_D0n, 8);
+  d.dump_slice2n("FF48 OBP0  : ", &gb->reg_obp0.XUFU_OBP0_D0n, 8);
+  d.dump_slice2n("FF49 OBP1  : ", &gb->reg_obp1.MOXY_OBP1_D0n, 8);
   d.dump_slice2n("FF4A WY    : ", &gb->reg_wy.NESO_WY0n, 8);
   d.dump_slice2n("FF4B WX    : ", &gb->reg_wx.MYPA_WX0n, 8);
   d.dump_slice2p("WIN MAP X  : ", &gb->win_map_x.WYKA_WIN_X3, 5);
@@ -536,7 +536,7 @@ void GateBoyApp::app_render_frame() {
     memset(overlay, 0, sizeof(overlay));
 
     int fb_x = gb->pix_count.get_old() - 8;
-    int fb_y = gb->lcd.reg_ly.get_old();
+    int fb_y = gb->reg_ly.get_old();
 
     if (fb_y >= 0 && fb_y < 144) {
       for (int x = 0; x < 160; x++) {

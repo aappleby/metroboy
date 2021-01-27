@@ -19,8 +19,8 @@ struct SpriteFetcher {
     d.dump_bitp   ("TOBU_SFETCH_S1_D2    : ", TOBU_SFETCH_S1p_D2  .state);
     d.dump_bitp   ("VONU_SFETCH_S1_D4    : ", VONU_SFETCH_S1p_D4  .state);
     d.dump_bitp   ("SEBA_SFETCH_S1_D5    : ", SEBA_SFETCH_S1p_D5  .state);
-    d.dump_slice2n("Temp A : ", &sprite_pix_a.REWO_SPRITE_DA0n, 8);
-    d.dump_slice2n("Temp B : ", &sprite_pix_b.PEFO_SPRITE_DB0n, 8);
+    //d.dump_slice2n("Temp A : ", &sprite_pix_a.REWO_SPRITE_DA0n, 8);
+    //d.dump_slice2n("Temp B : ", &sprite_pix_b.PEFO_SPRITE_DB0n, 8);
   }
 
   /*p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp; // ABCDEFGH Set on odd, cleared on even
@@ -35,9 +35,6 @@ struct SpriteFetcher {
   /*p29.TOBU*/ DFF17 TOBU_SFETCH_S1p_D2;       // xBxDxFxH
   /*p29.VONU*/ DFF17 VONU_SFETCH_S1p_D4;       // xBxDxFxH
   /*p29.SEBA*/ DFF17 SEBA_SFETCH_S1p_D5;       // AxCxExGx
-
-  SpritePixA sprite_pix_a;
-  SpritePixB sprite_pix_b;
 };
 
 //-----------------------------------------------------------------------------

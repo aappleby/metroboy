@@ -873,10 +873,10 @@ void GateBoy::store_sprite_line(SpriteStoreFlag store_flag) {
 void GateBoy::ly_to_sprite_line(wire FEPO_STORE_MATCHp) {
   SigIn SIG_GND = 0;
 
-  /*#p29.EBOS*/ wire EBOS_LY0n = not1(lcd.reg_ly.MUWY_LY0p.qp_new());
-  /* p29.DASA*/ wire DASA_LY1n = not1(lcd.reg_ly.MYRO_LY1p.qp_new());
-  /* p29.FUKY*/ wire FUKY_LY2n = not1(lcd.reg_ly.LEXA_LY2p.qp_new());
-  /* p29.FUVE*/ wire FUVE_LY3n = not1(lcd.reg_ly.LYDO_LY3p.qp_new());
+  /*#p29.EBOS*/ wire EBOS_LY0n = not1(reg_ly.MUWY_LY0p.qp_new());
+  /* p29.DASA*/ wire DASA_LY1n = not1(reg_ly.MYRO_LY1p.qp_new());
+  /* p29.FUKY*/ wire FUKY_LY2n = not1(reg_ly.LEXA_LY2p.qp_new());
+  /* p29.FUVE*/ wire FUVE_LY3n = not1(reg_ly.LYDO_LY3p.qp_new());
 
   /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n, oam_bus.oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND);
   /* p29.ENEF*/ auto _ENEF_YDIFF1 = add3(DASA_LY1n, oam_bus.oam_temp_a.XEGU_OAM_DA1p.qp_new(), _ERUC_YDIFF0.carry);

@@ -27,16 +27,16 @@ int main(int argc, char** argv) {
   auto start = timestamp();
 
 #ifdef USE_COMMIT
-  failures += t.test_reset_cart_vs_dump();
+  //failures += t.test_reset_cart_vs_dump();
 #endif
 
   //failures += t.test_fastboot_vs_slowboot();
   //failures += t.test_bootrom();
 
-  //failures += t.test_clk();
-  //failures += t.test_regs();
-  //failures += t.test_mem();
-  //failures += t.test_dma();
+  failures += t.test_clk();
+  failures += t.test_regs();
+  failures += t.test_mem();
+  failures += t.test_dma();
   failures += t.test_init();
   failures += t.test_ext_bus();
   failures += t.test_ppu();
@@ -1568,20 +1568,20 @@ int GateBoyTests::test_ppu() {
 
   // LY should increment every 114*8 phases after LCD enable, except on the last line.
   for (int i = 0; i < 153; i++) {
-    EXPECT_EQ(i, gb.lcd.reg_ly.get_old());
+    EXPECT_EQ(i, gb.reg_ly.get_old());
     gb.run_phases(114 * 8);
   }
 
   // LY is reset early on the last line, we should be at 0 now.
-  EXPECT_EQ(0, gb.lcd.reg_ly.get_old());
+  EXPECT_EQ(0, gb.reg_ly.get_old());
   gb.run_phases(114 * 8);
 
   // And we should be at 0 again
-  EXPECT_EQ(0, gb.lcd.reg_ly.get_old());
+  EXPECT_EQ(0, gb.reg_ly.get_old());
   gb.run_phases(114 * 8);
 
   // And now we should be at 1.
-  EXPECT_EQ(1, gb.lcd.reg_ly.get_old());
+  EXPECT_EQ(1, gb.reg_ly.get_old());
 
   if (!failures) LOG_B("Pass");
 #endif

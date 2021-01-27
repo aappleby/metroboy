@@ -24,7 +24,7 @@ wire GateBoy::ATEJ_LINE_RSTp_new() const {
 
 void GateBoy::tock_lcd(wire XYVO_y144p_old, DFF17 RUTU_x113p_old)
 {
-  /*#p21.POPU*/ lcd.POPU_VBLANKp.dff17(lcd.reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
+  /*#p21.POPU*/ lcd.POPU_VBLANKp.dff17(reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
 
   /*#p21.PURE*/ wire _PURE_LINE_ENDn_old = not1(RUTU_x113p_old.qp_old());
   /*#p21.SELA*/ wire _SELA_LINE_P908p_old = not1(_PURE_LINE_ENDn_old);
@@ -38,7 +38,7 @@ void GateBoy::tock_lcd(wire XYVO_y144p_old, DFF17 RUTU_x113p_old)
 
 void GateBoy::set_lcd_pin_ctrl() {
   /*#p21.SYGU*/ lcd.SYGU_LINE_STROBE.dff17(SONO_ABxxxxGH(), LYFE_VID_RSTn(), TEGY_STROBE());
-  /*#p21.RYNO*/ wire _RYNO = or2(lcd.SYGU_LINE_STROBE.qp_new(), lcd.reg_lx.RUTU_x113p.qp_new());
+  /*#p21.RYNO*/ wire _RYNO = or2(lcd.SYGU_LINE_STROBE.qp_new(), reg_lx.RUTU_x113p.qp_new());
   /*#p21.POGU*/ wire _POGU = not1(_RYNO);
   /*PIN_52*/ lcd.PIN_52_LCD_CNTRL.pin_out_dp(_POGU);
 }
@@ -64,7 +64,7 @@ void GateBoy::set_lcd_pin_flip(DFF17  TULU_DIV07p, DFF9 XONA_LCDC_LCDENn) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::set_lcd_pin_vsync() {
-  /*#p24.MEDA*/ lcd.MEDA_VSYNC_OUTn.dff17(lcd.reg_lx.NYPE_x113p.qn_new(), LYFE_VID_RSTn(), NERU_VSYNCp());
+  /*#p24.MEDA*/ lcd.MEDA_VSYNC_OUTn.dff17(reg_lx.NYPE_x113p.qn_new(), LYFE_VID_RSTn(), NERU_VSYNCp());
   /*#p24.MURE*/ wire _MURE_VSYNC = not1(lcd.MEDA_VSYNC_OUTn.qp_new());
   /*PIN_57*/ lcd.PIN_57_LCD_VSYNC.pin_out_dp(_MURE_VSYNC);
 }

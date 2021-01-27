@@ -648,15 +648,15 @@ struct GateBoy {
   }
 
   wire NERU_VSYNCp() const {
-    /*#p24.NERU*/ wire _NERU_VSYNCp = nor8(lcd.reg_ly.LAFO_LY7p.qp_new(), lcd.reg_ly.LOVU_LY4p.qp_new(), lcd.reg_ly.LYDO_LY3p.qp_new(), lcd.reg_ly.MUWY_LY0p.qp_new(), lcd.reg_ly.MYRO_LY1p.qp_new(), lcd.reg_ly.LEXA_LY2p.qp_new(), lcd.reg_ly.LEMA_LY5p.qp_new(), lcd.reg_ly.MATO_LY6p.qp_new());
+    /*#p24.NERU*/ wire _NERU_VSYNCp = nor8(reg_ly.LAFO_LY7p.qp_new(), reg_ly.LOVU_LY4p.qp_new(), reg_ly.LYDO_LY3p.qp_new(), reg_ly.MUWY_LY0p.qp_new(), reg_ly.MYRO_LY1p.qp_new(), reg_ly.LEXA_LY2p.qp_new(), reg_ly.LEMA_LY5p.qp_new(), reg_ly.MATO_LY6p.qp_new());
     return _NERU_VSYNCp;
   }
 
-  /*#p21.XYVO*/ wire XYVO_y144p_old() const { return and2(lcd.reg_ly.LOVU_LY4p.qp_old(), lcd.reg_ly.LAFO_LY7p.qp_old()); } // 128 + 16 = 144
-  /*#p21.XYVO*/ wire XYVO_y144p_new() const { return and2(lcd.reg_ly.LOVU_LY4p.qp_new(), lcd.reg_ly.LAFO_LY7p.qp_new()); } // 128 + 16 = 144
+  /*#p21.XYVO*/ wire XYVO_y144p_old() const { return and2(reg_ly.LOVU_LY4p.qp_old(), reg_ly.LAFO_LY7p.qp_old()); } // 128 + 16 = 144
+  /*#p21.XYVO*/ wire XYVO_y144p_new() const { return and2(reg_ly.LOVU_LY4p.qp_new(), reg_ly.LAFO_LY7p.qp_new()); } // 128 + 16 = 144
 
   wire PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(lcd.reg_lx.RUTU_x113p.qp_new());
+    /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(reg_lx.RUTU_x113p.qp_new());
     return _PURE_LINE_ENDn;
   }
 
@@ -671,8 +671,8 @@ struct GateBoy {
   //wire RUTU_x113p_new() const { return RUTU_x113p.qp_new(); }
   //wire RUTU_x113n_new() const { return RUTU_x113p.qn_new(); }
 
-  /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1(lcd.reg_lx.RUTU_x113p.qp_old()); }
-  /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1(lcd.reg_lx.RUTU_x113p.qp_new()); }
+  /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1(reg_lx.RUTU_x113p.qp_old()); }
+  /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1(reg_lx.RUTU_x113p.qp_new()); }
 
 
   /* p29.SAKY*/ wire SAKY_SFETCHn_old() const { return nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_old(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_old()); }
@@ -859,6 +859,9 @@ struct GateBoy {
   GateBoyOamBus  oam_bus;
   GateBoyZramBus zram_bus;
 
+  ExtDataLatch ext_data_latch;
+  ExtAddrLatch ext_addr_latch;
+
   GateBoyResetDebug rst;
   GateBoyClock      clk;
   GateBoyDiv        div;
@@ -870,8 +873,14 @@ struct GateBoy {
 
   GateBoySpriteStore   sprite_store;
   SpriteScanner sprite_scanner;
+
   SpriteFetcher sprite_fetcher;
+  SpritePixA sprite_pix_a;
+  SpritePixB sprite_pix_b;
+
   TileFetcher   tile_fetcher;
+  TileTempA tile_temp_a;
+  TileTempB tile_temp_b;
 
   RegLCDC reg_lcdc;
   RegStat reg_stat;
@@ -888,6 +897,14 @@ struct GateBoy {
   PixCount     pix_count;
   PixelPipes   pix_pipes;
   GateBoyLCD   lcd;
+
+  RegLX  reg_lx;
+  RegLY  reg_ly;
+  RegLYC reg_lyc;
+
+  RegBGP  reg_bgp;
+  RegOBP0 reg_obp0;
+  RegOBP1 reg_obp1;
 
   //----------
 

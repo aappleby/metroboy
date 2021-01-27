@@ -105,16 +105,16 @@ void GateBoy::tile_to_vram_addr(const BGScrollY scroll_y) {
   /*#p25.WAWE_WNY1_TO_VA02*/ new_bus.BUS_VRAM_A02n.tri6_nn(_XUCY_WIN_TILE_READn, win_map_y.VUJO_WIN_Y1.qp_new());
   /*#p25.WOLU_WNY2_TO_VA03*/ new_bus.BUS_VRAM_A03n.tri6_nn(_XUCY_WIN_TILE_READn, win_map_y.VYMU_WIN_Y2.qp_new());
 
-  /*#p25.VAPY_TEMP_TO_VA04*/ new_bus.BUS_VRAM_A04n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.RAWU_TILE_DB0p.qp_new());
-  /*#p25.SEZU_TEMP_TO_VA05*/ new_bus.BUS_VRAM_A05n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.POZO_TILE_DB1p.qp_new());
-  /*#p25.VEJY_TEMP_TO_VA06*/ new_bus.BUS_VRAM_A06n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.PYZO_TILE_DB2p.qp_new());
-  /*#p25.RUSA_TEMP_TO_VA07*/ new_bus.BUS_VRAM_A07n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.POXA_TILE_DB3p.qp_new());
-  /*#p25.ROHA_TEMP_TO_VA08*/ new_bus.BUS_VRAM_A08n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.PULO_TILE_DB4p.qp_new());
-  /*#p25.RESO_TEMP_TO_VA09*/ new_bus.BUS_VRAM_A09n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.POJU_TILE_DB5p.qp_new());
-  /*#p25.SUVO_TEMP_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.POWY_TILE_DB6p.qp_new());
-  /*#p25.TOBO_TEMP_TO_VA11*/ new_bus.BUS_VRAM_A11n.tri6_pn(NETA_BGW_TILE_READp(), tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.qp_new());
+  /*#p25.VAPY_TEMP_TO_VA04*/ new_bus.BUS_VRAM_A04n.tri6_pn(NETA_BGW_TILE_READp(), tile_temp_b.RAWU_TILE_DB0p.qp_new());
+  /*#p25.SEZU_TEMP_TO_VA05*/ new_bus.BUS_VRAM_A05n.tri6_pn(NETA_BGW_TILE_READp(), tile_temp_b.POZO_TILE_DB1p.qp_new());
+  /*#p25.VEJY_TEMP_TO_VA06*/ new_bus.BUS_VRAM_A06n.tri6_pn(NETA_BGW_TILE_READp(), tile_temp_b.PYZO_TILE_DB2p.qp_new());
+  /*#p25.RUSA_TEMP_TO_VA07*/ new_bus.BUS_VRAM_A07n.tri6_pn(NETA_BGW_TILE_READp(), tile_temp_b.POXA_TILE_DB3p.qp_new());
+  /*#p25.ROHA_TEMP_TO_VA08*/ new_bus.BUS_VRAM_A08n.tri6_pn(NETA_BGW_TILE_READp(), tile_temp_b.PULO_TILE_DB4p.qp_new());
+  /*#p25.RESO_TEMP_TO_VA09*/ new_bus.BUS_VRAM_A09n.tri6_pn(NETA_BGW_TILE_READp(), tile_temp_b.POJU_TILE_DB5p.qp_new());
+  /*#p25.SUVO_TEMP_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_pn(NETA_BGW_TILE_READp(), tile_temp_b.POWY_TILE_DB6p.qp_new());
+  /*#p25.TOBO_TEMP_TO_VA11*/ new_bus.BUS_VRAM_A11n.tri6_pn(NETA_BGW_TILE_READp(), tile_temp_b.PYJU_TILE_DB7p.qp_new());
 
-  /*#p25.VUZA*/ wire _VUZA_TILE_BANKp = nor2(tile_fetcher.tile_temp_b.PYJU_TILE_DB7p.qp_new(), reg_lcdc.WEXU_LCDC_BGTILEn.qn_new());
+  /*#p25.VUZA*/ wire _VUZA_TILE_BANKp = nor2(tile_temp_b.PYJU_TILE_DB7p.qp_new(), reg_lcdc.WEXU_LCDC_BGTILEn.qn_new());
   /*#p25.VURY_BANK_TO_VA12*/ new_bus.BUS_VRAM_A12n.tri6_pn(NETA_BGW_TILE_READp(), _VUZA_TILE_BANKp);
 }
 

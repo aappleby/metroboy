@@ -46,7 +46,6 @@ void GateBoy::dma_addr_to_vram_addr() {
 // BG map read address
 
 void GateBoy::scroll_to_vram_addr(BGScrollX scroll_x, BGScrollY scroll_y) {
-  SigIn SIG_VCC = 1;
   /* p26.ACEN*/ wire _ACEN_BG_MAP_READp = and2(POTU_BGW_MAP_READp(), AXAD_WIN_MODEn());
   /* p26.BAFY*/ wire _BAFY_BG_MAP_READn = not1(_ACEN_BG_MAP_READp);
   /* p26.AXEP_MX00_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_BAFY_BG_MAP_READn,  scroll_x.BABE_MAP_X0.sum);
@@ -69,7 +68,6 @@ void GateBoy::scroll_to_vram_addr(BGScrollX scroll_x, BGScrollY scroll_y) {
 
 
 void GateBoy::win_to_vram_addr() {
-  SigIn SIG_VCC = 1;
   /*#p25.XEZE*/ wire _XEZE_WIN_MAP_READp = and2(POTU_BGW_MAP_READp(), PORE_WIN_MODEp());
   /*#p25.WUKO*/ wire _WUKO_WIN_MAP_READn = not1(_XEZE_WIN_MAP_READp);
   /*#p27.XEJA_WX03_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_WUKO_WIN_MAP_READn, win_map_x.WYKA_WIN_X3.qp_new());
@@ -121,8 +119,6 @@ void GateBoy::tile_to_vram_addr(const BGScrollY scroll_y) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::sprite_to_vram_addr() {
-  SigIn SIG_GND = 0;
-
   /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1(oam_bus.oam_temp_b.YZOS_OAM_DB6p.qp_new());
   /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not1(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
 
@@ -297,7 +293,6 @@ void GateBoy::set_vram_pin_cs() {
 }
 
 void GateBoy::set_vram_pin_wr() {
-  SigIn SIG_VCC = 1;
   ///* p25.SUDO*/ wire _SUDO_MWRp = not1(/*vram_bus.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
   /* p25.SUDO*/ wire _SUDO_MWRp = not1(SIG_VCC); // Ignoring debug stuff for now
   /* p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp(), _SUDO_MWRp, TUJA_CPU_VRAM_WRp());

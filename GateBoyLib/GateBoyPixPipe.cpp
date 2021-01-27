@@ -128,8 +128,6 @@ void GateBoy::tock_fine_scroll(wire TYFA_CLKPIPE_odd, wire TEVO_WIN_FETCH_TRIGp)
 
 void GateBoy::tock_bgw_pipe(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 {
-  SigIn SIG_GND = 0;
-
   {
     /* p32.LOZE*/ wire _LOZE_PIPE_A_LOADp = not1(NYXU_BFETCH_RSTn);
     /* p32.LAKY*/ wire _LAKY_BG_PIX_SET0 = nand2(_LOZE_PIPE_A_LOADp, tile_temp_a.LEGU_TILE_DA0n.qn_new());
@@ -213,8 +211,6 @@ void GateBoy::tock_bgw_pipe(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 
 void GateBoy::tock_sprite_pipe(wire SACU_CLKPIPE_evn)
 {
-  SigIn SIG_GND = 0;
-
   /* p29.XEFY*/ wire _XEFY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp());
   /* p34.MEFU*/ wire _MEFU_SPRITE_MASK0n = or3(_XEFY_SPRITE_DONEn, pix_pipes.NYLU_SPR_PIPE_B0.qp_old(), pix_pipes.NURO_SPR_PIPE_A0.qp_old());
   /* p34.MEVE*/ wire _MEVE_SPRITE_MASK1n = or3(_XEFY_SPRITE_DONEn, pix_pipes.PEFU_SPR_PIPE_B1.qp_old(), pix_pipes.MASO_SPR_PIPE_A1.qp_old());
@@ -317,8 +313,6 @@ void GateBoy::tock_sprite_pipe(wire SACU_CLKPIPE_evn)
 
 void GateBoy::tock_mask_pipe(wire SACU_CLKPIPE_evn)
 {
-  SigIn SIG_VCC = 1;
-
   /* p29.XEFY*/ wire _XEFY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp());
   /* p34.MEFU*/ wire _MEFU_SPRITE_MASK0n = or3(_XEFY_SPRITE_DONEn, pix_pipes.NYLU_SPR_PIPE_B0.qp_old(), pix_pipes.NURO_SPR_PIPE_A0.qp_old());
   /* p34.MEVE*/ wire _MEVE_SPRITE_MASK1n = or3(_XEFY_SPRITE_DONEn, pix_pipes.PEFU_SPR_PIPE_B1.qp_old(), pix_pipes.MASO_SPR_PIPE_A1.qp_old());
@@ -381,8 +375,6 @@ void GateBoy::tock_mask_pipe(wire SACU_CLKPIPE_evn)
 
 void GateBoy::tock_pal_pipe(wire SACU_CLKPIPE_evn)
 {
-  SigIn SIG_GND = 0;
-
   /* p29.XEFY*/ wire _XEFY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp());
   /* p34.MEFU*/ wire _MEFU_SPRITE_MASK0n = or3(_XEFY_SPRITE_DONEn, pix_pipes.NYLU_SPR_PIPE_B0.qp_old(), pix_pipes.NURO_SPR_PIPE_A0.qp_old());
   /* p34.MEVE*/ wire _MEVE_SPRITE_MASK1n = or3(_XEFY_SPRITE_DONEn, pix_pipes.PEFU_SPR_PIPE_B1.qp_old(), pix_pipes.MASO_SPR_PIPE_A1.qp_old());

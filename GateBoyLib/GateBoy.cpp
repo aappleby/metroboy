@@ -11,6 +11,9 @@
 //#pragma warning(disable:4189) // local variable unused
 #pragma warning(disable:4100)
 
+const wire GateBoy::SIG_VCC = 1;
+const wire GateBoy::SIG_GND = 0;
+
 void GateBoy::dump(Dumper& d) const {
   const char* phases[] = {
     "\002A_______\001",
@@ -476,11 +479,6 @@ void GateBoy::next_phase() {
 
 void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
-
-  /*SIG_VCC*/ SigIn SIG_VCC;
-  /*SIG_GND*/ SigIn SIG_GND;
-  SIG_VCC.sig_in(1);
-  SIG_GND.sig_in(0);
 
   //-----------------------------------------------------------------------------
   // We need the sprite match result from the previous cycle, so we recalculate it here. :/

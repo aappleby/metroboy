@@ -5,8 +5,6 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 SpriteDeltaY GateBoy::sub_sprite_y() {
-  SigIn SIG_GND = 0;
-
   /*#p29.EBOS*/ wire EBOS_LY0n = not1(reg_ly.MUWY_LY0p.qp_new());
   /* p29.DASA*/ wire DASA_LY1n = not1(reg_ly.MYRO_LY1p.qp_new());
   /* p29.FUKY*/ wire FUKY_LY2n = not1(reg_ly.LEXA_LY2p.qp_new());
@@ -80,8 +78,6 @@ void GateBoy::tock_pix_counter(wire SACU_CLKPIPE_evn) {
 //------------------------------------------------------------------------------------------------------------------------
 
 BGScrollX GateBoy::add_scx() {
-  SigIn SIG_GND = 0;
-
   /*#p26.ATAD*/ auto _ATAD_TILE_X0 = add3(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), SIG_GND);
   /* p26.BEHU*/ auto _BEHU_TILE_X1 = add3(pix_count.SAVY_PX1p.qp_new(), reg_scx.DUZU_SCX1n.qn_new(), _ATAD_TILE_X0.carry);
   /* p26.APYH*/ auto _APYH_TILE_X2 = add3(pix_count.XODU_PX2p.qp_new(), reg_scx.CYXU_SCX2n.qn_new(), _BEHU_TILE_X1.carry);
@@ -104,8 +100,6 @@ BGScrollX GateBoy::add_scx() {
 }
 
 BGScrollY GateBoy::add_scy() {
-  SigIn SIG_GND = 0;
-
   /*#p26.FAFO*/ auto _FAFO_TILE_Y0 = add3(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), SIG_GND);
   /* p26.EMUX*/ auto _EMUX_TILE_Y1 = add3(reg_ly.MYRO_LY1p.qp_new(), reg_scy.FYMO_SCY1n.qn_new(), _FAFO_TILE_Y0.carry);
   /* p26.ECAB*/ auto _ECAB_TILE_Y2 = add3(reg_ly.LEXA_LY2p.qp_new(), reg_scy.FEZU_SCY2n.qn_new(), _EMUX_TILE_Y1.carry);
@@ -578,7 +572,6 @@ void GateBoy::store_tile_temp_a()
 
 void GateBoy::store_tile_temp_b()
 {
-  SigIn SIG_VCC = 1;
   // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
   /* p32.RAWU*/ tile_temp_b.RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D00p.qp_old());
   /* p32.POZO*/ tile_temp_b.POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn(), SIG_VCC, old_bus.BUS_VRAM_D01p.qp_old());

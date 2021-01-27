@@ -180,7 +180,6 @@ void GateBoy::dma_to_oam_addr_bus() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::sprite_index_to_oam_addr_bus(){
-  SigIn SIG_VCC = 1;
   // OAM address from sprite fetcher
   /* p28.AJON*/ wire _AJON_RENDERINGp = and2(BOGE_DMA_RUNNINGn(), XYMU_RENDERINGn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma
   /* p28.BETE*/ wire _BETE_SPR_I_TO_OAM_An = not1(_AJON_RENDERINGp);
@@ -198,7 +197,6 @@ void GateBoy::sprite_index_to_oam_addr_bus(){
 
 void GateBoy::scan_index_to_oam_addr_bus() {
   // OAM address from sprite scanner
-  SigIn SIG_GND = 0;
   /* p28.APAR*/ wire _APAR_SCANNINGn = not1(ACYL_SCANNINGp());
   /* p28.GEFY_SCANX_TO_OA0*/ new_bus.BUS_OAM_A00n.tri6_nn(_APAR_SCANNINGn, SIG_GND);
   /* p28.WUWE_SCANX_TO_OA1*/ new_bus.BUS_OAM_A01n.tri6_nn(_APAR_SCANNINGn, SIG_GND);

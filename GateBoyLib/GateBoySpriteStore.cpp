@@ -392,7 +392,6 @@ SpriteMatchFlag GateBoy::get_match_flags_new(wire _AROR_MATCH_ENp_new) {
 //------------------------------------------------------------------------------------------------------------------------
 
 SpriteFirstMatch GateBoy::get_first_match(SpriteMatchFlag match_flag) const {
-  SigIn SIG_GND = 0;
   /* p29.WEFU*/ wire _WEFU_STORE0_MATCH = not1(match_flag.YDUG_STORE0_MATCHn);
   /* p29.GAJA*/ wire _GAJA_STORE1_MATCH = not1(match_flag.DYDU_STORE1_MATCHn);
   /* p29.GUPO*/ wire _GUPO_STORE2_MATCH = not1(match_flag.DEGO_STORE2_MATCHn);
@@ -871,8 +870,6 @@ void GateBoy::store_sprite_line(SpriteStoreFlag store_flag) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::ly_to_sprite_line(wire FEPO_STORE_MATCHp) {
-  SigIn SIG_GND = 0;
-
   /*#p29.EBOS*/ wire EBOS_LY0n = not1(reg_ly.MUWY_LY0p.qp_new());
   /* p29.DASA*/ wire DASA_LY1n = not1(reg_ly.MYRO_LY1p.qp_new());
   /* p29.FUKY*/ wire FUKY_LY2n = not1(reg_ly.LEXA_LY2p.qp_new());

@@ -16,8 +16,6 @@ void SpriteFetcher::reset_to_cart() {
 }
 
 void GateBoy::tock_sprite_fetcher(wire TEKY_SFETCH_REQp_old) {
-  SigIn SIG_VCC = 1;
-
   /* p27.SUDA*/ sprite_fetcher.SUDA_SFETCH_REQp.dff17(LAPE_AxCxExGx(), SIG_VCC, sprite_fetcher.SOBU_SFETCH_REQp.qp_old());
   /* p27.SOBU*/ sprite_fetcher.SOBU_SFETCH_REQp.dff17(TAVA_xBxDxFxH(), SIG_VCC, TEKY_SFETCH_REQp_old);
 

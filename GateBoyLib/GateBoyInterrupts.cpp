@@ -109,7 +109,6 @@ void GateBoy::tock_interrupts(wire WODU_HBLANKp)
   /* p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  _ALUR_SYS_RSTn);
   /* p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  _ALUR_SYS_RSTn);
 
-  SigIn SIG_VCC = 1;
   /* p02.LOPE*/ interrupts.LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp,                   _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, SIG_VCC);
   /* p02.LALU*/ interrupts.LALU_FF0F_D1p.dff22(_VOTY_INT_STATp,                     _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, SIG_VCC);
   /* p02.NYBO*/ interrupts.NYBO_FF0F_D2p.dff22(timer.MOBA_TIMER_OVERFLOWp.qp_new(), _PYHU_FF0F_SET2n, _PYGA_FF0F_RST2n, SIG_VCC);

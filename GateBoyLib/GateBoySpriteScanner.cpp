@@ -16,8 +16,6 @@ wire GateBoy::AVAP_SCAN_DONE_TRIGp() {
 }
 
 void GateBoy::tock_sprite_scanner() {
-  SigIn SIG_VCC = 1;
-
   /*#p29.DOBA*/ sprite_scanner.DOBA_SCAN_DONE_Bp.dff17(ALET_xBxDxFxH(), BAGY_LINE_RSTn_new(), sprite_scanner.BYBA_SCAN_DONE_Ap.qp_old());
   /*#p29.BYBA*/ sprite_scanner.BYBA_SCAN_DONE_Ap.dff17(XUPY_ABxxEFxx(), BAGY_LINE_RSTn_new(), FETO_SCAN_DONEp_old());
 

@@ -8,8 +8,6 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_joypad() {
-  SigIn SIG_GND = 0;
-
   // has to be new_bus or sim isn't stable.
 
   /* p10.BYKO*/ wire BYKO_A05n = not1(new_bus.BUS_CPU_A05p.qp_any());

@@ -33,6 +33,9 @@
 #pragma pack(push, 1)
 struct GateBoy {
 
+  static const wire SIG_VCC;
+  static const wire SIG_GND;
+
   void dump(Dumper& d) const;
 
   void reset_to_bootrom(bool fastboot);

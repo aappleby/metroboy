@@ -48,7 +48,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 0
+#if 1
   // regenerate post-bootrom dump
   gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
   gb_thread.reset_to_bootrom();
@@ -109,7 +109,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   gb_thread.gb->run_phases(120);
 #endif
 
-#if 1
+#if 0
   load_flat_dump("roms/LinksAwakening_dog.dump");
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;

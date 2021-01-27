@@ -33,10 +33,10 @@ int main(int argc, char** argv) {
   //failures += t.test_fastboot_vs_slowboot();
   //failures += t.test_bootrom();
 
-  failures += t.test_clk();
-  failures += t.test_regs();
-  failures += t.test_mem();
-  failures += t.test_dma();
+  //failures += t.test_clk();
+  //failures += t.test_regs();
+  //failures += t.test_mem();
+  //failures += t.test_dma();
   failures += t.test_init();
   failures += t.test_ext_bus();
   failures += t.test_ppu();
@@ -858,10 +858,12 @@ int GateBoyTests::test_init() {
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset_states value");  // 00 after bootrom
+
   EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset_states value");  // FF after bootrom
   EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset_states value");  // FC after bootrom
   EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset_states value"); // 9F after bootrom
   EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
+
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
   EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
 

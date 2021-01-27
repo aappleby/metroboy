@@ -426,8 +426,12 @@ void DieDB::sanity_check() {
     CHECK_P(prev_cell);
     CHECK_P(next_cell);
 
-    if (next_cell->cell_type == DieCellType::BUS)    CHECK_P(prev_cell->cell_type == DieCellType::TRIBUF);
-    if (prev_cell->cell_type == DieCellType::TRIBUF) CHECK_P(next_cell->cell_type == DieCellType::BUS);
+    if (next_cell->cell_type == DieCellType::BUS)    {
+      CHECK_P(prev_cell->cell_type == DieCellType::TRIBUF);
+    }
+    if (prev_cell->cell_type == DieCellType::TRIBUF) {
+      CHECK_P(next_cell->cell_type == DieCellType::BUS);
+    }
 
     CHECK_P(std::find(prev_cell->output_ports.begin(),
                       prev_cell->output_ports.end(),

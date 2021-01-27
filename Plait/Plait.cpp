@@ -317,6 +317,8 @@ void Plait::delete_node(PlaitNode* dead_node) {
 //--------------------------------------------------------------------------------
 
 void Plait::check_dead(PlaitNode* dead_leaf) {
+  (void)dead_leaf;
+
   for (auto& [tag, plait_cell] : cell_map) {
 
     CHECK_P(dead_leaf != plait_cell->core_node);
@@ -331,6 +333,7 @@ void Plait::check_dead(PlaitNode* dead_leaf) {
 
   //for (auto& [trace_key, plait_trace] : trace_map_old) {
   for (auto& plait_trace : traces) {
+    (void)plait_trace;
     CHECK_P(plait_trace->input_node  != dead_leaf);
     CHECK_P(plait_trace->output_node != dead_leaf);
   }
@@ -531,6 +534,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
 
   //for (auto& [trace_key, plait_trace] : trace_map_old) {
   for (auto& plait_trace : traces) {
+    (void)plait_trace;
     //CHECK_P(plait_trace->die_trace->plait_trace == plait_trace);
     CHECK_P(plait_trace->output_node);
     CHECK_P(plait_trace->input_node);

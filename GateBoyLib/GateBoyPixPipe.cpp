@@ -10,6 +10,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
+#if 0
 void GateBoy::tock_window(DFF9 WYMO_LCDC_WINENn_old) {
   /*#p27.NAZE*/ wire _NAZE_WY_MATCH0p = xnor2(reg_wy.NESO_WY0n.qn_old(), lcd.reg_ly.MUWY_LY0p.qp_old());
   /* p27.PEBO*/ wire _PEBO_WY_MATCH1p = xnor2(reg_wy.NYRO_WY1n.qn_old(), lcd.reg_ly.MYRO_LY1p.qp_old());
@@ -101,6 +102,7 @@ void GateBoy::tock_window(DFF9 WYMO_LCDC_WINENn_old) {
   /* p23.MULY_WX6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.MUVO_WX6n.qp_new());
   /* p23.MARA_WX7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.NUKU_WX7n.qp_new());
 }
+#endif
 
 //------------------------------------------------------------------------------------------------------------------------
 

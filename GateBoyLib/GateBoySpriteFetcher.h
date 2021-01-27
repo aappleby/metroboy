@@ -6,7 +6,18 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteFetcher {
-  void reset_to_cart();
+  void reset_to_cart() {
+    TAKA_SFETCH_RUNNINGp.state = 0b00011000;
+    SOBU_SFETCH_REQp.state = 0b00011000;
+    SUDA_SFETCH_REQp.state = 0b00011010;
+    TOXE_SFETCH_S0p.state = 0b00011011;
+    TULY_SFETCH_S1p.state = 0b00011000;
+    TESE_SFETCH_S2p.state = 0b00011011;
+    TYFO_SFETCH_S0p_D1.state = 0b00011011;
+    TOBU_SFETCH_S1p_D2.state = 0b00011000;
+    VONU_SFETCH_S1p_D4.state = 0b00011000;
+    SEBA_SFETCH_S1p_D5.state = 0b00011010;
+  }
 
   void dump(Dumper& d) {
     d.dump_bitp   ("TAKA_SFETCH_RUNNINGp : ", TAKA_SFETCH_RUNNINGp.state);

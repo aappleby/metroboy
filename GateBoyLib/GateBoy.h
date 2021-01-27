@@ -260,9 +260,6 @@ struct GateBoy {
 
   void tock_tile_fetcher(wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
 
-  wire LOMA_LATCH_TILE_DAn() const;
-  wire LABU_LATCH_TILE_DBn() const;
-
   void tock_reset(DFF17 UPOF_DIV15p);
 
   void set_lcd_pin_ctrl();
@@ -736,22 +733,6 @@ struct GateBoy {
     /* p24.LOBY*/ wire _LOBY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
     /* p29.SYCU*/ wire _SYCU_SFETCH_S0pe = nor3(TYTU_SFETCH_S0n(), _LOBY_RENDERINGn, sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
     return _SYCU_SFETCH_S0pe;
-  }
-
-  wire XADO_STORE_SPRITE_An() const {
-    /*#p29.TOPU*/ wire _TOPU_STORE_SPRITE_Ap = and2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), SYCU_SFETCH_S0pe());
-    /*#p29.VYWA*/ wire _VYWA_STORE_SPRITE_An = not1(_TOPU_STORE_SPRITE_Ap);
-    /*#p29.WENY*/ wire _WENY_STORE_SPRITE_Ap = not1(_VYWA_STORE_SPRITE_An);
-    /*#p29.XADO*/ wire _XADO_STORE_SPRITE_An = not1(_WENY_STORE_SPRITE_Ap);
-    return _XADO_STORE_SPRITE_An;
-  }
-
-  wire PUCO_STORE_SPRITE_Bn() const {
-    /*#p29.RACA*/ wire _RACA_STORE_SPRITE_Bp = and2(sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new(), SYCU_SFETCH_S0pe());
-    /*#p29.PEBY*/ wire _PEBY_STORE_SPRITE_Bn = not1(_RACA_STORE_SPRITE_Bp);
-    /*#p29.NYBE*/ wire _NYBE_STORE_SPRITE_Bp = not1(_PEBY_STORE_SPRITE_Bn);
-    /*#p29.PUCO*/ wire _PUCO_STORE_SPRITE_Bn = not1(_NYBE_STORE_SPRITE_Bp);
-    return _PUCO_STORE_SPRITE_Bn;
   }
 
   /*#p29.XUQU*/ wire XUQU_SPRITE_AB() const { return not1(sprite_fetcher.VONU_SFETCH_S1p_D4.qn_new()); }

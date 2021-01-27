@@ -147,14 +147,6 @@ void GateBoy::copy_addr_latch_to_pins()
   /*PIN_13*/ ext_bus.PIN_13_A12.pin_out_hilo(_LUCE, _LOSO);
   /*PIN_14*/ ext_bus.PIN_14_A13.pin_out_hilo(_LABE, _LEVA);
   /*PIN_15*/ ext_bus.PIN_15_A14.pin_out_hilo(_PUHE, _PAHY);
-
-  // A15 is "special"
-  /* p08.SOBY*/ wire _SOBY_A15n = nor2 (new_bus.BUS_CPU_A15p.qp_new(), TUTU_READ_BOOTROMp());
-  /* p08.SEPY*/ wire _SEPY_A15p = nand2(cpu_bus.ABUZ_EXT_RAM_CS_CLK, _SOBY_A15n);
-  /* p08.TAZY*/ wire _TAZY_A15p = mux2p (LUMA_DMA_CARTp(), dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
-  /* p08.SUZE*/ wire _SUZE_A15n = nand2(_TAZY_A15p, RYCA_MODE_DBG2n());
-  /* p08.RULO*/ wire _RULO_A15n = nor2 (_TAZY_A15p, UNOR_MODE_DBG2p());
-  /*PIN_16*/ ext_bus.PIN_16_A15.pin_out_hilo(_SUZE_A15n, _RULO_A15n);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

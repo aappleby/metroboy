@@ -7,8 +7,7 @@
 ///* p01.ULUR*/ wire _ULUR_DIV_06_clknew = /*mux2p(FF60_1, _BOGA_Axxxxxxx,*/ TAMA_DIV05p.qn_new() /*)*/;
 ///* p01.UGOT*/ UGOT_DIV06p.dff17_clk(_ULUR_DIV_06_clknew,  UGOT_DIV06p.qn_old());
 
-void GateBoy::reg_div_tock()
-{
+void GateBoy::reg_div_tock() {
   /* p01.TAPE*/ wire _TAPE_FF04_WRp = and4(cpu_bus.TAPU_CPU_WRp, new_bus.RYFO_FF04_FF07p(), new_bus.TOLA_A01n(), new_bus.TOVY_A00n());
   /* p01.UFOL*/ wire _UFOL_DIV_RSTn = nor3(UCOB_CLKBADp(), rst.PIN_71_RST.qp_new(), _TAPE_FF04_WRp);
 
@@ -32,8 +31,7 @@ void GateBoy::reg_div_tock()
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::reg_div_read()
-{
+void GateBoy::reg_div_read() {
   /* p01.UMEK*/ wire _UMEK_DIV06n = not1(div.UGOT_DIV06p.qp_new());
   /* p01.UREK*/ wire _UREK_DIV07n = not1(div.TULU_DIV07p.qp_new());
   /* p01.UTOK*/ wire _UTOK_DIV08n = not1(div.TUGO_DIV08p.qp_new());
@@ -111,9 +109,7 @@ void GateBoy::reg_tac_write() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_timer()
-{
-
+void GateBoy::tock_timer() {
   /*#p03.MERY*/ wire _MERY_TIMER_OVERFLOWp_old = nor2(timer.NUGA_TIMA7p.qp_old(), timer.NYDU_TIMA7p_DELAY.qn_old());
   /*#p03.MOBA*/ timer.MOBA_TIMER_OVERFLOWp.dff17(BOGA_Axxxxxxx(), ALUR_SYS_RSTn(), _MERY_TIMER_OVERFLOWp_old);
 

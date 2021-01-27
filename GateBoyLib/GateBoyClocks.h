@@ -28,17 +28,6 @@ struct GateBoyClock {
     SIG_CPU_BOGA_Axxxxxxx.state = 0b00011001;
   }
 
-  void dump(Dumper& d) {
-    d.dump_bitp("AFUR_xxxxEFGHp : ", AFUR_xxxxEFGHp.state);
-    d.dump_bitp("ALEF_AxxxxFGHp : ", ALEF_AxxxxFGHp.state);
-    d.dump_bitp("APUK_ABxxxxGHp : ", APUK_ABxxxxGHp.state);
-    d.dump_bitp("ADYK_ABCxxxxHp : ", ADYK_ABCxxxxHp.state);
-    d("\n");
-    d.dump_bitp("WUVU_ABxxEFxxp : ", WUVU_ABxxEFxx.state);
-    d.dump_bitp("VENA_xxCDEFxxp : ", VENA_xxCDEFxx.state);
-    d.dump_bitp("WOSU_AxxDExxHp : ", WOSU_AxxDExxH.state);
-  }
-
   /* p01.ANOS*/ Gate ANOS; // NAND latch deglitcher
   /* p01.AVET*/ Gate AVET; // NAND latch deglitcher
 

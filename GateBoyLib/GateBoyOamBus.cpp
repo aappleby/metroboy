@@ -11,23 +11,23 @@ void GateBoy::latch_oam_data_bus()
   /*#p28.ASYT*/ wire _ASYT_OAM_OEn = and3(_AJEP_SCAN_OAM_LATCHn, XUJA_SPR_OAM_LATCHn(), _BOTA_OAM_OEn); // def and
   /*#p28.BODE*/ wire _BODE_OAM_OEp = not1(_ASYT_OAM_OEn);
 
-  /* p29.YDYV*/ oam_bus.oam_latch_a.YDYV_OAM_LATCH_DA0n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA00n.qp_new());
-  /* p29.YCEB*/ oam_bus.oam_latch_a.YCEB_OAM_LATCH_DA1n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA01n.qp_new());
-  /* p29.ZUCA*/ oam_bus.oam_latch_a.ZUCA_OAM_LATCH_DA2n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA02n.qp_new());
-  /* p29.WONE*/ oam_bus.oam_latch_a.WONE_OAM_LATCH_DA3n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA03n.qp_new());
-  /* p29.ZAXE*/ oam_bus.oam_latch_a.ZAXE_OAM_LATCH_DA4n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA04n.qp_new());
-  /* p29.XAFU*/ oam_bus.oam_latch_a.XAFU_OAM_LATCH_DA5n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA05n.qp_new());
-  /* p29.YSES*/ oam_bus.oam_latch_a.YSES_OAM_LATCH_DA6n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA06n.qp_new());
-  /* p29.ZECA*/ oam_bus.oam_latch_a.ZECA_OAM_LATCH_DA7n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA07n.qp_new());
+  /* p29.YDYV*/ oam_latch_a.YDYV_OAM_LATCH_DA0n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA00n.qp_new());
+  /* p29.YCEB*/ oam_latch_a.YCEB_OAM_LATCH_DA1n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA01n.qp_new());
+  /* p29.ZUCA*/ oam_latch_a.ZUCA_OAM_LATCH_DA2n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA02n.qp_new());
+  /* p29.WONE*/ oam_latch_a.WONE_OAM_LATCH_DA3n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA03n.qp_new());
+  /* p29.ZAXE*/ oam_latch_a.ZAXE_OAM_LATCH_DA4n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA04n.qp_new());
+  /* p29.XAFU*/ oam_latch_a.XAFU_OAM_LATCH_DA5n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA05n.qp_new());
+  /* p29.YSES*/ oam_latch_a.YSES_OAM_LATCH_DA6n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA06n.qp_new());
+  /* p29.ZECA*/ oam_latch_a.ZECA_OAM_LATCH_DA7n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DA07n.qp_new());
 
-  /*#p31.XYKY*/ oam_bus.oam_latch_b.XYKY_OAM_LATCH_DB0n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB00n.qp_new());
-  /* p31.YRUM*/ oam_bus.oam_latch_b.YRUM_OAM_LATCH_DB1n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB01n.qp_new());
-  /* p31.YSEX*/ oam_bus.oam_latch_b.YSEX_OAM_LATCH_DB2n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB02n.qp_new());
-  /* p31.YVEL*/ oam_bus.oam_latch_b.YVEL_OAM_LATCH_DB3n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB03n.qp_new());
-  /* p31.WYNO*/ oam_bus.oam_latch_b.WYNO_OAM_LATCH_DB4n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB04n.qp_new());
-  /* p31.CYRA*/ oam_bus.oam_latch_b.CYRA_OAM_LATCH_DB5n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB05n.qp_new());
-  /* p31.ZUVE*/ oam_bus.oam_latch_b.ZUVE_OAM_LATCH_DB6n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB06n.qp_new());
-  /* p31.ECED*/ oam_bus.oam_latch_b.ECED_OAM_LATCH_DB7n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB07n.qp_new());
+  /*#p31.XYKY*/ oam_latch_b.XYKY_OAM_LATCH_DB0n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB00n.qp_new());
+  /* p31.YRUM*/ oam_latch_b.YRUM_OAM_LATCH_DB1n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB01n.qp_new());
+  /* p31.YSEX*/ oam_latch_b.YSEX_OAM_LATCH_DB2n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB02n.qp_new());
+  /* p31.YVEL*/ oam_latch_b.YVEL_OAM_LATCH_DB3n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB03n.qp_new());
+  /* p31.WYNO*/ oam_latch_b.WYNO_OAM_LATCH_DB4n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB04n.qp_new());
+  /* p31.CYRA*/ oam_latch_b.CYRA_OAM_LATCH_DB5n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB05n.qp_new());
+  /* p31.ZUVE*/ oam_latch_b.ZUVE_OAM_LATCH_DB6n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB06n.qp_new());
+  /* p31.ECED*/ oam_latch_b.ECED_OAM_LATCH_DB7n.tp_latchn(_BODE_OAM_OEp, new_bus.BUS_OAM_DB07n.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -44,25 +44,25 @@ void GateBoy::oam_latch_to_cpu()
 
   /* p28.GUKO*/ wire _GUKO_OBL_TO_CBDp = and3(LEKO_CPU_RDp(), _AMAB_CPU_OAM_ENp, _WAFO_OAM_A0n);
   /* p28.WUME*/ wire _WUME_OBL_TO_CBDn = not1(_GUKO_OBL_TO_CBDp);
-  /* p29.YFAP_OLA_TO_CBD0*/ new_bus.BUS_CPU_D00p.tri10_np(_WUME_OBL_TO_CBDn, oam_bus.oam_latch_a.YDYV_OAM_LATCH_DA0n.qn_new());
-  /* p29.XELE_OLA_TO_CBD1*/ new_bus.BUS_CPU_D01p.tri10_np(_WUME_OBL_TO_CBDn, oam_bus.oam_latch_a.YCEB_OAM_LATCH_DA1n.qn_new());
-  /* p29.YPON_OLA_TO_CBD2*/ new_bus.BUS_CPU_D02p.tri10_np(_WUME_OBL_TO_CBDn, oam_bus.oam_latch_a.ZUCA_OAM_LATCH_DA2n.qn_new());
-  /* p29.XUVO_OLA_TO_CBD3*/ new_bus.BUS_CPU_D03p.tri10_np(_WUME_OBL_TO_CBDn, oam_bus.oam_latch_a.WONE_OAM_LATCH_DA3n.qn_new());
-  /* p29.ZYSA_OLA_TO_CBD4*/ new_bus.BUS_CPU_D04p.tri10_np(_WUME_OBL_TO_CBDn, oam_bus.oam_latch_a.ZAXE_OAM_LATCH_DA4n.qn_new());
-  /* p29.YWEG_OLA_TO_CBD5*/ new_bus.BUS_CPU_D05p.tri10_np(_WUME_OBL_TO_CBDn, oam_bus.oam_latch_a.XAFU_OAM_LATCH_DA5n.qn_new());
-  /* p29.XABU_OLA_TO_CBD6*/ new_bus.BUS_CPU_D06p.tri10_np(_WUME_OBL_TO_CBDn, oam_bus.oam_latch_a.YSES_OAM_LATCH_DA6n.qn_new());
-  /* p29.YTUX_OLA_TO_CBD7*/ new_bus.BUS_CPU_D07p.tri10_np(_WUME_OBL_TO_CBDn, oam_bus.oam_latch_a.ZECA_OAM_LATCH_DA7n.qn_new());
+  /* p29.YFAP_OLA_TO_CBD0*/ new_bus.BUS_CPU_D00p.tri10_np(_WUME_OBL_TO_CBDn, oam_latch_a.YDYV_OAM_LATCH_DA0n.qn_new());
+  /* p29.XELE_OLA_TO_CBD1*/ new_bus.BUS_CPU_D01p.tri10_np(_WUME_OBL_TO_CBDn, oam_latch_a.YCEB_OAM_LATCH_DA1n.qn_new());
+  /* p29.YPON_OLA_TO_CBD2*/ new_bus.BUS_CPU_D02p.tri10_np(_WUME_OBL_TO_CBDn, oam_latch_a.ZUCA_OAM_LATCH_DA2n.qn_new());
+  /* p29.XUVO_OLA_TO_CBD3*/ new_bus.BUS_CPU_D03p.tri10_np(_WUME_OBL_TO_CBDn, oam_latch_a.WONE_OAM_LATCH_DA3n.qn_new());
+  /* p29.ZYSA_OLA_TO_CBD4*/ new_bus.BUS_CPU_D04p.tri10_np(_WUME_OBL_TO_CBDn, oam_latch_a.ZAXE_OAM_LATCH_DA4n.qn_new());
+  /* p29.YWEG_OLA_TO_CBD5*/ new_bus.BUS_CPU_D05p.tri10_np(_WUME_OBL_TO_CBDn, oam_latch_a.XAFU_OAM_LATCH_DA5n.qn_new());
+  /* p29.XABU_OLA_TO_CBD6*/ new_bus.BUS_CPU_D06p.tri10_np(_WUME_OBL_TO_CBDn, oam_latch_a.YSES_OAM_LATCH_DA6n.qn_new());
+  /* p29.YTUX_OLA_TO_CBD7*/ new_bus.BUS_CPU_D07p.tri10_np(_WUME_OBL_TO_CBDn, oam_latch_a.ZECA_OAM_LATCH_DA7n.qn_new());
 
   /* p28.WUKU*/ wire _WUKU_OBL_TO_CBDp = and3(LEKO_CPU_RDp(), _AMAB_CPU_OAM_ENp, _GEKA_OAM_A0p);
   /* p28.WEWU*/ wire _WEWU_OBL_TO_CBDn = not1(_WUKU_OBL_TO_CBDp);
-  /* p31.XACA_OLB_TO_CBD0*/ new_bus.BUS_CPU_D00p.tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.oam_latch_b.XYKY_OAM_LATCH_DB0n.qn_new());
-  /* p31.XAGU_OLB_TO_CBD1*/ new_bus.BUS_CPU_D01p.tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.oam_latch_b.YRUM_OAM_LATCH_DB1n.qn_new());
-  /* p31.XEPU_OLB_TO_CBD2*/ new_bus.BUS_CPU_D02p.tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.oam_latch_b.YSEX_OAM_LATCH_DB2n.qn_new());
-  /* p31.XYGU_OLB_TO_CBD3*/ new_bus.BUS_CPU_D03p.tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.oam_latch_b.YVEL_OAM_LATCH_DB3n.qn_new());
-  /* p31.XUNA_OLB_TO_CBD4*/ new_bus.BUS_CPU_D04p.tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.oam_latch_b.WYNO_OAM_LATCH_DB4n.qn_new());
-  /* p31.DEVE_OLB_TO_CBD5*/ new_bus.BUS_CPU_D05p.tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.oam_latch_b.CYRA_OAM_LATCH_DB5n.qn_new());
-  /* p31.ZEHA_OLB_TO_CBD6*/ new_bus.BUS_CPU_D06p.tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.oam_latch_b.ZUVE_OAM_LATCH_DB6n.qn_new());
-  /* p31.FYRA_OLB_TO_CBD7*/ new_bus.BUS_CPU_D07p.tri10_np(_WEWU_OBL_TO_CBDn, oam_bus.oam_latch_b.ECED_OAM_LATCH_DB7n.qn_new());
+  /* p31.XACA_OLB_TO_CBD0*/ new_bus.BUS_CPU_D00p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.XYKY_OAM_LATCH_DB0n.qn_new());
+  /* p31.XAGU_OLB_TO_CBD1*/ new_bus.BUS_CPU_D01p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.YRUM_OAM_LATCH_DB1n.qn_new());
+  /* p31.XEPU_OLB_TO_CBD2*/ new_bus.BUS_CPU_D02p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.YSEX_OAM_LATCH_DB2n.qn_new());
+  /* p31.XYGU_OLB_TO_CBD3*/ new_bus.BUS_CPU_D03p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.YVEL_OAM_LATCH_DB3n.qn_new());
+  /* p31.XUNA_OLB_TO_CBD4*/ new_bus.BUS_CPU_D04p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.WYNO_OAM_LATCH_DB4n.qn_new());
+  /* p31.DEVE_OLB_TO_CBD5*/ new_bus.BUS_CPU_D05p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.CYRA_OAM_LATCH_DB5n.qn_new());
+  /* p31.ZEHA_OLB_TO_CBD6*/ new_bus.BUS_CPU_D06p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.ZUVE_OAM_LATCH_DB6n.qn_new());
+  /* p31.FYRA_OLB_TO_CBD7*/ new_bus.BUS_CPU_D07p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.ECED_OAM_LATCH_DB7n.qn_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -75,14 +75,14 @@ void GateBoy::oam_latch_to_temp_a()
   /* p25.COTA*/ wire _COTA_OAM_CLKn = not1(_BYCU_OAM_CLKp);
 
   /* p29.YWOK*/ wire _YWOK_OAM_CLKp = not1(_COTA_OAM_CLKn);
-  /*#p29.XUSO*/ oam_bus.oam_temp_a.XUSO_OAM_DA0p.dff8n(_YWOK_OAM_CLKp, oam_bus.oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
-  /* p29.XEGU*/ oam_bus.oam_temp_a.XEGU_OAM_DA1p.dff8n(_YWOK_OAM_CLKp, oam_bus.oam_latch_a.YCEB_OAM_LATCH_DA1n.qp_old());
-  /* p29.YJEX*/ oam_bus.oam_temp_a.YJEX_OAM_DA2p.dff8n(_YWOK_OAM_CLKp, oam_bus.oam_latch_a.ZUCA_OAM_LATCH_DA2n.qp_old());
-  /* p29.XYJU*/ oam_bus.oam_temp_a.XYJU_OAM_DA3p.dff8n(_YWOK_OAM_CLKp, oam_bus.oam_latch_a.WONE_OAM_LATCH_DA3n.qp_old());
-  /* p29.YBOG*/ oam_bus.oam_temp_a.YBOG_OAM_DA4p.dff8n(_YWOK_OAM_CLKp, oam_bus.oam_latch_a.ZAXE_OAM_LATCH_DA4n.qp_old());
-  /* p29.WYSO*/ oam_bus.oam_temp_a.WYSO_OAM_DA5p.dff8n(_YWOK_OAM_CLKp, oam_bus.oam_latch_a.XAFU_OAM_LATCH_DA5n.qp_old());
-  /* p29.XOTE*/ oam_bus.oam_temp_a.XOTE_OAM_DA6p.dff8n(_YWOK_OAM_CLKp, oam_bus.oam_latch_a.YSES_OAM_LATCH_DA6n.qp_old());
-  /* p29.YZAB*/ oam_bus.oam_temp_a.YZAB_OAM_DA7p.dff8n(_YWOK_OAM_CLKp, oam_bus.oam_latch_a.ZECA_OAM_LATCH_DA7n.qp_old());
+  /*#p29.XUSO*/ oam_temp_a.XUSO_OAM_DA0p.dff8n(_YWOK_OAM_CLKp, oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
+  /* p29.XEGU*/ oam_temp_a.XEGU_OAM_DA1p.dff8n(_YWOK_OAM_CLKp, oam_latch_a.YCEB_OAM_LATCH_DA1n.qp_old());
+  /* p29.YJEX*/ oam_temp_a.YJEX_OAM_DA2p.dff8n(_YWOK_OAM_CLKp, oam_latch_a.ZUCA_OAM_LATCH_DA2n.qp_old());
+  /* p29.XYJU*/ oam_temp_a.XYJU_OAM_DA3p.dff8n(_YWOK_OAM_CLKp, oam_latch_a.WONE_OAM_LATCH_DA3n.qp_old());
+  /* p29.YBOG*/ oam_temp_a.YBOG_OAM_DA4p.dff8n(_YWOK_OAM_CLKp, oam_latch_a.ZAXE_OAM_LATCH_DA4n.qp_old());
+  /* p29.WYSO*/ oam_temp_a.WYSO_OAM_DA5p.dff8n(_YWOK_OAM_CLKp, oam_latch_a.XAFU_OAM_LATCH_DA5n.qp_old());
+  /* p29.XOTE*/ oam_temp_a.XOTE_OAM_DA6p.dff8n(_YWOK_OAM_CLKp, oam_latch_a.YSES_OAM_LATCH_DA6n.qp_old());
+  /* p29.YZAB*/ oam_temp_a.YZAB_OAM_DA7p.dff8n(_YWOK_OAM_CLKp, oam_latch_a.ZECA_OAM_LATCH_DA7n.qp_old());
 }
 
 void GateBoy::oam_latch_to_temp_b()
@@ -93,14 +93,14 @@ void GateBoy::oam_latch_to_temp_b()
   /* p25.COTA*/ wire _COTA_OAM_CLKn = not1(_BYCU_OAM_CLKp);
 
   /* p31.XEGA*/ wire _XEGA_OAM_CLKp = not1(_COTA_OAM_CLKn);
-  /* p31.YLOR*/ oam_bus.oam_temp_b.YLOR_OAM_DB0p.dff8n(_XEGA_OAM_CLKp, oam_bus.oam_latch_b.XYKY_OAM_LATCH_DB0n.qp_old());
-  /* p31.ZYTY*/ oam_bus.oam_temp_b.ZYTY_OAM_DB1p.dff8n(_XEGA_OAM_CLKp, oam_bus.oam_latch_b.YRUM_OAM_LATCH_DB1n.qp_old());
-  /* p31.ZYVE*/ oam_bus.oam_temp_b.ZYVE_OAM_DB2p.dff8n(_XEGA_OAM_CLKp, oam_bus.oam_latch_b.YSEX_OAM_LATCH_DB2n.qp_old());
-  /* p31.ZEZY*/ oam_bus.oam_temp_b.ZEZY_OAM_DB3p.dff8n(_XEGA_OAM_CLKp, oam_bus.oam_latch_b.YVEL_OAM_LATCH_DB3n.qp_old());
-  /* p31.GOMO*/ oam_bus.oam_temp_b.GOMO_OAM_DB4p.dff8n(_XEGA_OAM_CLKp, oam_bus.oam_latch_b.WYNO_OAM_LATCH_DB4n.qp_old());
-  /* p31.BAXO*/ oam_bus.oam_temp_b.BAXO_OAM_DB5p.dff8n(_XEGA_OAM_CLKp, oam_bus.oam_latch_b.CYRA_OAM_LATCH_DB5n.qp_old());
-  /* p31.YZOS*/ oam_bus.oam_temp_b.YZOS_OAM_DB6p.dff8n(_XEGA_OAM_CLKp, oam_bus.oam_latch_b.ZUVE_OAM_LATCH_DB6n.qp_old());
-  /* p31.DEPO*/ oam_bus.oam_temp_b.DEPO_OAM_DB7p.dff8n(_XEGA_OAM_CLKp, oam_bus.oam_latch_b.ECED_OAM_LATCH_DB7n.qp_old());
+  /* p31.YLOR*/ oam_temp_b.YLOR_OAM_DB0p.dff8n(_XEGA_OAM_CLKp, oam_latch_b.XYKY_OAM_LATCH_DB0n.qp_old());
+  /* p31.ZYTY*/ oam_temp_b.ZYTY_OAM_DB1p.dff8n(_XEGA_OAM_CLKp, oam_latch_b.YRUM_OAM_LATCH_DB1n.qp_old());
+  /* p31.ZYVE*/ oam_temp_b.ZYVE_OAM_DB2p.dff8n(_XEGA_OAM_CLKp, oam_latch_b.YSEX_OAM_LATCH_DB2n.qp_old());
+  /* p31.ZEZY*/ oam_temp_b.ZEZY_OAM_DB3p.dff8n(_XEGA_OAM_CLKp, oam_latch_b.YVEL_OAM_LATCH_DB3n.qp_old());
+  /* p31.GOMO*/ oam_temp_b.GOMO_OAM_DB4p.dff8n(_XEGA_OAM_CLKp, oam_latch_b.WYNO_OAM_LATCH_DB4n.qp_old());
+  /* p31.BAXO*/ oam_temp_b.BAXO_OAM_DB5p.dff8n(_XEGA_OAM_CLKp, oam_latch_b.CYRA_OAM_LATCH_DB5n.qp_old());
+  /* p31.YZOS*/ oam_temp_b.YZOS_OAM_DB6p.dff8n(_XEGA_OAM_CLKp, oam_latch_b.ZUVE_OAM_LATCH_DB6n.qp_old());
+  /* p31.DEPO*/ oam_temp_b.DEPO_OAM_DB7p.dff8n(_XEGA_OAM_CLKp, oam_latch_b.ECED_OAM_LATCH_DB7n.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

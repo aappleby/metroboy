@@ -14,47 +14,6 @@
 const wire GateBoy::SIG_VCC = 1;
 const wire GateBoy::SIG_GND = 0;
 
-void GateBoy::dump(Dumper& d) const {
-  const char* phases[] = {
-    "\002A_______\001",
-    "\003_B______\001",
-    "\002__C_____\001",
-    "\003___D____\001",
-    "\002____E___\001",
-    "\003_____F__\001",
-    "\002______G_\001",
-    "\003_______H\001",
-  };
-
-  d             ("phase        : %s\n", phases[phase_total & 7]);
-  d             ("sys_rst      : %d\n", sys_rst);
-  d             ("sys_t1       : %d\n", sys_t1);
-  d             ("sys_t2       : %d\n", sys_t2);
-  d             ("sys_clken    : %d\n", sys_clken);
-  d             ("sys_clkgood  : %d\n", sys_clkgood);
-  d             ("sys_cpuready : %d\n", sys_clkreq);
-  d             ("sys_cpu_en   : %d\n", sys_cpu_en);
-  d             ("sys_fastboot : %d\n", sys_fastboot);
-  d             ("sys_buttons  : %d\n", sys_buttons);
-  d.dump_req    ("bus_req_old  : ", bus_req_old);
-  d.dump_req    ("bus_req_new  : ", bus_req_new);
-  d.dump_bytep  ("data_latch   : ", cpu_data_latch);
-  d("\n");
-  //d             ("gb_screen_x  : %d\n", gb_screen_x);
-  //d             ("gb_screen_y  : %d\n", gb_screen_y);
-  //d.dump_bitp   ("lcd_pix_lo   : ", lcd.lcd_pix_lo.state);
-  //d.dump_bitp   ("lcd_pix_hi   : ", lcd.lcd_pix_hi.state);
-  //d.dump_slice2p("lcd_pipe_lo  : ", lcd.lcd_pipe_lo, 8);
-  //d.dump_slice2p("lcd_pipe_hi  : ", lcd.lcd_pipe_hi, 8);
-  //d("\n");
-  d             ("sim_time     : %f\n",      sim_time);
-  d             ("phase_total  : %lld\n",    phase_total);
-  d             ("phase_origin : %lld\n",    phase_origin);
-  d             ("phase_delta  : %lld\n",    phase_total - phase_origin);
-  d             ("pass_hash    : %016llx\n", phase_hash);
-  d             ("total_hash   : %016llx\n", cumulative_hash);
-}
-
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset_to_bootrom(bool fastboot)
@@ -190,6 +149,11 @@ void GateBoy::reset_to_cart() {
   oam_bus.reset_to_cart();
   ext_bus.reset_to_cart();
   vram_bus.reset_to_cart();
+
+  oam_latch_a.reset_to_cart();
+  oam_latch_b.reset_to_cart();
+  oam_temp_a.reset_to_cart();
+  oam_temp_b.reset_to_cart();
 
   ext_addr_latch.reset_to_cart();
   ext_data_latch.reset_to_cart();
@@ -527,9 +491,9 @@ void GateBoy::tock_slow(int pass_index) {
 
   auto XYDO_PX3p_old = pix_count.XYDO_PX3p;
 
-  auto BAXO_OAM_DB5p_old = oam_bus.oam_temp_b.BAXO_OAM_DB5p;
+  auto BAXO_OAM_DB5p_old = oam_temp_b.BAXO_OAM_DB5p;
 
-  auto oam_temp_b_old = oam_bus.oam_temp_b;
+  auto oam_temp_b_old = oam_temp_b;
 
   SpritePix sprite_pix_old = flip_sprite_pix(TEXY_SFETCHINGp_old(), BAXO_OAM_DB5p_old);
 
@@ -583,7 +547,15 @@ void GateBoy::tock_slow(int pass_index) {
     reg_stat_write();
     reg_tma_write();
     reg_tac_write();
-    write_boot_bit_sync();
+    {
+      //write_boot_bit_sync();
+      /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_bus.TAPU_CPU_WRp, new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
+      // FF50 - disable bootrom bit
+
+      /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(old_bus.BUS_CPU_D00p.qp_old(), cpu_bus.TEPU_BOOT_BITn_h.qp_old());
+      /* p07.TEPU*/ cpu_bus.TEPU_BOOT_BITn_h.dff17(_TUGE_FF50_WRn, ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
+    }
+
     reg_dma_write();
     reg_wy_write();
     reg_wx_write();
@@ -1059,7 +1031,11 @@ void GateBoy::tock_slow(int pass_index) {
     reg_dma_read();
     reg_div_read();
     read_bootrom();
-    read_boot_bit();
+    {
+      //read_boot_bit();
+      /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_bus.TEDO_CPU_RDp, new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
+      /* p07.SYPU_BOOT_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TEXE_FF50_RDp, cpu_bus.TEPU_BOOT_BITn_h.qp_new());
+    }
     reg_tima_read();
     reg_tma_read();
     reg_tac_read();

@@ -36,8 +36,6 @@ struct GateBoy {
   static const wire SIG_VCC;
   static const wire SIG_GND;
 
-  void dump(Dumper& d) const;
-
   void reset_to_bootrom(bool fastboot);
   void reset_to_cart();
   void load_cart(uint8_t* _boot_buf, size_t _boot_size,
@@ -821,6 +819,13 @@ struct GateBoy {
   /* p27.NETA*/ wire NETA_BGW_TILE_READp() const { return and2(LENA_BFETCHINGp(), NOGU_BFETCH_01p()); }
   /*#p27.XUHA*/ wire XUHA_FETCH_HILOp()    const { return not1(NOFU_BFETCH_S2n()); }
 
+  void dump_sys(Dumper& d) const;
+  void dump_tile_fetcher(Dumper& d);
+  void dump_clocks(Dumper& d);
+  void dump_interrupts(Dumper& d);
+  void dump_joypad(Dumper& d);
+  void dump_lcd(Dumper& d);
+  void dump_oam_bus(Dumper& d);
 
   //-----------------------------------------------------------------------------
   // All the SOC registers, pins, buses. Everything in this section should derive
@@ -842,6 +847,11 @@ struct GateBoy {
   GateBoyVramBus vram_bus;
   GateBoyOamBus  oam_bus;
   GateBoyZramBus zram_bus;
+
+  OamLatchA oam_latch_a;
+  OamLatchB oam_latch_b;
+  OamTempA oam_temp_a;
+  OamTempB oam_temp_b;
 
   ExtDataLatch ext_data_latch;
   ExtAddrLatch ext_addr_latch;

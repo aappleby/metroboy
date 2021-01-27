@@ -119,14 +119,14 @@ void GateBoy::tile_to_vram_addr(const BGScrollY scroll_y) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::sprite_to_vram_addr() {
-  /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1(oam_bus.oam_temp_b.YZOS_OAM_DB6p.qp_new());
+  /*#p29.WUKY*/ wire _WUKY_FLIP_Yp = not1(oam_temp_b.YZOS_OAM_DB6p.qp_new());
   /*#p29.FUFO*/ wire _FUFO_LCDC_SPSIZEn = not1(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
 
   /*#p29.CYVU*/ wire _CYVU_L0 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L0.qp_new());
   /*#p29.BORE*/ wire _BORE_L1 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L1.qp_new());
   /*#p29.BUVY*/ wire _BUVY_L2 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L2.qp_new());
   /*#p29.WAGO*/ wire _WAGO_L3 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L3.qp_new());
-  /*#p29.GEJY*/ wire _GEJY_L3 = amux2(oam_bus.oam_temp_a.XUSO_OAM_DA0p.qp_new(), _FUFO_LCDC_SPSIZEn, reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), _WAGO_L3);
+  /*#p29.GEJY*/ wire _GEJY_L3 = amux2(oam_temp_a.XUSO_OAM_DA0p.qp_new(), _FUFO_LCDC_SPSIZEn, reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), _WAGO_L3);
 
   /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_new());
   /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn(), _TEPA_RENDERINGp); // def or
@@ -137,13 +137,13 @@ void GateBoy::sprite_to_vram_addr() {
   /* p29.ARAS_SPL1_TO_VA02*/ new_bus.BUS_VRAM_A02n.tri6_nn(_ABON_SFETCHINGn, _BORE_L1);
   /* p29.AGAG_SPL2_TO_VA03*/ new_bus.BUS_VRAM_A03n.tri6_nn(_ABON_SFETCHINGn, _BUVY_L2);
   /* p29.FAMU_SPL3_TO_VA04*/ new_bus.BUS_VRAM_A04n.tri6_nn(_ABON_SFETCHINGn, _GEJY_L3);
-  /*#p29.FUGY_ODA1_TO_VA05*/ new_bus.BUS_VRAM_A05n.tri6_nn(_ABON_SFETCHINGn, oam_bus.oam_temp_a.XEGU_OAM_DA1p.qp_new());
-  /* p29.GAVO_ODA2_TO_VA06*/ new_bus.BUS_VRAM_A06n.tri6_nn(_ABON_SFETCHINGn, oam_bus.oam_temp_a.YJEX_OAM_DA2p.qp_new());
-  /* p29.WYGA_ODA3_TO_VA07*/ new_bus.BUS_VRAM_A07n.tri6_nn(_ABON_SFETCHINGn, oam_bus.oam_temp_a.XYJU_OAM_DA3p.qp_new());
-  /* p29.WUNE_ODA4_TO_VA08*/ new_bus.BUS_VRAM_A08n.tri6_nn(_ABON_SFETCHINGn, oam_bus.oam_temp_a.YBOG_OAM_DA4p.qp_new());
-  /* p29.GOTU_ODA5_TO_VA09*/ new_bus.BUS_VRAM_A09n.tri6_nn(_ABON_SFETCHINGn, oam_bus.oam_temp_a.WYSO_OAM_DA5p.qp_new());
-  /* p29.GEGU_ODA6_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_nn(_ABON_SFETCHINGn, oam_bus.oam_temp_a.XOTE_OAM_DA6p.qp_new());
-  /* p29.XEHE_ODA7_TO_VA11*/ new_bus.BUS_VRAM_A11n.tri6_nn(_ABON_SFETCHINGn, oam_bus.oam_temp_a.YZAB_OAM_DA7p.qp_new());
+  /*#p29.FUGY_ODA1_TO_VA05*/ new_bus.BUS_VRAM_A05n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.XEGU_OAM_DA1p.qp_new());
+  /* p29.GAVO_ODA2_TO_VA06*/ new_bus.BUS_VRAM_A06n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.YJEX_OAM_DA2p.qp_new());
+  /* p29.WYGA_ODA3_TO_VA07*/ new_bus.BUS_VRAM_A07n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.XYJU_OAM_DA3p.qp_new());
+  /* p29.WUNE_ODA4_TO_VA08*/ new_bus.BUS_VRAM_A08n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.YBOG_OAM_DA4p.qp_new());
+  /* p29.GOTU_ODA5_TO_VA09*/ new_bus.BUS_VRAM_A09n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.WYSO_OAM_DA5p.qp_new());
+  /* p29.GEGU_ODA6_TO_VA10*/ new_bus.BUS_VRAM_A10n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.XOTE_OAM_DA6p.qp_new());
+  /* p29.XEHE_ODA7_TO_VA11*/ new_bus.BUS_VRAM_A11n.tri6_nn(_ABON_SFETCHINGn, oam_temp_a.YZAB_OAM_DA7p.qp_new());
   /* p29.DYSO_BANK_TO_VA12*/ new_bus.BUS_VRAM_A12n.tri6_nn(_ABON_SFETCHINGn, SIG_GND);   // sprites always in low half of tile store
 }
 

@@ -23,6 +23,7 @@
     <ClCompile Include="GateBoyClocks.cpp" />
     <ClCompile Include="GateBoyCpuBus.cpp" />
     <ClCompile Include="GateBoyDMA.cpp" />
+    <ClCompile Include="GateBoyDumper.cpp" />
     <ClCompile Include="GateBoyExtBus.cpp" />
     <ClCompile Include="GateBoyInterrupts.cpp" />
     <ClCompile Include="GateBoyJoypad.cpp" />

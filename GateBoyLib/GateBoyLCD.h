@@ -30,32 +30,6 @@ struct GateBoyLCD {
     PIN_57_LCD_VSYNC.state = 0b00011000;
   }
 
-  void dump(Dumper& d) {
-    d.dump_bitp("CATU_START_SCANNING     : ", CATU_START_SCANNING.state);
-    d.dump_bitp("ANEL_LINE_P002p     : ", ANEL_LINE_P002p.state);
-    d.dump_bitp("POPU_VBLANKp        : ", POPU_VBLANKp.state);
-    d.dump_bitp("SYGU_LINE_STROBE    : ", SYGU_LINE_STROBE.state);
-    d.dump_bitn("MEDA_VSYNC_OUTn     : ", MEDA_VSYNC_OUTn.state);
-    d.dump_bitp("LUCA_LINE_EVENp     : ", LUCA_LINE_EVENp.state);
-    d.dump_bitp("NAPO_FRAME_EVENp    : ", NAPO_FRAME_EVENp.state);
-    d.dump_bitp("RUJU                : ", RUJU.get_state());
-    d.dump_bitp("POFY                : ", POFY.get_state());
-    d.dump_bitp("POME                : ", POME.get_state());
-    d.dump_bitp("PAHO_X_8_SYNC       : ", PAHO_X_8_SYNC.state);
-    d.dump_bitp("WUSA_LCD_CLOCK_GATE : ", WUSA_LCD_CLOCK_GATE.state);
-    //d.dump_bitp("lcd_pix_lo          : ", lcd_pix_lo.state);
-    //d.dump_bitp("lcd_pix_hi          : ", lcd_pix_hi.state);
-    d("\n");
-    d.dump_bitp("PIN_50_LCD_DATA1     : ", PIN_50_LCD_DATA1.state);
-    d.dump_bitp("PIN_51_LCD_DATA0     : ", PIN_51_LCD_DATA0.state);
-    d.dump_bitp("PIN_54_LCD_HSYNC     : ", PIN_54_LCD_HSYNC.state);
-    d.dump_bitp("PIN_56_LCD_FLIPS     : ", PIN_56_LCD_FLIPS.state);
-    d.dump_bitp("PIN_52_LCD_CNTRL     : ", PIN_52_LCD_CNTRL.state);
-    d.dump_bitp("PIN_55_LCD_LATCH     : ", PIN_55_LCD_LATCH.state);
-    d.dump_bitp("PIN_53_LCD_CLOCK     : ", PIN_53_LCD_CLOCK.state);
-    d.dump_bitp("PIN_57_LCD_VSYNC     : ", PIN_57_LCD_VSYNC.state);
-  }
-
   // H deltas are due to reg writes
   /*p29.CATU*/ DFF17 CATU_START_SCANNING;  // Axxxxxxx
   /*p28.ANEL*/ DFF17 ANEL_LINE_P002p;  // xxCxxxxx

@@ -291,7 +291,7 @@ void GateBoyApp::app_render_frame() {
   d("\n");
 
   d("\002===== GateBoy Top =====\001\n");
-  gb->dump(d);
+  gb->dump_sys(d);
   d("\n");
 
   d("\002===== Reset/Debug =====\001\n");
@@ -299,7 +299,7 @@ void GateBoyApp::app_render_frame() {
   d("\n");
 
   d("\002===== Clocks =====\001\n");
-  gb->clk.dump(d);
+  gb->dump_clocks(d);
   d("\n");
 
   d("\002===== Timer =====\001\n");
@@ -308,7 +308,7 @@ void GateBoyApp::app_render_frame() {
   d("\n");
 
   d("\002===== Joypad =====\001\n");
-  gb->joy.dump(d);
+  gb->dump_joypad(d);
   d("\n");
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
@@ -325,7 +325,7 @@ void GateBoyApp::app_render_frame() {
   d("\n");
 
   d("\002===== Interrupts =====\001\n");
-  gb->interrupts.dump(d);
+  gb->dump_interrupts(d);
   d("\n");
 
   d("\002===== DMA =====\001\n");
@@ -350,7 +350,7 @@ void GateBoyApp::app_render_frame() {
   //----------------------------------------
 
   d("\002===== LCD =====\001\n");
-  gb->lcd.dump(d);
+  gb->dump_lcd(d);
   d.dump_slice2p("LX         : ", &gb->reg_lx.SAXO_LX0p.state,  7);
   d.dump_slice2p("FF44 LY    : ", &gb->reg_ly.MUWY_LY0p.state,  8);
   d.dump_slice2n("FF45 LYC   : ", &gb->reg_lyc.SYRY_LYC0n.state, 8);
@@ -369,7 +369,7 @@ void GateBoyApp::app_render_frame() {
   d("\n");
 
   d("\002===== OAM Bus =====\001\n");
-  gb->oam_bus.dump(d);
+  gb->dump_oam_bus(d);
   d("\n");
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
@@ -428,7 +428,7 @@ void GateBoyApp::app_render_frame() {
   d("\n");
 
   d("\002===== Tile Fetch =====\001\n");
-  gb->tile_fetcher.dump(d);
+  gb->dump_tile_fetcher(d);
   d("\n");
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);

@@ -78,12 +78,11 @@ int main(int argc, char** argv) {
 
   PlaitApp* app = new PlaitApp();
 
-#if 1
+#if 0
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
   printf("Done\n\n");
 
-#if 1
   {
     printf("Saving gameboy.die_db.json\n");
     //std::ostringstream stream_out;
@@ -98,7 +97,6 @@ int main(int argc, char** argv) {
     app->die_db.load_json(die_db_file);
     printf("Done\n\n");
   }
-#endif
 
 #else
   printf("Loading gameboy.die_db.json\n");

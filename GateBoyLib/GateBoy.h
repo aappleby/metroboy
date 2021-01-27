@@ -187,7 +187,6 @@ struct GateBoy {
 
   void reg_stat_read();
   void reg_stat_write();
-  void reg_stat_tock();
 
   void tock_interrupts(wire WODU_HBLANKp);
   void read_intf();
@@ -339,7 +338,6 @@ struct GateBoy {
   void store_sprite_line(SpriteStoreFlag store_flag);
   void ly_to_sprite_line(wire FEPO_STORE_MATCHp);
 
-  void tock_lcd(wire XYVO_y144p_old, DFF17 RUTU_x113p_old);
   void set_lcd_pin_flip(DFF17  TULU_DIV07p, DFF9 XONA_LCDC_LCDENn);
   void set_lcd_pin_vsync();
   void set_lcd_pin_hsync(wire TYFA_CLKPIPE_odd, DFF17 XYDO_PX3p_old);
@@ -353,8 +351,6 @@ struct GateBoy {
   void tock_mask_pipe(wire SACU_CLKPIPE_evn);
   void tock_pal_pipe(wire SACU_CLKPIPE_evn);
   void tock_pix_output();
-
-  void tock_fine_scroll(wire TYFA_CLKPIPE_odd, wire TEVO_WIN_FETCH_TRIGp);
 
   /*#p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(XYMU_RENDERINGn.qn_new()); }
   /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp() const { return and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn()); }
@@ -396,7 +392,12 @@ struct GateBoy {
 
   //----------------------------------------
 
-  /* p28.ATEJ*/ wire ATEJ_LINE_RSTp_old() const;
+  wire ATEJ_LINE_RSTp_old() const {
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(lcd.CATU_START_SCANNING.qp_old());
+    /* p28.BYHA*/ wire _BYHA_LINE_RSTn_old = or_and3(lcd.ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, ABEZ_VID_RSTn_old()); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_old = not1(_BYHA_LINE_RSTn_old);
+    return bit(_ATEJ_LINE_RSTp_old);
+  }
   /* p27.XAHY*/ wire XAHY_LINE_RSTn_old() const { return not1(ATEJ_LINE_RSTp_old()); }
   /*#p28.ANOM*/ wire ANOM_LINE_RSTn_old() const { return nor2(ATEJ_LINE_RSTp_old(), ATAR_VID_RSTp_old()); }
   /* p28.ABAK*/ wire ABAK_LINE_RSTp_old() const { return  or2(ATEJ_LINE_RSTp_old(), AMYG_VID_RSTp_old()); }
@@ -406,7 +407,12 @@ struct GateBoy {
   /*#p29.BAGY*/ wire BAGY_LINE_RSTn_old() const { return not1(BALU_LINE_RSTp_old()); }
   /* p21.TADY*/ wire TADY_LINE_RSTn_old() const { return nor2(ATEJ_LINE_RSTp_old(), TOFU_VID_RSTp_old()); }
 
-  /* p28.ATEJ*/ wire ATEJ_LINE_RSTp_new() const;
+  wire ATEJ_LINE_RSTp_new() const {
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(lcd.CATU_START_SCANNING.qp_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_RSTn_new = or_and3(lcd.ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n_new, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_new = not1(_BYHA_LINE_RSTn_new);
+    return bit(_ATEJ_LINE_RSTp_new);
+  }
   /* p27.XAHY*/ wire XAHY_LINE_RSTn_new() const { return not1(ATEJ_LINE_RSTp_new()); }
   /*#p28.ANOM*/ wire ANOM_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp_new(), ATAR_VID_RSTp()); }
   /* p28.ABAK*/ wire ABAK_LINE_RSTp_new() const { return  or2(ATEJ_LINE_RSTp_new(), AMYG_VID_RSTp()); }
@@ -417,12 +423,6 @@ struct GateBoy {
   /* p21.TADY*/ wire TADY_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp_new(), TOFU_VID_RSTp()); }
 
   /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(lcd.POPU_VBLANKp.qn_new()); }
-
-  ///* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(XODO_VID_RSTp()); }
-  ///* p01.TOFU*/ wire TOFU_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  ///*#p01.ATAR*/ wire ATAR_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  ///* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  ///*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp_old() const { return or2(rst.AFER_SYS_RSTp.qp_old(), rst.ASOL_POR_DONEn.qp_old()); }
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn_old() const { return not1(AVOR_SYS_RSTp_old()); }

@@ -4,38 +4,6 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-wire GateBoy::ATEJ_LINE_RSTp_old() const {
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(lcd.CATU_START_SCANNING.qp_old());
-  /* p28.BYHA*/ wire _BYHA_LINE_RSTn_old = or_and3(lcd.ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, ABEZ_VID_RSTn_old()); // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_old = not1(_BYHA_LINE_RSTn_old);
-  return bit(_ATEJ_LINE_RSTp_old);
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-wire GateBoy::ATEJ_LINE_RSTp_new() const {
-  /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(lcd.CATU_START_SCANNING.qp_new());
-  /* p28.BYHA*/ wire _BYHA_LINE_RSTn_new = or_and3(lcd.ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n_new, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
-  /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_new = not1(_BYHA_LINE_RSTn_new);
-  return bit(_ATEJ_LINE_RSTp_new);
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::tock_lcd(wire XYVO_y144p_old, DFF17 RUTU_x113p_old)
-{
-  /*#p21.POPU*/ lcd.POPU_VBLANKp.dff17(reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
-
-  /*#p21.PURE*/ wire _PURE_LINE_ENDn_old = not1(RUTU_x113p_old.qp_old());
-  /*#p21.SELA*/ wire _SELA_LINE_P908p_old = not1(_PURE_LINE_ENDn_old);
-  /*#p29.ALES*/ wire _ALES_y144n_old = not1(XYVO_y144p_old);
-  /*#p29.ABOV*/ wire _ABOV_LINE_P908p_old = and2(_SELA_LINE_P908p_old, _ALES_y144n_old);
-  /*#p28.ANEL*/ lcd.ANEL_LINE_P002p.dff17(AWOH_xxCDxxGH(), ABEZ_VID_RSTn(),  lcd.CATU_START_SCANNING.qp_old());
-  /*#p29.CATU*/ lcd.CATU_START_SCANNING.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), _ABOV_LINE_P908p_old);
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
 void GateBoy::set_lcd_pin_ctrl() {
   /*#p21.SYGU*/ lcd.SYGU_LINE_STROBE.dff17(SONO_ABxxxxGH(), LYFE_VID_RSTn(), TEGY_STROBE());
   /*#p21.RYNO*/ wire _RYNO = or2(lcd.SYGU_LINE_STROBE.qp_new(), reg_lx.RUTU_x113p.qp_new());

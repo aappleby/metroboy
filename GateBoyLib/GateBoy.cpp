@@ -183,7 +183,6 @@ void GateBoy::reset_to_cart() {
 
   VOGA_HBLANKp.state = 0b00011001;
 
-  //old_bus.reset_to_cart_old();
   old_bus.reset_to_cart_new();
   new_bus.reset_to_cart_new();
 
@@ -607,7 +606,18 @@ void GateBoy::tock_slow(int pass_index) {
   reg_lx_tock();
   reg_ly_tock2();
 
-  tock_lcd(XYVO_y144p_old, RUTU_x113p_old);
+
+  {
+    //tock_lcd(XYVO_y144p_old, RUTU_x113p_old);
+    /*#p21.POPU*/ lcd.POPU_VBLANKp.dff17(reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
+
+    /*#p21.PURE*/ wire _PURE_LINE_ENDn_old = not1(RUTU_x113p_old.qp_old());
+    /*#p21.SELA*/ wire _SELA_LINE_P908p_old = not1(_PURE_LINE_ENDn_old);
+    /*#p29.ALES*/ wire _ALES_y144n_old = not1(XYVO_y144p_old);
+    /*#p29.ABOV*/ wire _ABOV_LINE_P908p_old = and2(_SELA_LINE_P908p_old, _ALES_y144n_old);
+    /*#p28.ANEL*/ lcd.ANEL_LINE_P002p.dff17(AWOH_xxCDxxGH(), ABEZ_VID_RSTn(),  lcd.CATU_START_SCANNING.qp_old());
+    /*#p29.CATU*/ lcd.CATU_START_SCANNING.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), _ABOV_LINE_P908p_old);
+  }
 
   // DMA has to tock early
   reg_dma_tock();
@@ -718,7 +728,24 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(AVAP_SCAN_DONE_TRIGp(), MOSU_WIN_MODE_TRIGp_new(), TEVO_WIN_FETCH_TRIGp);
   tock_tile_fetcher(NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
 
-  tock_fine_scroll(TYFA_CLKPIPE_odd, TEVO_WIN_FETCH_TRIGp);
+  {
+    //tock_fine_scroll(TYFA_CLKPIPE_odd, TEVO_WIN_FETCH_TRIGp);
+    // Fine match counter. Registers are only read as old, so this can go down as far in the list as needed.
+
+    /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
+    /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
+
+    /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
+    /*#p27.PASO*/ wire _PASO_FINE_RST = nor2(_PAHA_RENDERINGn, TEVO_WIN_FETCH_TRIGp);
+
+    for (int feedback = 0; feedback < 2; feedback++) {
+      /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_any(), fine_scroll.ROGA_FINE_CNT1.qp_any(), fine_scroll.RYKU_FINE_CNT0.qp_any());
+      /*#p27.PECU*/ wire _PECU_FINE_CLK = nand2(_ROXO_CLKPIPE_odd, _ROZE_FINE_COUNT_7n);
+      /*#p27.RYKU*/ fine_scroll.RYKU_FINE_CNT0.dff17_any(_PECU_FINE_CLK,                      _PASO_FINE_RST, fine_scroll.RYKU_FINE_CNT0.qn_any());
+      /*#p27.ROGA*/ fine_scroll.ROGA_FINE_CNT1.dff17_any(fine_scroll.RYKU_FINE_CNT0.qn_any(), _PASO_FINE_RST, fine_scroll.ROGA_FINE_CNT1.qn_any());
+      /*#p27.RUBU*/ fine_scroll.RUBU_FINE_CNT2.dff17_any(fine_scroll.ROGA_FINE_CNT1.qn_any(), _PASO_FINE_RST, fine_scroll.RUBU_FINE_CNT2.qn_any());
+    }
+  }
 
   {
     store_sprite_pix_a(sprite_pix_old);
@@ -873,7 +900,6 @@ void GateBoy::tock_slow(int pass_index) {
     tock_serial();
 
     tock_timer();
-    reg_stat_tock();
     tock_joypad();
     tock_interrupts(WODU_HBLANKp);
   }

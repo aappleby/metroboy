@@ -317,7 +317,7 @@ void GateBoy::tock_oam_bus() {
   uint8_t oam_data_a = (uint8_t)BitBase::pack_newn(8, &new_bus.BUS_OAM_DA00n);
   uint8_t oam_data_b = (uint8_t)BitBase::pack_newn(8, &new_bus.BUS_OAM_DB00n);
 
-  if (bit(~oam_bus.old_oam_clk) && bit(~oam_bus.SIG_OAM_CLKn.qp_new())) {
+  if (bit(~oam_bus.old_oam_clk.qp_old()) && bit(~oam_bus.SIG_OAM_CLKn.qp_new())) {
     if (bit(~oam_bus.SIG_OAM_WRn_A.qp_new())) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
     if (bit(~oam_bus.SIG_OAM_WRn_B.qp_new())) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
   }

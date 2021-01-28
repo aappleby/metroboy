@@ -128,12 +128,6 @@ struct Gate : public BitBase {
     return state;
   }
 
-  operator wire() const {
-    //return qp_new();
-    // FIXME turned off all old/new checking
-    return state;
-  }
-
   void operator=(wire D) {
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
   }
@@ -145,7 +139,6 @@ struct SigIn : public BitBase {
   SigIn() { state = 0; }
   SigIn(wire D) { state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D); }
 
-  operator wire()     const { return qp_new(); }
   uint8_t get_state() const { return state; }
 
   void reset(uint8_t s) { state = s; }

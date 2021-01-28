@@ -9,7 +9,7 @@ void GateBoy::tock_reset(DFF17 UPOF_DIV15p) {
   /* p01.AFER*/ rst.AFER_SYS_RSTp.dff13(BOGA_Axxxxxxx(), UPOJ_MODE_PRODn(), rst.ASOL_POR_DONEn.qp_old());
 
   /* p01.UPYF*/ wire _UPYF = or2(rst.PIN_71_RST.qp_new(), UCOB_CLKBADp());
-  /* p01.TUBO*/ rst.TUBO_WAITINGp.nor_latch(_UPYF, clk.SIG_CPU_CLKREQ);
+  /* p01.TUBO*/ rst.TUBO_WAITINGp.nor_latch(_UPYF, clk.SIG_CPU_CLKREQ.qp_new());
   /* p01.UNUT*/ wire _UNUT_POR_TRIGn = and2(rst.TUBO_WAITINGp.qp_new(), UPOF_DIV15p.qp_new());
   /* p01.TABA*/ wire _TABA_POR_TRIGn = or3(UNOR_MODE_DBG2p(), UMUT_MODE_DBG1p(), _UNUT_POR_TRIGn);
   /*#p01.ALYP*/ wire _ALYP_RSTn = not1(_TABA_POR_TRIGn);

@@ -15,9 +15,9 @@ void GateBoy::tock_joypad() {
   /* p10.AMUS*/ wire AMUS_XX_0xx00000 = nor6(new_bus.BUS_CPU_A00p.qp_any(), new_bus.BUS_CPU_A01p.qp_any(), new_bus.BUS_CPU_A02p.qp_any(), new_bus.BUS_CPU_A03p.qp_any(), new_bus.BUS_CPU_A04p.qp_any(), new_bus.BUS_CPU_A07p.qp_any());
   /* p10.ANAP*/ wire ANAP_FF_0xx00000  = and2(new_bus.SYKE_ADDR_HIp(), AMUS_XX_0xx00000);
 
-  /* p10.ACAT*/ wire ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp, ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
+  /* p10.ACAT*/ wire ACAT_FF00_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
   /* p05.BYZO*/ wire BYZO_FF00_RDn = not1(ACAT_FF00_RDp);
-  /* p10.ATOZ*/ wire ATOZ_FF00_WRn = nand4(cpu_bus.TAPU_CPU_WRp, ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
+  /* p10.ATOZ*/ wire ATOZ_FF00_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
 
   ///* p05.JUTE*/ JUTE_DBG_D0    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[0].qp_old());
   ///* p05.KECY*/ KECY_DBG_D1    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_bus.BUS_CPU_D[1].qp_old());

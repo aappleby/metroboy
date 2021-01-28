@@ -11,12 +11,12 @@ void GateBoy::tock_clocks() {
   /*PIN_73*/ pins.PIN_73_CLK_DRIVE.pin_out_dp(pins.PIN_74_CLK.clock());
 
   /* p01.ARYS*/ wire ARYS = not1(pins.PIN_74_CLK.clock());
-  /* p01.AVET*/ clk.AVET = nand2(clk.ANOS, ARYS);
-  /* p01.ANOS*/ clk.ANOS = nand2(pins.PIN_74_CLK.clock(), clk.AVET);
-  /* p01.AVET*/ clk.AVET = nand2(clk.ANOS, ARYS);
-  /* p01.ANOS*/ clk.ANOS = nand2(pins.PIN_74_CLK.clock(), clk.AVET);
+  /* p01.AVET*/ clk.AVET = nand2(clk.ANOS.qp_mid(), ARYS);
+  /* p01.ANOS*/ clk.ANOS = nand2(pins.PIN_74_CLK.clock(), clk.AVET.qp_mid());
+  /* p01.AVET*/ clk.AVET = nand2(clk.ANOS.qp_mid(), ARYS);
+  /* p01.ANOS*/ clk.ANOS = nand2(pins.PIN_74_CLK.clock(), clk.AVET.qp_mid());
 
-  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET);
+  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET.qp_new());
   /* p01.ATAN*/ wire _ATAN_AxCxExGx = not1(_ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
 
   DFF9 _ADYK_ABCxxxxHp_old = clk.ADYK_ABCxxxxHp;

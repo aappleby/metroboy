@@ -642,6 +642,8 @@ struct GateBoy {
   /* p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp;
   /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp;
   /*#p21.SANU*/ Gate SANU_x113p;
+  /*#p21.XYVO*/ Gate XYVO_y144p;
+  /*#p29.ABOV*/ Gate ABOV_LINE_P908p;
 
   SpriteMatchFlag sprite_match;
   SpriteFirstMatch first_match;

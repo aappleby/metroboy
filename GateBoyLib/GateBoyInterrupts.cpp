@@ -63,8 +63,9 @@ void GateBoy::tock_interrupts()
   // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
   // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
+  /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(reg_lx.RUTU_x113p.qp_new());
   /*#p21.TOLU*/ wire _TOLU_VBLANKn   = not1(PARU_VBLANKp());
-  /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(PURE_LINE_ENDn());
+  /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(_PURE_LINE_ENDn);
   /*#p21.TAPA*/ wire _TAPA_INT_OAM   = and2(_TOLU_VBLANKn, _SELA_LINE_P908p);
   /*#p21.TARU*/ wire _TARU_INT_HBL   = and2(WODU_HBLANKp.qp_new(), _TOLU_VBLANKn);
   // polarity?

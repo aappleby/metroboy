@@ -556,16 +556,16 @@ void GateBoy::store_sprite_x(SpriteStoreFlag store_flag, SpriteFirstMatch sprite
   /* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(ABAK_LINE_RSTp_new());
   /* p29.DYBA*/ wire _DYBA_LINE_RSTp = not1(_BYVA_LINE_RSTn);
 
-  /* p29.EBOJ*/ sprite_store.EBOJ_STORE0_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.GUVA_SPRITE0_GETp.qp_old());
-  /* p29.CEDY*/ sprite_store.CEDY_STORE1_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.ENUT_SPRITE1_GETp.qp_old());
-  /* p29.EGAV*/ sprite_store.EGAV_STORE2_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.EMOL_SPRITE2_GETp.qp_old());
-  /* p29.GOTA*/ sprite_store.GOTA_STORE3_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.GYFY_SPRITE3_GETp.qp_old());
-  /* p29.XUDY*/ sprite_store.XUDY_STORE4_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.GONO_SPRITE4_GETp.qp_old());
-  /* p29.WAFY*/ sprite_store.WAFY_STORE5_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.GEGA_SPRITE5_GETp.qp_old());
-  /* p29.WOMY*/ sprite_store.WOMY_STORE6_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.XOJA_SPRITE6_GETp.qp_old());
-  /* p29.WAPO*/ sprite_store.WAPO_STORE7_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.GUTU_SPRITE7_GETp.qp_old());
-  /* p29.EXUQ*/ sprite_store.EXUQ_STORE8_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.FOXA_SPRITE8_GETp.qp_old());
-  /* p29.FONO*/ sprite_store.FONO_STORE9_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp(), _BYVA_LINE_RSTn, sprite_flag.GUZE_SPRITE9_GETp.qp_old());
+  /* p29.EBOJ*/ sprite_store.EBOJ_STORE0_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.GUVA_SPRITE0_GETp.qp_old());
+  /* p29.CEDY*/ sprite_store.CEDY_STORE1_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.ENUT_SPRITE1_GETp.qp_old());
+  /* p29.EGAV*/ sprite_store.EGAV_STORE2_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.EMOL_SPRITE2_GETp.qp_old());
+  /* p29.GOTA*/ sprite_store.GOTA_STORE3_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.GYFY_SPRITE3_GETp.qp_old());
+  /* p29.XUDY*/ sprite_store.XUDY_STORE4_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.GONO_SPRITE4_GETp.qp_old());
+  /* p29.WAFY*/ sprite_store.WAFY_STORE5_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.GEGA_SPRITE5_GETp.qp_old());
+  /* p29.WOMY*/ sprite_store.WOMY_STORE6_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.XOJA_SPRITE6_GETp.qp_old());
+  /* p29.WAPO*/ sprite_store.WAPO_STORE7_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.GUTU_SPRITE7_GETp.qp_old());
+  /* p29.EXUQ*/ sprite_store.EXUQ_STORE8_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.FOXA_SPRITE8_GETp.qp_old());
+  /* p29.FONO*/ sprite_store.FONO_STORE9_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.GUZE_SPRITE9_GETp.qp_old());
 
   /* p29.DYWE*/ wire _DYWE_STORE0_RSTp = or2(_DYBA_LINE_RSTp, sprite_store.EBOJ_STORE0_RSTp_evn.qp_new());
   /* p29.EFEV*/ wire _EFEV_STORE1_RSTp = or2(_DYBA_LINE_RSTp, sprite_store.CEDY_STORE1_RSTp_evn.qp_new());

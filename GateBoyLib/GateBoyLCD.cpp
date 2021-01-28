@@ -70,7 +70,8 @@ void GateBoy::set_lcd_pin_data(wire REMY_LD0n, wire RAVO_LD1n) {
 
 void GateBoy::set_lcd_pin_latch() {
   /* p01.UMEK*/ wire _UMEK_DIV06n = not1(div.UGOT_DIV06p.qp_new());
-  /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(PURE_LINE_ENDn());
+  /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(reg_lx.RUTU_x113p.qp_new());
+  /*#p24.KASA*/ wire _KASA_LINE_ENDp = not1(_PURE_LINE_ENDn);
   /*#p24.UMOB*/ wire _UMOB_DIV_06p = not1(_UMEK_DIV06n);
   /*#p24.KEDY*/ wire _KEDY_LCDC_ENn = not1(reg_lcdc.XONA_LCDC_LCDENn.qn_new());
   /*#p24.KAHE*/ wire _KAHE_LINE_ENDp = amux2(reg_lcdc.XONA_LCDC_LCDENn.qn_new(), _KASA_LINE_ENDp, _KEDY_LCDC_ENn, _UMOB_DIV_06p);

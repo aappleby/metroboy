@@ -46,13 +46,6 @@ SpriteDeltaY GateBoy::sub_sprite_y() {
   };
 }
 
-//-----------------------------------------------------------------------------
-// Pixel counter
-
-void GateBoy::tock_pix_counter(wire SACU_CLKPIPE_evn) {
-  (void)SACU_CLKPIPE_evn;
-}
-
 //------------------------------------------------------------------------------------------------------------------------
 
 BGScrollX GateBoy::add_scx() {
@@ -101,8 +94,8 @@ BGScrollY GateBoy::add_scy() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-SpritePix GateBoy::flip_sprite_pix(wire TEXY_SFETCHINGp, DFF8n BAXO_OAM_DB5p) {
-  /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(BAXO_OAM_DB5p.qp_new(), TEXY_SFETCHINGp);
+SpritePix GateBoy::flip_sprite_pix(DFF8n BAXO_OAM_DB5p) {
+  /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(BAXO_OAM_DB5p.qp_new(), TEXY_SFETCHINGp());
   /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D07p.qp_new(), new_bus.BUS_VRAM_D00p.qp_new());
   /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D06p.qp_new(), new_bus.BUS_VRAM_D01p.qp_new());
   /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D05p.qp_new(), new_bus.BUS_VRAM_D02p.qp_new());

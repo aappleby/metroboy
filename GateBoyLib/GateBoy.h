@@ -159,11 +159,9 @@ struct GateBoy {
   void tock_clocks();
   void tock_vid_clocks();
 
-  SpritePix flip_sprite_pix(wire TEXY_SFETCHINGp, DFF8n BAXO_OAM_DB5p);
+  SpritePix flip_sprite_pix(DFF8n BAXO_OAM_DB5p);
 
   SpriteDeltaY sub_sprite_y();
-
-  void tock_sprite_fetcher(wire TEKY_SFETCH_REQp_old);
 
   void set_cpu_pins();
 
@@ -190,8 +188,6 @@ struct GateBoy {
   void reg_tac_read();
   void reg_tac_write();
   void tock_timer();
-
-  void tock_pix_counter(wire SACU_CLKPIPE_evn);
 
   BGScrollX add_scx();
   BGScrollY add_scy();
@@ -220,8 +216,6 @@ struct GateBoy {
   void tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp);
   void tock_win_map_y();
 
-  void tock_tile_fetcher(wire NYXU_BFETCH_RSTn, wire MOCE_BFETCH_DONEn_old);
-
   void tock_reset(DFF17 UPOF_DIV15p);
 
   void set_lcd_pin_ctrl();
@@ -243,7 +237,6 @@ struct GateBoy {
   void reg_dma_tock();
   void reg_dma_read();
 
-  void tock_sprite_scanner();
   void ext_to_oam_data_bus();
   void vram_to_oam_data_bus();
 
@@ -349,21 +342,23 @@ struct GateBoy {
 
   //----------------------------------------
 
-
+#if 0
   wire ATEJ_LINE_RSTp_new() const {
     /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(lcd.CATU_START_SCANNING.qp_new());
     /* p28.BYHA*/ wire _BYHA_LINE_RSTn_new = or_and3(lcd.ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n_new, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
     /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_new = not1(_BYHA_LINE_RSTn_new);
     return bit(_ATEJ_LINE_RSTp_new);
   }
-  /* p27.XAHY*/ wire XAHY_LINE_RSTn_new() const { return not1(ATEJ_LINE_RSTp_new()); }
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp_new(), ATAR_VID_RSTp()); }
-  /* p28.ABAK*/ wire ABAK_LINE_RSTp_new() const { return  or2(ATEJ_LINE_RSTp_new(), AMYG_VID_RSTp()); }
+#endif
+
+  /* p27.XAHY*/ wire XAHY_LINE_RSTn_new() const { return not1(ATEJ_LINE_RSTp.qp_new()); }
+  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp.qp_new(), ATAR_VID_RSTp()); }
+  /* p28.ABAK*/ wire ABAK_LINE_RSTp_new() const { return  or2(ATEJ_LINE_RSTp.qp_new(), AMYG_VID_RSTp()); }
   /*#p29.BALU*/ wire BALU_LINE_RSTp_new() const { return not1(ANOM_LINE_RSTn_new()); }
   /* p28.BYVA*/ wire BYVA_LINE_RSTn_new() const { return not1(ABAK_LINE_RSTp_new()); }
   /* p29.DYBA*/ wire DYBA_LINE_RSTp_new() const { return not1(BYVA_LINE_RSTn_new()); }
   /*#p29.BAGY*/ wire BAGY_LINE_RSTn_new() const { return not1(BALU_LINE_RSTp_new()); }
-  /* p21.TADY*/ wire TADY_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp_new(), TOFU_VID_RSTp()); }
+  /* p21.TADY*/ wire TADY_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp.qp_new(), TOFU_VID_RSTp()); }
 
   /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(lcd.POPU_VBLANKp.qn_new()); }
 
@@ -530,11 +525,6 @@ struct GateBoy {
     return _NERU_VSYNCp;
   }
 
-  wire PURE_LINE_ENDn() const {
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(reg_lx.RUTU_x113p.qp_new());
-    return _PURE_LINE_ENDn;
-  }
-
   //-----------------------------------------------------------------------------
 
   wire TEXY_SFETCHINGp() const {
@@ -543,38 +533,6 @@ struct GateBoy {
     /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(_SAKY_SFETCHn, _TEPA_RENDERINGp); // def or
     /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
     return _TEXY_SFETCHINGp;
-  }
-
-  wire TUVO_PPU_OAM_RDp() const {
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_new());
-    /* p29.TUVO*/ wire _TUVO_PPU_OAM_RDp = nor3(_TEPA_RENDERINGp, sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.TESE_SFETCH_S2p.qp_new());
-    return _TUVO_PPU_OAM_RDp;
-  }
-
-  wire TACU_SPR_SEQ_5_TRIG() const {
-    /* p29.TYTU*/ wire _TYTU_SFETCH_S0n = not1(sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
-    /* p29.TACU*/ wire _TACU_SPR_SEQ_5_TRIG = nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new(), _TYTU_SFETCH_S0n);
-    return _TACU_SPR_SEQ_5_TRIG;
-  }
-
-  wire XUJY_OAM_CLKENp() const {
-    /* p25.VAPE*/ wire _VAPE_OAM_CLKENn = and2(TUVO_PPU_OAM_RDp(), TACU_SPR_SEQ_5_TRIG());
-    /* p25.XUJY*/ wire _XUJY_OAM_CLKENp = not1(_VAPE_OAM_CLKENn);
-    return _XUJY_OAM_CLKENp;
-  }
-
-
-  wire XUJA_SPR_OAM_LATCHn() const {
-    /* p28.WEFY*/ wire _WEFY_SPR_READp = and2(TUVO_PPU_OAM_RDp(), sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
-    /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(_WEFY_SPR_READp);
-    return _XUJA_SPR_OAM_LATCHn;
-  }
-
-  wire WUTY_SFETCH_DONE_TRIGp() const {
-    /* p29.TYNO*/ wire _TYNO = nand3(sprite_fetcher.TOXE_SFETCH_S0p.qp_new(), sprite_fetcher.SEBA_SFETCH_S1p_D5.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
-    /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn = or2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qn_new(), _TYNO);
-    /* p29.WUTY*/ wire _WUTY_SFETCH_DONE_TRIGp = not1(_VUSA_SPRITE_DONEn);
-    return _WUTY_SFETCH_DONE_TRIGp;
   }
 
   //-----------------------------------------------------------------------------
@@ -681,6 +639,9 @@ struct GateBoy {
   /*#p28.ACYL*/ Gate ACYL_SCANNINGp;
   /*#p28.FETO*/ Gate FETO_SCAN_DONEp;
   /* p29.FEPO*/ Gate FEPO_STORE_MATCHp;
+  /* p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp;
+  /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp;
+  /*#p21.SANU*/ Gate SANU_x113p;
 
   SpriteMatchFlag sprite_match;
   SpriteFirstMatch first_match;

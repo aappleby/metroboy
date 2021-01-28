@@ -530,9 +530,8 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p28.ANEL*/ lcd.ANEL_LINE_P002p.dff17(AWOH_xxCDxxGH(), ABEZ_VID_RSTn(),  lcd.CATU_START_SCANNING.qp_old());
     /*#p29.CATU*/ lcd.CATU_START_SCANNING.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), _ABOV_LINE_P908p_old);
 
-    /*#p21.SANU*/ wire _SANU_x113p_old = and4(reg_lx.TYRY_LX6p.qp_old(), reg_lx.TAHA_LX5p.qp_old(), reg_lx.SUDE_LX4p.qp_old(), reg_lx.SAXO_LX0p.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
     /*#p21.NYPE*/ reg_lx.NYPE_x113p.dff17(TALU_xxCDEFxx(), LYFE_VID_RSTn(), reg_lx.RUTU_x113p.qp_old());
-    /*#p21.RUTU*/ reg_lx.RUTU_x113p.dff17(SONO_ABxxxxGH(), LYFE_VID_RSTn(), _SANU_x113p_old);
+    /*#p21.RUTU*/ reg_lx.RUTU_x113p.dff17(SONO_ABxxxxGH(), LYFE_VID_RSTn(), SANU_x113p.qp_old());
 
     /*#p21.POPU*/ lcd.POPU_VBLANKp.dff17(reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), _XYVO_y144p_old);
 
@@ -546,6 +545,7 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p21.TYRY*/ reg_lx.TYRY_LX6p.dff17(reg_lx.TAHA_LX5p.qn_new(), _MUDE_X_RSTn, reg_lx.TYRY_LX6p.qn_old());
 
     /*#p21.MYTA*/ reg_ly.MYTA_y153p.dff17(reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), NOKO_y153p.qp_old());
+    /*#p21.SANU*/ SANU_x113p = and4(reg_lx.TYRY_LX6p.qp_new(), reg_lx.TAHA_LX5p.qp_new(), reg_lx.SUDE_LX4p.qp_new(), reg_lx.SAXO_LX0p.qp_new()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
 
     /*#p21.LAMA*/ wire _LAMA_Y_RSTn = nor2(reg_ly.MYTA_y153p.qp_new(), LYHA_VID_RSTp());
     /*#p21.MUWY*/ reg_ly.MUWY_LY0p.dff17(reg_lx.RUTU_x113p.qp_new(), _LAMA_Y_RSTn, reg_ly.MUWY_LY0p.qn_old());
@@ -579,6 +579,10 @@ void GateBoy::tock_slow(int pass_index) {
     /* p23.WAMA_LY5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_VARO_FF44_RDn, _XAGA_LY5n);
     /* p23.WAVO_LY6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_VARO_FF44_RDn, _XUCE_LY6n);
     /* p23.WEZE_LY7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_VARO_FF44_RDn, _XOWO_LY7n);
+
+    /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(lcd.CATU_START_SCANNING.qp_new());
+    /* p28.BYHA*/ wire _BYHA_LINE_RSTn = or_and3(lcd.ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ ATEJ_LINE_RSTp = not1(_BYHA_LINE_RSTn);
   }
 
   //----------------------------------------
@@ -748,7 +752,7 @@ void GateBoy::tock_slow(int pass_index) {
       /*#p29.TOBU*/ sprite_fetcher.TOBU_SFETCH_S1p_D2.dff17(TAVA_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), sprite_fetcher.TULY_SFETCH_S1p.qp_old());
 
       /* p27.RYCE*/ wire _RYCE_SFETCH_TRIGp = and2(sprite_fetcher.SOBU_SFETCH_REQp.qp_new(), sprite_fetcher.SUDA_SFETCH_REQp.qn_new());
-      /*#p27.SECA*/ wire _SECA_SFETCH_RSTn = nor3(_RYCE_SFETCH_TRIGp, ROSY_VID_RSTp(), ATEJ_LINE_RSTp_new());
+      /*#p27.SECA*/ wire _SECA_SFETCH_RSTn = nor3(_RYCE_SFETCH_TRIGp, ROSY_VID_RSTp(), ATEJ_LINE_RSTp.qp_new());
 
       // Feedback loop
       for (int feedback = 0; feedback < 2; feedback++) {
@@ -759,7 +763,11 @@ void GateBoy::tock_slow(int pass_index) {
         /*#p29.TESE*/ sprite_fetcher.TESE_SFETCH_S2p.dff17_any(sprite_fetcher.TULY_SFETCH_S1p.qn_any(), _SECA_SFETCH_RSTn, sprite_fetcher.TESE_SFETCH_S2p.qn_any());
       }
 
-      /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SFETCH_DONE_TRIGp(), TAVE_PRELOAD_DONE_TRIGp); // def nor
+      /* p29.TYNO*/ wire _TYNO = nand3(sprite_fetcher.TOXE_SFETCH_S0p.qp_new(), sprite_fetcher.SEBA_SFETCH_S1p_D5.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
+      /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn = or2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qn_new(), _TYNO);
+      /* p29.WUTY*/ WUTY_SFETCH_DONE_TRIGp = not1(_VUSA_SPRITE_DONEn);
+
+      /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SFETCH_DONE_TRIGp.qp_new(), TAVE_PRELOAD_DONE_TRIGp); // def nor
       /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RSTn, _VEKU_SFETCH_RUNNING_RSTn);
     }
 
@@ -776,7 +784,7 @@ void GateBoy::tock_slow(int pass_index) {
       // Sprite store counter. The sprite count clock stops ticking once we have 10 sprites.
       // Sprite Y matcher. This is using an adder as a subtracter by inverting the first input.
 
-      /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn = not1(ATEJ_LINE_RSTp_new());
+      /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn = not1(ATEJ_LINE_RSTp.qp_new());
 
       for (int feedback = 0; feedback < 2; feedback++) {
         /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL_new = and2(sprite_store.CUXY_SPRITE_COUNT1.qp_any(), sprite_store.DYBE_SPRITE_COUNT3.qp_any());
@@ -1081,7 +1089,8 @@ void GateBoy::tock_slow(int pass_index) {
     oam_latch_to_cpu();
   }
 
-  sprite_pix = flip_sprite_pix(TEXY_SFETCHINGp(), oam_temp_b.BAXO_OAM_DB5p);
+
+  sprite_pix = flip_sprite_pix(oam_temp_b.BAXO_OAM_DB5p);
 
   //----------------------------------------
   // Misc tocks

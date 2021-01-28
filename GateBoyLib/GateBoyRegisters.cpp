@@ -50,29 +50,7 @@ SpriteDeltaY GateBoy::sub_sprite_y() {
 // Pixel counter
 
 void GateBoy::tock_pix_counter(wire SACU_CLKPIPE_evn) {
-  // Pixel counter, has carry lookahead because this can increment every tcycle
-  /* p21.RYBO*/ wire RYBO_old = xor2(pix_count.XEHO_PX0p.qp_old(), pix_count.SAVY_PX1p.qp_old()); // XOR layout 1, feet facing gnd, this should def be regular xor
-  /* p21.XUKE*/ wire XUKE_old = and2(pix_count.XEHO_PX0p.qp_old(), pix_count.SAVY_PX1p.qp_old());
-  /* p21.XYLE*/ wire XYLE_old = and2(pix_count.XODU_PX2p.qp_old(), XUKE_old);
-  /* p21.XEGY*/ wire XEGY_old = xor2(pix_count.XODU_PX2p.qp_old(), XUKE_old); // feet facing gnd
-  /* p21.XORA*/ wire XORA_old = xor2(pix_count.XYDO_PX3p.qp_old(), XYLE_old); // feet facing gnd
-
-  /* p21.XEHO*/ pix_count.XEHO_PX0p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), pix_count.XEHO_PX0p.qn_old());
-  /* p21.SAVY*/ pix_count.SAVY_PX1p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), RYBO_old);
-  /* p21.XODU*/ pix_count.XODU_PX2p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), XEGY_old);
-  /* p21.XYDO*/ pix_count.XYDO_PX3p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), XORA_old);
-
-  /* p24.TOCA*/ wire TOCA_new = not1(pix_count.XYDO_PX3p.qp_new());
-  /* p21.SAKE*/ wire SAKE_old = xor2(pix_count.TUHU_PX4p.qp_old(), pix_count.TUKY_PX5p.qp_old());
-  /* p21.TYBA*/ wire TYBA_old = and2(pix_count.TUHU_PX4p.qp_old(), pix_count.TUKY_PX5p.qp_old());
-  /* p21.SURY*/ wire SURY_old = and2(pix_count.TAKO_PX6p.qp_old(), TYBA_old);
-  /* p21.TYGE*/ wire TYGE_old = xor2(pix_count.TAKO_PX6p.qp_old(), TYBA_old);
-  /* p21.ROKU*/ wire ROKU_old = xor2(pix_count.SYBE_PX7p.qp_old(), SURY_old); // derp
-
-  /* p21.TUHU*/ pix_count.TUHU_PX4p.dff17(TOCA_new, TADY_LINE_RSTn_new(), pix_count.TUHU_PX4p.qn_old());
-  /* p21.TUKY*/ pix_count.TUKY_PX5p.dff17(TOCA_new, TADY_LINE_RSTn_new(), SAKE_old); // this is a doc
-  /* p21.TAKO*/ pix_count.TAKO_PX6p.dff17(TOCA_new, TADY_LINE_RSTn_new(), TYGE_old);
-  /* p21.SYBE*/ pix_count.SYBE_PX7p.dff17(TOCA_new, TADY_LINE_RSTn_new(), ROKU_old);
+  (void)SACU_CLKPIPE_evn;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

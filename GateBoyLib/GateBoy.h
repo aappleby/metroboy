@@ -300,7 +300,7 @@ struct GateBoy {
 
   void set_lcd_pin_flip(DFF17  TULU_DIV07p, DFF9 XONA_LCDC_LCDENn);
   void set_lcd_pin_vsync();
-  void set_lcd_pin_hsync(wire TYFA_CLKPIPE_odd, DFF17 XYDO_PX3p_old);
+  void set_lcd_pin_hsync();
   void set_lcd_pin_data(wire REMY_LD0n, wire RAVO_LD1n);
   void set_lcd_pin_latch();
   void set_lcd_pin_clock(wire SACU_CLKPIPE_evn);

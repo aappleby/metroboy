@@ -465,19 +465,9 @@ void GateBoy::tock_slow(int pass_index) {
   wire XYVO_y144p_old = this->XYVO_y144p_old();
   auto RUTU_x113p_old = reg_lx.RUTU_x113p;
 
-  //wire FETO_SCAN_DONEp_old = sprite_scanner.FETO_SCAN_DONEp_old();
-
   auto RYDY_WIN_HITp_old = win_reg.RYDY_WIN_HITp; //.qp_old();
 
   auto RYFA_WIN_FETCHn_A_old = win_reg.RYFA_WIN_FETCHn_A; //.qp_old();
-
-  auto XYDO_PX3p_old = pix_count.XYDO_PX3p;
-
-  auto BAXO_OAM_DB5p_old = oam_temp_b.BAXO_OAM_DB5p;
-
-  auto oam_temp_b_old = oam_temp_b;
-
-  //SpritePix sprite_pix_old = flip_sprite_pix(TEXY_SFETCHINGp_old(), BAXO_OAM_DB5p_old);
 
   //-----------------------------------------------------------------------------
 
@@ -773,8 +763,35 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p27.ROXY*/ fine_scroll.ROXY_FINE_SCROLL_DONEn.nor_latch(_PAHA_RENDERINGn, _POVA_FINE_MATCH_TRIGp);
   }
 
+  /* p24.PAHO*/ lcd.PAHO_X_8_SYNC.dff17(ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), pix_count.XYDO_PX3p.qp_old());
+
   /*#p24.SACU*/ wire SACU_CLKPIPE_evn = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
-  tock_pix_counter(SACU_CLKPIPE_evn);
+  //tock_pix_counter(SACU_CLKPIPE_evn);
+  {
+    // Pixel counter, has carry lookahead because this can increment every tcycle
+    /* p21.RYBO*/ wire RYBO_old = xor2(pix_count.XEHO_PX0p.qp_old(), pix_count.SAVY_PX1p.qp_old()); // XOR layout 1, feet facing gnd, this should def be regular xor
+    /* p21.XUKE*/ wire XUKE_old = and2(pix_count.XEHO_PX0p.qp_old(), pix_count.SAVY_PX1p.qp_old());
+    /* p21.XYLE*/ wire XYLE_old = and2(pix_count.XODU_PX2p.qp_old(), XUKE_old);
+    /* p21.XEGY*/ wire XEGY_old = xor2(pix_count.XODU_PX2p.qp_old(), XUKE_old); // feet facing gnd
+    /* p21.XORA*/ wire XORA_old = xor2(pix_count.XYDO_PX3p.qp_old(), XYLE_old); // feet facing gnd
+
+    /* p21.XEHO*/ pix_count.XEHO_PX0p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), pix_count.XEHO_PX0p.qn_old());
+    /* p21.SAVY*/ pix_count.SAVY_PX1p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), RYBO_old);
+    /* p21.XODU*/ pix_count.XODU_PX2p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), XEGY_old);
+    /* p21.XYDO*/ pix_count.XYDO_PX3p.dff17(SACU_CLKPIPE_evn, TADY_LINE_RSTn_new(), XORA_old);
+
+    /* p24.TOCA*/ wire TOCA_new = not1(pix_count.XYDO_PX3p.qp_new());
+    /* p21.SAKE*/ wire SAKE_old = xor2(pix_count.TUHU_PX4p.qp_old(), pix_count.TUKY_PX5p.qp_old());
+    /* p21.TYBA*/ wire TYBA_old = and2(pix_count.TUHU_PX4p.qp_old(), pix_count.TUKY_PX5p.qp_old());
+    /* p21.SURY*/ wire SURY_old = and2(pix_count.TAKO_PX6p.qp_old(), TYBA_old);
+    /* p21.TYGE*/ wire TYGE_old = xor2(pix_count.TAKO_PX6p.qp_old(), TYBA_old);
+    /* p21.ROKU*/ wire ROKU_old = xor2(pix_count.SYBE_PX7p.qp_old(), SURY_old); // derp
+
+    /* p21.TUHU*/ pix_count.TUHU_PX4p.dff17(TOCA_new, TADY_LINE_RSTn_new(), pix_count.TUHU_PX4p.qn_old());
+    /* p21.TUKY*/ pix_count.TUKY_PX5p.dff17(TOCA_new, TADY_LINE_RSTn_new(), SAKE_old); // this is a doc
+    /* p21.TAKO*/ pix_count.TAKO_PX6p.dff17(TOCA_new, TADY_LINE_RSTn_new(), TYGE_old);
+    /* p21.SYBE*/ pix_count.SYBE_PX7p.dff17(TOCA_new, TADY_LINE_RSTn_new(), ROKU_old);
+  }
 
   /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn());
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
@@ -876,7 +893,7 @@ void GateBoy::tock_slow(int pass_index) {
     set_lcd_pin_ctrl();
     set_lcd_pin_flip(div.TULU_DIV07p, reg_lcdc.XONA_LCDC_LCDENn);
     set_lcd_pin_vsync();
-    set_lcd_pin_hsync(TYFA_CLKPIPE_odd, XYDO_PX3p_old);
+    set_lcd_pin_hsync();
     set_lcd_pin_latch();
 
     set_lcd_pin_clock(SACU_CLKPIPE_evn);

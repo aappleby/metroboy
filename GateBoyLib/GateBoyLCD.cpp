@@ -45,12 +45,7 @@ void GateBoy::set_lcd_pin_vsync() {
 // That would be a loooot of gate delay.
 // Could we possibly be incrementing X3p one phase early?
 
-void GateBoy::set_lcd_pin_hsync(wire TYFA_CLKPIPE_odd, DFF17 XYDO_PX3p_old) {
-  /*#p24.SEGU*/ wire _SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
-  /*#p24.ROXO*/ wire _ROXO_CLKPIPE_odd = not1(_SEGU_CLKPIPE_evn);
-
-  /* p24.PAHO*/ lcd.PAHO_X_8_SYNC.dff17(_ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
-
+void GateBoy::set_lcd_pin_hsync() {
   // LCD horizontal sync pin latch
   /*#p24.POME*/ lcd.POME = nor2(AVAP_SCAN_DONE_TRIGp(), lcd.POFY);
   /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), lcd.POME);

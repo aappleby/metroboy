@@ -446,14 +446,12 @@ void GateBoy::tock_slow(int pass_index) {
   //-----------------------------------------------------------------------------
   // We need the sprite match result from the previous cycle, so we recalculate it here. :/
 
-  /* p29.CEHA*/ wire _CEHA_SCANNINGp_old  = not1(sprite_scanner.CENO_SCANNINGn.qn_old());
-  /*#p29.BYJO*/ wire _BYJO_SCANNINGn_old  = not1(_CEHA_SCANNINGp_old);
-  /*#p29.AZEM*/ wire _AZEM_RENDERINGp_old = and2(XYMU_RENDERINGn.qn_old(), _BYJO_SCANNINGn_old);
-  /*#p29.AROR*/ wire _AROR_MATCH_ENp_old  = and2(_AZEM_RENDERINGp_old, reg_lcdc.XYLO_LCDC_SPENn.qn_old());
+  ///* p29.CEHA*/ wire _CEHA_SCANNINGp_old  = not1(sprite_scanner.CENO_SCANNINGn.qn_old());
+  ///*#p29.BYJO*/ wire _BYJO_SCANNINGn_old  = not1(_CEHA_SCANNINGp_old);
+  ///*#p29.AZEM*/ wire _AZEM_RENDERINGp_old = and2(XYMU_RENDERINGn.qn_old(), _BYJO_SCANNINGn_old);
+  ///*#p29.AROR*/ wire _AROR_MATCH_ENp_old  = and2(_AZEM_RENDERINGp_old, reg_lcdc.XYLO_LCDC_SPENn.qn_old());
 
-  SpriteMatchFlag old_match = get_match_flags_old(_AROR_MATCH_ENp_old);
-
-  SpriteFirstMatch old_first_match = get_first_match(old_match);
+  SpriteFirstMatch old_first_match = get_first_match(sprite_match);
 
   wire TAVE_PRELOAD_DONE_TRIGp_old = this->TAVE_PRELOAD_DONE_TRIGp_old();
 
@@ -466,7 +464,7 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.MOCE*/ wire MOCE_BFETCH_DONEn_old = nand3(tile_fetcher._LAXU_BFETCH_S0p.qp_old(), tile_fetcher._NYVA_BFETCH_S2p.qp_old(), NYXU_BFETCH_RSTn_old);
   /* p27.LYRY*/ wire LYRY_BFETCH_DONEp_old = not1(MOCE_BFETCH_DONEn_old);
 
-  /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(FEPO_STORE_MATCHp(old_match), TUKU_WIN_HITn_old(), LYRY_BFETCH_DONEp_old, SOWO_SFETCH_RUNNINGn_old());
+  /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(FEPO_STORE_MATCHp_old(sprite_match), TUKU_WIN_HITn_old(), LYRY_BFETCH_DONEp_old, SOWO_SFETCH_RUNNINGn_old());
 
   auto WYMO_LCDC_WINENn_old = reg_lcdc.WYMO_LCDC_WINENn;
 
@@ -711,7 +709,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   }
 
-  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(FEPO_STORE_MATCHp(old_match), WODU_HBLANKp_old, MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(FEPO_STORE_MATCHp_old(sprite_match), WODU_HBLANKp_old, MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
   /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn_new(), tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
@@ -796,13 +794,13 @@ void GateBoy::tock_slow(int pass_index) {
 
   /*#p29.AZEM*/ wire _AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn());
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
-  SpriteMatchFlag sprite_match = get_match_flags_new(_AROR_MATCH_ENp);
+  sprite_match = get_match_flags_new(_AROR_MATCH_ENp);
   {
     SpriteFirstMatch first_match = get_first_match(sprite_match);
     get_sprite(first_match);
-    ly_to_sprite_line(FEPO_STORE_MATCHp(sprite_match));
+    ly_to_sprite_line(FEPO_STORE_MATCHp_new(sprite_match));
   }
-  /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn(sprite_match), XANO_PX167p_new()); // WODU goes high on odd, cleared on H
+  /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn_new(sprite_match), XANO_PX167p_new()); // WODU goes high on odd, cleared on H
 
   {
     /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), RYFA_WIN_FETCHn_A_old.qp_old());

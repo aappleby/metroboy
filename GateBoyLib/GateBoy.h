@@ -537,7 +537,7 @@ struct GateBoy {
     ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
     ///*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = mux2p(_TEFY_VRAM_MCSp, _TUTO_DBG_VRAMp, _TUCA_CPU_VRAM_RDp);
 
-    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), cpu_bus.ABUZ_EXT_RAM_CS_CLK);
+    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), cpu_bus.ABUZ_EXT_RAM_CS_CLK.qp_new());
     /*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = not1(_TUCA_CPU_VRAM_RDp);
 
     return _TOLE_CPU_VRAM_RDp;
@@ -575,14 +575,14 @@ struct GateBoy {
 
 
   wire SUZU_WIN_FIRST_TILEne_old() const {
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_old = not1(win_reg.RYDY_WIN_HITp);
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_old = not1(win_reg.RYDY_WIN_HITp.qp_old());
     /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_old = nand2(_SYLO_WIN_HITn_old, win_reg.SOVY_WIN_HITp.qp_old());
     /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_old = not1(_TUXY_WIN_FIRST_TILEne_old);
     return _SUZU_WIN_FIRST_TILEne_old;
   }
 
   wire SUZU_WIN_FIRST_TILEne_new() const {
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_new = not1(win_reg.RYDY_WIN_HITp);
+    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_new = not1(win_reg.RYDY_WIN_HITp.qp_new());
     /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_new = nand2(_SYLO_WIN_HITn_new, win_reg.SOVY_WIN_HITp.qp_new());
     /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_new = not1(_TUXY_WIN_FIRST_TILEne_new);
     return _SUZU_WIN_FIRST_TILEne_new;
@@ -598,12 +598,12 @@ struct GateBoy {
     return _SEKO_WIN_FETCH_TRIGp_new;
   }
 
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn_old() const { return not1(win_reg.RYDY_WIN_HITp); }
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn_old() const { return not1(win_reg.RYDY_WIN_HITp.qp_old()); }
   /*#p24.TOMU*/ wire TOMU_WIN_HITp_old() const { return not1(SYLO_WIN_HITn_old()); }
   /* p27.TUKU*/ wire TUKU_WIN_HITn_old() const { return not1(TOMU_WIN_HITp_old()); }
   /*#p24.SOCY*/ wire SOCY_WIN_HITn_old() const { return not1(TOMU_WIN_HITp_old()); }
 
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn_new() const { return not1(win_reg.RYDY_WIN_HITp); }
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn_new() const { return not1(win_reg.RYDY_WIN_HITp.qp_new()); }
   /*#p24.TOMU*/ wire TOMU_WIN_HITp_new() const { return not1(SYLO_WIN_HITn_new()); }
   /* p27.TUKU*/ wire TUKU_WIN_HITn_new() const { return not1(TOMU_WIN_HITp_new()); }
   /*#p24.SOCY*/ wire SOCY_WIN_HITn_new() const { return not1(TOMU_WIN_HITp_new()); }
@@ -627,7 +627,7 @@ struct GateBoy {
 
   wire GESE_SCAN_MATCH_Yp(SpriteDeltaY& delta, DFF9 XYMO_LCDC_SPSIZEn) {
     /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH_new = or2(XYMO_LCDC_SPSIZEn.qn_new(), delta.GYKY_YDIFF3.sum);
-    /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(delta.GACE_SPRITE_DELTA4, delta.GUVU_SPRITE_DELTA5, delta.GYDA_SPRITE_DELTA6, delta.GEWY_SPRITE_DELTA7, delta.WUHU_YDIFF7.carry, _GOVU_SPSIZE_MATCH_new);
+    /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(delta.GACE_SPRITE_DELTA4.qp_new(), delta.GUVU_SPRITE_DELTA5.qp_new(), delta.GYDA_SPRITE_DELTA6.qp_new(), delta.GEWY_SPRITE_DELTA7.qp_new(), delta.WUHU_YDIFF7.carry, _GOVU_SPSIZE_MATCH_new);
     /* p29.GESE*/ wire _GESE_SCAN_MATCH_Yp_new = not1(_WOTA_SCAN_MATCH_Yn_new);
     return _GESE_SCAN_MATCH_Yp_new;
   }
@@ -772,16 +772,24 @@ struct GateBoy {
   /*#p29.BYJO*/ wire BYJO_SCANNINGn() const { return not1(CEHA_SCANNINGp()); }
 
 
-  wire FEPO_STORE_MATCHp(SpriteMatchFlag& flag) const {
-    /* p29.FEFY*/ wire _FEFY_STORE_MATCHp = nand5(flag.XAGE_STORE4_MATCHn, flag.YLOZ_STORE3_MATCHn, flag.DEGO_STORE2_MATCHn, flag.DYDU_STORE1_MATCHn, flag.YDUG_STORE0_MATCHn);
-    /* p29.FOVE*/ wire _FOVE_STORE_MATCHp = nand5(flag.YGEM_STORE9_MATCHn, flag.EFYL_STORE8_MATCHn, flag.DYKA_STORE7_MATCHn, flag.YBEZ_STORE6_MATCHn, flag.EGOM_STORE5_MATCHn);
+  wire FEPO_STORE_MATCHp_old(SpriteMatchFlag& flag) const {
+    /* p29.FEFY*/ wire _FEFY_STORE_MATCHp = nand5(flag.XAGE_STORE4_MATCHn.qp_old(), flag.YLOZ_STORE3_MATCHn.qp_old(), flag.DEGO_STORE2_MATCHn.qp_old(), flag.DYDU_STORE1_MATCHn.qp_old(), flag.YDUG_STORE0_MATCHn.qp_old());
+    /* p29.FOVE*/ wire _FOVE_STORE_MATCHp = nand5(flag.YGEM_STORE9_MATCHn.qp_old(), flag.EFYL_STORE8_MATCHn.qp_old(), flag.DYKA_STORE7_MATCHn.qp_old(), flag.YBEZ_STORE6_MATCHn.qp_old(), flag.EGOM_STORE5_MATCHn.qp_old());
+    /* p29.FEPO*/ wire _FEPO_STORE_MATCHp = or2(_FEFY_STORE_MATCHp, _FOVE_STORE_MATCHp);
+    return _FEPO_STORE_MATCHp;
+  }
+
+  wire FEPO_STORE_MATCHp_new(SpriteMatchFlag& flag) const {
+    /* p29.FEFY*/ wire _FEFY_STORE_MATCHp = nand5(flag.XAGE_STORE4_MATCHn.qp_new(), flag.YLOZ_STORE3_MATCHn.qp_new(), flag.DEGO_STORE2_MATCHn.qp_new(), flag.DYDU_STORE1_MATCHn.qp_new(), flag.YDUG_STORE0_MATCHn.qp_new());
+    /* p29.FOVE*/ wire _FOVE_STORE_MATCHp = nand5(flag.YGEM_STORE9_MATCHn.qp_new(), flag.EFYL_STORE8_MATCHn.qp_new(), flag.DYKA_STORE7_MATCHn.qp_new(), flag.YBEZ_STORE6_MATCHn.qp_new(), flag.EGOM_STORE5_MATCHn.qp_new());
     /* p29.FEPO*/ wire _FEPO_STORE_MATCHp = or2(_FEFY_STORE_MATCHp, _FOVE_STORE_MATCHp);
     return _FEPO_STORE_MATCHp;
   }
 
   //-----------------------------------------------------------------------------
 
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn(SpriteMatchFlag& flag) const { return not1(FEPO_STORE_MATCHp(flag)); }
+  /*#p21.XENA*/ wire XENA_STORE_MATCHn_old(SpriteMatchFlag& flag) const { return not1(FEPO_STORE_MATCHp_old(flag)); }
+  /*#p21.XENA*/ wire XENA_STORE_MATCHn_new(SpriteMatchFlag& flag) const { return not1(FEPO_STORE_MATCHp_new(flag)); }
 
   /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const { return not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new()); }
 
@@ -902,6 +910,8 @@ struct GateBoy {
 
   /*#p21.WODU*/ Gate WODU_HBLANKp;
   /*#p21.NOKO*/ Gate NOKO_y153p;
+
+  SpriteMatchFlag sprite_match;
 
   //----------
 

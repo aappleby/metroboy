@@ -377,15 +377,15 @@ SpriteMatchFlag GateBoy::get_match_flags_new(wire _AROR_MATCH_ENp_new) {
 //------------------------------------------------------------------------------------------------------------------------
 
 SpriteFirstMatch GateBoy::get_first_match(SpriteMatchFlag match_flag) const {
-  /* p29.WEFU*/ wire _WEFU_STORE0_MATCH = not1(match_flag.YDUG_STORE0_MATCHn);
-  /* p29.GAJA*/ wire _GAJA_STORE1_MATCH = not1(match_flag.DYDU_STORE1_MATCHn);
-  /* p29.GUPO*/ wire _GUPO_STORE2_MATCH = not1(match_flag.DEGO_STORE2_MATCHn);
-  /* p29.WEBO*/ wire _WEBO_STORE3_MATCH = not1(match_flag.YLOZ_STORE3_MATCHn);
-  /* p29.WUNA*/ wire _WUNA_STORE4_MATCH = not1(match_flag.XAGE_STORE4_MATCHn);
-  /* p29.GABA*/ wire _GABA_STORE5_MATCH = not1(match_flag.EGOM_STORE5_MATCHn);
-  /* p29.WASE*/ wire _WASE_STORE6_MATCH = not1(match_flag.YBEZ_STORE6_MATCHn);
-  /* p29.GYTE*/ wire _GYTE_STORE7_MATCH = not1(match_flag.DYKA_STORE7_MATCHn);
-  /* p29.GEKE*/ wire _GEKE_STORE8_MATCH = not1(match_flag.EFYL_STORE8_MATCHn);
+  /* p29.WEFU*/ wire _WEFU_STORE0_MATCH = not1(match_flag.YDUG_STORE0_MATCHn.qp_new());
+  /* p29.GAJA*/ wire _GAJA_STORE1_MATCH = not1(match_flag.DYDU_STORE1_MATCHn.qp_new());
+  /* p29.GUPO*/ wire _GUPO_STORE2_MATCH = not1(match_flag.DEGO_STORE2_MATCHn.qp_new());
+  /* p29.WEBO*/ wire _WEBO_STORE3_MATCH = not1(match_flag.YLOZ_STORE3_MATCHn.qp_new());
+  /* p29.WUNA*/ wire _WUNA_STORE4_MATCH = not1(match_flag.XAGE_STORE4_MATCHn.qp_new());
+  /* p29.GABA*/ wire _GABA_STORE5_MATCH = not1(match_flag.EGOM_STORE5_MATCHn.qp_new());
+  /* p29.WASE*/ wire _WASE_STORE6_MATCH = not1(match_flag.YBEZ_STORE6_MATCHn.qp_new());
+  /* p29.GYTE*/ wire _GYTE_STORE7_MATCH = not1(match_flag.DYKA_STORE7_MATCHn.qp_new());
+  /* p29.GEKE*/ wire _GEKE_STORE8_MATCH = not1(match_flag.EFYL_STORE8_MATCHn.qp_new());
 
   /* p29.GEZE*/ wire _GEZE_STORE0_MATCH = or2(_WEFU_STORE0_MATCH, SIG_GND);
   /* p29.FUMA*/ wire _FUMA_STORE1_MATCH = or2(_GAJA_STORE1_MATCH, _GEZE_STORE0_MATCH);
@@ -397,16 +397,16 @@ SpriteFirstMatch GateBoy::get_first_match(SpriteMatchFlag match_flag) const {
   /* p29.FAVO*/ wire _FAVO_STORE7_MATCH = or2(_GYTE_STORE7_MATCH, _WYLA_STORE6_MATCH);
   /* p29.GYGA*/ wire _GYGA_STORE8_MATCH = or2(_GEKE_STORE8_MATCH, _FAVO_STORE7_MATCH);
 
-  /* p29.GUVA*/ wire _GUVA_SPRITE0_GETp = nor2(match_flag.YDUG_STORE0_MATCHn, SIG_GND);
-  /* p29.ENUT*/ wire _ENUT_SPRITE1_GETp = nor2(match_flag.DYDU_STORE1_MATCHn, _GEZE_STORE0_MATCH);
-  /* p29.EMOL*/ wire _EMOL_SPRITE2_GETp = nor2(match_flag.DEGO_STORE2_MATCHn, _FUMA_STORE1_MATCH);
-  /* p29.GYFY*/ wire _GYFY_SPRITE3_GETp = nor2(match_flag.YLOZ_STORE3_MATCHn, _GEDE_STORE2_MATCH);
-  /* p29.GONO*/ wire _GONO_SPRITE4_GETp = nor2(match_flag.XAGE_STORE4_MATCHn, _WUTO_STORE3_MATCH);
-  /* p29.GEGA*/ wire _GEGA_SPRITE5_GETp = nor2(match_flag.EGOM_STORE5_MATCHn, _XYLA_STORE4_MATCH);
-  /* p29.XOJA*/ wire _XOJA_SPRITE6_GETp = nor2(match_flag.YBEZ_STORE6_MATCHn, _WEJA_STORE5_MATCH);
-  /* p29.GUTU*/ wire _GUTU_SPRITE7_GETp = nor2(match_flag.DYKA_STORE7_MATCHn, _WYLA_STORE6_MATCH);
-  /* p29.FOXA*/ wire _FOXA_SPRITE8_GETp = nor2(match_flag.EFYL_STORE8_MATCHn, _FAVO_STORE7_MATCH);
-  /* p29.GUZE*/ wire _GUZE_SPRITE9_GETp = nor2(match_flag.YGEM_STORE9_MATCHn, _GYGA_STORE8_MATCH);
+  /* p29.GUVA*/ wire _GUVA_SPRITE0_GETp = nor2(match_flag.YDUG_STORE0_MATCHn.qp_new(), SIG_GND);
+  /* p29.ENUT*/ wire _ENUT_SPRITE1_GETp = nor2(match_flag.DYDU_STORE1_MATCHn.qp_new(), _GEZE_STORE0_MATCH);
+  /* p29.EMOL*/ wire _EMOL_SPRITE2_GETp = nor2(match_flag.DEGO_STORE2_MATCHn.qp_new(), _FUMA_STORE1_MATCH);
+  /* p29.GYFY*/ wire _GYFY_SPRITE3_GETp = nor2(match_flag.YLOZ_STORE3_MATCHn.qp_new(), _GEDE_STORE2_MATCH);
+  /* p29.GONO*/ wire _GONO_SPRITE4_GETp = nor2(match_flag.XAGE_STORE4_MATCHn.qp_new(), _WUTO_STORE3_MATCH);
+  /* p29.GEGA*/ wire _GEGA_SPRITE5_GETp = nor2(match_flag.EGOM_STORE5_MATCHn.qp_new(), _XYLA_STORE4_MATCH);
+  /* p29.XOJA*/ wire _XOJA_SPRITE6_GETp = nor2(match_flag.YBEZ_STORE6_MATCHn.qp_new(), _WEJA_STORE5_MATCH);
+  /* p29.GUTU*/ wire _GUTU_SPRITE7_GETp = nor2(match_flag.DYKA_STORE7_MATCHn.qp_new(), _WYLA_STORE6_MATCH);
+  /* p29.FOXA*/ wire _FOXA_SPRITE8_GETp = nor2(match_flag.EFYL_STORE8_MATCHn.qp_new(), _FAVO_STORE7_MATCH);
+  /* p29.GUZE*/ wire _GUZE_SPRITE9_GETp = nor2(match_flag.YGEM_STORE9_MATCHn.qp_new(), _GYGA_STORE8_MATCH);
 
   return {
     bit(_GUVA_SPRITE0_GETp),
@@ -427,16 +427,16 @@ SpriteFirstMatch GateBoy::get_first_match(SpriteMatchFlag match_flag) const {
 
 void GateBoy::get_sprite() {
 
-  /* p29.FURO*/ wire _FURO_SPRITE0_GETn = not1(first_match.GUVA_SPRITE0_GETp);
-  /* p29.DYDO*/ wire _DYDO_SPRITE1_GETn = not1(first_match.ENUT_SPRITE1_GETp);
-  /* p29.FAME*/ wire _FAME_SPRITE2_GETn = not1(first_match.EMOL_SPRITE2_GETp);
-  /* p29.GYMA*/ wire _GYMA_SPRITE3_GETn = not1(first_match.GYFY_SPRITE3_GETp);
-  /* p29.GOWO*/ wire _GOWO_SPRITE4_GETn = not1(first_match.GONO_SPRITE4_GETp);
-  /* p29.GYGY*/ wire _GYGY_SPRITE5_GETn = not1(first_match.GEGA_SPRITE5_GETp);
-  /* p29.XYME*/ wire _XYME_SPRITE6_GETn = not1(first_match.XOJA_SPRITE6_GETp);
-  /* p29.GUGY*/ wire _GUGY_SPRITE7_GETn = not1(first_match.GUTU_SPRITE7_GETp);
-  /* p29.DENY*/ wire _DENY_SPRITE8_GETn = not1(first_match.FOXA_SPRITE8_GETp);
-  /* p29.FADO*/ wire _FADO_SPRITE9_GETn = not1(first_match.GUZE_SPRITE9_GETp);
+  /* p29.FURO*/ wire _FURO_SPRITE0_GETn = not1(first_match.GUVA_SPRITE0_GETp.qp_new());
+  /* p29.DYDO*/ wire _DYDO_SPRITE1_GETn = not1(first_match.ENUT_SPRITE1_GETp.qp_new());
+  /* p29.FAME*/ wire _FAME_SPRITE2_GETn = not1(first_match.EMOL_SPRITE2_GETp.qp_new());
+  /* p29.GYMA*/ wire _GYMA_SPRITE3_GETn = not1(first_match.GYFY_SPRITE3_GETp.qp_new());
+  /* p29.GOWO*/ wire _GOWO_SPRITE4_GETn = not1(first_match.GONO_SPRITE4_GETp.qp_new());
+  /* p29.GYGY*/ wire _GYGY_SPRITE5_GETn = not1(first_match.GEGA_SPRITE5_GETp.qp_new());
+  /* p29.XYME*/ wire _XYME_SPRITE6_GETn = not1(first_match.XOJA_SPRITE6_GETp.qp_new());
+  /* p29.GUGY*/ wire _GUGY_SPRITE7_GETn = not1(first_match.GUTU_SPRITE7_GETp.qp_new());
+  /* p29.DENY*/ wire _DENY_SPRITE8_GETn = not1(first_match.FOXA_SPRITE8_GETp.qp_new());
+  /* p29.FADO*/ wire _FADO_SPRITE9_GETn = not1(first_match.GUZE_SPRITE9_GETp.qp_new());
 
   /* p30.ZETU_STORE0_GET_I0*/ new_bus.BUS_SPR_I0.tri6_nn(_FURO_SPRITE0_GETn, sprite_store.YGUS_STORE0_I0n_odd.qp_new());
   /* p30.ZECE_STORE0_GET_I1*/ new_bus.BUS_SPR_I1.tri6_nn(_FURO_SPRITE0_GETn, sprite_store.YSOK_STORE0_I1n_odd.qp_new());

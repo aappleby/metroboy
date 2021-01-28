@@ -181,6 +181,8 @@ void GateBoy::reset_to_cart() {
   reg_ly.reset_to_cart();
   reg_lyc.reset_to_cart();
 
+  WODU_HBLANKp.state = 0b00011001;
+
   check_state_old_and_driven_or_pullup();
 
   sys_rst = false;
@@ -322,6 +324,10 @@ struct GateBoyOffsets {
   const int o_pix_count      = offsetof(GateBoy, pix_count);
   const int o_pix_pipes      = offsetof(GateBoy, pix_pipes);
   const int o_lcd            = offsetof(GateBoy, lcd      );
+
+  const int o_sprite_match   = offsetof(GateBoy, sprite_match);
+  const int o_first_match    = offsetof(GateBoy, first_match);
+  const int o_sprite_pix     = offsetof(GateBoy, sprite_pix);
 
 } gb_offsets;
 

@@ -245,7 +245,6 @@ struct GateBoy {
   void reg_dma_read();
 
   wire ACYL_SCANNINGp();
-  wire AVAP_SCAN_DONE_TRIGp();
   void tock_sprite_scanner();
   void ext_to_oam_data_bus();
   void vram_to_oam_data_bus();
@@ -352,20 +351,6 @@ struct GateBoy {
 
   //----------------------------------------
 
-  wire ATEJ_LINE_RSTp_old() const {
-    /* p28.ABAF*/ wire _ABAF_LINE_P000n_old = not1(lcd.CATU_START_SCANNING.qp_old());
-    /* p28.BYHA*/ wire _BYHA_LINE_RSTn_old = or_and3(lcd.ANEL_LINE_P002p.qp_old(), _ABAF_LINE_P000n_old, ABEZ_VID_RSTn_old()); // so if this is or_and, BYHA should go low on 910 and 911
-    /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_old = not1(_BYHA_LINE_RSTn_old);
-    return bit(_ATEJ_LINE_RSTp_old);
-  }
-  /* p27.XAHY*/ wire XAHY_LINE_RSTn_old() const { return not1(ATEJ_LINE_RSTp_old()); }
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_old() const { return nor2(ATEJ_LINE_RSTp_old(), ATAR_VID_RSTp_old()); }
-  /* p28.ABAK*/ wire ABAK_LINE_RSTp_old() const { return  or2(ATEJ_LINE_RSTp_old(), AMYG_VID_RSTp_old()); }
-  /*#p29.BALU*/ wire BALU_LINE_RSTp_old() const { return not1(ANOM_LINE_RSTn_old()); }
-  /* p28.BYVA*/ wire BYVA_LINE_RSTn_old() const { return not1(ABAK_LINE_RSTp_old()); }
-  /* p29.DYBA*/ wire DYBA_LINE_RSTp_old() const { return not1(BYVA_LINE_RSTn_old()); }
-  /*#p29.BAGY*/ wire BAGY_LINE_RSTn_old() const { return not1(BALU_LINE_RSTp_old()); }
-  /* p21.TADY*/ wire TADY_LINE_RSTn_old() const { return nor2(ATEJ_LINE_RSTp_old(), TOFU_VID_RSTp_old()); }
 
   wire ATEJ_LINE_RSTp_new() const {
     /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(lcd.CATU_START_SCANNING.qp_new());
@@ -525,50 +510,6 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  wire NUNY_WIN_MODE_TRIGp_old() const {
-    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp_old = and2(win_reg.PYNU_WIN_MODE_Ap.qp_old(), win_reg.NOPA_WIN_MODE_Bp.qn_old());
-    return _NUNY_WIN_MODE_TRIGp_old;
-  }
-  /* p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn_old() const { return not1(NUNY_WIN_MODE_TRIGp_old()); }
-  /* p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp_old() const { return not1(NYFO_WIN_MODE_TRIGn_old()); }
-
-  wire NUNY_WIN_MODE_TRIGp_new() const {
-    /*#p27.NUNY*/ wire _NUNY_WIN_MODE_TRIGp_new = and2(win_reg.PYNU_WIN_MODE_Ap.qp_new(), win_reg.NOPA_WIN_MODE_Bp.qn_new());
-    return _NUNY_WIN_MODE_TRIGp_new;
-  }
-  /* p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn_new() const { return not1(NUNY_WIN_MODE_TRIGp_new()); }
-  /* p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp_new() const { return not1(NYFO_WIN_MODE_TRIGn_new()); }
-
-
-  wire SUZU_WIN_FIRST_TILEne_old() const {
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_old = not1(win_reg.RYDY_WIN_HITp.qp_old());
-    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_old = nand2(_SYLO_WIN_HITn_old, win_reg.SOVY_WIN_HITp.qp_old());
-    /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_old = not1(_TUXY_WIN_FIRST_TILEne_old);
-    return _SUZU_WIN_FIRST_TILEne_old;
-  }
-
-  wire SUZU_WIN_FIRST_TILEne_new() const {
-    /*#p27.SYLO*/ wire _SYLO_WIN_HITn_new = not1(win_reg.RYDY_WIN_HITp.qp_new());
-    /* p27.TUXY*/ wire _TUXY_WIN_FIRST_TILEne_new = nand2(_SYLO_WIN_HITn_new, win_reg.SOVY_WIN_HITp.qp_new());
-    /* p27.SUZU*/ wire _SUZU_WIN_FIRST_TILEne_new = not1(_TUXY_WIN_FIRST_TILEne_new);
-    return _SUZU_WIN_FIRST_TILEne_new;
-  }
-
-  wire SEKO_WIN_FETCH_TRIGp_old() const {
-    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp_old = nor2(win_reg.RYFA_WIN_FETCHn_A.qn_old(), win_reg.RENE_WIN_FETCHn_B.qp_old());
-    return _SEKO_WIN_FETCH_TRIGp_old;
-  }
-
-  wire SEKO_WIN_FETCH_TRIGp_new() const {
-    /* p27.SEKO*/ wire _SEKO_WIN_FETCH_TRIGp_new = nor2(win_reg.RYFA_WIN_FETCHn_A.qn_new(), win_reg.RENE_WIN_FETCHn_B.qp_new());
-    return _SEKO_WIN_FETCH_TRIGp_new;
-  }
-
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn_old() const { return not1(win_reg.RYDY_WIN_HITp.qp_old()); }
-  /*#p24.TOMU*/ wire TOMU_WIN_HITp_old() const { return not1(SYLO_WIN_HITn_old()); }
-  /* p27.TUKU*/ wire TUKU_WIN_HITn_old() const { return not1(TOMU_WIN_HITp_old()); }
-  /*#p24.SOCY*/ wire SOCY_WIN_HITn_old() const { return not1(TOMU_WIN_HITp_old()); }
-
   /*#p27.SYLO*/ wire SYLO_WIN_HITn_new() const { return not1(win_reg.RYDY_WIN_HITp.qp_new()); }
   /*#p24.TOMU*/ wire TOMU_WIN_HITp_new() const { return not1(SYLO_WIN_HITn_new()); }
   /* p27.TUKU*/ wire TUKU_WIN_HITn_new() const { return not1(TOMU_WIN_HITp_new()); }
@@ -579,11 +520,6 @@ struct GateBoy {
   /* p26.AXAD*/ wire AXAD_WIN_MODEn() const { return not1(PORE_WIN_MODEp()); }
 
   //-----------------------------------------------------------------------------
-
-  wire ROZE_FINE_COUNT_7n_old() {
-    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n_old = nand3(fine_scroll.RUBU_FINE_CNT2.qp_old(), fine_scroll.ROGA_FINE_CNT1.qp_old(), fine_scroll.RYKU_FINE_CNT0.qp_old());
-    return _ROZE_FINE_COUNT_7n_old;
-  }
 
   wire ROZE_FINE_COUNT_7n() {
     /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_new(), fine_scroll.ROGA_FINE_CNT1.qp_new(), fine_scroll.RYKU_FINE_CNT0.qp_new());
@@ -601,18 +537,6 @@ struct GateBoy {
     /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(delta.GACE_SPRITE_DELTA4.qp_new(), delta.GUVU_SPRITE_DELTA5.qp_new(), delta.GYDA_SPRITE_DELTA6.qp_new(), delta.GEWY_SPRITE_DELTA7.qp_new(), delta.WUHU_YDIFF7.carry, _GOVU_SPSIZE_MATCH_new);
     /* p29.GESE*/ wire _GESE_SCAN_MATCH_Yp_new = not1(_WOTA_SCAN_MATCH_Yn_new);
     return _GESE_SCAN_MATCH_Yp_new;
-  }
-
-  wire XANO_PX167p_old() const {
-    /*#p21.XUGU*/ wire _XUGU_PX167n_old = nand5(pix_count.XEHO_PX0p.qp_old(), pix_count.SAVY_PX1p.qp_old(), pix_count.XODU_PX2p.qp_old(), pix_count.TUKY_PX5p.qp_old(), pix_count.SYBE_PX7p.qp_old()); // 128 + 32 + 4 + 2 + 1 = 167
-    /*#p21.XANO*/ wire _XANO_PX167p_old = not1(_XUGU_PX167n_old);
-    return _XANO_PX167p_old;
-  }
-
-  wire XANO_PX167p_new() const {
-    /*#p21.XUGU*/ wire _XUGU_PX167n = nand5(pix_count.XEHO_PX0p.qp_new(), pix_count.SAVY_PX1p.qp_new(), pix_count.XODU_PX2p.qp_new(), pix_count.TUKY_PX5p.qp_new(), pix_count.SYBE_PX7p.qp_new()); // 128 + 32 + 4 + 2 + 1 = 167
-    /*#p21.XANO*/ wire _XANO_PX167p = not1(_XUGU_PX167n);
-    return _XANO_PX167p;
   }
 
   wire NERU_VSYNCp() const {
@@ -724,21 +648,6 @@ struct GateBoy {
     return _FETO_SCAN_DONEp_any;
   }
 
-  wire AVAP_SCAN_DONE_TRIGp_old() const {
-    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_old = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_old(), BALU_LINE_RSTp_old(), sprite_scanner.BYBA_SCAN_DONE_Ap.qn_old());
-    /*#p29.AVAP*/ wire _AVAP_SCAN_DONE_TRIGp_old = not1(_BEBU_SCAN_DONE_TRIGn_old);
-    return _AVAP_SCAN_DONE_TRIGp_old;
-  }
-
-  wire AVAP_SCAN_DONE_TRIGp_new() const {
-    /*#p29.BEBU*/ wire _BEBU_SCAN_DONE_TRIGn_new = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp_new(), sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new());
-    /*#p29.AVAP*/ wire _AVAP_SCAN_DONE_TRIGp_new = not1(_BEBU_SCAN_DONE_TRIGn_new);
-    return _AVAP_SCAN_DONE_TRIGp_new;
-  }
-
-  /* p29.CEHA*/ wire CEHA_SCANNINGp() const { return not1(sprite_scanner.CENO_SCANNINGn.qn_new()); }
-  /*#p29.BYJO*/ wire BYJO_SCANNINGn() const { return not1(CEHA_SCANNINGp()); }
-
 
   wire FEPO_STORE_MATCHp_old(SpriteMatchFlag& flag) const {
     /* p29.FEFY*/ wire _FEFY_STORE_MATCHp = nand5(flag.XAGE_STORE4_MATCHn.qp_old(), flag.YLOZ_STORE3_MATCHn.qp_old(), flag.DEGO_STORE2_MATCHn.qp_old(), flag.DYDU_STORE1_MATCHn.qp_old(), flag.YDUG_STORE0_MATCHn.qp_old());
@@ -755,27 +664,6 @@ struct GateBoy {
   }
 
   //-----------------------------------------------------------------------------
-
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn_old(SpriteMatchFlag& flag) const { return not1(FEPO_STORE_MATCHp_old(flag)); }
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn_new(SpriteMatchFlag& flag) const { return not1(FEPO_STORE_MATCHp_new(flag)); }
-
-  /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const { return not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new()); }
-
-  wire TAVE_PRELOAD_DONE_TRIGp_new() const {
-    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_new      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
-    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new = nand4(XYMU_RENDERINGn.qn_new(), _ROMO_PRELOAD_DONEn_new, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
-    /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_new = not1(_SUVU_PRELOAD_DONE_TRIGn_new);
-    return _TAVE_PRELOAD_DONE_TRIGp_new;
-  }
-
-  ///* p27.MOCE*/ wire MOCE_BFETCH_DONEn_old(wire NYXU_BFETCH_RSTn_old) const { return nand3(_LAXU_BFETCH_S0p.qp_old(), _NYVA_BFETCH_S2p.qp_old(), NYXU_BFETCH_RSTn_old); }
-  ///* p27.LYRY*/ wire LYRY_BFETCH_DONEp_old(wire NYXU_BFETCH_RSTn_old) const { return not1(MOCE_BFETCH_DONEn_old(NYXU_BFETCH_RSTn_old)); }
-
-  ///* p27.MOCE*/ wire MOCE_BFETCH_DONEn_new(wire NYXU_BFETCH_RSTn_new) const { return nand3(_LAXU_BFETCH_S0p.qp_new(), _NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn_new); }
-  ///* p27.LYRY*/ wire LYRY_BFETCH_DONEp_new(wire NYXU_BFETCH_RSTn_new) const { return not1(MOCE_BFETCH_DONEn_new(NYXU_BFETCH_RSTn_new)); }
-
-  ///* p27.MOCE*/ wire MOCE_BFETCH_DONEn_any(wire NYXU_BFETCH_RSTn_new) const { return nand3(_LAXU_BFETCH_S0p.qp_any(), _NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn_new); }
-  ///* p27.LYRY*/ wire LYRY_BFETCH_DONEp_any(wire NYXU_BFETCH_RSTn_new) const { return not1(MOCE_BFETCH_DONEn_any(NYXU_BFETCH_RSTn_new)); }
 
   /* p27.LUSU*/ wire LUSU_FETCHINGn()      const { return not1(tile_fetcher.LONY_FETCHINGp.qp_new()); }
   /* p27.LENA*/ wire LENA_BFETCHINGp()     const { return not1(LUSU_FETCHINGn()); }
@@ -878,7 +766,7 @@ struct GateBoy {
   /* p27.MOCE*/ Gate MOCE_BFETCH_DONEn;
   /* p27.LYRY*/ Gate LYRY_BFETCH_DONEp;
   /* p27.TEKY*/ Gate TEKY_SFETCH_REQp;
-
+  /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp;
 
   SpriteMatchFlag sprite_match;
   SpriteFirstMatch first_match;

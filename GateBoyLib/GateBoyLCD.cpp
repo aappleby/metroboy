@@ -47,10 +47,10 @@ void GateBoy::set_lcd_pin_vsync() {
 
 void GateBoy::set_lcd_pin_hsync() {
   // LCD horizontal sync pin latch
-  /*#p24.POME*/ lcd.POME = nor2(AVAP_SCAN_DONE_TRIGp(), lcd.POFY.qp_mid());
+  /*#p24.POME*/ lcd.POME = nor2(AVAP_SCAN_DONE_TRIGp.qp_new(), lcd.POFY.qp_mid());
   /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), lcd.POME.qp_mid());
   /*#p24.POFY*/ lcd.POFY = not1(lcd.RUJU.qp_mid());
-  /*#p24.POME*/ lcd.POME = nor2(AVAP_SCAN_DONE_TRIGp(), lcd.POFY.qp_mid());
+  /*#p24.POME*/ lcd.POME = nor2(AVAP_SCAN_DONE_TRIGp.qp_new(), lcd.POFY.qp_mid());
   /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), lcd.POME.qp_mid());
   /*#p24.POFY*/ lcd.POFY = not1(lcd.RUJU.qp_mid());
 

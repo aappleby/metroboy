@@ -155,9 +155,7 @@ int AppHost::app_main(int, char**) {
     io.DisplaySize.x = float(screen_w);
     io.DisplaySize.y = float(screen_h);
 
-    static bool idle_timeout = false;
-
-    if (idle_timeout && (new_now - last_event) > 1.0) {
+    if (app->pause_when_idle() && (new_now - last_event) > 1.0) {
       printf("waiting\n");
       SDL_WaitEvent(nullptr);
       delta = new_now - old_now;

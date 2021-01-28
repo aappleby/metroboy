@@ -49,36 +49,6 @@ void GateBoy::reg_dma_write() {
 
 void GateBoy::reg_dma_tock()
 {
-  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
-  /*#p04.LUPA*/ wire _LUPA_DMA_TRIG_old = nor2(LAVY_FF46_WRp, dma.LYXE_DMA_LATCHp.qn_old());
-  /*#p04.LENE*/ dma.LENE_DMA_TRIG_d4.dff17(MOPA_xxxxEFGH(), CUNU_SYS_RSTn(), dma.LUVY_DMA_TRIG_d0.qp_old());
-  /*#p04.LUVY*/ dma.LUVY_DMA_TRIG_d0.dff17(UVYT_ABCDxxxx(), CUNU_SYS_RSTn(), _LUPA_DMA_TRIG_old);
-
-  /*#p04.LOKO*/ wire _LOKO_DMA_RSTp = nand2(dma.LENE_DMA_TRIG_d4.qn_new(), CUNU_SYS_RSTn());
-  /*#p04.LYXE*/ dma.LYXE_DMA_LATCHp.nor_latch(LAVY_FF46_WRp, _LOKO_DMA_RSTp);
-
-  /*#p04.LAPA*/ wire _LAPA_DMA_RSTn = not1(_LOKO_DMA_RSTp);
-
-  /*#p04.NAVO*/ wire _NAVO_DMA_DONEn_old = nand6(dma.NAKY_DMA_A00p.qp_old(), dma.PYRO_DMA_A01p.qp_old(), dma.NEFY_DMA_A02p.qp_old(), dma.MUTY_DMA_A03p.qp_old(), dma.NYKO_DMA_A04p.qp_old(), dma.MUGU_DMA_A07p.qp_old()); // 128+16+8+4+2+1 = 159
-  /*#p04.NOLO*/ wire _NOLO_DMA_DONEp_old = not1(_NAVO_DMA_DONEn_old);
-
-  /*#p04.MYTE*/ dma.MYTE_DMA_DONE.dff17(MOPA_xxxxEFGH(), _LAPA_DMA_RSTn, _NOLO_DMA_DONEp_old);
-
-  /*#p04.MATU*/ dma.MATU_DMA_RUNNINGp.dff17(UVYT_ABCDxxxx(), CUNU_SYS_RSTn(), dma.LOKY_DMA_LATCHp.qp_old());
-
-  /* p04.LARA*/ dma.LARA_DMA_LATCHn = nand3(dma.LOKY_DMA_LATCHp.qp_mid(), dma.MYTE_DMA_DONE.qn_any(), CUNU_SYS_RSTn());
-  /*#p04.LOKY*/ dma.LOKY_DMA_LATCHp = nand2(dma.LARA_DMA_LATCHn.qp_mid(), dma.LENE_DMA_TRIG_d4.qn_any());
-  /* p04.LARA*/ dma.LARA_DMA_LATCHn = nand3(dma.LOKY_DMA_LATCHp.qp_mid(), dma.MYTE_DMA_DONE.qn_any(), CUNU_SYS_RSTn());
-
-  /*#p04.META*/ wire _META_DMA_CLKp = and2(UVYT_ABCDxxxx(), dma.LOKY_DMA_LATCHp.qp_new());
-  /*#p04.NAKY*/ dma.NAKY_DMA_A00p.dff17(_META_DMA_CLKp,             _LAPA_DMA_RSTn, dma.NAKY_DMA_A00p.qn_old());
-  /*#p04.PYRO*/ dma.PYRO_DMA_A01p.dff17(dma.NAKY_DMA_A00p.qn_new(), _LAPA_DMA_RSTn, dma.PYRO_DMA_A01p.qn_old());
-  /* p04.NEFY*/ dma.NEFY_DMA_A02p.dff17(dma.PYRO_DMA_A01p.qn_new(), _LAPA_DMA_RSTn, dma.NEFY_DMA_A02p.qn_old());
-  /* p04.MUTY*/ dma.MUTY_DMA_A03p.dff17(dma.NEFY_DMA_A02p.qn_new(), _LAPA_DMA_RSTn, dma.MUTY_DMA_A03p.qn_old());
-  /* p04.NYKO*/ dma.NYKO_DMA_A04p.dff17(dma.MUTY_DMA_A03p.qn_new(), _LAPA_DMA_RSTn, dma.NYKO_DMA_A04p.qn_old());
-  /* p04.PYLO*/ dma.PYLO_DMA_A05p.dff17(dma.NYKO_DMA_A04p.qn_new(), _LAPA_DMA_RSTn, dma.PYLO_DMA_A05p.qn_old());
-  /* p04.NUTO*/ dma.NUTO_DMA_A06p.dff17(dma.PYLO_DMA_A05p.qn_new(), _LAPA_DMA_RSTn, dma.NUTO_DMA_A06p.qn_old());
-  /* p04.MUGU*/ dma.MUGU_DMA_A07p.dff17(dma.NUTO_DMA_A06p.qn_new(), _LAPA_DMA_RSTn, dma.MUGU_DMA_A07p.qn_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

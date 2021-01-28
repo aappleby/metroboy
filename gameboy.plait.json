@@ -3,8 +3,8 @@
     "ABAF": {
       "core": {
         "name": "core",
-        "pos_x": -10752.0,
-        "pos_y": -10912.0
+        "pos_x": -9792.0,
+        "pos_y": -10944.0
       },
       "leaves": {},
       "roots": {}
@@ -12,8 +12,8 @@
     "ABAK": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10784.0
+        "pos_x": -9504.0,
+        "pos_y": -10816.0
       },
       "leaves": {},
       "roots": {}
@@ -54,8 +54,8 @@
       "leaves": {
         "leaf_0abf84b7": {
           "name": "leaf_0abf84b7",
-          "pos_x": -10944.0,
-          "pos_y": -10912.0
+          "pos_x": -10688.0,
+          "pos_y": -11104.0
         },
         "leaf_4c3dad15": {
           "name": "leaf_4c3dad15",
@@ -64,13 +64,13 @@
         },
         "leaf_55b1327c": {
           "name": "leaf_55b1327c",
-          "pos_x": -10752.0,
-          "pos_y": -10848.0
+          "pos_x": -9792.0,
+          "pos_y": -10880.0
         },
         "leaf_8b5ab4d3": {
           "name": "leaf_8b5ab4d3",
-          "pos_x": -10848.0,
-          "pos_y": -10976.0
+          "pos_x": -10976.0,
+          "pos_y": -10784.0
         }
       },
       "roots": {}
@@ -141,8 +141,8 @@
     "ABOV": {
       "core": {
         "name": "core",
-        "pos_x": -10944.0,
-        "pos_y": -10848.0
+        "pos_x": -10688.0,
+        "pos_y": -11040.0
       },
       "leaves": {},
       "roots": {}
@@ -697,8 +697,8 @@
     "ALES": {
       "core": {
         "name": "core",
-        "pos_x": -11040.0,
-        "pos_y": -10816.0
+        "pos_x": -10784.0,
+        "pos_y": -10976.0
       },
       "leaves": {},
       "roots": {}
@@ -988,8 +988,8 @@
     "AMYG": {
       "core": {
         "name": "core",
-        "pos_x": -10560.0,
-        "pos_y": -10720.0
+        "pos_x": -9600.0,
+        "pos_y": -10752.0
       },
       "leaves": {},
       "roots": {}
@@ -1021,17 +1021,23 @@
     "ANEL": {
       "core": {
         "name": "core",
-        "pos_x": -10752.0,
-        "pos_y": -10976.0
+        "pos_x": -10880.0,
+        "pos_y": -10784.0
       },
-      "leaves": {},
+      "leaves": {
+        "leaf_6c1cec0f": {
+          "name": "leaf_6c1cec0f",
+          "pos_x": -9792.0,
+          "pos_y": -11008.0
+        }
+      },
       "roots": {}
     },
     "ANOM": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10848.0
+        "pos_x": -9504.0,
+        "pos_y": -10880.0
       },
       "leaves": {
         "leaf_1f07b339": {
@@ -1591,8 +1597,8 @@
       "leaves": {
         "leaf_744d6876": {
           "name": "leaf_744d6876",
-          "pos_x": -10560.0,
-          "pos_y": -10784.0
+          "pos_x": -9600.0,
+          "pos_y": -10816.0
         },
         "leaf_bd8d2a58": {
           "name": "leaf_bd8d2a58",
@@ -1605,8 +1611,8 @@
     "ATEJ": {
       "core": {
         "name": "core",
-        "pos_x": -10560.0,
-        "pos_y": -10912.0
+        "pos_x": -9600.0,
+        "pos_y": -10944.0
       },
       "leaves": {
         "leaf_22785781": {
@@ -1875,10 +1881,16 @@
     "AWOH": {
       "core": {
         "name": "core",
-        "pos_x": -10848.0,
-        "pos_y": -11040.0
+        "pos_x": -11632.0,
+        "pos_y": -7040.0
       },
-      "leaves": {},
+      "leaves": {
+        "leaf_516e99cd": {
+          "name": "leaf_516e99cd",
+          "pos_x": -10976.0,
+          "pos_y": -10848.0
+        }
+      },
       "roots": {}
     },
     "AXAD": {
@@ -2020,8 +2032,8 @@
     "AZYB": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10912.0
+        "pos_x": -9504.0,
+        "pos_y": -10944.0
       },
       "leaves": {
         "leaf_baddc945": {
@@ -2119,8 +2131,8 @@
     "BAGY": {
       "core": {
         "name": "core",
-        "pos_x": -10272.0,
-        "pos_y": -10848.0
+        "pos_x": -9312.0,
+        "pos_y": -10880.0
       },
       "leaves": {
         "leaf_7f7385e6": {
@@ -2181,8 +2193,8 @@
     "BALU": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10848.0
+        "pos_x": -9408.0,
+        "pos_y": -10880.0
       },
       "leaves": {
         "leaf_49700b57": {
@@ -3708,8 +3720,8 @@
         },
         "root_784df54a": {
           "name": "root_784df54a",
-          "pos_x": -10272.0,
-          "pos_y": -10528.0
+          "pos_x": -9408.0,
+          "pos_y": -10624.0
         },
         "root_7b8fdfd8": {
           "name": "root_7b8fdfd8",
@@ -3944,8 +3956,8 @@
         },
         "root_a8808358": {
           "name": "root_a8808358",
-          "pos_x": -10272.0,
-          "pos_y": -10464.0
+          "pos_x": -9408.0,
+          "pos_y": -10560.0
         },
         "root_c225d0b2": {
           "name": "root_c225d0b2",
@@ -4175,8 +4187,8 @@
         },
         "root_d7038348": {
           "name": "root_d7038348",
-          "pos_x": -10272.0,
-          "pos_y": -10400.0
+          "pos_x": -9408.0,
+          "pos_y": -10496.0
         },
         "root_f1ecf727": {
           "name": "root_f1ecf727",
@@ -4316,8 +4328,8 @@
         },
         "root_3317d333": {
           "name": "root_3317d333",
-          "pos_x": -10272.0,
-          "pos_y": -10336.0
+          "pos_x": -9408.0,
+          "pos_y": -10432.0
         },
         "root_3b3ede7c": {
           "name": "root_3b3ede7c",
@@ -4552,8 +4564,8 @@
         },
         "root_82cb33ff": {
           "name": "root_82cb33ff",
-          "pos_x": -10272.0,
-          "pos_y": -10272.0
+          "pos_x": -9408.0,
+          "pos_y": -10368.0
         },
         "root_83a477a5": {
           "name": "root_83a477a5",
@@ -4753,8 +4765,8 @@
         },
         "root_5dad798a": {
           "name": "root_5dad798a",
-          "pos_x": -10272.0,
-          "pos_y": -10208.0
+          "pos_x": -9408.0,
+          "pos_y": -10304.0
         },
         "root_6cf9ec8f": {
           "name": "root_6cf9ec8f",
@@ -4909,8 +4921,8 @@
         },
         "root_36a8a2d1": {
           "name": "root_36a8a2d1",
-          "pos_x": -10272.0,
-          "pos_y": -10144.0
+          "pos_x": -9408.0,
+          "pos_y": -10240.0
         },
         "root_4478683f": {
           "name": "root_4478683f",
@@ -5115,8 +5127,8 @@
         },
         "root_5908c90e": {
           "name": "root_5908c90e",
-          "pos_x": -10272.0,
-          "pos_y": -10080.0
+          "pos_x": -9408.0,
+          "pos_y": -10176.0
         },
         "root_614a8251": {
           "name": "root_614a8251",
@@ -5850,18 +5862,19 @@
         "pos_y": -19536.0
       },
       "leaves": {
-        "leaf_36b8134f": {
-          "name": "leaf_36b8134f",
-          "pos_x": 16528.0,
-          "pos_y": -19536.0
-        },
         "leaf_b137000a": {
           "name": "leaf_b137000a",
           "pos_x": -512.0,
           "pos_y": -2800.0
         }
       },
-      "roots": {}
+      "roots": {
+        "root_d65bcbec": {
+          "name": "root_d65bcbec",
+          "pos_x": 16528.0,
+          "pos_y": -19536.0
+        }
+      }
     },
     "BUS_SPR_I1": {
       "core": {
@@ -5874,14 +5887,15 @@
           "name": "leaf_02806242",
           "pos_x": -512.0,
           "pos_y": -2736.0
-        },
-        "leaf_43aa3108": {
-          "name": "leaf_43aa3108",
+        }
+      },
+      "roots": {
+        "root_fc5b630c": {
+          "name": "root_fc5b630c",
           "pos_x": 16528.0,
           "pos_y": -19472.0
         }
-      },
-      "roots": {}
+      }
     },
     "BUS_SPR_I2": {
       "core": {
@@ -5890,18 +5904,19 @@
         "pos_y": -19408.0
       },
       "leaves": {
-        "leaf_68a3c1f1": {
-          "name": "leaf_68a3c1f1",
-          "pos_x": 16528.0,
-          "pos_y": -19408.0
-        },
         "leaf_dac674f0": {
           "name": "leaf_dac674f0",
           "pos_x": -512.0,
           "pos_y": -2672.0
         }
       },
-      "roots": {}
+      "roots": {
+        "root_9ce0540e": {
+          "name": "root_9ce0540e",
+          "pos_x": 16528.0,
+          "pos_y": -19408.0
+        }
+      }
     },
     "BUS_SPR_I3": {
       "core": {
@@ -5914,14 +5929,15 @@
           "name": "leaf_30e48ebc",
           "pos_x": -512.0,
           "pos_y": -2608.0
-        },
-        "leaf_fd1937db": {
-          "name": "leaf_fd1937db",
+        }
+      },
+      "roots": {
+        "root_36f7402c": {
+          "name": "root_36f7402c",
           "pos_x": 16528.0,
           "pos_y": -19344.0
         }
-      },
-      "roots": {}
+      }
     },
     "BUS_SPR_I4": {
       "core": {
@@ -5930,18 +5946,19 @@
         "pos_y": -19280.0
       },
       "leaves": {
-        "leaf_5f7e74c2": {
-          "name": "leaf_5f7e74c2",
-          "pos_x": 16528.0,
-          "pos_y": -19280.0
-        },
         "leaf_8c1c8195": {
           "name": "leaf_8c1c8195",
           "pos_x": -512.0,
           "pos_y": -2544.0
         }
       },
-      "roots": {}
+      "roots": {
+        "root_3c73b245": {
+          "name": "root_3c73b245",
+          "pos_x": 16528.0,
+          "pos_y": -19280.0
+        }
+      }
     },
     "BUS_SPR_I5": {
       "core": {
@@ -5954,14 +5971,15 @@
           "name": "leaf_51402ac1",
           "pos_x": -512.0,
           "pos_y": -2480.0
-        },
-        "leaf_5a9787fe": {
-          "name": "leaf_5a9787fe",
+        }
+      },
+      "roots": {
+        "root_417d0cc0": {
+          "name": "root_417d0cc0",
           "pos_x": 16528.0,
           "pos_y": -19216.0
         }
-      },
-      "roots": {}
+      }
     },
     "BUS_SPR_L0": {
       "core": {
@@ -5970,18 +5988,19 @@
         "pos_y": -18800.0
       },
       "leaves": {
-        "leaf_00e0e553": {
-          "name": "leaf_00e0e553",
-          "pos_x": 16144.0,
-          "pos_y": -18800.0
-        },
         "leaf_a8ddb965": {
           "name": "leaf_a8ddb965",
           "pos_x": -2416.0,
           "pos_y": -8688.0
         }
       },
-      "roots": {}
+      "roots": {
+        "root_2414a354": {
+          "name": "root_2414a354",
+          "pos_x": 16144.0,
+          "pos_y": -18800.0
+        }
+      }
     },
     "BUS_SPR_L1": {
       "core": {
@@ -5990,18 +6009,19 @@
         "pos_y": -18736.0
       },
       "leaves": {
-        "leaf_770710ad": {
-          "name": "leaf_770710ad",
-          "pos_x": 16144.0,
-          "pos_y": -18736.0
-        },
         "leaf_e1b1798a": {
           "name": "leaf_e1b1798a",
           "pos_x": -2416.0,
           "pos_y": -8624.0
         }
       },
-      "roots": {}
+      "roots": {
+        "root_44babc2c": {
+          "name": "root_44babc2c",
+          "pos_x": 16144.0,
+          "pos_y": -18736.0
+        }
+      }
     },
     "BUS_SPR_L2": {
       "core": {
@@ -6014,14 +6034,15 @@
           "name": "leaf_82cb67e6",
           "pos_x": -2416.0,
           "pos_y": -8560.0
-        },
-        "leaf_89f637e0": {
-          "name": "leaf_89f637e0",
+        }
+      },
+      "roots": {
+        "root_3cbf0c5f": {
+          "name": "root_3cbf0c5f",
           "pos_x": 16144.0,
           "pos_y": -18672.0
         }
-      },
-      "roots": {}
+      }
     },
     "BUS_SPR_L3": {
       "core": {
@@ -6034,14 +6055,15 @@
           "name": "leaf_2efb1167",
           "pos_x": -2416.0,
           "pos_y": -8496.0
-        },
-        "leaf_603e190e": {
-          "name": "leaf_603e190e",
+        }
+      },
+      "roots": {
+        "root_13dc4b2e": {
+          "name": "root_13dc4b2e",
           "pos_x": 16144.0,
           "pos_y": -18608.0
         }
-      },
-      "roots": {}
+      }
     },
     "BUS_VRAM_A00n": {
       "core": {
@@ -7086,8 +7108,8 @@
     "BYHA": {
       "core": {
         "name": "core",
-        "pos_x": -10656.0,
-        "pos_y": -10912.0
+        "pos_x": -9696.0,
+        "pos_y": -10944.0
       },
       "leaves": {},
       "roots": {}
@@ -7209,8 +7231,8 @@
     "BYVA": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10784.0
+        "pos_x": -9408.0,
+        "pos_y": -10816.0
       },
       "leaves": {
         "leaf_05b58de0": {
@@ -7487,10 +7509,20 @@
     "CATU": {
       "core": {
         "name": "core",
-        "pos_x": -10848.0,
-        "pos_y": -10912.0
+        "pos_x": -10592.0,
+        "pos_y": -11104.0
       },
       "leaves": {
+        "leaf_033c3ca8": {
+          "name": "leaf_033c3ca8",
+          "pos_x": -9888.0,
+          "pos_y": -10944.0
+        },
+        "leaf_3bc86795": {
+          "name": "leaf_3bc86795",
+          "pos_x": -10976.0,
+          "pos_y": -10720.0
+        },
         "leaf_78086b84": {
           "name": "leaf_78086b84",
           "pos_x": -5040.0,
@@ -9421,8 +9453,8 @@
     "DYBA": {
       "core": {
         "name": "core",
-        "pos_x": -10272.0,
-        "pos_y": -10784.0
+        "pos_x": -9312.0,
+        "pos_y": -10816.0
       },
       "leaves": {
         "leaf_41e894a2": {
@@ -12742,14 +12774,19 @@
     "LAFO": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10080.0
+        "pos_x": -10224.0,
+        "pos_y": -10176.0
       },
       "leaves": {
         "leaf_0ecdade0": {
           "name": "leaf_0ecdade0",
           "pos_x": -1872.0,
           "pos_y": -6080.0
+        },
+        "leaf_37e2cfc5": {
+          "name": "leaf_37e2cfc5",
+          "pos_x": -10976.0,
+          "pos_y": -10944.0
         },
         "leaf_53123963": {
           "name": "leaf_53123963",
@@ -12768,8 +12805,8 @@
         },
         "leaf_b1bdaac3": {
           "name": "leaf_b1bdaac3",
-          "pos_x": -10560.0,
-          "pos_y": -10080.0
+          "pos_x": -9696.0,
+          "pos_y": -10176.0
         }
       },
       "roots": {}
@@ -12849,8 +12886,8 @@
     "LAMA": {
       "core": {
         "name": "core",
-        "pos_x": -11520.0,
-        "pos_y": -10304.0
+        "pos_x": -10320.0,
+        "pos_y": -10400.0
       },
       "leaves": {},
       "roots": {}
@@ -13231,8 +13268,8 @@
     "LEMA": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10208.0
+        "pos_x": -10224.0,
+        "pos_y": -10304.0
       },
       "leaves": {
         "leaf_8b232d33": {
@@ -13242,8 +13279,8 @@
         },
         "leaf_a80030e2": {
           "name": "leaf_a80030e2",
-          "pos_x": -10560.0,
-          "pos_y": -10208.0
+          "pos_x": -9696.0,
+          "pos_y": -10304.0
         },
         "leaf_b80b6a4c": {
           "name": "leaf_b80b6a4c",
@@ -13456,8 +13493,8 @@
     "LEXA": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10400.0
+        "pos_x": -10224.0,
+        "pos_y": -10496.0
       },
       "leaves": {
         "leaf_065d46d3": {
@@ -13482,8 +13519,8 @@
         },
         "leaf_f5f44bcd": {
           "name": "leaf_f5f44bcd",
-          "pos_x": -10560.0,
-          "pos_y": -10400.0
+          "pos_x": -9696.0,
+          "pos_y": -10496.0
         }
       },
       "roots": {}
@@ -13831,8 +13868,8 @@
     "LOVU": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10272.0
+        "pos_x": -10224.0,
+        "pos_y": -10368.0
       },
       "leaves": {
         "leaf_1012f033": {
@@ -13850,10 +13887,15 @@
           "pos_x": 7744.0,
           "pos_y": -14240.0
         },
+        "leaf_f1102b13": {
+          "name": "leaf_f1102b13",
+          "pos_x": -10976.0,
+          "pos_y": -11008.0
+        },
         "leaf_fabcec17": {
           "name": "leaf_fabcec17",
-          "pos_x": -10560.0,
-          "pos_y": -10272.0
+          "pos_x": -9696.0,
+          "pos_y": -10368.0
         },
         "leaf_fe983a98": {
           "name": "leaf_fe983a98",
@@ -14289,8 +14331,8 @@
     "LYCO": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10400.0
+        "pos_x": -9504.0,
+        "pos_y": -10496.0
       },
       "leaves": {},
       "roots": {}
@@ -14307,8 +14349,8 @@
     "LYDO": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10336.0
+        "pos_x": -10224.0,
+        "pos_y": -10432.0
       },
       "leaves": {
         "leaf_2cc38a43": {
@@ -14318,8 +14360,8 @@
         },
         "leaf_6ba208c9": {
           "name": "leaf_6ba208c9",
-          "pos_x": -10560.0,
-          "pos_y": -10336.0
+          "pos_x": -9696.0,
+          "pos_y": -10432.0
         },
         "leaf_cc845a50": {
           "name": "leaf_cc845a50",
@@ -14357,18 +14399,18 @@
       "leaves": {
         "leaf_1126a09f": {
           "name": "leaf_1126a09f",
-          "pos_x": -11232.0,
-          "pos_y": -10752.0
+          "pos_x": -10976.0,
+          "pos_y": -10272.0
         },
         "leaf_115db66f": {
           "name": "leaf_115db66f",
-          "pos_x": -11328.0,
-          "pos_y": -10688.0
+          "pos_x": -10880.0,
+          "pos_y": -10592.0
         },
         "leaf_3097be0c": {
           "name": "leaf_3097be0c",
-          "pos_x": -11328.0,
-          "pos_y": -10144.0
+          "pos_x": -10128.0,
+          "pos_y": -10240.0
         },
         "leaf_3efb05ae": {
           "name": "leaf_3efb05ae",
@@ -14377,8 +14419,8 @@
         },
         "leaf_53939063": {
           "name": "leaf_53939063",
-          "pos_x": -11136.0,
-          "pos_y": -10688.0
+          "pos_x": -10880.0,
+          "pos_y": -10208.0
         },
         "leaf_59ef924c": {
           "name": "leaf_59ef924c",
@@ -14407,13 +14449,13 @@
       "leaves": {
         "leaf_19e20793": {
           "name": "leaf_19e20793",
-          "pos_x": -11616.0,
-          "pos_y": -10272.0
+          "pos_x": -10416.0,
+          "pos_y": -10368.0
         },
         "leaf_439b7d22": {
           "name": "leaf_439b7d22",
-          "pos_x": -11616.0,
-          "pos_y": -10784.0
+          "pos_x": -10416.0,
+          "pos_y": -10880.0
         }
       },
       "roots": {}
@@ -14779,8 +14821,8 @@
     "MATO": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10144.0
+        "pos_x": -10224.0,
+        "pos_y": -10240.0
       },
       "leaves": {
         "leaf_0a311b9f": {
@@ -14790,8 +14832,8 @@
         },
         "leaf_27620348": {
           "name": "leaf_27620348",
-          "pos_x": -10560.0,
-          "pos_y": -10144.0
+          "pos_x": -9696.0,
+          "pos_y": -10240.0
         },
         "leaf_88f0e0d9": {
           "name": "leaf_88f0e0d9",
@@ -15524,8 +15566,8 @@
     "MUDE": {
       "core": {
         "name": "core",
-        "pos_x": -11520.0,
-        "pos_y": -10816.0
+        "pos_x": -10320.0,
+        "pos_y": -10912.0
       },
       "leaves": {},
       "roots": {}
@@ -15770,8 +15812,8 @@
     "MUWY": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10528.0
+        "pos_x": -10224.0,
+        "pos_y": -10624.0
       },
       "leaves": {
         "leaf_0fcd7d58": {
@@ -15781,8 +15823,8 @@
         },
         "leaf_1a218e91": {
           "name": "leaf_1a218e91",
-          "pos_x": -10560.0,
-          "pos_y": -10528.0
+          "pos_x": -9696.0,
+          "pos_y": -10624.0
         },
         "leaf_1c3cf40d": {
           "name": "leaf_1c3cf40d",
@@ -15847,8 +15889,8 @@
     "MYFA": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10400.0
+        "pos_x": -9600.0,
+        "pos_y": -10496.0
       },
       "leaves": {},
       "roots": {}
@@ -15955,14 +15997,14 @@
     "MYRO": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10464.0
+        "pos_x": -10224.0,
+        "pos_y": -10560.0
       },
       "leaves": {
         "leaf_29cf2582": {
           "name": "leaf_29cf2582",
-          "pos_x": -10560.0,
-          "pos_y": -10464.0
+          "pos_x": -9696.0,
+          "pos_y": -10560.0
         },
         "leaf_67918f39": {
           "name": "leaf_67918f39",
@@ -16019,14 +16061,14 @@
     "MYTA": {
       "core": {
         "name": "core",
-        "pos_x": -11232.0,
-        "pos_y": -10144.0
+        "pos_x": -10032.0,
+        "pos_y": -10240.0
       },
       "leaves": {
         "leaf_1d76fbd9": {
           "name": "leaf_1d76fbd9",
-          "pos_x": -11616.0,
-          "pos_y": -10336.0
+          "pos_x": -10416.0,
+          "pos_y": -10432.0
         }
       },
       "roots": {}
@@ -16502,8 +16544,8 @@
     "NERU": {
       "core": {
         "name": "core",
-        "pos_x": -11328.0,
-        "pos_y": -10464.0
+        "pos_x": -10128.0,
+        "pos_y": -10400.0
       },
       "leaves": {
         "leaf_45802aa1": {
@@ -16688,8 +16730,8 @@
     "NOKO": {
       "core": {
         "name": "core",
-        "pos_x": -11328.0,
-        "pos_y": -10080.0
+        "pos_x": -10128.0,
+        "pos_y": -10176.0
       },
       "leaves": {},
       "roots": {}
@@ -17243,8 +17285,8 @@
     "NYPE": {
       "core": {
         "name": "core",
-        "pos_x": -11136.0,
-        "pos_y": -10752.0
+        "pos_x": -10880.0,
+        "pos_y": -10272.0
       },
       "leaves": {
         "leaf_d74e6bab": {
@@ -17254,8 +17296,8 @@
         },
         "leaf_e57f786e": {
           "name": "leaf_e57f786e",
-          "pos_x": -11328.0,
-          "pos_y": -10208.0
+          "pos_x": -10128.0,
+          "pos_y": -10304.0
         }
       },
       "roots": {}
@@ -17587,8 +17629,8 @@
     "PARU": {
       "core": {
         "name": "core",
-        "pos_x": -10944.0,
-        "pos_y": -10688.0
+        "pos_x": -10688.0,
+        "pos_y": -10208.0
       },
       "leaves": {
         "leaf_8c7ab80d": {
@@ -18891,8 +18933,8 @@
     "POPU": {
       "core": {
         "name": "core",
-        "pos_x": -11040.0,
-        "pos_y": -10688.0
+        "pos_x": -10784.0,
+        "pos_y": -10208.0
       },
       "leaves": {
         "leaf_71956779": {
@@ -19229,8 +19271,8 @@
     "PURE": {
       "core": {
         "name": "core",
-        "pos_x": -11136.0,
-        "pos_y": -10880.0
+        "pos_x": -10880.0,
+        "pos_y": -11104.0
       },
       "leaves": {
         "leaf_dcb615f8": {
@@ -19558,8 +19600,8 @@
       "leaves": {
         "leaf_7706b8bf": {
           "name": "leaf_7706b8bf",
-          "pos_x": -10944.0,
-          "pos_y": -10624.0
+          "pos_x": -10688.0,
+          "pos_y": -10144.0
         },
         "leaf_f364d527": {
           "name": "leaf_f364d527",
@@ -20278,8 +20320,8 @@
     "REPU": {
       "core": {
         "name": "core",
-        "pos_x": -10848.0,
-        "pos_y": -10656.0
+        "pos_x": -10592.0,
+        "pos_y": -10176.0
       },
       "leaves": {
         "leaf_58626ec1": {
@@ -21266,10 +21308,15 @@
     "RUTU": {
       "core": {
         "name": "core",
-        "pos_x": -11232.0,
-        "pos_y": -10688.0
+        "pos_x": -10784.0,
+        "pos_y": -10592.0
       },
       "leaves": {
+        "leaf_00538e1c": {
+          "name": "leaf_00538e1c",
+          "pos_x": -10976.0,
+          "pos_y": -10208.0
+        },
         "leaf_03c91155": {
           "name": "leaf_03c91155",
           "pos_x": 20224.0,
@@ -21277,8 +21324,8 @@
         },
         "leaf_0ab73efa": {
           "name": "leaf_0ab73efa",
-          "pos_x": -11520.0,
-          "pos_y": -10528.0
+          "pos_x": -10320.0,
+          "pos_y": -10624.0
         },
         "leaf_7f886e75": {
           "name": "leaf_7f886e75",
@@ -21287,8 +21334,13 @@
         },
         "leaf_9ed59043": {
           "name": "leaf_9ed59043",
-          "pos_x": -11616.0,
-          "pos_y": -10848.0
+          "pos_x": -10416.0,
+          "pos_y": -10944.0
+        },
+        "leaf_fadf4855": {
+          "name": "leaf_fadf4855",
+          "pos_x": -10976.0,
+          "pos_y": -11104.0
         }
       },
       "roots": {}
@@ -22005,8 +22057,8 @@
     "SANU": {
       "core": {
         "name": "core",
-        "pos_x": -11328.0,
-        "pos_y": -10624.0
+        "pos_x": -10880.0,
+        "pos_y": -10528.0
       },
       "leaves": {},
       "roots": {}
@@ -22195,14 +22247,19 @@
     "SAXO": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -11008.0
+        "pos_x": -10224.0,
+        "pos_y": -11104.0
       },
       "leaves": {
         "leaf_19b9b774": {
           "name": "leaf_19b9b774",
           "pos_x": 19840.0,
           "pos_y": -17008.0
+        },
+        "leaf_2945be8b": {
+          "name": "leaf_2945be8b",
+          "pos_x": -10976.0,
+          "pos_y": -10432.0
         }
       },
       "roots": {}
@@ -22432,8 +22489,8 @@
     "SELA": {
       "core": {
         "name": "core",
-        "pos_x": -11040.0,
-        "pos_y": -10880.0
+        "pos_x": -10784.0,
+        "pos_y": -11104.0
       },
       "leaves": {
         "leaf_0513d950": {
@@ -23501,8 +23558,8 @@
         },
         "leaf_e3caaa7d": {
           "name": "leaf_e3caaa7d",
-          "pos_x": -11328.0,
-          "pos_y": -10752.0
+          "pos_x": -10880.0,
+          "pos_y": -10656.0
         }
       },
       "roots": {}
@@ -23738,10 +23795,15 @@
     "SUDE": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10752.0
+        "pos_x": -10224.0,
+        "pos_y": -10848.0
       },
       "leaves": {
+        "leaf_4f993424": {
+          "name": "leaf_4f993424",
+          "pos_x": -10976.0,
+          "pos_y": -10496.0
+        },
         "leaf_96f04635": {
           "name": "leaf_96f04635",
           "pos_x": 19840.0,
@@ -24390,14 +24452,19 @@
     "TAHA": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10688.0
+        "pos_x": -10224.0,
+        "pos_y": -10784.0
       },
       "leaves": {
         "leaf_c33632ee": {
           "name": "leaf_c33632ee",
           "pos_x": 19840.0,
           "pos_y": -16688.0
+        },
+        "leaf_d470262a": {
+          "name": "leaf_d470262a",
+          "pos_x": -10976.0,
+          "pos_y": -10560.0
         }
       },
       "roots": {}
@@ -24477,13 +24544,13 @@
       "leaves": {
         "leaf_0b73c84f": {
           "name": "leaf_0b73c84f",
-          "pos_x": -11520.0,
-          "pos_y": -11008.0
+          "pos_x": -10320.0,
+          "pos_y": -11104.0
         },
         "leaf_47c3ff37": {
           "name": "leaf_47c3ff37",
-          "pos_x": -11232.0,
-          "pos_y": -10816.0
+          "pos_x": -10976.0,
+          "pos_y": -10336.0
         },
         "leaf_506fcb3a": {
           "name": "leaf_506fcb3a",
@@ -24984,8 +25051,8 @@
     "TELU": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10816.0
+        "pos_x": -10224.0,
+        "pos_y": -10912.0
       },
       "leaves": {
         "leaf_713466a5": {
@@ -25390,8 +25457,8 @@
         },
         "leaf_62c41616": {
           "name": "leaf_62c41616",
-          "pos_x": -10560.0,
-          "pos_y": -10848.0
+          "pos_x": -9600.0,
+          "pos_y": -10880.0
         },
         "leaf_684bc636": {
           "name": "leaf_684bc636",
@@ -26370,8 +26437,8 @@
     "TYPO": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10944.0
+        "pos_x": -10224.0,
+        "pos_y": -11040.0
       },
       "leaves": {
         "leaf_d4f9dd7d": {
@@ -26429,14 +26496,19 @@
     "TYRY": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10624.0
+        "pos_x": -10224.0,
+        "pos_y": -10720.0
       },
       "leaves": {
         "leaf_665ad1cf": {
           "name": "leaf_665ad1cf",
           "pos_x": 19840.0,
           "pos_y": -16624.0
+        },
+        "leaf_a2879f00": {
+          "name": "leaf_a2879f00",
+          "pos_x": -10976.0,
+          "pos_y": -10624.0
         }
       },
       "roots": {}
@@ -27245,8 +27317,8 @@
       "leaves": {
         "leaf_ed417ac4": {
           "name": "leaf_ed417ac4",
-          "pos_x": -10656.0,
-          "pos_y": -10320.0
+          "pos_x": -9792.0,
+          "pos_y": -10416.0
         }
       },
       "roots": {}
@@ -27355,8 +27427,8 @@
     "VEGA": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10528.0
+        "pos_x": -9504.0,
+        "pos_y": -10624.0
       },
       "leaves": {},
       "roots": {}
@@ -27926,8 +27998,8 @@
     "VYNE": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10272.0
+        "pos_x": -9504.0,
+        "pos_y": -10368.0
       },
       "leaves": {},
       "roots": {}
@@ -28030,8 +28102,8 @@
     "VYZO": {
       "core": {
         "name": "core",
-        "pos_x": -11424.0,
-        "pos_y": -10880.0
+        "pos_x": -10224.0,
+        "pos_y": -10976.0
       },
       "leaves": {
         "leaf_216ee124": {
@@ -28241,8 +28313,8 @@
     "WAMA": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10208.0
+        "pos_x": -9504.0,
+        "pos_y": -10304.0
       },
       "leaves": {},
       "roots": {}
@@ -28352,8 +28424,8 @@
     "WATA": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10272.0
+        "pos_x": -9600.0,
+        "pos_y": -10368.0
       },
       "leaves": {},
       "roots": {}
@@ -28379,8 +28451,8 @@
     "WAVO": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10144.0
+        "pos_x": -9504.0,
+        "pos_y": -10240.0
       },
       "leaves": {},
       "roots": {}
@@ -28884,8 +28956,8 @@
     "WEZE": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10080.0
+        "pos_x": -9504.0,
+        "pos_y": -10176.0
       },
       "leaves": {},
       "roots": {}
@@ -29012,8 +29084,8 @@
     "WOJY": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10336.0
+        "pos_x": -9504.0,
+        "pos_y": -10432.0
       },
       "leaves": {},
       "roots": {}
@@ -29485,8 +29557,8 @@
     "WURY": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10528.0
+        "pos_x": -9600.0,
+        "pos_y": -10624.0
       },
       "leaves": {},
       "roots": {}
@@ -29550,8 +29622,8 @@
     "WUVA": {
       "core": {
         "name": "core",
-        "pos_x": -10368.0,
-        "pos_y": -10464.0
+        "pos_x": -9504.0,
+        "pos_y": -10560.0
       },
       "leaves": {},
       "roots": {}
@@ -30070,8 +30142,8 @@
     "XAGA": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10208.0
+        "pos_x": -9600.0,
+        "pos_y": -10304.0
       },
       "leaves": {},
       "roots": {}
@@ -30130,8 +30202,8 @@
     "XAHY": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10976.0
+        "pos_x": -9504.0,
+        "pos_y": -11008.0
       },
       "leaves": {
         "leaf_ba9d514c": {
@@ -30317,8 +30389,8 @@
         },
         "leaf_cd66a64d": {
           "name": "leaf_cd66a64d",
-          "pos_x": -10656.0,
-          "pos_y": -10720.0
+          "pos_x": -9696.0,
+          "pos_y": -10752.0
         }
       },
       "roots": {}
@@ -30809,8 +30881,8 @@
     "XEPO": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10464.0
+        "pos_x": -9600.0,
+        "pos_y": -10560.0
       },
       "leaves": {},
       "roots": {}
@@ -31313,8 +31385,8 @@
     "XOWO": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10080.0
+        "pos_x": -9600.0,
+        "pos_y": -10176.0
       },
       "leaves": {},
       "roots": {}
@@ -31361,8 +31433,8 @@
     "XUCE": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10144.0
+        "pos_x": -9600.0,
+        "pos_y": -10240.0
       },
       "leaves": {},
       "roots": {}
@@ -31489,8 +31561,8 @@
     "XUHY": {
       "core": {
         "name": "core",
-        "pos_x": -10464.0,
-        "pos_y": -10336.0
+        "pos_x": -9600.0,
+        "pos_y": -10432.0
       },
       "leaves": {},
       "roots": {}
@@ -31642,15 +31714,10 @@
           "pos_x": -5920.0,
           "pos_y": -9600.0
         },
-        "leaf_232e952d": {
-          "name": "leaf_232e952d",
-          "pos_x": -10944.0,
-          "pos_y": -11040.0
-        },
         "leaf_3acc3b32": {
           "name": "leaf_3acc3b32",
-          "pos_x": -10944.0,
-          "pos_y": -10976.0
+          "pos_x": -10688.0,
+          "pos_y": -11168.0
         },
         "leaf_48cff14e": {
           "name": "leaf_48cff14e",
@@ -32241,19 +32308,14 @@
     "XYVO": {
       "core": {
         "name": "core",
-        "pos_x": -11328.0,
-        "pos_y": -10336.0
+        "pos_x": -10880.0,
+        "pos_y": -10976.0
       },
       "leaves": {
         "leaf_9c5ec159": {
           "name": "leaf_9c5ec159",
-          "pos_x": -11136.0,
-          "pos_y": -10624.0
-        },
-        "leaf_cf7d58ca": {
-          "name": "leaf_cf7d58ca",
-          "pos_x": -11136.0,
-          "pos_y": -10816.0
+          "pos_x": -10880.0,
+          "pos_y": -10144.0
         }
       },
       "roots": {}
@@ -33936,7 +33998,7 @@
       "roots": {}
     }
   },
-  "guid": 87519943,
+  "guid": 1098714304,
   "labels": [
     {
       "pos_x": -368.0,
@@ -33975,8 +34037,8 @@
       "text": "Sprite Fetcher"
     },
     {
-      "pos_x": -11872.0,
-      "pos_y": -11296.0,
+      "pos_x": -11232.0,
+      "pos_y": -11504.0,
       "scale": 16.0,
       "text": "LCD Coordinate Counters"
     },
@@ -34758,7 +34820,7 @@
     },
     "ADYB.qp -> BUS_SPR_I5.ADYB": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "ADYB",
       "output_cell": "ADYB",
       "output_node": "core",
@@ -34806,7 +34868,7 @@
     },
     "AFEN.qp -> BUS_SPR_I2.AFEN": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "AFEN",
       "output_cell": "AFEN",
       "output_node": "core",
@@ -34846,7 +34908,7 @@
     },
     "AFOZ.qp -> BUS_SPR_I1.AFOZ": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "AFOZ",
       "output_cell": "AFOZ",
       "output_node": "core",
@@ -34926,7 +34988,7 @@
     },
     "AHAC.qp -> BUS_SPR_L2.AHAC": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "AHAC",
       "output_cell": "AHAC",
       "output_node": "core",
@@ -35150,7 +35212,7 @@
     },
     "AHUM.qp -> BUS_SPR_L1.AHUM": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "AHUM",
       "output_cell": "AHUM",
       "output_node": "core",
@@ -35158,7 +35220,7 @@
     },
     "AJAL.qp -> BUS_SPR_L2.AJAL": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "AJAL",
       "output_cell": "AJAL",
       "output_node": "core",
@@ -35302,7 +35364,7 @@
     },
     "AKYH.qp -> BUS_SPR_I1.AKYH": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "AKYH",
       "output_cell": "AKYH",
       "output_node": "core",
@@ -36057,7 +36119,7 @@
       "input_node": "core",
       "input_port": "a",
       "output_cell": "ANEL",
-      "output_node": "core",
+      "output_node": "leaf_6c1cec0f",
       "output_port": "qp"
     },
     "ANOM.qp -> BALU.a": {
@@ -36230,7 +36292,7 @@
     },
     "APOB.qp -> BUS_SPR_I4.APOB": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "APOB",
       "output_cell": "APOB",
       "output_node": "core",
@@ -36238,7 +36300,7 @@
     },
     "APOC.qp -> BUS_SPR_I0.APOC": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "APOC",
       "output_cell": "APOC",
       "output_node": "core",
@@ -36262,7 +36324,7 @@
     },
     "APON.qp -> BUS_SPR_I2.APON": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "APON",
       "output_cell": "APON",
       "output_node": "core",
@@ -36414,7 +36476,7 @@
     },
     "APYV.qp -> BUS_SPR_I3.APYV": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "APYV",
       "output_cell": "APYV",
       "output_node": "core",
@@ -37446,7 +37508,7 @@
     },
     "AWAT.qp -> BUS_SPR_L3.AWAT": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "AWAT",
       "output_cell": "AWAT",
       "output_node": "core",
@@ -37473,7 +37535,7 @@
       "input_node": "core",
       "input_port": "CLKp",
       "output_cell": "AWOH",
-      "output_node": "core",
+      "output_node": "leaf_516e99cd",
       "output_port": "qp"
     },
     "AXAD.qp -> ACEN.b": {
@@ -37494,7 +37556,7 @@
     },
     "AXEC.qp -> BUS_SPR_I5.AXEC": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "AXEC",
       "output_cell": "AXEC",
       "output_node": "core",
@@ -37942,7 +38004,7 @@
     },
     "BACE.qp -> BUS_SPR_L0.BACE": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "BACE",
       "output_cell": "BACE",
       "output_node": "core",
@@ -37950,7 +38012,7 @@
     },
     "BACO.qp -> BUS_SPR_L2.BACO": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "BACO",
       "output_cell": "BACO",
       "output_node": "core",
@@ -38366,7 +38428,7 @@
     },
     "BAZU.qp -> BUS_SPR_L1.BAZU": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "BAZU",
       "output_cell": "BAZU",
       "output_node": "core",
@@ -38510,7 +38572,7 @@
     },
     "BEFE.qp -> BUS_SPR_L3.BEFE": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "BEFE",
       "output_cell": "BEFE",
       "output_node": "core",
@@ -38638,7 +38700,7 @@
     },
     "BEMO.qp -> BUS_SPR_I5.BEMO": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "BEMO",
       "output_cell": "BEMO",
       "output_node": "core",
@@ -38782,7 +38844,7 @@
     },
     "BETY.qp -> BUS_SPR_I3.BETY": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "BETY",
       "output_cell": "BETY",
       "output_node": "core",
@@ -38798,7 +38860,7 @@
     },
     "BEVY.qp -> BUS_SPR_L1.BEVY": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "BEVY",
       "output_cell": "BEVY",
       "output_node": "core",
@@ -38974,7 +39036,7 @@
     },
     "BODU.qp -> BUS_SPR_L2.BODU": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "BODU",
       "output_cell": "BODU",
       "output_node": "core",
@@ -39158,7 +39220,7 @@
     },
     "BOSO.qp -> BUS_SPR_L0.BOSO": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "BOSO",
       "output_cell": "BOSO",
       "output_node": "core",
@@ -39182,7 +39244,7 @@
     },
     "BOVE.qp -> BUS_SPR_L2.BOVE": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "BOVE",
       "output_cell": "BOVE",
       "output_node": "core",
@@ -39222,7 +39284,7 @@
     },
     "BUCE.qp -> BUS_SPR_L0.BUCE": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "BUCE",
       "output_cell": "BUCE",
       "output_node": "core",
@@ -39350,7 +39412,7 @@
     },
     "BUJA.qp -> BUS_SPR_L1.BUJA": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "BUJA",
       "output_cell": "BUJA",
       "output_node": "core",
@@ -39358,7 +39420,7 @@
     },
     "BUJY.qp -> BUS_SPR_L3.BUJY": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "BUJY",
       "output_cell": "BUJY",
       "output_node": "core",
@@ -39398,7 +39460,7 @@
     },
     "BUKY.qp -> BUS_SPR_L1.BUKY": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "BUKY",
       "output_cell": "BUKY",
       "output_node": "core",
@@ -43822,7 +43884,7 @@
     },
     "BYDO.qp -> BUS_SPR_L3.BYDO": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "BYDO",
       "output_cell": "BYDO",
       "output_node": "core",
@@ -43894,7 +43956,7 @@
     },
     "BYME.qp -> BUS_SPR_L0.BYME": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "BYME",
       "output_cell": "BYME",
       "output_node": "core",
@@ -43950,7 +44012,7 @@
     },
     "BYRO.qp -> BUS_SPR_L0.BYRO": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "BYRO",
       "output_cell": "BYRO",
       "output_node": "core",
@@ -44537,7 +44599,7 @@
       "input_node": "core",
       "input_port": "a",
       "output_cell": "CATU",
-      "output_node": "core",
+      "output_node": "leaf_033c3ca8",
       "output_port": "qp"
     },
     "CATU.qp -> ANEL.Dp": {
@@ -44545,7 +44607,7 @@
       "input_node": "core",
       "input_port": "Dp",
       "output_cell": "CATU",
-      "output_node": "core",
+      "output_node": "leaf_3bc86795",
       "output_port": "qp"
     },
     "CATU.qp -> BESU.SETp": {
@@ -44654,7 +44716,7 @@
     },
     "CAWO.qp -> BUS_SPR_L3.CAWO": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "CAWO",
       "output_cell": "CAWO",
       "output_node": "core",
@@ -44902,7 +44964,7 @@
     },
     "CEGY.qp -> BUS_SPR_I2.CEGY": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "CEGY",
       "output_cell": "CEGY",
       "output_node": "core",
@@ -44950,7 +45012,7 @@
     },
     "CELU.qp -> BUS_SPR_I1.CELU": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "CELU",
       "output_cell": "CELU",
       "output_node": "core",
@@ -45134,7 +45196,7 @@
     },
     "COHO.qp -> BUS_SPR_L2.COHO": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "COHO",
       "output_cell": "COHO",
       "output_node": "core",
@@ -45374,7 +45436,7 @@
     },
     "CUBE.qp -> BUS_SPR_I0.CUBE": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "CUBE",
       "output_cell": "CUBE",
       "output_node": "core",
@@ -45382,7 +45444,7 @@
     },
     "CUBO.qp -> BUS_SPR_I0.CUBO": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "CUBO",
       "output_cell": "CUBO",
       "output_node": "core",
@@ -45846,7 +45908,7 @@
     },
     "CUVU.qp -> BUS_SPR_I3.CUVU": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "CUVU",
       "output_cell": "CUVU",
       "output_node": "core",
@@ -45918,7 +45980,7 @@
     },
     "CYBY.qp -> BUS_SPR_I4.CYBY": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "CYBY",
       "output_cell": "CYBY",
       "output_node": "core",
@@ -46142,7 +46204,7 @@
     },
     "CYRO.qp -> BUS_SPR_I4.CYRO": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "CYRO",
       "output_cell": "CYRO",
       "output_node": "core",
@@ -46358,7 +46420,7 @@
     },
     "DALO.qp -> BUS_SPR_I5.DALO": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "DALO",
       "output_cell": "DALO",
       "output_node": "core",
@@ -46366,7 +46428,7 @@
     },
     "DALY.qp -> BUS_SPR_I4.DALY": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "DALY",
       "output_cell": "DALY",
       "output_node": "core",
@@ -46966,7 +47028,7 @@
     },
     "DEZU.qp -> BUS_SPR_I5.DEZU": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "DEZU",
       "output_cell": "DEZU",
       "output_node": "core",
@@ -46990,7 +47052,7 @@
     },
     "DOBO.qp -> BUS_SPR_I0.DOBO": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "DOBO",
       "output_cell": "DOBO",
       "output_node": "core",
@@ -47110,7 +47172,7 @@
     },
     "DONY.qp -> BUS_SPR_I3.DONY": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "DONY",
       "output_cell": "DONY",
       "output_node": "core",
@@ -47214,7 +47276,7 @@
     },
     "DOWA.qp -> BUS_SPR_I2.DOWA": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "DOWA",
       "output_cell": "DOWA",
       "output_node": "core",
@@ -47430,7 +47492,7 @@
     },
     "DUZA.qp -> BUS_SPR_I3.DUZA": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "DUZA",
       "output_cell": "DUZA",
       "output_node": "core",
@@ -47710,7 +47772,7 @@
     },
     "DYGO.qp -> BUS_SPR_I1.DYGO": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "DYGO",
       "output_cell": "DYGO",
       "output_node": "core",
@@ -47894,7 +47956,7 @@
     },
     "DYNY.qp -> BUS_SPR_I1.DYNY": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "DYNY",
       "output_cell": "DYNY",
       "output_node": "core",
@@ -48262,7 +48324,7 @@
     },
     "EFUD.qp -> BUS_SPR_I4.EFUD": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "EFUD",
       "output_cell": "EFUD",
       "output_node": "core",
@@ -48550,7 +48612,7 @@
     },
     "ELEP.qp -> BUS_SPR_I2.ELEP": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "ELEP",
       "output_cell": "ELEP",
       "output_node": "core",
@@ -48582,7 +48644,7 @@
     },
     "ELYC.qp -> BUS_SPR_I4.ELYC": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "ELYC",
       "output_cell": "ELYC",
       "output_node": "core",
@@ -48686,7 +48748,7 @@
     },
     "ENAP.qp -> BUS_SPR_I0.ENAP": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "ENAP",
       "output_cell": "ENAP",
       "output_node": "core",
@@ -48886,7 +48948,7 @@
     },
     "ETAD.qp -> BUS_SPR_I3.ETAD": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "ETAD",
       "output_cell": "ETAD",
       "output_node": "core",
@@ -48982,7 +49044,7 @@
     },
     "EVYT.qp -> BUS_SPR_I5.EVYT": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "EVYT",
       "output_cell": "EVYT",
       "output_node": "core",
@@ -49070,7 +49132,7 @@
     },
     "EZOC.qp -> BUS_SPR_I2.EZOC": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "EZOC",
       "output_cell": "EZOC",
       "output_node": "core",
@@ -50614,7 +50676,7 @@
     },
     "GATE.qp -> BUS_SPR_L1.GATE": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "GATE",
       "output_cell": "GATE",
       "output_node": "core",
@@ -50982,7 +51044,7 @@
     },
     "GOFO.qp -> BUS_SPR_L3.GOFO": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "GOFO",
       "output_cell": "GOFO",
       "output_node": "core",
@@ -52377,7 +52439,7 @@
       "input_node": "core",
       "input_port": "b",
       "output_cell": "LAFO",
-      "output_node": "core",
+      "output_node": "leaf_37e2cfc5",
       "output_port": "qp"
     },
     "LAFU.qp -> LAVA.a": {
@@ -54121,7 +54183,7 @@
       "input_node": "core",
       "input_port": "a",
       "output_cell": "LOVU",
-      "output_node": "core",
+      "output_node": "leaf_f1102b13",
       "output_port": "qp"
     },
     "LOVY.qn -> LURY.a": {
@@ -63065,7 +63127,7 @@
       "input_node": "core",
       "input_port": "Dp",
       "output_cell": "RUTU",
-      "output_node": "core",
+      "output_node": "leaf_00538e1c",
       "output_port": "qp"
     },
     "RUTU.qp -> PURE.a": {
@@ -63073,7 +63135,7 @@
       "input_node": "core",
       "input_port": "a",
       "output_cell": "RUTU",
-      "output_node": "core",
+      "output_node": "leaf_fadf4855",
       "output_port": "qp"
     },
     "RUTU.qp -> RYNO.b": {
@@ -64457,7 +64519,7 @@
       "input_node": "core",
       "input_port": "d",
       "output_cell": "SAXO",
-      "output_node": "core",
+      "output_node": "leaf_2945be8b",
       "output_port": "qp"
     },
     "SAXO.qp -> TEBO.g": {
@@ -66121,7 +66183,7 @@
       "input_node": "core",
       "input_port": "c",
       "output_cell": "SUDE",
-      "output_node": "core",
+      "output_node": "leaf_4f993424",
       "output_port": "qp"
     },
     "SUDE.qp -> TEBO.c": {
@@ -67033,7 +67095,7 @@
       "input_node": "core",
       "input_port": "b",
       "output_cell": "TAHA",
-      "output_node": "core",
+      "output_node": "leaf_d470262a",
       "output_port": "qp"
     },
     "TAHA.qp -> TAFY.a": {
@@ -69937,7 +69999,7 @@
       "input_node": "core",
       "input_port": "a",
       "output_cell": "TYRY",
-      "output_node": "core",
+      "output_node": "leaf_a2879f00",
       "output_port": "qp"
     },
     "TYRY.qp -> TEBO.a": {
@@ -72390,7 +72452,7 @@
     },
     "WABA.qp -> BUS_SPR_I4.WABA": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "WABA",
       "output_cell": "WABA",
       "output_node": "core",
@@ -72430,7 +72492,7 @@
     },
     "WABO.qp -> BUS_SPR_I3.WABO": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "WABO",
       "output_cell": "WABO",
       "output_node": "core",
@@ -72438,7 +72500,7 @@
     },
     "WABU.qp -> BUS_SPR_L2.WABU": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "WABU",
       "output_cell": "WABU",
       "output_node": "core",
@@ -72542,7 +72604,7 @@
     },
     "WAGA.qp -> BUS_SPR_I2.WAGA": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "WAGA",
       "output_cell": "WAGA",
       "output_node": "core",
@@ -72566,7 +72628,7 @@
     },
     "WAJA.qp -> BUS_SPR_I5.WAJA": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "WAJA",
       "output_cell": "WAJA",
       "output_node": "core",
@@ -72574,7 +72636,7 @@
     },
     "WAKO.qp -> BUS_SPR_I0.WAKO": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "WAKO",
       "output_cell": "WAKO",
       "output_node": "core",
@@ -72766,7 +72828,7 @@
     },
     "WANA.qp -> BUS_SPR_L3.WANA": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "WANA",
       "output_cell": "WANA",
       "output_node": "core",
@@ -72910,7 +72972,7 @@
     },
     "WATO.qp -> BUS_SPR_I0.WATO": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "WATO",
       "output_cell": "WATO",
       "output_node": "core",
@@ -72950,7 +73012,7 @@
     },
     "WAXE.qp -> BUS_SPR_L0.WAXE": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "WAXE",
       "output_cell": "WAXE",
       "output_node": "core",
@@ -73078,7 +73140,7 @@
     },
     "WEHE.qp -> BUS_SPR_L0.WEHE": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "WEHE",
       "output_cell": "WEHE",
       "output_node": "core",
@@ -73350,7 +73412,7 @@
     },
     "WEPY.qp -> BUS_SPR_I1.WEPY": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "WEPY",
       "output_cell": "WEPY",
       "output_node": "core",
@@ -73374,7 +73436,7 @@
     },
     "WERE.qp -> BUS_SPR_L1.WERE": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "WERE",
       "output_cell": "WERE",
       "output_node": "core",
@@ -73478,7 +73540,7 @@
     },
     "WERU.qp -> BUS_SPR_I2.WERU": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "WERU",
       "output_cell": "WERU",
       "output_node": "core",
@@ -73838,7 +73900,7 @@
     },
     "WOCY.qp -> BUS_SPR_I5.WOCY": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "WOCY",
       "output_cell": "WOCY",
       "output_node": "core",
@@ -74014,7 +74076,7 @@
     },
     "WOKO.qp -> BUS_SPR_I3.WOKO": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "WOKO",
       "output_cell": "WOKO",
       "output_node": "core",
@@ -74198,7 +74260,7 @@
     },
     "WOXY.qp -> BUS_SPR_I4.WOXY": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "WOXY",
       "output_cell": "WOXY",
       "output_node": "core",
@@ -75030,7 +75092,7 @@
     },
     "WUXE.qp -> BUS_SPR_L2.WUXE": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "WUXE",
       "output_cell": "WUXE",
       "output_node": "core",
@@ -75038,7 +75100,7 @@
     },
     "WUXU.qp -> BUS_SPR_I0.WUXU": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "WUXU",
       "output_cell": "WUXU",
       "output_node": "core",
@@ -75254,7 +75316,7 @@
     },
     "WYGO.qp -> BUS_SPR_I1.WYGO": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "WYGO",
       "output_cell": "WYGO",
       "output_node": "core",
@@ -75542,7 +75604,7 @@
     },
     "WYWY.qp -> BUS_SPR_I1.WYWY": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "WYWY",
       "output_cell": "WYWY",
       "output_node": "core",
@@ -78169,7 +78231,7 @@
       "input_node": "core",
       "input_port": "a",
       "output_cell": "XUPY",
-      "output_node": "leaf_232e952d",
+      "output_node": "core",
       "output_port": "qp"
     },
     "XUPY.qp -> BYBA.CLKp": {
@@ -78942,7 +79004,7 @@
     },
     "XYRA.qp -> BUS_SPR_I3.XYRA": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "XYRA",
       "output_cell": "XYRA",
       "output_node": "core",
@@ -78950,7 +79012,7 @@
     },
     "XYRE.qp -> BUS_SPR_I3.XYRE": {
       "input_cell": "BUS_SPR_I3",
-      "input_node": "core",
+      "input_node": "root_36f7402c",
       "input_port": "XYRE",
       "output_cell": "XYRE",
       "output_node": "core",
@@ -79001,7 +79063,7 @@
       "input_node": "core",
       "input_port": "a",
       "output_cell": "XYVO",
-      "output_node": "leaf_cf7d58ca",
+      "output_node": "core",
       "output_port": "qp"
     },
     "XYVO.qp -> POPU.Dp": {
@@ -79102,7 +79164,7 @@
     },
     "YBUK.qp -> BUS_SPR_L0.YBUK": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "YBUK",
       "output_cell": "YBUK",
       "output_node": "core",
@@ -79382,7 +79444,7 @@
     },
     "YHAL.qp -> BUS_SPR_I5.YHAL": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "YHAL",
       "output_cell": "YHAL",
       "output_node": "core",
@@ -79398,7 +79460,7 @@
     },
     "YJEM.qp -> BUS_SPR_L2.YJEM": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "YJEM",
       "output_cell": "YJEM",
       "output_node": "core",
@@ -79430,7 +79492,7 @@
     },
     "YKOZ.qp -> BUS_SPR_L1.YKOZ": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "YKOZ",
       "output_cell": "YKOZ",
       "output_node": "core",
@@ -79550,7 +79612,7 @@
     },
     "YNEV.qp -> BUS_SPR_I2.YNEV": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "YNEV",
       "output_cell": "YNEV",
       "output_node": "core",
@@ -79582,7 +79644,7 @@
     },
     "YPOZ.qp -> BUS_SPR_L1.YPOZ": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "YPOZ",
       "output_cell": "YPOZ",
       "output_node": "core",
@@ -79686,7 +79748,7 @@
     },
     "YRAD.qp -> BUS_SPR_I4.YRAD": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "YRAD",
       "output_cell": "YRAD",
       "output_node": "core",
@@ -79966,7 +80028,7 @@
     },
     "YWAV.qp -> BUS_SPR_L1.YWAV": {
       "input_cell": "BUS_SPR_L1",
-      "input_node": "core",
+      "input_node": "root_44babc2c",
       "input_port": "YWAV",
       "output_cell": "YWAV",
       "output_node": "core",
@@ -80118,7 +80180,7 @@
     },
     "ZABY.qp -> BUS_SPR_L3.ZABY": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "ZABY",
       "output_cell": "ZABY",
       "output_node": "core",
@@ -80358,7 +80420,7 @@
     },
     "ZARO.qp -> BUS_SPR_I0.ZARO": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "ZARO",
       "output_cell": "ZARO",
       "output_node": "core",
@@ -80382,7 +80444,7 @@
     },
     "ZAVE.qp -> BUS_SPR_I2.ZAVE": {
       "input_cell": "BUS_SPR_I2",
-      "input_node": "core",
+      "input_node": "root_9ce0540e",
       "input_port": "ZAVE",
       "output_cell": "ZAVE",
       "output_node": "core",
@@ -80446,7 +80508,7 @@
     },
     "ZECE.qp -> BUS_SPR_I1.ZECE": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "ZECE",
       "output_cell": "ZECE",
       "output_node": "core",
@@ -80470,7 +80532,7 @@
     },
     "ZEDY.qp -> BUS_SPR_I5.ZEDY": {
       "input_cell": "BUS_SPR_I5",
-      "input_node": "core",
+      "input_node": "root_417d0cc0",
       "input_port": "ZEDY",
       "output_cell": "ZEDY",
       "output_node": "core",
@@ -80566,7 +80628,7 @@
     },
     "ZETU.qp -> BUS_SPR_I0.ZETU": {
       "input_cell": "BUS_SPR_I0",
-      "input_node": "core",
+      "input_node": "root_d65bcbec",
       "input_port": "ZETU",
       "output_cell": "ZETU",
       "output_node": "core",
@@ -80574,7 +80636,7 @@
     },
     "ZEXE.qp -> BUS_SPR_L0.ZEXE": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "ZEXE",
       "output_cell": "ZEXE",
       "output_node": "core",
@@ -80710,7 +80772,7 @@
     },
     "ZOJY.qp -> BUS_SPR_I1.ZOJY": {
       "input_cell": "BUS_SPR_I1",
-      "input_node": "core",
+      "input_node": "root_fc5b630c",
       "input_port": "ZOJY",
       "output_cell": "ZOJY",
       "output_node": "core",
@@ -80806,7 +80868,7 @@
     },
     "ZUDO.qp -> BUS_SPR_L3.ZUDO": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "ZUDO",
       "output_cell": "ZUDO",
       "output_node": "core",
@@ -80846,7 +80908,7 @@
     },
     "ZUKE.qp -> BUS_SPR_L0.ZUKE": {
       "input_cell": "BUS_SPR_L0",
-      "input_node": "core",
+      "input_node": "root_2414a354",
       "input_port": "ZUKE",
       "output_cell": "ZUKE",
       "output_node": "core",
@@ -80878,7 +80940,7 @@
     },
     "ZUMU.qp -> BUS_SPR_I4.ZUMU": {
       "input_cell": "BUS_SPR_I4",
-      "input_node": "core",
+      "input_node": "root_3c73b245",
       "input_port": "ZUMU",
       "output_cell": "ZUMU",
       "output_node": "core",
@@ -81038,7 +81100,7 @@
     },
     "ZYPO.qp -> BUS_SPR_L3.ZYPO": {
       "input_cell": "BUS_SPR_L3",
-      "input_node": "core",
+      "input_node": "root_13dc4b2e",
       "input_port": "ZYPO",
       "output_cell": "ZYPO",
       "output_node": "core",
@@ -81070,7 +81132,7 @@
     },
     "ZYTO.qp -> BUS_SPR_L2.ZYTO": {
       "input_cell": "BUS_SPR_L2",
-      "input_node": "core",
+      "input_node": "root_3cbf0c5f",
       "input_port": "ZYTO",
       "output_cell": "ZYTO",
       "output_node": "core",

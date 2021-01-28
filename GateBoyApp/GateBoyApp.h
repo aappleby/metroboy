@@ -20,7 +20,7 @@ public:
   const char* app_get_title() override { return "GateBoyApp"; }
   void app_init(int screen_w, int screen_h) override;
   void app_close() override;
-
+  bool pause_when_idle() override { return false; }
   void reset_to_bootrom();
   void load_raw_dump();
   void save_raw_dump();

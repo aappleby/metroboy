@@ -38,6 +38,7 @@ struct Viewport {
 
   double get_zoom() const;
 
+  Viewport center_on(dvec2 c);
   Viewport zoom(dvec2 screen_pos, double zoom);
   Viewport pan(dvec2 delta);
   Viewport snap();
@@ -76,6 +77,11 @@ struct ViewController {
 
   void pan(double dx, double dy) {
     view_target = view_target.pan({dx, dy});
+    view_target_snap = view_target.snap();
+  }
+
+  void center_on(dvec2 c) {
+    view_target = view_target.center_on(c);
     view_target_snap = view_target.snap();
   }
 

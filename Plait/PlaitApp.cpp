@@ -1192,7 +1192,7 @@ void PlaitApp::app_render_frame() {
     uint32_t color = plait_cell->core_node->color;
 
     if (plait_cell->root_nodes.empty() && plait_cell->leaf_nodes.empty()) {
-      color = (color & 0xFEFEFEFE) >> 1;
+      color = (color & 0xFF000000) | ((color & 0x00FEFEFE) >> 1);
     }
 
     draw_node_fill(plait_cell->core_node, color);
@@ -1419,7 +1419,6 @@ void PlaitApp::app_render_ui() {
   ui_text_painter.render(view_control.view_screen, 0, 0);
   time_ui = timestamp() - time_start;
 
-  /*
   {
     ImGui::Begin("Label Editor");
     static char str0[128] = "Label Text Here";
@@ -1438,15 +1437,28 @@ void PlaitApp::app_render_ui() {
       printf("Creating label %s\n", str0);
       PlaitLabel* label = new PlaitLabel {
         str0,
-        view_control.view_snap.center(),
-        view_control.view_snap.center(),
+        view_control.view_smooth_snap.center(),
+        view_control.view_smooth_snap.center(),
         16.0
       };
       plait.labels.push_back(label);
     }
+
+    static char node_tag[128];
+    ImGui::InputText("tag", node_tag, IM_ARRAYSIZE(node_tag));
+    if (ImGui::Button("Find Tag")) {
+      printf("find tag\n");
+      for (auto& [tag, plait_cell] : plait.cell_map) {
+        if (tag == node_tag) {
+          view_control.center_on(plait_cell->core_node->pos_old + node_size * 0.5);
+        }
+      }
+
+    }
+
+
     ImGui::End();
   }
-  */
 
 #endif
 }

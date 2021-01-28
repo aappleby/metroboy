@@ -59,6 +59,22 @@ double Viewport::get_zoom() const {
 
 //-----------------------------------------------------------------------------
 
+Viewport Viewport::center_on(dvec2 c) {
+  return {
+    {
+      c.x - screen_size.x / 8,
+      c.y - screen_size.y / 8,
+    },
+    {
+      c.x + screen_size.x / 8,
+      c.y + screen_size.y / 8,
+    },
+    screen_size,
+  };
+}
+
+//-----------------------------------------------------------------------------
+
 Viewport Viewport::zoom(dvec2 screen_pos, double zoom) {
 
   Viewport& a = *this;

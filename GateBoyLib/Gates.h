@@ -77,13 +77,12 @@ struct BitBase {
     return *this;
   }
   BitBase& check_old() {
-    // we'll have to do a bunch of initial state cleanup before we can check driven/pullup on old signals...
-    //check_any();
+    CHECK_P((state & BIT_DRIVEN) || (state & BIT_PULLUP));
     CHECK_P((state & 0xF0) == BIT_OLD);
     return *this;
   }
   BitBase& check_new() {
-    check_any();
+    CHECK_P((state & BIT_DRIVEN) || (state & BIT_PULLUP));
     CHECK_P((state & 0xF0) == (BIT_NEW | BIT_DIRTY3 | BIT_DIRTY4));
     return *this;
   }
@@ -92,13 +91,12 @@ struct BitBase {
     return *this;
   }
   const BitBase& check_old() const {
-    // we'll have to do a bunch of initial state cleanup before we can check driven/pullup on old signals...
-    //check_any();
+    CHECK_P((state & BIT_DRIVEN) || (state & BIT_PULLUP));
     CHECK_P((state & 0xF0) == BIT_OLD);
     return *this;
   }
   const BitBase& check_new() const {
-    check_any();
+    CHECK_P((state & BIT_DRIVEN) || (state & BIT_PULLUP));
     CHECK_P((state & 0xF0) == (BIT_NEW | BIT_DIRTY3 | BIT_DIRTY4));
     return *this;
   }

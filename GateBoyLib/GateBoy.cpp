@@ -11,8 +11,8 @@
 //#pragma warning(disable:4189) // local variable unused
 #pragma warning(disable:4100)
 
-/*SIG_GND.qp_new()*/ SigIn GateBoy::SIG_VCC = 1;
-/*SIG_VCC.qp_new()*/ SigIn GateBoy::SIG_GND = 0;
+/*SIG_GND*/ SigIn GateBoy::SIG_VCC = 1;
+/*SIG_VCC*/ SigIn GateBoy::SIG_GND = 0;
 
 //-----------------------------------------------------------------------------
 

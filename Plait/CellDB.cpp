@@ -624,8 +624,8 @@ bool DieDB::parse_line(const std::string& line) {
 
 bool DieDB::parse_rest(DieCell& c, const string& rest) {
 
-  static regex static_member_decl(R"(^static const wire (\w+);.*)");
-  static regex static_member_def(R"(^const wire GateBoy::(\w+) .*)");
+  static regex static_member_decl(R"(^static SigIn (\w+);.*)");
+  static regex static_member_def(R"(^SigIn GateBoy::(\w+) .*)");
 
   static regex member_decl(R"(^(\w+)\s+(\w+)\s*;.*)");
   static regex member_assign(R"(^(?:\w+\.)*(\w+)\s*=\s*(.+;).*)");
@@ -647,11 +647,11 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
 
   smatch match;
   if (regex_match(rest, match, static_member_decl)) {
-    printf("laksdlfkasj\n");
+    result &= parse_reg_type(c, "SigIn");
     result &= parse_cell_name(c, match[1].str());
   }
   else if (regex_match(rest, match, static_member_def)) {
-    printf("laksdlfkasj\n");
+    result &= parse_reg_type(c, "SigIn");
     result &= parse_cell_name(c, match[1].str());
   }
   else if (regex_match(rest, match, member_decl)) {
@@ -814,7 +814,7 @@ bool DieDB::parse_reg_type(DieCell& c, const std::string& type) {
 
 std::string trim_name(const std::string& raw_port) {
   std::string result = raw_port;
-  if (result.ends_with("_old") || result.ends_with("_new") || result.ends_with("_any")) {
+  if (result.ends_with("_old") || result.ends_with("_new") || result.ends_with("_any") || result.ends_with("_mid")) {
     result.resize(result.size() - 4);
   }
   return result;

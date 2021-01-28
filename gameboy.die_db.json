@@ -1664,7 +1664,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "AROP_SPX5n_new",
+      "long_name": "AROP_SPX5n",
       "output_ports": [
         "qp"
       ],
@@ -2691,7 +2691,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "BADY_SPX7n_new",
+      "long_name": "BADY_SPX7n",
       "output_ports": [
         "qp"
       ],
@@ -7173,7 +7173,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "COSE_SPX4n_new",
+      "long_name": "COSE_SPX4n",
       "output_ports": [
         "qp"
       ],
@@ -19642,7 +19642,7 @@
     },
     "NOKO": {
       "cell_type": "LOGIC",
-      "doc": "// Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153",
+      "doc": "",
       "fanout": 1,
       "gate": "and4",
       "input_ports": [
@@ -28568,7 +28568,7 @@
       "fanout": 14,
       "gate": "sig_in",
       "input_ports": [],
-      "long_name": "SIG_GND",
+      "long_name": "SIG_VCC",
       "output_ports": [
         "qp"
       ],
@@ -28633,7 +28633,7 @@
       "fanout": 30,
       "gate": "sig_in",
       "input_ports": [],
-      "long_name": "SIG_VCC",
+      "long_name": "SIG_GND",
       "output_ports": [
         "qp"
       ],
@@ -36285,7 +36285,7 @@
     },
     "WODU": {
       "cell_type": "LOGIC",
-      "doc": "// WODU goes high on odd, cleared on H",
+      "doc": "",
       "fanout": 3,
       "gate": "and2",
       "input_ports": [
@@ -38451,7 +38451,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "XATU_SPX6n_new",
+      "long_name": "XATU_SPX6n",
       "output_ports": [
         "qp"
       ],
@@ -40895,7 +40895,7 @@
     },
     "XYVO": {
       "cell_type": "LOGIC",
-      "doc": "",
+      "doc": "// 128 + 16 = 144",
       "fanout": 2,
       "gate": "and2",
       "input_ports": [
@@ -41769,7 +41769,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "YPUR_SPX2n_new",
+      "long_name": "YPUR_SPX2n",
       "output_ports": [
         "qp"
       ],
@@ -42068,7 +42068,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "YVOK_SPX3n_new",
+      "long_name": "YVOK_SPX3n",
       "output_ports": [
         "qp"
       ],
@@ -42398,7 +42398,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "ZAGO_SPX0n_new",
+      "long_name": "ZAGO_SPX0n",
       "output_ports": [
         "qp"
       ],
@@ -42966,7 +42966,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "ZOCY_SPX1n_new",
+      "long_name": "ZOCY_SPX1n",
       "output_ports": [
         "qp"
       ],

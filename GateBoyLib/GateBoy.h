@@ -32,8 +32,8 @@
 #pragma pack(push, 1)
 struct GateBoy {
 
-  /*SIG_GND.qp_new()*/ static SigIn SIG_VCC;
-  /*SIG_VCC.qp_new()*/ static SigIn SIG_GND;
+  /*SIG_GND*/ static SigIn SIG_VCC;
+  /*SIG_VCC*/ static SigIn SIG_GND;
 
   void reset_to_bootrom(bool fastboot);
   void reset_to_cart();

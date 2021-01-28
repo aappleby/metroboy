@@ -619,6 +619,11 @@ struct GateBoy {
     return _ROZE_FINE_COUNT_7n_old;
   }
 
+  wire ROZE_FINE_COUNT_7n() {
+    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_new(), fine_scroll.ROGA_FINE_CNT1.qp_new(), fine_scroll.RYKU_FINE_CNT0.qp_new());
+    return _ROZE_FINE_COUNT_7n;
+  }
+
   wire POVA_FINE_MATCH_TRIGp() {
     /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_new(), fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_new());
     return _POVA_FINE_MATCH_TRIGp;
@@ -911,6 +916,8 @@ struct GateBoy {
   /*#p21.WODU*/ Gate WODU_HBLANKp;
   /*#p21.NOKO*/ Gate NOKO_y153p;
   /*#p27.POHU*/ Gate POHU_SCX_FINE_MATCHp;
+  /* p27.PANY*/ Gate PANY_WIN_FETCHn;
+  /* p27.NUKO*/ Gate NUKO_WX_MATCHp;
 
   SpriteMatchFlag sprite_match;
   SpriteFirstMatch first_match;

@@ -15,7 +15,8 @@ void GateBoy::set_lcd_pin_ctrl() {
 // if LCDC_ENn, PIN_56_LCD_FLIPS = 4k div clock. Otherwise PIN_LCD_FLIPS = xor(LINE_evn,FRAME_evn)
 
 void GateBoy::set_lcd_pin_flip(DFF17  TULU_DIV07p, DFF9 XONA_LCDC_LCDENn) {
-  /*#p24.LUCA*/ lcd.LUCA_LINE_EVENp .dff17(LOFU_x113n_new(), LYFE_VID_RSTn(), lcd.LUCA_LINE_EVENp.qn_old());
+  /*#p24.LOFU*/ wire LOFU_x113n = not1(reg_lx.RUTU_x113p.qp_new());
+  /*#p24.LUCA*/ lcd.LUCA_LINE_EVENp .dff17(LOFU_x113n, LYFE_VID_RSTn(), lcd.LUCA_LINE_EVENp.qn_old());
   /*#p21.NAPO*/ lcd.NAPO_FRAME_EVENp.dff17(lcd.POPU_VBLANKp.qp_new(),   LYFE_VID_RSTn(), lcd.NAPO_FRAME_EVENp.qn_old());
 
   /*#p24.MAGU*/ wire _MAGU = xor2(lcd.NAPO_FRAME_EVENp.qp_new(), lcd.LUCA_LINE_EVENp.qn_new());

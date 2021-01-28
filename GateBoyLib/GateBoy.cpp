@@ -723,7 +723,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   //----------
 
-  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(FEPO_STORE_MATCHp_old(sprite_match), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(FEPO_STORE_MATCHp.qp_old(), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
   /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn_new(), tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
@@ -853,13 +853,18 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn);
   /*#p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
   sprite_match = get_match_flags_new(AROR_MATCH_ENp);
+
+  /* p29.FEFY*/ wire FEFY_STORE_MATCHp = nand5(sprite_match.XAGE_STORE4_MATCHn.qp_new(), sprite_match.YLOZ_STORE3_MATCHn.qp_new(), sprite_match.DEGO_STORE2_MATCHn.qp_new(), sprite_match.DYDU_STORE1_MATCHn.qp_new(), sprite_match.YDUG_STORE0_MATCHn.qp_new());
+  /* p29.FOVE*/ wire FOVE_STORE_MATCHp = nand5(sprite_match.YGEM_STORE9_MATCHn.qp_new(), sprite_match.EFYL_STORE8_MATCHn.qp_new(), sprite_match.DYKA_STORE7_MATCHn.qp_new(), sprite_match.YBEZ_STORE6_MATCHn.qp_new(), sprite_match.EGOM_STORE5_MATCHn.qp_new());
+  /* p29.FEPO*/ FEPO_STORE_MATCHp = or2(FEFY_STORE_MATCHp, FOVE_STORE_MATCHp);
+
   {
     first_match = get_first_match(sprite_match);
     get_sprite();
-    ly_to_sprite_line(FEPO_STORE_MATCHp_new(sprite_match));
+    ly_to_sprite_line();
   }
 
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn = not1(FEPO_STORE_MATCHp_new(sprite_match));
+  /*#p21.XENA*/ wire XENA_STORE_MATCHn = not1(FEPO_STORE_MATCHp.qp_new());
 
   /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn, XANO_PX167p); // WODU goes high on odd, cleared on H
 
@@ -924,8 +929,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   store_tile_temp_a();
   store_tile_temp_b();
-  store_sprite_pix_a();
-  store_sprite_pix_b();
+  store_sprite_pix();
 
   //----------------------------------------
   // LCD
@@ -1188,7 +1192,8 @@ void GateBoy::tock_slow(int pass_index) {
   {
     /* p27.MOCE*/ MOCE_BFETCH_DONEn = nand3(tile_fetcher._LAXU_BFETCH_S0p.qp_new(), tile_fetcher._NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn);
     /* p27.LYRY*/ LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn.qp_new());
-    /* p27.TEKY*/ TEKY_SFETCH_REQp = and4(FEPO_STORE_MATCHp_new(sprite_match), TUKU_WIN_HITn_new(), LYRY_BFETCH_DONEp.qp_new(), SOWO_SFETCH_RUNNINGn_new());
+    /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_new());
+    /* p27.TEKY*/ TEKY_SFETCH_REQp = and4(FEPO_STORE_MATCHp.qp_new(), TUKU_WIN_HITn_new(), LYRY_BFETCH_DONEp.qp_new(), SOWO_SFETCH_RUNNINGn);
   }
 
   const_cast<GateBoyBuses&>(old_bus) = new_bus;

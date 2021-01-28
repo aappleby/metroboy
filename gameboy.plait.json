@@ -747,8 +747,8 @@
         },
         "leaf_ddcb09c2": {
           "name": "leaf_ddcb09c2",
-          "pos_x": 3504.0,
-          "pos_y": -10144.0
+          "pos_x": 3248.0,
+          "pos_y": -9840.0
         },
         "leaf_eec26e70": {
           "name": "leaf_eec26e70",
@@ -1611,8 +1611,8 @@
       "leaves": {
         "leaf_22785781": {
           "name": "leaf_22785781",
-          "pos_x": 3408.0,
-          "pos_y": -10112.0
+          "pos_x": 3152.0,
+          "pos_y": -9808.0
         },
         "leaf_774ac4f7": {
           "name": "leaf_774ac4f7",
@@ -2923,13 +2923,7 @@
         "pos_x": -12912.0,
         "pos_y": -7888.0
       },
-      "leaves": {
-        "leaf_f6b32e31": {
-          "name": "leaf_f6b32e31",
-          "pos_x": -11408.0,
-          "pos_y": -7136.0
-        }
-      },
+      "leaves": {},
       "roots": {}
     },
     "BUFA": {
@@ -15340,8 +15334,8 @@
     "MOPA": {
       "core": {
         "name": "core",
-        "pos_x": -11216.0,
-        "pos_y": -7200.0
+        "pos_x": -12720.0,
+        "pos_y": -7824.0
       },
       "leaves": {
         "leaf_08756700": {
@@ -18631,8 +18625,8 @@
     "PIN_75": {
       "core": {
         "name": "core",
-        "pos_x": -11312.0,
-        "pos_y": -7136.0
+        "pos_x": -12816.0,
+        "pos_y": -7760.0
       },
       "leaves": {},
       "roots": {}
@@ -22820,8 +22814,8 @@
     "SIG_CPU_BUDE_xxxxEFGH": {
       "core": {
         "name": "core",
-        "pos_x": -11312.0,
-        "pos_y": -7072.0
+        "pos_x": -12816.0,
+        "pos_y": -7696.0
       },
       "leaves": {},
       "roots": {}
@@ -24330,8 +24324,8 @@
     "TADY": {
       "core": {
         "name": "core",
-        "pos_x": 3504.0,
-        "pos_y": -10080.0
+        "pos_x": 3248.0,
+        "pos_y": -9776.0
       },
       "leaves": {
         "leaf_e4e2dcf0": {
@@ -25391,8 +25385,8 @@
         },
         "leaf_4d9e0de5": {
           "name": "leaf_4d9e0de5",
-          "pos_x": 3408.0,
-          "pos_y": -10048.0
+          "pos_x": 3152.0,
+          "pos_y": -9744.0
         },
         "leaf_62c41616": {
           "name": "leaf_62c41616",
@@ -27062,8 +27056,8 @@
     "UVYT": {
       "core": {
         "name": "core",
-        "pos_x": -11312.0,
-        "pos_y": -7200.0
+        "pos_x": -12816.0,
+        "pos_y": -7824.0
       },
       "leaves": {
         "leaf_007b572d": {
@@ -27517,8 +27511,8 @@
     "VOGA": {
       "core": {
         "name": "core",
-        "pos_x": 3600.0,
-        "pos_y": -10080.0
+        "pos_x": 3344.0,
+        "pos_y": -9776.0
       },
       "leaves": {
         "leaf_4c2a8b98": {
@@ -28940,11 +28934,6 @@
           "name": "leaf_1e8f7aef",
           "pos_x": 5904.0,
           "pos_y": -10096.0
-        },
-        "leaf_3429ea7d": {
-          "name": "leaf_3429ea7d",
-          "pos_x": 3504.0,
-          "pos_y": -10016.0
         },
         "leaf_a26285fa": {
           "name": "leaf_a26285fa",
@@ -34771,7 +34760,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "ADYB",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "ADYB",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -34819,7 +34808,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "AFEN",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "AFEN",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -34859,7 +34848,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "AFOZ",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "AFOZ",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -34939,7 +34928,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "AHAC",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "AHAC",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -35163,7 +35152,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "AHUM",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "AHUM",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -35171,7 +35160,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "AJAL",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "AJAL",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -35315,7 +35304,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "AKYH",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "AKYH",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -36243,7 +36232,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "APOB",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "APOB",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -36251,7 +36240,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "APOC",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "APOC",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -36275,7 +36264,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "APON",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "APON",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -36427,7 +36416,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "APYV",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "APYV",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -37459,7 +37448,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "AWAT",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "AWAT",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -37507,7 +37496,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "AXEC",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "AXEC",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -37955,7 +37944,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "BACE",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "BACE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -37963,7 +37952,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "BACO",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "BACO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -38379,7 +38368,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "BAZU",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "BAZU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -38523,7 +38512,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "BEFE",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "BEFE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -38651,7 +38640,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "BEMO",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "BEMO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -38795,7 +38784,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "BETY",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "BETY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -38811,7 +38800,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "BEVY",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "BEVY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -38987,7 +38976,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "BODU",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "BODU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -39171,7 +39160,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "BOSO",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "BOSO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -39195,7 +39184,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "BOVE",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "BOVE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -39235,7 +39224,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "BUCE",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "BUCE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -39308,7 +39297,7 @@
       "input_node": "core",
       "input_port": "DP",
       "output_cell": "BUDE",
-      "output_node": "leaf_f6b32e31",
+      "output_node": "core",
       "output_port": "qp"
     },
     "BUDE.qp -> SIG_CPU_BUDE_xxxxEFGH.Dp": {
@@ -39316,7 +39305,7 @@
       "input_node": "core",
       "input_port": "Dp",
       "output_cell": "BUDE",
-      "output_node": "leaf_f6b32e31",
+      "output_node": "core",
       "output_port": "qp"
     },
     "BUDE.qp -> UVYT.a": {
@@ -39324,7 +39313,7 @@
       "input_node": "core",
       "input_port": "a",
       "output_cell": "BUDE",
-      "output_node": "leaf_f6b32e31",
+      "output_node": "core",
       "output_port": "qp"
     },
     "BUFA.qp -> BOLO.a": {
@@ -39363,7 +39352,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "BUJA",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "BUJA",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -39371,7 +39360,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "BUJY",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "BUJY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -39411,7 +39400,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "BUKY",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "BUKY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -43835,7 +43824,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "BYDO",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "BYDO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -43907,7 +43896,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "BYME",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "BYME",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -43963,7 +43952,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "BYRO",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "BYRO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -44667,7 +44656,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "CAWO",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "CAWO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -44915,7 +44904,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "CEGY",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "CEGY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -44963,7 +44952,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "CELU",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "CELU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -45147,7 +45136,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "COHO",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "COHO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -45387,7 +45376,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "CUBE",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "CUBE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -45395,7 +45384,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "CUBO",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "CUBO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -45859,7 +45848,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "CUVU",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "CUVU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -45931,7 +45920,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "CYBY",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "CYBY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -46155,7 +46144,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "CYRO",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "CYRO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -46371,7 +46360,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "DALO",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "DALO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -46379,7 +46368,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "DALY",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "DALY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -46979,7 +46968,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "DEZU",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "DEZU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -47003,7 +46992,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "DOBO",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "DOBO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -47123,7 +47112,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "DONY",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "DONY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -47227,7 +47216,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "DOWA",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "DOWA",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -47443,7 +47432,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "DUZA",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "DUZA",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -47723,7 +47712,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "DYGO",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "DYGO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -47907,7 +47896,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "DYNY",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "DYNY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -48275,7 +48264,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "EFUD",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "EFUD",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -48563,7 +48552,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "ELEP",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "ELEP",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -48595,7 +48584,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "ELYC",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "ELYC",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -48699,7 +48688,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "ENAP",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "ENAP",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -48899,7 +48888,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "ETAD",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "ETAD",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -48995,7 +48984,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "EVYT",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "EVYT",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -49083,7 +49072,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "EZOC",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "EZOC",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -50627,7 +50616,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "GATE",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "GATE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -50995,7 +50984,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "GOFO",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "GOFO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -72403,7 +72392,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "WABA",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "WABA",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -72443,7 +72432,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "WABO",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "WABO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -72451,7 +72440,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "WABU",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "WABU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -72555,7 +72544,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "WAGA",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "WAGA",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -72579,7 +72568,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "WAJA",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "WAJA",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -72587,7 +72576,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "WAKO",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "WAKO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -72779,7 +72768,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "WANA",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "WANA",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -72923,7 +72912,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "WATO",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "WATO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -72963,7 +72952,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "WAXE",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "WAXE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -73091,7 +73080,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "WEHE",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "WEHE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -73363,7 +73352,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "WEPY",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "WEPY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -73387,7 +73376,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "WERE",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "WERE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -73491,7 +73480,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "WERU",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "WERU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -73851,7 +73840,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "WOCY",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "WOCY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -73876,7 +73865,7 @@
       "input_node": "core",
       "input_port": "Dp",
       "output_cell": "WODU",
-      "output_node": "leaf_3429ea7d",
+      "output_node": "core",
       "output_port": "qp"
     },
     "WODU.qp -> VYBO.b": {
@@ -74027,7 +74016,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "WOKO",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "WOKO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -74211,7 +74200,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "WOXY",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "WOXY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -75043,7 +75032,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "WUXE",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "WUXE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -75051,7 +75040,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "WUXU",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "WUXU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -75267,7 +75256,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "WYGO",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "WYGO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -75555,7 +75544,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "WYWY",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "WYWY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -78955,7 +78944,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "XYRA",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "XYRA",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -78963,7 +78952,7 @@
       "input_cell": "BUS_SPR_I3",
       "input_node": "core",
       "input_port": "XYRE",
-      "output_cell": "BUS_SPR_I3",
+      "output_cell": "XYRE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -79115,7 +79104,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "YBUK",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "YBUK",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -79395,7 +79384,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "YHAL",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "YHAL",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -79411,7 +79400,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "YJEM",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "YJEM",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -79443,7 +79432,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "YKOZ",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "YKOZ",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -79563,7 +79552,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "YNEV",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "YNEV",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -79595,7 +79584,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "YPOZ",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "YPOZ",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -79699,7 +79688,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "YRAD",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "YRAD",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -79979,7 +79968,7 @@
       "input_cell": "BUS_SPR_L1",
       "input_node": "core",
       "input_port": "YWAV",
-      "output_cell": "BUS_SPR_L1",
+      "output_cell": "YWAV",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80131,7 +80120,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "ZABY",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "ZABY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80371,7 +80360,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "ZARO",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "ZARO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80395,7 +80384,7 @@
       "input_cell": "BUS_SPR_I2",
       "input_node": "core",
       "input_port": "ZAVE",
-      "output_cell": "BUS_SPR_I2",
+      "output_cell": "ZAVE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80459,7 +80448,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "ZECE",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "ZECE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80483,7 +80472,7 @@
       "input_cell": "BUS_SPR_I5",
       "input_node": "core",
       "input_port": "ZEDY",
-      "output_cell": "BUS_SPR_I5",
+      "output_cell": "ZEDY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80579,7 +80568,7 @@
       "input_cell": "BUS_SPR_I0",
       "input_node": "core",
       "input_port": "ZETU",
-      "output_cell": "BUS_SPR_I0",
+      "output_cell": "ZETU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80587,7 +80576,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "ZEXE",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "ZEXE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80723,7 +80712,7 @@
       "input_cell": "BUS_SPR_I1",
       "input_node": "core",
       "input_port": "ZOJY",
-      "output_cell": "BUS_SPR_I1",
+      "output_cell": "ZOJY",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80819,7 +80808,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "ZUDO",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "ZUDO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80859,7 +80848,7 @@
       "input_cell": "BUS_SPR_L0",
       "input_node": "core",
       "input_port": "ZUKE",
-      "output_cell": "BUS_SPR_L0",
+      "output_cell": "ZUKE",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -80891,7 +80880,7 @@
       "input_cell": "BUS_SPR_I4",
       "input_node": "core",
       "input_port": "ZUMU",
-      "output_cell": "BUS_SPR_I4",
+      "output_cell": "ZUMU",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -81051,7 +81040,7 @@
       "input_cell": "BUS_SPR_L3",
       "input_node": "core",
       "input_port": "ZYPO",
-      "output_cell": "BUS_SPR_L3",
+      "output_cell": "ZYPO",
       "output_node": "core",
       "output_port": "qp"
     },
@@ -81083,7 +81072,7 @@
       "input_cell": "BUS_SPR_L2",
       "input_node": "core",
       "input_port": "ZYTO",
-      "output_cell": "BUS_SPR_L2",
+      "output_cell": "ZYTO",
       "output_node": "core",
       "output_port": "qp"
     },

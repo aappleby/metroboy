@@ -55,7 +55,7 @@ void GateBoy::write_ie()
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_interrupts(wire WODU_HBLANKp)
+void GateBoy::tock_interrupts()
 {
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)

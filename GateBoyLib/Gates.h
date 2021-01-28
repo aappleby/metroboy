@@ -69,21 +69,43 @@ struct BitBase {
   }
 
 #ifdef CHECK_DIRTY_BIT
-  void check_any() const {
+  BitBase& check_any() {
     CHECK_P((state & BIT_DRIVEN) || (state & BIT_PULLUP));
+    return *this;
   }
-  void check_old() const {
+  BitBase& check_old() {
     // we'll have to do a bunch of initial state cleanup before we can check driven/pullup on old signals...
     //check_any();
     CHECK_P((state & 0xF0) == BIT_OLD);
+    return *this;
   }
-  void check_new() const {
+  BitBase& check_new() {
     check_any();
     CHECK_P((state & 0xF0) == (BIT_NEW | BIT_DIRTY3 | BIT_DIRTY4));
+    return *this;
+  }
+  const BitBase& check_any() const {
+    CHECK_P((state & BIT_DRIVEN) || (state & BIT_PULLUP));
+    return *this;
+  }
+  const BitBase& check_old() const {
+    // we'll have to do a bunch of initial state cleanup before we can check driven/pullup on old signals...
+    //check_any();
+    CHECK_P((state & 0xF0) == BIT_OLD);
+    return *this;
+  }
+  const BitBase& check_new() const {
+    check_any();
+    CHECK_P((state & 0xF0) == (BIT_NEW | BIT_DIRTY3 | BIT_DIRTY4));
+    return *this;
   }
 #else
-  void check_old() const { }
-  void check_new() const { }
+  BitBase& check_any() { return *this; }
+  BitBase& check_old() { return *this; }
+  BitBase& check_new() { return *this; }
+  const BitBase& check_any() const { return *this; }
+  const BitBase& check_old() const { return *this; }
+  const BitBase& check_new() const { return *this; }
 #endif
 
   void set_data (wire d) { state = (state & 0b11101110) | (bit(d) << 0); }

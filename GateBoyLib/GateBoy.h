@@ -185,7 +185,7 @@ struct GateBoy {
   void reg_stat_read();
   void reg_stat_write();
 
-  void tock_interrupts(wire WODU_HBLANKp);
+  void tock_interrupts();
   void read_intf();
   void read_ie();
   void write_ie();
@@ -441,7 +441,7 @@ struct GateBoy {
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
   wire AZOF_AxCxExGx() const {
-    /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET);
+    /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET.qp_new());
     /* p01.AZOF*/ wire _AZOF_AxCxExGx = not1(_ATAL_xBxDxFxH);
     return _AZOF_AxCxExGx;
   }
@@ -506,14 +506,14 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  /* p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(cpu_bus.TEDO_CPU_RDp); }
-  /* p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(cpu_bus.TAPU_CPU_WRp); }
+  /* p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(cpu_bus.TEDO_CPU_RDp.qp_new()); }
+  /* p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(cpu_bus.TAPU_CPU_WRp.qp_new()); }
   /* p07.ASOT*/ wire ASOT_CPU_RDp      () const { return not1(AJAS_CPU_RDn()); }
   /* p28.LEKO*/ wire LEKO_CPU_RDp      () const { return not1(MYNU_CPU_RDn()); }
   /* p07.CUPA*/ wire CUPA_CPU_WRp      () const { return not1(DYKY_CPU_WRn()); }
   /* p28.MYNU*/ wire MYNU_CPU_RDn      () const { return nand2(ASOT_CPU_RDp(), CATY_LATCH_EXTp()); }
-  /* p08.REDU*/ wire REDU_CPU_RDn      () const { return not1(cpu_bus.TEDO_CPU_RDp); }
-  /* p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(cpu_bus.APOV_CPU_WRp); }
+  /* p08.REDU*/ wire REDU_CPU_RDn      () const { return not1(cpu_bus.TEDO_CPU_RDp.qp_new()); }
+  /* p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(cpu_bus.APOV_CPU_WRp.qp_new()); }
 
 
   /* p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(cpu_bus.SIG_CPU_LATCH_EXT); }
@@ -527,7 +527,7 @@ struct GateBoy {
   /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(new_bus.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
   /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), new_bus.BUS_CPU_A15p.qp_new()); }
   /* p08.LEVO*/ wire LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
-  /* p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), cpu_bus.APOV_CPU_WRp); }
+  /* p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), cpu_bus.APOV_CPU_WRp.qp_new()); }
 
   wire TOLE_CPU_VRAM_RDp() const
   {
@@ -899,6 +899,9 @@ struct GateBoy {
   RegBGP  reg_bgp;
   RegOBP0 reg_obp0;
   RegOBP1 reg_obp1;
+
+  /*#p21.WODU*/ Gate WODU_HBLANKp;
+  /*#p21.NOKO*/ Gate NOKO_y153p;
 
   //----------
 

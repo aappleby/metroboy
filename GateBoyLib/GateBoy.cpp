@@ -589,8 +589,8 @@ void GateBoy::tock_slow(int pass_index) {
   }
   {
     //reg_ly_tock2();
-    /*#p21.NOKO*/ wire _NOKO_y153p_old = and4(reg_ly.LAFO_LY7p.qp_old(), reg_ly.LOVU_LY4p.qp_old(), reg_ly.LYDO_LY3p.qp_old(), reg_ly.MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-    /*#p21.MYTA*/ reg_ly.MYTA_y153p.dff17(reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), _NOKO_y153p_old);
+    ///*#p21.NOKO*/ wire _NOKO_y153p_old = and4(reg_ly.LAFO_LY7p.qp_old(), reg_ly.LOVU_LY4p.qp_old(), reg_ly.LYDO_LY3p.qp_old(), reg_ly.MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
+    /*#p21.MYTA*/ reg_ly.MYTA_y153p.dff17(reg_lx.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), NOKO_y153p.qp_old());
 
     /*#p21.LAMA*/ wire _LAMA_Y_RSTn = nor2(reg_ly.MYTA_y153p.qp_new(), LYHA_VID_RSTp());
     /*#p21.MUWY*/ reg_ly.MUWY_LY0p.dff17(reg_lx.RUTU_x113p.qp_new(), _LAMA_Y_RSTn, reg_ly.MUWY_LY0p.qn_old());
@@ -601,6 +601,8 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p21.LEMA*/ reg_ly.LEMA_LY5p.dff17(reg_ly.LOVU_LY4p.qn_new(),  _LAMA_Y_RSTn, reg_ly.LEMA_LY5p.qn_old());
     /*#p21.MATO*/ reg_ly.MATO_LY6p.dff17(reg_ly.LEMA_LY5p.qn_new(),  _LAMA_Y_RSTn, reg_ly.MATO_LY6p.qn_old());
     /*#p21.LAFO*/ reg_ly.LAFO_LY7p.dff17(reg_ly.MATO_LY6p.qn_new(),  _LAMA_Y_RSTn, reg_ly.LAFO_LY7p.qn_old());
+
+    /*#p21.NOKO*/ NOKO_y153p = and4(reg_ly.LAFO_LY7p.qp_new(), reg_ly.LOVU_LY4p.qp_new(), reg_ly.LYDO_LY3p.qp_new(), reg_ly.MUWY_LY0p.qp_new()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
   }
 
 
@@ -622,8 +624,8 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Sprite scanner
 
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn_old = not1(FEPO_STORE_MATCHp(old_match));
-  /*#p21.WODU*/ wire WODU_HBLANKp_old = and2(XENA_STORE_MATCHn_old, XANO_PX167p_old());
+  ///*#p21.XENA*/ wire XENA_STORE_MATCHn_old = not1(FEPO_STORE_MATCHp(old_match));
+  /*#p21.WODU*/ auto WODU_HBLANKp_old = WODU_HBLANKp;
   /*#p21.VOGA*/ VOGA_HBLANKp.dff17(ALET_xBxDxFxH(), TADY_LINE_RSTn_new(), WODU_HBLANKp_old);
 
   {
@@ -800,7 +802,7 @@ void GateBoy::tock_slow(int pass_index) {
     get_sprite(first_match);
     ly_to_sprite_line(FEPO_STORE_MATCHp(sprite_match));
   }
-  /*#p21.WODU*/ wire WODU_HBLANKp = and2(XENA_STORE_MATCHn(sprite_match), XANO_PX167p_new()); // WODU goes high on odd, cleared on H
+  /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn(sprite_match), XANO_PX167p_new()); // WODU goes high on odd, cleared on H
 
   {
     /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), RYFA_WIN_FETCHn_A_old.qp_old());
@@ -1016,7 +1018,7 @@ void GateBoy::tock_slow(int pass_index) {
 
     tock_timer();
     tock_joypad();
-    tock_interrupts(WODU_HBLANKp);
+    tock_interrupts();
   }
 
   //----------------------------------------

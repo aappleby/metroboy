@@ -1190,6 +1190,11 @@ void PlaitApp::app_render_frame() {
 
   for (auto& [tag, plait_cell] : plait.cell_map) {
     uint32_t color = plait_cell->core_node->color;
+
+    if (plait_cell->root_nodes.empty() && plait_cell->leaf_nodes.empty()) {
+      color = (color & 0xFEFEFEFE) >> 1;
+    }
+
     draw_node_fill(plait_cell->core_node, color);
     draw_node_text(plait_cell->core_node);
     draw_node_ports(plait_cell->core_node);

@@ -140,8 +140,10 @@ int AppHost::app_main(int, char**) {
   //----------------------------------------
   // Loop forever
 
-  static double old_now = timestamp();
-  static double new_now = timestamp();
+  double old_now = timestamp();
+  double new_now = timestamp();
+  double delta = new_now - old_now;
+  double last_event = 0;
 
   while (!quit) {
     if (keyboard_state[SDL_SCANCODE_ESCAPE] && keyboard_state[SDL_SCANCODE_LSHIFT]) {
@@ -153,18 +155,33 @@ int AppHost::app_main(int, char**) {
     io.DisplaySize.x = float(screen_w);
     io.DisplaySize.y = float(screen_h);
 
-    app->begin_frame(screen_w, screen_h);
-    old_now = new_now;
-    new_now = timestamp();
-    const double delta = new_now - old_now;
+
+    if ((new_now - last_event) > 1.0) {
+      printf("waiting\n");
+      SDL_WaitEvent(nullptr);
+      delta = new_now - old_now;
+      new_now = timestamp();
+      old_now = new_now - delta;
+    }
+    else {
+      SDL_PumpEvents();
+      old_now = new_now;
+      new_now = timestamp();
+      delta = new_now - old_now;
+    }
+
     io.DeltaTime = (float)delta;
+
+    app->begin_frame(screen_w, screen_h);
 
     //----------------------------------------
     // Check for quit message
 
-    SDL_PumpEvents();
     SDL_Event events[64];
     const int nevents = SDL_PeepEvents(events, 64, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+
+    if (nevents) last_event = new_now;
+
     for(int i = 0; i < nevents; i++) {
       if (events[i].type == SDL_QUIT) quit = true;
     }

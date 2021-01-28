@@ -192,7 +192,8 @@ void GateBoyApp::load_flat_dump(const char* filename) {
 
 void GateBoyApp::app_update(double /*delta*/) {
   SDL_Event event;
-  while (SDL_PollEvent(&event)) {
+  //while (SDL_PollEvent(&event)) {
+  while (SDL_WaitEvent(&event)) {
 
     if (event.type == SDL_KEYDOWN)
     switch (event.key.keysym.sym) {

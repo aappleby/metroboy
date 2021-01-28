@@ -10,9 +10,25 @@ double ema_coeff1(double fc, double fs) {
 }
 
 double ease(double a, double b, double delta) {
+  if (a == b) return b;
   double t = 1.0 - pow(0.1, delta / 0.08);
   double c = a + (b - a) * t;
   return ((float)c == (float)a) ? b : c;
+}
+
+dvec2 ease(dvec2 a, dvec2 b, double delta) {
+  return {
+    ease(a.x, b.x, delta),
+    ease(a.y, b.y, delta),
+  };
+}
+
+Viewport ease(Viewport a, Viewport b, double delta) {
+  return {
+    ease(a.min, b.min, delta),
+    ease(a.max, b.max, delta),
+    a.screen_size
+  };
 }
 
 //-----------------------------------------------------------------------------
@@ -102,16 +118,7 @@ Viewport Viewport::snap() {
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::ease(Viewport target, double delta) {
-  Viewport& a = *this;
-  Viewport b;
-  b.screen_size = a.screen_size;
-
-  b.min.x = ::ease(a.min.x, target.min.x, delta);
-  b.min.y = ::ease(a.min.y, target.min.y, delta);
-  b.max.x = ::ease(a.max.x, target.max.x, delta);
-  b.max.y = ::ease(a.max.y, target.max.y, delta);
-
-  return b;
+  return ::ease(*this, target, delta);
 }
 
 //-----------------------------------------------------------------------------

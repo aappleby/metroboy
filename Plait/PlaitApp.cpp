@@ -480,7 +480,7 @@ double remap_clamp(double x, double a1, double a2, double b1, double b2) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::begin_frame(int screen_w, int screen_h) {
-    view_control.begin_frame(screen_w, screen_h);
+  view_control.begin_frame(screen_w, screen_h);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -847,6 +847,8 @@ void PlaitApp::event_select_tool(SDL_Event event) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::app_update(double delta_time) {
+  auto& view = view_control.view_smooth_snap;
+
   time_delta = delta_time;
 
   double time_start = timestamp();
@@ -855,7 +857,7 @@ void PlaitApp::app_update(double delta_time) {
     int mouse_x = 0, mouse_y = 0;
     mouse_buttons    = SDL_GetMouseState(&mouse_x, &mouse_y);
     mouse_pos_screen = {mouse_x, mouse_y};
-    mouse_pos_world  = view_control.view_snap.screenToWorld(mouse_pos_screen);
+    mouse_pos_world  = view.screenToWorld(mouse_pos_screen);
     mouse_pos_wrap = mouse_pos_world;
     while(mouse_pos_wrap.x >  32768) mouse_pos_wrap.x -= 65536;
     while(mouse_pos_wrap.x < -32768) mouse_pos_wrap.x += 65536;
@@ -1139,6 +1141,8 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
 
 void PlaitApp::app_render_frame() {
 
+  auto& view = view_control.view_smooth_snap;
+
   double time_start = timestamp();
 
   box_painter.reset();
@@ -1149,19 +1153,19 @@ void PlaitApp::app_render_frame() {
   //----------------------------------------
   // Grid layer
 
-  grid_painter.render(view_control.view_snap);
+  grid_painter.render(view);
 
   //----------------------------------------
   // Visibility
 
   /*
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    plait_cell->core_node->update_visibility(view_control.view_snap);
+    plait_cell->core_node->update_visibility(view);
     for (auto& [name, root] : plait_cell->root_nodes) {
-      root->update_visibility(view_control.view_snap);
+      root->update_visibility(view);
     }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      leaf->update_visibility(view_control.view_snap);
+      leaf->update_visibility(view);
     }
   }
   */
@@ -1314,10 +1318,10 @@ void PlaitApp::app_render_frame() {
   text_painter.update_buf();
 
   for (int i = world_min; i <= world_max; i++) {
-    box_painter.render_at(view_control.view_snap, 65536 * i, 0, 1);
-    port_painter.render_at(view_control.view_snap, 65536 * i, 0, 1);
-    edge_painter.render_at(view_control.view_snap, 65536 * i, 0, 1);
-    text_painter.render_at(view_control.view_snap, 65536 * i, 0);
+    box_painter .render_at(view, 65536 * i, 0, 1);
+    port_painter.render_at(view, 65536 * i, 0, 1);
+    edge_painter.render_at(view, 65536 * i, 0, 1);
+    text_painter.render_at(view, 65536 * i, 0);
   }
 
   //----------------------------------------
@@ -1330,7 +1334,7 @@ void PlaitApp::app_render_frame() {
 
     if (sel_color) {
       outline_painter.push_box(click_pos_wrap, mouse_pos_wrap, sel_color);
-      outline_painter.render(view_control.view_snap, 0, 0, 1);
+      outline_painter.render(view, 0, 0, 1);
     }
   }
 

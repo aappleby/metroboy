@@ -326,7 +326,7 @@ struct GateBoy {
   SpriteMatchFlag get_match_flags_old(wire _AROR_MATCH_ENp_old);
   SpriteMatchFlag get_match_flags_new(wire _AROR_MATCH_ENp_new);
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
-  void get_sprite(SpriteFirstMatch first_match);
+  void get_sprite();
   void store_sprite_x(SpriteStoreFlag store_flag, SpriteFirstMatch sprite_flag);
   void store_sprite_index(SpriteStoreFlag store_flag);
   void store_sprite_line(SpriteStoreFlag store_flag);
@@ -910,8 +910,10 @@ struct GateBoy {
 
   /*#p21.WODU*/ Gate WODU_HBLANKp;
   /*#p21.NOKO*/ Gate NOKO_y153p;
+  /*#p27.POHU*/ Gate POHU_SCX_FINE_MATCHp;
 
   SpriteMatchFlag sprite_match;
+  SpriteFirstMatch first_match;
 
   //----------
 

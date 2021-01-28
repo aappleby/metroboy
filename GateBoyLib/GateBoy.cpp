@@ -444,14 +444,6 @@ void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
 
   //-----------------------------------------------------------------------------
-  // We need the sprite match result from the previous cycle, so we recalculate it here. :/
-
-  ///* p29.CEHA*/ wire _CEHA_SCANNINGp_old  = not1(sprite_scanner.CENO_SCANNINGn.qn_old());
-  ///*#p29.BYJO*/ wire _BYJO_SCANNINGn_old  = not1(_CEHA_SCANNINGp_old);
-  ///*#p29.AZEM*/ wire _AZEM_RENDERINGp_old = and2(XYMU_RENDERINGn.qn_old(), _BYJO_SCANNINGn_old);
-  ///*#p29.AROR*/ wire _AROR_MATCH_ENp_old  = and2(_AZEM_RENDERINGp_old, reg_lcdc.XYLO_LCDC_SPENn.qn_old());
-
-  SpriteFirstMatch old_first_match = get_first_match(sprite_match);
 
   wire TAVE_PRELOAD_DONE_TRIGp_old = this->TAVE_PRELOAD_DONE_TRIGp_old();
 
@@ -476,12 +468,6 @@ void GateBoy::tock_slow(int pass_index) {
   auto RUTU_x113p_old = reg_lx.RUTU_x113p;
 
   //wire FETO_SCAN_DONEp_old = sprite_scanner.FETO_SCAN_DONEp_old();
-
-  /* p27.SUHA*/ wire _SUHA_SCX_FINE_MATCHp_old = xnor2(reg_scx.DATY_SCX0n.qn_old(), fine_scroll.RYKU_FINE_CNT0.qp_old());
-  /* p27.SYBY*/ wire _SYBY_SCX_FINE_MATCHp_old = xnor2(reg_scx.DUZU_SCX1n.qn_old(), fine_scroll.ROGA_FINE_CNT1.qp_old());
-  /* p27.SOZU*/ wire _SOZU_SCX_FINE_MATCHp_old = xnor2(reg_scx.CYXU_SCX2n.qn_old(), fine_scroll.RUBU_FINE_CNT2.qp_old());
-  /*#p27.RONE*/ wire _RONE_SCX_FINE_MATCHn_old = nand4(fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_old(), _SUHA_SCX_FINE_MATCHp_old, _SYBY_SCX_FINE_MATCHp_old, _SOZU_SCX_FINE_MATCHp_old);
-  /*#p27.POHU*/ wire _POHU_SCX_FINE_MATCHp_old = not1(_RONE_SCX_FINE_MATCHn_old);
 
   auto RYDY_WIN_HITp_old = win_reg.RYDY_WIN_HITp; //.qp_old();
 
@@ -771,7 +757,7 @@ void GateBoy::tock_slow(int pass_index) {
       }
 
       SpriteStoreFlag store_flag = get_store_flags(_DYTY_COUNT_CLKp);
-      store_sprite_x(store_flag, old_first_match);
+      store_sprite_x(store_flag, first_match);
       store_sprite_index(store_flag); // this needs old oam temp b, which is tocked in oam_latch_to_temp_b()
       store_sprite_line (store_flag);
     }
@@ -782,7 +768,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   {
     /*#p27.NYZE*/ fine_scroll.NYZE_SCX_FINE_MATCH_B.dff17(MOXE_AxCxExGx(), XYMU_RENDERINGn.qn_new(), fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_old());
-    /*#p27.PUXA*/ fine_scroll.PUXA_SCX_FINE_MATCH_A.dff17(ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), _POHU_SCX_FINE_MATCHp_old);
+    /*#p27.PUXA*/ fine_scroll.PUXA_SCX_FINE_MATCH_A.dff17(ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), POHU_SCX_FINE_MATCHp.qp_old());
     /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_new(), fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_new());
     /*#p27.PAHA*/ wire _PAHA_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
 
@@ -796,8 +782,8 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p29.AROR*/ wire _AROR_MATCH_ENp = and2(_AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
   sprite_match = get_match_flags_new(_AROR_MATCH_ENp);
   {
-    SpriteFirstMatch first_match = get_first_match(sprite_match);
-    get_sprite(first_match);
+    first_match = get_first_match(sprite_match);
+    get_sprite();
     ly_to_sprite_line(FEPO_STORE_MATCHp_new(sprite_match));
   }
   /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn_new(sprite_match), XANO_PX167p_new()); // WODU goes high on odd, cleared on H
@@ -853,6 +839,12 @@ void GateBoy::tock_slow(int pass_index) {
       /*#p27.ROGA*/ fine_scroll.ROGA_FINE_CNT1.dff17_any(fine_scroll.RYKU_FINE_CNT0.qn_any(), _PASO_FINE_RST, fine_scroll.ROGA_FINE_CNT1.qn_any());
       /*#p27.RUBU*/ fine_scroll.RUBU_FINE_CNT2.dff17_any(fine_scroll.ROGA_FINE_CNT1.qn_any(), _PASO_FINE_RST, fine_scroll.RUBU_FINE_CNT2.qn_any());
     }
+
+    /* p27.SUHA*/ wire SUHA_SCX_FINE_MATCHp = xnor2(reg_scx.DATY_SCX0n.qn_new(), fine_scroll.RYKU_FINE_CNT0.qp_new());
+    /* p27.SYBY*/ wire SYBY_SCX_FINE_MATCHp = xnor2(reg_scx.DUZU_SCX1n.qn_new(), fine_scroll.ROGA_FINE_CNT1.qp_new());
+    /* p27.SOZU*/ wire SOZU_SCX_FINE_MATCHp = xnor2(reg_scx.CYXU_SCX2n.qn_new(), fine_scroll.RUBU_FINE_CNT2.qp_new());
+    /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn = nand4(fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new(), SUHA_SCX_FINE_MATCHp, SYBY_SCX_FINE_MATCHp, SOZU_SCX_FINE_MATCHp);
+    /*#p27.POHU*/ POHU_SCX_FINE_MATCHp = not1(RONE_SCX_FINE_MATCHn);
   }
 
   store_tile_temp_a();

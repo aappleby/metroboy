@@ -35,7 +35,7 @@ void GateBoy::tock_joypad() {
   joy.PIN_63_JOY_P14.reset_for_pass();
   joy.PIN_62_JOY_P15.reset_for_pass();
 
-  /* p07.BURO*/ wire BURO_FF60_D0p = not1(SIG_GND); // FIXME hacking out debug stuff
+  /* p07.BURO*/ wire BURO_FF60_D0p = not1(SIG_GND.qp_new()); // FIXME hacking out debug stuff
   /* p05.KURA*/ wire KURA_FF60_D0n = not1(BURO_FF60_D0p);
 
   /*

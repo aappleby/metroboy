@@ -623,6 +623,10 @@ bool DieDB::parse_line(const std::string& line) {
 // everything after the comment tag
 
 bool DieDB::parse_rest(DieCell& c, const string& rest) {
+
+  static regex static_member_decl(R"(^static const wire (\w+);.*)");
+  static regex static_member_def(R"(^const wire GateBoy::(\w+) .*)");
+
   static regex member_decl(R"(^(\w+)\s+(\w+)\s*;.*)");
   static regex member_assign(R"(^(?:\w+\.)*(\w+)\s*=\s*(.+;).*)");
   static regex local_decl(R"(^wire\s+(\w+)\s*=\s*(.*)$)");
@@ -642,7 +646,15 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
   bool result = true;
 
   smatch match;
-  if (regex_match(rest, match, member_decl)) {
+  if (regex_match(rest, match, static_member_decl)) {
+    printf("laksdlfkasj\n");
+    result &= parse_cell_name(c, match[1].str());
+  }
+  else if (regex_match(rest, match, static_member_def)) {
+    printf("laksdlfkasj\n");
+    result &= parse_cell_name(c, match[1].str());
+  }
+  else if (regex_match(rest, match, member_decl)) {
     result &= parse_reg_type(c, match[1].str());
     result &= parse_cell_name(c, match[2].str());
   }

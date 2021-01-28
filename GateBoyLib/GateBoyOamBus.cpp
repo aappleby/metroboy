@@ -183,8 +183,8 @@ void GateBoy::sprite_index_to_oam_addr_bus(){
   // OAM address from sprite fetcher
   /* p28.AJON*/ wire _AJON_RENDERINGp = and2(BOGE_DMA_RUNNINGn(), XYMU_RENDERINGn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma
   /* p28.BETE*/ wire _BETE_SPR_I_TO_OAM_An = not1(_AJON_RENDERINGp);
-  /* p28.GECA_FETCHX_TO_OA0*/ new_bus.BUS_OAM_A00n.tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC);
-  /* p28.WYDU_FETCHX_TO_OA1*/ new_bus.BUS_OAM_A01n.tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC);
+  /* p28.GECA_FETCHX_TO_OA0*/ new_bus.BUS_OAM_A00n.tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC.qp_new());
+  /* p28.WYDU_FETCHX_TO_OA1*/ new_bus.BUS_OAM_A01n.tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC.qp_new());
   /* p28.GYBU_FETCH0_TO_OA2*/ new_bus.BUS_OAM_A02n.tri6_nn(_BETE_SPR_I_TO_OAM_An, new_bus.BUS_SPR_I0.qp_new());
   /* p28.GYKA_FETCH1_TO_OA3*/ new_bus.BUS_OAM_A03n.tri6_nn(_BETE_SPR_I_TO_OAM_An, new_bus.BUS_SPR_I1.qp_new());
   /* p28.FABY_FETCH2_TO_OA4*/ new_bus.BUS_OAM_A04n.tri6_nn(_BETE_SPR_I_TO_OAM_An, new_bus.BUS_SPR_I2.qp_new());
@@ -198,8 +198,8 @@ void GateBoy::sprite_index_to_oam_addr_bus(){
 void GateBoy::scan_index_to_oam_addr_bus() {
   // OAM address from sprite scanner
   /* p28.APAR*/ wire _APAR_SCANNINGn = not1(ACYL_SCANNINGp());
-  /* p28.GEFY_SCANX_TO_OA0*/ new_bus.BUS_OAM_A00n.tri6_nn(_APAR_SCANNINGn, SIG_GND);
-  /* p28.WUWE_SCANX_TO_OA1*/ new_bus.BUS_OAM_A01n.tri6_nn(_APAR_SCANNINGn, SIG_GND);
+  /* p28.GEFY_SCANX_TO_OA0*/ new_bus.BUS_OAM_A00n.tri6_nn(_APAR_SCANNINGn, SIG_GND.qp_new());
+  /* p28.WUWE_SCANX_TO_OA1*/ new_bus.BUS_OAM_A01n.tri6_nn(_APAR_SCANNINGn, SIG_GND.qp_new());
   /* p28.GUSE_SCAN0_TO_OA2*/ new_bus.BUS_OAM_A02n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.YFEL_SCAN0.qp_new());
   /* p28.GEMA_SCAN1_TO_OA3*/ new_bus.BUS_OAM_A03n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.WEWY_SCAN1.qp_new());
   /* p28.FUTO_SCAN2_TO_OA4*/ new_bus.BUS_OAM_A04n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.GOSO_SCAN2.qp_new());

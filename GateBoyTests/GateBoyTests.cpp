@@ -8,6 +8,8 @@
 
 #include <windows.h>
 
+//#define RUN_SLOW_TESTS
+
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {

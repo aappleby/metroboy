@@ -64,16 +64,6 @@ struct GateBoyVramBus {
     PIN_25_VRAM_D07.reset_for_pass();
   }
 
-  void dump(Dumper& d) {
-    d.dump_bitp   ("PIN_43_VRAM_CSn  : ", PIN_43_VRAM_CSn.state);
-    d.dump_bitp   ("PIN_45_VRAM_OEn  : ", PIN_45_VRAM_OEn.state);
-    d.dump_bitp   ("PIN_49_VRAM_WRn  : ", PIN_49_VRAM_WRn.state);
-    d.dump_slice2p("PIN_34_VRAM_ADDR : ", &PIN_34_VRAM_A00, 13);
-    d.dump_slice2p("PIN_25_VRAM_DATA : ", &PIN_33_VRAM_D00, 8);
-    //d.dump_slice2n("BUS_VRAM_An     : ", &BUS_VRAM_A00n, 13);
-    //d.dump_slice2p("BUS_VRAM_Dp     : ", &BUS_VRAM_D00p, 8);
-  }
-
   /*PIN_43*/ PinOut PIN_43_VRAM_CSn;
   /*PIN_45*/ PinOut PIN_45_VRAM_OEn;
   /*PIN_49*/ PinOut PIN_49_VRAM_WRn;

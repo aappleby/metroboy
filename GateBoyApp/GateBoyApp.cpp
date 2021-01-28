@@ -279,37 +279,16 @@ void GateBoyApp::app_render_frame() {
   uint8_t* vid_ram = gb->vid_ram;
   uint64_t phase_total = gb->phase_total;
 
+
   StringDumper d;
+
+#if 0
   float cursor_x = 8;
   float cursor_y = 4;
   float col_spacing = 220;
 
   //----------------------------------------
-
-  d("\002===== Thread =====\001\n");
-  gb_thread.dump(d);
-  d("\n");
-
-  d("\002===== GateBoy Top =====\001\n");
-  gb->dump_sys(d);
-  d("\n");
-
-  d("\002===== Reset/Debug =====\001\n");
-  gb->rst.dump(d);
-  d("\n");
-
-  d("\002===== Clocks =====\001\n");
-  gb->dump_clocks(d);
-  d("\n");
-
-  d("\002===== Timer =====\001\n");
-  gb->div.dump(d);
-  gb->timer.dump(d);
-  d("\n");
-
-  d("\002===== Joypad =====\001\n");
-  gb->dump_joypad(d);
-  d("\n");
+  // dump column 1
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
@@ -317,31 +296,7 @@ void GateBoyApp::app_render_frame() {
 
   //----------------------------------------
 
-  d("\002===== CPU =====\001\n");
-  gb->cpu.dump(d);
-
-  d("\002===== CPU Bus =====\001\n");
-  gb->cpu_bus.dump(d);
-  d("\n");
-
-  d("\002===== Interrupts =====\001\n");
-  gb->dump_interrupts(d);
-  d("\n");
-
-  d("\002===== DMA =====\001\n");
-  gb->dma.dump(d);
-  d("\n");
-
-  /*
-  d("\002===== Serial =====\001\n");
-  d.dump_bitp   ("ETAF_SER_RUNNING : ", gb->serial.ETAF_SER_RUNNING.state);
-  d.dump_bitp   ("CULY_XFER_DIR    : ", gb->serial.CULY_SER_DIR.state);
-  d.dump_bitp   ("COTY_SER_CLK     : ", gb->serial.COTY_SER_CLK.state);
-  d.dump_bitp   ("ELYS_SER_OUT     : ", gb->serial.ELYS_SER_OUT.state);
-  d.dump_slice2p("CAFA_SER_CNT     : ", &gb->serial.CAFA_SER_CNT0, 4);
-  d.dump_slice2p("CUBA_SER_DATA    : ", &gb->serial.CUBA_SER_DATA0, 8);
-  d("\n");
-  */
+  // dump column 2
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
@@ -349,28 +304,7 @@ void GateBoyApp::app_render_frame() {
 
   //----------------------------------------
 
-  d("\002===== LCD =====\001\n");
-  gb->dump_lcd(d);
-  d.dump_slice2p("LX         : ", &gb->reg_lx.SAXO_LX0p.state,  7);
-  d.dump_slice2p("FF44 LY    : ", &gb->reg_ly.MUWY_LY0p.state,  8);
-  d.dump_slice2n("FF45 LYC   : ", &gb->reg_lyc.SYRY_LYC0n.state, 8);
-  d.dump_bitp   ("MYTA_y153p          : ", gb->reg_ly.MYTA_y153p.state);
-  d.dump_bitp   ("RUTU_LINE_P910p     : ", gb->reg_lx.RUTU_x113p.state);
-  d.dump_bitp   ("NYPE_LINE_P002p     : ", gb->reg_lx.NYPE_x113p.state);
-  d.dump_bitp   ("ROPO_LY_MATCH_SYNCp : ", gb->reg_lyc.ROPO_LY_MATCH_SYNCp.state);
-  d("\n");
-
-  d("\002===== EXT Bus =====\001\n");
-  gb->ext_bus.dump(d);
-  d("\n");
-
-  d("\002===== VRAM Bus =====\001\n");
-  gb->vram_bus.dump(d);
-  d("\n");
-
-  d("\002===== OAM Bus =====\001\n");
-  gb->dump_oam_bus(d);
-  d("\n");
+  // dump column 3
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
@@ -378,58 +312,7 @@ void GateBoyApp::app_render_frame() {
 
   //----------------------------------------
 
-  d("\002===== PPU Regs=====\001\n");
-  d.dump_slice2n("FF40 LCDC  : ", &gb->reg_lcdc.VYXE_LCDC_BGENn, 8);
-  gb->reg_stat.dump(d);
-  d.dump_slice2n("FF42 SCY   : ", &gb->reg_scy.GAVE_SCY0n, 8);
-  d.dump_slice2n("FF43 SCX   : ", &gb->reg_scx.DATY_SCX0n, 8);
-  d.dump_slice2n("FF47 BGP   : ", &gb->reg_bgp.PAVO_BGP_D0n, 8);
-  d.dump_slice2n("FF48 OBP0  : ", &gb->reg_obp0.XUFU_OBP0_D0n, 8);
-  d.dump_slice2n("FF49 OBP1  : ", &gb->reg_obp1.MOXY_OBP1_D0n, 8);
-  d.dump_slice2n("FF4A WY    : ", &gb->reg_wy.NESO_WY0n, 8);
-  d.dump_slice2n("FF4B WX    : ", &gb->reg_wx.MYPA_WX0n, 8);
-  d.dump_slice2p("WIN MAP X  : ", &gb->win_map_x.WYKA_WIN_X3, 5);
-  d.dump_slice2p("WIN MAP Y  : ", &gb->win_map_y.VYNO_WIN_Y0, 8);
-  d.dump_bitp   ("RUPO_LYC_MATCHn     : ", gb->reg_stat.RUPO_LYC_MATCHn.state);
-  d("\n");
-
-  d("\002===== Pix Pipe =====\001\n");
-  d.dump_slice2p("PIX COUNT  : ", &gb->pix_count.XEHO_PX0p, 8);
-  d.dump_slice2p("BG PIPE A  : ", &gb->pix_pipes.MYDE_BGW_PIPE_A0, 8);
-  d.dump_slice2p("BG PIPE B  : ", &gb->pix_pipes.TOMY_BGW_PIPE_B0, 8);
-  d.dump_slice2p("SPR PIPE A : ", &gb->pix_pipes.NURO_SPR_PIPE_A0, 8);
-  d.dump_slice2p("SPR PIPE B : ", &gb->pix_pipes.NYLU_SPR_PIPE_B0, 8);
-  d.dump_slice2p("PAL PIPE   : ", &gb->pix_pipes.RUGO_PAL_PIPE_D0, 8);
-  d.dump_slice2p("MASK PIPE  : ", &gb->pix_pipes.VEZO_MASK_PIPE_0, 8);
-  d.dump_bitn   ("REMY_LD0n  : ", gb->pix_pipes.REMY_LD0n.get_state());
-  d.dump_bitn   ("RAVO_LD1n  : ", gb->pix_pipes.RAVO_LD1n.get_state());
-
-  d("\n");
-  d.dump_bitp("XYMU_RENDERINGn        : ", gb->XYMU_RENDERINGn.state);
-  d.dump_bitp("PYNU_WIN_MODE_Ap       : ", gb->win_reg.PYNU_WIN_MODE_Ap.state);
-  d.dump_bitp("PUKU_WIN_HITn          : ", gb->win_reg.PUKU_WIN_HITn.get_state());
-  d.dump_bitp("RYDY_WIN_HITp          : ", gb->win_reg.RYDY_WIN_HITp.get_state());
-  d.dump_bitp("SOVY_WIN_FIRST_TILE_B  : ", gb->win_reg.SOVY_WIN_HITp.state);
-  d.dump_bitp("NOPA_WIN_MODE_B        : ", gb->win_reg.NOPA_WIN_MODE_Bp.state);
-  d.dump_bitp("PYCO_WX_MATCH_A        : ", gb->win_reg.PYCO_WIN_MATCHp.state);
-  d.dump_bitp("NUNU_WX_MATCH_B        : ", gb->win_reg.NUNU_WIN_MATCHp.state);
-  d.dump_bitp("REJO_WY_MATCH_LATCH    : ", gb->win_reg.REJO_WY_MATCH_LATCHp.state);
-  d.dump_bitp("SARY_WY_MATCH          : ", gb->win_reg.SARY_WY_MATCHp.state);
-  d.dump_bitp("RYFA_FETCHn_A          : ", gb->win_reg.RYFA_WIN_FETCHn_A.state);
-  d.dump_bitp("RENE_FETCHn_B          : ", gb->win_reg.RENE_WIN_FETCHn_B.state);
-  d.dump_bitp("RYKU_FINE_CNT0         : ", gb->fine_scroll.RYKU_FINE_CNT0.state);
-  d.dump_bitp("ROGA_FINE_CNT1         : ", gb->fine_scroll.ROGA_FINE_CNT1.state);
-  d.dump_bitp("RUBU_FINE_CNT2         : ", gb->fine_scroll.RUBU_FINE_CNT2.state);
-  d.dump_bitp("PUXA_FINE_MATCH_A      : ", gb->fine_scroll.PUXA_SCX_FINE_MATCH_A.state);
-  d.dump_bitp("NYZE_FINE_MATCH_B      : ", gb->fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
-  d.dump_bitp("ROXY_FINE_SCROLL_DONEn : ", gb->fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
-  d.dump_bitp("RUPO_LYC_MATCH_LATCHn  : ", gb->reg_stat.RUPO_LYC_MATCHn.state);
-  d.dump_bitp("VOGA_HBLANKp           : ", gb->VOGA_HBLANKp.state);
-  d("\n");
-
-  d("\002===== Tile Fetch =====\001\n");
-  gb->dump_tile_fetcher(d);
-  d("\n");
+  // dump column 4
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
@@ -437,18 +320,7 @@ void GateBoyApp::app_render_frame() {
 
   //----------------------------------------
 
-  d("\002===== Sprite Fetch =====\001\n");
-  gb->sprite_fetcher.dump(d);
-  d("\n");
-
-  d("\002===== Sprite Scan =====\001\n");
-  gb->sprite_scanner.dump(d);
-  d("\n");
-
-  const auto& ss = gb->sprite_store;
-  d("\002===== Sprite Store =====\001\n");
-  gb->sprite_store.dump(d);
-  d("\n");
+  // dump column 5
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
@@ -456,32 +328,7 @@ void GateBoyApp::app_render_frame() {
 
   //----------------------------------------
 
-  d("\002===== Disasm =====\001\n");
-  {
-    uint16_t pc = gb->cpu.op_addr;
-    const uint8_t* code = nullptr;
-    uint16_t code_size = 0;
-    uint16_t code_base = 0;
-
-    if (!bit(gb->cpu_bus.TEPU_BOOT_BITn_h.qp_old())) {
-      code = gb_thread.boot.data();
-      code_size = 256;
-      code_base = ADDR_BOOT_ROM_BEGIN;
-    }
-    else if (pc >= 0x0000 && pc <= 0x7FFF) {
-      // FIXME needs to account for mbc1 mem mapping
-      code = gb_thread.cart.data();
-      code_size = 32768;
-      code_base = ADDR_CART_ROM_BEGIN;
-    }
-    else if (pc >= 0xFF80 && pc <= 0xFFFE) {
-      code = gb->zero_ram;
-      code_size = 127;
-      code_base = ADDR_ZEROPAGE_BEGIN;
-    }
-
-    assembler.disassemble(code, code_size, code_base, pc, 34, d, /*collapse_nops*/ false);
-  }
+  // dump column 6
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
@@ -489,24 +336,12 @@ void GateBoyApp::app_render_frame() {
 
   //----------------------------------------
 
-  d("\002===== OAM =====\001\n");
-  for (int y = 0; y < 10; y++) {
-    for (int x = 0; x < 16; x++) {
-      d("%02x ", gb->oam_ram[x + y * 16]);
-    }
-    d("\n");
-  }
-  d("\n");
-  d("\002===== ZRAM =====\001\n");
-  for (int y = 0; y < 8; y++) {
-    for (int x = 0; x < 16; x++) {
-      d("%02x ", gb->zero_ram[x + y * 16]);
-    }
-    d("\n");
-  }
-  d("\n");
+  // dump column 7
+
   text_painter.render_string(view, d.s.c_str(), 42 * 32 - 16, 10 * 32);
+  cursor_x += col_spacing;
   d.clear();
+#endif
 
   //----------------------------------------
 

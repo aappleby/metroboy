@@ -926,7 +926,6 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
   return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
 }
 
-struct GateBoyBootrom;
 struct GateBoyClock;
 struct GateBoyVideoClock;
 struct GateBoyCpuBus;

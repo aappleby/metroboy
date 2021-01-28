@@ -51,8 +51,6 @@ struct SpriteMatchFlag {
 struct GateBoySpriteStore {
   void reset_to_cart();
 
-  void dump(Dumper& d);
-
   //----------------------------------------
   // Sprite counter tracks how many sprites have been selected for this line.
 

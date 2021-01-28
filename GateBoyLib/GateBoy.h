@@ -6,7 +6,6 @@
 
 #include "GateBoyLib/Probe.h"
 
-#include "GateBoyLib/GateBoyBootrom.h"
 #include "GateBoyLib/GateBoyBuses.h"
 #include "GateBoyLib/GateBoyTimer.h"
 #include "GateBoyLib/GateBoyLCD.h"
@@ -826,6 +825,7 @@ struct GateBoy {
   void dump_joypad(Dumper& d);
   void dump_lcd(Dumper& d);
   void dump_oam_bus(Dumper& d);
+  void dump_sprite_store(Dumper& d);
 
   //-----------------------------------------------------------------------------
   // All the SOC registers, pins, buses. Everything in this section should derive

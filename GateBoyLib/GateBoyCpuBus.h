@@ -7,24 +7,6 @@ struct GateBoyCpuBus {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  void dump(Dumper& d) {
-    d.dump_bitp   ("SIG_CPU_RDp       : ", SIG_CPU_RDp.get_state());
-    d.dump_bitp   ("SIG_CPU_WRp       : ", SIG_CPU_WRp.get_state());
-    d.dump_bitp   ("SIG_CPU_UNOR_DBG  : ", SIG_CPU_UNOR_DBG.get_state());
-    d.dump_bitp   ("SIG_CPU_ADDR_HIp  : ", SIG_CPU_ADDR_HIp.get_state());
-    d.dump_bitp   ("SIG_CPU_UMUT_DBG  : ", SIG_CPU_UMUT_DBG.get_state());
-    d.dump_bitp   ("SIG_CPU_EXT_BUSp  : ", SIG_CPU_EXT_BUSp.get_state());
-    //d.dump_bitp   ("SIG_CPU_6         : ", SIG_CPU_6.state);
-    d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", SIG_CPU_LATCH_EXT.get_state());
-    d.dump_bitp   ("BOOT_BITn         : ", TEPU_BOOT_BITn_h.state);
-    d.dump_bitp   ("SIG_CPU_BOOTp     : ", SIG_CPU_BOOTp.get_state());
-    d.dump_bitp   ("TEDO_CPU_RDp      : ", TEDO_CPU_RDp.get_state());
-    d.dump_bitp   ("APOV_CPU_WRp      : ", APOV_CPU_WRp.get_state());
-    d.dump_bitp   ("TAPU_CPU_WRp      : ", TAPU_CPU_WRp.get_state());
-    //d.dump_slice2p("BUS_CPU_A : ", &new_bus.BUS_CPU_A00p, 16);
-    //d.dump_slice2p("BUS_CPU_D : ", &new_bus.BUS_CPU_D00p, 8);
-  }
-
   Gate ABUZ_EXT_RAM_CS_CLK;
 
   /*SIG_CPU_RDp     */  SigIn  SIG_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO

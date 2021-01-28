@@ -101,16 +101,6 @@ struct GateBoyExtBus {
     PIN_78_WRn.state = 0b00011000;
   }
 
-  void dump(Dumper& d) {
-    d.dump_slice2n("PIN_01_ADDR : ", &PIN_01_A00, 16);
-    d.dump_slice2n("PIN_17_DATA : ", &PIN_17_D00, 8);
-    d.dump_bitn   ("PIN_80_CSn  : ", PIN_80_CSn.state);
-    d.dump_bitn   ("PIN_79_RDn  : ", PIN_79_RDn.state);
-    d.dump_bitn   ("PIN_78_WRn  : ", PIN_78_WRn.state);
-    //d.dump_slice2p("ADDR LATCH : ", &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
-    //d.dump_slice2n("DATA LATCH : ", &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
-  }
-
   /*PIN_01*/ PinOut PIN_01_A00;
   /*PIN_02*/ PinOut PIN_02_A01;
   /*PIN_03*/ PinOut PIN_03_A02;

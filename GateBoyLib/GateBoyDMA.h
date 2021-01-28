@@ -33,19 +33,6 @@ struct GateBoyDMA {
     LOKY_DMA_LATCHp.state = 0b00011000;
   }
 
-  void dump(Dumper& d) {
-    d.dump_slice2p("DMA_A_LOW  : ", &NAKY_DMA_A00p, 8);
-    d.dump_slice2n("DMA_A_HIGH : ", &NAFA_DMA_A08n, 8);
-    d             ("DMA Addr   : 0x%02x:%02x\n", BitBase::pack_oldn(8, &NAFA_DMA_A08n), BitBase::pack_old(8, &NAKY_DMA_A00p));
-    d.dump_bitp   ("MATU_DMA_RUNNINGp : ", MATU_DMA_RUNNINGp.state);
-    d.dump_bitp   ("LYXE_DMA_LATCHp   : ", LYXE_DMA_LATCHp  .state);
-    d.dump_bitp   ("MYTE_DMA_DONE     : ", MYTE_DMA_DONE    .state);
-    d.dump_bitp   ("LUVY_DMA_TRIG_d0  : ", LUVY_DMA_TRIG_d0 .state);
-    d.dump_bitp   ("LENE_DMA_TRIG_d4  : ", LENE_DMA_TRIG_d4 .state);
-    d.dump_bitp   ("LOKY_DMA_LATCHp   : ", LOKY_DMA_LATCHp  .get_state());
-    d("\n");
-  }
-
   /*p04.NAKY*/ DFF17 NAKY_DMA_A00p;      // Axxxxxxx
   /*p04.PYRO*/ DFF17 PYRO_DMA_A01p;      // Axxxxxxx
   /*p04.NEFY*/ DFF17 NEFY_DMA_A02p;      // Axxxxxxx

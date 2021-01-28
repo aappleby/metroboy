@@ -136,10 +136,6 @@ struct RegLCDC {
 
 struct RegStat {
 
-  void dump(Dumper& d) {
-    d.dump_slice2n("FF41 STAT  : ", &ROXE_STAT_HBI_ENn, 4);
-  }
-
   void reset_to_cart() {
     RUPO_LYC_MATCHn.state = 0b00011000;
     ROXE_STAT_HBI_ENn.state = 0b00011011;
@@ -513,10 +509,6 @@ struct OamTempB {
 
 struct TileTempA {
 
-  void dump(Dumper& d) {
-    d.dump_slice2n("Tile Temp A : ", &LEGU_TILE_DA0n, 8);
-  }
-
   /*p32.LEGU*/ DFF8p LEGU_TILE_DA0n;   // xBxDxFxH
   /*p32.NUDU*/ DFF8p NUDU_TILE_DA1n;   // xBxDxFxH
   /*p32.MUKU*/ DFF8p MUKU_TILE_DA2n;   // xBxDxFxH
@@ -530,10 +522,6 @@ struct TileTempA {
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
-  void dump(Dumper& d) {
-    d.dump_slice2p("Tile Temp B : ", &RAWU_TILE_DB0p, 8);
-  }
-
   /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p;   // xBxDxFxH
   /*p32.POZO*/ DFF11 POZO_TILE_DB1p;   // xBxDxFxH
   /*p32.PYZO*/ DFF11 PYZO_TILE_DB2p;   // xBxDxFxH
@@ -547,10 +535,6 @@ struct TileTempB {
 //-----------------------------------------------------------------------------
 
 struct SpritePixA {
-  void dump(Dumper& d) {
-    d.dump_slice2n("Sprite Temp A : ", &REWO_SPRITE_DA0n, 8);
-  }
-
   /*p33.REWO*/ DFF8n REWO_SPRITE_DA0n; // xBxDxFxH
   /*p33.PEBA*/ DFF8n PEBA_SPRITE_DA1n; // xBxDxFxH
   /*p33.MOFO*/ DFF8n MOFO_SPRITE_DA2n; // xBxDxFxH
@@ -564,11 +548,6 @@ struct SpritePixA {
 //-----------------------------------------------------------------------------
 
 struct SpritePixB {
-  void dump(Dumper& d) {
-    d.dump_slice2n("Sprite Temp B : ", &PEFO_SPRITE_DB0n, 8);
-  }
-
-
   /*p33.PEFO*/ DFF8n PEFO_SPRITE_DB0n; // xBxDxFxH
   /*p33.ROKA*/ DFF8n ROKA_SPRITE_DB1n; // xBxDxFxH
   /*p33.MYTU*/ DFF8n MYTU_SPRITE_DB2n; // xBxDxFxH
@@ -582,10 +561,6 @@ struct SpritePixB {
 //-----------------------------------------------------------------------------
 
 struct WinMapX {
-  void dump(Dumper& d) {
-    d.dump_slice2p("Win Map X : ", &WYKA_WIN_X3, 5);
-  }
-
   // Current window map coord
   /*p27.WYKA*/ DFF17 WYKA_WIN_X3;      // AxCxExGx
   /*p27.WODY*/ DFF17 WODY_WIN_X4;      // AxCxExGx
@@ -597,10 +572,6 @@ struct WinMapX {
 //-----------------------------------------------------------------------------
 
 struct WinLineY {
-  void dump(Dumper& d) {
-    d.dump_slice2p("Win Line Y : ", &VYNO_WIN_Y0, 8);
-  }
-
   /*p27.VYNO*/ DFF17 VYNO_WIN_Y0;      // AxCxExGh probably, but not enough data.
   /*p27.VUJO*/ DFF17 VUJO_WIN_Y1;      // AxCxExGh probably, but not enough data.
   /*p27.VYMU*/ DFF17 VYMU_WIN_Y2;      // AxCxExGh probably, but not enough data.

@@ -25,14 +25,6 @@ struct SpriteScanner {
     XECU_SPRITE_IDX5p.state = 0b00011010;
   }
 
-  void dump(Dumper& d) {
-    d.dump_slice2p("SCAN INDEX     : ", &YFEL_SCAN0, 6);
-    d.dump_bitp   ("BESU_SCANNINGp : ", BESU_SCANNINGp.state);
-    d.dump_bitp   ("CENO_SCANNINGp : ", CENO_SCANNINGn.state);
-    d.dump_bitp   ("BYBA_SCAN_DONE_Ap : ", BYBA_SCAN_DONE_Ap.state);
-    d.dump_bitp   ("DOBA_SCAN_DONE_Bp : ", DOBA_SCAN_DONE_Bp.state);
-  }
-
   /*p28.BESU*/ NorLatch BESU_SCANNINGp; // Axxxxxxx
   /*p29.CENO*/ DFF17 CENO_SCANNINGn;    // xxxxExxx
   /*p29.BYBA*/ DFF17 BYBA_SCAN_DONE_Ap; // Axxxxxxx

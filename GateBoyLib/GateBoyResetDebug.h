@@ -26,12 +26,6 @@ struct GateBoyResetDebug {
   }
 
 
-  void dump(Dumper& d) {
-    d.dump_bitp("TUBO_WAITINGp  : ", TUBO_WAITINGp.state);
-    d.dump_bitn("ASOL_POR_DONEn : ", ASOL_POR_DONEn.state);
-    d.dump_bitp("AFER_SYS_RSTp  : ", AFER_SYS_RSTp.state);
-  }
-
   //----------------------------------------
 
   // This is here because it controls the reset signals for all the graphics stuff.

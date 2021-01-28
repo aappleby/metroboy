@@ -29,6 +29,9 @@ struct BitBase {
   BitBase() { state = 0; }
   explicit BitBase(int new_state)  { state = uint8_t(new_state); }
 
+  wire qp_mid() const { return state; }
+  wire qn_mid() const { return ~state; }
+
   wire qp_any() const { return state; }
   wire qn_any() const { return ~state; }
 

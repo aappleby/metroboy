@@ -96,14 +96,14 @@ struct BGScrollY {
 //-----------------------------------------------------------------------------
 
 struct SpritePix {
-  wire PUTE_FLIP0p;
-  wire PELO_FLIP1p;
-  wire PONO_FLIP2p;
-  wire POBE_FLIP3p;
-  wire PACY_FLIP4p;
-  wire PUGU_FLIP5p;
-  wire PAWE_FLIP6p;
-  wire PULY_FLIP7p;
+  Gate PUTE_FLIP0p;
+  Gate PELO_FLIP1p;
+  Gate PONO_FLIP2p;
+  Gate POBE_FLIP3p;
+  Gate PACY_FLIP4p;
+  Gate PUGU_FLIP5p;
+  Gate PAWE_FLIP6p;
+  Gate PULY_FLIP7p;
 };
 
 //-----------------------------------------------------------------------------

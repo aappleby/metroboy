@@ -479,7 +479,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   auto oam_temp_b_old = oam_temp_b;
 
-  SpritePix sprite_pix_old = flip_sprite_pix(TEXY_SFETCHINGp_old(), BAXO_OAM_DB5p_old);
+  //SpritePix sprite_pix_old = flip_sprite_pix(TEXY_SFETCHINGp_old(), BAXO_OAM_DB5p_old);
 
   //-----------------------------------------------------------------------------
 
@@ -849,8 +849,8 @@ void GateBoy::tock_slow(int pass_index) {
 
   store_tile_temp_a();
   store_tile_temp_b();
-  store_sprite_pix_a(sprite_pix_old);
-  store_sprite_pix_b(sprite_pix_old);
+  store_sprite_pix_a();
+  store_sprite_pix_b();
 
   //----------------------------------------
   // LCD
@@ -985,6 +985,7 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // OAM bus
 
+
   {
     dma_to_oam_addr_bus();
     sprite_index_to_oam_addr_bus();
@@ -1000,6 +1001,8 @@ void GateBoy::tock_slow(int pass_index) {
     latch_oam_data_bus();
     oam_latch_to_cpu();
   }
+
+  sprite_pix = flip_sprite_pix(TEXY_SFETCHINGp(), oam_temp_b.BAXO_OAM_DB5p);
 
   //----------------------------------------
   // Misc tocks

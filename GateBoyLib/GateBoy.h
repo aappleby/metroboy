@@ -249,8 +249,8 @@ struct GateBoy {
   void store_tile_temp_a();
   void store_tile_temp_b();
 
-  void store_sprite_pix_a(SpritePix sprite_pix_old);
-  void store_sprite_pix_b(SpritePix sprite_pix_old);
+  void store_sprite_pix_a();
+  void store_sprite_pix_b();
 
   void tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp);
   void tock_win_map_y();
@@ -914,6 +914,8 @@ struct GateBoy {
 
   SpriteMatchFlag sprite_match;
   SpriteFirstMatch first_match;
+  SpritePix sprite_pix;
+
 
   //----------
 

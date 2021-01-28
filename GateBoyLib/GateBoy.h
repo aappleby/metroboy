@@ -244,7 +244,6 @@ struct GateBoy {
   void reg_dma_tock();
   void reg_dma_read();
 
-  wire ACYL_SCANNINGp();
   void tock_sprite_scanner();
   void ext_to_oam_data_bus();
   void vram_to_oam_data_bus();
@@ -369,18 +368,6 @@ struct GateBoy {
 
   /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(lcd.POPU_VBLANKp.qn_new()); }
 
-  /*#p01.AVOR*/ wire AVOR_SYS_RSTp_old() const { return or2(rst.AFER_SYS_RSTp.qp_old(), rst.ASOL_POR_DONEn.qp_old()); }
-  /*#p01.ALUR*/ wire ALUR_SYS_RSTn_old() const { return not1(AVOR_SYS_RSTp_old()); }
-  /*#p01.DULA*/ wire DULA_SYS_RSTp_old() const { return not1(ALUR_SYS_RSTn_old()); }
-  /*#p01.CUNU*/ wire CUNU_SYS_RSTn_old() const { return not1(DULA_SYS_RSTp_old()); }
-  /*#p01.XORE*/ wire XORE_SYS_RSTp_old() const { return not1(CUNU_SYS_RSTn_old()); }
-  /* p01.XEBE*/ wire XEBE_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
-  /* p01.XODO*/ wire XODO_VID_RSTp_old() const { return nand2(XEBE_SYS_RSTn_old(), rst._XONA_LCDC_LCDENn.qn_old()); }
-  /* p01.XAPO*/ wire XAPO_VID_RSTn_old() const { return not1(XODO_VID_RSTp_old()); }
-  /* p01.TOFU*/ wire TOFU_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
-  /*#p01.ATAR*/ wire ATAR_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
-  /* p01.AMYG*/ wire AMYG_VID_RSTp_old() const { return not1(XAPO_VID_RSTn_old()); }
-  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn_old() const { return not1(ATAR_VID_RSTp_old()); }
 
   //----------------------------------------
 
@@ -551,29 +538,12 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  //wire NYPE_x113p_new() const { return NYPE_x113p.qp_new(); }
-  //wire NYPE_x113n_new() const { return NYPE_x113p.qn_new(); }
-  //
-  //wire RUTU_x113p_old() const { return RUTU_x113p.qp_old(); }
-  //wire RUTU_x113n_old() const { return RUTU_x113p.qn_old(); }
-  //
-  //wire RUTU_x113p_new() const { return RUTU_x113p.qp_new(); }
-  //wire RUTU_x113n_new() const { return RUTU_x113p.qn_new(); }
-
-  /*#p24.LOFU*/ wire LOFU_x113n_old() const { return not1(reg_lx.RUTU_x113p.qp_old()); }
   /*#p24.LOFU*/ wire LOFU_x113n_new() const { return not1(reg_lx.RUTU_x113p.qp_new()); }
 
 
   /* p29.SAKY*/ wire SAKY_SFETCHn_old() const { return nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_old(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_old()); }
 
   /* p29.SAKY*/ wire SAKY_SFETCHn() const { return nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new()); }
-
-  wire TEXY_SFETCHINGp_old() const {
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_old());
-    /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(SAKY_SFETCHn_old(), _TEPA_RENDERINGp); // def or
-    /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
-    return _TEXY_SFETCHINGp;
-  }
 
   wire TEXY_SFETCHINGp() const {
     /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_new());
@@ -582,7 +552,6 @@ struct GateBoy {
     return _TEXY_SFETCHINGp;
   }
 
-  /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_old() const { return not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_old()); }
   /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_new() const { return not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_new()); }
 
   /* p29.TYTU*/ wire TYTU_SFETCH_S0n() const { return not1(sprite_fetcher.TOXE_SFETCH_S0p.qp_new()); }
@@ -633,22 +602,6 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  wire FETO_SCAN_DONEp_old() const {
-    /*#p28.FETO*/ wire _FETO_SCAN_DONEp_old = and4(sprite_scanner.YFEL_SCAN0.qp_old(), sprite_scanner.WEWY_SCAN1.qp_old(), sprite_scanner.GOSO_SCAN2.qp_old(), sprite_scanner.FONY_SCAN5.qp_old()); // 32 + 4 + 2 + 1 = 39
-    return _FETO_SCAN_DONEp_old;
-  }
-
-  wire FETO_SCAN_DONEp_new() const {
-    /*#p28.FETO*/ wire _FETO_SCAN_DONEp_new = and4(sprite_scanner.YFEL_SCAN0.qp_new(), sprite_scanner.WEWY_SCAN1.qp_new(), sprite_scanner.GOSO_SCAN2.qp_new(), sprite_scanner.FONY_SCAN5.qp_new()); // 32 + 4 + 2 + 1 = 39
-    return _FETO_SCAN_DONEp_new;
-  }
-
-  wire FETO_SCAN_DONEp_any() const {
-    /*#p28.FETO*/ wire _FETO_SCAN_DONEp_any = and4(sprite_scanner.YFEL_SCAN0.qp_any(), sprite_scanner.WEWY_SCAN1.qp_any(), sprite_scanner.GOSO_SCAN2.qp_any(), sprite_scanner.FONY_SCAN5.qp_any()); // 32 + 4 + 2 + 1 = 39
-    return _FETO_SCAN_DONEp_any;
-  }
-
-
   wire FEPO_STORE_MATCHp_old(SpriteMatchFlag& flag) const {
     /* p29.FEFY*/ wire _FEFY_STORE_MATCHp = nand5(flag.XAGE_STORE4_MATCHn.qp_old(), flag.YLOZ_STORE3_MATCHn.qp_old(), flag.DEGO_STORE2_MATCHn.qp_old(), flag.DYDU_STORE1_MATCHn.qp_old(), flag.YDUG_STORE0_MATCHn.qp_old());
     /* p29.FOVE*/ wire _FOVE_STORE_MATCHp = nand5(flag.YGEM_STORE9_MATCHn.qp_old(), flag.EFYL_STORE8_MATCHn.qp_old(), flag.DYKA_STORE7_MATCHn.qp_old(), flag.YBEZ_STORE6_MATCHn.qp_old(), flag.EGOM_STORE5_MATCHn.qp_old());
@@ -671,9 +624,6 @@ struct GateBoy {
   /*#p27.NOFU*/ wire NOFU_BFETCH_S2n()     const { return not1(tile_fetcher._NYVA_BFETCH_S2p.qp_new()); }
   /* p27.NOGU*/ wire NOGU_BFETCH_01p()     const { return nand2(NAKO_BFETCH_S1n(), NOFU_BFETCH_S2n()); }
   /* p27.NENY*/ wire NENY_BFETCH_01n()     const { return not1(NOGU_BFETCH_01p()); }
-  /* p27.POTU*/ wire POTU_BGW_MAP_READp()  const { return and2(LENA_BFETCHINGp(), NENY_BFETCH_01n()); }
-  /* p27.NETA*/ wire NETA_BGW_TILE_READp() const { return and2(LENA_BFETCHINGp(), NOGU_BFETCH_01p()); }
-  /*#p27.XUHA*/ wire XUHA_FETCH_HILOp()    const { return not1(NOFU_BFETCH_S2n()); }
 
   void dump_sys(Dumper& d) const;
   void dump_tile_fetcher(Dumper& d);
@@ -767,6 +717,8 @@ struct GateBoy {
   /* p27.LYRY*/ Gate LYRY_BFETCH_DONEp;
   /* p27.TEKY*/ Gate TEKY_SFETCH_REQp;
   /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp;
+  /*#p28.ACYL*/ Gate ACYL_SCANNINGp;
+  /*#p28.FETO*/ Gate FETO_SCAN_DONEp;
 
   SpriteMatchFlag sprite_match;
   SpriteFirstMatch first_match;

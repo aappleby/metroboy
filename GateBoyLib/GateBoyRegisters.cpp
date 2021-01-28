@@ -159,7 +159,7 @@ void GateBoy::reg_lcdc_write()
 void GateBoy::reg_stat_read()
 {
   /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp());   // die NOR
-  /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp(), XYMU_RENDERINGn.qn_new()); // die NOR
+  /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp.qp_new(), XYMU_RENDERINGn.qn_new()); // die NOR
   /* p21.TOBE*/ wire _TOBE_FF41_RDp = and2(ASOT_CPU_RDp(), new_bus.VARY_FF41p());
   /* p21.VAVE*/ wire _VAVE_FF41_RDn = not1(_TOBE_FF41_RDp);
   /*#p21.TEBY_STAT0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);

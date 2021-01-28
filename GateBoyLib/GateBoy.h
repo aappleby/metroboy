@@ -620,9 +620,6 @@ struct GateBoy {
     return _NERU_VSYNCp;
   }
 
-  /*#p21.XYVO*/ wire XYVO_y144p_old() const { return and2(reg_ly.LOVU_LY4p.qp_old(), reg_ly.LAFO_LY7p.qp_old()); } // 128 + 16 = 144
-  /*#p21.XYVO*/ wire XYVO_y144p_new() const { return and2(reg_ly.LOVU_LY4p.qp_new(), reg_ly.LAFO_LY7p.qp_new()); } // 128 + 16 = 144
-
   wire PURE_LINE_ENDn() const {
     /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(reg_lx.RUTU_x113p.qp_new());
     return _PURE_LINE_ENDn;
@@ -764,13 +761,6 @@ struct GateBoy {
 
   /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn() const { return not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new()); }
 
-  wire TAVE_PRELOAD_DONE_TRIGp_old() const {
-    /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_old      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_old());
-    /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_old = nand4(XYMU_RENDERINGn.qn_old(), _ROMO_PRELOAD_DONEn_old, tile_fetcher.NYKA_FETCH_DONEp.qp_old(), tile_fetcher.PORY_FETCH_DONEp.qp_old());
-    /* p27.TAVE*/ wire _TAVE_PRELOAD_DONE_TRIGp_old = not1(_SUVU_PRELOAD_DONE_TRIGn_old);
-    return _TAVE_PRELOAD_DONE_TRIGp_old;
-  }
-
   wire TAVE_PRELOAD_DONE_TRIGp_new() const {
     /* p27.ROMO*/ wire _ROMO_PRELOAD_DONEn_new      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
     /* p27.SUVU*/ wire _SUVU_PRELOAD_DONE_TRIGn_new = nand4(XYMU_RENDERINGn.qn_new(), _ROMO_PRELOAD_DONEn_new, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
@@ -885,6 +875,10 @@ struct GateBoy {
   /* p27.PANY*/ Gate PANY_WIN_FETCHn;
   /* p27.NUKO*/ Gate NUKO_WX_MATCHp;
   /* p27.ROGE*/ Gate ROGE_WY_MATCHp;
+  /* p27.MOCE*/ Gate MOCE_BFETCH_DONEn;
+  /* p27.LYRY*/ Gate LYRY_BFETCH_DONEp;
+  /* p27.TEKY*/ Gate TEKY_SFETCH_REQp;
+
 
   SpriteMatchFlag sprite_match;
   SpriteFirstMatch first_match;

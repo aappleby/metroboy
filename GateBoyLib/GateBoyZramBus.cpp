@@ -17,14 +17,14 @@ void GateBoy::read_zram()
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   uint8_t data = zero_ram[addr & 0x007F];
-  new_bus.BUS_CPU_D00p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp), bit(data, 0));
-  new_bus.BUS_CPU_D01p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp), bit(data, 1));
-  new_bus.BUS_CPU_D02p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp), bit(data, 2));
-  new_bus.BUS_CPU_D03p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp), bit(data, 3));
-  new_bus.BUS_CPU_D04p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp), bit(data, 4));
-  new_bus.BUS_CPU_D05p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp), bit(data, 5));
-  new_bus.BUS_CPU_D06p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp), bit(data, 6));
-  new_bus.BUS_CPU_D07p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp), bit(data, 7));
+  new_bus.BUS_CPU_D00p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new()), bit(data, 0));
+  new_bus.BUS_CPU_D01p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new()), bit(data, 1));
+  new_bus.BUS_CPU_D02p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new()), bit(data, 2));
+  new_bus.BUS_CPU_D03p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new()), bit(data, 3));
+  new_bus.BUS_CPU_D04p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new()), bit(data, 4));
+  new_bus.BUS_CPU_D05p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new()), bit(data, 5));
+  new_bus.BUS_CPU_D06p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new()), bit(data, 6));
+  new_bus.BUS_CPU_D07p.tri(CSp && bit(cpu_bus.TEDO_CPU_RDp.qp_new()), bit(data, 7));
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ void GateBoy::write_zram()
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   wire clk_new = bit(~cpu_bus.TAPU_CPU_WRp);
-  if (bit(~zram_bus.clk_old) && clk_new && CSp) {
+  if (bit(~zram_bus.clk_old.qp_old()) && clk_new && CSp) {
     zero_ram[addr & 0x007F] = (uint8_t)BitBase::pack_old(8, &old_bus.BUS_CPU_D00p);
   }
   zram_bus.clk_old = clk_new;

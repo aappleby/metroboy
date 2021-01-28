@@ -705,16 +705,16 @@ void GateBoy::store_sprite_x(SpriteStoreFlag store_flag, SpriteFirstMatch sprite
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::store_sprite_index(SpriteStoreFlag store_flag) {
-  /* p29.GENY*/ wire _GENY_STORE0_CLKp = not1(store_flag.DYHU_STORE0_CLKn);
-  /* p29.BYVY*/ wire _BYVY_STORE1_CLKp = not1(store_flag.BUCO_STORE1_CLKn);
-  /* p29.BUZY*/ wire _BUZY_STORE2_CLKp = not1(store_flag.GYFO_STORE2_CLKn);
-  /* p29.FEKA*/ wire _FEKA_STORE3_CLKp = not1(store_flag.GUSA_STORE3_CLKn);
-  /* p29.WYLU*/ wire _WYLU_STORE4_CLKp = not1(store_flag.DUKE_STORE4_CLKn);
-  /* p29.DYMO*/ wire _DYMO_STORE5_CLKp = not1(store_flag.BEDE_STORE5_CLKn);
-  /* p29.WUSE*/ wire _WUSE_STORE6_CLKp = not1(store_flag.WEKA_STORE6_CLKn);
-  /* p29.FEFO*/ wire _FEFO_STORE7_CLKp = not1(store_flag.GYVO_STORE7_CLKn);
-  /* p29.AKOL*/ wire _AKOL_STORE8_CLKp = not1(store_flag.BUKA_STORE8_CLKn);
-  /* p29.WUFA*/ wire _WUFA_STORE9_CLKp = not1(store_flag.DECU_STORE9_CLKn);
+  /* p29.GENY*/ wire _GENY_STORE0_CLKp = not1(store_flag.DYHU_STORE0_CLKn.qp_new());
+  /* p29.BYVY*/ wire _BYVY_STORE1_CLKp = not1(store_flag.BUCO_STORE1_CLKn.qp_new());
+  /* p29.BUZY*/ wire _BUZY_STORE2_CLKp = not1(store_flag.GYFO_STORE2_CLKn.qp_new());
+  /* p29.FEKA*/ wire _FEKA_STORE3_CLKp = not1(store_flag.GUSA_STORE3_CLKn.qp_new());
+  /* p29.WYLU*/ wire _WYLU_STORE4_CLKp = not1(store_flag.DUKE_STORE4_CLKn.qp_new());
+  /* p29.DYMO*/ wire _DYMO_STORE5_CLKp = not1(store_flag.BEDE_STORE5_CLKn.qp_new());
+  /* p29.WUSE*/ wire _WUSE_STORE6_CLKp = not1(store_flag.WEKA_STORE6_CLKn.qp_new());
+  /* p29.FEFO*/ wire _FEFO_STORE7_CLKp = not1(store_flag.GYVO_STORE7_CLKn.qp_new());
+  /* p29.AKOL*/ wire _AKOL_STORE8_CLKp = not1(store_flag.BUKA_STORE8_CLKn.qp_new());
+  /* p29.WUFA*/ wire _WUFA_STORE9_CLKp = not1(store_flag.DECU_STORE9_CLKn.qp_new());
 
   /* p30.YGUS*/ sprite_store.YGUS_STORE0_I0n_odd.dff8n(_GENY_STORE0_CLKp, old_bus.BUS_SPR_I0.qp_old());
   /* p30.YSOK*/ sprite_store.YSOK_STORE0_I1n_odd.dff8n(_GENY_STORE0_CLKp, old_bus.BUS_SPR_I1.qp_old());
@@ -790,16 +790,16 @@ void GateBoy::store_sprite_index(SpriteStoreFlag store_flag) {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::store_sprite_line(SpriteStoreFlag store_flag) {
-  /* p29.ENOB*/ wire _ENOB_STORE0_CLKp = not1(store_flag.DYHU_STORE0_CLKn);
-  /* p29.AHOF*/ wire _AHOF_STORE1_CLKp = not1(store_flag.BUCO_STORE1_CLKn);
-  /* p29.FUKE*/ wire _FUKE_STORE2_CLKp = not1(store_flag.GYFO_STORE2_CLKn);
-  /* p29.XYHA*/ wire _XYHA_STORE3_CLKp = not1(store_flag.GUSA_STORE3_CLKn);
-  /* p29.EWOT*/ wire _EWOT_STORE4_CLKp = not1(store_flag.DUKE_STORE4_CLKn);
-  /* p29.BUCY*/ wire _BUCY_STORE5_CLKp = not1(store_flag.BEDE_STORE5_CLKn);
-  /* p29.ZURU*/ wire _ZURU_STORE6_CLKp = not1(store_flag.WEKA_STORE6_CLKn);
-  /* p29.WABE*/ wire _WABE_STORE7_CLKp = not1(store_flag.GYVO_STORE7_CLKn);
-  /* p29.BYMY*/ wire _BYMY_STORE8_CLKp = not1(store_flag.BUKA_STORE8_CLKn);
-  /* p29.FAKA*/ wire _FAKA_STORE9_CLKp = not1(store_flag.DECU_STORE9_CLKn);
+  /* p29.ENOB*/ wire _ENOB_STORE0_CLKp = not1(store_flag.DYHU_STORE0_CLKn.qp_new());
+  /* p29.AHOF*/ wire _AHOF_STORE1_CLKp = not1(store_flag.BUCO_STORE1_CLKn.qp_new());
+  /* p29.FUKE*/ wire _FUKE_STORE2_CLKp = not1(store_flag.GYFO_STORE2_CLKn.qp_new());
+  /* p29.XYHA*/ wire _XYHA_STORE3_CLKp = not1(store_flag.GUSA_STORE3_CLKn.qp_new());
+  /* p29.EWOT*/ wire _EWOT_STORE4_CLKp = not1(store_flag.DUKE_STORE4_CLKn.qp_new());
+  /* p29.BUCY*/ wire _BUCY_STORE5_CLKp = not1(store_flag.BEDE_STORE5_CLKn.qp_new());
+  /* p29.ZURU*/ wire _ZURU_STORE6_CLKp = not1(store_flag.WEKA_STORE6_CLKn.qp_new());
+  /* p29.WABE*/ wire _WABE_STORE7_CLKp = not1(store_flag.GYVO_STORE7_CLKn.qp_new());
+  /* p29.BYMY*/ wire _BYMY_STORE8_CLKp = not1(store_flag.BUKA_STORE8_CLKn.qp_new());
+  /* p29.FAKA*/ wire _FAKA_STORE9_CLKp = not1(store_flag.DECU_STORE9_CLKn.qp_new());
 
   /* p30.GYHO*/ sprite_store.GYHO_STORE0_L0n_odd.dff8n(_ENOB_STORE0_CLKp, old_bus.BUS_SPR_L0.qp_old());
   /* p30.CUFO*/ sprite_store.CUFO_STORE0_L1n_odd.dff8n(_ENOB_STORE0_CLKp, old_bus.BUS_SPR_L1.qp_old());

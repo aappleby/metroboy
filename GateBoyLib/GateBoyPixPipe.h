@@ -13,31 +13,32 @@ struct OamTempB;
 //------------------------------------------------------------------------------------------------------------------------
 
 struct WindowRegisters {
-
-  /*p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;      // AxxxxxGx
-  /*p27.PUKU*/ Gate PUKU_WIN_HITn;             // xxCxxxGx
-  /*p27.RYDY*/ Gate RYDY_WIN_HITp;             // xxCxxxGx
-  /*p27.SOVY*/ DFF17 SOVY_WIN_HITp;            // xxxDxxxH
-  /*p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp;         // xBxDxFxH
-  /*p27.PYCO*/ DFF17 PYCO_WIN_MATCHp;          // xxxDxxxH
-  /*p27.NUNU*/ DFF17 NUNU_WIN_MATCHp;          // xxxxExGx
-  /*p27.REJO*/ NorLatch REJO_WY_MATCH_LATCHp;  // xxCxxxxx
-  /*p27.SARY*/ DFF17 SARY_WY_MATCHp;           // xxCxxxxx
-  /*p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A;        // AxCxExGx
-  /*p27.RENE*/ DFF17 RENE_WIN_FETCHn_B;        // xBxDxFxH
+  /* p27.NUKO*/ Gate NUKO_WX_MATCHp; // old used
+  /* p27.ROGE*/ Gate ROGE_WY_MATCHp; // old used
+  /* p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;      // AxxxxxGx
+  /* p27.PUKU*/ Gate PUKU_WIN_HITn;             // xxCxxxGx
+  /* p27.RYDY*/ Gate RYDY_WIN_HITp;             // xxCxxxGx
+  /* p27.SOVY*/ DFF17 SOVY_WIN_HITp;            // xxxDxxxH
+  /* p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp;         // xBxDxFxH
+  /* p27.PYCO*/ DFF17 PYCO_WIN_MATCHp;          // xxxDxxxH
+  /* p27.NUNU*/ DFF17 NUNU_WIN_MATCHp;          // xxxxExGx
+  /* p27.REJO*/ NorLatch REJO_WY_MATCH_LATCHp;  // xxCxxxxx
+  /* p27.SARY*/ DFF17 SARY_WY_MATCHp;           // xxCxxxxx
+  /* p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A;        // AxCxExGx
+  /* p27.RENE*/ DFF17 RENE_WIN_FETCHn_B;        // xBxDxFxH
 };
 
 //------------------------------------------------------------------------------------------------------------------------
 
 struct FineScroll {
+  /* p27.RYKU*/ DFF17 RYKU_FINE_CNT0;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+  /* p27.ROGA*/ DFF17 ROGA_FINE_CNT1;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+  /* p27.RUBU*/ DFF17 RUBU_FINE_CNT2;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
 
-  /*p27.RYKU*/ DFF17 RYKU_FINE_CNT0;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
-  /*p27.ROGA*/ DFF17 ROGA_FINE_CNT1;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
-  /*p27.RUBU*/ DFF17 RUBU_FINE_CNT2;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
-
-  /*p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;        // xxxxxFxH
-  /*p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;        // AxxxxxGx
-  /*p27.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
+  /* p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;        // xxxxxFxH
+  /* p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;        // AxxxxxGx
+  /* p27.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
+  ///*#p27.POHU*/ Gate POHU_SCX_FINE_MATCHp; // only old used
 };
 
 //------------------------------------------------------------------------------------------------------------------------

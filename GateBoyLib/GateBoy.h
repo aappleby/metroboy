@@ -208,7 +208,7 @@ struct GateBoy {
   void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
 
   void read_zram();
-  void write_zram();
+  void tock_zram();
 
   void get_sprite();
   void store_sprite(wire _DYTY_COUNT_CLKp);
@@ -456,12 +456,7 @@ struct GateBoy {
 
   /*#p21.WODU*/ Gate WODU_HBLANKp; // only old used
   /*#p21.NOKO*/ Gate NOKO_y153p; // only old used
-  /*#p27.POHU*/ Gate POHU_SCX_FINE_MATCHp; // only old used
-  /* p27.PANY*/ Gate PANY_WIN_FETCHn; // only old used
-  /* p27.NUKO*/ Gate NUKO_WX_MATCHp; // old used
-  /* p27.ROGE*/ Gate ROGE_WY_MATCHp; // old used
   /* p27.LYRY*/ Gate LYRY_BFETCH_DONEp; // old used
-  /* p27.TEKY*/ Gate TEKY_SFETCH_REQp; // old used
   /* p07.SATO*/ Gate SATO_BOOT_BITn; // old used
 
   /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp; // new used

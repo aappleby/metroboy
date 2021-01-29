@@ -7,6 +7,9 @@
 void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
   vram_bus.reset_buses();
 
+  reg_scx_write();
+  reg_scy_write();
+
   /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(win_reg.PYNU_WIN_MODE_Ap.qp_new());
   /* p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
 
@@ -392,6 +395,9 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
   /* p25.REXU_VD5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_pn(_SEBY_VBD_TO_CBDp, _RORO_VBUS_D5n);
   /* p25.RUPY_VD6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_pn(_SEBY_VBD_TO_CBDp, _RABO_VBUS_D6n);
   /* p25.TOKU_VD7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_pn(_SEBY_VBD_TO_CBDp, _SAME_VBUS_D7n);
+
+  reg_scx_read();
+  reg_scy_read();
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -158,8 +158,6 @@ struct GateBoy {
 
   wire TEGY_STROBE() const;
 
-  void store_vram_data();
-
   void tock_reset(DFF17 UPOF_DIV15p);
 
   void tock_ext_bus();

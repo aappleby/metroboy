@@ -495,6 +495,7 @@ void GateBoy::tock_slow(int pass_index) {
   tock_reset(bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p);
 
   reg_lcdc_write(); // LCDC. Has to be near the top as it controls the video reset signal
+  reg_lcdc_read();
 
   rst.set_signals(reg_lcdc.XONA_LCDC_LCDENn);
   tock_vid_clocks();
@@ -1164,8 +1165,6 @@ void GateBoy::tock_slow(int pass_index) {
   tock_joypad();
 
   tock_interrupts();
-
-  reg_lcdc_read();
 
   tock_zram();
 

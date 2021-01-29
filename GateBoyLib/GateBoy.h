@@ -222,7 +222,7 @@ struct GateBoy {
   void copy_pins_to_data_latch();
   void copy_data_latch_to_cpu_bus();
   void copy_cpu_data_to_pins();
-  void set_ext_control_pins();
+  void tock_ext_bus();
   void read_ext_to_pins();
   void write_pins_to_ext();
 

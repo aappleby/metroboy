@@ -987,73 +987,7 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Ext new_bus
 
-  {
-    ext_bus.PIN_80_CSn.reset_for_pass();
-    ext_bus.PIN_79_RDn.reset_for_pass();
-    ext_bus.PIN_78_WRn.reset_for_pass();
-
-    ext_bus.PIN_01_A00.reset_for_pass();
-    ext_bus.PIN_02_A01.reset_for_pass();
-    ext_bus.PIN_03_A02.reset_for_pass();
-    ext_bus.PIN_04_A03.reset_for_pass();
-    ext_bus.PIN_05_A04.reset_for_pass();
-    ext_bus.PIN_06_A05.reset_for_pass();
-    ext_bus.PIN_07_A06.reset_for_pass();
-    ext_bus.PIN_08_A07.reset_for_pass();
-    ext_bus.PIN_09_A08.reset_for_pass();
-    ext_bus.PIN_10_A09.reset_for_pass();
-    ext_bus.PIN_11_A10.reset_for_pass();
-    ext_bus.PIN_12_A11.reset_for_pass();
-    ext_bus.PIN_13_A12.reset_for_pass();
-    ext_bus.PIN_14_A13.reset_for_pass();
-    ext_bus.PIN_15_A14.reset_for_pass();
-    ext_bus.PIN_16_A15.reset_for_pass();
-
-    ext_bus.PIN_17_D00.reset_for_pass();
-    ext_bus.PIN_18_D01.reset_for_pass();
-    ext_bus.PIN_19_D02.reset_for_pass();
-    ext_bus.PIN_20_D03.reset_for_pass();
-    ext_bus.PIN_21_D04.reset_for_pass();
-    ext_bus.PIN_22_D05.reset_for_pass();
-    ext_bus.PIN_23_D06.reset_for_pass();
-    ext_bus.PIN_24_D07.reset_for_pass();
-
-    // FIXME this is slightly weird
-    //ext_bus.PIN_17_D00.state = 0b00100000;
-    //ext_bus.PIN_18_D01.state = 0b00100000;
-    //ext_bus.PIN_19_D02.state = 0b00100000;
-    //ext_bus.PIN_20_D03.state = 0b00100000;
-    //ext_bus.PIN_21_D04.state = 0b00100000;
-    //ext_bus.PIN_22_D05.state = 0b00100000;
-    //ext_bus.PIN_23_D06.state = 0b00100000;
-    //ext_bus.PIN_24_D07.state = 0b00100000;
-
-    set_ext_control_pins();
-    copy_cpu_addr_to_addr_latch();
-    copy_addr_latch_to_pins();
-
-    // A15 is "special"
-    /* p07.TERA*/ wire TERA_BOOT_BITp = not1(cpu_bus.TEPU_BOOT_BITn_h.qp_new());
-    /* p07.TUTU*/ wire TUTU_READ_BOOTROMp = and2(TERA_BOOT_BITp, new_bus.TULO_ADDR_BOOTROMp());
-    /* p08.SOBY*/ wire _SOBY_A15n = nor2 (new_bus.BUS_CPU_A15p.qp_new(), TUTU_READ_BOOTROMp);
-    /* p08.SEPY*/ wire _SEPY_A15p = nand2(cpu_bus.ABUZ_EXT_RAM_CS_CLK.qp_new(), _SOBY_A15n);
-    /*#p04.LEBU*/ wire _LEBU_DMA_A15n  = not1(dma.MARU_DMA_A15n.qn_new());
-    /*#p04.MUDA*/ wire _MUDA_DMA_VRAMp = nor3(dma.PULA_DMA_A13n.qn_new(), dma.POKU_DMA_A14n.qn_new(), _LEBU_DMA_A15n);
-    /* p04.LOGO*/ wire _LOGO_DMA_VRAMn = not1(_MUDA_DMA_VRAMp);
-    /* p04.MORY*/ wire _MORY_DMA_CARTn = nand2(dma.MATU_DMA_RUNNINGp.qp_new(), _LOGO_DMA_VRAMn);
-    /* p04.LUMA*/ wire _LUMA_DMA_CARTp = not1(_MORY_DMA_CARTn);
-    /* p08.TAZY*/ wire _TAZY_A15p = mux2p (_LUMA_DMA_CARTp, dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
-    /* p08.SUZE*/ wire _SUZE_A15n = nand2(_TAZY_A15p, RYCA_MODE_DBG2n());
-    /* p08.RULO*/ wire _RULO_A15n = nor2 (_TAZY_A15p, UNOR_MODE_DBG2p());
-    /*PIN_16*/ ext_bus.PIN_16_A15.pin_out_hilo(_SUZE_A15n, _RULO_A15n);
-
-    copy_cpu_data_to_pins();
-    read_ext_to_pins();
-
-    write_pins_to_ext();
-    copy_pins_to_data_latch();
-    copy_data_latch_to_cpu_bus();
-  }
+  tock_ext_bus();
 
   //----------------------------------------
   // VRAM bus

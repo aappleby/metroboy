@@ -48,52 +48,6 @@ SpriteDeltaY GateBoy::sub_sprite_y() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-BGScrollX GateBoy::add_scx() {
-  /*#p26.ATAD*/ auto _ATAD_TILE_X0 = add3(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), SIG_GND.qp_new());
-  /* p26.BEHU*/ auto _BEHU_TILE_X1 = add3(pix_count.SAVY_PX1p.qp_new(), reg_scx.DUZU_SCX1n.qn_new(), _ATAD_TILE_X0.carry);
-  /* p26.APYH*/ auto _APYH_TILE_X2 = add3(pix_count.XODU_PX2p.qp_new(), reg_scx.CYXU_SCX2n.qn_new(), _BEHU_TILE_X1.carry);
-  /* p26.BABE*/ auto _BABE_MAP_X0  = add3(pix_count.XYDO_PX3p.qp_new(), reg_scx.GUBO_SCX3n.qn_new(), _APYH_TILE_X2.carry);
-  /* p26.ABOD*/ auto _ABOD_MAP_X1  = add3(pix_count.TUHU_PX4p.qp_new(), reg_scx.BEMY_SCX4n.qn_new(), _BABE_MAP_X0.carry);
-  /* p26.BEWY*/ auto _BEWY_MAP_X2  = add3(pix_count.TUKY_PX5p.qp_new(), reg_scx.CUZY_SCX5n.qn_new(), _ABOD_MAP_X1.carry);
-  /* p26.BYCA*/ auto _BYCA_MAP_X3  = add3(pix_count.TAKO_PX6p.qp_new(), reg_scx.CABU_SCX6n.qn_new(), _BEWY_MAP_X2.carry);
-  /* p26.ACUL*/ auto _ACUL_MAP_X4  = add3(pix_count.SYBE_PX7p.qp_new(), reg_scx.BAKE_SCX7n.qn_new(), _BYCA_MAP_X3.carry);
-
-  return {
-    _ATAD_TILE_X0,
-    _BEHU_TILE_X1,
-    _APYH_TILE_X2,
-    _BABE_MAP_X0,
-    _ABOD_MAP_X1,
-    _BEWY_MAP_X2,
-    _BYCA_MAP_X3,
-    _ACUL_MAP_X4
-  };
-}
-
-BGScrollY GateBoy::add_scy() {
-  /*#p26.FAFO*/ auto _FAFO_TILE_Y0 = add3(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), SIG_GND.qp_new());
-  /* p26.EMUX*/ auto _EMUX_TILE_Y1 = add3(reg_ly.MYRO_LY1p.qp_new(), reg_scy.FYMO_SCY1n.qn_new(), _FAFO_TILE_Y0.carry);
-  /* p26.ECAB*/ auto _ECAB_TILE_Y2 = add3(reg_ly.LEXA_LY2p.qp_new(), reg_scy.FEZU_SCY2n.qn_new(), _EMUX_TILE_Y1.carry);
-  /* p26.ETAM*/ auto _ETAM_MAP_Y0  = add3(reg_ly.LYDO_LY3p.qp_new(), reg_scy.FUJO_SCY3n.qn_new(), _ECAB_TILE_Y2.carry);
-  /* p26.DOTO*/ auto _DOTO_MAP_Y1  = add3(reg_ly.LOVU_LY4p.qp_new(), reg_scy.DEDE_SCY4n.qn_new(), _ETAM_MAP_Y0.carry);
-  /* p26.DABA*/ auto _DABA_MAP_Y2  = add3(reg_ly.LEMA_LY5p.qp_new(), reg_scy.FOTY_SCY5n.qn_new(), _DOTO_MAP_Y1.carry);
-  /* p26.EFYK*/ auto _EFYK_MAP_Y3  = add3(reg_ly.MATO_LY6p.qp_new(), reg_scy.FOHA_SCY6n.qn_new(), _DABA_MAP_Y2.carry);
-  /* p26.EJOK*/ auto _EJOK_MAP_Y4  = add3(reg_ly.LAFO_LY7p.qp_new(), reg_scy.FUNY_SCY7n.qn_new(), _EFYK_MAP_Y3.carry);
-
-  return {
-    _FAFO_TILE_Y0,
-    _EMUX_TILE_Y1,
-    _ECAB_TILE_Y2,
-    _ETAM_MAP_Y0,
-    _DOTO_MAP_Y1,
-    _DABA_MAP_Y2,
-    _EFYK_MAP_Y3,
-    _EJOK_MAP_Y4
-  };
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
 SpritePix GateBoy::flip_sprite_pix(DFF8n BAXO_OAM_DB5p) {
   /*#p29.XONO*/ wire _XONO_FLIP_X_old = and2(BAXO_OAM_DB5p.qp_new(), TEXY_SFETCHINGp.qp_new());
   /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X_old, new_bus.BUS_VRAM_D07p.qp_new(), new_bus.BUS_VRAM_D00p.qp_new());
@@ -571,37 +525,3 @@ void GateBoy::store_sprite_pix() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_win_map_xy(wire TEVO_WIN_FETCH_TRIGp) {
-  /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(win_reg.PYNU_WIN_MODE_Ap.qp_new());
-  /* p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
-
-  {
-    /* p27.VETU*/ wire _VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp);
-    /* p27.XAHY*/ wire XAHY_LINE_RSTn = not1(ATEJ_LINE_RSTp.qp_new());
-    /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn, XAPO_VID_RSTn());
-    /* p27.XACO*/ wire _XACO_WIN_RSTn = not1(_XOFO_WIN_RSTp);
-    /* p27.WYKA*/ win_map_x.WYKA_WIN_X3.dff17(_VETU_WIN_MAPp,                 _XACO_WIN_RSTn, win_map_x.WYKA_WIN_X3.qn_old());
-    /* p27.WODY*/ win_map_x.WODY_WIN_X4.dff17(win_map_x.WYKA_WIN_X3.qn_new(), _XACO_WIN_RSTn, win_map_x.WODY_WIN_X4.qn_old());
-    /* p27.WOBO*/ win_map_x.WOBO_WIN_X5.dff17(win_map_x.WODY_WIN_X4.qn_new(), _XACO_WIN_RSTn, win_map_x.WOBO_WIN_X5.qn_old());
-    /* p27.WYKO*/ win_map_x.WYKO_WIN_X6.dff17(win_map_x.WOBO_WIN_X5.qn_new(), _XACO_WIN_RSTn, win_map_x.WYKO_WIN_X6.qn_old());
-    /* p27.XOLO*/ win_map_x.XOLO_WIN_X7.dff17(win_map_x.WYKO_WIN_X6.qn_new(), _XACO_WIN_RSTn, win_map_x.XOLO_WIN_X7.qn_old());
-  }
-
-  {
-    // Every time we leave win mode we increment win_y
-    /* p27.WAZY*/ wire _WAZY_WIN_MODEn = not1(PORE_WIN_MODEp);
-    /*#p21.PARU*/ wire PARU_VBLANKp = not1(lcd.POPU_VBLANKp.qn_new());
-    /* p27.REPU*/ wire _REPU_VBLANKp   = or2(PARU_VBLANKp, PYRY_VID_RSTp());
-    /* p27.SYNY*/ wire _SYNY_VBLANKn   = not1(_REPU_VBLANKp);
-    /* p27.VYNO*/ win_map_y.VYNO_WIN_Y0.dff17(_WAZY_WIN_MODEn,                _SYNY_VBLANKn, win_map_y.VYNO_WIN_Y0.qn_old());
-    /* p27.VUJO*/ win_map_y.VUJO_WIN_Y1.dff17(win_map_y.VYNO_WIN_Y0.qn_new(), _SYNY_VBLANKn, win_map_y.VUJO_WIN_Y1.qn_old());
-    /* p27.VYMU*/ win_map_y.VYMU_WIN_Y2.dff17(win_map_y.VUJO_WIN_Y1.qn_new(), _SYNY_VBLANKn, win_map_y.VYMU_WIN_Y2.qn_old());
-    /* p27.TUFU*/ win_map_y.TUFU_WIN_Y3.dff17(win_map_y.VYMU_WIN_Y2.qn_new(), _SYNY_VBLANKn, win_map_y.TUFU_WIN_Y3.qn_old());
-    /* p27.TAXA*/ win_map_y.TAXA_WIN_Y4.dff17(win_map_y.TUFU_WIN_Y3.qn_new(), _SYNY_VBLANKn, win_map_y.TAXA_WIN_Y4.qn_old());
-    /* p27.TOZO*/ win_map_y.TOZO_WIN_Y5.dff17(win_map_y.TAXA_WIN_Y4.qn_new(), _SYNY_VBLANKn, win_map_y.TOZO_WIN_Y5.qn_old());
-    /* p27.TATE*/ win_map_y.TATE_WIN_Y6.dff17(win_map_y.TOZO_WIN_Y5.qn_new(), _SYNY_VBLANKn, win_map_y.TATE_WIN_Y6.qn_old());
-    /* p27.TEKE*/ win_map_y.TEKE_WIN_Y7.dff17(win_map_y.TATE_WIN_Y6.qn_new(), _SYNY_VBLANKn, win_map_y.TEKE_WIN_Y7.qn_old());
-  }
-}
-
-//------------------------------------------------------------------------------------------------------------------------

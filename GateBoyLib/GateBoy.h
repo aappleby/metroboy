@@ -213,8 +213,6 @@ struct GateBoy {
 
   void store_sprite_pix();
 
-  void tock_win_map_xy(wire TEVO_WIN_FETCH_TRIGp);
-
   void tock_reset(DFF17 UPOF_DIV15p);
 
   void set_lcd_pin_ctrl();
@@ -252,14 +250,7 @@ struct GateBoy {
 
   void tock_serial();
 
-  void set_vram_addr();
-
-  void set_vram_data();
-  void vram_bus_data_to_pins();
-  void set_vram_pins();
-  void tock_vram();
-  void write_vram();
-  void get_vram_data();
+  void tock_vram(wire TEVO_WIN_FETCH_TRIGp);
 
   void read_zram();
   void write_zram();

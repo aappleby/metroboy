@@ -868,10 +868,6 @@ void GateBoy::tock_slow(int pass_index) {
 
 
 
-  /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
-  /* p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(XYMU_RENDERINGn.qn_new(), ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
-  /* p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
-
   // vvvvvvvvvv
 
   /*#p29.TYFO*/ sprite_fetcher.TYFO_SFETCH_S0p_D1.dff17(LAPE_AxCxExGx(), SIG_VCC.qp_new(),         sprite_fetcher.TOXE_SFETCH_S0p.qp_old());
@@ -897,9 +893,11 @@ void GateBoy::tock_slow(int pass_index) {
   /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn = or2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qn_new(), _TYNO);
   /* p29.WUTY*/ WUTY_SFETCH_DONE_TRIGp = not1(_VUSA_SPRITE_DONEn);
 
+  /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
+  /* p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(XYMU_RENDERINGn.qn_new(), ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
+  /* p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
   /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SFETCH_DONE_TRIGp.qp_new(), TAVE_PRELOAD_DONE_TRIGp); // def nor
   /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RSTn, _VEKU_SFETCH_RUNNING_RSTn);
-  ///* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_new());
 
   /* p25.CUFE*/ wire _CUFE_OAM_CLKp = not_or_and3(new_bus.SARO_ADDR_OAMp(), dma.MATU_DMA_RUNNINGp.qp_new(), MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
   /* p25.AVER*/ wire _AVER_AxxxExxx = nand2(ACYL_SCANNINGp.qp_new(), XYSO_xBCDxFGH());
@@ -938,7 +936,6 @@ void GateBoy::tock_slow(int pass_index) {
   store_sprite(_DYTY_COUNT_CLKp);
 
   oam_latch_to_temp_b(_COTA_OAM_CLKn, oam_latch_b, oam_temp_b);
-
 
   //----------------------------------------
 
@@ -1126,7 +1123,6 @@ void GateBoy::tock_slow(int pass_index) {
     /* p23.MARA_WX7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.NUKU_WX7n.qp_new());
   }
 
-  store_vram_data();
 
   //----------------------------------------
 
@@ -1138,9 +1134,30 @@ void GateBoy::tock_slow(int pass_index) {
 
   tock_vram_bus(TEVO_WIN_FETCH_TRIGp);
 
-  tock_oam_bus();
+  {
+    /*#p29.XONO*/ wire _XONO_FLIP_X = and2(oam_temp_b.BAXO_OAM_DB5p.qp_new(), TEXY_SFETCHINGp.qp_new());
+    /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D07p.qp_new(), new_bus.BUS_VRAM_D00p.qp_new());
+    /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D06p.qp_new(), new_bus.BUS_VRAM_D01p.qp_new());
+    /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D05p.qp_new(), new_bus.BUS_VRAM_D02p.qp_new());
+    /* p33.POBE*/ wire _POBE_FLIP3p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D04p.qp_new(), new_bus.BUS_VRAM_D03p.qp_new());
+    /* p33.PACY*/ wire _PACY_FLIP4p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D03p.qp_new(), new_bus.BUS_VRAM_D04p.qp_new());
+    /* p33.PUGU*/ wire _PUGU_FLIP5p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D02p.qp_new(), new_bus.BUS_VRAM_D05p.qp_new());
+    /* p33.PAWE*/ wire _PAWE_FLIP6p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D01p.qp_new(), new_bus.BUS_VRAM_D06p.qp_new());
+    /* p33.PULY*/ wire _PULY_FLIP7p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D00p.qp_new(), new_bus.BUS_VRAM_D07p.qp_new());
 
-  flipped_sprite = flip_sprite_pix(oam_temp_b.BAXO_OAM_DB5p);
+    flipped_sprite = {
+      _PUTE_FLIP0p,
+      _PELO_FLIP1p,
+      _PONO_FLIP2p,
+      _POBE_FLIP3p,
+      _PACY_FLIP4p,
+      _PUGU_FLIP5p,
+      _PAWE_FLIP6p,
+      _PULY_FLIP7p
+    };
+  }
+
+  tock_oam_bus();
 
   tock_serial();
 

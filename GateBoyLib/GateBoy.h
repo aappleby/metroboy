@@ -149,53 +149,22 @@ struct GateBoy {
   void tock_clocks();
   void tock_vid_clocks();
 
-  SpritePix flip_sprite_pix(DFF8n BAXO_OAM_DB5p);
-
   static SpriteDeltaY sub_sprite_y(const RegLY& reg_ly, const OamTempA& oam_temp_a);
 
   void set_cpu_pins();
 
-  void reg_wy_read();
-  void reg_wy_write();
-
-  void reg_wx_read();
-  void reg_wx_write();
-
   void tock_div();
-  void reg_div_read();
-  void reg_tima_read();
-  void reg_tma_read();
-  void reg_tma_write();
-  void reg_tac_read();
-  void reg_tac_write();
   void tock_timer();
 
-  void reg_scy_read();
-  void reg_scy_write();
-
-  void reg_scx_read();
-  void reg_scx_write();
-
-  void reg_ly_read();
-  void reg_ly_tock2();
-
   wire TEGY_STROBE() const;
-  void reg_lx_tock();
-  void reg_lyc_read();
-  void reg_lyc_write();
-  void reg_lyc_tock2();
 
   void store_vram_data();
-  void store_tile_temp_b();
-
-  void store_sprite_pix();
 
   void tock_reset(DFF17 UPOF_DIV15p);
 
   void tock_ext_bus();
 
   void reg_dma_write();
-  void reg_dma_tock();
   void reg_dma_read();
 
   void tock_oam_bus();
@@ -207,7 +176,6 @@ struct GateBoy {
 
   void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
 
-  void read_zram();
   void tock_zram();
 
   void get_sprite();

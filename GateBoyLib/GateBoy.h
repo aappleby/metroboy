@@ -137,10 +137,6 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void read_boot_bit();
-  void write_boot_bit_sync();
-  void read_bootrom();
-
   void reg_lcdc_read();
   void reg_lcdc_write();
 
@@ -171,15 +167,6 @@ struct GateBoy {
   void reg_wx_read();
   void reg_wx_write();
 
-  void reg_bgp_read();
-  void reg_bgp_write();
-
-  void reg_obp0_read();
-  void reg_obp0_write();
-
-  void reg_obp1_read();
-  void reg_obp1_write();
-
   void reg_div_tock();
   void reg_div_read();
   void reg_tima_read();
@@ -204,7 +191,7 @@ struct GateBoy {
   void reg_lyc_write();
   void reg_lyc_tock2();
 
-  void store_tile_temp_a();
+  void store_vram_data();
   void store_tile_temp_b();
 
   void store_sprite_pix();
@@ -234,15 +221,10 @@ struct GateBoy {
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
   void get_sprite();
   void store_sprite(wire _DYTY_COUNT_CLKp);
-  void ly_to_sprite_line();
 
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
 
   void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
-  void tock_sprite_pipe(wire SACU_CLKPIPE_evn);
-  void tock_mask_pipe(wire SACU_CLKPIPE_evn);
-  void tock_pal_pipe(wire SACU_CLKPIPE_evn);
-  void tock_pix_output();
 
   //----------------------------------------
 
@@ -489,6 +471,7 @@ struct GateBoy {
   /* p27.ROGE*/ Gate ROGE_WY_MATCHp; // old used
   /* p27.LYRY*/ Gate LYRY_BFETCH_DONEp; // old used
   /* p27.TEKY*/ Gate TEKY_SFETCH_REQp; // old used
+  /* p07.SATO*/ Gate SATO_BOOT_BITn; // old used
 
   /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp; // new used
   /*#p28.ACYL*/ Gate ACYL_SCANNINGp; // new used

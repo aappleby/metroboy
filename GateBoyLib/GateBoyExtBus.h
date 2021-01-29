@@ -10,14 +10,14 @@ struct GateBoyResetDebug;
 
 struct ExtDataLatch {
   void reset_to_cart() {
-    SOMA_EXT_DATA_LATCH_D0n.state = 0b00011000;
-    RONY_EXT_DATA_LATCH_D1n.state = 0b00011000;
-    RAXY_EXT_DATA_LATCH_D2n.state = 0b00011000;
-    SELO_EXT_DATA_LATCH_D3n.state = 0b00011000;
-    SODY_EXT_DATA_LATCH_D4n.state = 0b00011000;
-    SAGO_EXT_DATA_LATCH_D5n.state = 0b00011000;
-    RUPA_EXT_DATA_LATCH_D6n.state = 0b00011000;
-    SAZY_EXT_DATA_LATCH_D7n.state = 0b00011000;
+    SOMA_EXT_DATA_LATCH_D0n.state = 0b00011001;
+    RONY_EXT_DATA_LATCH_D1n.state = 0b00011001;
+    RAXY_EXT_DATA_LATCH_D2n.state = 0b00011001;
+    SELO_EXT_DATA_LATCH_D3n.state = 0b00011001;
+    SODY_EXT_DATA_LATCH_D4n.state = 0b00011001;
+    SAGO_EXT_DATA_LATCH_D5n.state = 0b00011001;
+    RUPA_EXT_DATA_LATCH_D6n.state = 0b00011001;
+    SAZY_EXT_DATA_LATCH_D7n.state = 0b00011001;
   }
 
   /*p08.SOMA*/ TpLatch SOMA_EXT_DATA_LATCH_D0n; // AxCxExxx
@@ -88,14 +88,14 @@ struct GateBoyExtBus {
     PIN_14_A13.state = 0b00011001;
     PIN_15_A14.state = 0b00011001;
     PIN_16_A15.state = 0b00011000;
-    PIN_17_D00.state = 0b00010100;
-    PIN_18_D01.state = 0b00010100;
-    PIN_19_D02.state = 0b00010100;
-    PIN_20_D03.state = 0b00010100;
-    PIN_21_D04.state = 0b00010100;
-    PIN_22_D05.state = 0b00010100;
-    PIN_23_D06.state = 0b00010100;
-    PIN_24_D07.state = 0b00010100;
+    PIN_17_D00.state = 0b00010101;
+    PIN_18_D01.state = 0b00010101;
+    PIN_19_D02.state = 0b00010101;
+    PIN_20_D03.state = 0b00010101;
+    PIN_21_D04.state = 0b00010101;
+    PIN_22_D05.state = 0b00010101;
+    PIN_23_D06.state = 0b00010101;
+    PIN_24_D07.state = 0b00010101;
     PIN_80_CSn.state = 0b00011000;
     PIN_79_RDn.state = 0b00011001;
     PIN_78_WRn.state = 0b00011000;

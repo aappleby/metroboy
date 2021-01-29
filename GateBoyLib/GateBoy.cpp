@@ -183,6 +183,9 @@ void GateBoy::reset_to_cart() {
 
   WODU_HBLANKp.state = 0b00011001;
 
+  FETO_SCAN_DONEp.state = 0b00011001;
+  ATEJ_LINE_RSTp.state = 0b00011000;
+
   check_state_old_and_driven_or_pullup();
 
   sys_rst = false;
@@ -291,6 +294,14 @@ struct GateBoyOffsets {
   const int o_vram_bus       = offsetof(GateBoy, vram_bus);
   const int o_oam_bus        = offsetof(GateBoy, oam_bus);
   const int o_zram_bus       = offsetof(GateBoy, zram_bus);
+
+  const int o_oam_latch_a    = offsetof(GateBoy, oam_latch_a);
+  const int o_oam_latch_b    = offsetof(GateBoy, oam_latch_b);
+  const int o_oam_temp_a     = offsetof(GateBoy, oam_temp_a );
+  const int o_oam_temp_b     = offsetof(GateBoy, oam_temp_b );
+
+  const int o_ext_data_latch = offsetof(GateBoy, ext_data_latch);
+  const int o_ext_addr_latch = offsetof(GateBoy, ext_addr_latch);
 
   const int o_rst_reg        = offsetof(GateBoy, rst);
   const int o_clk_reg        = offsetof(GateBoy, clk);
@@ -497,15 +508,6 @@ void GateBoy::tock_slow(int pass_index) {
     reg_stat_write();
     reg_tma_write();
     reg_tac_write();
-    {
-      //write_boot_bit_sync();
-      /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
-      // FF50 - disable bootrom bit
-
-      /* p07.SATO*/ wire _SATO_BOOT_BITn_old = or2(old_bus.BUS_CPU_D00p.qp_old(), cpu_bus.TEPU_BOOT_BITn_h.qp_old());
-      /* p07.TEPU*/ cpu_bus.TEPU_BOOT_BITn_h.dff17(_TUGE_FF50_WRn, ALUR_SYS_RSTn(), _SATO_BOOT_BITn_old);
-    }
-
     reg_dma_write();
     reg_wy_write();
     reg_wx_write();
@@ -513,6 +515,47 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   new_bus.set_data(int(phase_total), bus_req_new);
+
+  {
+    //write_boot_bit_sync();
+    /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
+    // FF50 - disable bootrom bit
+
+    /* p07.TEPU*/ cpu_bus.TEPU_BOOT_BITn_h.dff17(_TUGE_FF50_WRn, ALUR_SYS_RSTn(), SATO_BOOT_BITn.qp_old());
+
+    // BOOT -> CBD
+    // this is kind of a hack
+    uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
+    wire bootrom_data = boot_buf[cpu_addr & 0xFF];
+
+    /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(cpu_bus.TEPU_BOOT_BITn_h.qp_new());
+    /* p07.TUTU*/ wire _TUTU_READ_BOOTROMp = and2(_TERA_BOOT_BITp, new_bus.TULO_ADDR_BOOTROMp());
+    /*SIG_CPU_BOOTp*/ cpu_bus.SIG_CPU_BOOTp.sig_out(_TUTU_READ_BOOTROMp);
+
+    /* p07.ZORO*/ wire _ZORO_0000xxxx_XX = nor4(new_bus.BUS_CPU_A15p.qp_new(), new_bus.BUS_CPU_A14p.qp_new(), new_bus.BUS_CPU_A13p.qp_new(), new_bus.BUS_CPU_A12p.qp_new());
+    /* p07.ZADU*/ wire _ZADU_xxxx0000_XX = nor4(new_bus.BUS_CPU_A11p.qp_new(), new_bus.BUS_CPU_A10p.qp_new(), new_bus.BUS_CPU_A09p.qp_new(), new_bus.BUS_CPU_A08p.qp_new());
+    /* p07.ZUFA*/ wire _ZUFA_0000_00FF  = and2(_ZORO_0000xxxx_XX, _ZADU_xxxx0000_XX);
+    /* p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(UMUT_MODE_DBG1p());
+    /* p07.YULA*/ wire _YULA_BOOT_RDp   = and3(cpu_bus.TEDO_CPU_RDp.qp_new(), _YAZA_MODE_DBG1n, _TUTU_READ_BOOTROMp); // def AND
+    /* p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, _ZUFA_0000_00FF);
+    /* p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
+
+    /*SIG_BOOT_CSp*/ cpu_bus.SIG_BOOT_CSp.sig_out(_ZERY_BOOT_CSp);
+
+    new_bus.BUS_CPU_D00p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 0));
+    new_bus.BUS_CPU_D01p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 1));
+    new_bus.BUS_CPU_D02p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 2));
+    new_bus.BUS_CPU_D03p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 3));
+    new_bus.BUS_CPU_D04p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 4));
+    new_bus.BUS_CPU_D05p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 5));
+    new_bus.BUS_CPU_D06p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 6));
+    new_bus.BUS_CPU_D07p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 7));
+
+    /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
+    /* p07.SYPU_BOOT_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TEXE_FF50_RDp, cpu_bus.TEPU_BOOT_BITn_h.qp_new());
+
+    /* p07.SATO*/ SATO_BOOT_BITn = or2(new_bus.BUS_CPU_D00p.qp_new(), cpu_bus.TEPU_BOOT_BITn_h.qp_new());
+  }
 
   /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(AROV_xxCDEFxx(), AJAX_xxxxEFGH(), cpu_bus.SIG_CPU_EXT_BUSp.qp_new());
   /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH);
@@ -986,9 +1029,7 @@ void GateBoy::tock_slow(int pass_index) {
     /* p27.PANY*/ PANY_WIN_FETCHn = nor2(NUKO_WX_MATCHp.qp_new(), _ROZE_FINE_COUNT_7n);
   }
 
-  store_tile_temp_a();
-  store_tile_temp_b();
-  store_sprite_pix();
+  store_vram_data();
 
   //----------------------------------------
   // LCD
@@ -1001,99 +1042,44 @@ void GateBoy::tock_slow(int pass_index) {
 
   tock_vram_bus(TEVO_WIN_FETCH_TRIGp);
 
-  //----------------------------------------
-  // OAM bus
-
-
-  {
-    tock_oam_bus();
-  }
-
+  tock_oam_bus();
 
   flipped_sprite = flip_sprite_pix(oam_temp_b.BAXO_OAM_DB5p);
 
-  //----------------------------------------
-  // Misc tocks
-  {
-    tock_serial();
+  tock_serial();
 
-    tock_timer();
-    tock_joypad();
-    tock_interrupts();
-  }
+  tock_timer();
+  tock_joypad();
+  tock_interrupts();
 
-  //----------------------------------------
-  // Async reads
+  read_ie();
+  read_intf();
+  reg_stat_read();
+  reg_scx_read();
+  reg_scy_read();
+  reg_dma_read();
+  reg_div_read();
 
-  {
-    read_ie();
-    read_intf();
-    reg_stat_read();
-    reg_scx_read();
-    reg_scy_read();
-    reg_dma_read();
-    reg_div_read();
+  reg_tima_read();
+  reg_tma_read();
+  reg_tac_read();
+  reg_lcdc_read();
+  reg_lyc_read();
+  reg_ly_read();
+  reg_wy_read();
+  reg_wx_read();
 
-    //read_bootrom();
-    {
-      // BOOT -> CBD
-      // this is kind of a hack
-      uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
-      wire bootrom_data = boot_buf[cpu_addr & 0xFF];
-
-      /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(cpu_bus.TEPU_BOOT_BITn_h.qp_new());
-      /* p07.TUTU*/ wire _TUTU_READ_BOOTROMp = and2(_TERA_BOOT_BITp, new_bus.TULO_ADDR_BOOTROMp());
-      /*SIG_CPU_BOOTp*/ cpu_bus.SIG_CPU_BOOTp.sig_out(_TUTU_READ_BOOTROMp);
-
-      /* p07.ZORO*/ wire _ZORO_0000xxxx_XX = nor4(new_bus.BUS_CPU_A15p.qp_new(), new_bus.BUS_CPU_A14p.qp_new(), new_bus.BUS_CPU_A13p.qp_new(), new_bus.BUS_CPU_A12p.qp_new());
-      /* p07.ZADU*/ wire _ZADU_xxxx0000_XX = nor4(new_bus.BUS_CPU_A11p.qp_new(), new_bus.BUS_CPU_A10p.qp_new(), new_bus.BUS_CPU_A09p.qp_new(), new_bus.BUS_CPU_A08p.qp_new());
-      /* p07.ZUFA*/ wire _ZUFA_0000_00FF  = and2(_ZORO_0000xxxx_XX, _ZADU_xxxx0000_XX);
-      /* p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(UMUT_MODE_DBG1p());
-      /* p07.YULA*/ wire _YULA_BOOT_RDp   = and3(cpu_bus.TEDO_CPU_RDp.qp_new(), _YAZA_MODE_DBG1n, _TUTU_READ_BOOTROMp); // def AND
-      /* p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, _ZUFA_0000_00FF);
-      /* p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
-
-      /*SIG_BOOT_CSp*/ cpu_bus.SIG_BOOT_CSp.sig_out(_ZERY_BOOT_CSp);
-
-      new_bus.BUS_CPU_D00p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 0));
-      new_bus.BUS_CPU_D01p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 1));
-      new_bus.BUS_CPU_D02p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 2));
-      new_bus.BUS_CPU_D03p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 3));
-      new_bus.BUS_CPU_D04p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 4));
-      new_bus.BUS_CPU_D05p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 5));
-      new_bus.BUS_CPU_D06p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 6));
-      new_bus.BUS_CPU_D07p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 7));
-    }
-
-
-    {
-      //read_boot_bit();
-      /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
-      /* p07.SYPU_BOOT_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TEXE_FF50_RDp, cpu_bus.TEPU_BOOT_BITn_h.qp_new());
-    }
-    reg_tima_read();
-    reg_tma_read();
-    reg_tac_read();
-    reg_lcdc_read();
-    reg_lyc_read();
-    reg_ly_read();
-    reg_wy_read();
-    reg_wx_read();
-
-    write_zram();
-    read_zram();
-  }
+  write_zram();
+  read_zram();
 
   // Signals for next cycle
 
 
-  {
-    /* p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(tile_fetcher._LAXU_BFETCH_S0p.qp_new(), tile_fetcher._NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn);
-    /* p27.LYRY*/ LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
-    /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_new());
-    /* p27.TUKU*/ wire TUKU_WIN_HITn = not1(TOMU_WIN_HITp);
-    /* p27.TEKY*/ TEKY_SFETCH_REQp = and4(FEPO_STORE_MATCHp.qp_new(), TUKU_WIN_HITn, LYRY_BFETCH_DONEp.qp_new(), SOWO_SFETCH_RUNNINGn);
-  }
+  /* p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(tile_fetcher._LAXU_BFETCH_S0p.qp_new(), tile_fetcher._NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn);
+  /* p27.LYRY*/ LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
+  /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_new());
+  /* p27.TUKU*/ wire TUKU_WIN_HITn = not1(TOMU_WIN_HITp);
+  /* p27.TEKY*/ TEKY_SFETCH_REQp = and4(FEPO_STORE_MATCHp.qp_new(), TUKU_WIN_HITn, LYRY_BFETCH_DONEp.qp_new(), SOWO_SFETCH_RUNNINGn);
 
   const_cast<GateBoyBuses&>(old_bus) = new_bus;
 }

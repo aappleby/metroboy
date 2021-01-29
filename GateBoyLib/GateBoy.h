@@ -303,8 +303,6 @@ struct GateBoy {
   void tock_pix_output();
 
   /*#p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(XYMU_RENDERINGn.qn_new()); }
-  /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp() const { return and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn()); }
-  /*#p21.WEGO*/ wire WEGO_HBLANKp() const { return or2(TOFU_VID_RSTp(), VOGA_HBLANKp.qp_new()); }
 
   //----------------------------------------
 
@@ -339,32 +337,6 @@ struct GateBoy {
   /* p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
   /* p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), rst.SOTO_DBG_VRAMp.qn_new()); }
-
-  //----------------------------------------
-
-#if 0
-  wire ATEJ_LINE_RSTp_new() const {
-    /* p28.ABAF*/ wire _ABAF_LINE_P000n_new = not1(lcd.CATU_START_SCANNING.qp_new());
-    /* p28.BYHA*/ wire _BYHA_LINE_RSTn_new = or_and3(lcd.ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n_new, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
-    /* p28.ATEJ*/ wire _ATEJ_LINE_RSTp_new = not1(_BYHA_LINE_RSTn_new);
-    return bit(_ATEJ_LINE_RSTp_new);
-  }
-#endif
-
-  /* p27.XAHY*/ wire XAHY_LINE_RSTn_new() const { return not1(ATEJ_LINE_RSTp.qp_new()); }
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp.qp_new(), ATAR_VID_RSTp()); }
-  /* p28.ABAK*/ wire ABAK_LINE_RSTp_new() const { return  or2(ATEJ_LINE_RSTp.qp_new(), AMYG_VID_RSTp()); }
-  /*#p29.BALU*/ wire BALU_LINE_RSTp_new() const { return not1(ANOM_LINE_RSTn_new()); }
-  /* p28.BYVA*/ wire BYVA_LINE_RSTn_new() const { return not1(ABAK_LINE_RSTp_new()); }
-  /* p29.DYBA*/ wire DYBA_LINE_RSTp_new() const { return not1(BYVA_LINE_RSTn_new()); }
-  /*#p29.BAGY*/ wire BAGY_LINE_RSTn_new() const { return not1(BALU_LINE_RSTp_new()); }
-  /* p21.TADY*/ wire TADY_LINE_RSTn_new() const { return nor2(ATEJ_LINE_RSTp.qp_new(), TOFU_VID_RSTp()); }
-
-  /*#p21.PARU*/ wire PARU_VBLANKp() const { return not1(lcd.POPU_VBLANKp.qn_new()); }
-
-
-  //----------------------------------------
-
 
   /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(pins.PIN_74_CLK.clock_good()); }
   /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(pins.PIN_74_CLK.clock_good()); }
@@ -441,12 +413,11 @@ struct GateBoy {
   /* p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(cpu_bus.TEDO_CPU_RDp.qp_new()); }
   /* p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(cpu_bus.TAPU_CPU_WRp.qp_new()); }
   /* p07.ASOT*/ wire ASOT_CPU_RDp      () const { return not1(AJAS_CPU_RDn()); }
+  /* p28.MYNU*/ wire MYNU_CPU_RDn      () const { return nand2(ASOT_CPU_RDp(), CATY_LATCH_EXTp()); }
   /* p28.LEKO*/ wire LEKO_CPU_RDp      () const { return not1(MYNU_CPU_RDn()); }
   /* p07.CUPA*/ wire CUPA_CPU_WRp      () const { return not1(DYKY_CPU_WRn()); }
-  /* p28.MYNU*/ wire MYNU_CPU_RDn      () const { return nand2(ASOT_CPU_RDp(), CATY_LATCH_EXTp()); }
   /* p08.REDU*/ wire REDU_CPU_RDn      () const { return not1(cpu_bus.TEDO_CPU_RDp.qp_new()); }
   /* p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(cpu_bus.APOV_CPU_WRp.qp_new()); }
-
 
   /* p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(cpu_bus.SIG_CPU_LATCH_EXT.qp_new()); }
   /* p04.CATY*/ wire CATY_LATCH_EXTp   () const { return not1(DECY_LATCH_EXTn()); }
@@ -488,17 +459,6 @@ struct GateBoy {
 
     return _SALE_CPU_VRAM_WRn;
   }
-
-  //-----------------------------------------------------------------------------
-
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn_new() const { return not1(win_reg.RYDY_WIN_HITp.qp_new()); }
-  /*#p24.TOMU*/ wire TOMU_WIN_HITp_new() const { return not1(SYLO_WIN_HITn_new()); }
-  /* p27.TUKU*/ wire TUKU_WIN_HITn_new() const { return not1(TOMU_WIN_HITp_new()); }
-  /*#p24.SOCY*/ wire SOCY_WIN_HITn_new() const { return not1(TOMU_WIN_HITp_new()); }
-
-  /*#p27.NOCU*/ wire NOCU_WIN_MODEn() const { return not1(win_reg.PYNU_WIN_MODE_Ap.qp_new()); }
-  /* p27.PORE*/ wire PORE_WIN_MODEp() const { return not1(NOCU_WIN_MODEn()); }
-  /* p26.AXAD*/ wire AXAD_WIN_MODEn() const { return not1(PORE_WIN_MODEp()); }
 
   //-----------------------------------------------------------------------------
 

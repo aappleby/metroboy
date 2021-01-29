@@ -151,7 +151,8 @@ void GateBoy::reg_lcdc_write()
 
 void GateBoy::reg_stat_read()
 {
-  /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp());   // die NOR
+  /*#p21.PARU*/ wire PARU_VBLANKp = not1(lcd.POPU_VBLANKp.qn_new());
+  /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
   /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(ACYL_SCANNINGp.qp_new(), XYMU_RENDERINGn.qn_new()); // die NOR
   /* p21.TOBE*/ wire _TOBE_FF41_RDp = and2(ASOT_CPU_RDp(), new_bus.VARY_FF41p());
   /* p21.VAVE*/ wire _VAVE_FF41_RDn = not1(_TOBE_FF41_RDp);
@@ -571,8 +572,11 @@ void GateBoy::store_sprite_pix() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp) {
-  /* p27.VETU*/ wire _VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp());
-  /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn_new(), XAPO_VID_RSTn());
+  /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(win_reg.PYNU_WIN_MODE_Ap.qp_new());
+  /* p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
+  /* p27.VETU*/ wire _VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp);
+  /* p27.XAHY*/ wire XAHY_LINE_RSTn = not1(ATEJ_LINE_RSTp.qp_new());
+  /*#p27.XOFO*/ wire _XOFO_WIN_RSTp = nand3(reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn, XAPO_VID_RSTn());
   /* p27.XACO*/ wire _XACO_WIN_RSTn = not1(_XOFO_WIN_RSTp);
   /* p27.WYKA*/ win_map_x.WYKA_WIN_X3.dff17(_VETU_WIN_MAPp,                 _XACO_WIN_RSTn, win_map_x.WYKA_WIN_X3.qn_old());
   /* p27.WODY*/ win_map_x.WODY_WIN_X4.dff17(win_map_x.WYKA_WIN_X3.qn_new(), _XACO_WIN_RSTn, win_map_x.WODY_WIN_X4.qn_old());
@@ -586,8 +590,11 @@ void GateBoy::tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp) {
 
 void GateBoy::tock_win_map_y() {
   // Every time we leave win mode we increment win_y
-  /* p27.WAZY*/ wire _WAZY_WIN_MODEn = not1(PORE_WIN_MODEp());
-  /* p27.REPU*/ wire _REPU_VBLANKp   = or2(PARU_VBLANKp(), PYRY_VID_RSTp());
+  /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(win_reg.PYNU_WIN_MODE_Ap.qp_new());
+  /* p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
+  /* p27.WAZY*/ wire _WAZY_WIN_MODEn = not1(PORE_WIN_MODEp);
+  /*#p21.PARU*/ wire PARU_VBLANKp = not1(lcd.POPU_VBLANKp.qn_new());
+  /* p27.REPU*/ wire _REPU_VBLANKp   = or2(PARU_VBLANKp, PYRY_VID_RSTp());
   /* p27.SYNY*/ wire _SYNY_VBLANKn   = not1(_REPU_VBLANKp);
   /* p27.VYNO*/ win_map_y.VYNO_WIN_Y0.dff17(_WAZY_WIN_MODEn,                _SYNY_VBLANKn, win_map_y.VYNO_WIN_Y0.qn_old());
   /* p27.VUJO*/ win_map_y.VUJO_WIN_Y1.dff17(win_map_y.VYNO_WIN_Y0.qn_new(), _SYNY_VBLANKn, win_map_y.VUJO_WIN_Y1.qn_old());

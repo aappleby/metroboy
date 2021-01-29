@@ -553,7 +553,8 @@ void GateBoy::get_sprite() {
 
 void GateBoy::store_sprite_x(SpriteStoreFlag store_flag, SpriteFirstMatch sprite_flag) {
   // Sprite store X resetter. This has to happen before the match check.
-  /* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(ABAK_LINE_RSTp_new());
+  /* p28.ABAK*/ wire _ABAK_LINE_RSTp = or2(ATEJ_LINE_RSTp.qp_new(), AMYG_VID_RSTp());
+  /* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(_ABAK_LINE_RSTp);
   /* p29.DYBA*/ wire _DYBA_LINE_RSTp = not1(_BYVA_LINE_RSTn);
 
   /* p29.EBOJ*/ sprite_store.EBOJ_STORE0_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), _BYVA_LINE_RSTn, sprite_flag.GUVA_SPRITE0_GETp.qp_old());

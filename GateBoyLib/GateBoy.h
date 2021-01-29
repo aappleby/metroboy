@@ -189,9 +189,6 @@ struct GateBoy {
   void reg_tac_write();
   void tock_timer();
 
-  BGScrollX add_scx();
-  BGScrollY add_scy();
-
   void reg_scy_read();
   void reg_scy_write();
 
@@ -199,7 +196,6 @@ struct GateBoy {
   void reg_scx_write();
 
   void reg_ly_read();
-  void reg_ly_write();
   void reg_ly_tock2();
 
   wire TEGY_STROBE() const;
@@ -215,37 +211,16 @@ struct GateBoy {
 
   void tock_reset(DFF17 UPOF_DIV15p);
 
-
-  void copy_cpu_addr_to_addr_latch();
-  void copy_addr_latch_to_pins();
-  void copy_pins_to_data_latch();
-  void copy_data_latch_to_cpu_bus();
-  void copy_cpu_data_to_pins();
   void tock_ext_bus();
-  void read_ext_to_pins();
-  void write_pins_to_ext();
 
   void reg_dma_write();
   void reg_dma_tock();
   void reg_dma_read();
 
-  void ext_to_oam_data_bus();
-  void vram_to_oam_data_bus();
-
-  void dma_to_oam_addr_bus();
-  void sprite_index_to_oam_addr_bus();
-  void scan_index_to_oam_addr_bus();
-  void cpu_to_oam_addr_bus();
-  void cpu_to_oam_data_bus();
-  void set_oam_pin_clk();
-  void set_oam_pin_wr();
-  void set_oam_pin_oe();
   void tock_oam_bus();
-  void latch_oam_data_bus();
-  void oam_latch_to_cpu();
 
-  void oam_latch_to_temp_a();
-  void oam_latch_to_temp_b();
+  void oam_latch_to_temp_a(wire COTA_OAM_CLKn);
+  void oam_latch_to_temp_b(wire COTA_OAM_CLKn);
 
   void tock_serial();
 
@@ -256,13 +231,10 @@ struct GateBoy {
 
   void update_count(wire _DYTY_STORE_CLKp);
   SpriteStoreFlag get_store_flags(wire _DYTY_STORE_CLKp);
-  SpriteMatchFlag get_match_flags_old(wire _AROR_MATCH_ENp_old);
-  SpriteMatchFlag get_match_flags_new(wire _AROR_MATCH_ENp_new);
+  SpriteMatchFlag get_match_flags(wire _AROR_MATCH_ENp_new);
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
   void get_sprite();
-  void store_sprite_x(SpriteStoreFlag store_flag, SpriteFirstMatch sprite_flag);
-  void store_sprite_index(SpriteStoreFlag store_flag);
-  void store_sprite_line(SpriteStoreFlag store_flag);
+  void store_sprite(wire _DYTY_COUNT_CLKp);
   void ly_to_sprite_line();
 
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
@@ -531,7 +503,7 @@ struct GateBoy {
   /* p29.TEXY*/ Gate TEXY_SFETCHINGp; // new used
 
   SpriteFirstMatch first_match;
-  SpritePix sprite_pix;
+  SpritePix flipped_sprite;
 
 
   //----------

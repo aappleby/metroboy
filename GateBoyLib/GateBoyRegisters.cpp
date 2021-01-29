@@ -499,28 +499,28 @@ void GateBoy::store_sprite_pix() {
   /*#p29.WENY*/ wire _WENY_STORE_SPRITE_Ap = not1(_VYWA_STORE_SPRITE_An);
   /*#p29.XADO*/ wire _XADO_STORE_SPRITE_An = not1(_WENY_STORE_SPRITE_Ap);
 
-  /* p33.REWO*/ sprite_pix_a.REWO_SPRITE_DA0n.dff8n(_XADO_STORE_SPRITE_An, sprite_pix.PUTE_FLIP0p.qp_old());
-  /* p33.PEBA*/ sprite_pix_a.PEBA_SPRITE_DA1n.dff8n(_XADO_STORE_SPRITE_An, sprite_pix.PELO_FLIP1p.qp_old());
-  /* p33.MOFO*/ sprite_pix_a.MOFO_SPRITE_DA2n.dff8n(_XADO_STORE_SPRITE_An, sprite_pix.PONO_FLIP2p.qp_old());
-  /* p33.PUDU*/ sprite_pix_a.PUDU_SPRITE_DA3n.dff8n(_XADO_STORE_SPRITE_An, sprite_pix.POBE_FLIP3p.qp_old());
-  /* p33.SAJA*/ sprite_pix_a.SAJA_SPRITE_DA4n.dff8n(_XADO_STORE_SPRITE_An, sprite_pix.PACY_FLIP4p.qp_old());
-  /* p33.SUNY*/ sprite_pix_a.SUNY_SPRITE_DA5n.dff8n(_XADO_STORE_SPRITE_An, sprite_pix.PUGU_FLIP5p.qp_old());
-  /* p33.SEMO*/ sprite_pix_a.SEMO_SPRITE_DA6n.dff8n(_XADO_STORE_SPRITE_An, sprite_pix.PAWE_FLIP6p.qp_old());
-  /* p33.SEGA*/ sprite_pix_a.SEGA_SPRITE_DA7n.dff8n(_XADO_STORE_SPRITE_An, sprite_pix.PULY_FLIP7p.qp_old());
+  /* p33.REWO*/ sprite_pix_a.REWO_SPRITE_DA0n.dff8n(_XADO_STORE_SPRITE_An, flipped_sprite.PUTE_FLIP0p.qp_old());
+  /* p33.PEBA*/ sprite_pix_a.PEBA_SPRITE_DA1n.dff8n(_XADO_STORE_SPRITE_An, flipped_sprite.PELO_FLIP1p.qp_old());
+  /* p33.MOFO*/ sprite_pix_a.MOFO_SPRITE_DA2n.dff8n(_XADO_STORE_SPRITE_An, flipped_sprite.PONO_FLIP2p.qp_old());
+  /* p33.PUDU*/ sprite_pix_a.PUDU_SPRITE_DA3n.dff8n(_XADO_STORE_SPRITE_An, flipped_sprite.POBE_FLIP3p.qp_old());
+  /* p33.SAJA*/ sprite_pix_a.SAJA_SPRITE_DA4n.dff8n(_XADO_STORE_SPRITE_An, flipped_sprite.PACY_FLIP4p.qp_old());
+  /* p33.SUNY*/ sprite_pix_a.SUNY_SPRITE_DA5n.dff8n(_XADO_STORE_SPRITE_An, flipped_sprite.PUGU_FLIP5p.qp_old());
+  /* p33.SEMO*/ sprite_pix_a.SEMO_SPRITE_DA6n.dff8n(_XADO_STORE_SPRITE_An, flipped_sprite.PAWE_FLIP6p.qp_old());
+  /* p33.SEGA*/ sprite_pix_a.SEGA_SPRITE_DA7n.dff8n(_XADO_STORE_SPRITE_An, flipped_sprite.PULY_FLIP7p.qp_old());
 
   /*#p29.RACA*/ wire _RACA_STORE_SPRITE_Bp = and2(sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new(), _SYCU_SFETCH_S0pe);
   /*#p29.PEBY*/ wire _PEBY_STORE_SPRITE_Bn = not1(_RACA_STORE_SPRITE_Bp);
   /*#p29.NYBE*/ wire _NYBE_STORE_SPRITE_Bp = not1(_PEBY_STORE_SPRITE_Bn);
   /*#p29.PUCO*/ wire _PUCO_STORE_SPRITE_Bn = not1(_NYBE_STORE_SPRITE_Bp);
 
-  /* p33.PEFO*/ sprite_pix_b.PEFO_SPRITE_DB0n.dff8n(_PUCO_STORE_SPRITE_Bn, sprite_pix.PUTE_FLIP0p.qp_old());
-  /* p33.ROKA*/ sprite_pix_b.ROKA_SPRITE_DB1n.dff8n(_PUCO_STORE_SPRITE_Bn, sprite_pix.PELO_FLIP1p.qp_old());
-  /* p33.MYTU*/ sprite_pix_b.MYTU_SPRITE_DB2n.dff8n(_PUCO_STORE_SPRITE_Bn, sprite_pix.PONO_FLIP2p.qp_old());
-  /* p33.RAMU*/ sprite_pix_b.RAMU_SPRITE_DB3n.dff8n(_PUCO_STORE_SPRITE_Bn, sprite_pix.POBE_FLIP3p.qp_old());
-  /* p33.SELE*/ sprite_pix_b.SELE_SPRITE_DB4n.dff8n(_PUCO_STORE_SPRITE_Bn, sprite_pix.PACY_FLIP4p.qp_old());
-  /* p33.SUTO*/ sprite_pix_b.SUTO_SPRITE_DB5n.dff8n(_PUCO_STORE_SPRITE_Bn, sprite_pix.PUGU_FLIP5p.qp_old());
-  /* p33.RAMA*/ sprite_pix_b.RAMA_SPRITE_DB6n.dff8n(_PUCO_STORE_SPRITE_Bn, sprite_pix.PAWE_FLIP6p.qp_old());
-  /* p33.RYDU*/ sprite_pix_b.RYDU_SPRITE_DB7n.dff8n(_PUCO_STORE_SPRITE_Bn, sprite_pix.PULY_FLIP7p.qp_old());
+  /* p33.PEFO*/ sprite_pix_b.PEFO_SPRITE_DB0n.dff8n(_PUCO_STORE_SPRITE_Bn, flipped_sprite.PUTE_FLIP0p.qp_old());
+  /* p33.ROKA*/ sprite_pix_b.ROKA_SPRITE_DB1n.dff8n(_PUCO_STORE_SPRITE_Bn, flipped_sprite.PELO_FLIP1p.qp_old());
+  /* p33.MYTU*/ sprite_pix_b.MYTU_SPRITE_DB2n.dff8n(_PUCO_STORE_SPRITE_Bn, flipped_sprite.PONO_FLIP2p.qp_old());
+  /* p33.RAMU*/ sprite_pix_b.RAMU_SPRITE_DB3n.dff8n(_PUCO_STORE_SPRITE_Bn, flipped_sprite.POBE_FLIP3p.qp_old());
+  /* p33.SELE*/ sprite_pix_b.SELE_SPRITE_DB4n.dff8n(_PUCO_STORE_SPRITE_Bn, flipped_sprite.PACY_FLIP4p.qp_old());
+  /* p33.SUTO*/ sprite_pix_b.SUTO_SPRITE_DB5n.dff8n(_PUCO_STORE_SPRITE_Bn, flipped_sprite.PUGU_FLIP5p.qp_old());
+  /* p33.RAMA*/ sprite_pix_b.RAMA_SPRITE_DB6n.dff8n(_PUCO_STORE_SPRITE_Bn, flipped_sprite.PAWE_FLIP6p.qp_old());
+  /* p33.RYDU*/ sprite_pix_b.RYDU_SPRITE_DB7n.dff8n(_PUCO_STORE_SPRITE_Bn, flipped_sprite.PULY_FLIP7p.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

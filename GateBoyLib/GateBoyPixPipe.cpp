@@ -10,7 +10,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_bgw_pipe(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
+void GateBoy::tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 {
   {
     /* p32.LOZE*/ wire _LOZE_PIPE_A_LOADp = not1(NYXU_BFETCH_RSTn);
@@ -89,12 +89,7 @@ void GateBoy::tock_bgw_pipe(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
     /* p32.TACA*/ pix_pipes.TACA_BGW_PIPE_B1.dff22(SACU_CLKPIPE_evn, _SOLY_BG_PIX_SET1, _SENO_BG_PIX_RST1, pix_pipes.TOMY_BGW_PIPE_B0.qp_old());
     /* p32.TOMY*/ pix_pipes.TOMY_BGW_PIPE_B0.dff22(SACU_CLKPIPE_evn, _TUXE_BG_PIX_SET0, _SEJA_BG_PIX_RST0, SIG_GND.qp_new());
   }
-}
 
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::tock_sprite_pipe(wire SACU_CLKPIPE_evn)
-{
   /* p29.XEFY*/ wire _XEFY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp.qp_new());
   /* p34.MEFU*/ wire _MEFU_SPRITE_MASK0n = or3(_XEFY_SPRITE_DONEn, pix_pipes.NYLU_SPR_PIPE_B0.qp_old(), pix_pipes.NURO_SPR_PIPE_A0.qp_old());
   /* p34.MEVE*/ wire _MEVE_SPRITE_MASK1n = or3(_XEFY_SPRITE_DONEn, pix_pipes.PEFU_SPR_PIPE_B1.qp_old(), pix_pipes.MASO_SPR_PIPE_A1.qp_old());
@@ -191,31 +186,8 @@ void GateBoy::tock_sprite_pipe(wire SACU_CLKPIPE_evn)
     /* p33.PEFU*/ pix_pipes.PEFU_SPR_PIPE_B1.dff22(SACU_CLKPIPE_evn, _RUSY_SPR_PIX_SET1, _RUCA_SPR_PIX_RST1, pix_pipes.NYLU_SPR_PIPE_B0.qp_old());
     /* p33.NYLU*/ pix_pipes.NYLU_SPR_PIPE_B0.dff22(SACU_CLKPIPE_evn, _MEZU_SPR_PIX_SET0, _MOFY_SPR_PIX_RST0, SIG_GND.qp_new());
   }
-}
 
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::tock_mask_pipe(wire SACU_CLKPIPE_evn)
-{
-  /* p29.XEFY*/ wire _XEFY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp.qp_new());
-  /* p34.MEFU*/ wire _MEFU_SPRITE_MASK0n = or3(_XEFY_SPRITE_DONEn, pix_pipes.NYLU_SPR_PIPE_B0.qp_old(), pix_pipes.NURO_SPR_PIPE_A0.qp_old());
-  /* p34.MEVE*/ wire _MEVE_SPRITE_MASK1n = or3(_XEFY_SPRITE_DONEn, pix_pipes.PEFU_SPR_PIPE_B1.qp_old(), pix_pipes.MASO_SPR_PIPE_A1.qp_old());
-  /* p34.MYZO*/ wire _MYZO_SPRITE_MASK2n = or3(_XEFY_SPRITE_DONEn, pix_pipes.NATY_SPR_PIPE_B2.qp_old(), pix_pipes.LEFE_SPR_PIPE_A2.qp_old());
-  /* p34.RUDA*/ wire _RUDA_SPRITE_MASK3n = or3(_XEFY_SPRITE_DONEn, pix_pipes.PYJO_SPR_PIPE_B3.qp_old(), pix_pipes.LESU_SPR_PIPE_A3.qp_old());
-  /* p34.VOTO*/ wire _VOTO_SPRITE_MASK4n = or3(_XEFY_SPRITE_DONEn, pix_pipes.VARE_SPR_PIPE_B4.qp_old(), pix_pipes.WYHO_SPR_PIPE_A4.qp_old());
-  /* p34.VYSA*/ wire _VYSA_SPRITE_MASK5n = or3(_XEFY_SPRITE_DONEn, pix_pipes.WEBA_SPR_PIPE_B5.qp_old(), pix_pipes.WORA_SPR_PIPE_A5.qp_old());
-  /* p34.TORY*/ wire _TORY_SPRITE_MASK6n = or3(_XEFY_SPRITE_DONEn, pix_pipes.VANU_SPR_PIPE_B6.qp_old(), pix_pipes.VAFO_SPR_PIPE_A6.qp_old());
-  /* p34.WOPE*/ wire _WOPE_SPRITE_MASK7n = or3(_XEFY_SPRITE_DONEn, pix_pipes.VUPY_SPR_PIPE_B7.qp_old(), pix_pipes.WUFY_SPR_PIPE_A7.qp_old());
-
-  /* p34.LESY*/ wire _LESY_SPRITE_MASK0p = not1(_MEFU_SPRITE_MASK0n);
-  /* p34.LOTA*/ wire _LOTA_SPRITE_MASK1p = not1(_MEVE_SPRITE_MASK1n);
-  /* p34.LYKU*/ wire _LYKU_SPRITE_MASK2p = not1(_MYZO_SPRITE_MASK2n);
-  /* p34.ROBY*/ wire _ROBY_SPRITE_MASK3p = not1(_RUDA_SPRITE_MASK3n);
-  /* p34.TYTA*/ wire _TYTA_SPRITE_MASK4p = not1(_VOTO_SPRITE_MASK4n);
-  /* p34.TYCO*/ wire _TYCO_SPRITE_MASK5p = not1(_VYSA_SPRITE_MASK5n);
-  /* p34.SOKA*/ wire _SOKA_SPRITE_MASK6p = not1(_TORY_SPRITE_MASK6n);
-  /* p34.XOVU*/ wire _XOVU_SPRITE_MASK7p = not1(_WOPE_SPRITE_MASK7n);
-
+  // Mask pipe
   {
     /* p26.TEDE*/ wire _TEDE_MASK_PIPE_SET0 = nand2(_LESY_SPRITE_MASK0p, oam_temp_b.DEPO_OAM_DB7p.qp_new());
     /* p26.XALA*/ wire _XALA_MASK_PIPE_SET1 = nand2(_LOTA_SPRITE_MASK1p, oam_temp_b.DEPO_OAM_DB7p.qp_new());
@@ -253,31 +225,8 @@ void GateBoy::tock_mask_pipe(wire SACU_CLKPIPE_evn)
     /* p26.WURU*/ pix_pipes.WURU_MASK_PIPE_1.dff22(SACU_CLKPIPE_evn, _XALA_MASK_PIPE_SET1, _WEDE_MASK_PIPE_RST1, pix_pipes.VEZO_MASK_PIPE_0.qp_old());
     /* p26.VEZO*/ pix_pipes.VEZO_MASK_PIPE_0.dff22(SACU_CLKPIPE_evn, _TEDE_MASK_PIPE_SET0, _WOKA_MASK_PIPE_RST0, SIG_VCC.qp_new());
   }
-}
 
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::tock_pal_pipe(wire SACU_CLKPIPE_evn)
-{
-  /* p29.XEFY*/ wire _XEFY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp.qp_new());
-  /* p34.MEFU*/ wire _MEFU_SPRITE_MASK0n = or3(_XEFY_SPRITE_DONEn, pix_pipes.NYLU_SPR_PIPE_B0.qp_old(), pix_pipes.NURO_SPR_PIPE_A0.qp_old());
-  /* p34.MEVE*/ wire _MEVE_SPRITE_MASK1n = or3(_XEFY_SPRITE_DONEn, pix_pipes.PEFU_SPR_PIPE_B1.qp_old(), pix_pipes.MASO_SPR_PIPE_A1.qp_old());
-  /* p34.MYZO*/ wire _MYZO_SPRITE_MASK2n = or3(_XEFY_SPRITE_DONEn, pix_pipes.NATY_SPR_PIPE_B2.qp_old(), pix_pipes.LEFE_SPR_PIPE_A2.qp_old());
-  /* p34.RUDA*/ wire _RUDA_SPRITE_MASK3n = or3(_XEFY_SPRITE_DONEn, pix_pipes.PYJO_SPR_PIPE_B3.qp_old(), pix_pipes.LESU_SPR_PIPE_A3.qp_old());
-  /* p34.VOTO*/ wire _VOTO_SPRITE_MASK4n = or3(_XEFY_SPRITE_DONEn, pix_pipes.VARE_SPR_PIPE_B4.qp_old(), pix_pipes.WYHO_SPR_PIPE_A4.qp_old());
-  /* p34.VYSA*/ wire _VYSA_SPRITE_MASK5n = or3(_XEFY_SPRITE_DONEn, pix_pipes.WEBA_SPR_PIPE_B5.qp_old(), pix_pipes.WORA_SPR_PIPE_A5.qp_old());
-  /* p34.TORY*/ wire _TORY_SPRITE_MASK6n = or3(_XEFY_SPRITE_DONEn, pix_pipes.VANU_SPR_PIPE_B6.qp_old(), pix_pipes.VAFO_SPR_PIPE_A6.qp_old());
-  /* p34.WOPE*/ wire _WOPE_SPRITE_MASK7n = or3(_XEFY_SPRITE_DONEn, pix_pipes.VUPY_SPR_PIPE_B7.qp_old(), pix_pipes.WUFY_SPR_PIPE_A7.qp_old());
-
-  /* p34.LESY*/ wire _LESY_SPRITE_MASK0p = not1(_MEFU_SPRITE_MASK0n);
-  /* p34.LOTA*/ wire _LOTA_SPRITE_MASK1p = not1(_MEVE_SPRITE_MASK1n);
-  /* p34.LYKU*/ wire _LYKU_SPRITE_MASK2p = not1(_MYZO_SPRITE_MASK2n);
-  /* p34.ROBY*/ wire _ROBY_SPRITE_MASK3p = not1(_RUDA_SPRITE_MASK3n);
-  /* p34.TYTA*/ wire _TYTA_SPRITE_MASK4p = not1(_VOTO_SPRITE_MASK4n);
-  /* p34.TYCO*/ wire _TYCO_SPRITE_MASK5p = not1(_VYSA_SPRITE_MASK5n);
-  /* p34.SOKA*/ wire _SOKA_SPRITE_MASK6p = not1(_TORY_SPRITE_MASK6n);
-  /* p34.XOVU*/ wire _XOVU_SPRITE_MASK7p = not1(_WOPE_SPRITE_MASK7n);
-
+  // Pal pipe
   {
     /* p34.PUME*/ wire _PUME_PAL_PIPE_SET0 = nand2(_LESY_SPRITE_MASK0p, oam_temp_b.GOMO_OAM_DB4p.qp_new());
     /* p34.SORO*/ wire _SORO_PAL_PIPE_SET1 = nand2(_LOTA_SPRITE_MASK1p, oam_temp_b.GOMO_OAM_DB4p.qp_new());
@@ -315,12 +264,9 @@ void GateBoy::tock_pal_pipe(wire SACU_CLKPIPE_evn)
     /* p34.SATA*/ pix_pipes.SATA_PAL_PIPE_D1.dff22(SACU_CLKPIPE_evn, _SORO_PAL_PIPE_SET1, _TAFA_PAL_PIPE_RST1, pix_pipes.RUGO_PAL_PIPE_D0.qp_old());
     /* p34.RUGO*/ pix_pipes.RUGO_PAL_PIPE_D0.dff22(SACU_CLKPIPE_evn, _PUME_PAL_PIPE_SET0, _SUCO_PAL_PIPE_RST0, SIG_GND.qp_new());
   }
-}
 
-//------------------------------------------------------------------------------------------------------------------------
+  // Pix output
 
-void GateBoy::tock_pix_output()
-{
   reg_bgp_write();
   reg_obp0_write();
   reg_obp1_write();

@@ -249,7 +249,7 @@ struct GateBoy {
 
   void tock_serial();
 
-  void tock_vram(wire TEVO_WIN_FETCH_TRIGp);
+  void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
 
   void read_zram();
   void write_zram();
@@ -267,7 +267,7 @@ struct GateBoy {
 
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
 
-  void tock_bgw_pipe(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
+  void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
   void tock_sprite_pipe(wire SACU_CLKPIPE_evn);
   void tock_mask_pipe(wire SACU_CLKPIPE_evn);
   void tock_pal_pipe(wire SACU_CLKPIPE_evn);

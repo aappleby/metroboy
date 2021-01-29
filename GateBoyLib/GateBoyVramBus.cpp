@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_vram(wire TEVO_WIN_FETCH_TRIGp) {
+void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
   vram_bus.reset_buses();
 
   /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(win_reg.PYNU_WIN_MODE_Ap.qp_new());

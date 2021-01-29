@@ -947,27 +947,13 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // LCD
 
-  {
-    tock_bgw_pipe   (SACU_CLKPIPE_evn, NYXU_BFETCH_RSTn);
-    tock_mask_pipe  (SACU_CLKPIPE_evn);
-    tock_pal_pipe   (SACU_CLKPIPE_evn);
-    tock_sprite_pipe(SACU_CLKPIPE_evn);
-    tock_pix_output ();
-
-    set_lcd_pins(SACU_CLKPIPE_evn);
-
-    update_framebuffer();
-  }
-
-  //----------------------------------------
-  // Ext new_bus
+  tock_pix_pipes(SACU_CLKPIPE_evn, NYXU_BFETCH_RSTn);
+  set_lcd_pins(SACU_CLKPIPE_evn);
+  update_framebuffer();
 
   tock_ext_bus();
 
-  //----------------------------------------
-  // VRAM bus
-
-  tock_vram(TEVO_WIN_FETCH_TRIGp);
+  tock_vram_bus(TEVO_WIN_FETCH_TRIGp);
 
   //----------------------------------------
   // OAM bus

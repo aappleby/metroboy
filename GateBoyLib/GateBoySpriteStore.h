@@ -18,19 +18,6 @@ struct SpriteFirstMatch {
   /* p29.GUZE*/ Gate GUZE_SPRITE9_GETp;
 };
 
-struct SpriteStoreFlag {
-  /* p29.DYHU*/ Gate DYHU_STORE0_CLKn;
-  /* p29.BUCO*/ Gate BUCO_STORE1_CLKn;
-  /* p29.GYFO*/ Gate GYFO_STORE2_CLKn;
-  /* p29.GUSA*/ Gate GUSA_STORE3_CLKn;
-  /* p29.DUKE*/ Gate DUKE_STORE4_CLKn;
-  /* p29.BEDE*/ Gate BEDE_STORE5_CLKn;
-  /* p29.WEKA*/ Gate WEKA_STORE6_CLKn;
-  /* p29.GYVO*/ Gate GYVO_STORE7_CLKn;
-  /* p29.BUKA*/ Gate BUKA_STORE8_CLKn;
-  /* p29.DECU*/ Gate DECU_STORE9_CLKn;
-};
-
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteMatchFlag {

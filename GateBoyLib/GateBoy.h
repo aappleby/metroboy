@@ -230,7 +230,6 @@ struct GateBoy {
   void write_zram();
 
   void update_count(wire _DYTY_STORE_CLKp);
-  SpriteStoreFlag get_store_flags(wire _DYTY_STORE_CLKp);
   SpriteMatchFlag get_match_flags(wire _AROR_MATCH_ENp_new);
   SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
   void get_sprite();

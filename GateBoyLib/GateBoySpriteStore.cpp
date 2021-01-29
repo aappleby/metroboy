@@ -681,27 +681,3 @@ void GateBoy::store_sprite(wire _DYTY_COUNT_CLKp) {
 }
 
 //------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::ly_to_sprite_line() {
-  /*#p29.EBOS*/ wire EBOS_LY0n = not1(reg_ly.MUWY_LY0p.qp_new());
-  /* p29.DASA*/ wire DASA_LY1n = not1(reg_ly.MYRO_LY1p.qp_new());
-  /* p29.FUKY*/ wire FUKY_LY2n = not1(reg_ly.LEXA_LY2p.qp_new());
-  /* p29.FUVE*/ wire FUVE_LY3n = not1(reg_ly.LYDO_LY3p.qp_new());
-
-  /* p29.ERUC*/ auto _ERUC_YDIFF0 = add3(EBOS_LY0n, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND.qp_new());
-  /* p29.ENEF*/ auto _ENEF_YDIFF1 = add3(DASA_LY1n, oam_temp_a.XEGU_OAM_DA1p.qp_new(), _ERUC_YDIFF0.carry);
-  /* p29.FECO*/ auto _FECO_YDIFF2 = add3(FUKY_LY2n, oam_temp_a.YJEX_OAM_DA2p.qp_new(), _ENEF_YDIFF1.carry);
-  /* p29.GYKY*/ auto _GYKY_YDIFF3 = add3(FUVE_LY3n, oam_temp_a.XYJU_OAM_DA3p.qp_new(), _FECO_YDIFF2.carry);
-
-  /* p29.DEGE*/ wire _DEGE_SPRITE_DELTA0_new = not1(_ERUC_YDIFF0.sum);
-  /* p29.DABY*/ wire _DABY_SPRITE_DELTA1_new = not1(_ENEF_YDIFF1.sum);
-  /* p29.DABU*/ wire _DABU_SPRITE_DELTA2_new = not1(_FECO_YDIFF2.sum);
-  /* p29.GYSA*/ wire _GYSA_SPRITE_DELTA3_new = not1(_GYKY_YDIFF3.sum);
-
-  /*#p30.CUCU_STORE_L0*/ new_bus.BUS_SPR_L0.tri6_nn(FEPO_STORE_MATCHp.qp_new(), _DEGE_SPRITE_DELTA0_new);
-  /*#p30.CUCA_STORE_L1*/ new_bus.BUS_SPR_L1.tri6_nn(FEPO_STORE_MATCHp.qp_new(), _DABY_SPRITE_DELTA1_new);
-  /*#p30.CEGA_STORE_L2*/ new_bus.BUS_SPR_L2.tri6_nn(FEPO_STORE_MATCHp.qp_new(), _DABU_SPRITE_DELTA2_new);
-  /*#p30.WENU_STORE_L3*/ new_bus.BUS_SPR_L3.tri6_nn(FEPO_STORE_MATCHp.qp_new(), _GYSA_SPRITE_DELTA3_new);
-}
-
-//------------------------------------------------------------------------------------------------------------------------

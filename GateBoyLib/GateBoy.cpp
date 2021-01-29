@@ -553,7 +553,6 @@ void GateBoy::tock_slow(int pass_index) {
   reg_dma_write();
   reg_wy_write();
   reg_wx_write();
-  write_ie();
 
   tock_timer();
 
@@ -1073,10 +1072,9 @@ void GateBoy::tock_slow(int pass_index) {
   tock_serial();
 
   tock_joypad();
+
   tock_interrupts();
 
-  read_ie();
-  read_intf();
   reg_scx_read();
   reg_scy_read();
   reg_dma_read();

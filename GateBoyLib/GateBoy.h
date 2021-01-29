@@ -145,9 +145,6 @@ struct GateBoy {
   /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new()); }
 
   void tock_interrupts();
-  void read_intf();
-  void read_ie();
-  void write_ie();
 
   void tock_clocks();
   void tock_vid_clocks();

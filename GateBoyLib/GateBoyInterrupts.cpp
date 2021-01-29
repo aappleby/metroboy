@@ -6,44 +6,11 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::read_intf() {
-  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_bus.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
-  /* p02.POLA*/ wire _POLA_FF0F_RDp = not1(_ROLO_FF0F_RDn);
-
-  // FIXME why is this latch different from the others? MATY is one of those big yellow latchy things.
-
-  /* p02.MATY*/ interrupts.MATY_FF0F_L0p.tp_latchp(_ROLO_FF0F_RDn, interrupts.LOPE_FF0F_D0p.qp_new()); // OUTPUT ON RUNG 10
-  /* p02.MOPO*/ interrupts.MOPO_FF0F_L1p.tp_latchp(_ROLO_FF0F_RDn, interrupts.LALU_FF0F_D1p.qp_new()); // OUTPUT ON RUNG 10
-  /* p02.PAVY*/ interrupts.PAVY_FF0F_L2p.tp_latchp(_ROLO_FF0F_RDn, interrupts.NYBO_FF0F_D2p.qp_new()); // OUTPUT ON RUNG 10
-  /* p02.NEJY*/ interrupts.NEJY_FF0F_L3p.tp_latchp(_ROLO_FF0F_RDn, interrupts.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
-  /* p02.NUTY*/ interrupts.NUTY_FF0F_L4p.tp_latchp(_ROLO_FF0F_RDn, interrupts.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
-
-  /*#p02.NELA_IF0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_POLA_FF0F_RDp, interrupts.MATY_FF0F_L0p.qn_new());
-  /*#p02.NABO_IF1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_pn(_POLA_FF0F_RDp, interrupts.MOPO_FF0F_L1p.qn_new());
-  /*#p02.ROVA_IF2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_pn(_POLA_FF0F_RDp, interrupts.PAVY_FF0F_L2p.qn_new());
-  /*#p02.PADO_IF3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_pn(_POLA_FF0F_RDp, interrupts.NEJY_FF0F_L3p.qn_new());
-  /*#p02.PEGY_IF4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_pn(_POLA_FF0F_RDp, interrupts.NUTY_FF0F_L4p.qn_new());
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::read_ie()
+void GateBoy::tock_interrupts()
 {
   uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_RDn_ext = nand2(cpu_bus.TEDO_CPU_RDp.qp_new(), FFFF_HIT_ext);
-
-  new_bus.BUS_CPU_D00p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D0.qn_new());
-  new_bus.BUS_CPU_D01p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D1.qn_new());
-  new_bus.BUS_CPU_D02p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D2.qn_new());
-  new_bus.BUS_CPU_D03p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D3.qn_new());
-  new_bus.BUS_CPU_D04p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D4.qn_new());
-}
-
-void GateBoy::write_ie()
-{
-  uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
-  wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp.qp_new(), FFFF_HIT_ext);
 
   interrupts.IE_D0.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D00p.qp_old());
@@ -51,12 +18,7 @@ void GateBoy::write_ie()
   interrupts.IE_D2.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D02p.qp_old());
   interrupts.IE_D3.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D03p.qp_old());
   interrupts.IE_D4.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D04p.qp_old());
-}
 
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::tock_interrupts()
-{
   /* p21.SEPA*/ wire _SEPA_FF41_WRp = and2(CUPA_CPU_WRp(), new_bus.VARY_FF41p());
   /* p21.RYVE*/ wire _RYVE_FF41_WRn = not1(_SEPA_FF41_WRp);
 
@@ -143,6 +105,30 @@ void GateBoy::tock_interrupts()
   /*SIG_CPU_INT_TIMER */ interrupts.SIG_CPU_INT_TIMER .sig_out(interrupts.NYBO_FF0F_D2p.qp_new());
   /*SIG_CPU_INT_SERIAL*/ interrupts.SIG_CPU_INT_SERIAL.sig_out(interrupts.UBUL_FF0F_D3p.qp_new());
   /*SIG_CPU_INT_JOYPAD*/ interrupts.SIG_CPU_INT_JOYPAD.sig_out(interrupts.ULAK_FF0F_D4p.qp_new());
+
+
+  new_bus.BUS_CPU_D00p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D0.qn_new());
+  new_bus.BUS_CPU_D01p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D1.qn_new());
+  new_bus.BUS_CPU_D02p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D2.qn_new());
+  new_bus.BUS_CPU_D03p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D3.qn_new());
+  new_bus.BUS_CPU_D04p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D4.qn_new());
+
+  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_bus.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /* p02.POLA*/ wire _POLA_FF0F_RDp = not1(_ROLO_FF0F_RDn);
+
+  // FIXME why is this latch different from the others? MATY is one of those big yellow latchy things.
+
+  /* p02.MATY*/ interrupts.MATY_FF0F_L0p.tp_latchp(_ROLO_FF0F_RDn, interrupts.LOPE_FF0F_D0p.qp_new()); // OUTPUT ON RUNG 10
+  /* p02.MOPO*/ interrupts.MOPO_FF0F_L1p.tp_latchp(_ROLO_FF0F_RDn, interrupts.LALU_FF0F_D1p.qp_new()); // OUTPUT ON RUNG 10
+  /* p02.PAVY*/ interrupts.PAVY_FF0F_L2p.tp_latchp(_ROLO_FF0F_RDn, interrupts.NYBO_FF0F_D2p.qp_new()); // OUTPUT ON RUNG 10
+  /* p02.NEJY*/ interrupts.NEJY_FF0F_L3p.tp_latchp(_ROLO_FF0F_RDn, interrupts.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
+  /* p02.NUTY*/ interrupts.NUTY_FF0F_L4p.tp_latchp(_ROLO_FF0F_RDn, interrupts.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
+
+  /*#p02.NELA_IF0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_POLA_FF0F_RDp, interrupts.MATY_FF0F_L0p.qn_new());
+  /*#p02.NABO_IF1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_pn(_POLA_FF0F_RDp, interrupts.MOPO_FF0F_L1p.qn_new());
+  /*#p02.ROVA_IF2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_pn(_POLA_FF0F_RDp, interrupts.PAVY_FF0F_L2p.qn_new());
+  /*#p02.PADO_IF3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_pn(_POLA_FF0F_RDp, interrupts.NEJY_FF0F_L3p.qn_new());
+  /*#p02.PEGY_IF4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_pn(_POLA_FF0F_RDp, interrupts.NUTY_FF0F_L4p.qn_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -948,40 +948,15 @@ void GateBoy::tock_slow(int pass_index) {
   // LCD
 
   {
-    lcd.PIN_50_LCD_DATA1.reset_for_pass();
-    lcd.PIN_51_LCD_DATA0.reset_for_pass();
-    lcd.PIN_54_LCD_HSYNC.reset_for_pass();
-    lcd.PIN_56_LCD_FLIPS.reset_for_pass();
-    lcd.PIN_52_LCD_CNTRL.reset_for_pass();
-    lcd.PIN_55_LCD_LATCH.reset_for_pass();
-    lcd.PIN_53_LCD_CLOCK.reset_for_pass();
-    lcd.PIN_57_LCD_VSYNC.reset_for_pass();
-
-    reg_bgp_write();
-    reg_obp0_write();
-    reg_obp1_write();
-
     tock_bgw_pipe   (SACU_CLKPIPE_evn, NYXU_BFETCH_RSTn);
     tock_mask_pipe  (SACU_CLKPIPE_evn);
     tock_pal_pipe   (SACU_CLKPIPE_evn);
     tock_sprite_pipe(SACU_CLKPIPE_evn);
     tock_pix_output ();
-    set_lcd_pin_data(pix_pipes.REMY_LD0n.qp_new(), pix_pipes.RAVO_LD1n.qp_new());
 
-    set_lcd_pin_ctrl();
-    set_lcd_pin_flip(div.TULU_DIV07p, reg_lcdc.XONA_LCDC_LCDENn);
-    set_lcd_pin_vsync();
-    set_lcd_pin_hsync();
-    set_lcd_pin_latch();
+    set_lcd_pins(SACU_CLKPIPE_evn);
 
-    set_lcd_pin_clock(SACU_CLKPIPE_evn);
-
-    update_lcd_pipe();
     update_framebuffer();
-
-    reg_bgp_read();
-    reg_obp0_read();
-    reg_obp1_read();
   }
 
   //----------------------------------------

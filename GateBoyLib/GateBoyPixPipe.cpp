@@ -321,6 +321,13 @@ void GateBoy::tock_pal_pipe(wire SACU_CLKPIPE_evn)
 
 void GateBoy::tock_pix_output()
 {
+  reg_bgp_write();
+  reg_obp0_write();
+  reg_obp1_write();
+  reg_bgp_read();
+  reg_obp0_read();
+  reg_obp1_read();
+
   /*#p35.RAJY*/ wire RAJY_PIX_BG_LOp = and2(pix_pipes.PYBO_BGW_PIPE_A7.qp_new(), reg_lcdc.VYXE_LCDC_BGENn.qn_new());
   /*#p35.TADE*/ wire TADE_PIX_BG_HIp = and2(pix_pipes.SOHU_BGW_PIPE_B7.qp_new(), reg_lcdc.VYXE_LCDC_BGENn.qn_new());
   /*#p35.XULA*/ wire XULA_PIX_SP_LOp = and2(reg_lcdc.XYLO_LCDC_SPENn.qn_new(), pix_pipes.WUFY_SPR_PIPE_A7.qp_new());

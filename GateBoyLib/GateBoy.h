@@ -215,7 +215,6 @@ struct GateBoy {
 
   void tock_reset(DFF17 UPOF_DIV15p);
 
-  void set_lcd_pin_ctrl();
 
   void copy_cpu_addr_to_addr_latch();
   void copy_addr_latch_to_pins();
@@ -266,13 +265,7 @@ struct GateBoy {
   void store_sprite_line(SpriteStoreFlag store_flag);
   void ly_to_sprite_line();
 
-  void set_lcd_pin_flip(DFF17  TULU_DIV07p, DFF9 XONA_LCDC_LCDENn);
-  void set_lcd_pin_vsync();
-  void set_lcd_pin_hsync();
-  void set_lcd_pin_data(wire REMY_LD0n, wire RAVO_LD1n);
-  void set_lcd_pin_latch();
-  void set_lcd_pin_clock(wire SACU_CLKPIPE_evn);
-  void update_lcd_pipe();
+  void set_lcd_pins(wire SACU_CLKPIPE_evn);
 
   void tock_bgw_pipe(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
   void tock_sprite_pipe(wire SACU_CLKPIPE_evn);

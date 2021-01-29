@@ -144,9 +144,6 @@ struct GateBoy {
 
   /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new()); }
 
-  void reg_stat_read();
-  void reg_stat_write();
-
   void tock_interrupts();
   void read_intf();
   void read_ie();
@@ -167,7 +164,7 @@ struct GateBoy {
   void reg_wx_read();
   void reg_wx_write();
 
-  void reg_div_tock();
+  void tock_div();
   void reg_div_read();
   void reg_tima_read();
   void reg_tma_read();
@@ -216,9 +213,6 @@ struct GateBoy {
   void read_zram();
   void write_zram();
 
-  void update_count(wire _DYTY_STORE_CLKp);
-  SpriteMatchFlag get_match_flags(wire _AROR_MATCH_ENp_new);
-  SpriteFirstMatch get_first_match(SpriteMatchFlag match_flag) const;
   void get_sprite();
   void store_sprite(wire _DYTY_COUNT_CLKp);
 

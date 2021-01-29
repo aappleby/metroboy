@@ -213,8 +213,7 @@ struct GateBoy {
 
   void store_sprite_pix();
 
-  void tock_win_map_x(wire TEVO_WIN_FETCH_TRIGp);
-  void tock_win_map_y();
+  void tock_win_map_xy(wire TEVO_WIN_FETCH_TRIGp);
 
   void tock_reset(DFF17 UPOF_DIV15p);
 
@@ -229,10 +228,6 @@ struct GateBoy {
   void read_ext_to_pins();
   void write_pins_to_ext();
 
-  wire BOGE_DMA_RUNNINGn() const;
-  wire DUGA_DMA_RUNNINGn() const;
-  wire LUMA_DMA_CARTp() const;
-  wire LUFA_DMA_VRAMp() const;
   void reg_dma_write();
   void reg_dma_tock();
   void reg_dma_read();
@@ -257,22 +252,14 @@ struct GateBoy {
 
   void tock_serial();
 
-  void cpu_addr_to_vram_addr();
-  void dma_addr_to_vram_addr();
-  void scroll_to_vram_addr(BGScrollX scroll_x, BGScrollY scroll_y);
-  void win_to_vram_addr();
-  void tile_to_vram_addr(const BGScrollY scroll_y);
-  void sprite_to_vram_addr();
-  void vram_addr_to_pins();
-  void cpu_data_to_vram_bus_data();
+  void set_vram_addr();
+
+  void set_vram_data();
   void vram_bus_data_to_pins();
-  void set_vram_pin_cs();
-  void set_vram_pin_wr();
-  void set_vram_pin_oe();
-  void read_vram();
+  void set_vram_pins();
+  void tock_vram();
   void write_vram();
-  void vram_pins_to_data_bus();
-  void vram_data_bus_to_cpu_bus();
+  void get_vram_data();
 
   void read_zram();
   void write_zram();
@@ -301,8 +288,6 @@ struct GateBoy {
   void tock_mask_pipe(wire SACU_CLKPIPE_evn);
   void tock_pal_pipe(wire SACU_CLKPIPE_evn);
   void tock_pix_output();
-
-  /*#p25.ROPY*/ wire ROPY_RENDERINGn() const { return not1(XYMU_RENDERINGn.qn_new()); }
 
   //----------------------------------------
 
@@ -422,9 +407,6 @@ struct GateBoy {
   /* p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(cpu_bus.SIG_CPU_LATCH_EXT.qp_new()); }
   /* p04.CATY*/ wire CATY_LATCH_EXTp   () const { return not1(DECY_LATCH_EXTn()); }
   /*#p28.BOFE*/ wire BOFE_LATCH_EXTn   () const { return not1(CATY_LATCH_EXTp()); }
-
-  /* p07.TERA*/ wire TERA_BOOT_BITp    () const { return not1(cpu_bus.TEPU_BOOT_BITn_h.qp_new()); }
-  /* p07.TUTU*/ wire TUTU_READ_BOOTROMp() const { return and2(TERA_BOOT_BITp(), new_bus.TULO_ADDR_BOOTROMp()); }
 
   /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(cpu_bus.SIG_CPU_EXT_BUSp.qp_new(), new_bus.TEVY_ADDR_VRAMn()); }
   /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(new_bus.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }

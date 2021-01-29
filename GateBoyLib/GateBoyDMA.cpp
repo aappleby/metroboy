@@ -4,34 +4,6 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-wire GateBoy::BOGE_DMA_RUNNINGn() const {
-  /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
-  return BOGE_DMA_RUNNINGn;
-}
-wire GateBoy::DUGA_DMA_RUNNINGn() const {
-  /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
-  return DUGA_DMA_RUNNINGn;
-}
-
-wire GateBoy::LUMA_DMA_CARTp() const {
-  /*#p04.LEBU*/ wire _LEBU_DMA_A15n  = not1(dma.MARU_DMA_A15n.qn_new());
-  /*#p04.MUDA*/ wire _MUDA_DMA_VRAMp = nor3(dma.PULA_DMA_A13n.qn_new(), dma.POKU_DMA_A14n.qn_new(), _LEBU_DMA_A15n);
-  /* p04.LOGO*/ wire _LOGO_DMA_VRAMn = not1(_MUDA_DMA_VRAMp);
-  /* p04.MORY*/ wire _MORY_DMA_CARTn = nand2(dma.MATU_DMA_RUNNINGp.qp_new(), _LOGO_DMA_VRAMn);
-  /* p04.LUMA*/ wire _LUMA_DMA_CARTp = not1(_MORY_DMA_CARTn);
-  return _LUMA_DMA_CARTp;
-}
-
-wire GateBoy::LUFA_DMA_VRAMp() const {
-  /*#p04.LEBU*/ wire _LEBU_DMA_A15n  = not1(dma.MARU_DMA_A15n.qn_new());
-  /*#p04.MUDA*/ wire _MUDA_DMA_VRAMp = nor3(dma.PULA_DMA_A13n.qn_new(), dma.POKU_DMA_A14n.qn_new(), _LEBU_DMA_A15n);
-  /* p04.MUHO*/ wire _MUHO_DMA_VRAMp = nand2(dma.MATU_DMA_RUNNINGp.qp_new(), _MUDA_DMA_VRAMp);
-  /* p04.LUFA*/ wire _LUFA_DMA_VRAMp = not1(_MUHO_DMA_VRAMp);
-  return _LUFA_DMA_VRAMp;
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
 void GateBoy::reg_dma_write() {
   /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
   /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);

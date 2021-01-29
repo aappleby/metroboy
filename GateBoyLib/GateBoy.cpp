@@ -652,7 +652,8 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p29.CENO*/ sprite_scanner.CENO_SCANNINGn.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(),  sprite_scanner.BESU_SCANNINGp.qp_old());
     /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGp.nor_latch(lcd.CATU_START_SCANNING.qp_new(), ASEN_SCAN_DONE_TRIGp);
 
-    /*#p28.ACYL*/ ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn(), sprite_scanner.BESU_SCANNINGp.qp_new());
+    /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
+    /*#p28.ACYL*/ ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.qp_new());
 
 
     /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(old_bus.BUS_OAM_A02n.qp_old());
@@ -672,7 +673,7 @@ void GateBoy::tock_slow(int pass_index) {
 
     ///*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_Bp.qp_new(), lcd.BALU_LINE_RSTp_new(), BYBA_SCAN_DONE_Ap.qn_new());
     ///*#p29.AVAP*/ wire AVAP_SCAN_DONE_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
-    ///*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma.BOGE_DMA_RUNNINGn(), BESU_SCANNINGp.qp_new());
+    ///*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma.BOGE_DMA_RUNNINGn, BESU_SCANNINGp.qp_new());
     /*#p21.XYMU*/ XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, AVAP_SCAN_DONE_TRIGp.qp_new());
 
     /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(sprite_scanner.CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
@@ -1036,9 +1037,16 @@ void GateBoy::tock_slow(int pass_index) {
     copy_addr_latch_to_pins();
 
     // A15 is "special"
-    /* p08.SOBY*/ wire _SOBY_A15n = nor2 (new_bus.BUS_CPU_A15p.qp_new(), TUTU_READ_BOOTROMp());
+    /* p07.TERA*/ wire TERA_BOOT_BITp = not1(cpu_bus.TEPU_BOOT_BITn_h.qp_new());
+    /* p07.TUTU*/ wire TUTU_READ_BOOTROMp = and2(TERA_BOOT_BITp, new_bus.TULO_ADDR_BOOTROMp());
+    /* p08.SOBY*/ wire _SOBY_A15n = nor2 (new_bus.BUS_CPU_A15p.qp_new(), TUTU_READ_BOOTROMp);
     /* p08.SEPY*/ wire _SEPY_A15p = nand2(cpu_bus.ABUZ_EXT_RAM_CS_CLK.qp_new(), _SOBY_A15n);
-    /* p08.TAZY*/ wire _TAZY_A15p = mux2p (LUMA_DMA_CARTp(), dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
+    /*#p04.LEBU*/ wire _LEBU_DMA_A15n  = not1(dma.MARU_DMA_A15n.qn_new());
+    /*#p04.MUDA*/ wire _MUDA_DMA_VRAMp = nor3(dma.PULA_DMA_A13n.qn_new(), dma.POKU_DMA_A14n.qn_new(), _LEBU_DMA_A15n);
+    /* p04.LOGO*/ wire _LOGO_DMA_VRAMn = not1(_MUDA_DMA_VRAMp);
+    /* p04.MORY*/ wire _MORY_DMA_CARTn = nand2(dma.MATU_DMA_RUNNINGp.qp_new(), _LOGO_DMA_VRAMn);
+    /* p04.LUMA*/ wire _LUMA_DMA_CARTp = not1(_MORY_DMA_CARTn);
+    /* p08.TAZY*/ wire _TAZY_A15p = mux2p (_LUMA_DMA_CARTp, dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
     /* p08.SUZE*/ wire _SUZE_A15n = nand2(_TAZY_A15p, RYCA_MODE_DBG2n());
     /* p08.RULO*/ wire _RULO_A15n = nor2 (_TAZY_A15p, UNOR_MODE_DBG2p());
     /*PIN_16*/ ext_bus.PIN_16_A15.pin_out_hilo(_SUZE_A15n, _RULO_A15n);
@@ -1057,33 +1065,17 @@ void GateBoy::tock_slow(int pass_index) {
   {
     vram_bus.reset_buses();
 
-    cpu_addr_to_vram_addr();
-    dma_addr_to_vram_addr();
+    tock_win_map_xy(TEVO_WIN_FETCH_TRIGp);
 
-    auto scroll_x = add_scx();
-    auto scroll_y = add_scy();
-    scroll_to_vram_addr(scroll_x, scroll_y);
+    set_vram_addr();
 
-    tock_win_map_x(TEVO_WIN_FETCH_TRIGp);
-    tock_win_map_y();
-    win_to_vram_addr();
+    set_vram_data();
 
-    tile_to_vram_addr(scroll_y);
-    sprite_to_vram_addr();
-    vram_addr_to_pins();
+    set_vram_pins();
 
-    cpu_data_to_vram_bus_data();
-    vram_bus_data_to_pins();
+    tock_vram();
 
-    set_vram_pin_cs();
-    set_vram_pin_wr();
-    set_vram_pin_oe();
-
-    read_vram();
-    write_vram();
-
-    vram_pins_to_data_bus();
-    vram_data_bus_to_cpu_bus();
+    get_vram_data();
   }
 
   //----------------------------------------

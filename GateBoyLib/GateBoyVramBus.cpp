@@ -432,6 +432,29 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
   /* p25.REXU_VD5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_pn(_SEBY_VBD_TO_CBDp, _RORO_VBUS_D5n);
   /* p25.RUPY_VD6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_pn(_SEBY_VBD_TO_CBDp, _RABO_VBUS_D6n);
   /* p25.TOKU_VD7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_pn(_SEBY_VBD_TO_CBDp, _SAME_VBUS_D7n);
+
+  {
+    /*#p29.XONO*/ wire _XONO_FLIP_X = and2(oam_temp_b.BAXO_OAM_DB5p.qp_new(), TEXY_SFETCHINGp.qp_new());
+    /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D07p.qp_new(), new_bus.BUS_VRAM_D00p.qp_new());
+    /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D06p.qp_new(), new_bus.BUS_VRAM_D01p.qp_new());
+    /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D05p.qp_new(), new_bus.BUS_VRAM_D02p.qp_new());
+    /* p33.POBE*/ wire _POBE_FLIP3p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D04p.qp_new(), new_bus.BUS_VRAM_D03p.qp_new());
+    /* p33.PACY*/ wire _PACY_FLIP4p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D03p.qp_new(), new_bus.BUS_VRAM_D04p.qp_new());
+    /* p33.PUGU*/ wire _PUGU_FLIP5p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D02p.qp_new(), new_bus.BUS_VRAM_D05p.qp_new());
+    /* p33.PAWE*/ wire _PAWE_FLIP6p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D01p.qp_new(), new_bus.BUS_VRAM_D06p.qp_new());
+    /* p33.PULY*/ wire _PULY_FLIP7p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D00p.qp_new(), new_bus.BUS_VRAM_D07p.qp_new());
+
+    flipped_sprite = {
+      _PUTE_FLIP0p,
+      _PELO_FLIP1p,
+      _PONO_FLIP2p,
+      _POBE_FLIP3p,
+      _PACY_FLIP4p,
+      _PUGU_FLIP5p,
+      _PAWE_FLIP6p,
+      _PULY_FLIP7p
+    };
+  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------

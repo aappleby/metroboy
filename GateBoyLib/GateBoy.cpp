@@ -841,8 +841,6 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p24.TOMU*/ wire TOMU_WIN_HITp = not1(SYLO_WIN_HITn);
   /*#p24.SOCY*/ wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);
 
-  /* p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne = nand2(SYLO_WIN_HITn, win_reg.SOVY_WIN_HITp.qp_new());
-  /* p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILEne);
 
   //----------
 
@@ -1006,6 +1004,9 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   /* p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp = nor2(win_reg.RYFA_WIN_FETCHn_A.qn_new(), win_reg.RENE_WIN_FETCHn_B.qp_new());
+  /* p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne = nand2(SYLO_WIN_HITn, win_reg.SOVY_WIN_HITp.qp_new());
+  /* p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILEne);
+
   /* p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp, SUZU_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(AVAP_SCAN_DONE_TRIGp.qp_new(), MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
 
@@ -1134,29 +1135,6 @@ void GateBoy::tock_slow(int pass_index) {
   tock_ext_bus();
 
   tock_vram_bus(TEVO_WIN_FETCH_TRIGp);
-
-  {
-    /*#p29.XONO*/ wire _XONO_FLIP_X = and2(oam_temp_b.BAXO_OAM_DB5p.qp_new(), TEXY_SFETCHINGp.qp_new());
-    /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D07p.qp_new(), new_bus.BUS_VRAM_D00p.qp_new());
-    /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D06p.qp_new(), new_bus.BUS_VRAM_D01p.qp_new());
-    /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D05p.qp_new(), new_bus.BUS_VRAM_D02p.qp_new());
-    /* p33.POBE*/ wire _POBE_FLIP3p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D04p.qp_new(), new_bus.BUS_VRAM_D03p.qp_new());
-    /* p33.PACY*/ wire _PACY_FLIP4p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D03p.qp_new(), new_bus.BUS_VRAM_D04p.qp_new());
-    /* p33.PUGU*/ wire _PUGU_FLIP5p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D02p.qp_new(), new_bus.BUS_VRAM_D05p.qp_new());
-    /* p33.PAWE*/ wire _PAWE_FLIP6p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D01p.qp_new(), new_bus.BUS_VRAM_D06p.qp_new());
-    /* p33.PULY*/ wire _PULY_FLIP7p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D00p.qp_new(), new_bus.BUS_VRAM_D07p.qp_new());
-
-    flipped_sprite = {
-      _PUTE_FLIP0p,
-      _PELO_FLIP1p,
-      _PONO_FLIP2p,
-      _POBE_FLIP3p,
-      _PACY_FLIP4p,
-      _PUGU_FLIP5p,
-      _PAWE_FLIP6p,
-      _PULY_FLIP7p
-    };
-  }
 
   tock_oam_bus();
 

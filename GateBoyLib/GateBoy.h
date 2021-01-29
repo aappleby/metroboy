@@ -140,48 +140,32 @@ struct GateBoy {
   void reg_lcdc_read();
   void reg_lcdc_write();
 
-  void tock_joypad();
-
-  /* p02.ASOK*/ wire ASOK_INT_JOYp() const { return and2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new()); }
-
-  void tock_interrupts();
-
-  void tock_clocks();
-  void tock_vid_clocks();
-
-  static SpriteDeltaY sub_sprite_y(const RegLY& reg_ly, const OamTempA& oam_temp_a);
-
-  void set_cpu_pins();
-
-  void tock_div();
-  void tock_timer();
-
-  wire TEGY_STROBE() const;
-
-  void tock_reset(DFF17 UPOF_DIV15p);
-
-  void tock_ext_bus();
-
   void reg_dma_write();
   void reg_dma_read();
 
+  void set_cpu_pins();
+
+  void tock_joypad();
+  void tock_interrupts();
+  void tock_clocks();
+  void tock_vid_clocks();
+  void tock_div();
+  void tock_timer();
+  void tock_reset(DFF17 UPOF_DIV15p);
+  void tock_ext_bus();
   void tock_oam_bus();
-
-  static void oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a);
-  static void oam_latch_to_temp_b(wire COTA_OAM_CLKn, const OamLatchB& old_oam_latch_b, OamTempB& oam_temp_b);
-
   void tock_serial();
-
   void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
-
   void tock_zram();
+  void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
 
   void get_sprite();
   void store_sprite(wire _DYTY_COUNT_CLKp);
-
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
 
-  void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
+  static SpriteDeltaY sub_sprite_y(const RegLY& reg_ly, const OamTempA& oam_temp_a);
+  static void oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a);
+  static void oam_latch_to_temp_b(wire COTA_OAM_CLKn, const OamLatchB& old_oam_latch_b, OamTempB& oam_temp_b);
 
   //----------------------------------------
 
@@ -438,7 +422,6 @@ struct GateBoy {
 
   SpriteFirstMatch first_match;
   SpritePix flipped_sprite;
-
 
   //----------
 

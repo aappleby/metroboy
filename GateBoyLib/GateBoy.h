@@ -159,8 +159,22 @@ struct GateBoy {
   void tock_zram();
   void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
 
-  void get_sprite();
-  void store_sprite(wire _DYTY_COUNT_CLKp);
+  void store_sprite2(
+    const GateBoyBuses& old_bus,
+    const OamTempB& oam_temp_b,
+    const Gate WUTY_SFETCH_DONE_TRIGp,
+    const Gate ATEJ_LINE_RSTp,
+    const wire AMYG_VID_RSTp,
+    const wire _DYTY_COUNT_CLKp,
+    GateBoySpriteStore& sprite_store);
+
+  static void get_sprite2(
+    const PixCount& pix_count,
+    const wire AROR_MATCH_ENp,
+    const SigIn SIG_GND,
+    GateBoySpriteStore& sprite_store,
+    GateBoyBuses& new_bus);
+
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
 
   static SpriteDeltaY sub_sprite_y(const RegLY& reg_ly, const OamTempA& oam_temp_a);
@@ -412,7 +426,6 @@ struct GateBoy {
   /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp; // new used
   /*#p28.ACYL*/ Gate ACYL_SCANNINGp; // new used
   /*#p28.FETO*/ Gate FETO_SCAN_DONEp; // old used
-  /* p29.FEPO*/ Gate FEPO_STORE_MATCHp; // old and new used?
   /* p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp; // new used
   /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp; // new used
   /*#p21.SANU*/ Gate SANU_x113p; // old used
@@ -420,7 +433,6 @@ struct GateBoy {
   /*#p29.ABOV*/ Gate ABOV_LINE_P908p; // old used
   /* p29.TEXY*/ Gate TEXY_SFETCHINGp; // new used
 
-  SpriteFirstMatch first_match;
   SpritePix flipped_sprite;
 
   //----------

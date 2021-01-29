@@ -6,31 +6,6 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 struct SpriteFirstMatch {
-  /* p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
-  /* p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
-  /* p29.EMOL*/ Gate EMOL_SPRITE2_GETp;
-  /* p29.GYFY*/ Gate GYFY_SPRITE3_GETp;
-  /* p29.GONO*/ Gate GONO_SPRITE4_GETp;
-  /* p29.GEGA*/ Gate GEGA_SPRITE5_GETp;
-  /* p29.XOJA*/ Gate XOJA_SPRITE6_GETp;
-  /* p29.GUTU*/ Gate GUTU_SPRITE7_GETp;
-  /* p29.FOXA*/ Gate FOXA_SPRITE8_GETp;
-  /* p29.GUZE*/ Gate GUZE_SPRITE9_GETp;
-};
-
-//------------------------------------------------------------------------------------------------------------------------
-
-struct SpriteMatchFlag {
-  /* p29.YDUG*/ Gate YDUG_STORE0_MATCHn;
-  /* p29.DYDU*/ Gate DYDU_STORE1_MATCHn;
-  /* p29.DEGO*/ Gate DEGO_STORE2_MATCHn;
-  /* p29.YLOZ*/ Gate YLOZ_STORE3_MATCHn;
-  /* p29.XAGE*/ Gate XAGE_STORE4_MATCHn;
-  /* p29.EGOM*/ Gate EGOM_STORE5_MATCHn;
-  /* p29.YBEZ*/ Gate YBEZ_STORE6_MATCHn;
-  /* p29.DYKA*/ Gate DYKA_STORE7_MATCHn;
-  /* p29.EFYL*/ Gate EFYL_STORE8_MATCHn;
-  /* p29.YGEM*/ Gate YGEM_STORE9_MATCHn;
 };
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -60,6 +35,22 @@ struct GateBoySpriteStore {
   /*p29.WAPO*/ DFF17 WAPO_STORE7_RSTp_evn;   // AxCxExGx
   /*p29.EXUQ*/ DFF17 EXUQ_STORE8_RSTp_evn;   // AxCxExGx
   /*p29.FONO*/ DFF17 FONO_STORE9_RSTp_evn;   // AxCxExGx
+
+  //----------------------------------------
+  // 10 match signals + 1 global match signal
+
+  /* p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
+  /* p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
+  /* p29.EMOL*/ Gate EMOL_SPRITE2_GETp;
+  /* p29.GYFY*/ Gate GYFY_SPRITE3_GETp;
+  /* p29.GONO*/ Gate GONO_SPRITE4_GETp;
+  /* p29.GEGA*/ Gate GEGA_SPRITE5_GETp;
+  /* p29.XOJA*/ Gate XOJA_SPRITE6_GETp;
+  /* p29.GUTU*/ Gate GUTU_SPRITE7_GETp;
+  /* p29.FOXA*/ Gate FOXA_SPRITE8_GETp;
+  /* p29.GUZE*/ Gate GUZE_SPRITE9_GETp;
+
+  /* p29.FEPO*/ Gate FEPO_STORE_MATCHp;
 
   //----------------------------------------
   // All 10 of the sprite stores

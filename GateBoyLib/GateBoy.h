@@ -502,47 +502,10 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  wire ROZE_FINE_COUNT_7n() {
-    /*#p27.ROZE*/ wire _ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_new(), fine_scroll.ROGA_FINE_CNT1.qp_new(), fine_scroll.RYKU_FINE_CNT0.qp_new());
-    return _ROZE_FINE_COUNT_7n;
-  }
-
-  wire POVA_FINE_MATCH_TRIGp() {
-    /*#p27.POVA*/ wire _POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_new(), fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_new());
-    return _POVA_FINE_MATCH_TRIGp;
-  }
-
-
-  wire GESE_SCAN_MATCH_Yp(SpriteDeltaY& delta, DFF9 XYMO_LCDC_SPSIZEn) {
-    /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH_new = or2(XYMO_LCDC_SPSIZEn.qn_new(), delta.GYKY_YDIFF3.sum);
-    /* p29.WOTA*/ wire _WOTA_SCAN_MATCH_Yn_new = nand6(delta.GACE_SPRITE_DELTA4.qp_new(), delta.GUVU_SPRITE_DELTA5.qp_new(), delta.GYDA_SPRITE_DELTA6.qp_new(), delta.GEWY_SPRITE_DELTA7.qp_new(), delta.WUHU_YDIFF7.carry, _GOVU_SPSIZE_MATCH_new);
-    /* p29.GESE*/ wire _GESE_SCAN_MATCH_Yp_new = not1(_WOTA_SCAN_MATCH_Yn_new);
-    return _GESE_SCAN_MATCH_Yp_new;
-  }
-
-  wire NERU_VSYNCp() const {
-    /*#p24.NERU*/ wire _NERU_VSYNCp = nor8(reg_ly.LAFO_LY7p.qp_new(), reg_ly.LOVU_LY4p.qp_new(), reg_ly.LYDO_LY3p.qp_new(), reg_ly.MUWY_LY0p.qp_new(), reg_ly.MYRO_LY1p.qp_new(), reg_ly.LEXA_LY2p.qp_new(), reg_ly.LEMA_LY5p.qp_new(), reg_ly.MATO_LY6p.qp_new());
-    return _NERU_VSYNCp;
-  }
-
-  //-----------------------------------------------------------------------------
-
-  wire TEXY_SFETCHINGp() const {
-    /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_new());
-    /* p29.SAKY*/ wire _SAKY_SFETCHn = nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
-    /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(_SAKY_SFETCHn, _TEPA_RENDERINGp); // def or
-    /* p29.TEXY*/ wire _TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
-    return _TEXY_SFETCHINGp;
-  }
-
-  //-----------------------------------------------------------------------------
-
   /* p27.LUSU*/ wire LUSU_FETCHINGn()      const { return not1(tile_fetcher.LONY_FETCHINGp.qp_new()); }
   /* p27.LENA*/ wire LENA_BFETCHINGp()     const { return not1(LUSU_FETCHINGn()); }
   /*#p27.NAKO*/ wire NAKO_BFETCH_S1n()     const { return not1(tile_fetcher._MESU_BFETCH_S1p.qp_new()); }
   /*#p27.NOFU*/ wire NOFU_BFETCH_S2n()     const { return not1(tile_fetcher._NYVA_BFETCH_S2p.qp_new()); }
-  /* p27.NOGU*/ wire NOGU_BFETCH_01p()     const { return nand2(NAKO_BFETCH_S1n(), NOFU_BFETCH_S2n()); }
-  /* p27.NENY*/ wire NENY_BFETCH_01n()     const { return not1(NOGU_BFETCH_01p()); }
 
   void dump_sys(Dumper& d) const;
   void dump_tile_fetcher(Dumper& d);
@@ -644,6 +607,7 @@ struct GateBoy {
   /*#p21.SANU*/ Gate SANU_x113p;
   /*#p21.XYVO*/ Gate XYVO_y144p;
   /*#p29.ABOV*/ Gate ABOV_LINE_P908p;
+  /* p29.TEXY*/ Gate TEXY_SFETCHINGp;
 
   SpriteMatchFlag sprite_match;
   SpriteFirstMatch first_match;

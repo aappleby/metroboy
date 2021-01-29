@@ -423,9 +423,6 @@ struct GateBoy {
   /* p27.LYRY*/ Gate LYRY_BFETCH_DONEp; // old used
   /* p07.SATO*/ Gate SATO_BOOT_BITn; // old used
 
-  /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp; // new used
-  /*#p28.ACYL*/ Gate ACYL_SCANNINGp; // new used
-  /*#p28.FETO*/ Gate FETO_SCAN_DONEp; // old used
   /* p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp; // new used
   /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp; // new used
   /*#p21.SANU*/ Gate SANU_x113p; // old used

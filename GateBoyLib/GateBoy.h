@@ -502,11 +502,6 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  /* p27.LUSU*/ wire LUSU_FETCHINGn()      const { return not1(tile_fetcher.LONY_FETCHINGp.qp_new()); }
-  /* p27.LENA*/ wire LENA_BFETCHINGp()     const { return not1(LUSU_FETCHINGn()); }
-  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n()     const { return not1(tile_fetcher._MESU_BFETCH_S1p.qp_new()); }
-  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n()     const { return not1(tile_fetcher._NYVA_BFETCH_S2p.qp_new()); }
-
   void dump_sys(Dumper& d) const;
   void dump_tile_fetcher(Dumper& d);
   void dump_clocks(Dumper& d);

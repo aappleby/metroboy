@@ -517,27 +517,26 @@ struct GateBoy {
   RegOBP0 reg_obp0;
   RegOBP1 reg_obp1;
 
-  /*#p21.WODU*/ Gate WODU_HBLANKp;
-  /*#p21.NOKO*/ Gate NOKO_y153p;
-  /*#p27.POHU*/ Gate POHU_SCX_FINE_MATCHp;
-  /* p27.PANY*/ Gate PANY_WIN_FETCHn;
-  /* p27.NUKO*/ Gate NUKO_WX_MATCHp;
-  /* p27.ROGE*/ Gate ROGE_WY_MATCHp;
-  /* p27.MOCE*/ Gate MOCE_BFETCH_DONEn;
-  /* p27.LYRY*/ Gate LYRY_BFETCH_DONEp;
-  /* p27.TEKY*/ Gate TEKY_SFETCH_REQp;
-  /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp;
-  /*#p28.ACYL*/ Gate ACYL_SCANNINGp;
-  /*#p28.FETO*/ Gate FETO_SCAN_DONEp;
-  /* p29.FEPO*/ Gate FEPO_STORE_MATCHp;
-  /* p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp;
-  /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp;
-  /*#p21.SANU*/ Gate SANU_x113p;
-  /*#p21.XYVO*/ Gate XYVO_y144p;
-  /*#p29.ABOV*/ Gate ABOV_LINE_P908p;
-  /* p29.TEXY*/ Gate TEXY_SFETCHINGp;
+  /*#p21.WODU*/ Gate WODU_HBLANKp; // only old used
+  /*#p21.NOKO*/ Gate NOKO_y153p; // only old used
+  /*#p27.POHU*/ Gate POHU_SCX_FINE_MATCHp; // only old used
+  /* p27.PANY*/ Gate PANY_WIN_FETCHn; // only old used
+  /* p27.NUKO*/ Gate NUKO_WX_MATCHp; // old used
+  /* p27.ROGE*/ Gate ROGE_WY_MATCHp; // old used
+  /* p27.LYRY*/ Gate LYRY_BFETCH_DONEp; // old used
+  /* p27.TEKY*/ Gate TEKY_SFETCH_REQp; // old used
 
-  SpriteMatchFlag sprite_match;
+  /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp; // new used
+  /*#p28.ACYL*/ Gate ACYL_SCANNINGp; // new used
+  /*#p28.FETO*/ Gate FETO_SCAN_DONEp; // old used
+  /* p29.FEPO*/ Gate FEPO_STORE_MATCHp; // old and new used?
+  /* p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp; // new used
+  /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp; // new used
+  /*#p21.SANU*/ Gate SANU_x113p; // old used
+  /*#p21.XYVO*/ Gate XYVO_y144p; // old used
+  /*#p29.ABOV*/ Gate ABOV_LINE_P908p; // old used
+  /* p29.TEXY*/ Gate TEXY_SFETCHINGp; // new used
+
   SpriteFirstMatch first_match;
   SpritePix sprite_pix;
 

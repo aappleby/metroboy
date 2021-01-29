@@ -325,9 +325,7 @@ struct GateBoyOffsets {
   const int o_pix_pipes      = offsetof(GateBoy, pix_pipes);
   const int o_lcd            = offsetof(GateBoy, lcd      );
 
-  const int o_sprite_match   = offsetof(GateBoy, sprite_match);
   const int o_first_match    = offsetof(GateBoy, first_match);
-  const int o_sprite_pix     = offsetof(GateBoy, sprite_pix);
 
 } gb_offsets;
 
@@ -671,9 +669,6 @@ void GateBoy::tock_slow(int pass_index) {
     /* p30.YDUF*/ sprite_scanner.YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH(), SIG_VCC.qp_new(), _XEMU_OAM_A6p_old);
     /* p30.XECU*/ sprite_scanner.XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH(), SIG_VCC.qp_new(), _YZET_OAM_A7p_old);
 
-    ///*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(DOBA_SCAN_DONE_Bp.qp_new(), lcd.BALU_LINE_RSTp_new(), BYBA_SCAN_DONE_Ap.qn_new());
-    ///*#p29.AVAP*/ wire AVAP_SCAN_DONE_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
-    ///*#p28.ACYL*/ wire ACYL_SCANNINGp = and2(dma.BOGE_DMA_RUNNINGn, BESU_SCANNINGp.qp_new());
     /*#p21.XYMU*/ XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, AVAP_SCAN_DONE_TRIGp.qp_new());
 
     /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(sprite_scanner.CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
@@ -755,7 +750,6 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
 
   // vvvvvvvvvv
-  //tock_sprite_fetcher(TEKY_SFETCH_REQp_old);
   /* p27.SUDA*/ sprite_fetcher.SUDA_SFETCH_REQp.dff17(LAPE_AxCxExGx(), SIG_VCC.qp_new(), sprite_fetcher.SOBU_SFETCH_REQp.qp_old());
   /* p27.SOBU*/ sprite_fetcher.SOBU_SFETCH_REQp.dff17(TAVA_xBxDxFxH(), SIG_VCC.qp_new(), TEKY_SFETCH_REQp.qp_old());
 
@@ -877,21 +871,20 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p29.BYJO*/ wire BYJO_SCANNINGn = not1(CEHA_SCANNINGp);
   /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn);
   /*#p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
-  sprite_match = get_match_flags_new(AROR_MATCH_ENp);
+  SpriteMatchFlag sprite_match = get_match_flags_new(AROR_MATCH_ENp);
 
   /* p29.FEFY*/ wire FEFY_STORE_MATCHp = nand5(sprite_match.XAGE_STORE4_MATCHn.qp_new(), sprite_match.YLOZ_STORE3_MATCHn.qp_new(), sprite_match.DEGO_STORE2_MATCHn.qp_new(), sprite_match.DYDU_STORE1_MATCHn.qp_new(), sprite_match.YDUG_STORE0_MATCHn.qp_new());
   /* p29.FOVE*/ wire FOVE_STORE_MATCHp = nand5(sprite_match.YGEM_STORE9_MATCHn.qp_new(), sprite_match.EFYL_STORE8_MATCHn.qp_new(), sprite_match.DYKA_STORE7_MATCHn.qp_new(), sprite_match.YBEZ_STORE6_MATCHn.qp_new(), sprite_match.EGOM_STORE5_MATCHn.qp_new());
   /* p29.FEPO*/ FEPO_STORE_MATCHp = or2(FEFY_STORE_MATCHp, FOVE_STORE_MATCHp);
 
+  first_match = get_first_match(sprite_match);
+  get_sprite();
+  ly_to_sprite_line();
+
   {
-    first_match = get_first_match(sprite_match);
-    get_sprite();
-    ly_to_sprite_line();
+    /*#p21.XENA*/ wire XENA_STORE_MATCHn = not1(FEPO_STORE_MATCHp.qp_new());
+    /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn, XANO_PX167p); // WODU goes high on odd, cleared on H
   }
-
-  /*#p21.XENA*/ wire XENA_STORE_MATCHn = not1(FEPO_STORE_MATCHp.qp_new());
-
-  /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn, XANO_PX167p); // WODU goes high on odd, cleared on H
 
   {
     /* p27.RENE*/ win_reg.RENE_WIN_FETCHn_B.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), win_reg.RYFA_WIN_FETCHn_A.qp_old());
@@ -908,7 +901,6 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp, SUZU_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(AVAP_SCAN_DONE_TRIGp.qp_new(), MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
 
-  //tock_tile_fetcher(NYXU_BFETCH_RSTn, MOCE_BFETCH_DONEn_old);
   for (int feedback = 0; feedback < 2; feedback++) {
     /* p27.MOCE*/ wire _MOCE_BFETCH_DONEn = nand3(tile_fetcher._LAXU_BFETCH_S0p.qp_any(), tile_fetcher._NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn);
     /* p27.LEBO*/ wire _LEBO_AxCxExGx = nand2(ALET_xBxDxFxH(), _MOCE_BFETCH_DONEn);
@@ -1017,15 +1009,24 @@ void GateBoy::tock_slow(int pass_index) {
     ext_bus.PIN_15_A14.reset_for_pass();
     ext_bus.PIN_16_A15.reset_for_pass();
 
+    ext_bus.PIN_17_D00.reset_for_pass();
+    ext_bus.PIN_18_D01.reset_for_pass();
+    ext_bus.PIN_19_D02.reset_for_pass();
+    ext_bus.PIN_20_D03.reset_for_pass();
+    ext_bus.PIN_21_D04.reset_for_pass();
+    ext_bus.PIN_22_D05.reset_for_pass();
+    ext_bus.PIN_23_D06.reset_for_pass();
+    ext_bus.PIN_24_D07.reset_for_pass();
+
     // FIXME this is slightly weird
-    ext_bus.PIN_17_D00.state = 0b00100000;
-    ext_bus.PIN_18_D01.state = 0b00100000;
-    ext_bus.PIN_19_D02.state = 0b00100000;
-    ext_bus.PIN_20_D03.state = 0b00100000;
-    ext_bus.PIN_21_D04.state = 0b00100000;
-    ext_bus.PIN_22_D05.state = 0b00100000;
-    ext_bus.PIN_23_D06.state = 0b00100000;
-    ext_bus.PIN_24_D07.state = 0b00100000;
+    //ext_bus.PIN_17_D00.state = 0b00100000;
+    //ext_bus.PIN_18_D01.state = 0b00100000;
+    //ext_bus.PIN_19_D02.state = 0b00100000;
+    //ext_bus.PIN_20_D03.state = 0b00100000;
+    //ext_bus.PIN_21_D04.state = 0b00100000;
+    //ext_bus.PIN_22_D05.state = 0b00100000;
+    //ext_bus.PIN_23_D06.state = 0b00100000;
+    //ext_bus.PIN_24_D07.state = 0b00100000;
 
     set_ext_control_pins();
     copy_cpu_addr_to_addr_latch();
@@ -1189,8 +1190,8 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.PANY*/ PANY_WIN_FETCHn = nor2(NUKO_WX_MATCHp.qp_new(), _ROZE_FINE_COUNT_7n);
 
   {
-    /* p27.MOCE*/ MOCE_BFETCH_DONEn = nand3(tile_fetcher._LAXU_BFETCH_S0p.qp_new(), tile_fetcher._NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn);
-    /* p27.LYRY*/ LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn.qp_new());
+    /* p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(tile_fetcher._LAXU_BFETCH_S0p.qp_new(), tile_fetcher._NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn);
+    /* p27.LYRY*/ LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
     /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_new());
     /* p27.TUKU*/ wire TUKU_WIN_HITn = not1(TOMU_WIN_HITp);
     /* p27.TEKY*/ TEKY_SFETCH_REQp = and4(FEPO_STORE_MATCHp.qp_new(), TUKU_WIN_HITn, LYRY_BFETCH_DONEp.qp_new(), SOWO_SFETCH_RUNNINGn);

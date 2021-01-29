@@ -151,7 +151,7 @@ struct GateBoy {
 
   SpritePix flip_sprite_pix(DFF8n BAXO_OAM_DB5p);
 
-  SpriteDeltaY sub_sprite_y();
+  static SpriteDeltaY sub_sprite_y(const RegLY& reg_ly, const OamTempA& oam_temp_a);
 
   void set_cpu_pins();
 
@@ -200,8 +200,8 @@ struct GateBoy {
 
   void tock_oam_bus();
 
-  void oam_latch_to_temp_a(wire COTA_OAM_CLKn);
-  void oam_latch_to_temp_b(wire COTA_OAM_CLKn);
+  static void oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a);
+  static void oam_latch_to_temp_b(wire COTA_OAM_CLKn, const OamLatchB& old_oam_latch_b, OamTempB& oam_temp_b);
 
   void tock_serial();
 

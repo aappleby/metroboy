@@ -1101,8 +1101,18 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
   auto output_pos_new = output_node->get_pos_new();
   auto input_pos_new  = input_node->get_pos_new();
 
+  /*
+  if (edge->input_node->plait_cell->die_cell->cell_type == DieCellType::DFF) {
+    auto& input_port_name = edge->input_node->plait_cell->die_cell->input_ports[edge->input_port_index];
+    if (input_port_name[0] == 'D') {
+      input_pos_new.x += 65536;
+    }
+  }
+  */
+
   auto delta = wrap(input_pos_new - output_pos_new);
   input_pos_new = output_pos_new + delta;
+
 
   // Highlight "backwards" edges in red.
   bool edge_backwards = delta.x < 0;

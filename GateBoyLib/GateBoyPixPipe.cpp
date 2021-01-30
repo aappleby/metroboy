@@ -84,7 +84,7 @@ void GateBoy::tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
     /* p33.RYDU*/ sprite_pix_b.RYDU_SPRITE_DB7n.dff8n(_PUCO_STORE_SPRITE_Bn, flipped_sprite.PULY_FLIP7p.qp_old());
   }
 
-  /* p29.XEFY*/ wire _XEFY_SPRITE_DONEn  = not1(WUTY_SFETCH_DONE_TRIGp.qp_new());
+  /* p29.XEFY*/ wire _XEFY_SPRITE_DONEn  = not1(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.qp_new());
 
   // FIXME - old? well,i guess there's another feedback loop here...
 

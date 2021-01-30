@@ -983,8 +983,10 @@ bool DieDB::parse_cell_def(DieCell& c, const string& value) {
     result &= parse_cell_gate(c, match[1].str());
     result &= parse_cell_arglist(c, match[2].str());
     string doc = match[3].str();
-    CHECK_P(c.doc.empty() || c.doc == doc);
-    c.doc = doc;
+    if (!doc.empty()) {
+      CHECK_P(c.doc.empty() || c.doc == doc);
+      c.doc = doc;
+    }
   }
   else {
     printf("Could not parse value %s\n", value.c_str());

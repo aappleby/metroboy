@@ -726,13 +726,6 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Sprite scanner
 
-
-
-
-
-
-
-
   {
     /*#p29.DOBA*/ sprite_scanner.DOBA_SCAN_DONE_Bp.dff17(ALET_xBxDxFxH(), BAGY_LINE_RSTn, sprite_scanner.BYBA_SCAN_DONE_Ap.qp_old());
     /*#p29.BYBA*/ sprite_scanner.BYBA_SCAN_DONE_Ap.dff17(XUPY_ABxxEFxx(), BAGY_LINE_RSTn, sprite_scanner.FETO_SCAN_DONEp.qp_old());
@@ -746,14 +739,13 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
     /*#p28.ACYL*/ sprite_scanner.ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.qp_new());
 
+    // Sprite store grabs the sprite index off the _old_ oam address bus
     /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(old_bus.BUS_OAM_A02n.qp_old());
     /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(old_bus.BUS_OAM_A03n.qp_old());
     /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1(old_bus.BUS_OAM_A04n.qp_old());
     /* p28.YMEV*/ wire _YMEV_OAM_A5p_old = not1(old_bus.BUS_OAM_A05n.qp_old());
     /* p28.XEMU*/ wire _XEMU_OAM_A6p_old = not1(old_bus.BUS_OAM_A06n.qp_old());
     /* p28.YZET*/ wire _YZET_OAM_A7p_old = not1(old_bus.BUS_OAM_A07n.qp_old());
-
-    // Sprite store grabs the sprite index off the _old_ oam address bus
     /* p30.XADU*/ sprite_scanner.XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH(), SIG_VCC.qp_new(), _YFOT_OAM_A2p_old);
     /* p30.XEDY*/ sprite_scanner.XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH(), SIG_VCC.qp_new(), _YFOC_OAM_A3p_old);
     /* p30.ZUZE*/ sprite_scanner.ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH(), SIG_VCC.qp_new(), _YVOM_OAM_A4p_old);
@@ -805,8 +797,8 @@ void GateBoy::tock_slow(int pass_index) {
   /* p24.NAFY*/ wire NAFY_WIN_MODE_TRIGn = nor2(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
 
   /* p24.PYGO*/ tile_fetcher.PYGO_FETCH_DONEp.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), tile_fetcher.PORY_FETCH_DONEp.qp_old());
-  /* p24.PORY*/ tile_fetcher.PORY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NAFY_WIN_MODE_TRIGn,     tile_fetcher.NYKA_FETCH_DONEp.qp_old());
-  /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.dff17(ALET_xBxDxFxH(), NAFY_WIN_MODE_TRIGn,     LYRY_BFETCH_DONEp.qp_old());
+  /* p24.PORY*/ tile_fetcher.PORY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NAFY_WIN_MODE_TRIGn,      tile_fetcher.NYKA_FETCH_DONEp.qp_old());
+  /* p24.NYKA*/ tile_fetcher.NYKA_FETCH_DONEp.dff17(ALET_xBxDxFxH(), NAFY_WIN_MODE_TRIGn,      tile_fetcher.LYRY_BFETCH_DONEp.qp_old());
   /* p24.POKY*/ tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(tile_fetcher.PYGO_FETCH_DONEp.qp_new(), LOBY_RENDERINGn);
 
   /* p27.SOVY*/ win_reg.SOVY_WIN_HITp.dff17(ALET_xBxDxFxH(), XAPO_VID_RSTn(), win_reg.RYDY_WIN_HITp.qp_old());
@@ -824,7 +816,8 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p24.TOMU*/ wire TOMU_WIN_HITp = not1(SYLO_WIN_HITn);
   /*#p24.SOCY*/ wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);
 
-  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_store.FEPO_STORE_MATCHp.qp_old(), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx()); // FIXME old/new - but does it really matter here?
+  // FIXME old/new - but does it really matter here?
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_store.FEPO_STORE_MATCHp.qp_old(), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx());
   /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
@@ -853,7 +846,7 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.TUKU*/ wire TUKU_WIN_HITn_old = not1(TOMU_WIN_HITp_old);
 
   /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_old = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_old());
-  /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(sprite_store.FEPO_STORE_MATCHp.qp_old(), TUKU_WIN_HITn_old, LYRY_BFETCH_DONEp.qp_old(), SOWO_SFETCH_RUNNINGn_old);
+  /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(sprite_store.FEPO_STORE_MATCHp.qp_old(), TUKU_WIN_HITn_old, tile_fetcher.LYRY_BFETCH_DONEp.qp_old(), SOWO_SFETCH_RUNNINGn_old);
 
   /* p27.SUDA*/ sprite_fetcher.SUDA_SFETCH_REQp.dff17(LAPE_AxCxExGx(), SIG_VCC.qp_new(), sprite_fetcher.SOBU_SFETCH_REQp.qp_old());
   /* p27.SOBU*/ sprite_fetcher.SOBU_SFETCH_REQp.dff17(TAVA_xBxDxFxH(), SIG_VCC.qp_new(), TEKY_SFETCH_REQp_old);
@@ -878,16 +871,16 @@ void GateBoy::tock_slow(int pass_index) {
   /* p29.TEPA*/ wire _TEPA_RENDERINGp = not1(XYMU_RENDERINGn.qn_new());
   /* p29.SAKY*/ wire _SAKY_SFETCHn = nor2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
   /* p29.TYSO*/ wire _TYSO_SFETCHINGn = or2(_SAKY_SFETCHn, _TEPA_RENDERINGp); // def or
-  /* p29.TEXY*/ TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
+  /* p29.TEXY*/ sprite_fetcher.TEXY_SFETCHINGp = not1(_TYSO_SFETCHINGn);
 
   /* p29.TYNO*/ wire _TYNO = nand3(sprite_fetcher.TOXE_SFETCH_S0p.qp_new(), sprite_fetcher.SEBA_SFETCH_S1p_D5.qp_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new());
   /* p29.VUSA*/ wire _VUSA_SPRITE_DONEn = or2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qn_new(), _TYNO);
-  /* p29.WUTY*/ WUTY_SFETCH_DONE_TRIGp = not1(_VUSA_SPRITE_DONEn);
+  /* p29.WUTY*/ sprite_fetcher.WUTY_SFETCH_DONE_TRIGp = not1(_VUSA_SPRITE_DONEn);
 
   /* p27.ROMO*/ wire ROMO_PRELOAD_DONEn      = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
   /* p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(XYMU_RENDERINGn.qn_new(), ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
   /* p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
-  /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(WUTY_SFETCH_DONE_TRIGp.qp_new(), TAVE_PRELOAD_DONE_TRIGp); // def nor
+  /* p27.VEKU*/ wire _VEKU_SFETCH_RUNNING_RSTn = nor2(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.qp_new(), TAVE_PRELOAD_DONE_TRIGp); // def nor
   /* p27.TAKA*/ sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(_SECA_SFETCH_RSTn, _VEKU_SFETCH_RUNNING_RSTn);
 
   /* p25.CUFE*/ wire _CUFE_OAM_CLKp = not_or_and3(new_bus.SARO_ADDR_OAMp(), dma.MATU_DMA_RUNNINGp.qp_new(), MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
@@ -927,7 +920,7 @@ void GateBoy::tock_slow(int pass_index) {
   store_sprite2(
     old_bus,
     oam_temp_b,
-    WUTY_SFETCH_DONE_TRIGp,
+    sprite_fetcher.WUTY_SFETCH_DONE_TRIGp,
     ATEJ_LINE_RSTp,
     AMYG_VID_RSTp(),
     _DYTY_COUNT_CLKp,
@@ -1036,10 +1029,10 @@ void GateBoy::tock_slow(int pass_index) {
       /* p27.NYVA*/ tile_fetcher._NYVA_BFETCH_S2p.dff17_any(tile_fetcher._MESU_BFETCH_S1p.qn_any(), NYXU_BFETCH_RSTn, tile_fetcher._NYVA_BFETCH_S2p.qn_any());
     }
 
-    /* p27.LOVY*/ tile_fetcher.LOVY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, LYRY_BFETCH_DONEp.qp_old());
+    /* p27.LOVY*/ tile_fetcher.LOVY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, tile_fetcher.LYRY_BFETCH_DONEp.qp_old());
 
     /* p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(tile_fetcher._LAXU_BFETCH_S0p.qp_new(), tile_fetcher._NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn);
-    /* p27.LYRY*/ LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
+    /* p27.LYRY*/ tile_fetcher.LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 
     /* p27.LURY*/ wire _LURY_BG_FETCH_DONEn = and2(tile_fetcher.LOVY_FETCH_DONEp.qn_new(), XYMU_RENDERINGn.qn_new());
     /* p27.LONY*/ tile_fetcher.LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, _LURY_BG_FETCH_DONEn);

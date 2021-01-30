@@ -231,7 +231,7 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
   /*#p29.WAGO*/ wire _WAGO_L3 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L3.qp_new());
   /*#p29.GEJY*/ wire _GEJY_L3 = amux2(oam_temp_a.XUSO_OAM_DA0p.qp_new(), _FUFO_LCDC_SPSIZEn, reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), _WAGO_L3);
 
-  /* p29.ABON*/ wire _ABON_SFETCHINGn = not1(TEXY_SFETCHINGp.qp_new());
+  /* p29.ABON*/ wire _ABON_SFETCHINGn = not1(sprite_fetcher.TEXY_SFETCHINGp.qp_new());
   /* p29.ABEM_HILO_TO_VA00*/ new_bus.BUS_VRAM_A00n.tri6_nn(_ABON_SFETCHINGn, XUQU_SPRITE_AB);
   /* p29.BAXE_SPL0_TO_VA01*/ new_bus.BUS_VRAM_A01n.tri6_nn(_ABON_SFETCHINGn, _CYVU_L0);
   /* p29.ARAS_SPL1_TO_VA02*/ new_bus.BUS_VRAM_A02n.tri6_nn(_ABON_SFETCHINGn, _BORE_L1);
@@ -370,7 +370,7 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
 
   /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp());
 
-  /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA_BFETCHINGp, _LUFA_DMA_VRAMp, TEXY_SFETCHINGp.qp_new(), SERE_CPU_VRAM_RDp);
+  /*#p25.SUTU*/ wire _SUTU_MCSn = nor4(LENA_BFETCHINGp, _LUFA_DMA_VRAMp, sprite_fetcher.TEXY_SFETCHINGp.qp_new(), SERE_CPU_VRAM_RDp);
   /* p25.TODE*/ wire _TODE_MCSn_A = and2(_SUTU_MCSn, _RACO_DBG_VRAMn);
   /* p25.SEWO*/ wire _SEWO_MCSn_D =  or2(_SUTU_MCSn, TUTO_VRAM_DBGp());
   /* p25.SOKY*/ wire _SOKY_MCSp_A = not1(_TODE_MCSn_A);
@@ -392,7 +392,7 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
   /* p25.RYLU*/ wire _RYLU_CPU_VRAM_RDn = nand2(SALE_CPU_VRAM_WRn(), _XANE_VRAM_LOCKn);
   /* p29.TYTU*/ wire _TYTU_SFETCH_S0n = not1(sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
   /* p29.TACU*/ wire _TACU_SPR_SEQ_5_TRIG = nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new(), _TYTU_SFETCH_S0n);
-  /* p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and2(_TACU_SPR_SEQ_5_TRIG, TEXY_SFETCHINGp.qp_new());
+  /* p25.SOHO*/ wire _SOHO_SPR_VRAM_RDp = and2(_TACU_SPR_SEQ_5_TRIG, sprite_fetcher.TEXY_SFETCHINGp.qp_new());
   /* p25.RAWA*/ wire _RAWA_SPR_VRAM_RDn = not1(_SOHO_SPR_VRAM_RDp);
   /* p27.MYMA*/ wire _MYMA_BGW_VRAM_RDn = not1(tile_fetcher.LONY_FETCHINGp.qp_new());
   /* p25.APAM*/ wire _APAM_DMA_VRAMn    = not1(_LUFA_DMA_VRAMp);
@@ -466,7 +466,7 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
   // Vram bus to sprite x flipper
 
   {
-    /*#p29.XONO*/ wire _XONO_FLIP_X = and2(oam_temp_b.BAXO_OAM_DB5p.qp_new(), TEXY_SFETCHINGp.qp_new());
+    /*#p29.XONO*/ wire _XONO_FLIP_X = and2(oam_temp_b.BAXO_OAM_DB5p.qp_new(), sprite_fetcher.TEXY_SFETCHINGp.qp_new());
     /* p33.PUTE*/ wire _PUTE_FLIP0p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D07p.qp_new(), new_bus.BUS_VRAM_D00p.qp_new());
     /* p33.PELO*/ wire _PELO_FLIP1p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D06p.qp_new(), new_bus.BUS_VRAM_D01p.qp_new());
     /* p33.PONO*/ wire _PONO_FLIP2p = mux2p(_XONO_FLIP_X, new_bus.BUS_VRAM_D05p.qp_new(), new_bus.BUS_VRAM_D02p.qp_new());

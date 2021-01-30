@@ -65,6 +65,9 @@ void main() {
   if (world_pos.x >  32768.0) frag_col.rgb *= 1.1;
   if (world_pos.y < -32768.0) frag_col.rgb *= 0.9;
   if (world_pos.y >  32768.0) frag_col.rgb *= 1.1;
+
+  if (world_pos.x > -32776.0 && world_pos.x < -32760.0) frag_col.r = 0.3;
+  if (world_pos.x >  32760.0 && world_pos.x <  32776.0) frag_col.r = 0.3;
 }
 
 #endif

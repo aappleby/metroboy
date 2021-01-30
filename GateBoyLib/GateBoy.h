@@ -420,15 +420,12 @@ struct GateBoy {
 
   /*#p21.WODU*/ Gate WODU_HBLANKp; // only old used
   /*#p21.NOKO*/ Gate NOKO_y153p; // only old used
-  /* p27.LYRY*/ Gate LYRY_BFETCH_DONEp; // old used
   /* p07.SATO*/ Gate SATO_BOOT_BITn; // old used
 
-  /* p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp; // new used
   /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp; // new used
   /*#p21.SANU*/ Gate SANU_x113p; // old used
   /*#p21.XYVO*/ Gate XYVO_y144p; // old used
   /*#p29.ABOV*/ Gate ABOV_LINE_P908p; // old used
-  /* p29.TEXY*/ Gate TEXY_SFETCHINGp; // new used
 
   SpritePix flipped_sprite;
 

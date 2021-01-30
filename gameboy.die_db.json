@@ -1952,7 +1952,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "ASYS_STORE1_clk",
+      "long_name": "ASYS_STORE1_CLKp",
       "output_ports": [
         "qp"
       ],
@@ -6194,7 +6194,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "CACU_STORE2_clk",
+      "long_name": "CACU_STORE2_CLKp",
       "output_ports": [
         "qp"
       ],
@@ -6928,7 +6928,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "CEXU_STORE8_clk",
+      "long_name": "CEXU_STORE8_CLKp",
       "output_ports": [
         "qp"
       ],
@@ -7806,7 +7806,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "CYLA_STORE5_clk",
+      "long_name": "CYLA_STORE5_CLKp",
       "output_ports": [
         "qp"
       ],
@@ -12272,7 +12272,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "FUXU_STORE0_clk",
+      "long_name": "FUXU_STORE0_CLKp",
       "output_ports": [
         "qp"
       ],
@@ -12929,7 +12929,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "GECY_STORE7_clk",
+      "long_name": "GECY_STORE7_CLKp",
       "output_ports": [
         "qp"
       ],
@@ -27182,7 +27182,7 @@
     },
     "SANU": {
       "cell_type": "LOGIC",
-      "doc": "// 113 = 64 + 32 + 16 + 1, schematic is wrong",
+      "doc": "",
       "fanout": 1,
       "gate": "and4",
       "input_ports": [
@@ -34705,7 +34705,7 @@
     },
     "VYBO": {
       "cell_type": "LOGIC",
-      "doc": "// FIXME old/new - but does it really matter here?",
+      "doc": "",
       "fanout": 1,
       "gate": "nor3",
       "input_ports": [
@@ -35902,7 +35902,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "WEME_STORE9_clk",
+      "long_name": "WEME_STORE9_CLKp",
       "output_ports": [
         "qp"
       ],
@@ -36344,7 +36344,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "WOFO_STORE4_clk",
+      "long_name": "WOFO_STORE4_CLKp",
       "output_ports": [
         "qp"
       ],
@@ -40895,7 +40895,7 @@
     },
     "XYVO": {
       "cell_type": "LOGIC",
-      "doc": "// 128 + 16 = 144",
+      "doc": "",
       "fanout": 2,
       "gate": "and2",
       "input_ports": [
@@ -41187,7 +41187,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "YFAG_STORE3_clk",
+      "long_name": "YFAG_STORE3_CLKp",
       "output_ports": [
         "qp"
       ],
@@ -42529,7 +42529,7 @@
       "input_ports": [
         "a"
       ],
-      "long_name": "ZAPE_STORE6_clk",
+      "long_name": "ZAPE_STORE6_CLKp",
       "output_ports": [
         "qp"
       ],

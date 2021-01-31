@@ -325,8 +325,8 @@
         "leaf_c589da58": {
           "name": "leaf_c589da58",
           "old": false,
-          "pos_x": 1744.0,
-          "pos_y": 7408.0
+          "pos_x": 1664.0,
+          "pos_y": 7552.0
         },
         "leaf_c733bb7c": {
           "name": "leaf_c733bb7c",
@@ -719,31 +719,18 @@
       "core": {
         "name": "core",
         "old": false,
-        "pos_x": -19872.0,
-        "pos_y": -2800.0
+        "pos_x": 1664.0,
+        "pos_y": 7616.0
       },
-      "leaves": {
-        "leaf_9f7b2f4b": {
-          "name": "leaf_9f7b2f4b",
-          "old": false,
-          "pos_x": 1744.0,
-          "pos_y": 7472.0
-        },
-        "leaf_fbe8f89f": {
-          "name": "leaf_fbe8f89f",
-          "old": false,
-          "pos_x": 2832.0,
-          "pos_y": 6384.0
-        }
-      },
+      "leaves": {},
       "roots": {}
     },
     "AJUJ": {
       "core": {
         "name": "core",
         "old": false,
-        "pos_x": 1840.0,
-        "pos_y": 7408.0
+        "pos_x": 1760.0,
+        "pos_y": 7552.0
       },
       "leaves": {
         "leaf_494ff9f3": {
@@ -888,8 +875,8 @@
         "leaf_ddcb09c2": {
           "name": "leaf_ddcb09c2",
           "old": false,
-          "pos_x": -27232.0,
-          "pos_y": -3056.0
+          "pos_x": -20256.0,
+          "pos_y": -2800.0
         },
         "leaf_eec26e70": {
           "name": "leaf_eec26e70",
@@ -1041,8 +1028,8 @@
       "core": {
         "name": "core",
         "old": false,
-        "pos_x": 1936.0,
-        "pos_y": 7376.0
+        "pos_x": 1856.0,
+        "pos_y": 7520.0
       },
       "leaves": {
         "leaf_0e948180": {
@@ -2932,8 +2919,8 @@
       "core": {
         "name": "core",
         "old": false,
-        "pos_x": 2896.0,
-        "pos_y": 6384.0
+        "pos_x": 1760.0,
+        "pos_y": 7616.0
       },
       "leaves": {
         "leaf_15d07f3e": {
@@ -3134,8 +3121,8 @@
         "leaf_a78b90e3": {
           "name": "leaf_a78b90e3",
           "old": false,
-          "pos_x": -19968.0,
-          "pos_y": -2800.0
+          "pos_x": 1568.0,
+          "pos_y": 7584.0
         }
       },
       "roots": {}
@@ -16071,7 +16058,7 @@
         "name": "core",
         "old": false,
         "pos_x": -19872.0,
-        "pos_y": -2672.0
+        "pos_y": -2704.0
       },
       "leaves": {
         "leaf_00d7c5b6": {
@@ -17536,8 +17523,8 @@
         "leaf_59d9c78c": {
           "name": "leaf_59d9c78c",
           "old": false,
-          "pos_x": 1744.0,
-          "pos_y": 7344.0
+          "pos_x": 1664.0,
+          "pos_y": 7488.0
         },
         "leaf_70f45695": {
           "name": "leaf_70f45695",
@@ -20426,7 +20413,7 @@
         "name": "core",
         "old": false,
         "pos_x": -19872.0,
-        "pos_y": -2736.0
+        "pos_y": -2768.0
       },
       "leaves": {
         "leaf_623485bb": {
@@ -25778,8 +25765,8 @@
         "leaf_1c5b01ea": {
           "name": "leaf_1c5b01ea",
           "old": false,
-          "pos_x": 1840.0,
-          "pos_y": 7344.0
+          "pos_x": 1760.0,
+          "pos_y": 7488.0
         },
         "leaf_23f78be3": {
           "name": "leaf_23f78be3",
@@ -28256,7 +28243,7 @@
       "core": {
         "name": "core",
         "old": false,
-        "pos_x": -27232.0,
+        "pos_x": -27216.0,
         "pos_y": -2992.0
       },
       "leaves": {
@@ -28265,6 +28252,12 @@
           "old": false,
           "pos_x": -8512.0,
           "pos_y": -2656.0
+        },
+        "leaf_c42f534d": {
+          "name": "leaf_c42f534d",
+          "old": false,
+          "pos_x": -20256.0,
+          "pos_y": -2736.0
         },
         "leaf_e4e2dcf0": {
           "name": "leaf_e4e2dcf0",
@@ -29450,8 +29443,8 @@
         "leaf_684bc636": {
           "name": "leaf_684bc636",
           "old": false,
-          "pos_x": -27136.0,
-          "pos_y": -3056.0
+          "pos_x": -20160.0,
+          "pos_y": -2800.0
         }
       },
       "roots": {}
@@ -31853,8 +31846,8 @@
       "core": {
         "name": "core",
         "old": false,
-        "pos_x": -27136.0,
-        "pos_y": -2992.0
+        "pos_x": -20160.0,
+        "pos_y": -2736.0
       },
       "leaves": {},
       "roots": {}
@@ -32958,8 +32951,8 @@
       "core": {
         "name": "core",
         "old": false,
-        "pos_x": -27040.0,
-        "pos_y": -3024.0
+        "pos_x": -20064.0,
+        "pos_y": -2768.0
       },
       "leaves": {
         "leaf_97b2a471": {
@@ -32967,12 +32960,6 @@
           "old": false,
           "pos_x": 12304.0,
           "pos_y": -6576.0
-        },
-        "leaf_fc8ab9a4": {
-          "name": "leaf_fc8ab9a4",
-          "old": false,
-          "pos_x": -20064.0,
-          "pos_y": -2768.0
         }
       },
       "roots": {}
@@ -33277,8 +33264,8 @@
       "core": {
         "name": "core",
         "old": false,
-        "pos_x": 2608.0,
-        "pos_y": 7632.0
+        "pos_x": 2768.0,
+        "pos_y": 7520.0
       },
       "leaves": {
         "leaf_87e5cdf6": {
@@ -33433,8 +33420,8 @@
         "leaf_acf3c444": {
           "name": "leaf_acf3c444",
           "old": true,
-          "pos_x": -27232.0,
-          "pos_y": -2928.0
+          "pos_x": -20256.0,
+          "pos_y": -2672.0
         }
       },
       "roots": {}
@@ -37154,6 +37141,12 @@
           "pos_x": 12304.0,
           "pos_y": 6368.0
         },
+        "leaf_a9d004ed": {
+          "name": "leaf_a9d004ed",
+          "old": false,
+          "pos_x": 1568.0,
+          "pos_y": 7648.0
+        },
         "leaf_aa81f32a": {
           "name": "leaf_aa81f32a",
           "old": false,
@@ -39438,7 +39431,7 @@
       "roots": {}
     }
   },
-  "guid": 535097044,
+  "guid": 2848982253,
   "labels": [
     {
       "pos_x": 1008.0,
@@ -40723,7 +40716,7 @@
       "input_node": "core",
       "input_port": "c",
       "output_cell": "AJON",
-      "output_node": "leaf_9f7b2f4b",
+      "output_node": "core",
       "output_port": "qp"
     },
     "AJON.qp -> BETE.a": {
@@ -40731,7 +40724,7 @@
       "input_node": "core",
       "input_port": "a",
       "output_cell": "AJON",
-      "output_node": "leaf_fbe8f89f",
+      "output_node": "core",
       "output_port": "qp"
     },
     "AJUJ.qp -> AMAB.b": {
@@ -72387,7 +72380,7 @@
       "input_node": "core",
       "input_port": "RSTn",
       "output_cell": "TADY",
-      "output_node": "core",
+      "output_node": "leaf_c42f534d",
       "output_port": "qp"
     },
     "TADY.qp -> XEHO.RSTn": {
@@ -78587,7 +78580,7 @@
       "input_node": "core",
       "input_port": "SETp",
       "output_cell": "WEGO",
-      "output_node": "leaf_fc8ab9a4",
+      "output_node": "core",
       "output_port": "qp"
     },
     "WEHE.qp -> BUS_SPR_L0.WEHE": {
@@ -84243,7 +84236,7 @@
       "input_node": "core",
       "input_port": "b",
       "output_cell": "XYMU",
-      "output_node": "core",
+      "output_node": "leaf_a9d004ed",
       "output_port": "qn"
     },
     "XYMU.qn -> ASAM.b": {

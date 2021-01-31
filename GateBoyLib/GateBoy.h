@@ -138,7 +138,7 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
 
   void reg_lcdc_read();
-  void reg_lcdc_write();
+  void tock_lcdc();
 
   void reg_dma_write();
   void reg_dma_read();

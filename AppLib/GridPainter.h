@@ -10,12 +10,14 @@ struct Rect {
 
 struct GridUniforms {
   Rect viewport = {};
+  float world_width;
+  float world_height;
 };
 
 class GridPainter {
 public:
 
-  void init();
+  void init(float world_width, float world_height);
   void render(Viewport view);
 
 private:

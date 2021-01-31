@@ -106,6 +106,8 @@ void GateBoy::tock_timer() {
   /*#p03.PYMA*/ wire _PYMA_TIMA_D6 = nor2(MULO_SYS_RSTn(), _REFU_TIMA_D6);
   /*#p03.PAGU*/ wire _PAGU_TIMA_D7 = nor2(MULO_SYS_RSTn(), _RATO_TIMA_D7);
 
+  // FIXME puxy etc should be old
+
   /*#p03.REGA*/ timer.REGA_TIMA0p.dff20(_SOGU_TIMA_CLKn,            _MEXU_TIMA_LOADp, _PUXY_TIMA_D0);
   /*#p03.POVY*/ timer.POVY_TIMA1p.dff20(timer.REGA_TIMA0p.qp_any(), _MEXU_TIMA_LOADp, _NERO_TIMA_D1);
   /*#p03.PERU*/ timer.PERU_TIMA2p.dff20(timer.POVY_TIMA1p.qp_any(), _MEXU_TIMA_LOADp, _NADA_TIMA_D2);

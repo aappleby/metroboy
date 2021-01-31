@@ -37,7 +37,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   screen_w = _screen_w;
   screen_h = _screen_h;
 
-  grid_painter.init();
+  grid_painter.init(65536, 65536);
   text_painter.init();
   dump_painter.init();
   gb_blitter.init();

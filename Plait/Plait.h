@@ -113,6 +113,7 @@ struct PlaitNode {
   std::string name;
   dvec2 pos_new = {0,0};
   dvec2 pos_old = {0,0};
+  bool old = false;
 
   //----------------------------------------
   // Not serialized
@@ -122,6 +123,14 @@ struct PlaitNode {
   uint32_t color = 0xFFFF00FF;
 
   //----------------------------------------
+
+  bool is_root() {
+    return name[0] == 'r' && name[1] == 'o' && name[2] == 'o' && name[3] == 't';
+  }
+
+  bool is_leaf() {
+    return name[0] == 'l' && name[1] == 'e' && name[2] == 'a' && name[3] == 'f';
+  }
 
   bool selected() {
     return _selected;

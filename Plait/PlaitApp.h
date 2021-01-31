@@ -30,6 +30,8 @@ enum class ToolMode {
   SELECT_REGION,
   GHOST_REGION,
 
+  TOGGLE_OLD,
+
   CREATE_ROOT,
   CREATE_LEAF,
   LINK_NODE,
@@ -96,6 +98,8 @@ public:
   void event_select_region(SDL_Event event);
   void event_ghost_region (SDL_Event event);
 
+  void event_toggle_old   (SDL_Event event);
+
   void event_create_root  (SDL_Event event);
   void event_create_leaf  (SDL_Event event);
   void event_link_node    (SDL_Event event);
@@ -141,6 +145,10 @@ public:
   bool show_anchors = true;
 
   std::set<PlaitNode*> node_selection;
+
+  int bad_node_count = 0;
+  int bad_edge_count = 0;
+  int bad_branch_count = 0;
 
   double time_update = 0;
   double time_render = 0;

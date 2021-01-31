@@ -38,7 +38,7 @@ void MetroBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
   app_start = timestamp();
 
   blitter.init();
-  grid_painter.init();
+  grid_painter.init(65536, 65536);
   text_painter.init();
 
   keyboard_state = SDL_GetKeyboardState(nullptr);

@@ -14,8 +14,26 @@ void GateBoyCpuBus::reset_to_cart() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::set_cpu_pins()
+void GateBoy::set_pins()
 {
+  rst.PIN_71_RST.reset_for_pass();
+  pins.PIN_74_CLK.reset_for_pass();
+  rst.PIN_76_T2.reset_for_pass();
+  rst.PIN_77_T1.reset_for_pass();
+
+  rst.PIN_71_RST.pin_in_dp(bit(~sys_rst));
+  pins.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
+  rst.PIN_76_T2.pin_in_dp(bit(~sys_t2));
+  rst.PIN_77_T1.pin_in_dp(bit(~sys_t1));
+
+  interrupts.SIG_CPU_ACK_VBLANK.sig_in(bit(int_ack_latch, BIT_VBLANK));
+  interrupts.SIG_CPU_ACK_STAT  .sig_in(bit(int_ack_latch, BIT_STAT));
+  interrupts.SIG_CPU_ACK_TIMER .sig_in(bit(int_ack_latch, BIT_TIMER));
+  interrupts.SIG_CPU_ACK_SERIAL.sig_in(bit(int_ack_latch, BIT_SERIAL));
+  interrupts.SIG_CPU_ACK_JOYPAD.sig_in(bit(int_ack_latch, BIT_JOYPAD));
+
+  clk.SIG_CPU_CLKREQ.sig_in(sys_clkreq);
+
   cpu_bus.SIG_CPU_RDp.sig_in(DELTA_HA ? 0 : bus_req_new.read);
   cpu_bus.SIG_CPU_WRp.sig_in(DELTA_HA ? 0 : bus_req_new.write);
 
@@ -47,16 +65,6 @@ void GateBoy::set_cpu_pins()
 
   ///* p07.UJYV*/ wire _UJYV_CPU_RDn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_79_EXT_RDn.qn_new()*/ 0, SIG_CPU_RDp.qp_new()); // Ignoring debug stuff for now
   ///* p07.UBAL*/ wire _UBAL_CPU_WRn = mux2n(rst.UNOR_MODE_DBG2p(), /*PIN_78_EXT_WRn.qn_new()*/ 0, _APOV_CPU_WRp); // Ignoring debug stuff for now
-
-  /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(cpu_bus.SIG_CPU_RDp.qp_new());
-  /* p07.TEDO*/ cpu_bus.TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
-
-  /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(ADAR_ABCxxxxH(), ATYP_ABCDxxxx());
-  /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(cpu_bus.SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
-  /* p01.APOV*/ cpu_bus.APOV_CPU_WRp = not1(_AREV_CPU_WRn);
-
-  /* p07.UBAL*/ wire _UBAL_CPU_WRn = not1(cpu_bus.APOV_CPU_WRp.qp_new());
-  /* p07.TAPU*/ cpu_bus.TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -143,7 +143,7 @@ struct GateBoy {
   void reg_dma_write();
   void reg_dma_read();
 
-  void set_cpu_pins();
+  void set_pins();
 
   void tock_joypad();
   void tock_interrupts();

@@ -16,7 +16,7 @@ void DummyApp::app_init(int _screen_w, int _screen_h) {
   screen_w = _screen_w;
   screen_h = _screen_h;
 
-  grid_painter.init();
+  grid_painter.init(65536.0f, 65536.0f);
   text_painter.init();
   blitter.init();
 

@@ -20,6 +20,8 @@ struct Rect {
 layout(std140) uniform GridUniforms
 {
   Rect viewport;
+  float world_width;
+  float world_height;
 };
 
 #ifdef _VERTEX_
@@ -45,6 +47,9 @@ out vec4 frag_col;
 
 void main() {
 
+  float half_world_width = world_width * 0.5;
+  float half_world_height = world_height * 0.5;
+
   int world_x = int(floor(world_pos.x));
   int world_y = int(floor(world_pos.y));
 
@@ -61,13 +66,22 @@ void main() {
   frag_col.b = b ? ga : gb;
   frag_col.a = 1.0;
 
-  if (world_pos.x < -32768.0) frag_col.rgb *= 0.9;
-  if (world_pos.x >  32768.0) frag_col.rgb *= 1.1;
-  if (world_pos.y < -32768.0) frag_col.rgb *= 0.9;
-  if (world_pos.y >  32768.0) frag_col.rgb *= 1.1;
+  //if (world_pos.x < -half_world_width)  frag_col.r = 0.2;
+  //if (world_pos.x >  half_world_width)  frag_col.r = 0.2;
+  //if (world_pos.y < -half_world_height) frag_col.r = 0.2;
+  //if (world_pos.y >  half_world_height) frag_col.r = 0.2;
 
-  if (world_pos.x > -32776.0 && world_pos.x < -32760.0) frag_col.r = 0.3;
-  if (world_pos.x >  32760.0 && world_pos.x <  32776.0) frag_col.r = 0.3;
+  //if (world_pos.x < -half_world_width)  frag_col.rgb *= 0.9;
+  //if (world_pos.x >  half_world_width)  frag_col.rgb *= 1.1;
+  //if (world_pos.y < -half_world_height) frag_col.rgb *= 0.9;
+  //if (world_pos.y >  half_world_height) frag_col.rgb *= 1.1;
+
+  //if (world_pos.x > -16.0 && world_pos.x < 16.0) frag_col.g += 0.2;
+
+  if (world_pos.x > (-half_world_width - 16.0) && world_pos.x < (-half_world_width + 16.0))   frag_col.r += 0.2;
+  if (world_pos.x > ( half_world_width - 16.0) && world_pos.x < ( half_world_width + 16.0))   frag_col.r += 0.2;
+  if (world_pos.y > (-half_world_height - 16.0) && world_pos.y < (-half_world_height + 16.0)) frag_col.r += 0.2;
+  if (world_pos.y > ( half_world_height - 16.0) && world_pos.y < ( half_world_height + 16.0)) frag_col.r += 0.2;
 }
 
 #endif
@@ -78,7 +92,10 @@ static uint32_t grid_prog = 0;
 
 //-----------------------------------------------------------------------------
 
-void GridPainter::init() {
+void GridPainter::init(float world_width, float world_height) {
+  grid_uniforms.world_width  = world_width;
+  grid_uniforms.world_height = world_height;
+
   if (!grid_prog) {
     grid_prog = create_shader("grid_glsl", grid_glsl);
   }

@@ -26,6 +26,12 @@ const dvec2 node_size = {64,64};
 const dvec2 node_half_size = {32,32};
 const dvec2 port_size = {4,4};
 
+const double world_width  = 65536.0;
+const double world_height = 16384.0;
+
+const double half_world_width  = world_width / 2.0;
+const double half_world_height = world_height / 2.0;
+
 const int world_min = -1;
 const int world_max = 1;
 //const int world_min = 0;
@@ -41,6 +47,8 @@ static std::map<ToolMode, std::string> tool_to_string = {
   {ToolMode::SELECT_REGION,   "SELECT_REGION"},
   {ToolMode::GHOST_REGION,    "GHOST_REGION"},
 
+  {ToolMode::TOGGLE_OLD,      "TOGGLE_OLD"},
+
   {ToolMode::CREATE_ROOT,     "CREATE_ROOT"},
   {ToolMode::CREATE_LEAF,     "CREATE_LEAF"},
   {ToolMode::DELETE_NODE,     "DELETE_NODE"},
@@ -51,18 +59,18 @@ static std::map<ToolMode, std::string> tool_to_string = {
 };
 
 dvec2 wrap(dvec2 d) {
-  while(d.x >  32768) d.x -= 65536;
-  while(d.x < -32768) d.x += 65536;
-  while(d.y >  32768) d.y -= 65536;
-  while(d.y < -32768) d.y += 65536;
+  while(d.x >  half_world_width) d.x -= world_width;
+  while(d.x < -half_world_width) d.x += world_width;
+  //while(d.y >  half_world_height) d.y -= world_height;
+  //while(d.y < -half_world_height) d.y += world_height;
   return d;
 }
 
 dvec2 wrap_towards(dvec2 origin, dvec2 d) {
-  while((d.x - origin.x) >  32768) d.x -= 65536;
-  while((d.x - origin.x) < -32768) d.x += 65536;
-  while((d.y - origin.y) >  32768) d.y -= 65536;
-  while((d.y - origin.y) < -32768) d.y += 65536;
+  while((d.x - origin.x) >  half_world_width) d.x -= world_width;
+  while((d.x - origin.x) < -half_world_width) d.x += world_width;
+  //while((d.y - origin.y) >  half_world_height) d.y -= world_height;
+  //while((d.y - origin.y) < -half_world_height) d.y += world_height;
   return d;
 }
 
@@ -281,7 +289,7 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
 
   box_painter.init();
   port_painter.init();
-  grid_painter.init();
+  grid_painter.init(world_width, world_height);
   edge_painter.init();
   outline_painter.init();
   text_painter.init();
@@ -327,8 +335,8 @@ bool PlaitApp::hit_node(dvec2 _mouse_pos, PlaitNode* node) {
   double max_x = node_pos.x + node_size.x;
   double max_y = node_pos.y + node_size.y;
 
-  while(_mouse_pos.x - min_x >  32768) _mouse_pos.x -= 65536;
-  while(_mouse_pos.x - max_x < -32768) _mouse_pos.x += 65536;
+  while(_mouse_pos.x - min_x >  half_world_width) _mouse_pos.x -= world_width;
+  while(_mouse_pos.x - max_x < -half_world_width) _mouse_pos.x += world_width;
 
   if (_mouse_pos.x >= min_x &&
       _mouse_pos.y >= min_y &&
@@ -572,6 +580,28 @@ void PlaitApp::event_ghost_region(SDL_Event event) {
 
 //--------------------------------------------------------------------------------
 
+void PlaitApp::event_toggle_old(SDL_Event event) {
+  switch(event.type) {
+  case SDL_MOUSEBUTTONDOWN: {
+    if (event.button.button & SDL_BUTTON_LMASK) {
+      if (clicked_node && clicked_node->is_leaf()) {
+        clicked_node->old = !clicked_node->old;
+      }
+    }
+    break;
+  }
+  case SDL_KEYUP: {
+    int key = event.key.keysym.scancode;
+    if (key == SDL_SCANCODE_F) {
+      current_tool = ToolMode::NONE;
+    }
+    break;
+  }
+  }
+}
+
+//--------------------------------------------------------------------------------
+
 void PlaitApp::event_pan_view(SDL_Event event) {
   bool was_drag = length(click_pos_screen - mouse_pos_screen) > 3;
 
@@ -787,6 +817,7 @@ void PlaitApp::event_select_tool(SDL_Event event) {
 
     if (key == SDL_SCANCODE_E) show_edges = !show_edges;
 
+    if (key == SDL_SCANCODE_F)     new_tool = ToolMode::TOGGLE_OLD;
     if (key == SDL_SCANCODE_Q)     new_tool = ToolMode::GHOST_REGION;
     if (key == SDL_SCANCODE_Z)     new_tool = ToolMode::CREATE_ROOT;
     if (key == SDL_SCANCODE_X)     new_tool = ToolMode::CREATE_LEAF;
@@ -859,8 +890,8 @@ void PlaitApp::app_update(double delta_time) {
     mouse_pos_screen = {mouse_x, mouse_y};
     mouse_pos_world  = view.screenToWorld(mouse_pos_screen);
     mouse_pos_wrap = mouse_pos_world;
-    while(mouse_pos_wrap.x >  32768) mouse_pos_wrap.x -= 65536;
-    while(mouse_pos_wrap.x < -32768) mouse_pos_wrap.x += 65536;
+    while(mouse_pos_wrap.x >  half_world_width) mouse_pos_wrap.x -= world_width;
+    while(mouse_pos_wrap.x < -half_world_width) mouse_pos_wrap.x += world_width;
   }
 
   {
@@ -900,6 +931,7 @@ void PlaitApp::app_update(double delta_time) {
     case ToolMode::DRAG_LABEL:     event_drag_label(event); break;
     case ToolMode::SELECT_REGION:  event_select_region(event); break;
     case ToolMode::GHOST_REGION:   event_ghost_region(event); break;
+    case ToolMode::TOGGLE_OLD:     event_toggle_old(event); break;
     case ToolMode::CREATE_ROOT:    event_create_root(event); break;
     case ToolMode::CREATE_LEAF:    event_create_leaf(event); break;
     case ToolMode::LINK_NODE:      event_link_node(event); break;
@@ -1044,6 +1076,23 @@ void PlaitApp::draw_node_outline(PlaitNode* node) {
 
 void PlaitApp::draw_node_fill(PlaitNode* node, uint32_t color) {
   if (!node->ghosted) {
+    bool bad_node = false;
+
+    //if (node->is_leaf() && node->plait_cell->die_cell->fanout == 1 && !node->old) {
+    //  bad_node = true;
+    //}
+    //if (node->is_root() && node->plait_cell->die_cell->input_ports.size() == 1) {
+    //  bad_node = true;
+    //}
+
+    if (bad_node) {
+      bad_node_count++;
+      color = (frame_count & 16) ? 0xFFFF00FF : 0xFF00FFFF;
+    }
+
+    if (node->old) {
+      color = (color & 0xFF000000) | ((color & 0x00FEFEFE) >> 1);
+    }
     box_painter.push_corner_size(node->get_pos_new(), node_size, color);
   }
 }
@@ -1101,16 +1150,8 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
   auto output_pos_new = output_node->get_pos_new();
   auto input_pos_new  = input_node->get_pos_new();
 
-  /*
-  if (edge->input_node->plait_cell->die_cell->cell_type == DieCellType::DFF) {
-    auto& input_port_name = edge->input_node->plait_cell->die_cell->input_ports[edge->input_port_index];
-    if (input_port_name[0] == 'D') {
-      input_pos_new.x += 65536;
-    }
-  }
-  */
-
-  auto delta = wrap(input_pos_new - output_pos_new);
+  //auto delta = wrap(input_pos_new - output_pos_new);
+  auto delta = input_pos_new - output_pos_new;
   input_pos_new = output_pos_new + delta;
 
 
@@ -1130,6 +1171,37 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
       input_color |= 0xFF000000;
     }
   }
+
+  // Old nodes can drive other old nodes and DFF D ports.
+  // New nodes can only drive other new nodes, except DFF D ports.
+
+  auto& cell_type = edge->input_node->plait_cell->die_cell->cell_type;
+  auto& input_port_name = edge->input_node->plait_cell->die_cell->input_ports[edge->input_port_index];
+
+  bool input_is_logic = (cell_type == DieCellType::ADDER) || (cell_type == DieCellType::LOGIC);
+  bool input_is_dff   = cell_type == DieCellType::DFF;
+  bool input_is_dff_d = input_is_dff && (input_port_name[0] == 'D');
+
+  bool bad_edge = false;
+
+  // Old node -> old node = input must be a logic cell
+  if ( edge->output_node->old &&  edge->input_node->old) bad_edge = !input_is_logic;
+
+  // Old node -> new node = input must be dff d port
+  if ( edge->output_node->old && !edge->input_node->old) bad_edge = !input_is_dff_d;
+
+  // New node -> old node = always bad
+  if (!edge->output_node->old &&  edge->input_node->old) bad_edge = true;
+
+  // New node -> new node = input must _not_ be dff d port
+  if (!edge->output_node->old && !edge->input_node->old) bad_edge = input_is_dff_d;
+
+  if (bad_edge) {
+    input_color  = (frame_count & 16) ? 0xFFFF00FF : 0xFF00FFFF;
+    output_color = (frame_count & 16) ? 0xFFFF00FF : 0xFF00FFFF;
+    bad_edge_count++;
+  }
+
 
   size_t output_port_count = output_node->plait_cell->die_cell->output_ports.size();
   size_t input_port_count  = input_node->plait_cell->die_cell->input_ports.size();
@@ -1159,6 +1231,10 @@ void PlaitApp::app_render_frame() {
   port_painter.reset();
   edge_painter.reset();
   text_painter.reset();
+
+  bad_node_count = 0;
+  bad_edge_count = 0;
+  bad_branch_count = 0;
 
   //----------------------------------------
   // Grid layer
@@ -1201,10 +1277,6 @@ void PlaitApp::app_render_frame() {
   for (auto& [tag, plait_cell] : plait.cell_map) {
     uint32_t color = plait_cell->core_node->color;
 
-    if (plait_cell->root_nodes.empty() && plait_cell->leaf_nodes.empty()) {
-      color = (color & 0xFF000000) | ((color & 0x00FEFEFE) >> 1);
-    }
-
     draw_node_fill(plait_cell->core_node, color);
     draw_node_text(plait_cell->core_node);
     draw_node_ports(plait_cell->core_node);
@@ -1232,31 +1304,40 @@ void PlaitApp::app_render_frame() {
 #if 1
   // Branches
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    //if (plait_cell->die_cell->cell_type == DieCellType::TRIBUF) continue;
-    //if (plait_cell->die_cell->cell_type == DieCellType::BUS) continue;
-    //if (plait_cell->die_cell->cell_type == DieCellType::DFF) continue;
-    //if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) continue;
-    if (plait_cell->core_node->ghosted) continue;
 
     bool wrap_ok = false;
     if (plait_cell->die_cell->cell_type == DieCellType::BUS)    wrap_ok = true;
-    if (plait_cell->die_cell->cell_type == DieCellType::DFF)    wrap_ok = true;
     if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) wrap_ok = true;
 
-    bool always_draw = false;
-    //if (plait_cell->die_cell->cell_type == DieCellType::LATCH) always_draw = true;
-    //if (plait_cell->die_cell->cell_type == DieCellType::LOGIC) always_draw = true;
-    //if (plait_cell->die_cell->cell_type == DieCellType::ADDER) always_draw = true;
+    double max_root_x = -1e10;
+    double min_leaf_x =  1e10;
+
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      if (root->pos_new.x > max_root_x) max_root_x = root->pos_new.x;
+    }
+
+    for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+      if (leaf->pos_new.x < min_leaf_x) min_leaf_x = leaf->pos_new.x;
+    }
 
     for (auto& [name, root] : plait_cell->root_nodes) {
       if (root->ghosted) continue;
-      auto core_pos = plait_cell->core_node->pos_new;
-      auto root_pos = wrap_towards(core_pos, root->pos_new);
-      bool backwards = (root_pos.x > core_pos.x) && !wrap_ok;
-      uint32_t color_a = backwards ? 0xFF0000FF : 0xFFFFFF00;
-      uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF00FF;
 
-      if ((plait_cell->core_node->selected() ^ root->selected()) || backwards || always_draw) {
+      auto core_pos = plait_cell->core_node->pos_new;
+      auto root_pos = root->pos_new;
+
+      bool bad_branch = false;
+      if (root_pos.x > min_leaf_x) bad_branch = true;
+      if (!plait_cell->core_node->old && root_pos.x > core_pos.x) bad_branch = true;
+      if (wrap_ok) bad_branch = false;
+      if (root->old) bad_branch = false;
+
+      uint32_t color_a = bad_branch ? 0x8000FFFF : 0x80808080;
+      uint32_t color_b = bad_branch ? 0x8000FFFF : 0x80808080;
+
+      if (bad_branch) bad_branch_count++;
+
+      if (plait_cell->selected_node_count || bad_branch) {
         edge_painter.push(core_pos + node_half_size,
                           color_a,
                           root_pos + node_half_size,
@@ -1266,12 +1347,20 @@ void PlaitApp::app_render_frame() {
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (leaf->ghosted) continue;
       auto core_pos = plait_cell->core_node->pos_new;
-      auto leaf_pos = wrap_towards(core_pos, leaf->pos_new);
-      bool backwards = (leaf_pos.x < core_pos.x) && !wrap_ok;
-      uint32_t color_a = backwards ? 0xFF0000FF : 0xFFFFFF00;
-      uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF00FF;
+      auto leaf_pos = leaf->pos_new;
 
-      if ((plait_cell->core_node->selected() ^ leaf->selected()) || backwards || always_draw) {
+      bool bad_branch = false;
+      if (leaf_pos.x < max_root_x) bad_branch = true;
+      if (!plait_cell->core_node->old && leaf_pos.x < core_pos.x) bad_branch = true;
+      if (wrap_ok) bad_branch = false;
+      if (leaf->old) bad_branch = false;
+
+      uint32_t color_a = bad_branch ? 0x8000FFFF : 0x80808080;
+      uint32_t color_b = bad_branch ? 0x8000FFFF : 0x80808080;
+
+      if (bad_branch) bad_branch_count++;
+
+      if (plait_cell->selected_node_count || bad_branch) {
         edge_painter.push(core_pos + node_half_size,
                           color_a,
                           leaf_pos + node_half_size,
@@ -1333,10 +1422,10 @@ void PlaitApp::app_render_frame() {
   text_painter.update_buf();
 
   for (int i = world_min; i <= world_max; i++) {
-    box_painter .render_at(view, 65536 * i, 0, 1);
-    port_painter.render_at(view, 65536 * i, 0, 1);
-    edge_painter.render_at(view, 65536 * i, 0, 1);
-    text_painter.render_at(view, 65536 * i, 0);
+    box_painter .render_at(view, world_width * i, 0, 1);
+    port_painter.render_at(view, world_width * i, 0, 1);
+    edge_painter.render_at(view, world_width * i, 0, 1);
+    text_painter.render_at(view, world_width * i, 0);
   }
 
   //----------------------------------------
@@ -1376,6 +1465,9 @@ void PlaitApp::app_render_ui() {
 
     d.clear();
 
+    d("Bad node count   : %d\n", bad_node_count);
+    d("Bad edge count   : %d\n", bad_edge_count);
+    d("Bad branch count : %d\n", bad_branch_count);
     d("Mouse screen x : %f\n", mouse_pos_screen.x);
     d("Mouse screen y : %f\n", mouse_pos_screen.y);
     d("Mouse world x  : %f\n", mouse_pos_world.x);

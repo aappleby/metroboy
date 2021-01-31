@@ -50,6 +50,39 @@ struct GateBoySpriteStore {
   /* p29.FOXA*/ Gate FOXA_SPRITE8_GETp;
   /* p29.GUZE*/ Gate GUZE_SPRITE9_GETp;
 
+  /* p29.YDUG*/ Gate YDUG_STORE0_MATCHn;
+  /* p29.DYDU*/ Gate DYDU_STORE1_MATCHn;
+  /* p29.DEGO*/ Gate DEGO_STORE2_MATCHn;
+  /* p29.YLOZ*/ Gate YLOZ_STORE3_MATCHn;
+  /* p29.XAGE*/ Gate XAGE_STORE4_MATCHn;
+  /* p29.EGOM*/ Gate EGOM_STORE5_MATCHn;
+  /* p29.YBEZ*/ Gate YBEZ_STORE6_MATCHn;
+  /* p29.DYKA*/ Gate DYKA_STORE7_MATCHn;
+  /* p29.EFYL*/ Gate EFYL_STORE8_MATCHn;
+  /* p29.YGEM*/ Gate YGEM_STORE9_MATCHn;
+
+  /* p29.DYNA*/ Gate DYNA_STORE0_RSTn;
+  /* p29.DOKU*/ Gate DOKU_STORE1_RSTn;
+  /* p29.GAMY*/ Gate GAMY_STORE2_RSTn;
+  /* p29.WUPA*/ Gate WUPA_STORE3_RSTn;
+  /* p29.WUNU*/ Gate WUNU_STORE4_RSTn;
+  /* p29.EJAD*/ Gate EJAD_STORE5_RSTn;
+  /* p29.XAHO*/ Gate XAHO_STORE6_RSTn;
+  /* p29.GAFY*/ Gate GAFY_STORE7_RSTn;
+  /* p29.WUZO*/ Gate WUZO_STORE8_RSTn;
+  /* p29.DOSY*/ Gate DOSY_STORE9_RSTn;
+
+  /* p29.DYHU*/ Gate DYHU_STORE0_CLKn;
+  /* p29.BUCO*/ Gate BUCO_STORE1_CLKn;
+  /* p29.GYFO*/ Gate GYFO_STORE2_CLKn;
+  /* p29.GUSA*/ Gate GUSA_STORE3_CLKn;
+  /* p29.DUKE*/ Gate DUKE_STORE4_CLKn;
+  /* p29.BEDE*/ Gate BEDE_STORE5_CLKn;
+  /* p29.WEKA*/ Gate WEKA_STORE6_CLKn;
+  /* p29.GYVO*/ Gate GYVO_STORE7_CLKn;
+  /* p29.BUKA*/ Gate BUKA_STORE8_CLKn;
+  /* p29.DECU*/ Gate DECU_STORE9_CLKn;
+
   /* p29.FEPO*/ Gate FEPO_STORE_MATCHp;
 
   //----------------------------------------

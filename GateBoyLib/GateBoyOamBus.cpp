@@ -6,28 +6,16 @@
 
 void GateBoy::oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a)
 {
-  /* p29.YWOK*/ wire _YWOK_OAM_CLKp = not1(COTA_OAM_CLKn);
-  /*#p29.XUSO*/ oam_temp_a.XUSO_OAM_DA0p.dff8n(_YWOK_OAM_CLKp, old_oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
-  /* p29.XEGU*/ oam_temp_a.XEGU_OAM_DA1p.dff8n(_YWOK_OAM_CLKp, old_oam_latch_a.YCEB_OAM_LATCH_DA1n.qp_old());
-  /* p29.YJEX*/ oam_temp_a.YJEX_OAM_DA2p.dff8n(_YWOK_OAM_CLKp, old_oam_latch_a.ZUCA_OAM_LATCH_DA2n.qp_old());
-  /* p29.XYJU*/ oam_temp_a.XYJU_OAM_DA3p.dff8n(_YWOK_OAM_CLKp, old_oam_latch_a.WONE_OAM_LATCH_DA3n.qp_old());
-  /* p29.YBOG*/ oam_temp_a.YBOG_OAM_DA4p.dff8n(_YWOK_OAM_CLKp, old_oam_latch_a.ZAXE_OAM_LATCH_DA4n.qp_old());
-  /* p29.WYSO*/ oam_temp_a.WYSO_OAM_DA5p.dff8n(_YWOK_OAM_CLKp, old_oam_latch_a.XAFU_OAM_LATCH_DA5n.qp_old());
-  /* p29.XOTE*/ oam_temp_a.XOTE_OAM_DA6p.dff8n(_YWOK_OAM_CLKp, old_oam_latch_a.YSES_OAM_LATCH_DA6n.qp_old());
-  /* p29.YZAB*/ oam_temp_a.YZAB_OAM_DA7p.dff8n(_YWOK_OAM_CLKp, old_oam_latch_a.ZECA_OAM_LATCH_DA7n.qp_old());
+  (void)COTA_OAM_CLKn;
+  (void)old_oam_latch_a;
+  (void)oam_temp_a;
 }
 
 void GateBoy::oam_latch_to_temp_b(wire COTA_OAM_CLKn, const OamLatchB& old_oam_latch_b, OamTempB& oam_temp_b)
 {
-  /* p31.XEGA*/ wire _XEGA_OAM_CLKp = not1(COTA_OAM_CLKn);
-  /* p31.YLOR*/ oam_temp_b.YLOR_OAM_DB0p.dff8n(_XEGA_OAM_CLKp, old_oam_latch_b.XYKY_OAM_LATCH_DB0n.qp_old());
-  /* p31.ZYTY*/ oam_temp_b.ZYTY_OAM_DB1p.dff8n(_XEGA_OAM_CLKp, old_oam_latch_b.YRUM_OAM_LATCH_DB1n.qp_old());
-  /* p31.ZYVE*/ oam_temp_b.ZYVE_OAM_DB2p.dff8n(_XEGA_OAM_CLKp, old_oam_latch_b.YSEX_OAM_LATCH_DB2n.qp_old());
-  /* p31.ZEZY*/ oam_temp_b.ZEZY_OAM_DB3p.dff8n(_XEGA_OAM_CLKp, old_oam_latch_b.YVEL_OAM_LATCH_DB3n.qp_old());
-  /* p31.GOMO*/ oam_temp_b.GOMO_OAM_DB4p.dff8n(_XEGA_OAM_CLKp, old_oam_latch_b.WYNO_OAM_LATCH_DB4n.qp_old());
-  /* p31.BAXO*/ oam_temp_b.BAXO_OAM_DB5p.dff8n(_XEGA_OAM_CLKp, old_oam_latch_b.CYRA_OAM_LATCH_DB5n.qp_old());
-  /* p31.YZOS*/ oam_temp_b.YZOS_OAM_DB6p.dff8n(_XEGA_OAM_CLKp, old_oam_latch_b.ZUVE_OAM_LATCH_DB6n.qp_old());
-  /* p31.DEPO*/ oam_temp_b.DEPO_OAM_DB7p.dff8n(_XEGA_OAM_CLKp, old_oam_latch_b.ECED_OAM_LATCH_DB7n.qp_old());
+  (void)COTA_OAM_CLKn;
+  (void)old_oam_latch_b;
+  (void)oam_temp_b;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

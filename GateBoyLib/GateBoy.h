@@ -159,18 +159,27 @@ struct GateBoy {
   void tock_zram();
   void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
 
-  void store_sprite2(
-    const GateBoyBuses& old_bus,
-    const OamTempB& oam_temp_b,
+  void update_sprite_reset(
     const Gate WUTY_SFETCH_DONE_TRIGp,
     const Gate ATEJ_LINE_RSTp,
     const wire AMYG_VID_RSTp,
+    GateBoySpriteStore& sprite_store);
+
+  void update_store_clocks(
     const wire _DYTY_COUNT_CLKp,
     GateBoySpriteStore& sprite_store);
 
-  static void get_sprite2(
+  void store_sprite2(
+    const GateBoyBuses& old_bus,
+    const OamTempB& oam_temp_b,
+    GateBoySpriteStore& sprite_store);
+
+  static void update_sprite_match(
     const PixCount& pix_count,
     const wire AROR_MATCH_ENp,
+    GateBoySpriteStore& sprite_store);
+
+  static void get_sprite2(
     const SigIn SIG_GND,
     GateBoySpriteStore& sprite_store,
     GateBoyBuses& new_bus);

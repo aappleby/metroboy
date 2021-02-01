@@ -30,14 +30,14 @@ void GateBoy::tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
   {
     /*#p32.METE*/ wire _METE_LATCH_TILE_DAp = not1(_NYDY_LATCH_TILE_DAn);
     /*#p32.LOMA*/ wire _LOMA_LATCH_TILE_DAn = not1(_METE_LATCH_TILE_DAp);
-    /* p32.LEGU*/ tile_temp_a.LEGU_TILE_DA0n.dff8p(_LOMA_LATCH_TILE_DAn, old_bus.BUS_VRAM_D00p.qp_old());
-    /* p32.NUDU*/ tile_temp_a.NUDU_TILE_DA1n.dff8p(_LOMA_LATCH_TILE_DAn, old_bus.BUS_VRAM_D01p.qp_old());
-    /* p32.MUKU*/ tile_temp_a.MUKU_TILE_DA2n.dff8p(_LOMA_LATCH_TILE_DAn, old_bus.BUS_VRAM_D02p.qp_old());
-    /* p32.LUZO*/ tile_temp_a.LUZO_TILE_DA3n.dff8p(_LOMA_LATCH_TILE_DAn, old_bus.BUS_VRAM_D03p.qp_old());
-    /* p32.MEGU*/ tile_temp_a.MEGU_TILE_DA4n.dff8p(_LOMA_LATCH_TILE_DAn, old_bus.BUS_VRAM_D04p.qp_old());
-    /* p32.MYJY*/ tile_temp_a.MYJY_TILE_DA5n.dff8p(_LOMA_LATCH_TILE_DAn, old_bus.BUS_VRAM_D05p.qp_old());
-    /* p32.NASA*/ tile_temp_a.NASA_TILE_DA6n.dff8p(_LOMA_LATCH_TILE_DAn, old_bus.BUS_VRAM_D06p.qp_old());
-    /* p32.NEFO*/ tile_temp_a.NEFO_TILE_DA7n.dff8p(_LOMA_LATCH_TILE_DAn, old_bus.BUS_VRAM_D07p.qp_old());
+    /* p32.LEGU*/ tile_temp_a.LEGU_TILE_DA0n.dff8p(_LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D00p.qp_old());
+    /* p32.NUDU*/ tile_temp_a.NUDU_TILE_DA1n.dff8p(_LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D01p.qp_old());
+    /* p32.MUKU*/ tile_temp_a.MUKU_TILE_DA2n.dff8p(_LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D02p.qp_old());
+    /* p32.LUZO*/ tile_temp_a.LUZO_TILE_DA3n.dff8p(_LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D03p.qp_old());
+    /* p32.MEGU*/ tile_temp_a.MEGU_TILE_DA4n.dff8p(_LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D04p.qp_old());
+    /* p32.MYJY*/ tile_temp_a.MYJY_TILE_DA5n.dff8p(_LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D05p.qp_old());
+    /* p32.NASA*/ tile_temp_a.NASA_TILE_DA6n.dff8p(_LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D06p.qp_old());
+    /* p32.NEFO*/ tile_temp_a.NEFO_TILE_DA7n.dff8p(_LOMA_LATCH_TILE_DAn, vram_bus.BUS_VRAM_D07p.qp_old());
   }
 
   {
@@ -46,14 +46,14 @@ void GateBoy::tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
     /* p32.LESO*/ wire _LESO_LATCH_TILE_DBn = not1(_MOFU_LATCH_TILE_DBp);
     /* p32.LUVE*/ wire _LUVE_LATCH_TILE_DBp = not1(_LESO_LATCH_TILE_DBn); // Schematic wrong, was labeled AJAR
     /* p32.LABU*/ wire _LABU_LATCH_TILE_DBn = not1(_LUVE_LATCH_TILE_DBp);
-    /* p32.RAWU*/ tile_temp_b.RAWU_TILE_DB0p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), old_bus.BUS_VRAM_D00p.qp_old());
-    /* p32.POZO*/ tile_temp_b.POZO_TILE_DB1p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), old_bus.BUS_VRAM_D01p.qp_old());
-    /* p32.PYZO*/ tile_temp_b.PYZO_TILE_DB2p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), old_bus.BUS_VRAM_D02p.qp_old());
-    /* p32.POXA*/ tile_temp_b.POXA_TILE_DB3p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), old_bus.BUS_VRAM_D03p.qp_old());
-    /* p32.PULO*/ tile_temp_b.PULO_TILE_DB4p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), old_bus.BUS_VRAM_D04p.qp_old());
-    /* p32.POJU*/ tile_temp_b.POJU_TILE_DB5p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), old_bus.BUS_VRAM_D05p.qp_old());
-    /* p32.POWY*/ tile_temp_b.POWY_TILE_DB6p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), old_bus.BUS_VRAM_D06p.qp_old());
-    /* p32.PYJU*/ tile_temp_b.PYJU_TILE_DB7p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), old_bus.BUS_VRAM_D07p.qp_old());
+    /* p32.RAWU*/ tile_temp_b.RAWU_TILE_DB0p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), vram_bus.BUS_VRAM_D00p.qp_old());
+    /* p32.POZO*/ tile_temp_b.POZO_TILE_DB1p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), vram_bus.BUS_VRAM_D01p.qp_old());
+    /* p32.PYZO*/ tile_temp_b.PYZO_TILE_DB2p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), vram_bus.BUS_VRAM_D02p.qp_old());
+    /* p32.POXA*/ tile_temp_b.POXA_TILE_DB3p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), vram_bus.BUS_VRAM_D03p.qp_old());
+    /* p32.PULO*/ tile_temp_b.PULO_TILE_DB4p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), vram_bus.BUS_VRAM_D04p.qp_old());
+    /* p32.POJU*/ tile_temp_b.POJU_TILE_DB5p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), vram_bus.BUS_VRAM_D05p.qp_old());
+    /* p32.POWY*/ tile_temp_b.POWY_TILE_DB6p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), vram_bus.BUS_VRAM_D06p.qp_old());
+    /* p32.PYJU*/ tile_temp_b.PYJU_TILE_DB7p.dff11(_LABU_LATCH_TILE_DBn, SIG_VCC.qp_new(), vram_bus.BUS_VRAM_D07p.qp_old());
   }
 
   {

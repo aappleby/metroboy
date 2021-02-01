@@ -163,7 +163,7 @@ void GateBoy::reset_to_cart() {
   div.reset_to_cart();
   interrupts.reset_to_cart();
   serial.reset_to_cart();
-  sprite_store.reset_to_cart();
+  reset_sprite_store();
   sprite_scanner.reset_to_cart();
   sprite_fetcher.reset_to_cart();
   reg_stat.reset_to_cart();
@@ -780,7 +780,7 @@ void GateBoy::tock_slow(int pass_index) {
   /*#p24.TOMU*/ wire TOMU_WIN_HITp_old = not1(SYLO_WIN_HITn_old);
   /* p27.TUKU*/ wire TUKU_WIN_HITn_old = not1(TOMU_WIN_HITp_old);
   /* p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_old = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_old());
-  /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(sprite_store.FEPO_STORE_MATCHp.qp_old(), TUKU_WIN_HITn_old, tile_fetcher.LYRY_BFETCH_DONEp.qp_old(), SOWO_SFETCH_RUNNINGn_old);
+  /* p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(sprite_matches.FEPO_STORE_MATCHp.qp_old(), TUKU_WIN_HITn_old, tile_fetcher.LYRY_BFETCH_DONEp.qp_old(), SOWO_SFETCH_RUNNINGn_old);
   /* p27.SUDA*/ sprite_fetcher.SUDA_SFETCH_REQp.dff17(LAPE_AxCxExGx(), SIG_VCC.qp_new(), sprite_fetcher.SOBU_SFETCH_REQp.qp_old());
   /* p27.SOBU*/ sprite_fetcher.SOBU_SFETCH_REQp.dff17(TAVA_xBxDxFxH(), SIG_VCC.qp_new(), TEKY_SFETCH_REQp_old);
 
@@ -874,23 +874,26 @@ void GateBoy::tock_slow(int pass_index) {
     /* p29.CEHA*/ wire _CEHA_SCANNINGp = not1(sprite_scanner.CENO_SCANNINGn.qn_new());
     /* p29.CARE*/ wire _CARE_COUNT_CLKn = and3(XOCE_xBCxxFGx(), _CEHA_SCANNINGp, _GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /* p29.DYTY*/ wire _DYTY_COUNT_CLKp = not1(_CARE_COUNT_CLKn);
-    /* p29.DEZY*/ sprite_store.DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx(), XAPO_VID_RSTn(), _DYTY_COUNT_CLKp);
+    /* p29.DEZY*/ sprite_counter.DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx(), XAPO_VID_RSTn(), _DYTY_COUNT_CLKp);
 
     // There's a feedback loop here, but we don't actually need to loop - BAKY holds the clock line high once the sprite store is full, so doing a second logic pass
     // doesn't actually change any of the dffs.
     {
-      /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL_new = and2(sprite_store.CUXY_SPRITE_COUNT1.qp_any(), sprite_store.DYBE_SPRITE_COUNT3.qp_any());
-      /*#p29.CAKE*/ wire _CAKE_COUNT_CLKp_new = or2(_BAKY_SPRITES_FULL_new, sprite_store.DEZY_COUNT_CLKp.qp_any());
+      /*#p29.BAKY*/ wire _BAKY_SPRITES_FULL_new = and2(sprite_counter.CUXY_SPRITE_COUNT1.qp_any(), sprite_counter.DYBE_SPRITE_COUNT3.qp_any());
+      /*#p29.CAKE*/ wire _CAKE_COUNT_CLKp_new = or2(_BAKY_SPRITES_FULL_new, sprite_counter.DEZY_COUNT_CLKp.qp_any());
       /*#p28.AZYB*/ wire _AZYB_LINE_TRIGn = not1(ATEJ_LINE_RSTp.qp_new());
-      /* p29.BESE*/ sprite_store.BESE_SPRITE_COUNT0.dff17_any(_CAKE_COUNT_CLKp_new,                     _AZYB_LINE_TRIGn, sprite_store.BESE_SPRITE_COUNT0.qn_any());
-      /* p29.CUXY*/ sprite_store.CUXY_SPRITE_COUNT1.dff17_any(sprite_store.BESE_SPRITE_COUNT0.qn_any(), _AZYB_LINE_TRIGn, sprite_store.CUXY_SPRITE_COUNT1.qn_any());
-      /* p29.BEGO*/ sprite_store.BEGO_SPRITE_COUNT2.dff17_any(sprite_store.CUXY_SPRITE_COUNT1.qn_any(), _AZYB_LINE_TRIGn, sprite_store.BEGO_SPRITE_COUNT2.qn_any());
-      /* p29.DYBE*/ sprite_store.DYBE_SPRITE_COUNT3.dff17_any(sprite_store.BEGO_SPRITE_COUNT2.qn_any(), _AZYB_LINE_TRIGn, sprite_store.DYBE_SPRITE_COUNT3.qn_any());
+      /* p29.BESE*/ sprite_counter.BESE_SPRITE_COUNT0.dff17_any(_CAKE_COUNT_CLKp_new,                       _AZYB_LINE_TRIGn, sprite_counter.BESE_SPRITE_COUNT0.qn_any());
+      /* p29.CUXY*/ sprite_counter.CUXY_SPRITE_COUNT1.dff17_any(sprite_counter.BESE_SPRITE_COUNT0.qn_any(), _AZYB_LINE_TRIGn, sprite_counter.CUXY_SPRITE_COUNT1.qn_any());
+      /* p29.BEGO*/ sprite_counter.BEGO_SPRITE_COUNT2.dff17_any(sprite_counter.CUXY_SPRITE_COUNT1.qn_any(), _AZYB_LINE_TRIGn, sprite_counter.BEGO_SPRITE_COUNT2.qn_any());
+      /* p29.DYBE*/ sprite_counter.DYBE_SPRITE_COUNT3.dff17_any(sprite_counter.BEGO_SPRITE_COUNT2.qn_any(), _AZYB_LINE_TRIGn, sprite_counter.DYBE_SPRITE_COUNT3.qn_any());
     }
 
-    update_sprite_reset(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp, ATEJ_LINE_RSTp, AMYG_VID_RSTp(), sprite_store);
-    update_store_clocks(_DYTY_COUNT_CLKp, sprite_store);
-    store_sprite2(old_bus, oam_temp_b_old, sprite_store);
+    /* p28.ABAK*/ wire _ABAK_LINE_RSTp = or2(ATEJ_LINE_RSTp.qp_new(), AMYG_VID_RSTp());
+    /* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(_ABAK_LINE_RSTp);
+
+    update_sprite_resets(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp, _BYVA_LINE_RSTn, sprite_matches, sprite_resets);
+    update_sprite_store_clocks(sprite_counter, _DYTY_COUNT_CLKp, sprite_clocks);
+    store_sprite(sprite_clocks, sprite_resets, _BYVA_LINE_RSTn, old_bus, oam_temp_b_old, sprite_store);
   }
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -912,7 +915,7 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn);
     /*#p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
 
-    /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_store.FEPO_STORE_MATCHp.qp_any(), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx());
+    /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_matches.FEPO_STORE_MATCHp.qp_any(), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx());
     /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
     /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
     /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
@@ -948,20 +951,18 @@ void GateBoy::tock_slow(int pass_index) {
     /* p21.TAKO*/ pix_count.TAKO_PX6p.dff17_any(TOCA_new, TADY_LINE_RSTn, TYGE_old);
     /* p21.SYBE*/ pix_count.SYBE_PX7p.dff17_any(TOCA_new, TADY_LINE_RSTn, ROKU_old);
 
-    update_sprite_match(pix_count, AROR_MATCH_ENp, sprite_store);
+    get_sprite_match(pix_count, AROR_MATCH_ENp, sprite_store, sprite_matches);
   }
 
-  // Pix counter enables the pixel pipe clocks for later
-
-  // and triggers HBLANK if there's no sprite store match
+  // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
   {
-    /*#p21.XENA*/ wire XENA_STORE_MATCHn = not1(sprite_store.FEPO_STORE_MATCHp.qp_new());
+    /*#p21.XENA*/ wire XENA_STORE_MATCHn = not1(sprite_matches.FEPO_STORE_MATCHp.qp_new());
     /*#p21.XUGU*/ wire XUGU_PX167n = nand5(pix_count.XEHO_PX0p.qp_new(), pix_count.SAVY_PX1p.qp_new(), pix_count.XODU_PX2p.qp_new(), pix_count.TUKY_PX5p.qp_new(), pix_count.SYBE_PX7p.qp_new()); // 128 + 32 + 4 + 2 + 1 = 167
     /*#p21.XANO*/ wire XANO_PX167p = not1(XUGU_PX167n);
     /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn, XANO_PX167p); // WODU goes high on odd, cleared on H
   }
 
-  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_store.FEPO_STORE_MATCHp.qp_new(), WODU_HBLANKp.qp_new(), MYVO_AxCxExGx());
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_matches.FEPO_STORE_MATCHp.qp_new(), WODU_HBLANKp.qp_new(), MYVO_AxCxExGx());
   /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
@@ -972,9 +973,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  get_sprite2(SIG_GND, sprite_store, new_bus);
-
-
+  sprite_il_to_bus(sprite_store, sprite_matches, new_bus);
 
   {
     /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(sprite_scanner.CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
@@ -985,10 +984,10 @@ void GateBoy::tock_slow(int pass_index) {
     /* p30.WUCO_STORE_I4*/ new_bus.BUS_SPR_I4.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.YDUF_SPRITE_IDX4p.qn_new());
     /* p30.WEZA_STORE_I5*/ new_bus.BUS_SPR_I5.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XECU_SPRITE_IDX5p.qn_new());
 
-    /*#p30.CUCU_STORE_L0*/ new_bus.BUS_SPR_L0.tri6_nn(sprite_store.FEPO_STORE_MATCHp.qp_new(), delta.DEGE_SPRITE_DELTA0.qp_new());
-    /*#p30.CUCA_STORE_L1*/ new_bus.BUS_SPR_L1.tri6_nn(sprite_store.FEPO_STORE_MATCHp.qp_new(), delta.DABY_SPRITE_DELTA1.qp_new());
-    /*#p30.CEGA_STORE_L2*/ new_bus.BUS_SPR_L2.tri6_nn(sprite_store.FEPO_STORE_MATCHp.qp_new(), delta.DABU_SPRITE_DELTA2.qp_new());
-    /*#p30.WENU_STORE_L3*/ new_bus.BUS_SPR_L3.tri6_nn(sprite_store.FEPO_STORE_MATCHp.qp_new(), delta.GYSA_SPRITE_DELTA3.qp_new());
+    /*#p30.CUCU_STORE_L0*/ new_bus.BUS_SPR_L0.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.DEGE_SPRITE_DELTA0.qp_new());
+    /*#p30.CUCA_STORE_L1*/ new_bus.BUS_SPR_L1.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.DABY_SPRITE_DELTA1.qp_new());
+    /*#p30.CEGA_STORE_L2*/ new_bus.BUS_SPR_L2.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.DABU_SPRITE_DELTA2.qp_new());
+    /*#p30.WENU_STORE_L3*/ new_bus.BUS_SPR_L3.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.GYSA_SPRITE_DELTA3.qp_new());
   }
 
   {
@@ -1126,10 +1125,14 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
 
   tock_pix_pipes(SACU_CLKPIPE_evn, NYXU_BFETCH_RSTn);
+
+
   set_lcd_pins(SACU_CLKPIPE_evn);
   update_framebuffer();
   tock_ext_bus();
+
   tock_vram_bus(TEVO_WIN_FETCH_TRIGp);
+
   tock_oam_bus();
   tock_interrupts();
   tock_zram();

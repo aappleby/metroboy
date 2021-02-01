@@ -66,28 +66,6 @@ struct GateBoyBuses {
     BUS_OAM_DB05n.state = 0b00011100;
     BUS_OAM_DB06n.state = 0b00011100;
     BUS_OAM_DB07n.state = 0b00011100;
-
-    BUS_VRAM_A00n.state = 0b00011101;
-    BUS_VRAM_A01n.state = 0b00011101;
-    BUS_VRAM_A02n.state = 0b00011101;
-    BUS_VRAM_A03n.state = 0b00011101;
-    BUS_VRAM_A04n.state = 0b00011100;
-    BUS_VRAM_A05n.state = 0b00011101;
-    BUS_VRAM_A06n.state = 0b00011100;
-    BUS_VRAM_A07n.state = 0b00011101;
-    BUS_VRAM_A08n.state = 0b00011101;
-    BUS_VRAM_A09n.state = 0b00011101;
-    BUS_VRAM_A10n.state = 0b00011101;
-    BUS_VRAM_A11n.state = 0b00011101;
-    BUS_VRAM_A12n.state = 0b00011101;
-    BUS_VRAM_D00p.state = 0b00011100;
-    BUS_VRAM_D01p.state = 0b00011100;
-    BUS_VRAM_D02p.state = 0b00011100;
-    BUS_VRAM_D03p.state = 0b00011100;
-    BUS_VRAM_D04p.state = 0b00011100;
-    BUS_VRAM_D05p.state = 0b00011100;
-    BUS_VRAM_D06p.state = 0b00011100;
-    BUS_VRAM_D07p.state = 0b00011100;
   }
 
   void reset_for_pass() {
@@ -155,29 +133,6 @@ struct GateBoyBuses {
     BUS_OAM_DB05n.reset_for_pass();
     BUS_OAM_DB06n.reset_for_pass();
     BUS_OAM_DB07n.reset_for_pass();
-
-    BUS_VRAM_A00n.reset_for_pass();
-    BUS_VRAM_A01n.reset_for_pass();
-    BUS_VRAM_A02n.reset_for_pass();
-    BUS_VRAM_A03n.reset_for_pass();
-    BUS_VRAM_A04n.reset_for_pass();
-    BUS_VRAM_A05n.reset_for_pass();
-    BUS_VRAM_A06n.reset_for_pass();
-    BUS_VRAM_A07n.reset_for_pass();
-    BUS_VRAM_A08n.reset_for_pass();
-    BUS_VRAM_A09n.reset_for_pass();
-    BUS_VRAM_A10n.reset_for_pass();
-    BUS_VRAM_A11n.reset_for_pass();
-    BUS_VRAM_A12n.reset_for_pass();
-
-    BUS_VRAM_D00p.reset_for_pass();
-    BUS_VRAM_D01p.reset_for_pass();
-    BUS_VRAM_D02p.reset_for_pass();
-    BUS_VRAM_D03p.reset_for_pass();
-    BUS_VRAM_D04p.reset_for_pass();
-    BUS_VRAM_D05p.reset_for_pass();
-    BUS_VRAM_D06p.reset_for_pass();
-    BUS_VRAM_D07p.reset_for_pass();
   }
 
   void set_addr(int phase_total, Req bus_req_new)
@@ -359,30 +314,5 @@ struct GateBoyBuses {
   /*BUS_OAM_DB05n*/ Bus BUS_OAM_DB05n;
   /*BUS_OAM_DB06n*/ Bus BUS_OAM_DB06n;
   /*BUS_OAM_DB07n*/ Bus BUS_OAM_DB07n;
-
-  //----------------------------------------
-
-  /*BUS_VRAM_A00n*/ Bus BUS_VRAM_A00n;
-  /*BUS_VRAM_A01n*/ Bus BUS_VRAM_A01n;
-  /*BUS_VRAM_A02n*/ Bus BUS_VRAM_A02n;
-  /*BUS_VRAM_A03n*/ Bus BUS_VRAM_A03n;
-  /*BUS_VRAM_A04n*/ Bus BUS_VRAM_A04n;
-  /*BUS_VRAM_A05n*/ Bus BUS_VRAM_A05n;
-  /*BUS_VRAM_A06n*/ Bus BUS_VRAM_A06n;
-  /*BUS_VRAM_A07n*/ Bus BUS_VRAM_A07n;
-  /*BUS_VRAM_A08n*/ Bus BUS_VRAM_A08n;
-  /*BUS_VRAM_A09n*/ Bus BUS_VRAM_A09n;
-  /*BUS_VRAM_A10n*/ Bus BUS_VRAM_A10n;
-  /*BUS_VRAM_A11n*/ Bus BUS_VRAM_A11n;
-  /*BUS_VRAM_A12n*/ Bus BUS_VRAM_A12n;
-
-  /*BUS_VRAM_D00p*/ Bus BUS_VRAM_D00p;
-  /*BUS_VRAM_D01p*/ Bus BUS_VRAM_D01p;
-  /*BUS_VRAM_D02p*/ Bus BUS_VRAM_D02p;
-  /*BUS_VRAM_D03p*/ Bus BUS_VRAM_D03p;
-  /*BUS_VRAM_D04p*/ Bus BUS_VRAM_D04p;
-  /*BUS_VRAM_D05p*/ Bus BUS_VRAM_D05p;
-  /*BUS_VRAM_D06p*/ Bus BUS_VRAM_D06p;
-  /*BUS_VRAM_D07p*/ Bus BUS_VRAM_D07p;
 };
 

@@ -159,29 +159,34 @@ struct GateBoy {
   void tock_zram();
   void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
 
-  void update_sprite_reset(
+  void update_sprite_resets(
     const Gate WUTY_SFETCH_DONE_TRIGp,
-    const Gate ATEJ_LINE_RSTp,
-    const wire AMYG_VID_RSTp,
-    GateBoySpriteStore& sprite_store);
+    const wire BYVA_LINE_RSTn,
+    const SpriteMatchFlags& sprite_get_flag,
+    SpriteResetFlags& sprite_resets);
 
-  void update_store_clocks(
+  void update_sprite_store_clocks(
+    const SpriteCounter& sprite_counter,
     const wire _DYTY_COUNT_CLKp,
-    GateBoySpriteStore& sprite_store);
+    SpriteStoreClocks& sprite_clocks);
 
-  void store_sprite2(
+  void store_sprite(
+    const SpriteStoreClocks& sprite_clocks,
+    const SpriteResetFlags& sprite_resets,
+    const wire BYVA_LINE_RSTn,
     const GateBoyBuses& old_bus,
     const OamTempB& oam_temp_b,
     GateBoySpriteStore& sprite_store);
 
-  static void update_sprite_match(
+  static void get_sprite_match(
     const PixCount& pix_count,
     const wire AROR_MATCH_ENp,
-    GateBoySpriteStore& sprite_store);
-
-  static void get_sprite2(
-    const SigIn SIG_GND,
     GateBoySpriteStore& sprite_store,
+    SpriteMatchFlags& sprite_get_flag);
+
+  static void sprite_il_to_bus(
+    const GateBoySpriteStore& sprite_store,
+    const SpriteMatchFlags& sprite_get_flag,
     GateBoyBuses& new_bus);
 
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
@@ -345,6 +350,8 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
+  void reset_sprite_store();
+
   void dump_sys(Dumper& d) const;
   void dump_tile_fetcher(Dumper& d);
   void dump_clocks(Dumper& d);
@@ -366,12 +373,14 @@ struct GateBoy {
   GateBoyBuses old_bus;
   GateBoyBuses new_bus;
 
+  VramBus vram_bus;
+
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
 
   GateBoyCpuBus  cpu_bus;
   GateBoyExtBus  ext_bus;
-  GateBoyVramBus vram_bus;
+  GateBoyVramPins vram_pins;
   GateBoyOamBus  oam_bus;
   GateBoyZramBus zram_bus;
 
@@ -393,6 +402,13 @@ struct GateBoy {
   GateBoySerial     serial;
 
   GateBoySpriteStore   sprite_store;
+
+  SpriteCounter sprite_counter;
+
+  SpriteMatchFlags sprite_matches;
+  SpriteResetFlags sprite_resets;
+  SpriteStoreClocks sprite_clocks;
+
   SpriteScanner sprite_scanner;
 
   SpriteFetcher sprite_fetcher;

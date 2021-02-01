@@ -151,23 +151,23 @@ void GateBoy::tock_oam_bus()
   /* p04.LUFA*/ wire _LUFA_DMA_VRAMp = not1(_MUHO_DMA_VRAMp);
   /* p28.AZAR*/ wire _AZAR_VBD_TO_OBDn = not1(_LUFA_DMA_VRAMp);
 
-  /* p28.WUZU_VD0_TO_ODA0*/ new_bus.BUS_OAM_DA00n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D00p.qp_new());
-  /* p28.AXER_VD1_TO_ODA1*/ new_bus.BUS_OAM_DA01n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D01p.qp_new());
-  /* p28.ASOX_VD2_TO_ODA2*/ new_bus.BUS_OAM_DA02n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D02p.qp_new());
-  /* p28.CETU_VD3_TO_ODA3*/ new_bus.BUS_OAM_DA03n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D03p.qp_new());
-  /* p28.ARYN_VD4_TO_ODA4*/ new_bus.BUS_OAM_DA04n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D04p.qp_new());
-  /* p28.ACOT_VD5_TO_ODA5*/ new_bus.BUS_OAM_DA05n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D05p.qp_new());
-  /* p28.CUJE_VD6_TO_ODA6*/ new_bus.BUS_OAM_DA06n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D06p.qp_new());
-  /* p28.ATER_VD7_TO_ODA7*/ new_bus.BUS_OAM_DA07n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D07p.qp_new());
+  /* p28.WUZU_VD0_TO_ODA0*/ new_bus.BUS_OAM_DA00n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D00p.qp_new());
+  /* p28.AXER_VD1_TO_ODA1*/ new_bus.BUS_OAM_DA01n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D01p.qp_new());
+  /* p28.ASOX_VD2_TO_ODA2*/ new_bus.BUS_OAM_DA02n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D02p.qp_new());
+  /* p28.CETU_VD3_TO_ODA3*/ new_bus.BUS_OAM_DA03n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D03p.qp_new());
+  /* p28.ARYN_VD4_TO_ODA4*/ new_bus.BUS_OAM_DA04n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D04p.qp_new());
+  /* p28.ACOT_VD5_TO_ODA5*/ new_bus.BUS_OAM_DA05n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D05p.qp_new());
+  /* p28.CUJE_VD6_TO_ODA6*/ new_bus.BUS_OAM_DA06n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D06p.qp_new());
+  /* p28.ATER_VD7_TO_ODA7*/ new_bus.BUS_OAM_DA07n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D07p.qp_new());
 
-  /* p28.WOWA_VD0_TO_ODB0*/ new_bus.BUS_OAM_DB00n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D00p.qp_new());
-  /* p28.AVEB_VD1_TO_ODB1*/ new_bus.BUS_OAM_DB01n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D01p.qp_new());
-  /* p28.AMUH_VD2_TO_ODB2*/ new_bus.BUS_OAM_DB02n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D02p.qp_new());
-  /* p28.COFO_VD3_TO_ODB3*/ new_bus.BUS_OAM_DB03n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D03p.qp_new());
-  /* p28.AZOZ_VD4_TO_ODB4*/ new_bus.BUS_OAM_DB04n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D04p.qp_new());
-  /* p28.AGYK_VD5_TO_ODB5*/ new_bus.BUS_OAM_DB05n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D05p.qp_new());
-  /* p28.BUSE_VD6_TO_ODB6*/ new_bus.BUS_OAM_DB06n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D06p.qp_new());
-  /* p28.ANUM_VD7_TO_ODB7*/ new_bus.BUS_OAM_DB07n.tri6_nn(_AZAR_VBD_TO_OBDn, new_bus.BUS_VRAM_D07p.qp_new());
+  /* p28.WOWA_VD0_TO_ODB0*/ new_bus.BUS_OAM_DB00n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D00p.qp_new());
+  /* p28.AVEB_VD1_TO_ODB1*/ new_bus.BUS_OAM_DB01n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D01p.qp_new());
+  /* p28.AMUH_VD2_TO_ODB2*/ new_bus.BUS_OAM_DB02n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D02p.qp_new());
+  /* p28.COFO_VD3_TO_ODB3*/ new_bus.BUS_OAM_DB03n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D03p.qp_new());
+  /* p28.AZOZ_VD4_TO_ODB4*/ new_bus.BUS_OAM_DB04n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D04p.qp_new());
+  /* p28.AGYK_VD5_TO_ODB5*/ new_bus.BUS_OAM_DB05n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D05p.qp_new());
+  /* p28.BUSE_VD6_TO_ODB6*/ new_bus.BUS_OAM_DB06n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D06p.qp_new());
+  /* p28.ANUM_VD7_TO_ODB7*/ new_bus.BUS_OAM_DB07n.tri6_nn(_AZAR_VBD_TO_OBDn, vram_bus.BUS_VRAM_D07p.qp_new());
 
   /* p25.AVER*/ wire _AVER_AxxxExxx = nand2(sprite_scanner.ACYL_SCANNINGp.qp_new(), XYSO_xBCDxFGH());
   /* p25.CUFE*/ wire _CUFE_OAM_CLKp = not_or_and3(new_bus.SARO_ADDR_OAMp(), dma.MATU_DMA_RUNNINGp.qp_new(), MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter

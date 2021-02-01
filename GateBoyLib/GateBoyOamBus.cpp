@@ -75,12 +75,12 @@ void GateBoy::tock_oam_bus()
   /* p28.BETE*/ wire _BETE_SPR_I_TO_OAM_An = not1(_AJON_RENDERINGp);
   /* p28.GECA_FETCHX_TO_OA0*/ oam_bus.BUS_OAM_A00n.tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC.qp_new());
   /* p28.WYDU_FETCHX_TO_OA1*/ oam_bus.BUS_OAM_A01n.tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC.qp_new());
-  /* p28.GYBU_FETCH0_TO_OA2*/ oam_bus.BUS_OAM_A02n.tri6_nn(_BETE_SPR_I_TO_OAM_An, new_bus.BUS_SPR_I0.qp_new());
-  /* p28.GYKA_FETCH1_TO_OA3*/ oam_bus.BUS_OAM_A03n.tri6_nn(_BETE_SPR_I_TO_OAM_An, new_bus.BUS_SPR_I1.qp_new());
-  /* p28.FABY_FETCH2_TO_OA4*/ oam_bus.BUS_OAM_A04n.tri6_nn(_BETE_SPR_I_TO_OAM_An, new_bus.BUS_SPR_I2.qp_new());
-  /* p28.FACO_FETCH3_TO_OA5*/ oam_bus.BUS_OAM_A05n.tri6_nn(_BETE_SPR_I_TO_OAM_An, new_bus.BUS_SPR_I3.qp_new());
-  /* p28.FUGU_FETCH4_TO_OA6*/ oam_bus.BUS_OAM_A06n.tri6_nn(_BETE_SPR_I_TO_OAM_An, new_bus.BUS_SPR_I4.qp_new());
-  /* p28.FYKE_FETCH5_TO_OA7*/ oam_bus.BUS_OAM_A07n.tri6_nn(_BETE_SPR_I_TO_OAM_An, new_bus.BUS_SPR_I5.qp_new());
+  /* p28.GYBU_FETCH0_TO_OA2*/ oam_bus.BUS_OAM_A02n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I0.qp_new());
+  /* p28.GYKA_FETCH1_TO_OA3*/ oam_bus.BUS_OAM_A03n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I1.qp_new());
+  /* p28.FABY_FETCH2_TO_OA4*/ oam_bus.BUS_OAM_A04n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I2.qp_new());
+  /* p28.FACO_FETCH3_TO_OA5*/ oam_bus.BUS_OAM_A05n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I3.qp_new());
+  /* p28.FUGU_FETCH4_TO_OA6*/ oam_bus.BUS_OAM_A06n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I4.qp_new());
+  /* p28.FYKE_FETCH5_TO_OA7*/ oam_bus.BUS_OAM_A07n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I5.qp_new());
 
   // cpu to oam data bus
 

@@ -6,7 +6,6 @@
 
 #include "GateBoyLib/Probe.h"
 
-#include "GateBoyLib/GateBoyBuses.h"
 #include "GateBoyLib/GateBoyTimer.h"
 #include "GateBoyLib/GateBoyLCD.h"
 #include "GateBoyLib/GateBoyDMA.h"
@@ -174,7 +173,7 @@ struct GateBoy {
     const SpriteStoreClocks& sprite_clocks,
     const SpriteResetFlags& sprite_resets,
     const wire BYVA_LINE_RSTn,
-    const GateBoyBuses& old_bus,
+    const SpriteBus& sprite_bus,
     const OamTempB& oam_temp_b,
     GateBoySpriteStore& sprite_store);
 
@@ -187,7 +186,7 @@ struct GateBoy {
   static void sprite_il_to_bus(
     const GateBoySpriteStore& sprite_store,
     const SpriteMatchFlags& sprite_get_flag,
-    GateBoyBuses& new_bus);
+    SpriteBus& sprite_bus);
 
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
 
@@ -301,24 +300,24 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  /* p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(cpu_bus.TEDO_CPU_RDp.qp_new()); }
-  /* p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(cpu_bus.TAPU_CPU_WRp.qp_new()); }
+  /* p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(cpu_signals.TEDO_CPU_RDp.qp_new()); }
+  /* p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(cpu_signals.TAPU_CPU_WRp.qp_new()); }
   /* p07.ASOT*/ wire ASOT_CPU_RDp      () const { return not1(AJAS_CPU_RDn()); }
   /* p28.MYNU*/ wire MYNU_CPU_RDn      () const { return nand2(ASOT_CPU_RDp(), CATY_LATCH_EXTp()); }
   /* p28.LEKO*/ wire LEKO_CPU_RDp      () const { return not1(MYNU_CPU_RDn()); }
   /* p07.CUPA*/ wire CUPA_CPU_WRp      () const { return not1(DYKY_CPU_WRn()); }
-  /* p08.REDU*/ wire REDU_CPU_RDn      () const { return not1(cpu_bus.TEDO_CPU_RDp.qp_new()); }
-  /* p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(cpu_bus.APOV_CPU_WRp.qp_new()); }
+  /* p08.REDU*/ wire REDU_CPU_RDn      () const { return not1(cpu_signals.TEDO_CPU_RDp.qp_new()); }
+  /* p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(cpu_signals.APOV_CPU_WRp.qp_new()); }
 
-  /* p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(cpu_bus.SIG_CPU_LATCH_EXT.qp_new()); }
+  /* p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(cpu_signals.SIG_CPU_LATCH_EXT.qp_new()); }
   /* p04.CATY*/ wire CATY_LATCH_EXTp   () const { return not1(DECY_LATCH_EXTn()); }
   /*#p28.BOFE*/ wire BOFE_LATCH_EXTn   () const { return not1(CATY_LATCH_EXTp()); }
 
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(cpu_bus.SIG_CPU_EXT_BUSp.qp_new(), new_bus.TEVY_ADDR_VRAMn()); }
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(cpu_signals.SIG_CPU_EXT_BUSp.qp_new(), new_bus.TEVY_ADDR_VRAMn()); }
   /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(new_bus.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
   /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), new_bus.BUS_CPU_A15p.qp_new()); }
   /* p08.LEVO*/ wire LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
-  /* p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), cpu_bus.APOV_CPU_WRp.qp_new()); }
+  /* p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), cpu_signals.APOV_CPU_WRp.qp_new()); }
 
   wire TOLE_CPU_VRAM_RDp() const
   {
@@ -328,7 +327,7 @@ struct GateBoy {
     ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
     ///*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = mux2p(_TEFY_VRAM_MCSp, _TUTO_DBG_VRAMp, _TUCA_CPU_VRAM_RDp);
 
-    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), cpu_bus.ABUZ_EXT_RAM_CS_CLK.qp_new());
+    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new());
     /*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = not1(_TUCA_CPU_VRAM_RDp);
 
     return _TOLE_CPU_VRAM_RDp;
@@ -342,7 +341,7 @@ struct GateBoy {
     ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
     ///*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = mux2p(_TUTO_DBG_VRAMp, _TAVY_MOEp, _TEGU_CPU_VRAM_WRn);
 
-    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), cpu_bus.SIG_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_CPU_WRp
+    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), cpu_signals.SIG_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_CPU_WRp
     /*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = not1(_TEGU_CPU_VRAM_WRn);
 
     return _SALE_CPU_VRAM_WRn;
@@ -370,15 +369,15 @@ struct GateBoy {
   //----------
 
   GateBoyPins pins;
-  GateBoyBuses old_bus;
-  GateBoyBuses new_bus;
+  GateBoyCpuBus old_bus;
+  GateBoyCpuBus new_bus;
 
   VramBus vram_bus;
 
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
 
-  GateBoyCpuBus  cpu_bus;
+  GateBoyCpuSignals  cpu_signals;
   GateBoyExtBus  ext_bus;
   GateBoyVramPins vram_pins;
   GateBoyOamBus  oam_bus;
@@ -403,6 +402,7 @@ struct GateBoy {
 
   GateBoySpriteStore   sprite_store;
 
+  SpriteBus sprite_bus;
   SpriteCounter sprite_counter;
 
   SpriteMatchFlags sprite_matches;

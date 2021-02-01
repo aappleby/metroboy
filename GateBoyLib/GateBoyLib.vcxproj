@@ -18,7 +18,6 @@
   <ItemGroup>
     <ClCompile Include="BusDump.cpp" />
     <ClCompile Include="GateBoy.cpp" />
-    <ClCompile Include="GateBoyBuses.cpp" />
     <ClCompile Include="GateBoyClocks.cpp" />
     <ClCompile Include="GateBoyCpuBus.cpp" />
     <ClCompile Include="GateBoyDMA.cpp" />
@@ -51,7 +50,6 @@
   <ItemGroup>
     <ClInclude Include="BusDump.h" />
     <ClInclude Include="GateBoy.h" />
-    <ClInclude Include="GateBoyBuses.h" />
     <ClInclude Include="GateBoyCpuBus.h" />
     <ClInclude Include="GateBoyPins.h" />
     <ClInclude Include="GateBoyRegisters.h" />

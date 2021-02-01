@@ -1,12 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-#include "GateBoyLib/GateBoyBuses.h"
-
-struct GateBoyResetDebug;
-struct GateBoyClock;
-struct GateBoyCpuBus;
-
 //-----------------------------------------------------------------------------
 // FF04 DIV
 

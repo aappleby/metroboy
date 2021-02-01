@@ -145,7 +145,7 @@ void GateBoy::reset_to_cart() {
   old_bus.reset_to_cart_new();
   new_bus.reset_to_cart_new();
 
-  cpu_bus.reset_to_cart();
+  cpu_signals.reset_to_cart();
   oam_bus.reset_to_cart();
   ext_bus.reset_to_cart();
   vram_bus.reset_to_cart();
@@ -289,7 +289,7 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 struct GateBoyOffsets {
   const int o_old_bus        = offsetof(GateBoy, old_bus);
   const int o_new_bus        = offsetof(GateBoy, new_bus);
-  const int o_cpu_bus        = offsetof(GateBoy, cpu_bus);
+  const int o_cpu_bus        = offsetof(GateBoy, cpu_signals);
   const int o_ext_bus        = offsetof(GateBoy, ext_bus);
   const int o_vram_bus       = offsetof(GateBoy, vram_bus);
   const int o_oam_bus        = offsetof(GateBoy, oam_bus);
@@ -312,8 +312,8 @@ struct GateBoyOffsets {
   const int o_joypad         = offsetof(GateBoy, joy);
   const int o_ser_reg        = offsetof(GateBoy, serial);
 
-  const int o_SPR_TRI_I      = offsetof(GateBoy, new_bus.BUS_SPR_I0);
-  const int o_SPR_TRI_L      = offsetof(GateBoy, new_bus.BUS_SPR_L0);
+  const int o_SPR_TRI_I      = offsetof(GateBoy, sprite_bus.BUS_SPR_I0);
+  const int o_SPR_TRI_L      = offsetof(GateBoy, sprite_bus.BUS_SPR_L0);
 
   const int o_sprite_store   = offsetof(GateBoy, sprite_store);
   const int o_sprite_scanner = offsetof(GateBoy, sprite_scanner);
@@ -470,15 +470,15 @@ void GateBoy::tock_slow(int pass_index) {
   tock_clocks();
 
   {
-    /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(cpu_bus.SIG_CPU_RDp.qp_new());
-    /* p07.TEDO*/ cpu_bus.TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
+    /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(cpu_signals.SIG_CPU_RDp.qp_new());
+    /* p07.TEDO*/ cpu_signals.TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
 
     /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(ADAR_ABCxxxxH(), ATYP_ABCDxxxx());
-    /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(cpu_bus.SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
-    /* p01.APOV*/ cpu_bus.APOV_CPU_WRp = not1(_AREV_CPU_WRn);
+    /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(cpu_signals.SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
+    /* p01.APOV*/ cpu_signals.APOV_CPU_WRp = not1(_AREV_CPU_WRn);
 
-    /* p07.UBAL*/ wire _UBAL_CPU_WRn = not1(cpu_bus.APOV_CPU_WRp.qp_new());
-    /* p07.TAPU*/ cpu_bus.TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
+    /* p07.UBAL*/ wire _UBAL_CPU_WRn = not1(cpu_signals.APOV_CPU_WRp.qp_new());
+    /* p07.TAPU*/ cpu_signals.TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
   }
 
   tock_div();
@@ -543,29 +543,29 @@ void GateBoy::tock_slow(int pass_index) {
 
   // Bootrom
   {
-    /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
+    /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_signals.TAPU_CPU_WRp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
     // FF50 - disable bootrom bit
 
-    /* p07.TEPU*/ cpu_bus.TEPU_BOOT_BITn_h.dff17(_TUGE_FF50_WRn, ALUR_SYS_RSTn(), SATO_BOOT_BITn.qp_old());
+    /* p07.TEPU*/ cpu_signals.TEPU_BOOT_BITn_h.dff17(_TUGE_FF50_WRn, ALUR_SYS_RSTn(), SATO_BOOT_BITn.qp_old());
 
     // BOOT -> CBD
     // this is kind of a hack
     uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
     wire bootrom_data = boot_buf[cpu_addr & 0xFF];
 
-    /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(cpu_bus.TEPU_BOOT_BITn_h.qp_new());
+    /* p07.TERA*/ wire _TERA_BOOT_BITp  = not1(cpu_signals.TEPU_BOOT_BITn_h.qp_new());
     /* p07.TUTU*/ wire _TUTU_READ_BOOTROMp = and2(_TERA_BOOT_BITp, new_bus.TULO_ADDR_BOOTROMp());
-    /*SIG_CPU_BOOTp*/ cpu_bus.SIG_CPU_BOOTp.sig_out(_TUTU_READ_BOOTROMp);
+    /*SIG_CPU_BOOTp*/ cpu_signals.SIG_CPU_BOOTp.sig_out(_TUTU_READ_BOOTROMp);
 
     /* p07.ZORO*/ wire _ZORO_0000xxxx_XX = nor4(new_bus.BUS_CPU_A15p.qp_new(), new_bus.BUS_CPU_A14p.qp_new(), new_bus.BUS_CPU_A13p.qp_new(), new_bus.BUS_CPU_A12p.qp_new());
     /* p07.ZADU*/ wire _ZADU_xxxx0000_XX = nor4(new_bus.BUS_CPU_A11p.qp_new(), new_bus.BUS_CPU_A10p.qp_new(), new_bus.BUS_CPU_A09p.qp_new(), new_bus.BUS_CPU_A08p.qp_new());
     /* p07.ZUFA*/ wire _ZUFA_0000_00FF  = and2(_ZORO_0000xxxx_XX, _ZADU_xxxx0000_XX);
     /* p07.YAZA*/ wire _YAZA_MODE_DBG1n = not1(UMUT_MODE_DBG1p());
-    /* p07.YULA*/ wire _YULA_BOOT_RDp   = and3(cpu_bus.TEDO_CPU_RDp.qp_new(), _YAZA_MODE_DBG1n, _TUTU_READ_BOOTROMp); // def AND
+    /* p07.YULA*/ wire _YULA_BOOT_RDp   = and3(cpu_signals.TEDO_CPU_RDp.qp_new(), _YAZA_MODE_DBG1n, _TUTU_READ_BOOTROMp); // def AND
     /* p07.ZADO*/ wire _ZADO_BOOT_CSn   = nand2(_YULA_BOOT_RDp, _ZUFA_0000_00FF);
     /* p07.ZERY*/ wire _ZERY_BOOT_CSp   = not1(_ZADO_BOOT_CSn);
 
-    /*SIG_BOOT_CSp*/ cpu_bus.SIG_BOOT_CSp.sig_out(_ZERY_BOOT_CSp);
+    /*SIG_BOOT_CSp*/ cpu_signals.SIG_BOOT_CSp.sig_out(_ZERY_BOOT_CSp);
 
     new_bus.BUS_CPU_D00p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 0));
     new_bus.BUS_CPU_D01p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 1));
@@ -576,15 +576,15 @@ void GateBoy::tock_slow(int pass_index) {
     new_bus.BUS_CPU_D06p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 6));
     new_bus.BUS_CPU_D07p.tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 7));
 
-    /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_bus.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
-    /* p07.SYPU_BOOT_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TEXE_FF50_RDp, cpu_bus.TEPU_BOOT_BITn_h.qp_new());
+    /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_signals.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
+    /* p07.SYPU_BOOT_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TEXE_FF50_RDp, cpu_signals.TEPU_BOOT_BITn_h.qp_new());
 
-    /* p07.SATO*/ SATO_BOOT_BITn = or2(new_bus.BUS_CPU_D00p.qp_new(), cpu_bus.TEPU_BOOT_BITn_h.qp_new());
+    /* p07.SATO*/ SATO_BOOT_BITn = or2(new_bus.BUS_CPU_D00p.qp_new(), cpu_signals.TEPU_BOOT_BITn_h.qp_new());
   }
 
-  /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(AROV_xxCDEFxx(), AJAX_xxxxEFGH(), cpu_bus.SIG_CPU_EXT_BUSp.qp_new());
+  /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(AROV_xxCDEFxx(), AJAX_xxxxEFGH(), cpu_signals.SIG_CPU_EXT_BUSp.qp_new());
   /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH);
-  /*#p01.ABUZ*/ cpu_bus.ABUZ_EXT_RAM_CS_CLK = not1(_AWOD_ABxxxxxx);
+  /*#p01.ABUZ*/ cpu_signals.ABUZ_EXT_RAM_CS_CLK = not1(_AWOD_ABxxxxxx);
 
   // lx/ly/line reset
   {
@@ -893,7 +893,7 @@ void GateBoy::tock_slow(int pass_index) {
 
     update_sprite_resets(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp, _BYVA_LINE_RSTn, sprite_matches, sprite_resets);
     update_sprite_store_clocks(sprite_counter, _DYTY_COUNT_CLKp, sprite_clocks);
-    store_sprite(sprite_clocks, sprite_resets, _BYVA_LINE_RSTn, old_bus, oam_temp_b_old, sprite_store);
+    store_sprite(sprite_clocks, sprite_resets, _BYVA_LINE_RSTn, sprite_bus, oam_temp_b_old, sprite_store);
   }
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -973,21 +973,22 @@ void GateBoy::tock_slow(int pass_index) {
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  sprite_il_to_bus(sprite_store, sprite_matches, new_bus);
+  sprite_bus.reset_for_pass();
+  sprite_il_to_bus(sprite_store, sprite_matches, sprite_bus);
 
   {
     /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(sprite_scanner.CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
-    /*#p30.WUZY_STORE_I0*/ new_bus.BUS_SPR_I0.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XADU_SPRITE_IDX0p.qn_new());
-    /* p30.WYSE_STORE_I1*/ new_bus.BUS_SPR_I1.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XEDY_SPRITE_IDX1p.qn_new());
-    /* p30.ZYSU_STORE_I2*/ new_bus.BUS_SPR_I2.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.ZUZE_SPRITE_IDX2p.qn_new());
-    /* p30.WYDA_STORE_I3*/ new_bus.BUS_SPR_I3.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XOBE_SPRITE_IDX3p.qn_new());
-    /* p30.WUCO_STORE_I4*/ new_bus.BUS_SPR_I4.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.YDUF_SPRITE_IDX4p.qn_new());
-    /* p30.WEZA_STORE_I5*/ new_bus.BUS_SPR_I5.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XECU_SPRITE_IDX5p.qn_new());
+    /*#p30.WUZY_STORE_I0*/ sprite_bus.BUS_SPR_I0.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XADU_SPRITE_IDX0p.qn_new());
+    /* p30.WYSE_STORE_I1*/ sprite_bus.BUS_SPR_I1.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XEDY_SPRITE_IDX1p.qn_new());
+    /* p30.ZYSU_STORE_I2*/ sprite_bus.BUS_SPR_I2.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.ZUZE_SPRITE_IDX2p.qn_new());
+    /* p30.WYDA_STORE_I3*/ sprite_bus.BUS_SPR_I3.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XOBE_SPRITE_IDX3p.qn_new());
+    /* p30.WUCO_STORE_I4*/ sprite_bus.BUS_SPR_I4.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.YDUF_SPRITE_IDX4p.qn_new());
+    /* p30.WEZA_STORE_I5*/ sprite_bus.BUS_SPR_I5.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XECU_SPRITE_IDX5p.qn_new());
 
-    /*#p30.CUCU_STORE_L0*/ new_bus.BUS_SPR_L0.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.DEGE_SPRITE_DELTA0.qp_new());
-    /*#p30.CUCA_STORE_L1*/ new_bus.BUS_SPR_L1.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.DABY_SPRITE_DELTA1.qp_new());
-    /*#p30.CEGA_STORE_L2*/ new_bus.BUS_SPR_L2.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.DABU_SPRITE_DELTA2.qp_new());
-    /*#p30.WENU_STORE_L3*/ new_bus.BUS_SPR_L3.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.GYSA_SPRITE_DELTA3.qp_new());
+    /*#p30.CUCU_STORE_L0*/ sprite_bus.BUS_SPR_L0.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.DEGE_SPRITE_DELTA0.qp_new());
+    /*#p30.CUCA_STORE_L1*/ sprite_bus.BUS_SPR_L1.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.DABY_SPRITE_DELTA1.qp_new());
+    /*#p30.CEGA_STORE_L2*/ sprite_bus.BUS_SPR_L2.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.DABU_SPRITE_DELTA2.qp_new());
+    /*#p30.WENU_STORE_L3*/ sprite_bus.BUS_SPR_L3.tri6_nn(sprite_matches.FEPO_STORE_MATCHp.qp_new(), delta.GYSA_SPRITE_DELTA3.qp_new());
   }
 
   {
@@ -1137,7 +1138,7 @@ void GateBoy::tock_slow(int pass_index) {
   tock_interrupts();
   tock_zram();
 
-  const_cast<GateBoyBuses&>(old_bus) = new_bus;
+  const_cast<GateBoyCpuBus&>(old_bus) = new_bus;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -1,7 +1,50 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-#include "GateBoyLib/GateBoyBuses.h"
+//-----------------------------------------------------------------------------
+
+struct SpriteBus {
+  void reset_to_cart() {
+    BUS_SPR_I0.state = 0b00011100;
+    BUS_SPR_I1.state = 0b00011100;
+    BUS_SPR_I2.state = 0b00011101;
+    BUS_SPR_I3.state = 0b00011100;
+    BUS_SPR_I4.state = 0b00011101;
+    BUS_SPR_I5.state = 0b00011100;
+    BUS_SPR_L0.state = 0b00011101;
+    BUS_SPR_L1.state = 0b00011101;
+    BUS_SPR_L2.state = 0b00011101;
+    BUS_SPR_L3.state = 0b00011101;
+  }
+
+  void reset_for_pass() {
+    BUS_SPR_I0.reset_for_pass();
+    BUS_SPR_I1.reset_for_pass();
+    BUS_SPR_I2.reset_for_pass();
+    BUS_SPR_I3.reset_for_pass();
+    BUS_SPR_I4.reset_for_pass();
+    BUS_SPR_I5.reset_for_pass();
+
+    BUS_SPR_L0.reset_for_pass();
+    BUS_SPR_L1.reset_for_pass();
+    BUS_SPR_L2.reset_for_pass();
+    BUS_SPR_L3.reset_for_pass();
+  }
+
+  //----------------------------------------
+
+  /*BUS_SPR_I0*/ Bus BUS_SPR_I0; // AxCxExGx
+  /*BUS_SPR_I1*/ Bus BUS_SPR_I1; // AxCxExGx
+  /*BUS_SPR_I2*/ Bus BUS_SPR_I2; // AxCxExGx
+  /*BUS_SPR_I3*/ Bus BUS_SPR_I3; // AxCxExGx
+  /*BUS_SPR_I4*/ Bus BUS_SPR_I4; // AxCxExGx
+  /*BUS_SPR_I5*/ Bus BUS_SPR_I5; // AxCxExGx
+
+  /*BUS_SPR_L0*/ Bus BUS_SPR_L0; // AxCxExGx
+  /*BUS_SPR_L1*/ Bus BUS_SPR_L1; // AxCxExGx
+  /*BUS_SPR_L2*/ Bus BUS_SPR_L2; // AxCxExGx
+  /*BUS_SPR_L3*/ Bus BUS_SPR_L3; // AxCxExGx
+};
 
 //------------------------------------------------------------------------------------------------------------------------
 

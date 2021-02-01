@@ -1,9 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-#include "GateBoyLib/GateBoyBuses.h"
-#include "GateBoyLib/GateBoyRegisters.h"
-
 //-----------------------------------------------------------------------------
 
 struct VramBus {

@@ -944,7 +944,7 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 struct GateBoyClock;
 struct GateBoyVideoClock;
-struct GateBoyCpuBus;
+struct GateBoyCpuSignals;
 struct GateBoyDMA;
 struct GateBoyExtBus;
 struct GateBoyInterrupts;

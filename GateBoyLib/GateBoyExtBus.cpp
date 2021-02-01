@@ -99,7 +99,7 @@ void GateBoy::tock_ext_bus()
   /* p04.LUMA*/ wire _LUMA_DMA_CARTp = not1(_MORY_DMA_CARTn);
 
   {
-    /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.SIG_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_bus.SIG_CPU_WRp.qp_new());
+    /* p08.LAGU*/ wire _LAGU = and_or3(cpu_signals.SIG_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_CPU_WRp.qp_new());
     /* p08.LYWE*/ wire _LYWE = not1(_LAGU);
     /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
     /* p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(_LUMA_DMA_CARTp, _MOTY_CPU_EXT_RD);
@@ -117,7 +117,7 @@ void GateBoy::tock_ext_bus()
   }
 
   {
-    /* p08.TOZA*/ wire _TOZA_CS_A = and3(cpu_bus.ABUZ_EXT_RAM_CS_CLK.qp_new(), new_bus.TYNU_A000_FFFFp(), new_bus.TUNA_0000_FDFF());
+    /* p08.TOZA*/ wire _TOZA_CS_A = and3(cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new(), new_bus.TYNU_A000_FFFFp(), new_bus.TUNA_0000_FDFF());
     /* p08.TYHO*/ wire _TYHO_CS_A = mux2p(_LUMA_DMA_CARTp, dma.MARU_DMA_A15n.qn_new(), _TOZA_CS_A);
     /*PIN_80*/ ext_bus.PIN_80_CSn.pin_out_dp(_TYHO_CS_A);
   }
@@ -207,10 +207,10 @@ void GateBoy::tock_ext_bus()
   /*PIN_15*/ ext_bus.PIN_15_A14.pin_out_hilo(_PUHE, _PAHY);
 
   // A15 is "special"
-  /* p07.TERA*/ wire TERA_BOOT_BITp = not1(cpu_bus.TEPU_BOOT_BITn_h.qp_new());
+  /* p07.TERA*/ wire TERA_BOOT_BITp = not1(cpu_signals.TEPU_BOOT_BITn_h.qp_new());
   /* p07.TUTU*/ wire TUTU_READ_BOOTROMp = and2(TERA_BOOT_BITp, new_bus.TULO_ADDR_BOOTROMp());
   /* p08.SOBY*/ wire _SOBY_A15n = nor2 (new_bus.BUS_CPU_A15p.qp_new(), TUTU_READ_BOOTROMp);
-  /* p08.SEPY*/ wire _SEPY_A15p = nand2(cpu_bus.ABUZ_EXT_RAM_CS_CLK.qp_new(), _SOBY_A15n);
+  /* p08.SEPY*/ wire _SEPY_A15p = nand2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new(), _SOBY_A15n);
   /* p08.TAZY*/ wire _TAZY_A15p = mux2p (_LUMA_DMA_CARTp, dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
   /* p08.SUZE*/ wire _SUZE_A15n = nand2(_TAZY_A15p, RYCA_MODE_DBG2n());
   /* p08.RULO*/ wire _RULO_A15n = nor2 (_TAZY_A15p, UNOR_MODE_DBG2p());
@@ -219,7 +219,7 @@ void GateBoy::tock_ext_bus()
   // FIXME So does this mean that if the CPU writes to the external bus during dma, that data
   // will actually end up in oam?
 
-  /* p08.LAGU*/ wire _LAGU = and_or3(cpu_bus.SIG_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_bus.SIG_CPU_WRp.qp_new());
+  /* p08.LAGU*/ wire _LAGU = and_or3(cpu_signals.SIG_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_CPU_WRp.qp_new());
   /* p08.LYWE*/ wire _LYWE = not1(_LAGU);
   /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
   /* p08.RORU*/ wire _RORU_CBD_TO_EPDn = mux2p(UNOR_MODE_DBG2p(), REDU_CPU_RDn(), _MOTY_CPU_EXT_RD);
@@ -320,7 +320,7 @@ void GateBoy::tock_ext_bus()
     if (eram_WRp) int_ram[addr & 0x1FFF]  = data;
   }
 
-  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_bus.SIG_CPU_RDp.qp_new(), TEXO_ADDR_VRAMn(), cpu_bus.SIG_CPU_LATCH_EXT.qp_new());
+  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_signals.SIG_CPU_RDp.qp_new(), TEXO_ADDR_VRAMn(), cpu_signals.SIG_CPU_LATCH_EXT.qp_new());
 
   /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(_LAVO_HOLDn, ext_bus.PIN_17_D00.qp_new());
   /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(_LAVO_HOLDn, ext_bus.PIN_18_D01.qp_new());

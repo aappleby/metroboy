@@ -226,10 +226,10 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
 
   /*#p29.XUQU*/ wire XUQU_SPRITE_AB = not1(sprite_fetcher.VONU_SFETCH_S1p_D4.qn_new());
 
-  /*#p29.CYVU*/ wire _CYVU_L0 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L0.qp_new());
-  /*#p29.BORE*/ wire _BORE_L1 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L1.qp_new());
-  /*#p29.BUVY*/ wire _BUVY_L2 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L2.qp_new());
-  /*#p29.WAGO*/ wire _WAGO_L3 = xor2(_WUKY_FLIP_Yp, new_bus.BUS_SPR_L3.qp_new());
+  /*#p29.CYVU*/ wire _CYVU_L0 = xor2(_WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L0.qp_new());
+  /*#p29.BORE*/ wire _BORE_L1 = xor2(_WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L1.qp_new());
+  /*#p29.BUVY*/ wire _BUVY_L2 = xor2(_WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L2.qp_new());
+  /*#p29.WAGO*/ wire _WAGO_L3 = xor2(_WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L3.qp_new());
   /*#p29.GEJY*/ wire _GEJY_L3 = amux2(oam_temp_a.XUSO_OAM_DA0p.qp_new(), _FUFO_LCDC_SPSIZEn, reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), _WAGO_L3);
 
   /* p29.ABON*/ wire _ABON_SFETCHINGn = not1(sprite_fetcher.TEXY_SFETCHINGp.qp_new());

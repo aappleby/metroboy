@@ -1,8 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-#include "GateBoyLib/GateBoyBuses.h"
-
 // Bottom-level registers that don't have dependencies on anything else.
 
 // #define ADDR_LCDC        0xFF40

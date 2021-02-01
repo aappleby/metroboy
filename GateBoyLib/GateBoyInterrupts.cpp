@@ -10,8 +10,8 @@ void GateBoy::tock_interrupts()
 {
   uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
-  wire FFFF_RDn_ext = nand2(cpu_bus.TEDO_CPU_RDp.qp_new(), FFFF_HIT_ext);
-  wire FFFF_WRn_ext = nand2(cpu_bus.TAPU_CPU_WRp.qp_new(), FFFF_HIT_ext);
+  wire FFFF_RDn_ext = nand2(cpu_signals.TEDO_CPU_RDp.qp_new(), FFFF_HIT_ext);
+  wire FFFF_WRn_ext = nand2(cpu_signals.TAPU_CPU_WRp.qp_new(), FFFF_HIT_ext);
 
   interrupts.IE_D0.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D00p.qp_old());
   interrupts.IE_D1.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D01p.qp_old());
@@ -61,7 +61,7 @@ void GateBoy::tock_interrupts()
   /*#p21.VOTY*/ wire _VOTY_INT_STATp   = not1(_TUVA_INT_STATn);
 
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp());
-  /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_bus.TAPU_CPU_WRp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_signals.TAPU_CPU_WRp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
 
   // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
   // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
@@ -116,7 +116,7 @@ void GateBoy::tock_interrupts()
   new_bus.BUS_CPU_D03p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D3.qn_new());
   new_bus.BUS_CPU_D04p.tri6_nn(FFFF_RDn_ext, interrupts.IE_D4.qn_new());
 
-  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_bus.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_signals.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
   /* p02.POLA*/ wire _POLA_FF0F_RDp = not1(_ROLO_FF0F_RDn);
 
   // FIXME why is this latch different from the others? MATY is one of those big yellow latchy things.

@@ -7,7 +7,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoySpriteStore::reset_to_cart() {
-  DEZY_COUNT_CLKp.state = 0b00011011;
+  DEZY_COUNT_CLKp.state    = 0b00011011;
   BESE_SPRITE_COUNT0.state = 0b00011010;
   CUXY_SPRITE_COUNT1.state = 0b00011010;
   BEGO_SPRITE_COUNT2.state = 0b00011010;
@@ -15,6 +15,7 @@ void GateBoySpriteStore::reset_to_cart() {
 }
 
 //------------------------------------------------------------------------------------------------------------------------
+// Update sprite store reset signals to clear the first matched sprite when the sprite fetch is done.
 
 void GateBoy::update_sprite_reset(
   const Gate WUTY_SFETCH_DONE_TRIGp,
@@ -23,8 +24,6 @@ void GateBoy::update_sprite_reset(
   GateBoySpriteStore& sprite_store
 )
 {
-  // Update sprite store reset signals to clear the first matched sprite when the sprite fetch is done.
-
   /* p28.ABAK*/ wire _ABAK_LINE_RSTp = or2(ATEJ_LINE_RSTp.qp_new(), AMYG_VID_RSTp);
   /* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(_ABAK_LINE_RSTp);
   /* p29.DYBA*/ wire _DYBA_LINE_RSTp = not1(_BYVA_LINE_RSTn);
@@ -64,13 +63,12 @@ void GateBoy::update_sprite_reset(
 }
 
 //------------------------------------------------------------------------------------------------------------------------
+// Turn the sprite counter into a one-hot clock signal.
 
 void GateBoy::update_store_clocks(
   const wire _DYTY_COUNT_CLKp,
   GateBoySpriteStore& sprite_store)
 {
-  // Turn the sprite counter into a one-hot clock signal.
-
   /* p29.EDEN*/ wire _EDEN_SPRITE_COUNT0n = not1(sprite_store.BESE_SPRITE_COUNT0.qp_new());
   /* p29.CYPY*/ wire _CYPY_SPRITE_COUNT1n = not1(sprite_store.CUXY_SPRITE_COUNT1.qp_new());
   /* p29.CAPE*/ wire _CAPE_SPRITE_COUNT2n = not1(sprite_store.BEGO_SPRITE_COUNT2.qp_new());
@@ -122,8 +120,6 @@ void GateBoy::store_sprite2(
   const OamTempB& oam_temp_b,
   GateBoySpriteStore& sprite_store)
 {
-
-
   // Clock the scanned sprite's X coordinate into the selected sprite store.
 
   /* p29.FUXU*/ wire _FUXU_STORE0_CLKp = not1(sprite_store.DYHU_STORE0_CLKn.qp_new());
@@ -236,7 +232,6 @@ void GateBoy::store_sprite2(
   /* p31.YNEP*/ sprite_store.YNEP_STORE9_X6p_odd.dff9(_WEME_STORE9_CLKp, sprite_store.DOSY_STORE9_RSTn.qp_new(), _XATU_SPX6n_old);
   /* p31.YZOF*/ sprite_store.YZOF_STORE9_X7p_odd.dff9(_WEME_STORE9_CLKp, sprite_store.DOSY_STORE9_RSTn.qp_new(), _BADY_SPX7n_old);
 
-
   // Clock the scanned sprite's index into the selected sprite store.
 
   /* p29.GENY*/ wire _GENY_STORE0_CLKp = not1(sprite_store.DYHU_STORE0_CLKn.qp_new());
@@ -320,7 +315,6 @@ void GateBoy::store_sprite2(
   /* p30.XUTE*/ sprite_store.XUTE_STORE9_I4n_odd.dff8n(_WUFA_STORE9_CLKp, old_bus.BUS_SPR_I4.qp_old());
   /* p30.XUFO*/ sprite_store.XUFO_STORE9_I5n_odd.dff8n(_WUFA_STORE9_CLKp, old_bus.BUS_SPR_I5.qp_old());
 
-
   // Clock the scanned sprite's current line into the selected sprite store.
 
   /* p29.ENOB*/ wire _ENOB_STORE0_CLKp = not1(sprite_store.DYHU_STORE0_CLKn.qp_new());
@@ -386,6 +380,8 @@ void GateBoy::store_sprite2(
 }
 
 //------------------------------------------------------------------------------------------------------------------------
+// Check the whole sprite store for a sprite at the current pixel coordinate and update the match flags and
+// FEPO_STORE_MATCHp.
 
 void GateBoy::update_sprite_match(
   const PixCount& pix_count,
@@ -535,10 +531,6 @@ void GateBoy::get_sprite2(
   GateBoySpriteStore& sprite_store,
   GateBoyBuses& new_bus)
 {
-  // Check the whole sprite store for a sprite at the current pixel coordinate.
-
-
-
   // Update one-hot priority encoder to flag the first matching sprite.
 
   /* p29.WEFU*/ wire _WEFU_STORE0_MATCH = not1(sprite_store.YDUG_STORE0_MATCHn.qp_new());
@@ -571,7 +563,6 @@ void GateBoy::get_sprite2(
   /* p29.GUTU*/ sprite_store.GUTU_SPRITE7_GETp = nor2(sprite_store.DYKA_STORE7_MATCHn.qp_new(), _WYLA_STORE6_MATCH);
   /* p29.FOXA*/ sprite_store.FOXA_SPRITE8_GETp = nor2(sprite_store.EFYL_STORE8_MATCHn.qp_new(), _FAVO_STORE7_MATCH);
   /* p29.GUZE*/ sprite_store.GUZE_SPRITE9_GETp = nor2(sprite_store.YGEM_STORE9_MATCHn.qp_new(), _GYGA_STORE8_MATCH);
-
 
   // Push sprite index and line for the matching sprite onto the i/l bus.
 

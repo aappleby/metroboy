@@ -20561,7 +20561,7 @@
       "cell_type": "DFF",
       "doc": "",
       "fanout": 1,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",
@@ -23187,7 +23187,7 @@
       "cell_type": "DFF",
       "doc": "",
       "fanout": 2,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",
@@ -25099,7 +25099,7 @@
     },
     "ROKU": {
       "cell_type": "LOGIC",
-      "doc": "// derp",
+      "doc": "",
       "fanout": 1,
       "gate": "xor2",
       "input_ports": [
@@ -27372,7 +27372,7 @@
       "cell_type": "DFF",
       "doc": "",
       "fanout": 6,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",
@@ -27544,7 +27544,7 @@
         "b",
         "c"
       ],
-      "long_name": "SECA_SFETCH_RSTn",
+      "long_name": "SECA_SFETCH_STARTn",
       "output_ports": [
         "qp"
       ],
@@ -29831,7 +29831,7 @@
       "cell_type": "DFF",
       "doc": "",
       "fanout": 5,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",
@@ -30427,7 +30427,7 @@
       "cell_type": "DFF",
       "doc": "",
       "fanout": 5,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",
@@ -32079,7 +32079,7 @@
       "cell_type": "DFF",
       "doc": "",
       "fanout": 6,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",
@@ -32156,9 +32156,9 @@
     },
     "TUKY": {
       "cell_type": "DFF",
-      "doc": "// this is a doc",
+      "doc": "",
       "fanout": 6,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",
@@ -34019,7 +34019,7 @@
         "a",
         "b"
       ],
-      "long_name": "VEKU_SFETCH_RUNNING_RSTn",
+      "long_name": "VEKU_SFETCH_ENDn",
       "output_ports": [
         "qp"
       ],
@@ -38849,7 +38849,7 @@
       "cell_type": "DFF",
       "doc": "",
       "fanout": 8,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",
@@ -39339,7 +39339,7 @@
       "cell_type": "DFF",
       "doc": "",
       "fanout": 6,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",
@@ -40459,7 +40459,7 @@
       "cell_type": "DFF",
       "doc": "",
       "fanout": 7,
-      "gate": "dff17",
+      "gate": "dff17_any",
       "input_ports": [
         "CLKp",
         "RSTn",

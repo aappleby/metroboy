@@ -894,28 +894,24 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   auto XYDO_PX3p_old = pix_count.XYDO_PX3p;
 
   // Weird feedback loop here - fine scroll and pix count affect store match, which affects pipe clock, which affects fine scroll and pix count.
   // Implementing the feedback doesn't seem to change any test results, but... paranoia...
 
-  /* p27.SUHA*/ wire SUHA_SCX_FINE_MATCHp_old = xnor2(reg_scx.DATY_SCX0n.qn_old(), fine_scroll.RYKU_FINE_CNT0.qp_old());
-  /* p27.SYBY*/ wire SYBY_SCX_FINE_MATCHp_old = xnor2(reg_scx.DUZU_SCX1n.qn_old(), fine_scroll.ROGA_FINE_CNT1.qp_old());
-  /* p27.SOZU*/ wire SOZU_SCX_FINE_MATCHp_old = xnor2(reg_scx.CYXU_SCX2n.qn_old(), fine_scroll.RUBU_FINE_CNT2.qp_old());
-  /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn_old = nand4(fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_old(), SUHA_SCX_FINE_MATCHp_old, SYBY_SCX_FINE_MATCHp_old, SOZU_SCX_FINE_MATCHp_old);
-  /*#p27.POHU*/ wire POHU_SCX_FINE_MATCHp_old = not1(RONE_SCX_FINE_MATCHn_old);
-
-  /* p29.CEHA*/ wire CEHA_SCANNINGp = not1(sprite_scanner.CENO_SCANNINGn.qn_new());
-  /*#p29.BYJO*/ wire BYJO_SCANNINGn = not1(CEHA_SCANNINGp);
-  /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn);
-  /*#p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
-
   for (int feedback = 0; feedback < 2; feedback++) {
+    /* p27.SUHA*/ wire SUHA_SCX_FINE_MATCHp_old = xnor2(reg_scx.DATY_SCX0n.qn_old(), fine_scroll.RYKU_FINE_CNT0.qp_old());
+    /* p27.SYBY*/ wire SYBY_SCX_FINE_MATCHp_old = xnor2(reg_scx.DUZU_SCX1n.qn_old(), fine_scroll.ROGA_FINE_CNT1.qp_old());
+    /* p27.SOZU*/ wire SOZU_SCX_FINE_MATCHp_old = xnor2(reg_scx.CYXU_SCX2n.qn_old(), fine_scroll.RUBU_FINE_CNT2.qp_old());
+    /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn_old = nand4(fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_any(), SUHA_SCX_FINE_MATCHp_old, SYBY_SCX_FINE_MATCHp_old, SOZU_SCX_FINE_MATCHp_old);
+    /*#p27.POHU*/ wire POHU_SCX_FINE_MATCHp_old = not1(RONE_SCX_FINE_MATCHn_old);
+
+    /* p29.CEHA*/ wire CEHA_SCANNINGp = not1(sprite_scanner.CENO_SCANNINGn.qn_new());
+    /*#p29.BYJO*/ wire BYJO_SCANNINGn = not1(CEHA_SCANNINGp);
+    /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn);
+    /*#p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
+
     /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_store.FEPO_STORE_MATCHp.qp_any(), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx());
     /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
     /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
@@ -955,7 +951,17 @@ void GateBoy::tock_slow(int pass_index) {
     update_sprite_match(pix_count, AROR_MATCH_ENp, sprite_store);
   }
 
-  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_store.FEPO_STORE_MATCHp.qp_new(), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx());
+  // Pix counter enables the pixel pipe clocks for later
+
+  // and triggers HBLANK if there's no sprite store match
+  {
+    /*#p21.XENA*/ wire XENA_STORE_MATCHn = not1(sprite_store.FEPO_STORE_MATCHp.qp_new());
+    /*#p21.XUGU*/ wire XUGU_PX167n = nand5(pix_count.XEHO_PX0p.qp_new(), pix_count.SAVY_PX1p.qp_new(), pix_count.XODU_PX2p.qp_new(), pix_count.TUKY_PX5p.qp_new(), pix_count.SYBE_PX7p.qp_new()); // 128 + 32 + 4 + 2 + 1 = 167
+    /*#p21.XANO*/ wire XANO_PX167p = not1(XUGU_PX167n);
+    /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn, XANO_PX167p); // WODU goes high on odd, cleared on H
+  }
+
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_store.FEPO_STORE_MATCHp.qp_new(), WODU_HBLANKp.qp_new(), MYVO_AxCxExGx());
   /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
@@ -963,10 +969,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   /* p24.PAHO*/ lcd.PAHO_X_8_SYNC.dff17(ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
 
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   get_sprite2(SIG_GND, sprite_store, new_bus);
@@ -989,13 +992,6 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   {
-    /*#p21.XENA*/ wire XENA_STORE_MATCHn = not1(sprite_store.FEPO_STORE_MATCHp.qp_new());
-    /*#p21.XUGU*/ wire XUGU_PX167n = nand5(pix_count.XEHO_PX0p.qp_new(), pix_count.SAVY_PX1p.qp_new(), pix_count.XODU_PX2p.qp_new(), pix_count.TUKY_PX5p.qp_new(), pix_count.SYBE_PX7p.qp_new()); // 128 + 32 + 4 + 2 + 1 = 167
-    /*#p21.XANO*/ wire XANO_PX167p = not1(XUGU_PX167n);
-    /*#p21.WODU*/ WODU_HBLANKp = and2(XENA_STORE_MATCHn, XANO_PX167p); // WODU goes high on odd, cleared on H
-  }
-
-  {
     /* p27.ROCO*/ wire _ROCO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
 
     /* p27.PYCO*/ win_reg.PYCO_WIN_MATCHp.dff17(_ROCO_CLKPIPE_odd, XAPO_VID_RSTn(), win_reg.NUKO_WX_MATCHp.qp_old());
@@ -1010,7 +1006,6 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp = nor2(win_reg.RYFA_WIN_FETCHn_A.qn_new(), win_reg.RENE_WIN_FETCHn_B.qp_new());
   /* p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne = nand2(SYLO_WIN_HITn, win_reg.SOVY_WIN_HITp.qp_new());
   /* p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILEne);
-
   /* p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp, SUZU_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
   /* p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.qp_new(), MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
 
@@ -1034,8 +1029,6 @@ void GateBoy::tock_slow(int pass_index) {
     /* p27.LONY*/ tile_fetcher.LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, _LURY_BG_FETCH_DONEn);
     /* p27.LYZU*/ tile_fetcher._LYZU_BFETCH_S0p_D1.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), tile_fetcher._LAXU_BFETCH_S0p.qp_new());
   }
-
-
 
   // Fine match counter. Registers are only read as old, so this can go down as far in the list as needed.
   {

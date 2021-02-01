@@ -19,7 +19,7 @@ struct TileFetcher {
   /* p27.LAXU*/ DFF17 _LAXU_BFETCH_S0p;         // AxCxExGx
   /* p27.MESU*/ DFF17 _MESU_BFETCH_S1p;         // AxCxExGx
   /* p27.NYVA*/ DFF17 _NYVA_BFETCH_S2p;         // AxCxExGx
-  /* p27.LYZU*/ DFF17 _LYZU_BFETCH_S0p_D1;      // xBxDxFxG
+  /* p27.LYZU*/ DFF17 LYZU_BFETCH_S0p_D1;      // xBxDxFxG
 };
 
 //-----------------------------------------------------------------------------

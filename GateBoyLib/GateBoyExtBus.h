@@ -68,7 +68,7 @@ struct ExtAddrLatch {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct GateBoyExtBus {
+struct GateBoyExtPins {
   void reset_to_cart() {
     PIN_01_A00.state = 0b00011000;
     PIN_02_A01.state = 0b00011001;

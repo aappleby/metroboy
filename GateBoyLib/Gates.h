@@ -946,7 +946,7 @@ struct GateBoyClock;
 struct GateBoyVideoClock;
 struct GateBoyCpuSignals;
 struct GateBoyDMA;
-struct GateBoyExtBus;
+struct GateBoyExtPins;
 struct GateBoyInterrupts;
 struct GateBoyJoypad;
 struct GateBoyLCD;
@@ -982,7 +982,7 @@ struct RegOBP1;
 struct RegWY;
 struct RegWX;
 
-struct WinMapX;
+struct WinCoords;
 struct WinLineY;
 struct SpritePixA;
 struct SpritePixB;

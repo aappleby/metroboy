@@ -47,15 +47,6 @@ struct GateBoyLCD {
   /*p24.PAHO*/ DFF17 PAHO_X_8_SYNC;          // xBxDxFxH
   /*p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE; // xBxDxFGH High on G at beginning of line, low on H at end of line. Not sure what's up with the others. Scroll/sprite count?
 
-  //Signal old_lcd_clock;
-  //Signal old_lcd_latch;
-
-  //NorLatch lcd_pix_lo;
-  //NorLatch lcd_pix_hi;
-
-  //DFF lcd_pipe_lo[160];
-  //DFF lcd_pipe_hi[160];
-
   /*PIN_50*/ PinOut PIN_50_LCD_DATA1;
   /*PIN_51*/ PinOut PIN_51_LCD_DATA0;
   /*PIN_54*/ PinOut PIN_54_LCD_HSYNC;

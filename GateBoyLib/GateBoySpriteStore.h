@@ -2,6 +2,7 @@
 #include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
+// Tristate buses to move sprite index & line in/out of sprite store
 
 struct SpriteBus {
   void reset_to_cart() {
@@ -47,7 +48,6 @@ struct SpriteBus {
 };
 
 //------------------------------------------------------------------------------------------------------------------------
-
 // Sprite counter tracks how many sprites have been selected for this line.
 
 struct SpriteCounter {
@@ -89,7 +89,7 @@ struct SpriteResetFlags {
   /*p29.FONO*/ DFF17 FONO_STORE9_RSTp_evn;   // AxCxExGx
 };
 
-struct SpriteStoreClocks {
+struct SpriteStoreFlags {
   /* p29.DYHU*/ Gate DYHU_STORE0_CLKn;
   /* p29.BUCO*/ Gate BUCO_STORE1_CLKn;
   /* p29.GYFO*/ Gate GYFO_STORE2_CLKn;

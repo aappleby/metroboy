@@ -558,26 +558,22 @@ struct SpritePixB {
 
 //-----------------------------------------------------------------------------
 
-struct WinMapX {
-  // Current window map coord
-  /*p27.WYKA*/ DFF17 WYKA_WIN_X3;      // AxCxExGx
-  /*p27.WODY*/ DFF17 WODY_WIN_X4;      // AxCxExGx
-  /*p27.WOBO*/ DFF17 WOBO_WIN_X5;      // AxCxExGx
-  /*p27.WYKO*/ DFF17 WYKO_WIN_X6;      // AxCxExGx
-  /*p27.XOLO*/ DFF17 XOLO_WIN_X7;      // AxCxExGx
-};
+struct WinCoords {
+  /*p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
+  /*p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
+  /*p27.VYMU*/ DFF17 VYMU_WIN_TILE_Y2;  // AxCxExGh probably, but not enough data.
 
-//-----------------------------------------------------------------------------
+  /*p27.WYKA*/ DFF17 WYKA_WIN_MAP_X0;   // AxCxExGx
+  /*p27.WODY*/ DFF17 WODY_WIN_MAP_X1;   // AxCxExGx
+  /*p27.WOBO*/ DFF17 WOBO_WIN_MAP_X2;   // AxCxExGx
+  /*p27.WYKO*/ DFF17 WYKO_WIN_MAP_X3;   // AxCxExGx
+  /*p27.XOLO*/ DFF17 XOLO_WIN_MAP_X4;   // AxCxExGx
 
-struct WinLineY {
-  /*p27.VYNO*/ DFF17 VYNO_WIN_Y0;      // AxCxExGh probably, but not enough data.
-  /*p27.VUJO*/ DFF17 VUJO_WIN_Y1;      // AxCxExGh probably, but not enough data.
-  /*p27.VYMU*/ DFF17 VYMU_WIN_Y2;      // AxCxExGh probably, but not enough data.
-  /*p27.TUFU*/ DFF17 TUFU_WIN_Y3;      // AxCxExGh probably, but not enough data.
-  /*p27.TAXA*/ DFF17 TAXA_WIN_Y4;      // AxCxExGh probably, but not enough data.
-  /*p27.TOZO*/ DFF17 TOZO_WIN_Y5;      // AxCxExGh probably, but not enough data.
-  /*p27.TATE*/ DFF17 TATE_WIN_Y6;      // AxCxExGh probably, but not enough data.
-  /*p27.TEKE*/ DFF17 TEKE_WIN_Y7;      // AxCxExGh probably, but not enough data.
+  /*p27.TUFU*/ DFF17 TUFU_WIN_MAP_Y0;   // AxCxExGh probably, but not enough data.
+  /*p27.TAXA*/ DFF17 TAXA_WIN_MAP_Y1;   // AxCxExGh probably, but not enough data.
+  /*p27.TOZO*/ DFF17 TOZO_WIN_MAP_Y2;   // AxCxExGh probably, but not enough data.
+  /*p27.TATE*/ DFF17 TATE_WIN_MAP_Y3;   // AxCxExGh probably, but not enough data.
+  /*p27.TEKE*/ DFF17 TEKE_WIN_MAP_Y4;   // AxCxExGh probably, but not enough data.
 };
 
 //-----------------------------------------------------------------------------

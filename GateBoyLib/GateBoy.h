@@ -136,11 +136,11 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void reg_lcdc_read();
+  void tock_lcd();
   void tock_lcdc();
+  void tock_lyc();
 
-  void reg_dma_write();
-  void reg_dma_read();
+  void tock_dma();
 
   void set_pins();
 
@@ -151,41 +151,48 @@ struct GateBoy {
   void tock_div();
   void tock_timer();
   void tock_reset(DFF17 UPOF_DIV15p);
-  void tock_ext_bus();
+  void tock_ext();
   void tock_oam_bus();
   void tock_serial();
   void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
   void tock_zram();
   void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
 
-  void update_sprite_resets(
+  void update_sprite_reset_flags(
     const Gate WUTY_SFETCH_DONE_TRIGp,
     const wire BYVA_LINE_RSTn,
     const SpriteMatchFlags& sprite_get_flag,
-    SpriteResetFlags& sprite_resets);
+    SpriteResetFlags& sprite_reset_flags);
 
-  void update_sprite_store_clocks(
+  void update_sprite_store_flags(
     const SpriteCounter& sprite_counter,
     const wire _DYTY_COUNT_CLKp,
-    SpriteStoreClocks& sprite_clocks);
+    SpriteStoreFlags& sprite_store_flags);
 
   void store_sprite(
-    const SpriteStoreClocks& sprite_clocks,
-    const SpriteResetFlags& sprite_resets,
+    const SpriteStoreFlags& sprite_store_flags,
+    const SpriteResetFlags& sprite_reset_flags,
     const wire BYVA_LINE_RSTn,
     const SpriteBus& sprite_bus,
     const OamTempB& oam_temp_b,
     GateBoySpriteStore& sprite_store);
 
-  static void get_sprite_match(
+  static void get_sprite_match_flags(
     const PixCount& pix_count,
     const wire AROR_MATCH_ENp,
     GateBoySpriteStore& sprite_store,
     SpriteMatchFlags& sprite_get_flag);
 
-  static void sprite_il_to_bus(
+  static void sprite_match_to_bus(
     const GateBoySpriteStore& sprite_store,
     const SpriteMatchFlags& sprite_get_flag,
+    SpriteBus& sprite_bus);
+
+  static void sprite_scan_to_bus(
+    const SpriteScanner& sprite_scanner,
+    SpriteDeltaY delta,
+    NorLatch XYMU_RENDERINGn,
+    Gate FEPO_STORE_MATCHp,
     SpriteBus& sprite_bus);
 
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
@@ -378,7 +385,7 @@ struct GateBoy {
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
 
   GateBoyCpuSignals  cpu_signals;
-  GateBoyExtBus  ext_bus;
+  GateBoyExtPins  ext_pins;
   GateBoyVramPins vram_pins;
   GateBoyOamBus  oam_bus;
   GateBoyZramBus zram_bus;
@@ -405,9 +412,9 @@ struct GateBoy {
   SpriteBus sprite_bus;
   SpriteCounter sprite_counter;
 
-  SpriteMatchFlags sprite_matches;
-  SpriteResetFlags sprite_resets;
-  SpriteStoreClocks sprite_clocks;
+  SpriteMatchFlags sprite_match_flags;
+  SpriteResetFlags sprite_reset_flags;
+  SpriteStoreFlags sprite_store_flags;
 
   SpriteScanner sprite_scanner;
 
@@ -426,8 +433,8 @@ struct GateBoy {
   RegWY   reg_wy;
   RegWX   reg_wx;
 
-  WinMapX         win_map_x;
-  WinLineY        win_map_y;
+  WinCoords win_coords;
+
   WindowRegisters win_reg;
   FineScroll      fine_scroll;
 

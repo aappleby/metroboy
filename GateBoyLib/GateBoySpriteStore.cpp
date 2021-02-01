@@ -17,35 +17,35 @@ void GateBoy::reset_sprite_store() {
 //------------------------------------------------------------------------------------------------------------------------
 // Update sprite store reset signals to clear the first matched sprite when the sprite fetch is done.
 
-void GateBoy::update_sprite_resets(
+void GateBoy::update_sprite_reset_flags(
   const Gate WUTY_SFETCH_DONE_TRIGp,
   const wire BYVA_LINE_RSTn,
   const SpriteMatchFlags& sprite_get_flag,
-  SpriteResetFlags& sprite_resets)
+  SpriteResetFlags& sprite_reset_flags)
 {
   ///* p28.ABAK*/ wire _ABAK_LINE_RSTp = or2(ATEJ_LINE_RSTp.qp_new(), AMYG_VID_RSTp);
   ///* p28.BYVA*/ wire _BYVA_LINE_RSTn = not1(_ABAK_LINE_RSTp);
   ///* p29.DYBA*/ wire _DYBA_LINE_RSTp = not1(_BYVA_LINE_RSTn);
 
-  /* p29.EBOJ*/ sprite_resets.EBOJ_STORE0_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GUVA_SPRITE0_GETp.qp_old());
-  /* p29.CEDY*/ sprite_resets.CEDY_STORE1_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.ENUT_SPRITE1_GETp.qp_old());
-  /* p29.EGAV*/ sprite_resets.EGAV_STORE2_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.EMOL_SPRITE2_GETp.qp_old());
-  /* p29.GOTA*/ sprite_resets.GOTA_STORE3_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GYFY_SPRITE3_GETp.qp_old());
-  /* p29.XUDY*/ sprite_resets.XUDY_STORE4_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GONO_SPRITE4_GETp.qp_old());
-  /* p29.WAFY*/ sprite_resets.WAFY_STORE5_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GEGA_SPRITE5_GETp.qp_old());
-  /* p29.WOMY*/ sprite_resets.WOMY_STORE6_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.XOJA_SPRITE6_GETp.qp_old());
-  /* p29.WAPO*/ sprite_resets.WAPO_STORE7_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GUTU_SPRITE7_GETp.qp_old());
-  /* p29.EXUQ*/ sprite_resets.EXUQ_STORE8_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.FOXA_SPRITE8_GETp.qp_old());
-  /* p29.FONO*/ sprite_resets.FONO_STORE9_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GUZE_SPRITE9_GETp.qp_old());
+  /* p29.EBOJ*/ sprite_reset_flags.EBOJ_STORE0_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GUVA_SPRITE0_GETp.qp_old());
+  /* p29.CEDY*/ sprite_reset_flags.CEDY_STORE1_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.ENUT_SPRITE1_GETp.qp_old());
+  /* p29.EGAV*/ sprite_reset_flags.EGAV_STORE2_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.EMOL_SPRITE2_GETp.qp_old());
+  /* p29.GOTA*/ sprite_reset_flags.GOTA_STORE3_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GYFY_SPRITE3_GETp.qp_old());
+  /* p29.XUDY*/ sprite_reset_flags.XUDY_STORE4_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GONO_SPRITE4_GETp.qp_old());
+  /* p29.WAFY*/ sprite_reset_flags.WAFY_STORE5_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GEGA_SPRITE5_GETp.qp_old());
+  /* p29.WOMY*/ sprite_reset_flags.WOMY_STORE6_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.XOJA_SPRITE6_GETp.qp_old());
+  /* p29.WAPO*/ sprite_reset_flags.WAPO_STORE7_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GUTU_SPRITE7_GETp.qp_old());
+  /* p29.EXUQ*/ sprite_reset_flags.EXUQ_STORE8_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.FOXA_SPRITE8_GETp.qp_old());
+  /* p29.FONO*/ sprite_reset_flags.FONO_STORE9_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GUZE_SPRITE9_GETp.qp_old());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 // Turn the sprite counter into a one-hot clock signal.
 
-void GateBoy::update_sprite_store_clocks(
+void GateBoy::update_sprite_store_flags(
   const SpriteCounter& sprite_counter,
   const wire _DYTY_COUNT_CLKp,
-  SpriteStoreClocks& sprite_clocks)
+  SpriteStoreFlags& sprite_store_flags)
 {
   /* p29.EDEN*/ wire _EDEN_SPRITE_COUNT0n = not1(sprite_counter.BESE_SPRITE_COUNT0.qp_new());
   /* p29.CYPY*/ wire _CYPY_SPRITE_COUNT1n = not1(sprite_counter.CUXY_SPRITE_COUNT1.qp_new());
@@ -79,51 +79,51 @@ void GateBoy::update_sprite_store_clocks(
   /* p29.CAHO*/ wire _CAHO_STORE8_CLKp = or2(_DYTY_COUNT_CLKp, _DEWY_STORE8_SELn);
   /* p29.CATO*/ wire _CATO_STORE9_CLKp = or2(_DYTY_COUNT_CLKp, _DOGU_STORE9_SELn);
 
-  /* p29.DYHU*/ sprite_clocks.DYHU_STORE0_CLKn = not1(_CEMY_STORE0_CLKp);
-  /* p29.BUCO*/ sprite_clocks.BUCO_STORE1_CLKn = not1(_BYBY_STORE1_CLKp);
-  /* p29.GYFO*/ sprite_clocks.GYFO_STORE2_CLKn = not1(_WYXO_STORE2_CLKp);
-  /* p29.GUSA*/ sprite_clocks.GUSA_STORE3_CLKn = not1(_GUVE_STORE3_CLKp);
-  /* p29.DUKE*/ sprite_clocks.DUKE_STORE4_CLKn = not1(_CECU_STORE4_CLKp);
-  /* p29.BEDE*/ sprite_clocks.BEDE_STORE5_CLKn = not1(_CADO_STORE5_CLKp);
-  /* p29.WEKA*/ sprite_clocks.WEKA_STORE6_CLKn = not1(_XUJO_STORE6_CLKp);
-  /* p29.GYVO*/ sprite_clocks.GYVO_STORE7_CLKn = not1(_GAPE_STORE7_CLKp);
-  /* p29.BUKA*/ sprite_clocks.BUKA_STORE8_CLKn = not1(_CAHO_STORE8_CLKp);
-  /* p29.DECU*/ sprite_clocks.DECU_STORE9_CLKn = not1(_CATO_STORE9_CLKp);
+  /* p29.DYHU*/ sprite_store_flags.DYHU_STORE0_CLKn = not1(_CEMY_STORE0_CLKp);
+  /* p29.BUCO*/ sprite_store_flags.BUCO_STORE1_CLKn = not1(_BYBY_STORE1_CLKp);
+  /* p29.GYFO*/ sprite_store_flags.GYFO_STORE2_CLKn = not1(_WYXO_STORE2_CLKp);
+  /* p29.GUSA*/ sprite_store_flags.GUSA_STORE3_CLKn = not1(_GUVE_STORE3_CLKp);
+  /* p29.DUKE*/ sprite_store_flags.DUKE_STORE4_CLKn = not1(_CECU_STORE4_CLKp);
+  /* p29.BEDE*/ sprite_store_flags.BEDE_STORE5_CLKn = not1(_CADO_STORE5_CLKp);
+  /* p29.WEKA*/ sprite_store_flags.WEKA_STORE6_CLKn = not1(_XUJO_STORE6_CLKp);
+  /* p29.GYVO*/ sprite_store_flags.GYVO_STORE7_CLKn = not1(_GAPE_STORE7_CLKp);
+  /* p29.BUKA*/ sprite_store_flags.BUKA_STORE8_CLKn = not1(_CAHO_STORE8_CLKp);
+  /* p29.DECU*/ sprite_store_flags.DECU_STORE9_CLKn = not1(_CATO_STORE9_CLKp);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::store_sprite(
-  const SpriteStoreClocks& sprite_clocks,
-  const SpriteResetFlags& sprite_resets,
+  const SpriteStoreFlags& sprite_store_flags,
+  const SpriteResetFlags& sprite_reset_flags,
   const wire BYVA_LINE_RSTn,
   const SpriteBus& sprite_bus,
   const OamTempB& oam_temp_b,
   GateBoySpriteStore& sprite_store)
 {
 
-  /* p29.FUXU*/ wire _FUXU_STORE0_CLKp = not1(sprite_clocks.DYHU_STORE0_CLKn.qp_new());
-  /* p29.ASYS*/ wire _ASYS_STORE1_CLKp = not1(sprite_clocks.BUCO_STORE1_CLKn.qp_new());
-  /* p29.CACU*/ wire _CACU_STORE2_CLKp = not1(sprite_clocks.GYFO_STORE2_CLKn.qp_new());
-  /* p29.YFAG*/ wire _YFAG_STORE3_CLKp = not1(sprite_clocks.GUSA_STORE3_CLKn.qp_new());
-  /* p29.WOFO*/ wire _WOFO_STORE4_CLKp = not1(sprite_clocks.DUKE_STORE4_CLKn.qp_new());
-  /* p29.CYLA*/ wire _CYLA_STORE5_CLKp = not1(sprite_clocks.BEDE_STORE5_CLKn.qp_new());
-  /* p29.ZAPE*/ wire _ZAPE_STORE6_CLKp = not1(sprite_clocks.WEKA_STORE6_CLKn.qp_new());
-  /* p29.GECY*/ wire _GECY_STORE7_CLKp = not1(sprite_clocks.GYVO_STORE7_CLKn.qp_new());
-  /* p29.CEXU*/ wire _CEXU_STORE8_CLKp = not1(sprite_clocks.BUKA_STORE8_CLKn.qp_new());
-  /* p29.WEME*/ wire _WEME_STORE9_CLKp = not1(sprite_clocks.DECU_STORE9_CLKn.qp_new());
+  /* p29.FUXU*/ wire _FUXU_STORE0_CLKp = not1(sprite_store_flags.DYHU_STORE0_CLKn.qp_new());
+  /* p29.ASYS*/ wire _ASYS_STORE1_CLKp = not1(sprite_store_flags.BUCO_STORE1_CLKn.qp_new());
+  /* p29.CACU*/ wire _CACU_STORE2_CLKp = not1(sprite_store_flags.GYFO_STORE2_CLKn.qp_new());
+  /* p29.YFAG*/ wire _YFAG_STORE3_CLKp = not1(sprite_store_flags.GUSA_STORE3_CLKn.qp_new());
+  /* p29.WOFO*/ wire _WOFO_STORE4_CLKp = not1(sprite_store_flags.DUKE_STORE4_CLKn.qp_new());
+  /* p29.CYLA*/ wire _CYLA_STORE5_CLKp = not1(sprite_store_flags.BEDE_STORE5_CLKn.qp_new());
+  /* p29.ZAPE*/ wire _ZAPE_STORE6_CLKp = not1(sprite_store_flags.WEKA_STORE6_CLKn.qp_new());
+  /* p29.GECY*/ wire _GECY_STORE7_CLKp = not1(sprite_store_flags.GYVO_STORE7_CLKn.qp_new());
+  /* p29.CEXU*/ wire _CEXU_STORE8_CLKp = not1(sprite_store_flags.BUKA_STORE8_CLKn.qp_new());
+  /* p29.WEME*/ wire _WEME_STORE9_CLKp = not1(sprite_store_flags.DECU_STORE9_CLKn.qp_new());
 
   /* p29.DYBA*/ wire _DYBA_LINE_RSTp = not1(BYVA_LINE_RSTn);
-  /* p29.DYWE*/ wire _DYWE_STORE0_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.EBOJ_STORE0_RSTp_evn.qp_new());
-  /* p29.EFEV*/ wire _EFEV_STORE1_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.CEDY_STORE1_RSTp_evn.qp_new());
-  /* p29.FOKO*/ wire _FOKO_STORE2_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.EGAV_STORE2_RSTp_evn.qp_new());
-  /* p29.GAKE*/ wire _GAKE_STORE3_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.GOTA_STORE3_RSTp_evn.qp_new());
-  /* p29.WOHU*/ wire _WOHU_STORE4_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.XUDY_STORE4_RSTp_evn.qp_new());
-  /* p29.FEVE*/ wire _FEVE_STORE5_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.WAFY_STORE5_RSTp_evn.qp_new());
-  /* p29.WACY*/ wire _WACY_STORE6_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.WOMY_STORE6_RSTp_evn.qp_new());
-  /* p29.GUKY*/ wire _GUKY_STORE7_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.WAPO_STORE7_RSTp_evn.qp_new());
-  /* p29.GORO*/ wire _GORO_STORE8_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.EXUQ_STORE8_RSTp_evn.qp_new());
-  /* p29.DUBU*/ wire _DUBU_STORE9_RSTp = or2(_DYBA_LINE_RSTp, sprite_resets.FONO_STORE9_RSTp_evn.qp_new());
+  /* p29.DYWE*/ wire _DYWE_STORE0_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.EBOJ_STORE0_RSTp_evn.qp_new());
+  /* p29.EFEV*/ wire _EFEV_STORE1_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.CEDY_STORE1_RSTp_evn.qp_new());
+  /* p29.FOKO*/ wire _FOKO_STORE2_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.EGAV_STORE2_RSTp_evn.qp_new());
+  /* p29.GAKE*/ wire _GAKE_STORE3_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.GOTA_STORE3_RSTp_evn.qp_new());
+  /* p29.WOHU*/ wire _WOHU_STORE4_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.XUDY_STORE4_RSTp_evn.qp_new());
+  /* p29.FEVE*/ wire _FEVE_STORE5_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.WAFY_STORE5_RSTp_evn.qp_new());
+  /* p29.WACY*/ wire _WACY_STORE6_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.WOMY_STORE6_RSTp_evn.qp_new());
+  /* p29.GUKY*/ wire _GUKY_STORE7_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.WAPO_STORE7_RSTp_evn.qp_new());
+  /* p29.GORO*/ wire _GORO_STORE8_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.EXUQ_STORE8_RSTp_evn.qp_new());
+  /* p29.DUBU*/ wire _DUBU_STORE9_RSTp = or2(_DYBA_LINE_RSTp, sprite_reset_flags.FONO_STORE9_RSTp_evn.qp_new());
 
   /* p29.DYNA*/ wire _DYNA_STORE0_RSTn = not1(_DYWE_STORE0_RSTp);
   /* p29.DOKU*/ wire _DOKU_STORE1_RSTn = not1(_EFEV_STORE1_RSTp);
@@ -239,16 +239,16 @@ void GateBoy::store_sprite(
 
   // Clock the scanned sprite's index into the selected sprite store.
 
-  /* p29.GENY*/ wire _GENY_STORE0_CLKp = not1(sprite_clocks.DYHU_STORE0_CLKn.qp_new());
-  /* p29.BYVY*/ wire _BYVY_STORE1_CLKp = not1(sprite_clocks.BUCO_STORE1_CLKn.qp_new());
-  /* p29.BUZY*/ wire _BUZY_STORE2_CLKp = not1(sprite_clocks.GYFO_STORE2_CLKn.qp_new());
-  /* p29.FEKA*/ wire _FEKA_STORE3_CLKp = not1(sprite_clocks.GUSA_STORE3_CLKn.qp_new());
-  /* p29.WYLU*/ wire _WYLU_STORE4_CLKp = not1(sprite_clocks.DUKE_STORE4_CLKn.qp_new());
-  /* p29.DYMO*/ wire _DYMO_STORE5_CLKp = not1(sprite_clocks.BEDE_STORE5_CLKn.qp_new());
-  /* p29.WUSE*/ wire _WUSE_STORE6_CLKp = not1(sprite_clocks.WEKA_STORE6_CLKn.qp_new());
-  /* p29.FEFO*/ wire _FEFO_STORE7_CLKp = not1(sprite_clocks.GYVO_STORE7_CLKn.qp_new());
-  /* p29.AKOL*/ wire _AKOL_STORE8_CLKp = not1(sprite_clocks.BUKA_STORE8_CLKn.qp_new());
-  /* p29.WUFA*/ wire _WUFA_STORE9_CLKp = not1(sprite_clocks.DECU_STORE9_CLKn.qp_new());
+  /* p29.GENY*/ wire _GENY_STORE0_CLKp = not1(sprite_store_flags.DYHU_STORE0_CLKn.qp_new());
+  /* p29.BYVY*/ wire _BYVY_STORE1_CLKp = not1(sprite_store_flags.BUCO_STORE1_CLKn.qp_new());
+  /* p29.BUZY*/ wire _BUZY_STORE2_CLKp = not1(sprite_store_flags.GYFO_STORE2_CLKn.qp_new());
+  /* p29.FEKA*/ wire _FEKA_STORE3_CLKp = not1(sprite_store_flags.GUSA_STORE3_CLKn.qp_new());
+  /* p29.WYLU*/ wire _WYLU_STORE4_CLKp = not1(sprite_store_flags.DUKE_STORE4_CLKn.qp_new());
+  /* p29.DYMO*/ wire _DYMO_STORE5_CLKp = not1(sprite_store_flags.BEDE_STORE5_CLKn.qp_new());
+  /* p29.WUSE*/ wire _WUSE_STORE6_CLKp = not1(sprite_store_flags.WEKA_STORE6_CLKn.qp_new());
+  /* p29.FEFO*/ wire _FEFO_STORE7_CLKp = not1(sprite_store_flags.GYVO_STORE7_CLKn.qp_new());
+  /* p29.AKOL*/ wire _AKOL_STORE8_CLKp = not1(sprite_store_flags.BUKA_STORE8_CLKn.qp_new());
+  /* p29.WUFA*/ wire _WUFA_STORE9_CLKp = not1(sprite_store_flags.DECU_STORE9_CLKn.qp_new());
 
   /* p30.YGUS*/ sprite_store.YGUS_STORE0_I0n_odd.dff8n(_GENY_STORE0_CLKp, sprite_bus.BUS_SPR_I0.qp_old());
   /* p30.YSOK*/ sprite_store.YSOK_STORE0_I1n_odd.dff8n(_GENY_STORE0_CLKp, sprite_bus.BUS_SPR_I1.qp_old());
@@ -322,16 +322,16 @@ void GateBoy::store_sprite(
 
   // Clock the scanned sprite's current line into the selected sprite store.
 
-  /* p29.ENOB*/ wire _ENOB_STORE0_CLKp = not1(sprite_clocks.DYHU_STORE0_CLKn.qp_new());
-  /* p29.AHOF*/ wire _AHOF_STORE1_CLKp = not1(sprite_clocks.BUCO_STORE1_CLKn.qp_new());
-  /* p29.FUKE*/ wire _FUKE_STORE2_CLKp = not1(sprite_clocks.GYFO_STORE2_CLKn.qp_new());
-  /* p29.XYHA*/ wire _XYHA_STORE3_CLKp = not1(sprite_clocks.GUSA_STORE3_CLKn.qp_new());
-  /* p29.EWOT*/ wire _EWOT_STORE4_CLKp = not1(sprite_clocks.DUKE_STORE4_CLKn.qp_new());
-  /* p29.BUCY*/ wire _BUCY_STORE5_CLKp = not1(sprite_clocks.BEDE_STORE5_CLKn.qp_new());
-  /* p29.ZURU*/ wire _ZURU_STORE6_CLKp = not1(sprite_clocks.WEKA_STORE6_CLKn.qp_new());
-  /* p29.WABE*/ wire _WABE_STORE7_CLKp = not1(sprite_clocks.GYVO_STORE7_CLKn.qp_new());
-  /* p29.BYMY*/ wire _BYMY_STORE8_CLKp = not1(sprite_clocks.BUKA_STORE8_CLKn.qp_new());
-  /* p29.FAKA*/ wire _FAKA_STORE9_CLKp = not1(sprite_clocks.DECU_STORE9_CLKn.qp_new());
+  /* p29.ENOB*/ wire _ENOB_STORE0_CLKp = not1(sprite_store_flags.DYHU_STORE0_CLKn.qp_new());
+  /* p29.AHOF*/ wire _AHOF_STORE1_CLKp = not1(sprite_store_flags.BUCO_STORE1_CLKn.qp_new());
+  /* p29.FUKE*/ wire _FUKE_STORE2_CLKp = not1(sprite_store_flags.GYFO_STORE2_CLKn.qp_new());
+  /* p29.XYHA*/ wire _XYHA_STORE3_CLKp = not1(sprite_store_flags.GUSA_STORE3_CLKn.qp_new());
+  /* p29.EWOT*/ wire _EWOT_STORE4_CLKp = not1(sprite_store_flags.DUKE_STORE4_CLKn.qp_new());
+  /* p29.BUCY*/ wire _BUCY_STORE5_CLKp = not1(sprite_store_flags.BEDE_STORE5_CLKn.qp_new());
+  /* p29.ZURU*/ wire _ZURU_STORE6_CLKp = not1(sprite_store_flags.WEKA_STORE6_CLKn.qp_new());
+  /* p29.WABE*/ wire _WABE_STORE7_CLKp = not1(sprite_store_flags.GYVO_STORE7_CLKn.qp_new());
+  /* p29.BYMY*/ wire _BYMY_STORE8_CLKp = not1(sprite_store_flags.BUKA_STORE8_CLKn.qp_new());
+  /* p29.FAKA*/ wire _FAKA_STORE9_CLKp = not1(sprite_store_flags.DECU_STORE9_CLKn.qp_new());
 
   /* p30.GYHO*/ sprite_store.GYHO_STORE0_L0n_odd.dff8n(_ENOB_STORE0_CLKp, sprite_bus.BUS_SPR_L0.qp_old());
   /* p30.CUFO*/ sprite_store.CUFO_STORE0_L1n_odd.dff8n(_ENOB_STORE0_CLKp, sprite_bus.BUS_SPR_L1.qp_old());
@@ -388,11 +388,11 @@ void GateBoy::store_sprite(
 // Check the whole sprite store for a sprite at the current pixel coordinate and update the match flags and
 // FEPO_STORE_MATCHp.
 
-void GateBoy::get_sprite_match(
+void GateBoy::get_sprite_match_flags(
   const PixCount& pix_count,
   const wire AROR_MATCH_ENp,
   GateBoySpriteStore& sprite_store,
-  SpriteMatchFlags& sprite_matches) {
+  SpriteMatchFlags& sprite_match_flags) {
   /*#p21.ACAM*/ wire ACAM_PX0n = not1(pix_count.XEHO_PX0p.qp_new());
   /* p21.AZUB*/ wire AZUB_PX1n = not1(pix_count.SAVY_PX1p.qp_new());
   /* p21.AMEL*/ wire AMEL_PX2n = not1(pix_count.XODU_PX2p.qp_new());
@@ -526,7 +526,7 @@ void GateBoy::get_sprite_match(
 
   /* p29.FEFY*/ wire FEFY_STORE_MATCHp = nand5(XAGE_STORE4_MATCHn, YLOZ_STORE3_MATCHn, DEGO_STORE2_MATCHn, DYDU_STORE1_MATCHn, YDUG_STORE0_MATCHn);
   /* p29.FOVE*/ wire FOVE_STORE_MATCHp = nand5(YGEM_STORE9_MATCHn, EFYL_STORE8_MATCHn, DYKA_STORE7_MATCHn, YBEZ_STORE6_MATCHn, EGOM_STORE5_MATCHn);
-  /* p29.FEPO*/ sprite_matches.FEPO_STORE_MATCHp = or2(FEFY_STORE_MATCHp, FOVE_STORE_MATCHp);
+  /* p29.FEPO*/ sprite_match_flags.FEPO_STORE_MATCHp = or2(FEFY_STORE_MATCHp, FOVE_STORE_MATCHp);
 
   // Update one-hot priority encoder to flag the first matching sprite.
 
@@ -550,21 +550,21 @@ void GateBoy::get_sprite_match(
   /* p29.FAVO*/ wire _FAVO_STORE7_MATCH = or2(_GYTE_STORE7_MATCH, _WYLA_STORE6_MATCH);
   /* p29.GYGA*/ wire _GYGA_STORE8_MATCH = or2(_GEKE_STORE8_MATCH, _FAVO_STORE7_MATCH);
 
-  /* p29.GUVA*/ sprite_matches.GUVA_SPRITE0_GETp = nor2(YDUG_STORE0_MATCHn, SIG_GND.qp_new());
-  /* p29.ENUT*/ sprite_matches.ENUT_SPRITE1_GETp = nor2(DYDU_STORE1_MATCHn, _GEZE_STORE0_MATCH);
-  /* p29.EMOL*/ sprite_matches.EMOL_SPRITE2_GETp = nor2(DEGO_STORE2_MATCHn, _FUMA_STORE1_MATCH);
-  /* p29.GYFY*/ sprite_matches.GYFY_SPRITE3_GETp = nor2(YLOZ_STORE3_MATCHn, _GEDE_STORE2_MATCH);
-  /* p29.GONO*/ sprite_matches.GONO_SPRITE4_GETp = nor2(XAGE_STORE4_MATCHn, _WUTO_STORE3_MATCH);
-  /* p29.GEGA*/ sprite_matches.GEGA_SPRITE5_GETp = nor2(EGOM_STORE5_MATCHn, _XYLA_STORE4_MATCH);
-  /* p29.XOJA*/ sprite_matches.XOJA_SPRITE6_GETp = nor2(YBEZ_STORE6_MATCHn, _WEJA_STORE5_MATCH);
-  /* p29.GUTU*/ sprite_matches.GUTU_SPRITE7_GETp = nor2(DYKA_STORE7_MATCHn, _WYLA_STORE6_MATCH);
-  /* p29.FOXA*/ sprite_matches.FOXA_SPRITE8_GETp = nor2(EFYL_STORE8_MATCHn, _FAVO_STORE7_MATCH);
-  /* p29.GUZE*/ sprite_matches.GUZE_SPRITE9_GETp = nor2(YGEM_STORE9_MATCHn, _GYGA_STORE8_MATCH);
+  /* p29.GUVA*/ sprite_match_flags.GUVA_SPRITE0_GETp = nor2(YDUG_STORE0_MATCHn, SIG_GND.qp_new());
+  /* p29.ENUT*/ sprite_match_flags.ENUT_SPRITE1_GETp = nor2(DYDU_STORE1_MATCHn, _GEZE_STORE0_MATCH);
+  /* p29.EMOL*/ sprite_match_flags.EMOL_SPRITE2_GETp = nor2(DEGO_STORE2_MATCHn, _FUMA_STORE1_MATCH);
+  /* p29.GYFY*/ sprite_match_flags.GYFY_SPRITE3_GETp = nor2(YLOZ_STORE3_MATCHn, _GEDE_STORE2_MATCH);
+  /* p29.GONO*/ sprite_match_flags.GONO_SPRITE4_GETp = nor2(XAGE_STORE4_MATCHn, _WUTO_STORE3_MATCH);
+  /* p29.GEGA*/ sprite_match_flags.GEGA_SPRITE5_GETp = nor2(EGOM_STORE5_MATCHn, _XYLA_STORE4_MATCH);
+  /* p29.XOJA*/ sprite_match_flags.XOJA_SPRITE6_GETp = nor2(YBEZ_STORE6_MATCHn, _WEJA_STORE5_MATCH);
+  /* p29.GUTU*/ sprite_match_flags.GUTU_SPRITE7_GETp = nor2(DYKA_STORE7_MATCHn, _WYLA_STORE6_MATCH);
+  /* p29.FOXA*/ sprite_match_flags.FOXA_SPRITE8_GETp = nor2(EFYL_STORE8_MATCHn, _FAVO_STORE7_MATCH);
+  /* p29.GUZE*/ sprite_match_flags.GUZE_SPRITE9_GETp = nor2(YGEM_STORE9_MATCHn, _GYGA_STORE8_MATCH);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::sprite_il_to_bus(
+void GateBoy::sprite_match_to_bus(
   const GateBoySpriteStore& sprite_store,
   const SpriteMatchFlags& sprite_get_flag,
   SpriteBus& sprite_bus)
@@ -691,6 +691,22 @@ void GateBoy::sprite_il_to_bus(
   /* p30.GATE_STORE9_GET_L3*/ sprite_bus.BUS_SPR_L1.tri6_nn(_FADO_SPRITE9_GETn, sprite_store.FOFO_STORE9_L1n_odd.qp_new());
   /* p30.COHO_STORE9_GET_L4*/ sprite_bus.BUS_SPR_L2.tri6_nn(_FADO_SPRITE9_GETn, sprite_store.DYSY_STORE9_L2n_odd.qp_new());
   /* p30.CAWO_STORE9_GET_L5*/ sprite_bus.BUS_SPR_L3.tri6_nn(_FADO_SPRITE9_GETn, sprite_store.DEWU_STORE9_L3n_odd.qp_new());
+}
+
+void GateBoy::sprite_scan_to_bus(const SpriteScanner& sprite_scanner, SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp, SpriteBus& sprite_bus)
+{
+  /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(sprite_scanner.CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
+  /*#p30.WUZY_STORE_I0*/ sprite_bus.BUS_SPR_I0.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XADU_SPRITE_IDX0p.qn_new());
+  /* p30.WYSE_STORE_I1*/ sprite_bus.BUS_SPR_I1.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XEDY_SPRITE_IDX1p.qn_new());
+  /* p30.ZYSU_STORE_I2*/ sprite_bus.BUS_SPR_I2.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.ZUZE_SPRITE_IDX2p.qn_new());
+  /* p30.WYDA_STORE_I3*/ sprite_bus.BUS_SPR_I3.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XOBE_SPRITE_IDX3p.qn_new());
+  /* p30.WUCO_STORE_I4*/ sprite_bus.BUS_SPR_I4.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.YDUF_SPRITE_IDX4p.qn_new());
+  /* p30.WEZA_STORE_I5*/ sprite_bus.BUS_SPR_I5.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XECU_SPRITE_IDX5p.qn_new());
+
+  /*#p30.CUCU_STORE_L0*/ sprite_bus.BUS_SPR_L0.tri6_nn(FEPO_STORE_MATCHp.qp_new(), delta.DEGE_SPRITE_DELTA0.qp_new());
+  /*#p30.CUCA_STORE_L1*/ sprite_bus.BUS_SPR_L1.tri6_nn(FEPO_STORE_MATCHp.qp_new(), delta.DABY_SPRITE_DELTA1.qp_new());
+  /*#p30.CEGA_STORE_L2*/ sprite_bus.BUS_SPR_L2.tri6_nn(FEPO_STORE_MATCHp.qp_new(), delta.DABU_SPRITE_DELTA2.qp_new());
+  /*#p30.WENU_STORE_L3*/ sprite_bus.BUS_SPR_L3.tri6_nn(FEPO_STORE_MATCHp.qp_new(), delta.GYSA_SPRITE_DELTA3.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

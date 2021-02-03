@@ -157,6 +157,8 @@ struct GateBoy {
   void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
   void tock_zram();
   void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
+  void tock_bootrom();
+  void tock_window(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
 
   void update_sprite_reset_flags(
     const Gate WUTY_SFETCH_DONE_TRIGp,

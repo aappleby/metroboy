@@ -126,6 +126,10 @@ struct Gate : public BitBase {
     return state;
   }
 
+  void hold() {
+    state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(state);
+  }
+
   void operator=(wire D) {
     state = BIT_DIRTY4 | BIT_DIRTY3 | BIT_NEW | BIT_DRIVEN | bit(D);
   }

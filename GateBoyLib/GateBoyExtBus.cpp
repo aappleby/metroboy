@@ -10,38 +10,18 @@
 // A000-BFFF - RAM Bank 00-03, if any (Read/Write) This area is used to address external RAM in the cartridge (if any). External RAM is often battery buffered, allowing to store game positions or high score tables, even if the gameboy is turned off, or if the cartridge is removed from the gameboy. Available RAM sizes are: 2KByte (at A000-A7FF), 8KByte (at A000-BFFF), and 32KByte (in form of four 8K banks at A000-BFFF).
 
 // 0000-1FFF - RAM Enable (Write Only)   00h  Disable RAM (default)   ?Ah  Enable RAM Practically any value with 0Ah in the lower 4 bits enables RAM, and any other value disables RAM.
-// 2000-3FFF - ROM Bank Number (Write Only) Writing to this address space selects the lower 5 bits of the ROM Bank Number (in range 01-1Fh). When 00h is written, the MBC translates that to bank 01h also. That doesn't harm so far, because ROM Bank 00h can be always directly accessed by reading from 0000-3FFF.
-// But (when using the register below to specify the upper ROM Bank bits), the same happens for Bank 20h, 40h, and 60h. Any attempt to address these ROM Banks will select Bank 21h, 41h, and 61h instead.
+// 2000-3FFF - ROM Bank Number (Write Only)
+// Writing to this address space selects the lower 5 bits of the ROM Bank Number (in range 01-1Fh).
+// When 00h is written, the MBC translates that to bank 01h also.
+// That doesn't harm so far, because ROM Bank 00h can be always directly accessed by reading from 0000-3FFF.
+// But (when using the register below to specify the upper ROM Bank bits), the same happens for Bank 20h, 40h, and 60h.
+// Any attempt to address these ROM Banks will select Bank 21h, 41h, and 61h instead.
+
 // 4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only) This 2bit register can be used to select a RAM Bank in range from 00-03h, or to specify the upper two bits (Bit 5-6) of the ROM Bank number, depending on the current ROM/RAM Mode. (See below.)
 // 6000-7FFF - ROM/RAM Mode Select (Write Only)  00h = ROM Banking Mode (up to 8KByte RAM, 2MByte ROM) (default)   01h = RAM Banking Mode (up to 32KByte RAM, 512KByte ROM)
 
-// MBC1_RAM_EN
-
-// MBC1_BANK_D0
-// MBC1_BANK_D1
-// MBC1_BANK_D2
-// MBC1_BANK_D3
-// MBC1_BANK_D4
-// MBC1_BANK_D5
-// MBC1_BANK_D6
-
-// MBC1_MODE
-
 /*
 {
-
-  bool bank_0 = nor(MBC1_BANK_D0, MBC1_BANK_D1, MBC1_BANK_D2, MBC1_BANK_D3, MBC1_BANK_D4);
-
-  wire cart_rom_a14 = bank_0 ? 1 : MBC1_BANK_D0.qp_new();
-  wire cart_rom_a15 = bank_0 ? 0 : MBC1_BANK_D1.qp_new();
-  wire cart_rom_a16 = bank_0 ? 0 : MBC1_BANK_D2.qp_new();
-  wire cart_rom_a17 = bank_0 ? 0 : MBC1_BANK_D3.qp_new();
-  wire cart_rom_a18 = bank_0 ? 0 : MBC1_BANK_D4.qp_new();
-  wire cart_rom_a19 = bit(MBC1_MODE.qp_new()) ? 0 : bank_0 ? 0 : MBC1_BANK_D5.qp_new();
-  wire cart_rom_a20 = bit(MBC1_MODE.qp_new()) ? 0 : bank_0 ? 0 : MBC1_BANK_D6.qp_new();
-
-  wire cart_ram_a13 = bit(MBC1_MODE.qp_new()) ? MBC1_BANK_D5.qp_new() : 0;
-  wire cart_ram_a14 = bit(MBC1_MODE.qp_new()) ? MBC1_BANK_D6.qp_new() : 0;
 
   // ROM read
   {
@@ -56,7 +36,37 @@
 }
 */
 
+/*
+void MetroBoyCart::tick(int phase_total, const Req& req, Ack& ack) const {
+  (void)phase_total;
+
+  const int region = req.addr >> 13;
+  const uint16_t ram_addr = req.addr & 0x1FFF;
+  const uint16_t rom_addr = req.addr & 0x7FFF;
+
+  if (req.read) {
+    if (region == 2 || region == 3) {
+      int rom_bank = ((bank_latch2 << 5) | bank_latch1);
+      if (bank_latch1 == 0) rom_bank |= 0b00000001;
+      rom_bank &= (rom_bank_count - 1);
+      ack.data_lo = cart_rom[(rom_bank << 14) | (rom_addr & 0x3FFF)];
+    }
+    else if (region == 5) {
+      // cart_ram
+      if (ram_enable && ram_bank_count) {
+        int ram_bank = mode ? bank_latch2 : 0;
+        ram_bank &= (ram_bank_count - 1);
+        if (ram_bank_count == 0) ram_bank = 0;
+        ack.data_lo = cart_ram[(ram_bank << 13) | ram_addr];
+      }
+    }
+  }
+}
+*/
+
 //------------------------------------------------------------------------------------------------------------------------
+
+#pragma warning(disable:4189) // unused local
 
 void GateBoy::tock_ext()
 {
@@ -252,22 +262,71 @@ void GateBoy::tock_ext()
   /*PIN_23*/ ext_pins.PIN_23_D06.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
   /*PIN_24*/ ext_pins.PIN_24_D07.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
 
+  ext_pins.MBC1_RAM_EN.hold();
+  ext_pins.MBC1_MODE.hold();
+  ext_pins.MBC1_BANK0.hold();
+  ext_pins.MBC1_BANK1.hold();
+  ext_pins.MBC1_BANK2.hold();
+  ext_pins.MBC1_BANK3.hold();
+  ext_pins.MBC1_BANK4.hold();
+  ext_pins.MBC1_BANK5.hold();
+  ext_pins.MBC1_BANK6.hold();
+
   {
     uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &ext_pins.PIN_01_A00);
     wire data = 0xFF;
 
+    wire bank_0 = nor5(ext_pins.MBC1_BANK0.qp_new(), ext_pins.MBC1_BANK1.qp_new(), ext_pins.MBC1_BANK2.qp_new(), ext_pins.MBC1_BANK3.qp_new(), ext_pins.MBC1_BANK4.qp_new());
+
+
     // ROM read
     //wire rom_CEn = PIN_01_ADDR[15].ext_qp_new2();
     //wire rom_OEp = bit(~rom_CEn) && bit(~PIN_79_RDn.ext_qp_new2()) && cart_buf;
-    wire rom_OEp = (addr >= 0x0000) && (addr <= 0x7FFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
-    if (rom_OEp) data = cart_buf[addr & 0x7FFF];
+
+    wire rom0_OEp = (addr >= 0x0000) && (addr <= 0x3FFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
+    if (rom0_OEp) {
+      data = cart_buf[addr];
+    }
+
+    wire rom1_OEp = (addr >= 0x4000) && (addr <= 0x7FFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
+    if (rom1_OEp) {
+      uint16_t mbc1_addr = addr & 0x3FFF;
+
+      wire cart_rom_a14 = bank_0 ? 1 : ext_pins.MBC1_BANK0.qp_new();
+      wire cart_rom_a15 = bank_0 ? 0 : ext_pins.MBC1_BANK1.qp_new();
+      wire cart_rom_a16 = bank_0 ? 0 : ext_pins.MBC1_BANK2.qp_new();
+      wire cart_rom_a17 = bank_0 ? 0 : ext_pins.MBC1_BANK3.qp_new();
+      wire cart_rom_a18 = bank_0 ? 0 : ext_pins.MBC1_BANK4.qp_new();
+      wire cart_rom_a19 = bit(ext_pins.MBC1_MODE.qp_new()) ? 0 : bank_0 ? 0 : ext_pins.MBC1_BANK5.qp_new();
+      wire cart_rom_a20 = bit(ext_pins.MBC1_MODE.qp_new()) ? 0 : bank_0 ? 0 : ext_pins.MBC1_BANK6.qp_new();
+
+      mbc1_addr |= (cart_rom_a14 << 14);
+      mbc1_addr |= (cart_rom_a15 << 15);
+      mbc1_addr |= (cart_rom_a16 << 16);
+      mbc1_addr |= (cart_rom_a17 << 17);
+      mbc1_addr |= (cart_rom_a18 << 18);
+      mbc1_addr |= (cart_rom_a19 << 19);
+      mbc1_addr |= (cart_rom_a20 << 20);
+      data = cart_buf[mbc1_addr];
+    }
 
     // Cart RAM read
     //wire cram_CS1n = PIN_80_CSn.ext_qp_new2();
     //wire cram_CS2p = PIN_01_ADDR[13].ext_qp_new2() && bit(~PIN_01_ADDR[14].ext_qp_new2()) && PIN_01_ADDR[15].ext_qp_new2();
     //wire cram_OEp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN_79_RDn.ext_qp_new2());
     wire cram_OEp = (addr >= 0xA000) && (addr <= 0xBFFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
-    if (cram_OEp) data = cart_ram[addr & 0x1FFF];
+    if (cram_OEp) {
+      uint16_t mbc1_addr = addr & 0x1FFF;
+
+      wire cart_ram_a13 = bit(ext_pins.MBC1_MODE.qp_new()) ? ext_pins.MBC1_BANK5.qp_new() : 0;
+      wire cart_ram_a14 = bit(ext_pins.MBC1_MODE.qp_new()) ? ext_pins.MBC1_BANK6.qp_new() : 0;
+
+      mbc1_addr |= (cart_ram_a13 << 13);
+      mbc1_addr |= (cart_ram_a14 << 14);
+      data = cart_ram[mbc1_addr];
+    }
+
+
 
     // Internal RAM read
     //wire iram_CS1n = PIN_80_CSn.qp_new();
@@ -283,7 +342,7 @@ void GateBoy::tock_ext()
     wire eram_OEp = (addr >= 0xE000) && (addr <= 0xFFFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
     if (eram_OEp) data = int_ram[addr & 0x1FFF];
 
-    wire ext_OEp = rom_OEp || cram_OEp || iram_OEp || eram_OEp;
+    wire ext_OEp = rom0_OEp || rom1_OEp || cram_OEp || iram_OEp || eram_OEp;
     ext_pins.PIN_17_D00.pin_io_in_oedp(ext_OEp, (data >> 0) & 1);
     ext_pins.PIN_18_D01.pin_io_in_oedp(ext_OEp, (data >> 1) & 1);
     ext_pins.PIN_19_D02.pin_io_in_oedp(ext_OEp, (data >> 2) & 1);
@@ -298,12 +357,62 @@ void GateBoy::tock_ext()
     uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &ext_pins.PIN_01_A00);
     wire data = (wire)BitBase::pack_ext_new(8, &ext_pins.PIN_17_D00);
 
+    const int region = addr >> 13;
+    const uint16_t ram_addr = addr & 0x1FFF;
+
+    (void)region;
+    (void)ram_addr;
+
+    if (region == 0) {
+      ext_pins.MBC1_RAM_EN = bit((data & 0x0F) == 0x0A);
+    }
+    else if (region == 1) {
+      ext_pins.MBC1_BANK0 = bit(data, 0);
+      ext_pins.MBC1_BANK1 = bit(data, 1);
+      ext_pins.MBC1_BANK2 = bit(data, 2);
+      ext_pins.MBC1_BANK3 = bit(data, 3);
+      ext_pins.MBC1_BANK4 = bit(data, 4);
+    }
+    else if (region == 2) {
+      ext_pins.MBC1_BANK5 = bit(data, 0);
+      ext_pins.MBC1_BANK6 = bit(data, 1);
+    }
+    else if (region == 3) {
+      ext_pins.MBC1_MODE = (data & 1);
+    }
+
+    /*
+    if (region == 0) ram_enable = (req.data_lo & 0x0F) == 0x0A;
+    if (region == 1) bank_latch1 = req.data_lo & 0b00011111;
+    if (region == 2) bank_latch2 = req.data_lo & 0b00000011;
+    if (region == 3) mode = req.data_lo & 1;
+
+    if (region == 5) {
+      if (ram_enable && ram_bank_count) {
+        int ram_bank = mode ? bank_latch2 : 0;
+        ram_bank &= (ram_bank_count - 1);
+        cart_ram[(ram_bank << 13) | ram_addr] = static_cast<uint8_t>(req.data_lo);
+      }
+    }
+    */
+
+
     // Cart RAM write
     //wire cram_CS1n = PIN_80_CSn.qp_new();
     //wire cram_CS2p = PIN_01_ADDR[13].qp_new() && bit(~PIN_01_ADDR[14].qp_new()) && PIN_01_ADDR[15].qp_new();
     //wire cram_WRp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN_78_WRn.qp_new());
     wire cram_WRp = (addr >= 0xA000) && (addr <= 0xBFFF) && bit(~ext_pins.PIN_78_WRn.qp_ext_new());
-    if (cram_WRp) cart_ram[addr & 0x1FFF] = data;
+    if (cram_WRp) {
+      uint16_t mbc1_addr = addr & 0x1FFF;
+
+      wire cart_ram_a13 = bit(ext_pins.MBC1_MODE.qp_new()) ? ext_pins.MBC1_BANK5.qp_new() : 0;
+      wire cart_ram_a14 = bit(ext_pins.MBC1_MODE.qp_new()) ? ext_pins.MBC1_BANK6.qp_new() : 0;
+
+      mbc1_addr |= (cart_ram_a13 << 13);
+      mbc1_addr |= (cart_ram_a14 << 14);
+
+      cart_ram[mbc1_addr] = data;
+    }
 
     // Internal RAM write
     //wire iram_CS1n = PIN_80_CSn.qp_new();

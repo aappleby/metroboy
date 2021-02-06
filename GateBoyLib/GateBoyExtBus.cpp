@@ -276,7 +276,7 @@ void GateBoy::tock_ext()
     uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &ext_pins.PIN_01_A00);
     wire data = 0xFF;
 
-    wire bank_0 = nor5(ext_pins.MBC1_BANK0.qp_new(), ext_pins.MBC1_BANK1.qp_new(), ext_pins.MBC1_BANK2.qp_new(), ext_pins.MBC1_BANK3.qp_new(), ext_pins.MBC1_BANK4.qp_new());
+    wire bank_0 = bit(nor5(ext_pins.MBC1_BANK0.qp_new(), ext_pins.MBC1_BANK1.qp_new(), ext_pins.MBC1_BANK2.qp_new(), ext_pins.MBC1_BANK3.qp_new(), ext_pins.MBC1_BANK4.qp_new()));
 
 
     // ROM read

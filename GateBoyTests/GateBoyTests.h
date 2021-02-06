@@ -44,6 +44,12 @@ struct GateBoyTests {
 
   void run_benchmark();
 
+  int test_mooneye_generic();
+  int test_mooneye_mbc1();
+  int test_mooneye_timer();
+  int test_mooneye_ppu();
+  int run_mooneye_test(const char* path, const char* filename);
+
   GateBoy create_gb_poweron();
 
   bool verbose = false;

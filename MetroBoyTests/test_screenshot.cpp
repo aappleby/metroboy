@@ -3,6 +3,39 @@
 
 #pragma warning(disable : 4996)
 
+#if 0
+  {
+    /*
+    m3_lcdc_obj_size_change.gb - small fail
+    m3_lcdc_obj_size_change_scx.gb - small fail
+    m3_lcdc_bg_en_change.gb - something off by one
+    m3_bgp_change.gb - off by one
+    m3_lcdc_obj_en_change.gb - off by one
+    m3_lcdc_obj_en_change_variant.gb - off by one
+    m3_lcdc_win_en_change_multiple_wx.gb -  fail, chunks off. image from mealybug wrong
+    m3_bgp_change_sprites.gb - off by one
+    m3_lcdc_win_en_change_multiple.gb  - fail, chunks off
+
+    m3_obp0_change.gb - pass
+    m3_lcdc_bg_map_change.gb - pass
+    m3_lcdc_tile_sel_change.gb
+    m3_lcdc_tile_sel_win_change.gb
+    m3_lcdc_win_map_change.gb
+    m3_scx_low_3_bits.gb
+    m3_window_timing.gb
+    m3_window_timing_wx_0.gb
+    m3_wx_4_change.gb
+    m3_wx_4_change_sprites.gb
+    m3_wx_5_change.gb
+    m3_wx_6_change.gb
+    */
+
+    load_rom   ("roms/mealybug/m3_lcdc_bg_map_change.gb");
+    load_golden("roms/mealybug/m3_lcdc_bg_map_change.bmp");
+  }
+#endif
+
+
 static const char* mealybug_tests[] = {
   "m3_window_timing",
   "m3_bgp_change",

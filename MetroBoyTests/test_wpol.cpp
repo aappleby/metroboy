@@ -10,7 +10,7 @@
 //---------
 // wpol generic
 
-static const char* generic_tests[] = {
+static const char* wpol_generic_tests[] = {
   "add_sp_e_timing.gb",
   "boot_hwio-G.gb",    // X
   "boot_regs-dmg.gb",
@@ -50,7 +50,7 @@ static const char* generic_tests[] = {
 //---------
 // wpol ppu
 
-static const char* ppu_tests[] = {
+static const char* wpol_ppu_tests[] = {
   // dmg pass
 
   "hblank_ly_scx_timing-GS.gb",
@@ -163,14 +163,14 @@ void run_wpol_test(const std::string& prefix, const std::string& name) {
 
 void run_wpol_acceptance() {
   printf("-----WPol Generic tests-----\n");
-  for (auto name : generic_tests) {
+  for (auto name : wpol_generic_tests) {
     std::string prefix = "wpol-gb/tests/build/acceptance/";
     run_wpol_test(prefix, name);
   }
   printf("\n");
 
   printf("-----WPol PPU tests-----\n");
-  for (auto name : ppu_tests) {
+  for (auto name : wpol_ppu_tests) {
     std::string prefix = "wpol-gb/tests/build/acceptance/gpu/";
     run_wpol_test(prefix, name);
   }

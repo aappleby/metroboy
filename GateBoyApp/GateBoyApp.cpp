@@ -48,7 +48,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 1
+#if 0
   // regenerate post-bootrom dump
   gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
   gb_thread.reset_to_bootrom();
@@ -57,39 +57,10 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   }
 #endif
 
-#if 0
-  {
-    /*
-    m3_lcdc_obj_size_change.gb - small fail
-    m3_lcdc_obj_size_change_scx.gb - small fail
-    m3_lcdc_bg_en_change.gb - something off by one
-    m3_bgp_change.gb - off by one
-    m3_lcdc_obj_en_change.gb - off by one
-    m3_lcdc_obj_en_change_variant.gb - off by one
-    m3_lcdc_win_en_change_multiple_wx.gb -  fail, chunks off. image from mealybug wrong
-    m3_bgp_change_sprites.gb - off by one
-    m3_obp0_change.gb
-    m3_lcdc_bg_map_change.gb
-    m3_lcdc_tile_sel_change.gb
-    m3_lcdc_tile_sel_win_change.gb
-    m3_lcdc_win_en_change_multiple.gb  - fail, chunks off
-    m3_lcdc_win_map_change.gb
-    m3_scx_low_3_bits.gb
-    m3_window_timing.gb
-    m3_window_timing_wx_0.gb
-    m3_wx_4_change.gb
-    m3_wx_4_change_sprites.gb
-    m3_wx_5_change.gb
-    m3_wx_6_change.gb
-    */
 
-    //load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb"));
-    load_rom   ("roms/mealybug/m3_bgp_change_sprites.gb");
-    load_golden("roms/mealybug/m3_bgp_change_sprites.bmp");
-  }
-#endif
 
-  //load_rom("microtests/build/dmg/poweron_obp0_000.gb");
+
+  load_rom("roms/wpol-gb/tests/build/acceptance/gpu/"   "hblank_ly_scx_timing-GS.gb");
 
 
 #if 0
@@ -291,62 +262,164 @@ void GateBoyApp::app_render_frame() {
 
   d("\002===== Thread =====\001\n");
   gb_thread.dump(d);
+  d("\n");
 
   d("\002===== GateBoy Top =====\001\n");
   gb->dump_sys(d);
+  d("\n");
+
+  d("\002===== CPU =====\001\n");
+  gb->cpu.dump(d);
+  d("\n");
+
+  d("\002===== Clocks =====\001\n");
+  gb->dump_clocks(d);
+  d("\n");
+
+  d("\002===== Resets =====\001\n");
+  gb->dump_resets(d);
+  d("\n");
+
+
+  d("\002===== Interrupts =====\001\n");
+  gb->dump_interrupts(d);
+  d("\n");
+
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
-#if 0
   //----------------------------------------
-
   // dump column 2
 
+  d("\002===== DMA =====\001\n");
+  gb->dump_dma(d);
+  d("\n");
+
+  d("\002===== CPU Bus =====\001\n");
+  gb->dump_cpu_bus(d);
+  d("\n");
+
+  d("\002===== EXT Bus =====\001\n");
+  gb->dump_ext_bus(d);
+  d("\n");
+
+  d("\002===== OAM Bus =====\001\n");
+  gb->dump_oam_bus(d);
+  d("\n");
+
+  d("\002===== VRAM Bus =====\001\n");
+  gb->dump_vram_bus(d);
+  d("\n");
+
+  d("\002===== MBC1 =====\001\n");
+  gb->dump_mbc1(d);
+  d("\n");
+
+  d("\002===== Timer =====\001\n");
+  gb->dump_timer(d);
+  d("\n");
+
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
   //----------------------------------------
-
   // dump column 3
 
+  d("\002===== TileFetcher =====\001\n");
+  gb->dump_tile_fetcher(d);
+  d("\n");
+
+  d("\002===== Sprite Fetch =====\001\n");
+  gb->dump_sprite_fetcher(d);
+  d("\n");
+
+  d("\002===== SpriteStore =====\001\n");
+  gb->dump_sprite_store(d);
+  d("\n");
+
+  d("\002===== Sprite Scan =====\001\n");
+  gb->dump_sprite_scanner(d);
+  d("\n");
+
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
   //----------------------------------------
-
   // dump column 4
 
+  d("\002===== LCD =====\001\n");
+  gb->dump_lcd(d);
+  d("\n");
+
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
   //----------------------------------------
-
   // dump column 5
 
+  d("\002===== PPU =====\001\n");
+  gb->dump_ppu(d);
+  d("\n");
+
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
   //----------------------------------------
-
   // dump column 6
 
+  d("\002===== Disasm =====\001\n");
+  {
+    uint16_t pc = gb->cpu.op_addr;
+    const uint8_t* code = nullptr;
+    uint16_t code_size = 0;
+    uint16_t code_base = 0;
+
+    if (!bit(gb->cpu_signals.TEPU_BOOT_BITn_h.qp_old())) {
+      code = gb_thread.boot.data();
+      code_size = 256;
+      code_base = ADDR_BOOT_ROM_BEGIN;
+    }
+    else if (pc >= 0x0000 && pc <= 0x7FFF) {
+      // FIXME needs to account for mbc1 mem mapping
+      code = gb_thread.cart.data();
+      code_size = 32768;
+      code_base = ADDR_CART_ROM_BEGIN;
+    }
+    else if (pc >= 0xFF80 && pc <= 0xFFFE) {
+      code = gb->zero_ram;
+      code_size = 127;
+      code_base = ADDR_ZEROPAGE_BEGIN;
+    }
+
+    assembler.disassemble(code, code_size, code_base, pc, 34, d, /*collapse_nops*/ false);
+  }
+  d("\n");
+
+  d("\002===== Joypad =====\001\n");
+  gb->dump_joypad(d);
+  d("\n");
+
+  d("\002===== Serial =====\001\n");
+  gb->dump_serial(d);
+  d("\n");
+
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
 
   //----------------------------------------
-
   // dump column 7
 
-  text_painter.render_string(view, d.s.c_str(), 42 * 32 - 16, 10 * 32);
+  /*
+  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
-#endif
+  */
 
   //----------------------------------------
 

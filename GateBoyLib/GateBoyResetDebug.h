@@ -5,7 +5,6 @@
 
 struct GateBoyResetDebug {
   void reset_to_cart() {
-    _XONA_LCDC_LCDENn.state = 0b00011010;
     PIN_71_RST.state = 0b00011000;
     PIN_77_T1.state = 0b00011000;
     PIN_76_T2.state = 0b00011000;
@@ -19,17 +18,7 @@ struct GateBoyResetDebug {
     SIG_CPU_INT_RESETp.state = 0b00011000;
   }
 
-  void set_signals(DFF9 XONA_LCDC_LCDENn)
-  {
-    //_XONA_LCDC_LCDENp.set(XONA_LCDC_LCDENp);
-    _XONA_LCDC_LCDENn = XONA_LCDC_LCDENn;
-  }
-
-
   //----------------------------------------
-
-  // This is here because it controls the reset signals for all the graphics stuff.
-  DFF9 _XONA_LCDC_LCDENn;  // xxxxxxxH
 
   /*PIN_71*/ PinIn  PIN_71_RST;
   /*PIN_77*/ PinIn  PIN_77_T1;

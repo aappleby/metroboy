@@ -482,7 +482,6 @@ void GateBoy::tock_slow(int pass_index) {
   // LCDC. Has to be near the top as it controls the video reset signal
   tock_lcdc();
 
-  rst.set_signals(reg_lcdc.XONA_LCDC_LCDENn);
   tock_vid_clocks();
 
   tock_lyc();

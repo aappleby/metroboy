@@ -216,7 +216,7 @@ struct GateBoy {
   /* p01.XARE*/ wire XARE_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
   /* p03.MULO*/ wire MULO_SYS_RSTn() const { return not1(ALUR_SYS_RSTn()); }
 
-  /* p01.XODO*/ wire XODO_VID_RSTp() const { return nand2(XEBE_SYS_RSTn(), rst._XONA_LCDC_LCDENn.qn_new()); }
+  /* p01.XODO*/ wire XODO_VID_RSTp() const { return nand2(XEBE_SYS_RSTn(), reg_lcdc.XONA_LCDC_LCDENn.qn_new()); }
   /* p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(XODO_VID_RSTp()); }
   /* p01.LYHA*/ wire LYHA_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /* p01.LYFE*/ wire LYFE_VID_RSTn() const { return not1(LYHA_VID_RSTp()); }
@@ -361,13 +361,29 @@ struct GateBoy {
   void reset_sprite_store();
 
   void dump_sys(Dumper& d) const;
+
+  void dump_cpu_bus(Dumper& d);
+  void dump_ext_bus(Dumper& d);
+  void dump_vram_bus(Dumper& d);
+  void dump_oam_bus(Dumper& d);
+
+  void dump_sprite_scanner(Dumper& d);
+
   void dump_tile_fetcher(Dumper& d);
+  void dump_sprite_fetcher(Dumper& d);
+
+  void dump_resets(Dumper& d);
+
+  void dump_timer(Dumper& d);
   void dump_clocks(Dumper& d);
   void dump_interrupts(Dumper& d);
   void dump_joypad(Dumper& d);
   void dump_lcd(Dumper& d);
-  void dump_oam_bus(Dumper& d);
   void dump_sprite_store(Dumper& d);
+  void dump_mbc1(Dumper& d);
+  void dump_dma(Dumper& d);
+  void dump_serial(Dumper& d);
+  void dump_ppu(Dumper& d);
 
   //-----------------------------------------------------------------------------
   // All the SOC registers, pins, buses. Everything in this section should derive

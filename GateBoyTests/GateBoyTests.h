@@ -48,6 +48,8 @@ struct GateBoyTests {
   int test_mooneye_mbc1();
   int test_mooneye_timer();
   int test_mooneye_ppu();
+  int test_wpol_generic();
+  int test_wpol_ppu();
   int run_mooneye_test(const char* path, const char* filename);
 
   GateBoy create_gb_poweron();

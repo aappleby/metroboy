@@ -95,6 +95,7 @@ int main(int argc, char** argv) {
   failures += t.test_micro_window();
   failures += t.test_micro_ppu();
   failures += t.test_micro_dma();
+  failures += t.test_micro_mbc1();
 #endif
 
 #ifdef TEST_MOONEYE
@@ -819,6 +820,17 @@ int GateBoyTests::test_micro_window() {
   failures += run_microtest("win14_b.gb");
   failures += run_microtest("win15_a.gb");
   failures += run_microtest("win15_b.gb");
+
+  TEST_END();
+}
+
+//-----------------------------------------------------------------------------
+
+int GateBoyTests::test_micro_mbc1() {
+  TEST_START();
+
+  failures += run_microtest("mbc1_ram_banks.gb");
+  failures += run_microtest("mbc1_rom_banks.gb");
 
   TEST_END();
 }

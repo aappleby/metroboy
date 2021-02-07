@@ -35,6 +35,7 @@ struct GateBoyTests {
   int test_micro_window();
   int test_micro_dma();
   int test_micro_ppu();
+  int test_micro_mbc1();
 
   int run_microtest(const char* filename);
 

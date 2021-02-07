@@ -57,17 +57,18 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   }
 #endif
 
+  //load_rom("roms/wpol-gb/tests/build/acceptance/gpu/"   "hblank_ly_scx_timing-GS.gb");
+  //load_rom("roms/naughtyemu/build/naughtyemu.gb"); // broken
 
+  //load_rom("roms/LinksAwakening.gb");
 
-
-  load_rom("roms/wpol-gb/tests/build/acceptance/gpu/"   "hblank_ly_scx_timing-GS.gb");
-
+  load_rom("microtests/build/dmg/dma_0xA000.gb");
 
 #if 0
   const char* app = R"(
   0150:
     ld a, $55
-    ld hl, $c003
+    ld hl, $A000
     ld (hl), a
     jr -3
   )";
@@ -77,7 +78,6 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 
   gb_thread.load_cart(DMG_ROM_blob, as.link());
   gb_thread.reset_to_cart();
-  gb_thread.gb->run_phases(120);
 #endif
 
 #if 0

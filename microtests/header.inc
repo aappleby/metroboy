@@ -2,18 +2,19 @@
 
 .gbheader
 	name "microtest"
+  cartridgetype $03
 	nintendologo
+  romdmg
+  ramsize 3
 .endgb
 
 .memorymap
-  defaultslot 0 
   slot 0 start $0000 size $4000
-  slot 1 start $4000 size $4000
+  defaultslot 0 
 .endme
+
 .rombanksize $4000
 .rombanks 2
-.ramsize 2
-.bank 0 slot 0
 
 //------------------------------------------------------------------------------
 
@@ -48,6 +49,7 @@
 
 .include "macros.inc"
 
+.bank 0
 .org $100
   nop
   jp $150

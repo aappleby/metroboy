@@ -8,9 +8,43 @@
 
 #include <windows.h>
 
+#include <filesystem>
+#include <iostream>
+
 //#define RUN_SLOW_TESTS
 
 #define TEST_MOONEYE
+
+//-----------------------------------------------------------------------------
+
+uint8_t cart_header[] = {
+  // nop; jp $150
+  0x00, 0xc3, 0x50, 0x01,
+
+  // logo
+  0xce, 0xed, 0x66, 0x66, 0xcc, 0x0d, 0x00, 0x0b,
+  0x03, 0x73, 0x00, 0x83, 0x00, 0x0c, 0x00, 0x0d,
+  0x00, 0x08, 0x11, 0x1f, 0x88, 0x89, 0x00, 0x0e,
+  0xdc, 0xcc, 0x6e, 0xe6, 0xdd, 0xdd, 0xd9, 0x99,
+  0xbb, 0xbb, 0x67, 0x63, 0x6e, 0x0e, 0xec, 0xcc,
+  0xdd, 0xdc, 0x99, 0x9f, 0xbb, 0xb9, 0x33, 0x3e,
+
+  // title
+  0x6d, 0x69, 0x63, 0x72, 0x6f, 0x74, 0x65, 0x73, 0x74, 0x00, 0x00,
+
+  0x00, 0x00, 0x00, 0x00, // mfr code
+  0x00,       // cgb flag
+  0x00, 0x00, // new license code
+  0x00,       // sgb flag
+  0x02,       // cart type MBC1 + RAM
+  0x00,       // rom size 32k
+  0x02,       // ram size 8k
+  0x01,       // dest code non-japanese
+  0x33,       // old license code
+  0x00,       // mask rom version
+  0x0d,       // header checksum
+  0x1a, 0x41, // global checksum
+};
 
 //-----------------------------------------------------------------------------
 
@@ -25,8 +59,9 @@ int main(int argc, char** argv) {
   static const bool skip_passing_tests = true;
 
   GateBoyTests t;
-  t.verbose = true;
+  //t.verbose = true;
   t.cart_rom.resize(32768, 0);
+  memcpy(&t.cart_rom[0x100], cart_header, sizeof(cart_header));
 
   auto start = timestamp();
 
@@ -34,7 +69,7 @@ int main(int argc, char** argv) {
   failures += t.test_reset_cart_vs_dump();
 #endif
 
-#if 0
+#if 1
   failures += t.test_fastboot_vs_slowboot();
   failures += t.test_bootrom();
 
@@ -68,8 +103,8 @@ int main(int argc, char** argv) {
   //failures += t.test_mooneye_timer();   // pass
   //failures += t.test_mooneye_ppu();     // 3 fails
 
-  failures += t.test_wpol_generic();
-  failures += t.test_wpol_ppu();
+  //failures += t.test_wpol_generic();
+  //failures += t.test_wpol_ppu();
 #endif
 
   auto finish = timestamp();
@@ -1360,12 +1395,12 @@ int GateBoyTests::test_ext_bus() {
 int GateBoyTests::test_mem() {
   TEST_START();
 
+  failures += test_mem("ROM",  0x0000, 0x7FFF, 31,  false);
+  failures += test_mem("VRAM", 0x8000, 0x9FFF, 31,  true);
+  failures += test_mem("CRAM", 0xA000, 0xBFFF, 31,  true);
+  failures += test_mem("IRAM", 0xC000, 0xDFFF, 31,  true);
+  failures += test_mem("ERAM", 0xE000, 0xFDFF, 31,  true);
   failures += test_mem("OAM",  0xFE00, 0xFEFF, 1,   true);
-  failures += test_mem("ROM",  0x0000, 0x7FFF, 256, false);
-  failures += test_mem("VRAM", 0x8000, 0x9FFF, 256, true);
-  failures += test_mem("CRAM", 0xA000, 0xBFFF, 256, true);
-  failures += test_mem("IRAM", 0xC000, 0xDFFF, 256, true);
-  failures += test_mem("ERAM", 0xE000, 0xFDFF, 256, true);
   failures += test_mem("ZRAM", 0xFF80, 0xFFFE, 1,   true);
 
   TEST_END();
@@ -1552,6 +1587,7 @@ int GateBoyTests::test_dma(uint16_t src) {
   gb.reset_to_cart();
   gb.sys_cpu_en = 0;
   gb.dbg_write(ADDR_LCDC, 0);
+  gb.dbg_write(0x0000, 0x0A); // enable mbc1 ram
 
   uint8_t* mem = get_flat_ptr(gb, src);
   for (int i = 0; i < 256; i++) {
@@ -1612,7 +1648,8 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
   TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
   GateBoy gb = create_gb_poweron();
-  gb.dbg_write(0xFF50, 1);
+  gb.dbg_write(0xFF50, 0x01); // disable bootrom
+  gb.dbg_write(0x0000, 0x0A); // enable mbc1 ram
 
   int len = addr_end - addr_start + 1;
   uint8_t* mem = get_flat_ptr(gb, addr_start);
@@ -1824,9 +1861,25 @@ int GateBoyTests::test_mooneye_generic() {
 int GateBoyTests::test_mooneye_mbc1() {
   TEST_START();
 
+  /*
+  using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+  for (const auto& dirEntry : recursive_directory_iterator(path)) {
+    if (!dirEntry.path().string().ends_with(".gb")) continue;
+
+    failures += run_mooneye_test("", dirEntry.path().string().c_str());
+  }
+  */
+
   const char* path = "roms/mooneye-gb/tests/build/emulator-only/mbc1/";
 
-  failures += run_mooneye_test(path, "bits_ram_en.gb"); // XXX gateboy fail ram not disabled
+  failures += run_mooneye_test(path, "bits_bank1.gb");
+  failures += run_mooneye_test(path, "bits_bank2.gb");
+  failures += run_mooneye_test(path, "bits_mode.gb");
+  failures += run_mooneye_test(path, "bits_ramg.gb");
+
+  // not going to bother with multicart support for now
+  //"multicart_rom_8Mb.gb",
+
   failures += run_mooneye_test(path, "ram_256Kb.gb");   // XXX gateboy fail round 1
   failures += run_mooneye_test(path, "ram_64Kb.gb");    // XXX gateboy fail round 1
   failures += run_mooneye_test(path, "rom_16Mb.gb");    // XXX gateboy fail
@@ -1835,9 +1888,6 @@ int GateBoyTests::test_mooneye_mbc1() {
   failures += run_mooneye_test(path, "rom_4Mb.gb");
   failures += run_mooneye_test(path, "rom_512Kb.gb");
   failures += run_mooneye_test(path, "rom_8Mb.gb");
-
-  // not going to bother with multicart support for now
-  //"multicart_rom_8Mb.gb",
 
   TEST_END();
 }
@@ -2030,5 +2080,86 @@ int GateBoyTests::run_mooneye_test(const char* path, const char* filename) {
     return 1;
   }
 }
+
+//-----------------------------------------------------------------------------
+
+
+#if 0
+
+//load_rom("roms/gb-test-roms/instr_timing/instr_timing.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/cpu_instrs.gb"); // doesn't work yet, probably mbc1 stuff
+
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/01-special.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/02-interrupts.gb"); // broken
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/03-op sp,hl.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/04-op r,imm.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/05-op rp.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/08-misc instrs.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/09-op r,r.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/10-bit ops.gb"); // pass
+//load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");
+
+./cgb_sound/cgb_sound.gb
+./cgb_sound/rom_singles/01-registers.gb
+./cgb_sound/rom_singles/02-len ctr.gb
+./cgb_sound/rom_singles/03-trigger.gb
+./cgb_sound/rom_singles/04-sweep.gb
+./cgb_sound/rom_singles/05-sweep details.gb
+./cgb_sound/rom_singles/06-overflow on trigger.gb
+./cgb_sound/rom_singles/07-len sweep period sync.gb
+./cgb_sound/rom_singles/08-len ctr during power.gb
+./cgb_sound/rom_singles/09-wave read while on.gb
+./cgb_sound/rom_singles/10-wave trigger while on.gb
+./cgb_sound/rom_singles/11-regs after power.gb
+./cgb_sound/rom_singles/12-wave.gb
+./cpu_instrs/cpu_instrs.gb
+./cpu_instrs/individual/01-special.gb
+./cpu_instrs/individual/02-interrupts.gb
+./cpu_instrs/individual/03-op sp,hl.gb
+./cpu_instrs/individual/04-op r,imm.gb
+./cpu_instrs/individual/05-op rp.gb
+./cpu_instrs/individual/06-ld r,r.gb
+./cpu_instrs/individual/07-jr,jp,call,ret,rst.gb
+./cpu_instrs/individual/08-misc instrs.gb
+./cpu_instrs/individual/09-op r,r.gb
+./cpu_instrs/individual/10-bit ops.gb
+./cpu_instrs/individual/11-op a,(hl).gb
+./dmg_sound/dmg_sound.gb
+./dmg_sound/rom_singles/01-registers.gb
+./dmg_sound/rom_singles/02-len ctr.gb
+./dmg_sound/rom_singles/03-trigger.gb
+./dmg_sound/rom_singles/04-sweep.gb
+./dmg_sound/rom_singles/05-sweep details.gb
+./dmg_sound/rom_singles/06-overflow on trigger.gb
+./dmg_sound/rom_singles/07-len sweep period sync.gb
+./dmg_sound/rom_singles/08-len ctr during power.gb
+./dmg_sound/rom_singles/09-wave read while on.gb
+./dmg_sound/rom_singles/10-wave trigger while on.gb
+./dmg_sound/rom_singles/11-regs after power.gb
+./dmg_sound/rom_singles/12-wave write while on.gb
+./halt_bug.gb
+./instr_timing/instr_timing.gb
+./interrupt_time/interrupt_time.gb
+./mem_timing/individual/01-read_timing.gb
+./mem_timing/individual/02-write_timing.gb
+./mem_timing/individual/03-modify_timing.gb
+./mem_timing/mem_timing.gb
+./mem_timing-2/mem_timing.gb
+./mem_timing-2/rom_singles/01-read_timing.gb
+./mem_timing-2/rom_singles/02-write_timing.gb
+./mem_timing-2/rom_singles/03-modify_timing.gb
+./oam_bug/oam_bug.gb
+./oam_bug/rom_singles/1-lcd_sync.gb
+./oam_bug/rom_singles/2-causes.gb
+./oam_bug/rom_singles/3-non_causes.gb
+./oam_bug/rom_singles/4-scanline_timing.gb
+./oam_bug/rom_singles/5-timing_bug.gb
+./oam_bug/rom_singles/6-timing_no_bug.gb
+./oam_bug/rom_singles/7-timing_effect.gb
+./oam_bug/rom_singles/8-instr_effect.gb
+
+#endif
 
 //-----------------------------------------------------------------------------

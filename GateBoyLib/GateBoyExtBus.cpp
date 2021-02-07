@@ -5,6 +5,36 @@
 //----------------------------------------
 // FIXME - implement MBC1
 
+// ROM read
+//wire rom_CEn = PIN_01_ADDR[15].ext_qp_new2();
+//wire rom_OEp = bit(~rom_CEn) && bit(~PIN_79_RDn.ext_qp_new2()) && cart_buf;
+// Cart RAM read
+//wire cram_CS1n = PIN_80_CSn.ext_qp_new2();
+//wire cram_CS2p = PIN_01_ADDR[13].ext_qp_new2() && bit(~PIN_01_ADDR[14].ext_qp_new2()) && PIN_01_ADDR[15].ext_qp_new2();
+//wire cram_OEp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN_79_RDn.ext_qp_new2());
+// Internal RAM read
+//wire iram_CS1n = PIN_80_CSn.qp_new();
+//wire iram_CS2p = PIN_01_ADDR[14].qp_new();
+//wire iram_OEp  = bit(~iram_CS1n) && iram_CS2p && bit(~PIN_79_RDn.qp_new());
+// Echo RAM read
+//wire eram_CS1n = PIN_80_CSn.qp_new();
+//wire eram_CS2p = PIN_01_ADDR[14].qp_new();
+//wire eram_OEp  = bit(~eram_CS1n) && eram_CS2p && bit(~PIN_79_RDn.qp_new());
+
+// Cart RAM write
+//wire cram_CS1n = PIN_80_CSn.qp_new();
+//wire cram_CS2p = PIN_01_ADDR[13].qp_new() && bit(~PIN_01_ADDR[14].qp_new()) && PIN_01_ADDR[15].qp_new();
+//wire cram_WRp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN_78_WRn.qp_new());
+// Internal RAM write
+//wire iram_CS1n = PIN_80_CSn.qp_new();
+//wire iram_CS2p = PIN_01_ADDR[14].qp_new();
+//wire iram_WRp  = bit(~iram_CS1n) && iram_CS2p && bit(~PIN_78_WRn.qp_new());
+// Echo RAM write
+//wire eram_CS1n = PIN_80_CSn.qp_new();
+//wire eram_CS2p = PIN_01_ADDR[14].qp_new();
+//wire eram_WRp  = bit(~eram_CS1n) && iram_CS2p && bit(~PIN_78_WRn.qp_new());
+
+
 // 0000-3FFF - ROM Bank 00 (Read Only) This area always contains the first 16KBytes of the cartridge ROM.
 // 4000-7FFF - ROM Bank 01-7F (Read Only) This area may contain any of the further 16KByte banks of the ROM, allowing to address up to 125 ROM Banks (almost 2MByte). As described below, bank numbers 20h, 40h, and 60h cannot be used, resulting in the odd amount of 125 banks.
 // A000-BFFF - RAM Bank 00-03, if any (Read/Write) This area is used to address external RAM in the cartridge (if any). External RAM is often battery buffered, allowing to store game positions or high score tables, even if the gameboy is turned off, or if the cartridge is removed from the gameboy. Available RAM sizes are: 2KByte (at A000-A7FF), 8KByte (at A000-BFFF), and 32KByte (in form of four 8K banks at A000-BFFF).
@@ -226,7 +256,7 @@ void GateBoy::tock_ext()
   /* p08.RULO*/ wire _RULO_A15n = nor2 (_TAZY_A15p, UNOR_MODE_DBG2p());
   /*PIN_16*/ ext_pins.PIN_16_A15.pin_out_hilo(_SUZE_A15n, _RULO_A15n);
 
-  // FIXME So does this mean that if the CPU writes to the external bus during dma, that data
+  // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_in
   // will actually end up in oam?
 
   /* p08.LAGU*/ wire _LAGU = and_or3(cpu_signals.SIG_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_CPU_WRp.qp_new());
@@ -272,162 +302,110 @@ void GateBoy::tock_ext()
   ext_pins.MBC1_BANK5.hold();
   ext_pins.MBC1_BANK6.hold();
 
-  {
-    uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &ext_pins.PIN_01_A00);
-    wire data = 0xFF;
+  //----------------------------------------
+  // region 0 = rom 0
+  // region 1 = rom 0
+  // region 2 = rom 1
+  // region 3 = rom 1
+  // region 4 = vram
+  // region 5 = cram
+  // region 6 = iram
+  // region 7 = eram
 
-    wire bank_0 = bit(nor5(ext_pins.MBC1_BANK0.qp_new(), ext_pins.MBC1_BANK1.qp_new(), ext_pins.MBC1_BANK2.qp_new(), ext_pins.MBC1_BANK3.qp_new(), ext_pins.MBC1_BANK4.qp_new()));
+  uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &ext_pins.PIN_01_A00);
+  const int region = addr >> 13;
+
+  bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.qp_new());
+  bool mbc1_mode   = bit(ext_pins.MBC1_MODE.qp_new());
+
+  uint32_t mbc1_rom_bank = mbc1_mode ? BitBase::pack_new(5, &ext_pins.MBC1_BANK0) : BitBase::pack_new(7, &ext_pins.MBC1_BANK0);
+  if ((mbc1_rom_bank & 0x1F) == 0) mbc1_rom_bank |= 1;
+
+  uint32_t mbc1_ram_bank = mbc1_mode ? BitBase::pack_new(2, &ext_pins.MBC1_BANK5) : 0;
+  if (mbc1_mode == 0) mbc1_ram_bank = 0;
+
+  uint32_t mbc1_rom_addr = ((addr & 0x3FFF) | (mbc1_rom_bank << 14)) & cart_rom_addr_mask;
+  uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask;
 
 
-    // ROM read
-    //wire rom_CEn = PIN_01_ADDR[15].ext_qp_new2();
-    //wire rom_OEp = bit(~rom_CEn) && bit(~PIN_79_RDn.ext_qp_new2()) && cart_buf;
+  if (mbc1_rom_addr >= cart_size) __debugbreak();
+  if (mbc1_ram_addr >= 32768)     __debugbreak();
 
-    wire rom0_OEp = (addr >= 0x0000) && (addr <= 0x3FFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
-    if (rom0_OEp) {
-      data = cart_buf[addr];
+  //----------------------------------------
+
+  bool rd_en = false;
+  uint8_t data_out = 0;
+
+  if (bit(~ext_pins.PIN_79_RDn.qp_ext_new())) {
+    if (region == 0 || region == 1) {
+      rd_en = 1;
+      data_out = cart_buf[addr];
     }
-
-    wire rom1_OEp = (addr >= 0x4000) && (addr <= 0x7FFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
-    if (rom1_OEp) {
-      uint16_t mbc1_addr = addr & 0x3FFF;
-
-      wire cart_rom_a14 = bank_0 ? 1 : ext_pins.MBC1_BANK0.qp_new();
-      wire cart_rom_a15 = bank_0 ? 0 : ext_pins.MBC1_BANK1.qp_new();
-      wire cart_rom_a16 = bank_0 ? 0 : ext_pins.MBC1_BANK2.qp_new();
-      wire cart_rom_a17 = bank_0 ? 0 : ext_pins.MBC1_BANK3.qp_new();
-      wire cart_rom_a18 = bank_0 ? 0 : ext_pins.MBC1_BANK4.qp_new();
-      wire cart_rom_a19 = bit(ext_pins.MBC1_MODE.qp_new()) ? 0 : bank_0 ? 0 : ext_pins.MBC1_BANK5.qp_new();
-      wire cart_rom_a20 = bit(ext_pins.MBC1_MODE.qp_new()) ? 0 : bank_0 ? 0 : ext_pins.MBC1_BANK6.qp_new();
-
-      mbc1_addr |= (cart_rom_a14 << 14);
-      mbc1_addr |= (cart_rom_a15 << 15);
-      mbc1_addr |= (cart_rom_a16 << 16);
-      mbc1_addr |= (cart_rom_a17 << 17);
-      mbc1_addr |= (cart_rom_a18 << 18);
-      mbc1_addr |= (cart_rom_a19 << 19);
-      mbc1_addr |= (cart_rom_a20 << 20);
-      data = cart_buf[mbc1_addr];
+    else if ((region == 2 || region == 3) && cart_has_mbc1) {
+      rd_en = 1;
+      data_out = cart_buf[mbc1_rom_addr];
     }
-
-    // Cart RAM read
-    //wire cram_CS1n = PIN_80_CSn.ext_qp_new2();
-    //wire cram_CS2p = PIN_01_ADDR[13].ext_qp_new2() && bit(~PIN_01_ADDR[14].ext_qp_new2()) && PIN_01_ADDR[15].ext_qp_new2();
-    //wire cram_OEp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN_79_RDn.ext_qp_new2());
-    wire cram_OEp = (addr >= 0xA000) && (addr <= 0xBFFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
-    if (cram_OEp) {
-      uint16_t mbc1_addr = addr & 0x1FFF;
-
-      wire cart_ram_a13 = bit(ext_pins.MBC1_MODE.qp_new()) ? ext_pins.MBC1_BANK5.qp_new() : 0;
-      wire cart_ram_a14 = bit(ext_pins.MBC1_MODE.qp_new()) ? ext_pins.MBC1_BANK6.qp_new() : 0;
-
-      mbc1_addr |= (cart_ram_a13 << 13);
-      mbc1_addr |= (cart_ram_a14 << 14);
-      data = cart_ram[mbc1_addr];
+    else if ((region == 2 || region == 3) && !cart_has_mbc1) {
+      rd_en = 1;
+      data_out = cart_buf[addr & cart_rom_addr_mask];
     }
-
-
-
-    // Internal RAM read
-    //wire iram_CS1n = PIN_80_CSn.qp_new();
-    //wire iram_CS2p = PIN_01_ADDR[14].qp_new();
-    //wire iram_OEp  = bit(~iram_CS1n) && iram_CS2p && bit(~PIN_79_RDn.qp_new());
-    wire iram_OEp = (addr >= 0xC000) && (addr <= 0xDFFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
-    if (iram_OEp) data = int_ram[addr & 0x1FFF];
-
-    // Echo RAM read
-    //wire eram_CS1n = PIN_80_CSn.qp_new();
-    //wire eram_CS2p = PIN_01_ADDR[14].qp_new();
-    //wire eram_OEp  = bit(~eram_CS1n) && eram_CS2p && bit(~PIN_79_RDn.qp_new());
-    wire eram_OEp = (addr >= 0xE000) && (addr <= 0xFFFF) && bit(~ext_pins.PIN_79_RDn.qp_ext_new());
-    if (eram_OEp) data = int_ram[addr & 0x1FFF];
-
-    wire ext_OEp = rom0_OEp || rom1_OEp || cram_OEp || iram_OEp || eram_OEp;
-    ext_pins.PIN_17_D00.pin_io_in_oedp(ext_OEp, (data >> 0) & 1);
-    ext_pins.PIN_18_D01.pin_io_in_oedp(ext_OEp, (data >> 1) & 1);
-    ext_pins.PIN_19_D02.pin_io_in_oedp(ext_OEp, (data >> 2) & 1);
-    ext_pins.PIN_20_D03.pin_io_in_oedp(ext_OEp, (data >> 3) & 1);
-    ext_pins.PIN_21_D04.pin_io_in_oedp(ext_OEp, (data >> 4) & 1);
-    ext_pins.PIN_22_D05.pin_io_in_oedp(ext_OEp, (data >> 5) & 1);
-    ext_pins.PIN_23_D06.pin_io_in_oedp(ext_OEp, (data >> 6) & 1);
-    ext_pins.PIN_24_D07.pin_io_in_oedp(ext_OEp, (data >> 7) & 1);
+    else if (region == 5 && cart_has_ram && cart_has_mbc1) {
+      rd_en = mbc1_ram_en;
+      data_out = cart_ram[mbc1_ram_addr & cart_ram_addr_mask];
+    }
+    else if (region == 5 && cart_has_ram && !cart_has_mbc1) {
+      rd_en = 1;
+      data_out = cart_ram[addr & cart_ram_addr_mask];
+    }
+    else if (region == 6 || region == 7) {
+      rd_en = 1;
+      data_out = int_ram[addr & 0x1FFF];
+    }
   }
 
-  {
-    uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &ext_pins.PIN_01_A00);
-    wire data = (wire)BitBase::pack_ext_new(8, &ext_pins.PIN_17_D00);
+  ext_pins.PIN_17_D00.pin_io_in_oedp(rd_en, (data_out >> 0) & 1);
+  ext_pins.PIN_18_D01.pin_io_in_oedp(rd_en, (data_out >> 1) & 1);
+  ext_pins.PIN_19_D02.pin_io_in_oedp(rd_en, (data_out >> 2) & 1);
+  ext_pins.PIN_20_D03.pin_io_in_oedp(rd_en, (data_out >> 3) & 1);
+  ext_pins.PIN_21_D04.pin_io_in_oedp(rd_en, (data_out >> 4) & 1);
+  ext_pins.PIN_22_D05.pin_io_in_oedp(rd_en, (data_out >> 5) & 1);
+  ext_pins.PIN_23_D06.pin_io_in_oedp(rd_en, (data_out >> 6) & 1);
+  ext_pins.PIN_24_D07.pin_io_in_oedp(rd_en, (data_out >> 7) & 1);
 
-    const int region = addr >> 13;
-    const uint16_t ram_addr = addr & 0x1FFF;
+  //----------------------------------------
 
-    (void)region;
-    (void)ram_addr;
+  uint8_t data_in  = (uint8_t)BitBase::pack_ext_new(8, &ext_pins.PIN_17_D00);
 
-    if (region == 0) {
-      ext_pins.MBC1_RAM_EN = bit((data & 0x0F) == 0x0A);
+  if (bit(~ext_pins.PIN_78_WRn.qp_ext_new())) {
+    if (region == 0 && cart_has_mbc1) {
+      ext_pins.MBC1_RAM_EN = bit((data_in & 0x0F) == 0x0A);
     }
-    else if (region == 1) {
-      ext_pins.MBC1_BANK0 = bit(data, 0);
-      ext_pins.MBC1_BANK1 = bit(data, 1);
-      ext_pins.MBC1_BANK2 = bit(data, 2);
-      ext_pins.MBC1_BANK3 = bit(data, 3);
-      ext_pins.MBC1_BANK4 = bit(data, 4);
+    else if (region == 1 && cart_has_mbc1) {
+      ext_pins.MBC1_BANK0 = bit(data_in, 0);
+      ext_pins.MBC1_BANK1 = bit(data_in, 1);
+      ext_pins.MBC1_BANK2 = bit(data_in, 2);
+      ext_pins.MBC1_BANK3 = bit(data_in, 3);
+      ext_pins.MBC1_BANK4 = bit(data_in, 4);
     }
-    else if (region == 2) {
-      ext_pins.MBC1_BANK5 = bit(data, 0);
-      ext_pins.MBC1_BANK6 = bit(data, 1);
+    else if (region == 2 && cart_has_mbc1) {
+      ext_pins.MBC1_BANK5 = bit(data_in, 0);
+      ext_pins.MBC1_BANK6 = bit(data_in, 1);
     }
-    else if (region == 3) {
-      ext_pins.MBC1_MODE = (data & 1);
+    else if (region == 3 && cart_has_mbc1) {
+      ext_pins.MBC1_MODE = (data_in & 1);
     }
-
-    /*
-    if (region == 0) ram_enable = (req.data_lo & 0x0F) == 0x0A;
-    if (region == 1) bank_latch1 = req.data_lo & 0b00011111;
-    if (region == 2) bank_latch2 = req.data_lo & 0b00000011;
-    if (region == 3) mode = req.data_lo & 1;
-
-    if (region == 5) {
-      if (ram_enable && ram_bank_count) {
-        int ram_bank = mode ? bank_latch2 : 0;
-        ram_bank &= (ram_bank_count - 1);
-        cart_ram[(ram_bank << 13) | ram_addr] = static_cast<uint8_t>(req.data_lo);
-      }
+    else if (region == 5 && cart_has_ram && cart_has_mbc1 && mbc1_ram_en) {
+      cart_ram[mbc1_ram_addr & cart_ram_addr_mask] = data_in;
     }
-    */
-
-
-    // Cart RAM write
-    //wire cram_CS1n = PIN_80_CSn.qp_new();
-    //wire cram_CS2p = PIN_01_ADDR[13].qp_new() && bit(~PIN_01_ADDR[14].qp_new()) && PIN_01_ADDR[15].qp_new();
-    //wire cram_WRp  = bit(~cram_CS1n) && cram_CS2p && bit(~PIN_78_WRn.qp_new());
-    wire cram_WRp = (addr >= 0xA000) && (addr <= 0xBFFF) && bit(~ext_pins.PIN_78_WRn.qp_ext_new());
-    if (cram_WRp) {
-      uint16_t mbc1_addr = addr & 0x1FFF;
-
-      wire cart_ram_a13 = bit(ext_pins.MBC1_MODE.qp_new()) ? ext_pins.MBC1_BANK5.qp_new() : 0;
-      wire cart_ram_a14 = bit(ext_pins.MBC1_MODE.qp_new()) ? ext_pins.MBC1_BANK6.qp_new() : 0;
-
-      mbc1_addr |= (cart_ram_a13 << 13);
-      mbc1_addr |= (cart_ram_a14 << 14);
-
-      cart_ram[mbc1_addr] = data;
+    else if (region == 5 && cart_has_ram && !cart_has_mbc1) {
+      cart_ram[addr & cart_ram_addr_mask] = data_in;
     }
-
-    // Internal RAM write
-    //wire iram_CS1n = PIN_80_CSn.qp_new();
-    //wire iram_CS2p = PIN_01_ADDR[14].qp_new();
-    //wire iram_WRp  = bit(~iram_CS1n) && iram_CS2p && bit(~PIN_78_WRn.qp_new());
-    wire iram_WRp = (addr >= 0xC000) && (addr <= 0xDFFF) && bit(~ext_pins.PIN_78_WRn.qp_ext_new());
-    if (iram_WRp) int_ram[addr & 0x1FFF]  = data;
-
-    // Echo RAM write
-    //wire eram_CS1n = PIN_80_CSn.qp_new();
-    //wire eram_CS2p = PIN_01_ADDR[14].qp_new();
-    //wire eram_WRp  = bit(~eram_CS1n) && iram_CS2p && bit(~PIN_78_WRn.qp_new());
-    wire eram_WRp = (addr >= 0xE000) && (addr <= 0xFFFF) && bit(~ext_pins.PIN_78_WRn.qp_ext_new());
-    if (eram_WRp) int_ram[addr & 0x1FFF]  = data;
+    else if (region == 6 || region == 7) {
+      int_ram[addr & 0x1FFF]  = data_in;
+    }
   }
+
+  //----------------------------------------
 
   /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_signals.SIG_CPU_RDp.qp_new(), TEXO_ADDR_VRAMn(), cpu_signals.SIG_CPU_LATCH_EXT.qp_new());
 

@@ -53,21 +53,18 @@ uint8_t metadata[] = {
   // title
   0x6d, 0x69, 0x63, 0x72, 0x6f, 0x74, 0x65, 0x73, 0x74, 0x00, 0x00,
 
-  // metadata
-  0x00, 0x00, 0x00, 0x00,
-  0x00,
-  0x00, 0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x0d,
-
-  // checksum
-  0x1a, 0x41,
+  0x00, 0x00, 0x00, 0x00, // mfr code
+  0x00,       // cgb flag
+  0x00, 0x00, // new license code
+  0x00,       // sgb flag
+  0x02,       // cart type MBC1 + RAM
+  0x00,       // rom size 32k
+  0x02,       // ram size 8k
+  0x01,       // dest code non-japanese
+  0x33,       // old license code
+  0x00,       // mask rom version
+  0x0d,       // header checksum
+  0x1a, 0x41, // global checksum
 };
 
 blob Assembler::link() {
@@ -87,6 +84,12 @@ void Assembler::link_to(uint8_t* rom_buf) {
     const blob& code = block.second;
     memcpy(rom_buf + addr, code.data(), code.size());
   }
+
+  uint8_t checksum = 0;
+  for (int i = 0x0134; i <= 0x014C; i++) {
+    checksum = checksum - rom_buf[i] - 1;
+  }
+  rom_buf[0x014D] = checksum;
 }
 
 

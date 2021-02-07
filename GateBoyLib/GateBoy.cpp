@@ -60,10 +60,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
   reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
 
-  boot_buf  = _boot_buf;
-  boot_size = _boot_size;
-  cart_buf  = _cart_buf;
-  cart_size = _cart_size;
+  load_cart(_boot_buf, _boot_size, _cart_buf, _cart_size);
 
   sentinel1 = SENTINEL1;
   sentinel2 = SENTINEL2;
@@ -240,6 +237,39 @@ void GateBoy::load_cart(uint8_t* _boot_buf, size_t _boot_size,
   boot_size = _boot_size;
   cart_buf  = _cart_buf;
   cart_size = _cart_size;
+
+  switch(cart_buf[0x0147]) {
+  case 0x00: cart_has_mbc1 = 0; cart_has_ram = 0; break;
+  case 0x01: cart_has_mbc1 = 1; cart_has_ram = 0; break;
+  case 0x02: cart_has_mbc1 = 1; cart_has_ram = 1; break;
+  case 0x03: cart_has_mbc1 = 1; cart_has_ram = 1; break;
+  case 0x08: cart_has_mbc1 = 0; cart_has_ram = 1; break;
+  case 0x09: cart_has_mbc1 = 0; cart_has_ram = 1; break;
+  default: break;
+  }
+
+  // these masks are only for mbc1
+
+  switch(cart_buf[0x0148]) {
+  case 0:  cart_rom_addr_mask = 0x00007FFF; break; // 32K
+  case 1:  cart_rom_addr_mask = 0x0000FFFF; break; // 64K
+  case 2:  cart_rom_addr_mask = 0x0001FFFF; break; // 128K
+  case 3:  cart_rom_addr_mask = 0x0003FFFF; break; // 256K
+  case 4:  cart_rom_addr_mask = 0x0007FFFF; break; // 512K
+  case 5:  cart_rom_addr_mask = 0x000FFFFF; break; // 1M
+  case 6:  cart_rom_addr_mask = 0x001FFFFF; break; // 2M
+  case 7:  cart_rom_addr_mask = 0x003FFFFF; break; // 4M
+  case 8:  cart_rom_addr_mask = 0x007FFFFF; break; // 8M
+  default: cart_rom_addr_mask = 0x00007FFF; break;
+  }
+
+  switch(cart_buf[0x0149]) {
+  case 0:  cart_ram_addr_mask = 0x00000000; break;
+  case 1:  cart_ram_addr_mask = 0x000007FF; break;
+  case 2:  cart_ram_addr_mask = 0x00001FFF; break;
+  case 3:  cart_ram_addr_mask = 0x00007FFF; break;
+  default: cart_ram_addr_mask = 0x00000000; break;
+  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -278,7 +308,15 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
   bus_req_new.data = data;
   bus_req_new.read = 0;
   bus_req_new.write = 1;
-  run_phases(8);
+
+  next_phase();
+  next_phase();
+  next_phase();
+  next_phase();
+  next_phase();
+  next_phase();
+  next_phase();
+  next_phase();
 
   bus_req_new = old_req;
   sys_cpu_en = old_cpu_en;

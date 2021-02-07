@@ -5,7 +5,11 @@ main:
   ld a, $00;
   ldh ($40), a;
 
+  // enable cart ram
+  ld a, $0A
+  ld ($0000), a
 
+  // sentinel bytes already in rom
 
 
 

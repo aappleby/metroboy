@@ -513,8 +513,14 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // Memory
 
+  bool cart_has_mbc1 = 0;
+  bool cart_has_ram = 0;
+
+  uint32_t cart_rom_addr_mask = 0x7FFF;
+  uint32_t cart_ram_addr_mask = 0x0000;
+
   uint8_t vid_ram [8192];
-  uint8_t cart_ram[8192];
+  uint8_t cart_ram[32768];
   uint8_t int_ram [8192];
   uint8_t oam_ram [256];
   uint8_t zero_ram[128];

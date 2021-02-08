@@ -86,14 +86,14 @@ struct GateBoyExtPins {
     PIN_14_A13.state = 0b00011001;
     PIN_15_A14.state = 0b00011001;
     PIN_16_A15.state = 0b00011000;
-    PIN_17_D00.state = 0b00010101;
-    PIN_18_D01.state = 0b00010101;
-    PIN_19_D02.state = 0b00010101;
-    PIN_20_D03.state = 0b00010101;
-    PIN_21_D04.state = 0b00010101;
-    PIN_22_D05.state = 0b00010101;
-    PIN_23_D06.state = 0b00010101;
-    PIN_24_D07.state = 0b00010101;
+    PIN_17_D00.reset_int(0b00010101);
+    PIN_18_D01.reset_int(0b00010101);
+    PIN_19_D02.reset_int(0b00010101);
+    PIN_20_D03.reset_int(0b00010101);
+    PIN_21_D04.reset_int(0b00010101);
+    PIN_22_D05.reset_int(0b00010101);
+    PIN_23_D06.reset_int(0b00010101);
+    PIN_24_D07.reset_int(0b00010101);
     PIN_80_CSn.state = 0b00011000;
     PIN_79_RDn.state = 0b00011001;
     PIN_78_WRn.state = 0b00011000;
@@ -116,14 +116,14 @@ struct GateBoyExtPins {
   /*PIN_15*/ PinOut PIN_15_A14;
   /*PIN_16*/ PinOut PIN_16_A15;
 
-  /*PIN_17*/ PinIO  PIN_17_D00;
-  /*PIN_18*/ PinIO  PIN_18_D01;
-  /*PIN_19*/ PinIO  PIN_19_D02;
-  /*PIN_20*/ PinIO  PIN_20_D03;
-  /*PIN_21*/ PinIO  PIN_21_D04;
-  /*PIN_22*/ PinIO  PIN_22_D05;
-  /*PIN_23*/ PinIO  PIN_23_D06;
-  /*PIN_24*/ PinIO  PIN_24_D07;
+  /*PIN_17*/ PinIO2 PIN_17_D00;
+  /*PIN_18*/ PinIO2 PIN_18_D01;
+  /*PIN_19*/ PinIO2 PIN_19_D02;
+  /*PIN_20*/ PinIO2 PIN_20_D03;
+  /*PIN_21*/ PinIO2 PIN_21_D04;
+  /*PIN_22*/ PinIO2 PIN_22_D05;
+  /*PIN_23*/ PinIO2 PIN_23_D06;
+  /*PIN_24*/ PinIO2 PIN_24_D07;
 
   /*PIN_80*/ PinOut PIN_80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
   /*PIN_79*/ PinOut PIN_79_RDn;      // RDn idles low, goes high on phase B for an external write

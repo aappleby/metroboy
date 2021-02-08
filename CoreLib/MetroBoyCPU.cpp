@@ -389,7 +389,7 @@ void MetroBoyCPU::execute_op() {
   if (state == 1 && STM_A8_A)               /**/ { pc = adp; /**/ xy = 0xFF00 | in;                        /**/ bus_write(xy, a); }
   if (state == 2 && STM_A8_A)               /**/ {           /**/                                          /**/ bus_done(pc); }
 
-  // push_corner_size / pop
+  // push / pop
 
   if (state == 0 && PUSH_BC)                /**/ { pc = adp; /**/                                          /**/ bus_pass(sp); }
   if (state == 0 && PUSH_DE)                /**/ { pc = adp; /**/                                          /**/ bus_pass(sp); }

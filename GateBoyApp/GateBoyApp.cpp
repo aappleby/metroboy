@@ -62,14 +62,17 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 
   //load_rom("roms/LinksAwakening.gb");
 
-  load_rom("microtests/build/dmg/dma_0xA000.gb");
+  //load_rom("roms/mooneye-gb/tests/build/emulator-only/mbc1/"   "bits_ramg.gb");
 
-#if 0
+#if 1
   const char* app = R"(
   0150:
-    ld a, $55
-    ld hl, $A000
+    ld hl, $C000
+    ld a, $54
     ld (hl), a
+    ld a, (hl)
+    nop
+    nop
     jr -3
   )";
 
@@ -343,6 +346,24 @@ void GateBoyApp::app_render_frame() {
   gb->dump_sprite_scanner(d);
   d("\n");
 
+  d("\002===== IRAM =====\001\n");
+  for (int y = 0; y < 10; y++) {
+    for (int x = 0; x < 16; x++) {
+      d("%02x ", gb->int_ram[x + y * 16]);
+    }
+    d("\n");
+  }
+  d("\n");
+
+  d("\002===== OAM =====\001\n");
+  for (int y = 0; y < 10; y++) {
+    for (int x = 0; x < 16; x++) {
+      d("%02x ", gb->oam_ram[x + y * 16]);
+    }
+    d("\n");
+  }
+  d("\n");
+
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
   cursor_x += col_spacing;
   d.clear();
@@ -511,7 +532,7 @@ void GateBoyApp::app_render_frame() {
   // Probe dump
 
   gb->probes.dump(d, draw_passes);
-  text_painter.render_string(view, d.s, 42 * 32 - 16, 19 * 32 - 24);
+  text_painter.render_string(view, d.s, 42 * 32 - 16, 19 * 20 - 24);
   d.clear();
 
   frame_count++;

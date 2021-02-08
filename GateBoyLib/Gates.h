@@ -29,6 +29,18 @@ struct BitBase {
   BitBase() { state = 0; }
   explicit BitBase(int new_state)  { state = uint8_t(new_state); }
 
+  char cp() const {
+    if (state & BIT_DRIVEN)      return (state & 1) ? '1' : '0';
+    else if (state & BIT_PULLUP) return (state & 1) ? '^' : 'v';
+    else                         return 'X';
+  }
+
+  char cn() const {
+    if (state & BIT_DRIVEN)      return (state & 1) ? '0' : '1';
+    else if (state & BIT_PULLUP) return (state & 1) ? '^' : 'v';
+    else                         return 'X';
+  }
+
   wire qp_mid() const { return state; }
   wire qn_mid() const { return ~state; }
 
@@ -70,6 +82,11 @@ struct BitBase {
     if (state & BIT_PULLUP) return '^';
     return 'X';
   }
+
+  bool is_pullup() { return bit(state, 2); }
+  bool is_driven() { return bit(state, 3); }
+  bool is_old()    { return bit(state, 4); }
+  bool is_new()    { return bit(state, 5); }
 
 #ifdef CHECK_DIRTY_BIT
   BitBase& check_any() {
@@ -599,6 +616,19 @@ struct PinIO : public BitBase {
 
   wire qp_ext_new() const { return qn_new(); }
 
+  wire qp_hax() {
+    if (state & BIT_DRIVEN) {
+      return qp_new();
+    }
+    else if (state & BIT_PULLUP) {
+      return 0;
+    }
+    else {
+      __debugbreak();
+      return 0;
+    }
+  }
+
   void reset_for_pass() {
     CHECK_N(state & BIT_NEW);
     state = BIT_NEW | BIT_DATA;
@@ -673,8 +703,94 @@ struct PinIO : public BitBase {
 
     state |= BIT_DIRTY4;
   }
+};
 
-  //----------------------------------------
+//-----------------------------------------------------------------------------
+// Stores the bit INSIDE the chip. Bits are inverted when traveling across
+// the chip pins.
+
+struct PinIO2 : private BitBase {
+  void reset_int(uint8_t s) { state = s; }
+
+  char cp_int() const {
+    if      (state & BIT_DRIVEN) return (state & 1) ? '1' : '0';
+    else if (state & BIT_PULLUP) return 'v';
+    else                         return 'X';
+  }
+
+  char cp_ext() const {
+    if      (state & BIT_DRIVEN) {
+      return (state & 1) ? '0' : '1';
+    }
+    else if (state & BIT_PULLUP) {
+      return '^';
+    }
+    else {
+      return 'X';
+    }
+  }
+
+  wire qp_int_new() {
+    CHECK_P(state & BIT_NEW);
+    CHECK_P(state & BIT_DIRTY3);
+    CHECK_P(state & BIT_DIRTY4);
+
+    if (is_driven()) {
+      return qp_new();
+    }
+    else if (is_pullup()) {
+      // An IO pin that is pulled _up_ externally appears pulled _down_ internally.
+      // the chip.
+      return 0;
+    }
+    else {
+      __debugbreak();
+      return 0;
+    }
+  }
+
+  wire qp_ext_new() {
+    return ~qp_int_new();
+  }
+
+  void set_pin_io(wire int_PUn, wire int_HI, wire int_LO, wire ext_OEp, wire ext_Dp) {
+    CHECK_P(state & BIT_OLD);
+    CHECK_N(state & BIT_NEW);
+
+    int_PUn = bit(int_PUn);
+    int_HI = bit(int_HI);
+    int_LO = bit(int_LO);
+    ext_OEp = bit(ext_OEp);
+    ext_Dp = bit(ext_Dp);
+
+    state = 0;
+
+    if (!int_HI && !int_LO) {
+      // internal bit 0, external bit 1
+      CHECK_N(ext_OEp);
+      state = BIT_DRIVEN | 0;
+    }
+    else if (int_HI && int_LO) {
+      // internal bit 1, external bit 0
+      CHECK_N(ext_OEp);
+      state = BIT_DRIVEN | 1;
+    }
+    else if (int_HI && !int_LO) {
+      // hi-z, can be driven externally
+      if (ext_OEp) {
+        state = BIT_DRIVEN | (ext_Dp ? 0 : 1);
+      }
+    }
+    else if (!int_HI && int_LO) {
+      // shootthrough, this is bad
+      __debugbreak();
+    }
+
+    state |= BIT_NEW | BIT_DIRTY3 | BIT_DIRTY4;
+    if (!int_PUn) state |= BIT_PULLUP;
+
+    CHECK_P(is_driven() || is_pullup());
+  }
 };
 
 //-----------------------------------------------------------------------------

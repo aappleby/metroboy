@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
   auto start = timestamp();
 
 #ifdef USE_COMMIT
-  failures += t.test_reset_cart_vs_dump();
+  //failures += t.test_reset_cart_vs_dump();
 #endif
 
 #if 1
@@ -98,9 +98,10 @@ int main(int argc, char** argv) {
   failures += t.test_micro_mbc1();
 #endif
 
-#ifdef TEST_MOONEYE
+#if 0
+  t.verbose = true;
   //failures += t.test_mooneye_generic(); // some failing
-  //failures += t.test_mooneye_mbc1();    // mostly failing
+  failures += t.test_mooneye_mbc1();    // mostly failing
   //failures += t.test_mooneye_timer();   // pass
   //failures += t.test_mooneye_ppu();     // 3 fails
 
@@ -1027,7 +1028,7 @@ int GateBoyTests::test_ext_bus() {
     const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
 
     const char* D00_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // Scope trace w/ extra pulldown resistor patched in so we can see when
-    const char* D01_WAVE = "^^111111 ^1110000 ^^000000 ^^000000 ^^^^^^^^"; // the pullups are the only thing driving the new_bus.
+    const char* D01_WAVE = "^^111111 ^1110000 ^^000000 ^^000000 ^^^^^^^^"; // the pullups are the only thing driving the bus.
     const char* D02_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // #
     const char* D03_WAVE = "^^000000 ^1110000 ^^111111 ^^111111 ^^^^^^^^"; // #
     const char* D04_WAVE = "^^111111 ^1111111 ^^111111 ^^111111 ^^^^^^^^"; // #
@@ -1058,14 +1059,14 @@ int GateBoyTests::test_ext_bus() {
       char A14 = gb.ext_pins.PIN_15_A14.ext_c();
       char A15 = gb.ext_pins.PIN_16_A15.ext_c();
 
-      char D00 = gb.ext_pins.PIN_17_D00.ext_c();
-      char D01 = gb.ext_pins.PIN_18_D01.ext_c();
-      char D02 = gb.ext_pins.PIN_19_D02.ext_c();
-      char D03 = gb.ext_pins.PIN_20_D03.ext_c();
-      char D04 = gb.ext_pins.PIN_21_D04.ext_c();
-      char D05 = gb.ext_pins.PIN_22_D05.ext_c();
-      char D06 = gb.ext_pins.PIN_23_D06.ext_c();
-      char D07 = gb.ext_pins.PIN_24_D07.ext_c();
+      char D00 = gb.ext_pins.PIN_17_D00.cp_ext();
+      char D01 = gb.ext_pins.PIN_18_D01.cp_ext();
+      char D02 = gb.ext_pins.PIN_19_D02.cp_ext();
+      char D03 = gb.ext_pins.PIN_20_D03.cp_ext();
+      char D04 = gb.ext_pins.PIN_21_D04.cp_ext();
+      char D05 = gb.ext_pins.PIN_22_D05.cp_ext();
+      char D06 = gb.ext_pins.PIN_23_D06.cp_ext();
+      char D07 = gb.ext_pins.PIN_24_D07.cp_ext();
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1181,14 +1182,14 @@ int GateBoyTests::test_ext_bus() {
       char A14 = gb.ext_pins.PIN_15_A14.ext_c();
       char A15 = gb.ext_pins.PIN_16_A15.ext_c();
 
-      char D00 = gb.ext_pins.PIN_17_D00.ext_c();
-      char D01 = gb.ext_pins.PIN_18_D01.ext_c();
-      char D02 = gb.ext_pins.PIN_19_D02.ext_c();
-      char D03 = gb.ext_pins.PIN_20_D03.ext_c();
-      char D04 = gb.ext_pins.PIN_21_D04.ext_c();
-      char D05 = gb.ext_pins.PIN_22_D05.ext_c();
-      char D06 = gb.ext_pins.PIN_23_D06.ext_c();
-      char D07 = gb.ext_pins.PIN_24_D07.ext_c();
+      char D00 = gb.ext_pins.PIN_17_D00.cp_ext();
+      char D01 = gb.ext_pins.PIN_18_D01.cp_ext();
+      char D02 = gb.ext_pins.PIN_19_D02.cp_ext();
+      char D03 = gb.ext_pins.PIN_20_D03.cp_ext();
+      char D04 = gb.ext_pins.PIN_21_D04.cp_ext();
+      char D05 = gb.ext_pins.PIN_22_D05.cp_ext();
+      char D06 = gb.ext_pins.PIN_23_D06.cp_ext();
+      char D07 = gb.ext_pins.PIN_24_D07.cp_ext();
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1277,7 +1278,7 @@ int GateBoyTests::test_ext_bus() {
     }
 
     // The glitch pulse causes the ext address latch to latch even though the
-    // 0xFFxx addresses are _not_ external, so the address shows up on the new_bus.
+    // 0xFFxx addresses are _not_ external, so the address shows up on the bus.
 
     //                                xxxxxxx x
     const char* A00_WAVE = "11111111 10000000 00000000 01111111 11111111";
@@ -1352,14 +1353,14 @@ int GateBoyTests::test_ext_bus() {
       char A14 = gb.ext_pins.PIN_15_A14.ext_c();
       char A15 = gb.ext_pins.PIN_16_A15.ext_c();
 
-      char D00 = gb.ext_pins.PIN_17_D00.ext_c();
-      char D01 = gb.ext_pins.PIN_18_D01.ext_c();
-      char D02 = gb.ext_pins.PIN_19_D02.ext_c();
-      char D03 = gb.ext_pins.PIN_20_D03.ext_c();
-      char D04 = gb.ext_pins.PIN_21_D04.ext_c();
-      char D05 = gb.ext_pins.PIN_22_D05.ext_c();
-      char D06 = gb.ext_pins.PIN_23_D06.ext_c();
-      char D07 = gb.ext_pins.PIN_24_D07.ext_c();
+      char D00 = gb.ext_pins.PIN_17_D00.cp_ext();
+      char D01 = gb.ext_pins.PIN_18_D01.cp_ext();
+      char D02 = gb.ext_pins.PIN_19_D02.cp_ext();
+      char D03 = gb.ext_pins.PIN_20_D03.cp_ext();
+      char D04 = gb.ext_pins.PIN_21_D04.cp_ext();
+      char D05 = gb.ext_pins.PIN_22_D05.cp_ext();
+      char D06 = gb.ext_pins.PIN_23_D06.cp_ext();
+      char D07 = gb.ext_pins.PIN_24_D07.cp_ext();
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 

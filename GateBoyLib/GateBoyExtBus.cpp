@@ -121,15 +121,6 @@ void GateBoy::tock_ext()
   ext_pins.PIN_15_A14.reset_for_pass();
   ext_pins.PIN_16_A15.reset_for_pass();
 
-  ext_pins.PIN_17_D00.reset_for_pass();
-  ext_pins.PIN_18_D01.reset_for_pass();
-  ext_pins.PIN_19_D02.reset_for_pass();
-  ext_pins.PIN_20_D03.reset_for_pass();
-  ext_pins.PIN_21_D04.reset_for_pass();
-  ext_pins.PIN_22_D05.reset_for_pass();
-  ext_pins.PIN_23_D06.reset_for_pass();
-  ext_pins.PIN_24_D07.reset_for_pass();
-
   /* p08.MOCA*/ wire _MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn(), UMUT_MODE_DBG1p());
 
   /*#p04.LEBU*/ wire _LEBU_DMA_A15n  = not1(dma.MARU_DMA_A15n.qn_new());
@@ -256,7 +247,7 @@ void GateBoy::tock_ext()
   /* p08.RULO*/ wire _RULO_A15n = nor2 (_TAZY_A15p, UNOR_MODE_DBG2p());
   /*PIN_16*/ ext_pins.PIN_16_A15.pin_out_hilo(_SUZE_A15n, _RULO_A15n);
 
-  // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_in
+  // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_out
   // will actually end up in oam?
 
   /* p08.LAGU*/ wire _LAGU = and_or3(cpu_signals.SIG_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_CPU_WRp.qp_new());
@@ -283,25 +274,6 @@ void GateBoy::tock_ext()
   /* p08.ROGY*/ wire _ROGY = nor2 (new_bus.BUS_CPU_D06p.qp_new(), _RORU_CBD_TO_EPDn);
   /* p08.RYDA*/ wire _RYDA = nor2 (new_bus.BUS_CPU_D07p.qp_new(), _RORU_CBD_TO_EPDn);
 
-  /*PIN_17*/ ext_pins.PIN_17_D00.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUXA, _RUNE);
-  /*PIN_18*/ ext_pins.PIN_18_D01.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RUJA, _RYPU);
-  /*PIN_19*/ ext_pins.PIN_19_D02.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RABY, _SULY);
-  /*PIN_20*/ ext_pins.PIN_20_D03.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RERA, _SEZE);
-  /*PIN_21*/ ext_pins.PIN_21_D04.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RORY, _RESY);
-  /*PIN_22*/ ext_pins.PIN_22_D05.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RYVO, _TAMU);
-  /*PIN_23*/ ext_pins.PIN_23_D06.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAFY, _ROGY);
-  /*PIN_24*/ ext_pins.PIN_24_D07.pin_io_out_pull_hilo(_LULA_CBD_TO_EPDp, _RAVU, _RYDA);
-
-  ext_pins.MBC1_RAM_EN.hold();
-  ext_pins.MBC1_MODE.hold();
-  ext_pins.MBC1_BANK0.hold();
-  ext_pins.MBC1_BANK1.hold();
-  ext_pins.MBC1_BANK2.hold();
-  ext_pins.MBC1_BANK3.hold();
-  ext_pins.MBC1_BANK4.hold();
-  ext_pins.MBC1_BANK5.hold();
-  ext_pins.MBC1_BANK6.hold();
-
   //----------------------------------------
   // region 0 = rom 0
   // region 1 = rom 0
@@ -315,18 +287,17 @@ void GateBoy::tock_ext()
   uint16_t addr = (uint16_t)BitBase::pack_ext_new(16, &ext_pins.PIN_01_A00);
   const int region = addr >> 13;
 
-  bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.qp_new());
-  bool mbc1_mode   = bit(ext_pins.MBC1_MODE.qp_new());
+  bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.qp_old());
+  bool mbc1_mode   = bit(ext_pins.MBC1_MODE.qp_old());
 
-  uint32_t mbc1_rom_bank = mbc1_mode ? BitBase::pack_new(5, &ext_pins.MBC1_BANK0) : BitBase::pack_new(7, &ext_pins.MBC1_BANK0);
+  uint32_t mbc1_rom_bank = mbc1_mode ? BitBase::pack_old(5, &ext_pins.MBC1_BANK0) : BitBase::pack_old(7, &ext_pins.MBC1_BANK0);
   if ((mbc1_rom_bank & 0x1F) == 0) mbc1_rom_bank |= 1;
 
-  uint32_t mbc1_ram_bank = mbc1_mode ? BitBase::pack_new(2, &ext_pins.MBC1_BANK5) : 0;
+  uint32_t mbc1_ram_bank = mbc1_mode ? BitBase::pack_old(2, &ext_pins.MBC1_BANK5) : 0;
   if (mbc1_mode == 0) mbc1_ram_bank = 0;
 
   uint32_t mbc1_rom_addr = ((addr & 0x3FFF) | (mbc1_rom_bank << 14)) & cart_rom_addr_mask;
   uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask;
-
 
   if (mbc1_rom_addr >= cart_size) __debugbreak();
   if (mbc1_ram_addr >= 32768)     __debugbreak();
@@ -334,74 +305,102 @@ void GateBoy::tock_ext()
   //----------------------------------------
 
   bool rd_en = false;
-  uint8_t data_out = 0;
+  uint8_t data_in = 0;
 
   if (bit(~ext_pins.PIN_79_RDn.qp_ext_new())) {
     if (region == 0 || region == 1) {
       rd_en = 1;
-      data_out = cart_buf[addr];
+      data_in = cart_buf[addr];
     }
     else if ((region == 2 || region == 3) && cart_has_mbc1) {
       rd_en = 1;
-      data_out = cart_buf[mbc1_rom_addr];
+      data_in = cart_buf[mbc1_rom_addr];
     }
     else if ((region == 2 || region == 3) && !cart_has_mbc1) {
       rd_en = 1;
-      data_out = cart_buf[addr & cart_rom_addr_mask];
+      data_in = cart_buf[addr & cart_rom_addr_mask];
     }
     else if (region == 5 && cart_has_ram && cart_has_mbc1) {
       rd_en = mbc1_ram_en;
-      data_out = cart_ram[mbc1_ram_addr & cart_ram_addr_mask];
+      data_in = cart_ram[mbc1_ram_addr & cart_ram_addr_mask];
     }
     else if (region == 5 && cart_has_ram && !cart_has_mbc1) {
       rd_en = 1;
-      data_out = cart_ram[addr & cart_ram_addr_mask];
+      data_in = cart_ram[addr & cart_ram_addr_mask];
     }
     else if (region == 6 || region == 7) {
       rd_en = 1;
-      data_out = int_ram[addr & 0x1FFF];
+      data_in = int_ram[addr & 0x1FFF];
     }
   }
 
-  ext_pins.PIN_17_D00.pin_io_in_oedp(rd_en, (data_out >> 0) & 1);
-  ext_pins.PIN_18_D01.pin_io_in_oedp(rd_en, (data_out >> 1) & 1);
-  ext_pins.PIN_19_D02.pin_io_in_oedp(rd_en, (data_out >> 2) & 1);
-  ext_pins.PIN_20_D03.pin_io_in_oedp(rd_en, (data_out >> 3) & 1);
-  ext_pins.PIN_21_D04.pin_io_in_oedp(rd_en, (data_out >> 4) & 1);
-  ext_pins.PIN_22_D05.pin_io_in_oedp(rd_en, (data_out >> 5) & 1);
-  ext_pins.PIN_23_D06.pin_io_in_oedp(rd_en, (data_out >> 6) & 1);
-  ext_pins.PIN_24_D07.pin_io_in_oedp(rd_en, (data_out >> 7) & 1);
+  //ext_pins.PIN_17_D00.reset_for_pass();
+  //ext_pins.PIN_18_D01.reset_for_pass();
+  //ext_pins.PIN_19_D02.reset_for_pass();
+  //ext_pins.PIN_20_D03.reset_for_pass();
+  //ext_pins.PIN_21_D04.reset_for_pass();
+  //ext_pins.PIN_22_D05.reset_for_pass();
+  //ext_pins.PIN_23_D06.reset_for_pass();
+  //ext_pins.PIN_24_D07.reset_for_pass();
+
+
+  /*PIN_17*/ ext_pins.PIN_17_D00.set_pin_io(_LULA_CBD_TO_EPDp, _RUXA, _RUNE, rd_en, bit(data_in, 0));
+  /*PIN_18*/ ext_pins.PIN_18_D01.set_pin_io(_LULA_CBD_TO_EPDp, _RUJA, _RYPU, rd_en, bit(data_in, 1));
+  /*PIN_19*/ ext_pins.PIN_19_D02.set_pin_io(_LULA_CBD_TO_EPDp, _RABY, _SULY, rd_en, bit(data_in, 2));
+  /*PIN_20*/ ext_pins.PIN_20_D03.set_pin_io(_LULA_CBD_TO_EPDp, _RERA, _SEZE, rd_en, bit(data_in, 3));
+  /*PIN_21*/ ext_pins.PIN_21_D04.set_pin_io(_LULA_CBD_TO_EPDp, _RORY, _RESY, rd_en, bit(data_in, 4));
+  /*PIN_22*/ ext_pins.PIN_22_D05.set_pin_io(_LULA_CBD_TO_EPDp, _RYVO, _TAMU, rd_en, bit(data_in, 5));
+  /*PIN_23*/ ext_pins.PIN_23_D06.set_pin_io(_LULA_CBD_TO_EPDp, _RAFY, _ROGY, rd_en, bit(data_in, 6));
+  /*PIN_24*/ ext_pins.PIN_24_D07.set_pin_io(_LULA_CBD_TO_EPDp, _RAVU, _RYDA, rd_en, bit(data_in, 7));
 
   //----------------------------------------
 
-  uint8_t data_in  = (uint8_t)BitBase::pack_ext_new(8, &ext_pins.PIN_17_D00);
+  ext_pins.MBC1_RAM_EN.hold();
+  ext_pins.MBC1_MODE.hold();
+  ext_pins.MBC1_BANK0.hold();
+  ext_pins.MBC1_BANK1.hold();
+  ext_pins.MBC1_BANK2.hold();
+  ext_pins.MBC1_BANK3.hold();
+  ext_pins.MBC1_BANK4.hold();
+  ext_pins.MBC1_BANK5.hold();
+  ext_pins.MBC1_BANK6.hold();
+
+  uint8_t data_out = 0;
+  data_out |= bit(ext_pins.PIN_17_D00.qp_ext_new()) << 0;
+  data_out |= bit(ext_pins.PIN_18_D01.qp_ext_new()) << 1;
+  data_out |= bit(ext_pins.PIN_19_D02.qp_ext_new()) << 2;
+  data_out |= bit(ext_pins.PIN_20_D03.qp_ext_new()) << 3;
+  data_out |= bit(ext_pins.PIN_21_D04.qp_ext_new()) << 4;
+  data_out |= bit(ext_pins.PIN_22_D05.qp_ext_new()) << 5;
+  data_out |= bit(ext_pins.PIN_23_D06.qp_ext_new()) << 6;
+  data_out |= bit(ext_pins.PIN_24_D07.qp_ext_new()) << 7;
 
   if (bit(~ext_pins.PIN_78_WRn.qp_ext_new())) {
     if (region == 0 && cart_has_mbc1) {
-      ext_pins.MBC1_RAM_EN = bit((data_in & 0x0F) == 0x0A);
+      ext_pins.MBC1_RAM_EN = bit((data_out & 0x0F) == 0x0A);
     }
     else if (region == 1 && cart_has_mbc1) {
-      ext_pins.MBC1_BANK0 = bit(data_in, 0);
-      ext_pins.MBC1_BANK1 = bit(data_in, 1);
-      ext_pins.MBC1_BANK2 = bit(data_in, 2);
-      ext_pins.MBC1_BANK3 = bit(data_in, 3);
-      ext_pins.MBC1_BANK4 = bit(data_in, 4);
+      ext_pins.MBC1_BANK0 = bit(data_out, 0);
+      ext_pins.MBC1_BANK1 = bit(data_out, 1);
+      ext_pins.MBC1_BANK2 = bit(data_out, 2);
+      ext_pins.MBC1_BANK3 = bit(data_out, 3);
+      ext_pins.MBC1_BANK4 = bit(data_out, 4);
     }
     else if (region == 2 && cart_has_mbc1) {
-      ext_pins.MBC1_BANK5 = bit(data_in, 0);
-      ext_pins.MBC1_BANK6 = bit(data_in, 1);
+      ext_pins.MBC1_BANK5 = bit(data_out, 0);
+      ext_pins.MBC1_BANK6 = bit(data_out, 1);
     }
     else if (region == 3 && cart_has_mbc1) {
-      ext_pins.MBC1_MODE = (data_in & 1);
+      ext_pins.MBC1_MODE = (data_out & 1);
     }
     else if (region == 5 && cart_has_ram && cart_has_mbc1 && mbc1_ram_en) {
-      cart_ram[mbc1_ram_addr & cart_ram_addr_mask] = data_in;
+      cart_ram[mbc1_ram_addr & cart_ram_addr_mask] = data_out;
     }
     else if (region == 5 && cart_has_ram && !cart_has_mbc1) {
-      cart_ram[addr & cart_ram_addr_mask] = data_in;
+      cart_ram[addr & cart_ram_addr_mask] = data_out;
     }
     else if (region == 6 || region == 7) {
-      int_ram[addr & 0x1FFF]  = data_in;
+      int_ram[addr & 0x1FFF]  = data_out;
     }
   }
 
@@ -409,14 +408,38 @@ void GateBoy::tock_ext()
 
   /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_signals.SIG_CPU_RDp.qp_new(), TEXO_ADDR_VRAMn(), cpu_signals.SIG_CPU_LATCH_EXT.qp_new());
 
-  /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_17_D00.qp_new());
-  /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_18_D01.qp_new());
-  /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_19_D02.qp_new());
-  /* p08.SELO*/ ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_20_D03.qp_new());
-  /* p08.SODY*/ ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_21_D04.qp_new());
-  /* p08.SAGO*/ ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_22_D05.qp_new());
-  /* p08.RUPA*/ ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_23_D06.qp_new());
-  /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_24_D07.qp_new());
+  //probe_wire(1, "LAVO",  _LAVO_HOLDn);
+  //probe_wire(2, "RD",    cpu_signals.SIG_CPU_RDp.qp_new());
+  //probe_wire(3, "TEXO",  TEXO_ADDR_VRAMn());
+  //probe_wire(4, "LATCH", cpu_signals.SIG_CPU_LATCH_EXT.qp_new());
+
+  //probe_char( 8, "PIN_17 ext", ext_pins.PIN_17_D00.cp_ext());
+  //probe_char( 9, "PIN_18 ext", ext_pins.PIN_18_D01.cp_ext());
+  //probe_char(10, "PIN_19 ext", ext_pins.PIN_19_D02.cp_ext());
+  //probe_char(11, "PIN_20 ext", ext_pins.PIN_20_D03.cp_ext());
+  //probe_char(12, "PIN_21 ext", ext_pins.PIN_21_D04.cp_ext());
+  //probe_char(13, "PIN_22 ext", ext_pins.PIN_22_D05.cp_ext());
+  //probe_char(14, "PIN_23 ext", ext_pins.PIN_23_D06.cp_ext());
+  //probe_char(15, "PIN_24 ext", ext_pins.PIN_24_D07.cp_ext());
+
+  /*#p08.SOMA*/ ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_17_D00.qp_int_new());
+  /* p08.RONY*/ ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_18_D01.qp_int_new());
+  /* p08.RAXY*/ ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_19_D02.qp_int_new());
+  /* p08.SELO*/ ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_20_D03.qp_int_new());
+  /* p08.SODY*/ ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_21_D04.qp_int_new());
+  /* p08.SAGO*/ ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_22_D05.qp_int_new());
+  /* p08.RUPA*/ ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_23_D06.qp_int_new());
+  /* p08.SAZY*/ ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latchn(_LAVO_HOLDn, ext_pins.PIN_24_D07.qp_int_new());
+
+  //probe_wire(24, "SOMA", ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
+  //probe_wire(25, "RONY", ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
+  //probe_wire(26, "RAXY", ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
+  //probe_wire(27, "SELO", ext_data_latch.SELO_EXT_DATA_LATCH_D3n.qp_new());
+  //probe_wire(28, "SODY", ext_data_latch.SODY_EXT_DATA_LATCH_D4n.qp_new());
+  //probe_wire(29, "SAGO", ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.qp_new());
+  //probe_wire(30, "RUPA", ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
+  //probe_wire(31, "SAZY", ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
+
   /*#p08.RYMA_EL0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_LAVO_HOLDn, ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
   /* p08.RUVO_EL1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_LAVO_HOLDn, ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
   /* p08.RYKO_EL2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_LAVO_HOLDn, ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());

@@ -176,7 +176,7 @@ struct Channel3 {
   /*p18.FEXU*/ bool LEN_DONE;
 
   //----------
-  // wave ram new_bus
+  // wave ram bus
 
   bool WAVE_RAM_CTRL1;
   bool WAVE_RAM_CTRL3;

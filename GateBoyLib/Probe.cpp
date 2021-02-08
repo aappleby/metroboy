@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "GateBoyLib/Gates.h"
+
 thread_local Probes* thread_probes = nullptr;
 
 Probes::Probes() {
@@ -23,7 +25,7 @@ void Probes::reset_to_cart() {
   memset(stable, 0, sample_count);
 }
 
-void Probes::probe(int index, const char* signal_name, char s) {
+void Probes::probe_wire(int index, const char* signal_name, char s) {
   strcpy_s(names[index], 31, signal_name);
   if (s <= 1) {
     pass_samples[index][pass_cursor] = s + 30; //? '#' : '_';
@@ -71,12 +73,23 @@ void Probes::dump(Dumper& d, bool draw_passes) {
     }
     d.add_char('\001');
     d.add_char('\n');
+
+    if ((y & 7) == 7) d.add_char('\n');
   }
 }
 
-void probe(int index, const char* signal_name, char s) {
+void probe_wire(int index, const char* signal_name, wire s) {
   if (thread_probes) {
-    thread_probes->probe(index, signal_name, s);
+    thread_probes->probe_wire(index, signal_name, s & 1);
+  }
+  else {
+    //printf("<no probes for current thread>\n");
+  }
+}
+
+void probe_char(int index, const char* signal_name, char s) {
+  if (thread_probes) {
+    thread_probes->probe_wire(index, signal_name, s);
   }
   else {
     //printf("<no probes for current thread>\n");

@@ -1,5 +1,13 @@
 #include "GateBoyLib/GateBoy.h"
 
+void dump_slice2b(Dumper& d, const char* tag, const BitBase* bits, int bit_count) {
+  d(tag);
+  for (int i = bit_count - 1; i >= 0; i--) {
+    d.add_char(bits[i].cp());
+  }
+  d.add_char('\n');
+}
+
 void GateBoy::dump_sys(Dumper& d) const {
   const char* phases[] = {
     "\002A_______\001",
@@ -199,7 +207,7 @@ void GateBoy::dump_cpu_bus(Dumper& d) {
   d.dump_bitp   ("APOV_CPU_WRp      : ", cpu_signals.APOV_CPU_WRp.get_state());
   d.dump_bitp   ("TAPU_CPU_WRp      : ", cpu_signals.TAPU_CPU_WRp.get_state());
   d.dump_slice2p("BUS_CPU_A : ", &new_bus.BUS_CPU_A00p, 16);
-  d.dump_slice2p("BUS_CPU_D : ", &new_bus.BUS_CPU_D00p, 8);
+  dump_slice2b(d, "BUS_CPU_D : ", &new_bus.BUS_CPU_D00p, 8);
 }
 
 void GateBoy::dump_dma(Dumper& d) {
@@ -214,14 +222,18 @@ void GateBoy::dump_dma(Dumper& d) {
   d.dump_bitp   ("LOKY_DMA_LATCHp   : ", dma.LOKY_DMA_LATCHp  .get_state());
 }
 
+
 void GateBoy::dump_ext_bus(Dumper& d) {
   d.dump_slice2n("PIN_01_ADDR : ", &ext_pins.PIN_01_A00, 16);
-  d.dump_slice2n("PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
+
+  //d.dump_slice2n(   "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
+  //dump_slice2b  (d, "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
+
   d.dump_bitn   ("PIN_80_CSn  : ", ext_pins.PIN_80_CSn.state);
   d.dump_bitn   ("PIN_79_RDn  : ", ext_pins.PIN_79_RDn.state);
   d.dump_bitn   ("PIN_78_WRn  : ", ext_pins.PIN_78_WRn.state);
-  //d.dump_slice2p("ADDR LATCH : ", &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
-  //d.dump_slice2n("DATA LATCH : ", &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
+  d.dump_slice2p("ADDR LATCH  : ", &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
+  d.dump_slice2n("DATA LATCH  : ", &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
 }
 
 void GateBoy::dump_vram_bus(Dumper& d) {

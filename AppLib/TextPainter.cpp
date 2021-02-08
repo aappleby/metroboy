@@ -205,7 +205,7 @@ void TextPainter::add_char(const char c, double scale) {
     text_y += glyph_size_y;
   }
   else if (c < 10) {
-    //fg_pal = c;
+    fg_pal = c;
   }
   else {
     push_char(text_x, text_y, scale, c, palette[fg_pal]);

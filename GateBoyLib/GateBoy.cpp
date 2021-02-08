@@ -432,7 +432,7 @@ void GateBoy::next_phase() {
   // Run one pass of our simulation.
 
   probes.begin_pass(0);
-  probe(0, "phase", "ABCDEFGH"[phase_total & 7]);
+  probe_char(0, "phase", "Abcdefgh"[(phase_total + 1) & 7]);
 
   tock_slow(0);
 
@@ -893,8 +893,8 @@ void GateBoy::update_framebuffer()
     uint8_t p0 = bit(lcd.PIN_51_LCD_DATA0.qp_new());
     uint8_t p1 = bit(lcd.PIN_50_LCD_DATA1.qp_new());
 
-    //probe(4, "pix lo", p0);
-    //probe(5, "pix hi", p1);
+    //probe_wire(4, "pix lo", p0);
+    //probe_wire(5, "pix hi", p1);
 
     uint8_t new_pix = p0 + p1 * 2;
 

@@ -350,6 +350,13 @@ void GateBoy::dump_ppu(Dumper& d) {
   d("\n");
 }
 
+void GateBoy::dump_spu(Dumper& d) {
+  d.dump_bitp   ("HADA_ALL_SOUND_ONp     : ", reg_NR52.HADA_ALL_SOUND_ONp.state);
+  d.dump_slice2p("NR50 : ", &reg_NR50.APEG_VOL_L0, 8);
+
+
+}
+
 #if 0
   d("\002===== OAM =====\001\n");
   for (int y = 0; y < 10; y++) {

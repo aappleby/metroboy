@@ -5,7 +5,7 @@
 
 struct ApuControl {
 
-  /*p09.JYRO*/ bool APU_RST; // This is the root of the APU reset tree
+  /*p09.JYRO*/ bool JYRO_APU_RST; // This is the root of the APU reset tree
 
   /*p09.KEBA*/ bool APU_RESET1;
   /*p10.TACE*/ bool AMP_ENn;

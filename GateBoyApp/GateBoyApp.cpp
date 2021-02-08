@@ -60,15 +60,21 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("roms/wpol-gb/tests/build/acceptance/gpu/"   "hblank_ly_scx_timing-GS.gb");
   //load_rom("roms/naughtyemu/build/naughtyemu.gb"); // broken
   //load_rom("roms/LinksAwakening.gb");
-  load_rom("roms/mooneye-gb/tests/build/emulator-only/mbc1/"   "rom_8Mb.gb");
+  //load_rom("roms/Prehistorik Man (U).gb"); // seems to work
+
+  load_rom("roms/mooneye-gb/tests/build/acceptance/" "oam_dma/sources-GS.gb");
+
+
 
 #if 0
   const char* app = R"(
   0150:
-    ld hl, $C000
-    ld a, $54
+    ld a, $80
+    ld ($FF26), a
+
+    ld hl, $FF24
+    ld a, $0F
     ld (hl), a
-    ld a, (hl)
     nop
     nop
     jr -3
@@ -344,10 +350,10 @@ void GateBoyApp::app_render_frame() {
   gb->dump_sprite_scanner(d);
   d("\n");
 
-  d("\002===== IRAM =====\001\n");
+  d("\002===== CRAM =====\001\n");
   for (int y = 0; y < 10; y++) {
     for (int x = 0; x < 16; x++) {
-      d("%02x ", gb->int_ram[x + y * 16]);
+      d("%02x ", gb->cart_ram[x + y * 16]);
     }
     d("\n");
   }
@@ -357,6 +363,15 @@ void GateBoyApp::app_render_frame() {
   for (int y = 0; y < 10; y++) {
     for (int x = 0; x < 16; x++) {
       d("%02x ", gb->oam_ram[x + y * 16]);
+    }
+    d("\n");
+  }
+  d("\n");
+
+  d("\002===== ZRAM =====\001\n");
+  for (int y = 0; y < 8; y++) {
+    for (int x = 0; x < 16; x++) {
+      d("%02x ", gb->zero_ram[x + y * 16]);
     }
     d("\n");
   }
@@ -382,6 +397,10 @@ void GateBoyApp::app_render_frame() {
 
   d("\002===== PPU =====\001\n");
   gb->dump_ppu(d);
+  d("\n");
+
+  d("\002===== SPU =====\001\n");
+  gb->dump_spu(d);
   d("\n");
 
   text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);

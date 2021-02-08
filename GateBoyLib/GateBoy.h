@@ -25,6 +25,7 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoyPins.h"
+#include "GateBoyLib/GateBoySPU.h"
 
 //-----------------------------------------------------------------------------
 
@@ -159,6 +160,7 @@ struct GateBoy {
   void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
   void tock_bootrom();
   void tock_window(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
+  void tock_spu();
 
   void update_sprite_reset_flags(
     const Gate WUTY_SFETCH_DONE_TRIGp,
@@ -384,6 +386,7 @@ struct GateBoy {
   void dump_dma(Dumper& d);
   void dump_serial(Dumper& d);
   void dump_ppu(Dumper& d);
+  void dump_spu(Dumper& d);
 
   //-----------------------------------------------------------------------------
   // All the SOC registers, pins, buses. Everything in this section should derive
@@ -478,6 +481,29 @@ struct GateBoy {
   /*#p29.ABOV*/ Gate ABOV_LINE_P908p; // old used
 
   SpritePix flipped_sprite;
+
+  //NR10 reg_NR10;
+  //NR11 reg_NR11;
+  //NR12 reg_NR12;
+  //NR14 reg_NR14;
+
+  //NR21 reg_NR21;
+  //NR22 reg_NR22;
+  //NR24 reg_NR24;
+
+  //NR30 reg_NR30;
+  //NR31 reg_NR31;
+  //NR32 reg_NR32;
+  //NR34 reg_NR34;
+
+  //NR41 reg_NR41;
+  //NR42 reg_NR42;
+  //NR43 reg_NR43;
+  //NR44 reg_NR44;
+
+  NR50 reg_NR50;
+  NR51 reg_NR51;
+  NR52 reg_NR52;
 
   //----------
 

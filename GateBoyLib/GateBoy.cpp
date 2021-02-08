@@ -240,6 +240,15 @@ void GateBoy::load_cart(uint8_t* _boot_buf, size_t _boot_size,
   cart_buf  = _cart_buf;
   cart_size = _cart_size;
 
+  /*
+  $19
+  $1A
+  $1B
+  $1C
+  $1D
+  $1E
+  */
+
   switch(cart_buf[0x0147]) {
   case 0x00: cart_has_mbc1 = 0; cart_has_ram = 0; break;
   case 0x01: cart_has_mbc1 = 1; cart_has_ram = 0; break;
@@ -247,7 +256,18 @@ void GateBoy::load_cart(uint8_t* _boot_buf, size_t _boot_size,
   case 0x03: cart_has_mbc1 = 1; cart_has_ram = 1; break;
   case 0x08: cart_has_mbc1 = 0; cart_has_ram = 1; break;
   case 0x09: cart_has_mbc1 = 0; cart_has_ram = 1; break;
-  default: break;
+
+  // FIXME we don't really support all of MBC5, but mooneye's sources-GS.gb test references it
+  case 0x19: cart_has_mbc1 = 1; cart_has_ram = 0; break; // MBC5
+  case 0x1A: cart_has_mbc1 = 1; cart_has_ram = 1; break; // MBC5+RAM
+  case 0x1B: cart_has_mbc1 = 1; cart_has_ram = 1; break; // MBC5+RAM+BATTERY
+  case 0x1C: cart_has_mbc1 = 1; cart_has_ram = 0; break; // MBC5+RUMBLE
+  case 0x1D: cart_has_mbc1 = 1; cart_has_ram = 1; break; // MBC5+RUMBLE+RAM
+  case 0x1E: cart_has_mbc1 = 1; cart_has_ram = 1; break; // MBC5+RUMBLE+RAM+BATTERY
+  default: {
+    printf("Bad cart type! 0x%02x\n", cart_buf[0x0147]);
+    __debugbreak();
+  }
   }
 
   // these masks are only for mbc1
@@ -867,6 +887,11 @@ void GateBoy::tock_slow(int pass_index) {
   tock_pix_pipes(SACU_CLKPIPE_evn, NYXU_BFETCH_RSTn);
   set_lcd_pins(SACU_CLKPIPE_evn);
   update_framebuffer();
+
+  //----------------------------------------
+  // Audio
+
+  tock_spu();
 
   //----------------------------------------
   // Memory buses

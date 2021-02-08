@@ -27,6 +27,7 @@
     <ClCompile Include="GateBoySerial.cpp" />
     <ClCompile Include="GateBoySpriteFetcher.cpp" />
     <ClCompile Include="GateBoySpriteScanner.cpp" />
+    <ClCompile Include="GateBoySPU.cpp" />
     <ClCompile Include="GateBoyThread.cpp" />
     <ClCompile Include="GateBoyTileFetcher.cpp" />
     <ClCompile Include="GateBoyTimer.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="GateBoyPins.h" />
     <ClInclude Include="GateBoyRegisters.h" />
     <ClInclude Include="GateBoyResetDebug.h" />
+    <ClInclude Include="GateBoySPU.h" />
     <ClInclude Include="GateBoyThread.h" />
     <ClInclude Include="GateBoyZramBus.h" />
     <ClInclude Include="Gates.h" />

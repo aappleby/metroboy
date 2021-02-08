@@ -220,8 +220,10 @@ void GateBoy::reset_to_cart() {
   memcpy(framebuffer, framebuffer_boot, 160*144);
 
   sim_time = 169.62587129999756;
-  phase_total = 46880720;
-  phase_origin = 46880720;
+  //phase_total = 46880720;
+  //phase_origin = 46880720;
+  phase_total = 0;
+  phase_origin = 0;
   phase_hash = 0xad3faa49f49984b4;
   cumulative_hash = 0x6e58a5c197ff4af1;
 

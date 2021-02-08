@@ -290,16 +290,24 @@ void GateBoy::tock_ext()
   bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.qp_old());
   bool mbc1_mode   = bit(ext_pins.MBC1_MODE.qp_old());
 
-  uint32_t mbc1_rom_bank = mbc1_mode ? BitBase::pack_old(5, &ext_pins.MBC1_BANK0) : BitBase::pack_old(7, &ext_pins.MBC1_BANK0);
-  if ((mbc1_rom_bank & 0x1F) == 0) mbc1_rom_bank |= 1;
+  //----------------------------------------
+
+  uint32_t mbc1_rom0_bank = mbc1_mode ? BitBase::pack_old(2, &ext_pins.MBC1_BANK5) : 0;
+  uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask;
+  if (mbc1_rom0_addr >= cart_size) __debugbreak();
+
+  //----------------------------------------
+
+  uint32_t mbc1_rom1_bank = BitBase::pack_old(7, &ext_pins.MBC1_BANK0);
+  if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
+  uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask;
+  if (mbc1_rom1_addr >= cart_size) __debugbreak();
+
+  //----------------------------------------
 
   uint32_t mbc1_ram_bank = mbc1_mode ? BitBase::pack_old(2, &ext_pins.MBC1_BANK5) : 0;
   if (mbc1_mode == 0) mbc1_ram_bank = 0;
-
-  uint32_t mbc1_rom_addr = ((addr & 0x3FFF) | (mbc1_rom_bank << 14)) & cart_rom_addr_mask;
   uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask;
-
-  if (mbc1_rom_addr >= cart_size) __debugbreak();
   if (mbc1_ram_addr >= 32768)     __debugbreak();
 
   //----------------------------------------
@@ -308,27 +316,36 @@ void GateBoy::tock_ext()
   uint8_t data_in = 0;
 
   if (bit(~ext_pins.PIN_79_RDn.qp_ext_new())) {
-    if (region == 0 || region == 1) {
-      rd_en = 1;
-      data_in = cart_buf[addr];
+    if (cart_has_mbc1) {
+      if (region == 0 || region == 1) {
+        rd_en = 1;
+        data_in = cart_buf[mbc1_rom0_addr];
+      }
+      else if (region == 2 || region == 3) {
+        rd_en = 1;
+        data_in = cart_buf[mbc1_rom1_addr];
+      }
+      else if (region == 5 && cart_has_ram) {
+        rd_en = mbc1_ram_en;
+        data_in = cart_ram[mbc1_ram_addr];
+      }
     }
-    else if ((region == 2 || region == 3) && cart_has_mbc1) {
-      rd_en = 1;
-      data_in = cart_buf[mbc1_rom_addr];
+    else {
+      if (region == 0 || region == 1) {
+        rd_en = 1;
+        data_in = cart_buf[addr & cart_rom_addr_mask];
+      }
+      else if (region == 2 || region == 3) {
+        rd_en = 1;
+        data_in = cart_buf[addr & cart_rom_addr_mask];
+      }
+      else if (region == 5 && cart_has_ram) {
+        rd_en = 1;
+        data_in = cart_ram[addr & cart_ram_addr_mask];
+      }
     }
-    else if ((region == 2 || region == 3) && !cart_has_mbc1) {
-      rd_en = 1;
-      data_in = cart_buf[addr & cart_rom_addr_mask];
-    }
-    else if (region == 5 && cart_has_ram && cart_has_mbc1) {
-      rd_en = mbc1_ram_en;
-      data_in = cart_ram[mbc1_ram_addr & cart_ram_addr_mask];
-    }
-    else if (region == 5 && cart_has_ram && !cart_has_mbc1) {
-      rd_en = 1;
-      data_in = cart_ram[addr & cart_ram_addr_mask];
-    }
-    else if (region == 6 || region == 7) {
+
+    if (region == 6 || region == 7) {
       rd_en = 1;
       data_in = int_ram[addr & 0x1FFF];
     }

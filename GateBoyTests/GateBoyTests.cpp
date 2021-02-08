@@ -67,10 +67,10 @@ int main(int argc, char** argv) {
 
 #ifdef USE_COMMIT
   //failures += t.test_reset_cart_vs_dump();
+  failures += t.test_fastboot_vs_slowboot();
 #endif
 
 #if 1
-  failures += t.test_fastboot_vs_slowboot();
   failures += t.test_bootrom();
 
   failures += t.test_clk();
@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
 #if 0
   t.verbose = true;
   //failures += t.test_mooneye_generic(); // some failing
-  failures += t.test_mooneye_mbc1();    // mostly failing
+  //failures += t.test_mooneye_mbc1();    // pass
   //failures += t.test_mooneye_timer();   // pass
   //failures += t.test_mooneye_ppu();     // 3 fails
 
@@ -1885,10 +1885,10 @@ int GateBoyTests::test_mooneye_mbc1() {
 
   const char* path = "roms/mooneye-gb/tests/build/emulator-only/mbc1/";
 
-  failures += run_mooneye_test(path, "bits_bank1.gb");
-  failures += run_mooneye_test(path, "bits_bank2.gb");
-  failures += run_mooneye_test(path, "bits_mode.gb");
-  failures += run_mooneye_test(path, "bits_ramg.gb");
+  //failures += run_mooneye_test(path, "bits_bank1.gb"); // pass, but very slow (3 sim-sec)
+  //failures += run_mooneye_test(path, "bits_bank2.gb"); // pass, but very slow (3 sim-sec)
+  //failures += run_mooneye_test(path, "bits_mode.gb");  // pass, but very slow (3 sim-sec)
+  failures += run_mooneye_test(path, "bits_ramg.gb");  // pass, but very slow (6 sim-sec)
 
   // not going to bother with multicart support for now
   //"multicart_rom_8Mb.gb",
@@ -2073,9 +2073,7 @@ int GateBoyTests::run_mooneye_test(const char* path, const char* filename) {
   gb.reset_to_cart();
   gb.phase_total = 0;
 
-  int timeout = 1000000;
-  // bits_ram_en needs lots of phases
-  if (std::string(filename) == "bits_ram_en.gb") timeout = 25000000;
+  int timeout = 6400000; // bits_ramg is super slow
 
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {

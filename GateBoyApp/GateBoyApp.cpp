@@ -59,12 +59,10 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 
   //load_rom("roms/wpol-gb/tests/build/acceptance/gpu/"   "hblank_ly_scx_timing-GS.gb");
   //load_rom("roms/naughtyemu/build/naughtyemu.gb"); // broken
-
   //load_rom("roms/LinksAwakening.gb");
+  load_rom("roms/mooneye-gb/tests/build/emulator-only/mbc1/"   "rom_8Mb.gb");
 
-  //load_rom("roms/mooneye-gb/tests/build/emulator-only/mbc1/"   "bits_ramg.gb");
-
-#if 1
+#if 0
   const char* app = R"(
   0150:
     ld hl, $C000

@@ -71,42 +71,42 @@ int main(int argc, char** argv) {
 #endif
 
 #if 1
-  //failures += t.test_bootrom();
-  //
-  //failures += t.test_clk();
-  //failures += t.test_regs();
-  //failures += t.test_mem();
+  failures += t.test_bootrom();
+
+  failures += t.test_clk();
+  failures += t.test_regs();
+  failures += t.test_mem();
   failures += t.test_dma();
-  //failures += t.test_init();
-  //failures += t.test_ext_bus();
-  //failures += t.test_ppu();
-  //failures += t.test_timer();
-  //
-  //failures += t.test_micro_poweron();
-  //failures += t.test_micro_lcden();
-  //failures += t.test_micro_timer();
-  //failures += t.test_micro_int_vblank();
-  //failures += t.test_micro_int_stat();
-  //failures += t.test_micro_int_timer();
-  //failures += t.test_micro_int_serial();
-  //failures += t.test_micro_int_joypad();
-  //failures += t.test_micro_lock_oam();
-  //failures += t.test_micro_lock_vram();
-  //failures += t.test_micro_window();
-  //failures += t.test_micro_ppu();
-  //failures += t.test_micro_dma();
-  //failures += t.test_micro_mbc1();
+  failures += t.test_init();
+  failures += t.test_ext_bus();
+  failures += t.test_ppu();
+  failures += t.test_timer();
+
+  failures += t.test_micro_poweron();
+  failures += t.test_micro_lcden();
+  failures += t.test_micro_timer();
+  failures += t.test_micro_int_vblank();
+  failures += t.test_micro_int_stat();
+  failures += t.test_micro_int_timer();
+  failures += t.test_micro_int_serial();
+  failures += t.test_micro_int_joypad();
+  failures += t.test_micro_lock_oam();
+  failures += t.test_micro_lock_vram();
+  failures += t.test_micro_window();
+  failures += t.test_micro_ppu();
+  failures += t.test_micro_dma();
+  failures += t.test_micro_mbc1();
 #endif
 
-#if 1
+#if 0
   t.verbose = true;
   failures += t.test_mooneye_generic(); // some failing
-  //failures += t.test_mooneye_mbc1();    // pass
-  //failures += t.test_mooneye_timer();   // pass
-  //failures += t.test_mooneye_ppu();     // 3 fails
+  failures += t.test_mooneye_mbc1();    // pass
+  failures += t.test_mooneye_timer();   // pass
+  failures += t.test_mooneye_ppu();     // 3 fails
 
-  //failures += t.test_wpol_generic();
-  //failures += t.test_wpol_ppu();
+  failures += t.test_wpol_generic();
+  failures += t.test_wpol_ppu();
 #endif
 
   auto finish = timestamp();
@@ -1798,47 +1798,47 @@ int GateBoyTests::test_mooneye_generic() {
 
   const char* path = "roms/mooneye-gb/tests/build/acceptance/";
 
-  //failures += run_mooneye_test(path, "boot_div-dmgABCmgb.gb");         // p
-  //failures += run_mooneye_test(path, "boot_hwio-dmgABCmgb.gb");        // XXX sound regs
-  //failures += run_mooneye_test(path, "boot_regs-dmgABC.gb");           // p
-  //failures += run_mooneye_test(path, "add_sp_e_timing.gb");            // p
-  //failures += run_mooneye_test(path, "call_cc_timing.gb");             // p
-  //failures += run_mooneye_test(path, "call_cc_timing2.gb");            // p
-  //failures += run_mooneye_test(path, "call_timing.gb");                // p
-  //failures += run_mooneye_test(path, "call_timing2.gb");               // p
-  //failures += run_mooneye_test(path, "di_timing-GS.gb");               // p
-  //failures += run_mooneye_test(path, "div_timing.gb");                 // p
-  //failures += run_mooneye_test(path, "ei_sequence.gb");                // XXX gateboy fail
-  //failures += run_mooneye_test(path, "ei_timing.gb");                  // XXX gateboy fail
-  //failures += run_mooneye_test(path, "halt_ime0_ei.gb");               // p
-  //failures += run_mooneye_test(path, "halt_ime0_nointr_timing.gb");    // XXX gateboy hang
-  //failures += run_mooneye_test(path, "halt_ime1_timing.gb");           // p
-  //failures += run_mooneye_test(path, "halt_ime1_timing2-GS.gb");       // p
-  //failures += run_mooneye_test(path, "if_ie_registers.gb");            // p
-  //failures += run_mooneye_test(path, "intr_timing.gb");                // p
-  //failures += run_mooneye_test(path, "jp_cc_timing.gb");               // p
-  //failures += run_mooneye_test(path, "jp_timing.gb");                  // p
-  //failures += run_mooneye_test(path, "ld_hl_sp_e_timing.gb");          // p
-  //failures += run_mooneye_test(path, "oam_dma_restart.gb");            // p
-  //failures += run_mooneye_test(path, "oam_dma_start.gb");              // p
-  //failures += run_mooneye_test(path, "oam_dma_timing.gb");             // p
-  //failures += run_mooneye_test(path, "pop_timing.gb");                 // p
-  //failures += run_mooneye_test(path, "push_timing.gb");                // p
-  //failures += run_mooneye_test(path, "rapid_di_ei.gb");                // XXX gateboy FAIL
-  //failures += run_mooneye_test(path, "ret_cc_timing.gb");              // p
-  //failures += run_mooneye_test(path, "ret_timing.gb");                 // p
-  //failures += run_mooneye_test(path, "reti_intr_timing.gb");           // XXX gateboy FAIL
-  //failures += run_mooneye_test(path, "reti_timing.gb");                // p
-  //failures += run_mooneye_test(path, "rst_timing.gb");                 // p
-  //failures += run_mooneye_test(path, "bits/mem_oam.gb");               // p
-  //failures += run_mooneye_test(path, "bits/reg_f.gb");                 // p
-  //failures += run_mooneye_test(path, "bits/unused_hwio-GS.gb");        // XXX sound regs
-  //failures += run_mooneye_test(path, "instr/daa.gb");                  // p
-  //failures += run_mooneye_test(path, "interrupts/ie_push.gb");         // XXX gateboy FAIL R3 - unwanted cancel
-  //failures += run_mooneye_test(path, "oam_dma/basic.gb");              // p
+  failures += run_mooneye_test(path, "boot_div-dmgABCmgb.gb");         // p
+  failures += run_mooneye_test(path, "boot_hwio-dmgABCmgb.gb");        // XXX sound regs
+  failures += run_mooneye_test(path, "boot_regs-dmgABC.gb");           // p
+  failures += run_mooneye_test(path, "add_sp_e_timing.gb");            // p
+  failures += run_mooneye_test(path, "call_cc_timing.gb");             // p
+  failures += run_mooneye_test(path, "call_cc_timing2.gb");            // p
+  failures += run_mooneye_test(path, "call_timing.gb");                // p
+  failures += run_mooneye_test(path, "call_timing2.gb");               // p
+  failures += run_mooneye_test(path, "di_timing-GS.gb");               // p
+  failures += run_mooneye_test(path, "div_timing.gb");                 // p
+  failures += run_mooneye_test(path, "ei_sequence.gb");                // XXX gateboy fail
+  failures += run_mooneye_test(path, "ei_timing.gb");                  // XXX gateboy fail
+  failures += run_mooneye_test(path, "halt_ime0_ei.gb");               // p
+  failures += run_mooneye_test(path, "halt_ime0_nointr_timing.gb");    // XXX gateboy hang
+  failures += run_mooneye_test(path, "halt_ime1_timing.gb");           // p
+  failures += run_mooneye_test(path, "halt_ime1_timing2-GS.gb");       // p
+  failures += run_mooneye_test(path, "if_ie_registers.gb");            // p
+  failures += run_mooneye_test(path, "intr_timing.gb");                // p
+  failures += run_mooneye_test(path, "jp_cc_timing.gb");               // p
+  failures += run_mooneye_test(path, "jp_timing.gb");                  // p
+  failures += run_mooneye_test(path, "ld_hl_sp_e_timing.gb");          // p
+  failures += run_mooneye_test(path, "oam_dma_restart.gb");            // p
+  failures += run_mooneye_test(path, "oam_dma_start.gb");              // p
+  failures += run_mooneye_test(path, "oam_dma_timing.gb");             // p
+  failures += run_mooneye_test(path, "pop_timing.gb");                 // p
+  failures += run_mooneye_test(path, "push_timing.gb");                // p
+  failures += run_mooneye_test(path, "rapid_di_ei.gb");                // XXX gateboy FAIL
+  failures += run_mooneye_test(path, "ret_cc_timing.gb");              // p
+  failures += run_mooneye_test(path, "ret_timing.gb");                 // p
+  failures += run_mooneye_test(path, "reti_intr_timing.gb");           // XXX gateboy FAIL
+  failures += run_mooneye_test(path, "reti_timing.gb");                // p
+  failures += run_mooneye_test(path, "rst_timing.gb");                 // p
+  failures += run_mooneye_test(path, "bits/mem_oam.gb");               // p
+  failures += run_mooneye_test(path, "bits/reg_f.gb");                 // p
+  failures += run_mooneye_test(path, "bits/unused_hwio-GS.gb");        // XXX sound regs
+  failures += run_mooneye_test(path, "instr/daa.gb");                  // p
+  failures += run_mooneye_test(path, "interrupts/ie_push.gb");         // XXX gateboy FAIL R3 - unwanted cancel
+  failures += run_mooneye_test(path, "oam_dma/basic.gb");              // p
 
-  //failures += run_mooneye_test(path, "oam_dma/basic.gb");              // p
-  //failures += run_mooneye_test(path, "oam_dma/reg_read.gb");           // p
+  failures += run_mooneye_test(path, "oam_dma/basic.gb");              // p
+  failures += run_mooneye_test(path, "oam_dma/reg_read.gb");           // p
   failures += run_mooneye_test(path, "oam_dma/sources-GS.gb");         // p
 
   TEST_END();
@@ -1849,33 +1849,24 @@ int GateBoyTests::test_mooneye_generic() {
 int GateBoyTests::test_mooneye_mbc1() {
   TEST_START();
 
-  /*
-  using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
-  for (const auto& dirEntry : recursive_directory_iterator(path)) {
-    if (!dirEntry.path().string().ends_with(".gb")) continue;
-
-    failures += run_mooneye_test("", dirEntry.path().string().c_str());
-  }
-  */
-
   const char* path = "roms/mooneye-gb/tests/build/emulator-only/mbc1/";
 
-  //failures += run_mooneye_test(path, "bits_bank1.gb"); // pass, but very slow (3 sim-sec)
-  //failures += run_mooneye_test(path, "bits_bank2.gb"); // pass, but very slow (3 sim-sec)
-  //failures += run_mooneye_test(path, "bits_mode.gb");  // pass, but very slow (3 sim-sec)
+  failures += run_mooneye_test(path, "bits_bank1.gb"); // pass, but very slow (3 sim-sec)
+  failures += run_mooneye_test(path, "bits_bank2.gb"); // pass, but very slow (3 sim-sec)
+  failures += run_mooneye_test(path, "bits_mode.gb");  // pass, but very slow (3 sim-sec)
   failures += run_mooneye_test(path, "bits_ramg.gb");  // pass, but very slow (6 sim-sec)
 
   // not going to bother with multicart support for now
   //"multicart_rom_8Mb.gb",
 
-  failures += run_mooneye_test(path, "ram_256Kb.gb");   // XXX gateboy fail round 1
-  failures += run_mooneye_test(path, "ram_64Kb.gb");    // XXX gateboy fail round 1
-  failures += run_mooneye_test(path, "rom_16Mb.gb");    // XXX gateboy fail
-  failures += run_mooneye_test(path, "rom_1Mb.gb");
-  failures += run_mooneye_test(path, "rom_2Mb.gb");
-  failures += run_mooneye_test(path, "rom_4Mb.gb");
-  failures += run_mooneye_test(path, "rom_512Kb.gb");
-  failures += run_mooneye_test(path, "rom_8Mb.gb");
+  failures += run_mooneye_test(path, "ram_256Kb.gb");  // pass
+  failures += run_mooneye_test(path, "ram_64Kb.gb");   // pass
+  failures += run_mooneye_test(path, "rom_16Mb.gb");   // pass
+  failures += run_mooneye_test(path, "rom_1Mb.gb");    // pass
+  failures += run_mooneye_test(path, "rom_2Mb.gb");    // pass
+  failures += run_mooneye_test(path, "rom_4Mb.gb");    // pass
+  failures += run_mooneye_test(path, "rom_512Kb.gb");  // pass
+  failures += run_mooneye_test(path, "rom_8Mb.gb");    // pass
 
   TEST_END();
 }
@@ -1887,19 +1878,19 @@ int GateBoyTests::test_mooneye_timer() {
 
   const char* path = "roms/mooneye-gb/tests/build/acceptance/timer/";
 
-  failures += run_mooneye_test(path, "div_write.gb");               // p
-  failures += run_mooneye_test(path, "rapid_toggle.gb");            // p
-  failures += run_mooneye_test(path, "tim00.gb");                   // p
-  failures += run_mooneye_test(path, "tim00_div_trigger.gb");       // p
-  failures += run_mooneye_test(path, "tim01.gb");                   // p
-  failures += run_mooneye_test(path, "tim01_div_trigger.gb");       // p
-  failures += run_mooneye_test(path, "tim10.gb");                   // p
-  failures += run_mooneye_test(path, "tim10_div_trigger.gb");       // p
-  failures += run_mooneye_test(path, "tim11.gb");                   // p
-  failures += run_mooneye_test(path, "tim11_div_trigger.gb");       // p
-  failures += run_mooneye_test(path, "tima_reload.gb");             // p
-  failures += run_mooneye_test(path, "tima_write_reloading.gb");    // p
-  failures += run_mooneye_test(path, "tma_write_reloading.gb");     // p
+  failures += run_mooneye_test(path, "div_write.gb");            // pass
+  failures += run_mooneye_test(path, "rapid_toggle.gb");         // pass
+  failures += run_mooneye_test(path, "tim00.gb");                // pass
+  failures += run_mooneye_test(path, "tim00_div_trigger.gb");    // pass
+  failures += run_mooneye_test(path, "tim01.gb");                // pass
+  failures += run_mooneye_test(path, "tim01_div_trigger.gb");    // pass
+  failures += run_mooneye_test(path, "tim10.gb");                // pass
+  failures += run_mooneye_test(path, "tim10_div_trigger.gb");    // pass
+  failures += run_mooneye_test(path, "tim11.gb");                // pass
+  failures += run_mooneye_test(path, "tim11_div_trigger.gb");    // pass
+  failures += run_mooneye_test(path, "tima_reload.gb");          // pass
+  failures += run_mooneye_test(path, "tima_write_reloading.gb"); // pass
+  failures += run_mooneye_test(path, "tma_write_reloading.gb");  // pass
 
   TEST_END();
 }

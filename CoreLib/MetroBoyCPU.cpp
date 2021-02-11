@@ -133,23 +133,31 @@ void MetroBoyCPU::tock_de(uint8_t imask, uint8_t intf_de) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_int(uint8_t imask_, uint8_t intf_) {
-  uint8_t _int_addr = 0;
-  uint8_t _int_ack = 0;
-
   state_ = state + 1;
 
-  if      (imask_ & intf_ & INT_JOYPAD_MASK) { _int_addr = 0x60; _int_ack = INT_JOYPAD_MASK; }
-  else if (imask_ & intf_ & INT_SERIAL_MASK) { _int_addr = 0x58; _int_ack = INT_SERIAL_MASK; }
-  else if (imask_ & intf_ & INT_TIMER_MASK)  { _int_addr = 0x50; _int_ack = INT_TIMER_MASK; }
-  else if (imask_ & intf_ & INT_STAT_MASK)   { _int_addr = 0x48; _int_ack = INT_STAT_MASK; }
-  else if (imask_ & intf_ & INT_VBLANK_MASK) { _int_addr = 0x40; _int_ack = INT_VBLANK_MASK; }
-  else                                       { _int_addr = 0x00; _int_ack = 0; }
+  if (/*state == 0 || state == 1 ||*/ state == 2 /*|| state == 3 || state == 4*/) {
+    if      (imask_ & intf_ & INT_VBLANK_MASK) { int_addr = 0x40; }
+    else if (imask_ & intf_ & INT_STAT_MASK)   { int_addr = 0x48; }
+    else if (imask_ & intf_ & INT_TIMER_MASK)  { int_addr = 0x50; }
+    else if (imask_ & intf_ & INT_SERIAL_MASK) { int_addr = 0x58; }
+    else if (imask_ & intf_ & INT_JOYPAD_MASK) { int_addr = 0x60; }
+    else                                       { int_addr = 0x00; }
+  }
+
+  if (/*state == 0 || state == 1 ||*/ state == 2 /*|| state == 3 || state == 4*/) {
+    if      (imask_ & intf_ & INT_VBLANK_MASK) { int_ack = INT_VBLANK_MASK; }
+    else if (imask_ & intf_ & INT_STAT_MASK)   { int_ack = INT_STAT_MASK; }
+    else if (imask_ & intf_ & INT_TIMER_MASK)  { int_ack = INT_TIMER_MASK; }
+    else if (imask_ & intf_ & INT_SERIAL_MASK) { int_ack = INT_SERIAL_MASK; }
+    else if (imask_ & intf_ & INT_JOYPAD_MASK) { int_ack = INT_JOYPAD_MASK; }
+    else                                       { int_ack = 0; }
+  }
 
   if      (state == 0) { pc = _bus_addr;     bus_pass(sp); }
   else if (state == 1) { sp = _bus_addr - 1; bus_write(sp, pch); }
   else if (state == 2) { sp = _bus_addr - 1; bus_write(sp, pcl); }
   else if (state == 3) {                     bus_pass(pc); }
-  else if (state == 4) { int_ack = _int_ack; bus_done(_int_addr); }
+  else if (state == 4) {                     bus_done(int_addr); }
 }
 
 //-----------------------------------------------------------------------------

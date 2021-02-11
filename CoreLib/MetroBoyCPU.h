@@ -77,6 +77,7 @@ struct MetroBoyCPU {
   uint8_t  in;
 
   bool     ime, ime_delay;
+  uint8_t  int_addr;
   uint8_t  int_ack;
 
   uint8_t  alu_f;

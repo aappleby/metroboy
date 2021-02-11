@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
 
 #if 1
   t.verbose = true;
-  //failures += t.test_mooneye_generic(); // some failing
+  failures += t.test_mooneye_generic(); // some failing
   //failures += t.test_mooneye_mbc1();    // pass
   //failures += t.test_mooneye_timer();   // pass
   failures += t.test_mooneye_ppu();     // 3 fails
@@ -1827,16 +1827,15 @@ int GateBoyTests::test_mooneye_generic() {
   failures += run_mooneye_test(path, "rapid_di_ei.gb");                // p
   failures += run_mooneye_test(path, "ret_cc_timing.gb");              // p
   failures += run_mooneye_test(path, "ret_timing.gb");                 // p
-  failures += run_mooneye_test(path, "reti_intr_timing.gb");           // XXX gateboy FAIL
+  failures += run_mooneye_test(path, "reti_intr_timing.gb");           // p
   failures += run_mooneye_test(path, "reti_timing.gb");                // p
   failures += run_mooneye_test(path, "rst_timing.gb");                 // p
   failures += run_mooneye_test(path, "bits/mem_oam.gb");               // p
   failures += run_mooneye_test(path, "bits/reg_f.gb");                 // p
   failures += run_mooneye_test(path, "bits/unused_hwio-GS.gb");        // XXX sound regs
   failures += run_mooneye_test(path, "instr/daa.gb");                  // p
-  failures += run_mooneye_test(path, "interrupts/ie_push.gb");         // XXX gateboy FAIL R3 - unwanted cancel
+  failures += run_mooneye_test(path, "interrupts/ie_push.gb");         // p
   failures += run_mooneye_test(path, "oam_dma/basic.gb");              // p
-
   failures += run_mooneye_test(path, "oam_dma/basic.gb");              // p
   failures += run_mooneye_test(path, "oam_dma/reg_read.gb");           // p
   failures += run_mooneye_test(path, "oam_dma/sources-GS.gb");         // p
@@ -1952,7 +1951,7 @@ int GateBoyTests::test_wpol_generic() {
   failures += run_mooneye_test(path, "rapid_di_ei.gb");              // p
   failures += run_mooneye_test(path, "ret_cc_timing.gb");            // p
   failures += run_mooneye_test(path, "ret_timing.gb");               // p
-  failures += run_mooneye_test(path, "reti_intr_timing.gb");         // fail
+  failures += run_mooneye_test(path, "reti_intr_timing.gb");         // p
   failures += run_mooneye_test(path, "reti_timing.gb");              // p
   failures += run_mooneye_test(path, "rst_timing.gb");               // p
   failures += run_mooneye_test(path, "bits/mem_oam.gb");             // p

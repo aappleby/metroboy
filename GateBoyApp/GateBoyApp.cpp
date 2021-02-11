@@ -62,8 +62,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("roms/LinksAwakening.gb");
   //load_rom("roms/Prehistorik Man (U).gb"); // seems to work
 
-  // hangs in test_round_2
-  load_rom("roms/mooneye-gb/tests/build/acceptance/" "halt_ime0_nointr_timing.gb");
+  load_rom("roms/mooneye-gb/tests/build/acceptance/" "interrupts/ie_push.gb");
 
 
 

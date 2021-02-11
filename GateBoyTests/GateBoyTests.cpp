@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
   failures += t.test_micro_mbc1();
 #endif
 
-#if 1
+#if 0
   t.verbose = true;
   failures += t.test_mooneye_generic(); // some failing
   //failures += t.test_mooneye_mbc1();    // pass
@@ -1905,11 +1905,11 @@ int GateBoyTests::test_mooneye_ppu() {
   failures += run_mooneye_test(path, "intr_1_2_timing-GS.gb");           // p
   failures += run_mooneye_test(path, "intr_2_0_timing.gb");              // p
   failures += run_mooneye_test(path, "intr_2_mode0_timing.gb");          // p
-  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites.gb");  // XXX gateboy FAIL test 00 fail
+  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites.gb");  // XXX - test 00 fail
   failures += run_mooneye_test(path, "intr_2_mode3_timing.gb");          // p
   failures += run_mooneye_test(path, "intr_2_oam_ok_timing.gb");         // p
-  failures += run_mooneye_test(path, "lcdon_timing-GS.gb");              // XXX gateboy FAIL stat lyc
-  failures += run_mooneye_test(path, "lcdon_write_timing-GS.gb");        // XXX gateboy FAIL
+  failures += run_mooneye_test(path, "lcdon_timing-GS.gb");              // XXX - this is the same as lcdon_to_stat2_a
+  failures += run_mooneye_test(path, "lcdon_write_timing-GS.gb");        // XXX - probably the same as lcdon_to_oam_unlock_d
   failures += run_mooneye_test(path, "stat_irq_blocking.gb");            // p
   failures += run_mooneye_test(path, "stat_lyc_onoff.gb");               // p
   failures += run_mooneye_test(path, "vblank_stat_intr-GS.gb");          // p
@@ -1925,7 +1925,7 @@ int GateBoyTests::test_wpol_generic() {
   const char* path = "roms/wpol-gb/tests/build/acceptance/";
 
   failures += run_mooneye_test(path, "add_sp_e_timing.gb");          // p
-  failures += run_mooneye_test(path, "boot_hwio-G.gb");              // XXX sound regs
+  failures += run_mooneye_test(path, "boot_hwio-G.gb");              // XXX - sound regs
   failures += run_mooneye_test(path, "boot_regs-dmg.gb");            // p
   failures += run_mooneye_test(path, "call_cc_timing.gb");           // p
   failures += run_mooneye_test(path, "call_cc_timing2.gb");          // p
@@ -1956,7 +1956,7 @@ int GateBoyTests::test_wpol_generic() {
   failures += run_mooneye_test(path, "rst_timing.gb");               // p
   failures += run_mooneye_test(path, "bits/mem_oam.gb");             // p
   failures += run_mooneye_test(path, "bits/reg_f.gb");               // p
-  failures += run_mooneye_test(path, "bits/unused_hwio-GS.gb");      // XXX sound regs
+  failures += run_mooneye_test(path, "bits/unused_hwio-GS.gb");      // XXX - sound regs
 
   TEST_END();
 }

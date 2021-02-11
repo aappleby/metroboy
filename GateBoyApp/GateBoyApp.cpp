@@ -62,7 +62,10 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("roms/LinksAwakening.gb");
   //load_rom("roms/Prehistorik Man (U).gb"); // seems to work
 
-  load_rom("roms/mooneye-gb/tests/build/acceptance/" "interrupts/ie_push.gb");
+  //load_rom("roms/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb");
+
+  //load_rom("roms/oh.gb"); // works fine
+  load_rom("roms/gejmboj.gb");
 
 
 

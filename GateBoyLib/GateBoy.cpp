@@ -183,6 +183,10 @@ void GateBoy::reset_to_cart() {
   sprite_scanner.FETO_SCAN_DONEp.state = 0b00011001;
   ATEJ_LINE_RSTp.state = 0b00011000;
 
+  reg_NR50.reset_to_cart();
+  reg_NR51.reset_to_cart();
+  reg_NR52.reset_to_cart();
+
   check_state_old_and_driven_or_pullup();
 
   sys_rst = false;
@@ -346,23 +350,98 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
+/*
+  GateBoyPins pins;
+  GateBoyCpuBus old_bus;
+  GateBoyCpuBus new_bus;
+
+  VramBus vram_bus;
+
+  DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
+  NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
+
+  GateBoyCpuSignals  cpu_signals;
+  GateBoyExtPins  ext_pins;
+  GateBoyVramPins vram_pins;
+  GateBoyOamBus  oam_bus;
+  GateBoyZramBus zram_bus;
+
+  OamLatchA oam_latch_a;
+  OamLatchB oam_latch_b;
+  OamTempA oam_temp_a;
+  OamTempB oam_temp_b;
+
+  ExtDataLatch ext_data_latch;
+  ExtAddrLatch ext_addr_latch;
+
+  GateBoyResetDebug rst;
+  GateBoyClock      clk;
+  GateBoyDiv        div;
+  GateBoyTimer      timer;
+  GateBoyDMA        dma;
+  GateBoyInterrupts interrupts;
+  GateBoyJoypad     joy;
+  GateBoySerial     serial;
+
+  GateBoySpriteStore   sprite_store;
+
+  SpriteBus sprite_bus;
+  SpriteCounter sprite_counter;
+
+  SpriteMatchFlags sprite_match_flags;
+  SpriteResetFlags sprite_reset_flags;
+  SpriteStoreFlags sprite_store_flags;
+
+  SpriteScanner sprite_scanner;
+
+  SpriteFetcher sprite_fetcher;
+  SpritePixA sprite_pix_a;
+  SpritePixB sprite_pix_b;
+
+  TileFetcher   tile_fetcher;
+  TileTempA tile_temp_a;
+  TileTempB tile_temp_b;
+
+  RegLCDC reg_lcdc;
+  RegStat reg_stat;
+  RegSCX  reg_scx;
+  RegSCY  reg_scy;
+  RegWY   reg_wy;
+  RegWX   reg_wx;
+
+  WinCoords win_coords;
+
+  WindowRegisters win_reg;
+  FineScroll      fine_scroll;
+
+  PixCount     pix_count;
+  PixelPipes   pix_pipes;
+  GateBoyLCD   lcd;
+
+  RegLX  reg_lx;
+  RegLY  reg_ly;
+  RegLYC reg_lyc;
+
+  RegBGP  reg_bgp;
+  RegOBP0 reg_obp0;
+  RegOBP1 reg_obp1;
+*/
+
 struct GateBoyOffsets {
+  const int o_pins           = offsetof(GateBoy, pins);
   const int o_old_bus        = offsetof(GateBoy, old_bus);
   const int o_new_bus        = offsetof(GateBoy, new_bus);
+  const int o_vram_bus       = offsetof(GateBoy, vram_bus);
   const int o_cpu_bus        = offsetof(GateBoy, cpu_signals);
   const int o_ext_bus        = offsetof(GateBoy, ext_pins);
-  const int o_vram_bus       = offsetof(GateBoy, vram_bus);
   const int o_oam_bus        = offsetof(GateBoy, oam_bus);
   const int o_zram_bus       = offsetof(GateBoy, zram_bus);
-
   const int o_oam_latch_a    = offsetof(GateBoy, oam_latch_a);
   const int o_oam_latch_b    = offsetof(GateBoy, oam_latch_b);
   const int o_oam_temp_a     = offsetof(GateBoy, oam_temp_a );
   const int o_oam_temp_b     = offsetof(GateBoy, oam_temp_b );
-
   const int o_ext_data_latch = offsetof(GateBoy, ext_data_latch);
   const int o_ext_addr_latch = offsetof(GateBoy, ext_addr_latch);
-
   const int o_rst_reg        = offsetof(GateBoy, rst);
   const int o_clk_reg        = offsetof(GateBoy, clk);
   const int o_div_reg        = offsetof(GateBoy, div);
@@ -372,13 +451,17 @@ struct GateBoyOffsets {
   const int o_joypad         = offsetof(GateBoy, joy);
   const int o_ser_reg        = offsetof(GateBoy, serial);
 
-  const int o_SPR_TRI_I      = offsetof(GateBoy, sprite_bus.BUS_SPR_I0);
-  const int o_SPR_TRI_L      = offsetof(GateBoy, sprite_bus.BUS_SPR_L0);
-
   const int o_sprite_store   = offsetof(GateBoy, sprite_store);
+  const int o_sprite_bus     = offsetof(GateBoy, sprite_bus);
+  const int o_sprite_counter = offsetof(GateBoy, sprite_counter);
   const int o_sprite_scanner = offsetof(GateBoy, sprite_scanner);
   const int o_sprite_fetcher = offsetof(GateBoy, sprite_fetcher);
+  const int o_sprite_pix_a   = offsetof(GateBoy, sprite_pix_a);
+  const int o_sprite_pix_b   = offsetof(GateBoy, sprite_pix_b);
+
   const int o_tile_fetcher   = offsetof(GateBoy, tile_fetcher);
+  const int o_tile_temp_a    = offsetof(GateBoy, tile_temp_a);
+  const int o_tile_temp_b    = offsetof(GateBoy, tile_temp_b);
 
   const int o_reg_lcdc       = offsetof(GateBoy, reg_lcdc);
   const int o_reg_stat       = offsetof(GateBoy, reg_stat);
@@ -394,6 +477,23 @@ struct GateBoyOffsets {
   const int o_pix_count      = offsetof(GateBoy, pix_count);
   const int o_pix_pipes      = offsetof(GateBoy, pix_pipes);
   const int o_lcd            = offsetof(GateBoy, lcd      );
+  const int o_reg_lx         = offsetof(GateBoy, reg_lx   );
+  const int o_reg_ly         = offsetof(GateBoy, reg_ly   );
+  const int o_reg_lyc        = offsetof(GateBoy, reg_lyc  );
+  const int o_reg_bgp        = offsetof(GateBoy, reg_bgp  );
+  const int o_reg_obp0       = offsetof(GateBoy, reg_obp0 );
+  const int o_reg_obp1       = offsetof(GateBoy, reg_obp1 );
+
+  const int o_reg_NR50       = offsetof(GateBoy, reg_NR50 );
+  const int o_reg_NR51       = offsetof(GateBoy, reg_NR51 );
+  const int o_reg_NR52       = offsetof(GateBoy, reg_NR52 );
+
+  const int o_vid_ram  = offsetof(GateBoy, vid_ram );
+  const int o_cart_ram = offsetof(GateBoy, cart_ram);
+  const int o_int_ram  = offsetof(GateBoy, int_ram );
+  const int o_oam_ram  = offsetof(GateBoy, oam_ram );
+  const int o_zero_ram = offsetof(GateBoy, zero_ram);
+
 
 } gb_offsets;
 

@@ -38,7 +38,7 @@ uint8_t cart_header[] = {
   0x00,       // sgb flag
   0x02,       // cart type MBC1 + RAM
   0x00,       // rom size 32k
-  0x02,       // ram size 8k
+  0x03,       // ram size 32k
   0x01,       // dest code non-japanese
   0x33,       // old license code
   0x00,       // mask rom version

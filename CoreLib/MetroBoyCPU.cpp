@@ -91,7 +91,6 @@ void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   tocked_de = 0;
 
   state = state_;
-  ime = ime_delay;
 
   if (_bus_read) in = bus_data;
 
@@ -108,6 +107,7 @@ void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   }
 
   int_ack = 0;
+  ime = ime_delay; // must be after int check, before op execution
 
   if      (INT)       execute_int(imask, intf_gh);
   else if (HALT)      execute_halt(imask, intf_gh);
@@ -117,13 +117,14 @@ void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyCPU::tock_de(uint8_t imask, uint8_t intf_cd) {
+void MetroBoyCPU::tock_de(uint8_t imask, uint8_t intf_de) {
   if (tocked_de) return;
   tocked_ab = 0;
   tocked_de = 1;
 
   if (HALT) {
-    if ((imask & intf_cd) && ime) {
+    //if ((imask & intf_de) && ime) {
+    if (imask & intf_de) {
       state_ = 0;
     }
   }
@@ -158,6 +159,8 @@ void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
     pc = _bus_addr + 1;
     bus_read(pc);
     state_ = !(imask_& intf_);
+
+    //if (!ime) state_ = 0;
   }
   else if (state == 1) {
     pc = _bus_addr;

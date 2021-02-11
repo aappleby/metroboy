@@ -98,11 +98,11 @@ int main(int argc, char** argv) {
   failures += t.test_micro_mbc1();
 #endif
 
-#if 0
+#if 1
   t.verbose = true;
-  failures += t.test_mooneye_generic(); // some failing
-  failures += t.test_mooneye_mbc1();    // pass
-  failures += t.test_mooneye_timer();   // pass
+  //failures += t.test_mooneye_generic(); // some failing
+  //failures += t.test_mooneye_mbc1();    // pass
+  //failures += t.test_mooneye_timer();   // pass
   failures += t.test_mooneye_ppu();     // 3 fails
 
   failures += t.test_wpol_generic();
@@ -1808,10 +1808,10 @@ int GateBoyTests::test_mooneye_generic() {
   failures += run_mooneye_test(path, "call_timing2.gb");               // p
   failures += run_mooneye_test(path, "di_timing-GS.gb");               // p
   failures += run_mooneye_test(path, "div_timing.gb");                 // p
-  failures += run_mooneye_test(path, "ei_sequence.gb");                // XXX gateboy fail
-  failures += run_mooneye_test(path, "ei_timing.gb");                  // XXX gateboy fail
+  failures += run_mooneye_test(path, "ei_sequence.gb");                // p
+  failures += run_mooneye_test(path, "ei_timing.gb");                  // p
   failures += run_mooneye_test(path, "halt_ime0_ei.gb");               // p
-  failures += run_mooneye_test(path, "halt_ime0_nointr_timing.gb");    // XXX gateboy hang
+  failures += run_mooneye_test(path, "halt_ime0_nointr_timing.gb");    // p
   failures += run_mooneye_test(path, "halt_ime1_timing.gb");           // p
   failures += run_mooneye_test(path, "halt_ime1_timing2-GS.gb");       // p
   failures += run_mooneye_test(path, "if_ie_registers.gb");            // p
@@ -1824,7 +1824,7 @@ int GateBoyTests::test_mooneye_generic() {
   failures += run_mooneye_test(path, "oam_dma_timing.gb");             // p
   failures += run_mooneye_test(path, "pop_timing.gb");                 // p
   failures += run_mooneye_test(path, "push_timing.gb");                // p
-  failures += run_mooneye_test(path, "rapid_di_ei.gb");                // XXX gateboy FAIL
+  failures += run_mooneye_test(path, "rapid_di_ei.gb");                // p
   failures += run_mooneye_test(path, "ret_cc_timing.gb");              // p
   failures += run_mooneye_test(path, "ret_timing.gb");                 // p
   failures += run_mooneye_test(path, "reti_intr_timing.gb");           // XXX gateboy FAIL
@@ -1934,9 +1934,9 @@ int GateBoyTests::test_wpol_generic() {
   failures += run_mooneye_test(path, "call_timing2.gb");             // p
   failures += run_mooneye_test(path, "di_timing-GS.gb");             // p
   failures += run_mooneye_test(path, "div_timing.gb");               // p
-  failures += run_mooneye_test(path, "ei_timing.gb");                // fail
+  failures += run_mooneye_test(path, "ei_timing.gb");                // p
   failures += run_mooneye_test(path, "halt_ime0_ei.gb");             // p
-  failures += run_mooneye_test(path, "halt_ime0_nointr_timing.gb");  // timeout
+  failures += run_mooneye_test(path, "halt_ime0_nointr_timing.gb");  // p
   failures += run_mooneye_test(path, "halt_ime1_timing.gb");         // p
   failures += run_mooneye_test(path, "halt_ime1_timing2-GS.gb");     // p
   failures += run_mooneye_test(path, "if_ie_registers.gb");          // p
@@ -1949,7 +1949,7 @@ int GateBoyTests::test_wpol_generic() {
   failures += run_mooneye_test(path, "oam_dma_timing.gb");           // p
   failures += run_mooneye_test(path, "pop_timing.gb");               // p
   failures += run_mooneye_test(path, "push_timing.gb");              // p
-  failures += run_mooneye_test(path, "rapid_di_ei.gb");              // fail
+  failures += run_mooneye_test(path, "rapid_di_ei.gb");              // p
   failures += run_mooneye_test(path, "ret_cc_timing.gb");            // p
   failures += run_mooneye_test(path, "ret_timing.gb");               // p
   failures += run_mooneye_test(path, "reti_intr_timing.gb");         // fail

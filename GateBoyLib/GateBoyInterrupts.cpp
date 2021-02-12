@@ -34,6 +34,13 @@ void GateBoy::tock_interrupts()
   /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
   /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(sprite_scanner.ACYL_SCANNINGp.qp_new(), XYMU_RENDERINGn.qn_new()); // die NOR
 
+  probe_wire(8,  "POPU", lcd.POPU_VBLANKp.qn_new());
+  probe_wire(9,  "XYMU", XYMU_RENDERINGn.qn_new());
+  probe_wire(10, "ACYL", sprite_scanner.ACYL_SCANNINGp.qp_new());
+  probe_wire(11, "SADU", ~_SADU_STAT_MODE0n);
+  probe_wire(12, "XATY", ~_XATY_STAT_MODE1n);
+  probe_wire(13, "RUPO", ~reg_stat.RUPO_LYC_MATCHn.qp_new());
+
   /*#p21.TEBY_STAT0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);
   /*#p21.WUGA_STAT1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_pn(_TOBE_FF41_RDp, _XATY_STAT_MODE1n);
   /*#p21.SEGO_STAT2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_pn(_TOBE_FF41_RDp, reg_stat.RUPO_LYC_MATCHn.qp_new());

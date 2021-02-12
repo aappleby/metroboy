@@ -57,17 +57,33 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   }
 #endif
 
-  //load_rom("roms/wpol-gb/tests/build/acceptance/gpu/"   "hblank_ly_scx_timing-GS.gb");
-  //load_rom("roms/naughtyemu/build/naughtyemu.gb"); // broken
   //load_rom("roms/LinksAwakening.gb");
   //load_rom("roms/Prehistorik Man (U).gb"); // seems to work
-
-  //load_rom("roms/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb");
-
   //load_rom("roms/oh.gb"); // works fine
-  load_rom("roms/gejmboj.gb");
+  //load_rom("roms/gejmboj.gb");
+  //load_rom("roms/dmg-acid2.gb"); // pass
 
 
+  //load_rom("roms/wpol-gb/tests/build/acceptance/gpu/"   "hblank_ly_scx_timing-GS.gb"); // pass
+  //load_rom("roms/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
+  //load_rom("roms/mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-GS.gb"); // dmg pass, gateboy fail
+  //load_rom("roms/mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing_sprites.gb"); // dmg pass, gateboy fail
+
+
+  //load_rom("roms/gb-test-roms/cpu_instrs/cpu_instrs.gb"); // pass
+  //load_rom("roms/gb-test-roms/instr_timing/instr_timing.gb"); // pass
+  //load_rom("roms/gb-test-roms/mem_timing/mem_timing.gb"); // pass
+  //load_rom("roms/gb-test-roms/mem_timing-2/mem_timing.gb"); // pass
+  //load_rom("roms/gb-test-roms/halt_bug.gb"); // fail
+  //load_rom("roms/gb-test-roms/oam_bug/oam_bug.gb"); // fail
+
+  //load_rom("roms/scribbltests/lycscx/lycscx.gb"); // pass
+  //load_rom("roms/scribbltests/lycscy/lycscy.gb"); // pass
+  //load_rom("roms/scribbltests/palettely/palettely.gb");
+  //load_rom("roms/scribbltests/scxly/scxly.gb");
+  //load_rom("roms/scribbltests/statcount/statcount-auto.gb"); // pass
+
+  load_rom("microtests/build/dmg/poweron_stat_006.gb");
 
 
 

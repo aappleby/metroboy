@@ -1905,11 +1905,11 @@ int GateBoyTests::test_mooneye_ppu() {
   failures += run_mooneye_test(path, "intr_1_2_timing-GS.gb");           // p
   failures += run_mooneye_test(path, "intr_2_0_timing.gb");              // p
   failures += run_mooneye_test(path, "intr_2_mode0_timing.gb");          // p
-  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites.gb");  // XXX - test 00 fail
+  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites.gb");  // dmg pass, gateboy fail
   failures += run_mooneye_test(path, "intr_2_mode3_timing.gb");          // p
   failures += run_mooneye_test(path, "intr_2_oam_ok_timing.gb");         // p
-  failures += run_mooneye_test(path, "lcdon_timing-GS.gb");              // XXX - this is the same as lcdon_to_stat2_a
-  failures += run_mooneye_test(path, "lcdon_write_timing-GS.gb");        // XXX - probably the same as lcdon_to_oam_unlock_d
+  failures += run_mooneye_test(path, "lcdon_timing-GS.gb");              // dmg pass, gateboy fail - this is the same as lcdon_to_stat2_a
+  failures += run_mooneye_test(path, "lcdon_write_timing-GS.gb");        // dmg pass, gateboy fail - probably the same as lcdon_to_oam_unlock_d
   failures += run_mooneye_test(path, "stat_irq_blocking.gb");            // p
   failures += run_mooneye_test(path, "stat_lyc_onoff.gb");               // p
   failures += run_mooneye_test(path, "vblank_stat_intr-GS.gb");          // p
@@ -1968,51 +1968,107 @@ int GateBoyTests::test_wpol_ppu() {
 
   const char* path = "roms/wpol-gb/tests/build/acceptance/gpu/";
 
+#if 0
+  hblank_ly_scx_timing_variant_nops.gb
+  intr_0_timing.gb
+  intr_1_2_timing-GS.gb
+  intr_1_timing.gb
+  intr_2_0_timing.gb
+  intr_2_mode0_scx1_timing_nops.gb
+  intr_2_mode0_scx2_timing_nops.gb
+  intr_2_mode0_scx3_timing_nops.gb
+  intr_2_mode0_scx4_timing_nops.gb
+  intr_2_mode0_scx5_timing_nops.gb
+  intr_2_mode0_scx6_timing_nops.gb
+  intr_2_mode0_scx7_timing_nops.gb
+  intr_2_mode0_scx8_timing_nops.gb
+  intr_2_mode0_timing.gb
+  intr_2_mode0_timing_sprites.gb
+  intr_2_mode0_timing_sprites_nops.gb
+  intr_2_mode0_timing_sprites_scx1_nops.gb
+  intr_2_mode0_timing_sprites_scx2_nops.gb
+  intr_2_mode0_timing_sprites_scx3_nops.gb
+  intr_2_mode0_timing_sprites_scx4_nops.gb
+  intr_2_mode3_timing.gb
+  intr_2_oam_ok_timing.gb
+  intr_2_timing.gb
+  lcdon_mode_timing.gb
+  ly00_01_mode0_2.gb
+  ly00_mode0_2-GS.gb
+  ly00_mode1_0-GS.gb
+  ly00_mode2_3.gb
+  ly00_mode3_0.gb
+  ly143_144_145.gb
+  ly143_144_152_153.gb
+  ly143_144_mode0_1.gb
+  ly143_144_mode3_0.gb
+  ly_lyc-GS.gb
+  ly_lyc_0-GS.gb
+  ly_lyc_0_write-GS.gb
+  ly_lyc_144-GS.gb
+  ly_lyc_153-GS.gb
+  ly_lyc_153_write-GS.gb
+  ly_lyc_write-GS.gb
+  ly_new_frame-GS.gb
+  stat_irq_blocking.gb
+  stat_write_if-GS.gb
+  vblank_if_timing.gb
+  vblank_stat_intr-GS.gb
+#endif
+
   failures += run_mooneye_test(path, "hblank_ly_scx_timing-GS.gb");
   failures += run_mooneye_test(path, "hblank_ly_scx_timing_nops.gb");
-  failures += run_mooneye_test(path, "hblank_ly_scx_timing_variant_nops.gb");     // fail
-  failures += run_mooneye_test(path, "intr_0_timing.gb");
-  failures += run_mooneye_test(path, "intr_1_2_timing-GS.gb");
-  failures += run_mooneye_test(path, "intr_1_timing.gb");
-  failures += run_mooneye_test(path, "intr_2_0_timing.gb");
-  failures += run_mooneye_test(path, "intr_2_mode0_scx1_timing_nops.gb");
-  failures += run_mooneye_test(path, "intr_2_mode0_scx2_timing_nops.gb");
-  failures += run_mooneye_test(path, "intr_2_mode0_scx3_timing_nops.gb");         // fail
-  failures += run_mooneye_test(path, "intr_2_mode0_scx4_timing_nops.gb");
-  failures += run_mooneye_test(path, "intr_2_mode0_scx5_timing_nops.gb");
-  failures += run_mooneye_test(path, "intr_2_mode0_scx6_timing_nops.gb");
-  failures += run_mooneye_test(path, "intr_2_mode0_scx7_timing_nops.gb");         // fail
-  failures += run_mooneye_test(path, "intr_2_mode0_scx8_timing_nops.gb");
-  failures += run_mooneye_test(path, "intr_2_mode0_timing.gb");
-  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites.gb");           // fail
-  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_nops.gb");      // fail
-  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_scx1_nops.gb"); // fail
-  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_scx2_nops.gb"); // fail
-  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_scx3_nops.gb"); // fail
-  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_scx4_nops.gb"); // fail
-  failures += run_mooneye_test(path, "intr_2_mode3_timing.gb");
+  failures += run_mooneye_test(path, "hblank_ly_scx_timing_variant_nops.gb");
+
+  failures += run_mooneye_test(path, "intr_0_timing.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_1_2_timing-GS.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_1_timing.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_0_timing.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode0_scx1_timing_nops.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode0_scx2_timing_nops.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode0_scx3_timing_nops.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode0_scx4_timing_nops.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode0_scx5_timing_nops.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode0_scx6_timing_nops.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode0_scx7_timing_nops.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode0_scx8_timing_nops.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode0_timing.gb"); // dmg fail
+  failures += run_mooneye_test(path, "intr_2_mode3_timing.gb"); // dmg fail
+
+
+  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites.gb");
+  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_nops.gb");
+  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_scx1_nops.gb");
+  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_scx2_nops.gb");
+  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_scx3_nops.gb");
+  failures += run_mooneye_test(path, "intr_2_mode0_timing_sprites_scx4_nops.gb");
+
+
+
+
+
   failures += run_mooneye_test(path, "intr_2_oam_ok_timing.gb");
   failures += run_mooneye_test(path, "intr_2_timing.gb");
   failures += run_mooneye_test(path, "lcdon_mode_timing.gb");
   failures += run_mooneye_test(path, "ly00_01_mode0_2.gb");
-  failures += run_mooneye_test(path, "ly00_mode0_2-GS.gb");                       // fail
-  failures += run_mooneye_test(path, "ly00_mode1_0-GS.gb");                       // fail
+  failures += run_mooneye_test(path, "ly00_mode0_2-GS.gb");
+  failures += run_mooneye_test(path, "ly00_mode1_0-GS.gb");
   failures += run_mooneye_test(path, "ly00_mode2_3.gb");
   failures += run_mooneye_test(path, "ly00_mode3_0.gb");
   failures += run_mooneye_test(path, "ly143_144_145.gb");
   failures += run_mooneye_test(path, "ly143_144_152_153.gb");
   failures += run_mooneye_test(path, "ly143_144_mode0_1.gb");
   failures += run_mooneye_test(path, "ly143_144_mode3_0.gb");
-  failures += run_mooneye_test(path, "ly_lyc-GS.gb");                             // fail
-  failures += run_mooneye_test(path, "ly_lyc_0-GS.gb");                           // fail
-  failures += run_mooneye_test(path, "ly_lyc_0_write-GS.gb");                     // fail
-  failures += run_mooneye_test(path, "ly_lyc_153-GS.gb");                         // fail
-  failures += run_mooneye_test(path, "ly_lyc_144-GS.gb");                         // fail
-  failures += run_mooneye_test(path, "ly_lyc_153_write-GS.gb");                   // fail
+  failures += run_mooneye_test(path, "ly_lyc-GS.gb");
+  failures += run_mooneye_test(path, "ly_lyc_0-GS.gb");
+  failures += run_mooneye_test(path, "ly_lyc_0_write-GS.gb");
+  failures += run_mooneye_test(path, "ly_lyc_153-GS.gb");
+  failures += run_mooneye_test(path, "ly_lyc_144-GS.gb");
+  failures += run_mooneye_test(path, "ly_lyc_153_write-GS.gb");
   failures += run_mooneye_test(path, "ly_lyc_write-GS.gb");
-  failures += run_mooneye_test(path, "ly_new_frame-GS.gb");                       // fail
+  failures += run_mooneye_test(path, "ly_new_frame-GS.gb");
   failures += run_mooneye_test(path, "stat_irq_blocking.gb");
-  failures += run_mooneye_test(path, "stat_write_if-GS.gb");                      // fail
+  failures += run_mooneye_test(path, "stat_write_if-GS.gb");
   failures += run_mooneye_test(path, "vblank_if_timing.gb");
   failures += run_mooneye_test(path, "vblank_stat_intr-GS.gb");
 

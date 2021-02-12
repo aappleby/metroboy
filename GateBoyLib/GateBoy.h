@@ -137,13 +137,21 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void tock_lcd();
   void tock_lcdc();
+
+
+  void tock_lcd();
+  void tock_lx();
+  void tock_ly();
   void tock_lyc();
+  void tock_lyc_match();
+  void tock_lcd2();
+
+
+
 
   void tock_dma();
-
-  void set_pins();
+    void set_pins();
 
   void tock_joypad();
   void tock_interrupts();
@@ -472,13 +480,13 @@ struct GateBoy {
   RegOBP1 reg_obp1;
 
   /*#p21.WODU*/ Gate WODU_HBLANKp; // only old used
-  /*#p21.NOKO*/ Gate NOKO_y153p; // only old used
+  ///*#p21.NOKO*/ Gate NOKO_y153p; // only old used
   /* p07.SATO*/ Gate SATO_BOOT_BITn; // old used
 
   /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp; // new used
-  /*#p21.SANU*/ Gate SANU_x113p; // old used
-  /*#p21.XYVO*/ Gate XYVO_y144p; // old used
-  /*#p29.ABOV*/ Gate ABOV_LINE_P908p; // old used
+  ///*#p21.SANU*/ Gate SANU_x113p; // old used
+  ///*#p21.XYVO*/ Gate XYVO_y144p; // old used
+  ///*#p29.ABOV*/ Gate ABOV_LINE_P908p; // old used
 
   SpritePix flipped_sprite;
 

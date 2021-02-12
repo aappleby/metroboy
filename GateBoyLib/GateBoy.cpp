@@ -644,7 +644,20 @@ void GateBoy::tock_slow(int pass_index) {
 
   tock_vid_clocks();
 
+
+
+
+  tock_lyc_match();
   tock_lyc();
+  tock_lcd();
+  tock_lx();
+  tock_ly();
+  tock_lcd2();
+
+
+
+
+
   tock_joypad();
   tock_serial();
   tock_timer();
@@ -653,7 +666,6 @@ void GateBoy::tock_slow(int pass_index) {
 
   //----------------------------------------
 
-  tock_lcd();
 
   /*#p21.PARU*/ wire PARU_VBLANKp = not1(lcd.POPU_VBLANKp.qn_new());
   /* p27.REPU*/ wire REPU_VBLANKp = or2(PARU_VBLANKp, PYRY_VID_RSTp());

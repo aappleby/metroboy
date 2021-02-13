@@ -98,12 +98,6 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
     poweron_oam_234.gb                0  255 -255  255 MISMATCH @ 2080
     poweron_vram_026.gb               0  255 -255  255 MISMATCH @ 416
     poweron_vram_140.gb               0  255 -255  255 MISMATCH @ 1328
-    stat_write_glitch_l0_a.gb       224  226   -2  255 MISMATCH @ 416
-    stat_write_glitch_l0_b.gb       224  226   -2  255 MISMATCH @ 1288
-    stat_write_glitch_l1_b.gb       224  226   -2  255 MISMATCH @ 1800
-    stat_write_glitch_l1_c.gb       224  226   -2  255 MISMATCH @ 2200
-    ppu_sprite0_scx3_a.gb           128  131   -3  255 MISMATCH @ 1880
-    ppu_sprite0_scx7_a.gb           128  131   -3  255 MISMATCH @ 1880
 #endif
 
   //load_rom("microtests/build/dmg/poweron_stat_006.gb"); // stat low nibble goes 5-7-6, but it's supposed to read 4 - SADU cleared too late?
@@ -115,10 +109,14 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   // sig_oam_clkn goes low EFGH during read
   //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
 
-  load_rom("microtests/build/dmg/oam_read_l1_a.gb");
+  //load_rom("microtests/build/dmg/oam_read_l1_a.gb");
+
+  load_rom("microtests/build/dmg/ppu_sprite0_scx1_a.gb"); // stat 80, should be 83 - hblank early? - pix count hits 167 on a
+  //load_rom("microtests/build/dmg/ppu_sprite0_scx3_a.gb"); // stat 80, should be 83 - hblank early? - pix count hits 167 on a
+  //load_rom("microtests/build/dmg/ppu_sprite0_scx7_a.gb"); // stat 80, should be 83 - hblank early? - pix count hits 167 on a
 
 
-#if 1
+#if 0
   const char* app = R"(
   0150:
     ld a, $00

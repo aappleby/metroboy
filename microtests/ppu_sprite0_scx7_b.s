@@ -1,20 +1,13 @@
 .include "header.inc"
 
-.define DELAY 65
-.define RESULT $80
-.define SPRITEX 0
-.define SPRITEY 0
-
 main:
   lcd_off_unsafe
 
-  load_sprite 0 SPRITEY SPRITEX 0 0
+  load_sprite 0 0 0 0 0
 
   ld a, 7
   ldh (SCX), a
 
   lcd_on_sprites
-  nops 114 - 2
-
-  nops DELAY
-  test_finish_stat RESULT
+  nops 177
+  test_finish_stat $80

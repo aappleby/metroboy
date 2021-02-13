@@ -1,13 +1,7 @@
-; pass - dmg
-
 .include "header.inc"
 
-.define DELAY  17
-.define ADDR   $FE00
-.define RESULT $F0
-
 main:
-  ld hl, ADDR
+  ld hl, $FE33
 
   ld a, $0
   ldh (LCDC), a
@@ -18,7 +12,7 @@ main:
   ld a, $91
   ldh (LCDC), a
 
-  nops DELAY
+  nops 17
   ld a, (hl)
 
-  test_finish_a RESULT
+  test_finish_a $F0

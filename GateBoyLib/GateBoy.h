@@ -141,11 +141,6 @@ struct GateBoy {
 
 
   void tock_lcd();
-  void tock_lx();
-  void tock_ly();
-  void tock_lyc();
-  void tock_lyc_match();
-  void tock_lcd2();
 
 
 

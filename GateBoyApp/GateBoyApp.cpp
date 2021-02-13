@@ -83,22 +83,53 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("roms/scribbltests/scxly/scxly.gb");
   //load_rom("roms/scribbltests/statcount/statcount-auto.gb"); // pass
 
-  load_rom("microtests/build/dmg/poweron_stat_006.gb");
-
-
-
 #if 0
+    poweron_stat_006.gb             133  132    1  255 MISMATCH @ 256
+    poweron_stat_120.gb             132  128    4  255 MISMATCH @ 1168
+    lcdon_to_stat2_a.gb             132  128    4  255 MISMATCH @ 1264
+    oam_read_l0_d.gb                  0  240 -240  255 MISMATCH @ 816
+    oam_read_l1_a.gb                240  255  -15  255 MISMATCH @ 1216
+    oam_read_l1_f.gb                240  255  -15  255 MISMATCH @ 2128
+    oam_write_l0_d.gb               240  145   95  255 MISMATCH @ 888
+    oam_write_l1_c.gb               240  145   95  255 MISMATCH @ 1832
+    lcdon_to_oam_unlock_d.gb          0   39  -39  255 MISMATCH @ 880
+    poweron_oam_006.gb                0  255 -255  255 MISMATCH @ 256
+    poweron_oam_120.gb                0  255 -255  255 MISMATCH @ 1168
+    poweron_oam_234.gb                0  255 -255  255 MISMATCH @ 2080
+    poweron_vram_026.gb               0  255 -255  255 MISMATCH @ 416
+    poweron_vram_140.gb               0  255 -255  255 MISMATCH @ 1328
+    stat_write_glitch_l0_a.gb       224  226   -2  255 MISMATCH @ 416
+    stat_write_glitch_l0_b.gb       224  226   -2  255 MISMATCH @ 1288
+    stat_write_glitch_l1_b.gb       224  226   -2  255 MISMATCH @ 1800
+    stat_write_glitch_l1_c.gb       224  226   -2  255 MISMATCH @ 2200
+    ppu_sprite0_scx3_a.gb           128  131   -3  255 MISMATCH @ 1880
+    ppu_sprite0_scx7_a.gb           128  131   -3  255 MISMATCH @ 1880
+#endif
+
+  //load_rom("microtests/build/dmg/poweron_stat_006.gb"); // stat low nibble goes 5-7-6, but it's supposed to read 4 - SADU cleared too late?
+  //load_rom("microtests/build/dmg/poweron_stat_120.gb"); // stat low nibble goes 4-6-2 but it's supposed to read 0 - RUPO cleared too late?
+  //load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb"); // RUPO cleared too late?
+
+  // SIG_OAM_OEn goes back to 1 on E after the read starts, so we have to latch before that?
+  // but the oam address doesn't show up until H?
+  // sig_oam_clkn goes low EFGH during read
+  //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
+
+  load_rom("microtests/build/dmg/oam_read_l1_a.gb");
+
+
+#if 1
   const char* app = R"(
   0150:
-    ld a, $80
-    ld ($FF26), a
+    ld a, $00
+    ld ($FF40), a
 
-    ld hl, $FF24
-    ld a, $0F
+    ld a, $CD
+    ld hl, $FE32
+
     ld (hl), a
-    nop
-    nop
-    jr -3
+    ld a, (hl)
+    jr -4
   )";
 
   Assembler as;
@@ -223,7 +254,6 @@ void GateBoyApp::app_update(double /*delta*/) {
     case SDLK_r:    gb_thread.reset_to_cart();          break;
     case SDLK_d:    show_diff   = !show_diff;   break;
     case SDLK_g:    show_golden = !show_golden; break;
-    case SDLK_o:    draw_passes = !draw_passes; break;
     //case SDLK_c:  { gb_thread.toggle_cpu(); break; }
 
     case SDLK_LEFT:   {
@@ -569,7 +599,7 @@ void GateBoyApp::app_render_frame() {
 
   // Probe dump
 
-  gb->probes.dump(d, draw_passes);
+  gb->probes.dump(d);
   text_painter.render_string(view, d.s, 42 * 32 - 16, 19 * 20 - 24);
   d.clear();
 

@@ -185,7 +185,6 @@ struct RegSCX {
 
 struct RegLY {
   void reset_to_cart() {
-    MYTA_y153p.state = 0b00011001;
     MUWY_LY0p.state = 0b00011000;
     MYRO_LY1p.state = 0b00011010;
     LEXA_LY2p.state = 0b00011010;
@@ -198,8 +197,6 @@ struct RegLY {
 
   uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &MUWY_LY0p); }
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &MUWY_LY0p); }
-
-  /*p21.MYTA*/ DFF17 MYTA_y153p; // xxCxxxxH
 
   /*p21.MUWY*/ DFF17 MUWY_LY0p;  // xxCxxxGx Ticks on G, reset on C
   /*p21.MYRO*/ DFF17 MYRO_LY1p;  // xxCxxxGx Ticks on G, reset on C
@@ -216,8 +213,6 @@ struct RegLY {
 
 struct RegLX {
   void reset_to_cart() {
-    RUTU_x113p.state = 0b00011010;
-    NYPE_x113p.state = 0b00011000;
     SAXO_LX0p.state = 0b00011000;
     TYPO_LX1p.state = 0b00011011;
     VYZO_LX2p.state = 0b00011000;
@@ -229,9 +224,6 @@ struct RegLX {
 
   uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &SAXO_LX0p); }
   uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &SAXO_LX0p); }
-
-  /*p21.RUTU*/ DFF17 RUTU_x113p;  // xxxxxxGx
-  /*p21.NYPE*/ DFF17 NYPE_x113p;  // xxCxxxxx
 
   /*p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
   /*p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G

@@ -11,6 +11,9 @@ struct GateBoyLCD {
     CATU_START_SCANNING.state = 0b00011010;
     ANEL_LINE_P002p.state = 0b00011000;
     POPU_VBLANKp.state = 0b00011001;
+    MYTA_y153p.state = 0b00011001;
+    RUTU_x113p.state = 0b00011010;
+    NYPE_x113p.state = 0b00011000;
     SYGU_LINE_STROBE.state = 0b00011010;
     MEDA_VSYNC_OUTn.state = 0b00011011;
     LUCA_LINE_EVENp.state = 0b00011011;
@@ -34,6 +37,9 @@ struct GateBoyLCD {
   /*p29.CATU*/ DFF17 CATU_START_SCANNING;  // Axxxxxxx
   /*p28.ANEL*/ DFF17 ANEL_LINE_P002p;  // xxCxxxxx
   /*p21.POPU*/ DFF17 POPU_VBLANKp;     // xxCxxxxH
+  /*p21.MYTA*/ DFF17 MYTA_y153p; // xxCxxxxH
+  /*p21.RUTU*/ DFF17 RUTU_x113p;  // xxxxxxGx
+  /*p21.NYPE*/ DFF17 NYPE_x113p;  // xxCxxxxx
 
   /*p21.SYGU*/ DFF17 SYGU_LINE_STROBE; // xxxxxxGH
   /*p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;  // xxCxxxxH

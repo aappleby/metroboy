@@ -34,12 +34,12 @@ void GateBoy::tock_interrupts()
   /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
   /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(sprite_scanner.ACYL_SCANNINGp.qp_new(), XYMU_RENDERINGn.qn_new()); // die NOR
 
-  probe_wire(8,  "POPU", lcd.POPU_VBLANKp.qn_new());
-  probe_wire(9,  "XYMU", XYMU_RENDERINGn.qn_new());
-  probe_wire(10, "ACYL", sprite_scanner.ACYL_SCANNINGp.qp_new());
-  probe_wire(11, "SADU", ~_SADU_STAT_MODE0n);
-  probe_wire(12, "XATY", ~_XATY_STAT_MODE1n);
-  probe_wire(13, "RUPO", ~reg_stat.RUPO_LYC_MATCHn.qp_new());
+  probe_wire(8,  "VBLANK",    lcd.POPU_VBLANKp.qp_new());
+  probe_wire(9,  "RENDERING", ~XYMU_RENDERINGn.qp_new());
+  probe_wire(10, "SCANNING",  sprite_scanner.ACYL_SCANNINGp.qp_new());
+  probe_wire(11, "STAT0",     ~_SADU_STAT_MODE0n);
+  probe_wire(12, "STAT1",     ~_XATY_STAT_MODE1n);
+  probe_wire(13, "STAT2",     ~reg_stat.RUPO_LYC_MATCHn.qp_new());
 
   /*#p21.TEBY_STAT0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);
   /*#p21.WUGA_STAT1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_pn(_TOBE_FF41_RDp, _XATY_STAT_MODE1n);
@@ -55,7 +55,7 @@ void GateBoy::tock_interrupts()
   // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
   // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
-  /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(reg_lx.RUTU_x113p.qp_new());
+  /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(lcd.RUTU_x113p.qp_new());
   /*#p21.TOLU*/ wire _TOLU_VBLANKn   = not1(PARU_VBLANKp);
   /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(_PURE_LINE_ENDn);
   /*#p21.TAPA*/ wire _TAPA_INT_OAM   = and2(_TOLU_VBLANKn, _SELA_LINE_P908p);

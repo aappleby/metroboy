@@ -1,9 +1,17 @@
 #include "GateBoyLib/GateBoy.h"
 
-void dump_slice2b(Dumper& d, const char* tag, const BitBase* bits, int bit_count) {
+void dump_slice(Dumper& d, const char* tag, const BitBase* bits, int bit_count) {
   d(tag);
   for (int i = bit_count - 1; i >= 0; i--) {
     d.add_char(bits[i].cp());
+  }
+  d.add_char('\n');
+}
+
+void dump_slicen(Dumper& d, const char* tag, const BitBase* bits, int bit_count) {
+  d(tag);
+  for (int i = bit_count - 1; i >= 0; i--) {
+    d.add_char(bits[i].cn());
   }
   d.add_char('\n');
 }
@@ -140,9 +148,9 @@ void GateBoy::dump_lcd(Dumper& d) {
   d.dump_slice2p("LX              : ", &reg_lx.SAXO_LX0p.state,  7);
   d.dump_slice2p("FF44 LY         : ", &reg_ly.MUWY_LY0p.state,  8);
   d.dump_slice2n("FF45 LYC        : ", &reg_lyc.SYRY_LYC0n.state, 8);
-  d.dump_bitp   ("MYTA_y153p      : ", reg_ly.MYTA_y153p.state);
-  d.dump_bitp   ("RUTU_LINE_P910p : ", reg_lx.RUTU_x113p.state);
-  d.dump_bitp   ("NYPE_LINE_P002p : ", reg_lx.NYPE_x113p.state);
+  d.dump_bitp   ("MYTA_y153p      : ", lcd.MYTA_y153p.state);
+  d.dump_bitp   ("RUTU_LINE_P910p : ", lcd.RUTU_x113p.state);
+  d.dump_bitp   ("NYPE_LINE_P002p : ", lcd.NYPE_x113p.state);
   d.dump_bitp   ("ROPO_LY_MATCH   : ", reg_lyc.ROPO_LY_MATCH_SYNCp.state);
   d.dump_bitp   ("RUPO_LYC_MATCHn : ", reg_stat.RUPO_LYC_MATCHn.state);
 }
@@ -155,9 +163,9 @@ void GateBoy::dump_oam_bus(Dumper& d) {
   d.dump_bitp   ("SIG_OAM_WRn_B    : ", oam_bus.SIG_OAM_WRn_B.get_state());
   d.dump_bitp   ("SIG_OAM_OEn      : ", oam_bus.SIG_OAM_OEn.get_state());
 
-  d.dump_slice2n("BUS_OAM_An  : ", &oam_bus.BUS_OAM_A00n, 8);
-  d.dump_slice2n("BUS_OAM_DAn : ", &oam_bus.BUS_OAM_DA00n, 8);
-  d.dump_slice2n("BUS_OAM_DBn : ", &oam_bus.BUS_OAM_DB00n, 8);
+  dump_slicen(d, "BUS_OAM_An  : ", &oam_bus.BUS_OAM_A00n, 8);
+  dump_slicen(d, "BUS_OAM_DAn : ", &oam_bus.BUS_OAM_DA00n, 8);
+  dump_slicen(d, "BUS_OAM_DBn : ", &oam_bus.BUS_OAM_DB00n, 8);
   d.dump_slice2n("OAM LATCH A : ", &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
   d.dump_slice2n("OAM LATCH B : ", &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
   d.dump_slice2p("OAM TEMP A  : ", &oam_temp_a.XUSO_OAM_DA0p, 8);
@@ -207,7 +215,7 @@ void GateBoy::dump_cpu_bus(Dumper& d) {
   d.dump_bitp   ("APOV_CPU_WRp      : ", cpu_signals.APOV_CPU_WRp.get_state());
   d.dump_bitp   ("TAPU_CPU_WRp      : ", cpu_signals.TAPU_CPU_WRp.get_state());
   d.dump_slice2p("BUS_CPU_A : ", &new_bus.BUS_CPU_A00p, 16);
-  dump_slice2b(d, "BUS_CPU_D : ", &new_bus.BUS_CPU_D00p, 8);
+  dump_slice(d,  "BUS_CPU_D : ", &new_bus.BUS_CPU_D00p, 8);
 }
 
 void GateBoy::dump_dma(Dumper& d) {

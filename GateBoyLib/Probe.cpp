@@ -13,63 +13,48 @@ Probes::Probes() {
 }
 
 void Probes::reset_to_cart() {
-  pass_cursor = 0;
-
+  phase_cursor = 0;
   for (int i = 0; i < channel_count; i++) {
     memset(names[i], 0, 32);
     sprintf_s(names[i], 32, "<probe %02d>", i);
   }
 
   memset(phase_samples, '_', channel_count * sample_count);
-  memset(pass_samples, '_', channel_count * sample_count);
-  memset(stable, 0, sample_count);
+  memset(phase_tags, '_', sample_count);
 }
 
 void Probes::probe_wire(int index, const char* signal_name, char s) {
   strcpy_s(names[index], 31, signal_name);
   if (s <= 1) {
-    pass_samples[index][pass_cursor] = s + 30; //? '#' : '_';
     phase_samples[index][phase_cursor] = s + 30; //? '#' : '_';
   }
   else {
-    pass_samples[index][pass_cursor] = s;
     phase_samples[index][phase_cursor] = s;
   }
 }
 
-void Probes::begin_pass(int pass_count) {
+void Probes::begin_pass(int phase_tag) {
   CHECK_P(thread_probes == nullptr);
   thread_probes = this;
-  pass_cursor = (pass_cursor + 1) % sample_count;
-  if (pass_count == 0) {
-    phase_cursor = (phase_cursor + 1) % sample_count;
-  }
+  phase_cursor = (phase_cursor + 1) % sample_count;
+  phase_tags[phase_cursor] = phase_tag;
 }
 
-void Probes::end_pass(bool _stable) {
+void Probes::end_pass() {
   CHECK_P(thread_probes == this);
-  stable[pass_cursor] = _stable;
   thread_probes = nullptr;
 }
 
-void Probes::dump(Dumper& d, bool draw_passes) {
+void Probes::dump(Dumper& d) {
   for (int y = 0; y < channel_count; y++) {
 
     d("\001%-16s : ", names[y]);
-    if (draw_passes) {
-      auto s = pass_samples[y];
-      for (int x = 0; x < sample_count; x++) {
-        int idx = (pass_cursor + x + 1) % sample_count;
-        d.add_char(stable[idx] ? '\001' : '\007');
-        d.add_char(s[idx]);
-      }
-    }
-    else {
-      auto s = phase_samples[y];
-      for (int x = 0; x < sample_count; x++) {
-        int idx = (phase_cursor + x + 1) % sample_count;
-        d.add_char(s[idx]);
-      }
+    auto s = phase_samples[y];
+    for (int x = 0; x < sample_count; x++) {
+      int idx = (phase_cursor + x + 1) % sample_count;
+
+      d.add_char(phase_tags[idx] == 0 ? '\004' : '\001');
+      d.add_char(s[idx]);
     }
     d.add_char('\001');
     d.add_char('\n');

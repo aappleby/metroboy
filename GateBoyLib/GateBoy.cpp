@@ -553,8 +553,7 @@ void GateBoy::next_phase() {
   //----------------------------------------
   // Run one pass of our simulation.
 
-  probes.begin_pass(0);
-  probe_char(0, "phase", "Abcdefgh"[(phase_total + 1) & 7]);
+  probes.begin_pass((phase_total + 1) & 7);
 
   tock_slow(0);
 
@@ -568,7 +567,7 @@ void GateBoy::next_phase() {
   auto& gb2 = *this;
 #endif
 
-  probes.end_pass(true);
+  probes.end_pass();
 
   uint64_t hash_new = commit_and_hash();
 
@@ -647,12 +646,7 @@ void GateBoy::tock_slow(int pass_index) {
 
 
 
-  tock_lyc_match();
-  tock_lyc();
   tock_lcd();
-  tock_lx();
-  tock_ly();
-  tock_lcd2();
 
 
 

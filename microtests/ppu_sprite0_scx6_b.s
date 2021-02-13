@@ -9,5 +9,5 @@ main:
   ldh (SCX), a
 
   lcd_on_sprites
-  nops 177
+  nops 175
   test_finish_stat $80

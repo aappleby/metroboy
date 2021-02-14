@@ -29,6 +29,7 @@ void GateBoy::dump_sys(Dumper& d) const {
   };
 
   d             ("phase        : %s\n", phases[phase_total & 7]);
+  d             ("line phase   : %d\n", line_phase_x);
   d             ("sys_rst      : %d\n", sys_rst);
   d             ("sys_t1       : %d\n", sys_t1);
   d             ("sys_t2       : %d\n", sys_t2);
@@ -123,9 +124,13 @@ void GateBoy::dump_joypad(Dumper& d) {
 }
 
 void GateBoy::dump_lcd(Dumper& d) {
-  d.dump_bitp   ("CATU_START_SCANNING : ", lcd.CATU_x113p.state);
-  d.dump_bitp   ("ANEL_LINE_P002p     : ", lcd.ANEL_x113p.state);
-  d.dump_bitp   ("POPU_VBLANKp        : ", lcd.POPU_y144p.state);
+  d.dump_bitp   ("CATU : ", lcd.CATU_x113p.state);
+  d.dump_bitp   ("ANEL : ", lcd.ANEL_x113p.state);
+  d.dump_bitp   ("POPU : ", lcd.POPU_y144p.state);
+  d.dump_bitp   ("MYTA : ", lcd.MYTA_y153p.state);
+  d.dump_bitp   ("RUTU : ", lcd.RUTU_x113p.state);
+  d.dump_bitp   ("NYPE : ", lcd.NYPE_x113p.state);
+  d("\n");
   d.dump_bitp   ("SYGU_LINE_STROBE    : ", lcd.SYGU_LINE_STROBE.state);
   d.dump_bitn   ("MEDA_VSYNC_OUTn     : ", lcd.MEDA_VSYNC_OUTn.state);
   d.dump_bitp   ("LUCA_LINE_EVENp     : ", lcd.LUCA_LINE_EVENp.state);
@@ -148,9 +153,6 @@ void GateBoy::dump_lcd(Dumper& d) {
   d.dump_slice2p("LX              : ", &reg_lx.SAXO_LX0p.state,  7);
   d.dump_slice2p("FF44 LY         : ", &reg_ly.MUWY_LY0p.state,  8);
   d.dump_slice2n("FF45 LYC        : ", &reg_lyc.SYRY_LYC0n.state, 8);
-  d.dump_bitp   ("MYTA_y153p      : ", lcd.MYTA_y153p.state);
-  d.dump_bitp   ("RUTU_LINE_P910p : ", lcd.RUTU_x113p.state);
-  d.dump_bitp   ("NYPE_LINE_P002p : ", lcd.NYPE_x113p.state);
   d.dump_bitp   ("ROPO_LY_MATCH   : ", reg_lyc.ROPO_LY_MATCH_SYNCp.state);
   d.dump_bitp   ("RUPO_LYC_MATCHn : ", reg_stat.RUPO_LYC_MATCHn.state);
 }

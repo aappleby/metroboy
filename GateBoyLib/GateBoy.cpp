@@ -189,6 +189,8 @@ void GateBoy::reset_to_cart() {
 
   check_state_old_and_driven_or_pullup();
 
+  line_phase_x = 98 * 8 + 6;
+
   sys_rst = false;
   sys_t1 = false;
   sys_t2 = false;
@@ -595,6 +597,21 @@ void GateBoy::next_phase() {
 
   //----------
   // Done, move to the next phase.
+
+  line_phase_x++;
+  if (line_phase_x == 912) line_phase_x = 0;
+  if (bit(reg_lcdc.XONA_LCDC_LCDENn.qp_old())) line_phase_x = 4;
+
+  {
+    int x1 = reg_lx.get_old();
+    int x2 = line_phase_x >> 3;
+
+    if (line_phase_x >= 908) x2 = 0;
+
+    if (x1 != x2) {
+      printf("*** %03d %03d %03d %lld\n", x1, x2, line_phase_x, phase_total);
+    }
+  }
 
   bus_req_old = bus_req_new;
   phase_hash = hash_new;

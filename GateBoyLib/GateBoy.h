@@ -512,6 +512,9 @@ struct GateBoy {
 
   uint64_t sentinel2 = SENTINEL2;
 
+  // Position in the current scanline, in phases since ATEJ_LINE_RSTp fired. For debugging.
+
+  int line_phase_x = 0;
 
   //-----------------------------------------------------------------------------
   // Control stuff

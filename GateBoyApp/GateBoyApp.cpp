@@ -115,12 +115,13 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("microtests/build/dmg/ppu_sprite0_scx0_b.gb"); // pix 167 on c
   //load_rom("microtests/build/dmg/ppu_sprite0_scx1_b.gb"); // pix 167 on e
   //load_rom("microtests/build/dmg/ppu_sprite0_scx2_b.gb"); // pix 167 on g
-  load_rom("microtests/build/dmg/ppu_sprite0_scx3_b.gb"); // pix 167 on a, fail - so hblank is like 1 or 2 phases late
+  //load_rom("microtests/build/dmg/ppu_sprite0_scx3_b.gb"); // pix 167 on a, fail - so hblank is like 1 or 2 phases late
 
 
   // if it was a data latch issue reading stat, it wouldn't also affect oam read...?
 
-#if 0
+#if 1
+  /*
   const char* app = R"(
   0150:
     ld a, $00
@@ -132,6 +133,11 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
     ld (hl), a
     ld a, (hl)
     jr -4
+  )";
+  */
+  const char* app = R"(
+  0150:
+    jr -2
   )";
 
   Assembler as;

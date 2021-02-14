@@ -222,8 +222,8 @@ struct RegLX {
     TYRY_LX6p.state = 0b00011001;
   }
 
-  uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &SAXO_LX0p); }
-  uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &SAXO_LX0p); }
+  uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(7, &SAXO_LX0p); }
+  uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(7, &SAXO_LX0p); }
 
   /*p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
   /*p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G

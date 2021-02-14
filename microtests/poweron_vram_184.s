@@ -1,9 +1,5 @@
 .include "header.inc"
 
-.define DELAY  184
-.define ADDR   $8000
-.define RESULT $FF
-
 // line 0
 //   0 - 00
 //  25 - 00
@@ -18,6 +14,6 @@
 // 184 - 00
 
 main:
-  nops DELAY
-  ld a, (ADDR)
-  test_finish_not_a RESULT
+  nops 184
+  ld a, ($8059)
+  test_finish_not_a $FF

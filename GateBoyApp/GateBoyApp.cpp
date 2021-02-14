@@ -83,38 +83,42 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("roms/scribbltests/scxly/scxly.gb");
   //load_rom("roms/scribbltests/statcount/statcount-auto.gb"); // pass
 
-#if 0
-    poweron_stat_006.gb             133  132    1  255 MISMATCH @ 256
-    poweron_stat_120.gb             132  128    4  255 MISMATCH @ 1168
-    lcdon_to_stat2_a.gb             132  128    4  255 MISMATCH @ 1264
-    oam_read_l0_d.gb                  0  240 -240  255 MISMATCH @ 816
-    oam_read_l1_a.gb                240  255  -15  255 MISMATCH @ 1216
-    oam_read_l1_f.gb                240  255  -15  255 MISMATCH @ 2128
-    oam_write_l0_d.gb               240  145   95  255 MISMATCH @ 888
-    oam_write_l1_c.gb               240  145   95  255 MISMATCH @ 1832
-    lcdon_to_oam_unlock_d.gb          0   39  -39  255 MISMATCH @ 880
-    poweron_oam_006.gb                0  255 -255  255 MISMATCH @ 256
-    poweron_oam_120.gb                0  255 -255  255 MISMATCH @ 1168
-    poweron_oam_234.gb                0  255 -255  255 MISMATCH @ 2080
-    poweron_vram_026.gb               0  255 -255  255 MISMATCH @ 416
-    poweron_vram_140.gb               0  255 -255  255 MISMATCH @ 1328
-#endif
+
+
+
+
 
   //load_rom("microtests/build/dmg/poweron_stat_006.gb"); // stat low nibble goes 5-7-6, but it's supposed to read 4 - SADU cleared too late?
   //load_rom("microtests/build/dmg/poweron_stat_120.gb"); // stat low nibble goes 4-6-2 but it's supposed to read 0 - RUPO cleared too late?
+
+  //load_rom("microtests/build/dmg/poweron_oam_006.gb"); // should be locked but wasn't - scan started late
+  //load_rom("microtests/build/dmg/poweron_oam_120.gb"); // should be locked but wasn't - scan started late
+  //load_rom("microtests/build/dmg/poweron_oam_234.gb"); // should be locked but wasn't - scan started late
+
   //load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb"); // RUPO cleared too late?
+
+  //load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb"); // hblank late
 
   // SIG_OAM_OEn goes back to 1 on E after the read starts, so we have to latch before that?
   // but the oam address doesn't show up until H?
   // sig_oam_clkn goes low EFGH during read
   //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
 
-  //load_rom("microtests/build/dmg/oam_read_l1_a.gb");
+  //load_rom("microtests/build/dmg/oam_write_l0_d.gb");   // should be unlocked but wasn't - hblank started late?
+  //load_rom("microtests/build/dmg/oam_write_l1_c.gb"); // this is the scan/render gap
+  //load_rom("microtests/build/dmg/oam_read_l1_a.gb");    // should be locked but wasn't - scan started late?
+  //load_rom("microtests/build/dmg/oam_read_l1_f.gb");    // should be locked but wasn't - scan started late?
 
-  load_rom("microtests/build/dmg/ppu_sprite0_scx1_a.gb"); // stat 80, should be 83 - hblank early? - pix count hits 167 on a
-  //load_rom("microtests/build/dmg/ppu_sprite0_scx3_a.gb"); // stat 80, should be 83 - hblank early? - pix count hits 167 on a
-  //load_rom("microtests/build/dmg/ppu_sprite0_scx7_a.gb"); // stat 80, should be 83 - hblank early? - pix count hits 167 on a
+  //load_rom("microtests/build/dmg/poweron_vram_026.gb"); // should be locked but wasn't - rendering started late?
+  //load_rom("microtests/build/dmg/poweron_vram_140.gb"); // should be locked but wasn't - rendering started late?
 
+  //load_rom("microtests/build/dmg/ppu_sprite0_scx0_b.gb"); // pix 167 on c
+  //load_rom("microtests/build/dmg/ppu_sprite0_scx1_b.gb"); // pix 167 on e
+  //load_rom("microtests/build/dmg/ppu_sprite0_scx2_b.gb"); // pix 167 on g
+  load_rom("microtests/build/dmg/ppu_sprite0_scx3_b.gb"); // pix 167 on a, fail - so hblank is like 1 or 2 phases late
+
+
+  // if it was a data latch issue reading stat, it wouldn't also affect oam read...?
 
 #if 0
   const char* app = R"(

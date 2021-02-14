@@ -247,12 +247,12 @@ void GateBoy::tock_oam_bus()
   /*#p28.ZODO*/ wire _ZODO_OAM_OEn = not1(_YRYV_OAM_OEp);   // schematic thinks this is OAM_CLK?
   /*SIG_OAM_OEn*/ oam_bus.SIG_OAM_OEn.sig_out(_ZODO_OAM_OEn);
 
-  probe_wire(24, "COTA CLKn",  _COTA_OAM_CLKn);
-  probe_wire(25, "ZODO OEn",   _ZODO_OAM_OEn);
-  probe_wire(26, "ZOFE A WRn", _ZOFE_OAM_A_WRn);
-  probe_wire(27, "ZONE B WRn", _ZONE_OAM_B_WRn);
-  probe_wire(28, "bus a driven", bit(oam_bus.BUS_OAM_DA00n.state, 3));
-  probe_wire(29, "bus b driven", bit(oam_bus.BUS_OAM_DB00n.state, 3));
+  //probe_wire(24, "COTA CLKn",  _COTA_OAM_CLKn);
+  //probe_wire(25, "ZODO OEn",   _ZODO_OAM_OEn);
+  //probe_wire(26, "ZOFE A WRn", _ZOFE_OAM_A_WRn);
+  //probe_wire(27, "ZONE B WRn", _ZONE_OAM_B_WRn);
+  //probe_wire(28, "bus a driven", bit(oam_bus.BUS_OAM_DA00n.state, 3));
+  //probe_wire(29, "bus b driven", bit(oam_bus.BUS_OAM_DB00n.state, 3));
 
   uint8_t oam_addr   = (uint8_t)BitBase::pack_newn(7, &oam_bus.BUS_OAM_A01n);
   uint8_t oam_data_a = (uint8_t)BitBase::pack_newn(8, &oam_bus.BUS_OAM_DA00n);
@@ -329,8 +329,8 @@ void GateBoy::tock_oam_bus()
   /* p31.FYRA_OLB_TO_CBD7*/ new_bus.BUS_CPU_D07p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.ECED_OAM_LATCH_DB7n.qn_new());
 
 
-  probe_wire(30, "bus a driven", bit(oam_bus.BUS_OAM_DA00n.state, 3));
-  probe_wire(31, "bus b driven", bit(oam_bus.BUS_OAM_DB00n.state, 3));
+  //probe_wire(30, "bus a driven", bit(oam_bus.BUS_OAM_DA00n.state, 3));
+  //probe_wire(31, "bus b driven", bit(oam_bus.BUS_OAM_DB00n.state, 3));
 }
 
 //------------------------------------------------------------------------------------------------------------------------

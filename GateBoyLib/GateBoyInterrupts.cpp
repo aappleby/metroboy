@@ -30,11 +30,11 @@ void GateBoy::tock_interrupts()
   /* p21.TOBE*/ wire _TOBE_FF41_RDp = and2(ASOT_CPU_RDp(), new_bus.VARY_FF41p());
   /* p21.VAVE*/ wire _VAVE_FF41_RDn = not1(_TOBE_FF41_RDp);
 
-  /*#p21.PARU*/ wire PARU_VBLANKp = not1(lcd.POPU_VBLANKp.qn_new());
+  /*#p21.PARU*/ wire PARU_VBLANKp = not1(lcd.POPU_y144p.qn_new());
   /*#p21.SADU*/ wire _SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
   /*#p21.XATY*/ wire _XATY_STAT_MODE1n = nor2(sprite_scanner.ACYL_SCANNINGp.qp_new(), XYMU_RENDERINGn.qn_new()); // die NOR
 
-  //probe_wire(8,  "VBLANK",    lcd.POPU_VBLANKp.qp_new());
+  //probe_wire(8,  "VBLANK",    lcd.POPU_y144p.qp_new());
   //probe_wire(9,  "RENDERING", ~XYMU_RENDERINGn.qp_new());
   //probe_wire(10, "SCANNING",  sprite_scanner.ACYL_SCANNINGp.qp_new());
   //probe_wire(11, "STAT0",     ~_SADU_STAT_MODE0n);

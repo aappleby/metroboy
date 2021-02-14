@@ -161,7 +161,7 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
 
   // Every time we leave win mode we increment win_y
   /* p27.WAZY*/ wire _WAZY_WIN_MODEn = not1(PORE_WIN_MODEp);
-  /*#p21.PARU*/ wire PARU_VBLANKp = not1(lcd.POPU_VBLANKp.qn_new());
+  /*#p21.PARU*/ wire PARU_VBLANKp = not1(lcd.POPU_y144p.qn_new());
   /* p27.REPU*/ wire _REPU_VBLANKp   = or2(PARU_VBLANKp, PYRY_VID_RSTp());
   /* p27.SYNY*/ wire _SYNY_VBLANKn   = not1(_REPU_VBLANKp);
   /* p27.VYNO*/ win_coords.VYNO_WIN_TILE_Y0.dff17(_WAZY_WIN_MODEn,                      _SYNY_VBLANKn, win_coords.VYNO_WIN_TILE_Y0.qn_old());

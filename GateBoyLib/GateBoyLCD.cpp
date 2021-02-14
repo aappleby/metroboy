@@ -48,38 +48,28 @@ void GateBoy::tock_lcd() {
     /* p23.PUFY_LYC7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_WEKU_FF45_RDn, reg_lyc.RAHA_LYC7n.qp_new());
   }
 
-  /*#p28.ANEL*/ lcd.ANEL_LINE_P002p.dff17(AWOH_xxCDxxGH(), ABEZ_VID_RSTn(),  lcd.CATU_START_SCANNING.qp_old());
 
   {
-    /*#p21.PURE*/ wire _PURE_LINE_ENDn_old = not1(lcd.RUTU_x113p.qp_old());
-    /*#p21.SELA*/ wire _SELA_LINE_P908p_old = not1(_PURE_LINE_ENDn_old);
-    /*#p21.XYVO*/ wire XYVO_y144p_old = and2(reg_ly.LOVU_LY4p.qp_old(), reg_ly.LAFO_LY7p.qp_old()); // 128 + 16 = 144
-    /*#p29.ALES*/ wire _ALES_y144n_old = not1(XYVO_y144p_old);
-    /*#p29.ABOV*/ wire ABOV_LINE_P908p_old = and2(_SELA_LINE_P908p_old, _ALES_y144n_old);
-    /*#p29.CATU*/ lcd.CATU_START_SCANNING.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), ABOV_LINE_P908p_old);
-  }
-
-  /*#p21.NYPE*/ lcd.NYPE_x113p.dff17(TALU_xxCDEFxx(), LYFE_VID_RSTn(), lcd.RUTU_x113p.qp_old());
-
-  {
-    /*#p21.SANU*/ wire SANU_x113p_old = and4(reg_lx.TYRY_LX6p.qp_old(), reg_lx.TAHA_LX5p.qp_old(), reg_lx.SUDE_LX4p.qp_old(), reg_lx.SAXO_LX0p.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-    /*#p21.RUTU*/ lcd.RUTU_x113p.dff17(SONO_ABxxxxGH(), LYFE_VID_RSTn(), SANU_x113p_old);
-  }
-
-  {
-    /*#p21.XYVO*/ wire XYVO_y144p_old = and2(reg_ly.LOVU_LY4p.qp_old(), reg_ly.LAFO_LY7p.qp_old()); // 128 + 16 = 144
-    /*#p21.POPU*/ lcd.POPU_VBLANKp.dff17(lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
-  }
-
-  {
+    /*#p21.PURE*/ wire PURE_x113n = not1(lcd.RUTU_x113p.qp_old());
+    /*#p21.SELA*/ wire SELA_x113p = not1(PURE_x113n);
+    /*#p21.XYVO*/ wire XYVO_y144p = and2(reg_ly.LOVU_LY4p.qp_old(), reg_ly.LAFO_LY7p.qp_old()); // 128 + 16 = 144
+    /*#p29.ALES*/ wire ALES_y144n = not1(XYVO_y144p);
+    /*#p29.ABOV*/ wire ABOV_x113p = and2(SELA_x113p, ALES_y144n);
+    /*#p21.SANU*/ wire SANU_x113p = and4(reg_lx.TYRY_LX6p.qp_old(), reg_lx.TAHA_LX5p.qp_old(), reg_lx.SUDE_LX4p.qp_old(), reg_lx.SAXO_LX0p.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
     /*#p21.NOKO*/ wire NOKO_y153p = and4(reg_ly.LAFO_LY7p.qp_old(), reg_ly.LOVU_LY4p.qp_old(), reg_ly.LYDO_LY3p.qp_old(), reg_ly.MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
-    /*#p21.MYTA*/ lcd.MYTA_y153p.dff17(lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), NOKO_y153p);
-  }
 
-  {
-    /* p28.ABAF*/ wire _ABAF_LINE_P000n = not1(lcd.CATU_START_SCANNING.qp_new());
-    /* p28.BYHA*/ wire _BYHA_LINE_RSTn = or_and3(lcd.ANEL_LINE_P002p.qp_new(), _ABAF_LINE_P000n, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
-    /* p28.ATEJ*/ ATEJ_LINE_RSTp = not1(_BYHA_LINE_RSTn);
+    /*#p28.ANEL*/ lcd.ANEL_x113p.dff17(AWOH_xxCDxxGH(), ABEZ_VID_RSTn(), lcd.CATU_x113p.qp_old());
+    /*#p29.CATU*/ lcd.CATU_x113p.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), ABOV_x113p);
+
+    /* p28.ABAF*/ wire ABAF_x113n = not1(lcd.CATU_x113p.qp_new());
+    /* p28.BYHA*/ wire BYHA_LINE_RSTn = or_and3(lcd.ANEL_x113p.qp_new(), ABAF_x113n, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
+    /* p28.ATEJ*/ ATEJ_LINE_RSTp = not1(BYHA_LINE_RSTn);
+
+
+    /*#p21.NYPE*/ lcd.NYPE_x113p.dff17(TALU_xxCDEFxx(),         LYFE_VID_RSTn(), lcd.RUTU_x113p.qp_old());
+    /*#p21.RUTU*/ lcd.RUTU_x113p.dff17(SONO_ABxxxxGH(),         LYFE_VID_RSTn(), SANU_x113p);
+    /*#p21.POPU*/ lcd.POPU_y144p.dff17(lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p);
+    /*#p21.MYTA*/ lcd.MYTA_y153p.dff17(lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), NOKO_y153p);
   }
 
   {
@@ -173,7 +163,7 @@ void GateBoy::set_lcd_pins(wire SACU_CLKPIPE_evn) {
 
   /*#p24.LOFU*/ wire LOFU_x113n = not1(lcd.RUTU_x113p.qp_new());
   /*#p24.LUCA*/ lcd.LUCA_LINE_EVENp .dff17(LOFU_x113n, LYFE_VID_RSTn(), lcd.LUCA_LINE_EVENp.qn_old());
-  /*#p21.NAPO*/ lcd.NAPO_FRAME_EVENp.dff17(lcd.POPU_VBLANKp.qp_new(),   LYFE_VID_RSTn(), lcd.NAPO_FRAME_EVENp.qn_old());
+  /*#p21.NAPO*/ lcd.NAPO_FRAME_EVENp.dff17(lcd.POPU_y144p.qp_new(),   LYFE_VID_RSTn(), lcd.NAPO_FRAME_EVENp.qn_old());
 
   /*#p24.MAGU*/ wire _MAGU = xor2(lcd.NAPO_FRAME_EVENp.qp_new(), lcd.LUCA_LINE_EVENp.qn_new());
   /*#p24.MECO*/ wire _MECO = not1(_MAGU);

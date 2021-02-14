@@ -123,9 +123,9 @@ void GateBoy::dump_joypad(Dumper& d) {
 }
 
 void GateBoy::dump_lcd(Dumper& d) {
-  d.dump_bitp   ("CATU_START_SCANNING : ", lcd.CATU_START_SCANNING.state);
-  d.dump_bitp   ("ANEL_LINE_P002p     : ", lcd.ANEL_LINE_P002p.state);
-  d.dump_bitp   ("POPU_VBLANKp        : ", lcd.POPU_VBLANKp.state);
+  d.dump_bitp   ("CATU_START_SCANNING : ", lcd.CATU_x113p.state);
+  d.dump_bitp   ("ANEL_LINE_P002p     : ", lcd.ANEL_x113p.state);
+  d.dump_bitp   ("POPU_VBLANKp        : ", lcd.POPU_y144p.state);
   d.dump_bitp   ("SYGU_LINE_STROBE    : ", lcd.SYGU_LINE_STROBE.state);
   d.dump_bitn   ("MEDA_VSYNC_OUTn     : ", lcd.MEDA_VSYNC_OUTn.state);
   d.dump_bitp   ("LUCA_LINE_EVENp     : ", lcd.LUCA_LINE_EVENp.state);

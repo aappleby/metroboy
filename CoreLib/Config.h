@@ -6,4 +6,4 @@
 #define USE_COMMIT
 #define CHECK_DIRTY_BIT
 
-#define LCD_HACK
+//#define LCD_HACK

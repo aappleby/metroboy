@@ -91,7 +91,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("microtests/build/dmg/poweron_stat_006.gb"); // stat low nibble goes 5-7-6, but it's supposed to read 4 - SADU cleared too late?
   //load_rom("microtests/build/dmg/poweron_stat_120.gb"); // stat low nibble goes 4-6-2 but it's supposed to read 0 - RUPO cleared too late?
 
-  //load_rom("microtests/build/dmg/poweron_oam_006.gb"); // should be locked but wasn't - scan started late
+  load_rom("microtests/build/dmg/poweron_oam_006.gb"); // should be locked but wasn't - scan started late
   //load_rom("microtests/build/dmg/poweron_oam_120.gb"); // should be locked but wasn't - scan started late
   //load_rom("microtests/build/dmg/poweron_oam_234.gb"); // should be locked but wasn't - scan started late
 
@@ -120,7 +120,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 
   // if it was a data latch issue reading stat, it wouldn't also affect oam read...?
 
-#if 1
+#if 0
   /*
   const char* app = R"(
   0150:

@@ -21,5 +21,5 @@
 
 main:
   nops 6
-  ld a, ($FE00)
+  ld a, ($FE35)
   test_finish_a $FF

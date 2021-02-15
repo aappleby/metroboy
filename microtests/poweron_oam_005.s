@@ -1,9 +1,5 @@
 .include "header.inc"
 
-.define DELAY  5
-.define ADDR   $FE00
-.define RESULT $FF
-
 // line 0
 //   0 - ..
 //   5 - ..
@@ -24,6 +20,6 @@
 // 235 - FF
 
 main:
-  nops DELAY
-  ld a, (ADDR)
-  test_finish_not_a RESULT
+  nops 5
+  ld a, ($FE35)
+  test_finish_not_a $FF

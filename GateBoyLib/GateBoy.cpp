@@ -726,6 +726,8 @@ void GateBoy::tock_slow(int pass_index) {
 
       /*#p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(_FETO_SCAN_DONEp, XUPY_ABxxEFxx());
 
+      probe_wire(9, "GAVA", GAVA_SCAN_CLOCKp);
+
       // DFF17_01 SC
       // DFF17_02 << CLKp
       // DFF17_03 SC

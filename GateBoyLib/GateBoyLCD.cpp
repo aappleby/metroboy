@@ -93,6 +93,8 @@ void GateBoy::tock_lcd() {
     /* p28.BYHA*/ wire BYHA_LINE_RSTn = or_and3(lcd.ANEL_x113p.qp_new(), ABAF_x113n, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
     /* p28.ATEJ*/ ATEJ_LINE_RSTp = not1(BYHA_LINE_RSTn);
 
+    probe_wire(8, "ATEJ", ATEJ_LINE_RSTp.qp_new());
+
     /*#p21.POPU*/ lcd.POPU_y144p.dff17(lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p);
     /*#p21.MYTA*/ lcd.MYTA_y153p.dff17(lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), NOKO_y153p);
   }

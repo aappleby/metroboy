@@ -21,5 +21,5 @@
 
 main:
   nops 0
-  ld a, ($FE00)
+  ld a, ($FE35)
   test_finish_not_a $FF

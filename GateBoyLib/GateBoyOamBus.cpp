@@ -82,6 +82,15 @@ void GateBoy::tock_oam_bus()
   /* p28.FUGU_FETCH4_TO_OA6*/ oam_bus.BUS_OAM_A06n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I4.qp_new());
   /* p28.FYKE_FETCH5_TO_OA7*/ oam_bus.BUS_OAM_A07n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I5.qp_new());
 
+  probe_wire(16, "ASAM CPU", _ASAM_CPU_OAM_RDn);
+  probe_wire(17, "DUGA DMA", DUGA_DMA_RUNNINGn);
+  probe_wire(18, "APAR SCN", _APAR_SCANNINGn);
+  probe_wire(19, "BETE PPU", _BETE_SPR_I_TO_OAM_An);
+
+  if (!oam_bus.BUS_OAM_A00n.is_driven()) {
+    printf("%03d oam bus not driven\n", line_phase_x);
+  }
+
   // cpu to oam data bus
 
   /* p28.XUTO*/ wire _XUTO_CPU_OAM_WRp = and2(new_bus.SARO_ADDR_OAMp(), CUPA_CPU_WRp());
@@ -128,28 +137,6 @@ void GateBoy::tock_oam_bus()
   /* p04.MORY*/ wire _MORY_DMA_CARTn = nand2(dma.MATU_DMA_RUNNINGp.qp_new(), _LOGO_DMA_VRAMn);
   /* p04.LUMA*/ wire _LUMA_DMA_CARTp = not1(_MORY_DMA_CARTn);
   /* p25.CEDE*/ wire _CEDE_EBD_TO_OBDn = not1(_LUMA_DMA_CARTp);
-
-#if 0
-  {
-    /* p28.XUPA*/ wire _XUPA_CPU_OAM_WRp  = not1(oam_bus.WUJE_CPU_OAM_WRn.qp_new());
-    /*#p28.AJUJ*/ wire _AJUJ_OAM_BUSYn    = nor3(dma.MATU_DMA_RUNNINGp.qp_new(), sprite_scanner.ACYL_SCANNINGp.qp_new(), _AJON_RENDERINGp);
-    /*#p28.AMAB*/ wire _AMAB_CPU_OAM_ENp  = and2(new_bus.SARO_ADDR_OAMp(), _AJUJ_OAM_BUSYn); // def and
-    /*#p28.APAG*/ wire _APAG_CBD_TO_OBDp  = amux2(_XUPA_CPU_OAM_WRp, _AMAB_CPU_OAM_ENp, _AJUJ_OAM_BUSYn, new_bus.ADAH_FE00_FEFFn());
-    /*#p28.AZUL*/ wire _AZUL_CBD_TO_OBDn  = not1(_APAG_CBD_TO_OBDp);
-
-    /*#p04.LEBU*/ wire _LEBU_DMA_A15n  = not1(dma.MARU_DMA_A15n.qn_new());
-    /*#p04.MUDA*/ wire _MUDA_DMA_VRAMp = nor3(dma.PULA_DMA_A13n.qn_new(), dma.POKU_DMA_A14n.qn_new(), _LEBU_DMA_A15n);
-    /* p04.LOGO*/ wire _LOGO_DMA_VRAMn = not1(_MUDA_DMA_VRAMp);
-    /* p04.MORY*/ wire _MORY_DMA_CARTn = nand2(dma.MATU_DMA_RUNNINGp.qp_new(), _LOGO_DMA_VRAMn);
-    /* p04.LUMA*/ wire _LUMA_DMA_CARTp = not1(_MORY_DMA_CARTn);
-    /* p25.CEDE*/ wire _CEDE_EBD_TO_OBDn = not1(_LUMA_DMA_CARTp);
-
-    /* p04.MUHO*/ wire _MUHO_DMA_VRAMp = nand2(dma.MATU_DMA_RUNNINGp.qp_new(), _MUDA_DMA_VRAMp);
-    /* p04.LUFA*/ wire _LUFA_DMA_VRAMp = not1(_MUHO_DMA_VRAMp);
-    /* p28.AZAR*/ wire _AZAR_VBD_TO_OBDn = not1(_LUFA_DMA_VRAMp);
-
-  }
-#endif
 
   /* p25.WASA_ED0_TO_ODA0*/ oam_bus.BUS_OAM_DA00n.tri6_nn(_CEDE_EBD_TO_OBDn, _RALO_EXT_D0p);
   /* p25.BOMO_ED1_TO_ODA1*/ oam_bus.BUS_OAM_DA01n.tri6_nn(_CEDE_EBD_TO_OBDn, _TUNE_EXT_D1p);
@@ -231,28 +218,11 @@ void GateBoy::tock_oam_bus()
   /*#p28.BOTA*/ wire _BOTA_OAM_OEn  = nand3(BOFE_LATCH_EXTn(), new_bus.SARO_ADDR_OAMp(), ASOT_CPU_RDp()); // Schematic wrong, this is NAND
   /*#p28.ASYT*/ wire _ASYT_OAM_OEn = and3(_AJEP_SCAN_OAM_LATCHn, _XUJA_SPR_OAM_LATCHn, _BOTA_OAM_OEn); // def and
 
-  //probe_wire(24, "BOFE", BOFE_LATCH_EXTn());
-  //probe_wire(25, "SARO", new_bus.SARO_ADDR_OAMp());
-  //probe_wire(26, "ASOT", ASOT_CPU_RDp());
-  //probe_wire(27, "AJEP", _AJEP_SCAN_OAM_LATCHn);
-  //probe_wire(28, "XUJA", _XUJA_SPR_OAM_LATCHn);
-  //probe_wire(29, "BOTA", _BOTA_OAM_OEn);
-  //probe_wire(30, "ASYT", _ASYT_OAM_OEn);
-  //probe_wire(31, "COTA", _COTA_OAM_CLKn);
-
-
   /*#p28.BODE*/ wire _BODE_OAM_OEp = not1(_ASYT_OAM_OEn);
   /*#p28.YVAL*/ wire _YVAL_OAM_OEn = not1(_BODE_OAM_OEp);
   /*#p28.YRYV*/ wire _YRYV_OAM_OEp = not1(_YVAL_OAM_OEn);
   /*#p28.ZODO*/ wire _ZODO_OAM_OEn = not1(_YRYV_OAM_OEp);   // schematic thinks this is OAM_CLK?
   /*SIG_OAM_OEn*/ oam_bus.SIG_OAM_OEn.sig_out(_ZODO_OAM_OEn);
-
-  //probe_wire(24, "COTA CLKn",  _COTA_OAM_CLKn);
-  //probe_wire(25, "ZODO OEn",   _ZODO_OAM_OEn);
-  //probe_wire(26, "ZOFE A WRn", _ZOFE_OAM_A_WRn);
-  //probe_wire(27, "ZONE B WRn", _ZONE_OAM_B_WRn);
-  //probe_wire(28, "bus a driven", bit(oam_bus.BUS_OAM_DA00n.state, 3));
-  //probe_wire(29, "bus b driven", bit(oam_bus.BUS_OAM_DB00n.state, 3));
 
   uint8_t oam_addr   = (uint8_t)BitBase::pack_newn(7, &oam_bus.BUS_OAM_A01n);
   uint8_t oam_data_a = (uint8_t)BitBase::pack_newn(8, &oam_bus.BUS_OAM_DA00n);
@@ -263,10 +233,8 @@ void GateBoy::tock_oam_bus()
     if (bit(~oam_bus.SIG_OAM_WRn_B.qp_new())) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
   }
 
-  //if (bit(~oam_bus.SIG_OAM_OEn.qp_new())) {
-    oam_data_a = oam_ram[(oam_addr << 1) + 0];
-    oam_data_b = oam_ram[(oam_addr << 1) + 1];
-  //}
+  oam_data_a = oam_ram[(oam_addr << 1) + 0];
+  oam_data_b = oam_ram[(oam_addr << 1) + 1];
 
   oam_bus.old_oam_clk = bit(~oam_bus.SIG_OAM_CLKn.qp_new());
 
@@ -327,10 +295,6 @@ void GateBoy::tock_oam_bus()
   /* p31.DEVE_OLB_TO_CBD5*/ new_bus.BUS_CPU_D05p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.CYRA_OAM_LATCH_DB5n.qn_new());
   /* p31.ZEHA_OLB_TO_CBD6*/ new_bus.BUS_CPU_D06p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.ZUVE_OAM_LATCH_DB6n.qn_new());
   /* p31.FYRA_OLB_TO_CBD7*/ new_bus.BUS_CPU_D07p.tri10_np(_WEWU_OBL_TO_CBDn, oam_latch_b.ECED_OAM_LATCH_DB7n.qn_new());
-
-
-  //probe_wire(30, "bus a driven", bit(oam_bus.BUS_OAM_DA00n.state, 3));
-  //probe_wire(31, "bus b driven", bit(oam_bus.BUS_OAM_DB00n.state, 3));
 }
 
 //------------------------------------------------------------------------------------------------------------------------

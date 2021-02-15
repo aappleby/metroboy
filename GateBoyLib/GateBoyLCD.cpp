@@ -51,24 +51,47 @@ void GateBoy::tock_lcd() {
 
   {
     /*#p21.XYVO*/ wire XYVO_y144p = and2(reg_ly.LOVU_LY4p.qp_old(), reg_ly.LAFO_LY7p.qp_old()); // 128 + 16 = 144
-    /*#p29.ALES*/ wire ALES_y144n = not1(XYVO_y144p);
     /*#p21.NOKO*/ wire NOKO_y153p = and4(reg_ly.LAFO_LY7p.qp_old(), reg_ly.LOVU_LY4p.qp_old(), reg_ly.LYDO_LY3p.qp_old(), reg_ly.MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
 
-    /*#p21.PURE*/ wire PURE_x113n = not1(lcd.RUTU_x113p.qp_old());
-    /*#p21.SELA*/ wire SELA_x113p = not1(PURE_x113n);
-    /*#p29.ABOV*/ wire ABOV_x113p = and2(SELA_x113p, ALES_y144n);
-    /*#p21.SANU*/ wire SANU_x113p = and4(reg_lx.TYRY_LX6p.qp_old(), reg_lx.TAHA_LX5p.qp_old(), reg_lx.SUDE_LX4p.qp_old(), reg_lx.SAXO_LX0p.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
 
     /*#p28.ANEL*/ lcd.ANEL_x113p.dff17(AWOH_xxCDxxGH(), ABEZ_VID_RSTn(), lcd.CATU_x113p.qp_old());
+
+
+
+
+    /*#p21.PURE*/ wire PURE_x113n = not1(lcd.RUTU_x113p.qp_old());
+    /*#p29.ALES*/ wire ALES_y144n = not1(XYVO_y144p);
+    /*#p21.SELA*/ wire SELA_x113p = not1(PURE_x113n);
+    /*#p29.ABOV*/ wire ABOV_x113p = and2(SELA_x113p, ALES_y144n);
     /*#p29.CATU*/ lcd.CATU_x113p.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), ABOV_x113p);
+
+#ifdef LCD_HACK
+    lcd.RUTU_x113p.state = 0b11101000;
+    lcd.NYPE_x113p.state = 0b11101000;
+
+    int next_line_phase = line_phase_x + 1;
+    lcd.RUTU_x113p.state |= (next_line_phase >= 908 || next_line_phase <= 3);
+    lcd.NYPE_x113p.state |= (next_line_phase >=   0 && next_line_phase <= 7);
+
+    /*
+    lcd.CATU_x113p.state = 0b11101000;
+    lcd.CATU_x113p.state |= (next_line_phase >= 910 || next_line_phase <= 5);
+
+    if (!XYVO_y144p) {
+      lcd.CATU_x113p.state &= ~1;
+    }
+    */
+
+
+#else
+    /*#p21.NYPE*/ lcd.NYPE_x113p.dff17(TALU_xxCDEFxx(),         LYFE_VID_RSTn(), lcd.RUTU_x113p.qp_old());
+    /*#p21.SANU*/ wire SANU_x113p = and4(reg_lx.TYRY_LX6p.qp_old(), reg_lx.TAHA_LX5p.qp_old(), reg_lx.SUDE_LX4p.qp_old(), reg_lx.SAXO_LX0p.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+    /*#p21.RUTU*/ lcd.RUTU_x113p.dff17(SONO_ABxxxxGH(),         LYFE_VID_RSTn(), SANU_x113p);
+#endif
 
     /* p28.ABAF*/ wire ABAF_x113n = not1(lcd.CATU_x113p.qp_new());
     /* p28.BYHA*/ wire BYHA_LINE_RSTn = or_and3(lcd.ANEL_x113p.qp_new(), ABAF_x113n, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
     /* p28.ATEJ*/ ATEJ_LINE_RSTp = not1(BYHA_LINE_RSTn);
-
-
-    /*#p21.NYPE*/ lcd.NYPE_x113p.dff17(TALU_xxCDEFxx(),         LYFE_VID_RSTn(), lcd.RUTU_x113p.qp_old());
-    /*#p21.RUTU*/ lcd.RUTU_x113p.dff17(SONO_ABxxxxGH(),         LYFE_VID_RSTn(), SANU_x113p);
 
     /*#p21.POPU*/ lcd.POPU_y144p.dff17(lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p);
     /*#p21.MYTA*/ lcd.MYTA_y153p.dff17(lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), NOKO_y153p);

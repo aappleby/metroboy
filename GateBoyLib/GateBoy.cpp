@@ -724,8 +724,27 @@ void GateBoy::tock_slow(int pass_index) {
     for (int feedback = 0; feedback < 2; feedback++) {
       /*#p28.FETO*/ wire _FETO_SCAN_DONEp = and4(sprite_scanner.YFEL_SCAN0.qp_mid(), sprite_scanner.WEWY_SCAN1.qp_mid(), sprite_scanner.GOSO_SCAN2.qp_mid(), sprite_scanner.FONY_SCAN5.qp_mid()); // 32 + 4 + 2 + 1 = 39
 
-      /* p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(_FETO_SCAN_DONEp, XUPY_ABxxEFxx());
-      /* p28.YFEL*/ sprite_scanner.YFEL_SCAN0.dff17_any(GAVA_SCAN_CLOCKp,                   ANOM_LINE_RSTn, sprite_scanner.YFEL_SCAN0.qn_any());
+      /*#p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(_FETO_SCAN_DONEp, XUPY_ABxxEFxx());
+
+      // DFF17_01 SC
+      // DFF17_02 << CLKp
+      // DFF17_03 SC
+      // DFF17_04 --
+      // DFF17_05 --
+      // DFF17_06 << RSTn  // must be RSTn, see WUVU/VENA/WOSU
+      // DFF17_07 << D
+      // DFF17_08 --
+      // DFF17_09 SC
+      // DFF17_10 --
+      // DFF17_11 --
+      // DFF17_12 SC
+      // DFF17_13 << RSTn
+      // DFF17_14 --
+      // DFF17_15 --
+      // DFF17_16 >> QN   _MUST_ be QN - see TERO
+      // DFF17_17 >> Q    _MUST_ be Q  - see TERO
+
+      /*#p28.YFEL*/ sprite_scanner.YFEL_SCAN0.dff17_any(GAVA_SCAN_CLOCKp,                   ANOM_LINE_RSTn, sprite_scanner.YFEL_SCAN0.qn_any());
       /* p28.WEWY*/ sprite_scanner.WEWY_SCAN1.dff17_any(sprite_scanner.YFEL_SCAN0.qn_any(), ANOM_LINE_RSTn, sprite_scanner.WEWY_SCAN1.qn_any());
       /* p28.GOSO*/ sprite_scanner.GOSO_SCAN2.dff17_any(sprite_scanner.WEWY_SCAN1.qn_any(), ANOM_LINE_RSTn, sprite_scanner.GOSO_SCAN2.qn_any());
       /* p28.ELYN*/ sprite_scanner.ELYN_SCAN3.dff17_any(sprite_scanner.GOSO_SCAN2.qn_any(), ANOM_LINE_RSTn, sprite_scanner.ELYN_SCAN3.qn_any());

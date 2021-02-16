@@ -60,31 +60,6 @@ struct GateBoyCpuBus {
   }
 
   void reset_for_pass() {
-    BUS_CPU_A00p.reset_for_pass();
-    BUS_CPU_A01p.reset_for_pass();
-    BUS_CPU_A02p.reset_for_pass();
-    BUS_CPU_A03p.reset_for_pass();
-    BUS_CPU_A04p.reset_for_pass();
-    BUS_CPU_A05p.reset_for_pass();
-    BUS_CPU_A06p.reset_for_pass();
-    BUS_CPU_A07p.reset_for_pass();
-    BUS_CPU_A08p.reset_for_pass();
-    BUS_CPU_A09p.reset_for_pass();
-    BUS_CPU_A10p.reset_for_pass();
-    BUS_CPU_A11p.reset_for_pass();
-    BUS_CPU_A12p.reset_for_pass();
-    BUS_CPU_A13p.reset_for_pass();
-    BUS_CPU_A14p.reset_for_pass();
-    BUS_CPU_A15p.reset_for_pass();
-
-    BUS_CPU_D00p.reset_for_pass();
-    BUS_CPU_D01p.reset_for_pass();
-    BUS_CPU_D02p.reset_for_pass();
-    BUS_CPU_D03p.reset_for_pass();
-    BUS_CPU_D04p.reset_for_pass();
-    BUS_CPU_D05p.reset_for_pass();
-    BUS_CPU_D06p.reset_for_pass();
-    BUS_CPU_D07p.reset_for_pass();
   }
 
   void set_addr(int phase_total, Req bus_req_new)

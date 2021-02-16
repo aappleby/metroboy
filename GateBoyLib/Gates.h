@@ -578,8 +578,7 @@ struct Bus : public BitBase {
   void tri(wire OEp, wire Dp) {
     CHECK_P(state & BIT_NEW);
 
-    wire new_state = Dp;
-    new_state &= BIT_DATA;
+    wire new_state = Dp & BIT_DATA;
     new_state |= BIT_PULLUP;
     new_state |= BIT_DRIVEN;
     new_state |= BIT_NEW;
@@ -595,8 +594,7 @@ struct Bus : public BitBase {
 
   void set(wire Dp) {
     CHECK_P(state & BIT_NEW);
-    state = Dp;
-    state &= BIT_DATA;
+    state = Dp & BIT_DATA;
     state |= BIT_PULLUP;
     state |= BIT_DRIVEN;
     state |= BIT_NEW;

@@ -203,14 +203,14 @@ void GateBoy::dump_mbc1(Dumper& d) {
 }
 
 void GateBoy::dump_cpu_bus(Dumper& d) {
-  d.dump_bitp   ("SIG_CPU_RDp       : ", cpu_signals.SIG_CPU_RDp.get_state());
-  d.dump_bitp   ("SIG_CPU_WRp       : ", cpu_signals.SIG_CPU_WRp.get_state());
+  d.dump_bitp   ("SIG_CPU_RDp       : ", cpu_signals.SIG_IN_CPU_RDp.get_state());
+  d.dump_bitp   ("SIG_CPU_WRp       : ", cpu_signals.SIG_IN_CPU_WRp.get_state());
   d.dump_bitp   ("SIG_CPU_UNOR_DBG  : ", cpu_signals.SIG_CPU_UNOR_DBG.get_state());
   d.dump_bitp   ("SIG_CPU_ADDR_HIp  : ", cpu_signals.SIG_CPU_ADDR_HIp.get_state());
   d.dump_bitp   ("SIG_CPU_UMUT_DBG  : ", cpu_signals.SIG_CPU_UMUT_DBG.get_state());
-  d.dump_bitp   ("SIG_CPU_EXT_BUSp  : ", cpu_signals.SIG_CPU_EXT_BUSp.get_state());
+  d.dump_bitp   ("SIG_CPU_EXT_BUSp  : ", cpu_signals.SIG_IN_CPU_EXT_BUSp.get_state());
   //d.dump_bitp   ("SIG_CPU_6         : ", SIG_CPU_6.state);
-  d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", cpu_signals.SIG_CPU_LATCH_EXT.get_state());
+  d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", cpu_signals.SIG_IN_CPU_LATCH_EXT.get_state());
   d.dump_bitp   ("BOOT_BITn         : ", cpu_signals.TEPU_BOOT_BITn_h.state);
   d.dump_bitp   ("SIG_CPU_BOOTp     : ", cpu_signals.SIG_CPU_BOOTp.get_state());
   d.dump_bitp   ("TEDO_CPU_RDp      : ", cpu_signals.TEDO_CPU_RDp.get_state());

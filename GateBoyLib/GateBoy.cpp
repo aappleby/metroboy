@@ -212,7 +212,6 @@ void GateBoy::reset_to_cart() {
   bus_req_new.write = 1;
 
   cpu_data_latch = 1;
-  int_ack_latch = 0;
   intf_latch = 1;
   intf_latch_delay = 0;
   intf_halt_latch = 1;
@@ -505,24 +504,27 @@ void GateBoy::next_phase() {
 
   //----------------------------------------
 
+  cpu_data_latch &= (uint8_t)BitBase::pack_old(8, &new_bus.BUS_CPU_D00p);
+
+
   if (DELTA_HA) {
-    cpu_data_latch = (uint8_t)BitBase::pack_old(8, &new_bus.BUS_CPU_D00p);
-
-    // this one latches funny, some hardware bug
-    intf_halt_latch &= ~INT_TIMER_MASK;
-    if (bit(interrupts.NYBO_FF0F_D2p.qp_old())) intf_halt_latch |= INT_TIMER_MASK;
-
-    intf_latch = 0;
-    if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_latch |= INT_VBLANK_MASK;
-    if (bit(interrupts.LALU_FF0F_D1p.qp_old())) intf_latch |= INT_STAT_MASK;
-    if (bit(interrupts.NYBO_FF0F_D2p.qp_old())) intf_latch |= INT_TIMER_MASK;
-    if (bit(interrupts.UBUL_FF0F_D3p.qp_old())) intf_latch |= INT_SERIAL_MASK;
-    if (bit(interrupts.ULAK_FF0F_D4p.qp_old())) intf_latch |= INT_JOYPAD_MASK;
+    imask_latch = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
+    if (cpu.op == 0x76 && (imask_latch & intf_halt_latch)) cpu.state_ = 0;
+    intf_halt_latch = 0;
   }
 
+  // +ha -ab -bc -cd -de -ef -fg -gh
+  if (DELTA_HA) {
+    // this one latches funny, some hardware bug
+    if (bit(interrupts.NYBO_FF0F_D2p.qp_old())) intf_halt_latch |= INT_TIMER_MASK;
+
+  }
+
+  // -ha +ab -bc
   if (DELTA_AB) {
     if (sys_cpu_en) {
-      cpu.tock_ab((uint8_t)BitBase::pack_old(5, &interrupts.IE_D0), intf_latch, cpu_data_latch);
+      imask_latch = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
+      cpu.tock_ab(imask_latch, intf_latch, cpu_data_latch);
     }
   }
 
@@ -533,23 +535,30 @@ void GateBoy::next_phase() {
       bus_req_new.read  = cpu._bus_read;
       bus_req_new.write = cpu._bus_write;
     }
-    int_ack_latch = cpu.int_ack;
   }
 
-  if (DELTA_DE) {
-    intf_halt_latch &= ~INT_VBLANK_MASK;
-    intf_halt_latch &= ~INT_STAT_MASK;
-    intf_halt_latch &= ~INT_SERIAL_MASK;
-    intf_halt_latch &= ~INT_JOYPAD_MASK;
-
+  // -bc +cd +de -ef -fg -gh -ha -ab
+  if (DELTA_CD) {
     if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_halt_latch |= INT_VBLANK_MASK;
     if (bit(interrupts.LALU_FF0F_D1p.qp_old())) intf_halt_latch |= INT_STAT_MASK;
     if (bit(interrupts.UBUL_FF0F_D3p.qp_old())) intf_halt_latch |= INT_SERIAL_MASK;
     if (bit(interrupts.ULAK_FF0F_D4p.qp_old())) intf_halt_latch |= INT_JOYPAD_MASK;
+  }
 
-    if (sys_cpu_en) {
-      cpu.tock_de((uint8_t)BitBase::pack_old(5, &interrupts.IE_D0), intf_halt_latch);
-    }
+  // -ha -ab -bc -cd -de -ef +fg +gh
+  if (DELTA_GH) {
+    cpu_data_latch = 0xFF;
+  }
+
+  // +ha -ab -bc -cd -de -ef -fg +gh
+
+  if (DELTA_GH) {
+    intf_latch = 0;
+    if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_latch |= INT_VBLANK_MASK;
+    if (bit(interrupts.LALU_FF0F_D1p.qp_old())) intf_latch |= INT_STAT_MASK;
+    if (bit(interrupts.NYBO_FF0F_D2p.qp_old())) intf_latch |= INT_TIMER_MASK;
+    if (bit(interrupts.UBUL_FF0F_D3p.qp_old())) intf_latch |= INT_SERIAL_MASK;
+    if (bit(interrupts.ULAK_FF0F_D4p.qp_old())) intf_latch |= INT_JOYPAD_MASK;
   }
 
   //----------------------------------------
@@ -629,7 +638,52 @@ void GateBoy::tock_slow(int pass_index) {
   new_bus.set_data(int(phase_total), bus_req_new);
   new_bus.set_addr(int(phase_total), bus_req_new);
 
-  set_pins();
+  cpu_signals.SIG_IN_CPU_RDp.sig_in(DELTA_HA ? 0 : bus_req_new.read);
+  cpu_signals.SIG_IN_CPU_WRp.sig_in(DELTA_HA ? 0 : bus_req_new.write);
+
+  // not at all certain about this. seems to break some oam read glitches.
+  if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req_new.read && (bus_req_new.addr < 0xFF00))) {
+    cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(1);
+  }
+  else {
+    cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(0);
+  }
+
+  // FIXME yeeeeeech this is nasty. probably not right.
+
+  uint16_t bus_addr_new = bus_req_new.addr;
+  bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_addr_new < 0xFE00);
+  if (bus_addr_new <= 0x00FF && bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
+  if (DELTA_HA) {
+    if ((bus_addr_new >= 0x8000) && (bus_addr_new < 0x9FFF)) addr_ext_new = false;
+  }
+  cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
+
+  //-----------------------------------------------------------------------------
+
+  rst.PIN_71_RST.reset_for_pass();
+  pins.PIN_74_CLK.reset_for_pass();
+  rst.PIN_76_T2.reset_for_pass();
+  rst.PIN_77_T1.reset_for_pass();
+
+  rst.PIN_71_RST.pin_in_dp(bit(~sys_rst));
+  pins.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
+  rst.PIN_76_T2.pin_in_dp(bit(~sys_t2));
+  rst.PIN_77_T1.pin_in_dp(bit(~sys_t1));
+
+  interrupts.SIG_CPU_ACK_VBLANK.sig_in(bit(cpu.int_ack, BIT_VBLANK));
+  interrupts.SIG_CPU_ACK_STAT  .sig_in(bit(cpu.int_ack, BIT_STAT));
+  interrupts.SIG_CPU_ACK_TIMER .sig_in(bit(cpu.int_ack, BIT_TIMER));
+  interrupts.SIG_CPU_ACK_SERIAL.sig_in(bit(cpu.int_ack, BIT_SERIAL));
+  interrupts.SIG_CPU_ACK_JOYPAD.sig_in(bit(cpu.int_ack, BIT_JOYPAD));
+
+  clk.SIG_CPU_CLKREQ.sig_in(sys_clkreq);
+
+  // Data has to be driven on EFGH or we fail the wave tests
+
+  /*SIG_CPU_ADDR_HIp*/ cpu_signals.SIG_CPU_ADDR_HIp.sig_out(new_bus.SYRO_FE00_FFFF());
+  /*SIG_CPU_UNOR_DBG*/ cpu_signals.SIG_CPU_UNOR_DBG.sig_out(UNOR_MODE_DBG2p());
+  /*SIG_CPU_UMUT_DBG*/ cpu_signals.SIG_CPU_UMUT_DBG.sig_out(UMUT_MODE_DBG1p());
 
   //-----------------------------------------------------------------------------
   // Sys clock signals
@@ -637,17 +691,17 @@ void GateBoy::tock_slow(int pass_index) {
   tock_clocks();
 
   {
-    /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(cpu_signals.SIG_CPU_RDp.qp_new());
+    /* p07.UJYV*/ wire _UJYV_CPU_RDn = not1(cpu_signals.SIG_IN_CPU_RDp.qp_new());
     /* p07.TEDO*/ cpu_signals.TEDO_CPU_RDp = not1(_UJYV_CPU_RDn);
 
     /*#p01.AFAS*/ wire _AFAS_xxxxEFGx = nor2(ADAR_ABCxxxxH(), ATYP_ABCDxxxx());
-    /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(cpu_signals.SIG_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
+    /* p01.AREV*/ wire _AREV_CPU_WRn = nand2(cpu_signals.SIG_IN_CPU_WRp.qp_new(), _AFAS_xxxxEFGx);
     /* p01.APOV*/ cpu_signals.APOV_CPU_WRp = not1(_AREV_CPU_WRn);
 
     /* p07.UBAL*/ wire _UBAL_CPU_WRn = not1(cpu_signals.APOV_CPU_WRp.qp_new());
     /* p07.TAPU*/ cpu_signals.TAPU_CPU_WRp = not1(_UBAL_CPU_WRn); // xxxxEFGx
 
-    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(AROV_xxCDEFxx(), AJAX_xxxxEFGH(), cpu_signals.SIG_CPU_EXT_BUSp.qp_new());
+    /*#p01.AGUT*/ wire _AGUT_xxCDEFGH = or_and3(AROV_xxCDEFxx(), AJAX_xxxxEFGH(), cpu_signals.SIG_IN_CPU_EXT_BUSp.qp_new());
     /*#p01.AWOD*/ wire _AWOD_ABxxxxxx = nor2(UNOR_MODE_DBG2p(), _AGUT_xxCDEFGH);
     /*#p01.ABUZ*/ cpu_signals.ABUZ_EXT_RAM_CS_CLK = not1(_AWOD_ABxxxxxx);
   }

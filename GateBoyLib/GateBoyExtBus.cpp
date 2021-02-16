@@ -130,7 +130,7 @@ void GateBoy::tock_ext()
   /* p04.LUMA*/ wire _LUMA_DMA_CARTp = not1(_MORY_DMA_CARTn);
 
   {
-    /* p08.LAGU*/ wire _LAGU = and_or3(cpu_signals.SIG_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_CPU_WRp.qp_new());
+    /* p08.LAGU*/ wire _LAGU = and_or3(cpu_signals.SIG_IN_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_IN_CPU_WRp.qp_new());
     /* p08.LYWE*/ wire _LYWE = not1(_LAGU);
     /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
     /* p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(_LUMA_DMA_CARTp, _MOTY_CPU_EXT_RD);
@@ -250,7 +250,7 @@ void GateBoy::tock_ext()
   // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_out
   // will actually end up in oam?
 
-  /* p08.LAGU*/ wire _LAGU = and_or3(cpu_signals.SIG_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_CPU_WRp.qp_new());
+  /* p08.LAGU*/ wire _LAGU = and_or3(cpu_signals.SIG_IN_CPU_RDp.qp_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_IN_CPU_WRp.qp_new());
   /* p08.LYWE*/ wire _LYWE = not1(_LAGU);
   /* p08.MOTY*/ wire _MOTY_CPU_EXT_RD = or2(_MOCA_DBG_EXT_RD, _LYWE);
   /* p08.RORU*/ wire _RORU_CBD_TO_EPDn = mux2p(UNOR_MODE_DBG2p(), REDU_CPU_RDn(), _MOTY_CPU_EXT_RD);
@@ -423,12 +423,12 @@ void GateBoy::tock_ext()
 
   //----------------------------------------
 
-  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_signals.SIG_CPU_RDp.qp_new(), TEXO_ADDR_VRAMn(), cpu_signals.SIG_CPU_LATCH_EXT.qp_new());
+  /* p08.LAVO*/ wire _LAVO_HOLDn = nand3(cpu_signals.SIG_IN_CPU_RDp.qp_new(), TEXO_ADDR_VRAMn(), cpu_signals.SIG_IN_CPU_LATCH_EXT.qp_new());
 
   //probe_wire(1, "LAVO",  _LAVO_HOLDn);
-  //probe_wire(2, "RD",    cpu_signals.SIG_CPU_RDp.qp_new());
+  //probe_wire(2, "RD",    cpu_signals.SIG_IN_CPU_RDp.qp_new());
   //probe_wire(3, "TEXO",  TEXO_ADDR_VRAMn());
-  //probe_wire(4, "LATCH", cpu_signals.SIG_CPU_LATCH_EXT.qp_new());
+  //probe_wire(4, "LATCH", cpu_signals.SIG_IN_CPU_LATCH_EXT.qp_new());
 
   //probe_char( 8, "PIN_17 ext", ext_pins.PIN_17_D00.cp_ext());
   //probe_char( 9, "PIN_18 ext", ext_pins.PIN_18_D01.cp_ext());

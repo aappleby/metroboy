@@ -11,7 +11,6 @@ struct MetroBoyCPU {
   void dump(Dumper& d) const;
 
   void tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data);
-  void tock_de(uint8_t imask, uint8_t intf_cd);
 
   void execute_int(uint8_t imask_, uint8_t intf_);
   void execute_halt(uint8_t imask_, uint8_t intf_);
@@ -60,10 +59,6 @@ struct MetroBoyCPU {
   uint8_t alu_cb(uint8_t arg1, int op, uint8_t flags);
 
   //----------------------------------------
-
-  // hacks to make tock idempotent
-  bool tocked_ab = false;
-  bool tocked_de = false;
 
   uint16_t _bus_addr;
   uint8_t  _bus_data;

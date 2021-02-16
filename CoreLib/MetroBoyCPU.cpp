@@ -22,9 +22,6 @@ void MetroBoyCPU::reset_to_bootrom() {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::reset_to_cart() {
-  tocked_ab = false;
-  tocked_de = true;
-
   _bus_addr  = 0xff50;
   _bus_data  = 1;
   _bus_read  = 0;
@@ -83,19 +80,13 @@ void MetroBoyCPU::dump(Dumper& d_) const {
 
 //-----------------------------------------------------------------------------
 // Do the meat of executing the instruction
-// pc update _must_ happen in tcycle 0 of state 0, because if an interrupt fires it should _not_ happen.
 
 void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
-  if (tocked_ab) return;
-  tocked_ab = 1;
-  tocked_de = 0;
-
   state = state_;
 
   if (_bus_read) in = bus_data;
 
   if (state == 0) {
-    pc = _bus_addr;
     op_addr = _bus_addr;
     op = bus_data;
 
@@ -117,34 +108,17 @@ void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyCPU::tock_de(uint8_t imask, uint8_t intf_de) {
-  if (tocked_de) return;
-  tocked_ab = 0;
-  tocked_de = 1;
-
-  if (HALT) {
-    //if ((imask & intf_de) && ime) {
-    if (imask & intf_de) {
-      state_ = 0;
-    }
-  }
-}
-
-//-----------------------------------------------------------------------------
-
 void MetroBoyCPU::execute_int(uint8_t imask_, uint8_t intf_) {
   state_ = state + 1;
 
-  if (/*state == 0 || state == 1 ||*/ state == 2 /*|| state == 3 || state == 4*/) {
+  if (state == 2) {
     if      (imask_ & intf_ & INT_VBLANK_MASK) { int_addr = 0x40; }
     else if (imask_ & intf_ & INT_STAT_MASK)   { int_addr = 0x48; }
     else if (imask_ & intf_ & INT_TIMER_MASK)  { int_addr = 0x50; }
     else if (imask_ & intf_ & INT_SERIAL_MASK) { int_addr = 0x58; }
     else if (imask_ & intf_ & INT_JOYPAD_MASK) { int_addr = 0x60; }
     else                                       { int_addr = 0x00; }
-  }
 
-  if (/*state == 0 || state == 1 ||*/ state == 2 /*|| state == 3 || state == 4*/) {
     if      (imask_ & intf_ & INT_VBLANK_MASK) { int_ack = INT_VBLANK_MASK; }
     else if (imask_ & intf_ & INT_STAT_MASK)   { int_ack = INT_STAT_MASK; }
     else if (imask_ & intf_ & INT_TIMER_MASK)  { int_ack = INT_TIMER_MASK; }

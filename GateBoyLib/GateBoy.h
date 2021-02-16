@@ -534,7 +534,6 @@ struct GateBoy {
 
   MetroBoyCPU      cpu;
 
-  Req      bus_req_old = {0};
   Req      bus_req_new = {0};
   uint8_t  cpu_data_latch = 0;
   uint8_t  imask_latch = 0;

@@ -805,9 +805,8 @@ struct PinIn : public BitBase {
     CHECK_P(state & BIT_NEW);
     CHECK_N(state & BIT_DIRTY4);
 
-    state = ~D;
+    state = (~D) & BIT_DATA;
 
-    state &= BIT_DATA;
     state |= BIT_DRIVEN;
     state |= BIT_NEW;
     state |= BIT_DIRTY3;

@@ -201,11 +201,6 @@ void GateBoy::reset_to_cart() {
 
   cpu.reset_to_cart();
 
-  bus_req_old.addr = 0xFF50;
-  bus_req_old.data = 1;
-  bus_req_old.read = 0;
-  bus_req_old.write = 1;
-
   bus_req_new.addr = 0xFF50;
   bus_req_new.data = 1;
   bus_req_new.read = 0;
@@ -244,15 +239,6 @@ void GateBoy::load_cart(uint8_t* _boot_buf, size_t _boot_size,
   boot_size = _boot_size;
   cart_buf  = _cart_buf;
   cart_size = _cart_size;
-
-  /*
-  $19
-  $1A
-  $1B
-  $1C
-  $1D
-  $1E
-  */
 
   switch(cart_buf[0x0147]) {
   case 0x00: cart_has_mbc1 = 0; cart_has_ram = 0; break;
@@ -351,83 +337,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-/*
-  GateBoyPins pins;
-  GateBoyCpuBus old_bus;
-  GateBoyCpuBus new_bus;
-
-  VramBus vram_bus;
-
-  DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
-  NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
-
-  GateBoyCpuSignals  cpu_signals;
-  GateBoyExtPins  ext_pins;
-  GateBoyVramPins vram_pins;
-  GateBoyOamBus  oam_bus;
-  GateBoyZramBus zram_bus;
-
-  OamLatchA oam_latch_a;
-  OamLatchB oam_latch_b;
-  OamTempA oam_temp_a;
-  OamTempB oam_temp_b;
-
-  ExtDataLatch ext_data_latch;
-  ExtAddrLatch ext_addr_latch;
-
-  GateBoyResetDebug rst;
-  GateBoyClock      clk;
-  GateBoyDiv        div;
-  GateBoyTimer      timer;
-  GateBoyDMA        dma;
-  GateBoyInterrupts interrupts;
-  GateBoyJoypad     joy;
-  GateBoySerial     serial;
-
-  GateBoySpriteStore   sprite_store;
-
-  SpriteBus sprite_bus;
-  SpriteCounter sprite_counter;
-
-  SpriteMatchFlags sprite_match_flags;
-  SpriteResetFlags sprite_reset_flags;
-  SpriteStoreFlags sprite_store_flags;
-
-  SpriteScanner sprite_scanner;
-
-  SpriteFetcher sprite_fetcher;
-  SpritePixA sprite_pix_a;
-  SpritePixB sprite_pix_b;
-
-  TileFetcher   tile_fetcher;
-  TileTempA tile_temp_a;
-  TileTempB tile_temp_b;
-
-  RegLCDC reg_lcdc;
-  RegStat reg_stat;
-  RegSCX  reg_scx;
-  RegSCY  reg_scy;
-  RegWY   reg_wy;
-  RegWX   reg_wx;
-
-  WinCoords win_coords;
-
-  WindowRegisters win_reg;
-  FineScroll      fine_scroll;
-
-  PixCount     pix_count;
-  PixelPipes   pix_pipes;
-  GateBoyLCD   lcd;
-
-  RegLX  reg_lx;
-  RegLY  reg_ly;
-  RegLYC reg_lyc;
-
-  RegBGP  reg_bgp;
-  RegOBP0 reg_obp0;
-  RegOBP1 reg_obp1;
-*/
-
 struct GateBoyOffsets {
   const int o_pins           = offsetof(GateBoy, pins);
   const int o_old_bus        = offsetof(GateBoy, old_bus);
@@ -495,33 +404,92 @@ struct GateBoyOffsets {
   const int o_oam_ram  = offsetof(GateBoy, oam_ram );
   const int o_zero_ram = offsetof(GateBoy, zero_ram);
 
-
 } gb_offsets;
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::next_phase() {
 
+  probes.begin_pass((phase_total + 1) & 7);
+
+  tock_slow(0);
+
+#ifdef CHECK_SINGLE_PASS
+  uint64_t hash_old = commit_and_hash();
+
+  static GateBoy gb1;
+  memcpy(&gb1, this, sizeof(GateBoy));
+
+  tock_slow(1);
+  auto& gb2 = *this;
+#endif
+
+  uint64_t hash_new = commit_and_hash();
+
+#ifdef CHECK_SINGLE_PASS
+  if (hash_old != hash_new) {
+    LOG_Y("Sim not stable after second pass!\n");
+
+    int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
+    int end   = offsetof(GateBoy, sentinel2);
+
+    uint8_t* blob_old = (uint8_t*)&gb1;
+    uint8_t* blob_new = (uint8_t*)&gb2;
+
+    for (int i = start; i < end; i++) {
+      if (blob_old[i] != blob_new[i]) {
+        printf("%06lld %04d %02d %02d\n", phase_total, i, blob_old[i], blob_new[i]);
+      }
+    }
+
+    printf("\n");
+  }
+#endif
+
   //----------------------------------------
+
+  line_phase_x++;
+  if (line_phase_x == 912) line_phase_x = 0;
+  if (bit(reg_lcdc.XONA_LCDC_LCDENn.qp_old())) line_phase_x = 4;
+
+  {
+    int x1 = reg_lx.get_old();
+    int x2 = line_phase_x >> 3;
+
+    if (line_phase_x >= 908) x2 = 0;
+
+    if (x1 != x2) {
+      printf("*** %03d %03d %03d %lld\n", x1, x2, line_phase_x, phase_total);
+    }
+  }
+
+  probes.end_pass();
+  phase_total++;
+  phase_hash = hash_new;
+  combine_hash(cumulative_hash, phase_hash);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::tock_slow(int pass_index) {
+  (void)pass_index;
 
   cpu_data_latch &= (uint8_t)BitBase::pack_old(8, &new_bus.BUS_CPU_D00p);
 
-
-  if (DELTA_HA) {
+  if (DELTA_HA && pass_index == 0) {
     imask_latch = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
     if (cpu.op == 0x76 && (imask_latch & intf_halt_latch)) cpu.state_ = 0;
     intf_halt_latch = 0;
   }
 
   // +ha -ab -bc -cd -de -ef -fg -gh
-  if (DELTA_HA) {
+  if (DELTA_HA && pass_index == 0) {
     // this one latches funny, some hardware bug
     if (bit(interrupts.NYBO_FF0F_D2p.qp_old())) intf_halt_latch |= INT_TIMER_MASK;
-
   }
 
   // -ha +ab -bc
-  if (DELTA_AB) {
+  if (DELTA_AB && pass_index == 0) {
     if (sys_cpu_en) {
       imask_latch = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
       cpu.tock_ab(imask_latch, intf_latch, cpu_data_latch);
@@ -551,7 +519,6 @@ void GateBoy::next_phase() {
   }
 
   // +ha -ab -bc -cd -de -ef -fg +gh
-
   if (DELTA_GH) {
     intf_latch = 0;
     if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_latch |= INT_VBLANK_MASK;
@@ -561,159 +528,40 @@ void GateBoy::next_phase() {
     if (bit(interrupts.ULAK_FF0F_D4p.qp_old())) intf_latch |= INT_JOYPAD_MASK;
   }
 
-  //----------------------------------------
-  // Run one pass of our simulation.
-
-  probes.begin_pass((phase_total + 1) & 7);
-
-  tock_slow(0);
-
-#ifdef CHECK_SINGLE_PASS
-  uint64_t hash_old = commit_and_hash();
-
-  static GateBoy gb1;
-  memcpy(&gb1, this, sizeof(GateBoy));
-
-  tock_slow(1);
-  auto& gb2 = *this;
-#endif
-
-  probes.end_pass();
-
-  uint64_t hash_new = commit_and_hash();
-
-#ifdef CHECK_SINGLE_PASS
-  if (hash_old != hash_new) {
-    LOG_Y("Sim not stable after second pass!\n");
-
-    int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
-    int end   = offsetof(GateBoy, sentinel2);
-
-    uint8_t* blob_old = (uint8_t*)&gb1;
-    uint8_t* blob_new = (uint8_t*)&gb2;
-
-    for (int i = start; i < end; i++) {
-      if (blob_old[i] != blob_new[i]) {
-        printf("%06lld %04d %02d %02d\n", phase_total, i, blob_old[i], blob_new[i]);
-      }
-    }
-
-    printf("\n");
-  }
-#endif
-
-  phase_total++;
-
-  //----------
-  // Done, move to the next phase.
-
-  line_phase_x++;
-  if (line_phase_x == 912) line_phase_x = 0;
-  if (bit(reg_lcdc.XONA_LCDC_LCDENn.qp_old())) line_phase_x = 4;
-
-  {
-    int x1 = reg_lx.get_old();
-    int x2 = line_phase_x >> 3;
-
-    if (line_phase_x >= 908) x2 = 0;
-
-    if (x1 != x2) {
-      printf("*** %03d %03d %03d %lld\n", x1, x2, line_phase_x, phase_total);
-    }
-  }
-
-  bus_req_old = bus_req_new;
-  phase_hash = hash_new;
-  combine_hash(cumulative_hash, phase_hash);
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::tock_slow(int pass_index) {
-  (void)pass_index;
-
   //-----------------------------------------------------------------------------
 
-  //new_bus.reset_for_pass();
-  new_bus.BUS_CPU_A00p.reset_for_pass();
-  new_bus.BUS_CPU_A01p.reset_for_pass();
-  new_bus.BUS_CPU_A02p.reset_for_pass();
-  new_bus.BUS_CPU_A03p.reset_for_pass();
-  new_bus.BUS_CPU_A04p.reset_for_pass();
-  new_bus.BUS_CPU_A05p.reset_for_pass();
-  new_bus.BUS_CPU_A06p.reset_for_pass();
-  new_bus.BUS_CPU_A07p.reset_for_pass();
-  new_bus.BUS_CPU_A08p.reset_for_pass();
-  new_bus.BUS_CPU_A09p.reset_for_pass();
-  new_bus.BUS_CPU_A10p.reset_for_pass();
-  new_bus.BUS_CPU_A11p.reset_for_pass();
-  new_bus.BUS_CPU_A12p.reset_for_pass();
-  new_bus.BUS_CPU_A13p.reset_for_pass();
-  new_bus.BUS_CPU_A14p.reset_for_pass();
-  new_bus.BUS_CPU_A15p.reset_for_pass();
+  new_bus.reset_for_pass();
 
-  new_bus.BUS_CPU_D00p.reset_for_pass();
-  new_bus.BUS_CPU_D01p.reset_for_pass();
-  new_bus.BUS_CPU_D02p.reset_for_pass();
-  new_bus.BUS_CPU_D03p.reset_for_pass();
-  new_bus.BUS_CPU_D04p.reset_for_pass();
-  new_bus.BUS_CPU_D05p.reset_for_pass();
-  new_bus.BUS_CPU_D06p.reset_for_pass();
-  new_bus.BUS_CPU_D07p.reset_for_pass();
-
-
-  //new_bus.set_data(int(phase_total), bus_req_new);
-  wire bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
-  new_bus.BUS_CPU_D00p.tri(bus_oe_new, (bus_req_new.data_lo >> 0) & 1);
-  new_bus.BUS_CPU_D01p.tri(bus_oe_new, (bus_req_new.data_lo >> 1) & 1);
-  new_bus.BUS_CPU_D02p.tri(bus_oe_new, (bus_req_new.data_lo >> 2) & 1);
-  new_bus.BUS_CPU_D03p.tri(bus_oe_new, (bus_req_new.data_lo >> 3) & 1);
-  new_bus.BUS_CPU_D04p.tri(bus_oe_new, (bus_req_new.data_lo >> 4) & 1);
-  new_bus.BUS_CPU_D05p.tri(bus_oe_new, (bus_req_new.data_lo >> 5) & 1);
-  new_bus.BUS_CPU_D06p.tri(bus_oe_new, (bus_req_new.data_lo >> 6) & 1);
-  new_bus.BUS_CPU_D07p.tri(bus_oe_new, (bus_req_new.data_lo >> 7) & 1);
-
-  //new_bus.set_addr(int(phase_total), bus_req_new);
-  uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
-  new_bus.BUS_CPU_A00p.set((bus_addr_new >>  0) & 1);
-  new_bus.BUS_CPU_A01p.set((bus_addr_new >>  1) & 1);
-  new_bus.BUS_CPU_A02p.set((bus_addr_new >>  2) & 1);
-  new_bus.BUS_CPU_A03p.set((bus_addr_new >>  3) & 1);
-  new_bus.BUS_CPU_A04p.set((bus_addr_new >>  4) & 1);
-  new_bus.BUS_CPU_A05p.set((bus_addr_new >>  5) & 1);
-  new_bus.BUS_CPU_A06p.set((bus_addr_new >>  6) & 1);
-  new_bus.BUS_CPU_A07p.set((bus_addr_new >>  7) & 1);
-  new_bus.BUS_CPU_A08p.set((bus_addr_new >>  8) & 1);
-  new_bus.BUS_CPU_A09p.set((bus_addr_new >>  9) & 1);
-  new_bus.BUS_CPU_A10p.set((bus_addr_new >> 10) & 1);
-  new_bus.BUS_CPU_A11p.set((bus_addr_new >> 11) & 1);
-  new_bus.BUS_CPU_A12p.set((bus_addr_new >> 12) & 1);
-  new_bus.BUS_CPU_A13p.set((bus_addr_new >> 13) & 1);
-  new_bus.BUS_CPU_A14p.set((bus_addr_new >> 14) & 1);
-  new_bus.BUS_CPU_A15p.set((bus_addr_new >> 15) & 1);
-
-
-  cpu_signals.SIG_IN_CPU_RDp.sig_in(DELTA_HA ? 0 : bus_req_new.read);
-  cpu_signals.SIG_IN_CPU_WRp.sig_in(DELTA_HA ? 0 : bus_req_new.write);
-
-  // not at all certain about this. seems to break some oam read glitches.
-  if ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && (bus_req_new.read && (bus_req_new.addr < 0xFF00))) {
-    cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(1);
+  if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
+    // Data has to be driven on EFGH or we fail the wave tests
+    new_bus.set_data(bus_req_new.write, bus_req_new.data_lo);
+    cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(bus_req_new.read && (bus_req_new.addr < 0xFF00));
   }
   else {
     cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(0);
   }
 
   // FIXME yeeeeeech this is nasty. probably not right.
-  // Data has to be driven on EFGH or we fail the wave tests
 
-  bus_addr_new = bus_req_new.addr;
-  bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_addr_new < 0xFE00);
-  if (bus_addr_new <= 0x00FF && bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
   if (DELTA_HA) {
-    if ((bus_addr_new >= 0x8000) && (bus_addr_new < 0x9FFF)) addr_ext_new = false;
+    cpu_signals.SIG_IN_CPU_RDp.sig_in(0);
+    cpu_signals.SIG_IN_CPU_WRp.sig_in(0);
+
+    new_bus.set_addr(bus_req_new.addr & 0x00FF);
+    bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_req_new.addr < 0xFE00);
+    if (bus_req_new.addr <= 0x00FF && bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
+    if ((bus_req_new.addr >= 0x8000) && (bus_req_new.addr < 0x9FFF)) addr_ext_new = false;
+    cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
   }
-  cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
+  else {
+    cpu_signals.SIG_IN_CPU_RDp.sig_in(bus_req_new.read);
+    cpu_signals.SIG_IN_CPU_WRp.sig_in(bus_req_new.write);
+
+    new_bus.set_addr(DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr);
+    bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_req_new.addr < 0xFE00);
+    if (bus_req_new.addr <= 0x00FF && bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
+    cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
+  }
 
   //-----------------------------------------------------------------------------
 

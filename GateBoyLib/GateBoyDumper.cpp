@@ -39,7 +39,6 @@ void GateBoy::dump_sys(Dumper& d) const {
   d             ("sys_cpu_en   : %d\n", sys_cpu_en);
   d             ("sys_fastboot : %d\n", sys_fastboot);
   d             ("sys_buttons  : %d\n", sys_buttons);
-  d.dump_req    ("bus_req_old  : ", bus_req_old);
   d.dump_req    ("bus_req_new  : ", bus_req_new);
   d.dump_bytep  ("data_latch   : ", cpu_data_latch);
   d("\n");

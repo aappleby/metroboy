@@ -141,8 +141,8 @@ void run_wpol_test(const std::string& prefix, const std::string& name) {
   constexpr int timeout = 25000000 * 8;
   for (; phase < timeout; phase++) {
     gb->next_phase();
-    if (gb->cpu.op == 0x40) {
-      result = gb->cpu.a;
+    if (gb->gb_cpu.op == 0x40) {
+      result = gb->gb_cpu.a;
       break;
     }
   }

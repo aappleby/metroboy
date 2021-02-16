@@ -2099,10 +2099,10 @@ int GateBoyTests::run_mooneye_test(const char* path, const char* filename) {
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
     gb.run_phases(8);
-    if (gb.cpu.op == 0x40) break;
+    if (gb.gb_cpu.op == 0x40) break;
   }
 
-  if ((gb.cpu.a == 0x00) && (mcycle != timeout)) {
+  if ((gb.gb_cpu.a == 0x00) && (mcycle != timeout)) {
     if (verbose) LOG_G("PASS @ %d\n", mcycle);
     return 0;
   }

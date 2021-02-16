@@ -338,7 +338,7 @@ void GateBoyApp::app_render_frame() {
   d("\n");
 
   d("\002===== CPU =====\001\n");
-  gb->cpu.dump(d);
+  gb->gb_cpu.dump(d);
   d("\n");
 
   d("\002===== Clocks =====\001\n");
@@ -474,7 +474,7 @@ void GateBoyApp::app_render_frame() {
 
   d("\002===== Disasm =====\001\n");
   {
-    uint16_t pc = gb->cpu.op_addr;
+    uint16_t pc = gb->gb_cpu.op_addr;
     const uint8_t* code = nullptr;
     uint16_t code_size = 0;
     uint16_t code_base = 0;

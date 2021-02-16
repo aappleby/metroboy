@@ -122,9 +122,9 @@ void run_mooneye_test(const std::string& prefix, const std::string& name) {
 
   for (; phase < timeout; phase++) {
     gameboy.next_phase();
-    if (gameboy.cpu.op == 0x40) {
+    if (gameboy.gb_cpu.op == 0x40) {
       //printf("\ntest %s end @ %d\n", name.c_str(), i);
-      result = gameboy.cpu.a;
+      result = gameboy.gb_cpu.a;
       break;
     }
   }

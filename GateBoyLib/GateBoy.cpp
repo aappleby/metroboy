@@ -199,7 +199,7 @@ void GateBoy::reset_to_cart() {
   sys_clkreq = true;
   sys_fastboot = true;
 
-  cpu.reset_to_cart();
+  gb_cpu.reset_to_cart();
 
   bus_req_new.addr = 0xFF50;
   bus_req_new.data = 1;
@@ -475,10 +475,10 @@ void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
 
   cpu_data_latch &= (uint8_t)BitBase::pack_old(8, &new_bus.BUS_CPU_D00p);
+  imask_latch     = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
 
   if (DELTA_HA && pass_index == 0) {
-    imask_latch = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
-    if (cpu.op == 0x76 && (imask_latch & intf_halt_latch)) cpu.state_ = 0;
+    if (gb_cpu.op == 0x76 && (imask_latch & intf_halt_latch)) gb_cpu.state_ = 0;
     intf_halt_latch = 0;
   }
 
@@ -491,22 +491,21 @@ void GateBoy::tock_slow(int pass_index) {
   // -ha +ab -bc
   if (DELTA_AB && pass_index == 0) {
     if (sys_cpu_en) {
-      imask_latch = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
-      cpu.tock_ab(imask_latch, intf_latch, cpu_data_latch);
+      gb_cpu.tock_ab(imask_latch, intf_latch, cpu_data_latch);
     }
   }
 
   if (DELTA_AB) {
     if (sys_cpu_en) {
-      bus_req_new.addr  = cpu._bus_addr;
-      bus_req_new.data  = cpu._bus_data;
-      bus_req_new.read  = cpu._bus_read;
-      bus_req_new.write = cpu._bus_write;
+      bus_req_new.addr  = gb_cpu._bus_addr;
+      bus_req_new.data  = gb_cpu._bus_data;
+      bus_req_new.read  = gb_cpu._bus_read;
+      bus_req_new.write = gb_cpu._bus_write;
     }
   }
 
   // -bc +cd +de -ef -fg -gh -ha -ab
-  if (DELTA_CD) {
+  if (DELTA_DE) {
     if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_halt_latch |= INT_VBLANK_MASK;
     if (bit(interrupts.LALU_FF0F_D1p.qp_old())) intf_halt_latch |= INT_STAT_MASK;
     if (bit(interrupts.UBUL_FF0F_D3p.qp_old())) intf_halt_latch |= INT_SERIAL_MASK;
@@ -520,12 +519,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   // +ha -ab -bc -cd -de -ef -fg +gh
   if (DELTA_GH) {
-    intf_latch = 0;
-    if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_latch |= INT_VBLANK_MASK;
-    if (bit(interrupts.LALU_FF0F_D1p.qp_old())) intf_latch |= INT_STAT_MASK;
-    if (bit(interrupts.NYBO_FF0F_D2p.qp_old())) intf_latch |= INT_TIMER_MASK;
-    if (bit(interrupts.UBUL_FF0F_D3p.qp_old())) intf_latch |= INT_SERIAL_MASK;
-    if (bit(interrupts.ULAK_FF0F_D4p.qp_old())) intf_latch |= INT_JOYPAD_MASK;
+    intf_latch = (uint8_t)BitBase::pack_old(5, &interrupts.LOPE_FF0F_D0p);
   }
 
   //-----------------------------------------------------------------------------
@@ -535,13 +529,12 @@ void GateBoy::tock_slow(int pass_index) {
   if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
     // Data has to be driven on EFGH or we fail the wave tests
     new_bus.set_data(bus_req_new.write, bus_req_new.data_lo);
-    cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(bus_req_new.read && (bus_req_new.addr < 0xFF00));
+    //cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(bus_req_new.read && (bus_req_new.addr < 0xFF00));
+    cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(bus_req_new.read);
   }
   else {
     cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(0);
   }
-
-  // FIXME yeeeeeech this is nasty. probably not right.
 
   if (DELTA_HA) {
     cpu_signals.SIG_IN_CPU_RDp.sig_in(0);
@@ -549,7 +542,7 @@ void GateBoy::tock_slow(int pass_index) {
 
     new_bus.set_addr(bus_req_new.addr & 0x00FF);
     bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_req_new.addr < 0xFE00);
-    if (bus_req_new.addr <= 0x00FF && bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
+    if (bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
     if ((bus_req_new.addr >= 0x8000) && (bus_req_new.addr < 0x9FFF)) addr_ext_new = false;
     cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
   }
@@ -559,7 +552,7 @@ void GateBoy::tock_slow(int pass_index) {
 
     new_bus.set_addr(DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr);
     bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_req_new.addr < 0xFE00);
-    if (bus_req_new.addr <= 0x00FF && bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
+    if (bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
     cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
   }
 
@@ -575,11 +568,11 @@ void GateBoy::tock_slow(int pass_index) {
   rst.PIN_76_T2.pin_in_dp(bit(~sys_t2));
   rst.PIN_77_T1.pin_in_dp(bit(~sys_t1));
 
-  interrupts.SIG_CPU_ACK_VBLANK.sig_in(bit(cpu.int_ack, BIT_VBLANK));
-  interrupts.SIG_CPU_ACK_STAT  .sig_in(bit(cpu.int_ack, BIT_STAT));
-  interrupts.SIG_CPU_ACK_TIMER .sig_in(bit(cpu.int_ack, BIT_TIMER));
-  interrupts.SIG_CPU_ACK_SERIAL.sig_in(bit(cpu.int_ack, BIT_SERIAL));
-  interrupts.SIG_CPU_ACK_JOYPAD.sig_in(bit(cpu.int_ack, BIT_JOYPAD));
+  interrupts.SIG_CPU_ACK_VBLANK.sig_in(bit(gb_cpu.int_ack, BIT_VBLANK));
+  interrupts.SIG_CPU_ACK_STAT  .sig_in(bit(gb_cpu.int_ack, BIT_STAT));
+  interrupts.SIG_CPU_ACK_TIMER .sig_in(bit(gb_cpu.int_ack, BIT_TIMER));
+  interrupts.SIG_CPU_ACK_SERIAL.sig_in(bit(gb_cpu.int_ack, BIT_SERIAL));
+  interrupts.SIG_CPU_ACK_JOYPAD.sig_in(bit(gb_cpu.int_ack, BIT_JOYPAD));
 
   clk.SIG_CPU_CLKREQ.sig_in(sys_clkreq);
 

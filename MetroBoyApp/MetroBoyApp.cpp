@@ -306,7 +306,7 @@ void MetroBoyApp::app_render_ui() {
   int column = 0;
   if (1) {
     gb->dump_bus(d);
-    gb->cpu.dump(d);
+    gb->gb_cpu.dump(d);
     gb->ints.dump(d);
     gb->timer.dump(d);
     gb->dma.dump(d);

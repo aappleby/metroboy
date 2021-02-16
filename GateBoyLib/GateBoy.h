@@ -532,7 +532,7 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // CPU
 
-  MetroBoyCPU      cpu;
+  MetroBoyCPU      gb_cpu;
 
   Req      bus_req_new = {0};
   uint8_t  cpu_data_latch = 0;

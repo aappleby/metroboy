@@ -40,7 +40,7 @@ struct MetroBoy {
 
   //----------
 
-  MetroBoyCPU     cpu;
+  MetroBoyCPU     gb_cpu;
   MetroBoyTimer   timer;
   MetroBoyCart    cart;
   MetroBoyVRAM    vram;

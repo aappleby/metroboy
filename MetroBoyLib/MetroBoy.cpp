@@ -14,7 +14,7 @@
 void MetroBoy::reset_to_cart(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
-  cpu.reset_to_cart();
+  gb_cpu.reset_to_cart();
   cart.set_rom(new_rom, new_rom_size);
   cart.reset_to_cart();
   ppu.reset_to_cart();
@@ -46,7 +46,7 @@ void MetroBoy::reset_to_cart(uint8_t* new_rom, size_t new_rom_size) {
 void MetroBoy::reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
-  cpu.reset_to_bootrom();
+  gb_cpu.reset_to_bootrom();
   cart.set_rom(new_rom, new_rom_size);
   cart.reset_to_cart();
   ppu.reset_to_bootrom();
@@ -127,7 +127,7 @@ void MetroBoy::next_phase() {
     else if (cpu_has_vbus_req) bus_data = vbus_ack.data_lo;
     else if (cpu_has_obus_req) bus_data = obus_ack.data_lo;
 
-    cpu.tock_ab(ints.imask, ints.intf, bus_data);
+    gb_cpu.tock_ab(ints.imask, ints.intf, bus_data);
 
     /*
     cpu.tock_ack(imask_delay, intf_delay, bus_data);
@@ -149,7 +149,7 @@ void MetroBoy::next_phase() {
   cart.  tock(phase_total, ebus_req);
   vram.  tock(phase_total, vbus_req);
   oam.   tock(phase_total, obus_req);
-  ints.  tock(phase_total, ibus_req, cpu.int_ack, ppu.vblank_int, ppu.stat_int, timer.timer_int, /*serial_int*/ 0, joy.get() != 0xFF);
+  ints.  tock(phase_total, ibus_req, gb_cpu.int_ack, ppu.vblank_int, ppu.stat_int, timer.timer_int, /*serial_int*/ 0, joy.get() != 0xFF);
 
   //----------
 
@@ -164,10 +164,10 @@ void MetroBoy::next_phase() {
   // prioritize reqs
 
   if (DELTA_AB) {
-    cpu_req.addr  = cpu._bus_addr;
-    cpu_req.data  = cpu._bus_data;
-    cpu_req.read  = cpu._bus_read;
-    cpu_req.write = cpu._bus_write;
+    cpu_req.addr  = gb_cpu._bus_addr;
+    cpu_req.data  = gb_cpu._bus_data;
+    cpu_req.read  = gb_cpu._bus_read;
+    cpu_req.write = gb_cpu._bus_write;
 
     ibus_req = {0};
     ebus_req = {0};
@@ -246,7 +246,7 @@ void MetroBoy::dump_bus(Dumper& d) {
 void MetroBoy::dump_disasm(Dumper& d) {
   d("\002--------------DISASM-----------\001\n");
 
-  uint16_t pc = cpu.op_addr;
+  uint16_t pc = gb_cpu.op_addr;
 
   Assembler a;
   if (ADDR_CART_ROM_BEGIN <= pc && pc <= ADDR_CART_ROM_END) {

@@ -635,8 +635,37 @@ void GateBoy::tock_slow(int pass_index) {
   //-----------------------------------------------------------------------------
 
   new_bus.reset_for_pass();
-  new_bus.set_data(int(phase_total), bus_req_new);
-  new_bus.set_addr(int(phase_total), bus_req_new);
+
+  //new_bus.set_data(int(phase_total), bus_req_new);
+  wire bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
+  new_bus.BUS_CPU_D00p.tri(bus_oe_new, (bus_req_new.data_lo >> 0) & 1);
+  new_bus.BUS_CPU_D01p.tri(bus_oe_new, (bus_req_new.data_lo >> 1) & 1);
+  new_bus.BUS_CPU_D02p.tri(bus_oe_new, (bus_req_new.data_lo >> 2) & 1);
+  new_bus.BUS_CPU_D03p.tri(bus_oe_new, (bus_req_new.data_lo >> 3) & 1);
+  new_bus.BUS_CPU_D04p.tri(bus_oe_new, (bus_req_new.data_lo >> 4) & 1);
+  new_bus.BUS_CPU_D05p.tri(bus_oe_new, (bus_req_new.data_lo >> 5) & 1);
+  new_bus.BUS_CPU_D06p.tri(bus_oe_new, (bus_req_new.data_lo >> 6) & 1);
+  new_bus.BUS_CPU_D07p.tri(bus_oe_new, (bus_req_new.data_lo >> 7) & 1);
+
+  //new_bus.set_addr(int(phase_total), bus_req_new);
+  uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
+  new_bus.BUS_CPU_A00p.set((bus_addr_new >>  0) & 1);
+  new_bus.BUS_CPU_A01p.set((bus_addr_new >>  1) & 1);
+  new_bus.BUS_CPU_A02p.set((bus_addr_new >>  2) & 1);
+  new_bus.BUS_CPU_A03p.set((bus_addr_new >>  3) & 1);
+  new_bus.BUS_CPU_A04p.set((bus_addr_new >>  4) & 1);
+  new_bus.BUS_CPU_A05p.set((bus_addr_new >>  5) & 1);
+  new_bus.BUS_CPU_A06p.set((bus_addr_new >>  6) & 1);
+  new_bus.BUS_CPU_A07p.set((bus_addr_new >>  7) & 1);
+  new_bus.BUS_CPU_A08p.set((bus_addr_new >>  8) & 1);
+  new_bus.BUS_CPU_A09p.set((bus_addr_new >>  9) & 1);
+  new_bus.BUS_CPU_A10p.set((bus_addr_new >> 10) & 1);
+  new_bus.BUS_CPU_A11p.set((bus_addr_new >> 11) & 1);
+  new_bus.BUS_CPU_A12p.set((bus_addr_new >> 12) & 1);
+  new_bus.BUS_CPU_A13p.set((bus_addr_new >> 13) & 1);
+  new_bus.BUS_CPU_A14p.set((bus_addr_new >> 14) & 1);
+  new_bus.BUS_CPU_A15p.set((bus_addr_new >> 15) & 1);
+
 
   cpu_signals.SIG_IN_CPU_RDp.sig_in(DELTA_HA ? 0 : bus_req_new.read);
   cpu_signals.SIG_IN_CPU_WRp.sig_in(DELTA_HA ? 0 : bus_req_new.write);
@@ -650,8 +679,9 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   // FIXME yeeeeeech this is nasty. probably not right.
+  // Data has to be driven on EFGH or we fail the wave tests
 
-  uint16_t bus_addr_new = bus_req_new.addr;
+  bus_addr_new = bus_req_new.addr;
   bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_addr_new < 0xFE00);
   if (bus_addr_new <= 0x00FF && bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
   if (DELTA_HA) {
@@ -678,8 +708,6 @@ void GateBoy::tock_slow(int pass_index) {
   interrupts.SIG_CPU_ACK_JOYPAD.sig_in(bit(cpu.int_ack, BIT_JOYPAD));
 
   clk.SIG_CPU_CLKREQ.sig_in(sys_clkreq);
-
-  // Data has to be driven on EFGH or we fail the wave tests
 
   /*SIG_CPU_ADDR_HIp*/ cpu_signals.SIG_CPU_ADDR_HIp.sig_out(new_bus.SYRO_FE00_FFFF());
   /*SIG_CPU_UNOR_DBG*/ cpu_signals.SIG_CPU_UNOR_DBG.sig_out(UNOR_MODE_DBG2p());

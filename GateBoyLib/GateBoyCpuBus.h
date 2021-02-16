@@ -89,37 +89,15 @@ struct GateBoyCpuBus {
 
   void set_addr(int phase_total, Req bus_req_new)
   {
-    uint16_t bus_addr_new = DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr;
-    BUS_CPU_A00p.set((bus_addr_new >>  0) & 1);
-    BUS_CPU_A01p.set((bus_addr_new >>  1) & 1);
-    BUS_CPU_A02p.set((bus_addr_new >>  2) & 1);
-    BUS_CPU_A03p.set((bus_addr_new >>  3) & 1);
-    BUS_CPU_A04p.set((bus_addr_new >>  4) & 1);
-    BUS_CPU_A05p.set((bus_addr_new >>  5) & 1);
-    BUS_CPU_A06p.set((bus_addr_new >>  6) & 1);
-    BUS_CPU_A07p.set((bus_addr_new >>  7) & 1);
-    BUS_CPU_A08p.set((bus_addr_new >>  8) & 1);
-    BUS_CPU_A09p.set((bus_addr_new >>  9) & 1);
-    BUS_CPU_A10p.set((bus_addr_new >> 10) & 1);
-    BUS_CPU_A11p.set((bus_addr_new >> 11) & 1);
-    BUS_CPU_A12p.set((bus_addr_new >> 12) & 1);
-    BUS_CPU_A13p.set((bus_addr_new >> 13) & 1);
-    BUS_CPU_A14p.set((bus_addr_new >> 14) & 1);
-    BUS_CPU_A15p.set((bus_addr_new >> 15) & 1);
+    (void)phase_total;
+    (void)bus_req_new;
   }
 
   //------------------------------------------------------------------------------------------------------------------------
 
   void set_data(int phase_total, Req bus_req_new) {
-    wire bus_oe_new = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && bus_req_new.write;
-    BUS_CPU_D00p.tri(bus_oe_new, (bus_req_new.data_lo >> 0) & 1);
-    BUS_CPU_D01p.tri(bus_oe_new, (bus_req_new.data_lo >> 1) & 1);
-    BUS_CPU_D02p.tri(bus_oe_new, (bus_req_new.data_lo >> 2) & 1);
-    BUS_CPU_D03p.tri(bus_oe_new, (bus_req_new.data_lo >> 3) & 1);
-    BUS_CPU_D04p.tri(bus_oe_new, (bus_req_new.data_lo >> 4) & 1);
-    BUS_CPU_D05p.tri(bus_oe_new, (bus_req_new.data_lo >> 5) & 1);
-    BUS_CPU_D06p.tri(bus_oe_new, (bus_req_new.data_lo >> 6) & 1);
-    BUS_CPU_D07p.tri(bus_oe_new, (bus_req_new.data_lo >> 7) & 1);
+    (void)phase_total;
+    (void)bus_req_new;
   }
 
 

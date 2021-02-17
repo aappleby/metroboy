@@ -474,8 +474,10 @@ void GateBoy::next_phase() {
 void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
 
-  cpu_data_latch &= (uint8_t)BitBase::pack_old(8, &new_bus.BUS_CPU_D00p);
-  imask_latch     = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
+  if (pass_index == 0) {
+    cpu_data_latch &= (uint8_t)BitBase::pack_old(8, &new_bus.BUS_CPU_D00p);
+    imask_latch     = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
+  }
 
   if (DELTA_HA && pass_index == 0) {
     if (gb_cpu.op == 0x76 && (imask_latch & intf_halt_latch)) gb_cpu.state_ = 0;
@@ -495,7 +497,7 @@ void GateBoy::tock_slow(int pass_index) {
     }
   }
 
-  if (DELTA_AB) {
+  if (DELTA_AB && pass_index == 0) {
     if (sys_cpu_en) {
       bus_req_new.addr  = gb_cpu._bus_addr;
       bus_req_new.data  = gb_cpu._bus_data;
@@ -505,7 +507,7 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   // -bc +cd +de -ef -fg -gh -ha -ab
-  if (DELTA_DE) {
+  if (DELTA_DE && pass_index == 0) {
     if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_halt_latch |= INT_VBLANK_MASK;
     if (bit(interrupts.LALU_FF0F_D1p.qp_old())) intf_halt_latch |= INT_STAT_MASK;
     if (bit(interrupts.UBUL_FF0F_D3p.qp_old())) intf_halt_latch |= INT_SERIAL_MASK;
@@ -513,12 +515,12 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   // -ha -ab -bc -cd -de -ef +fg +gh
-  if (DELTA_GH) {
+  if (DELTA_GH && pass_index == 0) {
     cpu_data_latch = 0xFF;
   }
 
   // +ha -ab -bc -cd -de -ef -fg +gh
-  if (DELTA_GH) {
+  if (DELTA_GH && pass_index == 0) {
     intf_latch = (uint8_t)BitBase::pack_old(5, &interrupts.LOPE_FF0F_D0p);
   }
 

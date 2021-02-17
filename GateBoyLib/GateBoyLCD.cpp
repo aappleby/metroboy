@@ -22,6 +22,14 @@ void GateBoy::tock_lcd() {
     /*#p21.PALY*/ wire _PALY_LY_MATCHa_old = not1 (_RAPE_LY_MATCHn_old);
 
     /*#p21.ROPO*/ reg_lyc.ROPO_LY_MATCH_SYNCp.dff17(TALU_xxCDEFxx(), WESY_SYS_RSTn(), _PALY_LY_MATCHa_old);
+
+    // GH fixes some tests, breaks others.
+    ///*#p21.ROPO*/ reg_lyc.ROPO_LY_MATCH_SYNCp.dff17(DELTA_GH, WESY_SYS_RSTn(), _PALY_LY_MATCHa_old);
+
+    /* p21.SEPA*/ wire _SEPA_FF41_WRp = and2(CUPA_CPU_WRp(), new_bus.VARY_FF41p());
+    /* p21.RYJU*/ wire _RYJU_FF41_WRn = not1(_SEPA_FF41_WRp);
+    /* p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = or2(WESY_SYS_RSTn(), _RYJU_FF41_WRn);
+    /* p21.RUPO*/ reg_stat.RUPO_LYC_MATCHn.nor_latch(_PAGO_LYC_MATCH_RST, reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new());
   }
 
   {
@@ -143,13 +151,6 @@ void GateBoy::tock_lcd() {
     /* p23.WAMA_LY5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_VARO_FF44_RDn, _XAGA_LY5n);
     /* p23.WAVO_LY6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_VARO_FF44_RDn, _XUCE_LY6n);
     /* p23.WEZE_LY7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_VARO_FF44_RDn, _XOWO_LY7n);
-  }
-
-  {
-    /* p21.SEPA*/ wire _SEPA_FF41_WRp = and2(CUPA_CPU_WRp(), new_bus.VARY_FF41p());
-    /* p21.RYJU*/ wire _RYJU_FF41_WRn = not1(_SEPA_FF41_WRp);
-    /* p21.PAGO*/ wire _PAGO_LYC_MATCH_RST = or2(WESY_SYS_RSTn(), _RYJU_FF41_WRn);
-    /* p21.RUPO*/ reg_stat.RUPO_LYC_MATCHn.nor_latch(_PAGO_LYC_MATCH_RST, reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new());
   }
 }
 

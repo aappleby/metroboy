@@ -90,16 +90,11 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 
   //load_rom("microtests/build/dmg/poweron_stat_006.gb"); // stat low nibble goes 5-7-6, but it's supposed to read 4 - SADU cleared too late?
   //load_rom("microtests/build/dmg/poweron_stat_120.gb"); // stat low nibble goes 4-6-2 but it's supposed to read 0 - RUPO cleared too late?
-
-  load_rom("microtests/build/dmg/poweron_oam_006.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
-
-  gb_thread.gb->oam_ram[0x35] = 0x4F;
-
+  //load_rom("microtests/build/dmg/poweron_oam_006.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
   //load_rom("microtests/build/dmg/poweron_oam_120.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
   //load_rom("microtests/build/dmg/poweron_oam_234.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
 
-  //load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb"); // RUPO cleared too late?
-
+  load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb"); // RUPO cleared too late?
   //load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb"); // hblank late
 
   // SIG_OAM_OEn goes back to 1 on E after the read starts, so we have to latch before that?
@@ -122,6 +117,8 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 
 
   // if it was a data latch issue reading stat, it wouldn't also affect oam read...?
+
+  gb_thread.gb->oam_ram[0x35] = 0x4F;
 
 #if 0
   /*

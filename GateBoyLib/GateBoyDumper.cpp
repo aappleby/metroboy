@@ -73,10 +73,10 @@ void GateBoy::dump_tile_fetcher(Dumper& d) {
 }
 
 void GateBoy::dump_clocks(Dumper& d) {
-  d.dump_bitp("AFUR_xxxxEFGHp : ", clk.AFUR_xxxxEFGHp.state);
-  d.dump_bitp("ALEF_AxxxxFGHp : ", clk.ALEF_AxxxxFGHp.state);
-  d.dump_bitp("APUK_ABxxxxGHp : ", clk.APUK_ABxxxxGHp.state);
-  d.dump_bitp("ADYK_ABCxxxxHp : ", clk.ADYK_ABCxxxxHp.state);
+  d.dump_bitp("AFUR_xxxxEFGHp : ", clk.AFUR_xxxxEFGH.state);
+  d.dump_bitp("ALEF_AxxxxFGHp : ", clk.ALEF_AxxxxFGH.state);
+  d.dump_bitp("APUK_ABxxxxGHp : ", clk.APUK_ABxxxxGH.state);
+  d.dump_bitp("ADYK_ABCxxxxHp : ", clk.ADYK_ABCxxxxH.state);
   d("\n");
   d.dump_bitp("WUVU_ABxxEFxxp : ", clk.WUVU_ABxxEFxx.state);
   d.dump_bitp("VENA_xxCDEFxxp : ", clk.VENA_xxCDEFxx.state);

@@ -16,7 +16,7 @@ void GateBoy::tock_reset(DFF17 UPOF_DIV15p) {
   /*#p01.AFAR*/ wire _AFAR_RSTp  = nor2(rst.PIN_71_RST.qp_new(), _ALYP_RSTn);
   /* p01.ASOL*/ rst.ASOL_POR_DONEn.nor_latch(rst.PIN_71_RST.qp_new(), _AFAR_RSTp); // Schematic wrong, this is a latch.
 
-  /*SIG_CPU_EXT_CLKGOOD*/ rst.SIG_CPU_EXT_CLKGOOD.sig_out(pins.PIN_74_CLK.clock_good());
+  /*SIG_CPU_EXT_CLKGOOD*/ rst.SIG_CPU_EXT_CLKGOOD.sig_out(clk.PIN_74_CLK.clock_good());
   /*SIG_CPU_EXT_RESETp */ rst.SIG_CPU_EXT_RESETp.sig_out(rst.PIN_71_RST.qp_new());
   /*SIG_CPU_STARTp     */ rst.SIG_CPU_STARTp.sig_out(_TABA_POR_TRIGn);
   /*SIG_CPU_INT_RESETp */ rst.SIG_CPU_INT_RESETp.sig_out(rst.AFER_SYS_RSTp.qp_new());

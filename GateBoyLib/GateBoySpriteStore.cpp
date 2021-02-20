@@ -4,7 +4,7 @@
 
 #pragma warning(disable:4458)
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::reset_sprite_store() {
   sprite_counter.DEZY_COUNT_CLKp.state    = 0b00011011;
@@ -14,8 +14,9 @@ void GateBoy::reset_sprite_store() {
   sprite_counter.DYBE_SPRITE_COUNT3.state = 0b00011010;
 }
 
-//------------------------------------------------------------------------------------------------------------------------
-// Update sprite store reset signals to clear the first matched sprite when the sprite fetch is done.
+//-----------------------------------------------------------------------------
+// Update sprite store reset signals to clear the first matched sprite when the
+// sprite fetch is done.
 
 void GateBoy::update_sprite_reset_flags(
   const Gate WUTY_SFETCH_DONE_TRIGp,
@@ -39,7 +40,7 @@ void GateBoy::update_sprite_reset_flags(
   /* p29.FONO*/ sprite_reset_flags.FONO_STORE9_RSTp_evn.dff17(WUTY_SFETCH_DONE_TRIGp.qp_new(), BYVA_LINE_RSTn, sprite_get_flag.GUZE_SPRITE9_GETp.qp_old());
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Turn the sprite counter into a one-hot clock signal.
 
 void GateBoy::update_sprite_store_flags(
@@ -91,7 +92,7 @@ void GateBoy::update_sprite_store_flags(
   /* p29.DECU*/ sprite_store_flags.DECU_STORE9_CLKn = not1(_CATO_STORE9_CLKp);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::store_sprite(
   const SpriteStoreFlags& sprite_store_flags,
@@ -384,9 +385,9 @@ void GateBoy::store_sprite(
   /* p30.DEWU*/ sprite_store.DEWU_STORE9_L3n_odd.dff8n(_FAKA_STORE9_CLKp, sprite_bus.BUS_SPR_L3.qp_old());
 }
 
-//------------------------------------------------------------------------------------------------------------------------
-// Check the whole sprite store for a sprite at the current pixel coordinate and update the match flags and
-// FEPO_STORE_MATCHp.
+//-----------------------------------------------------------------------------
+// Check the whole sprite store for a sprite at the current pixel coordinate
+// and update the match flags and FEPO_STORE_MATCHp.
 
 void GateBoy::get_sprite_match_flags(
   const PixCount& pix_count,
@@ -562,7 +563,7 @@ void GateBoy::get_sprite_match_flags(
   /* p29.GUZE*/ sprite_match_flags.GUZE_SPRITE9_GETp = nor2(YGEM_STORE9_MATCHn, _GYGA_STORE8_MATCH);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::sprite_match_to_bus(
   const GateBoySpriteStore& sprite_store,
@@ -709,4 +710,4 @@ void GateBoy::sprite_scan_to_bus(const SpriteScanner& sprite_scanner, SpriteDelt
   /*#p30.WENU_STORE_L3*/ sprite_bus.BUS_SPR_L3.tri6_nn(FEPO_STORE_MATCHp.qp_new(), delta.GYSA_SPRITE_DELTA3.qp_new());
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

@@ -48,7 +48,10 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   overlay_tex = create_texture_u32(160, 144);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-#if 0
+#if 1
+  // something bootrom broken......
+  // why is the vram clear loop not writing to vram?
+
   // regenerate post-bootrom dump
   gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
   gb_thread.reset_to_bootrom();
@@ -94,7 +97,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("microtests/build/dmg/poweron_oam_120.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
   //load_rom("microtests/build/dmg/poweron_oam_234.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
 
-  load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb"); // RUPO cleared too late?
+  //load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb"); // RUPO cleared too late?
   //load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb"); // hblank late
 
   // SIG_OAM_OEn goes back to 1 on E after the read starts, so we have to latch before that?
@@ -117,8 +120,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 
 
   // if it was a data latch issue reading stat, it wouldn't also affect oam read...?
-
-  gb_thread.gb->oam_ram[0x35] = 0x4F;
+  //gb_thread.gb->oam_ram[0x35] = 0x4F;
 
 #if 0
   /*

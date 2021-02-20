@@ -82,14 +82,14 @@ void GateBoy::tock_oam_bus()
   /* p28.FUGU_FETCH4_TO_OA6*/ oam_bus.BUS_OAM_A06n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I4.qp_new());
   /* p28.FYKE_FETCH5_TO_OA7*/ oam_bus.BUS_OAM_A07n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I5.qp_new());
 
-  probe_wire(16, "ASAM CPU", _ASAM_CPU_OAM_RDn);
-  probe_wire(17, "DUGA DMA", DUGA_DMA_RUNNINGn);
-  probe_wire(18, "APAR SCN", _APAR_SCANNINGn);
-  probe_wire(19, "BETE PPU", _BETE_SPR_I_TO_OAM_An);
+  //probe_wire(16, "ASAM CPU", _ASAM_CPU_OAM_RDn);
+  //probe_wire(17, "DUGA DMA", DUGA_DMA_RUNNINGn);
+  //probe_wire(18, "APAR SCN", _APAR_SCANNINGn);
+  //probe_wire(19, "BETE PPU", _BETE_SPR_I_TO_OAM_An);
 
-  if (!oam_bus.BUS_OAM_A00n.is_driven()) {
-    printf("%03d oam bus not driven\n", line_phase_x);
-  }
+  //if (!oam_bus.BUS_OAM_A00n.is_driven()) {
+  //  printf("%03d oam bus not driven\n", line_phase_x);
+  //}
 
   // cpu to oam data bus
 
@@ -196,7 +196,6 @@ void GateBoy::tock_oam_bus()
   /*#p28.GEKA*/ wire _GEKA_OAM_A0p = not1(oam_bus.BUS_OAM_A00n.qp_new());
   /* p28.WAFO*/ wire _WAFO_OAM_A0n = not1(_GEKA_OAM_A0p);
 
-
   /* p04.MAKA*/ oam_bus.MAKA_LATCH_EXTp.dff17(ZEME_AxCxExGx(), AVOR_SYS_RSTp(), CATY_LATCH_EXTp());
 
   /* p04.NAXY*/ wire _NAXY_DMA_OAM_WRp = nor2(UVYT_ABCDxxxx(), oam_bus.MAKA_LATCH_EXTp.qp_new()); // def nor2
@@ -213,7 +212,6 @@ void GateBoy::tock_oam_bus()
   /*#p28.AJEP*/ wire _AJEP_SCAN_OAM_LATCHn = nand2(sprite_scanner.ACYL_SCANNINGp.qp_new(), XOCE_xBCxxFGx()); // schematic wrong, is def nand2
   /* p28.WEFY*/ wire _WEFY_SPR_READp = and2(_TUVO_PPU_OAM_RDp, sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
   /*#p28.XUJA*/ wire _XUJA_SPR_OAM_LATCHn  = not1(_WEFY_SPR_READp);
-
 
   /*#p28.BOTA*/ wire _BOTA_OAM_OEn  = nand3(BOFE_LATCH_EXTn(), new_bus.SARO_ADDR_OAMp(), ASOT_CPU_RDp()); // Schematic wrong, this is NAND
   /*#p28.ASYT*/ wire _ASYT_OAM_OEn = and3(_AJEP_SCAN_OAM_LATCHn, _XUJA_SPR_OAM_LATCHn, _BOTA_OAM_OEn); // def and

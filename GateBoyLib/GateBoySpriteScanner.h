@@ -48,7 +48,6 @@ struct SpriteScanner {
   /* p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p; // AxxxExxx
   /* p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p; // AxxxExxx
   /* p30.XECU*/ DFF13 XECU_SPRITE_IDX5p; // AxxxExxx
-
 };
 
 //------------------------------------------------------------------------------------------------------------------------

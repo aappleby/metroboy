@@ -24,7 +24,6 @@
 #include "GateBoyLib/GateBoyZramBus.h"
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
-#include "GateBoyLib/GateBoyPins.h"
 #include "GateBoyLib/GateBoySPU.h"
 
 //-----------------------------------------------------------------------------
@@ -140,6 +139,7 @@ struct GateBoy {
   void tock_lcdc();
 
 
+  void tock_lyc();
   void tock_lcd();
 
 
@@ -242,14 +242,14 @@ struct GateBoy {
   /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
   /* p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), rst.SOTO_DBG_VRAMp.qn_new()); }
 
-  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(pins.PIN_74_CLK.clock_good()); }
-  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(pins.PIN_74_CLK.clock_good()); }
+  /* p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(clk.PIN_74_CLK.clock_good()); }
+  /* p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(clk.PIN_74_CLK.clock_good()); }
 
   /* p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(clk.SIG_CPU_CLKREQ.qp_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
   wire AZOF_AxCxExGx() const {
-    /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET.qp_new());
+    /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.qp_new());
     /* p01.AZOF*/ wire _AZOF_AxCxExGx = not1(_ATAL_xBxDxFxH);
     return _AZOF_AxCxExGx;
   }
@@ -266,10 +266,10 @@ struct GateBoy {
   /* p27.MOXE*/ wire MOXE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
   /* p27.TAVA*/ wire TAVA_xBxDxFxH() const { return not1(LAPE_AxCxExGx()); }
 
-  /*#p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not1(clk.AFUR_xxxxEFGHp.qp_new()); }
-  /*#p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not1(clk.ALEF_AxxxxFGHp.qn_new()); }
-  /*#p01.AROV*/ wire AROV_xxCDEFxx() const { return not1(clk.APUK_ABxxxxGHp.qp_new()); }
-  /*#p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(clk.ADYK_ABCxxxxHp.qn_new()); }
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not1(clk.AFUR_xxxxEFGH.qp_new()); }
+  /*#p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not1(clk.ALEF_AxxxxFGH.qn_new()); }
+  /*#p01.AROV*/ wire AROV_xxCDEFxx() const { return not1(clk.APUK_ABxxxxGH.qp_new()); }
+  /*#p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(clk.ADYK_ABCxxxxH.qn_new()); }
 
   /*#p01.BEKO*/ wire BEKO_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); } // BEKO+BAVY parallel
   /*#p01.BAPY*/ wire BAPY_xxxxxxGH() const { return nor3(ABOL_CLKREQn(), AROV_xxCDEFxx(), ATYP_ABCDxxxx()); }
@@ -399,7 +399,6 @@ struct GateBoy {
 
   //----------
 
-  GateBoyPins pins;
   GateBoyCpuBus old_bus;
   GateBoyCpuBus new_bus;
 
@@ -474,14 +473,9 @@ struct GateBoy {
   RegOBP0 reg_obp0;
   RegOBP1 reg_obp1;
 
-  /*#p21.WODU*/ Gate WODU_HBLANKp; // only old used
-  ///*#p21.NOKO*/ Gate NOKO_y153p; // only old used
-  /* p07.SATO*/ Gate SATO_BOOT_BITn; // old used
-
-  /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp; // new used
-  ///*#p21.SANU*/ Gate SANU_x113p; // old used
-  ///*#p21.XYVO*/ Gate XYVO_y144p; // old used
-  ///*#p29.ABOV*/ Gate ABOV_LINE_P908p; // old used
+  /*#p21.WODU*/ Gate WODU_HBLANKp;
+  /* p07.SATO*/ Gate SATO_BOOT_BITn;
+  /* p28.ATEJ*/ Gate ATEJ_LINE_RSTp;
 
   SpritePix flipped_sprite;
 
@@ -532,8 +526,7 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // CPU
 
-  MetroBoyCPU      gb_cpu;
-
+  MetroBoyCPU gb_cpu;
   Req      bus_req_new = {0};
   uint8_t  cpu_data_latch = 0;
   uint8_t  imask_latch = 0;
@@ -558,6 +551,12 @@ struct GateBoy {
 
   uint64_t sentinel3 = SENTINEL3;
 
+  uint8_t* boot_buf = nullptr;
+  size_t   boot_size = 0;
+
+  uint8_t* cart_buf = nullptr;
+  size_t   cart_size = 0;
+
   //-----------------------------------------------------------------------------
   // LCD and framebuffer
 
@@ -565,10 +564,9 @@ struct GateBoy {
   int old_lcd_y = 0;
 
   uint8_t framebuffer[160*144];
-  //uint8_t gb_screen_x = 0;
-  //uint8_t gb_screen_y = 0;
 
   //-----------------------------------------------------------------------------
+  // Bookkeeping
 
   double   sim_time = 0;
   uint64_t phase_total = 0;
@@ -578,12 +576,6 @@ struct GateBoy {
   uint64_t cumulative_hash = 0;
 
   Probes   probes;
-
-  uint8_t* boot_buf = nullptr;
-  size_t   boot_size = 0;
-
-  uint8_t* cart_buf = nullptr;
-  size_t   cart_size = 0;
 
   uint64_t sentinel4 = SENTINEL4;
 };

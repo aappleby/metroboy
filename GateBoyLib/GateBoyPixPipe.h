@@ -1,15 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-#include "GateBoyLib/GateBoyRegisters.h"
-
-struct SpriteFetcher;
-struct TileTempA;
-struct TileTempB;
-struct SpritePixA;
-struct SpritePixB;
-struct OamTempB;
-
 //------------------------------------------------------------------------------------------------------------------------
 
 struct WindowRegisters {

@@ -66,8 +66,8 @@ int main(int argc, char** argv) {
   auto start = timestamp();
 
 #ifdef USE_COMMIT
-  //failures += t.test_reset_cart_vs_dump();
-  //failures += t.test_fastboot_vs_slowboot();
+  failures += t.test_reset_cart_vs_dump();
+  failures += t.test_fastboot_vs_slowboot();
 #endif
 
 #if 1
@@ -98,11 +98,11 @@ int main(int argc, char** argv) {
   failures += t.test_micro_mbc1();
 #endif
 
-#if 0
+#if 1
   t.verbose = true;
   failures += t.test_mooneye_generic(); // some failing
-  //failures += t.test_mooneye_mbc1();    // pass
-  //failures += t.test_mooneye_timer();   // pass
+  failures += t.test_mooneye_mbc1();    // pass
+  failures += t.test_mooneye_timer();   // pass
   failures += t.test_mooneye_ppu();     // 3 fails
 
   failures += t.test_wpol_generic();
@@ -954,10 +954,10 @@ int GateBoyTests::test_clk() {
 
   for (int i = 0; i < 32; i++) {
     int phase = gb.phase_total & 7;
-    EXPECT_CLK(clk.AFUR_xxxxEFGHp.qp_old(), 0b00001111);
-    EXPECT_CLK(clk.ALEF_AxxxxFGHp.qp_old(), 0b10000111);
-    EXPECT_CLK(clk.APUK_ABxxxxGHp.qp_old(), 0b11000011);
-    EXPECT_CLK(clk.ADYK_ABCxxxxHp.qp_old(), 0b11100001);
+    EXPECT_CLK(clk.AFUR_xxxxEFGH.qp_old(), 0b00001111);
+    EXPECT_CLK(clk.ALEF_AxxxxFGH.qp_old(), 0b10000111);
+    EXPECT_CLK(clk.APUK_ABxxxxGH.qp_old(), 0b11000011);
+    EXPECT_CLK(clk.ADYK_ABCxxxxH.qp_old(), 0b11100001);
 
     EXPECT_CLK(clk.WUVU_ABxxEFxx.qp_old(), 0b11001100);
     EXPECT_CLK(clk.VENA_xxCDEFxx.qp_old(), 0b00111100);
@@ -971,7 +971,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(top.clk.SIG_CPU_BUKE_AxxxxxGH.qp_old(), 0b10000011);
     EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH.qp_old(), 0b01111111);
     EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx.qp_old(), 0b10000000);
-    EXPECT_CLK(top.pins.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
+    EXPECT_CLK(top.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
     gb.next_phase();
   }
 
@@ -1041,7 +1041,7 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.pins.PIN_75_CLK_OUT.ext_c();
+      char CLK = gb.clk.PIN_75_CLK_OUT.ext_c();
       char WRn = gb.ext_pins.PIN_78_WRn.ext_c();
       char RDn = gb.ext_pins.PIN_79_RDn.ext_c();
       char CSn = gb.ext_pins.PIN_80_CSn.ext_c();
@@ -1164,7 +1164,7 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.pins.PIN_75_CLK_OUT.ext_c();
+      char CLK = gb.clk.PIN_75_CLK_OUT.ext_c();
       char WRn = gb.ext_pins.PIN_78_WRn.ext_c();
       char RDn = gb.ext_pins.PIN_79_RDn.ext_c();
       char CSn = gb.ext_pins.PIN_80_CSn.ext_c();
@@ -1335,7 +1335,7 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.pins.PIN_75_CLK_OUT.ext_c();
+      char CLK = gb.clk.PIN_75_CLK_OUT.ext_c();
       char WRn = gb.ext_pins.PIN_78_WRn.ext_c();
       char RDn = gb.ext_pins.PIN_79_RDn.ext_c();
       char CSn = gb.ext_pins.PIN_80_CSn.ext_c();

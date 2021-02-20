@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BusDump.cpp" />
     <ClCompile Include="GateBoy.cpp" />
     <ClCompile Include="GateBoyClocks.cpp" />
     <ClCompile Include="GateBoyCpuBus.cpp" />
@@ -44,10 +43,8 @@
     <ClCompile Include="Sch_Channel4.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BusDump.h" />
     <ClInclude Include="GateBoy.h" />
     <ClInclude Include="GateBoyCpuBus.h" />
-    <ClInclude Include="GateBoyPins.h" />
     <ClInclude Include="GateBoyRegisters.h" />
     <ClInclude Include="GateBoyResetDebug.h" />
     <ClInclude Include="GateBoySPU.h" />

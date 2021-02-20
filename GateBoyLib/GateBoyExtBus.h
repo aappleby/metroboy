@@ -129,8 +129,6 @@ struct GateBoyExtPins {
   /*PIN_79*/ PinOut PIN_79_RDn;      // RDn idles low, goes high on phase B for an external write
   /*PIN_78*/ PinOut PIN_78_WRn;      // WRn idles high, goes low during EFG if there's a write
 
-  //Gate MBC1_BANK_0;
-
   Gate MBC1_RAM_EN;
   Gate MBC1_MODE;
 
@@ -141,11 +139,6 @@ struct GateBoyExtPins {
   Gate MBC1_BANK4;
   Gate MBC1_BANK5;
   Gate MBC1_BANK6;
-
-  // PIN_17 a << RUXA
-  // PIN_17 b << LULA
-  // PIN_17 c >> TOVO,RALO,SOMA
-  // PIN_17 d << RUNE
 };
 
 //------------------------------------------------------------------------------------------------------------------------

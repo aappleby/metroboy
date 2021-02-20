@@ -6,6 +6,12 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
+// Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
+// Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
+// Bit 2 : Timer    Interrupt Request(INT 50h)  (1=Request)
+// Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
+// Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
+
 void GateBoy::tock_interrupts()
 {
   uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
@@ -43,40 +49,29 @@ void GateBoy::tock_interrupts()
   probe_wire(30, "MUWY LY0",    reg_ly.MUWY_LY0p.qp_new());
   probe_wire(31, "SYRY LYC0",   reg_lyc.SYRY_LYC0n.qn_new());
 
-  /*#p21.TEBY_STAT0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);
-  /*#p21.WUGA_STAT1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_pn(_TOBE_FF41_RDp, _XATY_STAT_MODE1n);
-  /*#p21.SEGO_STAT2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_pn(_TOBE_FF41_RDp, reg_stat.RUPO_LYC_MATCHn.qp_new());
-  /* p21.PUZO_STAT3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(_VAVE_FF41_RDn, reg_stat.ROXE_STAT_HBI_ENn.qp_new());
-  /* p21.POFO_STAT4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_nn(_VAVE_FF41_RDn, reg_stat.RUFO_STAT_VBI_ENn.qp_new());
-  /* p21.SASY_STAT5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_VAVE_FF41_RDn, reg_stat.REFE_STAT_OAI_ENn.qp_new());
-  /* p21.POTE_STAT6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_VAVE_FF41_RDn, reg_stat.RUGU_STAT_LYI_ENn.qp_new());
-
-  // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
-  // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
-  // Bit 2 : Timer    Interrupt Request(INT 50h)  (1=Request)
-  // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
-  // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
+  /*#p21.TEBY*/ new_bus.BUS_CPU_D00p.tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);
+  /*#p21.WUGA*/ new_bus.BUS_CPU_D01p.tri6_pn(_TOBE_FF41_RDp, _XATY_STAT_MODE1n);
+  /*#p21.SEGO*/ new_bus.BUS_CPU_D02p.tri6_pn(_TOBE_FF41_RDp, reg_stat.RUPO_LYC_MATCHn.qp_new());
+  /* p21.PUZO*/ new_bus.BUS_CPU_D03p.tri6_nn(_VAVE_FF41_RDn, reg_stat.ROXE_STAT_HBI_ENn.qp_new());
+  /* p21.POFO*/ new_bus.BUS_CPU_D04p.tri6_nn(_VAVE_FF41_RDn, reg_stat.RUFO_STAT_VBI_ENn.qp_new());
+  /* p21.SASY*/ new_bus.BUS_CPU_D05p.tri6_nn(_VAVE_FF41_RDn, reg_stat.REFE_STAT_OAI_ENn.qp_new());
+  /* p21.POTE*/ new_bus.BUS_CPU_D06p.tri6_nn(_VAVE_FF41_RDn, reg_stat.RUGU_STAT_LYI_ENn.qp_new());
 
   /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(lcd.RUTU_x113p.qp_new());
   /*#p21.TOLU*/ wire _TOLU_VBLANKn   = not1(PARU_VBLANKp);
   /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(_PURE_LINE_ENDn);
   /*#p21.TAPA*/ wire _TAPA_INT_OAM   = and2(_TOLU_VBLANKn, _SELA_LINE_P908p);
   /*#p21.TARU*/ wire _TARU_INT_HBL   = and2(WODU_HBLANKp.qp_new(), _TOLU_VBLANKn);
-  // polarity?
   /*#p21.SUKO*/ wire _SUKO_INT_STATp = amux4(reg_stat.RUGU_STAT_LYI_ENn.qn_new(), reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new(), reg_stat.REFE_STAT_OAI_ENn.qn_new(), _TAPA_INT_OAM, reg_stat.RUFO_STAT_VBI_ENn.qn_new(), PARU_VBLANKp, reg_stat.ROXE_STAT_HBI_ENn.qn_new(), _TARU_INT_HBL);
 
   /*#p21.VYPU*/ wire _VYPU_INT_VBLANKp = not1(_TOLU_VBLANKn);
   /*#p21.TUVA*/ wire _TUVA_INT_STATn   = not1(_SUKO_INT_STATp);
   /*#p21.VOTY*/ wire _VOTY_INT_STATp   = not1(_TUVA_INT_STATn);
 
+  /* p02.ASOK*/ wire ASOK_INT_JOYp = and2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new());
+
   /*#p01.ALUR*/ wire _ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp());
   /* p07.REFA*/ wire _REFA_FF0F_WRn = nand4(cpu_signals.TAPU_CPU_WRp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
-
-  // Bit 0 : V-Blank  Interrupt Request(INT 40h)  (1=Request)
-  // Bit 1 : LCD STAT Interrupt Request(INT 48h)  (1=Request)
-  // Bit 2 : Timer    Interrupt Request(INT 50h)  (1=Request)
-  // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
-  // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
   /* p02.LETY*/ wire _LETY_INT_VBL_ACKn  = not1(interrupts.SIG_CPU_ACK_VBLANK.qp_new());
   /* p02.LEJA*/ wire _LEJA_INT_STAT_ACKn = not1(interrupts.SIG_CPU_ACK_STAT.qp_new());
@@ -102,9 +97,6 @@ void GateBoy::tock_interrupts()
   /* p02.PYGA*/ wire _PYGA_FF0F_RST2n = and3(_RAKE_INT2_WRn, _LESA_INT_TIM_ACKn,  _ALUR_SYS_RSTn);
   /* p02.TUNY*/ wire _TUNY_FF0F_RST3n = and3(_SULO_INT3_WRn, _LUFE_INT_SER_ACKn,  _ALUR_SYS_RSTn);
   /* p02.TYME*/ wire _TYME_FF0F_RST4n = and3(_SEME_INT4_WRn, _LAMO_INT_JOY_ACKn,  _ALUR_SYS_RSTn);
-
-  /* p02.ASOK*/ wire ASOK_INT_JOYp = and2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new());
-
 
   /* p02.LOPE*/ interrupts.LOPE_FF0F_D0p.dff22(_VYPU_INT_VBLANKp,                   _MYZU_FF0F_SET0n, _LYTA_FF0F_RST0n, SIG_VCC.qp_new());
   /* p02.LALU*/ interrupts.LALU_FF0F_D1p.dff22(_VOTY_INT_STATp,                     _MODY_FF0F_SET1n, _MOVU_FF0F_RST1n, SIG_VCC.qp_new());

@@ -8,12 +8,12 @@ struct GateBoyResetDebug;
 struct GateBoyClock {
 
   void reset_to_cart() {
-    ANOS.state = 0b00011000;
-    AVET.state = 0b00011001;
-    AFUR_xxxxEFGHp.state = 0b00011010;
-    ALEF_AxxxxFGHp.state = 0b00011001;
-    APUK_ABxxxxGHp.state = 0b00011011;
-    ADYK_ABCxxxxHp.state = 0b00011001;
+    ANOS_DEGLITCH.state = 0b00011000;
+    AVET_DEGLITCH.state = 0b00011001;
+    AFUR_xxxxEFGH.state = 0b00011010;
+    ALEF_AxxxxFGH.state = 0b00011001;
+    APUK_ABxxxxGH.state = 0b00011011;
+    ADYK_ABCxxxxH.state = 0b00011001;
     WUVU_ABxxEFxx.state = 0b00011011;
     VENA_xxCDEFxx.state = 0b00011000;
     WOSU_AxxDExxH.state = 0b00011001;
@@ -28,13 +28,17 @@ struct GateBoyClock {
     SIG_CPU_BOGA_Axxxxxxx.state = 0b00011001;
   }
 
-  /* p01.ANOS*/ Gate ANOS; // NAND latch deglitcher
-  /* p01.AVET*/ Gate AVET; // NAND latch deglitcher
+  /*PIN_73*/ PinOut   PIN_73_CLK_DRIVE;
+  /*PIN_74*/ PinClock PIN_74_CLK;
+  /*PIN_75*/ PinOut   PIN_75_CLK_OUT;
 
-  /* p01.AFUR*/ DFF9 AFUR_xxxxEFGHp;
-  /* p01.ALEF*/ DFF9 ALEF_AxxxxFGHp;
-  /* p01.APUK*/ DFF9 APUK_ABxxxxGHp;
-  /* p01.ADYK*/ DFF9 ADYK_ABCxxxxHp;
+  /* p01.ANOS*/ Gate ANOS_DEGLITCH; // NAND latch deglitcher
+  /* p01.AVET*/ Gate AVET_DEGLITCH; // NAND latch deglitcher
+
+  /* p01.AFUR*/ DFF9 AFUR_xxxxEFGH;
+  /* p01.ALEF*/ DFF9 ALEF_AxxxxFGH;
+  /* p01.APUK*/ DFF9 APUK_ABxxxxGH;
+  /* p01.ADYK*/ DFF9 ADYK_ABCxxxxH;
 
   /* p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
   /* p21.VENA*/ DFF17 VENA_xxCDEFxx;

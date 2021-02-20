@@ -5,31 +5,31 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_clocks() {
-  pins.PIN_73_CLK_DRIVE.reset_for_pass();
-  pins.PIN_75_CLK_OUT.reset_for_pass();
+  clk.PIN_73_CLK_DRIVE.reset_for_pass();
+  clk.PIN_75_CLK_OUT.reset_for_pass();
 
-  /*PIN_73*/ pins.PIN_73_CLK_DRIVE.pin_out_dp(pins.PIN_74_CLK.clock());
+  /*PIN_73*/ clk.PIN_73_CLK_DRIVE.pin_out_dp(clk.PIN_74_CLK.clock());
 
-  /* p01.ARYS*/ wire ARYS = not1(pins.PIN_74_CLK.clock());
-  /* p01.AVET*/ clk.AVET = nand2(clk.ANOS.qp_mid(), ARYS);
-  /* p01.ANOS*/ clk.ANOS = nand2(pins.PIN_74_CLK.clock(), clk.AVET.qp_mid());
-  /* p01.AVET*/ clk.AVET = nand2(clk.ANOS.qp_mid(), ARYS);
-  /* p01.ANOS*/ clk.ANOS = nand2(pins.PIN_74_CLK.clock(), clk.AVET.qp_mid());
+  /* p01.ARYS*/ wire ARYS_CLKIN = not1(clk.PIN_74_CLK.clock());
+  /* p01.AVET*/ clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.qp_mid(), ARYS_CLKIN);
+  /* p01.ANOS*/ clk.ANOS_DEGLITCH = nand2(clk.PIN_74_CLK.clock(), clk.AVET_DEGLITCH.qp_mid());
+  /* p01.AVET*/ clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.qp_mid(), ARYS_CLKIN);
+  /* p01.ANOS*/ clk.ANOS_DEGLITCH = nand2(clk.PIN_74_CLK.clock(), clk.AVET_DEGLITCH.qp_mid());
 
-  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET.qp_new());
+  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.qp_new());
   /* p01.ATAN*/ wire _ATAN_AxCxExGx = not1(_ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
 
-  DFF9 _ADYK_ABCxxxxHp_old = clk.ADYK_ABCxxxxHp;
-  DFF9 _AFUR_xxxxEFGHp_old = clk.AFUR_xxxxEFGHp;
-  DFF9 _ALEF_AxxxxFGHp_old = clk.ALEF_AxxxxFGHp;
-  DFF9 _APUK_ABxxxxGHp_old = clk.APUK_ABxxxxGHp;
+  DFF9 _ADYK_ABCxxxxH_old = clk.ADYK_ABCxxxxH;
+  DFF9 _AFUR_xxxxEFGH_old = clk.AFUR_xxxxEFGH;
+  DFF9 _ALEF_AxxxxFGH_old = clk.ALEF_AxxxxFGH;
+  DFF9 _APUK_ABxxxxGH_old = clk.APUK_ABxxxxGH;
 
-  /* p01.AFUR*/ clk.AFUR_xxxxEFGHp.dff9(_ATAN_AxCxExGx, UPOJ_MODE_PRODn(), _ADYK_ABCxxxxHp_old.qp_old());
-  /* p01.ALEF*/ clk.ALEF_AxxxxFGHp.dff9(_ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), _AFUR_xxxxEFGHp_old.qn_old());
-  /* p01.APUK*/ clk.APUK_ABxxxxGHp.dff9(_ATAN_AxCxExGx, UPOJ_MODE_PRODn(), _ALEF_AxxxxFGHp_old.qn_old());
-  /* p01.ADYK*/ clk.ADYK_ABCxxxxHp.dff9(_ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), _APUK_ABxxxxGHp_old.qn_old());
+  /* p01.AFUR*/ clk.AFUR_xxxxEFGH.dff9(_ATAN_AxCxExGx, UPOJ_MODE_PRODn(), _ADYK_ABCxxxxH_old.qp_old());
+  /* p01.ALEF*/ clk.ALEF_AxxxxFGH.dff9(_ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), _AFUR_xxxxEFGH_old.qn_old());
+  /* p01.APUK*/ clk.APUK_ABxxxxGH.dff9(_ATAN_AxCxExGx, UPOJ_MODE_PRODn(), _ALEF_AxxxxFGH_old.qn_old());
+  /* p01.ADYK*/ clk.ADYK_ABCxxxxH.dff9(_ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), _APUK_ABxxxxGH_old.qn_old());
 
-  /*PIN_75*/ pins.PIN_75_CLK_OUT.pin_out_dp(BUDE_xxxxEFGH());
+  /*PIN_75*/ clk.PIN_75_CLK_OUT.pin_out_dp(BUDE_xxxxEFGH());
   /*SIG_CPU_BOWA_Axxxxxxx*/ clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
   /*SIG_CPU_BEDO_xBCDEFGH*/ clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(BEDO_Axxxxxxx());
   /*SIG_CPU_BEKO_ABCDxxxx*/ clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(BEKO_ABCDxxxx());

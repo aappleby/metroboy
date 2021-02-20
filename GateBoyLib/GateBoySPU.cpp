@@ -3,11 +3,12 @@
 
 #pragma warning(disable : 4189)
 
+//-----------------------------------------------------------------------------
+
 void GateBoy::tock_spu() {
 
   /*#p09.HAPO*/ wire HAPO_SYS_RESETp = not1(ALUR_SYS_RSTn());
   /*#p09.GUFO*/ wire GUFO_SYS_RESETn = not1(HAPO_SYS_RESETp);
-
 
   /*#p09.AGUZ*/ wire AGUZ_CPU_RDn = not1(cpu_signals.TEDO_CPU_RDp.qp_new());
   /*#p09.CETO*/ wire CETO_CPU_RDp = not1(AGUZ_CPU_RDn);
@@ -49,37 +50,7 @@ void GateBoy::tock_spu() {
   /*#p10.CONA*/ wire CONA_ADDR_FF2X  = not1(BEZY_ADDR_FF2Xn);
 
 #if 0
-    if (NR50_RD1) next.bus.set_data(
-      /*p09.AKOD*/ b.apu.NR50_VOL_L0,
-      /*p09.AWED*/ b.apu.NR50_VOL_L1,
-      /*p09.AVUD*/ b.apu.NR50_VOL_L2,
-      /*p09.AXEM*/ b.apu.NR50_VIN_TO_L,
-      /*p09.AMAD*/ b.apu.NR50_VOL_R0,
-      /*p09.ARUX*/ b.apu.NR50_VOL_R1,
-      /*p09.BOCY*/ b.apu.NR50_VOL_R2,
-      /*p09.ATUM*/ b.apu.NR50_VIN_TO_R
-    );
-#endif
-
-#if 0
-    /*p09.EFOP*/ wire NR52_DBG_APU_IN  = and2(b.bus.TS_D4(), b.dbg.MODE_DBG2);
-
-
-    /*p09.HADA*/ next.apu.NR52_ALL_SOUND_ON  = tock_pos(a.apu.NR52_WRn1, b.apu.NR52_WRn1, SYS_RESETn3, b.apu.NR52_ALL_SOUND_ON, b.bus.TS_D7()); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
     /*p09.EDEK*/ next.apu.NR52_DBG_APU       = not1(!b.apu.NR52_DBG_APUn);
-
-    /*p09.AGUZ*/ wire CPU_RDn = not1(b.ctl.TEDO_CPURD);
-    /*p09.CETO*/ wire CPU_RDa = not1(CPU_RDn);
-    /*p09.KAZO*/ wire CPU_RDb = not1(CPU_RDn);
-    /*p09.CURU*/ wire CPU_RDc = not1(CPU_RDn);
-    /*p09.GAXO*/ wire CPU_RDd = not1(CPU_RDn);
-    /*p09.KYDU*/ wire CPU_RDe = not1(CPU_RDn);
-
-    /*p09.DOLE*/ wire NR52_RDna = nand2(ADDR_FF26, CPU_RDa);
-    /*p09.KAMU*/ wire NR52_RDnb = nand2(ADDR_FF26, CPU_RDb);
-    /*p09.DURU*/ wire NR52_RDnd = nand2(ADDR_FF26, CPU_RDc);
-    /*p09.FEWA*/ wire NR52_RDnc = nand2(ADDR_FF26, CPU_RDd);
-    /*p09.JURE*/ wire NR52_RDne = nand2(ADDR_FF26, CPU_RDe);
 
     /*p18.COKA*/ wire CH3_ACTIVE = not1(!b.ch3.CH3_ACTIVEo);
     /*p18.ERED*/ wire CH3_ACTIVEn = not1(CH3_ACTIVE);
@@ -93,7 +64,6 @@ void GateBoy::tock_spu() {
       /*p09.HOPE*/ b.apu.NR52_ALL_SOUND_ON
     );
 #endif
-
 
   /*#p10.DOXY*/ wire DOXY_ADDR_FF26 = and2 (CONA_ADDR_FF2X,  EKAG_ADDR_0110p);
 
@@ -112,6 +82,8 @@ void GateBoy::tock_spu() {
   /*#p09.FERO*/ reg_NR52.FERO_DBG_APUp     .dff9 (FOKU_NR52_WRn, KEPY_APU_RESETn, EFOP_DBG_APUp);
   /*#p09.BOWY*/ reg_NR52.BOWY_DBG_SWEEPp   .dff17(BOPY_NR52_WRn, KEPY_APU_RESETn, old_bus.BUS_CPU_D05p.qp_old());
 
+  //-----------------------------------------------------------------------------
+
   /*#p09.DOLE*/ wire DOLE_NR52_RDn = nand2(DOXY_ADDR_FF26, CETO_CPU_RDp);
   /*#p09.KAMU*/ wire KAMU_NR52_RDn = nand2(DOXY_ADDR_FF26, KAZO_CPU_RDp);
   /*#p09.DURU*/ wire DURU_NR52_RDn = nand2(DOXY_ADDR_FF26, CURU_CPU_RDp);
@@ -128,6 +100,8 @@ void GateBoy::tock_spu() {
   /*#p23.FATE_NR52_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(FEWA_NR52_RDn, ERED_CH3_ACTIVE);
   /*#p23.KOGE_NR52_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(KAMU_NR52_RDn, JUWA_CH4_ACTIVE);
   /*#p23.HOPE_NR52_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(JURE_NR52_RDn, reg_NR52.HADA_ALL_SOUND_ONp.qn_new());
+
+  //-----------------------------------------------------------------------------
 
   /*#p10.CAFY*/ wire CAFY_ADDR_FF24p = nor2(DATU_ADDR_0100n, BEZY_ADDR_FF2Xn);
   /*#p09.BYMA*/ wire BYMA_ADDR_FF24n = not1(CAFY_ADDR_FF24p);
@@ -158,7 +132,7 @@ void GateBoy::tock_spu() {
   /*#p23.BOCY_NR50_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(ADAK_NR50_RDn, reg_NR50.COZU_VOL_R2  .qp_new());
   /*#p23.ATUM_NR50_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(ADAK_NR50_RDn, reg_NR50.BEDU_VIN_TO_R.qp_new());
 
-
+  //-----------------------------------------------------------------------------
 
 
   /*p10.DURA*/ wire DURA_ADDR_0101n = nand4(ACOL_ADDR_0xxx, DENO_ADDR_x1xx, AFOB_ADDR_xx0x, DOSO_ADDR_xxx1);
@@ -168,9 +142,6 @@ void GateBoy::tock_spu() {
 
   /*p09.BONO*/ wire BONO_NR51_WRp = not1(BUPO_NR51_WRn);
   /*p09.BYFA*/ wire BYFA_NR51_WRp = not1(BUPO_NR51_WRn);
-
-  /*p09.HEFA*/ wire HEFA_NR51_RDp = nor2(GEPA_ADDR_FF25n, AGUZ_CPU_RDn);
-  /*p09.GUMU*/ wire GUMU_NR51_RDn = not1(HEFA_NR51_RDp);
 
   wire COMP_CLOCK = not(BONO_NR51_WRp);
 
@@ -183,6 +154,9 @@ void GateBoy::tock_spu() {
   /*p09.BEFO*/ reg_NR51.NR51_6.dff9(COMP_CLOCK, KEPY_APU_RESETn, old_bus.BUS_CPU_D06p.qp_old());
   /*p09.BEPU*/ reg_NR51.NR51_7.dff9(COMP_CLOCK, KEPY_APU_RESETn, old_bus.BUS_CPU_D07p.qp_old());
 
+  /*p09.HEFA*/ wire HEFA_NR51_RDp = nor2(GEPA_ADDR_FF25n, AGUZ_CPU_RDn);
+  /*p09.GUMU*/ wire GUMU_NR51_RDn = not1(HEFA_NR51_RDp);
+
   /*p09.CAPU_NR51_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(GUMU_NR51_RDn, reg_NR51.NR51_0.qp_new());
   /*p09.CAGA_NR51_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(GUMU_NR51_RDn, reg_NR51.NR51_1.qp_new());
   /*p09.BOCA_NR51_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(GUMU_NR51_RDn, reg_NR51.NR51_2.qp_new());
@@ -192,3 +166,5 @@ void GateBoy::tock_spu() {
   /*p09.CAVU_NR51_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(GUMU_NR51_RDn, reg_NR51.NR51_6.qp_new());
   /*p09.CUDU_NR51_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(GUMU_NR51_RDn, reg_NR51.NR51_7.qp_new());
 }
+
+//-----------------------------------------------------------------------------

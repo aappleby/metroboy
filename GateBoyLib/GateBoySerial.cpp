@@ -2,29 +2,6 @@
 
 #include "GateBoyLib/GateBoy.h"
 
-// DFF17_01 SC
-// DFF17_02 << CLKp
-// DFF17_03 SC
-// DFF17_04 --
-// DFF17_05 --
-// DFF17_06 << RSTn  // must be RSTn, see WUVU/VENA/WOSU
-// DFF17_07 << D
-// DFF17_08 --
-// DFF17_09 SC
-// DFF17_10 --
-// DFF17_11 --
-// DFF17_12 SC
-// DFF17_13 << RSTn
-// DFF17_14 --
-// DFF17_15 --
-// DFF17_16 >> QN   _MUST_ be QN - see TERO
-// DFF17_17 >> Q    _MUST_ be Q  - see TERO
-
-// sck_a <= KEXU
-// sck_b <= CULY17
-// sck_c => CAVE
-// sck_d <= KUJO
-
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_serial()

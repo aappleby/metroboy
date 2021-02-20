@@ -14,12 +14,6 @@ void GateBoyCpuSignals::reset_to_cart() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::set_pins()
-{
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
 void GateBoy::tock_bootrom() {
   /* p07.TUGE*/ wire _TUGE_FF50_WRn = nand4(cpu_signals.TAPU_CPU_WRp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
   // FF50 - disable bootrom bit

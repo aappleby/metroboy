@@ -1,8 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-#include "GateBoyLib/GateBoyRegisters.h"
-
 //-----------------------------------------------------------------------------
 
 struct TileFetcher {

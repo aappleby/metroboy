@@ -12,6 +12,7 @@ struct GateBoyJoypad {
   /*p02.AGEM*/ DFF17 AGEM_JP_GLITCH2;
   /*p02.APUG*/ DFF17 APUG_JP_GLITCH3;
 
+  // Ignoring debug stuff for now
   ///*p05.JUTE*/ DFF17 JUTE_DBG_D0;
   ///*p05.KECY*/ DFF17 KECY_DBG_D1;
   ///*p05.JALE*/ DFF17 JALE_DBG_D2;
@@ -21,10 +22,10 @@ struct GateBoyJoypad {
   ///*p05.KUKO*/ DFF17 KUKO_DBG_D6;
   ///*p05.KERU*/ DFF17 KERU_DBG_D7;
 
-  /*p05.KEVU*/ TpLatch KEVU_JOYP_L0n; // 10-rung, looks like pass gate or something
-  /*p05.KAPA*/ TpLatch KAPA_JOYP_L1n; // 10-rung, looks like pass gate or something
-  /*p05.KEJA*/ TpLatch KEJA_JOYP_L2n; // 10-rung, looks like pass gate or something
-  /*p05.KOLO*/ TpLatch KOLO_JOYP_L3n; // 10-rung, looks like pass gate or something
+  /*p05.KEVU*/ TpLatch KEVU_JOYP_L0n;
+  /*p05.KAPA*/ TpLatch KAPA_JOYP_L1n;
+  /*p05.KEJA*/ TpLatch KEJA_JOYP_L2n;
+  /*p05.KOLO*/ TpLatch KOLO_JOYP_L3n;
 
   /*SIG_CPU_WAKE*/ SigOut SIG_CPU_WAKE;  // top right wire by itself <- P02.AWOB
 

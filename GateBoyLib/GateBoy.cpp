@@ -87,10 +87,10 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   sys_clkgood = 1;
   run_phases(2);
 
-  CHECK_N(bit(clk.AFUR_xxxxEFGHp.qp_old()));
-  CHECK_P(bit(clk.ALEF_AxxxxFGHp.qp_old()));
-  CHECK_P(bit(clk.APUK_ABxxxxGHp.qp_old()));
-  CHECK_P(bit(clk.ADYK_ABCxxxxHp.qp_old()));
+  CHECK_N(bit(clk.AFUR_xxxxEFGH.qp_old()));
+  CHECK_P(bit(clk.ALEF_AxxxxFGH.qp_old()));
+  CHECK_P(bit(clk.APUK_ABxxxxGH.qp_old()));
+  CHECK_P(bit(clk.ADYK_ABCxxxxH.qp_old()));
 
   phase_total = 0;
   phase_origin = 46880720;
@@ -338,7 +338,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
 //------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyOffsets {
-  const int o_pins           = offsetof(GateBoy, pins);
   const int o_old_bus        = offsetof(GateBoy, old_bus);
   const int o_new_bus        = offsetof(GateBoy, new_bus);
   const int o_vram_bus       = offsetof(GateBoy, vram_bus);
@@ -560,13 +559,14 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
+  clk.PIN_74_CLK.reset_for_pass();
+  clk.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
+
   rst.PIN_71_RST.reset_for_pass();
-  pins.PIN_74_CLK.reset_for_pass();
   rst.PIN_76_T2.reset_for_pass();
   rst.PIN_77_T1.reset_for_pass();
 
   rst.PIN_71_RST.pin_in_dp(bit(~sys_rst));
-  pins.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
   rst.PIN_76_T2.pin_in_dp(bit(~sys_t2));
   rst.PIN_77_T1.pin_in_dp(bit(~sys_t1));
 
@@ -606,24 +606,13 @@ void GateBoy::tock_slow(int pass_index) {
   tock_div();
   tock_reset(bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p);
 
-  // LCDC. Has to be near the top as it controls the video reset signal
-  tock_lcdc();
-
+  tock_lcdc(); // LCDC has to be near the top as it controls the video reset signal
   tock_vid_clocks();
-
-
-
-
+  tock_lyc();
   tock_lcd();
-
-
-
-
-
   tock_joypad();
   tock_serial();
   tock_timer();
-
   tock_bootrom();
 
   //----------------------------------------
@@ -658,7 +647,7 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
     /*#p28.ACYL*/ sprite_scanner.ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGp.qp_new());
 
-    // Sprite store grabs the sprite index off the _old_ oam address bus
+    // Sprite scanner grabs the sprite index off the _old_ oam address bus
     /* p28.YFOT*/ wire _YFOT_OAM_A2p_old = not1(oam_bus.BUS_OAM_A02n.qp_old());
     /* p28.YFOC*/ wire _YFOC_OAM_A3p_old = not1(oam_bus.BUS_OAM_A03n.qp_old());
     /* p28.YVOM*/ wire _YVOM_OAM_A4p_old = not1(oam_bus.BUS_OAM_A04n.qp_old());
@@ -676,26 +665,6 @@ void GateBoy::tock_slow(int pass_index) {
       /*#p28.FETO*/ wire _FETO_SCAN_DONEp = and4(sprite_scanner.YFEL_SCAN0.qp_mid(), sprite_scanner.WEWY_SCAN1.qp_mid(), sprite_scanner.GOSO_SCAN2.qp_mid(), sprite_scanner.FONY_SCAN5.qp_mid()); // 32 + 4 + 2 + 1 = 39
 
       /*#p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(_FETO_SCAN_DONEp, XUPY_ABxxEFxx());
-
-      probe_wire(9, "GAVA", GAVA_SCAN_CLOCKp);
-
-      // DFF17_01 SC
-      // DFF17_02 << CLKp
-      // DFF17_03 SC
-      // DFF17_04 --
-      // DFF17_05 --
-      // DFF17_06 << RSTn  // must be RSTn, see WUVU/VENA/WOSU
-      // DFF17_07 << D
-      // DFF17_08 --
-      // DFF17_09 SC
-      // DFF17_10 --
-      // DFF17_11 --
-      // DFF17_12 SC
-      // DFF17_13 << RSTn
-      // DFF17_14 --
-      // DFF17_15 --
-      // DFF17_16 >> QN   _MUST_ be QN - see TERO
-      // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
       /*#p28.YFEL*/ sprite_scanner.YFEL_SCAN0.dff17_any(GAVA_SCAN_CLOCKp,                   ANOM_LINE_RSTn, sprite_scanner.YFEL_SCAN0.qn_any());
       /* p28.WEWY*/ sprite_scanner.WEWY_SCAN1.dff17_any(sprite_scanner.YFEL_SCAN0.qn_any(), ANOM_LINE_RSTn, sprite_scanner.WEWY_SCAN1.qn_any());
@@ -818,7 +787,7 @@ void GateBoy::tock_slow(int pass_index) {
   }
 
   //----------------------------------------
-  // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if a sprite overlaps the current LCD Y coordinate.
+  // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
   SpriteDeltaY delta = sub_sprite_y(reg_ly, oam_temp_a);
 
@@ -1014,10 +983,6 @@ void GateBoy::update_framebuffer()
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
     uint8_t p0 = bit(lcd.PIN_51_LCD_DATA0.qp_new());
     uint8_t p1 = bit(lcd.PIN_50_LCD_DATA1.qp_new());
-
-    //probe_wire(4, "pix lo", p0);
-    //probe_wire(5, "pix hi", p1);
-
     uint8_t new_pix = p0 + p1 * 2;
 
     framebuffer[lcd_x + lcd_y * 160] = new_pix;

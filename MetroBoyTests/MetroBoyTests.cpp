@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <string>
 
-void run_wpol_acceptance();
 void run_mooneye_acceptance();
 void run_screenshot_tests();
 void run_mealybug_tests();
@@ -657,7 +656,6 @@ int main(int argc, char** argv) {
   run_microtests();
   //run_screenshot_tests();
   //run_mooneye_acceptance();
-  //run_wpol_acceptance();
   //run_mealybug_tests();
   //return 0;
 

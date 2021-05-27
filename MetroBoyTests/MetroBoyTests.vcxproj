@@ -15,7 +15,6 @@
     <ClCompile Include="test_codegen.cpp" />
     <ClCompile Include="test_mooneye.cpp" />
     <ClCompile Include="test_screenshot.cpp" />
-    <ClCompile Include="test_wpol.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CoreLib\CoreLib.vcxproj">

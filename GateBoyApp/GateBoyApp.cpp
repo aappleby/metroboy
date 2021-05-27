@@ -67,7 +67,6 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("roms/dmg-acid2.gb"); // pass
 
 
-  //load_rom("roms/wpol-gb/tests/build/acceptance/gpu/"   "hblank_ly_scx_timing-GS.gb"); // pass
   //load_rom("roms/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
   //load_rom("roms/mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-GS.gb"); // dmg pass, gateboy fail
   //load_rom("roms/mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing_sprites.gb"); // dmg pass, gateboy fail

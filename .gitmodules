@@ -6,7 +6,7 @@
 	url = https://github.com/g-truc/glm
 [submodule "SDL"]
 	path = SDL
-	url = https://github.com/SDL-mirror/SDL
+	url = https://github.com/libsdl-org
 [submodule "json"]
 	path = json
 	url = https://github.com/nlohmann/json

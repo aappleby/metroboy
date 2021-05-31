@@ -478,52 +478,52 @@ void GateBoy::tock_slow(int pass_index) {
 
   if (pass_index == 0) {
     cpu_data_latch &= (uint8_t)BitBase::pack_old(8, (BitBase*)&new_bus.BUS_CPU_D00p);
-    imask_latch     = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
-  }
+    imask_latch = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
 
-  if (DELTA_HA && pass_index == 0) {
-    if (gb_cpu.op == 0x76 && (imask_latch & intf_halt_latch)) gb_cpu.state_ = 0;
-    intf_halt_latch = 0;
-  }
-
-  // +ha -ab -bc -cd -de -ef -fg -gh
-  if (DELTA_HA && pass_index == 0) {
-    // this one latches funny, some hardware bug
-    if (bit(interrupts.NYBO_FF0F_D2p.qp_old())) intf_halt_latch |= INT_TIMER_MASK;
-  }
-
-  // -ha +ab -bc
-  if (DELTA_AB && pass_index == 0) {
-    if (sys_cpu_en) {
-      gb_cpu.tock_ab(imask_latch, intf_latch, cpu_data_latch);
+    if (DELTA_HA) {
+      if (gb_cpu.op == 0x76 && (imask_latch & intf_halt_latch)) gb_cpu.state_ = 0;
+      intf_halt_latch = 0;
     }
-  }
 
-  if (DELTA_AB && pass_index == 0) {
-    if (sys_cpu_en) {
-      bus_req_new.addr  = gb_cpu._bus_addr;
-      bus_req_new.data  = gb_cpu._bus_data;
-      bus_req_new.read  = gb_cpu._bus_read;
-      bus_req_new.write = gb_cpu._bus_write;
+    // +ha -ab -bc -cd -de -ef -fg -gh
+    if (DELTA_HA) {
+      // this one latches funny, some hardware bug
+      if (bit(interrupts.NYBO_FF0F_D2p.qp_old())) intf_halt_latch |= INT_TIMER_MASK;
     }
-  }
 
-  // -bc +cd +de -ef -fg -gh -ha -ab
-  if (DELTA_DE && pass_index == 0) {
-    if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_halt_latch |= INT_VBLANK_MASK;
-    if (bit(interrupts.LALU_FF0F_D1p.qp_old())) intf_halt_latch |= INT_STAT_MASK;
-    if (bit(interrupts.UBUL_FF0F_D3p.qp_old())) intf_halt_latch |= INT_SERIAL_MASK;
-    if (bit(interrupts.ULAK_FF0F_D4p.qp_old())) intf_halt_latch |= INT_JOYPAD_MASK;
-  }
+    // -ha +ab -bc
+    if (DELTA_AB) {
+      if (sys_cpu_en) {
+        gb_cpu.tock_ab(imask_latch, intf_latch, cpu_data_latch);
+      }
+    }
 
-  // -ha -ab -bc -cd -de -ef +fg +gh
-  if (DELTA_GH && pass_index == 0) {
-    cpu_data_latch = 0xFF;
-  }
+    if (DELTA_AB) {
+      if (sys_cpu_en) {
+        bus_req_new.addr = gb_cpu._bus_addr;
+        bus_req_new.data = gb_cpu._bus_data;
+        bus_req_new.read = gb_cpu._bus_read;
+        bus_req_new.write = gb_cpu._bus_write;
+      }
+    }
 
-  // +ha -ab -bc -cd -de -ef -fg +gh
-  if (DELTA_GH && pass_index == 0) {
-    intf_latch = (uint8_t)BitBase::pack_old(5, &interrupts.LOPE_FF0F_D0p);
+    // -bc +cd +de -ef -fg -gh -ha -ab
+    if (DELTA_DE) {
+      if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_halt_latch |= INT_VBLANK_MASK;
+      if (bit(interrupts.LALU_FF0F_D1p.qp_old())) intf_halt_latch |= INT_STAT_MASK;
+      if (bit(interrupts.UBUL_FF0F_D3p.qp_old())) intf_halt_latch |= INT_SERIAL_MASK;
+      if (bit(interrupts.ULAK_FF0F_D4p.qp_old())) intf_halt_latch |= INT_JOYPAD_MASK;
+    }
+
+    // -ha -ab -bc -cd -de -ef +fg +gh
+    if (DELTA_GH) {
+      cpu_data_latch = 0xFF;
+    }
+
+    // +ha -ab -bc -cd -de -ef -fg +gh
+    if (DELTA_GH) {
+      intf_latch = (uint8_t)BitBase::pack_old(5, &interrupts.LOPE_FF0F_D0p);
+    }
   }
 
   //-----------------------------------------------------------------------------
@@ -543,23 +543,38 @@ void GateBoy::tock_slow(int pass_index) {
     cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(0);
   }
 
+  bool addr_is_vram = (bus_req_new.addr >= 0x8000) && (bus_req_new.addr < 0x9FFF);
+  bool in_bootrom = bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old());
+
   if (DELTA_HA) {
     cpu_signals.SIG_IN_CPU_RDp.sig_in(0);
     cpu_signals.SIG_IN_CPU_WRp.sig_in(0);
 
     new_bus.set_addr(bus_req_new.addr & 0x00FF);
     bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_req_new.addr < 0xFE00);
-    if (bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
-    if ((bus_req_new.addr >= 0x8000) && (bus_req_new.addr < 0x9FFF)) addr_ext_new = false;
+    if (in_bootrom) addr_ext_new = false;
+    if (addr_is_vram) addr_ext_new = false;
     cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
   }
   else {
     cpu_signals.SIG_IN_CPU_RDp.sig_in(bus_req_new.read);
     cpu_signals.SIG_IN_CPU_WRp.sig_in(bus_req_new.write);
 
-    new_bus.set_addr(DELTA_HA ? bus_req_new.addr & 0x00FF : bus_req_new.addr);
+    new_bus.set_addr(bus_req_new.addr);
     bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_req_new.addr < 0xFE00);
-    if (bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old())) addr_ext_new = false;
+    //if (in_bootrom && !addr_is_vram) addr_ext_new = false;
+
+    // FIXME bootrom needs to be able to read from  <= 0xFF to check logo...
+    // Is one of the signals from the CPU supposed to indicate instruction vs data fetch?.....
+    // That would be reasonable.
+
+    if (in_bootrom) {
+      if (addr_is_vram) {
+      }
+      else {
+        addr_ext_new = false;
+      }
+    }
     cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
   }
 

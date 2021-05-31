@@ -341,30 +341,24 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
     /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
 
+    probe_wire(8,  "RUVY_CPU_VRM_WRp", _RUVY_CPU_VRAM_WRp);
+    probe_wire(9,  "ROPY_RENDERINGn",  ROPY_RENDERINGn);
+    probe_wire(10, "CPU_EXT_BUSp",     cpu_signals.SIG_IN_CPU_EXT_BUSp.qp_new());
+    //probe_wire(10, "ABUZ_EXT_RAM_CLK", cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new());
+    //probe_wire(11, "SOSE_ADDR_VRAMp",  SOSE_ADDR_VRAMp());
+    //probe_wire(12, "TOLE_CPU_VRM_RDp", TOLE_CPU_VRAM_RDp());
+
     ///* p25.SUDO*/ wire _SUDO_MWRp = not1(/*vram_pins.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
     /* p25.SUDO*/ wire _SUDO_MWRp = not1(SIG_VCC.qp_new()); // Ignoring debug stuff for now
 
-    probe_wire(6, "RUVY", _RUVY_CPU_VRAM_WRp);
-    probe_wire(7, "ROPY", ROPY_RENDERINGn);
-    probe_wire(8, "TUTO", TUTO_VRAM_DBGp());
-    probe_wire(9, "TUJA", TUJA_CPU_VRAM_WRp());
-    probe_wire(10, "SUDO", _SUDO_MWRp);
-
     /*#p25.TYJY*/ wire _TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp(), _SUDO_MWRp, TUJA_CPU_VRAM_WRp());
     /*#p25.SOHY*/ wire _SOHY_MWRn     = nand2(_TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp);
-
-    probe_wire(11, "TYJY", _TYJY_VRAM_WRp);
-    probe_wire(12, "SOHY", _SOHY_MWRn);
-    probe_wire(13, "SERE", SERE_CPU_VRAM_RDp);
 
     /*#p25.RACO*/ wire _RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp());
     /* p25.TAXY*/ wire _TAXY_MWRn_A = and2(_SOHY_MWRn, _RACO_DBG_VRAMn);
     /* p25.SOFY*/ wire _SOFY_MWRn_D =  or2(_SOHY_MWRn, TUTO_VRAM_DBGp());
     /* p25.SYSY*/ wire _SYSY_MWRp_A = not1(_TAXY_MWRn_A);
     /* p25.RAGU*/ wire _RAGU_MWRp_D = not1(_SOFY_MWRn_D);
-
-    probe_wire(14, "SYSY", _SYSY_MWRp_A);
-    probe_wire(15, "RAGU", _RAGU_MWRp_D);
 
     /*PIN_49*/ vram_pins.PIN_49_VRAM_WRn.set_pin_int(_SYSY_MWRp_A, _RAGU_MWRp_D);
 

@@ -78,7 +78,11 @@ int main(int argc, char** argv) {
   failures += t.test_mem();
   failures += t.test_dma();
   failures += t.test_init();
-  //failures += t.test_ext_bus();
+
+#ifndef FAST_MODE
+  failures += t.test_ext_bus();
+#endif
+
   failures += t.test_ppu();
   failures += t.test_timer();
 

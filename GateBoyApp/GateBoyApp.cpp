@@ -53,7 +53,8 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   // why is the vram clear loop not writing to vram?
 
   // regenerate post-bootrom dump
-  gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
+  //gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
+  gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/LinksAwakening.gb"));
   gb_thread.reset_to_bootrom();
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
@@ -138,8 +139,9 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   */
   const char* app = R"(
   0150:
-    ld hl, $0000
-    ld a, (hl)
+    ld a, $FF
+    ld hl, $8000
+    ld (hl), a
     jr -3
   )";
 

@@ -270,15 +270,15 @@ struct Dumper {
 #define ASSERT_P(A)  if (!(A)) { printf("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); __debugbreak(); }
 #define ASSERT_N(A)  if ((A))  { printf("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); __debugbreak(); }
 
-#ifdef ALWAYS_CHECK
-
-#define CHECK_P(A)   if (!(A)) { printf("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  __debugbreak(); }
-#define CHECK_N(A)   if ((A))  { printf("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  __debugbreak(); }
-
-#else
+#ifdef FAST_MODE
 
 #define CHECK_P(A)
 #define CHECK_N(A)
+
+#else
+
+#define CHECK_P(A)   if (!(A)) { printf("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  __debugbreak(); }
+#define CHECK_N(A)   if ((A))  { printf("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  __debugbreak(); }
 
 #endif
 

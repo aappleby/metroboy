@@ -5,31 +5,30 @@
 // Tristate buses to move sprite index & line in/out of sprite store
 
 struct SpriteBus {
-  void reset_to_cart() {
-    BUS_SPR_I0.state = 0b00011100;
-    BUS_SPR_I1.state = 0b00011100;
-    BUS_SPR_I2.state = 0b00011101;
-    BUS_SPR_I3.state = 0b00011100;
-    BUS_SPR_I4.state = 0b00011101;
-    BUS_SPR_I5.state = 0b00011100;
-    BUS_SPR_L0.state = 0b00011101;
-    BUS_SPR_L1.state = 0b00011101;
-    BUS_SPR_L2.state = 0b00011101;
-    BUS_SPR_L3.state = 0b00011101;
+  void reset_to_bootrom() {
+    BUS_SPR_I0.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_I1.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_I2.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_I3.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_I4.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_I5.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_L0.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_L1.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_L2.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_L3.reset(BIT_OLD | BIT_PULLED | 1);
   }
 
-  void reset_for_pass() {
-    BUS_SPR_I0.reset_for_pass();
-    BUS_SPR_I1.reset_for_pass();
-    BUS_SPR_I2.reset_for_pass();
-    BUS_SPR_I3.reset_for_pass();
-    BUS_SPR_I4.reset_for_pass();
-    BUS_SPR_I5.reset_for_pass();
-
-    BUS_SPR_L0.reset_for_pass();
-    BUS_SPR_L1.reset_for_pass();
-    BUS_SPR_L2.reset_for_pass();
-    BUS_SPR_L3.reset_for_pass();
+  void reset_to_cart() {
+    BUS_SPR_I0.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_SPR_I1.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_SPR_I2.reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_SPR_I3.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_SPR_I4.reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_SPR_I5.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_SPR_L0.reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_SPR_L1.reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_SPR_L2.reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_SPR_L3.reset(BIT_OLD | BIT_DRIVEN | 1);
   }
 
   //----------------------------------------

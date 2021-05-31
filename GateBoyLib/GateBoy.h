@@ -106,15 +106,15 @@ struct GateBoy {
 
   int64_t commit_and_hash() {
     int64_t hash = 0;
-#ifdef USE_HASH
+#ifndef FAST_MODE
     {
-      uint8_t* a = (uint8_t*)(&sentinel1);
-      uint8_t* b = (uint8_t*)(&sentinel2);
+      uint8_t* a = reg_begin();
+      uint8_t* b = reg_end();
       hash = hash_blob2(a, b - a);
     }
 #endif
 
-#ifdef USE_COMMIT
+#ifndef FAST_MODE
     {
       uint8_t* a = reg_begin();
       uint8_t* b = reg_end();
@@ -124,13 +124,13 @@ struct GateBoy {
     return hash;
   }
 
-  void check_state_old_and_driven_or_pullup() {
+  void check_state_old_and_driven_or_pulled() {
     auto s = reg_end() - reg_begin();
     for (auto i = 0; i < s; i++) {
       auto r = reg_begin()[i];
       (void)r;
       CHECK_P((r & 0xF0) == BIT_OLD);
-      CHECK_P((r & BIT_DRIVEN) || (r & BIT_PULLUP));
+      CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
     }
   }
 
@@ -232,11 +232,11 @@ struct GateBoy {
   /* p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /* p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
 
-  /* p07.UBET*/ wire UBETp()           const { return not1(rst.PIN_77_T1.qp_new()); }
-  /* p07.UVAR*/ wire UVARp()           const { return not1(rst.PIN_76_T2.qp_new()); }
-  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(rst.PIN_77_T1.qp_new(), UVARp()); }
-  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(rst.PIN_76_T2.qp_new(), UBETp()); }
-  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), rst.PIN_71_RST.qp_new()); }
+  /* p07.UBET*/ wire UBETp()           const { return not1(rst.PIN_77_T1.qp_int_new()); }
+  /* p07.UVAR*/ wire UVARp()           const { return not1(rst.PIN_76_T2.qp_int_new()); }
+  /* p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(rst.PIN_77_T1.qp_int_new(), UVARp()); }
+  /* p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(rst.PIN_76_T2.qp_int_new(), UBETp()); }
+  /* p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), rst.PIN_71_RST.qp_int_new()); }
   /* p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /* p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
@@ -399,19 +399,22 @@ struct GateBoy {
 
   //----------
 
-  GateBoyCpuBus old_bus;
-  GateBoyCpuBus new_bus;
+  GateBoyCpuBus  old_bus;
 
-  VramBus vram_bus;
+  GateBoyCpuBus  new_bus;
+  VramBus        vram_bus;
+  SpriteBus      sprite_bus;
+  GateBoyOamBus  oam_bus;
+
 
   /*p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
   /*p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
 
-  GateBoyCpuSignals  cpu_signals;
-  GateBoyExtPins  ext_pins;
-  GateBoyVramPins vram_pins;
-  GateBoyOamBus  oam_bus;
-  GateBoyZramBus zram_bus;
+  GateBoyCpuSignals cpu_signals;
+  GateBoyExtPins    ext_pins;
+  GateBoyVramPins   vram_pins;
+  GateBoyOam        oam;
+  GateBoyZram       zram_bus;
 
   OamLatchA oam_latch_a;
   OamLatchB oam_latch_b;
@@ -432,7 +435,6 @@ struct GateBoy {
 
   GateBoySpriteStore   sprite_store;
 
-  SpriteBus sprite_bus;
   SpriteCounter sprite_counter;
 
   SpriteMatchFlags sprite_match_flags;
@@ -506,10 +508,6 @@ struct GateBoy {
 
   uint64_t sentinel2 = SENTINEL2;
 
-  // Position in the current scanline, in phases since ATEJ_LINE_RSTp fired. For debugging.
-
-  int line_phase_x = 0;
-
   //-----------------------------------------------------------------------------
   // Control stuff
 
@@ -559,6 +557,8 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
   // LCD and framebuffer
+
+  int line_phase_x = 0; // Position in the current scanline, in phases since ATEJ_LINE_RSTp fired. For debugging.
 
   int old_lcd_x = 0;
   int old_lcd_y = 0;

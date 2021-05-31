@@ -6,9 +6,6 @@
 
 void GateBoy::tock_serial()
 {
-  serial.PIN_68_SCK.reset_for_pass();
-  serial.PIN_70_SOUT.reset_for_pass();
-
   /*#p06.UWAM*/ wire _UWAM_FF02_WRn = nand4(new_bus.TOVY_A00n(), new_bus.BUS_CPU_A01p.qp_new(), cpu_signals.TAPU_CPU_WRp.qp_new(), new_bus.SANO_FF00_FF03p());
   /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(_UWAM_FF02_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
 
@@ -20,7 +17,7 @@ void GateBoy::tock_serial()
 
   for (int rep = 0; rep < 2; rep++) {
     // FIXME check PIN_68 polarity
-    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_any());
+    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_int_any());
     /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUNNING.qn_any());
 
     {
@@ -42,33 +39,30 @@ void GateBoy::tock_serial()
       /*#p06.JAGO*/ wire _JAGO =  not1(serial.CULY_SER_DIR.qp_new());
       /*#p06.KUJO*/ wire _KUJO =  nor2(_JAGO, _DAWA_SER_CLK); // schematic wrong
 
-      /*PIN_68*/ serial.PIN_68_SCK.pin_io_out_pull_hilo_any(serial.CULY_SER_DIR.qp_new(), _KEXU, _KUJO);
-      serial.PIN_68_SCK.pin_io_in_oedp_any(0, 1);
+      /*PIN_68*/ serial.PIN_68_SCK.set_pin_io_any(serial.CULY_SER_DIR.qp_new(), _KEXU, _KUJO, 0, 1);
     }
   }
 
   //----------------------------------------
 
   {
-    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_new());
+    /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_int_new());
     /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUNNING.qn_new());
     /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
     /*#p06.ELYS*/ serial.ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, ALUR_SYS_RSTn(), serial.EDER_SER_DATA7.qp_old());
     ///* p05.KENA*/ wire _KENA = mux2n(KUKO_DBG_FF00_D6, ELYS_SER_OUT.qp_new(), FF60_0); // FIXME hacking out debug stuff
-    /*PIN_70*/ serial.PIN_70_SOUT.pin_out_dp(serial.ELYS_SER_OUT.qp_new());
+    /*PIN_70*/ serial.PIN_70_SOUT.set_pin_int(serial.ELYS_SER_OUT.qp_new());
   }
 
-  serial.PIN_69_SIN.reset_for_pass();
-
-  /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_new());
+  /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_int_new());
   /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUNNING.qn_new());
   /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
   /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
   /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
   /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
 
-  // this pin has 4 wire2s attached, but they're not traced
-  serial.PIN_69_SIN.pin_in_dp(1);
+  // this pin has 4 wires attached, but they're not traced
+  serial.PIN_69_SIN.set_pin_ext(1);
 
   /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_signals.TAPU_CPU_WRp.qp_new(), new_bus.SANO_FF00_FF03p(), new_bus.TOLA_A01n(),   new_bus.BUS_CPU_A00p.qp_new());
   /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D00p.qp_new(), ALUR_SYS_RSTn());
@@ -90,7 +84,7 @@ void GateBoy::tock_serial()
   /* p06.EDEL*/ wire _EDEL_SER_DATA6_SETn = nand2(new_bus.BUS_CPU_D06p.qp_new(), _DAKU_FF01_WRp);
   /* p06.EFEF*/ wire _EFEF_SER_DATA7_SETn = nand2(new_bus.BUS_CPU_D07p.qp_new(), _DAKU_FF01_WRp);
 
-  /* p06.CAGE*/ wire _CAGE_SER_IN_new  = not1(serial.PIN_69_SIN.qp_new());
+  /* p06.CAGE*/ wire _CAGE_SER_IN_new  = not1(serial.PIN_69_SIN.qp_int_new());
   /* p06.EDER*/ serial.EDER_SER_DATA7.dff22(_EPYT_SER_CLK, _EFEF_SER_DATA7_SETn, _EGUV_SER_DATA7_RSTn, serial.EROD_SER_DATA6.qp_old());
   /* p06.EROD*/ serial.EROD_SER_DATA6.dff22(_EPYT_SER_CLK, _EDEL_SER_DATA6_SETn, _EFAK_SER_DATA6_RSTn, serial.EJAB_SER_DATA5.qp_old());
   /* p06.EJAB*/ serial.EJAB_SER_DATA5.dff22(_EPYT_SER_CLK, _ELOK_SER_DATA5_SETn, _EHUJ_SER_DATA5_RSTn, serial.DOVU_SER_DATA4.qp_old());

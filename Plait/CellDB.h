@@ -162,12 +162,17 @@ struct DieDB {
     return new_cell;
   }
 
+  void error(const char* format, ...);
+
   std::map<std::string, DieCell*> cell_map;
 
   //std::vector<DieTrace*> traces;
   std::vector<DieTrace> traces;
 
   //std::map<std::string, DieTrace*> trace_map_old;
+
+  std::string current_filename;
+  int current_line;
 
   int total_lines = 0;
   int total_tagged_lines = 0;

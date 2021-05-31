@@ -34,12 +34,22 @@ void commit_blob(void* blob, size_t size) {
   for (size_t i = 0; i < size; i++) {
     uint8_t s = base[i];
 
-    if ((s & 0xF0) != 0xE0) {
+    if (bool(s & BIT_DRIVEN) && bool(s & BIT_PULLED)) {
+      LOG_Y("Bit %d both driven and pulled up!\n", i);
+      bad_bits = true;
+    }
+
+    if (!bool(s & BIT_DRIVEN) && !bool(s & BIT_PULLED)) {
+      LOG_Y("Bit %d floating!\n", i);
+      bad_bits = true;
+    }
+
+    if ((s & (BIT_OLD | BIT_NEW)) != BIT_NEW) {
       LOG_Y("Bit %d not dirty after sim pass!\n", i);
       bad_bits = true;
     }
 
-    base[i] = (s & 0b00001111) | 0b00010000;
+    base[i] = (s & 0b00001111) | BIT_OLD;
   }
   ASSERT_N(bad_bits);
 }

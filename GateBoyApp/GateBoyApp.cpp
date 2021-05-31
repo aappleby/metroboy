@@ -138,7 +138,9 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   */
   const char* app = R"(
   0150:
-    jr -2
+    ld hl, $0000
+    ld a, (hl)
+    jr -3
   )";
 
   Assembler as;

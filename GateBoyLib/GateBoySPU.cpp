@@ -3,6 +3,8 @@
 
 #pragma warning(disable : 4189)
 
+/// plait_noparse
+
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_spu() {
@@ -50,18 +52,18 @@ void GateBoy::tock_spu() {
   /*#p10.CONA*/ wire CONA_ADDR_FF2X  = not1(BEZY_ADDR_FF2Xn);
 
 #if 0
-    /*p09.EDEK*/ next.apu.NR52_DBG_APU       = not1(!b.apu.NR52_DBG_APUn);
+    / *p09.EDEK* / next.apu.NR52_DBG_APU       = not1(!b.apu.NR52_DBG_APUn);
 
-    /*p18.COKA*/ wire CH3_ACTIVE = not1(!b.ch3.CH3_ACTIVEo);
-    /*p18.ERED*/ wire CH3_ACTIVEn = not1(CH3_ACTIVE);
-    /*p20.JUWA*/ wire CH4_ACTIVEn = not1(b.ch4.CH4_ACTIVE);
+    / *p18.COKA* / wire CH3_ACTIVE = not1(!b.ch3.CH3_ACTIVEo);
+    / *p18.ERED* / wire CH3_ACTIVEn = not1(CH3_ACTIVE);
+    / *p20.JUWA* / wire CH4_ACTIVEn = not1(b.ch4.CH4_ACTIVE);
 
     if (NR52_RDna) next.bus.set_data(
-      /*p09.COTO*/ not1(CH1_ACTIVEn),
-      /*p09.EFUS*/ not1(CH2_ACTIVEn),
-      /*p09.FATE*/ not1(CH3_ACTIVEn),
-      /*p09.KOGE*/ not1(CH4_ACTIVEn),
-      /*p09.HOPE*/ b.apu.NR52_ALL_SOUND_ON
+      / *p09.COTO* / not1(CH1_ACTIVEn),
+      / *p09.EFUS* / not1(CH2_ACTIVEn),
+      / *p09.FATE* / not1(CH3_ACTIVEn),
+      / *p09.KOGE* / not1(CH4_ACTIVEn),
+      / *p09.HOPE* / b.apu.NR52_ALL_SOUND_ON
     );
 #endif
 

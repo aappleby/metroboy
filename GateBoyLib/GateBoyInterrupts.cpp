@@ -14,16 +14,16 @@
 
 void GateBoy::tock_interrupts()
 {
-  uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, &new_bus.BUS_CPU_A00p);
+  uint16_t cpu_addr = (uint16_t)BitBase::pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_RDn_ext = nand2(cpu_signals.TEDO_CPU_RDp.qp_new(), FFFF_HIT_ext);
   wire FFFF_WRn_ext = nand2(cpu_signals.TAPU_CPU_WRp.qp_new(), FFFF_HIT_ext);
 
-  interrupts.IE_D0.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D00p.qp_old());
-  interrupts.IE_D1.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D01p.qp_old());
-  interrupts.IE_D2.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D02p.qp_old());
-  interrupts.IE_D3.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D03p.qp_old());
-  interrupts.IE_D4.dff_r(FFFF_WRn_ext, rst.PIN_71_RST.qn_new(), old_bus.BUS_CPU_D04p.qp_old());
+  interrupts.IE_D0.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D00p.qp_old());
+  interrupts.IE_D1.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D01p.qp_old());
+  interrupts.IE_D2.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D02p.qp_old());
+  interrupts.IE_D3.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D03p.qp_old());
+  interrupts.IE_D4.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D04p.qp_old());
 
   /* p21.SEPA*/ wire _SEPA_FF41_WRp = and2(CUPA_CPU_WRp(), new_bus.VARY_FF41p());
   /* p21.RYVE*/ wire _RYVE_FF41_WRn = not1(_SEPA_FF41_WRp);

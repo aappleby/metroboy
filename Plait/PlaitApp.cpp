@@ -17,11 +17,8 @@
 #include <filesystem>
 #include <sstream>
 
-//#include <windows.h>
-
 using namespace std;
 
-//const dvec2 node_size = {128,64};
 const dvec2 node_size = {64,64};
 const dvec2 node_half_size = {32,32};
 const dvec2 port_size = {4,4};
@@ -34,8 +31,6 @@ const double half_world_height = world_height / 2.0;
 
 const int world_min = -1;
 const int world_max = 1;
-//const int world_min = 0;
-//const int world_max = 0;
 
 static std::map<ToolMode, std::string> tool_to_string = {
   {ToolMode::NONE,            "NONE"},
@@ -61,16 +56,12 @@ static std::map<ToolMode, std::string> tool_to_string = {
 dvec2 wrap(dvec2 d) {
   while(d.x >  half_world_width) d.x -= world_width;
   while(d.x < -half_world_width) d.x += world_width;
-  //while(d.y >  half_world_height) d.y -= world_height;
-  //while(d.y < -half_world_height) d.y += world_height;
   return d;
 }
 
 dvec2 wrap_towards(dvec2 origin, dvec2 d) {
   while((d.x - origin.x) >  half_world_width) d.x -= world_width;
   while((d.x - origin.x) < -half_world_width) d.x += world_width;
-  //while((d.y - origin.y) >  half_world_height) d.y -= world_height;
-  //while((d.y - origin.y) < -half_world_height) d.y += world_height;
   return d;
 }
 
@@ -85,28 +76,30 @@ int main(int argc, char** argv) {
   (void)die_db_file;
 
   PlaitApp* app = new PlaitApp();
+  (void)app;
 
-#if 1
+  printf("Parsing gateboy source\n");
+  app->die_db.parse_dir("GateBoyLib");
+  printf("Done\n\n");
+
+#if 0
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
   printf("Done\n\n");
 
   {
     printf("Saving gameboy.die_db.json\n");
-    //std::ostringstream stream_out;
-    //app->die_db.save_json(stream_out);
     app->die_db.save_json(die_db_file);
     printf("Done\n\n");
 
     printf("Loading gameboy.die_db.json\n");
     app->die_db.clear();
-    //std::istringstream stream_in(stream_out.str());
-    //app->die_db.load_json(stream_in);
     app->die_db.load_json(die_db_file);
     printf("Done\n\n");
   }
+#endif
 
-#else
+#if 0
   printf("Loading gameboy.die_db.json\n");
   app->die_db.clear();
   app->die_db.load_json("gameboy.die_db.json");
@@ -144,7 +137,7 @@ int main(int argc, char** argv) {
   }
 #endif
 
-#if 1
+#if 0
 
   printf("Loading gameboy.plait.json\n");
   {

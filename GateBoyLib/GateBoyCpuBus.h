@@ -33,58 +33,59 @@ struct GateBoyCpuSignals {
 
 struct GateBoyCpuBus {
   void reset_to_cart_new() {
-    BUS_CPU_A00p.state = 0b00011100;
-    BUS_CPU_A01p.state = 0b00011100;
-    BUS_CPU_A02p.state = 0b00011100;
-    BUS_CPU_A03p.state = 0b00011100;
-    BUS_CPU_A04p.state = 0b00011101;
-    BUS_CPU_A05p.state = 0b00011100;
-    BUS_CPU_A06p.state = 0b00011101;
-    BUS_CPU_A07p.state = 0b00011100;
-    BUS_CPU_A08p.state = 0b00011100;
-    BUS_CPU_A09p.state = 0b00011100;
-    BUS_CPU_A10p.state = 0b00011100;
-    BUS_CPU_A11p.state = 0b00011100;
-    BUS_CPU_A12p.state = 0b00011100;
-    BUS_CPU_A13p.state = 0b00011100;
-    BUS_CPU_A14p.state = 0b00011100;
-    BUS_CPU_A15p.state = 0b00011100;
-    BUS_CPU_D00p.state = 0b00010101;
-    BUS_CPU_D01p.state = 0b00010101;
-    BUS_CPU_D02p.state = 0b00010101;
-    BUS_CPU_D03p.state = 0b00010101;
-    BUS_CPU_D04p.state = 0b00010101;
-    BUS_CPU_D05p.state = 0b00010101;
-    BUS_CPU_D06p.state = 0b00010101;
-    BUS_CPU_D07p.state = 0b00010101;
+    BUS_CPU_A00p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A01p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A02p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A03p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A04p.reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_CPU_A05p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A06p.reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_CPU_A07p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A08p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A09p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A10p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A11p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A12p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A13p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A14p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A15p.reset(BIT_OLD | BIT_DRIVEN | 0);
+
+    BUS_CPU_D00p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D01p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D02p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D03p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D04p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D05p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D06p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D07p.reset(BIT_OLD | BIT_PULLED | 1);
   }
 
-  void reset_for_pass() {
-    BUS_CPU_A00p.reset_for_pass();
-    BUS_CPU_A01p.reset_for_pass();
-    BUS_CPU_A02p.reset_for_pass();
-    BUS_CPU_A03p.reset_for_pass();
-    BUS_CPU_A04p.reset_for_pass();
-    BUS_CPU_A05p.reset_for_pass();
-    BUS_CPU_A06p.reset_for_pass();
-    BUS_CPU_A07p.reset_for_pass();
-    BUS_CPU_A08p.reset_for_pass();
-    BUS_CPU_A09p.reset_for_pass();
-    BUS_CPU_A10p.reset_for_pass();
-    BUS_CPU_A11p.reset_for_pass();
-    BUS_CPU_A12p.reset_for_pass();
-    BUS_CPU_A13p.reset_for_pass();
-    BUS_CPU_A14p.reset_for_pass();
-    BUS_CPU_A15p.reset_for_pass();
+  void reset_to_bootrom() {
+    BUS_CPU_A00p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A01p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A02p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A03p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A04p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A05p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A06p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A07p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A08p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A09p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A10p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A11p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A12p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A13p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A14p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A15p.reset(BIT_OLD | BIT_PULLED | 1);
 
-    BUS_CPU_D00p.reset_for_pass();
-    BUS_CPU_D01p.reset_for_pass();
-    BUS_CPU_D02p.reset_for_pass();
-    BUS_CPU_D03p.reset_for_pass();
-    BUS_CPU_D04p.reset_for_pass();
-    BUS_CPU_D05p.reset_for_pass();
-    BUS_CPU_D06p.reset_for_pass();
-    BUS_CPU_D07p.reset_for_pass();
+    BUS_CPU_D00p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D01p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D02p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D03p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D04p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D05p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D06p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D07p.reset(BIT_OLD | BIT_PULLED | 1);
   }
 
   void set_addr(uint16_t bus_addr_new)

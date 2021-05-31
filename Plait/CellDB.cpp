@@ -144,7 +144,7 @@ std::map<std::string, DieCellType> gate_to_cell_type = {
   {"pin_io_out_pull_hilo",     DieCellType::PIN_IO},
   {"pin_io_out_pull_hilo_any", DieCellType::PIN_IO},
   {"pin_io_in_oedp",           DieCellType::PIN_IO},
-  {"pin_io_in_oedp_any",       DieCellType::PIN_IO},
+  //{"pin_io_in_oedp_any",       DieCellType::PIN_IO},
 
   {"pin_clk",     DieCellType::PIN_CLK},
 
@@ -448,6 +448,18 @@ void DieDB::sanity_check() {
   }
 }
 
+//----------------------------------------
+
+void DieDB::error(const char* format, ...) {
+  char source_buf[1024];
+  va_list args;
+  va_start(args, format);
+  vsnprintf(source_buf, 1024, format, args);
+  va_end(args);
+  printf("@%s:%d - ", current_filename.c_str(), current_line);
+  printf(source_buf);
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 bool DieDB::parse_dir(const std::string& path) {
@@ -464,7 +476,7 @@ bool DieDB::parse_dir(const std::string& path) {
     string line = R"(  /* p28.ATEJ*/ wire ATEJ_LINE_RSTp_old() const;)";
     parse_line(line);
   }
-#else
+#endif
 
   // FIXME scan headers before source
 
@@ -475,10 +487,15 @@ bool DieDB::parse_dir(const std::string& path) {
       std::string p = entry.path().filename().string();
       smatch matches;
       if (regex_match(p, matches, src_names)) {
+        current_filename = entry.path().string();
         result &= parse_file(entry.path().string());
       }
     }
   }
+
+#if 0
+  current_filename = "<postprocess>";
+  current_line = 0;
 
   //----------------------------------------
   // Postprocess the cells.
@@ -489,7 +506,7 @@ bool DieDB::parse_dir(const std::string& path) {
 
 
     if (cell->long_name.empty()) {
-      printf("Cell %s needs a name\n", cell->tag.c_str());
+      error("Cell %s needs a name\n", cell->tag.c_str());
       cell->long_name = cell->tag;
     }
 
@@ -523,8 +540,8 @@ bool DieDB::parse_dir(const std::string& path) {
     if (cell->cell_type != DieCellType::BUS) {
 
       if (!gate_to_in_ports.contains(cell->gate)) {
-        printf("bad cell \"%s\"\n", cell->tag.c_str());
-        printf("bad gate \"%s\"\n", cell->gate.c_str());
+        error("bad cell \"%s\"\n", cell->tag.c_str());
+        error("bad gate \"%s\"\n", cell->gate.c_str());
       }
       CHECK_P(gate_to_in_ports.contains(cell->gate));
 
@@ -573,11 +590,18 @@ bool DieDB::parse_file(const std::string& path) {
   bool result = true;
   printf("Parsing %s\n", path.c_str());
   std::ifstream lines(path);
+  current_line = 1;
   for (string line; getline(lines, line); ) {
+    if (line == "/// plait_noparse") {
+      printf("Skipping %s\n", current_filename.c_str());
+      break;
+    }
+
     total_lines++;
     if (parse_line(line)) {
       total_tagged_lines++;
     }
+    current_line++;
   }
   return result;
 }
@@ -608,7 +632,7 @@ bool DieDB::parse_line(const std::string& line) {
       result &= parse_rest(*cell, matches[2].str());
     }
     else {
-      printf("Could not parse line : \"%s\"\n", line.c_str());
+      error("Could not parse line : \"%s\"\n", line.c_str());
       result = false;
     }
   }
@@ -674,7 +698,7 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
     result &= parse_cell_def(c, match[2].str());
   }
   else if (regex_match(rest, match, wire_decl)) {
-    printf("are we using this?");
+    error("are we using this?");
     __debugbreak();
     result &= parse_cell_name(c, match[1].str());
   }
@@ -689,6 +713,7 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
     result &= parse_tribuf_bus_target(c, match[1].str());
   }
   else if (regex_match(rest, match, pin_call)) {
+    printf("rest %s\n", rest.c_str());
     result &= parse_pin_name(c, match[1].str());
     result &= parse_cell_def(c, match[2].str());
   }
@@ -711,7 +736,7 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
     result &= parse_cell_def(c, match[2].str());
   }
   else {
-    printf("Could not parse rest : \"%s\"\n", rest.c_str());
+    error("Could not parse rest : \"%s\"\n", rest.c_str());
     result = false;
   }
   return result;
@@ -778,7 +803,7 @@ bool DieDB::parse_tag(const std::string& tag_comment, std::string& page_out, std
     return true;
   }
   else {
-    printf("Could not parse tag comment %s\n", tag_comment.c_str());
+    error("Could not parse tag comment %s\n", tag_comment.c_str());
     return false;
   }
 }
@@ -926,7 +951,7 @@ bool DieDB::parse_cell_arg(const std::string& arg, std::string& tag_out, std::st
     return true;
   }
   else {
-    printf("Could not parse arg \"%s\"\n", arg.c_str());
+    error("Could not parse arg \"%s\"\n", arg.c_str());
     __debugbreak();
     return false;
   }
@@ -989,7 +1014,7 @@ bool DieDB::parse_cell_def(DieCell& c, const string& value) {
     }
   }
   else {
-    printf("Could not parse value %s\n", value.c_str());
+    error("Could not parse value %s\n", value.c_str());
     result = false;
   }
   return result;
@@ -1020,7 +1045,7 @@ bool DieDB::parse_cell_name(DieCell& c, const string& name) {
     base_name = match[1].str();
   }
   else {
-    printf("Could not parse name %s\n", name.c_str());
+    error("Could not parse name %s\n", name.c_str());
     return false;
   }
 
@@ -1060,7 +1085,7 @@ bool DieDB::parse_tribuf_bus_target(DieCell& c, const string& bus_name) {
 
     return true;
   } else {
-    printf("Could not parse bus name \"%s\"\n", bus_name.c_str());
+    error("Could not parse bus name \"%s\"\n", bus_name.c_str());
     return false;
   }
 }
@@ -1076,7 +1101,7 @@ bool DieDB::parse_pin_name(DieCell& c, const string& pin_name) {
     c.long_name = trim_name(match[1].str());
     return true;
   } else {
-    printf("Could not parse pin name %s\n", pin_name.c_str());
+    error("Could not parse pin name %s\n", pin_name.c_str());
     return false;
   }
 }
@@ -1092,7 +1117,7 @@ bool DieDB::parse_sig_name(DieCell& c, const string& sig_name) {
     c.long_name = trim_name(match[1].str());
     return true;
   } else {
-    printf("Could not parse sig name %s\n", sig_name.c_str());
+    error("Could not parse sig name %s\n", sig_name.c_str());
     return false;
   }
 }

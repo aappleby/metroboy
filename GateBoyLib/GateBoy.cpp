@@ -24,6 +24,9 @@ void GateBoy::reset_to_bootrom(bool fastboot)
     *c = 0b00011000;
   }
 
+  new_bus.reset_to_bootrom();
+  sprite_bus.reset_to_bootrom();
+
   dma.NAFA_DMA_A08n.state = 0b00011010;
   dma.PYNE_DMA_A09n.state = 0b00011010;
   dma.PARA_DMA_A10n.state = 0b00011010;
@@ -67,7 +70,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   sentinel3 = SENTINEL3;
   sentinel4 = SENTINEL4;
 
-  check_state_old_and_driven_or_pullup();
+  check_state_old_and_driven_or_pulled();
 
   sys_fastboot = fastboot;
 
@@ -187,7 +190,7 @@ void GateBoy::reset_to_cart() {
   reg_NR51.reset_to_cart();
   reg_NR52.reset_to_cart();
 
-  check_state_old_and_driven_or_pullup();
+  check_state_old_and_driven_or_pulled();
 
   line_phase_x = 98 * 8 + 6;
 
@@ -413,7 +416,7 @@ void GateBoy::next_phase() {
 
   tock_slow(0);
 
-#ifdef CHECK_SINGLE_PASS
+#ifndef FAST_MODE
   uint64_t hash_old = commit_and_hash();
 
   static GateBoy gb1;
@@ -425,7 +428,7 @@ void GateBoy::next_phase() {
 
   uint64_t hash_new = commit_and_hash();
 
-#ifdef CHECK_SINGLE_PASS
+#ifndef FAST_MODE
   if (hash_old != hash_new) {
     LOG_Y("Sim not stable after second pass!\n");
 
@@ -474,7 +477,7 @@ void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
 
   if (pass_index == 0) {
-    cpu_data_latch &= (uint8_t)BitBase::pack_old(8, &new_bus.BUS_CPU_D00p);
+    cpu_data_latch &= (uint8_t)BitBase::pack_old(8, (BitBase*)&new_bus.BUS_CPU_D00p);
     imask_latch     = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
   }
 
@@ -525,7 +528,9 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
-  new_bus.reset_for_pass();
+  memset(&new_bus, BIT_NEW | BIT_PULLED | 1, sizeof(new_bus));
+
+  //-----------------------------------------------------------------------------
 
   if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
     // Data has to be driven on EFGH or we fail the wave tests
@@ -534,6 +539,7 @@ void GateBoy::tock_slow(int pass_index) {
     cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(bus_req_new.read);
   }
   else {
+    new_bus.set_data(false, bus_req_new.data_lo);
     cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(0);
   }
 
@@ -559,16 +565,16 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
-  clk.PIN_74_CLK.reset_for_pass();
+  //clk.PIN_74_CLK.reset_for_pass();
   clk.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
 
-  rst.PIN_71_RST.reset_for_pass();
-  rst.PIN_76_T2.reset_for_pass();
-  rst.PIN_77_T1.reset_for_pass();
+  //rst.PIN_71_RST.reset_for_pass();
+  //rst.PIN_76_T2.reset_for_pass();
+  //rst.PIN_77_T1.reset_for_pass();
 
-  rst.PIN_71_RST.pin_in_dp(bit(~sys_rst));
-  rst.PIN_76_T2.pin_in_dp(bit(~sys_t2));
-  rst.PIN_77_T1.pin_in_dp(bit(~sys_t1));
+  rst.PIN_71_RST.set_pin_ext(bit(~sys_rst));
+  rst.PIN_76_T2.set_pin_ext(bit(~sys_t2));
+  rst.PIN_77_T1.set_pin_ext(bit(~sys_t1));
 
   interrupts.SIG_CPU_ACK_VBLANK.sig_in(bit(gb_cpu.int_ack, BIT_VBLANK));
   interrupts.SIG_CPU_ACK_STAT  .sig_in(bit(gb_cpu.int_ack, BIT_STAT));
@@ -896,7 +902,8 @@ void GateBoy::tock_slow(int pass_index) {
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  sprite_bus.reset_for_pass();
+  memset(&sprite_bus, BIT_NEW | BIT_PULLED | 1, sizeof(sprite_bus));
+
   sprite_match_to_bus(sprite_store, sprite_match_flags, sprite_bus);
   sprite_scan_to_bus(sprite_scanner, delta, XYMU_RENDERINGn, sprite_match_flags.FEPO_STORE_MATCHp, sprite_bus);
 
@@ -970,7 +977,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   tock_interrupts();
 
-  const_cast<GateBoyCpuBus&>(old_bus) = new_bus;
+  old_bus = new_bus;
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -981,8 +988,8 @@ void GateBoy::update_framebuffer()
   int lcd_y = reg_ly.get_new();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
-    uint8_t p0 = bit(lcd.PIN_51_LCD_DATA0.qp_new());
-    uint8_t p1 = bit(lcd.PIN_50_LCD_DATA1.qp_new());
+    uint8_t p0 = bit(lcd.PIN_51_LCD_DATA0.qp_ext_new());
+    uint8_t p1 = bit(lcd.PIN_50_LCD_DATA1.qp_ext_new());
     uint8_t new_pix = p0 + p1 * 2;
 
     framebuffer[lcd_x + lcd_y * 160] = new_pix;

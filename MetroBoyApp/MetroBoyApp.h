@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CoreLib/StateManager.h"
+#include "CoreLib/StateManager2.h"
 #include "CoreLib/File.h"
 #include "CoreLib/SmoothTimer.h"
 #include "AppLib/App.h"

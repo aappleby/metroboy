@@ -1,8 +1,13 @@
 #include "CoreLib/File.h"
 
+#pragma warning(disable:4996)
+
+double blep() {
+  return 2.0;
+}
+
 size_t file_size(const char* filename) {
-  FILE* f = nullptr;
-  fopen_s(&f, filename, "rb");
+  FILE* f = fopen(filename, "rb");;
 
   if (f == nullptr) {
     printf("Failed to open %s\n", filename);
@@ -16,8 +21,7 @@ size_t file_size(const char* filename) {
 }
 
 size_t load_blob(const char* filename, void* dst, size_t dst_size) {
-  FILE* f = nullptr;
-  fopen_s(&f, filename, "rb");
+  FILE* f = fopen(filename, "rb");
 
   if (f == nullptr) {
     printf("Failed to open %s\n", filename);
@@ -30,15 +34,15 @@ size_t load_blob(const char* filename, void* dst, size_t dst_size) {
 
   ASSERT_P(size == dst_size);
   fseek(f, 0, SEEK_SET);
-  fread(dst, 1, size, f);
+  auto len = fread(dst, 1, size, f);
+  (void)len;
   fclose(f);
   return size;
 }
 
 void save_blob(const char* filename, const void* src, size_t size) {
   //printf("Saving %zd bytes to %s\n", size, filename);
-  FILE* f = nullptr;
-  fopen_s(&f, filename, "wb");
+  FILE* f = fopen(filename, "wb");
   fwrite(src, 1, size, f);
   fclose(f);
 }

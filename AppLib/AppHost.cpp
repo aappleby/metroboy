@@ -6,11 +6,7 @@
 
 #include "CoreLib/Tests.h"
 
-#ifdef _MSC_VER
 #include "SDL/include/SDL.h"
-#else
-#include <SDL2/SDL.h>
-#endif
 
 //-----------------------------------------------------------------------------
 
@@ -207,7 +203,7 @@ int AppHost::app_main(int, char**) {
     //----------------------------------------
     // ImGui render
 
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
     ImGui::Render();
 
     const ImDrawData* draw_data = ImGui::GetDrawData();

@@ -49,12 +49,10 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
 #if 1
-  // something bootrom broken......
-  // why is the vram clear loop not writing to vram?
-
   // regenerate post-bootrom dump
   //gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
-  gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/LinksAwakening.gb"));
+  //gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/LinksAwakening.gb"));
+  gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/SML.gb"));
   gb_thread.reset_to_bootrom();
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
@@ -66,6 +64,8 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("roms/oh.gb"); // works fine
   //load_rom("roms/gejmboj.gb");
   //load_rom("roms/dmg-acid2.gb"); // pass
+  //load_rom("roms/SML.gb");
+  //gb_thread.reset_to_cart();
 
 
   //load_rom("roms/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
@@ -85,11 +85,6 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //load_rom("roms/scribbltests/palettely/palettely.gb");
   //load_rom("roms/scribbltests/scxly/scxly.gb");
   //load_rom("roms/scribbltests/statcount/statcount-auto.gb"); // pass
-
-
-
-
-
 
   //load_rom("microtests/build/dmg/poweron_stat_006.gb"); // stat low nibble goes 5-7-6, but it's supposed to read 4 - SADU cleared too late?
   //load_rom("microtests/build/dmg/poweron_stat_120.gb"); // stat low nibble goes 4-6-2 but it's supposed to read 0 - RUPO cleared too late?
@@ -157,8 +152,8 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   gb_thread.gb->sys_cpu_en = false;
   gb_thread.gb->phase_total = 0;
 
-  gb_thread.gb->dbg_write(ADDR_WY, 113);
-  gb_thread.gb->dbg_write(ADDR_WX, 13 + 7);
+  gb_thread.gb->dbg_write(ADDR_WY, 97);
+  gb_thread.gb->dbg_write(ADDR_WX, 20);
 
   //gb_thread.gb->dbg_write(ADDR_SCX, 7);
   //gb_thread.gb->dbg_write(ADDR_SCY, 7);
@@ -233,7 +228,8 @@ void GateBoyApp::load_flat_dump(const char* filename) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyApp::app_update(double /*delta*/) {
+void GateBoyApp::app_update(double _delta) {
+  this->delta = _delta;
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
 
@@ -313,9 +309,23 @@ void GateBoyApp::app_render_frame() {
 
   gb_thread.pause();
 
-  grid_painter.render(view);
-
   const auto gb = gb_thread.gb.state();
+
+  //----------------------------------------
+  // Button input
+
+  gb->sys_buttons = 0;
+  if (runmode == RUN_FAST) {
+    if (keyboard_state[SDL_SCANCODE_RIGHT])  gb->sys_buttons |= 0x01; // RIGHT
+    if (keyboard_state[SDL_SCANCODE_LEFT])   gb->sys_buttons |= 0x02; // LEFT
+    if (keyboard_state[SDL_SCANCODE_UP])     gb->sys_buttons |= 0x04; // UP
+    if (keyboard_state[SDL_SCANCODE_DOWN])   gb->sys_buttons |= 0x08; // DOWN
+
+    if (keyboard_state[SDL_SCANCODE_X])      gb->sys_buttons |= 0x10; // A
+    if (keyboard_state[SDL_SCANCODE_Z])      gb->sys_buttons |= 0x20; // B
+    if (keyboard_state[SDL_SCANCODE_RSHIFT]) gb->sys_buttons |= 0x40; // SELECT
+    if (keyboard_state[SDL_SCANCODE_RETURN]) gb->sys_buttons |= 0x80; // START
+  }
 
   uint8_t* framebuffer = gb->framebuffer;
   uint8_t* vid_ram = gb->vid_ram;
@@ -328,11 +338,15 @@ void GateBoyApp::app_render_frame() {
   float cursor_y = 4;
   float col_spacing = 220;
 
+  grid_painter.render(view);
+
   //----------------------------------------
   // dump column 1
 
   d("\002===== Thread =====\001\n");
   gb_thread.dump(d);
+  d("App fps       : %f\n", 1.0f / delta);
+
   d("\n");
 
   d("\002===== GateBoy Top =====\001\n");
@@ -530,9 +544,6 @@ void GateBoyApp::app_render_frame() {
 
   // Draw flat memory view
   {
-    //printf("rom_buf.data() %p\n", rom_buf.data());
-    //printf("gb->rom_buf %p\n", gb->rom_buf);
-
     update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread.cart.data());
     update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->vid_ram);
     update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->cart_ram);
@@ -607,6 +618,18 @@ void GateBoyApp::app_render_frame() {
     phase_names[phase_total & 7],
     show_golden ? "GOLDEN IMAGE " : "");
   //d("Sim time %f, sim ratio %f, frame time %f\n", sim_time_smooth, sim_ratio, frame_time_smooth);
+
+  d("%c %c %c %c %c %c %c %c\n",
+    gb->sys_buttons & 0x01 ? 'R' : '-',
+    gb->sys_buttons & 0x02 ? 'L' : '-',
+    gb->sys_buttons & 0x04 ? 'U' : '-',
+    gb->sys_buttons & 0x08 ? 'D' : '-',
+    gb->sys_buttons & 0x10 ? 'A' : '-',
+    gb->sys_buttons & 0x20 ? 'B' : '-',
+    gb->sys_buttons & 0x40 ? 'E' : '-',
+    gb->sys_buttons & 0x80 ? 'S' : '-');
+
+
   text_painter.render_string(view, d.s, gb_x, gb_y + 144 * 2);
   d.clear();
 

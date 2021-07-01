@@ -5,12 +5,9 @@
 #include <list>
 #include <mutex>
 #include <condition_variable>
+#include <string.h>
 
-#ifdef _MSC_VER
 #include "SDL/include/SDL.h"
-#else
-#include <SDL2/SDL.h>
-#endif
 
 #define AVERAGE
 #define HIGHPASS

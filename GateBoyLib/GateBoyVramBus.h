@@ -19,14 +19,14 @@ struct VramBus {
     BUS_VRAM_A11n.reset(BIT_OLD | BIT_DRIVEN | 1);
     BUS_VRAM_A12n.reset(BIT_OLD | BIT_DRIVEN | 1);
 
-    BUS_VRAM_D00p.reset(BIT_OLD | BIT_PULLED | 0);
-    BUS_VRAM_D01p.reset(BIT_OLD | BIT_PULLED | 0);
-    BUS_VRAM_D02p.reset(BIT_OLD | BIT_PULLED | 0);
-    BUS_VRAM_D03p.reset(BIT_OLD | BIT_PULLED | 0);
-    BUS_VRAM_D04p.reset(BIT_OLD | BIT_PULLED | 0);
-    BUS_VRAM_D05p.reset(BIT_OLD | BIT_PULLED | 0);
-    BUS_VRAM_D06p.reset(BIT_OLD | BIT_PULLED | 0);
-    BUS_VRAM_D07p.reset(BIT_OLD | BIT_PULLED | 0);
+    BUS_VRAM_D00p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_VRAM_D01p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_VRAM_D02p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_VRAM_D03p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_VRAM_D04p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_VRAM_D05p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_VRAM_D06p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_VRAM_D07p.reset(BIT_OLD | BIT_DRIVEN | 0);
   }
 
   /*BUS_VRAM_A00n*/ Bus BUS_VRAM_A00n;

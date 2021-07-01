@@ -12,13 +12,13 @@ template<typename T>
 inline void load_array(const std::string& filename, T& data) {
   size_t size = file_size(filename.c_str());
   if (size == 0) return;
-  data.resize(size / sizeof(T::value_type));
+  data.resize(size / sizeof(typename T::value_type));
   load_blob(filename.c_str(), data.data(), size);
 }
 
 template<typename T>
 inline void save_array(const std::string& filename, T& data) {
-  save_blob(filename.c_str(), (void*)data.data(), data.size() * sizeof(T::value_type));
+  save_blob(filename.c_str(), (void*)data.data(), data.size() * sizeof(typename T::value_type));
 }
 
 template<typename T>

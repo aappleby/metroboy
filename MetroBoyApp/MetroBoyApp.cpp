@@ -134,7 +134,7 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
 
   load_array(gb_filename.c_str(), rom);
 
-  gb.clear_history();
+  gb.reset_states();
   gb->reset_to_cart(rom.data(), rom.size());
 
   rom_loaded = true;
@@ -162,17 +162,17 @@ void MetroBoyApp::app_update(double /*delta*/) {
     //case SDLK_DOWN:   stepsize = clamp_val(stepsize - 1, STEP_MIN, STEP_MAX); break;
 
     case SDLK_r: {
-      gb.clear_history();
+      gb.reset_states();
       gb->reset_to_cart(rom.data(), rom.size());
       break;
     }
     case SDLK_F1: {
-      load_obj("dump.MetroBoy", *gb.top());
+      load_obj("dump.MetroBoy", *gb.state());
       rom_loaded = true;
       break;
     }
     case SDLK_F4: {
-      save_obj("dump.MetroBoy", *gb.top());
+      save_obj("dump.MetroBoy", *gb.state());
       break;
     }
 
@@ -189,7 +189,7 @@ void MetroBoyApp::app_update(double /*delta*/) {
 
     if (event.type == SDL_DROPFILE) {
       load_array(event.drop.file, rom);
-      gb.clear_history();
+      gb.reset_states();
       gb->reset_to_cart(rom.data(), rom.size());
       rom_loaded = true;
       runmode = RUN_SYNC;
@@ -217,12 +217,12 @@ void MetroBoyApp::app_update(double /*delta*/) {
   int64_t phase_begin = gb->phase_total;
 
   if (runmode == RUN_FAST) {
-    gb.clear_history();
+    gb.reset_states();
     gb->joy.set(~buttons);
     step_cycle(MCYCLES_PER_FRAME * 8);
   }
   else if (runmode == RUN_SYNC) {
-    gb.clear_history();
+    gb.reset_states();
     gb->joy.set(~buttons);
     sync_to_vblank();
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreLib/Types.h"
 #include <stdio.h>
+#include <string.h>
 
 //-----------------------------------------------------------------------------
 
@@ -390,6 +391,22 @@ struct DFF17 : public DFF {
   }
 };
 
+// same as above but resets to 1?
+
+struct DFF17b : public DFF {
+  void dff17(wire CLKp, wire RSTn, wire Dp) {
+    CHECK_N(state & BIT_NEW);
+    CLKp = (CLKp << 1) & 2;
+
+    if ((~state & CLKp) == 0) Dp = state;
+
+    //Dp &= RSTn;
+    if (!RSTn) Dp = 1;
+
+    state = (Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN;
+  }
+};
+
 //-----------------------------------------------------------------------------
 // 20-rung counter ff with async load. Only used by TIMA and a few audio regs.
 
@@ -486,6 +503,14 @@ struct DFF22 : public DFF {
 // TYGO_10 nc
 
 // tri6_nn : top rung tadpole _not_ facing second rung dot.
+
+// TRI6NN_01 :
+// TRI6NN_02 : NC
+// TRI6NN_03 : NC
+// TRI6NN_04 :
+// TRI6NN_05 : NC
+// TRI6NN_06 :
+
 // tri6_pn : top rung tadpole facing second rung dot.
 
 struct Bus : private BitBase {
@@ -548,7 +573,7 @@ struct PinIO : private BitBase {
     else {
       if (bit(int_LO)) {
         // shootthrough, this is bad
-        __debugbreak();
+        debugbreak();
       }
       else {
         // hi-z, can be driven externally
@@ -644,7 +669,7 @@ struct PinOut : private BitBase {
     }
     else if (!bit(int_HI) && bit(int_LO)) {
       // shootthrough, this is bad
-      __debugbreak();
+      debugbreak();
     }
   }
 };

@@ -1,16 +1,28 @@
 #pragma once
 
-#include "Config.h"
 #include <vector> // for blob
+#include <stdint.h>
 
-typedef signed char        int8_t;
-typedef short              int16_t;
-typedef int                int32_t;
-typedef long long          int64_t;
-typedef unsigned char      uint8_t;
-typedef unsigned short     uint16_t;
-typedef unsigned int       uint32_t;
-typedef unsigned long long uint64_t;
+#ifdef __GNUC__
+#include <csignal>
+#define debugbreak() raise(SIGTRAP);
+
+typedef int64_t LARGE_INTEGER;
+
+#else
+
+#define debugbreak() __debugbreak();
+
+#endif
+
+//typedef signed char        int8_t;
+//typedef short              int16_t;
+//typedef int                int32_t;
+//typedef long long          int64_t;
+//typedef unsigned char      uint8_t;
+//typedef unsigned short     uint16_t;
+//typedef unsigned int       uint32_t;
+//typedef unsigned long long uint64_t;
 
 typedef int16_t sample_t;
 
@@ -20,8 +32,9 @@ typedef uint8_t wire;
 
 inline wire bit(wire w)        { return bool(w & 1); }
 inline wire bit(wire w, int i) { return bool((w >> i) & 1); }
-inline wire clk(wire c) { return (c & 1) << 1; }
-inline wire mask(int i)  { return (1 << i) - 1; }
+
+uint32_t swap(uint32_t x);
+uint64_t swap(uint64_t x);
 
 enum RunMode {
   RUN_STOP = 0, // don't run
@@ -267,18 +280,19 @@ struct Dumper {
 
 //-----------------------------------------------------------------------------
 
-#define ASSERT_P(A)  if (!(A)) { printf("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); __debugbreak(); }
-#define ASSERT_N(A)  if ((A))  { printf("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); __debugbreak(); }
+#define ASSERT_P(A)  if (!(A)) { printf("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
+#define ASSERT_N(A)  if ((A))  { printf("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
 
-#ifdef FAST_MODE
+//#ifdef FAST_MODE
+#if 1
 
 #define CHECK_P(A)
 #define CHECK_N(A)
 
 #else
 
-#define CHECK_P(A)   if (!(A)) { printf("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  __debugbreak(); }
-#define CHECK_N(A)   if ((A))  { printf("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  __debugbreak(); }
+#define CHECK_P(A)   if (!(A)) { printf("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }
+#define CHECK_N(A)   if ((A))  { printf("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }
 
 #endif
 

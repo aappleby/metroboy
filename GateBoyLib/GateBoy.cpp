@@ -63,6 +63,14 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
   reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
 
+  joy.BATU_JP_GLITCH0.state = 0b00011011;
+  joy.ACEF_JP_GLITCH1.state = 0b00011011;
+  joy.AGEM_JP_GLITCH2.state = 0b00011011;
+  joy.APUG_JP_GLITCH3.state = 0b00011011;
+
+  joy.KELY_JOYP_UDLRp.state = 0b00011011;
+  joy.COFY_JOYP_ABCSp.state = 0b00011011;
+
   load_cart(_boot_buf, _boot_size, _cart_buf, _cart_size);
 
   sentinel1 = SENTINEL1;
@@ -260,7 +268,7 @@ void GateBoy::load_cart(uint8_t* _boot_buf, size_t _boot_size,
   case 0x1E: cart_has_mbc1 = 1; cart_has_ram = 1; break; // MBC5+RUMBLE+RAM+BATTERY
   default: {
     printf("Bad cart type! 0x%02x\n", cart_buf[0x0147]);
-    __debugbreak();
+    debugbreak();
   }
   }
 
@@ -318,8 +326,6 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
   bool old_cpu_en = sys_cpu_en;
   sys_cpu_en = false;
 
-  //printf("old req %d %d %d %d\n", old_req.addr, old_req.data, old_req.read, old_req.write);
-
   bus_req_new.addr = uint16_t(addr);
   bus_req_new.data = data;
   bus_req_new.read = 0;
@@ -344,10 +350,15 @@ struct GateBoyOffsets {
   const int o_old_bus        = offsetof(GateBoy, old_bus);
   const int o_new_bus        = offsetof(GateBoy, new_bus);
   const int o_vram_bus       = offsetof(GateBoy, vram_bus);
+  const int o_sprite_bus     = offsetof(GateBoy, sprite_bus);
+  const int o_oam_bus        = offsetof(GateBoy, oam_bus);
+
   const int o_cpu_bus        = offsetof(GateBoy, cpu_signals);
   const int o_ext_bus        = offsetof(GateBoy, ext_pins);
-  const int o_oam_bus        = offsetof(GateBoy, oam_bus);
+  const int o_vram_pins      = offsetof(GateBoy, vram_pins);
+  const int o_oam            = offsetof(GateBoy, oam);
   const int o_zram_bus       = offsetof(GateBoy, zram_bus);
+
   const int o_oam_latch_a    = offsetof(GateBoy, oam_latch_a);
   const int o_oam_latch_b    = offsetof(GateBoy, oam_latch_b);
   const int o_oam_temp_a     = offsetof(GateBoy, oam_temp_a );
@@ -364,7 +375,6 @@ struct GateBoyOffsets {
   const int o_ser_reg        = offsetof(GateBoy, serial);
 
   const int o_sprite_store   = offsetof(GateBoy, sprite_store);
-  const int o_sprite_bus     = offsetof(GateBoy, sprite_bus);
   const int o_sprite_counter = offsetof(GateBoy, sprite_counter);
   const int o_sprite_scanner = offsetof(GateBoy, sprite_scanner);
   const int o_sprite_fetcher = offsetof(GateBoy, sprite_fetcher);
@@ -400,11 +410,11 @@ struct GateBoyOffsets {
   const int o_reg_NR51       = offsetof(GateBoy, reg_NR51 );
   const int o_reg_NR52       = offsetof(GateBoy, reg_NR52 );
 
-  const int o_vid_ram  = offsetof(GateBoy, vid_ram );
-  const int o_cart_ram = offsetof(GateBoy, cart_ram);
-  const int o_int_ram  = offsetof(GateBoy, int_ram );
-  const int o_oam_ram  = offsetof(GateBoy, oam_ram );
-  const int o_zero_ram = offsetof(GateBoy, zero_ram);
+  const int o_vid_ram        = offsetof(GateBoy, vid_ram );
+  const int o_cart_ram       = offsetof(GateBoy, cart_ram);
+  const int o_int_ram        = offsetof(GateBoy, int_ram );
+  const int o_oam_ram        = offsetof(GateBoy, oam_ram );
+  const int o_zero_ram       = offsetof(GateBoy, zero_ram);
 
 } gb_offsets;
 
@@ -416,7 +426,8 @@ void GateBoy::next_phase() {
 
   tock_slow(0);
 
-#ifndef FAST_MODE
+#if 0
+//#ifndef FAST_MODE
   uint64_t hash_old = commit_and_hash();
 
   static GateBoy gb1;
@@ -428,7 +439,8 @@ void GateBoy::next_phase() {
 
   uint64_t hash_new = commit_and_hash();
 
-#ifndef FAST_MODE
+#if 0
+  //#ifndef FAST_MODE
   if (hash_old != hash_new) {
     LOG_Y("Sim not stable after second pass!\n");
 
@@ -461,7 +473,7 @@ void GateBoy::next_phase() {
     if (line_phase_x >= 908) x2 = 0;
 
     if (x1 != x2) {
-      printf("*** %03d %03d %03d %lld\n", x1, x2, line_phase_x, phase_total);
+      printf("*** %03d %03d %03d %llu\n", x1, x2, line_phase_x, phase_total);
     }
   }
 
@@ -535,58 +547,41 @@ void GateBoy::tock_slow(int pass_index) {
   if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
     // Data has to be driven on EFGH or we fail the wave tests
     new_bus.set_data(bus_req_new.write, bus_req_new.data_lo);
-    //cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(bus_req_new.read && (bus_req_new.addr < 0xFF00));
     cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(bus_req_new.read);
   }
   else {
-    new_bus.set_data(false, bus_req_new.data_lo);
+    new_bus.set_data(false, 0);
     cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(0);
   }
 
-  bool addr_is_vram = (bus_req_new.addr >= 0x8000) && (bus_req_new.addr < 0x9FFF);
+  bool addr_ext_new = (bus_req_new.read || bus_req_new.write);
   bool in_bootrom = bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old());
+  bool addr_boot = (bus_req_new.addr <= 0x00FF) && in_bootrom;
+  bool addr_vram = (bus_req_new.addr >= 0x8000) && (bus_req_new.addr < 0x9FFF);
+  bool addr_high = (bus_req_new.addr >= 0xFE00);
 
   if (DELTA_HA) {
     cpu_signals.SIG_IN_CPU_RDp.sig_in(0);
     cpu_signals.SIG_IN_CPU_WRp.sig_in(0);
-
     new_bus.set_addr(bus_req_new.addr & 0x00FF);
-    bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_req_new.addr < 0xFE00);
-    if (in_bootrom) addr_ext_new = false;
-    if (addr_is_vram) addr_ext_new = false;
-    cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
+
+    if (addr_high) addr_ext_new = false;
+    if (addr_boot) addr_ext_new = false;
+    if (addr_vram) addr_ext_new = false;
   }
   else {
     cpu_signals.SIG_IN_CPU_RDp.sig_in(bus_req_new.read);
     cpu_signals.SIG_IN_CPU_WRp.sig_in(bus_req_new.write);
-
     new_bus.set_addr(bus_req_new.addr);
-    bool addr_ext_new = (bus_req_new.read || bus_req_new.write) && (bus_req_new.addr < 0xFE00);
-    //if (in_bootrom && !addr_is_vram) addr_ext_new = false;
 
-    // FIXME bootrom needs to be able to read from  <= 0xFF to check logo...
-    // Is one of the signals from the CPU supposed to indicate instruction vs data fetch?.....
-    // That would be reasonable.
-
-    if (in_bootrom) {
-      if (addr_is_vram) {
-      }
-      else {
-        addr_ext_new = false;
-      }
-    }
-    cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
+    if (addr_high) addr_ext_new = false;
+    if (addr_boot) addr_ext_new = false;
   }
+  cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
 
   //-----------------------------------------------------------------------------
 
-  //clk.PIN_74_CLK.reset_for_pass();
   clk.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
-
-  //rst.PIN_71_RST.reset_for_pass();
-  //rst.PIN_76_T2.reset_for_pass();
-  //rst.PIN_77_T1.reset_for_pass();
-
   rst.PIN_71_RST.set_pin_ext(bit(~sys_rst));
   rst.PIN_76_T2.set_pin_ext(bit(~sys_t2));
   rst.PIN_77_T1.set_pin_ext(bit(~sys_t1));
@@ -635,6 +630,7 @@ void GateBoy::tock_slow(int pass_index) {
   tock_serial();
   tock_timer();
   tock_bootrom();
+  tock_dma();
 
   //----------------------------------------
 
@@ -649,8 +645,6 @@ void GateBoy::tock_slow(int pass_index) {
   /* p27.XAHY*/ wire XAHY_LINE_RSTn = not1(ATEJ_LINE_RSTp.qp_new());
 
   //----------------------------------------
-
-  tock_dma();
 
   //----------------------------------------
   // Sprite scanner
@@ -1007,7 +1001,7 @@ void GateBoy::update_framebuffer()
     uint8_t p1 = bit(lcd.PIN_50_LCD_DATA1.qp_ext_new());
     uint8_t new_pix = p0 + p1 * 2;
 
-    framebuffer[lcd_x + lcd_y * 160] = new_pix;
+    framebuffer[lcd_x + lcd_y * 160] = 3 - new_pix;
   }
 
   old_lcd_x = lcd_x;

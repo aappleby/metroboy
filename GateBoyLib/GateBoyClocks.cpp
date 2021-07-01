@@ -5,9 +5,6 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_clocks() {
-  //clk.PIN_73_CLK_DRIVE.reset_for_pass();
-  //clk.PIN_75_CLK_OUT.reset_for_pass();
-
   /*PIN_73*/ clk.PIN_73_CLK_DRIVE.set_pin_int(clk.PIN_74_CLK.clock());
 
   /* p01.ARYS*/ wire ARYS_CLKIN = not1(clk.PIN_74_CLK.clock());

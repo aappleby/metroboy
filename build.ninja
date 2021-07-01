@@ -1,0 +1,155 @@
+rule compile
+  command = g++ -O3 -Wno-format -I. -std=c++14 -c $in -o $out
+
+rule lib
+  command = ar rcs $out $in
+
+rule link
+  command = g++ -O3 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -o $out
+
+################################################################################
+# CoreLib
+
+build bin/CoreLib/Assembler.o     : compile CoreLib/Assembler.cpp
+build bin/CoreLib/Constants.o     : compile CoreLib/Constants.cpp
+build bin/CoreLib/Debug.o         : compile CoreLib/Debug.cpp
+build bin/CoreLib/File.o          : compile CoreLib/File.cpp
+build bin/CoreLib/MetroBoyCPU.o   : compile CoreLib/MetroBoyCPU.cpp
+build bin/CoreLib/StateManager2.o : compile CoreLib/StateManager2.cpp
+build bin/CoreLib/Types.o         : compile CoreLib/Types.cpp
+
+build bin/CoreLib.a : lib $
+  bin/CoreLib/Assembler.o $
+  bin/CoreLib/Constants.o $
+  bin/CoreLib/Debug.o $
+  bin/CoreLib/File.o $
+  bin/CoreLib/MetroBoyCPU.o $
+  bin/CoreLib/StateManager2.o $
+  bin/CoreLib/Types.o
+
+################################################################################
+# AppLib
+
+build bin/AppLib/AppHost.o        : compile AppLib/AppHost.cpp
+build bin/AppLib/Audio.o          : compile AppLib/Audio.cpp
+build bin/AppLib/Blitter.o        : compile AppLib/Blitter.cpp
+build bin/AppLib/BoxPainter.o     : compile AppLib/BoxPainter.cpp
+build bin/AppLib/Console.o        : compile AppLib/Console.cpp
+build bin/AppLib/DummyApp.o       : compile AppLib/DummyApp.cpp
+build bin/AppLib/DumpPainter.o    : compile AppLib/DumpPainter.cpp
+build bin/AppLib/GatePix.o        : compile AppLib/GatePix.cpp
+build bin/AppLib/GBBlitter.o      : compile AppLib/GBBlitter.cpp
+build bin/AppLib/GLBase.o         : compile AppLib/GLBase.cpp
+build bin/AppLib/GridPainter.o    : compile AppLib/GridPainter.cpp
+build bin/AppLib/LinePainter.o    : compile AppLib/LinePainter.cpp
+build bin/AppLib/Terminus.o       : compile AppLib/Terminus.cpp
+build bin/AppLib/TextPainter.o    : compile AppLib/TextPainter.cpp
+build bin/AppLib/Viewport.o       : compile AppLib/Viewport.cpp
+
+build bin/AppLib.a : lib $
+  bin/AppLib/AppHost.o $
+  bin/AppLib/Audio.o $
+  bin/AppLib/Blitter.o $
+  bin/AppLib/BoxPainter.o $
+  bin/AppLib/Console.o $
+  bin/AppLib/DummyApp.o $
+  bin/AppLib/DumpPainter.o $
+  bin/AppLib/GatePix.o $
+  bin/AppLib/GBBlitter.o $
+  bin/AppLib/GLBase.o $
+  bin/AppLib/GridPainter.o $
+  bin/AppLib/LinePainter.o $
+  bin/AppLib/Terminus.o $
+  bin/AppLib/TextPainter.o $
+  bin/AppLib/Viewport.o $
+
+################################################################################
+# GateBoyLib
+
+build bin/GateBoyLib/GateBoy.o              : compile GateBoyLib/GateBoy.cpp
+build bin/GateBoyLib/GateBoyClocks.o        : compile GateBoyLib/GateBoyClocks.cpp
+build bin/GateBoyLib/GateBoyCpuBus.o        : compile GateBoyLib/GateBoyCpuBus.cpp
+build bin/GateBoyLib/GateBoyDMA.o           : compile GateBoyLib/GateBoyDMA.cpp
+build bin/GateBoyLib/GateBoyDumper.o        : compile GateBoyLib/GateBoyDumper.cpp
+build bin/GateBoyLib/GateBoyExtBus.o        : compile GateBoyLib/GateBoyExtBus.cpp
+build bin/GateBoyLib/GateBoyInterrupts.o    : compile GateBoyLib/GateBoyInterrupts.cpp
+build bin/GateBoyLib/GateBoyJoypad.o        : compile GateBoyLib/GateBoyJoypad.cpp
+build bin/GateBoyLib/GateBoyLCD.o           : compile GateBoyLib/GateBoyLCD.cpp
+build bin/GateBoyLib/GateBoyOamBus.o        : compile GateBoyLib/GateBoyOamBus.cpp
+build bin/GateBoyLib/GateBoyPixPipe.o       : compile GateBoyLib/GateBoyPixPipe.cpp
+build bin/GateBoyLib/GateBoyRegisters.o     : compile GateBoyLib/GateBoyRegisters.cpp
+build bin/GateBoyLib/GateBoyResetDebug.o    : compile GateBoyLib/GateBoyResetDebug.cpp
+build bin/GateBoyLib/GateBoySerial.o        : compile GateBoyLib/GateBoySerial.cpp
+build bin/GateBoyLib/GateBoySpriteFetcher.o : compile GateBoyLib/GateBoySpriteFetcher.cpp
+build bin/GateBoyLib/GateBoySpriteScanner.o : compile GateBoyLib/GateBoySpriteScanner.cpp
+build bin/GateBoyLib/GateBoySpriteStore.o   : compile GateBoyLib/GateBoySpriteStore.cpp
+build bin/GateBoyLib/GateBoySPU.o           : compile GateBoyLib/GateBoySPU.cpp
+build bin/GateBoyLib/GateBoyTileFetcher.o   : compile GateBoyLib/GateBoyTileFetcher.cpp
+build bin/GateBoyLib/GateBoyTimer.o         : compile GateBoyLib/GateBoyTimer.cpp
+build bin/GateBoyLib/GateBoyVramBus.o       : compile GateBoyLib/GateBoyVramBus.cpp
+build bin/GateBoyLib/GateBoyZramBus.o       : compile GateBoyLib/GateBoyZramBus.cpp
+build bin/GateBoyLib/Gates.o                : compile GateBoyLib/Gates.cpp
+build bin/GateBoyLib/Probe.o                : compile GateBoyLib/Probe.cpp
+
+build bin/GateBoyLib.a : lib $
+  bin/GateBoyLib/GateBoy.o $
+  bin/GateBoyLib/GateBoyClocks.o $
+  bin/GateBoyLib/GateBoyCpuBus.o $
+  bin/GateBoyLib/GateBoyDMA.o $
+  bin/GateBoyLib/GateBoyDumper.o $
+  bin/GateBoyLib/GateBoyExtBus.o $
+  bin/GateBoyLib/GateBoyInterrupts.o $
+  bin/GateBoyLib/GateBoyJoypad.o $
+  bin/GateBoyLib/GateBoyLCD.o $
+  bin/GateBoyLib/GateBoyOamBus.o $
+  bin/GateBoyLib/GateBoyPixPipe.o $
+  bin/GateBoyLib/GateBoyRegisters.o $
+  bin/GateBoyLib/GateBoyResetDebug.o $
+  bin/GateBoyLib/GateBoySerial.o $
+  bin/GateBoyLib/GateBoySpriteFetcher.o $
+  bin/GateBoyLib/GateBoySpriteScanner.o $
+  bin/GateBoyLib/GateBoySpriteStore.o $
+  bin/GateBoyLib/GateBoySPU.o $
+  bin/GateBoyLib/GateBoyTileFetcher.o $
+  bin/GateBoyLib/GateBoyTimer.o $
+  bin/GateBoyLib/GateBoyVramBus.o $
+  bin/GateBoyLib/GateBoyZramBus.o $
+  bin/GateBoyLib/Gates.o $
+  bin/GateBoyLib/Probe.o $
+
+################################################################################
+# MetroBoyLib
+
+
+
+
+
+
+
+################################################################################
+# GateBoyApp
+
+################################################################################
+# MetroBoyApp
+
+################################################################################
+# Plait
+
+
+
+
+################################################################################
+# GateBoyTests
+
+build bin/GateBoyTests.o : compile GateBoyTests/GateBoyTests.cpp
+
+build bin/GateBoyTests : link bin/GateBoyTests.o bin/CoreLib.a bin/GateBoyLib.a
+
+################################################################################
+# MetroBoyTests
+
+
+
+
+
+

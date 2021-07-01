@@ -1,8 +1,11 @@
 #include "AppLib/Console.h"
 
-#include <windows.h> /* for HANDLE type, and console functions */
 #include <stdio.h> /* standard input/output */
 #include <stdint.h>
+
+#ifdef _MSC_VER
+
+#include <windows.h> /* for HANDLE type, and console functions */
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 
@@ -86,3 +89,4 @@ void Console::print_at(int x, int y, int color, const char* format, ...) {
   for (int i = 0; i < len; i++) plot(x + i, y, color, source_buf[i]);
 }
 
+#endif

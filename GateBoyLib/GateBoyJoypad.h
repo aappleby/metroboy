@@ -17,8 +17,12 @@ struct GateBoyJoypad {
   ///*p05.KECY*/ DFF17 KECY_DBG_D1;
   ///*p05.JALE*/ DFF17 JALE_DBG_D2;
   ///*p05.KYME*/ DFF17 KYME_DBG_D3;
+
+  // these two _must_ be 1 on reset or we read button states before we've written these regs
+
   /*p05.KELY*/ DFF17 KELY_JOYP_UDLRp;
   /*p05.COFY*/ DFF17 COFY_JOYP_ABCSp;
+
   ///*p05.KUKO*/ DFF17 KUKO_DBG_D6;
   ///*p05.KERU*/ DFF17 KERU_DBG_D7;
 

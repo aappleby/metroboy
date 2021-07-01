@@ -15,3 +15,7 @@ verilator
 wla-dx
 DMG-CPU-Inside
 imgui.ini
+.ninja_deps
+.ninja_log
+bin
+.vscode

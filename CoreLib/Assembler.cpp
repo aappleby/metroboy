@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <stdarg.h>
+#include <string.h>
 
 #pragma warning(disable : 4996)
 

@@ -1,6 +1,6 @@
 #include "MetroBoyLib/MetroBoyZRAM.h"
 #include "CoreLib/Constants.h"
-#include <assert.h.>
+#include <assert.h>
 #include <memory.h>
 
 //-----------------------------------------------------------------------------

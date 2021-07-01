@@ -179,21 +179,21 @@ void GateBoy::tock_ext()
 
   uint32_t mbc1_rom0_bank = mbc1_mode ? BitBase::pack_old(2, &ext_pins.MBC1_BANK5) : 0;
   uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask;
-  if (mbc1_rom0_addr >= cart_size) __debugbreak();
+  if (mbc1_rom0_addr >= cart_size) debugbreak();
 
   //----------------------------------------
 
   uint32_t mbc1_rom1_bank = BitBase::pack_old(7, &ext_pins.MBC1_BANK0);
   if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
   uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask;
-  if (mbc1_rom1_addr >= cart_size) __debugbreak();
+  if (mbc1_rom1_addr >= cart_size) debugbreak();
 
   //----------------------------------------
 
   uint32_t mbc1_ram_bank = mbc1_mode ? BitBase::pack_old(2, &ext_pins.MBC1_BANK5) : 0;
   if (mbc1_mode == 0) mbc1_ram_bank = 0;
   uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask;
-  if (mbc1_ram_addr >= 32768)     __debugbreak();
+  if (mbc1_ram_addr >= 32768) debugbreak();
 
   //----------------------------------------
 

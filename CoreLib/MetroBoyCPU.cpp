@@ -1,6 +1,7 @@
 #include "CoreLib/MetroBoyCPU.h"
 #include "CoreLib/Constants.h"
 #include "CoreLib/OpDecoder.h"
+#include <string.h>
 
 //#pragma warning(disable:4189) // local variable unreferenced
 //#pragma warning(disable:4244)

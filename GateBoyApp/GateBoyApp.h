@@ -63,6 +63,7 @@ private:
   int replay_cursor = 0;
   int phase_origin = 0;
 
+  double delta = 0;
   double frame_begin = 0;
   double frame_end = 0;
   double frame_time = 0;

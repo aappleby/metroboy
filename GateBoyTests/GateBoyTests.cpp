@@ -1,19 +1,28 @@
 #include "GateBoyTests/GateBoyTests.h"
-#include "GateBoyLib/GateBoy.h"
+
+
 #include "CoreLib/Assembler.h"
+#include "GateBoyLib/GateBoy.h"
 #include "CoreLib/Constants.h"
 #include "CoreLib/Tests.h"
 #include "CoreLib/File.h"
+
 #include <stddef.h>
-
-#include <windows.h>
-
+#include <stdio.h>
 #include <filesystem>
 #include <iostream>
+#include <math.h>
+
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
 
 //#define RUN_SLOW_TESTS
+//#define TEST_MOONEYE
 
-#define TEST_MOONEYE
+//#include "SDL/include/SDL.h"
+
+double blep();
 
 //-----------------------------------------------------------------------------
 
@@ -48,8 +57,13 @@ uint8_t cart_header[] = {
 
 //-----------------------------------------------------------------------------
 
+
 int main(int argc, char** argv) {
+  printf("GateBoyTests::main()\n");
+
+#ifdef _MSC_VER
   SetPriorityClass(GetCurrentProcess(), 0x00000080);
+#endif
 
   TEST_START("Maaaaaain");
 
@@ -58,12 +72,12 @@ int main(int argc, char** argv) {
 
   static const bool skip_passing_tests = true;
 
+  auto start = timestamp();
+
   GateBoyTests t;
   //t.verbose = true;
   t.cart_rom.resize(32768, 0);
   memcpy(&t.cart_rom[0x100], cart_header, sizeof(cart_header));
-
-  auto start = timestamp();
 
 #ifndef FAST_MODE
   failures += t.test_reset_cart_vs_dump();
@@ -72,7 +86,6 @@ int main(int argc, char** argv) {
 
 #if 1
   failures += t.test_bootrom();
-
   failures += t.test_clk();
   failures += t.test_regs();
   failures += t.test_mem();
@@ -80,7 +93,7 @@ int main(int argc, char** argv) {
   failures += t.test_init();
 
 #ifndef FAST_MODE
-  failures += t.test_ext_bus();
+  //failures += t.test_ext_bus();
 #endif
 
   failures += t.test_ppu();
@@ -166,6 +179,37 @@ GateBoy GateBoyTests::create_gb_poweron() {
 
 //-----------------------------------------------------------------------------
 
+int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
+  TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
+
+  GateBoy gb = create_gb_poweron();
+
+  for (int i = 0; i < 256; i++) {
+    uint8_t data_in = uint8_t(i & mask);
+    gb.dbg_write(addr, uint8_t(data_in));
+    uint8_t data_out = gb.dbg_read(addr) & mask;
+    ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
+  }
+
+  TEST_END();
+}
+
+int GateBoyTests::test_spu_reg(const char* tag, uint16_t addr, uint8_t mask) {
+  TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
+
+  GateBoy gb = create_gb_poweron();
+  gb.dbg_write(ADDR_NR52, 0x80);
+
+  for (int i = 0; i < 256; i++) {
+    uint8_t data_in = uint8_t(i & mask);
+    gb.dbg_write(addr, uint8_t(data_in));
+    uint8_t data_out = gb.dbg_read(addr) & mask;
+    ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
+  }
+
+  TEST_END();
+}
+
 int GateBoyTests::test_regs() {
   TEST_START();
 
@@ -196,6 +240,7 @@ int GateBoyTests::test_regs() {
 
   TEST_END();
 }
+
 
 //-----------------------------------------------------------------------------
 // Power-on reset state should be stable
@@ -1141,6 +1186,7 @@ int GateBoyTests::test_ext_bus() {
     const char* A01_WAVE = "10000000 00000000 01111111 11111111 11111111";
     const char* A02_WAVE = "11111111 11111111 11111111 11111111 11111111";
     const char* A03_WAVE = "00000000 00000000 00000000 00000000 00000000";
+
     const char* A04_WAVE = "11111111 11111111 11111111 11111111 11111111";
     const char* A05_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A06_WAVE = "11111111 11111111 11111111 11111111 11111111";
@@ -1150,6 +1196,7 @@ int GateBoyTests::test_ext_bus() {
     const char* A09_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A10_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A11_WAVE = "00000000 00000000 00000000 00000000 00000000";
+
     const char* A12_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A13_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A14_WAVE = "00000000 00000000 00000000 00000000 00000000";
@@ -1590,7 +1637,7 @@ uint8_t* get_flat_ptr(GateBoy& gb, uint16_t addr) {
     return gb.zero_ram + (addr & 0x007F);
   }
   else {
-    __debugbreak();
+    debugbreak();
     return nullptr;
   }
 }
@@ -1698,39 +1745,6 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
     ASSERT_EQ(mem[i], data_wr,  "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, mem[i]);
     uint8_t data_rd = gb.dbg_read(addr_start + i);
     ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, data_rd);
-  }
-
-  TEST_END();
-}
-
-//------------------------------------------------------------------------------
-
-int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
-  TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
-
-  GateBoy gb = create_gb_poweron();
-
-  for (int i = 0; i < 256; i++) {
-    uint8_t data_in = uint8_t(i & mask);
-    gb.dbg_write(addr, uint8_t(data_in));
-    uint8_t data_out = gb.dbg_read(addr) & mask;
-    ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
-  }
-
-  TEST_END();
-}
-
-int GateBoyTests::test_spu_reg(const char* tag, uint16_t addr, uint8_t mask) {
-  TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
-
-  GateBoy gb = create_gb_poweron();
-  gb.dbg_write(ADDR_NR52, 0x80);
-
-  for (int i = 0; i < 256; i++) {
-    uint8_t data_in = uint8_t(i & mask);
-    gb.dbg_write(addr, uint8_t(data_in));
-    uint8_t data_out = gb.dbg_read(addr) & mask;
-    ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
   TEST_END();

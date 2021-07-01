@@ -6,28 +6,31 @@
 struct GateBoyInterrupts {
   void reset_to_cart() {
     LOPE_FF0F_D0p.state = 0b00011011;
-    UBUL_FF0F_D3p.state = 0b00011000;
-    ULAK_FF0F_D4p.state = 0b00011000;
     LALU_FF0F_D1p.state = 0b00011000;
     NYBO_FF0F_D2p.state = 0b00011000;
+    UBUL_FF0F_D3p.state = 0b00011000;
+    ULAK_FF0F_D4p.state = 0b00011000;
+
     MATY_FF0F_L0p.state = 0b00011000;
-    NEJY_FF0F_L3p.state = 0b00011000;
-    NUTY_FF0F_L4p.state = 0b00011000;
     MOPO_FF0F_L1p.state = 0b00011000;
     PAVY_FF0F_L2p.state = 0b00011000;
+    NEJY_FF0F_L3p.state = 0b00011000;
+    NUTY_FF0F_L4p.state = 0b00011000;
+
     IE_D0.state = 0b00011010;
     IE_D1.state = 0b00011010;
     IE_D2.state = 0b00011010;
     IE_D3.state = 0b00011010;
     IE_D4.state = 0b00011010;
+
     SIG_CPU_INT_VBLANK.state = 0b00011001;
-    SIG_CPU_INT_STAT.state = 0b00011000;
-    SIG_CPU_INT_TIMER.state = 0b00011000;
+    SIG_CPU_INT_STAT.state   = 0b00011000;
+    SIG_CPU_INT_TIMER.state  = 0b00011000;
     SIG_CPU_INT_SERIAL.state = 0b00011000;
     SIG_CPU_INT_JOYPAD.state = 0b00011000;
     SIG_CPU_ACK_VBLANK.state = 0b00011000;
-    SIG_CPU_ACK_STAT.state = 0b00011000;
-    SIG_CPU_ACK_TIMER.state = 0b00011000;
+    SIG_CPU_ACK_STAT.state   = 0b00011000;
+    SIG_CPU_ACK_TIMER.state  = 0b00011000;
     SIG_CPU_ACK_SERIAL.state = 0b00011000;
     SIG_CPU_ACK_JOYPAD.state = 0b00011000;
   }

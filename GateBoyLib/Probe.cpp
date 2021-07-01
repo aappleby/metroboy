@@ -6,6 +6,8 @@
 
 #include "GateBoyLib/Gates.h"
 
+#pragma warning(disable: 4996)
+
 thread_local Probes* thread_probes = nullptr;
 
 Probes::Probes() {
@@ -16,7 +18,7 @@ void Probes::reset_to_cart() {
   phase_cursor = 0;
   for (int i = 0; i < channel_count; i++) {
     memset(names[i], 0, 32);
-    sprintf_s(names[i], 32, "<probe %02d>", i);
+    sprintf(names[i], "<probe %02d>", i);
   }
 
   memset(phase_samples, '_', channel_count * sample_count);
@@ -24,7 +26,7 @@ void Probes::reset_to_cart() {
 }
 
 void Probes::probe_wire(int index, const char* signal_name, char s) {
-  strcpy_s(names[index], 31, signal_name);
+  strcpy(names[index], signal_name);
   if (s <= 1) {
     phase_samples[index][phase_cursor] = s + 30; //? '#' : '_';
   }

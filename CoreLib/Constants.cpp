@@ -1,5 +1,6 @@
 #include "CoreLib/Constants.h"
 #include "CoreLib/File.h"
+#include <string.h>
 
 #if 0
 
@@ -169,7 +170,7 @@ Addr_00F4:
 	DEC B			; $00f6
 	JR NZ, Addr_00F4	; $00f7
 	ADD (HL)		; $00f9
-	JR NZ,$fe		; $00fa	; if $19 + bytes from $0134-$014D  don't add to $00
+	JR NZ,$fe		; $00fa	; if $19 + bytes from $0134-$014D  dont add to $00
 						;  ... lock up
 
 	LD A,$01		; $00fc

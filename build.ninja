@@ -1,5 +1,5 @@
 rule compile
-  command = g++ -O3 -Wno-format -I. -std=gnu++2a -c $in -o $out
+  command = g++ -DFAST_MODE -O3 -Wno-format -I. -std=gnu++2a -c $in -o $out
 
 rule lib
   command = ar rcs $out $in

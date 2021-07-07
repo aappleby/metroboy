@@ -6,18 +6,6 @@
 
 #include "CoreLib/Tests.h"
 
-// using an OpenGL ES 3.0 context causes the gamma to be wrong due to some
-// incorrect SRGB conversion (I think). So, we use OpenGL 4.3 (which supports glDebugMessageCallback).
-
-// es broken right now
-//#define USE_OPENGL_ES
-
-/*
-extern "C" {
-_declspec(dllexport) int NvOptimusEnablement = 0x00000001;
-}
-*/
-
 //-----------------------------------------------------------------------------
 
 void APIENTRY debugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
@@ -54,15 +42,9 @@ void* init_gl(void* window) {
                           SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG |
                           SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 
-#ifdef USE_OPENGL_ES
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-#else
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-#endif
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -74,7 +56,6 @@ void* init_gl(void* window) {
   SDL_GL_SetSwapInterval(1);  // Enable vsync
   // SDL_GL_SetSwapInterval(0); // Disable vsync
 
-  //gladLoadGLES2Loader(SDL_GL_GetProcAddress);
   gladLoadGLLoader(SDL_GL_GetProcAddress);
 
   LOG_B("Vendor:   "); LOG_G("%s\n", glGetString(GL_VENDOR));
@@ -82,17 +63,15 @@ void* init_gl(void* window) {
   LOG_B("Version:  "); LOG_G("%s\n", glGetString(GL_VERSION));
   LOG_B("GLSL:     "); LOG_G("%s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-//#ifndef USE_OPENGL_ES
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
   glDebugMessageCallback(debugOutput, nullptr);
-//#endif
 
   int ext_count = 0;
   glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
   LOG_B("Ext count "); LOG_G("%d\n", ext_count);
-#if 0
+#if 1
   for (int i = 0; i < ext_count; i++) {
     printf("Ext %2d: %s\n", i, glGetStringi(GL_EXTENSIONS, i));
   }
@@ -107,12 +86,7 @@ void* init_gl(void* window) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glClearColor(0.1f, 0.1f, 0.2f, 0.f);
-
-#ifdef USE_OPENGL_ES
-  glClearDepth(1.0);
-#else
   glClearDepthf(1.0);
-#endif
 
   return (void*)gl_context;
 }
@@ -330,11 +304,11 @@ int create_shader(const char* name, const char* src) {
   LOG_B("Compiling %s\n", name);
 
   auto vert_srcs = {
-    "#version 400\n",
-    "#define _VERTEX_\n",
+    "#version 450\n",
     "precision highp float;\n",
     "precision highp int;\n",
     "precision highp usampler2D;\n",
+    "#define _VERTEX_\n",
     src
   };
 
@@ -353,11 +327,11 @@ int create_shader(const char* name, const char* src) {
   }
 
   auto frag_srcs = {
-    "#version 400\n",
-    "#define _FRAGMENT_\n",
+    "#version 450\n",
     "precision highp float;\n",
     "precision highp int;\n",
     "precision highp usampler2D;\n",
+    "#define _FRAGMENT_\n",
     src
   };
   int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);

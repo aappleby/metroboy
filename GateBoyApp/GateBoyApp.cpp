@@ -10,16 +10,18 @@
 #define SDL_MAIN_HANDLED
 #ifdef _MSC_VER
 #include "SDL/include/SDL.h"
+#include <windows.h>
 #else
 #include <SDL2/SDL.h>
 #endif
 
-#include <windows.h>
 
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+#ifdef _MSC_VER
   SetPriorityClass(GetCurrentProcess(), 0x00000080);
+#endif
 
   App* app = new GateBoyApp();
   AppHost* app_host = new AppHost(app);

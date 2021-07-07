@@ -11,13 +11,44 @@
 #include <condition_variable>
 #include <atomic>
 #include <deque>
-#include <barrier>
+#include <thread>
+
+//--------------------------------------------------------------------------------
+// Trivial barrier implementation because std::barrier doesn't seem to be in
+// Ubuntu 20.04 by default...
+
+class Barrier2 {
+public:
+
+  Barrier2(int _max) : count(0), max(_max) {}
+
+  void arrive_and_wait() {
+    std::unique_lock<std::mutex> lock(mut);
+
+    count++;
+
+    if (count == max) {
+      count = 0;
+      cond.notify_all();
+    }
+    else {
+      cond.wait(lock, [this] { return count == 0; });
+    }
+  }
+
+  std::mutex mut;
+  std::condition_variable cond;
+  int count;
+  int max;
+};
 
 //--------------------------------------------------------------------------------
 
 struct GateBoyThread {
 
-  GateBoyThread() : pause_barrier(2), resume_barrier(2) {}
+  GateBoyThread() : pause_barrier(2), resume_barrier(2)
+  {
+  }
 
   void reset_to_bootrom();
   void reset_to_cart();
@@ -57,8 +88,9 @@ private:
   int pause_count = 0;
   std::atomic_bool sig_break   = false;
   std::atomic_bool sig_exit    = false;
-  std::barrier<> pause_barrier;
-  std::barrier<> resume_barrier;
+
+  Barrier2 pause_barrier;
+  Barrier2 resume_barrier;
 
   enum {
     CMD_None,

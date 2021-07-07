@@ -2,6 +2,7 @@
 #include "AppLib/GLBase.h"
 
 #include "AppLib/AppHost.h"
+#include "AppLib/DummyApp.h"
 #include "AppLib/GLBase.h"
 
 #include "Plait/CellDB.h"
@@ -16,6 +17,8 @@
 #include <algorithm>
 #include <filesystem>
 #include <sstream>
+
+#pragma warning(disable:4996)
 
 using namespace std;
 
@@ -72,6 +75,12 @@ int main(int argc, char** argv) {
   (void)argv;
   int ret = 0;
 
+  DummyApp* app = new DummyApp();
+  AppHost* app_host = new AppHost(app);
+  ret = app_host->app_main(argc, argv);
+  delete app;
+
+#if 0
   const char* die_db_file = "gameboy.die_db.json";
   (void)die_db_file;
 
@@ -81,6 +90,9 @@ int main(int argc, char** argv) {
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
   printf("Done\n\n");
+#endif
+
+
 
 #if 0
   printf("Parsing gateboy source\n");
@@ -933,7 +945,7 @@ void PlaitApp::app_update(double delta_time) {
     case ToolMode::MENU_OPTION:    event_menu_option(event); break;
     default: {
       printf("Bad tool!\n");
-      __debugbreak();
+      debugbreak();
       break;
     }
     }
@@ -1519,7 +1531,7 @@ void PlaitApp::app_render_ui() {
     static char str0[128] = "Label Text Here";
 
     if (clicked_label) {
-      strcpy_s(str0, 128, clicked_label->text.c_str());
+      strcpy(str0, clicked_label->text.c_str());
     }
 
     if (ImGui::InputText("text", str0, IM_ARRAYSIZE(str0))) {

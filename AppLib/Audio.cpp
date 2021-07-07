@@ -16,18 +16,18 @@
 SDL_AudioDeviceID dev;
 
 struct AudioQueue {
-  AudioQueue() : queue(), mux(), cv(), closed(false) {
+  AudioQueue() : queue(), mut(), cv(), closed(false) {
   }
 
   std::list<sample_t*> queue;
-  std::mutex mux;
+  std::mutex mut;
   std::condition_variable cv;
   bool closed;
 
   sample_t* get() {
     if (!dev) return nullptr;
 
-    std::unique_lock<std::mutex> lock(mux);
+    std::unique_lock<std::mutex> lock(mut);
     cv.wait(lock, [&] { return closed || !queue.empty(); });
 
     printf("get: queue size %zd\n", queue.size());
@@ -45,7 +45,7 @@ struct AudioQueue {
   void put(sample_t* buf) {
     if (!dev) return;
 
-    std::unique_lock<std::mutex> lock(mux);
+    std::unique_lock<std::mutex> lock(mut);
 
     printf("put: queue size %zd\n", queue.size());
 

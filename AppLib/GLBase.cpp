@@ -69,6 +69,8 @@ void* init_gl(void* window) {
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
   SDL_GLContext gl_context = SDL_GL_CreateContext((SDL_Window*)window);
+
+  printf("Enable vsync\n");
   SDL_GL_SetSwapInterval(1);  // Enable vsync
   // SDL_GL_SetSwapInterval(0); // Disable vsync
 
@@ -328,10 +330,11 @@ int create_shader(const char* name, const char* src) {
   LOG_B("Compiling %s\n", name);
 
   auto vert_srcs = {
-    "#version 300 es\n",
+    "#version 400\n",
     "#define _VERTEX_\n",
     "precision highp float;\n",
     "precision highp int;\n",
+    "precision highp usampler2D;\n",
     src
   };
 
@@ -350,10 +353,11 @@ int create_shader(const char* name, const char* src) {
   }
 
   auto frag_srcs = {
-    "#version 300 es\n",
+    "#version 400\n",
     "#define _FRAGMENT_\n",
     "precision highp float;\n",
     "precision highp int;\n",
+    "precision highp usampler2D;\n",
     src
   };
   int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);

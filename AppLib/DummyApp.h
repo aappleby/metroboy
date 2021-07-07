@@ -4,6 +4,7 @@
 #include "AppLib/GridPainter.h"
 #include "AppLib/TextPainter.h"
 #include "AppLib/Blitter.h"
+#include "AppLib/Viewport.h"
 
 //-----------------------------------------------------------------------------
 
@@ -21,6 +22,8 @@ public:
   GridPainter grid_painter;
   TextPainter text_painter;
   Blitter     blitter;
+  ViewController view_control;
+
   int screen_w = 0;
   int screen_h = 0;
   int tex = 0;

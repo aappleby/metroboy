@@ -324,7 +324,7 @@ void DieCell::sanity_check() const {
     check_cell_tag(tag);
   }
   else {
-    __debugbreak();
+    debugbreak();
   }
 }
 
@@ -699,7 +699,7 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
   }
   else if (regex_match(rest, match, wire_decl)) {
     error("are we using this?");
-    __debugbreak();
+    debugbreak();
     result &= parse_cell_name(c, match[1].str());
   }
   else if (regex_match(rest, match, signal_decl)) {
@@ -952,7 +952,7 @@ bool DieDB::parse_cell_arg(const std::string& arg, std::string& tag_out, std::st
   }
   else {
     error("Could not parse arg \"%s\"\n", arg.c_str());
-    __debugbreak();
+    debugbreak();
     return false;
   }
 }

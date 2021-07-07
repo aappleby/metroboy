@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#pragma warning(disable:4996)
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void from_json(const nlohmann::json& j, PlaitLabel*& plait_label) {
@@ -161,7 +163,7 @@ PlaitNode* PlaitCell::spawn_root_node(PlaitNode* neighbor, uint32_t guid) {
   auto new_root = new PlaitNode();
 
   char buf[256];
-  sprintf_s(buf, 256, "root_%08x", guid);
+  sprintf(buf, "root_%08x", guid);
 
   new_root->name = buf;
   new_root->pos_new = neighbor->pos_old - dvec2(128, 0);
@@ -178,7 +180,7 @@ PlaitNode* PlaitCell::spawn_leaf_node(PlaitNode* neighbor, uint32_t guid) {
   auto new_leaf = new PlaitNode();
 
   char buf[256];
-  sprintf_s(buf, 256, "leaf_%08x", guid);
+  sprintf(buf, "leaf_%08x", guid);
 
   new_leaf->name = buf;
   new_leaf->pos_new = neighbor->pos_old + dvec2(128, 0);

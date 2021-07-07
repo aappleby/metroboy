@@ -307,6 +307,8 @@ void GateBoyApp::app_update(double _delta) {
 #pragma warning(disable:4189)
 
 void GateBoyApp::app_render_frame() {
+  //printf("GateBoyApp::app_render_frame()\n");
+
   Viewport view = Viewport::screenspace(screen_w, screen_h);
 
   gb_thread.pause();

@@ -6,6 +6,34 @@
 
 #include "CoreLib/Tests.h"
 
+#include <map>
+
+std::map<uint32_t, const char*> messageMap = {
+  {GL_DEBUG_SOURCE_API,               "API" },
+  {GL_DEBUG_SOURCE_APPLICATION,       "APPLICATION" },
+  {GL_DEBUG_SOURCE_OTHER,             "OTHER" },
+  {GL_DEBUG_SOURCE_SHADER_COMPILER,   "SHADER_COMPILER" },
+  {GL_DEBUG_SOURCE_THIRD_PARTY,       "THIRD_PARTY" },
+  {GL_DEBUG_SOURCE_WINDOW_SYSTEM,     "WINDOW_SYSTEM" },
+
+  {GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR, "DEPRECATED" },
+  {GL_DEBUG_TYPE_ERROR,               "ERROR" },
+  {GL_DEBUG_TYPE_MARKER,              "MARKER" },
+  {GL_DEBUG_TYPE_OTHER,               "OTHER" },
+  {GL_DEBUG_TYPE_PERFORMANCE,         "PERFORMANCE" },
+  {GL_DEBUG_TYPE_POP_GROUP,           "POP_GROUP" },
+  {GL_DEBUG_TYPE_PORTABILITY,         "PORTABILITY" },
+  {GL_DEBUG_TYPE_PUSH_GROUP,          "PUSH_GROUP" },
+  {GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR,  "UNDEFINED" },
+
+
+  {GL_DEBUG_SEVERITY_HIGH,            "HIGH" },
+  {GL_DEBUG_SEVERITY_MEDIUM,          "MEDIUM" },
+  {GL_DEBUG_SEVERITY_LOW,             "LOW" },
+  {GL_DEBUG_SEVERITY_NOTIFICATION,    "NOTIFICATION" },
+
+};
+
 //-----------------------------------------------------------------------------
 
 void APIENTRY debugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
@@ -19,16 +47,15 @@ void APIENTRY debugOutput(GLenum source, GLenum type, GLuint id, GLenum severity
   (void)message;
   (void)userParam;
 
-  if (severity == GL_DEBUG_TYPE_ERROR ||
-      severity == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR ||
-      severity == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR ||
-      severity == GL_DEBUG_TYPE_PORTABILITY ||
-      severity == GL_DEBUG_TYPE_PERFORMANCE) {
-  	printf("GLDEBUG: %s\n", message);
-  }
-  else {
-  	//printf("GLDEBUG: %s\n", message);
-  }
+  // "will use VIDEO memory as the source..."
+  if (id == 0x20071) return;
+
+  printf("GLDEBUG %.20s:%.20s:%.20s (0x%08x) %s\n",
+    messageMap[source],
+    messageMap[type],
+    messageMap[severity],
+    id,
+    message);
 }
 
 //-----------------------------------------------------------------------------
@@ -71,7 +98,7 @@ void* init_gl(void* window) {
   int ext_count = 0;
   glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
   LOG_B("Ext count "); LOG_G("%d\n", ext_count);
-#if 1
+#if 0
   for (int i = 0; i < ext_count; i++) {
     printf("Ext %2d: %s\n", i, glGetStringi(GL_EXTENSIONS, i));
   }

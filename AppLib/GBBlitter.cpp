@@ -54,7 +54,7 @@ const char* gb_blit_screen_glsl = R"(
 uniform sampler2D tex;
 uniform vec4 viewport;
 uniform vec4 blit_dst_rect;
-uniform vec4 palette[5];
+uniform vec4 palette[16];
 
 float remap(float x, float a1, float a2, float b1, float b2) {
   x = (x - a1) / (a2 - a1);

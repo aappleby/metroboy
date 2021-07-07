@@ -79,7 +79,6 @@ void* init_gl(void* window) {
 
   SDL_GLContext gl_context = SDL_GL_CreateContext((SDL_Window*)window);
 
-  printf("Enable vsync\n");
   SDL_GL_SetSwapInterval(1);  // Enable vsync
   // SDL_GL_SetSwapInterval(0); // Disable vsync
 

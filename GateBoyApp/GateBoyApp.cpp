@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 
 void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   LOG_G("GateBoyApp::app_init()\n");
-  LOG_SCOPE_INDENT();
+  LOG_INDENT();
 
   screen_w = _screen_w;
   screen_h = _screen_h;
@@ -161,6 +161,7 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //gb_thread.gb->dbg_write(ADDR_SCY, 7);
 #endif
 
+  LOG_DEDENT();
   LOG_G("GateBoyApp::app_init() done\n");
   gb_thread.start();
 }

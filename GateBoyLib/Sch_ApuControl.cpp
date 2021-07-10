@@ -1,3 +1,5 @@
+/// plait_noparse
+
 #include "GateBoyLib/Sch_ApuControl.h"
 
 #if 0

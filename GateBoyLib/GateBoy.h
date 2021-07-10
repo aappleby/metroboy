@@ -30,10 +30,6 @@
 
 #pragma pack(push, 1)
 struct GateBoy {
-
-  /*SIG_GND*/ static SigIn SIG_VCC;
-  /*SIG_VCC*/ static SigIn SIG_GND;
-
   void reset_to_bootrom(bool fastboot);
   void reset_to_cart();
   void load_cart(uint8_t* _boot_buf, size_t _boot_size,
@@ -188,7 +184,8 @@ struct GateBoy {
     const PixCount& pix_count,
     const wire AROR_MATCH_ENp,
     GateBoySpriteStore& sprite_store,
-    SpriteMatchFlags& sprite_get_flag);
+    SpriteMatchFlags& sprite_get_flag,
+    SigIn SIG_GND);
 
   static void sprite_match_to_bus(
     const GateBoySpriteStore& sprite_store,
@@ -204,7 +201,7 @@ struct GateBoy {
 
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
 
-  static SpriteDeltaY sub_sprite_y(const RegLY& reg_ly, const OamTempA& oam_temp_a);
+  static SpriteDeltaY sub_sprite_y(const RegLY& reg_ly, const OamTempA& oam_temp_a, SigIn SIG_GND);
   static void oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a);
   static void oam_latch_to_temp_b(wire COTA_OAM_CLKn, const OamLatchB& old_oam_latch_b, OamTempB& oam_temp_b);
 
@@ -249,9 +246,9 @@ struct GateBoy {
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
   wire AZOF_AxCxExGx() const {
-    /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.qp_new());
-    /* p01.AZOF*/ wire _AZOF_AxCxExGx = not1(_ATAL_xBxDxFxH);
-    return _AZOF_AxCxExGx;
+    /* p01.ATAL*/ wire ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.qp_new());
+    /* p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
+    return AZOF_AxCxExGx;
   }
 
   /* p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not1(AZOF_AxCxExGx()); }
@@ -341,10 +338,10 @@ struct GateBoy {
     ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
     ///*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = mux2p(_TEFY_VRAM_MCSp, _TUTO_DBG_VRAMp, _TUCA_CPU_VRAM_RDp);
 
-    /*#p25.TUCA*/ wire _TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new());
-    /*#p25.TOLE*/ wire _TOLE_CPU_VRAM_RDp = not1(_TUCA_CPU_VRAM_RDp);
+    /*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new());
+    /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = not1(TUCA_CPU_VRAM_RDp);
 
-    return _TOLE_CPU_VRAM_RDp;
+    return TOLE_CPU_VRAM_RDp;
   }
 
   wire SALE_CPU_VRAM_WRn() const
@@ -355,10 +352,10 @@ struct GateBoy {
     ///*#p25.TEFY*/ wire _TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
     ///*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = mux2p(_TUTO_DBG_VRAMp, _TAVY_MOEp, _TEGU_CPU_VRAM_WRn);
 
-    /*#p25.TEGU*/ wire _TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), cpu_signals.SIG_IN_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
-    /*#p25.SALE*/ wire _SALE_CPU_VRAM_WRn = not1(_TEGU_CPU_VRAM_WRn);
+    /*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), cpu_signals.SIG_IN_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
+    /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = not1(TEGU_CPU_VRAM_WRn);
 
-    return _SALE_CPU_VRAM_WRn;
+    return SALE_CPU_VRAM_WRn;
   }
 
   //-----------------------------------------------------------------------------
@@ -398,6 +395,9 @@ struct GateBoy {
   uint64_t sentinel1 = SENTINEL1;
 
   //----------
+
+  /*SIG_GND*/ SigIn SIG_VCC;
+  /*SIG_VCC*/ SigIn SIG_GND;
 
   GateBoyCpuBus  old_bus;
 

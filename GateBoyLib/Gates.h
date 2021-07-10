@@ -799,12 +799,12 @@ inline wire not_or_and3(wire a, wire b, wire c) { return ~or_and3(a, b, c); }
 
 //-----------------------------------------------------------------------------
 
-struct adder {
+struct Adder {
   const wire sum;
   const wire carry;
 };
 
-inline adder add3(wire a, wire b, wire c) {
+inline Adder add3(wire a, wire b, wire c) {
   return {
     bit(bit(a) + bit(b) + bit(c), 0),
     bit(bit(a) + bit(b) + bit(c), 1)

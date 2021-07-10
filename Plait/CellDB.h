@@ -29,6 +29,31 @@ struct DieCell {
   void sanity_check() const;
   void dump(Dumper& d) const;
 
+  void set_type(DieCellType _cell_type) {
+    if (cell_type == DieCellType::UNKNOWN) cell_type = _cell_type;
+    CHECK_P(cell_type == _cell_type);
+  }
+  void set_page(const std::string& _page) {
+    if (page.empty()) page = _page;
+    CHECK_P(page == _page);
+  }
+  void set_tag(const std::string& _tag) {
+    if (tag.empty()) tag = _tag;
+    CHECK_P(tag == _tag);
+  }
+  void set_gate(const std::string& _gate) {
+    if (gate.empty()) gate = _gate;
+    CHECK_P(gate == _gate);
+  }
+  void set_name(const std::string& _name) {
+    if (long_name.empty()) long_name = _name;
+    CHECK_P(long_name == _name);
+  }
+  void set_doc(const std::string& _doc) {
+    if (doc.empty()) doc = _doc;
+    CHECK_P(doc == _doc);
+  }
+
   DieCellType cell_type = DieCellType::UNKNOWN;
   std::string page;
   std::string tag;
@@ -126,9 +151,19 @@ struct DieDB {
   void sanity_check();
 
   bool parse_dir(const std::string& path);
-  bool parse_file(const std::string& path);
-  bool parse_line(const std::string& line);
+  bool parse_header_file(const std::string& path);
+  bool parse_source_file(const std::string& path);
+
+  bool parse_line();
   bool parse_rest(DieCell& c, const std::string& rest);
+  bool parse_assign(DieCell& c, const std::string& lhs, const std::string& rhs);
+  bool parse_lhs(DieCell& c, const std::string& rhs);
+  bool parse_rhs(DieCell& c, const std::string& rhs);
+  bool parse_decl(DieCell& c, const std::string& ctype, const std::string& cname);
+  bool parse_method_call(DieCell& c, const std::string& rest);
+
+
+
 
   bool parse_cell_name(DieCell& c, const std::string& cell_name);
   bool parse_cell_def(DieCell& c, const std::string& value);
@@ -139,7 +174,13 @@ struct DieDB {
   bool parse_pin_name(DieCell& c, const std::string& pin_name);
   bool parse_sig_name(DieCell& c, const std::string& sig_name);
 
-  bool parse_tag(const std::string& tag_comment, std::string& page_out, std::string& tag_out, std::string& name_out);
+  bool parse_tag(const std::string& whole_tag,
+                 std::string& flag_out,
+                 std::string& page_out,
+                 std::string& tag_out,
+                 std::string& name_out);
+
+
   bool parse_reg_type(DieCell& c, const std::string& type);
   bool parse_cell_gate(DieCell& c, const std::string& type);
 
@@ -172,9 +213,11 @@ struct DieDB {
   //std::map<std::string, DieTrace*> trace_map_old;
 
   std::string current_filename;
-  int current_line;
+  std::string current_line;
+  int current_linenum;
 
   int total_lines = 0;
+  int total_files = 0;
   int total_tagged_lines = 0;
 };
 

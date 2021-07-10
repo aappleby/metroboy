@@ -393,7 +393,8 @@ void GateBoy::get_sprite_match_flags(
   const PixCount& pix_count,
   const wire AROR_MATCH_ENp,
   GateBoySpriteStore& sprite_store,
-  SpriteMatchFlags& sprite_match_flags) {
+  SpriteMatchFlags& sprite_match_flags,
+  SigIn SIG_GND) {
   /*#p21.ACAM*/ wire ACAM_PX0n = not1(pix_count.XEHO_PX0p.qp_new());
   /* p21.AZUB*/ wire AZUB_PX1n = not1(pix_count.SAVY_PX1p.qp_new());
   /* p21.AMEL*/ wire AMEL_PX2n = not1(pix_count.XODU_PX2p.qp_new());

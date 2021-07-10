@@ -1,3 +1,5 @@
+/// plait_noparse
+
 #include "GateBoyLib/Sch_Channel2.h"
 
 #if 0

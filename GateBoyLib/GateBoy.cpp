@@ -6,9 +6,6 @@
 #include "CoreLib/Tests.h"
 #include "GateBoyLib/Probe.h"
 
-/*SIG_GND*/ SigIn GateBoy::SIG_VCC = 1;
-/*SIG_VCC*/ SigIn GateBoy::SIG_GND = 0;
-
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset_to_bootrom(bool fastboot)
@@ -488,6 +485,10 @@ void GateBoy::next_phase() {
 void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
 
+  /*SIG_GND*/ SIG_VCC = 1;
+  /*SIG_VCC*/ SIG_GND = 0;
+
+
   if (pass_index == 0) {
     cpu_data_latch &= (uint8_t)BitBase::pack_old(8, (BitBase*)&new_bus.BUS_CPU_D00p);
     imask_latch = (uint8_t)BitBase::pack_old(5, &interrupts.IE_D0);
@@ -804,7 +805,7 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
-  SpriteDeltaY delta = sub_sprite_y(reg_ly, oam_temp_a);
+  SpriteDeltaY delta = sub_sprite_y(reg_ly, oam_temp_a, SIG_GND);
 
   {
     /*#p29.GOVU*/ wire _GOVU_SPSIZE_MATCH = or2(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), delta.GYKY_YDIFF3.sum);
@@ -890,7 +891,7 @@ void GateBoy::tock_slow(int pass_index) {
     /* p21.TAKO*/ pix_count.TAKO_PX6p.dff17_any(TOCA_new, TADY_LINE_RSTn, TYGE_old);
     /* p21.SYBE*/ pix_count.SYBE_PX7p.dff17_any(TOCA_new, TADY_LINE_RSTn, ROKU_old);
 
-    get_sprite_match_flags(pix_count, AROR_MATCH_ENp, sprite_store, sprite_match_flags);
+    get_sprite_match_flags(pix_count, AROR_MATCH_ENp, sprite_store, sprite_match_flags, SIG_GND);
   }
 
   // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later

@@ -80,7 +80,7 @@ void* init_gl(void* window) {
   SDL_GLContext gl_context = SDL_GL_CreateContext((SDL_Window*)window);
 
   SDL_GL_SetSwapInterval(1);  // Enable vsync
-  // SDL_GL_SetSwapInterval(0); // Disable vsync
+  //SDL_GL_SetSwapInterval(0); // Disable vsync
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
 

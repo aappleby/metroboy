@@ -53,13 +53,13 @@ void DummyApp::app_update(double delta) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_MOUSEWHEEL) {
-      printf("wheel\n");
+      //printf("wheel\n");
       view_control.on_mouse_wheel((int)mouse_pos_screen.x, (int)mouse_pos_screen.y, double(event.wheel.y) * 0.25);
     }
 
     if (event.motion.state & SDL_BUTTON_LMASK) {
-      printf("xrel %d\n", event.motion.xrel);
-      printf("yrel %d\n", event.motion.yrel);
+      //printf("xrel %d\n", event.motion.xrel);
+      //printf("yrel %d\n", event.motion.yrel);
 
       // Getting garbage xrel/yrel under WSLg
       if (abs(event.motion.xrel) < 1000 && abs(event.motion.yrel) < 1000) {

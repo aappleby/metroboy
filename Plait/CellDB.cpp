@@ -137,6 +137,7 @@ std::map<std::string, std::vector<std::string>> gate_to_in_ports = {
 std::map<std::string, DieCellType> gate_to_cell_type = {
   {"pin_in_dp",      DieCellType::PIN_IN},
 
+  {"set_pin_int",    DieCellType::PIN_OUT},
   {"pin_out_dp",     DieCellType::PIN_OUT},
   {"pin_out_hilo",   DieCellType::PIN_OUT},
   {"pin_out_oehilo", DieCellType::PIN_OUT},
@@ -588,12 +589,15 @@ bool DieDB::parse_file(const std::string& path) {
   ConsoleDumper d;
 
   bool result = true;
-  printf("Parsing %s\n", path.c_str());
+  
+  // FIXME undo this
+  //printf("Parsing %s\n", path.c_str());
+  
   std::ifstream lines(path);
   current_line = 1;
   for (string line; getline(lines, line); ) {
     if (line == "/// plait_noparse") {
-      printf("Skipping %s\n", current_filename.c_str());
+      //printf("Skipping %s\n", current_filename.c_str());
       break;
     }
 
@@ -647,22 +651,80 @@ bool DieDB::parse_line(const std::string& line) {
 // everything after the comment tag
 
 bool DieDB::parse_rest(DieCell& c, const string& rest) {
+  (void)c;
 
+  smatch match;
+
+  static regex has_assign(R"(^(.*?)\s*=\s*(.*);.*$)");
+  if (regex_match(rest, match, has_assign)) {
+    //printf("assign %s\n", match[1].str().c_str());
+
+    string m1 = match[0].str();
+    string l1 = match[1].str();
+    string r1 = match[2].str();
+
+    //printf("m: '%s'\n", match[0].str().c_str());
+    //printf("l: '%s'\n", match[1].str().c_str());
+    //printf("r: '%s'\n", match[2].str().c_str());
+
+    /*
+    static regex has_decl(R"(^(.*) (.*)$)");
+    if (regex_match(lhs, match, has_decl)) {
+      printf("decl %s\n", match[1].str().c_str());
+      //printf("  wire %s\n", match[1].str().c_str());
+    }
+    else {
+      printf("  lhs %s\n", lhs.c_str());
+    }
+    */
+
+    static regex lhs_has_decl(R"(^(\w+)\s+(.*)$)");
+    if (regex_match(l1, match, lhs_has_decl)) {
+      string m2 = match[0].str();
+      string l2 = match[1].str();
+      string r2 = match[2].str();
+
+      //printf("m: '%s'\n", m2.c_str());
+      //printf("l: '%s'\n", l2.c_str());
+      printf("r: '%s'\n", r2.c_str());
+    }
+
+    return true;
+  }
+
+  /*
+  static regex has_call(R"((.*?)\((.*)\).*;.*)");
+  if (regex_match(rest, match, has_call)) {
+    //printf("  src %s\n", match[1].str().c_str());
+    //printf("  args %s\n", match[2].str().c_str());
+    //printf("match[0] = %s\n", match[0].str().c_str());
+    //printf("match[1] = %s\n", match[1].str().c_str());
+    //printf("match[2] = %s\n", match[2].str().c_str());
+    //printf("match[3] = %s\n", match[3].str().c_str());
+    //printf("match[4] = %s\n", match[4].str().c_str());
+    //printf("\n");
+  }
+  */
+  return true;
+
+
+#if 0
   static regex static_member_decl(R"(^static SigIn (\w+);.*)");
   static regex static_member_def(R"(^SigIn GateBoy::(\w+) .*)");
 
   static regex member_decl(R"(^(\w+)\s+(\w+)\s*;.*)");
-  static regex member_assign(R"(^(?:\w+\.)*(\w+)\s*=\s*(.+;).*)");
   static regex local_decl(R"(^wire\s+(\w+)\s*=\s*(.*)$)");
   static regex auto_decl (R"(^auto\s+(\w+)\s*=\s*(.*)$)");
   static regex func_decl(R"(^wire\s+(\w+)\(.*\) const;.*$)");
   static regex inline_func_decl(R"(^(?:inline\s+)?wire\s+(\w+)\s*.*\{\s*return\s*(.*)\}.*)");
   static regex wire_decl(R"(^wire\s*(\w+);.*$)");
   static regex signal_decl(R"(^Signal\s*(\w+);.*$)");
+
+  static regex member_assign(R"(^(?:\w+\.)*(\w+)\s*=\s*(.+;).*)");
+
   static regex tri_call(R"(^(.*)\.\s*(tri\w+\(.*$))");
   static regex dff_call(R"(^(.*)\.\s*(dff\w+\(.*$))");
   static regex latch_call(R"(^(.*)\.\s*(.*_latch[pn]?\(.*$))");
-
   static regex sig_out_call(R"(^(.*)\.\s*sig_out\((.*)\).*)");
 
   static regex pin_call(R"(^(.*)\.\s*(pin\w+\(.*$))");
@@ -740,6 +802,7 @@ bool DieDB::parse_rest(DieCell& c, const string& rest) {
     result = false;
   }
   return result;
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

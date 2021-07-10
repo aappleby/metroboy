@@ -82,24 +82,24 @@ struct NR50 {
 
 struct NR51 {
   void reset_to_cart() {
-    NR51_0.state = 0b00011010;
-    NR51_1.state = 0b00011010;
-    NR51_2.state = 0b00011011;
-    NR51_3.state = 0b00011011;
-    NR51_4.state = 0b00011010;
-    NR51_5.state = 0b00011010;
-    NR51_6.state = 0b00011010;
-    NR51_7.state = 0b00011010;
+    ANEV_NR51_0.state = 0b00011010;
+    BOGU_NR51_1.state = 0b00011010;
+    BAFO_NR51_2.state = 0b00011011;
+    ATUF_NR51_3.state = 0b00011011;
+    BUME_NR51_4.state = 0b00011010;
+    BOFA_NR51_5.state = 0b00011010;
+    BEFO_NR51_6.state = 0b00011010;
+    BEPU_NR51_7.state = 0b00011010;
   }
 
-  /*p09.ANEV*/ DFF9 NR51_0;
-  /*p09.BOGU*/ DFF9 NR51_1;
-  /*p09.BAFO*/ DFF9 NR51_2;
-  /*p09.ATUF*/ DFF9 NR51_3;
-  /*p09.BUME*/ DFF9 NR51_4;
-  /*p09.BOFA*/ DFF9 NR51_5;
-  /*p09.BEFO*/ DFF9 NR51_6;
-  /*p09.BEPU*/ DFF9 NR51_7;
+  /*p09.ANEV*/ DFF9 ANEV_NR51_0;
+  /*p09.BOGU*/ DFF9 BOGU_NR51_1;
+  /*p09.BAFO*/ DFF9 BAFO_NR51_2;
+  /*p09.ATUF*/ DFF9 ATUF_NR51_3;
+  /*p09.BUME*/ DFF9 BUME_NR51_4;
+  /*p09.BOFA*/ DFF9 BOFA_NR51_5;
+  /*p09.BEFO*/ DFF9 BEFO_NR51_6;
+  /*p09.BEPU*/ DFF9 BEPU_NR51_7;
 };
 
 struct NR52 {

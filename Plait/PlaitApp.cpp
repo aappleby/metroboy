@@ -75,12 +75,13 @@ int main(int argc, char** argv) {
   (void)argv;
   int ret = 0;
 
+  /*
   DummyApp* app = new DummyApp();
   AppHost* app_host = new AppHost(app);
   ret = app_host->app_main(argc, argv);
   delete app;
+  */
 
-#if 0
   const char* die_db_file = "gameboy.die_db.json";
   (void)die_db_file;
 
@@ -90,8 +91,6 @@ int main(int argc, char** argv) {
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
   printf("Done\n\n");
-#endif
-
 
 
 #if 0

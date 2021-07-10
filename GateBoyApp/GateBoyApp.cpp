@@ -307,6 +307,8 @@ void GateBoyApp::app_update(double _delta) {
 
 #pragma warning(disable:4189)
 
+double ease(double a, double b, double delta);
+
 void GateBoyApp::app_render_frame() {
   //printf("GateBoyApp::app_render_frame()\n");
 
@@ -350,7 +352,11 @@ void GateBoyApp::app_render_frame() {
 
   d("\002===== Thread =====\001\n");
   gb_thread.dump(d);
-  d("App fps       : %f\n", 1.0f / delta);
+
+  double fps = 1.0f / delta;
+  static double smooth_fps = 0.0;
+  smooth_fps = ease(smooth_fps, fps, delta);
+  d("App fps       : %d\n", (int)round(smooth_fps));
 
   d("\n");
 

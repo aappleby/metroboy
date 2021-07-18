@@ -1,5 +1,0 @@
-; this file was created with wlalink by ville helin <vhelin@iki.fi>.
-; wla symbolic information for "build/dmg/cpu_nop.gb".
-
-[labels]
-00:0150 main

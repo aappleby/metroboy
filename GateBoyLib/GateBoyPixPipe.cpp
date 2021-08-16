@@ -76,25 +76,43 @@ void GateBoy::tock_window(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
 
   /* p23.WAXU*/ wire _WAXU_FF4A_RDp = and2(ASOT_CPU_RDp(), new_bus.VYGA_FF4Ap());
   /* p23.VOMY*/ wire _VOMY_FF4A_RDn = not1(_WAXU_FF4A_RDp);
-  /*#p23.PUNU_WY0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_VOMY_FF4A_RDn, reg_wy.NESO_WY0n.qp_new());
-  /* p23.PODA_WY1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_VOMY_FF4A_RDn, reg_wy.NYRO_WY1n.qp_new());
-  /* p23.PYGU_WY2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_VOMY_FF4A_RDn, reg_wy.NAGA_WY2n.qp_new());
-  /* p23.LOKA_WY3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(_VOMY_FF4A_RDn, reg_wy.MELA_WY3n.qp_new());
-  /* p23.MEGA_WY4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_nn(_VOMY_FF4A_RDn, reg_wy.NULO_WY4n.qp_new());
-  /* p23.PELA_WY5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_VOMY_FF4A_RDn, reg_wy.NENE_WY5n.qp_new());
-  /* p23.POLO_WY6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_VOMY_FF4A_RDn, reg_wy.NUKA_WY6n.qp_new());
-  /* p23.MERA_WY7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_VOMY_FF4A_RDn, reg_wy.NAFU_WY7n.qp_new());
+  /*#p23.PUNU_WY0_TO_CD0*/ wire PUNU_WY0_TO_CD0 = tri6_nn(_VOMY_FF4A_RDn, reg_wy.NESO_WY0n.qp_new());
+  /* p23.PODA_WY1_TO_CD1*/ wire PODA_WY1_TO_CD1 = tri6_nn(_VOMY_FF4A_RDn, reg_wy.NYRO_WY1n.qp_new());
+  /* p23.PYGU_WY2_TO_CD2*/ wire PYGU_WY2_TO_CD2 = tri6_nn(_VOMY_FF4A_RDn, reg_wy.NAGA_WY2n.qp_new());
+  /* p23.LOKA_WY3_TO_CD3*/ wire LOKA_WY3_TO_CD3 = tri6_nn(_VOMY_FF4A_RDn, reg_wy.MELA_WY3n.qp_new());
+  /* p23.MEGA_WY4_TO_CD4*/ wire MEGA_WY4_TO_CD4 = tri6_nn(_VOMY_FF4A_RDn, reg_wy.NULO_WY4n.qp_new());
+  /* p23.PELA_WY5_TO_CD5*/ wire PELA_WY5_TO_CD5 = tri6_nn(_VOMY_FF4A_RDn, reg_wy.NENE_WY5n.qp_new());
+  /* p23.POLO_WY6_TO_CD6*/ wire POLO_WY6_TO_CD6 = tri6_nn(_VOMY_FF4A_RDn, reg_wy.NUKA_WY6n.qp_new());
+  /* p23.MERA_WY7_TO_CD7*/ wire MERA_WY7_TO_CD7 = tri6_nn(_VOMY_FF4A_RDn, reg_wy.NAFU_WY7n.qp_new());
+
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(PUNU_WY0_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(PODA_WY1_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(PYGU_WY2_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(LOKA_WY3_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(MEGA_WY4_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(PELA_WY5_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(POLO_WY6_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(MERA_WY7_TO_CD7);
 
   /* p23.WYZE*/ wire _WYZE_FF4B_RDp = and2(ASOT_CPU_RDp(), new_bus.VUMY_FF4Bp());
   /* p23.VYCU*/ wire _VYCU_FF4B_RDn = not1(_WYZE_FF4B_RDp);
-  /*#p23.LOVA_WX0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.MYPA_WX0n.qp_new());
-  /* p23.MUKA_WX1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.NOFE_WX1n.qp_new());
-  /* p23.MOKO_WX2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.NOKE_WX2n.qp_new());
-  /* p23.LOLE_WX3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.MEBY_WX3n.qp_new());
-  /* p23.MELE_WX4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.MYPU_WX4n.qp_new());
-  /* p23.MUFE_WX5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.MYCE_WX5n.qp_new());
-  /* p23.MULY_WX6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.MUVO_WX6n.qp_new());
-  /* p23.MARA_WX7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_VYCU_FF4B_RDn, reg_wx.NUKU_WX7n.qp_new());
+  /*#p23.LOVA_WX0_TO_CD0*/ wire LOVA_WX0_TO_CD0 = tri6_nn(_VYCU_FF4B_RDn, reg_wx.MYPA_WX0n.qp_new());
+  /* p23.MUKA_WX1_TO_CD1*/ wire MUKA_WX1_TO_CD1 = tri6_nn(_VYCU_FF4B_RDn, reg_wx.NOFE_WX1n.qp_new());
+  /* p23.MOKO_WX2_TO_CD2*/ wire MOKO_WX2_TO_CD2 = tri6_nn(_VYCU_FF4B_RDn, reg_wx.NOKE_WX2n.qp_new());
+  /* p23.LOLE_WX3_TO_CD3*/ wire LOLE_WX3_TO_CD3 = tri6_nn(_VYCU_FF4B_RDn, reg_wx.MEBY_WX3n.qp_new());
+  /* p23.MELE_WX4_TO_CD4*/ wire MELE_WX4_TO_CD4 = tri6_nn(_VYCU_FF4B_RDn, reg_wx.MYPU_WX4n.qp_new());
+  /* p23.MUFE_WX5_TO_CD5*/ wire MUFE_WX5_TO_CD5 = tri6_nn(_VYCU_FF4B_RDn, reg_wx.MYCE_WX5n.qp_new());
+  /* p23.MULY_WX6_TO_CD6*/ wire MULY_WX6_TO_CD6 = tri6_nn(_VYCU_FF4B_RDn, reg_wx.MUVO_WX6n.qp_new());
+  /* p23.MARA_WX7_TO_CD7*/ wire MARA_WX7_TO_CD7 = tri6_nn(_VYCU_FF4B_RDn, reg_wx.NUKU_WX7n.qp_new());
+
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(LOVA_WX0_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(MUKA_WX1_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(MOKO_WX2_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(LOLE_WX3_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(MELE_WX4_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(MUFE_WX5_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(MULY_WX6_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(MARA_WX7_TO_CD7);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -493,36 +511,63 @@ void GateBoy::tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 
   /* p36.VUSO*/ wire _VUSO_FF47_RDp = and2(ASOT_CPU_RDp(), new_bus.WERA_FF47p());
   /* p36.TEPY*/ wire _TEPY_FF47_RDn = not1(_VUSO_FF47_RDp);
-  /*#p36.RARO_BGP0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_TEPY_FF47_RDn, reg_bgp.PAVO_BGP_D0n.qp_new());
-  /* p36.PABA_BGP1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_TEPY_FF47_RDn, reg_bgp.NUSY_BGP_D1n.qp_new());
-  /* p36.REDO_BGP2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_TEPY_FF47_RDn, reg_bgp.PYLU_BGP_D2n.qp_new());
-  /* p36.LOBE_BGP3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(_TEPY_FF47_RDn, reg_bgp.MAXY_BGP_D3n.qp_new());
-  /* p36.LACE_BGP4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_nn(_TEPY_FF47_RDn, reg_bgp.MUKE_BGP_D4n.qp_new());
-  /* p36.LYKA_BGP5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_TEPY_FF47_RDn, reg_bgp.MORU_BGP_D5n.qp_new());
-  /* p36.LODY_BGP6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_TEPY_FF47_RDn, reg_bgp.MOGY_BGP_D6n.qp_new());
-  /* p36.LARY_BGP7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_TEPY_FF47_RDn, reg_bgp.MENA_BGP_D7n.qp_new());
+  /*#p36.RARO_BGP0_TO_CD0*/ wire RARO_BGP0_TO_CD0 = tri6_nn(_TEPY_FF47_RDn, reg_bgp.PAVO_BGP_D0n.qp_new());
+  /* p36.PABA_BGP1_TO_CD1*/ wire PABA_BGP1_TO_CD1 = tri6_nn(_TEPY_FF47_RDn, reg_bgp.NUSY_BGP_D1n.qp_new());
+  /* p36.REDO_BGP2_TO_CD2*/ wire REDO_BGP2_TO_CD2 = tri6_nn(_TEPY_FF47_RDn, reg_bgp.PYLU_BGP_D2n.qp_new());
+  /* p36.LOBE_BGP3_TO_CD3*/ wire LOBE_BGP3_TO_CD3 = tri6_nn(_TEPY_FF47_RDn, reg_bgp.MAXY_BGP_D3n.qp_new());
+  /* p36.LACE_BGP4_TO_CD4*/ wire LACE_BGP4_TO_CD4 = tri6_nn(_TEPY_FF47_RDn, reg_bgp.MUKE_BGP_D4n.qp_new());
+  /* p36.LYKA_BGP5_TO_CD5*/ wire LYKA_BGP5_TO_CD5 = tri6_nn(_TEPY_FF47_RDn, reg_bgp.MORU_BGP_D5n.qp_new());
+  /* p36.LODY_BGP6_TO_CD6*/ wire LODY_BGP6_TO_CD6 = tri6_nn(_TEPY_FF47_RDn, reg_bgp.MOGY_BGP_D6n.qp_new());
+  /* p36.LARY_BGP7_TO_CD7*/ wire LARY_BGP7_TO_CD7 = tri6_nn(_TEPY_FF47_RDn, reg_bgp.MENA_BGP_D7n.qp_new());
+
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(RARO_BGP0_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(PABA_BGP1_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(REDO_BGP2_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(LOBE_BGP3_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(LACE_BGP4_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(LYKA_BGP5_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(LODY_BGP6_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(LARY_BGP7_TO_CD7);
 
   /* p36.XUFY*/ wire _XUFY_FF48_RDp = and2(ASOT_CPU_RDp(), new_bus.XAYO_FF48p());
   /* p36.XOZY*/ wire _XOZY_FF48_RDn = not1(_XUFY_FF48_RDp);
-  /*#p36.XARY_OBP00_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_XOZY_FF48_RDn, reg_obp0.XUFU_OBP0_D0n.qp_new());
-  /* p36.XOKE_OBP01_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_XOZY_FF48_RDn, reg_obp0.XUKY_OBP0_D1n.qp_new());
-  /* p36.XUNO_OBP02_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_XOZY_FF48_RDn, reg_obp0.XOVA_OBP0_D2n.qp_new());
-  /* p36.XUBY_OBP03_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(_XOZY_FF48_RDn, reg_obp0.XALO_OBP0_D3n.qp_new());
-  /* p36.XAJU_OBP04_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_nn(_XOZY_FF48_RDn, reg_obp0.XERU_OBP0_D4n.qp_new());
-  /* p36.XOBO_OBP05_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_XOZY_FF48_RDn, reg_obp0.XYZE_OBP0_D5n.qp_new());
-  /* p36.XAXA_OBP06_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_XOZY_FF48_RDn, reg_obp0.XUPO_OBP0_D6n.qp_new());
-  /* p36.XAWO_OBP07_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_XOZY_FF48_RDn, reg_obp0.XANA_OBP0_D7n.qp_new());
+  /*#p36.XARY_OBP00_TO_CD0*/ wire XARY_OBP00_TO_CD0 = tri6_nn(_XOZY_FF48_RDn, reg_obp0.XUFU_OBP0_D0n.qp_new());
+  /* p36.XOKE_OBP01_TO_CD1*/ wire XOKE_OBP01_TO_CD1 = tri6_nn(_XOZY_FF48_RDn, reg_obp0.XUKY_OBP0_D1n.qp_new());
+  /* p36.XUNO_OBP02_TO_CD2*/ wire XUNO_OBP02_TO_CD2 = tri6_nn(_XOZY_FF48_RDn, reg_obp0.XOVA_OBP0_D2n.qp_new());
+  /* p36.XUBY_OBP03_TO_CD3*/ wire XUBY_OBP03_TO_CD3 = tri6_nn(_XOZY_FF48_RDn, reg_obp0.XALO_OBP0_D3n.qp_new());
+  /* p36.XAJU_OBP04_TO_CD4*/ wire XAJU_OBP04_TO_CD4 = tri6_nn(_XOZY_FF48_RDn, reg_obp0.XERU_OBP0_D4n.qp_new());
+  /* p36.XOBO_OBP05_TO_CD5*/ wire XOBO_OBP05_TO_CD5 = tri6_nn(_XOZY_FF48_RDn, reg_obp0.XYZE_OBP0_D5n.qp_new());
+  /* p36.XAXA_OBP06_TO_CD6*/ wire XAXA_OBP06_TO_CD6 = tri6_nn(_XOZY_FF48_RDn, reg_obp0.XUPO_OBP0_D6n.qp_new());
+  /* p36.XAWO_OBP07_TO_CD7*/ wire XAWO_OBP07_TO_CD7 = tri6_nn(_XOZY_FF48_RDn, reg_obp0.XANA_OBP0_D7n.qp_new());
+
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(XARY_OBP00_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(XOKE_OBP01_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(XUNO_OBP02_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(XUBY_OBP03_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(XAJU_OBP04_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(XOBO_OBP05_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(XAXA_OBP06_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(XAWO_OBP07_TO_CD7);
 
   /* p36.MUMY*/ wire _MUMY_FF49_RDp = and2(ASOT_CPU_RDp(), new_bus.TEGO_FF49p());
   /* p36.LOTE*/ wire _LOTE_FF49_RDn = not1(_MUMY_FF49_RDp);
-  /*#p36.LAJU_OBP10_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_LOTE_FF49_RDn, reg_obp1.MOXY_OBP1_D0n.qp_new());
-  /* p36.LEPA_OBP11_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_LOTE_FF49_RDn, reg_obp1.LAWO_OBP1_D1n.qp_new());
-  /* p36.LODE_OBP12_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_LOTE_FF49_RDn, reg_obp1.MOSA_OBP1_D2n.qp_new());
-  /* p36.LYZA_OBP13_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(_LOTE_FF49_RDn, reg_obp1.LOSE_OBP1_D3n.qp_new());
-  /* p36.LUKY_OBP14_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_nn(_LOTE_FF49_RDn, reg_obp1.LUNE_OBP1_D4n.qp_new());
-  /* p36.LUGA_OBP15_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_LOTE_FF49_RDn, reg_obp1.LUGU_OBP1_D5n.qp_new());
-  /* p36.LEBA_OBP16_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_LOTE_FF49_RDn, reg_obp1.LEPU_OBP1_D6n.qp_new());
-  /* p36.LELU_OBP17_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_LOTE_FF49_RDn, reg_obp1.LUXO_OBP1_D7n.qp_new());
+  /*#p36.LAJU_OBP10_TO_CD0*/ wire LAJU_OBP10_TO_CD0 = tri6_nn(_LOTE_FF49_RDn, reg_obp1.MOXY_OBP1_D0n.qp_new());
+  /* p36.LEPA_OBP11_TO_CD1*/ wire LEPA_OBP11_TO_CD1 = tri6_nn(_LOTE_FF49_RDn, reg_obp1.LAWO_OBP1_D1n.qp_new());
+  /* p36.LODE_OBP12_TO_CD2*/ wire LODE_OBP12_TO_CD2 = tri6_nn(_LOTE_FF49_RDn, reg_obp1.MOSA_OBP1_D2n.qp_new());
+  /* p36.LYZA_OBP13_TO_CD3*/ wire LYZA_OBP13_TO_CD3 = tri6_nn(_LOTE_FF49_RDn, reg_obp1.LOSE_OBP1_D3n.qp_new());
+  /* p36.LUKY_OBP14_TO_CD4*/ wire LUKY_OBP14_TO_CD4 = tri6_nn(_LOTE_FF49_RDn, reg_obp1.LUNE_OBP1_D4n.qp_new());
+  /* p36.LUGA_OBP15_TO_CD5*/ wire LUGA_OBP15_TO_CD5 = tri6_nn(_LOTE_FF49_RDn, reg_obp1.LUGU_OBP1_D5n.qp_new());
+  /* p36.LEBA_OBP16_TO_CD6*/ wire LEBA_OBP16_TO_CD6 = tri6_nn(_LOTE_FF49_RDn, reg_obp1.LEPU_OBP1_D6n.qp_new());
+  /* p36.LELU_OBP17_TO_CD7*/ wire LELU_OBP17_TO_CD7 = tri6_nn(_LOTE_FF49_RDn, reg_obp1.LUXO_OBP1_D7n.qp_new());
+
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(LAJU_OBP10_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(LEPA_OBP11_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(LODE_OBP12_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(LYZA_OBP13_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(LUKY_OBP14_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(LUGA_OBP15_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(LEBA_OBP16_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(LELU_OBP17_TO_CD7);
 
   //----------------------------------------
   // Sprite palette 0 lookup

@@ -115,8 +115,11 @@ void GateBoy::tock_serial()
   /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(ETAK_SD7_TO_CD7);
 
   /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_signals.TEDO_CPU_RDp.qp_new(), new_bus.SANO_FF00_FF03p(), new_bus.BUS_CPU_A01p.qp_new(), new_bus.TOVY_A00n());
-  /* p06.CORE_SER0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_UCOM_FF02_RDp, serial.CULY_SER_DIR.qn_new());
-  /* p06.ELUV_SER1_TO_CD1*/ new_bus.BUS_CPU_D07p.tri6_pn(_UCOM_FF02_RDp, serial.ETAF_SER_RUN.qn_new());
+  /* p06.CORE_SER0_TO_CD0*/ wire CORE_SER0_TO_CD0 = tri6_pn(_UCOM_FF02_RDp, serial.CULY_SER_DIR.qn_new());
+  /* p06.ELUV_SER1_TO_CD1*/ wire ELUV_SER1_TO_CD1 = tri6_pn(_UCOM_FF02_RDp, serial.ETAF_SER_RUN.qn_new());
+
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(CORE_SER0_TO_CD0);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(ELUV_SER1_TO_CD1);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

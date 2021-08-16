@@ -46,9 +46,9 @@ struct GateBoySerial {
   /* p06.EROD*/ DFF22 EROD_SER_DATA6; // xxxxExxx
   /* p06.EDER*/ DFF22 EDER_SER_DATA7; // xxxxExxx
 
-  /* PIN_68_SCK */ PinIO  PIN_68_SCK;
-  /* PIN_69_SIN */ PinIn  PIN_69_SIN;
-  /* PIN_70_SOUT*/ PinOut PIN_70_SOUT;
+  /* PIN_68*/ PinIO  PIN_68_SCK;
+  /* PIN_69*/ PinIn  PIN_69_SIN;
+  /* PIN_70*/ PinOut PIN_70_SOUT;
 };
 
 //-----------------------------------------------------------------------------

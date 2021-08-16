@@ -556,7 +556,7 @@ void GateBoy::tock_slow(int pass_index) {
     new_bus.set_data(false, 0);
     cpu_latch_ext = 0;
   }
-  cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(cpu_latch_ext);
+  /* SIG_IN_CPU_LATCH_EXT*/ cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(cpu_latch_ext);
 
   bool addr_ext_new = (bus_req_new.read || bus_req_new.write);
   bool in_bootrom = bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old());
@@ -591,10 +591,10 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
-  /* PIN_74_CLK*/ clk.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
-  /* PIN_71_RST*/ rst.PIN_71_RST.set_pin_ext(bit(~sys_rst));
-  /* PIN_76_T2 */ rst.PIN_76_T2.set_pin_ext(bit(~sys_t2));
-  /* PIN_77_T1 */ rst.PIN_77_T1.set_pin_ext(bit(~sys_t1));
+  /* PIN_74*/ clk.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
+  /* PIN_71*/ rst.PIN_71_RST.set_pin_ext(bit(~sys_rst));
+  /* PIN_76*/ rst.PIN_76_T2.set_pin_ext(bit(~sys_t2));
+  /* PIN_77*/ rst.PIN_77_T1.set_pin_ext(bit(~sys_t1));
 
   /* SIG_CPU_ACK_VBLANK*/ interrupts.SIG_CPU_ACK_VBLANK.sig_in(bit(gb_cpu.int_ack, BIT_VBLANK));
   /* SIG_CPU_ACK_STAT  */ interrupts.SIG_CPU_ACK_STAT.sig_in(bit(gb_cpu.int_ack, BIT_STAT));

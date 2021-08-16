@@ -21,7 +21,7 @@ void GateBoy::tock_ext()
     /* p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(_LUMA_DMA_CARTp, _MOTY_CPU_EXT_RD);
     /* p08.UGAC*/ wire _UGAC_RD_A = nand2(_TYMU_EXT_RDn, TOVA_MODE_DBG2n());
     /* p08.URUN*/ wire _URUN_RD_D = nor2 (_TYMU_EXT_RDn, UNOR_MODE_DBG2p());
-    /*PIN_79*/ ext_pins.PIN_79_RDn.set_pin_int(_UGAC_RD_A, _URUN_RD_D);
+    /* PIN_79*/ ext_pins.PIN_79_RDn.set_pin_int(_UGAC_RD_A, _URUN_RD_D);
   }
 
   {
@@ -29,13 +29,13 @@ void GateBoy::tock_ext()
     /* p08.PUVA*/ wire _PUVA_EXT_WRn = or2(_NEVY, _LUMA_DMA_CARTp);
     /* p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_WRn, TOVA_MODE_DBG2n());
     /* p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, UNOR_MODE_DBG2p());
-    /*PIN_78*/ ext_pins.PIN_78_WRn.set_pin_int(_UVER_WR_A, _USUF_WR_D);
+    /* PIN_78*/ ext_pins.PIN_78_WRn.set_pin_int(_UVER_WR_A, _USUF_WR_D);
   }
 
   {
     /* p08.TOZA*/ wire _TOZA_CS_A = and3(cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new(), new_bus.TYNU_A000_FFFFp(), new_bus.TUNA_0000_FDFF());
     /* p08.TYHO*/ wire _TYHO_CS_A = mux2p(_LUMA_DMA_CARTp, dma.MARU_DMA_A15n.qn_new(), _TOZA_CS_A);
-    /*PIN_80*/ ext_pins.PIN_80_CSn.set_pin_int(_TYHO_CS_A);
+    /* PIN_80*/ ext_pins.PIN_80_CSn.set_pin_int(_TYHO_CS_A);
   }
 
   /* p08.LOXO*/ wire _LOXO_HOLDn = and_or3(MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn(), UMUT_MODE_DBG1p());

@@ -28,9 +28,9 @@ struct GateBoyClock {
     SIG_CPU_BOGA_Axxxxxxx.state = 0b00011001;
   }
 
-  /*PIN_73*/ PinOut   PIN_73_CLK_DRIVE;
-  /*PIN_74*/ PinClock PIN_74_CLK;
-  /*PIN_75*/ PinOut   PIN_75_CLK_OUT;
+  /* PIN_73*/ PinOut   PIN_73_CLK_DRIVE;
+  /* PIN_74*/ PinClock PIN_74_CLK;
+  /* PIN_75*/ PinOut   PIN_75_CLK_OUT;
 
   /* p01.ANOS*/ Gate ANOS_DEGLITCH; // NAND latch deglitcher
   /* p01.AVET*/ Gate AVET_DEGLITCH; // NAND latch deglitcher

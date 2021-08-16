@@ -549,16 +549,19 @@ bool DieDB::parse_dir(const std::string& path) {
 
   for (auto& [tag, cell] : cell_map) {
 
-    //if (cell->gate.empty()) {
-    {
+    if (cell->arglists.size() > 1) {
       printf("%1s ", cell->flag.c_str());
       printf("%2s ", cell->page.c_str());
       printf("%-16.16s ", cell->tag.c_str());
       printf("%-16.16s ", cell->name.c_str());
       //printf("%-12s ", cell_type_to_name[cell->cell_type].c_str());
       printf("%-12s ", cell->gate.c_str());
+      printf("%zd ", cell->arglists.size());
       //printf("%s ", cell->args.c_str());
       printf("\n");
+      //for (auto& arglist : cell->arglists) {
+      //  printf("%s\n", arglist.c_str());
+      //}
     }
 
 
@@ -781,6 +784,11 @@ std::string trim_name(const std::string& raw_name) {
   return result;
 }
 
+std::string trim_arglist(const std::string& arglist) {
+  static regex rx_trim(R"((_any|_new|_old))");
+  return std::regex_replace(arglist, rx_trim, "");
+}
+
 //-----------------------------------------------------------------------------
 // wire _name_ = _gate_(_args_);
 
@@ -791,7 +799,7 @@ bool DieDB::parse_gate(const std::string& line, DieCell* cell) {
     cell->set_decl("wire");
     cell->set_name(trim_name(match[1].str()));
     cell->set_gate(match[2].str());
-    cell->arglists.insert(match[3].str());
+    cell->arglists.insert(trim_arglist(match[3].str()));
     return true;
   }
   else {
@@ -825,7 +833,7 @@ bool DieDB::parse_method_decl(const std::string& line, DieCell* cell) {
     cell->set_decl("wire");
     cell->set_name(trim_name(match[1].str()));
     cell->set_gate(match[2].str());
-    cell->arglists.insert(match[3].str());
+    cell->arglists.insert(trim_arglist(match[3].str()));
     return true;
   }
   else {
@@ -843,7 +851,7 @@ bool DieDB::parse_adder(const std::string& line, DieCell* cell) {
     cell->set_decl("Adder");
     cell->set_name(trim_name(match[1].str()));
     cell->set_gate(match[2].str());
-    cell->arglists.insert(match[3].str());
+    cell->arglists.insert(trim_arglist(match[3].str()));
     return true;
   }
   else {
@@ -860,7 +868,7 @@ bool DieDB::parse_assignment(const std::string& line, DieCell* cell) {
   if (regex_search(line, match, rx_gate2)) {
     cell->set_full_path(match[1].str());
     cell->set_gate(match[2].str());
-    cell->arglists.insert(match[3].str());
+    cell->arglists.insert(trim_arglist(match[3].str()));
     return true;
   }
   else {
@@ -886,7 +894,7 @@ bool DieDB::parse_method_call(const string& line, DieCell* cell) {
       cell->set_name(path);
     }
     cell->set_gate(match[2].str());
-    cell->arglists.insert(match[3].str());
+    cell->arglists.insert(trim_arglist(match[3].str()));
     return true;
   }
   else {
@@ -902,7 +910,7 @@ bool DieDB::parse_sig_vcc_gnd(const string& line, DieCell* cell) {
   static regex rx_vccgnd(R"(^(\w+)\s*=\s*([0-9]+);)");
   if (regex_search(line, match, rx_vccgnd)) {
     cell->set_name(trim_name(match[1].str()));
-    cell->arglists.insert(match[2].str());
+    cell->arglists.insert(trim_arglist(match[2].str()));
     return true;
   }
   else {

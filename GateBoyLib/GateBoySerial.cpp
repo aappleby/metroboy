@@ -95,14 +95,24 @@ void GateBoy::tock_serial()
   /* p06.CUBA*/ serial.CUBA_SER_DATA0.dff22(_DAWE_SER_CLK, _CUFU_SER_DATA0_SETn, _COHY_SER_DATA0_RSTn, _CAGE_SER_IN_new);
 
   /* p06.UFEG*/ wire _UFEG_FF01_RDp =  and4(cpu_signals.TEDO_CPU_RDp.qp_new(), new_bus.SANO_FF00_FF03p(), new_bus.TOLA_A01n(), new_bus.BUS_CPU_A00p.qp_new());
-  /*#p06.CUGY_SD0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_UFEG_FF01_RDp, serial.CUBA_SER_DATA0.qn_new());
-  /* p06.DUDE_SD1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_pn(_UFEG_FF01_RDp, serial.DEGU_SER_DATA1.qn_new());
-  /* p06.DETU_SD2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_pn(_UFEG_FF01_RDp, serial.DYRA_SER_DATA2.qn_new());
-  /* p06.DASO_SD3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_pn(_UFEG_FF01_RDp, serial.DOJO_SER_DATA3.qn_new());
-  /* p06.DAME_SD4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_pn(_UFEG_FF01_RDp, serial.DOVU_SER_DATA4.qn_new());
-  /* p06.EVOK_SD5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_pn(_UFEG_FF01_RDp, serial.EJAB_SER_DATA5.qn_new());
-  /* p06.EFAB_SD6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_pn(_UFEG_FF01_RDp, serial.EROD_SER_DATA6.qn_new());
-  /*#p06.ETAK_SD7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_pn(_UFEG_FF01_RDp, serial.EDER_SER_DATA7.qn_new());
+
+  /*#p06.CUGY_SD0_TO_CD0*/ wire CUGY_SD0_TO_CD0 = tri6_pn(_UFEG_FF01_RDp, serial.CUBA_SER_DATA0.qn_new());
+  /* p06.DUDE_SD1_TO_CD1*/ wire DUDE_SD1_TO_CD1 = tri6_pn(_UFEG_FF01_RDp, serial.DEGU_SER_DATA1.qn_new());
+  /* p06.DETU_SD2_TO_CD2*/ wire DETU_SD2_TO_CD2 = tri6_pn(_UFEG_FF01_RDp, serial.DYRA_SER_DATA2.qn_new());
+  /* p06.DASO_SD3_TO_CD3*/ wire DASO_SD3_TO_CD3 = tri6_pn(_UFEG_FF01_RDp, serial.DOJO_SER_DATA3.qn_new());
+  /* p06.DAME_SD4_TO_CD4*/ wire DAME_SD4_TO_CD4 = tri6_pn(_UFEG_FF01_RDp, serial.DOVU_SER_DATA4.qn_new());
+  /* p06.EVOK_SD5_TO_CD5*/ wire EVOK_SD5_TO_CD5 = tri6_pn(_UFEG_FF01_RDp, serial.EJAB_SER_DATA5.qn_new());
+  /* p06.EFAB_SD6_TO_CD6*/ wire EFAB_SD6_TO_CD6 = tri6_pn(_UFEG_FF01_RDp, serial.EROD_SER_DATA6.qn_new());
+  /*#p06.ETAK_SD7_TO_CD7*/ wire ETAK_SD7_TO_CD7 = tri6_pn(_UFEG_FF01_RDp, serial.EDER_SER_DATA7.qn_new());
+
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(CUGY_SD0_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(DUDE_SD1_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(DETU_SD2_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(DASO_SD3_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(DAME_SD4_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(EVOK_SD5_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(EFAB_SD6_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(ETAK_SD7_TO_CD7);
 
   /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_signals.TEDO_CPU_RDp.qp_new(), new_bus.SANO_FF00_FF03p(), new_bus.BUS_CPU_A01p.qp_new(), new_bus.TOVY_A00n());
   /* p06.CORE_SER0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_UCOM_FF02_RDp, serial.CULY_SER_DIR.qn_new());

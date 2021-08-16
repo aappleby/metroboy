@@ -310,14 +310,23 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
     /*#p25.ROCY*/ wire _ROCY_CBD_TO_VPDp = and2(_SAZO_CBD_TO_VPDp, _REVO_CBD_TO_VPDp);
     /*#p25.RAHU*/ wire _RAHU_CBD_TO_VPDn = not1(_ROCY_CBD_TO_VPDp);
 
-    /* p25.TEME_CD0_TO_VD0*/ vram_bus.BUS_VRAM_D00p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D00p.qp_new());
-    /* p25.TEWU_CD1_TO_VD1*/ vram_bus.BUS_VRAM_D01p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D01p.qp_new());
-    /*#p25.TYGO_CD2_TO_VD2*/ vram_bus.BUS_VRAM_D02p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D02p.qp_new());
-    /* p25.SOTE_CD3_TO_VD3*/ vram_bus.BUS_VRAM_D03p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D03p.qp_new());
-    /* p25.SEKE_CD4_TO_VD4*/ vram_bus.BUS_VRAM_D04p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D04p.qp_new());
-    /* p25.RUJO_CD5_TO_VD5*/ vram_bus.BUS_VRAM_D05p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D05p.qp_new());
-    /* p25.TOFA_CD6_TO_VD6*/ vram_bus.BUS_VRAM_D06p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D06p.qp_new());
-    /* p25.SUZA_CD7_TO_VD7*/ vram_bus.BUS_VRAM_D07p.tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D07p.qp_new());
+    /* p25.TEME_CD0_TO_VD0*/ wire TEME_CD0_TO_VD0 = tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D00p.qp_new());
+    /* p25.TEWU_CD1_TO_VD1*/ wire TEWU_CD1_TO_VD1 = tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D01p.qp_new());
+    /*#p25.TYGO_CD2_TO_VD2*/ wire TYGO_CD2_TO_VD2 = tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D02p.qp_new());
+    /* p25.SOTE_CD3_TO_VD3*/ wire SOTE_CD3_TO_VD3 = tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D03p.qp_new());
+    /* p25.SEKE_CD4_TO_VD4*/ wire SEKE_CD4_TO_VD4 = tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D04p.qp_new());
+    /* p25.RUJO_CD5_TO_VD5*/ wire RUJO_CD5_TO_VD5 = tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D05p.qp_new());
+    /* p25.TOFA_CD6_TO_VD6*/ wire TOFA_CD6_TO_VD6 = tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D06p.qp_new());
+    /* p25.SUZA_CD7_TO_VD7*/ wire SUZA_CD7_TO_VD7 = tri10_np(_RAHU_CBD_TO_VPDn, new_bus.BUS_CPU_D07p.qp_new());
+
+    /* BUS_VRAM_D00p*/ vram_bus.BUS_VRAM_D00p.tri(TEME_CD0_TO_VD0);
+    /* BUS_VRAM_D01p*/ vram_bus.BUS_VRAM_D01p.tri(TEWU_CD1_TO_VD1);
+    /* BUS_VRAM_D02p*/ vram_bus.BUS_VRAM_D02p.tri(TYGO_CD2_TO_VD2);
+    /* BUS_VRAM_D03p*/ vram_bus.BUS_VRAM_D03p.tri(SOTE_CD3_TO_VD3);
+    /* BUS_VRAM_D04p*/ vram_bus.BUS_VRAM_D04p.tri(SEKE_CD4_TO_VD4);
+    /* BUS_VRAM_D05p*/ vram_bus.BUS_VRAM_D05p.tri(RUJO_CD5_TO_VD5);
+    /* BUS_VRAM_D06p*/ vram_bus.BUS_VRAM_D06p.tri(TOFA_CD6_TO_VD6);
+    /* BUS_VRAM_D07p*/ vram_bus.BUS_VRAM_D07p.tri(SUZA_CD7_TO_VD7);
   }
 
   //--------------------------------------------

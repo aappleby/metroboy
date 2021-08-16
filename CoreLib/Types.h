@@ -30,8 +30,8 @@ typedef std::vector<uint8_t> blob;
 
 typedef uint8_t wire;
 
-inline wire bit(wire w)        { return bool(w & 1); }
-inline wire bit(wire w, int i) { return bool((w >> i) & 1); }
+inline wire bit(uint32_t w) { return wire(w & 1); }
+inline wire bit(uint32_t w, int i) { return wire((w >> i) & 1); }
 
 uint32_t swap(uint32_t x);
 uint64_t swap(uint64_t x);
@@ -208,11 +208,11 @@ struct Dumper {
 
   //----------
 
-  void dump_bitp(const char* tag, uint8_t b) {
+  void dump_bitp(const char* tag, wire b) {
     operator()("%s%c\n", tag, (b & 0x01) ? '1' : '0');
   }
 
-  void dump_bitn(const char* tag, uint8_t b) {
+  void dump_bitn(const char* tag, wire b) {
     operator()("%s%c\n", tag, (b & 0x01) ? '0' : '1');
   }
 

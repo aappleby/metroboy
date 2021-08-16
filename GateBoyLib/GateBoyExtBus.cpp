@@ -332,14 +332,23 @@ void GateBoy::tock_ext()
   //probe_wire(30, "RUPA", ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
   //probe_wire(31, "SAZY", ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
 
-  /*#p08.RYMA_EL0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_LAVO_HOLDn, ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
-  /* p08.RUVO_EL1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_LAVO_HOLDn, ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
-  /* p08.RYKO_EL2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_LAVO_HOLDn, ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
-  /* p08.TAVO_EL3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(_LAVO_HOLDn, ext_data_latch.SELO_EXT_DATA_LATCH_D3n.qp_new());
-  /* p08.TEPE_EL4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_nn(_LAVO_HOLDn, ext_data_latch.SODY_EXT_DATA_LATCH_D4n.qp_new());
-  /* p08.SAFO_EL5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_LAVO_HOLDn, ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.qp_new());
-  /* p08.SEVU_EL6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_LAVO_HOLDn, ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
-  /* p08.TAJU_EL7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_LAVO_HOLDn, ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
+  /*#p08.RYMA_EL0_TO_CD0*/ wire RYMA_EL0_TO_CD0 = tri6_nn(_LAVO_HOLDn, ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
+  /* p08.RUVO_EL1_TO_CD1*/ wire RUVO_EL1_TO_CD1 = tri6_nn(_LAVO_HOLDn, ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
+  /* p08.RYKO_EL2_TO_CD2*/ wire RYKO_EL2_TO_CD2 = tri6_nn(_LAVO_HOLDn, ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
+  /* p08.TAVO_EL3_TO_CD3*/ wire TAVO_EL3_TO_CD3 = tri6_nn(_LAVO_HOLDn, ext_data_latch.SELO_EXT_DATA_LATCH_D3n.qp_new());
+  /* p08.TEPE_EL4_TO_CD4*/ wire TEPE_EL4_TO_CD4 = tri6_nn(_LAVO_HOLDn, ext_data_latch.SODY_EXT_DATA_LATCH_D4n.qp_new());
+  /* p08.SAFO_EL5_TO_CD5*/ wire SAFO_EL5_TO_CD5 = tri6_nn(_LAVO_HOLDn, ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.qp_new());
+  /* p08.SEVU_EL6_TO_CD6*/ wire SEVU_EL6_TO_CD6 = tri6_nn(_LAVO_HOLDn, ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
+  /* p08.TAJU_EL7_TO_CD7*/ wire TAJU_EL7_TO_CD7 = tri6_nn(_LAVO_HOLDn, ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
+
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(RYMA_EL0_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(RUVO_EL1_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(RYKO_EL2_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(TAVO_EL3_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(TEPE_EL4_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(SAFO_EL5_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(SEVU_EL6_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(TAJU_EL7_TO_CD7);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

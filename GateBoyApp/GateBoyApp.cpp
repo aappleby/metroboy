@@ -610,8 +610,8 @@ void GateBoyApp::app_render_frame() {
   } else {
     gb_blitter.blit_screen(view, gb_x, gb_y,  2, framebuffer);
   }
-  gb_blitter.blit_map   (view, 52 * 32 - 8,   0 * 32 + 8,  1, vid_ram, bit(gb->reg_lcdc.XAFO_LCDC_BGMAPn.qn_old()),  bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
-  gb_blitter.blit_map   (view, 52 * 32 - 8,   8 * 32 + 16, 1, vid_ram, bit(gb->reg_lcdc.WOKY_LCDC_WINMAPn.qn_old()), bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, 52 * 32 - 8,   0 * 32 + 8,  1, vid_ram, (int)bit(gb->reg_lcdc.XAFO_LCDC_BGMAPn.qn_old()),  (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, 52 * 32 - 8,   8 * 32 + 16, 1, vid_ram, (int)bit(gb->reg_lcdc.WOKY_LCDC_WINMAPn.qn_old()), (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
   gb_blitter.blit_tiles (view, 52 * 32 - 8,  16 * 32 + 24, 1, vid_ram);
 
   blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);

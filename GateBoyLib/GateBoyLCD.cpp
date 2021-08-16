@@ -39,14 +39,24 @@ void GateBoy::tock_lyc() {
 
     /* p23.XYLY*/ wire _XYLY_FF45_RDp = and2(ASOT_CPU_RDp(), new_bus.XAYU_FF45p());
     /* p23.WEKU*/ wire _WEKU_FF45_RDn = not1(_XYLY_FF45_RDp);
-    /*#p23.RETU_LYC0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_WEKU_FF45_RDn, reg_lyc.SYRY_LYC0n.qp_new());
-    /* p23.VOJO_LYC1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_WEKU_FF45_RDn, reg_lyc.VUCE_LYC1n.qp_new());
-    /* p23.RAZU_LYC2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_WEKU_FF45_RDn, reg_lyc.SEDY_LYC2n.qp_new());
-    /* p23.REDY_LYC3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(_WEKU_FF45_RDn, reg_lyc.SALO_LYC3n.qp_new());
-    /* p23.RACE_LYC4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_nn(_WEKU_FF45_RDn, reg_lyc.SOTA_LYC4n.qp_new());
-    /*#p23.VAZU_LYC5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_WEKU_FF45_RDn, reg_lyc.VAFA_LYC5n.qp_new());
-    /* p23.VAFE_LYC6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_WEKU_FF45_RDn, reg_lyc.VEVO_LYC6n.qp_new());
-    /* p23.PUFY_LYC7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_WEKU_FF45_RDn, reg_lyc.RAHA_LYC7n.qp_new());
+
+    /*#p23.RETU_LYC0_TO_CD0*/ wire RETU_LYC0_TO_CD0 = tri6_nn(_WEKU_FF45_RDn, reg_lyc.SYRY_LYC0n.qp_new());
+    /* p23.VOJO_LYC1_TO_CD1*/ wire VOJO_LYC1_TO_CD1 = tri6_nn(_WEKU_FF45_RDn, reg_lyc.VUCE_LYC1n.qp_new());
+    /* p23.RAZU_LYC2_TO_CD2*/ wire RAZU_LYC2_TO_CD2 = tri6_nn(_WEKU_FF45_RDn, reg_lyc.SEDY_LYC2n.qp_new());
+    /* p23.REDY_LYC3_TO_CD3*/ wire REDY_LYC3_TO_CD3 = tri6_nn(_WEKU_FF45_RDn, reg_lyc.SALO_LYC3n.qp_new());
+    /* p23.RACE_LYC4_TO_CD4*/ wire RACE_LYC4_TO_CD4 = tri6_nn(_WEKU_FF45_RDn, reg_lyc.SOTA_LYC4n.qp_new());
+    /*#p23.VAZU_LYC5_TO_CD5*/ wire VAZU_LYC5_TO_CD5 = tri6_nn(_WEKU_FF45_RDn, reg_lyc.VAFA_LYC5n.qp_new());
+    /* p23.VAFE_LYC6_TO_CD6*/ wire VAFE_LYC6_TO_CD6 = tri6_nn(_WEKU_FF45_RDn, reg_lyc.VEVO_LYC6n.qp_new());
+    /* p23.PUFY_LYC7_TO_CD7*/ wire PUFY_LYC7_TO_CD7 = tri6_nn(_WEKU_FF45_RDn, reg_lyc.RAHA_LYC7n.qp_new());
+
+    /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(RETU_LYC0_TO_CD0);
+    /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(VOJO_LYC1_TO_CD1);
+    /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(RAZU_LYC2_TO_CD2);
+    /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(REDY_LYC3_TO_CD3);
+    /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(RACE_LYC4_TO_CD4);
+    /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(VAZU_LYC5_TO_CD5);
+    /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(VAFE_LYC6_TO_CD6);
+    /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(PUFY_LYC7_TO_CD7);
   }
 
   {
@@ -139,14 +149,23 @@ void GateBoy::tock_lcd() {
     /* p23.XUCE*/ wire _XUCE_LY6n = not1(reg_ly.MATO_LY6p.qp_new());
     /* p23.XOWO*/ wire _XOWO_LY7n = not1(reg_ly.LAFO_LY7p.qp_new());
 
-    /* p23.VEGA_LY0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_nn(_VARO_FF44_RDn, _WURY_LY0n);
-    /* p23.WUVA_LY1_TO_CD1*/ new_bus.BUS_CPU_D01p.tri6_nn(_VARO_FF44_RDn, _XEPO_LY1n);
-    /* p23.LYCO_LY2_TO_CD2*/ new_bus.BUS_CPU_D02p.tri6_nn(_VARO_FF44_RDn, _MYFA_LY2n);
-    /* p23.WOJY_LY3_TO_CD3*/ new_bus.BUS_CPU_D03p.tri6_nn(_VARO_FF44_RDn, _XUHY_LY3n);
-    /* p23.VYNE_LY4_TO_CD4*/ new_bus.BUS_CPU_D04p.tri6_nn(_VARO_FF44_RDn, _WATA_LY4n);
-    /* p23.WAMA_LY5_TO_CD5*/ new_bus.BUS_CPU_D05p.tri6_nn(_VARO_FF44_RDn, _XAGA_LY5n);
-    /* p23.WAVO_LY6_TO_CD6*/ new_bus.BUS_CPU_D06p.tri6_nn(_VARO_FF44_RDn, _XUCE_LY6n);
-    /* p23.WEZE_LY7_TO_CD7*/ new_bus.BUS_CPU_D07p.tri6_nn(_VARO_FF44_RDn, _XOWO_LY7n);
+    /* p23.VEGA_LY0_TO_CD0*/ wire VEGA_LY0_TO_CD0 = tri6_nn(_VARO_FF44_RDn, _WURY_LY0n);
+    /* p23.WUVA_LY1_TO_CD1*/ wire WUVA_LY1_TO_CD1 = tri6_nn(_VARO_FF44_RDn, _XEPO_LY1n);
+    /* p23.LYCO_LY2_TO_CD2*/ wire LYCO_LY2_TO_CD2 = tri6_nn(_VARO_FF44_RDn, _MYFA_LY2n);
+    /* p23.WOJY_LY3_TO_CD3*/ wire WOJY_LY3_TO_CD3 = tri6_nn(_VARO_FF44_RDn, _XUHY_LY3n);
+    /* p23.VYNE_LY4_TO_CD4*/ wire VYNE_LY4_TO_CD4 = tri6_nn(_VARO_FF44_RDn, _WATA_LY4n);
+    /* p23.WAMA_LY5_TO_CD5*/ wire WAMA_LY5_TO_CD5 = tri6_nn(_VARO_FF44_RDn, _XAGA_LY5n);
+    /* p23.WAVO_LY6_TO_CD6*/ wire WAVO_LY6_TO_CD6 = tri6_nn(_VARO_FF44_RDn, _XUCE_LY6n);
+    /* p23.WEZE_LY7_TO_CD7*/ wire WEZE_LY7_TO_CD7 = tri6_nn(_VARO_FF44_RDn, _XOWO_LY7n);
+
+    /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(VEGA_LY0_TO_CD0);
+    /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(WUVA_LY1_TO_CD1);
+    /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(LYCO_LY2_TO_CD2);
+    /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(WOJY_LY3_TO_CD3);
+    /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(VYNE_LY4_TO_CD4);
+    /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(WAMA_LY5_TO_CD5);
+    /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(WAVO_LY6_TO_CD6);
+    /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(WEZE_LY7_TO_CD7);
   }
 }
 

@@ -90,22 +90,22 @@ struct GateBoyCpuBus {
 
   void set_addr(uint16_t bus_addr_new)
   {
-    BUS_CPU_A00p.set((bus_addr_new >>  0) & 1);
-    BUS_CPU_A01p.set((bus_addr_new >>  1) & 1);
-    BUS_CPU_A02p.set((bus_addr_new >>  2) & 1);
-    BUS_CPU_A03p.set((bus_addr_new >>  3) & 1);
-    BUS_CPU_A04p.set((bus_addr_new >>  4) & 1);
-    BUS_CPU_A05p.set((bus_addr_new >>  5) & 1);
-    BUS_CPU_A06p.set((bus_addr_new >>  6) & 1);
-    BUS_CPU_A07p.set((bus_addr_new >>  7) & 1);
-    BUS_CPU_A08p.set((bus_addr_new >>  8) & 1);
-    BUS_CPU_A09p.set((bus_addr_new >>  9) & 1);
-    BUS_CPU_A10p.set((bus_addr_new >> 10) & 1);
-    BUS_CPU_A11p.set((bus_addr_new >> 11) & 1);
-    BUS_CPU_A12p.set((bus_addr_new >> 12) & 1);
-    BUS_CPU_A13p.set((bus_addr_new >> 13) & 1);
-    BUS_CPU_A14p.set((bus_addr_new >> 14) & 1);
-    BUS_CPU_A15p.set((bus_addr_new >> 15) & 1);
+    BUS_CPU_A00p.set(bit(bus_addr_new,  0));
+    BUS_CPU_A01p.set(bit(bus_addr_new,  1));
+    BUS_CPU_A02p.set(bit(bus_addr_new,  2));
+    BUS_CPU_A03p.set(bit(bus_addr_new,  3));
+    BUS_CPU_A04p.set(bit(bus_addr_new,  4));
+    BUS_CPU_A05p.set(bit(bus_addr_new,  5));
+    BUS_CPU_A06p.set(bit(bus_addr_new,  6));
+    BUS_CPU_A07p.set(bit(bus_addr_new,  7));
+    BUS_CPU_A08p.set(bit(bus_addr_new,  8));
+    BUS_CPU_A09p.set(bit(bus_addr_new,  9));
+    BUS_CPU_A10p.set(bit(bus_addr_new, 10));
+    BUS_CPU_A11p.set(bit(bus_addr_new, 11));
+    BUS_CPU_A12p.set(bit(bus_addr_new, 12));
+    BUS_CPU_A13p.set(bit(bus_addr_new, 13));
+    BUS_CPU_A14p.set(bit(bus_addr_new, 14));
+    BUS_CPU_A15p.set(bit(bus_addr_new, 15));
   }
 
   //------------------------------------------------------------------------------------------------------------------------
@@ -114,14 +114,23 @@ struct GateBoyCpuBus {
     (void)OEp;
     (void)data;
 
-    BUS_CPU_D00p.tri(OEp, (data >> 0) & 1);
-    BUS_CPU_D01p.tri(OEp, (data >> 1) & 1);
-    BUS_CPU_D02p.tri(OEp, (data >> 2) & 1);
-    BUS_CPU_D03p.tri(OEp, (data >> 3) & 1);
-    BUS_CPU_D04p.tri(OEp, (data >> 4) & 1);
-    BUS_CPU_D05p.tri(OEp, (data >> 5) & 1);
-    BUS_CPU_D06p.tri(OEp, (data >> 6) & 1);
-    BUS_CPU_D07p.tri(OEp, (data >> 7) & 1);
+    wire tri0 = tri_pp(OEp, bit(data, 0));
+    wire tri1 = tri_pp(OEp, bit(data, 1));
+    wire tri2 = tri_pp(OEp, bit(data, 2));
+    wire tri3 = tri_pp(OEp, bit(data, 3));
+    wire tri4 = tri_pp(OEp, bit(data, 4));
+    wire tri5 = tri_pp(OEp, bit(data, 5));
+    wire tri6 = tri_pp(OEp, bit(data, 6));
+    wire tri7 = tri_pp(OEp, bit(data, 7));
+
+    BUS_CPU_D00p.tri(tri0);
+    BUS_CPU_D01p.tri(tri1);
+    BUS_CPU_D02p.tri(tri2);
+    BUS_CPU_D03p.tri(tri3);
+    BUS_CPU_D04p.tri(tri4);
+    BUS_CPU_D05p.tri(tri5);
+    BUS_CPU_D06p.tri(tri6);
+    BUS_CPU_D07p.tri(tri7);
   }
 
 

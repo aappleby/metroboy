@@ -23,14 +23,24 @@ void GateBoy::tock_zram()
   zram_bus.clk_old = clk_new;
 
   uint8_t data = zero_ram[addr & 0x007F];
-  new_bus.BUS_CPU_D00p.tri(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 0));
-  new_bus.BUS_CPU_D01p.tri(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 1));
-  new_bus.BUS_CPU_D02p.tri(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 2));
-  new_bus.BUS_CPU_D03p.tri(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 3));
-  new_bus.BUS_CPU_D04p.tri(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 4));
-  new_bus.BUS_CPU_D05p.tri(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 5));
-  new_bus.BUS_CPU_D06p.tri(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 6));
-  new_bus.BUS_CPU_D07p.tri(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 7));
+
+  wire tri0 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 0));
+  wire tri1 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 1));
+  wire tri2 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 2));
+  wire tri3 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 3));
+  wire tri4 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 4));
+  wire tri5 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 5));
+  wire tri6 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 6));
+  wire tri7 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 7));
+
+  new_bus.BUS_CPU_D00p.tri(tri0);
+  new_bus.BUS_CPU_D01p.tri(tri1);
+  new_bus.BUS_CPU_D02p.tri(tri2);
+  new_bus.BUS_CPU_D03p.tri(tri3);
+  new_bus.BUS_CPU_D04p.tri(tri4);
+  new_bus.BUS_CPU_D05p.tri(tri5);
+  new_bus.BUS_CPU_D06p.tri(tri6);
+  new_bus.BUS_CPU_D07p.tri(tri7);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

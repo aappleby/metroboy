@@ -1001,11 +1001,11 @@ void GateBoy::update_framebuffer()
   int lcd_y = reg_ly.get_new();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
-    uint8_t p0 = bit(lcd.PIN_51_LCD_DATA0.qp_ext_new());
-    uint8_t p1 = bit(lcd.PIN_50_LCD_DATA1.qp_ext_new());
-    uint8_t new_pix = p0 + p1 * 2;
+    wire p0 = bit(lcd.PIN_51_LCD_DATA0.qp_ext_new());
+    wire p1 = bit(lcd.PIN_50_LCD_DATA1.qp_ext_new());
+    auto new_pix = p0 + p1 * 2;
 
-    framebuffer[lcd_x + lcd_y * 160] = 3 - new_pix;
+    framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
   }
 
   old_lcd_x = lcd_x;

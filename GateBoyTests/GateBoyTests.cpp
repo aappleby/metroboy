@@ -986,7 +986,7 @@ int GateBoyTests::test_init() {
 
 //-----------------------------------------------------------------------------
 
-#define EXPECT_CLK(A, B) EXPECT_EQ(bit(A), ((B) >> (7 - phase)) & 1, "Clock phase mismatch, %s at phase %d", #A, phase);
+#define EXPECT_CLK(A, B) EXPECT_EQ(bit(A), bit(B, 7 - phase), "Clock phase mismatch, %s at phase %d", #A, phase);
 
 int GateBoyTests::test_clk() {
   TEST_START();
@@ -1000,14 +1000,14 @@ int GateBoyTests::test_clk() {
 
   for (int i = 0; i < 32; i++) {
     int phase = gb.phase_total & 7;
-    EXPECT_CLK(clk.AFUR_xxxxEFGH.qp_old(), 0b00001111);
-    EXPECT_CLK(clk.ALEF_AxxxxFGH.qp_old(), 0b10000111);
-    EXPECT_CLK(clk.APUK_ABxxxxGH.qp_old(), 0b11000011);
-    EXPECT_CLK(clk.ADYK_ABCxxxxH.qp_old(), 0b11100001);
+    EXPECT_CLK(clk.AFUR_xxxxEFGH.qp_old(), (uint8_t)0b00001111);
+    EXPECT_CLK(clk.ALEF_AxxxxFGH.qp_old(), (uint8_t)0b10000111);
+    EXPECT_CLK(clk.APUK_ABxxxxGH.qp_old(), (uint8_t)0b11000011);
+    EXPECT_CLK(clk.ADYK_ABCxxxxH.qp_old(), (uint8_t)0b11100001);
 
-    EXPECT_CLK(clk.WUVU_ABxxEFxx.qp_old(), 0b11001100);
-    EXPECT_CLK(clk.VENA_xxCDEFxx.qp_old(), 0b00111100);
-    EXPECT_CLK(clk.WOSU_AxxDExxH.qp_old(), 0b10011001);
+    EXPECT_CLK(clk.WUVU_ABxxEFxx.qp_old(), (uint8_t)0b11001100);
+    EXPECT_CLK(clk.VENA_xxCDEFxx.qp_old(), (uint8_t)0b00111100);
+    EXPECT_CLK(clk.WOSU_AxxDExxH.qp_old(), (uint8_t)0b10011001);
 
     EXPECT_CLK(top.clk.SIG_CPU_BOWA_Axxxxxxx.qp_old(), 0b10000000);
     EXPECT_CLK(top.clk.SIG_CPU_BEDO_xBCDEFGH.qp_old(), 0b01111111);

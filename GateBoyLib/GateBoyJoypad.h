@@ -34,12 +34,12 @@ struct GateBoyJoypad {
   /*SIG_CPU_WAKE*/ SigOut SIG_CPU_WAKE;  // top right wire by itself <- P02.AWOB
 
   // Pressing a button pulls the corresponding pin _down_.
-  /*PIN_67*/ PinIn  PIN_67_JOY_P10;
-  /*PIN_66*/ PinIn  PIN_66_JOY_P11;
-  /*PIN_65*/ PinIn  PIN_65_JOY_P12;
-  /*PIN_64*/ PinIn  PIN_64_JOY_P13;
-  /*PIN_63*/ PinOut PIN_63_JOY_P14;
-  /*PIN_62*/ PinOut PIN_62_JOY_P15;
+  /* PIN_67_JOY_P10*/ PinIn  PIN_67_JOY_P10;
+  /* PIN_66_JOY_P11*/ PinIn  PIN_66_JOY_P11;
+  /* PIN_65_JOY_P12*/ PinIn  PIN_65_JOY_P12;
+  /* PIN_64_JOY_P13*/ PinIn  PIN_64_JOY_P13;
+  /* PIN_63_JOY_P14*/ PinOut PIN_63_JOY_P14;
+  /* PIN_62_JOY_P15*/ PinOut PIN_62_JOY_P15;
 };
 
 //------------------------------------------------------------------------------------------------------------------------

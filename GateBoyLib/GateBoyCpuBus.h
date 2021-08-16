@@ -90,22 +90,22 @@ struct GateBoyCpuBus {
 
   void set_addr(uint16_t bus_addr_new)
   {
-    BUS_CPU_A00p.set(bit(bus_addr_new,  0));
-    BUS_CPU_A01p.set(bit(bus_addr_new,  1));
-    BUS_CPU_A02p.set(bit(bus_addr_new,  2));
-    BUS_CPU_A03p.set(bit(bus_addr_new,  3));
-    BUS_CPU_A04p.set(bit(bus_addr_new,  4));
-    BUS_CPU_A05p.set(bit(bus_addr_new,  5));
-    BUS_CPU_A06p.set(bit(bus_addr_new,  6));
-    BUS_CPU_A07p.set(bit(bus_addr_new,  7));
-    BUS_CPU_A08p.set(bit(bus_addr_new,  8));
-    BUS_CPU_A09p.set(bit(bus_addr_new,  9));
-    BUS_CPU_A10p.set(bit(bus_addr_new, 10));
-    BUS_CPU_A11p.set(bit(bus_addr_new, 11));
-    BUS_CPU_A12p.set(bit(bus_addr_new, 12));
-    BUS_CPU_A13p.set(bit(bus_addr_new, 13));
-    BUS_CPU_A14p.set(bit(bus_addr_new, 14));
-    BUS_CPU_A15p.set(bit(bus_addr_new, 15));
+    /* BUS_CPU_A00p*/ BUS_CPU_A00p.set(bit(bus_addr_new, 0));
+    /* BUS_CPU_A01p*/ BUS_CPU_A01p.set(bit(bus_addr_new, 1));
+    /* BUS_CPU_A02p*/ BUS_CPU_A02p.set(bit(bus_addr_new, 2));
+    /* BUS_CPU_A03p*/ BUS_CPU_A03p.set(bit(bus_addr_new, 3));
+    /* BUS_CPU_A04p*/ BUS_CPU_A04p.set(bit(bus_addr_new, 4));
+    /* BUS_CPU_A05p*/ BUS_CPU_A05p.set(bit(bus_addr_new, 5));
+    /* BUS_CPU_A06p*/ BUS_CPU_A06p.set(bit(bus_addr_new, 6));
+    /* BUS_CPU_A07p*/ BUS_CPU_A07p.set(bit(bus_addr_new, 7));
+    /* BUS_CPU_A08p*/ BUS_CPU_A08p.set(bit(bus_addr_new, 8));
+    /* BUS_CPU_A09p*/ BUS_CPU_A09p.set(bit(bus_addr_new, 9));
+    /* BUS_CPU_A10p*/ BUS_CPU_A10p.set(bit(bus_addr_new, 10));
+    /* BUS_CPU_A11p*/ BUS_CPU_A11p.set(bit(bus_addr_new, 11));
+    /* BUS_CPU_A12p*/ BUS_CPU_A12p.set(bit(bus_addr_new, 12));
+    /* BUS_CPU_A13p*/ BUS_CPU_A13p.set(bit(bus_addr_new, 13));
+    /* BUS_CPU_A14p*/ BUS_CPU_A14p.set(bit(bus_addr_new, 14));
+    /* BUS_CPU_A15p*/ BUS_CPU_A15p.set(bit(bus_addr_new, 15));
   }
 
   //------------------------------------------------------------------------------------------------------------------------

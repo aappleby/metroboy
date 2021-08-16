@@ -79,27 +79,34 @@ void GateBoy::tock_joypad() {
   /* p05.KARU*/ wire KARU = or2(joy.KELY_JOYP_UDLRp.qn_new(), KURA_FF60_D0n);
   /* p05.CELA*/ wire CELA = or2(joy.COFY_JOYP_ABCSp.qn_new(), KURA_FF60_D0n);
 
-  /*#PIN_63*/ joy.PIN_63_JOY_P14.set_pin_int(KARU, joy.KELY_JOYP_UDLRp.qn_new());
-  /*#PIN_62*/ joy.PIN_62_JOY_P15.set_pin_int(CELA, joy.COFY_JOYP_ABCSp.qn_new());
+  /*#PIN_63_JOY_P14*/ joy.PIN_63_JOY_P14.set_pin_int(KARU, joy.KELY_JOYP_UDLRp.qn_new());
+  /*#PIN_62_JOY_P15*/ joy.PIN_62_JOY_P15.set_pin_int(CELA, joy.COFY_JOYP_ABCSp.qn_new());
+
+  bool b0, b1, b2, b3;
 
   if (!bit(joy.PIN_63_JOY_P14.qp_ext_new())) {
-    joy.PIN_67_JOY_P10.set_pin_ext(!bit(sys_buttons, 0)); // RIGHT
-    joy.PIN_66_JOY_P11.set_pin_ext(!bit(sys_buttons, 1)); // LEFT
-    joy.PIN_65_JOY_P12.set_pin_ext(!bit(sys_buttons, 2)); // UP
-    joy.PIN_64_JOY_P13.set_pin_ext(!bit(sys_buttons, 3)); // DOWN
+    b0 = !bit(sys_buttons, 0); // RIGHT
+    b1 = !bit(sys_buttons, 1); // LEFT
+    b2 = !bit(sys_buttons, 2); // UP
+    b3 = !bit(sys_buttons, 3); // DOWN
   }
   else if (!bit(joy.PIN_62_JOY_P15.qp_ext_new())) {
-    joy.PIN_67_JOY_P10.set_pin_ext(!bit(sys_buttons, 4)); // A
-    joy.PIN_66_JOY_P11.set_pin_ext(!bit(sys_buttons, 5)); // B
-    joy.PIN_65_JOY_P12.set_pin_ext(!bit(sys_buttons, 6)); // SELECT
-    joy.PIN_64_JOY_P13.set_pin_ext(!bit(sys_buttons, 7)); // START
+    b0 = !bit(sys_buttons, 4); // A
+    b1 = !bit(sys_buttons, 5); // B
+    b2 = !bit(sys_buttons, 6); // SELECT
+    b3 = !bit(sys_buttons, 7); // START
   }
   else {
-    joy.PIN_67_JOY_P10.set_pin_ext(1);
-    joy.PIN_66_JOY_P11.set_pin_ext(1);
-    joy.PIN_65_JOY_P12.set_pin_ext(1);
-    joy.PIN_64_JOY_P13.set_pin_ext(1);
+    b0 = 1;
+    b1 = 1;
+    b2 = 1;
+    b3 = 1;
   }
+
+  /* PIN_67_JOY_P10*/ joy.PIN_67_JOY_P10.set_pin_ext(b0);
+  /* PIN_66_JOY_P11*/ joy.PIN_66_JOY_P11.set_pin_ext(b1);
+  /* PIN_65_JOY_P12*/ joy.PIN_65_JOY_P12.set_pin_ext(b2);
+  /* PIN_64_JOY_P13*/ joy.PIN_64_JOY_P13.set_pin_ext(b3);
 
   // debug stuff
 #if 0

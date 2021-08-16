@@ -62,7 +62,7 @@ void GateBoy::tock_serial()
   /* p06.DAWE*/ wire _DAWE_SER_CLK = not1(_DEHO_SER_CLK);
 
   // this pin has 4 wires attached, but they're not traced
-  serial.PIN_69_SIN.set_pin_ext(1);
+  /* PIN_69_SIN*/ serial.PIN_69_SIN.set_pin_ext(1);
 
   /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_signals.TAPU_CPU_WRp.qp_new(), new_bus.SANO_FF00_FF03p(), new_bus.TOLA_A01n(),   new_bus.BUS_CPU_A00p.qp_new());
   /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D00p.qp_new(), ALUR_SYS_RSTn());

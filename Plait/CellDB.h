@@ -84,10 +84,13 @@ struct DieCell {
   std::string decl; // The name of the C++ type used to represent this cell - wire, DFF8n, TpLatch
   std::string gate; // The specific type of cell
   //std::string args; // The inputs to the cell
+
+  std::set<std::string> arglists;
+
   std::string name; // The descriptive name of this cell. Should include the tag.
   std::string doc;  // Any comment string appended after the cell's declaration.
 
-  std::vector<CellPort> args;
+  //std::vector<CellPort> args;
 
   std::vector<std::string> input_ports;
   std::vector<std::string> output_ports;

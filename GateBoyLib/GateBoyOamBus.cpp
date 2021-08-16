@@ -58,38 +58,65 @@ void GateBoy::tock_oam_bus()
 
   // DMA OAM write address driver
   /* p04.DUGA*/ wire DUGA_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
-  /* p28.FODO_DMA0_TO_OA0*/ oam_bus.BUS_OAM_A00n.tri6_nn(DUGA_DMA_RUNNINGn, dma.NAKY_DMA_A00p.qp_new());
-  /* p28.FESA_DMA1_TO_OA1*/ oam_bus.BUS_OAM_A01n.tri6_nn(DUGA_DMA_RUNNINGn, dma.PYRO_DMA_A01p.qp_new());
-  /* p28.FAGO_DMA2_TO_OA2*/ oam_bus.BUS_OAM_A02n.tri6_nn(DUGA_DMA_RUNNINGn, dma.NEFY_DMA_A02p.qp_new());
-  /* p28.FYKY_DMA3_TO_OA3*/ oam_bus.BUS_OAM_A03n.tri6_nn(DUGA_DMA_RUNNINGn, dma.MUTY_DMA_A03p.qp_new());
-  /* p28.ELUG_DMA4_TO_OA4*/ oam_bus.BUS_OAM_A04n.tri6_nn(DUGA_DMA_RUNNINGn, dma.NYKO_DMA_A04p.qp_new());
-  /* p28.EDOL_DMA5_TO_OA5*/ oam_bus.BUS_OAM_A05n.tri6_nn(DUGA_DMA_RUNNINGn, dma.PYLO_DMA_A05p.qp_new());
-  /* p28.FYDU_DMA6_TO_OA6*/ oam_bus.BUS_OAM_A06n.tri6_nn(DUGA_DMA_RUNNINGn, dma.NUTO_DMA_A06p.qp_new());
-  /* p28.FETU_DMA7_TO_OA7*/ oam_bus.BUS_OAM_A07n.tri6_nn(DUGA_DMA_RUNNINGn, dma.MUGU_DMA_A07p.qp_new());
+  /* p28.FODO_DMA0_TO_OA0*/ wire FODO_DMA0_TO_OA0 = tri6_nn(DUGA_DMA_RUNNINGn, dma.NAKY_DMA_A00p.qp_new());
+  /* p28.FESA_DMA1_TO_OA1*/ wire FESA_DMA1_TO_OA1 = tri6_nn(DUGA_DMA_RUNNINGn, dma.PYRO_DMA_A01p.qp_new());
+  /* p28.FAGO_DMA2_TO_OA2*/ wire FAGO_DMA2_TO_OA2 = tri6_nn(DUGA_DMA_RUNNINGn, dma.NEFY_DMA_A02p.qp_new());
+  /* p28.FYKY_DMA3_TO_OA3*/ wire FYKY_DMA3_TO_OA3 = tri6_nn(DUGA_DMA_RUNNINGn, dma.MUTY_DMA_A03p.qp_new());
+  /* p28.ELUG_DMA4_TO_OA4*/ wire ELUG_DMA4_TO_OA4 = tri6_nn(DUGA_DMA_RUNNINGn, dma.NYKO_DMA_A04p.qp_new());
+  /* p28.EDOL_DMA5_TO_OA5*/ wire EDOL_DMA5_TO_OA5 = tri6_nn(DUGA_DMA_RUNNINGn, dma.PYLO_DMA_A05p.qp_new());
+  /* p28.FYDU_DMA6_TO_OA6*/ wire FYDU_DMA6_TO_OA6 = tri6_nn(DUGA_DMA_RUNNINGn, dma.NUTO_DMA_A06p.qp_new());
+  /* p28.FETU_DMA7_TO_OA7*/ wire FETU_DMA7_TO_OA7 = tri6_nn(DUGA_DMA_RUNNINGn, dma.MUGU_DMA_A07p.qp_new());
+
+  /* BUS_OAM_A00n*/ oam_bus.BUS_OAM_A00n.tri(FODO_DMA0_TO_OA0);
+  /* BUS_OAM_A01n*/ oam_bus.BUS_OAM_A01n.tri(FESA_DMA1_TO_OA1);
+  /* BUS_OAM_A02n*/ oam_bus.BUS_OAM_A02n.tri(FAGO_DMA2_TO_OA2);
+  /* BUS_OAM_A03n*/ oam_bus.BUS_OAM_A03n.tri(FYKY_DMA3_TO_OA3);
+  /* BUS_OAM_A04n*/ oam_bus.BUS_OAM_A04n.tri(ELUG_DMA4_TO_OA4);
+  /* BUS_OAM_A05n*/ oam_bus.BUS_OAM_A05n.tri(EDOL_DMA5_TO_OA5);
+  /* BUS_OAM_A06n*/ oam_bus.BUS_OAM_A06n.tri(FYDU_DMA6_TO_OA6);
+  /* BUS_OAM_A07n*/ oam_bus.BUS_OAM_A07n.tri(FETU_DMA7_TO_OA7);
 
   // OAM address from sprite scanner
   /* p28.APAR*/ wire _APAR_SCANNINGn = not1(sprite_scanner.ACYL_SCANNINGp.qp_new());
-  /* p28.GEFY_SCANX_TO_OA0*/ oam_bus.BUS_OAM_A00n.tri6_nn(_APAR_SCANNINGn, SIG_GND.qp_new());
-  /* p28.WUWE_SCANX_TO_OA1*/ oam_bus.BUS_OAM_A01n.tri6_nn(_APAR_SCANNINGn, SIG_GND.qp_new());
-  /* p28.GUSE_SCAN0_TO_OA2*/ oam_bus.BUS_OAM_A02n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.YFEL_SCAN0.qp_new());
-  /* p28.GEMA_SCAN1_TO_OA3*/ oam_bus.BUS_OAM_A03n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.WEWY_SCAN1.qp_new());
-  /* p28.FUTO_SCAN2_TO_OA4*/ oam_bus.BUS_OAM_A04n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.GOSO_SCAN2.qp_new());
-  /* p28.FAKU_SCAN3_TO_OA5*/ oam_bus.BUS_OAM_A05n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.ELYN_SCAN3.qp_new());
-  /* p28.GAMA_SCAN4_TO_OA6*/ oam_bus.BUS_OAM_A06n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.FAHA_SCAN4.qp_new());
-  /* p28.GOBY_SCAN5_TO_OA7*/ oam_bus.BUS_OAM_A07n.tri6_nn(_APAR_SCANNINGn, sprite_scanner.FONY_SCAN5.qp_new());
+  /* p28.GEFY_SCANX_TO_OA0*/ wire GEFY_SCANX_TO_OA0 = tri6_nn(_APAR_SCANNINGn, SIG_GND.qp_new());
+  /* p28.WUWE_SCANX_TO_OA1*/ wire WUWE_SCANX_TO_OA1 = tri6_nn(_APAR_SCANNINGn, SIG_GND.qp_new());
+  /* p28.GUSE_SCAN0_TO_OA2*/ wire GUSE_SCAN0_TO_OA2 = tri6_nn(_APAR_SCANNINGn, sprite_scanner.YFEL_SCAN0.qp_new());
+  /* p28.GEMA_SCAN1_TO_OA3*/ wire GEMA_SCAN1_TO_OA3 = tri6_nn(_APAR_SCANNINGn, sprite_scanner.WEWY_SCAN1.qp_new());
+  /* p28.FUTO_SCAN2_TO_OA4*/ wire FUTO_SCAN2_TO_OA4 = tri6_nn(_APAR_SCANNINGn, sprite_scanner.GOSO_SCAN2.qp_new());
+  /* p28.FAKU_SCAN3_TO_OA5*/ wire FAKU_SCAN3_TO_OA5 = tri6_nn(_APAR_SCANNINGn, sprite_scanner.ELYN_SCAN3.qp_new());
+  /* p28.GAMA_SCAN4_TO_OA6*/ wire GAMA_SCAN4_TO_OA6 = tri6_nn(_APAR_SCANNINGn, sprite_scanner.FAHA_SCAN4.qp_new());
+  /* p28.GOBY_SCAN5_TO_OA7*/ wire GOBY_SCAN5_TO_OA7 = tri6_nn(_APAR_SCANNINGn, sprite_scanner.FONY_SCAN5.qp_new());
+
+  /* BUS_OAM_A00n*/ oam_bus.BUS_OAM_A00n.tri(GEFY_SCANX_TO_OA0);
+  /* BUS_OAM_A01n*/ oam_bus.BUS_OAM_A01n.tri(WUWE_SCANX_TO_OA1);
+  /* BUS_OAM_A02n*/ oam_bus.BUS_OAM_A02n.tri(GUSE_SCAN0_TO_OA2);
+  /* BUS_OAM_A03n*/ oam_bus.BUS_OAM_A03n.tri(GEMA_SCAN1_TO_OA3);
+  /* BUS_OAM_A04n*/ oam_bus.BUS_OAM_A04n.tri(FUTO_SCAN2_TO_OA4);
+  /* BUS_OAM_A05n*/ oam_bus.BUS_OAM_A05n.tri(FAKU_SCAN3_TO_OA5);
+  /* BUS_OAM_A06n*/ oam_bus.BUS_OAM_A06n.tri(GAMA_SCAN4_TO_OA6);
+  /* BUS_OAM_A07n*/ oam_bus.BUS_OAM_A07n.tri(GOBY_SCAN5_TO_OA7);
 
   // OAM address from sprite fetcher
   /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
   /* p28.AJON*/ wire _AJON_RENDERINGp = and2(BOGE_DMA_RUNNINGn, XYMU_RENDERINGn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma
   /* p28.BETE*/ wire _BETE_SPR_I_TO_OAM_An = not1(_AJON_RENDERINGp);
-  /* p28.GECA_FETCHX_TO_OA0*/ oam_bus.BUS_OAM_A00n.tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC.qp_new());
-  /* p28.WYDU_FETCHX_TO_OA1*/ oam_bus.BUS_OAM_A01n.tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC.qp_new());
-  /* p28.GYBU_FETCH0_TO_OA2*/ oam_bus.BUS_OAM_A02n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I0.qp_new());
-  /* p28.GYKA_FETCH1_TO_OA3*/ oam_bus.BUS_OAM_A03n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I1.qp_new());
-  /* p28.FABY_FETCH2_TO_OA4*/ oam_bus.BUS_OAM_A04n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I2.qp_new());
-  /* p28.FACO_FETCH3_TO_OA5*/ oam_bus.BUS_OAM_A05n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I3.qp_new());
-  /* p28.FUGU_FETCH4_TO_OA6*/ oam_bus.BUS_OAM_A06n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I4.qp_new());
-  /* p28.FYKE_FETCH5_TO_OA7*/ oam_bus.BUS_OAM_A07n.tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I5.qp_new());
+  /* p28.GECA_FETCHX_TO_OA0*/ wire GECA_FETCHX_TO_OA0 = tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC.qp_new());
+  /* p28.WYDU_FETCHX_TO_OA1*/ wire WYDU_FETCHX_TO_OA1 = tri6_nn(_BETE_SPR_I_TO_OAM_An, SIG_VCC.qp_new());
+  /* p28.GYBU_FETCH0_TO_OA2*/ wire GYBU_FETCH0_TO_OA2 = tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I0.qp_new());
+  /* p28.GYKA_FETCH1_TO_OA3*/ wire GYKA_FETCH1_TO_OA3 = tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I1.qp_new());
+  /* p28.FABY_FETCH2_TO_OA4*/ wire FABY_FETCH2_TO_OA4 = tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I2.qp_new());
+  /* p28.FACO_FETCH3_TO_OA5*/ wire FACO_FETCH3_TO_OA5 = tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I3.qp_new());
+  /* p28.FUGU_FETCH4_TO_OA6*/ wire FUGU_FETCH4_TO_OA6 = tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I4.qp_new());
+  /* p28.FYKE_FETCH5_TO_OA7*/ wire FYKE_FETCH5_TO_OA7 = tri6_nn(_BETE_SPR_I_TO_OAM_An, sprite_bus.BUS_SPR_I5.qp_new());
+
+  /* BUS_OAM_A00n*/ oam_bus.BUS_OAM_A00n.tri(GECA_FETCHX_TO_OA0);
+  /* BUS_OAM_A01n*/ oam_bus.BUS_OAM_A01n.tri(WYDU_FETCHX_TO_OA1);
+  /* BUS_OAM_A02n*/ oam_bus.BUS_OAM_A02n.tri(GYBU_FETCH0_TO_OA2);
+  /* BUS_OAM_A03n*/ oam_bus.BUS_OAM_A03n.tri(GYKA_FETCH1_TO_OA3);
+  /* BUS_OAM_A04n*/ oam_bus.BUS_OAM_A04n.tri(FABY_FETCH2_TO_OA4);
+  /* BUS_OAM_A05n*/ oam_bus.BUS_OAM_A05n.tri(FACO_FETCH3_TO_OA5);
+  /* BUS_OAM_A06n*/ oam_bus.BUS_OAM_A06n.tri(FUGU_FETCH4_TO_OA6);
+  /* BUS_OAM_A07n*/ oam_bus.BUS_OAM_A07n.tri(FYKE_FETCH5_TO_OA7);
 
   //probe_wire(16, "ASAM CPU", _ASAM_CPU_OAM_RDn);
   //probe_wire(17, "DUGA DMA", DUGA_DMA_RUNNINGn);
@@ -111,23 +138,41 @@ void GateBoy::tock_oam_bus()
   /*#p28.APAG*/ wire _APAG_CBD_TO_OBDp  = amux2(_XUPA_CPU_OAM_WRp, _AMAB_CPU_OAM_ENp, _AJUJ_OAM_BUSYn, new_bus.ADAH_FE00_FEFFn());
   /*#p28.AZUL*/ wire _AZUL_CBD_TO_OBDn  = not1(_APAG_CBD_TO_OBDp);
 
-  /* p28.ZAMY_CD0_TO_ODB0*/ oam_bus.BUS_OAM_DA00n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D00p.qp_new());
-  /* p28.ZOPU_CD1_TO_ODB1*/ oam_bus.BUS_OAM_DA01n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D01p.qp_new());
-  /* p28.WYKY_CD2_TO_ODB2*/ oam_bus.BUS_OAM_DA02n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D02p.qp_new());
-  /* p28.ZAJA_CD3_TO_ODB3*/ oam_bus.BUS_OAM_DA03n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D03p.qp_new());
-  /* p28.ZUGA_CD4_TO_ODB4*/ oam_bus.BUS_OAM_DA04n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D04p.qp_new());
-  /* p28.ZUMO_CD5_TO_ODB5*/ oam_bus.BUS_OAM_DA05n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D05p.qp_new());
-  /* p28.XYTO_CD6_TO_ODB6*/ oam_bus.BUS_OAM_DA06n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D06p.qp_new());
-  /* p28.ZYFA_CD7_TO_ODB7*/ oam_bus.BUS_OAM_DA07n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D07p.qp_new());
+  /* p28.ZAMY_CD0_TO_ODB0*/ wire ZAMY_CD0_TO_ODB0 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D00p.qp_new());
+  /* p28.ZOPU_CD1_TO_ODB1*/ wire ZOPU_CD1_TO_ODB1 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D01p.qp_new());
+  /* p28.WYKY_CD2_TO_ODB2*/ wire WYKY_CD2_TO_ODB2 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D02p.qp_new());
+  /* p28.ZAJA_CD3_TO_ODB3*/ wire ZAJA_CD3_TO_ODB3 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D03p.qp_new());
+  /* p28.ZUGA_CD4_TO_ODB4*/ wire ZUGA_CD4_TO_ODB4 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D04p.qp_new());
+  /* p28.ZUMO_CD5_TO_ODB5*/ wire ZUMO_CD5_TO_ODB5 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D05p.qp_new());
+  /* p28.XYTO_CD6_TO_ODB6*/ wire XYTO_CD6_TO_ODB6 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D06p.qp_new());
+  /* p28.ZYFA_CD7_TO_ODB7*/ wire ZYFA_CD7_TO_ODB7 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D07p.qp_new());
 
-  /* p28.ZAXA_CD0_TO_ODA0*/ oam_bus.BUS_OAM_DB00n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D00p.qp_new());
-  /* p28.ZAKY_CD1_TO_ODA1*/ oam_bus.BUS_OAM_DB01n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D01p.qp_new());
-  /* p28.WULE_CD2_TO_ODA2*/ oam_bus.BUS_OAM_DB02n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D02p.qp_new());
-  /* p28.ZOZO_CD3_TO_ODA3*/ oam_bus.BUS_OAM_DB03n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D03p.qp_new());
-  /* p28.ZUFO_CD4_TO_ODA4*/ oam_bus.BUS_OAM_DB04n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D04p.qp_new());
-  /* p28.ZATO_CD5_TO_ODA5*/ oam_bus.BUS_OAM_DB05n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D05p.qp_new());
-  /* p28.YVUC_CD6_TO_ODA6*/ oam_bus.BUS_OAM_DB06n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D06p.qp_new());
-  /* p28.ZUFE_CD7_TO_ODA7*/ oam_bus.BUS_OAM_DB07n.tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D07p.qp_new());
+  /* p28.ZAXA_CD0_TO_ODA0*/ wire ZAXA_CD0_TO_ODA0 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D00p.qp_new());
+  /* p28.ZAKY_CD1_TO_ODA1*/ wire ZAKY_CD1_TO_ODA1 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D01p.qp_new());
+  /* p28.WULE_CD2_TO_ODA2*/ wire WULE_CD2_TO_ODA2 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D02p.qp_new());
+  /* p28.ZOZO_CD3_TO_ODA3*/ wire ZOZO_CD3_TO_ODA3 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D03p.qp_new());
+  /* p28.ZUFO_CD4_TO_ODA4*/ wire ZUFO_CD4_TO_ODA4 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D04p.qp_new());
+  /* p28.ZATO_CD5_TO_ODA5*/ wire ZATO_CD5_TO_ODA5 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D05p.qp_new());
+  /* p28.YVUC_CD6_TO_ODA6*/ wire YVUC_CD6_TO_ODA6 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D06p.qp_new());
+  /* p28.ZUFE_CD7_TO_ODA7*/ wire ZUFE_CD7_TO_ODA7 = tri6_nn(_AZUL_CBD_TO_OBDn, new_bus.BUS_CPU_D07p.qp_new());
+
+  /* BUS_OAM_DA00n*/ oam_bus.BUS_OAM_DA00n.tri(ZAMY_CD0_TO_ODB0);
+  /* BUS_OAM_DA01n*/ oam_bus.BUS_OAM_DA01n.tri(ZOPU_CD1_TO_ODB1);
+  /* BUS_OAM_DA02n*/ oam_bus.BUS_OAM_DA02n.tri(WYKY_CD2_TO_ODB2);
+  /* BUS_OAM_DA03n*/ oam_bus.BUS_OAM_DA03n.tri(ZAJA_CD3_TO_ODB3);
+  /* BUS_OAM_DA04n*/ oam_bus.BUS_OAM_DA04n.tri(ZUGA_CD4_TO_ODB4);
+  /* BUS_OAM_DA05n*/ oam_bus.BUS_OAM_DA05n.tri(ZUMO_CD5_TO_ODB5);
+  /* BUS_OAM_DA06n*/ oam_bus.BUS_OAM_DA06n.tri(XYTO_CD6_TO_ODB6);
+  /* BUS_OAM_DA07n*/ oam_bus.BUS_OAM_DA07n.tri(ZYFA_CD7_TO_ODB7);
+
+  /* BUS_OAM_DB00n*/ oam_bus.BUS_OAM_DB00n.tri(ZAXA_CD0_TO_ODA0);
+  /* BUS_OAM_DB01n*/ oam_bus.BUS_OAM_DB01n.tri(ZAKY_CD1_TO_ODA1);
+  /* BUS_OAM_DB02n*/ oam_bus.BUS_OAM_DB02n.tri(WULE_CD2_TO_ODA2);
+  /* BUS_OAM_DB03n*/ oam_bus.BUS_OAM_DB03n.tri(ZOZO_CD3_TO_ODA3);
+  /* BUS_OAM_DB04n*/ oam_bus.BUS_OAM_DB04n.tri(ZUFO_CD4_TO_ODA4);
+  /* BUS_OAM_DB05n*/ oam_bus.BUS_OAM_DB05n.tri(ZATO_CD5_TO_ODA5);
+  /* BUS_OAM_DB06n*/ oam_bus.BUS_OAM_DB06n.tri(YVUC_CD6_TO_ODA6);
+  /* BUS_OAM_DB07n*/ oam_bus.BUS_OAM_DB07n.tri(ZUFE_CD7_TO_ODA7);
 
   // ext dma to oam data bus
 

@@ -63,7 +63,7 @@ struct BitBase {
   uint8_t state;
 
   BitBase() { state = 0; }
-  explicit BitBase(int new_state)  { state = uint8_t(new_state); }
+  explicit BitBase(int new_state) { state = uint8_t(new_state); }
 
   char cp_int() const {
     if (state & BIT_DRIVEN) return bit(state) ? '1' : '0';
@@ -101,8 +101,8 @@ struct BitBase {
     return r;
   }
 
-  inline static uint32_t pack_oldn(int c, const BitBase* b)    { return pack_old(c, b) ^ ((1 << c) - 1); }
-  inline static uint32_t pack_newn(int c, const BitBase* b)    { return pack_new(c, b) ^ ((1 << c) - 1); }
+  inline static uint32_t pack_oldn(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
+  inline static uint32_t pack_newn(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
 
   inline static uint32_t pack_ext_old(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
   inline static uint32_t pack_ext_new(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
@@ -118,7 +118,7 @@ struct BitBase {
   void check_new() const {
     CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
     CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
-}
+  }
 #endif
 };
 
@@ -534,9 +534,7 @@ struct Bus : private BitBase {
   using BitBase::qp_new;
   using BitBase::qp_old;
 
-  void reset(uint8_t s) {
-    state = s;
-  }
+  void reset(uint8_t s) { state = s; }
 
   void tri(wire tristate) {
     CHECK_N(state & BIT_OLD);
@@ -549,9 +547,6 @@ struct Bus : private BitBase {
   void set(wire Dp) {
     state = (Dp & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
   }
-
-  void tri6_nn (wire OEn, wire Dn) { tri(bit(~OEn) ? BIT_NEW | TRI_DRIVEN | bit(~Dn) : BIT_NEW); }
-  void tri6_pn (wire OEp, wire Dn) { tri(bit( OEp) ? BIT_NEW | TRI_DRIVEN | bit(~Dn) : BIT_NEW); }
 };
 
 //-----------------------------------------------------------------------------
@@ -634,7 +629,7 @@ struct PinIn : private BitBase {
 struct PinClock {
 
   wire clock_good() const { return CLKGOOD.qp_int_new(); }
-  wire clock() const      { return CLK.qp_int_new(); }
+  wire clock() const { return CLK.qp_int_new(); }
 
   void pin_clk(wire clk, wire clkgood) {
     CLK.set_pin_ext(clk);
@@ -789,7 +784,7 @@ inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
 inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
 inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
 
-inline wire xor2 (wire a, wire b) { return a ^ b; }
+inline wire xor2(wire a, wire b) { return a ^ b; }
 
 inline wire xnor2(wire a, wire b) { return ~(a ^ b); }
 

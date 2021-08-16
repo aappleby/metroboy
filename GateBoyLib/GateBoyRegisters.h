@@ -20,18 +20,23 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteDeltaY {
-
-  /* p29.DEGE*/ Gate DEGE_SPRITE_DELTA0;
-  /* p29.DABY*/ Gate DABY_SPRITE_DELTA1;
-  /* p29.DABU*/ Gate DABU_SPRITE_DELTA2;
-  /* p29.GYSA*/ Gate GYSA_SPRITE_DELTA3;
-  /* p29.GACE*/ Gate GACE_SPRITE_DELTA4;
-  /* p29.GUVU*/ Gate GUVU_SPRITE_DELTA5;
-  /* p29.GYDA*/ Gate GYDA_SPRITE_DELTA6;
-  /* p29.GEWY*/ Gate GEWY_SPRITE_DELTA7;
-
+  /* p29.ERUC*/ Adder ERUC_YDIFF0;
+  /* p29.ENEF*/ Adder ENEF_YDIFF1;
+  /* p29.FECO*/ Adder FECO_YDIFF2;
   /* p29.GYKY*/ Adder GYKY_YDIFF3;
+  /* p29.GOPU*/ Adder GOPU_YDIFF4;
+  /* p29.FUWA*/ Adder FUWA_YDIFF5;
+  /* p29.GOJU*/ Adder GOJU_YDIFF6;
   /* p29.WUHU*/ Adder WUHU_YDIFF7;
+
+  /* p29.DEGE*/ wire DEGE_SPRITE_DELTA0;
+  /* p29.DABY*/ wire DABY_SPRITE_DELTA1;
+  /* p29.DABU*/ wire DABU_SPRITE_DELTA2;
+  /* p29.GYSA*/ wire GYSA_SPRITE_DELTA3;
+  /* p29.GACE*/ wire GACE_SPRITE_DELTA4;
+  /* p29.GUVU*/ wire GUVU_SPRITE_DELTA5;
+  /* p29.GYDA*/ wire GYDA_SPRITE_DELTA6;
+  /* p29.GEWY*/ wire GEWY_SPRITE_DELTA7;
 };
 
 //-----------------------------------------------------------------------------

@@ -57,10 +57,10 @@ void GateBoy::tock_interrupts()
   /* p21.SASY*/ new_bus.BUS_CPU_D05p.tri6_nn(_VAVE_FF41_RDn, reg_stat.REFE_STAT_OAI_ENn.qp_new());
   /* p21.POTE*/ new_bus.BUS_CPU_D06p.tri6_nn(_VAVE_FF41_RDn, reg_stat.RUGU_STAT_LYI_ENn.qp_new());
 
-  /*#p21.PURE*/ wire _PURE_LINE_ENDn = not1(lcd.RUTU_x113p.qp_new());
+  /*#p21.PURE*/ wire _PURE_x113n = not1(lcd.RUTU_x113p.qp_new());
   /*#p21.TOLU*/ wire _TOLU_VBLANKn   = not1(PARU_VBLANKp);
-  /*#p21.SELA*/ wire _SELA_LINE_P908p = not1(_PURE_LINE_ENDn);
-  /*#p21.TAPA*/ wire _TAPA_INT_OAM   = and2(_TOLU_VBLANKn, _SELA_LINE_P908p);
+  /*#p21.SELA*/ wire _SELA_x113p = not1(_PURE_x113n);
+  /*#p21.TAPA*/ wire _TAPA_INT_OAM   = and2(_TOLU_VBLANKn, _SELA_x113p);
   /*#p21.TARU*/ wire _TARU_INT_HBL   = and2(WODU_HBLANKp.qp_new(), _TOLU_VBLANKn);
   /*#p21.SUKO*/ wire _SUKO_INT_STATp = amux4(reg_stat.RUGU_STAT_LYI_ENn.qn_new(), reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new(), reg_stat.REFE_STAT_OAI_ENn.qn_new(), _TAPA_INT_OAM, reg_stat.RUFO_STAT_VBI_ENn.qn_new(), PARU_VBLANKp, reg_stat.ROXE_STAT_HBI_ENn.qn_new(), _TARU_INT_HBL);
 

@@ -79,7 +79,7 @@ struct PlaitCell {
   //}
 
   const char* tag() const  { return die_cell ? die_cell->tag.c_str()  : "<no_tag>"; }
-  const char* name() const { return die_cell ? die_cell->long_name.c_str() : "<no_cell>"; }
+  const char* name() const { return die_cell ? die_cell->name.c_str() : "<no_cell>"; }
   const char* gate() const { return die_cell ? die_cell->gate.c_str() : "<no_gate>"; }
 
   void       add_root_node(PlaitNode* node);

@@ -57,10 +57,7 @@ enum struct BitState : uint8_t {
 };
 
 struct BitBase {
-  union {
-    uint8_t state;
-    BitState bit_state;
-  };
+  uint8_t state;
 
   BitBase() { state = 0; }
   explicit BitBase(int new_state)  { state = uint8_t(new_state); }
@@ -513,12 +510,23 @@ struct DFF22 : public DFF {
 
 // tri6_pn : top rung tadpole facing second rung dot.
 
+
 struct Bus : private BitBase {
   using BitBase::qp_any;
   using BitBase::qp_new;
   using BitBase::qp_old;
 
   void reset(uint8_t s) { state = s; }
+
+  void merge(uint8_t tristate) {
+    CHECK_N(state & BIT_OLD);
+    CHECK_P(state & BIT_NEW);
+
+    if (tristate & BIT_DRIVEN) {
+      CHECK_N(state & BIT_DRIVEN);
+      state = (tristate & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
+    }
+  }
 
   void tri(wire OEp, wire Dp) {
     CHECK_N(state & BIT_OLD);
@@ -538,6 +546,14 @@ struct Bus : private BitBase {
   void tri6_pn (wire OEp, wire Dn) { tri( OEp, ~Dn); }
   void tri10_np(wire OEn, wire Dp) { tri(~OEn,  Dp); }
 };
+
+inline uint8_t tri6_nn(wire OEn, wire Dn) {
+  uint8_t result = 0;
+  if (!OEn) result |= BIT_DRIVEN;
+  if (!Dn) result |= BIT_DATA;
+  return result;
+}
+
 
 //-----------------------------------------------------------------------------
 // Stores the bit INSIDE the chip. Bits are inverted when traveling across
@@ -800,8 +816,8 @@ inline wire not_or_and3(wire a, wire b, wire c) { return ~or_and3(a, b, c); }
 //-----------------------------------------------------------------------------
 
 struct Adder {
-  const wire sum;
-  const wire carry;
+  wire sum;
+  wire carry;
 };
 
 inline Adder add3(wire a, wire b, wire c) {

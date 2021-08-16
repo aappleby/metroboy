@@ -307,7 +307,7 @@ void GateBoy::dump_sprite_scanner(Dumper& d) {
 }
 
 void GateBoy::dump_serial(Dumper& d) {
-  d.dump_bitp   ("ETAF_SER_RUNNING : ", serial.ETAF_SER_RUNNING.state);
+  d.dump_bitp   ("ETAF_SER_RUNNING : ", serial.ETAF_SER_RUN.state);
   d.dump_bitp   ("CULY_XFER_DIR    : ", serial.CULY_SER_DIR.state);
   d.dump_bitp   ("COTY_SER_CLK     : ", serial.COTY_SER_CLK.state);
   d.dump_bitp   ("ELYS_SER_OUT     : ", serial.ELYS_SER_OUT.state);

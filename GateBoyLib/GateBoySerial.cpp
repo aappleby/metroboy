@@ -10,7 +10,7 @@ void GateBoy::tock_serial()
   /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(_UWAM_FF02_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
 
   /*#p01.UVYN*/ wire _UVYN_DIV05n = not1(div.TAMA_DIV05p.qp_new());
-  /*#p06.COTY*/ serial.COTY_SER_CLK.dff17(_UVYN_DIV05n, _UWAM_FF02_WRn, serial.COTY_SER_CLK.qn_old()); // schematic wrong, clock is UVYN
+  /*#p06.COTY*/ serial.COTY_SER_CLK.dff17(_UVYN_DIV05n, _UWAM_FF02_WRn, serial.COTY_SER_CLK.qn_old());
 
   //----------------------------------------
   // Feedback loop
@@ -18,7 +18,7 @@ void GateBoy::tock_serial()
   for (int rep = 0; rep < 2; rep++) {
     // FIXME check PIN_68 polarity
     /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_int_any());
-    /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUNNING.qn_any());
+    /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUN.qn_any());
 
     {
       /* p06.CARO*/ wire _CARO_SER_RSTn = and2(_UWAM_FF02_WRn, ALUR_SYS_RSTn());
@@ -31,7 +31,7 @@ void GateBoy::tock_serial()
     {
       /*#p06.COBA*/ wire _COBA_SER_CNT3n = not1(serial.CALY_SER_CNT3.qp_any());
       /*#p06.CABY*/ wire _CABY_XFER_RESET = and2(_COBA_SER_CNT3n, ALUR_SYS_RSTn());
-      /*#p06.ETAF*/ serial.ETAF_SER_RUNNING.dff17_any(_UWAM_FF02_WRn, _CABY_XFER_RESET, old_bus.BUS_CPU_D07p.qp_old());
+      /*#p06.ETAF*/ serial.ETAF_SER_RUN.dff17_any(_UWAM_FF02_WRn, _CABY_XFER_RESET, old_bus.BUS_CPU_D07p.qp_old());
     }
 
     {
@@ -47,7 +47,7 @@ void GateBoy::tock_serial()
 
   {
     /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_int_new());
-    /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUNNING.qn_new());
+    /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUN.qn_new());
     /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
     /*#p06.ELYS*/ serial.ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, ALUR_SYS_RSTn(), serial.EDER_SER_DATA7.qp_old());
     ///* p05.KENA*/ wire _KENA = mux2n(KUKO_DBG_FF00_D6, ELYS_SER_OUT.qp_new(), FF60_0); // FIXME hacking out debug stuff
@@ -55,7 +55,7 @@ void GateBoy::tock_serial()
   }
 
   /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_int_new());
-  /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUNNING.qn_new());
+  /*#p06.DAWA*/ wire _DAWA_SER_CLK = or2(_CAVE_SER_CLK, serial.ETAF_SER_RUN.qn_new());
   /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
   /* p06.EPYT*/ wire _EPYT_SER_CLK = not1(_EDYL_SER_CLK);
   /* p06.DEHO*/ wire _DEHO_SER_CLK = not1(_EPYT_SER_CLK);
@@ -106,7 +106,7 @@ void GateBoy::tock_serial()
 
   /* p06.UCOM*/ wire _UCOM_FF02_RDp =  and4(cpu_signals.TEDO_CPU_RDp.qp_new(), new_bus.SANO_FF00_FF03p(), new_bus.BUS_CPU_A01p.qp_new(), new_bus.TOVY_A00n());
   /* p06.CORE_SER0_TO_CD0*/ new_bus.BUS_CPU_D00p.tri6_pn(_UCOM_FF02_RDp, serial.CULY_SER_DIR.qn_new());
-  /* p06.ELUV_SER1_TO_CD1*/ new_bus.BUS_CPU_D07p.tri6_pn(_UCOM_FF02_RDp, serial.ETAF_SER_RUNNING.qn_new());
+  /* p06.ELUV_SER1_TO_CD1*/ new_bus.BUS_CPU_D07p.tri6_pn(_UCOM_FF02_RDp, serial.ETAF_SER_RUN.qn_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------

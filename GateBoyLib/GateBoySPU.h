@@ -1,3 +1,5 @@
+/// plait_noparse
+
 #pragma once
 #include "GateBoyLib/Gates.h"
 

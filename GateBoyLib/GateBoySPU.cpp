@@ -1,9 +1,9 @@
+/// plait_noparse
+
 #include "GateBoyLib/GateBoySPU.h"
 #include "GateBoyLib/GateBoy.h"
 
 #pragma warning(disable : 4189)
-
-/// plait_noparse
 
 //-----------------------------------------------------------------------------
 

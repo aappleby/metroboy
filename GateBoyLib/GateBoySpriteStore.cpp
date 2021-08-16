@@ -695,7 +695,7 @@ void GateBoy::sprite_match_to_bus(
   /* p30.CAWO_STORE9_GET_L5*/ sprite_bus.BUS_SPR_L3.tri6_nn(_FADO_SPRITE9_GETn, sprite_store.DEWU_STORE9_L3n_odd.qp_new());
 }
 
-void GateBoy::sprite_scan_to_bus(const SpriteScanner& sprite_scanner, SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp, SpriteBus& sprite_bus)
+void GateBoy::sprite_scan_to_bus(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
 {
   /*#p29.BUZA*/ wire _BUZA_STORE_SPRITE_INDXn_new = and2(sprite_scanner.CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
   /*#p30.WUZY_STORE_I0*/ sprite_bus.BUS_SPR_I0.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XADU_SPRITE_IDX0p.qn_new());
@@ -705,10 +705,10 @@ void GateBoy::sprite_scan_to_bus(const SpriteScanner& sprite_scanner, SpriteDelt
   /* p30.WUCO_STORE_I4*/ sprite_bus.BUS_SPR_I4.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.YDUF_SPRITE_IDX4p.qn_new());
   /* p30.WEZA_STORE_I5*/ sprite_bus.BUS_SPR_I5.tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XECU_SPRITE_IDX5p.qn_new());
 
-  /*#p30.CUCU_STORE_L0*/ sprite_bus.BUS_SPR_L0.tri6_nn(FEPO_STORE_MATCHp.qp_new(), delta.DEGE_SPRITE_DELTA0.qp_new());
-  /*#p30.CUCA_STORE_L1*/ sprite_bus.BUS_SPR_L1.tri6_nn(FEPO_STORE_MATCHp.qp_new(), delta.DABY_SPRITE_DELTA1.qp_new());
-  /*#p30.CEGA_STORE_L2*/ sprite_bus.BUS_SPR_L2.tri6_nn(FEPO_STORE_MATCHp.qp_new(), delta.DABU_SPRITE_DELTA2.qp_new());
-  /*#p30.WENU_STORE_L3*/ sprite_bus.BUS_SPR_L3.tri6_nn(FEPO_STORE_MATCHp.qp_new(), delta.GYSA_SPRITE_DELTA3.qp_new());
+  /*#p30.CUCU_STORE_L0*/ sprite_bus.BUS_SPR_L0.tri6_nn(FEPO_STORE_MATCHp.qp_new(), sprite_delta_y.DEGE_SPRITE_DELTA0);
+  /*#p30.CUCA_STORE_L1*/ sprite_bus.BUS_SPR_L1.tri6_nn(FEPO_STORE_MATCHp.qp_new(), sprite_delta_y.DABY_SPRITE_DELTA1);
+  /*#p30.CEGA_STORE_L2*/ sprite_bus.BUS_SPR_L2.tri6_nn(FEPO_STORE_MATCHp.qp_new(), sprite_delta_y.DABU_SPRITE_DELTA2);
+  /*#p30.WENU_STORE_L3*/ sprite_bus.BUS_SPR_L3.tri6_nn(FEPO_STORE_MATCHp.qp_new(), sprite_delta_y.GYSA_SPRITE_DELTA3);
 }
 
 //-----------------------------------------------------------------------------

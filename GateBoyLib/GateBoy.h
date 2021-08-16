@@ -192,16 +192,11 @@ struct GateBoy {
     const SpriteMatchFlags& sprite_get_flag,
     SpriteBus& sprite_bus);
 
-  static void sprite_scan_to_bus(
-    const SpriteScanner& sprite_scanner,
-    SpriteDeltaY delta,
-    NorLatch XYMU_RENDERINGn,
-    Gate FEPO_STORE_MATCHp,
-    SpriteBus& sprite_bus);
+  void sprite_scan_to_bus(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
 
   void set_lcd_pins(wire SACU_CLKPIPE_evn);
 
-  static SpriteDeltaY sub_sprite_y(const RegLY& reg_ly, const OamTempA& oam_temp_a, SigIn SIG_GND);
+  SpriteDeltaY sub_sprite_y();
   static void oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a);
   static void oam_latch_to_temp_b(wire COTA_OAM_CLKn, const OamLatchB& old_oam_latch_b, OamTempB& oam_temp_b);
 

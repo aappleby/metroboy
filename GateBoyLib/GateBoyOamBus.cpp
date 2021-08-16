@@ -94,7 +94,7 @@ void GateBoy::tock_oam_bus()
   // cpu to oam data bus
 
   /* p28.XUTO*/ wire _XUTO_CPU_OAM_WRp = and2(new_bus.SARO_ADDR_OAMp(), CUPA_CPU_WRp());
-  /* p28.WUJE*/ oam.WUJE_CPU_OAM_WRn.nor_latch(XYNY_ABCDxxxx(), _XUTO_CPU_OAM_WRp); // slightly weird
+  /* p28.WUJE*/ oam.WUJE_CPU_OAM_WRn.nor_latch(XYNY_ABCDxxxx(), _XUTO_CPU_OAM_WRp);
 
   /* p28.XUPA*/ wire _XUPA_CPU_OAM_WRp  = not1(oam.WUJE_CPU_OAM_WRn.qp_new());
   /*#p28.AJUJ*/ wire _AJUJ_OAM_BUSYn    = nor3(dma.MATU_DMA_RUNNINGp.qp_new(), sprite_scanner.ACYL_SCANNINGp.qp_new(), _AJON_RENDERINGp);

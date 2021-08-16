@@ -5,7 +5,7 @@
 
 struct GateBoySerial {
   void reset_to_cart() {
-    ETAF_SER_RUNNING.state = 0b00011010;
+    ETAF_SER_RUN.state = 0b00011010;
     CULY_SER_DIR.state = 0b00011010;
     COTY_SER_CLK.state = 0b00011000;
     ELYS_SER_OUT.state = 0b00011000;
@@ -27,10 +27,10 @@ struct GateBoySerial {
     PIN_70_SOUT.reset(0b00011000);
   }
 
-  /*p06.ETAF*/ DFF17 ETAF_SER_RUNNING; // xxxxxxxH ?
-  /*p06.CULY*/ DFF17 CULY_SER_DIR;    // AxxxDxxH ?
-  /*p06.COTY*/ DFF17 COTY_SER_CLK;     // AxxxDxxH ?
-  /*p06.ELYS*/ DFF17 ELYS_SER_OUT;     // AxxxDxxH ?
+  /*p06.ETAF*/ DFF17 ETAF_SER_RUN; // xxxxxxxH ?
+  /*p06.CULY*/ DFF17 CULY_SER_DIR; // AxxxDxxH ?
+  /*p06.COTY*/ DFF17 COTY_SER_CLK; // AxxxDxxH ? schematic wrong, clock is UVYN
+  /*p06.ELYS*/ DFF17 ELYS_SER_OUT; // AxxxDxxH ?
 
   /*p06.CAFA*/ DFF17 CAFA_SER_CNT0; // ????????
   /*p06.CYLO*/ DFF17 CYLO_SER_CNT1; // ????????

@@ -51,7 +51,7 @@ struct DieCell {
   void set_decl(const std::string& _decl) { if (decl.empty()) decl = _decl; CHECK_P(decl == _decl); }
   void set_tag (const std::string& _tag)  { if (tag.empty())  tag  = _tag;  CHECK_P(tag  == _tag);  }
   void set_gate(const std::string& _gate) { if (gate.empty()) gate = _gate; CHECK_P(gate == _gate); }
-  //void set_args(const std::string& _args) { if (args.empty()) args = _args; CHECK_P(args == _args); }
+  void set_args(const std::string& _args) { if (args.empty()) args = _args; CHECK_P(args == _args); }
   void set_name(const std::string& _name) { if (name.empty()) name = _name; CHECK_P(name == _name); }
   void set_doc (const std::string& _doc)  { if (doc.empty())  doc  = _doc;  CHECK_P(doc  == _doc);  }
 
@@ -83,9 +83,9 @@ struct DieCell {
   std::string tag;  // The four-character tag used by Furrtek's schematic, or SIG/BUS/PIN/etc
   std::string decl; // The name of the C++ type used to represent this cell - wire, DFF8n, TpLatch
   std::string gate; // The specific type of cell
-  //std::string args; // The inputs to the cell
+  std::string args; // The inputs to the cell
 
-  std::set<std::string> arglists;
+  //std::set<std::string> arglists;
 
   std::string name; // The descriptive name of this cell. Should include the tag.
   std::string doc;  // Any comment string appended after the cell's declaration.

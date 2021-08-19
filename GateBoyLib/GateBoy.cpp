@@ -596,11 +596,17 @@ void GateBoy::tock_slow(int pass_index) {
   /* PIN_76*/ rst.PIN_76_T2.set_pin_ext(bit(~sys_t2));
   /* PIN_77*/ rst.PIN_77_T1.set_pin_ext(bit(~sys_t1));
 
-  /* SIG_CPU_ACK_VBLANK*/ interrupts.SIG_CPU_ACK_VBLANK.sig_in(bit(gb_cpu.int_ack, BIT_VBLANK));
-  /* SIG_CPU_ACK_STAT  */ interrupts.SIG_CPU_ACK_STAT.sig_in(bit(gb_cpu.int_ack, BIT_STAT));
-  /* SIG_CPU_ACK_TIMER */ interrupts.SIG_CPU_ACK_TIMER.sig_in(bit(gb_cpu.int_ack, BIT_TIMER));
-  /* SIG_CPU_ACK_SERIAL*/ interrupts.SIG_CPU_ACK_SERIAL.sig_in(bit(gb_cpu.int_ack, BIT_SERIAL));
-  /* SIG_CPU_ACK_JOYPAD*/ interrupts.SIG_CPU_ACK_JOYPAD.sig_in(bit(gb_cpu.int_ack, BIT_JOYPAD));
+  wire ack_vblank = bit(gb_cpu.int_ack, BIT_VBLANK);
+  wire ack_stat = bit(gb_cpu.int_ack, BIT_STAT);
+  wire ack_timer = bit(gb_cpu.int_ack, BIT_TIMER);
+  wire ack_serial = bit(gb_cpu.int_ack, BIT_SERIAL);
+  wire ack_joypad = bit(gb_cpu.int_ack, BIT_JOYPAD);
+
+  /* SIG_CPU_ACK_VBLANK*/ interrupts.SIG_CPU_ACK_VBLANK.sig_in(ack_vblank);
+  /* SIG_CPU_ACK_STAT  */ interrupts.SIG_CPU_ACK_STAT.sig_in(ack_stat);
+  /* SIG_CPU_ACK_TIMER */ interrupts.SIG_CPU_ACK_TIMER.sig_in(ack_timer);
+  /* SIG_CPU_ACK_SERIAL*/ interrupts.SIG_CPU_ACK_SERIAL.sig_in(ack_serial);
+  /* SIG_CPU_ACK_JOYPAD*/ interrupts.SIG_CPU_ACK_JOYPAD.sig_in(ack_joypad);
 
   /* SIG_CPU_CLKREQ*/ clk.SIG_CPU_CLKREQ.sig_in(sys_clkreq);
 

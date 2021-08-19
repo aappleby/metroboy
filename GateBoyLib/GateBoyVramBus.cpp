@@ -556,14 +556,23 @@ void GateBoy::tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp) {
     /*#p25.RENA*/ wire _RENA_CBD_TO_VPDn = not1(_RELA_CBD_TO_VPDp);
     /*#p25.ROFA*/ wire _ROFA_CBD_TO_VPDp = not1(_RENA_CBD_TO_VPDn);
 
-    /*PIN_33*/ vram_pins.PIN_33_VRAM_D00.set_pin_io(_ROFA_CBD_TO_VPDp, _REGE_D0n, _RURA_D0n, ~vram_pins.PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 0));
-    /*PIN_31*/ vram_pins.PIN_31_VRAM_D01.set_pin_io(_ROFA_CBD_TO_VPDp, _RYKY_D1n, _RULY_D1n, ~vram_pins.PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 1));
-    /*PIN_30*/ vram_pins.PIN_30_VRAM_D02.set_pin_io(_ROFA_CBD_TO_VPDp, _RAZO_D2n, _RARE_D2n, ~vram_pins.PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 2));
-    /*PIN_29*/ vram_pins.PIN_29_VRAM_D03.set_pin_io(_ROFA_CBD_TO_VPDp, _RADA_D3n, _RODU_D3n, ~vram_pins.PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 3));
-    /*PIN_28*/ vram_pins.PIN_28_VRAM_D04.set_pin_io(_ROFA_CBD_TO_VPDp, _RYRO_D4n, _RUBE_D4n, ~vram_pins.PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 4));
-    /*PIN_27*/ vram_pins.PIN_27_VRAM_D05.set_pin_io(_ROFA_CBD_TO_VPDp, _REVU_D5n, _RUMU_D5n, ~vram_pins.PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 5));
-    /*PIN_26*/ vram_pins.PIN_26_VRAM_D06.set_pin_io(_ROFA_CBD_TO_VPDp, _REKU_D6n, _RYTY_D6n, ~vram_pins.PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 6));
-    /*PIN_25*/ vram_pins.PIN_25_VRAM_D07.set_pin_io(_ROFA_CBD_TO_VPDp, _RYZE_D7n, _RADY_D7n, ~vram_pins.PIN_45_VRAM_OEn.qp_ext_new(), bit(data, 7));
+    wire vram_d0 = bit(data, 0);
+    wire vram_d1 = bit(data, 1);
+    wire vram_d2 = bit(data, 2);
+    wire vram_d3 = bit(data, 3);
+    wire vram_d4 = bit(data, 4);
+    wire vram_d5 = bit(data, 5);
+    wire vram_d6 = bit(data, 6);
+    wire vram_d7 = bit(data, 7);
+
+    /*PIN_33*/ vram_pins.PIN_33_VRAM_D00.set_pin_io(_ROFA_CBD_TO_VPDp, _REGE_D0n, _RURA_D0n, vram_pins.PIN_45_VRAM_OEn.qn_ext_new(), vram_d0);
+    /*PIN_31*/ vram_pins.PIN_31_VRAM_D01.set_pin_io(_ROFA_CBD_TO_VPDp, _RYKY_D1n, _RULY_D1n, vram_pins.PIN_45_VRAM_OEn.qn_ext_new(), vram_d1);
+    /*PIN_30*/ vram_pins.PIN_30_VRAM_D02.set_pin_io(_ROFA_CBD_TO_VPDp, _RAZO_D2n, _RARE_D2n, vram_pins.PIN_45_VRAM_OEn.qn_ext_new(), vram_d2);
+    /*PIN_29*/ vram_pins.PIN_29_VRAM_D03.set_pin_io(_ROFA_CBD_TO_VPDp, _RADA_D3n, _RODU_D3n, vram_pins.PIN_45_VRAM_OEn.qn_ext_new(), vram_d3);
+    /*PIN_28*/ vram_pins.PIN_28_VRAM_D04.set_pin_io(_ROFA_CBD_TO_VPDp, _RYRO_D4n, _RUBE_D4n, vram_pins.PIN_45_VRAM_OEn.qn_ext_new(), vram_d4);
+    /*PIN_27*/ vram_pins.PIN_27_VRAM_D05.set_pin_io(_ROFA_CBD_TO_VPDp, _REVU_D5n, _RUMU_D5n, vram_pins.PIN_45_VRAM_OEn.qn_ext_new(), vram_d5);
+    /*PIN_26*/ vram_pins.PIN_26_VRAM_D06.set_pin_io(_ROFA_CBD_TO_VPDp, _REKU_D6n, _RYTY_D6n, vram_pins.PIN_45_VRAM_OEn.qn_ext_new(), vram_d6);
+    /*PIN_25*/ vram_pins.PIN_25_VRAM_D07.set_pin_io(_ROFA_CBD_TO_VPDp, _RYZE_D7n, _RADY_D7n, vram_pins.PIN_45_VRAM_OEn.qn_ext_new(), vram_d7);
   }
 
   //--------------------------------------------

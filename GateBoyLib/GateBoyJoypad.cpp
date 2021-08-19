@@ -110,14 +110,14 @@ void GateBoy::tock_joypad() {
 
   // debug stuff
 #if 0
-  /* p05.KOLE*/ wire _KOLE = nand2(JUTE_JOYP_RA.qp17(), BURO_FF60_0p);
-  /* p05.KYBU*/ wire _KYBU = nor2(JUTE_JOYP_RA.qp17(), _KURA);
-  /* p05.KYTO*/ wire _KYTO = nand2(KECY_JOYP_LB.qp17(), BURO_FF60_0p);
-  /* p05.KABU*/ wire _KABU = nor2(KECY_JOYP_LB.qp17(), _KURA);
-  /* p05.KYHU*/ wire _KYHU = nand2(JALE_JOYP_UC.qp17(), BURO_FF60_0p);
-  /* p05.KASY*/ wire _KASY = nor2(JALE_JOYP_UC.qp17(), _KURA);
-  /* p05.KORY*/ wire _KORY = nand2(KYME_JOYP_DS.qp17(), BURO_FF60_0p);
-  /* p05.KALE*/ wire _KALE = nor2(KYME_JOYP_DS.qp17(), _KURA);
+  / * p05.KOLE*/ wire _KOLE = nand2(JUTE_JOYP_RA.qp17(), BURO_FF60_0p);
+  / * p05.KYBU*/ wire _KYBU = nor2(JUTE_JOYP_RA.qp17(), _KURA);
+  / * p05.KYTO*/ wire _KYTO = nand2(KECY_JOYP_LB.qp17(), BURO_FF60_0p);
+  / * p05.KABU*/ wire _KABU = nor2(KECY_JOYP_LB.qp17(), _KURA);
+  / * p05.KYHU*/ wire _KYHU = nand2(JALE_JOYP_UC.qp17(), BURO_FF60_0p);
+  / * p05.KASY*/ wire _KASY = nor2(JALE_JOYP_UC.qp17(), _KURA);
+  / * p05.KORY*/ wire _KORY = nand2(KYME_JOYP_DS.qp17(), BURO_FF60_0p);
+  / * p05.KALE*/ wire _KALE = nor2(KYME_JOYP_DS.qp17(), _KURA);
 
   PIN_67_JOY_P10.pin_out_hilo2(_KOLE, _KYBU);
   PIN_66_JOY_P11.pin_out_hilo2(_KYTO, _KABU);

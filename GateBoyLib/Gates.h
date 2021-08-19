@@ -156,7 +156,7 @@ struct SigIn : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void sig_in(wire D) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
   }
 };
@@ -172,7 +172,7 @@ struct SigOut : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void sig_out(wire D) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
   }
 };
@@ -184,7 +184,7 @@ struct DFF : public BitBase {
   void reset(wire clk, wire d) { state = uint8_t((bit(clk) << 1) | bit(d)); }
 
   void dff_sr(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     CLKp = (CLKp << 1) & 2;
 
     if ((~state & CLKp) == 0) Dp = state;
@@ -226,7 +226,7 @@ struct DFF : public BitBase {
 
 struct DFF8n : public DFF {
   void dff8n(wire CLKn, wire Dn) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     wire Dp = ~Dn;
     wire CLKp = (~CLKn << 1) & 2;
 
@@ -251,7 +251,7 @@ struct DFF8n : public DFF {
 
 struct DFF8p : public DFF {
   void dff8p(wire CLKp, wire Dn) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     wire Dp = ~Dn;
     CLKp = (CLKp << 1) & 2;
 
@@ -278,7 +278,7 @@ struct DFF8p : public DFF {
 
 struct DFF9 : public DFF {
   void dff9(wire CLKp, wire SETn, wire Dn) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     wire Dp = ~Dn;
     CLKp = (CLKp << 1) & 2;
 
@@ -308,7 +308,7 @@ struct DFF9 : public DFF {
 
 struct DFF11 : public DFF {
   void dff11(wire CLKp, wire RSTn, wire Dp) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     CLKp = (CLKp << 1) & 2;
 
     if ((~state & CLKp) == 0) Dp = state;
@@ -337,7 +337,7 @@ struct DFF11 : public DFF {
 
 struct DFF13 : public DFF {
   void dff13(wire CLKp, wire RSTn, wire Dp) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     CLKp = (CLKp << 1) & 2;
 
     if ((~state & CLKp) == 0) Dp = state;
@@ -370,7 +370,7 @@ struct DFF13 : public DFF {
 
 struct DFF17 : public DFF {
   void dff17(wire CLKp, wire RSTn, wire Dp) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     CLKp = (CLKp << 1) & 2;
 
     if ((~state & CLKp) == 0) Dp = state;
@@ -395,7 +395,7 @@ struct DFF17 : public DFF {
 
 struct DFF17b : public DFF {
   void dff17(wire CLKp, wire RSTn, wire Dp) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     CLKp = (CLKp << 1) & 2;
 
     if ((~state & CLKp) == 0) Dp = state;
@@ -433,7 +433,7 @@ struct DFF17b : public DFF {
 
 struct DFF20 : public DFF {
   void dff20(wire CLKn, wire LOADp, wire newD) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     wire CLKp = (~CLKn << 1) & 2;
     wire Dp = ~state;
 
@@ -476,7 +476,7 @@ struct DFF20 : public DFF {
 
 struct DFF22 : public DFF {
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    CHECK_N(state & BIT_NEW);
+    check_old();
     CLKp = (CLKp << 1) & 2;
 
     if ((~state & CLKp) == 0) Dp = state;
@@ -537,8 +537,9 @@ struct Bus : private BitBase {
   void reset(uint8_t s) { state = s; }
 
   void tri(wire tristate) {
-    CHECK_N(state & BIT_OLD);
-    CHECK_P(state & BIT_NEW);
+    check_new();
+
+    // if both the new and old state are both driven, that's a bus collision.
     CHECK_N((tristate & TRI_DRIVEN) && (state & BIT_DRIVEN));
 
     if (tristate & TRI_DRIVEN) state = uint8_t(tristate);
@@ -553,7 +554,7 @@ struct Bus : private BitBase {
 // Stores the bit INSIDE the chip. Bits are inverted when traveling across
 // the chip pins.
 
-// I think I was going to transition all pins to use this, but then I didn't finish?
+// FIXME I think I was going to transition all pins to use this, but then I didn't finish?
 
 struct PinIO : private BitBase {
   using BitBase::cp_int;
@@ -561,16 +562,16 @@ struct PinIO : private BitBase {
 
   void reset_int(uint8_t s) { state = s; }
 
-  wire qp_ext_old() const { return qn_old(); }
   wire qp_int_old() const { return qp_old(); }
+  wire qp_int_any() const { return qp_any(); }
+  wire qp_int_new() const { return qp_new(); }
 
-  wire qp_int_any() const { return state; }
-
-  wire qp_int_new() const { CHECK_P(state & BIT_NEW); return state; }
-  wire qp_ext_new() const { CHECK_P(state & BIT_NEW); return ~state; }
+  wire qp_ext_old() const { return qn_old(); }
+  wire qp_ext_new() const { return qn_new(); }
+  wire qn_ext_new() const { return qp_new(); }
 
   void set_pin_io(wire int_PUn, wire int_HI, wire int_LO, wire ext_OEp, wire ext_Dp) {
-    CHECK_P(state & BIT_OLD);
+    check_old();
     set_pin_io_any(int_PUn, int_HI, int_LO, ext_OEp, ext_Dp);
   }
 
@@ -583,7 +584,7 @@ struct PinIO : private BitBase {
     else {
       if (bit(int_LO)) {
         // shootthrough, this is bad
-        debugbreak();
+        CHECK_P(false);
       }
       else {
         // hi-z, can be driven externally
@@ -619,7 +620,7 @@ struct PinIn : private BitBase {
   wire qp_int_new() const { return qp_new(); }
 
   void set_pin_ext(wire ext_Dp) {
-    CHECK_P(state & BIT_OLD);
+    check_old();
     state = ((~ext_Dp) & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
   }
 };
@@ -653,18 +654,19 @@ struct PinOut : private BitBase {
   wire qp_ext_new() const { return qn_new(); }
   wire qp_int_old() const { return qp_old(); }
   wire qp_int_new() const { return qp_new(); }
+  wire qn_ext_new() const { return qp_new(); }
 
   void ext_pullup() {
     state |= BIT_PULLED;
   }
 
   void set_pin_int(wire int_Dp) {
-    CHECK_P(state & BIT_OLD);
+    check_old();
     state = BIT_NEW | BIT_DRIVEN | (int_Dp & BIT_DATA);
   }
 
   void set_pin_int(wire int_HI, wire int_LO) {
-    CHECK_P(state & BIT_OLD);
+    check_old();
 
     if (!bit(int_HI) && !bit(int_LO)) {
       // internal bit 0, external bit 1
@@ -698,6 +700,7 @@ struct NorLatch : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void nor_latch(wire SETp, wire RSTp) {
+    check_old();
     state |= SETp;
     state &= ~RSTp;
 
@@ -719,6 +722,7 @@ struct NandLatch : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void nand_latch(wire SETn, wire RSTn) {
+    check_old();
     state |= ~SETn;
     state &= RSTn;
 
@@ -747,6 +751,7 @@ struct TpLatch : public BitBase {
   void reset(uint8_t s) { state = s; }
 
   void tp_latchn(wire HOLDn, wire Dp) {
+    check_old();
     wire SETp = HOLDn & Dp;
     wire RSTp = HOLDn & ~Dp;
 
@@ -757,6 +762,7 @@ struct TpLatch : public BitBase {
   }
 
   void tp_latchp(wire HOLDp, wire Dp) {
+    check_old();
     wire SETp = (~HOLDp) & Dp;
     wire RSTp = (~HOLDp) & ~Dp;
 

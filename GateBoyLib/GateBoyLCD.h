@@ -23,14 +23,14 @@ struct GateBoyLCD {
     POME.state = 0b00011001;
     PAHO_X_8_SYNC.state = 0b00011000;
     WUSA_LCD_CLOCK_GATE.state = 0b00011000;
-    PIN_50_LCD_DATA1.reset(0b00011000);
-    PIN_51_LCD_DATA0.reset(0b00011000);
-    PIN_54_LCD_HSYNC.reset(0b00011001);
-    PIN_56_LCD_FLIPS.reset(0b00011001);
-    PIN_52_LCD_CNTRL.reset(0b00011001);
-    PIN_55_LCD_LATCH.reset(0b00011001);
-    PIN_53_LCD_CLOCK.reset(0b00011001);
-    PIN_57_LCD_VSYNC.reset(0b00011000);
+    PIN_50_LCD_DATA1.state = 0b00011000;
+    PIN_51_LCD_DATA0.state = 0b00011000;
+    PIN_54_LCD_HSYNC.state = 0b00011001;
+    PIN_56_LCD_FLIPS.state = 0b00011001;
+    PIN_52_LCD_CNTRL.state = 0b00011001;
+    PIN_55_LCD_LATCH.state = 0b00011001;
+    PIN_53_LCD_CLOCK.state = 0b00011001;
+    PIN_57_LCD_VSYNC.state = 0b00011000;
   }
 
   // H deltas are due to reg writes

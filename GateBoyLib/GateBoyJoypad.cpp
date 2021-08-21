@@ -79,8 +79,8 @@ void GateBoy::tock_joypad() {
   /* p05.KARU*/ wire KARU = or2(joy.KELY_JOYP_UDLRp.qn_new(), KURA_FF60_D0n);
   /* p05.CELA*/ wire CELA = or2(joy.COFY_JOYP_ABCSp.qn_new(), KURA_FF60_D0n);
 
-  /*#PIN_63*/ joy.PIN_63_JOY_P14.pin_tri(KARU, joy.KELY_JOYP_UDLRp.qn_new());
-  /*#PIN_62*/ joy.PIN_62_JOY_P15.pin_tri(CELA, joy.COFY_JOYP_ABCSp.qn_new());
+  /*#PIN_63*/ joy.PIN_63_JOY_P14.pin_out(KARU, joy.KELY_JOYP_UDLRp.qn_new());
+  /*#PIN_62*/ joy.PIN_62_JOY_P15.pin_out(CELA, joy.COFY_JOYP_ABCSp.qn_new());
 
   bool EXT_button0, EXT_button1, EXT_button2, EXT_button3;
 
@@ -103,10 +103,10 @@ void GateBoy::tock_joypad() {
     EXT_button3 = 1;
   }
 
-  /* PIN_67*/ joy.PIN_67_JOY_P10.pin_ext(EXT_button0);
-  /* PIN_66*/ joy.PIN_66_JOY_P11.pin_ext(EXT_button1);
-  /* PIN_65*/ joy.PIN_65_JOY_P12.pin_ext(EXT_button2);
-  /* PIN_64*/ joy.PIN_64_JOY_P13.pin_ext(EXT_button3);
+  /* PIN_67*/ joy.PIN_67_JOY_P10.pin_in(EXT_button0);
+  /* PIN_66*/ joy.PIN_66_JOY_P11.pin_in(EXT_button1);
+  /* PIN_65*/ joy.PIN_65_JOY_P12.pin_in(EXT_button2);
+  /* PIN_64*/ joy.PIN_64_JOY_P13.pin_in(EXT_button3);
 
   // debug stuff
 #if 0

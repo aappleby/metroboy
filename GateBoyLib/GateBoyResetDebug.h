@@ -5,9 +5,9 @@
 
 struct GateBoyResetDebug {
   void reset_to_cart() {
-    PIN_71_RST.reset(0b00011000);
-    PIN_77_T1. reset(0b00011000);
-    PIN_76_T2. reset(0b00011000);
+    PIN_71_RST.state = 0b00011000;
+    PIN_77_T1. state = 0b00011000;
+    PIN_76_T2. state = 0b00011000;
 
     TUBO_WAITINGp.state  = 0b00011000;
     ASOL_POR_DONEn.state = 0b00011000;

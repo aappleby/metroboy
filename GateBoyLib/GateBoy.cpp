@@ -601,9 +601,9 @@ void GateBoy::tock_slow(int pass_index) {
   wire EXT_clkgood = bit(~sys_clkgood);
 
   /* PIN_74*/ clk.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
-  /* PIN_71*/ rst.PIN_71_RST.pin_ext(EXT_sys_rst);
-  /* PIN_76*/ rst.PIN_76_T2.pin_ext(EXT_sys_t2);
-  /* PIN_77*/ rst.PIN_77_T1.pin_ext(EXT_sys_t1);
+  /* PIN_71*/ rst.PIN_71_RST.pin_in(EXT_sys_rst);
+  /* PIN_76*/ rst.PIN_76_T2.pin_in(EXT_sys_t2);
+  /* PIN_77*/ rst.PIN_77_T1.pin_in(EXT_sys_t1);
 
   wire EXT_ack_vblank = bit(gb_cpu.int_ack, BIT_VBLANK);
   wire EXT_ack_stat = bit(gb_cpu.int_ack, BIT_STAT);

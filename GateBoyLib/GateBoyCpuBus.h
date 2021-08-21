@@ -90,47 +90,44 @@ struct GateBoyCpuBus {
 
   void set_addr(uint16_t bus_addr_new)
   {
-    wire EXT_bus_addr00 = bit(bus_addr_new, 0);
-    wire EXT_bus_addr01 = bit(bus_addr_new, 1);
-    wire EXT_bus_addr02 = bit(bus_addr_new, 2);
-    wire EXT_bus_addr03 = bit(bus_addr_new, 3);
-    wire EXT_bus_addr04 = bit(bus_addr_new, 4);
-    wire EXT_bus_addr05 = bit(bus_addr_new, 5);
-    wire EXT_bus_addr06 = bit(bus_addr_new, 6);
-    wire EXT_bus_addr07 = bit(bus_addr_new, 7);
-    wire EXT_bus_addr08 = bit(bus_addr_new, 8);
-    wire EXT_bus_addr09 = bit(bus_addr_new, 9);
-    wire EXT_bus_addr10 = bit(bus_addr_new, 10);
-    wire EXT_bus_addr11 = bit(bus_addr_new, 11);
-    wire EXT_bus_addr12 = bit(bus_addr_new, 12);
-    wire EXT_bus_addr13 = bit(bus_addr_new, 13);
-    wire EXT_bus_addr14 = bit(bus_addr_new, 14);
-    wire EXT_bus_addr15 = bit(bus_addr_new, 15);
+    wire EXT_bus_addr00 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 0);
+    wire EXT_bus_addr01 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 1);
+    wire EXT_bus_addr02 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 2);
+    wire EXT_bus_addr03 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 3);
+    wire EXT_bus_addr04 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 4);
+    wire EXT_bus_addr05 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 5);
+    wire EXT_bus_addr06 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 6);
+    wire EXT_bus_addr07 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 7);
+    wire EXT_bus_addr08 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 8);
+    wire EXT_bus_addr09 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 9);
+    wire EXT_bus_addr10 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 10);
+    wire EXT_bus_addr11 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 11);
+    wire EXT_bus_addr12 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 12);
+    wire EXT_bus_addr13 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 13);
+    wire EXT_bus_addr14 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 14);
+    wire EXT_bus_addr15 = BIT_DRIVEN | BIT_NEW | bit(bus_addr_new, 15);
 
-    /* BUS_CPU_A00p*/ BUS_CPU_A00p.set_bus(EXT_bus_addr00);
-    /* BUS_CPU_A01p*/ BUS_CPU_A01p.set_bus(EXT_bus_addr01);
-    /* BUS_CPU_A02p*/ BUS_CPU_A02p.set_bus(EXT_bus_addr02);
-    /* BUS_CPU_A03p*/ BUS_CPU_A03p.set_bus(EXT_bus_addr03);
-    /* BUS_CPU_A04p*/ BUS_CPU_A04p.set_bus(EXT_bus_addr04);
-    /* BUS_CPU_A05p*/ BUS_CPU_A05p.set_bus(EXT_bus_addr05);
-    /* BUS_CPU_A06p*/ BUS_CPU_A06p.set_bus(EXT_bus_addr06);
-    /* BUS_CPU_A07p*/ BUS_CPU_A07p.set_bus(EXT_bus_addr07);
-    /* BUS_CPU_A08p*/ BUS_CPU_A08p.set_bus(EXT_bus_addr08);
-    /* BUS_CPU_A09p*/ BUS_CPU_A09p.set_bus(EXT_bus_addr09);
-    /* BUS_CPU_A10p*/ BUS_CPU_A10p.set_bus(EXT_bus_addr10);
-    /* BUS_CPU_A11p*/ BUS_CPU_A11p.set_bus(EXT_bus_addr11);
-    /* BUS_CPU_A12p*/ BUS_CPU_A12p.set_bus(EXT_bus_addr12);
-    /* BUS_CPU_A13p*/ BUS_CPU_A13p.set_bus(EXT_bus_addr13);
-    /* BUS_CPU_A14p*/ BUS_CPU_A14p.set_bus(EXT_bus_addr14);
-    /* BUS_CPU_A15p*/ BUS_CPU_A15p.set_bus(EXT_bus_addr15);
+    /* BUS_CPU_A00p*/ BUS_CPU_A00p.tri_bus(EXT_bus_addr00);
+    /* BUS_CPU_A01p*/ BUS_CPU_A01p.tri_bus(EXT_bus_addr01);
+    /* BUS_CPU_A02p*/ BUS_CPU_A02p.tri_bus(EXT_bus_addr02);
+    /* BUS_CPU_A03p*/ BUS_CPU_A03p.tri_bus(EXT_bus_addr03);
+    /* BUS_CPU_A04p*/ BUS_CPU_A04p.tri_bus(EXT_bus_addr04);
+    /* BUS_CPU_A05p*/ BUS_CPU_A05p.tri_bus(EXT_bus_addr05);
+    /* BUS_CPU_A06p*/ BUS_CPU_A06p.tri_bus(EXT_bus_addr06);
+    /* BUS_CPU_A07p*/ BUS_CPU_A07p.tri_bus(EXT_bus_addr07);
+    /* BUS_CPU_A08p*/ BUS_CPU_A08p.tri_bus(EXT_bus_addr08);
+    /* BUS_CPU_A09p*/ BUS_CPU_A09p.tri_bus(EXT_bus_addr09);
+    /* BUS_CPU_A10p*/ BUS_CPU_A10p.tri_bus(EXT_bus_addr10);
+    /* BUS_CPU_A11p*/ BUS_CPU_A11p.tri_bus(EXT_bus_addr11);
+    /* BUS_CPU_A12p*/ BUS_CPU_A12p.tri_bus(EXT_bus_addr12);
+    /* BUS_CPU_A13p*/ BUS_CPU_A13p.tri_bus(EXT_bus_addr13);
+    /* BUS_CPU_A14p*/ BUS_CPU_A14p.tri_bus(EXT_bus_addr14);
+    /* BUS_CPU_A15p*/ BUS_CPU_A15p.tri_bus(EXT_bus_addr15);
   }
 
   //------------------------------------------------------------------------------------------------------------------------
 
   void set_data(bool OEp, uint8_t data) {
-    (void)OEp;
-    (void)data;
-
     wire tri0 = tri_pp(OEp, bit(data, 0));
     wire tri1 = tri_pp(OEp, bit(data, 1));
     wire tri2 = tri_pp(OEp, bit(data, 2));

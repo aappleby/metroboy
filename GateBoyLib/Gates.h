@@ -107,10 +107,7 @@ struct Gate : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct SigIn : private BitBase {
-  using BitBase::state;
-  using BitBase::qp_new;
-
+struct SigIn : public BitBase {
   void sig_in(wire D) {
     check_old();
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
@@ -119,11 +116,7 @@ struct SigIn : private BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct SigOut : private BitBase {
-  using BitBase::state;
-  using BitBase::qp_old;
-  using BitBase::qp_new;
-
+struct SigOut : public BitBase {
   void sig_out(wire D) {
     check_old();
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
@@ -211,7 +204,7 @@ struct DFF8p : public BitBase {
 // DFF9_08 |xxx-O-xxx| >> Qn
 // DFF9_09 |xxx-O-xxx| >> Q
 
-struct DFF9 : public DFF {
+struct DFF9 : public BitBase {
   void dff9(wire CLKp, wire SETn, wire Dn) {
     check_old();
     wire Dp = ~Dn;
@@ -241,7 +234,7 @@ struct DFF9 : public DFF {
 // DFF11_10 nc
 // DFF11_11 >> Qp?
 
-struct DFF11 : public DFF {
+struct DFF11 : public BitBase {
   void dff11(wire CLKp, wire RSTn, wire Dp) {
     check_old();
     CLKp = (CLKp << 1) & 2;
@@ -270,7 +263,7 @@ struct DFF11 : public DFF {
 // DFF13_12 >> Qn
 // DFF13_13 >> Q
 
-struct DFF13 : public DFF {
+struct DFF13 : public BitBase {
   void dff13(wire CLKp, wire RSTn, wire Dp) {
     check_old();
     CLKp = (CLKp << 1) & 2;
@@ -284,7 +277,6 @@ struct DFF13 : public DFF {
 };
 
 //-----------------------------------------------------------------------------
-
 // DFF17_01 SC
 // DFF17_02 << CLKp
 // DFF17_03 SC
@@ -303,7 +295,7 @@ struct DFF13 : public DFF {
 // DFF17_16 >> QN   _MUST_ be QN - see TERO
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
-struct DFF17 : public DFF {
+struct DFF17 : public BitBase {
   void dff17(wire CLKp, wire RSTn, wire Dp) {
     check_old();
     CLKp = (CLKp << 1) & 2;
@@ -328,7 +320,7 @@ struct DFF17 : public DFF {
 
 // same as above but resets to 1?
 
-struct DFF17b : public DFF {
+struct DFF17b : public BitBase {
   void dff17(wire CLKp, wire RSTn, wire Dp) {
     check_old();
     CLKp = (CLKp << 1) & 2;
@@ -366,7 +358,7 @@ struct DFF17b : public DFF {
 // DFF20_19 sc
 // DFF20_20 << CLKn
 
-struct DFF20 : public DFF {
+struct DFF20 : public BitBase {
   void dff20(wire CLKn, wire LOADp, wire newD) {
     check_old();
     wire CLKp = (~CLKn << 1) & 2;
@@ -409,7 +401,7 @@ struct DFF20 : public DFF {
 // DFF22_21 sc
 // DFF22_22 << CLKp
 
-struct DFF22 : public DFF {
+struct DFF22 : public BitBase {
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     check_old();
     CLKp = (CLKp << 1) & 2;
@@ -473,19 +465,13 @@ struct Bus : public BitBase {
 
     if (tristate & TRI_DRIVEN) state = uint8_t(tristate);
   }
-
-  void set_bus(wire Dp) {
-    state = (Dp & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
-  }
 };
 
 //-----------------------------------------------------------------------------
-// Stores the bit INSIDE the chip. Bits are inverted when traveling across
-// the chip pins.
+// Pin structs store the bit as it apperas INSIDE the chip. Bits are inverted
+// when traveling across the chip boundary.
 
-// FIXME I think I was going to transition all pins to use this, but then I didn't finish?
-
-struct PinIO : public BitBase {
+struct PinBase : public BitBase {
   wire qp_int_old() const { return qp_old(); }
   wire qp_int_any() const { return qp_any(); }
   wire qp_int_new() const { return qp_new(); }
@@ -493,13 +479,15 @@ struct PinIO : public BitBase {
   wire qp_ext_old() const { return qn_old(); }
   wire qp_ext_new() const { return qn_new(); }
   wire qn_ext_new() const { return qp_new(); }
+};
 
-  void set_pin_io(wire int_PUn, wire int_HI, wire int_LO, wire ext_OEp, wire ext_Dp) {
+struct PinIO : public PinBase {
+  void pin_io(wire int_PUn, wire int_HI, wire int_LO, wire ext_OEp, wire ext_Dp) {
     check_old();
-    set_pin_io_any(int_PUn, int_HI, int_LO, ext_OEp, ext_Dp);
+    pin_io_any(int_PUn, int_HI, int_LO, ext_OEp, ext_Dp);
   }
 
-  void set_pin_io_any(wire int_PUn, wire int_HI, wire int_LO, wire ext_OEp, wire ext_Dp) {
+  void pin_io_any(wire int_PUn, wire int_HI, wire int_LO, wire ext_OEp, wire ext_Dp) {
     (void)int_PUn;
 
     if (bit(int_HI) == bit(int_LO)) {
@@ -535,15 +523,8 @@ struct PinIO : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct PinIn : private BitBase {
-  using BitBase::state;
-
-  void reset(uint8_t s) { state = s; }
-
-  wire qp_int_old() const { return qp_old(); }
-  wire qp_int_new() const { return qp_new(); }
-
-  void pin_ext(wire ext_Dp) {
+struct PinIn : public PinBase {
+  void pin_in(wire ext_Dp) {
     check_old();
     state = ((~ext_Dp) & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
   }
@@ -551,43 +532,8 @@ struct PinIn : private BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct PinClock {
-
-  wire clock_good() const { return CLKGOOD.qp_int_new(); }
-  wire clock() const { return CLK.qp_int_new(); }
-
-  void pin_clk(wire clk, wire clkgood) {
-    CLK.pin_ext(clk);
-    CLKGOOD.pin_ext(clkgood);
-  }
-
-private:
-
-  PinIn CLK;
-  PinIn CLKGOOD;
-};
-
-//-----------------------------------------------------------------------------
-
-struct PinOut : private BitBase {
-  using BitBase::state;
-
-  void reset(uint8_t s) { state = s; }
-
-  wire qp_ext_old() const { return qn_old(); }
-  wire qp_ext_new() const { return qn_new(); }
-  wire qn_ext_new() const { return qp_new(); }
-
-  void ext_pullup() {
-    state |= BIT_PULLED;
-  }
-
-  void pin_out(wire int_Dp) {
-    check_old();
-    state = BIT_NEW | BIT_DRIVEN | (int_Dp & BIT_DATA);
-  }
-
-  void pin_tri(wire int_HI, wire int_LO) {
+struct PinOut : public PinBase {
+  void pin_out(wire int_HI, wire int_LO) {
     check_old();
 
     if (!bit(int_HI) && !bit(int_LO)) {
@@ -609,6 +555,24 @@ struct PinOut : private BitBase {
 };
 
 //-----------------------------------------------------------------------------
+
+struct PinClock {
+
+  wire clock_good() const { return CLKGOOD.qp_int_new(); }
+  wire clock() const { return CLK.qp_int_new(); }
+
+  void pin_clk(wire clk, wire clkgood) {
+    CLK.pin_in(clk);
+    CLKGOOD.pin_in(clkgood);
+  }
+
+private:
+
+  PinIn CLK;
+  PinIn CLKGOOD;
+};
+
+//-----------------------------------------------------------------------------
 // 6-rung cell, "arms" on ground side
 
 // NORLATCH_01 << SET
@@ -619,8 +583,6 @@ struct PinOut : private BitBase {
 // NORLATCH_06 << RST
 
 struct NorLatch : public BitBase {
-  void reset(uint8_t s) { state = s; }
-
   void nor_latch(wire SETp, wire RSTp) {
     check_old();
     state |= SETp;
@@ -641,8 +603,6 @@ struct NorLatch : public BitBase {
 // NANDLATCH_06 << RSTn
 
 struct NandLatch : public BitBase {
-  void reset(uint8_t s) { state = s; }
-
   void nand_latch(wire SETn, wire RSTn) {
     check_old();
     state |= ~SETn;
@@ -669,9 +629,9 @@ struct NandLatch : public BitBase {
 // Output 08 must _not_ be inverting, see pin EXT_A14p
 // Output 10 _must_ be inverting...?
 
-struct TpLatch : public BitBase {
-  void reset(uint8_t s) { state = s; }
+// FIXME - why do we have latchN and latchP?
 
+struct TpLatch : public BitBase {
   void tp_latchn(wire HOLDn, wire Dp) {
     check_old();
     wire SETp = HOLDn & Dp;

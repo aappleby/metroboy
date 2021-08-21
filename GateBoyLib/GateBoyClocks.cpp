@@ -5,7 +5,7 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_clocks() {
-  /*PIN_73*/ clk.PIN_73_CLK_DRIVE.pin_out(clk.PIN_74_CLK.clock());
+  /*PIN_73*/ clk.PIN_73_CLK_DRIVE.pin_out(clk.PIN_74_CLK.clock(), clk.PIN_74_CLK.clock());
 
   /* p01.ARYS*/ wire ARYS_CLKIN = not1(clk.PIN_74_CLK.clock());
   /* p01.AVET*/ clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.qp_mid(), ARYS_CLKIN);
@@ -26,7 +26,7 @@ void GateBoy::tock_clocks() {
   /* p01.APUK*/ clk.APUK_ABxxxxGH.dff9(_ATAN_AxCxExGx, UPOJ_MODE_PRODn(), _ALEF_AxxxxFGH_old.qn_old());
   /* p01.ADYK*/ clk.ADYK_ABCxxxxH.dff9(_ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), _APUK_ABxxxxGH_old.qn_old());
 
-  /*PIN_75*/ clk.PIN_75_CLK_OUT.pin_out(BUDE_xxxxEFGH());
+  /*PIN_75*/ clk.PIN_75_CLK_OUT.pin_out(BUDE_xxxxEFGH(), BUDE_xxxxEFGH());
   /*SIG_CPU_BOWA_Axxxxxxx*/ clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
   /*SIG_CPU_BEDO_xBCDEFGH*/ clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(BEDO_Axxxxxxx());
   /*SIG_CPU_BEKO_ABCDxxxx*/ clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(BEKO_ABCDxxxx());

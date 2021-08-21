@@ -21,7 +21,7 @@ void GateBoy::tock_ext()
     /* p08.TYMU*/ wire _TYMU_EXT_RDn = nor2(_LUMA_DMA_CARTp, _MOTY_CPU_EXT_RD);
     /* p08.UGAC*/ wire _UGAC_RD_A = nand2(_TYMU_EXT_RDn, TOVA_MODE_DBG2n());
     /* p08.URUN*/ wire _URUN_RD_D = nor2 (_TYMU_EXT_RDn, UNOR_MODE_DBG2p());
-    /* PIN_79*/ ext_pins.PIN_79_RDn.pin_tri(_UGAC_RD_A, _URUN_RD_D);
+    /* PIN_79*/ ext_pins.PIN_79_RDn.pin_out(_UGAC_RD_A, _URUN_RD_D);
   }
 
   {
@@ -29,13 +29,13 @@ void GateBoy::tock_ext()
     /* p08.PUVA*/ wire _PUVA_EXT_WRn = or2(_NEVY, _LUMA_DMA_CARTp);
     /* p08.UVER*/ wire _UVER_WR_A = nand2(_PUVA_EXT_WRn, TOVA_MODE_DBG2n());
     /* p08.USUF*/ wire _USUF_WR_D = nor2 (_PUVA_EXT_WRn, UNOR_MODE_DBG2p());
-    /* PIN_78*/ ext_pins.PIN_78_WRn.pin_tri(_UVER_WR_A, _USUF_WR_D);
+    /* PIN_78*/ ext_pins.PIN_78_WRn.pin_out(_UVER_WR_A, _USUF_WR_D);
   }
 
   {
     /* p08.TOZA*/ wire _TOZA_CS_A = and3(cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new(), new_bus.TYNU_A000_FFFFp(), new_bus.TUNA_0000_FDFF());
     /* p08.TYHO*/ wire _TYHO_CS_A = mux2p(_LUMA_DMA_CARTp, dma.MARU_DMA_A15n.qn_new(), _TOZA_CS_A);
-    /* PIN_80*/ ext_pins.PIN_80_CSn.pin_out(_TYHO_CS_A);
+    /* PIN_80*/ ext_pins.PIN_80_CSn.pin_out(_TYHO_CS_A, _TYHO_CS_A);
   }
 
   /* p08.LOXO*/ wire _LOXO_HOLDn = and_or3(MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn(), UMUT_MODE_DBG1p());
@@ -106,21 +106,21 @@ void GateBoy::tock_ext()
   /* p08.LEVA*/ wire _LEVA = nor2(_MUCE_A13p, UNOR_MODE_DBG2p());
   /* p08.PAHY*/ wire _PAHY = nor2(_PEGE_A14p, UNOR_MODE_DBG2p());
 
-  /*PIN_01*/ ext_pins.PIN_01_A00.pin_tri(_KUPO, _KOTY);
-  /*PIN_02*/ ext_pins.PIN_02_A01.pin_tri(_CABA, _COTU);
-  /*PIN_03*/ ext_pins.PIN_03_A02.pin_tri(_BOKU, _BAJO);
-  /*PIN_04*/ ext_pins.PIN_04_A03.pin_tri(_BOTY, _BOLA);
-  /*PIN_05*/ ext_pins.PIN_05_A04.pin_tri(_BYLA, _BEVO);
-  /*PIN_06*/ ext_pins.PIN_06_A05.pin_tri(_BADU, _AJAV);
-  /*PIN_07*/ ext_pins.PIN_07_A06.pin_tri(_CEPU, _CYKA);
-  /*PIN_08*/ ext_pins.PIN_08_A07.pin_tri(_DEFY, _COLO);
-  /*PIN_09*/ ext_pins.PIN_09_A08.pin_tri(_MYNY, _MEGO);
-  /*PIN_10*/ ext_pins.PIN_10_A09.pin_tri(_MUNE, _MENY);
-  /*PIN_11*/ ext_pins.PIN_11_A10.pin_tri(_ROXU, _RORE);
-  /*PIN_12*/ ext_pins.PIN_12_A11.pin_tri(_LEPY, _LYNY);
-  /*PIN_13*/ ext_pins.PIN_13_A12.pin_tri(_LUCE, _LOSO);
-  /*PIN_14*/ ext_pins.PIN_14_A13.pin_tri(_LABE, _LEVA);
-  /*PIN_15*/ ext_pins.PIN_15_A14.pin_tri(_PUHE, _PAHY);
+  /*PIN_01*/ ext_pins.PIN_01_A00.pin_out(_KUPO, _KOTY);
+  /*PIN_02*/ ext_pins.PIN_02_A01.pin_out(_CABA, _COTU);
+  /*PIN_03*/ ext_pins.PIN_03_A02.pin_out(_BOKU, _BAJO);
+  /*PIN_04*/ ext_pins.PIN_04_A03.pin_out(_BOTY, _BOLA);
+  /*PIN_05*/ ext_pins.PIN_05_A04.pin_out(_BYLA, _BEVO);
+  /*PIN_06*/ ext_pins.PIN_06_A05.pin_out(_BADU, _AJAV);
+  /*PIN_07*/ ext_pins.PIN_07_A06.pin_out(_CEPU, _CYKA);
+  /*PIN_08*/ ext_pins.PIN_08_A07.pin_out(_DEFY, _COLO);
+  /*PIN_09*/ ext_pins.PIN_09_A08.pin_out(_MYNY, _MEGO);
+  /*PIN_10*/ ext_pins.PIN_10_A09.pin_out(_MUNE, _MENY);
+  /*PIN_11*/ ext_pins.PIN_11_A10.pin_out(_ROXU, _RORE);
+  /*PIN_12*/ ext_pins.PIN_12_A11.pin_out(_LEPY, _LYNY);
+  /*PIN_13*/ ext_pins.PIN_13_A12.pin_out(_LUCE, _LOSO);
+  /*PIN_14*/ ext_pins.PIN_14_A13.pin_out(_LABE, _LEVA);
+  /*PIN_15*/ ext_pins.PIN_15_A14.pin_out(_PUHE, _PAHY);
 
   // A15 is "special"
   /* p07.TERA*/ wire TERA_BOOT_BITp = not1(cpu_signals.TEPU_BOOT_BITn_h.qp_new());
@@ -130,7 +130,7 @@ void GateBoy::tock_ext()
   /* p08.TAZY*/ wire _TAZY_A15p = mux2p (_LUMA_DMA_CARTp, dma.MARU_DMA_A15n.qn_new(), _SEPY_A15p);
   /* p08.SUZE*/ wire _SUZE_A15n = nand2(_TAZY_A15p, RYCA_MODE_DBG2n());
   /* p08.RULO*/ wire _RULO_A15n = nor2 (_TAZY_A15p, UNOR_MODE_DBG2p());
-  /*PIN_16*/ ext_pins.PIN_16_A15.pin_tri(_SUZE_A15n, _RULO_A15n);
+  /*PIN_16*/ ext_pins.PIN_16_A15.pin_out(_SUZE_A15n, _RULO_A15n);
 
   // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_out
   // will actually end up in oam?
@@ -246,14 +246,14 @@ void GateBoy::tock_ext()
   wire EXT_data_in7 = bit(data_in, 7);
 
 
-  /*PIN_17*/ ext_pins.PIN_17_D00.set_pin_io(_LULA_CBD_TO_EPDp, _RUXA, _RUNE, EXT_rd_en, EXT_data_in0);
-  /*PIN_18*/ ext_pins.PIN_18_D01.set_pin_io(_LULA_CBD_TO_EPDp, _RUJA, _RYPU, EXT_rd_en, EXT_data_in1);
-  /*PIN_19*/ ext_pins.PIN_19_D02.set_pin_io(_LULA_CBD_TO_EPDp, _RABY, _SULY, EXT_rd_en, EXT_data_in2);
-  /*PIN_20*/ ext_pins.PIN_20_D03.set_pin_io(_LULA_CBD_TO_EPDp, _RERA, _SEZE, EXT_rd_en, EXT_data_in3);
-  /*PIN_21*/ ext_pins.PIN_21_D04.set_pin_io(_LULA_CBD_TO_EPDp, _RORY, _RESY, EXT_rd_en, EXT_data_in4);
-  /*PIN_22*/ ext_pins.PIN_22_D05.set_pin_io(_LULA_CBD_TO_EPDp, _RYVO, _TAMU, EXT_rd_en, EXT_data_in5);
-  /*PIN_23*/ ext_pins.PIN_23_D06.set_pin_io(_LULA_CBD_TO_EPDp, _RAFY, _ROGY, EXT_rd_en, EXT_data_in6);
-  /*PIN_24*/ ext_pins.PIN_24_D07.set_pin_io(_LULA_CBD_TO_EPDp, _RAVU, _RYDA, EXT_rd_en, EXT_data_in7);
+  /*PIN_17*/ ext_pins.PIN_17_D00.pin_io(_LULA_CBD_TO_EPDp, _RUXA, _RUNE, EXT_rd_en, EXT_data_in0);
+  /*PIN_18*/ ext_pins.PIN_18_D01.pin_io(_LULA_CBD_TO_EPDp, _RUJA, _RYPU, EXT_rd_en, EXT_data_in1);
+  /*PIN_19*/ ext_pins.PIN_19_D02.pin_io(_LULA_CBD_TO_EPDp, _RABY, _SULY, EXT_rd_en, EXT_data_in2);
+  /*PIN_20*/ ext_pins.PIN_20_D03.pin_io(_LULA_CBD_TO_EPDp, _RERA, _SEZE, EXT_rd_en, EXT_data_in3);
+  /*PIN_21*/ ext_pins.PIN_21_D04.pin_io(_LULA_CBD_TO_EPDp, _RORY, _RESY, EXT_rd_en, EXT_data_in4);
+  /*PIN_22*/ ext_pins.PIN_22_D05.pin_io(_LULA_CBD_TO_EPDp, _RYVO, _TAMU, EXT_rd_en, EXT_data_in5);
+  /*PIN_23*/ ext_pins.PIN_23_D06.pin_io(_LULA_CBD_TO_EPDp, _RAFY, _ROGY, EXT_rd_en, EXT_data_in6);
+  /*PIN_24*/ ext_pins.PIN_24_D07.pin_io(_LULA_CBD_TO_EPDp, _RAVU, _RYDA, EXT_rd_en, EXT_data_in7);
 
   //----------------------------------------
 

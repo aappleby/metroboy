@@ -42,7 +42,7 @@ void GateBoy::tock_serial()
       wire EXT_ser_oe = 0;
       wire EXT_ser_dp = 1;
 
-      /* PIN_68*/ serial.PIN_68_SCK.set_pin_io_any(serial.CULY_SER_DIR.qp_new(), _KEXU, _KUJO, EXT_ser_oe, EXT_ser_dp);
+      /* PIN_68*/ serial.PIN_68_SCK.pin_io_any(serial.CULY_SER_DIR.qp_new(), _KEXU, _KUJO, EXT_ser_oe, EXT_ser_dp);
     }
   }
 
@@ -54,7 +54,7 @@ void GateBoy::tock_serial()
     /*#p06.EDYL*/ wire _EDYL_SER_CLK = not1(_DAWA_SER_CLK);
     /*#p06.ELYS*/ serial.ELYS_SER_OUT  .dff17(_EDYL_SER_CLK, ALUR_SYS_RSTn(), serial.EDER_SER_DATA7.qp_old());
     ///* p05.KENA*/ wire _KENA = mux2n(KUKO_DBG_FF00_D6, ELYS_SER_OUT.qp_new(), FF60_0); // FIXME hacking out debug stuff
-    /* PIN_70*/ serial.PIN_70_SOUT.pin_out(serial.ELYS_SER_OUT.qp_new());
+    /* PIN_70*/ serial.PIN_70_SOUT.pin_out(serial.ELYS_SER_OUT.qp_new(), serial.ELYS_SER_OUT.qp_new());
   }
 
   /*#p06.CAVE*/ wire _CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.qp_new(), serial.COTY_SER_CLK.qp_new(), serial.PIN_68_SCK.qp_int_new());
@@ -66,7 +66,7 @@ void GateBoy::tock_serial()
 
   // this pin has 4 wires attached, but they're not traced
   wire EXT_ser_sin = 1;
-  /* PIN_69*/ serial.PIN_69_SIN.pin_ext(EXT_ser_sin);
+  /* PIN_69*/ serial.PIN_69_SIN.pin_in(EXT_ser_sin);
 
   /* p06.URYS*/ wire _URYS_FF01_WRn = nand4(cpu_signals.TAPU_CPU_WRp.qp_new(), new_bus.SANO_FF00_FF03p(), new_bus.TOLA_A01n(),   new_bus.BUS_CPU_A00p.qp_new());
   /* p06.COHY*/ wire _COHY_SER_DATA0_RSTn = or_and3(_URYS_FF01_WRn, new_bus.BUS_CPU_D00p.qp_new(), ALUR_SYS_RSTn());

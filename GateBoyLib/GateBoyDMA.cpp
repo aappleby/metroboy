@@ -59,14 +59,14 @@ void GateBoy::tock_dma() {
   /* p04.RESU_DMA6_TO_CD6*/ wire RESU_DMA6_TO_CD6 = tri6_pn(PUSY_FF46_RDp, dma.POKU_DMA_A14n.qp_new());
   /* p04.NUVY_DMA7_TO_CD7*/ wire NUVY_DMA7_TO_CD7 = tri6_pn(PUSY_FF46_RDp, dma.MARU_DMA_A15n.qp_new());
 
-  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(POLY_DMA0_TO_CD0);
-  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(ROFO_DMA1_TO_CD1);
-  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(REMA_DMA2_TO_CD2);
-  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(PANE_DMA3_TO_CD3);
-  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(PARE_DMA4_TO_CD4);
-  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(RALY_DMA5_TO_CD5);
-  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(RESU_DMA6_TO_CD6);
-  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(NUVY_DMA7_TO_CD7);
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(POLY_DMA0_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(ROFO_DMA1_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(REMA_DMA2_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(PANE_DMA3_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri_bus(PARE_DMA4_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri_bus(RALY_DMA5_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri_bus(RESU_DMA6_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(NUVY_DMA7_TO_CD7);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

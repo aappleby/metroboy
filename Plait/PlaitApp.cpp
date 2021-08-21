@@ -82,14 +82,18 @@ int main(int argc, char** argv) {
   delete app;
   */
 
-  const char* die_db_file = "gameboy.die_db.json";
-  (void)die_db_file;
+  //const char* die_db_file = "gameboy.die_db.json";
+  //(void)die_db_file;
 
   PlaitApp* app = new PlaitApp();
   (void)app;
 
   printf("Parsing gateboy source\n");
   app->die_db.parse_dir("GateBoyLib");
+  printf("Done\n\n");
+
+  printf("Saving haxxor.die_db.json\n");
+  app->die_db.save_json("haxxor.die_db.json");
   printf("Done\n\n");
 
 

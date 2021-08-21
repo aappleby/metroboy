@@ -1,12 +1,9 @@
 #pragma once
 #include "CoreLib/Types.h"
-#include <stdio.h>
-#include <string.h>
 
 //-----------------------------------------------------------------------------
 
-void combine_hash(uint64_t& a, uint64_t b);
-
+void     combine_hash(uint64_t& a, uint64_t b);
 uint64_t hash_blob2(void* blob, size_t size);
 void     commit_blob(void* blob, size_t size);
 
@@ -37,45 +34,13 @@ void     commit_blob(void* blob, size_t size);
 
 #endif
 
-enum struct BitState : uint8_t {
-  BIT_OLD_CL_PD = 0b00010100,
-  BIT_OLD_CL_PU = 0b00010101,
-  BIT_OLD_CH_PD = 0b00010110,
-  BIT_OLD_CH_PU = 0b00010111,
-
-  BIT_OLD_CL_D0 = 0b00011000,
-  BIT_OLD_CL_D1 = 0b00011001,
-  BIT_OLD_CH_D0 = 0b00011010,
-  BIT_OLD_CH_D1 = 0b00011011,
-
-  BIT_NEW_CL_PD = 0b00100100,
-  BIT_NEW_CL_PU = 0b00100101,
-  BIT_NEW_CH_PD = 0b00100110,
-  BIT_NEW_CH_PU = 0b00100111,
-
-  BIT_NEW_CL_D0 = 0b00101000,
-  BIT_NEW_CL_D1 = 0b00101001,
-  BIT_NEW_CH_D0 = 0b00101010,
-  BIT_NEW_CH_D1 = 0b00101011,
-};
+//-----------------------------------------------------------------------------
 
 struct BitBase {
   uint8_t state;
 
   BitBase() { state = 0; }
   explicit BitBase(int new_state) { state = uint8_t(new_state); }
-
-  char cp_int() const {
-    if (state & BIT_DRIVEN) return bit(state) ? '1' : '0';
-    if (state & BIT_PULLED) return bit(state) ? '^' : 'v';
-    return 'X';
-  }
-
-  char cp_ext() const {
-    if (state & BIT_DRIVEN) return bit(state) ? '0' : '1';
-    if (state & BIT_PULLED) return bit(state) ? 'v' : '^';
-    return 'X';
-  }
 
   wire qp_mid() const { return state; }
   wire qn_mid() const { return ~state; }
@@ -127,14 +92,9 @@ static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 //-----------------------------------------------------------------------------
 
 struct Gate : public BitBase {
+
   Gate() { state = 0; }
   Gate(wire D) { state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D)); }
-
-  void reset(uint8_t s) { state = s; }
-
-  uint8_t get_state() const {
-    return state;
-  }
 
   void hold() {
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(state));
@@ -147,13 +107,9 @@ struct Gate : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct SigIn : public BitBase {
-  SigIn() { state = 0; }
-  SigIn(wire D) { state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D)); }
-
-  uint8_t get_state() const { return state; }
-
-  void reset(uint8_t s) { state = s; }
+struct SigIn : private BitBase {
+  using BitBase::state;
+  using BitBase::qp_new;
 
   void sig_in(wire D) {
     check_old();
@@ -163,13 +119,10 @@ struct SigIn : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct SigOut : public BitBase {
-  uint8_t get_state() const { return state; }
-
-  using BitBase::qp_new;
+struct SigOut : private BitBase {
+  using BitBase::state;
   using BitBase::qp_old;
-
-  void reset(uint8_t s) { state = s; }
+  using BitBase::qp_new;
 
   void sig_out(wire D) {
     check_old();
@@ -181,30 +134,12 @@ struct SigOut : public BitBase {
 // Generic DFF
 
 struct DFF : public BitBase {
-  void reset(wire clk, wire d) { state = uint8_t((bit(clk) << 1) | bit(d)); }
-
-  void dff_sr(wire CLKp, wire SETn, wire RSTn, wire Dp) {
+  void dff_r(wire CLKp, wire RSTn, wire Dp) {
     check_old();
     CLKp = (CLKp << 1) & 2;
 
     if ((~state & CLKp) == 0) Dp = state;
 
-    Dp |= ~SETn;
-    Dp &= RSTn;
-
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
-  }
-
-  void dff_r(wire CLKp, wire RSTn, wire Dp) {
-    dff_sr(CLKp, 1, RSTn, Dp);
-  }
-
-  void dff_any(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    CLKp = (CLKp << 1) & 2;
-
-    if ((~state & CLKp) == 0) Dp = state;
-
-    Dp |= ~SETn;
     Dp &= RSTn;
 
     state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
@@ -224,7 +159,7 @@ struct DFF : public BitBase {
 // DFF8_07 |xxx-O-xxx| >> Qn
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
-struct DFF8n : public DFF {
+struct DFF8n : public BitBase {
   void dff8n(wire CLKn, wire Dn) {
     check_old();
     wire Dp = ~Dn;
@@ -249,7 +184,7 @@ struct DFF8n : public DFF {
 // DFF8_07 |xxx-O-xxx| >> Qn
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
-struct DFF8p : public DFF {
+struct DFF8p : public BitBase {
   void dff8p(wire CLKp, wire Dn) {
     check_old();
     wire Dp = ~Dn;
@@ -529,14 +464,8 @@ inline wire tri10_np(wire OEn, wire Dp) {
   return bit(OEn) ? BIT_NEW : BIT_NEW | TRI_DRIVEN | bit(Dp);
 }
 
-struct Bus : private BitBase {
-  using BitBase::qp_any;
-  using BitBase::qp_new;
-  using BitBase::qp_old;
-
-  void reset(uint8_t s) { state = s; }
-
-  void tri(wire tristate) {
+struct Bus : public BitBase {
+  void tri_bus(wire tristate) {
     check_new();
 
     // if both the new and old state are both driven, that's a bus collision.
@@ -545,7 +474,7 @@ struct Bus : private BitBase {
     if (tristate & TRI_DRIVEN) state = uint8_t(tristate);
   }
 
-  void set(wire Dp) {
+  void set_bus(wire Dp) {
     state = (Dp & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
   }
 };
@@ -556,12 +485,7 @@ struct Bus : private BitBase {
 
 // FIXME I think I was going to transition all pins to use this, but then I didn't finish?
 
-struct PinIO : private BitBase {
-  using BitBase::cp_int;
-  using BitBase::cp_ext;
-
-  void reset_int(uint8_t s) { state = s; }
-
+struct PinIO : public BitBase {
   wire qp_int_old() const { return qp_old(); }
   wire qp_int_any() const { return qp_any(); }
   wire qp_int_new() const { return qp_new(); }
@@ -612,14 +536,14 @@ struct PinIO : private BitBase {
 //-----------------------------------------------------------------------------
 
 struct PinIn : private BitBase {
+  using BitBase::state;
+
   void reset(uint8_t s) { state = s; }
 
-  wire qp_ext_old() const { return qn_old(); }
-  wire qp_ext_new() const { return qn_new(); }
   wire qp_int_old() const { return qp_old(); }
   wire qp_int_new() const { return qp_new(); }
 
-  void set_pin_ext(wire ext_Dp) {
+  void pin_ext(wire ext_Dp) {
     check_old();
     state = ((~ext_Dp) & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
   }
@@ -633,8 +557,8 @@ struct PinClock {
   wire clock() const { return CLK.qp_int_new(); }
 
   void pin_clk(wire clk, wire clkgood) {
-    CLK.set_pin_ext(clk);
-    CLKGOOD.set_pin_ext(clkgood);
+    CLK.pin_ext(clk);
+    CLKGOOD.pin_ext(clkgood);
   }
 
 private:
@@ -646,26 +570,24 @@ private:
 //-----------------------------------------------------------------------------
 
 struct PinOut : private BitBase {
-  using BitBase::cp_ext;
+  using BitBase::state;
 
   void reset(uint8_t s) { state = s; }
 
   wire qp_ext_old() const { return qn_old(); }
   wire qp_ext_new() const { return qn_new(); }
-  wire qp_int_old() const { return qp_old(); }
-  wire qp_int_new() const { return qp_new(); }
   wire qn_ext_new() const { return qp_new(); }
 
   void ext_pullup() {
     state |= BIT_PULLED;
   }
 
-  void set_pin_int(wire int_Dp) {
+  void pin_out(wire int_Dp) {
     check_old();
     state = BIT_NEW | BIT_DRIVEN | (int_Dp & BIT_DATA);
   }
 
-  void set_pin_int(wire int_HI, wire int_LO) {
+  void pin_tri(wire int_HI, wire int_LO) {
     check_old();
 
     if (!bit(int_HI) && !bit(int_LO)) {
@@ -821,10 +743,8 @@ struct Adder {
 };
 
 inline Adder add3(wire a, wire b, wire c) {
-  return {
-    bit(bit(a) + bit(b) + bit(c), 0),
-    bit(bit(a) + bit(b) + bit(c), 1)
-  };
+  uint8_t s = bit(a) + bit(b) + bit(c);
+  return { bit(s, 0), bit(s, 1) };
 }
 
 //-----------------------------------------------------------------------------
@@ -854,52 +774,3 @@ inline wire amux4(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3, wire a4, wire b4, wire a5, wire b5) {
   return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
 }
-
-struct GateBoyClock;
-struct GateBoyVideoClock;
-struct GateBoyCpuSignals;
-struct GateBoyDMA;
-struct GateBoyExtPins;
-struct GateBoyInterrupts;
-struct GateBoyJoypad;
-struct GateBoyLCD;
-struct GateBoyOamBus;
-struct GateBoyPixPipe;
-struct GateBoyResetDebug;
-struct GateBoySerial;
-struct GateBoySpriteFetcher;
-struct GateBoySpriteScanner;
-struct GateBoySpriteStore;
-struct GateBoyTileFetcher;
-struct GateBoyDiv;
-struct GateBoyTimer;
-struct GateBoyVramPins;
-struct GateBoyPins;
-
-struct SpriteScanner;
-struct GateBoySpriteStore;
-struct FineScroll;
-struct SpritePix;
-struct PixCount;
-
-struct RegLCDC;
-struct RegStat;
-struct RegSCX;
-struct RegSCY;
-struct RegLY;
-struct RegLX;
-struct RegLYC;
-struct RegBGP;
-struct RegOBP0;
-struct RegOBP1;
-struct RegWY;
-struct RegWX;
-
-struct WinCoords;
-struct WinLineY;
-struct SpritePixA;
-struct SpritePixB;
-struct TileTempA;
-struct TileTempB;
-struct OamTempA;
-struct OamTempB;

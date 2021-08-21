@@ -78,14 +78,14 @@ void GateBoy::tock_lcdc()
   /*#p23.VAHA_LCDC6_TO_CD6*/ wire VAHA_LCDC6_TO_CD6 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.WOKY_LCDC_WINMAPn.qp_new());
   /*#p23.XEBU_LCDC7_TO_CD7*/ wire XEBU_LCDC7_TO_CD7 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.XONA_LCDC_LCDENn.qp_new());
 
-  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(WYPO_LCDC0_TO_CD0);
-  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(XERO_LCDC1_TO_CD1);
-  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(WYJU_LCDC2_TO_CD2);
-  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(WUKA_LCDC3_TO_CD3);
-  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(VOKE_LCDC4_TO_CD4);
-  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(VATO_LCDC5_TO_CD5);
-  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(VAHA_LCDC6_TO_CD6);
-  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(XEBU_LCDC7_TO_CD7);
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(WYPO_LCDC0_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(XERO_LCDC1_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(WYJU_LCDC2_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(WUKA_LCDC3_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri_bus(VOKE_LCDC4_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri_bus(VATO_LCDC5_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri_bus(VAHA_LCDC6_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(XEBU_LCDC7_TO_CD7);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

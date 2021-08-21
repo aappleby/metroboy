@@ -391,8 +391,8 @@ struct GateBoy {
 
   //----------
 
-  /*SIG_GND*/ SigIn SIG_VCC;
-  /*SIG_VCC*/ SigIn SIG_GND;
+  /*SIG_VCC*/ SigIn SIG_VCC;
+  /*SIG_GND*/ SigIn SIG_GND;
 
   GateBoyCpuBus  old_bus;
 
@@ -511,7 +511,7 @@ struct GateBoy {
   uint8_t sys_t2 = 0;
   uint8_t sys_clken = 0;
   uint8_t sys_clkgood = 0;
-  uint8_t sys_clkreq = 0;
+  uint8_t EXT_sys_clkreq = 0;
   uint8_t sys_cpu_en = 0;
   uint8_t sys_fastboot = 0;
   uint8_t sys_buttons = 0;

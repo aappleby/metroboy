@@ -5,28 +5,28 @@
 
 struct VramBus {
   void reset_to_cart() {
-    BUS_VRAM_A00n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A01n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A02n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A03n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A04n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_VRAM_A05n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A06n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_VRAM_A07n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A08n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A09n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A10n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A11n.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_VRAM_A12n.reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_VRAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A02n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A03n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A04n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_A05n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A06n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_A07n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A08n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A09n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A10n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A11n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A12n.state = BIT_OLD | BIT_DRIVEN | 1;
 
-    BUS_VRAM_D00p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_VRAM_D01p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_VRAM_D02p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_VRAM_D03p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_VRAM_D04p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_VRAM_D05p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_VRAM_D06p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_VRAM_D07p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_VRAM_D00p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D01p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D02p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D03p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D04p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D05p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D06p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D07p.state = BIT_OLD | BIT_DRIVEN | 0;
   }
 
   /*BUS_VRAM_A00n*/ Bus BUS_VRAM_A00n;
@@ -58,32 +58,32 @@ struct VramBus {
 struct GateBoyVramPins {
 
   void reset_to_cart() {
-    PIN_43_VRAM_CSn.reset(BIT_OLD | BIT_DRIVEN | 0);
-    PIN_45_VRAM_OEn.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_49_VRAM_WRn.reset(BIT_OLD | BIT_DRIVEN | 0);
+    PIN_43_VRAM_CSn.state = BIT_OLD | BIT_DRIVEN | 0;
+    PIN_45_VRAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_49_VRAM_WRn.state = BIT_OLD | BIT_DRIVEN | 0;
 
-    PIN_34_VRAM_A00.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_35_VRAM_A01.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_36_VRAM_A02.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_37_VRAM_A03.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_38_VRAM_A04.reset(BIT_OLD | BIT_DRIVEN | 0);
-    PIN_39_VRAM_A05.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_40_VRAM_A06.reset(BIT_OLD | BIT_DRIVEN | 0);
-    PIN_41_VRAM_A07.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_48_VRAM_A08.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_47_VRAM_A09.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_44_VRAM_A10.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_46_VRAM_A11.reset(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_42_VRAM_A12.reset(BIT_OLD | BIT_DRIVEN | 1);
+    PIN_34_VRAM_A00.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_35_VRAM_A01.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_36_VRAM_A02.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_37_VRAM_A03.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_38_VRAM_A04.state = BIT_OLD | BIT_DRIVEN | 0;
+    PIN_39_VRAM_A05.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_40_VRAM_A06.state = BIT_OLD | BIT_DRIVEN | 0;
+    PIN_41_VRAM_A07.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_48_VRAM_A08.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_47_VRAM_A09.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_44_VRAM_A10.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_46_VRAM_A11.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_42_VRAM_A12.state = BIT_OLD | BIT_DRIVEN | 1;
 
-    PIN_33_VRAM_D00.reset_int(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_31_VRAM_D01.reset_int(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_30_VRAM_D02.reset_int(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_29_VRAM_D03.reset_int(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_28_VRAM_D04.reset_int(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_27_VRAM_D05.reset_int(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_26_VRAM_D06.reset_int(BIT_OLD | BIT_DRIVEN | 1);
-    PIN_25_VRAM_D07.reset_int(BIT_OLD | BIT_DRIVEN | 1);
+    PIN_33_VRAM_D00.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_31_VRAM_D01.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_30_VRAM_D02.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_29_VRAM_D03.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_28_VRAM_D04.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_27_VRAM_D05.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_26_VRAM_D06.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_25_VRAM_D07.state = BIT_OLD | BIT_DRIVEN | 1;
   }
 
   /*PIN_43*/ PinOut PIN_43_VRAM_CSn;

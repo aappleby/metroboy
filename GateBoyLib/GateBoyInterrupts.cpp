@@ -49,21 +49,21 @@ void GateBoy::tock_interrupts()
   probe_wire(30, "MUWY LY0",    reg_ly.MUWY_LY0p.qp_new());
   probe_wire(31, "SYRY LYC0",   reg_lyc.SYRY_LYC0n.qn_new());
 
-  /*#p21.TEBY*/ wire TEBY = tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);
-  /*#p21.WUGA*/ wire WUGA = tri6_pn(_TOBE_FF41_RDp, _XATY_STAT_MODE1n);
-  /*#p21.SEGO*/ wire SEGO = tri6_pn(_TOBE_FF41_RDp, reg_stat.RUPO_LYC_MATCHn.qp_new());
-  /* p21.PUZO*/ wire PUZO = tri6_nn(_VAVE_FF41_RDn, reg_stat.ROXE_STAT_HBI_ENn.qp_new());
-  /* p21.POFO*/ wire POFO = tri6_nn(_VAVE_FF41_RDn, reg_stat.RUFO_STAT_VBI_ENn.qp_new());
-  /* p21.SASY*/ wire SASY = tri6_nn(_VAVE_FF41_RDn, reg_stat.REFE_STAT_OAI_ENn.qp_new());
-  /* p21.POTE*/ wire POTE = tri6_nn(_VAVE_FF41_RDn, reg_stat.RUGU_STAT_LYI_ENn.qp_new());
+  /*#p21.TEBY*/ wire TEBY_STAT0_TO_CD0 = tri6_pn(_TOBE_FF41_RDp, _SADU_STAT_MODE0n);
+  /*#p21.WUGA*/ wire WUGA_STAT1_TO_CD1 = tri6_pn(_TOBE_FF41_RDp, _XATY_STAT_MODE1n);
+  /*#p21.SEGO*/ wire SEGO_STAT2_TO_CD2 = tri6_pn(_TOBE_FF41_RDp, reg_stat.RUPO_LYC_MATCHn.qp_new());
+  /* p21.PUZO*/ wire PUZO_STAT3_TO_CD3 = tri6_nn(_VAVE_FF41_RDn, reg_stat.ROXE_STAT_HBI_ENn.qp_new());
+  /* p21.POFO*/ wire POFO_STAT4_TO_CD4 = tri6_nn(_VAVE_FF41_RDn, reg_stat.RUFO_STAT_VBI_ENn.qp_new());
+  /* p21.SASY*/ wire SASY_STAT5_TO_CD5 = tri6_nn(_VAVE_FF41_RDn, reg_stat.REFE_STAT_OAI_ENn.qp_new());
+  /* p21.POTE*/ wire POTE_STAT6_TO_CD6 = tri6_nn(_VAVE_FF41_RDn, reg_stat.RUGU_STAT_LYI_ENn.qp_new());
 
-  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(TEBY);
-  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(WUGA);
-  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(SEGO);
-  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(PUZO);
-  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(POFO);
-  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(SASY);
-  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(POTE);
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(TEBY_STAT0_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(WUGA_STAT1_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(SEGO_STAT2_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(PUZO_STAT3_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri_bus(POFO_STAT4_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri_bus(SASY_STAT5_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri_bus(POTE_STAT6_TO_CD6);
 
   /*#p21.PURE*/ wire PURE_x113n = not1(lcd.RUTU_x113p.qp_new());
   /*#p21.TOLU*/ wire _TOLU_VBLANKn   = not1(PARU_VBLANKp);
@@ -125,11 +125,11 @@ void GateBoy::tock_interrupts()
   wire tristate_i3 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D3.qn_new());
   wire tristate_i4 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D4.qn_new());
 
-  new_bus.BUS_CPU_D00p.tri(tristate_i0);
-  new_bus.BUS_CPU_D01p.tri(tristate_i1);
-  new_bus.BUS_CPU_D02p.tri(tristate_i2);
-  new_bus.BUS_CPU_D03p.tri(tristate_i3);
-  new_bus.BUS_CPU_D04p.tri(tristate_i4);
+  new_bus.BUS_CPU_D00p.tri_bus(tristate_i0);
+  new_bus.BUS_CPU_D01p.tri_bus(tristate_i1);
+  new_bus.BUS_CPU_D02p.tri_bus(tristate_i2);
+  new_bus.BUS_CPU_D03p.tri_bus(tristate_i3);
+  new_bus.BUS_CPU_D04p.tri_bus(tristate_i4);
 
   /* p07.ROLO*/ wire _ROLO_FF0F_RDn = nand4(cpu_signals.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
   /* p02.POLA*/ wire _POLA_FF0F_RDp = not1(_ROLO_FF0F_RDn);
@@ -148,11 +148,11 @@ void GateBoy::tock_interrupts()
   /*#p02.PADO_IF3_TO_CD3*/ wire PADO_IF3_TO_CD3 = tri6_pn(_POLA_FF0F_RDp, interrupts.NEJY_FF0F_L3p.qn_new());
   /*#p02.PEGY_IF4_TO_CD4*/ wire PEGY_IF4_TO_CD4 = tri6_pn(_POLA_FF0F_RDp, interrupts.NUTY_FF0F_L4p.qn_new());
 
-  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(NELA_IF0_TO_CD0);
-  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(NABO_IF1_TO_CD1);
-  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(ROVA_IF2_TO_CD2);
-  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(PADO_IF3_TO_CD3);
-  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(PEGY_IF4_TO_CD4);
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(NELA_IF0_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(NABO_IF1_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(ROVA_IF2_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(PADO_IF3_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri_bus(PEGY_IF4_TO_CD4);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

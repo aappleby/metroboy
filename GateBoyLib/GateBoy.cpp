@@ -124,7 +124,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   //----------------------------------------
   // We're ready to go, release the CPU so it can start running the bootrom.
 
-  sys_clkreq = 1;
+  EXT_sys_clkreq = 1;
   sys_cpu_en = true;
 
   if (fastboot) {
@@ -204,7 +204,7 @@ void GateBoy::reset_to_cart() {
   sys_t2 = false;
   sys_clken = true;
   sys_clkgood = true;
-  sys_clkreq = true;
+  EXT_sys_clkreq = true;
   sys_fastboot = true;
 
   gb_cpu.reset_to_cart();
@@ -485,9 +485,11 @@ void GateBoy::next_phase() {
 void GateBoy::tock_slow(int pass_index) {
   (void)pass_index;
 
-  /*SIG_GND*/ SIG_VCC = 1;
-  /*SIG_VCC*/ SIG_GND = 0;
+  wire EXT_vcc = 1;
+  wire EXT_gnd = 0;
 
+  /*SIG_VCC*/ SIG_VCC.sig_in(EXT_vcc);
+  /*SIG_GND*/ SIG_GND.sig_in(EXT_gnd);
 
   if (pass_index == 0) {
     cpu_data_latch &= (uint8_t)BitBase::pack_old(8, (BitBase*)&new_bus.BUS_CPU_D00p);
@@ -545,70 +547,77 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
-  bool cpu_latch_ext;
+  bool EXT_cpu_latch_ext;
 
   if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
     // Data has to be driven on EFGH or we fail the wave tests
     new_bus.set_data(bus_req_new.write, bus_req_new.data_lo);
-    cpu_latch_ext = bus_req_new.read;
+    EXT_cpu_latch_ext = bus_req_new.read;
   }
   else {
     new_bus.set_data(false, 0);
-    cpu_latch_ext = 0;
+    EXT_cpu_latch_ext = 0;
   }
-  /* SIG_IN_CPU_LATCH_EXT*/ cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(cpu_latch_ext);
+  /* SIG_IN_CPU_LATCH_EXT*/ cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(EXT_cpu_latch_ext);
 
-  bool addr_ext_new = (bus_req_new.read || bus_req_new.write);
+  bool EXT_addr_new = (bus_req_new.read || bus_req_new.write);
   bool in_bootrom = bit(~cpu_signals.TEPU_BOOT_BITn_h.qp_old());
   bool addr_boot = (bus_req_new.addr <= 0x00FF) && in_bootrom;
   bool addr_vram = (bus_req_new.addr >= 0x8000) && (bus_req_new.addr < 0x9FFF);
   bool addr_high = (bus_req_new.addr >= 0xFE00);
 
-  bool cpu_rd;
-  bool cpu_wr;
+  bool EXT_cpu_rd;
+  bool EXT_cpu_wr;
 
   if (DELTA_HA) {
-    cpu_rd = 0;
-    cpu_wr = 0;
+    EXT_cpu_rd = 0;
+    EXT_cpu_wr = 0;
     new_bus.set_addr(bus_req_new.addr & 0x00FF);
 
-    if (addr_high) addr_ext_new = false;
-    if (addr_boot) addr_ext_new = false;
-    if (addr_vram) addr_ext_new = false;
+    if (addr_high) EXT_addr_new = false;
+    if (addr_boot) EXT_addr_new = false;
+    if (addr_vram) EXT_addr_new = false;
   }
   else {
-    cpu_rd = bus_req_new.read;
-    cpu_wr = bus_req_new.write;
+    EXT_cpu_rd = bus_req_new.read;
+    EXT_cpu_wr = bus_req_new.write;
     new_bus.set_addr(bus_req_new.addr);
 
-    if (addr_high) addr_ext_new = false;
-    if (addr_boot) addr_ext_new = false;
+    if (addr_high) EXT_addr_new = false;
+    if (addr_boot) EXT_addr_new = false;
   }
 
-  /* SIG_IN_CPU_RDp*/ cpu_signals.SIG_IN_CPU_RDp.sig_in(cpu_rd);
-  /* SIG_IN_CPU_WRp*/ cpu_signals.SIG_IN_CPU_WRp.sig_in(cpu_wr);
-  /* SIG_IN_CPU_EXT_BUSp*/ cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(addr_ext_new);
+  /* SIG_IN_CPU_RDp*/ cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
+  /* SIG_IN_CPU_WRp*/ cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+  /* SIG_IN_CPU_EXT_BUSp*/ cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
 
   //-----------------------------------------------------------------------------
 
-  /* PIN_74*/ clk.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, bit(~sys_clkgood));
-  /* PIN_71*/ rst.PIN_71_RST.set_pin_ext(bit(~sys_rst));
-  /* PIN_76*/ rst.PIN_76_T2.set_pin_ext(bit(~sys_t2));
-  /* PIN_77*/ rst.PIN_77_T1.set_pin_ext(bit(~sys_t1));
+  wire EXT_sys_rst = bit(~sys_rst);
+  wire EXT_sys_t2 = bit(~sys_t2);
+  wire EXT_sys_t1 = bit(~sys_t1);
 
-  wire ack_vblank = bit(gb_cpu.int_ack, BIT_VBLANK);
-  wire ack_stat = bit(gb_cpu.int_ack, BIT_STAT);
-  wire ack_timer = bit(gb_cpu.int_ack, BIT_TIMER);
-  wire ack_serial = bit(gb_cpu.int_ack, BIT_SERIAL);
-  wire ack_joypad = bit(gb_cpu.int_ack, BIT_JOYPAD);
+  wire EXT_clkin = !(phase_total & 1) && sys_clken;
+  wire EXT_clkgood = bit(~sys_clkgood);
 
-  /* SIG_CPU_ACK_VBLANK*/ interrupts.SIG_CPU_ACK_VBLANK.sig_in(ack_vblank);
-  /* SIG_CPU_ACK_STAT  */ interrupts.SIG_CPU_ACK_STAT.sig_in(ack_stat);
-  /* SIG_CPU_ACK_TIMER */ interrupts.SIG_CPU_ACK_TIMER.sig_in(ack_timer);
-  /* SIG_CPU_ACK_SERIAL*/ interrupts.SIG_CPU_ACK_SERIAL.sig_in(ack_serial);
-  /* SIG_CPU_ACK_JOYPAD*/ interrupts.SIG_CPU_ACK_JOYPAD.sig_in(ack_joypad);
+  /* PIN_74*/ clk.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
+  /* PIN_71*/ rst.PIN_71_RST.pin_ext(EXT_sys_rst);
+  /* PIN_76*/ rst.PIN_76_T2.pin_ext(EXT_sys_t2);
+  /* PIN_77*/ rst.PIN_77_T1.pin_ext(EXT_sys_t1);
 
-  /* SIG_CPU_CLKREQ*/ clk.SIG_CPU_CLKREQ.sig_in(sys_clkreq);
+  wire EXT_ack_vblank = bit(gb_cpu.int_ack, BIT_VBLANK);
+  wire EXT_ack_stat = bit(gb_cpu.int_ack, BIT_STAT);
+  wire EXT_ack_timer = bit(gb_cpu.int_ack, BIT_TIMER);
+  wire EXT_ack_serial = bit(gb_cpu.int_ack, BIT_SERIAL);
+  wire EXT_ack_joypad = bit(gb_cpu.int_ack, BIT_JOYPAD);
+
+  /* SIG_CPU_ACK_VBLANK*/ interrupts.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
+  /* SIG_CPU_ACK_STAT  */ interrupts.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
+  /* SIG_CPU_ACK_TIMER */ interrupts.SIG_CPU_ACK_TIMER.sig_in(EXT_ack_timer);
+  /* SIG_CPU_ACK_SERIAL*/ interrupts.SIG_CPU_ACK_SERIAL.sig_in(EXT_ack_serial);
+  /* SIG_CPU_ACK_JOYPAD*/ interrupts.SIG_CPU_ACK_JOYPAD.sig_in(EXT_ack_joypad);
+
+  /* SIG_CPU_CLKREQ*/ clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
 
   /*SIG_CPU_ADDR_HIp*/ cpu_signals.SIG_CPU_ADDR_HIp.sig_out(new_bus.SYRO_FE00_FFFF());
   /*SIG_CPU_UNOR_DBG*/ cpu_signals.SIG_CPU_UNOR_DBG.sig_out(UNOR_MODE_DBG2p());
@@ -873,7 +882,7 @@ void GateBoy::tock_slow(int pass_index) {
     /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn);
     /*#p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
 
-    /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_match_flags.FEPO_STORE_MATCHp.qp_any(), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx());
+    /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_match_flags.FEPO_STORE_MATCHp.qp_mid(), WODU_HBLANKp.qp_old(), MYVO_AxCxExGx());
     /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
     /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
     /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);

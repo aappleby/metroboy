@@ -31,32 +31,32 @@ struct GateBoyOam {
 
 struct GateBoyOamBus {
   void reset_to_cart() {
-    BUS_OAM_A00n. reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_OAM_A01n. reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_OAM_A02n. reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_OAM_A03n. reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_OAM_A04n. reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_A05n. reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_OAM_A06n. reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_A07n. reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_OAM_A00n. state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A01n. state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A02n. state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A03n. state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A04n. state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_A05n. state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A06n. state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_A07n. state = BIT_OLD | BIT_DRIVEN | 1;
 
-    BUS_OAM_DA00n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DA01n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DA02n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DA03n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DA04n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DA05n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DA06n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DA07n.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_OAM_DA00n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA01n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA02n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA03n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA04n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA05n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA06n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA07n.state = BIT_OLD | BIT_DRIVEN | 0;
 
-    BUS_OAM_DB00n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DB01n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DB02n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DB03n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DB04n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DB05n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DB06n.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_OAM_DB07n.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_OAM_DB00n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB01n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB02n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB03n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB04n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB05n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB06n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB07n.state = BIT_OLD | BIT_DRIVEN | 0;
   }
 
   /*BUS_OAM_A00n*/ Bus BUS_OAM_A00n;  // ABCDEFGH

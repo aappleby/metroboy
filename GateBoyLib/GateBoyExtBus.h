@@ -70,35 +70,35 @@ struct ExtAddrLatch {
 
 struct GateBoyExtPins {
   void reset_to_cart() {
-    PIN_01_A00.reset(0b00011000);
-    PIN_02_A01.reset(0b00011001);
-    PIN_03_A02.reset(0b00011000);
-    PIN_04_A03.reset(0b00011000);
-    PIN_05_A04.reset(0b00011001);
-    PIN_06_A05.reset(0b00011001);
-    PIN_07_A06.reset(0b00011000);
-    PIN_08_A07.reset(0b00011001);
-    PIN_09_A08.reset(0b00011001);
-    PIN_10_A09.reset(0b00011001);
-    PIN_11_A10.reset(0b00011001);
-    PIN_12_A11.reset(0b00011001);
-    PIN_13_A12.reset(0b00011001);
-    PIN_14_A13.reset(0b00011001);
-    PIN_15_A14.reset(0b00011001);
-    PIN_16_A15.reset(0b00011000);
+    PIN_01_A00.state = 0b00011000;
+    PIN_02_A01.state = 0b00011001;
+    PIN_03_A02.state = 0b00011000;
+    PIN_04_A03.state = 0b00011000;
+    PIN_05_A04.state = 0b00011001;
+    PIN_06_A05.state = 0b00011001;
+    PIN_07_A06.state = 0b00011000;
+    PIN_08_A07.state = 0b00011001;
+    PIN_09_A08.state = 0b00011001;
+    PIN_10_A09.state = 0b00011001;
+    PIN_11_A10.state = 0b00011001;
+    PIN_12_A11.state = 0b00011001;
+    PIN_13_A12.state = 0b00011001;
+    PIN_14_A13.state = 0b00011001;
+    PIN_15_A14.state = 0b00011001;
+    PIN_16_A15.state = 0b00011000;
 
-    PIN_17_D00.reset_int(0b00010100);
-    PIN_18_D01.reset_int(0b00010100);
-    PIN_19_D02.reset_int(0b00010100);
-    PIN_20_D03.reset_int(0b00010100);
-    PIN_21_D04.reset_int(0b00010100);
-    PIN_22_D05.reset_int(0b00010100);
-    PIN_23_D06.reset_int(0b00010100);
-    PIN_24_D07.reset_int(0b00010100);
+    PIN_17_D00.state = 0b00010100;
+    PIN_18_D01.state = 0b00010100;
+    PIN_19_D02.state = 0b00010100;
+    PIN_20_D03.state = 0b00010100;
+    PIN_21_D04.state = 0b00010100;
+    PIN_22_D05.state = 0b00010100;
+    PIN_23_D06.state = 0b00010100;
+    PIN_24_D07.state = 0b00010100;
 
-    PIN_80_CSn.reset(0b00011000);
-    PIN_79_RDn.reset(0b00011001);
-    PIN_78_WRn.reset(0b00011000);
+    PIN_80_CSn.state = 0b00011000;
+    PIN_79_RDn.state = 0b00011001;
+    PIN_78_WRn.state = 0b00011000;
   }
 
   /*PIN_01*/ PinOut PIN_01_A00;

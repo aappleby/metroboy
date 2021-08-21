@@ -48,20 +48,20 @@ void GateBoy::tock_bootrom() {
   wire boot_d6 = tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 6));
   wire boot_d7 = tri6_pn(_ZERY_BOOT_CSp, bit(~bootrom_data, 7));
 
-  new_bus.BUS_CPU_D00p.tri(boot_d0);
-  new_bus.BUS_CPU_D01p.tri(boot_d1);
-  new_bus.BUS_CPU_D02p.tri(boot_d2);
-  new_bus.BUS_CPU_D03p.tri(boot_d3);
-  new_bus.BUS_CPU_D04p.tri(boot_d4);
-  new_bus.BUS_CPU_D05p.tri(boot_d5);
-  new_bus.BUS_CPU_D06p.tri(boot_d6);
-  new_bus.BUS_CPU_D07p.tri(boot_d7);
+  new_bus.BUS_CPU_D00p.tri_bus(boot_d0);
+  new_bus.BUS_CPU_D01p.tri_bus(boot_d1);
+  new_bus.BUS_CPU_D02p.tri_bus(boot_d2);
+  new_bus.BUS_CPU_D03p.tri_bus(boot_d3);
+  new_bus.BUS_CPU_D04p.tri_bus(boot_d4);
+  new_bus.BUS_CPU_D05p.tri_bus(boot_d5);
+  new_bus.BUS_CPU_D06p.tri_bus(boot_d6);
+  new_bus.BUS_CPU_D07p.tri_bus(boot_d7);
 
   /* p07.TEXE*/ wire _TEXE_FF50_RDp =  and4(cpu_signals.TEDO_CPU_RDp.qp_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
   
   
   /* p07.SYPU_BOOT_TO_CD0*/ wire SYPU_BOOT_TO_CD0 = tri6_pn(_TEXE_FF50_RDp, cpu_signals.TEPU_BOOT_BITn_h.qp_new());
-  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(SYPU_BOOT_TO_CD0);
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(SYPU_BOOT_TO_CD0);
 
   /* p07.SATO*/ SATO_BOOT_BITn = or2(new_bus.BUS_CPU_D00p.qp_new(), cpu_signals.TEPU_BOOT_BITn_h.qp_new());
 }

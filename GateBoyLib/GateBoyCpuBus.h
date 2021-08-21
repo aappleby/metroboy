@@ -33,79 +33,96 @@ struct GateBoyCpuSignals {
 
 struct GateBoyCpuBus {
   void reset_to_cart_new() {
-    BUS_CPU_A00p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A01p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A02p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A03p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A04p.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_CPU_A05p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A06p.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_CPU_A07p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A08p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A09p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A10p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A11p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A12p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A13p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A14p.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_CPU_A15p.reset(BIT_OLD | BIT_DRIVEN | 0);
+    BUS_CPU_A00p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A01p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A02p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A03p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A04p.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_CPU_A05p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A06p.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_CPU_A07p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A08p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A09p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A10p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A11p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A12p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A13p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A14p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A15p.state = BIT_OLD | BIT_DRIVEN | 0;
 
-    BUS_CPU_D00p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D01p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D02p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D03p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D04p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D05p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D06p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D07p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
   }
 
   void reset_to_bootrom() {
-    BUS_CPU_A00p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A01p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A02p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A03p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A04p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A05p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A06p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A07p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A08p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A09p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A10p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A11p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A12p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A13p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A14p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_A15p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_A00p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A01p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A02p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A03p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A04p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A05p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A06p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A07p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A08p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A09p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A10p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A11p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A12p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A13p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A14p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A15p.state = BIT_OLD | BIT_PULLED | 1;
 
-    BUS_CPU_D00p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D01p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D02p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D03p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D04p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D05p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D06p.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_CPU_D07p.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
   }
 
   void set_addr(uint16_t bus_addr_new)
   {
-    /* BUS_CPU_A00p*/ BUS_CPU_A00p.set(bit(bus_addr_new, 0));
-    /* BUS_CPU_A01p*/ BUS_CPU_A01p.set(bit(bus_addr_new, 1));
-    /* BUS_CPU_A02p*/ BUS_CPU_A02p.set(bit(bus_addr_new, 2));
-    /* BUS_CPU_A03p*/ BUS_CPU_A03p.set(bit(bus_addr_new, 3));
-    /* BUS_CPU_A04p*/ BUS_CPU_A04p.set(bit(bus_addr_new, 4));
-    /* BUS_CPU_A05p*/ BUS_CPU_A05p.set(bit(bus_addr_new, 5));
-    /* BUS_CPU_A06p*/ BUS_CPU_A06p.set(bit(bus_addr_new, 6));
-    /* BUS_CPU_A07p*/ BUS_CPU_A07p.set(bit(bus_addr_new, 7));
-    /* BUS_CPU_A08p*/ BUS_CPU_A08p.set(bit(bus_addr_new, 8));
-    /* BUS_CPU_A09p*/ BUS_CPU_A09p.set(bit(bus_addr_new, 9));
-    /* BUS_CPU_A10p*/ BUS_CPU_A10p.set(bit(bus_addr_new, 10));
-    /* BUS_CPU_A11p*/ BUS_CPU_A11p.set(bit(bus_addr_new, 11));
-    /* BUS_CPU_A12p*/ BUS_CPU_A12p.set(bit(bus_addr_new, 12));
-    /* BUS_CPU_A13p*/ BUS_CPU_A13p.set(bit(bus_addr_new, 13));
-    /* BUS_CPU_A14p*/ BUS_CPU_A14p.set(bit(bus_addr_new, 14));
-    /* BUS_CPU_A15p*/ BUS_CPU_A15p.set(bit(bus_addr_new, 15));
+    wire EXT_bus_addr00 = bit(bus_addr_new, 0);
+    wire EXT_bus_addr01 = bit(bus_addr_new, 1);
+    wire EXT_bus_addr02 = bit(bus_addr_new, 2);
+    wire EXT_bus_addr03 = bit(bus_addr_new, 3);
+    wire EXT_bus_addr04 = bit(bus_addr_new, 4);
+    wire EXT_bus_addr05 = bit(bus_addr_new, 5);
+    wire EXT_bus_addr06 = bit(bus_addr_new, 6);
+    wire EXT_bus_addr07 = bit(bus_addr_new, 7);
+    wire EXT_bus_addr08 = bit(bus_addr_new, 8);
+    wire EXT_bus_addr09 = bit(bus_addr_new, 9);
+    wire EXT_bus_addr10 = bit(bus_addr_new, 10);
+    wire EXT_bus_addr11 = bit(bus_addr_new, 11);
+    wire EXT_bus_addr12 = bit(bus_addr_new, 12);
+    wire EXT_bus_addr13 = bit(bus_addr_new, 13);
+    wire EXT_bus_addr14 = bit(bus_addr_new, 14);
+    wire EXT_bus_addr15 = bit(bus_addr_new, 15);
+
+    /* BUS_CPU_A00p*/ BUS_CPU_A00p.set_bus(EXT_bus_addr00);
+    /* BUS_CPU_A01p*/ BUS_CPU_A01p.set_bus(EXT_bus_addr01);
+    /* BUS_CPU_A02p*/ BUS_CPU_A02p.set_bus(EXT_bus_addr02);
+    /* BUS_CPU_A03p*/ BUS_CPU_A03p.set_bus(EXT_bus_addr03);
+    /* BUS_CPU_A04p*/ BUS_CPU_A04p.set_bus(EXT_bus_addr04);
+    /* BUS_CPU_A05p*/ BUS_CPU_A05p.set_bus(EXT_bus_addr05);
+    /* BUS_CPU_A06p*/ BUS_CPU_A06p.set_bus(EXT_bus_addr06);
+    /* BUS_CPU_A07p*/ BUS_CPU_A07p.set_bus(EXT_bus_addr07);
+    /* BUS_CPU_A08p*/ BUS_CPU_A08p.set_bus(EXT_bus_addr08);
+    /* BUS_CPU_A09p*/ BUS_CPU_A09p.set_bus(EXT_bus_addr09);
+    /* BUS_CPU_A10p*/ BUS_CPU_A10p.set_bus(EXT_bus_addr10);
+    /* BUS_CPU_A11p*/ BUS_CPU_A11p.set_bus(EXT_bus_addr11);
+    /* BUS_CPU_A12p*/ BUS_CPU_A12p.set_bus(EXT_bus_addr12);
+    /* BUS_CPU_A13p*/ BUS_CPU_A13p.set_bus(EXT_bus_addr13);
+    /* BUS_CPU_A14p*/ BUS_CPU_A14p.set_bus(EXT_bus_addr14);
+    /* BUS_CPU_A15p*/ BUS_CPU_A15p.set_bus(EXT_bus_addr15);
   }
 
   //------------------------------------------------------------------------------------------------------------------------
@@ -123,14 +140,14 @@ struct GateBoyCpuBus {
     wire tri6 = tri_pp(OEp, bit(data, 6));
     wire tri7 = tri_pp(OEp, bit(data, 7));
 
-    BUS_CPU_D00p.tri(tri0);
-    BUS_CPU_D01p.tri(tri1);
-    BUS_CPU_D02p.tri(tri2);
-    BUS_CPU_D03p.tri(tri3);
-    BUS_CPU_D04p.tri(tri4);
-    BUS_CPU_D05p.tri(tri5);
-    BUS_CPU_D06p.tri(tri6);
-    BUS_CPU_D07p.tri(tri7);
+    BUS_CPU_D00p.tri_bus(tri0);
+    BUS_CPU_D01p.tri_bus(tri1);
+    BUS_CPU_D02p.tri_bus(tri2);
+    BUS_CPU_D03p.tri_bus(tri3);
+    BUS_CPU_D04p.tri_bus(tri4);
+    BUS_CPU_D05p.tri_bus(tri5);
+    BUS_CPU_D06p.tri_bus(tri6);
+    BUS_CPU_D07p.tri_bus(tri7);
   }
 
 

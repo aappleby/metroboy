@@ -1,9 +1,15 @@
 #include "GateBoyLib/GateBoy.h"
 
+char cp_int(uint8_t state) {
+  if (state & BIT_DRIVEN) return bit(state) ? '1' : '0';
+  if (state & BIT_PULLED) return bit(state) ? '^' : 'v';
+  return 'X';
+}
+
 void dump_slice_int(Dumper& d, const char* tag, const BitBase* bits, int bit_count) {
   d(tag);
   for (int i = bit_count - 1; i >= 0; i--) {
-    d.add_char(bits[i].cp_int());
+    d.add_char(cp_int(bits[i].state));
   }
   d.add_char('\n');
 }
@@ -37,7 +43,7 @@ void GateBoy::dump_sys(Dumper& d) const {
   d             ("sys_t2       : %d\n", sys_t2);
   d             ("sys_clken    : %d\n", sys_clken);
   d             ("sys_clkgood  : %d\n", sys_clkgood);
-  d             ("sys_cpuready : %d\n", sys_clkreq);
+  d             ("sys_cpuready : %d\n", EXT_sys_clkreq);
   d             ("sys_cpu_en   : %d\n", sys_cpu_en);
   d             ("sys_fastboot : %d\n", sys_fastboot);
   d             ("sys_buttons  : %d\n", sys_buttons);
@@ -95,14 +101,14 @@ void GateBoy::dump_interrupts(Dumper& d) {
 
 void GateBoy::dump_joypad(Dumper& d) {
   d.dump_bitp("AWOB_WAKE_CPU   : ", joy.AWOB_WAKE_CPU.state);
-  d.dump_bitp("SIG_CPU_WAKE    : ", joy.SIG_CPU_WAKE.get_state());
+  d.dump_bitp("SIG_CPU_WAKE    : ", joy.SIG_CPU_WAKE.state);
   d("\n");
-  d.dump_bitp("PIN_67_JOY_P10   : ", joy.PIN_67_JOY_P10.qp_ext_old());
-  d.dump_bitp("PIN_66_JOY_P11   : ", joy.PIN_66_JOY_P11.qp_ext_old());
-  d.dump_bitp("PIN_65_JOY_P12   : ", joy.PIN_65_JOY_P12.qp_ext_old());
-  d.dump_bitp("PIN_64_JOY_P13   : ", joy.PIN_64_JOY_P13.qp_ext_old());
-  d.dump_bitp("PIN_63_JOY_P14   : ", joy.PIN_63_JOY_P14.qp_ext_old());
-  d.dump_bitp("PIN_62_JOY_P15   : ", joy.PIN_62_JOY_P15.qp_ext_old());
+  d.dump_bitp("PIN_67_JOY_P10   : ", joy.PIN_67_JOY_P10.state);
+  d.dump_bitp("PIN_66_JOY_P11   : ", joy.PIN_66_JOY_P11.state);
+  d.dump_bitp("PIN_65_JOY_P12   : ", joy.PIN_65_JOY_P12.state);
+  d.dump_bitp("PIN_64_JOY_P13   : ", joy.PIN_64_JOY_P13.state);
+  d.dump_bitp("PIN_63_JOY_P14   : ", joy.PIN_63_JOY_P14.state);
+  d.dump_bitp("PIN_62_JOY_P15   : ", joy.PIN_62_JOY_P15.state);
   d("\n");
   d.dump_bitp("KEVU_JOYP_L0n   : ", joy.KEVU_JOYP_L0n.state);
   d.dump_bitp("KAPA_JOYP_L1n   : ", joy.KAPA_JOYP_L1n.state);
@@ -136,20 +142,20 @@ void GateBoy::dump_lcd(Dumper& d) {
   d.dump_bitn   ("MEDA_VSYNC_OUTn     : ", lcd.MEDA_VSYNC_OUTn.state);
   d.dump_bitp   ("LUCA_LINE_EVENp     : ", lcd.LUCA_LINE_EVENp.state);
   d.dump_bitp   ("NAPO_FRAME_EVENp    : ", lcd.NAPO_FRAME_EVENp.state);
-  d.dump_bitp   ("RUJU                : ", lcd.RUJU.get_state());
-  d.dump_bitp   ("POFY                : ", lcd.POFY.get_state());
-  d.dump_bitp   ("POME                : ", lcd.POME.get_state());
+  d.dump_bitp   ("RUJU                : ", lcd.RUJU.state);
+  d.dump_bitp   ("POFY                : ", lcd.POFY.state);
+  d.dump_bitp   ("POME                : ", lcd.POME.state);
   d.dump_bitp   ("PAHO_X_8_SYNC       : ", lcd.PAHO_X_8_SYNC.state);
   d.dump_bitp   ("WUSA_LCD_CLOCK_GATE : ", lcd.WUSA_LCD_CLOCK_GATE.state);
   d("\n");
-  d.dump_bitp   ("PIN_50_LCD_DATA1 : ", lcd.PIN_50_LCD_DATA1.qp_ext_old());
-  d.dump_bitp   ("PIN_51_LCD_DATA0 : ", lcd.PIN_51_LCD_DATA0.qp_ext_old());
-  d.dump_bitp   ("PIN_54_LCD_HSYNC : ", lcd.PIN_54_LCD_HSYNC.qp_ext_old());
-  d.dump_bitp   ("PIN_56_LCD_FLIPS : ", lcd.PIN_56_LCD_FLIPS.qp_ext_old());
-  d.dump_bitp   ("PIN_52_LCD_CNTRL : ", lcd.PIN_52_LCD_CNTRL.qp_ext_old());
-  d.dump_bitp   ("PIN_55_LCD_LATCH : ", lcd.PIN_55_LCD_LATCH.qp_ext_old());
-  d.dump_bitp   ("PIN_53_LCD_CLOCK : ", lcd.PIN_53_LCD_CLOCK.qp_ext_old());
-  d.dump_bitp   ("PIN_57_LCD_VSYNC : ", lcd.PIN_57_LCD_VSYNC.qp_ext_old());
+  d.dump_bitp   ("PIN_50_LCD_DATA1 : ", lcd.PIN_50_LCD_DATA1.state);
+  d.dump_bitp   ("PIN_51_LCD_DATA0 : ", lcd.PIN_51_LCD_DATA0.state);
+  d.dump_bitp   ("PIN_54_LCD_HSYNC : ", lcd.PIN_54_LCD_HSYNC.state);
+  d.dump_bitp   ("PIN_56_LCD_FLIPS : ", lcd.PIN_56_LCD_FLIPS.state);
+  d.dump_bitp   ("PIN_52_LCD_CNTRL : ", lcd.PIN_52_LCD_CNTRL.state);
+  d.dump_bitp   ("PIN_55_LCD_LATCH : ", lcd.PIN_55_LCD_LATCH.state);
+  d.dump_bitp   ("PIN_53_LCD_CLOCK : ", lcd.PIN_53_LCD_CLOCK.state);
+  d.dump_bitp   ("PIN_57_LCD_VSYNC : ", lcd.PIN_57_LCD_VSYNC.state);
   d("\n");
   d.dump_slice2p("LX              : ", &reg_lx.SAXO_LX0p.state,  7);
   d.dump_slice2p("FF44 LY         : ", &reg_ly.MUWY_LY0p.state,  8);
@@ -161,10 +167,10 @@ void GateBoy::dump_lcd(Dumper& d) {
 void GateBoy::dump_oam_bus(Dumper& d) {
   d.dump_bitp   ("MAKA_LATCH_EXTp  : ", oam.MAKA_LATCH_EXTp.state);
   d.dump_bitp   ("WUJE_CPU_OAM_WRn : ", oam.WUJE_CPU_OAM_WRn.state);
-  d.dump_bitp   ("SIG_OAM_CLKn     : ", oam.SIG_OAM_CLKn.get_state());
-  d.dump_bitp   ("SIG_OAM_WRn_A    : ", oam.SIG_OAM_WRn_A.get_state());
-  d.dump_bitp   ("SIG_OAM_WRn_B    : ", oam.SIG_OAM_WRn_B.get_state());
-  d.dump_bitp   ("SIG_OAM_OEn      : ", oam.SIG_OAM_OEn.get_state());
+  d.dump_bitp   ("SIG_OAM_CLKn     : ", oam.SIG_OAM_CLKn.state);
+  d.dump_bitp   ("SIG_OAM_WRn_A    : ", oam.SIG_OAM_WRn_A.state);
+  d.dump_bitp   ("SIG_OAM_WRn_B    : ", oam.SIG_OAM_WRn_B.state);
+  d.dump_bitp   ("SIG_OAM_OEn      : ", oam.SIG_OAM_OEn.state);
 
   //dump_slicen(d, "BUS_OAM_An  : ", &oam_bus.BUS_OAM_A00n, 8);
   //dump_slicen(d, "BUS_OAM_DAn : ", &oam_bus.BUS_OAM_DA00n, 8);
@@ -183,16 +189,16 @@ void GateBoy::dump_sprite_store(Dumper& d) {
   d.dump_slice2p("SPRITE COUNT   : ", &sprite_counter.BESE_SPRITE_COUNT0, 4);
   d.dump_bitp   ("DEZY_STORE_ENn : ", sprite_counter.DEZY_COUNT_CLKp.state);
   d("\n");
-  d("STORE0 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EBOJ_STORE0_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.YGUS_STORE0_I0n_odd), BitBase::pack_oldn(4, &ss.GYHO_STORE0_L0n_odd), BitBase::pack_oldn(8, &ss.XEPE_STORE0_X0p_odd));
-  d("STORE1 R%d I%02d L%02d X%03d\n", sprite_reset_flags.CEDY_STORE1_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.CADU_STORE1_I0n_odd), BitBase::pack_oldn(4, &ss.AMES_STORE1_L0n_odd), BitBase::pack_oldn(8, &ss.DANY_STORE1_X0p_odd));
-  d("STORE2 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EGAV_STORE2_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.BUHE_STORE2_I0n_odd), BitBase::pack_oldn(4, &ss.YLOV_STORE2_L0n_odd), BitBase::pack_oldn(8, &ss.FOKA_STORE2_X0p_odd));
-  d("STORE3 R%d I%02d L%02d X%03d\n", sprite_reset_flags.GOTA_STORE3_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.DEVY_STORE3_I0n_odd), BitBase::pack_oldn(4, &ss.ZURO_STORE3_L0n_odd), BitBase::pack_oldn(8, &ss.XOLY_STORE3_X0p_odd));
-  d("STORE4 R%d I%02d L%02d X%03d\n", sprite_reset_flags.XUDY_STORE4_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.XAVE_STORE4_I0n_odd), BitBase::pack_oldn(4, &ss.CAPO_STORE4_L0n_odd), BitBase::pack_oldn(8, &ss.WEDU_STORE4_X0p_odd));
-  d("STORE5 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WAFY_STORE5_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.EKOP_STORE5_I0n_odd), BitBase::pack_oldn(4, &ss.ACEP_STORE5_L0n_odd), BitBase::pack_oldn(8, &ss.FUSA_STORE5_X0p_odd));
-  d("STORE6 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WOMY_STORE6_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.GABO_STORE6_I0n_odd), BitBase::pack_oldn(4, &ss.ZUMY_STORE6_L0n_odd), BitBase::pack_oldn(8, &ss.YCOL_STORE6_X0p_odd));
-  d("STORE7 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WAPO_STORE7_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.GULE_STORE7_I0n_odd), BitBase::pack_oldn(4, &ss.XYNA_STORE7_L0n_odd), BitBase::pack_oldn(8, &ss.ERAZ_STORE7_X0p_odd));
-  d("STORE8 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EXUQ_STORE8_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.AXUV_STORE8_I0n_odd), BitBase::pack_oldn(4, &ss.AZAP_STORE8_L0n_odd), BitBase::pack_oldn(8, &ss.EZUF_STORE8_X0p_odd));
-  d("STORE9 R%d I%02d L%02d X%03d\n", sprite_reset_flags.FONO_STORE9_RSTp_evn.qp_old(), BitBase::pack_oldn(6, &ss.YBER_STORE9_I0n_odd), BitBase::pack_oldn(4, &ss.CANA_STORE9_L0n_odd), BitBase::pack_oldn(8, &ss.XUVY_STORE9_X0p_odd));
+  d("STORE0 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EBOJ_STORE0_RSTp_evn.state, BitBase::pack_oldn(6, &ss.YGUS_STORE0_I0n_odd), BitBase::pack_oldn(4, &ss.GYHO_STORE0_L0n_odd), BitBase::pack_oldn(8, &ss.XEPE_STORE0_X0p_odd));
+  d("STORE1 R%d I%02d L%02d X%03d\n", sprite_reset_flags.CEDY_STORE1_RSTp_evn.state, BitBase::pack_oldn(6, &ss.CADU_STORE1_I0n_odd), BitBase::pack_oldn(4, &ss.AMES_STORE1_L0n_odd), BitBase::pack_oldn(8, &ss.DANY_STORE1_X0p_odd));
+  d("STORE2 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EGAV_STORE2_RSTp_evn.state, BitBase::pack_oldn(6, &ss.BUHE_STORE2_I0n_odd), BitBase::pack_oldn(4, &ss.YLOV_STORE2_L0n_odd), BitBase::pack_oldn(8, &ss.FOKA_STORE2_X0p_odd));
+  d("STORE3 R%d I%02d L%02d X%03d\n", sprite_reset_flags.GOTA_STORE3_RSTp_evn.state, BitBase::pack_oldn(6, &ss.DEVY_STORE3_I0n_odd), BitBase::pack_oldn(4, &ss.ZURO_STORE3_L0n_odd), BitBase::pack_oldn(8, &ss.XOLY_STORE3_X0p_odd));
+  d("STORE4 R%d I%02d L%02d X%03d\n", sprite_reset_flags.XUDY_STORE4_RSTp_evn.state, BitBase::pack_oldn(6, &ss.XAVE_STORE4_I0n_odd), BitBase::pack_oldn(4, &ss.CAPO_STORE4_L0n_odd), BitBase::pack_oldn(8, &ss.WEDU_STORE4_X0p_odd));
+  d("STORE5 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WAFY_STORE5_RSTp_evn.state, BitBase::pack_oldn(6, &ss.EKOP_STORE5_I0n_odd), BitBase::pack_oldn(4, &ss.ACEP_STORE5_L0n_odd), BitBase::pack_oldn(8, &ss.FUSA_STORE5_X0p_odd));
+  d("STORE6 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WOMY_STORE6_RSTp_evn.state, BitBase::pack_oldn(6, &ss.GABO_STORE6_I0n_odd), BitBase::pack_oldn(4, &ss.ZUMY_STORE6_L0n_odd), BitBase::pack_oldn(8, &ss.YCOL_STORE6_X0p_odd));
+  d("STORE7 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WAPO_STORE7_RSTp_evn.state, BitBase::pack_oldn(6, &ss.GULE_STORE7_I0n_odd), BitBase::pack_oldn(4, &ss.XYNA_STORE7_L0n_odd), BitBase::pack_oldn(8, &ss.ERAZ_STORE7_X0p_odd));
+  d("STORE8 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EXUQ_STORE8_RSTp_evn.state, BitBase::pack_oldn(6, &ss.AXUV_STORE8_I0n_odd), BitBase::pack_oldn(4, &ss.AZAP_STORE8_L0n_odd), BitBase::pack_oldn(8, &ss.EZUF_STORE8_X0p_odd));
+  d("STORE9 R%d I%02d L%02d X%03d\n", sprite_reset_flags.FONO_STORE9_RSTp_evn.state, BitBase::pack_oldn(6, &ss.YBER_STORE9_I0n_odd), BitBase::pack_oldn(4, &ss.CANA_STORE9_L0n_odd), BitBase::pack_oldn(8, &ss.XUVY_STORE9_X0p_odd));
 }
 
 void GateBoy::dump_mbc1(Dumper& d) {
@@ -204,19 +210,19 @@ void GateBoy::dump_mbc1(Dumper& d) {
 }
 
 void GateBoy::dump_cpu_bus(Dumper& d) {
-  d.dump_bitp   ("SIG_CPU_RDp       : ", cpu_signals.SIG_IN_CPU_RDp.get_state());
-  d.dump_bitp   ("SIG_CPU_WRp       : ", cpu_signals.SIG_IN_CPU_WRp.get_state());
-  d.dump_bitp   ("SIG_CPU_UNOR_DBG  : ", cpu_signals.SIG_CPU_UNOR_DBG.get_state());
-  d.dump_bitp   ("SIG_CPU_ADDR_HIp  : ", cpu_signals.SIG_CPU_ADDR_HIp.get_state());
-  d.dump_bitp   ("SIG_CPU_UMUT_DBG  : ", cpu_signals.SIG_CPU_UMUT_DBG.get_state());
-  d.dump_bitp   ("SIG_CPU_EXT_BUSp  : ", cpu_signals.SIG_IN_CPU_EXT_BUSp.get_state());
+  d.dump_bitp   ("SIG_CPU_RDp       : ", cpu_signals.SIG_IN_CPU_RDp.state);
+  d.dump_bitp   ("SIG_CPU_WRp       : ", cpu_signals.SIG_IN_CPU_WRp.state);
+  d.dump_bitp   ("SIG_CPU_UNOR_DBG  : ", cpu_signals.SIG_CPU_UNOR_DBG.state);
+  d.dump_bitp   ("SIG_CPU_ADDR_HIp  : ", cpu_signals.SIG_CPU_ADDR_HIp.state);
+  d.dump_bitp   ("SIG_CPU_UMUT_DBG  : ", cpu_signals.SIG_CPU_UMUT_DBG.state);
+  d.dump_bitp   ("SIG_CPU_EXT_BUSp  : ", cpu_signals.SIG_IN_CPU_EXT_BUSp.state);
   //d.dump_bitp   ("SIG_CPU_6         : ", SIG_CPU_6.state);
-  d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", cpu_signals.SIG_IN_CPU_LATCH_EXT.get_state());
+  d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", cpu_signals.SIG_IN_CPU_LATCH_EXT.state);
   d.dump_bitp   ("BOOT_BITn         : ", cpu_signals.TEPU_BOOT_BITn_h.state);
-  d.dump_bitp   ("SIG_CPU_BOOTp     : ", cpu_signals.SIG_CPU_BOOTp.get_state());
-  d.dump_bitp   ("TEDO_CPU_RDp      : ", cpu_signals.TEDO_CPU_RDp.get_state());
-  d.dump_bitp   ("APOV_CPU_WRp      : ", cpu_signals.APOV_CPU_WRp.get_state());
-  d.dump_bitp   ("TAPU_CPU_WRp      : ", cpu_signals.TAPU_CPU_WRp.get_state());
+  d.dump_bitp   ("SIG_CPU_BOOTp     : ", cpu_signals.SIG_CPU_BOOTp.state);
+  d.dump_bitp   ("TEDO_CPU_RDp      : ", cpu_signals.TEDO_CPU_RDp.state);
+  d.dump_bitp   ("APOV_CPU_WRp      : ", cpu_signals.APOV_CPU_WRp.state);
+  d.dump_bitp   ("TAPU_CPU_WRp      : ", cpu_signals.TAPU_CPU_WRp.state);
   d.dump_slice2p("BUS_CPU_A : ",     (BitBase*)&new_bus.BUS_CPU_A00p, 16);
   dump_slice_int(d,  "BUS_CPU_D : ", (BitBase*)&new_bus.BUS_CPU_D00p, 8);
 }
@@ -230,7 +236,7 @@ void GateBoy::dump_dma(Dumper& d) {
   d.dump_bitp   ("MYTE_DMA_DONE     : ", dma.MYTE_DMA_DONE    .state);
   d.dump_bitp   ("LUVY_DMA_TRIG_d0  : ", dma.LUVY_DMA_TRIG_d0 .state);
   d.dump_bitp   ("LENE_DMA_TRIG_d4  : ", dma.LENE_DMA_TRIG_d4 .state);
-  d.dump_bitp   ("LOKY_DMA_LATCHp   : ", dma.LOKY_DMA_LATCHp  .get_state());
+  d.dump_bitp   ("LOKY_DMA_LATCHp   : ", dma.LOKY_DMA_LATCHp  .state);
 }
 
 
@@ -240,17 +246,17 @@ void GateBoy::dump_ext_bus(Dumper& d) {
   //d.dump_slice2n(   "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
   //dump_slice2b  (d, "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
 
-  d.dump_bitn   ("PIN_80_CSn  : ", ext_pins.PIN_80_CSn.qp_ext_old());
-  d.dump_bitn   ("PIN_79_RDn  : ", ext_pins.PIN_79_RDn.qp_ext_old());
-  d.dump_bitn   ("PIN_78_WRn  : ", ext_pins.PIN_78_WRn.qp_ext_old());
+  d.dump_bitn   ("PIN_80_CSn  : ", ext_pins.PIN_80_CSn.state);
+  d.dump_bitn   ("PIN_79_RDn  : ", ext_pins.PIN_79_RDn.state);
+  d.dump_bitn   ("PIN_78_WRn  : ", ext_pins.PIN_78_WRn.state);
   d.dump_slice2p("ADDR LATCH  : ", &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
   d.dump_slice2n("DATA LATCH  : ", &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
 }
 
 void GateBoy::dump_vram_bus(Dumper& d) {
-  d.dump_bitp   ("PIN_43_VRAM_CSn  : ", vram_pins.PIN_43_VRAM_CSn.qp_ext_old());
-  d.dump_bitp   ("PIN_45_VRAM_OEn  : ", vram_pins.PIN_45_VRAM_OEn.qp_ext_old());
-  d.dump_bitp   ("PIN_49_VRAM_WRn  : ", vram_pins.PIN_49_VRAM_WRn.qp_ext_old());
+  d.dump_bitp   ("PIN_43_VRAM_CSn  : ", vram_pins.PIN_43_VRAM_CSn.state);
+  d.dump_bitp   ("PIN_45_VRAM_OEn  : ", vram_pins.PIN_45_VRAM_OEn.state);
+  d.dump_bitp   ("PIN_49_VRAM_WRn  : ", vram_pins.PIN_49_VRAM_WRn.state);
   d.dump_slice2p("PIN_34_VRAM_ADDR : ", &vram_pins.PIN_34_VRAM_A00, 13);
   d.dump_slice2p("PIN_25_VRAM_DATA : ", &vram_pins.PIN_33_VRAM_D00, 8);
   d.dump_slice2n("BUS_VRAM_An      : ", &vram_bus.BUS_VRAM_A00n, 13);
@@ -283,9 +289,9 @@ void GateBoy::dump_timer(Dumper& d) {
 }
 
 void GateBoy::dump_resets(Dumper& d) {
-  d.dump_bitp("PIN_71_RST     : ", rst.PIN_71_RST.qp_ext_old());
-  d.dump_bitp("PIN_77_T1      : ", rst.PIN_77_T1.qp_ext_old());
-  d.dump_bitp("PIN_76_T2      : ", rst.PIN_76_T2.qp_ext_old());
+  d.dump_bitp("PIN_71_RST     : ", rst.PIN_71_RST.state);
+  d.dump_bitp("PIN_77_T1      : ", rst.PIN_77_T1.state);
+  d.dump_bitp("PIN_76_T2      : ", rst.PIN_76_T2.state);
 
   d.dump_bitp("TUBO_WAITINGp  : ", rst.TUBO_WAITINGp.state);
   d.dump_bitn("ASOL_POR_DONEn : ", rst.ASOL_POR_DONEn.state);
@@ -336,13 +342,13 @@ void GateBoy::dump_ppu(Dumper& d) {
   d.dump_slice2p("SPR PIPE B : ", &pix_pipes.NYLU_SPR_PIPE_B0, 8);
   d.dump_slice2p("PAL PIPE   : ", &pix_pipes.RUGO_PAL_PIPE_D0, 8);
   d.dump_slice2p("MASK PIPE  : ", &pix_pipes.VEZO_MASK_PIPE_0, 8);
-  d.dump_bitn   ("REMY_LD0n  : ", pix_pipes.REMY_LD0n.get_state());
-  d.dump_bitn   ("RAVO_LD1n  : ", pix_pipes.RAVO_LD1n.get_state());
+  d.dump_bitn   ("REMY_LD0n  : ", pix_pipes.REMY_LD0n.state);
+  d.dump_bitn   ("RAVO_LD1n  : ", pix_pipes.RAVO_LD1n.state);
   d("\n");
   d.dump_bitp("XYMU_RENDERINGn        : ", XYMU_RENDERINGn.state);
   d.dump_bitp("PYNU_WIN_MODE_Ap       : ", win_reg.PYNU_WIN_MODE_Ap.state);
-  d.dump_bitp("PUKU_WIN_HITn          : ", win_reg.PUKU_WIN_HITn.get_state());
-  d.dump_bitp("RYDY_WIN_HITp          : ", win_reg.RYDY_WIN_HITp.get_state());
+  d.dump_bitp("PUKU_WIN_HITn          : ", win_reg.PUKU_WIN_HITn.state);
+  d.dump_bitp("RYDY_WIN_HITp          : ", win_reg.RYDY_WIN_HITp.state);
   d.dump_bitp("SOVY_WIN_FIRST_TILE_B  : ", win_reg.SOVY_WIN_HITp.state);
   d.dump_bitp("NOPA_WIN_MODE_B        : ", win_reg.NOPA_WIN_MODE_Bp.state);
   d.dump_bitp("PYCO_WX_MATCH_A        : ", win_reg.PYCO_WIN_MATCHp.state);

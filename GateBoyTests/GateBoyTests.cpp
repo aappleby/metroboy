@@ -1028,6 +1028,12 @@ int GateBoyTests::test_clk() {
 
 #pragma warning(disable : 4189) // unref var
 
+char cp_ext(uint8_t state) {
+  if (state & BIT_DRIVEN) return bit(state) ? '0' : '1';
+  if (state & BIT_PULLED) return bit(state) ? 'v' : '^';
+  return 'X';
+}
+
 int GateBoyTests::test_ext_bus() {
   TEST_START();
 
@@ -1087,36 +1093,36 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.clk.PIN_75_CLK_OUT .cp_ext();
-      char WRn = gb.ext_pins.PIN_78_WRn.cp_ext();
-      char RDn = gb.ext_pins.PIN_79_RDn.cp_ext();
-      char CSn = gb.ext_pins.PIN_80_CSn.cp_ext();
+      char CLK = cp_ext(gb.clk.PIN_75_CLK_OUT .state);
+      char WRn = cp_ext(gb.ext_pins.PIN_78_WRn.state);
+      char RDn = cp_ext(gb.ext_pins.PIN_79_RDn.state);
+      char CSn = cp_ext(gb.ext_pins.PIN_80_CSn.state);
 
-      char A00 = gb.ext_pins.PIN_01_A00.cp_ext();
-      char A01 = gb.ext_pins.PIN_02_A01.cp_ext();
-      char A02 = gb.ext_pins.PIN_03_A02.cp_ext();
-      char A03 = gb.ext_pins.PIN_04_A03.cp_ext();
-      char A04 = gb.ext_pins.PIN_05_A04.cp_ext();
-      char A05 = gb.ext_pins.PIN_06_A05.cp_ext();
-      char A06 = gb.ext_pins.PIN_07_A06.cp_ext();
-      char A07 = gb.ext_pins.PIN_08_A07.cp_ext();
-      char A08 = gb.ext_pins.PIN_09_A08.cp_ext();
-      char A09 = gb.ext_pins.PIN_10_A09.cp_ext();
-      char A10 = gb.ext_pins.PIN_11_A10.cp_ext();
-      char A11 = gb.ext_pins.PIN_12_A11.cp_ext();
-      char A12 = gb.ext_pins.PIN_13_A12.cp_ext();
-      char A13 = gb.ext_pins.PIN_14_A13.cp_ext();
-      char A14 = gb.ext_pins.PIN_15_A14.cp_ext();
-      char A15 = gb.ext_pins.PIN_16_A15.cp_ext();
+      char A00 = cp_ext(gb.ext_pins.PIN_01_A00.state);
+      char A01 = cp_ext(gb.ext_pins.PIN_02_A01.state);
+      char A02 = cp_ext(gb.ext_pins.PIN_03_A02.state);
+      char A03 = cp_ext(gb.ext_pins.PIN_04_A03.state);
+      char A04 = cp_ext(gb.ext_pins.PIN_05_A04.state);
+      char A05 = cp_ext(gb.ext_pins.PIN_06_A05.state);
+      char A06 = cp_ext(gb.ext_pins.PIN_07_A06.state);
+      char A07 = cp_ext(gb.ext_pins.PIN_08_A07.state);
+      char A08 = cp_ext(gb.ext_pins.PIN_09_A08.state);
+      char A09 = cp_ext(gb.ext_pins.PIN_10_A09.state);
+      char A10 = cp_ext(gb.ext_pins.PIN_11_A10.state);
+      char A11 = cp_ext(gb.ext_pins.PIN_12_A11.state);
+      char A12 = cp_ext(gb.ext_pins.PIN_13_A12.state);
+      char A13 = cp_ext(gb.ext_pins.PIN_14_A13.state);
+      char A14 = cp_ext(gb.ext_pins.PIN_15_A14.state);
+      char A15 = cp_ext(gb.ext_pins.PIN_16_A15.state);
 
-      char D00 = gb.ext_pins.PIN_17_D00.cp_ext();
-      char D01 = gb.ext_pins.PIN_18_D01.cp_ext();
-      char D02 = gb.ext_pins.PIN_19_D02.cp_ext();
-      char D03 = gb.ext_pins.PIN_20_D03.cp_ext();
-      char D04 = gb.ext_pins.PIN_21_D04.cp_ext();
-      char D05 = gb.ext_pins.PIN_22_D05.cp_ext();
-      char D06 = gb.ext_pins.PIN_23_D06.cp_ext();
-      char D07 = gb.ext_pins.PIN_24_D07.cp_ext();
+      char D00 = cp_ext(gb.ext_pins.PIN_17_D00.state);
+      char D01 = cp_ext(gb.ext_pins.PIN_18_D01.state);
+      char D02 = cp_ext(gb.ext_pins.PIN_19_D02.state);
+      char D03 = cp_ext(gb.ext_pins.PIN_20_D03.state);
+      char D04 = cp_ext(gb.ext_pins.PIN_21_D04.state);
+      char D05 = cp_ext(gb.ext_pins.PIN_22_D05.state);
+      char D06 = cp_ext(gb.ext_pins.PIN_23_D06.state);
+      char D07 = cp_ext(gb.ext_pins.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1212,36 +1218,36 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.clk.PIN_75_CLK_OUT. cp_ext();
-      char WRn = gb.ext_pins.PIN_78_WRn.cp_ext();
-      char RDn = gb.ext_pins.PIN_79_RDn.cp_ext();
-      char CSn = gb.ext_pins.PIN_80_CSn.cp_ext();
+      char CLK = cp_ext(gb.clk.PIN_75_CLK_OUT. state);
+      char WRn = cp_ext(gb.ext_pins.PIN_78_WRn.state);
+      char RDn = cp_ext(gb.ext_pins.PIN_79_RDn.state);
+      char CSn = cp_ext(gb.ext_pins.PIN_80_CSn.state);
 
-      char A00 = gb.ext_pins.PIN_01_A00.cp_ext();
-      char A01 = gb.ext_pins.PIN_02_A01.cp_ext();
-      char A02 = gb.ext_pins.PIN_03_A02.cp_ext();
-      char A03 = gb.ext_pins.PIN_04_A03.cp_ext();
-      char A04 = gb.ext_pins.PIN_05_A04.cp_ext();
-      char A05 = gb.ext_pins.PIN_06_A05.cp_ext();
-      char A06 = gb.ext_pins.PIN_07_A06.cp_ext();
-      char A07 = gb.ext_pins.PIN_08_A07.cp_ext();
-      char A08 = gb.ext_pins.PIN_09_A08.cp_ext();
-      char A09 = gb.ext_pins.PIN_10_A09.cp_ext();
-      char A10 = gb.ext_pins.PIN_11_A10.cp_ext();
-      char A11 = gb.ext_pins.PIN_12_A11.cp_ext();
-      char A12 = gb.ext_pins.PIN_13_A12.cp_ext();
-      char A13 = gb.ext_pins.PIN_14_A13.cp_ext();
-      char A14 = gb.ext_pins.PIN_15_A14.cp_ext();
-      char A15 = gb.ext_pins.PIN_16_A15.cp_ext();
+      char A00 = cp_ext(gb.ext_pins.PIN_01_A00.state);
+      char A01 = cp_ext(gb.ext_pins.PIN_02_A01.state);
+      char A02 = cp_ext(gb.ext_pins.PIN_03_A02.state);
+      char A03 = cp_ext(gb.ext_pins.PIN_04_A03.state);
+      char A04 = cp_ext(gb.ext_pins.PIN_05_A04.state);
+      char A05 = cp_ext(gb.ext_pins.PIN_06_A05.state);
+      char A06 = cp_ext(gb.ext_pins.PIN_07_A06.state);
+      char A07 = cp_ext(gb.ext_pins.PIN_08_A07.state);
+      char A08 = cp_ext(gb.ext_pins.PIN_09_A08.state);
+      char A09 = cp_ext(gb.ext_pins.PIN_10_A09.state);
+      char A10 = cp_ext(gb.ext_pins.PIN_11_A10.state);
+      char A11 = cp_ext(gb.ext_pins.PIN_12_A11.state);
+      char A12 = cp_ext(gb.ext_pins.PIN_13_A12.state);
+      char A13 = cp_ext(gb.ext_pins.PIN_14_A13.state);
+      char A14 = cp_ext(gb.ext_pins.PIN_15_A14.state);
+      char A15 = cp_ext(gb.ext_pins.PIN_16_A15.state);
 
-      char D00 = gb.ext_pins.PIN_17_D00.cp_ext();
-      char D01 = gb.ext_pins.PIN_18_D01.cp_ext();
-      char D02 = gb.ext_pins.PIN_19_D02.cp_ext();
-      char D03 = gb.ext_pins.PIN_20_D03.cp_ext();
-      char D04 = gb.ext_pins.PIN_21_D04.cp_ext();
-      char D05 = gb.ext_pins.PIN_22_D05.cp_ext();
-      char D06 = gb.ext_pins.PIN_23_D06.cp_ext();
-      char D07 = gb.ext_pins.PIN_24_D07.cp_ext();
+      char D00 = cp_ext(gb.ext_pins.PIN_17_D00.state);
+      char D01 = cp_ext(gb.ext_pins.PIN_18_D01.state);
+      char D02 = cp_ext(gb.ext_pins.PIN_19_D02.state);
+      char D03 = cp_ext(gb.ext_pins.PIN_20_D03.state);
+      char D04 = cp_ext(gb.ext_pins.PIN_21_D04.state);
+      char D05 = cp_ext(gb.ext_pins.PIN_22_D05.state);
+      char D06 = cp_ext(gb.ext_pins.PIN_23_D06.state);
+      char D07 = cp_ext(gb.ext_pins.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1383,36 +1389,36 @@ int GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = gb.clk.PIN_75_CLK_OUT.cp_ext();
-      char WRn = gb.ext_pins.PIN_78_WRn.cp_ext();
-      char RDn = gb.ext_pins.PIN_79_RDn.cp_ext();
-      char CSn = gb.ext_pins.PIN_80_CSn.cp_ext();
+      char CLK = cp_ext(gb.clk.PIN_75_CLK_OUT .state);
+      char WRn = cp_ext(gb.ext_pins.PIN_78_WRn.state);
+      char RDn = cp_ext(gb.ext_pins.PIN_79_RDn.state);
+      char CSn = cp_ext(gb.ext_pins.PIN_80_CSn.state);
 
-      char A00 = gb.ext_pins.PIN_01_A00.cp_ext();
-      char A01 = gb.ext_pins.PIN_02_A01.cp_ext();
-      char A02 = gb.ext_pins.PIN_03_A02.cp_ext();
-      char A03 = gb.ext_pins.PIN_04_A03.cp_ext();
-      char A04 = gb.ext_pins.PIN_05_A04.cp_ext();
-      char A05 = gb.ext_pins.PIN_06_A05.cp_ext();
-      char A06 = gb.ext_pins.PIN_07_A06.cp_ext();
-      char A07 = gb.ext_pins.PIN_08_A07.cp_ext();
-      char A08 = gb.ext_pins.PIN_09_A08.cp_ext();
-      char A09 = gb.ext_pins.PIN_10_A09.cp_ext();
-      char A10 = gb.ext_pins.PIN_11_A10.cp_ext();
-      char A11 = gb.ext_pins.PIN_12_A11.cp_ext();
-      char A12 = gb.ext_pins.PIN_13_A12.cp_ext();
-      char A13 = gb.ext_pins.PIN_14_A13.cp_ext();
-      char A14 = gb.ext_pins.PIN_15_A14.cp_ext();
-      char A15 = gb.ext_pins.PIN_16_A15.cp_ext();
+      char A00 = cp_ext(gb.ext_pins.PIN_01_A00.state);
+      char A01 = cp_ext(gb.ext_pins.PIN_02_A01.state);
+      char A02 = cp_ext(gb.ext_pins.PIN_03_A02.state);
+      char A03 = cp_ext(gb.ext_pins.PIN_04_A03.state);
+      char A04 = cp_ext(gb.ext_pins.PIN_05_A04.state);
+      char A05 = cp_ext(gb.ext_pins.PIN_06_A05.state);
+      char A06 = cp_ext(gb.ext_pins.PIN_07_A06.state);
+      char A07 = cp_ext(gb.ext_pins.PIN_08_A07.state);
+      char A08 = cp_ext(gb.ext_pins.PIN_09_A08.state);
+      char A09 = cp_ext(gb.ext_pins.PIN_10_A09.state);
+      char A10 = cp_ext(gb.ext_pins.PIN_11_A10.state);
+      char A11 = cp_ext(gb.ext_pins.PIN_12_A11.state);
+      char A12 = cp_ext(gb.ext_pins.PIN_13_A12.state);
+      char A13 = cp_ext(gb.ext_pins.PIN_14_A13.state);
+      char A14 = cp_ext(gb.ext_pins.PIN_15_A14.state);
+      char A15 = cp_ext(gb.ext_pins.PIN_16_A15.state);
 
-      char D00 = gb.ext_pins.PIN_17_D00.cp_ext();
-      char D01 = gb.ext_pins.PIN_18_D01.cp_ext();
-      char D02 = gb.ext_pins.PIN_19_D02.cp_ext();
-      char D03 = gb.ext_pins.PIN_20_D03.cp_ext();
-      char D04 = gb.ext_pins.PIN_21_D04.cp_ext();
-      char D05 = gb.ext_pins.PIN_22_D05.cp_ext();
-      char D06 = gb.ext_pins.PIN_23_D06.cp_ext();
-      char D07 = gb.ext_pins.PIN_24_D07.cp_ext();
+      char D00 = cp_ext(gb.ext_pins.PIN_17_D00.state);
+      char D01 = cp_ext(gb.ext_pins.PIN_18_D01.state);
+      char D02 = cp_ext(gb.ext_pins.PIN_19_D02.state);
+      char D03 = cp_ext(gb.ext_pins.PIN_20_D03.state);
+      char D04 = cp_ext(gb.ext_pins.PIN_21_D04.state);
+      char D05 = cp_ext(gb.ext_pins.PIN_22_D05.state);
+      char D06 = cp_ext(gb.ext_pins.PIN_23_D06.state);
+      char D07 = cp_ext(gb.ext_pins.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 

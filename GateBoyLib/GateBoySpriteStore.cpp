@@ -595,16 +595,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.AJAL_STORE0_GET_L4*/ wire AJAL_STORE0_GET_L4 = tri6_nn(_FURO_SPRITE0_GETn, sprite_store.BOZU_STORE0_L2n_odd.qp_new());
   /* p30.GOFO_STORE0_GET_L5*/ wire GOFO_STORE0_GET_L5 = tri6_nn(_FURO_SPRITE0_GETn, sprite_store.FYHY_STORE0_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(ZETU_STORE0_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(ZECE_STORE0_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(ZAVE_STORE0_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(WOKO_STORE0_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(ZUMU_STORE0_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(ZEDY_STORE0_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(WEHE_STORE0_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(BUKY_STORE0_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(AJAL_STORE0_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(GOFO_STORE0_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(ZETU_STORE0_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(ZECE_STORE0_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(ZAVE_STORE0_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(WOKO_STORE0_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(ZUMU_STORE0_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(ZEDY_STORE0_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(WEHE_STORE0_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(BUKY_STORE0_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(AJAL_STORE0_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(GOFO_STORE0_GET_L5);
 
   /*#p30.CUBO_STORE1_GET_I0*/ wire CUBO_STORE1_GET_I0 = tri6_nn(_DYDO_SPRITE1_GETn, sprite_store.CADU_STORE1_I0n_odd.qp_new());
   /* p30.CELU_STORE1_GET_I1*/ wire CELU_STORE1_GET_I1 = tri6_nn(_DYDO_SPRITE1_GETn, sprite_store.CEBO_STORE1_I1n_odd.qp_new());
@@ -617,16 +617,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.BACO_STORE1_GET_L4*/ wire BACO_STORE1_GET_L4 = tri6_nn(_DYDO_SPRITE1_GETn, sprite_store.ABOP_STORE1_L2n_odd.qp_new());
   /* p30.BEFE_STORE1_GET_L5*/ wire BEFE_STORE1_GET_L5 = tri6_nn(_DYDO_SPRITE1_GETn, sprite_store.ABUG_STORE1_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(CUBO_STORE1_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(CELU_STORE1_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(CEGY_STORE1_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(BETY_STORE1_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(CYBY_STORE1_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(BEMO_STORE1_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(BYRO_STORE1_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(AHUM_STORE1_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(BACO_STORE1_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(BEFE_STORE1_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(CUBO_STORE1_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(CELU_STORE1_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(CEGY_STORE1_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(BETY_STORE1_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(CYBY_STORE1_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(BEMO_STORE1_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(BYRO_STORE1_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(AHUM_STORE1_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(BACO_STORE1_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(BEFE_STORE1_GET_L5);
 
   /* p30.CUBE_STORE2_GET_I0*/ wire CUBE_STORE2_GET_I0 = tri6_nn(_FAME_SPRITE2_GETn, sprite_store.BUHE_STORE2_I0n_odd.qp_new());
   /* p30.AFOZ_STORE2_GET_I1*/ wire AFOZ_STORE2_GET_I1 = tri6_nn(_FAME_SPRITE2_GETn, sprite_store.BYHU_STORE2_I1n_odd.qp_new());
@@ -639,16 +639,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.WUXE_STORE2_GET_L4*/ wire WUXE_STORE2_GET_L4 = tri6_nn(_FAME_SPRITE2_GETn, sprite_store.XAZY_STORE2_L2n_odd.qp_new());
   /* p30.ZABY_STORE2_GET_L5*/ wire ZABY_STORE2_GET_L5 = tri6_nn(_FAME_SPRITE2_GETn, sprite_store.YKUK_STORE2_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(CUBE_STORE2_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(AFOZ_STORE2_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(APON_STORE2_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(CUVU_STORE2_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(CYRO_STORE2_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(AXEC_STORE2_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(ZUKE_STORE2_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(WERE_STORE2_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(WUXE_STORE2_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(ZABY_STORE2_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(CUBE_STORE2_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(AFOZ_STORE2_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(APON_STORE2_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(CUVU_STORE2_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(CYRO_STORE2_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(AXEC_STORE2_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(ZUKE_STORE2_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(WERE_STORE2_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(WUXE_STORE2_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(ZABY_STORE2_GET_L5);
 
   /* p30.ENAP_STORE3_GET_I0*/ wire ENAP_STORE3_GET_I0 = tri6_nn(_GYMA_SPRITE3_GETn, sprite_store.DEVY_STORE3_I0n_odd.qp_new());
   /* p30.DYGO_STORE3_GET_I1*/ wire DYGO_STORE3_GET_I1 = tri6_nn(_GYMA_SPRITE3_GETn, sprite_store.DESE_STORE3_I1n_odd.qp_new());
@@ -661,16 +661,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.YJEM_STORE3_GET_L4*/ wire YJEM_STORE3_GET_L4 = tri6_nn(_GYMA_SPRITE3_GETn, sprite_store.ZENE_STORE3_L2n_odd.qp_new());
   /* p30.ZYPO_STORE3_GET_L5*/ wire ZYPO_STORE3_GET_L5 = tri6_nn(_GYMA_SPRITE3_GETn, sprite_store.ZURY_STORE3_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(ENAP_STORE3_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(DYGO_STORE3_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(DOWA_STORE3_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(DONY_STORE3_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(EFUD_STORE3_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(DEZU_STORE3_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(ZEXE_STORE3_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(YWAV_STORE3_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(YJEM_STORE3_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(ZYPO_STORE3_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(ENAP_STORE3_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(DYGO_STORE3_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(DOWA_STORE3_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(DONY_STORE3_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(EFUD_STORE3_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(DEZU_STORE3_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(ZEXE_STORE3_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(YWAV_STORE3_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(YJEM_STORE3_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(ZYPO_STORE3_GET_L5);
 
   /* p30.WUXU_STORE4_GET_I0*/ wire WUXU_STORE4_GET_I0 = tri6_nn(_GOWO_SPRITE4_GETn, sprite_store.XAVE_STORE4_I0n_odd.qp_new());
   /* p30.WEPY_STORE4_GET_I1*/ wire WEPY_STORE4_GET_I1 = tri6_nn(_GOWO_SPRITE4_GETn, sprite_store.XEFE_STORE4_I1n_odd.qp_new());
@@ -683,16 +683,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.BOVE_STORE4_GET_L4*/ wire BOVE_STORE4_GET_L4 = tri6_nn(_GOWO_SPRITE4_GETn, sprite_store.CONO_STORE4_L2n_odd.qp_new());
   /* p30.BYDO_STORE4_GET_L5*/ wire BYDO_STORE4_GET_L5 = tri6_nn(_GOWO_SPRITE4_GETn, sprite_store.CUMU_STORE4_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(WUXU_STORE4_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(WEPY_STORE4_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(WERU_STORE4_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(XYRE_STORE4_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(WOXY_STORE4_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(WAJA_STORE4_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(BUCE_STORE4_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(BEVY_STORE4_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(BOVE_STORE4_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(BYDO_STORE4_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(WUXU_STORE4_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(WEPY_STORE4_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(WERU_STORE4_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(XYRE_STORE4_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(WOXY_STORE4_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(WAJA_STORE4_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(BUCE_STORE4_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(BEVY_STORE4_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(BOVE_STORE4_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(BYDO_STORE4_GET_L5);
 
   /* p30.DOBO_STORE5_GET_I0*/ wire DOBO_STORE5_GET_I0 = tri6_nn(_GYGY_SPRITE5_GETn, sprite_store.EKOP_STORE5_I0n_odd.qp_new());
   /* p30.DYNY_STORE5_GET_I1*/ wire DYNY_STORE5_GET_I1 = tri6_nn(_GYGY_SPRITE5_GETn, sprite_store.ETYM_STORE5_I1n_odd.qp_new());
@@ -705,16 +705,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.BODU_STORE5_GET_L4*/ wire BODU_STORE5_GET_L4 = tri6_nn(_GYGY_SPRITE5_GETn, sprite_store.ABUX_STORE5_L2n_odd.qp_new());
   /* p30.AWAT_STORE5_GET_L5*/ wire AWAT_STORE5_GET_L5 = tri6_nn(_GYGY_SPRITE5_GETn, sprite_store.ANED_STORE5_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(DOBO_STORE5_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(DYNY_STORE5_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(WAGA_STORE5_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(DUZA_STORE5_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(DALY_STORE5_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(DALO_STORE5_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(BACE_STORE5_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(BUJA_STORE5_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(BODU_STORE5_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(AWAT_STORE5_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(DOBO_STORE5_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(DYNY_STORE5_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(WAGA_STORE5_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(DUZA_STORE5_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(DALY_STORE5_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(DALO_STORE5_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(BACE_STORE5_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(BUJA_STORE5_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(BODU_STORE5_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(AWAT_STORE5_GET_L5);
 
   /* p30.WATO_STORE6_GET_I0*/ wire WATO_STORE6_GET_I0 = tri6_nn(_XYME_SPRITE6_GETn, sprite_store.GABO_STORE6_I0n_odd.qp_new());
   /* p30.WYWY_STORE6_GET_I1*/ wire WYWY_STORE6_GET_I1 = tri6_nn(_XYME_SPRITE6_GETn, sprite_store.GACY_STORE6_I1n_odd.qp_new());
@@ -727,16 +727,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.ZYTO_STORE6_GET_L4*/ wire ZYTO_STORE6_GET_L4 = tri6_nn(_XYME_SPRITE6_GETn, sprite_store.ZEXO_STORE6_L2n_odd.qp_new());
   /* p30.ZUDO_STORE6_GET_L5*/ wire ZUDO_STORE6_GET_L5 = tri6_nn(_XYME_SPRITE6_GETn, sprite_store.ZUBE_STORE6_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(WATO_STORE6_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(WYWY_STORE6_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(EZOC_STORE6_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(WABO_STORE6_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(ELYC_STORE6_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(WOCY_STORE6_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(YBUK_STORE6_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(YKOZ_STORE6_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(ZYTO_STORE6_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(ZUDO_STORE6_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(WATO_STORE6_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(WYWY_STORE6_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(EZOC_STORE6_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(WABO_STORE6_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(ELYC_STORE6_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(WOCY_STORE6_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(YBUK_STORE6_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(YKOZ_STORE6_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(ZYTO_STORE6_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(ZUDO_STORE6_GET_L5);
 
   /* p30.WAKO_STORE7_GET_I0*/ wire WAKO_STORE7_GET_I0 = tri6_nn(_GUGY_SPRITE7_GETn, sprite_store.GULE_STORE7_I0n_odd.qp_new());
   /* p30.WYGO_STORE7_GET_I1*/ wire WYGO_STORE7_GET_I1 = tri6_nn(_GUGY_SPRITE7_GETn, sprite_store.GYNO_STORE7_I1n_odd.qp_new());
@@ -749,16 +749,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.WABU_STORE7_GET_L4*/ wire WABU_STORE7_GET_L4 = tri6_nn(_GUGY_SPRITE7_GETn, sprite_store.XAKU_STORE7_L2n_odd.qp_new());
   /* p30.WANA_STORE7_GET_L5*/ wire WANA_STORE7_GET_L5 = tri6_nn(_GUGY_SPRITE7_GETn, sprite_store.XYGO_STORE7_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(WAKO_STORE7_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(WYGO_STORE7_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(ELEP_STORE7_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(ETAD_STORE7_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(WABA_STORE7_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(EVYT_STORE7_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(WAXE_STORE7_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(YPOZ_STORE7_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(WABU_STORE7_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(WANA_STORE7_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(WAKO_STORE7_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(WYGO_STORE7_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(ELEP_STORE7_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(ETAD_STORE7_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(WABA_STORE7_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(EVYT_STORE7_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(WAXE_STORE7_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(YPOZ_STORE7_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(WABU_STORE7_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(WANA_STORE7_GET_L5);
 
   /* p30.APOC_STORE8_GET_I0*/ wire APOC_STORE8_GET_I0 = tri6_nn(_DENY_SPRITE8_GETn, sprite_store.AXUV_STORE8_I0n_odd.qp_new());
   /* p30.AKYH_STORE8_GET_I1*/ wire AKYH_STORE8_GET_I1 = tri6_nn(_DENY_SPRITE8_GETn, sprite_store.BADA_STORE8_I1n_odd.qp_new());
@@ -771,16 +771,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.AHAC_STORE8_GET_L4*/ wire AHAC_STORE8_GET_L4 = tri6_nn(_DENY_SPRITE8_GETn, sprite_store.AFUT_STORE8_L2n_odd.qp_new());
   /* p30.BUJY_STORE8_GET_L5*/ wire BUJY_STORE8_GET_L5 = tri6_nn(_DENY_SPRITE8_GETn, sprite_store.AFYM_STORE8_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(APOC_STORE8_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(AKYH_STORE8_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(AFEN_STORE8_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(APYV_STORE8_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(APOB_STORE8_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(ADYB_STORE8_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(BOSO_STORE8_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(BAZU_STORE8_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(AHAC_STORE8_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(BUJY_STORE8_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(APOC_STORE8_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(AKYH_STORE8_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(AFEN_STORE8_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(APYV_STORE8_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(APOB_STORE8_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(ADYB_STORE8_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(BOSO_STORE8_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(BAZU_STORE8_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(AHAC_STORE8_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(BUJY_STORE8_GET_L5);
 
   /* p30.ZARO_STORE9_GET_I0*/ wire ZARO_STORE9_GET_I0 = tri6_nn(_FADO_SPRITE9_GETn, sprite_store.YBER_STORE9_I0n_odd.qp_new());
   /* p30.ZOJY_STORE9_GET_I1*/ wire ZOJY_STORE9_GET_I1 = tri6_nn(_FADO_SPRITE9_GETn, sprite_store.YZOR_STORE9_I1n_odd.qp_new());
@@ -793,16 +793,16 @@ void GateBoy::sprite_match_to_bus(
   /* p30.COHO_STORE9_GET_L4*/ wire COHO_STORE9_GET_L4 = tri6_nn(_FADO_SPRITE9_GETn, sprite_store.DYSY_STORE9_L2n_odd.qp_new());
   /* p30.CAWO_STORE9_GET_L5*/ wire CAWO_STORE9_GET_L5 = tri6_nn(_FADO_SPRITE9_GETn, sprite_store.DEWU_STORE9_L3n_odd.qp_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(ZARO_STORE9_GET_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(ZOJY_STORE9_GET_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(YNEV_STORE9_GET_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(XYRA_STORE9_GET_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(YRAD_STORE9_GET_L0);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(YHAL_STORE9_GET_L1);
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(BYME_STORE9_GET_L2);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(GATE_STORE9_GET_L3);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(COHO_STORE9_GET_L4);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(CAWO_STORE9_GET_L5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(ZARO_STORE9_GET_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(ZOJY_STORE9_GET_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(YNEV_STORE9_GET_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(XYRA_STORE9_GET_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(YRAD_STORE9_GET_L0);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(YHAL_STORE9_GET_L1);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(BYME_STORE9_GET_L2);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(GATE_STORE9_GET_L3);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(COHO_STORE9_GET_L4);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(CAWO_STORE9_GET_L5);
 }
 
 void GateBoy::sprite_scan_to_bus(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
@@ -815,22 +815,22 @@ void GateBoy::sprite_scan_to_bus(SpriteDeltaY sprite_delta_y, NorLatch XYMU_REND
   /* p30.WUCO_STORE_I4*/ wire WUCO_STORE_I4 = tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.YDUF_SPRITE_IDX4p.qn_new());
   /* p30.WEZA_STORE_I5*/ wire WEZA_STORE_I5 = tri6_nn(_BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XECU_SPRITE_IDX5p.qn_new());
 
-  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri(WUZY_STORE_I0);
-  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri(WYSE_STORE_I1);
-  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri(ZYSU_STORE_I2);
-  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri(WYDA_STORE_I3);
-  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri(WUCO_STORE_I4);
-  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri(WEZA_STORE_I5);
+  /* BUS_SPR_I0*/ sprite_bus.BUS_SPR_I0.tri_bus(WUZY_STORE_I0);
+  /* BUS_SPR_I1*/ sprite_bus.BUS_SPR_I1.tri_bus(WYSE_STORE_I1);
+  /* BUS_SPR_I2*/ sprite_bus.BUS_SPR_I2.tri_bus(ZYSU_STORE_I2);
+  /* BUS_SPR_I3*/ sprite_bus.BUS_SPR_I3.tri_bus(WYDA_STORE_I3);
+  /* BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(WUCO_STORE_I4);
+  /* BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(WEZA_STORE_I5);
 
   /*#p30.CUCU_STORE_L0*/ wire CUCU_STORE_L0 = tri6_nn(FEPO_STORE_MATCHp.qp_new(), sprite_delta_y.DEGE_SPRITE_DELTA0);
   /*#p30.CUCA_STORE_L1*/ wire CUCA_STORE_L1 = tri6_nn(FEPO_STORE_MATCHp.qp_new(), sprite_delta_y.DABY_SPRITE_DELTA1);
   /*#p30.CEGA_STORE_L2*/ wire CEGA_STORE_L2 = tri6_nn(FEPO_STORE_MATCHp.qp_new(), sprite_delta_y.DABU_SPRITE_DELTA2);
   /*#p30.WENU_STORE_L3*/ wire WENU_STORE_L3 = tri6_nn(FEPO_STORE_MATCHp.qp_new(), sprite_delta_y.GYSA_SPRITE_DELTA3);
 
-  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri(CUCU_STORE_L0);
-  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri(CUCA_STORE_L1);
-  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri(CEGA_STORE_L2);
-  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri(WENU_STORE_L3);
+  /* BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(CUCU_STORE_L0);
+  /* BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(CUCA_STORE_L1);
+  /* BUS_SPR_L2*/ sprite_bus.BUS_SPR_L2.tri_bus(CEGA_STORE_L2);
+  /* BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(WENU_STORE_L3);
 }
 
 //-----------------------------------------------------------------------------

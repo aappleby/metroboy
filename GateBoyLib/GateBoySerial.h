@@ -22,9 +22,9 @@ struct GateBoySerial {
     EROD_SER_DATA6.state = 0b00011010;
     EDER_SER_DATA7.state = 0b00011010;
 
-    PIN_68_SCK. reset_int(0b00010101);
-    PIN_69_SIN. reset(0b00011000);
-    PIN_70_SOUT.reset(0b00011000);
+    PIN_68_SCK. state = 0b00010101;
+    PIN_69_SIN. state = 0b00011000;
+    PIN_70_SOUT.state = 0b00011000;
   }
 
   /* p06.ETAF*/ DFF17 ETAF_SER_RUN; // xxxxxxxH ?

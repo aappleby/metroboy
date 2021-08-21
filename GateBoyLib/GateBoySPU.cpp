@@ -103,11 +103,11 @@ void GateBoy::tock_spu() {
   /*#p23.KOGE_NR52_TO_CD3*/ wire KOGE_NR52_TO_CD3 = tri6_nn(KAMU_NR52_RDn, JUWA_CH4_ACTIVE);
   /*#p23.HOPE_NR52_TO_CD7*/ wire HOPE_NR52_TO_CD7 = tri6_nn(JURE_NR52_RDn, reg_NR52.HADA_ALL_SOUND_ONp.qn_new());
 
-  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(COTO_NR52_TO_CD0);
-  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(EFUS_NR52_TO_CD1);
-  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(FATE_NR52_TO_CD2);
-  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(KOGE_NR52_TO_CD3);
-  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(HOPE_NR52_TO_CD7);
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(COTO_NR52_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(EFUS_NR52_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(FATE_NR52_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(KOGE_NR52_TO_CD3);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(HOPE_NR52_TO_CD7);
 
   //-----------------------------------------------------------------------------
 
@@ -140,14 +140,14 @@ void GateBoy::tock_spu() {
   /*#p23.BOCY_NR50_TO_CD6*/ wire BOCY_NR50_TO_CD6 = tri6_nn(ADAK_NR50_RDn, reg_NR50.COZU_VOL_R2.qp_new());
   /*#p23.ATUM_NR50_TO_CD7*/ wire ATUM_NR50_TO_CD7 = tri6_nn(ADAK_NR50_RDn, reg_NR50.BEDU_VIN_TO_R.qp_new());
 
-  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(AKOD_NR50_TO_CD0);
-  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(AWED_NR50_TO_CD1);
-  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(AVUD_NR50_TO_CD2);
-  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(AXEM_NR50_TO_CD3);
-  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(AMAD_NR50_TO_CD4);
-  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(ARUX_NR50_TO_CD5);
-  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(BOCY_NR50_TO_CD6);
-  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(ATUM_NR50_TO_CD7);
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(AKOD_NR50_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(AWED_NR50_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(AVUD_NR50_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(AXEM_NR50_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri_bus(AMAD_NR50_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri_bus(ARUX_NR50_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri_bus(BOCY_NR50_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(ATUM_NR50_TO_CD7);
 
   //-----------------------------------------------------------------------------
 
@@ -183,14 +183,14 @@ void GateBoy::tock_spu() {
   /* p09.CAVU_NR51_TO_CD6*/ wire CAVU_NR51_TO_CD6 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BEFO_NR51_6.qp_new());
   /* p09.CUDU_NR51_TO_CD7*/ wire CUDU_NR51_TO_CD7 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BEPU_NR51_7.qp_new());
 
-  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri(CAPU_NR51_TO_CD0);
-  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri(CAGA_NR51_TO_CD1);
-  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri(BOCA_NR51_TO_CD2);
-  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri(BUZU_NR51_TO_CD3);
-  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri(CERE_NR51_TO_CD4);
-  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri(CADA_NR51_TO_CD5);
-  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri(CAVU_NR51_TO_CD6);
-  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri(CUDU_NR51_TO_CD7);
+  /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(CAPU_NR51_TO_CD0);
+  /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(CAGA_NR51_TO_CD1);
+  /* BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(BOCA_NR51_TO_CD2);
+  /* BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(BUZU_NR51_TO_CD3);
+  /* BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri_bus(CERE_NR51_TO_CD4);
+  /* BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri_bus(CADA_NR51_TO_CD5);
+  /* BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri_bus(CAVU_NR51_TO_CD6);
+  /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(CUDU_NR51_TO_CD7);
 }
 
 //-----------------------------------------------------------------------------

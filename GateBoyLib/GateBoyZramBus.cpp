@@ -33,14 +33,14 @@ void GateBoy::tock_zram()
   wire tri6 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 6));
   wire tri7 = tri_pp(CSp && bit(cpu_signals.TEDO_CPU_RDp.qp_new()), bit(data, 7));
 
-  new_bus.BUS_CPU_D00p.tri(tri0);
-  new_bus.BUS_CPU_D01p.tri(tri1);
-  new_bus.BUS_CPU_D02p.tri(tri2);
-  new_bus.BUS_CPU_D03p.tri(tri3);
-  new_bus.BUS_CPU_D04p.tri(tri4);
-  new_bus.BUS_CPU_D05p.tri(tri5);
-  new_bus.BUS_CPU_D06p.tri(tri6);
-  new_bus.BUS_CPU_D07p.tri(tri7);
+  new_bus.BUS_CPU_D00p.tri_bus(tri0);
+  new_bus.BUS_CPU_D01p.tri_bus(tri1);
+  new_bus.BUS_CPU_D02p.tri_bus(tri2);
+  new_bus.BUS_CPU_D03p.tri_bus(tri3);
+  new_bus.BUS_CPU_D04p.tri_bus(tri4);
+  new_bus.BUS_CPU_D05p.tri_bus(tri5);
+  new_bus.BUS_CPU_D06p.tri_bus(tri6);
+  new_bus.BUS_CPU_D07p.tri_bus(tri7);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

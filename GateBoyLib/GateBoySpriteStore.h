@@ -6,29 +6,29 @@
 
 struct SpriteBus {
   void reset_to_bootrom() {
-    BUS_SPR_I0.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_SPR_I1.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_SPR_I2.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_SPR_I3.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_SPR_I4.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_SPR_I5.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_SPR_L0.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_SPR_L1.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_SPR_L2.reset(BIT_OLD | BIT_PULLED | 1);
-    BUS_SPR_L3.reset(BIT_OLD | BIT_PULLED | 1);
+    BUS_SPR_I0.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_I1.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_I2.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_I3.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_I4.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_I5.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_L0.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_L1.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_L2.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_L3.state = BIT_OLD | BIT_PULLED | 1;
   }
 
   void reset_to_cart() {
-    BUS_SPR_I0.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_SPR_I1.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_SPR_I2.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_SPR_I3.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_SPR_I4.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_SPR_I5.reset(BIT_OLD | BIT_DRIVEN | 0);
-    BUS_SPR_L0.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_SPR_L1.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_SPR_L2.reset(BIT_OLD | BIT_DRIVEN | 1);
-    BUS_SPR_L3.reset(BIT_OLD | BIT_DRIVEN | 1);
+    BUS_SPR_I0.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_SPR_I1.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_SPR_I2.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_SPR_I3.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_SPR_I4.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_SPR_I5.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_SPR_L2.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_SPR_L3.state = BIT_OLD | BIT_DRIVEN | 1;
   }
 
   //----------------------------------------

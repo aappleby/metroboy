@@ -201,8 +201,8 @@ struct RegLY {
     LAFO_LY7p.state = 0b00011010;
   }
 
-  uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, &MUWY_LY0p); }
-  uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, &MUWY_LY0p); }
+  uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(8, (BitBase*)&MUWY_LY0p); }
+  uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(8, (BitBase*)&MUWY_LY0p); }
 
   /*p21.MUWY*/ DFF17 MUWY_LY0p;  // xxCxxxGx Ticks on G, reset on C
   /*p21.MYRO*/ DFF17 MYRO_LY1p;  // xxCxxxGx Ticks on G, reset on C
@@ -228,8 +228,8 @@ struct RegLX {
     TYRY_LX6p.state = 0b00011001;
   }
 
-  uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(7, &SAXO_LX0p); }
-  uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(7, &SAXO_LX0p); }
+  uint8_t get_old() const  { return (uint8_t)BitBase::pack_old(7, (BitBase*)&SAXO_LX0p); }
+  uint8_t get_new() const  { return (uint8_t)BitBase::pack_new(7, (BitBase*)&SAXO_LX0p); }
 
   /*p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
   /*p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G
@@ -350,14 +350,14 @@ struct RegOBP1 {
 
 struct RegWY {
   void set(uint8_t wy) {
-    NESO_WY0n.reset(1, bit(~wy, 0));
-    NYRO_WY1n.reset(1, bit(~wy, 1));
-    NAGA_WY2n.reset(1, bit(~wy, 2));
-    MELA_WY3n.reset(1, bit(~wy, 3));
-    NULO_WY4n.reset(1, bit(~wy, 4));
-    NENE_WY5n.reset(1, bit(~wy, 5));
-    NUKA_WY6n.reset(1, bit(~wy, 6));
-    NAFU_WY7n.reset(1, bit(~wy, 7));
+    NESO_WY0n.state = BIT_CLOCK | bit(~wy, 0);
+    NYRO_WY1n.state = BIT_CLOCK | bit(~wy, 1);
+    NAGA_WY2n.state = BIT_CLOCK | bit(~wy, 2);
+    MELA_WY3n.state = BIT_CLOCK | bit(~wy, 3);
+    NULO_WY4n.state = BIT_CLOCK | bit(~wy, 4);
+    NENE_WY5n.state = BIT_CLOCK | bit(~wy, 5);
+    NUKA_WY6n.state = BIT_CLOCK | bit(~wy, 6);
+    NAFU_WY7n.state = BIT_CLOCK | bit(~wy, 7);
   }
 
   int get() const { return BitBase::pack_oldn(8, &NESO_WY0n); }
@@ -377,17 +377,17 @@ struct RegWY {
 
 struct RegWX {
   void set(uint8_t wx) {
-    MYPA_WX0n.reset(1, bit(~wx, 0));
-    NOFE_WX1n.reset(1, bit(~wx, 1));
-    NOKE_WX2n.reset(1, bit(~wx, 2));
-    MEBY_WX3n.reset(1, bit(~wx, 3));
-    MYPU_WX4n.reset(1, bit(~wx, 4));
-    MYCE_WX5n.reset(1, bit(~wx, 5));
-    MUVO_WX6n.reset(1, bit(~wx, 6));
-    NUKU_WX7n.reset(1, bit(~wx, 7));
+    MYPA_WX0n.state = BIT_CLOCK | bit(~wx, 0);
+    NOFE_WX1n.state = BIT_CLOCK | bit(~wx, 1);
+    NOKE_WX2n.state = BIT_CLOCK | bit(~wx, 2);
+    MEBY_WX3n.state = BIT_CLOCK | bit(~wx, 3);
+    MYPU_WX4n.state = BIT_CLOCK | bit(~wx, 4);
+    MYCE_WX5n.state = BIT_CLOCK | bit(~wx, 5);
+    MUVO_WX6n.state = BIT_CLOCK | bit(~wx, 6);
+    NUKU_WX7n.state = BIT_CLOCK | bit(~wx, 7);
   }
 
-  int get() const { return BitBase::pack_oldn(8, &MYPA_WX0n); }
+  int get() const { return BitBase::pack_oldn(8, (BitBase*)&MYPA_WX0n); }
 
   /*p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
   /*p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH

@@ -39,8 +39,8 @@ void     commit_blob(void* blob, size_t size);
 struct BitBase {
   uint8_t state;
 
-  BitBase() { state = 0; }
-  explicit BitBase(int new_state) { state = uint8_t(new_state); }
+  wire qp_old() const { check_old(); return state; }
+  wire qn_old() const { check_old(); return ~state; }
 
   wire qp_mid() const { return state; }
   wire qn_mid() const { return ~state; }
@@ -48,29 +48,8 @@ struct BitBase {
   wire qp_any() const { return state; }
   wire qn_any() const { return ~state; }
 
-  wire qp_old() const { check_old(); return state; }
-  wire qn_old() const { check_old(); return ~state; }
-
   wire qp_new() const { check_new(); return state; }
   wire qn_new() const { check_new(); return ~state; }
-
-  inline static uint32_t pack_old(int c, const BitBase* b) {
-    uint32_t r = 0;
-    for (int i = 0; i < c; i++) r |= (bit(b[i].qp_old()) << i);
-    return r;
-  }
-
-  inline static uint32_t pack_new(int c, const BitBase* b) {
-    uint32_t r = 0;
-    for (int i = 0; i < c; i++) r |= (bit(b[i].qp_new()) << i);
-    return r;
-  }
-
-  inline static uint32_t pack_oldn(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
-  inline static uint32_t pack_newn(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
-
-  inline static uint32_t pack_ext_old(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
-  inline static uint32_t pack_ext_new(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
 
 #ifdef FAST_MODE
   void check_old() const {}
@@ -92,10 +71,6 @@ static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 //-----------------------------------------------------------------------------
 
 struct Gate : public BitBase {
-
-  Gate() { state = 0; }
-  Gate(wire D) { state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D)); }
-
   void hold() {
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(state));
   }
@@ -318,22 +293,6 @@ struct DFF17 : public BitBase {
   }
 };
 
-// same as above but resets to 1?
-
-struct DFF17b : public BitBase {
-  void dff17(wire CLKp, wire RSTn, wire Dp) {
-    check_old();
-    CLKp = (CLKp << 1) & 2;
-
-    if ((~state & CLKp) == 0) Dp = state;
-
-    //Dp &= RSTn;
-    if (!RSTn) Dp = 1;
-
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
-  }
-};
-
 //-----------------------------------------------------------------------------
 // 20-rung counter ff with async load. Only used by TIMA and a few audio regs.
 
@@ -430,6 +389,7 @@ struct DFF22 : public BitBase {
 // TYGO_10 nc
 
 // tri6_nn : top rung tadpole _not_ facing second rung dot.
+// tri6_pn : top rung tadpole facing second rung dot.
 
 // TRI6NN_01 :
 // TRI6NN_02 : NC
@@ -438,7 +398,6 @@ struct DFF22 : public BitBase {
 // TRI6NN_05 : NC
 // TRI6NN_06 :
 
-// tri6_pn : top rung tadpole facing second rung dot.
 
 inline wire tri_pp(wire OEp, wire Dp) {
   return bit(OEp) ? BIT_NEW | TRI_DRIVEN | bit(Dp) : BIT_NEW;
@@ -734,3 +693,22 @@ inline wire amux4(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3, wire b3, wire a4, wire b4, wire a5, wire b5) {
   return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
 }
+
+//-----------------------------------------------------------------------------
+
+inline uint32_t pack_old(int c, const BitBase* b) {
+  uint32_t r = 0;
+  for (int i = 0; i < c; i++) r |= (bit(b[i].qp_old()) << i);
+  return r;
+}
+
+inline uint32_t pack_new(int c, const BitBase* b) {
+  uint32_t r = 0;
+  for (int i = 0; i < c; i++) r |= (bit(b[i].qp_new()) << i);
+  return r;
+}
+
+inline uint32_t pack_oldn(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
+inline uint32_t pack_newn(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
+inline uint32_t pack_ext_old(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
+inline uint32_t pack_ext_new(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }

@@ -56,27 +56,27 @@ SpriteDeltaY GateBoy::sub_sprite_y() {
 
 void GateBoy::tock_lcdc()
 {
-  /* p23.WARU*/ wire _WARU_FF40_WRp = and2(CUPA_CPU_WRp(), old_bus.VOCA_FF40p());
-  /* p23.XUBO*/ wire _XUBO_FF40_WRn = not1(_WARU_FF40_WRp);
-  /*#p23.VYXE*/ reg_lcdc.VYXE_LCDC_BGENn  .dff9(_XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
-  /* p23.XYLO*/ reg_lcdc.XYLO_LCDC_SPENn  .dff9(_XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
-  /* p23.XYMO*/ reg_lcdc.XYMO_LCDC_SPSIZEn.dff9(_XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
-  /* p23.XAFO*/ reg_lcdc.XAFO_LCDC_BGMAPn .dff9(_XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D03p.qp_old());
-  /* p23.WEXU*/ reg_lcdc.WEXU_LCDC_BGTILEn.dff9(_XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
-  /* p23.WYMO*/ reg_lcdc.WYMO_LCDC_WINENn .dff9(_XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
-  /* p23.WOKY*/ reg_lcdc.WOKY_LCDC_WINMAPn.dff9(_XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D06p.qp_old());
-  /* p23.XONA*/ reg_lcdc.XONA_LCDC_LCDENn. dff9(_XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D07p.qp_old());
+  /* p23.WARU*/ wire WARU_FF40_WRp = and2(CUPA_CPU_WRp(), old_bus.VOCA_FF40p());
+  /* p23.XUBO*/ wire XUBO_FF40_WRn = not1(WARU_FF40_WRp);
+  /*#p23.VYXE*/ reg_lcdc.VYXE_LCDC_BGENn  .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
+  /* p23.XYLO*/ reg_lcdc.XYLO_LCDC_SPENn  .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
+  /* p23.XYMO*/ reg_lcdc.XYMO_LCDC_SPSIZEn.dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
+  /* p23.XAFO*/ reg_lcdc.XAFO_LCDC_BGMAPn .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D03p.qp_old());
+  /* p23.WEXU*/ reg_lcdc.WEXU_LCDC_BGTILEn.dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
+  /* p23.WYMO*/ reg_lcdc.WYMO_LCDC_WINENn .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
+  /* p23.WOKY*/ reg_lcdc.WOKY_LCDC_WINMAPn.dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D06p.qp_old());
+  /* p23.XONA*/ reg_lcdc.XONA_LCDC_LCDENn. dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D07p.qp_old());
 
-  /* p23.VYRE*/ wire _VYRE_FF40_RDp = and2(ASOT_CPU_RDp(), new_bus.VOCA_FF40p());
-  /* p23.WYCE*/ wire _WYCE_FF40_RDn = not1(_VYRE_FF40_RDp);
-  /*#p23.WYPO_LCDC0_TO_CD0*/ wire WYPO_LCDC0_TO_CD0 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.VYXE_LCDC_BGENn.qp_new());
-  /*#p23.XERO_LCDC1_TO_CD1*/ wire XERO_LCDC1_TO_CD1 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.XYLO_LCDC_SPENn.qp_new());
-  /* p23.WYJU_LCDC2_TO_CD2*/ wire WYJU_LCDC2_TO_CD2 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.XYMO_LCDC_SPSIZEn.qp_new());
-  /* p23.WUKA_LCDC3_TO_CD3*/ wire WUKA_LCDC3_TO_CD3 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.XAFO_LCDC_BGMAPn.qp_new());
-  /* p23.VOKE_LCDC4_TO_CD4*/ wire VOKE_LCDC4_TO_CD4 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.WEXU_LCDC_BGTILEn.qp_new());
-  /* p23.VATO_LCDC5_TO_CD5*/ wire VATO_LCDC5_TO_CD5 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.WYMO_LCDC_WINENn.qp_new());
-  /*#p23.VAHA_LCDC6_TO_CD6*/ wire VAHA_LCDC6_TO_CD6 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.WOKY_LCDC_WINMAPn.qp_new());
-  /*#p23.XEBU_LCDC7_TO_CD7*/ wire XEBU_LCDC7_TO_CD7 = tri6_nn(_WYCE_FF40_RDn, reg_lcdc.XONA_LCDC_LCDENn.qp_new());
+  /* p23.VYRE*/ wire VYRE_FF40_RDp = and2(ASOT_CPU_RDp(), new_bus.VOCA_FF40p());
+  /* p23.WYCE*/ wire WYCE_FF40_RDn = not1(VYRE_FF40_RDp);
+  /*#p23.WYPO_LCDC0_TO_CD0*/ wire WYPO_LCDC0_TO_CD0 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.VYXE_LCDC_BGENn.qp_new());
+  /*#p23.XERO_LCDC1_TO_CD1*/ wire XERO_LCDC1_TO_CD1 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.XYLO_LCDC_SPENn.qp_new());
+  /* p23.WYJU_LCDC2_TO_CD2*/ wire WYJU_LCDC2_TO_CD2 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.XYMO_LCDC_SPSIZEn.qp_new());
+  /* p23.WUKA_LCDC3_TO_CD3*/ wire WUKA_LCDC3_TO_CD3 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.XAFO_LCDC_BGMAPn.qp_new());
+  /* p23.VOKE_LCDC4_TO_CD4*/ wire VOKE_LCDC4_TO_CD4 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.WEXU_LCDC_BGTILEn.qp_new());
+  /* p23.VATO_LCDC5_TO_CD5*/ wire VATO_LCDC5_TO_CD5 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.WYMO_LCDC_WINENn.qp_new());
+  /*#p23.VAHA_LCDC6_TO_CD6*/ wire VAHA_LCDC6_TO_CD6 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.WOKY_LCDC_WINMAPn.qp_new());
+  /*#p23.XEBU_LCDC7_TO_CD7*/ wire XEBU_LCDC7_TO_CD7 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.XONA_LCDC_LCDENn.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(WYPO_LCDC0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(XERO_LCDC1_TO_CD1);

@@ -13,18 +13,18 @@ void GateBoy::tock_clocks() {
   /* p01.AVET*/ clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.qp_mid(), ARYS_CLKIN);
   /* p01.ANOS*/ clk.ANOS_DEGLITCH = nand2(clk.PIN_74_CLK.clock(), clk.AVET_DEGLITCH.qp_mid());
 
-  /* p01.ATAL*/ wire _ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.qp_new());
-  /* p01.ATAN*/ wire _ATAN_AxCxExGx = not1(_ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
+  /* p01.ATAL*/ wire ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.qp_new());
+  /* p01.ATAN*/ wire ATAN_AxCxExGx = not1(ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
 
-  DFF9 _ADYK_ABCxxxxH_old = clk.ADYK_ABCxxxxH;
-  DFF9 _AFUR_xxxxEFGH_old = clk.AFUR_xxxxEFGH;
-  DFF9 _ALEF_AxxxxFGH_old = clk.ALEF_AxxxxFGH;
-  DFF9 _APUK_ABxxxxGH_old = clk.APUK_ABxxxxGH;
+  DFF9 ADYK_ABCxxxxH_old = clk.ADYK_ABCxxxxH;
+  DFF9 AFUR_xxxxEFGH_old = clk.AFUR_xxxxEFGH;
+  DFF9 ALEF_AxxxxFGH_old = clk.ALEF_AxxxxFGH;
+  DFF9 APUK_ABxxxxGH_old = clk.APUK_ABxxxxGH;
 
-  /* p01.AFUR*/ clk.AFUR_xxxxEFGH.dff9(_ATAN_AxCxExGx, UPOJ_MODE_PRODn(), _ADYK_ABCxxxxH_old.qp_old());
-  /* p01.ALEF*/ clk.ALEF_AxxxxFGH.dff9(_ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), _AFUR_xxxxEFGH_old.qn_old());
-  /* p01.APUK*/ clk.APUK_ABxxxxGH.dff9(_ATAN_AxCxExGx, UPOJ_MODE_PRODn(), _ALEF_AxxxxFGH_old.qn_old());
-  /* p01.ADYK*/ clk.ADYK_ABCxxxxH.dff9(_ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), _APUK_ABxxxxGH_old.qn_old());
+  /* p01.AFUR*/ clk.AFUR_xxxxEFGH.dff9(ATAN_AxCxExGx, UPOJ_MODE_PRODn(), ADYK_ABCxxxxH_old.qp_old());
+  /* p01.ALEF*/ clk.ALEF_AxxxxFGH.dff9(ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), AFUR_xxxxEFGH_old.qn_old());
+  /* p01.APUK*/ clk.APUK_ABxxxxGH.dff9(ATAN_AxCxExGx, UPOJ_MODE_PRODn(), ALEF_AxxxxFGH_old.qn_old());
+  /* p01.ADYK*/ clk.ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), APUK_ABxxxxGH_old.qn_old());
 
   /*PIN_75*/ clk.PIN_75_CLK_OUT.pin_out(BUDE_xxxxEFGH(), BUDE_xxxxEFGH());
   /*SIG_CPU_BOWA_Axxxxxxx*/ clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());

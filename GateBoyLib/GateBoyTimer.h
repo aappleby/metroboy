@@ -24,7 +24,7 @@ struct GateBoyDiv {
     UPOF_DIV15p.state = 0b00011001;
   }
 
-  int get_div() const  { return BitBase::pack_old(16, &UKUP_DIV00p); }
+  int get_div() const  { return pack_old(16, &UKUP_DIV00p); }
 
   void force_set_div(uint16_t div) {
     uint16_t div_a = div;
@@ -70,9 +70,9 @@ struct GateBoyDiv {
 
 struct GateBoyTimer {
 
-  int get_tima() const { return BitBase::pack_old(8,  &REGA_TIMA0p); }
-  int get_tma() const  { return BitBase::pack_old(8,  &SABU_TMA0p); }
-  int get_tac() const  { return BitBase::pack_old(3,  &SOPU_TAC0p); }
+  int get_tima() const { return pack_old(8,  &REGA_TIMA0p); }
+  int get_tma() const  { return pack_old(8,  &SABU_TMA0p); }
+  int get_tac() const  { return pack_old(3,  &SOPU_TAC0p); }
 
   void force_set_tima(uint8_t tima) {
     uint16_t tima_a = tima;

@@ -28,14 +28,14 @@ void GateBoy::tock_lyc() {
   {
     /* p23.XUFA*/ wire XUFA_FF45_WRn = and2(CUPA_CPU_WRp(), new_bus.XAYU_FF45p());
     /* p23.WANE*/ wire WANE_FF45_WRp = not1(XUFA_FF45_WRn);
-    /* p23.SYRY*/ reg_lyc.SYRY_LYC0n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D00p.qp_old());
-    /* p23.VUCE*/ reg_lyc.VUCE_LYC1n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D01p.qp_old());
-    /* p23.SEDY*/ reg_lyc.SEDY_LYC2n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D02p.qp_old());
-    /* p23.SALO*/ reg_lyc.SALO_LYC3n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D03p.qp_old());
-    /* p23.SOTA*/ reg_lyc.SOTA_LYC4n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
-    /* p23.VAFA*/ reg_lyc.VAFA_LYC5n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
-    /* p23.VEVO*/ reg_lyc.VEVO_LYC6n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D06p.qp_old());
-    /* p23.RAHA*/ reg_lyc.RAHA_LYC7n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D07p.qp_old());
+    /* p23.SYRY*/ reg_lyc.SYRY_LYC0n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D00p.out_old());
+    /* p23.VUCE*/ reg_lyc.VUCE_LYC1n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D01p.out_old());
+    /* p23.SEDY*/ reg_lyc.SEDY_LYC2n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D02p.out_old());
+    /* p23.SALO*/ reg_lyc.SALO_LYC3n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D03p.out_old());
+    /* p23.SOTA*/ reg_lyc.SOTA_LYC4n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D04p.out_old());
+    /* p23.VAFA*/ reg_lyc.VAFA_LYC5n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D05p.out_old());
+    /* p23.VEVO*/ reg_lyc.VEVO_LYC6n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D06p.out_old());
+    /* p23.RAHA*/ reg_lyc.RAHA_LYC7n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), old_bus.BUS_CPU_D07p.out_old());
 
     /* p23.XYLY*/ wire XYLY_FF45_RDp = and2(ASOT_CPU_RDp(), new_bus.XAYU_FF45p());
     /* p23.WEKU*/ wire WEKU_FF45_RDn = not1(XYLY_FF45_RDp);
@@ -205,18 +205,18 @@ void GateBoy::set_lcd_pins(wire SACU_CLKPIPE_evn) {
   // Could we possibly be incrementing X3p one phase early?
 
   // LCD horizontal sync pin latch
-  /*#p24.POME*/ lcd.POME = nor2(sprite_scanner.AVAP_SCAN_DONE_TRIGp.qp_new(), lcd.POFY.qp_mid());
-  /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), lcd.POME.qp_mid());
-  /*#p24.POFY*/ lcd.POFY = not1(lcd.RUJU.qp_mid());
-  /*#p24.POME*/ lcd.POME = nor2(sprite_scanner.AVAP_SCAN_DONE_TRIGp.qp_new(), lcd.POFY.qp_mid());
-  /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), lcd.POME.qp_mid());
-  /*#p24.POFY*/ lcd.POFY = not1(lcd.RUJU.qp_mid());
+  /*#p24.POME*/ lcd.POME = nor2(sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new(), lcd.POFY.out_mid());
+  /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), lcd.POME.out_mid());
+  /*#p24.POFY*/ lcd.POFY = not1(lcd.RUJU.out_mid());
+  /*#p24.POME*/ lcd.POME = nor2(sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new(), lcd.POFY.out_mid());
+  /*#p24.RUJU*/ lcd.RUJU = or3(lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), lcd.POME.out_mid());
+  /*#p24.POFY*/ lcd.POFY = not1(lcd.RUJU.out_mid());
 
-  /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(lcd.POFY.qp_mid());
+  /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(lcd.POFY.out_mid());
   /*PIN_54*/ lcd.PIN_54_LCD_HSYNC.pin_out(RUZE_HSYNCn, RUZE_HSYNCn);
 
-  /*PIN_51*/ lcd.PIN_51_LCD_DATA0.pin_out(pix_pipes.REMY_LD0n.qp_new(), pix_pipes.REMY_LD0n.qp_new());
-  /*PIN_50*/ lcd.PIN_50_LCD_DATA1.pin_out(pix_pipes.RAVO_LD1n.qp_new(), pix_pipes.RAVO_LD1n.qp_new());
+  /*PIN_51*/ lcd.PIN_51_LCD_DATA0.pin_out(pix_pipes.REMY_LD0n.out_new(), pix_pipes.REMY_LD0n.out_new());
+  /*PIN_50*/ lcd.PIN_50_LCD_DATA1.pin_out(pix_pipes.RAVO_LD1n.out_new(), pix_pipes.RAVO_LD1n.out_new());
 
   /* p01.UMEK*/ wire UMEK_DIV06n = not1(div.UGOT_DIV06p.qp_new());
   /*#p21.PURE*/ wire PURE_x113n = not1(lcd.RUTU_x113p.qp_new());

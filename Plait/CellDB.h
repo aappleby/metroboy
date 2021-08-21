@@ -32,6 +32,13 @@ struct CellPort {
   }
 };
 
+struct GateInfo {
+  std::string gate;
+  DieCellType cell_type;
+  std::vector<std::string> input_ports;
+  std::vector<std::string> output_ports;
+};
+
 std::string trim_name(std::string raw_name);
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -116,22 +123,6 @@ struct DieTrace {
     if (input_port != e.input_port) return false;
     return true;
   }
-
-  /*
-  void from_key(const std::string& key) {
-    auto first_dot = key.find('.');
-    auto arrow = key.find(" -> ");
-    auto second_dot = key.find('.', first_dot + 1);
-    //printf("%zd\n", first_dot);
-    //printf("%zd\n", arrow);
-    //printf("%zd\n", second_dot);
-
-    output_tag  = key.substr(0,              first_dot  - 0);
-    output_port = key.substr(first_dot + 1,  arrow      - (first_dot + 1));
-    input_tag  = key.substr(arrow + 4,      second_dot - (arrow + 4));
-    input_port_old = key.substr(second_dot + 1, key.size() - (second_dot + 1));
-  }
-  */
 
   std::string to_key() const {
     return output_tag + "." + output_port + " -> " + input_tag + "." + input_port;

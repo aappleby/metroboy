@@ -5,15 +5,15 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_clocks() {
-  /*PIN_73*/ clk.PIN_73_CLK_DRIVE.pin_out(clk.PIN_74_CLK.clock(), clk.PIN_74_CLK.clock());
+  /*PIN_73*/ clk.PIN_73_CLK_DRIVE.pin_out(clk.PIN_74_CLK.clk(), clk.PIN_74_CLK.clk());
 
-  /* p01.ARYS*/ wire ARYS_CLKIN = not1(clk.PIN_74_CLK.clock());
-  /* p01.AVET*/ clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.qp_mid(), ARYS_CLKIN);
-  /* p01.ANOS*/ clk.ANOS_DEGLITCH = nand2(clk.PIN_74_CLK.clock(), clk.AVET_DEGLITCH.qp_mid());
-  /* p01.AVET*/ clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.qp_mid(), ARYS_CLKIN);
-  /* p01.ANOS*/ clk.ANOS_DEGLITCH = nand2(clk.PIN_74_CLK.clock(), clk.AVET_DEGLITCH.qp_mid());
+  /* p01.ARYS*/ wire ARYS_CLKIN = not1(clk.PIN_74_CLK.clk());
+  /* p01.AVET*/ clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.out_mid(), ARYS_CLKIN);
+  /* p01.ANOS*/ clk.ANOS_DEGLITCH = nand2(clk.PIN_74_CLK.clk(), clk.AVET_DEGLITCH.out_mid());
+  /* p01.AVET*/ clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.out_mid(), ARYS_CLKIN);
+  /* p01.ANOS*/ clk.ANOS_DEGLITCH = nand2(clk.PIN_74_CLK.clk(), clk.AVET_DEGLITCH.out_mid());
 
-  /* p01.ATAL*/ wire ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.qp_new());
+  /* p01.ATAL*/ wire ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.out_new());
   /* p01.ATAN*/ wire ATAN_AxCxExGx = not1(ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
 
   DFF9 ADYK_ABCxxxxH_old = clk.ADYK_ABCxxxxH;

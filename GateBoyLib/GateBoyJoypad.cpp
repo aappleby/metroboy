@@ -10,14 +10,14 @@
 void GateBoy::tock_joypad() {
   // has to be new_bus or sim isn't stable.
 
-  /* p10.BYKO*/ wire BYKO_A05n = not1(new_bus.BUS_CPU_A05p.qp_any());
-  /* p10.AKUG*/ wire AKUG_A06n = not1(new_bus.BUS_CPU_A06p.qp_any());
-  /* p10.AMUS*/ wire AMUS_XX_0xx00000 = nor6(new_bus.BUS_CPU_A00p.qp_any(), new_bus.BUS_CPU_A01p.qp_any(), new_bus.BUS_CPU_A02p.qp_any(), new_bus.BUS_CPU_A03p.qp_any(), new_bus.BUS_CPU_A04p.qp_any(), new_bus.BUS_CPU_A07p.qp_any());
+  /* p10.BYKO*/ wire BYKO_A05n = not1(new_bus.BUS_CPU_A05p.out_any());
+  /* p10.AKUG*/ wire AKUG_A06n = not1(new_bus.BUS_CPU_A06p.out_any());
+  /* p10.AMUS*/ wire AMUS_XX_0xx00000 = nor6(new_bus.BUS_CPU_A00p.out_any(), new_bus.BUS_CPU_A01p.out_any(), new_bus.BUS_CPU_A02p.out_any(), new_bus.BUS_CPU_A03p.out_any(), new_bus.BUS_CPU_A04p.out_any(), new_bus.BUS_CPU_A07p.out_any());
   /* p10.ANAP*/ wire ANAP_FF_0xx00000 = and2(new_bus.SYKE_ADDR_HIp(), AMUS_XX_0xx00000);
 
-  /* p10.ACAT*/ wire ACAT_FF00_RDp = and4(cpu_signals.TEDO_CPU_RDp.qp_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
+  /* p10.ACAT*/ wire ACAT_FF00_RDp = and4(cpu_signals.TEDO_CPU_RDp.out_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
   /* p05.BYZO*/ wire BYZO_FF00_RDn = not1(ACAT_FF00_RDp);
-  /* p10.ATOZ*/ wire ATOZ_FF00_WRn = nand4(cpu_signals.TAPU_CPU_WRp.qp_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
+  /* p10.ATOZ*/ wire ATOZ_FF00_WRn = nand4(cpu_signals.TAPU_CPU_WRp.out_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
 
   ///* p05.JUTE*/ JUTE_DBG_D0    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[0].qp_old());
   ///* p05.KECY*/ KECY_DBG_D1    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[1].qp_old());
@@ -26,13 +26,13 @@ void GateBoy::tock_joypad() {
 
   // this _has_ to reset to 1
 
-  /*#p05.KELY*/ joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D04p.qp_old());
-  /*#p05.COFY*/ joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D05p.qp_old());
+  /*#p05.KELY*/ joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D04p.out_old());
+  /*#p05.COFY*/ joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D05p.out_old());
 
   ///* p05.KUKO*/ KUKO_DBG_D6    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[6].qp_old());
   ///* p05.KERU*/ KERU_DBG_D7    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[7].qp_old());
 
-  /* p07.BURO*/ wire BURO_FF60_D0p = not1(SIG_GND.qp_new()); // FIXME hacking out debug stuff
+  /* p07.BURO*/ wire BURO_FF60_D0p = not1(SIG_GND.out_new()); // FIXME hacking out debug stuff
   /* p05.KURA*/ wire KURA_FF60_D0n = not1(BURO_FF60_D0p);
 
   /*
@@ -110,14 +110,14 @@ void GateBoy::tock_joypad() {
 
   // debug stuff
 #if 0
-  / * p05.KOLE*/ wire KOLE = nand2(JUTE_JOYP_RA.qp17(), BURO_FF60_0p);
-  / * p05.KYBU*/ wire KYBU = nor2 (JUTE_JOYP_RA.qp17(), KURA);
-  / * p05.KYTO*/ wire KYTO = nand2(KECY_JOYP_LB.qp17(), BURO_FF60_0p);
-  / * p05.KABU*/ wire KABU = nor2 (KECY_JOYP_LB.qp17(), KURA);
-  / * p05.KYHU*/ wire KYHU = nand2(JALE_JOYP_UC.qp17(), BURO_FF60_0p);
-  / * p05.KASY*/ wire KASY = nor2 (JALE_JOYP_UC.qp17(), KURA);
-  / * p05.KORY*/ wire KORY = nand2(KYME_JOYP_DS.qp17(), BURO_FF60_0p);
-  / * p05.KALE*/ wire KALE = nor2 (KYME_JOYP_DS.qp17(), KURA);
+  ///* p05.KOLE*/ wire KOLE = nand2(JUTE_JOYP_RA.qp17(), BURO_FF60_0p);
+  ///* p05.KYBU*/ wire KYBU = nor2 (JUTE_JOYP_RA.qp17(), KURA);
+  ///* p05.KYTO*/ wire KYTO = nand2(KECY_JOYP_LB.qp17(), BURO_FF60_0p);
+  ///* p05.KABU*/ wire KABU = nor2 (KECY_JOYP_LB.qp17(), KURA);
+  ///* p05.KYHU*/ wire KYHU = nand2(JALE_JOYP_UC.qp17(), BURO_FF60_0p);
+  ///* p05.KASY*/ wire KASY = nor2 (JALE_JOYP_UC.qp17(), KURA);
+  ///* p05.KORY*/ wire KORY = nand2(KYME_JOYP_DS.qp17(), BURO_FF60_0p);
+  ///* p05.KALE*/ wire KALE = nor2 (KYME_JOYP_DS.qp17(), KURA);
 
   PIN_67_JOY_P10.pin_out_hilo2(KOLE, KYBU);
   PIN_66_JOY_P11.pin_out_hilo2(KYTO, KABU);

@@ -70,7 +70,16 @@ static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
 
 //-----------------------------------------------------------------------------
 
-struct Gate : public BitBase {
+struct Gate : private BitBase {
+  Gate() {}
+  Gate(uint8_t _state) { state = _state; }
+
+  using BitBase::state;
+
+  wire out_old() const { check_old(); return state; }
+  wire out_mid() const { return state; }
+  wire out_new() const { check_new(); return state; }
+
   void hold() {
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(state));
   }
@@ -82,7 +91,11 @@ struct Gate : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct SigIn : public BitBase {
+struct SigIn : private BitBase {
+  using BitBase::state;
+
+  wire out_new() const { check_new(); return state; }
+
   void sig_in(wire D) {
     check_old();
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
@@ -91,7 +104,12 @@ struct SigIn : public BitBase {
 
 //-----------------------------------------------------------------------------
 
-struct SigOut : public BitBase {
+struct SigOut : private BitBase {
+  using BitBase::state;
+
+  wire out_old() const { check_old(); return state; }
+  wire out_new() const { check_new(); return state; }
+
   void sig_out(wire D) {
     check_old();
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
@@ -415,7 +433,14 @@ inline wire tri10_np(wire OEn, wire Dp) {
   return bit(OEn) ? BIT_NEW : BIT_NEW | TRI_DRIVEN | bit(Dp);
 }
 
-struct Bus : public BitBase {
+struct Bus : private BitBase {
+  using BitBase::state;
+
+  wire out_old() const { check_old(); return state; }
+  wire out_any() const { return state; }
+  wire out_mid() const { return state; }
+  wire out_new() const { check_new(); return state; }
+
   void tri_bus(wire tristate) {
     check_new();
 
@@ -517,8 +542,8 @@ struct PinOut : public PinBase {
 
 struct PinClock {
 
-  wire clock_good() const { return CLKGOOD.qp_int_new(); }
-  wire clock() const { return CLK.qp_int_new(); }
+  wire clkgood() const { return CLKGOOD.qp_int_new(); }
+  wire clk() const { return CLK.qp_int_new(); }
 
   void pin_clk(wire clk, wire clkgood) {
     CLK.pin_in(clk);

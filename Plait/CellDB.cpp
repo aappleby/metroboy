@@ -30,21 +30,14 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DieCellType, {
   {DieCellType::LOGIC,   "LOGIC"},
   });
 
-struct GateInfo {
-  string gate;
-  DieCellType cell_type;
-  vector<string> input_ports;
-  vector<string> output_ports;
-};
-
 struct GateInfo gate_db[] = {
   {"sig_in",      DieCellType::SIG_IN,  {"in"},  {"out"} },
   {"sig_out",     DieCellType::SIG_OUT, {"in"},  {"out"} },
   {"tri_bus",     DieCellType::BUS,     {"tri"}, {"out"} },
 
-  {"pin_in",      DieCellType::PIN_IN,  {"Dp"},                           {"qp", "qn"} },
-  {"pin_out",     DieCellType::PIN_OUT, {"hi", "lo"},                     {"qp", "qn"} },
-  {"pin_io",      DieCellType::PIN_IO,  {"PUn", "HI", "LO", "OEp", "Dp"}, {"qp", "qn"} },
+  {"pin_in",      DieCellType::PIN_IN,  {"Dp"},                           {"qp_int"} },
+  {"pin_out",     DieCellType::PIN_OUT, {"hi", "lo"},                     {"qp_ext", "qn_ext"} },
+  {"pin_io",      DieCellType::PIN_IO,  {"PUn", "HI", "LO", "OEp", "Dp"}, {"qp_int"} },
   {"pin_clk",     DieCellType::PIN_CLK, {"clk", "clkgood"},               {"clk", "clkgood"} },
 
   {"dff8p",       DieCellType::DFF,     {"CLKp", "Dn"},                 {"qp", "qn"} },
@@ -126,13 +119,13 @@ std::vector<std::string> split_path(const std::string& text) {
 }
 
 std::vector<std::string> split_args(const std::string& text) {
-  static regex rx_split_args(R"(\s*_?([^,]+?)(,|$))");
+  static regex rx_split_args(R"(\s*([^,]+?)(,|$))");
   return split(text, rx_split_args);
 }
 
 std::string trim_name(std::string raw_name) {
   CHECK_P(!raw_name.empty());
-  static regex rx_trim(R"((^_| _| |_any|_new|_old|_mid|_odd|_evn|\(\)))");
+  static regex rx_trim(R"((_any|_new|_old|_mid|_odd|_evn|\(\)))");
   auto name = std::regex_replace(raw_name, rx_trim, "");
   return name;
 }
@@ -404,6 +397,13 @@ std::string clean_line(const char* line) {
   return result;
 }
 
+string name_to_tag(const string& name) {
+  static regex rx_match_tag(R"(^(BUS_.*|PIN_\d{2}|SIG_.*|EXT_.*|[A-Z]{4}))");
+  smatch match;
+  CHECK_P(regex_search(name, match, rx_match_tag));
+  return match[1].str();
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 bool DieDB::parse_dir(const std::string& path) {
@@ -441,56 +441,64 @@ bool DieDB::parse_dir(const std::string& path) {
   for (auto& [tag, cell] : cell_map) {
     auto& info = gate_info(cell->gate);
     (void)info;
-
     vector<string> args = split_args(cell->args);
-    if (cell->gate != "tri_bus") {
+
+    cell->cell_type = info.cell_type;
+    cell->output_ports = info.output_ports;
+
+    if (cell->gate == "tri_bus") {
+      for (int i = 0; i < args.size(); i++) {
+        char buf[256];
+        sprintf_s(buf, 256, "tri%02d", i);
+        cell->input_ports.push_back(buf);
+      }
+    }
+    else {
       CHECK_P(args.size() == info.input_ports.size());
+      cell->input_ports = info.input_ports;
     }
 
-    for (const auto& arg : args) {
+
+    for (int iarg = 0; iarg < args.size(); iarg++) {
+      const auto& arg = args[iarg];
       vector<string> parts = split_path(arg);
-
-      for (const auto& part : parts) {
-        if (part[0] == '_') {
-          printf("%s\n", part.c_str());
-          CHECK_P(false);
-        }
-      }
-
-      static regex rx_match_tag(R"(^(BUS_|PIN_|SIG_|EXT_|_?[A-Z]{4}))");
+      static regex rx_match_tag(R"(^(BUS_|PIN_|SIG_|EXT_|[A-Z]{4}))");
       while (!regex_search(parts.front(), rx_match_tag)) parts.erase(parts.begin());
-
       CHECK_P(parts.size() == 1 || parts.size() == 2);
 
-      printf("arg %s\n", trim_name(parts[0]).c_str());
-      if (parts.size() == 2) {
-        printf("port %s\n", trim_name(parts[1]).c_str());
-      }
+      string src_tag = name_to_tag(parts[0]);
+      string src_port = parts.size() == 2 ? parts[1] : "out";
+      if (src_tag.starts_with("EXT_")) continue;
+
+      DieCell* src_cell = get_cell(src_tag);
+      CHECK_P(src_cell);
+
+      DieTrace trace = {
+        src_cell->tag,
+        src_port,
+        cell->tag,
+        cell->input_ports[iarg],
+      };
+
+      traces.push_back(trace);
+
+      //printf("%s.%s -> %s.%s\n", src_cell->tag.c_str(), src_port.c_str(), cell->tag.c_str(), cell->input_ports[iarg].c_str());
+
     }
-
-
-    //cell->cell_type = gate_to_cell_type(cell->gate);
-    //cell->input_ports = gate_to_in_ports(cell->gate);
-    //cell->output_ports = gate_to_out_ports(cell->gate);
 
     /*
-    if (cell->cell_type == DieCellType::UNKNOWN) {
-      printf("flag: %1s ",      cell->flag.c_str());
-      printf("page: %2s ",      cell->page.c_str());
-      printf("path: %-24.24s ", cell->path.c_str());
-      printf("type: %-16s ",    cell_type_to_name[cell->cell_type].c_str());
-      printf("tag: %-16.16s ", cell->tag.c_str());
-      printf("decl: %-16.16s ", cell->decl.c_str());
-      printf("gate: %-12s ",    cell->gate.c_str());
-      printf("name: %-24.24s ", cell->name.c_str());
-      printf("doc: %-24.24s ", cell->doc.c_str());
-      printf("args: %s ", cell->args.c_str());
-      printf("\n");
-    }
+    printf("flag: %1s ",      cell->flag.c_str());
+    printf("page: %3s ",      cell->page.c_str());
+    printf("tag: %-16.16s ",  cell->tag.c_str());
+    printf("name: %-24.24s ", cell->name.c_str());
+    printf("gate: %-12s ",    cell->gate.c_str());
+    printf("args: %s ",       cell->args.c_str());
+    printf("doc: %-24.24s ",  cell->doc.c_str());
+    printf("\n");
     */
   }
 
-  //sanity_check();
+  sanity_check();
 
 
   printf("Parsed %d files\n", total_files);
@@ -528,10 +536,10 @@ bool DieDB::parse_file(const std::string& source_path) {
     string whole_tag = match[1].str();
     line = match.suffix();
 
-    static regex pin_tag(R"((#?)()(PIN_\w+))");
+    static regex pin_tag(R"((#?)()(PIN_\d{2}))");
     static regex sig_tag(R"((#?)()(SIG_\w+))");
     static regex bus_tag(R"((#?)()(BUS_\w+))");
-    static regex cell_tag(R"((#?)(p[0-9]{2})\.([A-Z]{4}\w*))");
+    static regex cell_tag(R"((#?)(p[0-9]{2})\.([A-Z]{4}))");
 
     bool found_match = false;
     if (!found_match) found_match = regex_search(whole_tag, match, pin_tag);
@@ -589,6 +597,3 @@ bool DieDB::parse_file(const std::string& source_path) {
   total_files++;
   return true;
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-

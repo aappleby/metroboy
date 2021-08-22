@@ -40,9 +40,9 @@ struct GateInfo gate_db[] = {
   {"pin_io",      DieCellType::PIN_IO,  {"PUn", "HI", "LO", "OEp", "Dp"}, {"qp_int"} },
   {"pin_clk",     DieCellType::PIN_CLK, {"clk", "clkgood"},               {"clk", "clkgood"} },
 
+  {"dff8n",       DieCellType::DFF,     {"CLKn", "Dn"},                 {"qp", "qn"} },
   {"dff8p",       DieCellType::DFF,     {"CLKp", "Dn"},                 {"qp", "qn"} },
-  {"dff8n",       DieCellType::DFF,     {"CLKp", "Dn"},                 {"qp", "qn"} },
-  {"dff9",        DieCellType::DFF,     {"CLKp", "SETn", "Dp"},         {"qp", "qn"} },
+  {"dff9",        DieCellType::DFF,     {"CLKp", "SETn", "Dn"},         {"qp", "qn"} },
   {"dff11",       DieCellType::DFF,     {"CLKp", "RSTn", "Dp"},         {"qp", "qn"} },
   {"dff13",       DieCellType::DFF,     {"CLKp", "RSTn", "Dp"},         {"qp", "qn"} },
   {"dff17",       DieCellType::DFF,     {"CLKp", "RSTn", "Dp"},         {"qp", "qn"} },
@@ -416,15 +416,15 @@ bool DieDB::parse_dir(const std::string& path) {
 
   for (const auto& entry : filesystem::directory_iterator(path)) {
     if (entry.is_regular_file()) {
-      current_filename = entry.path().string();
-      if (current_filename.ends_with(".h")) parse_file(current_filename);
+      auto filename = entry.path().string();
+      if (filename.ends_with(".h")) parse_file(filename);
     }
   }
 
   for (const auto& entry : filesystem::directory_iterator(path)) {
     if (entry.is_regular_file()) {
-      current_filename = entry.path().string();
-      if (current_filename.ends_with(".cpp")) parse_file(current_filename);
+      auto filename = entry.path().string();
+      if (filename.ends_with(".cpp")) parse_file(filename);
     }
   }
 
@@ -434,9 +434,6 @@ bool DieDB::parse_dir(const std::string& path) {
 
   //----------------------------------------
   // Postprocess the cells.
-
-  current_filename = "<postprocess>";
-  current_line = "";
 
   for (auto& [tag, cell] : cell_map) {
     auto& info = gate_info(cell->gate);
@@ -473,6 +470,8 @@ bool DieDB::parse_dir(const std::string& path) {
       DieCell* src_cell = get_cell(src_tag);
       CHECK_P(src_cell);
 
+      src_cell->fanout++;
+
       DieTrace trace = {
         src_cell->tag,
         src_port,
@@ -504,7 +503,7 @@ bool DieDB::parse_dir(const std::string& path) {
   printf("Parsed %d files\n", total_files);
   printf("Parsed %d lines\n", total_lines);
   printf("Found %d cells\n", (int)cell_map.size());
-  printf("Found %d args\n", total_args);
+  printf("Found %d traces\n", (int)traces.size());
 
   return true;
 }
@@ -515,17 +514,14 @@ bool DieDB::parse_file(const std::string& source_path) {
   printf("Parsing %s\n", source_path.c_str());
 
   std::ifstream lines(source_path);
-  current_linenum = 0;
 
   for (string line; getline(lines, line); ) {
     line = clean_line(line.c_str());
-    current_line = line;
-    current_linenum++;
     total_lines++;
 
     static regex rx_noparse("plait_noparse");
     if (regex_search(line, rx_noparse)) {
-      printf("Not parsing %s due to 'plait_noparse'\n", current_filename.c_str());
+      printf("Not parsing %s due to 'plait_noparse'\n", source_path.c_str());
       break;
     }
 

@@ -167,14 +167,8 @@ struct DieDB {
   std::map<std::string, DieCell*> cell_map;
   std::vector<DieTrace> traces;
 
-  std::string current_filename;
-  std::string current_line;
-  int current_linenum;
-
-  int total_lines = 0;
   int total_files = 0;
-  int total_tagged_lines = 0;
-  int total_args = 0;
+  int total_lines = 0;
 };
 
 //------------------------------------------------------------------------------------------------------------------------

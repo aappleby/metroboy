@@ -92,11 +92,9 @@ int main(int argc, char** argv) {
   app->die_db.parse_dir("GateBoyLib");
   printf("Done\n\n");
 
-  /*
   printf("Saving haxxor.die_db.json\n");
   app->die_db.save_json("haxxor.die_db.json");
   printf("Done\n\n");
-  */
 
 
 #if 0

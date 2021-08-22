@@ -158,12 +158,12 @@ void GateBoy::tock_joypad() {
   /*#p05.KEJA*/ joy.KEJA_JOYP_L2n.tp_latchn(BYZO_FF00_RDn, joy.PIN_65_JOY_P12.qp_int_new()); // C / Up
   /*#p05.KOLO*/ joy.KOLO_JOYP_L3n.tp_latchn(BYZO_FF00_RDn, joy.PIN_64_JOY_P13.qp_int_new()); // S / Down
 
-  /*#p05.KEMA_JOY0_TO_CD0*/ wire KEMA_JOY0_TO_CD0 = tri6_nn(BYZO_FF00_RDn, joy.KEVU_JOYP_L0n.qp_new());
-  /*#p05.KURO_JOY1_TO_CD1*/ wire KURO_JOY1_TO_CD1 = tri6_nn(BYZO_FF00_RDn, joy.KAPA_JOYP_L1n.qp_new());
-  /*#p05.KUVE_JOY2_TO_CD2*/ wire KUVE_JOY2_TO_CD2 = tri6_nn(BYZO_FF00_RDn, joy.KEJA_JOYP_L2n.qp_new());
-  /*#p05.JEKU_JOY3_TO_CD3*/ wire JEKU_JOY3_TO_CD3 = tri6_nn(BYZO_FF00_RDn, joy.KOLO_JOYP_L3n.qp_new());
-  /*#p05.KOCE_JOY4_TO_CD4*/ wire KOCE_JOY4_TO_CD4 = tri6_nn(BYZO_FF00_RDn, joy.KELY_JOYP_UDLRp.qn_new());
-  /*#p05.CUDY_JOY5_TO_CD5*/ wire CUDY_JOY5_TO_CD5 = tri6_nn(BYZO_FF00_RDn, joy.COFY_JOYP_ABCSp.qn_new());
+  /*#p05.KEMA_JOY0_TO_CD0*/ triwire KEMA_JOY0_TO_CD0 = tri6_nn(BYZO_FF00_RDn, joy.KEVU_JOYP_L0n.qp_new());
+  /*#p05.KURO_JOY1_TO_CD1*/ triwire KURO_JOY1_TO_CD1 = tri6_nn(BYZO_FF00_RDn, joy.KAPA_JOYP_L1n.qp_new());
+  /*#p05.KUVE_JOY2_TO_CD2*/ triwire KUVE_JOY2_TO_CD2 = tri6_nn(BYZO_FF00_RDn, joy.KEJA_JOYP_L2n.qp_new());
+  /*#p05.JEKU_JOY3_TO_CD3*/ triwire JEKU_JOY3_TO_CD3 = tri6_nn(BYZO_FF00_RDn, joy.KOLO_JOYP_L3n.qp_new());
+  /*#p05.KOCE_JOY4_TO_CD4*/ triwire KOCE_JOY4_TO_CD4 = tri6_nn(BYZO_FF00_RDn, joy.KELY_JOYP_UDLRp.qn_new());
+  /*#p05.CUDY_JOY5_TO_CD5*/ triwire CUDY_JOY5_TO_CD5 = tri6_nn(BYZO_FF00_RDn, joy.COFY_JOYP_ABCSp.qn_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(KEMA_JOY0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(KURO_JOY1_TO_CD1);

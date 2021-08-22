@@ -342,14 +342,14 @@ void GateBoy::tock_ext()
   //probe_wire(30, "RUPA", ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
   //probe_wire(31, "SAZY", ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
 
-  /*#p08.RYMA_EL0_TO_CD0*/ wire RYMA_EL0_TO_CD0 = tri6_nn(LAVO_HOLDn, ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
-  /* p08.RUVO_EL1_TO_CD1*/ wire RUVO_EL1_TO_CD1 = tri6_nn(LAVO_HOLDn, ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
-  /* p08.RYKO_EL2_TO_CD2*/ wire RYKO_EL2_TO_CD2 = tri6_nn(LAVO_HOLDn, ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
-  /* p08.TAVO_EL3_TO_CD3*/ wire TAVO_EL3_TO_CD3 = tri6_nn(LAVO_HOLDn, ext_data_latch.SELO_EXT_DATA_LATCH_D3n.qp_new());
-  /* p08.TEPE_EL4_TO_CD4*/ wire TEPE_EL4_TO_CD4 = tri6_nn(LAVO_HOLDn, ext_data_latch.SODY_EXT_DATA_LATCH_D4n.qp_new());
-  /* p08.SAFO_EL5_TO_CD5*/ wire SAFO_EL5_TO_CD5 = tri6_nn(LAVO_HOLDn, ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.qp_new());
-  /* p08.SEVU_EL6_TO_CD6*/ wire SEVU_EL6_TO_CD6 = tri6_nn(LAVO_HOLDn, ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
-  /* p08.TAJU_EL7_TO_CD7*/ wire TAJU_EL7_TO_CD7 = tri6_nn(LAVO_HOLDn, ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
+  /*#p08.RYMA_EL0_TO_CD0*/ triwire RYMA_EL0_TO_CD0 = tri6_nn(LAVO_HOLDn, ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
+  /* p08.RUVO_EL1_TO_CD1*/ triwire RUVO_EL1_TO_CD1 = tri6_nn(LAVO_HOLDn, ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
+  /* p08.RYKO_EL2_TO_CD2*/ triwire RYKO_EL2_TO_CD2 = tri6_nn(LAVO_HOLDn, ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
+  /* p08.TAVO_EL3_TO_CD3*/ triwire TAVO_EL3_TO_CD3 = tri6_nn(LAVO_HOLDn, ext_data_latch.SELO_EXT_DATA_LATCH_D3n.qp_new());
+  /* p08.TEPE_EL4_TO_CD4*/ triwire TEPE_EL4_TO_CD4 = tri6_nn(LAVO_HOLDn, ext_data_latch.SODY_EXT_DATA_LATCH_D4n.qp_new());
+  /* p08.SAFO_EL5_TO_CD5*/ triwire SAFO_EL5_TO_CD5 = tri6_nn(LAVO_HOLDn, ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.qp_new());
+  /* p08.SEVU_EL6_TO_CD6*/ triwire SEVU_EL6_TO_CD6 = tri6_nn(LAVO_HOLDn, ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
+  /* p08.TAJU_EL7_TO_CD7*/ triwire TAJU_EL7_TO_CD7 = tri6_nn(LAVO_HOLDn, ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(RYMA_EL0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(RUVO_EL1_TO_CD1);

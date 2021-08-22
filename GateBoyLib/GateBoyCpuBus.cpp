@@ -39,14 +39,14 @@ void GateBoy::tock_bootrom() {
 
   /*SIG_BOOT_CSp*/ cpu_signals.SIG_BOOT_CSp.sig_out(ZERY_BOOT_CSp);
 
-  wire boot_d0 = tri6_pn(ZERY_BOOT_CSp, bit(~bootrom_data, 0));
-  wire boot_d1 = tri6_pn(ZERY_BOOT_CSp, bit(~bootrom_data, 1));
-  wire boot_d2 = tri6_pn(ZERY_BOOT_CSp, bit(~bootrom_data, 2));
-  wire boot_d3 = tri6_pn(ZERY_BOOT_CSp, bit(~bootrom_data, 3));
-  wire boot_d4 = tri6_pn(ZERY_BOOT_CSp, bit(~bootrom_data, 4));
-  wire boot_d5 = tri6_pn(ZERY_BOOT_CSp, bit(~bootrom_data, 5));
-  wire boot_d6 = tri6_pn(ZERY_BOOT_CSp, bit(~bootrom_data, 6));
-  wire boot_d7 = tri6_pn(ZERY_BOOT_CSp, bit(~bootrom_data, 7));
+  triwire boot_d0 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 0));
+  triwire boot_d1 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 1));
+  triwire boot_d2 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 2));
+  triwire boot_d3 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 3));
+  triwire boot_d4 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 4));
+  triwire boot_d5 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 5));
+  triwire boot_d6 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 6));
+  triwire boot_d7 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 7));
 
   new_bus.BUS_CPU_D00p.tri_bus(boot_d0);
   new_bus.BUS_CPU_D01p.tri_bus(boot_d1);
@@ -58,7 +58,7 @@ void GateBoy::tock_bootrom() {
   new_bus.BUS_CPU_D07p.tri_bus(boot_d7);
 
   /* p07.TEXE*/ wire TEXE_FF50_RDp =  and4(cpu_signals.TEDO_CPU_RDp.out_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
-  /* p07.SYPU*/ wire SYPU_BOOT_TO_CD0 = tri6_pn(TEXE_FF50_RDp, cpu_signals.TEPU_BOOT_BITn_h.qp_new());
+  /* p07.SYPU*/ triwire SYPU_BOOT_TO_CD0 = tri6_pn(TEXE_FF50_RDp, cpu_signals.TEPU_BOOT_BITn_h.qp_new());
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(SYPU_BOOT_TO_CD0);
 
   /* p07.SATO*/ SATO_BOOT_BITn = or2(new_bus.BUS_CPU_D00p.out_new(), cpu_signals.TEPU_BOOT_BITn_h.qp_new());

@@ -96,11 +96,11 @@ void GateBoy::tock_spu() {
   wire ERED_CH3_ACTIVE = 0; // FIXME stub input d
   wire JUWA_CH4_ACTIVE = 0; // FIXME stub input d
 
-  /*#p23.COTO_NR52_TO_CD0*/ wire COTO_NR52_TO_CD0 = tri6_nn(DOLE_NR52_RDn, CARA_CH1_ACTIVE);
-  /*#p23.EFUS_NR52_TO_CD1*/ wire EFUS_NR52_TO_CD1 = tri6_nn(DURU_NR52_RDn, DEFU_CH2_ACTIVE);
-  /*#p23.FATE_NR52_TO_CD2*/ wire FATE_NR52_TO_CD2 = tri6_nn(FEWA_NR52_RDn, ERED_CH3_ACTIVE);
-  /*#p23.KOGE_NR52_TO_CD3*/ wire KOGE_NR52_TO_CD3 = tri6_nn(KAMU_NR52_RDn, JUWA_CH4_ACTIVE);
-  /*#p23.HOPE_NR52_TO_CD7*/ wire HOPE_NR52_TO_CD7 = tri6_nn(JURE_NR52_RDn, reg_NR52.HADA_ALL_SOUND_ONp.qn_new());
+  /*#p23.COTO_NR52_TO_CD0*/ triwire COTO_NR52_TO_CD0 = tri6_nn(DOLE_NR52_RDn, CARA_CH1_ACTIVE);
+  /*#p23.EFUS_NR52_TO_CD1*/ triwire EFUS_NR52_TO_CD1 = tri6_nn(DURU_NR52_RDn, DEFU_CH2_ACTIVE);
+  /*#p23.FATE_NR52_TO_CD2*/ triwire FATE_NR52_TO_CD2 = tri6_nn(FEWA_NR52_RDn, ERED_CH3_ACTIVE);
+  /*#p23.KOGE_NR52_TO_CD3*/ triwire KOGE_NR52_TO_CD3 = tri6_nn(KAMU_NR52_RDn, JUWA_CH4_ACTIVE);
+  /*#p23.HOPE_NR52_TO_CD7*/ triwire HOPE_NR52_TO_CD7 = tri6_nn(JURE_NR52_RDn, reg_NR52.HADA_ALL_SOUND_ONp.qn_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(COTO_NR52_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(EFUS_NR52_TO_CD1);
@@ -130,14 +130,14 @@ void GateBoy::tock_spu() {
   /*#p09.BEFU*/ wire BEFU_NR50_RDp = nor2(AGUZ_CPU_RDn, BYMA_ADDR_FF24n);
   /*#p09.ADAK*/ wire ADAK_NR50_RDn = not1(BEFU_NR50_RDp);
 
-  /*#p23.AKOD_NR50_TO_CD0*/ wire AKOD_NR50_TO_CD0 = tri6_nn(ADAK_NR50_RDn, reg_NR50.APEG_VOL_L0.qp_new());
-  /*#p23.AWED_NR50_TO_CD1*/ wire AWED_NR50_TO_CD1 = tri6_nn(ADAK_NR50_RDn, reg_NR50.BYGA_VOL_L1.qp_new());
-  /*#p23.AVUD_NR50_TO_CD2*/ wire AVUD_NR50_TO_CD2 = tri6_nn(ADAK_NR50_RDn, reg_NR50.AGER_VOL_L2.qp_new());
-  /*#p23.AXEM_NR50_TO_CD3*/ wire AXEM_NR50_TO_CD3 = tri6_nn(ADAK_NR50_RDn, reg_NR50.APOS_VIN_TO_L.qp_new());
-  /*#p23.AMAD_NR50_TO_CD4*/ wire AMAD_NR50_TO_CD4 = tri6_nn(ADAK_NR50_RDn, reg_NR50.BYRE_VOL_R0.qp_new());
-  /*#p23.ARUX_NR50_TO_CD5*/ wire ARUX_NR50_TO_CD5 = tri6_nn(ADAK_NR50_RDn, reg_NR50.BUMO_VOL_R1.qp_new());
-  /*#p23.BOCY_NR50_TO_CD6*/ wire BOCY_NR50_TO_CD6 = tri6_nn(ADAK_NR50_RDn, reg_NR50.COZU_VOL_R2.qp_new());
-  /*#p23.ATUM_NR50_TO_CD7*/ wire ATUM_NR50_TO_CD7 = tri6_nn(ADAK_NR50_RDn, reg_NR50.BEDU_VIN_TO_R.qp_new());
+  /*#p23.AKOD_NR50_TO_CD0*/ triwire AKOD_NR50_TO_CD0 = tri6_nn(ADAK_NR50_RDn, reg_NR50.APEG_VOL_L0.qp_new());
+  /*#p23.AWED_NR50_TO_CD1*/ triwire AWED_NR50_TO_CD1 = tri6_nn(ADAK_NR50_RDn, reg_NR50.BYGA_VOL_L1.qp_new());
+  /*#p23.AVUD_NR50_TO_CD2*/ triwire AVUD_NR50_TO_CD2 = tri6_nn(ADAK_NR50_RDn, reg_NR50.AGER_VOL_L2.qp_new());
+  /*#p23.AXEM_NR50_TO_CD3*/ triwire AXEM_NR50_TO_CD3 = tri6_nn(ADAK_NR50_RDn, reg_NR50.APOS_VIN_TO_L.qp_new());
+  /*#p23.AMAD_NR50_TO_CD4*/ triwire AMAD_NR50_TO_CD4 = tri6_nn(ADAK_NR50_RDn, reg_NR50.BYRE_VOL_R0.qp_new());
+  /*#p23.ARUX_NR50_TO_CD5*/ triwire ARUX_NR50_TO_CD5 = tri6_nn(ADAK_NR50_RDn, reg_NR50.BUMO_VOL_R1.qp_new());
+  /*#p23.BOCY_NR50_TO_CD6*/ triwire BOCY_NR50_TO_CD6 = tri6_nn(ADAK_NR50_RDn, reg_NR50.COZU_VOL_R2.qp_new());
+  /*#p23.ATUM_NR50_TO_CD7*/ triwire ATUM_NR50_TO_CD7 = tri6_nn(ADAK_NR50_RDn, reg_NR50.BEDU_VIN_TO_R.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(AKOD_NR50_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(AWED_NR50_TO_CD1);
@@ -173,14 +173,14 @@ void GateBoy::tock_spu() {
   /* p09.HEFA*/ wire HEFA_NR51_RDp = nor2(GEPA_ADDR_FF25n, AGUZ_CPU_RDn);
   /* p09.GUMU*/ wire GUMU_NR51_RDn = not1(HEFA_NR51_RDp);
 
-  /* p09.CAPU_NR51_TO_CD0*/ wire CAPU_NR51_TO_CD0 = tri6_nn(GUMU_NR51_RDn, reg_NR51.ANEV_NR51_0.qp_new());
-  /* p09.CAGA_NR51_TO_CD1*/ wire CAGA_NR51_TO_CD1 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BOGU_NR51_1.qp_new());
-  /* p09.BOCA_NR51_TO_CD2*/ wire BOCA_NR51_TO_CD2 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BAFO_NR51_2.qp_new());
-  /* p09.BUZU_NR51_TO_CD3*/ wire BUZU_NR51_TO_CD3 = tri6_nn(GUMU_NR51_RDn, reg_NR51.ATUF_NR51_3.qp_new());
-  /* p09.CERE_NR51_TO_CD4*/ wire CERE_NR51_TO_CD4 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BUME_NR51_4.qp_new());
-  /* p09.CADA_NR51_TO_CD5*/ wire CADA_NR51_TO_CD5 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BOFA_NR51_5.qp_new());
-  /* p09.CAVU_NR51_TO_CD6*/ wire CAVU_NR51_TO_CD6 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BEFO_NR51_6.qp_new());
-  /* p09.CUDU_NR51_TO_CD7*/ wire CUDU_NR51_TO_CD7 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BEPU_NR51_7.qp_new());
+  /* p09.CAPU_NR51_TO_CD0*/ triwire CAPU_NR51_TO_CD0 = tri6_nn(GUMU_NR51_RDn, reg_NR51.ANEV_NR51_0.qp_new());
+  /* p09.CAGA_NR51_TO_CD1*/ triwire CAGA_NR51_TO_CD1 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BOGU_NR51_1.qp_new());
+  /* p09.BOCA_NR51_TO_CD2*/ triwire BOCA_NR51_TO_CD2 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BAFO_NR51_2.qp_new());
+  /* p09.BUZU_NR51_TO_CD3*/ triwire BUZU_NR51_TO_CD3 = tri6_nn(GUMU_NR51_RDn, reg_NR51.ATUF_NR51_3.qp_new());
+  /* p09.CERE_NR51_TO_CD4*/ triwire CERE_NR51_TO_CD4 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BUME_NR51_4.qp_new());
+  /* p09.CADA_NR51_TO_CD5*/ triwire CADA_NR51_TO_CD5 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BOFA_NR51_5.qp_new());
+  /* p09.CAVU_NR51_TO_CD6*/ triwire CAVU_NR51_TO_CD6 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BEFO_NR51_6.qp_new());
+  /* p09.CUDU_NR51_TO_CD7*/ triwire CUDU_NR51_TO_CD7 = tri6_nn(GUMU_NR51_RDn, reg_NR51.BEPU_NR51_7.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(CAPU_NR51_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(CAGA_NR51_TO_CD1);

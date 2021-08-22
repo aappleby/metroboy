@@ -9,29 +9,24 @@ void     commit_blob(void* blob, size_t size);
 
 //-----------------------------------------------------------------------------
 
-#define CHECK_BIT(A) CHECK_N((A) & 0b11111110)
-#define CHECK_CLK(A) CHECK_N((A) & 0b11111101)
-
+// These _must_ be defined for all builds.
 #define BIT_DATA   0b00000001
 #define BIT_CLOCK  0b00000010
-
-#define TRI_DATA   0b00000001
 #define TRI_DRIVEN 0b00001000
 
+// These are only used for error checking and can be disabled in fast builds.
 #ifdef FAST_MODE
-
 #define BIT_PULLED 0b00000000
 #define BIT_DRIVEN 0b00000000
 #define BIT_OLD    0b00000000
 #define BIT_NEW    0b00000000
-
+#define TRI_NEW    0b00000000
 #else
-
 #define BIT_PULLED 0b00000100
 #define BIT_DRIVEN 0b00001000
 #define BIT_OLD    0b00010000
 #define BIT_NEW    0b00100000
-
+#define TRI_NEW    0b00100000
 #endif
 
 //-----------------------------------------------------------------------------
@@ -122,7 +117,7 @@ struct SigOut : private BitBase {
 struct DFF : public BitBase {
   void dff_r(wire CLKp, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & 2;
+    CLKp = (CLKp << 1) & BIT_CLOCK;
 
     if ((~state & CLKp) == 0) Dp = state;
 
@@ -149,7 +144,7 @@ struct DFF8n : public BitBase {
   void dff8n(wire CLKn, wire Dn) {
     check_old();
     wire Dp = ~Dn;
-    wire CLKp = (~CLKn << 1) & 2;
+    wire CLKp = (~CLKn << 1) & BIT_CLOCK;
 
     if ((~state & CLKp) == 0) Dp = state;
 
@@ -174,7 +169,7 @@ struct DFF8p : public BitBase {
   void dff8p(wire CLKp, wire Dn) {
     check_old();
     wire Dp = ~Dn;
-    CLKp = (CLKp << 1) & 2;
+    CLKp = (CLKp << 1) & BIT_CLOCK;
 
     if ((~state & CLKp) == 0) Dp = state;
 
@@ -201,7 +196,7 @@ struct DFF9 : public BitBase {
   void dff9(wire CLKp, wire SETn, wire Dn) {
     check_old();
     wire Dp = ~Dn;
-    CLKp = (CLKp << 1) & 2;
+    CLKp = (CLKp << 1) & BIT_CLOCK;
 
     if ((~state & CLKp) == 0) Dp = state;
 
@@ -230,7 +225,7 @@ struct DFF9 : public BitBase {
 struct DFF11 : public BitBase {
   void dff11(wire CLKp, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & 2;
+    CLKp = (CLKp << 1) & BIT_CLOCK;
 
     if ((~state & CLKp) == 0) Dp = state;
 
@@ -259,7 +254,7 @@ struct DFF11 : public BitBase {
 struct DFF13 : public BitBase {
   void dff13(wire CLKp, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & 2;
+    CLKp = (CLKp << 1) & BIT_CLOCK;
 
     if ((~state & CLKp) == 0) Dp = state;
 
@@ -291,7 +286,7 @@ struct DFF13 : public BitBase {
 struct DFF17 : public BitBase {
   void dff17(wire CLKp, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & 2;
+    CLKp = (CLKp << 1) & BIT_CLOCK;
 
     if ((~state & CLKp) == 0) Dp = state;
 
@@ -301,7 +296,7 @@ struct DFF17 : public BitBase {
   }
 
   void dff17_any(wire CLKp, wire RSTn, wire Dp) {
-    CLKp = (CLKp << 1) & 2;
+    CLKp = (CLKp << 1) & BIT_CLOCK;
 
     if ((~state & CLKp) == 0) Dp = state;
 
@@ -338,7 +333,7 @@ struct DFF17 : public BitBase {
 struct DFF20 : public BitBase {
   void dff20(wire CLKn, wire LOADp, wire newD) {
     check_old();
-    wire CLKp = (~CLKn << 1) & 2;
+    wire CLKp = (~CLKn << 1) & BIT_CLOCK;
     wire Dp = ~state;
 
     if ((~state & CLKp) == 0) Dp = state;
@@ -381,7 +376,7 @@ struct DFF20 : public BitBase {
 struct DFF22 : public BitBase {
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & 2;
+    CLKp = (CLKp << 1) & BIT_CLOCK;
 
     if ((~state & CLKp) == 0) Dp = state;
 
@@ -416,21 +411,24 @@ struct DFF22 : public BitBase {
 // TRI6NN_05 : NC
 // TRI6NN_06 :
 
+struct triwire {
+  wire state;
+};
 
-inline wire tri_pp(wire OEp, wire Dp) {
-  return bit(OEp) ? BIT_NEW | TRI_DRIVEN | bit(Dp) : BIT_NEW;
+inline triwire tri_pp(wire OEp, wire Dp) {
+  return { wire(bit(OEp) ? TRI_NEW | TRI_DRIVEN | bit(Dp) : TRI_NEW) };
 }
 
-inline wire tri6_nn(wire OEn, wire Dn) {
-  return bit(OEn) ? BIT_NEW : BIT_NEW | TRI_DRIVEN | bit(~Dn);
+inline triwire tri6_nn(wire OEn, wire Dn) {
+  return { wire(bit(OEn) ? TRI_NEW : TRI_NEW | TRI_DRIVEN | bit(~Dn)) };
 }
 
-inline wire tri6_pn(wire OEp, wire Dn) {
-  return bit(OEp) ? BIT_NEW | TRI_DRIVEN | bit(~Dn) : BIT_NEW;
+inline triwire tri6_pn(wire OEp, wire Dn) {
+  return { wire(bit(OEp) ? TRI_NEW | TRI_DRIVEN | bit(~Dn) : TRI_NEW) };
 }
 
-inline wire tri10_np(wire OEn, wire Dp) {
-  return bit(OEn) ? BIT_NEW : BIT_NEW | TRI_DRIVEN | bit(Dp);
+inline triwire tri10_np(wire OEn, wire Dp) {
+  return { wire(bit(OEn) ? TRI_NEW : TRI_NEW | TRI_DRIVEN | bit(Dp)) };
 }
 
 struct Bus : private BitBase {
@@ -441,13 +439,13 @@ struct Bus : private BitBase {
   wire out_mid() const { return state; }
   wire out_new() const { check_new(); return state; }
 
-  void tri_bus(wire tristate) {
+  void tri_bus(triwire t) {
     check_new();
 
     // if both the new and old state are both driven, that's a bus collision.
-    CHECK_N((tristate & TRI_DRIVEN) && (state & BIT_DRIVEN));
+    CHECK_N((t.state & TRI_DRIVEN) && (state & BIT_DRIVEN));
 
-    if (tristate & TRI_DRIVEN) state = uint8_t(tristate);
+    if (t.state & TRI_DRIVEN) state = t.state;
   }
 };
 

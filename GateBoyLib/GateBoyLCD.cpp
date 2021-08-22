@@ -40,14 +40,14 @@ void GateBoy::tock_lyc() {
     /* p23.XYLY*/ wire XYLY_FF45_RDp = and2(ASOT_CPU_RDp(), new_bus.XAYU_FF45p());
     /* p23.WEKU*/ wire WEKU_FF45_RDn = not1(XYLY_FF45_RDp);
 
-    /*#p23.RETU_LYC0_TO_CD0*/ wire RETU_LYC0_TO_CD0 = tri6_nn(WEKU_FF45_RDn, reg_lyc.SYRY_LYC0n.qp_new());
-    /* p23.VOJO_LYC1_TO_CD1*/ wire VOJO_LYC1_TO_CD1 = tri6_nn(WEKU_FF45_RDn, reg_lyc.VUCE_LYC1n.qp_new());
-    /* p23.RAZU_LYC2_TO_CD2*/ wire RAZU_LYC2_TO_CD2 = tri6_nn(WEKU_FF45_RDn, reg_lyc.SEDY_LYC2n.qp_new());
-    /* p23.REDY_LYC3_TO_CD3*/ wire REDY_LYC3_TO_CD3 = tri6_nn(WEKU_FF45_RDn, reg_lyc.SALO_LYC3n.qp_new());
-    /* p23.RACE_LYC4_TO_CD4*/ wire RACE_LYC4_TO_CD4 = tri6_nn(WEKU_FF45_RDn, reg_lyc.SOTA_LYC4n.qp_new());
-    /*#p23.VAZU_LYC5_TO_CD5*/ wire VAZU_LYC5_TO_CD5 = tri6_nn(WEKU_FF45_RDn, reg_lyc.VAFA_LYC5n.qp_new());
-    /* p23.VAFE_LYC6_TO_CD6*/ wire VAFE_LYC6_TO_CD6 = tri6_nn(WEKU_FF45_RDn, reg_lyc.VEVO_LYC6n.qp_new());
-    /* p23.PUFY_LYC7_TO_CD7*/ wire PUFY_LYC7_TO_CD7 = tri6_nn(WEKU_FF45_RDn, reg_lyc.RAHA_LYC7n.qp_new());
+    /*#p23.RETU_LYC0_TO_CD0*/ triwire RETU_LYC0_TO_CD0 = tri6_nn(WEKU_FF45_RDn, reg_lyc.SYRY_LYC0n.qp_new());
+    /* p23.VOJO_LYC1_TO_CD1*/ triwire VOJO_LYC1_TO_CD1 = tri6_nn(WEKU_FF45_RDn, reg_lyc.VUCE_LYC1n.qp_new());
+    /* p23.RAZU_LYC2_TO_CD2*/ triwire RAZU_LYC2_TO_CD2 = tri6_nn(WEKU_FF45_RDn, reg_lyc.SEDY_LYC2n.qp_new());
+    /* p23.REDY_LYC3_TO_CD3*/ triwire REDY_LYC3_TO_CD3 = tri6_nn(WEKU_FF45_RDn, reg_lyc.SALO_LYC3n.qp_new());
+    /* p23.RACE_LYC4_TO_CD4*/ triwire RACE_LYC4_TO_CD4 = tri6_nn(WEKU_FF45_RDn, reg_lyc.SOTA_LYC4n.qp_new());
+    /*#p23.VAZU_LYC5_TO_CD5*/ triwire VAZU_LYC5_TO_CD5 = tri6_nn(WEKU_FF45_RDn, reg_lyc.VAFA_LYC5n.qp_new());
+    /* p23.VAFE_LYC6_TO_CD6*/ triwire VAFE_LYC6_TO_CD6 = tri6_nn(WEKU_FF45_RDn, reg_lyc.VEVO_LYC6n.qp_new());
+    /* p23.PUFY_LYC7_TO_CD7*/ triwire PUFY_LYC7_TO_CD7 = tri6_nn(WEKU_FF45_RDn, reg_lyc.RAHA_LYC7n.qp_new());
 
     /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(RETU_LYC0_TO_CD0);
     /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(VOJO_LYC1_TO_CD1);
@@ -149,14 +149,14 @@ void GateBoy::tock_lcd() {
     /* p23.XUCE*/ wire XUCE_LY6n = not1(reg_ly.MATO_LY6p.qp_new());
     /* p23.XOWO*/ wire XOWO_LY7n = not1(reg_ly.LAFO_LY7p.qp_new());
 
-    /* p23.VEGA_LY0_TO_CD0*/ wire VEGA_LY0_TO_CD0 = tri6_nn(VARO_FF44_RDn, WURY_LY0n);
-    /* p23.WUVA_LY1_TO_CD1*/ wire WUVA_LY1_TO_CD1 = tri6_nn(VARO_FF44_RDn, XEPO_LY1n);
-    /* p23.LYCO_LY2_TO_CD2*/ wire LYCO_LY2_TO_CD2 = tri6_nn(VARO_FF44_RDn, MYFA_LY2n);
-    /* p23.WOJY_LY3_TO_CD3*/ wire WOJY_LY3_TO_CD3 = tri6_nn(VARO_FF44_RDn, XUHY_LY3n);
-    /* p23.VYNE_LY4_TO_CD4*/ wire VYNE_LY4_TO_CD4 = tri6_nn(VARO_FF44_RDn, WATA_LY4n);
-    /* p23.WAMA_LY5_TO_CD5*/ wire WAMA_LY5_TO_CD5 = tri6_nn(VARO_FF44_RDn, XAGA_LY5n);
-    /* p23.WAVO_LY6_TO_CD6*/ wire WAVO_LY6_TO_CD6 = tri6_nn(VARO_FF44_RDn, XUCE_LY6n);
-    /* p23.WEZE_LY7_TO_CD7*/ wire WEZE_LY7_TO_CD7 = tri6_nn(VARO_FF44_RDn, XOWO_LY7n);
+    /* p23.VEGA_LY0_TO_CD0*/ triwire VEGA_LY0_TO_CD0 = tri6_nn(VARO_FF44_RDn, WURY_LY0n);
+    /* p23.WUVA_LY1_TO_CD1*/ triwire WUVA_LY1_TO_CD1 = tri6_nn(VARO_FF44_RDn, XEPO_LY1n);
+    /* p23.LYCO_LY2_TO_CD2*/ triwire LYCO_LY2_TO_CD2 = tri6_nn(VARO_FF44_RDn, MYFA_LY2n);
+    /* p23.WOJY_LY3_TO_CD3*/ triwire WOJY_LY3_TO_CD3 = tri6_nn(VARO_FF44_RDn, XUHY_LY3n);
+    /* p23.VYNE_LY4_TO_CD4*/ triwire VYNE_LY4_TO_CD4 = tri6_nn(VARO_FF44_RDn, WATA_LY4n);
+    /* p23.WAMA_LY5_TO_CD5*/ triwire WAMA_LY5_TO_CD5 = tri6_nn(VARO_FF44_RDn, XAGA_LY5n);
+    /* p23.WAVO_LY6_TO_CD6*/ triwire WAVO_LY6_TO_CD6 = tri6_nn(VARO_FF44_RDn, XUCE_LY6n);
+    /* p23.WEZE_LY7_TO_CD7*/ triwire WEZE_LY7_TO_CD7 = tri6_nn(VARO_FF44_RDn, XOWO_LY7n);
 
     /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(VEGA_LY0_TO_CD0);
     /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(WUVA_LY1_TO_CD1);

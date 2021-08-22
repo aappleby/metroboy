@@ -38,14 +38,14 @@ void GateBoy::tock_div() {
   /* p01.UDOR*/ wire UDOR_DIV13n = not1(div.TEKA_DIV13p.qp_new());
 
   /* p01.TAGY*/ wire TAGY_FF04_RDp_ext = and4(cpu_signals.TEDO_CPU_RDp.out_new(), new_bus.RYFO_FF04_FF07p(), new_bus.TOLA_A01n(), new_bus.TOVY_A00n());
-  /* p01.TAWU_DIV06_TO_CD0*/ wire TAWU_DIV06_TO_CD0 = tri6_pn(TAGY_FF04_RDp_ext, UMEK_DIV06n);
-  /* p01.TAKU_DIV07_TO_CD1*/ wire TAKU_DIV07_TO_CD1 = tri6_pn(TAGY_FF04_RDp_ext, UREK_DIV07n);
-  /* p01.TEMU_DIV08_TO_CD2*/ wire TEMU_DIV08_TO_CD2 = tri6_pn(TAGY_FF04_RDp_ext, UTOK_DIV08n);
-  /* p01.TUSE_DIV09_TO_CD3*/ wire TUSE_DIV09_TO_CD3 = tri6_pn(TAGY_FF04_RDp_ext, SAPY_DIV09n);
-  /* p01.UPUG_DIV10_TO_CD4*/ wire UPUG_DIV10_TO_CD4 = tri6_pn(TAGY_FF04_RDp_ext, UMER_DIV10n); // Schematic wrong, UPUG/SEPU driving D5/D4
-  /* p01.SEPU_DIV11_TO_CD5*/ wire SEPU_DIV11_TO_CD5 = tri6_pn(TAGY_FF04_RDp_ext, RAVE_DIV11n);
-  /* p01.SAWA_DIV12_TO_CD6*/ wire SAWA_DIV12_TO_CD6 = tri6_pn(TAGY_FF04_RDp_ext, RYSO_DIV12n);
-  /* p01.TATU_DIV13_TO_CD7*/ wire TATU_DIV13_TO_CD7 = tri6_pn(TAGY_FF04_RDp_ext, UDOR_DIV13n);
+  /* p01.TAWU_DIV06_TO_CD0*/ triwire TAWU_DIV06_TO_CD0 = tri6_pn(TAGY_FF04_RDp_ext, UMEK_DIV06n);
+  /* p01.TAKU_DIV07_TO_CD1*/ triwire TAKU_DIV07_TO_CD1 = tri6_pn(TAGY_FF04_RDp_ext, UREK_DIV07n);
+  /* p01.TEMU_DIV08_TO_CD2*/ triwire TEMU_DIV08_TO_CD2 = tri6_pn(TAGY_FF04_RDp_ext, UTOK_DIV08n);
+  /* p01.TUSE_DIV09_TO_CD3*/ triwire TUSE_DIV09_TO_CD3 = tri6_pn(TAGY_FF04_RDp_ext, SAPY_DIV09n);
+  /* p01.UPUG_DIV10_TO_CD4*/ triwire UPUG_DIV10_TO_CD4 = tri6_pn(TAGY_FF04_RDp_ext, UMER_DIV10n); // Schematic wrong, UPUG/SEPU driving D5/D4
+  /* p01.SEPU_DIV11_TO_CD5*/ triwire SEPU_DIV11_TO_CD5 = tri6_pn(TAGY_FF04_RDp_ext, RAVE_DIV11n);
+  /* p01.SAWA_DIV12_TO_CD6*/ triwire SAWA_DIV12_TO_CD6 = tri6_pn(TAGY_FF04_RDp_ext, RYSO_DIV12n);
+  /* p01.TATU_DIV13_TO_CD7*/ triwire TATU_DIV13_TO_CD7 = tri6_pn(TAGY_FF04_RDp_ext, UDOR_DIV13n);
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(TAWU_DIV06_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(TAKU_DIV07_TO_CD1);
@@ -127,14 +127,14 @@ void GateBoy::tock_timer() {
   /*#p03.NUGA*/ timer.NUGA_TIMA7p.dff20(timer.PEDA_TIMA6p.qp_any(), MEXU_TIMA_LOADp, PAGU_TIMA_D7);
 
   /*#p03.TEDA*/ wire TEDA_FF05_RDp =  and4(cpu_signals.TEDO_CPU_RDp.out_new(), new_bus.RYFO_FF04_FF07p(),  new_bus.TOLA_A01n(), new_bus.BUS_CPU_A00p.out_new());
-  /*#p03.SOKU_TIMA0_TO_CD0*/ wire SOKU_TIMA0_TO_CD0 = tri6_pn(TEDA_FF05_RDp, timer.REGA_TIMA0p.qn_new());
-  /*#p03.RACY_TIMA1_TO_CD1*/ wire RACY_TIMA1_TO_CD1 = tri6_pn(TEDA_FF05_RDp, timer.POVY_TIMA1p.qn_new());
-  /*#p03.RAVY_TIMA2_TO_CD2*/ wire RAVY_TIMA2_TO_CD2 = tri6_pn(TEDA_FF05_RDp, timer.PERU_TIMA2p.qn_new());
-  /*#p03.SOSY_TIMA3_TO_CD3*/ wire SOSY_TIMA3_TO_CD3 = tri6_pn(TEDA_FF05_RDp, timer.RATE_TIMA3p.qn_new());
-  /*#p03.SOMU_TIMA4_TO_CD4*/ wire SOMU_TIMA4_TO_CD4 = tri6_pn(TEDA_FF05_RDp, timer.RUBY_TIMA4p.qn_new());
-  /*#p03.SURO_TIMA5_TO_CD5*/ wire SURO_TIMA5_TO_CD5 = tri6_pn(TEDA_FF05_RDp, timer.RAGE_TIMA5p.qn_new());
-  /*#p03.ROWU_TIMA6_TO_CD6*/ wire ROWU_TIMA6_TO_CD6 = tri6_pn(TEDA_FF05_RDp, timer.PEDA_TIMA6p.qn_new());
-  /*#p03.PUSO_TIMA7_TO_CD7*/ wire PUSO_TIMA7_TO_CD7 = tri6_pn(TEDA_FF05_RDp, timer.NUGA_TIMA7p.qn_new());
+  /*#p03.SOKU_TIMA0_TO_CD0*/ triwire SOKU_TIMA0_TO_CD0 = tri6_pn(TEDA_FF05_RDp, timer.REGA_TIMA0p.qn_new());
+  /*#p03.RACY_TIMA1_TO_CD1*/ triwire RACY_TIMA1_TO_CD1 = tri6_pn(TEDA_FF05_RDp, timer.POVY_TIMA1p.qn_new());
+  /*#p03.RAVY_TIMA2_TO_CD2*/ triwire RAVY_TIMA2_TO_CD2 = tri6_pn(TEDA_FF05_RDp, timer.PERU_TIMA2p.qn_new());
+  /*#p03.SOSY_TIMA3_TO_CD3*/ triwire SOSY_TIMA3_TO_CD3 = tri6_pn(TEDA_FF05_RDp, timer.RATE_TIMA3p.qn_new());
+  /*#p03.SOMU_TIMA4_TO_CD4*/ triwire SOMU_TIMA4_TO_CD4 = tri6_pn(TEDA_FF05_RDp, timer.RUBY_TIMA4p.qn_new());
+  /*#p03.SURO_TIMA5_TO_CD5*/ triwire SURO_TIMA5_TO_CD5 = tri6_pn(TEDA_FF05_RDp, timer.RAGE_TIMA5p.qn_new());
+  /*#p03.ROWU_TIMA6_TO_CD6*/ triwire ROWU_TIMA6_TO_CD6 = tri6_pn(TEDA_FF05_RDp, timer.PEDA_TIMA6p.qn_new());
+  /*#p03.PUSO_TIMA7_TO_CD7*/ triwire PUSO_TIMA7_TO_CD7 = tri6_pn(TEDA_FF05_RDp, timer.NUGA_TIMA7p.qn_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(SOKU_TIMA0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(RACY_TIMA1_TO_CD1);
@@ -146,14 +146,14 @@ void GateBoy::tock_timer() {
   /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(PUSO_TIMA7_TO_CD7);
 
   /* p03.TUBY*/ wire TUBY_FF06_RDp =  and4(cpu_signals.TEDO_CPU_RDp.out_new(), new_bus.RYFO_FF04_FF07p(), new_bus.BUS_CPU_A01p.out_new(), new_bus.TOVY_A00n());
-  /*#p03.SETE_TMA0_TO_CD0*/ wire SETE_TMA0_TO_CD0 = tri6_pn(TUBY_FF06_RDp, timer.SABU_TMA0p.qn_new());
-  /*#p03.PYRE_TMA1_TO_CD1*/ wire PYRE_TMA1_TO_CD1 = tri6_pn(TUBY_FF06_RDp, timer.NYKE_TMA1p.qn_new());
-  /*#p03.NOLA_TMA2_TO_CD2*/ wire NOLA_TMA2_TO_CD2 = tri6_pn(TUBY_FF06_RDp, timer.MURU_TMA2p.qn_new());
-  /*#p03.SALU_TMA3_TO_CD3*/ wire SALU_TMA3_TO_CD3 = tri6_pn(TUBY_FF06_RDp, timer.TYVA_TMA3p.qn_new());
-  /*#p03.SUPO_TMA4_TO_CD4*/ wire SUPO_TMA4_TO_CD4 = tri6_pn(TUBY_FF06_RDp, timer.TYRU_TMA4p.qn_new());
-  /*#p03.SOTU_TMA5_TO_CD5*/ wire SOTU_TMA5_TO_CD5 = tri6_pn(TUBY_FF06_RDp, timer.SUFY_TMA5p.qn_new());
-  /*#p03.REVA_TMA6_TO_CD6*/ wire REVA_TMA6_TO_CD6 = tri6_pn(TUBY_FF06_RDp, timer.PETO_TMA6p.qn_new());
-  /*#p03.SAPU_TMA7_TO_CD7*/ wire SAPU_TMA7_TO_CD7 = tri6_pn(TUBY_FF06_RDp, timer.SETA_TMA7p.qn_new());
+  /*#p03.SETE_TMA0_TO_CD0*/ triwire SETE_TMA0_TO_CD0 = tri6_pn(TUBY_FF06_RDp, timer.SABU_TMA0p.qn_new());
+  /*#p03.PYRE_TMA1_TO_CD1*/ triwire PYRE_TMA1_TO_CD1 = tri6_pn(TUBY_FF06_RDp, timer.NYKE_TMA1p.qn_new());
+  /*#p03.NOLA_TMA2_TO_CD2*/ triwire NOLA_TMA2_TO_CD2 = tri6_pn(TUBY_FF06_RDp, timer.MURU_TMA2p.qn_new());
+  /*#p03.SALU_TMA3_TO_CD3*/ triwire SALU_TMA3_TO_CD3 = tri6_pn(TUBY_FF06_RDp, timer.TYVA_TMA3p.qn_new());
+  /*#p03.SUPO_TMA4_TO_CD4*/ triwire SUPO_TMA4_TO_CD4 = tri6_pn(TUBY_FF06_RDp, timer.TYRU_TMA4p.qn_new());
+  /*#p03.SOTU_TMA5_TO_CD5*/ triwire SOTU_TMA5_TO_CD5 = tri6_pn(TUBY_FF06_RDp, timer.SUFY_TMA5p.qn_new());
+  /*#p03.REVA_TMA6_TO_CD6*/ triwire REVA_TMA6_TO_CD6 = tri6_pn(TUBY_FF06_RDp, timer.PETO_TMA6p.qn_new());
+  /*#p03.SAPU_TMA7_TO_CD7*/ triwire SAPU_TMA7_TO_CD7 = tri6_pn(TUBY_FF06_RDp, timer.SETA_TMA7p.qn_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(SETE_TMA0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(PYRE_TMA1_TO_CD1);
@@ -165,9 +165,9 @@ void GateBoy::tock_timer() {
   /* BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(SAPU_TMA7_TO_CD7);
 
   /* p03.SORA*/ wire SORA_FF07_RDp =  and4(cpu_signals.TEDO_CPU_RDp.out_new(), new_bus.RYFO_FF04_FF07p(), new_bus.BUS_CPU_A01p.out_new(), new_bus.BUS_CPU_A00p.out_new());
-  /*#p03.RYLA_TAC0_TO_CD0*/ wire RYLA_TAC0_TO_CD0 = tri6_pn(SORA_FF07_RDp, timer.SOPU_TAC0p.qn_new());
-  /*#p03.ROTE_TAC1_TO_CD1*/ wire ROTE_TAC1_TO_CD1 = tri6_pn(SORA_FF07_RDp, timer.SAMY_TAC1p.qn_new());
-  /*#p03.SUPE_TAC2_TO_CD2*/ wire SUPE_TAC2_TO_CD2 = tri6_pn(SORA_FF07_RDp, timer.SABO_TAC2p.qn_new());
+  /*#p03.RYLA_TAC0_TO_CD0*/ triwire RYLA_TAC0_TO_CD0 = tri6_pn(SORA_FF07_RDp, timer.SOPU_TAC0p.qn_new());
+  /*#p03.ROTE_TAC1_TO_CD1*/ triwire ROTE_TAC1_TO_CD1 = tri6_pn(SORA_FF07_RDp, timer.SAMY_TAC1p.qn_new());
+  /*#p03.SUPE_TAC2_TO_CD2*/ triwire SUPE_TAC2_TO_CD2 = tri6_pn(SORA_FF07_RDp, timer.SABO_TAC2p.qn_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(RYLA_TAC0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(ROTE_TAC1_TO_CD1);

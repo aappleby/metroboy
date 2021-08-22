@@ -49,13 +49,13 @@ void GateBoy::tock_interrupts()
   probe_wire(30, "MUWY LY0",    reg_ly.MUWY_LY0p.qp_new());
   probe_wire(31, "SYRY LYC0",   reg_lyc.SYRY_LYC0n.qn_new());
 
-  /*#p21.TEBY*/ wire TEBY_STAT0_TO_CD0 = tri6_pn(TOBE_FF41_RDp, SADU_STAT_MODE0n);
-  /*#p21.WUGA*/ wire WUGA_STAT1_TO_CD1 = tri6_pn(TOBE_FF41_RDp, XATY_STAT_MODE1n);
-  /*#p21.SEGO*/ wire SEGO_STAT2_TO_CD2 = tri6_pn(TOBE_FF41_RDp, reg_stat.RUPO_LYC_MATCHn.qp_new());
-  /* p21.PUZO*/ wire PUZO_STAT3_TO_CD3 = tri6_nn(VAVE_FF41_RDn, reg_stat.ROXE_STAT_HBI_ENn.qp_new());
-  /* p21.POFO*/ wire POFO_STAT4_TO_CD4 = tri6_nn(VAVE_FF41_RDn, reg_stat.RUFO_STAT_VBI_ENn.qp_new());
-  /* p21.SASY*/ wire SASY_STAT5_TO_CD5 = tri6_nn(VAVE_FF41_RDn, reg_stat.REFE_STAT_OAI_ENn.qp_new());
-  /* p21.POTE*/ wire POTE_STAT6_TO_CD6 = tri6_nn(VAVE_FF41_RDn, reg_stat.RUGU_STAT_LYI_ENn.qp_new());
+  /*#p21.TEBY*/ triwire TEBY_STAT0_TO_CD0 = tri6_pn(TOBE_FF41_RDp, SADU_STAT_MODE0n);
+  /*#p21.WUGA*/ triwire WUGA_STAT1_TO_CD1 = tri6_pn(TOBE_FF41_RDp, XATY_STAT_MODE1n);
+  /*#p21.SEGO*/ triwire SEGO_STAT2_TO_CD2 = tri6_pn(TOBE_FF41_RDp, reg_stat.RUPO_LYC_MATCHn.qp_new());
+  /* p21.PUZO*/ triwire PUZO_STAT3_TO_CD3 = tri6_nn(VAVE_FF41_RDn, reg_stat.ROXE_STAT_HBI_ENn.qp_new());
+  /* p21.POFO*/ triwire POFO_STAT4_TO_CD4 = tri6_nn(VAVE_FF41_RDn, reg_stat.RUFO_STAT_VBI_ENn.qp_new());
+  /* p21.SASY*/ triwire SASY_STAT5_TO_CD5 = tri6_nn(VAVE_FF41_RDn, reg_stat.REFE_STAT_OAI_ENn.qp_new());
+  /* p21.POTE*/ triwire POTE_STAT6_TO_CD6 = tri6_nn(VAVE_FF41_RDn, reg_stat.RUGU_STAT_LYI_ENn.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(TEBY_STAT0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(WUGA_STAT1_TO_CD1);
@@ -119,11 +119,11 @@ void GateBoy::tock_interrupts()
   /*SIG_CPU_INT_JOYPAD*/ interrupts.SIG_CPU_INT_JOYPAD.sig_out(interrupts.ULAK_FF0F_D4p.qp_new());
 
   // FIXME where did these tags go?
-  wire tristate_i0 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D0.qn_new());
-  wire tristate_i1 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D1.qn_new());
-  wire tristate_i2 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D2.qn_new());
-  wire tristate_i3 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D3.qn_new());
-  wire tristate_i4 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D4.qn_new());
+  triwire tristate_i0 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D0.qn_new());
+  triwire tristate_i1 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D1.qn_new());
+  triwire tristate_i2 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D2.qn_new());
+  triwire tristate_i3 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D3.qn_new());
+  triwire tristate_i4 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D4.qn_new());
 
   new_bus.BUS_CPU_D00p.tri_bus(tristate_i0);
   new_bus.BUS_CPU_D01p.tri_bus(tristate_i1);
@@ -142,11 +142,11 @@ void GateBoy::tock_interrupts()
   /* p02.NEJY*/ interrupts.NEJY_FF0F_L3p.tp_latchp(ROLO_FF0F_RDn, interrupts.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
   /* p02.NUTY*/ interrupts.NUTY_FF0F_L4p.tp_latchp(ROLO_FF0F_RDn, interrupts.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
 
-  /*#p02.NELA_IF0_TO_CD0*/ wire NELA_IF0_TO_CD0 = tri6_pn(POLA_FF0F_RDp, interrupts.MATY_FF0F_L0p.qn_new());
-  /*#p02.NABO_IF1_TO_CD1*/ wire NABO_IF1_TO_CD1 = tri6_pn(POLA_FF0F_RDp, interrupts.MOPO_FF0F_L1p.qn_new());
-  /*#p02.ROVA_IF2_TO_CD2*/ wire ROVA_IF2_TO_CD2 = tri6_pn(POLA_FF0F_RDp, interrupts.PAVY_FF0F_L2p.qn_new());
-  /*#p02.PADO_IF3_TO_CD3*/ wire PADO_IF3_TO_CD3 = tri6_pn(POLA_FF0F_RDp, interrupts.NEJY_FF0F_L3p.qn_new());
-  /*#p02.PEGY_IF4_TO_CD4*/ wire PEGY_IF4_TO_CD4 = tri6_pn(POLA_FF0F_RDp, interrupts.NUTY_FF0F_L4p.qn_new());
+  /*#p02.NELA_IF0_TO_CD0*/ triwire NELA_IF0_TO_CD0 = tri6_pn(POLA_FF0F_RDp, interrupts.MATY_FF0F_L0p.qn_new());
+  /*#p02.NABO_IF1_TO_CD1*/ triwire NABO_IF1_TO_CD1 = tri6_pn(POLA_FF0F_RDp, interrupts.MOPO_FF0F_L1p.qn_new());
+  /*#p02.ROVA_IF2_TO_CD2*/ triwire ROVA_IF2_TO_CD2 = tri6_pn(POLA_FF0F_RDp, interrupts.PAVY_FF0F_L2p.qn_new());
+  /*#p02.PADO_IF3_TO_CD3*/ triwire PADO_IF3_TO_CD3 = tri6_pn(POLA_FF0F_RDp, interrupts.NEJY_FF0F_L3p.qn_new());
+  /*#p02.PEGY_IF4_TO_CD4*/ triwire PEGY_IF4_TO_CD4 = tri6_pn(POLA_FF0F_RDp, interrupts.NUTY_FF0F_L4p.qn_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(NELA_IF0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(NABO_IF1_TO_CD1);

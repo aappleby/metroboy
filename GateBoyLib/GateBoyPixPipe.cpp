@@ -76,14 +76,14 @@ void GateBoy::tock_window(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
 
   /* p23.WAXU*/ wire WAXU_FF4A_RDp = and2(ASOT_CPU_RDp(), new_bus.VYGA_FF4Ap());
   /* p23.VOMY*/ wire VOMY_FF4A_RDn = not1(WAXU_FF4A_RDp);
-  /*#p23.PUNU_WY0_TO_CD0*/ wire PUNU_WY0_TO_CD0 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NESO_WY0n.qp_new());
-  /* p23.PODA_WY1_TO_CD1*/ wire PODA_WY1_TO_CD1 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NYRO_WY1n.qp_new());
-  /* p23.PYGU_WY2_TO_CD2*/ wire PYGU_WY2_TO_CD2 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NAGA_WY2n.qp_new());
-  /* p23.LOKA_WY3_TO_CD3*/ wire LOKA_WY3_TO_CD3 = tri6_nn(VOMY_FF4A_RDn, reg_wy.MELA_WY3n.qp_new());
-  /* p23.MEGA_WY4_TO_CD4*/ wire MEGA_WY4_TO_CD4 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NULO_WY4n.qp_new());
-  /* p23.PELA_WY5_TO_CD5*/ wire PELA_WY5_TO_CD5 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NENE_WY5n.qp_new());
-  /* p23.POLO_WY6_TO_CD6*/ wire POLO_WY6_TO_CD6 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NUKA_WY6n.qp_new());
-  /* p23.MERA_WY7_TO_CD7*/ wire MERA_WY7_TO_CD7 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NAFU_WY7n.qp_new());
+  /*#p23.PUNU_WY0_TO_CD0*/ triwire PUNU_WY0_TO_CD0 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NESO_WY0n.qp_new());
+  /* p23.PODA_WY1_TO_CD1*/ triwire PODA_WY1_TO_CD1 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NYRO_WY1n.qp_new());
+  /* p23.PYGU_WY2_TO_CD2*/ triwire PYGU_WY2_TO_CD2 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NAGA_WY2n.qp_new());
+  /* p23.LOKA_WY3_TO_CD3*/ triwire LOKA_WY3_TO_CD3 = tri6_nn(VOMY_FF4A_RDn, reg_wy.MELA_WY3n.qp_new());
+  /* p23.MEGA_WY4_TO_CD4*/ triwire MEGA_WY4_TO_CD4 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NULO_WY4n.qp_new());
+  /* p23.PELA_WY5_TO_CD5*/ triwire PELA_WY5_TO_CD5 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NENE_WY5n.qp_new());
+  /* p23.POLO_WY6_TO_CD6*/ triwire POLO_WY6_TO_CD6 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NUKA_WY6n.qp_new());
+  /* p23.MERA_WY7_TO_CD7*/ triwire MERA_WY7_TO_CD7 = tri6_nn(VOMY_FF4A_RDn, reg_wy.NAFU_WY7n.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(PUNU_WY0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(PODA_WY1_TO_CD1);
@@ -96,14 +96,14 @@ void GateBoy::tock_window(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
 
   /* p23.WYZE*/ wire WYZE_FF4B_RDp = and2(ASOT_CPU_RDp(), new_bus.VUMY_FF4Bp());
   /* p23.VYCU*/ wire VYCU_FF4B_RDn = not1(WYZE_FF4B_RDp);
-  /*#p23.LOVA_WX0_TO_CD0*/ wire LOVA_WX0_TO_CD0 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MYPA_WX0n.qp_new());
-  /* p23.MUKA_WX1_TO_CD1*/ wire MUKA_WX1_TO_CD1 = tri6_nn(VYCU_FF4B_RDn, reg_wx.NOFE_WX1n.qp_new());
-  /* p23.MOKO_WX2_TO_CD2*/ wire MOKO_WX2_TO_CD2 = tri6_nn(VYCU_FF4B_RDn, reg_wx.NOKE_WX2n.qp_new());
-  /* p23.LOLE_WX3_TO_CD3*/ wire LOLE_WX3_TO_CD3 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MEBY_WX3n.qp_new());
-  /* p23.MELE_WX4_TO_CD4*/ wire MELE_WX4_TO_CD4 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MYPU_WX4n.qp_new());
-  /* p23.MUFE_WX5_TO_CD5*/ wire MUFE_WX5_TO_CD5 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MYCE_WX5n.qp_new());
-  /* p23.MULY_WX6_TO_CD6*/ wire MULY_WX6_TO_CD6 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MUVO_WX6n.qp_new());
-  /* p23.MARA_WX7_TO_CD7*/ wire MARA_WX7_TO_CD7 = tri6_nn(VYCU_FF4B_RDn, reg_wx.NUKU_WX7n.qp_new());
+  /*#p23.LOVA_WX0_TO_CD0*/ triwire LOVA_WX0_TO_CD0 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MYPA_WX0n.qp_new());
+  /* p23.MUKA_WX1_TO_CD1*/ triwire MUKA_WX1_TO_CD1 = tri6_nn(VYCU_FF4B_RDn, reg_wx.NOFE_WX1n.qp_new());
+  /* p23.MOKO_WX2_TO_CD2*/ triwire MOKO_WX2_TO_CD2 = tri6_nn(VYCU_FF4B_RDn, reg_wx.NOKE_WX2n.qp_new());
+  /* p23.LOLE_WX3_TO_CD3*/ triwire LOLE_WX3_TO_CD3 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MEBY_WX3n.qp_new());
+  /* p23.MELE_WX4_TO_CD4*/ triwire MELE_WX4_TO_CD4 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MYPU_WX4n.qp_new());
+  /* p23.MUFE_WX5_TO_CD5*/ triwire MUFE_WX5_TO_CD5 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MYCE_WX5n.qp_new());
+  /* p23.MULY_WX6_TO_CD6*/ triwire MULY_WX6_TO_CD6 = tri6_nn(VYCU_FF4B_RDn, reg_wx.MUVO_WX6n.qp_new());
+  /* p23.MARA_WX7_TO_CD7*/ triwire MARA_WX7_TO_CD7 = tri6_nn(VYCU_FF4B_RDn, reg_wx.NUKU_WX7n.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(LOVA_WX0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(MUKA_WX1_TO_CD1);
@@ -511,14 +511,14 @@ void GateBoy::tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 
   /* p36.VUSO*/ wire VUSO_FF47_RDp = and2(ASOT_CPU_RDp(), new_bus.WERA_FF47p());
   /* p36.TEPY*/ wire TEPY_FF47_RDn = not1(VUSO_FF47_RDp);
-  /*#p36.RARO_BGP0_TO_CD0*/ wire RARO_BGP0_TO_CD0 = tri6_nn(TEPY_FF47_RDn, reg_bgp.PAVO_BGP_D0n.qp_new());
-  /* p36.PABA_BGP1_TO_CD1*/ wire PABA_BGP1_TO_CD1 = tri6_nn(TEPY_FF47_RDn, reg_bgp.NUSY_BGP_D1n.qp_new());
-  /* p36.REDO_BGP2_TO_CD2*/ wire REDO_BGP2_TO_CD2 = tri6_nn(TEPY_FF47_RDn, reg_bgp.PYLU_BGP_D2n.qp_new());
-  /* p36.LOBE_BGP3_TO_CD3*/ wire LOBE_BGP3_TO_CD3 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MAXY_BGP_D3n.qp_new());
-  /* p36.LACE_BGP4_TO_CD4*/ wire LACE_BGP4_TO_CD4 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MUKE_BGP_D4n.qp_new());
-  /* p36.LYKA_BGP5_TO_CD5*/ wire LYKA_BGP5_TO_CD5 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MORU_BGP_D5n.qp_new());
-  /* p36.LODY_BGP6_TO_CD6*/ wire LODY_BGP6_TO_CD6 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MOGY_BGP_D6n.qp_new());
-  /* p36.LARY_BGP7_TO_CD7*/ wire LARY_BGP7_TO_CD7 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MENA_BGP_D7n.qp_new());
+  /*#p36.RARO_BGP0_TO_CD0*/ triwire RARO_BGP0_TO_CD0 = tri6_nn(TEPY_FF47_RDn, reg_bgp.PAVO_BGP_D0n.qp_new());
+  /* p36.PABA_BGP1_TO_CD1*/ triwire PABA_BGP1_TO_CD1 = tri6_nn(TEPY_FF47_RDn, reg_bgp.NUSY_BGP_D1n.qp_new());
+  /* p36.REDO_BGP2_TO_CD2*/ triwire REDO_BGP2_TO_CD2 = tri6_nn(TEPY_FF47_RDn, reg_bgp.PYLU_BGP_D2n.qp_new());
+  /* p36.LOBE_BGP3_TO_CD3*/ triwire LOBE_BGP3_TO_CD3 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MAXY_BGP_D3n.qp_new());
+  /* p36.LACE_BGP4_TO_CD4*/ triwire LACE_BGP4_TO_CD4 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MUKE_BGP_D4n.qp_new());
+  /* p36.LYKA_BGP5_TO_CD5*/ triwire LYKA_BGP5_TO_CD5 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MORU_BGP_D5n.qp_new());
+  /* p36.LODY_BGP6_TO_CD6*/ triwire LODY_BGP6_TO_CD6 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MOGY_BGP_D6n.qp_new());
+  /* p36.LARY_BGP7_TO_CD7*/ triwire LARY_BGP7_TO_CD7 = tri6_nn(TEPY_FF47_RDn, reg_bgp.MENA_BGP_D7n.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(RARO_BGP0_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(PABA_BGP1_TO_CD1);
@@ -531,14 +531,14 @@ void GateBoy::tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 
   /* p36.XUFY*/ wire XUFY_FF48_RDp = and2(ASOT_CPU_RDp(), new_bus.XAYO_FF48p());
   /* p36.XOZY*/ wire XOZY_FF48_RDn = not1(XUFY_FF48_RDp);
-  /*#p36.XARY_OBP00_TO_CD0*/ wire XARY_OBP00_TO_CD0 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XUFU_OBP0_D0n.qp_new());
-  /* p36.XOKE_OBP01_TO_CD1*/ wire XOKE_OBP01_TO_CD1 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XUKY_OBP0_D1n.qp_new());
-  /* p36.XUNO_OBP02_TO_CD2*/ wire XUNO_OBP02_TO_CD2 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XOVA_OBP0_D2n.qp_new());
-  /* p36.XUBY_OBP03_TO_CD3*/ wire XUBY_OBP03_TO_CD3 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XALO_OBP0_D3n.qp_new());
-  /* p36.XAJU_OBP04_TO_CD4*/ wire XAJU_OBP04_TO_CD4 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XERU_OBP0_D4n.qp_new());
-  /* p36.XOBO_OBP05_TO_CD5*/ wire XOBO_OBP05_TO_CD5 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XYZE_OBP0_D5n.qp_new());
-  /* p36.XAXA_OBP06_TO_CD6*/ wire XAXA_OBP06_TO_CD6 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XUPO_OBP0_D6n.qp_new());
-  /* p36.XAWO_OBP07_TO_CD7*/ wire XAWO_OBP07_TO_CD7 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XANA_OBP0_D7n.qp_new());
+  /*#p36.XARY_OBP00_TO_CD0*/ triwire XARY_OBP00_TO_CD0 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XUFU_OBP0_D0n.qp_new());
+  /* p36.XOKE_OBP01_TO_CD1*/ triwire XOKE_OBP01_TO_CD1 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XUKY_OBP0_D1n.qp_new());
+  /* p36.XUNO_OBP02_TO_CD2*/ triwire XUNO_OBP02_TO_CD2 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XOVA_OBP0_D2n.qp_new());
+  /* p36.XUBY_OBP03_TO_CD3*/ triwire XUBY_OBP03_TO_CD3 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XALO_OBP0_D3n.qp_new());
+  /* p36.XAJU_OBP04_TO_CD4*/ triwire XAJU_OBP04_TO_CD4 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XERU_OBP0_D4n.qp_new());
+  /* p36.XOBO_OBP05_TO_CD5*/ triwire XOBO_OBP05_TO_CD5 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XYZE_OBP0_D5n.qp_new());
+  /* p36.XAXA_OBP06_TO_CD6*/ triwire XAXA_OBP06_TO_CD6 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XUPO_OBP0_D6n.qp_new());
+  /* p36.XAWO_OBP07_TO_CD7*/ triwire XAWO_OBP07_TO_CD7 = tri6_nn(XOZY_FF48_RDn, reg_obp0.XANA_OBP0_D7n.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(XARY_OBP00_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(XOKE_OBP01_TO_CD1);
@@ -551,14 +551,14 @@ void GateBoy::tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 
   /* p36.MUMY*/ wire MUMY_FF49_RDp = and2(ASOT_CPU_RDp(), new_bus.TEGO_FF49p());
   /* p36.LOTE*/ wire LOTE_FF49_RDn = not1(MUMY_FF49_RDp);
-  /*#p36.LAJU_OBP10_TO_CD0*/ wire LAJU_OBP10_TO_CD0 = tri6_nn(LOTE_FF49_RDn, reg_obp1.MOXY_OBP1_D0n.qp_new());
-  /* p36.LEPA_OBP11_TO_CD1*/ wire LEPA_OBP11_TO_CD1 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LAWO_OBP1_D1n.qp_new());
-  /* p36.LODE_OBP12_TO_CD2*/ wire LODE_OBP12_TO_CD2 = tri6_nn(LOTE_FF49_RDn, reg_obp1.MOSA_OBP1_D2n.qp_new());
-  /* p36.LYZA_OBP13_TO_CD3*/ wire LYZA_OBP13_TO_CD3 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LOSE_OBP1_D3n.qp_new());
-  /* p36.LUKY_OBP14_TO_CD4*/ wire LUKY_OBP14_TO_CD4 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LUNE_OBP1_D4n.qp_new());
-  /* p36.LUGA_OBP15_TO_CD5*/ wire LUGA_OBP15_TO_CD5 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LUGU_OBP1_D5n.qp_new());
-  /* p36.LEBA_OBP16_TO_CD6*/ wire LEBA_OBP16_TO_CD6 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LEPU_OBP1_D6n.qp_new());
-  /* p36.LELU_OBP17_TO_CD7*/ wire LELU_OBP17_TO_CD7 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LUXO_OBP1_D7n.qp_new());
+  /*#p36.LAJU_OBP10_TO_CD0*/ triwire LAJU_OBP10_TO_CD0 = tri6_nn(LOTE_FF49_RDn, reg_obp1.MOXY_OBP1_D0n.qp_new());
+  /* p36.LEPA_OBP11_TO_CD1*/ triwire LEPA_OBP11_TO_CD1 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LAWO_OBP1_D1n.qp_new());
+  /* p36.LODE_OBP12_TO_CD2*/ triwire LODE_OBP12_TO_CD2 = tri6_nn(LOTE_FF49_RDn, reg_obp1.MOSA_OBP1_D2n.qp_new());
+  /* p36.LYZA_OBP13_TO_CD3*/ triwire LYZA_OBP13_TO_CD3 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LOSE_OBP1_D3n.qp_new());
+  /* p36.LUKY_OBP14_TO_CD4*/ triwire LUKY_OBP14_TO_CD4 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LUNE_OBP1_D4n.qp_new());
+  /* p36.LUGA_OBP15_TO_CD5*/ triwire LUGA_OBP15_TO_CD5 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LUGU_OBP1_D5n.qp_new());
+  /* p36.LEBA_OBP16_TO_CD6*/ triwire LEBA_OBP16_TO_CD6 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LEPU_OBP1_D6n.qp_new());
+  /* p36.LELU_OBP17_TO_CD7*/ triwire LELU_OBP17_TO_CD7 = tri6_nn(LOTE_FF49_RDn, reg_obp1.LUXO_OBP1_D7n.qp_new());
 
   /* BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(LAJU_OBP10_TO_CD0);
   /* BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(LEPA_OBP11_TO_CD1);

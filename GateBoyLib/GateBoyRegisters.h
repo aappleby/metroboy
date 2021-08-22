@@ -20,23 +20,23 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteDeltaY {
-  /* p29.ERUC*/ Adder ERUC_YDIFF0;
-  /* p29.ENEF*/ Adder ENEF_YDIFF1;
-  /* p29.FECO*/ Adder FECO_YDIFF2;
-  /* p29.GYKY*/ Adder GYKY_YDIFF3;
-  /* p29.GOPU*/ Adder GOPU_YDIFF4;
-  /* p29.FUWA*/ Adder FUWA_YDIFF5;
-  /* p29.GOJU*/ Adder GOJU_YDIFF6;
-  /* p29.WUHU*/ Adder WUHU_YDIFF7;
+  /*_p29.ERUC*/ Adder ERUC_YDIFF0;
+  /*_p29.ENEF*/ Adder ENEF_YDIFF1;
+  /*_p29.FECO*/ Adder FECO_YDIFF2;
+  /*_p29.GYKY*/ Adder GYKY_YDIFF3;
+  /*_p29.GOPU*/ Adder GOPU_YDIFF4;
+  /*_p29.FUWA*/ Adder FUWA_YDIFF5;
+  /*_p29.GOJU*/ Adder GOJU_YDIFF6;
+  /*_p29.WUHU*/ Adder WUHU_YDIFF7;
 
-  /* p29.DEGE*/ wire DEGE_SPRITE_DELTA0;
-  /* p29.DABY*/ wire DABY_SPRITE_DELTA1;
-  /* p29.DABU*/ wire DABU_SPRITE_DELTA2;
-  /* p29.GYSA*/ wire GYSA_SPRITE_DELTA3;
-  /* p29.GACE*/ wire GACE_SPRITE_DELTA4;
-  /* p29.GUVU*/ wire GUVU_SPRITE_DELTA5;
-  /* p29.GYDA*/ wire GYDA_SPRITE_DELTA6;
-  /* p29.GEWY*/ wire GEWY_SPRITE_DELTA7;
+  /*_p29.DEGE*/ wire DEGE_SPRITE_DELTA0;
+  /*_p29.DABY*/ wire DABY_SPRITE_DELTA1;
+  /*_p29.DABU*/ wire DABU_SPRITE_DELTA2;
+  /*_p29.GYSA*/ wire GYSA_SPRITE_DELTA3;
+  /*_p29.GACE*/ wire GACE_SPRITE_DELTA4;
+  /*_p29.GUVU*/ wire GUVU_SPRITE_DELTA5;
+  /*_p29.GYDA*/ wire GYDA_SPRITE_DELTA6;
+  /*_p29.GEWY*/ wire GEWY_SPRITE_DELTA7;
 };
 
 //-----------------------------------------------------------------------------
@@ -57,14 +57,14 @@ struct PixCount {
   int get_old() { return pack_old(8, &XEHO_PX0p); }
   int get_new() { return pack_new(8, &XEHO_PX0p); }
 
-  /*p21.XEHO*/ DFF17 XEHO_PX0p; // AxCxExGx
-  /*p21.SAVY*/ DFF17 SAVY_PX1p; // AxCxExGx
-  /*p21.XODU*/ DFF17 XODU_PX2p; // AxCxExGx
-  /*p21.XYDO*/ DFF17 XYDO_PX3p; // AxCxExGx
-  /*p21.TUHU*/ DFF17 TUHU_PX4p; // AxCxExGx
-  /*p21.TUKY*/ DFF17 TUKY_PX5p; // AxCxExGx
-  /*p21.TAKO*/ DFF17 TAKO_PX6p; // AxCxExGx
-  /*p21.SYBE*/ DFF17 SYBE_PX7p; // AxCxExGx
+  /*_p21.XEHO*/ DFF17 XEHO_PX0p; // AxCxExGx
+  /*_p21.SAVY*/ DFF17 SAVY_PX1p; // AxCxExGx
+  /*_p21.XODU*/ DFF17 XODU_PX2p; // AxCxExGx
+  /*_p21.XYDO*/ DFF17 XYDO_PX3p; // AxCxExGx
+  /*_p21.TUHU*/ DFF17 TUHU_PX4p; // AxCxExGx
+  /*_p21.TUKY*/ DFF17 TUKY_PX5p; // AxCxExGx
+  /*_p21.TAKO*/ DFF17 TAKO_PX6p; // AxCxExGx
+  /*_p21.SYBE*/ DFF17 SYBE_PX7p; // AxCxExGx
 };
 
 //-----------------------------------------------------------------------------
@@ -125,14 +125,14 @@ struct RegLCDC {
     XONA_LCDC_LCDENn.state = 0b00011010;
   }
 
-  /*p23.VYXE*/ DFF9 VYXE_LCDC_BGENn;   // xxxxxxxH
-  /*p23.XYLO*/ DFF9 XYLO_LCDC_SPENn;   // xxxxxxxH
-  /*p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn; // xxxxxxxH
-  /*p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn;  // xxxxxxxH
-  /*p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn; // xxxxxxxH
-  /*p23.WYMO*/ DFF9 WYMO_LCDC_WINENn;  // xxxxxxxH
-  /*p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn; // xxxxxxxH
-  /*p23.XONA*/ DFF9 XONA_LCDC_LCDENn;  // xxxxxxxH
+  /*#p23.VYXE*/ DFF9 VYXE_LCDC_BGENn;   // xxxxxxxH
+  /*_p23.XYLO*/ DFF9 XYLO_LCDC_SPENn;   // xxxxxxxH
+  /*_p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn; // xxxxxxxH
+  /*_p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn;  // xxxxxxxH
+  /*_p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn; // xxxxxxxH
+  /*_p23.WYMO*/ DFF9 WYMO_LCDC_WINENn;  // xxxxxxxH
+  /*_p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn; // xxxxxxxH
+  /*_p23.XONA*/ DFF9 XONA_LCDC_LCDENn;  // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -148,42 +148,40 @@ struct RegStat {
     RUGU_STAT_LYI_ENn.state = 0b00011011;
   }
 
-  /*p21.RUPO*/ NorLatch RUPO_LYC_MATCHn;       // xxCxxxxx
+  /*_p21.RUPO*/ NorLatch RUPO_LYC_MATCHn;       // xxCxxxxx
 
-  /*p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn; // xxxxxxxH
-  /*p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn; // xxxxxxxH
-  /*p21.REFE*/ DFF9 REFE_STAT_OAI_ENn; // xxxxxxxH
-  /*p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn; // xxxxxxxH
+  /*_p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn; // xxxxxxxH
+  /*_p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn; // xxxxxxxH
+  /*_p21.REFE*/ DFF9 REFE_STAT_OAI_ENn; // xxxxxxxH
+  /*_p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
 // FF42 SCY
 
 struct RegSCY {
-
-  /*p23.GAVE*/ DFF9 GAVE_SCY0n;          // xxxxxxxH
-  /*p23.FYMO*/ DFF9 FYMO_SCY1n;          // xxxxxxxH
-  /*p23.FEZU*/ DFF9 FEZU_SCY2n;          // xxxxxxxH
-  /*p23.FUJO*/ DFF9 FUJO_SCY3n;          // xxxxxxxH
-  /*p23.DEDE*/ DFF9 DEDE_SCY4n;          // xxxxxxxH
-  /*p23.FOTY*/ DFF9 FOTY_SCY5n;          // xxxxxxxH
-  /*p23.FOHA*/ DFF9 FOHA_SCY6n;          // xxxxxxxH
-  /*p23.FUNY*/ DFF9 FUNY_SCY7n;          // xxxxxxxH
+  /*_p23.GAVE*/ DFF9 GAVE_SCY0n;          // xxxxxxxH
+  /*_p23.FYMO*/ DFF9 FYMO_SCY1n;          // xxxxxxxH
+  /*_p23.FEZU*/ DFF9 FEZU_SCY2n;          // xxxxxxxH
+  /*_p23.FUJO*/ DFF9 FUJO_SCY3n;          // xxxxxxxH
+  /*_p23.DEDE*/ DFF9 DEDE_SCY4n;          // xxxxxxxH
+  /*_p23.FOTY*/ DFF9 FOTY_SCY5n;          // xxxxxxxH
+  /*_p23.FOHA*/ DFF9 FOHA_SCY6n;          // xxxxxxxH
+  /*_p23.FUNY*/ DFF9 FUNY_SCY7n;          // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
 // FF43 SCX
 
 struct RegSCX {
-
-  /*p23.DATY*/ DFF9 DATY_SCX0n;          // xxxxxxxH
-  /*p23.DUZU*/ DFF9 DUZU_SCX1n;          // xxxxxxxH
-  /*p23.CYXU*/ DFF9 CYXU_SCX2n;          // xxxxxxxH
-  /*p23.GUBO*/ DFF9 GUBO_SCX3n;          // xxxxxxxH
-  /*p23.BEMY*/ DFF9 BEMY_SCX4n;          // xxxxxxxH
-  /*p23.CUZY*/ DFF9 CUZY_SCX5n;          // xxxxxxxH
-  /*p23.CABU*/ DFF9 CABU_SCX6n;          // xxxxxxxH
-  /*p23.BAKE*/ DFF9 BAKE_SCX7n;          // xxxxxxxH
+  /*_p23.DATY*/ DFF9 DATY_SCX0n;          // xxxxxxxH
+  /*_p23.DUZU*/ DFF9 DUZU_SCX1n;          // xxxxxxxH
+  /*_p23.CYXU*/ DFF9 CYXU_SCX2n;          // xxxxxxxH
+  /*_p23.GUBO*/ DFF9 GUBO_SCX3n;          // xxxxxxxH
+  /*_p23.BEMY*/ DFF9 BEMY_SCX4n;          // xxxxxxxH
+  /*_p23.CUZY*/ DFF9 CUZY_SCX5n;          // xxxxxxxH
+  /*_p23.CABU*/ DFF9 CABU_SCX6n;          // xxxxxxxH
+  /*_p23.BAKE*/ DFF9 BAKE_SCX7n;          // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -204,14 +202,14 @@ struct RegLY {
   uint8_t get_old() const  { return (uint8_t)pack_old(8, (BitBase*)&MUWY_LY0p); }
   uint8_t get_new() const  { return (uint8_t)pack_new(8, (BitBase*)&MUWY_LY0p); }
 
-  /*p21.MUWY*/ DFF17 MUWY_LY0p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.MYRO*/ DFF17 MYRO_LY1p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LEXA*/ DFF17 LEXA_LY2p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LYDO*/ DFF17 LYDO_LY3p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LOVU*/ DFF17 LOVU_LY4p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LEMA*/ DFF17 LEMA_LY5p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.MATO*/ DFF17 MATO_LY6p;  // xxCxxxGx Ticks on G, reset on C
-  /*p21.LAFO*/ DFF17 LAFO_LY7p;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.MUWY*/ DFF17 MUWY_LY0p;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.MYRO*/ DFF17 MYRO_LY1p;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LEXA*/ DFF17 LEXA_LY2p;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LYDO*/ DFF17 LYDO_LY3p;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LOVU*/ DFF17 LOVU_LY4p;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LEMA*/ DFF17 LEMA_LY5p;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.MATO*/ DFF17 MATO_LY6p;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LAFO*/ DFF17 LAFO_LY7p;  // xxCxxxGx Ticks on G, reset on C
 };
 
 //-----------------------------------------------------------------------------
@@ -231,13 +229,13 @@ struct RegLX {
   uint8_t get_old() const  { return (uint8_t)pack_old(7, (BitBase*)&SAXO_LX0p); }
   uint8_t get_new() const  { return (uint8_t)pack_new(7, (BitBase*)&SAXO_LX0p); }
 
-  /*p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.VYZO*/ DFF17 VYZO_LX2p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.TELU*/ DFF17 TELU_LX3p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.SUDE*/ DFF17 SUDE_LX4p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.TAHA*/ DFF17 TAHA_LX5p; // xxCxxxGx Ticks on C, reset on G
-  /*p21.TYRY*/ DFF17 TYRY_LX6p; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.VYZO*/ DFF17 VYZO_LX2p; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.TELU*/ DFF17 TELU_LX3p; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.SUDE*/ DFF17 SUDE_LX4p; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.TAHA*/ DFF17 TAHA_LX5p; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.TYRY*/ DFF17 TYRY_LX6p; // xxCxxxGx Ticks on C, reset on G
 };
 
 //-----------------------------------------------------------------------------
@@ -258,16 +256,16 @@ struct RegLYC {
 
   uint8_t get() const { return (uint8_t)pack_oldn(8, &SYRY_LYC0n); }
 
-  /*p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
+  /*#p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
 
-  /*p23.SYRY*/ DFF9 SYRY_LYC0n; // xxxxxxxH
-  /*p23.VUCE*/ DFF9 VUCE_LYC1n; // xxxxxxxH
-  /*p23.SEDY*/ DFF9 SEDY_LYC2n; // xxxxxxxH
-  /*p23.SALO*/ DFF9 SALO_LYC3n; // xxxxxxxH
-  /*p23.SOTA*/ DFF9 SOTA_LYC4n; // xxxxxxxH
-  /*p23.VAFA*/ DFF9 VAFA_LYC5n; // xxxxxxxH
-  /*p23.VEVO*/ DFF9 VEVO_LYC6n; // xxxxxxxH
-  /*p23.RAHA*/ DFF9 RAHA_LYC7n; // xxxxxxxH
+  /*_p23.SYRY*/ DFF9 SYRY_LYC0n; // xxxxxxxH
+  /*_p23.VUCE*/ DFF9 VUCE_LYC1n; // xxxxxxxH
+  /*_p23.SEDY*/ DFF9 SEDY_LYC2n; // xxxxxxxH
+  /*_p23.SALO*/ DFF9 SALO_LYC3n; // xxxxxxxH
+  /*_p23.SOTA*/ DFF9 SOTA_LYC4n; // xxxxxxxH
+  /*_p23.VAFA*/ DFF9 VAFA_LYC5n; // xxxxxxxH
+  /*_p23.VEVO*/ DFF9 VEVO_LYC6n; // xxxxxxxH
+  /*_p23.RAHA*/ DFF9 RAHA_LYC7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -285,14 +283,14 @@ struct RegBGP {
     MENA_BGP_D7n.state = 0b00011010;
   }
 
-  /*p36.PAVO*/ DFF8p PAVO_BGP_D0n; // xxxxxxxH
-  /*p36.NUSY*/ DFF8p NUSY_BGP_D1n; // xxxxxxxH
-  /*p36.PYLU*/ DFF8p PYLU_BGP_D2n; // xxxxxxxH
-  /*p36.MAXY*/ DFF8p MAXY_BGP_D3n; // xxxxxxxH
-  /*p36.MUKE*/ DFF8p MUKE_BGP_D4n; // xxxxxxxH
-  /*p36.MORU*/ DFF8p MORU_BGP_D5n; // xxxxxxxH
-  /*p36.MOGY*/ DFF8p MOGY_BGP_D6n; // xxxxxxxH
-  /*p36.MENA*/ DFF8p MENA_BGP_D7n; // xxxxxxxH
+  /*#p36.PAVO*/ DFF8p PAVO_BGP_D0n; // xxxxxxxH
+  /*_p36.NUSY*/ DFF8p NUSY_BGP_D1n; // xxxxxxxH
+  /*_p36.PYLU*/ DFF8p PYLU_BGP_D2n; // xxxxxxxH
+  /*_p36.MAXY*/ DFF8p MAXY_BGP_D3n; // xxxxxxxH
+  /*_p36.MUKE*/ DFF8p MUKE_BGP_D4n; // xxxxxxxH
+  /*_p36.MORU*/ DFF8p MORU_BGP_D5n; // xxxxxxxH
+  /*_p36.MOGY*/ DFF8p MOGY_BGP_D6n; // xxxxxxxH
+  /*_p36.MENA*/ DFF8p MENA_BGP_D7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -310,14 +308,14 @@ struct RegOBP0 {
     XANA_OBP0_D7n.state = 0b00011010;
   }
 
-  /*p36.XUFU*/ DFF8p XUFU_OBP0_D0n; // xxxxxxxH
-  /*p36.XUKY*/ DFF8p XUKY_OBP0_D1n; // xxxxxxxH
-  /*p36.XOVA*/ DFF8p XOVA_OBP0_D2n; // xxxxxxxH
-  /*p36.XALO*/ DFF8p XALO_OBP0_D3n; // xxxxxxxH
-  /*p36.XERU*/ DFF8p XERU_OBP0_D4n; // xxxxxxxH
-  /*p36.XYZE*/ DFF8p XYZE_OBP0_D5n; // xxxxxxxH
-  /*p36.XUPO*/ DFF8p XUPO_OBP0_D6n; // xxxxxxxH
-  /*p36.XANA*/ DFF8p XANA_OBP0_D7n; // xxxxxxxH
+  /*_p36.XUFU*/ DFF8p XUFU_OBP0_D0n; // xxxxxxxH
+  /*_p36.XUKY*/ DFF8p XUKY_OBP0_D1n; // xxxxxxxH
+  /*_p36.XOVA*/ DFF8p XOVA_OBP0_D2n; // xxxxxxxH
+  /*_p36.XALO*/ DFF8p XALO_OBP0_D3n; // xxxxxxxH
+  /*_p36.XERU*/ DFF8p XERU_OBP0_D4n; // xxxxxxxH
+  /*_p36.XYZE*/ DFF8p XYZE_OBP0_D5n; // xxxxxxxH
+  /*_p36.XUPO*/ DFF8p XUPO_OBP0_D6n; // xxxxxxxH
+  /*_p36.XANA*/ DFF8p XANA_OBP0_D7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -335,14 +333,14 @@ struct RegOBP1 {
     LUXO_OBP1_D7n.state = 0b00011010;
   }
 
-  /*p36.MOXY*/ DFF8p MOXY_OBP1_D0n; // xxxxxxxH
-  /*p36.LAWO*/ DFF8p LAWO_OBP1_D1n; // xxxxxxxH
-  /*p36.MOSA*/ DFF8p MOSA_OBP1_D2n; // xxxxxxxH
-  /*p36.LOSE*/ DFF8p LOSE_OBP1_D3n; // xxxxxxxH
-  /*p36.LUNE*/ DFF8p LUNE_OBP1_D4n; // xxxxxxxH
-  /*p36.LUGU*/ DFF8p LUGU_OBP1_D5n; // xxxxxxxH
-  /*p36.LEPU*/ DFF8p LEPU_OBP1_D6n; // xxxxxxxH
-  /*p36.LUXO*/ DFF8p LUXO_OBP1_D7n; // xxxxxxxH
+  /*_p36.MOXY*/ DFF8p MOXY_OBP1_D0n; // xxxxxxxH
+  /*_p36.LAWO*/ DFF8p LAWO_OBP1_D1n; // xxxxxxxH
+  /*_p36.MOSA*/ DFF8p MOSA_OBP1_D2n; // xxxxxxxH
+  /*_p36.LOSE*/ DFF8p LOSE_OBP1_D3n; // xxxxxxxH
+  /*_p36.LUNE*/ DFF8p LUNE_OBP1_D4n; // xxxxxxxH
+  /*_p36.LUGU*/ DFF8p LUGU_OBP1_D5n; // xxxxxxxH
+  /*_p36.LEPU*/ DFF8p LEPU_OBP1_D6n; // xxxxxxxH
+  /*_p36.LUXO*/ DFF8p LUXO_OBP1_D7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -362,14 +360,14 @@ struct RegWY {
 
   int get() const { return pack_oldn(8, &NESO_WY0n); }
 
-  /*p23.NESO*/ DFF9 NESO_WY0n; // xxxxxxxH
-  /*p23.NYRO*/ DFF9 NYRO_WY1n; // xxxxxxxH
-  /*p23.NAGA*/ DFF9 NAGA_WY2n; // xxxxxxxH
-  /*p23.MELA*/ DFF9 MELA_WY3n; // xxxxxxxH
-  /*p23.NULO*/ DFF9 NULO_WY4n; // xxxxxxxH
-  /*p23.NENE*/ DFF9 NENE_WY5n; // xxxxxxxH
-  /*p23.NUKA*/ DFF9 NUKA_WY6n; // xxxxxxxH
-  /*p23.NAFU*/ DFF9 NAFU_WY7n; // xxxxxxxH
+  /*_p23.NESO*/ DFF9 NESO_WY0n; // xxxxxxxH
+  /*_p23.NYRO*/ DFF9 NYRO_WY1n; // xxxxxxxH
+  /*_p23.NAGA*/ DFF9 NAGA_WY2n; // xxxxxxxH
+  /*_p23.MELA*/ DFF9 MELA_WY3n; // xxxxxxxH
+  /*_p23.NULO*/ DFF9 NULO_WY4n; // xxxxxxxH
+  /*_p23.NENE*/ DFF9 NENE_WY5n; // xxxxxxxH
+  /*_p23.NUKA*/ DFF9 NUKA_WY6n; // xxxxxxxH
+  /*_p23.NAFU*/ DFF9 NAFU_WY7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -389,14 +387,14 @@ struct RegWX {
 
   int get() const { return pack_oldn(8, (BitBase*)&MYPA_WX0n); }
 
-  /*p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
-  /*p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH
-  /*p23.NOKE*/ DFF9 NOKE_WX2n; // xxxxxxxH
-  /*p23.MEBY*/ DFF9 MEBY_WX3n; // xxxxxxxH
-  /*p23.MYPU*/ DFF9 MYPU_WX4n; // xxxxxxxH
-  /*p23.MYCE*/ DFF9 MYCE_WX5n; // xxxxxxxH
-  /*p23.MUVO*/ DFF9 MUVO_WX6n; // xxxxxxxH
-  /*p23.NUKU*/ DFF9 NUKU_WX7n; // xxxxxxxH
+  /*_p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
+  /*_p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH
+  /*_p23.NOKE*/ DFF9 NOKE_WX2n; // xxxxxxxH
+  /*_p23.MEBY*/ DFF9 MEBY_WX3n; // xxxxxxxH
+  /*_p23.MYPU*/ DFF9 MYPU_WX4n; // xxxxxxxH
+  /*_p23.MYCE*/ DFF9 MYCE_WX5n; // xxxxxxxH
+  /*_p23.MUVO*/ DFF9 MUVO_WX6n; // xxxxxxxH
+  /*_p23.NUKU*/ DFF9 NUKU_WX7n; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -414,14 +412,14 @@ struct OamLatchA {
     ZECA_OAM_LATCH_DA7n.state = 0b00011001;
   }
 
-  /*p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n; // xBxDxFxx // Proooobably all odd clocks?
-  /*p29.YCEB*/ TpLatch YCEB_OAM_LATCH_DA1n; // xBxDxFxx
-  /*p29.ZUCA*/ TpLatch ZUCA_OAM_LATCH_DA2n; // xBxDxFxx
-  /*p29.WONE*/ TpLatch WONE_OAM_LATCH_DA3n; // xBxDxFxx
-  /*p29.ZAXE*/ TpLatch ZAXE_OAM_LATCH_DA4n; // xBxDxFxx
-  /*p29.XAFU*/ TpLatch XAFU_OAM_LATCH_DA5n; // xBxDxFxx
-  /*p29.YSES*/ TpLatch YSES_OAM_LATCH_DA6n; // xBxDxFxx
-  /*p29.ZECA*/ TpLatch ZECA_OAM_LATCH_DA7n; // xBxDxFxx
+  /*#p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n; // xBxDxFxx // Proooobably all odd clocks?
+  /*_p29.YCEB*/ TpLatch YCEB_OAM_LATCH_DA1n; // xBxDxFxx
+  /*_p29.ZUCA*/ TpLatch ZUCA_OAM_LATCH_DA2n; // xBxDxFxx
+  /*_p29.WONE*/ TpLatch WONE_OAM_LATCH_DA3n; // xBxDxFxx
+  /*_p29.ZAXE*/ TpLatch ZAXE_OAM_LATCH_DA4n; // xBxDxFxx
+  /*_p29.XAFU*/ TpLatch XAFU_OAM_LATCH_DA5n; // xBxDxFxx
+  /*_p29.YSES*/ TpLatch YSES_OAM_LATCH_DA6n; // xBxDxFxx
+  /*_p29.ZECA*/ TpLatch ZECA_OAM_LATCH_DA7n; // xBxDxFxx
 };
 
 //-----------------------------------------------------------------------------
@@ -439,14 +437,14 @@ struct OamLatchB {
     ECED_OAM_LATCH_DB7n.state = 0b00011001;
   }
 
-  /*p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n; // xBxxxFxx // Proooobably all odd clocks?
-  /*p31.YRUM*/ TpLatch YRUM_OAM_LATCH_DB1n; // xBxxxFxx
-  /*p31.YSEX*/ TpLatch YSEX_OAM_LATCH_DB2n; // xBxxxFxx
-  /*p31.YVEL*/ TpLatch YVEL_OAM_LATCH_DB3n; // xBxxxFxx
-  /*p31.WYNO*/ TpLatch WYNO_OAM_LATCH_DB4n; // xBxxxFxx
-  /*p31.CYRA*/ TpLatch CYRA_OAM_LATCH_DB5n; // xBxxxFxx
-  /*p31.ZUVE*/ TpLatch ZUVE_OAM_LATCH_DB6n; // xBxxxFxx
-  /*p31.ECED*/ TpLatch ECED_OAM_LATCH_DB7n; // xBxxxFxx
+  /*#p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n; // xBxxxFxx // Proooobably all odd clocks?
+  /*_p31.YRUM*/ TpLatch YRUM_OAM_LATCH_DB1n; // xBxxxFxx
+  /*_p31.YSEX*/ TpLatch YSEX_OAM_LATCH_DB2n; // xBxxxFxx
+  /*_p31.YVEL*/ TpLatch YVEL_OAM_LATCH_DB3n; // xBxxxFxx
+  /*_p31.WYNO*/ TpLatch WYNO_OAM_LATCH_DB4n; // xBxxxFxx
+  /*_p31.CYRA*/ TpLatch CYRA_OAM_LATCH_DB5n; // xBxxxFxx
+  /*_p31.ZUVE*/ TpLatch ZUVE_OAM_LATCH_DB6n; // xBxxxFxx
+  /*_p31.ECED*/ TpLatch ECED_OAM_LATCH_DB7n; // xBxxxFxx
 };
 
 //-----------------------------------------------------------------------------
@@ -465,14 +463,14 @@ struct OamTempA {
     YZAB_OAM_DA7p.state = 0b00011010;
   }
 
-  /*p29.XUSO*/ DFF8n XUSO_OAM_DA0p; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
-  /*p29.XEGU*/ DFF8n XEGU_OAM_DA1p; // AxxxExxx - sprite y bit 1, sprite tile index bit 1
-  /*p29.YJEX*/ DFF8n YJEX_OAM_DA2p; // AxxxExxx - sprite y bit 2, sprite tile index bit 2
-  /*p29.XYJU*/ DFF8n XYJU_OAM_DA3p; // AxxxExxx - sprite y bit 3, sprite tile index bit 3
-  /*p29.YBOG*/ DFF8n YBOG_OAM_DA4p; // AxxxExxx - sprite y bit 4, sprite tile index bit 4
-  /*p29.WYSO*/ DFF8n WYSO_OAM_DA5p; // AxxxExxx - sprite y bit 5, sprite tile index bit 5
-  /*p29.XOTE*/ DFF8n XOTE_OAM_DA6p; // AxxxExxx - sprite y bit 6, sprite tile index bit 6
-  /*p29.YZAB*/ DFF8n YZAB_OAM_DA7p; // AxxxExxx - sprite y bit 7, sprite tile index bit 7
+  /*#p29.XUSO*/ DFF8n XUSO_OAM_DA0p; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
+  /*_p29.XEGU*/ DFF8n XEGU_OAM_DA1p; // AxxxExxx - sprite y bit 1, sprite tile index bit 1
+  /*_p29.YJEX*/ DFF8n YJEX_OAM_DA2p; // AxxxExxx - sprite y bit 2, sprite tile index bit 2
+  /*_p29.XYJU*/ DFF8n XYJU_OAM_DA3p; // AxxxExxx - sprite y bit 3, sprite tile index bit 3
+  /*_p29.YBOG*/ DFF8n YBOG_OAM_DA4p; // AxxxExxx - sprite y bit 4, sprite tile index bit 4
+  /*_p29.WYSO*/ DFF8n WYSO_OAM_DA5p; // AxxxExxx - sprite y bit 5, sprite tile index bit 5
+  /*_p29.XOTE*/ DFF8n XOTE_OAM_DA6p; // AxxxExxx - sprite y bit 6, sprite tile index bit 6
+  /*_p29.YZAB*/ DFF8n YZAB_OAM_DA7p; // AxxxExxx - sprite y bit 7, sprite tile index bit 7
 };
 
 //-----------------------------------------------------------------------------
@@ -491,86 +489,86 @@ struct OamTempB {
     DEPO_OAM_DB7p.state = 0b00011010;
   }
 
-  /*p31.YLOR*/ DFF8n YLOR_OAM_DB0p; // AxxxExxx - sprite x bit 0,
-  /*p31.ZYTY*/ DFF8n ZYTY_OAM_DB1p; // AxxxExxx - sprite x bit 1,
-  /*p31.ZYVE*/ DFF8n ZYVE_OAM_DB2p; // AxxxExxx - sprite x bit 2,
-  /*p31.ZEZY*/ DFF8n ZEZY_OAM_DB3p; // AxxxExxx - sprite x bit 3,
-  /*p31.GOMO*/ DFF8n GOMO_OAM_DB4p; // AxxxExxx - sprite x bit 4, sprite palette
-  /*p31.BAXO*/ DFF8n BAXO_OAM_DB5p; // AxxxExxx - sprite x bit 5, sprite x flip
-  /*p31.YZOS*/ DFF8n YZOS_OAM_DB6p; // AxxxExxx - sprite x bit 6, sprite y flip
-  /*p31.DEPO*/ DFF8n DEPO_OAM_DB7p; // AxxxExxx - sprite x bit 7, sprite priority
+  /*_p31.YLOR*/ DFF8n YLOR_OAM_DB0p; // AxxxExxx - sprite x bit 0,
+  /*_p31.ZYTY*/ DFF8n ZYTY_OAM_DB1p; // AxxxExxx - sprite x bit 1,
+  /*_p31.ZYVE*/ DFF8n ZYVE_OAM_DB2p; // AxxxExxx - sprite x bit 2,
+  /*_p31.ZEZY*/ DFF8n ZEZY_OAM_DB3p; // AxxxExxx - sprite x bit 3,
+  /*_p31.GOMO*/ DFF8n GOMO_OAM_DB4p; // AxxxExxx - sprite x bit 4, sprite palette
+  /*_p31.BAXO*/ DFF8n BAXO_OAM_DB5p; // AxxxExxx - sprite x bit 5, sprite x flip
+  /*_p31.YZOS*/ DFF8n YZOS_OAM_DB6p; // AxxxExxx - sprite x bit 6, sprite y flip
+  /*_p31.DEPO*/ DFF8n DEPO_OAM_DB7p; // AxxxExxx - sprite x bit 7, sprite priority
 };
 
 //-----------------------------------------------------------------------------
 
 struct TileTempA {
-  /*p32.LEGU*/ DFF8p LEGU_TILE_DA0n;   // xBxDxFxH
-  /*p32.NUDU*/ DFF8p NUDU_TILE_DA1n;   // xBxDxFxH
-  /*p32.MUKU*/ DFF8p MUKU_TILE_DA2n;   // xBxDxFxH
-  /*p32.LUZO*/ DFF8p LUZO_TILE_DA3n;   // xBxDxFxH
-  /*p32.MEGU*/ DFF8p MEGU_TILE_DA4n;   // xBxDxFxH
-  /*p32.MYJY*/ DFF8p MYJY_TILE_DA5n;   // xBxDxFxH
-  /*p32.NASA*/ DFF8p NASA_TILE_DA6n;   // xBxDxFxH
-  /*p32.NEFO*/ DFF8p NEFO_TILE_DA7n;   // xBxDxFxH
+  /*_p32.LEGU*/ DFF8p LEGU_TILE_DA0n;   // xBxDxFxH
+  /*_p32.NUDU*/ DFF8p NUDU_TILE_DA1n;   // xBxDxFxH
+  /*_p32.MUKU*/ DFF8p MUKU_TILE_DA2n;   // xBxDxFxH
+  /*_p32.LUZO*/ DFF8p LUZO_TILE_DA3n;   // xBxDxFxH
+  /*_p32.MEGU*/ DFF8p MEGU_TILE_DA4n;   // xBxDxFxH
+  /*_p32.MYJY*/ DFF8p MYJY_TILE_DA5n;   // xBxDxFxH
+  /*_p32.NASA*/ DFF8p NASA_TILE_DA6n;   // xBxDxFxH
+  /*_p32.NEFO*/ DFF8p NEFO_TILE_DA7n;   // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
-  /*p32.RAWU*/ DFF11 RAWU_TILE_DB0p;   // xBxDxFxH
-  /*p32.POZO*/ DFF11 POZO_TILE_DB1p;   // xBxDxFxH
-  /*p32.PYZO*/ DFF11 PYZO_TILE_DB2p;   // xBxDxFxH
-  /*p32.POXA*/ DFF11 POXA_TILE_DB3p;   // xBxDxFxH
-  /*p32.PULO*/ DFF11 PULO_TILE_DB4p;   // xBxDxFxH
-  /*p32.POJU*/ DFF11 POJU_TILE_DB5p;   // xBxDxFxH
-  /*p32.POWY*/ DFF11 POWY_TILE_DB6p;   // xBxDxFxH
-  /*p32.PYJU*/ DFF11 PYJU_TILE_DB7p;   // xBxDxFxH
+  /*_p32.RAWU*/ DFF11 RAWU_TILE_DB0p;   // xBxDxFxH
+  /*_p32.POZO*/ DFF11 POZO_TILE_DB1p;   // xBxDxFxH
+  /*_p32.PYZO*/ DFF11 PYZO_TILE_DB2p;   // xBxDxFxH
+  /*_p32.POXA*/ DFF11 POXA_TILE_DB3p;   // xBxDxFxH
+  /*_p32.PULO*/ DFF11 PULO_TILE_DB4p;   // xBxDxFxH
+  /*_p32.POJU*/ DFF11 POJU_TILE_DB5p;   // xBxDxFxH
+  /*_p32.POWY*/ DFF11 POWY_TILE_DB6p;   // xBxDxFxH
+  /*_p32.PYJU*/ DFF11 PYJU_TILE_DB7p;   // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------
 
 struct SpritePixA {
-  /*p33.REWO*/ DFF8n REWO_SPRITE_DA0n; // xBxDxFxH
-  /*p33.PEBA*/ DFF8n PEBA_SPRITE_DA1n; // xBxDxFxH
-  /*p33.MOFO*/ DFF8n MOFO_SPRITE_DA2n; // xBxDxFxH
-  /*p33.PUDU*/ DFF8n PUDU_SPRITE_DA3n; // xBxDxFxH
-  /*p33.SAJA*/ DFF8n SAJA_SPRITE_DA4n; // xBxDxFxH
-  /*p33.SUNY*/ DFF8n SUNY_SPRITE_DA5n; // xBxDxFxH
-  /*p33.SEMO*/ DFF8n SEMO_SPRITE_DA6n; // xBxDxFxH
-  /*p33.SEGA*/ DFF8n SEGA_SPRITE_DA7n; // xBxDxFxH
+  /*_p33.REWO*/ DFF8n REWO_SPRITE_DA0n; // xBxDxFxH
+  /*_p33.PEBA*/ DFF8n PEBA_SPRITE_DA1n; // xBxDxFxH
+  /*_p33.MOFO*/ DFF8n MOFO_SPRITE_DA2n; // xBxDxFxH
+  /*_p33.PUDU*/ DFF8n PUDU_SPRITE_DA3n; // xBxDxFxH
+  /*_p33.SAJA*/ DFF8n SAJA_SPRITE_DA4n; // xBxDxFxH
+  /*_p33.SUNY*/ DFF8n SUNY_SPRITE_DA5n; // xBxDxFxH
+  /*_p33.SEMO*/ DFF8n SEMO_SPRITE_DA6n; // xBxDxFxH
+  /*_p33.SEGA*/ DFF8n SEGA_SPRITE_DA7n; // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------
 
 struct SpritePixB {
-  /*p33.PEFO*/ DFF8n PEFO_SPRITE_DB0n; // xBxDxFxH
-  /*p33.ROKA*/ DFF8n ROKA_SPRITE_DB1n; // xBxDxFxH
-  /*p33.MYTU*/ DFF8n MYTU_SPRITE_DB2n; // xBxDxFxH
-  /*p33.RAMU*/ DFF8n RAMU_SPRITE_DB3n; // xBxDxFxH
-  /*p33.SELE*/ DFF8n SELE_SPRITE_DB4n; // xBxDxFxH
-  /*p33.SUTO*/ DFF8n SUTO_SPRITE_DB5n; // xBxDxFxH
-  /*p33.RAMA*/ DFF8n RAMA_SPRITE_DB6n; // xBxDxFxH
-  /*p33.RYDU*/ DFF8n RYDU_SPRITE_DB7n; // xBxDxFxH
+  /*_p33.PEFO*/ DFF8n PEFO_SPRITE_DB0n; // xBxDxFxH
+  /*_p33.ROKA*/ DFF8n ROKA_SPRITE_DB1n; // xBxDxFxH
+  /*_p33.MYTU*/ DFF8n MYTU_SPRITE_DB2n; // xBxDxFxH
+  /*_p33.RAMU*/ DFF8n RAMU_SPRITE_DB3n; // xBxDxFxH
+  /*_p33.SELE*/ DFF8n SELE_SPRITE_DB4n; // xBxDxFxH
+  /*_p33.SUTO*/ DFF8n SUTO_SPRITE_DB5n; // xBxDxFxH
+  /*_p33.RAMA*/ DFF8n RAMA_SPRITE_DB6n; // xBxDxFxH
+  /*_p33.RYDU*/ DFF8n RYDU_SPRITE_DB7n; // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------
 
 struct WinCoords {
-  /*p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
-  /*p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
-  /*p27.VYMU*/ DFF17 VYMU_WIN_TILE_Y2;  // AxCxExGh probably, but not enough data.
+  /*_p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
+  /*_p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
+  /*_p27.VYMU*/ DFF17 VYMU_WIN_TILE_Y2;  // AxCxExGh probably, but not enough data.
 
-  /*p27.WYKA*/ DFF17 WYKA_WIN_MAP_X0;   // AxCxExGx
-  /*p27.WODY*/ DFF17 WODY_WIN_MAP_X1;   // AxCxExGx
-  /*p27.WOBO*/ DFF17 WOBO_WIN_MAP_X2;   // AxCxExGx
-  /*p27.WYKO*/ DFF17 WYKO_WIN_MAP_X3;   // AxCxExGx
-  /*p27.XOLO*/ DFF17 XOLO_WIN_MAP_X4;   // AxCxExGx
+  /*_p27.WYKA*/ DFF17 WYKA_WIN_MAP_X0;   // AxCxExGx
+  /*_p27.WODY*/ DFF17 WODY_WIN_MAP_X1;   // AxCxExGx
+  /*_p27.WOBO*/ DFF17 WOBO_WIN_MAP_X2;   // AxCxExGx
+  /*_p27.WYKO*/ DFF17 WYKO_WIN_MAP_X3;   // AxCxExGx
+  /*_p27.XOLO*/ DFF17 XOLO_WIN_MAP_X4;   // AxCxExGx
 
-  /*p27.TUFU*/ DFF17 TUFU_WIN_MAP_Y0;   // AxCxExGh probably, but not enough data.
-  /*p27.TAXA*/ DFF17 TAXA_WIN_MAP_Y1;   // AxCxExGh probably, but not enough data.
-  /*p27.TOZO*/ DFF17 TOZO_WIN_MAP_Y2;   // AxCxExGh probably, but not enough data.
-  /*p27.TATE*/ DFF17 TATE_WIN_MAP_Y3;   // AxCxExGh probably, but not enough data.
-  /*p27.TEKE*/ DFF17 TEKE_WIN_MAP_Y4;   // AxCxExGh probably, but not enough data.
+  /*_p27.TUFU*/ DFF17 TUFU_WIN_MAP_Y0;   // AxCxExGh probably, but not enough data.
+  /*_p27.TAXA*/ DFF17 TAXA_WIN_MAP_Y1;   // AxCxExGh probably, but not enough data.
+  /*_p27.TOZO*/ DFF17 TOZO_WIN_MAP_Y2;   // AxCxExGh probably, but not enough data.
+  /*_p27.TATE*/ DFF17 TATE_WIN_MAP_Y3;   // AxCxExGh probably, but not enough data.
+  /*_p27.TEKE*/ DFF17 TEKE_WIN_MAP_Y4;   // AxCxExGh probably, but not enough data.
 };
 
 //-----------------------------------------------------------------------------

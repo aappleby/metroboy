@@ -171,18 +171,11 @@ void check_cell_tag(const std::string& tag) {
 //--------------------------------------------------------------------------------
 
 void DieCell::sanity_check() const {
-  if (gate.empty()) {
-    ConsoleDumper d;
-    dump(d);
-  }
-
   CHECK_N(cell_type == DieCellType::UNKNOWN);
   CHECK_N(tag.empty());
   CHECK_N(gate.empty());
-
-  if (name.empty()) {
-    printf("No name for tag %s\n", tag.c_str());
-  }
+  CHECK_N(name.empty());
+  CHECK_N(args.empty());
 
   if (cell_type == DieCellType::PIN_IN) {
     CHECK_P(tag.starts_with("PIN_"));
@@ -311,22 +304,22 @@ void DieDB::load_json(std::istream& stream) {
 //----------------------------------------
 
 void DieDB::sanity_check() {
-  //printf("DieDB::sanity_check()\n");
-
   for (auto& [tag, cell] : cell_map) {
     cell->sanity_check();
     cell->mark = 0;
   }
 
   for (const auto& trace : traces) {
+    // Traces connected to EXT_* do not appear in the schematic.
     if (trace.output_tag.starts_with("EXT_")) continue;
 
+    // Cells at both ends of the trace should exist.
     auto prev_cell = cell_map[trace.output_tag];
     auto next_cell = cell_map[trace.input_tag];
-
     CHECK_P(prev_cell);
     CHECK_P(next_cell);
 
+    // Tribufs should only connect to buses and vice versa.
     if (next_cell->cell_type == DieCellType::BUS)    {
       CHECK_P(prev_cell->cell_type == DieCellType::TRIBUF);
     }
@@ -334,21 +327,19 @@ void DieDB::sanity_check() {
       CHECK_P(next_cell->cell_type == DieCellType::BUS);
     }
 
-    CHECK_P(std::find(prev_cell->output_ports.begin(),
-                      prev_cell->output_ports.end(),
-                      trace.output_port) != prev_cell->output_ports.end());
-
+    // Ports at both ends of the trace should exist.
+    CHECK_P(std::find(prev_cell->output_ports.begin(), prev_cell->output_ports.end(), trace.output_port) != prev_cell->output_ports.end());
     CHECK_P(std::find(next_cell->input_ports.begin(), next_cell->input_ports.end(), trace.input_port) != next_cell->input_ports.end());
 
+    // Mark the cells at both ends of the trace as connected.
     prev_cell->mark++;
     next_cell->mark++;
   }
 
-  /*
+  // There should be no unconnected cells.
   for (auto& [tag, cell] : cell_map) {
     CHECK_P(cell->mark);
   }
-  */
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -372,24 +363,36 @@ bool ispunct(char c) {
   return (c != 0) && !isspace(c) && !isword(c);
 }
 
+// Remove all double-spaces and all spaces that are adjacent to non-word characters.
 std::string clean_line(const char* line) {
-  std::string result;
-
+  // Skip leading whitespace.
   while (*line && isspace(*line)) line++;
-  if (*line == 0) return result;
+  if (*line == 0) return "";
 
+  // Scan pairs of characters and store required ones to result.
+  std::string result;
   char prev = *line++;
   while (*line) {
     char next = *line++;
 
-    if (isspace(prev) && isspace(next)) { continue; }
-    if (isspace(prev) && ispunct(next)) { prev = next; continue; }
-    if (ispunct(prev) && isspace(next)) { continue; }
-
-    if (prev) result.push_back(prev);
-    prev = next;
+    if (isspace(prev) && isspace(next)) {
+      // Double-spaces get skipped.
+    }
+    else if (isspace(prev) && ispunct(next)) {
+      // Spaces before punctuation get skipped.
+      prev = next;
+    }
+    else if (ispunct(prev) && isspace(next)) {
+      // Spaces after punctuation get skipped, but we hold on to the punctuation.
+    }
+    else {
+      // In all other cases the previous character moves to the result.
+      result.push_back(prev);
+      prev = next;
+    }
   }
 
+  // Handle the tail character.
   if (!isspace(prev)) {
     result.push_back(prev);
   }
@@ -440,10 +443,12 @@ bool DieDB::parse_dir(const std::string& path) {
     (void)info;
     vector<string> args = split_args(cell->args);
 
+    // Cell type and output ports come from the DB.
     cell->cell_type = info.cell_type;
     cell->output_ports = info.output_ports;
 
     if (cell->gate == "tri_bus") {
+      // Buses get all their arguments added as input ports.
       for (int i = 0; i < args.size(); i++) {
         char buf[256];
         sprintf_s(buf, 256, "tri%02d", i);
@@ -451,20 +456,27 @@ bool DieDB::parse_dir(const std::string& path) {
       }
     }
     else {
+      // All other cells use the input port list from the DB.
       CHECK_P(args.size() == info.input_ports.size());
       cell->input_ports = info.input_ports;
     }
 
 
     for (int iarg = 0; iarg < args.size(); iarg++) {
+      // Split the argument up by '.' delimiters.
       const auto& arg = args[iarg];
       vector<string> parts = split_path(arg);
+      
+      // Skip any leading path parts that aren't a tag: foo.bar.baz.TAGG.qp -> TAGG.qp
       static regex rx_match_tag(R"(^(BUS_|PIN_|SIG_|EXT_|[A-Z]{4}))");
       while (!regex_search(parts.front(), rx_match_tag)) parts.erase(parts.begin());
       CHECK_P(parts.size() == 1 || parts.size() == 2);
 
+      // Args without ports specified default to "out".
       string src_tag = name_to_tag(parts[0]);
       string src_port = parts.size() == 2 ? parts[1] : "out";
+
+      // EXT_ args don't generate traces.
       if (src_tag.starts_with("EXT_")) continue;
 
       DieCell* src_cell = get_cell(src_tag);
@@ -480,25 +492,10 @@ bool DieDB::parse_dir(const std::string& path) {
       };
 
       traces.push_back(trace);
-
-      //printf("%s.%s -> %s.%s\n", src_cell->tag.c_str(), src_port.c_str(), cell->tag.c_str(), cell->input_ports[iarg].c_str());
-
     }
-
-    /*
-    printf("flag: %1s ",      cell->flag.c_str());
-    printf("page: %3s ",      cell->page.c_str());
-    printf("tag: %-16.16s ",  cell->tag.c_str());
-    printf("name: %-24.24s ", cell->name.c_str());
-    printf("gate: %-12s ",    cell->gate.c_str());
-    printf("args: %s ",       cell->args.c_str());
-    printf("doc: %-24.24s ",  cell->doc.c_str());
-    printf("\n");
-    */
   }
 
   sanity_check();
-
 
   printf("Parsed %d files\n", total_files);
   printf("Parsed %d lines\n", total_lines);
@@ -516,26 +513,29 @@ bool DieDB::parse_file(const std::string& source_path) {
   std::ifstream lines(source_path);
 
   for (string line; getline(lines, line); ) {
-    line = clean_line(line.c_str());
-    total_lines++;
-
+    // Skip files that are tagged as 'noparse'
     static regex rx_noparse("plait_noparse");
     if (regex_search(line, rx_noparse)) {
       printf("Not parsing %s due to 'plait_noparse'\n", source_path.c_str());
       break;
     }
 
+    // Scrub whitespace from the line.
+    line = clean_line(line.c_str());
+    total_lines++;
+
+    // Split the line into the /*_pXX.XXXX*/ tag part and the remainder.
+    // If there is no tag, skip the line.
     smatch match;
     static regex rx_extract_tag(R"(^\/\*(.*?)\*\/)");
     if (!regex_search(line, match, rx_extract_tag)) continue;
-
     string whole_tag = match[1].str();
     line = match.suffix();
 
-    static regex pin_tag(R"((#?)()(PIN_\d{2}))");
-    static regex sig_tag(R"((#?)()(SIG_\w+))");
-    static regex bus_tag(R"((#?)()(BUS_\w+))");
-    static regex cell_tag(R"((#?)(p[0-9]{2})\.([A-Z]{4}))");
+    static regex pin_tag(R"((.)()(PIN_\d{2}))");
+    static regex sig_tag(R"((.)()(SIG_\w+))");
+    static regex bus_tag(R"((.)()(BUS_\w+))");
+    static regex cell_tag(R"((.)(p[0-9]{2})\.([A-Z]{4}))");
 
     bool found_match = false;
     if (!found_match) found_match = regex_search(whole_tag, match, pin_tag);

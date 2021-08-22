@@ -67,8 +67,8 @@ void MetroBoyDMA::tock(int phase_total, const Req& req) {
   }
 
   if (DELTA_FG) {
-    /*p04.LENE*/ DMA_RUN_TRIG_d4 = DMA_RUN_TRIG_d0;
-    /*p04.MYTE*/ DMA_DONE = (addr & 0xFF) == 159;
+    /*_p04.LENE*/ DMA_RUN_TRIG_d4 = DMA_RUN_TRIG_d0;
+    /*_p04.MYTE*/ DMA_DONE = (addr & 0xFF) == 159;
     if (req.write && req.addr == 0xFF46) {
       addr = (req.data_lo << 8);
     }

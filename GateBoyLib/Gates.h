@@ -117,13 +117,13 @@ struct SigOut : private BitBase {
 struct DFF : public BitBase {
   void dff_r(wire CLKp, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & BIT_CLOCK;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    Dp &= RSTn;
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
 
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    state = uint8_t(bit(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
 
@@ -143,12 +143,13 @@ struct DFF : public BitBase {
 struct DFF8n : public BitBase {
   void dff8n(wire CLKn, wire Dn) {
     check_old();
-    wire Dp = ~Dn;
-    wire CLKp = (~CLKn << 1) & BIT_CLOCK;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (~CLKn << 1) & BIT_CLOCK;
 
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    wire d1 = (~clk_old & clk_new) ? ~Dn : state;
+
+    state = uint8_t(bit(d1) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
 
@@ -168,12 +169,13 @@ struct DFF8n : public BitBase {
 struct DFF8p : public BitBase {
   void dff8p(wire CLKp, wire Dn) {
     check_old();
-    wire Dp = ~Dn;
-    CLKp = (CLKp << 1) & BIT_CLOCK;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    wire d1 = (~clk_old & clk_new) ? ~Dn : state;
+
+    state = uint8_t(bit(d1) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
 
@@ -195,14 +197,13 @@ struct DFF8p : public BitBase {
 struct DFF9 : public BitBase {
   void dff9(wire CLKp, wire SETn, wire Dn) {
     check_old();
-    wire Dp = ~Dn;
-    CLKp = (CLKp << 1) & BIT_CLOCK;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    Dp |= ~SETn;
+    wire d1 = (~clk_old & clk_new) ? ~Dn : state;
 
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    state = uint8_t(bit(d1 | (~SETn)) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
 
@@ -225,13 +226,12 @@ struct DFF9 : public BitBase {
 struct DFF11 : public BitBase {
   void dff11(wire CLKp, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & BIT_CLOCK;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
 
-    Dp &= RSTn;
-
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    state = uint8_t(bit(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
 
@@ -254,13 +254,12 @@ struct DFF11 : public BitBase {
 struct DFF13 : public BitBase {
   void dff13(wire CLKp, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & BIT_CLOCK;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
 
-    Dp &= RSTn;
-
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    state = uint8_t(bit(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
 
@@ -286,23 +285,21 @@ struct DFF13 : public BitBase {
 struct DFF17 : public BitBase {
   void dff17(wire CLKp, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & BIT_CLOCK;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
 
-    Dp &= RSTn;
-
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    state = uint8_t(bit(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 
   void dff17_any(wire CLKp, wire RSTn, wire Dp) {
-    CLKp = (CLKp << 1) & BIT_CLOCK;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
 
-    Dp &= RSTn;
-
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    state = uint8_t(bit(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
 
@@ -333,15 +330,14 @@ struct DFF17 : public BitBase {
 struct DFF20 : public BitBase {
   void dff20(wire CLKn, wire LOADp, wire newD) {
     check_old();
-    wire CLKp = (~CLKn << 1) & BIT_CLOCK;
-    wire Dp = ~state;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (~CLKn << 1) & BIT_CLOCK;
 
-    Dp &= ~LOADp;
-    Dp |= (newD & LOADp);
+    wire d1 = (~clk_old & clk_new) ? ~state : state;
+    wire d2 = bit(LOADp) ? newD : d1;
 
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    state = uint8_t(bit(d2) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
 
@@ -376,14 +372,12 @@ struct DFF20 : public BitBase {
 struct DFF22 : public BitBase {
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     check_old();
-    CLKp = (CLKp << 1) & BIT_CLOCK;
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    if ((~state & CLKp) == 0) Dp = state;
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
 
-    Dp |= ~SETn;
-    Dp &= RSTn;
-
-    state = uint8_t((Dp & BIT_DATA) | CLKp | BIT_NEW | BIT_DRIVEN);
+    state = uint8_t(bit((d1 | (~SETn)) & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
 
@@ -410,10 +404,6 @@ struct DFF22 : public BitBase {
 // TRI6NN_04 :
 // TRI6NN_05 : NC
 // TRI6NN_06 :
-
-struct triwire {
-  wire state;
-};
 
 inline triwire tri_pp(wire OEp, wire Dp) {
   return { wire(bit(OEp) ? TRI_NEW | TRI_DRIVEN | bit(Dp) : TRI_NEW) };

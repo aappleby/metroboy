@@ -15,21 +15,10 @@ typedef int64_t LARGE_INTEGER;
 
 #endif
 
-//typedef signed char        int8_t;
-//typedef short              int16_t;
-//typedef int                int32_t;
-//typedef long long          int64_t;
-//typedef unsigned char      uint8_t;
-//typedef unsigned short     uint16_t;
-//typedef unsigned int       uint32_t;
-//typedef unsigned long long uint64_t;
-
 typedef int16_t sample_t;
-
 typedef std::vector<uint8_t> blob;
-
-typedef uint8_t wire;
-//typedef const uint8_t wire;
+typedef const uint8_t wire;
+struct triwire { wire state; };
 
 inline wire bit(uint32_t w) { return wire(w & 1); }
 inline wire bit(uint32_t w, int i) { return wire((w >> i) & 1); }

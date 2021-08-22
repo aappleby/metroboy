@@ -377,6 +377,13 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
 
   for (auto& [tag, plait_cell] : cell_map) {
     auto die_cell = die_db.cell_map[tag];
+    if (die_cell == nullptr) {
+      printf("Could not find tag %s\n", tag.c_str());
+    }
+  }
+
+  for (auto& [tag, plait_cell] : cell_map) {
+    auto die_cell = die_db.cell_map[tag];
     CHECK_P(die_cell);
     plait_cell->die_cell = die_cell;
     die_cell->plait_cell = plait_cell;
@@ -403,16 +410,8 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
     trace_map[die_trace.to_key()] = &die_trace;
   }
 
-
+#if 1
   for (auto& [trace_key, j] : jroot["traces"].items()) {
-    //auto first_dot = trace_key.find('.');
-    //auto arrow = trace_key.find(" -> ");
-    //auto second_dot = trace_key.find('.', first_dot + 1);
-    //std::string trace_output_tag  = trace_key.substr(0,              first_dot  - 0);
-    //std::string trace_output_port = trace_key.substr(first_dot + 1,  arrow      - (first_dot + 1));
-    //std::string trace_input_tag  = trace_key.substr(arrow + 4,      second_dot - (arrow + 4));
-    //std::string trace_input_port_old = trace_key.substr(second_dot + 1, trace_key.size() - (second_dot + 1));
-
     std::string output_cell = j["output_cell"];
     std::string output_node = j["output_node"];
     std::string output_port;
@@ -427,7 +426,22 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
     const DieTrace* die_trace = nullptr;
     if (trace_map.contains(trace_key)) die_trace = trace_map[trace_key];
 
-    CHECK_P(die_trace);
+    /*
+    if (die_trace == nullptr) {
+      auto first_dot = trace_key.find('.');
+      auto arrow = trace_key.find(" -> ");
+      auto second_dot = trace_key.find('.', first_dot + 1);
+      std::string trace_output_tag = trace_key.substr(0, first_dot - 0);
+      std::string trace_output_port = trace_key.substr(first_dot + 1, arrow - (first_dot + 1));
+      std::string trace_input_tag = trace_key.substr(arrow + 4, second_dot - (arrow + 4));
+      std::string trace_input_port = trace_key.substr(second_dot + 1, trace_key.size() - (second_dot + 1));
+      std::string new_key = trace_output_tag + ".out -> " + trace_input_tag + "." + trace_input_port;
+      if (trace_map.contains(new_key)) die_trace = trace_map[new_key];
+    }
+    */
+
+    //CHECK_P(die_trace);
+    if (!die_trace) continue;
 
     if (output_port.empty()) output_port = die_trace->output_port;
     if (input_port.empty()) input_port = die_trace->input_port;
@@ -461,6 +475,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
 
     traces.push_back(plait_trace);
   }
+#endif
 
   // Fill in missing cells.
 
@@ -475,6 +490,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
     auto new_cell = new PlaitCell();
     new_cell->die_cell = die_cell;
     new_cell->core_node = core_node;
+    new_cell->core_node->plait_cell = new_cell;
 
     die_cell->plait_cell = new_cell;
     cell_map[tag] = new_cell;

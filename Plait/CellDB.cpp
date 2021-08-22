@@ -175,7 +175,8 @@ void DieCell::sanity_check() const {
   CHECK_N(tag.empty());
   CHECK_N(gate.empty());
   CHECK_N(name.empty());
-  CHECK_N(args.empty());
+  
+  //CHECK_N(args.empty()); // we don't necessarily want to save the raw arg string to the db...
 
   if (cell_type == DieCellType::PIN_IN) {
     CHECK_P(tag.starts_with("PIN_"));
@@ -420,24 +421,31 @@ bool DieDB::parse_dir(const std::string& path) {
   for (const auto& entry : filesystem::directory_iterator(path)) {
     if (entry.is_regular_file()) {
       auto filename = entry.path().string();
-      if (filename.ends_with(".h")) parse_file(filename);
+      if (filename.ends_with(".h")) {
+        printf(".");
+        parse_file(filename);
+      }
     }
   }
 
   for (const auto& entry : filesystem::directory_iterator(path)) {
     if (entry.is_regular_file()) {
       auto filename = entry.path().string();
-      if (filename.ends_with(".cpp")) parse_file(filename);
+      if (filename.ends_with(".cpp")) {
+        printf(".");
+        parse_file(filename);
+      }
     }
   }
-
   auto parse_end = timestamp();
 
+  printf("\n");
   printf("Parsing took %f msec\n", (parse_end - parse_begin) * 1000.0);
 
   //----------------------------------------
   // Postprocess the cells.
 
+  auto process_begin = timestamp();
   for (auto& [tag, cell] : cell_map) {
     auto& info = gate_info(cell->gate);
     (void)info;
@@ -494,8 +502,10 @@ bool DieDB::parse_dir(const std::string& path) {
       traces.push_back(trace);
     }
   }
-
   sanity_check();
+  auto process_end = timestamp();
+  printf("Processing took %f msec\n", (process_end - process_begin) * 1000.0);
+
 
   printf("Parsed %d files\n", total_files);
   printf("Parsed %d lines\n", total_lines);
@@ -508,15 +518,13 @@ bool DieDB::parse_dir(const std::string& path) {
 //-----------------------------------------------------------------------------
 
 bool DieDB::parse_file(const std::string& source_path) {
-  printf("Parsing %s\n", source_path.c_str());
-
   std::ifstream lines(source_path);
 
   for (string line; getline(lines, line); ) {
     // Skip files that are tagged as 'noparse'
     static regex rx_noparse("plait_noparse");
     if (regex_search(line, rx_noparse)) {
-      printf("Not parsing %s due to 'plait_noparse'\n", source_path.c_str());
+      //printf("Not parsing %s due to 'plait_noparse'\n", source_path.c_str());
       break;
     }
 
@@ -553,8 +561,6 @@ bool DieDB::parse_file(const std::string& source_path) {
     cell->set_flag(flag);
     cell->set_page(page);
 
-    if (cell == nullptr) continue;
-
     static regex rx_decl(R"(\w+ (\w+);)");
     static regex rx_assign(R"((\w+)=(\w+)\((.*)\);)");
     static regex rx_method(R"((\w+)\(\)const\{return (\w+)\((.*)\);\})");
@@ -569,7 +575,6 @@ bool DieDB::parse_file(const std::string& source_path) {
     if (!found_match) found_match = regex_search(line, match, rx_assign);
     if (!found_match) found_match = regex_search(line, match, rx_method);
     if (!found_match) found_match = regex_search(line, match, rx_method_call);
-
     CHECK_P(found_match);
 
     auto name = trim_name(match[1].str());
@@ -581,6 +586,7 @@ bool DieDB::parse_file(const std::string& source_path) {
     cell->set_gate(gate);
 
     if (cell->gate == "tri_bus") {
+      // Bus cells concatenate their args.
       cell->args = cell->args + ", " + args;
     }
     else {

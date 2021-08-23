@@ -545,7 +545,7 @@ void PlaitApp::event_toggle_old(SDL_Event event) {
   switch(event.type) {
   case SDL_MOUSEBUTTONDOWN: {
     if (event.button.button & SDL_BUTTON_LMASK) {
-      if (clicked_node && clicked_node->is_leaf()) {
+      if (clicked_node) {
         clicked_node->old = !clicked_node->old;
       }
     }
@@ -593,8 +593,8 @@ void PlaitApp::event_drag_nodes(SDL_Event event) {
   case SDL_MOUSEMOTION: {
     if (event.motion.state & SDL_BUTTON_LMASK) {
       dvec2 pos_abs_new = (mouse_pos_world - click_pos_world) + click_pos_wrap + clicked_node_offset;
-      pos_abs_new.x = round(pos_abs_new.x / 16) * 16.0;
-      pos_abs_new.y = round(pos_abs_new.y / 16) * 16.0;
+      pos_abs_new.x = round(pos_abs_new.x / 96) * 96.0;
+      pos_abs_new.y = round(pos_abs_new.y / 96) * 96.0;
       dvec2 delta = pos_abs_new - clicked_node->get_pos_new();
       for (auto node : node_selection) node->move(delta);
     }

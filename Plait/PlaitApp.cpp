@@ -1262,7 +1262,6 @@ void PlaitApp::app_render_frame() {
 
   //----------
 
-#if 1
   // Branches
   for (auto& [tag, plait_cell] : plait.cell_map) {
 
@@ -1362,8 +1361,36 @@ void PlaitApp::app_render_frame() {
   }
   */
 
-#endif
+  //if (hovered_node) {
+  for (auto& [tag, plait_cell] : plait.cell_map) {
+    auto core = plait_cell->core_node;
+    auto core_pos = core->pos_new + dvec2(32.0, 32.0);
 
+    /*
+    auto hover_pos = hovered_node->pos_new + dvec2(32, 32);
+    auto hovered_cell = hovered_node->plait_cell;
+    auto core = hovered_cell->core_node;
+
+    {
+      dvec2 delta = glm::normalize(core->pos_new - hovered_node->pos_new) * 128.0;
+      edge_painter.push(hover_pos, 0xFFFFFF00, hover_pos + delta, 0xFFFFFF00);
+      //edge_painter.push(hover_pos, 0xFFFFFF00, core->pos_new + dvec2(32, 32), 0xFFFFFF00);
+    }
+    */
+
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      auto root_pos = root->pos_new + dvec2(32.0, 32.0);
+      dvec2 delta = glm::normalize(root_pos - core_pos) * 64.0;
+      edge_painter.push(core_pos, 0xFFFFFF00, core_pos  + delta, 0xFFFFFF00);
+      edge_painter.push(root_pos, 0xFF0000FF, root_pos - delta, 0xFF0000FF);
+    }
+    for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+      auto leaf_pos = leaf->pos_new + dvec2(32.0, 32.0);
+      dvec2 delta = glm::normalize(leaf_pos - core_pos) * 64.0;
+      edge_painter.push(core_pos, 0xFFFF00FF, core_pos + delta, 0xFFFF00FF);
+      edge_painter.push(leaf_pos, 0xFF00FF00, leaf_pos - delta, 0xFF00FF00);
+    }
+  }
 
   //----------------------------------------
   // Labels

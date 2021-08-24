@@ -1274,6 +1274,8 @@ void PlaitApp::app_render_frame() {
     no_branches |= plait_cell->die_cell->cell_type == DieCellType::PIN_OUT;
     no_branches |= plait_cell->die_cell->cell_type == DieCellType::PIN_IO;
 
+    if (hovered_node && hovered_node->plait_cell == plait_cell) no_branches = false;
+
     bool wrap_ok = false;
     if (plait_cell->die_cell->cell_type == DieCellType::BUS)    wrap_ok = true;
     if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) wrap_ok = true;
@@ -1296,11 +1298,13 @@ void PlaitApp::app_render_frame() {
 
       for (auto& [name, root] : plait_cell->root_nodes) {
         if (root->ghosted) continue;
+        if (root->old && !plait_cell->selected_node_count && (root != hovered_node)) continue;
         auto root_pos = root->pos_new;
         edge_painter.push(core_pos + node_half_size, color, root_pos + node_half_size, color);
       }
       for (auto& [name, leaf] : plait_cell->leaf_nodes) {
         if (leaf->ghosted) continue;
+        if (leaf->old && !plait_cell->selected_node_count && (leaf != hovered_node)) continue;
         auto leaf_pos = leaf->pos_new;
         edge_painter.push(core_pos + node_half_size, color, leaf_pos + node_half_size, color);
       }

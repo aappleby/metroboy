@@ -594,7 +594,7 @@ void PlaitApp::event_drag_nodes(SDL_Event event) {
     if (event.motion.state & SDL_BUTTON_LMASK) {
       dvec2 pos_abs_new = (mouse_pos_world - click_pos_world) + click_pos_wrap + clicked_node_offset;
       pos_abs_new.x = round(pos_abs_new.x / 96) * 96.0;
-      pos_abs_new.y = round(pos_abs_new.y / 96) * 96.0;
+      pos_abs_new.y = round(pos_abs_new.y / 48) * 48.0;
       dvec2 delta = pos_abs_new - clicked_node->get_pos_new();
       for (auto node : node_selection) node->move(delta);
     }
@@ -1264,6 +1264,15 @@ void PlaitApp::app_render_frame() {
 
   // Branches
   for (auto& [tag, plait_cell] : plait.cell_map) {
+    auto core_pos = plait_cell->core_node->pos_new;
+
+    bool no_branches = false;
+    no_branches |= plait_cell->die_cell->cell_type == DieCellType::BUS;
+    no_branches |= plait_cell->die_cell->cell_type == DieCellType::SIG_IN;
+    no_branches |= plait_cell->die_cell->cell_type == DieCellType::SIG_OUT;
+    no_branches |= plait_cell->die_cell->cell_type == DieCellType::PIN_IN;
+    no_branches |= plait_cell->die_cell->cell_type == DieCellType::PIN_OUT;
+    no_branches |= plait_cell->die_cell->cell_type == DieCellType::PIN_IO;
 
     bool wrap_ok = false;
     if (plait_cell->die_cell->cell_type == DieCellType::BUS)    wrap_ok = true;
@@ -1280,117 +1289,82 @@ void PlaitApp::app_render_frame() {
       if (leaf->pos_new.x < min_leaf_x) min_leaf_x = leaf->pos_new.x;
     }
 
+    // Draw all branches for selected nodes that aren't buses
+    if (/*plait_cell->selected_node_count &&*/ !no_branches) {
+      uint32_t color = plait_cell->selected_node_count ? 0x80FFFF00 : 0x20FFFF00;
+      if (hovered_node && hovered_node->plait_cell == plait_cell) color = 0xFFFFFF00;
+
+      for (auto& [name, root] : plait_cell->root_nodes) {
+        if (root->ghosted) continue;
+        auto root_pos = root->pos_new;
+        edge_painter.push(core_pos + node_half_size, color, root_pos + node_half_size, color);
+      }
+      for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+        if (leaf->ghosted) continue;
+        auto leaf_pos = leaf->pos_new;
+        edge_painter.push(core_pos + node_half_size, color, leaf_pos + node_half_size, color);
+      }
+    }
+
+
+    // Draw bad root node branches
     for (auto& [name, root] : plait_cell->root_nodes) {
       if (root->ghosted) continue;
-
-      auto core_pos = plait_cell->core_node->pos_new;
       auto root_pos = root->pos_new;
-
       bool bad_branch = false;
       if (root_pos.x > min_leaf_x) bad_branch = true;
       if (!plait_cell->core_node->old && root_pos.x > core_pos.x) bad_branch = true;
       if (wrap_ok) bad_branch = false;
       if (root->old) bad_branch = false;
-
-      uint32_t color_a = bad_branch ? 0x8000FFFF : 0x80808080;
-      uint32_t color_b = bad_branch ? 0x8000FFFF : 0x80808080;
-
-      if (bad_branch) bad_branch_count++;
-
-      if (plait_cell->selected_node_count || bad_branch) {
-        edge_painter.push(core_pos + node_half_size,
-                          color_a,
-                          root_pos + node_half_size,
-                          color_b);
-      }
+      if (!bad_branch) continue;
+      bad_branch_count++;
+      edge_painter.push(core_pos + node_half_size, 0x8000FFFF, root_pos + node_half_size, 0x8000FFFF);
     }
+
+    // Draw bad leaf node branches
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (leaf->ghosted) continue;
-      auto core_pos = plait_cell->core_node->pos_new;
       auto leaf_pos = leaf->pos_new;
-
       bool bad_branch = false;
       if (leaf_pos.x < max_root_x) bad_branch = true;
       if (!plait_cell->core_node->old && leaf_pos.x < core_pos.x) bad_branch = true;
       if (wrap_ok) bad_branch = false;
       if (leaf->old) bad_branch = false;
+      if (!bad_branch) continue;
 
-      uint32_t color_a = bad_branch ? 0x8000FFFF : 0x80808080;
-      uint32_t color_b = bad_branch ? 0x8000FFFF : 0x80808080;
-
-      if (bad_branch) bad_branch_count++;
-
-      if (plait_cell->selected_node_count || bad_branch) {
-        edge_painter.push(core_pos + node_half_size,
-                          color_a,
-                          leaf_pos + node_half_size,
-                          color_b);
-      }
+      bad_branch_count++;
+      edge_painter.push(core_pos + node_half_size, 0x8000FFFF, leaf_pos + node_half_size, 0x8000FFFF);
     }
   }
 
+  // Core->leaf and core->root edges
   /*
-  // Cores with only one branch
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    if (plait_cell->core_node->ghosted) continue;
-    if (plait_cell->die_cell->cell_type == DieCellType::DFF) continue;
     if (plait_cell->die_cell->cell_type == DieCellType::BUS) continue;
-    if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) continue;
-    if (plait_cell->die_cell->cell_type == DieCellType::TRIBUF) continue;
-
-    if (plait_cell->leaf_nodes.size() != 1 || plait_cell->die_cell->fanout != 1) continue;
-
-    //for (auto& [name, root] : plait_cell->root_nodes) {
-    //  auto core_pos = plait_cell->core_node->pos_new + dvec2(64, 32);
-    //  auto root_pos = root->pos_new + dvec2(64, 32);
-    //  bool backwards = (root_pos.x > core_pos.x);
-    //  uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;
-    //  uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF0000;
-    //
-    //  edge_painter.push(core_pos, color_a, root_pos, color_b);
-    //}
-    for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      auto core_pos = plait_cell->core_node->pos_new + dvec2(64, 32);
-      auto leaf_pos = leaf->pos_new + dvec2(64, 32);
-      bool backwards = (leaf_pos.x < core_pos.x);
-      uint32_t color_a = backwards ? 0xFF0000FF : 0xFF00FF00;
-      uint32_t color_b = backwards ? 0xFF0000FF : 0xFFFF0000;
-
-      edge_painter.push(core_pos, color_a, leaf_pos, color_b);
-    }
-  }
-  */
-
-  //if (hovered_node) {
-  for (auto& [tag, plait_cell] : plait.cell_map) {
     auto core = plait_cell->core_node;
     auto core_pos = core->pos_new + dvec2(32.0, 32.0);
 
-    /*
-    auto hover_pos = hovered_node->pos_new + dvec2(32, 32);
-    auto hovered_cell = hovered_node->plait_cell;
-    auto core = hovered_cell->core_node;
+    uint32_t color = 0x08FFFFFF;
 
-    {
-      dvec2 delta = glm::normalize(core->pos_new - hovered_node->pos_new) * 128.0;
-      edge_painter.push(hover_pos, 0xFFFFFF00, hover_pos + delta, 0xFFFFFF00);
-      //edge_painter.push(hover_pos, 0xFFFFFF00, core->pos_new + dvec2(32, 32), 0xFFFFFF00);
+    if (plait_cell->core_node == hovered_node) color = 0x40FFFFFF;
+
+    for (auto& [name, root] : plait_cell->root_nodes) {
+      if (root == hovered_node) color = 0x40FFFFFF;
     }
-    */
+    for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+      if (leaf == hovered_node) color = 0x40FFFFFF;
+    }
 
     for (auto& [name, root] : plait_cell->root_nodes) {
       auto root_pos = root->pos_new + dvec2(32.0, 32.0);
-      dvec2 delta = glm::normalize(root_pos - core_pos) * 64.0;
-      edge_painter.push(core_pos, 0xFFFFFF00, core_pos  + delta, 0xFFFFFF00);
-      edge_painter.push(root_pos, 0xFF0000FF, root_pos - delta, 0xFF0000FF);
+      edge_painter.push(core_pos, color, root_pos, color);
     }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       auto leaf_pos = leaf->pos_new + dvec2(32.0, 32.0);
-      dvec2 delta = glm::normalize(leaf_pos - core_pos) * 64.0;
-      edge_painter.push(core_pos, 0xFFFF00FF, core_pos + delta, 0xFFFF00FF);
-      edge_painter.push(leaf_pos, 0xFF00FF00, leaf_pos - delta, 0xFF00FF00);
+      edge_painter.push(core_pos, color, leaf_pos , color);
     }
   }
+  */
 
   //----------------------------------------
   // Labels

@@ -150,7 +150,7 @@ void BoxPainter::render_at(Viewport view, double x, double y, float scale) {
 
   bind_shader(box_prog);
 
-  box_uniforms.viewport = { (float)view.min.x, (float)view.min.y, (float)view.max.x, (float)view.max.y };
+  box_uniforms.viewport = { (float)view.world_min().x, (float)view.world_min().y, (float)view.world_max().x, (float)view.world_max().y };
   box_uniforms.origin = { x, y, scale, scale };
   update_ubo(box_ubo, sizeof(box_uniforms), &box_uniforms);
   bind_ubo(box_prog, "BoxUniforms", 0, box_ubo);

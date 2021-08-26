@@ -24,123 +24,89 @@ dvec2 ease(dvec2 a, dvec2 b, double delta) {
 }
 
 Viewport ease(Viewport a, Viewport b, double delta) {
-  return {
-    ease(a.min, b.min, delta),
-    ease(a.max, b.max, delta),
-    a.screen_size
+  return Viewport::from_min_max_screen(ease(a.world_min(), b.world_min(), delta),
+                                       ease(a.world_max(), b.world_max(), delta),
+                                       a.screen_size());
+}
+
+#pragma warning(disable : 4201)
+union double_funtimes {
+  double value;
+  struct {
+    uint64_t mantissa : 52;
+    uint64_t exponent : 11;
+    uint64_t sign     : 1;
   };
+};
+
+double ppw_to_zoom(double ppw) {
+  double_funtimes f;
+  f.value = ppw;
+  return double(int(f.exponent) - 1023) + f.mantissa / exp2(52);
+}
+
+double zoom_to_ppw(double zoom) {
+  double zoom_i = floor(zoom);
+  double zoom_f = zoom - zoom_i;
+  double_funtimes f;
+  f.mantissa = uint64_t(zoom_f * exp2(52));
+  f.exponent = uint64_t(zoom_i + 1023);
+  f.sign = 0;
+  return f.value;
 }
 
 //-----------------------------------------------------------------------------
 
 dvec2 Viewport::worldToScreen(dvec2 v) const {
-  double x = screen_size.x * (v.x - min.x) / (max.x - min.x);
-  double y = screen_size.y * (v.y - min.y) / (max.y - min.y);
-  return {x, y};
+  return (v - world_center()) * scale_world_to_screen() + screen_center();
 }
 
 dvec2 Viewport::screenToWorld(dvec2 v) const {
-  double x = (v.x / screen_size.x) * (max.x - min.x) + min.x;
-  double y = (v.y / screen_size.y) * (max.y - min.y) + min.y;
-  return {x, y};
+  return (v - screen_center()) * scale_screen_to_world() + world_center();
 }
 
 dvec2 Viewport::deltaScreenToWorld(dvec2 delta) const {
-  double x = (delta.x / screen_size.x) * (max.x - min.x);
-  double y = (delta.y / screen_size.y) * (max.y - min.y);
-  return {x, y};
-}
-
-//-----------------------------------------------------------------------------
-
-double Viewport::get_pix_per_world() const {
-  return screen_size.x / (max.x - min.x);
-}
-
-double ppw_to_zoom(double ppw) {
-  return log2(ppw);
-}
-
-double zoom_to_ppw(double zoom) {
-  return exp2(zoom);
+  return delta * scale_screen_to_world();
 }
 
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::center_on(dvec2 c) {
-  return {
-    {
-      c.x - screen_size.x / 8,
-      c.y - screen_size.y / 8,
-    },
-    {
-      c.x + screen_size.x / 8,
-      c.y + screen_size.y / 8,
-    },
-    screen_size,
-  };
+  return Viewport::from_center_zoom_screen(c, 3.0, screen_size());
 }
 
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::zoom(dvec2 screen_pos, double zoom) {
+  auto screen_delta = screen_pos - 0.5 * screen_size();
 
-  Viewport& a = *this;
+  auto new_center =
+    world_center()
+    + screen_delta / (zoom_to_ppw(view_zoom()))
+    - screen_delta / (zoom_to_ppw(view_zoom() + zoom));
 
-  double nx = screen_pos.x / screen_size.x;
-  double ny = screen_pos.y / screen_size.y;
-
-  double aw = a.max.x - a.min.x;
-  double ah = a.max.y - a.min.y;
-
-  Viewport b;
-  b.screen_size = a.screen_size;
-
-  double ppw = zoom_to_ppw(zoom);
-  
-  b.min.x = a.min.x + nx * aw - nx * aw / ppw;
-  b.min.y = a.min.y + ny * ah - ny * ah / ppw;
-
-  b.max.x = b.min.x + aw / ppw;
-  b.max.y = b.min.y + ah / ppw;
-
-  return b;
+  auto new_zoom = view_zoom() + zoom;
+  return Viewport::from_center_zoom_screen(new_center, new_zoom, screen_size());
 }
 
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::pan(dvec2 screen_delta) {
-  const Viewport& a = *this;
-
-  const double ppw = a.get_pix_per_world();
-  dvec2 world_delta = screen_delta / ppw;
-
-  Viewport b;
-  b.screen_size = screen_size;
-  b.min = a.min - world_delta;
-  b.max = a.max - world_delta;
-
-  return b;
+  dvec2 world_delta = screen_delta * scale_screen_to_world();
+  return Viewport::from_center_zoom_screen(world_center() - world_delta, view_zoom(), screen_size());
 }
 
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::snap() {
-  const Viewport& a = *this;
-  Viewport b;
-  b.screen_size = a.screen_size;
-
-  double ppw1  = get_pix_per_world();
-  double zoom1 = ppw_to_zoom(ppw1);
+  double zoom1 = view_zoom();
   double zoom2 = round(zoom1 * 4.0) / 4.0;
   double ppw2  = zoom_to_ppw(zoom2);
 
-  b.min.x = round(a.min.x * ppw2) / ppw2;
-  b.min.y = round(a.min.y * ppw2) / ppw2;
-  b.max.x = round(a.max.x * ppw2) / ppw2;
-  b.max.y = round(a.max.y * ppw2) / ppw2;
+  dvec2 old_center = world_center();
+  dvec2 new_center = { round(old_center.x * ppw2) / ppw2, round(old_center.y * ppw2) / ppw2 };
 
-  return b;
+  return Viewport::from_center_zoom_screen(new_center, zoom2, screen_size());
 }
 
 //-----------------------------------------------------------------------------

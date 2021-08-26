@@ -118,10 +118,10 @@ void Blitter::blit(Viewport view,
   BlitUniforms blit_uniforms;
 
   blit_uniforms.viewport = {
-    (float)view.min.x,
-    (float)view.min.y,
-    (float)view.max.x,
-    (float)view.max.y,
+    (float)view.world_min().x,
+    (float)view.world_min().y,
+    (float)view.world_max().x,
+    (float)view.world_max().y,
   };
 
   blit_uniforms.blit_src_rect = {sx, sy, sx+sw, sy+sh};
@@ -151,10 +151,10 @@ void Blitter::blit_mono(Viewport view,
   BlitUniforms blit_uniforms;
 
   blit_uniforms.viewport = {
-    (float)view.min.x,
-    (float)view.min.y,
-    (float)view.max.x,
-    (float)view.max.y,
+    (float)view.world_min().x,
+    (float)view.world_min().y,
+    (float)view.world_max().x,
+    (float)view.world_max().y,
   };
 
   blit_uniforms.blit_src_rect = {sx, sy, sx+sw, sy+sh};

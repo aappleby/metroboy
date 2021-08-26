@@ -153,10 +153,10 @@ void TextPainter::render_at(Viewport view, double x, double y) {
   bind_shader(text_prog);
 
   text_uniforms.viewport = {
-    (float)view.min.x,
-    (float)view.min.y,
-    (float)view.max.x,
-    (float)view.max.y,
+    (float)view.world_min().x,
+    (float)view.world_min().y,
+    (float)view.world_max().x,
+    (float)view.world_max().y,
   };
   text_uniforms.origin = {x, y, 1, 1};
 

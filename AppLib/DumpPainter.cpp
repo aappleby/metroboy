@@ -175,15 +175,15 @@ void DumpPainter::render(Viewport view, double x, double y, int w, int h, const 
   double scale_x = 1.0;
   double scale_y = 1.0;
 
-  double view_w = view.max.x - view.min.x;
-  double view_h = view.max.y - view.min.y;
+  double view_w = view.world_max().x - view.world_min().x;
+  double view_h = view.world_max().y - view.world_min().y;
 
-  double view_dx = (x - view.min.x);
-  double view_dy = (y - view.min.y);
+  double view_dx = (x - view.world_min().x);
+  double view_dy = (y - view.world_min().y);
 
   {
-    double ax = +view_w / (view.screen_size.x * scale_x);
-    double ay = +view_h / (view.screen_size.y * scale_y);
+    double ax = +view_w / (view.screen_size().x * scale_x);
+    double ay = +view_h / (view.screen_size().y * scale_y);
     double bx = -view_dx / scale_x;
     double by = -view_dy / scale_y;
 
@@ -196,8 +196,8 @@ void DumpPainter::render(Viewport view, double x, double y, int w, int h, const 
   {
     double ax = 2.0 * (w * tile_w * scale_x) / view_w;
     double ay = 2.0 * (h * tile_h * scale_y) / view_h;
-    double bx = 2.0 * (x - view.min.x) / view_w - 1.0;
-    double by = 2.0 * (y - view.min.y) / view_h - 1.0;
+    double bx = 2.0 * (x - view.world_min().x) / view_w - 1.0;
+    double by = 2.0 * (y - view.world_min().y) / view_h - 1.0;
 
     ay = -ay;
     by = -by;

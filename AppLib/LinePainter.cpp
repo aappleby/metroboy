@@ -84,10 +84,10 @@ void LinePainter::render_at(Viewport view, double x, double y, float scale) {
 
   line_uniforms.origin = {x, y, scale, scale};
   line_uniforms.viewport = {
-    (float)view.min.x,
-    (float)view.min.y,
-    (float)view.max.x,
-    (float)view.max.y,
+    (float)view.world_min().x,
+    (float)view.world_min().y,
+    (float)view.world_max().x,
+    (float)view.world_max().y,
   };
   update_ubo(line_ubo, sizeof(line_uniforms), &line_uniforms);
   bind_ubo(line_prog, "LineUniforms", 0, line_ubo);

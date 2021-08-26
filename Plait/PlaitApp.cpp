@@ -1471,6 +1471,10 @@ void PlaitApp::app_render_ui() {
 
     d.clear();
 
+    d("World zoom       : %f\n", view_control.view_smooth.view_zoom());
+    d("World ppw        : %f\n", view_control.view_smooth.view_ppw());
+    d("World scale      : %f\n", view_control.view_smooth.view_scale());
+
     d("Bad node count   : %d\n", bad_node_count);
     d("Bad edge count   : %d\n", bad_edge_count);
     d("Bad branch count : %d\n", bad_branch_count);
@@ -1545,8 +1549,8 @@ void PlaitApp::app_render_ui() {
       printf("Creating label %s\n", str0);
       PlaitLabel* label = new PlaitLabel {
         str0,
-        view_control.view_smooth_snap.center(),
-        view_control.view_smooth_snap.center(),
+        view_control.view_smooth_snap.world_center(),
+        view_control.view_smooth_snap.world_center(),
         16.0
       };
       plait.labels.push_back(label);

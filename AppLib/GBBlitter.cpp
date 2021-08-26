@@ -395,10 +395,10 @@ void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, int scale,
   {
     GBBlitTileUniforms uniforms;
     uniforms.viewport = {
-      (float)view.min.x,
-      (float)view.min.y,
-      (float)view.max.x,
-      (float)view.max.y,
+      (float)view.world_min().x,
+      (float)view.world_min().y,
+      (float)view.world_max().x,
+      (float)view.world_max().y,
     };
     uniforms.quad_pos = {};
     uniforms.quad_tex = {};
@@ -441,10 +441,10 @@ void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, int scale, c
   {
     GBBlitMapUniforms uniforms;
     uniforms.viewport = {
-      (float)view.min.x,
-      (float)view.min.y,
-      (float)view.max.x,
-      (float)view.max.y,
+      (float)view.world_min().x,
+      (float)view.world_min().y,
+      (float)view.world_max().x,
+      (float)view.world_max().y,
     };
     uniforms.quad_pos = {screen_x, screen_y, screen_x + 256 * scale, screen_y + 256 * scale};
     uniforms.quad_tex = {0, 0, 256, 256};
@@ -478,10 +478,10 @@ void GBBlitter::blit_screen(Viewport view, int screen_x, int screen_y, int scale
   bind_texture(blit_screen_prog, "tex", 0, blit_screen_tex);
 
   glUniform4f(glGetUniformLocation(blit_screen_prog, "viewport"),
-      (float)view.min.x,
-      (float)view.min.y,
-      (float)view.max.x,
-      (float)view.max.y);
+      (float)view.world_min().x,
+      (float)view.world_min().y,
+      (float)view.world_max().x,
+      (float)view.world_max().y);
   glUniform4fv(glGetUniformLocation(blit_screen_prog, "palette"), 16, (float*)default_pal);
   glUniform4f(glGetUniformLocation(blit_screen_prog, "blit_dst_rect"),
               float(screen_x), float(screen_y), float(screen_x + 160 * scale), float(screen_y + 144 * scale));
@@ -501,10 +501,10 @@ void GBBlitter::blit_diff(Viewport view, int screen_x, int screen_y, int scale, 
   bind_texture(blit_diff_prog, "gold_tex", 1, blit_diff_tex);
 
   glUniform4f(glGetUniformLocation(blit_diff_prog, "viewport"),
-      (float)view.min.x,
-      (float)view.min.y,
-      (float)view.max.x,
-      (float)view.max.y);
+      (float)view.world_min().x,
+      (float)view.world_min().y,
+      (float)view.world_max().x,
+      (float)view.world_max().y);
   glUniform4fv(glGetUniformLocation(blit_diff_prog, "palette"), 16, (float*)default_pal);
   glUniform4f(glGetUniformLocation(blit_diff_prog, "blit_dst_rect"),
               float(screen_x), float(screen_y), float(screen_x + 160 * scale), float(screen_y + 144 * scale));
@@ -522,10 +522,10 @@ void GBBlitter::blit_trace(Viewport view, int screen_x, int screen_y, const uint
   bind_texture(blit_trace_prog, "tex", 0, blit_trace_tex);
 
   glUniform4f(glGetUniformLocation(blit_trace_prog, "viewport"),
-      (float)view.min.x,
-      (float)view.min.y,
-      (float)view.max.x,
-      (float)view.max.y);
+      (float)view.world_min().x,
+      (float)view.world_min().y,
+      (float)view.world_max().x,
+      (float)view.world_max().y);
   glUniform4f(glGetUniformLocation(blit_trace_prog, "blit_dst_rect"),
               float(screen_x), float(screen_y), float(screen_x + 456), float(screen_y + 154));
 

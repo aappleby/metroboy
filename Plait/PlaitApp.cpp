@@ -46,6 +46,7 @@ static std::map<ToolMode, std::string> tool_to_string = {
   {ToolMode::GHOST_REGION,    "GHOST_REGION"},
 
   {ToolMode::TOGGLE_OLD,      "TOGGLE_OLD"},
+  {ToolMode::TOGGLE_GLOBAL,   "TOGGLE_GLOBAL"},
 
   {ToolMode::CREATE_ROOT,     "CREATE_ROOT"},
   {ToolMode::CREATE_LEAF,     "CREATE_LEAF"},
@@ -563,6 +564,28 @@ void PlaitApp::event_toggle_old(SDL_Event event) {
 
 //--------------------------------------------------------------------------------
 
+void PlaitApp::event_toggle_global(SDL_Event event) {
+  switch (event.type) {
+  case SDL_MOUSEBUTTONDOWN: {
+    if (event.button.button & SDL_BUTTON_LMASK) {
+      if (clicked_node) {
+        clicked_node->plait_cell->core_node->global = !clicked_node->plait_cell->core_node->global;
+      }
+    }
+    break;
+  }
+  case SDL_KEYUP: {
+    int key = event.key.keysym.scancode;
+    if (key == SDL_SCANCODE_G) {
+      current_tool = ToolMode::NONE;
+    }
+    break;
+  }
+  }
+}
+
+//--------------------------------------------------------------------------------
+
 void PlaitApp::event_pan_view(SDL_Event event) {
   bool was_drag = length(click_pos_screen - mouse_pos_screen) > 3;
 
@@ -779,6 +802,7 @@ void PlaitApp::event_select_tool(SDL_Event event) {
     if (key == SDL_SCANCODE_E) show_edges = !show_edges;
 
     if (key == SDL_SCANCODE_F)     new_tool = ToolMode::TOGGLE_OLD;
+    if (key == SDL_SCANCODE_G)     new_tool = ToolMode::TOGGLE_GLOBAL;
     if (key == SDL_SCANCODE_Q)     new_tool = ToolMode::GHOST_REGION;
     if (key == SDL_SCANCODE_Z)     new_tool = ToolMode::CREATE_ROOT;
     if (key == SDL_SCANCODE_X)     new_tool = ToolMode::CREATE_LEAF;
@@ -893,6 +917,7 @@ void PlaitApp::app_update(double delta_time) {
     case ToolMode::SELECT_REGION:  event_select_region(event); break;
     case ToolMode::GHOST_REGION:   event_ghost_region(event); break;
     case ToolMode::TOGGLE_OLD:     event_toggle_old(event); break;
+    case ToolMode::TOGGLE_GLOBAL:  event_toggle_global(event); break;
     case ToolMode::CREATE_ROOT:    event_create_root(event); break;
     case ToolMode::CREATE_LEAF:    event_create_leaf(event); break;
     case ToolMode::LINK_NODE:      event_link_node(event); break;
@@ -1118,8 +1143,8 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
 
   // Highlight "backwards" edges in red.
   bool edge_backwards = delta.x < 0;
-  uint32_t output_color = edge_backwards ? 0xFF0000FF : 0x40FFFFFF;
-  uint32_t input_color = edge_backwards ? 0xFF0000FF : 0x4044FF44;
+  uint32_t output_color = edge_backwards ? 0xFF0000FF : 0x8044FF44;
+  uint32_t input_color  = edge_backwards ? 0xFF0000FF : 0x8044FF44;
 
   // Make edges connected to selected nodes opaque.
   if (output_node->plait_cell->selected() || input_node->plait_cell->selected()) {
@@ -1236,7 +1261,18 @@ void PlaitApp::app_render_frame() {
   // Node fills
 
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    uint32_t color = plait_cell->core_node->color;
+    auto core = plait_cell->core_node;
+    uint32_t color = core->color;
+
+    if (core->is_global()) {
+      box_painter.push_corner_size(core->get_pos_new() - dvec2(3, 3), node_size + dvec2(6, 6), 0xFF00FFFF);
+      for (auto& [name, root] : plait_cell->root_nodes) {
+        box_painter.push_corner_size(root->get_pos_new() - dvec2(3, 3), node_size + dvec2(6, 6), 0xFF00BBFF);
+      }
+      for (auto& [name, leaf] : plait_cell->leaf_nodes) {
+        box_painter.push_corner_size(leaf->get_pos_new() - dvec2(3, 3), node_size + dvec2(6, 6), 0xFF00FF88);
+      }
+    }
 
     draw_node_fill(plait_cell->core_node, color);
     draw_node_text(plait_cell->core_node);
@@ -1264,21 +1300,25 @@ void PlaitApp::app_render_frame() {
 
   // Branches
   for (auto& [tag, plait_cell] : plait.cell_map) {
-    auto core_pos = plait_cell->core_node->pos_new;
+    auto core = plait_cell->core_node;
+    auto die_cell = plait_cell->die_cell;
+
+    auto core_pos = core->pos_new;
 
     bool no_branches = false;
-    no_branches |= plait_cell->die_cell->cell_type == DieCellType::BUS;
-    no_branches |= plait_cell->die_cell->cell_type == DieCellType::SIG_IN;
-    no_branches |= plait_cell->die_cell->cell_type == DieCellType::SIG_OUT;
-    no_branches |= plait_cell->die_cell->cell_type == DieCellType::PIN_IN;
-    no_branches |= plait_cell->die_cell->cell_type == DieCellType::PIN_OUT;
-    no_branches |= plait_cell->die_cell->cell_type == DieCellType::PIN_IO;
+    //no_branches |= die_cell->cell_type == DieCellType::BUS;
+    //no_branches |= die_cell->cell_type == DieCellType::SIG_IN;
+    //no_branches |= die_cell->cell_type == DieCellType::SIG_OUT;
+    //no_branches |= die_cell->cell_type == DieCellType::PIN_IN;
+    //no_branches |= die_cell->cell_type == DieCellType::PIN_OUT;
+    //no_branches |= die_cell->cell_type == DieCellType::PIN_IO;
+    no_branches |= core->is_global();
 
     if (hovered_node && hovered_node->plait_cell == plait_cell) no_branches = false;
 
     bool wrap_ok = false;
-    if (plait_cell->die_cell->cell_type == DieCellType::BUS)    wrap_ok = true;
-    if (plait_cell->die_cell->cell_type == DieCellType::PIN_IO) wrap_ok = true;
+    if (die_cell->cell_type == DieCellType::BUS)    wrap_ok = true;
+    if (die_cell->cell_type == DieCellType::PIN_IO) wrap_ok = true;
 
     double max_root_x = -1e10;
     double min_leaf_x =  1e10;
@@ -1292,8 +1332,8 @@ void PlaitApp::app_render_frame() {
     }
 
     // Draw all branches for selected nodes that aren't buses
-    if (/*plait_cell->selected_node_count &&*/ !no_branches) {
-      uint32_t color = plait_cell->selected_node_count ? 0x80FFFF00 : 0x20FFFF00;
+    if (!no_branches) {
+      uint32_t color = plait_cell->selected_node_count ? 0xFFFFFF00 : 0x60FFFF00;
       if (hovered_node && hovered_node->plait_cell == plait_cell) color = 0xFFFFFF00;
 
       for (auto& [name, root] : plait_cell->root_nodes) {

@@ -51,10 +51,18 @@ dvec2 Viewport::deltaScreenToWorld(dvec2 delta) const {
   return {x, y};
 }
 
-double Viewport::get_zoom() const {
-  double w = screen_size.x / (max.x - min.x);
-  double z = log2(w);
-  return z;
+//-----------------------------------------------------------------------------
+
+double Viewport::get_pix_per_world() const {
+  return screen_size.x / (max.x - min.x);
+}
+
+double ppw_to_zoom(double ppw) {
+  return log2(ppw);
+}
+
+double zoom_to_ppw(double zoom) {
+  return exp2(zoom);
 }
 
 //-----------------------------------------------------------------------------
@@ -88,27 +96,29 @@ Viewport Viewport::zoom(dvec2 screen_pos, double zoom) {
   Viewport b;
   b.screen_size = a.screen_size;
 
-  double scale = exp2(-zoom);
-  b.min.x = a.min.x + nx * aw * (1 - scale);
-  b.min.y = a.min.y + ny * ah * (1 - scale);
-  b.max.x = b.min.x + aw * scale;
-  b.max.y = b.min.y + ah * scale;
+  double ppw = zoom_to_ppw(zoom);
+  
+  b.min.x = a.min.x + nx * aw - nx * aw / ppw;
+  b.min.y = a.min.y + ny * ah - ny * ah / ppw;
+
+  b.max.x = b.min.x + aw / ppw;
+  b.max.y = b.min.y + ah / ppw;
 
   return b;
 }
 
 //-----------------------------------------------------------------------------
 
-Viewport Viewport::pan(dvec2 delta) {
+Viewport Viewport::pan(dvec2 screen_delta) {
   const Viewport& a = *this;
+
+  const double ppw = a.get_pix_per_world();
+  dvec2 world_delta = screen_delta / ppw;
+
   Viewport b;
   b.screen_size = screen_size;
-
-  const double scale = screen_size.x / (max.x - min.x);
-  b.min.x = a.min.x + double(-delta.x) / scale;
-  b.min.y = a.min.y + double(-delta.y) / scale;
-  b.max.x = a.max.x + double(-delta.x) / scale;
-  b.max.y = a.max.y + double(-delta.y) / scale;
+  b.min = a.min - world_delta;
+  b.max = a.max - world_delta;
 
   return b;
 }
@@ -120,13 +130,15 @@ Viewport Viewport::snap() {
   Viewport b;
   b.screen_size = a.screen_size;
 
-  const double zoom  = round(a.get_zoom() * 4.0) / 4.0;
-  const double scale = exp2(zoom);
+  double ppw1  = get_pix_per_world();
+  double zoom1 = ppw_to_zoom(ppw1);
+  double zoom2 = round(zoom1 * 4.0) / 4.0;
+  double ppw2  = zoom_to_ppw(zoom2);
 
-  b.min.x = round(a.min.x * scale) / scale;
-  b.min.y = round(a.min.y * scale) / scale;
-  b.max.x = round(a.max.x * scale) / scale;
-  b.max.y = round(a.max.y * scale) / scale;
+  b.min.x = round(a.min.x * ppw2) / ppw2;
+  b.min.y = round(a.min.y * ppw2) / ppw2;
+  b.max.x = round(a.max.x * ppw2) / ppw2;
+  b.max.y = round(a.max.y * ppw2) / ppw2;
 
   return b;
 }

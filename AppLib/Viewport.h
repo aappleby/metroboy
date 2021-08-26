@@ -36,7 +36,8 @@ struct Viewport {
 
   dvec2 deltaScreenToWorld(dvec2 delta) const;
 
-  double get_zoom() const;
+  double get_pix_per_world() const;
+  //double get_zoom() const;
 
   Viewport center_on(dvec2 c);
   Viewport zoom(dvec2 screen_pos, double zoom);

@@ -57,14 +57,16 @@ void from_json(const nlohmann::json& j, PlaitNode*& plait_node) {
   plait_node->pos_old.x = j.value("pos_x", 0.0);
   plait_node->pos_old.y = j.value("pos_y", 0.0);
   plait_node->old       = j.value("old", false);
+  plait_node->global    = j.value("global", false);
   plait_node->pos_new = plait_node->pos_old;
 }
 
 void to_json(nlohmann::json& j, const PlaitNode* plait_node) {
-  j["name"]  = plait_node->name;
-  j["pos_x"] = plait_node->pos_new.x;
-  j["pos_y"] = plait_node->pos_new.y;
-  j["old"]   = plait_node->old;
+  j["name"]   = plait_node->name;
+  j["pos_x"]  = plait_node->pos_new.x;
+  j["pos_y"]  = plait_node->pos_new.y;
+  j["old"]    = plait_node->old;
+  j["global"] = plait_node->global;
 }
 
 void PlaitNode::dump(Dumper& d) {

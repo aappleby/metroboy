@@ -31,6 +31,7 @@ enum class ToolMode {
   GHOST_REGION,
 
   TOGGLE_OLD,
+  TOGGLE_GLOBAL,
 
   CREATE_ROOT,
   CREATE_LEAF,
@@ -99,6 +100,7 @@ public:
   void event_ghost_region (SDL_Event event);
 
   void event_toggle_old   (SDL_Event event);
+  void event_toggle_global(SDL_Event event);
 
   void event_create_root  (SDL_Event event);
   void event_create_leaf  (SDL_Event event);

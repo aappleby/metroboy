@@ -114,6 +114,7 @@ struct PlaitNode {
   dvec2 pos_new = {0,0};
   dvec2 pos_old = {0,0};
   bool old = false;
+  bool global = false;
 
   //----------------------------------------
   // Not serialized
@@ -157,6 +158,10 @@ struct PlaitNode {
   dvec2 get_pos_new() const  { return pos_new; }
   void  set_pos_new(dvec2 p) { pos_new = p; }
   void  move(dvec2 delta)    { pos_new += delta; }
+
+  bool is_global() const {
+    return plait_cell->core_node->global;
+  }
 
   void commit_pos()          {
     pos_old = pos_new;

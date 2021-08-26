@@ -42,15 +42,6 @@ struct Viewport {
     return 1.0 / zoom_to_ppw(_view_zoom);
   }
 
-  double get_pix_per_world() const {
-    return zoom_to_ppw(_view_zoom);
-  }
-
-
-  dvec2 _screen_size = {};
-  dvec2 _world_center = {};
-  double _view_zoom = 0;
-
   double view_zoom() const {
     return _view_zoom;
   }
@@ -126,6 +117,10 @@ struct Viewport {
       0.0
     };
   }
+
+  dvec2 _screen_size = {};
+  dvec2 _world_center = {};
+  double _view_zoom = 0;
 };
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------

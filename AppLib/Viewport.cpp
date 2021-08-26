@@ -42,7 +42,7 @@ union double_funtimes {
 double ppw_to_zoom(double ppw) {
   double_funtimes f;
   f.value = ppw;
-  return double(int(f.exponent) - 1023) + f.mantissa / exp2(52);
+  return double(int(f.exponent) - 1023) + double(f.mantissa) / exp2(52);
 }
 
 double zoom_to_ppw(double zoom) {

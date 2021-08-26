@@ -67,8 +67,11 @@ int AppHost::app_main(int, char**) {
 
   SDL_Init(SDL_INIT_VIDEO);
 
-  const int initial_screen_w = 3800;
-  const int initial_screen_h = 2000;
+  SDL_DisplayMode display_mode;
+  SDL_GetCurrentDisplayMode(0, &display_mode);
+
+  const int initial_screen_w = display_mode.w - 64;
+  const int initial_screen_h = display_mode.h - 128;
 
   //const int initial_screen_w = 1920;
   //const int initial_screen_h = 1080;

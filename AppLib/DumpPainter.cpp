@@ -110,21 +110,25 @@ void main() {
 
 //-----------------------------------------------------------------------------
 
-void DumpPainter::init() {
+void DumpPainter::init_hex() {
+  tile_w = 14;
+  tile_h = 12;
+  cell_w = 6;
+  cell_h = 12;
+
+  masks[0] = 0xF0;
+  masks[1] = 0x0F;
+  shifts[0] = 0x04;
+  shifts[1] = 0x00;
+
   dump_prog = create_shader("dump_glsl", dump_glsl);
   dump_vao  = create_vao();
   dump_tab  = create_table_u8(256, 256);
 
   {
-    std::vector<uint8_t> font_pix(65536);
-    for (int i = 0; i < 32768; i++) font_pix[i] = terminus[i] == '#' ? 0xFF : 0x00;
-    atlas_tex = create_texture_u8(256, 128, font_pix.data());
-  }
-
-  {
     std::vector<uint8_t> hexa_pix(2048);
     for (int i = 0; i < 2048; i++) hexa_pix[i] = terminus_hex[i] == '#' ? 0xFF : 0x00;
-    hexa_tex = create_texture_u8(128, 16, hexa_pix.data());
+    glyph_tex = create_texture_u8(128, 16, hexa_pix.data());
   }
 
   ruler_x_tab = create_table_u32(4096, 1);
@@ -158,28 +162,73 @@ void DumpPainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void DumpPainter::render(Viewport view, double x, double y, int w, int h, const uint8_t* dump) {
-  update_table_u8(dump_tab, w, h, dump);
+void DumpPainter::init_ascii() {
+  tile_w = 6;
+  tile_h = 12;
+  cell_w = 6;
+  cell_h = 12;
+
+  masks[0] = 0xFF;
+  shifts[0] = 0x00;
+
+  dump_prog = create_shader("dump_glsl", dump_glsl);
+  dump_vao = create_vao();
+  dump_tab = create_table_u8(256, 256);
+
+  {
+    std::vector<uint8_t> font_pix(65536);
+    for (int i = 0; i < 32768; i++) font_pix[i] = terminus[i] == '#' ? 0xFF : 0x00;
+    glyph_tex = create_texture_u8(256, 128, font_pix.data());
+  }
+
+  ruler_x_tab = create_table_u32(4096, 1);
+  ruler_y_tab = create_table_u32(4096, 1);
+
+  {
+
+    std::vector<uint32_t> ruler_x(4096);
+    for (int i = 0; i < 4096; i++) {
+      int tile_xi = i / tile_w;
+      int tile_xf = i % tile_w;
+      int cell_xi = tile_xf / cell_w;
+      int cell_xf = tile_xf % cell_w;
+      ruler_x[i] = (tile_xi << 0) | (cell_xi << 8) | (cell_xf << 16);
+    }
+    update_table_u32(ruler_x_tab, 4096, 1, ruler_x.data());
+  }
+
+  {
+    std::vector<uint32_t> ruler_y(4096);
+    for (int i = 0; i < 4096; i++) {
+      int tile_yi = i / tile_h;
+      int tile_yf = i % tile_h;
+      int cell_yi = tile_yf / cell_h;
+      int cell_yf = tile_yf % cell_h;
+      ruler_y[i] = (tile_yi << 0) | (cell_yi << 8) | (cell_yf << 16);
+    }
+    update_table_u32(ruler_y_tab, 4096, 1, ruler_y.data());
+  }
 
   bind_shader(dump_prog);
-
-  uint32_t masks[16]  = { 0xF0, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  uint32_t shifts[16] = { 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-  //uint32_t masks[16]  = { 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  //uint32_t shifts[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
   glUniform1uiv(glGetUniformLocation(dump_prog, "shifts"), 16, shifts);
-  glUniform1uiv(glGetUniformLocation(dump_prog, "masks"),  16, masks);
+  glUniform1uiv(glGetUniformLocation(dump_prog, "masks"), 16, masks);
+}
 
-  double scale_x = 1.0;
-  double scale_y = 1.0;
+//-----------------------------------------------------------------------------
+
+void DumpPainter::dump(Viewport view, double world_x, double world_y, double scale_x, double scale_y, int text_w, int text_h, const uint8_t* dump) {
+  update_table_u8(dump_tab, text_w, text_h, dump);
+
+  bind_shader(dump_prog);
+  glUniform1uiv(glGetUniformLocation(dump_prog, "shifts"), 16, shifts);
+  glUniform1uiv(glGetUniformLocation(dump_prog, "masks"), 16, masks);
+
 
   double view_w = view.world_max().x - view.world_min().x;
   double view_h = view.world_max().y - view.world_min().y;
 
-  double view_dx = (x - view.world_min().x);
-  double view_dy = (y - view.world_min().y);
+  double view_dx = (world_x - view.world_min().x);
+  double view_dy = (world_y - view.world_min().y);
 
   {
     double ax = +view_w / (view.screen_size().x * scale_x);
@@ -194,10 +243,10 @@ void DumpPainter::render(Viewport view, double x, double y, int w, int h, const 
   }
 
   {
-    double ax = 2.0 * (w * tile_w * scale_x) / view_w;
-    double ay = 2.0 * (h * tile_h * scale_y) / view_h;
-    double bx = 2.0 * (x - view.world_min().x) / view_w - 1.0;
-    double by = 2.0 * (y - view.world_min().y) / view_h - 1.0;
+    double ax = 2.0 * (text_w * tile_w * scale_x) / view_w;
+    double ay = 2.0 * (text_h * tile_h * scale_y) / view_h;
+    double bx = 2.0 * (world_x - view.world_min().x) / view_w - 1.0;
+    double by = 2.0 * (world_y - view.world_min().y) / view_h - 1.0;
 
     ay = -ay;
     by = -by;
@@ -211,10 +260,9 @@ void DumpPainter::render(Viewport view, double x, double y, int w, int h, const 
   glUniform4f(glGetUniformLocation(dump_prog, "highlight_color"), 1.0f, 1.0f, 0.0f, 1.0f);
 
   bind_texture(dump_prog, "dump_tab", 0, dump_tab);
-  //bind_texture(dump_prog, "atlas_tex", 1, atlas_tex);
-  bind_texture(dump_prog, "atlas_tex", 1, hexa_tex);
-  bind_table  (dump_prog, "ruler_x",  2, ruler_x_tab);
-  bind_table  (dump_prog, "ruler_y",  3, ruler_y_tab);
+  bind_texture(dump_prog, "atlas_tex", 1, glyph_tex);
+  bind_table(dump_prog, "ruler_x", 2, ruler_x_tab);
+  bind_table(dump_prog, "ruler_y", 3, ruler_y_tab);
 
   bind_vao(dump_vao);
 

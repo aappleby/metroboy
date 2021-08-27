@@ -40535,6 +40535,17 @@
       "roots": {}
     }
   },
+  "frames": [
+    {
+      "pos_x": -704.0,
+      "pos_y": -224.0,
+      "size_x": 128,
+      "size_y": 64,
+      "text": "The quick brown fox jumps over the lazy dog\nJackdaws love my big sphinx of quartz.slkdjlfksjdf",
+      "text_scale": 2,
+      "title": "Some Title"
+    }
+  ],
   "guid": 2554828494,
   "labels": [
     {

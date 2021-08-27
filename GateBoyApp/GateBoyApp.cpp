@@ -41,7 +41,8 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 
   grid_painter.init(65536, 65536);
   text_painter.init();
-  dump_painter.init();
+  //dump_painter.init_hex();
+  dump_painter.init_ascii();
   gb_blitter.init();
   blitter.init();
 
@@ -160,6 +161,10 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //gb_thread.gb->dbg_write(ADDR_SCX, 7);
   //gb_thread.gb->dbg_write(ADDR_SCY, 7);
 #endif
+
+  for (int i = 0; i < 8192; i++) {
+    gb_thread.gb->vid_ram[i] = uint8_t(i);
+  }
 
   LOG_DEDENT();
   LOG_G("GateBoyApp::app_init() done\n");
@@ -302,6 +307,24 @@ void GateBoyApp::app_update(double _delta) {
     }
   }
 }
+
+const char* raw_text_blob = R"(
+In this bulletin, directions are given for canning most fruits and vegetables
+in No. 2 and No. 2½ tin cans. A No. 2 can holds about 2½ cups, and a No. 2½ can
+about 3½ cups. Use only cans in good condition. —See that cans, lids, and
+gaskets are perfect. Discard badly bent, dented, or rusted cans, and lids with
+damaged gaskets. Keep lids in paper packing until ready to use. The paper
+protects the lids from dirt and moisture. Wash cans.—Just before use, wash cans
+in clean water; drain upside down. Do not wash lids; washing may damage the
+gaskets. If lids are dusty or dirty, rinse with clean water or wipe with a damp
+cloth just before you put them on the cans. Check the sealer.—Make sure the
+sealer you use is properly adjusted. To test, put a little water into a can,
+seal it, then submerge can in boiling water for a few seconds. If air bubbles
+rise from around the can, the seam is not tight. Adjust sealer, following
+manufacturer’s directions.
+)";
+
+uint8_t text_grid[8192];
 
 //-----------------------------------------------------------------------------
 
@@ -567,6 +590,26 @@ void GateBoyApp::app_render_frame() {
   }
 
   // Draw screen and vid ram contents
+
+  //dump_painter.dump(view, 64, 1100, 256, 32, gb->vid_ram);
+
+  {
+    const char* cursor = raw_text_blob;
+    int cursor_x2 = 0;
+    int cursor_y2 = 0;
+    while (*cursor) {
+      char c = *cursor++;
+      if (c == '\n') {
+        cursor_x2 = 0;
+        cursor_y2++;
+      }
+      else {
+        text_grid[cursor_x2 + cursor_y2 * 128] = c;
+        cursor_x2++;
+      }
+    }
+    dump_painter.dump(view, 64, 1100, 1, 1, 128, 64, text_grid);
+  }
 
   // Draw screen overlay
   {

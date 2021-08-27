@@ -5,6 +5,7 @@
 #include "AppLib/GridPainter.h"
 #include "AppLib/LinePainter.h"
 #include "AppLib/TextPainter.h"
+#include "AppLib/DumpPainter.h"
 #include "AppLib/Blitter.h"
 #include "AppLib/Viewport.h"
 
@@ -27,6 +28,10 @@ enum class ToolMode {
   IMGUI,
   DRAG_NODE,
   DRAG_LABEL,
+  DRAG_FRAME,
+
+  EDIT_FRAME,
+
   SELECT_REGION,
   GHOST_REGION,
 
@@ -79,8 +84,9 @@ public:
 
   bool hit_node(dvec2 _mouse_pos, PlaitNode* node);
 
-  PlaitLabel*     pick_label(dvec2 pos);
-  PlaitNode* pick_node(dvec2 pos);
+  PlaitLabel* pick_label(dvec2 pos);
+  PlaitNode*  pick_node(dvec2 pos);
+  PlaitFrame* pick_frame(dvec2 pos);
 
   void draw_node_fill(PlaitNode* node, uint32_t color);
   void draw_node_ports(PlaitNode* node);
@@ -95,6 +101,9 @@ public:
 
   void event_drag_nodes   (SDL_Event event);
   void event_drag_label   (SDL_Event event);
+  void event_drag_frame   (SDL_Event event);
+
+  void event_edit_frame   (SDL_Event event);
 
   void event_select_region(SDL_Event event);
   void event_ghost_region (SDL_Event event);
@@ -109,6 +118,17 @@ public:
 
   void event_pan_view     (SDL_Event event);
   void event_menu_option  (SDL_Event event);
+
+  void release_tool() {
+    if (clicked_label) {
+      clicked_label->pos_old = clicked_label->pos_new;
+    }
+
+    clicked_frame = nullptr;
+    selected_frame = nullptr;
+
+    current_tool = ToolMode::NONE;
+  }
 
   //----------------------------------------
 
@@ -128,6 +148,8 @@ public:
   BoxPainter  port_painter;
   Blitter     blitter;
   TextPainter ui_text_painter;
+  DumpPainter dump_painter;
+
 
   int tex = 0;
 
@@ -159,9 +181,17 @@ public:
 
   PlaitLabel* clicked_label = nullptr;
   dvec2       clicked_label_offset = {0,0};
+
+  PlaitNode*  hovered_node = nullptr;
   PlaitNode*  clicked_node = nullptr;
   dvec2       clicked_node_offset = {0,0};
-  PlaitNode*  hovered_node = nullptr;
+
+  PlaitFrame* hovered_frame = nullptr;
+  PlaitFrame* clicked_frame = nullptr;
+  dvec2       clicked_frame_offset = { 0,0 };
+  PlaitFrame* selected_frame = nullptr;
+
+  char* text_buf = nullptr;
 };
 
 //-----------------------------------------------------------------------------

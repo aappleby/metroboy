@@ -206,7 +206,7 @@ int AppHost::app_main(int, char**) {
     //----------------------------------------
     // ImGui render
 
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
     ImGui::Render();
 
     const ImDrawData* draw_data = ImGui::GetDrawData();

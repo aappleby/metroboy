@@ -42,6 +42,9 @@ static std::map<ToolMode, std::string> tool_to_string = {
   {ToolMode::DRAG_NODE,       "DRAG_NODE"},
   {ToolMode::DRAG_LABEL,      "DRAG_LABEL"},
 
+  {ToolMode::DRAG_FRAME,      "DRAG_FRAME"},
+  {ToolMode::EDIT_FRAME,      "EDIT_FRAME"},
+
   {ToolMode::SELECT_REGION,   "SELECT_REGION"},
   {ToolMode::GHOST_REGION,    "GHOST_REGION"},
 
@@ -257,6 +260,7 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
   text_painter.init();
   ui_text_painter.init();
   blitter.init();
+  dump_painter.init_ascii();
 
   check_gl_error();
 
@@ -279,12 +283,17 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
     }
   }
 
+  text_buf = new char[65536];
+  strcpy(text_buf, "The quick brown fox jumps over the lazy imgui dog.");
+
   printf("Init done %f\n", timestamp());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::app_close() {
+  delete[] text_buf;
+  text_buf = nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -335,6 +344,22 @@ PlaitLabel* PlaitApp::pick_label(dvec2 _mouse_pos) {
         _mouse_pos.x <= max.x &&
         _mouse_pos.y <= max.y) {
       return label;
+    }
+  }
+  return nullptr;
+}
+
+PlaitFrame* PlaitApp::pick_frame(dvec2 _mouse_pos) {
+  for (auto frame : plait.frames) {
+    dvec2 min = frame->pos;
+    dvec2 glyph_size(6, 12);
+
+    dvec2 max = min + dvec2(frame->size) * glyph_size * (double)frame->text_scale;
+    if (_mouse_pos.x >= min.x &&
+      _mouse_pos.y >= min.y &&
+      _mouse_pos.x <= max.x &&
+      _mouse_pos.y <= max.y) {
+      return frame;
     }
   }
   return nullptr;
@@ -472,9 +497,8 @@ void PlaitApp::event_menu_option(SDL_Event event) {
     break;
   }
   case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_LALT) {
-      current_tool = ToolMode::NONE;
+    if (event.key.keysym.scancode == SDL_SCANCODE_LALT) {
+      release_tool();
     }
     break;
   }
@@ -508,9 +532,8 @@ void PlaitApp::event_select_region(SDL_Event event) {
     break;
   }
   case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_LCTRL) {
-      current_tool = ToolMode::NONE;
+    if (event.key.keysym.scancode == SDL_SCANCODE_LCTRL) {
+      release_tool();
     }
     break;
   }
@@ -531,9 +554,8 @@ void PlaitApp::event_ghost_region(SDL_Event event) {
     break;
   }
   case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_Q) {
-      current_tool = ToolMode::NONE;
+    if (event.key.keysym.scancode == SDL_SCANCODE_Q) {
+      release_tool();
     }
     break;
   }
@@ -553,9 +575,8 @@ void PlaitApp::event_toggle_old(SDL_Event event) {
     break;
   }
   case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_F) {
-      current_tool = ToolMode::NONE;
+    if (event.key.keysym.scancode == SDL_SCANCODE_F) {
+      release_tool();
     }
     break;
   }
@@ -575,9 +596,8 @@ void PlaitApp::event_toggle_global(SDL_Event event) {
     break;
   }
   case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_G) {
-      current_tool = ToolMode::NONE;
+    if (event.key.keysym.scancode == SDL_SCANCODE_G) {
+      release_tool();
     }
     break;
   }
@@ -602,7 +622,7 @@ void PlaitApp::event_pan_view(SDL_Event event) {
         commit_selection();
         clear_selection();
       }
-      current_tool = ToolMode::NONE;
+      release_tool();
     }
     break;
   }
@@ -625,7 +645,7 @@ void PlaitApp::event_drag_nodes(SDL_Event event) {
   }
   case SDL_MOUSEBUTTONUP: {
     if (event.button.button & SDL_BUTTON_LMASK) {
-      current_tool = ToolMode::NONE;
+      release_tool();
     }
     break;
   }
@@ -648,11 +668,65 @@ void PlaitApp::event_drag_label(SDL_Event event) {
   }
   case SDL_MOUSEBUTTONUP: {
     if (event.button.button & SDL_BUTTON_LMASK) {
-      if (clicked_label) {
-        clicked_label->pos_old = clicked_label->pos_new;
-      }
-      current_tool = ToolMode::NONE;
+      release_tool();
     }
+    break;
+  }
+  }
+}
+
+//--------------------------------------------------------------------------------
+
+void PlaitApp::event_drag_frame(SDL_Event event) {
+  switch (event.type) {
+  case SDL_MOUSEMOTION: {
+    if (event.motion.state & SDL_BUTTON_LMASK) {
+      dvec2 pos_abs_new = mouse_pos_wrap + clicked_frame_offset;
+      pos_abs_new.x = round(pos_abs_new.x / 16) * 16.0;
+      pos_abs_new.y = round(pos_abs_new.y / 16) * 16.0;
+      clicked_frame->pos = pos_abs_new;
+    }
+    break;
+  }
+  case SDL_KEYDOWN: {
+    break;
+  }
+
+  case SDL_MOUSEBUTTONUP: {
+    if (event.button.button & SDL_BUTTON_LMASK) {
+      release_tool();
+    }
+    break;
+  }
+  }
+}
+
+void PlaitApp::event_edit_frame(SDL_Event event) {
+  switch (event.type) {
+  case SDL_MOUSEMOTION: {
+    break;
+  }
+  case SDL_MOUSEBUTTONUP: {
+    break;
+  }
+  case SDL_KEYDOWN: {
+    if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+      release_tool();
+      break;
+    }
+
+    if (selected_frame) {
+      if (event.key.keysym.scancode == SDL_SCANCODE_RETURN) {
+        selected_frame->text.push_back('\n');
+      }
+      else if (event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
+        selected_frame->text.pop_back();
+      }
+      else {
+        selected_frame->text.push_back((char)event.key.keysym.sym);
+      }
+    }
+
     break;
   }
   }
@@ -687,7 +761,7 @@ void PlaitApp::event_imgui(SDL_Event event) {
   }
 
   if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
-    current_tool = ToolMode::NONE;
+    release_tool();
   }
 }
 
@@ -707,9 +781,8 @@ void PlaitApp::event_create_root(SDL_Event event) {
     break;
   }
   case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_Z) {
-      current_tool = ToolMode::NONE;
+    if (event.key.keysym.scancode == SDL_SCANCODE_Z) {
+      release_tool();
     }
     break;
   }
@@ -731,9 +804,8 @@ void PlaitApp::event_create_leaf(SDL_Event event) {
     break;
   }
   case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_X) {
-      current_tool = ToolMode::NONE;
+    if (event.key.keysym.scancode == SDL_SCANCODE_X) {
+      release_tool();
     }
     break;
   }
@@ -756,9 +828,8 @@ void PlaitApp::event_link_node(SDL_Event event) {
     break;
   }
   case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_C) {
-      current_tool = ToolMode::NONE;
+    if (event.key.keysym.scancode == SDL_SCANCODE_C) {
+      release_tool();
     }
     break;
   }
@@ -783,9 +854,8 @@ void PlaitApp::event_delete_node(SDL_Event event) {
     break;
   }
   case SDL_KEYUP: {
-    int key = event.key.keysym.scancode;
-    if (key == SDL_SCANCODE_V) {
-      current_tool = ToolMode::NONE;
+    if (event.key.keysym.scancode == SDL_SCANCODE_V) {
+      release_tool();
     }
     break;
   }
@@ -811,20 +881,24 @@ void PlaitApp::event_select_tool(SDL_Event event) {
     if (key == SDL_SCANCODE_LALT)  new_tool = ToolMode::MENU_OPTION;
     if (key == SDL_SCANCODE_LCTRL) new_tool = ToolMode::SELECT_REGION;
 
-    if (new_tool != ToolMode::NONE) {
-      current_tool = new_tool;
-    }
-
     if (key == SDL_SCANCODE_ESCAPE && node_selection.size()) {
       printf("Reverting selection\n");
       revert_selection();
       clear_selection();
     }
 
-    if (key == SDL_SCANCODE_RETURN && node_selection.size()) {
+    if (key == SDL_SCANCODE_RETURN && hovered_frame) {
+      selected_frame = hovered_frame;
+      new_tool = ToolMode::EDIT_FRAME;
+    }
+    else if (key == SDL_SCANCODE_RETURN && node_selection.size()) {
       printf("Commiting selection\n");
       commit_selection();
       clear_selection();
+    }
+
+    if (new_tool != ToolMode::NONE) {
+      current_tool = new_tool;
     }
   }
   else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button & SDL_BUTTON_LMASK) {
@@ -840,6 +914,10 @@ void PlaitApp::event_select_tool(SDL_Event event) {
       }
       current_tool = ToolMode::DRAG_NODE;
     }
+    else if (clicked_frame) {
+      clicked_frame_offset = wrap(clicked_frame->pos - mouse_pos_world);
+      current_tool = ToolMode::DRAG_FRAME;
+    }
     else if (new_clicked_label) {
       clicked_label = new_clicked_label;
       clicked_label_offset = clicked_label->pos_new - mouse_pos_world;
@@ -847,8 +925,6 @@ void PlaitApp::event_select_tool(SDL_Event event) {
     }
     else {
       clicked_label = nullptr;
-      //commit_selection();
-      //clear_selection();
       current_tool = ToolMode::PAN_VIEW;
     }
   }
@@ -890,6 +966,7 @@ void PlaitApp::app_update(double delta_time) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_MOUSEBUTTONDOWN && (event.button.button & SDL_BUTTON_LMASK)) {
+      clicked_frame = pick_frame(mouse_pos_world);
       clicked_node = pick_node(mouse_pos_world);
       click_pos_screen = mouse_pos_screen;
       click_pos_world  = mouse_pos_world;
@@ -914,6 +991,8 @@ void PlaitApp::app_update(double delta_time) {
     case ToolMode::IMGUI:          event_imgui(event); break;
     case ToolMode::DRAG_NODE:      event_drag_nodes(event); break;
     case ToolMode::DRAG_LABEL:     event_drag_label(event); break;
+    case ToolMode::DRAG_FRAME:     event_drag_frame(event); break;
+    case ToolMode::EDIT_FRAME:     event_edit_frame(event); break;
     case ToolMode::SELECT_REGION:  event_select_region(event); break;
     case ToolMode::GHOST_REGION:   event_ghost_region(event); break;
     case ToolMode::TOGGLE_OLD:     event_toggle_old(event); break;
@@ -931,20 +1010,23 @@ void PlaitApp::app_update(double delta_time) {
     }
     }
 
-    if(event.type == SDL_MOUSEWHEEL) {
+    if(current_tool != ToolMode::IMGUI && event.type == SDL_MOUSEWHEEL) {
       view_control.on_mouse_wheel((int)mouse_pos_screen.x, (int)mouse_pos_screen.y, double(event.wheel.y) * 0.25);
     }
 
     if (event.type == SDL_MOUSEBUTTONUP && (event.button.button & SDL_BUTTON_LMASK)) {
+      clicked_frame = nullptr;
       clicked_node = nullptr;
     }
   }
 
   if (current_tool != ToolMode::IMGUI) {
     hovered_node = pick_node(mouse_pos_world);
+    hovered_frame = pick_frame(mouse_pos_world);
   }
   else {
     hovered_node = nullptr;
+    hovered_frame = nullptr;
   }
 
   view_control.update(delta_time);
@@ -1057,6 +1139,12 @@ void PlaitApp::draw_node_outline(PlaitNode* node) {
   }
 }
 */
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+const char* raw_text_blob = R"(The quick brown fox jumps over the lazy dog)";
+uint8_t text_grid[8192];
+
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1413,7 +1501,7 @@ void PlaitApp::app_render_frame() {
   //----------------------------------------
   // Labels
 
-  for (auto& label : plait.labels) {
+  for (auto label : plait.labels) {
     uint32_t color = (label == clicked_label) ? COL_VIOLET : COL_PALE_GREY;
     color |= 0xFF000000;
     text_painter.add_text_at(label->text.c_str(), color, label->pos_new.x, label->pos_new.y, label->scale);
@@ -1446,6 +1534,30 @@ void PlaitApp::app_render_frame() {
       outline_painter.push_box(click_pos_wrap, mouse_pos_wrap, sel_color);
       outline_painter.render(view, 0, 0, 1);
     }
+  }
+
+  //----------------------------------------
+  // Text blocks
+
+  for (auto frame : plait.frames) {
+    const char* cursor = frame->text.c_str();
+
+    memset(text_grid, 0, frame->size.x * frame->size.y);
+
+    int cursor_x2 = 0;
+    int cursor_y2 = 0;
+    while (*cursor) {
+      char c = *cursor++;
+      if (c == '\n') {
+        cursor_x2 = 0;
+        cursor_y2++;
+      }
+      else {
+        text_grid[cursor_x2 + cursor_y2 * 128] = c;
+        cursor_x2++;
+      }
+    }
+    dump_painter.dump(view, frame->pos.x, frame->pos.y, frame->text_scale, frame->text_scale, frame->size.x, frame->size.y, text_grid);
   }
 
   //----------------------------------------
@@ -1506,12 +1618,36 @@ void PlaitApp::app_render_ui() {
     else {
       d("Clicked node  : \n");
     }
+
     if (hovered_node) {
       d("Hovered node  : %s %f %f\n", hovered_node->plait_cell->name(), hovered_node->pos_new.x, hovered_node->pos_new.y);
     }
     else {
       d("Hovered node  : \n");
     }
+
+    if (hovered_frame) {
+      d("Hovered frame  : %s %f %f\n", hovered_frame->title.c_str(), hovered_frame->pos.x, hovered_frame->pos.y);
+    }
+    else {
+      d("Hovered frame  : \n");
+    }
+
+    if (clicked_frame) {
+      d("Clicked frame  : %s %f %f\n", clicked_frame->title.c_str(), clicked_frame->pos.x, clicked_frame->pos.y);
+    }
+    else {
+      d("Clicked frame  : \n");
+    }
+
+    if (selected_frame) {
+      d("Selected frame  : %s %f %f\n", selected_frame->title.c_str(), selected_frame->pos.x, selected_frame->pos.y);
+    }
+    else {
+      d("Selected frame  : \n");
+    }
+
+
     d("\n");
 
     d("Clicked label : %s\n", clicked_label ? clicked_label->text.c_str() : "<none>");
@@ -1533,18 +1669,24 @@ void PlaitApp::app_render_ui() {
 
   {
     ImGui::Begin("Label Editor");
+
+    /*
     static char str0[128] = "Label Text Here";
 
     if (clicked_label) {
       strcpy(str0, clicked_label->text.c_str());
     }
+    */
 
+    /*
     if (ImGui::InputText("text", str0, IM_ARRAYSIZE(str0))) {
       if (clicked_label) {
         clicked_label->text = str0;
       }
     }
+    */
 
+    /*
     if (ImGui::Button("Create label")) {
       printf("Creating label %s\n", str0);
       PlaitLabel* label = new PlaitLabel {
@@ -1555,9 +1697,13 @@ void PlaitApp::app_render_ui() {
       };
       plait.labels.push_back(label);
     }
+    */
 
     static char node_tag[128];
-    ImGui::InputText("tag", node_tag, IM_ARRAYSIZE(node_tag));
+    
+    //ImGui::InputText("tag", node_tag, IM_ARRAYSIZE(node_tag));
+
+    /*
     if (ImGui::Button("Find Tag")) {
       printf("find tag\n");
       for (auto& [tag, plait_cell] : plait.cell_map) {
@@ -1565,8 +1711,14 @@ void PlaitApp::app_render_ui() {
           view_control.center_on(plait_cell->core_node->pos_old + node_size * 0.5);
         }
       }
-
     }
+    */
+
+    static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_CtrlEnterForNewLine;
+
+    if (ImGui::InputTextMultiline("text", text_buf, 65536, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags)) {
+    }
+
 
 
     ImGui::End();

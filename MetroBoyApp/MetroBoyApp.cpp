@@ -49,7 +49,7 @@ void MetroBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
   ram_tex = create_texture_u8(256, 256);
 
   gb_blitter.init();
-  dump_painter.init();
+  dump_painter.init_hex();
   load_rom("roms/tetris.gb");
 
   //load_rom("roms/gb-test-roms/cpu_instrs/individual/01-special.gb");            // pass
@@ -293,7 +293,7 @@ void MetroBoyApp::app_render_frame() {
   // Memory debugger
 
   //dump_painter.render(view, 900, 100, 16, 8, metroboy->get_zram());
-  //dump_painter.render(view, 900, 300, 64, 128, metroboy->get_main_ram());
+  dump_painter.dump(view, 900, 300, 1, 1, 64, 128, gb->cart.main_ram);
 }
 
 //-----------------------------------------------------------------------------

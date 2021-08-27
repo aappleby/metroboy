@@ -14,6 +14,7 @@ struct PlaitCell;
 struct PlaitNode;
 struct PlaitTrace;
 struct PlaitLabel;
+struct PlaitFrame;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -44,16 +45,10 @@ struct Plait {
   void delete_node(PlaitNode* dead_leaf);
   void check_dead(PlaitNode* node);
 
-  //void save_json(const char* filename);
-  //void save_json(std::ostream& stream);
-  //void load_json(const char* filename, DieDB& die_db);
-  //void load_json(std::istream& stream, DieDB& die_db);
-
   std::map<std::string, PlaitCell*>  cell_map;
-  //std::map<std::string, PlaitTrace*> trace_map_old;
-  //std::map<std::string, PlaitTrace*> trace_map_new;
   std::vector<PlaitTrace*> traces;
   std::vector<PlaitLabel*> labels;
+  std::vector<PlaitFrame*> frames;
 
   uint32_t new_guid() {
     _guid = mix(_guid);
@@ -101,6 +96,19 @@ struct PlaitCell {
   // Not serialized
   DieCell* die_cell = nullptr;
   int selected_node_count = 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+struct PlaitFrame {
+  //----------------------------------------
+  // Serialized
+
+  std::string title;
+  std::string text;
+  dvec2 pos = { 0,0 };
+  ivec2 size = { 0, 0 };
+  int text_scale = 1;
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

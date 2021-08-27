@@ -4,6 +4,8 @@
 
 #pragma warning(disable:4996)
 
+extern const char* raw_text_blob;
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void from_json(const nlohmann::json& j, PlaitLabel*& plait_label) {
@@ -20,6 +22,29 @@ void to_json(nlohmann::json& j, const PlaitLabel* plait_label) {
   j["pos_x"] = plait_label->pos_old.x;
   j["pos_y"] = plait_label->pos_old.y;
   j["scale"] = plait_label->scale;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void from_json(const nlohmann::json& j, PlaitFrame*& plait_frame) {
+  plait_frame = new PlaitFrame();
+  plait_frame->title = j["title"];
+  plait_frame->text = j["text"];
+  plait_frame->pos.x = j["pos_x"];
+  plait_frame->pos.y = j["pos_y"];
+  plait_frame->size.x = j["size_x"];
+  plait_frame->size.y = j["size_y"];
+  plait_frame->text_scale = j["text_scale"];
+}
+
+void to_json(nlohmann::json& j, const PlaitFrame* plait_frame) {
+  j["title"] = plait_frame->title;
+  j["text"]  = plait_frame->text;
+  j["pos_x"] = plait_frame->pos.x;
+  j["pos_y"] = plait_frame->pos.y;
+  j["size_x"] = plait_frame->size.x;
+  j["size_y"] = plait_frame->size.y;
+  j["text_scale"] = plait_frame->text_scale;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -364,6 +389,8 @@ void Plait::to_json(nlohmann::json& jroot) {
     j["input_node"]  = plait_trace->input_node->name;
     j["input_port"]  = plait_trace->die_trace->input_port;
   }
+
+  jroot["frames"] = frames;
 }
 
 //----------------------------------------
@@ -403,6 +430,22 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   //if (jroot.contains("traces_new")) jroot["traces_new"].get_to(trace_map_new);
   jroot["labels"].get_to(labels);
   jroot["guid"]  .get_to(_guid);
+
+  if (jroot.contains("frames")) {
+    jroot["frames"].get_to(frames);
+  }
+
+  if (frames.empty()) {
+    auto frame = new PlaitFrame();
+    frame->title = "Some Title";
+    frame->text = raw_text_blob;
+    frame->pos = dvec2(0, 0);
+    frame->size = dvec2(128, 64);
+    frame->text_scale = 2;
+    frames.push_back(frame);
+  }
+
+  //----------------------------------------
 
 
   std::map<std::string, const DieTrace*> trace_map;
@@ -566,7 +609,6 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
 
     //CHECK_P(plait_trace->input_cell_name == plait_trace->die_trace->input_tag);
     //CHECK_P(plait_trace->input_node_name == plait_trace->input_node->name);
-
   }
 }
 

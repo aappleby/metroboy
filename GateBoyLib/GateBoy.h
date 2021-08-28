@@ -102,7 +102,7 @@ struct GateBoy {
 
   int64_t commit_and_hash() {
     int64_t hash = 0;
-#ifndef FAST_MODE
+#ifndef NO_HASH
     {
       uint8_t* a = reg_begin();
       uint8_t* b = reg_end();
@@ -110,7 +110,7 @@ struct GateBoy {
     }
 #endif
 
-#ifndef FAST_MODE
+#ifndef NO_COMMIT
     {
       uint8_t* a = reg_begin();
       uint8_t* b = reg_end();
@@ -384,8 +384,8 @@ struct GateBoy {
   void dump_spu(Dumper& d);
 
   //-----------------------------------------------------------------------------
-  // All the SOC registers, pins, buses. Everything in this section should derive
-  // from BitBase.
+  // All the SOC registers, pins, buses. Everything between sentinel 1 and
+  // sentinel 2 _must_ derive from BitBase.
 
   uint64_t sentinel1 = SENTINEL1;
 
@@ -499,19 +499,17 @@ struct GateBoy {
   NR51 reg_NR51;
   NR52 reg_NR52;
 
-  //----------
+  //-----------------------------------------------------------------------------
+  // Everything between sentinel 2 and 3 is checked in test_reset_cart_vs_dump
 
   uint64_t sentinel2 = SENTINEL2;
-
-  //-----------------------------------------------------------------------------
-  // Control stuff
 
   uint8_t sys_rst = 0;
   uint8_t sys_t1 = 0;
   uint8_t sys_t2 = 0;
   uint8_t sys_clken = 0;
   uint8_t sys_clkgood = 0;
-  uint8_t EXT_sys_clkreq = 0;
+  uint8_t sys_clkreq = 0;
   uint8_t sys_cpu_en = 0;
   uint8_t sys_fastboot = 0;
   uint8_t sys_buttons = 0;
@@ -530,12 +528,6 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // Memory
 
-  bool cart_has_mbc1 = 0;
-  bool cart_has_ram = 0;
-
-  uint32_t cart_rom_addr_mask = 0x7FFF;
-  uint32_t cart_ram_addr_mask = 0x0000;
-
   uint8_t vid_ram [8192];
   uint8_t cart_ram[32768];
   uint8_t int_ram [8192];
@@ -543,6 +535,14 @@ struct GateBoy {
   uint8_t zero_ram[128];
 
   uint64_t sentinel3 = SENTINEL3;
+
+  //-----------------------------------------------------------------------------
+  // Everything below here is "external" state not visible to the gameboy itself.
+
+  bool cart_has_mbc1 = 0;
+  bool cart_has_ram = 0;
+  uint32_t cart_rom_addr_mask = 0x7FFF;
+  uint32_t cart_ram_addr_mask = 0x0000;
 
   uint8_t* boot_buf = nullptr;
   size_t   boot_size = 0;

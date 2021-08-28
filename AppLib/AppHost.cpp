@@ -70,11 +70,11 @@ int AppHost::app_main(int, char**) {
   SDL_DisplayMode display_mode;
   SDL_GetCurrentDisplayMode(0, &display_mode);
 
-  const int initial_screen_w = display_mode.w - 64;
-  const int initial_screen_h = display_mode.h - 128;
+  //int initial_screen_w = display_mode.w - 64;
+  //int initial_screen_h = display_mode.h - 128;
 
-  //const int initial_screen_w = 1920;
-  //const int initial_screen_h = 1080;
+  int initial_screen_w = 1920;
+  int initial_screen_h = 1080;
 
   window = SDL_CreateWindow(app->app_get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -91,6 +91,8 @@ int AppHost::app_main(int, char**) {
   ImGui::CreateContext();
   ImGui::StyleColorsDark();
   ImGuiIO& io = ImGui::GetIO();
+
+  //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
   io.KeyMap[ImGuiKey_Tab] = SDL_SCANCODE_TAB;
   io.KeyMap[ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
@@ -114,11 +116,11 @@ int AppHost::app_main(int, char**) {
     unsigned char* pixels;
     int font_width, font_height;
     io.Fonts->GetTexDataAsAlpha8(&pixels, &font_width, &font_height);
-    imgui_tex = create_texture_u8(font_width, font_height, pixels);
+    imgui_tex = create_texture_u8(font_width, font_height, pixels, false);
 
     imgui_vao = create_vao();
-    imgui_vbo = create_vbo(65536);
-    imgui_ibo = create_ibo(65536);
+    imgui_vbo = create_vbo();
+    imgui_ibo = create_ibo();
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -206,7 +208,7 @@ int AppHost::app_main(int, char**) {
     //----------------------------------------
     // ImGui render
 
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
     ImGui::Render();
 
     const ImDrawData* draw_data = ImGui::GetDrawData();

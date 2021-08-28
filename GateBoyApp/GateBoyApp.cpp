@@ -41,14 +41,13 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 
   grid_painter.init(65536, 65536);
   text_painter.init();
-  //dump_painter.init_hex();
   dump_painter.init_ascii();
   gb_blitter.init();
   blitter.init();
 
-  trace_tex = create_texture_u32(912, 154);
-  ram_tex = create_texture_u8(256, 256);
-  overlay_tex = create_texture_u32(160, 144);
+  trace_tex = create_texture_u32(912, 154, nullptr);
+  ram_tex = create_texture_u8(256, 256, nullptr, false);
+  overlay_tex = create_texture_u32(160, 144, nullptr);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
 #if 1
@@ -56,6 +55,9 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   //gb_thread.load_cart(DMG_ROM_blob, load_blob("microtests/build/dmg/poweron_div_004.gb"));
   //gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/LinksAwakening.gb"));
   gb_thread.load_cart(DMG_ROM_blob, load_blob("roms/SML.gb"));
+
+  //gb_thread.reset_to_cart();
+
   gb_thread.reset_to_bootrom();
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
@@ -266,6 +268,18 @@ void GateBoyApp::app_update(double _delta) {
       break;
     }
 
+    // Run to end of bootrom
+    case SDLK_b: {
+      gb_thread.clear_work();
+      if (runmode != RUN_FAST) {
+        gb_thread.step_phase(46880640);
+        gb_thread.resume();
+        runmode = RUN_FAST;
+      }
+      break;
+    }
+
+
     case SDLK_F1:   load_raw_dump();            break;
     case SDLK_F4:   save_raw_dump();            break;
     case SDLK_r:    gb_thread.reset_to_cart();          break;
@@ -307,24 +321,6 @@ void GateBoyApp::app_update(double _delta) {
     }
   }
 }
-
-const char* raw_text_blob = R"(
-In this bulletin, directions are given for canning most fruits and vegetables
-in No. 2 and No. 2½ tin cans. A No. 2 can holds about 2½ cups, and a No. 2½ can
-about 3½ cups. Use only cans in good condition. —See that cans, lids, and
-gaskets are perfect. Discard badly bent, dented, or rusted cans, and lids with
-damaged gaskets. Keep lids in paper packing until ready to use. The paper
-protects the lids from dirt and moisture. Wash cans.—Just before use, wash cans
-in clean water; drain upside down. Do not wash lids; washing may damage the
-gaskets. If lids are dusty or dirty, rinse with clean water or wipe with a damp
-cloth just before you put them on the cans. Check the sealer.—Make sure the
-sealer you use is properly adjusted. To test, put a little water into a can,
-seal it, then submerge can in boiling water for a few seconds. If air bubbles
-rise from around the can, the seam is not tight. Adjust sealer, following
-manufacturer’s directions.
-)";
-
-uint8_t text_grid[8192];
 
 //-----------------------------------------------------------------------------
 
@@ -592,24 +588,6 @@ void GateBoyApp::app_render_frame() {
   // Draw screen and vid ram contents
 
   //dump_painter.dump(view, 64, 1100, 256, 32, gb->vid_ram);
-
-  {
-    const char* cursor = raw_text_blob;
-    int cursor_x2 = 0;
-    int cursor_y2 = 0;
-    while (*cursor) {
-      char c = *cursor++;
-      if (c == '\n') {
-        cursor_x2 = 0;
-        cursor_y2++;
-      }
-      else {
-        text_grid[cursor_x2 + cursor_y2 * 128] = c;
-        cursor_x2++;
-      }
-    }
-    dump_painter.dump(view, 64, 1100, 1, 1, 128, 64, text_grid);
-  }
 
   // Draw screen overlay
   {

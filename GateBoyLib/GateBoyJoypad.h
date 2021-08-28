@@ -4,6 +4,26 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyJoypad {
+  void reset_to_bootrom() {
+    BATU_JP_GLITCH0.state = 0b00011011;
+    ACEF_JP_GLITCH1.state = 0b00011011;
+    AGEM_JP_GLITCH2.state = 0b00011011;
+    APUG_JP_GLITCH3.state = 0b00011011;
+
+    KELY_JOYP_UDLRp.state = 0b00011011;
+    COFY_JOYP_ABCSp.state = 0b00011011;
+  }
+
+  void reset_to_cart() {
+    BATU_JP_GLITCH0.state = 0b00011011;
+    ACEF_JP_GLITCH1.state = 0b00011011;
+    AGEM_JP_GLITCH2.state = 0b00011011;
+    APUG_JP_GLITCH3.state = 0b00011011;
+
+    KELY_JOYP_UDLRp.state = 0b00011010; // wat?
+    COFY_JOYP_ABCSp.state = 0b00011010; // wat?
+  }
+
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*_p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
 
@@ -19,6 +39,7 @@ struct GateBoyJoypad {
   ///*_p05.KYME*/ DFF17 KYME_DBG_D3;
 
   // these two _must_ be 1 on reset or we read button states before we've written these regs
+  // or wait am i getting polarity wrong?
 
   /*#p05.KELY*/ DFF17 KELY_JOYP_UDLRp;
   /*#p05.COFY*/ DFF17 COFY_JOYP_ABCSp;

@@ -15,18 +15,22 @@ void     commit_blob(void* blob, size_t size);
 #define TRI_DRIVEN 0b00001000
 
 // These are only used for error checking and can be disabled in fast builds.
-#ifdef FAST_MODE
+#ifdef NO_GATE_BITS
+
 #define BIT_PULLED 0b00000000
 #define BIT_DRIVEN 0b00000000
 #define BIT_OLD    0b00000000
 #define BIT_NEW    0b00000000
 #define TRI_NEW    0b00000000
+
 #else
+
 #define BIT_PULLED 0b00000100
 #define BIT_DRIVEN 0b00001000
 #define BIT_OLD    0b00010000
 #define BIT_NEW    0b00100000
 #define TRI_NEW    0b00100000
+
 #endif
 
 //-----------------------------------------------------------------------------
@@ -46,7 +50,7 @@ struct BitBase {
   wire qp_new() const { check_new(); return state; }
   wire qn_new() const { check_new(); return ~state; }
 
-#ifdef FAST_MODE
+#ifdef NO_GATE_BITS
   void check_old() const {}
   void check_new() const {}
 #else

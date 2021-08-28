@@ -60,13 +60,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
   reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
 
-  joy.BATU_JP_GLITCH0.state = 0b00011011;
-  joy.ACEF_JP_GLITCH1.state = 0b00011011;
-  joy.AGEM_JP_GLITCH2.state = 0b00011011;
-  joy.APUG_JP_GLITCH3.state = 0b00011011;
-
-  joy.KELY_JOYP_UDLRp.state = 0b00011011;
-  joy.COFY_JOYP_ABCSp.state = 0b00011011;
+  joy.reset_to_bootrom();
 
   load_cart(_boot_buf, _boot_size, _cart_buf, _cart_size);
 
@@ -124,7 +118,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   //----------------------------------------
   // We're ready to go, release the CPU so it can start running the bootrom.
 
-  EXT_sys_clkreq = 1;
+  sys_clkreq = 1;
   sys_cpu_en = true;
 
   if (fastboot) {
@@ -178,6 +172,7 @@ void GateBoy::reset_to_cart() {
   reg_bgp.reset_to_cart();
   reg_obp0.reset_to_cart();
   reg_obp1.reset_to_cart();
+  joy.reset_to_cart();
 
   reg_lcdc.reset_to_cart();
   lcd.reset_to_cart();
@@ -204,7 +199,7 @@ void GateBoy::reset_to_cart() {
   sys_t2 = false;
   sys_clken = true;
   sys_clkgood = true;
-  EXT_sys_clkreq = true;
+  sys_clkreq = true;
   sys_fastboot = true;
 
   gb_cpu.reset_to_cart();
@@ -217,7 +212,7 @@ void GateBoy::reset_to_cart() {
   cpu_data_latch = 1;
   intf_latch = 1;
   intf_latch_delay = 0;
-  intf_halt_latch = 1;
+  intf_halt_latch = 0;
 
   memcpy(vid_ram, vram_boot, 8192);
 
@@ -241,7 +236,7 @@ void GateBoy::reset_to_cart() {
 //------------------------------------------------------------------------------
 
 void GateBoy::load_cart(uint8_t* _boot_buf, size_t _boot_size,
-                       uint8_t* _cart_buf, size_t _cart_size)
+                        uint8_t* _cart_buf, size_t _cart_size)
 {
   boot_buf  = _boot_buf;
   boot_size = _boot_size;
@@ -423,8 +418,7 @@ void GateBoy::next_phase() {
 
   tock_slow(0);
 
-#if 0
-//#ifndef FAST_MODE
+#ifndef NO_HASH
   uint64_t hash_old = commit_and_hash();
 
   static GateBoy gb1;
@@ -436,8 +430,7 @@ void GateBoy::next_phase() {
 
   uint64_t hash_new = commit_and_hash();
 
-#if 0
-  //#ifndef FAST_MODE
+#ifndef NO_HASH
   if (hash_old != hash_new) {
     LOG_Y("Sim not stable after second pass!\n");
 
@@ -593,6 +586,7 @@ void GateBoy::tock_slow(int pass_index) {
 
   //-----------------------------------------------------------------------------
 
+  wire EXT_sys_clkreq = bit(sys_clkreq);
   wire EXT_sys_rst = bit(~sys_rst);
   wire EXT_sys_t2 = bit(~sys_t2);
   wire EXT_sys_t1 = bit(~sys_t1);

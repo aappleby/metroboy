@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assembler.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="File.h" />

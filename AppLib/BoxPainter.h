@@ -28,10 +28,6 @@ public:
                        color);
   }
 
-  void update_buf();
-  void render_at(Viewport view, double x, double y, float scale = 1.0f);
-  void reset();
-
   void render(Viewport view, double x, double y, float scale = 1.0f);
 
 private:

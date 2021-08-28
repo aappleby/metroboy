@@ -37,13 +37,11 @@ const int world_max = 1;
 
 static std::map<ToolMode, std::string> tool_to_string = {
   {ToolMode::NONE,            "NONE"},
-  {ToolMode::IMGUI,           "IMGUI"},
 
   {ToolMode::DRAG_NODE,       "DRAG_NODE"},
   {ToolMode::DRAG_LABEL,      "DRAG_LABEL"},
 
   {ToolMode::DRAG_FRAME,      "DRAG_FRAME"},
-  {ToolMode::EDIT_FRAME,      "EDIT_FRAME"},
 
   {ToolMode::SELECT_REGION,   "SELECT_REGION"},
   {ToolMode::GHOST_REGION,    "GHOST_REGION"},
@@ -283,17 +281,12 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
     }
   }
 
-  text_buf = new char[65536];
-  strcpy(text_buf, "The quick brown fox jumps over the lazy imgui dog.");
-
   printf("Init done %f\n", timestamp());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::app_close() {
-  delete[] text_buf;
-  text_buf = nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -678,6 +671,8 @@ void PlaitApp::event_drag_label(SDL_Event event) {
 //--------------------------------------------------------------------------------
 
 void PlaitApp::event_drag_frame(SDL_Event event) {
+  assert(clicked_frame);
+
   switch (event.type) {
   case SDL_MOUSEMOTION: {
     if (event.motion.state & SDL_BUTTON_LMASK) {
@@ -696,37 +691,6 @@ void PlaitApp::event_drag_frame(SDL_Event event) {
     if (event.button.button & SDL_BUTTON_LMASK) {
       release_tool();
     }
-    break;
-  }
-  }
-}
-
-void PlaitApp::event_edit_frame(SDL_Event event) {
-  switch (event.type) {
-  case SDL_MOUSEMOTION: {
-    break;
-  }
-  case SDL_MOUSEBUTTONUP: {
-    break;
-  }
-  case SDL_KEYDOWN: {
-    if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-      release_tool();
-      break;
-    }
-
-    if (selected_frame) {
-      if (event.key.keysym.scancode == SDL_SCANCODE_RETURN) {
-        selected_frame->text.push_back('\n');
-      }
-      else if (event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
-        selected_frame->text.pop_back();
-      }
-      else {
-        selected_frame->text.push_back((char)event.key.keysym.sym);
-      }
-    }
-
     break;
   }
   }
@@ -758,10 +722,6 @@ void PlaitApp::event_imgui(SDL_Event event) {
     io.MouseWheel += event.wheel.y;
     break;
   }
-  }
-
-  if (!io.WantCaptureKeyboard && !io.WantCaptureMouse) {
-    release_tool();
   }
 }
 
@@ -887,11 +847,7 @@ void PlaitApp::event_select_tool(SDL_Event event) {
       clear_selection();
     }
 
-    if (key == SDL_SCANCODE_RETURN && hovered_frame) {
-      selected_frame = hovered_frame;
-      new_tool = ToolMode::EDIT_FRAME;
-    }
-    else if (key == SDL_SCANCODE_RETURN && node_selection.size()) {
+    if (key == SDL_SCANCODE_RETURN && node_selection.size()) {
       printf("Commiting selection\n");
       commit_selection();
       clear_selection();
@@ -915,8 +871,13 @@ void PlaitApp::event_select_tool(SDL_Event event) {
       current_tool = ToolMode::DRAG_NODE;
     }
     else if (clicked_frame) {
-      clicked_frame_offset = wrap(clicked_frame->pos - mouse_pos_world);
-      current_tool = ToolMode::DRAG_FRAME;
+      if (event.button.clicks == 2) {
+        selected_frame = clicked_frame;
+      }
+      else {
+        clicked_frame_offset = wrap(clicked_frame->pos - mouse_pos_world);
+        current_tool = ToolMode::DRAG_FRAME;
+      }
     }
     else if (new_clicked_label) {
       clicked_label = new_clicked_label;
@@ -926,12 +887,6 @@ void PlaitApp::event_select_tool(SDL_Event event) {
     else {
       clicked_label = nullptr;
       current_tool = ToolMode::PAN_VIEW;
-    }
-  }
-  else {
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.WantCaptureKeyboard || io.WantCaptureMouse) {
-      current_tool = ToolMode::IMGUI;
     }
   }
 }
@@ -955,16 +910,25 @@ void PlaitApp::app_update(double delta_time) {
     while(mouse_pos_wrap.x < -half_world_width) mouse_pos_wrap.x += world_width;
   }
 
-  {
-    ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[0] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
-    io.MouseDown[1] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
-    io.MouseDown[2] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
-    io.MousePos = { (float)mouse_pos_screen.x, (float)mouse_pos_screen.y };
-  }
+  ImGuiIO& io = ImGui::GetIO();
+  io.MouseDown[0] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
+  io.MouseDown[1] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)) != 0;
+  io.MouseDown[2] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE)) != 0;
+  io.MousePos = { (float)mouse_pos_screen.x, (float)mouse_pos_screen.y };
+  bool imgui_override = ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || io.WantCaptureKeyboard || io.WantCaptureMouse;
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
+    if (imgui_override) {
+      if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+          printf("Sending escape to imgui!\n");
+        }
+      }
+      event_imgui(event);
+      continue;
+    }
+
     if (event.type == SDL_MOUSEBUTTONDOWN && (event.button.button & SDL_BUTTON_LMASK)) {
       clicked_frame = pick_frame(mouse_pos_world);
       clicked_node = pick_node(mouse_pos_world);
@@ -988,11 +952,9 @@ void PlaitApp::app_update(double delta_time) {
 
     switch(current_tool) {
     case ToolMode::NONE:           event_select_tool(event); break;
-    case ToolMode::IMGUI:          event_imgui(event); break;
     case ToolMode::DRAG_NODE:      event_drag_nodes(event); break;
     case ToolMode::DRAG_LABEL:     event_drag_label(event); break;
     case ToolMode::DRAG_FRAME:     event_drag_frame(event); break;
-    case ToolMode::EDIT_FRAME:     event_edit_frame(event); break;
     case ToolMode::SELECT_REGION:  event_select_region(event); break;
     case ToolMode::GHOST_REGION:   event_ghost_region(event); break;
     case ToolMode::TOGGLE_OLD:     event_toggle_old(event); break;
@@ -1010,7 +972,7 @@ void PlaitApp::app_update(double delta_time) {
     }
     }
 
-    if(current_tool != ToolMode::IMGUI && event.type == SDL_MOUSEWHEEL) {
+    if(event.type == SDL_MOUSEWHEEL) {
       view_control.on_mouse_wheel((int)mouse_pos_screen.x, (int)mouse_pos_screen.y, double(event.wheel.y) * 0.25);
     }
 
@@ -1020,13 +982,12 @@ void PlaitApp::app_update(double delta_time) {
     }
   }
 
-  if (current_tool != ToolMode::IMGUI) {
+  hovered_node = nullptr;
+  hovered_frame = nullptr;
+
+  if (!imgui_override) {
     hovered_node = pick_node(mouse_pos_world);
     hovered_frame = pick_frame(mouse_pos_world);
-  }
-  else {
-    hovered_node = nullptr;
-    hovered_frame = nullptr;
   }
 
   view_control.update(delta_time);
@@ -1139,12 +1100,6 @@ void PlaitApp::draw_node_outline(PlaitNode* node) {
   }
 }
 */
-
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-const char* raw_text_blob = R"(The quick brown fox jumps over the lazy dog)";
-uint8_t text_grid[8192];
-
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1301,11 +1256,6 @@ void PlaitApp::app_render_frame() {
 
   double time_start = timestamp();
 
-  box_painter.reset();
-  port_painter.reset();
-  edge_painter.reset();
-  text_painter.reset();
-
   bad_node_count = 0;
   bad_edge_count = 0;
   bad_branch_count = 0;
@@ -1314,6 +1264,37 @@ void PlaitApp::app_render_frame() {
   // Grid layer
 
   grid_painter.render(view);
+
+  //----------------------------------------
+  // Text blocks
+
+  for (auto f : plait.frames) {
+    const char* cursor = f->text.c_str();
+
+    auto grid_bytes = f->size.x * f->size.y;
+    text_grid.resize(grid_bytes);
+    memset(text_grid.data(), 0, grid_bytes);
+
+    int cursor_x2 = 0;
+    int cursor_y2 = 0;
+    while (*cursor) {
+      char c = *cursor++;
+      if (c == '\n') {
+        cursor_x2 = 0;
+        cursor_y2++;
+      }
+      else if (c == '\t') {
+        while (cursor_x2 % 2) cursor_x2++;
+      }
+      else {
+        if (cursor_x2 < f->size.x && cursor_y2 < f->size.y) {
+          text_grid[cursor_x2 + cursor_y2 * f->size.x] = c;
+        }
+        cursor_x2++;
+      }
+    }
+    dump_painter.dump(view, f->pos.x, f->pos.y, f->text_scale, f->text_scale, f->size.x, f->size.y, f->color, (uint8_t*)text_grid.data());
+  }
 
   //----------------------------------------
   // Visibility
@@ -1341,9 +1322,10 @@ void PlaitApp::app_render_frame() {
 
     // Selected node highlights
     for (auto node: node_selection) {
-      box_painter.push_corner_size(node->get_pos_new() - dvec2(3,3), node_size + dvec2(6,6), 0xFFFFFFFF);
+      box_painter.push_corner_size(node->get_pos_new() - dvec2(6,6), node_size + dvec2(12,12), 0xFFFFFFFF);
     }
   }
+  box_painter.render(view, 0, 0, 1);
 
   //----------
   // Node fills
@@ -1384,9 +1366,16 @@ void PlaitApp::app_render_frame() {
     }
   }
 
+  box_painter.render(view, 0, 0, 1);
+  port_painter.render(view, 0, 0, 1);
+  text_painter.render(view, 0, 0);
+
+  edge_painter.render(view, 0, 0, 1);
+
   //----------
 
   // Branches
+
   for (auto& [tag, plait_cell] : plait.cell_map) {
     auto core = plait_cell->core_node;
     auto die_cell = plait_cell->die_cell;
@@ -1469,34 +1458,8 @@ void PlaitApp::app_render_frame() {
     }
   }
 
-  // Core->leaf and core->root edges
-  /*
-  for (auto& [tag, plait_cell] : plait.cell_map) {
-    if (plait_cell->die_cell->cell_type == DieCellType::BUS) continue;
-    auto core = plait_cell->core_node;
-    auto core_pos = core->pos_new + dvec2(32.0, 32.0);
+  edge_painter.render(view, 0, 0, 1);
 
-    uint32_t color = 0x08FFFFFF;
-
-    if (plait_cell->core_node == hovered_node) color = 0x40FFFFFF;
-
-    for (auto& [name, root] : plait_cell->root_nodes) {
-      if (root == hovered_node) color = 0x40FFFFFF;
-    }
-    for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      if (leaf == hovered_node) color = 0x40FFFFFF;
-    }
-
-    for (auto& [name, root] : plait_cell->root_nodes) {
-      auto root_pos = root->pos_new + dvec2(32.0, 32.0);
-      edge_painter.push(core_pos, color, root_pos, color);
-    }
-    for (auto& [name, leaf] : plait_cell->leaf_nodes) {
-      auto leaf_pos = leaf->pos_new + dvec2(32.0, 32.0);
-      edge_painter.push(core_pos, color, leaf_pos , color);
-    }
-  }
-  */
 
   //----------------------------------------
   // Labels
@@ -1506,21 +1469,7 @@ void PlaitApp::app_render_frame() {
     color |= 0xFF000000;
     text_painter.add_text_at(label->text.c_str(), color, label->pos_new.x, label->pos_new.y, label->scale);
   }
-
-  //----------
-  // Dump stuff to GPU
-
-  box_painter.update_buf();
-  port_painter.update_buf();
-  edge_painter.update_buf();
-  text_painter.update_buf();
-
-  for (int i = world_min; i <= world_max; i++) {
-    box_painter .render_at(view, world_width * i, 0, 1);
-    port_painter.render_at(view, world_width * i, 0, 1);
-    edge_painter.render_at(view, world_width * i, 0, 1);
-    text_painter.render_at(view, world_width * i, 0);
-  }
+  text_painter.render(view, 0, 0);
 
   //----------------------------------------
   // Selection rect
@@ -1534,30 +1483,6 @@ void PlaitApp::app_render_frame() {
       outline_painter.push_box(click_pos_wrap, mouse_pos_wrap, sel_color);
       outline_painter.render(view, 0, 0, 1);
     }
-  }
-
-  //----------------------------------------
-  // Text blocks
-
-  for (auto frame : plait.frames) {
-    const char* cursor = frame->text.c_str();
-
-    memset(text_grid, 0, frame->size.x * frame->size.y);
-
-    int cursor_x2 = 0;
-    int cursor_y2 = 0;
-    while (*cursor) {
-      char c = *cursor++;
-      if (c == '\n') {
-        cursor_x2 = 0;
-        cursor_y2++;
-      }
-      else {
-        text_grid[cursor_x2 + cursor_y2 * 128] = c;
-        cursor_x2++;
-      }
-    }
-    dump_painter.dump(view, frame->pos.x, frame->pos.y, frame->text_scale, frame->text_scale, frame->size.x, frame->size.y, text_grid);
   }
 
   //----------------------------------------
@@ -1576,7 +1501,6 @@ void PlaitApp::app_render_ui() {
   // Draw selection info
 
   double time_start = timestamp();
-  ui_text_painter.reset();
 
   {
     static StringDumper d;
@@ -1667,7 +1591,50 @@ void PlaitApp::app_render_ui() {
   ui_text_painter.render(view_control.view_screen, 0, 0);
   time_ui = timestamp() - time_start;
 
-  {
+  if (selected_frame) {
+    auto f = selected_frame;
+
+    ImGui::OpenPopup("Frame Editor");
+    if (ImGui::BeginPopupModal("Frame Editor", NULL, 0))
+    {
+      static ImGuiInputTextFlags flags = ImGuiInputTextFlags_CallbackResize;
+
+      auto string_resize = [](ImGuiInputTextCallbackData* data) {
+        if (data->EventFlag == ImGuiInputTextFlags_CallbackResize) {
+          std::string* str = (std::string*)data->UserData;
+          str->resize(data->BufSize);
+          data->Buf = str->data();
+        }
+        return 0;
+      };
+
+      if (ImGui::InputText("title", f->title.data(), f->title.size(), flags, string_resize, &f->title)) {
+      }
+      if (ImGui::InputTextMultiline("text", f->text.data(), f->text.size(), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags, string_resize, &f->text)) {
+      }
+      ImGui::SliderInt("size x", &f->size.x, 1, 128);
+      ImGui::SliderInt("size y", &f->size.y, 1, 128);
+      ImGui::SliderInt("scale",  &f->text_scale, 1, 32);
+      ImGui::ColorEdit4("Background", (float*)&f->color);
+
+
+      if (ImGui::Button("Close")) {
+        ImGui::CloseCurrentPopup();
+        selected_frame = nullptr;
+      }
+      ImGui::EndPopup();
+    }
+
+
+
+
+    /*
+
+    ImGui::End();
+    */
+  }
+
+  if (0) {
     ImGui::Begin("Label Editor");
 
     /*
@@ -1699,7 +1666,7 @@ void PlaitApp::app_render_ui() {
     }
     */
 
-    static char node_tag[128];
+    //static char node_tag[128];
     
     //ImGui::InputText("tag", node_tag, IM_ARRAYSIZE(node_tag));
 
@@ -1713,13 +1680,6 @@ void PlaitApp::app_render_ui() {
       }
     }
     */
-
-    static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_CtrlEnterForNewLine;
-
-    if (ImGui::InputTextMultiline("text", text_buf, 65536, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 16), flags)) {
-    }
-
-
 
     ImGui::End();
   }

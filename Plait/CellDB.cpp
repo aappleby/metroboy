@@ -400,12 +400,17 @@ std::string clean_line(const char* line) {
 
   return result;
 }
-
+  
 string name_to_tag(const string& name) {
   static regex rx_match_tag(R"(^(BUS_.*|PIN_\d{2}|SIG_.*|EXT_.*|[A-Z]{4}))");
   smatch match;
-  CHECK_P(regex_search(name, match, rx_match_tag));
-  return match[1].str();
+  if (regex_search(name, match, rx_match_tag)) {
+    return match[1].str();
+  }
+  else {
+    CHECK_P(false);
+    return "";  
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

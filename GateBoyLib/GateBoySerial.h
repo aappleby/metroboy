@@ -22,7 +22,7 @@ struct GateBoySerial {
     EROD_SER_DATA6.state = 0b00011010;
     EDER_SER_DATA7.state = 0b00011010;
 
-    PIN_68_SCK. state = 0b00010101;
+    PIN_68_SCK. state = 0b00010100;
     PIN_69_SIN. state = 0b00011000;
     PIN_70_SOUT.state = 0b00011000;
   }

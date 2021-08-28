@@ -141,10 +141,15 @@ void bind_vao(int vao) {
 
 //-----------------------------------------------------------------------------
 
-int create_vbo(int size_bytes, const void* data) {
+int create_vbo() {
   int vbo = 0;
   glGenBuffers(1, (GLuint*)&vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  return vbo;
+}
+
+int create_vbo(int size_bytes, const void* data) {
+  int vbo = create_vbo();
   glBufferData(GL_ARRAY_BUFFER, size_bytes, data, GL_DYNAMIC_DRAW);
   return vbo;
 }
@@ -157,32 +162,36 @@ void update_vbo(int vbo, int size_bytes, const void* data) {
 
 //-----------------------------------------------------------------------------
 
-int create_ibo(int size_bytes, const void* data) {
-  int vbo = 0;
-  glGenBuffers(1, (GLuint*)&vbo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_bytes, data, GL_DYNAMIC_DRAW);
-  return vbo;
+int create_ibo() {
+  int ibo = 0;
+  glGenBuffers(1, (GLuint*)&ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  return ibo;
 }
 
-void update_ibo(int vbo, int size_bytes, const uint16_t* data) {
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
+void update_ibo(int ibo, int size_bytes, const uint16_t* data) {
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_bytes, data, GL_DYNAMIC_DRAW);
 }
 
 //-----------------------------------------------------------------------------
 
-int create_ubo(int size_bytes) {
+int create_ubo() {
   int ubo = 0;
   glGenBuffers(1, (GLuint*)&ubo);
   glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+  return ubo;
+}
+
+int create_ubo(int size_bytes) {
+  int ubo = create_ubo();
   glBufferData(GL_UNIFORM_BUFFER, size_bytes, nullptr, GL_DYNAMIC_DRAW);
   return ubo;
 }
 
 void update_ubo(int ubo, int size_bytes, const void* data) {
   glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-  glBufferSubData(GL_UNIFORM_BUFFER, 0, size_bytes, data);
+  glBufferData(GL_UNIFORM_BUFFER, size_bytes, data, GL_DYNAMIC_DRAW);
 }
 
 void bind_ubo(int prog, const char* name, int index, int ubo) {

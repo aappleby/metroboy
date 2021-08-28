@@ -43,7 +43,7 @@ void GateBoy::dump_sys(Dumper& d) const {
   d             ("sys_t2       : %d\n", sys_t2);
   d             ("sys_clken    : %d\n", sys_clken);
   d             ("sys_clkgood  : %d\n", sys_clkgood);
-  d             ("sys_cpuready : %d\n", EXT_sys_clkreq);
+  d             ("sys_cpuready : %d\n", sys_clkreq);
   d             ("sys_cpu_en   : %d\n", sys_cpu_en);
   d             ("sys_fastboot : %d\n", sys_fastboot);
   d             ("sys_buttons  : %d\n", sys_buttons);
@@ -368,6 +368,8 @@ void GateBoy::dump_ppu(Dumper& d) {
 }
 
 void GateBoy::dump_spu(Dumper& d) {
+  (void)d;
+
   d.dump_bitp   ("HADA_ALL_SOUND_ONp     : ", reg_NR52.HADA_ALL_SOUND_ONp.state);
   d.dump_slice2p("NR50 : ", &reg_NR50.APEG_VOL_L0, 8);
 

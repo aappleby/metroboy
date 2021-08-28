@@ -108,6 +108,7 @@ struct PlaitFrame {
   std::string text;
   dvec2 pos = { 0,0 };
   ivec2 size = { 0, 0 };
+  vec4 color = { 0, 0, 0, 0.2f };
   int text_scale = 1;
 };
 

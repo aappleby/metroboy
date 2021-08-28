@@ -123,6 +123,7 @@ void GateBoyThread::thread_main() {
   printf("Command loop starting\n");
   while(!sig_exit) {
     // Pause until we have a job in the queue.
+
     while (sig_break || (command.count == 0 && (cursor_r == cursor_w))) {
       pause_barrier.arrive_and_wait();
       resume_barrier.arrive_and_wait();
@@ -166,6 +167,16 @@ void GateBoyThread::run_step_phase() {
   while(command.count && !sig_break) {
     gb->next_phase();
     command.count--;
+
+    // this doesn't work
+    /*
+    // Pause at the end of the bootrom, if we're running it.
+    if (gb->phase_total == gb->phase_origin) {
+      clear_work();
+      pause_barrier.arrive_and_wait();
+      resume_barrier.arrive_and_wait();
+    }
+    */
   }
 
   double time_end = timestamp();

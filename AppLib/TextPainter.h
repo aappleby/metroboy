@@ -29,10 +29,6 @@ public:
   void add_string(const std::string& text, double scale = 1.0);
   void dprintf(const char* format, ...);
 
-  void update_buf();
-  void render_at(Viewport view, double x, double y);
-  void reset();
-
   void render(Viewport view, double x, double y);
 
   void render_string(Viewport view, const std::string& text, double x, double y, double scale = 1.0) {

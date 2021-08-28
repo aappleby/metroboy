@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Config.h"
 #include <vector> // for blob
 #include <stdint.h>
 
@@ -273,7 +274,7 @@ struct Dumper {
 #define ASSERT_P(A)  if (!(A)) { printf("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
 #define ASSERT_N(A)  if ((A))  { printf("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
 
-#ifdef FAST_MODE
+#ifdef NO_CHECK
 
 #define CHECK_P(A)
 #define CHECK_N(A)

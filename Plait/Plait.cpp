@@ -4,8 +4,6 @@
 
 #pragma warning(disable:4996)
 
-extern const char* raw_text_blob;
-
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void from_json(const nlohmann::json& j, PlaitLabel*& plait_label) {
@@ -28,13 +26,17 @@ void to_json(nlohmann::json& j, const PlaitLabel* plait_label) {
 
 void from_json(const nlohmann::json& j, PlaitFrame*& plait_frame) {
   plait_frame = new PlaitFrame();
-  plait_frame->title = j["title"];
-  plait_frame->text = j["text"];
-  plait_frame->pos.x = j["pos_x"];
-  plait_frame->pos.y = j["pos_y"];
-  plait_frame->size.x = j["size_x"];
-  plait_frame->size.y = j["size_y"];
-  plait_frame->text_scale = j["text_scale"];
+  plait_frame->title   = j.value("title", "<no title>");
+  plait_frame->text    = j.value("text", "<no text>");
+  plait_frame->pos.x   = j.value("pos_x", 0.0);
+  plait_frame->pos.y   = j.value("pos_y", 0.0);
+  plait_frame->size.x  = j.value("size_x", 64);
+  plait_frame->size.y  = j.value("size_y", 16);
+  plait_frame->color.r = j.value("color_r", 0.0f);
+  plait_frame->color.g = j.value("color_g", 0.0f);
+  plait_frame->color.b = j.value("color_b", 0.0f);
+  plait_frame->color.a = j.value("color_a", 0.2f);
+  plait_frame->text_scale = j.value("text_scale", 1);
 }
 
 void to_json(nlohmann::json& j, const PlaitFrame* plait_frame) {
@@ -42,8 +44,12 @@ void to_json(nlohmann::json& j, const PlaitFrame* plait_frame) {
   j["text"]  = plait_frame->text;
   j["pos_x"] = plait_frame->pos.x;
   j["pos_y"] = plait_frame->pos.y;
-  j["size_x"] = plait_frame->size.x;
+  j["size_x"] = plait_frame->size.x; 
   j["size_y"] = plait_frame->size.y;
+  j["color_r"] = plait_frame->color.r;
+  j["color_g"] = plait_frame->color.g;
+  j["color_b"] = plait_frame->color.b;
+  j["color_a"] = plait_frame->color.a;
   j["text_scale"] = plait_frame->text_scale;
 }
 
@@ -438,7 +444,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   if (frames.empty()) {
     auto frame = new PlaitFrame();
     frame->title = "Some Title";
-    frame->text = raw_text_blob;
+    frame->text = "Placeholder frame text";
     frame->pos = dvec2(0, 0);
     frame->size = dvec2(128, 64);
     frame->text_scale = 2;

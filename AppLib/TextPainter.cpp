@@ -120,7 +120,7 @@ void TextPainter::init() {
   text_data_f32 = reinterpret_cast<float*>(text_data_u32);
 
   text_vao = create_vao();
-  text_vbo = create_vbo(max_text_bytes);
+  text_vbo = create_vbo(max_text_bytes, nullptr);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glEnableVertexAttribArray(2);
@@ -135,19 +135,17 @@ void TextPainter::init() {
 
   uint8_t* dst_pix = new uint8_t[32768];
   for (int i = 0; i < 32768; i++) dst_pix[i] = terminus[i] == '#' ? 0xFF : 0x00;
-  font_tex = create_texture_u8(256, 128, dst_pix);
+  font_tex = create_texture_u8(256, 128, dst_pix, false);
   delete [] dst_pix;
 
-  text_ubo = create_ubo(sizeof(TextUniforms));
+  text_ubo = create_ubo();
 }
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::update_buf() {
+void TextPainter::render(Viewport view, double x, double y) {
   update_vbo(text_vbo, glyph_count * bytes_per_glyph, text_data_u32);
-}
 
-void TextPainter::render_at(Viewport view, double x, double y) {
   if (glyph_count == 0) return;
 
   bind_shader(text_prog);
@@ -158,9 +156,9 @@ void TextPainter::render_at(Viewport view, double x, double y) {
     (float)view.world_max().x,
     (float)view.world_max().y,
   };
-  text_uniforms.origin = {x, y, 1, 1};
+  text_uniforms.origin = { x, y, 1, 1 };
 
-  bg_col = {0.0,0.0,0.0,0.3};
+  bg_col = { 0.0,0.0,0.0,0.3 };
   text_uniforms.bg_col = bg_col;
 
   update_ubo(text_ubo, sizeof(text_uniforms), &text_uniforms);
@@ -171,20 +169,11 @@ void TextPainter::render_at(Viewport view, double x, double y) {
   bind_vao(text_vao);
 
   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, glyph_count);
-}
 
-void TextPainter::reset() {
   text_x = 0;
   text_y = 0;
   glyph_count = 0;
   buf_cursor = 0;
-}
-
-
-void TextPainter::render(Viewport view, double x, double y) {
-  update_buf();
-  render_at(view, x, y);
-  reset();
 }
 
 //-----------------------------------------------------------------------------

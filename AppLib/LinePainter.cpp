@@ -1,19 +1,19 @@
 #include "AppLib/LinePainter.h"
 
 #include "AppLib/GLBase.h"
-
-#include <stdio.h>
-#include "SDL/include/SDL.h"
 #include "glad/glad.h"
 
 //-----------------------------------------------------------------------------
 
 const char* line_glsl = R"(
+//----------------------------------------
+
 layout(std140) uniform LineUniforms {
   vec4  viewport;
   vec4  origin;
 };
 
+//----------------------------------------
 #ifdef _VERTEX_
 
 layout(location = 0) in vec2 line_vtx;
@@ -37,8 +37,10 @@ void main() {
                      0.0,
                      1.0);
 }
+#endif
 
-#else
+//----------------------------------------
+#ifdef _FRAGMENT_
 
 in vec4 fg_color;
 out vec4 fs_out;
@@ -48,22 +50,17 @@ void main() {
 }
 
 #endif
-)";
 
-static uint32_t line_prog = 0;
+//----------------------------------------
+)";
 
 //-----------------------------------------------------------------------------
 
 void LinePainter::init() {
-  if (!line_prog) {
-    line_prog = create_shader("line_glsl", line_glsl);
-  }
-
-  line_data_u32 = new uint32_t[max_line_bytes / sizeof(uint32_t)];
-  line_data_f32 = reinterpret_cast<float*>(line_data_u32);
-  line_ubo = create_ubo(sizeof(LineUniforms));
+  line_prog = create_shader("line_glsl", line_glsl);
+  line_ubo = create_ubo();
   line_vao = create_vao();
-  line_vbo = create_vbo(max_line_bytes);
+  line_vbo = create_vbo();
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
@@ -73,55 +70,33 @@ void LinePainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void LinePainter::update_buf() {
-  update_vbo(line_vbo, line_end * 4, line_data_u32);
-}
-
-void LinePainter::render_at(Viewport view, double x, double y, float scale) {
-  if (line_end == 0) return;
+void LinePainter::render(Viewport view, double x, double y, float scale) {
+  if (line_data.empty()) return;
 
   bind_shader(line_prog);
 
-  line_uniforms.origin = {x, y, scale, scale};
-  line_uniforms.viewport = {
+  float line_uniforms[] = {
     (float)view.world_min().x,
     (float)view.world_min().y,
     (float)view.world_max().x,
     (float)view.world_max().y,
+    (float)x,
+    (float)y,
+    scale,
+    scale
   };
-  update_ubo(line_ubo, sizeof(line_uniforms), &line_uniforms);
-  bind_ubo(line_prog, "LineUniforms", 0, line_ubo);
 
+  bind_ubo(line_prog, "LineUniforms", 0, line_ubo);
   bind_vao(line_vao);
 
-  int vert_count = line_end / 3;
+  update_ubo(line_ubo, sizeof(line_uniforms), line_uniforms);
+  update_vbo(line_vbo, (int)line_data.size() * 4, line_data.data());
 
-  glDrawArrays(GL_LINES, 0, vert_count);
-}
+  glDrawArrays(GL_LINES, 0, (int)line_data.size() / 3);
 
-void LinePainter::reset() {
-  inst_begin = line_end = 0;
-}
-
-
-void LinePainter::render(Viewport view, double x, double y, float scale) {
-  update_buf();
-  render_at(view, x, y, scale);
-  reset();
+  line_data.clear();
 }
 
 //-----------------------------------------------------------------------------
-
-void LinePainter::push(float ax, float ay, uint32_t ac,
-                       float bx, float by, uint32_t bc) {
-  line_data_f32[line_end++] = ax;
-  line_data_f32[line_end++] = ay;
-  line_data_u32[line_end++] = ac;
-  line_data_f32[line_end++] = bx;
-  line_data_f32[line_end++] = by;
-  line_data_u32[line_end++] = bc;
-
-  CHECK_P((line_end * sizeof(uint32_t)) < max_line_bytes);
-}
 
 //-----------------------------------------------------------------------------

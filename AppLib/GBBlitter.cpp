@@ -360,22 +360,22 @@ void GBBlitter::init() {
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-  blit_map_ubo = create_ubo(sizeof(GBBlitMapUniforms));
+  blit_map_ubo = create_ubo();
   blit_map_prog = create_shader("gb_blit_map_glsl", gb_blit_map_glsl);
 
-  blit_tile_ubo = create_ubo(sizeof(GBBlitMapUniforms));
+  blit_tile_ubo = create_ubo();
   blit_tile_prog = create_shader("gb_blit_tile_glsl", gb_blit_tile_glsl);
 
-  vram_ubo = create_ubo(8192);
+  vram_ubo = create_ubo();
 
   blit_screen_prog = create_shader("gb_blit_screen_glsl", gb_blit_screen_glsl);
-  blit_screen_tex = create_texture_u8(160, 144);
+  blit_screen_tex = create_texture_u8(160, 144, nullptr, false);
 
   blit_diff_prog = create_shader("gb_blit_diff_glsl", gb_blit_diff_glsl);
-  blit_diff_tex = create_texture_u8(160, 144);
+  blit_diff_tex = create_texture_u8(160, 144, nullptr, false);
 
   blit_trace_prog = create_shader("gb_blit_trace_glsl", gb_blit_trace_glsl);
-  blit_trace_tex = create_texture_u32(456, 154);
+  blit_trace_tex = create_texture_u32(456, 154, nullptr);
 }
 
 //-----------------------------------------------------------------------------

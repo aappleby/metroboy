@@ -85,7 +85,7 @@ void BoxPainter::init() {
   box_data_f32 = reinterpret_cast<float*>(box_data_u32);
 
   box_vao = create_vao();
-  box_vbo = create_vbo(max_box_bytes);
+  box_vbo = create_vbo(max_box_bytes, nullptr);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(0, 4, GL_FLOAT,         GL_FALSE, 20, 0);
@@ -93,7 +93,7 @@ void BoxPainter::init() {
   glVertexAttribDivisor(0, 1);
   glVertexAttribDivisor(1, 1);
 
-  box_ubo = create_ubo(sizeof(BoxUniforms));
+  box_ubo = create_ubo();
 
   uint8_t* dst_pix = new uint8_t[16 * 512];
   for (int i = 0; i < 16 * 512; i++) {
@@ -103,7 +103,7 @@ void BoxPainter::init() {
     else               c = 0xFF;
     dst_pix[i] = c;
   }
-  gate_tex = create_texture_u8(16, 512, dst_pix);
+  gate_tex = create_texture_u8(16, 512, dst_pix, false);
   delete [] dst_pix;
 }
 
@@ -139,13 +139,11 @@ void BoxPainter::push_corner_size(float x, float y, float w, float h, uint32_t c
 
 //-----------------------------------------------------------------------------
 
-void BoxPainter::update_buf() {
+void BoxPainter::render(Viewport view, double x, double y, float scale) {
   if (box_cursor == 0) return;
   int box_count = box_cursor / 5;
   update_vbo(box_vbo, box_count * bytes_per_box, box_data_u32);
-}
 
-void BoxPainter::render_at(Viewport view, double x, double y, float scale) {
   if (box_cursor == 0) return;
 
   bind_shader(box_prog);
@@ -157,21 +155,11 @@ void BoxPainter::render_at(Viewport view, double x, double y, float scale) {
 
   bind_vao(box_vao);
 
-  int box_count = box_cursor / 5;
-
   bind_texture(box_prog, "tex", 0, gate_tex);
 
   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, box_count);
-}
 
-void BoxPainter::reset() {
   box_cursor = 0;
-}
-
-void BoxPainter::render(Viewport view, double x, double y, float scale) {
-  update_buf();
-  render_at(view, x, y, scale);
-  reset();
 }
 
 //-----------------------------------------------------------------------------

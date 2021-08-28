@@ -123,16 +123,16 @@ void DumpPainter::init_hex() {
 
   dump_prog = create_shader("dump_glsl", dump_glsl);
   dump_vao  = create_vao();
-  dump_tab  = create_table_u8(256, 256);
+  dump_tab  = create_table_u8(256, 256, nullptr);
 
   {
     std::vector<uint8_t> hexa_pix(2048);
     for (int i = 0; i < 2048; i++) hexa_pix[i] = terminus_hex[i] == '#' ? 0xFF : 0x00;
-    glyph_tex = create_texture_u8(128, 16, hexa_pix.data());
+    glyph_tex = create_texture_u8(128, 16, hexa_pix.data(), false);
   }
 
-  ruler_x_tab = create_table_u32(4096, 1);
-  ruler_y_tab = create_table_u32(4096, 1);
+  ruler_x_tab = create_table_u32(4096, 1, nullptr);
+  ruler_y_tab = create_table_u32(4096, 1, nullptr);
 
   {
 
@@ -173,16 +173,16 @@ void DumpPainter::init_ascii() {
 
   dump_prog = create_shader("dump_glsl", dump_glsl);
   dump_vao = create_vao();
-  dump_tab = create_table_u8(256, 256);
+  dump_tab = create_table_u8(256, 256, nullptr);
 
   {
     std::vector<uint8_t> font_pix(65536);
     for (int i = 0; i < 32768; i++) font_pix[i] = terminus[i] == '#' ? 0xFF : 0x00;
-    glyph_tex = create_texture_u8(256, 128, font_pix.data());
+    glyph_tex = create_texture_u8(256, 128, font_pix.data(), false);
   }
 
-  ruler_x_tab = create_table_u32(4096, 1);
-  ruler_y_tab = create_table_u32(4096, 1);
+  ruler_x_tab = create_table_u32(4096, 1, nullptr);
+  ruler_y_tab = create_table_u32(4096, 1, nullptr);
 
   {
 
@@ -216,7 +216,7 @@ void DumpPainter::init_ascii() {
 
 //-----------------------------------------------------------------------------
 
-void DumpPainter::dump(Viewport view, double world_x, double world_y, double scale_x, double scale_y, int text_w, int text_h, const uint8_t* dump) {
+void DumpPainter::dump(Viewport view, double world_x, double world_y, double scale_x, double scale_y, int text_w, int text_h, vec4 color, const uint8_t* dump) {
   update_table_u8(dump_tab, text_w, text_h, dump);
 
   bind_shader(dump_prog);
@@ -256,7 +256,7 @@ void DumpPainter::dump(Viewport view, double world_x, double world_y, double sca
 
   glUniform4ui(glGetUniformLocation(dump_prog, "highlight"), highlight_x, highlight_y, 0, 0);
   glUniform4f(glGetUniformLocation(dump_prog, "fg_color"), 0.8f, 0.8f, 0.8f, 1.0f);
-  glUniform4f(glGetUniformLocation(dump_prog, "bg_color"), 0.0f, 0.0f, 0.0f, 0.5f);
+  glUniform4f(glGetUniformLocation(dump_prog, "bg_color"), color.r, color.g, color.b, color.a);
   glUniform4f(glGetUniformLocation(dump_prog, "highlight_color"), 1.0f, 1.0f, 0.0f, 1.0f);
 
   bind_texture(dump_prog, "dump_tab", 0, dump_tab);

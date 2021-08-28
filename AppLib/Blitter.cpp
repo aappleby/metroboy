@@ -96,13 +96,12 @@ void Blitter::init() {
     1, 1,
   };
 
+  blit_ubo = create_ubo();
   blit_vao = create_vao();
   blit_vbo = create_vbo(sizeof(unit_quad), unit_quad);
 
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-  blit_ubo = create_ubo(sizeof(BlitUniforms));
 
   if (!blit_prog) {
     blit_prog = create_shader("blit_glsl", blit_glsl);

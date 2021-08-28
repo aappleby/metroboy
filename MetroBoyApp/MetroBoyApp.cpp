@@ -44,9 +44,9 @@ void MetroBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   //audio_init();
 
-  gb_tex = create_texture_u8(160, 144);
-  trace_tex = create_texture_u32(456, 154);
-  ram_tex = create_texture_u8(256, 256);
+  gb_tex = create_texture_u8(160, 144, nullptr, false);
+  trace_tex = create_texture_u32(456, 154, nullptr);
+  ram_tex = create_texture_u8(256, 256, nullptr, false);
 
   gb_blitter.init();
   dump_painter.init_hex();
@@ -293,7 +293,7 @@ void MetroBoyApp::app_render_frame() {
   // Memory debugger
 
   //dump_painter.render(view, 900, 100, 16, 8, metroboy->get_zram());
-  dump_painter.dump(view, 900, 300, 1, 1, 64, 128, gb->cart.main_ram);
+  dump_painter.dump(view, 900, 300, 1, 1, 64, 128, vec4(1,1,1,1), gb->cart.main_ram);
 }
 
 //-----------------------------------------------------------------------------

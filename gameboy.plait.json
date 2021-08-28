@@ -740,7 +740,7 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -17280.0,
+        "pos_x": -17184.0,
         "pos_y": -2832.0
       },
       "leaves": {},
@@ -854,8 +854,8 @@
           "global": false,
           "name": "leaf_33653415",
           "old": false,
-          "pos_x": -5760.0,
-          "pos_y": -3792.0
+          "pos_x": -6240.0,
+          "pos_y": -3120.0
         },
         "leaf_4c11855e": {
           "global": false,
@@ -863,6 +863,13 @@
           "old": false,
           "pos_x": -18912.0,
           "pos_y": -1392.0
+        },
+        "leaf_603d3dab": {
+          "global": false,
+          "name": "leaf_603d3dab",
+          "old": false,
+          "pos_x": -4224.0,
+          "pos_y": -3840.0
         },
         "leaf_6d77f0ac": {
           "global": false,
@@ -3215,8 +3222,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -17568.0,
-        "pos_y": -3024.0
+        "pos_x": -19872.0,
+        "pos_y": -3360.0
       },
       "leaves": {},
       "roots": {}
@@ -17732,8 +17739,8 @@
           "global": false,
           "name": "leaf_70f45695",
           "old": false,
-          "pos_x": -19008.0,
-          "pos_y": -1728.0
+          "pos_x": -19968.0,
+          "pos_y": -2784.0
         },
         "leaf_a18391fc": {
           "global": false,
@@ -19222,8 +19229,8 @@
           "global": false,
           "name": "leaf_219ab22f",
           "old": false,
-          "pos_x": -5760.0,
-          "pos_y": -2880.0
+          "pos_x": -8640.0,
+          "pos_y": -1248.0
         },
         "leaf_6a233150": {
           "global": false,
@@ -20160,8 +20167,8 @@
           "global": false,
           "name": "leaf_63257b04",
           "old": true,
-          "pos_x": -5760.0,
-          "pos_y": -2784.0
+          "pos_x": -4992.0,
+          "pos_y": -3072.0
         }
       },
       "roots": {}
@@ -20242,7 +20249,7 @@
           "global": false,
           "name": "leaf_5b863e34",
           "old": false,
-          "pos_x": -5760.0,
+          "pos_x": -6240.0,
           "pos_y": -3264.0
         }
       },
@@ -21034,8 +21041,8 @@
           "global": false,
           "name": "leaf_702cd8f5",
           "old": true,
-          "pos_x": -5760.0,
-          "pos_y": -4176.0
+          "pos_x": -4128.0,
+          "pos_y": -3840.0
         }
       },
       "roots": {}
@@ -22622,8 +22629,8 @@
           "global": false,
           "name": "leaf_aa7140a2",
           "old": false,
-          "pos_x": -5760.0,
-          "pos_y": -3552.0
+          "pos_x": -5472.0,
+          "pos_y": -3360.0
         }
       },
       "roots": {}
@@ -22763,7 +22770,7 @@
           "global": false,
           "name": "leaf_8f65358c",
           "old": false,
-          "pos_x": -5760.0,
+          "pos_x": -6240.0,
           "pos_y": -3456.0
         }
       },
@@ -22944,8 +22951,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5664.0,
-        "pos_y": -3264.0
+        "pos_x": -6144.0,
+        "pos_y": -3360.0
       },
       "leaves": {},
       "roots": {}
@@ -23209,7 +23216,7 @@
         "name": "core",
         "old": false,
         "pos_x": -4896.0,
-        "pos_y": -2784.0
+        "pos_y": -3168.0
       },
       "leaves": {
         "leaf_4748e237": {
@@ -23511,7 +23518,7 @@
           "global": false,
           "name": "leaf_f364d527",
           "old": false,
-          "pos_x": -5760.0,
+          "pos_x": -6240.0,
           "pos_y": -3360.0
         }
       },
@@ -24314,8 +24321,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5568.0,
-        "pos_y": -3984.0
+        "pos_x": -4128.0,
+        "pos_y": -3744.0
       },
       "leaves": {},
       "roots": {}
@@ -24540,7 +24547,7 @@
         "name": "core",
         "old": false,
         "pos_x": -4992.0,
-        "pos_y": -2976.0
+        "pos_y": -3264.0
       },
       "leaves": {},
       "roots": {}
@@ -25677,16 +25684,16 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5664.0,
-        "pos_y": -3360.0
+        "pos_x": -6144.0,
+        "pos_y": -3456.0
       },
       "leaves": {
         "leaf_0ef684ae": {
           "global": false,
           "name": "leaf_0ef684ae",
           "old": true,
-          "pos_x": -5664.0,
-          "pos_y": -3600.0
+          "pos_x": -6240.0,
+          "pos_y": -2928.0
         }
       },
       "roots": {}
@@ -25696,16 +25703,16 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -4992.0,
-        "pos_y": -3600.0
+        "pos_x": -4032.0,
+        "pos_y": -3936.0
       },
       "leaves": {
         "leaf_6c0cd2af": {
           "global": false,
           "name": "leaf_6c0cd2af",
           "old": true,
-          "pos_x": -5664.0,
-          "pos_y": -3936.0
+          "pos_x": -4224.0,
+          "pos_y": -3648.0
         }
       },
       "roots": {}
@@ -26820,7 +26827,15 @@
         "pos_x": -5088.0,
         "pos_y": -3360.0
       },
-      "leaves": {},
+      "leaves": {
+        "leaf_ab5b5a1c": {
+          "global": false,
+          "name": "leaf_ab5b5a1c",
+          "old": false,
+          "pos_x": -4128.0,
+          "pos_y": -4032.0
+        }
+      },
       "roots": {}
     },
     "SEJA": {
@@ -26861,7 +26876,7 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -4896.0,
+        "pos_x": -3936.0,
         "pos_y": -3888.0
       },
       "leaves": {},
@@ -27883,8 +27898,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5376.0,
-        "pos_y": -3456.0
+        "pos_x": -5856.0,
+        "pos_y": -3552.0
       },
       "leaves": {},
       "roots": {}
@@ -28321,8 +28336,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5568.0,
-        "pos_y": -3696.0
+        "pos_x": -6144.0,
+        "pos_y": -3024.0
       },
       "leaves": {},
       "roots": {}
@@ -28732,7 +28747,7 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5376.0,
+        "pos_x": -3936.0,
         "pos_y": -3792.0
       },
       "leaves": {},
@@ -28893,8 +28908,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5568.0,
-        "pos_y": -3360.0
+        "pos_x": -6048.0,
+        "pos_y": -3456.0
       },
       "leaves": {},
       "roots": {}
@@ -29545,8 +29560,8 @@
           "global": false,
           "name": "leaf_e9a3ebde",
           "old": false,
-          "pos_x": -5760.0,
-          "pos_y": -3648.0
+          "pos_x": -3936.0,
+          "pos_y": -3696.0
         }
       },
       "roots": {}
@@ -30074,8 +30089,8 @@
         "global": true,
         "name": "core",
         "old": false,
-        "pos_x": -4704.0,
-        "pos_y": -4128.0
+        "pos_x": -3840.0,
+        "pos_y": -3792.0
       },
       "leaves": {
         "leaf_1c71d090": {
@@ -30432,8 +30447,8 @@
         "global": true,
         "name": "core",
         "old": false,
-        "pos_x": -5472.0,
-        "pos_y": -3456.0
+        "pos_x": -5952.0,
+        "pos_y": -3552.0
       },
       "leaves": {
         "leaf_be8143f5": {
@@ -31198,8 +31213,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5472.0,
-        "pos_y": -3792.0
+        "pos_x": -5760.0,
+        "pos_y": -3216.0
       },
       "leaves": {},
       "roots": {}
@@ -33212,8 +33227,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5376.0,
-        "pos_y": -3264.0
+        "pos_x": -8544.0,
+        "pos_y": -1392.0
       },
       "leaves": {},
       "roots": {}
@@ -34490,8 +34505,8 @@
         "global": true,
         "name": "core",
         "old": false,
-        "pos_x": -5472.0,
-        "pos_y": -3072.0
+        "pos_x": -8640.0,
+        "pos_y": -1344.0
       },
       "leaves": {
         "leaf_a26285fa": {
@@ -36113,8 +36128,8 @@
         "global": true,
         "name": "core",
         "old": false,
-        "pos_x": -18240.0,
-        "pos_y": -2784.0
+        "pos_x": -19200.0,
+        "pos_y": -3312.0
       },
       "leaves": {
         "leaf_0b48fad2": {
@@ -36139,8 +36154,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5568.0,
-        "pos_y": -2976.0
+        "pos_x": -8736.0,
+        "pos_y": -1248.0
       },
       "leaves": {},
       "roots": {}
@@ -36207,8 +36222,15 @@
           "global": false,
           "name": "leaf_b8e8e053",
           "old": false,
-          "pos_x": -5760.0,
-          "pos_y": -3120.0
+          "pos_x": -6240.0,
+          "pos_y": -3024.0
+        },
+        "leaf_f66a32e0": {
+          "global": false,
+          "name": "leaf_f66a32e0",
+          "old": false,
+          "pos_x": -4992.0,
+          "pos_y": -3168.0
         }
       },
       "roots": {}
@@ -36692,8 +36714,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": -5568.0,
-        "pos_y": -3072.0
+        "pos_x": -8736.0,
+        "pos_y": -1344.0
       },
       "leaves": {},
       "roots": {}
@@ -37498,8 +37520,8 @@
           "global": false,
           "name": "leaf_a43fc87f",
           "old": false,
-          "pos_x": -5760.0,
-          "pos_y": -2976.0
+          "pos_x": -8832.0,
+          "pos_y": -1248.0
         }
       },
       "roots": {}
@@ -38190,8 +38212,8 @@
           "global": false,
           "name": "leaf_2adcd231",
           "old": false,
-          "pos_x": -5760.0,
-          "pos_y": -3984.0
+          "pos_x": -4224.0,
+          "pos_y": -3744.0
         },
         "leaf_2adead6c": {
           "global": false,
@@ -38218,8 +38240,8 @@
           "global": false,
           "name": "leaf_7491c0b7",
           "old": false,
-          "pos_x": -18528.0,
-          "pos_y": -2688.0
+          "pos_x": -19296.0,
+          "pos_y": -2832.0
         },
         "leaf_7fde1c9c": {
           "global": false,
@@ -38262,6 +38284,13 @@
           "old": false,
           "pos_x": -16512.0,
           "pos_y": -1344.0
+        },
+        "leaf_efe58a57": {
+          "global": false,
+          "name": "leaf_efe58a57",
+          "old": false,
+          "pos_x": -4128.0,
+          "pos_y": -3936.0
         },
         "leaf_f704fe97": {
           "global": false,
@@ -40537,16 +40566,20 @@
   },
   "frames": [
     {
-      "pos_x": -704.0,
-      "pos_y": -224.0,
-      "size_x": 128,
-      "size_y": 64,
-      "text": "The quick brown fox jumps over the lazy dog\nJackdaws love my big sphinx of quartz.slkdjlfksjdf",
-      "text_scale": 2,
-      "title": "Some Title"
+      "color_a": 0.30980393290519714,
+      "color_b": 0.7764706015586853,
+      "color_g": 0.15986156463623047,
+      "color_r": 0.0,
+      "pos_x": 11968.0,
+      "pos_y": -7472.0,
+      "size_x": 24,
+      "size_y": 7,
+      "text": "BGP/OBP0/OBP1 read/write\n\u0000in a modal imgui popup.\n\nthis is a mighty fine text box yessirreeee\nok let's see if the save button works...\nalskjdlfkasj\n  ksldjlfksj\n  slkjdflskjfd\nas'dflka'sldfjlkas;dfkjadfl;k a;lskdf;as\n\n\n\u0000skdjflsj\n\n\n\nlskdjflskdjflksj\u0000djflksj\u0000",
+      "text_scale": 16,
+      "title": "BGP/OBO0/OBP1 read/write\u0000"
     }
   ],
-  "guid": 2554828494,
+  "guid": 2874890780,
   "labels": [
     {
       "pos_x": 12096.0,
@@ -40747,8 +40780,8 @@
       "text": "SPRITE TEMP & Y MATCH"
     },
     {
-      "pos_x": 12656.0,
-      "pos_y": -7392.0,
+      "pos_x": 10880.0,
+      "pos_y": -8128.0,
       "scale": 16.0,
       "text": "BGP/OBP0/OBP1"
     }
@@ -42047,7 +42080,7 @@
       "input_node": "core",
       "input_port": "CLKp",
       "output_cell": "ALET",
-      "output_node": "leaf_33653415",
+      "output_node": "leaf_603d3dab",
       "output_port": "out"
     },
     "ALET.out -> SOVY.CLKp": {
@@ -71599,7 +71632,7 @@
       "input_node": "core",
       "input_port": "CLKp",
       "output_cell": "SEGU",
-      "output_node": "core",
+      "output_node": "leaf_ab5b5a1c",
       "output_port": "out"
     },
     "SEGU.out -> SACU.a": {
@@ -82943,7 +82976,7 @@
       "input_node": "core",
       "input_port": "RSTn",
       "output_cell": "XAPO",
-      "output_node": "leaf_b8e8e053",
+      "output_node": "leaf_f66a32e0",
       "output_port": "out"
     },
     "XAPO.out -> PYRY.a": {
@@ -85727,7 +85760,7 @@
       "input_node": "core",
       "input_port": "RSTn",
       "output_cell": "XYMU",
-      "output_node": "leaf_2adcd231",
+      "output_node": "leaf_efe58a57",
       "output_port": "qn"
     },
     "XYMU.qn -> SADU.a": {

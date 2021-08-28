@@ -100,7 +100,7 @@ void GridPainter::init(float world_width, float world_height) {
     grid_prog = create_shader("grid_glsl", grid_glsl);
   }
 
-  grid_ubo = create_ubo(sizeof(GridUniforms));
+  grid_ubo = create_ubo();
 }
 
 //-----------------------------------------------------------------------------

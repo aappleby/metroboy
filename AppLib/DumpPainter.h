@@ -8,11 +8,8 @@ public:
 
   void init_hex();
   void init_ascii();
-  void begin_frame(Viewport view);
-  void end_frame();
 
-  void dump(Viewport view, double world_x, double world_y, double scale_x, double scale_y, int text_w, int text_h, const uint8_t* dump);
-  void dump_ascii(Viewport view, double x, double y, int w, int h, const uint8_t* dump);
+  void dump(Viewport view, double world_x, double world_y, double scale_x, double scale_y, int text_w, int text_h, vec4 color, const uint8_t* dump);
 
 private:
 

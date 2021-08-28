@@ -25,12 +25,9 @@
 
 enum class ToolMode {
   NONE,
-  IMGUI,
   DRAG_NODE,
   DRAG_LABEL,
   DRAG_FRAME,
-
-  EDIT_FRAME,
 
   SELECT_REGION,
   GHOST_REGION,
@@ -102,8 +99,6 @@ public:
   void event_drag_nodes   (SDL_Event event);
   void event_drag_label   (SDL_Event event);
   void event_drag_frame   (SDL_Event event);
-
-  void event_edit_frame   (SDL_Event event);
 
   void event_select_region(SDL_Event event);
   void event_ghost_region (SDL_Event event);
@@ -191,7 +186,8 @@ public:
   dvec2       clicked_frame_offset = { 0,0 };
   PlaitFrame* selected_frame = nullptr;
 
-  char* text_buf = nullptr;
+  //std::string text_buf;
+  std::string text_grid;
 };
 
 //-----------------------------------------------------------------------------

@@ -539,66 +539,46 @@ void GateBoyApp::app_render_frame() {
   d(R"(
 Drag and drop rom files onto the window to load.
 
-Game Boy controls: Dpad   = Arrows
-                   A      = Z
-                   B      = X
-                   Select = Right Shift
-                   Start  = Enter
+Game Boy controls:
+  Dpad   = Arrows
+  A      = Z
+  B      = X
+  Select = Right Shift
+  Start  = Enter
 
-Mouse drag/wheel: pan/zoom view
-Escape: Reset view
-Shift-ESC : quit application
+UI controls:
+  Mouse drag   : Pan view
+  Mouse wheel  : Zoom view
+  Escape       : Reset view
+  Shift-Escape : Quit GateBoy
 
-Space : pause / unpause
-F : Run as fast as possible (which isn't very fast)
-B : Run exactly 46880640 phases, (bootrom duration)
-S : Run in single-stepping mode.
+Sim controls:
+  Space : pause / unpause
+  F     : Run full speed (which isn't very fast)
+  B     : Run 46880640 phases, (bootrom duration)
+  S     : Run in single-stepping mode.
+  R     : Reset to the start of game execution.
+  G     : Show golden image (for render tests)
+  D     : Show golden diff (for render tests)
+  F1    : Load state from "gateboy.raw.dump"
+  F4    : Save state to "gateboy.raw.dump"
+
+Step controls:
   Right arrow - step forward 1 phase
   Ctrl+R      - step forward 8 phases
   Alt+R       - step forward 1 line (144*8 phases)
   Ctrl+Alt+R  - step forward 8 lines (114*8*8 phases)
   Left arrow  - rewind history 1 step
   Ctrl+L      - rewind history 8 steps
-R: Reset to the start of game execution.
-D: Show diff against golden image (for render tests)
-G: Show golden image (for render tests)
-
-F1: Load state from "gateboy.raw.dump"
-F4: Save state to "gateboy.raw.dump"
-
-
-
 
 )");
 
-  d("\002===== CRAM =====\001\n");
-  for (int y = 0; y < 10; y++) {
-    for (int x = 0; x < 16; x++) {
-      d("%02x ", gb->cart_ram[x + y * 16]);
-    }
-    d("\n");
-  }
+  // Probe dump
+  d("\002========== Debug Probes ==========\001\n");
+  gb->probes.dump(d);
   d("\n");
 
-  d("\002===== OAM =====\001\n");
-  for (int y = 0; y < 10; y++) {
-    for (int x = 0; x < 16; x++) {
-      d("%02x ", gb->oam_ram[x + y * 16]);
-    }
-    d("\n");
-  }
-  d("\n");
-
-  d("\002===== ZRAM =====\001\n");
-  for (int y = 0; y < 8; y++) {
-    for (int x = 0; x < 16; x++) {
-      d("%02x ", gb->zero_ram[x + y * 16]);
-    }
-    d("\n");
-  }
-  d("\n");
-
-  d("\002===== Disasm =====\001\n");
+  d("\002========== Disassembly ==========\001\n");
   {
     int pc = gb->gb_cpu.op_addr;
     const uint8_t* code = nullptr;
@@ -687,7 +667,6 @@ F4: Save state to "gateboy.raw.dump"
         //int b = (3 - (p0 + p1 * 2)) * 30 + 30;
 
         uint32_t c = (x == fb_x) ? 0x77FFFFFF : 0x2200FFFF;
-
         overlay[x + fb_y * 160] = c; //0xFF000000 | (b << 16) | (g << 8) | (r << 0);
       }
       /*
@@ -716,10 +695,35 @@ F4: Save state to "gateboy.raw.dump"
     blitter.blit_mono(view, ram_tex, 256, 256, 0, 0, 256, 256, col6, 784, 256, 256);
   }
 
-  // Probe dump
-  d("\002========== Debug Probes ==========\001\n");
-  gb->probes.dump(d);
-  text_painter.render_string(view, d.s, col6, 340);
+  d("\002===== OAM =====\001\n");
+  for (int y = 0; y < 10; y++) {
+    for (int x = 0; x < 16; x++) {
+      d("%02x ", gb->oam_ram[x + y * 16]);
+    }
+    d("\n");
+  }
+  d("\n\n");
+
+  d("\002===== Cart Ram (first 128 bytes) =====\001\n");
+  for (int y = 0; y < 8; y++) {
+    for (int x = 0; x < 16; x++) {
+      d("%02x ", gb->cart_ram[x + y * 16]);
+    }
+    d("\n");
+  }
+  d("\n\n");
+
+  d("\002===== ZRAM =====\001\n");
+  for (int y = 0; y < 8; y++) {
+    for (int x = 0; x < 16; x++) {
+      d("%02x ", gb->zero_ram[x + y * 16]);
+    }
+    d("\n");
+  }
+  d("\n\n");
+
+
+  text_painter.render_string(view, d.s, col6, 352);
   d.clear();
 
 

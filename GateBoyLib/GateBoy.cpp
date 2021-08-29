@@ -121,6 +121,8 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   }
 
   memset(framebuffer, 4, sizeof(framebuffer));
+
+  probes.reset_to_cart();
 }
 
 //-----------------------------------------------------------------------------

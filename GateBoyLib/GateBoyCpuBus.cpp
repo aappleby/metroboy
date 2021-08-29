@@ -23,7 +23,7 @@ void GateBoy::tock_bootrom() {
   // BOOT -> CBD
   // this is kind of a hack
   uint16_t cpu_addr = (uint16_t)pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
-  wire bootrom_data = boot_buf[cpu_addr & 0xFF];
+  wire bootrom_data = DMG_ROM_blob[cpu_addr & 0xFF];
 
   /*_p07.TERA*/ wire TERA_BOOT_BITp  = not1(cpu_signals.TEPU_BOOT_BITn_h.qp_new());
   /*_p07.TUTU*/ wire TUTU_READ_BOOTROMp = and2(TERA_BOOT_BITp, new_bus.TULO_ADDR_BOOTROMp());

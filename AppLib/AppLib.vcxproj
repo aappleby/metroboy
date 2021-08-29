@@ -44,6 +44,7 @@
     <ClCompile Include="AppHost.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="Blitter.cpp" />
+    <ClCompile Include="BoardPainter.cpp" />
     <ClCompile Include="BoxPainter.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="DummyApp.cpp" />

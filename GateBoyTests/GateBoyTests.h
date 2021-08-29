@@ -3,6 +3,7 @@
 #include "CoreLib/File.h"
 
 struct GateBoy;
+struct GateBoyCart;
 
 struct GateBoyTests {
 
@@ -52,8 +53,7 @@ struct GateBoyTests {
   int test_mooneye_ppu();
   int run_mooneye_test(const char* path, const char* filename);
 
-  GateBoy create_gb_poweron();
+  GateBoy create_gb_poweron(const blob& cart_blob);
 
   bool verbose = false;
-  blob cart_rom;
 };

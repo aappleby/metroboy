@@ -7,24 +7,6 @@
 #include <thread>
 #include <atomic>
 
-//-----------------------------------------------------------------------------
-
-void GateBoyThread::reset_to_bootrom() {
-  gb.reset_states();
-  gb->reset_to_bootrom(true);
-}
-
-void GateBoyThread::reset_to_cart() {
-  gb.reset_states();
-  gb->reset_to_cart();
-}
-
-void GateBoyThread::load_cart(const blob& _boot, const blob& _cart) {
-  boot = _boot;
-  cart = _cart;
-  gb->load_cart(boot.data(), boot.size(), cart.data(), cart.size());
-}
-
 //------------------------------------------------------------------------------
 
 void GateBoyThread::start() {
@@ -36,10 +18,16 @@ void GateBoyThread::start() {
 
 void GateBoyThread::stop() {
   if (!main) return;
-  clear_work();
-  post_work({CMD_Exit, 1});
-  while (pause_count) resume();
+  printf("Stopping gateboy thread\n");
+
+  sig_break = true;
+  pause_barrier.arrive_and_wait();
+  sig_exit = true;
+  resume_barrier.arrive_and_wait();
+
   main->join();
+
+  printf("Gateboy thread stopped\n");
   delete main;
 }
 
@@ -61,26 +49,49 @@ void GateBoyThread::resume() {
   }
 }
 
-//------------------------------------------------------------------------------
+//----------------------------------------
 
-void GateBoyThread::step_phase(int steps) {
-  post_work({CMD_StepPhase, steps});
+void GateBoyThread::set_cart(const blob& new_cart_blob) {
+  cart_blob = new_cart_blob;
+}
+
+void GateBoyThread::reset_to_bootrom() {
+  CHECK_P(sig_paused);
+  clear_work();
+  gb.reset_states();
+  gb->reset_to_bootrom(cart_blob, true);
+}
+
+void GateBoyThread::reset_to_cart() {
+  CHECK_P(sig_paused);
+  clear_work();
+  gb.reset_states();
+  gb->reset_to_cart(cart_blob);
 }
 
 //----------------------------------------
 
+void GateBoyThread::step_phase(int steps) {
+  CHECK_P(sig_paused);
+  clear_work();
+  gb.push();
+  step_count = steps;
+}
+
 void GateBoyThread::step_back(int steps) {
-  post_work({CMD_StepBack, steps});
+  CHECK_P(sig_paused);
+  clear_work();
+  while (steps--) gb.pop();
 }
 
 //----------------------------------------
 
 void GateBoyThread::clear_work() {
-  pause();
-  cursor_r = 0;
-  cursor_w = 0;
-  command.count = 0;
-  resume();
+  CHECK_P(sig_paused);
+  step_count = 0;
+  old_sim_time = 0;
+  old_phase_total = 0;
+  phase_rate_smooth = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -96,9 +107,7 @@ void GateBoyThread::dump(Dumper& d) {
   }
   //d("BGB cycle     : 0x%08x\n",  (gb->phase_total / 4) - 0x10000);
   d("Sim clock     : %f\n",      double(gb->phase_total) / (4194304.0 * 2));
-
-  d("Commands left : %d\n",    uint8_t(cursor_w - cursor_r));
-  d("Steps left    : %d\n",    command.count);
+  d("Steps left    : %d\n", step_count);
 
   double phase_rate = (gb->phase_total - old_phase_total) / (gb->sim_time - old_sim_time);
 
@@ -112,6 +121,9 @@ void GateBoyThread::dump(Dumper& d) {
 
   d("Phase rate    : %f\n",      phase_rate_smooth);
   d("Sim fps       : %f\n",      60.0 * phase_rate_smooth / PHASES_PER_SECOND);
+  d("sig_break     : %d\n", (int)sig_break);
+  d("sig_exit      : %d\n", (int)sig_exit);
+
 
   old_phase_total = gb->phase_total;
   old_sim_time = gb->sim_time;
@@ -121,73 +133,23 @@ void GateBoyThread::dump(Dumper& d) {
 
 void GateBoyThread::thread_main() {
   printf("Command loop starting\n");
-  while(!sig_exit) {
-    // Pause until we have a job in the queue.
 
-    while (sig_break || (command.count == 0 && (cursor_r == cursor_w))) {
-      pause_barrier.arrive_and_wait();
-      resume_barrier.arrive_and_wait();
+  while(1) {
+    sig_paused = true;
+    pause_barrier.arrive_and_wait();
+    resume_barrier.arrive_and_wait();
+    sig_paused = false;
+
+    if (sig_exit) return;
+
+    double time_begin = timestamp();
+    while (step_count && !sig_break) {
+      gb->next_phase(cart_blob);
+      step_count--;
     }
 
-    // Grab the next job off the queue.
-    if (command.count == 0 && (cursor_r != cursor_w)) {
-      command = ring[cursor_r++];
-      if (command.op == CMD_StepPhase) gb.push();
-    }
-
-    // Do the job if we have one.
-    switch(command.op) {
-    case CMD_None:                        break;
-    case CMD_Exit:      sig_exit = true;  break;
-    case CMD_StepPhase: run_step_phase(); break;
-    case CMD_StepBack:  run_step_back();  break;
-    default:
-      printf("BAD COMMAND\n");
-      command.count = 0;
-      break;
-    }
-  }
-}
-
-//----------------------------------------
-
-void GateBoyThread::post_work(Command c) {
-  pause();
-  if (uint8_t(cursor_w + 1) != cursor_r) {
-    ring[cursor_w++] = c;
-  }
-  resume();
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoyThread::run_step_phase() {
-  double time_begin = timestamp();
-
-  while(command.count && !sig_break) {
-    gb->next_phase();
-    command.count--;
-
-    // this doesn't work
-    /*
-    // Pause at the end of the bootrom, if we're running it.
-    if (gb->phase_total == gb->phase_origin) {
-      clear_work();
-      pause_barrier.arrive_and_wait();
-      resume_barrier.arrive_and_wait();
-    }
-    */
-  }
-
-  double time_end = timestamp();
-  gb->sim_time += (time_end - time_begin);
-}
-
-//----------------------------------------
-
-void GateBoyThread::run_step_back() {
-  for(;command.count && !sig_break; command.count--) {
-    gb.pop();
+    double time_end = timestamp();
+    gb->sim_time += (time_end - time_begin);
   }
 }
 

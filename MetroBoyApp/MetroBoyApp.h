@@ -81,6 +81,13 @@ public:
   //----------
   // controls
 
+  enum RunMode {
+    RUN_STOP = 0, // don't run
+    RUN_STEP = 1, // run one step
+    RUN_FAST = 2, // run steps as fast as possible
+    RUN_SYNC = 3, // run until end of frame, then wait for vsync signal
+  };
+
   RunMode runmode = RUN_STEP;
 
   bool rom_loaded = false;

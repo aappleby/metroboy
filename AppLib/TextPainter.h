@@ -36,6 +36,11 @@ public:
     render(view, x, y);
   }
 
+  void render_string(Viewport view, const char* text, double x, double y, double scale = 1.0) {
+    add_text(text, scale);
+    render(view, x, y);
+  }
+
   void newline() { add_char(1, '\n'); }
 
   void set_pal(int index, double r, double g, double b, double a);

@@ -22,8 +22,8 @@ public:
   void app_close() override;
   bool pause_when_idle() override { return false; }
   void reset_to_bootrom();
-  void load_raw_dump();
-  void save_raw_dump();
+  void load_raw_dump(const char* filename);
+  void save_raw_dump(const char* filename);
   void load_flat_dump(const char* filename);
   void load_rom(const char* filename);
 
@@ -46,8 +46,6 @@ private:
 
   int screen_w = 1920;
   int screen_h = 1080;
-
-  RunMode runmode = RUN_STEP;
 
   const uint8_t* keyboard_state = nullptr;
 
@@ -79,6 +77,8 @@ private:
   bool has_golden = false;
   bool show_diff = false;
   bool show_golden = false;
+
+  bool app_paused = false;
 
   int ram_tex;
 

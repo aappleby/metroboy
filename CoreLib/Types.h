@@ -27,20 +27,6 @@ inline wire bit(uint32_t w, int i) { return wire((w >> i) & 1); }
 uint32_t swap(uint32_t x);
 uint64_t swap(uint64_t x);
 
-enum RunMode {
-  RUN_STOP = 0, // don't run
-  RUN_STEP = 1, // run one step
-  RUN_FAST = 2, // run steps as fast as possible
-  RUN_SYNC = 3, // run until end of frame, then wait for vsync signal
-};
-
-static const char* runmode_names[] = {
-  "RUN_STOP ",
-  "RUN_STEP ",
-  "RUN_FAST ",
-  "RUN_SYNC ",
-};
-
 static const char* phase_names[] = {
   "\002A_______\001",
   "\003_B______\001",

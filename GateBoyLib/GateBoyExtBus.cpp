@@ -4,7 +4,78 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_ext()
+uint32_t cart_rom_addr_mask(const blob& cart_blob) {
+  switch (cart_blob[0x0148]) {
+  case 0:  return 0x00007FFF; // 32K
+  case 1:  return 0x0000FFFF; // 64K
+  case 2:  return 0x0001FFFF; // 128K
+  case 3:  return 0x0003FFFF; // 256K
+  case 4:  return 0x0007FFFF; // 512K
+  case 5:  return 0x000FFFFF; // 1M
+  case 6:  return 0x001FFFFF; // 2M
+  case 7:  return 0x003FFFFF; // 4M
+  case 8:  return 0x007FFFFF; // 8M
+  default: return 0x00007FFF;
+  }
+}
+
+uint32_t cart_ram_addr_mask(const blob& cart_blob) {
+  // these masks are only for mbc1
+  switch (cart_blob[0x0149]) {
+  case 0:  return 0x00000000;
+  case 1:  return 0x000007FF;
+  case 2:  return 0x00001FFF;
+  case 3:  return 0x00007FFF;
+  default: return 0x00000000;
+  }
+}
+
+bool cart_has_mbc1(const blob& cart_blob) {
+  switch (cart_blob[0x0147]) {
+  case 0x00: return 0;
+  case 0x01: return 1;
+  case 0x02: return 1;
+  case 0x03: return 1;
+  case 0x08: return 0;
+  case 0x09: return 0;
+  case 0x19: return 1; // MBC5
+  case 0x1A: return 1; // MBC5+RAM
+  case 0x1B: return 1; // MBC5+RAM+BATTERY
+  case 0x1C: return 1; // MBC5+RUMBLE
+  case 0x1D: return 1; // MBC5+RUMBLE+RAM
+  case 0x1E: return 1; // MBC5+RUMBLE+RAM+BATTERY
+  default: {
+    printf("Bad cart type! 0x%02x\n", cart_blob[0x0147]);
+    return false;
+  }
+  }
+}
+
+bool cart_has_ram(const blob& cart_blob) {
+  switch (cart_blob[0x0147]) {
+  case 0x00: return 0;
+  case 0x01: return 0;
+  case 0x02: return 1;
+  case 0x03: return 1;
+  case 0x08: return 1;
+  case 0x09: return 1;
+  case 0x19: return 0; // MBC5
+  case 0x1A: return 1; // MBC5+RAM
+  case 0x1B: return 1; // MBC5+RAM+BATTERY
+  case 0x1C: return 0; // MBC5+RUMBLE
+  case 0x1D: return 1; // MBC5+RUMBLE+RAM
+  case 0x1E: return 1; // MBC5+RUMBLE+RAM+BATTERY
+  default: {
+    printf("Bad cart type! 0x%02x\n", cart_blob[0x0147]);
+    return 0;
+  }
+  }
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::tock_ext(const blob& cart_blob)
 {
   /*_p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn(), UMUT_MODE_DBG1p());
 
@@ -178,21 +249,21 @@ void GateBoy::tock_ext()
   //----------------------------------------
 
   uint32_t mbc1_rom0_bank = mbc1_mode ? pack_old(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
-  uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask;
-  if (mbc1_rom0_addr >= cart_size) debugbreak();
+  uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
+  if (mbc1_rom0_addr >= cart_blob.size()) debugbreak();
 
   //----------------------------------------
 
   uint32_t mbc1_rom1_bank = pack_old(7, (BitBase*)&ext_pins.MBC1_BANK0);
   if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
-  uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask;
-  if (mbc1_rom1_addr >= cart_size) debugbreak();
+  uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
+  if (mbc1_rom1_addr >= cart_blob.size()) debugbreak();
 
   //----------------------------------------
 
   uint32_t mbc1_ram_bank = mbc1_mode ? pack_old(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
   if (mbc1_mode == 0) mbc1_ram_bank = 0;
-  uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask;
+  uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
   if (mbc1_ram_addr >= 32768) debugbreak();
 
   //----------------------------------------
@@ -201,16 +272,16 @@ void GateBoy::tock_ext()
   uint8_t data_in = 0;
 
   if (bit(~ext_pins.PIN_79_RDn.qp_ext_new())) {
-    if (cart_has_mbc1) {
+    if (cart_has_mbc1(cart_blob)) {
       if (region == 0 || region == 1) {
         EXT_rd_en = true;
-        data_in = cart_buf[mbc1_rom0_addr];
+        data_in = cart_blob[mbc1_rom0_addr];
       }
       else if (region == 2 || region == 3) {
         EXT_rd_en = true;
-        data_in = cart_buf[mbc1_rom1_addr];
+        data_in = cart_blob[mbc1_rom1_addr];
       }
-      else if (region == 5 && cart_has_ram) {
+      else if (region == 5 && cart_has_ram(cart_blob)) {
         EXT_rd_en = mbc1_ram_en;
         data_in = cart_ram[mbc1_ram_addr];
       }
@@ -218,15 +289,15 @@ void GateBoy::tock_ext()
     else {
       if (region == 0 || region == 1) {
         EXT_rd_en = true;
-        data_in = cart_buf[addr & cart_rom_addr_mask];
+        data_in = cart_blob[addr & cart_rom_addr_mask(cart_blob)];
       }
       else if (region == 2 || region == 3) {
         EXT_rd_en = true;
-        data_in = cart_buf[addr & cart_rom_addr_mask];
+        data_in = cart_blob[addr & cart_rom_addr_mask(cart_blob)];
       }
-      else if (region == 5 && cart_has_ram) {
+      else if (region == 5 && cart_has_ram(cart_blob)) {
         EXT_rd_en = true;
-        data_in = cart_ram[addr & cart_ram_addr_mask];
+        data_in = cart_ram[addr & cart_ram_addr_mask(cart_blob)];
       }
     }
 
@@ -278,28 +349,28 @@ void GateBoy::tock_ext()
   data_out |= bit(ext_pins.PIN_24_D07.qp_ext_new()) << 7;
 
   if (bit(~ext_pins.PIN_78_WRn.qp_ext_new())) {
-    if (region == 0 && cart_has_mbc1) {
+    if (region == 0 && cart_has_mbc1(cart_blob)) {
       ext_pins.MBC1_RAM_EN = bit((data_out & 0x0F) == 0x0A);
     }
-    else if (region == 1 && cart_has_mbc1) {
+    else if (region == 1 && cart_has_mbc1(cart_blob)) {
       ext_pins.MBC1_BANK0 = bit(data_out, 0);
       ext_pins.MBC1_BANK1 = bit(data_out, 1);
       ext_pins.MBC1_BANK2 = bit(data_out, 2);
       ext_pins.MBC1_BANK3 = bit(data_out, 3);
       ext_pins.MBC1_BANK4 = bit(data_out, 4);
     }
-    else if (region == 2 && cart_has_mbc1) {
+    else if (region == 2 && cart_has_mbc1(cart_blob)) {
       ext_pins.MBC1_BANK5 = bit(data_out, 0);
       ext_pins.MBC1_BANK6 = bit(data_out, 1);
     }
-    else if (region == 3 && cart_has_mbc1) {
+    else if (region == 3 && cart_has_mbc1(cart_blob)) {
       ext_pins.MBC1_MODE = (data_out & 1);
     }
-    else if (region == 5 && cart_has_ram && cart_has_mbc1 && mbc1_ram_en) {
-      cart_ram[mbc1_ram_addr & cart_ram_addr_mask] = data_out;
+    else if (region == 5 && cart_has_ram(cart_blob) && cart_has_mbc1(cart_blob) && mbc1_ram_en) {
+      cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = data_out;
     }
-    else if (region == 5 && cart_has_ram && !cart_has_mbc1) {
-      cart_ram[addr & cart_ram_addr_mask] = data_out;
+    else if (region == 5 && cart_has_ram(cart_blob) && !cart_has_mbc1(cart_blob)) {
+      cart_ram[addr & cart_ram_addr_mask(cart_blob)] = data_out;
     }
     else if (region == 6 || region == 7) {
       int_ram[addr & 0x1FFF]  = data_out;

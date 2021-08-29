@@ -30,17 +30,30 @@
 
 #pragma pack(push, 1)
 struct GateBoy {
-  void reset_to_bootrom(bool fastboot);
-  void reset_to_cart();
-  void load_cart(uint8_t* _boot_buf, size_t _boot_size,
-                uint8_t* _cart_buf, size_t _cart_size);
+  void reset_to_bootrom(const blob& cart_blob, bool fastboot);
+  void reset_to_cart(const blob& cart_blob);
 
   //----------------------------------------
 
-  void from_blob(const blob& b) {
+  static bool check_sentinel(const blob& b) {
+    if (b.size() != sizeof(GateBoy)) return false;
+
+    GateBoy* gb = (GateBoy*)b.data();
+    if (gb->sentinel1 != SENTINEL1) return false;
+    if (gb->sentinel2 != SENTINEL2) return false;
+    if (gb->sentinel3 != SENTINEL3) return false;
+    if (gb->sentinel4 != SENTINEL4) return false;
+    return true;
+  }
+
+  int from_blob(const blob& b) {
     ASSERT_P(b.size() == sizeof(*this));
     memcpy(this, b.data(), sizeof(*this));
-    check_sentinel();
+    ASSERT_P(sentinel1 == SENTINEL1);
+    ASSERT_P(sentinel2 == SENTINEL2);
+    ASSERT_P(sentinel3 == SENTINEL3);
+    ASSERT_P(sentinel4 == SENTINEL4);
+    return (int)sizeof(*this);
   }
 
   void to_blob(blob& b) {
@@ -58,42 +71,24 @@ struct GateBoy {
     }
   }
 
-  static bool check_sentinel(const blob& b) {
-    if (b.size() != sizeof(GateBoy)) return false;
+  uint8_t dbg_read (const blob& cart_blob, int addr);
+  void dbg_write(const blob& cart_blob, int addr, uint8_t data);
 
-    GateBoy* gb = (GateBoy*)b.data();
-    if (gb->sentinel1 != SENTINEL1) return false;
-    if (gb->sentinel2 != SENTINEL2) return false;
-    if (gb->sentinel3 != SENTINEL3) return false;
-    if (gb->sentinel4 != SENTINEL4) return false;
-    return true;
-  }
-
-  void check_sentinel() const {
-    ASSERT_P(sentinel1 == SENTINEL1);
-    ASSERT_P(sentinel2 == SENTINEL2);
-    ASSERT_P(sentinel3 == SENTINEL3);
-    ASSERT_P(sentinel4 == SENTINEL4);
-  }
-
-  uint8_t dbg_read (int addr);
-  void dbg_write(int addr, uint8_t data);
-
-  void set_boot_bit() {
-    dbg_write(0xFF50, 0xFF);
+  void set_boot_bit(const blob& cart_blob) {
+    dbg_write(cart_blob, 0xFF50, 0xFF);
   }
 
   //-----------------------------------------------------------------------------
 
-  void run_phases(int phase_count) {
+  void run_phases(const blob& cart_blob, int phase_count) {
     for (int i = 0; i < phase_count; i++) {
-      next_phase();
+      next_phase(cart_blob);
     }
   }
 
-  void next_phase();
+  void next_phase(const blob& cart_blob);
 
-  void tock_slow(int pass_index);
+  void tock_slow(const blob& cart_blob, int pass_index);
 
   void update_framebuffer();
 
@@ -151,7 +146,7 @@ struct GateBoy {
   void tock_div();
   void tock_timer();
   void tock_reset(DFF17 UPOF_DIV15p);
-  void tock_ext();
+  void tock_ext(const blob& cart_blob);
   void tock_oam_bus();
   void tock_serial();
   void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
@@ -539,22 +534,7 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // Everything below here is "external" state not visible to the gameboy itself.
 
-  bool cart_has_mbc1 = 0;
-  bool cart_has_ram = 0;
-  uint32_t cart_rom_addr_mask = 0x7FFF;
-  uint32_t cart_ram_addr_mask = 0x0000;
-
-  uint8_t* boot_buf = nullptr;
-  size_t   boot_size = 0;
-
-  uint8_t* cart_buf = nullptr;
-  size_t   cart_size = 0;
-
-  //-----------------------------------------------------------------------------
-  // LCD and framebuffer
-
   int line_phase_x = 0; // Position in the current scanline, in phases since ATEJ_LINE_RSTp fired. For debugging.
-
   int old_lcd_x = 0;
   int old_lcd_y = 0;
 

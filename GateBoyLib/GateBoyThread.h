@@ -50,60 +50,51 @@ struct GateBoyThread {
   {
   }
 
-  void reset_to_bootrom();
-  void reset_to_cart();
-  void load_cart(const blob& _boot, const blob& _cart);
-
   void start();
   void stop();
   void pause();
   void resume();
   bool paused() { return sig_break; }
 
+  void set_cart(const blob& new_cart_blob);
+  const blob& get_cart() const {
+    return cart_blob;
+  }
+  void reset_to_bootrom();
+  void reset_to_cart();
+
   void step_phase(int steps);
   void step_back(int steps);
   void clear_work();
 
+  bool busy() {
+    pause();
+    bool result = step_count != 0;
+    resume();
+    return result;
+  }
+
   void dump(Dumper& d);
 
   StateStack<GateBoy> gb;
-  blob boot;
-  blob cart;
 
 private:
 
-  struct Command {
-    int64_t op;
-    int64_t count;
-  };
-
   void thread_main();
-  void post_work(Command c);
-
-  void run_step_phase();
-  void run_step_back();
 
   std::thread* main;
 
+  blob cart_blob;
+
   int pause_count = 0;
   std::atomic_bool sig_break   = false;
+  std::atomic_bool sig_paused  = false;
   std::atomic_bool sig_exit    = false;
 
   Barrier2 pause_barrier;
   Barrier2 resume_barrier;
 
-  enum {
-    CMD_None,
-    CMD_Exit,
-    CMD_StepPhase,
-    CMD_StepBack,
-  };
-
-  uint8_t cursor_r = 0;
-  uint8_t cursor_w = 0;
-  Command ring[256];
-
-  Command command = {0,0};
+  int step_count;
 
   double   old_sim_time = 0;
   uint64_t old_phase_total = 0;

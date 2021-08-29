@@ -55,6 +55,13 @@ uint8_t cart_header[] = {
   0x1a, 0x41, // global checksum
 };
 
+blob create_dummy_cart() {
+  blob cart_blob;
+  cart_blob.resize(32768, 0);
+  memcpy(&cart_blob[0x100], cart_header, sizeof(cart_header));
+  return cart_blob;
+}
+
 //-----------------------------------------------------------------------------
 
 
@@ -76,8 +83,8 @@ int main(int argc, char** argv) {
 
   GateBoyTests t;
   //t.verbose = true;
-  t.cart_rom.resize(32768, 0);
-  memcpy(&t.cart_rom[0x100], cart_header, sizeof(cart_header));
+  //t.cart_rom.resize(32768, 0);
+  //memcpy(&t.cart_rom[0x100], cart_header, sizeof(cart_header));
 
 #ifndef FAST_MODE
   failures += t.test_reset_cart_vs_dump();
@@ -168,10 +175,9 @@ int diff(const char* name_a, void* blob_a, int start_a, int end_a,
 
 //-----------------------------------------------------------------------------
 
-GateBoy GateBoyTests::create_gb_poweron() {
+GateBoy GateBoyTests::create_gb_poweron(const blob& cart_blob) {
   GateBoy gb;
-  gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-  gb.reset_to_bootrom(true);
+  gb.reset_to_bootrom(cart_blob, true);
   gb.sys_cpu_en = 0;
   return gb;
 }
@@ -182,12 +188,13 @@ GateBoy GateBoyTests::create_gb_poweron() {
 int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
-  GateBoy gb = create_gb_poweron();
+  blob cart_blob = create_dummy_cart();
+  GateBoy gb = create_gb_poweron(cart_blob);
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
-    gb.dbg_write(addr, uint8_t(data_in));
-    uint8_t data_out = gb.dbg_read(addr) & mask;
+    gb.dbg_write(cart_blob, addr, uint8_t(data_in));
+    uint8_t data_out = gb.dbg_read(cart_blob, addr) & mask;
     ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
@@ -197,13 +204,14 @@ int GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
 int GateBoyTests::test_spu_reg(const char* tag, uint16_t addr, uint8_t mask) {
   TEST_START("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
-  GateBoy gb = create_gb_poweron();
-  gb.dbg_write(ADDR_NR52, 0x80);
+  blob cart_blob = create_dummy_cart();
+  GateBoy gb = create_gb_poweron(cart_blob);
+  gb.dbg_write(cart_blob, ADDR_NR52, 0x80);
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
-    gb.dbg_write(addr, uint8_t(data_in));
-    uint8_t data_out = gb.dbg_read(addr) & mask;
+    gb.dbg_write(cart_blob, addr, uint8_t(data_in));
+    uint8_t data_out = gb.dbg_read(cart_blob, addr) & mask;
     ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
@@ -248,16 +256,16 @@ int GateBoyTests::test_regs() {
 int GateBoyTests::test_fastboot_vs_slowboot() {
   TEST_START();
 
+  blob cart_blob = create_dummy_cart();
+
   LOG_B("reset_to_bootrom with fastboot = true\n");
   GateBoy gb1;
-  gb1.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-  gb1.reset_to_bootrom(true);
+  gb1.reset_to_bootrom(cart_blob, true);
   LOG_G("reset_to_bootrom with fastboot = true done\n");
 
   LOG_B("reset_to_bootrom with fastboot = false\n");
   GateBoy gb2;
-  gb2.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-  gb2.reset_to_bootrom(false);
+  gb2.reset_to_bootrom(cart_blob, false);
   LOG_G("reset_to_bootrom with fastboot = false done\n");
 
   // Clear the fastboot bit on the first gameboy, since that obviously won't match
@@ -277,6 +285,8 @@ int GateBoyTests::test_fastboot_vs_slowboot() {
 int GateBoyTests::test_reset_cart_vs_dump() {
   TEST_START();
 
+  blob cart_blob = create_dummy_cart();
+
   auto blob = load_blob("gateboy_post_bootrom.raw.dump");
   if(!GateBoy::check_sentinel(blob)) {
     LOG_Y("Warning : gateboy_post_bootrom_raw.dump not valid\n");
@@ -290,8 +300,7 @@ int GateBoyTests::test_reset_cart_vs_dump() {
 
   LOG_B("reset_to_cart with fastboot = true\n");
   GateBoy gb2;
-  gb2.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-  gb2.reset_to_cart();
+  gb2.reset_to_cart(cart_blob);
   LOG_G("reset_cart done\n");
 
   int start = 0;
@@ -889,9 +898,9 @@ int GateBoyTests::test_micro_mbc1() {
 //-----------------------------------------------------------------------------
 
 int GateBoyTests::run_microtest(const char* filename) {
-  cart_rom = load_blob(std::string("microtests/build/dmg/") + filename);
+  blob cart_blob = load_blob(std::string("microtests/build/dmg/") + filename);
 
-  if (cart_rom.empty()) {
+  if (cart_blob.empty()) {
     LOG_B("%-30s ", filename);
     LOG_Y("FILE NOT FOUND\n");
     return 1;
@@ -900,15 +909,14 @@ int GateBoyTests::run_microtest(const char* filename) {
   if (verbose) LOG_B("%-30s ", filename);
 
   GateBoy gb;
-  gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-  gb.reset_to_cart();
+  gb.reset_to_cart(cart_blob);
   gb.phase_total = 0;
 
   //int timeout = 500; // All our "fast" microtests take under 500 cycles
   int timeout = 150000; // All our "fast" microtests take under 500 cycles
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
-    gb.run_phases(8);
+    gb.run_phases(cart_blob, 8);
     if (gb.zero_ram[2]) break;
   }
 
@@ -940,7 +948,8 @@ int GateBoyTests::run_microtest(const char* filename) {
 int GateBoyTests::test_init() {
   TEST_START();
 
-  GateBoy gb = create_gb_poweron();
+  blob cart_blob = create_dummy_cart();
+  GateBoy gb = create_gb_poweron(cart_blob);
 
   LOG_G("Checking reg flags\n");
 
@@ -958,28 +967,28 @@ int GateBoyTests::test_init() {
   }
 
   LOG_G("Checking reg values\n");
-  EXPECT_EQ(0xCF, gb.dbg_read(ADDR_P1),   "Bad P1 reset_states value");   // CF after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SB),   "Bad SB reset_states value");   // 00 after bootrom
-  EXPECT_EQ(0x7E, gb.dbg_read(ADDR_SC),   "Bad SC reset_states value");   // 7E after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_DIV),  "Bad DIV reset_states value");  // AB after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TIMA), "Bad TIMA reset_states value"); // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_TMA),  "Bad TMA reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0xF8, gb.dbg_read(ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
-  EXPECT_EQ(0xE0, gb.dbg_read(ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
-  EXPECT_EQ(0x80, gb.dbg_read(ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_LYC),  "Bad LYC reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0xCF, gb.dbg_read(cart_blob, ADDR_P1),   "Bad P1 reset_states value");   // CF after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_SB),   "Bad SB reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x7E, gb.dbg_read(cart_blob, ADDR_SC),   "Bad SC reset_states value");   // 7E after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_DIV),  "Bad DIV reset_states value");  // AB after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_TIMA), "Bad TIMA reset_states value"); // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_TMA),  "Bad TMA reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0xF8, gb.dbg_read(cart_blob, ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
+  EXPECT_EQ(0xE0, gb.dbg_read(cart_blob, ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
+  EXPECT_EQ(0x80, gb.dbg_read(cart_blob, ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_LYC),  "Bad LYC reset_states value");  // 00 after bootrom
 
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_DMA),  "Bad DMA reset_states value");  // FF after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_BGP),  "Bad BGP reset_states value");  // FC after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP0), "Bad OBP0 reset_states value"); // 9F after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(cart_blob, ADDR_DMA),  "Bad DMA reset_states value");  // FF after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(cart_blob, ADDR_BGP),  "Bad BGP reset_states value");  // FC after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(cart_blob, ADDR_OBP0), "Bad OBP0 reset_states value"); // 9F after bootrom
+  EXPECT_EQ(0xFF, gb.dbg_read(cart_blob, ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
 
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
+  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
 
   TEST_END();
 }
@@ -991,9 +1000,10 @@ int GateBoyTests::test_init() {
 int GateBoyTests::test_clk() {
   TEST_START();
 
-  GateBoy gb = create_gb_poweron();
-  gb.dbg_write(ADDR_LCDC, 0x80);
-  gb.run_phases(8);
+  blob cart_blob = create_dummy_cart();
+  GateBoy gb = create_gb_poweron(cart_blob);
+  gb.dbg_write(cart_blob, ADDR_LCDC, 0x80);
+  gb.run_phases(cart_blob, 8);
 
   auto& top = gb;
   auto& clk = top.clk;
@@ -1018,7 +1028,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH.out_old(), 0b01111111);
     EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx.out_old(), 0b10000000);
     EXPECT_CLK(top.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
-    gb.next_phase();
+    gb.next_phase(cart_blob);
   }
 
   TEST_END();
@@ -1051,12 +1061,11 @@ int GateBoyTests::test_ext_bus() {
 
     Assembler as;
     as.assemble(app);
-    cart_rom = as.link();
+    blob cart_blob = as.link();
 
     GateBoy gb;
-    gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-    gb.reset_to_cart();
-    gb.run_phases(120);
+    gb.reset_to_cart(cart_blob);
+    gb.run_phases(cart_blob, 120);
 
 #if 1
     // Start checking each phase
@@ -1157,7 +1166,7 @@ int GateBoyTests::test_ext_bus() {
       EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
       EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
-      gb.next_phase();
+      gb.next_phase(cart_blob);
     }
 #endif
   }
@@ -1176,12 +1185,11 @@ int GateBoyTests::test_ext_bus() {
 
     Assembler as;
     as.assemble(app);
-    cart_rom = as.link();
+    blob cart_blob = as.link();
 
     GateBoy gb;
-    gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-    gb.reset_to_cart();
-    gb.run_phases(120);
+    gb.reset_to_cart(cart_blob);
+    gb.run_phases(cart_blob, 120);
 
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11111111 11111111 11111111 11111111";
@@ -1285,7 +1293,7 @@ int GateBoyTests::test_ext_bus() {
       EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
       EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
-      gb.next_phase();
+      gb.next_phase(cart_blob);
     }
   }
 #endif
@@ -1304,12 +1312,11 @@ int GateBoyTests::test_ext_bus() {
 
     Assembler as;
     as.assemble(app);
-    cart_rom = as.link();
+    blob cart_blob = as.link();
 
     GateBoy gb;
-    gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-    gb.reset_to_cart();
-    gb.run_phases(120);
+    gb.reset_to_cart(cart_blob);
+    gb.run_phases(cart_blob, 120);
 
     // Start checking each phase
 
@@ -1453,7 +1460,7 @@ int GateBoyTests::test_ext_bus() {
       EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
       EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
-      gb.next_phase();
+      gb.next_phase(cart_blob);
     }
   }
 #endif
@@ -1482,10 +1489,11 @@ int GateBoyTests::test_mem() {
 int GateBoyTests::test_bootrom() {
   TEST_START();
 
-  GateBoy gb = create_gb_poweron();
+  blob cart_blob = create_dummy_cart();
+  GateBoy gb = create_gb_poweron(cart_blob);
 
   for (int i = 0; i < 16; i++) {
-    uint8_t byte = gb.dbg_read(i);
+    uint8_t byte = gb.dbg_read(cart_blob, i);
     EXPECT_EQ(byte, DMG_ROM_blob[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, byte, DMG_ROM_bin[i]);
   }
 
@@ -1504,84 +1512,88 @@ int GateBoyTests::test_timer() {
 
   LOG("Testing TIMA tick rate and reset_states to TMA...\n");
   {
-    GateBoy gb = create_gb_poweron();
+    blob cart_blob = create_dummy_cart();
+    GateBoy gb = create_gb_poweron(cart_blob);
 
-    gb.dbg_write(ADDR_TMA, 0x80);
-    gb.dbg_write(ADDR_TIMA,0xFD);
-    gb.dbg_write(ADDR_DIV, 0x00);
-    gb.dbg_write(ADDR_TAC, 0b00000100);
+    gb.dbg_write(cart_blob, ADDR_TMA, 0x80);
+    gb.dbg_write(cart_blob, ADDR_TIMA,0xFD);
+    gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
+    gb.dbg_write(cart_blob, ADDR_TAC, 0b00000100);
 
     EXPECT_EQ(0xFD, gb.timer.get_tima());
-    gb.run_phases(2048);
+    gb.run_phases(cart_blob, 2048);
     EXPECT_EQ(0xFE, gb.timer.get_tima());
-    gb.run_phases(2048);
+    gb.run_phases(cart_blob, 2048);
     EXPECT_EQ(0xFF, gb.timer.get_tima());
-    gb.run_phases(2048);
+    gb.run_phases(cart_blob, 2048);
     EXPECT_EQ(0x80, gb.timer.get_tima());
-    gb.run_phases(2048);
+    gb.run_phases(cart_blob, 2048);
     EXPECT_EQ(0x81, gb.timer.get_tima());
-    gb.run_phases(2048);
+    gb.run_phases(cart_blob, 2048);
     if (!failures) LOG_B("TAC 0b100 pass\n");
   }
 
   {
-    GateBoy gb = create_gb_poweron();
+    blob cart_blob = create_dummy_cart();
+    GateBoy gb = create_gb_poweron(cart_blob);
 
-    gb.dbg_write(ADDR_TMA, 0x80);
-    gb.dbg_write(ADDR_TIMA,0xFD);
-    gb.dbg_write(ADDR_DIV, 0x00);
-    gb.dbg_write(ADDR_TAC, 0b00000101);
+    gb.dbg_write(cart_blob, ADDR_TMA, 0x80);
+    gb.dbg_write(cart_blob, ADDR_TIMA,0xFD);
+    gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
+    gb.dbg_write(cart_blob, ADDR_TAC, 0b00000101);
 
     EXPECT_EQ(0xFD, gb.timer.get_tima());
-    gb.run_phases(32);
+    gb.run_phases(cart_blob, 32);
     EXPECT_EQ(0xFE, gb.timer.get_tima());
-    gb.run_phases(32);
+    gb.run_phases(cart_blob, 32);
     EXPECT_EQ(0xFF, gb.timer.get_tima());
-    gb.run_phases(32);
+    gb.run_phases(cart_blob, 32);
     EXPECT_EQ(0x80, gb.timer.get_tima());
-    gb.run_phases(32);
+    gb.run_phases(cart_blob, 32);
     EXPECT_EQ(0x81, gb.timer.get_tima());
-    gb.run_phases(32);
+    gb.run_phases(cart_blob, 32);
     if (!failures) LOG_B("TAC 0b101 pass\n");
   }
   {
-    GateBoy gb = create_gb_poweron();
+    blob cart_blob = create_dummy_cart();
+    GateBoy gb = create_gb_poweron(cart_blob);
 
-    gb.dbg_write(ADDR_TMA, 0x80);
-    gb.dbg_write(ADDR_TIMA,0xFD);
-    gb.dbg_write(ADDR_DIV, 0x00);
-    gb.dbg_write(ADDR_TAC, 0b00000110);
+    gb.dbg_write(cart_blob, ADDR_TMA, 0x80);
+    gb.dbg_write(cart_blob, ADDR_TIMA,0xFD);
+    gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
+    gb.dbg_write(cart_blob, ADDR_TAC, 0b00000110);
 
     EXPECT_EQ(0xFD, gb.timer.get_tima());
-    gb.run_phases(128);
+    gb.run_phases(cart_blob, 128);
     EXPECT_EQ(0xFE, gb.timer.get_tima());
-    gb.run_phases(128);
+    gb.run_phases(cart_blob, 128);
     EXPECT_EQ(0xFF, gb.timer.get_tima());
-    gb.run_phases(128);
+    gb.run_phases(cart_blob, 128);
     EXPECT_EQ(0x80, gb.timer.get_tima());
-    gb.run_phases(128);
+    gb.run_phases(cart_blob, 128);
     EXPECT_EQ(0x81, gb.timer.get_tima());
-    gb.run_phases(128);
+    gb.run_phases(cart_blob, 128);
     if (!failures) LOG_B("TAC 0b110 pass\n");
   }
   {
-    GateBoy gb = create_gb_poweron();
+    blob cart_blob = create_dummy_cart();
+    GateBoy gb = create_gb_poweron(cart_blob);
 
-    gb.dbg_write(ADDR_TMA, 0x80);
-    gb.dbg_write(ADDR_TIMA,0xFD);
-    gb.dbg_write(ADDR_DIV, 0x00);
-    gb.dbg_write(ADDR_TAC, 0b00000111);
+    gb.dbg_write(cart_blob, ADDR_TMA, 0x80);
+    gb.dbg_write(cart_blob, ADDR_TIMA,0xFD);
+    gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
+    gb.dbg_write(cart_blob, ADDR_TAC, 0b00000111);
 
     EXPECT_EQ(0xFD, gb.timer.get_tima());
-    gb.run_phases(512);
+    gb.run_phases(cart_blob, 512);
     EXPECT_EQ(0xFE, gb.timer.get_tima());
-    gb.run_phases(512);
+    gb.run_phases(cart_blob, 512);
     EXPECT_EQ(0xFF, gb.timer.get_tima());
-    gb.run_phases(512);
+    gb.run_phases(cart_blob, 512);
     EXPECT_EQ(0x80, gb.timer.get_tima());
-    gb.run_phases(512);
+    gb.run_phases(cart_blob, 512);
     EXPECT_EQ(0x81, gb.timer.get_tima());
-    gb.run_phases(512);
+    gb.run_phases(cart_blob, 512);
     if (!failures) LOG_B("TAC 0b111 pass\n");
   }
   if (!failures) LOG("\n");
@@ -1620,9 +1632,9 @@ int GateBoyTests::test_dma() {
 
 //----------------------------------------
 
-uint8_t* get_flat_ptr(GateBoy& gb, uint16_t addr) {
+uint8_t* get_flat_ptr(GateBoy& gb, blob& cart_blob, uint16_t addr) {
   if (addr >= 0x0000 && addr <= 0x7FFF) {
-    return gb.cart_buf + (addr & 0x7FFF);
+    return cart_blob.data() + (addr & 0x7FFF);
   }
   else if (addr >= 0x8000 && addr <= 0x9FFF) {
     return gb.vid_ram + (addr & 0x1FFF);
@@ -1653,21 +1665,21 @@ uint8_t* get_flat_ptr(GateBoy& gb, uint16_t addr) {
 int GateBoyTests::test_dma(uint16_t src) {
   TEST_START("0x%04x", src);
 
+  blob cart_blob = create_dummy_cart();
   GateBoy gb;
-  gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-  gb.reset_to_cart();
+  gb.reset_to_cart(cart_blob);
   gb.sys_cpu_en = 0;
-  gb.dbg_write(ADDR_LCDC, 0);
-  gb.dbg_write(0x0000, 0x0A); // enable mbc1 ram
+  gb.dbg_write(cart_blob, ADDR_LCDC, 0);
+  gb.dbg_write(cart_blob, 0x0000, 0x0A); // enable mbc1 ram
 
-  uint8_t* mem = get_flat_ptr(gb, src);
+  uint8_t* mem = get_flat_ptr(gb, cart_blob, src);
   for (int i = 0; i < 256; i++) {
     mem[i] = uint8_t(rand());
     gb.oam_ram[i] = 0xFF;
   }
 
-  gb.dbg_write(0xFF46, uint8_t(src >> 8));
-  gb.run_phases(1288);
+  gb.dbg_write(cart_blob, 0xFF46, uint8_t(src >> 8));
+  gb.run_phases(cart_blob, 1288);
 
   for (int i = 0; i < 160; i++) {
     uint8_t a = mem[i];
@@ -1718,24 +1730,25 @@ int GateBoyTests::test_ppu() {
 int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write) {
   TEST_START("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
-  GateBoy gb = create_gb_poweron();
-  gb.dbg_write(0xFF50, 0x01); // disable bootrom
-  gb.dbg_write(0x0000, 0x0A); // enable mbc1 ram
+  blob cart_blob = create_dummy_cart();
+  GateBoy gb = create_gb_poweron(cart_blob);
+  gb.dbg_write(cart_blob, 0xFF50, 0x01); // disable bootrom
+  gb.dbg_write(cart_blob, 0x0000, 0x0A); // enable mbc1 ram
 
   int len = addr_end - addr_start + 1;
-  uint8_t* mem = get_flat_ptr(gb, addr_start);
+  uint8_t* mem = get_flat_ptr(gb, cart_blob, addr_start);
 
   for (int i = 0; i < len; i += step) {
     uint8_t data_wr = 0x55;
     if (test_write) {
       mem[i] = 0;
-      gb.dbg_write(addr_start + i, data_wr);
+      gb.dbg_write(cart_blob, addr_start + i, data_wr);
     }
     else {
       mem[i] = data_wr;
     }
     ASSERT_EQ(mem[i], data_wr,  "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, mem[i]);
-    uint8_t data_rd = gb.dbg_read(addr_start + i);
+    uint8_t data_rd = gb.dbg_read(cart_blob, addr_start + i);
     ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, data_rd);
   }
 
@@ -1743,13 +1756,13 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
     uint8_t data_wr = 0xAA;
     if (test_write) {
       mem[i] = 0;
-      gb.dbg_write(addr_start + i, data_wr);
+      gb.dbg_write(cart_blob, addr_start + i, data_wr);
     }
     else {
       mem[i] = data_wr;
     }
     ASSERT_EQ(mem[i], data_wr,  "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, mem[i]);
-    uint8_t data_rd = gb.dbg_read(addr_start + i);
+    uint8_t data_rd = gb.dbg_read(cart_blob, addr_start + i);
     ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, data_rd);
   }
 
@@ -1759,6 +1772,7 @@ int GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_t addr_e
 //-----------------------------------------------------------------------------
 
 void GateBoyTests::run_benchmark() {
+  blob cart_blob = create_dummy_cart();
   GateBoy gb;
 
 #if _DEBUG
@@ -1778,8 +1792,7 @@ void GateBoyTests::run_benchmark() {
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
-    gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), nullptr, 0);
-    gb.reset_to_bootrom(true);
+    gb.reset_to_bootrom(cart_blob, true);
     gb.bus_req_new.addr = 0x0150;
     gb.bus_req_new.data = 0;
     gb.bus_req_new.read = 1;
@@ -1788,7 +1801,7 @@ void GateBoyTests::run_benchmark() {
     gb.phase_total = 0;
 
     auto start = timestamp();
-    gb.run_phases(phase_per_iter);
+    gb.run_phases(cart_blob, phase_per_iter);
     auto finish = timestamp();
 
     if (iter >= warmup) {
@@ -1942,9 +1955,9 @@ int GateBoyTests::test_mooneye_ppu() {
 
 int GateBoyTests::run_mooneye_test(const char* path, const char* filename) {
 
-  cart_rom = load_blob(std::string(path) + std::string(filename));
+  blob cart_blob = load_blob(std::string(path) + std::string(filename));
 
-  if (cart_rom.empty()) {
+  if (cart_blob.empty()) {
     LOG_B("%-30s ", filename);
     LOG_Y("FILE NOT FOUND\n");
     return 1;
@@ -1953,15 +1966,14 @@ int GateBoyTests::run_mooneye_test(const char* path, const char* filename) {
   if (verbose) LOG_B("%-50s ", filename);
 
   GateBoy gb;
-  gb.load_cart(DMG_ROM_blob.data(), DMG_ROM_blob.size(), cart_rom.data(), cart_rom.size());
-  gb.reset_to_cart();
+  gb.reset_to_cart(cart_blob);
   gb.phase_total = 0;
 
   int timeout = 6400000; // bits_ramg is super slow
 
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
-    gb.run_phases(8);
+    gb.run_phases(cart_blob, 8);
     if (gb.gb_cpu.op == 0x40) break;
   }
 

@@ -2,7 +2,7 @@
 
 #ifdef _DEBUG
 
-// Debug builds -
+// Debug builds - painfully, ungodly slow.
 
 // Evaluate all CHECK() statements (basically assert)
 #define YES_CHECK

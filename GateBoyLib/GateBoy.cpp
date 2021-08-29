@@ -8,13 +8,8 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_to_bootrom(bool fastboot)
+void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
 {
-  uint8_t* _boot_buf  = boot_buf;
-  size_t   _boot_size = boot_size;
-  uint8_t* _cart_buf  = cart_buf;
-  size_t   _cart_size = cart_size;
-
   memset(this, 0, sizeof(*this));
 
   for (auto c = reg_begin(); c != reg_end(); c++) {
@@ -62,8 +57,6 @@ void GateBoy::reset_to_bootrom(bool fastboot)
 
   joy.reset_to_bootrom();
 
-  load_cart(_boot_buf, _boot_size, _cart_buf, _cart_size);
-
   sentinel1 = SENTINEL1;
   sentinel2 = SENTINEL2;
   sentinel3 = SENTINEL3;
@@ -78,7 +71,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
 
   sys_rst = 1;
 
-  tock_slow(0);
+  tock_slow(cart_blob, 0);
   commit_and_hash();
 
   //----------------------------------------
@@ -87,7 +80,7 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   sys_rst = 0;
   sys_clken = 1;
   sys_clkgood = 1;
-  run_phases(2);
+  run_phases(cart_blob, 2);
 
   CHECK_N(bit(clk.AFUR_xxxxEFGH.qp_old()));
   CHECK_P(bit(clk.ALEF_AxxxxFGH.qp_old()));
@@ -102,18 +95,18 @@ void GateBoy::reset_to_bootrom(bool fastboot)
   // Wait for SIG_CPU_START
 
   while(bit(~rst.SIG_CPU_STARTp.out_old())) {
-    run_phases(8);
+    run_phases(cart_blob, 8);
   }
 
   //----------------------------------------
   // Delay to sync up with expected div value
 
-  run_phases(16);
+  run_phases(cart_blob, 16);
 
   //----------------------------------------
   // Fetch the first instruction in the bootrom
 
-  dbg_read(0x0000);
+  dbg_read(cart_blob, 0x0000);
 
   //----------------------------------------
   // We're ready to go, release the CPU so it can start running the bootrom.
@@ -132,8 +125,8 @@ void GateBoy::reset_to_bootrom(bool fastboot)
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_to_cart() {
-  reset_to_bootrom(true);
+void GateBoy::reset_to_cart(const blob& cart_blob) {
+  reset_to_bootrom(cart_blob, true);
 
   VOGA_HBLANKp.state = 0b00011001;
 
@@ -233,64 +226,9 @@ void GateBoy::reset_to_cart() {
   probes.reset_to_cart();
 }
 
-//------------------------------------------------------------------------------
-
-void GateBoy::load_cart(uint8_t* _boot_buf, size_t _boot_size,
-                        uint8_t* _cart_buf, size_t _cart_size)
-{
-  boot_buf  = _boot_buf;
-  boot_size = _boot_size;
-  cart_buf  = _cart_buf;
-  cart_size = _cart_size;
-
-  switch(cart_buf[0x0147]) {
-  case 0x00: cart_has_mbc1 = 0; cart_has_ram = 0; break;
-  case 0x01: cart_has_mbc1 = 1; cart_has_ram = 0; break;
-  case 0x02: cart_has_mbc1 = 1; cart_has_ram = 1; break;
-  case 0x03: cart_has_mbc1 = 1; cart_has_ram = 1; break;
-  case 0x08: cart_has_mbc1 = 0; cart_has_ram = 1; break;
-  case 0x09: cart_has_mbc1 = 0; cart_has_ram = 1; break;
-
-  // FIXME we don't really support all of MBC5, but mooneye's sources-GS.gb test references it
-  case 0x19: cart_has_mbc1 = 1; cart_has_ram = 0; break; // MBC5
-  case 0x1A: cart_has_mbc1 = 1; cart_has_ram = 1; break; // MBC5+RAM
-  case 0x1B: cart_has_mbc1 = 1; cart_has_ram = 1; break; // MBC5+RAM+BATTERY
-  case 0x1C: cart_has_mbc1 = 1; cart_has_ram = 0; break; // MBC5+RUMBLE
-  case 0x1D: cart_has_mbc1 = 1; cart_has_ram = 1; break; // MBC5+RUMBLE+RAM
-  case 0x1E: cart_has_mbc1 = 1; cart_has_ram = 1; break; // MBC5+RUMBLE+RAM+BATTERY
-  default: {
-    printf("Bad cart type! 0x%02x\n", cart_buf[0x0147]);
-    debugbreak();
-  }
-  }
-
-  // these masks are only for mbc1
-
-  switch(cart_buf[0x0148]) {
-  case 0:  cart_rom_addr_mask = 0x00007FFF; break; // 32K
-  case 1:  cart_rom_addr_mask = 0x0000FFFF; break; // 64K
-  case 2:  cart_rom_addr_mask = 0x0001FFFF; break; // 128K
-  case 3:  cart_rom_addr_mask = 0x0003FFFF; break; // 256K
-  case 4:  cart_rom_addr_mask = 0x0007FFFF; break; // 512K
-  case 5:  cart_rom_addr_mask = 0x000FFFFF; break; // 1M
-  case 6:  cart_rom_addr_mask = 0x001FFFFF; break; // 2M
-  case 7:  cart_rom_addr_mask = 0x003FFFFF; break; // 4M
-  case 8:  cart_rom_addr_mask = 0x007FFFFF; break; // 8M
-  default: cart_rom_addr_mask = 0x00007FFF; break;
-  }
-
-  switch(cart_buf[0x0149]) {
-  case 0:  cart_ram_addr_mask = 0x00000000; break;
-  case 1:  cart_ram_addr_mask = 0x000007FF; break;
-  case 2:  cart_ram_addr_mask = 0x00001FFF; break;
-  case 3:  cart_ram_addr_mask = 0x00007FFF; break;
-  default: cart_ram_addr_mask = 0x00000000; break;
-  }
-}
-
 //------------------------------------------------------------------------------------------------------------------------
 
-uint8_t GateBoy::dbg_read(int addr) {
+uint8_t GateBoy::dbg_read(const blob& cart_blob, int addr) {
   CHECK_P((phase_total & 7) == 0);
 
   Req old_req = bus_req_new;
@@ -301,7 +239,7 @@ uint8_t GateBoy::dbg_read(int addr) {
   bus_req_new.data = 0;
   bus_req_new.read = 1;
   bus_req_new.write = 0;
-  run_phases(8);
+  run_phases(cart_blob, 8);
 
   bus_req_new = old_req;
   sys_cpu_en = old_cpu_en;
@@ -311,7 +249,7 @@ uint8_t GateBoy::dbg_read(int addr) {
 
 //------------------------------------------------------------------------------
 
-void GateBoy::dbg_write(int addr, uint8_t data) {
+void GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
   CHECK_P((phase_total & 7) == 0);
 
   Req old_req = bus_req_new;
@@ -323,14 +261,14 @@ void GateBoy::dbg_write(int addr, uint8_t data) {
   bus_req_new.read = 0;
   bus_req_new.write = 1;
 
-  next_phase();
-  next_phase();
-  next_phase();
-  next_phase();
-  next_phase();
-  next_phase();
-  next_phase();
-  next_phase();
+  next_phase(cart_blob);
+  next_phase(cart_blob);
+  next_phase(cart_blob);
+  next_phase(cart_blob);
+  next_phase(cart_blob);
+  next_phase(cart_blob);
+  next_phase(cart_blob);
+  next_phase(cart_blob);
 
   bus_req_new = old_req;
   sys_cpu_en = old_cpu_en;
@@ -412,11 +350,11 @@ struct GateBoyOffsets {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::next_phase() {
+void GateBoy::next_phase(const blob& cart_blob) {
 
   probes.begin_pass((phase_total + 1) & 7);
 
-  tock_slow(0);
+  tock_slow(cart_blob, 0);
 
 #ifndef NO_HASH
   uint64_t hash_old = commit_and_hash();
@@ -475,7 +413,7 @@ void GateBoy::next_phase() {
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_slow(int pass_index) {
+void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   (void)pass_index;
 
   wire EXT_vcc = 1;
@@ -998,7 +936,7 @@ void GateBoy::tock_slow(int pass_index) {
   //----------------------------------------
   // Memory buses
 
-  tock_ext();
+  tock_ext(cart_blob);
   tock_vram_bus(TEVO_WIN_FETCH_TRIGp);
   tock_oam_bus();
   tock_zram();

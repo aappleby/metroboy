@@ -17,9 +17,9 @@ struct Assembler {
   void disassemble_one(const uint8_t* code, Dumper& dump);
 
   void disassemble(
-    const uint8_t* code, size_t code_size,
-    uint16_t code_base,
-    uint16_t pc,
+    const uint8_t* code, int code_size,
+    int code_base,
+    int pc,
     int opcount,
     Dumper& dump,
     bool collapse_nops = true);

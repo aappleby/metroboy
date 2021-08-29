@@ -341,6 +341,12 @@ void MetroBoyApp::app_render_ui() {
     column += 32 * 7;
   }
 
+  static const char* runmode_names[] = {
+    "RUN_STOP ",
+    "RUN_STEP ",
+    "RUN_FAST ",
+    "RUN_SYNC ",
+  };
   text_painter.dprintf("%s\n", runmode_names[runmode]);
 
   size_t state_size = gb.state_size_bytes();
@@ -359,7 +365,7 @@ void MetroBoyApp::app_render_ui() {
   text_painter.render(view, float(view.screen_size().x - 320), float(view.screen_size().y - 64));
 
 
-    /*
+  /*
   double mcycles_per_sec_1x = 114 * 154 * 60; // 1.05 mhz
   double sim_speed = 1.06;
   double sim_budget_msec = 60.0;

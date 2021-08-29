@@ -46,6 +46,7 @@ private:
 
   int screen_w = 1920;
   int screen_h = 1080;
+  ViewController view_control;
 
   const uint8_t* keyboard_state = nullptr;
 

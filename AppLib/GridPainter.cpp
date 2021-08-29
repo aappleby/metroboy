@@ -71,10 +71,10 @@ void main() {
   //if (world_pos.y < -half_world_height) frag_col.r = 0.2;
   //if (world_pos.y >  half_world_height) frag_col.r = 0.2;
 
-  //if (world_pos.x < -half_world_width)  frag_col.rgb *= 0.9;
-  //if (world_pos.x >  half_world_width)  frag_col.rgb *= 1.1;
-  //if (world_pos.y < -half_world_height) frag_col.rgb *= 0.9;
-  //if (world_pos.y >  half_world_height) frag_col.rgb *= 1.1;
+  if (world_pos.x < -half_world_width)  frag_col.rgb *= 0.9;
+  if (world_pos.x >  half_world_width)  frag_col.rgb *= 1.1;
+  if (world_pos.y < -half_world_height) frag_col.rgb *= 0.9;
+  if (world_pos.y >  half_world_height) frag_col.rgb *= 1.1;
 
   //if (world_pos.x > -16.0 && world_pos.x < 16.0) frag_col.g += 0.2;
 

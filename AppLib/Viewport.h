@@ -206,6 +206,7 @@ struct ViewController {
 
   void pop_view() {
     view_target = view_screen;
+    view_target_snap = view_screen;
   }
 
   Viewport view_screen;

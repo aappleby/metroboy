@@ -47,7 +47,7 @@ struct GateBoy {
   }
 
   int from_blob(const blob& b) {
-    ASSERT_P(b.size() == sizeof(*this));
+    ASSERT_P(b.size() >= sizeof(*this));
     memcpy(this, b.data(), sizeof(*this));
     ASSERT_P(sentinel1 == SENTINEL1);
     ASSERT_P(sentinel2 == SENTINEL2);

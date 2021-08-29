@@ -362,7 +362,7 @@ void GateBoy::next_phase(const blob& cart_blob) {
   static GateBoy gb1;
   memcpy(&gb1, this, sizeof(GateBoy));
 
-  tock_slow(1);
+  tock_slow(cart_blob, 1);
   auto& gb2 = *this;
 #endif
 

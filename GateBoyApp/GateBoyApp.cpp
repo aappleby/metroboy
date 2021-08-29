@@ -39,6 +39,8 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   screen_w = _screen_w;
   screen_h = _screen_h;
 
+  view_control.init(screen_w, screen_h);
+
   grid_painter.init(65536, 65536);
   text_painter.init(); 
   dump_painter.init_ascii();
@@ -116,18 +118,6 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   // if it was a data latch issue reading stat, it wouldn't also affect oam read...?
   //gb_thread.gb->oam_ram[0x35] = 0x4F;
 
-#if 0
-  load_flat_dump("roms/LinksAwakening_dog.dump");
-  gb_thread.gb->sys_cpu_en = false;
-  gb_thread.gb->phase_total = 0;
-
-  gb_thread.gb->dbg_write(ADDR_WY, 97);
-  gb_thread.gb->dbg_write(ADDR_WX, 20);
-
-  //gb_thread.gb->dbg_write(ADDR_SCX, 7);
-  //gb_thread.gb->dbg_write(ADDR_SCY, 7);
-#endif
-
   LOG_DEDENT();
   LOG_G("GateBoyApp::app_init() done\n");
 }
@@ -135,6 +125,10 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
 //-----------------------------------------------------------------------------
 
 void GateBoyApp::app_close() {
+  if (app_paused) {
+    app_paused = false;
+    gb_thread.resume();
+  }
   gb_thread.stop();
 }
 
@@ -219,8 +213,24 @@ void GateBoyApp::app_update(double _delta) {
 
   while (SDL_PollEvent(&event)) {
 
+    if (event.type == SDL_MOUSEMOTION) {
+      if (event.motion.state & SDL_BUTTON_LMASK) {
+        view_control.pan(event.motion.xrel, event.motion.yrel);
+      }
+    }
+
+    if (event.type == SDL_MOUSEWHEEL) {
+      int mouse_x = 0, mouse_y = 0;
+      SDL_GetMouseState(&mouse_x, &mouse_y);
+      view_control.on_mouse_wheel(mouse_x, mouse_y, double(event.wheel.y) * 0.25);
+    }
+
     if (event.type == SDL_KEYDOWN)
     switch (event.key.keysym.sym) {
+
+    case SDLK_ESCAPE:
+      view_control.pop_view();
+      break;
 
     case SDLK_SPACE: {
       // Note - this pair of pause/resume happens _while_ we're already paused.
@@ -238,25 +248,55 @@ void GateBoyApp::app_update(double _delta) {
     }
 
     case SDLK_f: {
+      if (app_paused) {
+        app_paused = false;
+        gb_thread.resume();
+      }
       gb_thread.clear_work();
       gb_thread.step_phase(INT_MAX);
       break;
     }
     case SDLK_s: {
+      if (app_paused) {
+        app_paused = false;
+        gb_thread.resume();
+      }
       gb_thread.clear_work();
       break;
     }
 
     // Run to end of bootrom
     case SDLK_b: {
+      if (app_paused) {
+        app_paused = false;
+        gb_thread.resume();
+      }
       gb_thread.clear_work();
       gb_thread.step_phase(46880640);
       break;
     }
 
-    case SDLK_F1:   load_raw_dump("gateboy.raw.dump"); break;
-    case SDLK_F4:   save_raw_dump("gateboy.raw.dump"); break;
+    case SDLK_F1: {
+#ifdef FAST_MODE
+      load_raw_dump("gateboy.fast.dump");
+#else
+      load_raw_dump("gateboy.raw.dump");
+#endif
+      break;
+    }
+    case SDLK_F4: {
+#ifdef FAST_MODE
+      save_raw_dump("gateboy.fast.dump");
+#else
+      save_raw_dump("gateboy.raw.dump");
+#endif
+      break;
+    }
     case SDLK_r: {
+      if (app_paused) {
+        app_paused = false;
+        gb_thread.resume();
+      }
       gb_thread.reset_to_cart(); break;
     }
     case SDLK_d:    show_diff   = !show_diff; break;
@@ -315,13 +355,15 @@ void GateBoyApp::app_update(double _delta) {
     if (keyboard_state[SDL_SCANCODE_RIGHT])  gb->sys_buttons |= 0x01; // RIGHT
     if (keyboard_state[SDL_SCANCODE_LEFT])   gb->sys_buttons |= 0x02; // LEFT
     if (keyboard_state[SDL_SCANCODE_UP])     gb->sys_buttons |= 0x04; // UP
-    if (keyboard_state[SDL_SCANCODE_DOWN])   gb->sys_buttons |= 0x08; // DOWN
+    if (keyboard_state[SDL_SCANCODE_DOWN])   gb->sys_buttons |= 0x08; // DOWN 
 
     if (keyboard_state[SDL_SCANCODE_X])      gb->sys_buttons |= 0x10; // A
     if (keyboard_state[SDL_SCANCODE_Z])      gb->sys_buttons |= 0x20; // B
     if (keyboard_state[SDL_SCANCODE_RSHIFT]) gb->sys_buttons |= 0x40; // SELECT
     if (keyboard_state[SDL_SCANCODE_RETURN]) gb->sys_buttons |= 0x80; // START
   }
+
+  view_control.update(_delta);
 
   gb_thread.resume();
 }
@@ -335,7 +377,7 @@ double ease(double a, double b, double delta);
 void GateBoyApp::app_render_frame() {
   //printf("GateBoyApp::app_render_frame()\n");
 
-  Viewport view = Viewport::screenspace(screen_w, screen_h);
+  auto& view = view_control.view_smooth_snap;
 
   gb_thread.pause();
 
@@ -348,14 +390,22 @@ void GateBoyApp::app_render_frame() {
 
   StringDumper d;
 
-  float cursor_x = 8;
-  float cursor_y = 4;
   float col_spacing = 220;
 
   grid_painter.render(view);
 
+  const int row1 = 4;
+
+  const int col1 = 32 *  0 + 8;
+  const int col2 = 32 *  7 + 8;
+  const int col3 = 32 * 14 + 8;
+  const int col4 = 32 * 21 + 8;
+  const int col5 = 32 * 29 + 8;
+  const int col6 = 32 * 40;
+  const int col7 = 32 * 51;
+
   //----------------------------------------
-  // dump column 1
+  // Column 1
 
   d("\002===== Thread =====\001\n");
   gb_thread.dump(d);
@@ -364,6 +414,13 @@ void GateBoyApp::app_render_frame() {
   static double smooth_fps = 0.0;
   smooth_fps = ease(smooth_fps, fps, delta);
   d("App fps       : %d\n", (int)round(smooth_fps));
+
+  if (app_paused) {
+    d("\003GB_THREAD IS PAUSED\001\n");
+  }
+  else {
+    d("\n");
+  }
 
   d("\n");
 
@@ -388,12 +445,11 @@ void GateBoyApp::app_render_frame() {
   gb->dump_interrupts(d);
   d("\n");
 
-  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
-  cursor_x += col_spacing;
+  text_painter.render_string(view, d.s.c_str(), col1, row1);
   d.clear();
 
   //----------------------------------------
-  // dump column 2
+  // Column 2
 
   d("\002===== DMA =====\001\n");
   gb->dump_dma(d);
@@ -423,12 +479,11 @@ void GateBoyApp::app_render_frame() {
   gb->dump_timer(d);
   d("\n");
 
-  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
-  cursor_x += col_spacing;
+  text_painter.render_string(view, d.s.c_str(), col2, row1);
   d.clear();
 
   //----------------------------------------
-  // dump column 3
+  // Column 3
 
   d("\002===== TileFetcher =====\001\n");
   gb->dump_tile_fetcher(d);
@@ -454,12 +509,11 @@ void GateBoyApp::app_render_frame() {
   gb->dump_serial(d);
   d("\n");
 
-  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
-  cursor_x += col_spacing;
+  text_painter.render_string(view, d.s.c_str(), col3, row1);
   d.clear();
 
   //----------------------------------------
-  // dump column 4
+  // Column 4
 
   d("\002===== LCD =====\001\n");
   gb->dump_lcd(d);
@@ -473,12 +527,49 @@ void GateBoyApp::app_render_frame() {
   gb->dump_spu(d);
   d("\n");
 
-  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
-  cursor_x += col_spacing;
+  text_painter.render_string(view, d.s.c_str(), col4, row1);
   d.clear();
 
   //----------------------------------------
-  // dump column 5
+  // Column 5
+
+  // Help
+
+  d("\004========== GATEBOY INSTRUCTIONS ==========\001\n");
+  d(R"(
+Drag and drop rom files onto the window to load.
+
+Game Boy controls: Dpad   = Arrows
+                   A      = Z
+                   B      = X
+                   Select = Right Shift
+                   Start  = Enter
+
+Mouse drag/wheel: pan/zoom view
+Escape: Reset view
+Shift-ESC : quit application
+
+Space : pause / unpause
+F : Run as fast as possible (which isn't very fast)
+B : Run exactly 46880640 phases, (bootrom duration)
+S : Run in single-stepping mode.
+  Right arrow - step forward 1 phase
+  Ctrl+R      - step forward 8 phases
+  Alt+R       - step forward 1 line (144*8 phases)
+  Ctrl+Alt+R  - step forward 8 lines (114*8*8 phases)
+  Left arrow  - rewind history 1 step
+  Ctrl+L      - rewind history 8 steps
+R: Reset to the start of game execution.
+D: Show diff against golden image (for render tests)
+G: Show golden image (for render tests)
+
+F1: Load state from "gateboy.raw.dump"
+F4: Save state to "gateboy.raw.dump"
+
+
+
+
+)");
 
   d("\002===== CRAM =====\001\n");
   for (int y = 0; y < 10; y++) {
@@ -535,71 +626,50 @@ void GateBoyApp::app_render_frame() {
   }
   d("\n");
 
-  // Help
-
-  d("\002===== GATEBOY INSTRUCTIONS =====\001\n");
-  d(R"(Drag and drop rom files onto the window to load.
-
-Space : pause / unpause
-
-F : Run as fast as possible (which isn't very fast)
-B : Run exactly 46880640 phases, (bootrom duration)
-S : Run in single-stepping mode.
-  Right arrow - step forward 1 phase
-  Ctrl+R      - step forward 8 phases
-  Alt+R       - step forward 1 line (144*8 phases)
-  Ctrl+Alt+R  - step forward 8 lines (114*8*8 phases)
-  Left arrow  - rewind history 1 step
-  Ctrl+L      - rewind history 8 steps
-R: Reset to the start of game execution.
-D: Show diff against golden image (for render tests)
-G: Show golden image (for render tests)
-
-F1: Load state from "gateboy.raw.dump"
-F4: Save state to "gateboy.raw.dump"
-)");
-
-  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
-  cursor_x += col_spacing;
+  text_painter.render_string(view, d.s.c_str(), col5, row1);
   d.clear();
 
   //----------------------------------------
-  // dump column 6
+  // Column 6
 
-  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
-  cursor_x += col_spacing;
-  d.clear();
+  int gb_screen_y = row1 + 16;
 
-  //----------------------------------------
-  // dump column 7
+  text_painter.render_string(view, "\002========== Game Boy Screen ==========\001", col6, row1);
 
-  /*
-  text_painter.render_string(view, d.s.c_str(), cursor_x, cursor_y);
-  cursor_x += col_spacing;
-  d.clear();
-  */
-
-  //----------------------------------------
-
-  //update_texture_u32(trace_tex, 912, 154, trace);
-  //blitter.blit(view, trace_tex, 0, 0, 912, 154);
-
-  // Draw flat memory view
-  {
-    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread.get_cart().data());
-    update_texture_u8(ram_tex, 0x00, 0x80, 256,  32, gb->vid_ram);
-    update_texture_u8(ram_tex, 0x00, 0xA0, 256,  32, gb->cart_ram);
-    update_texture_u8(ram_tex, 0x00, 0xC0, 256,  32, gb->int_ram);
-    update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gb->oam_ram);
-    update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->zero_ram);
-    blitter.blit_mono(view, ram_tex, 256, 256,
-                      0, 0, 256, 256,
-                      42 * 32 - 16, 640 + 96 + 32 + 32, 256, 256);
+  if (has_golden && show_diff) {
+    gb_blitter.blit_diff(view, col6, gb_screen_y, 2, framebuffer, golden_u8);
+  }
+  else if (show_golden) {
+    gb_blitter.blit_screen(view, col6, gb_screen_y, 2, golden_u8);
+  }
+  else {
+    gb_blitter.blit_screen(view, col6, gb_screen_y, 2, framebuffer);
   }
 
-  // Draw screen and vid ram contents
+  // Status bar under screen
 
-  //dump_painter.dump(view, 64, 1100, 256, 32, gb->vid_ram);
+  double sim_ratio = 0.0;
+  double sim_time_smooth = 0.0;
+
+  d("Sim clock %8.3f %s %s\n",
+    double(phase_total) / (4194304.0 * 2),
+    phase_names[phase_total & 7],
+    show_golden ? "GOLDEN IMAGE " : "");
+
+  d("%c %c %c %c %c %c %c %c\n",
+    gb->sys_buttons & 0x01 ? 'R' : '-',
+    gb->sys_buttons & 0x02 ? 'L' : '-',
+    gb->sys_buttons & 0x04 ? 'U' : '-',
+    gb->sys_buttons & 0x08 ? 'D' : '-',
+    gb->sys_buttons & 0x10 ? 'A' : '-',
+    gb->sys_buttons & 0x20 ? 'B' : '-',
+    gb->sys_buttons & 0x40 ? 'E' : '-',
+    gb->sys_buttons & 0x80 ? 'S' : '-');
+
+
+  text_painter.render_string(view, d.s, col6, gb_screen_y + 144 * 2);
+  d.clear();
+
 
   // Draw screen overlay
   {
@@ -632,55 +702,41 @@ F4: Save state to "gateboy.raw.dump"
 
     update_texture_u32(overlay_tex, 160, 144, overlay);
   }
+  blitter.blit(view, overlay_tex, col6, row1, 160 * 2, 144 * 2);
 
-  int gb_x = 42 * 32 - 16;
-  int gb_y = 8;
-
-  if (has_golden && show_diff) {
-    gb_blitter.blit_diff(view,   gb_x, gb_y,  2, framebuffer, golden_u8);
-  } else if (show_golden) {
-    gb_blitter.blit_screen(view, gb_x, gb_y,  2, golden_u8);
-  } else {
-    gb_blitter.blit_screen(view, gb_x, gb_y,  2, framebuffer);
+  // Draw flat memory view
+  {
+    text_painter.render_string(view, "\002========== Flat memory view ==========\001", col6, 768);
+    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread.get_cart().data());
+    update_texture_u8(ram_tex, 0x00, 0x80, 256, 32, gb->vid_ram);
+    update_texture_u8(ram_tex, 0x00, 0xA0, 256, 32, gb->cart_ram);
+    update_texture_u8(ram_tex, 0x00, 0xC0, 256, 32, gb->int_ram);
+    update_texture_u8(ram_tex, 0x00, 0xFE, 256, 1, gb->oam_ram);
+    update_texture_u8(ram_tex, 0x80, 0xFF, 128, 1, gb->zero_ram);
+    blitter.blit_mono(view, ram_tex, 256, 256, 0, 0, 256, 256, col6, 784, 256, 256);
   }
-  gb_blitter.blit_map   (view, 52 * 32 - 8,   0 * 32 + 8,  1, vid_ram, (int)bit(gb->reg_lcdc.XAFO_LCDC_BGMAPn.qn_old()),  (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
-  gb_blitter.blit_map   (view, 52 * 32 - 8,   8 * 32 + 16, 1, vid_ram, (int)bit(gb->reg_lcdc.WOKY_LCDC_WINMAPn.qn_old()), (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
-  gb_blitter.blit_tiles (view, 52 * 32 - 8,  16 * 32 + 24, 1, vid_ram);
-
-  blitter.blit(view, overlay_tex, gb_x, gb_y, 160 * 2, 144 * 2);
-
-  // Status bar under screen
-
-  //double phases_per_frame = 114 * 154 * 60 * 8;
-  //double sim_ratio = sim_rate / phases_per_frame;
-  double sim_ratio = 0.0;
-  double sim_time_smooth = 0.0;
-
-  d("Sim clock %8.3f %s %s\n",
-    double(phase_total) / (4194304.0 * 2),
-    phase_names[phase_total & 7],
-    show_golden ? "GOLDEN IMAGE " : "");
-  //d("Sim time %f, sim ratio %f, frame time %f\n", sim_time_smooth, sim_ratio, frame_time_smooth);
-
-  d("%c %c %c %c %c %c %c %c\n",
-    gb->sys_buttons & 0x01 ? 'R' : '-',
-    gb->sys_buttons & 0x02 ? 'L' : '-',
-    gb->sys_buttons & 0x04 ? 'U' : '-',
-    gb->sys_buttons & 0x08 ? 'D' : '-',
-    gb->sys_buttons & 0x10 ? 'A' : '-',
-    gb->sys_buttons & 0x20 ? 'B' : '-',
-    gb->sys_buttons & 0x40 ? 'E' : '-',
-    gb->sys_buttons & 0x80 ? 'S' : '-');
-
-
-  text_painter.render_string(view, d.s, gb_x, gb_y + 144 * 2);
-  d.clear();
 
   // Probe dump
-
+  d("\002========== Debug Probes ==========\001\n");
   gb->probes.dump(d);
-  text_painter.render_string(view, d.s, 42 * 32 - 16, 19 * 20 - 24);
+  text_painter.render_string(view, d.s, col6, 340);
   d.clear();
+
+
+  //----------------------------------------
+  // Column 7
+
+  int row2 = 320;
+  int row3 = 640;
+
+  text_painter.render_string(view, "\002========== VRAM Map 0 ==========\001", col7, row1);
+  gb_blitter.blit_map   (view, col7, row1 + 16,  1, vid_ram, (int)bit(gb->reg_lcdc.XAFO_LCDC_BGMAPn.qn_old()),  (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+
+  text_painter.render_string(view, "\002========== VRAM Map 1 ==========\001", col7, row2);
+  gb_blitter.blit_map   (view, col7, row2 + 16, 1, vid_ram, (int)bit(gb->reg_lcdc.WOKY_LCDC_WINMAPn.qn_old()), (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+
+  text_painter.render_string(view, "\002========== VRAM Tiles ==========\001", col7, row3);
+  gb_blitter.blit_tiles (view, col7, row3 + 16, 1, vid_ram);
 
   frame_count++;
   gb_thread.resume();

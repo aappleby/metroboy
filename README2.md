@@ -4,9 +4,9 @@
 
 ![GateBoy screenshot](gateboy.png "GateBoy screenshot")
 
-GateBoy is a **gate-level simulation** of the original Game Boy hardware that was **reverse-engineered from die shots of the original DMG-01 chip**. It includes all the standard cells on the chip, minus the audio (too slow). It does not currently simulate the CPU at the gate level - it's made of custom logic and is a bit too blurry for me to decipher. GateBoy's CPU is instead my current best guess at how it might be implemented given the constraints implied by the rest of the chip.
+GateBoy is a **gate-level simulation** of the original Game Boy hardware that was [**reverse-engineered from die shots of the original DMG-01 chip**](https://siliconpr0n.org/map/nintendo/dmg-cpu-b/mz_mit20x/#x=9744&y=8000&z=3). It includes all the standard cells on the chip, minus the audio (too slow). It does not currently simulate the CPU at the gate level - it's made of custom logic and is a bit too blurry for me to decipher. GateBoy's CPU is instead my current best guess at how it might be implemented given the constraints implied by the rest of the chip.
 
-I owe a **huge** amount of thanks to [Furrtek](https://github.com/furrtek) for his original [schematics](https://github.com/furrtek/DMG-CPU-Inside) that served as a [Rosetta Stone](https://en.wikipedia.org/wiki/Rosetta_Stone) for getting the whole translation started. I've noted in the codebase where I found errors in the schematics - some have been reported back to Furrtek but there are still a lot of discrepancies.
+I owe a **huge** amount of thanks to [Furrtek](https://github.com/furrtek) for his original [die traces](https://github.com/furrtek/DMG-CPU-Inside/blob/master/preview.png) and [schematics](https://github.com/furrtek/DMG-CPU-Inside) that served as a [Rosetta Stone](https://en.wikipedia.org/wiki/Rosetta_Stone) for getting the whole translation started. I've noted in the codebase where I found errors in the schematics - some have been reported back to Furrtek but there are still a lot of discrepancies.
 
 Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye emulator](https://github.com/Gekkio/mooneye-gb) and tests that helped bootstrap Gateboy, and for the flash cart he designed that I used to build many many additional tests.
 
@@ -14,10 +14,12 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 
 - How is this simulation connected to the Furrtek schematics?
   - Every gate in the Furrtek schematics has a corresponding line in the GateBoy source code. Lines are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
-  - ASUR in Furrtek's schematic -
-  - <img src="ASUR_schematic.png" alt="drawing" width="350"/>
-  - ASUR in GateBoy's code -
-  - ![ASUR in GateBoy's code](ASUR_code.png "ASUR in GateBoy's code")
+  - Here's a chunk of the unmodified die shot with ASUR in the middle - <img src="ASUR_context1.png" alt="drawing" width="100%"/>
+  - Here's the same chunk with Furrtek's annotations - <img src="ASUR_context2.png" alt="drawing" width="100%"/>
+  - And here's a closeup - <img src="ASUR_traced.png" alt="drawing" width="100%"/>
+  - which corresponds to this ASUR in Furrtek's schematic - <img src="ASUR_schematic.png" alt="drawing" width="100%"/>
+  - which in turn gets translated to this ASUR in GateBoy's code - <img src="ASUR_code.png" alt="drawing" width="100%"/>
+  - Repeat that a few thousand times, and you get GateBoy. 
 
 
 - How is this simulation tested?

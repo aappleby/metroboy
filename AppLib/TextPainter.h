@@ -45,15 +45,13 @@ public:
 
   void set_pal(int index, double r, double g, double b, double a);
 
-private:
-
   void push_char(double x, double y, double s, int c, uint32_t color);
 
   const int max_text_bytes = 1024 * 1024 * 4;
   const int bytes_per_glyph = 20;
   const int max_glyphs = max_text_bytes / bytes_per_glyph;
 
-  vec4 bg_col;
+  vec4 bg_col = vec4(0, 0, 0, 0.3);
 
   uint32_t font_tex = 0;
   uint64_t font_ptr = 0;

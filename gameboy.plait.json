@@ -16037,8 +16037,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": 2112.0,
-        "pos_y": -6336.0
+        "pos_x": 2208.0,
+        "pos_y": -6432.0
       },
       "leaves": {},
       "roots": {}
@@ -16467,8 +16467,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": 2208.0,
-        "pos_y": -6336.0
+        "pos_x": 2304.0,
+        "pos_y": -6432.0
       },
       "leaves": {},
       "roots": {}
@@ -17290,8 +17290,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": 2304.0,
-        "pos_y": -6336.0
+        "pos_x": 2400.0,
+        "pos_y": -6432.0
       },
       "leaves": {},
       "roots": {}
@@ -24524,8 +24524,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": 2400.0,
-        "pos_y": -6336.0
+        "pos_x": 2496.0,
+        "pos_y": -6432.0
       },
       "leaves": {},
       "roots": {}
@@ -28035,8 +28035,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": 2688.0,
-        "pos_y": -6336.0
+        "pos_x": 2784.0,
+        "pos_y": -6432.0
       },
       "leaves": {},
       "roots": {}
@@ -31246,8 +31246,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": 2592.0,
-        "pos_y": -6336.0
+        "pos_x": 2688.0,
+        "pos_y": -6432.0
       },
       "leaves": {},
       "roots": {}
@@ -31559,8 +31559,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": 2496.0,
-        "pos_y": -6336.0
+        "pos_x": 2592.0,
+        "pos_y": -6432.0
       },
       "leaves": {},
       "roots": {}
@@ -37353,8 +37353,8 @@
         "global": false,
         "name": "core",
         "old": false,
-        "pos_x": 2784.0,
-        "pos_y": -6336.0
+        "pos_x": 2880.0,
+        "pos_y": -6432.0
       },
       "leaves": {},
       "roots": {}
@@ -40571,7 +40571,7 @@
       "color_g": 0.15986156463623047,
       "color_r": 0.0,
       "pos_x": 11968.0,
-      "pos_y": -7472.0,
+      "pos_y": -7424.0,
       "size_x": 24,
       "size_y": 7,
       "text": "BGP/OBP0/OBP1 read/write\n\u0000in a modal imgui popup.\n\nthis is a mighty fine text box yessirreeee\nok let's see if the save button works...\nalskjdlfkasj\n  ksldjlfksj\n  slkjdflskjfd\nas'dflka'sldfjlkas;dfkjadfl;k a;lskdf;as\n\n\n\u0000skdjflsj\n\n\n\nlskdjflskdjflksj\u0000djflksj\u0000",
@@ -40580,14 +40580,7 @@
     }
   ],
   "guid": 2874890780,
-  "labels": [
-    {
-      "pos_x": 6080.0,
-      "pos_y": 960.0,
-      "scale": 16.0,
-      "text": "SERIAL"
-    }
-  ],
+  "labels": [],
   "traces": {
     "ABAF.out -> BYHA.b": {
       "input_cell": "BYHA",

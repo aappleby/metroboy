@@ -927,6 +927,10 @@ void PlaitApp::app_update(dvec2 screen_size, double delta_time) {
           clicked_label = nullptr;
         }
       }
+
+      if (key == SDL_SCANCODE_F1) {
+        show_help = !show_help;
+      }
     }
 
 
@@ -1477,6 +1481,77 @@ void PlaitApp::app_render_frame(dvec2 screen_size, double delta) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+static const char* help_text = R"(========== Legend ==========
+
+Graph edges and "root" nodes are generated from the parsed source and cannot be created or destroyed.
+Root nodes can be cloned to move their input/output edges elsewhere in the graph.
+
+Logic cells:
+  Blue    : OR/NOR
+  Pink    : AND/NAND
+  Green   : XOR/XNOR
+  Teal    : 1-Bit Adders
+  Grey    : NOT
+  Magenta : Mux, And+Or, Or+And, Nor+And
+
+Storage cells:
+  Orange  : Latches
+  Brown   : Flip-flops
+
+Communication cells:
+  Red     : Input signals (from the CPU)
+  Pink    : Input Pins
+  Yellow  : Tri-state bus drivers, IO pins
+  Green   : Buses, Output pins, Output signals
+
+Node modifiers:
+  No highlight     : Local node
+  Orange highlight : Input clone of a global node
+  Yellow highlight : Global root node.
+  Green highlight  : Output clone of a global node.
+  Dimmed           : An "old" signal from the previous cycle
+  Solid black      : Hidden "ghost" node.
+
+Edge colors:
+  Green  : Links between local nodes.
+  Teal   : Links between local clones.
+  Yellow : Node clones are "backwards"
+  Red    : Node edges are "backwards"
+  Blink  : Invalid connection between "old" and "new" node
+
+Flip-flop node input ports placement:
+  | Clock              Non-inverting output |
+  | Set (optional)                          |
+  | Reset (optional)   Inverting output     |          
+  | Data                                    |
+
+========== Controls ========== 
+
+Click+drag the background grid to pan the view, mousewheel to zoom the view
+
+Hold a key and click or click-drag to:
+  No key : Move selected nodes or text boxes
+  Control: Select nodes
+  F      : Toggle "old" state
+  G      : Toggle "global" state
+  Q      : Toggle "ghost" state
+
+Hold a key and click a node to:
+  Z : Create a new "input" node
+  X : Create a new "output" node
+  C : Link all selected nodes to it
+  V : Delete it.
+
+Other keys:
+  E      : Toggle edge visibility
+  Alt+S  : Save graph
+  Escape : Unselect nodes and return them to their previous location
+  Enter  : Unselect nodes and keep them in their new location
+)";
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 void PlaitApp::app_render_ui(dvec2 screen_size, double delta) {
   (void)delta;
 
@@ -1486,11 +1561,14 @@ void PlaitApp::app_render_ui(dvec2 screen_size, double delta) {
 
   double time_start = timestamp();
 
-  {
+  if (!show_help) {
+    ui_text_painter.bg_col = vec4(0, 0, 0, 0.3);
+
     static StringDumper d;
 
     d.clear();
 
+    d("\002========== PRESS F1 FOR HELP ==========\001\n");
     d("World zoom       : %f\n", view_control.view_smooth.view_zoom());
     d("World ppw        : %f\n", view_control.view_smooth.scale_world_to_screen());
     d("World scale      : %f\n", view_control.view_smooth.scale_screen_to_world());
@@ -1569,10 +1647,15 @@ void PlaitApp::app_render_ui(dvec2 screen_size, double delta) {
       hovered_node->dump(d);
     }
 
-    ui_text_painter.add_text_at(d.c_str(), 0, 0);
+    ui_text_painter.add_text_at(d.c_str(), 8, 8);
+  }
+  else {
+    ui_text_painter.bg_col = vec4(0, 0, 0, 0.8);
+    ui_text_painter.add_text_at(help_text, 8, 8);
   }
 
   ui_text_painter.render(Viewport::screenspace(screen_size), screen_size, 0, 0);
+
   time_ui = timestamp() - time_start;
 
   if (selected_frame) {

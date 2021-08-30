@@ -157,7 +157,7 @@ public:
   int frame_count = 0;
 
   bool show_edges = true;
-  bool show_anchors = true;
+  bool show_help = false;
 
   std::set<PlaitNode*> node_selection;
 

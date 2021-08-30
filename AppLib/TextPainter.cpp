@@ -157,8 +157,6 @@ void TextPainter::render(Viewport view, dvec2 screen_size, double x, double y) {
     (float)view.screen_max(screen_size).y,
   };
   text_uniforms.origin = { x, y, 1, 1 };
-
-  bg_col = { 0.0,0.0,0.0,0.3 };
   text_uniforms.bg_col = bg_col;
 
   update_ubo(text_ubo, sizeof(text_uniforms), &text_uniforms);

@@ -50,11 +50,13 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 - Wouldn't it be even faster to write this in Verilog and then simulate it in Verilator or something?
   - You would think so, and I have translated small portions of GateBoy into Verilog and simulated them in Verilator just to prove that GateBoy's simulation strategy does produce correct results. However, the Verilated code is still around 5-10x slower than GateBoy compiled in "fast mode".
 
-- Does it run in Linux?
-  - Yes, all the code is cross-platform and has been tested under Ubuntu and WSL-G.
-  - You'll need libsdl2-dev installed
-  - Run "ninja" in the repo root and you should get a set of "fast mode" executables in root/bin.
-  - Run the binaries from the root of the repo, as they make assumptions about file locations.
+# How do I run this?
+
+All the code is cross-platform and has been tested under Ubuntu and WSL-G. Clone the repo and don't forget to do "git submodule init" and "git submodule update" to pull down the support libraries (SDL2, glm, imgui, and json).
+
+On Windows, open MetroBoy.sln in Visual Studio Community 2019 and build and run as ususal. You may need to set the current working directory for the projects to the repo root.
+
+On Linux, make sure you have libsdl2-dev installed and run "ninja" from the repo root. You'll get a set of "fast mode" binaries in bin/, which should be launched from the repo root as they make assumptions about directories and such.
 
 # What happened to MetroBoy?
 

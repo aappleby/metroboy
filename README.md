@@ -43,7 +43,7 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 
 - Why is GateBoy so fast?
   - Aha, now we're asking interesting questions. Simulating hardware in software is usually 1000's of times slower than realtime - GateBoy is "only" 8x slower than realtime. How does it do that?
-  - GateBoy is designed so that most of the simulated gates optimize down to a single instruction or less after the compiler's optimization pass - one "and" gate turns into one "and" instruction, etcetera.
+  - GateBoy is designed so that most of the simulated gates optimize down to a single instruction or less after the compiler's optimization pass - one "and" gate turns into one "and" instruction, chains of "not" gates get optimized out, etcetera.
   - Normally this would require a huge amount of simulation infrastructure to ensure that the simulation doesn't diverge from the "real world" circuit. GateBoy doesn't do this. Instead, GateBoy does all its error checking by adding additional flags to each wire and register and verifying (in debug builds) that every gate is evaluated correctly.
   - The flags are set up so that they don't interfere with the usual one-instruction-per-gate operations, and in optimized builds the additional flags are disabled entirely.
 

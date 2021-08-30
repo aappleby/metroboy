@@ -21,11 +21,9 @@ public:
   virtual void app_init(int _screen_w, int _screen_h) override;
   virtual void app_close() override;
 
-  virtual void begin_frame(int /*screen_w*/, int /*screen_h*/) override { frame_begin = timestamp(); }
-  virtual void app_update(double delta) override;
-  virtual void app_render_frame() override;
-  virtual void app_render_ui() override;
-  virtual void end_frame() override { frame_end = timestamp(); frame_time = frame_end - frame_begin; }
+  virtual void app_update(dvec2 screen_size, double delta) override;
+  virtual void app_render_frame(dvec2 screen_size, double delta) override;
+  virtual void app_render_ui(dvec2 screen_size, double delta) override;
 
   void post();
   void load_rom(const std::string& prefix, const std::string& name);

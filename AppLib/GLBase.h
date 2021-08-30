@@ -22,7 +22,7 @@ int   create_ubo();
 void  update_ubo(int ubo, int size_bytes, const void* data);
 void  bind_ubo  (int prog, const char* name, int index, int ubo);
 
-int   create_texture_u32(int width, int height, const void* data);
+int   create_texture_u32(int width, int height, const void* data, bool filter);
 void  update_texture_u32(int tex, int width, int height, const void* pix);
 
 int   create_texture_u8(int width, int height, const void* data, bool filter);

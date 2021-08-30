@@ -66,7 +66,7 @@ blob create_dummy_cart() {
 
 
 int main(int argc, char** argv) {
-  printf("GateBoyTests::main()\n");
+  LOG_G("GateBoyTests::main()\n");
 
 #ifdef _MSC_VER
   SetPriorityClass(GetCurrentProcess(), 0x00000080);

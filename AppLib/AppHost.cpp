@@ -79,7 +79,7 @@ int AppHost::app_main(int, char**) {
   window = SDL_CreateWindow(app->app_get_title(),
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                             initial_screen_w, initial_screen_h,
-                            SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
+                            SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 
   const uint8_t* keyboard_state = SDL_GetKeyboardState(nullptr);
 
@@ -134,8 +134,6 @@ int AppHost::app_main(int, char**) {
   //----------------------------------------
   // Initialize internal renderers
 
-  printf("\n");
-
   app->app_init(initial_screen_w, initial_screen_h);
 
   //----------------------------------------
@@ -153,11 +151,13 @@ int AppHost::app_main(int, char**) {
 
     int screen_w = 0, screen_h = 0;
     SDL_GL_GetDrawableSize((SDL_Window*)window, &screen_w, &screen_h);
+    dvec2 screen_size(screen_w, screen_h);
+
     io.DisplaySize.x = float(screen_w);
     io.DisplaySize.y = float(screen_h);
 
     if (app->pause_when_idle() && (new_now - last_event) > 1.0) {
-      printf("waiting\n");
+      LOG_B("waiting\n");
       SDL_WaitEvent(nullptr);
       delta = new_now - old_now;
       new_now = timestamp();
@@ -171,8 +171,6 @@ int AppHost::app_main(int, char**) {
     }
 
     io.DeltaTime = (float)delta;
-
-    app->begin_frame(screen_w, screen_h);
 
     //----------------------------------------
     // Check for quit message
@@ -191,7 +189,7 @@ int AppHost::app_main(int, char**) {
 
     //view_control.update(delta);
 
-    app->app_update(delta);
+    app->app_update(screen_size, delta);
 
     //----------------------------------------
     // Client app render
@@ -201,9 +199,9 @@ int AppHost::app_main(int, char**) {
 
     ImGui::NewFrame();
 
-    app->app_render_frame();
+    app->app_render_frame(screen_size, delta);
 
-    app->app_render_ui();
+    app->app_render_ui(screen_size, delta);
 
     //----------------------------------------
     // ImGui render
@@ -248,20 +246,12 @@ int AppHost::app_main(int, char**) {
     }
 
     //----------------------------------------
-    // Client end frame
+    // Swap
 
-    //check_gl_error();
+    SDL_GL_SwapWindow((SDL_Window*)window);
 
-    app->end_frame();
-
-    {
-      //double time_start = timestamp();
-      SDL_GL_SwapWindow((SDL_Window*)window);
-      //double time_swap = timestamp() - time_start;
-      //printf("time_swap %f\n", time_swap * 1000.0);
-    }
-
-    SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+    // FIXME why was this here?
+    //SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
   }
 
   //----------------------------------------

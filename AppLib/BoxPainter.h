@@ -28,7 +28,7 @@ public:
                        color);
   }
 
-  void render(Viewport view, double x, double y, float scale = 1.0f);
+  void render(Viewport view, dvec2 screen_size, double x, double y, float scale = 1.0f);
 
 private:
 

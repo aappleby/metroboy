@@ -413,7 +413,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   for (auto& [tag, plait_cell] : cell_map) {
     auto die_cell = die_db.cell_map[tag];
     if (die_cell == nullptr) {
-      printf("Could not find tag %s\n", tag.c_str());
+      LOG_R("Could not find tag %s\n", tag.c_str());
     }
   }
 
@@ -509,7 +509,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
     plait_trace->input_port_index  = plait_input_cell->die_cell->get_input_index(die_trace->input_port);
 
     if (!plait_trace->output_node || !plait_trace->input_node) {
-      printf("Could not link %s.%s.%s -> %s.%s.%s, resetting link\n",
+      LOG_R("Could not link %s.%s.%s -> %s.%s.%s, resetting link\n",
         output_cell.c_str(),
         output_node.c_str(),
         output_port.c_str(),
@@ -533,7 +533,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   for (auto& [tag, die_cell] : die_db.cell_map) {
     if (die_cell->plait_cell) continue;
 
-    printf("Did not load node for tag \"%s\", creating default node\n", tag.c_str());
+    LOG_R("Did not load node for tag \"%s\", creating default node\n", tag.c_str());
 
     auto core_node = new PlaitNode();
     core_node->name = "core";
@@ -553,7 +553,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   for (auto& die_trace : die_db.traces) {
     if (trace_used[&die_trace]) continue;
 
-    printf("Did not load plait trace for die trace \"%s\", creating default trace\n", die_trace.to_key().c_str());
+    LOG_R("Did not load plait trace for die trace \"%s\", creating default trace\n", die_trace.to_key().c_str());
 
     auto output_cell = cell_map[die_trace.output_tag];
     auto output_node = output_cell->core_node;

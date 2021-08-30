@@ -143,7 +143,7 @@ void TextPainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void TextPainter::render(Viewport view, double x, double y) {
+void TextPainter::render(Viewport view, dvec2 screen_size, double x, double y) {
   update_vbo(text_vbo, glyph_count * bytes_per_glyph, text_data_u32);
 
   if (glyph_count == 0) return;
@@ -151,10 +151,10 @@ void TextPainter::render(Viewport view, double x, double y) {
   bind_shader(text_prog);
 
   text_uniforms.viewport = {
-    (float)view.world_min().x,
-    (float)view.world_min().y,
-    (float)view.world_max().x,
-    (float)view.world_max().y,
+    (float)view.screen_min(screen_size).x,
+    (float)view.screen_min(screen_size).y,
+    (float)view.screen_max(screen_size).x,
+    (float)view.screen_max(screen_size).y,
   };
   text_uniforms.origin = { x, y, 1, 1 };
 

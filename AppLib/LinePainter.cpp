@@ -70,16 +70,16 @@ void LinePainter::init() {
 
 //-----------------------------------------------------------------------------
 
-void LinePainter::render(Viewport view, double x, double y, float scale) {
+void LinePainter::render(Viewport view, dvec2 screen_size, double x, double y, float scale) {
   if (line_data.empty()) return;
 
   bind_shader(line_prog);
 
   float line_uniforms[] = {
-    (float)view.world_min().x,
-    (float)view.world_min().y,
-    (float)view.world_max().x,
-    (float)view.world_max().y,
+    (float)view.screen_min(screen_size).x,
+    (float)view.screen_min(screen_size).y,
+    (float)view.screen_max(screen_size).x,
+    (float)view.screen_max(screen_size).y,
     (float)x,
     (float)y,
     scale,

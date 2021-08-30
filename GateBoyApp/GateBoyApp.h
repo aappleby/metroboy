@@ -21,22 +21,14 @@ public:
   void app_init(int screen_w, int screen_h) override;
   void app_close() override;
   bool pause_when_idle() override { return false; }
-  void reset_to_bootrom();
   void load_raw_dump(const char* filename);
   void save_raw_dump(const char* filename);
   void load_flat_dump(const char* filename);
   void load_rom(const char* filename);
 
-  void begin_frame() { frame_begin = timestamp(); }
-  void app_update(double delta) override;
-  void app_render_frame() override;
-  void app_render_ui() override {};
-
-  void end_frame() {
-    frame_end = timestamp();
-    frame_time = frame_end - frame_begin;
-    frame_time_smooth = frame_time_smooth * 0.99 + frame_time * 0.01;
-  }
+  void app_update(dvec2 screen_size, double delta) override;
+  void app_render_frame(dvec2 screen_size, double delta) override;
+  void app_render_ui(dvec2 /*screen_size*/, double /*delta*/) override {};
 
   //----------
 
@@ -44,8 +36,6 @@ private:
 
   void load_golden(const char* filename);
 
-  int screen_w = 1920;
-  int screen_h = 1080;
   ViewController view_control;
 
   const uint8_t* keyboard_state = nullptr;
@@ -62,7 +52,6 @@ private:
   int replay_cursor = 0;
   int phase_origin = 0;
 
-  double delta = 0;
   double frame_begin = 0;
   double frame_end = 0;
   double frame_time = 0;

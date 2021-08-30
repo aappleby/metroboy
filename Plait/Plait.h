@@ -161,7 +161,9 @@ struct PlaitNode {
   }
 
   void dump(Dumper& d);
-  void toggle_ghosted()      { ghosted = !ghosted; }
+  void toggle_global() { global = !global; }
+  void toggle_ghosted() { ghosted = !ghosted; }
+  void toggle_old()     { old = !old; }
 
   dvec2 get_pos_old() const  { return pos_old; }
   dvec2 get_pos_new() const  { return pos_new; }

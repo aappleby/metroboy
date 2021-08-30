@@ -1,6 +1,7 @@
 #include "AppLib/Audio.h"
 
 #include "CoreLib/Constants.h"
+#include "CoreLib/Log.h"
 
 #include <list>
 #include <mutex>
@@ -30,7 +31,7 @@ struct AudioQueue {
     std::unique_lock<std::mutex> lock(mut);
     cv.wait(lock, [&] { return closed || !queue.empty(); });
 
-    printf("get: queue size %zd\n", queue.size());
+    //printf("get: queue size %zd\n", queue.size());
 
     if (queue.empty()) {
       return nullptr;
@@ -47,7 +48,7 @@ struct AudioQueue {
 
     std::unique_lock<std::mutex> lock(mut);
 
-    printf("put: queue size %zd\n", queue.size());
+    //printf("put: queue size %zd\n", queue.size());
 
     queue.push_back(buf);
     cv.notify_one();
@@ -99,7 +100,7 @@ void audio_init() {
     audio_queue_in.put(new sample_t[samples_per_frame * 2]);
   }
   else {
-    printf("Could not open audio device!\n");
+    LOG_R("Could not open audio device!\n");
   }
 }
 

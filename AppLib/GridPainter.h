@@ -18,7 +18,7 @@ class GridPainter {
 public:
 
   void init(float world_width, float world_height);
-  void render(Viewport view);
+  void render(Viewport view, dvec2 screen_size);
 
 private:
 

@@ -3,6 +3,7 @@
 #include "CoreLib/Constants.h"
 #include "CoreLib/Opcodes.h"
 #include "CoreLib/Debug.h"
+#include "CoreLib/Log.h"
 
 #include <assert.h>
 #include <stdarg.h>
@@ -325,7 +326,7 @@ void Assembler::assemble(const char* source) {
       break;
     }
     if (op == 256) {
-      printf("BAD ASM\n");
+      LOG_R("BAD ASM\n");
     }
   }
 }
@@ -354,10 +355,10 @@ void fuzz_assembler() {
     disassemble(code2, 0, 0, opcount, source2);
 
     if (cmp != 0) {
-      printf("---- %d ------\n", rep);
-      printf("%s", source1);
-      printf("-=====\001\n");
-      printf("%s", source2);
+      LOG_B("---- %d ------\n", rep);
+      LOG_B("%s", source1);
+      LOG_B("-=====\001\n");
+      LOG_B("%s", source2);
     }
   }
 }

@@ -3,6 +3,7 @@
 #include "CoreLib/File.h"
 #include "CoreLib/MetroBoyCPU.h"
 #include "CoreLib/Constants.h"
+#include "CoreLib/Log.h"
 
 #include "GateBoyLib/Probe.h"
 
@@ -66,7 +67,7 @@ struct GateBoy {
   void check_div() const {
     int div_val = div.get_div();
     if (div_val != BOOT_DIV) {
-      printf("div fail!\n");
+      LOG_R("div fail!\n");
       *reinterpret_cast<int*>(SENTINEL4) = 1;
     }
   }

@@ -107,10 +107,19 @@ void GridPainter::init(float world_width, float world_height) {
 
 #pragma warning(disable:4189)
 
-void GridPainter::render(Viewport view) {
+void GridPainter::render(Viewport view, dvec2 screen_size) {
   bind_shader(grid_prog);
 
-  grid_uniforms.viewport = {(float)view.mx(), (float)view.my(), (float)view.dx(), (float)view.dy() };
+  dvec2 screen_size_world = screen_size * view.scale_screen_to_world();
+
+
+  grid_uniforms.viewport = {
+    (float)view.screen_min(screen_size).x,
+    (float)view.screen_min(screen_size).y,
+    (float)screen_size_world.x,
+    (float)screen_size_world.y
+  };
+
   update_ubo(grid_ubo, sizeof(grid_uniforms), &grid_uniforms);
   bind_ubo(grid_prog, "GridUniforms", 0, grid_ubo);
 

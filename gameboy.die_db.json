@@ -37348,7 +37348,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "WULE_CD2_TO_ODA2",
+      "long_name": "WULE_CD2_TO_ODB2",
       "output_ports": [
         "out"
       ],
@@ -37952,7 +37952,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "WYKY_CD2_TO_ODB2",
+      "long_name": "WYKY_CD2_TO_ODA2",
       "output_ports": [
         "out"
       ],
@@ -41187,7 +41187,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "XYTO_CD6_TO_ODB6",
+      "long_name": "XYTO_CD6_TO_ODA6",
       "output_ports": [
         "out"
       ],
@@ -42431,7 +42431,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "YVUC_CD6_TO_ODA6",
+      "long_name": "YVUC_CD6_TO_ODB6",
       "output_ports": [
         "out"
       ],
@@ -42762,7 +42762,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZAJA_CD3_TO_ODB3",
+      "long_name": "ZAJA_CD3_TO_ODA3",
       "output_ports": [
         "out"
       ],
@@ -42812,7 +42812,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZAKY_CD1_TO_ODA1",
+      "long_name": "ZAKY_CD1_TO_ODB1",
       "output_ports": [
         "out"
       ],
@@ -42846,7 +42846,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZAMY_CD0_TO_ODB0",
+      "long_name": "ZAMY_CD0_TO_ODA0",
       "output_ports": [
         "out"
       ],
@@ -42925,7 +42925,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZATO_CD5_TO_ODA5",
+      "long_name": "ZATO_CD5_TO_ODB5",
       "output_ports": [
         "out"
       ],
@@ -42957,7 +42957,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZAXA_CD0_TO_ODA0",
+      "long_name": "ZAXA_CD0_TO_ODB0",
       "output_ports": [
         "out"
       ],
@@ -43478,7 +43478,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZOPU_CD1_TO_ODB1",
+      "long_name": "ZOPU_CD1_TO_ODA1",
       "output_ports": [
         "out"
       ],
@@ -43512,7 +43512,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZOZO_CD3_TO_ODA3",
+      "long_name": "ZOZO_CD3_TO_ODB3",
       "output_ports": [
         "out"
       ],
@@ -43594,7 +43594,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZUFE_CD7_TO_ODA7",
+      "long_name": "ZUFE_CD7_TO_ODB7",
       "output_ports": [
         "out"
       ],
@@ -43610,7 +43610,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZUFO_CD4_TO_ODA4",
+      "long_name": "ZUFO_CD4_TO_ODB4",
       "output_ports": [
         "out"
       ],
@@ -43626,7 +43626,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZUGA_CD4_TO_ODB4",
+      "long_name": "ZUGA_CD4_TO_ODA4",
       "output_ports": [
         "out"
       ],
@@ -43692,7 +43692,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZUMO_CD5_TO_ODB5",
+      "long_name": "ZUMO_CD5_TO_ODA5",
       "output_ports": [
         "out"
       ],
@@ -43891,7 +43891,7 @@
         "OEn",
         "Dn"
       ],
-      "long_name": "ZYFA_CD7_TO_ODB7",
+      "long_name": "ZYFA_CD7_TO_ODA7",
       "output_ports": [
         "out"
       ],

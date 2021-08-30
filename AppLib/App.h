@@ -1,6 +1,7 @@
 #pragma once
+#include "glm/glm/glm.hpp"
 
-#include "AppLib/Viewport.h"
+using namespace glm;
 
 //-----------------------------------------------------------------------------
 
@@ -12,11 +13,9 @@ public:
   virtual void app_close() = 0;
   virtual bool pause_when_idle() { return true; }
 
-  virtual void begin_frame(int /*screen_w*/, int /*screen_h*/) {};
-  virtual void app_update(double delta) = 0;
-  virtual void app_render_frame() = 0;
-  virtual void app_render_ui() = 0;
-  virtual void end_frame() {};
+  virtual void app_update(dvec2 screen_size, double delta) = 0;
+  virtual void app_render_frame(dvec2 screen_size, double delta) = 0;
+  virtual void app_render_ui(dvec2 screen_size, double delta) = 0;
 };
 
 //-----------------------------------------------------------------------------

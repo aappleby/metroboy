@@ -1,6 +1,7 @@
 #include "GateBoyThread.h"
 
 #include "CoreLib/Constants.h"
+#include "CoreLib/Log.h"
 
 #include <iostream>
 #include <chrono>
@@ -18,7 +19,7 @@ void GateBoyThread::start() {
 
 void GateBoyThread::stop() {
   if (!main) return;
-  printf("Stopping gateboy thread\n");
+  LOG_B("Stopping gateboy thread\n");
 
   sig_break = true;
   pause_barrier.arrive_and_wait();
@@ -27,7 +28,7 @@ void GateBoyThread::stop() {
 
   main->join();
 
-  printf("Gateboy thread stopped\n");
+  LOG_B("Gateboy thread stopped\n");
   delete main;
 }
 
@@ -132,7 +133,7 @@ void GateBoyThread::dump(Dumper& d) {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::thread_main() {
-  printf("Command loop starting\n");
+  LOG_B("Command loop starting\n");
 
   while(1) {
     sig_paused = true;

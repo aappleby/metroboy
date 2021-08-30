@@ -57,17 +57,16 @@ public:
   void app_init(int screen_w, int screen_h) override;
   void app_close() override;
 
-  void begin_frame(int screen_w, int screen_h) override;
-  void app_update(double delta) override;
-  void app_render_frame() override;
-  void app_render_ui() override;
+  void app_update(dvec2 screen_size, double delta) override;
+  void app_render_frame(dvec2 screen_size, double delta) override;
+  void app_render_ui(dvec2 screen_size, double delta) override;
 
   typedef std::function<void(PlaitCell*)> NodeGroupCallback;
   typedef std::function<void(PlaitNode*)>      NodeCallback;
 
   bool contains_node(dvec2 corner_a, dvec2 corner_b, PlaitNode* node);
 
-  void apply_region_node (dvec2 corner_a, dvec2 corner_b, NodeCallback callback);
+  int  apply_region_node (dvec2 corner_a, dvec2 corner_b, NodeCallback callback);
 
   void select_region(dvec2 corner_a, dvec2 corner_b);
   void lock_region(dvec2 corner_a, dvec2 corner_b);
@@ -144,9 +143,6 @@ public:
   Blitter     blitter;
   TextPainter ui_text_painter;
   DumpPainter dump_painter;
-
-
-  int tex = 0;
 
   uint32_t mouse_buttons = 0;
 

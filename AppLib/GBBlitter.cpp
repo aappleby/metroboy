@@ -375,7 +375,7 @@ void GBBlitter::init() {
   blit_diff_tex = create_texture_u8(160, 144, nullptr, false);
 
   blit_trace_prog = create_shader("gb_blit_trace_glsl", gb_blit_trace_glsl);
-  blit_trace_tex = create_texture_u32(456, 154, nullptr);
+  blit_trace_tex = create_texture_u32(456, 154, nullptr, false);
 }
 
 //-----------------------------------------------------------------------------
@@ -388,17 +388,17 @@ static vec4 default_pal[5] = {
   {0.80, 0.80, 0.00, 1.0},
 };
 
-void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* vram) {
+void GBBlitter::blit_tiles(Viewport view, dvec2 screen_size, int screen_x, int screen_y, int scale, const uint8_t* vram) {
   (void)scale;
   update_ubo(vram_ubo, 8192, vram);
 
   {
     GBBlitTileUniforms uniforms;
     uniforms.viewport = {
-      (float)view.world_min().x,
-      (float)view.world_min().y,
-      (float)view.world_max().x,
-      (float)view.world_max().y,
+      (float)view.screen_min(screen_size).x,
+      (float)view.screen_min(screen_size).y,
+      (float)view.screen_max(screen_size).x,
+      (float)view.screen_max(screen_size).y,
     };
     uniforms.quad_pos = {};
     uniforms.quad_tex = {};
@@ -435,16 +435,16 @@ void GBBlitter::blit_tiles(Viewport view, int screen_x, int screen_y, int scale,
 
 //-----------------------------------------------------------------------------
 
-void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* vram, int which_map, int alt_map) {
+void GBBlitter::blit_map(Viewport view, dvec2 screen_size, int screen_x, int screen_y, int scale, const uint8_t* vram, int which_map, int alt_map) {
   update_ubo(vram_ubo, 8192, vram);
 
   {
     GBBlitMapUniforms uniforms;
     uniforms.viewport = {
-      (float)view.world_min().x,
-      (float)view.world_min().y,
-      (float)view.world_max().x,
-      (float)view.world_max().y,
+      (float)view.screen_min(screen_size).x,
+      (float)view.screen_min(screen_size).y,
+      (float)view.screen_max(screen_size).x,
+      (float)view.screen_max(screen_size).y,
     };
     uniforms.quad_pos = {screen_x, screen_y, screen_x + 256 * scale, screen_y + 256 * scale};
     uniforms.quad_tex = {0, 0, 256, 256};
@@ -470,7 +470,7 @@ void GBBlitter::blit_map(Viewport view, int screen_x, int screen_y, int scale, c
 
 //-----------------------------------------------------------------------------
 
-void GBBlitter::blit_screen(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* framebuffer) {
+void GBBlitter::blit_screen(Viewport view, dvec2 screen_size, int screen_x, int screen_y, int scale, const uint8_t* framebuffer) {
   update_texture_u8(blit_screen_tex, 160, 144, framebuffer);
 
   bind_shader(blit_screen_prog);
@@ -478,10 +478,10 @@ void GBBlitter::blit_screen(Viewport view, int screen_x, int screen_y, int scale
   bind_texture(blit_screen_prog, "tex", 0, blit_screen_tex);
 
   glUniform4f(glGetUniformLocation(blit_screen_prog, "viewport"),
-      (float)view.world_min().x,
-      (float)view.world_min().y,
-      (float)view.world_max().x,
-      (float)view.world_max().y);
+      (float)view.screen_min(screen_size).x,
+      (float)view.screen_min(screen_size).y,
+      (float)view.screen_max(screen_size).x,
+      (float)view.screen_max(screen_size).y);
   glUniform4fv(glGetUniformLocation(blit_screen_prog, "palette"), 16, (float*)default_pal);
   glUniform4f(glGetUniformLocation(blit_screen_prog, "blit_dst_rect"),
               float(screen_x), float(screen_y), float(screen_x + 160 * scale), float(screen_y + 144 * scale));
@@ -491,7 +491,7 @@ void GBBlitter::blit_screen(Viewport view, int screen_x, int screen_y, int scale
 
 //-----------------------------------------------------------------------------
 
-void GBBlitter::blit_diff(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* test_tex, const uint8_t* gold_tex) {
+void GBBlitter::blit_diff(Viewport view, dvec2 screen_size, int screen_x, int screen_y, int scale, const uint8_t* test_tex, const uint8_t* gold_tex) {
   update_texture_u8(blit_screen_tex, 160, 144, test_tex);
   update_texture_u8(blit_diff_tex,   160, 144, gold_tex);
 
@@ -501,10 +501,10 @@ void GBBlitter::blit_diff(Viewport view, int screen_x, int screen_y, int scale, 
   bind_texture(blit_diff_prog, "gold_tex", 1, blit_diff_tex);
 
   glUniform4f(glGetUniformLocation(blit_diff_prog, "viewport"),
-      (float)view.world_min().x,
-      (float)view.world_min().y,
-      (float)view.world_max().x,
-      (float)view.world_max().y);
+      (float)view.screen_min(screen_size).x,
+      (float)view.screen_min(screen_size).y,
+      (float)view.screen_max(screen_size).x,
+      (float)view.screen_max(screen_size).y);
   glUniform4fv(glGetUniformLocation(blit_diff_prog, "palette"), 16, (float*)default_pal);
   glUniform4f(glGetUniformLocation(blit_diff_prog, "blit_dst_rect"),
               float(screen_x), float(screen_y), float(screen_x + 160 * scale), float(screen_y + 144 * scale));
@@ -514,7 +514,7 @@ void GBBlitter::blit_diff(Viewport view, int screen_x, int screen_y, int scale, 
 
 //-----------------------------------------------------------------------------
 
-void GBBlitter::blit_trace(Viewport view, int screen_x, int screen_y, const uint32_t* trace) {
+void GBBlitter::blit_trace(Viewport view, dvec2 screen_size, int screen_x, int screen_y, const uint32_t* trace) {
   update_texture_u32(blit_trace_tex, 456, 154, trace);
 
   bind_shader(blit_trace_prog);
@@ -522,10 +522,10 @@ void GBBlitter::blit_trace(Viewport view, int screen_x, int screen_y, const uint
   bind_texture(blit_trace_prog, "tex", 0, blit_trace_tex);
 
   glUniform4f(glGetUniformLocation(blit_trace_prog, "viewport"),
-      (float)view.world_min().x,
-      (float)view.world_min().y,
-      (float)view.world_max().x,
-      (float)view.world_max().y);
+      (float)view.screen_min(screen_size).x,
+      (float)view.screen_min(screen_size).y,
+      (float)view.screen_max(screen_size).x,
+      (float)view.screen_max(screen_size).y);
   glUniform4f(glGetUniformLocation(blit_trace_prog, "blit_dst_rect"),
               float(screen_x), float(screen_y), float(screen_x + 456), float(screen_y + 154));
 

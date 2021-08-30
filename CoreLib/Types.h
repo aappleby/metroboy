@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Log.h"
 #include "Config.h"
 #include <vector> // for blob
 #include <stdint.h>
@@ -257,8 +258,8 @@ struct Dumper {
 
 //-----------------------------------------------------------------------------
 
-#define ASSERT_P(A)  if (!(A)) { printf("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
-#define ASSERT_N(A)  if ((A))  { printf("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
+#define ASSERT_P(A)  if (!(A)) { LOG_R("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
+#define ASSERT_N(A)  if ((A))  { LOG_R("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
 
 #ifdef NO_CHECK
 
@@ -267,8 +268,8 @@ struct Dumper {
 
 #else
 
-#define CHECK_P(A)   if (!(A)) { printf("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }
-#define CHECK_N(A)   if ((A))  { printf("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }
+#define CHECK_P(A)   if (!(A)) { LOG_R("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }
+#define CHECK_N(A)   if ((A))  { LOG_R("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }
 
 #endif
 

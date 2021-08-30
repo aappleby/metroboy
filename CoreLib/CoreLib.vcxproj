@@ -29,6 +29,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="File.h" />
+    <ClInclude Include="Log.h" />
     <ClInclude Include="Opcodes.h" />
     <ClInclude Include="OpDecoder.h" />
     <ClInclude Include="SmoothTimer.h" />

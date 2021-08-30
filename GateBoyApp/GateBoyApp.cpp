@@ -32,14 +32,13 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyApp::app_init(int _screen_w, int _screen_h) {
+void GateBoyApp::app_init(int screen_w, int screen_h) {
+  dvec2 screen_size(screen_w, screen_h);
+
   LOG_G("GateBoyApp::app_init()\n");
   LOG_INDENT();
 
-  screen_w = _screen_w;
-  screen_h = _screen_h;
-
-  view_control.init(screen_w, screen_h);
+  view_control.init(screen_size);
 
   grid_painter.init(65536, 65536);
   text_painter.init(); 
@@ -47,9 +46,9 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   gb_blitter.init();
   blitter.init();
 
-  trace_tex = create_texture_u32(912, 154, nullptr);
+  trace_tex = create_texture_u32(912, 154, nullptr, false);
   ram_tex = create_texture_u8(256, 256, nullptr, false);
-  overlay_tex = create_texture_u32(160, 144, nullptr);
+  overlay_tex = create_texture_u32(160, 144, nullptr, false);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   gb_thread.start();
@@ -65,11 +64,13 @@ void GateBoyApp::app_init(int _screen_w, int _screen_h) {
   Assembler as;
   as.assemble(app);
 
+  gb_thread.pause();
   gb_thread.set_cart(as.link());
   gb_thread.reset_to_bootrom();
   for (int i = 0; i < 8192; i++) {
     gb_thread.gb->vid_ram[i] = (uint8_t)rand();
   }
+  gb_thread.resume();
 
   //load_rom("roms/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
   //load_rom("roms/mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-GS.gb"); // dmg pass, gateboy fail
@@ -135,7 +136,7 @@ void GateBoyApp::app_close() {
 //------------------------------------------------------------------------------
 
 void GateBoyApp::load_raw_dump(const char* filename) {
-  printf("Loading raw dump from %s\n", filename);
+  LOG_B("Loading raw dump from %s\n", filename);
 
   gb_thread.clear_work();
   blob raw_dump = load_blob(filename);
@@ -150,7 +151,7 @@ void GateBoyApp::load_raw_dump(const char* filename) {
 }
 
 void GateBoyApp::save_raw_dump(const char* filename) {
-  printf("Saving raw dump to %s\n", filename);
+  LOG_B("Saving raw dump to %s\n", filename);
 
   gb_thread.clear_work();
   blob raw_dump;
@@ -165,16 +166,16 @@ void GateBoyApp::save_raw_dump(const char* filename) {
 void GateBoyApp::load_rom(const char* filename) {
   gb_thread.clear_work();
 
-  printf("Loading %s\n", filename);
+  LOG_B("Loading %s\n", filename);
 
   blob cart_blob = load_blob(filename);
 
-  printf("GateBoyApp::load_rom cart_blob %p %d\n", cart_blob.data(), (int)cart_blob.size());
+  LOG_B("GateBoyApp::load_rom cart_blob %p %d\n", cart_blob.data(), (int)cart_blob.size());
 
   gb_thread.set_cart(cart_blob);
   gb_thread.reset_to_cart();
 
-  printf("Loaded %zd bytes from rom %s\n", cart_blob.size(), filename);
+  LOG_B("Loaded %zd bytes from rom %s\n", cart_blob.size(), filename);
 }
 
 
@@ -205,8 +206,11 @@ void GateBoyApp::load_flat_dump(const char* filename) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyApp::app_update(double _delta) {
-  this->delta = _delta;
+void GateBoyApp::app_update(dvec2 screen_size, double delta) {
+  (void)delta;
+
+  frame_begin = timestamp();
+
   SDL_Event event;
 
   gb_thread.pause();
@@ -215,21 +219,22 @@ void GateBoyApp::app_update(double _delta) {
 
     if (event.type == SDL_MOUSEMOTION) {
       if (event.motion.state & SDL_BUTTON_LMASK) {
-        view_control.pan(event.motion.xrel, event.motion.yrel);
+        view_control.pan(dvec2(event.motion.xrel, event.motion.yrel));
       }
     }
 
     if (event.type == SDL_MOUSEWHEEL) {
       int mouse_x = 0, mouse_y = 0;
       SDL_GetMouseState(&mouse_x, &mouse_y);
-      view_control.on_mouse_wheel(mouse_x, mouse_y, double(event.wheel.y) * 0.25);
+      view_control.on_mouse_wheel(dvec2(mouse_x, mouse_y), screen_size, double(event.wheel.y) * 0.25);
     }
 
     if (event.type == SDL_KEYDOWN)
     switch (event.key.keysym.sym) {
 
     case SDLK_ESCAPE:
-      view_control.pop_view();
+      view_control.view_target      = Viewport::screenspace(screen_size);
+      view_control.view_target_snap = Viewport::screenspace(screen_size);
       break;
 
     case SDLK_SPACE: {
@@ -363,7 +368,7 @@ void GateBoyApp::app_update(double _delta) {
     if (keyboard_state[SDL_SCANCODE_RETURN]) gb->sys_buttons |= 0x80; // START
   }
 
-  view_control.update(_delta);
+  view_control.update(delta);
 
   gb_thread.resume();
 }
@@ -374,8 +379,8 @@ void GateBoyApp::app_update(double _delta) {
 
 double ease(double a, double b, double delta);
 
-void GateBoyApp::app_render_frame() {
-  //printf("GateBoyApp::app_render_frame()\n");
+void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
+  (void)delta;
 
   auto& view = view_control.view_smooth_snap;
 
@@ -392,7 +397,7 @@ void GateBoyApp::app_render_frame() {
 
   float col_spacing = 220;
 
-  grid_painter.render(view);
+  grid_painter.render(view, screen_size);
 
   const int row1 = 4;
 
@@ -445,7 +450,7 @@ void GateBoyApp::app_render_frame() {
   gb->dump_interrupts(d);
   d("\n");
 
-  text_painter.render_string(view, d.s.c_str(), col1, row1);
+  text_painter.render_string(view, screen_size, d.s.c_str(), col1, row1);
   d.clear();
 
   //----------------------------------------
@@ -479,7 +484,11 @@ void GateBoyApp::app_render_frame() {
   gb->dump_timer(d);
   d("\n");
 
-  text_painter.render_string(view, d.s.c_str(), col2, row1);
+  d("\002===== SPU =====\001\n");
+  gb->dump_spu(d);
+  d("\n");
+
+  text_painter.render_string(view, screen_size, d.s.c_str(), col2, row1);
   d.clear();
 
   //----------------------------------------
@@ -509,25 +518,21 @@ void GateBoyApp::app_render_frame() {
   gb->dump_serial(d);
   d("\n");
 
-  text_painter.render_string(view, d.s.c_str(), col3, row1);
+  text_painter.render_string(view, screen_size, d.s.c_str(), col3, row1);
   d.clear();
 
   //----------------------------------------
   // Column 4
 
-  d("\002===== LCD =====\001\n");
-  gb->dump_lcd(d);
-  d("\n");
-
   d("\002===== PPU =====\001\n");
   gb->dump_ppu(d);
   d("\n");
 
-  d("\002===== SPU =====\001\n");
-  gb->dump_spu(d);
+  d("\002===== LCD =====\001\n");
+  gb->dump_lcd(d);
   d("\n");
 
-  text_painter.render_string(view, d.s.c_str(), col4, row1);
+  text_painter.render_string(view, screen_size, d.s.c_str(), col4, row1);
   d.clear();
 
   //----------------------------------------
@@ -606,7 +611,7 @@ Step controls:
   }
   d("\n");
 
-  text_painter.render_string(view, d.s.c_str(), col5, row1);
+  text_painter.render_string(view, screen_size, d.s.c_str(), col5, row1);
   d.clear();
 
   //----------------------------------------
@@ -614,16 +619,16 @@ Step controls:
 
   int gb_screen_y = row1 + 16;
 
-  text_painter.render_string(view, "\002========== Game Boy Screen ==========\001", col6, row1);
+  text_painter.render_string(view, screen_size, "\002========== Game Boy Screen ==========\001", col6, row1);
 
   if (has_golden && show_diff) {
-    gb_blitter.blit_diff(view, col6, gb_screen_y, 2, framebuffer, golden_u8);
+    gb_blitter.blit_diff(view, screen_size, col6, gb_screen_y, 2, framebuffer, golden_u8);
   }
   else if (show_golden) {
-    gb_blitter.blit_screen(view, col6, gb_screen_y, 2, golden_u8);
+    gb_blitter.blit_screen(view, screen_size, col6, gb_screen_y, 2, golden_u8);
   }
   else {
-    gb_blitter.blit_screen(view, col6, gb_screen_y, 2, framebuffer);
+    gb_blitter.blit_screen(view, screen_size, col6, gb_screen_y, 2, framebuffer);
   }
 
   // Status bar under screen
@@ -647,7 +652,7 @@ Step controls:
     gb->sys_buttons & 0x80 ? 'S' : '-');
 
 
-  text_painter.render_string(view, d.s, col6, gb_screen_y + 144 * 2);
+  text_painter.render_string(view, screen_size, d.s, col6, gb_screen_y + 144 * 2);
   d.clear();
 
 
@@ -681,21 +686,21 @@ Step controls:
 
     update_texture_u32(overlay_tex, 160, 144, overlay);
   }
-  blitter.blit(view, overlay_tex, col6, row1, 160 * 2, 144 * 2);
+  blitter.blit(view, screen_size, overlay_tex, col6, gb_screen_y, 160 * 2, 144 * 2);
 
   // Draw flat memory view
   {
-    text_painter.render_string(view, "\002========== Flat memory view ==========\001", col6, 768);
+    text_painter.render_string(view, screen_size, "\002========== Flat memory view ==========\001", col6, 768);
     update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread.get_cart().data());
     update_texture_u8(ram_tex, 0x00, 0x80, 256, 32, gb->vid_ram);
     update_texture_u8(ram_tex, 0x00, 0xA0, 256, 32, gb->cart_ram);
     update_texture_u8(ram_tex, 0x00, 0xC0, 256, 32, gb->int_ram);
     update_texture_u8(ram_tex, 0x00, 0xFE, 256, 1, gb->oam_ram);
     update_texture_u8(ram_tex, 0x80, 0xFF, 128, 1, gb->zero_ram);
-    blitter.blit_mono(view, ram_tex, 256, 256, 0, 0, 256, 256, col6, 784, 256, 256);
+    blitter.blit_mono(view, screen_size, ram_tex, 256, 256, 0, 0, 256, 256, col6, 784, 256, 256);
   }
 
-  d("\002===== OAM =====\001\n");
+  d("\002========== OAM ==========\001\n");
   for (int y = 0; y < 10; y++) {
     for (int x = 0; x < 16; x++) {
       d("%02x ", gb->oam_ram[x + y * 16]);
@@ -704,7 +709,7 @@ Step controls:
   }
   d("\n\n");
 
-  d("\002===== Cart Ram (first 128 bytes) =====\001\n");
+  d("\002========== Cart Ram (first 128 bytes) ==========\001\n");
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 16; x++) {
       d("%02x ", gb->cart_ram[x + y * 16]);
@@ -713,7 +718,7 @@ Step controls:
   }
   d("\n\n");
 
-  d("\002===== ZRAM =====\001\n");
+  d("\002========== ZRAM ==========\001\n");
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 16; x++) {
       d("%02x ", gb->zero_ram[x + y * 16]);
@@ -723,7 +728,7 @@ Step controls:
   d("\n\n");
 
 
-  text_painter.render_string(view, d.s, col6, 352);
+  text_painter.render_string(view, screen_size, d.s, col6, 352);
   d.clear();
 
 
@@ -733,17 +738,21 @@ Step controls:
   int row2 = 320;
   int row3 = 640;
 
-  text_painter.render_string(view, "\002========== VRAM Map 0 ==========\001", col7, row1);
-  gb_blitter.blit_map   (view, col7, row1 + 16,  1, vid_ram, (int)bit(gb->reg_lcdc.XAFO_LCDC_BGMAPn.qn_old()),  (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  text_painter.render_string(view, screen_size, "\002========== VRAM Map 0 ==========\001", col7, row1);
+  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, vid_ram, (int)bit(gb->reg_lcdc.XAFO_LCDC_BGMAPn.qn_old()),  (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
 
-  text_painter.render_string(view, "\002========== VRAM Map 1 ==========\001", col7, row2);
-  gb_blitter.blit_map   (view, col7, row2 + 16, 1, vid_ram, (int)bit(gb->reg_lcdc.WOKY_LCDC_WINMAPn.qn_old()), (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  text_painter.render_string(view, screen_size, "\002========== VRAM Map 1 ==========\001", col7, row2);
+  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, vid_ram, (int)bit(gb->reg_lcdc.WOKY_LCDC_WINMAPn.qn_old()), (int)bit(gb->reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
 
-  text_painter.render_string(view, "\002========== VRAM Tiles ==========\001", col7, row3);
-  gb_blitter.blit_tiles (view, col7, row3 + 16, 1, vid_ram);
+  text_painter.render_string(view, screen_size, "\002========== VRAM Tiles ==========\001", col7, row3);
+  gb_blitter.blit_tiles (view, screen_size, col7, row3 + 16, 1, vid_ram);
+
+  gb_thread.resume();
 
   frame_count++;
-  gb_thread.resume();
+  frame_end = timestamp();
+  frame_time = frame_end - frame_begin;
+  frame_time_smooth = frame_time_smooth * 0.99 + frame_time * 0.01;
 }
 
 //------------------------------------------------------------------------------
@@ -752,13 +761,13 @@ void GateBoyApp::load_golden(const char* filename) {
   SDL_Surface* golden_surface = SDL_LoadBMP(filename);
 
   if (!golden_surface) {
-    printf("Failed to load golden %s\n", filename);
+    LOG_R("Failed to load golden %s\n", filename);
     memset(golden_u8, 0, 160 * 144);
     return;
   }
 
   if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_INDEX8) {
-    printf("Loaded i8 golden %s\n", filename);
+    LOG_B("Loaded i8 golden %s\n", filename);
     uint8_t* src = (uint8_t*)golden_surface->pixels;
     uint32_t* pal = (uint32_t*)golden_surface->format->palette->colors;
     for (int y = 0; y < 144; y++) {
@@ -776,7 +785,7 @@ void GateBoyApp::load_golden(const char* filename) {
   }
 
   else if (golden_surface && golden_surface->format->format == SDL_PIXELFORMAT_BGR24) {
-    printf("Loaded bgr24 golden %s\n", filename);
+    LOG_B("Loaded bgr24 golden %s\n", filename);
     uint8_t* src = (uint8_t*)golden_surface->pixels;
     (void)src;
     for (int y = 0; y < 144; y++) {

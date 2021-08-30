@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreLib/Types.h"
+#include "CoreLib/Log.h"
 #include <string>
 #include <vector>
 #include <set>
@@ -81,7 +82,7 @@ struct DieCell {
     for (auto i = 0; i < input_ports.size(); i++) {
       if (input_ports[i] == port_name) return i;
     }
-    printf("no prev port for %s\n", port_name.c_str());
+    LOG_R("no prev port for %s\n", port_name.c_str());
     return -1;
   }
 
@@ -89,7 +90,7 @@ struct DieCell {
     for (auto i = 0; i < output_ports.size(); i++) {
       if (output_ports[i] == port_name) return i;
     }
-    printf("no next port for %s\n", port_name.c_str());
+    LOG_R("no next port for %s\n", port_name.c_str());
     return -1;
   }
 };

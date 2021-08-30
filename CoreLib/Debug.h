@@ -24,7 +24,6 @@ struct StringDumper : public Dumper {
     va_end (args);
     s.append(source_buf);
   }
-  //void print() { printf("%s", s.c_str()); }
   void clear() { s.clear(); }
 };
 

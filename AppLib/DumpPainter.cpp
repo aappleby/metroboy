@@ -216,7 +216,7 @@ void DumpPainter::init_ascii() {
 
 //-----------------------------------------------------------------------------
 
-void DumpPainter::dump(Viewport view, double world_x, double world_y, double scale_x, double scale_y, int text_w, int text_h, vec4 color, const uint8_t* dump) {
+void DumpPainter::dump(Viewport view, dvec2 screen_size, double world_x, double world_y, double scale_x, double scale_y, int text_w, int text_h, vec4 color, const uint8_t* dump) {
   update_table_u8(dump_tab, text_w, text_h, dump);
 
   bind_shader(dump_prog);
@@ -224,15 +224,15 @@ void DumpPainter::dump(Viewport view, double world_x, double world_y, double sca
   glUniform1uiv(glGetUniformLocation(dump_prog, "masks"), 16, masks);
 
 
-  double view_w = view.world_max().x - view.world_min().x;
-  double view_h = view.world_max().y - view.world_min().y;
+  double view_w = view.screen_max(screen_size).x - view.screen_min(screen_size).x;
+  double view_h = view.screen_max(screen_size).y - view.screen_min(screen_size).y;
 
-  double view_dx = (world_x - view.world_min().x);
-  double view_dy = (world_y - view.world_min().y);
+  double view_dx = (world_x - view.screen_min(screen_size).x);
+  double view_dy = (world_y - view.screen_min(screen_size).y);
 
   {
-    double ax = +view_w / (view.screen_size().x * scale_x);
-    double ay = +view_h / (view.screen_size().y * scale_y);
+    double ax = +view_w / (screen_size.x * scale_x);
+    double ay = +view_h / (screen_size.y * scale_y);
     double bx = -view_dx / scale_x;
     double by = -view_dy / scale_y;
 
@@ -245,8 +245,8 @@ void DumpPainter::dump(Viewport view, double world_x, double world_y, double sca
   {
     double ax = 2.0 * (text_w * tile_w * scale_x) / view_w;
     double ay = 2.0 * (text_h * tile_h * scale_y) / view_h;
-    double bx = 2.0 * (world_x - view.world_min().x) / view_w - 1.0;
-    double by = 2.0 * (world_y - view.world_min().y) / view_h - 1.0;
+    double bx = 2.0 * (world_x - view.screen_min(screen_size).x) / view_w - 1.0;
+    double by = 2.0 * (world_y - view.screen_min(screen_size).y) / view_h - 1.0;
 
     ay = -ay;
     by = -by;

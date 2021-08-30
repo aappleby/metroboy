@@ -139,7 +139,7 @@ void BoxPainter::push_corner_size(float x, float y, float w, float h, uint32_t c
 
 //-----------------------------------------------------------------------------
 
-void BoxPainter::render(Viewport view, double x, double y, float scale) {
+void BoxPainter::render(Viewport view, dvec2 screen_size, double x, double y, float scale) {
   if (box_cursor == 0) return;
   int box_count = box_cursor / 5;
   update_vbo(box_vbo, box_count * bytes_per_box, box_data_u32);
@@ -148,7 +148,12 @@ void BoxPainter::render(Viewport view, double x, double y, float scale) {
 
   bind_shader(box_prog);
 
-  box_uniforms.viewport = { (float)view.world_min().x, (float)view.world_min().y, (float)view.world_max().x, (float)view.world_max().y };
+  box_uniforms.viewport = {
+    (float)view.screen_min(screen_size).x,
+    (float)view.screen_min(screen_size).y,
+    (float)view.screen_max(screen_size).x,
+    (float)view.screen_max(screen_size).y
+  };
   box_uniforms.origin = { x, y, scale, scale };
   update_ubo(box_ubo, sizeof(box_uniforms), &box_uniforms);
   bind_ubo(box_prog, "BoxUniforms", 0, box_ubo);

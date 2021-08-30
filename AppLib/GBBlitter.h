@@ -8,11 +8,11 @@ class GBBlitter {
 public:
   void init();
 
-  void blit_tiles (Viewport view, int screen_x, int screen_y, int scale, const uint8_t* vram);
-  void blit_map   (Viewport view, int screen_x, int screen_y, int scale, const uint8_t* vram, int which_map, int alt_map);
-  void blit_screen(Viewport view, int screen_x, int screen_y, int scale, const uint8_t* framebuffer);
-  void blit_diff  (Viewport view, int screen_x, int screen_y, int scale, const uint8_t* test_tex, const uint8_t* gold_tex);
-  void blit_trace (Viewport view, int screen_x, int screen_y, const uint32_t* trace);
+  void blit_tiles (Viewport view, dvec2 screen_size, int screen_x, int screen_y, int scale, const uint8_t* vram);
+  void blit_map   (Viewport view, dvec2 screen_size, int screen_x, int screen_y, int scale, const uint8_t* vram, int which_map, int alt_map);
+  void blit_screen(Viewport view, dvec2 screen_size, int screen_x, int screen_y, int scale, const uint8_t* framebuffer);
+  void blit_diff  (Viewport view, dvec2 screen_size, int screen_x, int screen_y, int scale, const uint8_t* test_tex, const uint8_t* gold_tex);
+  void blit_trace (Viewport view, dvec2 screen_size, int screen_x, int screen_y, const uint32_t* trace);
 
   uint32_t vram_ubo = 0;
   uint32_t quad_vao = 0;

@@ -50,7 +50,7 @@ void APIENTRY debugOutput(GLenum source, GLenum type, GLuint id, GLenum severity
   // "will use VIDEO memory as the source..."
   if (id == 0x20071) return;
 
-  printf("GLDEBUG %.20s:%.20s:%.20s (0x%08x) %s\n",
+  LOG_B("GLDEBUG %.20s:%.20s:%.20s (0x%08x) %s\n",
     messageMap[source],
     messageMap[type],
     messageMap[severity],
@@ -99,7 +99,7 @@ void* init_gl(void* window) {
   LOG_B("Ext count "); LOG_G("%d\n", ext_count);
 #if 0
   for (int i = 0; i < ext_count; i++) {
-    printf("Ext %2d: %s\n", i, glGetStringi(GL_EXTENSIONS, i));
+    LOG_B("Ext %2d: %s\n", i, glGetStringi(GL_EXTENSIONS, i));
   }
 #endif
 
@@ -122,7 +122,7 @@ void* init_gl(void* window) {
 void check_gl_error() {
   int err = glGetError();
   if (err) {
-    printf("glGetError %d\n", err);
+    LOG_B("glGetError %d\n", err);
   }
 }
 
@@ -201,14 +201,12 @@ void bind_ubo(int prog, const char* name, int index, int ubo) {
 
 //-----------------------------------------------------------------------------
 
-int create_texture_u32(int width, int height, const void* data) {
+int create_texture_u32(int width, int height, const void* data, bool filter) {
   int tex = 0;
   glGenTextures(1, (GLuint*)&tex);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, tex);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-  bool filter = true;
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter ? GL_LINEAR : GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter ? GL_LINEAR : GL_NEAREST);
@@ -358,7 +356,7 @@ int create_shader(const char* name, const char* src) {
     char buf[1024];
     int len = 0;
     glGetShaderInfoLog(vertexShader, 1024, &len, buf);
-    printf("  Vert shader log %s\n", buf);
+    LOG_B("  Vert shader log %s\n", buf);
   }
 
   auto frag_srcs = {
@@ -380,7 +378,7 @@ int create_shader(const char* name, const char* src) {
     char buf[1024];
     int len = 0;
     glGetShaderInfoLog(fragmentShader, 1024, &len, buf);
-    printf("  Frag shader log %s\n", buf);
+    LOG_B("  Frag shader log %s\n", buf);
   }
 
   int shaderProgram = glCreateProgram();
@@ -396,7 +394,7 @@ int create_shader(const char* name, const char* src) {
     char buf[1024];
     int len = 0;
     glGetProgramInfoLog(shaderProgram, 1024, &len, buf);
-    printf("  Shader program log %s\n", buf);
+    LOG_B("  Shader program log %s\n", buf);
 
   }
 
@@ -411,7 +409,7 @@ int create_shader(const char* name, const char* src) {
 
 
     glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &count);
-    printf("  Active Attributes: %d\n", count);
+    LOG_B("  Active Attributes: %d\n", count);
 
     for (int i = 0; i < count; i++) {
       const int bufSize = 16;
@@ -420,11 +418,11 @@ int create_shader(const char* name, const char* src) {
       GLsizei length;
       GLint size;
       glGetActiveAttrib(program, (GLuint)i, bufSize, &length, &size, &type, var_name);
-      printf("    Attribute #%d Type: %u Name: %s\n", i, type, var_name);
+      LOG_B("    Attribute #%d Type: %u Name: %s\n", i, type, var_name);
     }
 
     glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
-    printf("  Active Uniforms: %d\n", count);
+    LOG_B("  Active Uniforms: %d\n", count);
 
     for (int i = 0; i < count; i++) {
       const int bufSize = 16;
@@ -434,14 +432,14 @@ int create_shader(const char* name, const char* src) {
       GLint size;
       glGetActiveUniform(program, (GLuint)i, bufSize, &length, &size, &type, var_name);
       int loc = glGetUniformLocation(program, var_name);
-      printf("    Uniform '%16s' @ %2d Type: 0x%04x\n", var_name, loc, type);
+      LOG_B("    Uniform '%16s' @ %2d Type: 0x%04x\n", var_name, loc, type);
     }
 
     glGetProgramiv(program, GL_ATTACHED_SHADERS, &count);
-    printf("  Attached shaders: %d\n", count);
+    LOG_B("  Attached shaders: %d\n", count);
 
     glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &count);
-    printf("  Uniform blocks: %d\n", count);
+    LOG_B("  Uniform blocks: %d\n", count);
 
     for (int i = 0; i < count; i++) {
       const int bufSize = 16;
@@ -449,29 +447,29 @@ int create_shader(const char* name, const char* src) {
       GLsizei length;
 
       glGetActiveUniformBlockName(program, i, bufSize, &length, var_name);
-      printf("  Uniform block #%d Name: %s\n", i, var_name);
+      LOG_B("  Uniform block #%d Name: %s\n", i, var_name);
 
       int temp[16];
 
       glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_BINDING, temp);
-      printf("    GL_UNIFORM_BLOCK_BINDING %d\n", temp[0]);
+      LOG_B("    GL_UNIFORM_BLOCK_BINDING %d\n", temp[0]);
 
       glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_DATA_SIZE, temp);
-      printf("    GL_UNIFORM_BLOCK_DATA_SIZE %d\n", temp[0]);
+      LOG_B("    GL_UNIFORM_BLOCK_DATA_SIZE %d\n", temp[0]);
 
       glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, temp);
-      printf("    GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS %d\n", temp[0]);
+      LOG_B("    GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS %d\n", temp[0]);
 
       glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER, temp);
-      printf("    GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER %d\n", temp[0]);
+      LOG_B("    GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER %d\n", temp[0]);
 
       glGetActiveUniformBlockiv(program, i, GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER, temp);
-      printf("    GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER %d\n", temp[0]);
+      LOG_B("    GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER %d\n", temp[0]);
     }
   }
 
   LOG_B("Compiling %s done\n", name);
-  if (verbose) printf("\n");
+  if (verbose) LOG_B("\n");
 
   return shaderProgram;
 }

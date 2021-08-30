@@ -29,16 +29,16 @@ public:
   void add_string(const std::string& text, double scale = 1.0);
   void dprintf(const char* format, ...);
 
-  void render(Viewport view, double x, double y);
+  void render(Viewport view, dvec2 screen_size, double x, double y);
 
-  void render_string(Viewport view, const std::string& text, double x, double y, double scale = 1.0) {
+  void render_string(Viewport view, dvec2 screen_size, const std::string& text, double x, double y, double scale = 1.0) {
     add_string(text, scale);
-    render(view, x, y);
+    render(view, screen_size, x, y);
   }
 
-  void render_string(Viewport view, const char* text, double x, double y, double scale = 1.0) {
+  void render_string(Viewport view, dvec2 screen_size, const char* text, double x, double y, double scale = 1.0) {
     add_text(text, scale);
-    render(view, x, y);
+    render(view, screen_size, x, y);
   }
 
   void newline() { add_char(1, '\n'); }

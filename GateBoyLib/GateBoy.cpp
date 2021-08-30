@@ -382,11 +382,11 @@ void GateBoy::next_phase(const blob& cart_blob) {
 
     for (int i = start; i < end; i++) {
       if (blob_old[i] != blob_new[i]) {
-        printf("%06lld %04d %02d %02d\n", phase_total, i, blob_old[i], blob_new[i]);
+        LOG_R("%06lld %04d %02d %02d\n", phase_total, i, blob_old[i], blob_new[i]);
       }
     }
 
-    printf("\n");
+    LOG_R("\n");
   }
 #endif
 
@@ -403,7 +403,7 @@ void GateBoy::next_phase(const blob& cart_blob) {
     if (line_phase_x >= 908) x2 = 0;
 
     if (x1 != x2) {
-      printf("*** %03d %03d %03d %llu\n", x1, x2, line_phase_x, phase_total);
+      LOG_R("*** %03d %03d %03d %llu\n", x1, x2, line_phase_x, phase_total);
     }
   }
 
@@ -971,11 +971,9 @@ void GateBoy::update_framebuffer()
 
 #if 0
   if (bit(~lcd.old_lcd_clock.qp_old()) && lcd.PIN_53_LCD_CLOCK.qp_new()) {
-    //printf("gb_screen_x++\n");
     gb_screen_x++;
   }
   if (lcd.PIN_54_LCD_HSYNC.qp_new() || lcd.PIN_55_LCD_LATCH.qp_new()) {
-    //printf("gb_screen_x = 0\n");
     gb_screen_x = 0;
   }
 
@@ -994,11 +992,9 @@ void GateBoy::update_framebuffer()
     }
 
     if (lcd.PIN_57_LCD_VSYNC.qp_new()) {
-      //printf("gb_screen_y = 0\n");
       gb_screen_y = 0;
     }
     else {
-      //printf("gb_screen_y++\n");
       gb_screen_y++;
     }
   }

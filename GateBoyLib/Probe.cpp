@@ -60,8 +60,6 @@ void Probes::dump(Dumper& d) {
     }
     d.add_char('\001');
     d.add_char('\n');
-
-    //if ((y & 7) == 7) d.add_char('\n');
   }
 }
 
@@ -69,16 +67,10 @@ void probe_wire(int index, const char* signal_name, wire s) {
   if (thread_probes) {
     thread_probes->probe_wire(index, signal_name, s & 1);
   }
-  else {
-    //printf("<no probes for current thread>\n");
-  }
 }
 
 void probe_char(int index, const char* signal_name, char s) {
   if (thread_probes) {
     thread_probes->probe_wire(index, signal_name, s);
-  }
-  else {
-    //printf("<no probes for current thread>\n");
   }
 }

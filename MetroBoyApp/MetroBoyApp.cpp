@@ -4,6 +4,7 @@
 #include "AppLib/Audio.h"
 #include "AppLib/GLBase.h"
 #include "CoreLib/Debug.h"
+#include "CoreLib/Log.h"
 
 //-----------------------------------------------------------------------------
 
@@ -45,7 +46,7 @@ void MetroBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
   //audio_init();
 
   gb_tex = create_texture_u8(160, 144, nullptr, false);
-  trace_tex = create_texture_u32(456, 154, nullptr);
+  trace_tex = create_texture_u32(456, 154, nullptr, false);
   ram_tex = create_texture_u8(256, 256, nullptr, false);
 
   gb_blitter.init();
@@ -130,7 +131,7 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
 
 void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
   std::string gb_filename = prefix + "/" + name;
-  printf("Loading rom %s\n", gb_filename.c_str());
+  LOG_B("Loading rom %s\n", gb_filename.c_str());
 
   load_array(gb_filename.c_str(), rom);
 
@@ -143,7 +144,12 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::app_update(double /*delta*/) {
+void MetroBoyApp::app_update(dvec2 screen_size, double delta) {
+  (void)screen_size;
+  (void)delta;
+
+  frame_begin = timestamp();
+
   int  step_forward = 0;
   int  step_backward = 0;
 
@@ -251,10 +257,13 @@ void MetroBoyApp::app_update(double /*delta*/) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::app_render_frame() {
-  Viewport view = Viewport::screenspace(1920, 1080);
+void MetroBoyApp::app_render_frame(dvec2 screen_size, double delta) {
+  (void)delta;
 
-  grid_painter.render(view);
+  Viewport view = Viewport::screenspace(screen_size);
+
+
+  grid_painter.render(view, screen_size);
 
   //----------------------------------------
   // Flat memory view
@@ -266,7 +275,7 @@ void MetroBoyApp::app_render_frame() {
   update_texture_u8(ram_tex, 0x00, 0xFE, 256,   1, gb->oam.ram);
   update_texture_u8(ram_tex, 0x80, 0xFF, 128,   1, gb->zram.ram);
 
-  blitter.blit_mono(view, ram_tex, 256, 256,
+  blitter.blit_mono(view, screen_size, ram_tex, 256, 256,
                     0, 0, 256, 256,
                     960 + 96, 640 + 96, 256, 256);
 
@@ -275,12 +284,12 @@ void MetroBoyApp::app_render_frame() {
 
   //gb_blitter.blit_map   (view, 1280, 32,  2, gb->vram.ram, 0, 0);
 
-  gb_blitter.blit_screen(view, 1280, 32,  2, gb->framebuffer);
-  gb_blitter.blit_tiles (view, 1632, 32,  1, gb->vram.ram);
-  gb_blitter.blit_map   (view, 1344, 448, 1, gb->vram.ram, 0, 0);
-  gb_blitter.blit_map   (view, 1632, 448, 1, gb->vram.ram, 0, 1);
-  gb_blitter.blit_map   (view, 1344, 736, 1, gb->vram.ram, 1, 0);
-  gb_blitter.blit_map   (view, 1632, 736, 1, gb->vram.ram, 1, 1);
+  gb_blitter.blit_screen(view, screen_size, 1280, 32,  2, gb->framebuffer);
+  gb_blitter.blit_tiles (view, screen_size, 1632, 32,  1, gb->vram.ram);
+  gb_blitter.blit_map   (view, screen_size, 1344, 448, 1, gb->vram.ram, 0, 0);
+  gb_blitter.blit_map   (view, screen_size, 1632, 448, 1, gb->vram.ram, 0, 1);
+  gb_blitter.blit_map   (view, screen_size, 1344, 736, 1, gb->vram.ram, 1, 0);
+  gb_blitter.blit_map   (view, screen_size, 1632, 736, 1, gb->vram.ram, 1, 1);
 
   //----------------------------------------
   // Trace view
@@ -293,13 +302,15 @@ void MetroBoyApp::app_render_frame() {
   // Memory debugger
 
   //dump_painter.render(view, 900, 100, 16, 8, metroboy->get_zram());
-  dump_painter.dump(view, 900, 300, 1, 1, 64, 128, vec4(1,1,1,1), gb->cart.main_ram);
+  dump_painter.dump(view, screen_size, 900, 300, 1, 1, 64, 128, vec4(1,1,1,1), gb->cart.main_ram);
 }
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyApp::app_render_ui() {
-  Viewport view = Viewport::screenspace(1920, 1080);
+void MetroBoyApp::app_render_ui(dvec2 screen_size, double delta) {
+  (void)delta;
+
+  Viewport view = Viewport::screenspace(screen_size);
 
   StringDumper d;
 
@@ -313,7 +324,7 @@ void MetroBoyApp::app_render_ui() {
     gb->cart.dump(d);
     gb->joy.dump(d);
     gb->serial.dump(d);
-    text_painter.render_string(view, d.s, (float)column, 0);
+    text_painter.render_string(view, screen_size, d.s, (float)column, 0);
     d.clear();
     column += 32 * 7;
   }
@@ -322,21 +333,21 @@ void MetroBoyApp::app_render_ui() {
     gb->spu.dump(d);
     gb->zram.dump(d);
     gb->oam.dump(d);
-    text_painter.render_string(view, d.s, (float)column, 0);
+    text_painter.render_string(view, screen_size, d.s, (float)column, 0);
     d.clear();
     column += 32 * 7;
   }
 
   if (1) {
     gb->ppu.dump(d);
-    text_painter.render_string(view, d.s, (float)column, 0);
+    text_painter.render_string(view, screen_size, d.s, (float)column, 0);
     d.clear();
     column += 32 * 7;
   }
 
   if (1) {
     gb->dump_disasm(d);
-    text_painter.render_string(view, d.s, (float)column, 0);
+    text_painter.render_string(view, screen_size, d.s, (float)column, 0);
     d.clear();
     column += 32 * 7;
   }
@@ -362,7 +373,7 @@ void MetroBoyApp::app_render_ui() {
 
   text_painter.dprintf("Sim time %f, sim ratio %f\n", sim_time, sim_ratio);
   text_painter.dprintf("Frame time %f\n", frame_time);
-  text_painter.render(view, float(view.screen_size().x - 320), float(view.screen_size().y - 64));
+  text_painter.render(view, screen_size, float(screen_size.x - 320), float(screen_size.y - 64));
 
 
   /*
@@ -390,6 +401,8 @@ void MetroBoyApp::app_render_ui() {
     text_painter.render(view, float(view.screen_size.x - 300 + 96), float(view.screen_size.y - 64));
   }
   */
+
+  frame_end = timestamp(); frame_time = frame_end - frame_begin;
 }
 
 //-----------------------------------------------------------------------------

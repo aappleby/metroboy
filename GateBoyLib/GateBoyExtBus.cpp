@@ -1,5 +1,6 @@
 #include "GateBoyLib/GateBoyExtBus.h"
 
+#include "CoreLib/Log.h"
 #include "GateBoyLib/GateBoy.h"
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -45,7 +46,7 @@ bool cart_has_mbc1(const blob& cart_blob) {
   case 0x1D: return 1; // MBC5+RUMBLE+RAM
   case 0x1E: return 1; // MBC5+RUMBLE+RAM+BATTERY
   default: {
-    printf("Bad cart type! 0x%02x\n", cart_blob[0x0147]);
+    LOG_R("Bad cart type! 0x%02x\n", cart_blob[0x0147]);
     return false;
   }
   }
@@ -66,7 +67,7 @@ bool cart_has_ram(const blob& cart_blob) {
   case 0x1D: return 1; // MBC5+RUMBLE+RAM
   case 0x1E: return 1; // MBC5+RUMBLE+RAM+BATTERY
   default: {
-    printf("Bad cart type! 0x%02x\n", cart_blob[0x0147]);
+    LOG_R("Bad cart type! 0x%02x\n", cart_blob[0x0147]);
     return 0;
   }
   }

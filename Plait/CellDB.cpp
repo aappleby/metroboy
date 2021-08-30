@@ -1,5 +1,6 @@
 #include "Plait/CellDB.h"
 #include "CoreLib/Debug.h"
+#include "CoreLib/Log.h"
 
 #include <map>
 #include <set>
@@ -445,7 +446,7 @@ bool DieDB::parse_dir(const std::string& path) {
   auto parse_end = timestamp();
 
   printf("\n");
-  printf("Parsing took %f msec\n", (parse_end - parse_begin) * 1000.0);
+  LOG_B("Parsing took %f msec\n", (parse_end - parse_begin) * 1000.0);
 
   //----------------------------------------
   // Postprocess the cells.
@@ -509,13 +510,9 @@ bool DieDB::parse_dir(const std::string& path) {
   }
   sanity_check();
   auto process_end = timestamp();
-  printf("Processing took %f msec\n", (process_end - process_begin) * 1000.0);
-
-
-  printf("Parsed %d files\n", total_files);
-  printf("Parsed %d lines\n", total_lines);
-  printf("Found %d cells\n", (int)cell_map.size());
-  printf("Found %d traces\n", (int)traces.size());
+  LOG_B("Processing took %f msec\n", (process_end - process_begin) * 1000.0);
+  LOG_B("Parsed %d files\n", total_files);
+  LOG_B("Parsed %d lines\n", total_lines);
 
   return true;
 }

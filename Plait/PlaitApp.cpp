@@ -77,56 +77,32 @@ int main(int argc, char** argv) {
   (void)argv;
   int ret = 0;
 
-  /*
-  DummyApp* app = new DummyApp();
-  AppHost* app_host = new AppHost(app);
-  ret = app_host->app_main(argc, argv);
-  delete app;
-  */
-
   PlaitApp* app = new PlaitApp();
   (void)app;
 
-  /*
-  printf("Parsing gateboy source\n");
+  LOG_B("Parsing gateboy source\n");
   app->die_db.clear();
   app->die_db.parse_dir("GateBoyLib");
-  printf("Done\n\n");
-  */
-
-  /*
-  printf("Saving haxxor.die_db.json\n");
-  app->die_db.save_json("haxxor.die_db.json");
-  printf("Done\n\n");
-  */
-
-  /*
-  printf("Saving gameboy.die_db.json\n");
   app->die_db.save_json("gameboy.die_db.json");
-  printf("Done\n\n");
-  */
+  LOG_B("Total cells %d\n", (int)app->die_db.cell_map.size());
+  LOG_B("Total edges %d\n", (int)app->die_db.traces.size());
+  LOG_B("Done\n");
 
-  printf("Loading gameboy.die_db.json\n");
-  app->die_db.clear();
-  app->die_db.load_json("gameboy.die_db.json");
-  printf("Done\n\n");
-
-  printf("Loading gameboy.plait.json\n");
+  
+  LOG_B("Loading gameboy.plait.json\n");
   nlohmann::json jroot;
   std::ifstream("gameboy.plait.json") >> jroot;
   app->plait.from_json(jroot, app->die_db);
-  printf("Done\n\n");
 
-  /*
   size_t total_nodes = 0;
   for (auto& [tag, plait_cell] : app->plait.cell_map) {
     total_nodes++;
     total_nodes += plait_cell->leaf_nodes.size();
   }
-  printf("Total cells %zd\n", app->plait.cell_map.size());
-  printf("Total nodes %zd\n", total_nodes);
-  printf("Total edges %zd\n", app->plait.traces.size());
-  */
+  LOG_B("Total cells %zd\n", app->plait.cell_map.size());
+  LOG_B("Total nodes %zd\n", total_nodes);
+  LOG_B("Total edges %zd\n", app->plait.traces.size());
+  LOG_B("Done\n");
 
   AppHost* app_host = new AppHost(app);
   ret = app_host->app_main(argc, argv);
@@ -238,7 +214,7 @@ void PlaitApp::paint_node(PlaitNode* node) {
       node->color = (*it).second;
     }
     else {
-      printf("Could not pick a color for %s\n", node->plait_cell->gate());
+      LOG_R("Could not pick a color for %s\n", node->plait_cell->gate());
     }
   }
 
@@ -248,7 +224,8 @@ void PlaitApp::paint_node(PlaitNode* node) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::app_init(int screen_w, int screen_h) {
-  view_control.init(screen_w, screen_h);
+  dvec2 screen_size(screen_w, screen_h);
+  view_control.init(screen_size);
 
   box_painter.init();
   port_painter.init();
@@ -262,15 +239,6 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
 
   check_gl_error();
 
-  uint32_t pix[] = {
-    0xFF00FFFF, 0xFF00FFFF, 0xFF00FFFF, 0xFF00FFFF,
-    0xFF00FFFF, 0xFFFF00FF, 0xFFFF00FF, 0xFF00FFFF,
-    0xFF00FFFF, 0xFFFF00FF, 0xFFFF00FF, 0xFF00FFFF,
-    0xFF00FFFF, 0xFF00FFFF, 0xFF00FFFF, 0xFF00FFFF,
-  };
-
-  tex = create_texture_u32(4, 4, pix);
-
   for (auto& [tag, cell] : plait.cell_map) {
     paint_node(cell->core_node);
     for (auto& [name, root] : cell->root_nodes) {
@@ -281,7 +249,7 @@ void PlaitApp::app_init(int screen_w, int screen_h) {
     }
   }
 
-  printf("Init done %f\n", timestamp());
+  LOG_B("Init done %f\n", timestamp());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -374,42 +342,56 @@ bool PlaitApp::contains_node(dvec2 corner_a, dvec2 corner_b, PlaitNode* node) {
   return true;
 }
 
-void PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback callback) {
+int PlaitApp::apply_region_node(dvec2 corner_a, dvec2 corner_b, NodeCallback callback) {
+  int hit = 0;
   for (auto& [tag, plait_cell] : plait.cell_map) {
     if (contains_node(corner_a, corner_b, plait_cell->core_node)) {
       callback(plait_cell->core_node);
+      hit++;
     }
     for (auto& [name, root] : plait_cell->root_nodes) {
       if (contains_node(corner_a, corner_b, root)) {
         callback(root);
+        hit++;
       }
     }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       if (contains_node(corner_a, corner_b, leaf)) {
         callback(leaf);
+        hit++;
       }
     }
   }
+
+  // If we just clicked a thing instead of click-drag-selecting, fire the callback for only
+  // the clicked node.
+  if (hit == 0) {
+    if (clicked_node) {
+      callback(clicked_node);
+    }
+  }
+
+  return hit;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
-  printf("Selection region ");
+  //LOG_B("Selection region ");
   auto callback = [this](PlaitNode* node) {
-    printf("%s ", node->plait_cell->name());
+    //LOG_B("%s ", node->plait_cell->name());
     node->select();
     node_selection.insert(node);
   };
 
   apply_region_node(corner_a, corner_b, callback);
-  printf("\n");
+  //LOG_B("\n");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void PlaitApp::select_node(PlaitNode* node) {
-  printf("Selecting %s\n", node->plait_cell->name());
+  //LOG_B("Selecting %s\n", node->plait_cell->name());
   node->select();
   node_selection.insert(node);
 }
@@ -417,35 +399,35 @@ void PlaitApp::select_node(PlaitNode* node) {
 void PlaitApp::commit_selection() {
   if (node_selection.empty()) return;
 
-  printf("Committing ");
+  //printf("Committing ");
   for (auto node : node_selection) {
-    printf("%s ", node->plait_cell->name());
+    //LOG_B("%s ", node->plait_cell->name());
     node->commit_pos();
   }
-  printf("\n");
+  //LOG_B("\n");
 }
 
 void PlaitApp::revert_selection() {
   if (node_selection.empty()) return;
 
-  printf("Reverting ");
+  //LOG_B("Reverting ");
   for (auto node : node_selection) {
-    printf("%s ", node->plait_cell->name());
+    //LOG_B("%s ", node->plait_cell->name());
     node->revert_pos();
   }
-  printf("\n");
+  //LOG_B("\n");
 }
 
 void PlaitApp::clear_selection() {
   if (node_selection.empty()) return;
 
-  printf("Unselecting ");
+  //LOG_B("Unselecting ");
   for (auto node : node_selection) {
-    printf("%s ", node->plait_cell->name());
+    //LOG_B("%s ", node->plait_cell->name());
     node->deselect();
   }
   node_selection.clear();
-  printf("\n");
+  //LOG_B("\n");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -467,19 +449,13 @@ double remap_clamp(double x, double a1, double a2, double b1, double b2) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::begin_frame(int screen_w, int screen_h) {
-  view_control.begin_frame(screen_w, screen_h);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 void PlaitApp::event_menu_option(SDL_Event event) {
   switch(event.type) {
   case SDL_KEYDOWN: {
     int key = event.key.keysym.scancode;
     if (key == SDL_SCANCODE_S) {
       const char* filename = "gameboy.plait.json";
-      printf("Saving plait %s\n", filename);
+      LOG_B("Saving plait %s\n", filename);
       commit_selection();
       clear_selection();
 
@@ -558,12 +534,13 @@ void PlaitApp::event_ghost_region(SDL_Event event) {
 //--------------------------------------------------------------------------------
 
 void PlaitApp::event_toggle_old(SDL_Event event) {
-  switch(event.type) {
-  case SDL_MOUSEBUTTONDOWN: {
+  switch (event.type) {
+  case SDL_MOUSEBUTTONUP: {
     if (event.button.button & SDL_BUTTON_LMASK) {
-      if (clicked_node) {
-        clicked_node->old = !clicked_node->old;
-      }
+      auto callback = [this](PlaitNode* node) {
+        node->toggle_old();
+      };
+      apply_region_node(click_pos_wrap, mouse_pos_world, callback);
     }
     break;
   }
@@ -580,11 +557,12 @@ void PlaitApp::event_toggle_old(SDL_Event event) {
 
 void PlaitApp::event_toggle_global(SDL_Event event) {
   switch (event.type) {
-  case SDL_MOUSEBUTTONDOWN: {
+  case SDL_MOUSEBUTTONUP: {
     if (event.button.button & SDL_BUTTON_LMASK) {
-      if (clicked_node) {
-        clicked_node->plait_cell->core_node->global = !clicked_node->plait_cell->core_node->global;
-      }
+      auto callback = [this](PlaitNode* node) {
+        node->toggle_global();
+      };
+      apply_region_node(click_pos_wrap, mouse_pos_world, callback);
     }
     break;
   }
@@ -605,7 +583,7 @@ void PlaitApp::event_pan_view(SDL_Event event) {
   switch(event.type) {
   case SDL_MOUSEMOTION: {
     if (event.motion.state & SDL_BUTTON_LMASK) {
-      view_control.pan(event.motion.xrel, event.motion.yrel);
+      view_control.pan(dvec2(event.motion.xrel, event.motion.yrel));
     }
     break;
   }
@@ -842,13 +820,13 @@ void PlaitApp::event_select_tool(SDL_Event event) {
     if (key == SDL_SCANCODE_LCTRL) new_tool = ToolMode::SELECT_REGION;
 
     if (key == SDL_SCANCODE_ESCAPE && node_selection.size()) {
-      printf("Reverting selection\n");
+      //LOG_B("Reverting selection\n");
       revert_selection();
       clear_selection();
     }
 
     if (key == SDL_SCANCODE_RETURN && node_selection.size()) {
-      printf("Commiting selection\n");
+      //LOG_B("Commiting selection\n");
       commit_selection();
       clear_selection();
     }
@@ -893,7 +871,9 @@ void PlaitApp::event_select_tool(SDL_Event event) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::app_update(double delta_time) {
+void PlaitApp::app_update(dvec2 screen_size, double delta_time) {
+  (void)delta_time;
+
   auto& view = view_control.view_smooth_snap;
 
   time_delta = delta_time;
@@ -904,7 +884,7 @@ void PlaitApp::app_update(double delta_time) {
     int mouse_x = 0, mouse_y = 0;
     mouse_buttons    = SDL_GetMouseState(&mouse_x, &mouse_y);
     mouse_pos_screen = {mouse_x, mouse_y};
-    mouse_pos_world  = view.screenToWorld(mouse_pos_screen);
+    mouse_pos_world  = view.screen_to_world(mouse_pos_screen, screen_size);
     mouse_pos_wrap = mouse_pos_world;
     while(mouse_pos_wrap.x >  half_world_width) mouse_pos_wrap.x -= world_width;
     while(mouse_pos_wrap.x < -half_world_width) mouse_pos_wrap.x += world_width;
@@ -922,7 +902,7 @@ void PlaitApp::app_update(double delta_time) {
     if (imgui_override) {
       if (event.type == SDL_KEYDOWN) {
         if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-          printf("Sending escape to imgui!\n");
+          //printf("Sending escape to imgui!\n");
         }
       }
       event_imgui(event);
@@ -966,14 +946,14 @@ void PlaitApp::app_update(double delta_time) {
     case ToolMode::PAN_VIEW:       event_pan_view(event); break;
     case ToolMode::MENU_OPTION:    event_menu_option(event); break;
     default: {
-      printf("Bad tool!\n");
+      LOG_R("Bad tool!\n");
       debugbreak();
       break;
     }
     }
 
     if(event.type == SDL_MOUSEWHEEL) {
-      view_control.on_mouse_wheel((int)mouse_pos_screen.x, (int)mouse_pos_screen.y, double(event.wheel.y) * 0.25);
+      view_control.on_mouse_wheel(mouse_pos_screen, screen_size, double(event.wheel.y) * 0.25);
     }
 
     if (event.type == SDL_MOUSEBUTTONUP && (event.button.button & SDL_BUTTON_LMASK)) {
@@ -1250,7 +1230,8 @@ void PlaitApp::draw_edge(PlaitTrace* edge) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::app_render_frame() {
+void PlaitApp::app_render_frame(dvec2 screen_size, double delta) {
+  (void)delta;
 
   auto& view = view_control.view_smooth_snap;
 
@@ -1263,7 +1244,7 @@ void PlaitApp::app_render_frame() {
   //----------------------------------------
   // Grid layer
 
-  grid_painter.render(view);
+  grid_painter.render(view, screen_size);
 
   //----------------------------------------
   // Text blocks
@@ -1293,7 +1274,7 @@ void PlaitApp::app_render_frame() {
         cursor_x2++;
       }
     }
-    dump_painter.dump(view, f->pos.x, f->pos.y, f->text_scale, f->text_scale, f->size.x, f->size.y, f->color, (uint8_t*)text_grid.data());
+    dump_painter.dump(view, screen_size, f->pos.x, f->pos.y, f->text_scale, f->text_scale, f->size.x, f->size.y, f->color, (uint8_t*)text_grid.data());
   }
 
   //----------------------------------------
@@ -1325,7 +1306,7 @@ void PlaitApp::app_render_frame() {
       box_painter.push_corner_size(node->get_pos_new() - dvec2(6,6), node_size + dvec2(12,12), 0xFFFFFFFF);
     }
   }
-  box_painter.render(view, 0, 0, 1);
+  box_painter.render(view, screen_size, 0, 0, 1);
 
   //----------
   // Node fills
@@ -1366,11 +1347,10 @@ void PlaitApp::app_render_frame() {
     }
   }
 
-  box_painter.render(view, 0, 0, 1);
-  port_painter.render(view, 0, 0, 1);
-  text_painter.render(view, 0, 0);
-
-  edge_painter.render(view, 0, 0, 1);
+  box_painter.render(view, screen_size, 0, 0, 1);
+  port_painter.render(view, screen_size, 0, 0, 1);
+  text_painter.render(view, screen_size, 0, 0);
+  edge_painter.render(view, screen_size, 0, 0, 1);
 
   //----------
 
@@ -1458,7 +1438,7 @@ void PlaitApp::app_render_frame() {
     }
   }
 
-  edge_painter.render(view, 0, 0, 1);
+  edge_painter.render(view, screen_size, 0, 0, 1);
 
 
   //----------------------------------------
@@ -1469,7 +1449,7 @@ void PlaitApp::app_render_frame() {
     color |= 0xFF000000;
     text_painter.add_text_at(label->text.c_str(), color, label->pos_new.x, label->pos_new.y, label->scale);
   }
-  text_painter.render(view, 0, 0);
+  text_painter.render(view, screen_size, 0, 0);
 
   //----------------------------------------
   // Selection rect
@@ -1477,11 +1457,13 @@ void PlaitApp::app_render_frame() {
   if (mouse_buttons & SDL_BUTTON_LMASK) {
     uint32_t sel_color = 0x00000000;
     if (current_tool == ToolMode::SELECT_REGION) sel_color = 0xFFFFFFFF;
-    if (current_tool == ToolMode::GHOST_REGION)  sel_color = 0xFFFF0040;
+    if (current_tool == ToolMode::GHOST_REGION)  sel_color = 0xFFFF0080;
+    if (current_tool == ToolMode::TOGGLE_GLOBAL) sel_color = 0xFF00FFFF;
+    if (current_tool == ToolMode::TOGGLE_OLD)    sel_color = 0xFF888888;
 
     if (sel_color) {
       outline_painter.push_box(click_pos_wrap, mouse_pos_wrap, sel_color);
-      outline_painter.render(view, 0, 0, 1);
+      outline_painter.render(view, screen_size, 0, 0, 1);
     }
   }
 
@@ -1495,7 +1477,9 @@ void PlaitApp::app_render_frame() {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void PlaitApp::app_render_ui() {
+void PlaitApp::app_render_ui(dvec2 screen_size, double delta) {
+  (void)delta;
+
 #if 1
 
   // Draw selection info
@@ -1508,8 +1492,8 @@ void PlaitApp::app_render_ui() {
     d.clear();
 
     d("World zoom       : %f\n", view_control.view_smooth.view_zoom());
-    d("World ppw        : %f\n", view_control.view_smooth.view_ppw());
-    d("World scale      : %f\n", view_control.view_smooth.view_scale());
+    d("World ppw        : %f\n", view_control.view_smooth.scale_world_to_screen());
+    d("World scale      : %f\n", view_control.view_smooth.scale_screen_to_world());
 
     d("Bad node count   : %d\n", bad_node_count);
     d("Bad edge count   : %d\n", bad_edge_count);
@@ -1588,7 +1572,7 @@ void PlaitApp::app_render_ui() {
     ui_text_painter.add_text_at(d.c_str(), 0, 0);
   }
 
-  ui_text_painter.render(view_control.view_screen, 0, 0);
+  ui_text_painter.render(Viewport::screenspace(screen_size), screen_size, 0, 0);
   time_ui = timestamp() - time_start;
 
   if (selected_frame) {
@@ -1655,7 +1639,7 @@ void PlaitApp::app_render_ui() {
 
     /*
     if (ImGui::Button("Create label")) {
-      printf("Creating label %s\n", str0);
+      //LOG_B("Creating label %s\n", str0);
       PlaitLabel* label = new PlaitLabel {
         str0,
         view_control.view_smooth_snap.world_center(),
@@ -1672,7 +1656,7 @@ void PlaitApp::app_render_ui() {
 
     /*
     if (ImGui::Button("Find Tag")) {
-      printf("find tag\n");
+      //LOG_B("find tag\n");
       for (auto& [tag, plait_cell] : plait.cell_map) {
         if (tag == node_tag) {
           view_control.center_on(plait_cell->core_node->pos_old + node_size * 0.5);

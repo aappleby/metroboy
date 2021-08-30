@@ -24,9 +24,30 @@ dvec2 ease(dvec2 a, dvec2 b, double delta) {
 }
 
 Viewport ease(Viewport a, Viewport b, double delta) {
-  return Viewport::from_min_max_screen(ease(a.world_min(), b.world_min(), delta),
-                                       ease(a.world_max(), b.world_max(), delta),
-                                       a.screen_size());
+  // Easing the viewport directly doesn't work well, but you can uncomment it if you want. :D
+  /*
+  return Viewport{
+    ease(a._world_center, b._world_center, delta),
+    ease(a._view_zoom, b._view_zoom, delta)
+  };
+  */
+
+  dvec2 world_min_a = a.world_center() - a.scale_screen_to_world() * 0.5;
+  dvec2 world_min_b = b.world_center() - b.scale_screen_to_world() * 0.5;
+
+  dvec2 world_max_a = a.world_center() + a.scale_screen_to_world() * 0.5;
+  dvec2 world_max_b = b.world_center() + b.scale_screen_to_world() * 0.5;
+
+  dvec2 world_min = ease(world_min_a, world_min_b, delta);
+  dvec2 world_max = ease(world_max_a, world_max_b, delta);
+
+  double ppw = 1.0 / (world_max.x - world_min.x);
+  double zoom = ppw_to_zoom(ppw);
+
+  return Viewport{
+    (world_min + world_max) * 0.5,
+    zoom
+  };
 }
 
 #pragma warning(disable : 4201)
@@ -57,43 +78,44 @@ double zoom_to_ppw(double zoom) {
 
 //-----------------------------------------------------------------------------
 
-dvec2 Viewport::worldToScreen(dvec2 v) const {
-  return (v - world_center()) * scale_world_to_screen() + screen_center();
+dvec2 Viewport::world_to_screen(dvec2 v, dvec2 screen_size) const {
+  dvec2 screen_center = screen_size * 0.5;
+  return (v - world_center()) * scale_world_to_screen() + screen_center;
 }
 
-dvec2 Viewport::screenToWorld(dvec2 v) const {
-  return (v - screen_center()) * scale_screen_to_world() + world_center();
-}
-
-dvec2 Viewport::deltaScreenToWorld(dvec2 delta) const {
-  return delta * scale_screen_to_world();
+dvec2 Viewport::screen_to_world(dvec2 v, dvec2 screen_size) const {
+  dvec2 screen_center = screen_size * 0.5;
+  return (v - screen_center) * scale_screen_to_world() + world_center();
 }
 
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::center_on(dvec2 c) {
-  return Viewport::from_center_zoom_screen(c, 3.0, screen_size());
+  return Viewport::from_center_zoom(c, 3.0);
 }
 
 //-----------------------------------------------------------------------------
 
-Viewport Viewport::zoom(dvec2 screen_pos, double zoom) {
-  auto screen_delta = screen_pos - 0.5 * screen_size();
+Viewport Viewport::zoom(dvec2 screen_pos, dvec2 screen_size, double zoom) {
+  double old_zoom = view_zoom();
+  double new_zoom = view_zoom() + zoom;
+
+  dvec2 screen_center = 0.5 * screen_size;
+  auto screen_delta = screen_pos - screen_center;
 
   auto new_center =
     world_center()
-    + screen_delta / (zoom_to_ppw(view_zoom()))
-    - screen_delta / (zoom_to_ppw(view_zoom() + zoom));
+    + screen_delta / (zoom_to_ppw(old_zoom))
+    - screen_delta / (zoom_to_ppw(new_zoom));
 
-  auto new_zoom = view_zoom() + zoom;
-  return Viewport::from_center_zoom_screen(new_center, new_zoom, screen_size());
+  return Viewport::from_center_zoom(new_center, new_zoom);
 }
 
 //-----------------------------------------------------------------------------
 
 Viewport Viewport::pan(dvec2 screen_delta) {
   dvec2 world_delta = screen_delta * scale_screen_to_world();
-  return Viewport::from_center_zoom_screen(world_center() - world_delta, view_zoom(), screen_size());
+  return Viewport::from_center_zoom(world_center() - world_delta, view_zoom());
 }
 
 //-----------------------------------------------------------------------------
@@ -106,7 +128,7 @@ Viewport Viewport::snap() {
   dvec2 old_center = world_center();
   dvec2 new_center = { round(old_center.x * ppw2) / ppw2, round(old_center.y * ppw2) / ppw2 };
 
-  return Viewport::from_center_zoom_screen(new_center, zoom2, screen_size());
+  return Viewport::from_center_zoom(new_center, zoom2);
 }
 
 //-----------------------------------------------------------------------------

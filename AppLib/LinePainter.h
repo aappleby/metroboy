@@ -7,7 +7,7 @@ class LinePainter {
 public:
 
   void init();
-  void render(Viewport view, double x, double y, float scale = 1.0f);
+  void render(Viewport view, dvec2 screen_size, double x, double y, float scale = 1.0f);
 
   void push(float ax, float ay, uint32_t ac, float bx, float by, uint32_t bc) {
     line_data.push_back(*(uint32_t*)&ax);

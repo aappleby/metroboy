@@ -48,7 +48,7 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
   - The flags are set up so that they don't interfere with the usual one-instruction-per-gate operations, and in optimized builds the additional flags are disabled entirely.
 
 - Wouldn't it be even faster to write this in Verilog and then simulate it in Verilator or something?
-  - You would think so, and I have translated small portions of GateBoy into Verilog and simulated them in Verilator just to prove that GateBoy's simulation strategy does produce correct results. Howevr, the Verilated code is still around 5-10x slower than GateBoy compiled in "fast mode".
+  - You would think so, and I have translated small portions of GateBoy into Verilog and simulated them in Verilator just to prove that GateBoy's simulation strategy does produce correct results. However, the Verilated code is still around 5-10x slower than GateBoy compiled in "fast mode".
 
 - Does it run in Linux?
   - Yes, all the code is cross-platform and there's a trivial build.ninja file that will compile a set of "fast mode" executables into bin/.

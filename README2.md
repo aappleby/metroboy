@@ -15,7 +15,7 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 - How is this simulation connected to the Furrtek schematics?
   - Every gate in the Furrtek schematics has a corresponding line in the GateBoy source code. Lines are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
   - ASUR in Furrtek's schematic -
-  - ![ASUR in Furrtek's schematic](ASUR_schematic.png "ASUR in Furrtek's schematic")
+  - <img src="ASUR_schematic.png" alt="drawing" width="350"/>
   - ASUR in GateBoy's code -
   - ![ASUR in GateBoy's code](ASUR_code.png "ASUR in GateBoy's code")
 

@@ -388,8 +388,6 @@ void PlaitApp::select_region(dvec2 corner_a, dvec2 corner_b) {
   //LOG_B("\n");
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 void PlaitApp::select_node(PlaitNode* node) {
   //LOG_B("Selecting %s\n", node->plait_cell->name());
   node->select();
@@ -880,15 +878,13 @@ void PlaitApp::app_update(dvec2 screen_size, double delta_time) {
 
   double time_start = timestamp();
 
-  {
-    int mouse_x = 0, mouse_y = 0;
-    mouse_buttons    = SDL_GetMouseState(&mouse_x, &mouse_y);
-    mouse_pos_screen = {mouse_x, mouse_y};
-    mouse_pos_world  = view.screen_to_world(mouse_pos_screen, screen_size);
-    mouse_pos_wrap = mouse_pos_world;
-    while(mouse_pos_wrap.x >  half_world_width) mouse_pos_wrap.x -= world_width;
-    while(mouse_pos_wrap.x < -half_world_width) mouse_pos_wrap.x += world_width;
-  }
+  int mouse_x = 0, mouse_y = 0;
+  mouse_buttons    = SDL_GetMouseState(&mouse_x, &mouse_y);
+  mouse_pos_screen = {mouse_x, mouse_y};
+  mouse_pos_world  = view.screen_to_world(mouse_pos_screen, screen_size);
+  mouse_pos_wrap = mouse_pos_world;
+  while(mouse_pos_wrap.x >  half_world_width) mouse_pos_wrap.x -= world_width;
+  while(mouse_pos_wrap.x < -half_world_width) mouse_pos_wrap.x += world_width;
 
   ImGuiIO& io = ImGui::GetIO();
   io.MouseDown[0] = (mouse_buttons & SDL_BUTTON(SDL_BUTTON_LEFT)) != 0;
@@ -899,12 +895,8 @@ void PlaitApp::app_update(dvec2 screen_size, double delta_time) {
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
+    // If ImGui wants input, it gets all the SDL events.
     if (imgui_override) {
-      if (event.type == SDL_KEYDOWN) {
-        if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
-          //printf("Sending escape to imgui!\n");
-        }
-      }
       event_imgui(event);
       continue;
     }
@@ -966,10 +958,11 @@ void PlaitApp::app_update(dvec2 screen_size, double delta_time) {
     }
   }
 
-  hovered_node = nullptr;
-  hovered_frame = nullptr;
-
-  if (!imgui_override) {
+  if (imgui_override) {
+    hovered_node = nullptr;
+    hovered_frame = nullptr;
+  }
+  else {
     hovered_node = pick_node(mouse_pos_world);
     hovered_frame = pick_frame(mouse_pos_world);
   }
@@ -1061,47 +1054,23 @@ void PlaitApp::app_update(dvec2 screen_size, double delta_time) {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-/*
-void PlaitApp::draw_node_outline(PlaitNode* node) {
-  dvec2 node_pos_old = node->get_pos_old();
-  dvec2 node_pos_new = node->get_pos_new();
-
-  //----------------------------------------
-
-  if (node->plait_cell->selected_node_count) {
-    uint32_t color = node->selected() ? 0xFFFFFFFF : 0xFF88CCFF;
-    box_painter.push_corner_size(node_pos_new, node_size, color);
-    box_painter.push_corner_size(node_pos_new, node_size, 0xFF000000);
-  }
-  else {
-    uint32_t color = COL_DARK_GREY;
-    if (node->plait_cell->leaf_nodes.size()) {
-      color = (node->name == "core") ? 0xFF408040 : 0xFF804040;
-    }
-
-    box_painter.push_corner_size(node_pos_new, node_size, color);
-    box_painter.push_corner_size(node_pos_new, node_size, 0xFF000000);
-  }
-}
-*/
-
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 void PlaitApp::draw_node_fill(PlaitNode* node, uint32_t color) {
   if (!node->ghosted) {
+    /*
     bool bad_node = false;
 
-    //if (node->is_leaf() && node->plait_cell->die_cell->fanout == 1 && !node->old) {
-    //  bad_node = true;
-    //}
-    //if (node->is_root() && node->plait_cell->die_cell->input_ports.size() == 1) {
-    //  bad_node = true;
-    //}
+    if (node->is_leaf() && node->plait_cell->die_cell->fanout == 1 && !node->old) {
+      bad_node = true;
+    }
+    if (node->is_root() && node->plait_cell->die_cell->input_ports.size() == 1) {
+      bad_node = true;
+    }
 
     if (bad_node) {
       bad_node_count++;
       color = (frame_count & 16) ? 0xFFFF00FF : 0xFF00FFFF;
     }
+    */
 
     if (node->old) {
       color = (color & 0xFF000000) | ((color & 0x00FEFEFE) >> 1);
@@ -1145,7 +1114,6 @@ void PlaitApp::draw_node_text(PlaitNode* node) {
   dvec2 node_pos_new = node->get_pos_new();
   text_painter.add_text_at_simple(node->plait_cell->name(), float(node_pos_new.x), float(node_pos_new.y));
   //text_painter.add_text_at_simple(node->plait_cell->gate(), float(node_pos_new.x + 8), float(node_pos_new.y + 24));
-
   //sprintf_s(buf, 256, "%d : %d", (int)node->plait_cell->root_nodes.size(), (int)node->plait_cell->leaf_nodes.size());
   //text_painter.add_text_at(buf, float(node_pos_new.x + 8), float(node_pos_new.y + 40));
 }
@@ -1525,6 +1493,8 @@ Flip-flop node input ports placement:
   | Reset (optional)   Inverting output     |          
   | Data                                    |
 
+Flip-flop data input ports _must_ be connected to an _old_ node.
+
 ========== Controls ========== 
 
 Click+drag the background grid to pan the view, mousewheel to zoom the view
@@ -1537,9 +1507,9 @@ Hold a key and click or click-drag to:
   Q      : Toggle "ghost" state
 
 Hold a key and click a node to:
-  Z : Create a new "input" node
-  X : Create a new "output" node
-  C : Link all selected nodes to it
+  Z : Create a new "input" clone
+  X : Create a new "output" clone
+  C : Link all selected nodes to it if possible
   V : Delete it.
 
 Other keys:
@@ -1547,6 +1517,9 @@ Other keys:
   Alt+S  : Save graph
   Escape : Unselect nodes and return them to their previous location
   Enter  : Unselect nodes and keep them in their new location
+
+Broken stuff:
+  Double-clicking a text box will open an editor, but controls aren't finished yet.
 )";
 
 
@@ -1554,10 +1527,6 @@ Other keys:
 
 void PlaitApp::app_render_ui(dvec2 screen_size, double delta) {
   (void)delta;
-
-#if 1
-
-  // Draw selection info
 
   double time_start = timestamp();
 
@@ -1691,14 +1660,6 @@ void PlaitApp::app_render_ui(dvec2 screen_size, double delta) {
       }
       ImGui::EndPopup();
     }
-
-
-
-
-    /*
-
-    ImGui::End();
-    */
   }
 
   if (0) {
@@ -1750,8 +1711,6 @@ void PlaitApp::app_render_ui(dvec2 screen_size, double delta) {
 
     ImGui::End();
   }
-
-#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------

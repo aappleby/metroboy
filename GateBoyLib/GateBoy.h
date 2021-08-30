@@ -27,6 +27,8 @@
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
 
+#include <cstring>
+
 //-----------------------------------------------------------------------------
 
 #pragma pack(push, 1)

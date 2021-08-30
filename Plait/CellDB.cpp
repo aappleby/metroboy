@@ -465,7 +465,7 @@ bool DieDB::parse_dir(const std::string& path) {
       // Buses get all their arguments added as input ports.
       for (int i = 0; i < args.size(); i++) {
         char buf[256];
-        sprintf_s(buf, 256, "tri%02d", i);
+        snprintf(buf, 256, "tri%02d", i);
         cell->input_ports.push_back(buf);
       }
     }

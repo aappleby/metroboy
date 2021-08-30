@@ -53,11 +53,11 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 - Does it run in Linux?
   - Yes, all the code is cross-platform and there's a trivial build.ninja file that will compile a set of "fast mode" executables into bin/.
 
-## What happened to MetroBoy?
+# What happened to MetroBoy?
 
-It's broken, don't use it. It will be coming back eventually.
+MetroBoy is/was a higher level Game Boy emulator. I got it to the point where it passed virtually all the available tests, and then hacked it up in various ways to help get GateBoy working. MetroBOy is currently broken, don't use it. It will be coming back eventually.
 
-## What's Plait?
+# What's Plait?
 
 ![Plait screenshot](images/plait.png "Plait screenshot")
 

@@ -1,86 +1,74 @@
-# MetroBoy is a Game Boy simulation designed to be mechanically translated into Verilog
+# This repo is the home of MetroBoy, GateBoy, and Plait.
 
-November 11 2019 - I've converted the Furrtek schematics to (totally untested) source code. If you want to run MetroBoy, don't build from head - use release 1.02 below.
+## GateBoy
 
-October 11 2019 - This guy has traced out all the signals (aside from CPU) on the DMG die - https://github.com/furrtek/DMG-CPU-Inside
+![GateBoy screenshot](gateboy.png "GateBoy screenshot")
 
-I'm going to be incrementally converting MetroBoy to use his schematics. Should be interesting ;)
+GateBoy is a **gate-level simulation** of the original Game Boy hardware that was [**reverse-engineered from die shots of the original DMG-01 chip**](https://siliconpr0n.org/map/nintendo/dmg-cpu-b/mz_mit20x/#x=9744&y=8000&z=3). It includes all the standard cells on the chip, minus the audio (too slow). It does not currently simulate the CPU at the gate level - it's made of custom logic and is a bit too blurry for me to decipher. GateBoy's CPU is instead my current best guess at how it might be implemented given the constraints implied by the rest of the chip.
 
-As of build 1.02 all Blargg, Mooneye, and Wpol test suites should be passing.
+I owe a **huge** amount of thanks to [Furrtek](https://github.com/furrtek) for his original [die traces](https://github.com/furrtek/DMG-CPU-Inside/blob/master/preview.png) and [schematics](https://github.com/furrtek/DMG-CPU-Inside) that served as a [Rosetta Stone](https://en.wikipedia.org/wiki/Rosetta_Stone) for getting the whole translation started. I've noted in the codebase where I found errors in the schematics - some have been reported back to Furrtek but there are still a lot of discrepancies.
 
-![MetroBoy screenshot](MetroBoy.png "MetroBoy screenshot")
+Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye emulator](https://github.com/Gekkio/mooneye-gb) and tests that helped bootstrap Gateboy, and for the flash cart he designed that I used to build many many additional tests.
 
-----------
+## GateBoy FAQ
 
-**TL;DR - Drag and drop rom files into the window to load them. Only first-gen Game Boy games that use the MBC1 controller are supported - Game Boy Color roms will not work.**
+- How is this simulation connected to the Furrtek schematics?
+  - Every gate in the Furrtek schematics has a corresponding line in the GateBoy source code. Lines are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
+  - Here's a chunk of the unmodified die shot with ASUR in the middle - <img src="ASUR_context1.png" alt="drawing" width="100%"/>
+  - Here's the same chunk with Furrtek's annotations - <img src="ASUR_context2.png" alt="drawing" width="100%"/>
+  - And here's a closeup - <img src="ASUR_traced.png" alt="drawing" width="100%"/>
+  - which corresponds to this ASUR in Furrtek's schematic - <img src="ASUR_schematic.png" alt="drawing" width="100%"/>
+  - which in turn gets translated to this ASUR in GateBoy's code - <img src="ASUR_code.png" alt="drawing" width="100%"/>
+  - Repeat that a few thousand times, and you get GateBoy. 
 
-## Game controls:
 
-- Dpad = arrow keys
-- B = Z
-- A = X
-- Select = shift
-- Start = enter
+- How is this simulation tested?
+  - GateBoy has a fairly comprehensive test suite that runs all of [the Mooneye tests](https://github.com/Gekkio/mooneye-gb/tree/master/tests), as well as a large suite of "micro-tests" that execute in a small number of cycles.
+  - GateBoy can also do automated render tests (used for [Mealybug's test suite](https://github.com/mattcurrie/mealybug-tearoom-tests)), but those are currently disabled.
+  - There are probably a few plain old code bugs remaining as well. Right now one of the early screens in Zelda is doing something funny with the grass tiles...
 
-## Debug controls:
+- Is GateBoy a perfect simulation of a Game Boy?
+  - Actually no, for complicated reasons. The Game Boy chip has a handful of logic gates that operate [independently of the master clock](https://en.wikipedia.org/wiki/Asynchronous_circuit) and whose exact behavior depends on things like [gate delay](https://en.wikipedia.org/wiki/Propagation_delay). These gates create [glitches](https://en.wikipedia.org/wiki/Glitch) that depend heavily on the physical placement of the gates, the silicon process used to make them, and other weird things like temperature and voltage.
+  - For example, there's a glitch in the external address bus logic that causes internal bus addresses like `0xFF20` to appear on the external bus even though the logic should prevent that. Due to input delays, not all of the inputs to gate `LOXO` (page 8 in the schematic) arrive at the same time. This causes `LOXO` to produce a glitch pulse that in turn causes latch `ALOR` to make a copy of one bit of the internal bus address. `ALOR` then drives that bit onto the external bus (through a few more gates) where it can be seen with an oscilloscope or logic analyzer.
 
-- R = Reset
-- F = Fast mode
-- V = Vsync mode (default)
-- S = Step mode
-- F1 = Load state
-- F4 = Save state
-- ESC = Quit
+- Wait, if glitches don't show up in the schematics then how did you figure that one out?
+  - In this case we can deduce what's going on because we can see the side-effect of the glitch on the external bus and there's not that many possible ways that address signal could've gotten there.
+  - Other internal glitches are harder to figure out because they don't affect external circuits - they just show up as "something does not match the simulation". There are probably 4-5 glitches that need to be tracked down somehow before the simulation is "perfect", but I'm not going to block the release of GateBoy until I find them.
 
-In step mode, up/down changes step granularity (frame/line/cycle) and left/right steps forward/back. Shift-right can be used to step over long instructions like loops and halts.
+- Why is GateBoy so slow?
+  - GateBoy simulates every logic gate on the DMG chip, one gate at a time. Adding two 8-bit values isn't simulated as "a = b + c;", it's simulated as eight 1-bit adders and eight 1-bit registers and all the control logic that goes along with it.
+  - In debug builds, all gates also includes a bunch of error checking to verify that gates aren't read before they're updated, that buses aren't floating, that the simulation always stabilizes, and other things like that.
+  - GateBoy also simulates every clock _phase_, not just individual clock cycles. While you may have read that the Game Boy runs at 1 megahertz, this is not quite correct. The 4.19 megahertz clock crystal feeds a set of gates `AFUR+ALEF+APUK+ADYK` that produce four 1 mhz clocks that are out of phase with each other. Those clocks are then combined by additional logic to create sub-clocks of various patterns and frequencies whose edges can lie on either the positive or negative edges of the 4.19 mhz master clock. So, it's more accurate to say that the Game Boy has a 1-megahertz, 8-phase clock. In GateBoy we give each phase a letter (A through H) and all sub-clocks have a suffix like this - `BALY_xBCDEFGH` - which indicates that the clock generated by gate BALY is high on phases B through H.
+  - Even with heroic optimization and all the error checking turned off in "fast mode", we still only hit 6-8 fps on a modern CPU.
 
-----------
+- Couldn't you write this in Verilog and then simulate it in Verilator or something?
+  - You can, and I have done so with small portions of the system. The Verilated code is around 5-10x slower than GateBoy compiled in "fast mode".
 
-## MetroBoy isn't an emulator in the traditional sense
+- Does it run in Linux?
+  - Yes, all the code is cross-platform and there's a trivial build.ninja file that will compile a set of "fast mode" executables into bin/.
 
-It's comparatively slow, though you can use it to play Game Boy games. It should run at full speed on most modern processors, with my current laptop running at about 2.5x realtime in fast mode.
+## What happened to MetroBoy?
 
-MetroBoy is more like a Verilog simulation of a Game Boy that's been translated into C++. You can also think of it as being written in a subset of C++ that's designed to to be mechanically translated into synthesizable Verilog.
+It's broken, don't use it. It will be coming back eventually.
 
-MetroBoy is part of a larger project named Metron, which is a C-to-Verilog translator based on LLVM that I'm still working on. Portions of MetroBoy have been validated by translating them from C to Verilog using Metron, translating that back to C using Verilator, then asserting that all the registers match up. MetroBoy usually runs between 3x-5x faster than the C->Verilog->Verilator->C version.
+## What's Plait?
 
-----------
+![Plait screenshot](plait.png "Plait screenshot")
 
-## MetroBoy screen contents 
+Plait is a tool for visualizing and untangling the mess of gates that makes up GateBoy. It's not at all finished yet, but there's enough functionality to be useful. It's also quite fun to poke around in the graph and see how things like the pixel pipe are actually implemented, gate-wise.
 
-Left columns
-- CPU registers
-- Memory bus
-- DMA state
-- Timer state
-- PPU registers
-- PPU state
-- Sprite state
-- Disassemby
+Plait **parses the GateBoy source code**, extracts all tagged (`/*#p08.ASUR*/`) lines, and converts the result to an editable graph. To make the level of complexity more manageable, Plait includes multiple editing features to help modularize and untangle the graph.
 
-Center column
-- Gameboy screen
-- 'Oscilloscope' view showing memory accesses per cycle (see Gameboy::trace)
+## So what comes after GateBoy?
 
-Right column
-- Tile memory
-- Tile map 0
-- Tile map 1
+The next step after this is LogicBoy, which will be a simulation that's equivalent at the register level to GateBoy but expresses the logic in more conventional C instead of and/or/not/etc. gates.
 
-----------
+## And after that?
 
-## FAQ
+MetroBoy will be rewritten so that its externally visible behavior exactly matches LogicBoy.
 
-- Why is MetroBoy so slow?
-  - MetroBoy simulates a Game Boy the hard way - in vsync mode it's simulating 4213440 full clock ticks per second. In fast mode it runs at about 10M clock ticks per second, or around 300 cycles per tick - not bad considering that the simulation does terrible things to branch predictors.
-- How accurate is MetroBoy's simulation?
-  - Very, very accurate. It passes all the test suites I've thrown at it, with the exception of a few PPU rendering issues in the Mealybug test suite.
-- How are you drawing the UI?
-  - Raw pixel writes to a SDL surface.
+# That's a lot of stuff. What's the overarching point of all this, anyhow?
 
-----------
+GateBoy, LogicBoy, and MetroBoy exist to give me a starting point for working on Metron, which is my long-term project to build a set of programming tools that can bridge between the C/C++ universe used by software and the Verilog/VHDL universe used by hardware. Eventually there will be a single codebase that, using some custom tools, can be translated directly to C++ and run on a PC or that can be translated to SystemVerilog and run on a FPGA.
 
-## Known Issues
 
-- Save game support isn't implemented yet
-- Cross-platform support via CMake is coming. Nothing in MetroBoy is OS-specific, I just haven't set it up yet.

@@ -2,7 +2,7 @@
 
 ## GateBoy
 
-![GateBoy screenshot](gateboy.png "GateBoy screenshot")
+![GateBoy screenshot](images/gateboy.png "GateBoy screenshot")
 
 GateBoy is a **gate-level simulation** of the original Game Boy hardware that was [**reverse-engineered from die shots of the original DMG-01 chip**](https://siliconpr0n.org/map/nintendo/dmg-cpu-b/mz_mit20x/#x=9744&y=8000&z=3). It includes all the standard cells on the chip, minus the audio (too slow). It does not currently simulate the CPU at the gate level - it's made of custom logic and is a bit too blurry for me to decipher. GateBoy's CPU is instead my current best guess at how it might be implemented given the constraints implied by the rest of the chip.
 
@@ -14,11 +14,11 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 
 - How is this simulation connected to the Furrtek schematics?
   - Every gate in the Furrtek schematics has a corresponding line in the GateBoy source code. Lines are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
-  - Here's a chunk of the unmodified die shot with ASUR in the middle - <img src="ASUR_context1.png" alt="drawing" width="100%"/>
-  - Here's the same chunk with Furrtek's annotations - <img src="ASUR_context2.png" alt="drawing" width="100%"/>
-  - And here's a closeup - <img src="ASUR_traced.png" alt="drawing" width="100%"/>
-  - which corresponds to this ASUR in Furrtek's schematic - <img src="ASUR_schematic.png" alt="drawing" width="100%"/>
-  - which in turn gets translated to this ASUR in GateBoy's code - <img src="ASUR_code.png" alt="drawing" width="100%"/>
+  - Here's a chunk of the unmodified die shot with ASUR in the middle - <img src="images/ASUR_context1.png" alt="drawing" width="100%"/>
+  - Here's the same chunk with Furrtek's annotations - <img src="images/ASUR_context2.png" alt="drawing" width="100%"/>
+  - And here's a closeup - <img src="images/ASUR_traced.png" alt="drawing" width="100%"/>
+  - which corresponds to this ASUR in Furrtek's schematic - <img src="images/ASUR_schematic.png" alt="drawing" width="100%"/>
+  - which in turn gets translated to this ASUR in GateBoy's code - <img src="images/ASUR_code.png" alt="drawing" width="100%"/>
   - Repeat that a few thousand times, and you get GateBoy. 
 
 
@@ -53,7 +53,7 @@ It's broken, don't use it. It will be coming back eventually.
 
 ## What's Plait?
 
-![Plait screenshot](plait.png "Plait screenshot")
+![Plait screenshot](images/plait.png "Plait screenshot")
 
 Plait is a tool for visualizing and untangling the mess of gates that makes up GateBoy. It's not at all finished yet, but there's enough functionality to be useful. It's also quite fun to poke around in the graph and see how things like the pixel pipe are actually implemented, gate-wise.
 

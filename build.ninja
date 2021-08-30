@@ -7,11 +7,6 @@ rule lib
 rule link
   command = g++ -O3 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
 
-
-
-
-
-
 ################################################################################
 # GateBoyApp
 
@@ -23,7 +18,6 @@ build bin/GateBoyApp : link $
   bin/imgui.a $
   bin/glad.o $
   obj/GateBoyApp.o
-
 
 ################################################################################
 # MetroBoyApp
@@ -45,11 +39,6 @@ build bin/Plait : link $
   obj/Plait/Plait.o $
   obj/Plait/PlaitApp.o $
   obj/Plait/CellDB.o $
-
-
-
-
-
 
 ################################################################################
 # CoreLib
@@ -223,13 +212,6 @@ build bin/imgui.a : lib $
   obj/imgui_tables.o $
   obj/imgui_widgets.o $
 
-
-
-
-
-
-
-
 ################################################################################
 # GateBoyTests
 
@@ -239,7 +221,6 @@ build bin/GateBoyTests : link $
   bin/CoreLib.a $
   bin/GateBoyLib.a $
   obj/GateBoyTests.o
-
 
 ################################################################################
 # MetroBoyTests

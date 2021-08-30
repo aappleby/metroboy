@@ -14,6 +14,11 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 
 - How is this simulation connected to the Furrtek schematics?
   - Every gate in the Furrtek schematics has a corresponding line in the GateBoy source code. Lines are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
+  - ASUR in Furrtek's schematic -
+  - <img src="ASUR_schematic.png" alt="drawing" width="350"/>
+  - ASUR in GateBoy's code -
+  - ![ASUR in GateBoy's code](ASUR_code.png "ASUR in GateBoy's code")
+
 
 - How is this simulation tested?
   - GateBoy has a fairly comprehensive test suite that runs all of [the Mooneye tests](https://github.com/Gekkio/mooneye-gb/tree/master/tests), as well as a large suite of "micro-tests" that execute in a small number of cycles.
@@ -50,7 +55,7 @@ It's broken, don't use it. It will be coming back eventually.
 
 Plait is a tool for visualizing and untangling the mess of gates that makes up GateBoy. It's not at all finished yet, but there's enough functionality to be useful. It's also quite fun to poke around in the graph and see how things like the pixel pipe are actually implemented, gate-wise.
 
-Plait parses the GateBoy source code, extracts all tagged (`/*#p08.ASUR*/`) lines, and converts the result to an editable graph. To make the level of complexity more manageable, Plait includes multiple editing features to help modularize and untangle the graph.
+Plait **parses the GateBoy source code**, extracts all tagged (`/*#p08.ASUR*/`) lines, and converts the result to an editable graph. To make the level of complexity more manageable, Plait includes multiple editing features to help modularize and untangle the graph.
 
 ## So what comes after GateBoy?
 

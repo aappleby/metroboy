@@ -13,7 +13,7 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 ## GateBoy FAQ
 
 - How is this simulation connected to the Furrtek schematics?
-  - Every gate in the Furrtek schematics has a corresponding line in the GateBoy source code. Lines are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
+  - Furrtek assigned every gate on the die and in the schematic a 4-character code like "ASUR" or "BALY". Each of those gates has a corresponding line in the GateBoy source code. Lines in the source are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
   - Here's a chunk of the unmodified die shot with ASUR in the middle - <img src="images/ASUR_context1.png" alt="drawing" width="100%"/>
   - Here's the same chunk with Furrtek's annotations - <img src="images/ASUR_context2.png" alt="drawing" width="100%"/>
   - And here's a closeup - <img src="images/ASUR_traced.png" alt="drawing" width="100%"/>

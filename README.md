@@ -19,7 +19,7 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
   - And here's a closeup - <img src="images/ASUR_traced.png" alt="drawing" width="100%"/>
   - which corresponds to this ASUR in Furrtek's schematic - <img src="images/ASUR_schematic.png" alt="drawing" width="100%"/>
   - which in turn gets translated to this ASUR in GateBoy's code - <img src="images/ASUR_code.png" alt="drawing" width="100%"/>
-  - Repeat that a few thousand times, and you get GateBoy. 
+  - Repeat that a few thousand times, spend a year-ish debugging, and you get GateBoy. 
 
 
 - How is this simulation tested?

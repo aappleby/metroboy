@@ -51,7 +51,10 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
   - You would think so, and I have translated small portions of GateBoy into Verilog and simulated them in Verilator just to prove that GateBoy's simulation strategy does produce correct results. However, the Verilated code is still around 5-10x slower than GateBoy compiled in "fast mode".
 
 - Does it run in Linux?
-  - Yes, all the code is cross-platform and there's a trivial build.ninja file that will compile a set of "fast mode" executables into bin/.
+  - Yes, all the code is cross-platform and has been tested under Ubuntu and WSL-G.
+  - You'll need libsdl2-dev installed
+  - Run "ninja" in the repo root and you should get a set of "fast mode" executables in root/bin.
+  - Run the binaries from the root of the repo, as they make assumptions about file locations.
 
 # What happened to MetroBoy?
 

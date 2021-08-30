@@ -1,12 +1,12 @@
 [submodule "imgui"]
-	path = imgui
+	path = src/imgui
 	url = https://github.com/ocornut/imgui
 [submodule "glm"]
-	path = glm
+	path = src/glm
 	url = https://github.com/g-truc/glm
 [submodule "json"]
-	path = json
+	path = src/json
 	url = https://github.com/nlohmann/json
 [submodule "SDL"]
-	path = SDL
+	path = src/SDL
 	url = https://github.com/libsdl-org/SDL

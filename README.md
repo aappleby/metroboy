@@ -65,7 +65,7 @@ Plait is a tool for visualizing and untangling the mess of gates that makes up G
 
 Plait **parses the GateBoy source code**, extracts all tagged (`/*#p08.ASUR*/`) lines, and converts the result to an editable graph. To make the level of complexity more manageable, Plait includes multiple editing features to help modularize and untangle the graph.
 
-## So what comes after GateBoy?
+# So what comes after GateBoy?
 
 The next step after this is LogicBoy, which will be a simulation that's equivalent at the register level to GateBoy but expresses the logic in more conventional C instead of and/or/not/etc. gates.
 
@@ -73,7 +73,7 @@ The next step after this is LogicBoy, which will be a simulation that's equivale
 
 MetroBoy will be rewritten so that its externally visible behavior exactly matches LogicBoy.
 
-# That's a lot of stuff. What's the overarching point of all this, anyhow?
+## That's a lot of stuff. What's the overarching point of all this, anyhow?
 
 GateBoy, LogicBoy, and MetroBoy exist to give me a starting point for working on Metron, which is my long-term project to build a set of programming tools that can bridge between the C/C++ universe used by software and the Verilog/VHDL universe used by hardware. Eventually there will be a single codebase that, using some custom tools, can be translated directly to C++ and run on a PC or that can be translated to SystemVerilog and run on a FPGA.
 

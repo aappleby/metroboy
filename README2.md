@@ -8,23 +8,34 @@ GateBoy is a **gate-level simulation** of the original Game Boy hardware that wa
 
 I owe a **huge** amount of thanks to [Furrtek](https://github.com/furrtek) for his original [schematics](https://github.com/furrtek/DMG-CPU-Inside) that served as a [Rosetta Stone](https://en.wikipedia.org/wiki/Rosetta_Stone) for getting the whole translation started. I've noted in the codebase where I found errors in the schematics - some have been reported back to Furrtek but there are still a lot of discrepancies.
 
-Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his Mooneye emulator + tests that helped bootstrap Gateboy, and for the flash cart he designed that I used to build many many additional tests.
+Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye emulator](https://github.com/Gekkio/mooneye-gb) and tests that helped bootstrap Gateboy, and for the flash cart he designed that I used to build many many additional tests.
+
+## GateBoy FAQ
 
 - How is this simulation connected to the Furrtek schematics?
   - Every gate in the Furrtek schematics has a corresponding line in the GateBoy source code. Lines are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
 
+- How is this simulation tested?
+  - GateBoy has a fairly comprehensive test suite that runs all of [the Mooneye tests](https://github.com/Gekkio/mooneye-gb/tree/master/tests), as well as a large suite of "micro-tests" that execute in a small number of cycles.
+  - GateBoy can also do automated render tests (used for [Mealybug's test suite](https://github.com/mattcurrie/mealybug-tearoom-tests)), but those are currently disabled.
+  - There are probably a few plain old code bugs remaining as well. Right now one of the early screens in Zelda is doing something funny with the grass tiles...
+
 - Is GateBoy a perfect simulation of a Game Boy?
   - Actually no, for complicated reasons. The Game Boy chip has a handful of logic gates that operate [independently of the master clock](https://en.wikipedia.org/wiki/Asynchronous_circuit) and whose exact behavior depends on things like [gate delay](https://en.wikipedia.org/wiki/Propagation_delay). These gates create [glitches](https://en.wikipedia.org/wiki/Glitch) that depend heavily on the physical placement of the gates, the silicon process used to make them, and other weird things like temperature and voltage.
-  - For example, there's a glitch in the external address bus logic that causes internal bus addresses like 0xFF20 to appear on the external bus even though the logic should prevent that. Due to input delays, not all of the inputs to gate LOXO (page 8 in the schematic) arrive at the same time. This causes LOXO to produce a glitch pulse that in turn causes latch ALOR to make a copy of one bit of the internal bus address. ALOR then drives that bit onto the external bus (through a few more gates) where it can be seen with an oscilloscope or logic analyzer.
+  - For example, there's a glitch in the external address bus logic that causes internal bus addresses like `0xFF20` to appear on the external bus even though the logic should prevent that. Due to input delays, not all of the inputs to gate `LOXO` (page 8 in the schematic) arrive at the same time. This causes `LOXO` to produce a glitch pulse that in turn causes latch `ALOR` to make a copy of one bit of the internal bus address. `ALOR` then drives that bit onto the external bus (through a few more gates) where it can be seen with an oscilloscope or logic analyzer.
 
 - Wait, if glitches don't show up in the schematics then how did you figure that one out?
-  - In this case we can deduce what's going on because we can see the side-effect of the glitch on the external bus and there's not that many possible ways that address signal could've gotten there. Other internal glitches are harder to figure out because they don't affect external circuits - they just show up as "something does not match the simulation". 
+  - In this case we can deduce what's going on because we can see the side-effect of the glitch on the external bus and there's not that many possible ways that address signal could've gotten there.
+  - Other internal glitches are harder to figure out because they don't affect external circuits - they just show up as "something does not match the simulation". There are probably 4-5 glitches that need to be tracked down somehow before the simulation is "perfect", but I'm not going to block the release of GateBoy until I find them.
 
 - Why is GateBoy so slow?
   - GateBoy simulates every logic gate on the DMG chip, one gate at a time. Adding two 8-bit values isn't simulated as "a = b + c;", it's simulated as eight 1-bit adders and eight 1-bit registers and all the control logic that goes along with it.
   - In debug builds, all gates also includes a bunch of error checking to verify that gates aren't read before they're updated, that buses aren't floating, that the simulation always stabilizes, and other things like that.
   - GateBoy also simulates every clock _phase_, not just individual clock cycles. While you may have read that the Game Boy runs at 1 megahertz, this is not quite correct. The 4.19 megahertz clock crystal feeds a set of gates (AFUR/ALEF/APUK/ADYK) that produce four 1 mhz clocks that are out of phase with each other. Those clocks are then combined by additional logic to create sub-clocks of various patterns and frequencies whose edges can lie on either the positive or negative edges of the 4.19 mhz master clock. So, it's more accurate to say that the Game Boy has a 1-megahertz, 8-phase clock. In GateBoy we give each phase a letter (A through H) and all sub-clocks have a suffix like this - `BALY_xBCDEFGH` - which indicates that the clock generated by gate BALY is high on phases B through H.
-  - Even with heroic optimization, we still only hit 6-8 fps on a modern CPU.
+  - Even with heroic optimization and all the error checking turned off, we still only hit 6-8 fps on a modern CPU.
+
+- Does it run in Linux?
+  - Yes, all the code is cross-platform and there's a trivial build.ninja file that will compile a set of "fast mode" executables into bin/.
 
 ## What happened to MetroBoy?
 

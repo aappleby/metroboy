@@ -21,8 +21,7 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
   - And here's a closeup - <img src="images/ASUR_traced.png" alt="drawing" width="100%"/>
   - which corresponds to this ASUR in Furrtek's schematic - <img src="images/ASUR_schematic.png" alt="drawing" width="100%"/>
   - which in turn gets translated to this ASUR in GateBoy's code - <img src="images/ASUR_code.png" alt="drawing" width="100%"/>
-  - Repeat that a few thousand times, spend a year-ish debugging, and you get GateBoy. 
-
+  - Repeat that a few thousand times, spend a year-ish debugging, and you get GateBoy. To give you a sense of scale, here's the whole die with a red dot covering ASUR - <img src="images/ASUR_die.png" alt="drawing" width="100%"/>
 
 - How is this simulation tested?
   - GateBoy has a fairly comprehensive test suite that runs all of [the Mooneye tests](https://github.com/Gekkio/mooneye-gb/tree/master/tests), as well as a large suite of "micro-tests" that execute in a small number of cycles.

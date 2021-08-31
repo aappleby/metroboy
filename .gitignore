@@ -3,11 +3,8 @@
 x64
 *.vcxproj.user
 *.vcxproj.filters
-roms
-microtests/build
 imgui.ini
 .ninja_deps
 .ninja_log
 obj
 bin
-gb-live32.exe

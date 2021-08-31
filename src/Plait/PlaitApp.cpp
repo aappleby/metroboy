@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
 
   LOG_B("Parsing gateboy source\n");
   app->die_db.clear();
-  app->die_db.parse_dir("GateBoyLib");
+  app->die_db.parse_dir("src/GateBoyLib");
   //app->die_db.save_json("gameboy.die_db.json");
   LOG_B("Total cells %d\n", (int)app->die_db.cell_map.size());
   LOG_B("Total edges %d\n", (int)app->die_db.traces.size());

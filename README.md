@@ -58,7 +58,8 @@ All the code is cross-platform and has been tested under Ubuntu and WSL-G. Clone
 
 - On Linux, make sure you have libsdl2-dev installed and run "ninja" from the repo root. You'll get a set of "fast mode" binaries in bin/, which should be launched from the repo root as they make assumptions about directories and such.
 
-- To run the microtests on either platform, you'll first need to build and install [wla-dx](https://github.com/vhelin/wla-dx), then run "ninja" in tests/microtests to assemble all the test roms. Running other tests (mooneye, mealybug, etc) requires additional setup that I haven't automated yet. :/
+- To run the microtests on either platform, you'll first need to build and install [wla-dx](https://github.com/vhelin/wla-dx), then run "ninja" in tests/microtests to assemble all the test roms. Once the test roms are built, run GateBoyTests from root. The tests should take a second or two, and there should be 20 (known) failures.
+- Running other tests (mooneye, mealybug, etc) requires additional setup that I haven't automated yet. :/
 
 # What happened to MetroBoy?
 

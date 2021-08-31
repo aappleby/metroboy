@@ -30,8 +30,8 @@
     m3_wx_6_change.gb
     */
 
-    load_rom   ("roms/mealybug/m3_lcdc_bg_map_change.gb");
-    load_golden("roms/mealybug/m3_lcdc_bg_map_change.bmp");
+    load_rom   ("tests/mealybug/m3_lcdc_bg_map_change.gb");
+    load_golden("tests/mealybug/m3_lcdc_bg_map_change.bmp");
   }
 #endif
 
@@ -194,7 +194,7 @@ void run_screenshot_tests() {
   /*
   double begin = timestamp();
 
-  std::string prefix = "microtests/build/dmg/";
+  std::string prefix = "tests/microtests/DMG/";
 
   printf("---------- Screenshot tests in %s: ----------\n", prefix.c_str());
 

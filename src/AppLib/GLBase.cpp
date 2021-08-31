@@ -61,7 +61,6 @@ void APIENTRY debugOutput(GLenum source, GLenum type, GLuint id, GLenum severity
 //-----------------------------------------------------------------------------
 
 void* init_gl(void* window) {
-  LOG_SCOPE_INDENT();
   LOG_G("GLBase::init_gl\n");
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
@@ -84,11 +83,6 @@ void* init_gl(void* window) {
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-  LOG_B("Vendor:   "); LOG_G("%s\n", glGetString(GL_VENDOR));
-  LOG_B("Renderer: "); LOG_G("%s\n", glGetString(GL_RENDERER));
-  LOG_B("Version:  "); LOG_G("%s\n", glGetString(GL_VERSION));
-  LOG_B("GLSL:     "); LOG_G("%s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
@@ -96,7 +90,15 @@ void* init_gl(void* window) {
 
   int ext_count = 0;
   glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
+
+  LOG_INDENT();
+  LOG_B("Vendor:   "); LOG_G("%s\n", glGetString(GL_VENDOR));
+  LOG_B("Renderer: "); LOG_G("%s\n", glGetString(GL_RENDERER));
+  LOG_B("Version:  "); LOG_G("%s\n", glGetString(GL_VERSION));
+  LOG_B("GLSL:     "); LOG_G("%s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
   LOG_B("Ext count "); LOG_G("%d\n", ext_count);
+  LOG_DEDENT();
+
 #if 0
   for (int i = 0; i < ext_count; i++) {
     LOG_B("Ext %2d: %s\n", i, glGetStringi(GL_EXTENSIONS, i));

@@ -41,7 +41,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   view_control.init(screen_size);
 
   grid_painter.init(65536, 65536);
-  text_painter.init(); 
+  text_painter.init();
   dump_painter.init_ascii();
   gb_blitter.init();
   blitter.init();
@@ -72,52 +72,51 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   }
   gb_thread.resume();
 
-  //load_rom("roms/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
-  //load_rom("roms/mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-GS.gb"); // dmg pass, gateboy fail
-  //load_rom("roms/mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing_sprites.gb"); // dmg pass, gateboy fail
+  //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
+  //load_rom("tests/mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-GS.gb"); // dmg pass, gateboy fail
+  //load_rom("tests/mooneye-gb/tests/build/acceptance/ppu/intr_2_mode0_timing_sprites.gb"); // dmg pass, gateboy fail
 
-  //load_rom("roms/gb-test-roms/cpu_instrs/cpu_instrs.gb"); // pass
-  //load_rom("roms/gb-test-roms/instr_timing/instr_timing.gb"); // pass
-  //load_rom("roms/gb-test-roms/mem_timing/mem_timing.gb"); // pass
-  //load_rom("roms/gb-test-roms/mem_timing-2/mem_timing.gb"); // pass
-  //load_rom("roms/gb-test-roms/halt_bug.gb"); // fail
-  //load_rom("roms/gb-test-roms/oam_bug/oam_bug.gb"); // fail
+  //load_rom("tests/gb-test-roms/cpu_instrs/cpu_instrs.gb"); // pass
+  //load_rom("tests/gb-test-roms/instr_timing/instr_timing.gb"); // pass
+  //load_rom("tests/gb-test-roms/mem_timing/mem_timing.gb"); // pass
+  //load_rom("tests/gb-test-roms/mem_timing-2/mem_timing.gb"); // pass
+  //load_rom("tests/gb-test-roms/halt_bug.gb"); // fail
+  //load_rom("tests/gb-test-roms/oam_bug/oam_bug.gb"); // fail
 
-  //load_rom("roms/scribbltests/lycscx/lycscx.gb"); // pass
-  //load_rom("roms/scribbltests/lycscy/lycscy.gb"); // pass
-  //load_rom("roms/scribbltests/palettely/palettely.gb");
-  //load_rom("roms/scribbltests/scxly/scxly.gb");
-  //load_rom("roms/scribbltests/statcount/statcount-auto.gb"); // pass
+  //load_rom("tests/scribbltests/lycscx/lycscx.gb"); // pass
+  //load_rom("tests/scribbltests/lycscy/lycscy.gb"); // pass
+  //load_rom("tests/scribbltests/palettely/palettely.gb");
+  //load_rom("tests/scribbltests/scxly/scxly.gb");
+  //load_rom("tests/scribbltests/statcount/statcount-auto.gb"); // pass
 
-  //load_rom("microtests/build/dmg/poweron_stat_006.gb"); // stat low nibble goes 5-7-6, but it's supposed to read 4 - SADU cleared too late?
-  //load_rom("microtests/build/dmg/poweron_stat_120.gb"); // stat low nibble goes 4-6-2 but it's supposed to read 0 - RUPO cleared too late?
-  //load_rom("microtests/build/dmg/poweron_oam_006.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
-  //load_rom("microtests/build/dmg/poweron_oam_120.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
-  //load_rom("microtests/build/dmg/poweron_oam_234.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
+  //load_rom("tests/microtests/DMG/poweron_stat_006.gb"); // stat low nibble goes 5-7-6, but it's supposed to read 4 - SADU cleared too late?
+  //load_rom("tests/microtests/DMG/poweron_stat_120.gb"); // stat low nibble goes 4-6-2 but it's supposed to read 0 - RUPO cleared too late?
+  //load_rom("tests/microtests/DMG/poweron_oam_006.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
+  //load_rom("tests/microtests/DMG/poweron_oam_120.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
+  //load_rom("tests/microtests/DMG/poweron_oam_234.gb"); // should be locked but wasn't - scan started late - oam locked the A after the read
 
-  //load_rom("microtests/build/dmg/lcdon_to_stat2_a.gb"); // RUPO cleared too late?
-  //load_rom("microtests/build/dmg/lcdon_to_oam_unlock_d.gb"); // hblank late
+  //load_rom("tests/microtests/DMG/lcdon_to_stat2_a.gb"); // RUPO cleared too late?
+  //load_rom("tests/microtests/DMG/lcdon_to_oam_unlock_d.gb"); // hblank late
 
   // SIG_OAM_OEn goes back to 1 on E after the read starts, so we have to latch before that?
   // but the oam address doesn't show up until H?
   // sig_oam_clkn goes low EFGH during read
-  //load_rom("microtests/build/dmg/oam_read_l0_d.gb");
+  //load_rom("tests/microtests/DMG/oam_read_l0_d.gb");
 
-  //load_rom("microtests/build/dmg/oam_write_l0_d.gb");   // should be unlocked but wasn't - hblank started late?
-  //load_rom("microtests/build/dmg/oam_write_l1_c.gb"); // this is the scan/render gap
-  //load_rom("microtests/build/dmg/oam_read_l1_a.gb");    // should be locked but wasn't - scan started late?
-  //load_rom("microtests/build/dmg/oam_read_l1_f.gb");    // should be locked but wasn't - scan started late?
+  //load_rom("tests/microtests/DMG/oam_write_l0_d.gb");   // should be unlocked but wasn't - hblank started late?
+  //load_rom("tests/microtests/DMG/oam_write_l1_c.gb"); // this is the scan/render gap
+  //load_rom("tests/microtests/DMG/oam_read_l1_a.gb");    // should be locked but wasn't - scan started late?
+  //load_rom("tests/microtests/DMG/oam_read_l1_f.gb");    // should be locked but wasn't - scan started late?
 
-  //load_rom("microtests/build/dmg/poweron_vram_026.gb"); // should be locked but wasn't - rendering started late?
-  //load_rom("microtests/build/dmg/poweron_vram_140.gb"); // should be locked but wasn't - rendering started late?
+  //load_rom("tests/microtests/DMG/poweron_vram_026.gb"); // should be locked but wasn't - rendering started late?
+  //load_rom("tests/microtests/DMG/poweron_vram_140.gb"); // should be locked but wasn't - rendering started late?
 
-  //load_rom("microtests/build/dmg/ppu_sprite0_scx0_b.gb"); // pix 167 on c
-  //load_rom("microtests/build/dmg/ppu_sprite0_scx1_b.gb"); // pix 167 on e
-  //load_rom("microtests/build/dmg/ppu_sprite0_scx2_b.gb"); // pix 167 on g
-  //load_rom("microtests/build/dmg/ppu_sprite0_scx3_b.gb"); // pix 167 on a, fail - so hblank is like 1 or 2 phases late
+  //load_rom("tests/microtests/DMG/ppu_sprite0_scx0_b.gb"); // pix 167 on c
+  //load_rom("tests/microtests/DMG/ppu_sprite0_scx1_b.gb"); // pix 167 on e
+  //load_rom("tests/microtests/DMG/ppu_sprite0_scx2_b.gb"); // pix 167 on g
+  //load_rom("tests/microtests/DMG/ppu_sprite0_scx3_b.gb"); // pix 167 on a, fail - so hblank is like 1 or 2 phases late
 
   // if it was a data latch issue reading stat, it wouldn't also affect oam read...?
-  //gb_thread.gb->oam_ram[0x35] = 0x4F;
 
   LOG_DEDENT();
   LOG_G("GateBoyApp::app_init() done\n");
@@ -360,7 +359,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     if (keyboard_state[SDL_SCANCODE_RIGHT])  gb->sys_buttons |= 0x01; // RIGHT
     if (keyboard_state[SDL_SCANCODE_LEFT])   gb->sys_buttons |= 0x02; // LEFT
     if (keyboard_state[SDL_SCANCODE_UP])     gb->sys_buttons |= 0x04; // UP
-    if (keyboard_state[SDL_SCANCODE_DOWN])   gb->sys_buttons |= 0x08; // DOWN 
+    if (keyboard_state[SDL_SCANCODE_DOWN])   gb->sys_buttons |= 0x08; // DOWN
 
     if (keyboard_state[SDL_SCANCODE_X])      gb->sys_buttons |= 0x10; // A
     if (keyboard_state[SDL_SCANCODE_Z])      gb->sys_buttons |= 0x20; // B

@@ -39,7 +39,7 @@ struct GateBoy {
   //----------------------------------------
 
   static bool check_sentinel(const blob& b) {
-    if (b.size() != sizeof(GateBoy)) return false;
+    if (b.size() < sizeof(GateBoy)) return false;
 
     GateBoy* gb = (GateBoy*)b.data();
     if (gb->sentinel1 != SENTINEL1) return false;

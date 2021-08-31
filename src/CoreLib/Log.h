@@ -5,9 +5,35 @@
 
 //-----------------------------------------------------------------------------
 
-inline void LOG(const char* format = "", ...) {
+double timestamp();
+
+inline void log_putchar(char c) {
   static int log_indent = 0;
   static int log_cursor_x = 0;
+  static bool log_start_line = true;
+
+  if (c == '\n') {
+    putchar(c);
+    log_cursor_x = 0;
+    log_start_line = true;
+  }
+  else if (c == '\t') {
+    log_indent += 2;
+  }
+  else if (c == '\v') {
+    log_indent -= 2;
+  }
+  else {
+    if (log_start_line) {
+      printf("\u001b[0m[%07.3f] ", timestamp());
+      log_start_line = false;
+    }
+    for (; log_cursor_x < log_indent; log_cursor_x++) putchar(' ');
+    putchar(c);
+  }
+}
+
+inline void log_printf(const char* format = "", ...) {
   static char buffer[256];
 
   va_list args;
@@ -16,44 +42,17 @@ inline void LOG(const char* format = "", ...) {
   va_end(args);
 
   for (char* b = buffer; *b; b++) {
-    if (*b == '\n') {
-      putchar(*b);
-      log_cursor_x = 0;
-    }
-    else if (*b == '\t') {
-      log_indent += 2;
-    }
-    else if (*b == '\v') {
-      log_indent -= 2;
-    }
-    else {
-      for (; log_cursor_x < log_indent; log_cursor_x++) putchar(' ');
-      putchar(*b);
-    }
+    log_putchar(*b);
   }
 }
 
-struct ScopeIndent {
-  ScopeIndent() {
-    LOG("\t");
-  }
-  ~ScopeIndent() {
-    LOG("\v");
-  }
-};
+#define LOG(...)   do { log_printf(__VA_ARGS__); } while(0);
+#define LOG_R(...) do { log_printf("\u001b[38;2;255;128;128m"); log_printf(__VA_ARGS__); printf("\u001b[0m"); } while(0);
+#define LOG_G(...) do { log_printf("\u001b[38;2;128;255;128m"); log_printf(__VA_ARGS__); printf("\u001b[0m"); } while(0);
+#define LOG_B(...) do { log_printf("\u001b[38;2;128;128;255m"); log_printf(__VA_ARGS__); printf("\u001b[0m"); } while(0);
+#define LOG_Y(...) do { log_printf("\u001b[38;2;255;255;128m"); log_printf(__VA_ARGS__); printf("\u001b[0m"); } while(0);
 
-double timestamp();
-
-#define LOG_R(...) do { printf("[%07.3f] \u001b[38;2;255;128;128m", timestamp()); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
-#define LOG_G(...) do { printf("[%07.3f] \u001b[38;2;128;255;128m", timestamp()); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
-#define LOG_B(...) do { printf("[%07.3f] \u001b[38;2;128;128;255m", timestamp()); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
-#define LOG_Y(...) do { printf("[%07.3f] \u001b[38;2;255;255;128m", timestamp()); LOG(__VA_ARGS__); printf("\u001b[0m"); } while(0);
-
-#define LOG_INDENT() LOG("\t");
-#define LOG_DEDENT() LOG("\v");
-
-#define CONCAT2(a, b) a##b
-#define CONCAT1(a, b) CONCAT2(a, b)
-#define LOG_SCOPE_INDENT() ScopeIndent CONCAT1(scope_indent_, __LINE__)
+#define LOG_INDENT() log_putchar('\t')
+#define LOG_DEDENT() log_putchar('\v')
 
 //-----------------------------------------------------------------------------

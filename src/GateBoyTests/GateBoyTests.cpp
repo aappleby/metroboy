@@ -20,10 +20,6 @@
 //#define RUN_SLOW_TESTS
 //#define TEST_MOONEYE
 
-//#include "SDL/include/SDL.h"
-
-double blep();
-
 //-----------------------------------------------------------------------------
 
 uint8_t cart_header[] = {
@@ -64,27 +60,13 @@ blob create_dummy_cart() {
 
 //-----------------------------------------------------------------------------
 
-
 int main(int argc, char** argv) {
-  LOG_G("GateBoyTests::main()\n");
-
-#ifdef _MSC_VER
-  SetPriorityClass(GetCurrentProcess(), 0x00000080);
-#endif
-
-  TEST_START("Maaaaaain");
-
   (void)argc;
   (void)argv;
 
-  static const bool skip_passing_tests = true;
-
-  auto start = timestamp();
+  TEST_START();
 
   GateBoyTests t;
-  //t.verbose = true;
-  //t.cart_rom.resize(32768, 0);
-  //memcpy(&t.cart_rom[0x100], cart_header, sizeof(cart_header));
 
 #ifndef FAST_MODE
   failures += t.test_reset_cart_vs_dump();
@@ -100,7 +82,7 @@ int main(int argc, char** argv) {
   failures += t.test_init();
 
 #ifndef FAST_MODE
-  //failures += t.test_ext_bus();
+  failures += t.test_ext_bus();
 #endif
 
   failures += t.test_ppu();
@@ -130,13 +112,6 @@ int main(int argc, char** argv) {
   failures += t.test_mooneye_ppu();     // 3 fails
 #endif
 
-  auto finish = timestamp();
-
-  if (!failures) LOG_G("Everything passed!\n");
-
-  LOG_G("Tests took %f seconds\n", finish - start);
-  LOG_G("%d failures\n", failures);
-
   TEST_END();
 }
 
@@ -144,7 +119,7 @@ int main(int argc, char** argv) {
 
 int diff(const char* name_a, void* blob_a, int start_a, int end_a,
          const char* name_b, void* blob_b, int start_b, int end_b) {
-  TEST_START();
+  int failures = 0;
   int size_a = end_a - start_a;
   int size_b = end_b - start_b;
 
@@ -169,8 +144,7 @@ int diff(const char* name_a, void* blob_a, int start_a, int end_a,
               name_a, ia, bytes_a[ia],
               name_b, ib, bytes_b[ib]);
   }
-
-  TEST_END();
+  return failures;
 }
 
 //-----------------------------------------------------------------------------
@@ -181,7 +155,6 @@ GateBoy GateBoyTests::create_gb_poweron(const blob& cart_blob) {
   gb.sys_cpu_en = 0;
   return gb;
 }
-
 
 //-----------------------------------------------------------------------------
 
@@ -285,14 +258,11 @@ int GateBoyTests::test_fastboot_vs_slowboot() {
 int GateBoyTests::test_reset_cart_vs_dump() {
   TEST_START();
 
-  blob cart_blob = create_dummy_cart();
-
   auto blob = load_blob("gateboy_post_bootrom.raw.dump");
   if(!GateBoy::check_sentinel(blob)) {
     LOG_Y("Warning : gateboy_post_bootrom_raw.dump not valid\n");
     TEST_END();
   }
-
   LOG_B("gateboy_post_bootrom.raw.dump\n");
   GateBoy gb1;
   gb1.from_blob(blob);
@@ -300,7 +270,7 @@ int GateBoyTests::test_reset_cart_vs_dump() {
 
   LOG_B("reset_to_cart with fastboot = true\n");
   GateBoy gb2;
-  gb2.reset_to_cart(cart_blob);
+  gb2.reset_to_cart(create_dummy_cart());
   LOG_G("reset_cart done\n");
 
   int start = 0;
@@ -898,7 +868,7 @@ int GateBoyTests::test_micro_mbc1() {
 //-----------------------------------------------------------------------------
 
 int GateBoyTests::run_microtest(const char* filename) {
-  blob cart_blob = load_blob(std::string("microtests/build/dmg/") + filename);
+  blob cart_blob = load_blob(std::string("tests/microtests/DMG/") + filename);
 
   if (cart_blob.empty()) {
     LOG_B("%-30s ", filename);
@@ -1596,7 +1566,6 @@ int GateBoyTests::test_timer() {
     gb.run_phases(cart_blob, 512);
     if (!failures) LOG_B("TAC 0b111 pass\n");
   }
-  if (!failures) LOG("\n");
 
 #ifdef RUN_SLOW_TESTS
   {
@@ -1720,8 +1689,6 @@ int GateBoyTests::test_ppu() {
 
   if (!failures) LOG_B("Pass");
 #endif
-  LOG("\n");
-
   TEST_END();
 }
 
@@ -1830,7 +1797,7 @@ void GateBoyTests::run_benchmark() {
 int GateBoyTests::test_mooneye_generic() {
   TEST_START();
 
-  const char* path = "roms/mooneye-gb/tests/build/acceptance/";
+  const char* path = "tests/mooneye-gb/tests/build/acceptance/";
 
   failures += run_mooneye_test(path, "boot_div-dmgABCmgb.gb");         // p
   failures += run_mooneye_test(path, "boot_hwio-dmgABCmgb.gb");        // XXX sound regs
@@ -1882,7 +1849,7 @@ int GateBoyTests::test_mooneye_generic() {
 int GateBoyTests::test_mooneye_mbc1() {
   TEST_START();
 
-  const char* path = "roms/mooneye-gb/tests/build/emulator-only/mbc1/";
+  const char* path = "tests/mooneye-gb/tests/build/emulator-only/mbc1/";
 
   failures += run_mooneye_test(path, "bits_bank1.gb"); // pass, but very slow (3 sim-sec)
   failures += run_mooneye_test(path, "bits_bank2.gb"); // pass, but very slow (3 sim-sec)
@@ -1909,7 +1876,7 @@ int GateBoyTests::test_mooneye_mbc1() {
 int GateBoyTests::test_mooneye_timer() {
   TEST_START();
 
-  const char* path = "roms/mooneye-gb/tests/build/acceptance/timer/";
+  const char* path = "tests/mooneye-gb/tests/build/acceptance/timer/";
 
   failures += run_mooneye_test(path, "div_write.gb");            // pass
   failures += run_mooneye_test(path, "rapid_toggle.gb");         // pass
@@ -1933,7 +1900,7 @@ int GateBoyTests::test_mooneye_timer() {
 int GateBoyTests::test_mooneye_ppu() {
   TEST_START();
 
-  const char* path = "roms/mooneye-gb/tests/build/acceptance/ppu/";
+  const char* path = "tests/mooneye-gb/tests/build/acceptance/ppu/";
 
   failures += run_mooneye_test(path, "hblank_ly_scx_timing-GS.gb");      // p
   failures += run_mooneye_test(path, "intr_1_2_timing-GS.gb");           // p
@@ -1993,20 +1960,20 @@ int GateBoyTests::run_mooneye_test(const char* path, const char* filename) {
 
 #if 0
 
-//load_rom("roms/gb-test-roms/instr_timing/instr_timing.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/cpu_instrs.gb"); // doesn't work yet, probably mbc1 stuff
+//load_rom("tests/gb-test-roms/instr_timing/instr_timing.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/cpu_instrs.gb"); // doesn't work yet, probably mbc1 stuff
 
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/01-special.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/02-interrupts.gb"); // broken
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/03-op sp,hl.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/04-op r,imm.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/05-op rp.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/08-misc instrs.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/09-op r,r.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/10-bit ops.gb"); // pass
-//load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/01-special.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/02-interrupts.gb"); // broken
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/03-op sp,hl.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/04-op r,imm.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/05-op rp.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/08-misc instrs.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/09-op r,r.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/10-bit ops.gb"); // pass
+//load_rom("tests/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");
 
 ./cgb_sound/cgb_sound.gb
 ./cgb_sound/rom_singles/01-registers.gb

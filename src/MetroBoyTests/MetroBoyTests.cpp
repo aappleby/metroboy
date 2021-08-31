@@ -25,14 +25,14 @@ void MetroBoyApp::post() {
   int err = 0;
 
   printf("Reset\n");
-  failures +=  run_microtest("micro_cpu/build/dmg/rst_0x00.gb");
-  failures +=  run_microtest("micro_cpu/build/dmg/rst_0x08.gb");
-  failures +=  run_microtest("micro_cpu/build/dmg/rst_0x10.gb");
-  failures +=  run_microtest("micro_cpu/build/dmg/rst_0x18.gb");
-  failures +=  run_microtest("micro_cpu/build/dmg/rst_0x20.gb");
-  failures +=  run_microtest("micro_cpu/build/dmg/rst_0x28.gb");
-  failures +=  run_microtest("micro_cpu/build/dmg/rst_0x30.gb");
-  failures +=  run_microtest("micro_cpu/build/dmg/rst_0x38.gb");
+  failures +=  run_microtest("tests/micro_cpu/DMG/rst_0x00.gb");
+  failures +=  run_microtest("tests/micro_cpu/DMG/rst_0x08.gb");
+  failures +=  run_microtest("tests/micro_cpu/DMG/rst_0x10.gb");
+  failures +=  run_microtest("tests/micro_cpu/DMG/rst_0x18.gb");
+  failures +=  run_microtest("tests/micro_cpu/DMG/rst_0x20.gb");
+  failures +=  run_microtest("tests/micro_cpu/DMG/rst_0x28.gb");
+  failures +=  run_microtest("tests/micro_cpu/DMG/rst_0x30.gb");
+  failures +=  run_microtest("tests/micro_cpu/DMG/rst_0x38.gb");
   printf("\n");
   if (err) exit(1);
 
@@ -41,36 +41,33 @@ void MetroBoyApp::post() {
   printf("\n");
 }
 
-  //load("roms/gb-test-roms/cpu_instrs/cpu_instrs");
-  //load("roms/gb-test-roms/instr_timing/instr_timing");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
-  //load("roms/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
+  //load("tests/gb-test-roms/cpu_instrs/cpu_instrs");
+  //load("tests/gb-test-roms/instr_timing/instr_timing");
+  //load("tests/gb-test-roms/cpu_instrs/individual", "08-misc instrs");
+  //load("tests/gb-test-roms/cpu_instrs/individual", "11-op a,(hl)");
 
-  //load("roms/tetris"); // tetris brokennnn
+  /*pass*/ //load("tests/mooneye-gb/tests/build/acceptance", "oam_dma/basic");
+  /*pass*/ //load("tests/mooneye-gb/tests/build/acceptance", "oam_dma/reg_read");
+  /*pass*/ //load("tests/mooneye-gb/tests/build/acceptance", "oam_dma/sources-dmgABCmgbS");
+  /*pass*/ //load("tests/mooneye-gb/tests/build/acceptance", "oam_dma_restart");
+  /*pass*/ //load("tests/mooneye-gb/tests/build/acceptance", "oam_dma_start");
+  /*pass*/ //load("tests/mooneye-gb/tests/build/acceptance", "oam_dma_timing");
 
-  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/basic");
-  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/reg_read");
-  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma/sources-dmgABCmgbS");
-  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_restart");
-  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_start");
-  /*pass*/ //load("roms/mooneye-gb/tests/build/acceptance", "oam_dma_timing");
+  //load("tests/micro_cpu/DMG", "cpu_zeropage");
 
-  //load("micro_cpu/build/dmg", "cpu_zeropage");
-
-  //load("microtests/build/dmg", "dma_basic");
-  //load("microtests/build/dmg", "dma_0x8000");
-  //load("microtests/build/dmg", "dma_0xA000");
-  //load("microtests/build/dmg", "dma_0xE000");
-  //load("microtests/build/dmg", "dma_0xFF00");
-
-  //load("microtests/build/dmg", "poweron_006_oam");
+  //load("tests/microtests/DMG", "dma_basic");
+  //load("tests/microtests/DMG", "dma_0x8000");
+  //load("tests/microtests/DMG", "dma_0xA000");
+  //load("tests/microtests/DMG", "dma_0xE000");
+  //load("tests/microtests/DMG", "dma_0xFF00");
+  //load("tests/microtests/DMG", "poweron_006_oam");
 
 #endif
 
 //------------------------------------------------------------------------------
 
 int run_microtest(std::string filename) {
-  std::string path = "microtests/build/dmg/" + filename;
+  std::string path = "test/microtests/DMG/" + filename;
 
   blob rom = load_blob(path);
   MetroBoy gb;

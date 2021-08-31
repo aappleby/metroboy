@@ -152,21 +152,21 @@ void run_mooneye_acceptance() {
 
   printf("Generic");
   for (auto name : mooneye_generic_tests) {
-    std::string prefix = "roms/mooneye-gb/tests/build/acceptance/";
+    std::string prefix = "tests/mooneye-gb/tests/build/acceptance/";
     run_mooneye_test(prefix, name);
   }
   printf("\n");
 
   printf("Timer");
   for (auto name : mooneye_timer_tests) {
-    std::string prefix = "roms/mooneye-gb/tests/build/acceptance/timer/";
+    std::string prefix = "tests/mooneye-gb/tests/build/acceptance/timer/";
     run_mooneye_test(prefix, name);
   }
   printf("\n");
 
   printf("MBC1");
   for (auto name : mooneye_mbc1_tests) {
-    std::string prefix = "roms/mooneye-gb/tests/build/emulator-only/mbc1/";
+    std::string prefix = "tests/mooneye-gb/tests/build/emulator-only/mbc1/";
     run_mooneye_test(prefix, name);
   }
   printf("\n");
@@ -174,7 +174,7 @@ void run_mooneye_acceptance() {
   /*
   printf("-----PPU tests-----\n");
   for (auto name : mooneye_ppu_tests) {
-    std::string prefix = "roms/mooneye-gb/tests/build/acceptance/ppu/";
+    std::string prefix = "tests/mooneye-gb/tests/build/acceptance/ppu/";
     run_mooneye_test(prefix, name);
   }
   printf("\n");

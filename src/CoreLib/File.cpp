@@ -3,10 +3,6 @@
 
 #pragma warning(disable:4996)
 
-double blep() {
-  return 2.0;
-}
-
 size_t file_size(const char* filename) {
   FILE* f = fopen(filename, "rb");;
 

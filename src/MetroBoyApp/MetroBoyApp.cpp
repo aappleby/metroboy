@@ -51,42 +51,28 @@ void MetroBoyApp::app_init(int /*screen_w*/, int /*screen_h*/) {
 
   gb_blitter.init();
   dump_painter.init_hex();
-  load_rom("roms/tetris.gb");
 
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/01-special.gb");            // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/02-interrupts.gb");         // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/03-op sp,hl.gb");           // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/04-op r,imm.gb");           // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/05-op rp.gb");              // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb");             // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb"); // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/08-misc instrs.gb");        // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/09-op r,r.gb");             // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/10-bit ops.gb");            // pass
-  //load_rom("roms/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
-  load_rom("roms/cpu_instrs.gb"); // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/01-special.gb");            // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/02-interrupts.gb");         // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/03-op sp,hl.gb");           // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/04-op r,imm.gb");           // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/05-op rp.gb");              // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/06-ld r,r.gb");             // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb"); // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/08-misc instrs.gb");        // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/09-op r,r.gb");             // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/10-bit ops.gb");            // pass
+  //load_rom("tests/gb-test-roms/cpu_instrs/individual/11-op a,(hl).gb");          // pass
+  load_rom("tests/cpu_instrs.gb"); // pass
 
-  //load_rom("microtests/build/dmg/timer_int_halt_a.gb");
-  //load_rom("microtests/build/dmg/halt_bug.gb");
-
-  //load_rom("microtests/build/dmg/hblank_int_if_a.gb");
-  //load_rom("microtests/build/dmg/hblank_int_if_b.gb");
-
-  //load_rom("microtests/build/dmg/int_hblank_halt_scx1.gb");
-
-  //load_rom("microtests/build/dmg/flood_vram.gb");
-
-  //load_rom("roms/oh.gb"); // broken eye
-  //load_rom("roms/pocket.gb");
-  //load_rom("roms/gejmboj.gb");
-  //load_rom("roms/LinksAwakening");
-  //load_rom("roms/Prehistorik Man (U).gb");
-  //load_rom("roms/SML.gb");
+  //load_rom("tests/microtests/DMG/timer_int_halt_a.gb");
+  //load_rom("tests/microtests/DMG/halt_bug.gb");
+  //load_rom("tests/microtests/DMG/hblank_int_if_a.gb");
+  //load_rom("tests/microtests/DMG/hblank_int_if_b.gb");
+  //load_rom("tests/microtests/DMG/int_hblank_halt_scx1.gb");
+  //load_rom("tests/microtests/DMG/flood_vram.gb");
 
   //runmode = RUN_FAST;
-
-  //load_memdump("roms", "LinksAwakening_house");
-  //load_memdump("roms", "LinksAwakening_dog");
 };
 
 //----------------------------------------

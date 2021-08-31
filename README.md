@@ -56,11 +56,12 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 
 All the code is cross-platform and has been tested under Windows 10, Windows 11, Debian, Ubuntu, and WSL-G. Clone the repo and don't forget to do "git submodule init" and "git submodule update" to pull down the support libraries (SDL2, glm, imgui, and json).
 
-- On Windows, open MetroBoy.sln in Visual Studio Community 2019 and build and run as ususal. You may need to set the current working directory for the projects to the repo root.
+- On Windows, open MetroBoy.sln in Visual Studio Community 2019 and build and run as ususal. If you get a "SDL2.dll not found" error, you can either install SDL2 globally, manually copy SDL2.dll into the same folder as the executables, or change "Working Directory" in Project Properties -> Configuration Properties -> Debugging to "$(SolutionDir)".
 
 - On Linux, make sure you have libsdl2-dev installed and run "ninja" from the repo root. You'll get a set of "fast mode" binaries in bin/, which should be launched from the repo root as they make assumptions about directories and such.
 
-- To run the microtests on either platform, you'll first need to build and install [wla-dx](https://github.com/vhelin/wla-dx), then run "ninja" in tests/microtests to assemble all the test roms. Once the test roms are built, run GateBoyTests from root. The tests should take a second or two, and there should be 20 (known) failures.
+- Test roms are in tests/microtests/DMG. If you're using some Linux flavor, you can rebuild them from source by installing [wla-dx](https://github.com/vhelin/wla-dx) and then running "ninja" in tests/microtests.
+- Once the test roms are built, run bin/GateBoyTests from root. The tests should take a second or two, and there should be 20 (known) failures.
 - Running other tests (mooneye, mealybug, etc) requires additional setup that I haven't automated yet. :/
 
 # What happened to MetroBoy?

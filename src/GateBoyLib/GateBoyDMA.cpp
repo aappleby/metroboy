@@ -120,14 +120,17 @@ void GateBoy::tock_dma_logic() {
   if (DELTA_DE && bit(CLKREQp)) {
     dma.LENE_DMA_TRIG_d4.state = uint8_t(bit(dma.LUVY_DMA_TRIG_d0.state));
     dma.MYTE_DMA_DONE.state = dma_lo == 159;
+
     if (bit(dma.LENE_DMA_TRIG_d4.state)) {
       dma.MYTE_DMA_DONE.state &= ~BIT_DATA;
     }
+
     if (bit(dma.MYTE_DMA_DONE.state)) {
       dma.LARA_DMA_LATCHn = 1;
       dma.LOKY_DMA_LATCHp = 0;
     }
-    else if (bit(dma.LENE_DMA_TRIG_d4.state)) {
+    
+    if (bit(dma.LENE_DMA_TRIG_d4.state)) {
       dma.LARA_DMA_LATCHn = 0;
       dma.LOKY_DMA_LATCHp = 1;
     }
@@ -140,8 +143,6 @@ void GateBoy::tock_dma_logic() {
 
   dma.LYXE_DMA_LATCHp.nor_latch(CPU_WR_FF46, dma.LENE_DMA_TRIG_d4.state);
 
-  wire DMA_CLK = and2(~and2(CLK_xxxxEFGH, CLKREQp), dma.LOKY_DMA_LATCHp.state);
-
   if (bit(dma.LENE_DMA_TRIG_d4.state)) {
     dma.NAKY_DMA_A00p.state = 0;
     dma.PYRO_DMA_A01p.state = 0;
@@ -152,15 +153,16 @@ void GateBoy::tock_dma_logic() {
     dma.NUTO_DMA_A06p.state = 0;
     dma.MUGU_DMA_A07p.state = 0;
   }
-  else {
-    dma.NAKY_DMA_A00p.dff(DMA_CLK,                  ~dma.NAKY_DMA_A00p.state);
-    dma.PYRO_DMA_A01p.dff(~dma.NAKY_DMA_A00p.state, ~dma.PYRO_DMA_A01p.state);
-    dma.NEFY_DMA_A02p.dff(~dma.PYRO_DMA_A01p.state, ~dma.NEFY_DMA_A02p.state);
-    dma.MUTY_DMA_A03p.dff(~dma.NEFY_DMA_A02p.state, ~dma.MUTY_DMA_A03p.state);
-    dma.NYKO_DMA_A04p.dff(~dma.MUTY_DMA_A03p.state, ~dma.NYKO_DMA_A04p.state);
-    dma.PYLO_DMA_A05p.dff(~dma.NYKO_DMA_A04p.state, ~dma.PYLO_DMA_A05p.state);
-    dma.NUTO_DMA_A06p.dff(~dma.PYLO_DMA_A05p.state, ~dma.NUTO_DMA_A06p.state);
-    dma.MUGU_DMA_A07p.dff(~dma.NUTO_DMA_A06p.state, ~dma.MUGU_DMA_A07p.state);
+  else if (DELTA_HA && bit(CLKREQp) && bit(dma.LOKY_DMA_LATCHp.state)) {
+    dma_lo++;
+    dma.NAKY_DMA_A00p.state = bit(dma_lo, 0);
+    dma.PYRO_DMA_A01p.state = bit(dma_lo, 1);
+    dma.NEFY_DMA_A02p.state = bit(dma_lo, 2);
+    dma.MUTY_DMA_A03p.state = bit(dma_lo, 3);
+    dma.NYKO_DMA_A04p.state = bit(dma_lo, 4);
+    dma.PYLO_DMA_A05p.state = bit(dma_lo, 5);
+    dma.NUTO_DMA_A06p.state = bit(dma_lo, 6);
+    dma.MUGU_DMA_A07p.state = bit(dma_lo, 7);
   }
 
   if ((new_addr == 0xFF46) && bit(CPU_RDp)) {

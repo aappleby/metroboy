@@ -27,6 +27,7 @@ void GateBoy::tock_clocks_gates() {
   /*_p01.ADYK*/ clk.ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), APUK_ABxxxxGH_old.qn_old());
 
   /*_PIN_75*/ clk.PIN_75_CLK_OUT.pin_out(BUDE_xxxxEFGH(), BUDE_xxxxEFGH());
+
   /*_SIG_CPU_BOWA_Axxxxxxx*/ clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
   /*_SIG_CPU_BEDO_xBCDEFGH*/ clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(BEDO_Axxxxxxx());
   /*_SIG_CPU_BEKO_ABCDxxxx*/ clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(BEKO_ABCDxxxx());
@@ -38,28 +39,27 @@ void GateBoy::tock_clocks_gates() {
 }
 
 void GateBoy::tock_clocks_logic() {
-  clk.PIN_73_CLK_DRIVE.pin_out(clk.PIN_74_CLK.clk(), clk.PIN_74_CLK.clk());
+  wire c = clk.PIN_74_CLK.clk();
 
-  wire ARYS_CLKIN = not1(clk.PIN_74_CLK.clk());
-  clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.out_mid(), ARYS_CLKIN);
-  clk.ANOS_DEGLITCH = nand2(clk.PIN_74_CLK.clk(), clk.AVET_DEGLITCH.out_mid());
-  clk.AVET_DEGLITCH = nand2(clk.ANOS_DEGLITCH.out_mid(), ARYS_CLKIN);
-  clk.ANOS_DEGLITCH = nand2(clk.PIN_74_CLK.clk(), clk.AVET_DEGLITCH.out_mid());
+  clk.PIN_73_CLK_DRIVE.pin_out(c, c);
 
-  wire ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.out_new());
-  wire ATAN_AxCxExGx = not1(ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
+  clk.AVET_DEGLITCH = bit(c);
+  clk.ANOS_DEGLITCH = bit(~c);
 
   DFF9 ADYK_ABCxxxxH_old = clk.ADYK_ABCxxxxH;
   DFF9 AFUR_xxxxEFGH_old = clk.AFUR_xxxxEFGH;
   DFF9 ALEF_AxxxxFGH_old = clk.ALEF_AxxxxFGH;
   DFF9 APUK_ABxxxxGH_old = clk.APUK_ABxxxxGH;
 
-  clk.AFUR_xxxxEFGH.dff9(ATAN_AxCxExGx, UPOJ_MODE_PRODn(), ADYK_ABCxxxxH_old.qp_old());
-  clk.ALEF_AxxxxFGH.dff9(ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), AFUR_xxxxEFGH_old.qn_old());
-  clk.APUK_ABxxxxGH.dff9(ATAN_AxCxExGx, UPOJ_MODE_PRODn(), ALEF_AxxxxFGH_old.qn_old());
-  clk.ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), APUK_ABxxxxGH_old.qn_old());
+  wire UPOJ_MODE_PRODn = nand3(~rst.PIN_77_T1.state, ~rst.PIN_76_T2.state, rst.PIN_71_RST.state);
+
+  clk.AFUR_xxxxEFGH.dff9(c,  UPOJ_MODE_PRODn, ADYK_ABCxxxxH_old.qp_old());
+  clk.ALEF_AxxxxFGH.dff9(~c, UPOJ_MODE_PRODn, AFUR_xxxxEFGH_old.qn_old());
+  clk.APUK_ABxxxxGH.dff9(c,  UPOJ_MODE_PRODn, ALEF_AxxxxFGH_old.qn_old());
+  clk.ADYK_ABCxxxxH.dff9(~c, UPOJ_MODE_PRODn, APUK_ABxxxxGH_old.qn_old());
 
   clk.PIN_75_CLK_OUT.pin_out(BUDE_xxxxEFGH(), BUDE_xxxxEFGH());
+
   clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
   clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(BEDO_Axxxxxxx());
   clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(BEKO_ABCDxxxx());

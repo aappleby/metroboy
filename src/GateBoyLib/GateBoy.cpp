@@ -587,7 +587,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   //-----------------------------------------------------------------------------
   // Sys clock signals
 
-  tock_clocks();
+  logic_mode ? tock_clocks_logic() : tock_clocks_gates();
 
   {
     /*_p07.UJYV*/ wire UJYV_CPU_RDn = not1(cpu_signals.SIG_IN_CPU_RDp.out_new());
@@ -609,7 +609,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   tock_reset(bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p);
 
   tock_lcdc(); // LCDC has to be near the top as it controls the video reset signal
-  tock_vid_clocks();
+  logic_mode ? tock_vid_clocks_logic() : tock_vid_clocks_gates();
   tock_lyc();
   tock_lcd();
   tock_joypad();

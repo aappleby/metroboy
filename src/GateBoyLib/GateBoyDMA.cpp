@@ -101,10 +101,8 @@ void GateBoy::tock_dma_logic() {
 
   dma.LYXE_DMA_LATCHp.state |= FF46_WRp;
 
-  {
-    auto old_data = pack_old(8, (BitBase*)&old_bus.BUS_CPU_D00p);
-    dff8p_8(&dma.NAFA_DMA_A08n, ~FF46_WRp, (uint8_t)old_data);
-  }
+  auto old_data = pack_old(8, (BitBase*)&old_bus.BUS_CPU_D00p);
+  dff8p_8(&dma.NAFA_DMA_A08n, ~FF46_WRp, (uint8_t)old_data);
 
   if (DELTA_DE) {
     auto dma_lo = pack_old(8, &dma.NAKY_DMA_A00p);

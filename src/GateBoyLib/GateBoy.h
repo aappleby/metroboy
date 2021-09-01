@@ -143,8 +143,10 @@ struct GateBoy {
 
   void tock_joypad();
   void tock_interrupts();
-  void tock_clocks();
-  void tock_vid_clocks();
+  void tock_clocks_gates();
+  void tock_clocks_logic();
+  void tock_vid_clocks_gates();
+  void tock_vid_clocks_logic();
   void tock_div();
   void tock_timer();
   void tock_reset(DFF17 UPOF_DIV15p);

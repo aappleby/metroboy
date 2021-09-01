@@ -198,6 +198,20 @@ struct DFF8p : public BitBase {
   }
 };
 
+inline void dff8p_8(DFF8p* r, wire CLKp, uint8_t Dn) {
+  for (int i = 0; i < 8; i++) {
+    r[i].dff8p(CLKp, bit(Dn, i));
+  }
+}
+
+inline void rst_8(BitBase* r) {
+  for (int i = 0; i < 8; i++) r[i].state = 0;
+}
+
+inline void set_8(BitBase* r, uint8_t d) {
+  for (int i = 0; i < 8; i++) r[i].state = bit(d, i);
+}
+
 //-----------------------------------------------------------------------------
 // 9-rung register with async _set_?, inverting input, and dual outputs. Looks like
 // Reg8 with a hat and a belt. Used by clock phase (CHECK), LYC, BGP, OBP0,
@@ -469,6 +483,12 @@ struct Bus : private BitBase {
     if (t.state & TRI_DRIVEN) state = t.state;
   }
 };
+
+inline void tri_8(Bus* b, uint8_t d) {
+  for (int i = 0; i < 8; i++) {
+    b[i].tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(d, i)) });
+  }
+}
 
 //-----------------------------------------------------------------------------
 // Pin structs store the bit as it apperas INSIDE the chip. Bits are inverted

@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_dma() {
+void GateBoy::tock_dma_gates() {
   /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(), new_bus.XEDA_FF46p());
   /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
   /*#p04.NAFA*/ dma.NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, old_bus.BUS_CPU_D00p.out_old());
@@ -67,6 +67,112 @@ void GateBoy::tock_dma() {
   /*_BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri_bus(RALY_DMA5_TO_CD5);
   /*_BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri_bus(RESU_DMA6_TO_CD6);
   /*_BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(NUVY_DMA7_TO_CD7);
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::tock_dma_logic() {
+  uint16_t new_addr = (uint16_t)pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+
+  wire CLK_xxxxEFGx = (((phase_total + 1) & 7) == 4) || (((phase_total + 1) & 7) == 5) | (((phase_total + 1) & 7) == 6);
+  wire CLK_xxxxEFGH = (((phase_total + 1) & 7) == 4) || (((phase_total + 1) & 7) == 5) | (((phase_total + 1) & 7) == 6) | (((phase_total + 1) & 7) == 7);
+
+  wire CPU_RDp = cpu_signals.SIG_IN_CPU_RDp.out_new();
+  wire CPU_WRp = and2(cpu_signals.SIG_IN_CPU_WRp.out_new(), CLK_xxxxEFGx);
+  wire SYS_RSTp = AVOR_SYS_RSTp();
+  auto dma_lo = pack_old(8, &dma.NAKY_DMA_A00p);
+
+  wire CLKREQp = clk.SIG_CPU_CLKREQ.state;
+
+  wire CPU_WR_FF46 = CPU_WRp & (new_addr == 0xFF46);
+
+  dma.NAFA_DMA_A08n.dff8p(~CPU_WR_FF46, old_bus.BUS_CPU_D00p.state);
+  dma.PYNE_DMA_A09n.dff8p(~CPU_WR_FF46, old_bus.BUS_CPU_D01p.state);
+  dma.PARA_DMA_A10n.dff8p(~CPU_WR_FF46, old_bus.BUS_CPU_D02p.state);
+  dma.NYDO_DMA_A11n.dff8p(~CPU_WR_FF46, old_bus.BUS_CPU_D03p.state);
+  dma.NYGY_DMA_A12n.dff8p(~CPU_WR_FF46, old_bus.BUS_CPU_D04p.state);
+  dma.PULA_DMA_A13n.dff8p(~CPU_WR_FF46, old_bus.BUS_CPU_D05p.state);
+  dma.POKU_DMA_A14n.dff8p(~CPU_WR_FF46, old_bus.BUS_CPU_D06p.state);
+  dma.MARU_DMA_A15n.dff8p(~CPU_WR_FF46, old_bus.BUS_CPU_D07p.state);
+
+  if (bit(SYS_RSTp)) {
+    dma.LENE_DMA_TRIG_d4.state = 0;
+    dma.LUVY_DMA_TRIG_d0.state = 0;
+    dma.LYXE_DMA_LATCHp.state = 0;
+    dma.MYTE_DMA_DONE.state = 0;
+    dma.MATU_DMA_RUNNINGp.state = 0;
+
+    dma.LARA_DMA_LATCHn = 1;
+    dma.LOKY_DMA_LATCHp = 0;
+    dma.LARA_DMA_LATCHn = 1;
+
+    dma.NAKY_DMA_A00p.state = 0;
+    dma.PYRO_DMA_A01p.state = 0;
+    dma.NEFY_DMA_A02p.state = 0;
+    dma.MUTY_DMA_A03p.state = 0;
+    dma.NYKO_DMA_A04p.state = 0;
+    dma.PYLO_DMA_A05p.state = 0;
+    dma.NUTO_DMA_A06p.state = 0;
+    dma.MUGU_DMA_A07p.state = 0;
+    return;
+  }
+
+  if (DELTA_DE && bit(CLKREQp)) {
+    dma.LENE_DMA_TRIG_d4.state = uint8_t(bit(dma.LUVY_DMA_TRIG_d0.state));
+    dma.MYTE_DMA_DONE.state = dma_lo == 159;
+    if (bit(dma.LENE_DMA_TRIG_d4.state)) {
+      dma.MYTE_DMA_DONE.state &= ~BIT_DATA;
+    }
+    if (bit(dma.MYTE_DMA_DONE.state)) {
+      dma.LARA_DMA_LATCHn = 1;
+      dma.LOKY_DMA_LATCHp = 0;
+    }
+    else if (bit(dma.LENE_DMA_TRIG_d4.state)) {
+      dma.LARA_DMA_LATCHn = 0;
+      dma.LOKY_DMA_LATCHp = 1;
+    }
+  }
+
+  if (DELTA_HA && bit(CLKREQp)) {
+    dma.LUVY_DMA_TRIG_d0.state = and2(~CPU_WR_FF46, dma.LYXE_DMA_LATCHp.state);
+    dma.MATU_DMA_RUNNINGp.state = dma.LOKY_DMA_LATCHp.state;
+  }
+
+  dma.LYXE_DMA_LATCHp.nor_latch(CPU_WR_FF46, dma.LENE_DMA_TRIG_d4.state);
+
+  wire DMA_CLK = and2(~and2(CLK_xxxxEFGH, CLKREQp), dma.LOKY_DMA_LATCHp.state);
+
+  if (bit(dma.LENE_DMA_TRIG_d4.state)) {
+    dma.NAKY_DMA_A00p.state = 0;
+    dma.PYRO_DMA_A01p.state = 0;
+    dma.NEFY_DMA_A02p.state = 0;
+    dma.MUTY_DMA_A03p.state = 0;
+    dma.NYKO_DMA_A04p.state = 0;
+    dma.PYLO_DMA_A05p.state = 0;
+    dma.NUTO_DMA_A06p.state = 0;
+    dma.MUGU_DMA_A07p.state = 0;
+  }
+  else {
+    dma.NAKY_DMA_A00p.dff(DMA_CLK,                  ~dma.NAKY_DMA_A00p.state);
+    dma.PYRO_DMA_A01p.dff(~dma.NAKY_DMA_A00p.state, ~dma.PYRO_DMA_A01p.state);
+    dma.NEFY_DMA_A02p.dff(~dma.PYRO_DMA_A01p.state, ~dma.NEFY_DMA_A02p.state);
+    dma.MUTY_DMA_A03p.dff(~dma.NEFY_DMA_A02p.state, ~dma.MUTY_DMA_A03p.state);
+    dma.NYKO_DMA_A04p.dff(~dma.MUTY_DMA_A03p.state, ~dma.NYKO_DMA_A04p.state);
+    dma.PYLO_DMA_A05p.dff(~dma.NYKO_DMA_A04p.state, ~dma.PYLO_DMA_A05p.state);
+    dma.NUTO_DMA_A06p.dff(~dma.PYLO_DMA_A05p.state, ~dma.NUTO_DMA_A06p.state);
+    dma.MUGU_DMA_A07p.dff(~dma.NUTO_DMA_A06p.state, ~dma.MUGU_DMA_A07p.state);
+  }
+
+  if ((new_addr == 0xFF46) && bit(CPU_RDp)) {
+    new_bus.BUS_CPU_D00p.tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(~dma.NAFA_DMA_A08n.state)) });
+    new_bus.BUS_CPU_D01p.tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(~dma.PYNE_DMA_A09n.state)) });
+    new_bus.BUS_CPU_D02p.tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(~dma.PARA_DMA_A10n.state)) });
+    new_bus.BUS_CPU_D03p.tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(~dma.NYDO_DMA_A11n.state)) });
+    new_bus.BUS_CPU_D04p.tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(~dma.NYGY_DMA_A12n.state)) });
+    new_bus.BUS_CPU_D05p.tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(~dma.PULA_DMA_A13n.state)) });
+    new_bus.BUS_CPU_D06p.tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(~dma.POKU_DMA_A14n.state)) });
+    new_bus.BUS_CPU_D07p.tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(~dma.MARU_DMA_A15n.state)) });
+  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------

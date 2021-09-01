@@ -10,27 +10,36 @@ void     commit_blob(void* blob, size_t size);
 //-----------------------------------------------------------------------------
 
 // These _must_ be defined for all builds.
-#define BIT_DATA   0b00000001
-#define BIT_CLOCK  0b00000010
-#define TRI_DRIVEN 0b00001000
+const wire BIT_DATA   = 0b00000001;
+const wire TRI_DRIVEN = 0b00001000;
+const wire BIT_CLOCK  = 0b00000010;
+
 
 // These are only used for error checking and can be disabled in fast builds.
-#ifdef NO_GATE_BITS
 
-#define BIT_PULLED 0b00000000
-#define BIT_DRIVEN 0b00000000
-#define BIT_OLD    0b00000000
-#define BIT_NEW    0b00000000
-#define TRI_NEW    0b00000000
-
+#ifdef USE_DRIVE_FLAGS
+const wire BIT_PULLED = 0b00000100;
+const wire BIT_DRIVEN = 0b00001000;
 #else
+const wire BIT_PULLED = 0b00000000;
+const wire BIT_DRIVEN = 0b00000000;
+#endif
 
-#define BIT_PULLED 0b00000100
-#define BIT_DRIVEN 0b00001000
-#define BIT_OLD    0b00010000
-#define BIT_NEW    0b00100000
-#define TRI_NEW    0b00100000
+#ifdef USE_OLDNEW_FLAGS
+const wire BIT_OLD = 0b00010000;
+const wire BIT_NEW = 0b00100000;
+const wire TRI_NEW = 0b00100000;
+#else
+const wire BIT_OLD = 0b00000000;
+const wire BIT_NEW = 0b00000000;
+const wire TRI_NEW = 0b00000000;
+#endif
 
+// Logic mode only cares that DFFs and buses and such contain the correct bit.
+#ifdef YES_LOGIC_VS_GATES
+const wire BITS_TO_HASH = BIT_DATA;
+#else
+const wire BITS_TO_HASH = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
 #endif
 
 //-----------------------------------------------------------------------------
@@ -50,19 +59,25 @@ struct BitBase {
   wire qp_new() const { check_new(); return state; }
   wire qn_new() const { check_new(); return ~state; }
 
-#ifdef NO_GATE_BITS
-  void check_old() const {}
-  void check_new() const {}
-#else
   void check_old() const {
+#ifdef USE_DRIVE_FLAGS
     CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-    CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_OLD);
-  }
-  void check_new() const {
-    CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-    CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
-  }
 #endif
+
+#ifdef USE_OLDNEW_FLAGS
+    CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_OLD);
+#endif
+  }
+
+  void check_new() const {
+#ifdef USE_DRIVE_FLAGS
+    CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
+#endif
+
+#ifdef USE_OLDNEW_FLAGS
+    CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
+#endif
+  }
 };
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
@@ -287,6 +302,18 @@ struct DFF13 : public BitBase {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public BitBase {
+
+  void dff(wire CLKp, wire Dp) {
+    check_old();
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
+
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
+
+    state = uint8_t(bit(d1) | clk_new | BIT_NEW | BIT_DRIVEN);
+  }
+
+
   void dff17(wire CLKp, wire RSTn, wire Dp) {
     check_old();
     wire clk_old = state & BIT_CLOCK;
@@ -559,6 +586,10 @@ private:
 // NORLATCH_06 << RST
 
 struct NorLatch : public BitBase {
+  void rst() {
+    state = BIT_DRIVEN | BIT_NEW | 0;
+  }
+
   void nor_latch(wire SETp, wire RSTp) {
     check_old();
     state |= SETp;

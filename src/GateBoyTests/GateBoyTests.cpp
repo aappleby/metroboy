@@ -68,10 +68,8 @@ int main(int argc, char** argv) {
 
   GateBoyTests t;
 
-#ifndef FAST_MODE
   failures += t.test_reset_cart_vs_dump();
   failures += t.test_fastboot_vs_slowboot();
-#endif
 
 #if 1
   failures += t.test_bootrom();
@@ -81,7 +79,7 @@ int main(int argc, char** argv) {
   failures += t.test_dma();
   failures += t.test_init();
 
-#ifndef FAST_MODE
+#ifdef USE_DRIVE_FLAGS
   failures += t.test_ext_bus();
 #endif
 
@@ -118,7 +116,7 @@ int main(int argc, char** argv) {
 //-----------------------------------------------------------------------------
 
 int diff(const char* name_a, void* blob_a, int start_a, int end_a,
-         const char* name_b, void* blob_b, int start_b, int end_b) {
+         const char* name_b, void* blob_b, int start_b, int end_b, uint8_t mask) {
   int failures = 0;
   int size_a = end_a - start_a;
   int size_b = end_b - start_b;
@@ -135,14 +133,14 @@ int diff(const char* name_a, void* blob_a, int start_a, int end_a,
     int ia = start_a + i;
     int ib = start_b + i;
 
-    int byte_a = bytes_a[ia];
-    int byte_b = bytes_b[ib];
+    int byte_a = bytes_a[ia] & mask;
+    int byte_b = bytes_b[ib] & mask;
 
     EXPECT_EQ(byte_a, byte_b,
               "%s != %s @ %5d : %s[%5d] = 0x%02x, %s[%5d] = 0x%02x\n",
               name_a, name_b, i,
-              name_a, ia, bytes_a[ia],
-              name_b, ib, bytes_b[ib]);
+              name_a, ia, byte_a,
+              name_b, ib, byte_b);
   }
   return failures;
 }
@@ -247,7 +245,7 @@ int GateBoyTests::test_fastboot_vs_slowboot() {
   int start = 0;
   int end   = offsetof(GateBoy, sentinel3);
 
-  failures += diff("fastboot", &gb1, start, end, "slowboot", &gb2, start, end);
+  failures += diff("fastboot", &gb1, start, end, "slowboot", &gb2, start, end, BITS_TO_HASH);
 
   TEST_END();
 }
@@ -276,7 +274,7 @@ int GateBoyTests::test_reset_cart_vs_dump() {
   int start = 0;
   int end   = offsetof(GateBoy, sentinel3);
 
-  failures += diff("dump", &gb1, start, end, "reset_to_cart", &gb2, start, end);
+  failures += diff("dump", &gb1, start, end, "reset_to_cart", &gb2, start, end, BITS_TO_HASH);
 
   TEST_END();
 }
@@ -1009,8 +1007,8 @@ int GateBoyTests::test_clk() {
 #pragma warning(disable : 4189) // unref var
 
 char cp_ext(uint8_t state) {
-  if (state & BIT_DRIVEN) return bit(state) ? '0' : '1';
-  if (state & BIT_PULLED) return bit(state) ? 'v' : '^';
+  if ((state & (BIT_DRIVEN | BIT_PULLED)) == BIT_DRIVEN) return bit(state) ? '0' : '1';
+  if ((state & (BIT_DRIVEN | BIT_PULLED)) == BIT_PULLED) return bit(state) ? 'v' : '^';
   return 'X';
 }
 

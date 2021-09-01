@@ -1,5 +1,21 @@
 #pragma once
 
+// Regression test the LogicBoy implementation against GateBoy
+#define YES_LOGIC_VS_GATES
+
+
+
+// Logic-vs-gates mode - turn all the checks off except the hash
+#ifdef YES_LOGIC_VS_GATES
+
+#define NO_CHECK
+#define YES_HASH
+#define NO_OLDNEW_FLAGS
+#define NO_DRIVE_FLAGS
+
+#else
+
+
 #ifdef _DEBUG
 
 // Debug builds - painfully, ungodly slow.
@@ -11,28 +27,34 @@
 #define YES_HASH
 
 // Verify that all registers were flagged as NEW after a logic pass, and set them back to OLD.
-#define YES_COMMIT
+#define USE_OLDNEW_FLAGS
 
-// Use the extra gate flag bits to check for old/new violations, floating gates, and bus collisions.
-#define YES_GATE_BITS
+// Use the extra gate flag bits to check for floating gates and bus collisions.
+#define USE_DRIVE_FLAGS
 
 #elif FAST_MODE
 
 // As-fast-as-possible build - turn all error checking off.
-
 #define NO_CHECK
 #define NO_HASH
-#define NO_COMMIT
-#define NO_GATE_BITS
+#define NO_OLDNEW_FLAGS
+#define NO_DRIVE_FLAGS
 
 #else
 
-// Running tests build - don't bother with CHECK()s or hash tests, but do use all
-// the gate bits as they get folded into the memory dump.
+// Running tests in optimized mode build - don't bother with CHECK()s or hash
+// tests, but do use all the gate bits as they get folded into the memory dump.
 
 #define NO_CHECK
 #define NO_HASH
-#define YES_COMMIT
-#define YES_GATE_BITS
+#define USE_OLDNEW_FLAGS
+#define USE_DRIVE_FLAGS
+
+#endif
+
+
+
+
+
 
 #endif

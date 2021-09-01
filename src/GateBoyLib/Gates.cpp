@@ -8,6 +8,7 @@
 //-----------------------------------------------------------------------------
 
 void combine_hash(uint64_t& a, uint64_t b) {
+  b &= BITS_TO_HASH;
   a = swap((a ^ b) * 0xff51afd7ed558ccd);
 }
 

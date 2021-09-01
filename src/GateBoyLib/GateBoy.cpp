@@ -356,9 +356,34 @@ void GateBoy::next_phase(const blob& cart_blob) {
 
   probes.begin_pass((phase_total + 1) & 7);
 
+#ifdef YES_LOGIC_VS_GATES
+
+  GateBoy& gb1 = *this;
+
+  static GateBoy gb2;
+  memcpy(&gb2, &gb1, sizeof(GateBoy));
+
+  gb1.logic_mode = false;
+  gb2.logic_mode = true;
+
+  gb1.tock_slow(cart_blob, 0);
+  gb2.tock_slow(cart_blob, 0);
+
+  uint64_t gb1_hash = gb1.commit_and_hash();
+  uint64_t gb2_hash = gb2.commit_and_hash();
+
+  if (gb1_hash != gb2_hash) {
+    LOG_R("Logic mode and gates mode mismatch!\n");
+    ASSERT_P(false);
+  }
+
+  uint64_t hash_new = gb1_hash;
+
+#else
+
   tock_slow(cart_blob, 0);
 
-#ifndef NO_HASH
+#ifdef YES_HASH
   uint64_t hash_old = commit_and_hash();
 
   static GateBoy gb1;
@@ -370,7 +395,7 @@ void GateBoy::next_phase(const blob& cart_blob) {
 
   uint64_t hash_new = commit_and_hash();
 
-#ifndef NO_HASH
+#ifdef YES_HASH
   if (hash_old != hash_new) {
     LOG_Y("Sim not stable after second pass!\n");
 
@@ -388,6 +413,8 @@ void GateBoy::next_phase(const blob& cart_blob) {
 
     LOG_R("\n");
   }
+#endif
+
 #endif
 
   //----------------------------------------
@@ -589,7 +616,8 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   tock_serial();
   tock_timer();
   tock_bootrom();
-  tock_dma();
+
+  logic_mode ? tock_dma_logic() : tock_dma_gates();
 
   //----------------------------------------
 

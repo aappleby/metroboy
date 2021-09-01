@@ -100,7 +100,7 @@ struct GateBoy {
 
   int64_t commit_and_hash() {
     int64_t hash = 0;
-#ifndef NO_HASH
+#ifdef YES_HASH
     {
       uint8_t* a = reg_begin();
       uint8_t* b = reg_end();
@@ -108,7 +108,7 @@ struct GateBoy {
     }
 #endif
 
-#ifndef NO_COMMIT
+#ifdef USE_OLDNEW_FLAGS
     {
       uint8_t* a = reg_begin();
       uint8_t* b = reg_end();
@@ -136,11 +136,10 @@ struct GateBoy {
   void tock_lyc();
   void tock_lcd();
 
+  void tock_dma_gates();
+  void tock_dma_logic();
 
-
-
-  void tock_dma();
-    void set_pins();
+  void set_pins();
 
   void tock_joypad();
   void tock_interrupts();
@@ -545,6 +544,12 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
   // Bookkeeping
+
+#ifdef YES_LOGIC_VS_GATES
+  bool logic_mode = false;
+#else
+  const bool logic_mode = false;
+#endif
 
   double   sim_time = 0;
   uint64_t phase_total = 0;

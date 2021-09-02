@@ -595,7 +595,16 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
 
   logic_mode ? tock_clocks_logic() : tock_clocks_gates();
 
-  {
+  if (logic_mode) {
+    wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+    wire CLK_xxCDEFGH = !!(phase_mask_new & 0b00111111);
+
+    cpu_signals.TEDO_CPU_RDp        = cpu_signals.SIG_IN_CPU_RDp.state;
+    cpu_signals.APOV_CPU_WRp        = CLK_xxxxEFGx & cpu_signals.SIG_IN_CPU_WRp.state;
+    cpu_signals.TAPU_CPU_WRp        = cpu_signals.APOV_CPU_WRp.state;
+    cpu_signals.ABUZ_EXT_RAM_CS_CLK = CLK_xxCDEFGH & cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
+  }
+  else {
     /*_p07.UJYV*/ wire UJYV_CPU_RDn = not1(cpu_signals.SIG_IN_CPU_RDp.out_new());
     /*_p07.TEDO*/ cpu_signals.TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
 
@@ -621,7 +630,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   tock_joypad();
   tock_serial();
   tock_timer();
-  tock_bootrom();
+  logic_mode ? tock_bootrom_logic() : tock_bootrom_gates();
 
   logic_mode ? tock_dma_logic() : tock_dma_gates();
 

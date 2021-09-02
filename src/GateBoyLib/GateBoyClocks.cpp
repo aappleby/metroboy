@@ -46,19 +46,22 @@ void GateBoy::tock_clocks_logic() {
   clk.AVET_DEGLITCH = bit(c);
   clk.ANOS_DEGLITCH = bit(~c);
 
-  clk.AFUR_xxxxEFGH.state = !!(phase_mask_new & 0b00001111);
-  clk.ALEF_AxxxxFGH.state = !!(phase_mask_new & 0b10000111);
-  clk.APUK_ABxxxxGH.state = !!(phase_mask_new & 0b11000011);
-  clk.ADYK_ABCxxxxH.state = !!(phase_mask_new & 0b11100001);
-
-  clk.PIN_75_CLK_OUT.pin_out(clk.AFUR_xxxxEFGH.state, clk.AFUR_xxxxEFGH.state);
-
   wire CLK_Axxxxxxx = !!(phase_mask_new & 0b10000000);
   wire CLK_xBCDEFGH = !!(phase_mask_new & 0b01111111);
   wire CLK_ABCDxxxx = !!(phase_mask_new & 0b11110000);
   wire CLK_xxxxEFGH = !!(phase_mask_new & 0b00001111);
   wire CLK_ABCDEFxx = !!(phase_mask_new & 0b11111100);
   wire CLK_AxxxxxGH = !!(phase_mask_new & 0b10000011);
+  wire CLK_AxxxxFGH = !!(phase_mask_new & 0b10000111);
+  wire CLK_ABxxxxGH = !!(phase_mask_new & 0b11000011);
+  wire CLK_ABCxxxxH = !!(phase_mask_new & 0b11100001);
+
+  clk.AFUR_xxxxEFGH.state = CLK_xxxxEFGH;
+  clk.ALEF_AxxxxFGH.state = CLK_AxxxxFGH;
+  clk.APUK_ABxxxxGH.state = CLK_ABxxxxGH;
+  clk.ADYK_ABCxxxxH.state = CLK_ABCxxxxH;
+
+  clk.PIN_75_CLK_OUT.pin_out(CLK_xxxxEFGH, CLK_xxxxEFGH);
 
   clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(CLK_Axxxxxxx);
   clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(CLK_xBCDEFGH);

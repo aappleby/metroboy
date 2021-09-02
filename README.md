@@ -17,10 +17,10 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 ## GateBoy FAQ
 
 - How is this simulation connected to the Furrtek schematics?
-  - Furrtek assigned every gate on the die and in the schematic a 4-character code like "ASUR" or "BALY". Each of those gates has a corresponding line in the GateBoy source code. Lines in the source are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
+  - Furrtek assigned every gate on the die and in the schematic a 4-character code like "ASUR" or "BALY". Each of those gates has a corresponding line in the GateBoy source code. Lines in the source are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR (which happens to be a 2-mux) is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
   - Here's a chunk of the unmodified die shot with ASUR in the middle - <img src="images/ASUR_context1.png" alt="drawing" width="100%"/>
   - Here's the same chunk with Furrtek's annotations - <img src="images/ASUR_context2.png" alt="drawing" width="100%"/>
-  - And here's a closeup - <img src="images/ASUR_traced.png" alt="drawing" width="100%"/>
+  - And here's a closeup showing the three inputs coming into the top "rungs" of the cell, and the output at the bottom - <img src="images/ASUR_traced.png" alt="drawing" width="100%"/>
   - which corresponds to this ASUR in Furrtek's schematic - <img src="images/ASUR_schematic.png" alt="drawing" width="100%"/>
   - which in turn gets translated to this ASUR in GateBoy's code - <img src="images/ASUR_code.png" alt="drawing" width="100%"/>
   - Repeat that a few thousand times, spend a year-ish debugging, and you get GateBoy. To give you a sense of scale, here's the whole die with a red dot covering ASUR - there are currently 2674 active cells in GateBoy, and another thousand-ish in the audio hardware that aren't being simulated - <img src="images/ASUR_die.png" alt="drawing" width="100%"/>

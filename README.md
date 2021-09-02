@@ -67,7 +67,7 @@ All the code is cross-platform and has been tested under Windows 10, Windows 11,
 
 # What happened to MetroBoy?
 
-MetroBoy is/was a higher level Game Boy emulator. I got it to the point where it passed virtually all the available tests, and then hacked it up in various ways to help get GateBoy working. MetroBoy is currently broken, don't use it. It will be coming back eventually.
+MetroBoy is/was a higher level Game Boy emulator that I wrote from scratch before Furrtek released his schematics. I got it to the point where it passed virtually all the available tests, and then hacked it up in various ways to help get GateBoy working. MetroBoy is currently broken, don't use it. It will be coming back eventually.
 
 # What's Plait?
 

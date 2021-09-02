@@ -154,7 +154,8 @@ struct GateBoy {
   void tock_oam_bus();
   void tock_serial();
   void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
-  void tock_zram();
+  void tock_zram_gates();
+  void tock_zram_logic();
   void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
 
   void tock_bootrom_gates();
@@ -553,7 +554,11 @@ struct GateBoy {
 #ifdef YES_LOGIC_VS_GATES
   bool logic_mode = false;
 #else
-  const bool logic_mode = false;
+  #ifdef FAST_MODE
+    const bool logic_mode = true;
+  #else
+    const bool logic_mode = false;
+  #endif
 #endif
 
   double   sim_time = 0;

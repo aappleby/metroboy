@@ -72,29 +72,10 @@ void GateBoy::tock_dma_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_dma_logic() {
-  if (bit(AVOR_SYS_RSTp())) {
-    dma.LENE_DMA_TRIG_d4.state = 0;
-    dma.LUVY_DMA_TRIG_d0.state = 0;
-    dma.LYXE_DMA_LATCHp.state = 0;
-    dma.MYTE_DMA_DONE.state = 0;
-    dma.MATU_DMA_RUNNINGp.state = 0;
-
-    dma.LARA_DMA_LATCHn = 1;
-    dma.LOKY_DMA_LATCHp = 0;
-    dma.LARA_DMA_LATCHn = 1;
-
-    rst_8(&dma.NAKY_DMA_A00p);
-    return;
-  }
-
-  if (!clk.SIG_CPU_CLKREQ.state) {
-    return;
-  }
-
   auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   wire CLK_xxxxEFGx = (((phase_total + 1) & 7) == 4) || (((phase_total + 1) & 7) == 5) | (((phase_total + 1) & 7) == 6);
-  wire CLK_xxxxEFGH = (((phase_total + 1) & 7) == 4) || (((phase_total + 1) & 7) == 5) | (((phase_total + 1) & 7) == 6) | (((phase_total + 1) & 7) == 7);
+  //wire CLK_xxxxEFGH = (((phase_total + 1) & 7) == 4) || (((phase_total + 1) & 7) == 5) | (((phase_total + 1) & 7) == 6) | (((phase_total + 1) & 7) == 7);
 
   wire FF46_RDp = cpu_signals.SIG_IN_CPU_RDp.out_new() & (new_addr == 0xFF46);
   wire FF46_WRp = cpu_signals.SIG_IN_CPU_WRp.out_new() & (new_addr == 0xFF46) & CLK_xxxxEFGx;

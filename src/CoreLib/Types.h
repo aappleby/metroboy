@@ -19,7 +19,8 @@ typedef int64_t LARGE_INTEGER;
 
 typedef int16_t sample_t;
 typedef std::vector<uint8_t> blob;
-typedef const uint8_t wire;
+//typedef const uint8_t wire;
+typedef uint8_t wire;
 struct triwire { wire state; };
 
 inline wire bit(uint32_t w) { return wire(w & 1); }

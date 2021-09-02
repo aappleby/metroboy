@@ -557,6 +557,9 @@ struct GateBoy {
   uint64_t phase_total = 0;
   uint64_t phase_origin = 0;
 
+  uint8_t phase_mask_old = 0;
+  uint8_t phase_mask_new = 0;
+
   uint64_t phase_hash = 0;
   uint64_t cumulative_hash = 0;
 

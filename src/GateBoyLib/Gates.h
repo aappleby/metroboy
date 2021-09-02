@@ -589,8 +589,6 @@ struct PinClock {
     CLKGOOD.pin_in(clkgood);
   }
 
-private:
-
   PinIn CLK;
   PinIn CLKGOOD;
 };

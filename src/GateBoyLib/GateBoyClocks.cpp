@@ -39,35 +39,35 @@ void GateBoy::tock_clocks_gates() {
 }
 
 void GateBoy::tock_clocks_logic() {
-  wire c = clk.PIN_74_CLK.clk();
+  wire c = bit(clk.PIN_74_CLK.CLK.state);
 
   clk.PIN_73_CLK_DRIVE.pin_out(c, c);
 
   clk.AVET_DEGLITCH = bit(c);
   clk.ANOS_DEGLITCH = bit(~c);
 
-  DFF9 ADYK_ABCxxxxH_old = clk.ADYK_ABCxxxxH;
-  DFF9 AFUR_xxxxEFGH_old = clk.AFUR_xxxxEFGH;
-  DFF9 ALEF_AxxxxFGH_old = clk.ALEF_AxxxxFGH;
-  DFF9 APUK_ABxxxxGH_old = clk.APUK_ABxxxxGH;
+  clk.AFUR_xxxxEFGH.state = !!(phase_mask_new & 0b00001111);
+  clk.ALEF_AxxxxFGH.state = !!(phase_mask_new & 0b10000111);
+  clk.APUK_ABxxxxGH.state = !!(phase_mask_new & 0b11000011);
+  clk.ADYK_ABCxxxxH.state = !!(phase_mask_new & 0b11100001);
 
-  wire UPOJ_MODE_PRODn = nand3(~rst.PIN_77_T1.state, ~rst.PIN_76_T2.state, rst.PIN_71_RST.state);
+  clk.PIN_75_CLK_OUT.pin_out(clk.AFUR_xxxxEFGH.state, clk.AFUR_xxxxEFGH.state);
 
-  clk.AFUR_xxxxEFGH.dff9(c,  UPOJ_MODE_PRODn, ADYK_ABCxxxxH_old.qp_old());
-  clk.ALEF_AxxxxFGH.dff9(~c, UPOJ_MODE_PRODn, AFUR_xxxxEFGH_old.qn_old());
-  clk.APUK_ABxxxxGH.dff9(c,  UPOJ_MODE_PRODn, ALEF_AxxxxFGH_old.qn_old());
-  clk.ADYK_ABCxxxxH.dff9(~c, UPOJ_MODE_PRODn, APUK_ABxxxxGH_old.qn_old());
+  wire CLK_Axxxxxxx = !!(phase_mask_new & 0b10000000);
+  wire CLK_xBCDEFGH = !!(phase_mask_new & 0b01111111);
+  wire CLK_ABCDxxxx = !!(phase_mask_new & 0b11110000);
+  wire CLK_xxxxEFGH = !!(phase_mask_new & 0b00001111);
+  wire CLK_ABCDEFxx = !!(phase_mask_new & 0b11111100);
+  wire CLK_AxxxxxGH = !!(phase_mask_new & 0b10000011);
 
-  clk.PIN_75_CLK_OUT.pin_out(BUDE_xxxxEFGH(), BUDE_xxxxEFGH());
-
-  clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
-  clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(BEDO_Axxxxxxx());
-  clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(BEKO_ABCDxxxx());
-  clk.SIG_CPU_BUDE_xxxxEFGH.sig_out(BUDE_xxxxEFGH());
-  clk.SIG_CPU_BOLO_ABCDEFxx.sig_out(BOLO_ABCDEFxx());
-  clk.SIG_CPU_BUKE_AxxxxxGH.sig_out(BUKE_AxxxxxGH());
-  clk.SIG_CPU_BOMA_xBCDEFGH.sig_out(BOMA_xBCDEFGH());
-  clk.SIG_CPU_BOGA_Axxxxxxx.sig_out(BOGA_Axxxxxxx());
+  clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(CLK_Axxxxxxx);
+  clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(CLK_xBCDEFGH);
+  clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(CLK_ABCDxxxx);
+  clk.SIG_CPU_BUDE_xxxxEFGH.sig_out(CLK_xxxxEFGH);
+  clk.SIG_CPU_BOLO_ABCDEFxx.sig_out(CLK_ABCDEFxx);
+  clk.SIG_CPU_BUKE_AxxxxxGH.sig_out(CLK_AxxxxxGH);
+  clk.SIG_CPU_BOMA_xBCDEFGH.sig_out(CLK_xBCDEFGH);
+  clk.SIG_CPU_BOGA_Axxxxxxx.sig_out(CLK_Axxxxxxx);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -79,9 +79,17 @@ void GateBoy::tock_vid_clocks_gates() {
 }
 
 void GateBoy::tock_vid_clocks_logic() {
-  clk.WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(), XAPO_VID_RSTn(), clk.WUVU_ABxxEFxx.qn_old());
-  clk.WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(), XAPO_VID_RSTn(), clk.WUVU_ABxxEFxx.qn_old());
-  clk.VENA_xxCDEFxx.dff17(clk.WUVU_ABxxEFxx.qn_new(), XAPO_VID_RSTn(), clk.VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
+  if (!bit(XAPO_VID_RSTn())) {
+    clk.WOSU_AxxDExxH.state = 0;
+    clk.WUVU_ABxxEFxx.state = 0;
+    clk.VENA_xxCDEFxx.state = 0;
+  }
+  else {
+    clk.WOSU_AxxDExxH.state = !!(phase_mask_new & 0b10011001);
+    clk.WUVU_ABxxEFxx.state = !!(phase_mask_new & 0b11001100);
+    clk.VENA_xxCDEFxx.state = !!(phase_mask_new & 0b00111100);
+  }
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 #pragma once
 
 // Regression test the LogicBoy implementation against GateBoy
-#define YES_LOGIC_VS_GATES
+//#define YES_LOGIC_VS_GATES
 
 
 
@@ -51,10 +51,5 @@
 #define USE_DRIVE_FLAGS
 
 #endif
-
-
-
-
-
 
 #endif

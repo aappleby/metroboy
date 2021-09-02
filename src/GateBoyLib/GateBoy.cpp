@@ -372,7 +372,10 @@ void GateBoy::next_phase(const blob& cart_blob) {
   uint64_t gb1_hash = gb1.commit_and_hash();
   uint64_t gb2_hash = gb2.commit_and_hash();
 
-  if (gb1_hash != gb2_hash) {
+  // GateBoy and LogicBoy are allowed to diverge in the POR phase, so only check for a match if sys_clkreq is asserted
+  // (meaning we're no longer in POR.
+
+  if (sys_clkreq && (gb1_hash != gb2_hash)) {
     LOG_R("Logic mode and gates mode mismatch!\n");
     ASSERT_P(false);
   }
@@ -443,6 +446,9 @@ void GateBoy::next_phase(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
+  phase_mask_old = 1 << (7 - ((phase_total + 0) & 7));
+  phase_mask_new = 1 << (7 - ((phase_total + 1) & 7));
+
   (void)pass_index;
 
   wire EXT_vcc = 1;

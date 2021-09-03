@@ -987,7 +987,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
 
   tock_ext(cart_blob);
   tock_vram_bus(TEVO_WIN_FETCH_TRIGp);
-  tock_oam_bus();
+  logic_mode ? tock_oam_bus_logic() : tock_oam_bus_gates();
   logic_mode ? tock_zram_logic() : tock_zram_gates();
 
   //----------------------------------------

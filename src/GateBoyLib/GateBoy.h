@@ -154,7 +154,8 @@ struct GateBoy {
   void tock_timer();
   void tock_reset(DFF17 UPOF_DIV15p);
   void tock_ext(const blob& cart_blob);
-  void tock_oam_bus();
+  void tock_oam_bus_gates();
+  void tock_oam_bus_logic();
   void tock_serial();
   void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
   void tock_zram_gates();

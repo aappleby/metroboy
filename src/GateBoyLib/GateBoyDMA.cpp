@@ -76,8 +76,8 @@ void GateBoy::tock_dma_logic() {
 
   wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
 
-  wire FF46_RDp = cpu_signals.SIG_IN_CPU_RDp.out_new() & (new_addr == 0xFF46);
-  wire FF46_WRp = cpu_signals.SIG_IN_CPU_WRp.out_new() & (new_addr == 0xFF46);
+  wire FF46_RDp = cpu_signals.SIG_IN_CPU_RDp.state & (new_addr == 0xFF46);
+  wire FF46_WRp = cpu_signals.SIG_IN_CPU_WRp.state & (new_addr == 0xFF46);
 
   dma.LYXE_DMA_LATCHp.state |= (FF46_WRp & CLK_xxxxEFGx);
 

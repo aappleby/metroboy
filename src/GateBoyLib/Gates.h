@@ -471,7 +471,7 @@ inline triwire tri10_np(wire OEn, wire Dp) {
   return { wire(bit(OEn) ? TRI_NEW : TRI_NEW | TRI_DRIVEN | bit(Dp)) };
 }
 
-struct Bus : private BitBase {
+struct Bus : public BitBase {
   using BitBase::state;
 
   wire out_old() const { check_old(); return state; }
@@ -784,8 +784,24 @@ inline uint32_t pack_newn(int c, const BitBase* b) { return pack_new(c, b) ^ ((1
 inline uint32_t pack_ext_old(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
 inline uint32_t pack_ext_new(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
 
+inline uint32_t pack_inv(int c, const BitBase* b) {
+  return pack_old(c, b) ^ ((1 << c) - 1);
+}
+
 inline void unpack(uint32_t d, int c, BitBase* b) {
   for (int i = 0; i < c; i++) {
     b[i].state = bit(d, i);
+  }
+}
+
+inline void unpack_inv(uint32_t d, int c, BitBase* b) {
+  for (int i = 0; i < c; i++) {
+    b[i].state = !bit(d, i);
+  }
+}
+
+inline void memcpy_inv(void* dst, void* src, int c) {
+  for (int i = 0; i < c; i++) {
+    ((uint8_t*)dst)[i] = ~((uint8_t*)src)[i];
   }
 }

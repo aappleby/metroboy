@@ -82,17 +82,9 @@ void GateBoy::tock_vid_clocks_gates() {
 }
 
 void GateBoy::tock_vid_clocks_logic() {
-  if (!bit(XAPO_VID_RSTn())) {
-    clk.WOSU_AxxDExxH.state = 0;
-    clk.WUVU_ABxxEFxx.state = 0;
-    clk.VENA_xxCDEFxx.state = 0;
-  }
-  else {
-    clk.WOSU_AxxDExxH.state = !!(phase_mask_new & 0b10011001);
-    clk.WUVU_ABxxEFxx.state = !!(phase_mask_new & 0b11001100);
-    clk.VENA_xxCDEFxx.state = !!(phase_mask_new & 0b00111100);
-  }
-
+  clk.WOSU_AxxDExxH.state = !bit(reg_lcdc.XONA_LCDC_LCDENn.state) && !!(phase_mask_new & 0b10011001);
+  clk.WUVU_ABxxEFxx.state = !bit(reg_lcdc.XONA_LCDC_LCDENn.state) && !!(phase_mask_new & 0b11001100);
+  clk.VENA_xxCDEFxx.state = !bit(reg_lcdc.XONA_LCDC_LCDENn.state) && !!(phase_mask_new & 0b00111100);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

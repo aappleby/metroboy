@@ -139,7 +139,8 @@ struct GateBoy {
   void tock_dma_gates();
   void tock_dma_logic();
 
-  void tock_joypad();
+  void tock_joypad_gates();
+  void tock_joypad_logic();
 
   void tock_interrupts_gates();
   void tock_interrupts_logic();

@@ -77,12 +77,9 @@ void GateBoy::tock_dma_logic() {
   wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
 
   wire FF46_RDp = cpu_signals.SIG_IN_CPU_RDp.out_new() & (new_addr == 0xFF46);
-  wire FF46_WRp = cpu_signals.SIG_IN_CPU_WRp.out_new() & (new_addr == 0xFF46) & CLK_xxxxEFGx;
+  wire FF46_WRp = cpu_signals.SIG_IN_CPU_WRp.out_new() & (new_addr == 0xFF46);
 
-  dma.LYXE_DMA_LATCHp.state |= FF46_WRp;
-
-  auto old_data = pack_old(8, (BitBase*)&old_bus.BUS_CPU_D00p);
-  dff8p_8(&dma.NAFA_DMA_A08n, ~FF46_WRp, (uint8_t)old_data);
+  dma.LYXE_DMA_LATCHp.state |= (FF46_WRp & CLK_xxxxEFGx);
 
   if (DELTA_DE) {
     auto dma_lo = pack_old(8, &dma.NAKY_DMA_A00p);
@@ -103,6 +100,15 @@ void GateBoy::tock_dma_logic() {
     }
   }
 
+  if (FF46_RDp) {
+    tri_8(&new_bus.BUS_CPU_D00p, uint8_t(~pack_new(8, &dma.NAFA_DMA_A08n)));
+  }
+
+  if (FF46_WRp && DELTA_GH) {
+    auto old_data = pack_old(8, (BitBase*)&old_bus.BUS_CPU_D00p);
+    unpack(~old_data, 8, &dma.NAFA_DMA_A08n);
+  }
+
   if (DELTA_HA) {
     dma.LUVY_DMA_TRIG_d0.state = ~FF46_WRp & dma.LYXE_DMA_LATCHp.state;
     dma.MATU_DMA_RUNNINGp.state = dma.LOKY_DMA_LATCHp.state;
@@ -114,9 +120,6 @@ void GateBoy::tock_dma_logic() {
     }
   }
 
-  if (FF46_RDp) {
-    tri_8(&new_bus.BUS_CPU_D00p, uint8_t(~pack_new(8, &dma.NAFA_DMA_A08n)));
-  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------

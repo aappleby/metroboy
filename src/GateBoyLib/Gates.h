@@ -59,6 +59,11 @@ struct BitBase {
   wire qp_new() const { check_new(); return state; }
   wire qn_new() const { check_new(); return ~state; }
 
+  void set_data(wire d) {
+    state &= ~1;
+    state |= bit(d);
+  }
+
   void check_old() const {
 #ifdef USE_DRIVE_FLAGS
     CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
@@ -778,3 +783,9 @@ inline uint32_t pack_oldn(int c, const BitBase* b) { return pack_old(c, b) ^ ((1
 inline uint32_t pack_newn(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
 inline uint32_t pack_ext_old(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
 inline uint32_t pack_ext_new(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
+
+inline void unpack(uint32_t d, int c, BitBase* b) {
+  for (int i = 0; i < c; i++) {
+    b[i].state = bit(d, i);
+  }
+}

@@ -139,14 +139,17 @@ struct GateBoy {
   void tock_dma_gates();
   void tock_dma_logic();
 
-  void set_pins();
-
   void tock_joypad();
-  void tock_interrupts();
+
+  void tock_interrupts_gates();
+  void tock_interrupts_logic();
+
   void tock_clocks_gates();
   void tock_clocks_logic();
+
   void tock_vid_clocks_gates();
   void tock_vid_clocks_logic();
+  
   void tock_div();
   void tock_timer();
   void tock_reset(DFF17 UPOF_DIV15p);

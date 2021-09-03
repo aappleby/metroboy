@@ -993,7 +993,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   //----------------------------------------
   // And finally, interrupts.
 
-  tock_interrupts();
+  logic_mode ? tock_interrupts_logic() : tock_interrupts_gates();
 
   old_bus = new_bus;
 }

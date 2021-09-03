@@ -12,7 +12,7 @@
 // Bit 3 : Serial   Interrupt Request(INT 58h)  (1=Request)
 // Bit 4 : Joypad   Interrupt Request(INT 60h)  (1=Request)
 
-void GateBoy::tock_interrupts()
+void GateBoy::tock_interrupts_gates()
 {
   uint16_t cpu_addr = (uint16_t)pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
@@ -153,6 +153,124 @@ void GateBoy::tock_interrupts()
   /*_BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(ROVA_IF2_TO_CD2);
   /*_BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(PADO_IF3_TO_CD3);
   /*_BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri_bus(PEGY_IF4_TO_CD4);
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::tock_interrupts_logic()
+{
+  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  wire FF0F_RDp = cpu_signals.SIG_IN_CPU_RDp.out_new() & (new_addr == 0xFF0F);
+  wire FF41_RDp = cpu_signals.SIG_IN_CPU_RDp.out_new() & (new_addr == 0xFF41);
+  wire FFFF_RDp = cpu_signals.SIG_IN_CPU_RDp.out_new() & (new_addr == 0xFFFF);
+
+  uint16_t cpu_addr = (uint16_t)pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
+  wire FFFF_WRn_ext = nand2(cpu_signals.TAPU_CPU_WRp.out_new(), FFFF_HIT_ext);
+
+  interrupts.IE_D0.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D00p.out_old());
+  interrupts.IE_D1.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D01p.out_old());
+  interrupts.IE_D2.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D02p.out_old());
+  interrupts.IE_D3.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D03p.out_old());
+  interrupts.IE_D4.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), old_bus.BUS_CPU_D04p.out_old());
+
+  wire SEPA_FF41_WRp = and2(CUPA_CPU_WRp(), new_bus.VARY_FF41p());
+  wire RYVE_FF41_WRn = not1(SEPA_FF41_WRp);
+
+  reg_stat.ROXE_STAT_HBI_ENn.dff9(RYVE_FF41_WRn, WESY_SYS_RSTn(), old_bus.BUS_CPU_D03p.out_old());
+  reg_stat.RUFO_STAT_VBI_ENn.dff9(RYVE_FF41_WRn, WESY_SYS_RSTn(), old_bus.BUS_CPU_D04p.out_old());
+  reg_stat.REFE_STAT_OAI_ENn.dff9(RYVE_FF41_WRn, WESY_SYS_RSTn(), old_bus.BUS_CPU_D05p.out_old());
+  reg_stat.RUGU_STAT_LYI_ENn.dff9(RYVE_FF41_WRn, WESY_SYS_RSTn(), old_bus.BUS_CPU_D06p.out_old());
+
+  wire PARU_VBLANKp = not1(lcd.POPU_y144p.qn_new());
+
+  if (bit(FF41_RDp)) {
+    wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
+    wire XATY_STAT_MODE1n = nor2(sprite_scanner.ACYL_SCANNINGp.out_new(), XYMU_RENDERINGn.qn_new()); // die NOR
+
+    new_bus.BUS_CPU_D00p.state = ~SADU_STAT_MODE0n;
+    new_bus.BUS_CPU_D01p.state = ~XATY_STAT_MODE1n;
+    new_bus.BUS_CPU_D02p.state = ~reg_stat.RUPO_LYC_MATCHn.state;
+    new_bus.BUS_CPU_D03p.state = ~reg_stat.ROXE_STAT_HBI_ENn.state;
+    new_bus.BUS_CPU_D04p.state = ~reg_stat.RUFO_STAT_VBI_ENn.state;
+    new_bus.BUS_CPU_D05p.state = ~reg_stat.REFE_STAT_OAI_ENn.state;
+    new_bus.BUS_CPU_D06p.state = ~reg_stat.RUGU_STAT_LYI_ENn.state;
+  }
+
+  wire PURE_x113n = not1(lcd.RUTU_x113p.qp_new());
+  wire TOLU_VBLANKn = not1(PARU_VBLANKp);
+  wire SELA_x113p = not1(PURE_x113n);
+  wire TAPA_INT_OAM = and2(TOLU_VBLANKn, SELA_x113p);
+  wire TARU_INT_HBL = and2(WODU_HBLANKp.out_new(), TOLU_VBLANKn);
+  wire SUKO_INT_STATp = amux4(reg_stat.RUGU_STAT_LYI_ENn.qn_new(), reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new(), reg_stat.REFE_STAT_OAI_ENn.qn_new(), TAPA_INT_OAM, reg_stat.RUFO_STAT_VBI_ENn.qn_new(), PARU_VBLANKp, reg_stat.ROXE_STAT_HBI_ENn.qn_new(), TARU_INT_HBL);
+
+  wire VYPU_INT_VBLANKp = not1(TOLU_VBLANKn);
+  wire TUVA_INT_STATn = not1(SUKO_INT_STATp);
+  wire VOTY_INT_STATp = not1(TUVA_INT_STATn);
+
+  wire ASOK_INT_JOYp = nand2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new());
+
+  wire REFA_FF0F_WRn = nand4(cpu_signals.TAPU_CPU_WRp.out_new(), new_bus.SYKE_ADDR_HIp(), new_bus.SEMY_XX_0000xxxxp(), new_bus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+
+  wire LETY_INT_VBL_ACKn = not1(interrupts.SIG_CPU_ACK_VBLANK.out_new());
+  wire LEJA_INT_STAT_ACKn = not1(interrupts.SIG_CPU_ACK_STAT.out_new());
+  wire LESA_INT_TIM_ACKn = not1(interrupts.SIG_CPU_ACK_TIMER.out_new());
+  wire LUFE_INT_SER_ACKn = not1(interrupts.SIG_CPU_ACK_SERIAL.out_new());
+  wire LAMO_INT_JOY_ACKn = not1(interrupts.SIG_CPU_ACK_JOYPAD.out_new());
+
+  wire ROTU_FF0F_WRp = not1(REFA_FF0F_WRn);
+  wire MYZU_FF0F_SET0n = nand3(ROTU_FF0F_WRp, LETY_INT_VBL_ACKn, new_bus.BUS_CPU_D00p.out_new());
+  wire MODY_FF0F_SET1n = nand3(ROTU_FF0F_WRp, LEJA_INT_STAT_ACKn, new_bus.BUS_CPU_D01p.out_new());
+  wire PYHU_FF0F_SET2n = nand3(ROTU_FF0F_WRp, LESA_INT_TIM_ACKn, new_bus.BUS_CPU_D02p.out_new());
+  wire TOME_FF0F_SET3n = nand3(ROTU_FF0F_WRp, LUFE_INT_SER_ACKn, new_bus.BUS_CPU_D03p.out_new());
+  wire TOGA_FF0F_SET4n = nand3(ROTU_FF0F_WRp, LAMO_INT_JOY_ACKn, new_bus.BUS_CPU_D04p.out_new());
+
+  wire MUXE_INT0_WRn = or2(new_bus.BUS_CPU_D00p.out_new(), REFA_FF0F_WRn);
+  wire NABE_INT1_WRn = or2(new_bus.BUS_CPU_D01p.out_new(), REFA_FF0F_WRn);
+  wire RAKE_INT2_WRn = or2(new_bus.BUS_CPU_D02p.out_new(), REFA_FF0F_WRn);
+  wire SULO_INT3_WRn = or2(new_bus.BUS_CPU_D03p.out_new(), REFA_FF0F_WRn);
+  wire SEME_INT4_WRn = or2(new_bus.BUS_CPU_D04p.out_new(), REFA_FF0F_WRn);
+
+  wire LYTA_FF0F_RST0n = and2(MUXE_INT0_WRn, LETY_INT_VBL_ACKn);
+  wire MOVU_FF0F_RST1n = and2(NABE_INT1_WRn, LEJA_INT_STAT_ACKn);
+  wire PYGA_FF0F_RST2n = and2(RAKE_INT2_WRn, LESA_INT_TIM_ACKn);
+  wire TUNY_FF0F_RST3n = and2(SULO_INT3_WRn, LUFE_INT_SER_ACKn);
+  wire TYME_FF0F_RST4n = and2(SEME_INT4_WRn, LAMO_INT_JOY_ACKn);
+
+  interrupts.LOPE_FF0F_D0p.dff22(VYPU_INT_VBLANKp, MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, SIG_VCC.out_new());
+  interrupts.LALU_FF0F_D1p.dff22(VOTY_INT_STATp, MODY_FF0F_SET1n, MOVU_FF0F_RST1n, SIG_VCC.out_new());
+  interrupts.NYBO_FF0F_D2p.dff22(timer.MOBA_TIMER_OVERFLOWp.qp_new(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, SIG_VCC.out_new());
+  interrupts.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), TOME_FF0F_SET3n, TUNY_FF0F_RST3n, SIG_VCC.out_new());
+  interrupts.ULAK_FF0F_D4p.dff22(ASOK_INT_JOYp, TOGA_FF0F_SET4n, TYME_FF0F_RST4n, SIG_VCC.out_new());
+
+  interrupts.SIG_CPU_INT_VBLANK.state = interrupts.LOPE_FF0F_D0p.state;
+  interrupts.SIG_CPU_INT_STAT  .state = interrupts.LALU_FF0F_D1p.state;
+  interrupts.SIG_CPU_INT_TIMER .state = interrupts.NYBO_FF0F_D2p.state;
+  interrupts.SIG_CPU_INT_SERIAL.state = interrupts.UBUL_FF0F_D3p.state;
+  interrupts.SIG_CPU_INT_JOYPAD.state = interrupts.ULAK_FF0F_D4p.state;
+
+  if (bit(FFFF_RDp)) {
+    new_bus.BUS_CPU_D00p.state = interrupts.IE_D0.state;
+    new_bus.BUS_CPU_D01p.state = interrupts.IE_D1.state;
+    new_bus.BUS_CPU_D02p.state = interrupts.IE_D2.state;
+    new_bus.BUS_CPU_D03p.state = interrupts.IE_D3.state;
+    new_bus.BUS_CPU_D04p.state = interrupts.IE_D4.state;
+
+  }
+
+  if (bit(FF0F_RDp)) {
+    interrupts.MATY_FF0F_L0p.state = interrupts.LOPE_FF0F_D0p.state;
+    interrupts.MOPO_FF0F_L1p.state = interrupts.LALU_FF0F_D1p.state;
+    interrupts.PAVY_FF0F_L2p.state = interrupts.NYBO_FF0F_D2p.state;
+    interrupts.NEJY_FF0F_L3p.state = interrupts.UBUL_FF0F_D3p.state;
+    interrupts.NUTY_FF0F_L4p.state = interrupts.ULAK_FF0F_D4p.state;
+
+    new_bus.BUS_CPU_D00p.state = interrupts.LOPE_FF0F_D0p.state;
+    new_bus.BUS_CPU_D01p.state = interrupts.LALU_FF0F_D1p.state;
+    new_bus.BUS_CPU_D02p.state = interrupts.NYBO_FF0F_D2p.state;
+    new_bus.BUS_CPU_D03p.state = interrupts.UBUL_FF0F_D3p.state;
+    new_bus.BUS_CPU_D04p.state = interrupts.ULAK_FF0F_D4p.state;
+  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------

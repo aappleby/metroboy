@@ -436,7 +436,6 @@ void GateBoy::tock_oam_bus_logic()
   wire dbus_free = cpu_signals.SIG_IN_CPU_LATCH_EXT.state;
   wire dbus_busy = !dbus_free;
 
-
   // At most one of these is going to be active.
   bool scanning = bit(sprite_scanner.ACYL_SCANNINGp.state);
   bool dma_running = bit(dma.MATU_DMA_RUNNINGp.state);
@@ -476,7 +475,7 @@ void GateBoy::tock_oam_bus_logic()
 
   // data out to oam
 
-  oam.WUJE_CPU_OAM_WRn.nor_latch(XYNY_ABCDxxxx(), and2(addr_oam, cpu_wr));
+  oam.WUJE_CPU_OAM_WRn.nor_latch(CLK_ABCDxxxx, and2(addr_oam, cpu_wr));
 
   if (dma_running) {
     if ((dma_addr >= 0x8000) && (dma_addr <= 0x9FFF)) {
@@ -538,11 +537,11 @@ void GateBoy::tock_oam_bus_logic()
     uint8_t oam_data_a = (uint8_t)pack_newn(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
     uint8_t oam_data_b = (uint8_t)pack_newn(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
 
-    if (bit(~oam.old_oam_clk.out_old()) && bit(~oam.SIG_OAM_CLKn.out_new())) {
-      if (bit(~oam.SIG_OAM_WRn_A.out_new())) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-      if (bit(~oam.SIG_OAM_WRn_B.out_new())) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+    if (bit(~oam.old_oam_clk.state) && bit(~oam.SIG_OAM_CLKn.state)) {
+      if (bit(~oam.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+      if (bit(~oam.SIG_OAM_WRn_B.state)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
     }
-    oam.old_oam_clk = bit(~oam.SIG_OAM_CLKn.out_new());
+    oam.old_oam_clk = bit(~oam.SIG_OAM_CLKn.state);
 
     oam_data_a = oam_ram[(oam_addr << 1) + 0];
     oam_data_b = oam_ram[(oam_addr << 1) + 1];
@@ -560,7 +559,7 @@ void GateBoy::tock_oam_bus_logic()
     }
 
     if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running && !scanning && !rendering) {
-      if (bit(oam_bus.BUS_OAM_A00n.out_new())) {
+      if (bit(oam_bus.BUS_OAM_A00n.state)) {
         memcpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
       }
       else {

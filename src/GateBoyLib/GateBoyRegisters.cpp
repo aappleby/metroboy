@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-SpriteDeltaY GateBoy::sub_sprite_y() {
+SpriteDeltaY GateBoy::sub_sprite_y_gates() {
   /*#p29.EBOS*/ wire EBOS_LY0n = not1(reg_ly.MUWY_LY0p.qp_new());
   /*_p29.DASA*/ wire DASA_LY1n = not1(reg_ly.MYRO_LY1p.qp_new());
   /*_p29.FUKY*/ wire FUKY_LY2n = not1(reg_ly.LEXA_LY2p.qp_new());
@@ -54,7 +54,39 @@ SpriteDeltaY GateBoy::sub_sprite_y() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_lcdc()
+SpriteDeltaY GateBoy::sub_sprite_y_logic() {
+  Adder ERUC_YDIFF0 = add3(~reg_ly.MUWY_LY0p.state, oam_temp_a.XUSO_OAM_DA0p.state, 0);
+  Adder ENEF_YDIFF1 = add3(~reg_ly.MYRO_LY1p.state, oam_temp_a.XEGU_OAM_DA1p.state, ERUC_YDIFF0.carry);
+  Adder FECO_YDIFF2 = add3(~reg_ly.LEXA_LY2p.state, oam_temp_a.YJEX_OAM_DA2p.state, ENEF_YDIFF1.carry);
+  Adder GYKY_YDIFF3 = add3(~reg_ly.LYDO_LY3p.state, oam_temp_a.XYJU_OAM_DA3p.state, FECO_YDIFF2.carry);
+  Adder GOPU_YDIFF4 = add3(~reg_ly.LOVU_LY4p.state, oam_temp_a.YBOG_OAM_DA4p.state, GYKY_YDIFF3.carry);
+  Adder FUWA_YDIFF5 = add3(~reg_ly.LEMA_LY5p.state, oam_temp_a.WYSO_OAM_DA5p.state, GOPU_YDIFF4.carry);
+  Adder GOJU_YDIFF6 = add3(~reg_ly.MATO_LY6p.state, oam_temp_a.XOTE_OAM_DA6p.state, FUWA_YDIFF5.carry);
+  Adder WUHU_YDIFF7 = add3(~reg_ly.LAFO_LY7p.state, oam_temp_a.YZAB_OAM_DA7p.state, GOJU_YDIFF6.carry);
+
+  return {
+    ERUC_YDIFF0,
+    ENEF_YDIFF1,
+    FECO_YDIFF2,
+    GYKY_YDIFF3,
+    GOPU_YDIFF4,
+    FUWA_YDIFF5,
+    GOJU_YDIFF6,
+    WUHU_YDIFF7,
+    wire(~ERUC_YDIFF0.sum),
+    wire(~ENEF_YDIFF1.sum),
+    wire(~FECO_YDIFF2.sum),
+    wire(~GYKY_YDIFF3.sum),
+    wire(~GOPU_YDIFF4.sum),
+    wire(~FUWA_YDIFF5.sum),
+    wire(~GOJU_YDIFF6.sum),
+    wire(~WUHU_YDIFF7.sum),
+  };
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::tock_lcdc_gates()
 {
   /*_p23.WARU*/ wire WARU_FF40_WRp = and2(CUPA_CPU_WRp(), old_bus.VOCA_FF40p());
   /*_p23.XUBO*/ wire XUBO_FF40_WRn = not1(WARU_FF40_WRp);
@@ -89,4 +121,5 @@ void GateBoy::tock_lcdc()
 }
 
 //------------------------------------------------------------------------------------------------------------------------
+
 

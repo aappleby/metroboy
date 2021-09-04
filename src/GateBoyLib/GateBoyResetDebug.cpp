@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_reset(DFF17 UPOF_DIV15p) {
+void GateBoy::tock_reset_gates(DFF17 UPOF_DIV15p) {
 
   /*_p01.AFER*/ rst.AFER_SYS_RSTp.dff13(BOGA_Axxxxxxx(), UPOJ_MODE_PRODn(), rst.ASOL_POR_DONEn.qp_old());
 
@@ -28,6 +28,21 @@ void GateBoy::tock_reset(DFF17 UPOF_DIV15p) {
   // APER
   // AMUT
   // BURO
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+// In logic mode we don't care about the power-on behavior, we only want behavior to match when running code. So, we set
+// this stuff to zeroes.
+
+void GateBoy::tock_reset_logic(DFF17 /*UPOF_DIV15p*/) {
+  rst.AFER_SYS_RSTp.state = 0;
+  rst.TUBO_WAITINGp.state = 0;
+  rst.ASOL_POR_DONEn.state = 0;
+  rst.SIG_CPU_EXT_CLKGOOD.sig_out(1);
+  rst.SIG_CPU_EXT_RESETp.sig_out(0);
+  rst.SIG_CPU_STARTp.sig_out(0);
+  rst.SIG_CPU_INT_RESETp.sig_out(0);
+  rst.SOTO_DBG_VRAMp.state = 0;
 }
 
 //------------------------------------------------------------------------------------------------------------------------

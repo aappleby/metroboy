@@ -178,7 +178,7 @@ void GateBoy::tock_joypad_gates() {
 void GateBoy::tock_joypad_logic() {
   auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
-  if (cpu_signals.SIG_IN_CPU_WRp.state && (new_addr == 0xFF00 && DELTA_GH)) {
+  if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF00 && DELTA_GH) {
     joy.KELY_JOYP_UDLRp.state = old_bus.BUS_CPU_D04p.out_old();
     joy.COFY_JOYP_ABCSp.state = old_bus.BUS_CPU_D05p.out_old();
   }

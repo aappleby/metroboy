@@ -624,19 +624,37 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
     /*#p01.ABUZ*/ cpu_signals.ABUZ_EXT_RAM_CS_CLK = not1(AWOD_ABxxxxxx);
   }
 
-  tock_div();
-  tock_reset(bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p);
+  logic_mode ? tock_div_logic() : tock_div_gates();
+
+  if (logic_mode) {
+    tock_reset_logic(bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p);
+  }
+  else {
+    tock_reset_gates(bit(sys_fastboot) ? div.TERO_DIV03p : div.UPOF_DIV15p);
+  }
 
   tock_lcdc(); // LCDC has to be near the top as it controls the video reset signal
-  logic_mode ? tock_vid_clocks_logic() : tock_vid_clocks_gates();
-  logic_mode ? tock_lyc_logic() : tock_lyc_gates();
-  logic_mode ? tock_lcd_logic() : tock_lcd_gates();
-  logic_mode ? tock_joypad_logic() : tock_joypad_gates();
-  logic_mode ? tock_serial_logic() : tock_serial_gates();
-  tock_timer();
-  logic_mode ? tock_bootrom_logic() : tock_bootrom_gates();
 
-  logic_mode ? tock_dma_logic() : tock_dma_gates();
+  if (logic_mode) {
+    tock_vid_clocks_logic();
+    tock_lyc_logic();
+    tock_lcd_logic();
+    tock_joypad_logic();
+    tock_serial_logic();
+    tock_timer_logic();
+    tock_bootrom_logic();
+    tock_dma_logic();
+  }
+  else {
+    tock_vid_clocks_gates();
+    tock_lyc_gates();
+    tock_lcd_gates();
+    tock_joypad_gates();
+    tock_serial_gates();
+    tock_timer_gates();
+    tock_bootrom_gates();
+    tock_dma_gates();
+  }
 
   //----------------------------------------
 
@@ -986,7 +1004,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   // Memory buses
 
   tock_ext(cart_blob);
-  tock_vram_bus(TEVO_WIN_FETCH_TRIGp);
+  logic_mode ? tock_vram_bus_logic(TEVO_WIN_FETCH_TRIGp) : tock_vram_bus_gates(TEVO_WIN_FETCH_TRIGp);
   logic_mode ? tock_oam_bus_logic() : tock_oam_bus_gates();
   logic_mode ? tock_zram_logic() : tock_zram_gates();
 

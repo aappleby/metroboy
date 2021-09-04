@@ -153,9 +153,15 @@ struct GateBoy {
   void tock_vid_clocks_gates();
   void tock_vid_clocks_logic();
   
-  void tock_div();
-  void tock_timer();
-  void tock_reset(DFF17 UPOF_DIV15p);
+  void tock_div_gates();
+  void tock_div_logic();
+
+  void tock_timer_gates();
+  void tock_timer_logic();
+
+  void tock_reset_gates(DFF17 UPOF_DIV15p);
+  void tock_reset_logic(DFF17 UPOF_DIV15p);
+
   void tock_ext(const blob& cart_blob);
   void tock_oam_bus_gates();
   void tock_oam_bus_logic();
@@ -163,7 +169,9 @@ struct GateBoy {
   void tock_serial_gates();
   void tock_serial_logic();
 
-  void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
+  void tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp);
+  void tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp);
+
   void tock_zram_gates();
   void tock_zram_logic();
   void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);

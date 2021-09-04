@@ -7,7 +7,7 @@
 ///*_p01.ULUR*/ wire ULUR_DIV_06_clknew = /*mux2p(FF60_1, BOGA_Axxxxxxx,*/ TAMA_DIV05p.qn_new() /*)*/;
 ///*_p01.UGOT*/ UGOT_DIV06p.dff17_clk(ULUR_DIV_06_clknew,  UGOT_DIV06p.qn_old());
 
-void GateBoy::tock_div() {
+void GateBoy::tock_div_gates() {
   /*_p01.TAPE*/ wire TAPE_FF04_WRp = and4(cpu_signals.TAPU_CPU_WRp.out_new(), new_bus.RYFO_FF04_FF07p(), new_bus.TOLA_A01n(), new_bus.TOVY_A00n());
   /*_p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(UCOB_CLKBADp(), rst.PIN_71_RST.qp_int_new(), TAPE_FF04_WRp);
 
@@ -59,7 +59,27 @@ void GateBoy::tock_div() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_timer() {
+void GateBoy::tock_div_logic() {
+  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+
+  if (DELTA_HA) {
+    auto div_old = pack_old(16, &div.UKUP_DIV00p);
+    unpack(div_old + 1, 16, &div.UKUP_DIV00p);
+  }
+
+  if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF04 && CLK_xxxxEFGx) {
+    memset(&div.UKUP_DIV00p, 0, 16);
+  }
+
+  if (cpu_signals.SIG_IN_CPU_RDp.state && new_addr == 0xFF04) {
+    memcpy(&new_bus.BUS_CPU_D00p, &div.UGOT_DIV06p, 8);
+  }
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::tock_timer_gates() {
   /*_p03.TYJU*/ wire TYJU_FF06_WRn = nand4(cpu_signals.TAPU_CPU_WRp.out_new(), new_bus.RYFO_FF04_FF07p(), new_bus.BUS_CPU_A01p.out_new(), new_bus.TOVY_A00n());
   /*_p03.SABU*/ timer.SABU_TMA0p.dff17(TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D00p.out_old());
   /*_p03.NYKE*/ timer.NYKE_TMA1p.dff17(TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D01p.out_old());
@@ -172,6 +192,60 @@ void GateBoy::tock_timer() {
   /*_BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(RYLA_TAC0_TO_CD0);
   /*_BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(ROTE_TAC1_TO_CD1);
   /*_BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(SUPE_TAC2_TO_CD2);
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::tock_timer_logic() {
+  wire CLK_Axxxxxxx = !!(phase_mask_new & 0b10000000);
+  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+
+  if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
+    if (new_addr == 0xFF06) memcpy(&timer.SABU_TMA0p, &new_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF07) memcpy(&timer.SOPU_TAC0p, &new_bus.BUS_CPU_D00p, 3);
+  }
+
+  wire MERY_TIMER_OVERFLOWp_old = nor2(timer.NUGA_TIMA7p.state, ~timer.NYDU_TIMA7p_DELAY.state);
+  timer.MOBA_TIMER_OVERFLOWp.dff17(CLK_Axxxxxxx, 1, MERY_TIMER_OVERFLOWp_old);
+
+  wire TOPE_FF05_WRn = !(CLK_xxxxEFGx && cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF05);
+
+  wire MUZU_CPU_LOAD_TIMAn = or2(cpu_signals.SIG_IN_CPU_LATCH_EXT.state, TOPE_FF05_WRn);
+  wire MEXU_TIMA_LOADp = nand2(MUZU_CPU_LOAD_TIMAn, ~timer.MOBA_TIMER_OVERFLOWp.state);
+
+  timer.NYDU_TIMA7p_DELAY.dff17(CLK_Axxxxxxx, ~MEXU_TIMA_LOADp, timer.NUGA_TIMA7p.state);
+
+  // FIXME gonna need old and new div for this
+
+  wire UKAP_CLK_MUXa = bit(timer.SOPU_TAC0p.state) ? div.TAMA_DIV05p.state : div.TERO_DIV03p.state;
+  wire TEKO_CLK_MUXb = bit(timer.SOPU_TAC0p.state) ? div.UFOR_DIV01p.state : div.TULU_DIV07p.state;
+  wire TECY_CLK_MUXc = bit(timer.SAMY_TAC1p.state) ? UKAP_CLK_MUXa : TEKO_CLK_MUXb;
+  wire SOGU_TIMA_CLKn = and2(TECY_CLK_MUXc, timer.SABO_TAC2p.state);
+
+  wire ROKE_TIMA_D0 = TOPE_FF05_WRn ? timer.SABU_TMA0p.state : new_bus.BUS_CPU_D00p.state;
+  wire PETU_TIMA_D1 = TOPE_FF05_WRn ? timer.NYKE_TMA1p.state : new_bus.BUS_CPU_D01p.state;
+  wire NYKU_TIMA_D2 = TOPE_FF05_WRn ? timer.MURU_TMA2p.state : new_bus.BUS_CPU_D02p.state;
+  wire SOCE_TIMA_D3 = TOPE_FF05_WRn ? timer.TYVA_TMA3p.state : new_bus.BUS_CPU_D03p.state;
+  wire SALA_TIMA_D4 = TOPE_FF05_WRn ? timer.TYRU_TMA4p.state : new_bus.BUS_CPU_D04p.state;
+  wire SYRU_TIMA_D5 = TOPE_FF05_WRn ? timer.SUFY_TMA5p.state : new_bus.BUS_CPU_D05p.state;
+  wire REFU_TIMA_D6 = TOPE_FF05_WRn ? timer.PETO_TMA6p.state : new_bus.BUS_CPU_D06p.state;
+  wire RATO_TIMA_D7 = TOPE_FF05_WRn ? timer.SETA_TMA7p.state : new_bus.BUS_CPU_D07p.state;
+
+  timer.REGA_TIMA0p.dff20(SOGU_TIMA_CLKn,          MEXU_TIMA_LOADp, ROKE_TIMA_D0);
+  timer.POVY_TIMA1p.dff20(timer.REGA_TIMA0p.state, MEXU_TIMA_LOADp, PETU_TIMA_D1);
+  timer.PERU_TIMA2p.dff20(timer.POVY_TIMA1p.state, MEXU_TIMA_LOADp, NYKU_TIMA_D2);
+  timer.RATE_TIMA3p.dff20(timer.PERU_TIMA2p.state, MEXU_TIMA_LOADp, SOCE_TIMA_D3);
+  timer.RUBY_TIMA4p.dff20(timer.RATE_TIMA3p.state, MEXU_TIMA_LOADp, SALA_TIMA_D4);
+  timer.RAGE_TIMA5p.dff20(timer.RUBY_TIMA4p.state, MEXU_TIMA_LOADp, SYRU_TIMA_D5);
+  timer.PEDA_TIMA6p.dff20(timer.RAGE_TIMA5p.state, MEXU_TIMA_LOADp, REFU_TIMA_D6);
+  timer.NUGA_TIMA7p.dff20(timer.PEDA_TIMA6p.state, MEXU_TIMA_LOADp, RATO_TIMA_D7);
+
+  if (cpu_signals.SIG_IN_CPU_RDp.state) {
+    if (new_addr == 0xFF05) memcpy(&new_bus.BUS_CPU_D00p, &timer.REGA_TIMA0p, 8);
+    if (new_addr == 0xFF06) memcpy(&new_bus.BUS_CPU_D00p, &timer.SABU_TMA0p, 8);
+    if (new_addr == 0xFF07) memcpy(&new_bus.BUS_CPU_D00p, &timer.SOPU_TAC0p, 3);
+  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------

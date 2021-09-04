@@ -159,7 +159,10 @@ struct GateBoy {
   void tock_ext(const blob& cart_blob);
   void tock_oam_bus_gates();
   void tock_oam_bus_logic();
-  void tock_serial();
+
+  void tock_serial_gates();
+  void tock_serial_logic();
+
   void tock_vram_bus(wire TEVO_WIN_FETCH_TRIGp);
   void tock_zram_gates();
   void tock_zram_logic();

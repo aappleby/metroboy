@@ -632,7 +632,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   logic_mode ? tock_lyc_logic() : tock_lyc_gates();
   logic_mode ? tock_lcd_logic() : tock_lcd_gates();
   logic_mode ? tock_joypad_logic() : tock_joypad_gates();
-  tock_serial();
+  logic_mode ? tock_serial_logic() : tock_serial_gates();
   tock_timer();
   logic_mode ? tock_bootrom_logic() : tock_bootrom_gates();
 

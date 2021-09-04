@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_serial()
+void GateBoy::tock_serial_gates()
 {
   /*#p06.UWAM*/ wire UWAM_FF02_WRn = nand4(new_bus.TOVY_A00n(), new_bus.BUS_CPU_A01p.out_new(), cpu_signals.TAPU_CPU_WRp.out_new(), new_bus.SANO_FF00_FF03p());
   /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(UWAM_FF02_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D00p.out_old());
@@ -124,6 +124,96 @@ void GateBoy::tock_serial()
 
   /*_BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(CORE_SER0_TO_CD0);
   /*_BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(ELUV_SER1_TO_CD1);
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::tock_serial_logic()
+{
+  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+
+  if (cpu_signals.SIG_IN_CPU_WRp.state && (new_addr == 0xFF02 && DELTA_GH)) {
+    serial.CULY_SER_DIR.state = old_bus.BUS_CPU_D00p.state;
+  }
+
+  wire UWAM_FF02_WRn = !(cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF02 && CLK_xxxxEFGx);
+
+  wire UVYN_DIV05n = not1(div.TAMA_DIV05p.state);
+  serial.COTY_SER_CLK.dff17(UVYN_DIV05n, UWAM_FF02_WRn, ~serial.COTY_SER_CLK.state);
+
+  //----------------------------------------
+  // Feedback loop
+
+  // FIXME going to need PIN_68_SCK_old for this
+
+  uint8_t CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.state, serial.COTY_SER_CLK.state, serial.PIN_68_SCK.state);
+  uint8_t DAWA_SER_CLK = or2(CAVE_SER_CLK, ~serial.ETAF_SER_RUN.state);
+
+  serial.CAFA_SER_CNT0.dff17_any(DAWA_SER_CLK,                UWAM_FF02_WRn, ~serial.CAFA_SER_CNT0.state);
+  serial.CYLO_SER_CNT1.dff17_any(~serial.CAFA_SER_CNT0.state, UWAM_FF02_WRn, ~serial.CYLO_SER_CNT1.state);
+  serial.CYDE_SER_CNT2.dff17_any(~serial.CYLO_SER_CNT1.state, UWAM_FF02_WRn, ~serial.CYDE_SER_CNT2.state);
+  serial.CALY_SER_CNT3.dff17_any(~serial.CYDE_SER_CNT2.state, UWAM_FF02_WRn, ~serial.CALY_SER_CNT3.state);
+
+  serial.ETAF_SER_RUN.dff17_any(UWAM_FF02_WRn, ~serial.CALY_SER_CNT3.state, old_bus.BUS_CPU_D07p.out_old());
+
+  {
+    wire KEXU = or2(~serial.CULY_SER_DIR.state, ~DAWA_SER_CLK);
+    wire KUJO = and2(serial.CULY_SER_DIR.state, ~DAWA_SER_CLK);
+
+    serial.PIN_68_SCK.pin_io_any(serial.CULY_SER_DIR.state, KEXU, KUJO, 0, 1);
+  }
+
+  CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.state, serial.COTY_SER_CLK.state, serial.PIN_68_SCK.state);
+  DAWA_SER_CLK = or2(CAVE_SER_CLK, ~serial.ETAF_SER_RUN.state);
+
+  serial.CAFA_SER_CNT0.dff17_any(DAWA_SER_CLK,                UWAM_FF02_WRn, ~serial.CAFA_SER_CNT0.state);
+  serial.CYLO_SER_CNT1.dff17_any(~serial.CAFA_SER_CNT0.state, UWAM_FF02_WRn, ~serial.CYLO_SER_CNT1.state);
+  serial.CYDE_SER_CNT2.dff17_any(~serial.CYLO_SER_CNT1.state, UWAM_FF02_WRn, ~serial.CYDE_SER_CNT2.state);
+  serial.CALY_SER_CNT3.dff17_any(~serial.CYDE_SER_CNT2.state, UWAM_FF02_WRn, ~serial.CALY_SER_CNT3.state);
+
+  serial.ETAF_SER_RUN.dff17_any(UWAM_FF02_WRn, ~serial.CALY_SER_CNT3.state, old_bus.BUS_CPU_D07p.out_old());
+
+  {
+    wire KEXU = or2(~serial.CULY_SER_DIR.state, ~DAWA_SER_CLK);
+    wire KUJO = and2(serial.CULY_SER_DIR.state, ~DAWA_SER_CLK);
+
+    serial.PIN_68_SCK.pin_io_any(serial.CULY_SER_DIR.state, KEXU, KUJO, 0, 1);
+  }
+
+  //----------------------------------------
+
+  serial.ELYS_SER_OUT.dff17(~DAWA_SER_CLK, 1, serial.EDER_SER_DATA7.state);
+  serial.PIN_70_SOUT.pin_out(serial.ELYS_SER_OUT.state, serial.ELYS_SER_OUT.state);
+
+  wire EXT_ser_sin = 1;
+  serial.PIN_69_SIN.pin_in(EXT_ser_sin);
+
+
+  if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF01 && CLK_xxxxEFGx) {
+    memcpy(&serial.CUBA_SER_DATA0, &new_bus.BUS_CPU_D00p, 8);
+  }
+  else {
+    wire CAGE_SER_IN_new = not1(serial.PIN_69_SIN.state);
+    serial.EDER_SER_DATA7.dff22(DAWA_SER_CLK, 1, 1, serial.EROD_SER_DATA6.state);
+    serial.EROD_SER_DATA6.dff22(DAWA_SER_CLK, 1, 1, serial.EJAB_SER_DATA5.state);
+    serial.EJAB_SER_DATA5.dff22(DAWA_SER_CLK, 1, 1, serial.DOVU_SER_DATA4.state);
+    serial.DOVU_SER_DATA4.dff22(DAWA_SER_CLK, 1, 1, serial.DOJO_SER_DATA3.state);
+    serial.DOJO_SER_DATA3.dff22(DAWA_SER_CLK, 1, 1, serial.DYRA_SER_DATA2.state);
+    serial.DYRA_SER_DATA2.dff22(DAWA_SER_CLK, 1, 1, serial.DEGU_SER_DATA1.state);
+    serial.DEGU_SER_DATA1.dff22(DAWA_SER_CLK, 1, 1, serial.CUBA_SER_DATA0.state);
+    serial.CUBA_SER_DATA0.dff22(DAWA_SER_CLK, 1, 1, CAGE_SER_IN_new);
+  }
+
+
+  if (cpu_signals.SIG_IN_CPU_RDp.state && new_addr == 0xFF01) {
+    memcpy(&new_bus.BUS_CPU_D00p, &serial.CUBA_SER_DATA0, 8);
+  }
+
+  if (cpu_signals.SIG_IN_CPU_RDp.state && new_addr == 0xFF02) {
+    new_bus.BUS_CPU_D00p.state = serial.CULY_SER_DIR.state;
+    new_bus.BUS_CPU_D07p.state = serial.ETAF_SER_RUN.state;
+  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------

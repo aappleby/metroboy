@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_lyc() {
+void GateBoy::tock_lyc_gates() {
   {
     // Inverting ROPO's clock and making it store the new match instead of the old match fixes lcdon_to_stat2_a but breaks other things
     // Just making it store the new match doesn't break anything.
@@ -64,6 +64,41 @@ void GateBoy::tock_lyc() {
     /*_p21.RYJU*/ wire RYJU_FF41_WRn = not1(SEPA_FF41_WRp);
     /*_p21.PAGO*/ wire PAGO_LYC_MATCH_RST = or2(WESY_SYS_RSTn(), RYJU_FF41_WRn);
     /*_p21.RUPO*/ reg_stat.RUPO_LYC_MATCHn.nor_latch(PAGO_LYC_MATCH_RST, reg_lyc.ROPO_LY_MATCH_SYNCp.qp_new());
+  }
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::tock_lyc_logic() {
+  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+
+  if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF45)) {
+    memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_lyc.SYRY_LYC0n, 8);
+  }
+
+  if (cpu_signals.SIG_IN_CPU_WRp.state && (new_addr == 0xFF45 && DELTA_GH)) {
+    memcpy_inv(&reg_lyc.SYRY_LYC0n, &old_bus.BUS_CPU_D00p, 8);
+  }
+
+  bool lcd_on = !bit(reg_lcdc.XONA_LCDC_LCDENn.state);
+
+  if (lcd_on && DELTA_BC) {
+    auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
+    auto lyc = pack_inv(8, &reg_lyc.SYRY_LYC0n);
+    reg_lyc.ROPO_LY_MATCH_SYNCp.state = ly == lyc;
+  }
+
+  // FIXME this seems slightly wrong...
+  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+  if (bit(cpu_signals.SIG_IN_CPU_WRp.state) && CLK_xxxxEFGx && new_addr == 0xFF41) {
+  }
+  else {
+    reg_stat.RUPO_LYC_MATCHn.state = 1;
+  }
+
+  // but the "reset" arm of the latch overrides the "set" arm, so it doesn't completely break?
+  if (bit(reg_lyc.ROPO_LY_MATCH_SYNCp.state)) {
+    reg_stat.RUPO_LYC_MATCHn.state = 0;
   }
 }
 

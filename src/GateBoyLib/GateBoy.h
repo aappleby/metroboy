@@ -133,7 +133,8 @@ struct GateBoy {
   void tock_lcdc();
 
 
-  void tock_lyc();
+  void tock_lyc_gates();
+  void tock_lyc_logic();
   void tock_lcd();
 
   void tock_dma_gates();

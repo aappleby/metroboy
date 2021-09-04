@@ -629,7 +629,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
 
   tock_lcdc(); // LCDC has to be near the top as it controls the video reset signal
   logic_mode ? tock_vid_clocks_logic() : tock_vid_clocks_gates();
-  tock_lyc();
+  logic_mode ? tock_lyc_logic() : tock_lyc_gates();
   tock_lcd();
   logic_mode ? tock_joypad_logic() : tock_joypad_gates();
   tock_serial();

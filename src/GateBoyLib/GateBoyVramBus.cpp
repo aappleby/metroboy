@@ -855,7 +855,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
 
   memcpy(&vram_pins.PIN_34_VRAM_A00, &vram_bus.BUS_VRAM_A00n, 13);
 
-  uint16_t addr = (uint16_t)pack_ext_new(13, (BitBase*)&vram_pins.PIN_34_VRAM_A00);
+  uint16_t vram_addr = (uint16_t)pack_ext_new(13, (BitBase*)&vram_pins.PIN_34_VRAM_A00);
 
   //--------------------------------------------
   // CPU bus to Vram data bus
@@ -876,21 +876,16 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
 
     if (dma_vram) {
       vram_pins.PIN_43_VRAM_CSn.pin_out(1, 1);
-
-      wire SOHY_MWRn = nand3(addr_vram, APOV_CPU_WRp, ABUZ_EXT_RAM_CS_CLK);
-      vram_pins.PIN_49_VRAM_WRn.pin_out(~SOHY_MWRn, ~SOHY_MWRn);
-
       vram_pins.PIN_45_VRAM_OEn.pin_out(1, 1);
     }
     else {
       wire SUTU_MCSn = nand2(addr_vram, ABUZ_EXT_RAM_CS_CLK);
       vram_pins.PIN_43_VRAM_CSn.pin_out(~SUTU_MCSn, ~SUTU_MCSn);
-
-      wire SOHY_MWRn = nand3(addr_vram, APOV_CPU_WRp, ABUZ_EXT_RAM_CS_CLK);
-      vram_pins.PIN_49_VRAM_WRn.pin_out(~SOHY_MWRn, ~SOHY_MWRn);
-
       vram_pins.PIN_45_VRAM_OEn.pin_out(nand2(addr_vram, cpu_signals.SIG_IN_CPU_WRp.state), nand2(addr_vram, cpu_signals.SIG_IN_CPU_WRp.state));
     }
+
+    wire SOHY_MWRn = nand3(addr_vram, APOV_CPU_WRp, ABUZ_EXT_RAM_CS_CLK);
+    vram_pins.PIN_49_VRAM_WRn.pin_out(~SOHY_MWRn, ~SOHY_MWRn);
   }
   else {
     if (dma_vram) {
@@ -916,29 +911,23 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
     }
   }
 
-  uint8_t data = 0xFF;
-  if (bit(~vram_pins.PIN_45_VRAM_OEn.qp_ext_new())) {
-    data = vid_ram[addr];
-  }
-
   //--------------------------------------------
   // Vram data pin driver
 
   memset(&vram_pins.PIN_33_VRAM_D00, 0, 8);
 
   if (bit(vram_pins.PIN_45_VRAM_OEn.state)) {
-    unpack_inv(data, 8, &vram_pins.PIN_33_VRAM_D00);
+    unpack_inv(vid_ram[vram_addr], 8, &vram_pins.PIN_33_VRAM_D00);
   }
 
-  if (bit(~vram_pins.PIN_49_VRAM_WRn.qp_ext_new())) {
-    vid_ram[addr] = (uint8_t)pack_ext_new(8, (BitBase*)&vram_pins.PIN_33_VRAM_D00);
+  if (bit(vram_pins.PIN_49_VRAM_WRn.state)) {
+    vid_ram[vram_addr] = (uint8_t)pack_ext_new(8, &vram_pins.PIN_33_VRAM_D00);
   }
 
   if (bit(and4(addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
     memcpy_inv(&vram_pins.PIN_33_VRAM_D00, &vram_bus.BUS_VRAM_D00p, 8);
   }
-
-  if (bit(nand4(addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
+  else {
     memcpy_inv(&vram_bus.BUS_VRAM_D00p, &vram_pins.PIN_33_VRAM_D00, 8);
   }
 

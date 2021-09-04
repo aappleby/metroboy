@@ -67,50 +67,30 @@ void GateBoy::tock_bootrom_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_bootrom_logic() {
-  wire TUGE_FF50_WRn = nand4(cpu_signals.TAPU_CPU_WRp.out_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
+  uint16_t new_addr = (uint16_t)pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
-  cpu_signals.TEPU_BOOT_BITn_h.dff17(TUGE_FF50_WRn, ALUR_SYS_RSTn(), SATO_BOOT_BITn.out_old());
+  if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF50 && DELTA_GH) {
+    cpu_signals.TEPU_BOOT_BITn_h.state = SATO_BOOT_BITn.state;
+  }
 
-  uint16_t cpu_addr = (uint16_t)pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
-  wire bootrom_data = DMG_ROM_blob[cpu_addr & 0xFF];
+  cpu_signals.SIG_CPU_BOOTp.state = 0;
+  cpu_signals.SIG_BOOT_CSp.state = 0;
 
-  wire TERA_BOOT_BITp = not1(cpu_signals.TEPU_BOOT_BITn_h.qp_new());
-  wire TUTU_READ_BOOTROMp = and2(TERA_BOOT_BITp, new_bus.TULO_ADDR_BOOTROMp());
-  cpu_signals.SIG_CPU_BOOTp.sig_out(TUTU_READ_BOOTROMp);
+  if (new_addr <= 0x00FF) {
 
-  wire ZORO_0000xxxx_XX = nor4(new_bus.BUS_CPU_A15p.out_new(), new_bus.BUS_CPU_A14p.out_new(), new_bus.BUS_CPU_A13p.out_new(), new_bus.BUS_CPU_A12p.out_new());
-  wire ZADU_xxxx0000_XX = nor4(new_bus.BUS_CPU_A11p.out_new(), new_bus.BUS_CPU_A10p.out_new(), new_bus.BUS_CPU_A09p.out_new(), new_bus.BUS_CPU_A08p.out_new());
-  wire ZUFA_0000_00FF = and2(ZORO_0000xxxx_XX, ZADU_xxxx0000_XX);
-  wire YAZA_MODE_DBG1n = not1(UMUT_MODE_DBG1p());
-  wire YULA_BOOT_RDp = and3(cpu_signals.TEDO_CPU_RDp.out_new(), YAZA_MODE_DBG1n, TUTU_READ_BOOTROMp); // def AND
-  wire ZADO_BOOT_CSn = nand2(YULA_BOOT_RDp, ZUFA_0000_00FF);
-  wire ZERY_BOOT_CSp = not1(ZADO_BOOT_CSn);
+    cpu_signals.SIG_CPU_BOOTp.sig_out(~cpu_signals.TEPU_BOOT_BITn_h.state);
 
-  cpu_signals.SIG_BOOT_CSp.sig_out(ZERY_BOOT_CSp);
+    if (bit(and2(cpu_signals.SIG_IN_CPU_RDp.state, ~cpu_signals.TEPU_BOOT_BITn_h.state))) {
+      cpu_signals.SIG_BOOT_CSp.state = 1;
+      unpack(DMG_ROM_blob[new_addr & 0xFF], 8, &new_bus.BUS_CPU_D00p);
+    }
+  }
 
-  triwire boot_d0 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 0));
-  triwire boot_d1 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 1));
-  triwire boot_d2 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 2));
-  triwire boot_d3 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 3));
-  triwire boot_d4 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 4));
-  triwire boot_d5 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 5));
-  triwire boot_d6 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 6));
-  triwire boot_d7 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 7));
+  if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF50)) {
+    new_bus.BUS_CPU_D00p.state = cpu_signals.TEPU_BOOT_BITn_h.state;
+  }
 
-  new_bus.BUS_CPU_D00p.tri_bus(boot_d0);
-  new_bus.BUS_CPU_D01p.tri_bus(boot_d1);
-  new_bus.BUS_CPU_D02p.tri_bus(boot_d2);
-  new_bus.BUS_CPU_D03p.tri_bus(boot_d3);
-  new_bus.BUS_CPU_D04p.tri_bus(boot_d4);
-  new_bus.BUS_CPU_D05p.tri_bus(boot_d5);
-  new_bus.BUS_CPU_D06p.tri_bus(boot_d6);
-  new_bus.BUS_CPU_D07p.tri_bus(boot_d7);
-
-  wire TEXE_FF50_RDp = and4(cpu_signals.TEDO_CPU_RDp.out_new(), new_bus.SYKE_ADDR_HIp(), new_bus.TYRO_XX_0x0x0000p(), new_bus.TUFA_XX_x1x1xxxxp());
-  triwire SYPU_BOOT_TO_CD0 = tri6_pn(TEXE_FF50_RDp, cpu_signals.TEPU_BOOT_BITn_h.qp_new());
-  new_bus.BUS_CPU_D00p.tri_bus(SYPU_BOOT_TO_CD0);
-
-  SATO_BOOT_BITn = or2(new_bus.BUS_CPU_D00p.out_new(), cpu_signals.TEPU_BOOT_BITn_h.qp_new());
+  SATO_BOOT_BITn = or2(new_bus.BUS_CPU_D00p.state, cpu_signals.TEPU_BOOT_BITn_h.state);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

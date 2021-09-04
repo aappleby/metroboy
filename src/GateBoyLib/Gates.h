@@ -805,3 +805,7 @@ inline void memcpy_inv(void* dst, void* src, int c) {
     ((uint8_t*)dst)[i] = ~((uint8_t*)src)[i];
   }
 }
+
+inline void clear(int c, BitBase* b) {
+  for (int i = 0; i < c; i++) b[i].state &= ~1;
+}

@@ -630,7 +630,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   tock_lcdc(); // LCDC has to be near the top as it controls the video reset signal
   logic_mode ? tock_vid_clocks_logic() : tock_vid_clocks_gates();
   logic_mode ? tock_lyc_logic() : tock_lyc_gates();
-  tock_lcd();
+  logic_mode ? tock_lcd_logic() : tock_lcd_gates();
   logic_mode ? tock_joypad_logic() : tock_joypad_gates();
   tock_serial();
   tock_timer();
@@ -974,7 +974,7 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
   // PPU / LCD output
 
   tock_pix_pipes(SACU_CLKPIPE_evn, NYXU_BFETCH_RSTn);
-  set_lcd_pins(SACU_CLKPIPE_evn);
+  logic_mode ? set_lcd_pins_logic(SACU_CLKPIPE_evn) : set_lcd_pins_gates(SACU_CLKPIPE_evn);
   update_framebuffer();
 
   //----------------------------------------

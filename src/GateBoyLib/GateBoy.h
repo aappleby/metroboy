@@ -135,7 +135,8 @@ struct GateBoy {
 
   void tock_lyc_gates();
   void tock_lyc_logic();
-  void tock_lcd();
+  void tock_lcd_gates();
+  void tock_lcd_logic();
 
   void tock_dma_gates();
   void tock_dma_logic();
@@ -203,7 +204,8 @@ struct GateBoy {
 
   void sprite_scan_to_bus(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
 
-  void set_lcd_pins(wire SACU_CLKPIPE_evn);
+  void set_lcd_pins_gates(wire SACU_CLKPIPE_evn);
+  void set_lcd_pins_logic(wire SACU_CLKPIPE_evn);
 
   SpriteDeltaY sub_sprite_y();
   static void oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a);

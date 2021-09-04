@@ -104,7 +104,7 @@ void GateBoy::tock_lyc_logic() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_lcd() {
+void GateBoy::tock_lcd_gates() {
   {
     /*#p21.XYVO*/ wire XYVO_y144p = and2(reg_ly.LOVU_LY4p.qp_old(), reg_ly.LAFO_LY7p.qp_old()); // 128 + 16 = 144
     /*#p21.NOKO*/ wire NOKO_y153p = and4(reg_ly.LAFO_LY7p.qp_old(), reg_ly.LOVU_LY4p.qp_old(), reg_ly.LYDO_LY3p.qp_old(), reg_ly.MUWY_LY0p.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
@@ -206,7 +206,74 @@ void GateBoy::tock_lcd() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::set_lcd_pins(wire SACU_CLKPIPE_evn) {
+void GateBoy::tock_lcd_logic() {
+  bool lcd_on = !bit(reg_lcdc.XONA_LCDC_LCDENn.state);
+  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+
+  if (lcd_on) {
+    if (DELTA_FG) {
+      auto lx_old = pack_old(7, &reg_lx.SAXO_LX0p);
+      wire rutu_old = bit(lcd.RUTU_x113p.state);
+      lcd.RUTU_x113p.state = lx_old == 113;
+      wire rutu_new = bit(lcd.RUTU_x113p.state);
+      if (!rutu_old && rutu_new) {
+        auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
+        unpack(ly + 1, 8, &reg_ly.MUWY_LY0p);
+      }
+
+      wire strobe = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
+      lcd.SYGU_LINE_STROBE.state = strobe;
+    }
+
+    if (DELTA_BC) {
+      wire nype_old = bit(lcd.NYPE_x113p.state);
+      lcd.NYPE_x113p.state = lcd.RUTU_x113p.state;
+      wire nype_new = bit(lcd.NYPE_x113p.state);
+      if (!nype_old && nype_new) {
+        auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
+        lcd.POPU_y144p.state = ly == 144;
+        lcd.MYTA_y153p.state = ly == 153;
+      }
+      lcd.ANEL_x113p.state = lcd.CATU_x113p.state;
+      auto lx_old = pack_old(7, &reg_lx.SAXO_LX0p);
+      unpack(lx_old + 1, 7, &reg_lx.SAXO_LX0p);
+    }
+
+    if (DELTA_HA) {
+      auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
+      lcd.CATU_x113p.state = bit(lcd.RUTU_x113p.state) && ly != 144;
+    }
+
+    ATEJ_LINE_RSTp = not1((bit(lcd.ANEL_x113p.state) || bit(not1(lcd.CATU_x113p.state))));
+
+    if (bit(lcd.RUTU_x113p.state)) clear(7, &reg_lx.SAXO_LX0p);
+    if (bit(lcd.MYTA_y153p.state)) clear(8, &reg_ly.MUWY_LY0p);
+  }
+  else {
+    lcd.ANEL_x113p.state = 0;
+    lcd.CATU_x113p.state = 0;
+    lcd.NYPE_x113p.state = 0;
+    lcd.RUTU_x113p.state = 0;
+    lcd.POPU_y144p.state = 0;
+    lcd.MYTA_y153p.state = 0;
+    lcd.SYGU_LINE_STROBE.state = 0;
+
+    ATEJ_LINE_RSTp = 1;
+
+    clear(7, &reg_lx.SAXO_LX0p);
+    clear(8, &reg_ly.MUWY_LY0p);
+
+  }
+
+  if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF44)) {
+    memcpy(&new_bus.BUS_CPU_D00p, &reg_ly.MUWY_LY0p, 8);
+  }
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*#p21.RYNO*/ wire RYNO = or2(lcd.SYGU_LINE_STROBE.qp_new(), lcd.RUTU_x113p.qp_new());
   /*#p21.POGU*/ wire POGU = not1(RYNO);
   /*_PIN_52*/ lcd.PIN_52_LCD_CNTRL.pin_out(POGU, POGU);
@@ -282,6 +349,82 @@ void GateBoy::set_lcd_pins(wire SACU_CLKPIPE_evn) {
   lcd_pipe_lo[159].dff(bit(~PIN_53_LCD_CLOCK.qp_new()), 1, 1, lcd_pix_lo.qp_new());
   lcd_pipe_hi[159].dff(bit(~PIN_53_LCD_CLOCK.qp_new()), 1, 1, lcd_pix_hi.qp_new());
   */
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::set_lcd_pins_logic(wire SACU_CLKPIPE_evn) {
+  bool lcd_on = !bit(reg_lcdc.XONA_LCDC_LCDENn.state);
+
+  if (lcd_on) {
+    wire POGU = ~or2(lcd.SYGU_LINE_STROBE.state, lcd.RUTU_x113p.state);
+    lcd.PIN_52_LCD_CNTRL.pin_out(POGU, POGU);
+
+    wire LOFU_x113n = ~lcd.RUTU_x113p.state;
+    lcd.LUCA_LINE_EVENp.dff17(LOFU_x113n,            1, ~lcd.LUCA_LINE_EVENp.state);
+    lcd.NAPO_FRAME_EVENp.dff17(lcd.POPU_y144p.state, 1, ~lcd.NAPO_FRAME_EVENp.state);
+
+    wire KOFO = ~xor2(lcd.NAPO_FRAME_EVENp.state, ~lcd.LUCA_LINE_EVENp.state);
+    lcd.PIN_56_LCD_FLIPS.pin_out(KOFO, KOFO);
+
+    auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
+
+    lcd.MEDA_VSYNC_OUTn.dff17(~lcd.NYPE_x113p.state, 1, ly == 0);
+    lcd.PIN_57_LCD_VSYNC.pin_out(~lcd.MEDA_VSYNC_OUTn.state, ~lcd.MEDA_VSYNC_OUTn.state);
+
+    if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state) && bit(lcd.PAHO_X_8_SYNC.state)) {
+      // this case is never be hit...
+      ASSERT_P(false);
+    }
+    else if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state)) {
+      lcd.POME = 0;
+      lcd.RUJU = 0;
+      lcd.POFY = 1;
+    }
+    else if (bit(lcd.PAHO_X_8_SYNC.state)) {
+      lcd.POME = 1;
+      lcd.RUJU = 1;
+      lcd.POFY = 0;
+    }
+
+    lcd.PIN_50_LCD_DATA1.pin_out(pix_pipes.RAVO_LD1n.state, pix_pipes.RAVO_LD1n.state);
+    lcd.PIN_51_LCD_DATA0.pin_out(pix_pipes.REMY_LD0n.state, pix_pipes.REMY_LD0n.state);
+    lcd.PIN_54_LCD_HSYNC.pin_out(~lcd.POFY.state, ~lcd.POFY.state);
+    lcd.PIN_55_LCD_LATCH.pin_out(~lcd.RUTU_x113p.state, ~lcd.RUTU_x113p.state);
+
+    if (bit(and2(pix_count.XEHO_PX0p.state, pix_count.XYDO_PX3p.state))) {
+      lcd.WUSA_LCD_CLOCK_GATE.state = 1;
+    }
+    if (bit(VOGA_HBLANKp.state)) {
+      lcd.WUSA_LCD_CLOCK_GATE.state = 0;
+    }
+
+    {
+      wire TOBA_LCD_CLOCK = and2(lcd.WUSA_LCD_CLOCK_GATE.state, SACU_CLKPIPE_evn);
+      wire POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.state, ~fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
+      wire SEMU_LCD_CLOCK = or2(TOBA_LCD_CLOCK, POVA_FINE_MATCH_TRIGp);
+      lcd.PIN_53_LCD_CLOCK.pin_out(~SEMU_LCD_CLOCK, ~SEMU_LCD_CLOCK);
+    }
+  }
+  else {
+    lcd.LUCA_LINE_EVENp.state &= ~1;
+    lcd.NAPO_FRAME_EVENp.state &= ~1;
+    lcd.MEDA_VSYNC_OUTn.state &= ~1;
+    lcd.WUSA_LCD_CLOCK_GATE.state = 0;
+
+    lcd.POME = 1;
+    lcd.RUJU = 1;
+    lcd.POFY = 0;
+
+    lcd.PIN_50_LCD_DATA1.pin_out(pix_pipes.RAVO_LD1n.state, pix_pipes.RAVO_LD1n.state);
+    lcd.PIN_51_LCD_DATA0.pin_out(pix_pipes.REMY_LD0n.state, pix_pipes.REMY_LD0n.state);
+    lcd.PIN_52_LCD_CNTRL.pin_out(1, 1);
+    lcd.PIN_53_LCD_CLOCK.pin_out(1, 1);
+    lcd.PIN_54_LCD_HSYNC.pin_out(1, 1);
+    lcd.PIN_55_LCD_LATCH.pin_out(~div.UGOT_DIV06p.state, ~div.UGOT_DIV06p.state);
+    lcd.PIN_56_LCD_FLIPS.pin_out(~div.TULU_DIV07p.state, ~div.TULU_DIV07p.state);
+    lcd.PIN_57_LCD_VSYNC.pin_out(1, 1);
+  }
 }
 
 //------------------------------------------------------------------------------------------------------------------------

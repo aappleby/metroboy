@@ -472,11 +472,10 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
   wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
   auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   wire addr_vram = (new_addr >= 0x8000) && (new_addr <= 0x9FFF);
+  wire addr_ram = (new_addr >= 0xA000) && (new_addr <= 0xFDFF);
   auto dma_addr = pack_inv(16, &dma.NAKY_DMA_A00p);
   wire dma_vram = (dma_addr >= 0x8000) && (dma_addr <= 0x9FFF);
   wire dma_busy = dma.MATU_DMA_RUNNINGp.state;
-
-  wire MOCA_EXT_RD = nand2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram);
 
   wire LUMA_DMA_CARTp = and2(dma_busy, ~dma_vram);
 
@@ -486,10 +485,10 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
     ext_pins.PIN_79_RDn.pin_out(1, 1);
   }
   else if (cpu_signals.SIG_IN_CPU_WRp.state) {
-    ext_pins.PIN_79_RDn.pin_out(MOCA_EXT_RD, MOCA_EXT_RD);
+    ext_pins.PIN_79_RDn.pin_out(nand2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram), nand2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram));
   }
   else if (cpu_signals.SIG_IN_CPU_RDp.state) {
-    wire TYMU_EXT_RDn = nor2(MOCA_EXT_RD, and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram));
+    wire TYMU_EXT_RDn = nor3(~cpu_signals.SIG_IN_CPU_EXT_BUSp.state, addr_vram, and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram));
     ext_pins.PIN_79_RDn.pin_out(~TYMU_EXT_RDn, ~TYMU_EXT_RDn);
   }
   else {
@@ -497,13 +496,15 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
   }
 
   {
-    wire PUVA_EXT_WRn = or4(~CLK_xxxxEFGx, ~cpu_signals.SIG_IN_CPU_WRp.state, MOCA_EXT_RD, LUMA_DMA_CARTp);
+    wire PUVA_EXT_WRn = or5(~CLK_xxxxEFGx, ~cpu_signals.SIG_IN_CPU_WRp.state, ~cpu_signals.SIG_IN_CPU_EXT_BUSp.state, addr_vram, LUMA_DMA_CARTp);
     ext_pins.PIN_78_WRn.pin_out(~PUVA_EXT_WRn, ~PUVA_EXT_WRn);
   }
 
-  {
-    wire TOZA_CS_A = and3(cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new(), new_bus.TYNU_A000_FFFFp(), new_bus.TUNA_0000_FDFF());
-    wire TYHO_CS_A = mux2p(LUMA_DMA_CARTp, dma.MARU_DMA_A15n.qn_new(), TOZA_CS_A);
+  if (bit(LUMA_DMA_CARTp)) {
+    ext_pins.PIN_80_CSn.pin_out(~dma.MARU_DMA_A15n.state, ~dma.MARU_DMA_A15n.state);
+  }
+  else {
+    wire TYHO_CS_A = and2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, addr_ram);
     ext_pins.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
   }
 
@@ -520,46 +521,28 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
   }
 
   // A15 is "special"
-  wire TERA_BOOT_BITp = not1(cpu_signals.TEPU_BOOT_BITn_h.qp_new());
-  wire TUTU_READ_BOOTROMp = and2(TERA_BOOT_BITp, new_bus.TULO_ADDR_BOOTROMp());
-  wire SOBY_A15n = nor2(new_bus.BUS_CPU_A15p.out_new(), TUTU_READ_BOOTROMp);
-  wire SEPY_A15p = nand2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new(), SOBY_A15n);
-  wire TAZY_A15p = mux2p(LUMA_DMA_CARTp, dma.MARU_DMA_A15n.qn_new(), SEPY_A15p);
-  wire SUZE_A15n = nand2(TAZY_A15p, RYCA_MODE_DBG2n());
-  wire RULO_A15n = nor2(TAZY_A15p, UNOR_MODE_DBG2p());
-  ext_pins.PIN_16_A15.pin_out(SUZE_A15n, RULO_A15n);
 
-  wire LAGU = and_or3(cpu_signals.SIG_IN_CPU_RDp.out_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_IN_CPU_WRp.out_new());
-  wire LYWE = not1(LAGU);
-  wire MOTY_CPU_EXT_RD = or2(MOCA_EXT_RD, LYWE);
-  wire RORU_CBD_TO_EPDn = mux2p(UNOR_MODE_DBG2p(), REDU_CPU_RDn(), MOTY_CPU_EXT_RD);
-  wire LULA_CBD_TO_EPDp = not1(RORU_CBD_TO_EPDn);
+  wire TUTU_READ_BOOTROMp = and2(~cpu_signals.TEPU_BOOT_BITn_h.state, new_addr <= 0x00FF);
 
-  wire RUXA = nand2(new_bus.BUS_CPU_D00p.out_new(), LULA_CBD_TO_EPDp);
-  wire RUJA = nand2(new_bus.BUS_CPU_D01p.out_new(), LULA_CBD_TO_EPDp);
-  wire RABY = nand2(new_bus.BUS_CPU_D02p.out_new(), LULA_CBD_TO_EPDp);
-  wire RERA = nand2(new_bus.BUS_CPU_D03p.out_new(), LULA_CBD_TO_EPDp);
-  wire RORY = nand2(new_bus.BUS_CPU_D04p.out_new(), LULA_CBD_TO_EPDp);
-  wire RYVO = nand2(new_bus.BUS_CPU_D05p.out_new(), LULA_CBD_TO_EPDp);
-  wire RAFY = nand2(new_bus.BUS_CPU_D06p.out_new(), LULA_CBD_TO_EPDp);
-  wire RAVU = nand2(new_bus.BUS_CPU_D07p.out_new(), LULA_CBD_TO_EPDp);
-
-  wire RUNE = nor2(new_bus.BUS_CPU_D00p.out_new(), RORU_CBD_TO_EPDn);
-  wire RYPU = nor2(new_bus.BUS_CPU_D01p.out_new(), RORU_CBD_TO_EPDn);
-  wire SULY = nor2(new_bus.BUS_CPU_D02p.out_new(), RORU_CBD_TO_EPDn);
-  wire SEZE = nor2(new_bus.BUS_CPU_D03p.out_new(), RORU_CBD_TO_EPDn);
-  wire RESY = nor2(new_bus.BUS_CPU_D04p.out_new(), RORU_CBD_TO_EPDn);
-  wire TAMU = nor2(new_bus.BUS_CPU_D05p.out_new(), RORU_CBD_TO_EPDn);
-  wire ROGY = nor2(new_bus.BUS_CPU_D06p.out_new(), RORU_CBD_TO_EPDn);
-  wire RYDA = nor2(new_bus.BUS_CPU_D07p.out_new(), RORU_CBD_TO_EPDn);
+  if (bit(LUMA_DMA_CARTp)) {
+    wire TAZY_A15p = ~dma.MARU_DMA_A15n.state;
+    ext_pins.PIN_16_A15.pin_out(~TAZY_A15p, ~TAZY_A15p);
+  }
+  else if (TUTU_READ_BOOTROMp) {
+    ext_pins.PIN_16_A15.pin_out(0, 0);
+  }
+  else {
+    wire TAZY_A15p = nand2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, ~new_bus.BUS_CPU_A15p.state);
+    ext_pins.PIN_16_A15.pin_out(~TAZY_A15p, ~TAZY_A15p);
+  }
 
   //----------------------------------------
 
   uint16_t addr = (uint16_t)pack_ext_new(16, (BitBase*)&ext_pins.PIN_01_A00);
   const int region = addr >> 13;
 
-  bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.out_old());
-  bool mbc1_mode = bit(ext_pins.MBC1_MODE.out_old());
+  bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.state);
+  bool mbc1_mode = bit(ext_pins.MBC1_MODE.state);
 
   //----------------------------------------
 
@@ -622,46 +605,21 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
     }
   }
 
-  wire EXT_data_in0 = bit(data_in, 0);
-  wire EXT_data_in1 = bit(data_in, 1);
-  wire EXT_data_in2 = bit(data_in, 2);
-  wire EXT_data_in3 = bit(data_in, 3);
-  wire EXT_data_in4 = bit(data_in, 4);
-  wire EXT_data_in5 = bit(data_in, 5);
-  wire EXT_data_in6 = bit(data_in, 6);
-  wire EXT_data_in7 = bit(data_in, 7);
+  memset(&ext_pins.PIN_17_D00, 0, 8);
 
+  ASSERT_N(cpu_signals.SIG_IN_CPU_RDp.state && cpu_signals.SIG_IN_CPU_WRp.state);
 
-  ext_pins.PIN_17_D00.pin_io(LULA_CBD_TO_EPDp, RUXA, RUNE, EXT_rd_en, EXT_data_in0);
-  ext_pins.PIN_18_D01.pin_io(LULA_CBD_TO_EPDp, RUJA, RYPU, EXT_rd_en, EXT_data_in1);
-  ext_pins.PIN_19_D02.pin_io(LULA_CBD_TO_EPDp, RABY, SULY, EXT_rd_en, EXT_data_in2);
-  ext_pins.PIN_20_D03.pin_io(LULA_CBD_TO_EPDp, RERA, SEZE, EXT_rd_en, EXT_data_in3);
-  ext_pins.PIN_21_D04.pin_io(LULA_CBD_TO_EPDp, RORY, RESY, EXT_rd_en, EXT_data_in4);
-  ext_pins.PIN_22_D05.pin_io(LULA_CBD_TO_EPDp, RYVO, TAMU, EXT_rd_en, EXT_data_in5);
-  ext_pins.PIN_23_D06.pin_io(LULA_CBD_TO_EPDp, RAFY, ROGY, EXT_rd_en, EXT_data_in6);
-  ext_pins.PIN_24_D07.pin_io(LULA_CBD_TO_EPDp, RAVU, RYDA, EXT_rd_en, EXT_data_in7);
+  if (cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state && !addr_vram) {
+    memcpy_inv(&ext_pins.PIN_17_D00, &new_bus.BUS_CPU_D00p, 8);
+  }
+
+  if (bit(EXT_rd_en)) {
+    unpack_inv(data_in, 8, &ext_pins.PIN_17_D00);
+  }
 
   //----------------------------------------
 
-  ext_pins.MBC1_RAM_EN.hold();
-  ext_pins.MBC1_MODE.hold();
-  ext_pins.MBC1_BANK0.hold();
-  ext_pins.MBC1_BANK1.hold();
-  ext_pins.MBC1_BANK2.hold();
-  ext_pins.MBC1_BANK3.hold();
-  ext_pins.MBC1_BANK4.hold();
-  ext_pins.MBC1_BANK5.hold();
-  ext_pins.MBC1_BANK6.hold();
-
-  uint8_t data_out = 0;
-  data_out |= bit(ext_pins.PIN_17_D00.qp_ext_new()) << 0;
-  data_out |= bit(ext_pins.PIN_18_D01.qp_ext_new()) << 1;
-  data_out |= bit(ext_pins.PIN_19_D02.qp_ext_new()) << 2;
-  data_out |= bit(ext_pins.PIN_20_D03.qp_ext_new()) << 3;
-  data_out |= bit(ext_pins.PIN_21_D04.qp_ext_new()) << 4;
-  data_out |= bit(ext_pins.PIN_22_D05.qp_ext_new()) << 5;
-  data_out |= bit(ext_pins.PIN_23_D06.qp_ext_new()) << 6;
-  data_out |= bit(ext_pins.PIN_24_D07.qp_ext_new()) << 7;
+  auto data_out = (uint8_t)pack_inv(8, &ext_pins.PIN_17_D00);
 
   if (bit(~ext_pins.PIN_78_WRn.qp_ext_new())) {
     if (region == 0 && cart_has_mbc1(cart_blob)) {
@@ -695,24 +653,10 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
   //----------------------------------------
 
   if (!bit(nand4(cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
-    new_bus.BUS_CPU_D00p.state = ~ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.state;
-    new_bus.BUS_CPU_D01p.state = ~ext_data_latch.RONY_EXT_DATA_LATCH_D1n.state;
-    new_bus.BUS_CPU_D02p.state = ~ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.state;
-    new_bus.BUS_CPU_D03p.state = ~ext_data_latch.SELO_EXT_DATA_LATCH_D3n.state;
-    new_bus.BUS_CPU_D04p.state = ~ext_data_latch.SODY_EXT_DATA_LATCH_D4n.state;
-    new_bus.BUS_CPU_D05p.state = ~ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.state;
-    new_bus.BUS_CPU_D06p.state = ~ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.state;
-    new_bus.BUS_CPU_D07p.state = ~ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.state;
+    memcpy_inv(&new_bus.BUS_CPU_D00p, &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
   }
   else {
-    ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.state = ext_pins.PIN_17_D00.state;
-    ext_data_latch.RONY_EXT_DATA_LATCH_D1n.state = ext_pins.PIN_18_D01.state;
-    ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.state = ext_pins.PIN_19_D02.state;
-    ext_data_latch.SELO_EXT_DATA_LATCH_D3n.state = ext_pins.PIN_20_D03.state;
-    ext_data_latch.SODY_EXT_DATA_LATCH_D4n.state = ext_pins.PIN_21_D04.state;
-    ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.state = ext_pins.PIN_22_D05.state;
-    ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.state = ext_pins.PIN_23_D06.state;
-    ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.state = ext_pins.PIN_24_D07.state;
+    memcpy(&ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, &ext_pins.PIN_17_D00, 8);
   }
 }
 

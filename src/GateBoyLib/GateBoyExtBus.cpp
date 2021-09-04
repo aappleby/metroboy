@@ -480,10 +480,20 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
 
   wire LUMA_DMA_CARTp = and2(dma_busy, ~dma_vram);
 
-  {
-    wire LYWE = ~and_or3(cpu_signals.SIG_IN_CPU_RDp.out_new(), LEVO_ADDR_VRAMn(), cpu_signals.SIG_IN_CPU_WRp.out_new());
-    wire TYMU_EXT_RDn = nor3(LUMA_DMA_CARTp, MOCA_EXT_RD, LYWE);
+
+
+  if (bit(LUMA_DMA_CARTp)) {
+    ext_pins.PIN_79_RDn.pin_out(1, 1);
+  }
+  else if (cpu_signals.SIG_IN_CPU_WRp.state) {
+    ext_pins.PIN_79_RDn.pin_out(MOCA_EXT_RD, MOCA_EXT_RD);
+  }
+  else if (cpu_signals.SIG_IN_CPU_RDp.state) {
+    wire TYMU_EXT_RDn = nor2(MOCA_EXT_RD, and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram));
     ext_pins.PIN_79_RDn.pin_out(~TYMU_EXT_RDn, ~TYMU_EXT_RDn);
+  }
+  else {
+    ext_pins.PIN_79_RDn.pin_out(1, 1);
   }
 
   {
@@ -497,89 +507,17 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
     ext_pins.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
   }
 
-  wire LOXO_HOLDn = and_or3(MULE_MODE_DBG1n(), and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram), UMUT_MODE_DBG1p());
-  wire LASY_HOLDp = not1(LOXO_HOLDn);
-  wire MATE_HOLDn = not1(LASY_HOLDp);
-  ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A00p.out_new());
-  ext_addr_latch.APUR_EXT_ADDR_LATCH_01p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A01p.out_new());
-  ext_addr_latch.ALYR_EXT_ADDR_LATCH_02p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A02p.out_new());
-  ext_addr_latch.ARET_EXT_ADDR_LATCH_03p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A03p.out_new());
-  ext_addr_latch.AVYS_EXT_ADDR_LATCH_04p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A04p.out_new());
-  ext_addr_latch.ATEV_EXT_ADDR_LATCH_05p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A05p.out_new());
-  ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A06p.out_new());
-  ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A07p.out_new());
-  ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A08p.out_new());
-  ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A09p.out_new());
-  ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A10p.out_new());
-  ext_addr_latch.LUMY_EXT_ADDR_LATCH_11p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A11p.out_new());
-  ext_addr_latch.LOBU_EXT_ADDR_LATCH_12p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A12p.out_new());
-  ext_addr_latch.LONU_EXT_ADDR_LATCH_13p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A13p.out_new());
-  ext_addr_latch.NYRE_EXT_ADDR_LATCH_14p.tp_latchn(MATE_HOLDn, new_bus.BUS_CPU_A14p.out_new());
+  if (bit(and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram))) {
+    memcpy(&ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, &new_bus.BUS_CPU_A00p, 15);
+  }
 
-
-  wire AMET_A00p = mux2p(LUMA_DMA_CARTp, dma.NAKY_DMA_A00p.qp_new(), ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.qp_new());
-  wire ATOL_A01p = mux2p(LUMA_DMA_CARTp, dma.PYRO_DMA_A01p.qp_new(), ext_addr_latch.APUR_EXT_ADDR_LATCH_01p.qp_new());
-  wire APOK_A02p = mux2p(LUMA_DMA_CARTp, dma.NEFY_DMA_A02p.qp_new(), ext_addr_latch.ALYR_EXT_ADDR_LATCH_02p.qp_new());
-  wire AMER_A03p = mux2p(LUMA_DMA_CARTp, dma.MUTY_DMA_A03p.qp_new(), ext_addr_latch.ARET_EXT_ADDR_LATCH_03p.qp_new());
-  wire ATEM_A04p = mux2p(LUMA_DMA_CARTp, dma.NYKO_DMA_A04p.qp_new(), ext_addr_latch.AVYS_EXT_ADDR_LATCH_04p.qp_new());
-  wire ATOV_A05p = mux2p(LUMA_DMA_CARTp, dma.PYLO_DMA_A05p.qp_new(), ext_addr_latch.ATEV_EXT_ADDR_LATCH_05p.qp_new());
-  wire ATYR_A06p = mux2p(LUMA_DMA_CARTp, dma.NUTO_DMA_A06p.qp_new(), ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.qp_new());
-  wire ASUR_A07p = mux2p(LUMA_DMA_CARTp, dma.MUGU_DMA_A07p.qp_new(), ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.qp_new());
-  wire MANO_A08p = mux2p(LUMA_DMA_CARTp, dma.NAFA_DMA_A08n.qn_new(), ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.qp_new());
-  wire MASU_A09p = mux2p(LUMA_DMA_CARTp, dma.PYNE_DMA_A09n.qn_new(), ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.qp_new());
-  wire PAMY_A10p = mux2p(LUMA_DMA_CARTp, dma.PARA_DMA_A10n.qn_new(), ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.qp_new());
-  wire MALE_A11p = mux2p(LUMA_DMA_CARTp, dma.NYDO_DMA_A11n.qn_new(), ext_addr_latch.LUMY_EXT_ADDR_LATCH_11p.qp_new());
-  wire MOJY_A12p = mux2p(LUMA_DMA_CARTp, dma.NYGY_DMA_A12n.qn_new(), ext_addr_latch.LOBU_EXT_ADDR_LATCH_12p.qp_new());
-  wire MUCE_A13p = mux2p(LUMA_DMA_CARTp, dma.PULA_DMA_A13n.qn_new(), ext_addr_latch.LONU_EXT_ADDR_LATCH_13p.qp_new());
-  wire PEGE_A14p = mux2p(LUMA_DMA_CARTp, dma.POKU_DMA_A14n.qn_new(), ext_addr_latch.NYRE_EXT_ADDR_LATCH_14p.qp_new());
-
-  wire KUPO = nand2(AMET_A00p, TOVA_MODE_DBG2n());
-  wire CABA = nand2(ATOL_A01p, TOVA_MODE_DBG2n());
-  wire BOKU = nand2(APOK_A02p, TOVA_MODE_DBG2n());
-  wire BOTY = nand2(AMER_A03p, TOVA_MODE_DBG2n());
-  wire BYLA = nand2(ATEM_A04p, TOVA_MODE_DBG2n());
-  wire BADU = nand2(ATOV_A05p, TOVA_MODE_DBG2n());
-  wire CEPU = nand2(ATYR_A06p, TOVA_MODE_DBG2n());
-  wire DEFY = nand2(ASUR_A07p, TOVA_MODE_DBG2n());
-  wire MYNY = nand2(MANO_A08p, TOVA_MODE_DBG2n());
-  wire MUNE = nand2(MASU_A09p, TOVA_MODE_DBG2n());
-  wire ROXU = nand2(PAMY_A10p, TOVA_MODE_DBG2n());
-  wire LEPY = nand2(MALE_A11p, TOVA_MODE_DBG2n());
-  wire LUCE = nand2(MOJY_A12p, TOVA_MODE_DBG2n());
-  wire LABE = nand2(MUCE_A13p, TOVA_MODE_DBG2n());
-  wire PUHE = nand2(PEGE_A14p, TOVA_MODE_DBG2n());
-
-  wire KOTY = nor2(AMET_A00p, UNOR_MODE_DBG2p());
-  wire COTU = nor2(ATOL_A01p, UNOR_MODE_DBG2p());
-  wire BAJO = nor2(APOK_A02p, UNOR_MODE_DBG2p());
-  wire BOLA = nor2(AMER_A03p, UNOR_MODE_DBG2p());
-  wire BEVO = nor2(ATEM_A04p, UNOR_MODE_DBG2p());
-  wire AJAV = nor2(ATOV_A05p, UNOR_MODE_DBG2p());
-  wire CYKA = nor2(ATYR_A06p, UNOR_MODE_DBG2p());
-  wire COLO = nor2(ASUR_A07p, UNOR_MODE_DBG2p());
-  wire MEGO = nor2(MANO_A08p, UNOR_MODE_DBG2p());
-  wire MENY = nor2(MASU_A09p, UNOR_MODE_DBG2p());
-  wire RORE = nor2(PAMY_A10p, UNOR_MODE_DBG2p());
-  wire LYNY = nor2(MALE_A11p, UNOR_MODE_DBG2p());
-  wire LOSO = nor2(MOJY_A12p, UNOR_MODE_DBG2p());
-  wire LEVA = nor2(MUCE_A13p, UNOR_MODE_DBG2p());
-  wire PAHY = nor2(PEGE_A14p, UNOR_MODE_DBG2p());
-
-  ext_pins.PIN_01_A00.pin_out(KUPO, KOTY);
-  ext_pins.PIN_02_A01.pin_out(CABA, COTU);
-  ext_pins.PIN_03_A02.pin_out(BOKU, BAJO);
-  ext_pins.PIN_04_A03.pin_out(BOTY, BOLA);
-  ext_pins.PIN_05_A04.pin_out(BYLA, BEVO);
-  ext_pins.PIN_06_A05.pin_out(BADU, AJAV);
-  ext_pins.PIN_07_A06.pin_out(CEPU, CYKA);
-  ext_pins.PIN_08_A07.pin_out(DEFY, COLO);
-  ext_pins.PIN_09_A08.pin_out(MYNY, MEGO);
-  ext_pins.PIN_10_A09.pin_out(MUNE, MENY);
-  ext_pins.PIN_11_A10.pin_out(ROXU, RORE);
-  ext_pins.PIN_12_A11.pin_out(LEPY, LYNY);
-  ext_pins.PIN_13_A12.pin_out(LUCE, LOSO);
-  ext_pins.PIN_14_A13.pin_out(LABE, LEVA);
-  ext_pins.PIN_15_A14.pin_out(PUHE, PAHY);
+  if (bit(LUMA_DMA_CARTp)) {
+    memcpy_inv(&ext_pins.PIN_01_A00, &dma.NAKY_DMA_A00p, 8);
+    memcpy(&ext_pins.PIN_09_A08, &dma.NAFA_DMA_A08n, 7);
+  }
+  else {
+    memcpy_inv(&ext_pins.PIN_01_A00, &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
+  }
 
   // A15 is "special"
   wire TERA_BOOT_BITp = not1(cpu_signals.TEPU_BOOT_BITn_h.qp_new());

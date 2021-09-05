@@ -176,7 +176,9 @@ struct GateBoy {
   void tock_bootrom_gates();
   void tock_bootrom_logic();
 
-  void tock_window(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
+  void tock_window_gates(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
+  void tock_window_logic(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
+
   void tock_spu();
 
   void update_sprite_reset_flags(
@@ -205,12 +207,18 @@ struct GateBoy {
     SpriteMatchFlags& sprite_get_flag,
     SigIn SIG_GND);
 
-  static void sprite_match_to_bus(
-    const GateBoySpriteStore& sprite_store,
-    const SpriteMatchFlags& sprite_get_flag,
+  static void sprite_match_to_bus_gates(
+    GateBoySpriteStore& sprite_store,
+    SpriteMatchFlags& sprite_get_flag,
     SpriteBus& sprite_bus);
 
-  void sprite_scan_to_bus(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
+  static void sprite_match_to_bus_logic(
+    GateBoySpriteStore& sprite_store,
+    SpriteMatchFlags& sprite_get_flag,
+    SpriteBus& sprite_bus);
+
+  void sprite_scan_to_bus_gates(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
+  void sprite_scan_to_bus_logic(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
 
   void set_lcd_pins_gates(wire SACU_CLKPIPE_evn);
   void set_lcd_pins_logic(wire SACU_CLKPIPE_evn);

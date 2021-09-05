@@ -560,11 +560,11 @@ void GateBoy::get_sprite_match_flags(
   /*_p29.GUZE*/ sprite_match_flags.GUZE_SPRITE9_GETp = nor2(YGEM_STORE9_MATCHn, GYGA_STORE8_MATCH);
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::sprite_match_to_bus(
-  const GateBoySpriteStore& sprite_store,
-  const SpriteMatchFlags& sprite_get_flag,
+void GateBoy::sprite_match_to_bus_gates(
+  GateBoySpriteStore& sprite_store,
+  SpriteMatchFlags& sprite_get_flag,
   SpriteBus& sprite_bus)
 {
   // Push sprite index and line for the matching sprite onto the i/l bus.
@@ -801,7 +801,32 @@ void GateBoy::sprite_match_to_bus(
   /*_BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(CAWO_STORE9_GET_L5);
 }
 
-void GateBoy::sprite_scan_to_bus(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::sprite_match_to_bus_logic(
+  GateBoySpriteStore& sprite_store,
+  SpriteMatchFlags& sprite_get_flag,
+  SpriteBus& sprite_bus)
+{
+  auto& gf = sprite_get_flag;
+  auto& sb = sprite_bus;
+  auto& ss = sprite_store;
+
+  if (bit(gf.GUVA_SPRITE0_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.YGUS_STORE0_I0n_odd, 10);
+  if (bit(gf.ENUT_SPRITE1_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.CADU_STORE1_I0n_odd, 10);
+  if (bit(gf.EMOL_SPRITE2_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.BUHE_STORE2_I0n_odd, 10);
+  if (bit(gf.GYFY_SPRITE3_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.DEVY_STORE3_I0n_odd, 10);
+  if (bit(gf.GONO_SPRITE4_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.XAVE_STORE4_I0n_odd, 10);
+  if (bit(gf.GEGA_SPRITE5_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.EKOP_STORE5_I0n_odd, 10);
+  if (bit(gf.XOJA_SPRITE6_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.GABO_STORE6_I0n_odd, 10);
+  if (bit(gf.GUTU_SPRITE7_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.GULE_STORE7_I0n_odd, 10);
+  if (bit(gf.FOXA_SPRITE8_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.AXUV_STORE8_I0n_odd, 10);
+  if (bit(gf.GUZE_SPRITE9_GETp.state)) memcpy_inv(&sb.BUS_SPR_I0, &ss.YBER_STORE9_I0n_odd, 10);
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
 {
   /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn_new = and2(sprite_scanner.CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
   /*#p30.WUZY*/ triwire WUZY_STORE_I0 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XADU_SPRITE_IDX0p.qn_new());
@@ -829,4 +854,17 @@ void GateBoy::sprite_scan_to_bus(SpriteDeltaY sprite_delta_y, NorLatch XYMU_REND
   /*_BUS_SPR_L3*/ sprite_bus.BUS_SPR_L3.tri_bus(WENU_STORE_L3);
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::sprite_scan_to_bus_logic(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
+{
+  if (bit(or2(sprite_scanner.CENO_SCANNINGn.state, XYMU_RENDERINGn.state))) {
+    memcpy(&sprite_bus.BUS_SPR_I0, &sprite_scanner.XADU_SPRITE_IDX0p, 6);
+  }
+
+  if (!bit(FEPO_STORE_MATCHp.state)) {
+    memcpy_inv(&sprite_bus.BUS_SPR_L0, &sprite_delta_y.DEGE_SPRITE_DELTA0, 4);
+  }
+}
+
+//------------------------------------------------------------------------------------------------------------------------

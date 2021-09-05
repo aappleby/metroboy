@@ -951,13 +951,25 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
 
   memset(&sprite_bus, BIT_NEW | BIT_PULLED | 1, sizeof(sprite_bus));
 
-  sprite_match_to_bus(sprite_store, sprite_match_flags, sprite_bus);
-  sprite_scan_to_bus(sprite_delta_y, XYMU_RENDERINGn, sprite_match_flags.FEPO_STORE_MATCHp);
+
+  if (logic_mode) {
+    sprite_match_to_bus_logic(sprite_store, sprite_match_flags, sprite_bus);
+    sprite_scan_to_bus_logic(sprite_delta_y, XYMU_RENDERINGn, sprite_match_flags.FEPO_STORE_MATCHp);
+  }
+  else {
+    sprite_match_to_bus_gates(sprite_store, sprite_match_flags, sprite_bus);
+    sprite_scan_to_bus_gates(sprite_delta_y, XYMU_RENDERINGn, sprite_match_flags.FEPO_STORE_MATCHp);
+  }
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
   // WY/WX/window match
 
-  tock_window(SEGU_CLKPIPE_evn, REPU_VBLANKp);
+  if (logic_mode) {
+    tock_window_logic(SEGU_CLKPIPE_evn, REPU_VBLANKp);
+  }
+  else {
+    tock_window_gates(SEGU_CLKPIPE_evn, REPU_VBLANKp);
+  }
 
   //----------------------------------------
   // Tile fetch sequencer

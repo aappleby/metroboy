@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma warning(disable:4189) // unused local variable
+
 //#pragma warning(disable : 4127)
 
 // Debug builds - painfully, ungodly slow.

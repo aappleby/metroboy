@@ -43,6 +43,10 @@ struct BitBase {
   wire qp_new() const { check_new(); return state; }
   wire qn_new() const { check_new(); return ~state; }
 
+  void rst() {
+    state &= ~1;
+  }
+
   void set_data(wire d) {
     state &= ~1;
     state |= bit(d);

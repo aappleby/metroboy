@@ -1411,6 +1411,8 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
 
   tock_clocks_logic();
 
+  wire CLK_xBCxxFGx = !!(phase_mask_new & 0b01100110);
+  wire CLK_xBCDxFGH = !!(phase_mask_new & 0b01110111);
   wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
   wire CLK_xxCDEFGH = !!(phase_mask_new & 0b00111111);
   wire CLK_xxxxEFGH = !!(phase_mask_new & 0b00001111);
@@ -1457,22 +1459,15 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
   //----------------------------------------
 
 
-  wire PARU_VBLANKp = lcd.POPU_y144p.state;
-  wire REPU_VBLANKp = or2(PARU_VBLANKp, vid_rst);
-
-  wire TADY_LINE_RSTn = nor2(ATEJ_LINE_RSTp.state, vid_rst);
   wire ANOM_LINE_RSTn = nor2(ATEJ_LINE_RSTp.state, vid_rst);
-  wire BALU_LINE_RSTp = ~ANOM_LINE_RSTn;
-  wire BAGY_LINE_RSTn = ~BALU_LINE_RSTp;
-  wire XAHY_LINE_RSTn = ~ATEJ_LINE_RSTp.state;
 
   //----------------------------------------
   // Sprite scanner
 
   {
-    sprite_scanner.DOBA_SCAN_DONE_Bp.dff17(CLK_xBxDxFxH, BAGY_LINE_RSTn, sprite_scanner.BYBA_SCAN_DONE_Ap.state);
-    sprite_scanner.BYBA_SCAN_DONE_Ap.dff17(CLK_ABxxEFxx, BAGY_LINE_RSTn, sprite_scanner.FETO_SCAN_DONEp.state);
-    sprite_scanner.AVAP_SCAN_DONE_TRIGp = nor3(sprite_scanner.DOBA_SCAN_DONE_Bp.state, BALU_LINE_RSTp, ~sprite_scanner.BYBA_SCAN_DONE_Ap.state);
+    sprite_scanner.DOBA_SCAN_DONE_Bp.dff17(CLK_xBxDxFxH, ANOM_LINE_RSTn, sprite_scanner.BYBA_SCAN_DONE_Ap.state);
+    sprite_scanner.BYBA_SCAN_DONE_Ap.dff17(CLK_ABxxEFxx, ANOM_LINE_RSTn, sprite_scanner.FETO_SCAN_DONEp.state);
+    sprite_scanner.AVAP_SCAN_DONE_TRIGp = nor3(sprite_scanner.DOBA_SCAN_DONE_Bp.state, ~ANOM_LINE_RSTn, ~sprite_scanner.BYBA_SCAN_DONE_Ap.state);
 
     wire ASEN_SCAN_DONE_TRIGp = or2(vid_rst, sprite_scanner.AVAP_SCAN_DONE_TRIGp.state);
     sprite_scanner.CENO_SCANNINGn.dff17(CLK_ABxxEFxx, !vid_rst, sprite_scanner.BESU_SCANNINGp.state);
@@ -1517,7 +1512,7 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
   //----------------------------------------
   // Global rendering flag 'XYMU'
 
-  VOGA_HBLANKp.dff17(CLK_xBxDxFxH, TADY_LINE_RSTn, WODU_HBLANKp.state);
+  VOGA_HBLANKp.dff17(CLK_xBxDxFxH, ANOM_LINE_RSTn, WODU_HBLANKp.state);
   
   if (bit(or2(vid_rst, VOGA_HBLANKp.qp_new()))) XYMU_RENDERINGn.state = 1;
   if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state)) XYMU_RENDERINGn.state = 0;
@@ -1554,26 +1549,20 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
   //----------------------------------------
   // Window state has some interaction with the tile fetcher here.
 
-  wire XOFO_WIN_RSTp = nand3(~reg_lcdc.WYMO_LCDC_WINENn.state, XAHY_LINE_RSTn, !vid_rst);
   win_reg.NUNU_WIN_MATCHp.dff17(CLK_AxCxExGx, !vid_rst, win_reg.PYCO_WIN_MATCHp.state);
   win_reg.NOPA_WIN_MODE_Bp.dff17(CLK_xBxDxFxH, !vid_rst, win_reg.PYNU_WIN_MODE_Ap.state);
-  win_reg.PYNU_WIN_MODE_Ap.nor_latch(win_reg.NUNU_WIN_MATCHp.state, XOFO_WIN_RSTp);
+  win_reg.PYNU_WIN_MODE_Ap.nor_latch(win_reg.NUNU_WIN_MATCHp.state, nand3(~reg_lcdc.WYMO_LCDC_WINENn.state, ~ATEJ_LINE_RSTp.state, !vid_rst));
 
-  wire NUNY_WIN_MODE_TRIGp = and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state);
-  wire NYFO_WIN_MODE_TRIGn = not1(NUNY_WIN_MODE_TRIGp);
-  wire MOSU_WIN_MODE_TRIGp = not1(NYFO_WIN_MODE_TRIGn);
-  wire NAFY_WIN_MODE_TRIGn = nor2(MOSU_WIN_MODE_TRIGp, !rendering);
-
-  tile_fetcher.PYGO_FETCH_DONEp.dff17(CLK_xBxDxFxH, rendering,           tile_fetcher.PORY_FETCH_DONEp.state);
-  tile_fetcher.PORY_FETCH_DONEp.dff17(CLK_AxCxExGx, NAFY_WIN_MODE_TRIGn, tile_fetcher.NYKA_FETCH_DONEp.state);
-  tile_fetcher.NYKA_FETCH_DONEp.dff17(CLK_xBxDxFxH, NAFY_WIN_MODE_TRIGn, tile_fetcher.LYRY_BFETCH_DONEp.state);
+  tile_fetcher.PYGO_FETCH_DONEp.dff17(CLK_xBxDxFxH, rendering,                             tile_fetcher.PORY_FETCH_DONEp.state);
+  tile_fetcher.PORY_FETCH_DONEp.dff17(CLK_AxCxExGx, nor2(and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state), !rendering), tile_fetcher.NYKA_FETCH_DONEp.state);
+  tile_fetcher.NYKA_FETCH_DONEp.dff17(CLK_xBxDxFxH, nor2(and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state), !rendering), tile_fetcher.LYRY_BFETCH_DONEp.state);
   tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(tile_fetcher.PYGO_FETCH_DONEp.state, !rendering);
 
   win_reg.SOVY_WIN_HITp.dff17(CLK_xBxDxFxH, !vid_rst, win_reg.RYDY_WIN_HITp.out_old());
   win_reg.RYDY_WIN_HITp = nor3(win_reg.PUKU_WIN_HITn.state, tile_fetcher.PORY_FETCH_DONEp.state, vid_rst);
-  win_reg.PUKU_WIN_HITn = nor2(win_reg.RYDY_WIN_HITp.state, NUNY_WIN_MODE_TRIGp);
+  win_reg.PUKU_WIN_HITn = nor2(win_reg.RYDY_WIN_HITp.state, and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state));
   win_reg.RYDY_WIN_HITp = nor3(win_reg.PUKU_WIN_HITn.state, tile_fetcher.PORY_FETCH_DONEp.state, vid_rst);
-  win_reg.PUKU_WIN_HITn = nor2(win_reg.RYDY_WIN_HITp.state, NUNY_WIN_MODE_TRIGp);
+  win_reg.PUKU_WIN_HITn = nor2(win_reg.RYDY_WIN_HITp.state, and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state));
 
   wire ROMO_PRELOAD_DONEn = not1(tile_fetcher.POKY_PRELOAD_LATCHp.state);
   wire TAVE_PRELOAD_DONE_TRIGp = and4(rendering, ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state);
@@ -1590,61 +1579,55 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
   // OAM latch from last cycle gets moved into temp registers.
 
   {
-    wire CUFE_OAM_CLKp = not_or_and3(new_bus.SARO_ADDR_OAMp(), dma.MATU_DMA_RUNNINGp.state, CLK_xxxxEFGH); // CUFE looks like BYHA minus an inverter
-    wire AVER_AxxxExxx = nand2(sprite_scanner.ACYL_SCANNINGp.out_new(), XYSO_xBCDxFGH());
-    wire TYTU_SFETCH_S0n = not1(sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
-    wire TACU_SPR_SEQ_5_TRIG = nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n);
-    wire TUVO_PPU_OAM_RDp = nor3(!rendering, sprite_fetcher.TULY_SFETCH_S1p.qp_new(), sprite_fetcher.TESE_SFETCH_S2p.qp_new());
-    wire VAPE_OAM_CLKENn = and2(TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
-    wire XUJY_OAM_CLKENp = not1(VAPE_OAM_CLKENn);
-    wire BYCU_OAM_CLKp = nand3(AVER_AxxxExxx, XUJY_OAM_CLKENp, CUFE_OAM_CLKp);
-    wire COTA_OAM_CLKn = not1(BYCU_OAM_CLKp);
-    oam_latch_to_temp_a(COTA_OAM_CLKn, oam_latch_a, oam_temp_a);
-    oam_latch_to_temp_b(COTA_OAM_CLKn, oam_latch_b, oam_temp_b);
+    wire CUFE_OAM_CLKp = not_or_and3(cpu_addr >= 0xFE00 && cpu_addr <= 0xFEFF, dma.MATU_DMA_RUNNINGp.state, CLK_xxxxEFGH); // CUFE looks like BYHA minus an inverter
+    wire AVER_AxxxExxx = nand2(sprite_scanner.ACYL_SCANNINGp.state, !vid_rst && CLK_xBCDxFGH);
+    wire TYTU_SFETCH_S0n = not1(sprite_fetcher.TOXE_SFETCH_S0p.state);
+    wire TACU_SPR_SEQ_5_TRIG = nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.state, TYTU_SFETCH_S0n);
+    wire TUVO_PPU_OAM_RDp = nor3(!rendering, sprite_fetcher.TULY_SFETCH_S1p.state, sprite_fetcher.TESE_SFETCH_S2p.qp_new());
+    wire BYCU_OAM_CLKp = nand3(AVER_AxxxExxx, nand2(TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG), CUFE_OAM_CLKp);
+
+    // FIXME needs gates/logic
+    oam_latch_to_temp_a(~BYCU_OAM_CLKp, oam_latch_a, oam_temp_a);
+    oam_latch_to_temp_b(~BYCU_OAM_CLKp, oam_latch_b, oam_temp_b);
   }
 
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
-  SpriteDeltaY sprite_delta_y = 1 ? sub_sprite_y_logic() : sub_sprite_y_gates();
+  SpriteDeltaY sprite_delta_y = sub_sprite_y_logic();
 
   {
-    wire GOVU_SPSIZE_MATCH = or2(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), sprite_delta_y.GYKY_YDIFF3.sum);
+    wire GOVU_SPSIZE_MATCH = or2(~reg_lcdc.XYMO_LCDC_SPSIZEn.state, sprite_delta_y.GYKY_YDIFF3.sum);
     wire WOTA_SCAN_MATCH_Yn = nand6(sprite_delta_y.GACE_SPRITE_DELTA4, sprite_delta_y.GUVU_SPRITE_DELTA5, sprite_delta_y.GYDA_SPRITE_DELTA6, sprite_delta_y.GEWY_SPRITE_DELTA7, sprite_delta_y.WUHU_YDIFF7.carry, GOVU_SPSIZE_MATCH);
     wire GESE_SCAN_MATCH_Yp = not1(WOTA_SCAN_MATCH_Yn);
-    wire CEHA_SCANNINGp = not1(sprite_scanner.CENO_SCANNINGn.qn_new());
-    wire CARE_COUNT_CLKn = and3(XOCE_xBCxxFGx(), CEHA_SCANNINGp, GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
-    wire DYTY_COUNT_CLKp = not1(CARE_COUNT_CLKn);
-    sprite_counter.DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx(), !vid_rst, DYTY_COUNT_CLKp);
+    wire CEHA_SCANNINGp = not1(~sprite_scanner.CENO_SCANNINGn.state);
+
+    wire DYTY_COUNT_CLKp = nand4(!vid_rst, CLK_xBCxxFGx, CEHA_SCANNINGp, GESE_SCAN_MATCH_Yp);
+    sprite_counter.DEZY_COUNT_CLKp.dff17_any(CLK_AxCxExGx, !vid_rst, DYTY_COUNT_CLKp);
 
     // There's a feedback loop here, but we don't actually need to loop - BAKY holds the clock line high once the sprite store is full, so doing a second logic pass
     // doesn't actually change any of the dffs.
-    wire BAKY_SPRITES_FULL_new = and2(sprite_counter.CUXY_SPRITE_COUNT1.state, sprite_counter.DYBE_SPRITE_COUNT3.state);
-    wire CAKE_COUNT_CLKp_new = or2(BAKY_SPRITES_FULL_new, sprite_counter.DEZY_COUNT_CLKp.state);
-    wire AZYB_LINE_TRIGn = not1(ATEJ_LINE_RSTp.state);
-    sprite_counter.BESE_SPRITE_COUNT0.dff17_any(CAKE_COUNT_CLKp_new, AZYB_LINE_TRIGn, ~sprite_counter.BESE_SPRITE_COUNT0.state);
-    sprite_counter.CUXY_SPRITE_COUNT1.dff17_any(~sprite_counter.BESE_SPRITE_COUNT0.state, AZYB_LINE_TRIGn, ~sprite_counter.CUXY_SPRITE_COUNT1.state);
-    sprite_counter.BEGO_SPRITE_COUNT2.dff17_any(~sprite_counter.CUXY_SPRITE_COUNT1.state, AZYB_LINE_TRIGn, ~sprite_counter.BEGO_SPRITE_COUNT2.state);
-    sprite_counter.DYBE_SPRITE_COUNT3.dff17_any(~sprite_counter.BEGO_SPRITE_COUNT2.state, AZYB_LINE_TRIGn, ~sprite_counter.DYBE_SPRITE_COUNT3.state);
+    wire CAKE_COUNT_CLKp_new = or2(and2(sprite_counter.CUXY_SPRITE_COUNT1.state, sprite_counter.DYBE_SPRITE_COUNT3.state), sprite_counter.DEZY_COUNT_CLKp.state);
+    sprite_counter.BESE_SPRITE_COUNT0.dff17_any(CAKE_COUNT_CLKp_new,                      ~ATEJ_LINE_RSTp.state, ~sprite_counter.BESE_SPRITE_COUNT0.state);
+    sprite_counter.CUXY_SPRITE_COUNT1.dff17_any(~sprite_counter.BESE_SPRITE_COUNT0.state, ~ATEJ_LINE_RSTp.state, ~sprite_counter.CUXY_SPRITE_COUNT1.state);
+    sprite_counter.BEGO_SPRITE_COUNT2.dff17_any(~sprite_counter.CUXY_SPRITE_COUNT1.state, ~ATEJ_LINE_RSTp.state, ~sprite_counter.BEGO_SPRITE_COUNT2.state);
+    sprite_counter.DYBE_SPRITE_COUNT3.dff17_any(~sprite_counter.BEGO_SPRITE_COUNT2.state, ~ATEJ_LINE_RSTp.state, ~sprite_counter.DYBE_SPRITE_COUNT3.state);
 
-    wire ABAK_LINE_RSTp = or2(ATEJ_LINE_RSTp.state, vid_rst);
-    wire BYVA_LINE_RSTn = not1(ABAK_LINE_RSTp);
-
-    sprite_reset_flags.EBOJ_STORE0_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.GUVA_SPRITE0_GETp.state);
-    sprite_reset_flags.CEDY_STORE1_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.ENUT_SPRITE1_GETp.state);
-    sprite_reset_flags.EGAV_STORE2_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.EMOL_SPRITE2_GETp.state);
-    sprite_reset_flags.GOTA_STORE3_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.GYFY_SPRITE3_GETp.state);
-    sprite_reset_flags.XUDY_STORE4_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.GONO_SPRITE4_GETp.state);
-    sprite_reset_flags.WAFY_STORE5_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.GEGA_SPRITE5_GETp.state);
-    sprite_reset_flags.WOMY_STORE6_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.XOJA_SPRITE6_GETp.state);
-    sprite_reset_flags.WAPO_STORE7_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.GUTU_SPRITE7_GETp.state);
-    sprite_reset_flags.EXUQ_STORE8_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.FOXA_SPRITE8_GETp.state);
-    sprite_reset_flags.FONO_STORE9_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, BYVA_LINE_RSTn, sprite_match_flags.GUZE_SPRITE9_GETp.state);
+    sprite_reset_flags.EBOJ_STORE0_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.GUVA_SPRITE0_GETp.state);
+    sprite_reset_flags.CEDY_STORE1_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.ENUT_SPRITE1_GETp.state);
+    sprite_reset_flags.EGAV_STORE2_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.EMOL_SPRITE2_GETp.state);
+    sprite_reset_flags.GOTA_STORE3_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.GYFY_SPRITE3_GETp.state);
+    sprite_reset_flags.XUDY_STORE4_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.GONO_SPRITE4_GETp.state);
+    sprite_reset_flags.WAFY_STORE5_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.GEGA_SPRITE5_GETp.state);
+    sprite_reset_flags.WOMY_STORE6_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.XOJA_SPRITE6_GETp.state);
+    sprite_reset_flags.WAPO_STORE7_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.GUTU_SPRITE7_GETp.state);
+    sprite_reset_flags.EXUQ_STORE8_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.FOXA_SPRITE8_GETp.state);
+    sprite_reset_flags.FONO_STORE9_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_match_flags.GUZE_SPRITE9_GETp.state);
 
     SpriteStoreFlags sprite_store_flags_old = sprite_store_flags;
 
     update_sprite_store_flags_logic(sprite_counter, DYTY_COUNT_CLKp, sprite_store_flags);
-    store_sprite_logic(sprite_store_flags_old, sprite_store_flags, sprite_reset_flags, BYVA_LINE_RSTn, sprite_bus, oam_temp_b_old, sprite_store);
+    store_sprite_logic(sprite_store_flags_old, sprite_store_flags, sprite_reset_flags, nor2(ATEJ_LINE_RSTp.state, vid_rst), sprite_bus, oam_temp_b_old, sprite_store);
   }
 
   //----------------------------------------
@@ -1678,10 +1661,10 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
     wire XEGY_old = xor2(pix_count.XODU_PX2p.state, XUKE_old); // feet facing gnd
     wire XORA_old = xor2(pix_count.XYDO_PX3p.state, XYLE_old); // feet facing gnd
 
-    pix_count.XEHO_PX0p.dff17_any(SACU_CLKPIPE_evn, TADY_LINE_RSTn, ~pix_count.XEHO_PX0p.state);
-    pix_count.SAVY_PX1p.dff17_any(SACU_CLKPIPE_evn, TADY_LINE_RSTn, RYBO_old);
-    pix_count.XODU_PX2p.dff17_any(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XEGY_old);
-    pix_count.XYDO_PX3p.dff17_any(SACU_CLKPIPE_evn, TADY_LINE_RSTn, XORA_old);
+    pix_count.XEHO_PX0p.dff17_any(SACU_CLKPIPE_evn, ANOM_LINE_RSTn, ~pix_count.XEHO_PX0p.state);
+    pix_count.SAVY_PX1p.dff17_any(SACU_CLKPIPE_evn, ANOM_LINE_RSTn, RYBO_old);
+    pix_count.XODU_PX2p.dff17_any(SACU_CLKPIPE_evn, ANOM_LINE_RSTn, XEGY_old);
+    pix_count.XYDO_PX3p.dff17_any(SACU_CLKPIPE_evn, ANOM_LINE_RSTn, XORA_old);
 
     wire TOCA_new = not1(pix_count.XYDO_PX3p.state);
     wire SAKE_old = xor2(pix_count.TUHU_PX4p.state, pix_count.TUKY_PX5p.state);
@@ -1690,10 +1673,10 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
     wire TYGE_old = xor2(pix_count.TAKO_PX6p.state, TYBA_old);
     wire ROKU_old = xor2(pix_count.SYBE_PX7p.state, SURY_old);
 
-    pix_count.TUHU_PX4p.dff17_any(TOCA_new, TADY_LINE_RSTn, ~pix_count.TUHU_PX4p.state);
-    pix_count.TUKY_PX5p.dff17_any(TOCA_new, TADY_LINE_RSTn, SAKE_old);
-    pix_count.TAKO_PX6p.dff17_any(TOCA_new, TADY_LINE_RSTn, TYGE_old);
-    pix_count.SYBE_PX7p.dff17_any(TOCA_new, TADY_LINE_RSTn, ROKU_old);
+    pix_count.TUHU_PX4p.dff17_any(TOCA_new, ANOM_LINE_RSTn, ~pix_count.TUHU_PX4p.state);
+    pix_count.TUKY_PX5p.dff17_any(TOCA_new, ANOM_LINE_RSTn, SAKE_old);
+    pix_count.TAKO_PX6p.dff17_any(TOCA_new, ANOM_LINE_RSTn, TYGE_old);
+    pix_count.SYBE_PX7p.dff17_any(TOCA_new, ANOM_LINE_RSTn, ROKU_old);
 
     get_sprite_match_flags_logic(pix_count, AROR_MATCH_ENp, sprite_store, sprite_match_flags, SIG_GND);
   }
@@ -1717,7 +1700,7 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
   // WY/WX/window match
 
-  tock_window_logic(SEGU_CLKPIPE_evn, REPU_VBLANKp);
+  tock_window_logic(SEGU_CLKPIPE_evn, or2(lcd.POPU_y144p.state, vid_rst));
 
   //----------------------------------------
   // Tile fetch sequencer
@@ -1726,7 +1709,7 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
   wire TUXY_WIN_FIRST_TILEne = nand2(not1(win_reg.RYDY_WIN_HITp.state), win_reg.SOVY_WIN_HITp.state);
   wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILEne);
   wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp, SUZU_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
-  wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state, MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
+  wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state, and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state), TEVO_WIN_FETCH_TRIGp);
 
   for (int feedback = 0; feedback < 2; feedback++) {
     wire MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state, NYXU_BFETCH_RSTn);

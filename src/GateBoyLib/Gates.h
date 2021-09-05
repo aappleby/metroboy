@@ -48,6 +48,15 @@ struct BitBase {
     state |= bit(d);
   }
 
+  wire get_clk() const {
+    return bit(state, 1);
+  }
+
+  void set_clk(wire c) {
+    state &= ~2;
+    state |= bit(c) << 1;
+  }
+
   void check_old() const {
     if (config_drive_flags) {
       CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
@@ -753,6 +762,10 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 inline uint8_t pack(wire a, wire b) {
   return (bit(a) << 0) | (bit(b) << 1);
+}
+
+inline uint8_t pack(wire a, wire b, wire c, wire d) {
+  return (bit(a) << 0) | (bit(b) << 1) | (bit(c) << 2) | (bit(d) << 3);
 }
 
 inline uint8_t pack(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) {

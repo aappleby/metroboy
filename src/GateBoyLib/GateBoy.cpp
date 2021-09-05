@@ -1065,6 +1065,16 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
 
   update_framebuffer();
   old_bus = new_bus;
+
+  /*
+  uint8_t b0 = bit(tile_fetcher.LAXU_BFETCH_S0p.state);
+  uint8_t b1 = bit(tile_fetcher.MESU_BFETCH_S1p.state);
+  uint8_t b2 = bit(tile_fetcher.NYVA_BFETCH_S2p.state);
+  uint8_t bo = bit(tile_fetcher.LYZU_BFETCH_S0p_D1.state);
+
+  printf("bfetch %c%c%c%c\n", b0 ? '#' : '.', bo ? '#' : '.', b1 ? '#' : '.', b2 ? '#' : '.');
+  */
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------

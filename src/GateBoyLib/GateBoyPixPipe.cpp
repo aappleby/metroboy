@@ -673,61 +673,65 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 
 
 
-
-
-
 //------------------------------------------------------------------------------------------------------------------------
+
+#pragma warning(disable:4189)
+#pragma optimize("", off)
 
 void GateBoy::tock_pix_pipes_logic(wire CLKPIPE_old, wire CLKPIPE_new, wire BFETCH_RSTn)
 {
   auto& tf = tile_fetcher;
   auto& sf = sprite_fetcher;
 
+  uint8_t bfetch_phase = pack(tf.LAXU_BFETCH_S0p.state, tf.LYZU_BFETCH_S0p_D1.state, tf.MESU_BFETCH_S1p.state, tf.NYVA_BFETCH_S2p.state);
+  uint8_t sfetch_phase = pack(sf.TOXE_SFETCH_S0p.state, sf.TYFO_SFETCH_S0p_D1.state, sf.TULY_SFETCH_S1p.state, sf.TESE_SFETCH_S2p.state);
+
+  // bfetch .#.. 2
+  // bfetch .... 0
+  // bfetch #... 1
+  // bfetch ##.. 3
+  // bfetch .##. 6
+  // bfetch ..#. 4
+  // bfetch #.#. 5
+  // bfetch ###. 7
+  // bfetch .#.# 10
+  // bfetch ...# 8
+  // bfetch #..# 9
+  // bfetch ##.# 11
+
+
   bool rendering = !bit(XYMU_RENDERINGn.state);
   auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
-  wire LATCH_TILE_DAn  = and5(rendering, tf.LAXU_BFETCH_S0p.state, ~tf.LYZU_BFETCH_S0p_D1.state,  tf.MESU_BFETCH_S1p.state, ~tf.NYVA_BFETCH_S2p.state);
-  wire LATCH_TILE_DBp  = and4(rendering, tf.LAXU_BFETCH_S0p.state, ~tf.LYZU_BFETCH_S0p_D1.state, ~tf.MESU_BFETCH_S1p.state);
-  wire STORE_SPRITE_Ap = and4(rendering, sf.TOXE_SFETCH_S0p.state, ~sf.TYFO_SFETCH_S0p_D1.state, sf.TULY_SFETCH_S1p.state);
-  wire STORE_SPRITE_Bp = and4(rendering, sf.TOXE_SFETCH_S0p.state, ~sf.TYFO_SFETCH_S0p_D1.state, sf.VONU_SFETCH_S1p_D4.state);
+  wire LATCH_TILE_DA = rendering && (bfetch_phase == 5);
+  wire LATCH_TILE_DB = rendering && (bfetch_phase == 1 || bfetch_phase == 9);
 
-  // FIXME need old clocks...
+  wire STORE_SPRITE_DA = rendering && (sfetch_phase == 5);
+  wire STORE_SPRITE_DB = rendering && (sfetch_phase == 9);
 
-  tile_temp_a.LEGU_TILE_DA0n.dff8p(~LATCH_TILE_DAn, vram_bus.BUS_VRAM_D00p.state);
-  tile_temp_a.NUDU_TILE_DA1n.dff8p(~LATCH_TILE_DAn, vram_bus.BUS_VRAM_D01p.state);
-  tile_temp_a.MUKU_TILE_DA2n.dff8p(~LATCH_TILE_DAn, vram_bus.BUS_VRAM_D02p.state);
-  tile_temp_a.LUZO_TILE_DA3n.dff8p(~LATCH_TILE_DAn, vram_bus.BUS_VRAM_D03p.state);
-  tile_temp_a.MEGU_TILE_DA4n.dff8p(~LATCH_TILE_DAn, vram_bus.BUS_VRAM_D04p.state);
-  tile_temp_a.MYJY_TILE_DA5n.dff8p(~LATCH_TILE_DAn, vram_bus.BUS_VRAM_D05p.state);
-  tile_temp_a.NASA_TILE_DA6n.dff8p(~LATCH_TILE_DAn, vram_bus.BUS_VRAM_D06p.state);
-  tile_temp_a.NEFO_TILE_DA7n.dff8p(~LATCH_TILE_DAn, vram_bus.BUS_VRAM_D07p.state);
+  if (rendering && (bfetch_phase == 7)) {
+    memcpy_inv(&tile_temp_a.LEGU_TILE_DA0n, &vram_bus.BUS_VRAM_D00p, 8);
+  }
 
-  tile_temp_b.RAWU_TILE_DB0p.dff11(~LATCH_TILE_DBp, 1, vram_bus.BUS_VRAM_D00p.state);
-  tile_temp_b.POZO_TILE_DB1p.dff11(~LATCH_TILE_DBp, 1, vram_bus.BUS_VRAM_D01p.state);
-  tile_temp_b.PYZO_TILE_DB2p.dff11(~LATCH_TILE_DBp, 1, vram_bus.BUS_VRAM_D02p.state);
-  tile_temp_b.POXA_TILE_DB3p.dff11(~LATCH_TILE_DBp, 1, vram_bus.BUS_VRAM_D03p.state);
-  tile_temp_b.PULO_TILE_DB4p.dff11(~LATCH_TILE_DBp, 1, vram_bus.BUS_VRAM_D04p.state);
-  tile_temp_b.POJU_TILE_DB5p.dff11(~LATCH_TILE_DBp, 1, vram_bus.BUS_VRAM_D05p.state);
-  tile_temp_b.POWY_TILE_DB6p.dff11(~LATCH_TILE_DBp, 1, vram_bus.BUS_VRAM_D06p.state);
-  tile_temp_b.PYJU_TILE_DB7p.dff11(~LATCH_TILE_DBp, 1, vram_bus.BUS_VRAM_D07p.state);
+  // FIXME something slightly weird about this reg... if I try and latch on phases 3 and 11, it doesn't pass regression...
 
-  sprite_pix_a.REWO_SPRITE_DA0n.dff8n(~STORE_SPRITE_Ap, flipped_sprite.PUTE_FLIP0p.state);
-  sprite_pix_a.PEBA_SPRITE_DA1n.dff8n(~STORE_SPRITE_Ap, flipped_sprite.PELO_FLIP1p.state);
-  sprite_pix_a.MOFO_SPRITE_DA2n.dff8n(~STORE_SPRITE_Ap, flipped_sprite.PONO_FLIP2p.state);
-  sprite_pix_a.PUDU_SPRITE_DA3n.dff8n(~STORE_SPRITE_Ap, flipped_sprite.POBE_FLIP3p.state);
-  sprite_pix_a.SAJA_SPRITE_DA4n.dff8n(~STORE_SPRITE_Ap, flipped_sprite.PACY_FLIP4p.state);
-  sprite_pix_a.SUNY_SPRITE_DA5n.dff8n(~STORE_SPRITE_Ap, flipped_sprite.PUGU_FLIP5p.state);
-  sprite_pix_a.SEMO_SPRITE_DA6n.dff8n(~STORE_SPRITE_Ap, flipped_sprite.PAWE_FLIP6p.state);
-  sprite_pix_a.SEGA_SPRITE_DA7n.dff8n(~STORE_SPRITE_Ap, flipped_sprite.PULY_FLIP7p.state);
+  tile_temp_b.RAWU_TILE_DB0p.dff11(~LATCH_TILE_DB, 1, vram_bus.BUS_VRAM_D00p.state);
+  tile_temp_b.POZO_TILE_DB1p.dff11(~LATCH_TILE_DB, 1, vram_bus.BUS_VRAM_D01p.state);
+  tile_temp_b.PYZO_TILE_DB2p.dff11(~LATCH_TILE_DB, 1, vram_bus.BUS_VRAM_D02p.state);
+  tile_temp_b.POXA_TILE_DB3p.dff11(~LATCH_TILE_DB, 1, vram_bus.BUS_VRAM_D03p.state);
+  tile_temp_b.PULO_TILE_DB4p.dff11(~LATCH_TILE_DB, 1, vram_bus.BUS_VRAM_D04p.state);
+  tile_temp_b.POJU_TILE_DB5p.dff11(~LATCH_TILE_DB, 1, vram_bus.BUS_VRAM_D05p.state);
+  tile_temp_b.POWY_TILE_DB6p.dff11(~LATCH_TILE_DB, 1, vram_bus.BUS_VRAM_D06p.state);
+  tile_temp_b.PYJU_TILE_DB7p.dff11(~LATCH_TILE_DB, 1, vram_bus.BUS_VRAM_D07p.state);
 
-  sprite_pix_b.PEFO_SPRITE_DB0n.dff8n(~STORE_SPRITE_Bp, flipped_sprite.PUTE_FLIP0p.state);
-  sprite_pix_b.ROKA_SPRITE_DB1n.dff8n(~STORE_SPRITE_Bp, flipped_sprite.PELO_FLIP1p.state);
-  sprite_pix_b.MYTU_SPRITE_DB2n.dff8n(~STORE_SPRITE_Bp, flipped_sprite.PONO_FLIP2p.state);
-  sprite_pix_b.RAMU_SPRITE_DB3n.dff8n(~STORE_SPRITE_Bp, flipped_sprite.POBE_FLIP3p.state);
-  sprite_pix_b.SELE_SPRITE_DB4n.dff8n(~STORE_SPRITE_Bp, flipped_sprite.PACY_FLIP4p.state);
-  sprite_pix_b.SUTO_SPRITE_DB5n.dff8n(~STORE_SPRITE_Bp, flipped_sprite.PUGU_FLIP5p.state);
-  sprite_pix_b.RAMA_SPRITE_DB6n.dff8n(~STORE_SPRITE_Bp, flipped_sprite.PAWE_FLIP6p.state);
-  sprite_pix_b.RYDU_SPRITE_DB7n.dff8n(~STORE_SPRITE_Bp, flipped_sprite.PULY_FLIP7p.state);
+
+  if (rendering && (sfetch_phase == 5)) {
+    memcpy_inv(&sprite_pix_a.REWO_SPRITE_DA0n, &flipped_sprite.PUTE_FLIP0p, 8);
+  }
+
+  if (rendering && (sfetch_phase == 9)) {
+    memcpy_inv(&sprite_pix_b.PEFO_SPRITE_DB0n, &flipped_sprite.PUTE_FLIP0p, 8);
+  }
 
   //----------------------------------------
   // Pal reg read/write

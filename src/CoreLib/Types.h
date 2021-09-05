@@ -262,16 +262,7 @@ struct Dumper {
 #define ASSERT_P(A)  if (!(A)) { LOG_R("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
 #define ASSERT_N(A)  if ((A))  { LOG_R("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
 
-#ifdef YES_CHECK
-
-#define CHECK_P(A)   if (!(A)) { LOG_R("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }
-#define CHECK_N(A)   if ((A))  { LOG_R("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }
-
-#else
-
-#define CHECK_P(A)
-#define CHECK_N(A)
-
-#endif
+#define CHECK_P(A)   if (config_check) {if (!(A)) { LOG_R("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }}
+#define CHECK_N(A)   if (config_check) {if ((A))  { LOG_R("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }}
 
 //-----------------------------------------------------------------------------

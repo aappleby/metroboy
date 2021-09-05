@@ -72,7 +72,7 @@ void GateBoy::tock_dma_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_dma_logic() {
-  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
 
@@ -82,7 +82,7 @@ void GateBoy::tock_dma_logic() {
   dma.LYXE_DMA_LATCHp.state |= (FF46_WRp & CLK_xxxxEFGx);
 
   if (DELTA_DE) {
-    auto dma_lo = pack_old(8, &dma.NAKY_DMA_A00p);
+    auto dma_lo = pack(8, &dma.NAKY_DMA_A00p);
     if (dma_lo == 159) {
       dma.MYTE_DMA_DONE.state = 1;
       dma.LARA_DMA_LATCHn = 1;
@@ -101,11 +101,11 @@ void GateBoy::tock_dma_logic() {
   }
 
   if (FF46_RDp) {
-    tri_8(&new_bus.BUS_CPU_D00p, uint8_t(~pack_new(8, &dma.NAFA_DMA_A08n)));
+    tri_8(&new_bus.BUS_CPU_D00p, uint8_t(~pack(8, &dma.NAFA_DMA_A08n)));
   }
 
   if (FF46_WRp && DELTA_GH) {
-    auto old_data = pack_old(8, (BitBase*)&old_bus.BUS_CPU_D00p);
+    auto old_data = pack(8, (BitBase*)&old_bus.BUS_CPU_D00p);
     unpack(~old_data, 8, &dma.NAFA_DMA_A08n);
   }
 
@@ -114,7 +114,7 @@ void GateBoy::tock_dma_logic() {
     dma.MATU_DMA_RUNNINGp.state = dma.LOKY_DMA_LATCHp.state;
 
     if (bit(dma.LOKY_DMA_LATCHp.state) && !bit(dma.LENE_DMA_TRIG_d4.state)) {
-      auto dma_lo = pack_old(8, &dma.NAKY_DMA_A00p);
+      auto dma_lo = pack(8, &dma.NAKY_DMA_A00p);
       dma_lo++;
       set_8(&dma.NAKY_DMA_A00p, (uint8_t)dma_lo);
     }

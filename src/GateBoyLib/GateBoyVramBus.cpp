@@ -401,7 +401,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   /*_PIN_46*/ vram_pins.PIN_46_VRAM_A11.pin_out(PEDUn, PEDUn);
   /*_PIN_42*/ vram_pins.PIN_42_VRAM_A12.pin_out(PONYn, PONYn);
 
-  uint16_t addr = (uint16_t)pack_ext_new(13, (BitBase*)&vram_pins.PIN_34_VRAM_A00);
+  uint16_t addr = (uint16_t)pack_inv(13, (BitBase*)&vram_pins.PIN_34_VRAM_A00);
 
   //--------------------------------------------
   // CPU bus to Vram data bus
@@ -577,7 +577,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   //--------------------------------------------
 
   if (bit(~vram_pins.PIN_49_VRAM_WRn.qp_ext_new())) {
-    vid_ram[addr] = (uint8_t)pack_ext_new(8, (BitBase*)&vram_pins.PIN_33_VRAM_D00);
+    vid_ram[addr] = (uint8_t)pack_inv(8, (BitBase*)&vram_pins.PIN_33_VRAM_D00);
   }
 
   //--------------------------------------------
@@ -702,13 +702,38 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
 
 
 
-//------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
-  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   auto dma_addr = pack_inv(16, &dma.NAKY_DMA_A00p);
   wire dma_vram = bit(dma.MATU_DMA_RUNNINGp.state) && (dma_addr >= 0x8000) && (dma_addr <= 0x9FFF);
-  wire addr_vram = (new_addr >= 0x8000) && (new_addr <= 0x9FFF);
+  wire cpu_addr_vram = (new_addr >= 0x8000) && (new_addr <= 0x9FFF);
 
   memset(&vram_bus, BIT_NEW | BIT_PULLED | 1, sizeof(vram_bus));
 
@@ -724,7 +749,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
 
   if (bit(dma_vram)) {
     memcpy_inv(&vram_bus.BUS_VRAM_A00n, &dma.NAKY_DMA_A00p, 8);
-    memcpy    (&vram_bus.BUS_VRAM_A08n, &dma.NAFA_DMA_A08n, 5);
+    memcpy(&vram_bus.BUS_VRAM_A08n, &dma.NAFA_DMA_A08n, 5);
   }
 
   //--------------------------------------------
@@ -780,7 +805,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
 
   wire VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, win_reg.PYNU_WIN_MODE_Ap.state);
   wire XOFO_WIN_RSTp = nand3(~reg_lcdc.WYMO_LCDC_WINENn.state, ~ATEJ_LINE_RSTp.state, ~reg_lcdc.XONA_LCDC_LCDENn.state);
-  win_coords.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp,                     ~XOFO_WIN_RSTp, ~win_coords.WYKA_WIN_MAP_X0.state);
+  win_coords.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp, ~XOFO_WIN_RSTp, ~win_coords.WYKA_WIN_MAP_X0.state);
   win_coords.WODY_WIN_MAP_X1.dff17(~win_coords.WYKA_WIN_MAP_X0.state, ~XOFO_WIN_RSTp, ~win_coords.WODY_WIN_MAP_X1.state);
   win_coords.WOBO_WIN_MAP_X2.dff17(~win_coords.WODY_WIN_MAP_X1.state, ~XOFO_WIN_RSTp, ~win_coords.WOBO_WIN_MAP_X2.state);
   win_coords.WYKO_WIN_MAP_X3.dff17(~win_coords.WOBO_WIN_MAP_X2.state, ~XOFO_WIN_RSTp, ~win_coords.WYKO_WIN_MAP_X3.state);
@@ -788,15 +813,15 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
 
   // Every time we leave win mode we increment win_y
   wire REPU_VBLANKp = or2(lcd.POPU_y144p.state, reg_lcdc.XONA_LCDC_LCDENn.state);
-  win_coords.VYNO_WIN_TILE_Y0.dff17(~win_reg.PYNU_WIN_MODE_Ap.state,      ~REPU_VBLANKp, ~win_coords.VYNO_WIN_TILE_Y0.state);
+  win_coords.VYNO_WIN_TILE_Y0.dff17(~win_reg.PYNU_WIN_MODE_Ap.state, ~REPU_VBLANKp, ~win_coords.VYNO_WIN_TILE_Y0.state);
   win_coords.VUJO_WIN_TILE_Y1.dff17(~win_coords.VYNO_WIN_TILE_Y0.state, ~REPU_VBLANKp, ~win_coords.VUJO_WIN_TILE_Y1.state);
   win_coords.VYMU_WIN_TILE_Y2.dff17(~win_coords.VUJO_WIN_TILE_Y1.state, ~REPU_VBLANKp, ~win_coords.VYMU_WIN_TILE_Y2.state);
-  win_coords.TUFU_WIN_MAP_Y0 .dff17(~win_coords.VYMU_WIN_TILE_Y2.state, ~REPU_VBLANKp, ~win_coords.TUFU_WIN_MAP_Y0.state);
+  win_coords.TUFU_WIN_MAP_Y0.dff17(~win_coords.VYMU_WIN_TILE_Y2.state, ~REPU_VBLANKp, ~win_coords.TUFU_WIN_MAP_Y0.state);
 
-  win_coords.TAXA_WIN_MAP_Y1 .dff17(~win_coords.TUFU_WIN_MAP_Y0.state,  ~REPU_VBLANKp, ~win_coords.TAXA_WIN_MAP_Y1.state);
-  win_coords.TOZO_WIN_MAP_Y2 .dff17(~win_coords.TAXA_WIN_MAP_Y1.state,  ~REPU_VBLANKp, ~win_coords.TOZO_WIN_MAP_Y2.state);
-  win_coords.TATE_WIN_MAP_Y3 .dff17(~win_coords.TOZO_WIN_MAP_Y2.state,  ~REPU_VBLANKp, ~win_coords.TATE_WIN_MAP_Y3.state);
-  win_coords.TEKE_WIN_MAP_Y4 .dff17(~win_coords.TATE_WIN_MAP_Y3.state,  ~REPU_VBLANKp, ~win_coords.TEKE_WIN_MAP_Y4.state);
+  win_coords.TAXA_WIN_MAP_Y1.dff17(~win_coords.TUFU_WIN_MAP_Y0.state, ~REPU_VBLANKp, ~win_coords.TAXA_WIN_MAP_Y1.state);
+  win_coords.TOZO_WIN_MAP_Y2.dff17(~win_coords.TAXA_WIN_MAP_Y1.state, ~REPU_VBLANKp, ~win_coords.TOZO_WIN_MAP_Y2.state);
+  win_coords.TATE_WIN_MAP_Y3.dff17(~win_coords.TOZO_WIN_MAP_Y2.state, ~REPU_VBLANKp, ~win_coords.TATE_WIN_MAP_Y3.state);
+  win_coords.TEKE_WIN_MAP_Y4.dff17(~win_coords.TATE_WIN_MAP_Y3.state, ~REPU_VBLANKp, ~win_coords.TEKE_WIN_MAP_Y4.state);
 
   if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, win_reg.PYNU_WIN_MODE_Ap.state))) {
     memcpy_inv(&vram_bus.BUS_VRAM_A00n, &win_coords.WYKA_WIN_MAP_X0, 5);
@@ -832,14 +857,14 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
   //--------------------------------------------
   // Sprite read address
 
-  if (sprite_fetcher.TEXY_SFETCHINGp.state) {
+  if (bit(sprite_fetcher.TEXY_SFETCHINGp.state)) {
     wire WUKY_FLIP_Yp = ~oam_temp_b.YZOS_OAM_DB6p.state;
 
-    wire CYVU_L0 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L0.state);
-    wire BORE_L1 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L1.state);
-    wire BUVY_L2 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L2.state);
-    wire WAGO_L3 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L3.state);
-    wire GEJY_L3 = reg_lcdc.XYMO_LCDC_SPSIZEn.state ? oam_temp_a.XUSO_OAM_DA0p.state : WAGO_L3;
+    wire CYVU_L0 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L0.out_new());
+    wire BORE_L1 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L1.out_new());
+    wire BUVY_L2 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L2.out_new());
+    wire WAGO_L3 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L3.out_new());
+    wire GEJY_L3 = bit(reg_lcdc.XYMO_LCDC_SPSIZEn.state) ? oam_temp_a.XUSO_OAM_DA0p.state : WAGO_L3;
 
     vram_bus.BUS_VRAM_A00n.state = ~sprite_fetcher.VONU_SFETCH_S1p_D4.state;
     vram_bus.BUS_VRAM_A01n.state = ~CYVU_L0;
@@ -855,12 +880,12 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
 
   memcpy(&vram_pins.PIN_34_VRAM_A00, &vram_bus.BUS_VRAM_A00n, 13);
 
-  uint16_t vram_addr = (uint16_t)pack_ext_new(13, (BitBase*)&vram_pins.PIN_34_VRAM_A00);
+  uint16_t vram_addr = (uint16_t)pack_inv(13, (BitBase*)&vram_pins.PIN_34_VRAM_A00);
 
   //--------------------------------------------
   // CPU bus to Vram data bus
 
-  if (bit(and4(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, addr_vram, cpu_signals.SIG_IN_CPU_WRp.state))) {
+  if (bit(and4(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_addr_vram, cpu_signals.SIG_IN_CPU_WRp.state))) {
     memcpy(&vram_bus.BUS_VRAM_D00p, &new_bus.BUS_CPU_D00p, 8);
   }
 
@@ -871,7 +896,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
     wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
     wire CLK_xxCDEFGH = !!(phase_mask_new & 0b00111111);
 
-    wire APOV_CPU_WRp        = CLK_xxxxEFGx & cpu_signals.SIG_IN_CPU_WRp.state;
+    wire APOV_CPU_WRp = CLK_xxxxEFGx & cpu_signals.SIG_IN_CPU_WRp.state;
     wire ABUZ_EXT_RAM_CS_CLK = CLK_xxCDEFGH & cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
 
     if (dma_vram) {
@@ -879,12 +904,12 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
       vram_pins.PIN_45_VRAM_OEn.pin_out(1, 1);
     }
     else {
-      wire SUTU_MCSn = nand2(addr_vram, ABUZ_EXT_RAM_CS_CLK);
+      wire SUTU_MCSn = nand2(cpu_addr_vram, ABUZ_EXT_RAM_CS_CLK);
       vram_pins.PIN_43_VRAM_CSn.pin_out(~SUTU_MCSn, ~SUTU_MCSn);
-      vram_pins.PIN_45_VRAM_OEn.pin_out(nand2(addr_vram, cpu_signals.SIG_IN_CPU_WRp.state), nand2(addr_vram, cpu_signals.SIG_IN_CPU_WRp.state));
+      vram_pins.PIN_45_VRAM_OEn.pin_out(nand2(cpu_addr_vram, cpu_signals.SIG_IN_CPU_WRp.state), nand2(cpu_addr_vram, cpu_signals.SIG_IN_CPU_WRp.state));
     }
 
-    wire SOHY_MWRn = nand3(addr_vram, APOV_CPU_WRp, ABUZ_EXT_RAM_CS_CLK);
+    wire SOHY_MWRn = nand3(cpu_addr_vram, APOV_CPU_WRp, ABUZ_EXT_RAM_CS_CLK);
     vram_pins.PIN_49_VRAM_WRn.pin_out(~SOHY_MWRn, ~SOHY_MWRn);
   }
   else {
@@ -911,6 +936,11 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
     }
   }
 
+  uint8_t data = 0xFF;
+  if (bit(~vram_pins.PIN_45_VRAM_OEn.qp_ext_new())) {
+    data = vid_ram[vram_addr];
+  }
+
   //--------------------------------------------
   // Vram data pin driver
 
@@ -921,37 +951,46 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
   }
 
   if (bit(vram_pins.PIN_49_VRAM_WRn.state)) {
-    vid_ram[vram_addr] = (uint8_t)pack_ext_new(8, &vram_pins.PIN_33_VRAM_D00);
+    vid_ram[vram_addr] = (uint8_t)pack_inv(8, &vram_pins.PIN_33_VRAM_D00);
   }
 
-  if (bit(and4(addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
+  if (bit(and4(cpu_addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
     memcpy_inv(&vram_pins.PIN_33_VRAM_D00, &vram_bus.BUS_VRAM_D00p, 8);
   }
-  else {
+
+  //--------------------------------------------
+
+  if (bit(~vram_pins.PIN_49_VRAM_WRn.qp_ext_new())) {
+    vid_ram[vram_addr] = (uint8_t)pack_inv(8, (BitBase*)&vram_pins.PIN_33_VRAM_D00);
+  }
+
+  //--------------------------------------------
+  // Vram pins to vram bus
+
+  if (!bit(and4(cpu_addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
     memcpy_inv(&vram_bus.BUS_VRAM_D00p, &vram_pins.PIN_33_VRAM_D00, 8);
   }
 
-  if (bit(and5(addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
+  //--------------------------------------------
+  // Vram bus to cpu bus
+
+  if (bit(and5(cpu_addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
     memcpy(&new_bus.BUS_CPU_D00p, &vram_bus.BUS_VRAM_D00p, 8);
   }
 
   //--------------------------------------------
   // Vram bus to sprite x flipper
 
-  {
-    wire XONO_FLIP_X = and2(oam_temp_b.BAXO_OAM_DB5p.state, sprite_fetcher.TEXY_SFETCHINGp.state);
+  wire XONO_FLIP_X = and2(oam_temp_b.BAXO_OAM_DB5p.state, sprite_fetcher.TEXY_SFETCHINGp.state);
 
-    flipped_sprite = {
-      XONO_FLIP_X ? vram_bus.BUS_VRAM_D07p.state : vram_bus.BUS_VRAM_D00p.state,
-      XONO_FLIP_X ? vram_bus.BUS_VRAM_D06p.state : vram_bus.BUS_VRAM_D01p.state,
-      XONO_FLIP_X ? vram_bus.BUS_VRAM_D05p.state : vram_bus.BUS_VRAM_D02p.state,
-      XONO_FLIP_X ? vram_bus.BUS_VRAM_D04p.state : vram_bus.BUS_VRAM_D03p.state,
-      XONO_FLIP_X ? vram_bus.BUS_VRAM_D03p.state : vram_bus.BUS_VRAM_D04p.state,
-      XONO_FLIP_X ? vram_bus.BUS_VRAM_D02p.state : vram_bus.BUS_VRAM_D05p.state,
-      XONO_FLIP_X ? vram_bus.BUS_VRAM_D01p.state : vram_bus.BUS_VRAM_D06p.state,
-      XONO_FLIP_X ? vram_bus.BUS_VRAM_D00p.state : vram_bus.BUS_VRAM_D07p.state,
-    };
-  }
+  flipped_sprite = {
+    XONO_FLIP_X ? vram_bus.BUS_VRAM_D07p.state : vram_bus.BUS_VRAM_D00p.state,
+    XONO_FLIP_X ? vram_bus.BUS_VRAM_D06p.state : vram_bus.BUS_VRAM_D01p.state,
+    XONO_FLIP_X ? vram_bus.BUS_VRAM_D05p.state : vram_bus.BUS_VRAM_D02p.state,
+    XONO_FLIP_X ? vram_bus.BUS_VRAM_D04p.state : vram_bus.BUS_VRAM_D03p.state,
+    XONO_FLIP_X ? vram_bus.BUS_VRAM_D03p.state : vram_bus.BUS_VRAM_D04p.state,
+    XONO_FLIP_X ? vram_bus.BUS_VRAM_D02p.state : vram_bus.BUS_VRAM_D05p.state,
+    XONO_FLIP_X ? vram_bus.BUS_VRAM_D01p.state : vram_bus.BUS_VRAM_D06p.state,
+    XONO_FLIP_X ? vram_bus.BUS_VRAM_D00p.state : vram_bus.BUS_VRAM_D07p.state,
+  };
 }
-
-//------------------------------------------------------------------------------------------------------------------------

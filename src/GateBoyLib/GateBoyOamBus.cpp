@@ -123,10 +123,6 @@ void GateBoy::tock_oam_bus_gates()
   //probe_wire(18, "APAR SCN", APAR_SCANNINGn);
   //probe_wire(19, "BETE PPU", BETE_SPR_I_TO_OAM_An);
 
-  //if (!oam_bus.BUS_OAM_A00n.is_driven()) {
-  //  printf("%03d oam bus not driven\n", line_phase_x);
-  //}
-
   // cpu to oam data bus
 
   /*_p28.XUTO*/ wire XUTO_CPU_OAM_WRp = and2(new_bus.SARO_ADDR_OAMp(), CUPA_CPU_WRp());
@@ -312,9 +308,9 @@ void GateBoy::tock_oam_bus_gates()
   /*#p28.ZODO*/ wire ZODO_OAM_OEn = not1(YRYV_OAM_OEp);   // schematic thinks this is OAM_CLK?
   /*_SIG_OAM_OEn*/ oam.SIG_OAM_OEn.sig_out(ZODO_OAM_OEn);
 
-  uint8_t oam_addr   = (uint8_t)pack_newn(7, (BitBase*)&oam_bus.BUS_OAM_A01n);
-  uint8_t oam_data_a = (uint8_t)pack_newn(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
-  uint8_t oam_data_b = (uint8_t)pack_newn(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
+  uint8_t oam_addr   = (uint8_t)pack_inv(7, (BitBase*)&oam_bus.BUS_OAM_A01n);
+  uint8_t oam_data_a = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
+  uint8_t oam_data_b = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
 
   if (bit(~oam.old_oam_clk.out_old()) && bit(~oam.SIG_OAM_CLKn.out_new())) {
     if (bit(~oam.SIG_OAM_WRn_A.out_new())) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
@@ -436,14 +432,12 @@ void GateBoy::tock_oam_bus_logic()
   wire dbus_free = cpu_signals.SIG_IN_CPU_LATCH_EXT.state;
   wire dbus_busy = !dbus_free;
 
-  // At most one of these is going to be active.
   bool scanning = bit(sprite_scanner.ACYL_SCANNINGp.state);
   bool dma_running = bit(dma.MATU_DMA_RUNNINGp.state);
   bool rendering = !bit(XYMU_RENDERINGn.state);
-  ASSERT_P(((int)scanning + (int)dma_running + (int)rendering) <= 1);
 
   auto dma_addr = pack_inv(16, &dma.NAKY_DMA_A00p);
-  auto cpu_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto cpu_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   wire addr_oam = (cpu_addr >= 0xFE00) && (cpu_addr <= 0xFEFF);
 
   bool cpu_reading_oam = (bool)bit(and3(dbus_busy, addr_oam, cpu_rd));
@@ -533,9 +527,9 @@ void GateBoy::tock_oam_bus_logic()
   // data in from oam
 
   {
-    uint8_t oam_addr = (uint8_t)pack_newn(7, (BitBase*)&oam_bus.BUS_OAM_A01n);
-    uint8_t oam_data_a = (uint8_t)pack_newn(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
-    uint8_t oam_data_b = (uint8_t)pack_newn(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
+    uint8_t oam_addr = (uint8_t)pack_inv(7, (BitBase*)&oam_bus.BUS_OAM_A01n);
+    uint8_t oam_data_a = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
+    uint8_t oam_data_b = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
 
     if (bit(~oam.old_oam_clk.state) && bit(~oam.SIG_OAM_CLKn.state)) {
       if (bit(~oam.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
@@ -568,4 +562,5 @@ void GateBoy::tock_oam_bus_logic()
     }
   }
 }
+
 //------------------------------------------------------------------------------------------------------------------------

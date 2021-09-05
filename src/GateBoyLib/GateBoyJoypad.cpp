@@ -176,17 +176,16 @@ void GateBoy::tock_joypad_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_joypad_logic() {
-  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF00 && DELTA_GH) {
     joy.KELY_JOYP_UDLRp.state = old_bus.BUS_CPU_D04p.out_old();
     joy.COFY_JOYP_ABCSp.state = old_bus.BUS_CPU_D05p.out_old();
+    joy.PIN_63_JOY_P14.pin_out(~joy.KELY_JOYP_UDLRp.state, ~joy.KELY_JOYP_UDLRp.state);
+    joy.PIN_62_JOY_P15.pin_out(~joy.COFY_JOYP_ABCSp.state, ~joy.COFY_JOYP_ABCSp.state);
   }
 
-  joy.PIN_63_JOY_P14.pin_out(~joy.KELY_JOYP_UDLRp.state, ~joy.KELY_JOYP_UDLRp.state);
-  joy.PIN_62_JOY_P15.pin_out(~joy.COFY_JOYP_ABCSp.state, ~joy.COFY_JOYP_ABCSp.state);
-
-  bool EXT_button0, EXT_button1, EXT_button2, EXT_button3;
+  bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
 
   if (bit(joy.PIN_63_JOY_P14.state)) {
     EXT_button0 = bit(sys_buttons, 0); // RIGHT
@@ -200,24 +199,18 @@ void GateBoy::tock_joypad_logic() {
     EXT_button2 = bit(sys_buttons, 6); // SELECT
     EXT_button3 = bit(sys_buttons, 7); // START
   }
-  else {
-    EXT_button0 = 0;
-    EXT_button1 = 0;
-    EXT_button2 = 0;
-    EXT_button3 = 0;
-  }
-
-  wire any_button = or4(EXT_button0, EXT_button1, EXT_button2, EXT_button3);
 
   joy.PIN_67_JOY_P10.pin_in(!EXT_button0);
   joy.PIN_66_JOY_P11.pin_in(!EXT_button1);
   joy.PIN_65_JOY_P12.pin_in(!EXT_button2);
   joy.PIN_64_JOY_P13.pin_in(!EXT_button3);
 
+  wire any_button = or4(EXT_button0, EXT_button1, EXT_button2, EXT_button3);
+
+  joy.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), !any_button);
   joy.SIG_CPU_WAKE.sig_out(joy.AWOB_WAKE_CPU.qp_new());
 
   if (DELTA_HA) {
-    joy.AWOB_WAKE_CPU.state = !any_button;
     joy.APUG_JP_GLITCH3.state = joy.AGEM_JP_GLITCH2.state;
     joy.AGEM_JP_GLITCH2.state = joy.ACEF_JP_GLITCH1.state;
     joy.ACEF_JP_GLITCH1.state = joy.BATU_JP_GLITCH0.state;
@@ -229,8 +222,8 @@ void GateBoy::tock_joypad_logic() {
     new_bus.BUS_CPU_D01p.state = ~joy.KAPA_JOYP_L1n.state;
     new_bus.BUS_CPU_D02p.state = ~joy.KEJA_JOYP_L2n.state;
     new_bus.BUS_CPU_D03p.state = ~joy.KOLO_JOYP_L3n.state;
-    new_bus.BUS_CPU_D04p.state = joy.KELY_JOYP_UDLRp.state;
-    new_bus.BUS_CPU_D05p.state = joy.COFY_JOYP_ABCSp.state;
+    new_bus.BUS_CPU_D04p.state =  joy.KELY_JOYP_UDLRp.state;
+    new_bus.BUS_CPU_D05p.state =  joy.COFY_JOYP_ABCSp.state;
   }
   else {
     joy.KEVU_JOYP_L0n.state = joy.PIN_67_JOY_P10.state;

@@ -3,9 +3,13 @@
 
 //-----------------------------------------------------------------------------
 
-void     combine_hash(uint64_t& a, uint64_t b);
-uint64_t hash_blob2(void* blob, size_t size);
+inline void combine_hash(uint64_t& a, uint64_t b) {
+  a = swap((a ^ b) * 0xff51afd7ed558ccd);
+}
+
+uint64_t hash_blob(void* blob, size_t size, uint8_t mask);
 void     commit_blob(void* blob, size_t size);
+int      diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int start_b, int end_b, uint8_t mask);
 
 //-----------------------------------------------------------------------------
 
@@ -14,33 +18,13 @@ const wire BIT_DATA   = 0b00000001;
 const wire TRI_DRIVEN = 0b00001000;
 const wire BIT_CLOCK  = 0b00000010;
 
-
 // These are only used for error checking and can be disabled in fast builds.
 
-#ifdef USE_DRIVE_FLAGS
-const wire BIT_PULLED = 0b00000100;
-const wire BIT_DRIVEN = 0b00001000;
-#else
-const wire BIT_PULLED = 0b00000000;
-const wire BIT_DRIVEN = 0b00000000;
-#endif
-
-#ifdef USE_OLDNEW_FLAGS
-const wire BIT_OLD = 0b00010000;
-const wire BIT_NEW = 0b00100000;
-const wire TRI_NEW = 0b00100000;
-#else
-const wire BIT_OLD = 0b00000000;
-const wire BIT_NEW = 0b00000000;
-const wire TRI_NEW = 0b00000000;
-#endif
-
-// Logic mode only cares that DFFs and buses and such contain the correct bit.
-#ifdef YES_LOGIC_VS_GATES
-const wire BITS_TO_HASH = BIT_DATA;
-#else
-const wire BITS_TO_HASH = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
-#endif
+const wire BIT_PULLED = config_drive_flags  ? 0b00000100 : 0b00000000;
+const wire BIT_DRIVEN = config_drive_flags  ? 0b00001000 : 0b00000000;
+const wire BIT_OLD    = config_oldnew_flags ? 0b00010000 : 0b00000000;
+const wire BIT_NEW    = config_oldnew_flags ? 0b00100000 : 0b00000000;
+const wire TRI_NEW    = config_oldnew_flags ? 0b00100000 : 0b00000000;
 
 //-----------------------------------------------------------------------------
 
@@ -65,23 +49,23 @@ struct BitBase {
   }
 
   void check_old() const {
-#ifdef USE_DRIVE_FLAGS
-    CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-#endif
+    if (config_drive_flags) {
+      CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
+    }
 
-#ifdef USE_OLDNEW_FLAGS
-    CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_OLD);
-#endif
+    if (config_oldnew_flags) {
+      CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_OLD);
+    }
   }
 
   void check_new() const {
-#ifdef USE_DRIVE_FLAGS
-    CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-#endif
+    if (config_drive_flags) {
+      CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
+    }
 
-#ifdef USE_OLDNEW_FLAGS
-    CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
-#endif
+    if (config_oldnew_flags) {
+      CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
+    }
   }
 };
 
@@ -767,36 +751,33 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 //-----------------------------------------------------------------------------
 
-inline uint32_t pack_old(int c, const BitBase* b) {
-  uint32_t r = 0;
-  for (int i = 0; i < c; i++) r |= (bit(b[i].qp_old()) << i);
-  return r;
+inline uint8_t pack(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) {
+  return (a << 0) | (b << 1) | (c << 2) | (d << 3) | (e << 4) | (f << 5) | (g << 6) | (h << 7);
 }
 
-inline uint32_t pack_new(int c, const BitBase* b) {
+inline uint32_t pack(int c, const BitBase* b) {
   uint32_t r = 0;
-  for (int i = 0; i < c; i++) r |= (bit(b[i].qp_new()) << i);
+  for (int i = 0; i < c; i++) r |= (bit(b[i].state) << i);
   return r;
 }
-
-inline uint32_t pack_oldn(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
-inline uint32_t pack_newn(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
-inline uint32_t pack_ext_old(int c, const BitBase* b) { return pack_old(c, b) ^ ((1 << c) - 1); }
-inline uint32_t pack_ext_new(int c, const BitBase* b) { return pack_new(c, b) ^ ((1 << c) - 1); }
 
 inline uint32_t pack_inv(int c, const BitBase* b) {
-  return pack_old(c, b) ^ ((1 << c) - 1);
+  uint32_t r = 0;
+  for (int i = 0; i < c; i++) r |= (bit(~b[i].state) << i);
+  return r;
 }
 
 inline void unpack(uint32_t d, int c, BitBase* b) {
   for (int i = 0; i < c; i++) {
-    b[i].state = bit(d, i);
+    b[i].state &= ~1;
+    b[i].state |= bit(d, i);
   }
 }
 
 inline void unpack_inv(uint32_t d, int c, BitBase* b) {
   for (int i = 0; i < c; i++) {
-    b[i].state = !bit(d, i);
+    b[i].state &= ~1;
+    b[i].state |= bit(~d, i);
   }
 }
 

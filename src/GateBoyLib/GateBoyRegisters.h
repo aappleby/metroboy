@@ -54,8 +54,8 @@ struct PixCount {
     SYBE_PX7p.state = 0b00011011;
   }
 
-  int get_old() { return pack_old(8, &XEHO_PX0p); }
-  int get_new() { return pack_new(8, &XEHO_PX0p); }
+  int get_old() { return pack(8, &XEHO_PX0p); }
+  int get_new() { return pack(8, &XEHO_PX0p); }
 
   /*_p21.XEHO*/ DFF17 XEHO_PX0p; // AxCxExGx
   /*_p21.SAVY*/ DFF17 SAVY_PX1p; // AxCxExGx
@@ -199,8 +199,8 @@ struct RegLY {
     LAFO_LY7p.state = 0b00011010;
   }
 
-  uint8_t get_old() const  { return (uint8_t)pack_old(8, (BitBase*)&MUWY_LY0p); }
-  uint8_t get_new() const  { return (uint8_t)pack_new(8, (BitBase*)&MUWY_LY0p); }
+  uint8_t get_old() const  { return (uint8_t)pack(8, (BitBase*)&MUWY_LY0p); }
+  uint8_t get_new() const  { return (uint8_t)pack(8, (BitBase*)&MUWY_LY0p); }
 
   /*#p21.MUWY*/ DFF17 MUWY_LY0p;  // xxCxxxGx Ticks on G, reset on C
   /*#p21.MYRO*/ DFF17 MYRO_LY1p;  // xxCxxxGx Ticks on G, reset on C
@@ -226,8 +226,8 @@ struct RegLX {
     TYRY_LX6p.state = 0b00011001;
   }
 
-  uint8_t get_old() const  { return (uint8_t)pack_old(7, (BitBase*)&SAXO_LX0p); }
-  uint8_t get_new() const  { return (uint8_t)pack_new(7, (BitBase*)&SAXO_LX0p); }
+  uint8_t get_old() const  { return (uint8_t)pack(7, (BitBase*)&SAXO_LX0p); }
+  uint8_t get_new() const  { return (uint8_t)pack(7, (BitBase*)&SAXO_LX0p); }
 
   /*#p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
   /*#p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G
@@ -254,7 +254,7 @@ struct RegLYC {
     RAHA_LYC7n.state = 0b00011011;
   }
 
-  uint8_t get() const { return (uint8_t)pack_oldn(8, &SYRY_LYC0n); }
+  uint8_t get() const { return (uint8_t)pack_inv(8, &SYRY_LYC0n); }
 
   /*#p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
 
@@ -358,7 +358,7 @@ struct RegWY {
     NAFU_WY7n.state = BIT_CLOCK | bit(~wy, 7);
   }
 
-  int get() const { return pack_oldn(8, &NESO_WY0n); }
+  int get() const { return pack_inv(8, &NESO_WY0n); }
 
   /*_p23.NESO*/ DFF9 NESO_WY0n; // xxxxxxxH
   /*_p23.NYRO*/ DFF9 NYRO_WY1n; // xxxxxxxH
@@ -385,7 +385,7 @@ struct RegWX {
     NUKU_WX7n.state = BIT_CLOCK | bit(~wx, 7);
   }
 
-  int get() const { return pack_oldn(8, (BitBase*)&MYPA_WX0n); }
+  int get() const { return pack_inv(8, (BitBase*)&MYPA_WX0n); }
 
   /*_p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
   /*_p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH

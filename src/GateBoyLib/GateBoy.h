@@ -98,24 +98,16 @@ struct GateBoy {
   uint8_t* reg_begin() { return (uint8_t*)(&sentinel1) + sizeof(sentinel1); }
   uint8_t* reg_end()   { return (uint8_t*)(&sentinel2); }
 
-  int64_t commit_and_hash() {
-    int64_t hash = 0;
-#ifdef YES_HASH
-    {
-      uint8_t* a = reg_begin();
-      uint8_t* b = reg_end();
-      hash = hash_blob2(a, b - a);
-    }
-#endif
+  int64_t hash(uint8_t mask) {
+    uint8_t* a = reg_begin();
+    uint8_t* b = reg_end();
+    return hash_blob(a, b - a, mask);
+  }
 
-#ifdef USE_OLDNEW_FLAGS
-    {
-      uint8_t* a = reg_begin();
-      uint8_t* b = reg_end();
-      commit_blob(a, b - a);
-    }
-#endif
-    return hash;
+  void commit() {
+    uint8_t* a = reg_begin();
+    uint8_t* b = reg_end();
+    commit_blob(a, b - a);
   }
 
   void check_state_old_and_driven_or_pulled() {
@@ -177,7 +169,9 @@ struct GateBoy {
 
   void tock_zram_gates();
   void tock_zram_logic();
-  void tock_pix_pipes(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
+
+  void tock_pix_pipes_gates(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
+  void tock_pix_pipes_logic(wire SACU_CLKPIPE_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
 
   void tock_bootrom_gates();
   void tock_bootrom_logic();
@@ -268,7 +262,7 @@ struct GateBoy {
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
   wire AZOF_AxCxExGx() const {
-    /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.out_new());
+    /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.out_mid());
     /*_p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
     return AZOF_AxCxExGx;
   }
@@ -566,7 +560,6 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // Everything below here is "external" state not visible to the gameboy itself.
 
-  int line_phase_x = 0; // Position in the current scanline, in phases since ATEJ_LINE_RSTp fired. For debugging.
   int old_lcd_x = 0;
   int old_lcd_y = 0;
 
@@ -575,15 +568,7 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // Bookkeeping
 
-#ifdef YES_LOGIC_VS_GATES
-  bool logic_mode = false;
-#else
-  #ifdef FAST_MODE
-    const bool logic_mode = true;
-  #else
-    const bool logic_mode = false;
-  #endif
-#endif
+  bool logic_mode = config_default_logic_mode;
 
   double   sim_time = 0;
   uint64_t phase_total = 0;

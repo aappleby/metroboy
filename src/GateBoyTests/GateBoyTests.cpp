@@ -17,7 +17,8 @@
 #include <windows.h>
 #endif
 
-//#define RUN_SLOW_TESTS
+const bool run_slow_tests = false;
+
 //#define TEST_MOONEYE
 
 //-----------------------------------------------------------------------------
@@ -66,12 +67,37 @@ int main(int argc, char** argv) {
 
   TEST_START();
 
+  // run one frame of Zelda to check rendering
+  if (config_regression) {
+    LOG_G("Running a few frames of Zelda...\n");
+
+    GateBoy gb;
+
+    blob raw_dump = load_blob("zelda.dump");
+    if (!raw_dump.empty()) {
+      int gb_size = gb.from_blob(raw_dump);
+      int cart_size = (int)raw_dump.size() - gb_size;
+
+      blob cart_blob;
+      cart_blob.resize(cart_size);
+      memcpy(cart_blob.data(), raw_dump.data() + gb_size, cart_size);
+
+      for (int i = 0; i < MCYCLES_PER_FRAME * 8 * 2; i++) {
+        gb.sys_buttons |= 0x02;
+        gb.next_phase(cart_blob);
+      }
+      LOG_G("Done\n");
+    }
+    else {
+      LOG_G("Could not load dump!\n");
+    }
+  }
+
   GateBoyTests t;
 
   failures += t.test_reset_cart_vs_dump();
   failures += t.test_fastboot_vs_slowboot();
 
-#if 1
   failures += t.test_bootrom();
   failures += t.test_clk();
   failures += t.test_regs();
@@ -79,9 +105,9 @@ int main(int argc, char** argv) {
   failures += t.test_dma();
   failures += t.test_init();
 
-#ifdef USE_DRIVE_FLAGS
-  failures += t.test_ext_bus();
-#endif
+  if (config_drive_flags) {
+    failures += t.test_ext_bus();
+  }
 
   failures += t.test_ppu();
   failures += t.test_timer();
@@ -89,7 +115,12 @@ int main(int argc, char** argv) {
   failures += t.test_micro_poweron();
   failures += t.test_micro_lcden();
   failures += t.test_micro_timer();
-  failures += t.test_micro_int_vblank();
+
+  if (run_slow_tests) {
+    failures += t.test_micro_int_vblank();
+  }
+  
+  
   failures += t.test_micro_int_stat();
   failures += t.test_micro_int_timer();
   failures += t.test_micro_int_serial();
@@ -100,7 +131,6 @@ int main(int argc, char** argv) {
   failures += t.test_micro_ppu();
   failures += t.test_micro_dma();
   failures += t.test_micro_mbc1();
-#endif
 
 #if 0
   t.verbose = true;
@@ -111,38 +141,6 @@ int main(int argc, char** argv) {
 #endif
 
   TEST_END();
-}
-
-//-----------------------------------------------------------------------------
-
-int diff(const char* name_a, void* blob_a, int start_a, int end_a,
-         const char* name_b, void* blob_b, int start_b, int end_b, uint8_t mask) {
-  int failures = 0;
-  int size_a = end_a - start_a;
-  int size_b = end_b - start_b;
-
-  if (size_a != size_b) {
-    LOG_R("diff() : Size mismatch %d vs %d\n", size_a, size_b);
-    return false;
-  }
-
-  uint8_t* bytes_a = (uint8_t*)blob_a;
-  uint8_t* bytes_b = (uint8_t*)blob_b;
-
-  for (int i = 0; i < size_a; i++) {
-    int ia = start_a + i;
-    int ib = start_b + i;
-
-    int byte_a = bytes_a[ia] & mask;
-    int byte_b = bytes_b[ib] & mask;
-
-    EXPECT_EQ(byte_a, byte_b,
-              "%s != %s @ %5d : %s[%5d] = 0x%02x, %s[%5d] = 0x%02x\n",
-              name_a, name_b, i,
-              name_a, ia, byte_a,
-              name_b, ib, byte_b);
-  }
-  return failures;
 }
 
 //-----------------------------------------------------------------------------
@@ -245,7 +243,9 @@ int GateBoyTests::test_fastboot_vs_slowboot() {
   int start = 0;
   int end   = offsetof(GateBoy, sentinel3);
 
-  failures += diff("fastboot", &gb1, start, end, "slowboot", &gb2, start, end, BITS_TO_HASH);
+  uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
+
+  failures += diff_blob(&gb1, start, end, &gb2, start, end, mask);
 
   TEST_END();
 }
@@ -274,7 +274,9 @@ int GateBoyTests::test_reset_cart_vs_dump() {
   int start = 0;
   int end   = offsetof(GateBoy, sentinel3);
 
-  failures += diff("dump", &gb1, start, end, "reset_to_cart", &gb2, start, end, BITS_TO_HASH);
+  uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
+
+  failures += diff_blob(&gb1, start, end, &gb2, start, end, mask);
 
   TEST_END();
 }
@@ -346,12 +348,10 @@ int GateBoyTests::test_micro_poweron() {
 int GateBoyTests::test_micro_int_vblank() {
   TEST_START();
 
-#ifdef RUN_SLOW_TESTS
   failures += run_microtest("lcdon_halt_to_vblank_int_a.gb");
   failures += run_microtest("lcdon_halt_to_vblank_int_b.gb");
   failures += run_microtest("lcdon_nops_to_vblank_int_a.gb");
   failures += run_microtest("lcdon_nops_to_vblank_int_b.gb");
-#endif
 
   TEST_END();
 }
@@ -388,15 +388,15 @@ int GateBoyTests::test_micro_int_stat() {
   failures += run_microtest("int_hblank_nops_scx6.gb"); // int fires on 834 C
   failures += run_microtest("int_hblank_nops_scx7.gb"); // int fires on 836 E
 
-#ifdef RUN_SLOW_TESTS
-  failures += run_microtest("int_vblank1_halt.gb"); // int fires on 131602 C
-  failures += run_microtest("int_vblank1_incs.gb");
-  failures += run_microtest("int_vblank1_nops.gb");
+  if (run_slow_tests) {
+    failures += run_microtest("int_vblank1_halt.gb"); // int fires on 131602 C
+    failures += run_microtest("int_vblank1_incs.gb");
+    failures += run_microtest("int_vblank1_nops.gb");
 
-  failures += run_microtest("int_vblank2_halt.gb"); // int fires on 131562 C
-  failures += run_microtest("int_vblank2_incs.gb");
-  failures += run_microtest("int_vblank2_nops.gb");
-#endif
+    failures += run_microtest("int_vblank2_halt.gb"); // int fires on 131562 C
+    failures += run_microtest("int_vblank2_incs.gb");
+    failures += run_microtest("int_vblank2_nops.gb");
+  }
 
   failures += run_microtest("int_lyc_halt.gb"); // int fires on 1226 C
   failures += run_microtest("int_lyc_incs.gb");
@@ -407,10 +407,10 @@ int GateBoyTests::test_micro_int_stat() {
   failures += run_microtest("int_oam_nops.gb");
 
   // broken and slow
-#ifdef RUN_SLOW_TESTS
-  failures += run_microtest("int_hblank_halt_bug_a.gb"); // failing
-  failures += run_microtest("int_hblank_halt_bug_b.gb"); // failing
-#endif
+  if (run_slow_tests) {
+    failures += run_microtest("int_hblank_halt_bug_a.gb"); // failing
+    failures += run_microtest("int_hblank_halt_bug_b.gb"); // failing
+  }
 
   failures += run_microtest("hblank_int_if_a.gb");
   failures += run_microtest("hblank_int_if_b.gb");
@@ -487,34 +487,34 @@ int GateBoyTests::test_micro_int_stat() {
   failures += run_microtest("int_hblank_incs_scx6.gb");
   failures += run_microtest("int_hblank_incs_scx7.gb");
 
-#ifdef RUN_SLOW_TESTS
-  failures += run_microtest("vblank2_int_if_a.gb");
-  failures += run_microtest("vblank2_int_if_b.gb");
-  failures += run_microtest("vblank2_int_if_c.gb");
-  failures += run_microtest("vblank2_int_if_d.gb");
-  failures += run_microtest("vblank2_int_inc_sled.gb");
-  failures += run_microtest("vblank2_int_nops_a.gb");
-  failures += run_microtest("vblank2_int_nops_b.gb");
+  if (run_slow_tests) {
+    failures += run_microtest("vblank2_int_if_a.gb");
+    failures += run_microtest("vblank2_int_if_b.gb");
+    failures += run_microtest("vblank2_int_if_c.gb");
+    failures += run_microtest("vblank2_int_if_d.gb");
+    failures += run_microtest("vblank2_int_inc_sled.gb");
+    failures += run_microtest("vblank2_int_nops_a.gb");
+    failures += run_microtest("vblank2_int_nops_b.gb");
 
-  failures += run_microtest("vblank_int_if_a.gb");
-  failures += run_microtest("vblank_int_if_b.gb");
-  failures += run_microtest("vblank_int_if_c.gb");
-  failures += run_microtest("vblank_int_if_d.gb");
-  failures += run_microtest("vblank_int_inc_sled.gb");
-  failures += run_microtest("vblank_int_nops_a.gb");
-  failures += run_microtest("vblank_int_nops_b.gb");
-#endif
+    failures += run_microtest("vblank_int_if_a.gb");
+    failures += run_microtest("vblank_int_if_b.gb");
+    failures += run_microtest("vblank_int_if_c.gb");
+    failures += run_microtest("vblank_int_if_d.gb");
+    failures += run_microtest("vblank_int_inc_sled.gb");
+    failures += run_microtest("vblank_int_nops_a.gb");
+    failures += run_microtest("vblank_int_nops_b.gb");
+  }
 
   failures += run_microtest("lcdon_to_oam_int_l0.gb");
   failures += run_microtest("lcdon_to_oam_int_l1.gb");
   failures += run_microtest("lcdon_to_oam_int_l2.gb");
 
-#ifdef RUN_SLOW_TESTS
-  failures += run_microtest("line_144_oam_int_a.gb"); // pass
-  failures += run_microtest("line_144_oam_int_b.gb"); // pass
-  failures += run_microtest("line_144_oam_int_c.gb"); // pass
-  failures += run_microtest("line_144_oam_int_d.gb"); // pass
-#endif
+  if (run_slow_tests) {
+    failures += run_microtest("line_144_oam_int_a.gb"); // pass
+    failures += run_microtest("line_144_oam_int_b.gb"); // pass
+    failures += run_microtest("line_144_oam_int_c.gb"); // pass
+    failures += run_microtest("line_144_oam_int_d.gb"); // pass
+  }
 
   failures += run_microtest("oam_int_if_edge_a.gb"); // pass
   failures += run_microtest("oam_int_if_edge_b.gb"); // pass
@@ -585,13 +585,13 @@ int GateBoyTests::test_micro_lcden() {
   failures += run_microtest("lcdon_to_stat0_c.gb");
   failures += run_microtest("lcdon_to_stat0_d.gb");
 
-#ifdef RUN_SLOW_TESTS
-  failures += run_microtest("lcdon_to_stat1_a.gb");
-  failures += run_microtest("lcdon_to_stat1_b.gb");
-  failures += run_microtest("lcdon_to_stat1_c.gb");
-  failures += run_microtest("lcdon_to_stat1_d.gb"); // failing
-  failures += run_microtest("lcdon_to_stat1_e.gb");
-#endif
+  if (run_slow_tests) {
+    failures += run_microtest("lcdon_to_stat1_a.gb");
+    failures += run_microtest("lcdon_to_stat1_b.gb");
+    failures += run_microtest("lcdon_to_stat1_c.gb");
+    failures += run_microtest("lcdon_to_stat1_d.gb"); // failing
+    failures += run_microtest("lcdon_to_stat1_e.gb");
+  }
 
   failures += run_microtest("lcdon_to_stat2_a.gb"); // failing
   failures += run_microtest("lcdon_to_stat2_b.gb");
@@ -748,15 +748,15 @@ int GateBoyTests::test_micro_timer() {
 int GateBoyTests::test_micro_ppu() {
   TEST_START();
 
-#ifdef RUN_SLOW_TESTS
-  failures += run_microtest("line_153_ly_a.gb");
-  failures += run_microtest("line_153_ly_b.gb");
-  failures += run_microtest("line_153_ly_c.gb");
-  failures += run_microtest("line_153_ly_d.gb");
-  failures += run_microtest("line_153_ly_e.gb");
-  failures += run_microtest("line_153_ly_f.gb");
-  failures += run_microtest("line_153_lyc0_int_inc_sled.gb");  // failing
-#endif
+  if (run_slow_tests) {
+    failures += run_microtest("line_153_ly_a.gb");
+    failures += run_microtest("line_153_ly_b.gb");
+    failures += run_microtest("line_153_ly_c.gb");
+    failures += run_microtest("line_153_ly_d.gb");
+    failures += run_microtest("line_153_ly_e.gb");
+    failures += run_microtest("line_153_ly_f.gb");
+    failures += run_microtest("line_153_lyc0_int_inc_sled.gb");  // failing
+  }
 
   failures += run_microtest("lyc1_write_timing_a.gb");
   failures += run_microtest("lyc1_write_timing_b.gb");
@@ -1565,22 +1565,21 @@ int GateBoyTests::test_timer() {
     if (!failures) LOG_B("TAC 0b111 pass\n");
   }
 
-#ifdef RUN_SLOW_TESTS
-  {
-    GateBoy gb = create_gb_poweron();
+  if (run_slow_tests) {
+    blob cart_blob = create_dummy_cart();
+    GateBoy gb = create_gb_poweron(cart_blob);
     gb.sys_cpu_en = 0;
 
     // passes, but slow :/
     LOG("Testing div reset_states + rollover, this takes a minute...");
-    gb.dbg_write(ADDR_DIV, 0);
+    gb.dbg_write(cart_blob, ADDR_DIV, 0);
     for (int i = 1; i < 32768; i++) {
-      int div_a = gb.dbg_read(ADDR_DIV);
+      int div_a = gb.dbg_read(cart_blob, ADDR_DIV);
       int div_b = (i >> 6) & 0xFF;
       EXPECT_EQ(div_a, div_b, "div match fail");
     }
     LOG("\n");
   }
-#endif
 
   TEST_END();
 }
@@ -1663,30 +1662,32 @@ int GateBoyTests::test_ppu() {
   TEST_START();
 
   // slow
-#ifdef RUN_SLOW_TESTS
-  LOG("Checking LY increment rate... ");
-  GateBoy gb = create_gb_poweron();
-  gb.dbg_write(ADDR_LCDC, 0x80);
+  if (run_slow_tests) {
+    LOG("Checking LY increment rate... ");
+    blob cart_blob = create_dummy_cart();
+    GateBoy gb = create_gb_poweron(cart_blob);
+    gb.dbg_write(cart_blob, ADDR_LCDC, 0x80);
 
-  // LY should increment every 114*8 phases after LCD enable, except on the last line.
-  for (int i = 0; i < 153; i++) {
-    EXPECT_EQ(i, gb.reg_ly.get_old());
-    gb.run_phases(114 * 8);
+    // LY should increment every 114*8 phases after LCD enable, except on the last line.
+    for (int i = 0; i < 153; i++) {
+      EXPECT_EQ(i, gb.reg_ly.get_old());
+      gb.run_phases(cart_blob, 114 * 8);
+    }
+
+    // LY is reset early on the last line, we should be at 0 now.
+    EXPECT_EQ(0, gb.reg_ly.get_old());
+    gb.run_phases(cart_blob, 114 * 8);
+
+    // And we should be at 0 again
+    EXPECT_EQ(0, gb.reg_ly.get_old());
+    gb.run_phases(cart_blob, 114 * 8);
+
+    // And now we should be at 1.
+    EXPECT_EQ(1, gb.reg_ly.get_old());
+
+    if (!failures) LOG_B("Pass");
   }
 
-  // LY is reset early on the last line, we should be at 0 now.
-  EXPECT_EQ(0, gb.reg_ly.get_old());
-  gb.run_phases(114 * 8);
-
-  // And we should be at 0 again
-  EXPECT_EQ(0, gb.reg_ly.get_old());
-  gb.run_phases(114 * 8);
-
-  // And now we should be at 1.
-  EXPECT_EQ(1, gb.reg_ly.get_old());
-
-  if (!failures) LOG_B("Pass");
-#endif
   TEST_END();
 }
 
@@ -1740,15 +1741,9 @@ void GateBoyTests::run_benchmark() {
   blob cart_blob = create_dummy_cart();
   GateBoy gb;
 
-#if _DEBUG
-  const int iter_count = 16;
-  const int phase_per_iter = 128;
-  const int warmup = 0;
-#else
-  const int iter_count = 74;
-  const int phase_per_iter = 8192;
-  const int warmup = 10;
-#endif
+  const int iter_count = config_debug ? 16 : 74;
+  const int phase_per_iter = config_debug ? 128 : 8192;
+  const int warmup = config_debug ? 0 : 10;
 
   double phase_rate_sum1 = 0;
   double phase_rate_sum2 = 0;

@@ -70,7 +70,7 @@ void GateBoy::tock_lyc_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_lyc_logic() {
-  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF45)) {
     memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_lyc.SYRY_LYC0n, 8);
@@ -83,7 +83,7 @@ void GateBoy::tock_lyc_logic() {
   bool lcd_on = !bit(reg_lcdc.XONA_LCDC_LCDENn.state);
 
   if (lcd_on && DELTA_BC) {
-    auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
+    auto ly = pack(8, &reg_ly.MUWY_LY0p);
     auto lyc = pack_inv(8, &reg_lyc.SYRY_LYC0n);
     reg_lyc.ROPO_LY_MATCH_SYNCp.state = ly == lyc;
   }
@@ -208,48 +208,10 @@ void GateBoy::tock_lcd_gates() {
 
 void GateBoy::tock_lcd_logic() {
   bool lcd_on = !bit(reg_lcdc.XONA_LCDC_LCDENn.state);
-  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto lx_old = pack(7, &reg_lx.SAXO_LX0p);
+  auto ly_old = pack(8, &reg_ly.MUWY_LY0p);
 
-  if (lcd_on) {
-    if (DELTA_FG) {
-      auto lx_old = pack_old(7, &reg_lx.SAXO_LX0p);
-      wire rutu_old = bit(lcd.RUTU_x113p.state);
-      lcd.RUTU_x113p.state = lx_old == 113;
-      wire rutu_new = bit(lcd.RUTU_x113p.state);
-      if (!rutu_old && rutu_new) {
-        auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
-        unpack(ly + 1, 8, &reg_ly.MUWY_LY0p);
-      }
-
-      wire strobe = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
-      lcd.SYGU_LINE_STROBE.state = strobe;
-    }
-
-    if (DELTA_BC) {
-      wire nype_old = bit(lcd.NYPE_x113p.state);
-      lcd.NYPE_x113p.state = lcd.RUTU_x113p.state;
-      wire nype_new = bit(lcd.NYPE_x113p.state);
-      if (!nype_old && nype_new) {
-        auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
-        lcd.POPU_y144p.state = ly == 144;
-        lcd.MYTA_y153p.state = ly == 153;
-      }
-      lcd.ANEL_x113p.state = lcd.CATU_x113p.state;
-      auto lx_old = pack_old(7, &reg_lx.SAXO_LX0p);
-      unpack(lx_old + 1, 7, &reg_lx.SAXO_LX0p);
-    }
-
-    if (DELTA_HA) {
-      auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
-      lcd.CATU_x113p.state = bit(lcd.RUTU_x113p.state) && ly != 144;
-    }
-
-    ATEJ_LINE_RSTp = not1((bit(lcd.ANEL_x113p.state) || bit(not1(lcd.CATU_x113p.state))));
-
-    if (bit(lcd.RUTU_x113p.state)) clear(7, &reg_lx.SAXO_LX0p);
-    if (bit(lcd.MYTA_y153p.state)) clear(8, &reg_ly.MUWY_LY0p);
-  }
-  else {
+  if (!lcd_on) {
     lcd.ANEL_x113p.state = 0;
     lcd.CATU_x113p.state = 0;
     lcd.NYPE_x113p.state = 0;
@@ -262,14 +224,54 @@ void GateBoy::tock_lcd_logic() {
 
     clear(7, &reg_lx.SAXO_LX0p);
     clear(8, &reg_ly.MUWY_LY0p);
-
+    return;
   }
 
-  if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF44)) {
-    memcpy(&new_bus.BUS_CPU_D00p, &reg_ly.MUWY_LY0p, 8);
+  wire XYVO_y144p = (ly_old & 0b10010000) == 0b10010000;
+  wire NOKO_y153p = (ly_old & 0b10011001) == 0b10011001;
+
+  if (DELTA_HA) {
+    lcd.CATU_x113p.state = and2(lcd.RUTU_x113p.qp_old(), ~XYVO_y144p);
   }
+
+  if (DELTA_BC) {
+    wire nype_old = bit(lcd.NYPE_x113p.state);
+
+    lcd.ANEL_x113p.state = lcd.CATU_x113p.state;
+    lcd.NYPE_x113p.state = lcd.RUTU_x113p.state;
+
+    wire nype_new = bit(lcd.NYPE_x113p.state);
+    if (!nype_old && nype_new) {
+      lcd.POPU_y144p.state = XYVO_y144p;
+      lcd.MYTA_y153p.state = NOKO_y153p;
+    }
+
+    unpack(lx_old + 1, 7, &reg_lx.SAXO_LX0p);
+  }
+
+  if (DELTA_DE) {
+    lcd.CATU_x113p.state = and2(lcd.RUTU_x113p.qp_old(), ~XYVO_y144p);
+  }
+
+  if (DELTA_FG) {
+    wire rutu_old = bit(lcd.RUTU_x113p.state);
+
+    lcd.ANEL_x113p.state = lcd.CATU_x113p.state;
+    lcd.RUTU_x113p.state = lx_old == 113;
+
+    wire rutu_new = bit(lcd.RUTU_x113p.state);
+    if (!rutu_old && rutu_new) {
+      unpack(ly_old + 1, 8, &reg_ly.MUWY_LY0p);
+    }
+
+    wire strobe = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
+    lcd.SYGU_LINE_STROBE.state = strobe;
+  }
+
+  ATEJ_LINE_RSTp = nor2(lcd.ANEL_x113p.state, ~lcd.CATU_x113p.state);
+  if (bit(lcd.RUTU_x113p.state)) clear(7, &reg_lx.SAXO_LX0p);
+  if (bit(lcd.MYTA_y153p.state)) clear(8, &reg_ly.MUWY_LY0p);
 }
-
 
 //------------------------------------------------------------------------------------------------------------------------
 
@@ -367,7 +369,7 @@ void GateBoy::set_lcd_pins_logic(wire SACU_CLKPIPE_evn) {
     wire KOFO = ~xor2(lcd.NAPO_FRAME_EVENp.state, ~lcd.LUCA_LINE_EVENp.state);
     lcd.PIN_56_LCD_FLIPS.pin_out(KOFO, KOFO);
 
-    auto ly = pack_old(8, &reg_ly.MUWY_LY0p);
+    auto ly = pack(8, &reg_ly.MUWY_LY0p);
 
     lcd.MEDA_VSYNC_OUTn.dff17(~lcd.NYPE_x113p.state, 1, ly == 0);
     lcd.PIN_57_LCD_VSYNC.pin_out(~lcd.MEDA_VSYNC_OUTn.state, ~lcd.MEDA_VSYNC_OUTn.state);

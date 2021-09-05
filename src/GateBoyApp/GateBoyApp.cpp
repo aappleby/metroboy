@@ -281,19 +281,11 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     }
 
     case SDLK_F1: {
-#ifdef FAST_MODE
-      load_raw_dump("gateboy.fast.dump");
-#else
       load_raw_dump("gateboy.raw.dump");
-#endif
       break;
     }
     case SDLK_F4: {
-#ifdef FAST_MODE
-      save_raw_dump("gateboy.fast.dump");
-#else
       save_raw_dump("gateboy.raw.dump");
-#endif
       break;
     }
     case SDLK_r: {

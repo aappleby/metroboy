@@ -241,7 +241,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   // region 6 = iram
   // region 7 = eram
 
-  uint16_t addr = (uint16_t)pack_ext_new(16, (BitBase*)&ext_pins.PIN_01_A00);
+  uint16_t addr = (uint16_t)pack_inv(16, (BitBase*)&ext_pins.PIN_01_A00);
   const int region = addr >> 13;
 
   bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.out_old());
@@ -249,20 +249,20 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
   //----------------------------------------
 
-  uint32_t mbc1_rom0_bank = mbc1_mode ? pack_old(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+  uint32_t mbc1_rom0_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
   uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
   if (mbc1_rom0_addr >= cart_blob.size()) debugbreak();
 
   //----------------------------------------
 
-  uint32_t mbc1_rom1_bank = pack_old(7, (BitBase*)&ext_pins.MBC1_BANK0);
+  uint32_t mbc1_rom1_bank = pack(7, (BitBase*)&ext_pins.MBC1_BANK0);
   if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
   uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
   if (mbc1_rom1_addr >= cart_blob.size()) debugbreak();
 
   //----------------------------------------
 
-  uint32_t mbc1_ram_bank = mbc1_mode ? pack_old(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+  uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
   if (mbc1_mode == 0) mbc1_ram_bank = 0;
   uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
   if (mbc1_ram_addr >= 32768) debugbreak();
@@ -470,7 +470,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 void GateBoy::tock_ext_logic(const blob& cart_blob)
 {
   wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
-  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   wire addr_vram = (new_addr >= 0x8000) && (new_addr <= 0x9FFF);
   wire addr_ram = (new_addr >= 0xA000) && (new_addr <= 0xFDFF);
   auto dma_addr = pack_inv(16, &dma.NAKY_DMA_A00p);
@@ -538,7 +538,7 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
 
   //----------------------------------------
 
-  uint16_t addr = (uint16_t)pack_ext_new(16, (BitBase*)&ext_pins.PIN_01_A00);
+  uint16_t addr = (uint16_t)pack_inv(16, (BitBase*)&ext_pins.PIN_01_A00);
   const int region = addr >> 13;
 
   bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.state);
@@ -546,20 +546,20 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
 
   //----------------------------------------
 
-  uint32_t mbc1_rom0_bank = mbc1_mode ? pack_old(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+  uint32_t mbc1_rom0_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
   uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
   if (mbc1_rom0_addr >= cart_blob.size()) debugbreak();
 
   //----------------------------------------
 
-  uint32_t mbc1_rom1_bank = pack_old(7, (BitBase*)&ext_pins.MBC1_BANK0);
+  uint32_t mbc1_rom1_bank = pack(7, (BitBase*)&ext_pins.MBC1_BANK0);
   if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
   uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
   if (mbc1_rom1_addr >= cart_blob.size()) debugbreak();
 
   //----------------------------------------
 
-  uint32_t mbc1_ram_bank = mbc1_mode ? pack_old(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+  uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
   if (mbc1_mode == 0) mbc1_ram_bank = 0;
   uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
   if (mbc1_ram_addr >= 32768) debugbreak();

@@ -13,11 +13,11 @@
 
 void GateBoy::tock_zram_gates()
 {
-  uint16_t addr = (uint16_t)pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  uint16_t addr = (uint16_t)pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   if (bit(zram_bus.clk_old.out_old() & ~cpu_signals.TAPU_CPU_WRp.out_new() & CSp)) {
-    zero_ram[addr & 0x007F] = (uint8_t)pack_old(8, (BitBase*)&old_bus.BUS_CPU_D00p);
+    zero_ram[addr & 0x007F] = (uint8_t)pack(8, (BitBase*)&old_bus.BUS_CPU_D00p);
   }
   zram_bus.clk_old = cpu_signals.TAPU_CPU_WRp.out_new();
 
@@ -46,11 +46,11 @@ void GateBoy::tock_zram_gates()
 
 void GateBoy::tock_zram_logic()
 {
-  uint16_t addr = (uint16_t)pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  uint16_t addr = (uint16_t)pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   if (bit(zram_bus.clk_old.state & ~cpu_signals.TAPU_CPU_WRp.state & CSp)) {
-    zero_ram[addr & 0x007F] = (uint8_t)pack_old(8, (BitBase*)&old_bus.BUS_CPU_D00p);
+    zero_ram[addr & 0x007F] = (uint8_t)pack(8, (BitBase*)&old_bus.BUS_CPU_D00p);
   }
   zram_bus.clk_old = cpu_signals.TAPU_CPU_WRp.state;
 

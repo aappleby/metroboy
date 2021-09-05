@@ -61,10 +61,10 @@ void GateBoy::tock_div_gates() {
 
 void GateBoy::tock_div_logic() {
   wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
-  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   if (DELTA_HA) {
-    auto div_old = pack_old(16, &div.UKUP_DIV00p);
+    auto div_old = pack(16, &div.UKUP_DIV00p);
     unpack(div_old + 1, 16, &div.UKUP_DIV00p);
   }
 
@@ -199,7 +199,7 @@ void GateBoy::tock_timer_gates() {
 void GateBoy::tock_timer_logic() {
   wire CLK_Axxxxxxx = !!(phase_mask_new & 0b10000000);
   wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
-  auto new_addr = pack_new(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
     if (new_addr == 0xFF06) memcpy(&timer.SABU_TMA0p, &new_bus.BUS_CPU_D00p, 8);

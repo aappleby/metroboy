@@ -751,8 +751,12 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
 
 //-----------------------------------------------------------------------------
 
+inline uint8_t pack(wire a, wire b) {
+  return (bit(a) << 0) | (bit(b) << 1);
+}
+
 inline uint8_t pack(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) {
-  return (a << 0) | (b << 1) | (c << 2) | (d << 3) | (e << 4) | (f << 5) | (g << 6) | (h << 7);
+  return (bit(a) << 0) | (bit(b) << 1) | (bit(c) << 2) | (bit(d) << 3) | (bit(e) << 4) | (bit(f) << 5) | (bit(g) << 6) | (bit(h) << 7);
 }
 
 inline uint32_t pack(int c, const BitBase* b) {
@@ -789,4 +793,8 @@ inline void memcpy_inv(void* dst, void* src, int c) {
 
 inline void clear(int c, BitBase* b) {
   for (int i = 0; i < c; i++) b[i].state &= ~1;
+}
+
+inline bool posedge(wire a, wire b) {
+  return !bit(a) && bit(b);
 }

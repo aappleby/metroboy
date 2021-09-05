@@ -90,6 +90,8 @@ int main(int argc, char** argv) {
     }
     else {
       LOG_G("Could not load dump!\n");
+      ASSERT_P(false);
+
     }
   }
 

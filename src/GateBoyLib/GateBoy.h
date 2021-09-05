@@ -83,6 +83,11 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
+  void run_phases_simple(const blob& cart_blob, int phase_count) {
+    for (int i = 0; i < phase_count; i++) {
+      next_phase_simple(cart_blob);
+    }
+  }
   void run_phases(const blob& cart_blob, int phase_count) {
     for (int i = 0; i < phase_count; i++) {
       next_phase(cart_blob);
@@ -90,8 +95,10 @@ struct GateBoy {
   }
 
   void next_phase(const blob& cart_blob);
+  void next_phase_simple(const blob& cart_blob);
 
-  void tock_slow(const blob& cart_blob, int pass_index);
+  void tock_gates(const blob& cart_blob, int pass_index);
+  void tock_logic(const blob& cart_blob, int pass_index);
 
   void update_framebuffer();
 
@@ -122,8 +129,7 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void tock_lcdc_gates();
-  void tock_lcdc_logic();
+  void tock_lcdc_gates(); // logic is inlined
 
   void tock_lyc_gates();
   void tock_lyc_logic();
@@ -582,8 +588,6 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
   // Bookkeeping
-
-  bool logic_mode = config_default_logic_mode;
 
   double   sim_time = 0;
   uint64_t phase_total = 0;

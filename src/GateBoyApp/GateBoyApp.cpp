@@ -700,10 +700,10 @@ Step controls:
   }
   d("\n\n");
 
-  d("\002========== Cart Ram (first 128 bytes) ==========\001\n");
+  d("\002========== Ram (first 128 bytes) ==========\001\n");
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 16; x++) {
-      d("%02x ", gb->cart_ram[x + y * 16]);
+      d("%02x ", gb->int_ram[x + y * 16]);
     }
     d("\n");
   }

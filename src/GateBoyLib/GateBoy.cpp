@@ -157,7 +157,14 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   div.reset_to_cart();
   interrupts.reset_to_cart();
   serial.reset_to_cart();
-  reset_sprite_store();
+  
+  //reset_sprite_store();
+  sprite_counter.DEZY_COUNT_CLKp.state = 0b00011011;
+  sprite_counter.BESE_SPRITE_COUNT0.state = 0b00011010;
+  sprite_counter.CUXY_SPRITE_COUNT1.state = 0b00011010;
+  sprite_counter.BEGO_SPRITE_COUNT2.state = 0b00011010;
+  sprite_counter.DYBE_SPRITE_COUNT3.state = 0b00011010;
+
   sprite_scanner.reset_to_cart();
   sprite_fetcher.reset_to_cart();
   reg_stat.reset_to_cart();
@@ -366,8 +373,8 @@ void GateBoy::next_phase(const blob& cart_blob) {
 
     memcpy(&gb2, &gb1, sizeof(GateBoy));
 
-    gb1.logic_mode = false;
-    gb2.logic_mode = true;
+    //gb1.logic_mode = false;
+    //gb2.logic_mode = true;
 
     gb1.tock_slow(cart_blob, 0);
     gb2.tock_slow(cart_blob, 0);
@@ -866,9 +873,30 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
     /*_p28.ABAK*/ wire ABAK_LINE_RSTp = or2(ATEJ_LINE_RSTp.out_new(), AMYG_VID_RSTp());
     /*_p28.BYVA*/ wire BYVA_LINE_RSTn = not1(ABAK_LINE_RSTp);
 
-    update_sprite_reset_flags(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp, BYVA_LINE_RSTn, sprite_match_flags, sprite_reset_flags);
-    update_sprite_store_flags(sprite_counter, DYTY_COUNT_CLKp, sprite_store_flags);
-    store_sprite(sprite_store_flags, sprite_reset_flags, BYVA_LINE_RSTn, sprite_bus, oam_temp_b_old, sprite_store);
+    //update_sprite_reset_flags(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp, BYVA_LINE_RSTn, sprite_match_flags, sprite_reset_flags);
+
+    /*_p29.EBOJ*/ sprite_reset_flags.EBOJ_STORE0_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.GUVA_SPRITE0_GETp.out_old());
+    /*_p29.CEDY*/ sprite_reset_flags.CEDY_STORE1_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.ENUT_SPRITE1_GETp.out_old());
+    /*_p29.EGAV*/ sprite_reset_flags.EGAV_STORE2_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.EMOL_SPRITE2_GETp.out_old());
+    /*_p29.GOTA*/ sprite_reset_flags.GOTA_STORE3_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.GYFY_SPRITE3_GETp.out_old());
+    /*_p29.XUDY*/ sprite_reset_flags.XUDY_STORE4_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.GONO_SPRITE4_GETp.out_old());
+    /*_p29.WAFY*/ sprite_reset_flags.WAFY_STORE5_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.GEGA_SPRITE5_GETp.out_old());
+    /*_p29.WOMY*/ sprite_reset_flags.WOMY_STORE6_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.XOJA_SPRITE6_GETp.out_old());
+    /*_p29.WAPO*/ sprite_reset_flags.WAPO_STORE7_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.GUTU_SPRITE7_GETp.out_old());
+    /*_p29.EXUQ*/ sprite_reset_flags.EXUQ_STORE8_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.FOXA_SPRITE8_GETp.out_old());
+    /*_p29.FONO*/ sprite_reset_flags.FONO_STORE9_RSTp_evn.dff17(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, sprite_match_flags.GUZE_SPRITE9_GETp.out_old());
+
+    SpriteStoreFlags sprite_store_flags_old = sprite_store_flags;
+
+
+    if (logic_mode) {
+      update_sprite_store_flags_logic(sprite_counter, DYTY_COUNT_CLKp, sprite_store_flags);
+      store_sprite_logic(sprite_store_flags_old, sprite_store_flags, sprite_reset_flags, BYVA_LINE_RSTn, sprite_bus, oam_temp_b_old, sprite_store);
+    }
+    else {
+      update_sprite_store_flags_gates(sprite_counter, DYTY_COUNT_CLKp, sprite_store_flags);
+      store_sprite_gates(sprite_store_flags_old, sprite_store_flags, sprite_reset_flags, BYVA_LINE_RSTn, sprite_bus, oam_temp_b_old, sprite_store);
+    }
   }
 
   //----------------------------------------
@@ -928,7 +956,12 @@ void GateBoy::tock_slow(const blob& cart_blob, int pass_index) {
     /*_p21.TAKO*/ pix_count.TAKO_PX6p.dff17_any(TOCA_new, TADY_LINE_RSTn, TYGE_old);
     /*_p21.SYBE*/ pix_count.SYBE_PX7p.dff17_any(TOCA_new, TADY_LINE_RSTn, ROKU_old);
 
-    get_sprite_match_flags(pix_count, AROR_MATCH_ENp, sprite_store, sprite_match_flags, SIG_GND);
+    if (logic_mode) {
+      get_sprite_match_flags_logic(pix_count, AROR_MATCH_ENp, sprite_store, sprite_match_flags, SIG_GND);
+    }
+    else {
+      get_sprite_match_flags_gates(pix_count, AROR_MATCH_ENp, sprite_store, sprite_match_flags, SIG_GND);
+    }
   }
 
   // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later

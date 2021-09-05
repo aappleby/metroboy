@@ -125,9 +125,9 @@ struct GateBoy {
   void tock_lcdc_gates();
   void tock_lcdc_logic();
 
-
   void tock_lyc_gates();
   void tock_lyc_logic();
+
   void tock_lcd_gates();
   void tock_lcd_logic();
 
@@ -181,28 +181,37 @@ struct GateBoy {
 
   void tock_spu();
 
-  void update_sprite_reset_flags(
-    const Gate WUTY_SFETCH_DONE_TRIGp,
-    const wire BYVA_LINE_RSTn,
-    const SpriteMatchFlags& sprite_get_flag,
-    SpriteResetFlags& sprite_reset_flags);
+  void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
+  void update_sprite_store_flags_logic(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
 
-  void update_sprite_store_flags(
-    const SpriteCounter& sprite_counter,
-    const wire DYTY_COUNT_CLKp,
-    SpriteStoreFlags& sprite_store_flags);
-
-  void store_sprite(
-    const SpriteStoreFlags& sprite_store_flags,
-    const SpriteResetFlags& sprite_reset_flags,
-    const wire BYVA_LINE_RSTn,
-    const SpriteBus& sprite_bus,
-    const OamTempB& oam_temp_b,
+  void store_sprite_gates(
+    SpriteStoreFlags& sprite_store_flags_old,
+    SpriteStoreFlags& sprite_store_flags_new,
+    SpriteResetFlags& sprite_reset_flags,
+    wire BYVA_LINE_RSTn,
+    SpriteBus& sprite_bus,
+    OamTempB& oam_temp_b,
     GateBoySpriteStore& sprite_store);
 
-  static void get_sprite_match_flags(
-    const PixCount& pix_count,
-    const wire AROR_MATCH_ENp,
+  void store_sprite_logic(
+    SpriteStoreFlags& sprite_store_flags_old,
+    SpriteStoreFlags& sprite_store_flags_new,
+    SpriteResetFlags& sprite_reset_flags,
+    wire BYVA_LINE_RSTn,
+    SpriteBus& sprite_bus,
+    OamTempB& oam_temp_b,
+    GateBoySpriteStore& sprite_store);
+
+  static void get_sprite_match_flags_gates(
+    PixCount& pix_count,
+    wire AROR_MATCH_ENp,
+    GateBoySpriteStore& sprite_store,
+    SpriteMatchFlags& sprite_get_flag,
+    SigIn SIG_GND);
+
+  static void get_sprite_match_flags_logic(
+    PixCount& pix_count,
+    wire AROR_MATCH_ENp,
     GateBoySpriteStore& sprite_store,
     SpriteMatchFlags& sprite_get_flag,
     SigIn SIG_GND);
@@ -383,8 +392,6 @@ struct GateBoy {
   }
 
   //-----------------------------------------------------------------------------
-
-  void reset_sprite_store();
 
   void dump_sys(Dumper& d) const;
 

@@ -43,9 +43,8 @@ struct BitBase {
   wire qp_new() const { check_new(); return state; }
   wire qn_new() const { check_new(); return ~state; }
 
-  void rst() {
-    state &= ~1;
-  }
+  void rst() { state &= ~1; }
+  void set() { state |= 1; }
 
   void set_data(wire d) {
     state &= ~1;
@@ -810,6 +809,10 @@ inline void memcpy_inv(void* dst, void* src, int c) {
 
 inline void clear(int c, BitBase* b) {
   for (int i = 0; i < c; i++) b[i].state &= ~1;
+}
+
+inline void set(int c, BitBase* b) {
+  for (int i = 0; i < c; i++) b[i].state |= 1;
 }
 
 inline bool posedge(wire a, wire b) {

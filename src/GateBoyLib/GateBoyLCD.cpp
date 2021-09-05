@@ -69,41 +69,6 @@ void GateBoy::tock_lyc_gates() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_lyc_logic() {
-  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
-
-  if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF45)) {
-    memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_lyc.SYRY_LYC0n, 8);
-  }
-
-  if (cpu_signals.SIG_IN_CPU_WRp.state && (new_addr == 0xFF45 && DELTA_GH)) {
-    memcpy_inv(&reg_lyc.SYRY_LYC0n, &old_bus.BUS_CPU_D00p, 8);
-  }
-
-  bool lcd_on = !bit(reg_lcdc.XONA_LCDC_LCDENn.state);
-
-  if (lcd_on && DELTA_BC) {
-    auto ly = pack(8, &reg_ly.MUWY_LY0p);
-    auto lyc = pack_inv(8, &reg_lyc.SYRY_LYC0n);
-    reg_lyc.ROPO_LY_MATCH_SYNCp.state = ly == lyc;
-  }
-
-  // FIXME this seems slightly wrong...
-  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
-  if (bit(cpu_signals.SIG_IN_CPU_WRp.state) && CLK_xxxxEFGx && new_addr == 0xFF41) {
-  }
-  else {
-    reg_stat.RUPO_LYC_MATCHn.state = 1;
-  }
-
-  // but the "reset" arm of the latch overrides the "set" arm, so it doesn't completely break?
-  if (bit(reg_lyc.ROPO_LY_MATCH_SYNCp.state)) {
-    reg_stat.RUPO_LYC_MATCHn.state = 0;
-  }
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
 void GateBoy::tock_lcd_gates() {
   {
     /*#p21.XYVO*/ wire XYVO_y144p = and2(reg_ly.LOVU_LY4p.qp_old(), reg_ly.LAFO_LY7p.qp_old()); // 128 + 16 = 144
@@ -202,75 +167,6 @@ void GateBoy::tock_lcd_gates() {
     /*_BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri_bus(WAVO_LY6_TO_CD6);
     /*_BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(WEZE_LY7_TO_CD7);
   }
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::tock_lcd_logic() {
-  bool lcd_on = !bit(reg_lcdc.XONA_LCDC_LCDENn.state);
-  auto lx_old = pack(7, &reg_lx.SAXO_LX0p);
-  auto ly_old = pack(8, &reg_ly.MUWY_LY0p);
-
-  if (!lcd_on) {
-    lcd.ANEL_x113p.state = 0;
-    lcd.CATU_x113p.state = 0;
-    lcd.NYPE_x113p.state = 0;
-    lcd.RUTU_x113p.state = 0;
-    lcd.POPU_y144p.state = 0;
-    lcd.MYTA_y153p.state = 0;
-    lcd.SYGU_LINE_STROBE.state = 0;
-
-    ATEJ_LINE_RSTp = 1;
-
-    clear(7, &reg_lx.SAXO_LX0p);
-    clear(8, &reg_ly.MUWY_LY0p);
-    return;
-  }
-
-  wire XYVO_y144p = (ly_old & 0b10010000) == 0b10010000;
-  wire NOKO_y153p = (ly_old & 0b10011001) == 0b10011001;
-
-  if (DELTA_HA) {
-    lcd.CATU_x113p.state = and2(lcd.RUTU_x113p.qp_old(), ~XYVO_y144p);
-  }
-
-  if (DELTA_BC) {
-    wire nype_old = bit(lcd.NYPE_x113p.state);
-
-    lcd.ANEL_x113p.state = lcd.CATU_x113p.state;
-    lcd.NYPE_x113p.state = lcd.RUTU_x113p.state;
-
-    wire nype_new = bit(lcd.NYPE_x113p.state);
-    if (!nype_old && nype_new) {
-      lcd.POPU_y144p.state = XYVO_y144p;
-      lcd.MYTA_y153p.state = NOKO_y153p;
-    }
-
-    unpack(lx_old + 1, 7, &reg_lx.SAXO_LX0p);
-  }
-
-  if (DELTA_DE) {
-    lcd.CATU_x113p.state = and2(lcd.RUTU_x113p.qp_old(), ~XYVO_y144p);
-  }
-
-  if (DELTA_FG) {
-    wire rutu_old = bit(lcd.RUTU_x113p.state);
-
-    lcd.ANEL_x113p.state = lcd.CATU_x113p.state;
-    lcd.RUTU_x113p.state = lx_old == 113;
-
-    wire rutu_new = bit(lcd.RUTU_x113p.state);
-    if (!rutu_old && rutu_new) {
-      unpack(ly_old + 1, 8, &reg_ly.MUWY_LY0p);
-    }
-
-    wire strobe = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
-    lcd.SYGU_LINE_STROBE.state = strobe;
-  }
-
-  ATEJ_LINE_RSTp = nor2(lcd.ANEL_x113p.state, ~lcd.CATU_x113p.state);
-  if (bit(lcd.RUTU_x113p.state)) clear(7, &reg_lx.SAXO_LX0p);
-  if (bit(lcd.MYTA_y153p.state)) clear(8, &reg_ly.MUWY_LY0p);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

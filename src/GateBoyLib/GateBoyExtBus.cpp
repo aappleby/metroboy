@@ -513,11 +513,11 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
   }
 
   if (bit(LUMA_DMA_CARTp)) {
-    memcpy_inv(&ext_pins.PIN_01_A00, &dma.NAKY_DMA_A00p, 8);
+    cpy_inv(&ext_pins.PIN_01_A00, &dma.NAKY_DMA_A00p, 8);
     memcpy(&ext_pins.PIN_09_A08, &dma.NAFA_DMA_A08n, 7);
   }
   else {
-    memcpy_inv(&ext_pins.PIN_01_A00, &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
+    cpy_inv(&ext_pins.PIN_01_A00, &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
   }
 
   // A15 is "special"
@@ -610,7 +610,7 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
   ASSERT_N(cpu_signals.SIG_IN_CPU_RDp.state && cpu_signals.SIG_IN_CPU_WRp.state);
 
   if (cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state && !addr_vram) {
-    memcpy_inv(&ext_pins.PIN_17_D00, &new_bus.BUS_CPU_D00p, 8);
+    cpy_inv(&ext_pins.PIN_17_D00, &new_bus.BUS_CPU_D00p, 8);
   }
 
   if (bit(EXT_rd_en)) {
@@ -653,7 +653,7 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
   //----------------------------------------
 
   if (!bit(nand4(cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
-    memcpy_inv(&new_bus.BUS_CPU_D00p, &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
+    cpy_inv(&new_bus.BUS_CPU_D00p, &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
   }
   else {
     memcpy(&ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, &ext_pins.PIN_17_D00, 8);

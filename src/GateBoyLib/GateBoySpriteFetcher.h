@@ -27,6 +27,7 @@ struct SpriteFetcher {
   /*#p29.TULY*/ DFF17 TULY_SFETCH_S1p;          // ABxDxFxH Beginning of line, reset on A. During line, ticks and resets on odd.
   /*#p29.TESE*/ DFF17 TESE_SFETCH_S2p;          // ABxDxFxH Beginning of line, reset on A. During line, ticks and resets on odd.
   /*#p29.TYFO*/ DFF17 TYFO_SFETCH_S0p_D1;       // AxCxExGx
+
   /*#p29.TOBU*/ DFF17 TOBU_SFETCH_S1p_D2;       // xBxDxFxH
   /*#p29.VONU*/ DFF17 VONU_SFETCH_S1p_D4;       // xBxDxFxH
   /*#p29.SEBA*/ DFF17 SEBA_SFETCH_S1p_D5;       // AxCxExGx

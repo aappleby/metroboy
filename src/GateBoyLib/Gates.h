@@ -43,22 +43,26 @@ struct BitBase {
   wire qp_new() const { check_new(); return state; }
   wire qn_new() const { check_new(); return ~state; }
 
+  //----------
+  // stuff in this section for logic mode only
+   
   void rst() { state &= ~1; }
   void set() { state |= 1; }
 
-  void set_data(wire d) {
-    state &= ~1;
-    state |= bit(d);
+  wire get_data() const { return bit(state); }
+  void set_data(wire d) { state = (state & ~1) | bit(d); }
+
+  wire get_clk() const { return bit(state, 1); }
+  void set_clk(wire c) { state = (state & ~2) | (bit(c) << 1); }
+
+  void dff_pp(wire CLKp, wire Dp) {
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
+    state = uint8_t(bit(d1) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 
-  wire get_clk() const {
-    return bit(state, 1);
-  }
-
-  void set_clk(wire c) {
-    state &= ~2;
-    state |= bit(c) << 1;
-  }
+  //----------
 
   void check_old() const {
     if (config_drive_flags) {
@@ -82,6 +86,9 @@ struct BitBase {
 };
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
+
+
+inline wire bit(const BitBase& b) { return b.get_data(); }
 
 //-----------------------------------------------------------------------------
 
@@ -801,7 +808,19 @@ inline void unpack_inv(uint32_t d, int c, BitBase* b) {
   }
 }
 
-inline void memcpy_inv(void* dst, void* src, int c) {
+inline void cpy(void* dst, void* src, int c) {
+  for (int i = 0; i < c; i++) {
+    ((uint8_t*)dst)[i] = ((uint8_t*)src)[i];
+  }
+}
+
+inline void cpy_inv(void* dst, void* src, int c) {
+  for (int i = 0; i < c; i++) {
+    ((uint8_t*)dst)[i] = ~((uint8_t*)src)[i];
+  }
+}
+
+inline void cpy_inv2(int c, void* src, void* dst) {
   for (int i = 0; i < c; i++) {
     ((uint8_t*)dst)[i] = ~((uint8_t*)src)[i];
   }

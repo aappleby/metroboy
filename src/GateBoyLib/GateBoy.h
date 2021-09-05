@@ -514,7 +514,7 @@ struct GateBoy {
 
   /*#p21.WODU*/ Gate WODU_HBLANKp;
   /*_p07.SATO*/ Gate SATO_BOOT_BITn;
-  /*_p28.ATEJ*/ Gate ATEJ_LINE_RSTp;
+  /*_p28.ATEJ*/ Gate ATEJ_LINE_RSTp; // this is always 1 during vid_rst
 
   SpritePix flipped_sprite;
 

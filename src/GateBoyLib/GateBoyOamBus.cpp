@@ -451,20 +451,20 @@ void GateBoy::tock_oam_bus_logic()
   // addr out to oam
 
   if (dma_running) {
-    memcpy_inv(&oam_bus.BUS_OAM_A00n, &dma.NAKY_DMA_A00p, 8);
+    cpy_inv(&oam_bus.BUS_OAM_A00n, &dma.NAKY_DMA_A00p, 8);
   }
   else if (scanning) {
     oam_bus.BUS_OAM_A00n.state = 1;
     oam_bus.BUS_OAM_A01n.state = 1;
-    memcpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_scanner.YFEL_SCAN0, 6);
+    cpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_scanner.YFEL_SCAN0, 6);
   }
   else if (rendering) {
     oam_bus.BUS_OAM_A00n.state = 0;
     oam_bus.BUS_OAM_A01n.state = 0;
-    memcpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_bus.BUS_SPR_I0, 6);
+    cpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_bus.BUS_SPR_I0, 6);
   }
   else {
-    memcpy_inv(&oam_bus.BUS_OAM_A00n, &new_bus.BUS_CPU_A00p, 8);
+    cpy_inv(&oam_bus.BUS_OAM_A00n, &new_bus.BUS_CPU_A00p, 8);
   }
 
   // data out to oam
@@ -473,8 +473,8 @@ void GateBoy::tock_oam_bus_logic()
 
   if (dma_running) {
     if ((dma_addr >= 0x8000) && (dma_addr <= 0x9FFF)) {
-      memcpy_inv(&oam_bus.BUS_OAM_DA00n, &vram_bus.BUS_VRAM_D00p, 8);
-      memcpy_inv(&oam_bus.BUS_OAM_DB00n, &vram_bus.BUS_VRAM_D00p, 8);
+      cpy_inv(&oam_bus.BUS_OAM_DA00n, &vram_bus.BUS_VRAM_D00p, 8);
+      cpy_inv(&oam_bus.BUS_OAM_DB00n, &vram_bus.BUS_VRAM_D00p, 8);
     }
     else {
       memcpy(&oam_bus.BUS_OAM_DA00n, &ext_pins.PIN_17_D00, 8);
@@ -483,8 +483,8 @@ void GateBoy::tock_oam_bus_logic()
   }
   else if (!scanning && !rendering) {
     if (!addr_oam || bit(~oam.WUJE_CPU_OAM_WRn.state)) {
-      memcpy_inv(&oam_bus.BUS_OAM_DA00n, &new_bus.BUS_CPU_D00p, 8);
-      memcpy_inv(&oam_bus.BUS_OAM_DB00n, &new_bus.BUS_CPU_D00p, 8);
+      cpy_inv(&oam_bus.BUS_OAM_DA00n, &new_bus.BUS_CPU_D00p, 8);
+      cpy_inv(&oam_bus.BUS_OAM_DB00n, &new_bus.BUS_CPU_D00p, 8);
     }
   }
 
@@ -554,10 +554,10 @@ void GateBoy::tock_oam_bus_logic()
 
     if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running && !scanning && !rendering) {
       if (bit(oam_bus.BUS_OAM_A00n.state)) {
-        memcpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
+        cpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
       }
       else {
-        memcpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
+        cpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
       }
     }
   }

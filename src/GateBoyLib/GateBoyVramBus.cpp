@@ -741,14 +741,14 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
   // CPU vram read address
 
   if (bit(nor2(dma_vram, XYMU_RENDERINGn.qn_new()))) {
-    memcpy_inv(&vram_bus.BUS_VRAM_A00n, &new_bus.BUS_CPU_A00p, 13);
+    cpy_inv(&vram_bus.BUS_VRAM_A00n, &new_bus.BUS_CPU_A00p, 13);
   }
 
   //--------------------------------------------
   // DMA vram read address
 
   if (bit(dma_vram)) {
-    memcpy_inv(&vram_bus.BUS_VRAM_A00n, &dma.NAKY_DMA_A00p, 8);
+    cpy_inv(&vram_bus.BUS_VRAM_A00n, &dma.NAKY_DMA_A00p, 8);
     memcpy(&vram_bus.BUS_VRAM_A08n, &dma.NAFA_DMA_A08n, 5);
   }
 
@@ -756,13 +756,13 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
   // SCX/SCY regs and BG map read address
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
-    if (new_addr == 0xFF42) memcpy_inv(&reg_scy.GAVE_SCY0n, &old_bus.BUS_CPU_D00p, 8);
-    if (new_addr == 0xFF43) memcpy_inv(&reg_scx.DATY_SCX0n, &old_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF42) cpy_inv(&reg_scy.GAVE_SCY0n, &old_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF43) cpy_inv(&reg_scx.DATY_SCX0n, &old_bus.BUS_CPU_D00p, 8);
   }
 
   if (cpu_signals.SIG_IN_CPU_RDp.state) {
-    if (new_addr == 0xFF42) memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_scy.GAVE_SCY0n, 8);
-    if (new_addr == 0xFF43) memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_scx.DATY_SCX0n, 8);
+    if (new_addr == 0xFF42) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_scy.GAVE_SCY0n, 8);
+    if (new_addr == 0xFF43) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_scx.DATY_SCX0n, 8);
   }
 
 
@@ -824,8 +824,8 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
   win_coords.TEKE_WIN_MAP_Y4.dff17(~win_coords.TATE_WIN_MAP_Y3.state, ~REPU_VBLANKp, ~win_coords.TEKE_WIN_MAP_Y4.state);
 
   if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, win_reg.PYNU_WIN_MODE_Ap.state))) {
-    memcpy_inv(&vram_bus.BUS_VRAM_A00n, &win_coords.WYKA_WIN_MAP_X0, 5);
-    memcpy_inv(&vram_bus.BUS_VRAM_A05n, &win_coords.TUFU_WIN_MAP_Y0, 5);
+    cpy_inv(&vram_bus.BUS_VRAM_A00n, &win_coords.WYKA_WIN_MAP_X0, 5);
+    cpy_inv(&vram_bus.BUS_VRAM_A05n, &win_coords.TUFU_WIN_MAP_Y0, 5);
     vram_bus.BUS_VRAM_A10n.state = reg_lcdc.WOKY_LCDC_WINMAPn.state;
     vram_bus.BUS_VRAM_A11n.state = 0;
     vram_bus.BUS_VRAM_A12n.state = 0;
@@ -849,7 +849,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
       vram_bus.BUS_VRAM_A03n.state = ~win_coords.VYMU_WIN_TILE_Y2.state;
     }
 
-    memcpy_inv(&vram_bus.BUS_VRAM_A04n, &tile_temp_b.RAWU_TILE_DB0p, 8);
+    cpy_inv(&vram_bus.BUS_VRAM_A04n, &tile_temp_b.RAWU_TILE_DB0p, 8);
 
     vram_bus.BUS_VRAM_A12n.state = or2(tile_temp_b.PYJU_TILE_DB7p.state, ~reg_lcdc.WEXU_LCDC_BGTILEn.state);
   }
@@ -871,7 +871,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
     vram_bus.BUS_VRAM_A02n.state = ~BORE_L1;
     vram_bus.BUS_VRAM_A03n.state = ~BUVY_L2;
     vram_bus.BUS_VRAM_A04n.state = ~GEJY_L3;
-    memcpy_inv(&vram_bus.BUS_VRAM_A05n, &oam_temp_a.XEGU_OAM_DA1p, 7);
+    cpy_inv(&vram_bus.BUS_VRAM_A05n, &oam_temp_a.XEGU_OAM_DA1p, 7);
     vram_bus.BUS_VRAM_A12n.state = 1;
   }
 
@@ -955,7 +955,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
   }
 
   if (bit(and4(cpu_addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
-    memcpy_inv(&vram_pins.PIN_33_VRAM_D00, &vram_bus.BUS_VRAM_D00p, 8);
+    cpy_inv(&vram_pins.PIN_33_VRAM_D00, &vram_bus.BUS_VRAM_D00p, 8);
   }
 
   //--------------------------------------------
@@ -968,7 +968,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
   // Vram pins to vram bus
 
   if (!bit(and4(cpu_addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
-    memcpy_inv(&vram_bus.BUS_VRAM_D00p, &vram_pins.PIN_33_VRAM_D00, 8);
+    cpy_inv(&vram_bus.BUS_VRAM_D00p, &vram_pins.PIN_33_VRAM_D00, 8);
   }
 
   //--------------------------------------------

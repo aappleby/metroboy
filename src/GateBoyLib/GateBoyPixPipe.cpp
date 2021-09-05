@@ -134,13 +134,13 @@ void GateBoy::tock_window_logic(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
   }
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
-    if (new_addr == 0xFF4A) memcpy_inv(&reg_wy.NESO_WY0n, &old_bus.BUS_CPU_D00p, 8);
-    if (new_addr == 0xFF4B) memcpy_inv(&reg_wx.MYPA_WX0n, &old_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF4A) cpy_inv(&reg_wy.NESO_WY0n, &old_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF4B) cpy_inv(&reg_wx.MYPA_WX0n, &old_bus.BUS_CPU_D00p, 8);
   }
 
   if (cpu_signals.SIG_IN_CPU_RDp.state) {
-    if (new_addr == 0xFF4A) memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_wy.NESO_WY0n, 8);
-    if (new_addr == 0xFF4B) memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_wx.MYPA_WX0n, 8);
+    if (new_addr == 0xFF4A) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_wy.NESO_WY0n, 8);
+    if (new_addr == 0xFF4B) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_wx.MYPA_WX0n, 8);
   }
 
   uint8_t wy = (uint8_t)pack_inv(8, &reg_wy.NESO_WY0n);
@@ -757,7 +757,7 @@ void GateBoy::tock_pix_pipes_logic(wire CLKPIPE_old, wire CLKPIPE_new, wire BFET
   wire STORE_SPRITE_DB = rendering && (sfetch_phase == 9);
 
   if (rendering && (bfetch_phase == 7)) {
-    memcpy_inv(&tile_temp_a.LEGU_TILE_DA0n, &vram_bus.BUS_VRAM_D00p, 8);
+    cpy_inv(&tile_temp_a.LEGU_TILE_DA0n, &vram_bus.BUS_VRAM_D00p, 8);
   }
 
   // FIXME something slightly weird about this reg... if I try and latch on phases 3 and 11, it doesn't pass regression...
@@ -773,26 +773,26 @@ void GateBoy::tock_pix_pipes_logic(wire CLKPIPE_old, wire CLKPIPE_new, wire BFET
 
 
   if (rendering && (sfetch_phase == 5)) {
-    memcpy_inv(&sprite_pix_a.REWO_SPRITE_DA0n, &flipped_sprite.PUTE_FLIP0p, 8);
+    cpy_inv(&sprite_pix_a.REWO_SPRITE_DA0n, &flipped_sprite.PUTE_FLIP0p, 8);
   }
 
   if (rendering && (sfetch_phase == 9)) {
-    memcpy_inv(&sprite_pix_b.PEFO_SPRITE_DB0n, &flipped_sprite.PUTE_FLIP0p, 8);
+    cpy_inv(&sprite_pix_b.PEFO_SPRITE_DB0n, &flipped_sprite.PUTE_FLIP0p, 8);
   }
 
   //----------------------------------------
   // Pal reg read/write
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
-    if (new_addr == 0xFF47) memcpy_inv(&reg_bgp.PAVO_BGP_D0n, &new_bus.BUS_CPU_D00p, 8);
-    if (new_addr == 0xFF48) memcpy_inv(&reg_obp0.XUFU_OBP0_D0n, &new_bus.BUS_CPU_D00p, 8);
-    if (new_addr == 0xFF49) memcpy_inv(&reg_obp1.MOXY_OBP1_D0n, &new_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF47) cpy_inv(&reg_bgp.PAVO_BGP_D0n, &new_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF48) cpy_inv(&reg_obp0.XUFU_OBP0_D0n, &new_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF49) cpy_inv(&reg_obp1.MOXY_OBP1_D0n, &new_bus.BUS_CPU_D00p, 8);
   }
 
   if (cpu_signals.SIG_IN_CPU_RDp.state) {
-    if (new_addr == 0xFF47) memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_bgp.PAVO_BGP_D0n, 8);
-    if (new_addr == 0xFF48) memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_obp0.XUFU_OBP0_D0n, 8);
-    if (new_addr == 0xFF49) memcpy_inv(&new_bus.BUS_CPU_D00p, &reg_obp1.MOXY_OBP1_D0n, 8);
+    if (new_addr == 0xFF47) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_bgp.PAVO_BGP_D0n, 8);
+    if (new_addr == 0xFF48) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_obp0.XUFU_OBP0_D0n, 8);
+    if (new_addr == 0xFF49) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_obp1.MOXY_OBP1_D0n, 8);
   }
 
   //----------------------------------------

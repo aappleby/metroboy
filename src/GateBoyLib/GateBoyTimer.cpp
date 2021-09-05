@@ -59,26 +59,6 @@ void GateBoy::tock_div_gates() {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_div_logic() {
-  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
-  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
-
-  if (DELTA_HA) {
-    auto div_old = pack(16, &div.UKUP_DIV00p);
-    unpack(div_old + 1, 16, &div.UKUP_DIV00p);
-  }
-
-  if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF04 && CLK_xxxxEFGx) {
-    memset(&div.UKUP_DIV00p, 0, 16);
-  }
-
-  if (cpu_signals.SIG_IN_CPU_RDp.state && new_addr == 0xFF04) {
-    memcpy(&new_bus.BUS_CPU_D00p, &div.UGOT_DIV06p, 8);
-  }
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
 void GateBoy::tock_timer_gates() {
   /*_p03.TYJU*/ wire TYJU_FF06_WRn = nand4(cpu_signals.TAPU_CPU_WRp.out_new(), new_bus.RYFO_FF04_FF07p(), new_bus.BUS_CPU_A01p.out_new(), new_bus.TOVY_A00n());
   /*_p03.SABU*/ timer.SABU_TMA0p.dff17(TYJU_FF06_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D00p.out_old());

@@ -38,53 +38,12 @@ void GateBoy::tock_clocks_gates() {
   /*_SIG_CPU_BOGA_Axxxxxxx*/ clk.SIG_CPU_BOGA_Axxxxxxx.sig_out(BOGA_Axxxxxxx());
 }
 
-void GateBoy::tock_clocks_logic() {
-  wire c = bit(clk.PIN_74_CLK.CLK.state);
-
-  clk.PIN_73_CLK_DRIVE.pin_out(c, c);
-
-  clk.AVET_DEGLITCH = bit(c);
-  clk.ANOS_DEGLITCH = bit(~c);
-
-  wire CLK_Axxxxxxx = !!(phase_mask_new & 0b10000000);
-  wire CLK_xBCDEFGH = !!(phase_mask_new & 0b01111111);
-  wire CLK_ABCDxxxx = !!(phase_mask_new & 0b11110000);
-  wire CLK_xxxxEFGH = !!(phase_mask_new & 0b00001111);
-  wire CLK_ABCDEFxx = !!(phase_mask_new & 0b11111100);
-  wire CLK_AxxxxxGH = !!(phase_mask_new & 0b10000011);
-  wire CLK_AxxxxFGH = !!(phase_mask_new & 0b10000111);
-  wire CLK_ABxxxxGH = !!(phase_mask_new & 0b11000011);
-  wire CLK_ABCxxxxH = !!(phase_mask_new & 0b11100001);
-
-  clk.AFUR_xxxxEFGH.state = CLK_xxxxEFGH;
-  clk.ALEF_AxxxxFGH.state = CLK_AxxxxFGH;
-  clk.APUK_ABxxxxGH.state = CLK_ABxxxxGH;
-  clk.ADYK_ABCxxxxH.state = CLK_ABCxxxxH;
-
-  clk.PIN_75_CLK_OUT.pin_out(CLK_xxxxEFGH, CLK_xxxxEFGH);
-
-  clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(CLK_Axxxxxxx);
-  clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(CLK_xBCDEFGH);
-  clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(CLK_ABCDxxxx);
-  clk.SIG_CPU_BUDE_xxxxEFGH.sig_out(CLK_xxxxEFGH);
-  clk.SIG_CPU_BOLO_ABCDEFxx.sig_out(CLK_ABCDEFxx);
-  clk.SIG_CPU_BUKE_AxxxxxGH.sig_out(CLK_AxxxxxGH);
-  clk.SIG_CPU_BOMA_xBCDEFGH.sig_out(CLK_xBCDEFGH);
-  clk.SIG_CPU_BOGA_Axxxxxxx.sig_out(CLK_Axxxxxxx);
-}
-
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_vid_clocks_gates() {
   /*_p29.WOSU*/ clk.WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),            XAPO_VID_RSTn(), clk.WUVU_ABxxEFxx.qn_old());
   /*_p29.WUVU*/ clk.WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),            XAPO_VID_RSTn(), clk.WUVU_ABxxEFxx.qn_old());
   /*_p21.VENA*/ clk.VENA_xxCDEFxx.dff17(clk.WUVU_ABxxEFxx.qn_new(), XAPO_VID_RSTn(), clk.VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
-}
-
-void GateBoy::tock_vid_clocks_logic() {
-  clk.WOSU_AxxDExxH.state = !bit(reg_lcdc.XONA_LCDC_LCDENn.state) && !!(phase_mask_new & 0b10011001);
-  clk.WUVU_ABxxEFxx.state = !bit(reg_lcdc.XONA_LCDC_LCDENn.state) && !!(phase_mask_new & 0b11001100);
-  clk.VENA_xxCDEFxx.state = !bit(reg_lcdc.XONA_LCDC_LCDENn.state) && !!(phase_mask_new & 0b00111100);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

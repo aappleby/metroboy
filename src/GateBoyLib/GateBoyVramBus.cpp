@@ -458,9 +458,9 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
     /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
 
-    probe_wire(8,  "RUVY_CPU_VRM_WRp", RUVY_CPU_VRAM_WRp);
-    probe_wire(9,  "ROPY_RENDERINGn",  ROPY_RENDERINGn);
-    probe_wire(10, "CPU_EXT_BUSp",     cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new());
+    //probe_wire(8,  "RUVY_CPU_VRM_WRp", RUVY_CPU_VRAM_WRp);
+    //probe_wire(9,  "ROPY_RENDERINGn",  ROPY_RENDERINGn);
+    //probe_wire(10, "CPU_EXT_BUSp",     cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new());
     //probe_wire(10, "ABUZ_EXT_RAM_CLK", cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new());
     //probe_wire(11, "SOSE_ADDR_VRAMp",  SOSE_ADDR_VRAMp());
     //probe_wire(12, "TOLE_CPU_VRM_RDp", TOLE_CPU_VRAM_RDp());

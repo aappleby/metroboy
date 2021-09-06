@@ -40,14 +40,14 @@ void GateBoy::tock_interrupts_gates()
   /*#p21.SADU*/ wire SADU_STAT_MODE0n = nor2(XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
   /*#p21.XATY*/ wire XATY_STAT_MODE1n = nor2(sprite_scanner.ACYL_SCANNINGp.out_new(), XYMU_RENDERINGn.qn_new()); // die NOR
 
-  probe_wire(24, "POPU VBLANK", lcd.POPU_y144p.qp_new());
-  probe_wire(25, "XYMU RENDER", ~XYMU_RENDERINGn.qp_new());
-  probe_wire(26, "ACYL SCAN",   sprite_scanner.ACYL_SCANNINGp.out_new());
-  probe_wire(27, "SADU STAT0",  ~SADU_STAT_MODE0n);
-  probe_wire(28, "XATY STAT1",  ~XATY_STAT_MODE1n);
-  probe_wire(29, "RUPO STAT2",  ~reg_stat.RUPO_LYC_MATCHn.qp_new());
-  probe_wire(30, "MUWY LY0",    reg_ly.MUWY_LY0p.qp_new());
-  probe_wire(31, "SYRY LYC0",   reg_lyc.SYRY_LYC0n.qn_new());
+  //probe_wire(24, "POPU VBLANK", lcd.POPU_y144p.qp_new());
+  //probe_wire(25, "XYMU RENDER", ~XYMU_RENDERINGn.qp_new());
+  //probe_wire(26, "ACYL SCAN",   sprite_scanner.ACYL_SCANNINGp.out_new());
+  //probe_wire(27, "SADU STAT0",  ~SADU_STAT_MODE0n);
+  //probe_wire(28, "XATY STAT1",  ~XATY_STAT_MODE1n);
+  //probe_wire(29, "RUPO STAT2",  ~reg_stat.RUPO_LYC_MATCHn.qp_new());
+  //probe_wire(30, "MUWY LY0",    reg_ly.MUWY_LY0p.qp_new());
+  //probe_wire(31, "SYRY LYC0",   reg_lyc.SYRY_LYC0n.qn_new());
 
   /*#p21.TEBY*/ triwire TEBY_STAT0_TO_CD0 = tri6_pn(TOBE_FF41_RDp, SADU_STAT_MODE0n);
   /*#p21.WUGA*/ triwire WUGA_STAT1_TO_CD1 = tri6_pn(TOBE_FF41_RDp, XATY_STAT_MODE1n);

@@ -65,11 +65,12 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   as.assemble(app);
 
   gb_thread.pause();
-  gb_thread.set_cart(as.link());
-  gb_thread.reset_to_bootrom();
-  for (int i = 0; i < 8192; i++) {
-    gb_thread.gb->vid_ram[i] = (uint8_t)rand();
-  }
+  load_raw_dump("zelda.dump");
+  //gb_thread.set_cart(as.link());
+  //gb_thread.reset_to_bootrom();
+  //for (int i = 0; i < 8192; i++) {
+  //  gb_thread.gb->vid_ram[i] = (uint8_t)rand();
+  //}
   gb_thread.resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail

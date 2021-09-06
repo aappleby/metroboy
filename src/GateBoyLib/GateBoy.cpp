@@ -10,11 +10,7 @@
 
 void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
 {
-  memset(this, 0, sizeof(*this));
-
-  for (auto c = reg_begin(); c != reg_end(); c++) {
-    *c = 0b00011000;
-  }
+  wipe();
 
   new_bus.reset_to_bootrom();
   sprite_bus.reset_to_bootrom();
@@ -56,11 +52,6 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
 
   joy.reset_to_bootrom();
-
-  sentinel1 = SENTINEL1;
-  sentinel2 = SENTINEL2;
-  sentinel3 = SENTINEL3;
-  sentinel4 = SENTINEL4;
 
   check_state_old_and_driven_or_pulled();
 
@@ -371,10 +362,16 @@ void GateBoy::next_phase(const blob& cart_blob) {
     // For regression tests we step GateBoy twice, once with each config, and then compare the hash
     // of the data bits.
 
+    static_assert(!config_drive_flags);
+    static_assert(!config_oldnew_flags);
+
     memcpy(&gb2, &gb1, sizeof(GateBoy));
 
     gb1.tock_gates(cart_blob, 0);
     gb2.tock_logic(cart_blob, 0);
+    //gb2.tock_gates(cart_blob, 0);
+
+    //gb2.pix_pipes.REMY_LD0n.state ^= 1;
 
     hash_old = gb1.hash(BIT_DATA);
     hash_new = gb2.hash(BIT_DATA);
@@ -386,7 +383,7 @@ void GateBoy::next_phase(const blob& cart_blob) {
       LOG_R("Logic mode and gates mode mismatch!\n");
 
       int start = 0;
-      int end = offsetof(GateBoy, sentinel3);
+      int end = sizeof(GateBoy);
       diff_blob(&gb1, start, end, &gb2, start, end, BIT_DATA);
 
       ASSERT_P(false);

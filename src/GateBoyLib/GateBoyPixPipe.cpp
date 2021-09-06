@@ -677,8 +677,6 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 
 //------------------------------------------------------------------------------------------------------------------------
 
-#pragma warning(disable:4189)
-#pragma optimize("", off)
 
 void GateBoy::tock_pix_pipes_logic(wire CLKPIPE_old, wire CLKPIPE_new, wire BFETCH_RSTn)
 {

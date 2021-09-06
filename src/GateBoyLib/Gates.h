@@ -11,6 +11,9 @@ uint64_t hash_blob(void* blob, size_t size, uint8_t mask);
 void     commit_blob(void* blob, size_t size);
 int      diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int start_b, int end_b, uint8_t mask);
 
+uint64_t hash_all_bits(const void* key, const int len, uint64_t seed);
+uint64_t hash_low_bit(const void* key, const int len, uint64_t seed);
+
 //-----------------------------------------------------------------------------
 
 // These _must_ be defined for all builds.

@@ -102,28 +102,59 @@ struct GateBoy {
 
   void update_framebuffer();
 
-  uint8_t* reg_begin() { return (uint8_t*)(&sentinel1) + sizeof(sentinel1); }
-  uint8_t* reg_end()   { return (uint8_t*)(&sentinel2); }
+  void wipe() {
+    memset(this, 0, sizeof(*this));
 
-  int64_t hash(uint8_t mask) {
-    uint8_t* a = reg_begin();
-    uint8_t* b = reg_end();
-    return hash_blob(a, b - a, mask);
+    uint8_t* a = (uint8_t*)(&sentinel1) + sizeof(sentinel1);
+    uint8_t* b = (uint8_t*)(&sentinel2);
+
+    for (auto c = a; c != b; c++) {
+      *c = 0b00011000;
+    }
+
+    sentinel1 = SENTINEL1;
+    sentinel2 = SENTINEL2;
+    sentinel3 = SENTINEL3;
+    sentinel4 = SENTINEL4;
+  }
+
+  int64_t hash(uint8_t reg_mask) {
+    (void)reg_mask;
+
+    uint64_t h = HASH_INIT;
+
+    uint8_t* blob = (uint8_t*)this;
+
+    int reg_a = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
+    int reg_b = offsetof(GateBoy, sentinel2);
+
+    h = hash_low_bit(blob + reg_a, reg_b - reg_a, h);
+
+    int state_a = offsetof(GateBoy, sentinel2) + sizeof(sentinel2);
+    int state_b = offsetof(GateBoy, sentinel4);
+
+    h = hash_all_bits(blob + state_a, state_b - state_a, h);
+
+    return h;
   }
 
   void commit() {
-    uint8_t* a = reg_begin();
-    uint8_t* b = reg_end();
+    uint8_t* a = (uint8_t*)(&sentinel1) + sizeof(sentinel1);
+    uint8_t* b = (uint8_t*)(&sentinel2);
     commit_blob(a, b - a);
   }
 
   void check_state_old_and_driven_or_pulled() {
-    auto s = reg_end() - reg_begin();
-    for (auto i = 0; i < s; i++) {
-      auto r = reg_begin()[i];
-      (void)r;
-      CHECK_P((r & 0xF0) == BIT_OLD);
-      CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
+    if (config_drive_flags) {
+      uint8_t* a = (uint8_t*)(&sentinel1) + sizeof(sentinel1);
+      uint8_t* b = (uint8_t*)(&sentinel2);
+      auto s = b - a;
+      for (auto i = 0; i < s; i++) {
+        auto r = a[i];
+        (void)r;
+        ASSERT_P((r & 0xF0) == BIT_OLD);
+        ASSERT_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
+      }
     }
   }
 

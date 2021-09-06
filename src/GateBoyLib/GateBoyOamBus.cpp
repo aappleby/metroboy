@@ -421,9 +421,9 @@ void GateBoy::tock_oam_bus_gates()
 
 void GateBoy::tock_oam_bus_logic()
 {
-  wire CLK_ABCDxxxx = !!(phase_mask_new & 0b11110000);
-  wire CLK_xxxxEFGH = !!(phase_mask_new & 0b00001111);
-  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+  wire CLK_ABCDxxxx = gen_clk_new(0b11110000);
+  wire CLK_xxxxEFGH = gen_clk_new(0b00001111);
+  wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
 
   wire cpu_rd = cpu_signals.SIG_IN_CPU_RDp.state;
   wire cpu_wr = cpu_signals.SIG_IN_CPU_WRp.state & CLK_xxxxEFGx;

@@ -21,10 +21,6 @@ public:
   void app_init(int screen_w, int screen_h) override;
   void app_close() override;
   bool pause_when_idle() override { return false; }
-  void load_raw_dump(const char* filename);
-  void save_raw_dump(const char* filename);
-  void load_flat_dump(const char* filename);
-  void load_rom(const char* filename);
 
   void app_update(dvec2 screen_size, double delta) override;
   void app_render_frame(dvec2 screen_size, double delta) override;

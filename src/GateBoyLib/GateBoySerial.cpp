@@ -130,7 +130,7 @@ void GateBoy::tock_serial_gates()
 
 void GateBoy::tock_serial_logic()
 {
-  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+  wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
   auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && (new_addr == 0xFF02 && DELTA_GH)) {

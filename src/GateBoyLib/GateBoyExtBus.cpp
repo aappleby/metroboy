@@ -469,7 +469,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
 void GateBoy::tock_ext_logic(const blob& cart_blob)
 {
-  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+  wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
   auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   wire addr_vram = (new_addr >= 0x8000) && (new_addr <= 0x9FFF);
   wire addr_ram = (new_addr >= 0xA000) && (new_addr <= 0xFDFF);

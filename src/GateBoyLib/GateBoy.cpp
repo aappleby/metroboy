@@ -63,7 +63,6 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   sys_rst = 1;
 
   tock_gates(cart_blob, 0);
-  if (config_commit) commit();
 
   //----------------------------------------
   // Release reset, start clock, and sync with phase
@@ -71,7 +70,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   sys_rst = 0;
   sys_clken = 1;
   sys_clkgood = 1;
-  run_phases_simple(cart_blob, 2);
+  run_phases(cart_blob, 2, false);
 
   CHECK_N(bit(clk.AFUR_xxxxEFGH.qp_old()));
   CHECK_P(bit(clk.ALEF_AxxxxFGH.qp_old()));
@@ -86,13 +85,13 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   // Wait for SIG_CPU_START
 
   while(bit(~rst.SIG_CPU_STARTp.out_old())) {
-    run_phases_simple(cart_blob, 8);
+    run_phases(cart_blob, 8, false);
   }
 
   //----------------------------------------
   // Delay to sync up with expected div value
 
-  run_phases_simple(cart_blob, 16);
+  run_phases(cart_blob, 16, false);
 
   //----------------------------------------
   // Fetch the first instruction in the bootrom
@@ -214,12 +213,8 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   memcpy(framebuffer, framebuffer_boot, 160*144);
 
   sim_time = 169.62587129999756;
-  //phase_total = 46880720;
-  //phase_origin = 46880720;
   phase_total = 0;
   phase_origin = 0;
-  phase_hash = 0xad3faa49f49984b4;
-  cumulative_hash = 0x6e58a5c197ff4af1;
 
   probes.reset_to_cart();
 }
@@ -237,7 +232,7 @@ uint8_t GateBoy::dbg_read(const blob& cart_blob, int addr) {
   bus_req_new.data = 0;
   bus_req_new.read = 1;
   bus_req_new.write = 0;
-  run_phases(cart_blob, 8);
+  run_phases(cart_blob, 8, false);
 
   bus_req_new = old_req;
   sys_cpu_en = old_cpu_en;
@@ -258,7 +253,7 @@ void GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
   bus_req_new.data = data;
   bus_req_new.read = 0;
   bus_req_new.write = 1;
-  run_phases(cart_blob, 8);
+  run_phases(cart_blob, 8, false);
 
   bus_req_new = old_req;
   sys_cpu_en = old_cpu_en;
@@ -340,101 +335,19 @@ struct GateBoyOffsets {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::next_phase_simple(const blob& cart_blob) {
-  tock_gates(cart_blob, 0);
-  if (config_commit) commit();
-  phase_total++;
-}
+void GateBoy::next_phase(const blob& cart_blob, bool logic_mode) {
+  ASSERT_P(sys_clkreq || !logic_mode);
 
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::next_phase(const blob& cart_blob) {
-
-  probes.begin_pass((phase_total + 1) & 7);
-
-  GateBoy& gb1 = *this;
-  static GateBoy gb2;
-
-  uint64_t hash_old = 0;
-  uint64_t hash_new = 0;
-
-  if (config_regression) {
-    // For regression tests we step GateBoy twice, once with each config, and then compare the hash
-    // of the data bits.
-
-    static_assert(!config_drive_flags);
-    static_assert(!config_oldnew_flags);
-
-    memcpy(&gb2, &gb1, sizeof(GateBoy));
-
-    gb1.tock_gates(cart_blob, 0);
-    gb2.tock_logic(cart_blob, 0);
-    //gb2.tock_gates(cart_blob, 0);
-
-    //gb2.pix_pipes.REMY_LD0n.state ^= 1;
-
-    hash_old = gb1.hash(BIT_DATA);
-    hash_new = gb2.hash(BIT_DATA);
-
-    // GateBoy and LogicBoy are allowed to diverge in the POR phase, so only check for a match if sys_clkreq is asserted
-    // (meaning we're no longer in POR).
-
-    if (sys_clkreq && (hash_old != hash_new)) {
-      LOG_R("Logic mode and gates mode mismatch!\n");
-
-      int start = 0;
-      int end = sizeof(GateBoy);
-      diff_blob(&gb1, start, end, &gb2, start, end, BIT_DATA);
-
-      ASSERT_P(false);
-    }
-  }
-  else if (config_idempotent) {
-    gb1.tock_gates(cart_blob, 0);
-    hash_old = config_hash ? gb1.hash(BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW) : 0;
-    if (config_commit) gb1.commit();
-
-    memcpy(&gb2, this, sizeof(GateBoy));
-
-    gb2.tock_gates(cart_blob, 1);
-    hash_new = config_hash ? gb2.hash(BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW) : 0;
-    if (config_commit) gb2.commit();
-
-    if (hash_old != hash_new) {
-      LOG_Y("Sim not stable after second pass!\n");
-
-      int start = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
-      int end = offsetof(GateBoy, sentinel2);
-
-      uint8_t* blob_old = (uint8_t*)&gb1;
-      uint8_t* blob_new = (uint8_t*)&gb2;
-
-      for (int i = start; i < end; i++) {
-        if (blob_old[i] != blob_new[i]) {
-          LOG_R("%06lld %04d %02d %02d\n", phase_total, i, blob_old[i], blob_new[i]);
-        }
-      }
-
-      LOG_R("\n");
-    }
-
+  if (logic_mode) {
+    tock_logic(cart_blob, 0);
   }
   else {
-    if (config_fastmode) {
-      gb1.tock_logic(cart_blob, 0);
-    }
-    else {
-      gb1.tock_gates(cart_blob, 0);
-    }
-    if (config_commit) gb1.commit();
+    tock_gates(cart_blob, 0);
   }
 
-  //----------------------------------------
+  update_framebuffer(pix_count.get_old() - 8, reg_ly.get_old(), lcd.PIN_51_LCD_DATA0.qp_ext_old(), lcd.PIN_50_LCD_DATA1.qp_ext_old());
 
-  probes.end_pass();
   phase_total++;
-  phase_hash = hash_new;
-  combine_hash(cumulative_hash, phase_hash);
 }
 
 
@@ -563,9 +476,6 @@ void GateBoy::next_phase(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_gates(const blob& cart_blob, int pass_index) {
-  phase_mask_old = 1 << (7 - ((phase_total + 0) & 7));
-  phase_mask_new = 1 << (7 - ((phase_total + 1) & 7));
-
   (void)pass_index;
 
   //----------
@@ -1126,8 +1036,8 @@ void GateBoy::tock_gates(const blob& cart_blob, int pass_index) {
 
   tock_interrupts_gates();
 
-  update_framebuffer();
   old_bus = new_bus;
+  commit();
 }
 
 
@@ -1260,8 +1170,8 @@ void GateBoy::tock_gates(const blob& cart_blob, int pass_index) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
-  phase_mask_old = 1 << (7 - ((phase_total + 0) & 7));
-  phase_mask_new = 1 << (7 - ((phase_total + 1) & 7));
+  uint8_t phase_mask_old = 1 << (7 - ((phase_total + 0) & 7));
+  uint8_t phase_mask_new = 1 << (7 - ((phase_total + 1) & 7));
 
   (void)pass_index;
 
@@ -1418,25 +1328,25 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
   clk.AVET_DEGLITCH = bit(c);
   clk.ANOS_DEGLITCH = bit(~c);
 
-  wire CLK_AxxDExxH = !!(phase_mask_new & 0b10011001);
-  wire CLK_Axxxxxxx = !!(phase_mask_new & 0b10000000);
-  wire CLK_xBCDEFGH = !!(phase_mask_new & 0b01111111);
-  wire CLK_ABCDxxxx = !!(phase_mask_new & 0b11110000);
-  wire CLK_xxxxEFGH = !!(phase_mask_new & 0b00001111);
-  wire CLK_ABCDEFxx = !!(phase_mask_new & 0b11111100);
-  wire CLK_AxxxxxGH = !!(phase_mask_new & 0b10000011);
-  wire CLK_AxxxxFGH = !!(phase_mask_new & 0b10000111);
-  wire CLK_ABxxxxGH = !!(phase_mask_new & 0b11000011);
-  wire CLK_ABCxxxxH = !!(phase_mask_new & 0b11100001);
-  wire CLK_xBCxxFGx = !!(phase_mask_new & 0b01100110);
-  wire CLK_xBCDxFGH = !!(phase_mask_new & 0b01110111);
-  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
-  wire CLK_xxCDEFGH = !!(phase_mask_new & 0b00111111);
-  wire CLK_xBxDxFxH = !!(phase_mask_new & 0b01010101);
-  wire CLK_AxCxExGx = !!(phase_mask_new & 0b10101010);
-  wire CLK_ABxxEFxx = !!(phase_mask_new & 0b11001100);
-  wire CLK_xxCDxxGH = !!(phase_mask_new & 0b00110011);
-  wire CLK_xxCDEFxx = !!(phase_mask_new & 0b00111100);
+  wire CLK_AxxDExxH = gen_clk_new(0b10011001);
+  wire CLK_Axxxxxxx = gen_clk_new(0b10000000);
+  wire CLK_xBCDEFGH = gen_clk_new(0b01111111);
+  wire CLK_ABCDxxxx = gen_clk_new(0b11110000);
+  wire CLK_xxxxEFGH = gen_clk_new(0b00001111);
+  wire CLK_ABCDEFxx = gen_clk_new(0b11111100);
+  wire CLK_AxxxxxGH = gen_clk_new(0b10000011);
+  wire CLK_AxxxxFGH = gen_clk_new(0b10000111);
+  wire CLK_ABxxxxGH = gen_clk_new(0b11000011);
+  wire CLK_ABCxxxxH = gen_clk_new(0b11100001);
+  wire CLK_xBCxxFGx = gen_clk_new(0b01100110);
+  wire CLK_xBCDxFGH = gen_clk_new(0b01110111);
+  wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
+  wire CLK_xxCDEFGH = gen_clk_new(0b00111111);
+  wire CLK_xBxDxFxH = gen_clk_new(0b01010101);
+  wire CLK_AxCxExGx = gen_clk_new(0b10101010);
+  wire CLK_ABxxEFxx = gen_clk_new(0b11001100);
+  wire CLK_xxCDxxGH = gen_clk_new(0b00110011);
+  wire CLK_xxCDEFxx = gen_clk_new(0b00111100);
 
   clk.AFUR_xxxxEFGH.state = CLK_xxxxEFGH;
   clk.ALEF_AxxxxFGH.state = CLK_AxxxxFGH;
@@ -2143,8 +2053,8 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
 
   tock_interrupts_logic();
 
-  update_framebuffer();
   old_bus = new_bus;
+  commit();
 }
 
 
@@ -2253,21 +2163,18 @@ void GateBoy::tock_logic(const blob& cart_blob, int pass_index) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::update_framebuffer()
+void GateBoy::update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1)
 {
-  int lcd_x = pix_count.get_new() - 8;
-  int lcd_y = reg_ly.get_new();
+  //int lcd_x = pix_count.get_new() - 8;
+  //int lcd_y = reg_ly.get_new();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
-    wire p0 = bit(lcd.PIN_51_LCD_DATA0.qp_ext_new());
-    wire p1 = bit(lcd.PIN_50_LCD_DATA1.qp_ext_new());
+    wire p0 = bit(DATA0);
+    wire p1 = bit(DATA1);
     auto new_pix = p0 + p1 * 2;
 
     framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
   }
-
-  old_lcd_x = lcd_x;
-  old_lcd_y = lcd_y;
 
 #if 0
   if (bit(~lcd.old_lcd_clock.qp_old()) && lcd.PIN_53_LCD_CLOCK.qp_new()) {

@@ -83,24 +83,18 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void run_phases_simple(const blob& cart_blob, int phase_count) {
+  void run_phases(const blob& cart_blob, int phase_count, bool logic_mode) {
     for (int i = 0; i < phase_count; i++) {
-      next_phase_simple(cart_blob);
-    }
-  }
-  void run_phases(const blob& cart_blob, int phase_count) {
-    for (int i = 0; i < phase_count; i++) {
-      next_phase(cart_blob);
+      next_phase(cart_blob, logic_mode);
     }
   }
 
-  void next_phase(const blob& cart_blob);
-  void next_phase_simple(const blob& cart_blob);
+  void next_phase(const blob& cart_blob, bool logic_mode);
 
   void tock_gates(const blob& cart_blob, int pass_index);
   void tock_logic(const blob& cart_blob, int pass_index);
 
-  void update_framebuffer();
+  void update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1);
 
   void wipe() {
     memset(this, 0, sizeof(*this));
@@ -118,9 +112,7 @@ struct GateBoy {
     sentinel4 = SENTINEL4;
   }
 
-  int64_t hash(uint8_t reg_mask) {
-    (void)reg_mask;
-
+  int64_t hash() {
     uint64_t h = HASH_INIT;
 
     uint8_t* blob = (uint8_t*)this;
@@ -128,7 +120,12 @@ struct GateBoy {
     int reg_a = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
     int reg_b = offsetof(GateBoy, sentinel2);
 
-    h = hash_low_bit(blob + reg_a, reg_b - reg_a, h);
+    if (config_regression) {
+      h = hash_low_bit(blob + reg_a, reg_b - reg_a, h);
+    }
+    else {
+      h = hash_all_bits(blob + reg_a, reg_b - reg_a, h);
+    }
 
     int state_a = offsetof(GateBoy, sentinel2) + sizeof(sentinel2);
     int state_b = offsetof(GateBoy, sentinel4);
@@ -314,6 +311,16 @@ struct GateBoy {
 
   /*_p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(clk.SIG_CPU_CLKREQ.out_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
+
+  wire gen_clk_old(uint8_t mask) {
+    uint8_t phase_mask_new = 1 << (7 - ((phase_total + 0) & 7));
+    return !!(phase_mask_new & mask);
+  }
+
+  wire gen_clk_new(uint8_t mask) {
+    uint8_t phase_mask_new = 1 << (7 - ((phase_total + 1) & 7));
+    return !!(phase_mask_new & mask);
+  }
 
   wire AZOF_AxCxExGx() const {
     /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.out_mid());
@@ -572,20 +579,8 @@ struct GateBoy {
   NR51 reg_NR51;
   NR52 reg_NR52;
 
-  //-----------------------------------------------------------------------------
-  // Everything between sentinel 2 and 3 is checked in test_reset_cart_vs_dump
-
+  // Everything after sentinel 2 is checked in test_reset_cart_vs_dump
   uint64_t sentinel2 = SENTINEL2;
-
-  uint8_t sys_rst = 0;
-  uint8_t sys_t1 = 0;
-  uint8_t sys_t2 = 0;
-  uint8_t sys_clken = 0;
-  uint8_t sys_clkgood = 0;
-  uint8_t sys_clkreq = 0;
-  uint8_t sys_cpu_en = 0;
-  uint8_t sys_fastboot = 0;
-  uint8_t sys_buttons = 0;
 
   //-----------------------------------------------------------------------------
   // CPU
@@ -606,30 +601,29 @@ struct GateBoy {
   uint8_t int_ram [8192];
   uint8_t oam_ram [256];
   uint8_t zero_ram[128];
+  uint8_t framebuffer[160*144];
 
   uint64_t sentinel3 = SENTINEL3;
 
   //-----------------------------------------------------------------------------
-  // Everything below here is "external" state not visible to the gameboy itself.
+  // External signals
 
-  int old_lcd_x = 0;
-  int old_lcd_y = 0;
-
-  uint8_t framebuffer[160*144];
+  uint8_t sys_rst = 0;
+  uint8_t sys_t1 = 0;
+  uint8_t sys_t2 = 0;
+  uint8_t sys_clken = 0;
+  uint8_t sys_clkgood = 0;
+  uint8_t sys_clkreq = 0;
+  uint8_t sys_cpu_en = 0;
+  uint8_t sys_fastboot = 0;
+  uint8_t sys_buttons = 0;
 
   //-----------------------------------------------------------------------------
-  // Bookkeeping
+  // Debug stuff
 
-  double   sim_time = 0;
   uint64_t phase_total = 0;
+  double   sim_time = 0;
   uint64_t phase_origin = 0;
-
-  uint8_t phase_mask_old = 0;
-  uint8_t phase_mask_new = 0;
-
-  uint64_t phase_hash = 0;
-  uint64_t cumulative_hash = 0;
-
   Probes   probes;
 
   uint64_t sentinel4 = SENTINEL4;

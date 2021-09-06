@@ -176,8 +176,10 @@ uint64_t hash_blob(void* blob, size_t size, uint8_t mask) {
   return h;
 }
 
+#pragma warning(disable:4127) // conditional expression is constant
+
 void commit_blob(void* blob, size_t size) {
-  //static_assert(config_drive_flags || config_oldnew_flags);
+  if (!config_drive_flags && !config_oldnew_flags) return;
 
   uint8_t* base = (uint8_t*)blob;
   bool bad_bits = false;
@@ -194,7 +196,6 @@ void commit_blob(void* blob, size_t size) {
         LOG_Y("Bit %d floating!\n", i);
         bad_bits = true;
       }
-
     }
 
     if (config_oldnew_flags) {
@@ -202,9 +203,8 @@ void commit_blob(void* blob, size_t size) {
         LOG_Y("Bit %d not dirty after sim pass!\n", i);
         bad_bits = true;
       }
+      base[i] = (s & 0b00001111) | BIT_OLD;
     }
-
-    base[i] = (s & 0b00001111) | BIT_OLD;
   }
   ASSERT_N(bad_bits);
 }

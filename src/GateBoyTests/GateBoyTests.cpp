@@ -61,7 +61,6 @@ blob create_dummy_cart() {
 
 //-----------------------------------------------------------------------------
 
-
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
@@ -85,7 +84,7 @@ int main(int argc, char** argv) {
 
       for (int i = 0; i < MCYCLES_PER_FRAME * 8 * 2; i++) {
         gb.sys_buttons |= 0x02;
-        gb.next_phase(cart_blob);
+        gb.next_phase(cart_blob, false);
       }
       LOG_G("Done\n");
     }
@@ -887,7 +886,7 @@ int GateBoyTests::run_microtest(const char* filename) {
   int timeout = 150000; // All our "fast" microtests take under 500 cycles
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
-    gb.run_phases(cart_blob, 8);
+    gb.run_phases(cart_blob, 8, false);
     if (gb.zero_ram[2]) break;
   }
 
@@ -974,7 +973,7 @@ int GateBoyTests::test_clk() {
   blob cart_blob = create_dummy_cart();
   GateBoy gb = create_gb_poweron(cart_blob);
   gb.dbg_write(cart_blob, ADDR_LCDC, 0x80);
-  gb.run_phases(cart_blob, 8);
+  gb.run_phases(cart_blob, 8, false);
 
   auto& top = gb;
   auto& clk = top.clk;
@@ -999,7 +998,7 @@ int GateBoyTests::test_clk() {
     EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH.out_old(), 0b01111111);
     EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx.out_old(), 0b10000000);
     EXPECT_CLK(top.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
-    gb.next_phase(cart_blob);
+    gb.next_phase(cart_blob, false);
   }
 
   TEST_END();
@@ -1036,7 +1035,7 @@ int GateBoyTests::test_ext_bus() {
 
     GateBoy gb;
     gb.reset_to_cart(cart_blob);
-    gb.run_phases(cart_blob, 120);
+    gb.run_phases(cart_blob, 120, false);
 
 #if 1
     // Start checking each phase
@@ -1137,7 +1136,7 @@ int GateBoyTests::test_ext_bus() {
       EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
       EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
-      gb.next_phase(cart_blob);
+      gb.next_phase(cart_blob, false);
     }
 #endif
   }
@@ -1160,7 +1159,7 @@ int GateBoyTests::test_ext_bus() {
 
     GateBoy gb;
     gb.reset_to_cart(cart_blob);
-    gb.run_phases(cart_blob, 120);
+    gb.run_phases(cart_blob, 120, false);
 
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11111111 11111111 11111111 11111111";
@@ -1264,7 +1263,7 @@ int GateBoyTests::test_ext_bus() {
       EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
       EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
-      gb.next_phase(cart_blob);
+      gb.next_phase(cart_blob, false);
     }
   }
 #endif
@@ -1287,7 +1286,7 @@ int GateBoyTests::test_ext_bus() {
 
     GateBoy gb;
     gb.reset_to_cart(cart_blob);
-    gb.run_phases(cart_blob, 120);
+    gb.run_phases(cart_blob, 120, false);
 
     // Start checking each phase
 
@@ -1431,7 +1430,7 @@ int GateBoyTests::test_ext_bus() {
       EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
       EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
-      gb.next_phase(cart_blob);
+      gb.next_phase(cart_blob, false);
     }
   }
 #endif
@@ -1492,15 +1491,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000100);
 
     EXPECT_EQ(0xFD, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 2048);
+    gb.run_phases(cart_blob, 2048, false);
     EXPECT_EQ(0xFE, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 2048);
+    gb.run_phases(cart_blob, 2048, false);
     EXPECT_EQ(0xFF, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 2048);
+    gb.run_phases(cart_blob, 2048, false);
     EXPECT_EQ(0x80, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 2048);
+    gb.run_phases(cart_blob, 2048, false);
     EXPECT_EQ(0x81, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 2048);
+    gb.run_phases(cart_blob, 2048, false);
     if (!failures) LOG_B("TAC 0b100 pass\n");
   }
 
@@ -1514,15 +1513,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000101);
 
     EXPECT_EQ(0xFD, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 32);
+    gb.run_phases(cart_blob, 32, false);
     EXPECT_EQ(0xFE, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 32);
+    gb.run_phases(cart_blob, 32, false);
     EXPECT_EQ(0xFF, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 32);
+    gb.run_phases(cart_blob, 32, false);
     EXPECT_EQ(0x80, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 32);
+    gb.run_phases(cart_blob, 32, false);
     EXPECT_EQ(0x81, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 32);
+    gb.run_phases(cart_blob, 32, false);
     if (!failures) LOG_B("TAC 0b101 pass\n");
   }
   {
@@ -1535,15 +1534,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000110);
 
     EXPECT_EQ(0xFD, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 128);
+    gb.run_phases(cart_blob, 128, false);
     EXPECT_EQ(0xFE, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 128);
+    gb.run_phases(cart_blob, 128, false);
     EXPECT_EQ(0xFF, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 128);
+    gb.run_phases(cart_blob, 128, false);
     EXPECT_EQ(0x80, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 128);
+    gb.run_phases(cart_blob, 128, false);
     EXPECT_EQ(0x81, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 128);
+    gb.run_phases(cart_blob, 128, false);
     if (!failures) LOG_B("TAC 0b110 pass\n");
   }
   {
@@ -1556,15 +1555,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000111);
 
     EXPECT_EQ(0xFD, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 512);
+    gb.run_phases(cart_blob, 512, false);
     EXPECT_EQ(0xFE, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 512);
+    gb.run_phases(cart_blob, 512, false);
     EXPECT_EQ(0xFF, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 512);
+    gb.run_phases(cart_blob, 512, false);
     EXPECT_EQ(0x80, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 512);
+    gb.run_phases(cart_blob, 512, false);
     EXPECT_EQ(0x81, gb.timer.get_tima());
-    gb.run_phases(cart_blob, 512);
+    gb.run_phases(cart_blob, 512, false);
     if (!failures) LOG_B("TAC 0b111 pass\n");
   }
 
@@ -1648,7 +1647,7 @@ int GateBoyTests::test_dma(uint16_t src) {
   }
 
   gb.dbg_write(cart_blob, 0xFF46, uint8_t(src >> 8));
-  gb.run_phases(cart_blob, 1288);
+  gb.run_phases(cart_blob, 1288, false);
 
   for (int i = 0; i < 160; i++) {
     uint8_t a = mem[i];
@@ -1674,16 +1673,16 @@ int GateBoyTests::test_ppu() {
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
     for (int i = 0; i < 153; i++) {
       EXPECT_EQ(i, gb.reg_ly.get_old());
-      gb.run_phases(cart_blob, 114 * 8);
+      gb.run_phases(cart_blob, 114 * 8, false);
     }
 
     // LY is reset early on the last line, we should be at 0 now.
     EXPECT_EQ(0, gb.reg_ly.get_old());
-    gb.run_phases(cart_blob, 114 * 8);
+    gb.run_phases(cart_blob, 114 * 8, false);
 
     // And we should be at 0 again
     EXPECT_EQ(0, gb.reg_ly.get_old());
-    gb.run_phases(cart_blob, 114 * 8);
+    gb.run_phases(cart_blob, 114 * 8, false);
 
     // And now we should be at 1.
     EXPECT_EQ(1, gb.reg_ly.get_old());
@@ -1764,7 +1763,7 @@ void GateBoyTests::run_benchmark() {
     gb.phase_total = 0;
 
     auto start = timestamp();
-    gb.run_phases(cart_blob, phase_per_iter);
+    gb.run_phases(cart_blob, phase_per_iter, false);
     auto finish = timestamp();
 
     if (iter >= warmup) {
@@ -1936,7 +1935,7 @@ int GateBoyTests::run_mooneye_test(const char* path, const char* filename) {
 
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
-    gb.run_phases(cart_blob, 8);
+    gb.run_phases(cart_blob, 8, false);
     if (gb.gb_cpu.op == 0x40) break;
   }
 

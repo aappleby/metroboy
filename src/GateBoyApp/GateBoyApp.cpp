@@ -65,12 +65,14 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   as.assemble(app);
 
   gb_thread.pause();
-  load_raw_dump("zelda.dump");
-  //gb_thread.set_cart(as.link());
-  //gb_thread.reset_to_bootrom();
-  //for (int i = 0; i < 8192; i++) {
-  //  gb_thread.gb->vid_ram[i] = (uint8_t)rand();
-  //}
+  //gb_thread.load_raw_dump("zelda.dump");
+  gb_thread.load_blob(as.link());
+  gb_thread.reset_to_bootrom();
+  for (int i = 0; i < 8192; i++) {
+    uint8_t r = (uint8_t)rand();
+    gb_thread.gb_a->vid_ram[i] = r;
+    gb_thread.gb_b->vid_ram[i] = r;
+  }
   gb_thread.resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
@@ -131,77 +133,6 @@ void GateBoyApp::app_close() {
     gb_thread.resume();
   }
   gb_thread.stop();
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoyApp::load_raw_dump(const char* filename) {
-  LOG_B("Loading raw dump from %s\n", filename);
-
-  gb_thread.clear_work();
-  blob raw_dump = load_blob(filename);
-  int gb_size = gb_thread.gb->from_blob(raw_dump);
-  int cart_size = (int)raw_dump.size() - gb_size;
-
-  blob cart_blob;
-  cart_blob.resize(cart_size);
-  memcpy(cart_blob.data(), raw_dump.data() + gb_size, cart_size);
-
-  gb_thread.set_cart(cart_blob);
-}
-
-void GateBoyApp::save_raw_dump(const char* filename) {
-  LOG_B("Saving raw dump to %s\n", filename);
-
-  gb_thread.clear_work();
-  blob raw_dump;
-  gb_thread.gb->to_blob(raw_dump);
-  raw_dump.insert(raw_dump.end(), gb_thread.get_cart().begin(), gb_thread.get_cart().end());
-  save_blob(filename, raw_dump);
-}
-
-//------------------------------------------------------------------------------
-// Load a standard GB rom
-
-void GateBoyApp::load_rom(const char* filename) {
-  gb_thread.clear_work();
-
-  LOG_B("Loading %s\n", filename);
-
-  blob cart_blob = load_blob(filename);
-
-  LOG_B("GateBoyApp::load_rom cart_blob %p %d\n", cart_blob.data(), (int)cart_blob.size());
-
-  gb_thread.set_cart(cart_blob);
-  gb_thread.reset_to_cart();
-
-  LOG_B("Loaded %zd bytes from rom %s\n", cart_blob.size(), filename);
-}
-
-
-//-----------------------------------------------------------------------------
-// Load a flat (just raw contents of memory addresses, no individual regs) dump
-// and copy it into the various regs and memory chunks.
-
-void GateBoyApp::load_flat_dump(const char* filename) {
-  blob cart_blob = load_blob(filename);
-  gb_thread.set_cart(cart_blob);
-  gb_thread.reset_to_cart();
-
-  memcpy(gb_thread.gb->vid_ram,  cart_blob.data() + 0x8000, 8192);
-  memcpy(gb_thread.gb->cart_ram, cart_blob.data() + 0xA000, 8192);
-  memcpy(gb_thread.gb->int_ram,  cart_blob.data() + 0xC000, 8192);
-  memcpy(gb_thread.gb->oam_ram,  cart_blob.data() + 0xFE00, 256);
-  memcpy(gb_thread.gb->zero_ram, cart_blob.data() + 0xFF80, 128);
-
-  gb_thread.gb->dbg_write(gb_thread.get_cart(), ADDR_BGP,  cart_blob[ADDR_BGP]);
-  gb_thread.gb->dbg_write(gb_thread.get_cart(), ADDR_OBP0, cart_blob[ADDR_OBP0]);
-  gb_thread.gb->dbg_write(gb_thread.get_cart(), ADDR_OBP1, cart_blob[ADDR_OBP1]);
-  gb_thread.gb->dbg_write(gb_thread.get_cart(), ADDR_SCY,  cart_blob[ADDR_SCY]);
-  gb_thread.gb->dbg_write(gb_thread.get_cart(), ADDR_SCX,  cart_blob[ADDR_SCX]);
-  gb_thread.gb->dbg_write(gb_thread.get_cart(), ADDR_WY,   cart_blob[ADDR_WY]);
-  gb_thread.gb->dbg_write(gb_thread.get_cart(), ADDR_WX,   cart_blob[ADDR_WX]);
-  gb_thread.gb->dbg_write(gb_thread.get_cart(), ADDR_LCDC, cart_blob[ADDR_LCDC]);
 }
 
 //-----------------------------------------------------------------------------
@@ -282,11 +213,11 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     }
 
     case SDLK_F1: {
-      load_raw_dump("gateboy.raw.dump");
+      gb_thread.load_raw_dump("gateboy.raw.dump");
       break;
     }
     case SDLK_F4: {
-      save_raw_dump("gateboy.raw.dump");
+      gb_thread.save_raw_dump("gateboy.raw.dump");
       break;
     }
     case SDLK_r: {
@@ -333,10 +264,10 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     if (event.type == SDL_DROPFILE) {
       std::string filename = event.drop.file;
       if (filename.ends_with("gb")) {
-        load_rom(event.drop.file);
+        gb_thread.load_rom(event.drop.file);
       }
       else if (filename.ends_with("dump")) {
-        load_raw_dump(event.drop.file);
+        gb_thread.load_raw_dump(event.drop.file);
       }
       SDL_free(event.drop.file);
     }
@@ -345,20 +276,21 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
   //----------------------------------------
   // Button input
 
-  const auto& gb = gb_thread.gb.state();
-  gb->sys_buttons = 0;
+  uint8_t buttons = 0;
 
   if (gb_thread.busy()) {
-    if (keyboard_state[SDL_SCANCODE_RIGHT])  gb->sys_buttons |= 0x01; // RIGHT
-    if (keyboard_state[SDL_SCANCODE_LEFT])   gb->sys_buttons |= 0x02; // LEFT
-    if (keyboard_state[SDL_SCANCODE_UP])     gb->sys_buttons |= 0x04; // UP
-    if (keyboard_state[SDL_SCANCODE_DOWN])   gb->sys_buttons |= 0x08; // DOWN
+    if (keyboard_state[SDL_SCANCODE_RIGHT])  buttons |= 0x01; // RIGHT
+    if (keyboard_state[SDL_SCANCODE_LEFT])   buttons |= 0x02; // LEFT
+    if (keyboard_state[SDL_SCANCODE_UP])     buttons |= 0x04; // UP
+    if (keyboard_state[SDL_SCANCODE_DOWN])   buttons |= 0x08; // DOWN
 
-    if (keyboard_state[SDL_SCANCODE_X])      gb->sys_buttons |= 0x10; // A
-    if (keyboard_state[SDL_SCANCODE_Z])      gb->sys_buttons |= 0x20; // B
-    if (keyboard_state[SDL_SCANCODE_RSHIFT]) gb->sys_buttons |= 0x40; // SELECT
-    if (keyboard_state[SDL_SCANCODE_RETURN]) gb->sys_buttons |= 0x80; // START
+    if (keyboard_state[SDL_SCANCODE_X])      buttons |= 0x10; // A
+    if (keyboard_state[SDL_SCANCODE_Z])      buttons |= 0x20; // B
+    if (keyboard_state[SDL_SCANCODE_RSHIFT]) buttons |= 0x40; // SELECT
+    if (keyboard_state[SDL_SCANCODE_RETURN]) buttons |= 0x80; // START
   }
+
+  gb_thread.set_buttons(buttons);
 
   view_control.update(delta);
 
@@ -378,7 +310,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   gb_thread.pause();
 
-  const auto& gb = gb_thread.gb.state();
+  const auto& gb = gb_thread.gb_a.state();
 
   uint8_t* framebuffer = gb->framebuffer;
   uint8_t* vid_ram = gb->vid_ram;

@@ -159,6 +159,7 @@ void GateBoy::tock_interrupts_gates()
 
 void GateBoy::tock_interrupts_logic()
 {
+  wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
   auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   if (new_addr == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
@@ -206,7 +207,6 @@ void GateBoy::tock_interrupts_logic()
 
   // note this is an async set so it doesn't happen on the GH clock edge like other writes
 
-  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
   if (cpu_signals.SIG_IN_CPU_WRp.state & (new_addr == 0xFF0F) & CLK_xxxxEFGx) {
     interrupts.LOPE_FF0F_D0p.set_data(new_bus.BUS_CPU_D00p.out_new());
     interrupts.LALU_FF0F_D1p.set_data(new_bus.BUS_CPU_D01p.out_new());

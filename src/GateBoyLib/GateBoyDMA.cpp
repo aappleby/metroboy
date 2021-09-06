@@ -74,7 +74,7 @@ void GateBoy::tock_dma_gates() {
 void GateBoy::tock_dma_logic() {
   auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
-  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+  wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
 
   wire FF46_RDp = cpu_signals.SIG_IN_CPU_RDp.state & (new_addr == 0xFF46);
   wire FF46_WRp = cpu_signals.SIG_IN_CPU_WRp.state & (new_addr == 0xFF46);

@@ -893,8 +893,8 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
   // Vram control pins
 
   if (bit(XYMU_RENDERINGn.state)) {
-    wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
-    wire CLK_xxCDEFGH = !!(phase_mask_new & 0b00111111);
+    wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
+    wire CLK_xxCDEFGH = gen_clk_new(0b00111111);
 
     wire APOV_CPU_WRp = CLK_xxxxEFGx & cpu_signals.SIG_IN_CPU_WRp.state;
     wire ABUZ_EXT_RAM_CS_CLK = CLK_xxCDEFGH & cpu_signals.SIG_IN_CPU_EXT_BUSp.state;

@@ -177,8 +177,8 @@ void GateBoy::tock_timer_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_timer_logic() {
-  wire CLK_Axxxxxxx = !!(phase_mask_new & 0b10000000);
-  wire CLK_xxxxEFGx = !!(phase_mask_new & 0b00001110);
+  wire CLK_Axxxxxxx = gen_clk_new(0b10000000);
+  wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
   auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {

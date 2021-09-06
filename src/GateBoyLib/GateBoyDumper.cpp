@@ -60,8 +60,6 @@ void GateBoy::dump_sys(Dumper& d) const {
   d             ("phase_total  : %lld\n",    phase_total);
   d             ("phase_origin : %lld\n",    phase_origin);
   d             ("phase_delta  : %lld\n",    phase_total - phase_origin);
-  d             ("pass_hash    : %016llx\n", phase_hash);
-  d             ("total_hash   : %016llx\n", cumulative_hash);
 }
 
 void GateBoy::dump_tile_fetcher(Dumper& d) {

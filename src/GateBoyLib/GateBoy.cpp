@@ -1573,7 +1573,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     sprite_scanner.BYBA_SCAN_DONE_Ap.rst();
     sprite_scanner.AVAP_SCAN_DONE_TRIGp = 0;
 
-    if (!bit(WUVU_ABxxEFxx_old) && bit(clk.WUVU_ABxxEFxx.state)) {
+    // FIXME unravel this a bit more
+
+    if (!bit(!vid_rst_old && (DELTA_AB || DELTA_EF)) && bit(!vid_rst_new && (DELTA_HA || DELTA_DE))) {
       sprite_scanner.CENO_SCANNINGn.state = sprite_scanner.BESU_SCANNINGn.state;
       cpy_inv(&sprite_scanner.XADU_SPRITE_IDX0p, &oam_bus.BUS_OAM_A02n, 6);
     }

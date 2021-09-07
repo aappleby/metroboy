@@ -449,6 +449,8 @@ void GateBoy::tock_oam_bus_logic()
 
   oam.WUJE_CPU_OAM_WRn.nor_latch(CLK_ABCDxxxx, and2(addr_oam, cpu_wr));
 
+  wire oam_clk_old = oam.SIG_OAM_CLKn.state;
+
   if (dma_running) {
     cpy_inv(&oam_bus.BUS_OAM_A00n, &dma.NAKY_DMA_A00p, 8);
 
@@ -506,24 +508,34 @@ void GateBoy::tock_oam_bus_logic()
     oam.SIG_OAM_OEn  .state = 1;
   }
 
+  wire oam_clk_new = oam.SIG_OAM_CLKn.state;
+
   // data in from oam
+  uint8_t oam_data_a, oam_data_b;
+  {
 
-  uint8_t oam_addr   = (uint8_t)pack_inv(7, (BitBase*)&oam_bus.BUS_OAM_A01n);
-  uint8_t oam_data_a = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
-  uint8_t oam_data_b = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
+    uint8_t oam_addr = (uint8_t)pack_inv(7, (BitBase*)&oam_bus.BUS_OAM_A01n);
+    oam_data_a = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
+    oam_data_b = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
 
-  if (bit(~oam.old_oam_clk.state) && bit(~oam.SIG_OAM_CLKn.state)) {
-    if (bit(~oam.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-    if (bit(~oam.SIG_OAM_WRn_B.state)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+    if (negedge(oam_clk_old, oam_clk_new)) {
+      if (bit(~oam.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+      if (bit(~oam.SIG_OAM_WRn_B.state)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+    }
+    oam.old_oam_clk = bit(~oam.SIG_OAM_CLKn.state);
+
+    oam_data_a = oam_ram[(oam_addr << 1) + 0];
+    oam_data_b = oam_ram[(oam_addr << 1) + 1];
   }
-  oam.old_oam_clk = bit(~oam.SIG_OAM_CLKn.state);
 
-  oam_data_a = oam_ram[(oam_addr << 1) + 0];
-  oam_data_b = oam_ram[(oam_addr << 1) + 1];
+
+
+
+
 
   bool latch_oam = false;
   latch_oam |= cpu_reading_oam;
-  latch_oam |= scanning && (bool)bit(XOCE_xBCxxFGx());
+  latch_oam |= scanning && gen_clk_new(0b01100110);
   latch_oam |= rendering && (bool)bit(and3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state));
 
   if (latch_oam) {

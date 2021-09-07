@@ -2432,7 +2432,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // And finally, interrupts.
 
-  tock_interrupts_gates();
+  tock_interrupts_logic();
 
   old_bus = new_bus;
   commit();

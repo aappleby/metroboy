@@ -117,7 +117,51 @@ void GateBoy::tock_window_gates(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
+void GateBoy::tock_window_logic(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
+  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  wire vid_rst = bit(reg_lcdc.XONA_LCDC_LCDENn.state);
 
+  win_reg.PYCO_WIN_MATCHp.dff17(~SEGU_CLKPIPE_evn, 1, win_reg.NUKO_WX_MATCHp.state);
+
+  wire PANY_WIN_FETCHn_old = and4(~win_reg.NUKO_WX_MATCHp.state, fine_scroll.RUBU_FINE_CNT2.state, fine_scroll.ROGA_FINE_CNT1.state, fine_scroll.RYKU_FINE_CNT0.state);
+
+  win_reg.RENE_WIN_FETCHn_B.dff17(ALET_xBxDxFxH(),  1, win_reg.RYFA_WIN_FETCHn_A.state);
+  win_reg.RYFA_WIN_FETCHn_A.dff17(SEGU_CLKPIPE_evn, 1, PANY_WIN_FETCHn_old);
+
+  if (bit(XYMU_RENDERINGn.state)) {
+    win_reg.RENE_WIN_FETCHn_B.rst();
+    win_reg.RYFA_WIN_FETCHn_A.rst();
+  }
+
+  if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
+    if (new_addr == 0xFF4A) cpy_inv(&reg_wy.NESO_WY0n, &old_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF4B) cpy_inv(&reg_wx.MYPA_WX0n, &old_bus.BUS_CPU_D00p, 8);
+  }
+
+  if (cpu_signals.SIG_IN_CPU_RDp.state) {
+    if (new_addr == 0xFF4A) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_wy.NESO_WY0n, 8);
+    if (new_addr == 0xFF4B) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_wx.MYPA_WX0n, 8);
+  }
+
+  uint8_t wy = (uint8_t)pack_inv(8, &reg_wy.NESO_WY0n);
+  uint8_t wx = (uint8_t)pack_inv(8, &reg_wx.MYPA_WX0n);
+  uint8_t ly = (uint8_t)pack(8, &reg_ly.MUWY_LY0p);
+  uint8_t px = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
+
+  win_reg.SARY_WY_MATCHp.dff17(TALU_xxCDEFxx(), 1, win_reg.ROGE_WY_MATCHp.state);
+
+  if (vid_rst) {
+    win_reg.PYCO_WIN_MATCHp.rst();
+    win_reg.SARY_WY_MATCHp.rst();
+  }
+
+  win_reg.ROGE_WY_MATCHp = (ly == wy) && !bit(reg_lcdc.WYMO_LCDC_WINENn.state);
+
+  if (bit(win_reg.SARY_WY_MATCHp.state)) win_reg.REJO_WY_MATCH_LATCHp.state = 1;
+  if (bit(REPU_VBLANKp)) win_reg.REJO_WY_MATCH_LATCHp.state = 0;
+
+  win_reg.NUKO_WX_MATCHp = (wx == px) && bit(win_reg.REJO_WY_MATCH_LATCHp.state);
+}
 
 
 

@@ -85,7 +85,24 @@ void GateBoy::update_sprite_store_flags_gates(
   /*_p29.DECU*/ sprite_store_flags.DECU_STORE9_CLKn = not1(CATO_STORE9_CLKp);
 }
 
+void GateBoy::update_sprite_store_flags_logic(
+  SpriteCounter& sprite_counter,
+  wire DYTY_COUNT_CLKp,
+  SpriteStoreFlags& sprite_store_flags)
+{
+  auto c = pack(4, &sprite_counter.BESE_SPRITE_COUNT0);
 
+  sprite_store_flags.DYHU_STORE0_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 0);
+  sprite_store_flags.BUCO_STORE1_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 1);
+  sprite_store_flags.GYFO_STORE2_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 2);
+  sprite_store_flags.GUSA_STORE3_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 3);
+  sprite_store_flags.DUKE_STORE4_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 4);
+  sprite_store_flags.BEDE_STORE5_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 5);
+  sprite_store_flags.WEKA_STORE6_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 6);
+  sprite_store_flags.GYVO_STORE7_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 7);
+  sprite_store_flags.BUKA_STORE8_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 8);
+  sprite_store_flags.DECU_STORE9_CLKn = !bit(DYTY_COUNT_CLKp) && (c == 9);
+}
 
 
 
@@ -446,7 +463,54 @@ void GateBoy::store_sprite_gates(
 
 //-----------------------------------------------------------------------------
 
+void GateBoy::store_sprite_logic(
+  SpriteStoreFlags& sprite_store_flags_old,
+  SpriteStoreFlags& sprite_store_flags_new,
+  SpriteResetFlags& sprite_reset_flags,
+  wire BYVA_LINE_RSTn,
+  SpriteBus& sprite_bus,
+  OamTempB& oam_temp_b,
+  GateBoySpriteStore& sprite_store)
+{
+  auto& ssfo = sprite_store_flags_old;
+  auto& ssfn = sprite_store_flags_new;
+  auto& srf = sprite_reset_flags;
+  auto& ss = sprite_store;
+  auto& sb = sprite_bus;
 
+  if (!bit(ssfo.DYHU_STORE0_CLKn.state) && bit(ssfn.DYHU_STORE0_CLKn.state)) cpy_inv(&ss.YGUS_STORE0_I0n, &sb.BUS_SPR_I0, 10);
+  if (!bit(ssfo.BUCO_STORE1_CLKn.state) && bit(ssfn.BUCO_STORE1_CLKn.state)) cpy_inv(&ss.CADU_STORE1_I0n, &sb.BUS_SPR_I0, 10);
+  if (!bit(ssfo.GYFO_STORE2_CLKn.state) && bit(ssfn.GYFO_STORE2_CLKn.state)) cpy_inv(&ss.BUHE_STORE2_I0n, &sb.BUS_SPR_I0, 10);
+  if (!bit(ssfo.GUSA_STORE3_CLKn.state) && bit(ssfn.GUSA_STORE3_CLKn.state)) cpy_inv(&ss.DEVY_STORE3_I0n, &sb.BUS_SPR_I0, 10);
+  if (!bit(ssfo.DUKE_STORE4_CLKn.state) && bit(ssfn.DUKE_STORE4_CLKn.state)) cpy_inv(&ss.XAVE_STORE4_I0n, &sb.BUS_SPR_I0, 10);
+  if (!bit(ssfo.BEDE_STORE5_CLKn.state) && bit(ssfn.BEDE_STORE5_CLKn.state)) cpy_inv(&ss.EKOP_STORE5_I0n, &sb.BUS_SPR_I0, 10);
+  if (!bit(ssfo.WEKA_STORE6_CLKn.state) && bit(ssfn.WEKA_STORE6_CLKn.state)) cpy_inv(&ss.GABO_STORE6_I0n, &sb.BUS_SPR_I0, 10);
+  if (!bit(ssfo.GYVO_STORE7_CLKn.state) && bit(ssfn.GYVO_STORE7_CLKn.state)) cpy_inv(&ss.GULE_STORE7_I0n, &sb.BUS_SPR_I0, 10);
+  if (!bit(ssfo.BUKA_STORE8_CLKn.state) && bit(ssfn.BUKA_STORE8_CLKn.state)) cpy_inv(&ss.AXUV_STORE8_I0n, &sb.BUS_SPR_I0, 10);
+  if (!bit(ssfo.DECU_STORE9_CLKn.state) && bit(ssfn.DECU_STORE9_CLKn.state)) cpy_inv(&ss.YBER_STORE9_I0n, &sb.BUS_SPR_I0, 10);
+
+  if (bit(ssfo.DYHU_STORE0_CLKn.state) && !bit(ssfn.DYHU_STORE0_CLKn.state)) memcpy(&ss.XEPE_STORE0_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+  if (bit(ssfo.BUCO_STORE1_CLKn.state) && !bit(ssfn.BUCO_STORE1_CLKn.state)) memcpy(&ss.DANY_STORE1_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+  if (bit(ssfo.GYFO_STORE2_CLKn.state) && !bit(ssfn.GYFO_STORE2_CLKn.state)) memcpy(&ss.FOKA_STORE2_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+  if (bit(ssfo.GUSA_STORE3_CLKn.state) && !bit(ssfn.GUSA_STORE3_CLKn.state)) memcpy(&ss.XOLY_STORE3_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+  if (bit(ssfo.DUKE_STORE4_CLKn.state) && !bit(ssfn.DUKE_STORE4_CLKn.state)) memcpy(&ss.WEDU_STORE4_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+  if (bit(ssfo.BEDE_STORE5_CLKn.state) && !bit(ssfn.BEDE_STORE5_CLKn.state)) memcpy(&ss.FUSA_STORE5_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+  if (bit(ssfo.WEKA_STORE6_CLKn.state) && !bit(ssfn.WEKA_STORE6_CLKn.state)) memcpy(&ss.YCOL_STORE6_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+  if (bit(ssfo.GYVO_STORE7_CLKn.state) && !bit(ssfn.GYVO_STORE7_CLKn.state)) memcpy(&ss.ERAZ_STORE7_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+  if (bit(ssfo.BUKA_STORE8_CLKn.state) && !bit(ssfn.BUKA_STORE8_CLKn.state)) memcpy(&ss.EZUF_STORE8_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+  if (bit(ssfo.DECU_STORE9_CLKn.state) && !bit(ssfn.DECU_STORE9_CLKn.state)) memcpy(&ss.XUVY_STORE9_X0p, &oam_temp_b.YLOR_OAM_DB0p.state, 8);
+
+  if (bit(or2(~BYVA_LINE_RSTn, srf.EBOJ_STORE0_RSTp.state))) set(8, &sprite_store.XEPE_STORE0_X0p);
+  if (bit(or2(~BYVA_LINE_RSTn, srf.CEDY_STORE1_RSTp.state))) set(8, &sprite_store.DANY_STORE1_X0p);
+  if (bit(or2(~BYVA_LINE_RSTn, srf.EGAV_STORE2_RSTp.state))) set(8, &sprite_store.FOKA_STORE2_X0p);
+  if (bit(or2(~BYVA_LINE_RSTn, srf.GOTA_STORE3_RSTp.state))) set(8, &sprite_store.XOLY_STORE3_X0p);
+  if (bit(or2(~BYVA_LINE_RSTn, srf.XUDY_STORE4_RSTp.state))) set(8, &sprite_store.WEDU_STORE4_X0p);
+  if (bit(or2(~BYVA_LINE_RSTn, srf.WAFY_STORE5_RSTp.state))) set(8, &sprite_store.FUSA_STORE5_X0p);
+  if (bit(or2(~BYVA_LINE_RSTn, srf.WOMY_STORE6_RSTp.state))) set(8, &sprite_store.YCOL_STORE6_X0p);
+  if (bit(or2(~BYVA_LINE_RSTn, srf.WAPO_STORE7_RSTp.state))) set(8, &sprite_store.ERAZ_STORE7_X0p);
+  if (bit(or2(~BYVA_LINE_RSTn, srf.EXUQ_STORE8_RSTp.state))) set(8, &sprite_store.EZUF_STORE8_X0p);
+  if (bit(or2(~BYVA_LINE_RSTn, srf.FONO_STORE9_RSTp.state))) set(8, &sprite_store.XUVY_STORE9_X0p);
+}
 
 
 
@@ -1038,7 +1102,26 @@ void GateBoy::sprite_match_to_bus_gates(
 
 //------------------------------------------------------------------------------------------------------------------------
 
+void GateBoy::sprite_match_to_bus_logic(
+  GateBoySpriteStore& sprite_store,
+  SpriteMatchFlags& sprite_get_flag,
+  SpriteBus& sprite_bus)
+{
+  auto& gf = sprite_get_flag;
+  auto& sb = sprite_bus;
+  auto& ss = sprite_store;
 
+  if (bit(gf.GUVA_SPRITE0_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.YGUS_STORE0_I0n, 10);
+  if (bit(gf.ENUT_SPRITE1_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.CADU_STORE1_I0n, 10);
+  if (bit(gf.EMOL_SPRITE2_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.BUHE_STORE2_I0n, 10);
+  if (bit(gf.GYFY_SPRITE3_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.DEVY_STORE3_I0n, 10);
+  if (bit(gf.GONO_SPRITE4_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.XAVE_STORE4_I0n, 10);
+  if (bit(gf.GEGA_SPRITE5_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.EKOP_STORE5_I0n, 10);
+  if (bit(gf.XOJA_SPRITE6_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.GABO_STORE6_I0n, 10);
+  if (bit(gf.GUTU_SPRITE7_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.GULE_STORE7_I0n, 10);
+  if (bit(gf.FOXA_SPRITE8_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.AXUV_STORE8_I0n, 10);
+  if (bit(gf.GUZE_SPRITE9_GETp.state)) cpy_inv(&sb.BUS_SPR_I0, &ss.YBER_STORE9_I0n, 10);
+}
 
 
 
@@ -1129,3 +1212,14 @@ void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYM
 }
 
 //------------------------------------------------------------------------------------------------------------------------
+
+void GateBoy::sprite_scan_to_bus_logic(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
+{
+  if (bit(or2(sprite_scanner.CENO_SCANNINGn.state, XYMU_RENDERINGn.state))) {
+    memcpy(&sprite_bus.BUS_SPR_I0, &sprite_scanner.XADU_SPRITE_IDX0p, 6);
+  }
+
+  if (!bit(FEPO_STORE_MATCHp.state)) {
+    cpy_inv(&sprite_bus.BUS_SPR_L0, &sprite_delta_y.DEGE_SPRITE_DELTA0, 4);
+  }
+}

@@ -27,6 +27,7 @@
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
 
+#include <atomic>
 #include <cstring>
 
 //-----------------------------------------------------------------------------
@@ -49,14 +50,13 @@ struct GateBoy {
     return true;
   }
 
-  int from_blob(const blob& b) {
-    ASSERT_P(b.size() >= sizeof(*this));
-    memcpy(this, b.data(), sizeof(*this));
+  void from_blob(const blob& b) {
+    ASSERT_P(b.size() >= sizeof(GateBoy));
+    memcpy(this, b.data(), sizeof(GateBoy));
     ASSERT_P(sentinel1 == SENTINEL1);
     ASSERT_P(sentinel2 == SENTINEL2);
     ASSERT_P(sentinel3 == SENTINEL3);
     ASSERT_P(sentinel4 == SENTINEL4);
-    return (int)sizeof(*this);
   }
 
   void to_blob(blob& b) {
@@ -91,8 +91,9 @@ struct GateBoy {
 
   void next_phase(const blob& cart_blob, bool logic_mode);
 
-  void tock_gates(const blob& cart_blob, int pass_index);
-  void tock_logic(const blob& cart_blob, int pass_index);
+  void tock_cpu();
+  void tock_gates(const blob& cart_blob);
+  void tock_logic(const blob& cart_blob);
 
   void update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1);
 
@@ -127,10 +128,12 @@ struct GateBoy {
       h = hash_all_bits(blob + reg_a, reg_b - reg_a, h);
     }
 
+    /*
     int state_a = offsetof(GateBoy, sentinel2) + sizeof(sentinel2);
     int state_b = offsetof(GateBoy, sentinel4);
 
     h = hash_all_bits(blob + state_a, state_b - state_a, h);
+    */
 
     return h;
   }

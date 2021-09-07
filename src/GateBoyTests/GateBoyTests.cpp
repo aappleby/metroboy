@@ -61,6 +61,8 @@ blob create_dummy_cart() {
 
 //-----------------------------------------------------------------------------
 
+#pragma optimize("", off)
+
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
@@ -71,20 +73,35 @@ int main(int argc, char** argv) {
   if (config_regression) {
     LOG_G("Running a few frames of Zelda...\n");
 
-    GateBoy gb;
+    GateBoy gba;
+    GateBoy gbb;
 
     blob raw_dump = load_blob("zelda.dump");
     if (!raw_dump.empty()) {
-      int gb_size = gb.from_blob(raw_dump);
-      int cart_size = (int)raw_dump.size() - gb_size;
+      gba.from_blob(raw_dump);
+      gbb.from_blob(raw_dump);
+
+      int cart_size = (int)raw_dump.size() - sizeof(GateBoy);
 
       blob cart_blob;
       cart_blob.resize(cart_size);
-      memcpy(cart_blob.data(), raw_dump.data() + gb_size, cart_size);
+      memcpy(cart_blob.data(), raw_dump.data() + sizeof(GateBoy), cart_size);
 
       for (int i = 0; i < MCYCLES_PER_FRAME * 8 * 2; i++) {
-        gb.sys_buttons |= 0x02;
-        gb.next_phase(cart_blob, false);
+        gba.sys_buttons |= 0x02;
+        gbb.sys_buttons |= 0x02;
+        gba.next_phase(cart_blob, true);
+        gbb.next_phase(cart_blob, false);
+
+        uint64_t hash_a_new = gba.hash();
+        uint64_t hash_b_new = gbb.hash();
+
+        if (hash_a_new != hash_b_new) {
+          LOG_R("Regression test mismatch @ phase %d!\n", i);
+          diff_blob(&gba, 0, sizeof(GateBoy), &gbb, 0, sizeof(GateBoy), 0x01);
+          failures++;
+          break;
+        }
       }
       LOG_G("Done\n");
     }
@@ -95,6 +112,7 @@ int main(int argc, char** argv) {
     }
   }
 
+#if 0
   GateBoyTests t;
 
   failures += t.test_reset_cart_vs_dump();
@@ -140,6 +158,8 @@ int main(int argc, char** argv) {
   failures += t.test_mooneye_mbc1();    // pass
   failures += t.test_mooneye_timer();   // pass
   failures += t.test_mooneye_ppu();     // 3 fails
+#endif
+
 #endif
 
   TEST_END();

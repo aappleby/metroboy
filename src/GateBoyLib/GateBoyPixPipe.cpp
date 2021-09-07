@@ -117,6 +117,7 @@ void GateBoy::tock_window_gates(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
+#if 0
 void GateBoy::tock_window_logic(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
   auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
   wire vid_rst = bit(reg_lcdc.XONA_LCDC_LCDENn.state);
@@ -162,7 +163,7 @@ void GateBoy::tock_window_logic(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
 
   win_reg.NUKO_WX_MATCHp = (wx == px) && bit(win_reg.REJO_WY_MATCH_LATCHp.state);
 }
-
+#endif
 
 
 
@@ -721,7 +722,7 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn)
 
 //------------------------------------------------------------------------------------------------------------------------
 
-
+#if 0
 void GateBoy::tock_pix_pipes_logic(wire CLKPIPE_old, wire CLKPIPE_new, wire BFETCH_RSTn)
 {
   auto& tf = tile_fetcher;
@@ -861,5 +862,6 @@ void GateBoy::tock_pix_pipes_logic(wire CLKPIPE_old, wire CLKPIPE_new, wire BFET
   pix_pipes.REMY_LD0n = ~bit(pal >> (pal_idx * 2 + 0));
   pix_pipes.RAVO_LD1n = ~bit(pal >> (pal_idx * 2 + 1));
 }
+#endif
 
 //------------------------------------------------------------------------------------------------------------------------

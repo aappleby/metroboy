@@ -438,226 +438,100 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_ext_logic(const blob& cart_blob)
 {
-  wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
-  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
-  wire addr_vram = (new_addr >= 0x8000) && (new_addr <= 0x9FFF);
-  wire addr_ram = (new_addr >= 0xA000) && (new_addr <= 0xFDFF);
-  auto dma_addr = pack_inv(16, &dma.NAKY_DMA_A00p);
-  wire dma_vram = (dma_addr >= 0x8000) && (dma_addr <= 0x9FFF);
-  wire dma_busy = dma.MATU_DMA_RUNNINGp.state;
-
-  wire LUMA_DMA_CARTp = and2(dma_busy, ~dma_vram);
-
-
-
-  if (bit(LUMA_DMA_CARTp)) {
-    ext_pins.PIN_79_RDn.pin_out(1, 1);
-  }
-  else if (cpu_signals.SIG_IN_CPU_WRp.state) {
-    ext_pins.PIN_79_RDn.pin_out(nand2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram), nand2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram));
-  }
-  else if (cpu_signals.SIG_IN_CPU_RDp.state) {
-    wire TYMU_EXT_RDn = nor3(~cpu_signals.SIG_IN_CPU_EXT_BUSp.state, addr_vram, and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram));
-    ext_pins.PIN_79_RDn.pin_out(~TYMU_EXT_RDn, ~TYMU_EXT_RDn);
-  }
-  else {
-    ext_pins.PIN_79_RDn.pin_out(1, 1);
-  }
-
-  {
-    wire PUVA_EXT_WRn = or5(~CLK_xxxxEFGx, ~cpu_signals.SIG_IN_CPU_WRp.state, ~cpu_signals.SIG_IN_CPU_EXT_BUSp.state, addr_vram, LUMA_DMA_CARTp);
-    ext_pins.PIN_78_WRn.pin_out(~PUVA_EXT_WRn, ~PUVA_EXT_WRn);
-  }
-
-  if (bit(LUMA_DMA_CARTp)) {
-    ext_pins.PIN_80_CSn.pin_out(~dma.MARU_DMA_A15n.state, ~dma.MARU_DMA_A15n.state);
-  }
-  else {
-    wire TYHO_CS_A = and2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, addr_ram);
-    ext_pins.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
-  }
-
-  if (bit(and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram))) {
-    memcpy(&ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, &new_bus.BUS_CPU_A00p, 15);
-  }
-
-  if (bit(LUMA_DMA_CARTp)) {
-    cpy_inv(&ext_pins.PIN_01_A00, &dma.NAKY_DMA_A00p, 8);
-    memcpy(&ext_pins.PIN_09_A08, &dma.NAFA_DMA_A08n, 7);
-  }
-  else {
-    cpy_inv(&ext_pins.PIN_01_A00, &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
-  }
-
-  // A15 is "special"
-
-  wire TUTU_READ_BOOTROMp = and2(~cpu_signals.TEPU_BOOT_BITn_h.state, new_addr <= 0x00FF);
-
-  if (bit(LUMA_DMA_CARTp)) {
-    wire TAZY_A15p = ~dma.MARU_DMA_A15n.state;
-    ext_pins.PIN_16_A15.pin_out(~TAZY_A15p, ~TAZY_A15p);
-  }
-  else if (TUTU_READ_BOOTROMp) {
-    ext_pins.PIN_16_A15.pin_out(0, 0);
-  }
-  else {
-    wire TAZY_A15p = nand2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, ~new_bus.BUS_CPU_A15p.state);
-    ext_pins.PIN_16_A15.pin_out(~TAZY_A15p, ~TAZY_A15p);
-  }
-
   //----------------------------------------
-
-  uint16_t addr = (uint16_t)pack_inv(16, (BitBase*)&ext_pins.PIN_01_A00);
-  const int region = addr >> 13;
-
-  bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.state);
-  bool mbc1_mode = bit(ext_pins.MBC1_MODE.state);
-
-  //----------------------------------------
-
-  uint32_t mbc1_rom0_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
-  uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
-  if (mbc1_rom0_addr >= cart_blob.size()) debugbreak();
-
-  //----------------------------------------
-
-  uint32_t mbc1_rom1_bank = pack(7, (BitBase*)&ext_pins.MBC1_BANK0);
-  if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
-  uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
-  if (mbc1_rom1_addr >= cart_blob.size()) debugbreak();
-
-  //----------------------------------------
-
-  uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
-  if (mbc1_mode == 0) mbc1_ram_bank = 0;
-  uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
-  if (mbc1_ram_addr >= 32768) debugbreak();
-
-  //----------------------------------------
-
-  bool EXT_rd_en = false;
-  uint8_t data_in = 0;
+  // Ext read
 
   if (bit(~ext_pins.PIN_79_RDn.qp_ext_new())) {
+    uint16_t ext_addr = (uint16_t)pack_inv(16, (BitBase*)&ext_pins.PIN_01_A00);
+    const int region = ext_addr >> 13;
+    uint8_t data_in = 0;
+
     if (cart_has_mbc1(cart_blob)) {
-      if (region == 0 || region == 1) {
-        EXT_rd_en = true;
-        data_in = cart_blob[mbc1_rom0_addr];
-      }
-      else if (region == 2 || region == 3) {
-        EXT_rd_en = true;
-        data_in = cart_blob[mbc1_rom1_addr];
-      }
-      else if (region == 5 && cart_has_ram(cart_blob)) {
-        EXT_rd_en = mbc1_ram_en;
-        data_in = cart_ram[mbc1_ram_addr];
+      bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.state);
+      bool mbc1_mode = bit(ext_pins.MBC1_MODE.state);
+
+      uint32_t mbc1_rom0_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+      uint32_t mbc1_rom0_addr = ((ext_addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
+
+      uint32_t mbc1_rom1_bank = pack(7, (BitBase*)&ext_pins.MBC1_BANK0);
+      uint32_t mbc1_rom1_addr = ((ext_addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
+
+      uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+      uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
+
+      if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
+
+      switch (region) {
+      case 0: data_in = cart_blob[mbc1_rom0_addr]; break;
+      case 1: data_in = cart_blob[mbc1_rom0_addr]; break;
+      case 2: data_in = cart_blob[mbc1_rom1_addr]; break;
+      case 3: data_in = cart_blob[mbc1_rom1_addr]; break;
+      case 4: data_in = 0xFF; break;
+      case 5: data_in = mbc1_ram_en ? cart_ram[mbc1_ram_addr] : 0xFF; break;
+      case 6: data_in = int_ram[ext_addr & 0x1FFF]; break;
+      case 7: data_in = int_ram[ext_addr & 0x1FFF]; break;
       }
     }
     else {
-      if (region == 0 || region == 1) {
-        EXT_rd_en = true;
-        data_in = cart_blob[addr & cart_rom_addr_mask(cart_blob)];
-      }
-      else if (region == 2 || region == 3) {
-        EXT_rd_en = true;
-        data_in = cart_blob[addr & cart_rom_addr_mask(cart_blob)];
-      }
-      else if (region == 5 && cart_has_ram(cart_blob)) {
-        EXT_rd_en = true;
-        data_in = cart_ram[addr & cart_ram_addr_mask(cart_blob)];
+      switch (region) {
+      case 0: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
+      case 1: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
+      case 2: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
+      case 3: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
+      case 4: data_in = 0xFF; break;
+      case 5: data_in = cart_has_ram(cart_blob) ? cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] : 0xFF; break;
+      case 6: data_in = int_ram[ext_addr & 0x1FFF]; break;
+      case 7: data_in = int_ram[ext_addr & 0x1FFF]; break;
       }
     }
 
-    if (region == 6 || region == 7) {
-      EXT_rd_en = true;
-      data_in = int_ram[addr & 0x1FFF];
-    }
-  }
-
-  memset(&ext_pins.PIN_17_D00, 0, 8);
-
-  ASSERT_N(cpu_signals.SIG_IN_CPU_RDp.state && cpu_signals.SIG_IN_CPU_WRp.state);
-
-  if (cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state && !addr_vram) {
-    cpy_inv(&ext_pins.PIN_17_D00, &new_bus.BUS_CPU_D00p, 8);
-  }
-
-  if (bit(EXT_rd_en)) {
     unpack_inv(data_in, 8, &ext_pins.PIN_17_D00);
   }
 
-  //----------------------------------------
 
-  auto data_out = (uint8_t)pack_inv(8, &ext_pins.PIN_17_D00);
+  //----------------------------------------
+  // Ext write
+
 
   if (bit(~ext_pins.PIN_78_WRn.qp_ext_new())) {
-    if (region == 0 && cart_has_mbc1(cart_blob)) {
-      ext_pins.MBC1_RAM_EN = bit((data_out & 0x0F) == 0x0A);
-    }
-    else if (region == 1 && cart_has_mbc1(cart_blob)) {
-      ext_pins.MBC1_BANK0 = bit(data_out, 0);
-      ext_pins.MBC1_BANK1 = bit(data_out, 1);
-      ext_pins.MBC1_BANK2 = bit(data_out, 2);
-      ext_pins.MBC1_BANK3 = bit(data_out, 3);
-      ext_pins.MBC1_BANK4 = bit(data_out, 4);
-    }
-    else if (region == 2 && cart_has_mbc1(cart_blob)) {
-      ext_pins.MBC1_BANK5 = bit(data_out, 0);
-      ext_pins.MBC1_BANK6 = bit(data_out, 1);
-    }
-    else if (region == 3 && cart_has_mbc1(cart_blob)) {
-      ext_pins.MBC1_MODE = (data_out & 1);
-    }
-    else if (region == 5 && cart_has_ram(cart_blob) && cart_has_mbc1(cart_blob) && mbc1_ram_en) {
-      cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = data_out;
-    }
-    else if (region == 5 && cart_has_ram(cart_blob) && !cart_has_mbc1(cart_blob)) {
-      cart_ram[addr & cart_ram_addr_mask(cart_blob)] = data_out;
-    }
-    else if (region == 6 || region == 7) {
-      int_ram[addr & 0x1FFF] = data_out;
-    }
-  }
+    uint16_t ext_addr = (uint16_t)pack_inv(16, (BitBase*)&ext_pins.PIN_01_A00);
+    const int region = ext_addr >> 13;
+    uint8_t data_out = (uint8_t)pack_inv(8, &ext_pins.PIN_17_D00);
 
-  //----------------------------------------
+    if (cart_has_mbc1(cart_blob)) {
+      bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.state);
+      bool mbc1_mode = bit(ext_pins.MBC1_MODE.state);
 
-  if (!bit(nand4(cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
-    cpy_inv(&new_bus.BUS_CPU_D00p, &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
-  }
-  else {
-    memcpy(&ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, &ext_pins.PIN_17_D00, 8);
+      uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+      uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
+
+      switch (region) {
+      case 0: ext_pins.MBC1_RAM_EN = bit((data_out & 0x0F) == 0x0A); break;
+      case 1: unpack(data_out, 5, (BitBase*)&ext_pins.MBC1_BANK0); break;
+      case 2: unpack(data_out, 2, (BitBase*)&ext_pins.MBC1_BANK5); break;
+      case 3: ext_pins.MBC1_MODE = (data_out & 1); break;
+      case 4: break;
+      case 5: if (cart_has_ram(cart_blob) && mbc1_ram_en) cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = data_out; break;
+      case 6: int_ram[ext_addr & 0x1FFF] = data_out; break;
+      case 7: int_ram[ext_addr & 0x1FFF] = data_out; break;
+      }
+    }
+    else {
+      switch (region) {
+      case 0: break;
+      case 1: break;
+      case 2: break;
+      case 3: break;
+      case 4: break;
+      case 5: if (cart_has_ram(cart_blob)) cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] = data_out; break;
+      case 6: int_ram[ext_addr & 0x1FFF] = data_out;break;
+      case 7: int_ram[ext_addr & 0x1FFF] = data_out;break;
+      }
+    }
+
   }
 }
-
-//------------------------------------------------------------------------------------------------------------------------

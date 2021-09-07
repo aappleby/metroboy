@@ -442,36 +442,16 @@ void GateBoy::tock_oam_bus_logic()
 
   bool cpu_reading_oam = (bool)bit(and3(dbus_busy, addr_oam, cpu_rd));
 
-
   // this is weird, why is it always 0 when not in reset?
   oam.MAKA_LATCH_EXTp.state = 0;
 
   memset(&oam_bus, BIT_NEW | BIT_PULLED | 1, sizeof(oam_bus));
 
-  // addr out to oam
-
-  if (dma_running) {
-    cpy_inv(&oam_bus.BUS_OAM_A00n, &dma.NAKY_DMA_A00p, 8);
-  }
-  else if (scanning) {
-    oam_bus.BUS_OAM_A00n.state = 1;
-    oam_bus.BUS_OAM_A01n.state = 1;
-    cpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_scanner.YFEL_SCAN0, 6);
-  }
-  else if (rendering) {
-    oam_bus.BUS_OAM_A00n.state = 0;
-    oam_bus.BUS_OAM_A01n.state = 0;
-    cpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_bus.BUS_SPR_I0, 6);
-  }
-  else {
-    cpy_inv(&oam_bus.BUS_OAM_A00n, &new_bus.BUS_CPU_A00p, 8);
-  }
-
-  // data out to oam
-
   oam.WUJE_CPU_OAM_WRn.nor_latch(CLK_ABCDxxxx, and2(addr_oam, cpu_wr));
 
   if (dma_running) {
+    cpy_inv(&oam_bus.BUS_OAM_A00n, &dma.NAKY_DMA_A00p, 8);
+
     if ((dma_addr >= 0x8000) && (dma_addr <= 0x9FFF)) {
       cpy_inv(&oam_bus.BUS_OAM_DA00n, &vram_bus.BUS_VRAM_D00p, 8);
       cpy_inv(&oam_bus.BUS_OAM_DB00n, &vram_bus.BUS_VRAM_D00p, 8);
@@ -480,44 +460,46 @@ void GateBoy::tock_oam_bus_logic()
       memcpy(&oam_bus.BUS_OAM_DA00n, &ext_pins.PIN_17_D00, 8);
       memcpy(&oam_bus.BUS_OAM_DB00n, &ext_pins.PIN_17_D00, 8);
     }
-  }
-  else if (!scanning && !rendering) {
-    if (!addr_oam || bit(~oam.WUJE_CPU_OAM_WRn.state)) {
-      cpy_inv(&oam_bus.BUS_OAM_DA00n, &new_bus.BUS_CPU_D00p, 8);
-      cpy_inv(&oam_bus.BUS_OAM_DB00n, &new_bus.BUS_CPU_D00p, 8);
-    }
-  }
 
-  // oam control signals
-
-  if (dma_running) {
     oam.SIG_OAM_CLKn .state = CLK_ABCDxxxx;
-    oam.SIG_OAM_WRn_A.state = nand2(CLK_xxxxEFGH, oam_bus.BUS_OAM_A00n.state);
-    oam.SIG_OAM_WRn_B.state = nand2(CLK_xxxxEFGH, ~oam_bus.BUS_OAM_A00n.state);
+    oam.SIG_OAM_WRn_A.state = or2(~CLK_xxxxEFGH, ~oam_bus.BUS_OAM_A00n.state);
+    oam.SIG_OAM_WRn_B.state = or2(~CLK_xxxxEFGH,  oam_bus.BUS_OAM_A00n.state);
     oam.SIG_OAM_OEn  .state = !cpu_reading_oam;
   }
   else if (scanning) {
+    oam_bus.BUS_OAM_A00n.state = 1;
+    oam_bus.BUS_OAM_A01n.state = 1;
+    cpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_scanner.YFEL_SCAN0, 6);
     oam.SIG_OAM_CLKn .state = and2(~XYSO_xBCDxFGH(), nand2(addr_oam, CLK_xxxxEFGH));
     oam.SIG_OAM_WRn_A.state = 1;
     oam.SIG_OAM_WRn_B.state = 1;
     oam.SIG_OAM_OEn  .state = and2(~XOCE_xBCxxFGx(), !cpu_reading_oam);
   }
   else if (rendering) {
-    wire TACU_SPR_SEQ_5_TRIG = nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.state, not1(sprite_fetcher.TOXE_SFETCH_S0p.state));
-    wire XUJA_SPR_OAM_LATCHn = nand3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state);
+    oam_bus.BUS_OAM_A00n.state = 0;
+    oam_bus.BUS_OAM_A01n.state = 0;
+    cpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_bus.BUS_SPR_I0, 6);
 
-    oam.SIG_OAM_CLKn .state = and2(nand3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, TACU_SPR_SEQ_5_TRIG), nand2(addr_oam, CLK_xxxxEFGH));
+    oam.SIG_OAM_CLKn .state = and2(nand3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.state, not1(sprite_fetcher.TOXE_SFETCH_S0p.state))), nand2(addr_oam, CLK_xxxxEFGH));
     oam.SIG_OAM_WRn_A.state = 1;
     oam.SIG_OAM_WRn_B.state = 1;
-    oam.SIG_OAM_OEn  .state = and2(XUJA_SPR_OAM_LATCHn, !cpu_reading_oam);
+    oam.SIG_OAM_OEn  .state = and2(nand3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state), !cpu_reading_oam);
   }
   else if (addr_oam) {
+    cpy_inv(&oam_bus.BUS_OAM_A00n, &new_bus.BUS_CPU_A00p, 8);
+    if (bit(~oam.WUJE_CPU_OAM_WRn.state)) {
+      cpy_inv(&oam_bus.BUS_OAM_DA00n, &new_bus.BUS_CPU_D00p, 8);
+      cpy_inv(&oam_bus.BUS_OAM_DB00n, &new_bus.BUS_CPU_D00p, 8);
+    }
     oam.SIG_OAM_CLKn .state = CLK_ABCDxxxx;
     oam.SIG_OAM_WRn_A.state = nand2(cpu_wr, oam_bus.BUS_OAM_A00n.state);
     oam.SIG_OAM_WRn_B.state = nand2(cpu_wr, ~oam_bus.BUS_OAM_A00n.state);
     oam.SIG_OAM_OEn  .state = nand2(cpu_rd, dbus_busy);
   }
   else {
+    cpy_inv(&oam_bus.BUS_OAM_A00n,  &new_bus.BUS_CPU_A00p, 8);
+    cpy_inv(&oam_bus.BUS_OAM_DA00n, &new_bus.BUS_CPU_D00p, 8);
+    cpy_inv(&oam_bus.BUS_OAM_DB00n, &new_bus.BUS_CPU_D00p, 8);
     oam.SIG_OAM_CLKn .state = 1;
     oam.SIG_OAM_WRn_A.state = 1;
     oam.SIG_OAM_WRn_B.state = 1;
@@ -526,39 +508,37 @@ void GateBoy::tock_oam_bus_logic()
 
   // data in from oam
 
-  {
-    uint8_t oam_addr = (uint8_t)pack_inv(7, (BitBase*)&oam_bus.BUS_OAM_A01n);
-    uint8_t oam_data_a = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
-    uint8_t oam_data_b = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
+  uint8_t oam_addr   = (uint8_t)pack_inv(7, (BitBase*)&oam_bus.BUS_OAM_A01n);
+  uint8_t oam_data_a = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
+  uint8_t oam_data_b = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
 
-    if (bit(~oam.old_oam_clk.state) && bit(~oam.SIG_OAM_CLKn.state)) {
-      if (bit(~oam.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-      if (bit(~oam.SIG_OAM_WRn_B.state)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+  if (bit(~oam.old_oam_clk.state) && bit(~oam.SIG_OAM_CLKn.state)) {
+    if (bit(~oam.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+    if (bit(~oam.SIG_OAM_WRn_B.state)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+  }
+  oam.old_oam_clk = bit(~oam.SIG_OAM_CLKn.state);
+
+  oam_data_a = oam_ram[(oam_addr << 1) + 0];
+  oam_data_b = oam_ram[(oam_addr << 1) + 1];
+
+  bool latch_oam = false;
+  latch_oam |= cpu_reading_oam;
+  latch_oam |= scanning && (bool)bit(XOCE_xBCxxFGx());
+  latch_oam |= rendering && (bool)bit(and3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state));
+
+  if (latch_oam) {
+    unpack_inv(oam_data_a, 8, &oam_bus.BUS_OAM_DA00n);
+    unpack_inv(oam_data_b, 8, &oam_bus.BUS_OAM_DB00n);
+    memcpy(&oam_latch_a.YDYV_OAM_LATCH_DA0n, &oam_bus.BUS_OAM_DA00n, 8);
+    memcpy(&oam_latch_b.XYKY_OAM_LATCH_DB0n, &oam_bus.BUS_OAM_DB00n, 8);
+  }
+
+  if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running && !scanning && !rendering) {
+    if (bit(oam_bus.BUS_OAM_A00n.state)) {
+      cpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
     }
-    oam.old_oam_clk = bit(~oam.SIG_OAM_CLKn.state);
-
-    oam_data_a = oam_ram[(oam_addr << 1) + 0];
-    oam_data_b = oam_ram[(oam_addr << 1) + 1];
-
-    bool latch_oam = false;
-    latch_oam |= cpu_reading_oam;
-    latch_oam |= scanning && (bool)bit(XOCE_xBCxxFGx());
-    latch_oam |= rendering && (bool)bit(and3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state));
-
-    if (latch_oam) {
-      unpack_inv(oam_data_a, 8, &oam_bus.BUS_OAM_DA00n);
-      unpack_inv(oam_data_b, 8, &oam_bus.BUS_OAM_DB00n);
-      memcpy(&oam_latch_a.YDYV_OAM_LATCH_DA0n, &oam_bus.BUS_OAM_DA00n, 8);
-      memcpy(&oam_latch_b.XYKY_OAM_LATCH_DB0n, &oam_bus.BUS_OAM_DB00n, 8);
-    }
-
-    if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running && !scanning && !rendering) {
-      if (bit(oam_bus.BUS_OAM_A00n.state)) {
-        cpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
-      }
-      else {
-        cpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
-      }
+    else {
+      cpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
     }
   }
 }

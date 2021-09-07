@@ -840,3 +840,7 @@ inline void set(int c, BitBase* b) {
 inline bool posedge(wire a, wire b) {
   return !bit(a) && bit(b);
 }
+
+inline bool negedge(wire a, wire b) {
+  return bit(a) && !bit(b);
+}

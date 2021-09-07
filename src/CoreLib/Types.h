@@ -95,17 +95,14 @@ const uint32_t COL_HINT3 = 0x00333333;
 
 //-----------------------------------------------------------------------------
 
-//#define PHASE(A) ((A) & (1 << (7 - phase)))
-
-#define DELTA_HA  ((((phase_total + 0) & 7) == 7) && (((phase_total + 1) & 7) == 0))
-#define DELTA_AB  ((((phase_total + 0) & 7) == 0) && (((phase_total + 1) & 7) == 1))
-#define DELTA_BC  ((((phase_total + 0) & 7) == 1) && (((phase_total + 1) & 7) == 2))
-#define DELTA_CD  ((((phase_total + 0) & 7) == 2) && (((phase_total + 1) & 7) == 3))
-#define DELTA_DE  ((((phase_total + 0) & 7) == 3) && (((phase_total + 1) & 7) == 4))
-#define DELTA_EF  ((((phase_total + 0) & 7) == 4) && (((phase_total + 1) & 7) == 5))
-#define DELTA_FG  ((((phase_total + 0) & 7) == 5) && (((phase_total + 1) & 7) == 6))
-#define DELTA_GH  ((((phase_total + 0) & 7) == 6) && (((phase_total + 1) & 7) == 7))
-
+#define DELTA_AB   ((phase_total & 7) == 0)
+#define DELTA_BC   ((phase_total & 7) == 1)
+#define DELTA_CD   ((phase_total & 7) == 2)
+#define DELTA_DE   ((phase_total & 7) == 3)
+#define DELTA_EF   ((phase_total & 7) == 4)
+#define DELTA_FG   ((phase_total & 7) == 5)
+#define DELTA_GH   ((phase_total & 7) == 6)
+#define DELTA_HA   ((phase_total & 7) == 7)
 #define DELTA_EVEN ((phase_total & 1) == 0)
 #define DELTA_ODD  ((phase_total & 1) == 1)
 

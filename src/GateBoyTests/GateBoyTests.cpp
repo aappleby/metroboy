@@ -112,7 +112,6 @@ int main(int argc, char** argv) {
     }
   }
 
-#if 0
   GateBoyTests t;
 
   failures += t.test_reset_cart_vs_dump();
@@ -158,8 +157,6 @@ int main(int argc, char** argv) {
   failures += t.test_mooneye_mbc1();    // pass
   failures += t.test_mooneye_timer();   // pass
   failures += t.test_mooneye_ppu();     // 3 fails
-#endif
-
 #endif
 
   TEST_END();

@@ -5,7 +5,7 @@
 
 struct SpriteScanner {
   void reset_to_cart() {
-    BESU_SCANNINGp.state = 0b00011000;
+    BESU_SCANNINGn.state = 0b00011000;
     CENO_SCANNINGn.state = 0b00011010;
     BYBA_SCAN_DONE_Ap.state = 0b00011011;
     DOBA_SCAN_DONE_Bp.state = 0b00011001;
@@ -27,7 +27,7 @@ struct SpriteScanner {
   /*#p28.FETO*/ Gate FETO_SCAN_DONEp; // old used
   /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp; // new used
 
-  /*#p28.BESU*/ NorLatch BESU_SCANNINGp; // Axxxxxxx
+  /*#p28.BESU*/ NorLatch BESU_SCANNINGn; // Axxxxxxx
   /*#p29.CENO*/ DFF17 CENO_SCANNINGn;    // xxxxExxx
   /*#p29.BYBA*/ DFF17 BYBA_SCAN_DONE_Ap; // Axxxxxxx
   /*#p29.DOBA*/ DFF17 DOBA_SCAN_DONE_Bp; // ABxxxxxx Cleared on A, set on B

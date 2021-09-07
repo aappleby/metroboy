@@ -271,8 +271,9 @@ void GateBoy::set_lcd_pins_logic(wire SACU_CLKPIPE_evn) {
     lcd.PIN_57_LCD_VSYNC.pin_out(~lcd.MEDA_VSYNC_OUTn.state, ~lcd.MEDA_VSYNC_OUTn.state);
 
     if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state) && bit(lcd.PAHO_X_8_SYNC.state)) {
-      // this case is never be hit...
-      ASSERT_P(false);
+      lcd.POME = 0;
+      lcd.RUJU = 1;
+      lcd.POFY = 0;
     }
     else if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state)) {
       lcd.POME = 0;

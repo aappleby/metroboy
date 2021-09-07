@@ -1713,48 +1713,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  /*
-  wire XOFO_WIN_RSTp = nand3(reg_lcdc.WYMO_LCDC_WINENn.qn_new(), not1(ATEJ_LINE_RSTp.state), XAPO_VID_RSTn());
-  win_reg.NUNU_WIN_MATCHp.dff17(MEHE_AxCxExGx(), XAPO_VID_RSTn(), win_reg.PYCO_WIN_MATCHp.qp_old());
-  win_reg.NOPA_WIN_MODE_Bp.dff17(ALET_xBxDxFxH(), XAPO_VID_RSTn(), win_reg.PYNU_WIN_MODE_Ap.qp_old());
-  win_reg.PYNU_WIN_MODE_Ap.nor_latch(win_reg.NUNU_WIN_MATCHp.qp_new(), XOFO_WIN_RSTp);
-
-  wire NUNY_WIN_MODE_TRIGp = and2(win_reg.PYNU_WIN_MODE_Ap.qp_new(), win_reg.NOPA_WIN_MODE_Bp.qn_new());
-  wire NYFO_WIN_MODE_TRIGn = not1(NUNY_WIN_MODE_TRIGp);
-  wire MOSU_WIN_MODE_TRIGp = not1(NYFO_WIN_MODE_TRIGn);
-  wire NAFY_WIN_MODE_TRIGn = nor2(MOSU_WIN_MODE_TRIGp, !rendering);
-
-  tile_fetcher.PYGO_FETCH_DONEp.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), tile_fetcher.PORY_FETCH_DONEp.qp_old());
-  tile_fetcher.PORY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NAFY_WIN_MODE_TRIGn, tile_fetcher.NYKA_FETCH_DONEp.qp_old());
-  tile_fetcher.NYKA_FETCH_DONEp.dff17(ALET_xBxDxFxH(), NAFY_WIN_MODE_TRIGn, tile_fetcher.LYRY_BFETCH_DONEp.out_old());
-  tile_fetcher.POKY_PRELOAD_LATCHp.nor_latch(tile_fetcher.PYGO_FETCH_DONEp.qp_new(), !rendering);
-
-  win_reg.SOVY_WIN_HITp.dff17(ALET_xBxDxFxH(), XAPO_VID_RSTn(), win_reg.RYDY_WIN_HITp.out_old());
-  win_reg.RYDY_WIN_HITp = nor3(win_reg.PUKU_WIN_HITn.out_mid(), tile_fetcher.PORY_FETCH_DONEp.qp_new(), PYRY_VID_RSTp());
-  win_reg.PUKU_WIN_HITn = nor2(win_reg.RYDY_WIN_HITp.out_mid(), NUNY_WIN_MODE_TRIGp);
-  win_reg.RYDY_WIN_HITp = nor3(win_reg.PUKU_WIN_HITn.out_mid(), tile_fetcher.PORY_FETCH_DONEp.qp_new(), PYRY_VID_RSTp());
-  win_reg.PUKU_WIN_HITn = nor2(win_reg.RYDY_WIN_HITp.out_mid(), NUNY_WIN_MODE_TRIGp);
-
-  wire SYLO_WIN_HITn = not1(win_reg.RYDY_WIN_HITp.out_new());
-  wire TOMU_WIN_HITp = not1(SYLO_WIN_HITn);
-  wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);
-
-  wire ROMO_PRELOAD_DONEn = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
-  wire SUVU_PRELOAD_DONE_TRIGn = nand4(XYMU_RENDERINGn.qn_new(), ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
-  wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
-
-  wire VEKU_SFETCH_ENDn = nor2(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new(), TAVE_PRELOAD_DONE_TRIGp); // def nor
-  sprite_fetcher.TAKA_SFETCH_RUNNINGp.nand_latch(SECA_SFETCH_STARTn, VEKU_SFETCH_ENDn);
-  */
-
-  wire NUNY_WIN_MODE_TRIGp = and2(win_reg.PYNU_WIN_MODE_Ap.qp_new(), win_reg.NOPA_WIN_MODE_Bp.qn_new());
-  wire NYFO_WIN_MODE_TRIGn = not1(NUNY_WIN_MODE_TRIGp);
-  wire MOSU_WIN_MODE_TRIGp = not1(NYFO_WIN_MODE_TRIGn);
-
-  wire ROMO_PRELOAD_DONEn = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
-  wire SUVU_PRELOAD_DONE_TRIGn = nand4(XYMU_RENDERINGn.qn_new(), ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
-  wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
-
 
   //----------------------------------------
   // OAM temp register B stores sprite X coordinate during scan, so we need a copy of it for later.
@@ -2035,23 +1993,19 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   tile_fetcher.LYZU_BFETCH_S0p_D1.dff17(CLK_xBxDxFxH, rendering, tile_fetcher.LAXU_BFETCH_S0p.state);
 
-  wire SEKO_WIN_FETCH_TRIGp = nor2(~win_reg.RYFA_WIN_FETCHn_A.state, win_reg.RENE_WIN_FETCHn_B.state);
-  wire TUXY_WIN_FIRST_TILEne = nand2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.state);
-  wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp, ~TUXY_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp);
-  wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state, MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
+  wire TEVO_WIN_FETCH_TRIGp = or3(and2(win_reg.RYFA_WIN_FETCHn_A.state, ~win_reg.RENE_WIN_FETCHn_B.state), ~or2(win_reg.RYDY_WIN_HITp.state, ~win_reg.SOVY_WIN_HITp.state), and4(rendering, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state));
+  wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state, and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state), TEVO_WIN_FETCH_TRIGp);
 
-  for (int feedback = 0; feedback < 2; feedback++) {
-    wire MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state, NYXU_BFETCH_RSTn);
-    wire LEBO_AxCxExGx = nand2(CLK_xBxDxFxH, MOCE_BFETCH_DONEn);
+  auto MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state, NYXU_BFETCH_RSTn);
+  auto LEBO_AxCxExGx = nand2(CLK_xBxDxFxH, MOCE_BFETCH_DONEn);
 
-    tile_fetcher.LAXU_BFETCH_S0p.dff17_any(LEBO_AxCxExGx, NYXU_BFETCH_RSTn, ~tile_fetcher.LAXU_BFETCH_S0p.state);
-    tile_fetcher.MESU_BFETCH_S1p.dff17_any(~tile_fetcher.LAXU_BFETCH_S0p.state, NYXU_BFETCH_RSTn, ~tile_fetcher.MESU_BFETCH_S1p.state);
-    tile_fetcher.NYVA_BFETCH_S2p.dff17_any(~tile_fetcher.MESU_BFETCH_S1p.state, NYXU_BFETCH_RSTn, ~tile_fetcher.NYVA_BFETCH_S2p.state);
-  }
+  tile_fetcher.LAXU_BFETCH_S0p.dff17_any(LEBO_AxCxExGx,                       NYXU_BFETCH_RSTn, ~tile_fetcher.LAXU_BFETCH_S0p.state);
+  tile_fetcher.MESU_BFETCH_S1p.dff17_any(~tile_fetcher.LAXU_BFETCH_S0p.state, NYXU_BFETCH_RSTn, ~tile_fetcher.MESU_BFETCH_S1p.state);
+  tile_fetcher.NYVA_BFETCH_S2p.dff17_any(~tile_fetcher.MESU_BFETCH_S1p.state, NYXU_BFETCH_RSTn, ~tile_fetcher.NYVA_BFETCH_S2p.state);
+
+  MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state, NYXU_BFETCH_RSTn);
 
   tile_fetcher.LOVY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, tile_fetcher.LYRY_BFETCH_DONEp.state);
-
-  wire MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state, NYXU_BFETCH_RSTn);
   tile_fetcher.LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 
   wire LURY_BG_FETCH_DONEn = and2(~tile_fetcher.LOVY_FETCH_DONEp.state, rendering);
@@ -2063,20 +2017,22 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   wire PASO_FINE_RST = nor2(!rendering, TEVO_WIN_FETCH_TRIGp);
 
-  for (int feedback = 0; feedback < 2; feedback++) {
-    wire ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_any(), fine_scroll.ROGA_FINE_CNT1.qp_any(), fine_scroll.RYKU_FINE_CNT0.qp_any());
-    wire PECU_FINE_CLK = nand2(~CLKPIPE_new, ROZE_FINE_COUNT_7n);
-    fine_scroll.RYKU_FINE_CNT0.dff17_any(PECU_FINE_CLK, PASO_FINE_RST, fine_scroll.RYKU_FINE_CNT0.qn_any());
-    fine_scroll.ROGA_FINE_CNT1.dff17_any(fine_scroll.RYKU_FINE_CNT0.qn_any(), PASO_FINE_RST, fine_scroll.ROGA_FINE_CNT1.qn_any());
-    fine_scroll.RUBU_FINE_CNT2.dff17_any(fine_scroll.ROGA_FINE_CNT1.qn_any(), PASO_FINE_RST, fine_scroll.RUBU_FINE_CNT2.qn_any());
-  }
+  auto ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_any(), fine_scroll.ROGA_FINE_CNT1.qp_any(), fine_scroll.RYKU_FINE_CNT0.qp_any());
+  auto PECU_FINE_CLK = nand2(~CLKPIPE_new, ROZE_FINE_COUNT_7n);
+  fine_scroll.RYKU_FINE_CNT0.dff17_any(PECU_FINE_CLK, PASO_FINE_RST, fine_scroll.RYKU_FINE_CNT0.qn_any());
+  fine_scroll.ROGA_FINE_CNT1.dff17_any(fine_scroll.RYKU_FINE_CNT0.qn_any(), PASO_FINE_RST, fine_scroll.ROGA_FINE_CNT1.qn_any());
+  fine_scroll.RUBU_FINE_CNT2.dff17_any(fine_scroll.ROGA_FINE_CNT1.qn_any(), PASO_FINE_RST, fine_scroll.RUBU_FINE_CNT2.qn_any());
+
+  ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_any(), fine_scroll.ROGA_FINE_CNT1.qp_any(), fine_scroll.RYKU_FINE_CNT0.qp_any());
+  PECU_FINE_CLK = nand2(~CLKPIPE_new, ROZE_FINE_COUNT_7n);
 
   //----------------------------------------
   // PPU / LCD output
 
   tock_pix_pipes_logic(CLKPIPE_old, CLKPIPE_new, NYXU_BFETCH_RSTn);
-  set_lcd_pins_logic(CLKPIPE_new);
 
+  set_lcd_pins_logic(CLKPIPE_new);
+  
   //----------------------------------------
   // Audio
 
@@ -2098,359 +2054,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   old_bus = new_bus;
   commit();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#if BROKEN_CODE
-
-void GateBoy::tock_logic(const blob& cart_blob) {
-  
-
-
-  //----------------------------------------
-  // Tile fetch sequencer
-
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn = not1(win_reg.RYDY_WIN_HITp.out_new());
-
-  /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
-  /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(XYMU_RENDERINGn.qn_new(), ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
-  /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
-
-  /*_p27.LYZU*/ tile_fetcher.LYZU_BFETCH_S0p_D1.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), tile_fetcher.LAXU_BFETCH_S0p.qp_old());
-
-  /*#p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp = and2(win_reg.PYNU_WIN_MODE_Ap.qp_new(), win_reg.NOPA_WIN_MODE_Bp.qn_new());
-  /*_p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not1(NUNY_WIN_MODE_TRIGp);
-  /*_p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not1(NYFO_WIN_MODE_TRIGn);
-
-  /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp = nor2(win_reg.RYFA_WIN_FETCHn_A.qn_new(), win_reg.RENE_WIN_FETCHn_B.qp_new());
-  /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne = nand2(SYLO_WIN_HITn, win_reg.SOVY_WIN_HITp.qp_new());
-  /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILEne);
-  /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp, SUZU_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
-  /*_p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new(), MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
-
-  for (int feedback = 0; feedback < 2; feedback++) {
-    /*_p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp_any(), tile_fetcher.NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn);
-    /*_p27.LEBO*/ wire LEBO_AxCxExGx = nand2(ALET_xBxDxFxH(), MOCE_BFETCH_DONEn);
-
-    /*_p27.LAXU*/ tile_fetcher.LAXU_BFETCH_S0p.dff17_any(LEBO_AxCxExGx, NYXU_BFETCH_RSTn, tile_fetcher.LAXU_BFETCH_S0p.qn_any());
-    /*_p27.MESU*/ tile_fetcher.MESU_BFETCH_S1p.dff17_any(tile_fetcher.LAXU_BFETCH_S0p.qn_any(), NYXU_BFETCH_RSTn, tile_fetcher.MESU_BFETCH_S1p.qn_any());
-    /*_p27.NYVA*/ tile_fetcher.NYVA_BFETCH_S2p.dff17_any(tile_fetcher.MESU_BFETCH_S1p.qn_any(), NYXU_BFETCH_RSTn, tile_fetcher.NYVA_BFETCH_S2p.qn_any());
-  }
-
-  /*_p27.LOVY*/ tile_fetcher.LOVY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, tile_fetcher.LYRY_BFETCH_DONEp.out_old());
-
-  /*_p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp_new(), tile_fetcher.NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn);
-  /*_p27.LYRY*/ tile_fetcher.LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
-
-  /*_p27.LURY*/ wire LURY_BG_FETCH_DONEn = and2(tile_fetcher.LOVY_FETCH_DONEp.qn_new(), XYMU_RENDERINGn.qn_new());
-  /*_p27.LONY*/ tile_fetcher.LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, LURY_BG_FETCH_DONEn);
-
-#if 0
-  tile_fetcher.LYZU_BFETCH_S0p_D1.dff17(CLK_xBxDxFxH, rendering, tile_fetcher.LAXU_BFETCH_S0p.state);
-
-  wire NYXU_BFETCH_RSTn = nor5(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state,
-                               and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state),
-                               nor2(~win_reg.RYFA_WIN_FETCHn_A.state, win_reg.RENE_WIN_FETCHn_B.state),
-                               and2(not1(win_reg.RYDY_WIN_HITp.state), win_reg.SOVY_WIN_HITp.state),
-                               and4(rendering, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state));
-
-  if (bit(nand2(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state))) {
-    tile_fetcher.LAXU_BFETCH_S0p.dff_pp(CLK_AxCxExGx,                        ~tile_fetcher.LAXU_BFETCH_S0p.state);
-    tile_fetcher.MESU_BFETCH_S1p.dff_pp(~tile_fetcher.LAXU_BFETCH_S0p.state, ~tile_fetcher.MESU_BFETCH_S1p.state);
-    tile_fetcher.NYVA_BFETCH_S2p.dff_pp(~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state);
-  }
-
-  tile_fetcher.LOVY_FETCH_DONEp.dff_pp(CLK_AxCxExGx, tile_fetcher.LYRY_BFETCH_DONEp.state);
-  tile_fetcher.LYRY_BFETCH_DONEp = and2(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state);
-
-  if (!bit(NYXU_BFETCH_RSTn)) {
-    tile_fetcher.LAXU_BFETCH_S0p.rst();
-    tile_fetcher.MESU_BFETCH_S1p.rst();
-    tile_fetcher.NYVA_BFETCH_S2p.rst();
-    tile_fetcher.LOVY_FETCH_DONEp.rst();
-    tile_fetcher.LONY_FETCHINGp.set();
-    tile_fetcher.LYRY_BFETCH_DONEp = 0;
-  }
-
-  if (bit(tile_fetcher.LOVY_FETCH_DONEp.state)) {
-    tile_fetcher.LONY_FETCHINGp.rst();
-  }
-
-  if (!rendering) {
-    tile_fetcher.LONY_FETCHINGp.rst();
-  }
-
-#endif
-  //----------------------------------------
-  // Fine match counter
-
-  {
-    /*#p27.PAHA*/ wire PAHA_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
-
-    /*#p24.TOMU*/ wire TOMU_WIN_HITp = not1(SYLO_WIN_HITn);
-    /*#p24.SOCY*/ wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);
-
-
-    /*#p27.PASO*/ wire PASO_FINE_RST = nor2(PAHA_RENDERINGn, TEVO_WIN_FETCH_TRIGp);
-
-    /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_match_flags.FEPO_STORE_MATCHp.out_mid(), WODU_HBLANKp.out_old(), MYVO_AxCxExGx());
-
-    /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
-    /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
-    /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
-
-    for (int feedback = 0; feedback < 2; feedback++) {
-      /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_any(), fine_scroll.ROGA_FINE_CNT1.qp_any(), fine_scroll.RYKU_FINE_CNT0.qp_any());
-      /*#p27.PECU*/ wire PECU_FINE_CLK = nand2(ROXO_CLKPIPE_odd, ROZE_FINE_COUNT_7n);
-      /*#p27.RYKU*/ fine_scroll.RYKU_FINE_CNT0.dff17_any(PECU_FINE_CLK, PASO_FINE_RST, fine_scroll.RYKU_FINE_CNT0.qn_any());
-      /*#p27.ROGA*/ fine_scroll.ROGA_FINE_CNT1.dff17_any(fine_scroll.RYKU_FINE_CNT0.qn_any(), PASO_FINE_RST, fine_scroll.ROGA_FINE_CNT1.qn_any());
-      /*#p27.RUBU*/ fine_scroll.RUBU_FINE_CNT2.dff17_any(fine_scroll.ROGA_FINE_CNT1.qn_any(), PASO_FINE_RST, fine_scroll.RUBU_FINE_CNT2.qn_any());
-    }
-  }
-
-  /*
-  if (DELTA_ODD) {
-    uint8_t PECU_FINE_CLK = nand3(clkpipe_en, CLK_xBxDxFxH, fine_cnt_old != 7);
-    fine_scroll.RYKU_FINE_CNT0.dff_pp(PECU_FINE_CLK,                     ~fine_scroll.RYKU_FINE_CNT0.state);
-    fine_scroll.ROGA_FINE_CNT1.dff_pp(~fine_scroll.RYKU_FINE_CNT0.state, ~fine_scroll.ROGA_FINE_CNT1.state);
-    fine_scroll.RUBU_FINE_CNT2.dff_pp(~fine_scroll.ROGA_FINE_CNT1.state, ~fine_scroll.RUBU_FINE_CNT2.state);
-  }
-
-  wire PASO_FINE_RST = nor2(!rendering,
-    or3(
-      nor2(~win_reg.RYFA_WIN_FETCHn_A.state, win_reg.RENE_WIN_FETCHn_B.state),
-      and2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.state),
-      and4(rendering, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state)
-    )
-  );
-
-  if (!bit(PASO_FINE_RST)) {
-    fine_scroll.RYKU_FINE_CNT0.rst();
-    fine_scroll.ROGA_FINE_CNT1.rst();
-    fine_scroll.RUBU_FINE_CNT2.rst();
-  }
-  */
-
-
-  //----------------------------------------
-  // PPU / LCD output
-
-  tock_pix_pipes_logic(CLKPIPE_old, CLKPIPE_new, NYXU_BFETCH_RSTn);
-  set_lcd_pins_logic(CLKPIPE_new);
-
-  //----------------------------------------
-  // Audio
-
-  tock_spu();
-
-  //----------------------------------------
-  // Memory buses
-
-  tock_ext_logic(cart_blob);
-  tock_vram_bus_logic(or3(nor2(~win_reg.RYFA_WIN_FETCHn_A.state, win_reg.RENE_WIN_FETCHn_B.state), and2(not1(win_reg.RYDY_WIN_HITp.state), win_reg.SOVY_WIN_HITp.state), and4(rendering, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state)));
-  tock_oam_bus_logic();
-  tock_zram_logic();
-
-  //----------------------------------------
-  // And finally, interrupts.
-
-  tock_interrupts_logic();
-
-  old_bus = new_bus;
-  commit();
-}
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

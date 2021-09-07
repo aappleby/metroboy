@@ -1173,10 +1173,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   wire TYFA_CLKPIPE_old = and3(SOCY_WIN_HITn_old, tile_fetcher.POKY_PRELOAD_LATCHp.qp_old(), VYBO_CLKPIPE_old);
   wire SEGU_CLKPIPE_old = not1(TYFA_CLKPIPE_old);
   wire ROXO_CLKPIPE_old = not1(SEGU_CLKPIPE_old);
-  wire SACU_CLKPIPE_old = or2(SEGU_CLKPIPE_old, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_old());
+  wire CLKPIPE_old = or2(SEGU_CLKPIPE_old, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_old());
 
   wire CLK_AxCxExGx_old = !!(phase_mask_old & 0b10101010);
-  wire CLKPIPE_old = or2(SEGU_CLKPIPE_old, fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
 
   wire vid_rst_old = bit(reg_lcdc.XONA_LCDC_LCDENn.state);
 
@@ -1864,119 +1863,198 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   }
 
+
+
+
+
+
+
+
+
+
+
+
   //----------------------------------------
   // Fine scroll match, sprite store match, clock pipe, and pixel counter are intertwined here.
 
   auto XYDO_PX3p_old = pix_count.XYDO_PX3p;
+  auto scx_old = pack_inv(3, &reg_scx.DATY_SCX0n);
+  auto fine_cnt_old = pack(3, &fine_scroll.RYKU_FINE_CNT0);
+  wire fine_match_old = bit(fine_scroll.ROXY_FINE_SCROLL_DONEn.state) && (scx_old == fine_cnt_old);
 
-  // Weird feedback loop here - fine scroll and pix count affect store match, which affects pipe clock, which affects fine scroll and pix count.
-  // Implementing the feedback doesn't seem to change any test results, but... paranoia...
+  wire clkpipe_en = 1;
 
-  {
-    wire SUHA_SCX_FINE_MATCHp_old = xnor2(reg_scx.DATY_SCX0n.qn_old(), fine_scroll.RYKU_FINE_CNT0.qp_old());
-    wire SYBY_SCX_FINE_MATCHp_old = xnor2(reg_scx.DUZU_SCX1n.qn_old(), fine_scroll.ROGA_FINE_CNT1.qp_old());
-    wire SOZU_SCX_FINE_MATCHp_old = xnor2(reg_scx.CYXU_SCX2n.qn_old(), fine_scroll.RUBU_FINE_CNT2.qp_old());
-    wire RONE_SCX_FINE_MATCHn_old = nand4(fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_any(), SUHA_SCX_FINE_MATCHp_old, SYBY_SCX_FINE_MATCHp_old, SOZU_SCX_FINE_MATCHp_old);
-    wire POHU_SCX_FINE_MATCHp_old = not1(RONE_SCX_FINE_MATCHn_old);
+  if (bit(win_reg.RYDY_WIN_HITp.state)) clkpipe_en = 0;
+  if (!bit(tile_fetcher.POKY_PRELOAD_LATCHp.state)) clkpipe_en = 0;
+  if (bit(sprite_match_flags.FEPO_STORE_MATCHp.state)) clkpipe_en = 0;
+  if (bit(WODU_HBLANKp.state)) clkpipe_en = 0;
 
-    wire CEHA_SCANNINGp = not1(sprite_scanner.CENO_SCANNINGn.qn_new());
-    wire BYJO_SCANNINGn = not1(CEHA_SCANNINGp);
-    wire AZEM_RENDERINGp = and2(XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn);
-    wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, reg_lcdc.XYLO_LCDC_SPENn.qn_new());
-
-    wire VYBO_CLKPIPE_odd = nor3(sprite_match_flags.FEPO_STORE_MATCHp.out_mid(), WODU_HBLANKp.out_old(), MYVO_AxCxExGx());
-    wire TYFA_CLKPIPE_odd = and3(~win_reg.RYDY_WIN_HITp.state, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
-    wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
-    wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
-
-    fine_scroll.NYZE_SCX_FINE_MATCH_B.dff17_any(MOXE_AxCxExGx(), XYMU_RENDERINGn.qn_new(), fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_any());
-    fine_scroll.PUXA_SCX_FINE_MATCH_A.dff17_any(ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), POHU_SCX_FINE_MATCHp_old);
-
-    wire POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_any(), fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_any());
-    fine_scroll.ROXY_FINE_SCROLL_DONEn.nor_latch(!rendering, POVA_FINE_MATCH_TRIGp);
-
-    wire SACU_CLKPIPE_evn = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_any());
-    wire RYBO_old = xor2(pix_count.XEHO_PX0p.qp_any(), pix_count.SAVY_PX1p.qp_any()); // XOR layout 1, feet facing gnd, this should def be regular xor
-    wire XUKE_old = and2(pix_count.XEHO_PX0p.qp_any(), pix_count.SAVY_PX1p.qp_any());
-    wire XYLE_old = and2(pix_count.XODU_PX2p.qp_any(), XUKE_old);
-    wire XEGY_old = xor2(pix_count.XODU_PX2p.qp_any(), XUKE_old); // feet facing gnd
-    wire XORA_old = xor2(pix_count.XYDO_PX3p.qp_any(), XYLE_old); // feet facing gnd
-
-    pix_count.XEHO_PX0p.dff17_any(SACU_CLKPIPE_evn, nor2(ATEJ_LINE_RSTp.state, vid_rst_new), pix_count.XEHO_PX0p.qn_any());
-    pix_count.SAVY_PX1p.dff17_any(SACU_CLKPIPE_evn, nor2(ATEJ_LINE_RSTp.state, vid_rst_new), RYBO_old);
-    pix_count.XODU_PX2p.dff17_any(SACU_CLKPIPE_evn, nor2(ATEJ_LINE_RSTp.state, vid_rst_new), XEGY_old);
-    pix_count.XYDO_PX3p.dff17_any(SACU_CLKPIPE_evn, nor2(ATEJ_LINE_RSTp.state, vid_rst_new), XORA_old);
-
-    wire TOCA_new = not1(pix_count.XYDO_PX3p.qp_any());
-    wire SAKE_old = xor2(pix_count.TUHU_PX4p.qp_any(), pix_count.TUKY_PX5p.qp_any());
-    wire TYBA_old = and2(pix_count.TUHU_PX4p.qp_any(), pix_count.TUKY_PX5p.qp_any());
-    wire SURY_old = and2(pix_count.TAKO_PX6p.qp_any(), TYBA_old);
-    wire TYGE_old = xor2(pix_count.TAKO_PX6p.qp_any(), TYBA_old);
-    wire ROKU_old = xor2(pix_count.SYBE_PX7p.qp_any(), SURY_old);
-
-    pix_count.TUHU_PX4p.dff17_any(TOCA_new, nor2(ATEJ_LINE_RSTp.state, vid_rst_new), pix_count.TUHU_PX4p.qn_any());
-    pix_count.TUKY_PX5p.dff17_any(TOCA_new, nor2(ATEJ_LINE_RSTp.state, vid_rst_new), SAKE_old);
-    pix_count.TAKO_PX6p.dff17_any(TOCA_new, nor2(ATEJ_LINE_RSTp.state, vid_rst_new), TYGE_old);
-    pix_count.SYBE_PX7p.dff17_any(TOCA_new, nor2(ATEJ_LINE_RSTp.state, vid_rst_new), ROKU_old);
-
-    get_sprite_match_flags_gates(pix_count, AROR_MATCH_ENp, sprite_store, sprite_match_flags, SIG_GND);
+  if (DELTA_EVEN) {
+    if (bit(clkpipe_en)) {
+      fine_scroll.PUXA_SCX_FINE_MATCH_A.state = fine_match_old;
+    }
   }
+  else {
+    fine_scroll.NYZE_SCX_FINE_MATCH_B.state = fine_scroll.PUXA_SCX_FINE_MATCH_A.state;
+  }
+
+  if (!rendering) {
+    fine_scroll.ROXY_FINE_SCROLL_DONEn.set();
+    fine_scroll.NYZE_SCX_FINE_MATCH_B.rst();
+    fine_scroll.PUXA_SCX_FINE_MATCH_A.rst();
+  }
+
+  if (bit(and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.state, ~fine_scroll.NYZE_SCX_FINE_MATCH_B.state))) {
+    fine_scroll.ROXY_FINE_SCROLL_DONEn.rst();
+  }
+
+  wire CLKPIPE_new = CLK_AxCxExGx;
+  if (!bit(clkpipe_en)) CLKPIPE_new = 1;
+  if (bit(fine_scroll.ROXY_FINE_SCROLL_DONEn.state)) CLKPIPE_new = 1;
+
+  wire px_old = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
+
+  if (!bit(CLKPIPE_old) && bit(CLKPIPE_new)) {
+    unpack(px_old + 1, 8, &pix_count.XEHO_PX0p);
+  }
+
+  if (!bit(nor2(ATEJ_LINE_RSTp.state, vid_rst_new))) {
+    clear(8, &pix_count.XEHO_PX0p);
+  }
+
+  wire AROR_MATCH_ENp = and3(rendering, ~sprite_scanner.CENO_SCANNINGn.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
+
+  if (!AROR_MATCH_ENp) {
+    memset(&sprite_match_flags, 0, sizeof(sprite_match_flags));
+  }
+  else {
+    uint8_t px = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
+
+    bool M0 = px == pack(8, &sprite_store.XEPE_STORE0_X0p);
+    bool M1 = px == pack(8, &sprite_store.DANY_STORE1_X0p);
+    bool M2 = px == pack(8, &sprite_store.FOKA_STORE2_X0p);
+    bool M3 = px == pack(8, &sprite_store.XOLY_STORE3_X0p);
+    bool M4 = px == pack(8, &sprite_store.WEDU_STORE4_X0p);
+    bool M5 = px == pack(8, &sprite_store.FUSA_STORE5_X0p);
+    bool M6 = px == pack(8, &sprite_store.YCOL_STORE6_X0p);
+    bool M7 = px == pack(8, &sprite_store.ERAZ_STORE7_X0p);
+    bool M8 = px == pack(8, &sprite_store.EZUF_STORE8_X0p);
+    bool M9 = px == pack(8, &sprite_store.XUVY_STORE9_X0p);
+
+    sprite_match_flags.FEPO_STORE_MATCHp = M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9;
+
+    sprite_match_flags.GUVA_SPRITE0_GETp = M0 & !(0);
+    sprite_match_flags.ENUT_SPRITE1_GETp = M1 & !(M0);
+    sprite_match_flags.EMOL_SPRITE2_GETp = M2 & !(M0 | M1);
+    sprite_match_flags.GYFY_SPRITE3_GETp = M3 & !(M0 | M1 | M2);
+    sprite_match_flags.GONO_SPRITE4_GETp = M4 & !(M0 | M1 | M2 | M3);
+    sprite_match_flags.GEGA_SPRITE5_GETp = M5 & !(M0 | M1 | M2 | M3 | M4);
+    sprite_match_flags.XOJA_SPRITE6_GETp = M6 & !(M0 | M1 | M2 | M3 | M4 | M5);
+    sprite_match_flags.GUTU_SPRITE7_GETp = M7 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6);
+    sprite_match_flags.FOXA_SPRITE8_GETp = M8 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7);
+    sprite_match_flags.GUZE_SPRITE9_GETp = M9 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8);
+  }
+
+
+  auto px_new = pack(8, &pix_count.XEHO_PX0p);
 
   // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
-  {
-    wire XENA_STORE_MATCHn = not1(sprite_match_flags.FEPO_STORE_MATCHp.out_new());
-    wire XUGU_PX167n = nand5(pix_count.XEHO_PX0p.qp_new(), pix_count.SAVY_PX1p.qp_new(), pix_count.XODU_PX2p.qp_new(), pix_count.TUKY_PX5p.qp_new(), pix_count.SYBE_PX7p.qp_new()); // 128 + 32 + 4 + 2 + 1 = 167
-    wire XANO_PX167p = not1(XUGU_PX167n);
-    WODU_HBLANKp = and2(XENA_STORE_MATCHn, XANO_PX167p); // WODU goes high on odd, cleared on H
-  }
+  WODU_HBLANKp = and2(~sprite_match_flags.FEPO_STORE_MATCHp.state, (px_new & 167) == 167); // WODU goes high on odd, cleared on H
 
-  wire VYBO_CLKPIPE_odd = nor3(sprite_match_flags.FEPO_STORE_MATCHp.out_new(), WODU_HBLANKp.out_new(), MYVO_AxCxExGx());
-  wire TYFA_CLKPIPE_odd = and3(~win_reg.RYDY_WIN_HITp.state, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
-  wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
-  wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
-  wire SACU_CLKPIPE_new = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
-
-  lcd.PAHO_X_8_SYNC.dff17(ROXO_CLKPIPE_odd, XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
+  lcd.PAHO_X_8_SYNC.dff17(and2(clkpipe_en, CLK_xBxDxFxH), rendering, XYDO_PX3p_old.state);
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   memset(&sprite_bus, BIT_NEW | BIT_PULLED | 1, sizeof(sprite_bus));
 
+  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.YGUS_STORE0_I0n, 10);
+  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.CADU_STORE1_I0n, 10);
+  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.BUHE_STORE2_I0n, 10);
+  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.DEVY_STORE3_I0n, 10);
+  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.XAVE_STORE4_I0n, 10);
+  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.EKOP_STORE5_I0n, 10);
+  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.GABO_STORE6_I0n, 10);
+  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.GULE_STORE7_I0n, 10);
+  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.AXUV_STORE8_I0n, 10);
+  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.YBER_STORE9_I0n, 10);
 
-  sprite_match_to_bus_logic(sprite_store, sprite_match_flags, sprite_bus);
-  sprite_scan_to_bus_logic(sprite_delta_y, XYMU_RENDERINGn, sprite_match_flags.FEPO_STORE_MATCHp);
+  if (bit(or2(sprite_scanner.CENO_SCANNINGn.state, XYMU_RENDERINGn.state))) {
+    memcpy(&sprite_bus.BUS_SPR_I0, &sprite_scanner.XADU_SPRITE_IDX0p, 6);
+  }
+
+  if (!bit(sprite_match_flags.FEPO_STORE_MATCHp.state)) {
+    cpy_inv(&sprite_bus.BUS_SPR_L0, &sprite_delta_y.DEGE_SPRITE_DELTA0, 4);
+  }
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
   // WY/WX/window match
 
-  tock_window_logic(SEGU_CLKPIPE_evn, or2(lcd.POPU_y144p.state, vid_rst_new));
+  win_reg.PYCO_WIN_MATCHp.dff17(~CLKPIPE_new, 1, win_reg.NUKO_WX_MATCHp.state);
+
+  wire PANY_WIN_FETCHn_old = and4(~win_reg.NUKO_WX_MATCHp.state, fine_scroll.RUBU_FINE_CNT2.state, fine_scroll.ROGA_FINE_CNT1.state, fine_scroll.RYKU_FINE_CNT0.state);
+
+  win_reg.RENE_WIN_FETCHn_B.dff17(ALET_xBxDxFxH(),  1, win_reg.RYFA_WIN_FETCHn_A.state);
+  win_reg.RYFA_WIN_FETCHn_A.dff17(CLKPIPE_new, 1, PANY_WIN_FETCHn_old);
+
+  if (bit(XYMU_RENDERINGn.state)) {
+    win_reg.RENE_WIN_FETCHn_B.rst();
+    win_reg.RYFA_WIN_FETCHn_A.rst();
+  }
+
+  if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
+    if (new_addr == 0xFF4A) cpy_inv(&reg_wy.NESO_WY0n, &old_bus.BUS_CPU_D00p, 8);
+    if (new_addr == 0xFF4B) cpy_inv(&reg_wx.MYPA_WX0n, &old_bus.BUS_CPU_D00p, 8);
+  }
+
+  if (cpu_signals.SIG_IN_CPU_RDp.state) {
+    if (new_addr == 0xFF4A) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_wy.NESO_WY0n, 8);
+    if (new_addr == 0xFF4B) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_wx.MYPA_WX0n, 8);
+  }
+
+  uint8_t wy = (uint8_t)pack_inv(8, &reg_wy.NESO_WY0n);
+  uint8_t wx = (uint8_t)pack_inv(8, &reg_wx.MYPA_WX0n);
+  uint8_t ly = (uint8_t)pack(8, &reg_ly.MUWY_LY0p);
+  uint8_t px = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
+
+  win_reg.SARY_WY_MATCHp.dff17(TALU_xxCDEFxx(), 1, win_reg.ROGE_WY_MATCHp.state);
+
+  if (vid_rst_new) {
+    win_reg.PYCO_WIN_MATCHp.rst();
+    win_reg.SARY_WY_MATCHp.rst();
+  }
+
+  win_reg.ROGE_WY_MATCHp = (ly == wy) && !bit(reg_lcdc.WYMO_LCDC_WINENn.state);
+
+  if (bit(win_reg.SARY_WY_MATCHp.state)) win_reg.REJO_WY_MATCH_LATCHp.state = 1;
+  if (bit(or2(lcd.POPU_y144p.state, vid_rst_new))) win_reg.REJO_WY_MATCH_LATCHp.state = 0;
+
+  win_reg.NUKO_WX_MATCHp = (wx == px) && bit(win_reg.REJO_WY_MATCH_LATCHp.state);
 
   //----------------------------------------
   // Tile fetch sequencer
 
-  tile_fetcher.LYZU_BFETCH_S0p_D1.dff17(ALET_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), tile_fetcher.LAXU_BFETCH_S0p.qp_old());
+  tile_fetcher.LYZU_BFETCH_S0p_D1.dff17(CLK_xBxDxFxH, rendering, tile_fetcher.LAXU_BFETCH_S0p.state);
 
-  wire SEKO_WIN_FETCH_TRIGp = nor2(win_reg.RYFA_WIN_FETCHn_A.qn_new(), win_reg.RENE_WIN_FETCHn_B.qp_new());
-  wire TUXY_WIN_FIRST_TILEne = nand2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.qp_new());
-  wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILEne);
-  wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp, SUZU_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
-  wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new(), MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
+  wire SEKO_WIN_FETCH_TRIGp = nor2(~win_reg.RYFA_WIN_FETCHn_A.state, win_reg.RENE_WIN_FETCHn_B.state);
+  wire TUXY_WIN_FIRST_TILEne = nand2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.state);
+  wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp, ~TUXY_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp);
+  wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state, MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
 
   for (int feedback = 0; feedback < 2; feedback++) {
-    wire MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp_any(), tile_fetcher.NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn);
-    wire LEBO_AxCxExGx = nand2(ALET_xBxDxFxH(), MOCE_BFETCH_DONEn);
+    wire MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state, NYXU_BFETCH_RSTn);
+    wire LEBO_AxCxExGx = nand2(CLK_xBxDxFxH, MOCE_BFETCH_DONEn);
 
-    tile_fetcher.LAXU_BFETCH_S0p.dff17_any(LEBO_AxCxExGx, NYXU_BFETCH_RSTn, tile_fetcher.LAXU_BFETCH_S0p.qn_any());
-    tile_fetcher.MESU_BFETCH_S1p.dff17_any(tile_fetcher.LAXU_BFETCH_S0p.qn_any(), NYXU_BFETCH_RSTn, tile_fetcher.MESU_BFETCH_S1p.qn_any());
-    tile_fetcher.NYVA_BFETCH_S2p.dff17_any(tile_fetcher.MESU_BFETCH_S1p.qn_any(), NYXU_BFETCH_RSTn, tile_fetcher.NYVA_BFETCH_S2p.qn_any());
+    tile_fetcher.LAXU_BFETCH_S0p.dff17_any(LEBO_AxCxExGx, NYXU_BFETCH_RSTn, ~tile_fetcher.LAXU_BFETCH_S0p.state);
+    tile_fetcher.MESU_BFETCH_S1p.dff17_any(~tile_fetcher.LAXU_BFETCH_S0p.state, NYXU_BFETCH_RSTn, ~tile_fetcher.MESU_BFETCH_S1p.state);
+    tile_fetcher.NYVA_BFETCH_S2p.dff17_any(~tile_fetcher.MESU_BFETCH_S1p.state, NYXU_BFETCH_RSTn, ~tile_fetcher.NYVA_BFETCH_S2p.state);
   }
 
-  tile_fetcher.LOVY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, tile_fetcher.LYRY_BFETCH_DONEp.out_old());
+  tile_fetcher.LOVY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, tile_fetcher.LYRY_BFETCH_DONEp.state);
 
-  wire MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.qp_new(), tile_fetcher.NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn);
+  wire MOCE_BFETCH_DONEn = nand3(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state, NYXU_BFETCH_RSTn);
   tile_fetcher.LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);
 
-  wire LURY_BG_FETCH_DONEn = and2(tile_fetcher.LOVY_FETCH_DONEp.qn_new(), XYMU_RENDERINGn.qn_new());
+  wire LURY_BG_FETCH_DONEn = and2(~tile_fetcher.LOVY_FETCH_DONEp.state, rendering);
   tile_fetcher.LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, LURY_BG_FETCH_DONEn);
 
 
@@ -1987,7 +2065,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   for (int feedback = 0; feedback < 2; feedback++) {
     wire ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_any(), fine_scroll.ROGA_FINE_CNT1.qp_any(), fine_scroll.RYKU_FINE_CNT0.qp_any());
-    wire PECU_FINE_CLK = nand2(ROXO_CLKPIPE_odd, ROZE_FINE_COUNT_7n);
+    wire PECU_FINE_CLK = nand2(~CLKPIPE_new, ROZE_FINE_COUNT_7n);
     fine_scroll.RYKU_FINE_CNT0.dff17_any(PECU_FINE_CLK, PASO_FINE_RST, fine_scroll.RYKU_FINE_CNT0.qn_any());
     fine_scroll.ROGA_FINE_CNT1.dff17_any(fine_scroll.RYKU_FINE_CNT0.qn_any(), PASO_FINE_RST, fine_scroll.ROGA_FINE_CNT1.qn_any());
     fine_scroll.RUBU_FINE_CNT2.dff17_any(fine_scroll.ROGA_FINE_CNT1.qn_any(), PASO_FINE_RST, fine_scroll.RUBU_FINE_CNT2.qn_any());
@@ -1996,8 +2074,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // PPU / LCD output
 
-  tock_pix_pipes_logic(SACU_CLKPIPE_old, SACU_CLKPIPE_new, NYXU_BFETCH_RSTn);
-  set_lcd_pins_logic(SACU_CLKPIPE_new);
+  tock_pix_pipes_logic(CLKPIPE_old, CLKPIPE_new, NYXU_BFETCH_RSTn);
+  set_lcd_pins_logic(CLKPIPE_new);
 
   //----------------------------------------
   // Audio
@@ -2146,170 +2224,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 void GateBoy::tock_logic(const blob& cart_blob) {
   
-  //----------------------------------------
-  // Fine scroll match, sprite store match, clock pipe, and pixel counter are intertwined here.
-
-  auto XYDO_PX3p_old = pix_count.XYDO_PX3p;
-  auto scx_old = pack_inv(3, &reg_scx.DATY_SCX0n);
-  auto fine_cnt_old = pack(3, &fine_scroll.RYKU_FINE_CNT0);
-  wire fine_match_old = bit(fine_scroll.ROXY_FINE_SCROLL_DONEn.state) && (scx_old == fine_cnt_old);
-
-  wire clkpipe_en = 1;
-
-  if (bit(win_reg.RYDY_WIN_HITp.state)) clkpipe_en = 0;
-  if (!bit(tile_fetcher.POKY_PRELOAD_LATCHp.state)) clkpipe_en = 0;
-  if (bit(sprite_match_flags.FEPO_STORE_MATCHp.state)) clkpipe_en = 0;
-  if (bit(WODU_HBLANKp.state)) clkpipe_en = 0;
-
-  if (DELTA_EVEN) {
-    if (bit(clkpipe_en)) {
-      fine_scroll.PUXA_SCX_FINE_MATCH_A.state = fine_match_old;
-    }
-  }
-  else {
-    fine_scroll.NYZE_SCX_FINE_MATCH_B.state = fine_scroll.PUXA_SCX_FINE_MATCH_A.state;
-  }
-
-  if (!rendering) {
-    fine_scroll.ROXY_FINE_SCROLL_DONEn.set();
-    fine_scroll.NYZE_SCX_FINE_MATCH_B.rst();
-    fine_scroll.PUXA_SCX_FINE_MATCH_A.rst();
-  }
-
-  if (bit(and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.state, ~fine_scroll.NYZE_SCX_FINE_MATCH_B.state))) {
-    fine_scroll.ROXY_FINE_SCROLL_DONEn.rst();
-  }
-
-  wire CLKPIPE_new = CLK_AxCxExGx;
-  if (!bit(clkpipe_en)) CLKPIPE_new = 1;
-  if (bit(fine_scroll.ROXY_FINE_SCROLL_DONEn.state)) CLKPIPE_new = 1;
-
-  wire px_old = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
-
-  if (!bit(CLKPIPE_old) && bit(CLKPIPE_new)) {
-    unpack(px_old + 1, 8, &pix_count.XEHO_PX0p);
-  }
-
-  if (!bit(ANOM_LINE_RSTn)) {
-    clear(8, &pix_count.XEHO_PX0p);
-  }
-
-  wire AROR_MATCH_ENp = and3(rendering, ~sprite_scanner.CENO_SCANNINGn.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
-
-  if (!AROR_MATCH_ENp) {
-    memset(&sprite_match_flags, 0, sizeof(sprite_match_flags));
-  }
-  else {
-    uint8_t px = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
-
-    bool M0 = px == pack(8, &sprite_store.XEPE_STORE0_X0p);
-    bool M1 = px == pack(8, &sprite_store.DANY_STORE1_X0p);
-    bool M2 = px == pack(8, &sprite_store.FOKA_STORE2_X0p);
-    bool M3 = px == pack(8, &sprite_store.XOLY_STORE3_X0p);
-    bool M4 = px == pack(8, &sprite_store.WEDU_STORE4_X0p);
-    bool M5 = px == pack(8, &sprite_store.FUSA_STORE5_X0p);
-    bool M6 = px == pack(8, &sprite_store.YCOL_STORE6_X0p);
-    bool M7 = px == pack(8, &sprite_store.ERAZ_STORE7_X0p);
-    bool M8 = px == pack(8, &sprite_store.EZUF_STORE8_X0p);
-    bool M9 = px == pack(8, &sprite_store.XUVY_STORE9_X0p);
-
-    sprite_match_flags.FEPO_STORE_MATCHp = M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9;
-
-    sprite_match_flags.GUVA_SPRITE0_GETp = M0 & !(0);
-    sprite_match_flags.ENUT_SPRITE1_GETp = M1 & !(M0);
-    sprite_match_flags.EMOL_SPRITE2_GETp = M2 & !(M0 | M1);
-    sprite_match_flags.GYFY_SPRITE3_GETp = M3 & !(M0 | M1 | M2);
-    sprite_match_flags.GONO_SPRITE4_GETp = M4 & !(M0 | M1 | M2 | M3);
-    sprite_match_flags.GEGA_SPRITE5_GETp = M5 & !(M0 | M1 | M2 | M3 | M4);
-    sprite_match_flags.XOJA_SPRITE6_GETp = M6 & !(M0 | M1 | M2 | M3 | M4 | M5);
-    sprite_match_flags.GUTU_SPRITE7_GETp = M7 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6);
-    sprite_match_flags.FOXA_SPRITE8_GETp = M8 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7);
-    sprite_match_flags.GUZE_SPRITE9_GETp = M9 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8);
-  }
-
-
-  auto px_new = pack(8, &pix_count.XEHO_PX0p);
-
-  // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
-  WODU_HBLANKp = and2(~sprite_match_flags.FEPO_STORE_MATCHp.state, (px_new & 167) == 167); // WODU goes high on odd, cleared on H
-
-  lcd.PAHO_X_8_SYNC.dff17(and2(clkpipe_en, CLK_xBxDxFxH), rendering, XYDO_PX3p_old.state);
-
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-  memset(&sprite_bus, BIT_NEW | BIT_PULLED | 1, sizeof(sprite_bus));
-
-  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.YGUS_STORE0_I0n, 10);
-  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.CADU_STORE1_I0n, 10);
-  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.BUHE_STORE2_I0n, 10);
-  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.DEVY_STORE3_I0n, 10);
-  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.XAVE_STORE4_I0n, 10);
-  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.EKOP_STORE5_I0n, 10);
-  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.GABO_STORE6_I0n, 10);
-  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.GULE_STORE7_I0n, 10);
-  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.AXUV_STORE8_I0n, 10);
-  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(&sprite_bus.BUS_SPR_I0, &sprite_store.YBER_STORE9_I0n, 10);
-
-  if (bit(or2(sprite_scanner.CENO_SCANNINGn.state, XYMU_RENDERINGn.state))) {
-    memcpy(&sprite_bus.BUS_SPR_I0, &sprite_scanner.XADU_SPRITE_IDX0p, 6);
-  }
-
-  if (!bit(sprite_match_flags.FEPO_STORE_MATCHp.state)) {
-    cpy_inv(&sprite_bus.BUS_SPR_L0, &sprite_delta_y.DEGE_SPRITE_DELTA0, 4);
-  }
-
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // WY/WX/window match
-
-  if (DELTA_EVEN) {
-    if (clkpipe_en) win_reg.PYCO_WIN_MATCHp.state = win_reg.NUKO_WX_MATCHp.state;
-  }
-
-  if (DELTA_ODD) {
-    wire PANY_WIN_FETCHn_old = and4(~win_reg.NUKO_WX_MATCHp.state, fine_scroll.RUBU_FINE_CNT2.state, fine_scroll.ROGA_FINE_CNT1.state, fine_scroll.RYKU_FINE_CNT0.state);
-    win_reg.RYFA_WIN_FETCHn_A.dff17(~and2(clkpipe_en, CLK_xBxDxFxH), 1, PANY_WIN_FETCHn_old);
-  }
-
-  if (DELTA_EVEN) {
-    win_reg.RENE_WIN_FETCHn_B.state = win_reg.RYFA_WIN_FETCHn_A.state;
-  }
-
-
-  if (bit(XYMU_RENDERINGn.state)) {
-    win_reg.RENE_WIN_FETCHn_B.rst();
-    win_reg.RYFA_WIN_FETCHn_A.rst();
-  }
-
-  if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
-    if (new_addr == 0xFF4A) cpy_inv(&reg_wy.NESO_WY0n, &old_bus.BUS_CPU_D00p, 8);
-    if (new_addr == 0xFF4B) cpy_inv(&reg_wx.MYPA_WX0n, &old_bus.BUS_CPU_D00p, 8);
-  }
-
-  if (cpu_signals.SIG_IN_CPU_RDp.state) {
-    if (new_addr == 0xFF4A) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_wy.NESO_WY0n, 8);
-    if (new_addr == 0xFF4B) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_wx.MYPA_WX0n, 8);
-  }
-
-  uint8_t wy = (uint8_t)pack_inv(8, &reg_wy.NESO_WY0n);
-  uint8_t wx = (uint8_t)pack_inv(8, &reg_wx.MYPA_WX0n);
-  uint8_t ly = (uint8_t)pack(8, &reg_ly.MUWY_LY0p);
-  uint8_t px = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
-
-  if (DELTA_BC) {
-    win_reg.SARY_WY_MATCHp.state = win_reg.ROGE_WY_MATCHp.state;
-  }
-
-  if (vid_rst) {
-    win_reg.PYCO_WIN_MATCHp.rst();
-    win_reg.SARY_WY_MATCHp.rst();
-  }
-
-  win_reg.ROGE_WY_MATCHp = (ly == wy) && !bit(reg_lcdc.WYMO_LCDC_WINENn.state);
-
-  if (bit(win_reg.SARY_WY_MATCHp.state)) win_reg.REJO_WY_MATCH_LATCHp.state = 1;
-  if (bit(or2(lcd.POPU_y144p.state, vid_rst))) win_reg.REJO_WY_MATCH_LATCHp.state = 0;
-
-  win_reg.NUKO_WX_MATCHp = (wx == px) && bit(win_reg.REJO_WY_MATCH_LATCHp.state);
 
 
   //----------------------------------------

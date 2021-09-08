@@ -69,24 +69,28 @@ void* init_gl(void* window) {
                           SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+  LOG_G("Creating context\n");
 
   SDL_GLContext gl_context = SDL_GL_CreateContext((SDL_Window*)window);
 
   SDL_GL_SetSwapInterval(1);  // Enable vsync
   //SDL_GL_SetSwapInterval(0); // Disable vsync
 
+  LOG_G("glad stuff\n");
+
   gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-  glEnable(GL_DEBUG_OUTPUT);
-  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-  glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-  glDebugMessageCallback(debugOutput, nullptr);
+  //glEnable(GL_DEBUG_OUTPUT);
+  //glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+  //glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+  //glDebugMessageCallback(debugOutput, nullptr);
 
   int ext_count = 0;
   glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
@@ -108,13 +112,20 @@ void* init_gl(void* window) {
   //----------------------------------------
   // Set initial GL state
 
-  glDisable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LEQUAL);
+  LOG_G("set initial state\n");
 
+  glDisable(GL_DEPTH_TEST);
+  LOG_G("1\n");
+  glDepthFunc(GL_LEQUAL);
+  LOG_G("2\n");
   glEnable(GL_BLEND);
+  LOG_G("3\n");
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  LOG_G("4\n");
   glClearColor(0.1f, 0.1f, 0.2f, 0.f);
-  glClearDepthf(1.0);
+  LOG_G("5\n");
+  glClearDepth(1.0);
+  LOG_G("init done\n");
 
   return (void*)gl_context;
 }
@@ -339,7 +350,7 @@ int create_shader(const char* name, const char* src) {
   LOG_B("Compiling %s\n", name);
 
   auto vert_srcs = {
-    "#version 450\n",
+    "#version 130\n",
     "precision highp float;\n",
     "precision highp int;\n",
     "precision highp usampler2D;\n",
@@ -362,7 +373,7 @@ int create_shader(const char* name, const char* src) {
   }
 
   auto frag_srcs = {
-    "#version 450\n",
+    "#version 130\n",
     "precision highp float;\n",
     "precision highp int;\n",
     "precision highp usampler2D;\n",

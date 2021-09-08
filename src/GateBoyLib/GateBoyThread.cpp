@@ -245,7 +245,7 @@ void GateBoyThread::thread_main() {
         sync.clear(ACK_PAUSE);
       }
     }
-    
+
     // Run the sim until we get a break signal
     double time_begin = timestamp();
     if      (config_regression)  run_regression();
@@ -278,6 +278,8 @@ void GateBoyThread::run_normal() {
 }
 
 //------------------------------------------------------------------------------
+
+#pragma optimize("", off)
 
 void GateBoyThread::run_regression() {
   auto& gba = *gb_a.state();

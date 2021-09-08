@@ -30,6 +30,11 @@
 #include <atomic>
 #include <cstring>
 
+uint32_t cart_rom_addr_mask(const blob& cart_blob);
+uint32_t cart_ram_addr_mask(const blob & cart_blob);
+bool cart_has_mbc1(const blob & cart_blob);
+bool cart_has_ram(const blob & cart_blob);
+
 //-----------------------------------------------------------------------------
 
 #pragma pack(push, 1)

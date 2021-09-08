@@ -440,6 +440,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
 //------------------------------------------------------------------------------------------------------------------------
 
+#if 0
 void GateBoy::tock_ext_logic(const blob& cart_blob)
 {
   //----------------------------------------
@@ -535,3 +536,4 @@ void GateBoy::tock_ext_logic(const blob& cart_blob)
 
   }
 }
+#endif

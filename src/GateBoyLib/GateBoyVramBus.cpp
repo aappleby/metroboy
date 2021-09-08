@@ -769,36 +769,17 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
     if (new_addr == 0xFF43) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_scx.DATY_SCX0n, 8);
   }
 
+  auto px  = pack(8, &pix_count.XEHO_PX0p);
+  auto ly  = pack(8, &reg_ly.MUWY_LY0p);
+  auto scx = pack_inv(8, &reg_scx.DATY_SCX0n);
+  auto scy = pack_inv(8, &reg_scy.GAVE_SCY0n);
 
-  Adder ATAD_TILE_X0 = add3(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), SIG_GND.out_new());
-  Adder BEHU_TILE_X1 = add3(pix_count.SAVY_PX1p.qp_new(), reg_scx.DUZU_SCX1n.qn_new(), ATAD_TILE_X0.carry);
-  Adder APYH_TILE_X2 = add3(pix_count.XODU_PX2p.qp_new(), reg_scx.CYXU_SCX2n.qn_new(), BEHU_TILE_X1.carry);
-  Adder BABE_MAP_X0 = add3(pix_count.XYDO_PX3p.qp_new(), reg_scx.GUBO_SCX3n.qn_new(), APYH_TILE_X2.carry);
-  Adder ABOD_MAP_X1 = add3(pix_count.TUHU_PX4p.qp_new(), reg_scx.BEMY_SCX4n.qn_new(), BABE_MAP_X0.carry);
-  Adder BEWY_MAP_X2 = add3(pix_count.TUKY_PX5p.qp_new(), reg_scx.CUZY_SCX5n.qn_new(), ABOD_MAP_X1.carry);
-  Adder BYCA_MAP_X3 = add3(pix_count.TAKO_PX6p.qp_new(), reg_scx.CABU_SCX6n.qn_new(), BEWY_MAP_X2.carry);
-  Adder ACUL_MAP_X4 = add3(pix_count.SYBE_PX7p.qp_new(), reg_scx.BAKE_SCX7n.qn_new(), BYCA_MAP_X3.carry);
-
-  Adder FAFO_TILE_Y0 = add3(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), SIG_GND.out_new());
-  Adder EMUX_TILE_Y1 = add3(reg_ly.MYRO_LY1p.qp_new(), reg_scy.FYMO_SCY1n.qn_new(), FAFO_TILE_Y0.carry);
-  Adder ECAB_TILE_Y2 = add3(reg_ly.LEXA_LY2p.qp_new(), reg_scy.FEZU_SCY2n.qn_new(), EMUX_TILE_Y1.carry);
-  Adder ETAM_MAP_Y0 = add3(reg_ly.LYDO_LY3p.qp_new(), reg_scy.FUJO_SCY3n.qn_new(), ECAB_TILE_Y2.carry);
-  Adder DOTO_MAP_Y1 = add3(reg_ly.LOVU_LY4p.qp_new(), reg_scy.DEDE_SCY4n.qn_new(), ETAM_MAP_Y0.carry);
-  Adder DABA_MAP_Y2 = add3(reg_ly.LEMA_LY5p.qp_new(), reg_scy.FOTY_SCY5n.qn_new(), DOTO_MAP_Y1.carry);
-  Adder EFYK_MAP_Y3 = add3(reg_ly.MATO_LY6p.qp_new(), reg_scy.FOHA_SCY6n.qn_new(), DABA_MAP_Y2.carry);
-  Adder EJOK_MAP_Y4 = add3(reg_ly.LAFO_LY7p.qp_new(), reg_scy.FUNY_SCY7n.qn_new(), EFYK_MAP_Y3.carry);
+  auto sum_x = px + scx;
+  auto sum_y = ly + scy;
 
   if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, ~win_reg.PYNU_WIN_MODE_Ap.state))) {
-    vram_bus.BUS_VRAM_A00n.state = ~BABE_MAP_X0.sum;
-    vram_bus.BUS_VRAM_A01n.state = ~ABOD_MAP_X1.sum;
-    vram_bus.BUS_VRAM_A02n.state = ~BEWY_MAP_X2.sum;
-    vram_bus.BUS_VRAM_A03n.state = ~BYCA_MAP_X3.sum;
-    vram_bus.BUS_VRAM_A04n.state = ~ACUL_MAP_X4.sum;
-    vram_bus.BUS_VRAM_A05n.state = ~ETAM_MAP_Y0.sum;
-    vram_bus.BUS_VRAM_A06n.state = ~DOTO_MAP_Y1.sum;
-    vram_bus.BUS_VRAM_A07n.state = ~DABA_MAP_Y2.sum;
-    vram_bus.BUS_VRAM_A08n.state = ~EFYK_MAP_Y3.sum;
-    vram_bus.BUS_VRAM_A09n.state = ~EJOK_MAP_Y4.sum;
+    unpack_inv(sum_x >> 3, 5, &vram_bus.BUS_VRAM_A00n);
+    unpack_inv(sum_y >> 3, 5, &vram_bus.BUS_VRAM_A05n);
     vram_bus.BUS_VRAM_A10n.state = reg_lcdc.XAFO_LCDC_BGMAPn.state;
     vram_bus.BUS_VRAM_A11n.state = 0;
     vram_bus.BUS_VRAM_A12n.state = 0;
@@ -809,7 +790,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
 
   wire VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, win_reg.PYNU_WIN_MODE_Ap.state);
   wire XOFO_WIN_RSTp = nand3(~reg_lcdc.WYMO_LCDC_WINENn.state, ~ATEJ_LINE_RSTp.state, ~reg_lcdc.XONA_LCDC_LCDENn.state);
-  win_coords.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp, ~XOFO_WIN_RSTp, ~win_coords.WYKA_WIN_MAP_X0.state);
+  win_coords.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp,                     ~XOFO_WIN_RSTp, ~win_coords.WYKA_WIN_MAP_X0.state);
   win_coords.WODY_WIN_MAP_X1.dff17(~win_coords.WYKA_WIN_MAP_X0.state, ~XOFO_WIN_RSTp, ~win_coords.WODY_WIN_MAP_X1.state);
   win_coords.WOBO_WIN_MAP_X2.dff17(~win_coords.WODY_WIN_MAP_X1.state, ~XOFO_WIN_RSTp, ~win_coords.WOBO_WIN_MAP_X2.state);
   win_coords.WYKO_WIN_MAP_X3.dff17(~win_coords.WOBO_WIN_MAP_X2.state, ~XOFO_WIN_RSTp, ~win_coords.WYKO_WIN_MAP_X3.state);
@@ -842,9 +823,7 @@ void GateBoy::tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp) {
     vram_bus.BUS_VRAM_A00n.state = ~tile_fetcher.NYVA_BFETCH_S2p.state;
 
     if (bit(~win_reg.PYNU_WIN_MODE_Ap.state)) {
-      vram_bus.BUS_VRAM_A01n.state = ~FAFO_TILE_Y0.sum;
-      vram_bus.BUS_VRAM_A02n.state = ~EMUX_TILE_Y1.sum;
-      vram_bus.BUS_VRAM_A03n.state = ~ECAB_TILE_Y2.sum;
+      unpack_inv(sum_y, 3, &vram_bus.BUS_VRAM_A01n);
     }
 
     if (bit(win_reg.PYNU_WIN_MODE_Ap.state)) {

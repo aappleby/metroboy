@@ -2379,7 +2379,100 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     memset(&ext_pins.PIN_17_D00, 0, 8);
   }
 
-  tock_ext_logic(cart_blob);
+  //----------------------------------------
+  // Ext read
+
+  if (bit(~ext_pins.PIN_79_RDn.qp_ext_new())) {
+    uint16_t ext_addr = (uint16_t)pack_inv(16, (BitBase*)&ext_pins.PIN_01_A00);
+    const int region = ext_addr >> 13;
+    uint8_t data_in = 0;
+
+    if (cart_has_mbc1(cart_blob)) {
+      bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.state);
+      bool mbc1_mode = bit(ext_pins.MBC1_MODE.state);
+
+      uint32_t mbc1_rom0_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+      uint32_t mbc1_rom0_addr = ((ext_addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
+
+      uint32_t mbc1_rom1_bank = pack(7, (BitBase*)&ext_pins.MBC1_BANK0);
+      uint32_t mbc1_rom1_addr = ((ext_addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
+
+      uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+      uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
+
+      if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
+
+      switch (region) {
+      case 0: data_in = cart_blob[mbc1_rom0_addr]; break;
+      case 1: data_in = cart_blob[mbc1_rom0_addr]; break;
+      case 2: data_in = cart_blob[mbc1_rom1_addr]; break;
+      case 3: data_in = cart_blob[mbc1_rom1_addr]; break;
+      case 4: data_in = 0xFF; break;
+      case 5: data_in = mbc1_ram_en ? cart_ram[mbc1_ram_addr] : 0xFF; break;
+      case 6: data_in = int_ram[ext_addr & 0x1FFF]; break;
+      case 7: data_in = int_ram[ext_addr & 0x1FFF]; break;
+      }
+    }
+    else {
+      switch (region) {
+      case 0: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
+      case 1: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
+      case 2: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
+      case 3: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
+      case 4: data_in = 0xFF; break;
+      case 5: data_in = cart_has_ram(cart_blob) ? cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] : 0xFF; break;
+      case 6: data_in = int_ram[ext_addr & 0x1FFF]; break;
+      case 7: data_in = int_ram[ext_addr & 0x1FFF]; break;
+      }
+    }
+
+    unpack_inv(data_in, 8, &ext_pins.PIN_17_D00);
+  }
+
+
+  //----------------------------------------
+  // Ext write
+
+
+  if (bit(~ext_pins.PIN_78_WRn.qp_ext_new())) {
+    uint16_t ext_addr = (uint16_t)pack_inv(16, (BitBase*)&ext_pins.PIN_01_A00);
+    const int region = ext_addr >> 13;
+    uint8_t data_out = (uint8_t)pack_inv(8, &ext_pins.PIN_17_D00);
+
+    if (cart_has_mbc1(cart_blob)) {
+      bool mbc1_ram_en = bit(ext_pins.MBC1_RAM_EN.state);
+      bool mbc1_mode = bit(ext_pins.MBC1_MODE.state);
+
+      uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_pins.MBC1_BANK5) : 0;
+      uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
+
+      switch (region) {
+      case 0: ext_pins.MBC1_RAM_EN = bit((data_out & 0x0F) == 0x0A); break;
+      case 1: unpack(data_out, 5, (BitBase*)&ext_pins.MBC1_BANK0); break;
+      case 2: unpack(data_out, 2, (BitBase*)&ext_pins.MBC1_BANK5); break;
+      case 3: ext_pins.MBC1_MODE = (data_out & 1); break;
+      case 4: break;
+      case 5: if (cart_has_ram(cart_blob) && mbc1_ram_en) cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = data_out; break;
+      case 6: int_ram[ext_addr & 0x1FFF] = data_out; break;
+      case 7: int_ram[ext_addr & 0x1FFF] = data_out; break;
+      }
+    }
+    else {
+      switch (region) {
+      case 0: break;
+      case 1: break;
+      case 2: break;
+      case 3: break;
+      case 4: break;
+      case 5: if (cart_has_ram(cart_blob)) cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] = data_out; break;
+      case 6: int_ram[ext_addr & 0x1FFF] = data_out;break;
+      case 7: int_ram[ext_addr & 0x1FFF] = data_out;break;
+      }
+    }
+  }
+
+  //----------------------------------------
+
 
   if (bit(and4(cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
     cpy_inv(&new_bus.BUS_CPU_D00p, &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
@@ -2432,7 +2525,64 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // And finally, interrupts.
 
-  tock_interrupts_logic();
+  {
+    if (new_addr == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
+      cpy(&interrupts.IE_D0, &old_bus.BUS_CPU_D00p, 5);
+    }
+
+    if (new_addr == 0xFF41 && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
+      cpy_inv(&reg_stat.ROXE_STAT_HBI_ENn, &old_bus.BUS_CPU_D00p, 4);
+    }
+
+    if (new_addr == 0xFF41 && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
+      new_bus.BUS_CPU_D00p.state = ~XYMU_RENDERINGn.state | lcd.POPU_y144p.state;
+      new_bus.BUS_CPU_D01p.state = ~XYMU_RENDERINGn.state | sprite_scanner.ACYL_SCANNINGp.state;
+      new_bus.BUS_CPU_D02p.state = ~reg_stat.RUPO_LYC_MATCHn.state;
+      cpy_inv(&new_bus.BUS_CPU_D03p, &reg_stat.ROXE_STAT_HBI_ENn, 4);
+    }
+
+    bool stat_int = 0;
+    if (!bit(reg_stat.RUGU_STAT_LYI_ENn.state) && bit(reg_lyc.ROPO_LY_MATCH_SYNCp.state)) stat_int = 1;
+    if (!bit(reg_stat.REFE_STAT_OAI_ENn.state) && bit(and2(~lcd.POPU_y144p.state, lcd.RUTU_x113p.qp_new()))) stat_int = 1;
+    if (!bit(reg_stat.RUFO_STAT_VBI_ENn.state) && bit(lcd.POPU_y144p.state)) stat_int = 1;
+    if (!bit(reg_stat.ROXE_STAT_HBI_ENn.state) && bit(and2(WODU_HBLANKp.state, ~lcd.POPU_y144p.state))) stat_int = 1;
+
+    wire lcd_int = lcd.POPU_y144p.state;
+    wire joy_int = nand2(joy.APUG_JP_GLITCH3.state, joy.BATU_JP_GLITCH0.state);
+    wire tim_int = timer.MOBA_TIMER_OVERFLOWp.state;
+    wire ser_int = serial.CALY_SER_CNT3.state;
+
+    // FIXME to handle these dffs correctly we need to know both the old and new value of the interrupt triggers...
+    interrupts.LOPE_FF0F_D0p.dff22(lcd_int,  1, 1, 1);
+    interrupts.LALU_FF0F_D1p.dff22(stat_int, 1, 1, 1);
+    interrupts.NYBO_FF0F_D2p.dff22(tim_int,  1, 1, 1);
+    interrupts.UBUL_FF0F_D3p.dff22(ser_int,  1, 1, 1);
+    interrupts.ULAK_FF0F_D4p.dff22(joy_int,  1, 1, 1);
+
+    // note this is an async set so it doesn't happen on the GH clock edge like other writes
+    if (cpu_signals.SIG_IN_CPU_WRp.state & (new_addr == 0xFF0F) & CLK_xxxxEFGx) {
+      cpy(&interrupts.LOPE_FF0F_D0p, &new_bus.BUS_CPU_D00p, 5);
+    }
+
+    interrupts.LOPE_FF0F_D0p.state = interrupts.LOPE_FF0F_D0p.state & ~interrupts.SIG_CPU_ACK_VBLANK.state;
+    interrupts.LALU_FF0F_D1p.state = interrupts.LALU_FF0F_D1p.state & ~interrupts.SIG_CPU_ACK_STAT.state;
+    interrupts.NYBO_FF0F_D2p.state = interrupts.NYBO_FF0F_D2p.state & ~interrupts.SIG_CPU_ACK_TIMER.state;
+    interrupts.UBUL_FF0F_D3p.state = interrupts.UBUL_FF0F_D3p.state & ~interrupts.SIG_CPU_ACK_SERIAL.state;
+    interrupts.ULAK_FF0F_D4p.state = interrupts.ULAK_FF0F_D4p.state & ~interrupts.SIG_CPU_ACK_JOYPAD.state;
+
+    cpy(&interrupts.SIG_CPU_INT_VBLANK, &interrupts.LOPE_FF0F_D0p, 5);
+
+    if (new_addr == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
+      cpy(&new_bus.BUS_CPU_D00p, &interrupts.IE_D0, 5);
+    }
+
+    if (new_addr == 0xFF0F && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
+      cpy(&interrupts.MATY_FF0F_L0p, &interrupts.LOPE_FF0F_D0p, 5);
+      cpy(&new_bus.BUS_CPU_D00p,     &interrupts.LOPE_FF0F_D0p, 5);
+    }
+  }
+
+  //----------------------------------------
 
   old_bus = new_bus;
   commit();

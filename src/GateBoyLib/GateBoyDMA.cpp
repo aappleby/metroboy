@@ -81,9 +81,10 @@ void GateBoy::tock_dma_logic() {
 
   dma.LYXE_DMA_LATCHp.state |= (FF46_WRp & CLK_xxxxEFGx);
 
+  auto dma_lo_old = pack(8, &dma.NAKY_DMA_A00p);
+
   if (DELTA_DE) {
-    auto dma_lo = pack(8, &dma.NAKY_DMA_A00p);
-    if (dma_lo == 159) {
+    if (dma_lo_old == 159) {
       dma.MYTE_DMA_DONE.state = 1;
       dma.LARA_DMA_LATCHn = 1;
       dma.LOKY_DMA_LATCHp = 0;
@@ -94,7 +95,7 @@ void GateBoy::tock_dma_logic() {
     if (bit(dma.LUVY_DMA_TRIG_d0.state)) {
       dma.MYTE_DMA_DONE.state = 0;
       dma.LYXE_DMA_LATCHp.state = 0;
-      rst_8(&dma.NAKY_DMA_A00p);
+      clear(8, &dma.NAKY_DMA_A00p);
       dma.LARA_DMA_LATCHn = 0;
       dma.LOKY_DMA_LATCHp = 1;
     }
@@ -114,9 +115,7 @@ void GateBoy::tock_dma_logic() {
     dma.MATU_DMA_RUNNINGp.state = dma.LOKY_DMA_LATCHp.state;
 
     if (bit(dma.LOKY_DMA_LATCHp.state) && !bit(dma.LENE_DMA_TRIG_d4.state)) {
-      auto dma_lo = pack(8, &dma.NAKY_DMA_A00p);
-      dma_lo++;
-      set_8(&dma.NAKY_DMA_A00p, (uint8_t)dma_lo);
+      unpack(dma_lo_old + 1, 8, &dma.NAKY_DMA_A00p);
     }
   }
 

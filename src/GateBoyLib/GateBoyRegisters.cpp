@@ -23,15 +23,6 @@ SpriteDeltaY GateBoy::sub_sprite_y_gates() {
   /*_p29.GOJU*/ Adder GOJU_YDIFF6 = add3(FEMO_LY6n, oam_temp_a.XOTE_OAM_DA6p.qp_new(), FUWA_YDIFF5.carry);
   /*_p29.WUHU*/ Adder WUHU_YDIFF7 = add3(GUSU_LY7n, oam_temp_a.YZAB_OAM_DA7p.qp_new(), GOJU_YDIFF6.carry);
 
-  /*_p29.DEGE*/ wire DEGE_SPRITE_DELTA0 = not1(ERUC_YDIFF0.sum);
-  /*_p29.DABY*/ wire DABY_SPRITE_DELTA1 = not1(ENEF_YDIFF1.sum);
-  /*_p29.DABU*/ wire DABU_SPRITE_DELTA2 = not1(FECO_YDIFF2.sum);
-  /*_p29.GYSA*/ wire GYSA_SPRITE_DELTA3 = not1(GYKY_YDIFF3.sum);
-  /*_p29.GACE*/ wire GACE_SPRITE_DELTA4 = not1(GOPU_YDIFF4.sum);
-  /*_p29.GUVU*/ wire GUVU_SPRITE_DELTA5 = not1(FUWA_YDIFF5.sum);
-  /*_p29.GYDA*/ wire GYDA_SPRITE_DELTA6 = not1(GOJU_YDIFF6.sum);
-  /*_p29.GEWY*/ wire GEWY_SPRITE_DELTA7 = not1(WUHU_YDIFF7.sum);
-
   return {
     ERUC_YDIFF0,
     ENEF_YDIFF1,
@@ -41,14 +32,6 @@ SpriteDeltaY GateBoy::sub_sprite_y_gates() {
     FUWA_YDIFF5,
     GOJU_YDIFF6,
     WUHU_YDIFF7,
-    DEGE_SPRITE_DELTA0,
-    DABY_SPRITE_DELTA1,
-    DABU_SPRITE_DELTA2,
-    GYSA_SPRITE_DELTA3,
-    GACE_SPRITE_DELTA4,
-    GUVU_SPRITE_DELTA5,
-    GYDA_SPRITE_DELTA6,
-    GEWY_SPRITE_DELTA7,
   };
 }
 

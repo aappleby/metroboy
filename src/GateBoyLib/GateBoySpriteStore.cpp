@@ -1106,10 +1106,15 @@ void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYM
   /*_BUS_SPR_I4*/ sprite_bus.BUS_SPR_I4.tri_bus(WUCO_STORE_I4);
   /*_BUS_SPR_I5*/ sprite_bus.BUS_SPR_I5.tri_bus(WEZA_STORE_I5);
 
-  /*#p30.CUCU*/ triwire CUCU_STORE_L0 = tri6_nn(FEPO_STORE_MATCHp.out_new(), sprite_delta_y.DEGE_SPRITE_DELTA0);
-  /*#p30.CUCA*/ triwire CUCA_STORE_L1 = tri6_nn(FEPO_STORE_MATCHp.out_new(), sprite_delta_y.DABY_SPRITE_DELTA1);
-  /*#p30.CEGA*/ triwire CEGA_STORE_L2 = tri6_nn(FEPO_STORE_MATCHp.out_new(), sprite_delta_y.DABU_SPRITE_DELTA2);
-  /*#p30.WENU*/ triwire WENU_STORE_L3 = tri6_nn(FEPO_STORE_MATCHp.out_new(), sprite_delta_y.GYSA_SPRITE_DELTA3);
+  /*_p29.DEGE*/ wire DEGE_SPRITE_DELTA0 = not1(sprite_delta_y.ERUC_YDIFF0.sum);
+  /*_p29.DABY*/ wire DABY_SPRITE_DELTA1 = not1(sprite_delta_y.ENEF_YDIFF1.sum);
+  /*_p29.DABU*/ wire DABU_SPRITE_DELTA2 = not1(sprite_delta_y.FECO_YDIFF2.sum);
+  /*_p29.GYSA*/ wire GYSA_SPRITE_DELTA3 = not1(sprite_delta_y.GYKY_YDIFF3.sum);
+
+  /*#p30.CUCU*/ triwire CUCU_STORE_L0 = tri6_nn(FEPO_STORE_MATCHp.out_new(), DEGE_SPRITE_DELTA0);
+  /*#p30.CUCA*/ triwire CUCA_STORE_L1 = tri6_nn(FEPO_STORE_MATCHp.out_new(), DABY_SPRITE_DELTA1);
+  /*#p30.CEGA*/ triwire CEGA_STORE_L2 = tri6_nn(FEPO_STORE_MATCHp.out_new(), DABU_SPRITE_DELTA2);
+  /*#p30.WENU*/ triwire WENU_STORE_L3 = tri6_nn(FEPO_STORE_MATCHp.out_new(), GYSA_SPRITE_DELTA3);
 
   /*_BUS_SPR_L0*/ sprite_bus.BUS_SPR_L0.tri_bus(CUCU_STORE_L0);
   /*_BUS_SPR_L1*/ sprite_bus.BUS_SPR_L1.tri_bus(CUCA_STORE_L1);

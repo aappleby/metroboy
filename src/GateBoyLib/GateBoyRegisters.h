@@ -28,15 +28,6 @@ struct SpriteDeltaY {
   /*_p29.FUWA*/ Adder FUWA_YDIFF5;
   /*_p29.GOJU*/ Adder GOJU_YDIFF6;
   /*_p29.WUHU*/ Adder WUHU_YDIFF7;
-
-  /*_p29.DEGE*/ wire DEGE_SPRITE_DELTA0;
-  /*_p29.DABY*/ wire DABY_SPRITE_DELTA1;
-  /*_p29.DABU*/ wire DABU_SPRITE_DELTA2;
-  /*_p29.GYSA*/ wire GYSA_SPRITE_DELTA3;
-  /*_p29.GACE*/ wire GACE_SPRITE_DELTA4;
-  /*_p29.GUVU*/ wire GUVU_SPRITE_DELTA5;
-  /*_p29.GYDA*/ wire GYDA_SPRITE_DELTA6;
-  /*_p29.GEWY*/ wire GEWY_SPRITE_DELTA7;
 };
 
 //-----------------------------------------------------------------------------

@@ -165,49 +165,34 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
+  void tock_dma_logic();
+  void tock_joypad_logic();
+  void tock_timer_logic();
+  void tock_serial_logic();
+  void tock_bootrom_logic();
+
   void tock_lcdc_gates(); // logic is inlined
   void tock_lyc_gates();
   void tock_lcd_gates();
-
   void tock_dma_gates();
-  void tock_dma_logic();
-
   void tock_joypad_gates();
-  void tock_joypad_logic();
-
   void tock_interrupts_gates();
-
   void tock_clocks_gates();
   void tock_vid_clocks_gates();
   void tock_div_gates();
-
   void tock_timer_gates();
-  void tock_timer_logic();
-
   void tock_reset_gates(DFF17 UPOF_DIV15p);
-
   void tock_ext_gates(const blob& cart_blob);
-
   void tock_oam_bus_gates();
-
   void tock_serial_gates();
-  void tock_serial_logic();
-
   void tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp);
-
   void tock_zram_gates();
-
   void tock_pix_pipes_gates(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
-  void tock_pix_pipes_logic(bool rendering_old, bool rendering_new, wire SACU_CLKPIPE_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn, uint8_t bfetch_phase_old, uint8_t bfetch_phase_new, uint8_t sfetch_phase_old, uint8_t sfetch_phase_new);
-
   void tock_bootrom_gates();
-  void tock_bootrom_logic();
-
   void tock_window_gates(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
+  void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
 
   void tock_spu();
-
-  void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
 
   void store_sprite_gates(
     SpriteStoreFlags& sprite_store_flags_old,

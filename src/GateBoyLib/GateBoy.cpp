@@ -148,7 +148,7 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   div.reset_to_cart();
   interrupts.reset_to_cart();
   serial.reset_to_cart();
-  
+
   //reset_sprite_store();
   sprite_counter.DEZY_COUNT_CLKp.state = 0b00011011;
   sprite_counter.BESE_SPRITE_COUNT0.state = 0b00011010;
@@ -1509,6 +1509,64 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Sprite scanner
 
+  {
+    /*#p21.PARU*/ wire PARU_VBLANKp = not1(lcd.POPU_y144p.qn_new());
+    /*_p27.REPU*/ wire REPU_VBLANKp = or2(PARU_VBLANKp, PYRY_VID_RSTp());
+
+    /*_p21.TADY*/ wire TADY_LINE_RSTn = nor2(ATEJ_LINE_RSTp.out_new(), TOFU_VID_RSTp());
+    /*#p28.ANOM*/ wire ANOM_LINE_RSTn = nor2(ATEJ_LINE_RSTp.out_new(), ATAR_VID_RSTp());
+    /*#p29.BALU*/ wire BALU_LINE_RSTp = not1(ANOM_LINE_RSTn);
+    /*#p29.BAGY*/ wire BAGY_LINE_RSTn = not1(BALU_LINE_RSTp);
+    /*_p27.XAHY*/ wire XAHY_LINE_RSTn = not1(ATEJ_LINE_RSTp.out_new());
+
+    /*#p29.DOBA*/ sprite_scanner.DOBA_SCAN_DONE_Bp.dff17(ALET_xBxDxFxH(), BAGY_LINE_RSTn, sprite_scanner.BYBA_SCAN_DONE_Ap.qp_old());
+    /*#p29.BYBA*/ sprite_scanner.BYBA_SCAN_DONE_Ap.dff17(XUPY_ABxxEFxx(), BAGY_LINE_RSTn, sprite_scanner.FETO_SCAN_DONEp.out_old());
+    /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp, sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new());
+    /*#p29.AVAP*/ sprite_scanner.AVAP_SCAN_DONE_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
+
+    /*#p28.ASEN*/ wire ASEN_SCAN_DONE_TRIGp = or2(ATAR_VID_RSTp(), sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new());
+    /*#p29.CENO*/ sprite_scanner.CENO_SCANNINGn.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), sprite_scanner.BESU_SCANNINGn.qp_old());
+    /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGn.nor_latch(lcd.CATU_x113p.qp_new(), ASEN_SCAN_DONE_TRIGp);
+
+    /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
+    /*#p28.ACYL*/ sprite_scanner.ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGn.qp_new());
+
+    // Sprite scanner grabs the sprite index off the _old_ oam address bus
+    /*_p28.YFOT*/ wire YFOT_OAM_A2p_old = not1(oam_bus.BUS_OAM_A02n.out_old());
+    /*_p28.YFOC*/ wire YFOC_OAM_A3p_old = not1(oam_bus.BUS_OAM_A03n.out_old());
+    /*_p28.YVOM*/ wire YVOM_OAM_A4p_old = not1(oam_bus.BUS_OAM_A04n.out_old());
+    /*_p28.YMEV*/ wire YMEV_OAM_A5p_old = not1(oam_bus.BUS_OAM_A05n.out_old());
+    /*_p28.XEMU*/ wire XEMU_OAM_A6p_old = not1(oam_bus.BUS_OAM_A06n.out_old());
+    /*_p28.YZET*/ wire YZET_OAM_A7p_old = not1(oam_bus.BUS_OAM_A07n.out_old());
+    /*_p30.XADU*/ sprite_scanner.XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YFOT_OAM_A2p_old);
+    /*_p30.XEDY*/ sprite_scanner.XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YFOC_OAM_A3p_old);
+    /*_p30.ZUZE*/ sprite_scanner.ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YVOM_OAM_A4p_old);
+    /*_p30.XOBE*/ sprite_scanner.XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YMEV_OAM_A5p_old);
+    /*_p30.YDUF*/ sprite_scanner.YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), XEMU_OAM_A6p_old);
+    /*_p30.XECU*/ sprite_scanner.XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YZET_OAM_A7p_old);
+
+    // FIXME is this OK without the second assignment of FETO?
+
+    for (int feedback = 0; feedback < 2; feedback++) {
+      // 32 + 4 + 2 + 1 = 39
+      /*#p28.FETO*/ sprite_scanner.FETO_SCAN_DONEp = and4(sprite_scanner.YFEL_SCAN0.qp_mid(), sprite_scanner.WEWY_SCAN1.qp_mid(), sprite_scanner.GOSO_SCAN2.qp_mid(), sprite_scanner.FONY_SCAN5.qp_mid());
+
+      /*#p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(sprite_scanner.FETO_SCAN_DONEp.out_new(), XUPY_ABxxEFxx());
+
+      /*#p28.YFEL*/ sprite_scanner.YFEL_SCAN0.dff17_any(GAVA_SCAN_CLOCKp, ANOM_LINE_RSTn, sprite_scanner.YFEL_SCAN0.qn_any());
+      /*_p28.WEWY*/ sprite_scanner.WEWY_SCAN1.dff17_any(sprite_scanner.YFEL_SCAN0.qn_any(), ANOM_LINE_RSTn, sprite_scanner.WEWY_SCAN1.qn_any());
+      /*_p28.GOSO*/ sprite_scanner.GOSO_SCAN2.dff17_any(sprite_scanner.WEWY_SCAN1.qn_any(), ANOM_LINE_RSTn, sprite_scanner.GOSO_SCAN2.qn_any());
+      /*_p28.ELYN*/ sprite_scanner.ELYN_SCAN3.dff17_any(sprite_scanner.GOSO_SCAN2.qn_any(), ANOM_LINE_RSTn, sprite_scanner.ELYN_SCAN3.qn_any());
+      /*_p28.FAHA*/ sprite_scanner.FAHA_SCAN4.dff17_any(sprite_scanner.ELYN_SCAN3.qn_any(), ANOM_LINE_RSTn, sprite_scanner.FAHA_SCAN4.qn_any());
+      /*_p28.FONY*/ sprite_scanner.FONY_SCAN5.dff17_any(sprite_scanner.FAHA_SCAN4.qn_any(), ANOM_LINE_RSTn, sprite_scanner.FONY_SCAN5.qn_any());
+    }
+
+    ///*#p28.FETO*/ sprite_scanner.FETO_SCAN_DONEp = and4(sprite_scanner.YFEL_SCAN0.qp_new(), sprite_scanner.WEWY_SCAN1.qp_new(), sprite_scanner.GOSO_SCAN2.qp_new(), sprite_scanner.FONY_SCAN5.qp_new());
+  }
+
+  // BROKEN
+
+  /*
   if (DELTA_EVEN) {
     sprite_scanner.DOBA_SCAN_DONE_Bp.state = sprite_scanner.BYBA_SCAN_DONE_Ap.state;
   }
@@ -1557,6 +1615,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     clear(6, &sprite_scanner.YFEL_SCAN0);
     sprite_scanner.FETO_SCAN_DONEp = 0;
   }
+  */
 
   bool scanning_new = bit(sprite_scanner.ACYL_SCANNINGp.state);
 
@@ -1744,7 +1803,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
   else {
     wire BYCU_OAM_CLKp = nand3(AVER_AxxxExxx_new, temp, 1);
-    
+
     /*#p29.XUSO*/ oam_temp_a.XUSO_OAM_DA0p.dff8n(BYCU_OAM_CLKp, oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
     /*_p29.XEGU*/ oam_temp_a.XEGU_OAM_DA1p.dff8n(BYCU_OAM_CLKp, oam_latch_a.YCEB_OAM_LATCH_DA1n.qp_old());
     /*_p29.YJEX*/ oam_temp_a.YJEX_OAM_DA2p.dff8n(BYCU_OAM_CLKp, oam_latch_a.ZUCA_OAM_LATCH_DA2n.qp_old());
@@ -2018,7 +2077,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // Tile fetch sequencer
 
   wire LYZU_old = tile_fetcher.LYZU_BFETCH_S0p_D1.state;
-  
+
   if (DELTA_EVEN) {
     tile_fetcher.LYZU_BFETCH_S0p_D1.state = tile_fetcher.LAXU_BFETCH_S0p.state;
   }
@@ -2026,7 +2085,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (!rendering_new) {
     tile_fetcher.LYZU_BFETCH_S0p_D1.rst();
   }
-  
+
   wire LYZU_new = tile_fetcher.LYZU_BFETCH_S0p_D1.state;
 
 
@@ -2073,6 +2132,38 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Fine match counter
 
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn = not1(win_reg.RYDY_WIN_HITp.out_new());
+  /*#p24.TOMU*/ wire TOMU_WIN_HITp = not1(SYLO_WIN_HITn);
+  /*#p24.SOCY*/ wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);
+
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(sprite_match_flags.FEPO_STORE_MATCHp.out_mid(), WODU_HBLANKp.out_old(), MYVO_AxCxExGx());
+  /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
+  /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
+  /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
+
+  /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn = not1(tile_fetcher.POKY_PRELOAD_LATCHp.qp_new());
+  /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(XYMU_RENDERINGn.qn_new(), ROMO_PRELOAD_DONEn, tile_fetcher.NYKA_FETCH_DONEp.qp_new(), tile_fetcher.PORY_FETCH_DONEp.qp_new());
+  /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
+
+  /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp = nor2(win_reg.RYFA_WIN_FETCHn_A.qn_new(), win_reg.RENE_WIN_FETCHn_B.qp_new());
+  /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne = nand2(SYLO_WIN_HITn, win_reg.SOVY_WIN_HITp.qp_new());
+  /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILEne);
+  /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp, SUZU_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
+
+  /*#p27.PAHA*/ wire PAHA_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
+  /*#p27.PASO*/ wire PASO_FINE_RST = nor2(PAHA_RENDERINGn, TEVO_WIN_FETCH_TRIGp);
+
+  for (int feedback = 0; feedback < 2; feedback++) {
+    /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n = nand3(fine_scroll.RUBU_FINE_CNT2.qp_any(), fine_scroll.ROGA_FINE_CNT1.qp_any(), fine_scroll.RYKU_FINE_CNT0.qp_any());
+    /*#p27.PECU*/ wire PECU_FINE_CLK = nand2(ROXO_CLKPIPE_odd, ROZE_FINE_COUNT_7n);
+    /*#p27.RYKU*/ fine_scroll.RYKU_FINE_CNT0.dff17_any(PECU_FINE_CLK, PASO_FINE_RST, fine_scroll.RYKU_FINE_CNT0.qn_any());
+    /*#p27.ROGA*/ fine_scroll.ROGA_FINE_CNT1.dff17_any(fine_scroll.RYKU_FINE_CNT0.qn_any(), PASO_FINE_RST, fine_scroll.ROGA_FINE_CNT1.qn_any());
+    /*#p27.RUBU*/ fine_scroll.RUBU_FINE_CNT2.dff17_any(fine_scroll.ROGA_FINE_CNT1.qn_any(), PASO_FINE_RST, fine_scroll.RUBU_FINE_CNT2.qn_any());
+  }
+
+  // Probably broken?
+
+  /*
   auto fs = pack(3, &fine_scroll.RYKU_FINE_CNT0);
 
   if (fs != 7 && posedge(CLKPIPE_old, CLKPIPE_new)) {
@@ -2096,11 +2187,28 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     fine_scroll.ROGA_FINE_CNT1.rst();
     fine_scroll.RUBU_FINE_CNT2.rst();
   }
-
+  */
 
   //----------------------------------------
   // PPU / LCD output
 
+  {
+    /*#p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp = and2(win_reg.PYNU_WIN_MODE_Ap.qp_new(), win_reg.NOPA_WIN_MODE_Bp.qn_new());
+    /*_p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not1(NUNY_WIN_MODE_TRIGp);
+    /*_p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not1(NYFO_WIN_MODE_TRIGn);
+
+    /*_p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new(), MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
+
+    /*#p24.SACU*/ wire SACU_CLKPIPE_new = or2(SEGU_CLKPIPE_evn, fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
+
+    tock_pix_pipes_gates(SACU_CLKPIPE_new, NYXU_BFETCH_RSTn);
+    set_lcd_pins_gates(SACU_CLKPIPE_new);
+  }
+
+
+  // Probably broken?
+
+#if 0
   auto& tf = tile_fetcher;
   auto& sf = sprite_fetcher;
 
@@ -2120,7 +2228,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   wire latch_ta_old = rendering_old && (bfetch_phase_old == 3) && bit(LYZU_old);
   wire latch_ta_new = rendering_new && (bfetch_phase_new == 3) && bit(LYZU_new);
-
 
   if (posedge(latch_ta_old, latch_ta_new)) {
     cpy_inv(&tile_temp_a.LEGU_TILE_DA0n, &vram_bus.BUS_VRAM_D00p, 8);
@@ -2308,8 +2415,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     lcd.PIN_56_LCD_FLIPS.pin_out(~div.TULU_DIV07p.state, ~div.TULU_DIV07p.state);
     lcd.PIN_57_LCD_VSYNC.pin_out(1, 1);
   }
+#endif
 
-  
+
   //----------------------------------------
   // Audio
 

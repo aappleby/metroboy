@@ -279,8 +279,6 @@ void GateBoyThread::run_normal() {
 
 //------------------------------------------------------------------------------
 
-#pragma optimize("", off)
-
 void GateBoyThread::run_regression() {
   auto& gba = *gb_a.state();
   auto& gbb = *gb_b.state();

@@ -1,3 +1,4 @@
+
 #include "GateBoyApp/GateBoyApp.h"
 
 #include "CoreLib/Constants.h"
@@ -66,6 +67,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   gb_thread.pause();
   //gb_thread.load_raw_dump("zelda.dump");
+  /*
   gb_thread.load_blob(as.link());
   gb_thread.reset_to_bootrom();
   for (int i = 0; i < 8192; i++) {
@@ -73,6 +75,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
     gb_thread.gb_a->vid_ram[i] = r;
     gb_thread.gb_b->vid_ram[i] = r;
   }
+  */
+  gb_thread.load_rom("LinksAwakening.gb");
   gb_thread.resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail

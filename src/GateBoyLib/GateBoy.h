@@ -180,7 +180,7 @@ struct GateBoy {
   void tock_joypad_logic();
 
   void tock_interrupts_gates();
-  void tock_interrupts_logic();
+  void tock_interrupts_logic(uint16_t cpu_addr_old, uint16_t cpu_addr_new, bool cpu_rd_old, bool cpu_rd_new, bool cpu_wr_old, bool cpu_wr_new);
 
   void tock_clocks_gates();
   void tock_clocks_logic();

@@ -166,12 +166,8 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
 
   void tock_lcdc_gates(); // logic is inlined
-
   void tock_lyc_gates();
-  void tock_lyc_logic();
-
   void tock_lcd_gates();
-  void tock_lcd_logic();
 
   void tock_dma_gates();
   void tock_dma_logic();
@@ -180,37 +176,26 @@ struct GateBoy {
   void tock_joypad_logic();
 
   void tock_interrupts_gates();
-  void tock_interrupts_logic(uint16_t cpu_addr_old, uint16_t cpu_addr_new, bool cpu_rd_old, bool cpu_rd_new, bool cpu_wr_old, bool cpu_wr_new);
 
   void tock_clocks_gates();
-  void tock_clocks_logic();
-
   void tock_vid_clocks_gates();
-  void tock_vid_clocks_logic();
-  
   void tock_div_gates();
-  void tock_div_logic();
 
   void tock_timer_gates();
   void tock_timer_logic();
 
   void tock_reset_gates(DFF17 UPOF_DIV15p);
-  void tock_reset_logic(DFF17 UPOF_DIV15p);
 
   void tock_ext_gates(const blob& cart_blob);
-  void tock_ext_logic(const blob& cart_blob);
 
   void tock_oam_bus_gates();
-  void tock_oam_bus_logic();
 
   void tock_serial_gates();
   void tock_serial_logic();
 
   void tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp);
-  void tock_vram_bus_logic(wire TEVO_WIN_FETCH_TRIGp);
 
   void tock_zram_gates();
-  void tock_zram_logic();
 
   void tock_pix_pipes_gates(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
   void tock_pix_pipes_logic(bool rendering_old, bool rendering_new, wire SACU_CLKPIPE_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn, uint8_t bfetch_phase_old, uint8_t bfetch_phase_new, uint8_t sfetch_phase_old, uint8_t sfetch_phase_new);
@@ -219,23 +204,12 @@ struct GateBoy {
   void tock_bootrom_logic();
 
   void tock_window_gates(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
-  void tock_window_logic(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
 
   void tock_spu();
 
   void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
-  void update_sprite_store_flags_logic(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
 
   void store_sprite_gates(
-    SpriteStoreFlags& sprite_store_flags_old,
-    SpriteStoreFlags& sprite_store_flags_new,
-    SpriteResetFlags& sprite_reset_flags,
-    wire BYVA_LINE_RSTn,
-    SpriteBus& sprite_bus,
-    OamTempB& oam_temp_b,
-    GateBoySpriteStore& sprite_store);
-
-  void store_sprite_logic(
     SpriteStoreFlags& sprite_store_flags_old,
     SpriteStoreFlags& sprite_store_flags_new,
     SpriteResetFlags& sprite_reset_flags,
@@ -251,31 +225,16 @@ struct GateBoy {
     SpriteMatchFlags& sprite_get_flag,
     SigIn SIG_GND);
 
-  static void get_sprite_match_flags_logic(
-    PixCount& pix_count,
-    wire AROR_MATCH_ENp,
-    GateBoySpriteStore& sprite_store,
-    SpriteMatchFlags& sprite_get_flag,
-    SigIn SIG_GND);
-
   static void sprite_match_to_bus_gates(
     GateBoySpriteStore& sprite_store,
     SpriteMatchFlags& sprite_get_flag,
     SpriteBus& sprite_bus);
 
-  static void sprite_match_to_bus_logic(
-    GateBoySpriteStore& sprite_store,
-    SpriteMatchFlags& sprite_get_flag,
-    SpriteBus& sprite_bus);
-
   void sprite_scan_to_bus_gates(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
-  void sprite_scan_to_bus_logic(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
 
   void set_lcd_pins_gates(wire SACU_CLKPIPE_evn);
-  void set_lcd_pins_logic(wire SACU_CLKPIPE_evn);
 
   SpriteDeltaY sub_sprite_y_gates();
-  SpriteDeltaY sub_sprite_y_logic();
 
   static void oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a);
   static void oam_latch_to_temp_b(wire COTA_OAM_CLKn, const OamLatchB& old_oam_latch_b, OamTempB& oam_temp_b);

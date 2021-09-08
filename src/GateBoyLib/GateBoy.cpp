@@ -833,7 +833,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
-  SpriteDeltaY sprite_delta_y = 0 ? sub_sprite_y_logic() : sub_sprite_y_gates();
+  SpriteDeltaY sprite_delta_y = sub_sprite_y_gates();
 
   {
     /*#p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or2(reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), sprite_delta_y.GYKY_YDIFF3.sum);
@@ -1274,14 +1274,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
 
     cpu_signals.SIG_CPU_ADDR_HIp.sig_out(new_bus.SYRO_FE00_FFFF());
-    cpu_signals.SIG_CPU_UNOR_DBG.sig_out(UNOR_MODE_DBG2p());
-    cpu_signals.SIG_CPU_UMUT_DBG.sig_out(UMUT_MODE_DBG1p());
+    cpu_signals.SIG_CPU_UNOR_DBG.sig_out(0);
+    cpu_signals.SIG_CPU_UMUT_DBG.sig_out(0);
   }
-
-  //-----------------------------------------------------------------------------
-  // Sys clock signals
-
-  tock_clocks_gates();
 
   //-----------------------------------------------------------------------------
 
@@ -1777,7 +1772,33 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
-  SpriteDeltaY sprite_delta_y = sub_sprite_y_logic();
+  Adder ERUC_YDIFF0 = add3(~reg_ly.MUWY_LY0p.state, oam_temp_a.XUSO_OAM_DA0p.state, 0);
+  Adder ENEF_YDIFF1 = add3(~reg_ly.MYRO_LY1p.state, oam_temp_a.XEGU_OAM_DA1p.state, ERUC_YDIFF0.carry);
+  Adder FECO_YDIFF2 = add3(~reg_ly.LEXA_LY2p.state, oam_temp_a.YJEX_OAM_DA2p.state, ENEF_YDIFF1.carry);
+  Adder GYKY_YDIFF3 = add3(~reg_ly.LYDO_LY3p.state, oam_temp_a.XYJU_OAM_DA3p.state, FECO_YDIFF2.carry);
+  Adder GOPU_YDIFF4 = add3(~reg_ly.LOVU_LY4p.state, oam_temp_a.YBOG_OAM_DA4p.state, GYKY_YDIFF3.carry);
+  Adder FUWA_YDIFF5 = add3(~reg_ly.LEMA_LY5p.state, oam_temp_a.WYSO_OAM_DA5p.state, GOPU_YDIFF4.carry);
+  Adder GOJU_YDIFF6 = add3(~reg_ly.MATO_LY6p.state, oam_temp_a.XOTE_OAM_DA6p.state, FUWA_YDIFF5.carry);
+  Adder WUHU_YDIFF7 = add3(~reg_ly.LAFO_LY7p.state, oam_temp_a.YZAB_OAM_DA7p.state, GOJU_YDIFF6.carry);
+
+  SpriteDeltaY sprite_delta_y = {
+    ERUC_YDIFF0,
+    ENEF_YDIFF1,
+    FECO_YDIFF2,
+    GYKY_YDIFF3,
+    GOPU_YDIFF4,
+    FUWA_YDIFF5,
+    GOJU_YDIFF6,
+    WUHU_YDIFF7,
+    wire(~ERUC_YDIFF0.sum),
+    wire(~ENEF_YDIFF1.sum),
+    wire(~FECO_YDIFF2.sum),
+    wire(~GYKY_YDIFF3.sum),
+    wire(~GOPU_YDIFF4.sum),
+    wire(~FUWA_YDIFF5.sum),
+    wire(~GOJU_YDIFF6.sum),
+    wire(~WUHU_YDIFF7.sum),
+  };
 
   wire GOVU_SPSIZE_MATCH = or2(~reg_lcdc.XYMO_LCDC_SPSIZEn.state, sprite_delta_y.GYKY_YDIFF3.sum);
 
@@ -2106,8 +2127,195 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // PPU / LCD output
 
-  tock_pix_pipes_logic(rendering_old, rendering_new, SACU_CLKPIPE_old, SACU_CLKPIPE_new, NYXU_BFETCH_RSTn, bfetch_phase_old, bfetch_phase_new, sfetch_phase_old, sfetch_phase_new);
-  set_lcd_pins_logic(SACU_CLKPIPE_new);
+  {
+    auto& tf = tile_fetcher;
+    auto& sf = sprite_fetcher;
+
+    // These ffs are weird because they latches on phase change _or_ if rendering stops in the middle of a fetch
+    // Good example of gate-level behavior that doesn't matter
+
+    if (rendering_old) {
+      if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || !rendering_new)) {
+        cpy_inv(&tile_temp_a, &vram_bus.BUS_VRAM_D00p, 8);
+      }
+
+      if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || !rendering_new)) {
+        cpy(&tile_temp_b, &vram_bus.BUS_VRAM_D00p, 8);
+      }
+
+      if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || !rendering_new)) {
+        cpy(&tile_temp_b, &vram_bus.BUS_VRAM_D00p, 8);
+      }
+
+      if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || !rendering_new)) {
+        cpy_inv(&sprite_pix_a, &flipped_sprite, 8);
+      }
+
+      if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || !rendering_new)) {
+        cpy_inv(&sprite_pix_b, &flipped_sprite, 8);
+      }
+    }
+
+    //----------------------------------------
+    // Pal reg read/write
+
+    if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
+      if (cpu_addr_new == 0xFF47) cpy_inv(&reg_bgp.PAVO_BGP_D0n, &new_bus.BUS_CPU_D00p, 8);
+      if (cpu_addr_new == 0xFF48) cpy_inv(&reg_obp0.XUFU_OBP0_D0n, &new_bus.BUS_CPU_D00p, 8);
+      if (cpu_addr_new == 0xFF49) cpy_inv(&reg_obp1.MOXY_OBP1_D0n, &new_bus.BUS_CPU_D00p, 8);
+    }
+
+    if (cpu_signals.SIG_IN_CPU_RDp.state) {
+      if (cpu_addr_new == 0xFF47) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_bgp.PAVO_BGP_D0n, 8);
+      if (cpu_addr_new == 0xFF48) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_obp0.XUFU_OBP0_D0n, 8);
+      if (cpu_addr_new == 0xFF49) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_obp1.MOXY_OBP1_D0n, 8);
+    }
+
+    //----------------------------------------
+    // Pixel pipes
+
+    uint8_t tpix_a = (uint8_t)pack_inv(8, &tile_temp_a.LEGU_TILE_DA0n);
+    uint8_t tpix_b = (uint8_t)pack(8, &tile_temp_b.RAWU_TILE_DB0p);
+    uint8_t spix_a = (uint8_t)pack_inv(8, &sprite_pix_a.REWO_SPRITE_DA0n);
+    uint8_t spix_b = (uint8_t)pack_inv(8, &sprite_pix_b.PEFO_SPRITE_DB0n);
+
+    uint8_t spipe_a = (uint8_t)pack(8, &pix_pipes.NURO_SPR_PIPE_A0);
+    uint8_t spipe_b = (uint8_t)pack(8, &pix_pipes.NYLU_SPR_PIPE_B0);
+    uint8_t bpipe_a = (uint8_t)pack(8, &pix_pipes.MYDE_BGW_PIPE_A0);
+    uint8_t bpipe_b = (uint8_t)pack(8, &pix_pipes.TOMY_BGW_PIPE_B0);
+    uint8_t mpipe   = (uint8_t)pack(8, &pix_pipes.VEZO_MASK_PIPE_0);
+    uint8_t ppipe   = (uint8_t)pack(8, &pix_pipes.RUGO_PAL_PIPE_D0);
+
+    if (posedge(SACU_CLKPIPE_old, SACU_CLKPIPE_new)) {
+      spipe_a = (spipe_a << 1) | 0;
+      spipe_b = (spipe_b << 1) | 0;
+      bpipe_a = (bpipe_a << 1) | 0;
+      bpipe_b = (bpipe_b << 1) | 0;
+      mpipe   = (mpipe   << 1) | 1;
+      ppipe   = (ppipe   << 1) | 0;
+    }
+    
+    if (bit(~NYXU_BFETCH_RSTn)) bpipe_a = tpix_a;
+    if (!bit(NYXU_BFETCH_RSTn)) bpipe_b = tpix_b;
+
+    if (bit(sf.WUTY_SFETCH_DONE_TRIGp.state)) {
+      uint8_t smask = (spipe_a | spipe_b);
+      spipe_a = (spipe_a & smask) | (spix_a & ~smask);
+      spipe_b = (spipe_b & smask) | (spix_b & ~smask);
+      mpipe = bit(oam_temp_b.DEPO_OAM_DB7p.state) ? mpipe | ~smask : mpipe & smask;
+      ppipe = bit(oam_temp_b.GOMO_OAM_DB4p.state) ? ppipe | ~smask : ppipe & smask;
+    }
+
+    unpack(spipe_a, 8, &pix_pipes.NURO_SPR_PIPE_A0);
+    unpack(spipe_b, 8, &pix_pipes.NYLU_SPR_PIPE_B0);
+    unpack(bpipe_a, 8, &pix_pipes.MYDE_BGW_PIPE_A0);
+    unpack(bpipe_b, 8, &pix_pipes.TOMY_BGW_PIPE_B0);
+    unpack(mpipe,   8, &pix_pipes.VEZO_MASK_PIPE_0);
+    unpack(ppipe,   8, &pix_pipes.RUGO_PAL_PIPE_D0);
+
+    //----------------------------------------
+    // Pipe merge and output
+
+    wire PIX_BG_LOp = and2(pix_pipes.PYBO_BGW_PIPE_A7.state, ~reg_lcdc.VYXE_LCDC_BGENn.state);
+    wire PIX_BG_HIp = and2(pix_pipes.SOHU_BGW_PIPE_B7.state, ~reg_lcdc.VYXE_LCDC_BGENn.state);
+    wire PIX_SP_LOp = and2(pix_pipes.WUFY_SPR_PIPE_A7.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
+    wire PIX_SP_HIp = and2(pix_pipes.VUPY_SPR_PIPE_B7.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
+
+    int pal_idx = 0;
+    uint8_t pal = 0;
+
+    uint8_t bgp  = (uint8_t)pack(8, &reg_bgp.PAVO_BGP_D0n);
+    uint8_t obp0 = (uint8_t)pack(8, &reg_obp0.XUFU_OBP0_D0n);
+    uint8_t obp1 = (uint8_t)pack(8, &reg_obp1.MOXY_OBP1_D0n);
+
+    if (bit(or2(PIX_SP_HIp, PIX_SP_LOp))) {
+      pal_idx = pack(PIX_SP_LOp, PIX_SP_HIp);
+      pal = bit(pix_pipes.LYME_PAL_PIPE_D7.state) ? obp1 : obp0;
+    }
+    else {
+      pal_idx = pack(PIX_BG_LOp, PIX_BG_HIp);
+      pal = bgp;
+    }
+
+    pix_pipes.REMY_LD0n = ~bit(pal >> (pal_idx * 2 + 0));
+    pix_pipes.RAVO_LD1n = ~bit(pal >> (pal_idx * 2 + 1));
+  }
+
+  //----------------------------------------
+  // LCD pins
+
+  {
+    if (lcd_on) {
+      wire POGU = ~or2(lcd.SYGU_LINE_STROBE.state, lcd.RUTU_x113p.state);
+      lcd.PIN_52_LCD_CNTRL.pin_out(POGU, POGU);
+
+      wire LOFU_x113n = ~lcd.RUTU_x113p.state;
+      lcd.LUCA_LINE_EVENp.dff17(LOFU_x113n,            1, ~lcd.LUCA_LINE_EVENp.state);
+      lcd.NAPO_FRAME_EVENp.dff17(lcd.POPU_y144p.state, 1, ~lcd.NAPO_FRAME_EVENp.state);
+
+      wire KOFO = ~xor2(lcd.NAPO_FRAME_EVENp.state, ~lcd.LUCA_LINE_EVENp.state);
+      lcd.PIN_56_LCD_FLIPS.pin_out(KOFO, KOFO);
+
+      auto ly = pack(8, &reg_ly.MUWY_LY0p);
+
+      lcd.MEDA_VSYNC_OUTn.dff17(~lcd.NYPE_x113p.state, 1, ly == 0);
+      lcd.PIN_57_LCD_VSYNC.pin_out(~lcd.MEDA_VSYNC_OUTn.state, ~lcd.MEDA_VSYNC_OUTn.state);
+
+      if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state) && bit(lcd.PAHO_X_8_SYNC.state)) {
+        lcd.POME = 0;
+        lcd.RUJU = 1;
+        lcd.POFY = 0;
+      }
+      else if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state)) {
+        lcd.POME = 0;
+        lcd.RUJU = 0;
+        lcd.POFY = 1;
+      }
+      else if (bit(lcd.PAHO_X_8_SYNC.state)) {
+        lcd.POME = 1;
+        lcd.RUJU = 1;
+        lcd.POFY = 0;
+      }
+
+      lcd.PIN_50_LCD_DATA1.pin_out(pix_pipes.RAVO_LD1n.state, pix_pipes.RAVO_LD1n.state);
+      lcd.PIN_51_LCD_DATA0.pin_out(pix_pipes.REMY_LD0n.state, pix_pipes.REMY_LD0n.state);
+      lcd.PIN_54_LCD_HSYNC.pin_out(~lcd.POFY.state, ~lcd.POFY.state);
+      lcd.PIN_55_LCD_LATCH.pin_out(~lcd.RUTU_x113p.state, ~lcd.RUTU_x113p.state);
+
+      if (bit(and2(pix_count.XEHO_PX0p.state, pix_count.XYDO_PX3p.state))) {
+        lcd.WUSA_LCD_CLOCK_GATE.state = 1;
+      }
+      if (bit(VOGA_HBLANKp.state)) {
+        lcd.WUSA_LCD_CLOCK_GATE.state = 0;
+      }
+
+      {
+        wire TOBA_LCD_CLOCK = and2(lcd.WUSA_LCD_CLOCK_GATE.state, SACU_CLKPIPE_new);
+        wire POVA_FINE_MATCH_TRIGp = and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.state, ~fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
+        wire SEMU_LCD_CLOCK = or2(TOBA_LCD_CLOCK, POVA_FINE_MATCH_TRIGp);
+        lcd.PIN_53_LCD_CLOCK.pin_out(~SEMU_LCD_CLOCK, ~SEMU_LCD_CLOCK);
+      }
+    }
+    else {
+      lcd.LUCA_LINE_EVENp.state &= ~1;
+      lcd.NAPO_FRAME_EVENp.state &= ~1;
+      lcd.MEDA_VSYNC_OUTn.state &= ~1;
+      lcd.WUSA_LCD_CLOCK_GATE.state = 0;
+
+      lcd.POME = 1;
+      lcd.RUJU = 1;
+      lcd.POFY = 0;
+
+      lcd.PIN_50_LCD_DATA1.pin_out(pix_pipes.RAVO_LD1n.state, pix_pipes.RAVO_LD1n.state);
+      lcd.PIN_51_LCD_DATA0.pin_out(pix_pipes.REMY_LD0n.state, pix_pipes.REMY_LD0n.state);
+      lcd.PIN_52_LCD_CNTRL.pin_out(1, 1);
+      lcd.PIN_53_LCD_CLOCK.pin_out(1, 1);
+      lcd.PIN_54_LCD_HSYNC.pin_out(1, 1);
+      lcd.PIN_55_LCD_LATCH.pin_out(~div.UGOT_DIV06p.state, ~div.UGOT_DIV06p.state);
+      lcd.PIN_56_LCD_FLIPS.pin_out(~div.TULU_DIV07p.state, ~div.TULU_DIV07p.state);
+      lcd.PIN_57_LCD_VSYNC.pin_out(1, 1);
+    }
+  }
 
   //----------------------------------------
   // Audio
@@ -2280,8 +2488,386 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     memcpy(&ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, &ext_pins.PIN_17_D00, 8);
   }
 
-  tock_vram_bus_logic(TEVO_WIN_FETCH_TRIGp);
-  tock_oam_bus_logic();
+  {
+    /*#p27.NOCU*/ wire NOCU_WIN_MODEn = not1(win_reg.PYNU_WIN_MODE_Ap.qp_new());
+    /*_p27.PORE*/ wire PORE_WIN_MODEp = not1(NOCU_WIN_MODEn);
+    /*_p26.AXAD*/ wire AXAD_WIN_MODEn = not1(PORE_WIN_MODEp);
+
+    auto dma_addr_new = pack_inv(16, &dma.NAKY_DMA_A00p);
+    wire dma_vram_new = bit(dma.MATU_DMA_RUNNINGp.state) && (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
+    wire cpu_addr_vram = (cpu_addr_new >= 0x8000) && (cpu_addr_new <= 0x9FFF);
+
+    memset(&vram_bus, BIT_NEW | BIT_PULLED | 1, sizeof(vram_bus));
+
+    //--------------------------------------------
+    // CPU vram read address
+
+    if (bit(nor2(dma_vram_new, XYMU_RENDERINGn.qn_new()))) {
+      cpy_inv(&vram_bus.BUS_VRAM_A00n, &new_bus.BUS_CPU_A00p, 13);
+    }
+
+    //--------------------------------------------
+    // DMA vram read address
+
+    if (bit(dma_vram_new)) {
+      cpy_inv(&vram_bus.BUS_VRAM_A00n, &dma.NAKY_DMA_A00p, 8);
+      memcpy(&vram_bus.BUS_VRAM_A08n, &dma.NAFA_DMA_A08n, 5);
+    }
+
+    //--------------------------------------------
+    // SCX/SCY regs and BG map read address
+
+    if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
+      if (cpu_addr_new == 0xFF42) cpy_inv(&reg_scy.GAVE_SCY0n, &old_bus.BUS_CPU_D00p, 8);
+      if (cpu_addr_new == 0xFF43) cpy_inv(&reg_scx.DATY_SCX0n, &old_bus.BUS_CPU_D00p, 8);
+    }
+
+    if (cpu_signals.SIG_IN_CPU_RDp.state) {
+      if (cpu_addr_new == 0xFF42) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_scy.GAVE_SCY0n, 8);
+      if (cpu_addr_new == 0xFF43) cpy_inv(&new_bus.BUS_CPU_D00p, &reg_scx.DATY_SCX0n, 8);
+    }
+
+    auto px  = pack(8, &pix_count.XEHO_PX0p);
+    auto ly  = pack(8, &reg_ly.MUWY_LY0p);
+    auto scx = pack_inv(8, &reg_scx.DATY_SCX0n);
+    auto scy = pack_inv(8, &reg_scy.GAVE_SCY0n);
+
+    auto sum_x = px + scx;
+    auto sum_y = ly + scy;
+
+    if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, ~win_reg.PYNU_WIN_MODE_Ap.state))) {
+      unpack_inv(sum_x >> 3, 5, &vram_bus.BUS_VRAM_A00n);
+      unpack_inv(sum_y >> 3, 5, &vram_bus.BUS_VRAM_A05n);
+      vram_bus.BUS_VRAM_A10n.state = reg_lcdc.XAFO_LCDC_BGMAPn.state;
+      vram_bus.BUS_VRAM_A11n.state = 0;
+      vram_bus.BUS_VRAM_A12n.state = 0;
+    }
+
+    //--------------------------------------------
+    // Win map counters & win map read address
+
+    wire VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, win_reg.PYNU_WIN_MODE_Ap.state);
+    wire XOFO_WIN_RSTp = nand3(~reg_lcdc.WYMO_LCDC_WINENn.state, ~ATEJ_LINE_RSTp.state, ~reg_lcdc.XONA_LCDC_LCDENn.state);
+    win_coords.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp,                     ~XOFO_WIN_RSTp, ~win_coords.WYKA_WIN_MAP_X0.state);
+    win_coords.WODY_WIN_MAP_X1.dff17(~win_coords.WYKA_WIN_MAP_X0.state, ~XOFO_WIN_RSTp, ~win_coords.WODY_WIN_MAP_X1.state);
+    win_coords.WOBO_WIN_MAP_X2.dff17(~win_coords.WODY_WIN_MAP_X1.state, ~XOFO_WIN_RSTp, ~win_coords.WOBO_WIN_MAP_X2.state);
+    win_coords.WYKO_WIN_MAP_X3.dff17(~win_coords.WOBO_WIN_MAP_X2.state, ~XOFO_WIN_RSTp, ~win_coords.WYKO_WIN_MAP_X3.state);
+    win_coords.XOLO_WIN_MAP_X4.dff17(~win_coords.WYKO_WIN_MAP_X3.state, ~XOFO_WIN_RSTp, ~win_coords.XOLO_WIN_MAP_X4.state);
+
+    // Every time we leave win mode we increment win_y
+    wire REPU_VBLANKp = or2(lcd.POPU_y144p.state, reg_lcdc.XONA_LCDC_LCDENn.state);
+    win_coords.VYNO_WIN_TILE_Y0.dff17(~win_reg.PYNU_WIN_MODE_Ap.state, ~REPU_VBLANKp, ~win_coords.VYNO_WIN_TILE_Y0.state);
+    win_coords.VUJO_WIN_TILE_Y1.dff17(~win_coords.VYNO_WIN_TILE_Y0.state, ~REPU_VBLANKp, ~win_coords.VUJO_WIN_TILE_Y1.state);
+    win_coords.VYMU_WIN_TILE_Y2.dff17(~win_coords.VUJO_WIN_TILE_Y1.state, ~REPU_VBLANKp, ~win_coords.VYMU_WIN_TILE_Y2.state);
+    win_coords.TUFU_WIN_MAP_Y0.dff17(~win_coords.VYMU_WIN_TILE_Y2.state, ~REPU_VBLANKp, ~win_coords.TUFU_WIN_MAP_Y0.state);
+
+    win_coords.TAXA_WIN_MAP_Y1.dff17(~win_coords.TUFU_WIN_MAP_Y0.state, ~REPU_VBLANKp, ~win_coords.TAXA_WIN_MAP_Y1.state);
+    win_coords.TOZO_WIN_MAP_Y2.dff17(~win_coords.TAXA_WIN_MAP_Y1.state, ~REPU_VBLANKp, ~win_coords.TOZO_WIN_MAP_Y2.state);
+    win_coords.TATE_WIN_MAP_Y3.dff17(~win_coords.TOZO_WIN_MAP_Y2.state, ~REPU_VBLANKp, ~win_coords.TATE_WIN_MAP_Y3.state);
+    win_coords.TEKE_WIN_MAP_Y4.dff17(~win_coords.TATE_WIN_MAP_Y3.state, ~REPU_VBLANKp, ~win_coords.TEKE_WIN_MAP_Y4.state);
+
+    if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, win_reg.PYNU_WIN_MODE_Ap.state))) {
+      cpy_inv(&vram_bus.BUS_VRAM_A00n, &win_coords.WYKA_WIN_MAP_X0, 5);
+      cpy_inv(&vram_bus.BUS_VRAM_A05n, &win_coords.TUFU_WIN_MAP_Y0, 5);
+      vram_bus.BUS_VRAM_A10n.state = reg_lcdc.WOKY_LCDC_WINMAPn.state;
+      vram_bus.BUS_VRAM_A11n.state = 0;
+      vram_bus.BUS_VRAM_A12n.state = 0;
+    }
+
+    //--------------------------------------------
+    // BG/Win tile read address
+
+    if (bit(and2(tile_fetcher.LONY_FETCHINGp.state, or2(tile_fetcher.MESU_BFETCH_S1p.state, tile_fetcher.NYVA_BFETCH_S2p.state)))) {
+      vram_bus.BUS_VRAM_A00n.state = ~tile_fetcher.NYVA_BFETCH_S2p.state;
+
+      if (bit(~win_reg.PYNU_WIN_MODE_Ap.state)) {
+        unpack_inv(sum_y, 3, &vram_bus.BUS_VRAM_A01n);
+      }
+
+      if (bit(win_reg.PYNU_WIN_MODE_Ap.state)) {
+        vram_bus.BUS_VRAM_A01n.state = ~win_coords.VYNO_WIN_TILE_Y0.state;
+        vram_bus.BUS_VRAM_A02n.state = ~win_coords.VUJO_WIN_TILE_Y1.state;
+        vram_bus.BUS_VRAM_A03n.state = ~win_coords.VYMU_WIN_TILE_Y2.state;
+      }
+
+      cpy_inv(&vram_bus.BUS_VRAM_A04n, &tile_temp_b.RAWU_TILE_DB0p, 8);
+
+      vram_bus.BUS_VRAM_A12n.state = or2(tile_temp_b.PYJU_TILE_DB7p.state, ~reg_lcdc.WEXU_LCDC_BGTILEn.state);
+    }
+
+    //--------------------------------------------
+    // Sprite read address
+
+    if (bit(sprite_fetcher.TEXY_SFETCHINGp.state)) {
+      wire WUKY_FLIP_Yp = ~oam_temp_b.YZOS_OAM_DB6p.state;
+
+      wire CYVU_L0 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L0.out_new());
+      wire BORE_L1 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L1.out_new());
+      wire BUVY_L2 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L2.out_new());
+      wire WAGO_L3 = xor2(WUKY_FLIP_Yp, sprite_bus.BUS_SPR_L3.out_new());
+      wire GEJY_L3 = bit(reg_lcdc.XYMO_LCDC_SPSIZEn.state) ? oam_temp_a.XUSO_OAM_DA0p.state : WAGO_L3;
+
+      vram_bus.BUS_VRAM_A00n.state = ~sprite_fetcher.VONU_SFETCH_S1p_D4.state;
+      vram_bus.BUS_VRAM_A01n.state = ~CYVU_L0;
+      vram_bus.BUS_VRAM_A02n.state = ~BORE_L1;
+      vram_bus.BUS_VRAM_A03n.state = ~BUVY_L2;
+      vram_bus.BUS_VRAM_A04n.state = ~GEJY_L3;
+      cpy_inv(&vram_bus.BUS_VRAM_A05n, &oam_temp_a.XEGU_OAM_DA1p, 7);
+      vram_bus.BUS_VRAM_A12n.state = 1;
+    }
+
+    //--------------------------------------------
+    // Vram address pin driver
+
+    memcpy(&vram_pins.PIN_34_VRAM_A00, &vram_bus.BUS_VRAM_A00n, 13);
+
+    uint16_t vram_addr = (uint16_t)pack_inv(13, (BitBase*)&vram_pins.PIN_34_VRAM_A00);
+
+    //--------------------------------------------
+    // CPU bus to Vram data bus
+
+    if (bit(and4(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_addr_vram, cpu_signals.SIG_IN_CPU_WRp.state))) {
+      memcpy(&vram_bus.BUS_VRAM_D00p, &new_bus.BUS_CPU_D00p, 8);
+    }
+
+    //--------------------------------------------
+    // Vram control pins
+
+    if (bit(XYMU_RENDERINGn.state)) {
+      wire APOV_CPU_WRp = CLK_xxxxEFGx & cpu_signals.SIG_IN_CPU_WRp.state;
+      wire ABUZ_EXT_RAM_CS_CLK = CLK_xxCDEFGH & cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
+
+      if (dma_vram_new) {
+        vram_pins.PIN_43_VRAM_CSn.pin_out(1, 1);
+        vram_pins.PIN_45_VRAM_OEn.pin_out(1, 1);
+      }
+      else {
+        wire SUTU_MCSn = nand2(cpu_addr_vram, ABUZ_EXT_RAM_CS_CLK);
+        vram_pins.PIN_43_VRAM_CSn.pin_out(~SUTU_MCSn, ~SUTU_MCSn);
+        vram_pins.PIN_45_VRAM_OEn.pin_out(nand2(cpu_addr_vram, cpu_signals.SIG_IN_CPU_WRp.state), nand2(cpu_addr_vram, cpu_signals.SIG_IN_CPU_WRp.state));
+      }
+
+      wire SOHY_MWRn = nand3(cpu_addr_vram, APOV_CPU_WRp, ABUZ_EXT_RAM_CS_CLK);
+      vram_pins.PIN_49_VRAM_WRn.pin_out(~SOHY_MWRn, ~SOHY_MWRn);
+    }
+    else {
+      if (dma_vram_new) {
+        vram_pins.PIN_43_VRAM_CSn.pin_out(1, 1);
+        vram_pins.PIN_49_VRAM_WRn.pin_out(0, 0);
+        vram_pins.PIN_45_VRAM_OEn.pin_out(1, 1);
+      }
+      else if (tile_fetcher.LONY_FETCHINGp.state) {
+        vram_pins.PIN_43_VRAM_CSn.pin_out(1, 1);
+        vram_pins.PIN_49_VRAM_WRn.pin_out(0, 0);
+        vram_pins.PIN_45_VRAM_OEn.pin_out(1, 1);
+      }
+      else if (sprite_fetcher.TEXY_SFETCHINGp.state) {
+        vram_pins.PIN_43_VRAM_CSn.pin_out(1, 1);
+        vram_pins.PIN_49_VRAM_WRn.pin_out(0, 0);
+        wire RACU_MOEn = and2(sprite_fetcher.TYFO_SFETCH_S0p_D1.state, ~sprite_fetcher.TOXE_SFETCH_S0p.state);
+        vram_pins.PIN_45_VRAM_OEn.pin_out(~RACU_MOEn, ~RACU_MOEn);
+      }
+      else {
+        vram_pins.PIN_43_VRAM_CSn.pin_out(0, 0);
+        vram_pins.PIN_49_VRAM_WRn.pin_out(0, 0);
+        vram_pins.PIN_45_VRAM_OEn.pin_out(0, 0);
+      }
+    }
+
+    uint8_t data = 0xFF;
+    if (bit(~vram_pins.PIN_45_VRAM_OEn.qp_ext_new())) {
+      data = vid_ram[vram_addr];
+    }
+
+    //--------------------------------------------
+    // Vram data pin driver
+
+    memset(&vram_pins.PIN_33_VRAM_D00, 0, 8);
+
+    if (bit(vram_pins.PIN_45_VRAM_OEn.state)) {
+      unpack_inv(vid_ram[vram_addr], 8, &vram_pins.PIN_33_VRAM_D00);
+    }
+
+    if (bit(vram_pins.PIN_49_VRAM_WRn.state)) {
+      vid_ram[vram_addr] = (uint8_t)pack_inv(8, &vram_pins.PIN_33_VRAM_D00);
+    }
+
+    if (bit(and4(cpu_addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
+      cpy_inv(&vram_pins.PIN_33_VRAM_D00, &vram_bus.BUS_VRAM_D00p, 8);
+    }
+
+    //--------------------------------------------
+
+    if (bit(~vram_pins.PIN_49_VRAM_WRn.qp_ext_new())) {
+      vid_ram[vram_addr] = (uint8_t)pack_inv(8, (BitBase*)&vram_pins.PIN_33_VRAM_D00);
+    }
+
+    //--------------------------------------------
+    // Vram pins to vram bus
+
+    if (!bit(and4(cpu_addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
+      cpy_inv(&vram_bus.BUS_VRAM_D00p, &vram_pins.PIN_33_VRAM_D00, 8);
+    }
+
+    //--------------------------------------------
+    // Vram bus to cpu bus
+
+    if (bit(and5(cpu_addr_vram, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
+      memcpy(&new_bus.BUS_CPU_D00p, &vram_bus.BUS_VRAM_D00p, 8);
+    }
+
+    //--------------------------------------------
+    // Vram bus to sprite x flipper
+
+    wire XONO_FLIP_X = and2(oam_temp_b.BAXO_OAM_DB5p.state, sprite_fetcher.TEXY_SFETCHINGp.state);
+
+    flipped_sprite = {
+      XONO_FLIP_X ? vram_bus.BUS_VRAM_D07p.state : vram_bus.BUS_VRAM_D00p.state,
+      XONO_FLIP_X ? vram_bus.BUS_VRAM_D06p.state : vram_bus.BUS_VRAM_D01p.state,
+      XONO_FLIP_X ? vram_bus.BUS_VRAM_D05p.state : vram_bus.BUS_VRAM_D02p.state,
+      XONO_FLIP_X ? vram_bus.BUS_VRAM_D04p.state : vram_bus.BUS_VRAM_D03p.state,
+      XONO_FLIP_X ? vram_bus.BUS_VRAM_D03p.state : vram_bus.BUS_VRAM_D04p.state,
+      XONO_FLIP_X ? vram_bus.BUS_VRAM_D02p.state : vram_bus.BUS_VRAM_D05p.state,
+      XONO_FLIP_X ? vram_bus.BUS_VRAM_D01p.state : vram_bus.BUS_VRAM_D06p.state,
+      XONO_FLIP_X ? vram_bus.BUS_VRAM_D00p.state : vram_bus.BUS_VRAM_D07p.state,
+    };
+  }
+
+
+
+  //----------------------------------------
+  // oam
+
+  {
+    wire cpu_rd = cpu_signals.SIG_IN_CPU_RDp.state;
+    wire cpu_wr = cpu_signals.SIG_IN_CPU_WRp.state & CLK_xxxxEFGx;
+  
+    // FIXME I'm feeling that the cpu_latch signal is really "cpu data bus free"
+    wire dbus_free = cpu_signals.SIG_IN_CPU_LATCH_EXT.state;
+    wire dbus_busy = !dbus_free;
+
+    bool scanning = bit(sprite_scanner.ACYL_SCANNINGp.state);
+    bool dma_running = bit(dma.MATU_DMA_RUNNINGp.state);
+    bool rendering = !bit(XYMU_RENDERINGn.state);
+
+    auto dma_addr_new = pack_inv(16, &dma.NAKY_DMA_A00p);
+    auto cpu_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+    wire addr_oam = (cpu_addr >= 0xFE00) && (cpu_addr <= 0xFEFF);
+
+    bool cpu_reading_oam = (bool)bit(and3(dbus_busy, addr_oam, cpu_rd));
+
+    // this is weird, why is it always 0 when not in reset?
+    oam.MAKA_LATCH_EXTp.state = 0;
+
+    memset(&oam_bus, BIT_NEW | BIT_PULLED | 1, sizeof(oam_bus));
+
+    oam.WUJE_CPU_OAM_WRn.nor_latch(CLK_ABCDxxxx, and2(addr_oam, cpu_wr));
+
+    wire oam_clk_old = oam.SIG_OAM_CLKn.state;
+
+    if (dma_running) {
+      cpy_inv(&oam_bus.BUS_OAM_A00n, &dma.NAKY_DMA_A00p, 8);
+
+      if ((dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF)) {
+        cpy_inv(&oam_bus.BUS_OAM_DA00n, &vram_bus.BUS_VRAM_D00p, 8);
+        cpy_inv(&oam_bus.BUS_OAM_DB00n, &vram_bus.BUS_VRAM_D00p, 8);
+      }
+      else {
+        memcpy(&oam_bus.BUS_OAM_DA00n, &ext_pins.PIN_17_D00, 8);
+        memcpy(&oam_bus.BUS_OAM_DB00n, &ext_pins.PIN_17_D00, 8);
+      }
+
+      oam.SIG_OAM_CLKn .state = CLK_ABCDxxxx;
+      oam.SIG_OAM_WRn_A.state = or2(~CLK_xxxxEFGH, ~oam_bus.BUS_OAM_A00n.state);
+      oam.SIG_OAM_WRn_B.state = or2(~CLK_xxxxEFGH,  oam_bus.BUS_OAM_A00n.state);
+      oam.SIG_OAM_OEn  .state = !cpu_reading_oam;
+    }
+    else if (scanning) {
+      oam_bus.BUS_OAM_A00n.state = 1;
+      oam_bus.BUS_OAM_A01n.state = 1;
+      cpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_scanner.YFEL_SCAN0, 6);
+      oam.SIG_OAM_CLKn .state = and2(~XYSO_xBCDxFGH(), nand2(addr_oam, CLK_xxxxEFGH));
+      oam.SIG_OAM_WRn_A.state = 1;
+      oam.SIG_OAM_WRn_B.state = 1;
+      oam.SIG_OAM_OEn  .state = and2(~XOCE_xBCxxFGx(), !cpu_reading_oam);
+    }
+    else if (rendering) {
+      oam_bus.BUS_OAM_A00n.state = 0;
+      oam_bus.BUS_OAM_A01n.state = 0;
+      cpy_inv(&oam_bus.BUS_OAM_A02n, &sprite_bus.BUS_SPR_I0, 6);
+
+      oam.SIG_OAM_CLKn .state = and2(nand3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.state, not1(sprite_fetcher.TOXE_SFETCH_S0p.state))), nand2(addr_oam, CLK_xxxxEFGH));
+      oam.SIG_OAM_WRn_A.state = 1;
+      oam.SIG_OAM_WRn_B.state = 1;
+      oam.SIG_OAM_OEn  .state = and2(nand3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state), !cpu_reading_oam);
+    }
+    else if (addr_oam) {
+      cpy_inv(&oam_bus.BUS_OAM_A00n, &new_bus.BUS_CPU_A00p, 8);
+      if (bit(~oam.WUJE_CPU_OAM_WRn.state)) {
+        cpy_inv(&oam_bus.BUS_OAM_DA00n, &new_bus.BUS_CPU_D00p, 8);
+        cpy_inv(&oam_bus.BUS_OAM_DB00n, &new_bus.BUS_CPU_D00p, 8);
+      }
+      oam.SIG_OAM_CLKn .state = CLK_ABCDxxxx;
+      oam.SIG_OAM_WRn_A.state = nand2(cpu_wr, oam_bus.BUS_OAM_A00n.state);
+      oam.SIG_OAM_WRn_B.state = nand2(cpu_wr, ~oam_bus.BUS_OAM_A00n.state);
+      oam.SIG_OAM_OEn  .state = nand2(cpu_rd, dbus_busy);
+    }
+    else {
+      cpy_inv(&oam_bus.BUS_OAM_A00n,  &new_bus.BUS_CPU_A00p, 8);
+      cpy_inv(&oam_bus.BUS_OAM_DA00n, &new_bus.BUS_CPU_D00p, 8);
+      cpy_inv(&oam_bus.BUS_OAM_DB00n, &new_bus.BUS_CPU_D00p, 8);
+      oam.SIG_OAM_CLKn .state = 1;
+      oam.SIG_OAM_WRn_A.state = 1;
+      oam.SIG_OAM_WRn_B.state = 1;
+      oam.SIG_OAM_OEn  .state = 1;
+    }
+
+    wire oam_clk_new = oam.SIG_OAM_CLKn.state;
+
+    // data in from oam
+    uint8_t oam_data_a, oam_data_b;
+    {
+
+      uint8_t oam_addr = (uint8_t)pack_inv(7, (BitBase*)&oam_bus.BUS_OAM_A01n);
+      oam_data_a = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DA00n);
+      oam_data_b = (uint8_t)pack_inv(8, (BitBase*)&oam_bus.BUS_OAM_DB00n);
+
+      if (negedge(oam_clk_old, oam_clk_new)) {
+        if (bit(~oam.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+        if (bit(~oam.SIG_OAM_WRn_B.state)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+      }
+      oam.old_oam_clk = bit(~oam.SIG_OAM_CLKn.state);
+
+      oam_data_a = oam_ram[(oam_addr << 1) + 0];
+      oam_data_b = oam_ram[(oam_addr << 1) + 1];
+    }
+
+
+
+
+
+
+    bool latch_oam = false;
+    latch_oam |= cpu_reading_oam;
+    latch_oam |= scanning && gen_clk_new(0b01100110);
+    latch_oam |= rendering && (bool)bit(and3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state));
+
+    if (latch_oam) {
+      unpack_inv(oam_data_a, 8, &oam_bus.BUS_OAM_DA00n);
+      unpack_inv(oam_data_b, 8, &oam_bus.BUS_OAM_DB00n);
+      memcpy(&oam_latch_a.YDYV_OAM_LATCH_DA0n, &oam_bus.BUS_OAM_DA00n, 8);
+      memcpy(&oam_latch_b.XYKY_OAM_LATCH_DB0n, &oam_bus.BUS_OAM_DB00n, 8);
+    }
+
+    if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running && !scanning && !rendering) {
+      if (bit(oam_bus.BUS_OAM_A00n.state)) {
+        cpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
+      }
+      else {
+        cpy_inv(&new_bus.BUS_CPU_D00p, &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
+      }
+    }
+  }
 
   //----------------------------------------
   // zram
@@ -2321,8 +2907,67 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // And finally, interrupts.
 
-  //tock_interrupts_gates();
-  tock_interrupts_logic(cpu_addr_old, cpu_addr_new, cpu_rd_old, cpu_rd_new, cpu_wr_old, cpu_wr_new);
+  {
+    auto CLK_xxxxEFGx_old = gen_clk_old(0b00001110);
+    auto CLK_xxxxEFGx_new = gen_clk_new(0b00001110);
+
+    if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
+      cpy(&interrupts.IE_D0, &old_bus.BUS_CPU_D00p, 5);
+    }
+
+    if (cpu_addr_new == 0xFF41 && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
+      cpy_inv(&reg_stat.ROXE_STAT_HBI_ENn, &old_bus.BUS_CPU_D03p, 4);
+    }
+
+    if (cpu_addr_new == 0xFF41 && cpu_rd_new) {
+      new_bus.BUS_CPU_D00p.state = ~XYMU_RENDERINGn.state | lcd.POPU_y144p.state;
+      new_bus.BUS_CPU_D01p.state = ~XYMU_RENDERINGn.state | sprite_scanner.ACYL_SCANNINGp.state;
+      new_bus.BUS_CPU_D02p.state = ~reg_stat.RUPO_LYC_MATCHn.state;
+      cpy_inv(&new_bus.BUS_CPU_D03p, &reg_stat.ROXE_STAT_HBI_ENn, 4);
+    }
+
+
+
+    bool stat_int = 0;
+    if (!bit(reg_stat.RUGU_STAT_LYI_ENn.state) && bit(reg_lyc.ROPO_LY_MATCH_SYNCp.state)) stat_int = 1;
+    if (!bit(reg_stat.REFE_STAT_OAI_ENn.state) && bit(and2(~lcd.POPU_y144p.state, lcd.RUTU_x113p.qp_new()))) stat_int = 1;
+    if (!bit(reg_stat.RUFO_STAT_VBI_ENn.state) && bit(lcd.POPU_y144p.state)) stat_int = 1;
+    if (!bit(reg_stat.ROXE_STAT_HBI_ENn.state) && bit(and2(WODU_HBLANKp.state, ~lcd.POPU_y144p.state))) stat_int = 1;
+
+    wire lcd_int = lcd.POPU_y144p.state;
+    wire joy_int = nand2(joy.APUG_JP_GLITCH3.state, joy.BATU_JP_GLITCH0.state);
+    wire tim_int = timer.MOBA_TIMER_OVERFLOWp.state;
+    wire ser_int = serial.CALY_SER_CNT3.state;
+
+    // FIXME to handle these dffs correctly we need to know both the old and new value of the interrupt triggers...
+    interrupts.LOPE_FF0F_D0p.dff22(lcd_int,  1, 1, 1);
+    interrupts.LALU_FF0F_D1p.dff22(stat_int, 1, 1, 1);
+    interrupts.NYBO_FF0F_D2p.dff22(tim_int,  1, 1, 1);
+    interrupts.UBUL_FF0F_D3p.dff22(ser_int,  1, 1, 1);
+    interrupts.ULAK_FF0F_D4p.dff22(joy_int,  1, 1, 1);
+
+    // note this is an async set so it doesn't happen on the GH clock edge like other writes
+    if (cpu_signals.SIG_IN_CPU_WRp.state & (cpu_addr_new == 0xFF0F) & CLK_xxxxEFGx_new) {
+      cpy(&interrupts.LOPE_FF0F_D0p, &new_bus.BUS_CPU_D00p, 5);
+    }
+
+    interrupts.LOPE_FF0F_D0p.state = interrupts.LOPE_FF0F_D0p.state & ~interrupts.SIG_CPU_ACK_VBLANK.state;
+    interrupts.LALU_FF0F_D1p.state = interrupts.LALU_FF0F_D1p.state & ~interrupts.SIG_CPU_ACK_STAT.state;
+    interrupts.NYBO_FF0F_D2p.state = interrupts.NYBO_FF0F_D2p.state & ~interrupts.SIG_CPU_ACK_TIMER.state;
+    interrupts.UBUL_FF0F_D3p.state = interrupts.UBUL_FF0F_D3p.state & ~interrupts.SIG_CPU_ACK_SERIAL.state;
+    interrupts.ULAK_FF0F_D4p.state = interrupts.ULAK_FF0F_D4p.state & ~interrupts.SIG_CPU_ACK_JOYPAD.state;
+
+    cpy(&interrupts.SIG_CPU_INT_VBLANK, &interrupts.LOPE_FF0F_D0p, 5);
+
+    if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
+      cpy(&new_bus.BUS_CPU_D00p, &interrupts.IE_D0, 5);
+    }
+
+    if (cpu_addr_new == 0xFF0F && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
+      cpy(&interrupts.MATY_FF0F_L0p, &interrupts.LOPE_FF0F_D0p, 5);
+      cpy(&new_bus.BUS_CPU_D00p,     &interrupts.LOPE_FF0F_D0p, 5);
+    }
+  }
 
   //----------------------------------------
 

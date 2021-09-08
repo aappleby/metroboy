@@ -213,7 +213,7 @@ struct GateBoy {
   void tock_zram_logic();
 
   void tock_pix_pipes_gates(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
-  void tock_pix_pipes_logic(wire SACU_CLKPIPE_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn, uint8_t bfetch_phase_old, uint8_t bfetch_phase_new, uint8_t sfetch_phase_old, uint8_t sfetch_phase_new);
+  void tock_pix_pipes_logic(bool rendering_old, bool rendering_new, wire SACU_CLKPIPE_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn, uint8_t bfetch_phase_old, uint8_t bfetch_phase_new, uint8_t sfetch_phase_old, uint8_t sfetch_phase_new);
 
   void tock_bootrom_gates();
   void tock_bootrom_logic();

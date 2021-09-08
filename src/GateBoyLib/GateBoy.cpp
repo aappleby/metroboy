@@ -1599,9 +1599,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     sprite_fetcher.VONU_SFETCH_S1p_D4.state = sprite_fetcher.TOBU_SFETCH_S1p_D2.state;
     sprite_fetcher.TOBU_SFETCH_S1p_D2.state = sprite_fetcher.TULY_SFETCH_S1p.state;
 
-    uint8_t sfetch_phase_old2 = pack(sprite_fetcher.TOXE_SFETCH_S0p.state, sprite_fetcher.TULY_SFETCH_S1p.state, sprite_fetcher.TESE_SFETCH_S2p.state, 0);
-    if (sfetch_phase_old2 != 5) {
-      unpack(sfetch_phase_old2 + 1, 3, &sprite_fetcher.TOXE_SFETCH_S0p);
+    if ((sfetch_phase_old >> 1) != 5) {
+      unpack((sfetch_phase_old >> 1) + 1, 3, &sprite_fetcher.TOXE_SFETCH_S0p);
     }
 
     if (bit(and2(sprite_fetcher.SOBU_SFETCH_REQp.state, ~sprite_fetcher.SUDA_SFETCH_REQp.state))) {
@@ -2041,11 +2040,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   wire LYZU_new = tile_fetcher.LYZU_BFETCH_S0p_D1.state;
 
-
-  auto bfetch_phase_old2 = pack(3, &tile_fetcher.LAXU_BFETCH_S0p);
-
-  if (bfetch_phase_old2 != 5 && DELTA_ODD) {
-    unpack(bfetch_phase_old2 + 1, 3, &tile_fetcher.LAXU_BFETCH_S0p);
+  if ((bfetch_phase_old < 10) && DELTA_ODD) {
+    unpack((bfetch_phase_old >> 1) + 1, 3, &tile_fetcher.LAXU_BFETCH_S0p);
   }
 
   auto lyry_old = tile_fetcher.LYRY_BFETCH_DONEp.state;
@@ -2110,7 +2106,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // PPU / LCD output
 
-  tock_pix_pipes_logic(SACU_CLKPIPE_old, SACU_CLKPIPE_new, NYXU_BFETCH_RSTn, bfetch_phase_old, bfetch_phase_new, sfetch_phase_old, sfetch_phase_new);
+  tock_pix_pipes_logic(rendering_old, rendering_new, SACU_CLKPIPE_old, SACU_CLKPIPE_new, NYXU_BFETCH_RSTn, bfetch_phase_old, bfetch_phase_new, sfetch_phase_old, sfetch_phase_new);
   set_lcd_pins_logic(SACU_CLKPIPE_new);
 
   //----------------------------------------

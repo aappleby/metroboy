@@ -856,24 +856,16 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_pix_pipes_logic(wire SACU_CLKPIPE_old, wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn, uint8_t bfetch_phase_old, uint8_t bfetch_phase_new, uint8_t sfetch_phase_old, uint8_t sfetch_phase_new)
+void GateBoy::tock_pix_pipes_logic(bool rendering_old, bool rendering_new, wire SACU_CLKPIPE_old, wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn, uint8_t bfetch_phase_old, uint8_t bfetch_phase_new, uint8_t sfetch_phase_old, uint8_t sfetch_phase_new)
 {
   auto& tf = tile_fetcher;
   auto& sf = sprite_fetcher;
 
-  bool rendering = !bit(XYMU_RENDERINGn.state);
   auto cpu_addr_new = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
-  {
-    wire NYDY_LATCH_TILE_DAn = nand5(rendering, tile_fetcher.LAXU_BFETCH_S0p.state, ~tile_fetcher.LYZU_BFETCH_S0p_D1.state, tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state);
-    tile_temp_a.LEGU_TILE_DA0n.dff_pp(NYDY_LATCH_TILE_DAn, ~vram_bus.BUS_VRAM_D00p.state);
-    tile_temp_a.NUDU_TILE_DA1n.dff_pp(NYDY_LATCH_TILE_DAn, ~vram_bus.BUS_VRAM_D01p.state);
-    tile_temp_a.MUKU_TILE_DA2n.dff_pp(NYDY_LATCH_TILE_DAn, ~vram_bus.BUS_VRAM_D02p.state);
-    tile_temp_a.LUZO_TILE_DA3n.dff_pp(NYDY_LATCH_TILE_DAn, ~vram_bus.BUS_VRAM_D03p.state);
-    tile_temp_a.MEGU_TILE_DA4n.dff_pp(NYDY_LATCH_TILE_DAn, ~vram_bus.BUS_VRAM_D04p.state);
-    tile_temp_a.MYJY_TILE_DA5n.dff_pp(NYDY_LATCH_TILE_DAn, ~vram_bus.BUS_VRAM_D05p.state);
-    tile_temp_a.NASA_TILE_DA6n.dff_pp(NYDY_LATCH_TILE_DAn, ~vram_bus.BUS_VRAM_D06p.state);
-    tile_temp_a.NEFO_TILE_DA7n.dff_pp(NYDY_LATCH_TILE_DAn, ~vram_bus.BUS_VRAM_D07p.state);
+  // This ff is weird because it latches on phase change _or_ if rendering stops in the middle of a fetch
+  if (rendering_old && (bfetch_phase_old == 6) && (!rendering_new || bfetch_phase_new != 6)) {
+    cpy_inv(&tile_temp_a.LEGU_TILE_DA0n, &vram_bus.BUS_VRAM_D00p, 8);
   }
 
 

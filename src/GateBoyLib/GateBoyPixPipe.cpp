@@ -856,6 +856,8 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
 
 //------------------------------------------------------------------------------------------------------------------------
 
+#pragma optimize("", off)
+
 void GateBoy::tock_pix_pipes_logic(bool rendering_old, bool rendering_new, wire SACU_CLKPIPE_old, wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn, uint8_t bfetch_phase_old, uint8_t bfetch_phase_new, uint8_t sfetch_phase_old, uint8_t sfetch_phase_new)
 {
   auto& tf = tile_fetcher;
@@ -864,10 +866,17 @@ void GateBoy::tock_pix_pipes_logic(bool rendering_old, bool rendering_new, wire 
   auto cpu_addr_new = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
 
   // This ff is weird because it latches on phase change _or_ if rendering stops in the middle of a fetch
-  if (rendering_old && (bfetch_phase_old == 6) && (!rendering_new || bfetch_phase_new != 6)) {
+  if (rendering_old && (bfetch_phase_old == 6) && (!rendering_new || bfetch_phase_new == 7)) {
     cpy_inv(&tile_temp_a.LEGU_TILE_DA0n, &vram_bus.BUS_VRAM_D00p, 8);
   }
 
+  if (rendering_old && (bfetch_phase_old == 2) && (bfetch_phase_new == 3 || !rendering_new)) {
+    cpy(&tile_temp_b.RAWU_TILE_DB0p, &vram_bus.BUS_VRAM_D00p, 8);
+  }
+
+  if (rendering_old && (bfetch_phase_old == 10) && (bfetch_phase_new == 11 || !rendering_new)) {
+    cpy(&tile_temp_b.RAWU_TILE_DB0p, &vram_bus.BUS_VRAM_D00p, 8);
+  }
 
   /*_p24.LOBY*/ wire LOBY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
 
@@ -884,22 +893,6 @@ void GateBoy::tock_pix_pipes_logic(bool rendering_old, bool rendering_new, wire 
   /*#p29.TOPU*/ wire TOPU_STORE_SPRITE_Ap = and2(sprite_fetcher.TULY_SFETCH_S1p.qp_new(), SYCU_SFETCH_S0pe);
   /*#p29.RACA*/ wire RACA_STORE_SPRITE_Bp = and2(sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new(), SYCU_SFETCH_S0pe);
 
-
-  {
-    // This is the only block of "dff11" on the chip. Not sure about clock polarity, it seems to work either way.
-
-    /*_p32.LESO*/ wire LESO_LATCH_TILE_DBn = not1(MOFU_LATCH_TILE_DBp);
-    /*_p32.LUVE*/ wire LUVE_LATCH_TILE_DBp = not1(LESO_LATCH_TILE_DBn); // Schematic wrong, was labeled AJAR
-    /*_p32.LABU*/ wire LABU_LATCH_TILE_DBn = not1(LUVE_LATCH_TILE_DBp);
-    /*_p32.RAWU*/ tile_temp_b.RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_bus.BUS_VRAM_D00p.out_old());
-    /*_p32.POZO*/ tile_temp_b.POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_bus.BUS_VRAM_D01p.out_old());
-    /*_p32.PYZO*/ tile_temp_b.PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_bus.BUS_VRAM_D02p.out_old());
-    /*_p32.POXA*/ tile_temp_b.POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_bus.BUS_VRAM_D03p.out_old());
-    /*_p32.PULO*/ tile_temp_b.PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_bus.BUS_VRAM_D04p.out_old());
-    /*_p32.POJU*/ tile_temp_b.POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_bus.BUS_VRAM_D05p.out_old());
-    /*_p32.POWY*/ tile_temp_b.POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_bus.BUS_VRAM_D06p.out_old());
-    /*_p32.PYJU*/ tile_temp_b.PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_bus.BUS_VRAM_D07p.out_old());
-  }
 
   {
     /*#p29.VYWA*/ wire VYWA_STORE_SPRITE_An = not1(TOPU_STORE_SPRITE_Ap);

@@ -1824,8 +1824,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (vid_rst_new) {
     DEZY_COUNT_CLKp.rst();
 
-    clear(sprite_counter.BESE_SPRITE_COUNT0);
-    clear(sprite_reset_flags.EBOJ_STORE0_RSTp);
+    clear(sprite_counter);
+    clear(sprite_reset_flags);
     clear(sprite_store_flags);
 
     set(store_x0);
@@ -1846,8 +1846,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       DEZY_COUNT_CLKp.state = 1;
     }
 
-    clear(4, &sprite_counter.BESE_SPRITE_COUNT0);
-    clear(10, &sprite_reset_flags.EBOJ_STORE0_RSTp);
+    clear(sprite_counter);
+    clear(sprite_reset_flags);
 
     memset(&sprite_store_flags, 0, 10);
 

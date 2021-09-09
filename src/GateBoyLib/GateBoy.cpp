@@ -1460,6 +1460,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   auto lx_old = pack(reg_lx);
   auto ly_old = pack(reg_ly);
+  
+  bool line_rst_old = ATEJ_LINE_RSTp;
 
   if (vid_rst_new) {
     lcd.ANEL_x113p = 0;
@@ -1533,6 +1535,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   bool popu_y144p_new = lcd.POPU_y144p;
   bool nype_x113p_new = lcd.NYPE_x113p;
 
+  bool line_rst_new = ATEJ_LINE_RSTp;
+
   //----------
 
   tock_joypad_logic();
@@ -1541,9 +1545,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   tock_bootrom_logic();
 
   //auto dma_addr_old = pack_inv(16, &dma.NAKY_DMA_A00p);
-  auto dma_running_old = bit(dma.MATU_DMA_RUNNINGp.state);
+  bool dma_running_old = dma.MATU_DMA_RUNNINGp;
   tock_dma_logic();
-  auto dma_running_new = bit(dma.MATU_DMA_RUNNINGp.state);
+  bool dma_running_new = dma.MATU_DMA_RUNNINGp;
   auto dma_addr_new = pack_inv(16, &dma.NAKY_DMA_A00p);
   auto dma_vram_new = dma_running_new && (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
 
@@ -1552,52 +1556,52 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   // This is still yeech
 
-  bool scanning_old = bit(sprite_scanner.ACYL_SCANNINGp.state);
+  bool scanning_old = sprite_scanner.ACYL_SCANNINGp;
 
   {
     auto scan_count_old = pack(scan_counter);
-    auto BESU_old = sprite_scanner.BESU_SCANNINGn.state;
-    auto BYBU_old = sprite_scanner.BYBA_SCAN_DONE_Ap.state;
-    auto FETO_old = pack(scan_counter) == 39;
+    bool BESU_old = sprite_scanner.BESU_SCANNINGn;
+    bool BYBU_old = sprite_scanner.BYBA_SCAN_DONE_Ap;
+    bool FETO_old = pack(scan_counter) == 39;
 
     //----------
 
-    if (vid_rst_new || bit(ATEJ_LINE_RSTp.state)) {
-      sprite_scanner.DOBA_SCAN_DONE_Bp.rst();
-      sprite_scanner.BYBA_SCAN_DONE_Ap.rst();
+    if (vid_rst_new || line_rst_new) {
+      sprite_scanner.DOBA_SCAN_DONE_Bp = 0;
+      sprite_scanner.BYBA_SCAN_DONE_Ap = 0;
       sprite_scanner.AVAP_SCAN_DONE_TRIGp = 0;
     }
     else {
-      if (DELTA_EVEN) sprite_scanner.DOBA_SCAN_DONE_Bp.state = BYBU_old;
-      if (DELTA_HA || DELTA_DE) sprite_scanner.BYBA_SCAN_DONE_Ap.state = FETO_old;
-      sprite_scanner.AVAP_SCAN_DONE_TRIGp = nor2(sprite_scanner.DOBA_SCAN_DONE_Bp.state, ~sprite_scanner.BYBA_SCAN_DONE_Ap.state);
+      if (DELTA_EVEN) sprite_scanner.DOBA_SCAN_DONE_Bp = BYBU_old;
+      if (DELTA_HA || DELTA_DE) sprite_scanner.BYBA_SCAN_DONE_Ap = FETO_old;
+      sprite_scanner.AVAP_SCAN_DONE_TRIGp = nor2(sprite_scanner.DOBA_SCAN_DONE_Bp, ~sprite_scanner.BYBA_SCAN_DONE_Ap);
     }
 
     //----------
 
     if (vid_rst_new) {
-      sprite_scanner.BESU_SCANNINGn.state = 0;
+      sprite_scanner.BESU_SCANNINGn = 0;
     }
-    else if (bit(ATEJ_LINE_RSTp.state)) {
-      sprite_scanner.BESU_SCANNINGn.state = 1;
+    else if (line_rst_new) {
+      sprite_scanner.BESU_SCANNINGn = 1;
     }
     else {
-      if (bit(lcd.CATU_x113p.state)) sprite_scanner.BESU_SCANNINGn.state = 1;
-      if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state)) sprite_scanner.BESU_SCANNINGn.state = 0;
+      if (lcd.CATU_x113p) sprite_scanner.BESU_SCANNINGn = 1;
+      if (sprite_scanner.AVAP_SCAN_DONE_TRIGp) sprite_scanner.BESU_SCANNINGn = 0;
     }
 
-    sprite_scanner.ACYL_SCANNINGp = and3(!vid_rst_new, ~dma_running_new, sprite_scanner.BESU_SCANNINGn.state);
+    sprite_scanner.ACYL_SCANNINGp = and3(!vid_rst_new, !dma_running_new, sprite_scanner.BESU_SCANNINGn);
 
     //----------
 
     if (!vid_rst_new && (DELTA_HA || DELTA_DE)) {
       cpy_inv_blob(sprite_index, &oam_abus.BUS_OAM_A02n);
-      sprite_scanner.CENO_SCANNINGn.state = BESU_old;
+      sprite_scanner.CENO_SCANNINGn = BESU_old;
     }
 
     //----------
 
-    if (vid_rst_new || bit(ATEJ_LINE_RSTp.state)) {
+    if (vid_rst_new || line_rst_new) {
       clear(scan_counter);
     }
     else if ((DELTA_HA || DELTA_DE) && (scan_count_old != 39)) {
@@ -1619,7 +1623,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     VOGA_HBLANKp.state = wodu_hblank_old;
   }
 
-  if (ATEJ_LINE_RSTp.state) {
+  if (line_rst_new) {
     VOGA_HBLANKp.rst();
   }
 
@@ -1656,7 +1660,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  if (vid_rst_new || bit(ATEJ_LINE_RSTp.state)) {
+  if (vid_rst_new || line_rst_new) {
     clear(3, &sprite_fetcher.TOXE_SFETCH_S0p);
   }
 
@@ -1699,7 +1703,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     win_reg.PYNU_WIN_MODE_Ap.state = 1;
   }
 
-  if (bit(nand3(winen_new, ~ATEJ_LINE_RSTp.state, !vid_rst_new))) {
+  if (bit(nand3(winen_new, !line_rst_new, !vid_rst_new))) {
     win_reg.PYNU_WIN_MODE_Ap.state = 0;
   }
 
@@ -1754,7 +1758,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  if (bit(and2(sprite_fetcher.SOBU_SFETCH_REQp, ~sprite_fetcher.SUDA_SFETCH_REQp)) || vid_rst_new || bit(ATEJ_LINE_RSTp)) {
+  if (bit(and2(sprite_fetcher.SOBU_SFETCH_REQp, ~sprite_fetcher.SUDA_SFETCH_REQp)) || vid_rst_new || line_rst_new) {
     sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
   }
 
@@ -1838,7 +1842,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     set(store_x8);
     set(store_x9);
   }
-  else if (bit(ATEJ_LINE_RSTp.state)) {
+  else if (line_rst_new) {
 
     // FIXME does this even matter?
     if (DELTA_ODD) {
@@ -2006,7 +2010,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     unpack(px_old + 1, pix_count);
   }
 
-  if (!bit(nor2(ATEJ_LINE_RSTp.state, vid_rst_new))) {
+  if (bit(or2(line_rst_new, vid_rst_new))) {
     clear(pix_count);
   }
 
@@ -2649,7 +2653,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire VETU_WIN_MAPp_old = and2(TEVO_WIN_FETCH_TRIGp_old, PYNU_WIN_MODE_Ap_old);
     wire VETU_WIN_MAPp_new = and2(TEVO_WIN_FETCH_TRIGp_new, PYNU_WIN_MODE_Ap_new);
 
-    wire XOFO_WIN_RSTp = nand3(winen_new, ~ATEJ_LINE_RSTp.state, ~reg_lcdc.XONA_LCDC_LCDENn.state);
+    wire XOFO_WIN_RSTp = nand3(winen_new, !line_rst_new, ~reg_lcdc.XONA_LCDC_LCDENn.state);
 
     auto win_map_x_old = pack(win_x);
 

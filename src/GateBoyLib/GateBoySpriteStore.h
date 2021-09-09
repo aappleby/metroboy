@@ -68,8 +68,6 @@ struct SpriteCounter {
 // 10 match signals + 1 global match signal
 
 struct SpriteMatchFlags {
-  /*_p29.FEPO*/ Gate FEPO_STORE_MATCHp;
-
   /*_p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
   /*_p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
   /*_p29.EMOL*/ Gate EMOL_SPRITE2_GETp;

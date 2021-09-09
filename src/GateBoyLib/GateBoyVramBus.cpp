@@ -454,7 +454,6 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   }
 
   {
-    /*#p25.RUVY*/ wire RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(XYMU_RENDERINGn.qn_new());
     /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
 

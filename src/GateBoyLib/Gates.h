@@ -851,18 +851,6 @@ inline void cpy_inv_blob(A& dst, const void* src) {
   cpy_inv(&dst, src, sizeof(A));
 }
 
-inline void cpy_and(void* dst, void* src, int c) {
-  for (int i = 0; i < c; i++) {
-    ((uint8_t*)dst)[i] &= ((uint8_t*)src)[i];
-  }
-}
-
-inline void cpy_inv2(int c, void* src, void* dst) {
-  for (int i = 0; i < c; i++) {
-    ((uint8_t*)dst)[i] = ~((uint8_t*)src)[i];
-  }
-}
-
 inline void clear(int c, void* blob) {
   uint8_t* b = (uint8_t*)blob;
   for (int i = 0; i < c; i++) b[i] &= ~1;
@@ -873,14 +861,10 @@ inline void clear(T& t) {
   clear(sizeof(T), &t);
 }
 
-inline void set(int c, void* blob) {
-  uint8_t* b = (uint8_t*)blob;
-  for (int i = 0; i < c; i++) b[i] |= 1;
-}
-
 template<typename T>
-  inline void set(T& t) {
-  set(sizeof(T), &t);
+inline void set(T& t) {
+  uint8_t* b = (uint8_t*)&t;
+  for (int i = 0; i < sizeof(T); i++) b[i] |= 1;
 }
 
 inline bool posedge(wire a, wire b) {

@@ -194,28 +194,9 @@ struct GateBoy {
 
   void tock_spu();
 
-  void store_sprite_gates(
-    SpriteStoreFlags& sprite_store_flags_old,
-    SpriteStoreFlags& sprite_store_flags_new,
-    SpriteResetFlags& sprite_reset_flags,
-    wire BYVA_LINE_RSTn,
-    SpriteIBus& sprite_ibus,
-    SpriteLBus& sprite_lbus,
-    OamTempB& oam_temp_b,
-    GateBoySpriteStore& sprite_store);
-
-  static void get_sprite_match_flags_gates(
-    PixCount& pix_count,
-    wire AROR_MATCH_ENp,
-    GateBoySpriteStore& sprite_store,
-    SpriteMatchFlags& sprite_get_flag,
-    SigIn SIG_GND);
-
-  static void sprite_match_to_bus_gates(
-    GateBoySpriteStore& sprite_store,
-    SpriteMatchFlags& sprite_get_flag,
-    SpriteIBus& sprite_ibus,
-    SpriteLBus& sprite_lbus);
+  void store_sprite_gates(SpriteStoreFlags& sprite_store_flags_old, SpriteStoreFlags& sprite_store_flags_new, SpriteResetFlags& sprite_reset_flags, wire BYVA_LINE_RSTn, OamTempB& oam_temp_b_old);
+  void get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags& sprite_get_flag);
+  void sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag);
 
   void sprite_scan_to_bus_gates(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
 
@@ -473,7 +454,38 @@ struct GateBoy {
   GateBoyJoypad     joy;
   GateBoySerial     serial;
 
-  GateBoySpriteStore   sprite_store;
+  StoreI0 store_i0;
+  StoreI1 store_i1;
+  StoreI2 store_i2;
+  StoreI3 store_i3;
+  StoreI4 store_i4;
+  StoreI5 store_i5;
+  StoreI6 store_i6;
+  StoreI7 store_i7;
+  StoreI8 store_i8;
+  StoreI9 store_i9;
+
+  StoreL0 store_l0;
+  StoreL1 store_l1;
+  StoreL2 store_l2;
+  StoreL3 store_l3;
+  StoreL4 store_l4;
+  StoreL5 store_l5;
+  StoreL6 store_l6;
+  StoreL7 store_l7;
+  StoreL8 store_l8;
+  StoreL9 store_l9;
+
+  StoreX0 store_x0;
+  StoreX1 store_x1;
+  StoreX2 store_x2;
+  StoreX3 store_x3;
+  StoreX4 store_x4;
+  StoreX5 store_x5;
+  StoreX6 store_x6;
+  StoreX7 store_x7;
+  StoreX8 store_x8;
+  StoreX9 store_x9;
 
   SpriteCounter sprite_counter;
 

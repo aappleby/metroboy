@@ -319,7 +319,7 @@ struct GateBoyOffsets {
   const int o_joypad         = offsetof(GateBoy, joy);
   const int o_ser_reg        = offsetof(GateBoy, serial);
 
-  const int o_sprite_store   = offsetof(GateBoy, sprite_store);
+  //const int o_sprite_store   = offsetof(GateBoy, sprite_store);
   const int o_sprite_counter = offsetof(GateBoy, sprite_counter);
   const int o_sprite_scanner = offsetof(GateBoy, sprite_scanner);
   const int o_sprite_fetcher = offsetof(GateBoy, sprite_fetcher);
@@ -903,7 +903,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     SpriteStoreFlags sprite_store_flags_old = sprite_store_flags;
 
     update_sprite_store_flags_gates(sprite_counter, DYTY_COUNT_CLKp, sprite_store_flags);
-    store_sprite_gates(sprite_store_flags_old, sprite_store_flags, sprite_reset_flags, BYVA_LINE_RSTn, sprite_ibus, sprite_lbus, oam_temp_b_old, sprite_store);
+    store_sprite_gates(sprite_store_flags_old, sprite_store_flags, sprite_reset_flags, BYVA_LINE_RSTn, oam_temp_b_old);
   }
 
   //----------------------------------------
@@ -963,7 +963,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p21.TAKO*/ pix_count.TAKO_PX6p.dff17_any(TOCA_new, TADY_LINE_RSTn, TYGE_old);
     /*_p21.SYBE*/ pix_count.SYBE_PX7p.dff17_any(TOCA_new, TADY_LINE_RSTn, ROKU_old);
 
-    get_sprite_match_flags_gates(pix_count, AROR_MATCH_ENp, sprite_store, sprite_match_flags, SIG_GND);
+    get_sprite_match_flags_gates(AROR_MATCH_ENp, sprite_match_flags);
   }
 
   // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
@@ -987,8 +987,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   memset(&sprite_ibus, BIT_NEW | BIT_PULLED | 1, sizeof(sprite_ibus));
   memset(&sprite_lbus, BIT_NEW | BIT_PULLED | 1, sizeof(sprite_lbus));
 
-
-  sprite_match_to_bus_gates(sprite_store, sprite_match_flags, sprite_ibus, sprite_lbus);
+  sprite_match_to_bus_gates(sprite_match_flags);
   sprite_scan_to_bus_gates(sprite_delta_y, XYMU_RENDERINGn, sprite_match_flags.FEPO_STORE_MATCHp);
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1845,9 +1844,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     memset(&sprite_store_flags, 0, 10);
 
-    for (int i = 0; i < 10; i++) {
-      set(8, &((BitBase*)&sprite_store)[18 * i + 10]);
-    }
+    set(8, &store_x0);
+    set(8, &store_x1);
+    set(8, &store_x2);
+    set(8, &store_x3);
+    set(8, &store_x4);
+    set(8, &store_x5);
+    set(8, &store_x6);
+    set(8, &store_x7);
+    set(8, &store_x8);
+    set(8, &store_x9);
   }
   else if (bit(ATEJ_LINE_RSTp.state)) {
 
@@ -1861,9 +1867,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     memset(&sprite_store_flags, 0, 10);
 
-    for (int i = 0; i < 10; i++) {
-      set(8, &((BitBase*)&sprite_store)[18 * i + 10]);
-    }
+    set(8, &store_x0);
+    set(8, &store_x1);
+    set(8, &store_x2);
+    set(8, &store_x3);
+    set(8, &store_x4);
+    set(8, &store_x5);
+    set(8, &store_x6);
+    set(8, &store_x7);
+    set(8, &store_x8);
+    set(8, &store_x9);
   }
   else {
     wire GACE_SPRITE_DELTA4 = not1(sprite_delta_y.GOPU_YDIFF4.sum);
@@ -1910,13 +1923,51 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     auto store_clk_pe = (~store_clk_old) & store_clk_new;
     auto store_clk_ne = store_clk_old & (~store_clk_new);
-    BitBase* store_regs = (BitBase*)&sprite_store;
 
-    for (int i = 0; i < 10; i++) {
-      if (bit(store_clk_ne, i)) cpy_inv(&store_regs[18 * i + 0], &sprite_ibus.BUS_SPR_I0, 10);
-      if (bit(store_clk_pe, i)) cpy(&store_regs[18 * i + 10], &oam_temp_b.YLOR_OAM_DB0p.state, 8);
-      if (bit(store_rst, i))    set(8, &store_regs[18 * i + 10]);
-    }
+    if (bit(store_clk_ne, 0)) cpy_inv(&store_i0, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 1)) cpy_inv(&store_i1, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 2)) cpy_inv(&store_i2, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 3)) cpy_inv(&store_i3, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 4)) cpy_inv(&store_i4, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 5)) cpy_inv(&store_i5, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 6)) cpy_inv(&store_i6, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 7)) cpy_inv(&store_i7, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 8)) cpy_inv(&store_i8, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 9)) cpy_inv(&store_i9, &sprite_ibus, sizeof(sprite_ibus));
+
+    if (bit(store_clk_ne, 0)) cpy_inv(&store_l0, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 1)) cpy_inv(&store_l1, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 2)) cpy_inv(&store_l2, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 3)) cpy_inv(&store_l3, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 4)) cpy_inv(&store_l4, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 5)) cpy_inv(&store_l5, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 6)) cpy_inv(&store_l6, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 7)) cpy_inv(&store_l7, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 8)) cpy_inv(&store_l8, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 9)) cpy_inv(&store_l9, &sprite_lbus, sizeof(sprite_lbus));
+
+    if (bit(store_clk_pe, 0)) cpy(&store_x0, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 1)) cpy(&store_x1, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 2)) cpy(&store_x2, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 3)) cpy(&store_x3, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 4)) cpy(&store_x4, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 5)) cpy(&store_x5, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 6)) cpy(&store_x6, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 7)) cpy(&store_x7, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 8)) cpy(&store_x8, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 9)) cpy(&store_x9, &oam_temp_b, sizeof(oam_temp_b));
+
+    if (bit(store_rst, 0)) set(sizeof(store_x0), &store_x0);
+    if (bit(store_rst, 1)) set(sizeof(store_x1), &store_x1);
+    if (bit(store_rst, 2)) set(sizeof(store_x2), &store_x2);
+    if (bit(store_rst, 3)) set(sizeof(store_x3), &store_x3);
+    if (bit(store_rst, 4)) set(sizeof(store_x4), &store_x4);
+    if (bit(store_rst, 5)) set(sizeof(store_x5), &store_x5);
+    if (bit(store_rst, 6)) set(sizeof(store_x6), &store_x6);
+    if (bit(store_rst, 7)) set(sizeof(store_x7), &store_x7);
+    if (bit(store_rst, 8)) set(sizeof(store_x8), &store_x8);
+    if (bit(store_rst, 9)) set(sizeof(store_x9), &store_x9);
+
   }
 
 
@@ -1983,16 +2034,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   else {
     uint8_t px = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
 
-    bool M0 = px == pack(8, &sprite_store.XEPE_STORE0_X0p);
-    bool M1 = px == pack(8, &sprite_store.DANY_STORE1_X0p);
-    bool M2 = px == pack(8, &sprite_store.FOKA_STORE2_X0p);
-    bool M3 = px == pack(8, &sprite_store.XOLY_STORE3_X0p);
-    bool M4 = px == pack(8, &sprite_store.WEDU_STORE4_X0p);
-    bool M5 = px == pack(8, &sprite_store.FUSA_STORE5_X0p);
-    bool M6 = px == pack(8, &sprite_store.YCOL_STORE6_X0p);
-    bool M7 = px == pack(8, &sprite_store.ERAZ_STORE7_X0p);
-    bool M8 = px == pack(8, &sprite_store.EZUF_STORE8_X0p);
-    bool M9 = px == pack(8, &sprite_store.XUVY_STORE9_X0p);
+    bool M0 = px == pack(8, &store_x0);
+    bool M1 = px == pack(8, &store_x1);
+    bool M2 = px == pack(8, &store_x2);
+    bool M3 = px == pack(8, &store_x3);
+    bool M4 = px == pack(8, &store_x4);
+    bool M5 = px == pack(8, &store_x5);
+    bool M6 = px == pack(8, &store_x6);
+    bool M7 = px == pack(8, &store_x7);
+    bool M8 = px == pack(8, &store_x8);
+    bool M9 = px == pack(8, &store_x9);
 
     sprite_match_flags.FEPO_STORE_MATCHp = M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9;
 
@@ -2029,27 +2080,27 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   memset(&sprite_ibus, 1, sizeof(sprite_ibus));
   memset(&sprite_lbus, 1, sizeof(sprite_lbus));
 
-  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.YGUS_STORE0_I0n, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.CADU_STORE1_I0n, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.BUHE_STORE2_I0n, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.DEVY_STORE3_I0n, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.XAVE_STORE4_I0n, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.EKOP_STORE5_I0n, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.GABO_STORE6_I0n, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.GULE_STORE7_I0n, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.AXUV_STORE8_I0n, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &sprite_store.YBER_STORE9_I0n, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i0, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i1, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i2, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i3, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i4, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i5, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i6, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i7, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i8, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i9, sizeof(sprite_ibus));
 
-  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.GYHO_STORE0_L0n, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.AMES_STORE1_L0n, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.YLOV_STORE2_L0n, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.ZURO_STORE3_L0n, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.CAPO_STORE4_L0n, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.ACEP_STORE5_L0n, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.ZUMY_STORE6_L0n, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.XYNA_STORE7_L0n, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.AZAP_STORE8_L0n, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.CANA_STORE9_L0n, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l0, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l1, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l2, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l3, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l4, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l5, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l6, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l7, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l8, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l9, sizeof(sprite_lbus));
 
   if (bit(or2(sprite_scanner.CENO_SCANNINGn.state, !rendering_new))) {
     memcpy(&sprite_ibus.BUS_SPR_I0, &sprite_index, 6);

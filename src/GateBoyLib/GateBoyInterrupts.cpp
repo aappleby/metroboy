@@ -106,17 +106,17 @@ void GateBoy::tock_interrupts_gates()
   /*_p02.TUNY*/ wire TUNY_FF0F_RST3n = and3(SULO_INT3_WRn, LUFE_INT_SER_ACKn,  ALUR_SYS_RSTn);
   /*_p02.TYME*/ wire TYME_FF0F_RST4n = and3(SEME_INT4_WRn, LAMO_INT_JOY_ACKn,  ALUR_SYS_RSTn);
 
-  /*_p02.LOPE*/ interrupts.LOPE_FF0F_D0p.dff22(VYPU_INT_VBLANKp,              MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, SIG_VCC.out_new());
-  /*_p02.LALU*/ interrupts.LALU_FF0F_D1p.dff22(VOTY_INT_STATp,                MODY_FF0F_SET1n, MOVU_FF0F_RST1n, SIG_VCC.out_new());
-  /*_p02.NYBO*/ interrupts.NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp.qp_new(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, SIG_VCC.out_new());
-  /*_p02.UBUL*/ interrupts.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), TOME_FF0F_SET3n, TUNY_FF0F_RST3n, SIG_VCC.out_new());
-  /*_p02.ULAK*/ interrupts.ULAK_FF0F_D4p.dff22(ASOK_INT_JOYp,                 TOGA_FF0F_SET4n, TYME_FF0F_RST4n, SIG_VCC.out_new());
+  /*_p02.LOPE*/ reg_if.LOPE_FF0F_D0p.dff22(VYPU_INT_VBLANKp,              MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, SIG_VCC.out_new());
+  /*_p02.LALU*/ reg_if.LALU_FF0F_D1p.dff22(VOTY_INT_STATp,                MODY_FF0F_SET1n, MOVU_FF0F_RST1n, SIG_VCC.out_new());
+  /*_p02.NYBO*/ reg_if.NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp.qp_new(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, SIG_VCC.out_new());
+  /*_p02.UBUL*/ reg_if.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), TOME_FF0F_SET3n, TUNY_FF0F_RST3n, SIG_VCC.out_new());
+  /*_p02.ULAK*/ reg_if.ULAK_FF0F_D4p.dff22(ASOK_INT_JOYp,                 TOGA_FF0F_SET4n, TYME_FF0F_RST4n, SIG_VCC.out_new());
 
-  /*_SIG_CPU_INT_VBLANK*/ interrupts.SIG_CPU_INT_VBLANK.sig_out(interrupts.LOPE_FF0F_D0p.qp_new());
-  /*_SIG_CPU_INT_STAT  */ interrupts.SIG_CPU_INT_STAT  .sig_out(interrupts.LALU_FF0F_D1p.qp_new());
-  /*_SIG_CPU_INT_TIMER */ interrupts.SIG_CPU_INT_TIMER .sig_out(interrupts.NYBO_FF0F_D2p.qp_new());
-  /*_SIG_CPU_INT_SERIAL*/ interrupts.SIG_CPU_INT_SERIAL.sig_out(interrupts.UBUL_FF0F_D3p.qp_new());
-  /*_SIG_CPU_INT_JOYPAD*/ interrupts.SIG_CPU_INT_JOYPAD.sig_out(interrupts.ULAK_FF0F_D4p.qp_new());
+  /*_SIG_CPU_INT_VBLANK*/ interrupts.SIG_CPU_INT_VBLANK.sig_out(reg_if.LOPE_FF0F_D0p.qp_new());
+  /*_SIG_CPU_INT_STAT  */ interrupts.SIG_CPU_INT_STAT  .sig_out(reg_if.LALU_FF0F_D1p.qp_new());
+  /*_SIG_CPU_INT_TIMER */ interrupts.SIG_CPU_INT_TIMER .sig_out(reg_if.NYBO_FF0F_D2p.qp_new());
+  /*_SIG_CPU_INT_SERIAL*/ interrupts.SIG_CPU_INT_SERIAL.sig_out(reg_if.UBUL_FF0F_D3p.qp_new());
+  /*_SIG_CPU_INT_JOYPAD*/ interrupts.SIG_CPU_INT_JOYPAD.sig_out(reg_if.ULAK_FF0F_D4p.qp_new());
 
   // FIXME where did these tags go?
   triwire tristate_i0 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D0.qn_new());
@@ -136,11 +136,11 @@ void GateBoy::tock_interrupts_gates()
 
   // FIXME why is this latch different from the others? MATY is one of those big yellow latchy things.
 
-  /*_p02.MATY*/ interrupts.MATY_FF0F_L0p.tp_latchp(ROLO_FF0F_RDn, interrupts.LOPE_FF0F_D0p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.MOPO*/ interrupts.MOPO_FF0F_L1p.tp_latchp(ROLO_FF0F_RDn, interrupts.LALU_FF0F_D1p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.PAVY*/ interrupts.PAVY_FF0F_L2p.tp_latchp(ROLO_FF0F_RDn, interrupts.NYBO_FF0F_D2p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.NEJY*/ interrupts.NEJY_FF0F_L3p.tp_latchp(ROLO_FF0F_RDn, interrupts.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.NUTY*/ interrupts.NUTY_FF0F_L4p.tp_latchp(ROLO_FF0F_RDn, interrupts.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.MATY*/ interrupts.MATY_FF0F_L0p.tp_latchp(ROLO_FF0F_RDn, reg_if.LOPE_FF0F_D0p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.MOPO*/ interrupts.MOPO_FF0F_L1p.tp_latchp(ROLO_FF0F_RDn, reg_if.LALU_FF0F_D1p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.PAVY*/ interrupts.PAVY_FF0F_L2p.tp_latchp(ROLO_FF0F_RDn, reg_if.NYBO_FF0F_D2p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.NEJY*/ interrupts.NEJY_FF0F_L3p.tp_latchp(ROLO_FF0F_RDn, reg_if.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.NUTY*/ interrupts.NUTY_FF0F_L4p.tp_latchp(ROLO_FF0F_RDn, reg_if.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
 
   /*#p02.NELA*/ triwire NELA_IF0_TO_CD0 = tri6_pn(POLA_FF0F_RDp, interrupts.MATY_FF0F_L0p.qn_new());
   /*#p02.NABO*/ triwire NABO_IF1_TO_CD1 = tri6_pn(POLA_FF0F_RDp, interrupts.MOPO_FF0F_L1p.qn_new());

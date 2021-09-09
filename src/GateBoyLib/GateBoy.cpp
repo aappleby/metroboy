@@ -164,6 +164,7 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   clk.reset_to_cart();
   div.reset_to_cart();
   interrupts.reset_to_cart();
+  reg_if.reset_to_cart();
   serial.reset_to_cart();
 
   //reset_sprite_store();
@@ -447,7 +448,7 @@ void GateBoy::tock_cpu() {
   // +ha -ab -bc -cd -de -ef -fg -gh
   if (DELTA_HA) {
     // this one latches funny, some hardware bug
-    if (bit(interrupts.NYBO_FF0F_D2p.qp_old())) intf_halt_latch |= INT_TIMER_MASK;
+    if (bit(reg_if.NYBO_FF0F_D2p.qp_old())) intf_halt_latch |= INT_TIMER_MASK;
   }
 
   // -ha +ab -bc
@@ -468,10 +469,10 @@ void GateBoy::tock_cpu() {
 
   // -bc +cd +de -ef -fg -gh -ha -ab
   if (DELTA_DE) {
-    if (bit(interrupts.LOPE_FF0F_D0p.qp_old())) intf_halt_latch |= INT_VBLANK_MASK;
-    if (bit(interrupts.LALU_FF0F_D1p.qp_old())) intf_halt_latch |= INT_STAT_MASK;
-    if (bit(interrupts.UBUL_FF0F_D3p.qp_old())) intf_halt_latch |= INT_SERIAL_MASK;
-    if (bit(interrupts.ULAK_FF0F_D4p.qp_old())) intf_halt_latch |= INT_JOYPAD_MASK;
+    if (bit(reg_if.LOPE_FF0F_D0p.qp_old())) intf_halt_latch |= INT_VBLANK_MASK;
+    if (bit(reg_if.LALU_FF0F_D1p.qp_old())) intf_halt_latch |= INT_STAT_MASK;
+    if (bit(reg_if.UBUL_FF0F_D3p.qp_old())) intf_halt_latch |= INT_SERIAL_MASK;
+    if (bit(reg_if.ULAK_FF0F_D4p.qp_old())) intf_halt_latch |= INT_JOYPAD_MASK;
   }
 
   // -ha -ab -bc -cd -de -ef +fg +gh
@@ -481,7 +482,7 @@ void GateBoy::tock_cpu() {
 
   // +ha -ab -bc -cd -de -ef -fg +gh
   if (DELTA_GH) {
-    intf_latch = (uint8_t)pack(5, &interrupts.LOPE_FF0F_D0p);
+    intf_latch = (uint8_t)pack(5, &reg_if.LOPE_FF0F_D0p);
   }
 }
 
@@ -3092,32 +3093,32 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire ser_int = serial.CALY_SER_CNT3.state;
 
     // FIXME to handle these dffs correctly we need to know both the old and new value of the interrupt triggers...
-    interrupts.LOPE_FF0F_D0p.dff22(lcd_int,  1, 1, 1);
-    interrupts.LALU_FF0F_D1p.dff22(stat_int, 1, 1, 1);
-    interrupts.NYBO_FF0F_D2p.dff22(tim_int,  1, 1, 1);
-    interrupts.UBUL_FF0F_D3p.dff22(ser_int,  1, 1, 1);
-    interrupts.ULAK_FF0F_D4p.dff22(joy_int,  1, 1, 1);
+    reg_if.LOPE_FF0F_D0p.dff22(lcd_int,  1, 1, 1);
+    reg_if.LALU_FF0F_D1p.dff22(stat_int, 1, 1, 1);
+    reg_if.NYBO_FF0F_D2p.dff22(tim_int,  1, 1, 1);
+    reg_if.UBUL_FF0F_D3p.dff22(ser_int,  1, 1, 1);
+    reg_if.ULAK_FF0F_D4p.dff22(joy_int,  1, 1, 1);
 
     // note this is an async set so it doesn't happen on the GH clock edge like other writes
     if (cpu_signals.SIG_IN_CPU_WRp.state & (cpu_addr_new == 0xFF0F) & CLK_xxxxEFGx_new) {
-      cpy(&interrupts.LOPE_FF0F_D0p, &cpu_dbus_new.BUS_CPU_D00p, 5);
+      cpy(&reg_if, &cpu_dbus_new.BUS_CPU_D00p, sizeof(reg_if));
     }
 
-    interrupts.LOPE_FF0F_D0p.state = interrupts.LOPE_FF0F_D0p.state & ~interrupts.SIG_CPU_ACK_VBLANK.state;
-    interrupts.LALU_FF0F_D1p.state = interrupts.LALU_FF0F_D1p.state & ~interrupts.SIG_CPU_ACK_STAT.state;
-    interrupts.NYBO_FF0F_D2p.state = interrupts.NYBO_FF0F_D2p.state & ~interrupts.SIG_CPU_ACK_TIMER.state;
-    interrupts.UBUL_FF0F_D3p.state = interrupts.UBUL_FF0F_D3p.state & ~interrupts.SIG_CPU_ACK_SERIAL.state;
-    interrupts.ULAK_FF0F_D4p.state = interrupts.ULAK_FF0F_D4p.state & ~interrupts.SIG_CPU_ACK_JOYPAD.state;
+    reg_if.LOPE_FF0F_D0p.state = reg_if.LOPE_FF0F_D0p.state & ~interrupts.SIG_CPU_ACK_VBLANK.state;
+    reg_if.LALU_FF0F_D1p.state = reg_if.LALU_FF0F_D1p.state & ~interrupts.SIG_CPU_ACK_STAT.state;
+    reg_if.NYBO_FF0F_D2p.state = reg_if.NYBO_FF0F_D2p.state & ~interrupts.SIG_CPU_ACK_TIMER.state;
+    reg_if.UBUL_FF0F_D3p.state = reg_if.UBUL_FF0F_D3p.state & ~interrupts.SIG_CPU_ACK_SERIAL.state;
+    reg_if.ULAK_FF0F_D4p.state = reg_if.ULAK_FF0F_D4p.state & ~interrupts.SIG_CPU_ACK_JOYPAD.state;
 
-    cpy(&interrupts.SIG_CPU_INT_VBLANK, &interrupts.LOPE_FF0F_D0p, 5);
+    cpy(&interrupts.SIG_CPU_INT_VBLANK, &reg_if, sizeof(reg_if));
 
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
       cpy(&cpu_dbus_new.BUS_CPU_D00p, &interrupts.IE_D0, 5);
     }
 
     if (cpu_addr_new == 0xFF0F && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
-      cpy(&interrupts.MATY_FF0F_L0p, &interrupts.LOPE_FF0F_D0p, 5);
-      cpy(&cpu_dbus_new.BUS_CPU_D00p,     &interrupts.LOPE_FF0F_D0p, 5);
+      cpy(&interrupts.MATY_FF0F_L0p,  &reg_if, sizeof(reg_if));
+      cpy(&cpu_dbus_new.BUS_CPU_D00p, &reg_if, sizeof(reg_if));
     }
   }
 

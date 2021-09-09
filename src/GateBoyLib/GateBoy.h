@@ -457,7 +457,10 @@ struct GateBoy {
   /*#p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // AxxxExxx
 
   GateBoyDMA        dma;
+  
   GateBoyInterrupts interrupts;
+  RegIF reg_if;
+
   GateBoyJoypad     joy;
   GateBoySerial     serial;
 

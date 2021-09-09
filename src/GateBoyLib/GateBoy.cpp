@@ -174,6 +174,10 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   sprite_counter.DYBE_SPRITE_COUNT3.state = 0b00011010;
 
   sprite_scanner.reset_to_cart();
+  scan_counter.reset_to_cart();
+  sprite_index.reset_to_cart();
+
+
   sprite_fetcher.reset_to_cart();
 
   RUPO_LYC_MATCHn.state = 0b00011000;
@@ -718,27 +722,27 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p28.YMEV*/ wire YMEV_OAM_A5p_old = not1(oam_abus.BUS_OAM_A05n.out_old());
     /*_p28.XEMU*/ wire XEMU_OAM_A6p_old = not1(oam_abus.BUS_OAM_A06n.out_old());
     /*_p28.YZET*/ wire YZET_OAM_A7p_old = not1(oam_abus.BUS_OAM_A07n.out_old());
-    /*_p30.XADU*/ sprite_scanner.XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YFOT_OAM_A2p_old);
-    /*_p30.XEDY*/ sprite_scanner.XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YFOC_OAM_A3p_old);
-    /*_p30.ZUZE*/ sprite_scanner.ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YVOM_OAM_A4p_old);
-    /*_p30.XOBE*/ sprite_scanner.XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YMEV_OAM_A5p_old);
-    /*_p30.YDUF*/ sprite_scanner.YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), XEMU_OAM_A6p_old);
-    /*_p30.XECU*/ sprite_scanner.XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YZET_OAM_A7p_old);
+    /*_p30.XADU*/ sprite_index.XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YFOT_OAM_A2p_old);
+    /*_p30.XEDY*/ sprite_index.XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YFOC_OAM_A3p_old);
+    /*_p30.ZUZE*/ sprite_index.ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YVOM_OAM_A4p_old);
+    /*_p30.XOBE*/ sprite_index.XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YMEV_OAM_A5p_old);
+    /*_p30.YDUF*/ sprite_index.YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), XEMU_OAM_A6p_old);
+    /*_p30.XECU*/ sprite_index.XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YZET_OAM_A7p_old);
 
     // FIXME is this OK without the second assignment of FETO?
 
     for (int feedback = 0; feedback < 2; feedback++) {
       // 32 + 4 + 2 + 1 = 39
-      /*#p28.FETO*/ sprite_scanner.FETO_SCAN_DONEp = and4(sprite_scanner.YFEL_SCAN0.qp_mid(), sprite_scanner.WEWY_SCAN1.qp_mid(), sprite_scanner.GOSO_SCAN2.qp_mid(), sprite_scanner.FONY_SCAN5.qp_mid());
+      /*#p28.FETO*/ sprite_scanner.FETO_SCAN_DONEp = and4(scan_counter.YFEL_SCAN0.qp_mid(), scan_counter.WEWY_SCAN1.qp_mid(), scan_counter.GOSO_SCAN2.qp_mid(), scan_counter.FONY_SCAN5.qp_mid());
 
       /*#p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(sprite_scanner.FETO_SCAN_DONEp.out_new(), XUPY_ABxxEFxx());
 
-      /*#p28.YFEL*/ sprite_scanner.YFEL_SCAN0.dff17_any(GAVA_SCAN_CLOCKp, ANOM_LINE_RSTn, sprite_scanner.YFEL_SCAN0.qn_any());
-      /*_p28.WEWY*/ sprite_scanner.WEWY_SCAN1.dff17_any(sprite_scanner.YFEL_SCAN0.qn_any(), ANOM_LINE_RSTn, sprite_scanner.WEWY_SCAN1.qn_any());
-      /*_p28.GOSO*/ sprite_scanner.GOSO_SCAN2.dff17_any(sprite_scanner.WEWY_SCAN1.qn_any(), ANOM_LINE_RSTn, sprite_scanner.GOSO_SCAN2.qn_any());
-      /*_p28.ELYN*/ sprite_scanner.ELYN_SCAN3.dff17_any(sprite_scanner.GOSO_SCAN2.qn_any(), ANOM_LINE_RSTn, sprite_scanner.ELYN_SCAN3.qn_any());
-      /*_p28.FAHA*/ sprite_scanner.FAHA_SCAN4.dff17_any(sprite_scanner.ELYN_SCAN3.qn_any(), ANOM_LINE_RSTn, sprite_scanner.FAHA_SCAN4.qn_any());
-      /*_p28.FONY*/ sprite_scanner.FONY_SCAN5.dff17_any(sprite_scanner.FAHA_SCAN4.qn_any(), ANOM_LINE_RSTn, sprite_scanner.FONY_SCAN5.qn_any());
+      /*#p28.YFEL*/ scan_counter.YFEL_SCAN0.dff17_any(GAVA_SCAN_CLOCKp,                 ANOM_LINE_RSTn, scan_counter.YFEL_SCAN0.qn_any());
+      /*_p28.WEWY*/ scan_counter.WEWY_SCAN1.dff17_any(scan_counter.YFEL_SCAN0.qn_any(), ANOM_LINE_RSTn, scan_counter.WEWY_SCAN1.qn_any());
+      /*_p28.GOSO*/ scan_counter.GOSO_SCAN2.dff17_any(scan_counter.WEWY_SCAN1.qn_any(), ANOM_LINE_RSTn, scan_counter.GOSO_SCAN2.qn_any());
+      /*_p28.ELYN*/ scan_counter.ELYN_SCAN3.dff17_any(scan_counter.GOSO_SCAN2.qn_any(), ANOM_LINE_RSTn, scan_counter.ELYN_SCAN3.qn_any());
+      /*_p28.FAHA*/ scan_counter.FAHA_SCAN4.dff17_any(scan_counter.ELYN_SCAN3.qn_any(), ANOM_LINE_RSTn, scan_counter.FAHA_SCAN4.qn_any());
+      /*_p28.FONY*/ scan_counter.FONY_SCAN5.dff17_any(scan_counter.FAHA_SCAN4.qn_any(), ANOM_LINE_RSTn, scan_counter.FONY_SCAN5.qn_any());
     }
 
     ///*#p28.FETO*/ sprite_scanner.FETO_SCAN_DONEp = and4(sprite_scanner.YFEL_SCAN0.qp_new(), sprite_scanner.WEWY_SCAN1.qp_new(), sprite_scanner.GOSO_SCAN2.qp_new(), sprite_scanner.FONY_SCAN5.qp_new());
@@ -1567,10 +1571,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // This is still yeech
 
   {
-    auto scan_count_old = pack(6, &sprite_scanner.YFEL_SCAN0);
+    auto scan_count_old = pack(6, &scan_counter);
     auto BESU_old = sprite_scanner.BESU_SCANNINGn.state;
     auto BYBU_old = sprite_scanner.BYBA_SCAN_DONE_Ap.state;
-    auto FETO_old = pack(6, &sprite_scanner.YFEL_SCAN0) == 39;
+    auto FETO_old = pack(6, &scan_counter) == 39;
 
     //----------
 
@@ -1603,21 +1607,21 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //----------
 
     if (!vid_rst_new && (DELTA_HA || DELTA_DE)) {
-      cpy_inv(&sprite_scanner.XADU_SPRITE_IDX0p, &oam_abus.BUS_OAM_A02n, 6);
+      cpy_inv(&sprite_index, &oam_abus.BUS_OAM_A02n, 6);
       sprite_scanner.CENO_SCANNINGn.state = BESU_old;
     }
 
     //----------
 
     if (vid_rst_new || bit(ATEJ_LINE_RSTp.state)) {
-      clear(6, &sprite_scanner.YFEL_SCAN0);
+      clear(6, &scan_counter);
     }
     else if ((DELTA_HA || DELTA_DE) && (scan_count_old != 39)) {
-      unpack(scan_count_old + 1, 6, &sprite_scanner.YFEL_SCAN0);
+      unpack(scan_count_old + 1, 6, &scan_counter);
     }
 
     // this is unused now
-    sprite_scanner.FETO_SCAN_DONEp = pack(6, &sprite_scanner.YFEL_SCAN0) == 39;
+    sprite_scanner.FETO_SCAN_DONEp = pack(6, &scan_counter) == 39;
   }
 
   bool scanning_new = bit(sprite_scanner.ACYL_SCANNINGp.state);
@@ -2048,7 +2052,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &sprite_store.CANA_STORE9_L0n, sizeof(sprite_lbus));
 
   if (bit(or2(sprite_scanner.CENO_SCANNINGn.state, !rendering_new))) {
-    memcpy(&sprite_ibus.BUS_SPR_I0, &sprite_scanner.XADU_SPRITE_IDX0p, 6);
+    memcpy(&sprite_ibus.BUS_SPR_I0, &sprite_index, 6);
   }
 
   if (!bit(sprite_match_flags.FEPO_STORE_MATCHp.state)) {
@@ -2883,7 +2887,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     else if (scanning_new) {
       oam_abus.BUS_OAM_A00n.state = 1;
       oam_abus.BUS_OAM_A01n.state = 1;
-      cpy_inv(&oam_abus.BUS_OAM_A02n, &sprite_scanner.YFEL_SCAN0, 6);
+      cpy_inv(&oam_abus.BUS_OAM_A02n, &scan_counter, 6);
       oam_ctrl.SIG_OAM_CLKn .state = and2(~XYSO_xBCDxFGH(), nand2(addr_oam, CLK_xxxxEFGH));
       oam_ctrl.SIG_OAM_WRn_A.state = 1;
       oam_ctrl.SIG_OAM_WRn_B.state = 1;

@@ -1,7 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-// FIXME split into smaller structs
 
 //------------------------------------------------------------------------------------------------------------------------
 
@@ -58,6 +57,8 @@ struct MaskPipe {
   /*_p26.VAVA*/ DFF22 VAVA_MASK_PIPE_7; // AxCxExGx
 };
 
+//------------------------------------------------------------------------------------------------------------------------
+
 struct BgwPipeA {
   /*_p32.MYDE*/ DFF22 MYDE_BGW_PIPE_A0; // AxCxExGx
   /*_p32.NOZO*/ DFF22 NOZO_BGW_PIPE_A1; // AxCxExGx
@@ -68,6 +69,8 @@ struct BgwPipeA {
   /*_p32.NEDA*/ DFF22 NEDA_BGW_PIPE_A6; // AxCxExGx
   /*_p32.PYBO*/ DFF22 PYBO_BGW_PIPE_A7; // AxCxExGx
 };
+
+//------------------------------------------------------------------------------------------------------------------------
 
 struct BgwPipeB {
   /*_p32.TOMY*/ DFF22 TOMY_BGW_PIPE_B0; // AxCxExGx
@@ -80,6 +83,8 @@ struct BgwPipeB {
   /*_p32.SOHU*/ DFF22 SOHU_BGW_PIPE_B7; // AxCxExGx
 };
 
+//------------------------------------------------------------------------------------------------------------------------
+
 struct SprPipeA {
   /*_p33.NURO*/ DFF22 NURO_SPR_PIPE_A0; // AxCxExGx
   /*_p33.MASO*/ DFF22 MASO_SPR_PIPE_A1; // AxCxExGx
@@ -91,6 +96,8 @@ struct SprPipeA {
   /*_p33.WUFY*/ DFF22 WUFY_SPR_PIPE_A7; // AxCxExGx
 };
 
+//------------------------------------------------------------------------------------------------------------------------
+
 struct SprPipeB {
   /*_p33.NYLU*/ DFF22 NYLU_SPR_PIPE_B0; // AxCxExGx
   /*_p33.PEFU*/ DFF22 PEFU_SPR_PIPE_B1; // AxCxExGx
@@ -101,6 +108,8 @@ struct SprPipeB {
   /*_p33.VANU*/ DFF22 VANU_SPR_PIPE_B6; // AxCxExGx
   /*_p33.VUPY*/ DFF22 VUPY_SPR_PIPE_B7; // AxCxExGx
 };
+
+//------------------------------------------------------------------------------------------------------------------------
 
 struct PalPipe {
   /*_p34.RUGO*/ DFF22 RUGO_PAL_PIPE_D0;

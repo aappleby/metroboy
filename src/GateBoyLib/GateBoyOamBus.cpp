@@ -82,12 +82,12 @@ void GateBoy::tock_oam_bus_gates()
   /*_p28.APAR*/ wire APAR_SCANNINGn = not1(sprite_scanner.ACYL_SCANNINGp.out_new());
   /*_p28.GEFY*/ triwire GEFY_SCANX_TO_OA0 = tri6_nn(APAR_SCANNINGn, SIG_GND.out_new());
   /*_p28.WUWE*/ triwire WUWE_SCANX_TO_OA1 = tri6_nn(APAR_SCANNINGn, SIG_GND.out_new());
-  /*_p28.GUSE*/ triwire GUSE_SCAN0_TO_OA2 = tri6_nn(APAR_SCANNINGn, sprite_scanner.YFEL_SCAN0.qp_new());
-  /*_p28.GEMA*/ triwire GEMA_SCAN1_TO_OA3 = tri6_nn(APAR_SCANNINGn, sprite_scanner.WEWY_SCAN1.qp_new());
-  /*_p28.FUTO*/ triwire FUTO_SCAN2_TO_OA4 = tri6_nn(APAR_SCANNINGn, sprite_scanner.GOSO_SCAN2.qp_new());
-  /*_p28.FAKU*/ triwire FAKU_SCAN3_TO_OA5 = tri6_nn(APAR_SCANNINGn, sprite_scanner.ELYN_SCAN3.qp_new());
-  /*_p28.GAMA*/ triwire GAMA_SCAN4_TO_OA6 = tri6_nn(APAR_SCANNINGn, sprite_scanner.FAHA_SCAN4.qp_new());
-  /*_p28.GOBY*/ triwire GOBY_SCAN5_TO_OA7 = tri6_nn(APAR_SCANNINGn, sprite_scanner.FONY_SCAN5.qp_new());
+  /*_p28.GUSE*/ triwire GUSE_SCAN0_TO_OA2 = tri6_nn(APAR_SCANNINGn, scan_counter.YFEL_SCAN0.qp_new());
+  /*_p28.GEMA*/ triwire GEMA_SCAN1_TO_OA3 = tri6_nn(APAR_SCANNINGn, scan_counter.WEWY_SCAN1.qp_new());
+  /*_p28.FUTO*/ triwire FUTO_SCAN2_TO_OA4 = tri6_nn(APAR_SCANNINGn, scan_counter.GOSO_SCAN2.qp_new());
+  /*_p28.FAKU*/ triwire FAKU_SCAN3_TO_OA5 = tri6_nn(APAR_SCANNINGn, scan_counter.ELYN_SCAN3.qp_new());
+  /*_p28.GAMA*/ triwire GAMA_SCAN4_TO_OA6 = tri6_nn(APAR_SCANNINGn, scan_counter.FAHA_SCAN4.qp_new());
+  /*_p28.GOBY*/ triwire GOBY_SCAN5_TO_OA7 = tri6_nn(APAR_SCANNINGn, scan_counter.FONY_SCAN5.qp_new());
 
   /*_BUS_OAM_A00n*/ oam_abus.BUS_OAM_A00n.tri_bus(GEFY_SCANX_TO_OA0);
   /*_BUS_OAM_A01n*/ oam_abus.BUS_OAM_A01n.tri_bus(WUWE_SCANX_TO_OA1);

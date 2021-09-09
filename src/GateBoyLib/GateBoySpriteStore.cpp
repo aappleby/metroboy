@@ -1094,12 +1094,12 @@ void GateBoy::sprite_match_to_bus_gates(
 void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
 {
   /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn_new = and2(sprite_scanner.CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
-  /*#p30.WUZY*/ triwire WUZY_STORE_I0 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XADU_SPRITE_IDX0p.qn_new());
-  /*_p30.WYSE*/ triwire WYSE_STORE_I1 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XEDY_SPRITE_IDX1p.qn_new());
-  /*_p30.ZYSU*/ triwire ZYSU_STORE_I2 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.ZUZE_SPRITE_IDX2p.qn_new());
-  /*_p30.WYDA*/ triwire WYDA_STORE_I3 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XOBE_SPRITE_IDX3p.qn_new());
-  /*_p30.WUCO*/ triwire WUCO_STORE_I4 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.YDUF_SPRITE_IDX4p.qn_new());
-  /*_p30.WEZA*/ triwire WEZA_STORE_I5 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_scanner.XECU_SPRITE_IDX5p.qn_new());
+  /*#p30.WUZY*/ triwire WUZY_STORE_I0 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_index.XADU_SPRITE_IDX0p.qn_new());
+  /*_p30.WYSE*/ triwire WYSE_STORE_I1 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_index.XEDY_SPRITE_IDX1p.qn_new());
+  /*_p30.ZYSU*/ triwire ZYSU_STORE_I2 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_index.ZUZE_SPRITE_IDX2p.qn_new());
+  /*_p30.WYDA*/ triwire WYDA_STORE_I3 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_index.XOBE_SPRITE_IDX3p.qn_new());
+  /*_p30.WUCO*/ triwire WUCO_STORE_I4 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_index.YDUF_SPRITE_IDX4p.qn_new());
+  /*_p30.WEZA*/ triwire WEZA_STORE_I5 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, sprite_index.XECU_SPRITE_IDX5p.qn_new());
 
   /*_BUS_SPR_I0*/ sprite_ibus.BUS_SPR_I0.tri_bus(WUZY_STORE_I0);
   /*_BUS_SPR_I1*/ sprite_ibus.BUS_SPR_I1.tri_bus(WYSE_STORE_I1);

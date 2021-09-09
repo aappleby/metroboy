@@ -302,7 +302,7 @@ void GateBoy::dump_resets(Dumper& d) {
 }
 
 void GateBoy::dump_sprite_scanner(Dumper& d) {
-  d.dump_slice2p("SCAN INDEX        : ", &sprite_scanner.YFEL_SCAN0, 6);
+  d.dump_slice2p("SCAN INDEX        : ", &scan_counter.YFEL_SCAN0, 6);
   d.dump_bitp   ("BESU_SCANNINGp    : ", sprite_scanner.BESU_SCANNINGn.state);
   d.dump_bitp   ("CENO_SCANNINGp    : ", sprite_scanner.CENO_SCANNINGn.state);
   d.dump_bitp   ("BYBA_SCAN_DONE_Ap : ", sprite_scanner.BYBA_SCAN_DONE_Ap.state);

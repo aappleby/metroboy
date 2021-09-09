@@ -482,6 +482,8 @@ struct GateBoy {
   SpriteStoreFlags sprite_store_flags;
 
   SpriteScanner sprite_scanner;
+  ScanCounter   scan_counter;
+  SpriteIndex   sprite_index;
 
   SpriteFetcher sprite_fetcher;
   SpritePixA    sprite_pix_a;

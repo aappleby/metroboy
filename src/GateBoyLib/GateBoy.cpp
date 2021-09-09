@@ -1173,6 +1173,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (!bit(clkpipe_en_old)) CLKPIPE_old = 1;
   if (bit(fine_scroll.ROXY_FINE_SCROLL_DONEn.state)) CLKPIPE_old = 1;
 
+  wire TEVO_WIN_FETCH_TRIGp_old = 0;
+  if (bit(and2(win_reg.RYFA_WIN_FETCHn_A.state, ~win_reg.RENE_WIN_FETCHn_B.state))) TEVO_WIN_FETCH_TRIGp_old = 1;
+  if (bit(and2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.state))) TEVO_WIN_FETCH_TRIGp_old = 1;
+  if (bit(and4(~XYMU_RENDERINGn.state, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state))) TEVO_WIN_FETCH_TRIGp_old = 1;
+
   //----------
 
   wire EXT_vcc = 1;
@@ -1382,6 +1387,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // has to be near the top as it controls the video reset signal
 
   //wire vid_rst_old = bit(reg_lcdc.XONA_LCDC_LCDENn.state);
+  //wire winen_old = bit(~reg_lcdc.WYMO_LCDC_WINENn.state);
+
   {
     if (cpu_wr_new && cpu_addr_new == 0xFF40 && DELTA_GH) {
       cpy_inv(&reg_lcdc.VYXE_LCDC_BGENn, &old_bus.BUS_CPU_D00p, 8);
@@ -1392,6 +1399,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
   wire vid_rst_new = bit(reg_lcdc.XONA_LCDC_LCDENn.state);
+  wire winen_new = bit(~reg_lcdc.WYMO_LCDC_WINENn.state);
 
   //----------
   // Video clocks
@@ -1432,6 +1440,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   /// LX, LY, lcd flags
 
   auto rutu_x113p_old = bit(lcd.RUTU_x113p.state);
+  auto popu_y144p_old = bit(lcd.POPU_y144p.state);
+  auto nype_x113p_old = bit(lcd.NYPE_x113p.state);
 
   auto lx_old = pack(7, &reg_lx.SAXO_LX0p);
   auto ly_old = pack(8, &reg_ly.MUWY_LY0p);
@@ -1505,6 +1515,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   auto ly_new = pack(8, &reg_ly.MUWY_LY0p);
 
   auto rutu_x113p_new = bit(lcd.RUTU_x113p.state);
+  auto popu_y144p_new = bit(lcd.POPU_y144p.state);
+  auto nype_x113p_new = bit(lcd.NYPE_x113p.state);
 
   //----------
 
@@ -1650,12 +1662,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Window state has some interaction with the tile fetcher here.
 
+  auto PYNU_WIN_MODE_Ap_old = win_reg.PYNU_WIN_MODE_Ap.state;
+
   if (DELTA_ODD) {
     win_reg.NUNU_WIN_MATCHp.state = win_reg.PYCO_WIN_MATCHp.state;
   }
 
   if (DELTA_EVEN) {
-    win_reg.NOPA_WIN_MODE_Bp.state = win_reg.PYNU_WIN_MODE_Ap.state;
+    win_reg.NOPA_WIN_MODE_Bp.state = PYNU_WIN_MODE_Ap_old;
   }
 
 
@@ -1668,10 +1682,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     win_reg.PYNU_WIN_MODE_Ap.set();
   }
 
-  if (bit(nand3(~reg_lcdc.WYMO_LCDC_WINENn.state, ~ATEJ_LINE_RSTp.state, !vid_rst_new))) {
+  if (bit(nand3(winen_new, ~ATEJ_LINE_RSTp.state, !vid_rst_new))) {
     win_reg.PYNU_WIN_MODE_Ap.rst();
   }
 
+  auto PYNU_WIN_MODE_Ap_new = win_reg.PYNU_WIN_MODE_Ap.state;
 
   //----------
 
@@ -1684,7 +1699,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     tile_fetcher.PORY_FETCH_DONEp.state = tile_fetcher.NYKA_FETCH_DONEp.state;
   }
 
-  if (!bit(nand2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state))) {
+  if (!bit(nand2(PYNU_WIN_MODE_Ap_new, ~win_reg.NOPA_WIN_MODE_Bp.state))) {
     tile_fetcher.PORY_FETCH_DONEp.rst();
     tile_fetcher.NYKA_FETCH_DONEp.rst();
   }
@@ -2046,7 +2061,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     win_reg.SARY_WY_MATCHp.rst();
   }
 
-  win_reg.ROGE_WY_MATCHp = (ly_new == wy_new) && !bit(reg_lcdc.WYMO_LCDC_WINENn.state);
+  win_reg.ROGE_WY_MATCHp = (ly_new == wy_new) && winen_new;
 
   if (bit(win_reg.SARY_WY_MATCHp.state)) win_reg.REJO_WY_MATCH_LATCHp.state = 1;
   if (bit(or2(lcd.POPU_y144p.state, vid_rst_new))) win_reg.REJO_WY_MATCH_LATCHp.state = 0;
@@ -2079,7 +2094,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   wire BFETCH_RSTp = or5(
     sprite_scanner.AVAP_SCAN_DONE_TRIGp.state,
-    and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state),
+    and2(PYNU_WIN_MODE_Ap_new, ~win_reg.NOPA_WIN_MODE_Bp.state),
     and2(win_reg.RYFA_WIN_FETCHn_A.state, ~win_reg.RENE_WIN_FETCHn_B.state),
     and2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.state),
     and4(rendering_new, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state)
@@ -2108,12 +2123,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Fine match counter
 
-  wire TEVO_WIN_FETCH_TRIGp = 0;
-  if (bit(and2(win_reg.RYFA_WIN_FETCHn_A.state, ~win_reg.RENE_WIN_FETCHn_B.state))) TEVO_WIN_FETCH_TRIGp = 1;
-  if (bit(and2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.state))) TEVO_WIN_FETCH_TRIGp = 1;
-  if (bit(and4(~XYMU_RENDERINGn.state, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state))) TEVO_WIN_FETCH_TRIGp = 1;
+  wire TEVO_WIN_FETCH_TRIGp_new = 0;
+  if (bit(and2(win_reg.RYFA_WIN_FETCHn_A.state, ~win_reg.RENE_WIN_FETCHn_B.state))) TEVO_WIN_FETCH_TRIGp_new = 1;
+  if (bit(and2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.state))) TEVO_WIN_FETCH_TRIGp_new = 1;
+  if (bit(and4(~XYMU_RENDERINGn.state, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state))) TEVO_WIN_FETCH_TRIGp_new = 1;
 
-  wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state, and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state), TEVO_WIN_FETCH_TRIGp);
+  wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state, and2(PYNU_WIN_MODE_Ap_new, ~win_reg.NOPA_WIN_MODE_Bp.state), TEVO_WIN_FETCH_TRIGp_new);
 
   wire TYFA_CLKPIPE_new = and5(~win_reg.RYDY_WIN_HITp.state, tile_fetcher.POKY_PRELOAD_LATCHp.state, ~sprite_match_flags.FEPO_STORE_MATCHp.state, !wodu_hblank_new, CLK_xBxDxFxG);
   wire SACU_CLKPIPE_new = or2(~TYFA_CLKPIPE_new, fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
@@ -2124,7 +2139,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       unpack(fs_old + 1, 3, &fine_scroll.RYKU_FINE_CNT0);
     }
 
-    if (bit(TEVO_WIN_FETCH_TRIGp) || bit(XYMU_RENDERINGn.state)) {
+    if (bit(TEVO_WIN_FETCH_TRIGp_new) || bit(XYMU_RENDERINGn.state)) {
       clear(3, &fine_scroll.RYKU_FINE_CNT0);
     }
   }
@@ -2260,14 +2275,20 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       }
 
 
-      lcd.NAPO_FRAME_EVENp.dff17(lcd.POPU_y144p.state, 1, ~lcd.NAPO_FRAME_EVENp.state);
+      if (posedge(popu_y144p_old, popu_y144p_new)) {
+        lcd.NAPO_FRAME_EVENp.state = ~lcd.NAPO_FRAME_EVENp.state;
+      }
 
       wire KOFO = ~xor2(lcd.NAPO_FRAME_EVENp.state, ~lcd.LUCA_LINE_EVENp.state);
       lcd.PIN_56_LCD_FLIPS.pin_out(KOFO, KOFO);
 
       auto ly = pack(8, &reg_ly.MUWY_LY0p);
 
-      lcd.MEDA_VSYNC_OUTn.dff17(~lcd.NYPE_x113p.state, 1, ly == 0);
+      if (negedge(nype_x113p_old, nype_x113p_new)) {
+        lcd.MEDA_VSYNC_OUTn.state = ly == 0;
+      }
+
+
       lcd.PIN_57_LCD_VSYNC.pin_out(~lcd.MEDA_VSYNC_OUTn.state, ~lcd.MEDA_VSYNC_OUTn.state);
 
       if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state) && bit(lcd.PAHO_X_8_SYNC.state)) {
@@ -2535,7 +2556,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto sum_x = px + scx;
     auto sum_y = ly + scy;
 
-    if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, ~win_reg.PYNU_WIN_MODE_Ap.state))) {
+    if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, ~PYNU_WIN_MODE_Ap_new))) {
       unpack_inv(sum_x >> 3, 5, &vram_bus.BUS_VRAM_A00n);
       unpack_inv(sum_y >> 3, 5, &vram_bus.BUS_VRAM_A05n);
       vram_bus.BUS_VRAM_A10n.state = reg_lcdc.XAFO_LCDC_BGMAPn.state;
@@ -2544,29 +2565,45 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     //--------------------------------------------
-    // Win map counters & win map read address
+    // Win coord x
 
-    wire VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, win_reg.PYNU_WIN_MODE_Ap.state);
-    wire XOFO_WIN_RSTp = nand3(~reg_lcdc.WYMO_LCDC_WINENn.state, ~ATEJ_LINE_RSTp.state, ~reg_lcdc.XONA_LCDC_LCDENn.state);
-    win_coords.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp,                     ~XOFO_WIN_RSTp, ~win_coords.WYKA_WIN_MAP_X0.state);
-    win_coords.WODY_WIN_MAP_X1.dff17(~win_coords.WYKA_WIN_MAP_X0.state, ~XOFO_WIN_RSTp, ~win_coords.WODY_WIN_MAP_X1.state);
-    win_coords.WOBO_WIN_MAP_X2.dff17(~win_coords.WODY_WIN_MAP_X1.state, ~XOFO_WIN_RSTp, ~win_coords.WOBO_WIN_MAP_X2.state);
-    win_coords.WYKO_WIN_MAP_X3.dff17(~win_coords.WOBO_WIN_MAP_X2.state, ~XOFO_WIN_RSTp, ~win_coords.WYKO_WIN_MAP_X3.state);
-    win_coords.XOLO_WIN_MAP_X4.dff17(~win_coords.WYKO_WIN_MAP_X3.state, ~XOFO_WIN_RSTp, ~win_coords.XOLO_WIN_MAP_X4.state);
+    wire VETU_WIN_MAPp_old = and2(TEVO_WIN_FETCH_TRIGp_old, PYNU_WIN_MODE_Ap_old);
+    wire VETU_WIN_MAPp_new = and2(TEVO_WIN_FETCH_TRIGp_new, PYNU_WIN_MODE_Ap_new);
 
-    // Every time we leave win mode we increment win_y
+    wire XOFO_WIN_RSTp = nand3(winen_new, ~ATEJ_LINE_RSTp.state, ~reg_lcdc.XONA_LCDC_LCDENn.state);
+
+    auto win_map_x_old = pack(5, &win_coords.WYKA_WIN_MAP_X0);
+
+    if (posedge(VETU_WIN_MAPp_old, VETU_WIN_MAPp_new)) {
+      unpack(win_map_x_old + 1, 5, &win_coords.WYKA_WIN_MAP_X0);
+    }
+
+    if (bit(XOFO_WIN_RSTp)) clear(5, &win_coords.WYKA_WIN_MAP_X0);
+
+    auto win_map_x_new = pack(5, &win_coords.WYKA_WIN_MAP_X0);
+
+    //--------------------------------------------
+    // Win coord y
+
     wire REPU_VBLANKp = or2(lcd.POPU_y144p.state, reg_lcdc.XONA_LCDC_LCDENn.state);
-    win_coords.VYNO_WIN_TILE_Y0.dff17(~win_reg.PYNU_WIN_MODE_Ap.state, ~REPU_VBLANKp, ~win_coords.VYNO_WIN_TILE_Y0.state);
-    win_coords.VUJO_WIN_TILE_Y1.dff17(~win_coords.VYNO_WIN_TILE_Y0.state, ~REPU_VBLANKp, ~win_coords.VUJO_WIN_TILE_Y1.state);
-    win_coords.VYMU_WIN_TILE_Y2.dff17(~win_coords.VUJO_WIN_TILE_Y1.state, ~REPU_VBLANKp, ~win_coords.VYMU_WIN_TILE_Y2.state);
-    win_coords.TUFU_WIN_MAP_Y0.dff17(~win_coords.VYMU_WIN_TILE_Y2.state, ~REPU_VBLANKp, ~win_coords.TUFU_WIN_MAP_Y0.state);
 
-    win_coords.TAXA_WIN_MAP_Y1.dff17(~win_coords.TUFU_WIN_MAP_Y0.state, ~REPU_VBLANKp, ~win_coords.TAXA_WIN_MAP_Y1.state);
-    win_coords.TOZO_WIN_MAP_Y2.dff17(~win_coords.TAXA_WIN_MAP_Y1.state, ~REPU_VBLANKp, ~win_coords.TOZO_WIN_MAP_Y2.state);
-    win_coords.TATE_WIN_MAP_Y3.dff17(~win_coords.TOZO_WIN_MAP_Y2.state, ~REPU_VBLANKp, ~win_coords.TATE_WIN_MAP_Y3.state);
-    win_coords.TEKE_WIN_MAP_Y4.dff17(~win_coords.TATE_WIN_MAP_Y3.state, ~REPU_VBLANKp, ~win_coords.TEKE_WIN_MAP_Y4.state);
+    auto win_y_old = pack(8, &win_coords.VYNO_WIN_TILE_Y0);
 
-    if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, win_reg.PYNU_WIN_MODE_Ap.state))) {
+    {
+      win_coords.VYNO_WIN_TILE_Y0.dff17(~PYNU_WIN_MODE_Ap_new, ~REPU_VBLANKp, ~win_coords.VYNO_WIN_TILE_Y0.state);
+      win_coords.VUJO_WIN_TILE_Y1.dff17(~win_coords.VYNO_WIN_TILE_Y0.state, ~REPU_VBLANKp, ~win_coords.VUJO_WIN_TILE_Y1.state);
+      win_coords.VYMU_WIN_TILE_Y2.dff17(~win_coords.VUJO_WIN_TILE_Y1.state, ~REPU_VBLANKp, ~win_coords.VYMU_WIN_TILE_Y2.state);
+      win_coords.TUFU_WIN_MAP_Y0.dff17(~win_coords.VYMU_WIN_TILE_Y2.state, ~REPU_VBLANKp, ~win_coords.TUFU_WIN_MAP_Y0.state);
+      win_coords.TAXA_WIN_MAP_Y1.dff17(~win_coords.TUFU_WIN_MAP_Y0.state, ~REPU_VBLANKp, ~win_coords.TAXA_WIN_MAP_Y1.state);
+      win_coords.TOZO_WIN_MAP_Y2.dff17(~win_coords.TAXA_WIN_MAP_Y1.state, ~REPU_VBLANKp, ~win_coords.TOZO_WIN_MAP_Y2.state);
+      win_coords.TATE_WIN_MAP_Y3.dff17(~win_coords.TOZO_WIN_MAP_Y2.state, ~REPU_VBLANKp, ~win_coords.TATE_WIN_MAP_Y3.state);
+      win_coords.TEKE_WIN_MAP_Y4.dff17(~win_coords.TATE_WIN_MAP_Y3.state, ~REPU_VBLANKp, ~win_coords.TEKE_WIN_MAP_Y4.state);
+    }
+
+    auto win_y_new = pack(8, &win_coords.VYNO_WIN_TILE_Y0);
+
+
+    if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, PYNU_WIN_MODE_Ap_new))) {
       cpy_inv(&vram_bus.BUS_VRAM_A00n, &win_coords.WYKA_WIN_MAP_X0, 5);
       cpy_inv(&vram_bus.BUS_VRAM_A05n, &win_coords.TUFU_WIN_MAP_Y0, 5);
       vram_bus.BUS_VRAM_A10n.state = reg_lcdc.WOKY_LCDC_WINMAPn.state;
@@ -2580,11 +2617,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (bit(and2(tile_fetcher.LONY_FETCHINGp.state, or2(tile_fetcher.MESU_BFETCH_S1p.state, tile_fetcher.NYVA_BFETCH_S2p.state)))) {
       vram_bus.BUS_VRAM_A00n.state = ~tile_fetcher.NYVA_BFETCH_S2p.state;
 
-      if (bit(~win_reg.PYNU_WIN_MODE_Ap.state)) {
+      if (bit(~PYNU_WIN_MODE_Ap_new)) {
         unpack_inv(sum_y, 3, &vram_bus.BUS_VRAM_A01n);
       }
 
-      if (bit(win_reg.PYNU_WIN_MODE_Ap.state)) {
+      if (bit(PYNU_WIN_MODE_Ap_new)) {
         vram_bus.BUS_VRAM_A01n.state = ~win_coords.VYNO_WIN_TILE_Y0.state;
         vram_bus.BUS_VRAM_A02n.state = ~win_coords.VUJO_WIN_TILE_Y1.state;
         vram_bus.BUS_VRAM_A03n.state = ~win_coords.VYMU_WIN_TILE_Y2.state;

@@ -1,8 +1,8 @@
 #pragma once
 
-//#pragma warning(disable:4189) // unused local variable
-//#pragma warning(disable:4100) // unused param
-//#pragma warning(disable : 4127)
+#pragma warning(disable:4189) // unused local variable
+#pragma warning(disable:4100) // unused param
+#pragma warning(disable:4127) // conditional expression is constant
 
 // Debug builds - painfully, ungodly slow.
 #ifdef CONFIG_DEBUG

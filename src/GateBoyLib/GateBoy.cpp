@@ -175,7 +175,7 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   serial.reset_to_cart();
 
   //reset_sprite_store();
-  sprite_counter.DEZY_COUNT_CLKp.state = 0b00011011;
+  DEZY_COUNT_CLKp.state = 0b00011011;
   sprite_counter.BESE_SPRITE_COUNT0.state = 0b00011010;
   sprite_counter.CUXY_SPRITE_COUNT1.state = 0b00011010;
   sprite_counter.BEGO_SPRITE_COUNT2.state = 0b00011010;
@@ -883,12 +883,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p29.CEHA*/ wire CEHA_SCANNINGp = not1(sprite_scanner.CENO_SCANNINGn.qn_new());
     /*_p29.CARE*/ wire CARE_COUNT_CLKn = and3(XOCE_xBCxxFGx(), CEHA_SCANNINGp, GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /*_p29.DYTY*/ wire DYTY_COUNT_CLKp = not1(CARE_COUNT_CLKn);
-    /*_p29.DEZY*/ sprite_counter.DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx(), XAPO_VID_RSTn(), DYTY_COUNT_CLKp);
+    /*_p29.DEZY*/ DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx(), XAPO_VID_RSTn(), DYTY_COUNT_CLKp);
 
     // There's a feedback loop here, but we don't actually need to loop - BAKY holds the clock line high once the sprite store is full, so doing a second logic pass
     // doesn't actually change any of the dffs.
     /*#p29.BAKY*/ wire BAKY_SPRITES_FULL_new = and2(sprite_counter.CUXY_SPRITE_COUNT1.qp_any(), sprite_counter.DYBE_SPRITE_COUNT3.qp_any());
-    /*#p29.CAKE*/ wire CAKE_COUNT_CLKp_new = or2(BAKY_SPRITES_FULL_new, sprite_counter.DEZY_COUNT_CLKp.qp_any());
+    /*#p29.CAKE*/ wire CAKE_COUNT_CLKp_new = or2(BAKY_SPRITES_FULL_new, DEZY_COUNT_CLKp.qp_any());
     /*#p28.AZYB*/ wire AZYB_LINE_TRIGn = not1(ATEJ_LINE_RSTp.out_new());
     /*_p29.BESE*/ sprite_counter.BESE_SPRITE_COUNT0.dff17_any(CAKE_COUNT_CLKp_new, AZYB_LINE_TRIGn, sprite_counter.BESE_SPRITE_COUNT0.qn_any());
     /*_p29.CUXY*/ sprite_counter.CUXY_SPRITE_COUNT1.dff17_any(sprite_counter.BESE_SPRITE_COUNT0.qn_any(), AZYB_LINE_TRIGn, sprite_counter.CUXY_SPRITE_COUNT1.qn_any());
@@ -1822,7 +1822,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
   if (vid_rst_new) {
-    sprite_counter.DEZY_COUNT_CLKp.rst();
+    DEZY_COUNT_CLKp.rst();
 
     clear(sprite_counter.BESE_SPRITE_COUNT0);
     clear(sprite_reset_flags.EBOJ_STORE0_RSTp);
@@ -1843,7 +1843,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     // FIXME does this even matter?
     if (DELTA_ODD) {
-      sprite_counter.DEZY_COUNT_CLKp.state = 1;
+      DEZY_COUNT_CLKp.state = 1;
     }
 
     clear(4, &sprite_counter.BESE_SPRITE_COUNT0);
@@ -1881,13 +1881,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
     if (DELTA_ODD) {
-      if (posedge(sprite_counter.DEZY_COUNT_CLKp.state, ssf_clk)) {
+      if (posedge(DEZY_COUNT_CLKp.state, ssf_clk)) {
         if (sprite_count_old != 10) {
           unpack(sprite_count_old + 1, 4, &sprite_counter.BESE_SPRITE_COUNT0);
         }
       }
 
-      sprite_counter.DEZY_COUNT_CLKp.state = ssf_clk;
+      DEZY_COUNT_CLKp.state = ssf_clk;
     }
 
 

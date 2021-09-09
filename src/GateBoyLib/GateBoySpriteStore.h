@@ -58,7 +58,6 @@ struct SpriteLBus {
 // Sprite counter tracks how many sprites have been selected for this line.
 
 struct SpriteCounter {
-  /*_p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;    // AxCxExGx
   /*_p29.BESE*/ DFF17 BESE_SPRITE_COUNT0; // AxxxExxx
   /*_p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1; // AxxxExxx
   /*_p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2; // AxxxExxx

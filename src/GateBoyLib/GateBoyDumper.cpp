@@ -182,7 +182,7 @@ void GateBoy::dump_oam_bus(Dumper& d) {
 void GateBoy::dump_sprite_store(Dumper& d) {
   //d.dump_slice2p("SPRITE INDEX   : ", &XADU_SPRITE_IDX0p.state, 6);
   d.dump_slice2p("SPRITE COUNT   : ", &sprite_counter.BESE_SPRITE_COUNT0, 4);
-  d.dump_bitp   ("DEZY_STORE_ENn : ", sprite_counter.DEZY_COUNT_CLKp.state);
+  d.dump_bitp   ("DEZY_STORE_ENn : ", DEZY_COUNT_CLKp.state);
   d("\n");
   d("STORE0 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EBOJ_STORE0_RSTp.state, pack_inv(6, &store_i0), pack_inv(4, &store_l0), pack_inv(8, &store_x0));
   d("STORE1 R%d I%02d L%02d X%03d\n", sprite_reset_flags.CEDY_STORE1_RSTp.state, pack_inv(6, &store_i1), pack_inv(4, &store_l1), pack_inv(8, &store_x1));

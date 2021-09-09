@@ -504,6 +504,7 @@ struct GateBoy {
   StoreX8 store_x8;
   StoreX9 store_x9;
 
+  /*_p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;    // AxCxExGx
   SpriteCounter sprite_counter;
 
   SpriteMatchFlags sprite_match_flags;

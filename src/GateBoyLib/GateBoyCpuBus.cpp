@@ -22,8 +22,8 @@ void GateBoy::tock_bootrom_gates() {
 
   // BOOT -> CBD
   // this is kind of a hack
-  uint16_t cpu_addr = (uint16_t)pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
-  wire bootrom_data = DMG_ROM_blob[cpu_addr & 0xFF];
+  auto cpu_addr_new = pack(cpu_abus_new);
+  wire bootrom_data = DMG_ROM_blob[cpu_addr_new & 0xFF];
 
   /*_p07.TERA*/ wire TERA_BOOT_BITp  = not1(cpu_signals.TEPU_BOOT_BITn_h.qp_new());
   /*_p07.TUTU*/ wire TUTU_READ_BOOTROMp = and2(TERA_BOOT_BITp, cpu_abus_new.TULO_ADDR_BOOTROMp());
@@ -67,26 +67,26 @@ void GateBoy::tock_bootrom_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_bootrom_logic() {
-  uint16_t new_addr = (uint16_t)pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
+  auto cpu_addr_new = pack(cpu_abus_new);
 
-  if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF50 && DELTA_GH) {
+  if (cpu_signals.SIG_IN_CPU_WRp.state && cpu_addr_new == 0xFF50 && DELTA_GH) {
     cpu_signals.TEPU_BOOT_BITn_h.state = SATO_BOOT_BITn.state;
   }
 
   cpu_signals.SIG_CPU_BOOTp.state = 0;
   cpu_signals.SIG_BOOT_CSp.state = 0;
 
-  if (new_addr <= 0x00FF) {
+  if (cpu_addr_new <= 0x00FF) {
 
     cpu_signals.SIG_CPU_BOOTp.sig_out(~cpu_signals.TEPU_BOOT_BITn_h.state);
 
     if (bit(and2(cpu_signals.SIG_IN_CPU_RDp.state, ~cpu_signals.TEPU_BOOT_BITn_h.state))) {
       cpu_signals.SIG_BOOT_CSp.state = 1;
-      unpack(DMG_ROM_blob[new_addr & 0xFF], 8, &cpu_dbus_new.BUS_CPU_D00p);
+      unpack(DMG_ROM_blob[cpu_addr_new & 0xFF], 8, &cpu_dbus_new.BUS_CPU_D00p);
     }
   }
 
-  if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF50)) {
+  if (cpu_signals.SIG_IN_CPU_RDp.state && (cpu_addr_new == 0xFF50)) {
     cpu_dbus_new.BUS_CPU_D00p.state = cpu_signals.TEPU_BOOT_BITn_h.state;
   }
 

@@ -2701,7 +2701,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       win_y.TEKE_WIN_MAP_Y4.rst();
     }
 
-    auto win_y_new = pack(8, &win_y.VYNO_WIN_TILE_Y0);
+    auto win_y_new = pack(win_y);
 
 
     if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, PYNU_WIN_MODE_Ap_new))) {
@@ -2884,8 +2884,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire dbus_free = cpu_signals.SIG_IN_CPU_LATCH_EXT.state;
     wire dbus_busy = !dbus_free;
 
-    auto cpu_addr = pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
-    wire addr_oam = (cpu_addr >= 0xFE00) && (cpu_addr <= 0xFEFF);
+    wire addr_oam = (cpu_addr_new >= 0xFE00) && (cpu_addr_new <= 0xFEFF);
 
     bool cpu_reading_oam = (bool)bit(and3(dbus_busy, addr_oam, cpu_rd));
 
@@ -3008,15 +3007,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // zram
 
   {
-    uint16_t addr = (uint16_t)pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
-    wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
+    wire CSp = (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE);
 
     if (bit(zram_bus.clk_old.state & ~cpu_signals.TAPU_CPU_WRp.state & CSp)) {
-      zero_ram[addr & 0x007F] = (uint8_t)pack(8, (BitBase*)&cpu_dbus_old.BUS_CPU_D00p);
+      zero_ram[cpu_addr_new & 0x007F] = (uint8_t)pack(cpu_dbus_old);
     }
     zram_bus.clk_old = cpu_signals.TAPU_CPU_WRp.state;
 
-    uint8_t data = zero_ram[addr & 0x007F];
+    uint8_t data = zero_ram[cpu_addr_new & 0x007F];
 
     if (CSp && bit(cpu_signals.TEDO_CPU_RDp.state)) {
       triwire tri0 = tri_pp(1, bit(data, 0));

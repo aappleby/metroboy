@@ -72,12 +72,12 @@ void GateBoy::tock_dma_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_dma_logic() {
-  auto new_addr = pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
+  auto cpu_addr_new = pack(cpu_abus_new);
 
   wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
 
-  wire FF46_RDp = cpu_signals.SIG_IN_CPU_RDp.state & (new_addr == 0xFF46);
-  wire FF46_WRp = cpu_signals.SIG_IN_CPU_WRp.state & (new_addr == 0xFF46);
+  wire FF46_RDp = cpu_signals.SIG_IN_CPU_RDp.state & (cpu_addr_new == 0xFF46);
+  wire FF46_WRp = cpu_signals.SIG_IN_CPU_WRp.state & (cpu_addr_new == 0xFF46);
 
   dma.LYXE_DMA_LATCHp.state |= (FF46_WRp & CLK_xxxxEFGx);
 
@@ -106,7 +106,7 @@ void GateBoy::tock_dma_logic() {
   }
 
   if (FF46_WRp && DELTA_GH) {
-    auto old_data = pack(8, (BitBase*)&cpu_dbus_old.BUS_CPU_D00p);
+    auto old_data = pack(cpu_dbus_old);
     unpack(~old_data, 8, &dma.NAFA_DMA_A08n);
   }
 

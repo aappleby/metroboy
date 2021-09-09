@@ -95,7 +95,7 @@ void GateBoy::tock_dma_logic() {
     if (bit(dma_ctrl.LUVY_DMA_TRIG_d0.state)) {
       dma_ctrl.MYTE_DMA_DONE.state = 0;
       dma_ctrl.LYXE_DMA_LATCHp.state = 0;
-      clear(8, &reg_dma_lo.NAKY_DMA_A00p);
+      clear(reg_dma_lo);
       dma_ctrl.LARA_DMA_LATCHn = 0;
       dma_ctrl.LOKY_DMA_LATCHp = 1;
     }

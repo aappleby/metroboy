@@ -1372,26 +1372,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------
   // DIV
 
-  auto div_old = pack(div);
-  {
-    if (DELTA_HA) {
-      unpack(div_old + 1, div);
-    }
-
-    if (cpu_addr_new == 0xFF04) {
-      if (cpu_wr_new && CLK_xxxxEFGx) clear(div);
-
-      if (cpu_rd_new) {
-        // This should've broken something...
-        //cpy(cpu_dbus_new, div);
-
-        cpy(&cpu_dbus_new, &div.UGOT_DIV06p, 8);
-      }
-
-
-    }
-  }
-  //auto div_new = pack(16, &div.UKUP_DIV00p);
+  if (DELTA_HA) unpack(pack(div) + 1, div);
+  if (cpu_addr_new == 0xFF04 && cpu_wr_new && CLK_xxxxEFGx) clear(div);
+  if (cpu_addr_new == 0xFF04 && cpu_rd_new) unpack(pack(div) >> 6, cpu_dbus_new);
 
   //----------
   // In logic mode we don't care about the power-on behavior, we only want behavior to match when running code. So, we set

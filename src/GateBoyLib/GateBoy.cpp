@@ -180,7 +180,10 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
 
   reg_stat.reset_to_cart();
   pix_count.reset_to_cart();
-  pix_pipes.reset_to_cart();
+  mask_pipe.reset_to_cart();
+  REMY_LD0n.state = 0b00011000;
+  RAVO_LD1n.state = 0b00011000;
+
   dma.reset_to_cart();
   reg_bgp.reset_to_cart();
   reg_obp0.reset_to_cart();
@@ -336,7 +339,7 @@ struct GateBoyOffsets {
   const int o_fine_scroll    = offsetof(GateBoy, fine_scroll);
 
   const int o_pix_count      = offsetof(GateBoy, pix_count);
-  const int o_pix_pipes      = offsetof(GateBoy, pix_pipes);
+  //const int o_pix_pipes      = offsetof(GateBoy, pix_pipes);
   const int o_lcd            = offsetof(GateBoy, lcd      );
   const int o_reg_lx         = offsetof(GateBoy, reg_lx   );
   const int o_reg_ly         = offsetof(GateBoy, reg_ly   );
@@ -2236,12 +2239,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     uint8_t spix_a = (uint8_t)pack_inv(8, &sprite_pix_a.REWO_SPRITE_DA0n);
     uint8_t spix_b = (uint8_t)pack_inv(8, &sprite_pix_b.PEFO_SPRITE_DB0n);
 
-    uint8_t spipe_a = (uint8_t)pack(8, &pix_pipes.NURO_SPR_PIPE_A0);
-    uint8_t spipe_b = (uint8_t)pack(8, &pix_pipes.NYLU_SPR_PIPE_B0);
-    uint8_t bpipe_a = (uint8_t)pack(8, &pix_pipes.MYDE_BGW_PIPE_A0);
-    uint8_t bpipe_b = (uint8_t)pack(8, &pix_pipes.TOMY_BGW_PIPE_B0);
-    uint8_t mpipe   = (uint8_t)pack(8, &pix_pipes.VEZO_MASK_PIPE_0);
-    uint8_t ppipe   = (uint8_t)pack(8, &pix_pipes.RUGO_PAL_PIPE_D0);
+    uint8_t spipe_a = (uint8_t)pack(8, &spr_pipe_a);
+    uint8_t spipe_b = (uint8_t)pack(8, &spr_pipe_b);
+    uint8_t bpipe_a = (uint8_t)pack(8, &bgw_pipe_a);
+    uint8_t bpipe_b = (uint8_t)pack(8, &bgw_pipe_b);
+    uint8_t mpipe   = (uint8_t)pack(8, &mask_pipe);
+    uint8_t ppipe   = (uint8_t)pack(8, &pal_pipe);
 
     if (posedge(SACU_CLKPIPE_old, SACU_CLKPIPE_new)) {
       spipe_a = (spipe_a << 1) | 0;
@@ -2263,20 +2266,20 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       ppipe = bit(oam_temp_b.GOMO_OAM_DB4p.state) ? ppipe | ~smask : ppipe & smask;
     }
 
-    unpack(spipe_a, 8, &pix_pipes.NURO_SPR_PIPE_A0);
-    unpack(spipe_b, 8, &pix_pipes.NYLU_SPR_PIPE_B0);
-    unpack(bpipe_a, 8, &pix_pipes.MYDE_BGW_PIPE_A0);
-    unpack(bpipe_b, 8, &pix_pipes.TOMY_BGW_PIPE_B0);
-    unpack(mpipe,   8, &pix_pipes.VEZO_MASK_PIPE_0);
-    unpack(ppipe,   8, &pix_pipes.RUGO_PAL_PIPE_D0);
+    unpack(spipe_a, 8, &spr_pipe_a);
+    unpack(spipe_b, 8, &spr_pipe_b);
+    unpack(bpipe_a, 8, &bgw_pipe_a);
+    unpack(bpipe_b, 8, &bgw_pipe_b);
+    unpack(mpipe,   8, &mask_pipe);
+    unpack(ppipe,   8, &pal_pipe);
 
     //----------------------------------------
     // Pipe merge and output
 
-    wire PIX_BG_LOp = and2(pix_pipes.PYBO_BGW_PIPE_A7.state, ~reg_lcdc.VYXE_LCDC_BGENn.state);
-    wire PIX_BG_HIp = and2(pix_pipes.SOHU_BGW_PIPE_B7.state, ~reg_lcdc.VYXE_LCDC_BGENn.state);
-    wire PIX_SP_LOp = and2(pix_pipes.WUFY_SPR_PIPE_A7.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
-    wire PIX_SP_HIp = and2(pix_pipes.VUPY_SPR_PIPE_B7.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
+    wire PIX_BG_LOp = and2(bgw_pipe_a.PYBO_BGW_PIPE_A7.state, ~reg_lcdc.VYXE_LCDC_BGENn.state);
+    wire PIX_BG_HIp = and2(bgw_pipe_b.SOHU_BGW_PIPE_B7.state, ~reg_lcdc.VYXE_LCDC_BGENn.state);
+    wire PIX_SP_LOp = and2(spr_pipe_a.WUFY_SPR_PIPE_A7.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
+    wire PIX_SP_HIp = and2(spr_pipe_b.VUPY_SPR_PIPE_B7.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
 
     int pal_idx = 0;
     uint8_t pal = 0;
@@ -2287,15 +2290,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     if (bit(or2(PIX_SP_HIp, PIX_SP_LOp))) {
       pal_idx = pack(PIX_SP_LOp, PIX_SP_HIp);
-      pal = bit(pix_pipes.LYME_PAL_PIPE_D7.state) ? obp1 : obp0;
+      pal = bit(pal_pipe.LYME_PAL_PIPE_D7.state) ? obp1 : obp0;
     }
     else {
       pal_idx = pack(PIX_BG_LOp, PIX_BG_HIp);
       pal = bgp;
     }
 
-    pix_pipes.REMY_LD0n = ~bit(pal >> (pal_idx * 2 + 0));
-    pix_pipes.RAVO_LD1n = ~bit(pal >> (pal_idx * 2 + 1));
+    REMY_LD0n = ~bit(pal >> (pal_idx * 2 + 0));
+    RAVO_LD1n = ~bit(pal >> (pal_idx * 2 + 1));
   }
 
   //----------------------------------------
@@ -2345,8 +2348,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
         lcd.POFY = 0;
       }
 
-      lcd.PIN_50_LCD_DATA1.pin_out(pix_pipes.RAVO_LD1n.state, pix_pipes.RAVO_LD1n.state);
-      lcd.PIN_51_LCD_DATA0.pin_out(pix_pipes.REMY_LD0n.state, pix_pipes.REMY_LD0n.state);
+      lcd.PIN_50_LCD_DATA1.pin_out(RAVO_LD1n.state, RAVO_LD1n.state);
+      lcd.PIN_51_LCD_DATA0.pin_out(REMY_LD0n.state, REMY_LD0n.state);
       lcd.PIN_54_LCD_HSYNC.pin_out(~lcd.POFY.state, ~lcd.POFY.state);
       lcd.PIN_55_LCD_LATCH.pin_out(~lcd.RUTU_x113p.state, ~lcd.RUTU_x113p.state);
 
@@ -2374,8 +2377,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       lcd.RUJU = 1;
       lcd.POFY = 0;
 
-      lcd.PIN_50_LCD_DATA1.pin_out(pix_pipes.RAVO_LD1n.state, pix_pipes.RAVO_LD1n.state);
-      lcd.PIN_51_LCD_DATA0.pin_out(pix_pipes.REMY_LD0n.state, pix_pipes.REMY_LD0n.state);
+      lcd.PIN_50_LCD_DATA1.pin_out(RAVO_LD1n.state, RAVO_LD1n.state);
+      lcd.PIN_51_LCD_DATA0.pin_out(REMY_LD0n.state, REMY_LD0n.state);
       lcd.PIN_52_LCD_CNTRL.pin_out(1, 1);
       lcd.PIN_53_LCD_CLOCK.pin_out(1, 1);
       lcd.PIN_54_LCD_HSYNC.pin_out(1, 1);

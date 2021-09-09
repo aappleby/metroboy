@@ -771,29 +771,35 @@ inline uint8_t pack(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire
   return (bit(a) << 0) | (bit(b) << 1) | (bit(c) << 2) | (bit(d) << 3) | (bit(e) << 4) | (bit(f) << 5) | (bit(g) << 6) | (bit(h) << 7);
 }
 
-inline uint32_t pack(int c, const BitBase* b) {
+inline uint32_t pack(int c, const void* blob) {
+  uint8_t* b = (uint8_t*)blob;
+
   uint32_t r = 0;
-  for (int i = 0; i < c; i++) r |= (bit(b[i].state) << i);
+  for (int i = 0; i < c; i++) r |= (bit(b[i]) << i);
   return r;
 }
 
-inline uint32_t pack_inv(int c, const BitBase* b) {
+inline uint32_t pack_inv(int c, const void* blob) {
+  uint8_t* b = (uint8_t*)blob;
+
   uint32_t r = 0;
-  for (int i = 0; i < c; i++) r |= (bit(~b[i].state) << i);
+  for (int i = 0; i < c; i++) r |= (bit(~b[i]) << i);
   return r;
 }
 
-inline void unpack(uint32_t d, int c, BitBase* b) {
+inline void unpack(uint32_t d, int c, void* blob) {
+  uint8_t* b = (uint8_t*)blob;
   for (int i = 0; i < c; i++) {
-    b[i].state &= ~1;
-    b[i].state |= bit(d, i);
+    b[i] &= ~1;
+    b[i] |= bit(d, i);
   }
 }
 
-inline void unpack_inv(uint32_t d, int c, BitBase* b) {
+inline void unpack_inv(uint32_t d, int c, void* blob) {
+  uint8_t* b = (uint8_t*)blob;
   for (int i = 0; i < c; i++) {
-    b[i].state &= ~1;
-    b[i].state |= bit(~d, i);
+    b[i] &= ~1;
+    b[i] |= bit(~d, i);
   }
 }
 
@@ -821,12 +827,14 @@ inline void cpy_inv2(int c, void* src, void* dst) {
   }
 }
 
-inline void clear(int c, BitBase* b) {
-  for (int i = 0; i < c; i++) b[i].state &= ~1;
+inline void clear(int c, void* blob) {
+  uint8_t* b = (uint8_t*)blob;
+  for (int i = 0; i < c; i++) b[i] &= ~1;
 }
 
-inline void set(int c, BitBase* b) {
-  for (int i = 0; i < c; i++) b[i].state |= 1;
+inline void set(int c, void* blob) {
+  uint8_t* b = (uint8_t*)blob;
+  for (int i = 0; i < c; i++) b[i] |= 1;
 }
 
 inline bool posedge(wire a, wire b) {

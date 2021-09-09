@@ -507,7 +507,17 @@ struct GateBoy {
   FineScroll      fine_scroll;
 
   PixCount     pix_count;
-  PixelPipes   pix_pipes;
+  
+  MaskPipe mask_pipe;
+  BgwPipeA bgw_pipe_a;
+  BgwPipeB bgw_pipe_b;
+  SprPipeA spr_pipe_a;
+  SprPipeB spr_pipe_b;
+  PalPipe  pal_pipe;
+
+  Gate REMY_LD0n;
+  Gate RAVO_LD1n;
+
   GateBoyLCDControl   lcd;
 
   RegLX  reg_lx;

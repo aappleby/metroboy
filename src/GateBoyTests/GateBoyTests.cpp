@@ -110,6 +110,42 @@ int main(int argc, char** argv) {
 
     }
   }
+
+  if (config_regression) {
+    LOG_G("Running a few frames of Zelda...\n");
+
+    GateBoy gba;
+    GateBoy gbb;
+
+    blob cart_blob = load_blob("LinksAwakening.gb");
+    if (!cart_blob.empty()) {
+      gba.reset_to_cart(cart_blob);
+      gbb.reset_to_cart(cart_blob);
+
+      for (int i = 0; i < MCYCLES_PER_FRAME * 8 * 2; i++) {
+        gba.sys_buttons |= 0x02;
+        gbb.sys_buttons |= 0x02;
+        gba.next_phase(cart_blob, true);
+        gbb.next_phase(cart_blob, false);
+
+        uint64_t hash_a_new = gba.hash();
+        uint64_t hash_b_new = gbb.hash();
+
+        if (hash_a_new != hash_b_new) {
+          LOG_R("Regression test mismatch @ phase %d!\n", i);
+          diff_blob(&gba, 0, sizeof(GateBoy), &gbb, 0, sizeof(GateBoy), 0x01);
+          results.fail_count++;
+          break;
+        }
+      }
+      LOG_G("Done\n");
+    }
+    else {
+      LOG_G("Could not load dump!\n");
+      ASSERT_P(false);
+
+    }
+  }
 #endif
 
   GateBoyTests t;

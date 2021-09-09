@@ -54,8 +54,8 @@ struct BitBase {
   operator bool() const { return get_data(); }
   BitBase& operator = (wire w) { state = w; return *this; }
   BitBase& operator = (const BitBase& b) { state = b.state; return *this; }
-  wire operator~() const { return ~state; }
-  wire operator^(const BitBase& b) const { return state ^ b.state; }
+  BitBase operator~() const { return BitBase(~state); }
+  BitBase operator^(const BitBase& b) const { return BitBase(state ^ b.state); }
 
   void rst() { state &= ~1; }
   void set() { state |= 1; }

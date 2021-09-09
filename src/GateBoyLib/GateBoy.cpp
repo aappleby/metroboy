@@ -389,7 +389,7 @@ void GateBoy::next_phase(const blob& cart_blob, bool logic_mode) {
     tock_gates(cart_blob);
   }
 
-  update_framebuffer(pix_count.get_old() - 8, reg_ly.get_old(), lcd.PIN_51_LCD_DATA0.qp_ext_old(), lcd.PIN_50_LCD_DATA1.qp_ext_old());
+  update_framebuffer(pack(pix_count) - 8, pack(reg_ly), lcd.PIN_51_LCD_DATA0.qp_ext_old(), lcd.PIN_50_LCD_DATA1.qp_ext_old());
 
   phase_total++;
 }
@@ -447,8 +447,8 @@ void GateBoy::update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1)
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_cpu() {
-  cpu_data_latch &= (uint8_t)pack(8, (BitBase*)&cpu_dbus_new.BUS_CPU_D00p);
-  imask_latch = (uint8_t)pack(5, &reg_ie);
+  cpu_data_latch &= (uint8_t)pack(cpu_dbus_new);
+  imask_latch = (uint8_t)pack(reg_ie);
 
   if (DELTA_HA) {
     if (gb_cpu.op == 0x76 && (imask_latch & intf_halt_latch)) gb_cpu.state_ = 0;
@@ -2360,7 +2360,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       wire KOFO = ~xor2(lcd.NAPO_FRAME_EVENp.state, ~lcd.LUCA_LINE_EVENp.state);
       lcd.PIN_56_LCD_FLIPS.pin_out(KOFO, KOFO);
 
-      auto ly = pack(8, &reg_ly.MUWY_LY0p);
+      auto ly = pack(reg_ly);
 
       if (negedge(nype_x113p_old, nype_x113p_new)) {
         lcd.MEDA_VSYNC_OUTn.state = ly == 0;
@@ -2627,10 +2627,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       if (cpu_addr_new == 0xFF43) cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_scx.DATY_SCX0n, 8);
     }
 
-    auto px  = pack(8, &pix_count.XEHO_PX0p);
-    auto ly  = pack(8, &reg_ly.MUWY_LY0p);
-    auto scx = pack_inv(8, &reg_scx.DATY_SCX0n);
-    auto scy = pack_inv(8, &reg_scy.GAVE_SCY0n);
+    auto px  = pack(pix_count);
+    auto ly  = pack(reg_ly);
+    auto scx = pack_inv(reg_scx);
+    auto scy = pack_inv(reg_scy);
 
     auto sum_x = px + scx;
     auto sum_y = ly + scy;
@@ -2651,22 +2651,22 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     wire XOFO_WIN_RSTp = nand3(winen_new, ~ATEJ_LINE_RSTp.state, ~reg_lcdc.XONA_LCDC_LCDENn.state);
 
-    auto win_map_x_old = pack(5, &win_x.WYKA_WIN_MAP_X0);
+    auto win_map_x_old = pack(win_x);
 
     if (posedge(VETU_WIN_MAPp_old, VETU_WIN_MAPp_new)) {
-      unpack(win_map_x_old + 1, 5, &win_x.WYKA_WIN_MAP_X0);
+      unpack(win_map_x_old + 1, win_x);
     }
 
-    if (bit(XOFO_WIN_RSTp)) clear(5, &win_x.WYKA_WIN_MAP_X0);
+    if (bit(XOFO_WIN_RSTp)) clear(win_x);
 
-    auto win_map_x_new = pack(5, &win_x.WYKA_WIN_MAP_X0);
+    auto win_map_x_new = pack(win_x);
 
     //--------------------------------------------
     // Win coord y
 
     wire REPU_VBLANKp = or2(lcd.POPU_y144p.state, reg_lcdc.XONA_LCDC_LCDENn.state);
 
-    auto win_y_old = bit(REPU_VBLANKp) ? 0 : pack(8, &win_y.VYNO_WIN_TILE_Y0);
+    auto win_y_old = bit(REPU_VBLANKp) ? 0 : pack(win_y);
 
     if (phase_total == 1117177879) __debugbreak();
 

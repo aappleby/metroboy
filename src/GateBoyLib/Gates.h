@@ -779,6 +779,11 @@ inline uint32_t pack(int c, const void* blob) {
   return r;
 }
 
+template<typename T>
+inline uint32_t pack(const T& t) {
+  return pack(sizeof(T), &t);
+}
+
 inline uint32_t pack_inv(int c, const void* blob) {
   uint8_t* b = (uint8_t*)blob;
 
@@ -793,6 +798,11 @@ inline void unpack(uint32_t d, int c, void* blob) {
     b[i] &= ~1;
     b[i] |= bit(d, i);
   }
+}
+
+template<typename T>
+inline void unpack(uint32_t d, T& t) {
+  unpack(d, sizeof(T), &t);
 }
 
 inline void unpack_inv(uint32_t d, int c, void* blob) {

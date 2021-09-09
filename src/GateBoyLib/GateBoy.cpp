@@ -1399,15 +1399,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------
   // DIV
 
-  auto div_old = pack(16, &div.UKUP_DIV00p);
+  auto div_old = pack(16, &div);
   {
     if (DELTA_HA) {
-      unpack(div_old + 1, 16, &div.UKUP_DIV00p);
+      unpack(div_old + 1, div);
     }
 
     if (cpu_addr_new == 0xFF04) {
-      if (cpu_wr_new && CLK_xxxxEFGx) memset(&div.UKUP_DIV00p, 0, 16);
-      if (cpu_rd_new) memcpy(&cpu_dbus_new.BUS_CPU_D00p, &div.UGOT_DIV06p, 8);
+      if (cpu_wr_new && CLK_xxxxEFGx) memset(&div, 0, 16);
+      if (cpu_rd_new) memcpy(&cpu_dbus_new, &div, 8);
     }
   }
   //auto div_new = pack(16, &div.UKUP_DIV00p);
@@ -1434,11 +1434,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   {
     if (cpu_wr_new && cpu_addr_new == 0xFF40 && DELTA_GH) {
-      cpy_inv(&reg_lcdc.VYXE_LCDC_BGENn, &cpu_dbus_old.BUS_CPU_D00p, 8);
+      cpy_inv(&reg_lcdc, &cpu_dbus_old, 8);
     }
 
     if (cpu_rd_new && (cpu_addr_new == 0xFF40)) {
-      cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_lcdc.VYXE_LCDC_BGENn, 8);
+      cpy_inv(&cpu_dbus_new, &reg_lcdc, 8);
     }
   }
   wire vid_rst_new = bit(reg_lcdc.XONA_LCDC_LCDENn.state);
@@ -1456,13 +1456,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   {
     if (cpu_addr_new == 0xFF45) {
-      if (cpu_rd_new) cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_lyc.SYRY_LYC0n, 8);
-      if (cpu_wr_new && DELTA_GH) cpy_inv(&reg_lyc.SYRY_LYC0n, &cpu_dbus_old.BUS_CPU_D00p, 8);
+      if (cpu_rd_new) cpy_inv(&cpu_dbus_new, &reg_lyc, 8);
+      if (cpu_wr_new && DELTA_GH) cpy_inv(&reg_lyc, &cpu_dbus_old, 8);
     }
 
     if (!vid_rst_new && DELTA_BC) {
-      auto ly = pack(8, &reg_ly.MUWY_LY0p);
-      auto lyc = pack_inv(8, &reg_lyc.SYRY_LYC0n);
+      auto ly = pack(8, &reg_ly);
+      auto lyc = pack_inv(8, &reg_lyc);
       ROPO_LY_MATCH_SYNCp.state = ly == lyc;
     }
 
@@ -1486,8 +1486,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   auto popu_y144p_old = bit(lcd.POPU_y144p.state);
   auto nype_x113p_old = bit(lcd.NYPE_x113p.state);
 
-  auto lx_old = pack(7, &reg_lx.SAXO_LX0p);
-  auto ly_old = pack(8, &reg_ly.MUWY_LY0p);
+  auto lx_old = pack(7, &reg_lx);
+  auto ly_old = pack(8, &reg_ly);
 
   if (vid_rst_new) {
     lcd.ANEL_x113p.state = 0;
@@ -1500,8 +1500,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     ATEJ_LINE_RSTp = 1;
 
-    clear(7, &reg_lx.SAXO_LX0p);
-    clear(8, &reg_ly.MUWY_LY0p);
+    clear(7, &reg_lx);
+    clear(8, &reg_ly);
   }
   else {
     wire ly_144 = (ly_old & 144) == 144;
@@ -1523,7 +1523,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
         lcd.MYTA_y153p.state = ly_153;
       }
 
-      unpack(lx_old + 1, 7, &reg_lx.SAXO_LX0p);
+      unpack(lx_old + 1, reg_lx);
     }
 
     if (DELTA_DE) {
@@ -1538,7 +1538,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
       wire rutu_new = bit(lcd.RUTU_x113p.state);
       if (!rutu_old && rutu_new) {
-        unpack(ly_old + 1, 8, &reg_ly.MUWY_LY0p);
+        unpack(ly_old + 1, reg_ly);
       }
 
       wire strobe = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
@@ -1546,16 +1546,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     ATEJ_LINE_RSTp = nor2(lcd.ANEL_x113p.state, ~lcd.CATU_x113p.state);
-    if (bit(lcd.RUTU_x113p.state)) clear(7, &reg_lx.SAXO_LX0p);
-    if (bit(lcd.MYTA_y153p.state)) clear(8, &reg_ly.MUWY_LY0p);
+    if (bit(lcd.RUTU_x113p.state)) clear(7, &reg_lx);
+    if (bit(lcd.MYTA_y153p.state)) clear(8, &reg_ly);
   }
 
   if (cpu_rd_new && (cpu_addr_new == 0xFF44)) {
-    memcpy(&cpu_dbus_new.BUS_CPU_D00p, &reg_ly.MUWY_LY0p, 8);
+    memcpy(&cpu_dbus_new, &reg_ly, 8);
   }
 
-  //auto lx_new = pack(7, &reg_lx.SAXO_LX0p);
-  auto ly_new = pack(8, &reg_ly.MUWY_LY0p);
+  //auto lx_new = pack(7, &reg_lx);
+  auto ly_new = pack(reg_ly);
 
   auto rutu_x113p_new = bit(lcd.RUTU_x113p.state);
   auto popu_y144p_new = bit(lcd.POPU_y144p.state);

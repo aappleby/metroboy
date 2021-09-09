@@ -1740,7 +1740,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (vid_rst_new) {
-    win_reg.SOVY_WIN_HITp.state = 1;
+    win_reg.SOVY_WIN_HITp.state = 0;
   }
 
 

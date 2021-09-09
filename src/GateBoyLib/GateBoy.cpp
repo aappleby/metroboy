@@ -1784,7 +1784,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     wire oam_busy_new = (cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFEFF) || dma_running_new;
     uint8_t BYCU_OAM_CLKp_new = (oam_busy_new ? CLK_ABCDxxxx_new : 1) && (!rendering_new || (sfetch_phase_new != 3)) && (!scanning_new || CLK_AxxxExxx_new);
-    auto clk_old = oam_temp_a.XUSO_OAM_DA0p.get_clk();
+    auto clk_old = BYCU_OAM_CLKp_old;
     auto clk_new = BYCU_OAM_CLKp_new;
 
     if (posedge(clk_old, clk_new)) {

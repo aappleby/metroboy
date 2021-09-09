@@ -223,15 +223,15 @@ void GateBoy::dump_cpu_bus(Dumper& d) {
 }
 
 void GateBoy::dump_dma(Dumper& d) {
-  d.dump_slice2p("DMA_A_LOW  : ", &dma.NAKY_DMA_A00p, 8);
-  d.dump_slice2n("DMA_A_HIGH : ", &dma.NAFA_DMA_A08n, 8);
-  d             ("DMA Addr   : 0x%02x:%02x\n", pack_inv(8, &dma.NAFA_DMA_A08n), pack(8, &dma.NAKY_DMA_A00p));
-  d.dump_bitp   ("MATU_DMA_RUNNINGp : ", dma.MATU_DMA_RUNNINGp.state);
-  d.dump_bitp   ("LYXE_DMA_LATCHp   : ", dma.LYXE_DMA_LATCHp  .state);
-  d.dump_bitp   ("MYTE_DMA_DONE     : ", dma.MYTE_DMA_DONE    .state);
-  d.dump_bitp   ("LUVY_DMA_TRIG_d0  : ", dma.LUVY_DMA_TRIG_d0 .state);
-  d.dump_bitp   ("LENE_DMA_TRIG_d4  : ", dma.LENE_DMA_TRIG_d4 .state);
-  d.dump_bitp   ("LOKY_DMA_LATCHp   : ", dma.LOKY_DMA_LATCHp  .state);
+  d.dump_slice2p("DMA_A_LOW  : ", &reg_dma_lo.NAKY_DMA_A00p, 8);
+  d.dump_slice2n("DMA_A_HIGH : ", &reg_dma_hi.NAFA_DMA_A08n, 8);
+  d             ("DMA Addr   : 0x%02x:%02x\n", pack_inv(8, &reg_dma_hi.NAFA_DMA_A08n), pack(8, &reg_dma_lo.NAKY_DMA_A00p));
+  d.dump_bitp   ("MATU_DMA_RUNNINGp : ", dma_ctrl.MATU_DMA_RUNNINGp.state);
+  d.dump_bitp   ("LYXE_DMA_LATCHp   : ", dma_ctrl.LYXE_DMA_LATCHp  .state);
+  d.dump_bitp   ("MYTE_DMA_DONE     : ", dma_ctrl.MYTE_DMA_DONE    .state);
+  d.dump_bitp   ("LUVY_DMA_TRIG_d0  : ", dma_ctrl.LUVY_DMA_TRIG_d0 .state);
+  d.dump_bitp   ("LENE_DMA_TRIG_d4  : ", dma_ctrl.LENE_DMA_TRIG_d4 .state);
+  d.dump_bitp   ("LOKY_DMA_LATCHp   : ", dma_ctrl.LOKY_DMA_LATCHp  .state);
 }
 
 

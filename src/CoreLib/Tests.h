@@ -6,23 +6,40 @@
 
 struct TestResults {
   void operator += (TestResults r) {
-    expect_count += r.expect_count;
-    pass_count += r.pass_count;
-    fail_count += r.fail_count;
+    expect_pass += r.expect_pass;
+    expect_fail += r.expect_fail;
+    test_pass += r.test_pass;
+    test_fail += r.test_fail;
   }
 
-  int expect_count = 0;
-  int pass_count = 0;
-  int fail_count = 0;
+  int expect_pass = 0;
+  int expect_fail = 0;
+
+  int test_pass = 0;
+  int test_fail = 0;
+
+  bool ok() const { return (expect_fail == 0) && (test_fail == 0); }
+
+  TestResults& finish(const char* function_name) {
+    LOG_DEDENT();
+    if (!test_pass && !test_fail) {
+      expect_fail ? test_fail++ : test_pass++;
+    }
+
+    if (test_fail) LOG_R("%s: %d expect failures, %d test failures\n", function_name, expect_fail, test_fail);
+    return *this;
+  }
 };
 
-#define TEST_START(...) do { LOG("%s: ", __FUNCTION__); LOG_B(__VA_ARGS__); LOG("\n"); LOG_INDENT(); } while(0); TestResults results;
-#define TEST_END()      do { LOG_DEDENT(); if (results.fail_count) { LOG_R("%s: %d failures\n", __FUNCTION__, results.fail_count); } else { results.pass_count++; } return results; } while(0);
+#define TEST_INIT(...) TestResults results; do { LOG("%s: ", __FUNCTION__); LOG_B(__VA_ARGS__); LOG("\n"); LOG_INDENT(); } while(0);
+#define TEST_DONE()    do {                        return results.finish(__FUNCTION__); } while(0);
+#define TEST_PASS()    do { results.expect_pass++; return results.finish(__FUNCTION__); } while(0);
+#define TEST_FAIL()    do { results.expect_fail++; return results.finish(__FUNCTION__); } while(0);
 
-#define EXPECT_EQ(A, B, ...) if ((A) != (B)) { LOG_Y("EXPECT_EQ fail: %llx != %llx @ %s : %d\n", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.fail_count++; } else { results.expect_count++; }
-#define EXPECT_NE(A, B, ...) if ((A) == (B)) { LOG_Y("EXPECT_NE fail: %llx == %llx @ %s : %d\n", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.fail_count++; } else { results.expect_count++; }
+#define EXPECT_EQ(A, B, ...) if ((A) == (B)) { results.expect_pass++; } else { LOG_Y("EXPECT_EQ fail: %llx != %llx @ %s : %d ", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.expect_fail++; } 
+#define EXPECT_NE(A, B, ...) if ((A) != (B)) { results.expect_pass++; } else { LOG_Y("EXPECT_NE fail: %llx == %llx @ %s : %d ", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.expect_fail++; } 
 
-#define ASSERT_EQ(A, B, ...) if ((A) != (B)) { LOG_R("ASSERT_EQ fail: %llx != %llx @ %s : %d\n", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); results.fail_count++; TEST_END(); }
-#define ASSERT_NE(A, B, ...) if ((A) == (B)) { LOG_R("ASSERT_NE fail: %llx == %llx @ %s : %d\n", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); results.fail_count++; TEST_END(); }
+#define ASSERT_EQ(A, B, ...) if ((A) == (B)) { results.expect_pass++; } else { LOG_R("ASSERT_EQ fail: %llx != %llx @ %s : %d ", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); TEST_FAIL(); }
+#define ASSERT_NE(A, B, ...) if ((A) != (B)) { results.expect_pass++; } else { LOG_R("ASSERT_NE fail: %llx == %llx @ %s : %d ", uint64_t(A), uint64_t(B), __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); TEST_FAIL(); }
 
 //-----------------------------------------------------------------------------

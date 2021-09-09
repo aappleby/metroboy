@@ -218,8 +218,7 @@ TestResults diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int st
 
   if (size_a != size_b) {
     LOG_R("diff() : Size mismatch %d vs %d\n", size_a, size_b);
-    results.fail_count++;
-    return results;
+    TEST_FAIL();
   }
 
   uint8_t* bytes_a = (uint8_t*)blob_a;
@@ -231,7 +230,6 @@ TestResults diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int st
 
     int byte_a = bytes_a[ia] & mask;
     int byte_b = bytes_b[ib] & mask;
-
     EXPECT_EQ(byte_a, byte_b, "@ %5d : [%5d] = 0x%02x, [%5d] = 0x%02x\n", i, ia, byte_a, ib, byte_b);
   }
   return results;

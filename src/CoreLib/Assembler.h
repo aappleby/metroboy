@@ -12,6 +12,8 @@ extern const char* source_header;
 struct Assembler {
   Assembler() = default;
 
+  static blob create_dummy_cart();
+
   template<typename ... Args>
   void assemble(const char* format, Args ... args);
   void disassemble_one(const uint8_t* code, Dumper& dump);

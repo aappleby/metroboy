@@ -474,4 +474,20 @@ void Assembler::test_finish_stat(int result) {
   test_finish();
 }
 
+// Cart that just loops writing 0xFF to vram
+blob Assembler::create_dummy_cart() {
+  const char* app = R"(
+  0150:
+    ld a, $FF
+    ld hl, $8000
+    ld (hl), a
+    inc l
+    jr -4
+  )";
+
+  Assembler as;
+  as.assemble(app);
+  return as.link();
+}
+
 //-----------------------------------------------------------------------------

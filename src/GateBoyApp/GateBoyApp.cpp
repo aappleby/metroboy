@@ -53,30 +53,13 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   gb_thread.start();
-
-  const char* app = R"(
-  0150:
-    ld a, $FF
-    ld hl, $8000
-    ld (hl), a
-    jr -3
-  )";
-
-  Assembler as;
-  as.assemble(app);
-
   gb_thread.pause();
 
-  gb_thread.load_blob(as.link());
-  gb_thread.reset_to_bootrom();
-  for (int i = 0; i < 8192; i++) {
-    uint8_t r = (uint8_t)rand();
-    gb_thread.gb_a->vid_ram[i] = r;
-    gb_thread.gb_b->vid_ram[i] = r;
-  }
+  //gb_thread.load_blob(Assembler::create_dummy_cart());
+  //gb_thread.reset_to_bootrom();
 
-  //gb_thread.load_raw_dump("zelda.dump");
-  //gb_thread.load_rom("LinksAwakening.gb");
+  //gb_thread.load_raw_dump("zelda_overworld.dump");
+  gb_thread.load_rom("LinksAwakening.gb");
   gb_thread.resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail

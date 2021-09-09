@@ -89,31 +89,29 @@ TestResults run_microtest(std::string filename) {
   if (phase >= timeout) {
     LOG_B("%-30s ", filename.c_str());
     LOG_Y("TIMEOUT\n");
-    results.fail_count++;
+    TEST_FAIL();
   }
   else if (result_c != 0x31) {
     LOG_B("%-30s ", filename.c_str());
     LOG_Y("0x%02x 0x%02x 0x%02x ERROR @ %d\n", result_a, result_b, result_c, phase);
-    results.fail_count++;
+    TEST_FAIL();
   }
   else if (result_a == result_b) {
     LOG_B("%-30s ", filename.c_str());
     LOG_G("0x%02x 0x%02x 0x%02x PASS @ %d\n", result_a, result_b, result_c, phase);
-    results.pass_count++;
+    TEST_PASS();
   }
   else {
     LOG_B("%-30s ", filename.c_str());
     LOG_R("0x%02x 0x%02x 0x%02x FAIL @ %d\n", result_a, result_b, result_c, phase);
-    results.fail_count++;
+    TEST_FAIL();
   }
-
-  return results;
 }
 
 //------------------------------------------------------------------------------
 
 TestResults run_microtests() {
-  TEST_START();
+  TEST_INIT();
 
   double begin = timestamp();
 
@@ -645,7 +643,7 @@ TestResults run_microtests() {
   double end = timestamp();
   LOG_Y("---------- Microtests took %f seconds, %d results ----------\n", (end - begin), results);
 
-  TEST_END();
+  TEST_DONE();
 }
 
 //------------------------------------------------------------------------------

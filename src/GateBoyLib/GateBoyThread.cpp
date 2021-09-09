@@ -280,8 +280,6 @@ void GateBoyThread::run_normal() {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::run_regression() {
-  GateBoy gb_backup = *gb_a.state();
-
   auto& gba = *gb_a.state();
   auto& gbb = *gb_b.state();
 
@@ -290,8 +288,8 @@ void GateBoyThread::run_regression() {
     uint64_t hash_a_old = gba.hash();
     uint64_t hash_b_old = gbb.hash();
 
-    gbb.next_phase(cart_blob, false);
-    gba.next_phase(cart_blob, true);
+    gba.next_phase(cart_blob, false);
+    gbb.next_phase(cart_blob, true);
 
     uint64_t hash_a_new = gba.hash();
     uint64_t hash_b_new = gbb.hash();
@@ -300,12 +298,6 @@ void GateBoyThread::run_regression() {
       LOG_R("Regression test mismatch NEW!\n");
       diff_blob(gb_a.state(), 0, sizeof(GateBoy), gb_b.state(), 0, sizeof(GateBoy), 0x01);
       LOG_R("Regression test mismatch NEW!\n");
-
-      gba = gb_backup;
-      uint64_t hash_c_old = gba.hash();
-      gba.next_phase(cart_blob, true);
-      uint64_t hash_c_new = gba.hash();
-
       clear_steps();
       return;
     }

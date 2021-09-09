@@ -4,7 +4,7 @@
 #pragma warning(disable:4100) // unused param
 #pragma warning(disable:4127) // conditional expression is constant
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 // Debug builds - painfully, ungodly slow.
 #ifdef CONFIG_DEBUG

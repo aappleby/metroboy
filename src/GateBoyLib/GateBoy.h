@@ -454,7 +454,9 @@ struct GateBoy {
   RegTMA  reg_tma;
   RegTAC  reg_tac;
 
-  GateBoyDMA        dma;
+  RegDmaLo   reg_dma_lo;
+  RegDmaHi   reg_dma_hi;
+  DmaControl dma_ctrl;
   
   InterruptControl int_ctrl;
 

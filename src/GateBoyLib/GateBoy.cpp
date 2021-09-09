@@ -11,6 +11,11 @@
 void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
 {
   wipe();
+  // Put some recognizable pattern in vram so we can see that we're in the bootrom
+  for (int i = 0; i < 8192; i++) {
+    uint32_t h = i * 0x1234567;
+    vid_ram[i] = uint8_t(h ^ (h >> 4));
+  }
 
   cpu_abus_new.reset_to_bootrom();
   cpu_dbus_new.reset_to_bootrom();
@@ -18,14 +23,14 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   sprite_ibus.reset_to_bootrom();
   sprite_lbus.reset_to_bootrom();
 
-  dma.NAFA_DMA_A08n.state = 0b00011010;
-  dma.PYNE_DMA_A09n.state = 0b00011010;
-  dma.PARA_DMA_A10n.state = 0b00011010;
-  dma.NYDO_DMA_A11n.state = 0b00011010;
-  dma.NYGY_DMA_A12n.state = 0b00011010;
-  dma.PULA_DMA_A13n.state = 0b00011010;
-  dma.POKU_DMA_A14n.state = 0b00011010;
-  dma.MARU_DMA_A15n.state = 0b00011010;
+  reg_dma_hi.NAFA_DMA_A08n.state = 0b00011010;
+  reg_dma_hi.PYNE_DMA_A09n.state = 0b00011010;
+  reg_dma_hi.PARA_DMA_A10n.state = 0b00011010;
+  reg_dma_hi.NYDO_DMA_A11n.state = 0b00011010;
+  reg_dma_hi.NYGY_DMA_A12n.state = 0b00011010;
+  reg_dma_hi.PULA_DMA_A13n.state = 0b00011010;
+  reg_dma_hi.POKU_DMA_A14n.state = 0b00011010;
+  reg_dma_hi.MARU_DMA_A15n.state = 0b00011010;
 
   reg_bgp.PAVO_BGP_D0n.state = 0b00011010;
   reg_bgp.NUSY_BGP_D1n.state = 0b00011010;
@@ -196,7 +201,10 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   REMY_LD0n.state = 0b00011000;
   RAVO_LD1n.state = 0b00011000;
 
-  dma.reset_to_cart();
+  reg_dma_lo.reset_to_cart();
+  reg_dma_hi.reset_to_cart();
+  dma_ctrl.reset_to_cart();
+
   reg_bgp.reset_to_cart();
   reg_obp0.reset_to_cart();
   reg_obp1.reset_to_cart();
@@ -325,7 +333,7 @@ struct GateBoyOffsets {
   const int o_clk_reg        = offsetof(GateBoy, clk);
   const int o_div_reg        = offsetof(GateBoy, div);
   //const int o_tim_reg        = offsetof(GateBoy, timer);
-  const int o_dma_reg        = offsetof(GateBoy, dma);
+  const int o_dma_reg        = offsetof(GateBoy, reg_dma_lo);
   //const int o_int_reg        = offsetof(GateBoy, interrupts);
   //const int o_joypad         = offsetof(GateBoy, joy);
   const int o_ser_reg        = offsetof(GateBoy, serial);
@@ -723,7 +731,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p29.CENO*/ sprite_scanner.CENO_SCANNINGn.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), sprite_scanner.BESU_SCANNINGn.qp_old());
     /*#p28.BESU*/ sprite_scanner.BESU_SCANNINGn.nor_latch(lcd.CATU_x113p.qp_new(), ASEN_SCAN_DONE_TRIGp);
 
-    /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma.MATU_DMA_RUNNINGp.qp_new());
+    /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_ctrl.MATU_DMA_RUNNINGp.qp_new());
     /*#p28.ACYL*/ sprite_scanner.ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, sprite_scanner.BESU_SCANNINGn.qp_new());
 
     // Sprite scanner grabs the sprite index off the _old_ oam address bus
@@ -853,7 +861,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // OAM latch from last cycle gets moved into temp registers.
 
   {
-    /*_p25.CUFE*/ wire CUFE_OAM_CLKp = not_or_and3(cpu_abus_new.SARO_ADDR_OAMp(), dma.MATU_DMA_RUNNINGp.qp_new(), MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
+    /*_p25.CUFE*/ wire CUFE_OAM_CLKp = not_or_and3(cpu_abus_new.SARO_ADDR_OAMp(), dma_ctrl.MATU_DMA_RUNNINGp.qp_new(), MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
     /*_p25.AVER*/ wire AVER_AxxxExxx = nand2(sprite_scanner.ACYL_SCANNINGp.out_new(), XYSO_xBCDxFGH());
     /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
     /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n);
@@ -1289,6 +1297,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   auto cpu_addr_new = pack(cpu_abus_new);
 
   auto cpu_addr_vram_new = (cpu_addr_new >= 0x8000) && (cpu_addr_new <= 0x9FFF);
+  auto cpu_addr_ram_new = (cpu_addr_new >= 0xA000) && (cpu_addr_new <= 0xFDFF);
   //auto cpu_addr_oam_new = (cpu_addr_new >= 0xFE00) && (cpu_addr_new <= 0xFEFF);
   //auto cpu_data_new = (uint8_t)pack(8, (BitBase*)&cpu_dbus_new.BUS_CPU_D00p);
   auto cpu_rd_new = bit(cpu_signals.SIG_IN_CPU_RDp);
@@ -1544,12 +1553,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   tock_timer_logic();
   tock_bootrom_logic();
 
-  //auto dma_addr_old = pack_inv(16, &dma.NAKY_DMA_A00p);
-  bool dma_running_old = dma.MATU_DMA_RUNNINGp;
+  auto dma_addr_old = (pack_inv(reg_dma_hi) << 8) | pack(reg_dma_lo);
+  bool dma_running_old = dma_ctrl.MATU_DMA_RUNNINGp;
   tock_dma_logic();
-  bool dma_running_new = dma.MATU_DMA_RUNNINGp;
-  auto dma_addr_new = pack_inv(16, &dma.NAKY_DMA_A00p);
-  auto dma_vram_new = dma_running_new && (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
+  bool dma_running_new = dma_ctrl.MATU_DMA_RUNNINGp;
+  auto dma_addr_new = (pack_inv(reg_dma_hi) << 8) | pack(reg_dma_lo);
+
+  auto dma_addr_vram_new = dma_running_new && (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
 
   //----------------------------------------
   // Sprite scanner
@@ -2437,37 +2447,40 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Memory buses
 
-  wire addr_vram = (cpu_addr_new >= 0x8000) && (cpu_addr_new <= 0x9FFF);
-  wire addr_ram = (cpu_addr_new >= 0xA000) && (cpu_addr_new <= 0xFDFF);
-  auto dma_addr = pack_inv(16, &dma.NAKY_DMA_A00p);
-  wire dma_vram = (dma_addr >= 0x8000) && (dma_addr <= 0x9FFF);
+  //wire addr_vram = (cpu_addr_new >= 0x8000) && (cpu_addr_new <= 0x9FFF);
+  //wire addr_ram = (cpu_addr_new >= 0xA000) && (cpu_addr_new <= 0xFDFF);
+  //
+  //// FIXME this was packing the whole dma address without inverting the top half before, how did that ever work?
+  //auto dma_addr = (pack_inv(reg_dma_hi) << 16) | pack(reg_dma_lo);
+  //
+  //wire dma_vram = (dma_addr >= 0x8000) && (dma_addr <= 0x9FFF);
 
-  wire LUMA_DMA_CARTp = and2(dma_running_new, ~dma_vram);
+  wire LUMA_DMA_CARTp = and2(dma_running_new, !dma_addr_vram_new);
   wire TUTU_READ_BOOTROMp = and2(~cpu_signals.TEPU_BOOT_BITn_h.state, cpu_addr_new <= 0x00FF);
   wire TAZY_A15p = nand2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, ~cpu_abus_new.BUS_CPU_A15p.state);
 
 
-  if (bit(cpu_signals.SIG_IN_CPU_EXT_BUSp.state) && !addr_vram) {
+  if (bit(cpu_signals.SIG_IN_CPU_EXT_BUSp.state) && !cpu_addr_vram_new) {
     memcpy(&ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, &cpu_abus_new.BUS_CPU_A00p, 15);
   }
 
   //----------------------------------------
 
   if (bit(LUMA_DMA_CARTp)) {
-    ext_ctrl.PIN_80_CSn.state = ~dma.MARU_DMA_A15n.state;
-    cpy_inv(&ext_abus.PIN_01_A00, &dma.NAKY_DMA_A00p, 8);
-    memcpy (&ext_abus.PIN_09_A08, &dma.NAFA_DMA_A08n, 7);
+    ext_ctrl.PIN_80_CSn.state = ~reg_dma_hi.MARU_DMA_A15n.state;
+    cpy_inv(&ext_abus.PIN_01_A00, &reg_dma_lo.NAKY_DMA_A00p, 8);
+    memcpy (&ext_abus.PIN_09_A08, &reg_dma_hi.NAFA_DMA_A08n, 7);
   }
   else {
-    ext_ctrl.PIN_80_CSn.state = and2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, addr_ram);
+    ext_ctrl.PIN_80_CSn.state = and2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, cpu_addr_ram_new);
     cpy_inv(&ext_abus.PIN_01_A00, &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
   }
 
   //----------------------------------------
 
   if (!bit(LUMA_DMA_CARTp) && cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state) {
-    ext_ctrl.PIN_79_RDn.state = addr_vram;
-    ext_ctrl.PIN_78_WRn.state = nor2(~CLK_xxxxEFGx, addr_vram);
+    ext_ctrl.PIN_79_RDn.state = cpu_addr_vram_new;
+    ext_ctrl.PIN_78_WRn.state = nor2(~CLK_xxxxEFGx, cpu_addr_vram_new);
   }
   else {
     ext_ctrl.PIN_79_RDn.state = 1;
@@ -2478,7 +2491,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
   if (bit(LUMA_DMA_CARTp)) {
-    ext_abus.PIN_16_A15.pin_out(dma.MARU_DMA_A15n.state, dma.MARU_DMA_A15n.state);
+    ext_abus.PIN_16_A15.pin_out(reg_dma_hi.MARU_DMA_A15n.state, reg_dma_hi.MARU_DMA_A15n.state);
   }
   else if (TUTU_READ_BOOTROMp) {
     ext_abus.PIN_16_A15.pin_out(0, 0);
@@ -2490,7 +2503,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   ASSERT_N(cpu_signals.SIG_IN_CPU_RDp.state && cpu_signals.SIG_IN_CPU_WRp.state);
 
-  if (cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state && !addr_vram) {
+  if (cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state && !cpu_addr_vram_new) {
     cpy_inv(ext_dbus, cpu_dbus_new);
   }
   else {
@@ -2592,7 +2605,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
 
-  if (bit(and4(cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
+  if (bit(and4(cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !cpu_addr_vram_new, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
     cpy_inv(cpu_dbus_new, ext_data_latch);
   }
   else {
@@ -2606,16 +2619,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // CPU vram read address
 
-    if (bit(nor2(dma_vram_new, XYMU_RENDERINGn.qn_new()))) {
+    if (bit(nor2(dma_addr_vram_new, XYMU_RENDERINGn.qn_new()))) {
       cpy_inv(vram_abus, cpu_abus_new);
     }
 
     //--------------------------------------------
     // DMA vram read address
 
-    if (bit(dma_vram_new)) {
-      cpy_inv(&vram_abus.BUS_VRAM_A00n, &dma.NAKY_DMA_A00p, 8);
-      memcpy(&vram_abus.BUS_VRAM_A08n, &dma.NAFA_DMA_A08n, 5);
+    if (bit(dma_addr_vram_new)) {
+      cpy_inv(&vram_abus.BUS_VRAM_A00n, &reg_dma_lo.NAKY_DMA_A00p, 8);
+      memcpy(&vram_abus.BUS_VRAM_A08n,  &reg_dma_hi.NAFA_DMA_A08n, 5);
     }
 
     //--------------------------------------------
@@ -2761,7 +2774,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       wire APOV_CPU_WRp = CLK_xxxxEFGx & cpu_signals.SIG_IN_CPU_WRp.state;
       wire ABUZ_EXT_RAM_CS_CLK = CLK_xxCDEFGH & cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
 
-      if (dma_vram_new) {
+      if (dma_addr_vram_new) {
         vram_ext_ctrl.PIN_43_VRAM_CSn.pin_out(1, 1);
         vram_ext_ctrl.PIN_45_VRAM_OEn.pin_out(1, 1);
       }
@@ -2775,7 +2788,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       vram_ext_ctrl.PIN_49_VRAM_WRn.pin_out(~SOHY_MWRn, ~SOHY_MWRn);
     }
     else {
-      if (dma_vram_new) {
+      if (dma_addr_vram_new) {
         vram_ext_ctrl.PIN_43_VRAM_CSn.pin_out(1, 1);
         vram_ext_ctrl.PIN_49_VRAM_WRn.pin_out(0, 0);
         vram_ext_ctrl.PIN_45_VRAM_OEn.pin_out(1, 1);
@@ -2886,7 +2899,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire oam_clk_old = oam_ctrl.SIG_OAM_CLKn.state;
 
     if (dma_running_new) {
-      cpy_inv(&oam_abus.BUS_OAM_A00n, &dma.NAKY_DMA_A00p, 8);
+      cpy_inv(&oam_abus.BUS_OAM_A00n, &reg_dma_lo.NAKY_DMA_A00p, 8);
 
       if ((dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF)) {
         cpy_inv(oam_dbus_a, vram_dbus);

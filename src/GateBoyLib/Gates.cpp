@@ -211,14 +211,15 @@ void commit_blob(void* blob, size_t size) {
 
 //-----------------------------------------------------------------------------
 
-int diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int start_b, int end_b, uint8_t mask) {
-  int failures = 0;
+TestResults diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int start_b, int end_b, uint8_t mask) {
+  TestResults results;
   int size_a = end_a - start_a;
   int size_b = end_b - start_b;
 
   if (size_a != size_b) {
     LOG_R("diff() : Size mismatch %d vs %d\n", size_a, size_b);
-    return false;
+    results.fail_count++;
+    return results;
   }
 
   uint8_t* bytes_a = (uint8_t*)blob_a;
@@ -233,7 +234,7 @@ int diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int start_b, i
 
     EXPECT_EQ(byte_a, byte_b, "@ %5d : [%5d] = 0x%02x, [%5d] = 0x%02x\n", i, ia, byte_a, ib, byte_b);
   }
-  return failures;
+  return results;
 }
 
 

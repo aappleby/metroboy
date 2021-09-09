@@ -1296,41 +1296,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //-----------------------------------------------------------------------------
 
-  {
-    wire EXT_sys_clkreq = bit(sys_clkreq);
-    wire EXT_sys_rst = bit(~sys_rst);
-    wire EXT_sys_t2 = bit(~sys_t2);
-    wire EXT_sys_t1 = bit(~sys_t1);
-
-    wire EXT_clkin = !(phase_total & 1) && sys_clken;
-    wire EXT_clkgood = bit(~sys_clkgood);
-
-    clk.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
-    rst.PIN_71_RST.pin_in(EXT_sys_rst);
-    rst.PIN_76_T2.pin_in(EXT_sys_t2);
-    rst.PIN_77_T1.pin_in(EXT_sys_t1);
-
-    wire EXT_ack_vblank = bit(gb_cpu.int_ack, BIT_VBLANK);
-    wire EXT_ack_stat = bit(gb_cpu.int_ack, BIT_STAT);
-    wire EXT_ack_timer = bit(gb_cpu.int_ack, BIT_TIMER);
-    wire EXT_ack_serial = bit(gb_cpu.int_ack, BIT_SERIAL);
-    wire EXT_ack_joypad = bit(gb_cpu.int_ack, BIT_JOYPAD);
-
-    cpu_ack.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
-    cpu_ack.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
-    cpu_ack.SIG_CPU_ACK_TIMER.sig_in(EXT_ack_timer);
-    cpu_ack.SIG_CPU_ACK_SERIAL.sig_in(EXT_ack_serial);
-    cpu_ack.SIG_CPU_ACK_JOYPAD.sig_in(EXT_ack_joypad);
-
-    clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
-
-    cpu_signals.SIG_CPU_ADDR_HIp.sig_out(cpu_abus_new.SYRO_FE00_FFFF());
-    cpu_signals.SIG_CPU_UNOR_DBG.sig_out(0);
-    cpu_signals.SIG_CPU_UMUT_DBG.sig_out(0);
-  }
-
-  //-----------------------------------------------------------------------------
-
   clk.PIN_74_CLK.pin_clk(!(phase_total & 1) && sys_clken, 0);
   rst.PIN_71_RST.state = 0;
   rst.PIN_76_T2.state = 0;
@@ -1406,8 +1371,23 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (cpu_addr_new == 0xFF04) {
-      if (cpu_wr_new && CLK_xxxxEFGx) memset(&div, 0, 16);
-      if (cpu_rd_new) memcpy(&cpu_dbus_new, &div, 8);
+      if (cpu_wr_new && CLK_xxxxEFGx) clear(div);
+
+      if (cpu_rd_new) {
+        // This should've broken something...
+        memcpy(&cpu_dbus_new, &div, 8);
+
+        cpu_dbus_new.BUS_CPU_D00p.state = div.UGOT_DIV06p.state;
+        cpu_dbus_new.BUS_CPU_D01p.state = div.TULU_DIV07p.state;
+        cpu_dbus_new.BUS_CPU_D02p.state = div.TUGO_DIV08p.state;
+        cpu_dbus_new.BUS_CPU_D03p.state = div.TOFE_DIV09p.state;
+        cpu_dbus_new.BUS_CPU_D04p.state = div.TERU_DIV10p.state;
+        cpu_dbus_new.BUS_CPU_D05p.state = div.SOLA_DIV11p.state;
+        cpu_dbus_new.BUS_CPU_D06p.state = div.SUBU_DIV12p.state;
+        cpu_dbus_new.BUS_CPU_D07p.state = div.TEKA_DIV13p.state;
+      }
+
+
     }
   }
   //auto div_new = pack(16, &div.UKUP_DIV00p);
@@ -1456,13 +1436,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   {
     if (cpu_addr_new == 0xFF45) {
-      if (cpu_rd_new) cpy_inv(&cpu_dbus_new, &reg_lyc, 8);
-      if (cpu_wr_new && DELTA_GH) cpy_inv(&reg_lyc, &cpu_dbus_old, 8);
+      if (cpu_rd_new) cpy_inv(cpu_dbus_new, reg_lyc);
+      if (cpu_wr_new && DELTA_GH) cpy_inv(reg_lyc, cpu_dbus_old);
     }
 
     if (!vid_rst_new && DELTA_BC) {
-      auto ly = pack(8, &reg_ly);
-      auto lyc = pack_inv(8, &reg_lyc);
+      auto ly = pack(reg_ly);
+      auto lyc = pack_inv(reg_lyc);
       ROPO_LY_MATCH_SYNCp.state = ly == lyc;
     }
 

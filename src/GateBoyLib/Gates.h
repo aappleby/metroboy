@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreLib/Types.h"
+#include "CoreLib/Tests.h"
 
 //-----------------------------------------------------------------------------
 
@@ -9,7 +10,7 @@ inline void combine_hash(uint64_t& a, uint64_t b) {
 
 uint64_t hash_blob(void* blob, size_t size, uint8_t mask);
 void     commit_blob(void* blob, size_t size);
-int      diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int start_b, int end_b, uint8_t mask);
+TestResults diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int start_b, int end_b, uint8_t mask);
 
 uint64_t hash_all_bits(const void* key, const int len, uint64_t seed);
 uint64_t hash_low_bit(const void* key, const int len, uint64_t seed);
@@ -792,6 +793,11 @@ inline uint32_t pack_inv(int c, const void* blob) {
   return r;
 }
 
+template<typename T>
+inline uint32_t pack_inv(const T& t) {
+  return pack_inv(sizeof(T), &t);
+}
+
 inline void unpack(uint32_t d, int c, void* blob) {
   uint8_t* b = (uint8_t*)blob;
   for (int i = 0; i < c; i++) {
@@ -813,17 +819,28 @@ inline void unpack_inv(uint32_t d, int c, void* blob) {
   }
 }
 
-inline void cpy(void* dst, void* src, int c) {
+inline void cpy(void* dst, const void* src, int c) {
   for (int i = 0; i < c; i++) {
-    ((uint8_t*)dst)[i] = ((uint8_t*)src)[i];
+    ((uint8_t*)dst)[i] = ((const uint8_t*)src)[i];
   }
 }
 
-inline void cpy_inv(void* dst, void* src, int c) {
+inline void cpy_inv(void* dst, const void* src, int c) {
   for (int i = 0; i < c; i++) {
-    ((uint8_t*)dst)[i] = ~((uint8_t*)src)[i];
+    ((uint8_t*)dst)[i] = ~((const uint8_t*)src)[i];
   }
 }
+
+template<typename A, typename B>
+inline void cpy(A& dst, const B& src) {
+  cpy(&dst, &src, sizeof(A) < sizeof(B) ? sizeof(A) : sizeof(B));
+}
+
+template<typename A, typename B>
+inline void cpy_inv(A& dst, const B& src) {
+  cpy_inv(&dst, &src, sizeof(A) < sizeof(B) ? sizeof(A) : sizeof(B));
+}
+
 
 inline void cpy_and(void* dst, void* src, int c) {
   for (int i = 0; i < c; i++) {
@@ -840,6 +857,11 @@ inline void cpy_inv2(int c, void* src, void* dst) {
 inline void clear(int c, void* blob) {
   uint8_t* b = (uint8_t*)blob;
   for (int i = 0; i < c; i++) b[i] &= ~1;
+}
+
+template<typename T>
+inline void clear(T& t) {
+  clear(sizeof(T), &t);
 }
 
 inline void set(int c, void* blob) {

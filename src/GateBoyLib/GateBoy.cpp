@@ -1413,8 +1413,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       cpy_inv(cpu_dbus_new, reg_lcdc);
     }
   }
-  wire vid_rst_new = bit(reg_lcdc.XONA_LCDC_LCDENn);
-  wire winen_new = bit(~reg_lcdc.WYMO_LCDC_WINENn);
+  bool vid_rst_new = reg_lcdc.XONA_LCDC_LCDENn;
+  bool winen_new = ~reg_lcdc.WYMO_LCDC_WINENn;
 
   //----------
   // Video clocks
@@ -2723,13 +2723,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // Sprite read address
 
     if (bit(sprite_fetcher.TEXY_SFETCHINGp.state)) {
-      wire WUKY_FLIP_Yp = ~oam_temp_b.YZOS_OAM_DB6p.state;
+      wire WUKY_FLIP_Yp = ~oam_temp_b.YZOS_OAM_DB6p;
 
-      wire CYVU_L0 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L0.out_new());
-      wire BORE_L1 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L1.out_new());
-      wire BUVY_L2 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L2.out_new());
-      wire WAGO_L3 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L3.out_new());
-      wire GEJY_L3 = bit(reg_lcdc.XYMO_LCDC_SPSIZEn.state) ? oam_temp_a.XUSO_OAM_DA0p.state : WAGO_L3;
+      wire CYVU_L0 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L0);
+      wire BORE_L1 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L1);
+      wire BUVY_L2 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L2);
+      wire WAGO_L3 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L3);
+      wire GEJY_L3 = reg_lcdc.XYMO_LCDC_SPSIZEn ? oam_temp_a.XUSO_OAM_DA0p : WAGO_L3;
 
       vram_abus.BUS_VRAM_A00n.state = ~sprite_fetcher.VONU_SFETCH_S1p_D4.state;
       vram_abus.BUS_VRAM_A01n.state = ~CYVU_L0;
@@ -2745,12 +2745,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     cpy(vram_ext_abus, vram_abus);
 
-    uint16_t vram_addr = (uint16_t)pack_inv(vram_ext_abus);
+    auto vram_addr = pack_inv(vram_ext_abus);
 
     //--------------------------------------------
     // CPU bus to Vram data bus
 
-    if (bit(and4(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_addr_vram_new, cpu_signals.SIG_IN_CPU_WRp.state))) {
+    if (bit(and4(cpu_signals.ABUZ_EXT_RAM_CS_CLK, XYMU_RENDERINGn, cpu_addr_vram_new, cpu_signals.SIG_IN_CPU_WRp.state))) {
       cpy(vram_dbus, cpu_dbus_new);
     }
 

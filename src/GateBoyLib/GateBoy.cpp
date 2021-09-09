@@ -1372,9 +1372,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------
   // DIV
 
-  if (DELTA_HA) unpack(pack(div) + 1, div);
-  if (cpu_addr_new == 0xFF04 && cpu_wr_new && CLK_xxxxEFGx) clear(div);
-  if (cpu_addr_new == 0xFF04 && cpu_rd_new) unpack(pack(div) >> 6, cpu_dbus_new);
+  if (DELTA_HA) unpack2(div, pack(div));
+  if (cpu_addr_new == 0xFF04 && cpu_wr_new && CLK_xxxxEFGx) unpack2(div, 0);
+  if (cpu_addr_new == 0xFF04 && cpu_rd_new) unpack2(cpu_dbus_new, pack(div) >> 6);
 
   //----------
   // In logic mode we don't care about the power-on behavior, we only want behavior to match when running code. So, we set
@@ -1489,7 +1489,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
         lcd.MYTA_y153p = ly_153;
       }
 
-      unpack(lx_old + 1, reg_lx);
+      unpack2(reg_lx, lx_old + 1);
     }
 
     if (DELTA_DE) {
@@ -1504,7 +1504,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
       bool rutu_new = lcd.RUTU_x113p;
       if (!rutu_old && rutu_new) {
-        unpack(ly_old + 1, reg_ly);
+        unpack2(reg_ly, ly_old + 1);
       }
 
       wire strobe = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
@@ -1598,7 +1598,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       clear(scan_counter);
     }
     else if ((DELTA_HA || DELTA_DE) && (scan_count_old != 39)) {
-      unpack(scan_count_old + 1, scan_counter);
+      unpack2(scan_counter, scan_count_old + 1);
     }
 
     // this is unused now
@@ -1878,7 +1878,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_ODD) {
       if (posedge(DEZY_COUNT_CLKp.state, ssf_clk)) {
         if (sprite_count_old != 10) {
-          unpack(sprite_count_old + 1, sprite_counter);
+          unpack2(sprite_counter, sprite_count_old + 1);
         }
       }
 
@@ -2000,7 +2000,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   wire px_old = (uint8_t)pack(pix_count);
 
   if (posedge(CLKPIPE_old, CLKPIPE_new)) {
-    unpack(px_old + 1, pix_count);
+    unpack2(pix_count, px_old + 1);
   }
 
   if (bit(or2(line_rst_new, vid_rst_new))) {
@@ -2300,12 +2300,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       ppipe = bit(oam_temp_b.GOMO_OAM_DB4p.state) ? ppipe | ~smask : ppipe & smask;
     }
 
-    unpack(spipe_a, spr_pipe_a);
-    unpack(spipe_b, spr_pipe_b);
-    unpack(bpipe_a, bgw_pipe_a);
-    unpack(bpipe_b, bgw_pipe_b);
-    unpack(mpipe,   mask_pipe);
-    unpack(ppipe,   pal_pipe);
+    unpack2(spr_pipe_a, spipe_a);
+    unpack2(spr_pipe_b, spipe_b);
+    unpack2(bgw_pipe_a, bpipe_a);
+    unpack2(bgw_pipe_b, bpipe_b);
+    unpack2(mask_pipe, mpipe);
+    unpack2(pal_pipe, ppipe);
 
     //----------------------------------------
     // Pipe merge and output
@@ -2654,7 +2654,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto win_map_x_old = pack(win_x);
 
     if (posedge(VETU_WIN_MAPp_old, VETU_WIN_MAPp_new)) {
-      unpack(win_map_x_old + 1, win_x);
+      unpack2(win_x, win_map_x_old + 1);
     }
 
     if (bit(XOFO_WIN_RSTp)) clear(win_x);
@@ -2669,7 +2669,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto win_y_old = REPU_VBLANKp ? 0 : pack(win_y);
 
     if (negedge(PYNU_WIN_MODE_Ap_old, PYNU_WIN_MODE_Ap_new)) {
-      unpack(win_y_old + 1, win_y);
+      unpack2(win_y, win_y_old + 1);
     }
 
     if (bit(REPU_VBLANKp)) {

@@ -199,7 +199,8 @@ struct GateBoy {
     SpriteStoreFlags& sprite_store_flags_new,
     SpriteResetFlags& sprite_reset_flags,
     wire BYVA_LINE_RSTn,
-    SpriteBus& sprite_bus,
+    SpriteIBus& sprite_ibus,
+    SpriteLBus& sprite_lbus,
     OamTempB& oam_temp_b,
     GateBoySpriteStore& sprite_store);
 
@@ -213,7 +214,8 @@ struct GateBoy {
   static void sprite_match_to_bus_gates(
     GateBoySpriteStore& sprite_store,
     SpriteMatchFlags& sprite_get_flag,
-    SpriteBus& sprite_bus);
+    SpriteIBus& sprite_ibus,
+    SpriteLBus& sprite_lbus);
 
   void sprite_scan_to_bus_gates(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
 
@@ -353,9 +355,9 @@ struct GateBoy {
   /*_p04.CATY*/ wire CATY_LATCH_EXTp   () const { return not1(DECY_LATCH_EXTn()); }
   /*#p28.BOFE*/ wire BOFE_LATCH_EXTn   () const { return not1(CATY_LATCH_EXTp()); }
 
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new(), new_bus.TEVY_ADDR_VRAMn()); }
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(new_bus.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), new_bus.BUS_CPU_A15p.out_new()); }
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new(), cpu_abus_new.TEVY_ADDR_VRAMn()); }
+  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(cpu_abus_new.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
+  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), cpu_abus_new.BUS_CPU_A15p.out_new()); }
   /*_p08.LEVO*/ wire LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
   /*_p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), cpu_signals.APOV_CPU_WRp.out_new()); }
 
@@ -426,30 +428,41 @@ struct GateBoy {
   /*_SIG_VCC*/ SigIn SIG_VCC;
   /*_SIG_GND*/ SigIn SIG_GND;
 
-  GateBoyCpuBus  old_bus;
+  GateBoyCpuSignals cpu_signals;
+  GateBoyCpuABus cpu_abus_old;
+  GateBoyCpuDBus cpu_dbus_old;
+  GateBoyCpuABus cpu_abus_new;
+  GateBoyCpuDBus cpu_dbus_new;
 
-  GateBoyCpuBus  new_bus;
-  VramBus        vram_bus;
-  SpriteBus      sprite_bus;
-  GateBoyOamBus  oam_bus;
+  VramABus       vram_abus;
+  VramDBus       vram_dbus;
+  VramExtControl vram_ext_ctrl;
+  VramExtABus    vram_ext_abus;
+  VramExtDBus    vram_ext_dbus;
 
+  SpriteIBus     sprite_ibus;
+  SpriteLBus     sprite_lbus;
+                 
+  OamControl     oam_ctrl;
+  OamABus        oam_abus;
+  OamDBusA       oam_dbus_a;
+  OamDBusB       oam_dbus_b;
+  OamLatchA      oam_latch_a;
+  OamLatchB      oam_latch_b;
+  OamTempA       oam_temp_a;
+  OamTempB       oam_temp_b;
+                 
+  ExtControl     ext_ctrl;
+  ExtABus        ext_abus;
+  ExtDBus        ext_dbus;
+  ExtDataLatch   ext_data_latch;
+  ExtAddrLatch   ext_addr_latch;
+  GateBoyMBC     ext_mbc;
+
+  GateBoyZram    zram_bus;
 
   /*#p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
   /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
-
-  GateBoyCpuSignals cpu_signals;
-  GateBoyExtPins    ext_pins;
-  GateBoyVramPins   vram_pins;
-  GateBoyOam        oam;
-  GateBoyZram       zram_bus;
-
-  OamLatchA oam_latch_a;
-  OamLatchB oam_latch_b;
-  OamTempA oam_temp_a;
-  OamTempB oam_temp_b;
-
-  ExtDataLatch ext_data_latch;
-  ExtAddrLatch ext_addr_latch;
 
   GateBoyResetDebug rst;
   GateBoyClock      clk;
@@ -471,12 +484,14 @@ struct GateBoy {
   SpriteScanner sprite_scanner;
 
   SpriteFetcher sprite_fetcher;
-  SpritePixA sprite_pix_a;
-  SpritePixB sprite_pix_b;
+  SpritePixA    sprite_pix_a;
+  SpritePixB    sprite_pix_b;
 
   TileFetcher   tile_fetcher;
   TileTempA tile_temp_a;
   TileTempB tile_temp_b;
+
+  /*_p21.RUPO*/ NorLatch RUPO_LYC_MATCHn;       // xxCxxxxx
 
   RegLCDC reg_lcdc;
   RegStat reg_stat;
@@ -485,17 +500,21 @@ struct GateBoy {
   RegWY   reg_wy;
   RegWX   reg_wx;
 
-  WinCoords win_coords;
+  WindowX win_x;
+  WindowY win_y;
 
   WindowRegisters win_reg;
   FineScroll      fine_scroll;
 
   PixCount     pix_count;
   PixelPipes   pix_pipes;
-  GateBoyLCD   lcd;
+  GateBoyLCDControl   lcd;
 
   RegLX  reg_lx;
   RegLY  reg_ly;
+
+  /*#p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
+
   RegLYC reg_lyc;
 
   RegBGP  reg_bgp;

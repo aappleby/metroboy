@@ -1,11 +1,10 @@
 #pragma once
-#include "GateBoyLib/Gates.h"
 
-#include "GateBoyLib/GateBoyRegisters.h"
+#include "GateBoyLib/Gates.h"
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct GateBoyOam {
+struct OamControl {
   void reset_to_cart() {
     MAKA_LATCH_EXTp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0;
     WUJE_CPU_OAM_WRn.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -29,7 +28,7 @@ struct GateBoyOam {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct GateBoyOamBus {
+struct OamABus {
   void reset_to_cart() {
     BUS_OAM_A00n. state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_OAM_A01n. state = BIT_OLD | BIT_DRIVEN | 1;
@@ -39,24 +38,6 @@ struct GateBoyOamBus {
     BUS_OAM_A05n. state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_OAM_A06n. state = BIT_OLD | BIT_DRIVEN | 0;
     BUS_OAM_A07n. state = BIT_OLD | BIT_DRIVEN | 1;
-
-    BUS_OAM_DA00n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA01n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA02n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA03n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA04n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA05n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA06n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA07n.state = BIT_OLD | BIT_DRIVEN | 0;
-
-    BUS_OAM_DB00n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB01n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB02n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB03n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB04n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB05n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB06n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB07n.state = BIT_OLD | BIT_DRIVEN | 0;
   }
 
   /*_BUS_OAM_A00n*/ Bus BUS_OAM_A00n;  // ABCDEFGH
@@ -67,6 +48,21 @@ struct GateBoyOamBus {
   /*_BUS_OAM_A05n*/ Bus BUS_OAM_A05n;  // ABCDEFGH
   /*_BUS_OAM_A06n*/ Bus BUS_OAM_A06n;  // ABCDEFGH
   /*_BUS_OAM_A07n*/ Bus BUS_OAM_A07n;  // ABCDEFGH
+};
+
+//------------------------------------------------------------------------------------------------------------------------
+
+struct OamDBusA {
+  void reset_to_cart() {
+    BUS_OAM_DA00n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA01n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA02n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA03n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA04n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA05n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA06n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DA07n.state = BIT_OLD | BIT_DRIVEN | 0;
+  }
 
   /*_BUS_OAM_DA00n*/ Bus BUS_OAM_DA00n;
   /*_BUS_OAM_DA01n*/ Bus BUS_OAM_DA01n;
@@ -76,6 +72,21 @@ struct GateBoyOamBus {
   /*_BUS_OAM_DA05n*/ Bus BUS_OAM_DA05n;
   /*_BUS_OAM_DA06n*/ Bus BUS_OAM_DA06n;
   /*_BUS_OAM_DA07n*/ Bus BUS_OAM_DA07n;
+};
+
+//------------------------------------------------------------------------------------------------------------------------
+
+struct OamDBusB {
+  void reset_to_cart() {
+    BUS_OAM_DB00n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB01n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB02n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB03n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB04n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB05n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB06n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_DB07n.state = BIT_OLD | BIT_DRIVEN | 0;
+  }
 
   /*_BUS_OAM_DB00n*/ Bus BUS_OAM_DB00n;
   /*_BUS_OAM_DB01n*/ Bus BUS_OAM_DB01n;

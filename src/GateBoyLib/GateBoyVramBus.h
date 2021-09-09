@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-struct VramBus {
+struct VramABus {
   void reset_to_cart() {
     BUS_VRAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_VRAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -18,15 +18,6 @@ struct VramBus {
     BUS_VRAM_A10n.state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_VRAM_A11n.state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_VRAM_A12n.state = BIT_OLD | BIT_DRIVEN | 1;
-
-    BUS_VRAM_D00p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_VRAM_D01p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_VRAM_D02p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_VRAM_D03p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_VRAM_D04p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_VRAM_D05p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_VRAM_D06p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_VRAM_D07p.state = BIT_OLD | BIT_DRIVEN | 0;
   }
 
   /*_BUS_VRAM_A00n*/ Bus BUS_VRAM_A00n;
@@ -42,6 +33,21 @@ struct VramBus {
   /*_BUS_VRAM_A10n*/ Bus BUS_VRAM_A10n;
   /*_BUS_VRAM_A11n*/ Bus BUS_VRAM_A11n;
   /*_BUS_VRAM_A12n*/ Bus BUS_VRAM_A12n;
+};
+
+//-----------------------------------------------------------------------------
+
+struct VramDBus {
+  void reset_to_cart() {
+    BUS_VRAM_D00p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D01p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D02p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D03p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D04p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D05p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D06p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_VRAM_D07p.state = BIT_OLD | BIT_DRIVEN | 0;
+  }
 
   /*_BUS_VRAM_D00p*/ Bus BUS_VRAM_D00p;
   /*_BUS_VRAM_D01p*/ Bus BUS_VRAM_D01p;
@@ -55,13 +61,22 @@ struct VramBus {
 
 //-----------------------------------------------------------------------------
 
-struct GateBoyVramPins {
-
+struct VramExtControl {
   void reset_to_cart() {
     PIN_43_VRAM_CSn.state = BIT_OLD | BIT_DRIVEN | 0;
     PIN_45_VRAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
     PIN_49_VRAM_WRn.state = BIT_OLD | BIT_DRIVEN | 0;
+  }
 
+  /*_PIN_43*/ PinOut PIN_43_VRAM_CSn;
+  /*_PIN_45*/ PinOut PIN_45_VRAM_OEn;
+  /*_PIN_49*/ PinOut PIN_49_VRAM_WRn;
+};
+
+//-----------------------------------------------------------------------------
+
+struct VramExtABus {
+  void reset_to_cart() {
     PIN_34_VRAM_A00.state = BIT_OLD | BIT_DRIVEN | 1;
     PIN_35_VRAM_A01.state = BIT_OLD | BIT_DRIVEN | 1;
     PIN_36_VRAM_A02.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -75,20 +90,7 @@ struct GateBoyVramPins {
     PIN_44_VRAM_A10.state = BIT_OLD | BIT_DRIVEN | 1;
     PIN_46_VRAM_A11.state = BIT_OLD | BIT_DRIVEN | 1;
     PIN_42_VRAM_A12.state = BIT_OLD | BIT_DRIVEN | 1;
-
-    PIN_33_VRAM_D00.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_31_VRAM_D01.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_30_VRAM_D02.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_29_VRAM_D03.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_28_VRAM_D04.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_27_VRAM_D05.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_26_VRAM_D06.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_25_VRAM_D07.state = BIT_OLD | BIT_DRIVEN | 1;
   }
-
-  /*_PIN_43*/ PinOut PIN_43_VRAM_CSn;
-  /*_PIN_45*/ PinOut PIN_45_VRAM_OEn;
-  /*_PIN_49*/ PinOut PIN_49_VRAM_WRn;
 
   /*_PIN_34*/ PinOut PIN_34_VRAM_A00;
   /*_PIN_35*/ PinOut PIN_35_VRAM_A01;
@@ -103,6 +105,21 @@ struct GateBoyVramPins {
   /*_PIN_44*/ PinOut PIN_44_VRAM_A10;
   /*_PIN_46*/ PinOut PIN_46_VRAM_A11;
   /*_PIN_42*/ PinOut PIN_42_VRAM_A12;
+};
+
+//-----------------------------------------------------------------------------
+
+struct VramExtDBus {
+  void reset_to_cart() {
+    PIN_33_VRAM_D00.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_31_VRAM_D01.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_30_VRAM_D02.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_29_VRAM_D03.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_28_VRAM_D04.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_27_VRAM_D05.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_26_VRAM_D06.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_25_VRAM_D07.state = BIT_OLD | BIT_DRIVEN | 1;
+  }
 
   /*_PIN_33*/ PinIO PIN_33_VRAM_D00;
   /*_PIN_31*/ PinIO PIN_31_VRAM_D01;

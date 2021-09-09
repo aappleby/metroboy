@@ -157,17 +157,17 @@ void GateBoy::dump_lcd(Dumper& d) {
   d.dump_slice2p("LX              : ", &reg_lx.SAXO_LX0p.state,  7);
   d.dump_slice2p("FF44 LY         : ", &reg_ly.MUWY_LY0p.state,  8);
   d.dump_slice2n("FF45 LYC        : ", &reg_lyc.SYRY_LYC0n.state, 8);
-  d.dump_bitp   ("ROPO_LY_MATCH   : ", reg_lyc.ROPO_LY_MATCH_SYNCp.state);
-  d.dump_bitp   ("RUPO_LYC_MATCHn : ", reg_stat.RUPO_LYC_MATCHn.state);
+  d.dump_bitp   ("ROPO_LY_MATCH   : ", ROPO_LY_MATCH_SYNCp.state);
+  d.dump_bitp   ("RUPO_LYC_MATCHn : ", RUPO_LYC_MATCHn.state);
 }
 
 void GateBoy::dump_oam_bus(Dumper& d) {
-  d.dump_bitp   ("MAKA_LATCH_EXTp  : ", oam.MAKA_LATCH_EXTp.state);
-  d.dump_bitp   ("WUJE_CPU_OAM_WRn : ", oam.WUJE_CPU_OAM_WRn.state);
-  d.dump_bitp   ("SIG_OAM_CLKn     : ", oam.SIG_OAM_CLKn.state);
-  d.dump_bitp   ("SIG_OAM_WRn_A    : ", oam.SIG_OAM_WRn_A.state);
-  d.dump_bitp   ("SIG_OAM_WRn_B    : ", oam.SIG_OAM_WRn_B.state);
-  d.dump_bitp   ("SIG_OAM_OEn      : ", oam.SIG_OAM_OEn.state);
+  d.dump_bitp   ("MAKA_LATCH_EXTp  : ", oam_ctrl.MAKA_LATCH_EXTp.state);
+  d.dump_bitp   ("WUJE_CPU_OAM_WRn : ", oam_ctrl.WUJE_CPU_OAM_WRn.state);
+  d.dump_bitp   ("SIG_OAM_CLKn     : ", oam_ctrl.SIG_OAM_CLKn.state);
+  d.dump_bitp   ("SIG_OAM_WRn_A    : ", oam_ctrl.SIG_OAM_WRn_A.state);
+  d.dump_bitp   ("SIG_OAM_WRn_B    : ", oam_ctrl.SIG_OAM_WRn_B.state);
+  d.dump_bitp   ("SIG_OAM_OEn      : ", oam_ctrl.SIG_OAM_OEn.state);
 
   //dump_slicen(d, "BUS_OAM_An  : ", &oam_bus.BUS_OAM_A00n, 8);
   //dump_slicen(d, "BUS_OAM_DAn : ", &oam_bus.BUS_OAM_DA00n, 8);
@@ -199,11 +199,11 @@ void GateBoy::dump_sprite_store(Dumper& d) {
 }
 
 void GateBoy::dump_mbc1(Dumper& d) {
-  d.dump_bitp   ("MBC1_MODE    : ", ext_pins.MBC1_MODE.state);
-  d.dump_bitp   ("MBC1_RAM_EN  : ", ext_pins.MBC1_RAM_EN.state);
-  d.dump_slice2p("MBC1_BANK    : ", &ext_pins.MBC1_BANK0, 7);
-  d.dump_slice2p("MBC1_BANK_LO : ", &ext_pins.MBC1_BANK0, 5);
-  d.dump_slice2p("MBC1_BANK_HI : ", &ext_pins.MBC1_BANK5, 2);
+  d.dump_bitp   ("MBC1_MODE    : ", ext_mbc.MBC1_MODE.state);
+  d.dump_bitp   ("MBC1_RAM_EN  : ", ext_mbc.MBC1_RAM_EN.state);
+  d.dump_slice2p("MBC1_BANK    : ", &ext_mbc.MBC1_BANK0, 7);
+  d.dump_slice2p("MBC1_BANK_LO : ", &ext_mbc.MBC1_BANK0, 5);
+  d.dump_slice2p("MBC1_BANK_HI : ", &ext_mbc.MBC1_BANK5, 2);
 }
 
 void GateBoy::dump_cpu_bus(Dumper& d) {
@@ -220,8 +220,8 @@ void GateBoy::dump_cpu_bus(Dumper& d) {
   d.dump_bitp   ("TEDO_CPU_RDp      : ", cpu_signals.TEDO_CPU_RDp.state);
   d.dump_bitp   ("APOV_CPU_WRp      : ", cpu_signals.APOV_CPU_WRp.state);
   d.dump_bitp   ("TAPU_CPU_WRp      : ", cpu_signals.TAPU_CPU_WRp.state);
-  d.dump_slice2p("BUS_CPU_A : ",     (BitBase*)&new_bus.BUS_CPU_A00p, 16);
-  dump_slice_int(d,  "BUS_CPU_D : ", (BitBase*)&new_bus.BUS_CPU_D00p, 8);
+  d.dump_slice2p("BUS_CPU_A : ",     (BitBase*)&cpu_abus_new.BUS_CPU_A00p, 16);
+  dump_slice_int(d,  "BUS_CPU_D : ", (BitBase*)&cpu_dbus_new.BUS_CPU_D00p, 8);
 }
 
 void GateBoy::dump_dma(Dumper& d) {
@@ -238,26 +238,26 @@ void GateBoy::dump_dma(Dumper& d) {
 
 
 void GateBoy::dump_ext_bus(Dumper& d) {
-  d.dump_slice2n("PIN_01_ADDR : ", &ext_pins.PIN_01_A00, 16);
+  d.dump_slice2n("PIN_01_ADDR : ", &ext_abus.PIN_01_A00, 16);
 
   //d.dump_slice2n(   "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
   //dump_slice2b  (d, "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
 
-  d.dump_bitn   ("PIN_80_CSn  : ", ext_pins.PIN_80_CSn.state);
-  d.dump_bitn   ("PIN_79_RDn  : ", ext_pins.PIN_79_RDn.state);
-  d.dump_bitn   ("PIN_78_WRn  : ", ext_pins.PIN_78_WRn.state);
+  d.dump_bitn   ("PIN_80_CSn  : ", ext_ctrl.PIN_80_CSn.state);
+  d.dump_bitn   ("PIN_79_RDn  : ", ext_ctrl.PIN_79_RDn.state);
+  d.dump_bitn   ("PIN_78_WRn  : ", ext_ctrl.PIN_78_WRn.state);
   d.dump_slice2p("ADDR LATCH  : ", &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
   d.dump_slice2n("DATA LATCH  : ", &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
 }
 
 void GateBoy::dump_vram_bus(Dumper& d) {
-  d.dump_bitp   ("PIN_43_VRAM_CSn  : ", vram_pins.PIN_43_VRAM_CSn.state);
-  d.dump_bitp   ("PIN_45_VRAM_OEn  : ", vram_pins.PIN_45_VRAM_OEn.state);
-  d.dump_bitp   ("PIN_49_VRAM_WRn  : ", vram_pins.PIN_49_VRAM_WRn.state);
-  d.dump_slice2p("PIN_34_VRAM_ADDR : ", &vram_pins.PIN_34_VRAM_A00, 13);
-  d.dump_slice2p("PIN_25_VRAM_DATA : ", &vram_pins.PIN_33_VRAM_D00, 8);
-  d.dump_slice2n("BUS_VRAM_An      : ", &vram_bus.BUS_VRAM_A00n, 13);
-  d.dump_slice2p("BUS_VRAM_Dp      : ", &vram_bus.BUS_VRAM_D00p, 8);
+  d.dump_bitp   ("PIN_43_VRAM_CSn  : ", vram_ext_ctrl.PIN_43_VRAM_CSn.state);
+  d.dump_bitp   ("PIN_45_VRAM_OEn  : ", vram_ext_ctrl.PIN_45_VRAM_OEn.state);
+  d.dump_bitp   ("PIN_49_VRAM_WRn  : ", vram_ext_ctrl.PIN_49_VRAM_WRn.state);
+  d.dump_slice2p("PIN_34_VRAM_ADDR : ", &vram_ext_abus.PIN_34_VRAM_A00, 13);
+  d.dump_slice2p("PIN_25_VRAM_DATA : ", &vram_ext_dbus.PIN_33_VRAM_D00, 8);
+  d.dump_slice2n("BUS_VRAM_An      : ", &vram_abus.BUS_VRAM_A00n, 13);
+  d.dump_slice2p("BUS_VRAM_Dp      : ", &vram_dbus.BUS_VRAM_D00p, 8);
 }
 
 void GateBoy::dump_sprite_fetcher(Dumper& d) {
@@ -328,9 +328,9 @@ void GateBoy::dump_ppu(Dumper& d) {
   d.dump_slice2n("FF49 OBP1  : ", &reg_obp1.MOXY_OBP1_D0n, 8);
   d.dump_slice2n("FF4A WY    : ", &reg_wy.NESO_WY0n, 8);
   d.dump_slice2n("FF4B WX    : ", &reg_wx.MYPA_WX0n, 8);
-  d.dump_slice2p("WIN MAP X  : ", &win_coords.WYKA_WIN_MAP_X0, 5);
-  d.dump_slice2p("WIN MAP Y  : ", &win_coords.TUFU_WIN_MAP_Y0, 8);
-  d.dump_slice2p("WIN TILE Y : ", &win_coords.VYNO_WIN_TILE_Y0, 3);
+  d.dump_slice2p("WIN MAP X  : ", &win_x.WYKA_WIN_MAP_X0, 5);
+  d.dump_slice2p("WIN MAP Y  : ", &win_y.TUFU_WIN_MAP_Y0, 8);
+  d.dump_slice2p("WIN TILE Y : ", &win_y.VYNO_WIN_TILE_Y0, 3);
   d("\n");
   d.dump_slice2p("PIX COUNT  : ", &pix_count.XEHO_PX0p, 8);
   d.dump_slice2p("BG PIPE A  : ", &pix_pipes.MYDE_BGW_PIPE_A0, 8);

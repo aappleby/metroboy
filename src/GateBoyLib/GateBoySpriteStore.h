@@ -1,10 +1,12 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+// FIXME split into smaller structs
+
 //-----------------------------------------------------------------------------
 // Tristate buses to move sprite index & line in/out of sprite store
 
-struct SpriteBus {
+struct SpriteIBus {
   void reset_to_bootrom() {
     BUS_SPR_I0.state = BIT_OLD | BIT_PULLED | 1;
     BUS_SPR_I1.state = BIT_OLD | BIT_PULLED | 1;
@@ -12,10 +14,6 @@ struct SpriteBus {
     BUS_SPR_I3.state = BIT_OLD | BIT_PULLED | 1;
     BUS_SPR_I4.state = BIT_OLD | BIT_PULLED | 1;
     BUS_SPR_I5.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_L0.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_L1.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_L2.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_L3.state = BIT_OLD | BIT_PULLED | 1;
   }
 
   void reset_to_cart() {
@@ -25,13 +23,7 @@ struct SpriteBus {
     BUS_SPR_I3.state = BIT_OLD | BIT_DRIVEN | 0;
     BUS_SPR_I4.state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_SPR_I5.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_L2.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_L3.state = BIT_OLD | BIT_DRIVEN | 1;
   }
-
-  //----------------------------------------
 
   /*_BUS_SPR_I0*/ Bus BUS_SPR_I0; // AxCxExGx
   /*_BUS_SPR_I1*/ Bus BUS_SPR_I1; // AxCxExGx
@@ -39,6 +31,24 @@ struct SpriteBus {
   /*_BUS_SPR_I3*/ Bus BUS_SPR_I3; // AxCxExGx
   /*_BUS_SPR_I4*/ Bus BUS_SPR_I4; // AxCxExGx
   /*_BUS_SPR_I5*/ Bus BUS_SPR_I5; // AxCxExGx
+};
+
+//-----------------------------------------------------------------------------
+
+struct SpriteLBus {
+  void reset_to_bootrom() {
+    BUS_SPR_L0.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_L1.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_L2.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_SPR_L3.state = BIT_OLD | BIT_PULLED | 1;
+  }
+
+  void reset_to_cart() {
+    BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_SPR_L2.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_SPR_L3.state = BIT_OLD | BIT_DRIVEN | 1;
+  }
 
   /*_BUS_SPR_L0*/ Bus BUS_SPR_L0; // AxCxExGx
   /*_BUS_SPR_L1*/ Bus BUS_SPR_L1; // AxCxExGx

@@ -20,6 +20,7 @@ struct WindowRegisters {
 };
 
 //------------------------------------------------------------------------------------------------------------------------
+// FIXME split into smaller structs
 
 struct FineScroll {
   /*#p27.RYKU*/ DFF17 RYKU_FINE_CNT0;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
@@ -33,6 +34,7 @@ struct FineScroll {
 };
 
 //------------------------------------------------------------------------------------------------------------------------
+// FIXME split into smaller structs
 
 struct PixelPipes {
 

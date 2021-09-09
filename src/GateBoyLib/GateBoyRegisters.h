@@ -61,8 +61,6 @@ struct PixCount {
 //-----------------------------------------------------------------------------
 
 struct BGScrollX {
-  //static BGScrollX add(PixCount& pix_count, RegSCX reg_scx);
-
   Adder ATAD_TILE_X0;
   Adder BEHU_TILE_X1;
   Adder APYH_TILE_X2;
@@ -76,8 +74,6 @@ struct BGScrollX {
 //-----------------------------------------------------------------------------
 
 struct BGScrollY {
-  //static BGScrollY add(RegLY& reg_ly, RegSCY& reg_scy);
-
   Adder FAFO_TILE_Y0;
   Adder EMUX_TILE_Y1;
   Adder ECAB_TILE_Y2;
@@ -132,14 +128,11 @@ struct RegLCDC {
 struct RegStat {
 
   void reset_to_cart() {
-    RUPO_LYC_MATCHn.state = 0b00011000;
     ROXE_STAT_HBI_ENn.state = 0b00011011;
     RUFO_STAT_VBI_ENn.state = 0b00011011;
     REFE_STAT_OAI_ENn.state = 0b00011011;
     RUGU_STAT_LYI_ENn.state = 0b00011011;
   }
-
-  /*_p21.RUPO*/ NorLatch RUPO_LYC_MATCHn;       // xxCxxxxx
 
   /*_p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn; // xxxxxxxH
   /*_p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn; // xxxxxxxH
@@ -234,7 +227,6 @@ struct RegLX {
 
 struct RegLYC {
   void reset_to_cart() {
-    ROPO_LY_MATCH_SYNCp.state = 0b00011001;
     SYRY_LYC0n.state = 0b00011011;
     VUCE_LYC1n.state = 0b00011011;
     SEDY_LYC2n.state = 0b00011011;
@@ -246,8 +238,6 @@ struct RegLYC {
   }
 
   uint8_t get() const { return (uint8_t)pack_inv(8, &SYRY_LYC0n); }
-
-  /*#p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
 
   /*_p23.SYRY*/ DFF9 SYRY_LYC0n; // xxxxxxxH
   /*_p23.VUCE*/ DFF9 VUCE_LYC1n; // xxxxxxxH
@@ -544,17 +534,18 @@ struct SpritePixB {
 
 //-----------------------------------------------------------------------------
 
-struct WinCoords {
-  /*_p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
-  /*_p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
-  /*_p27.VYMU*/ DFF17 VYMU_WIN_TILE_Y2;  // AxCxExGh probably, but not enough data.
-
+struct WindowX {
   /*_p27.WYKA*/ DFF17 WYKA_WIN_MAP_X0;   // AxCxExGx
   /*_p27.WODY*/ DFF17 WODY_WIN_MAP_X1;   // AxCxExGx
   /*_p27.WOBO*/ DFF17 WOBO_WIN_MAP_X2;   // AxCxExGx
   /*_p27.WYKO*/ DFF17 WYKO_WIN_MAP_X3;   // AxCxExGx
   /*_p27.XOLO*/ DFF17 XOLO_WIN_MAP_X4;   // AxCxExGx
+};
 
+struct WindowY {
+  /*_p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
+  /*_p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
+  /*_p27.VYMU*/ DFF17 VYMU_WIN_TILE_Y2;  // AxCxExGh probably, but not enough data.
   /*_p27.TUFU*/ DFF17 TUFU_WIN_MAP_Y0;   // AxCxExGh probably, but not enough data.
   /*_p27.TAXA*/ DFF17 TAXA_WIN_MAP_Y1;   // AxCxExGh probably, but not enough data.
   /*_p27.TOZO*/ DFF17 TOZO_WIN_MAP_Y2;   // AxCxExGh probably, but not enough data.

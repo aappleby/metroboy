@@ -31,7 +31,7 @@ struct GateBoyCpuSignals {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct GateBoyCpuBus {
+struct GateBoyCpuABus {
   void reset_to_cart_new() {
     BUS_CPU_A00p.state = BIT_OLD | BIT_DRIVEN | 0;
     BUS_CPU_A01p.state = BIT_OLD | BIT_DRIVEN | 0;
@@ -49,15 +49,6 @@ struct GateBoyCpuBus {
     BUS_CPU_A13p.state = BIT_OLD | BIT_DRIVEN | 0;
     BUS_CPU_A14p.state = BIT_OLD | BIT_DRIVEN | 0;
     BUS_CPU_A15p.state = BIT_OLD | BIT_DRIVEN | 0;
-
-    BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
   }
 
   void reset_to_bootrom() {
@@ -77,15 +68,6 @@ struct GateBoyCpuBus {
     BUS_CPU_A13p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_A14p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_A15p.state = BIT_OLD | BIT_PULLED | 1;
-
-    BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
   }
 
   void set_addr(uint16_t bus_addr_new)
@@ -124,29 +106,6 @@ struct GateBoyCpuBus {
     /*_BUS_CPU_A14p*/ BUS_CPU_A14p.tri_bus(EXT_bus_addr14);
     /*_BUS_CPU_A15p*/ BUS_CPU_A15p.tri_bus(EXT_bus_addr15);
   }
-
-  //------------------------------------------------------------------------------------------------------------------------
-
-  void set_data(bool OEp, uint8_t data) {
-    triwire tri0 = tri_pp(OEp, bit(data, 0));
-    triwire tri1 = tri_pp(OEp, bit(data, 1));
-    triwire tri2 = tri_pp(OEp, bit(data, 2));
-    triwire tri3 = tri_pp(OEp, bit(data, 3));
-    triwire tri4 = tri_pp(OEp, bit(data, 4));
-    triwire tri5 = tri_pp(OEp, bit(data, 5));
-    triwire tri6 = tri_pp(OEp, bit(data, 6));
-    triwire tri7 = tri_pp(OEp, bit(data, 7));
-
-    BUS_CPU_D00p.tri_bus(tri0);
-    BUS_CPU_D01p.tri_bus(tri1);
-    BUS_CPU_D02p.tri_bus(tri2);
-    BUS_CPU_D03p.tri_bus(tri3);
-    BUS_CPU_D04p.tri_bus(tri4);
-    BUS_CPU_D05p.tri_bus(tri5);
-    BUS_CPU_D06p.tri_bus(tri6);
-    BUS_CPU_D07p.tri_bus(tri7);
-  }
-
 
   /*_p07.TUNA*/ wire TUNA_0000_FDFF    () const { return nand7(BUS_CPU_A15p.out_any(), BUS_CPU_A14p.out_any(), BUS_CPU_A13p.out_any(), BUS_CPU_A12p.out_any(), BUS_CPU_A11p.out_any(), BUS_CPU_A10p.out_any(), BUS_CPU_A09p.out_any()); }
   /*_p07.RYCU*/ wire RYCU_FE00_FFFF    () const { return not1(TUNA_0000_FDFF()); }
@@ -221,8 +180,6 @@ struct GateBoyCpuBus {
 
   /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn   () const { return or3(BUS_CPU_A13p.out_any(), BUS_CPU_A14p.out_any(), SORE_A15n()); }
 
-  //----------------------------------------
-
   /*_BUS_CPU_A00p*/ Bus BUS_CPU_A00p;
   /*_BUS_CPU_A01p*/ Bus BUS_CPU_A01p;
   /*_BUS_CPU_A02p*/ Bus BUS_CPU_A02p;
@@ -239,6 +196,52 @@ struct GateBoyCpuBus {
   /*_BUS_CPU_A13p*/ Bus BUS_CPU_A13p;
   /*_BUS_CPU_A14p*/ Bus BUS_CPU_A14p;
   /*_BUS_CPU_A15p*/ Bus BUS_CPU_A15p;
+};
+
+//---------------------------------------------------------------------------------------------------------------------
+
+struct GateBoyCpuDBus {
+  void reset_to_cart_new() {
+    BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
+  }
+
+  void reset_to_bootrom() {
+    BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
+  }
+
+  void set_data(bool OEp, uint8_t data) {
+    triwire tri0 = tri_pp(OEp, bit(data, 0));
+    triwire tri1 = tri_pp(OEp, bit(data, 1));
+    triwire tri2 = tri_pp(OEp, bit(data, 2));
+    triwire tri3 = tri_pp(OEp, bit(data, 3));
+    triwire tri4 = tri_pp(OEp, bit(data, 4));
+    triwire tri5 = tri_pp(OEp, bit(data, 5));
+    triwire tri6 = tri_pp(OEp, bit(data, 6));
+    triwire tri7 = tri_pp(OEp, bit(data, 7));
+
+    BUS_CPU_D00p.tri_bus(tri0);
+    BUS_CPU_D01p.tri_bus(tri1);
+    BUS_CPU_D02p.tri_bus(tri2);
+    BUS_CPU_D03p.tri_bus(tri3);
+    BUS_CPU_D04p.tri_bus(tri4);
+    BUS_CPU_D05p.tri_bus(tri5);
+    BUS_CPU_D06p.tri_bus(tri6);
+    BUS_CPU_D07p.tri_bus(tri7);
+  }
 
   /*_BUS_CPU_D00p*/ Bus BUS_CPU_D00p;
   /*_BUS_CPU_D01p*/ Bus BUS_CPU_D01p;
@@ -249,3 +252,5 @@ struct GateBoyCpuBus {
   /*_BUS_CPU_D06p*/ Bus BUS_CPU_D06p;
   /*_BUS_CPU_D07p*/ Bus BUS_CPU_D07p;
 };
+
+//---------------------------------------------------------------------------------------------------------------------

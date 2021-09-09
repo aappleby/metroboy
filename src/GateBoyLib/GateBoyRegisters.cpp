@@ -39,18 +39,18 @@ SpriteDeltaY GateBoy::sub_sprite_y_gates() {
 
 void GateBoy::tock_lcdc_gates()
 {
-  /*_p23.WARU*/ wire WARU_FF40_WRp = and2(CUPA_CPU_WRp(), old_bus.VOCA_FF40p());
+  /*_p23.WARU*/ wire WARU_FF40_WRp = and2(CUPA_CPU_WRp(), cpu_abus_new.VOCA_FF40p());
   /*_p23.XUBO*/ wire XUBO_FF40_WRn = not1(WARU_FF40_WRp);
-  /*#p23.VYXE*/ reg_lcdc.VYXE_LCDC_BGENn  .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D00p.out_old());
-  /*_p23.XYLO*/ reg_lcdc.XYLO_LCDC_SPENn  .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D01p.out_old());
-  /*_p23.XYMO*/ reg_lcdc.XYMO_LCDC_SPSIZEn.dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D02p.out_old());
-  /*_p23.XAFO*/ reg_lcdc.XAFO_LCDC_BGMAPn .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D03p.out_old());
-  /*_p23.WEXU*/ reg_lcdc.WEXU_LCDC_BGTILEn.dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D04p.out_old());
-  /*_p23.WYMO*/ reg_lcdc.WYMO_LCDC_WINENn .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D05p.out_old());
-  /*_p23.WOKY*/ reg_lcdc.WOKY_LCDC_WINMAPn.dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D06p.out_old());
-  /*_p23.XONA*/ reg_lcdc.XONA_LCDC_LCDENn. dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), old_bus.BUS_CPU_D07p.out_old());
+  /*#p23.VYXE*/ reg_lcdc.VYXE_LCDC_BGENn  .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D00p.out_old());
+  /*_p23.XYLO*/ reg_lcdc.XYLO_LCDC_SPENn  .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D01p.out_old());
+  /*_p23.XYMO*/ reg_lcdc.XYMO_LCDC_SPSIZEn.dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D02p.out_old());
+  /*_p23.XAFO*/ reg_lcdc.XAFO_LCDC_BGMAPn .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D03p.out_old());
+  /*_p23.WEXU*/ reg_lcdc.WEXU_LCDC_BGTILEn.dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D04p.out_old());
+  /*_p23.WYMO*/ reg_lcdc.WYMO_LCDC_WINENn .dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D05p.out_old());
+  /*_p23.WOKY*/ reg_lcdc.WOKY_LCDC_WINMAPn.dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D06p.out_old());
+  /*_p23.XONA*/ reg_lcdc.XONA_LCDC_LCDENn. dff9(XUBO_FF40_WRn, XARE_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D07p.out_old());
 
-  /*_p23.VYRE*/ wire VYRE_FF40_RDp = and2(ASOT_CPU_RDp(), new_bus.VOCA_FF40p());
+  /*_p23.VYRE*/ wire VYRE_FF40_RDp = and2(ASOT_CPU_RDp(), cpu_abus_new.VOCA_FF40p());
   /*_p23.WYCE*/ wire WYCE_FF40_RDn = not1(VYRE_FF40_RDp);
   /*#p23.WYPO*/ triwire WYPO_LCDC0_TO_CD0 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.VYXE_LCDC_BGENn.qp_new());
   /*#p23.XERO*/ triwire XERO_LCDC1_TO_CD1 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.XYLO_LCDC_SPENn.qp_new());
@@ -61,14 +61,14 @@ void GateBoy::tock_lcdc_gates()
   /*#p23.VAHA*/ triwire VAHA_LCDC6_TO_CD6 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.WOKY_LCDC_WINMAPn.qp_new());
   /*#p23.XEBU*/ triwire XEBU_LCDC7_TO_CD7 = tri6_nn(WYCE_FF40_RDn, reg_lcdc.XONA_LCDC_LCDENn.qp_new());
 
-  /*_BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(WYPO_LCDC0_TO_CD0);
-  /*_BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(XERO_LCDC1_TO_CD1);
-  /*_BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(WYJU_LCDC2_TO_CD2);
-  /*_BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(WUKA_LCDC3_TO_CD3);
-  /*_BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri_bus(VOKE_LCDC4_TO_CD4);
-  /*_BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri_bus(VATO_LCDC5_TO_CD5);
-  /*_BUS_CPU_D06p*/ new_bus.BUS_CPU_D06p.tri_bus(VAHA_LCDC6_TO_CD6);
-  /*_BUS_CPU_D07p*/ new_bus.BUS_CPU_D07p.tri_bus(XEBU_LCDC7_TO_CD7);
+  /*_BUS_CPU_D00p*/ cpu_dbus_new.BUS_CPU_D00p.tri_bus(WYPO_LCDC0_TO_CD0);
+  /*_BUS_CPU_D01p*/ cpu_dbus_new.BUS_CPU_D01p.tri_bus(XERO_LCDC1_TO_CD1);
+  /*_BUS_CPU_D02p*/ cpu_dbus_new.BUS_CPU_D02p.tri_bus(WYJU_LCDC2_TO_CD2);
+  /*_BUS_CPU_D03p*/ cpu_dbus_new.BUS_CPU_D03p.tri_bus(WUKA_LCDC3_TO_CD3);
+  /*_BUS_CPU_D04p*/ cpu_dbus_new.BUS_CPU_D04p.tri_bus(VOKE_LCDC4_TO_CD4);
+  /*_BUS_CPU_D05p*/ cpu_dbus_new.BUS_CPU_D05p.tri_bus(VATO_LCDC5_TO_CD5);
+  /*_BUS_CPU_D06p*/ cpu_dbus_new.BUS_CPU_D06p.tri_bus(VAHA_LCDC6_TO_CD6);
+  /*_BUS_CPU_D07p*/ cpu_dbus_new.BUS_CPU_D07p.tri_bus(XEBU_LCDC7_TO_CD7);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

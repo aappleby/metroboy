@@ -10,10 +10,10 @@
 void GateBoy::tock_joypad_gates() {
   // has to be new_bus or sim isn't stable.
 
-  /*_p10.BYKO*/ wire BYKO_A05n = not1(new_bus.BUS_CPU_A05p.out_any());
-  /*_p10.AKUG*/ wire AKUG_A06n = not1(new_bus.BUS_CPU_A06p.out_any());
-  /*_p10.AMUS*/ wire AMUS_XX_0xx00000 = nor6(new_bus.BUS_CPU_A00p.out_any(), new_bus.BUS_CPU_A01p.out_any(), new_bus.BUS_CPU_A02p.out_any(), new_bus.BUS_CPU_A03p.out_any(), new_bus.BUS_CPU_A04p.out_any(), new_bus.BUS_CPU_A07p.out_any());
-  /*_p10.ANAP*/ wire ANAP_FF_0xx00000 = and2(new_bus.SYKE_ADDR_HIp(), AMUS_XX_0xx00000);
+  /*_p10.BYKO*/ wire BYKO_A05n = not1(cpu_abus_new.BUS_CPU_A05p.out_any());
+  /*_p10.AKUG*/ wire AKUG_A06n = not1(cpu_abus_new.BUS_CPU_A06p.out_any());
+  /*_p10.AMUS*/ wire AMUS_XX_0xx00000 = nor6(cpu_abus_new.BUS_CPU_A00p.out_any(), cpu_abus_new.BUS_CPU_A01p.out_any(), cpu_abus_new.BUS_CPU_A02p.out_any(), cpu_abus_new.BUS_CPU_A03p.out_any(), cpu_abus_new.BUS_CPU_A04p.out_any(), cpu_abus_new.BUS_CPU_A07p.out_any());
+  /*_p10.ANAP*/ wire ANAP_FF_0xx00000 = and2(cpu_abus_new.SYKE_ADDR_HIp(), AMUS_XX_0xx00000);
 
   /*_p10.ACAT*/ wire ACAT_FF00_RDp = and4(cpu_signals.TEDO_CPU_RDp.out_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
   /*_p05.BYZO*/ wire BYZO_FF00_RDn = not1(ACAT_FF00_RDp);
@@ -26,8 +26,8 @@ void GateBoy::tock_joypad_gates() {
 
   // this _has_ to reset to 1
 
-  /*#p05.KELY*/ joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D04p.out_old());
-  /*#p05.COFY*/ joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), old_bus.BUS_CPU_D05p.out_old());
+  /*#p05.KELY*/ joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D04p.out_old());
+  /*#p05.COFY*/ joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D05p.out_old());
 
   ///*_p05.KUKO*/ KUKO_DBG_D6    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[6].qp_old());
   ///*_p05.KERU*/ KERU_DBG_D7    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[7].qp_old());
@@ -165,22 +165,22 @@ void GateBoy::tock_joypad_gates() {
   /*#p05.KOCE*/ triwire KOCE_JOY4_TO_CD4 = tri6_nn(BYZO_FF00_RDn, joy.KELY_JOYP_UDLRp.qn_new());
   /*#p05.CUDY*/ triwire CUDY_JOY5_TO_CD5 = tri6_nn(BYZO_FF00_RDn, joy.COFY_JOYP_ABCSp.qn_new());
 
-  /*_BUS_CPU_D00p*/ new_bus.BUS_CPU_D00p.tri_bus(KEMA_JOY0_TO_CD0);
-  /*_BUS_CPU_D01p*/ new_bus.BUS_CPU_D01p.tri_bus(KURO_JOY1_TO_CD1);
-  /*_BUS_CPU_D02p*/ new_bus.BUS_CPU_D02p.tri_bus(KUVE_JOY2_TO_CD2);
-  /*_BUS_CPU_D03p*/ new_bus.BUS_CPU_D03p.tri_bus(JEKU_JOY3_TO_CD3);
-  /*_BUS_CPU_D04p*/ new_bus.BUS_CPU_D04p.tri_bus(KOCE_JOY4_TO_CD4);
-  /*_BUS_CPU_D05p*/ new_bus.BUS_CPU_D05p.tri_bus(CUDY_JOY5_TO_CD5);
+  /*_BUS_CPU_D00p*/ cpu_dbus_new.BUS_CPU_D00p.tri_bus(KEMA_JOY0_TO_CD0);
+  /*_BUS_CPU_D01p*/ cpu_dbus_new.BUS_CPU_D01p.tri_bus(KURO_JOY1_TO_CD1);
+  /*_BUS_CPU_D02p*/ cpu_dbus_new.BUS_CPU_D02p.tri_bus(KUVE_JOY2_TO_CD2);
+  /*_BUS_CPU_D03p*/ cpu_dbus_new.BUS_CPU_D03p.tri_bus(JEKU_JOY3_TO_CD3);
+  /*_BUS_CPU_D04p*/ cpu_dbus_new.BUS_CPU_D04p.tri_bus(KOCE_JOY4_TO_CD4);
+  /*_BUS_CPU_D05p*/ cpu_dbus_new.BUS_CPU_D05p.tri_bus(CUDY_JOY5_TO_CD5);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_joypad_logic() {
-  auto new_addr = pack(16, (BitBase*)&new_bus.BUS_CPU_A00p);
+  auto new_addr = pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF00 && DELTA_GH) {
-    joy.KELY_JOYP_UDLRp.state = old_bus.BUS_CPU_D04p.out_old();
-    joy.COFY_JOYP_ABCSp.state = old_bus.BUS_CPU_D05p.out_old();
+    joy.KELY_JOYP_UDLRp.state = cpu_dbus_old.BUS_CPU_D04p.out_old();
+    joy.COFY_JOYP_ABCSp.state = cpu_dbus_old.BUS_CPU_D05p.out_old();
     joy.PIN_63_JOY_P14.pin_out(~joy.KELY_JOYP_UDLRp.state, ~joy.KELY_JOYP_UDLRp.state);
     joy.PIN_62_JOY_P15.pin_out(~joy.COFY_JOYP_ABCSp.state, ~joy.COFY_JOYP_ABCSp.state);
   }
@@ -218,12 +218,12 @@ void GateBoy::tock_joypad_logic() {
   }
 
   if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF00)) {
-    new_bus.BUS_CPU_D00p.state = ~joy.KEVU_JOYP_L0n.state;
-    new_bus.BUS_CPU_D01p.state = ~joy.KAPA_JOYP_L1n.state;
-    new_bus.BUS_CPU_D02p.state = ~joy.KEJA_JOYP_L2n.state;
-    new_bus.BUS_CPU_D03p.state = ~joy.KOLO_JOYP_L3n.state;
-    new_bus.BUS_CPU_D04p.state =  joy.KELY_JOYP_UDLRp.state;
-    new_bus.BUS_CPU_D05p.state =  joy.COFY_JOYP_ABCSp.state;
+    cpu_dbus_new.BUS_CPU_D00p.state = ~joy.KEVU_JOYP_L0n.state;
+    cpu_dbus_new.BUS_CPU_D01p.state = ~joy.KAPA_JOYP_L1n.state;
+    cpu_dbus_new.BUS_CPU_D02p.state = ~joy.KEJA_JOYP_L2n.state;
+    cpu_dbus_new.BUS_CPU_D03p.state = ~joy.KOLO_JOYP_L3n.state;
+    cpu_dbus_new.BUS_CPU_D04p.state =  joy.KELY_JOYP_UDLRp.state;
+    cpu_dbus_new.BUS_CPU_D05p.state =  joy.COFY_JOYP_ABCSp.state;
   }
   else {
     joy.KEVU_JOYP_L0n.state = joy.PIN_67_JOY_P10.state;

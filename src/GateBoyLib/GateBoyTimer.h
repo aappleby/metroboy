@@ -1,6 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+// FIXME split into smaller structs
+// 
 //-----------------------------------------------------------------------------
 // FF04 DIV
 

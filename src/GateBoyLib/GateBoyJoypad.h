@@ -2,6 +2,7 @@
 #include "GateBoyLib/Gates.h"
 
 //------------------------------------------------------------------------------------------------------------------------
+// FIXME split into smaller structs
 
 struct GateBoyJoypad {
   void reset_to_bootrom() {

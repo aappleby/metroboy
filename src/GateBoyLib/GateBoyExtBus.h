@@ -68,7 +68,21 @@ struct ExtAddrLatch {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct GateBoyExtPins {
+struct ExtControl {
+  void reset_to_cart() {
+    PIN_80_CSn.state = 0b00011000;
+    PIN_79_RDn.state = 0b00011001;
+    PIN_78_WRn.state = 0b00011000;
+  }
+
+  /*_PIN_80*/ PinOut PIN_80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
+  /*_PIN_79*/ PinOut PIN_79_RDn;      // RDn idles low, goes high on phase B for an external write
+  /*_PIN_78*/ PinOut PIN_78_WRn;      // WRn idles high, goes low during EFG if there's a write
+};
+
+//------------------------------------------------------------------------------------------------------------------------
+
+struct ExtABus {
   void reset_to_cart() {
     PIN_01_A00.state = 0b00011000;
     PIN_02_A01.state = 0b00011001;
@@ -86,19 +100,6 @@ struct GateBoyExtPins {
     PIN_14_A13.state = 0b00011001;
     PIN_15_A14.state = 0b00011001;
     PIN_16_A15.state = 0b00011000;
-
-    PIN_17_D00.state = 0b00010100;
-    PIN_18_D01.state = 0b00010100;
-    PIN_19_D02.state = 0b00010100;
-    PIN_20_D03.state = 0b00010100;
-    PIN_21_D04.state = 0b00010100;
-    PIN_22_D05.state = 0b00010100;
-    PIN_23_D06.state = 0b00010100;
-    PIN_24_D07.state = 0b00010100;
-
-    PIN_80_CSn.state = 0b00011000;
-    PIN_79_RDn.state = 0b00011001;
-    PIN_78_WRn.state = 0b00011000;
   }
 
   /*_PIN_01*/ PinOut PIN_01_A00;
@@ -117,6 +118,21 @@ struct GateBoyExtPins {
   /*_PIN_14*/ PinOut PIN_14_A13;
   /*_PIN_15*/ PinOut PIN_15_A14;
   /*_PIN_16*/ PinOut PIN_16_A15;
+};
+
+//------------------------------------------------------------------------------------------------------------------------
+
+struct ExtDBus {
+  void reset_to_cart() {
+    PIN_17_D00.state = 0b00010100;
+    PIN_18_D01.state = 0b00010100;
+    PIN_19_D02.state = 0b00010100;
+    PIN_20_D03.state = 0b00010100;
+    PIN_21_D04.state = 0b00010100;
+    PIN_22_D05.state = 0b00010100;
+    PIN_23_D06.state = 0b00010100;
+    PIN_24_D07.state = 0b00010100;
+  }
 
   /*_PIN_17*/ PinIO PIN_17_D00;
   /*_PIN_18*/ PinIO PIN_18_D01;
@@ -126,11 +142,11 @@ struct GateBoyExtPins {
   /*_PIN_22*/ PinIO PIN_22_D05;
   /*_PIN_23*/ PinIO PIN_23_D06;
   /*_PIN_24*/ PinIO PIN_24_D07;
+};
 
-  /*_PIN_80*/ PinOut PIN_80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
-  /*_PIN_79*/ PinOut PIN_79_RDn;      // RDn idles low, goes high on phase B for an external write
-  /*_PIN_78*/ PinOut PIN_78_WRn;      // WRn idles high, goes low during EFG if there's a write
+//------------------------------------------------------------------------------------------------------------------------
 
+struct GateBoyMBC {
   Gate MBC1_RAM_EN;
   Gate MBC1_MODE;
 

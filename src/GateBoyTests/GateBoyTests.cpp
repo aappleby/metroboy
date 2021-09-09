@@ -61,8 +61,6 @@ blob create_dummy_cart() {
 
 //-----------------------------------------------------------------------------
 
-#pragma optimize("", off)
-
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;

@@ -4,6 +4,8 @@
 #pragma warning(disable:4100) // unused param
 #pragma warning(disable:4127) // conditional expression is constant
 
+#pragma optimize("", off)
+
 // Debug builds - painfully, ungodly slow.
 #ifdef CONFIG_DEBUG
 constexpr bool config_debug = true;
@@ -39,7 +41,7 @@ static_assert(((int)config_debug + (int)config_regression + (int)config_release 
 
 
 // Evaluate all CHECK() statements (basically assert)
-constexpr bool config_check        = config_debug;
+constexpr bool config_check        = config_debug | config_release;
 
 // Verify that all registers were flagged as NEW after a logic pass, and set them back to OLD.
 constexpr bool config_oldnew_flags = config_debug | config_release;

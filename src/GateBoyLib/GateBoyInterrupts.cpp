@@ -14,7 +14,7 @@
 
 void GateBoy::tock_interrupts_gates()
 {
-  uint16_t cpu_addr = (uint16_t)pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
+  auto cpu_addr = pack(cpu_abus_new);
   wire FFFF_HIT_ext = cpu_addr == 0xFFFF;
   wire FFFF_RDn_ext = nand2(cpu_signals.TEDO_CPU_RDp.out_new(), FFFF_HIT_ext);
   wire FFFF_WRn_ext = nand2(cpu_signals.TAPU_CPU_WRp.out_new(), FFFF_HIT_ext);

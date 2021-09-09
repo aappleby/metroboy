@@ -1187,7 +1187,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
 
 
-#pragma optimize("", off)
 
 
 
@@ -1365,7 +1364,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------
   // DIV
 
-  auto div_old = pack(16, &div);
+  auto div_old = pack(div);
   {
     if (DELTA_HA) {
       unpack(div_old + 1, div);
@@ -1848,19 +1847,18 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     clear(sprite_counter);
     clear(sprite_reset_flags);
+    clear(sprite_store_flags);
 
-    memset(&sprite_store_flags, 0, 10);
-
-    set(8, &store_x0);
-    set(8, &store_x1);
-    set(8, &store_x2);
-    set(8, &store_x3);
-    set(8, &store_x4);
-    set(8, &store_x5);
-    set(8, &store_x6);
-    set(8, &store_x7);
-    set(8, &store_x8);
-    set(8, &store_x9);
+    set(store_x0);
+    set(store_x1);
+    set(store_x2);
+    set(store_x3);
+    set(store_x4);
+    set(store_x5);
+    set(store_x6);
+    set(store_x7);
+    set(store_x8);
+    set(store_x9);
   }
   else {
     wire GACE_SPRITE_DELTA4 = not1(sprite_delta_y.GOPU_YDIFF4.sum);
@@ -1875,15 +1873,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       sprite_delta_y.WUHU_YDIFF7.carry,
       GOVU_SPSIZE_MATCH);
 
-    auto ssf_clk = nand4(!0, CLK_xBCxxFGx, sprite_scanner.CENO_SCANNINGn.state, ~WOTA_SCAN_MATCH_Yn);
+    auto ssf_clk = nand3(CLK_xBCxxFGx, sprite_scanner.CENO_SCANNINGn.state, ~WOTA_SCAN_MATCH_Yn);
 
-    auto sprite_count_old = pack(4, &sprite_counter.BESE_SPRITE_COUNT0);
+    auto sprite_count_old = pack(sprite_counter);
 
 
     if (DELTA_ODD) {
       if (posedge(DEZY_COUNT_CLKp.state, ssf_clk)) {
         if (sprite_count_old != 10) {
-          unpack(sprite_count_old + 1, 4, &sprite_counter.BESE_SPRITE_COUNT0);
+          unpack(sprite_count_old + 1, sprite_counter);
         }
       }
 
@@ -1891,7 +1889,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
 
-    auto sprite_count_new = pack(4, &sprite_counter.BESE_SPRITE_COUNT0);
+    auto sprite_count_new = pack(sprite_counter);
 
     if (!bit(WUTY_SFETCH_DONE_TRIGp_old) && bit(WUTY_SFETCH_DONE_TRIGp_new)) {
       memcpy(&sprite_reset_flags.EBOJ_STORE0_RSTp, &sprite_match_flags.GUVA_SPRITE0_GETp, 10);
@@ -1908,49 +1906,49 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto store_clk_pe = (~store_clk_old) & store_clk_new;
     auto store_clk_ne = store_clk_old & (~store_clk_new);
 
-    if (bit(store_clk_ne, 0)) cpy_inv(&store_i0, &sprite_ibus, sizeof(sprite_ibus));
-    if (bit(store_clk_ne, 1)) cpy_inv(&store_i1, &sprite_ibus, sizeof(sprite_ibus));
-    if (bit(store_clk_ne, 2)) cpy_inv(&store_i2, &sprite_ibus, sizeof(sprite_ibus));
-    if (bit(store_clk_ne, 3)) cpy_inv(&store_i3, &sprite_ibus, sizeof(sprite_ibus));
-    if (bit(store_clk_ne, 4)) cpy_inv(&store_i4, &sprite_ibus, sizeof(sprite_ibus));
-    if (bit(store_clk_ne, 5)) cpy_inv(&store_i5, &sprite_ibus, sizeof(sprite_ibus));
-    if (bit(store_clk_ne, 6)) cpy_inv(&store_i6, &sprite_ibus, sizeof(sprite_ibus));
-    if (bit(store_clk_ne, 7)) cpy_inv(&store_i7, &sprite_ibus, sizeof(sprite_ibus));
-    if (bit(store_clk_ne, 8)) cpy_inv(&store_i8, &sprite_ibus, sizeof(sprite_ibus));
-    if (bit(store_clk_ne, 9)) cpy_inv(&store_i9, &sprite_ibus, sizeof(sprite_ibus));
+    if (bit(store_clk_ne, 0)) cpy_inv(store_i0, sprite_ibus);
+    if (bit(store_clk_ne, 1)) cpy_inv(store_i1, sprite_ibus);
+    if (bit(store_clk_ne, 2)) cpy_inv(store_i2, sprite_ibus);
+    if (bit(store_clk_ne, 3)) cpy_inv(store_i3, sprite_ibus);
+    if (bit(store_clk_ne, 4)) cpy_inv(store_i4, sprite_ibus);
+    if (bit(store_clk_ne, 5)) cpy_inv(store_i5, sprite_ibus);
+    if (bit(store_clk_ne, 6)) cpy_inv(store_i6, sprite_ibus);
+    if (bit(store_clk_ne, 7)) cpy_inv(store_i7, sprite_ibus);
+    if (bit(store_clk_ne, 8)) cpy_inv(store_i8, sprite_ibus);
+    if (bit(store_clk_ne, 9)) cpy_inv(store_i9, sprite_ibus);
 
-    if (bit(store_clk_ne, 0)) cpy_inv(&store_l0, &sprite_lbus, sizeof(sprite_lbus));
-    if (bit(store_clk_ne, 1)) cpy_inv(&store_l1, &sprite_lbus, sizeof(sprite_lbus));
-    if (bit(store_clk_ne, 2)) cpy_inv(&store_l2, &sprite_lbus, sizeof(sprite_lbus));
-    if (bit(store_clk_ne, 3)) cpy_inv(&store_l3, &sprite_lbus, sizeof(sprite_lbus));
-    if (bit(store_clk_ne, 4)) cpy_inv(&store_l4, &sprite_lbus, sizeof(sprite_lbus));
-    if (bit(store_clk_ne, 5)) cpy_inv(&store_l5, &sprite_lbus, sizeof(sprite_lbus));
-    if (bit(store_clk_ne, 6)) cpy_inv(&store_l6, &sprite_lbus, sizeof(sprite_lbus));
-    if (bit(store_clk_ne, 7)) cpy_inv(&store_l7, &sprite_lbus, sizeof(sprite_lbus));
-    if (bit(store_clk_ne, 8)) cpy_inv(&store_l8, &sprite_lbus, sizeof(sprite_lbus));
-    if (bit(store_clk_ne, 9)) cpy_inv(&store_l9, &sprite_lbus, sizeof(sprite_lbus));
+    if (bit(store_clk_ne, 0)) cpy_inv(store_l0, sprite_lbus);
+    if (bit(store_clk_ne, 1)) cpy_inv(store_l1, sprite_lbus);
+    if (bit(store_clk_ne, 2)) cpy_inv(store_l2, sprite_lbus);
+    if (bit(store_clk_ne, 3)) cpy_inv(store_l3, sprite_lbus);
+    if (bit(store_clk_ne, 4)) cpy_inv(store_l4, sprite_lbus);
+    if (bit(store_clk_ne, 5)) cpy_inv(store_l5, sprite_lbus);
+    if (bit(store_clk_ne, 6)) cpy_inv(store_l6, sprite_lbus);
+    if (bit(store_clk_ne, 7)) cpy_inv(store_l7, sprite_lbus);
+    if (bit(store_clk_ne, 8)) cpy_inv(store_l8, sprite_lbus);
+    if (bit(store_clk_ne, 9)) cpy_inv(store_l9, sprite_lbus);
 
-    if (bit(store_clk_pe, 0)) cpy(&store_x0, &oam_temp_b, sizeof(oam_temp_b));
-    if (bit(store_clk_pe, 1)) cpy(&store_x1, &oam_temp_b, sizeof(oam_temp_b));
-    if (bit(store_clk_pe, 2)) cpy(&store_x2, &oam_temp_b, sizeof(oam_temp_b));
-    if (bit(store_clk_pe, 3)) cpy(&store_x3, &oam_temp_b, sizeof(oam_temp_b));
-    if (bit(store_clk_pe, 4)) cpy(&store_x4, &oam_temp_b, sizeof(oam_temp_b));
-    if (bit(store_clk_pe, 5)) cpy(&store_x5, &oam_temp_b, sizeof(oam_temp_b));
-    if (bit(store_clk_pe, 6)) cpy(&store_x6, &oam_temp_b, sizeof(oam_temp_b));
-    if (bit(store_clk_pe, 7)) cpy(&store_x7, &oam_temp_b, sizeof(oam_temp_b));
-    if (bit(store_clk_pe, 8)) cpy(&store_x8, &oam_temp_b, sizeof(oam_temp_b));
-    if (bit(store_clk_pe, 9)) cpy(&store_x9, &oam_temp_b, sizeof(oam_temp_b));
+    if (bit(store_clk_pe, 0)) cpy(store_x0, oam_temp_b);
+    if (bit(store_clk_pe, 1)) cpy(store_x1, oam_temp_b);
+    if (bit(store_clk_pe, 2)) cpy(store_x2, oam_temp_b);
+    if (bit(store_clk_pe, 3)) cpy(store_x3, oam_temp_b);
+    if (bit(store_clk_pe, 4)) cpy(store_x4, oam_temp_b);
+    if (bit(store_clk_pe, 5)) cpy(store_x5, oam_temp_b);
+    if (bit(store_clk_pe, 6)) cpy(store_x6, oam_temp_b);
+    if (bit(store_clk_pe, 7)) cpy(store_x7, oam_temp_b);
+    if (bit(store_clk_pe, 8)) cpy(store_x8, oam_temp_b);
+    if (bit(store_clk_pe, 9)) cpy(store_x9, oam_temp_b);
 
-    if (bit(store_rst, 0)) set(sizeof(store_x0), &store_x0);
-    if (bit(store_rst, 1)) set(sizeof(store_x1), &store_x1);
-    if (bit(store_rst, 2)) set(sizeof(store_x2), &store_x2);
-    if (bit(store_rst, 3)) set(sizeof(store_x3), &store_x3);
-    if (bit(store_rst, 4)) set(sizeof(store_x4), &store_x4);
-    if (bit(store_rst, 5)) set(sizeof(store_x5), &store_x5);
-    if (bit(store_rst, 6)) set(sizeof(store_x6), &store_x6);
-    if (bit(store_rst, 7)) set(sizeof(store_x7), &store_x7);
-    if (bit(store_rst, 8)) set(sizeof(store_x8), &store_x8);
-    if (bit(store_rst, 9)) set(sizeof(store_x9), &store_x9);
+    if (bit(store_rst, 0)) set(store_x0);
+    if (bit(store_rst, 1)) set(store_x1);
+    if (bit(store_rst, 2)) set(store_x2);
+    if (bit(store_rst, 3)) set(store_x3);
+    if (bit(store_rst, 4)) set(store_x4);
+    if (bit(store_rst, 5)) set(store_x5);
+    if (bit(store_rst, 6)) set(store_x6);
+    if (bit(store_rst, 7)) set(store_x7);
+    if (bit(store_rst, 8)) set(store_x8);
+    if (bit(store_rst, 9)) set(store_x9);
 
   }
 
@@ -2018,16 +2016,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   else {
     uint8_t px = (uint8_t)pack(pix_count);
 
-    bool M0 = px == pack(8, &store_x0);
-    bool M1 = px == pack(8, &store_x1);
-    bool M2 = px == pack(8, &store_x2);
-    bool M3 = px == pack(8, &store_x3);
-    bool M4 = px == pack(8, &store_x4);
-    bool M5 = px == pack(8, &store_x5);
-    bool M6 = px == pack(8, &store_x6);
-    bool M7 = px == pack(8, &store_x7);
-    bool M8 = px == pack(8, &store_x8);
-    bool M9 = px == pack(8, &store_x9);
+    bool M0 = px == pack(store_x0);
+    bool M1 = px == pack(store_x1);
+    bool M2 = px == pack(store_x2);
+    bool M3 = px == pack(store_x3);
+    bool M4 = px == pack(store_x4);
+    bool M5 = px == pack(store_x5);
+    bool M6 = px == pack(store_x6);
+    bool M7 = px == pack(store_x7);
+    bool M8 = px == pack(store_x8);
+    bool M9 = px == pack(store_x9);
 
     FEPO_STORE_MATCHp = M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9;
 
@@ -2273,17 +2271,17 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //----------------------------------------
     // Pixel pipes
 
-    uint8_t tpix_a = (uint8_t)pack_inv(8, &tile_temp_a.LEGU_TILE_DA0n);
-    uint8_t tpix_b = (uint8_t)pack(8, &tile_temp_b.RAWU_TILE_DB0p);
-    uint8_t spix_a = (uint8_t)pack_inv(8, &sprite_pix_a.REWO_SPRITE_DA0n);
-    uint8_t spix_b = (uint8_t)pack_inv(8, &sprite_pix_b.PEFO_SPRITE_DB0n);
+    auto tpix_a = pack_inv(tile_temp_a);
+    auto tpix_b = pack(tile_temp_b);
+    auto spix_a = pack_inv(sprite_pix_a);
+    auto spix_b = pack_inv(sprite_pix_b);
 
-    uint8_t spipe_a = (uint8_t)pack(8, &spr_pipe_a);
-    uint8_t spipe_b = (uint8_t)pack(8, &spr_pipe_b);
-    uint8_t bpipe_a = (uint8_t)pack(8, &bgw_pipe_a);
-    uint8_t bpipe_b = (uint8_t)pack(8, &bgw_pipe_b);
-    uint8_t mpipe   = (uint8_t)pack(8, &mask_pipe);
-    uint8_t ppipe   = (uint8_t)pack(8, &pal_pipe);
+    auto spipe_a = pack(spr_pipe_a);
+    auto spipe_b = pack(spr_pipe_b);
+    auto bpipe_a = pack(bgw_pipe_a);
+    auto bpipe_b = pack(bgw_pipe_b);
+    auto mpipe   = pack(mask_pipe);
+    auto ppipe   = pack(pal_pipe);
 
     if (posedge(SACU_CLKPIPE_old, SACU_CLKPIPE_new)) {
       spipe_a = (spipe_a << 1) | 0;
@@ -2298,19 +2296,19 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (!bit(NYXU_BFETCH_RSTn)) bpipe_b = tpix_b;
 
     if (bit(sf.WUTY_SFETCH_DONE_TRIGp.state)) {
-      uint8_t smask = (spipe_a | spipe_b);
+      auto smask = (spipe_a | spipe_b);
       spipe_a = (spipe_a & smask) | (spix_a & ~smask);
       spipe_b = (spipe_b & smask) | (spix_b & ~smask);
       mpipe = bit(oam_temp_b.DEPO_OAM_DB7p.state) ? mpipe | ~smask : mpipe & smask;
       ppipe = bit(oam_temp_b.GOMO_OAM_DB4p.state) ? ppipe | ~smask : ppipe & smask;
     }
 
-    unpack(spipe_a, 8, &spr_pipe_a);
-    unpack(spipe_b, 8, &spr_pipe_b);
-    unpack(bpipe_a, 8, &bgw_pipe_a);
-    unpack(bpipe_b, 8, &bgw_pipe_b);
-    unpack(mpipe,   8, &mask_pipe);
-    unpack(ppipe,   8, &pal_pipe);
+    unpack(spipe_a, spr_pipe_a);
+    unpack(spipe_b, spr_pipe_b);
+    unpack(bpipe_a, bgw_pipe_a);
+    unpack(bpipe_b, bgw_pipe_b);
+    unpack(mpipe,   mask_pipe);
+    unpack(ppipe,   pal_pipe);
 
     //----------------------------------------
     // Pipe merge and output
@@ -2320,12 +2318,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire PIX_SP_LOp = and2(spr_pipe_a.WUFY_SPR_PIPE_A7.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
     wire PIX_SP_HIp = and2(spr_pipe_b.VUPY_SPR_PIPE_B7.state, ~reg_lcdc.XYLO_LCDC_SPENn.state);
 
-    int pal_idx = 0;
-    uint8_t pal = 0;
+    auto pal_idx = 0;
+    auto pal = 0;
 
-    uint8_t bgp  = (uint8_t)pack(8, &reg_bgp.PAVO_BGP_D0n);
-    uint8_t obp0 = (uint8_t)pack(8, &reg_obp0.XUFU_OBP0_D0n);
-    uint8_t obp1 = (uint8_t)pack(8, &reg_obp1.MOXY_OBP1_D0n);
+    auto bgp  = pack(reg_bgp);
+    auto obp0 = pack(reg_obp0);
+    auto obp1 = pack(reg_obp1);
 
     if (bit(or2(PIX_SP_HIp, PIX_SP_LOp))) {
       pal_idx = pack(PIX_SP_LOp, PIX_SP_HIp);

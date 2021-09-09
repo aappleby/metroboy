@@ -1229,7 +1229,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //-----------------------------------------------------------------------------
 
-  //auto cpu_addr_old = (uint16_t)pack(16, (BitBase*)&old_bus.BUS_CPU_A00p);
+  auto cpu_addr_old = pack(cpu_abus_old);
   //auto cpu_addr_vram_old = (cpu_addr_old >= 0x8000) && (cpu_addr_old <= 0x9FFF);
   //auto cpu_addr_oam_old = (cpu_addr_old >= 0xFE00) && (cpu_addr_old <= 0xFEFF);
   //auto cpu_data_old = (uint8_t)pack(8, (BitBase*)&cpu_dbus_old.BUS_CPU_D00p);
@@ -1542,7 +1542,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   tock_bootrom_logic();
 
   //auto dma_addr_old = pack_inv(16, &dma.NAKY_DMA_A00p);
-  //auto dma_running_old = bit(dma.MATU_DMA_RUNNINGp.state);
+  auto dma_running_old = bit(dma.MATU_DMA_RUNNINGp.state);
   tock_dma_logic();
   auto dma_running_new = bit(dma.MATU_DMA_RUNNINGp.state);
   auto dma_addr_new = pack_inv(16, &dma.NAKY_DMA_A00p);
@@ -1552,6 +1552,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // Sprite scanner
 
   // This is still yeech
+
+  bool scanning_old = bit(sprite_scanner.ACYL_SCANNINGp.state);
 
   {
     auto scan_count_old = pack(scan_counter);
@@ -1766,25 +1768,24 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-
-  //----------------------------------------
-  // OAM temp register B stores sprite X coordinate during scan, so we need a copy of it for later.
-
-  auto oam_temp_b_old = oam_temp_b;
-
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
 
   // This chunk is weird.
 
-  wire oam_busy_new = (cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFEFF) || dma_running_new;
-
-  uint8_t BYCU_OAM_CLKp = (oam_busy_new ? CLK_ABCDxxxx : 1) && (!rendering_new || (sfetch_phase_new != 3)) && (!scanning_new || CLK_AxxxExxx);
-
-
   {
+    auto CLK_ABCDxxxx_old = gen_clk_old(0b11110000);
+    auto CLK_ABCDxxxx_new = gen_clk_new(0b11110000);
+    auto CLK_AxxxExxx_old = gen_clk_old(0b10001000);
+    auto CLK_AxxxExxx_new = gen_clk_new(0b10001000);
+
+    wire oam_busy_old = (cpu_addr_old >= 0xFE00 && cpu_addr_old <= 0xFEFF) || dma_running_old;
+    uint8_t BYCU_OAM_CLKp_old = (oam_busy_old ? CLK_ABCDxxxx_old : 1) && (!rendering_old || (sfetch_phase_old != 3)) && (!scanning_old || CLK_AxxxExxx_old);
+
+    wire oam_busy_new = (cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFEFF) || dma_running_new;
+    uint8_t BYCU_OAM_CLKp_new = (oam_busy_new ? CLK_ABCDxxxx_new : 1) && (!rendering_new || (sfetch_phase_new != 3)) && (!scanning_new || CLK_AxxxExxx_new);
     auto clk_old = oam_temp_a.XUSO_OAM_DA0p.get_clk();
-    auto clk_new = BYCU_OAM_CLKp;
+    auto clk_new = BYCU_OAM_CLKp_new;
 
     if (posedge(clk_old, clk_new)) {
       cpy_inv(oam_temp_a, oam_latch_a);

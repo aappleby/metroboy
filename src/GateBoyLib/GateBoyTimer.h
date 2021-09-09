@@ -23,8 +23,6 @@ struct RegDIV {
     UPOF_DIV15p.state = 0b00011001;
   }
 
-  int get_div() const  { return pack(16, &UKUP_DIV00p); }
-
   void force_set_div(uint16_t div) {
     uint16_t div_a = div;
     uint16_t div_b = ((~div) << 2);
@@ -68,8 +66,6 @@ struct RegDIV {
 //-----------------------------------------------------------------------------
 
 struct RegTIMA {
-  int get() const { return pack(8,  &REGA_TIMA0p); }
-
   void force_set_tima(uint8_t tima) {
     uint16_t tima_a = tima;
     uint16_t tima_b = ((~tima) << 2);
@@ -97,8 +93,6 @@ struct RegTIMA {
 //-----------------------------------------------------------------------------
 
 struct RegTMA {
-  int get() const  { return pack(8,  &SABU_TMA0p); }
-
   /*_p03.SABU*/ DFF17 SABU_TMA0p; // xxxxxxxH
   /*_p03.NYKE*/ DFF17 NYKE_TMA1p; // xxxxxxxH
   /*_p03.MURU*/ DFF17 MURU_TMA2p; // xxxxxxxH
@@ -112,8 +106,6 @@ struct RegTMA {
 //-----------------------------------------------------------------------------
 
 struct RegTAC {
-  int get() const  { return pack(3,  &SOPU_TAC0p); }
-
   /*_p03.SOPU*/ DFF17 SOPU_TAC0p; // xxxxxxxH
   /*_p03.SAMY*/ DFF17 SAMY_TAC1p; // xxxxxxxH
   /*_p03.SABO*/ DFF17 SABO_TAC2p; // xxxxxxxH

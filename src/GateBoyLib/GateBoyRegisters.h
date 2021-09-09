@@ -45,9 +45,6 @@ struct PixCount {
     SYBE_PX7p.state = 0b00011011;
   }
 
-  int get_old() { return pack(8, &XEHO_PX0p); }
-  int get_new() { return pack(8, &XEHO_PX0p); }
-
   /*_p21.XEHO*/ DFF17 XEHO_PX0p; // AxCxExGx
   /*_p21.SAVY*/ DFF17 SAVY_PX1p; // AxCxExGx
   /*_p21.XODU*/ DFF17 XODU_PX2p; // AxCxExGx
@@ -183,9 +180,6 @@ struct RegLY {
     LAFO_LY7p.state = 0b00011010;
   }
 
-  uint8_t get_old() const  { return (uint8_t)pack(8, (BitBase*)&MUWY_LY0p); }
-  uint8_t get_new() const  { return (uint8_t)pack(8, (BitBase*)&MUWY_LY0p); }
-
   /*#p21.MUWY*/ DFF17 MUWY_LY0p;  // xxCxxxGx Ticks on G, reset on C
   /*#p21.MYRO*/ DFF17 MYRO_LY1p;  // xxCxxxGx Ticks on G, reset on C
   /*#p21.LEXA*/ DFF17 LEXA_LY2p;  // xxCxxxGx Ticks on G, reset on C
@@ -209,9 +203,6 @@ struct RegLX {
     TAHA_LX5p.state = 0b00011011;
     TYRY_LX6p.state = 0b00011001;
   }
-
-  uint8_t get_old() const  { return (uint8_t)pack(7, (BitBase*)&SAXO_LX0p); }
-  uint8_t get_new() const  { return (uint8_t)pack(7, (BitBase*)&SAXO_LX0p); }
 
   /*#p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
   /*#p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G

@@ -1552,15 +1552,15 @@ TestResults GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000100);
 
-    EXPECT_EQ(0xFD, gb.reg_tima.get());
+    EXPECT_EQ(0xFD, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0xFE, gb.reg_tima.get());
+    EXPECT_EQ(0xFE, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0xFF, gb.reg_tima.get());
+    EXPECT_EQ(0xFF, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0x80, gb.reg_tima.get());
+    EXPECT_EQ(0x80, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0x81, gb.reg_tima.get());
+    EXPECT_EQ(0x81, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 2048, false);
     if (!results.fail_count) LOG_B("TAC 0b100 pass\n");
   }
@@ -1574,15 +1574,15 @@ TestResults GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000101);
 
-    EXPECT_EQ(0xFD, gb.reg_tima.get());
+    EXPECT_EQ(0xFD, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0xFE, gb.reg_tima.get());
+    EXPECT_EQ(0xFE, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0xFF, gb.reg_tima.get());
+    EXPECT_EQ(0xFF, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0x80, gb.reg_tima.get());
+    EXPECT_EQ(0x80, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0x81, gb.reg_tima.get());
+    EXPECT_EQ(0x81, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 32, false);
     if (!results.fail_count) LOG_B("TAC 0b101 pass\n");
   }
@@ -1595,15 +1595,15 @@ TestResults GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000110);
 
-    EXPECT_EQ(0xFD, gb.reg_tima.get());
+    EXPECT_EQ(0xFD, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0xFE, gb.reg_tima.get());
+    EXPECT_EQ(0xFE, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0xFF, gb.reg_tima.get());
+    EXPECT_EQ(0xFF, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0x80, gb.reg_tima.get());
+    EXPECT_EQ(0x80, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0x81, gb.reg_tima.get());
+    EXPECT_EQ(0x81, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 128, false);
     if (!results.fail_count) LOG_B("TAC 0b110 pass\n");
   }
@@ -1616,15 +1616,15 @@ TestResults GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000111);
 
-    EXPECT_EQ(0xFD, gb.reg_tima.get());
+    EXPECT_EQ(0xFD, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0xFE, gb.reg_tima.get());
+    EXPECT_EQ(0xFE, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0xFF, gb.reg_tima.get());
+    EXPECT_EQ(0xFF, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0x80, gb.reg_tima.get());
+    EXPECT_EQ(0x80, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0x81, gb.reg_tima.get());
+    EXPECT_EQ(0x81, pack(gb.reg_tima));
     gb.run_phases(cart_blob, 512, false);
     if (!results.fail_count) LOG_B("TAC 0b111 pass\n");
   }
@@ -1733,21 +1733,21 @@ TestResults GateBoyTests::test_ppu() {
     gb.dbg_write(cart_blob, ADDR_LCDC, 0x80);
 
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
-    for (int i = 0; i < 153; i++) {
-      EXPECT_EQ(i, gb.reg_ly.get_old());
+    for (uint32_t i = 0; i < 153; i++) {
+      EXPECT_EQ(i, pack(gb.reg_ly));
       gb.run_phases(cart_blob, 114 * 8, false);
     }
 
     // LY is reset early on the last line, we should be at 0 now.
-    EXPECT_EQ(0, gb.reg_ly.get_old());
+    EXPECT_EQ(0, pack(gb.reg_ly));
     gb.run_phases(cart_blob, 114 * 8, false);
 
     // And we should be at 0 again
-    EXPECT_EQ(0, gb.reg_ly.get_old());
+    EXPECT_EQ(0, pack(gb.reg_ly));
     gb.run_phases(cart_blob, 114 * 8, false);
 
     // And now we should be at 1.
-    EXPECT_EQ(1, gb.reg_ly.get_old());
+    EXPECT_EQ(1, pack(gb.reg_ly));
 
     if (!results.fail_count) LOG_B("Pass");
   }

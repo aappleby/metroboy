@@ -568,8 +568,8 @@ Step controls:
   {
     memset(overlay, 0, sizeof(overlay));
 
-    int fb_x = gb.pix_count.get_old() - 8;
-    int fb_y = gb.reg_ly.get_old();
+    int fb_x = pack(gb.pix_count) - 8;
+    int fb_y = pack(gb.reg_ly);
 
     if (fb_y >= 0 && fb_y < 144) {
       for (int x = 0; x < 160; x++) {

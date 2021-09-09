@@ -72,7 +72,7 @@ struct GateBoy {
   //----------------------------------------
 
   void check_div() const {
-    int div_val = div.get_div();
+    int div_val = pack(div);
     if (div_val != BOOT_DIV) {
       LOG_R("div fail!\n");
       *reinterpret_cast<int*>(SENTINEL4) = 1;

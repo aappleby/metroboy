@@ -84,7 +84,13 @@ struct CpuAck {
   /*_SIG_CPU_ACK_JOYPAD*/ SigIn  SIG_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joy int ack
 };
 
-struct GateBoyInterrupts {
+struct InterruptControl {
+  // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
+  /*_p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
+  /*_SIG_CPU_WAKE*/ SigOut SIG_CPU_WAKE;  // top right wire by itself <- P02.AWOB
+
+  /*#p03.NYDU*/ DFF17 NYDU_TIMA7p_DELAY;    // Axxxxxxx
+  /*#p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // AxxxExxx
 };
 
 //------------------------------------------------------------------------------------------------------------------------

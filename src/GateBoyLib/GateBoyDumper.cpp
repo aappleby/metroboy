@@ -97,20 +97,20 @@ void GateBoy::dump_interrupts(Dumper& d) {
 }
 
 void GateBoy::dump_joypad(Dumper& d) {
-  d.dump_bitp("AWOB_WAKE_CPU   : ", joy.AWOB_WAKE_CPU.state);
-  d.dump_bitp("SIG_CPU_WAKE    : ", joy.SIG_CPU_WAKE.state);
+  d.dump_bitp("AWOB_WAKE_CPU   : ", int_ctrl.AWOB_WAKE_CPU.state);
+  d.dump_bitp("SIG_CPU_WAKE    : ", int_ctrl.SIG_CPU_WAKE.state);
   d("\n");
-  d.dump_bitp("PIN_67_JOY_P10   : ", joy.PIN_67_JOY_P10.state);
-  d.dump_bitp("PIN_66_JOY_P11   : ", joy.PIN_66_JOY_P11.state);
-  d.dump_bitp("PIN_65_JOY_P12   : ", joy.PIN_65_JOY_P12.state);
-  d.dump_bitp("PIN_64_JOY_P13   : ", joy.PIN_64_JOY_P13.state);
-  d.dump_bitp("PIN_63_JOY_P14   : ", joy.PIN_63_JOY_P14.state);
-  d.dump_bitp("PIN_62_JOY_P15   : ", joy.PIN_62_JOY_P15.state);
+  d.dump_bitp("PIN_67_JOY_P10   : ", joy_ext.PIN_67_JOY_P10.state);
+  d.dump_bitp("PIN_66_JOY_P11   : ", joy_ext.PIN_66_JOY_P11.state);
+  d.dump_bitp("PIN_65_JOY_P12   : ", joy_ext.PIN_65_JOY_P12.state);
+  d.dump_bitp("PIN_64_JOY_P13   : ", joy_ext.PIN_64_JOY_P13.state);
+  d.dump_bitp("PIN_63_JOY_P14   : ", joy_ext.PIN_63_JOY_P14.state);
+  d.dump_bitp("PIN_62_JOY_P15   : ", joy_ext.PIN_62_JOY_P15.state);
   d("\n");
-  d.dump_bitp("KEVU_JOYP_L0n   : ", joy.KEVU_JOYP_L0n.state);
-  d.dump_bitp("KAPA_JOYP_L1n   : ", joy.KAPA_JOYP_L1n.state);
-  d.dump_bitp("KEJA_JOYP_L2n   : ", joy.KEJA_JOYP_L2n.state);
-  d.dump_bitp("KOLO_JOYP_L3n   : ", joy.KOLO_JOYP_L3n.state);
+  d.dump_bitp("KEVU_JOYP_L0n   : ", joy_latch.KEVU_JOYP_L0n.state);
+  d.dump_bitp("KAPA_JOYP_L1n   : ", joy_latch.KAPA_JOYP_L1n.state);
+  d.dump_bitp("KEJA_JOYP_L2n   : ", joy_latch.KEJA_JOYP_L2n.state);
+  d.dump_bitp("KOLO_JOYP_L3n   : ", joy_latch.KOLO_JOYP_L3n.state);
   d("\n");
   d.dump_bitp("BATU_JP_GLITCH0 : ", joy_int.BATU_JP_GLITCH0.state);
   d.dump_bitp("ACEF_JP_GLITCH1 : ", joy_int.ACEF_JP_GLITCH1.state);
@@ -121,8 +121,8 @@ void GateBoy::dump_joypad(Dumper& d) {
   //d.dump_bitp("KECY_DBG_D1     : ", joy.KECY_DBG_D1.state);
   //d.dump_bitp("JALE_DBG_D2     : ", joy.JALE_DBG_D2.state);
   //d.dump_bitp("KYME_DBG_D3     : ", joy.KYME_DBG_D3.state);
-  d.dump_bitp("KELY_JOYP_UDLR  : ", joy.KELY_JOYP_UDLRp.state);
-  d.dump_bitp("COFY_JOYP_ABCS  : ", joy.COFY_JOYP_ABCSp.state);
+  d.dump_bitp("KELY_JOYP_UDLR  : ", joy_reg.KELY_JOYP_UDLRp.state);
+  d.dump_bitp("COFY_JOYP_ABCS  : ", joy_reg.COFY_JOYP_ABCSp.state);
   //d.dump_bitp("KUKO_DBG_D6     : ", joy.KUKO_DBG_D6.state);
   //d.dump_bitp("KERU_DBG_D7     : ", joy.KERU_DBG_D7.state);
 }
@@ -279,8 +279,8 @@ void GateBoy::dump_timer(Dumper& d) {
   d.dump_slice2p("FF05 TIMA : ", &reg_tima, 8);
   d.dump_slice2p("FF06 TMA  : ", &reg_tma, 8);
   d.dump_slice2p("FF07 TAC  : ", &reg_tac, 3);
-  d.dump_bitp   ("NYDU_TIMA7p_DELAY    : ", NYDU_TIMA7p_DELAY.state);
-  d.dump_bitp   ("MOBA_TIMER_OVERFLOWp : ", MOBA_TIMER_OVERFLOWp.state);
+  d.dump_bitp   ("NYDU_TIMA7p_DELAY    : ", int_ctrl.NYDU_TIMA7p_DELAY.state);
+  d.dump_bitp   ("MOBA_TIMER_OVERFLOWp : ", int_ctrl.MOBA_TIMER_OVERFLOWp.state);
 }
 
 void GateBoy::dump_resets(Dumper& d) {

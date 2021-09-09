@@ -108,7 +108,7 @@ void GateBoy::tock_interrupts_gates()
 
   /*_p02.LOPE*/ reg_if.LOPE_FF0F_D0p.dff22(VYPU_INT_VBLANKp,              MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, SIG_VCC.out_new());
   /*_p02.LALU*/ reg_if.LALU_FF0F_D1p.dff22(VOTY_INT_STATp,                MODY_FF0F_SET1n, MOVU_FF0F_RST1n, SIG_VCC.out_new());
-  /*_p02.NYBO*/ reg_if.NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp.qp_new(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, SIG_VCC.out_new());
+  /*_p02.NYBO*/ reg_if.NYBO_FF0F_D2p.dff22(int_ctrl.MOBA_TIMER_OVERFLOWp.qp_new(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, SIG_VCC.out_new());
   /*_p02.UBUL*/ reg_if.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), TOME_FF0F_SET3n, TUNY_FF0F_RST3n, SIG_VCC.out_new());
   /*_p02.ULAK*/ reg_if.ULAK_FF0F_D4p.dff22(ASOK_INT_JOYp,                 TOGA_FF0F_SET4n, TYME_FF0F_RST4n, SIG_VCC.out_new());
 

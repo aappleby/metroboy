@@ -26,8 +26,8 @@ void GateBoy::tock_joypad_gates() {
 
   // this _has_ to reset to 1
 
-  /*#p05.KELY*/ joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D04p.out_old());
-  /*#p05.COFY*/ joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D05p.out_old());
+  /*#p05.KELY*/ joy_reg.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D04p.out_old());
+  /*#p05.COFY*/ joy_reg.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D05p.out_old());
 
   ///*_p05.KUKO*/ KUKO_DBG_D6    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[6].qp_old());
   ///*_p05.KERU*/ KERU_DBG_D7    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[7].qp_old());
@@ -76,21 +76,21 @@ void GateBoy::tock_joypad_gates() {
 
   // at boot p14 and p15 are low externally, so p14.a = p14.d = p15.a = p15.d = 1
 
-  /*_p05.KARU*/ wire KARU = or2(joy.KELY_JOYP_UDLRp.qn_new(), KURA_FF60_D0n);
-  /*_p05.CELA*/ wire CELA = or2(joy.COFY_JOYP_ABCSp.qn_new(), KURA_FF60_D0n);
+  /*_p05.KARU*/ wire KARU = or2(joy_reg.KELY_JOYP_UDLRp.qn_new(), KURA_FF60_D0n);
+  /*_p05.CELA*/ wire CELA = or2(joy_reg.COFY_JOYP_ABCSp.qn_new(), KURA_FF60_D0n);
 
-  /*#PIN_63*/ joy.PIN_63_JOY_P14.pin_out(KARU, joy.KELY_JOYP_UDLRp.qn_new());
-  /*#PIN_62*/ joy.PIN_62_JOY_P15.pin_out(CELA, joy.COFY_JOYP_ABCSp.qn_new());
+  /*#PIN_63*/ joy_ext.PIN_63_JOY_P14.pin_out(KARU, joy_reg.KELY_JOYP_UDLRp.qn_new());
+  /*#PIN_62*/ joy_ext.PIN_62_JOY_P15.pin_out(CELA, joy_reg.COFY_JOYP_ABCSp.qn_new());
 
   bool EXT_button0, EXT_button1, EXT_button2, EXT_button3;
 
-  if (!bit(joy.PIN_63_JOY_P14.qp_ext_new())) {
+  if (!bit(joy_ext.PIN_63_JOY_P14.qp_ext_new())) {
     EXT_button0 = !bit(sys_buttons, 0); // RIGHT
     EXT_button1 = !bit(sys_buttons, 1); // LEFT
     EXT_button2 = !bit(sys_buttons, 2); // UP
     EXT_button3 = !bit(sys_buttons, 3); // DOWN
   }
-  else if (!bit(joy.PIN_62_JOY_P15.qp_ext_new())) {
+  else if (!bit(joy_ext.PIN_62_JOY_P15.qp_ext_new())) {
     EXT_button0 = !bit(sys_buttons, 4); // A
     EXT_button1 = !bit(sys_buttons, 5); // B
     EXT_button2 = !bit(sys_buttons, 6); // SELECT
@@ -103,10 +103,10 @@ void GateBoy::tock_joypad_gates() {
     EXT_button3 = 1;
   }
 
-  /*_PIN_67*/ joy.PIN_67_JOY_P10.pin_in(EXT_button0);
-  /*_PIN_66*/ joy.PIN_66_JOY_P11.pin_in(EXT_button1);
-  /*_PIN_65*/ joy.PIN_65_JOY_P12.pin_in(EXT_button2);
-  /*_PIN_64*/ joy.PIN_64_JOY_P13.pin_in(EXT_button3);
+  /*_PIN_67*/ joy_ext.PIN_67_JOY_P10.pin_in(EXT_button0);
+  /*_PIN_66*/ joy_ext.PIN_66_JOY_P11.pin_in(EXT_button1);
+  /*_PIN_65*/ joy_ext.PIN_65_JOY_P12.pin_in(EXT_button2);
+  /*_PIN_64*/ joy_ext.PIN_64_JOY_P13.pin_in(EXT_button3);
 
   // debug stuff
 #if 0
@@ -125,10 +125,10 @@ void GateBoy::tock_joypad_gates() {
   PIN_64_JOY_P13.pin_out_hilo2(KORY, KALE);
 #endif
 
-  /*#p02.KERY*/ wire KERY_ANY_BUTTONp = nor4(joy.PIN_64_JOY_P13.qp_int_new(), joy.PIN_65_JOY_P12.qp_int_new(), joy.PIN_66_JOY_P11.qp_int_new(), joy.PIN_67_JOY_P10.qp_int_new());
+  /*#p02.KERY*/ wire KERY_ANY_BUTTONp = nor4(joy_ext.PIN_64_JOY_P13.qp_int_new(), joy_ext.PIN_65_JOY_P12.qp_int_new(), joy_ext.PIN_66_JOY_P11.qp_int_new(), joy_ext.PIN_67_JOY_P10.qp_int_new());
 
-  /*_p02.AWOB*/ joy.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), KERY_ANY_BUTTONp);
-  /*_SIG_CPU_WAKE*/ joy.SIG_CPU_WAKE.sig_out(joy.AWOB_WAKE_CPU.qp_new());
+  /*_p02.AWOB*/ int_ctrl.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), KERY_ANY_BUTTONp);
+  /*_SIG_CPU_WAKE*/ int_ctrl.SIG_CPU_WAKE.sig_out(int_ctrl.AWOB_WAKE_CPU.qp_new());
 
   // DFF17_01 SC
   // DFF17_02 << CLKp
@@ -153,17 +153,17 @@ void GateBoy::tock_joypad_gates() {
   /*_p02.ACEF*/ joy_int.ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx(), ALUR_SYS_RSTn(), joy_int.BATU_JP_GLITCH0.qp_old());
   /*_p02.BATU*/ joy_int.BATU_JP_GLITCH0.dff17(BOGA_Axxxxxxx(), ALUR_SYS_RSTn(), KERY_ANY_BUTTONp);
 
-  /*#p05.KEVU*/ joy.KEVU_JOYP_L0n.tp_latchn(BYZO_FF00_RDn, joy.PIN_67_JOY_P10.qp_int_new()); // A / Right
-  /*#p05.KAPA*/ joy.KAPA_JOYP_L1n.tp_latchn(BYZO_FF00_RDn, joy.PIN_66_JOY_P11.qp_int_new()); // B / Left
-  /*#p05.KEJA*/ joy.KEJA_JOYP_L2n.tp_latchn(BYZO_FF00_RDn, joy.PIN_65_JOY_P12.qp_int_new()); // C / Up
-  /*#p05.KOLO*/ joy.KOLO_JOYP_L3n.tp_latchn(BYZO_FF00_RDn, joy.PIN_64_JOY_P13.qp_int_new()); // S / Down
+  /*#p05.KEVU*/ joy_latch.KEVU_JOYP_L0n.tp_latchn(BYZO_FF00_RDn, joy_ext.PIN_67_JOY_P10.qp_int_new()); // A / Right
+  /*#p05.KAPA*/ joy_latch.KAPA_JOYP_L1n.tp_latchn(BYZO_FF00_RDn, joy_ext.PIN_66_JOY_P11.qp_int_new()); // B / Left
+  /*#p05.KEJA*/ joy_latch.KEJA_JOYP_L2n.tp_latchn(BYZO_FF00_RDn, joy_ext.PIN_65_JOY_P12.qp_int_new()); // C / Up
+  /*#p05.KOLO*/ joy_latch.KOLO_JOYP_L3n.tp_latchn(BYZO_FF00_RDn, joy_ext.PIN_64_JOY_P13.qp_int_new()); // S / Down
 
-  /*#p05.KEMA*/ triwire KEMA_JOY0_TO_CD0 = tri6_nn(BYZO_FF00_RDn, joy.KEVU_JOYP_L0n.qp_new());
-  /*#p05.KURO*/ triwire KURO_JOY1_TO_CD1 = tri6_nn(BYZO_FF00_RDn, joy.KAPA_JOYP_L1n.qp_new());
-  /*#p05.KUVE*/ triwire KUVE_JOY2_TO_CD2 = tri6_nn(BYZO_FF00_RDn, joy.KEJA_JOYP_L2n.qp_new());
-  /*#p05.JEKU*/ triwire JEKU_JOY3_TO_CD3 = tri6_nn(BYZO_FF00_RDn, joy.KOLO_JOYP_L3n.qp_new());
-  /*#p05.KOCE*/ triwire KOCE_JOY4_TO_CD4 = tri6_nn(BYZO_FF00_RDn, joy.KELY_JOYP_UDLRp.qn_new());
-  /*#p05.CUDY*/ triwire CUDY_JOY5_TO_CD5 = tri6_nn(BYZO_FF00_RDn, joy.COFY_JOYP_ABCSp.qn_new());
+  /*#p05.KEMA*/ triwire KEMA_JOY0_TO_CD0 = tri6_nn(BYZO_FF00_RDn, joy_latch.KEVU_JOYP_L0n.qp_new());
+  /*#p05.KURO*/ triwire KURO_JOY1_TO_CD1 = tri6_nn(BYZO_FF00_RDn, joy_latch.KAPA_JOYP_L1n.qp_new());
+  /*#p05.KUVE*/ triwire KUVE_JOY2_TO_CD2 = tri6_nn(BYZO_FF00_RDn, joy_latch.KEJA_JOYP_L2n.qp_new());
+  /*#p05.JEKU*/ triwire JEKU_JOY3_TO_CD3 = tri6_nn(BYZO_FF00_RDn, joy_latch.KOLO_JOYP_L3n.qp_new());
+  /*#p05.KOCE*/ triwire KOCE_JOY4_TO_CD4 = tri6_nn(BYZO_FF00_RDn, joy_reg.KELY_JOYP_UDLRp.qn_new());
+  /*#p05.CUDY*/ triwire CUDY_JOY5_TO_CD5 = tri6_nn(BYZO_FF00_RDn, joy_reg.COFY_JOYP_ABCSp.qn_new());
 
   /*_BUS_CPU_D00p*/ cpu_dbus_new.BUS_CPU_D00p.tri_bus(KEMA_JOY0_TO_CD0);
   /*_BUS_CPU_D01p*/ cpu_dbus_new.BUS_CPU_D01p.tri_bus(KURO_JOY1_TO_CD1);
@@ -179,36 +179,36 @@ void GateBoy::tock_joypad_logic() {
   auto new_addr = pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF00 && DELTA_GH) {
-    joy.KELY_JOYP_UDLRp.state = cpu_dbus_old.BUS_CPU_D04p.out_old();
-    joy.COFY_JOYP_ABCSp.state = cpu_dbus_old.BUS_CPU_D05p.out_old();
-    joy.PIN_63_JOY_P14.pin_out(~joy.KELY_JOYP_UDLRp.state, ~joy.KELY_JOYP_UDLRp.state);
-    joy.PIN_62_JOY_P15.pin_out(~joy.COFY_JOYP_ABCSp.state, ~joy.COFY_JOYP_ABCSp.state);
+    joy_reg.KELY_JOYP_UDLRp.state = cpu_dbus_old.BUS_CPU_D04p.out_old();
+    joy_reg.COFY_JOYP_ABCSp.state = cpu_dbus_old.BUS_CPU_D05p.out_old();
+    joy_ext.PIN_63_JOY_P14.pin_out(~joy_reg.KELY_JOYP_UDLRp.state, ~joy_reg.KELY_JOYP_UDLRp.state);
+    joy_ext.PIN_62_JOY_P15.pin_out(~joy_reg.COFY_JOYP_ABCSp.state, ~joy_reg.COFY_JOYP_ABCSp.state);
   }
 
   bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
 
-  if (bit(joy.PIN_63_JOY_P14.state)) {
+  if (bit(joy_ext.PIN_63_JOY_P14.state)) {
     EXT_button0 = bit(sys_buttons, 0); // RIGHT
     EXT_button1 = bit(sys_buttons, 1); // LEFT
     EXT_button2 = bit(sys_buttons, 2); // UP
     EXT_button3 = bit(sys_buttons, 3); // DOWN
   }
-  else if (bit(joy.PIN_62_JOY_P15.state)) {
+  else if (bit(joy_ext.PIN_62_JOY_P15.state)) {
     EXT_button0 = bit(sys_buttons, 4); // A
     EXT_button1 = bit(sys_buttons, 5); // B
     EXT_button2 = bit(sys_buttons, 6); // SELECT
     EXT_button3 = bit(sys_buttons, 7); // START
   }
 
-  joy.PIN_67_JOY_P10.pin_in(!EXT_button0);
-  joy.PIN_66_JOY_P11.pin_in(!EXT_button1);
-  joy.PIN_65_JOY_P12.pin_in(!EXT_button2);
-  joy.PIN_64_JOY_P13.pin_in(!EXT_button3);
+  joy_ext.PIN_67_JOY_P10.pin_in(!EXT_button0);
+  joy_ext.PIN_66_JOY_P11.pin_in(!EXT_button1);
+  joy_ext.PIN_65_JOY_P12.pin_in(!EXT_button2);
+  joy_ext.PIN_64_JOY_P13.pin_in(!EXT_button3);
 
   wire any_button = or4(EXT_button0, EXT_button1, EXT_button2, EXT_button3);
 
-  joy.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), !any_button);
-  joy.SIG_CPU_WAKE.sig_out(joy.AWOB_WAKE_CPU.qp_new());
+  int_ctrl.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), !any_button);
+  int_ctrl.SIG_CPU_WAKE.sig_out(int_ctrl.AWOB_WAKE_CPU.qp_new());
 
   if (DELTA_HA) {
     joy_int.APUG_JP_GLITCH3.state = joy_int.AGEM_JP_GLITCH2.state;
@@ -218,18 +218,18 @@ void GateBoy::tock_joypad_logic() {
   }
 
   if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF00)) {
-    cpu_dbus_new.BUS_CPU_D00p.state = ~joy.KEVU_JOYP_L0n.state;
-    cpu_dbus_new.BUS_CPU_D01p.state = ~joy.KAPA_JOYP_L1n.state;
-    cpu_dbus_new.BUS_CPU_D02p.state = ~joy.KEJA_JOYP_L2n.state;
-    cpu_dbus_new.BUS_CPU_D03p.state = ~joy.KOLO_JOYP_L3n.state;
-    cpu_dbus_new.BUS_CPU_D04p.state =  joy.KELY_JOYP_UDLRp.state;
-    cpu_dbus_new.BUS_CPU_D05p.state =  joy.COFY_JOYP_ABCSp.state;
+    cpu_dbus_new.BUS_CPU_D00p.state = ~joy_latch.KEVU_JOYP_L0n.state;
+    cpu_dbus_new.BUS_CPU_D01p.state = ~joy_latch.KAPA_JOYP_L1n.state;
+    cpu_dbus_new.BUS_CPU_D02p.state = ~joy_latch.KEJA_JOYP_L2n.state;
+    cpu_dbus_new.BUS_CPU_D03p.state = ~joy_latch.KOLO_JOYP_L3n.state;
+    cpu_dbus_new.BUS_CPU_D04p.state =  joy_reg.KELY_JOYP_UDLRp.state;
+    cpu_dbus_new.BUS_CPU_D05p.state =  joy_reg.COFY_JOYP_ABCSp.state;
   }
   else {
-    joy.KEVU_JOYP_L0n.state = joy.PIN_67_JOY_P10.state;
-    joy.KAPA_JOYP_L1n.state = joy.PIN_66_JOY_P11.state;
-    joy.KEJA_JOYP_L2n.state = joy.PIN_65_JOY_P12.state;
-    joy.KOLO_JOYP_L3n.state = joy.PIN_64_JOY_P13.state;
+    joy_latch.KEVU_JOYP_L0n.state = joy_ext.PIN_67_JOY_P10.state;
+    joy_latch.KAPA_JOYP_L1n.state = joy_ext.PIN_66_JOY_P11.state;
+    joy_latch.KEJA_JOYP_L2n.state = joy_ext.PIN_65_JOY_P12.state;
+    joy_latch.KOLO_JOYP_L3n.state = joy_ext.PIN_64_JOY_P13.state;
   }
 }
 

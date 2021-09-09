@@ -54,8 +54,8 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
   reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
 
-  joy.reset_to_bootrom();
   joy_int.reset_to_bootrom();
+  joy_reg.reset_to_bootrom();
 
   check_state_old_and_driven_or_pulled();
 
@@ -200,8 +200,10 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   reg_bgp.reset_to_cart();
   reg_obp0.reset_to_cart();
   reg_obp1.reset_to_cart();
-  joy.reset_to_cart();
+  
+  //joy.reset_to_cart();
   joy_int.reset_to_cart();
+  joy_reg.reset_to_cart();
 
   reg_lcdc.reset_to_cart();
   lcd.reset_to_cart();
@@ -324,8 +326,8 @@ struct GateBoyOffsets {
   const int o_div_reg        = offsetof(GateBoy, div);
   //const int o_tim_reg        = offsetof(GateBoy, timer);
   const int o_dma_reg        = offsetof(GateBoy, dma);
-  const int o_int_reg        = offsetof(GateBoy, interrupts);
-  const int o_joypad         = offsetof(GateBoy, joy);
+  //const int o_int_reg        = offsetof(GateBoy, interrupts);
+  //const int o_joypad         = offsetof(GateBoy, joy);
   const int o_ser_reg        = offsetof(GateBoy, serial);
 
   //const int o_sprite_store   = offsetof(GateBoy, sprite_store);
@@ -3097,7 +3099,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     wire int_lcd_int = lcd.POPU_y144p.state;
     wire int_joy_int = nand2(joy_int.APUG_JP_GLITCH3.state, joy_int.BATU_JP_GLITCH0.state);
-    wire int_tim_int = MOBA_TIMER_OVERFLOWp.state;
+    wire int_tim_int = int_ctrl.MOBA_TIMER_OVERFLOWp.state;
     wire int_ser_int = serial.CALY_SER_CNT3.state;
 
     // FIXME to handle these dffs correctly we need to know both the old and new value of the interrupt triggers...

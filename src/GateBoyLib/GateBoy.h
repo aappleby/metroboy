@@ -453,20 +453,21 @@ struct GateBoy {
   RegTIMA reg_tima;
   RegTMA  reg_tma;
   RegTAC  reg_tac;
-  /*#p03.NYDU*/ DFF17 NYDU_TIMA7p_DELAY;    // Axxxxxxx
-  /*#p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // AxxxExxx
 
   GateBoyDMA        dma;
   
-  GateBoyInterrupts interrupts;
-  RegIF reg_if;
-  RegIE reg_ie;
-  LatchIF latch_if;
-  CpuInt cpu_int;
-  CpuAck cpu_ack;
+  InterruptControl int_ctrl;
 
-  GateBoyJoypad     joy;
-  JoyInt joy_int;
+  RegIF   reg_if;
+  RegIE   reg_ie;
+  LatchIF latch_if;
+  CpuInt  cpu_int;
+  CpuAck  cpu_ack;
+
+  JoyInt   joy_int;
+  JoyReg   joy_reg;
+  JoyLatch joy_latch;
+  JoyExt   joy_ext;
 
   GateBoySerial     serial;
 

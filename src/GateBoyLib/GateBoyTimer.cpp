@@ -75,15 +75,15 @@ void GateBoy::tock_timer_gates() {
   /*_p03.SAMY*/ reg_tac.SAMY_TAC1p.dff17(SARA_FF07_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D01p.out_old());
   /*_p03.SABO*/ reg_tac.SABO_TAC2p.dff17(SARA_FF07_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D02p.out_old());
 
-  /*#p03.MERY*/ wire MERY_TIMER_OVERFLOWp_old = nor2(reg_tima.NUGA_TIMA7p.qp_old(), NYDU_TIMA7p_DELAY.qn_old());
-  /*#p03.MOBA*/ MOBA_TIMER_OVERFLOWp.dff17(BOGA_Axxxxxxx(), ALUR_SYS_RSTn(), MERY_TIMER_OVERFLOWp_old);
+  /*#p03.MERY*/ wire MERY_TIMER_OVERFLOWp_old = nor2(reg_tima.NUGA_TIMA7p.qp_old(), int_ctrl.NYDU_TIMA7p_DELAY.qn_old());
+  /*#p03.MOBA*/ int_ctrl.MOBA_TIMER_OVERFLOWp.dff17(BOGA_Axxxxxxx(), ALUR_SYS_RSTn(), MERY_TIMER_OVERFLOWp_old);
 
   /*#p03.TOPE*/ wire TOPE_FF05_WRn = nand4(cpu_signals.TAPU_CPU_WRp.out_new(), cpu_abus_new.RYFO_FF04_FF07p(),  cpu_abus_new.TOLA_A01n(), cpu_abus_new.BUS_CPU_A00p.out_new());
   /*#p03.MUZU*/ wire MUZU_CPU_LOAD_TIMAn  = or2(cpu_signals.SIG_IN_CPU_LATCH_EXT.out_new(), TOPE_FF05_WRn);
-  /*#p03.MEKE*/ wire MEKE_TIMER_OVERFLOWn = not1(MOBA_TIMER_OVERFLOWp.qp_new());
+  /*#p03.MEKE*/ wire MEKE_TIMER_OVERFLOWn = not1(int_ctrl.MOBA_TIMER_OVERFLOWp.qp_new());
   /*#p03.MEXU*/ wire MEXU_TIMA_LOADp      = nand3(MUZU_CPU_LOAD_TIMAn, ALUR_SYS_RSTn(), MEKE_TIMER_OVERFLOWn);
   /*#p03.MUGY*/ wire MUGY_TIMA_MAX_RSTn   = not1(MEXU_TIMA_LOADp);
-  /*#p03.NYDU*/ NYDU_TIMA7p_DELAY.dff17(BOGA_Axxxxxxx(), MUGY_TIMA_MAX_RSTn, reg_tima.NUGA_TIMA7p.qp_old());
+  /*#p03.NYDU*/ int_ctrl.NYDU_TIMA7p_DELAY.dff17(BOGA_Axxxxxxx(), MUGY_TIMA_MAX_RSTn, reg_tima.NUGA_TIMA7p.qp_old());
 
   /*#p03.UBOT*/ wire UBOT_DIV01n = not1(div.UFOR_DIV01p.qp_new());
   /*#p03.UVYR*/ wire UVYR_DIV03n = not1(div.TERO_DIV03p.qp_new());
@@ -186,15 +186,15 @@ void GateBoy::tock_timer_logic() {
     if (new_addr == 0xFF07) memcpy(&reg_tac, &cpu_dbus_new.BUS_CPU_D00p, 3);
   }
 
-  wire MERY_TIMER_OVERFLOWp_old = nor2(reg_tima.NUGA_TIMA7p.state, ~NYDU_TIMA7p_DELAY.state);
-  MOBA_TIMER_OVERFLOWp.dff17(CLK_Axxxxxxx, 1, MERY_TIMER_OVERFLOWp_old);
+  wire MERY_TIMER_OVERFLOWp_old = nor2(reg_tima.NUGA_TIMA7p.state, ~int_ctrl.NYDU_TIMA7p_DELAY.state);
+  int_ctrl.MOBA_TIMER_OVERFLOWp.dff17(CLK_Axxxxxxx, 1, MERY_TIMER_OVERFLOWp_old);
 
   wire TOPE_FF05_WRn = !(CLK_xxxxEFGx && cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF05);
 
   wire MUZU_CPU_LOAD_TIMAn = or2(cpu_signals.SIG_IN_CPU_LATCH_EXT.state, TOPE_FF05_WRn);
-  wire MEXU_TIMA_LOADp = nand2(MUZU_CPU_LOAD_TIMAn, ~MOBA_TIMER_OVERFLOWp.state);
+  wire MEXU_TIMA_LOADp = nand2(MUZU_CPU_LOAD_TIMAn, ~int_ctrl.MOBA_TIMER_OVERFLOWp.state);
 
-  NYDU_TIMA7p_DELAY.dff17(CLK_Axxxxxxx, ~MEXU_TIMA_LOADp, reg_tima.NUGA_TIMA7p.state);
+  int_ctrl.NYDU_TIMA7p_DELAY.dff17(CLK_Axxxxxxx, ~MEXU_TIMA_LOADp, reg_tima.NUGA_TIMA7p.state);
 
   // FIXME gonna need old and new div for this
 

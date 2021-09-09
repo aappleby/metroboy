@@ -1897,13 +1897,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       memcpy(&sprite_reset_flags.EBOJ_STORE0_RSTp, &sprite_match_flags.GUVA_SPRITE0_GETp, 10);
     }
 
-    auto store_rst = pack(10, &sprite_reset_flags.EBOJ_STORE0_RSTp);
+    auto store_rst = pack(sprite_reset_flags);
 
-    auto store_clk_old = pack_inv(10, (BitBase*)&sprite_store_flags.DYHU_STORE0_CLKn);
+    auto store_clk_old = pack_inv(sprite_store_flags);
     for (int i = 0; i < 10; i++) {
       (&sprite_store_flags.DYHU_STORE0_CLKn)[i] = (i == (int)sprite_count_new) && !bit(ssf_clk);
     }
-    auto store_clk_new = pack_inv(10, (BitBase*)&sprite_store_flags.DYHU_STORE0_CLKn);
+    auto store_clk_new = pack_inv(sprite_store_flags);
 
     auto store_clk_pe = (~store_clk_old) & store_clk_new;
     auto store_clk_ne = store_clk_old & (~store_clk_new);
@@ -2002,21 +2002,21 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (!clkpipe_en_new) CLKPIPE_new = 1;
   if (bit(fine_scroll.ROXY_FINE_SCROLL_DONEn.state)) CLKPIPE_new = 1;
 
-  wire px_old = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
+  wire px_old = (uint8_t)pack(pix_count);
 
   if (posedge(CLKPIPE_old, CLKPIPE_new)) {
-    unpack(px_old + 1, 8, &pix_count.XEHO_PX0p);
+    unpack(px_old + 1, pix_count);
   }
 
   if (!bit(nor2(ATEJ_LINE_RSTp.state, vid_rst_new))) {
-    clear(8, &pix_count.XEHO_PX0p);
+    clear(pix_count);
   }
 
   if (!and3(rendering_new, ~sprite_scanner.CENO_SCANNINGn.state, ~reg_lcdc.XYLO_LCDC_SPENn.state)) {
-    memset(&sprite_match_flags, 0, sizeof(sprite_match_flags));
+    clear(sprite_match_flags);
   }
   else {
-    uint8_t px = (uint8_t)pack(8, &pix_count.XEHO_PX0p);
+    uint8_t px = (uint8_t)pack(pix_count);
 
     bool M0 = px == pack(8, &store_x0);
     bool M1 = px == pack(8, &store_x1);
@@ -2044,7 +2044,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  auto px_new = pack(8, &pix_count.XEHO_PX0p);
+  auto px_new = pack(pix_count);
 
   // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
   WODU_HBLANKp = and2(~FEPO_STORE_MATCHp.state, (px_new & 167) == 167); // WODU goes high on odd, cleared on H

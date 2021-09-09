@@ -81,11 +81,11 @@ void GateBoy::tock_interrupts_gates()
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp());
   /*_p07.REFA*/ wire REFA_FF0F_WRn = nand4(cpu_signals.TAPU_CPU_WRp.out_new(), cpu_abus_new.SYKE_ADDR_HIp(), cpu_abus_new.SEMY_XX_0000xxxxp(), cpu_abus_new.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
 
-  /*_p02.LETY*/ wire LETY_INT_VBL_ACKn  = not1(interrupts.SIG_CPU_ACK_VBLANK.out_new());
-  /*_p02.LEJA*/ wire LEJA_INT_STAT_ACKn = not1(interrupts.SIG_CPU_ACK_STAT.out_new());
-  /*_p02.LESA*/ wire LESA_INT_TIM_ACKn  = not1(interrupts.SIG_CPU_ACK_TIMER.out_new());
-  /*_p02.LUFE*/ wire LUFE_INT_SER_ACKn  = not1(interrupts.SIG_CPU_ACK_SERIAL.out_new());
-  /*_p02.LAMO*/ wire LAMO_INT_JOY_ACKn  = not1(interrupts.SIG_CPU_ACK_JOYPAD.out_new());
+  /*_p02.LETY*/ wire LETY_INT_VBL_ACKn  = not1(cpu_ack.SIG_CPU_ACK_VBLANK.out_new());
+  /*_p02.LEJA*/ wire LEJA_INT_STAT_ACKn = not1(cpu_ack.SIG_CPU_ACK_STAT.out_new());
+  /*_p02.LESA*/ wire LESA_INT_TIM_ACKn  = not1(cpu_ack.SIG_CPU_ACK_TIMER.out_new());
+  /*_p02.LUFE*/ wire LUFE_INT_SER_ACKn  = not1(cpu_ack.SIG_CPU_ACK_SERIAL.out_new());
+  /*_p02.LAMO*/ wire LAMO_INT_JOY_ACKn  = not1(cpu_ack.SIG_CPU_ACK_JOYPAD.out_new());
 
   /*_p02.ROTU*/ wire ROTU_FF0F_WRp   = not1(REFA_FF0F_WRn);
   /*_p02.MYZU*/ wire MYZU_FF0F_SET0n = nand3(ROTU_FF0F_WRp, LETY_INT_VBL_ACKn,  cpu_dbus_new.BUS_CPU_D00p.out_new());
@@ -112,11 +112,11 @@ void GateBoy::tock_interrupts_gates()
   /*_p02.UBUL*/ reg_if.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), TOME_FF0F_SET3n, TUNY_FF0F_RST3n, SIG_VCC.out_new());
   /*_p02.ULAK*/ reg_if.ULAK_FF0F_D4p.dff22(ASOK_INT_JOYp,                 TOGA_FF0F_SET4n, TYME_FF0F_RST4n, SIG_VCC.out_new());
 
-  /*_SIG_CPU_INT_VBLANK*/ interrupts.SIG_CPU_INT_VBLANK.sig_out(reg_if.LOPE_FF0F_D0p.qp_new());
-  /*_SIG_CPU_INT_STAT  */ interrupts.SIG_CPU_INT_STAT  .sig_out(reg_if.LALU_FF0F_D1p.qp_new());
-  /*_SIG_CPU_INT_TIMER */ interrupts.SIG_CPU_INT_TIMER .sig_out(reg_if.NYBO_FF0F_D2p.qp_new());
-  /*_SIG_CPU_INT_SERIAL*/ interrupts.SIG_CPU_INT_SERIAL.sig_out(reg_if.UBUL_FF0F_D3p.qp_new());
-  /*_SIG_CPU_INT_JOYPAD*/ interrupts.SIG_CPU_INT_JOYPAD.sig_out(reg_if.ULAK_FF0F_D4p.qp_new());
+  /*_SIG_CPU_INT_VBLANK*/ cpu_int.SIG_CPU_INT_VBLANK.sig_out(reg_if.LOPE_FF0F_D0p.qp_new());
+  /*_SIG_CPU_INT_STAT  */ cpu_int.SIG_CPU_INT_STAT  .sig_out(reg_if.LALU_FF0F_D1p.qp_new());
+  /*_SIG_CPU_INT_TIMER */ cpu_int.SIG_CPU_INT_TIMER .sig_out(reg_if.NYBO_FF0F_D2p.qp_new());
+  /*_SIG_CPU_INT_SERIAL*/ cpu_int.SIG_CPU_INT_SERIAL.sig_out(reg_if.UBUL_FF0F_D3p.qp_new());
+  /*_SIG_CPU_INT_JOYPAD*/ cpu_int.SIG_CPU_INT_JOYPAD.sig_out(reg_if.ULAK_FF0F_D4p.qp_new());
 
   // FIXME where did these tags go?
   triwire tristate_i0 = tri6_nn(FFFF_RDn_ext, reg_ie.IE_D0.qn_new());

@@ -92,8 +92,8 @@ void GateBoy::dump_interrupts(Dumper& d) {
   d.dump_slice2p("FF0F IF : ", &reg_if, 5);
   d.dump_slice2p("FFFF IE : ", &reg_ie, 5);
   d.dump_slice2p("LATCH   : ", &latch_if, 5);
-  d.dump_slice2p("CPU_INT : ", &interrupts.SIG_CPU_INT_VBLANK, 5);
-  d.dump_slice2p("CPU_ACK : ", &interrupts.SIG_CPU_ACK_VBLANK, 5);
+  d.dump_slice2p("CPU_INT : ", &cpu_int, 5);
+  d.dump_slice2p("CPU_ACK : ", &cpu_ack, 5);
 }
 
 void GateBoy::dump_joypad(Dumper& d) {

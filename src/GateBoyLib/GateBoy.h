@@ -462,6 +462,8 @@ struct GateBoy {
   RegIF reg_if;
   RegIE reg_ie;
   LatchIF latch_if;
+  CpuInt cpu_int;
+  CpuAck cpu_ack;
 
   GateBoyJoypad     joy;
   GateBoySerial     serial;

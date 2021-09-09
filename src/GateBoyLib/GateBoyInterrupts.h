@@ -53,19 +53,13 @@ struct LatchIF {
   /*_p02.NUTY*/ TpLatch NUTY_FF0F_L4p;
 };
 
-
-struct GateBoyInterrupts {
+struct CpuInt {
   void reset_to_cart() {
     SIG_CPU_INT_VBLANK.state = 0b00011001;
     SIG_CPU_INT_STAT.state   = 0b00011000;
     SIG_CPU_INT_TIMER.state  = 0b00011000;
     SIG_CPU_INT_SERIAL.state = 0b00011000;
     SIG_CPU_INT_JOYPAD.state = 0b00011000;
-    SIG_CPU_ACK_VBLANK.state = 0b00011000;
-    SIG_CPU_ACK_STAT.state   = 0b00011000;
-    SIG_CPU_ACK_TIMER.state  = 0b00011000;
-    SIG_CPU_ACK_SERIAL.state = 0b00011000;
-    SIG_CPU_ACK_JOYPAD.state = 0b00011000;
   }
 
   /*_SIG_CPU_INT_VBLANK*/ SigOut SIG_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
@@ -73,12 +67,25 @@ struct GateBoyInterrupts {
   /*_SIG_CPU_INT_TIMER */ SigOut SIG_CPU_INT_TIMER ;    // bottom right port PORTB_11: <- P02.NYBO, timer int
   /*_SIG_CPU_INT_SERIAL*/ SigOut SIG_CPU_INT_SERIAL;    // bottom right port PORTB_15: <- P02.UBUL, serial int
   /*_SIG_CPU_INT_JOYPAD*/ SigOut SIG_CPU_INT_JOYPAD;    // bottom right port PORTB_19: <- P02.ULAK, joy int
+};
+
+struct CpuAck {
+  void reset_to_cart() {
+    SIG_CPU_ACK_VBLANK.state = 0b00011000;
+    SIG_CPU_ACK_STAT.state   = 0b00011000;
+    SIG_CPU_ACK_TIMER.state  = 0b00011000;
+    SIG_CPU_ACK_SERIAL.state = 0b00011000;
+    SIG_CPU_ACK_JOYPAD.state = 0b00011000;
+  }
 
   /*_SIG_CPU_ACK_VBLANK*/ SigIn  SIG_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
   /*_SIG_CPU_ACK_STAT  */ SigIn  SIG_CPU_ACK_STAT  ;    // bottom right port PORTB_05: -> P02.LEJA, stat int ack
   /*_SIG_CPU_ACK_TIMER */ SigIn  SIG_CPU_ACK_TIMER ;    // bottom right port PORTB_09: -> P02.LESA, timer int ack
   /*_SIG_CPU_ACK_SERIAL*/ SigIn  SIG_CPU_ACK_SERIAL;    // bottom right port PORTB_13: -> P02.LUFE, serial int ack
   /*_SIG_CPU_ACK_JOYPAD*/ SigIn  SIG_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joy int ack
+};
+
+struct GateBoyInterrupts {
 };
 
 //------------------------------------------------------------------------------------------------------------------------

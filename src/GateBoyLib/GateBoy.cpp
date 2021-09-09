@@ -164,11 +164,12 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   clk.reset_to_cart();
   div.reset_to_cart();
   
-  interrupts.reset_to_cart();
+  //interrupts.reset_to_cart();
   reg_if.reset_to_cart();
   reg_ie.reset_to_cart();
   latch_if.reset_to_cart();
-
+  cpu_int.reset_to_cart();
+  cpu_ack.reset_to_cart();
 
   serial.reset_to_cart();
 
@@ -647,11 +648,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire EXT_ack_serial = bit(gb_cpu.int_ack, BIT_SERIAL);
     wire EXT_ack_joypad = bit(gb_cpu.int_ack, BIT_JOYPAD);
 
-    /*_SIG_CPU_ACK_VBLANK*/ interrupts.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
-    /*_SIG_CPU_ACK_STAT  */ interrupts.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
-    /*_SIG_CPU_ACK_TIMER */ interrupts.SIG_CPU_ACK_TIMER.sig_in(EXT_ack_timer);
-    /*_SIG_CPU_ACK_SERIAL*/ interrupts.SIG_CPU_ACK_SERIAL.sig_in(EXT_ack_serial);
-    /*_SIG_CPU_ACK_JOYPAD*/ interrupts.SIG_CPU_ACK_JOYPAD.sig_in(EXT_ack_joypad);
+    /*_SIG_CPU_ACK_VBLANK*/ cpu_ack.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
+    /*_SIG_CPU_ACK_STAT  */ cpu_ack.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
+    /*_SIG_CPU_ACK_TIMER */ cpu_ack.SIG_CPU_ACK_TIMER.sig_in(EXT_ack_timer);
+    /*_SIG_CPU_ACK_SERIAL*/ cpu_ack.SIG_CPU_ACK_SERIAL.sig_in(EXT_ack_serial);
+    /*_SIG_CPU_ACK_JOYPAD*/ cpu_ack.SIG_CPU_ACK_JOYPAD.sig_in(EXT_ack_joypad);
 
     /*_SIG_CPU_CLKREQ*/ clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
 
@@ -1311,11 +1312,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire EXT_ack_serial = bit(gb_cpu.int_ack, BIT_SERIAL);
     wire EXT_ack_joypad = bit(gb_cpu.int_ack, BIT_JOYPAD);
 
-    interrupts.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
-    interrupts.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
-    interrupts.SIG_CPU_ACK_TIMER.sig_in(EXT_ack_timer);
-    interrupts.SIG_CPU_ACK_SERIAL.sig_in(EXT_ack_serial);
-    interrupts.SIG_CPU_ACK_JOYPAD.sig_in(EXT_ack_joypad);
+    cpu_ack.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
+    cpu_ack.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
+    cpu_ack.SIG_CPU_ACK_TIMER.sig_in(EXT_ack_timer);
+    cpu_ack.SIG_CPU_ACK_SERIAL.sig_in(EXT_ack_serial);
+    cpu_ack.SIG_CPU_ACK_JOYPAD.sig_in(EXT_ack_joypad);
 
     clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
 
@@ -1331,11 +1332,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   rst.PIN_76_T2.state = 0;
   rst.PIN_77_T1.state = 0;
 
-  interrupts.SIG_CPU_ACK_VBLANK.state = bit(gb_cpu.int_ack, BIT_VBLANK);
-  interrupts.SIG_CPU_ACK_STAT.state   = bit(gb_cpu.int_ack, BIT_STAT);
-  interrupts.SIG_CPU_ACK_TIMER.state  = bit(gb_cpu.int_ack, BIT_TIMER);
-  interrupts.SIG_CPU_ACK_SERIAL.state = bit(gb_cpu.int_ack, BIT_SERIAL);
-  interrupts.SIG_CPU_ACK_JOYPAD.state = bit(gb_cpu.int_ack, BIT_JOYPAD);
+  cpu_ack.SIG_CPU_ACK_VBLANK.state = bit(gb_cpu.int_ack, BIT_VBLANK);
+  cpu_ack.SIG_CPU_ACK_STAT.state   = bit(gb_cpu.int_ack, BIT_STAT);
+  cpu_ack.SIG_CPU_ACK_TIMER.state  = bit(gb_cpu.int_ack, BIT_TIMER);
+  cpu_ack.SIG_CPU_ACK_SERIAL.state = bit(gb_cpu.int_ack, BIT_SERIAL);
+  cpu_ack.SIG_CPU_ACK_JOYPAD.state = bit(gb_cpu.int_ack, BIT_JOYPAD);
 
   clk.SIG_CPU_CLKREQ.sig_in(1);
 
@@ -3109,13 +3110,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       cpy(&reg_if, &cpu_dbus_new.BUS_CPU_D00p, sizeof(reg_if));
     }
 
-    reg_if.LOPE_FF0F_D0p.state = reg_if.LOPE_FF0F_D0p.state & ~interrupts.SIG_CPU_ACK_VBLANK.state;
-    reg_if.LALU_FF0F_D1p.state = reg_if.LALU_FF0F_D1p.state & ~interrupts.SIG_CPU_ACK_STAT.state;
-    reg_if.NYBO_FF0F_D2p.state = reg_if.NYBO_FF0F_D2p.state & ~interrupts.SIG_CPU_ACK_TIMER.state;
-    reg_if.UBUL_FF0F_D3p.state = reg_if.UBUL_FF0F_D3p.state & ~interrupts.SIG_CPU_ACK_SERIAL.state;
-    reg_if.ULAK_FF0F_D4p.state = reg_if.ULAK_FF0F_D4p.state & ~interrupts.SIG_CPU_ACK_JOYPAD.state;
+    reg_if.LOPE_FF0F_D0p.state = reg_if.LOPE_FF0F_D0p.state & ~cpu_ack.SIG_CPU_ACK_VBLANK.state;
+    reg_if.LALU_FF0F_D1p.state = reg_if.LALU_FF0F_D1p.state & ~cpu_ack.SIG_CPU_ACK_STAT.state;
+    reg_if.NYBO_FF0F_D2p.state = reg_if.NYBO_FF0F_D2p.state & ~cpu_ack.SIG_CPU_ACK_TIMER.state;
+    reg_if.UBUL_FF0F_D3p.state = reg_if.UBUL_FF0F_D3p.state & ~cpu_ack.SIG_CPU_ACK_SERIAL.state;
+    reg_if.ULAK_FF0F_D4p.state = reg_if.ULAK_FF0F_D4p.state & ~cpu_ack.SIG_CPU_ACK_JOYPAD.state;
 
-    cpy(&interrupts.SIG_CPU_INT_VBLANK, &reg_if, sizeof(reg_if));
+    cpy(&cpu_int, &reg_if, sizeof(reg_if));
 
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
       cpy(&cpu_dbus_new.BUS_CPU_D00p, &reg_ie, sizeof(reg_ie));

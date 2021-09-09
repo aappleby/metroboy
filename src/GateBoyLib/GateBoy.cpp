@@ -2059,30 +2059,30 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  memset(&sprite_ibus, 1, sizeof(sprite_ibus));
-  memset(&sprite_lbus, 1, sizeof(sprite_lbus));
+  set(sprite_ibus);
+  set(sprite_lbus);
 
-  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i0, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i1, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i2, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i3, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i4, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i5, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i6, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i7, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i8, sizeof(sprite_ibus));
-  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(&sprite_ibus.BUS_SPR_I0, &store_i9, sizeof(sprite_ibus));
+  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(sprite_ibus, store_i0);
+  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(sprite_ibus, store_i1);
+  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(sprite_ibus, store_i2);
+  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(sprite_ibus, store_i3);
+  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(sprite_ibus, store_i4);
+  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(sprite_ibus, store_i5);
+  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(sprite_ibus, store_i6);
+  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(sprite_ibus, store_i7);
+  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(sprite_ibus, store_i8);
+  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(sprite_ibus, store_i9);
 
-  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l0, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l1, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l2, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l3, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l4, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l5, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l6, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l7, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l8, sizeof(sprite_lbus));
-  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(&sprite_lbus.BUS_SPR_L0, &store_l9, sizeof(sprite_lbus));
+  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) cpy_inv(sprite_lbus, store_l0);
+  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) cpy_inv(sprite_lbus, store_l1);
+  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) cpy_inv(sprite_lbus, store_l2);
+  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) cpy_inv(sprite_lbus, store_l3);
+  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) cpy_inv(sprite_lbus, store_l4);
+  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) cpy_inv(sprite_lbus, store_l5);
+  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) cpy_inv(sprite_lbus, store_l6);
+  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) cpy_inv(sprite_lbus, store_l7);
+  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) cpy_inv(sprite_lbus, store_l8);
+  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) cpy_inv(sprite_lbus, store_l9);
 
   if (bit(or2(sprite_scanner.CENO_SCANNINGn.state, !rendering_new))) {
     memcpy(&sprite_ibus.BUS_SPR_I0, &sprite_index, 6);
@@ -2118,13 +2118,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
-    if (cpu_addr_new == 0xFF4A) cpy_inv(&reg_wy.NESO_WY0n, &cpu_dbus_old.BUS_CPU_D00p, 8);
-    if (cpu_addr_new == 0xFF4B) cpy_inv(&reg_wx.MYPA_WX0n, &cpu_dbus_old.BUS_CPU_D00p, 8);
+    if (cpu_addr_new == 0xFF4A) cpy_inv(reg_wy, cpu_dbus_old);
+    if (cpu_addr_new == 0xFF4B) cpy_inv(reg_wx, cpu_dbus_old);
   }
 
   if (cpu_signals.SIG_IN_CPU_RDp.state) {
-    if (cpu_addr_new == 0xFF4A) cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_wy.NESO_WY0n, 8);
-    if (cpu_addr_new == 0xFF4B) cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_wx.MYPA_WX0n, 8);
+    if (cpu_addr_new == 0xFF4A) cpy_inv(cpu_dbus_new, reg_wy);
+    if (cpu_addr_new == 0xFF4B) cpy_inv(cpu_dbus_new, reg_wx);
   }
 
   uint8_t wy_new = (uint8_t)pack_inv(8, &reg_wy.NESO_WY0n);
@@ -2257,15 +2257,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // Pal reg read/write
 
     if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
-      if (cpu_addr_new == 0xFF47) cpy_inv(&reg_bgp.PAVO_BGP_D0n,   &cpu_dbus_old.BUS_CPU_D00p, 8);
-      if (cpu_addr_new == 0xFF48) cpy_inv(&reg_obp0.XUFU_OBP0_D0n, &cpu_dbus_old.BUS_CPU_D00p, 8);
-      if (cpu_addr_new == 0xFF49) cpy_inv(&reg_obp1.MOXY_OBP1_D0n, &cpu_dbus_old.BUS_CPU_D00p, 8);
+      if (cpu_addr_new == 0xFF47) cpy_inv(reg_bgp,  cpu_dbus_old);
+      if (cpu_addr_new == 0xFF48) cpy_inv(reg_obp0, cpu_dbus_old);
+      if (cpu_addr_new == 0xFF49) cpy_inv(reg_obp1, cpu_dbus_old);
     }
 
     if (cpu_signals.SIG_IN_CPU_RDp.state) {
-      if (cpu_addr_new == 0xFF47) cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_bgp.PAVO_BGP_D0n, 8);
-      if (cpu_addr_new == 0xFF48) cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_obp0.XUFU_OBP0_D0n, 8);
-      if (cpu_addr_new == 0xFF49) cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_obp1.MOXY_OBP1_D0n, 8);
+      if (cpu_addr_new == 0xFF47) cpy_inv(cpu_dbus_new, reg_bgp);
+      if (cpu_addr_new == 0xFF48) cpy_inv(cpu_dbus_new, reg_obp0);
+      if (cpu_addr_new == 0xFF49) cpy_inv(cpu_dbus_new, reg_obp1);
     }
 
     //----------------------------------------
@@ -2487,10 +2487,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   ASSERT_N(cpu_signals.SIG_IN_CPU_RDp.state && cpu_signals.SIG_IN_CPU_WRp.state);
 
   if (cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state && !addr_vram) {
-    cpy_inv(&ext_dbus.PIN_17_D00, &cpu_dbus_new.BUS_CPU_D00p, 8);
+    cpy_inv(ext_dbus, cpu_dbus_new);
   }
   else {
-    memset(&ext_dbus.PIN_17_D00, 0, 8);
+    clear(ext_dbus);
   }
 
   //----------------------------------------
@@ -2589,10 +2589,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
   if (bit(and4(cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !addr_vram, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
-    cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
+    cpy_inv(cpu_dbus_new, ext_data_latch);
   }
   else {
-    memcpy(&ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, &ext_dbus.PIN_17_D00, 8);
+    cpy(ext_data_latch, ext_dbus);
   }
 
   {

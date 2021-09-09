@@ -2233,23 +2233,23 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     if (rendering_old) {
       if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || !rendering_new)) {
-        cpy_inv(&tile_temp_a, &vram_dbus.BUS_VRAM_D00p, 8);
+        cpy_inv(tile_temp_a, vram_dbus);
       }
 
       if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || !rendering_new)) {
-        cpy(&tile_temp_b, &vram_dbus.BUS_VRAM_D00p, 8);
+        cpy(tile_temp_b, vram_dbus);
       }
 
       if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || !rendering_new)) {
-        cpy(&tile_temp_b, &vram_dbus.BUS_VRAM_D00p, 8);
+        cpy(tile_temp_b, vram_dbus);
       }
 
       if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || !rendering_new)) {
-        cpy_inv(&sprite_pix_a, &flipped_sprite, 8);
+        cpy_inv(sprite_pix_a, flipped_sprite);
       }
 
       if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || !rendering_new)) {
-        cpy_inv(&sprite_pix_b, &flipped_sprite, 8);
+        cpy_inv(sprite_pix_b, flipped_sprite);
       }
     }
 
@@ -2596,14 +2596,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   {
-    memset(&vram_abus, BIT_NEW | BIT_PULLED | 1, sizeof(vram_abus));
-    memset(&vram_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(vram_dbus));
+    set(vram_abus);
+    set(vram_dbus);
 
     //--------------------------------------------
     // CPU vram read address
 
     if (bit(nor2(dma_vram_new, XYMU_RENDERINGn.qn_new()))) {
-      cpy_inv(&vram_abus.BUS_VRAM_A00n, &cpu_abus_new.BUS_CPU_A00p, 13);
+      cpy_inv(vram_abus, cpu_abus_new);
     }
 
     //--------------------------------------------
@@ -2618,13 +2618,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // SCX/SCY regs and BG map read address
 
     if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
-      if (cpu_addr_new == 0xFF42) cpy_inv(&reg_scy.GAVE_SCY0n, &cpu_dbus_old.BUS_CPU_D00p, 8);
-      if (cpu_addr_new == 0xFF43) cpy_inv(&reg_scx.DATY_SCX0n, &cpu_dbus_old.BUS_CPU_D00p, 8);
+      if (cpu_addr_new == 0xFF42) cpy_inv(reg_scy, cpu_dbus_old);
+      if (cpu_addr_new == 0xFF43) cpy_inv(reg_scx, cpu_dbus_old);
     }
 
     if (cpu_signals.SIG_IN_CPU_RDp.state) {
-      if (cpu_addr_new == 0xFF42) cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_scy.GAVE_SCY0n, 8);
-      if (cpu_addr_new == 0xFF43) cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &reg_scx.DATY_SCX0n, 8);
+      if (cpu_addr_new == 0xFF42) cpy_inv(cpu_dbus_new, reg_scy);
+      if (cpu_addr_new == 0xFF43) cpy_inv(cpu_dbus_new, reg_scx);
     }
 
     auto px  = pack(pix_count);
@@ -2765,7 +2765,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // CPU bus to Vram data bus
 
     if (bit(and4(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_addr_vram_new, cpu_signals.SIG_IN_CPU_WRp.state))) {
-      memcpy(&vram_dbus.BUS_VRAM_D00p, &cpu_dbus_new.BUS_CPU_D00p, 8);
+      cpy(vram_dbus, cpu_dbus_new);
     }
 
     //--------------------------------------------
@@ -2820,7 +2820,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // Vram data pin driver
 
-    memset(&vram_ext_dbus.PIN_33_VRAM_D00, 0, 8);
+    clear(vram_ext_dbus);
 
     if (bit(vram_ext_ctrl.PIN_45_VRAM_OEn.state)) {
       unpack_inv(vid_ram[vram_addr], vram_ext_dbus);
@@ -2831,7 +2831,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (bit(and4(cpu_addr_vram_new, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
-      cpy_inv(&vram_ext_dbus.PIN_33_VRAM_D00, &vram_dbus.BUS_VRAM_D00p, 8);
+      cpy_inv(vram_ext_dbus, vram_dbus);
     }
 
     //--------------------------------------------
@@ -2844,14 +2844,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // Vram pins to vram bus
 
     if (!bit(and4(cpu_addr_vram_new, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
-      cpy_inv(&vram_dbus.BUS_VRAM_D00p, &vram_ext_dbus.PIN_33_VRAM_D00, 8);
+      cpy_inv(vram_dbus, vram_ext_dbus);
     }
 
     //--------------------------------------------
     // Vram bus to cpu bus
 
     if (bit(and5(cpu_addr_vram_new, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
-      memcpy(&cpu_dbus_new.BUS_CPU_D00p, &vram_dbus.BUS_VRAM_D00p, 8);
+      cpy(cpu_dbus_new, vram_dbus);
     }
 
     //--------------------------------------------
@@ -2891,9 +2891,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // this is weird, why is it always 0 when not in reset?
     oam_ctrl.MAKA_LATCH_EXTp.state = 0;
 
-    memset(&oam_abus,   BIT_NEW | BIT_PULLED | 1, sizeof(oam_abus));
-    memset(&oam_dbus_a, BIT_NEW | BIT_PULLED | 1, sizeof(oam_dbus_a));
-    memset(&oam_dbus_b, BIT_NEW | BIT_PULLED | 1, sizeof(oam_dbus_b));
+    set(oam_abus);
+    set(oam_dbus_a);
+    set(oam_dbus_b);
 
     oam_ctrl.WUJE_CPU_OAM_WRn.nor_latch(CLK_ABCDxxxx, and2(addr_oam, cpu_wr));
 
@@ -2903,12 +2903,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       cpy_inv(&oam_abus.BUS_OAM_A00n, &dma.NAKY_DMA_A00p, 8);
 
       if ((dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF)) {
-        cpy_inv(&oam_dbus_a.BUS_OAM_DA00n, &vram_dbus.BUS_VRAM_D00p, 8);
-        cpy_inv(&oam_dbus_b.BUS_OAM_DB00n, &vram_dbus.BUS_VRAM_D00p, 8);
+        cpy_inv(oam_dbus_a, vram_dbus);
+        cpy_inv(oam_dbus_b, vram_dbus);
       }
       else {
-        memcpy(&oam_dbus_a.BUS_OAM_DA00n, &ext_dbus.PIN_17_D00, 8);
-        memcpy(&oam_dbus_b.BUS_OAM_DB00n, &ext_dbus.PIN_17_D00, 8);
+        cpy(oam_dbus_a, ext_dbus);
+        cpy(oam_dbus_b, ext_dbus);
       }
 
       oam_ctrl.SIG_OAM_CLKn .state = CLK_ABCDxxxx;
@@ -2936,10 +2936,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       oam_ctrl.SIG_OAM_OEn  .state = and2(nand3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state), !cpu_reading_oam);
     }
     else if (addr_oam) {
-      cpy_inv(&oam_abus.BUS_OAM_A00n, &cpu_abus_new.BUS_CPU_A00p, 8);
+      cpy_inv(oam_abus, cpu_abus_new);
       if (bit(~oam_ctrl.WUJE_CPU_OAM_WRn.state)) {
-        cpy_inv(&oam_dbus_a.BUS_OAM_DA00n, &cpu_dbus_new.BUS_CPU_D00p, 8);
-        cpy_inv(&oam_dbus_b.BUS_OAM_DB00n, &cpu_dbus_new.BUS_CPU_D00p, 8);
+        cpy_inv(oam_dbus_a, cpu_dbus_new);
+        cpy_inv(oam_dbus_b, cpu_dbus_new);
       }
       oam_ctrl.SIG_OAM_CLKn .state = CLK_ABCDxxxx;
       oam_ctrl.SIG_OAM_WRn_A.state = nand2(cpu_wr,  oam_abus.BUS_OAM_A00n.state);
@@ -2947,9 +2947,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       oam_ctrl.SIG_OAM_OEn  .state = nand2(cpu_rd, dbus_busy);
     }
     else {
-      cpy_inv(&oam_abus.BUS_OAM_A00n,    &cpu_abus_new.BUS_CPU_A00p, 8);
-      cpy_inv(&oam_dbus_a.BUS_OAM_DA00n, &cpu_dbus_new.BUS_CPU_D00p, 8);
-      cpy_inv(&oam_dbus_b.BUS_OAM_DB00n, &cpu_dbus_new.BUS_CPU_D00p, 8);
+      cpy_inv(oam_abus,   cpu_abus_new);
+      cpy_inv(oam_dbus_a, cpu_dbus_new);
+      cpy_inv(oam_dbus_b, cpu_dbus_new);
       oam_ctrl.SIG_OAM_CLKn .state = 1;
       oam_ctrl.SIG_OAM_WRn_A.state = 1;
       oam_ctrl.SIG_OAM_WRn_B.state = 1;
@@ -2995,10 +2995,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running_new && !scanning_new && !rendering_new) {
       if (bit(oam_abus.BUS_OAM_A00n.state)) {
-        cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
+        cpy_inv(cpu_dbus_new, oam_latch_a);
       }
       else {
-        cpy_inv(&cpu_dbus_new.BUS_CPU_D00p, &oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
+        cpy_inv(cpu_dbus_new, oam_latch_b);
       }
     }
   }
@@ -3044,7 +3044,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto CLK_xxxxEFGx_new = gen_clk_new(0b00001110);
 
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
-      cpy(&reg_ie, &cpu_dbus_old.BUS_CPU_D00p, 5);
+      cpy(reg_ie, cpu_dbus_old);
     }
 
     if (cpu_addr_new == 0xFF41 && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
@@ -3080,7 +3080,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     // note this is an async set so it doesn't happen on the GH clock edge like other writes
     if (cpu_signals.SIG_IN_CPU_WRp.state & (cpu_addr_new == 0xFF0F) & CLK_xxxxEFGx_new) {
-      cpy(&reg_if, &cpu_dbus_new.BUS_CPU_D00p, sizeof(reg_if));
+      cpy(reg_if, cpu_dbus_new);
     }
 
     reg_if.LOPE_FF0F_D0p.state = reg_if.LOPE_FF0F_D0p.state & ~cpu_ack.SIG_CPU_ACK_VBLANK.state;
@@ -3089,15 +3089,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg_if.UBUL_FF0F_D3p.state = reg_if.UBUL_FF0F_D3p.state & ~cpu_ack.SIG_CPU_ACK_SERIAL.state;
     reg_if.ULAK_FF0F_D4p.state = reg_if.ULAK_FF0F_D4p.state & ~cpu_ack.SIG_CPU_ACK_JOYPAD.state;
 
-    cpy(&cpu_int, &reg_if, sizeof(reg_if));
+    cpy(cpu_int, reg_if);
 
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
-      cpy(&cpu_dbus_new.BUS_CPU_D00p, &reg_ie, sizeof(reg_ie));
+      cpy(cpu_dbus_new, reg_ie);
     }
 
     if (cpu_addr_new == 0xFF0F && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
-      cpy(&latch_if,  &reg_if, sizeof(reg_if));
-      cpy(&cpu_dbus_new.BUS_CPU_D00p, &reg_if, sizeof(reg_if));
+      cpy(latch_if,  reg_if);
+      cpy(cpu_dbus_new.BUS_CPU_D00p, reg_if);
     }
   }
 

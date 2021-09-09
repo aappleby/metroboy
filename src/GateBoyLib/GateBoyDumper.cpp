@@ -112,10 +112,10 @@ void GateBoy::dump_joypad(Dumper& d) {
   d.dump_bitp("KEJA_JOYP_L2n   : ", joy.KEJA_JOYP_L2n.state);
   d.dump_bitp("KOLO_JOYP_L3n   : ", joy.KOLO_JOYP_L3n.state);
   d("\n");
-  d.dump_bitp("BATU_JP_GLITCH0 : ", joy.BATU_JP_GLITCH0.state);
-  d.dump_bitp("ACEF_JP_GLITCH1 : ", joy.ACEF_JP_GLITCH1.state);
-  d.dump_bitp("AGEM_JP_GLITCH2 : ", joy.AGEM_JP_GLITCH2.state);
-  d.dump_bitp("APUG_JP_GLITCH3 : ", joy.APUG_JP_GLITCH3.state);
+  d.dump_bitp("BATU_JP_GLITCH0 : ", joy_int.BATU_JP_GLITCH0.state);
+  d.dump_bitp("ACEF_JP_GLITCH1 : ", joy_int.ACEF_JP_GLITCH1.state);
+  d.dump_bitp("AGEM_JP_GLITCH2 : ", joy_int.AGEM_JP_GLITCH2.state);
+  d.dump_bitp("APUG_JP_GLITCH3 : ", joy_int.APUG_JP_GLITCH3.state);
   d("\n");
   //d.dump_bitp("JUTE_DBG_D0     : ", joy.JUTE_DBG_D0.state);
   //d.dump_bitp("KECY_DBG_D1     : ", joy.KECY_DBG_D1.state);

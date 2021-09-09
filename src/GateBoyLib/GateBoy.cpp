@@ -55,6 +55,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
 
   joy.reset_to_bootrom();
+  joy_int.reset_to_bootrom();
 
   check_state_old_and_driven_or_pulled();
 
@@ -200,6 +201,7 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   reg_obp0.reset_to_cart();
   reg_obp1.reset_to_cart();
   joy.reset_to_cart();
+  joy_int.reset_to_cart();
 
   reg_lcdc.reset_to_cart();
   lcd.reset_to_cart();
@@ -3087,23 +3089,23 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
 
-    bool stat_int = 0;
-    if (!bit(reg_stat.RUGU_STAT_LYI_ENn.state) && bit(ROPO_LY_MATCH_SYNCp.state)) stat_int = 1;
-    if (!bit(reg_stat.REFE_STAT_OAI_ENn.state) && bit(and2(~lcd.POPU_y144p.state, lcd.RUTU_x113p.qp_new()))) stat_int = 1;
-    if (!bit(reg_stat.RUFO_STAT_VBI_ENn.state) && bit(lcd.POPU_y144p.state)) stat_int = 1;
-    if (!bit(reg_stat.ROXE_STAT_HBI_ENn.state) && bit(and2(wodu_hblank_new, ~lcd.POPU_y144p.state))) stat_int = 1;
+    bool int_stat_int = 0;
+    if (!bit(reg_stat.RUGU_STAT_LYI_ENn.state) && bit(ROPO_LY_MATCH_SYNCp.state)) int_stat_int = 1;
+    if (!bit(reg_stat.REFE_STAT_OAI_ENn.state) && bit(and2(~lcd.POPU_y144p.state, lcd.RUTU_x113p.qp_new()))) int_stat_int = 1;
+    if (!bit(reg_stat.RUFO_STAT_VBI_ENn.state) && bit(lcd.POPU_y144p.state)) int_stat_int = 1;
+    if (!bit(reg_stat.ROXE_STAT_HBI_ENn.state) && bit(and2(wodu_hblank_new, ~lcd.POPU_y144p.state))) int_stat_int = 1;
 
-    wire lcd_int = lcd.POPU_y144p.state;
-    wire joy_int = nand2(joy.APUG_JP_GLITCH3.state, joy.BATU_JP_GLITCH0.state);
-    wire tim_int = MOBA_TIMER_OVERFLOWp.state;
-    wire ser_int = serial.CALY_SER_CNT3.state;
+    wire int_lcd_int = lcd.POPU_y144p.state;
+    wire int_joy_int = nand2(joy_int.APUG_JP_GLITCH3.state, joy_int.BATU_JP_GLITCH0.state);
+    wire int_tim_int = MOBA_TIMER_OVERFLOWp.state;
+    wire int_ser_int = serial.CALY_SER_CNT3.state;
 
     // FIXME to handle these dffs correctly we need to know both the old and new value of the interrupt triggers...
-    reg_if.LOPE_FF0F_D0p.dff22(lcd_int,  1, 1, 1);
-    reg_if.LALU_FF0F_D1p.dff22(stat_int, 1, 1, 1);
-    reg_if.NYBO_FF0F_D2p.dff22(tim_int,  1, 1, 1);
-    reg_if.UBUL_FF0F_D3p.dff22(ser_int,  1, 1, 1);
-    reg_if.ULAK_FF0F_D4p.dff22(joy_int,  1, 1, 1);
+    reg_if.LOPE_FF0F_D0p.dff22(int_lcd_int,  1, 1, 1);
+    reg_if.LALU_FF0F_D1p.dff22(int_stat_int, 1, 1, 1);
+    reg_if.NYBO_FF0F_D2p.dff22(int_tim_int,  1, 1, 1);
+    reg_if.UBUL_FF0F_D3p.dff22(int_ser_int,  1, 1, 1);
+    reg_if.ULAK_FF0F_D4p.dff22(int_joy_int,  1, 1, 1);
 
     // note this is an async set so it doesn't happen on the GH clock edge like other writes
     if (cpu_signals.SIG_IN_CPU_WRp.state & (cpu_addr_new == 0xFF0F) & CLK_xxxxEFGx_new) {

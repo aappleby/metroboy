@@ -76,7 +76,7 @@ void GateBoy::tock_interrupts_gates()
   /*#p21.TUVA*/ wire TUVA_INT_STATn   = not1(SUKO_INT_STATp);
   /*#p21.VOTY*/ wire VOTY_INT_STATp   = not1(TUVA_INT_STATn);
 
-  /*#p02.ASOK*/ wire ASOK_INT_JOYp = nand2(joy.APUG_JP_GLITCH3.qp_new(), joy.BATU_JP_GLITCH0.qp_new());
+  /*#p02.ASOK*/ wire ASOK_INT_JOYp = nand2(joy_int.APUG_JP_GLITCH3.qp_new(), joy_int.BATU_JP_GLITCH0.qp_new());
 
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp());
   /*_p07.REFA*/ wire REFA_FF0F_WRn = nand4(cpu_signals.TAPU_CPU_WRp.out_new(), cpu_abus_new.SYKE_ADDR_HIp(), cpu_abus_new.SEMY_XX_0000xxxxp(), cpu_abus_new.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND

@@ -4,15 +4,12 @@
 //------------------------------------------------------------------------------------------------------------------------
 // FIXME split into smaller structs
 
-struct GateBoyJoypad {
+struct JoyInt {
   void reset_to_bootrom() {
     BATU_JP_GLITCH0.state = 0b00011011;
     ACEF_JP_GLITCH1.state = 0b00011011;
     AGEM_JP_GLITCH2.state = 0b00011011;
     APUG_JP_GLITCH3.state = 0b00011011;
-
-    KELY_JOYP_UDLRp.state = 0b00011011;
-    COFY_JOYP_ABCSp.state = 0b00011011;
   }
 
   void reset_to_cart() {
@@ -20,18 +17,27 @@ struct GateBoyJoypad {
     ACEF_JP_GLITCH1.state = 0b00011011;
     AGEM_JP_GLITCH2.state = 0b00011011;
     APUG_JP_GLITCH3.state = 0b00011011;
+  }
 
+  /*_p02.BATU*/ DFF17 BATU_JP_GLITCH0;
+  /*_p02.ACEF*/ DFF17 ACEF_JP_GLITCH1;
+  /*_p02.AGEM*/ DFF17 AGEM_JP_GLITCH2;
+  /*#p02.APUG*/ DFF17 APUG_JP_GLITCH3;
+};
+
+struct GateBoyJoypad {
+  void reset_to_bootrom() {
+    KELY_JOYP_UDLRp.state = 0b00011011;
+    COFY_JOYP_ABCSp.state = 0b00011011;
+  }
+
+  void reset_to_cart() {
     KELY_JOYP_UDLRp.state = 0b00011010; // wat?
     COFY_JOYP_ABCSp.state = 0b00011010; // wat?
   }
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*_p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
-
-  /*_p02.BATU*/ DFF17 BATU_JP_GLITCH0;
-  /*_p02.ACEF*/ DFF17 ACEF_JP_GLITCH1;
-  /*_p02.AGEM*/ DFF17 AGEM_JP_GLITCH2;
-  /*#p02.APUG*/ DFF17 APUG_JP_GLITCH3;
 
   // Ignoring debug stuff for now
   ///*_p05.JUTE*/ DFF17 JUTE_DBG_D0;

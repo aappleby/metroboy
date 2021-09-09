@@ -466,6 +466,8 @@ struct GateBoy {
   CpuAck cpu_ack;
 
   GateBoyJoypad     joy;
+  JoyInt joy_int;
+
   GateBoySerial     serial;
 
   StoreI0 store_i0;

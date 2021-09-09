@@ -2,7 +2,6 @@
 #include "GateBoyLib/Gates.h"
 
 //------------------------------------------------------------------------------------------------------------------------
-// FIXME split into smaller structs
 
 struct RegIF {
   void reset_to_cart() {

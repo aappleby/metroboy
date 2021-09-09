@@ -1,8 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-// FIXME split into smaller structs
-
 //-----------------------------------------------------------------------------
 // Tristate buses to move sprite index & line in/out of sprite store
 

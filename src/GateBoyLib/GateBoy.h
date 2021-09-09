@@ -447,8 +447,15 @@ struct GateBoy {
 
   GateBoyResetDebug rst;
   GateBoyClock      clk;
-  GateBoyDiv        div;
-  GateBoyTimer      timer;
+  RegDIV        div;
+  //GateBoyTimer      timer;
+
+  RegTIMA reg_tima;
+  RegTMA  reg_tma;
+  RegTAC  reg_tac;
+  /*#p03.NYDU*/ DFF17 NYDU_TIMA7p_DELAY;    // Axxxxxxx
+  /*#p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // AxxxExxx
+
   GateBoyDMA        dma;
   GateBoyInterrupts interrupts;
   GateBoyJoypad     joy;

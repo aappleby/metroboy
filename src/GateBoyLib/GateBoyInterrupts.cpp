@@ -106,11 +106,11 @@ void GateBoy::tock_interrupts_gates()
   /*_p02.TUNY*/ wire TUNY_FF0F_RST3n = and3(SULO_INT3_WRn, LUFE_INT_SER_ACKn,  ALUR_SYS_RSTn);
   /*_p02.TYME*/ wire TYME_FF0F_RST4n = and3(SEME_INT4_WRn, LAMO_INT_JOY_ACKn,  ALUR_SYS_RSTn);
 
-  /*_p02.LOPE*/ interrupts.LOPE_FF0F_D0p.dff22(VYPU_INT_VBLANKp,                    MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, SIG_VCC.out_new());
-  /*_p02.LALU*/ interrupts.LALU_FF0F_D1p.dff22(VOTY_INT_STATp,                      MODY_FF0F_SET1n, MOVU_FF0F_RST1n, SIG_VCC.out_new());
-  /*_p02.NYBO*/ interrupts.NYBO_FF0F_D2p.dff22(timer.MOBA_TIMER_OVERFLOWp.qp_new(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, SIG_VCC.out_new());
-  /*_p02.UBUL*/ interrupts.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(),       TOME_FF0F_SET3n, TUNY_FF0F_RST3n, SIG_VCC.out_new());
-  /*_p02.ULAK*/ interrupts.ULAK_FF0F_D4p.dff22(ASOK_INT_JOYp,                       TOGA_FF0F_SET4n, TYME_FF0F_RST4n, SIG_VCC.out_new());
+  /*_p02.LOPE*/ interrupts.LOPE_FF0F_D0p.dff22(VYPU_INT_VBLANKp,              MYZU_FF0F_SET0n, LYTA_FF0F_RST0n, SIG_VCC.out_new());
+  /*_p02.LALU*/ interrupts.LALU_FF0F_D1p.dff22(VOTY_INT_STATp,                MODY_FF0F_SET1n, MOVU_FF0F_RST1n, SIG_VCC.out_new());
+  /*_p02.NYBO*/ interrupts.NYBO_FF0F_D2p.dff22(MOBA_TIMER_OVERFLOWp.qp_new(), PYHU_FF0F_SET2n, PYGA_FF0F_RST2n, SIG_VCC.out_new());
+  /*_p02.UBUL*/ interrupts.UBUL_FF0F_D3p.dff22(serial.CALY_SER_CNT3.qp_new(), TOME_FF0F_SET3n, TUNY_FF0F_RST3n, SIG_VCC.out_new());
+  /*_p02.ULAK*/ interrupts.ULAK_FF0F_D4p.dff22(ASOK_INT_JOYp,                 TOGA_FF0F_SET4n, TYME_FF0F_RST4n, SIG_VCC.out_new());
 
   /*_SIG_CPU_INT_VBLANK*/ interrupts.SIG_CPU_INT_VBLANK.sig_out(interrupts.LOPE_FF0F_D0p.qp_new());
   /*_SIG_CPU_INT_STAT  */ interrupts.SIG_CPU_INT_STAT  .sig_out(interrupts.LALU_FF0F_D1p.qp_new());

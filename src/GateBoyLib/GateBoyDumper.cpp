@@ -276,11 +276,11 @@ void GateBoy::dump_sprite_fetcher(Dumper& d) {
 void GateBoy::dump_timer(Dumper& d) {
   d.dump_slice2p("DIV16 : ", &div.UKUP_DIV00p, 16);
   d.dump_slice2p("FF04 DIV  : ", &div.UGOT_DIV06p, 8);
-  d.dump_slice2p("FF05 TIMA : ", &timer.REGA_TIMA0p, 8);
-  d.dump_slice2p("FF06 TMA  : ", &timer.SABU_TMA0p, 8);
-  d.dump_slice2p("FF07 TAC  : ", &timer.SOPU_TAC0p, 3);
-  d.dump_bitp   ("NYDU_TIMA7p_DELAY    : ", timer.NYDU_TIMA7p_DELAY.state);
-  d.dump_bitp   ("MOBA_TIMER_OVERFLOWp : ", timer.MOBA_TIMER_OVERFLOWp.state);
+  d.dump_slice2p("FF05 TIMA : ", &reg_tima, 8);
+  d.dump_slice2p("FF06 TMA  : ", &reg_tma, 8);
+  d.dump_slice2p("FF07 TAC  : ", &reg_tac, 3);
+  d.dump_bitp   ("NYDU_TIMA7p_DELAY    : ", NYDU_TIMA7p_DELAY.state);
+  d.dump_bitp   ("MOBA_TIMER_OVERFLOWp : ", MOBA_TIMER_OVERFLOWp.state);
 }
 
 void GateBoy::dump_resets(Dumper& d) {

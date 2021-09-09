@@ -1,12 +1,9 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-// FIXME split into smaller structs
-// 
 //-----------------------------------------------------------------------------
-// FF04 DIV
 
-struct GateBoyDiv {
+struct RegDIV {
   void reset_to_cart() {
     UKUP_DIV00p.state = 0b00011011;
     UFOR_DIV01p.state = 0b00011001;
@@ -70,11 +67,8 @@ struct GateBoyDiv {
 
 //-----------------------------------------------------------------------------
 
-struct GateBoyTimer {
-
-  int get_tima() const { return pack(8,  &REGA_TIMA0p); }
-  int get_tma() const  { return pack(8,  &SABU_TMA0p); }
-  int get_tac() const  { return pack(3,  &SOPU_TAC0p); }
+struct RegTIMA {
+  int get() const { return pack(8,  &REGA_TIMA0p); }
 
   void force_set_tima(uint8_t tima) {
     uint16_t tima_a = tima;
@@ -90,12 +84,6 @@ struct GateBoyTimer {
     NUGA_TIMA7p.state = ((tima_a >>  7) & 1) | ((tima_b >>  7) & 2);
   }
 
-  /*#p03.NYDU*/ DFF17 NYDU_TIMA7p_DELAY;    // Axxxxxxx
-  /*#p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // AxxxExxx
-
-  //----------
-  // FF05 TIMA
-
   /*#p03.REGA*/ DFF20 REGA_TIMA0p; // AxxxExxH
   /*#p03.POVY*/ DFF20 POVY_TIMA1p; // AxxxExxH
   /*#p03.PERU*/ DFF20 PERU_TIMA2p; // AxxxExxH
@@ -104,9 +92,12 @@ struct GateBoyTimer {
   /*#p03.RAGE*/ DFF20 RAGE_TIMA5p; // AxxxExxH
   /*#p03.PEDA*/ DFF20 PEDA_TIMA6p; // AxxxExxH
   /*#p03.NUGA*/ DFF20 NUGA_TIMA7p; // AxxxExxH
+};
 
-  //----------
-  // FF06 TMA
+//-----------------------------------------------------------------------------
+
+struct RegTMA {
+  int get() const  { return pack(8,  &SABU_TMA0p); }
 
   /*_p03.SABU*/ DFF17 SABU_TMA0p; // xxxxxxxH
   /*_p03.NYKE*/ DFF17 NYKE_TMA1p; // xxxxxxxH
@@ -116,9 +107,12 @@ struct GateBoyTimer {
   /*_p03.SUFY*/ DFF17 SUFY_TMA5p; // xxxxxxxH
   /*_p03.PETO*/ DFF17 PETO_TMA6p; // xxxxxxxH
   /*_p03.SETA*/ DFF17 SETA_TMA7p; // xxxxxxxH
+};
 
-  //----------
-  // FF07 TAC
+//-----------------------------------------------------------------------------
+
+struct RegTAC {
+  int get() const  { return pack(3,  &SOPU_TAC0p); }
 
   /*_p03.SOPU*/ DFF17 SOPU_TAC0p; // xxxxxxxH
   /*_p03.SAMY*/ DFF17 SAMY_TAC1p; // xxxxxxxH

@@ -313,7 +313,7 @@ struct GateBoyOffsets {
   const int o_rst_reg        = offsetof(GateBoy, rst);
   const int o_clk_reg        = offsetof(GateBoy, clk);
   const int o_div_reg        = offsetof(GateBoy, div);
-  const int o_tim_reg        = offsetof(GateBoy, timer);
+  //const int o_tim_reg        = offsetof(GateBoy, timer);
   const int o_dma_reg        = offsetof(GateBoy, dma);
   const int o_int_reg        = offsetof(GateBoy, interrupts);
   const int o_joypad         = offsetof(GateBoy, joy);
@@ -3088,7 +3088,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     wire lcd_int = lcd.POPU_y144p.state;
     wire joy_int = nand2(joy.APUG_JP_GLITCH3.state, joy.BATU_JP_GLITCH0.state);
-    wire tim_int = timer.MOBA_TIMER_OVERFLOWp.state;
+    wire tim_int = MOBA_TIMER_OVERFLOWp.state;
     wire ser_int = serial.CALY_SER_CNT3.state;
 
     // FIXME to handle these dffs correctly we need to know both the old and new value of the interrupt triggers...

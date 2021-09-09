@@ -1509,15 +1509,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000100);
 
-    EXPECT_EQ(0xFD, gb.timer.get_tima());
+    EXPECT_EQ(0xFD, gb.reg_tima.get());
     gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0xFE, gb.timer.get_tima());
+    EXPECT_EQ(0xFE, gb.reg_tima.get());
     gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0xFF, gb.timer.get_tima());
+    EXPECT_EQ(0xFF, gb.reg_tima.get());
     gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0x80, gb.timer.get_tima());
+    EXPECT_EQ(0x80, gb.reg_tima.get());
     gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0x81, gb.timer.get_tima());
+    EXPECT_EQ(0x81, gb.reg_tima.get());
     gb.run_phases(cart_blob, 2048, false);
     if (!failures) LOG_B("TAC 0b100 pass\n");
   }
@@ -1531,15 +1531,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000101);
 
-    EXPECT_EQ(0xFD, gb.timer.get_tima());
+    EXPECT_EQ(0xFD, gb.reg_tima.get());
     gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0xFE, gb.timer.get_tima());
+    EXPECT_EQ(0xFE, gb.reg_tima.get());
     gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0xFF, gb.timer.get_tima());
+    EXPECT_EQ(0xFF, gb.reg_tima.get());
     gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0x80, gb.timer.get_tima());
+    EXPECT_EQ(0x80, gb.reg_tima.get());
     gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0x81, gb.timer.get_tima());
+    EXPECT_EQ(0x81, gb.reg_tima.get());
     gb.run_phases(cart_blob, 32, false);
     if (!failures) LOG_B("TAC 0b101 pass\n");
   }
@@ -1552,15 +1552,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000110);
 
-    EXPECT_EQ(0xFD, gb.timer.get_tima());
+    EXPECT_EQ(0xFD, gb.reg_tima.get());
     gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0xFE, gb.timer.get_tima());
+    EXPECT_EQ(0xFE, gb.reg_tima.get());
     gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0xFF, gb.timer.get_tima());
+    EXPECT_EQ(0xFF, gb.reg_tima.get());
     gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0x80, gb.timer.get_tima());
+    EXPECT_EQ(0x80, gb.reg_tima.get());
     gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0x81, gb.timer.get_tima());
+    EXPECT_EQ(0x81, gb.reg_tima.get());
     gb.run_phases(cart_blob, 128, false);
     if (!failures) LOG_B("TAC 0b110 pass\n");
   }
@@ -1573,15 +1573,15 @@ int GateBoyTests::test_timer() {
     gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gb.dbg_write(cart_blob, ADDR_TAC, 0b00000111);
 
-    EXPECT_EQ(0xFD, gb.timer.get_tima());
+    EXPECT_EQ(0xFD, gb.reg_tima.get());
     gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0xFE, gb.timer.get_tima());
+    EXPECT_EQ(0xFE, gb.reg_tima.get());
     gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0xFF, gb.timer.get_tima());
+    EXPECT_EQ(0xFF, gb.reg_tima.get());
     gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0x80, gb.timer.get_tima());
+    EXPECT_EQ(0x80, gb.reg_tima.get());
     gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0x81, gb.timer.get_tima());
+    EXPECT_EQ(0x81, gb.reg_tima.get());
     gb.run_phases(cart_blob, 512, false);
     if (!failures) LOG_B("TAC 0b111 pass\n");
   }

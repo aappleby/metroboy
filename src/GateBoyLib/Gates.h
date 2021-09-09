@@ -819,6 +819,11 @@ inline void unpack_inv(uint32_t d, int c, void* blob) {
   }
 }
 
+template<typename T>
+inline void unpack_inv(uint32_t d, T& t) {
+  unpack_inv(d, sizeof(T), &t);
+}
+
 inline void cpy(void* dst, const void* src, int c) {
   for (int i = 0; i < c; i++) {
     ((uint8_t*)dst)[i] = ((const uint8_t*)src)[i];

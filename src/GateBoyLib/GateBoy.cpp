@@ -2549,16 +2549,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
   if (bit(~ext_ctrl.PIN_78_WRn.qp_ext_new())) {
-    uint16_t ext_addr = (uint16_t)pack_inv(16, (BitBase*)&ext_abus.PIN_01_A00);
-    const int region = ext_addr >> 13;
-    uint8_t data_out = (uint8_t)pack_inv(8, &ext_dbus.PIN_17_D00);
+    auto ext_addr = pack_inv(ext_abus);
+    auto region = ext_addr >> 13;
+    auto data_out = pack_inv(ext_dbus);
 
     if (cart_has_mbc1(cart_blob)) {
       bool mbc1_ram_en = bit(ext_mbc.MBC1_RAM_EN.state);
       bool mbc1_mode = bit(ext_mbc.MBC1_MODE.state);
 
-      uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_mbc.MBC1_BANK5) : 0;
-      uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
+      auto mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_mbc.MBC1_BANK5) : 0;
+      auto mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
 
       switch (region) {
       case 0: ext_mbc.MBC1_RAM_EN = bit((data_out & 0x0F) == 0x0A); break;
@@ -2566,9 +2566,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       case 2: unpack(data_out, 2, (BitBase*)&ext_mbc.MBC1_BANK5); break;
       case 3: ext_mbc.MBC1_MODE = (data_out & 1); break;
       case 4: break;
-      case 5: if (cart_has_ram(cart_blob) && mbc1_ram_en) cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = data_out; break;
-      case 6: int_ram[ext_addr & 0x1FFF] = data_out; break;
-      case 7: int_ram[ext_addr & 0x1FFF] = data_out; break;
+      case 5: if (cart_has_ram(cart_blob) && mbc1_ram_en) cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = (uint8_t)data_out; break;
+      case 6: int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out; break;
+      case 7: int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out; break;
       }
     }
     else {
@@ -2578,9 +2578,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       case 2: break;
       case 3: break;
       case 4: break;
-      case 5: if (cart_has_ram(cart_blob)) cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] = data_out; break;
-      case 6: int_ram[ext_addr & 0x1FFF] = data_out;break;
-      case 7: int_ram[ext_addr & 0x1FFF] = data_out;break;
+      case 5: if (cart_has_ram(cart_blob)) cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] = (uint8_t)data_out; break;
+      case 6: int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out;break;
+      case 7: int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out;break;
       }
     }
   }
@@ -2757,9 +2757,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // Vram address pin driver
 
-    memcpy(&vram_ext_abus.PIN_34_VRAM_A00, &vram_abus.BUS_VRAM_A00n, 13);
+    cpy(vram_ext_abus, vram_abus);
 
-    uint16_t vram_addr = (uint16_t)pack_inv(13, (BitBase*)&vram_ext_abus.PIN_34_VRAM_A00);
+    uint16_t vram_addr = (uint16_t)pack_inv(vram_ext_abus);
 
     //--------------------------------------------
     // CPU bus to Vram data bus
@@ -2823,11 +2823,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     memset(&vram_ext_dbus.PIN_33_VRAM_D00, 0, 8);
 
     if (bit(vram_ext_ctrl.PIN_45_VRAM_OEn.state)) {
-      unpack_inv(vid_ram[vram_addr], 8, &vram_ext_dbus.PIN_33_VRAM_D00);
+      unpack_inv(vid_ram[vram_addr], vram_ext_dbus);
     }
 
     if (bit(vram_ext_ctrl.PIN_49_VRAM_WRn.state)) {
-      vid_ram[vram_addr] = (uint8_t)pack_inv(8, &vram_ext_dbus.PIN_33_VRAM_D00);
+      vid_ram[vram_addr] = (uint8_t)pack_inv(vram_ext_dbus);
     }
 
     if (bit(and4(cpu_addr_vram_new, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
@@ -2837,7 +2837,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
 
     if (bit(~vram_ext_ctrl.PIN_49_VRAM_WRn.qp_ext_new())) {
-      vid_ram[vram_addr] = (uint8_t)pack_inv(8, (BitBase*)&vram_ext_dbus.PIN_33_VRAM_D00);
+      vid_ram[vram_addr] = (uint8_t)pack_inv(vram_ext_dbus);
     }
 
     //--------------------------------------------
@@ -2963,8 +2963,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     {
 
       uint8_t oam_addr = (uint8_t)pack_inv(7, (BitBase*)&oam_abus.BUS_OAM_A01n);
-      oam_data_a = (uint8_t)pack_inv(8, (BitBase*)&oam_dbus_a.BUS_OAM_DA00n);
-      oam_data_b = (uint8_t)pack_inv(8, (BitBase*)&oam_dbus_b.BUS_OAM_DB00n);
+      oam_data_a = (uint8_t)pack_inv(oam_dbus_a);
+      oam_data_b = (uint8_t)pack_inv(oam_dbus_b);
 
       if (negedge(oam_clk_old, oam_clk_new)) {
         if (bit(~oam_ctrl.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;

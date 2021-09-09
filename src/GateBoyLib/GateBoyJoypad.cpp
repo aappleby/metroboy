@@ -176,9 +176,9 @@ void GateBoy::tock_joypad_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_joypad_logic() {
-  auto new_addr = pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
+  auto cpu_addr_new = pack(cpu_abus_new);
 
-  if (cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF00 && DELTA_GH) {
+  if (cpu_signals.SIG_IN_CPU_WRp.state && cpu_addr_new == 0xFF00 && DELTA_GH) {
     joy_reg.KELY_JOYP_UDLRp.state = cpu_dbus_old.BUS_CPU_D04p.out_old();
     joy_reg.COFY_JOYP_ABCSp.state = cpu_dbus_old.BUS_CPU_D05p.out_old();
     joy_ext.PIN_63_JOY_P14.pin_out(~joy_reg.KELY_JOYP_UDLRp.state, ~joy_reg.KELY_JOYP_UDLRp.state);
@@ -217,7 +217,7 @@ void GateBoy::tock_joypad_logic() {
     joy_int.BATU_JP_GLITCH0.state = !any_button;
   }
 
-  if (cpu_signals.SIG_IN_CPU_RDp.state && (new_addr == 0xFF00)) {
+  if (cpu_signals.SIG_IN_CPU_RDp.state && (cpu_addr_new == 0xFF00)) {
     cpu_dbus_new.BUS_CPU_D00p.state = ~joy_latch.KEVU_JOYP_L0n.state;
     cpu_dbus_new.BUS_CPU_D01p.state = ~joy_latch.KAPA_JOYP_L1n.state;
     cpu_dbus_new.BUS_CPU_D02p.state = ~joy_latch.KEJA_JOYP_L2n.state;

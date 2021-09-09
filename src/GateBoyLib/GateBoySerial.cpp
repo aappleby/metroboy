@@ -131,7 +131,7 @@ void GateBoy::tock_serial_gates()
 void GateBoy::tock_serial_logic()
 {
   wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
-  auto new_addr = pack(16, (BitBase*)&cpu_abus_new.BUS_CPU_A00p);
+  auto new_addr = pack(cpu_abus_new);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && (new_addr == 0xFF02 && DELTA_GH)) {
     serial.CULY_SER_DIR.state = cpu_dbus_old.BUS_CPU_D00p.state;

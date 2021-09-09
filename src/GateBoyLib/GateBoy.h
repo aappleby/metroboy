@@ -507,6 +507,7 @@ struct GateBoy {
   /*_p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;    // AxCxExGx
   SpriteCounter sprite_counter;
 
+  /*_p29.FEPO*/ Gate FEPO_STORE_MATCHp;
   SpriteMatchFlags sprite_match_flags;
   SpriteResetFlags sprite_reset_flags;
   SpriteStoreFlags sprite_store_flags;

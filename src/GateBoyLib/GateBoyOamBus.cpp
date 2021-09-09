@@ -310,9 +310,10 @@ void GateBoy::tock_oam_bus_gates()
   /*#p28.ZODO*/ wire ZODO_OAM_OEn = not1(YRYV_OAM_OEp);   // schematic thinks this is OAM_CLK?
   /*_SIG_OAM_OEn*/ oam_ctrl.SIG_OAM_OEn.sig_out(ZODO_OAM_OEn);
 
+  // FIXME do the pack
   uint8_t oam_addr   = (uint8_t)pack_inv(7, (BitBase*)&oam_abus.BUS_OAM_A01n);
-  uint8_t oam_data_a = (uint8_t)pack_inv(8, (BitBase*)&oam_dbus_a.BUS_OAM_DA00n);
-  uint8_t oam_data_b = (uint8_t)pack_inv(8, (BitBase*)&oam_dbus_b.BUS_OAM_DB00n);
+  uint8_t oam_data_a = (uint8_t)pack_inv(oam_dbus_a);
+  uint8_t oam_data_b = (uint8_t)pack_inv(oam_dbus_b);
 
   if (bit(~oam_ctrl.old_oam_clk.out_old()) && bit(~oam_ctrl.SIG_OAM_CLKn.out_new())) {
     if (bit(~oam_ctrl.SIG_OAM_WRn_A.out_new())) oam_ram[(oam_addr << 1) + 0] = oam_data_a;

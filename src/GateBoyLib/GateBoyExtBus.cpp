@@ -241,8 +241,8 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   // region 6 = iram
   // region 7 = eram
 
-  uint16_t addr = (uint16_t)pack_inv(16, (BitBase*)&ext_abus.PIN_01_A00);
-  const int region = addr >> 13;
+  auto ext_addr = pack_inv(ext_abus);
+  const int region = ext_addr >> 13;
 
   bool mbc1_ram_en = bit(ext_mbc.MBC1_RAM_EN.out_old());
   bool mbc1_mode   = bit(ext_mbc.MBC1_MODE.out_old());
@@ -250,21 +250,21 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   //----------------------------------------
 
   uint32_t mbc1_rom0_bank = mbc1_mode ? pack(2, (BitBase*)&ext_mbc.MBC1_BANK5) : 0;
-  uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
+  uint32_t mbc1_rom0_addr = ((ext_addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
   if (mbc1_rom0_addr >= cart_blob.size()) debugbreak();
 
   //----------------------------------------
 
   uint32_t mbc1_rom1_bank = pack(7, (BitBase*)&ext_mbc.MBC1_BANK0);
   if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
-  uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
+  uint32_t mbc1_rom1_addr = ((ext_addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
   if (mbc1_rom1_addr >= cart_blob.size()) debugbreak();
 
   //----------------------------------------
 
   uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_mbc.MBC1_BANK5) : 0;
   if (mbc1_mode == 0) mbc1_ram_bank = 0;
-  uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
+  uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
   if (mbc1_ram_addr >= 32768) debugbreak();
 
   //----------------------------------------
@@ -290,21 +290,21 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
     else {
       if (region == 0 || region == 1) {
         EXT_rd_en = true;
-        data_in = cart_blob[addr & cart_rom_addr_mask(cart_blob)];
+        data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)];
       }
       else if (region == 2 || region == 3) {
         EXT_rd_en = true;
-        data_in = cart_blob[addr & cart_rom_addr_mask(cart_blob)];
+        data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)];
       }
       else if (region == 5 && cart_has_ram(cart_blob)) {
         EXT_rd_en = true;
-        data_in = cart_ram[addr & cart_ram_addr_mask(cart_blob)];
+        data_in = cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)];
       }
     }
 
     if (region == 6 || region == 7) {
       EXT_rd_en = true;
-      data_in = int_ram[addr & 0x1FFF];
+      data_in = int_ram[ext_addr & 0x1FFF];
     }
   }
 
@@ -371,10 +371,10 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
       cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = data_out;
     }
     else if (region == 5 && cart_has_ram(cart_blob) && !cart_has_mbc1(cart_blob)) {
-      cart_ram[addr & cart_ram_addr_mask(cart_blob)] = data_out;
+      cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] = data_out;
     }
     else if (region == 6 || region == 7) {
-      int_ram[addr & 0x1FFF]  = data_out;
+      int_ram[ext_addr & 0x1FFF]  = data_out;
     }
   }
 

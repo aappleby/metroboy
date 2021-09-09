@@ -184,16 +184,16 @@ void GateBoy::dump_sprite_store(Dumper& d) {
   d.dump_slice2p("SPRITE COUNT   : ", &sprite_counter.BESE_SPRITE_COUNT0, 4);
   d.dump_bitp   ("DEZY_STORE_ENn : ", DEZY_COUNT_CLKp.state);
   d("\n");
-  d("STORE0 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EBOJ_STORE0_RSTp.state, pack_inv(6, &store_i0), pack_inv(4, &store_l0), pack_inv(8, &store_x0));
-  d("STORE1 R%d I%02d L%02d X%03d\n", sprite_reset_flags.CEDY_STORE1_RSTp.state, pack_inv(6, &store_i1), pack_inv(4, &store_l1), pack_inv(8, &store_x1));
-  d("STORE2 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EGAV_STORE2_RSTp.state, pack_inv(6, &store_i2), pack_inv(4, &store_l2), pack_inv(8, &store_x2));
-  d("STORE3 R%d I%02d L%02d X%03d\n", sprite_reset_flags.GOTA_STORE3_RSTp.state, pack_inv(6, &store_i3), pack_inv(4, &store_l3), pack_inv(8, &store_x3));
-  d("STORE4 R%d I%02d L%02d X%03d\n", sprite_reset_flags.XUDY_STORE4_RSTp.state, pack_inv(6, &store_i4), pack_inv(4, &store_l4), pack_inv(8, &store_x4));
-  d("STORE5 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WAFY_STORE5_RSTp.state, pack_inv(6, &store_i5), pack_inv(4, &store_l5), pack_inv(8, &store_x5));
-  d("STORE6 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WOMY_STORE6_RSTp.state, pack_inv(6, &store_i6), pack_inv(4, &store_l6), pack_inv(8, &store_x6));
-  d("STORE7 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WAPO_STORE7_RSTp.state, pack_inv(6, &store_i7), pack_inv(4, &store_l7), pack_inv(8, &store_x7));
-  d("STORE8 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EXUQ_STORE8_RSTp.state, pack_inv(6, &store_i8), pack_inv(4, &store_l8), pack_inv(8, &store_x8));
-  d("STORE9 R%d I%02d L%02d X%03d\n", sprite_reset_flags.FONO_STORE9_RSTp.state, pack_inv(6, &store_i9), pack_inv(4, &store_l9), pack_inv(8, &store_x9));
+  d("STORE0 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EBOJ_STORE0_RSTp.state, pack_inv(store_i0), pack_inv(store_l0), pack_inv(store_x0));
+  d("STORE1 R%d I%02d L%02d X%03d\n", sprite_reset_flags.CEDY_STORE1_RSTp.state, pack_inv(store_i1), pack_inv(store_l1), pack_inv(store_x1));
+  d("STORE2 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EGAV_STORE2_RSTp.state, pack_inv(store_i2), pack_inv(store_l2), pack_inv(store_x2));
+  d("STORE3 R%d I%02d L%02d X%03d\n", sprite_reset_flags.GOTA_STORE3_RSTp.state, pack_inv(store_i3), pack_inv(store_l3), pack_inv(store_x3));
+  d("STORE4 R%d I%02d L%02d X%03d\n", sprite_reset_flags.XUDY_STORE4_RSTp.state, pack_inv(store_i4), pack_inv(store_l4), pack_inv(store_x4));
+  d("STORE5 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WAFY_STORE5_RSTp.state, pack_inv(store_i5), pack_inv(store_l5), pack_inv(store_x5));
+  d("STORE6 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WOMY_STORE6_RSTp.state, pack_inv(store_i6), pack_inv(store_l6), pack_inv(store_x6));
+  d("STORE7 R%d I%02d L%02d X%03d\n", sprite_reset_flags.WAPO_STORE7_RSTp.state, pack_inv(store_i7), pack_inv(store_l7), pack_inv(store_x7));
+  d("STORE8 R%d I%02d L%02d X%03d\n", sprite_reset_flags.EXUQ_STORE8_RSTp.state, pack_inv(store_i8), pack_inv(store_l8), pack_inv(store_x8));
+  d("STORE9 R%d I%02d L%02d X%03d\n", sprite_reset_flags.FONO_STORE9_RSTp.state, pack_inv(store_i9), pack_inv(store_l9), pack_inv(store_x9));
 }
 
 void GateBoy::dump_mbc1(Dumper& d) {

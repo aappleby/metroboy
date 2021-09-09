@@ -841,6 +841,10 @@ inline void cpy_inv(A& dst, const B& src) {
   cpy_inv(&dst, &src, sizeof(A) < sizeof(B) ? sizeof(A) : sizeof(B));
 }
 
+template<typename A>
+inline void cpy_inv_blob(A& dst, const void* src) {
+  cpy_inv(&dst, src, sizeof(A));
+}
 
 inline void cpy_and(void* dst, void* src, int c) {
   for (int i = 0; i < c; i++) {
@@ -867,6 +871,11 @@ inline void clear(T& t) {
 inline void set(int c, void* blob) {
   uint8_t* b = (uint8_t*)blob;
   for (int i = 0; i < c; i++) b[i] |= 1;
+}
+
+template<typename T>
+  inline void set(T& t) {
+  set(sizeof(T), &t);
 }
 
 inline bool posedge(wire a, wire b) {

@@ -2540,7 +2540,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       }
     }
 
-    unpack_inv(data_in, 8, &ext_dbus.PIN_17_D00);
+    unpack_inv(data_in, ext_dbus);
   }
 
 
@@ -2987,10 +2987,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     latch_oam |= rendering_new && (bool)bit(and3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state));
 
     if (latch_oam) {
-      unpack_inv(oam_data_a, 8, &oam_dbus_a.BUS_OAM_DA00n);
-      unpack_inv(oam_data_b, 8, &oam_dbus_b.BUS_OAM_DB00n);
-      memcpy(&oam_latch_a.YDYV_OAM_LATCH_DA0n, &oam_dbus_a.BUS_OAM_DA00n, 8);
-      memcpy(&oam_latch_b.XYKY_OAM_LATCH_DB0n, &oam_dbus_b.BUS_OAM_DB00n, 8);
+      unpack_inv(oam_data_a, oam_dbus_a);
+      unpack_inv(oam_data_b, oam_dbus_b);
+      cpy(oam_latch_a, oam_dbus_a);
+      cpy(oam_latch_b, oam_dbus_b);
     }
 
     if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running_new && !scanning_new && !rendering_new) {

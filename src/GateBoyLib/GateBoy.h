@@ -460,6 +460,7 @@ struct GateBoy {
   
   GateBoyInterrupts interrupts;
   RegIF reg_if;
+  RegIE reg_ie;
 
   GateBoyJoypad     joy;
   GateBoySerial     serial;

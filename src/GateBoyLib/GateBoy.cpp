@@ -165,6 +165,7 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   div.reset_to_cart();
   interrupts.reset_to_cart();
   reg_if.reset_to_cart();
+  reg_ie.reset_to_cart();
   serial.reset_to_cart();
 
   //reset_sprite_store();
@@ -438,7 +439,7 @@ void GateBoy::update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1)
 
 void GateBoy::tock_cpu() {
   cpu_data_latch &= (uint8_t)pack(8, (BitBase*)&cpu_dbus_new.BUS_CPU_D00p);
-  imask_latch = (uint8_t)pack(5, &interrupts.IE_D0);
+  imask_latch = (uint8_t)pack(5, &reg_ie);
 
   if (DELTA_HA) {
     if (gb_cpu.op == 0x76 && (imask_latch & intf_halt_latch)) gb_cpu.state_ = 0;
@@ -3065,7 +3066,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto CLK_xxxxEFGx_new = gen_clk_new(0b00001110);
 
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
-      cpy(&interrupts.IE_D0, &cpu_dbus_old.BUS_CPU_D00p, 5);
+      cpy(&reg_ie, &cpu_dbus_old.BUS_CPU_D00p, 5);
     }
 
     if (cpu_addr_new == 0xFF41 && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
@@ -3113,7 +3114,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     cpy(&interrupts.SIG_CPU_INT_VBLANK, &reg_if, sizeof(reg_if));
 
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
-      cpy(&cpu_dbus_new.BUS_CPU_D00p, &interrupts.IE_D0, 5);
+      cpy(&cpu_dbus_new.BUS_CPU_D00p, &reg_ie, sizeof(reg_ie));
     }
 
     if (cpu_addr_new == 0xFF0F && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {

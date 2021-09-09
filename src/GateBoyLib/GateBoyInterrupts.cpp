@@ -19,11 +19,11 @@ void GateBoy::tock_interrupts_gates()
   wire FFFF_RDn_ext = nand2(cpu_signals.TEDO_CPU_RDp.out_new(), FFFF_HIT_ext);
   wire FFFF_WRn_ext = nand2(cpu_signals.TAPU_CPU_WRp.out_new(), FFFF_HIT_ext);
 
-  interrupts.IE_D0.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D00p.out_old());
-  interrupts.IE_D1.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D01p.out_old());
-  interrupts.IE_D2.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D02p.out_old());
-  interrupts.IE_D3.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D03p.out_old());
-  interrupts.IE_D4.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D04p.out_old());
+  reg_ie.IE_D0.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D00p.out_old());
+  reg_ie.IE_D1.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D01p.out_old());
+  reg_ie.IE_D2.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D02p.out_old());
+  reg_ie.IE_D3.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D03p.out_old());
+  reg_ie.IE_D4.dff_r(FFFF_WRn_ext, ~rst.PIN_71_RST.qp_int_new(), cpu_dbus_old.BUS_CPU_D04p.out_old());
 
   /*_p21.SEPA*/ wire SEPA_FF41_WRp = and2(CUPA_CPU_WRp(), cpu_abus_new.VARY_FF41p());
   /*_p21.RYVE*/ wire RYVE_FF41_WRn = not1(SEPA_FF41_WRp);
@@ -119,11 +119,11 @@ void GateBoy::tock_interrupts_gates()
   /*_SIG_CPU_INT_JOYPAD*/ interrupts.SIG_CPU_INT_JOYPAD.sig_out(reg_if.ULAK_FF0F_D4p.qp_new());
 
   // FIXME where did these tags go?
-  triwire tristate_i0 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D0.qn_new());
-  triwire tristate_i1 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D1.qn_new());
-  triwire tristate_i2 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D2.qn_new());
-  triwire tristate_i3 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D3.qn_new());
-  triwire tristate_i4 = tri6_nn(FFFF_RDn_ext, interrupts.IE_D4.qn_new());
+  triwire tristate_i0 = tri6_nn(FFFF_RDn_ext, reg_ie.IE_D0.qn_new());
+  triwire tristate_i1 = tri6_nn(FFFF_RDn_ext, reg_ie.IE_D1.qn_new());
+  triwire tristate_i2 = tri6_nn(FFFF_RDn_ext, reg_ie.IE_D2.qn_new());
+  triwire tristate_i3 = tri6_nn(FFFF_RDn_ext, reg_ie.IE_D3.qn_new());
+  triwire tristate_i4 = tri6_nn(FFFF_RDn_ext, reg_ie.IE_D4.qn_new());
 
   cpu_dbus_new.BUS_CPU_D00p.tri_bus(tristate_i0);
   cpu_dbus_new.BUS_CPU_D01p.tri_bus(tristate_i1);

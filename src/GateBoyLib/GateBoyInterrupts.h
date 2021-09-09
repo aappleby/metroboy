@@ -20,6 +20,23 @@ struct RegIF {
   /*_p02.ULAK*/ DFF22 ULAK_FF0F_D4p;
 };
 
+// This is technically in the CPU, but we're going to implement it here for now.
+struct RegIE {
+  void reset_to_cart() {
+    IE_D0.state = 0b00011010;
+    IE_D1.state = 0b00011010;
+    IE_D2.state = 0b00011010;
+    IE_D3.state = 0b00011010;
+    IE_D4.state = 0b00011010;
+  }
+
+  DFF IE_D0;
+  DFF IE_D1;
+  DFF IE_D2;
+  DFF IE_D3;
+  DFF IE_D4;
+};
+
 struct GateBoyInterrupts {
   void reset_to_cart() {
     MATY_FF0F_L0p.state = 0b00011000;
@@ -27,12 +44,6 @@ struct GateBoyInterrupts {
     PAVY_FF0F_L2p.state = 0b00011000;
     NEJY_FF0F_L3p.state = 0b00011000;
     NUTY_FF0F_L4p.state = 0b00011000;
-
-    IE_D0.state = 0b00011010;
-    IE_D1.state = 0b00011010;
-    IE_D2.state = 0b00011010;
-    IE_D3.state = 0b00011010;
-    IE_D4.state = 0b00011010;
 
     SIG_CPU_INT_VBLANK.state = 0b00011001;
     SIG_CPU_INT_STAT.state   = 0b00011000;
@@ -51,13 +62,6 @@ struct GateBoyInterrupts {
   /*_p02.PAVY*/ TpLatch PAVY_FF0F_L2p;
   /*_p02.NEJY*/ TpLatch NEJY_FF0F_L3p;
   /*_p02.NUTY*/ TpLatch NUTY_FF0F_L4p;
-
-  // This is technically in the CPU, but we're going to implement it here for now.
-  DFF IE_D0;
-  DFF IE_D1;
-  DFF IE_D2;
-  DFF IE_D3;
-  DFF IE_D4;
 
   /*_SIG_CPU_INT_VBLANK*/ SigOut SIG_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
   /*_SIG_CPU_INT_STAT  */ SigOut SIG_CPU_INT_STAT  ;    // bottom right port PORTB_07: <- P02.LALU, stat int

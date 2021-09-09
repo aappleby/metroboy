@@ -136,17 +136,17 @@ void GateBoy::tock_interrupts_gates()
 
   // FIXME why is this latch different from the others? MATY is one of those big yellow latchy things.
 
-  /*_p02.MATY*/ interrupts.MATY_FF0F_L0p.tp_latchp(ROLO_FF0F_RDn, reg_if.LOPE_FF0F_D0p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.MOPO*/ interrupts.MOPO_FF0F_L1p.tp_latchp(ROLO_FF0F_RDn, reg_if.LALU_FF0F_D1p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.PAVY*/ interrupts.PAVY_FF0F_L2p.tp_latchp(ROLO_FF0F_RDn, reg_if.NYBO_FF0F_D2p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.NEJY*/ interrupts.NEJY_FF0F_L3p.tp_latchp(ROLO_FF0F_RDn, reg_if.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.NUTY*/ interrupts.NUTY_FF0F_L4p.tp_latchp(ROLO_FF0F_RDn, reg_if.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.MATY*/ latch_if.MATY_FF0F_L0p.tp_latchp(ROLO_FF0F_RDn, reg_if.LOPE_FF0F_D0p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.MOPO*/ latch_if.MOPO_FF0F_L1p.tp_latchp(ROLO_FF0F_RDn, reg_if.LALU_FF0F_D1p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.PAVY*/ latch_if.PAVY_FF0F_L2p.tp_latchp(ROLO_FF0F_RDn, reg_if.NYBO_FF0F_D2p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.NEJY*/ latch_if.NEJY_FF0F_L3p.tp_latchp(ROLO_FF0F_RDn, reg_if.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.NUTY*/ latch_if.NUTY_FF0F_L4p.tp_latchp(ROLO_FF0F_RDn, reg_if.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
 
-  /*#p02.NELA*/ triwire NELA_IF0_TO_CD0 = tri6_pn(POLA_FF0F_RDp, interrupts.MATY_FF0F_L0p.qn_new());
-  /*#p02.NABO*/ triwire NABO_IF1_TO_CD1 = tri6_pn(POLA_FF0F_RDp, interrupts.MOPO_FF0F_L1p.qn_new());
-  /*#p02.ROVA*/ triwire ROVA_IF2_TO_CD2 = tri6_pn(POLA_FF0F_RDp, interrupts.PAVY_FF0F_L2p.qn_new());
-  /*#p02.PADO*/ triwire PADO_IF3_TO_CD3 = tri6_pn(POLA_FF0F_RDp, interrupts.NEJY_FF0F_L3p.qn_new());
-  /*#p02.PEGY*/ triwire PEGY_IF4_TO_CD4 = tri6_pn(POLA_FF0F_RDp, interrupts.NUTY_FF0F_L4p.qn_new());
+  /*#p02.NELA*/ triwire NELA_IF0_TO_CD0 = tri6_pn(POLA_FF0F_RDp, latch_if.MATY_FF0F_L0p.qn_new());
+  /*#p02.NABO*/ triwire NABO_IF1_TO_CD1 = tri6_pn(POLA_FF0F_RDp, latch_if.MOPO_FF0F_L1p.qn_new());
+  /*#p02.ROVA*/ triwire ROVA_IF2_TO_CD2 = tri6_pn(POLA_FF0F_RDp, latch_if.PAVY_FF0F_L2p.qn_new());
+  /*#p02.PADO*/ triwire PADO_IF3_TO_CD3 = tri6_pn(POLA_FF0F_RDp, latch_if.NEJY_FF0F_L3p.qn_new());
+  /*#p02.PEGY*/ triwire PEGY_IF4_TO_CD4 = tri6_pn(POLA_FF0F_RDp, latch_if.NUTY_FF0F_L4p.qn_new());
 
   /*_BUS_CPU_D00p*/ cpu_dbus_new.BUS_CPU_D00p.tri_bus(NELA_IF0_TO_CD0);
   /*_BUS_CPU_D01p*/ cpu_dbus_new.BUS_CPU_D01p.tri_bus(NABO_IF1_TO_CD1);

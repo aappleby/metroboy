@@ -37,14 +37,25 @@ struct RegIE {
   DFF IE_D4;
 };
 
-struct GateBoyInterrupts {
+struct LatchIF {
   void reset_to_cart() {
     MATY_FF0F_L0p.state = 0b00011000;
     MOPO_FF0F_L1p.state = 0b00011000;
     PAVY_FF0F_L2p.state = 0b00011000;
     NEJY_FF0F_L3p.state = 0b00011000;
     NUTY_FF0F_L4p.state = 0b00011000;
+  }
 
+  /*_p02.MATY*/ TpLatch MATY_FF0F_L0p;
+  /*_p02.MOPO*/ TpLatch MOPO_FF0F_L1p;
+  /*_p02.PAVY*/ TpLatch PAVY_FF0F_L2p;
+  /*_p02.NEJY*/ TpLatch NEJY_FF0F_L3p;
+  /*_p02.NUTY*/ TpLatch NUTY_FF0F_L4p;
+};
+
+
+struct GateBoyInterrupts {
+  void reset_to_cart() {
     SIG_CPU_INT_VBLANK.state = 0b00011001;
     SIG_CPU_INT_STAT.state   = 0b00011000;
     SIG_CPU_INT_TIMER.state  = 0b00011000;
@@ -56,12 +67,6 @@ struct GateBoyInterrupts {
     SIG_CPU_ACK_SERIAL.state = 0b00011000;
     SIG_CPU_ACK_JOYPAD.state = 0b00011000;
   }
-
-  /*_p02.MATY*/ TpLatch MATY_FF0F_L0p;
-  /*_p02.MOPO*/ TpLatch MOPO_FF0F_L1p;
-  /*_p02.PAVY*/ TpLatch PAVY_FF0F_L2p;
-  /*_p02.NEJY*/ TpLatch NEJY_FF0F_L3p;
-  /*_p02.NUTY*/ TpLatch NUTY_FF0F_L4p;
 
   /*_SIG_CPU_INT_VBLANK*/ SigOut SIG_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
   /*_SIG_CPU_INT_STAT  */ SigOut SIG_CPU_INT_STAT  ;    // bottom right port PORTB_07: <- P02.LALU, stat int

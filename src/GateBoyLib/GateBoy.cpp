@@ -163,9 +163,13 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   rst.reset_to_cart();
   clk.reset_to_cart();
   div.reset_to_cart();
+  
   interrupts.reset_to_cart();
   reg_if.reset_to_cart();
   reg_ie.reset_to_cart();
+  latch_if.reset_to_cart();
+
+
   serial.reset_to_cart();
 
   //reset_sprite_store();
@@ -3118,7 +3122,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (cpu_addr_new == 0xFF0F && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
-      cpy(&interrupts.MATY_FF0F_L0p,  &reg_if, sizeof(reg_if));
+      cpy(&latch_if,  &reg_if, sizeof(reg_if));
       cpy(&cpu_dbus_new.BUS_CPU_D00p, &reg_if, sizeof(reg_if));
     }
   }

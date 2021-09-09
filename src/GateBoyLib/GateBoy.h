@@ -461,6 +461,7 @@ struct GateBoy {
   GateBoyInterrupts interrupts;
   RegIF reg_if;
   RegIE reg_ie;
+  LatchIF latch_if;
 
   GateBoyJoypad     joy;
   GateBoySerial     serial;

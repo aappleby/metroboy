@@ -91,7 +91,7 @@ void GateBoy::dump_clocks(Dumper& d) {
 void GateBoy::dump_interrupts(Dumper& d) {
   d.dump_slice2p("FF0F IF : ", &reg_if, 5);
   d.dump_slice2p("FFFF IE : ", &reg_ie, 5);
-  d.dump_slice2p("LATCH   : ", &interrupts.MATY_FF0F_L0p.state, 5);
+  d.dump_slice2p("LATCH   : ", &latch_if, 5);
   d.dump_slice2p("CPU_INT : ", &interrupts.SIG_CPU_INT_VBLANK, 5);
   d.dump_slice2p("CPU_ACK : ", &interrupts.SIG_CPU_ACK_VBLANK, 5);
 }

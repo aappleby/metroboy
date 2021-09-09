@@ -2668,41 +2668,23 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // Win coord y
 
-    wire REPU_VBLANKp = or2(lcd.POPU_y144p.state, reg_lcdc.XONA_LCDC_LCDENn.state);
+    auto REPU_VBLANKp = lcd.POPU_y144p || reg_lcdc.XONA_LCDC_LCDENn;
 
-    auto win_y_old = bit(REPU_VBLANKp) ? 0 : pack(win_y);
-
-    if (phase_total == 1117177879) __debugbreak();
+    auto win_y_old = REPU_VBLANKp ? 0 : pack(win_y);
 
     if (negedge(PYNU_WIN_MODE_Ap_old, PYNU_WIN_MODE_Ap_new)) {
-
-      if (negedge(PYNU_WIN_MODE_Ap_old, PYNU_WIN_MODE_Ap_new))       win_y.VYNO_WIN_TILE_Y0.set_data(!bit(win_y_old, 0));
-      if (negedge(bit(win_y_old, 0), win_y.VYNO_WIN_TILE_Y0.state))  win_y.VUJO_WIN_TILE_Y1.set_data(!bit(win_y_old, 1));
-      if (negedge(bit(win_y_old, 1), win_y.VUJO_WIN_TILE_Y1.state))  win_y.VYMU_WIN_TILE_Y2.set_data(!bit(win_y_old, 2));
-      if (negedge(bit(win_y_old, 2), win_y.VYMU_WIN_TILE_Y2.state))  win_y.TUFU_WIN_MAP_Y0 .set_data(!bit(win_y_old, 3));
-      if (negedge(bit(win_y_old, 3), win_y.TUFU_WIN_MAP_Y0 .state))  win_y.TAXA_WIN_MAP_Y1 .set_data(!bit(win_y_old, 4));
-      if (negedge(bit(win_y_old, 4), win_y.TAXA_WIN_MAP_Y1 .state))  win_y.TOZO_WIN_MAP_Y2 .set_data(!bit(win_y_old, 5));
-      if (negedge(bit(win_y_old, 5), win_y.TOZO_WIN_MAP_Y2 .state))  win_y.TATE_WIN_MAP_Y3 .set_data(!bit(win_y_old, 6));
-      if (negedge(bit(win_y_old, 6), win_y.TATE_WIN_MAP_Y3 .state))  win_y.TEKE_WIN_MAP_Y4 .set_data(!bit(win_y_old, 7));
-
-      //auto win_y_new = pack(8, &win_coords.VYNO_WIN_TILE_Y0);
-      //
-      //if (win_y_new != win_y_old + 1) {
-      //  int x = 0;
-      //  x++;
-      //  __debugbreak();
-      //}
+      unpack(win_y_old + 1, win_y);
     }
 
     if (bit(REPU_VBLANKp)) {
-      win_y.VYNO_WIN_TILE_Y0.rst();
-      win_y.VUJO_WIN_TILE_Y1.rst();
-      win_y.VYMU_WIN_TILE_Y2.rst();
-      win_y.TUFU_WIN_MAP_Y0.rst();
-      win_y.TAXA_WIN_MAP_Y1.rst();
-      win_y.TOZO_WIN_MAP_Y2.rst();
-      win_y.TATE_WIN_MAP_Y3.rst();
-      win_y.TEKE_WIN_MAP_Y4.rst();
+      win_y.VYNO_WIN_TILE_Y0 = 0;
+      win_y.VUJO_WIN_TILE_Y1 = 0;
+      win_y.VYMU_WIN_TILE_Y2 = 0;
+      win_y.TUFU_WIN_MAP_Y0  = 0;
+      win_y.TAXA_WIN_MAP_Y1  = 0;
+      win_y.TOZO_WIN_MAP_Y2  = 0;
+      win_y.TATE_WIN_MAP_Y3  = 0;
+      win_y.TEKE_WIN_MAP_Y4  = 0;
     }
 
     auto win_y_new = pack(win_y);

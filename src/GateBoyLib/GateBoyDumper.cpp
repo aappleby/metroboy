@@ -213,7 +213,7 @@ void GateBoy::dump_cpu_bus(Dumper& d) {
   d.dump_bitp   ("SIG_CPU_EXT_BUSp  : ", cpu_signals.SIG_IN_CPU_EXT_BUSp.state);
   //d.dump_bitp   ("SIG_CPU_6         : ", SIG_CPU_6.state);
   d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", cpu_signals.SIG_IN_CPU_LATCH_EXT.state);
-  d.dump_bitp   ("BOOT_BITn         : ", cpu_signals.TEPU_BOOT_BITn_h.state);
+  d.dump_bitp   ("BOOT_BITn         : ", cpu_signals.TEPU_BOOT_BITn.state);
   d.dump_bitp   ("SIG_CPU_BOOTp     : ", cpu_signals.SIG_CPU_BOOTp.state);
   d.dump_bitp   ("TEDO_CPU_RDp      : ", cpu_signals.TEDO_CPU_RDp.state);
   d.dump_bitp   ("APOV_CPU_WRp      : ", cpu_signals.APOV_CPU_WRp.state);
@@ -223,9 +223,9 @@ void GateBoy::dump_cpu_bus(Dumper& d) {
 }
 
 void GateBoy::dump_dma(Dumper& d) {
-  d.dump_slice2p("DMA_A_LOW  : ", &reg_dma_lo.NAKY_DMA_A00p, 8);
-  d.dump_slice2n("DMA_A_HIGH : ", &reg_dma_hi.NAFA_DMA_A08n, 8);
-  d             ("DMA Addr   : 0x%02x:%02x\n", pack_inv(8, &reg_dma_hi.NAFA_DMA_A08n), pack(8, &reg_dma_lo.NAKY_DMA_A00p));
+  d.dump_slice2p("DMA_A_LOW  : ", &dma_lo.NAKY_DMA_A00p, 8);
+  d.dump_slice2n("DMA_A_HIGH : ", &dma_hi.NAFA_DMA_A08n, 8);
+  d             ("DMA Addr   : 0x%02x:%02x\n", pack_inv(8, &dma_hi.NAFA_DMA_A08n), pack(8, &dma_lo.NAKY_DMA_A00p));
   d.dump_bitp   ("MATU_DMA_RUNNINGp : ", dma_ctrl.MATU_DMA_RUNNINGp.state);
   d.dump_bitp   ("LYXE_DMA_LATCHp   : ", dma_ctrl.LYXE_DMA_LATCHp  .state);
   d.dump_bitp   ("MYTE_DMA_DONE     : ", dma_ctrl.MYTE_DMA_DONE    .state);
@@ -276,9 +276,9 @@ void GateBoy::dump_sprite_fetcher(Dumper& d) {
 void GateBoy::dump_timer(Dumper& d) {
   d.dump_slice2p("DIV16 : ", &div.UKUP_DIV00p, 16);
   d.dump_slice2p("FF04 DIV  : ", &div.UGOT_DIV06p, 8);
-  d.dump_slice2p("FF05 TIMA : ", &reg_tima, 8);
-  d.dump_slice2p("FF06 TMA  : ", &reg_tma, 8);
-  d.dump_slice2p("FF07 TAC  : ", &reg_tac, 3);
+  d.dump_slice2p("FF05 TIMA : ", &tima, 8);
+  d.dump_slice2p("FF06 TMA  : ", &tma, 8);
+  d.dump_slice2p("FF07 TAC  : ", &tac, 3);
   d.dump_bitp   ("NYDU_TIMA7p_DELAY    : ", int_ctrl.NYDU_TIMA7p_DELAY.state);
   d.dump_bitp   ("MOBA_TIMER_OVERFLOWp : ", int_ctrl.MOBA_TIMER_OVERFLOWp.state);
 }
@@ -308,12 +308,14 @@ void GateBoy::dump_sprite_scanner(Dumper& d) {
 }
 
 void GateBoy::dump_serial(Dumper& d) {
+#if 0
   d.dump_bitp   ("ETAF_SER_RUNNING : ", serial.ETAF_SER_RUN.state);
   d.dump_bitp   ("CULY_XFER_DIR    : ", serial.CULY_SER_DIR.state);
   d.dump_bitp   ("COTY_SER_CLK     : ", serial.COTY_SER_CLK.state);
   d.dump_bitp   ("ELYS_SER_OUT     : ", serial.ELYS_SER_OUT.state);
   d.dump_slice2p("CAFA_SER_CNT     : ", &serial.CAFA_SER_CNT0, 4);
   d.dump_slice2p("CUBA_SER_DATA    : ", &serial.CUBA_SER_DATA0, 8);
+#endif
 }
 
 void GateBoy::dump_ppu(Dumper& d) {
@@ -365,8 +367,8 @@ void GateBoy::dump_ppu(Dumper& d) {
 void GateBoy::dump_spu(Dumper& d) {
   (void)d;
 
-  d.dump_bitp   ("HADA_ALL_SOUND_ONp     : ", reg_NR52.HADA_ALL_SOUND_ONp.state);
-  d.dump_slice2p("NR50 : ", &reg_NR50.APEG_VOL_L0, 8);
+  //d.dump_bitp   ("HADA_ALL_SOUND_ONp     : ", reg_NR52.HADA_ALL_SOUND_ONp.state);
+  //d.dump_slice2p("NR50 : ", &reg_NR50.APEG_VOL_L0, 8);
 
 
 }

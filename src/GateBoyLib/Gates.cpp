@@ -230,7 +230,7 @@ TestResults diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int st
 
     int byte_a = bytes_a[ia] & mask;
     int byte_b = bytes_b[ib] & mask;
-    EXPECT_EQ(byte_a, byte_b, "@ %5d : [%5d] = 0x%02x, [%5d] = 0x%02x\n", i, ia, byte_a, ib, byte_b);
+    EXPECT_EQ(byte_a, byte_b, ": [%5d] = 0x%02x, [%5d] = 0x%02x\n", ia, byte_a, ib, byte_b);
   }
   return results;
 }

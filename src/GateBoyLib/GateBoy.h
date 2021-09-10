@@ -35,6 +35,11 @@ uint32_t cart_ram_addr_mask(const blob & cart_blob);
 bool cart_has_mbc1(const blob & cart_blob);
 bool cart_has_ram(const blob & cart_blob);
 
+struct GateBoy;
+
+void print_field_at(int offset);
+void diff_gb(GateBoy* gba, GateBoy* gbb, uint8_t mask);
+
 //-----------------------------------------------------------------------------
 
 #pragma pack(push, 1)
@@ -79,8 +84,8 @@ struct GateBoy {
     }
   }
 
-  uint8_t dbg_read (const blob& cart_blob, int addr);
-  void dbg_write(const blob& cart_blob, int addr, uint8_t data);
+  bool dbg_read (const blob& cart_blob, int addr, uint8_t& out);
+  bool dbg_write(const blob& cart_blob, int addr, uint8_t data);
 
   void set_boot_bit(const blob& cart_blob) {
     dbg_write(cart_blob, 0xFF50, 0xFF);
@@ -88,13 +93,13 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void run_phases(const blob& cart_blob, int phase_count, bool logic_mode) {
+  void run_phases(const blob& cart_blob, int phase_count) {
     for (int i = 0; i < phase_count; i++) {
-      next_phase(cart_blob, logic_mode);
+      next_phase(cart_blob);
     }
   }
 
-  void next_phase(const blob& cart_blob, bool logic_mode);
+  bool next_phase(const blob& cart_blob);
 
   void tock_cpu();
   void tock_gates(const blob& cart_blob);
@@ -118,28 +123,21 @@ struct GateBoy {
     sentinel4 = SENTINEL4;
   }
 
-  int64_t hash() {
+  int64_t hash_regression() {
     uint64_t h = HASH_INIT;
-
     uint8_t* blob = (uint8_t*)this;
-
     int reg_a = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
     int reg_b = offsetof(GateBoy, sentinel2);
+    h = hash_low_bit(blob + reg_a, reg_b - reg_a, h);
+    return h;
+  }
 
-    if (config_regression) {
-      h = hash_low_bit(blob + reg_a, reg_b - reg_a, h);
-    }
-    else {
-      h = hash_all_bits(blob + reg_a, reg_b - reg_a, h);
-    }
-
-    /*
-    int state_a = offsetof(GateBoy, sentinel2) + sizeof(sentinel2);
-    int state_b = offsetof(GateBoy, sentinel4);
-
-    h = hash_all_bits(blob + state_a, state_b - state_a, h);
-    */
-
+  int64_t hash_all() {
+    uint64_t h = HASH_INIT;
+    uint8_t* blob = (uint8_t*)this;
+    int reg_a = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
+    int reg_b = offsetof(GateBoy, sentinel2);
+    h = hash_all_bits(blob + reg_a, reg_b - reg_a, h);
     return h;
   }
 
@@ -168,7 +166,7 @@ struct GateBoy {
   void tock_dma_logic();
   void tock_joypad_logic();
   void tock_timer_logic();
-  void tock_serial_logic();
+  void tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new);
   void tock_bootrom_logic();
 
   void tock_lcdc_gates(); // logic is inlined
@@ -192,7 +190,8 @@ struct GateBoy {
   void tock_window_gates(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
   void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
 
-  void tock_spu();
+  void tock_spu_gates();
+  void tock_spu_logic();
 
   void store_sprite_gates(SpriteStoreFlags& sprite_store_flags_old, SpriteStoreFlags& sprite_store_flags_new, SpriteResetFlags& sprite_reset_flags, wire BYVA_LINE_RSTn, OamTempB& oam_temp_b_old);
   void get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags& sprite_get_flag);
@@ -448,15 +447,13 @@ struct GateBoy {
   GateBoyResetDebug rst;
   GateBoyClock      clk;
   RegDIV        div;
-  //GateBoyTimer      timer;
+  RegTIMA tima;
+  RegTMA  tma;
+  RegTAC  tac;
 
-  RegTIMA reg_tima;
-  RegTMA  reg_tma;
-  RegTAC  reg_tac;
-
-  RegDmaLo   reg_dma_lo;
-  RegDmaHi   reg_dma_hi;
   DmaControl dma_ctrl;
+  RegDmaLo   dma_lo;
+  RegDmaHi   dma_hi;
   
   InterruptControl int_ctrl;
 
@@ -471,7 +468,7 @@ struct GateBoy {
   JoyLatch joy_latch;
   JoyExt   joy_ext;
 
-  GateBoySerial     serial;
+  //GateBoySerial     serial;
 
   StoreI0 store_i0;
   StoreI1 store_i1;
@@ -591,9 +588,9 @@ struct GateBoy {
   //NR43 reg_NR43;
   //NR44 reg_NR44;
 
-  NR50 reg_NR50;
-  NR51 reg_NR51;
-  NR52 reg_NR52;
+  //NR50 reg_NR50;
+  //NR51 reg_NR51;
+  //NR52 reg_NR52;
 
   // Everything after sentinel 2 is checked in test_reset_cart_vs_dump
   uint64_t sentinel2 = SENTINEL2;
@@ -637,6 +634,7 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // Debug stuff
 
+  bool     logic_mode = config_fastmode; // Fastmode builds use logic mode by default.
   uint64_t phase_total = 0;
   double   sim_time = 0;
   uint64_t phase_origin = 0;

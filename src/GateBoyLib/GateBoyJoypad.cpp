@@ -179,10 +179,10 @@ void GateBoy::tock_joypad_logic() {
   auto cpu_addr_new = pack(cpu_abus_new);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && cpu_addr_new == 0xFF00 && DELTA_GH) {
-    joy_reg.KELY_JOYP_UDLRp.state = cpu_dbus_old.BUS_CPU_D04p.out_old();
-    joy_reg.COFY_JOYP_ABCSp.state = cpu_dbus_old.BUS_CPU_D05p.out_old();
-    joy_ext.PIN_63_JOY_P14.pin_out(~joy_reg.KELY_JOYP_UDLRp.state, ~joy_reg.KELY_JOYP_UDLRp.state);
-    joy_ext.PIN_62_JOY_P15.pin_out(~joy_reg.COFY_JOYP_ABCSp.state, ~joy_reg.COFY_JOYP_ABCSp.state);
+    joy_reg.KELY_JOYP_UDLRp.state = cpu_dbus_old.BUS_CPU_D04p.state;
+    joy_reg.COFY_JOYP_ABCSp.state = cpu_dbus_old.BUS_CPU_D05p.state;
+    joy_ext.PIN_63_JOY_P14.state = ~joy_reg.KELY_JOYP_UDLRp.state;
+    joy_ext.PIN_62_JOY_P15.state = ~joy_reg.COFY_JOYP_ABCSp.state;
   }
 
   bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
@@ -200,15 +200,17 @@ void GateBoy::tock_joypad_logic() {
     EXT_button3 = bit(sys_buttons, 7); // START
   }
 
-  joy_ext.PIN_67_JOY_P10.pin_in(!EXT_button0);
-  joy_ext.PIN_66_JOY_P11.pin_in(!EXT_button1);
-  joy_ext.PIN_65_JOY_P12.pin_in(!EXT_button2);
-  joy_ext.PIN_64_JOY_P13.pin_in(!EXT_button3);
+  joy_ext.PIN_67_JOY_P10.state = EXT_button0;
+  joy_ext.PIN_66_JOY_P11.state = EXT_button1;
+  joy_ext.PIN_65_JOY_P12.state = EXT_button2;
+  joy_ext.PIN_64_JOY_P13.state = EXT_button3;
 
   wire any_button = or4(EXT_button0, EXT_button1, EXT_button2, EXT_button3);
 
-  int_ctrl.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), !any_button);
-  int_ctrl.SIG_CPU_WAKE.sig_out(int_ctrl.AWOB_WAKE_CPU.qp_new());
+  if (bit(gen_clk_new(0b10000000))) {
+    int_ctrl.AWOB_WAKE_CPU.state = !any_button;
+    int_ctrl.SIG_CPU_WAKE.state = !any_button;
+  }
 
   if (DELTA_HA) {
     joy_int.APUG_JP_GLITCH3.state = joy_int.AGEM_JP_GLITCH2.state;

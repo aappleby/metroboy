@@ -14,6 +14,9 @@ GateBoyThread::GateBoyThread()
 {
   gb_a->wipe();
   gb_b->wipe();
+
+  gb_a->logic_mode = false;
+  gb_b->logic_mode = true;
 }
 
 //----------------------------------------
@@ -271,7 +274,7 @@ void GateBoyThread::run_normal() {
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
 
-    gba.next_phase(cart_blob, config_fastmode);
+    gba.next_phase(cart_blob);
 
     step_count--;
   }
@@ -285,18 +288,15 @@ void GateBoyThread::run_regression() {
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
 
-    uint64_t hash_a_old = gba.hash();
-    uint64_t hash_b_old = gbb.hash();
+    gba.next_phase(cart_blob);
+    gbb.next_phase(cart_blob);
 
-    gba.next_phase(cart_blob, false);
-    gbb.next_phase(cart_blob, true);
-
-    uint64_t hash_a_new = gba.hash();
-    uint64_t hash_b_new = gbb.hash();
+    uint64_t hash_a_new = gba.hash_regression();
+    uint64_t hash_b_new = gbb.hash_regression();
 
     if (hash_a_new != hash_b_new) {
       LOG_R("Regression test mismatch NEW!\n");
-      diff_blob(gb_a.state(), 0, sizeof(GateBoy), gb_b.state(), 0, sizeof(GateBoy), 0x01);
+      diff_gb(gb_a.state(), gb_b.state(), 0x01);
       LOG_R("Regression test mismatch NEW!\n");
       clear_steps();
       return;
@@ -318,20 +318,20 @@ void GateBoyThread::run_idempotence() {
     gba.tock_gates(cart_blob);
     gba.update_framebuffer(pack(gba.pix_count) - 8, pack(gba.reg_ly), gba.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gba.lcd.PIN_50_LCD_DATA1.qp_ext_old());
 
-    uint64_t hash_a = gba.hash();
+    uint64_t hash_a = gba.hash_all();
 
     memcpy(gb_b.state(), gb_a.state(), sizeof(GateBoy));
 
     gbb.tock_gates(cart_blob);
     gbb.update_framebuffer(pack(gbb.pix_count) - 8, pack(gbb.reg_ly), gbb.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gbb.lcd.PIN_50_LCD_DATA1.qp_ext_old());
 
-    uint64_t hash_b = gbb.hash();
+    uint64_t hash_b = gbb.hash_all();
 
     gba.phase_total++;
 
     if (hash_a != hash_b) {
       LOG_R("Sim not stable after second pass!\n");
-      diff_blob(gb_a.state(), 0, sizeof(GateBoy), gb_b.state(), 0, sizeof(GateBoy), 0xFF);
+      diff_gb(gb_a.state(), gb_b.state(), 0xFF);
       LOG_R("Sim not stable after second pass!\n");
       step_count = 0;
       return;

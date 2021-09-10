@@ -6,6 +6,7 @@
 
 void GateBoy::tock_serial_gates()
 {
+#if 0
   /*#p06.UWAM*/ wire UWAM_FF02_WRn = nand4(cpu_abus_new.TOVY_A00n(), cpu_abus_new.BUS_CPU_A01p.out_new(), cpu_signals.TAPU_CPU_WRp.out_new(), cpu_abus_new.SANO_FF00_FF03p());
   /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(UWAM_FF02_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D00p.out_old());
 
@@ -124,38 +125,61 @@ void GateBoy::tock_serial_gates()
 
   /*_BUS_CPU_D00p*/ cpu_dbus_new.BUS_CPU_D00p.tri_bus(CORE_SER0_TO_CD0);
   /*_BUS_CPU_D07p*/ cpu_dbus_new.BUS_CPU_D07p.tri_bus(ELUV_SER1_TO_CD1);
+#endif
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_serial_logic()
+void GateBoy::tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new)
 {
+#if 0
   wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
   auto new_addr = pack(cpu_abus_new);
 
+  wire uwam_old = !(cpu_wr_old && cpu_addr_old == 0xFF02 && gen_clk_old(0b00001110));
+  wire uwam_new = !(cpu_wr_new && cpu_addr_new == 0xFF02 && gen_clk_new(0b00001110));
+
+
+  //----------------------------------------
+
+  wire culy_old = bit(serial.CULY_SER_DIR.state);
   if (cpu_signals.SIG_IN_CPU_WRp.state && (new_addr == 0xFF02 && DELTA_GH)) {
     serial.CULY_SER_DIR.state = cpu_dbus_old.BUS_CPU_D00p.state;
   }
+  wire culy_new = bit(serial.CULY_SER_DIR.state);
 
-  wire UWAM_FF02_WRn = !(cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF02 && CLK_xxxxEFGx);
+  wire coty_old = bit(serial.COTY_SER_CLK.state);
+  {
+    auto clk_old = bit(div_old, 6);
+    auto clk_new = bit(div_new, 6);
 
-  wire UVYN_DIV05n = not1(div.TAMA_DIV05p.state);
-  serial.COTY_SER_CLK.dff17(UVYN_DIV05n, UWAM_FF02_WRn, ~serial.COTY_SER_CLK.state);
+    if (posedge(clk_old, clk_new)) {
+      serial.COTY_SER_CLK.state = ~serial.COTY_SER_CLK.state;
+    }
+
+    if (!bit(uwam_new)) {
+      serial.COTY_SER_CLK.state = 0;
+    }
+  }
+  wire coty_new = bit(serial.COTY_SER_CLK.state);
 
   //----------------------------------------
   // Feedback loop
 
-  // FIXME going to need PIN_68_SCK_old for this
+  wire etaf_old = bit(serial.ETAF_SER_RUN.state);
+  if (posedge(uwam_old, uwam_new)) {
+    serial.ETAF_SER_RUN.state = cpu_dbus_old.BUS_CPU_D07p.state;
+  }
+  if (bit(serial.CALY_SER_CNT3.state)) {
+    serial.ETAF_SER_RUN.state = 0;
+  }
+  wire etaf_new = bit(serial.ETAF_SER_RUN.state);
 
-  uint8_t CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.state, serial.COTY_SER_CLK.state, serial.PIN_68_SCK.state);
-  uint8_t DAWA_SER_CLK = or2(CAVE_SER_CLK, ~serial.ETAF_SER_RUN.state);
 
-  serial.CAFA_SER_CNT0.dff17_any(DAWA_SER_CLK,                UWAM_FF02_WRn, ~serial.CAFA_SER_CNT0.state);
-  serial.CYLO_SER_CNT1.dff17_any(~serial.CAFA_SER_CNT0.state, UWAM_FF02_WRn, ~serial.CYLO_SER_CNT1.state);
-  serial.CYDE_SER_CNT2.dff17_any(~serial.CYLO_SER_CNT1.state, UWAM_FF02_WRn, ~serial.CYDE_SER_CNT2.state);
-  serial.CALY_SER_CNT3.dff17_any(~serial.CYDE_SER_CNT2.state, UWAM_FF02_WRn, ~serial.CALY_SER_CNT3.state);
+  wire sck_old = bit(serial.PIN_68_SCK.state);
+  uint8_t dawa_ser_clk_old = or2(mux2n(culy_old, coty_old, sck_old), ~etaf_old);
 
-  serial.ETAF_SER_RUN.dff17_any(UWAM_FF02_WRn, ~serial.CALY_SER_CNT3.state, cpu_dbus_old.BUS_CPU_D07p.out_old());
+  uint8_t dawa_ser_clk_new = or2(mux2n(culy_new, coty_new, sck_new), ~etaf_new);
 
   {
     wire KEXU = or2(~serial.CULY_SER_DIR.state, ~DAWA_SER_CLK);
@@ -163,6 +187,16 @@ void GateBoy::tock_serial_logic()
 
     serial.PIN_68_SCK.pin_io_any(serial.CULY_SER_DIR.state, KEXU, KUJO, 0, 1);
   }
+
+
+  auto ser_cnt_old = pack(4, &serial.CAFA_SER_CNT0);
+
+  serial.CAFA_SER_CNT0.dff17_any(DAWA_SER_CLK,                1, ~serial.CAFA_SER_CNT0.state);
+  serial.CYLO_SER_CNT1.dff17_any(~serial.CAFA_SER_CNT0.state, 1, ~serial.CYLO_SER_CNT1.state);
+  serial.CYDE_SER_CNT2.dff17_any(~serial.CYLO_SER_CNT1.state, 1, ~serial.CYDE_SER_CNT2.state);
+  serial.CALY_SER_CNT3.dff17_any(~serial.CYDE_SER_CNT2.state, 1, ~serial.CALY_SER_CNT3.state);
+
+  if (!bit(uwam_new)) clear(4, &serial.CAFA_SER_CNT0);
 
   CAVE_SER_CLK = mux2n(serial.CULY_SER_DIR.state, serial.COTY_SER_CLK.state, serial.PIN_68_SCK.state);
   DAWA_SER_CLK = or2(CAVE_SER_CLK, ~serial.ETAF_SER_RUN.state);
@@ -214,6 +248,7 @@ void GateBoy::tock_serial_logic()
     cpu_dbus_new.BUS_CPU_D00p.state = serial.CULY_SER_DIR.state;
     cpu_dbus_new.BUS_CPU_D07p.state = serial.ETAF_SER_RUN.state;
   }
+#endif
 }
 
 //------------------------------------------------------------------------------------------------------------------------

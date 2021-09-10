@@ -5,10 +5,11 @@
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoyCpuSignals::reset_to_bootrom() {
+  TEPU_BOOT_BITn.state = 0b00011010;
 }
 
 void GateBoyCpuSignals::reset_to_cart() {
-  TEPU_BOOT_BITn_h.state = 0b00011011;
+  TEPU_BOOT_BITn.state = 0b00011011;
   SIG_CPU_BOOTp.state = 0b00011000;
 }
 
@@ -18,14 +19,14 @@ void GateBoy::tock_bootrom_gates() {
   /*_p07.TUGE*/ wire TUGE_FF50_WRn = nand4(cpu_signals.TAPU_CPU_WRp.out_new(), cpu_abus_new.SYKE_ADDR_HIp(), cpu_abus_new.TYRO_XX_0x0x0000p(), cpu_abus_new.TUFA_XX_x1x1xxxxp());
   // FF50 - disable bootrom bit
 
-  /*_p07.TEPU*/ cpu_signals.TEPU_BOOT_BITn_h.dff17(TUGE_FF50_WRn, ALUR_SYS_RSTn(), SATO_BOOT_BITn.out_old());
+  /*_p07.TEPU*/ cpu_signals.TEPU_BOOT_BITn.dff17(TUGE_FF50_WRn, ALUR_SYS_RSTn(), SATO_BOOT_BITn.out_old());
 
   // BOOT -> CBD
   // this is kind of a hack
   auto cpu_addr_new = pack(cpu_abus_new);
   wire bootrom_data = DMG_ROM_blob[cpu_addr_new & 0xFF];
 
-  /*_p07.TERA*/ wire TERA_BOOT_BITp  = not1(cpu_signals.TEPU_BOOT_BITn_h.qp_new());
+  /*_p07.TERA*/ wire TERA_BOOT_BITp  = not1(cpu_signals.TEPU_BOOT_BITn.qp_new());
   /*_p07.TUTU*/ wire TUTU_READ_BOOTROMp = and2(TERA_BOOT_BITp, cpu_abus_new.TULO_ADDR_BOOTROMp());
   /*_SIG_CPU_BOOTp*/ cpu_signals.SIG_CPU_BOOTp.sig_out(TUTU_READ_BOOTROMp);
 
@@ -58,10 +59,10 @@ void GateBoy::tock_bootrom_gates() {
   cpu_dbus_new.BUS_CPU_D07p.tri_bus(boot_d7);
 
   /*_p07.TEXE*/ wire TEXE_FF50_RDp =  and4(cpu_signals.TEDO_CPU_RDp.out_new(), cpu_abus_new.SYKE_ADDR_HIp(), cpu_abus_new.TYRO_XX_0x0x0000p(), cpu_abus_new.TUFA_XX_x1x1xxxxp());
-  /*_p07.SYPU*/ triwire SYPU_BOOT_TO_CD0 = tri6_pn(TEXE_FF50_RDp, cpu_signals.TEPU_BOOT_BITn_h.qp_new());
+  /*_p07.SYPU*/ triwire SYPU_BOOT_TO_CD0 = tri6_pn(TEXE_FF50_RDp, cpu_signals.TEPU_BOOT_BITn.qp_new());
   /*_BUS_CPU_D00p*/ cpu_dbus_new.BUS_CPU_D00p.tri_bus(SYPU_BOOT_TO_CD0);
 
-  /*_p07.SATO*/ SATO_BOOT_BITn = or2(cpu_dbus_new.BUS_CPU_D00p.out_new(), cpu_signals.TEPU_BOOT_BITn_h.qp_new());
+  /*_p07.SATO*/ SATO_BOOT_BITn = or2(cpu_dbus_new.BUS_CPU_D00p.out_new(), cpu_signals.TEPU_BOOT_BITn.qp_new());
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -70,7 +71,7 @@ void GateBoy::tock_bootrom_logic() {
   auto cpu_addr_new = pack(cpu_abus_new);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && cpu_addr_new == 0xFF50 && DELTA_GH) {
-    cpu_signals.TEPU_BOOT_BITn_h.state = SATO_BOOT_BITn.state;
+    cpu_signals.TEPU_BOOT_BITn.state = SATO_BOOT_BITn.state;
   }
 
   cpu_signals.SIG_CPU_BOOTp.state = 0;
@@ -78,19 +79,19 @@ void GateBoy::tock_bootrom_logic() {
 
   if (cpu_addr_new <= 0x00FF) {
 
-    cpu_signals.SIG_CPU_BOOTp.sig_out(~cpu_signals.TEPU_BOOT_BITn_h.state);
+    cpu_signals.SIG_CPU_BOOTp.state = ~cpu_signals.TEPU_BOOT_BITn.state;
 
-    if (bit(and2(cpu_signals.SIG_IN_CPU_RDp.state, ~cpu_signals.TEPU_BOOT_BITn_h.state))) {
+    if (bit(and2(cpu_signals.SIG_IN_CPU_RDp.state, ~cpu_signals.TEPU_BOOT_BITn.state))) {
       cpu_signals.SIG_BOOT_CSp.state = 1;
       unpack(DMG_ROM_blob[cpu_addr_new & 0xFF], 8, &cpu_dbus_new.BUS_CPU_D00p);
     }
   }
 
   if (cpu_signals.SIG_IN_CPU_RDp.state && (cpu_addr_new == 0xFF50)) {
-    cpu_dbus_new.BUS_CPU_D00p.state = cpu_signals.TEPU_BOOT_BITn_h.state;
+    cpu_dbus_new.BUS_CPU_D00p.state = cpu_signals.TEPU_BOOT_BITn.state;
   }
 
-  SATO_BOOT_BITn = or2(cpu_dbus_new.BUS_CPU_D00p.state, cpu_signals.TEPU_BOOT_BITn_h.state);
+  SATO_BOOT_BITn = or2(cpu_dbus_new.BUS_CPU_D00p.state, cpu_signals.TEPU_BOOT_BITn.state);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

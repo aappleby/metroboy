@@ -25,31 +25,19 @@ const bool run_slow_tests = false;
 
 TestResults test_regression_cart(blob cart_blob, int cycles, bool from_bootrom) {
   TEST_INIT();
-
   if (cart_blob.empty()) TEST_FAIL();
 
-  GateBoy gba;
-  GateBoy gbb;
-
+  GateBoyPair gbp;
   if (from_bootrom) {
-    gba.reset_to_bootrom(cart_blob, true);
-    gbb.reset_to_bootrom(cart_blob, true);
+    gbp.reset_to_bootrom(cart_blob, true);
   }
   else {
-    gba.reset_to_cart(cart_blob);
-    gbb.reset_to_cart(cart_blob);
+    gbp.reset_to_cart(cart_blob);
   }
 
   for (int i = 0; i < cycles; i++) {
     if (i && (i % 1000000) == 0) LOG_G("Phase %d\n", i);
-
-    gba.next_phase(cart_blob, true);
-    gbb.next_phase(cart_blob, false);
-    if (gba.hash() != gbb.hash()) {
-      LOG_R("Regression test mismatch @ phase %d!\n", i);
-      diff_blob(&gba, 0, sizeof(GateBoy), &gbb, 0, sizeof(GateBoy), 0x01);
-      TEST_FAIL();
-    }
+    if (!gbp.next_phase(cart_blob)) TEST_FAIL();
   }
 
   TEST_DONE();
@@ -57,14 +45,10 @@ TestResults test_regression_cart(blob cart_blob, int cycles, bool from_bootrom) 
 
 TestResults test_regression_dump(blob raw_dump, int cycles) {
   TEST_INIT();
-
   if (raw_dump.empty()) TEST_FAIL();
 
-  GateBoy gba;
-  GateBoy gbb;
-
-  gba.from_blob(raw_dump);
-  gbb.from_blob(raw_dump);
+  GateBoyPair gbp;
+  gbp.from_blob(raw_dump);
   
   blob cart_blob;
   int cart_size = (int)raw_dump.size() - sizeof(GateBoy);
@@ -73,14 +57,7 @@ TestResults test_regression_dump(blob raw_dump, int cycles) {
 
   for (int i = 0; i < cycles; i++) {
     if (i && (i % 1000000) == 0) LOG_G("Phase %d\n", i);
-
-    gba.next_phase(cart_blob, true);
-    gbb.next_phase(cart_blob, false);
-    if (gba.hash() != gbb.hash()) {
-      LOG_R("Regression test mismatch @ phase %d!\n", i);
-      diff_blob(&gba, 0, sizeof(GateBoy), &gbb, 0, sizeof(GateBoy), 0x01);
-      TEST_FAIL();
-    }
+    if (!gbp.next_phase(cart_blob)) TEST_FAIL();
   }
 
   TEST_DONE();
@@ -97,6 +74,8 @@ TestResults fake_test() {
   TEST_DONE();
 }
 
+//-----------------------------------------------------------------------------
+
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
@@ -104,26 +83,31 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-  if (config_regression) {
-    LOG_G("Regression testing bootrom start\n");
-    results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
+#if 0
+  LOG_G("Regression testing bootrom start\n");
+  results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
 
-    LOG_G("Regression testing Zelda boot\n");
-    results += test_regression_cart(load_blob("LinksAwakening.gb"), 1000000, true);
+  LOG_G("Regression testing Zelda boot\n");
+  results += test_regression_cart(load_blob("LinksAwakening.gb"), 1000000, true);
 
-    LOG_G("Regression testing Zelda intro dump\n");
-    results += test_regression_dump(load_blob("zelda_intro.dump"), 1000000);
+  //LOG_G("Regression testing Zelda intro dump\n");
+  //results += test_regression_dump(load_blob("zelda_intro.dump"), 1000000);
 
-    LOG_G("Regression testing Zelda overworld dump\n");
-    results += test_regression_dump(load_blob("zelda_overworld.dump"), 1000000);
-  }
+  //LOG_G("Regression testing Zelda overworld dump\n");
+  //results += test_regression_dump(load_blob("zelda_overworld.dump"), 1000000);
+#endif
 
+#if 0
   results += t.test_reset_cart_vs_dump();
   results += t.test_fastboot_vs_slowboot();
+#endif
 
-  results += t.test_bootrom();
-  results += t.test_clk();
-  results += t.test_regs();
+  //results += t.test_bootrom();
+  //results += t.test_clk();
+  //results += t.test_regs();
+  //results += t.test_reg("IF",   ADDR_IF,   0b00011111);
+
+#if 0
   results += t.test_mem();
   results += t.test_dma();
   results += t.test_init();
@@ -161,11 +145,13 @@ int main(int argc, char** argv) {
   results += t.test_mooneye_timer();   // pass
   results += t.test_mooneye_ppu();     // 3 fails
 #endif
+#endif
 
   LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
   LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
   LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
   LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+
 
   if (results.test_fail > 20) {
     LOG_R("\n");
@@ -180,11 +166,12 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-GateBoy GateBoyTests::create_gb_poweron(const blob& cart_blob) {
-  GateBoy gb;
-  gb.reset_to_bootrom(cart_blob, true);
-  gb.sys_cpu_en = 0;
-  return gb;
+GateBoyPair GateBoyTests::create_debug_gb(const blob& cart_blob) {
+  GateBoyPair gbp;
+  gbp.reset_to_bootrom(cart_blob, true);
+  gbp.gba.sys_cpu_en = 0;
+  gbp.gbb.sys_cpu_en = 0;
+  return gbp;
 }
 
 //-----------------------------------------------------------------------------
@@ -193,12 +180,14 @@ TestResults GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask)
   TEST_INIT("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   blob cart_blob = Assembler::create_dummy_cart();
-  GateBoy gb = create_gb_poweron(cart_blob);
+  auto gbp = create_debug_gb(cart_blob);
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
-    gb.dbg_write(cart_blob, addr, uint8_t(data_in));
-    uint8_t data_out = gb.dbg_read(cart_blob, addr) & mask;
+    uint8_t data_out;
+    EXPECT(gbp.dbg_write(cart_blob, addr, data_in));
+    EXPECT(gbp.dbg_read(cart_blob, addr, data_out));
+    data_out &= mask;
     ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
@@ -209,13 +198,15 @@ TestResults GateBoyTests::test_spu_reg(const char* tag, uint16_t addr, uint8_t m
   TEST_INIT("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   blob cart_blob = Assembler::create_dummy_cart();
-  GateBoy gb = create_gb_poweron(cart_blob);
-  gb.dbg_write(cart_blob, ADDR_NR52, 0x80);
+  auto gbp = create_debug_gb(cart_blob);
+  gbp.dbg_write(cart_blob, ADDR_NR52, 0x80);
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
-    gb.dbg_write(cart_blob, addr, uint8_t(data_in));
-    uint8_t data_out = gb.dbg_read(cart_blob, addr) & mask;
+    uint8_t data_out;
+    EXPECT(gbp.dbg_write(cart_blob, addr, data_in));
+    EXPECT(gbp.dbg_read(cart_blob, addr, data_out));
+    data_out &= mask;
     ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
@@ -226,8 +217,8 @@ TestResults GateBoyTests::test_regs() {
   TEST_INIT();
 
   results += test_reg("P1",   ADDR_P1,   0b00110000);
-  results += test_reg("SB",   ADDR_SB,   0b11111111);
-  results += test_reg("SC",   ADDR_SC,   0b10000001);
+  //results += test_reg("SB",   ADDR_SB,   0b11111111);
+  //results += test_reg("SC",   ADDR_SC,   0b10000001);
   results += test_reg("TIMA", ADDR_TIMA, 0b11111111);
   results += test_reg("TMA",  ADDR_TMA,  0b11111111);
   results += test_reg("TAC",  ADDR_TAC,  0b00000111);
@@ -263,24 +254,25 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot() {
   blob cart_blob = Assembler::create_dummy_cart();
 
   LOG_B("reset_to_bootrom with fastboot = true\n");
-  GateBoy gb1;
-  gb1.reset_to_bootrom(cart_blob, true);
+  GateBoyPair gbp1;
+  gbp1.reset_to_bootrom(cart_blob, true);
   LOG_G("reset_to_bootrom with fastboot = true done\n");
 
   LOG_B("reset_to_bootrom with fastboot = false\n");
-  GateBoy gb2;
-  gb2.reset_to_bootrom(cart_blob, false);
+  GateBoyPair gbp2;
+  gbp2.reset_to_bootrom(cart_blob, false);
   LOG_G("reset_to_bootrom with fastboot = false done\n");
 
   // Clear the fastboot bit on the first gameboy, since that obviously won't match
-  gb1.sys_fastboot = 0;
+  gbp1.gba.sys_fastboot = 0;
+  gbp1.gbb.sys_fastboot = 0;
 
   int start = 0;
   int end   = offsetof(GateBoy, sentinel3);
 
   uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
 
-  results += diff_blob(&gb1, start, end, &gb2, start, end, mask);
+  results += diff_blob(&gbp1.gba, start, end, &gbp2.gba, start, end, mask);
 
   TEST_DONE();
 }
@@ -913,26 +905,24 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
 
   if (verbose) LOG_B("%-30s ", filename);
 
-  GateBoy gb;
-  gb.reset_to_cart(cart_blob);
-  gb.phase_total = 0;
+  GateBoyPair gbp;
+  gbp.reset_to_cart(cart_blob);
 
-  //int timeout = 500; // All our "fast" microtests take under 500 cycles
-  int timeout = 150000; // All our "fast" microtests take under 500 cycles
-  int mcycle = 0;
-  for (; mcycle < timeout; mcycle++) {
-    gb.run_phases(cart_blob, 8, false);
-    if (gb.zero_ram[2]) break;
+  int timeout = 150000 * 8;
+
+  while(gbp.gba.phase_total < timeout) {
+    if (!gbp.next_phase(cart_blob)) break;
+    if (gbp.gba.zero_ram[2]) break;
   }
 
-  uint8_t result_a = gb.zero_ram[0]; // actual
-  uint8_t result_b = gb.zero_ram[1]; // expected
-  uint8_t result_c = gb.zero_ram[2]; // 0x01 if test passes, 0xFF if test fails
+  uint8_t result_a = gbp.gba.zero_ram[0]; // actual
+  uint8_t result_b = gbp.gba.zero_ram[1]; // expected
+  uint8_t result_c = gbp.gba.zero_ram[2]; // 0x01 if test passes, 0xFF if test fails
 
-  bool pass = (result_c == 0x01) && (mcycle < timeout);
+  bool pass = (result_c == 0x01) && (gbp.gba.phase_total < timeout);
 
   if (pass) {
-    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, mcycle);
+    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, gbp.gba.phase_total);
     results.test_pass++;
     return results;
   }
@@ -940,11 +930,11 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
     if (!verbose) LOG_B("%-30s ", filename);
 
     const char* reason = "ERROR";
-    if      (mcycle == timeout)    reason = "TIMEOUT";
-    else if (result_a != result_b) reason = "MISMATCH";
-    else if (result_c == 0xFF)     reason = "FAIL";
+    if      (gbp.gba.phase_total == timeout) reason = "TIMEOUT";
+    else if (result_a != result_b)           reason = "MISMATCH";
+    else if (result_c == 0xFF)               reason = "FAIL";
 
-    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gb.phase_total);
+    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gbp.gba.phase_total);
     results.test_fail++;
     return results;
   }
@@ -956,46 +946,49 @@ TestResults GateBoyTests::test_init() {
   TEST_INIT();
 
   blob cart_blob = Assembler::create_dummy_cart();
-  GateBoy gb = create_gb_poweron(cart_blob);
+  GateBoyPair gbp = create_debug_gb(cart_blob);
 
   LOG_G("Checking reg flags\n");
 
   LOG_G("Checking mem\n");
   // Mem should be clear
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.cart_ram[i]);
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gb.int_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.cart_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.cart_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.int_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.int_ram[i]);
 
   // Framebuffer should be 0x04 (yellow) except for the first pixel, which
   // always gets written to because XONA_LCDCENn is 0 at boot
 
   LOG_G("Checking framebuffer\n");
   for (int i = 1; i < 160*144; i++) {
-    ASSERT_EQ(4, gb.framebuffer[i], "bad framebuffer at %d\n", i);
+    ASSERT_EQ(4, gbp.gba.framebuffer[i], "bad framebuffer at %d\n", i);
+    ASSERT_EQ(4, gbp.gbb.framebuffer[i], "bad framebuffer at %d\n", i);
   }
 
   LOG_G("Checking reg values\n");
-  EXPECT_EQ(0xCF, gb.dbg_read(cart_blob, ADDR_P1),   "Bad P1 reset_states value");   // CF after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_SB),   "Bad SB reset_states value");   // 00 after bootrom
-  EXPECT_EQ(0x7E, gb.dbg_read(cart_blob, ADDR_SC),   "Bad SC reset_states value");   // 7E after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_DIV),  "Bad DIV reset_states value");  // AB after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_TIMA), "Bad TIMA reset_states value"); // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_TMA),  "Bad TMA reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0xF8, gb.dbg_read(cart_blob, ADDR_TAC),  "Bad TAC reset_states value");  // F8 after bootrom
-  EXPECT_EQ(0xE0, gb.dbg_read(cart_blob, ADDR_IF),   "Bad IF reset_states value");   // E1 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_LCDC), "Bad LCDC reset_states value"); // 91 after bootrom
-  EXPECT_EQ(0x80, gb.dbg_read(cart_blob, ADDR_STAT), "Bad STAT reset value");        // 85 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_SCY),  "Bad SCY reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_SCX),  "Bad SCX reset_states value");  // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_LY),   "Bad LY reset_states value");   // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_LYC),  "Bad LYC reset_states value");  // 00 after bootrom
-
-  EXPECT_EQ(0xFF, gb.dbg_read(cart_blob, ADDR_DMA),  "Bad DMA reset_states value");  // FF after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(cart_blob, ADDR_BGP),  "Bad BGP reset_states value");  // FC after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(cart_blob, ADDR_OBP0), "Bad OBP0 reset_states value"); // 9F after bootrom
-  EXPECT_EQ(0xFF, gb.dbg_read(cart_blob, ADDR_OBP1), "Bad OBP1 reset_states value"); // FF after bootrom
-
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_WY),   "Bad WY reset_states value");   // 00 after bootrom
-  EXPECT_EQ(0x00, gb.dbg_read(cart_blob, ADDR_WX),   "Bad WX reset_states value");   // 00 after bootrom
+  uint8_t data_out;
+  
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_P1,   data_out)); EXPECT_EQ(data_out, 0xCF, "Bad P1 reset_states value");   // CF after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_SB,   data_out)); EXPECT_EQ(data_out, 0x00, "Bad SB reset_states value");   // 00 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_SC,   data_out)); EXPECT_EQ(data_out, 0x7E, "Bad SC reset_states value");   // 7E after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_DIV,  data_out)); EXPECT_EQ(data_out, 0x00, "Bad DIV reset_states value");  // AB after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_TIMA, data_out)); EXPECT_EQ(data_out, 0x00, "Bad TIMA reset_states value"); // 00 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_TMA,  data_out)); EXPECT_EQ(data_out, 0x00, "Bad TMA reset_states value");  // 00 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_TAC,  data_out)); EXPECT_EQ(data_out, 0xF8, "Bad TAC reset_states value");  // F8 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_IF,   data_out)); EXPECT_EQ(data_out, 0xE0, "Bad IF reset_states value");   // E1 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_LCDC, data_out)); EXPECT_EQ(data_out, 0x00, "Bad LCDC reset_states value"); // 91 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_STAT, data_out)); EXPECT_EQ(data_out, 0x80, "Bad STAT reset value");        // 85 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_SCY,  data_out)); EXPECT_EQ(data_out, 0x00, "Bad SCY reset_states value");  // 00 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_SCX,  data_out)); EXPECT_EQ(data_out, 0x00, "Bad SCX reset_states value");  // 00 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_LY,   data_out)); EXPECT_EQ(data_out, 0x00, "Bad LY reset_states value");   // 00 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_LYC,  data_out)); EXPECT_EQ(data_out, 0x00, "Bad LYC reset_states value");  // 00 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_DMA,  data_out)); EXPECT_EQ(data_out, 0xFF, "Bad DMA reset_states value");  // FF after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_BGP,  data_out)); EXPECT_EQ(data_out, 0xFF, "Bad BGP reset_states value");  // FC after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_OBP0, data_out)); EXPECT_EQ(data_out, 0xFF, "Bad OBP0 reset_states value"); // 9F after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_OBP1, data_out)); EXPECT_EQ(data_out, 0xFF, "Bad OBP1 reset_states value"); // FF after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_WY,   data_out)); EXPECT_EQ(data_out, 0x00, "Bad WY reset_states value");   // 00 after bootrom
+  EXPECT(gbp.dbg_read(cart_blob, ADDR_WX,   data_out)); EXPECT_EQ(data_out, 0x00, "Bad WX reset_states value");   // 00 after bootrom
 
   TEST_DONE();
 }
@@ -1008,15 +1001,14 @@ TestResults GateBoyTests::test_clk() {
   TEST_INIT();
 
   blob cart_blob = Assembler::create_dummy_cart();
-  GateBoy gb = create_gb_poweron(cart_blob);
-  gb.dbg_write(cart_blob, ADDR_LCDC, 0x80);
-  gb.run_phases(cart_blob, 8, false);
+  GateBoyPair gbp = create_debug_gb(cart_blob);
+  gbp.dbg_write(cart_blob, ADDR_LCDC, 0x80);
+  gbp.run_phases(cart_blob, 8);
 
-  auto& top = gb;
-  auto& clk = top.clk;
+  auto& clk = gbp.gba.clk;
 
   for (int i = 0; i < 32; i++) {
-    int phase = gb.phase_total & 7;
+    int phase = gbp.gba.phase_total & 7;
     EXPECT_CLK(clk.AFUR_xxxxEFGH.qp_old(), (uint8_t)0b00001111);
     EXPECT_CLK(clk.ALEF_AxxxxFGH.qp_old(), (uint8_t)0b10000111);
     EXPECT_CLK(clk.APUK_ABxxxxGH.qp_old(), (uint8_t)0b11000011);
@@ -1026,16 +1018,16 @@ TestResults GateBoyTests::test_clk() {
     EXPECT_CLK(clk.VENA_xxCDEFxx.qp_old(), (uint8_t)0b00111100);
     EXPECT_CLK(clk.WOSU_AxxDExxH.qp_old(), (uint8_t)0b10011001);
 
-    EXPECT_CLK(top.clk.SIG_CPU_BOWA_Axxxxxxx.out_old(), 0b10000000);
-    EXPECT_CLK(top.clk.SIG_CPU_BEDO_xBCDEFGH.out_old(), 0b01111111);
-    EXPECT_CLK(top.clk.SIG_CPU_BEKO_ABCDxxxx.out_old(), 0b11110000);
-    EXPECT_CLK(top.clk.SIG_CPU_BUDE_xxxxEFGH.out_old(), 0b00001111);
-    EXPECT_CLK(top.clk.SIG_CPU_BOLO_ABCDEFxx.out_old(), 0b11111100);
-    EXPECT_CLK(top.clk.SIG_CPU_BUKE_AxxxxxGH.out_old(), 0b10000011);
-    EXPECT_CLK(top.clk.SIG_CPU_BOMA_xBCDEFGH.out_old(), 0b01111111);
-    EXPECT_CLK(top.clk.SIG_CPU_BOGA_Axxxxxxx.out_old(), 0b10000000);
-    EXPECT_CLK(top.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
-    gb.next_phase(cart_blob, false);
+    EXPECT_CLK(gbp.gba.clk.SIG_CPU_BOWA_Axxxxxxx.out_old(), 0b10000000);
+    EXPECT_CLK(gbp.gba.clk.SIG_CPU_BEDO_xBCDEFGH.out_old(), 0b01111111);
+    EXPECT_CLK(gbp.gba.clk.SIG_CPU_BEKO_ABCDxxxx.out_old(), 0b11110000);
+    EXPECT_CLK(gbp.gba.clk.SIG_CPU_BUDE_xxxxEFGH.out_old(), 0b00001111);
+    EXPECT_CLK(gbp.gba.clk.SIG_CPU_BOLO_ABCDEFxx.out_old(), 0b11111100);
+    EXPECT_CLK(gbp.gba.clk.SIG_CPU_BUKE_AxxxxxGH.out_old(), 0b10000011);
+    EXPECT_CLK(gbp.gba.clk.SIG_CPU_BOMA_xBCDEFGH.out_old(), 0b01111111);
+    EXPECT_CLK(gbp.gba.clk.SIG_CPU_BOGA_Axxxxxxx.out_old(), 0b10000000);
+    EXPECT_CLK(gbp.gba.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
+    gbp.next_phase(cart_blob);
   }
 
   TEST_DONE();
@@ -1070,9 +1062,9 @@ TestResults GateBoyTests::test_ext_bus() {
     as.assemble(app);
     blob cart_blob = as.link();
 
-    GateBoy gb;
-    gb.reset_to_cart(cart_blob);
-    gb.run_phases(cart_blob, 120, false);
+    GateBoyPair gbp;
+    gbp.reset_to_cart(cart_blob);
+    gbp.run_phases(cart_blob, 120);
 
 #if 1
     // Start checking each phase
@@ -1109,36 +1101,36 @@ TestResults GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
-      char CLK = cp_ext(gb.clk.PIN_75_CLK_OUT .state);
-      char WRn = cp_ext(gb.ext_ctrl.PIN_78_WRn.state);
-      char RDn = cp_ext(gb.ext_ctrl.PIN_79_RDn.state);
-      char CSn = cp_ext(gb.ext_ctrl.PIN_80_CSn.state);
+      char CLK = cp_ext(gbp.gba.clk.PIN_75_CLK_OUT .state);
+      char WRn = cp_ext(gbp.gba.ext_ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(gbp.gba.ext_ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(gbp.gba.ext_ctrl.PIN_80_CSn.state);
 
-      char A00 = cp_ext(gb.ext_abus.PIN_01_A00.state);
-      char A01 = cp_ext(gb.ext_abus.PIN_02_A01.state);
-      char A02 = cp_ext(gb.ext_abus.PIN_03_A02.state);
-      char A03 = cp_ext(gb.ext_abus.PIN_04_A03.state);
-      char A04 = cp_ext(gb.ext_abus.PIN_05_A04.state);
-      char A05 = cp_ext(gb.ext_abus.PIN_06_A05.state);
-      char A06 = cp_ext(gb.ext_abus.PIN_07_A06.state);
-      char A07 = cp_ext(gb.ext_abus.PIN_08_A07.state);
-      char A08 = cp_ext(gb.ext_abus.PIN_09_A08.state);
-      char A09 = cp_ext(gb.ext_abus.PIN_10_A09.state);
-      char A10 = cp_ext(gb.ext_abus.PIN_11_A10.state);
-      char A11 = cp_ext(gb.ext_abus.PIN_12_A11.state);
-      char A12 = cp_ext(gb.ext_abus.PIN_13_A12.state);
-      char A13 = cp_ext(gb.ext_abus.PIN_14_A13.state);
-      char A14 = cp_ext(gb.ext_abus.PIN_15_A14.state);
-      char A15 = cp_ext(gb.ext_abus.PIN_16_A15.state);
+      char A00 = cp_ext(gbp.gba.ext_abus.PIN_01_A00.state);
+      char A01 = cp_ext(gbp.gba.ext_abus.PIN_02_A01.state);
+      char A02 = cp_ext(gbp.gba.ext_abus.PIN_03_A02.state);
+      char A03 = cp_ext(gbp.gba.ext_abus.PIN_04_A03.state);
+      char A04 = cp_ext(gbp.gba.ext_abus.PIN_05_A04.state);
+      char A05 = cp_ext(gbp.gba.ext_abus.PIN_06_A05.state);
+      char A06 = cp_ext(gbp.gba.ext_abus.PIN_07_A06.state);
+      char A07 = cp_ext(gbp.gba.ext_abus.PIN_08_A07.state);
+      char A08 = cp_ext(gbp.gba.ext_abus.PIN_09_A08.state);
+      char A09 = cp_ext(gbp.gba.ext_abus.PIN_10_A09.state);
+      char A10 = cp_ext(gbp.gba.ext_abus.PIN_11_A10.state);
+      char A11 = cp_ext(gbp.gba.ext_abus.PIN_12_A11.state);
+      char A12 = cp_ext(gbp.gba.ext_abus.PIN_13_A12.state);
+      char A13 = cp_ext(gbp.gba.ext_abus.PIN_14_A13.state);
+      char A14 = cp_ext(gbp.gba.ext_abus.PIN_15_A14.state);
+      char A15 = cp_ext(gbp.gba.ext_abus.PIN_16_A15.state);
 
-      char D00 = cp_ext(gb.ext_dbus.PIN_17_D00.state);
-      char D01 = cp_ext(gb.ext_dbus.PIN_18_D01.state);
-      char D02 = cp_ext(gb.ext_dbus.PIN_19_D02.state);
-      char D03 = cp_ext(gb.ext_dbus.PIN_20_D03.state);
-      char D04 = cp_ext(gb.ext_dbus.PIN_21_D04.state);
-      char D05 = cp_ext(gb.ext_dbus.PIN_22_D05.state);
-      char D06 = cp_ext(gb.ext_dbus.PIN_23_D06.state);
-      char D07 = cp_ext(gb.ext_dbus.PIN_24_D07.state);
+      char D00 = cp_ext(gbp.gba.ext_dbus.PIN_17_D00.state);
+      char D01 = cp_ext(gbp.gba.ext_dbus.PIN_18_D01.state);
+      char D02 = cp_ext(gbp.gba.ext_dbus.PIN_19_D02.state);
+      char D03 = cp_ext(gbp.gba.ext_dbus.PIN_20_D03.state);
+      char D04 = cp_ext(gbp.gba.ext_dbus.PIN_21_D04.state);
+      char D05 = cp_ext(gbp.gba.ext_dbus.PIN_22_D05.state);
+      char D06 = cp_ext(gbp.gba.ext_dbus.PIN_23_D06.state);
+      char D07 = cp_ext(gbp.gba.ext_dbus.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1173,7 +1165,7 @@ TestResults GateBoyTests::test_ext_bus() {
       EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
       EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
-      gb.next_phase(cart_blob, false);
+      gbp.next_phase(cart_blob);
     }
 #endif
   }
@@ -1194,9 +1186,9 @@ TestResults GateBoyTests::test_ext_bus() {
     as.assemble(app);
     blob cart_blob = as.link();
 
-    GateBoy gb;
-    gb.reset_to_cart(cart_blob);
-    gb.run_phases(cart_blob, 120, false);
+    GateBoyPair gbp;
+    gbp.reset_to_cart(cart_blob);
+    gbp.run_phases(cart_blob, 120);
 
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11111111 11111111 11111111 11111111";
@@ -1233,36 +1225,36 @@ TestResults GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = cp_ext(gb.clk.PIN_75_CLK_OUT. state);
-      char WRn = cp_ext(gb.ext_ctrl.PIN_78_WRn.state);
-      char RDn = cp_ext(gb.ext_ctrl.PIN_79_RDn.state);
-      char CSn = cp_ext(gb.ext_ctrl.PIN_80_CSn.state);
+      char CLK = cp_ext(gbp.gba.clk.PIN_75_CLK_OUT. state);
+      char WRn = cp_ext(gbp.gba.ext_ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(gbp.gba.ext_ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(gbp.gba.ext_ctrl.PIN_80_CSn.state);
 
-      char A00 = cp_ext(gb.ext_abus.PIN_01_A00.state);
-      char A01 = cp_ext(gb.ext_abus.PIN_02_A01.state);
-      char A02 = cp_ext(gb.ext_abus.PIN_03_A02.state);
-      char A03 = cp_ext(gb.ext_abus.PIN_04_A03.state);
-      char A04 = cp_ext(gb.ext_abus.PIN_05_A04.state);
-      char A05 = cp_ext(gb.ext_abus.PIN_06_A05.state);
-      char A06 = cp_ext(gb.ext_abus.PIN_07_A06.state);
-      char A07 = cp_ext(gb.ext_abus.PIN_08_A07.state);
-      char A08 = cp_ext(gb.ext_abus.PIN_09_A08.state);
-      char A09 = cp_ext(gb.ext_abus.PIN_10_A09.state);
-      char A10 = cp_ext(gb.ext_abus.PIN_11_A10.state);
-      char A11 = cp_ext(gb.ext_abus.PIN_12_A11.state);
-      char A12 = cp_ext(gb.ext_abus.PIN_13_A12.state);
-      char A13 = cp_ext(gb.ext_abus.PIN_14_A13.state);
-      char A14 = cp_ext(gb.ext_abus.PIN_15_A14.state);
-      char A15 = cp_ext(gb.ext_abus.PIN_16_A15.state);
+      char A00 = cp_ext(gbp.gba.ext_abus.PIN_01_A00.state);
+      char A01 = cp_ext(gbp.gba.ext_abus.PIN_02_A01.state);
+      char A02 = cp_ext(gbp.gba.ext_abus.PIN_03_A02.state);
+      char A03 = cp_ext(gbp.gba.ext_abus.PIN_04_A03.state);
+      char A04 = cp_ext(gbp.gba.ext_abus.PIN_05_A04.state);
+      char A05 = cp_ext(gbp.gba.ext_abus.PIN_06_A05.state);
+      char A06 = cp_ext(gbp.gba.ext_abus.PIN_07_A06.state);
+      char A07 = cp_ext(gbp.gba.ext_abus.PIN_08_A07.state);
+      char A08 = cp_ext(gbp.gba.ext_abus.PIN_09_A08.state);
+      char A09 = cp_ext(gbp.gba.ext_abus.PIN_10_A09.state);
+      char A10 = cp_ext(gbp.gba.ext_abus.PIN_11_A10.state);
+      char A11 = cp_ext(gbp.gba.ext_abus.PIN_12_A11.state);
+      char A12 = cp_ext(gbp.gba.ext_abus.PIN_13_A12.state);
+      char A13 = cp_ext(gbp.gba.ext_abus.PIN_14_A13.state);
+      char A14 = cp_ext(gbp.gba.ext_abus.PIN_15_A14.state);
+      char A15 = cp_ext(gbp.gba.ext_abus.PIN_16_A15.state);
 
-      char D00 = cp_ext(gb.ext_dbus.PIN_17_D00.state);
-      char D01 = cp_ext(gb.ext_dbus.PIN_18_D01.state);
-      char D02 = cp_ext(gb.ext_dbus.PIN_19_D02.state);
-      char D03 = cp_ext(gb.ext_dbus.PIN_20_D03.state);
-      char D04 = cp_ext(gb.ext_dbus.PIN_21_D04.state);
-      char D05 = cp_ext(gb.ext_dbus.PIN_22_D05.state);
-      char D06 = cp_ext(gb.ext_dbus.PIN_23_D06.state);
-      char D07 = cp_ext(gb.ext_dbus.PIN_24_D07.state);
+      char D00 = cp_ext(gbp.gba.ext_dbus.PIN_17_D00.state);
+      char D01 = cp_ext(gbp.gba.ext_dbus.PIN_18_D01.state);
+      char D02 = cp_ext(gbp.gba.ext_dbus.PIN_19_D02.state);
+      char D03 = cp_ext(gbp.gba.ext_dbus.PIN_20_D03.state);
+      char D04 = cp_ext(gbp.gba.ext_dbus.PIN_21_D04.state);
+      char D05 = cp_ext(gbp.gba.ext_dbus.PIN_22_D05.state);
+      char D06 = cp_ext(gbp.gba.ext_dbus.PIN_23_D06.state);
+      char D07 = cp_ext(gbp.gba.ext_dbus.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1300,7 +1292,7 @@ TestResults GateBoyTests::test_ext_bus() {
       EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
       EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
-      gb.next_phase(cart_blob, false);
+      gbp.next_phase(cart_blob);
     }
   }
 #endif
@@ -1321,9 +1313,9 @@ TestResults GateBoyTests::test_ext_bus() {
     as.assemble(app);
     blob cart_blob = as.link();
 
-    GateBoy gb;
-    gb.reset_to_cart(cart_blob);
-    gb.run_phases(cart_blob, 120, false);
+    GateBoyPair gbp;
+    gbp.reset_to_cart(cart_blob);
+    gbp.run_phases(cart_blob, 120);
 
     // Start checking each phase
 
@@ -1403,36 +1395,36 @@ TestResults GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = cp_ext(gb.clk.PIN_75_CLK_OUT .state);
-      char WRn = cp_ext(gb.ext_ctrl.PIN_78_WRn.state);
-      char RDn = cp_ext(gb.ext_ctrl.PIN_79_RDn.state);
-      char CSn = cp_ext(gb.ext_ctrl.PIN_80_CSn.state);
+      char CLK = cp_ext(gbp.gba.clk.PIN_75_CLK_OUT .state);
+      char WRn = cp_ext(gbp.gba.ext_ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(gbp.gba.ext_ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(gbp.gba.ext_ctrl.PIN_80_CSn.state);
 
-      char A00 = cp_ext(gb.ext_abus.PIN_01_A00.state);
-      char A01 = cp_ext(gb.ext_abus.PIN_02_A01.state);
-      char A02 = cp_ext(gb.ext_abus.PIN_03_A02.state);
-      char A03 = cp_ext(gb.ext_abus.PIN_04_A03.state);
-      char A04 = cp_ext(gb.ext_abus.PIN_05_A04.state);
-      char A05 = cp_ext(gb.ext_abus.PIN_06_A05.state);
-      char A06 = cp_ext(gb.ext_abus.PIN_07_A06.state);
-      char A07 = cp_ext(gb.ext_abus.PIN_08_A07.state);
-      char A08 = cp_ext(gb.ext_abus.PIN_09_A08.state);
-      char A09 = cp_ext(gb.ext_abus.PIN_10_A09.state);
-      char A10 = cp_ext(gb.ext_abus.PIN_11_A10.state);
-      char A11 = cp_ext(gb.ext_abus.PIN_12_A11.state);
-      char A12 = cp_ext(gb.ext_abus.PIN_13_A12.state);
-      char A13 = cp_ext(gb.ext_abus.PIN_14_A13.state);
-      char A14 = cp_ext(gb.ext_abus.PIN_15_A14.state);
-      char A15 = cp_ext(gb.ext_abus.PIN_16_A15.state);
+      char A00 = cp_ext(gbp.gba.ext_abus.PIN_01_A00.state);
+      char A01 = cp_ext(gbp.gba.ext_abus.PIN_02_A01.state);
+      char A02 = cp_ext(gbp.gba.ext_abus.PIN_03_A02.state);
+      char A03 = cp_ext(gbp.gba.ext_abus.PIN_04_A03.state);
+      char A04 = cp_ext(gbp.gba.ext_abus.PIN_05_A04.state);
+      char A05 = cp_ext(gbp.gba.ext_abus.PIN_06_A05.state);
+      char A06 = cp_ext(gbp.gba.ext_abus.PIN_07_A06.state);
+      char A07 = cp_ext(gbp.gba.ext_abus.PIN_08_A07.state);
+      char A08 = cp_ext(gbp.gba.ext_abus.PIN_09_A08.state);
+      char A09 = cp_ext(gbp.gba.ext_abus.PIN_10_A09.state);
+      char A10 = cp_ext(gbp.gba.ext_abus.PIN_11_A10.state);
+      char A11 = cp_ext(gbp.gba.ext_abus.PIN_12_A11.state);
+      char A12 = cp_ext(gbp.gba.ext_abus.PIN_13_A12.state);
+      char A13 = cp_ext(gbp.gba.ext_abus.PIN_14_A13.state);
+      char A14 = cp_ext(gbp.gba.ext_abus.PIN_15_A14.state);
+      char A15 = cp_ext(gbp.gba.ext_abus.PIN_16_A15.state);
 
-      char D00 = cp_ext(gb.ext_dbus.PIN_17_D00.state);
-      char D01 = cp_ext(gb.ext_dbus.PIN_18_D01.state);
-      char D02 = cp_ext(gb.ext_dbus.PIN_19_D02.state);
-      char D03 = cp_ext(gb.ext_dbus.PIN_20_D03.state);
-      char D04 = cp_ext(gb.ext_dbus.PIN_21_D04.state);
-      char D05 = cp_ext(gb.ext_dbus.PIN_22_D05.state);
-      char D06 = cp_ext(gb.ext_dbus.PIN_23_D06.state);
-      char D07 = cp_ext(gb.ext_dbus.PIN_24_D07.state);
+      char D00 = cp_ext(gbp.gba.ext_dbus.PIN_17_D00.state);
+      char D01 = cp_ext(gbp.gba.ext_dbus.PIN_18_D01.state);
+      char D02 = cp_ext(gbp.gba.ext_dbus.PIN_19_D02.state);
+      char D03 = cp_ext(gbp.gba.ext_dbus.PIN_20_D03.state);
+      char D04 = cp_ext(gbp.gba.ext_dbus.PIN_21_D04.state);
+      char D05 = cp_ext(gbp.gba.ext_dbus.PIN_22_D05.state);
+      char D06 = cp_ext(gbp.gba.ext_dbus.PIN_23_D06.state);
+      char D07 = cp_ext(gbp.gba.ext_dbus.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1467,7 +1459,7 @@ TestResults GateBoyTests::test_ext_bus() {
       EXPECT_EQ(D06, D06_WAVE[wave_idx], "D06 failure at phase %d - expected %c, got %c\n", i, D06_WAVE[wave_idx], D06);
       EXPECT_EQ(D07, D07_WAVE[wave_idx], "D07 failure at phase %d - expected %c, got %c\n", i, D07_WAVE[wave_idx], D07);
 
-      gb.next_phase(cart_blob, false);
+      gbp.next_phase(cart_blob);
     }
   }
 #endif
@@ -1497,11 +1489,14 @@ TestResults GateBoyTests::test_bootrom() {
   TEST_INIT();
 
   blob cart_blob = Assembler::create_dummy_cart();
-  GateBoy gb = create_gb_poweron(cart_blob);
+  GateBoyPair gbp = create_debug_gb(cart_blob);
 
   for (int i = 0; i < 16; i++) {
-    uint8_t byte = gb.dbg_read(cart_blob, i);
-    EXPECT_EQ(byte, DMG_ROM_blob[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, byte, DMG_ROM_bin[i]);
+    uint8_t data_out;
+    gbp.check_sync();
+    EXPECT(gbp.dbg_read(cart_blob, (uint16_t)i, data_out));
+    gbp.check_sync();
+    EXPECT_EQ(data_out, DMG_ROM_blob[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, data_out, DMG_ROM_bin[i]);
   }
 
   TEST_DONE();
@@ -1520,101 +1515,101 @@ TestResults GateBoyTests::test_timer() {
   LOG("Testing TIMA tick rate and reset_states to TMA...\n");
   {
     blob cart_blob = Assembler::create_dummy_cart();
-    GateBoy gb = create_gb_poweron(cart_blob);
+    GateBoyPair gbp = create_debug_gb(cart_blob);
 
-    gb.dbg_write(cart_blob, ADDR_TMA, 0x80);
-    gb.dbg_write(cart_blob, ADDR_TIMA,0xFD);
-    gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
-    gb.dbg_write(cart_blob, ADDR_TAC, 0b00000100);
+    gbp.dbg_write(cart_blob, ADDR_TMA, 0x80);
+    gbp.dbg_write(cart_blob, ADDR_TIMA,0xFD);
+    gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
+    gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000100);
 
-    EXPECT_EQ(0xFD, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0xFE, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0xFF, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0x80, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 2048, false);
-    EXPECT_EQ(0x81, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 2048, false);
+    EXPECT_EQ(0xFD, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 2048);
+    EXPECT_EQ(0xFE, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 2048);
+    EXPECT_EQ(0xFF, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 2048);
+    EXPECT_EQ(0x80, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 2048);
+    EXPECT_EQ(0x81, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 2048);
     if (results.ok()) LOG_B("TAC 0b100 pass\n");
   }
 
   {
     blob cart_blob = Assembler::create_dummy_cart();
-    GateBoy gb = create_gb_poweron(cart_blob);
+    GateBoyPair gbp = create_debug_gb(cart_blob);
 
-    gb.dbg_write(cart_blob, ADDR_TMA, 0x80);
-    gb.dbg_write(cart_blob, ADDR_TIMA,0xFD);
-    gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
-    gb.dbg_write(cart_blob, ADDR_TAC, 0b00000101);
+    gbp.dbg_write(cart_blob, ADDR_TMA, 0x80);
+    gbp.dbg_write(cart_blob, ADDR_TIMA,0xFD);
+    gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
+    gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000101);
 
-    EXPECT_EQ(0xFD, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0xFE, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0xFF, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0x80, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 32, false);
-    EXPECT_EQ(0x81, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 32, false);
+    EXPECT_EQ(0xFD, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 32);
+    EXPECT_EQ(0xFE, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 32);
+    EXPECT_EQ(0xFF, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 32);
+    EXPECT_EQ(0x80, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 32);
+    EXPECT_EQ(0x81, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 32);
     if (results.ok()) LOG_B("TAC 0b101 pass\n");
   }
   {
     blob cart_blob = Assembler::create_dummy_cart();
-    GateBoy gb = create_gb_poweron(cart_blob);
+    GateBoyPair gbp = create_debug_gb(cart_blob);
 
-    gb.dbg_write(cart_blob, ADDR_TMA, 0x80);
-    gb.dbg_write(cart_blob, ADDR_TIMA,0xFD);
-    gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
-    gb.dbg_write(cart_blob, ADDR_TAC, 0b00000110);
+    gbp.dbg_write(cart_blob, ADDR_TMA, 0x80);
+    gbp.dbg_write(cart_blob, ADDR_TIMA,0xFD);
+    gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
+    gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000110);
 
-    EXPECT_EQ(0xFD, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0xFE, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0xFF, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0x80, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 128, false);
-    EXPECT_EQ(0x81, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 128, false);
+    EXPECT_EQ(0xFD, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 128);
+    EXPECT_EQ(0xFE, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 128);
+    EXPECT_EQ(0xFF, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 128);
+    EXPECT_EQ(0x80, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 128);
+    EXPECT_EQ(0x81, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 128);
     if (results.ok()) LOG_B("TAC 0b110 pass\n");
   }
   {
     blob cart_blob = Assembler::create_dummy_cart();
-    GateBoy gb = create_gb_poweron(cart_blob);
+    GateBoyPair gbp = create_debug_gb(cart_blob);
 
-    gb.dbg_write(cart_blob, ADDR_TMA, 0x80);
-    gb.dbg_write(cart_blob, ADDR_TIMA,0xFD);
-    gb.dbg_write(cart_blob, ADDR_DIV, 0x00);
-    gb.dbg_write(cart_blob, ADDR_TAC, 0b00000111);
+    gbp.dbg_write(cart_blob, ADDR_TMA, 0x80);
+    gbp.dbg_write(cart_blob, ADDR_TIMA,0xFD);
+    gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
+    gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000111);
 
-    EXPECT_EQ(0xFD, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0xFE, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0xFF, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0x80, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 512, false);
-    EXPECT_EQ(0x81, pack(gb.reg_tima));
-    gb.run_phases(cart_blob, 512, false);
+    EXPECT_EQ(0xFD, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 512);
+    EXPECT_EQ(0xFE, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 512);
+    EXPECT_EQ(0xFF, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 512);
+    EXPECT_EQ(0x80, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 512);
+    EXPECT_EQ(0x81, pack(gbp.gba.tima));
+    gbp.run_phases(cart_blob, 512);
     if (results.ok()) LOG_B("TAC 0b111 pass\n");
   }
 
   if (run_slow_tests) {
     blob cart_blob = Assembler::create_dummy_cart();
-    GateBoy gb = create_gb_poweron(cart_blob);
-    gb.sys_cpu_en = 0;
+    GateBoyPair gbp = create_debug_gb(cart_blob);
 
     // passes, but slow :/
     LOG("Testing div reset_states + rollover, this takes a minute...");
-    gb.dbg_write(cart_blob, ADDR_DIV, 0);
+    gbp.dbg_write(cart_blob, ADDR_DIV, 0);
     for (int i = 1; i < 32768; i++) {
-      int div_a = gb.dbg_read(cart_blob, ADDR_DIV);
-      int div_b = (i >> 6) & 0xFF;
+      uint8_t div_a;
+      EXPECT(gbp.dbg_read(cart_blob, ADDR_DIV, div_a));
+      uint8_t div_b = (i >> 6) & 0xFF;
       EXPECT_EQ(div_a, div_b, "div match fail");
     }
     LOG("\n");
@@ -1671,25 +1666,33 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
   TEST_INIT("0x%04x", src);
 
   blob cart_blob = Assembler::create_dummy_cart();
-  GateBoy gb;
-  gb.reset_to_cart(cart_blob);
-  gb.sys_cpu_en = 0;
-  gb.dbg_write(cart_blob, ADDR_LCDC, 0);
-  gb.dbg_write(cart_blob, 0x0000, 0x0A); // enable mbc1 ram
+  GateBoyPair gbp;
+  gbp.reset_to_cart(cart_blob);
+  gbp.gba.sys_cpu_en = 0;
+  gbp.gbb.sys_cpu_en = 0;
+  gbp.dbg_write(cart_blob, ADDR_LCDC, 0);
+  gbp.dbg_write(cart_blob, 0x0000, 0x0A); // enable mbc1 ram
 
-  uint8_t* mem = get_flat_ptr(gb, cart_blob, src);
+  uint8_t* mem_a = get_flat_ptr(gbp.gba, cart_blob, src);
+  uint8_t* mem_b = get_flat_ptr(gbp.gbb, cart_blob, src);
   for (int i = 0; i < 256; i++) {
-    mem[i] = uint8_t(rand());
-    gb.oam_ram[i] = 0xFF;
+    uint8_t r = (uint8_t)rand();
+    mem_a[i] = r;
+    mem_b[i] = r;
+    gbp.gba.oam_ram[i] = 0xFF;
+    gbp.gbb.oam_ram[i] = 0xFF;
   }
 
-  gb.dbg_write(cart_blob, 0xFF46, uint8_t(src >> 8));
-  gb.run_phases(cart_blob, 1288, false);
+  gbp.dbg_write(cart_blob, 0xFF46, uint8_t(src >> 8));
+  gbp.run_phases(cart_blob, 1288);
 
   for (int i = 0; i < 160; i++) {
-    uint8_t a = mem[i];
-    uint8_t b = gb.oam_ram[i];
-    ASSERT_EQ(a, b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, a, b);
+    uint8_t src_a = mem_a[i];
+    uint8_t src_b = mem_b[i];
+    uint8_t dst_a = gbp.gba.oam_ram[i];
+    uint8_t dst_b = gbp.gbb.oam_ram[i];
+    ASSERT_EQ(src_a, dst_a, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_a, dst_a);
+    ASSERT_EQ(src_b, dst_b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_b, dst_b);
   }
 
   TEST_DONE();
@@ -1704,25 +1707,25 @@ TestResults GateBoyTests::test_ppu() {
   if (run_slow_tests) {
     LOG("Checking LY increment rate... ");
     blob cart_blob = Assembler::create_dummy_cart();
-    GateBoy gb = create_gb_poweron(cart_blob);
-    gb.dbg_write(cart_blob, ADDR_LCDC, 0x80);
+    GateBoyPair gbp = create_debug_gb(cart_blob);
+    gbp.dbg_write(cart_blob, ADDR_LCDC, 0x80);
 
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
     for (uint32_t i = 0; i < 153; i++) {
-      EXPECT_EQ(i, pack(gb.reg_ly));
-      gb.run_phases(cart_blob, 114 * 8, false);
+      EXPECT_EQ(i, pack(gbp.gba.reg_ly));
+      gbp.run_phases(cart_blob, 114 * 8);
     }
 
     // LY is reset early on the last line, we should be at 0 now.
-    EXPECT_EQ(0, pack(gb.reg_ly));
-    gb.run_phases(cart_blob, 114 * 8, false);
+    EXPECT_EQ(0, pack(gbp.gba.reg_ly));
+    gbp.run_phases(cart_blob, 114 * 8);
 
     // And we should be at 0 again
-    EXPECT_EQ(0, pack(gb.reg_ly));
-    gb.run_phases(cart_blob, 114 * 8, false);
+    EXPECT_EQ(0, pack(gbp.gba.reg_ly));
+    gbp.run_phases(cart_blob, 114 * 8);
 
     // And now we should be at 1.
-    EXPECT_EQ(1, pack(gb.reg_ly));
+    EXPECT_EQ(1, pack(gbp.gba.reg_ly));
 
     if (results.ok()) LOG_B("Pass");
   }
@@ -1736,38 +1739,40 @@ TestResults GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_
   TEST_INIT("%-4s @ [0x%04x,0x%04x], step %3d write %d", tag, addr_start, addr_end, step, test_write);
 
   blob cart_blob = Assembler::create_dummy_cart();
-  GateBoy gb = create_gb_poweron(cart_blob);
-  gb.dbg_write(cart_blob, 0xFF50, 0x01); // disable bootrom
-  gb.dbg_write(cart_blob, 0x0000, 0x0A); // enable mbc1 ram
+  GateBoyPair gbp = create_debug_gb(cart_blob);
+  gbp.dbg_write(cart_blob, 0xFF50, 0x01); // disable bootrom
+  gbp.dbg_write(cart_blob, 0x0000, 0x0A); // enable mbc1 ram
 
   int len = addr_end - addr_start + 1;
-  uint8_t* mem = get_flat_ptr(gb, cart_blob, addr_start);
+  uint8_t* mem = get_flat_ptr(gbp.gba, cart_blob, addr_start);
 
-  for (int i = 0; i < len; i += step) {
+  for (uint16_t i = 0; i < len; i += step) {
     uint8_t data_wr = 0x55;
     if (test_write) {
       mem[i] = 0;
-      gb.dbg_write(cart_blob, addr_start + i, data_wr);
+      gbp.dbg_write(cart_blob, addr_start + i, data_wr);
     }
     else {
       mem[i] = data_wr;
     }
     ASSERT_EQ(mem[i], data_wr,  "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, mem[i]);
-    uint8_t data_rd = gb.dbg_read(cart_blob, addr_start + i);
+    uint8_t data_rd;
+    gbp.dbg_read(cart_blob, addr_start + i, data_rd);
     ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, data_rd);
   }
 
-  for (int i = 0; i < len; i += step) {
+  for (uint16_t i = 0; i < len; i += step) {
     uint8_t data_wr = 0xAA;
     if (test_write) {
       mem[i] = 0;
-      gb.dbg_write(cart_blob, addr_start + i, data_wr);
+      gbp.dbg_write(cart_blob, addr_start + i, data_wr);
     }
     else {
       mem[i] = data_wr;
     }
     ASSERT_EQ(mem[i], data_wr,  "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, mem[i]);
-    uint8_t data_rd = gb.dbg_read(cart_blob, addr_start + i);
+    uint8_t data_rd;
+    gbp.dbg_read(cart_blob, addr_start + i, data_rd);
     ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr_start + i, data_wr, data_rd);
   }
 
@@ -1800,7 +1805,7 @@ void GateBoyTests::run_benchmark() {
     gb.phase_total = 0;
 
     auto start = timestamp();
-    gb.run_phases(cart_blob, phase_per_iter, false);
+    gb.run_phases(cart_blob, phase_per_iter);
     auto finish = timestamp();
 
     if (iter >= warmup) {
@@ -1965,19 +1970,18 @@ TestResults GateBoyTests::run_mooneye_test(const char* path, const char* filenam
 
   if (verbose) LOG_B("%-50s ", filename);
 
-  GateBoy gb;
-  gb.reset_to_cart(cart_blob);
-  gb.phase_total = 0;
+  GateBoyPair gbp;
+  gbp.reset_to_cart(cart_blob);
 
   int timeout = 6400000; // bits_ramg is super slow
 
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
-    gb.run_phases(cart_blob, 8, false);
-    if (gb.gb_cpu.op == 0x40) break;
+    gbp.run_phases(cart_blob, 8);
+    if (gbp.gba.gb_cpu.op == 0x40) break;
   }
 
-  if ((gb.gb_cpu.a == 0x00) && (mcycle != timeout)) {
+  if ((gbp.gba.gb_cpu.a == 0x00) && (mcycle != timeout)) {
     if (verbose) LOG_G("PASS @ %d\n", mcycle);
   }
   else {

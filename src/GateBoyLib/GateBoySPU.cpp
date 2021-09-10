@@ -7,8 +7,8 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_spu() {
-
+void GateBoy::tock_spu_gates() {
+#if 0
   /*#p09.HAPO*/ wire HAPO_SYS_RESETp = not1(ALUR_SYS_RSTn());
   /*#p09.GUFO*/ wire GUFO_SYS_RESETn = not1(HAPO_SYS_RESETp);
 
@@ -190,6 +190,88 @@ void GateBoy::tock_spu() {
   /*_BUS_CPU_D05p*/ cpu_dbus_new.BUS_CPU_D05p.tri_bus(CADA_NR51_TO_CD5);
   /*_BUS_CPU_D06p*/ cpu_dbus_new.BUS_CPU_D06p.tri_bus(CAVU_NR51_TO_CD6);
   /*_BUS_CPU_D07p*/ cpu_dbus_new.BUS_CPU_D07p.tri_bus(CUDU_NR51_TO_CD7);
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_spu_logic() {
+#if 0
+  auto cpu_addr_new = pack(cpu_abus_new);
+  auto cpu_rd_new = bit(cpu_signals.SIG_IN_CPU_RDp);
+  auto cpu_wr_new = bit(cpu_signals.SIG_IN_CPU_WRp);
+
+  // cpu_signals.APOV_CPU_WRp = CLK_xxxxEFGx && cpu_wr_new;
+
+#if 0
+    //next.apu.NR52_DBG_APU       = not1(!b.apu.NR52_DBG_APUn);
+    //wire CH3_ACTIVE = not1(!b.ch3.CH3_ACTIVEo);
+    //wire CH3_ACTIVEn = not1(CH3_ACTIVE);
+    //wire CH4_ACTIVEn = not1(b.ch4.CH4_ACTIVE);
+
+    if (NR52_RDna) next.bus.set_data(
+      // not1(CH1_ACTIVEn),
+      // not1(CH2_ACTIVEn),
+      // not1(CH3_ACTIVEn),
+      // not1(CH4_ACTIVEn),
+      // b.apu.NR52_ALL_SOUND_ON
+    );
+#endif
+
+  if (cpu_wr_new && (cpu_addr_new == 0xFF26) && DELTA_GH) {
+    reg_NR52.HADA_ALL_SOUND_ONp.state = cpu_dbus_old.BUS_CPU_D07p.state;
+    reg_NR52.FERO_DBG_APUp     .state = 0;
+    reg_NR52.BOWY_DBG_SWEEPp   .state = cpu_dbus_old.BUS_CPU_D05p.state;
+  }
+
+  bool spu_rst = bit(~reg_NR52.HADA_ALL_SOUND_ONp.state);
+
+  if (spu_rst) {
+    reg_NR52.FERO_DBG_APUp.state = 0;
+    reg_NR52.BOWY_DBG_SWEEPp.state = 0;
+  }
+
+  //-----------------------------------------------------------------------------
+
+  wire CARA_CH1_ACTIVE = 0; // FIXME stub input d
+  wire DEFU_CH2_ACTIVE = 0; // FIXME stub input d
+  wire ERED_CH3_ACTIVE = 0; // FIXME stub input d
+  wire JUWA_CH4_ACTIVE = 0; // FIXME stub input d
+
+  if (cpu_rd_new && (cpu_addr_new == 0xFF26)) {
+    cpu_dbus_new.BUS_CPU_D00p.state = CARA_CH1_ACTIVE;
+    cpu_dbus_new.BUS_CPU_D01p.state = DEFU_CH2_ACTIVE;
+    cpu_dbus_new.BUS_CPU_D02p.state = ERED_CH3_ACTIVE;
+    cpu_dbus_new.BUS_CPU_D03p.state = JUWA_CH4_ACTIVE;
+    cpu_dbus_new.BUS_CPU_D07p.state = reg_NR52.HADA_ALL_SOUND_ONp.state;
+  }
+
+  //-----------------------------------------------------------------------------
+
+  if (cpu_wr_new && (cpu_addr_new == 0xFF24) && DELTA_GH) {
+    unpack2(reg_NR50, pack(cpu_dbus_new));
+  }
+
+  if (spu_rst) {
+    clear(reg_NR50);
+  }
+
+  if (cpu_rd_new && (cpu_addr_new == 0xFF24)) {
+    unpack2(cpu_dbus_new, pack(reg_NR50));
+  }
+
+  //-----------------------------------------------------------------------------
+
+  if (cpu_wr_new && (cpu_addr_new == 0xFF25) && DELTA_GH) {
+    unpack2(reg_NR51, pack(cpu_dbus_new));
+  }
+
+  if (spu_rst) clear(reg_NR51);
+
+  if (cpu_rd_new && (cpu_addr_new == 0xFF25)) {
+    unpack2(cpu_dbus_new, pack(reg_NR51));
+  }
+#endif
 }
 
 //-----------------------------------------------------------------------------

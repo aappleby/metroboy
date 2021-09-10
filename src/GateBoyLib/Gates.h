@@ -395,9 +395,7 @@ struct DFF17 : public BitBase {
 struct DFF20 : public BitBase {
   using BitBase::operator=;
 
-  void dff20(wire CLKn, wire LOADp, wire newD) {
-    check_old();
-
+  void dff20_any(wire CLKn, wire LOADp, wire newD) {
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (~CLKn << 1) & BIT_CLOCK;
 
@@ -405,6 +403,11 @@ struct DFF20 : public BitBase {
     wire d2 = bit(LOADp) ? newD : d1;
 
     state = uint8_t(bit(d2) | clk_new | BIT_NEW | BIT_DRIVEN);
+  }
+
+  void dff20(wire CLKn, wire LOADp, wire newD) {
+    check_old();
+    dff20_any(CLKn, LOADp, newD);
   }
 };
 
@@ -439,14 +442,18 @@ struct DFF20 : public BitBase {
 struct DFF22 : public BitBase {
   using BitBase::operator=;
 
-  void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    check_old();
+  void dff22_any(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
     wire d1 = (~clk_old & clk_new) ? Dp : state;
 
     state = uint8_t(bit((d1 | (~SETn)) & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
+  }
+
+  void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
+    check_old();
+    dff22_any(CLKp, SETn, RSTn, Dp);
   }
 };
 
@@ -850,7 +857,9 @@ template<typename T>
 inline void unpack2(T& dst, uint32_t d) {
   uint8_t* b = (uint8_t*)&dst;
   for (int i = 0; i < sizeof(dst); i++) {
-    b[i] = (d >> i) & 1;
+    b[i] = bit(d, i);
+    //b[i] &= 1;
+    //b[i] |= bit(d, i);
   }
 }
 
@@ -863,7 +872,7 @@ inline void unpack_inv(uint32_t d, int c, void* blob) {
   uint8_t* b = (uint8_t*)blob;
   for (int i = 0; i < c; i++) {
     b[i] &= ~1;
-    b[i] |= bit(~d, i);
+    b[i] |= !bit(d, i);
   }
 }
 
@@ -872,15 +881,37 @@ inline void unpack_inv(uint32_t d, T& t) {
   unpack_inv(d, sizeof(T), &t);
 }
 
-inline void cpy(void* dst, const void* src, int c) {
+inline void cpy(void* dst_blob, const void* src_blob, int c) {
+  uint8_t* d = (uint8_t*)dst_blob;
+  const uint8_t* s = (const uint8_t*)src_blob;
+
   for (int i = 0; i < c; i++) {
-    ((uint8_t*)dst)[i] = ((const uint8_t*)src)[i];
+    d[i] = bit(s[i]);
+    //d[i] &= ~1;
+    //d[i] |= bit(s[i]);
   }
 }
 
-inline void cpy_inv(void* dst, const void* src, int c) {
+inline void cpy2(void* dst_blob, const void* src_blob, int c) {
+  uint8_t* d = (uint8_t*)dst_blob;
+  const uint8_t* s = (const uint8_t*)src_blob;
+
   for (int i = 0; i < c; i++) {
-    ((uint8_t*)dst)[i] = ~((const uint8_t*)src)[i];
+    //d[i] = bit(s[i]);
+    d[i] &= ~1;
+    d[i] |= bit(s[i]);
+  }
+}
+
+
+inline void cpy_inv(void* dst_blob, const void* src_blob, int c) {
+  uint8_t* d = (uint8_t*)dst_blob;
+  const uint8_t* s = (const uint8_t*)src_blob;
+
+  for (int i = 0; i < c; i++) {
+    d[i] = !bit(s[i]);
+    //d[i] &= ~1;
+    //d[i] |= !bit(s[i]);
   }
 }
 

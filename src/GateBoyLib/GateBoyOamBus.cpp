@@ -60,14 +60,14 @@ void GateBoy::tock_oam_bus_gates()
 
   // DMA OAM write address driver
   /*_p04.DUGA*/ wire DUGA_DMA_RUNNINGn = not1(dma_ctrl.MATU_DMA_RUNNINGp.qp_new());
-  /*_p28.FODO*/ triwire FODO_DMA0_TO_OA0 = tri6_nn(DUGA_DMA_RUNNINGn, reg_dma_lo.NAKY_DMA_A00p.qp_new());
-  /*_p28.FESA*/ triwire FESA_DMA1_TO_OA1 = tri6_nn(DUGA_DMA_RUNNINGn, reg_dma_lo.PYRO_DMA_A01p.qp_new());
-  /*_p28.FAGO*/ triwire FAGO_DMA2_TO_OA2 = tri6_nn(DUGA_DMA_RUNNINGn, reg_dma_lo.NEFY_DMA_A02p.qp_new());
-  /*_p28.FYKY*/ triwire FYKY_DMA3_TO_OA3 = tri6_nn(DUGA_DMA_RUNNINGn, reg_dma_lo.MUTY_DMA_A03p.qp_new());
-  /*_p28.ELUG*/ triwire ELUG_DMA4_TO_OA4 = tri6_nn(DUGA_DMA_RUNNINGn, reg_dma_lo.NYKO_DMA_A04p.qp_new());
-  /*_p28.EDOL*/ triwire EDOL_DMA5_TO_OA5 = tri6_nn(DUGA_DMA_RUNNINGn, reg_dma_lo.PYLO_DMA_A05p.qp_new());
-  /*_p28.FYDU*/ triwire FYDU_DMA6_TO_OA6 = tri6_nn(DUGA_DMA_RUNNINGn, reg_dma_lo.NUTO_DMA_A06p.qp_new());
-  /*_p28.FETU*/ triwire FETU_DMA7_TO_OA7 = tri6_nn(DUGA_DMA_RUNNINGn, reg_dma_lo.MUGU_DMA_A07p.qp_new());
+  /*_p28.FODO*/ triwire FODO_DMA0_TO_OA0 = tri6_nn(DUGA_DMA_RUNNINGn, dma_lo.NAKY_DMA_A00p.qp_new());
+  /*_p28.FESA*/ triwire FESA_DMA1_TO_OA1 = tri6_nn(DUGA_DMA_RUNNINGn, dma_lo.PYRO_DMA_A01p.qp_new());
+  /*_p28.FAGO*/ triwire FAGO_DMA2_TO_OA2 = tri6_nn(DUGA_DMA_RUNNINGn, dma_lo.NEFY_DMA_A02p.qp_new());
+  /*_p28.FYKY*/ triwire FYKY_DMA3_TO_OA3 = tri6_nn(DUGA_DMA_RUNNINGn, dma_lo.MUTY_DMA_A03p.qp_new());
+  /*_p28.ELUG*/ triwire ELUG_DMA4_TO_OA4 = tri6_nn(DUGA_DMA_RUNNINGn, dma_lo.NYKO_DMA_A04p.qp_new());
+  /*_p28.EDOL*/ triwire EDOL_DMA5_TO_OA5 = tri6_nn(DUGA_DMA_RUNNINGn, dma_lo.PYLO_DMA_A05p.qp_new());
+  /*_p28.FYDU*/ triwire FYDU_DMA6_TO_OA6 = tri6_nn(DUGA_DMA_RUNNINGn, dma_lo.NUTO_DMA_A06p.qp_new());
+  /*_p28.FETU*/ triwire FETU_DMA7_TO_OA7 = tri6_nn(DUGA_DMA_RUNNINGn, dma_lo.MUGU_DMA_A07p.qp_new());
 
   /*_BUS_OAM_A00n*/ oam_abus.BUS_OAM_A00n.tri_bus(FODO_DMA0_TO_OA0);
   /*_BUS_OAM_A01n*/ oam_abus.BUS_OAM_A01n.tri_bus(FESA_DMA1_TO_OA1);
@@ -183,8 +183,8 @@ void GateBoy::tock_oam_bus_gates()
   /*_p25.TUBE*/ wire TUBE_EXT_D6p = not1(ext_dbus.PIN_23_D06.qp_int_new());
   /*_p25.SYZO*/ wire SYZO_EXT_D7p = not1(ext_dbus.PIN_24_D07.qp_int_new());
 
-  /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(reg_dma_hi.MARU_DMA_A15n.qn_new());
-  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(reg_dma_hi.PULA_DMA_A13n.qn_new(), reg_dma_hi.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
+  /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(dma_hi.MARU_DMA_A15n.qn_new());
+  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(dma_hi.PULA_DMA_A13n.qn_new(), dma_hi.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
   /*_p04.LOGO*/ wire LOGO_DMA_VRAMn = not1(MUDA_DMA_VRAMp);
   /*_p04.MORY*/ wire MORY_DMA_CARTn = nand2(dma_ctrl.MATU_DMA_RUNNINGp.qp_new(), LOGO_DMA_VRAMn);
   /*_p04.LUMA*/ wire LUMA_DMA_CARTp = not1(MORY_DMA_CARTn);

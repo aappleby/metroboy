@@ -20,7 +20,7 @@ struct GateBoyCpuSignals {
   /*_SIG_CPU_BOOTp*/     SigOut SIG_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   /*_SIG_BOOT_CSp*/      SigOut SIG_BOOT_CSp;          // cs for bootrom
 
-  /*_p07.TEPU*/ DFF17 TEPU_BOOT_BITn_h;
+  /*_p07.TEPU*/ DFF17 TEPU_BOOT_BITn;
 
   Gate TEDO_CPU_RDp;
   Gate APOV_CPU_WRp;

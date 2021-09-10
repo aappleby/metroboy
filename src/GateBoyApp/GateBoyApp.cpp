@@ -55,11 +55,11 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread.start();
   gb_thread.pause();
 
-  //gb_thread.load_blob(Assembler::create_dummy_cart());
-  //gb_thread.reset_to_bootrom();
+  gb_thread.load_blob(Assembler::create_dummy_cart());
+  gb_thread.reset_to_bootrom();
 
   //gb_thread.load_raw_dump("zelda_overworld.dump");
-  gb_thread.load_rom("LinksAwakening.gb");
+  //gb_thread.load_rom("LinksAwakening.gb");
   gb_thread.resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
@@ -481,7 +481,7 @@ Step controls:
     int code_size = 0;
     int code_base = 0;
 
-    if (!bit(gb.cpu_signals.TEPU_BOOT_BITn_h.qp_old())) {
+    if (!bit(gb.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
       code      = DMG_ROM_blob.data();
       code_size = (int)DMG_ROM_blob.size();
       code_base = ADDR_BOOT_ROM_BEGIN;

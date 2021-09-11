@@ -40,14 +40,14 @@ void GateBoy::tock_bootrom_gates() {
 
   /*_SIG_BOOT_CSp*/ cpu_signals.SIG_BOOT_CSp.sig_out(ZERY_BOOT_CSp);
 
-  triwire boot_d0 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 0));
-  triwire boot_d1 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 1));
-  triwire boot_d2 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 2));
-  triwire boot_d3 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 3));
-  triwire boot_d4 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 4));
-  triwire boot_d5 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 5));
-  triwire boot_d6 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 6));
-  triwire boot_d7 = tri_pp(ZERY_BOOT_CSp, bit(bootrom_data, 7));
+  triwire boot_d0 = tri_pp(ZERY_BOOT_CSp, get_bit(bootrom_data, 0));
+  triwire boot_d1 = tri_pp(ZERY_BOOT_CSp, get_bit(bootrom_data, 1));
+  triwire boot_d2 = tri_pp(ZERY_BOOT_CSp, get_bit(bootrom_data, 2));
+  triwire boot_d3 = tri_pp(ZERY_BOOT_CSp, get_bit(bootrom_data, 3));
+  triwire boot_d4 = tri_pp(ZERY_BOOT_CSp, get_bit(bootrom_data, 4));
+  triwire boot_d5 = tri_pp(ZERY_BOOT_CSp, get_bit(bootrom_data, 5));
+  triwire boot_d6 = tri_pp(ZERY_BOOT_CSp, get_bit(bootrom_data, 6));
+  triwire boot_d7 = tri_pp(ZERY_BOOT_CSp, get_bit(bootrom_data, 7));
 
   cpu_dbus_new.BUS_CPU_D00p.tri_bus(boot_d0);
   cpu_dbus_new.BUS_CPU_D01p.tri_bus(boot_d1);

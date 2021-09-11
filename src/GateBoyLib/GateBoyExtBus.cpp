@@ -299,14 +299,14 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
     }
   }
 
-  wire EXT_data_in0 = bit(data_in, 0);
-  wire EXT_data_in1 = bit(data_in, 1);
-  wire EXT_data_in2 = bit(data_in, 2);
-  wire EXT_data_in3 = bit(data_in, 3);
-  wire EXT_data_in4 = bit(data_in, 4);
-  wire EXT_data_in5 = bit(data_in, 5);
-  wire EXT_data_in6 = bit(data_in, 6);
-  wire EXT_data_in7 = bit(data_in, 7);
+  wire EXT_data_in0 = get_bit(data_in, 0);
+  wire EXT_data_in1 = get_bit(data_in, 1);
+  wire EXT_data_in2 = get_bit(data_in, 2);
+  wire EXT_data_in3 = get_bit(data_in, 3);
+  wire EXT_data_in4 = get_bit(data_in, 4);
+  wire EXT_data_in5 = get_bit(data_in, 5);
+  wire EXT_data_in6 = get_bit(data_in, 6);
+  wire EXT_data_in7 = get_bit(data_in, 7);
 
 
   /*_PIN_17*/ ext_dbus.PIN_17_D00.pin_io(LULA_CBD_TO_EPDp, RUXA, RUNE, EXT_rd_en, EXT_data_in0);
@@ -349,15 +349,15 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
         ext_mbc.MBC1_RAM_EN = bit((data_out & 0x0F) == 0x0A);
       }
       else if (region == 1 && 1) {
-        ext_mbc.MBC1_BANK0 = bit(data_out, 0);
-        ext_mbc.MBC1_BANK1 = bit(data_out, 1);
-        ext_mbc.MBC1_BANK2 = bit(data_out, 2);
-        ext_mbc.MBC1_BANK3 = bit(data_out, 3);
-        ext_mbc.MBC1_BANK4 = bit(data_out, 4);
+        ext_mbc.MBC1_BANK0 = get_bit(data_out, 0);
+        ext_mbc.MBC1_BANK1 = get_bit(data_out, 1);
+        ext_mbc.MBC1_BANK2 = get_bit(data_out, 2);
+        ext_mbc.MBC1_BANK3 = get_bit(data_out, 3);
+        ext_mbc.MBC1_BANK4 = get_bit(data_out, 4);
       }
       else if (region == 2 && 1) {
-        ext_mbc.MBC1_BANK5 = bit(data_out, 0);
-        ext_mbc.MBC1_BANK6 = bit(data_out, 1);
+        ext_mbc.MBC1_BANK5 = get_bit(data_out, 0);
+        ext_mbc.MBC1_BANK6 = get_bit(data_out, 1);
       }
       else if (region == 3 && 1) {
         ext_mbc.MBC1_MODE = (data_out & 1);

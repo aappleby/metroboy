@@ -320,14 +320,14 @@ struct RegOBP1 {
 
 struct RegWY {
   void set(uint8_t wy) {
-    NESO_WY0n.state = BIT_CLOCK | bit(~wy, 0);
-    NYRO_WY1n.state = BIT_CLOCK | bit(~wy, 1);
-    NAGA_WY2n.state = BIT_CLOCK | bit(~wy, 2);
-    MELA_WY3n.state = BIT_CLOCK | bit(~wy, 3);
-    NULO_WY4n.state = BIT_CLOCK | bit(~wy, 4);
-    NENE_WY5n.state = BIT_CLOCK | bit(~wy, 5);
-    NUKA_WY6n.state = BIT_CLOCK | bit(~wy, 6);
-    NAFU_WY7n.state = BIT_CLOCK | bit(~wy, 7);
+    NESO_WY0n.state = BIT_CLOCK | get_bit(~wy, 0);
+    NYRO_WY1n.state = BIT_CLOCK | get_bit(~wy, 1);
+    NAGA_WY2n.state = BIT_CLOCK | get_bit(~wy, 2);
+    MELA_WY3n.state = BIT_CLOCK | get_bit(~wy, 3);
+    NULO_WY4n.state = BIT_CLOCK | get_bit(~wy, 4);
+    NENE_WY5n.state = BIT_CLOCK | get_bit(~wy, 5);
+    NUKA_WY6n.state = BIT_CLOCK | get_bit(~wy, 6);
+    NAFU_WY7n.state = BIT_CLOCK | get_bit(~wy, 7);
   }
 
   int get() const { return bit_pack_inv(*this); }
@@ -347,14 +347,14 @@ struct RegWY {
 
 struct RegWX {
   void set(uint8_t wx) {
-    MYPA_WX0n.state = BIT_CLOCK | bit(~wx, 0);
-    NOFE_WX1n.state = BIT_CLOCK | bit(~wx, 1);
-    NOKE_WX2n.state = BIT_CLOCK | bit(~wx, 2);
-    MEBY_WX3n.state = BIT_CLOCK | bit(~wx, 3);
-    MYPU_WX4n.state = BIT_CLOCK | bit(~wx, 4);
-    MYCE_WX5n.state = BIT_CLOCK | bit(~wx, 5);
-    MUVO_WX6n.state = BIT_CLOCK | bit(~wx, 6);
-    NUKU_WX7n.state = BIT_CLOCK | bit(~wx, 7);
+    MYPA_WX0n.state = BIT_CLOCK | get_bit(~wx, 0);
+    NOFE_WX1n.state = BIT_CLOCK | get_bit(~wx, 1);
+    NOKE_WX2n.state = BIT_CLOCK | get_bit(~wx, 2);
+    MEBY_WX3n.state = BIT_CLOCK | get_bit(~wx, 3);
+    MYPU_WX4n.state = BIT_CLOCK | get_bit(~wx, 4);
+    MYCE_WX5n.state = BIT_CLOCK | get_bit(~wx, 5);
+    MUVO_WX6n.state = BIT_CLOCK | get_bit(~wx, 6);
+    NUKU_WX7n.state = BIT_CLOCK | get_bit(~wx, 7);
   }
 
   int get() const { return bit_pack_inv(*this); }

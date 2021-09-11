@@ -85,16 +85,16 @@ void GateBoy::tock_joypad_gates() {
   bool EXT_button0, EXT_button1, EXT_button2, EXT_button3;
 
   if (!bit(joy_ext.PIN_63_JOY_P14.qp_ext_new())) {
-    EXT_button0 = !bit(sys_buttons, 0); // RIGHT
-    EXT_button1 = !bit(sys_buttons, 1); // LEFT
-    EXT_button2 = !bit(sys_buttons, 2); // UP
-    EXT_button3 = !bit(sys_buttons, 3); // DOWN
+    EXT_button0 = !get_bit(sys_buttons, 0); // RIGHT
+    EXT_button1 = !get_bit(sys_buttons, 1); // LEFT
+    EXT_button2 = !get_bit(sys_buttons, 2); // UP
+    EXT_button3 = !get_bit(sys_buttons, 3); // DOWN
   }
   else if (!bit(joy_ext.PIN_62_JOY_P15.qp_ext_new())) {
-    EXT_button0 = !bit(sys_buttons, 4); // A
-    EXT_button1 = !bit(sys_buttons, 5); // B
-    EXT_button2 = !bit(sys_buttons, 6); // SELECT
-    EXT_button3 = !bit(sys_buttons, 7); // START
+    EXT_button0 = !get_bit(sys_buttons, 4); // A
+    EXT_button1 = !get_bit(sys_buttons, 5); // B
+    EXT_button2 = !get_bit(sys_buttons, 6); // SELECT
+    EXT_button3 = !get_bit(sys_buttons, 7); // START
   }
   else {
     EXT_button0 = 1;
@@ -188,16 +188,16 @@ void GateBoy::tock_joypad_logic() {
   bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
 
   if (bit(joy_ext.PIN_63_JOY_P14.state)) {
-    EXT_button0 = bit(sys_buttons, 0); // RIGHT
-    EXT_button1 = bit(sys_buttons, 1); // LEFT
-    EXT_button2 = bit(sys_buttons, 2); // UP
-    EXT_button3 = bit(sys_buttons, 3); // DOWN
+    EXT_button0 = get_bit(sys_buttons, 0); // RIGHT
+    EXT_button1 = get_bit(sys_buttons, 1); // LEFT
+    EXT_button2 = get_bit(sys_buttons, 2); // UP
+    EXT_button3 = get_bit(sys_buttons, 3); // DOWN
   }
   else if (bit(joy_ext.PIN_62_JOY_P15.state)) {
-    EXT_button0 = bit(sys_buttons, 4); // A
-    EXT_button1 = bit(sys_buttons, 5); // B
-    EXT_button2 = bit(sys_buttons, 6); // SELECT
-    EXT_button3 = bit(sys_buttons, 7); // START
+    EXT_button0 = get_bit(sys_buttons, 4); // A
+    EXT_button1 = get_bit(sys_buttons, 5); // B
+    EXT_button2 = get_bit(sys_buttons, 6); // SELECT
+    EXT_button3 = get_bit(sys_buttons, 7); // START
   }
 
   joy_ext.PIN_67_JOY_P10.state = EXT_button0;

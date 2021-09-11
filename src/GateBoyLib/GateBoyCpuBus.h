@@ -72,22 +72,22 @@ struct GateBoyCpuABus {
 
   void set_addr(uint16_t bus_addr_new)
   {
-    triwire EXT_bus_addr00 = tri_pp(1, bit(bus_addr_new, 0));
-    triwire EXT_bus_addr01 = tri_pp(1, bit(bus_addr_new, 1));
-    triwire EXT_bus_addr02 = tri_pp(1, bit(bus_addr_new, 2));
-    triwire EXT_bus_addr03 = tri_pp(1, bit(bus_addr_new, 3));
-    triwire EXT_bus_addr04 = tri_pp(1, bit(bus_addr_new, 4));
-    triwire EXT_bus_addr05 = tri_pp(1, bit(bus_addr_new, 5));
-    triwire EXT_bus_addr06 = tri_pp(1, bit(bus_addr_new, 6));
-    triwire EXT_bus_addr07 = tri_pp(1, bit(bus_addr_new, 7));
-    triwire EXT_bus_addr08 = tri_pp(1, bit(bus_addr_new, 8));
-    triwire EXT_bus_addr09 = tri_pp(1, bit(bus_addr_new, 9));
-    triwire EXT_bus_addr10 = tri_pp(1, bit(bus_addr_new, 10));
-    triwire EXT_bus_addr11 = tri_pp(1, bit(bus_addr_new, 11));
-    triwire EXT_bus_addr12 = tri_pp(1, bit(bus_addr_new, 12));
-    triwire EXT_bus_addr13 = tri_pp(1, bit(bus_addr_new, 13));
-    triwire EXT_bus_addr14 = tri_pp(1, bit(bus_addr_new, 14));
-    triwire EXT_bus_addr15 = tri_pp(1, bit(bus_addr_new, 15));
+    triwire EXT_bus_addr00 = tri_pp(1, get_bit(bus_addr_new, 0));
+    triwire EXT_bus_addr01 = tri_pp(1, get_bit(bus_addr_new, 1));
+    triwire EXT_bus_addr02 = tri_pp(1, get_bit(bus_addr_new, 2));
+    triwire EXT_bus_addr03 = tri_pp(1, get_bit(bus_addr_new, 3));
+    triwire EXT_bus_addr04 = tri_pp(1, get_bit(bus_addr_new, 4));
+    triwire EXT_bus_addr05 = tri_pp(1, get_bit(bus_addr_new, 5));
+    triwire EXT_bus_addr06 = tri_pp(1, get_bit(bus_addr_new, 6));
+    triwire EXT_bus_addr07 = tri_pp(1, get_bit(bus_addr_new, 7));
+    triwire EXT_bus_addr08 = tri_pp(1, get_bit(bus_addr_new, 8));
+    triwire EXT_bus_addr09 = tri_pp(1, get_bit(bus_addr_new, 9));
+    triwire EXT_bus_addr10 = tri_pp(1, get_bit(bus_addr_new, 10));
+    triwire EXT_bus_addr11 = tri_pp(1, get_bit(bus_addr_new, 11));
+    triwire EXT_bus_addr12 = tri_pp(1, get_bit(bus_addr_new, 12));
+    triwire EXT_bus_addr13 = tri_pp(1, get_bit(bus_addr_new, 13));
+    triwire EXT_bus_addr14 = tri_pp(1, get_bit(bus_addr_new, 14));
+    triwire EXT_bus_addr15 = tri_pp(1, get_bit(bus_addr_new, 15));
 
     /*_BUS_CPU_A00p*/ BUS_CPU_A00p.tri_bus(EXT_bus_addr00);
     /*_BUS_CPU_A01p*/ BUS_CPU_A01p.tri_bus(EXT_bus_addr01);
@@ -224,14 +224,14 @@ struct GateBoyCpuDBus {
   }
 
   void set_data(bool OEp, uint8_t data) {
-    triwire tri0 = tri_pp(OEp, bit(data, 0));
-    triwire tri1 = tri_pp(OEp, bit(data, 1));
-    triwire tri2 = tri_pp(OEp, bit(data, 2));
-    triwire tri3 = tri_pp(OEp, bit(data, 3));
-    triwire tri4 = tri_pp(OEp, bit(data, 4));
-    triwire tri5 = tri_pp(OEp, bit(data, 5));
-    triwire tri6 = tri_pp(OEp, bit(data, 6));
-    triwire tri7 = tri_pp(OEp, bit(data, 7));
+    triwire tri0 = tri_pp(OEp, get_bit(data, 0));
+    triwire tri1 = tri_pp(OEp, get_bit(data, 1));
+    triwire tri2 = tri_pp(OEp, get_bit(data, 2));
+    triwire tri3 = tri_pp(OEp, get_bit(data, 3));
+    triwire tri4 = tri_pp(OEp, get_bit(data, 4));
+    triwire tri5 = tri_pp(OEp, get_bit(data, 5));
+    triwire tri6 = tri_pp(OEp, get_bit(data, 6));
+    triwire tri7 = tri_pp(OEp, get_bit(data, 7));
 
     BUS_CPU_D00p.tri_bus(tri0);
     BUS_CPU_D01p.tri_bus(tri1);

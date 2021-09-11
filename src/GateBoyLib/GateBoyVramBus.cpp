@@ -554,14 +554,14 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
     /*#p25.RENA*/ wire RENA_CBD_TO_VPDn = not1(RELA_CBD_TO_VPDp);
     /*#p25.ROFA*/ wire ROFA_CBD_TO_VPDp = not1(RENA_CBD_TO_VPDn);
 
-    wire EXT_vram_d0 = bit(data, 0);
-    wire EXT_vram_d1 = bit(data, 1);
-    wire EXT_vram_d2 = bit(data, 2);
-    wire EXT_vram_d3 = bit(data, 3);
-    wire EXT_vram_d4 = bit(data, 4);
-    wire EXT_vram_d5 = bit(data, 5);
-    wire EXT_vram_d6 = bit(data, 6);
-    wire EXT_vram_d7 = bit(data, 7);
+    wire EXT_vram_d0 = get_bit(data, 0);
+    wire EXT_vram_d1 = get_bit(data, 1);
+    wire EXT_vram_d2 = get_bit(data, 2);
+    wire EXT_vram_d3 = get_bit(data, 3);
+    wire EXT_vram_d4 = get_bit(data, 4);
+    wire EXT_vram_d5 = get_bit(data, 5);
+    wire EXT_vram_d6 = get_bit(data, 6);
+    wire EXT_vram_d7 = get_bit(data, 7);
 
     /*_PIN_33*/ vram_ext_dbus.PIN_33_VRAM_D00.pin_io(ROFA_CBD_TO_VPDp, REGE_D0n, RURA_D0n, vram_ext_ctrl.PIN_45_VRAM_OEn.qn_ext_new(), EXT_vram_d0);
     /*_PIN_31*/ vram_ext_dbus.PIN_31_VRAM_D01.pin_io(ROFA_CBD_TO_VPDp, RYKY_D1n, RULY_D1n, vram_ext_ctrl.PIN_45_VRAM_OEn.qn_ext_new(), EXT_vram_d1);

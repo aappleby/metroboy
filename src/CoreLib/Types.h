@@ -24,7 +24,7 @@ typedef uint8_t wire;
 struct triwire { wire state; };
 
 inline wire bit(uint32_t w) { return wire(w & 1); }
-inline wire bit(uint32_t w, int i) { return wire((w >> i) & 1); }
+inline wire get_bit(uint32_t w, int i) { return wire((w >> i) & 1); }
 
 uint32_t swap(uint32_t x);
 uint64_t swap(uint64_t x);

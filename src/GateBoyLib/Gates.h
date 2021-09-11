@@ -71,7 +71,7 @@ struct BitBase {
   wire get_data() const { return bit(state); }
   void set_data(wire d) { state = (state & ~1) | bit(d); }
 
-  wire get_clk() const { return bit(state, 1); }
+  wire get_clk() const { return get_bit(state, 1); }
   void set_clk(wire c) { state = (state & ~2) | (bit(c) << 1); }
 
   void dff_pp(wire CLKp, wire Dp) {
@@ -786,7 +786,7 @@ struct Adder {
 
 inline Adder add3(wire a, wire b, wire c) {
   uint8_t s = bit(a) + bit(b) + bit(c);
-  return { bit(s, 0), bit(s, 1) };
+  return { get_bit(s, 0), get_bit(s, 1) };
 }
 
 //-----------------------------------------------------------------------------
@@ -868,7 +868,7 @@ inline void bit_unpack(DST* pdst, int c, const uint32_t src) {
   uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {
     dst[i] &= ~1;
-    dst[i] |= bit(src, i);
+    dst[i] |= get_bit(src, i);
   }
 }
 
@@ -884,7 +884,7 @@ inline void bit_unpack_inv(DST* pdst, int c, const uint32_t src) {
   uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {
     dst[i] &= ~1;
-    dst[i] |= !bit(src, i);
+    dst[i] |= !get_bit(src, i);
   }
 }
 

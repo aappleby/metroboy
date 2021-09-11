@@ -1001,7 +1001,7 @@ TestResults GateBoyTests::test_init() {
 
 //-----------------------------------------------------------------------------
 
-#define EXPECT_CLK(A, B) EXPECT_EQ(bit(A), bit(B, 7 - phase), "Clock phase mismatch, %s at phase %d", #A, phase);
+#define EXPECT_CLK(A, B) EXPECT_EQ(bit(A), get_bit(B, 7 - phase), "Clock phase mismatch, %s at phase %d", #A, phase);
 
 TestResults GateBoyTests::test_clk() {
   TEST_INIT();

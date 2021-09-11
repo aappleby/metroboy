@@ -325,23 +325,23 @@ void GateBoy::tock_oam_bus_gates()
 
   oam_ctrl.old_oam_clk = bit(~oam_ctrl.SIG_OAM_CLKn.out_new());
 
-  triwire oam_data_a0 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_a, 0));
-  triwire oam_data_a1 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_a, 1));
-  triwire oam_data_a2 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_a, 2));
-  triwire oam_data_a3 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_a, 3));
-  triwire oam_data_a4 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_a, 4));
-  triwire oam_data_a5 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_a, 5));
-  triwire oam_data_a6 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_a, 6));
-  triwire oam_data_a7 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_a, 7));
+  triwire oam_data_a0 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 0));
+  triwire oam_data_a1 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 1));
+  triwire oam_data_a2 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 2));
+  triwire oam_data_a3 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 3));
+  triwire oam_data_a4 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 4));
+  triwire oam_data_a5 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 5));
+  triwire oam_data_a6 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 6));
+  triwire oam_data_a7 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 7));
 
-  triwire oam_data_b0 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_b, 0));
-  triwire oam_data_b1 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_b, 1));
-  triwire oam_data_b2 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_b, 2));
-  triwire oam_data_b3 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_b, 3));
-  triwire oam_data_b4 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_b, 4));
-  triwire oam_data_b5 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_b, 5));
-  triwire oam_data_b6 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_b, 6));
-  triwire oam_data_b7 = tri6_nn(ZODO_OAM_OEn, bit(oam_data_b, 7));
+  triwire oam_data_b0 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_b, 0));
+  triwire oam_data_b1 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_b, 1));
+  triwire oam_data_b2 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_b, 2));
+  triwire oam_data_b3 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_b, 3));
+  triwire oam_data_b4 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_b, 4));
+  triwire oam_data_b5 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_b, 5));
+  triwire oam_data_b6 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_b, 6));
+  triwire oam_data_b7 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_b, 7));
 
   oam_dbus_a.BUS_OAM_DA00n.tri_bus(oam_data_a0);
   oam_dbus_a.BUS_OAM_DA01n.tri_bus(oam_data_a1);

@@ -50,11 +50,19 @@ struct GateBoyPair {
   }
 
   bool next_phase(const blob& cart_blob) {
+
+    if (gba.logic_mode) gba.check_no_flags();
+    if (gbb.logic_mode) gbb.check_no_flags();
+
     bool result = true;
     result &= gba.next_phase(cart_blob);
     if (config_regression) {
       result &= gbb.next_phase(cart_blob);
     }
+
+    if (gba.logic_mode) gba.check_no_flags();
+    if (gbb.logic_mode) gbb.check_no_flags();
+
     result &= check_sync();
     return result;
   }
@@ -155,9 +163,6 @@ struct GateBoyPair {
         return false;
       }
     }
-
-    if (gba.logic_mode) gba.check_no_flags();
-    if (gbb.logic_mode) gbb.check_no_flags();
 
     return true;
   }

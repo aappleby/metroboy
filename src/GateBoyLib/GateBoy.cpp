@@ -3170,52 +3170,52 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     bit_clear(vram_ext_dbus);
 
-    if (bit(vram_ext_ctrl.PIN_45_VRAM_OEn.state)) {
+    if (vram_ext_ctrl.PIN_45_VRAM_OEn.state) {
       bit_unpack_inv(vram_ext_dbus, vid_ram[vram_addr]);
     }
 
-    if (bit(vram_ext_ctrl.PIN_49_VRAM_WRn.state)) {
+    if (vram_ext_ctrl.PIN_49_VRAM_WRn.state) {
       vid_ram[vram_addr] = (uint8_t)bit_pack_inv(vram_ext_dbus);
     }
 
-    if (bit(and4(cpu_addr_vram_new, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
+    if (cpu_addr_vram_new && cpu_signals.ABUZ_EXT_RAM_CS_CLK.state && XYMU_RENDERINGn.state && cpu_signals.SIG_IN_CPU_WRp.state) {
       bit_copy_inv(vram_ext_dbus, vram_dbus);
     }
 
     //--------------------------------------------
 
-    if (bit(vram_ext_ctrl.PIN_49_VRAM_WRn.state)) {
+    if (vram_ext_ctrl.PIN_49_VRAM_WRn.state) {
       vid_ram[vram_addr] = (uint8_t)bit_pack_inv(vram_ext_dbus);
     }
 
     //--------------------------------------------
     // Vram pins to vram bus
 
-    if (!bit(and4(cpu_addr_vram_new, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_WRp.state))) {
+    if (!cpu_addr_vram_new || !cpu_signals.ABUZ_EXT_RAM_CS_CLK.state || !XYMU_RENDERINGn.state || !cpu_signals.SIG_IN_CPU_WRp.state) {
       bit_copy_inv(vram_dbus, vram_ext_dbus);
     }
 
     //--------------------------------------------
     // Vram bus to cpu bus
 
-    if (bit(and5(cpu_addr_vram_new, cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, XYMU_RENDERINGn.state, cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
+    if (cpu_addr_vram_new && cpu_signals.ABUZ_EXT_RAM_CS_CLK.state && XYMU_RENDERINGn.state && cpu_signals.SIG_IN_CPU_RDp.state && cpu_signals.SIG_IN_CPU_LATCH_EXT.state) {
       bit_copy(cpu_dbus_new, vram_dbus);
     }
 
     //--------------------------------------------
     // Vram bus to sprite x flipper
 
-    wire XONO_FLIP_X = and2(oam_temp_b.BAXO_OAM_DB5p.state, sprite_fetcher.TEXY_SFETCHINGp.state);
+    wire XONO_FLIP_X = oam_temp_b.BAXO_OAM_DB5p.state && sprite_fetcher.TEXY_SFETCHINGp.state;
 
     flipped_sprite = {
-      bit(XONO_FLIP_X) ? vram_dbus.BUS_VRAM_D07p.state : vram_dbus.BUS_VRAM_D00p.state,
-      bit(XONO_FLIP_X) ? vram_dbus.BUS_VRAM_D06p.state : vram_dbus.BUS_VRAM_D01p.state,
-      bit(XONO_FLIP_X) ? vram_dbus.BUS_VRAM_D05p.state : vram_dbus.BUS_VRAM_D02p.state,
-      bit(XONO_FLIP_X) ? vram_dbus.BUS_VRAM_D04p.state : vram_dbus.BUS_VRAM_D03p.state,
-      bit(XONO_FLIP_X) ? vram_dbus.BUS_VRAM_D03p.state : vram_dbus.BUS_VRAM_D04p.state,
-      bit(XONO_FLIP_X) ? vram_dbus.BUS_VRAM_D02p.state : vram_dbus.BUS_VRAM_D05p.state,
-      bit(XONO_FLIP_X) ? vram_dbus.BUS_VRAM_D01p.state : vram_dbus.BUS_VRAM_D06p.state,
-      bit(XONO_FLIP_X) ? vram_dbus.BUS_VRAM_D00p.state : vram_dbus.BUS_VRAM_D07p.state,
+      XONO_FLIP_X ? vram_dbus.BUS_VRAM_D07p.state : vram_dbus.BUS_VRAM_D00p.state,
+      XONO_FLIP_X ? vram_dbus.BUS_VRAM_D06p.state : vram_dbus.BUS_VRAM_D01p.state,
+      XONO_FLIP_X ? vram_dbus.BUS_VRAM_D05p.state : vram_dbus.BUS_VRAM_D02p.state,
+      XONO_FLIP_X ? vram_dbus.BUS_VRAM_D04p.state : vram_dbus.BUS_VRAM_D03p.state,
+      XONO_FLIP_X ? vram_dbus.BUS_VRAM_D03p.state : vram_dbus.BUS_VRAM_D04p.state,
+      XONO_FLIP_X ? vram_dbus.BUS_VRAM_D02p.state : vram_dbus.BUS_VRAM_D05p.state,
+      XONO_FLIP_X ? vram_dbus.BUS_VRAM_D01p.state : vram_dbus.BUS_VRAM_D06p.state,
+      XONO_FLIP_X ? vram_dbus.BUS_VRAM_D00p.state : vram_dbus.BUS_VRAM_D07p.state,
     };
   }
 
@@ -3226,7 +3226,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   {
     wire cpu_rd = cpu_signals.SIG_IN_CPU_RDp.state;
-    wire cpu_wr = cpu_signals.SIG_IN_CPU_WRp.state & CLK_xxxxEFGx;
+    wire cpu_wr = cpu_signals.SIG_IN_CPU_WRp.state && CLK_xxxxEFGx;
   
     // FIXME I'm feeling that the cpu_latch signal is really "cpu data bus free"
     wire dbus_free = cpu_signals.SIG_IN_CPU_LATCH_EXT.state;
@@ -3234,7 +3234,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     wire addr_oam = (cpu_addr_new >= 0xFE00) && (cpu_addr_new <= 0xFEFF);
 
-    bool cpu_reading_oam = (bool)bit(and3(dbus_busy, addr_oam, cpu_rd));
+    bool cpu_reading_oam = dbus_busy && addr_oam && cpu_rd;
 
     // this is weird, why is it always 0 when not in reset?
     oam_ctrl.MAKA_LATCH_EXTp.state = 0;
@@ -3243,11 +3243,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_set(oam_dbus_a);
     bit_set(oam_dbus_b);
 
-    if (bit(CLK_ABCDxxxx)) {
+    if (CLK_ABCDxxxx) {
       oam_ctrl.WUJE_CPU_OAM_WRn.state = 1;
     }
 
-    if (bit(and2(addr_oam, cpu_wr))) {
+    if (addr_oam && cpu_wr) {
       oam_ctrl.WUJE_CPU_OAM_WRn.state = 0;
     }
 
@@ -3266,18 +3266,20 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       }
 
       oam_ctrl.SIG_OAM_CLKn .state = CLK_ABCDxxxx;
-      oam_ctrl.SIG_OAM_WRn_A.state = bit(or2(CLK_ABCDxxxx, !oam_abus.BUS_OAM_A00n.state));
-      oam_ctrl.SIG_OAM_WRn_B.state = bit(or2(CLK_ABCDxxxx,  oam_abus.BUS_OAM_A00n.state));
+      oam_ctrl.SIG_OAM_WRn_A.state = CLK_ABCDxxxx || !oam_abus.BUS_OAM_A00n.state;
+      oam_ctrl.SIG_OAM_WRn_B.state = CLK_ABCDxxxx ||  oam_abus.BUS_OAM_A00n.state;
       oam_ctrl.SIG_OAM_OEn  .state = !cpu_reading_oam;
     }
     else if (scanning_new) {
       oam_abus.BUS_OAM_A00n.state = 1;
       oam_abus.BUS_OAM_A01n.state = 1;
       bit_copy_inv(&oam_abus.BUS_OAM_A02n, 6, &scan_counter);
-      oam_ctrl.SIG_OAM_CLKn .state = bit(and2(~XYSO_xBCDxFGH(), nand2(addr_oam, CLK_xxxxEFGH)));
+
+
+      oam_ctrl.SIG_OAM_CLKn .state = clk.WOSU_AxxDExxH.state && clk.WUVU_ABxxEFxx.state && (!addr_oam || !CLK_xxxxEFGH);
       oam_ctrl.SIG_OAM_WRn_A.state = 1;
       oam_ctrl.SIG_OAM_WRn_B.state = 1;
-      oam_ctrl.SIG_OAM_OEn  .state = bit(and2(~XOCE_xBCxxFGx(), !cpu_reading_oam));
+      oam_ctrl.SIG_OAM_OEn  .state = clk.WOSU_AxxDExxH.state && !cpu_reading_oam;
     }
     else if (rendering_new) {
       oam_abus.BUS_OAM_A00n.state = 0;

@@ -2805,12 +2805,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   wire LUMA_DMA_CARTp = dma_running_new && !dma_addr_vram_new;
   wire TUTU_READ_BOOTROMp = !cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF;
 
-  // FIXME if i bitcast this something breaks...
-  wire TAZY_A15p = nand2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, ~cpu_abus_new.BUS_CPU_A15p.state);
-
-  //wire TAZY_A15p = !cpu_signals.ABUZ_EXT_RAM_CS_CLK.state || cpu_abus_new.BUS_CPU_A15p.state;
-
-
   if (cpu_signals.SIG_IN_CPU_EXT_BUSp.state && !cpu_addr_vram_new) {
     bit_copy(&ext_addr_latch, 15, &cpu_abus_new);
   }
@@ -2841,14 +2835,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
 
-  if (bit(LUMA_DMA_CARTp)) {
+  if (LUMA_DMA_CARTp) {
     ext_abus.PIN_16_A15.state = dma_hi.MARU_DMA_A15n.state;
   }
   else if (TUTU_READ_BOOTROMp) {
     ext_abus.PIN_16_A15.state = 0;
   }
   else {
-    ext_abus.PIN_16_A15.state = ~TAZY_A15p;
+    ext_abus.PIN_16_A15.state = cpu_signals.ABUZ_EXT_RAM_CS_CLK.state && !cpu_abus_new.BUS_CPU_A15p.state;
   }
 
 

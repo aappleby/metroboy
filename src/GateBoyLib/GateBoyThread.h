@@ -5,7 +5,7 @@
 #include "CoreLib/StateManager2.h"
 #include "CoreLib/File.h"
 
-#include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/GateBoyPair.h"
 
 #include <mutex>
 #include <condition_variable>
@@ -88,8 +88,8 @@ struct GateBoyThread {
   void save_raw_dump(blob& dump_blob);
 
   void set_buttons(uint8_t buttons) {
-    gb_a->sys_buttons = buttons;
-    gb_b->sys_buttons = buttons;
+    gbp->gba.sys_buttons = buttons;
+    gbp->gbb.sys_buttons = buttons;
   }
 
   const int REQ_PAUSE = 0b0001;
@@ -109,17 +109,15 @@ struct GateBoyThread {
 
   void dump(Dumper& d);
 
-  GateBoy& get_gb() {
-    CHECK_P(sim_paused());
-    return *gb_a.state();
-  }
+  StateStack<GateBoyPair> gbp;
 
-  StateStack<GateBoy> gb_a;
-  StateStack<GateBoy> gb_b;
+  void run_steps();
 
 private:
 
+  void reset_gb();
   void thread_main();
+
   void run_normal();
   void run_regression();
   void run_idempotence();

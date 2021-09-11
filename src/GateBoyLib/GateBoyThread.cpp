@@ -12,11 +12,7 @@
 
 GateBoyThread::GateBoyThread()
 {
-  gb_a->wipe();
-  gb_b->wipe();
-
-  gb_a->logic_mode = false;
-  gb_b->logic_mode = true;
+  reset_gb();
 }
 
 //----------------------------------------
@@ -55,30 +51,38 @@ void GateBoyThread::resume() {
 
 //----------------------------------------
 
+void GateBoyThread::reset_gb() {
+  gbp.reset_states();
+  gbp->gba.wipe();
+  gbp->gbb.wipe();
+  gbp->gba.logic_mode = config_fastmode;
+  gbp->gbb.logic_mode = config_regression;
+}
+
+//----------------------------------------
+
+
 void GateBoyThread::reset_to_bootrom() {
   CHECK_P(sim_paused());
   clear_steps();
-  gb_a.reset_states();
-  gb_b.reset_states();
-  gb_a->reset_to_bootrom(cart_blob, true);
-  gb_b->reset_to_bootrom(cart_blob, true);
+  reset_gb();
+  gbp->gba.reset_to_bootrom(cart_blob, true);
+  gbp->gbb.reset_to_bootrom(cart_blob, true);
 }
 
 void GateBoyThread::reset_to_cart() {
   CHECK_P(sim_paused());
   clear_steps();
-  gb_a.reset_states();
-  gb_b.reset_states();
-  gb_a->reset_to_cart(cart_blob);
-  gb_b->reset_to_cart(cart_blob);
+  reset_gb();
+  gbp->gba.reset_to_cart(cart_blob);
+  gbp->gbb.reset_to_cart(cart_blob);
 }
 
 //----------------------------------------
 
 void GateBoyThread::add_steps(int steps) {
   CHECK_P(sim_paused());
-  gb_a.push();
-  gb_b.push();
+  gbp.push();
   step_count += steps;
 }
 
@@ -86,8 +90,7 @@ void GateBoyThread::rewind(int steps) {
   CHECK_P(sim_paused());
   clear_steps();
   while (steps--) {
-    gb_a.pop();
-    gb_b.pop();
+    gbp.pop();
   }
 }
 
@@ -106,9 +109,9 @@ void GateBoyThread::clear_steps() {
 void GateBoyThread::dump(Dumper& d) {
   CHECK_P(sim_paused());
 
-  d("State count A  : %d\n", gb_a.state_count());
+  d("State count A  : %d\n", gbp.state_count());
 
-  size_t state_size = gb_a.state_size_bytes() + gb_b.state_size_bytes();
+  size_t state_size = gbp.state_size_bytes();
   if (state_size < 1024 * 1024) {
     d("State size    : %d K\n", state_size / 1024);
   }
@@ -116,13 +119,13 @@ void GateBoyThread::dump(Dumper& d) {
     d("State size    : %d M\n", state_size / (1024 * 1024));
   }
   //d("BGB cycle     : 0x%08x\n",  (gb->phase_total / 4) - 0x10000);
-  d("Sim clock     : %f\n",      double(gb_a->phase_total) / (4194304.0 * 2));
+  d("Sim clock     : %f\n",      double(gbp->gba.phase_total) / (4194304.0 * 2));
   d("Steps left    : %d\n", step_count.load());
 
-  double phase_rate = (gb_a->phase_total - old_phase_total) / (gb_a->sim_time - old_sim_time);
+  double phase_rate = (gbp->gba.phase_total - old_phase_total) / (gbp->gba.sim_time - old_sim_time);
 
   if (phase_rate > 0) {
-    if (gb_a->sim_time == old_sim_time) {
+    if (gbp->gba.sim_time == old_sim_time) {
       phase_rate = 0;
     }
 
@@ -137,8 +140,8 @@ void GateBoyThread::dump(Dumper& d) {
   //d("sig_exit      : %d\n", (int)sig_exit);
 
 
-  old_phase_total = gb_a->phase_total;
-  old_sim_time = gb_a->sim_time;
+  old_phase_total = gbp->gba.phase_total;
+  old_sim_time = gbp->gba.sim_time;
 }
 
 //------------------------------------------------------------------------------
@@ -147,9 +150,12 @@ void GateBoyThread::load_raw_dump(const blob& raw_dump) {
   CHECK_P(sim_paused());
   CHECK_N(raw_dump.empty());
 
+  reset_gb();
   clear_steps();
-  gb_a->from_blob(raw_dump);
-  gb_b->from_blob(raw_dump);
+  gbp->gba.from_blob(raw_dump);
+  gbp->gbb.from_blob(raw_dump);
+  gbp->gba.logic_mode = config_fastmode;
+  gbp->gbb.logic_mode = config_regression;
 
   int cart_size = (int)raw_dump.size() - sizeof(GateBoy);
   cart_blob.resize(cart_size);
@@ -161,7 +167,7 @@ void GateBoyThread::load_raw_dump(const blob& raw_dump) {
 void GateBoyThread::save_raw_dump(blob& raw_dump) {
   CHECK_P(sim_paused());
   clear_steps();
-  gb_a->to_blob(raw_dump);
+  gbp->gba.to_blob(raw_dump);
   raw_dump.insert(raw_dump.end(), cart_blob.begin(), cart_blob.end());
 }
 
@@ -180,22 +186,22 @@ void GateBoyThread::load_flat_dump(const blob& flat_dump) {
   CHECK_P(sim_paused());
 
   cart_blob = flat_dump;
-  memcpy(gb_a->vid_ram,  flat_dump.data() + 0x8000, 8192);
-  memcpy(gb_a->cart_ram, flat_dump.data() + 0xA000, 8192);
-  memcpy(gb_a->int_ram,  flat_dump.data() + 0xC000, 8192);
-  memcpy(gb_a->oam_ram,  flat_dump.data() + 0xFE00, 256);
-  memcpy(gb_a->zero_ram, flat_dump.data() + 0xFF80, 128);
+  memcpy(gbp->gba.vid_ram,  flat_dump.data() + 0x8000, 8192);
+  memcpy(gbp->gba.cart_ram, flat_dump.data() + 0xA000, 8192);
+  memcpy(gbp->gba.int_ram,  flat_dump.data() + 0xC000, 8192);
+  memcpy(gbp->gba.oam_ram,  flat_dump.data() + 0xFE00, 256);
+  memcpy(gbp->gba.zero_ram, flat_dump.data() + 0xFF80, 128);
 
-  gb_a->dbg_write(flat_dump, ADDR_BGP,  flat_dump[ADDR_BGP]);
-  gb_a->dbg_write(flat_dump, ADDR_OBP0, flat_dump[ADDR_OBP0]);
-  gb_a->dbg_write(flat_dump, ADDR_OBP1, flat_dump[ADDR_OBP1]);
-  gb_a->dbg_write(flat_dump, ADDR_SCY,  flat_dump[ADDR_SCY]);
-  gb_a->dbg_write(flat_dump, ADDR_SCX,  flat_dump[ADDR_SCX]);
-  gb_a->dbg_write(flat_dump, ADDR_WY,   flat_dump[ADDR_WY]);
-  gb_a->dbg_write(flat_dump, ADDR_WX,   flat_dump[ADDR_WX]);
-  gb_a->dbg_write(flat_dump, ADDR_LCDC, flat_dump[ADDR_LCDC]);
+  gbp->gba.dbg_write(flat_dump, ADDR_BGP,  flat_dump[ADDR_BGP]);
+  gbp->gba.dbg_write(flat_dump, ADDR_OBP0, flat_dump[ADDR_OBP0]);
+  gbp->gba.dbg_write(flat_dump, ADDR_OBP1, flat_dump[ADDR_OBP1]);
+  gbp->gba.dbg_write(flat_dump, ADDR_SCY,  flat_dump[ADDR_SCY]);
+  gbp->gba.dbg_write(flat_dump, ADDR_SCX,  flat_dump[ADDR_SCX]);
+  gbp->gba.dbg_write(flat_dump, ADDR_WY,   flat_dump[ADDR_WY]);
+  gbp->gba.dbg_write(flat_dump, ADDR_WX,   flat_dump[ADDR_WX]);
+  gbp->gba.dbg_write(flat_dump, ADDR_LCDC, flat_dump[ADDR_LCDC]);
 
-  memcpy(gb_b.state(), gb_a.state(), sizeof(GateBoy));
+  memcpy(&gbp->gbb, &gbp->gba, sizeof(GateBoy));
 }
 
 
@@ -221,14 +227,12 @@ void GateBoyThread::thread_main() {
 
     // Run the sim until we get a break signal
     double time_begin = timestamp();
-    if      (config_regression)  run_regression();
-    else if (config_idempotence) run_idempotence();
-    else                         run_normal();
+    run_steps();
     double time_end = timestamp();
 
     // Update stats
-    gb_a->sim_time += (time_end - time_begin);
-    gb_b->sim_time += (time_end - time_begin);
+    gbp->gba.sim_time += (time_end - time_begin);
+    gbp->gbb.sim_time += (time_end - time_begin);
 
     if (sync.test(REQ_EXIT)) {
       sync.set(ACK_EXIT);
@@ -239,8 +243,16 @@ void GateBoyThread::thread_main() {
 
 //------------------------------------------------------------------------------
 
+void GateBoyThread::run_steps() {
+  if      (config_regression)  run_regression();
+  else if (config_idempotence) run_idempotence();
+  else                         run_normal();
+}
+
+//------------------------------------------------------------------------------
+
 void GateBoyThread::run_normal() {
-  auto& gba = *gb_a.state();
+  auto& gba = gbp->gba;
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
 
@@ -253,8 +265,8 @@ void GateBoyThread::run_normal() {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::run_regression() {
-  auto& gba = *gb_a.state();
-  auto& gbb = *gb_b.state();
+  auto& gba = gbp->gba;
+  auto& gbb = gbp->gbb;
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
     gba.next_phase(cart_blob);
@@ -265,7 +277,7 @@ void GateBoyThread::run_regression() {
 
     if (hash_a_new != hash_b_new) {
       LOG_R("Regression test mismatch @ phase %lld!\n", gba.phase_total);
-      diff_gb(gb_a.state(), gb_b.state(), 0x01);
+      diff_gb(&gba, &gbb, 0x01);
       step_count = 0;
       return;
     }
@@ -277,8 +289,8 @@ void GateBoyThread::run_regression() {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::run_idempotence() {
-  auto& gba = *gb_a.state();
-  auto& gbb = *gb_b.state();
+  auto& gba = gbp->gba;
+  auto& gbb = gbp->gbb;
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
     gba.tock_cpu();
@@ -288,7 +300,7 @@ void GateBoyThread::run_idempotence() {
 
     uint64_t hash_a = gba.hash_all();
 
-    memcpy(gb_b.state(), gb_a.state(), sizeof(GateBoy));
+    memcpy(&gbp->gbb, &gbp->gba, sizeof(GateBoy));
 
     gbb.tock_gates(cart_blob);
     gbb.update_framebuffer(pack(gbb.pix_count) - 8, pack(gbb.reg_ly), gbb.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gbb.lcd.PIN_50_LCD_DATA1.qp_ext_old());
@@ -299,7 +311,7 @@ void GateBoyThread::run_idempotence() {
 
     if (hash_a != hash_b) {
       LOG_R("Sim not stable after second pass!\n");
-      diff_gb(gb_a.state(), gb_b.state(), 0xFF);
+      diff_gb(&gba, &gbb, 0xFF);
       LOG_R("Sim not stable after second pass!\n");
       step_count = 0;
       return;

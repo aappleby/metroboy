@@ -10,10 +10,12 @@
 
 void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
 {
+  wipe();
+
+  // Can't run logic mode during power-on-reset, so save and restore it.
   bool old_logic_mode = logic_mode;
   logic_mode = false;
 
-  wipe();
   // Put some recognizable pattern in vram so we can see that we're in the bootrom
   for (int i = 0; i < 8192; i++) {
     uint32_t h = i * 0x1234567;
@@ -1363,6 +1365,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   wire TYFA_CLKPIPE_old = and3(SOCY_WIN_HITn_old, tile_fetcher.POKY_PRELOAD_LATCHp, VYBO_CLKPIPE_old);
   wire SEGU_CLKPIPE_old = not1(TYFA_CLKPIPE_old);
   wire SACU_CLKPIPE_old = or2(SEGU_CLKPIPE_old, fine_scroll.ROXY_FINE_SCROLL_DONEn);
+  wire ROCO_CLKPIPE_old = not1(SEGU_CLKPIPE_old);
 
   wire clkpipe_en_old = 1;
   if (win_reg.RYDY_WIN_HITp) clkpipe_en_old = 0;
@@ -1392,6 +1395,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   wire int_tim_old = int_ctrl.MOBA_TIMER_OVERFLOWp.state;
   //wire int_ser_old = serial.CALY_SER_CNT3.state;
   wire int_ser_old = 0;
+
+
+
+
 
   //----------
 
@@ -1754,6 +1761,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (!vid_rst_new && (DELTA_HA || DELTA_DE)) {
       cpy_inv_blob(sprite_index, &oam_abus.BUS_OAM_A02n);
       sprite_scanner.CENO_SCANNINGn = BESU_old;
+    }
+
+    if (vid_rst_new) {
+      sprite_scanner.CENO_SCANNINGn = 0;
     }
 
     //----------
@@ -2257,8 +2268,23 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
   // WY/WX/window match
 
-  if (bit(CLKPIPE_old) && !CLKPIPE_new) {
-    win_reg.PYCO_WIN_MATCHp.state = win_reg.NUKO_WX_MATCHp.state;
+  {
+    // _p27.PYCO win_reg.PYCO_WIN_MATCHp.dff17(ROCO_CLKPIPE_odd, XAPO_VID_RSTn(), win_reg.NUKO_WX_MATCHp.out_old());
+
+    // should be using ROCO_CLKPIPE = 1 and old = 0....
+
+    wire SYLO_WIN_HITn = not1(win_reg.RYDY_WIN_HITp.state);
+    wire TOMU_WIN_HITp = not1(SYLO_WIN_HITn);
+    wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);
+
+    wire VYBO_CLKPIPE_odd = nor3(FEPO_STORE_MATCHp.state, WODU_HBLANKp.state, MYVO_AxCxExGx());
+    wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.state, VYBO_CLKPIPE_odd);
+    wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
+    wire ROCO_CLKPIPE_new = not1(SEGU_CLKPIPE_evn);
+
+    if (!bit(ROCO_CLKPIPE_old) && bit(ROCO_CLKPIPE_new)) {
+      win_reg.PYCO_WIN_MATCHp.state = win_reg.NUKO_WX_MATCHp.state;
+    }
   }
 
 

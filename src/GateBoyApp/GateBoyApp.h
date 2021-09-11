@@ -63,6 +63,7 @@ private:
   bool has_golden = false;
   bool show_diff = false;
   bool show_golden = false;
+  bool show_gb_ab = false;
 
   bool app_paused = false;
 

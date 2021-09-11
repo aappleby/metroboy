@@ -108,6 +108,7 @@ struct GateBoy {
   void update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1);
 
   void wipe() {
+    bool old_logic_mode = logic_mode;
     memset(this, 0, sizeof(*this));
 
     uint8_t* a = (uint8_t*)(&sentinel1) + sizeof(sentinel1);
@@ -121,6 +122,7 @@ struct GateBoy {
     sentinel2 = SENTINEL2;
     sentinel3 = SENTINEL3;
     sentinel4 = SENTINEL4;
+    logic_mode = old_logic_mode;
   }
 
   int64_t hash_regression() {

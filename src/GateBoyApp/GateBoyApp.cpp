@@ -55,6 +55,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread.start();
   gb_thread.pause();
 
+  /*
   {
     const char* app = R"(
     0150:
@@ -75,6 +76,15 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
     gb_thread.load_cart_blob(blob);
     gb_thread.reset_to_cart();
   }
+  */
+
+  blob cart;
+  load_blob("tests/microtests/dmg/win0_scx3_a.gb", cart);
+  gb_thread.load_cart_blob(cart);
+  gb_thread.reset_to_cart();
+
+  gb_thread.add_steps(430);
+  gb_thread.run_steps();
 
   //gb_thread.load_blob(Assembler::create_dummy_cart());
   //gb_thread.reset_to_bootrom();
@@ -234,6 +244,8 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     case SDLK_d:    show_diff   = !show_diff; break;
     case SDLK_g:    show_golden = !show_golden; break;
 
+    case SDLK_t: show_gb_ab = !show_gb_ab; break;
+
     case SDLK_LEFT:   {
       if (keyboard_state[SDL_SCANCODE_LCTRL]) {
         gb_thread.rewind(8);
@@ -315,7 +327,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   gb_thread.pause();
 
-  auto& gb = gb_thread.get_gb();
+  auto& gb = show_gb_ab ? gb_thread.gbp->gbb : gb_thread.gbp->gba;
 
   uint8_t* framebuffer = gb.framebuffer;
   uint8_t* vid_ram = gb.vid_ram;
@@ -348,6 +360,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   static double smooth_fps = 0.0;
   smooth_fps = ease(smooth_fps, fps, delta);
   d("App fps       : %d\n", (int)round(smooth_fps));
+  d("Logic mode    : %d\n", gb.logic_mode);
 
   if (app_paused) {
     d("\003GB_THREAD IS PAUSED\001\n");
@@ -565,7 +578,8 @@ Step controls:
   double sim_ratio = 0.0;
   double sim_time_smooth = 0.0;
 
-  d("Sim clock %8.3f %s %s\n",
+  d("Viewing sim %c, Sim clock %8.3f %s %s\n",
+    show_gb_ab ? 'B' : 'A',
     double(phase_total) / (4194304.0 * 2),
     phase_names[phase_total & 7],
     show_golden ? "GOLDEN IMAGE " : "");

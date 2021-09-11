@@ -53,6 +53,7 @@
   <ItemGroup>
     <ClInclude Include="GateBoy.h" />
     <ClInclude Include="GateBoyCpuBus.h" />
+    <ClInclude Include="GateBoyPair.h" />
     <ClInclude Include="GateBoyRegisters.h" />
     <ClInclude Include="GateBoyResetDebug.h" />
     <ClInclude Include="GateBoySPU.h" />

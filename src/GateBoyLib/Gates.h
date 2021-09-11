@@ -827,9 +827,25 @@ inline uint32_t pack(int c, const void* blob) {
   return r;
 }
 
+inline uint32_t pack(const void* blob, int c) {
+  uint8_t* b = (uint8_t*)blob;
+
+  uint32_t r = 0;
+  for (int i = 0; i < c; i++) r |= (bit(b[i]) << i);
+  return r;
+}
+
 template<typename T>
 inline uint32_t pack(const T& t) {
   return pack(sizeof(T), &t);
+}
+
+inline uint32_t pack_inv(const void* blob, int c) {
+  uint8_t* b = (uint8_t*)blob;
+
+  uint32_t r = 0;
+  for (int i = 0; i < c; i++) r |= (bit(~b[i]) << i);
+  return r;
 }
 
 inline uint32_t pack_inv(int c, const void* blob) {
@@ -853,6 +869,18 @@ inline void unpack(uint32_t d, int c, void* blob) {
   }
 }
 
+inline void unpack(void* blob, int c, uint32_t d) {
+  uint8_t* b = (uint8_t*)blob;
+  for (int i = 0; i < c; i++) {
+    b[i] &= ~1;
+    b[i] |= bit(d, i);
+  }
+}
+
+inline uint32_t widen(wire x, int c) {
+  return (bit(x) << c) - bit(x);
+}
+
 template<typename T>
 inline void unpack2(T& dst, uint32_t d) {
   uint8_t* b = (uint8_t*)&dst;
@@ -869,6 +897,14 @@ inline void unpack(uint32_t d, T& t) {
 }
 
 inline void unpack_inv(uint32_t d, int c, void* blob) {
+  uint8_t* b = (uint8_t*)blob;
+  for (int i = 0; i < c; i++) {
+    b[i] &= ~1;
+    b[i] |= !bit(d, i);
+  }
+}
+
+inline void unpack_inv(void* blob, int c, uint32_t d) {
   uint8_t* b = (uint8_t*)blob;
   for (int i = 0; i < c; i++) {
     b[i] &= ~1;

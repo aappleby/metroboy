@@ -27,7 +27,8 @@ TestResults test_regression_cart(blob cart_blob, int cycles, bool from_bootrom) 
   TEST_INIT();
   if (cart_blob.empty()) TEST_FAIL();
 
-  GateBoyPair gbp;
+  GateBoyPair gbp(false, true);
+
   if (from_bootrom) {
     gbp.reset_to_bootrom(cart_blob, true);
   }
@@ -49,7 +50,8 @@ TestResults test_regression_dump(blob raw_dump, int cycles) {
   TEST_INIT();
   if (raw_dump.empty()) TEST_FAIL();
 
-  GateBoyPair gbp;
+  GateBoyPair gbp(false, true);
+
   gbp.from_blob(raw_dump);
   
   blob cart_blob;
@@ -85,7 +87,7 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-#if 0
+#if 1
   {
     LOG_G("Regression testing bootrom start\n");
     results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
@@ -172,7 +174,7 @@ int main(int argc, char** argv) {
 //-----------------------------------------------------------------------------
 
 GateBoyPair GateBoyTests::create_debug_gb(const blob& cart_blob) {
-  GateBoyPair gbp;
+  GateBoyPair gbp(false, true);
   gbp.reset_to_bootrom(cart_blob, true);
   gbp.gba.sys_cpu_en = 0;
   gbp.gbb.sys_cpu_en = 0;
@@ -913,7 +915,7 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
 
   if (verbose) LOG_B("%-30s ", filename);
 
-  GateBoyPair gbp;
+  GateBoyPair gbp(false, true);
   gbp.reset_to_cart(cart_blob);
 
   int timeout = 150000 * 8;
@@ -1070,7 +1072,7 @@ TestResults GateBoyTests::test_ext_bus() {
     as.assemble(app);
     blob cart_blob = as.link();
 
-    GateBoyPair gbp;
+    GateBoyPair gbp(false, true);
     gbp.reset_to_cart(cart_blob);
     gbp.run_phases(cart_blob, 120);
 
@@ -1194,7 +1196,7 @@ TestResults GateBoyTests::test_ext_bus() {
     as.assemble(app);
     blob cart_blob = as.link();
 
-    GateBoyPair gbp;
+    GateBoyPair gbp(false, true);
     gbp.reset_to_cart(cart_blob);
     gbp.run_phases(cart_blob, 120);
 
@@ -1321,7 +1323,7 @@ TestResults GateBoyTests::test_ext_bus() {
     as.assemble(app);
     blob cart_blob = as.link();
 
-    GateBoyPair gbp;
+    GateBoyPair gbp(false, true);
     gbp.reset_to_cart(cart_blob);
     gbp.run_phases(cart_blob, 120);
 
@@ -1674,7 +1676,7 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
   TEST_INIT("0x%04x", src);
 
   blob cart_blob = Assembler::create_dummy_cart();
-  GateBoyPair gbp;
+  GateBoyPair gbp(false, true);
   gbp.reset_to_cart(cart_blob);
   gbp.gba.sys_cpu_en = 0;
   gbp.gbb.sys_cpu_en = 0;
@@ -1982,7 +1984,7 @@ TestResults GateBoyTests::run_mooneye_test(const char* path, const char* filenam
 
   if (verbose) LOG_B("%-50s ", filename);
 
-  GateBoyPair gbp;
+  GateBoyPair gbp(false, true);
   gbp.reset_to_cart(rom);
 
   int timeout = 6400000; // bits_ramg is super slow

@@ -61,12 +61,14 @@ struct GateBoy {
   }
 
   void from_blob(const blob& b) {
+    bool old_logic_mode = logic_mode;
     CHECK_P(b.size() >= sizeof(GateBoy));
     memcpy(this, b.data(), sizeof(GateBoy));
     CHECK_P(sentinel1 == SENTINEL1);
     CHECK_P(sentinel2 == SENTINEL2);
     CHECK_P(sentinel3 == SENTINEL3);
     CHECK_P(sentinel4 == SENTINEL4);
+    logic_mode = old_logic_mode;
   }
 
   void to_blob(blob& b) {

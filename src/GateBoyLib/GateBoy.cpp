@@ -2911,21 +2911,23 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // Sprite read address
 
     if (bit(sprite_fetcher.TEXY_SFETCHINGp.state)) {
-      wire WUKY_FLIP_Yp = ~oam_temp_b.YZOS_OAM_DB6p;
+      uint32_t addr = 1 << 12;
 
-      wire CYVU_L0 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L0);
-      wire BORE_L1 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L1);
-      wire BUVY_L2 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L2);
-      wire WAGO_L3 = xor2(WUKY_FLIP_Yp, sprite_lbus.BUS_SPR_L3);
-      wire GEJY_L3 = reg_lcdc.XYMO_LCDC_SPSIZEn ? oam_temp_a.XUSO_OAM_DA0p : WAGO_L3;
+      uint16_t tile = (uint16_t)pack(oam_temp_a);
 
-      vram_abus.BUS_VRAM_A00n.state = ~sprite_fetcher.VONU_SFETCH_S1p_D4.state;
-      vram_abus.BUS_VRAM_A01n.state = ~CYVU_L0;
-      vram_abus.BUS_VRAM_A02n.state = ~BORE_L1;
-      vram_abus.BUS_VRAM_A03n.state = ~BUVY_L2;
-      vram_abus.BUS_VRAM_A04n.state = ~GEJY_L3;
-      cpy_inv(&vram_abus.BUS_VRAM_A05n, &oam_temp_a.XEGU_OAM_DA1p, 7);
-      vram_abus.BUS_VRAM_A12n.state = 1;
+      uint16_t lbus = (uint16_t)pack(sprite_lbus);
+      uint16_t flip = (uint16_t)widen(~oam_temp_b.YZOS_OAM_DB6p, 4);
+      uint16_t line = flip ^ lbus;
+
+      uint16_t lohi = bit(sprite_fetcher.VONU_SFETCH_S1p_D4.state);
+
+      if (bit(reg_lcdc.XYMO_LCDC_SPSIZEn)) {
+        addr |= ((tile & 0b11111111) << 4) | ((line & 0b01111) << 1) | lohi;
+      }
+      else {
+        addr |= ((tile & 0b11111110) << 4) | ((line & 0b11111) << 1) | lohi;
+      }
+      unpack_inv(&vram_abus.BUS_VRAM_A00n, 12, addr);
     }
 
     //--------------------------------------------

@@ -3244,33 +3244,24 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //wire int_ser = serial.CALY_SER_CNT3.state;
     wire int_ser_new = 0;
 
-    // FIXME to handle these dffs correctly we need to know both the old and new value of the interrupt triggers...
-    reg_if.LOPE_FF0F_D0p.dff22_any(int_lcd_new,  1, 1, 1);
-    reg_if.LALU_FF0F_D1p.dff22_any(int_stat_new, 1, 1, 1);
-    reg_if.NYBO_FF0F_D2p.dff22_any(int_tim_new,  1, 1, 1);
-    reg_if.UBUL_FF0F_D3p.dff22_any(int_ser_new,  1, 1, 1);
-    reg_if.ULAK_FF0F_D4p.dff22_any(int_joy_new,  1, 1, 1);
+    auto pack_if = bit_pack(reg_if);
 
-    /*
-    if (posedge(int_lcd_old, int_lcd_new))   reg_if.LOPE_FF0F_D0p.state = 1;
-    if (posedge(int_stat_old, int_stat_new)) reg_if.LALU_FF0F_D1p.state = 1;
-    if (posedge(int_tim_old, int_tim_new))   reg_if.NYBO_FF0F_D2p.state = 1;
-    if (posedge(int_ser_old, int_ser_new))   reg_if.UBUL_FF0F_D3p.state = 1;
-    if (posedge(int_joy_old, int_joy_new))   reg_if.ULAK_FF0F_D4p.state = 1;
-    */
+
+    if (posedge(int_lcd_old, int_lcd_new))   pack_if |= (1 << 0);
+    if (posedge(int_stat_old, int_stat_new)) pack_if |= (1 << 1);
+    if (posedge(int_tim_old, int_tim_new))   pack_if |= (1 << 2);
+    if (posedge(int_ser_old, int_ser_new))   pack_if |= (1 << 3);
+    if (posedge(int_joy_old, int_joy_new))   pack_if |= (1 << 4);
 
     // note this is an async set so it doesn't happen on the GH clock edge like other writes
     if (cpu_signals.SIG_IN_CPU_WRp.state & (cpu_addr_new == 0xFF0F) & CLK_xxxxEFGx_new) {
-      bit_copy(reg_if, cpu_dbus_new);
+      pack_if = bit_pack(cpu_dbus_new);
     }
 
-    reg_if.LOPE_FF0F_D0p.state = reg_if.LOPE_FF0F_D0p.state & ~cpu_ack.SIG_CPU_ACK_VBLANK.state;
-    reg_if.LALU_FF0F_D1p.state = reg_if.LALU_FF0F_D1p.state & ~cpu_ack.SIG_CPU_ACK_STAT.state;
-    reg_if.NYBO_FF0F_D2p.state = reg_if.NYBO_FF0F_D2p.state & ~cpu_ack.SIG_CPU_ACK_TIMER.state;
-    reg_if.UBUL_FF0F_D3p.state = reg_if.UBUL_FF0F_D3p.state & ~cpu_ack.SIG_CPU_ACK_SERIAL.state;
-    reg_if.ULAK_FF0F_D4p.state = reg_if.ULAK_FF0F_D4p.state & ~cpu_ack.SIG_CPU_ACK_JOYPAD.state;
+    pack_if &= ~bit_pack(cpu_ack);
 
-    bit_copy(cpu_int, reg_if);
+    bit_unpack(reg_if, pack_if);
+    bit_unpack(cpu_int, pack_if);
 
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
       bit_copy(cpu_dbus_new, reg_ie);

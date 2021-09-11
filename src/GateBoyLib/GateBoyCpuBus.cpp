@@ -23,7 +23,7 @@ void GateBoy::tock_bootrom_gates() {
 
   // BOOT -> CBD
   // this is kind of a hack
-  auto cpu_addr_new = pack(cpu_abus_new);
+  auto cpu_addr_new = bit_pack(cpu_abus_new);
   wire bootrom_data = DMG_ROM_blob[cpu_addr_new & 0xFF];
 
   /*_p07.TERA*/ wire TERA_BOOT_BITp  = not1(cpu_signals.TEPU_BOOT_BITn.qp_new());
@@ -68,7 +68,7 @@ void GateBoy::tock_bootrom_gates() {
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_bootrom_logic() {
-  auto cpu_addr_new = pack(cpu_abus_new);
+  auto cpu_addr_new = bit_pack(cpu_abus_new);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && cpu_addr_new == 0xFF50 && DELTA_GH) {
     cpu_signals.TEPU_BOOT_BITn.state = SATO_BOOT_BITn.state;
@@ -83,7 +83,7 @@ void GateBoy::tock_bootrom_logic() {
 
     if (bit(and2(cpu_signals.SIG_IN_CPU_RDp.state, ~cpu_signals.TEPU_BOOT_BITn.state))) {
       cpu_signals.SIG_BOOT_CSp.state = 1;
-      unpack(DMG_ROM_blob[cpu_addr_new & 0xFF], 8, &cpu_dbus_new.BUS_CPU_D00p);
+      bit_unpack(cpu_dbus_new, DMG_ROM_blob[cpu_addr_new & 0xFF]);
     }
   }
 

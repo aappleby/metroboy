@@ -311,9 +311,9 @@ void GateBoy::tock_oam_bus_gates()
   /*_SIG_OAM_OEn*/ oam_ctrl.SIG_OAM_OEn.sig_out(ZODO_OAM_OEn);
 
   // FIXME do the pack
-  uint8_t oam_addr   = (uint8_t)pack_inv(7, (BitBase*)&oam_abus.BUS_OAM_A01n);
-  uint8_t oam_data_a = (uint8_t)pack_inv(oam_dbus_a);
-  uint8_t oam_data_b = (uint8_t)pack_inv(oam_dbus_b);
+  uint8_t oam_addr   = (uint8_t)bit_pack_inv(&oam_abus.BUS_OAM_A01n, 7);
+  uint8_t oam_data_a = (uint8_t)bit_pack_inv(oam_dbus_a);
+  uint8_t oam_data_b = (uint8_t)bit_pack_inv(oam_dbus_b);
 
   if (bit(~oam_ctrl.old_oam_clk.out_old()) && bit(~oam_ctrl.SIG_OAM_CLKn.out_new())) {
     if (bit(~oam_ctrl.SIG_OAM_WRn_A.out_new())) oam_ram[(oam_addr << 1) + 0] = oam_data_a;

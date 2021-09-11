@@ -87,25 +87,21 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-#if 1
-  {
-    LOG_G("Regression testing bootrom start\n");
-    results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
-
-    LOG_G("Regression testing Zelda startup\n");
-    blob b;
-    load_blob("LinksAwakening.gb", b);
-    results += test_regression_cart(b, 1000000, false);
-
-    LOG_G("Regression testing Zelda intro dump\n");
-    load_blob("zelda_intro.dump", b);
-    results += test_regression_dump(b, 1000000);
-
-    LOG_G("Regression testing Zelda overworld dump\n");
-    load_blob("zelda_overworld.dump", b);
-    results += test_regression_dump(b, 1000000);
-  }
-#endif
+  LOG_G("Regression testing bootrom start\n");
+  results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
+  
+  LOG_G("Regression testing Zelda startup\n");
+  blob b;
+  load_blob("LinksAwakening.gb", b);
+  results += test_regression_cart(b, 1000000, false);
+  
+  LOG_G("Regression testing Zelda intro dump\n");
+  load_blob("zelda_intro.dump", b);
+  results += test_regression_dump(b, 1000000);
+  
+  LOG_G("Regression testing Zelda overworld dump\n");
+  load_blob("zelda_overworld.dump", b);
+  results += test_regression_dump(b, 1000000);
 
 #if 0
   results += t.test_reset_cart_vs_dump();
@@ -131,9 +127,9 @@ int main(int argc, char** argv) {
   results += t.test_micro_lcden();
   results += t.test_micro_timer();
 
-  //if (run_slow_tests) {
-  //  results += t.test_micro_int_vblank();
-  //}
+  if (run_slow_tests) {
+    results += t.test_micro_int_vblank();
+  }
  
   results += t.test_micro_int_stat();
   results += t.test_micro_int_timer();
@@ -1532,15 +1528,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000100);
 
-    EXPECT_EQ(0xFD, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0xFE, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0xFF, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0x80, pack(gbp.gba.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0x81, pack(gbp.gba.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 2048);
     if (results.ok()) LOG_B("TAC 0b100 pass\n");
   }
@@ -1554,15 +1550,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000101);
 
-    EXPECT_EQ(0xFD, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0xFE, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0xFF, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0x80, pack(gbp.gba.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0x81, pack(gbp.gba.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 32);
     if (results.ok()) LOG_B("TAC 0b101 pass\n");
   }
@@ -1575,15 +1571,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000110);
 
-    EXPECT_EQ(0xFD, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0xFE, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0xFF, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0x80, pack(gbp.gba.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0x81, pack(gbp.gba.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 128);
     if (results.ok()) LOG_B("TAC 0b110 pass\n");
   }
@@ -1596,15 +1592,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000111);
 
-    EXPECT_EQ(0xFD, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0xFE, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0xFF, pack(gbp.gba.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0x80, pack(gbp.gba.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0x81, pack(gbp.gba.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.tima));
     gbp.run_phases(cart_blob, 512);
     if (results.ok()) LOG_B("TAC 0b111 pass\n");
   }
@@ -1725,20 +1721,20 @@ TestResults GateBoyTests::test_ppu() {
 
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
     for (uint32_t i = 0; i < 153; i++) {
-      EXPECT_EQ(i, pack(gbp.gba.reg_ly));
+      EXPECT_EQ(i, bit_pack(gbp.gba.reg_ly));
       gbp.run_phases(cart_blob, 114 * 8);
     }
 
     // LY is reset early on the last line, we should be at 0 now.
-    EXPECT_EQ(0, pack(gbp.gba.reg_ly));
+    EXPECT_EQ(0, bit_pack(gbp.gba.reg_ly));
     gbp.run_phases(cart_blob, 114 * 8);
 
     // And we should be at 0 again
-    EXPECT_EQ(0, pack(gbp.gba.reg_ly));
+    EXPECT_EQ(0, bit_pack(gbp.gba.reg_ly));
     gbp.run_phases(cart_blob, 114 * 8);
 
     // And now we should be at 1.
-    EXPECT_EQ(1, pack(gbp.gba.reg_ly));
+    EXPECT_EQ(1, bit_pack(gbp.gba.reg_ly));
 
     if (results.ok()) LOG_B("Pass");
   }

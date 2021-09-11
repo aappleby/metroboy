@@ -819,168 +819,141 @@ inline uint8_t pack(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire
   return (bit(a) << 0) | (bit(b) << 1) | (bit(c) << 2) | (bit(d) << 3) | (bit(e) << 4) | (bit(f) << 5) | (bit(g) << 6) | (bit(h) << 7);
 }
 
-inline uint32_t pack(int c, const void* blob) {
-  uint8_t* b = (uint8_t*)blob;
+//-----------------------------------------------------------------------------
 
-  uint32_t r = 0;
-  for (int i = 0; i < c; i++) r |= (bit(b[i]) << i);
-  return r;
+template<typename SRC>
+inline uint32_t bit_pack(const SRC* psrc, int c) {
+  uint8_t* src = (uint8_t*)psrc;
+  uint32_t result = 0;
+  for (int i = 0; i < c; i++) result |= (bit(src[i]) << i);
+  return result;
 }
 
-inline uint32_t pack(const void* blob, int c) {
-  uint8_t* b = (uint8_t*)blob;
-
-  uint32_t r = 0;
-  for (int i = 0; i < c; i++) r |= (bit(b[i]) << i);
-  return r;
+template<typename SRC>
+inline uint32_t bit_pack(const SRC& src) {
+  return bit_pack(&src, sizeof(SRC));
 }
 
-template<typename T>
-inline uint32_t pack(const T& t) {
-  return pack(sizeof(T), &t);
+//-----------------------------------------------------------------------------
+
+template<typename SRC>
+inline uint32_t bit_pack_inv(const SRC* psrc, int c) {
+  uint8_t* src = (uint8_t*)psrc;
+  uint32_t result = 0;
+  for (int i = 0; i < c; i++) result |= (!bit(src[i]) << i);
+  return result;
 }
 
-inline uint32_t pack_inv(const void* blob, int c) {
-  uint8_t* b = (uint8_t*)blob;
-
-  uint32_t r = 0;
-  for (int i = 0; i < c; i++) r |= (bit(~b[i]) << i);
-  return r;
+template<class SRC>
+inline uint32_t bit_pack_inv(const SRC& src) {
+  return bit_pack_inv(&src, sizeof(SRC));
 }
 
-inline uint32_t pack_inv(int c, const void* blob) {
-  uint8_t* b = (uint8_t*)blob;
+//-----------------------------------------------------------------------------
 
-  uint32_t r = 0;
-  for (int i = 0; i < c; i++) r |= (bit(~b[i]) << i);
-  return r;
-}
-
-template<typename T>
-inline uint32_t pack_inv(const T& t) {
-  return pack_inv(sizeof(T), &t);
-}
-
-inline void unpack(uint32_t d, int c, void* blob) {
-  uint8_t* b = (uint8_t*)blob;
+template<class DST>
+inline void bit_unpack(DST* pdst, int c, const uint32_t src) {
+  uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {
-    b[i] &= ~1;
-    b[i] |= bit(d, i);
+    dst[i] &= ~1;
+    dst[i] |= bit(src, i);
   }
 }
 
-inline void unpack(void* blob, int c, uint32_t d) {
-  uint8_t* b = (uint8_t*)blob;
+template<class DST>
+inline void bit_unpack(DST& dst, const uint32_t src) {
+  bit_unpack(&dst, sizeof(DST), src);
+}
+
+//-----------------------------------------------------------------------------
+
+template<class DST>
+inline void bit_unpack_inv(DST* pdst, int c, const uint32_t src) {
+  uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {
-    b[i] &= ~1;
-    b[i] |= bit(d, i);
+    dst[i] &= ~1;
+    dst[i] |= !bit(src, i);
   }
 }
 
-inline uint32_t widen(wire x, int c) {
-  return (bit(x) << c) - bit(x);
+template<class DST>
+inline void bit_unpack_inv(DST& dst, const uint32_t src) {
+  bit_unpack_inv(&dst, sizeof(DST), src);
 }
 
-template<typename T>
-inline void unpack2(T& dst, uint32_t d) {
-  uint8_t* b = (uint8_t*)&dst;
-  for (int i = 0; i < sizeof(dst); i++) {
-    b[i] = bit(d, i);
-    //b[i] &= 1;
-    //b[i] |= bit(d, i);
-  }
+//-----------------------------------------------------------------------------
+
+inline uint32_t bit_mask(uint32_t x, int c) {
+  return x & ((1 << c) - 1);
 }
 
-template<typename T>
-inline void unpack(uint32_t d, T& t) {
-  unpack(d, sizeof(T), &t);
+//-----------------------------------------------------------------------------
+
+inline uint32_t bit_widen(wire src, int c) {
+  return (bit(src) << c) - bit(src);
 }
 
-inline void unpack_inv(uint32_t d, int c, void* blob) {
-  uint8_t* b = (uint8_t*)blob;
+//-----------------------------------------------------------------------------
+
+template<class DST, class SRC>
+inline void bit_copy(DST* pdst, int c, const SRC* psrc) {
+  uint8_t* dst = (uint8_t*)pdst;
+  const uint8_t* src = (const uint8_t*)psrc;
   for (int i = 0; i < c; i++) {
-    b[i] &= ~1;
-    b[i] |= !bit(d, i);
+    dst[i] &= ~1;
+    dst[i] |= bit(src[i]);
   }
 }
 
-inline void unpack_inv(void* blob, int c, uint32_t d) {
-  uint8_t* b = (uint8_t*)blob;
+template<class DST, class SRC>
+inline void bit_copy(DST& dst, const SRC& src) {
+  bit_copy(&dst, sizeof(DST) < sizeof(SRC) ? sizeof(DST) : sizeof(SRC), &src);
+}
+
+//-----------------------------------------------------------------------------
+
+template<class DST, class SRC>
+inline void bit_copy_inv(DST* pdst, int c, const SRC* psrc) {
+  uint8_t* dst = (uint8_t*)pdst;
+  const uint8_t* src = (const uint8_t*)psrc;
   for (int i = 0; i < c; i++) {
-    b[i] &= ~1;
-    b[i] |= !bit(d, i);
+    dst[i] &= ~1;
+    dst[i] |= !bit(src[i]);
   }
 }
 
-template<typename T>
-inline void unpack_inv(uint32_t d, T& t) {
-  unpack_inv(d, sizeof(T), &t);
+template<class DST, class SRC>
+inline void bit_copy_inv(DST& dst, const SRC& src) {
+  bit_copy_inv(&dst, sizeof(DST) < sizeof(SRC) ? sizeof(DST) : sizeof(SRC), &src);
 }
 
-inline void cpy(void* dst_blob, const void* src_blob, int c) {
-  uint8_t* d = (uint8_t*)dst_blob;
-  const uint8_t* s = (const uint8_t*)src_blob;
+//-----------------------------------------------------------------------------
 
-  for (int i = 0; i < c; i++) {
-    d[i] = bit(s[i]);
-    //d[i] &= ~1;
-    //d[i] |= bit(s[i]);
-  }
+template<typename DST>
+inline void bit_clear(DST* pdst, int c) {
+  uint8_t* dst = (uint8_t*)pdst;
+  for (int i = 0; i < c; i++) dst[i] &= ~1;
 }
 
-inline void cpy2(void* dst_blob, const void* src_blob, int c) {
-  uint8_t* d = (uint8_t*)dst_blob;
-  const uint8_t* s = (const uint8_t*)src_blob;
-
-  for (int i = 0; i < c; i++) {
-    //d[i] = bit(s[i]);
-    d[i] &= ~1;
-    d[i] |= bit(s[i]);
-  }
+template<typename DST>
+inline void bit_clear(DST& dst) {
+  bit_clear(&dst, sizeof(DST));
 }
 
+//-----------------------------------------------------------------------------
 
-inline void cpy_inv(void* dst_blob, const void* src_blob, int c) {
-  uint8_t* d = (uint8_t*)dst_blob;
-  const uint8_t* s = (const uint8_t*)src_blob;
-
-  for (int i = 0; i < c; i++) {
-    d[i] = !bit(s[i]);
-    //d[i] &= ~1;
-    //d[i] |= !bit(s[i]);
-  }
+template<typename DST>
+inline void bit_set(DST* pdst, int c) {
+  uint8_t* dst = (uint8_t*)pdst;
+  for (int i = 0; i < c; i++) dst[i] |= 1;
 }
 
-template<typename A, typename B>
-inline void cpy(A& dst, const B& src) {
-  cpy(&dst, &src, sizeof(A) < sizeof(B) ? sizeof(A) : sizeof(B));
+template<typename DST>
+inline void bit_set(DST& dst) {
+  bit_set(&dst, sizeof(DST));
 }
 
-template<typename A, typename B>
-inline void cpy_inv(A& dst, const B& src) {
-  cpy_inv(&dst, &src, sizeof(A) < sizeof(B) ? sizeof(A) : sizeof(B));
-}
-
-template<typename A>
-inline void cpy_inv_blob(A& dst, const void* src) {
-  cpy_inv(&dst, src, sizeof(A));
-}
-
-inline void clear(int c, void* blob) {
-  uint8_t* b = (uint8_t*)blob;
-  for (int i = 0; i < c; i++) b[i] &= ~1;
-}
-
-template<typename T>
-inline void clear(T& t) {
-  clear(sizeof(T), &t);
-}
-
-template<typename T>
-inline void set(T& t) {
-  uint8_t* b = (uint8_t*)&t;
-  for (int i = 0; i < sizeof(T); i++) b[i] |= 1;
-}
+//-----------------------------------------------------------------------------
 
 inline bool posedge(wire a, wire b) {
   return !bit(a) && bit(b);

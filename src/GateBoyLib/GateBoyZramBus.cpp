@@ -13,11 +13,11 @@
 
 void GateBoy::tock_zram_gates()
 {
-  auto addr = pack(cpu_abus_new);
+  auto addr = bit_pack(cpu_abus_new);
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   if (bit(zram_bus.clk_old.out_old() & ~cpu_signals.TAPU_CPU_WRp.out_new() & CSp)) {
-    zero_ram[addr & 0x007F] = (uint8_t)pack(cpu_dbus_old);
+    zero_ram[addr & 0x007F] = (uint8_t)bit_pack(cpu_dbus_old);
   }
   zram_bus.clk_old = cpu_signals.TAPU_CPU_WRp.out_new();
 

@@ -179,7 +179,7 @@ void GateBoy::tock_timer_gates() {
 void GateBoy::tock_timer_logic() {
   wire CLK_Axxxxxxx = gen_clk_new(0b10000000);
   wire CLK_xxxxEFGx = gen_clk_new(0b00001110);
-  auto new_addr = pack(cpu_abus_new);
+  auto new_addr = bit_pack(cpu_abus_new);
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
     if (new_addr == 0xFF06) memcpy(&tma, &cpu_dbus_new.BUS_CPU_D00p, 8);

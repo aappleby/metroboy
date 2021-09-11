@@ -241,7 +241,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   // region 6 = iram
   // region 7 = eram
 
-  auto ext_addr = pack_inv(ext_abus);
+  auto ext_addr = bit_pack_inv(ext_abus);
   const int region = ext_addr >> 13;
 
   //----------------------------------------
@@ -256,7 +256,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
       bool mbc1_ram_en = bit(ext_mbc.MBC1_RAM_EN.out_old());
 
       if (region == 0 || region == 1) {
-        uint32_t mbc1_rom0_bank = mbc1_mode ? pack(2, (BitBase*)&ext_mbc.MBC1_BANK5) : 0;
+        uint32_t mbc1_rom0_bank = mbc1_mode ? bit_pack(&ext_mbc.MBC1_BANK5, 2) : 0;
         uint32_t mbc1_rom0_addr = ((ext_addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
         if (mbc1_rom0_addr >= cart_blob.size()) debugbreak();
 
@@ -264,7 +264,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
         data_in = cart_blob[mbc1_rom0_addr];
       }
       else if (region == 2 || region == 3) {
-        uint32_t mbc1_rom1_bank = pack(7, (BitBase*)&ext_mbc.MBC1_BANK0);
+        uint32_t mbc1_rom1_bank = bit_pack(&ext_mbc.MBC1_BANK0, 7);
         if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
         uint32_t mbc1_rom1_addr = ((ext_addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
         if (mbc1_rom1_addr >= cart_blob.size()) debugbreak();
@@ -273,7 +273,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
         data_in = cart_blob[mbc1_rom1_addr];
       }
       else if (region == 5 && cart_has_ram(cart_blob)) {
-        uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_mbc.MBC1_BANK5) : 0;
+        uint32_t mbc1_ram_bank = mbc1_mode ? bit_pack(&ext_mbc.MBC1_BANK5, 2) : 0;
         if (mbc1_mode == 0) mbc1_ram_bank = 0;
         uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
         if (mbc1_ram_addr >= 32768) debugbreak();
@@ -363,7 +363,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
         ext_mbc.MBC1_MODE = (data_out & 1);
       }
       else if (region == 5 && cart_has_ram(cart_blob) && 1 && mbc1_ram_en) {
-        uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_mbc.MBC1_BANK5) : 0;
+        uint32_t mbc1_ram_bank = mbc1_mode ? bit_pack(&ext_mbc.MBC1_BANK5, 2) : 0;
         if (mbc1_mode == 0) mbc1_ram_bank = 0;
         uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
         if (mbc1_ram_addr >= 32768) debugbreak();

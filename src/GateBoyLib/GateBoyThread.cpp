@@ -296,14 +296,14 @@ void GateBoyThread::run_idempotence() {
     gba.tock_cpu();
 
     gba.tock_gates(cart_blob);
-    gba.update_framebuffer(pack(gba.pix_count) - 8, pack(gba.reg_ly), gba.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gba.lcd.PIN_50_LCD_DATA1.qp_ext_old());
+    gba.update_framebuffer(bit_pack(gba.pix_count) - 8, bit_pack(gba.reg_ly), gba.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gba.lcd.PIN_50_LCD_DATA1.qp_ext_old());
 
     uint64_t hash_a = gba.hash_all();
 
     memcpy(&gbp->gbb, &gbp->gba, sizeof(GateBoy));
 
     gbb.tock_gates(cart_blob);
-    gbb.update_framebuffer(pack(gbb.pix_count) - 8, pack(gbb.reg_ly), gbb.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gbb.lcd.PIN_50_LCD_DATA1.qp_ext_old());
+    gbb.update_framebuffer(bit_pack(gbb.pix_count) - 8, bit_pack(gbb.reg_ly), gbb.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gbb.lcd.PIN_50_LCD_DATA1.qp_ext_old());
 
     uint64_t hash_b = gbb.hash_all();
 

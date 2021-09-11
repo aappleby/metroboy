@@ -83,7 +83,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread.load_cart_blob(cart);
   gb_thread.reset_to_cart();
 
-  gb_thread.add_steps(430);
+  gb_thread.add_steps(409);
   gb_thread.run_steps();
 
   //gb_thread.load_blob(Assembler::create_dummy_cart());
@@ -603,8 +603,8 @@ Step controls:
   {
     memset(overlay, 0, sizeof(overlay));
 
-    int fb_x = pack(gb.pix_count) - 8;
-    int fb_y = pack(gb.reg_ly);
+    int fb_x = bit_pack(gb.pix_count) - 8;
+    int fb_y = bit_pack(gb.reg_ly);
 
     if (fb_y >= 0 && fb_y < 144) {
       for (int x = 0; x < 160; x++) {

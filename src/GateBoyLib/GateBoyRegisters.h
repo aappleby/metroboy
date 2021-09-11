@@ -228,7 +228,7 @@ struct RegLYC {
     RAHA_LYC7n.state = 0b00011011;
   }
 
-  uint8_t get() const { return (uint8_t)pack_inv(8, &SYRY_LYC0n); }
+  uint8_t get() const { return (uint8_t)bit_pack_inv(*this); }
 
   /*_p23.SYRY*/ DFF9 SYRY_LYC0n; // xxxxxxxH
   /*_p23.VUCE*/ DFF9 VUCE_LYC1n; // xxxxxxxH
@@ -330,7 +330,7 @@ struct RegWY {
     NAFU_WY7n.state = BIT_CLOCK | bit(~wy, 7);
   }
 
-  int get() const { return pack_inv(8, &NESO_WY0n); }
+  int get() const { return bit_pack_inv(*this); }
 
   /*_p23.NESO*/ DFF9 NESO_WY0n; // xxxxxxxH
   /*_p23.NYRO*/ DFF9 NYRO_WY1n; // xxxxxxxH
@@ -357,7 +357,7 @@ struct RegWX {
     NUKU_WX7n.state = BIT_CLOCK | bit(~wx, 7);
   }
 
-  int get() const { return pack_inv(8, (BitBase*)&MYPA_WX0n); }
+  int get() const { return bit_pack_inv(*this); }
 
   /*_p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
   /*_p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH

@@ -401,7 +401,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   /*_PIN_46*/ vram_ext_abus.PIN_46_VRAM_A11.pin_out(PEDUn, PEDUn);
   /*_PIN_42*/ vram_ext_abus.PIN_42_VRAM_A12.pin_out(PONYn, PONYn);
 
-  uint16_t addr = (uint16_t)pack_inv(vram_ext_abus);
+  uint16_t addr = (uint16_t)bit_pack_inv(vram_ext_abus);
 
   //--------------------------------------------
   // CPU bus to Vram data bus
@@ -576,7 +576,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   //--------------------------------------------
 
   if (bit(~vram_ext_ctrl.PIN_49_VRAM_WRn.qp_ext_new())) {
-    vid_ram[addr] = (uint8_t)pack_inv(vram_ext_dbus);
+    vid_ram[addr] = (uint8_t)bit_pack_inv(vram_ext_dbus);
   }
 
   //--------------------------------------------

@@ -184,11 +184,7 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void tock_dma_logic();
-  void tock_joypad_logic();
-  void tock_timer_logic();
   void tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new);
-  void tock_bootrom_logic();
 
   void tock_lcdc_gates(); // logic is inlined
   void tock_lyc_gates();

@@ -1797,9 +1797,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
     }
 
-
-    // FIXME gonna need old and new div for this
-
     wire UKAP_CLK_MUXa_new = tac.SOPU_TAC0p.state ? div.TAMA_DIV05p.state : div.TERO_DIV03p.state;
     wire TEKO_CLK_MUXb_new = tac.SOPU_TAC0p.state ? div.UFOR_DIV01p.state : div.TULU_DIV07p.state;
     wire TECY_CLK_MUXc_new = tac.SAMY_TAC1p.state ? UKAP_CLK_MUXa_new : TEKO_CLK_MUXb_new;
@@ -1880,7 +1877,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
       dma_ctrl.LENE_DMA_TRIG_d4.state = dma_ctrl.LUVY_DMA_TRIG_d0.state;
 
-      if (bit(dma_ctrl.LUVY_DMA_TRIG_d0.state)) {
+      if (dma_ctrl.LUVY_DMA_TRIG_d0.state) {
         dma_ctrl.MYTE_DMA_DONE.state = 0;
         dma_ctrl.LYXE_DMA_LATCHp.state = 0;
         bit_clear(dma_lo);
@@ -2011,7 +2008,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_unpack(&sprite_fetcher.TOXE_SFETCH_S0p, 3, (sfetch_phase_old >> 1) + 1);
     }
 
-    if (bit(and2(sprite_fetcher.SOBU_SFETCH_REQp.state, ~sprite_fetcher.SUDA_SFETCH_REQp.state))) {
+    if (sprite_fetcher.SOBU_SFETCH_REQp.state && !sprite_fetcher.SUDA_SFETCH_REQp.state) {
       bit_clear(&sprite_fetcher.TOXE_SFETCH_S0p, 3);
     }
   }
@@ -2690,7 +2687,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto obp0 = bit_pack_inv(reg_obp0);
     auto obp1 = bit_pack_inv(reg_obp1);
 
-    if (bit(or2(PIX_SP_HIp, PIX_SP_LOp))) {
+    if (PIX_SP_HIp || PIX_SP_LOp) {
       pal_idx = pack(PIX_SP_LOp, PIX_SP_HIp);
       pal = pal_pipe.LYME_PAL_PIPE_D7.state ? obp1 : obp0;
     }
@@ -2735,12 +2732,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
         lcd.RUJU = 1;
         lcd.POFY = 0;
       }
-      else if (bit(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state)) {
+      else if (sprite_scanner.AVAP_SCAN_DONE_TRIGp.state) {
         lcd.POME = 0;
         lcd.RUJU = 0;
         lcd.POFY = 1;
       }
-      else if (bit(lcd.PAHO_X_8_SYNC.state)) {
+      else if (lcd.PAHO_X_8_SYNC.state) {
         lcd.POME = 1;
         lcd.RUJU = 1;
         lcd.POFY = 0;
@@ -2793,14 +2790,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
   // Memory buses
-
-  //wire addr_vram = (cpu_addr_new >= 0x8000) && (cpu_addr_new <= 0x9FFF);
-  //wire addr_ram = (cpu_addr_new >= 0xA000) && (cpu_addr_new <= 0xFDFF);
-  //
-  //// FIXME this was packing the whole dma address without inverting the top half before, how did that ever work?
-  //auto dma_addr = (pack_inv(reg_dma_hi) << 16) | pack(reg_dma_lo);
-  //
-  //wire dma_vram = (dma_addr >= 0x8000) && (dma_addr <= 0x9FFF);
 
   wire LUMA_DMA_CARTp = dma_running_new && !dma_addr_vram_new;
   wire TUTU_READ_BOOTROMp = !cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF;
@@ -2976,7 +2965,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // DMA vram read address
 
-    if (bit(dma_addr_vram_new)) {
+    if (dma_addr_vram_new) {
       bit_copy_inv(vram_abus, dma_lo);
       bit_copy(&vram_abus.BUS_VRAM_A08n, 5, &dma_hi.NAFA_DMA_A08n);
     }
@@ -3161,7 +3150,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     uint8_t data = 0xFF;
-    if (bit(vram_ext_ctrl.PIN_45_VRAM_OEn.state)) {
+    if (vram_ext_ctrl.PIN_45_VRAM_OEn.state) {
       data = vid_ram[vram_addr];
     }
 
@@ -3228,7 +3217,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire cpu_rd = cpu_signals.SIG_IN_CPU_RDp.state;
     wire cpu_wr = cpu_signals.SIG_IN_CPU_WRp.state && CLK_xxxxEFGx;
   
-    // FIXME I'm feeling that the cpu_latch signal is really "cpu data bus free"
     wire dbus_free = cpu_signals.SIG_IN_CPU_LATCH_EXT.state;
     wire dbus_busy = !dbus_free;
 

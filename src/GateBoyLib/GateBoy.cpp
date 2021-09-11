@@ -2251,7 +2251,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     auto sprite_count_new = bit_pack(sprite_counter);
 
-    if (!bit(WUTY_SFETCH_DONE_TRIGp_old) && bit(WUTY_SFETCH_DONE_TRIGp_new)) {
+    if (!WUTY_SFETCH_DONE_TRIGp_old && WUTY_SFETCH_DONE_TRIGp_new) {
       auto pack_sprite_match_flags = bit_pack(sprite_match_flags);
       bit_unpack(sprite_reset_flags, pack_sprite_match_flags);
     }
@@ -2330,13 +2330,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   auto XYDO_PX3p_old = pix_count.XYDO_PX3p;
   auto scx_old = bit_pack_inv(&reg_scx.DATY_SCX0n, 3);
   auto fine_cnt_old = bit_pack(&fine_scroll.RYKU_FINE_CNT0, 3);
-  wire fine_match_old = bit(fine_scroll.ROXY_FINE_SCROLL_DONEn.state) && (scx_old == fine_cnt_old);
+  wire fine_match_old = fine_scroll.ROXY_FINE_SCROLL_DONEn.state && (scx_old == fine_cnt_old);
 
   wire clkpipe_en_new = 1;
-  if (bit(win_reg.RYDY_WIN_HITp.state)) clkpipe_en_new = 0;
-  if (!bit(tile_fetcher.POKY_PRELOAD_LATCHp.state)) clkpipe_en_new = 0;
-  if (bit(FEPO_STORE_MATCHp.state)) clkpipe_en_new = 0;
-  if (bit(WODU_HBLANKp.state)) clkpipe_en_new = 0;
+  if (win_reg.RYDY_WIN_HITp.state) clkpipe_en_new = 0;
+  if (!tile_fetcher.POKY_PRELOAD_LATCHp.state) clkpipe_en_new = 0;
+  if (FEPO_STORE_MATCHp.state) clkpipe_en_new = 0;
+  if (WODU_HBLANKp.state) clkpipe_en_new = 0;
 
   if (DELTA_EVEN) {
     if (clkpipe_en_new) {
@@ -2353,13 +2353,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     fine_scroll.PUXA_SCX_FINE_MATCH_A.rst();
   }
 
-  if (bit(and2(fine_scroll.PUXA_SCX_FINE_MATCH_A.state, ~fine_scroll.NYZE_SCX_FINE_MATCH_B.state))) {
+  if (fine_scroll.PUXA_SCX_FINE_MATCH_A.state && !fine_scroll.NYZE_SCX_FINE_MATCH_B.state) {
     fine_scroll.ROXY_FINE_SCROLL_DONEn.rst();
   }
 
   wire CLKPIPE_new = CLK_AxCxExGx;
   if (!clkpipe_en_new) CLKPIPE_new = 1;
-  if (bit(fine_scroll.ROXY_FINE_SCROLL_DONEn.state)) CLKPIPE_new = 1;
+  if (fine_scroll.ROXY_FINE_SCROLL_DONEn.state) CLKPIPE_new = 1;
 
   wire px_old = (uint8_t)bit_pack(pix_count);
 
@@ -2367,11 +2367,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_unpack(pix_count, px_old + 1);
   }
 
-  if (bit(or2(line_rst_new, vid_rst_new))) {
+  if (line_rst_new || vid_rst_new) {
     bit_clear(pix_count);
   }
 
-  if (!and3(rendering_new, ~sprite_scanner.CENO_SCANNINGn.state, ~reg_lcdc.XYLO_LCDC_SPENn.state)) {
+  if (!rendering_new || sprite_scanner.CENO_SCANNINGn.state || reg_lcdc.XYLO_LCDC_SPENn.state) {
     bit_clear(sprite_match_flags);
   }
   else {
@@ -2406,8 +2406,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   auto px_new = bit_pack(pix_count);
 
   // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
-  WODU_HBLANKp = and2(~FEPO_STORE_MATCHp.state, (px_new & 167) == 167); // WODU goes high on odd, cleared on H
-  auto wodu_hblank_new = bit(WODU_HBLANKp.state);
+  WODU_HBLANKp = !FEPO_STORE_MATCHp.state && (px_new & 167) == 167; // WODU goes high on odd, cleared on H
+  auto wodu_hblank_new = WODU_HBLANKp.state;
 
   {
     wire clk_old = and2(clkpipe_en_old, gen_clk_old(0b01010101));

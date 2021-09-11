@@ -181,19 +181,19 @@ void GateBoy::tock_joypad_logic() {
   if (cpu_signals.SIG_IN_CPU_WRp.state && cpu_addr_new == 0xFF00 && DELTA_GH) {
     joy_reg.KELY_JOYP_UDLRp.state = cpu_dbus_old.BUS_CPU_D04p.state;
     joy_reg.COFY_JOYP_ABCSp.state = cpu_dbus_old.BUS_CPU_D05p.state;
-    joy_ext.PIN_63_JOY_P14.state = !bit(joy_reg.KELY_JOYP_UDLRp.state);
-    joy_ext.PIN_62_JOY_P15.state = !bit(joy_reg.COFY_JOYP_ABCSp.state);
+    joy_ext.PIN_63_JOY_P14.state = !joy_reg.KELY_JOYP_UDLRp.state;
+    joy_ext.PIN_62_JOY_P15.state = !joy_reg.COFY_JOYP_ABCSp.state;
   }
 
   bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
 
-  if (bit(joy_ext.PIN_63_JOY_P14.state)) {
+  if (joy_ext.PIN_63_JOY_P14.state) {
     EXT_button0 = get_bit(sys_buttons, 0); // RIGHT
     EXT_button1 = get_bit(sys_buttons, 1); // LEFT
     EXT_button2 = get_bit(sys_buttons, 2); // UP
     EXT_button3 = get_bit(sys_buttons, 3); // DOWN
   }
-  else if (bit(joy_ext.PIN_62_JOY_P15.state)) {
+  else if (joy_ext.PIN_62_JOY_P15.state) {
     EXT_button0 = get_bit(sys_buttons, 4); // A
     EXT_button1 = get_bit(sys_buttons, 5); // B
     EXT_button2 = get_bit(sys_buttons, 6); // SELECT
@@ -205,9 +205,9 @@ void GateBoy::tock_joypad_logic() {
   joy_ext.PIN_65_JOY_P12.state = EXT_button2;
   joy_ext.PIN_64_JOY_P13.state = EXT_button3;
 
-  wire any_button = or4(EXT_button0, EXT_button1, EXT_button2, EXT_button3);
+  wire any_button = EXT_button0 || EXT_button1 || EXT_button2 || EXT_button3;
 
-  if (bit(gen_clk_new(0b10000000))) {
+  if (gen_clk_new(0b10000000)) {
     int_ctrl.AWOB_WAKE_CPU.state = !any_button;
     int_ctrl.SIG_CPU_WAKE.state = !any_button;
   }
@@ -216,22 +216,22 @@ void GateBoy::tock_joypad_logic() {
     joy_int.APUG_JP_GLITCH3.state = joy_int.AGEM_JP_GLITCH2.state;
     joy_int.AGEM_JP_GLITCH2.state = joy_int.ACEF_JP_GLITCH1.state;
     joy_int.ACEF_JP_GLITCH1.state = joy_int.BATU_JP_GLITCH0.state;
-    joy_int.BATU_JP_GLITCH0.state = !bit(any_button);
+    joy_int.BATU_JP_GLITCH0.state = !any_button;
   }
 
   if (cpu_signals.SIG_IN_CPU_RDp.state && (cpu_addr_new == 0xFF00)) {
-    cpu_dbus_new.BUS_CPU_D00p.state = !bit(joy_latch.KEVU_JOYP_L0n.state);
-    cpu_dbus_new.BUS_CPU_D01p.state = !bit(joy_latch.KAPA_JOYP_L1n.state);
-    cpu_dbus_new.BUS_CPU_D02p.state = !bit(joy_latch.KEJA_JOYP_L2n.state);
-    cpu_dbus_new.BUS_CPU_D03p.state = !bit(joy_latch.KOLO_JOYP_L3n.state);
-    cpu_dbus_new.BUS_CPU_D04p.state =  bit(joy_reg.KELY_JOYP_UDLRp.state);
-    cpu_dbus_new.BUS_CPU_D05p.state =  bit(joy_reg.COFY_JOYP_ABCSp.state);
+    cpu_dbus_new.BUS_CPU_D00p.state = !joy_latch.KEVU_JOYP_L0n.state;
+    cpu_dbus_new.BUS_CPU_D01p.state = !joy_latch.KAPA_JOYP_L1n.state;
+    cpu_dbus_new.BUS_CPU_D02p.state = !joy_latch.KEJA_JOYP_L2n.state;
+    cpu_dbus_new.BUS_CPU_D03p.state = !joy_latch.KOLO_JOYP_L3n.state;
+    cpu_dbus_new.BUS_CPU_D04p.state =  joy_reg.KELY_JOYP_UDLRp.state;
+    cpu_dbus_new.BUS_CPU_D05p.state =  joy_reg.COFY_JOYP_ABCSp.state;
   }
   else {
-    joy_latch.KEVU_JOYP_L0n.state = bit(joy_ext.PIN_67_JOY_P10.state);
-    joy_latch.KAPA_JOYP_L1n.state = bit(joy_ext.PIN_66_JOY_P11.state);
-    joy_latch.KEJA_JOYP_L2n.state = bit(joy_ext.PIN_65_JOY_P12.state);
-    joy_latch.KOLO_JOYP_L3n.state = bit(joy_ext.PIN_64_JOY_P13.state);
+    joy_latch.KEVU_JOYP_L0n.state = joy_ext.PIN_67_JOY_P10.state;
+    joy_latch.KAPA_JOYP_L1n.state = joy_ext.PIN_66_JOY_P11.state;
+    joy_latch.KEJA_JOYP_L2n.state = joy_ext.PIN_65_JOY_P12.state;
+    joy_latch.KOLO_JOYP_L3n.state = joy_ext.PIN_64_JOY_P13.state;
   }
 }
 

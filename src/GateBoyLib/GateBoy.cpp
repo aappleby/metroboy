@@ -1709,7 +1709,64 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------
 
-  tock_joypad_logic();
+  {
+    if (cpu_signals.SIG_IN_CPU_WRp.state && cpu_addr_new == 0xFF00 && DELTA_GH) {
+      joy_reg.KELY_JOYP_UDLRp.state = cpu_dbus_old.BUS_CPU_D04p.state;
+      joy_reg.COFY_JOYP_ABCSp.state = cpu_dbus_old.BUS_CPU_D05p.state;
+      joy_ext.PIN_63_JOY_P14.state = !joy_reg.KELY_JOYP_UDLRp.state;
+      joy_ext.PIN_62_JOY_P15.state = !joy_reg.COFY_JOYP_ABCSp.state;
+    }
+
+    bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
+
+    if (joy_ext.PIN_63_JOY_P14.state) {
+      EXT_button0 = get_bit(sys_buttons, 0); // RIGHT
+      EXT_button1 = get_bit(sys_buttons, 1); // LEFT
+      EXT_button2 = get_bit(sys_buttons, 2); // UP
+      EXT_button3 = get_bit(sys_buttons, 3); // DOWN
+    }
+    else if (joy_ext.PIN_62_JOY_P15.state) {
+      EXT_button0 = get_bit(sys_buttons, 4); // A
+      EXT_button1 = get_bit(sys_buttons, 5); // B
+      EXT_button2 = get_bit(sys_buttons, 6); // SELECT
+      EXT_button3 = get_bit(sys_buttons, 7); // START
+    }
+
+    joy_ext.PIN_67_JOY_P10.state = EXT_button0;
+    joy_ext.PIN_66_JOY_P11.state = EXT_button1;
+    joy_ext.PIN_65_JOY_P12.state = EXT_button2;
+    joy_ext.PIN_64_JOY_P13.state = EXT_button3;
+
+    wire any_button = EXT_button0 || EXT_button1 || EXT_button2 || EXT_button3;
+
+    if (gen_clk_new(0b10000000)) {
+      int_ctrl.AWOB_WAKE_CPU.state = !any_button;
+      int_ctrl.SIG_CPU_WAKE.state = !any_button;
+    }
+
+    if (DELTA_HA) {
+      joy_int.APUG_JP_GLITCH3.state = joy_int.AGEM_JP_GLITCH2.state;
+      joy_int.AGEM_JP_GLITCH2.state = joy_int.ACEF_JP_GLITCH1.state;
+      joy_int.ACEF_JP_GLITCH1.state = joy_int.BATU_JP_GLITCH0.state;
+      joy_int.BATU_JP_GLITCH0.state = !any_button;
+    }
+
+    if (cpu_signals.SIG_IN_CPU_RDp.state && (cpu_addr_new == 0xFF00)) {
+      cpu_dbus_new.BUS_CPU_D00p.state = !joy_latch.KEVU_JOYP_L0n.state;
+      cpu_dbus_new.BUS_CPU_D01p.state = !joy_latch.KAPA_JOYP_L1n.state;
+      cpu_dbus_new.BUS_CPU_D02p.state = !joy_latch.KEJA_JOYP_L2n.state;
+      cpu_dbus_new.BUS_CPU_D03p.state = !joy_latch.KOLO_JOYP_L3n.state;
+      cpu_dbus_new.BUS_CPU_D04p.state =  joy_reg.KELY_JOYP_UDLRp.state;
+      cpu_dbus_new.BUS_CPU_D05p.state =  joy_reg.COFY_JOYP_ABCSp.state;
+    }
+    else {
+      joy_latch.KEVU_JOYP_L0n.state = joy_ext.PIN_67_JOY_P10.state;
+      joy_latch.KAPA_JOYP_L1n.state = joy_ext.PIN_66_JOY_P11.state;
+      joy_latch.KEJA_JOYP_L2n.state = joy_ext.PIN_65_JOY_P12.state;
+      joy_latch.KOLO_JOYP_L3n.state = joy_ext.PIN_64_JOY_P13.state;
+    }
+  }
+
   //tock_serial_logic();
   //tock_timer_logic();
 
@@ -1723,20 +1780,20 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     
     if (posedge(gen_clk_old(0b10000000), gen_clk_new(0b10000000))) {
-      wire MERY_TIMER_OVERFLOWp_old = nor2(tima.NUGA_TIMA7p.state, ~int_ctrl.NYDU_TIMA7p_DELAY.state);
+      wire MERY_TIMER_OVERFLOWp_old = !tima.NUGA_TIMA7p.state && int_ctrl.NYDU_TIMA7p_DELAY.state;
       int_ctrl.MOBA_TIMER_OVERFLOWp.state = MERY_TIMER_OVERFLOWp_old;
     }
 
     wire TOPE_FF05_WRn = !(CLK_xxxxEFGx && cpu_signals.SIG_IN_CPU_WRp.state && new_addr == 0xFF05);
 
-    wire MUZU_CPU_LOAD_TIMAn = or2(cpu_signals.SIG_IN_CPU_LATCH_EXT.state, TOPE_FF05_WRn);
-    wire MEXU_TIMA_LOADp = nand2(MUZU_CPU_LOAD_TIMAn, ~int_ctrl.MOBA_TIMER_OVERFLOWp.state);
+    wire MUZU_CPU_LOAD_TIMAn = cpu_signals.SIG_IN_CPU_LATCH_EXT.state || TOPE_FF05_WRn;
+    wire MEXU_TIMA_LOADp = !MUZU_CPU_LOAD_TIMAn || int_ctrl.MOBA_TIMER_OVERFLOWp.state;
 
     if (posedge(gen_clk_old(0b10000000), gen_clk_new(0b10000000))) {
-      int_ctrl.NYDU_TIMA7p_DELAY.state = bit(tima.NUGA_TIMA7p.state);
+      int_ctrl.NYDU_TIMA7p_DELAY.state = tima.NUGA_TIMA7p.state;
     }
 
-    if (bit(MEXU_TIMA_LOADp)) {
+    if (MEXU_TIMA_LOADp) {
       int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
     }
 
@@ -1746,7 +1803,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire UKAP_CLK_MUXa_new = tac.SOPU_TAC0p.state ? div.TAMA_DIV05p.state : div.TERO_DIV03p.state;
     wire TEKO_CLK_MUXb_new = tac.SOPU_TAC0p.state ? div.UFOR_DIV01p.state : div.TULU_DIV07p.state;
     wire TECY_CLK_MUXc_new = tac.SAMY_TAC1p.state ? UKAP_CLK_MUXa_new : TEKO_CLK_MUXb_new;
-    wire SOGU_TIMA_CLKn_new = and2(TECY_CLK_MUXc_new, tac.SABO_TAC2p.state);
+    wire SOGU_TIMA_CLKn_new = TECY_CLK_MUXc_new && tac.SABO_TAC2p.state;
 
     wire ROKE_TIMA_D0 = TOPE_FF05_WRn ? tma.SABU_TMA0p.state : cpu_dbus_new.BUS_CPU_D00p.state;
     wire PETU_TIMA_D1 = TOPE_FF05_WRn ? tma.NYKE_TMA1p.state : cpu_dbus_new.BUS_CPU_D01p.state;
@@ -1761,7 +1818,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_unpack(tima, bit_pack(tima) + 1);
     }
 
-    if (bit(MEXU_TIMA_LOADp)) {
+    if (MEXU_TIMA_LOADp) {
       tima.REGA_TIMA0p.set_data(ROKE_TIMA_D0);
       tima.POVY_TIMA1p.set_data(PETU_TIMA_D1);
       tima.PERU_TIMA2p.set_data(NYKU_TIMA_D2);
@@ -1806,7 +1863,51 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   auto dma_addr_old = (bit_pack_inv(dma_hi) << 8) | bit_pack(dma_lo);
   bool dma_running_old = dma_ctrl.MATU_DMA_RUNNINGp;
-  tock_dma_logic();
+  {
+    wire FF46_RDp = cpu_signals.SIG_IN_CPU_RDp.state && (cpu_addr_new == 0xFF46);
+    wire FF46_WRp = cpu_signals.SIG_IN_CPU_WRp.state && (cpu_addr_new == 0xFF46);
+
+    dma_ctrl.LYXE_DMA_LATCHp.state |= (FF46_WRp & CLK_xxxxEFGx);
+
+    auto dma_lo_old = bit_pack(dma_lo);
+
+    if (DELTA_DE) {
+      if (dma_lo_old == 159) {
+        dma_ctrl.MYTE_DMA_DONE.state = 1;
+        dma_ctrl.LARA_DMA_LATCHn = 1;
+        dma_ctrl.LOKY_DMA_LATCHp = 0;
+      }
+
+      dma_ctrl.LENE_DMA_TRIG_d4.state = dma_ctrl.LUVY_DMA_TRIG_d0.state;
+
+      if (bit(dma_ctrl.LUVY_DMA_TRIG_d0.state)) {
+        dma_ctrl.MYTE_DMA_DONE.state = 0;
+        dma_ctrl.LYXE_DMA_LATCHp.state = 0;
+        bit_clear(dma_lo);
+        dma_ctrl.LARA_DMA_LATCHn = 0;
+        dma_ctrl.LOKY_DMA_LATCHp = 1;
+      }
+    }
+
+    if (FF46_RDp) {
+      bit_unpack(cpu_dbus_new, bit_pack_inv(dma_hi));
+    }
+
+    if (FF46_WRp && DELTA_GH) {
+      auto old_data = bit_pack(cpu_dbus_old);
+      bit_unpack_inv(dma_hi, old_data);
+    }
+
+    if (DELTA_HA) {
+      dma_ctrl.LUVY_DMA_TRIG_d0.state = ~FF46_WRp & dma_ctrl.LYXE_DMA_LATCHp.state;
+      dma_ctrl.MATU_DMA_RUNNINGp.state = dma_ctrl.LOKY_DMA_LATCHp.state;
+
+      if (dma_ctrl.LOKY_DMA_LATCHp.state && !dma_ctrl.LENE_DMA_TRIG_d4.state) {
+        bit_unpack(dma_lo, dma_lo_old + 1);
+      }
+    }
+
+  }
   bool dma_running_new = dma_ctrl.MATU_DMA_RUNNINGp;
   auto dma_addr_new = (bit_pack_inv(dma_hi) << 8) | bit_pack(dma_lo);
 
@@ -1902,7 +2003,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   uint8_t sfetch_phase_old = pack(!(sprite_fetcher.TYFO_SFETCH_S0p_D1.state ^ sprite_fetcher.TOXE_SFETCH_S0p.state), sprite_fetcher.TOXE_SFETCH_S0p.state, sprite_fetcher.TULY_SFETCH_S1p.state, sprite_fetcher.TESE_SFETCH_S2p.state);
 
   if (DELTA_EVEN) {
-    sprite_fetcher.SOBU_SFETCH_REQp.  state = and4(FEPO_STORE_MATCHp.state, ~TOMU_WIN_HITp_old, tile_fetcher.LYRY_BFETCH_DONEp.state, ~sprite_fetcher.TAKA_SFETCH_RUNNINGp.state);
+    sprite_fetcher.SOBU_SFETCH_REQp.  state = FEPO_STORE_MATCHp.state && !TOMU_WIN_HITp_old && tile_fetcher.LYRY_BFETCH_DONEp.state && !sprite_fetcher.TAKA_SFETCH_RUNNINGp.state;
     sprite_fetcher.VONU_SFETCH_S1p_D4.state = sprite_fetcher.TOBU_SFETCH_S1p_D2;
     sprite_fetcher.TOBU_SFETCH_S1p_D2.state = sprite_fetcher.TULY_SFETCH_S1p;
 

@@ -3209,14 +3209,20 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // And finally, interrupts.
 
   {
+    auto pack_cpu_dbus_old = bit_pack(cpu_dbus_old);
+    auto pack_ie = bit_pack(reg_ie);
+    auto pack_if = bit_pack(reg_if);
+    auto pack_stat = bit_pack(reg_stat);
+
     auto CLK_xxxxEFGx_new = gen_clk_new(0b00001110);
 
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
-      bit_copy(reg_ie, cpu_dbus_old);
+      pack_ie = pack_cpu_dbus_old;
     }
+    bit_unpack(reg_ie, pack_ie);
 
     if (cpu_addr_new == 0xFF41 && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
-      bit_copy_inv(&reg_stat.ROXE_STAT_HBI_ENn, 4, &cpu_dbus_old.BUS_CPU_D03p);
+      pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
     }
 
     if (cpu_addr_new == 0xFF41 && cpu_rd_new) {
@@ -3225,18 +3231,18 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       data |= bit(~XYMU_RENDERINGn.state | lcd.POPU_y144p.state) << 0;
       data |= bit(~XYMU_RENDERINGn.state | sprite_scanner.ACYL_SCANNINGp.state) << 1;
       data |= bit(~RUPO_LYC_MATCHn.state) << 2;
-      data |= bit_pack_inv(&reg_stat.ROXE_STAT_HBI_ENn, 4) << 3;
+      data |= (pack_stat ^ 0b1111) << 3;
 
       bit_unpack(cpu_dbus_new, data);
     }
 
-
+    bit_unpack(reg_stat, pack_stat);
 
     bool int_stat_new = 0;
-    if (!bit(reg_stat.RUGU_STAT_LYI_ENn.state) && bit(ROPO_LY_MATCH_SYNCp.state)) int_stat_new = 1;
-    if (!bit(reg_stat.REFE_STAT_OAI_ENn.state) && bit(and2(~lcd.POPU_y144p.state, lcd.RUTU_x113p.qp_new()))) int_stat_new = 1;
-    if (!bit(reg_stat.RUFO_STAT_VBI_ENn.state) && bit(lcd.POPU_y144p.state)) int_stat_new = 1;
-    if (!bit(reg_stat.ROXE_STAT_HBI_ENn.state) && bit(and2(wodu_hblank_new, ~lcd.POPU_y144p.state))) int_stat_new = 1;
+    if (!bit(pack_stat, 0) && bit(and2(wodu_hblank_new, ~lcd.POPU_y144p.state))) int_stat_new = 1;
+    if (!bit(pack_stat, 1) && bit(lcd.POPU_y144p.state)) int_stat_new = 1;
+    if (!bit(pack_stat, 2) && bit(and2(~lcd.POPU_y144p.state, lcd.RUTU_x113p.qp_new()))) int_stat_new = 1;
+    if (!bit(pack_stat, 3) && bit(ROPO_LY_MATCH_SYNCp.state)) int_stat_new = 1;
 
     wire int_lcd_new = lcd.POPU_y144p.state;
     wire int_joy_new = nand2(joy_int.APUG_JP_GLITCH3.state, joy_int.BATU_JP_GLITCH0.state);
@@ -3244,7 +3250,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //wire int_ser = serial.CALY_SER_CNT3.state;
     wire int_ser_new = 0;
 
-    auto pack_if = bit_pack(reg_if);
 
 
     if (posedge(int_lcd_old, int_lcd_new))   pack_if |= (1 << 0);
@@ -3264,12 +3269,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_unpack(cpu_int, pack_if);
 
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
-      bit_copy(cpu_dbus_new, reg_ie);
+      bit_unpack(&cpu_dbus_new, sizeof(reg_ie), pack_ie);
     }
 
     if (cpu_addr_new == 0xFF0F && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
-      bit_copy(latch_if,  reg_if);
-      bit_copy(cpu_dbus_new, reg_if);
+      bit_unpack(latch_if,  pack_if);
+      bit_unpack(&cpu_dbus_new, sizeof(reg_if), pack_if);
     }
   }
 

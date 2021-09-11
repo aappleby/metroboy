@@ -3201,23 +3201,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     uint8_t data = zero_ram[cpu_addr_new & 0x007F];
 
     if (CSp && bit(cpu_signals.TEDO_CPU_RDp.state)) {
-      triwire tri0 = tri_pp(1, bit(data, 0));
-      triwire tri1 = tri_pp(1, bit(data, 1));
-      triwire tri2 = tri_pp(1, bit(data, 2));
-      triwire tri3 = tri_pp(1, bit(data, 3));
-      triwire tri4 = tri_pp(1, bit(data, 4));
-      triwire tri5 = tri_pp(1, bit(data, 5));
-      triwire tri6 = tri_pp(1, bit(data, 6));
-      triwire tri7 = tri_pp(1, bit(data, 7));
-
-      cpu_dbus_new.BUS_CPU_D00p.tri_bus(tri0);
-      cpu_dbus_new.BUS_CPU_D01p.tri_bus(tri1);
-      cpu_dbus_new.BUS_CPU_D02p.tri_bus(tri2);
-      cpu_dbus_new.BUS_CPU_D03p.tri_bus(tri3);
-      cpu_dbus_new.BUS_CPU_D04p.tri_bus(tri4);
-      cpu_dbus_new.BUS_CPU_D05p.tri_bus(tri5);
-      cpu_dbus_new.BUS_CPU_D06p.tri_bus(tri6);
-      cpu_dbus_new.BUS_CPU_D07p.tri_bus(tri7);
+      bit_unpack(cpu_dbus_new, data);
     }
   }
 
@@ -3236,10 +3220,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (cpu_addr_new == 0xFF41 && cpu_rd_new) {
-      cpu_dbus_new.BUS_CPU_D00p.state = ~XYMU_RENDERINGn.state | lcd.POPU_y144p.state;
-      cpu_dbus_new.BUS_CPU_D01p.state = ~XYMU_RENDERINGn.state | sprite_scanner.ACYL_SCANNINGp.state;
-      cpu_dbus_new.BUS_CPU_D02p.state = ~RUPO_LYC_MATCHn.state;
-      bit_copy_inv(&cpu_dbus_new.BUS_CPU_D03p, 4, &reg_stat.ROXE_STAT_HBI_ENn);
+      uint8_t data = 0x80;
+
+      data |= bit(~XYMU_RENDERINGn.state | lcd.POPU_y144p.state) << 0;
+      data |= bit(~XYMU_RENDERINGn.state | sprite_scanner.ACYL_SCANNINGp.state) << 1;
+      data |= bit(~RUPO_LYC_MATCHn.state) << 2;
+      data |= bit_pack_inv(&reg_stat.ROXE_STAT_HBI_ENn, 4) << 3;
+
+      bit_unpack(cpu_dbus_new, data);
     }
 
 

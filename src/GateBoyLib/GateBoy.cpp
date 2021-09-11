@@ -2410,10 +2410,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   auto wodu_hblank_new = WODU_HBLANKp.state;
 
   {
-    wire clk_old = and2(clkpipe_en_old, gen_clk_old(0b01010101));
-    wire clk_new = and2(clkpipe_en_new, gen_clk_new(0b01010101));
+    wire clk_old = clkpipe_en_old && gen_clk_old(0b01010101);
+    wire clk_new = clkpipe_en_new && gen_clk_new(0b01010101);
 
-    if (posedge(clk_old, clk_new)) {
+    if (!clk_old && clk_new) {
       lcd.PAHO_X_8_SYNC.state = XYDO_PX3p_old.state;
     }
   }
@@ -2423,34 +2423,34 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   bit_set(sprite_ibus);
   bit_set(sprite_lbus);
 
-  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) bit_copy_inv(sprite_ibus, store_i0);
-  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) bit_copy_inv(sprite_ibus, store_i1);
-  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) bit_copy_inv(sprite_ibus, store_i2);
-  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) bit_copy_inv(sprite_ibus, store_i3);
-  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) bit_copy_inv(sprite_ibus, store_i4);
-  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) bit_copy_inv(sprite_ibus, store_i5);
-  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) bit_copy_inv(sprite_ibus, store_i6);
-  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) bit_copy_inv(sprite_ibus, store_i7);
-  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) bit_copy_inv(sprite_ibus, store_i8);
-  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) bit_copy_inv(sprite_ibus, store_i9);
+  if (sprite_match_flags.GUVA_SPRITE0_GETp.state) bit_copy_inv(sprite_ibus, store_i0);
+  if (sprite_match_flags.ENUT_SPRITE1_GETp.state) bit_copy_inv(sprite_ibus, store_i1);
+  if (sprite_match_flags.EMOL_SPRITE2_GETp.state) bit_copy_inv(sprite_ibus, store_i2);
+  if (sprite_match_flags.GYFY_SPRITE3_GETp.state) bit_copy_inv(sprite_ibus, store_i3);
+  if (sprite_match_flags.GONO_SPRITE4_GETp.state) bit_copy_inv(sprite_ibus, store_i4);
+  if (sprite_match_flags.GEGA_SPRITE5_GETp.state) bit_copy_inv(sprite_ibus, store_i5);
+  if (sprite_match_flags.XOJA_SPRITE6_GETp.state) bit_copy_inv(sprite_ibus, store_i6);
+  if (sprite_match_flags.GUTU_SPRITE7_GETp.state) bit_copy_inv(sprite_ibus, store_i7);
+  if (sprite_match_flags.FOXA_SPRITE8_GETp.state) bit_copy_inv(sprite_ibus, store_i8);
+  if (sprite_match_flags.GUZE_SPRITE9_GETp.state) bit_copy_inv(sprite_ibus, store_i9);
 
-  if (bit(sprite_match_flags.GUVA_SPRITE0_GETp.state)) bit_copy_inv(sprite_lbus, store_l0);
-  if (bit(sprite_match_flags.ENUT_SPRITE1_GETp.state)) bit_copy_inv(sprite_lbus, store_l1);
-  if (bit(sprite_match_flags.EMOL_SPRITE2_GETp.state)) bit_copy_inv(sprite_lbus, store_l2);
-  if (bit(sprite_match_flags.GYFY_SPRITE3_GETp.state)) bit_copy_inv(sprite_lbus, store_l3);
-  if (bit(sprite_match_flags.GONO_SPRITE4_GETp.state)) bit_copy_inv(sprite_lbus, store_l4);
-  if (bit(sprite_match_flags.GEGA_SPRITE5_GETp.state)) bit_copy_inv(sprite_lbus, store_l5);
-  if (bit(sprite_match_flags.XOJA_SPRITE6_GETp.state)) bit_copy_inv(sprite_lbus, store_l6);
-  if (bit(sprite_match_flags.GUTU_SPRITE7_GETp.state)) bit_copy_inv(sprite_lbus, store_l7);
-  if (bit(sprite_match_flags.FOXA_SPRITE8_GETp.state)) bit_copy_inv(sprite_lbus, store_l8);
-  if (bit(sprite_match_flags.GUZE_SPRITE9_GETp.state)) bit_copy_inv(sprite_lbus, store_l9);
+  if (sprite_match_flags.GUVA_SPRITE0_GETp.state) bit_copy_inv(sprite_lbus, store_l0);
+  if (sprite_match_flags.ENUT_SPRITE1_GETp.state) bit_copy_inv(sprite_lbus, store_l1);
+  if (sprite_match_flags.EMOL_SPRITE2_GETp.state) bit_copy_inv(sprite_lbus, store_l2);
+  if (sprite_match_flags.GYFY_SPRITE3_GETp.state) bit_copy_inv(sprite_lbus, store_l3);
+  if (sprite_match_flags.GONO_SPRITE4_GETp.state) bit_copy_inv(sprite_lbus, store_l4);
+  if (sprite_match_flags.GEGA_SPRITE5_GETp.state) bit_copy_inv(sprite_lbus, store_l5);
+  if (sprite_match_flags.XOJA_SPRITE6_GETp.state) bit_copy_inv(sprite_lbus, store_l6);
+  if (sprite_match_flags.GUTU_SPRITE7_GETp.state) bit_copy_inv(sprite_lbus, store_l7);
+  if (sprite_match_flags.FOXA_SPRITE8_GETp.state) bit_copy_inv(sprite_lbus, store_l8);
+  if (sprite_match_flags.GUZE_SPRITE9_GETp.state) bit_copy_inv(sprite_lbus, store_l9);
 
-  if (bit(or2(sprite_scanner.CENO_SCANNINGn.state, !rendering_new))) {
+  if (sprite_scanner.CENO_SCANNINGn.state || !rendering_new) {
     auto pack_sprite_index = bit_pack(sprite_index);
     bit_unpack(sprite_ibus, pack_sprite_index);
   }
 
-  if (!bit(FEPO_STORE_MATCHp.state)) {
+  if (!FEPO_STORE_MATCHp.state) {
     sprite_lbus.BUS_SPR_L0.state = sprite_delta_y.ERUC_YDIFF0.sum;
     sprite_lbus.BUS_SPR_L1.state = sprite_delta_y.ENEF_YDIFF1.sum;
     sprite_lbus.BUS_SPR_L2.state = sprite_delta_y.FECO_YDIFF2.sum;
@@ -2461,10 +2461,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // WY/WX/window match
 
   {
-    wire VYBO_CLKPIPE_odd = and3(!FEPO_STORE_MATCHp.state, !WODU_HBLANKp.state, !MYVO_AxCxExGx());
-    wire ROCO_CLKPIPE_new = and3(!win_reg.RYDY_WIN_HITp.state, tile_fetcher.POKY_PRELOAD_LATCHp.state, VYBO_CLKPIPE_odd);
+    wire VYBO_CLKPIPE_odd = !FEPO_STORE_MATCHp.state && !WODU_HBLANKp.state && !MYVO_AxCxExGx();
+    wire ROCO_CLKPIPE_new = !win_reg.RYDY_WIN_HITp.state && tile_fetcher.POKY_PRELOAD_LATCHp.state && VYBO_CLKPIPE_odd;
 
-    if (!bit(ROCO_CLKPIPE_old) && bit(ROCO_CLKPIPE_new)) {
+    if (!ROCO_CLKPIPE_old && ROCO_CLKPIPE_new) {
       win_reg.PYCO_WIN_MATCHp.state = win_reg.NUKO_WX_MATCHp.state;
     }
   }
@@ -2475,13 +2475,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       win_reg.RENE_WIN_FETCHn_B.state = win_reg.RYFA_WIN_FETCHn_A.state;
     }
 
-    if (posedge(CLKPIPE_old, CLKPIPE_new)) {
-      win_reg.RYFA_WIN_FETCHn_A.state = and4(~win_reg.NUKO_WX_MATCHp.state, fine_scroll.RUBU_FINE_CNT2.state, fine_scroll.ROGA_FINE_CNT1.state, fine_scroll.RYKU_FINE_CNT0.state);
+    if (!CLKPIPE_old && CLKPIPE_new) {
+      win_reg.RYFA_WIN_FETCHn_A.state = !win_reg.NUKO_WX_MATCHp.state && fine_scroll.RUBU_FINE_CNT2.state && fine_scroll.ROGA_FINE_CNT1.state && fine_scroll.RYKU_FINE_CNT0.state;
     }
   }
   else {
-    win_reg.RENE_WIN_FETCHn_B.rst();
-    win_reg.RYFA_WIN_FETCHn_A.rst();
+    win_reg.RENE_WIN_FETCHn_B.state = 0;
+    win_reg.RYFA_WIN_FETCHn_A.state = 0;
   }
 
   if (cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
@@ -2502,16 +2502,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (vid_rst_new) {
-    win_reg.PYCO_WIN_MATCHp.rst();
-    win_reg.SARY_WY_MATCHp.rst();
+    win_reg.PYCO_WIN_MATCHp.state = 0;
+    win_reg.SARY_WY_MATCHp.state = 0;
   }
 
   win_reg.ROGE_WY_MATCHp = (ly_new == wy_new) && winen_new;
 
-  if (bit(win_reg.SARY_WY_MATCHp.state)) win_reg.REJO_WY_MATCH_LATCHp.state = 1;
-  if (bit(or2(lcd.POPU_y144p.state, vid_rst_new))) win_reg.REJO_WY_MATCH_LATCHp.state = 0;
+  if (win_reg.SARY_WY_MATCHp.state) win_reg.REJO_WY_MATCH_LATCHp.state = 1;
+  if (lcd.POPU_y144p.state || vid_rst_new) win_reg.REJO_WY_MATCH_LATCHp.state = 0;
 
-  win_reg.NUKO_WX_MATCHp = (wx_new == px_new) && bit(win_reg.REJO_WY_MATCH_LATCHp.state);
+  win_reg.NUKO_WX_MATCHp = (wx_new == px_new) && win_reg.REJO_WY_MATCH_LATCHp.state;
 
   //----------------------------------------
   // Tile fetch sequencer

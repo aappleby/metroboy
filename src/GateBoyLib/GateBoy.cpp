@@ -2087,7 +2087,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     tile_fetcher.NYKA_FETCH_DONEp.state = 0;
   }
 
-  if (bit(tile_fetcher.PYGO_FETCH_DONEp.state)) {
+  if (tile_fetcher.PYGO_FETCH_DONEp.state) {
     tile_fetcher.POKY_PRELOAD_LATCHp.state = 1;
   }
 
@@ -2110,25 +2110,25 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  if (vid_rst_new || bit(tile_fetcher.PORY_FETCH_DONEp.state)) {
+  if (vid_rst_new || tile_fetcher.PORY_FETCH_DONEp.state) {
     win_reg.RYDY_WIN_HITp = 0;
     win_reg.PUKU_WIN_HITn = 1;
   }
-  else if (bit(and2(win_reg.PYNU_WIN_MODE_Ap.state, ~win_reg.NOPA_WIN_MODE_Bp.state))) {
+  else if (win_reg.PYNU_WIN_MODE_Ap.state && !win_reg.NOPA_WIN_MODE_Bp.state) {
     win_reg.RYDY_WIN_HITp = 1;
     win_reg.PUKU_WIN_HITn = 0;
   }
 
 
-  if (bit(and2(sprite_fetcher.SOBU_SFETCH_REQp, ~sprite_fetcher.SUDA_SFETCH_REQp)) || vid_rst_new || line_rst_new) {
+  if ((sprite_fetcher.SOBU_SFETCH_REQp && !sprite_fetcher.SUDA_SFETCH_REQp) || vid_rst_new || line_rst_new) {
     sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
   }
 
-  if (bit(and4(rendering_new, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state))) {
+  if (rendering_new && !tile_fetcher.POKY_PRELOAD_LATCHp.state && tile_fetcher.NYKA_FETCH_DONEp.state && tile_fetcher.PORY_FETCH_DONEp.state) {
     sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 0;
   }
 
-  if (bit(sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state)) {
+  if (sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state) {
     sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 0;
   }
 
@@ -2161,14 +2161,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
-  Adder ERUC_YDIFF0 = add3(~reg_ly.MUWY_LY0p.state, oam_temp_a.XUSO_OAM_DA0p.state, 0);
-  Adder ENEF_YDIFF1 = add3(~reg_ly.MYRO_LY1p.state, oam_temp_a.XEGU_OAM_DA1p.state, ERUC_YDIFF0.carry);
-  Adder FECO_YDIFF2 = add3(~reg_ly.LEXA_LY2p.state, oam_temp_a.YJEX_OAM_DA2p.state, ENEF_YDIFF1.carry);
-  Adder GYKY_YDIFF3 = add3(~reg_ly.LYDO_LY3p.state, oam_temp_a.XYJU_OAM_DA3p.state, FECO_YDIFF2.carry);
-  Adder GOPU_YDIFF4 = add3(~reg_ly.LOVU_LY4p.state, oam_temp_a.YBOG_OAM_DA4p.state, GYKY_YDIFF3.carry);
-  Adder FUWA_YDIFF5 = add3(~reg_ly.LEMA_LY5p.state, oam_temp_a.WYSO_OAM_DA5p.state, GOPU_YDIFF4.carry);
-  Adder GOJU_YDIFF6 = add3(~reg_ly.MATO_LY6p.state, oam_temp_a.XOTE_OAM_DA6p.state, FUWA_YDIFF5.carry);
-  Adder WUHU_YDIFF7 = add3(~reg_ly.LAFO_LY7p.state, oam_temp_a.YZAB_OAM_DA7p.state, GOJU_YDIFF6.carry);
+  // FIXME need to ditch these adders
+
+  Adder ERUC_YDIFF0 = add3(!reg_ly.MUWY_LY0p.state, oam_temp_a.XUSO_OAM_DA0p.state, 0);
+  Adder ENEF_YDIFF1 = add3(!reg_ly.MYRO_LY1p.state, oam_temp_a.XEGU_OAM_DA1p.state, ERUC_YDIFF0.carry);
+  Adder FECO_YDIFF2 = add3(!reg_ly.LEXA_LY2p.state, oam_temp_a.YJEX_OAM_DA2p.state, ENEF_YDIFF1.carry);
+  Adder GYKY_YDIFF3 = add3(!reg_ly.LYDO_LY3p.state, oam_temp_a.XYJU_OAM_DA3p.state, FECO_YDIFF2.carry);
+  Adder GOPU_YDIFF4 = add3(!reg_ly.LOVU_LY4p.state, oam_temp_a.YBOG_OAM_DA4p.state, GYKY_YDIFF3.carry);
+  Adder FUWA_YDIFF5 = add3(!reg_ly.LEMA_LY5p.state, oam_temp_a.WYSO_OAM_DA5p.state, GOPU_YDIFF4.carry);
+  Adder GOJU_YDIFF6 = add3(!reg_ly.MATO_LY6p.state, oam_temp_a.XOTE_OAM_DA6p.state, FUWA_YDIFF5.carry);
+  Adder WUHU_YDIFF7 = add3(!reg_ly.LAFO_LY7p.state, oam_temp_a.YZAB_OAM_DA7p.state, GOJU_YDIFF6.carry);
 
   SpriteDeltaY sprite_delta_y = {
     ERUC_YDIFF0,
@@ -2182,7 +2184,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   };
 
   wire GOVU_SPSIZE_MATCH = or2(~reg_lcdc.XYMO_LCDC_SPSIZEn.state, sprite_delta_y.GYKY_YDIFF3.sum);
-
 
   if (vid_rst_new) {
     DEZY_COUNT_CLKp.rst();
@@ -2225,19 +2226,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_set(store_x9);
   }
   else {
-    wire GACE_SPRITE_DELTA4 = not1(sprite_delta_y.GOPU_YDIFF4.sum);
-    wire GUVU_SPRITE_DELTA5 = not1(sprite_delta_y.FUWA_YDIFF5.sum);
-    wire GYDA_SPRITE_DELTA6 = not1(sprite_delta_y.GOJU_YDIFF6.sum);
-    wire GEWY_SPRITE_DELTA7 = not1(sprite_delta_y.WUHU_YDIFF7.sum);
+    wire GACE_SPRITE_DELTA4 = !sprite_delta_y.GOPU_YDIFF4.sum;
+    wire GUVU_SPRITE_DELTA5 = !sprite_delta_y.FUWA_YDIFF5.sum;
+    wire GYDA_SPRITE_DELTA6 = !sprite_delta_y.GOJU_YDIFF6.sum;
+    wire GEWY_SPRITE_DELTA7 = !sprite_delta_y.WUHU_YDIFF7.sum;
 
-    wire WOTA_SCAN_MATCH_Yn = nand6(GACE_SPRITE_DELTA4,
-      GUVU_SPRITE_DELTA5,
-      GYDA_SPRITE_DELTA6,
-      GEWY_SPRITE_DELTA7,
-      sprite_delta_y.WUHU_YDIFF7.carry,
-      GOVU_SPSIZE_MATCH);
+    wire WOTA_SCAN_MATCH_Yn = !GACE_SPRITE_DELTA4 || !GUVU_SPRITE_DELTA5 || !GYDA_SPRITE_DELTA6 || !GEWY_SPRITE_DELTA7 || !sprite_delta_y.WUHU_YDIFF7.carry || !GOVU_SPSIZE_MATCH;
 
-    auto ssf_clk = nand3(CLK_xBCxxFGx, sprite_scanner.CENO_SCANNINGn.state, ~WOTA_SCAN_MATCH_Yn);
+    auto ssf_clk = !CLK_xBCxxFGx || !sprite_scanner.CENO_SCANNINGn.state || WOTA_SCAN_MATCH_Yn;
 
     auto sprite_count_old = bit_pack(sprite_counter);
 
@@ -2249,7 +2245,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
         }
       }
 
-      DEZY_COUNT_CLKp.state = bit(ssf_clk);
+      DEZY_COUNT_CLKp.state = ssf_clk;
     }
 
 

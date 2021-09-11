@@ -753,6 +753,7 @@ inline wire or2(wire a, wire b) { return a | b; }
 inline wire or3(wire a, wire b, wire c) { return  (a | b | c); }
 inline wire or4(wire a, wire b, wire c, wire d) { return  (a | b | c | d); }
 inline wire or5(wire a, wire b, wire c, wire d, wire e) { return  (a | b | c | d | e); }
+inline wire or6(wire a, wire b, wire c, wire d, wire e, wire f) { return a | b | c | d | e | f; }
 
 inline wire xor2(wire a, wire b) { return a ^ b; }
 

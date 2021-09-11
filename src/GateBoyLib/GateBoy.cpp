@@ -3210,6 +3210,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   {
     auto pack_cpu_dbus_old = bit_pack(cpu_dbus_old);
+    auto pack_cpu_dbus_new = bit_pack(cpu_dbus_new);
     auto pack_ie = bit_pack(reg_ie);
     auto pack_if = bit_pack(reg_if);
     auto pack_stat = bit_pack(reg_stat);
@@ -3219,7 +3220,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
       pack_ie = pack_cpu_dbus_old;
     }
-    bit_unpack(reg_ie, pack_ie);
 
     if (cpu_addr_new == 0xFF41 && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
       pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
@@ -3233,10 +3233,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       data |= bit(~RUPO_LYC_MATCHn.state) << 2;
       data |= (pack_stat ^ 0b1111) << 3;
 
-      bit_unpack(cpu_dbus_new, data);
+      pack_cpu_dbus_new = data;
     }
 
-    bit_unpack(reg_stat, pack_stat);
 
     bool int_stat_new = 0;
     if (!bit(pack_stat, 0) && bit(and2(wodu_hblank_new, ~lcd.POPU_y144p.state))) int_stat_new = 1;
@@ -3260,22 +3259,25 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     // note this is an async set so it doesn't happen on the GH clock edge like other writes
     if (cpu_signals.SIG_IN_CPU_WRp.state & (cpu_addr_new == 0xFF0F) & CLK_xxxxEFGx_new) {
-      pack_if = bit_pack(cpu_dbus_new);
+      pack_if = pack_cpu_dbus_new;
     }
 
     pack_if &= ~bit_pack(cpu_ack);
 
-    bit_unpack(reg_if, pack_if);
-    bit_unpack(cpu_int, pack_if);
-
     if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
-      bit_unpack(&cpu_dbus_new, sizeof(reg_ie), pack_ie);
+      pack_cpu_dbus_new = pack_ie | 0b11100000;
     }
 
     if (cpu_addr_new == 0xFF0F && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
       bit_unpack(latch_if,  pack_if);
-      bit_unpack(&cpu_dbus_new, sizeof(reg_if), pack_if);
+      pack_cpu_dbus_new = pack_if | 0b11100000;
     }
+
+    bit_unpack(cpu_dbus_new, pack_cpu_dbus_new);
+    bit_unpack(cpu_int, pack_if);
+    bit_unpack(reg_ie, pack_ie);
+    bit_unpack(reg_if, pack_if);
+    bit_unpack(reg_stat, pack_stat);
   }
 
   //----------------------------------------

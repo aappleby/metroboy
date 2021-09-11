@@ -3286,21 +3286,25 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       oam_abus.BUS_OAM_A01n.state = 0;
       bit_copy_inv(&oam_abus.BUS_OAM_A02n, 6, &sprite_ibus.BUS_SPR_I0);
 
-      oam_ctrl.SIG_OAM_CLKn .state = bit(and2(nand3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, nand2(sprite_fetcher.TYFO_SFETCH_S0p_D1.state, not1(sprite_fetcher.TOXE_SFETCH_S0p.state))), nand2(addr_oam, CLK_xxxxEFGH)));
+      oam_ctrl.SIG_OAM_CLKn .state = 
+        (sprite_fetcher.TULY_SFETCH_S1p.state || sprite_fetcher.TESE_SFETCH_S2p.state || (sprite_fetcher.TYFO_SFETCH_S0p_D1.state && !sprite_fetcher.TOXE_SFETCH_S0p.state)) && 
+        (!addr_oam || !CLK_xxxxEFGH);
       oam_ctrl.SIG_OAM_WRn_A.state = 1;
       oam_ctrl.SIG_OAM_WRn_B.state = 1;
-      oam_ctrl.SIG_OAM_OEn  .state = bit(and2(nand3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state), !cpu_reading_oam));
+      oam_ctrl.SIG_OAM_OEn  .state = 
+        (sprite_fetcher.TULY_SFETCH_S1p.state || sprite_fetcher.TESE_SFETCH_S2p.state || !sprite_fetcher.TYFO_SFETCH_S0p_D1.state) && 
+        !cpu_reading_oam;
     }
     else if (addr_oam) {
       bit_copy_inv(oam_abus, cpu_abus_new);
-      if (bit(~oam_ctrl.WUJE_CPU_OAM_WRn.state)) {
+      if (!oam_ctrl.WUJE_CPU_OAM_WRn.state) {
         bit_copy_inv(oam_dbus_a, cpu_dbus_new);
         bit_copy_inv(oam_dbus_b, cpu_dbus_new);
       }
-      oam_ctrl.SIG_OAM_CLKn .state = bit(CLK_ABCDxxxx);
-      oam_ctrl.SIG_OAM_WRn_A.state = bit(nand2(cpu_wr,  oam_abus.BUS_OAM_A00n.state));
-      oam_ctrl.SIG_OAM_WRn_B.state = bit(nand2(cpu_wr, !oam_abus.BUS_OAM_A00n.state));
-      oam_ctrl.SIG_OAM_OEn  .state = bit(nand2(cpu_rd, dbus_busy));
+      oam_ctrl.SIG_OAM_CLKn .state = CLK_ABCDxxxx;
+      oam_ctrl.SIG_OAM_WRn_A.state = (!cpu_wr || !oam_abus.BUS_OAM_A00n.state);
+      oam_ctrl.SIG_OAM_WRn_B.state = (!cpu_wr ||  oam_abus.BUS_OAM_A00n.state);
+      oam_ctrl.SIG_OAM_OEn  .state = (!cpu_rd || !dbus_busy);
     }
     else {
       bit_copy_inv(oam_abus,   cpu_abus_new);
@@ -3322,11 +3326,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       oam_data_a = (uint8_t)bit_pack_inv(oam_dbus_a);
       oam_data_b = (uint8_t)bit_pack_inv(oam_dbus_b);
 
-      if (negedge(oam_clk_old, oam_clk_new)) {
-        if (bit(!oam_ctrl.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-        if (bit(!oam_ctrl.SIG_OAM_WRn_B.state)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+      if (oam_clk_old && !oam_clk_new) {
+        if (!oam_ctrl.SIG_OAM_WRn_A.state) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+        if (!oam_ctrl.SIG_OAM_WRn_B.state) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
       }
-      oam_ctrl.old_oam_clk = bit(!oam_ctrl.SIG_OAM_CLKn.state);
+      oam_ctrl.old_oam_clk = !oam_ctrl.SIG_OAM_CLKn.state;
 
       oam_data_a = oam_ram[(oam_addr << 1) + 0];
       oam_data_b = oam_ram[(oam_addr << 1) + 1];
@@ -3340,7 +3344,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bool latch_oam = false;
     latch_oam |= cpu_reading_oam;
     latch_oam |= scanning_new && gen_clk_new(0b01100110);
-    latch_oam |= rendering_new && (bool)bit(and3(!sprite_fetcher.TULY_SFETCH_S1p.state, !sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state));
+    latch_oam |= rendering_new && !sprite_fetcher.TULY_SFETCH_S1p.state && !sprite_fetcher.TESE_SFETCH_S2p.state && sprite_fetcher.TYFO_SFETCH_S0p_D1.state;
 
     if (latch_oam) {
       bit_unpack_inv(oam_dbus_a, oam_data_a);
@@ -3350,7 +3354,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running_new && !scanning_new && !rendering_new) {
-      if (bit(oam_abus.BUS_OAM_A00n.state)) {
+      if (oam_abus.BUS_OAM_A00n.state) {
         bit_copy_inv(cpu_dbus_new, oam_latch_a);
       }
       else {
@@ -3365,14 +3369,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   {
     wire CSp = (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE);
 
-    if (bit(zram_bus.clk_old.state & !cpu_signals.TAPU_CPU_WRp.state & CSp)) {
+    if (zram_bus.clk_old.state && !cpu_signals.TAPU_CPU_WRp.state && CSp) {
       zero_ram[cpu_addr_new & 0x007F] = (uint8_t)bit_pack(cpu_dbus_old);
     }
     zram_bus.clk_old = cpu_signals.TAPU_CPU_WRp.state;
 
     uint8_t data = zero_ram[cpu_addr_new & 0x007F];
 
-    if (CSp && bit(cpu_signals.TEDO_CPU_RDp.state)) {
+    if (CSp && cpu_signals.TEDO_CPU_RDp.state) {
       bit_unpack(cpu_dbus_new, data);
     }
   }
@@ -3389,11 +3393,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     auto CLK_xxxxEFGx_new = gen_clk_new(0b00001110);
 
-    if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
+    if (cpu_addr_new == 0xFFFF && cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
       pack_ie = pack_cpu_dbus_old;
     }
 
-    if (cpu_addr_new == 0xFF41 && bit(cpu_signals.SIG_IN_CPU_WRp.state) && DELTA_GH) {
+    if (cpu_addr_new == 0xFF41 && cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
       pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
     }
 

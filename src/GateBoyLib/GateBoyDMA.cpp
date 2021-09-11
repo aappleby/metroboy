@@ -102,12 +102,12 @@ void GateBoy::tock_dma_logic() {
   }
 
   if (FF46_RDp) {
-    tri_8(&cpu_dbus_new.BUS_CPU_D00p, uint8_t(bit_pack_inv(&dma_hi.NAFA_DMA_A08n, 8)));
+    bit_unpack(cpu_dbus_new, bit_pack_inv(dma_hi));
   }
 
   if (FF46_WRp && DELTA_GH) {
     auto old_data = bit_pack(cpu_dbus_old);
-    bit_unpack_inv(&dma_hi.NAFA_DMA_A08n, 8, old_data);
+    bit_unpack_inv(dma_hi, old_data);
   }
 
   if (DELTA_HA) {
@@ -115,7 +115,7 @@ void GateBoy::tock_dma_logic() {
     dma_ctrl.MATU_DMA_RUNNINGp.state = dma_ctrl.LOKY_DMA_LATCHp.state;
 
     if (bit(dma_ctrl.LOKY_DMA_LATCHp.state) && !bit(dma_ctrl.LENE_DMA_TRIG_d4.state)) {
-      bit_unpack(&dma_lo.NAKY_DMA_A00p, 8, dma_lo_old + 1);
+      bit_unpack(dma_lo, dma_lo_old + 1);
     }
   }
 

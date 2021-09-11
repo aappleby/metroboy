@@ -2639,7 +2639,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (bit(LUMA_DMA_CARTp)) {
     ext_ctrl.PIN_80_CSn.state = ~dma_hi.MARU_DMA_A15n.state;
-    bit_copy_inv(&ext_abus.PIN_01_A00, 8, &dma_lo.NAKY_DMA_A00p);
+    bit_copy_inv(ext_abus, dma_lo);
     memcpy (&ext_abus.PIN_09_A08, &dma_hi.NAFA_DMA_A08n, 7);
   }
   else {
@@ -2804,7 +2804,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // DMA vram read address
 
     if (bit(dma_addr_vram_new)) {
-      bit_copy_inv(&vram_abus.BUS_VRAM_A00n, 8, &dma_lo.NAKY_DMA_A00p);
+      bit_copy_inv(vram_abus, dma_lo);
       bit_copy(&vram_abus.BUS_VRAM_A08n, 5, &dma_hi.NAFA_DMA_A08n);
     }
 
@@ -2887,7 +2887,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       auto wy = bit_pack_inv(&win_y.TUFU_WIN_MAP_Y0, 5);
 
       bit_unpack(&vram_abus.BUS_VRAM_A00n, 5, wx);
-
       bit_unpack(&vram_abus.BUS_VRAM_A05n, 5, wy);
       bit_copy_inv(&vram_abus.BUS_VRAM_A05n, 5, &win_y.TUFU_WIN_MAP_Y0);
 
@@ -3085,7 +3084,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire oam_clk_old = oam_ctrl.SIG_OAM_CLKn.state;
 
     if (dma_running_new) {
-      bit_copy_inv(&oam_abus.BUS_OAM_A00n, 8, &dma_lo.NAKY_DMA_A00p);
+      bit_copy_inv(oam_abus, dma_lo);
 
       if ((dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF)) {
         bit_copy_inv(oam_dbus_a, vram_dbus);
@@ -3147,7 +3146,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     uint8_t oam_data_a, oam_data_b;
     {
 
-      uint8_t oam_addr = (uint8_t)bit_pack_inv(&oam_abus.BUS_OAM_A01n, 7);
+      uint8_t oam_addr = (uint8_t)bit_pack_inv(oam_abus) >> 1;
       oam_data_a = (uint8_t)bit_pack_inv(oam_dbus_a);
       oam_data_b = (uint8_t)bit_pack_inv(oam_dbus_b);
 
@@ -3274,7 +3273,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     // note this is an async set so it doesn't happen on the GH clock edge like other writes
     if (cpu_signals.SIG_IN_CPU_WRp.state & (cpu_addr_new == 0xFF0F) & CLK_xxxxEFGx_new) {
-      bit_copy(&reg_if, sizeof(reg_if), &cpu_dbus_new);
+      bit_copy(reg_if, cpu_dbus_new);
     }
 
     reg_if.LOPE_FF0F_D0p.state = reg_if.LOPE_FF0F_D0p.state & ~cpu_ack.SIG_CPU_ACK_VBLANK.state;

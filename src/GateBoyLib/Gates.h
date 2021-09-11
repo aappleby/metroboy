@@ -515,12 +515,6 @@ struct Bus : public BitBase {
   }
 };
 
-inline void tri_8(Bus* b, uint8_t d) {
-  for (int i = 0; i < 8; i++) {
-    b[i].tri_bus({ (wire)(TRI_NEW | TRI_DRIVEN | bit(d, i)) });
-  }
-}
-
 //-----------------------------------------------------------------------------
 // Pin structs store the bit as it apperas INSIDE the chip. Bits are inverted
 // when traveling across the chip boundary.
@@ -923,6 +917,16 @@ inline void bit_copy_inv(DST* pdst, int c, const SRC* psrc) {
 }
 
 template<class DST, class SRC>
+inline void bit_copy_inv(DST& rdst, int c, const SRC& rsrc) {
+  uint8_t* dst = (uint8_t*)&rdst;
+  const uint8_t* src = (const uint8_t*)&rsrc;
+  for (int i = 0; i < c; i++) {
+    dst[i] &= ~1;
+    dst[i] |= !bit(src[i]);
+  }
+}
+
+template<class DST, class SRC>
 inline void bit_copy_inv(DST& dst, const SRC& src) {
   bit_copy_inv(&dst, sizeof(DST) < sizeof(SRC) ? sizeof(DST) : sizeof(SRC), &src);
 }
@@ -943,14 +947,9 @@ inline void bit_clear(DST& dst) {
 //-----------------------------------------------------------------------------
 
 template<typename DST>
-inline void bit_set(DST* pdst, int c) {
-  uint8_t* dst = (uint8_t*)pdst;
-  for (int i = 0; i < c; i++) dst[i] |= 1;
-}
-
-template<typename DST>
-inline void bit_set(DST& dst) {
-  bit_set(&dst, sizeof(DST));
+inline void bit_set(DST& rdst) {
+  uint8_t* dst = (uint8_t*)&rdst;
+  for (int i = 0; i < sizeof(DST); i++) dst[i] |= 1;
 }
 
 //-----------------------------------------------------------------------------

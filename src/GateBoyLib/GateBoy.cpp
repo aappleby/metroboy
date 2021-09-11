@@ -1361,7 +1361,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_logic(const blob& cart_blob) {
-  wire SYLO_WIN_HITn_old = not1(win_reg.RYDY_WIN_HITp);
+  wire SYLO_WIN_HITn_old = !win_reg.RYDY_WIN_HITp;
   wire TOMU_WIN_HITp_old = not1(SYLO_WIN_HITn_old);
   wire SOCY_WIN_HITn_old = not1(TOMU_WIN_HITp_old);
   wire VYBO_CLKPIPE_old = nor3(FEPO_STORE_MATCHp, WODU_HBLANKp, gen_clk_old(0b10101010));
@@ -1382,7 +1382,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   wire TEVO_WIN_FETCH_TRIGp_old = 0;
   if (and2(win_reg.RYFA_WIN_FETCHn_A, ~win_reg.RENE_WIN_FETCHn_B)) TEVO_WIN_FETCH_TRIGp_old = 1;
-  if (and2(~win_reg.RYDY_WIN_HITp, win_reg.SOVY_WIN_HITp)) TEVO_WIN_FETCH_TRIGp_old = 1;
+  if (and2(!win_reg.RYDY_WIN_HITp, win_reg.SOVY_WIN_HITp)) TEVO_WIN_FETCH_TRIGp_old = 1;
   if (and4(~XYMU_RENDERINGn, ~tile_fetcher.POKY_PRELOAD_LATCHp, tile_fetcher.NYKA_FETCH_DONEp, tile_fetcher.PORY_FETCH_DONEp)) TEVO_WIN_FETCH_TRIGp_old = 1;
 
   auto wodu_hblank_old = WODU_HBLANKp.state;
@@ -2348,9 +2348,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // WY/WX/window match
 
   {
-    wire SYLO_WIN_HITn = not1(win_reg.RYDY_WIN_HITp.state);
-    wire TOMU_WIN_HITp = not1(SYLO_WIN_HITn);
-    wire SOCY_WIN_HITn = not1(TOMU_WIN_HITp);
+    bool SYLO_WIN_HITn = !win_reg.RYDY_WIN_HITp.state;
+    bool TOMU_WIN_HITp = !SYLO_WIN_HITn;
+    bool SOCY_WIN_HITn = !TOMU_WIN_HITp;
 
     wire VYBO_CLKPIPE_odd = nor3(FEPO_STORE_MATCHp.state, WODU_HBLANKp.state, MYVO_AxCxExGx());
     wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, tile_fetcher.POKY_PRELOAD_LATCHp.state, VYBO_CLKPIPE_odd);

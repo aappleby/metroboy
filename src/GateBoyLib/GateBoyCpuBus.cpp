@@ -79,7 +79,7 @@ void GateBoy::tock_bootrom_logic() {
 
   if (cpu_addr_new <= 0x00FF) {
 
-    cpu_signals.SIG_CPU_BOOTp.state = ~cpu_signals.TEPU_BOOT_BITn.state;
+    cpu_signals.SIG_CPU_BOOTp.state = !bit(cpu_signals.TEPU_BOOT_BITn.state);
 
     if (bit(and2(cpu_signals.SIG_IN_CPU_RDp.state, ~cpu_signals.TEPU_BOOT_BITn.state))) {
       cpu_signals.SIG_BOOT_CSp.state = 1;

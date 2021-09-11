@@ -30,6 +30,14 @@ const wire BIT_OLD    = config_oldnew_flags ? 0b00010000 : 0b00000000;
 const wire BIT_NEW    = config_oldnew_flags ? 0b00100000 : 0b00000000;
 const wire TRI_NEW    = config_oldnew_flags ? 0b00100000 : 0b00000000;
 
+inline bool posedge(wire a, wire b) {
+  return !bit(a) && bit(b);
+}
+
+inline bool negedge(wire a, wire b) {
+  return bit(a) && !bit(b);
+}
+
 //-----------------------------------------------------------------------------
 
 struct BitBase {
@@ -396,13 +404,23 @@ struct DFF20 : public BitBase {
   using BitBase::operator=;
 
   void dff20_any(wire CLKn, wire LOADp, wire newD) {
-    wire clk_old = state & BIT_CLOCK;
-    wire clk_new = (~CLKn << 1) & BIT_CLOCK;
+    wire clk_old = bit(state >> 1);
+    wire clk_new = bit(~CLKn);
 
-    wire d1 = (~clk_old & clk_new) ? ~state : state;
-    wire d2 = bit(LOADp) ? newD : d1;
+    state = bit(state);
 
-    state = uint8_t(bit(d2) | clk_new | BIT_NEW | BIT_DRIVEN);
+    if (posedge(clk_old, clk_new)) {
+      state = !state;
+    }
+
+    state |= (clk_new << 1);
+    state |= BIT_NEW;
+    state |= BIT_DRIVEN;
+
+    if (bit(LOADp)) {
+      state &= ~1;
+      state |= bit(newD);
+    }
   }
 
   void dff20(wire CLKn, wire LOADp, wire newD) {
@@ -953,11 +971,3 @@ inline void bit_set(DST& rdst) {
 }
 
 //-----------------------------------------------------------------------------
-
-inline bool posedge(wire a, wire b) {
-  return !bit(a) && bit(b);
-}
-
-inline bool negedge(wire a, wire b) {
-  return bit(a) && !bit(b);
-}

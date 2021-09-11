@@ -116,8 +116,10 @@ struct GateBoy {
     uint8_t* a = (uint8_t*)(&sentinel1) + sizeof(sentinel1);
     uint8_t* b = (uint8_t*)(&sentinel2);
 
-    for (auto c = a; c != b; c++) {
-      *c = 0b00011000;
+    if (!old_logic_mode) {
+      for (auto c = a; c != b; c++) {
+        *c = 0b00011000;
+      }
     }
 
     sentinel1 = SENTINEL1;
@@ -125,6 +127,13 @@ struct GateBoy {
     sentinel3 = SENTINEL3;
     sentinel4 = SENTINEL4;
     logic_mode = old_logic_mode;
+  }
+
+  void wipe_flags() {
+    uint8_t* blob = (uint8_t*)this;
+    for (int i = offsetof(GateBoy, sentinel1) + sizeof(GateBoy::sentinel1); i < offsetof(GateBoy, sentinel2); i++) {
+      blob[i] &= 1;
+    }
   }
 
   int64_t hash_regression() {

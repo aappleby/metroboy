@@ -136,6 +136,14 @@ struct GateBoy {
     }
   }
 
+  bool check_no_flags() {
+    uint8_t* blob = (uint8_t*)this;
+    for (int i = offsetof(GateBoy, sentinel1) + sizeof(GateBoy::sentinel1); i < offsetof(GateBoy, sentinel2); i++) {
+      CHECK_N(blob[i] & ~1);
+    }
+    return true;
+  }
+
   int64_t hash_regression() {
     uint64_t h = HASH_INIT;
     uint8_t* blob = (uint8_t*)this;

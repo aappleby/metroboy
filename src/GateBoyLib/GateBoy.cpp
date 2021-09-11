@@ -1773,13 +1773,36 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (cpu_signals.SIG_IN_CPU_RDp.state) {
-      if (new_addr == 0xFF05) memcpy(&cpu_dbus_new.BUS_CPU_D00p, &tima, 8);
-      if (new_addr == 0xFF06) memcpy(&cpu_dbus_new.BUS_CPU_D00p, &tma, 8);
-      if (new_addr == 0xFF07) memcpy(&cpu_dbus_new.BUS_CPU_D00p, &tac, 3);
+      if (new_addr == 0xFF05) bit_copy(cpu_dbus_new, tima);
+      if (new_addr == 0xFF06) bit_copy(cpu_dbus_new, tma);
+      if (new_addr == 0xFF07) bit_copy(cpu_dbus_new, tac);
     }
-}
+  }
 
-  tock_bootrom_logic();
+  {
+    if (cpu_signals.SIG_IN_CPU_WRp.state && cpu_addr_new == 0xFF50 && DELTA_GH) {
+      cpu_signals.TEPU_BOOT_BITn.state = SATO_BOOT_BITn.state;
+    }
+
+    cpu_signals.SIG_CPU_BOOTp.state = 0;
+    cpu_signals.SIG_BOOT_CSp.state = 0;
+
+    if (cpu_addr_new <= 0x00FF) {
+
+      cpu_signals.SIG_CPU_BOOTp.state = !cpu_signals.TEPU_BOOT_BITn.state;
+
+      if (cpu_signals.SIG_IN_CPU_RDp.state && !cpu_signals.TEPU_BOOT_BITn.state) {
+        cpu_signals.SIG_BOOT_CSp.state = 1;
+        bit_unpack(cpu_dbus_new, DMG_ROM_blob[cpu_addr_new & 0xFF]);
+      }
+    }
+
+    if (cpu_signals.SIG_IN_CPU_RDp.state && (cpu_addr_new == 0xFF50)) {
+      cpu_dbus_new.BUS_CPU_D00p.state = cpu_signals.TEPU_BOOT_BITn.state;
+    }
+
+    SATO_BOOT_BITn = cpu_dbus_new.BUS_CPU_D00p.state || cpu_signals.TEPU_BOOT_BITn.state;
+  }
 
   auto dma_addr_old = (bit_pack_inv(dma_hi) << 8) | bit_pack(dma_lo);
   bool dma_running_old = dma_ctrl.MATU_DMA_RUNNINGp;
@@ -1791,8 +1814,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
   // Sprite scanner
-
-  // This is still yeech
 
   bool scanning_old = sprite_scanner.ACYL_SCANNINGp;
 
@@ -1812,7 +1833,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     else {
       if (DELTA_EVEN) sprite_scanner.DOBA_SCAN_DONE_Bp = BYBU_old;
       if (DELTA_HA || DELTA_DE) sprite_scanner.BYBA_SCAN_DONE_Ap = FETO_old;
-      sprite_scanner.AVAP_SCAN_DONE_TRIGp = nor2(sprite_scanner.DOBA_SCAN_DONE_Bp, ~sprite_scanner.BYBA_SCAN_DONE_Ap);
+      sprite_scanner.AVAP_SCAN_DONE_TRIGp = !sprite_scanner.DOBA_SCAN_DONE_Bp && sprite_scanner.BYBA_SCAN_DONE_Ap;
     }
 
     //----------
@@ -1828,7 +1849,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       if (sprite_scanner.AVAP_SCAN_DONE_TRIGp) sprite_scanner.BESU_SCANNINGn = 0;
     }
 
-    sprite_scanner.ACYL_SCANNINGp = and3(!vid_rst_new, !dma_running_new, sprite_scanner.BESU_SCANNINGn);
+    sprite_scanner.ACYL_SCANNINGp = !vid_rst_new && !dma_running_new && sprite_scanner.BESU_SCANNINGn;
 
     //----------
 

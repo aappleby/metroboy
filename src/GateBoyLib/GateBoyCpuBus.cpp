@@ -66,32 +66,3 @@ void GateBoy::tock_bootrom_gates() {
 }
 
 //------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::tock_bootrom_logic() {
-  auto cpu_addr_new = bit_pack(cpu_abus_new);
-
-  if (cpu_signals.SIG_IN_CPU_WRp.state && cpu_addr_new == 0xFF50 && DELTA_GH) {
-    cpu_signals.TEPU_BOOT_BITn.state = SATO_BOOT_BITn.state;
-  }
-
-  cpu_signals.SIG_CPU_BOOTp.state = 0;
-  cpu_signals.SIG_BOOT_CSp.state = 0;
-
-  if (cpu_addr_new <= 0x00FF) {
-
-    cpu_signals.SIG_CPU_BOOTp.state = !bit(cpu_signals.TEPU_BOOT_BITn.state);
-
-    if (bit(and2(cpu_signals.SIG_IN_CPU_RDp.state, ~cpu_signals.TEPU_BOOT_BITn.state))) {
-      cpu_signals.SIG_BOOT_CSp.state = 1;
-      bit_unpack(cpu_dbus_new, DMG_ROM_blob[cpu_addr_new & 0xFF]);
-    }
-  }
-
-  if (cpu_signals.SIG_IN_CPU_RDp.state && (cpu_addr_new == 0xFF50)) {
-    cpu_dbus_new.BUS_CPU_D00p.state = cpu_signals.TEPU_BOOT_BITn.state;
-  }
-
-  SATO_BOOT_BITn = or2(cpu_dbus_new.BUS_CPU_D00p.state, cpu_signals.TEPU_BOOT_BITn.state);
-}
-
-//------------------------------------------------------------------------------------------------------------------------

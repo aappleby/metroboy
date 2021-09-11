@@ -3020,11 +3020,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     auto win_map_x_old = bit_pack(win_x);
 
-    if (posedge(VETU_WIN_MAPp_old, VETU_WIN_MAPp_new)) {
+    if (!VETU_WIN_MAPp_old && VETU_WIN_MAPp_new) {
       bit_unpack(win_x, win_map_x_old + 1);
     }
 
-    if (bit(XOFO_WIN_RSTp)) bit_clear(win_x);
+    if (XOFO_WIN_RSTp) bit_clear(win_x);
 
     auto win_map_x_new = bit_pack(win_x);
 
@@ -3035,11 +3035,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     auto win_y_old = REPU_VBLANKp ? 0 : bit_pack(win_y);
 
-    if (negedge(PYNU_WIN_MODE_Ap_old, PYNU_WIN_MODE_Ap_new)) {
+    if (PYNU_WIN_MODE_Ap_old && !PYNU_WIN_MODE_Ap_new) {
       bit_unpack(win_y, win_y_old + 1);
     }
 
-    if (bit(REPU_VBLANKp)) {
+    if (REPU_VBLANKp) {
       win_y.VYNO_WIN_TILE_Y0 = 0;
       win_y.VUJO_WIN_TILE_Y1 = 0;
       win_y.VYMU_WIN_TILE_Y2 = 0;
@@ -3053,7 +3053,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto win_y_new = bit_pack(win_y);
 
 
-    if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, PYNU_WIN_MODE_Ap_new))) {
+    if (tile_fetcher.LONY_FETCHINGp.state && !tile_fetcher.MESU_BFETCH_S1p.state && !tile_fetcher.NYVA_BFETCH_S2p.state && PYNU_WIN_MODE_Ap_new) {
       uint32_t addr = 0;
 
       auto wx = bit_pack_inv(&win_x.WYKA_WIN_MAP_X0, 5);
@@ -3063,7 +3063,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_unpack(&vram_abus.BUS_VRAM_A05n, 5, wy);
       bit_copy_inv(&vram_abus.BUS_VRAM_A05n, 5, &win_y.TUFU_WIN_MAP_Y0);
 
-      addr |= bit(reg_lcdc.WOKY_LCDC_WINMAPn.state) << 10;
+      addr |= reg_lcdc.WOKY_LCDC_WINMAPn.state << 10;
 
       vram_abus.BUS_VRAM_A10n.state = get_bit(addr, 10);
       vram_abus.BUS_VRAM_A11n.state = get_bit(addr, 11);
@@ -3073,13 +3073,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // BG/Win tile read address
 
-    if (bit(and2(tile_fetcher.LONY_FETCHINGp.state, or2(tile_fetcher.MESU_BFETCH_S1p.state, tile_fetcher.NYVA_BFETCH_S2p.state)))) {
+    if (tile_fetcher.LONY_FETCHINGp.state && (tile_fetcher.MESU_BFETCH_S1p.state || tile_fetcher.NYVA_BFETCH_S2p.state)) {
       uint32_t addr  = 0;
 
-      addr |= bit(tile_fetcher.NYVA_BFETCH_S2p.state) << 0;
-      addr |= (bit(PYNU_WIN_MODE_Ap_new) ? bit_pack(&win_y, 3) : bit_mask(sum_y, 3)) << 1;
+      addr |= tile_fetcher.NYVA_BFETCH_S2p.state << 0;
+      addr |= (PYNU_WIN_MODE_Ap_new ? bit_pack(&win_y, 3) : bit_mask(sum_y, 3)) << 1;
       addr |= bit_pack(tile_temp_b) << 4;
-      addr |= bit(and2(~tile_temp_b.PYJU_TILE_DB7p.state, reg_lcdc.WEXU_LCDC_BGTILEn.state)) << 12;
+      addr |= (!tile_temp_b.PYJU_TILE_DB7p.state && reg_lcdc.WEXU_LCDC_BGTILEn.state) << 12;
 
       bit_unpack_inv(vram_abus, addr);
     }
@@ -3087,15 +3087,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // Sprite read address
 
-    if (bit(sprite_fetcher.TEXY_SFETCHINGp.state)) {
+    if (sprite_fetcher.TEXY_SFETCHINGp.state) {
       uint32_t addr = 1 << 12;
 
-      addr |= bit(sprite_fetcher.VONU_SFETCH_S1p_D4.state);
+      addr |= sprite_fetcher.VONU_SFETCH_S1p_D4.state;
 
       auto line = bit_pack(sprite_lbus) ^ bit_widen(!oam_temp_b.YZOS_OAM_DB6p, 4);
       auto tile = bit_pack(oam_temp_a);
 
-      if (bit(reg_lcdc.XYMO_LCDC_SPSIZEn)) {
+      if (reg_lcdc.XYMO_LCDC_SPSIZEn) {
         addr |= ((tile & 0b11111111) << 4) | ((line & 0b01111) << 1);
       }
       else {
@@ -3115,14 +3115,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // CPU bus to Vram data bus
 
-    if (bit(and4(cpu_signals.ABUZ_EXT_RAM_CS_CLK, XYMU_RENDERINGn, cpu_addr_vram_new, cpu_signals.SIG_IN_CPU_WRp.state))) {
+    if (cpu_signals.ABUZ_EXT_RAM_CS_CLK && XYMU_RENDERINGn && cpu_addr_vram_new && cpu_signals.SIG_IN_CPU_WRp.state) {
       bit_copy(vram_dbus, cpu_dbus_new);
     }
 
     //--------------------------------------------
     // Vram control pins
 
-    if (bit(XYMU_RENDERINGn.state)) {
+    if (XYMU_RENDERINGn.state) {
       wire APOV_CPU_WRp = CLK_xxxxEFGx && cpu_signals.SIG_IN_CPU_WRp.state;
       wire ABUZ_EXT_RAM_CS_CLK = CLK_xxCDEFGH && cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
 
@@ -3131,13 +3131,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
         vram_ext_ctrl.PIN_45_VRAM_OEn.state = 1;
       }
       else {
-        wire SUTU_MCSn = nand2(cpu_addr_vram_new, ABUZ_EXT_RAM_CS_CLK);
-        vram_ext_ctrl.PIN_43_VRAM_CSn.state = ~SUTU_MCSn;
-        vram_ext_ctrl.PIN_45_VRAM_OEn.state = bit(nand2(cpu_addr_vram_new, cpu_signals.SIG_IN_CPU_WRp.state));
+        vram_ext_ctrl.PIN_43_VRAM_CSn.state = cpu_addr_vram_new && ABUZ_EXT_RAM_CS_CLK;
+        vram_ext_ctrl.PIN_45_VRAM_OEn.state = !cpu_addr_vram_new || !cpu_signals.SIG_IN_CPU_WRp.state;
       }
 
-      wire SOHY_MWRn = nand3(cpu_addr_vram_new, APOV_CPU_WRp, ABUZ_EXT_RAM_CS_CLK);
-      vram_ext_ctrl.PIN_49_VRAM_WRn.state = ~SOHY_MWRn;
+      vram_ext_ctrl.PIN_49_VRAM_WRn.state = cpu_addr_vram_new && APOV_CPU_WRp && ABUZ_EXT_RAM_CS_CLK;
     }
     else {
       if (dma_addr_vram_new) {
@@ -3153,8 +3151,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       else if (sprite_fetcher.TEXY_SFETCHINGp.state) {
         vram_ext_ctrl.PIN_43_VRAM_CSn.state = 1;
         vram_ext_ctrl.PIN_49_VRAM_WRn.state = 0;
-        wire RACU_MOEn = and2(sprite_fetcher.TYFO_SFETCH_S0p_D1.state, ~sprite_fetcher.TOXE_SFETCH_S0p.state);
-        vram_ext_ctrl.PIN_45_VRAM_OEn.state = !bit(RACU_MOEn);
+        vram_ext_ctrl.PIN_45_VRAM_OEn.state = !sprite_fetcher.TYFO_SFETCH_S0p_D1.state || sprite_fetcher.TOXE_SFETCH_S0p.state;
       }
       else {
         vram_ext_ctrl.PIN_43_VRAM_CSn.state = 0;

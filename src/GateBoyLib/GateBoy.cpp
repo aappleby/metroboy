@@ -2523,7 +2523,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (!rendering_new) {
-    tile_fetcher.LYZU_BFETCH_S0p_D1.rst();
+    tile_fetcher.LYZU_BFETCH_S0p_D1.state = 0;
   }
 
   if ((bfetch_phase_old < 10) && DELTA_ODD) {
@@ -2531,22 +2531,20 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   auto lyry_old = tile_fetcher.LYRY_BFETCH_DONEp.state;
-  tile_fetcher.LYRY_BFETCH_DONEp = and2(tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.NYVA_BFETCH_S2p.state);
+  tile_fetcher.LYRY_BFETCH_DONEp = tile_fetcher.LAXU_BFETCH_S0p.state && tile_fetcher.NYVA_BFETCH_S2p.state;
 
   if (DELTA_ODD) {
     tile_fetcher.LOVY_FETCH_DONEp.state = lyry_old;
   }
 
-  wire BFETCH_RSTp = or5(
-    sprite_scanner.AVAP_SCAN_DONE_TRIGp.state,
-    and2(PYNU_WIN_MODE_Ap_new, ~win_reg.NOPA_WIN_MODE_Bp.state),
-    and2(win_reg.RYFA_WIN_FETCHn_A.state, ~win_reg.RENE_WIN_FETCHn_B.state),
-    and2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.state),
-    and4(rendering_new, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state)
-  );
+  wire BFETCH_RSTp =
+    sprite_scanner.AVAP_SCAN_DONE_TRIGp.state ||
+    (PYNU_WIN_MODE_Ap_new && !win_reg.NOPA_WIN_MODE_Bp.state) ||
+    (win_reg.RYFA_WIN_FETCHn_A.state && !win_reg.RENE_WIN_FETCHn_B.state) ||
+    (!win_reg.RYDY_WIN_HITp.state && win_reg.SOVY_WIN_HITp.state) ||
+    (rendering_new && !tile_fetcher.POKY_PRELOAD_LATCHp.state && tile_fetcher.NYKA_FETCH_DONEp.state && tile_fetcher.PORY_FETCH_DONEp.state);
 
-
-  if (bit(BFETCH_RSTp)) {
+  if (BFETCH_RSTp) {
     tile_fetcher.LAXU_BFETCH_S0p.rst();
     tile_fetcher.MESU_BFETCH_S1p.rst();
     tile_fetcher.NYVA_BFETCH_S2p.rst();
@@ -2558,7 +2556,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     tile_fetcher.LYRY_BFETCH_DONEp.state = 0;
   }
 
-  if (!bit(and2(~tile_fetcher.LOVY_FETCH_DONEp.state, rendering_new))) {
+  if (tile_fetcher.LOVY_FETCH_DONEp.state || !rendering_new) {
     tile_fetcher.LONY_FETCHINGp.state = 0;
   }
 
@@ -2569,9 +2567,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // Fine match counter
 
   wire TEVO_WIN_FETCH_TRIGp_new = 0;
-  if (bit(and2(win_reg.RYFA_WIN_FETCHn_A.state, ~win_reg.RENE_WIN_FETCHn_B.state))) TEVO_WIN_FETCH_TRIGp_new = 1;
-  if (bit(and2(~win_reg.RYDY_WIN_HITp.state, win_reg.SOVY_WIN_HITp.state))) TEVO_WIN_FETCH_TRIGp_new = 1;
-  if (bit(and4(~XYMU_RENDERINGn.state, ~tile_fetcher.POKY_PRELOAD_LATCHp.state, tile_fetcher.NYKA_FETCH_DONEp.state, tile_fetcher.PORY_FETCH_DONEp.state))) TEVO_WIN_FETCH_TRIGp_new = 1;
+  if (win_reg.RYFA_WIN_FETCHn_A.state && !win_reg.RENE_WIN_FETCHn_B.state) TEVO_WIN_FETCH_TRIGp_new = 1;
+  if (!win_reg.RYDY_WIN_HITp.state && win_reg.SOVY_WIN_HITp.state) TEVO_WIN_FETCH_TRIGp_new = 1;
+  if (!XYMU_RENDERINGn.state && !tile_fetcher.POKY_PRELOAD_LATCHp.state && tile_fetcher.NYKA_FETCH_DONEp.state && tile_fetcher.PORY_FETCH_DONEp.state) TEVO_WIN_FETCH_TRIGp_new = 1;
 
   wire NYXU_BFETCH_RSTn = nor3(sprite_scanner.AVAP_SCAN_DONE_TRIGp.state, and2(PYNU_WIN_MODE_Ap_new, ~win_reg.NOPA_WIN_MODE_Bp.state), TEVO_WIN_FETCH_TRIGp_new);
 

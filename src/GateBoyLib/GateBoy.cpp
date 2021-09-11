@@ -2845,8 +2845,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     ext_abus.PIN_16_A15.state = cpu_signals.ABUZ_EXT_RAM_CS_CLK.state && !cpu_abus_new.BUS_CPU_A15p.state;
   }
 
-
-  CHECK_N(bit(cpu_signals.SIG_IN_CPU_RDp.state) && bit(cpu_signals.SIG_IN_CPU_WRp.state));
+  CHECK_N(cpu_signals.SIG_IN_CPU_RDp.state && cpu_signals.SIG_IN_CPU_WRp.state);
 
   if (cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state && !cpu_addr_vram_new) {
     bit_copy_inv(ext_dbus, cpu_dbus_new);
@@ -2858,7 +2857,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Ext read
 
-  if (bit(ext_ctrl.PIN_79_RDn.state)) {
+  if (ext_ctrl.PIN_79_RDn.state) {
     uint16_t ext_addr = (uint16_t)bit_pack_inv(ext_abus);
     
     auto rom_addr_mask = cart_rom_addr_mask(cart_blob);
@@ -2871,8 +2870,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     if (cart_has_mbc1(cart_blob)) {
 
-      bool mbc1_ram_en = bit(ext_mbc.MBC1_RAM_EN.state);
-      bool mbc1_mode = bit(ext_mbc.MBC1_MODE.state);
+      bool mbc1_ram_en = ext_mbc.MBC1_RAM_EN.state;
+      bool mbc1_mode = ext_mbc.MBC1_MODE.state;
 
       uint32_t mbc1_rom0_bank = mbc1_mode ? bit_pack(&ext_mbc.MBC1_BANK5, 2) : 0;
       uint32_t mbc1_rom0_addr = ((ext_addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & rom_addr_mask;
@@ -2916,20 +2915,20 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // Ext write
 
 
-  if (bit(ext_ctrl.PIN_78_WRn.state)) {
+  if (ext_ctrl.PIN_78_WRn.state) {
     auto ext_addr = bit_pack_inv(ext_abus);
     auto region = ext_addr >> 13;
     auto data_out = bit_pack_inv(ext_dbus);
 
     if (cart_has_mbc1(cart_blob)) {
-      bool mbc1_ram_en = bit(ext_mbc.MBC1_RAM_EN.state);
-      bool mbc1_mode = bit(ext_mbc.MBC1_MODE.state);
+      bool mbc1_ram_en = ext_mbc.MBC1_RAM_EN.state;
+      bool mbc1_mode = ext_mbc.MBC1_MODE.state;
 
       auto mbc1_ram_bank = mbc1_mode ? bit_pack(&ext_mbc.MBC1_BANK5, 2) : 0;
       auto mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
 
       switch (region) {
-      case 0: ext_mbc.MBC1_RAM_EN = bit((data_out & 0x0F) == 0x0A); break;
+      case 0: ext_mbc.MBC1_RAM_EN = (data_out & 0x0F) == 0x0A; break;
       case 1: bit_unpack(&ext_mbc.MBC1_BANK0, 5, data_out); break;
       case 2: bit_unpack(&ext_mbc.MBC1_BANK5, 2, data_out); break;
       case 3: ext_mbc.MBC1_MODE = (data_out & 1); break;

@@ -2032,11 +2032,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     sprite_fetcher.SEBA_SFETCH_S1p_D5.state = 0;
   }
 
-  sprite_fetcher.TEXY_SFETCHINGp = and2(or2(sprite_fetcher.TULY_SFETCH_S1p, sprite_fetcher.VONU_SFETCH_S1p_D4), rendering_new);
+  sprite_fetcher.TEXY_SFETCHINGp = (sprite_fetcher.TULY_SFETCH_S1p || sprite_fetcher.VONU_SFETCH_S1p_D4) && rendering_new;
 
   wire WUTY_SFETCH_DONE_TRIGp_old = sprite_fetcher.WUTY_SFETCH_DONE_TRIGp;
 
-  sprite_fetcher.WUTY_SFETCH_DONE_TRIGp = nor4(~sprite_fetcher.TYFO_SFETCH_S0p_D1, ~sprite_fetcher.TOXE_SFETCH_S0p, ~sprite_fetcher.SEBA_SFETCH_S1p_D5, ~sprite_fetcher.VONU_SFETCH_S1p_D4);
+  sprite_fetcher.WUTY_SFETCH_DONE_TRIGp = sprite_fetcher.TYFO_SFETCH_S0p_D1 && sprite_fetcher.TOXE_SFETCH_S0p && sprite_fetcher.SEBA_SFETCH_S1p_D5 && sprite_fetcher.VONU_SFETCH_S1p_D4;
 
   wire WUTY_SFETCH_DONE_TRIGp_new = sprite_fetcher.WUTY_SFETCH_DONE_TRIGp;
 
@@ -2061,11 +2061,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     win_reg.NOPA_WIN_MODE_Bp.state = 0;
   }
 
-  if (bit(win_reg.NUNU_WIN_MATCHp.state)) {
+  if (win_reg.NUNU_WIN_MATCHp.state) {
     win_reg.PYNU_WIN_MODE_Ap.state = 1;
   }
 
-  if (bit(nand3(winen_new, !line_rst_new, !vid_rst_new))) {
+  if (!winen_new || line_rst_new || vid_rst_new) {
     win_reg.PYNU_WIN_MODE_Ap.state = 0;
   }
 
@@ -2082,7 +2082,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     tile_fetcher.PORY_FETCH_DONEp.state = tile_fetcher.NYKA_FETCH_DONEp.state;
   }
 
-  if (!bit(nand2(PYNU_WIN_MODE_Ap_new, ~win_reg.NOPA_WIN_MODE_Bp.state))) {
+  if (PYNU_WIN_MODE_Ap_new && !win_reg.NOPA_WIN_MODE_Bp.state) {
     tile_fetcher.PORY_FETCH_DONEp.state = 0;
     tile_fetcher.NYKA_FETCH_DONEp.state = 0;
   }

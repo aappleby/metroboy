@@ -2955,7 +2955,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
 
-  if (bit(and4(cpu_signals.SIG_IN_CPU_RDp.state, cpu_signals.SIG_IN_CPU_EXT_BUSp.state, !cpu_addr_vram_new, cpu_signals.SIG_IN_CPU_LATCH_EXT.state))) {
+  if (cpu_signals.SIG_IN_CPU_RDp.state && cpu_signals.SIG_IN_CPU_EXT_BUSp.state && !cpu_addr_vram_new && cpu_signals.SIG_IN_CPU_LATCH_EXT.state) {
     bit_copy_inv(cpu_dbus_new, ext_data_latch);
   }
   else {
@@ -2969,7 +2969,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // CPU vram read address
 
-    if (bit(nor2(dma_addr_vram_new, ~XYMU_RENDERINGn.state))) {
+    if (!dma_addr_vram_new && XYMU_RENDERINGn.state) {
       bit_copy_inv(vram_abus, cpu_abus_new);
     }
 
@@ -3002,7 +3002,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto sum_x = px + scx;
     auto sum_y = ly + scy;
 
-    if (bit(and4(tile_fetcher.LONY_FETCHINGp.state, ~tile_fetcher.MESU_BFETCH_S1p.state, ~tile_fetcher.NYVA_BFETCH_S2p.state, ~PYNU_WIN_MODE_Ap_new))) {
+    if (tile_fetcher.LONY_FETCHINGp.state && !tile_fetcher.MESU_BFETCH_S1p.state && !tile_fetcher.NYVA_BFETCH_S2p.state && !PYNU_WIN_MODE_Ap_new) {
       bit_unpack_inv(&vram_abus.BUS_VRAM_A00n, 5, sum_x >> 3);
       bit_unpack_inv(&vram_abus.BUS_VRAM_A05n, 5, sum_y >> 3);
       vram_abus.BUS_VRAM_A10n.state = reg_lcdc.XAFO_LCDC_BGMAPn.state;
@@ -3013,10 +3013,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // Win coord x
 
-    wire VETU_WIN_MAPp_old = and2(TEVO_WIN_FETCH_TRIGp_old, PYNU_WIN_MODE_Ap_old);
-    wire VETU_WIN_MAPp_new = and2(TEVO_WIN_FETCH_TRIGp_new, PYNU_WIN_MODE_Ap_new);
+    wire VETU_WIN_MAPp_old = TEVO_WIN_FETCH_TRIGp_old && PYNU_WIN_MODE_Ap_old;
+    wire VETU_WIN_MAPp_new = TEVO_WIN_FETCH_TRIGp_new && PYNU_WIN_MODE_Ap_new;
 
-    wire XOFO_WIN_RSTp = nand3(winen_new, !line_rst_new, ~reg_lcdc.XONA_LCDC_LCDENn.state);
+    wire XOFO_WIN_RSTp = !winen_new || line_rst_new || reg_lcdc.XONA_LCDC_LCDENn.state;
 
     auto win_map_x_old = bit_pack(win_x);
 

@@ -1472,12 +1472,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   auto cpu_addr_new = bit_pack(cpu_abus_new);
 
-  auto cpu_addr_vram_new = (cpu_addr_new >= 0x8000) && (cpu_addr_new <= 0x9FFF);
-  auto cpu_addr_ram_new = (cpu_addr_new >= 0xA000) && (cpu_addr_new <= 0xFDFF);
+  bool cpu_addr_vram_new = (cpu_addr_new >= 0x8000) && (cpu_addr_new <= 0x9FFF);
+  bool cpu_addr_ram_new = (cpu_addr_new >= 0xA000) && (cpu_addr_new <= 0xFDFF);
   //auto cpu_addr_oam_new = (cpu_addr_new >= 0xFE00) && (cpu_addr_new <= 0xFEFF);
   //auto cpu_data_new = (uint8_t)pack(8, (BitBase*)&cpu_dbus_new.BUS_CPU_D00p);
-  auto cpu_rd_new = cpu_signals.SIG_IN_CPU_RDp;
-  auto cpu_wr_new = cpu_signals.SIG_IN_CPU_WRp;
+  bool cpu_rd_new = cpu_signals.SIG_IN_CPU_RDp;
+  bool cpu_wr_new = cpu_signals.SIG_IN_CPU_WRp;
 
   //-----------------------------------------------------------------------------
 
@@ -2994,7 +2994,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
       addr |= bit(sprite_fetcher.VONU_SFETCH_S1p_D4.state);
 
-      auto line = bit_pack(sprite_lbus) ^ bit_widen(~oam_temp_b.YZOS_OAM_DB6p, 4);
+      auto line = bit_pack(sprite_lbus) ^ bit_widen(!oam_temp_b.YZOS_OAM_DB6p, 4);
       auto tile = bit_pack(oam_temp_a);
 
       if (bit(reg_lcdc.XYMO_LCDC_SPSIZEn)) {
@@ -3025,8 +3025,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // Vram control pins
 
     if (bit(XYMU_RENDERINGn.state)) {
-      wire APOV_CPU_WRp = CLK_xxxxEFGx & cpu_signals.SIG_IN_CPU_WRp.state;
-      wire ABUZ_EXT_RAM_CS_CLK = CLK_xxCDEFGH & cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
+      wire APOV_CPU_WRp = CLK_xxxxEFGx && cpu_signals.SIG_IN_CPU_WRp.state;
+      wire ABUZ_EXT_RAM_CS_CLK = CLK_xxCDEFGH && cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
 
       if (dma_addr_vram_new) {
         vram_ext_ctrl.PIN_43_VRAM_CSn.state = 1;
@@ -3171,8 +3171,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       }
 
       oam_ctrl.SIG_OAM_CLKn .state = CLK_ABCDxxxx;
-      oam_ctrl.SIG_OAM_WRn_A.state = bit(or2(~CLK_xxxxEFGH, ~oam_abus.BUS_OAM_A00n.state));
-      oam_ctrl.SIG_OAM_WRn_B.state = bit(or2(~CLK_xxxxEFGH,  oam_abus.BUS_OAM_A00n.state));
+      oam_ctrl.SIG_OAM_WRn_A.state = bit(or2(CLK_ABCDxxxx, !oam_abus.BUS_OAM_A00n.state));
+      oam_ctrl.SIG_OAM_WRn_B.state = bit(or2(CLK_ABCDxxxx,  oam_abus.BUS_OAM_A00n.state));
       oam_ctrl.SIG_OAM_OEn  .state = !cpu_reading_oam;
     }
     else if (scanning_new) {
@@ -3202,7 +3202,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       }
       oam_ctrl.SIG_OAM_CLKn .state = bit(CLK_ABCDxxxx);
       oam_ctrl.SIG_OAM_WRn_A.state = bit(nand2(cpu_wr,  oam_abus.BUS_OAM_A00n.state));
-      oam_ctrl.SIG_OAM_WRn_B.state = bit(nand2(cpu_wr, ~oam_abus.BUS_OAM_A00n.state));
+      oam_ctrl.SIG_OAM_WRn_B.state = bit(nand2(cpu_wr, !oam_abus.BUS_OAM_A00n.state));
       oam_ctrl.SIG_OAM_OEn  .state = bit(nand2(cpu_rd, dbus_busy));
     }
     else {
@@ -3226,10 +3226,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       oam_data_b = (uint8_t)bit_pack_inv(oam_dbus_b);
 
       if (negedge(oam_clk_old, oam_clk_new)) {
-        if (bit(~oam_ctrl.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-        if (bit(~oam_ctrl.SIG_OAM_WRn_B.state)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+        if (bit(!oam_ctrl.SIG_OAM_WRn_A.state)) oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+        if (bit(!oam_ctrl.SIG_OAM_WRn_B.state)) oam_ram[(oam_addr << 1) + 1] = oam_data_b;
       }
-      oam_ctrl.old_oam_clk = bit(~oam_ctrl.SIG_OAM_CLKn.state);
+      oam_ctrl.old_oam_clk = bit(!oam_ctrl.SIG_OAM_CLKn.state);
 
       oam_data_a = oam_ram[(oam_addr << 1) + 0];
       oam_data_b = oam_ram[(oam_addr << 1) + 1];
@@ -3243,7 +3243,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bool latch_oam = false;
     latch_oam |= cpu_reading_oam;
     latch_oam |= scanning_new && gen_clk_new(0b01100110);
-    latch_oam |= rendering_new && (bool)bit(and3(~sprite_fetcher.TULY_SFETCH_S1p.state, ~sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state));
+    latch_oam |= rendering_new && (bool)bit(and3(!sprite_fetcher.TULY_SFETCH_S1p.state, !sprite_fetcher.TESE_SFETCH_S2p.state, sprite_fetcher.TYFO_SFETCH_S0p_D1.state));
 
     if (latch_oam) {
       bit_unpack_inv(oam_dbus_a, oam_data_a);
@@ -3268,7 +3268,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   {
     wire CSp = (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE);
 
-    if (bit(zram_bus.clk_old.state & ~cpu_signals.TAPU_CPU_WRp.state & CSp)) {
+    if (bit(zram_bus.clk_old.state & !cpu_signals.TAPU_CPU_WRp.state & CSp)) {
       zero_ram[cpu_addr_new & 0x007F] = (uint8_t)bit_pack(cpu_dbus_old);
     }
     zram_bus.clk_old = cpu_signals.TAPU_CPU_WRp.state;
@@ -3303,9 +3303,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (cpu_addr_new == 0xFF41 && cpu_rd_new) {
       uint8_t data = 0x80;
 
-      data |= bit(~XYMU_RENDERINGn.state | lcd.POPU_y144p.state) << 0;
-      data |= bit(~XYMU_RENDERINGn.state | sprite_scanner.ACYL_SCANNINGp.state) << 1;
-      data |= bit(~RUPO_LYC_MATCHn.state) << 2;
+      data |= (!XYMU_RENDERINGn.state || lcd.POPU_y144p.state) << 0;
+      data |= (!XYMU_RENDERINGn.state || sprite_scanner.ACYL_SCANNINGp.state) << 1;
+      data |= (!RUPO_LYC_MATCHn.state) << 2;
       data |= (pack_stat ^ 0b1111) << 3;
 
       pack_cpu_dbus_new = data;
@@ -3313,9 +3313,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
     bool int_stat_new = 0;
-    if (!get_bit(pack_stat, 0) && bit(and2(wodu_hblank_new, ~lcd.POPU_y144p.state))) int_stat_new = 1;
+    if (!get_bit(pack_stat, 0) && bit(and2(wodu_hblank_new, !lcd.POPU_y144p.state))) int_stat_new = 1;
     if (!get_bit(pack_stat, 1) && bit(lcd.POPU_y144p.state)) int_stat_new = 1;
-    if (!get_bit(pack_stat, 2) && bit(and2(~lcd.POPU_y144p.state, lcd.RUTU_x113p.qp_new()))) int_stat_new = 1;
+    if (!get_bit(pack_stat, 2) && bit(and2(!lcd.POPU_y144p.state, lcd.RUTU_x113p.qp_new()))) int_stat_new = 1;
     if (!get_bit(pack_stat, 3) && bit(ROPO_LY_MATCH_SYNCp.state)) int_stat_new = 1;
 
     wire int_lcd_new = lcd.POPU_y144p.state;

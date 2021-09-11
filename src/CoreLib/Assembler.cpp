@@ -100,7 +100,7 @@ void Assembler::write_source() {
   dump("%s", source_header);
   disassemble(dump);
 
-  save_array((name + ".s").c_str(), dump.s);
+  save_blob((name + ".s").c_str(), dump.s.data(), dump.s.size());
 }
 
 void Assembler::begin_label(std::string label) {

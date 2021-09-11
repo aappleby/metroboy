@@ -206,7 +206,7 @@ void commit_blob(void* blob, size_t size) {
       base[i] = (s & 0b00001111) | BIT_OLD;
     }
   }
-  ASSERT_N(bad_bits);
+  CHECK_N(bad_bits);
 }
 
 //-----------------------------------------------------------------------------

@@ -40,7 +40,9 @@ struct GateBoyPair {
   bool next_phase(const blob& cart_blob) {
     bool result = true;
     result &= gba.next_phase(cart_blob);
-    result &= gbb.next_phase(cart_blob);
+    if (config_regression) {
+      result &= gbb.next_phase(cart_blob);
+    }
     result &= check_sync();
     return result;
   }
@@ -133,11 +135,13 @@ struct GateBoyPair {
   }
 
   bool check_sync() {
-    if (gba.hash_regression() != gbb.hash_regression()) {
-      LOG_R("Regression test mismatch @ phase %lld!\n", gba.phase_total);
-      diff_gb(&gba, &gbb, 0x01);
-      __debugbreak();
-      return false;
+    if (config_regression) {
+      if (gba.hash_regression() != gbb.hash_regression()) {
+        LOG_R("Regression test mismatch @ phase %lld!\n", gba.phase_total);
+        diff_gb(&gba, &gbb, 0x01);
+        __debugbreak();
+        return false;
+      }
     }
     return true;
   }

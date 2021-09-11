@@ -70,8 +70,10 @@ TestResults run_microtest(std::string filename) {
   TestResults results;
 
   std::string path = "test/microtests/DMG/" + filename;
+  blob rom;
+  rom.resize(file_size(filename.c_str()));
+  load_blob(filename.c_str(), rom.data(), rom.size());
 
-  blob rom = load_blob(path);
   MetroBoy gb;
   gb.reset_to_cart(rom.data(), rom.size());
 

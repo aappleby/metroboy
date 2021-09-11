@@ -55,8 +55,29 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread.start();
   gb_thread.pause();
 
-  gb_thread.load_blob(Assembler::create_dummy_cart());
-  gb_thread.reset_to_bootrom();
+  {
+    const char* app = R"(
+    0150:
+      ld a, $40
+      ld hl, $FF46
+      ld (hl), a
+      jr -2
+    )";
+
+    Assembler as;
+    as.assemble(app);
+    auto blob = as.link();
+
+    for (size_t i = 0; i < 256; i++) {
+      blob[i + 0x4000] = 0xDA;
+    }
+
+    gb_thread.load_cart_blob(blob);
+    gb_thread.reset_to_cart();
+  }
+
+  //gb_thread.load_blob(Assembler::create_dummy_cart());
+  //gb_thread.reset_to_bootrom();
 
   //gb_thread.load_raw_dump("zelda_overworld.dump");
   //gb_thread.load_rom("LinksAwakening.gb");
@@ -186,11 +207,21 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     }
 
     case SDLK_F1: {
-      gb_thread.load_raw_dump("gateboy.raw.dump");
+      const char* filename = "gateboy.raw.dump";
+      LOG_B("Loading raw dump from %s\n", filename);
+      blob raw_dump;
+      ::load_blob(filename, raw_dump);
+      if (!raw_dump.empty()) {
+        gb_thread.load_raw_dump(raw_dump);
+      }
       break;
     }
     case SDLK_F4: {
-      gb_thread.save_raw_dump("gateboy.raw.dump");
+      const char* filename = "gateboy.raw.dump";
+      LOG_B("Saving raw dump to %s\n", filename);
+      blob raw_dump;
+      gb_thread.save_raw_dump(raw_dump);
+      save_blob(filename, raw_dump);
       break;
     }
     case SDLK_r: {
@@ -233,10 +264,17 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     if (event.type == SDL_DROPFILE) {
       std::string filename = event.drop.file;
       if (filename.ends_with("gb")) {
-        gb_thread.load_rom(event.drop.file);
+        LOG_B("Loading cart rom from %s\n", filename.c_str());
+        blob rom;
+        load_blob(event.drop.file, rom);
+        gb_thread.load_cart_blob(rom);
+        gb_thread.reset_to_cart();
       }
       else if (filename.ends_with("dump")) {
-        gb_thread.load_raw_dump(event.drop.file);
+        LOG_B("Loading raw dump from %s\n", filename.c_str());
+        blob dump;
+        load_blob(event.drop.file, dump);
+        gb_thread.load_raw_dump(dump);
       }
       SDL_free(event.drop.file);
     }

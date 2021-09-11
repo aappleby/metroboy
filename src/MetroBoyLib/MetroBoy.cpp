@@ -110,10 +110,10 @@ void MetroBoy::next_phase() {
   if (dma_src_vbus) dma_data_latch = vbus_ack.data_lo;
   if (dma_src_ebus) dma_data_latch = ebus_ack.data_lo;
 
-  CHECK_N(ibus_ack.read > 1);
-  CHECK_N(ebus_ack.read > 1);
-  CHECK_N(vbus_ack.read > 1);
-  CHECK_N(obus_ack.read > 1);
+  DCHECK_N(ibus_ack.read > 1);
+  DCHECK_N(ebus_ack.read > 1);
+  DCHECK_N(vbus_ack.read > 1);
+  DCHECK_N(obus_ack.read > 1);
 
   if (DELTA_HA) {
     bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;

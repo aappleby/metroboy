@@ -77,21 +77,21 @@ struct BitBase {
 
   void check_old() const {
     if (config_drive_flags) {
-      CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
+      DCHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
     }
 
     if (config_oldnew_flags) {
-      CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_OLD);
+      DCHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_OLD);
     }
   }
 
   void check_new() const {
     if (config_drive_flags) {
-      CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
+      DCHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
     }
 
     if (config_oldnew_flags) {
-      CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
+      DCHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
     }
   }
 };
@@ -509,7 +509,7 @@ struct Bus : public BitBase {
     check_new();
 
     // if both the new and old state are both driven, that's a bus collision.
-    CHECK_N((t.state & TRI_DRIVEN) && (state & BIT_DRIVEN));
+    DCHECK_N((t.state & TRI_DRIVEN) && (state & BIT_DRIVEN));
 
     if (t.state & TRI_DRIVEN) state = t.state;
   }
@@ -554,11 +554,11 @@ struct PinIO : public PinBase {
     else {
       if (bit(int_LO)) {
         // shootthrough, this is bad
-        CHECK_P(false);
+        DCHECK_P(false);
       }
       else {
         // hi-z, can be driven externally
-        CHECK_N(bit(int_PUn)); // must not be floating
+        DCHECK_N(bit(int_PUn)); // must not be floating
 
         // this is the _internal_ bit, so if this is pulled high externally it should read 0 internally.
         // i think...
@@ -569,13 +569,13 @@ struct PinIO : public PinBase {
     }
 
     if (bit(ext_OEp)) {
-      CHECK_N(state & BIT_DRIVEN);
+      DCHECK_N(state & BIT_DRIVEN);
       // External bit is inverted when crossing the pin
       state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(~ext_Dp));
     }
 
-    CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-    CHECK_P(bool(state & BIT_NEW));
+    DCHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
+    DCHECK_P(bool(state & BIT_NEW));
   }
 };
 

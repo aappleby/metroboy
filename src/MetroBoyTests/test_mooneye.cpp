@@ -108,7 +108,8 @@ static const std::string mooneye_mbc1_tests[] = {
 void run_mooneye_test(const std::string& prefix, const std::string& name) {
   std::string filename = prefix + name;
   blob rom;
-  load_array(filename, rom);
+  rom.resize(file_size(filename.c_str()));
+  load_blob(filename.c_str(), rom.data(), rom.size());
 
   MetroBoy gameboy;
   gameboy.reset_to_cart(rom.data(), rom.size());

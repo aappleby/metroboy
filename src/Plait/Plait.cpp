@@ -145,18 +145,18 @@ void PlaitCell::dump(Dumper& d) {
 //--------------------------------------------------------------------------------
 
 void PlaitCell::add_root_node(PlaitNode* node) {
-  CHECK_N(node->plait_cell);
-  CHECK_N(node->name == "core");
-  CHECK_N(root_nodes[node->name]);
+  DCHECK_N(node->plait_cell);
+  DCHECK_N(node->name == "core");
+  DCHECK_N(root_nodes[node->name]);
 
   root_nodes[node->name] = node;
   node->plait_cell = this;
 }
 
 void PlaitCell::add_leaf_node(PlaitNode* node) {
-  CHECK_N(node->plait_cell);
-  CHECK_N(node->name == "core");
-  CHECK_N(leaf_nodes[node->name]);
+  DCHECK_N(node->plait_cell);
+  DCHECK_N(node->name == "core");
+  DCHECK_N(leaf_nodes[node->name]);
 
   leaf_nodes[node->name] = node;
   node->plait_cell = this;
@@ -169,7 +169,7 @@ PlaitNode* PlaitCell::find_root_node(const std::string& name) const {
 
   auto it = root_nodes.find(name);
   if (it == root_nodes.end()) {
-    //CHECK_P(false);
+    //ASSERT_P(false);
     return nullptr;
   }
   else {
@@ -182,7 +182,7 @@ PlaitNode* PlaitCell::find_leaf_node(const std::string& name) const {
 
   auto it = leaf_nodes.find(name);
   if (it == leaf_nodes.end()) {
-    //CHECK_P(false);
+    //ASSERT_P(false);
     return nullptr;
   }
   else {
@@ -339,7 +339,7 @@ void Plait::swap_output_edges(PlaitNode* old_node, PlaitNode* new_node) {
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void Plait::delete_node(PlaitNode* dead_node) {
-  CHECK_N(dead_node->name == "core");
+  DCHECK_N(dead_node->name == "core");
 
   auto plait_cell = dead_node->plait_cell;
   plait_cell->root_nodes.erase(dead_node->name);
@@ -491,7 +491,7 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
     }
     */
 
-    //CHECK_P(die_trace);
+    //ASSERT_P(die_trace);
     if (!die_trace) continue;
 
     if (output_port.empty()) output_port = die_trace->output_port;
@@ -587,18 +587,18 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   for (auto& [tag, plait_cell] : cell_map) {
     // Every cell should have a core node.
     CHECK_P(plait_cell->core_node);
-    CHECK_N(plait_cell->core_node->name.empty());
+    DCHECK_N(plait_cell->core_node->name.empty());
     CHECK_P(plait_cell->core_node->plait_cell == plait_cell);
 
     // Every node should have a link to the cell.
     for (auto& [name, root] : plait_cell->root_nodes) {
       CHECK_P(root);
-      CHECK_N(root->name.empty());
+      DCHECK_N(root->name.empty());
       CHECK_P(root->plait_cell == plait_cell);
     }
     for (auto& [name, leaf] : plait_cell->leaf_nodes) {
       CHECK_P(leaf);
-      CHECK_N(leaf->name.empty());
+      DCHECK_N(leaf->name.empty());
       CHECK_P(leaf->plait_cell == plait_cell);
     }
   }
@@ -606,15 +606,15 @@ void Plait::from_json(nlohmann::json& jroot, DieDB& die_db) {
   //for (auto& [trace_key, plait_trace] : trace_map_old) {
   for (auto& plait_trace : traces) {
     (void)plait_trace;
-    //CHECK_P(plait_trace->die_trace->plait_trace == plait_trace);
+    //ASSERT_P(plait_trace->die_trace->plait_trace == plait_trace);
     CHECK_P(plait_trace->output_node);
     CHECK_P(plait_trace->input_node);
 
-    //CHECK_P(plait_trace->output_cell_name == plait_trace->die_trace->output_tag);
-    //CHECK_P(plait_trace->output_node_name == plait_trace->output_node->name);
+    //ASSERT_P(plait_trace->output_cell_name == plait_trace->die_trace->output_tag);
+    //ASSERT_P(plait_trace->output_node_name == plait_trace->output_node->name);
 
-    //CHECK_P(plait_trace->input_cell_name == plait_trace->die_trace->input_tag);
-    //CHECK_P(plait_trace->input_node_name == plait_trace->input_node->name);
+    //ASSERT_P(plait_trace->input_cell_name == plait_trace->die_trace->input_tag);
+    //ASSERT_P(plait_trace->input_node_name == plait_trace->input_node->name);
   }
 }
 

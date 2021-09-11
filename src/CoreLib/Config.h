@@ -37,11 +37,13 @@ constexpr bool config_fastmode = false;
 
 static_assert(((int)config_debug + (int)config_regression + (int)config_release + (int)config_fastmode) == 1, "Bad build config");
 
+// debug      - use flags, dchecks, idempotence checks
+// release    - use flags, no dchecks
+// regression - no flags, no dchecks, regression checks against release
+// fast       - no flags, no dchecks
 
-
-
-// Evaluate all CHECK() statements (basically assert)
-constexpr bool config_check        = config_debug | config_release;
+// Evaluate all DCHECK() statements (basically assert)
+constexpr bool config_dcheck       = config_debug;
 
 // Verify that all registers were flagged as NEW after a logic pass, and set them back to OLD.
 constexpr bool config_oldnew_flags = config_debug | config_release;
@@ -50,4 +52,4 @@ constexpr bool config_oldnew_flags = config_debug | config_release;
 constexpr bool config_drive_flags  = config_debug | config_release;
 
 // In debug builds we check that tock_slow() is idempotent.
-constexpr bool config_idempotence = config_debug;
+constexpr bool config_idempotence  = config_debug;

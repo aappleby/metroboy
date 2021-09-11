@@ -256,10 +256,12 @@ struct Dumper {
 
 //-----------------------------------------------------------------------------
 
-#define ASSERT_P(A)  if (!(A)) { LOG_R("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
-#define ASSERT_N(A)  if ((A))  { LOG_R("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
+// Checks that always happen in every build.
+#define CHECK_P(A)  if (!(A)) { LOG_R("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
+#define CHECK_N(A)  if ((A))  { LOG_R("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
 
-#define CHECK_P(A)   if (config_check) {if (!(A)) { LOG_R("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }}
-#define CHECK_N(A)   if (config_check) {if ((A))  { LOG_R("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }}
+// Checks that only happen if "config_dcheck" is on.
+#define DCHECK_P(A)   if (config_dcheck) {if (!(A)) { LOG_R("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }}
+#define DCHECK_N(A)   if (config_dcheck) {if ((A))  { LOG_R("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }}
 
 //-----------------------------------------------------------------------------

@@ -143,15 +143,11 @@ void GateBoyThread::dump(Dumper& d) {
 
 //------------------------------------------------------------------------------
 
-void GateBoyThread::load_raw_dump(const char* filename) {
+void GateBoyThread::load_raw_dump(const blob& raw_dump) {
   CHECK_P(sim_paused());
-
-  LOG_B("Loading raw dump from %s\n", filename);
+  CHECK_N(raw_dump.empty());
 
   clear_steps();
-  blob raw_dump = ::load_blob(filename);
-  if (raw_dump.empty()) return;
-
   gb_a->from_blob(raw_dump);
   gb_b->from_blob(raw_dump);
 
@@ -162,72 +158,46 @@ void GateBoyThread::load_raw_dump(const char* filename) {
 
 //------------------------------------------------------------------------------
 
-void GateBoyThread::save_raw_dump(const char* filename) {
+void GateBoyThread::save_raw_dump(blob& raw_dump) {
   CHECK_P(sim_paused());
-
-  LOG_B("Saving raw dump to %s\n", filename);
-
   clear_steps();
-  blob raw_dump;
   gb_a->to_blob(raw_dump);
   raw_dump.insert(raw_dump.end(), cart_blob.begin(), cart_blob.end());
-  save_blob(filename, raw_dump);
 }
 
 //------------------------------------------------------------------------------
 
-void GateBoyThread::load_blob(const blob& _cart_blob) {
+void GateBoyThread::load_cart_blob(const blob& _cart_blob) {
   CHECK_P(sim_paused());
-
   cart_blob = _cart_blob;
-  reset_to_cart();
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoyThread::load_rom(const char* filename) {
-  CHECK_P(sim_paused());
-
-  clear_steps();
-
-  LOG_B("Loading %s\n", filename);
-
-  cart_blob = ::load_blob(filename);
-
-  LOG_B("GateBoyApp::load_rom cart_blob %p %d\n", cart_blob.data(), (int)cart_blob.size());
-
-  reset_to_cart();
-
-  LOG_B("Loaded %zd bytes from rom %s\n", cart_blob.size(), filename);
 }
 
 //------------------------------------------------------------------------------
 // Load a flat (just raw contents of memory addresses, no individual regs) dump
 // and copy it into the various regs and memory chunks.
 
-void GateBoyThread::load_flat_dump(const char* filename) {
+void GateBoyThread::load_flat_dump(const blob& flat_dump) {
   CHECK_P(sim_paused());
 
-  cart_blob = ::load_blob(filename);
-  reset_to_cart();
+  cart_blob = flat_dump;
+  memcpy(gb_a->vid_ram,  flat_dump.data() + 0x8000, 8192);
+  memcpy(gb_a->cart_ram, flat_dump.data() + 0xA000, 8192);
+  memcpy(gb_a->int_ram,  flat_dump.data() + 0xC000, 8192);
+  memcpy(gb_a->oam_ram,  flat_dump.data() + 0xFE00, 256);
+  memcpy(gb_a->zero_ram, flat_dump.data() + 0xFF80, 128);
 
-  memcpy(gb_a->vid_ram,  cart_blob.data() + 0x8000, 8192);
-  memcpy(gb_a->cart_ram, cart_blob.data() + 0xA000, 8192);
-  memcpy(gb_a->int_ram,  cart_blob.data() + 0xC000, 8192);
-  memcpy(gb_a->oam_ram,  cart_blob.data() + 0xFE00, 256);
-  memcpy(gb_a->zero_ram, cart_blob.data() + 0xFF80, 128);
-
-  gb_a->dbg_write(cart_blob, ADDR_BGP,  cart_blob[ADDR_BGP]);
-  gb_a->dbg_write(cart_blob, ADDR_OBP0, cart_blob[ADDR_OBP0]);
-  gb_a->dbg_write(cart_blob, ADDR_OBP1, cart_blob[ADDR_OBP1]);
-  gb_a->dbg_write(cart_blob, ADDR_SCY,  cart_blob[ADDR_SCY]);
-  gb_a->dbg_write(cart_blob, ADDR_SCX,  cart_blob[ADDR_SCX]);
-  gb_a->dbg_write(cart_blob, ADDR_WY,   cart_blob[ADDR_WY]);
-  gb_a->dbg_write(cart_blob, ADDR_WX,   cart_blob[ADDR_WX]);
-  gb_a->dbg_write(cart_blob, ADDR_LCDC, cart_blob[ADDR_LCDC]);
+  gb_a->dbg_write(flat_dump, ADDR_BGP,  flat_dump[ADDR_BGP]);
+  gb_a->dbg_write(flat_dump, ADDR_OBP0, flat_dump[ADDR_OBP0]);
+  gb_a->dbg_write(flat_dump, ADDR_OBP1, flat_dump[ADDR_OBP1]);
+  gb_a->dbg_write(flat_dump, ADDR_SCY,  flat_dump[ADDR_SCY]);
+  gb_a->dbg_write(flat_dump, ADDR_SCX,  flat_dump[ADDR_SCX]);
+  gb_a->dbg_write(flat_dump, ADDR_WY,   flat_dump[ADDR_WY]);
+  gb_a->dbg_write(flat_dump, ADDR_WX,   flat_dump[ADDR_WX]);
+  gb_a->dbg_write(flat_dump, ADDR_LCDC, flat_dump[ADDR_LCDC]);
 
   memcpy(gb_b.state(), gb_a.state(), sizeof(GateBoy));
 }
+
 
 //=====================================================================================================================
 //=====================================================================================================================
@@ -287,7 +257,6 @@ void GateBoyThread::run_regression() {
   auto& gbb = *gb_b.state();
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-
     gba.next_phase(cart_blob);
     gbb.next_phase(cart_blob);
 
@@ -295,10 +264,9 @@ void GateBoyThread::run_regression() {
     uint64_t hash_b_new = gbb.hash_regression();
 
     if (hash_a_new != hash_b_new) {
-      LOG_R("Regression test mismatch NEW!\n");
+      LOG_R("Regression test mismatch @ phase %lld!\n", gba.phase_total);
       diff_gb(gb_a.state(), gb_b.state(), 0x01);
-      LOG_R("Regression test mismatch NEW!\n");
-      clear_steps();
+      step_count = 0;
       return;
     }
 

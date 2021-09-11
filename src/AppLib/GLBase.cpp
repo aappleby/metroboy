@@ -334,7 +334,7 @@ void bind_table(int prog, const char* name, int index, int tex) {
 
 int create_shader(const char* name, const char* src) {
   static bool verbose = false;
-  CHECK_N(glGetError());
+  DCHECK_N(glGetError());
 
   LOG_B("Compiling %s\n", name);
 

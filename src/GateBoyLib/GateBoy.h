@@ -61,12 +61,12 @@ struct GateBoy {
   }
 
   void from_blob(const blob& b) {
-    ASSERT_P(b.size() >= sizeof(GateBoy));
+    CHECK_P(b.size() >= sizeof(GateBoy));
     memcpy(this, b.data(), sizeof(GateBoy));
-    ASSERT_P(sentinel1 == SENTINEL1);
-    ASSERT_P(sentinel2 == SENTINEL2);
-    ASSERT_P(sentinel3 == SENTINEL3);
-    ASSERT_P(sentinel4 == SENTINEL4);
+    CHECK_P(sentinel1 == SENTINEL1);
+    CHECK_P(sentinel2 == SENTINEL2);
+    CHECK_P(sentinel3 == SENTINEL3);
+    CHECK_P(sentinel4 == SENTINEL4);
   }
 
   void to_blob(blob& b) {
@@ -155,8 +155,8 @@ struct GateBoy {
       for (auto i = 0; i < s; i++) {
         auto r = a[i];
         (void)r;
-        ASSERT_P((r & 0xF0) == BIT_OLD);
-        ASSERT_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
+        CHECK_P((r & 0xF0) == BIT_OLD);
+        CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
       }
     }
   }

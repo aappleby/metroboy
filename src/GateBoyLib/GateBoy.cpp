@@ -535,7 +535,7 @@ void diff_gb(GateBoy* gba, GateBoy* gbb, uint8_t mask) {
 //------------------------------------------------------------------------------------------------------------------------
 
 bool GateBoy::next_phase(const blob& cart_blob) {
-  ASSERT_N(!sys_clkreq && logic_mode);
+  CHECK_N(!sys_clkreq && logic_mode);
 
   tock_cpu();
 
@@ -2646,7 +2646,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  ASSERT_N(bit(cpu_signals.SIG_IN_CPU_RDp.state) && bit(cpu_signals.SIG_IN_CPU_WRp.state));
+  CHECK_N(bit(cpu_signals.SIG_IN_CPU_RDp.state) && bit(cpu_signals.SIG_IN_CPU_WRp.state));
 
   if (cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state && !cpu_addr_vram_new) {
     cpy_inv(ext_dbus, cpu_dbus_new);
@@ -2660,23 +2660,27 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (bit(ext_ctrl.PIN_79_RDn.state)) {
     uint16_t ext_addr = (uint16_t)pack_inv(16, (BitBase*)&ext_abus.PIN_01_A00);
+    
+    auto rom_addr_mask = cart_rom_addr_mask(cart_blob);
+    auto ram_addr_mask = cart_ram_addr_mask(cart_blob);
+
     const int region = ext_addr >> 13;
     uint8_t data_in = 0;
 
     if (cart_has_mbc1(cart_blob)) {
+
       bool mbc1_ram_en = bit(ext_mbc.MBC1_RAM_EN.state);
       bool mbc1_mode = bit(ext_mbc.MBC1_MODE.state);
 
       uint32_t mbc1_rom0_bank = mbc1_mode ? pack(2, (BitBase*)&ext_mbc.MBC1_BANK5) : 0;
-      uint32_t mbc1_rom0_addr = ((ext_addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
+      uint32_t mbc1_rom0_addr = ((ext_addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & rom_addr_mask;
 
       uint32_t mbc1_rom1_bank = pack(7, (BitBase*)&ext_mbc.MBC1_BANK0);
-      uint32_t mbc1_rom1_addr = ((ext_addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
+      if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
+      uint32_t mbc1_rom1_addr = ((ext_addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & rom_addr_mask;
 
       uint32_t mbc1_ram_bank = mbc1_mode ? pack(2, (BitBase*)&ext_mbc.MBC1_BANK5) : 0;
-      uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
-
-      if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
+      uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & ram_addr_mask;
 
       switch (region) {
       case 0: data_in = cart_blob[mbc1_rom0_addr]; break;
@@ -2691,12 +2695,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
     else {
       switch (region) {
-      case 0: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
-      case 1: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
-      case 2: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
-      case 3: data_in = cart_blob[ext_addr & cart_rom_addr_mask(cart_blob)]; break;
+      case 0: data_in = cart_blob[ext_addr & rom_addr_mask]; break;
+      case 1: data_in = cart_blob[ext_addr & rom_addr_mask]; break;
+      case 2: data_in = cart_blob[ext_addr & rom_addr_mask]; break;
+      case 3: data_in = cart_blob[ext_addr & rom_addr_mask]; break;
       case 4: data_in = 0xFF; break;
-      case 5: data_in = cart_has_ram(cart_blob) ? cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] : 0xFF; break;
+      case 5: data_in = 0xFF; break;
       case 6: data_in = int_ram[ext_addr & 0x1FFF]; break;
       case 7: data_in = int_ram[ext_addr & 0x1FFF]; break;
       }

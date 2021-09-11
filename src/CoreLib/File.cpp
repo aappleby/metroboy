@@ -17,28 +17,31 @@ size_t file_size(const char* filename) {
   return result;
 }
 
-size_t load_blob(const char* filename, void* dst, size_t dst_size) {
+bool load_blob(const char* filename, void* dst, size_t dst_size) {
   FILE* f = fopen(filename, "rb");
-
   if (f == nullptr) {
     LOG_R("Failed to open %s\n", filename);
-    return 0;
+    return false;
   }
 
   fseek(f, 0, SEEK_END);
-  size_t size = ftell(f);
-
-  ASSERT_P(size == dst_size);
+  CHECK_P(ftell(f) == dst_size);
   fseek(f, 0, SEEK_SET);
-  auto len = fread(dst, 1, size, f);
-  (void)len;
+
+  CHECK_P(fread(dst, 1, dst_size, f) == dst_size);
   fclose(f);
-  return size;
+  return true;
 }
 
-void save_blob(const char* filename, const void* src, size_t size) {
+bool save_blob(const char* filename, const void* src, size_t src_size) {
   FILE* f = fopen(filename, "wb");
-  fwrite(src, 1, size, f);
+  if (f == nullptr) {
+    LOG_R("Failed to open %s\n", filename);
+    return false;
+  }
+
+  CHECK_P(fwrite(src, 1, src_size, f) == src_size);
   fclose(f);
+  return true;
 }
 

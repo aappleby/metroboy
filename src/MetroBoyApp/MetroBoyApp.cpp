@@ -88,7 +88,8 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
 
   std::string filename = prefix + "/" + name + ".dump";
   blob buf;
-  load_array(filename, buf);
+  buf.resize(file_size(filename.c_str()));
+  load_blob(filename.c_str(), buf.data(), buf.size());
 
   memcpy(gb->vram.ram, &buf[0x8000], 8192);
 
@@ -116,10 +117,10 @@ void MetroBoyApp::load_memdump(const std::string& prefix, const std::string& nam
 //-----------------------------------------------------------------------------
 
 void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
-  std::string gb_filename = prefix + "/" + name;
-  LOG_B("Loading rom %s\n", gb_filename.c_str());
-
-  load_array(gb_filename.c_str(), rom);
+  std::string filename = prefix + "/" + name;
+  LOG_B("Loading rom %s\n", filename.c_str());
+  rom.resize(file_size(filename.c_str()));
+  load_blob(filename.c_str(), rom.data(), rom.size());
 
   gb.reset_states();
   gb->reset_to_cart(rom.data(), rom.size());
@@ -180,7 +181,9 @@ void MetroBoyApp::app_update(dvec2 screen_size, double delta) {
     }
 
     if (event.type == SDL_DROPFILE) {
-      load_array(event.drop.file, rom);
+      rom.resize(file_size(event.drop.file));
+      load_blob(event.drop.file, rom.data(), rom.size());
+
       gb.reset_states();
       gb->reset_to_cart(rom.data(), rom.size());
       rom_loaded = true;

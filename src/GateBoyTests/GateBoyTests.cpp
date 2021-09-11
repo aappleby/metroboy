@@ -43,6 +43,8 @@ TestResults test_regression_cart(blob cart_blob, int cycles, bool from_bootrom) 
   TEST_DONE();
 }
 
+//-----------------------------------------------------------------------------
+
 TestResults test_regression_dump(blob raw_dump, int cycles) {
   TEST_INIT();
   if (raw_dump.empty()) TEST_FAIL();
@@ -84,17 +86,23 @@ int main(int argc, char** argv) {
   GateBoyTests t;
 
 #if 0
-  LOG_G("Regression testing bootrom start\n");
-  results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
+  {
+    LOG_G("Regression testing bootrom start\n");
+    results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
 
-  LOG_G("Regression testing Zelda boot\n");
-  results += test_regression_cart(load_blob("LinksAwakening.gb"), 1000000, true);
+    LOG_G("Regression testing Zelda startup\n");
+    blob b;
+    load_blob("LinksAwakening.gb", b);
+    results += test_regression_cart(b, 1000000, false);
 
-  //LOG_G("Regression testing Zelda intro dump\n");
-  //results += test_regression_dump(load_blob("zelda_intro.dump"), 1000000);
+    LOG_G("Regression testing Zelda intro dump\n");
+    load_blob("zelda_intro.dump", b);
+    results += test_regression_dump(b, 1000000);
 
-  //LOG_G("Regression testing Zelda overworld dump\n");
-  //results += test_regression_dump(load_blob("zelda_overworld.dump"), 1000000);
+    LOG_G("Regression testing Zelda overworld dump\n");
+    load_blob("zelda_overworld.dump", b);
+    results += test_regression_dump(b, 1000000);
+  }
 #endif
 
 #if 0
@@ -102,14 +110,12 @@ int main(int argc, char** argv) {
   results += t.test_fastboot_vs_slowboot();
 #endif
 
-  //results += t.test_bootrom();
-  //results += t.test_clk();
-  //results += t.test_regs();
-  //results += t.test_reg("IF",   ADDR_IF,   0b00011111);
-
-#if 0
-  results += t.test_mem();
+  results += t.test_bootrom();
+  results += t.test_clk();
+  results += t.test_regs();
   results += t.test_dma();
+
+  results += t.test_mem();
   results += t.test_init();
 
   if (config_drive_flags) {
@@ -123,9 +129,9 @@ int main(int argc, char** argv) {
   results += t.test_micro_lcden();
   results += t.test_micro_timer();
 
-  if (run_slow_tests) {
-    results += t.test_micro_int_vblank();
-  }
+  //if (run_slow_tests) {
+  //  results += t.test_micro_int_vblank();
+  //}
  
   results += t.test_micro_int_stat();
   results += t.test_micro_int_timer();
@@ -144,7 +150,6 @@ int main(int argc, char** argv) {
   results += t.test_mooneye_mbc1();    // pass
   results += t.test_mooneye_timer();   // pass
   results += t.test_mooneye_ppu();     // 3 fails
-#endif
 #endif
 
   LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
@@ -237,9 +242,9 @@ TestResults GateBoyTests::test_regs() {
   results += test_reg("WX",   ADDR_WX,   0b11111111);
   results += test_reg("IE",   ADDR_IE,   0b00011111);
 
-  results += test_spu_reg("NR50", ADDR_NR50, 0b11111111);
-  results += test_spu_reg("NR51", ADDR_NR51, 0b11111111);
-  results += test_reg    ("NR52", ADDR_NR52, 0b10000000);
+  //results += test_spu_reg("NR50", ADDR_NR50, 0b11111111);
+  //results += test_spu_reg("NR51", ADDR_NR51, 0b11111111);
+  //results += test_reg    ("NR52", ADDR_NR52, 0b10000000);
 
   TEST_DONE();
 }
@@ -283,14 +288,16 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot() {
 TestResults GateBoyTests::test_reset_cart_vs_dump() {
   TEST_INIT();
 
-  auto blob = load_blob("gateboy_post_bootrom.raw.dump");
-  if(!GateBoy::check_sentinel(blob)) {
+  blob dump;
+  load_blob("gateboy_post_bootrom.raw.dump", dump);
+
+  if(!GateBoy::check_sentinel(dump)) {
     LOG_Y("Warning : gateboy_post_bootrom_raw.dump not valid\n");
     TEST_DONE();
   }
   LOG_B("gateboy_post_bootrom.raw.dump\n");
   GateBoy gb1;
-  gb1.from_blob(blob);
+  gb1.from_blob(dump);
   LOG_G("gateboy_post_bootrom.raw.dump done\n");
 
   LOG_B("reset_to_cart with fastboot = true\n");
@@ -357,8 +364,8 @@ TestResults GateBoyTests::test_micro_poweron() {
   results += run_microtest("poweron_lyc_000.gb");
   results += run_microtest("poweron_obp0_000.gb");
   results += run_microtest("poweron_obp1_000.gb");
-  results += run_microtest("poweron_sb_000.gb");
-  results += run_microtest("poweron_sc_000.gb");
+  //results += run_microtest("poweron_sb_000.gb");
+  //results += run_microtest("poweron_sc_000.gb");
   results += run_microtest("poweron_scx_000.gb");
   results += run_microtest("poweron_scy_000.gb");
   results += run_microtest("poweron_tac_000.gb");
@@ -895,7 +902,8 @@ TestResults GateBoyTests::test_micro_mbc1() {
 TestResults GateBoyTests::run_microtest(const char* filename) {
   TestResults results;
 
-  blob cart_blob = load_blob(std::string("tests/microtests/DMG/") + filename);
+  blob cart_blob;
+  load_blob((std::string("tests/microtests/DMG/") + filename).c_str(), cart_blob);
 
   if (cart_blob.empty()) {
     LOG_B("%-30s ", filename);
@@ -970,8 +978,8 @@ TestResults GateBoyTests::test_init() {
   uint8_t data_out;
   
   EXPECT(gbp.dbg_read(cart_blob, ADDR_P1,   data_out)); EXPECT_EQ(data_out, 0xCF, "Bad P1 reset_states value");   // CF after bootrom
-  EXPECT(gbp.dbg_read(cart_blob, ADDR_SB,   data_out)); EXPECT_EQ(data_out, 0x00, "Bad SB reset_states value");   // 00 after bootrom
-  EXPECT(gbp.dbg_read(cart_blob, ADDR_SC,   data_out)); EXPECT_EQ(data_out, 0x7E, "Bad SC reset_states value");   // 7E after bootrom
+  //EXPECT(gbp.dbg_read(cart_blob, ADDR_SB,   data_out)); EXPECT_EQ(data_out, 0x00, "Bad SB reset_states value");   // 00 after bootrom
+  //EXPECT(gbp.dbg_read(cart_blob, ADDR_SC,   data_out)); EXPECT_EQ(data_out, 0x7E, "Bad SC reset_states value");   // 7E after bootrom
   EXPECT(gbp.dbg_read(cart_blob, ADDR_DIV,  data_out)); EXPECT_EQ(data_out, 0x00, "Bad DIV reset_states value");  // AB after bootrom
   EXPECT(gbp.dbg_read(cart_blob, ADDR_TIMA, data_out)); EXPECT_EQ(data_out, 0x00, "Bad TIMA reset_states value"); // 00 after bootrom
   EXPECT(gbp.dbg_read(cart_blob, ADDR_TMA,  data_out)); EXPECT_EQ(data_out, 0x00, "Bad TMA reset_states value");  // 00 after bootrom
@@ -1688,11 +1696,14 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
 
   for (int i = 0; i < 160; i++) {
     uint8_t src_a = mem_a[i];
-    uint8_t src_b = mem_b[i];
     uint8_t dst_a = gbp.gba.oam_ram[i];
-    uint8_t dst_b = gbp.gbb.oam_ram[i];
     ASSERT_EQ(src_a, dst_a, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_a, dst_a);
-    ASSERT_EQ(src_b, dst_b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_b, dst_b);
+
+    if (config_regression) {
+      uint8_t src_b = mem_b[i];
+      uint8_t dst_b = gbp.gbb.oam_ram[i];
+      ASSERT_EQ(src_b, dst_b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_b, dst_b);
+    }
   }
 
   TEST_DONE();
@@ -1960,9 +1971,10 @@ TestResults GateBoyTests::test_mooneye_ppu() {
 TestResults GateBoyTests::run_mooneye_test(const char* path, const char* filename) {
   TEST_INIT();
 
-  blob cart_blob = load_blob(std::string(path) + std::string(filename));
+  blob rom;
+  load_blob((std::string(path) + std::string(filename)).c_str(), rom);
 
-  if (cart_blob.empty()) {
+  if (rom.empty()) {
     LOG_B("%-30s ", filename);
     LOG_Y("FILE NOT FOUND\n");
     TEST_FAIL();
@@ -1971,13 +1983,13 @@ TestResults GateBoyTests::run_mooneye_test(const char* path, const char* filenam
   if (verbose) LOG_B("%-50s ", filename);
 
   GateBoyPair gbp;
-  gbp.reset_to_cart(cart_blob);
+  gbp.reset_to_cart(rom);
 
   int timeout = 6400000; // bits_ramg is super slow
 
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
-    gbp.run_phases(cart_blob, 8);
+    gbp.run_phases(rom, 8);
     if (gbp.gba.gb_cpu.op == 0x40) break;
   }
 

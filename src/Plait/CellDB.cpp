@@ -172,10 +172,10 @@ void check_cell_tag(const std::string& tag) {
 //--------------------------------------------------------------------------------
 
 void DieCell::sanity_check() const {
-  CHECK_N(cell_type == DieCellType::UNKNOWN);
-  CHECK_N(tag.empty());
-  CHECK_N(gate.empty());
-  CHECK_N(name.empty());
+  DCHECK_N(cell_type == DieCellType::UNKNOWN);
+  DCHECK_N(tag.empty());
+  DCHECK_N(gate.empty());
+  DCHECK_N(name.empty());
   
   //CHECK_N(args.empty()); // we don't necessarily want to save the raw arg string to the db...
 

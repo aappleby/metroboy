@@ -2817,21 +2817,21 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  if (bit(LUMA_DMA_CARTp)) {
-    ext_ctrl.PIN_80_CSn.state = !bit(dma_hi.MARU_DMA_A15n.state);
+  if (LUMA_DMA_CARTp) {
+    ext_ctrl.PIN_80_CSn.state = !dma_hi.MARU_DMA_A15n.state;
     bit_copy_inv(ext_abus, dma_lo);
-    memcpy (&ext_abus.PIN_09_A08, &dma_hi.NAFA_DMA_A08n, 7);
+    bit_copy(&ext_abus.PIN_09_A08, 7, &dma_hi.NAFA_DMA_A08n);
   }
   else {
-    ext_ctrl.PIN_80_CSn.state = bit(and2(cpu_signals.ABUZ_EXT_RAM_CS_CLK.state, cpu_addr_ram_new));
+    ext_ctrl.PIN_80_CSn.state = cpu_signals.ABUZ_EXT_RAM_CS_CLK.state && cpu_addr_ram_new;
     bit_copy_inv(&ext_abus.PIN_01_A00, 15, &ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p);
   }
 
   //----------------------------------------
 
-  if (!bit(LUMA_DMA_CARTp) && cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state) {
+  if (!LUMA_DMA_CARTp && cpu_signals.SIG_IN_CPU_EXT_BUSp.state && cpu_signals.SIG_IN_CPU_WRp.state) {
     ext_ctrl.PIN_79_RDn.state = cpu_addr_vram_new;
-    ext_ctrl.PIN_78_WRn.state = nor2(~CLK_xxxxEFGx, cpu_addr_vram_new);
+    ext_ctrl.PIN_78_WRn.state = CLK_xxxxEFGx && !cpu_addr_vram_new;
   }
   else {
     ext_ctrl.PIN_79_RDn.state = 1;

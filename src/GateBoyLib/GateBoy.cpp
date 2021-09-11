@@ -3414,24 +3414,22 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
     bool int_stat_new = 0;
-    if (!get_bit(pack_stat, 0) && bit(and2(wodu_hblank_new, !lcd.POPU_y144p.state))) int_stat_new = 1;
-    if (!get_bit(pack_stat, 1) && bit(lcd.POPU_y144p.state)) int_stat_new = 1;
-    if (!get_bit(pack_stat, 2) && bit(and2(!lcd.POPU_y144p.state, lcd.RUTU_x113p.qp_new()))) int_stat_new = 1;
-    if (!get_bit(pack_stat, 3) && bit(ROPO_LY_MATCH_SYNCp.state)) int_stat_new = 1;
+    if (!get_bit(pack_stat, 0) && wodu_hblank_new && !lcd.POPU_y144p.state) int_stat_new = 1;
+    if (!get_bit(pack_stat, 1) && lcd.POPU_y144p.state) int_stat_new = 1;
+    if (!get_bit(pack_stat, 2) && !lcd.POPU_y144p.state && lcd.RUTU_x113p.state) int_stat_new = 1;
+    if (!get_bit(pack_stat, 3) && ROPO_LY_MATCH_SYNCp.state) int_stat_new = 1;
 
     wire int_lcd_new = lcd.POPU_y144p.state;
-    wire int_joy_new = nand2(joy_int.APUG_JP_GLITCH3.state, joy_int.BATU_JP_GLITCH0.state);
+    wire int_joy_new = !joy_int.APUG_JP_GLITCH3.state || !joy_int.BATU_JP_GLITCH0.state;
     wire int_tim_new = int_ctrl.MOBA_TIMER_OVERFLOWp.state;
     //wire int_ser = serial.CALY_SER_CNT3.state;
     wire int_ser_new = 0;
 
-
-
-    if (posedge(int_lcd_old, int_lcd_new))   pack_if |= (1 << 0);
-    if (posedge(int_stat_old, int_stat_new)) pack_if |= (1 << 1);
-    if (posedge(int_tim_old, int_tim_new))   pack_if |= (1 << 2);
-    if (posedge(int_ser_old, int_ser_new))   pack_if |= (1 << 3);
-    if (posedge(int_joy_old, int_joy_new))   pack_if |= (1 << 4);
+    if (!int_lcd_old  && int_lcd_new)  pack_if |= (1 << 0);
+    if (!int_stat_old && int_stat_new) pack_if |= (1 << 1);
+    if (!int_tim_old  && int_tim_new)  pack_if |= (1 << 2);
+    if (!int_ser_old  && int_ser_new)  pack_if |= (1 << 3);
+    if (!int_joy_old  && int_joy_new)  pack_if |= (1 << 4);
 
     // note this is an async set so it doesn't happen on the GH clock edge like other writes
     if (cpu_signals.SIG_IN_CPU_WRp.state & (cpu_addr_new == 0xFF0F) & CLK_xxxxEFGx_new) {
@@ -3440,11 +3438,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     pack_if &= ~bit_pack(cpu_ack);
 
-    if (cpu_addr_new == 0xFFFF && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
+    if (cpu_addr_new == 0xFFFF && cpu_signals.SIG_IN_CPU_RDp.state) {
       pack_cpu_dbus_new = pack_ie | 0b11100000;
     }
 
-    if (cpu_addr_new == 0xFF0F && bit(cpu_signals.SIG_IN_CPU_RDp.state)) {
+    if (cpu_addr_new == 0xFF0F && cpu_signals.SIG_IN_CPU_RDp.state) {
       bit_unpack(latch_if,  pack_if);
       pack_cpu_dbus_new = pack_if | 0b11100000;
     }

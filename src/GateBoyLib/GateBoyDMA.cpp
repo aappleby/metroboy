@@ -4,17 +4,17 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_dma_gates(GateBoyReg& reg_old) {
+void GateBoy::tock_dma_gates(const GateBoyCpuDBus& cpu_dbus_old) {
   /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(), reg.cpu_abus.XEDA_FF46p());
   /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
-  /*#p04.NAFA*/ reg.dma_hi.NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  /*_p04.PYNE*/ reg.dma_hi.PYNE_DMA_A09n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  /*_p04.PARA*/ reg.dma_hi.PARA_DMA_A10n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-  /*_p04.NYDO*/ reg.dma_hi.NYDO_DMA_A11n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p04.NYGY*/ reg.dma_hi.NYGY_DMA_A12n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p04.PULA*/ reg.dma_hi.PULA_DMA_A13n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p04.POKU*/ reg.dma_hi.POKU_DMA_A14n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-  /*_p04.MARU*/ reg.dma_hi.MARU_DMA_A15n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+  /*#p04.NAFA*/ reg.dma_hi.NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, cpu_dbus_old.BUS_CPU_D00p.out_old());
+  /*_p04.PYNE*/ reg.dma_hi.PYNE_DMA_A09n.dff8p(LORU_FF46_WRn, cpu_dbus_old.BUS_CPU_D01p.out_old());
+  /*_p04.PARA*/ reg.dma_hi.PARA_DMA_A10n.dff8p(LORU_FF46_WRn, cpu_dbus_old.BUS_CPU_D02p.out_old());
+  /*_p04.NYDO*/ reg.dma_hi.NYDO_DMA_A11n.dff8p(LORU_FF46_WRn, cpu_dbus_old.BUS_CPU_D03p.out_old());
+  /*_p04.NYGY*/ reg.dma_hi.NYGY_DMA_A12n.dff8p(LORU_FF46_WRn, cpu_dbus_old.BUS_CPU_D04p.out_old());
+  /*_p04.PULA*/ reg.dma_hi.PULA_DMA_A13n.dff8p(LORU_FF46_WRn, cpu_dbus_old.BUS_CPU_D05p.out_old());
+  /*_p04.POKU*/ reg.dma_hi.POKU_DMA_A14n.dff8p(LORU_FF46_WRn, cpu_dbus_old.BUS_CPU_D06p.out_old());
+  /*_p04.MARU*/ reg.dma_hi.MARU_DMA_A15n.dff8p(LORU_FF46_WRn, cpu_dbus_old.BUS_CPU_D07p.out_old());
 
   /*#p04.LUPA*/ wire LUPA_DMA_TRIG_old = nor2(LAVY_FF46_WRp, reg.dma_ctrl.LYXE_DMA_LATCHp.qn_old());
   /*#p04.LENE*/ reg.dma_ctrl.LENE_DMA_TRIG_d4.dff17(MOPA_xxxxEFGH(), CUNU_SYS_RSTn(), reg.dma_ctrl.LUVY_DMA_TRIG_d0.qp_old());

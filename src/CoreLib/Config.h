@@ -47,10 +47,10 @@ static_assert(((int)config_debug + (int)config_regression + (int)config_release 
 constexpr bool config_dcheck       = config_debug;
 
 // Verify that all registers were flagged as NEW after a logic pass, and set them back to OLD.
-constexpr bool config_oldnew_flags = config_debug | config_release;
+constexpr bool config_oldnew_flags = config_debug;
 
 // Use the extra gate flag bits to check for floating gates and bus collisions.
-constexpr bool config_drive_flags  = config_debug | config_release;
+constexpr bool config_drive_flags  = config_debug;
 
 // In debug builds we check that tock_slow() is idempotent.
 constexpr bool config_idempotence  = config_debug;

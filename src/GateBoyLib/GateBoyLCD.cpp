@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_lyc_gates(GateBoyReg& reg_old) {
+void GateBoy::tock_lyc_gates(const GateBoyCpuDBus& cpu_dbus_old) {
   {
     // Inverting ROPO's clock and making it store the new match instead of the old match fixes lcdon_to_stat2_a but breaks other things
     // Just making it store the new match doesn't break anything.
@@ -28,14 +28,14 @@ void GateBoy::tock_lyc_gates(GateBoyReg& reg_old) {
   {
     /*_p23.XUFA*/ wire XUFA_FF45_WRn = and2(CUPA_CPU_WRp(), reg.cpu_abus.XAYU_FF45p());
     /*_p23.WANE*/ wire WANE_FF45_WRp = not1(XUFA_FF45_WRn);
-    /*_p23.SYRY*/ reg.reg_lyc.SYRY_LYC0n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-    /*_p23.VUCE*/ reg.reg_lyc.VUCE_LYC1n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-    /*_p23.SEDY*/ reg.reg_lyc.SEDY_LYC2n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-    /*_p23.SALO*/ reg.reg_lyc.SALO_LYC3n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-    /*_p23.SOTA*/ reg.reg_lyc.SOTA_LYC4n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-    /*_p23.VAFA*/ reg.reg_lyc.VAFA_LYC5n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-    /*_p23.VEVO*/ reg.reg_lyc.VEVO_LYC6n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-    /*_p23.RAHA*/ reg.reg_lyc.RAHA_LYC7n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+    /*_p23.SYRY*/ reg.reg_lyc.SYRY_LYC0n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D00p.out_old());
+    /*_p23.VUCE*/ reg.reg_lyc.VUCE_LYC1n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D01p.out_old());
+    /*_p23.SEDY*/ reg.reg_lyc.SEDY_LYC2n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D02p.out_old());
+    /*_p23.SALO*/ reg.reg_lyc.SALO_LYC3n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D03p.out_old());
+    /*_p23.SOTA*/ reg.reg_lyc.SOTA_LYC4n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D04p.out_old());
+    /*_p23.VAFA*/ reg.reg_lyc.VAFA_LYC5n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D05p.out_old());
+    /*_p23.VEVO*/ reg.reg_lyc.VEVO_LYC6n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D06p.out_old());
+    /*_p23.RAHA*/ reg.reg_lyc.RAHA_LYC7n.dff9(WANE_FF45_WRp, WESY_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D07p.out_old());
 
     /*_p23.XYLY*/ wire XYLY_FF45_RDp = and2(ASOT_CPU_RDp(), reg.cpu_abus.XAYU_FF45p());
     /*_p23.WEKU*/ wire WEKU_FF45_RDn = not1(XYLY_FF45_RDp);

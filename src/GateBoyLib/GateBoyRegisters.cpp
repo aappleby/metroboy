@@ -14,7 +14,7 @@ SpriteDeltaY GateBoy::sub_sprite_y_gates() {
   /*_p29.FEMO*/ wire FEMO_LY6n = not1(reg_ly.MATO_LY6p.qp_new());
   /*_p29.GUSU*/ wire GUSU_LY7n = not1(reg_ly.LAFO_LY7p.qp_new());
 
-  /*_p29.ERUC*/ Adder ERUC_YDIFF0 = add3(EBOS_LY0n, oam_temp_a.XUSO_OAM_DA0p.qp_new(), SIG_GND.out_new());
+  /*_p29.ERUC*/ Adder ERUC_YDIFF0 = add3(EBOS_LY0n, oam_temp_a.XUSO_OAM_DA0p.qp_new(), gbs.SIG_GND.out_new());
   /*_p29.ENEF*/ Adder ENEF_YDIFF1 = add3(DASA_LY1n, oam_temp_a.XEGU_OAM_DA1p.qp_new(), ERUC_YDIFF0.carry);
   /*_p29.FECO*/ Adder FECO_YDIFF2 = add3(FUKY_LY2n, oam_temp_a.YJEX_OAM_DA2p.qp_new(), ENEF_YDIFF1.carry);
   /*_p29.GYKY*/ Adder GYKY_YDIFF3 = add3(FUVE_LY3n, oam_temp_a.XYJU_OAM_DA3p.qp_new(), FECO_YDIFF2.carry);

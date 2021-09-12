@@ -332,8 +332,8 @@ struct MemberOffset {
 
 MemberOffset gb_offsets[] = {
   GEN_OFFSET(sentinel1),
-  GEN_OFFSET(SIG_VCC),
-  GEN_OFFSET(SIG_GND),
+  GEN_OFFSET(gbs.SIG_VCC),
+  GEN_OFFSET(gbs.SIG_GND),
   GEN_OFFSET(cpu_signals),
   GEN_OFFSET(cpu_abus_old),
   GEN_OFFSET(cpu_dbus_old),
@@ -739,8 +739,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   wire EXT_vcc = 1;
   wire EXT_gnd = 0;
 
-  /*_SIG_VCC*/ SIG_VCC.sig_in(EXT_vcc);
-  /*_SIG_GND*/ SIG_GND.sig_in(EXT_gnd);
+  /*_SIG_VCC*/ gbs.SIG_VCC.sig_in(EXT_vcc);
+  /*_SIG_GND*/ gbs.SIG_GND.sig_in(EXT_gnd);
 
   //-----------------------------------------------------------------------------
 
@@ -898,12 +898,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p28.YMEV*/ wire YMEV_OAM_A5p_old = not1(oam_abus.BUS_OAM_A05n.out_old());
     /*_p28.XEMU*/ wire XEMU_OAM_A6p_old = not1(oam_abus.BUS_OAM_A06n.out_old());
     /*_p28.YZET*/ wire YZET_OAM_A7p_old = not1(oam_abus.BUS_OAM_A07n.out_old());
-    /*_p30.XADU*/ sprite_index.XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YFOT_OAM_A2p_old);
-    /*_p30.XEDY*/ sprite_index.XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YFOC_OAM_A3p_old);
-    /*_p30.ZUZE*/ sprite_index.ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YVOM_OAM_A4p_old);
-    /*_p30.XOBE*/ sprite_index.XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YMEV_OAM_A5p_old);
-    /*_p30.YDUF*/ sprite_index.YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), XEMU_OAM_A6p_old);
-    /*_p30.XECU*/ sprite_index.XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH(), SIG_VCC.out_new(), YZET_OAM_A7p_old);
+    /*_p30.XADU*/ sprite_index.XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH(), gbs.SIG_VCC.out_new(), YFOT_OAM_A2p_old);
+    /*_p30.XEDY*/ sprite_index.XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH(), gbs.SIG_VCC.out_new(), YFOC_OAM_A3p_old);
+    /*_p30.ZUZE*/ sprite_index.ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH(), gbs.SIG_VCC.out_new(), YVOM_OAM_A4p_old);
+    /*_p30.XOBE*/ sprite_index.XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH(), gbs.SIG_VCC.out_new(), YMEV_OAM_A5p_old);
+    /*_p30.YDUF*/ sprite_index.YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH(), gbs.SIG_VCC.out_new(), XEMU_OAM_A6p_old);
+    /*_p30.XECU*/ sprite_index.XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH(), gbs.SIG_VCC.out_new(), YZET_OAM_A7p_old);
 
     // FIXME is this OK without the second assignment of FETO?
 
@@ -942,10 +942,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p27.TUKU*/ wire TUKU_WIN_HITn_old = not1(TOMU_WIN_HITp_old);
     /*_p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_old = not1(sprite_fetcher.TAKA_SFETCH_RUNNINGp.qp_old());
     /*_p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(FEPO_STORE_MATCHp.out_old(), TUKU_WIN_HITn_old, tile_fetcher.LYRY_BFETCH_DONEp.out_old(), SOWO_SFETCH_RUNNINGn_old);
-    /*_p27.SUDA*/ sprite_fetcher.SUDA_SFETCH_REQp.dff17(LAPE_AxCxExGx(), SIG_VCC.out_new(), sprite_fetcher.SOBU_SFETCH_REQp.qp_old());
-    /*_p27.SOBU*/ sprite_fetcher.SOBU_SFETCH_REQp.dff17(TAVA_xBxDxFxH(), SIG_VCC.out_new(), TEKY_SFETCH_REQp_old);
+    /*_p27.SUDA*/ sprite_fetcher.SUDA_SFETCH_REQp.dff17(LAPE_AxCxExGx(), gbs.SIG_VCC.out_new(), sprite_fetcher.SOBU_SFETCH_REQp.qp_old());
+    /*_p27.SOBU*/ sprite_fetcher.SOBU_SFETCH_REQp.dff17(TAVA_xBxDxFxH(), gbs.SIG_VCC.out_new(), TEKY_SFETCH_REQp_old);
 
-    /*#p29.TYFO*/ sprite_fetcher.TYFO_SFETCH_S0p_D1.dff17(LAPE_AxCxExGx(), SIG_VCC.out_new(), sprite_fetcher.TOXE_SFETCH_S0p.qp_old());
+    /*#p29.TYFO*/ sprite_fetcher.TYFO_SFETCH_S0p_D1.dff17(LAPE_AxCxExGx(), gbs.SIG_VCC.out_new(), sprite_fetcher.TOXE_SFETCH_S0p.qp_old());
     /*#p29.SEBA*/ sprite_fetcher.SEBA_SFETCH_S1p_D5.dff17(LAPE_AxCxExGx(), XYMU_RENDERINGn.qn_new(), sprite_fetcher.VONU_SFETCH_S1p_D4.qp_old());
     /*#p29.VONU*/ sprite_fetcher.VONU_SFETCH_S1p_D4.dff17(TAVA_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), sprite_fetcher.TOBU_SFETCH_S1p_D2.qp_old());
     /*#p29.TOBU*/ sprite_fetcher.TOBU_SFETCH_S1p_D2.dff17(TAVA_xBxDxFxH(), XYMU_RENDERINGn.qn_new(), sprite_fetcher.TULY_SFETCH_S1p.qp_old());
@@ -1413,8 +1413,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------
 
-  SIG_VCC.state = 1;
-  SIG_GND.state = 0;
+  gbs.SIG_VCC.state = 1;
+  gbs.SIG_GND.state = 0;
 
   //-----------------------------------------------------------------------------
 
@@ -1973,7 +1973,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_clear(&sprite_fetcher.TOXE_SFETCH_S0p, 3);
     }
   }
-  else {
+
+
+  if (DELTA_ODD) {
     sprite_fetcher.SUDA_SFETCH_REQp  .state = sprite_fetcher.SOBU_SFETCH_REQp.state;
     sprite_fetcher.TYFO_SFETCH_S0p_D1.state = sprite_fetcher.TOXE_SFETCH_S0p.state;
     sprite_fetcher.SEBA_SFETCH_S1p_D5.state = sprite_fetcher.VONU_SFETCH_S1p_D4.state;
@@ -2467,23 +2469,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   uint8_t bfetch_phase_old = pack(!(tile_fetcher.LYZU_BFETCH_S0p_D1.state ^ tile_fetcher.LAXU_BFETCH_S0p.state), tile_fetcher.LAXU_BFETCH_S0p.state, tile_fetcher.MESU_BFETCH_S1p.state, tile_fetcher.NYVA_BFETCH_S2p.state);
 
-  if (DELTA_EVEN) {
-    tile_fetcher.LYZU_BFETCH_S0p_D1.state = tile_fetcher.LAXU_BFETCH_S0p.state;
-  }
-
-  if (!rendering_new) {
-    tile_fetcher.LYZU_BFETCH_S0p_D1.state = 0;
-  }
-
-  if ((bfetch_phase_old < 10) && DELTA_ODD) {
-    bit_unpack(&tile_fetcher.LAXU_BFETCH_S0p, 3, (bfetch_phase_old >> 1) + 1);
-  }
-
-  if (DELTA_ODD) {
-    tile_fetcher.LOVY_FETCH_DONEp.state = tile_fetcher.LYRY_BFETCH_DONEp.state;
-  }
-  tile_fetcher.LYRY_BFETCH_DONEp = tile_fetcher.LAXU_BFETCH_S0p.state && tile_fetcher.NYVA_BFETCH_S2p.state;
-
   wire BFETCH_RSTp =
     sprite_scanner.AVAP_SCAN_DONE_TRIGp.state ||
     (win_reg.PYNU_WIN_MODE_Ap.state && !win_reg.NOPA_WIN_MODE_Bp.state) ||
@@ -2491,16 +2476,31 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     (win_reg.SOVY_WIN_HITp.state && !win_reg.RYDY_WIN_HITp.state) ||
     (rendering_new && !tile_fetcher.POKY_PRELOAD_LATCHp.state && tile_fetcher.NYKA_FETCH_DONEp.state && tile_fetcher.PORY_FETCH_DONEp.state);
 
+  if (gen_clk_new(0b01010101)) {
+    tile_fetcher.LYZU_BFETCH_S0p_D1.state = tile_fetcher.LAXU_BFETCH_S0p.state;
+  }
+
+  if (!rendering_new) {
+    tile_fetcher.LYZU_BFETCH_S0p_D1.state = 0;
+  }
+
   if (BFETCH_RSTp) {
-    tile_fetcher.LAXU_BFETCH_S0p.state = 0;
-    tile_fetcher.MESU_BFETCH_S1p.state = 0;
-    tile_fetcher.NYVA_BFETCH_S2p.state = 0;
     tile_fetcher.LAXU_BFETCH_S0p.state = 0;
     tile_fetcher.MESU_BFETCH_S1p.state = 0;
     tile_fetcher.NYVA_BFETCH_S2p.state = 0;
     tile_fetcher.LOVY_FETCH_DONEp.state = 0;
     tile_fetcher.LONY_FETCHINGp.state = 1;
     tile_fetcher.LYRY_BFETCH_DONEp.state = 0;
+  }
+  else {
+    if ((bfetch_phase_old < 10) && DELTA_ODD) {
+      bit_unpack(&tile_fetcher.LAXU_BFETCH_S0p, 3, (bfetch_phase_old >> 1) + 1);
+    }
+
+    if (gen_clk_new(0b10101010)) {
+      tile_fetcher.LOVY_FETCH_DONEp.state = tile_fetcher.LYRY_BFETCH_DONEp.state;
+    }
+    tile_fetcher.LYRY_BFETCH_DONEp = tile_fetcher.LAXU_BFETCH_S0p.state && tile_fetcher.NYVA_BFETCH_S2p.state;
   }
 
   if (tile_fetcher.LOVY_FETCH_DONEp.state || !rendering_new) {
@@ -2659,84 +2659,77 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // LCD pins
 
-  {
-    if (!vid_rst_new) {
-      lcd.PIN_52_LCD_CNTRL.state = !lcd.SYGU_LINE_STROBE.state && !lcd.RUTU_x113p.state;
+  if (!vid_rst_new) {
+    lcd.PIN_52_LCD_CNTRL.state = !lcd.SYGU_LINE_STROBE.state && !lcd.RUTU_x113p.state;
 
-      if (rutu_x113p_old && !rutu_x113p_new) {
-        lcd.LUCA_LINE_EVENp.state = !lcd.LUCA_LINE_EVENp.state;
-      }
-
-
-      if (!popu_y144p_old && popu_y144p_new) {
-        lcd.NAPO_FRAME_EVENp.state = !lcd.NAPO_FRAME_EVENp.state;
-      }
-
-      lcd.PIN_56_LCD_FLIPS.state = lcd.NAPO_FRAME_EVENp.state ^ lcd.LUCA_LINE_EVENp.state;
-
-
-      auto ly = bit_pack(reg_ly);
-
-      if (nype_x113p_old && !nype_x113p_new) {
-        lcd.MEDA_VSYNC_OUTn.state = ly == 0;
-      }
-
-      lcd.PIN_57_LCD_VSYNC.state = !lcd.MEDA_VSYNC_OUTn.state;
-
-      if (sprite_scanner.AVAP_SCAN_DONE_TRIGp.state && lcd.PAHO_X_8_SYNC.state) {
-        lcd.POME = 0;
-        lcd.RUJU = 1;
-        lcd.POFY = 0;
-      }
-      else if (sprite_scanner.AVAP_SCAN_DONE_TRIGp.state) {
-        lcd.POME = 0;
-        lcd.RUJU = 0;
-        lcd.POFY = 1;
-      }
-      else if (lcd.PAHO_X_8_SYNC.state) {
-        lcd.POME = 1;
-        lcd.RUJU = 1;
-        lcd.POFY = 0;
-      }
-
-      lcd.PIN_50_LCD_DATA1.state = RAVO_LD1n.state;
-      lcd.PIN_51_LCD_DATA0.state = REMY_LD0n.state;
-      lcd.PIN_54_LCD_HSYNC.state = !lcd.POFY.state;
-      lcd.PIN_55_LCD_LATCH.state = !lcd.RUTU_x113p.state;
-
-      if (pix_count.XEHO_PX0p.state && pix_count.XYDO_PX3p.state) {
-        lcd.WUSA_LCD_CLOCK_GATE.state = 1;
-      }
-      if (VOGA_HBLANKp.state) {
-        lcd.WUSA_LCD_CLOCK_GATE.state = 0;
-      }
-
-      {
-        wire TOBA_LCD_CLOCK = lcd.WUSA_LCD_CLOCK_GATE.state && SACU_CLKPIPE_new;
-        wire POVA_FINE_MATCH_TRIGp = fine_scroll.PUXA_SCX_FINE_MATCH_A.state && !fine_scroll.NYZE_SCX_FINE_MATCH_B.state;
-        wire SEMU_LCD_CLOCK = TOBA_LCD_CLOCK || POVA_FINE_MATCH_TRIGp;
-        lcd.PIN_53_LCD_CLOCK.state = !SEMU_LCD_CLOCK;
-      }
+    if (rutu_x113p_old && !rutu_x113p_new) {
+      lcd.LUCA_LINE_EVENp.state = !lcd.LUCA_LINE_EVENp.state;
     }
-    else {
-      lcd.LUCA_LINE_EVENp.state = 0;
-      lcd.NAPO_FRAME_EVENp.state = 0;
-      lcd.MEDA_VSYNC_OUTn.state = 0;
-      lcd.WUSA_LCD_CLOCK_GATE.state = 0;
 
+
+    if (!popu_y144p_old && popu_y144p_new) {
+      lcd.NAPO_FRAME_EVENp.state = !lcd.NAPO_FRAME_EVENp.state;
+    }
+
+    lcd.PIN_56_LCD_FLIPS.state = lcd.NAPO_FRAME_EVENp.state ^ lcd.LUCA_LINE_EVENp.state;
+
+
+    auto ly = bit_pack(reg_ly);
+
+    if (nype_x113p_old && !nype_x113p_new) {
+      lcd.MEDA_VSYNC_OUTn.state = ly == 0;
+    }
+
+    lcd.PIN_57_LCD_VSYNC.state = !lcd.MEDA_VSYNC_OUTn.state;
+
+    if (sprite_scanner.AVAP_SCAN_DONE_TRIGp.state && lcd.PAHO_X_8_SYNC.state) {
+      lcd.POME = 0;
+      lcd.RUJU = 1;
+      lcd.POFY = 0;
+    }
+    else if (sprite_scanner.AVAP_SCAN_DONE_TRIGp.state) {
+      lcd.POME = 0;
+      lcd.RUJU = 0;
+      lcd.POFY = 1;
+    }
+    else if (lcd.PAHO_X_8_SYNC.state) {
       lcd.POME = 1;
       lcd.RUJU = 1;
       lcd.POFY = 0;
-
-      lcd.PIN_50_LCD_DATA1.state = RAVO_LD1n.state;
-      lcd.PIN_51_LCD_DATA0.state = REMY_LD0n.state;
-      lcd.PIN_52_LCD_CNTRL.state = 1;
-      lcd.PIN_53_LCD_CLOCK.state = 1;
-      lcd.PIN_54_LCD_HSYNC.state = 1;
-      lcd.PIN_55_LCD_LATCH.state = !div.UGOT_DIV06p.state;
-      lcd.PIN_56_LCD_FLIPS.state = !div.TULU_DIV07p.state;
-      lcd.PIN_57_LCD_VSYNC.state = 1;
     }
+
+    lcd.PIN_50_LCD_DATA1.state = RAVO_LD1n.state;
+    lcd.PIN_51_LCD_DATA0.state = REMY_LD0n.state;
+    lcd.PIN_54_LCD_HSYNC.state = !lcd.POFY.state;
+    lcd.PIN_55_LCD_LATCH.state = !lcd.RUTU_x113p.state;
+
+    if (pix_count.XEHO_PX0p.state && pix_count.XYDO_PX3p.state) {
+      lcd.WUSA_LCD_CLOCK_GATE.state = 1;
+    }
+    if (VOGA_HBLANKp.state) {
+      lcd.WUSA_LCD_CLOCK_GATE.state = 0;
+    }
+
+    lcd.PIN_53_LCD_CLOCK.state = (!lcd.WUSA_LCD_CLOCK_GATE.state || !SACU_CLKPIPE_new) && (!fine_scroll.PUXA_SCX_FINE_MATCH_A.state || fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
+  }
+  else {
+    lcd.LUCA_LINE_EVENp.state = 0;
+    lcd.NAPO_FRAME_EVENp.state = 0;
+    lcd.MEDA_VSYNC_OUTn.state = 0;
+    lcd.WUSA_LCD_CLOCK_GATE.state = 0;
+
+    lcd.POME = 1;
+    lcd.RUJU = 1;
+    lcd.POFY = 0;
+
+    lcd.PIN_50_LCD_DATA1.state = RAVO_LD1n.state;
+    lcd.PIN_51_LCD_DATA0.state = REMY_LD0n.state;
+    lcd.PIN_52_LCD_CNTRL.state = 1;
+    lcd.PIN_53_LCD_CLOCK.state = 1;
+    lcd.PIN_54_LCD_HSYNC.state = 1;
+    lcd.PIN_55_LCD_LATCH.state = !div.UGOT_DIV06p.state;
+    lcd.PIN_56_LCD_FLIPS.state = !div.TULU_DIV07p.state;
+    lcd.PIN_57_LCD_VSYNC.state = 1;
   }
 
   //----------------------------------------

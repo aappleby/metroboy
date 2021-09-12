@@ -32,7 +32,7 @@ void GateBoy::tock_joypad_gates() {
   ///*_p05.KUKO*/ KUKO_DBG_D6    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[6].qp_old());
   ///*_p05.KERU*/ KERU_DBG_D7    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[7].qp_old());
 
-  /*_p07.BURO*/ wire BURO_FF60_D0p = not1(SIG_GND.out_new()); // FIXME hacking out debug stuff
+  /*_p07.BURO*/ wire BURO_FF60_D0p = not1(gbs.SIG_GND.out_new()); // FIXME hacking out debug stuff
   /*_p05.KURA*/ wire KURA_FF60_D0n = not1(BURO_FF60_D0p);
 
   /*

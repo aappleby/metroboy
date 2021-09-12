@@ -676,7 +676,7 @@ void GateBoy::get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags
   /*_p29.GYTE*/ wire GYTE_STORE7_MATCH = not1(DYKA_STORE7_MATCHn);
   /*_p29.GEKE*/ wire GEKE_STORE8_MATCH = not1(EFYL_STORE8_MATCHn);
 
-  /*_p29.GEZE*/ wire GEZE_STORE0_MATCH = or2(WEFU_STORE0_MATCH, SIG_GND.out_new());
+  /*_p29.GEZE*/ wire GEZE_STORE0_MATCH = or2(WEFU_STORE0_MATCH, gbs.SIG_GND.out_new());
   /*_p29.FUMA*/ wire FUMA_STORE1_MATCH = or2(GAJA_STORE1_MATCH, GEZE_STORE0_MATCH);
   /*_p29.GEDE*/ wire GEDE_STORE2_MATCH = or2(GUPO_STORE2_MATCH, FUMA_STORE1_MATCH);
   /*_p29.WUTO*/ wire WUTO_STORE3_MATCH = or2(WEBO_STORE3_MATCH, GEDE_STORE2_MATCH);
@@ -686,7 +686,7 @@ void GateBoy::get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags
   /*_p29.FAVO*/ wire FAVO_STORE7_MATCH = or2(GYTE_STORE7_MATCH, WYLA_STORE6_MATCH);
   /*_p29.GYGA*/ wire GYGA_STORE8_MATCH = or2(GEKE_STORE8_MATCH, FAVO_STORE7_MATCH);
 
-  /*_p29.GUVA*/ sprite_match_flags.GUVA_SPRITE0_GETp = nor2(YDUG_STORE0_MATCHn, SIG_GND.out_new());
+  /*_p29.GUVA*/ sprite_match_flags.GUVA_SPRITE0_GETp = nor2(YDUG_STORE0_MATCHn, gbs.SIG_GND.out_new());
   /*_p29.ENUT*/ sprite_match_flags.ENUT_SPRITE1_GETp = nor2(DYDU_STORE1_MATCHn, GEZE_STORE0_MATCH);
   /*_p29.EMOL*/ sprite_match_flags.EMOL_SPRITE2_GETp = nor2(DEGO_STORE2_MATCHn, FUMA_STORE1_MATCH);
   /*_p29.GYFY*/ sprite_match_flags.GYFY_SPRITE3_GETp = nor2(YLOZ_STORE3_MATCHn, GEDE_STORE2_MATCH);

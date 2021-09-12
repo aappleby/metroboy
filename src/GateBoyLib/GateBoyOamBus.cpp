@@ -80,8 +80,8 @@ void GateBoy::tock_oam_bus_gates()
 
   // OAM address from sprite scanner
   /*_p28.APAR*/ wire APAR_SCANNINGn = not1(sprite_scanner.ACYL_SCANNINGp.out_new());
-  /*_p28.GEFY*/ triwire GEFY_SCANX_TO_OA0 = tri6_nn(APAR_SCANNINGn, SIG_GND.out_new());
-  /*_p28.WUWE*/ triwire WUWE_SCANX_TO_OA1 = tri6_nn(APAR_SCANNINGn, SIG_GND.out_new());
+  /*_p28.GEFY*/ triwire GEFY_SCANX_TO_OA0 = tri6_nn(APAR_SCANNINGn, gbs.SIG_GND.out_new());
+  /*_p28.WUWE*/ triwire WUWE_SCANX_TO_OA1 = tri6_nn(APAR_SCANNINGn, gbs.SIG_GND.out_new());
   /*_p28.GUSE*/ triwire GUSE_SCAN0_TO_OA2 = tri6_nn(APAR_SCANNINGn, scan_counter.YFEL_SCAN0.qp_new());
   /*_p28.GEMA*/ triwire GEMA_SCAN1_TO_OA3 = tri6_nn(APAR_SCANNINGn, scan_counter.WEWY_SCAN1.qp_new());
   /*_p28.FUTO*/ triwire FUTO_SCAN2_TO_OA4 = tri6_nn(APAR_SCANNINGn, scan_counter.GOSO_SCAN2.qp_new());
@@ -102,8 +102,8 @@ void GateBoy::tock_oam_bus_gates()
   /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(dma_ctrl.MATU_DMA_RUNNINGp.qp_new());
   /*_p28.AJON*/ wire AJON_RENDERINGp = and2(BOGE_DMA_RUNNINGn, XYMU_RENDERINGn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma
   /*_p28.BETE*/ wire BETE_SPR_I_TO_OAM_An = not1(AJON_RENDERINGp);
-  /*_p28.GECA*/ triwire GECA_FETCHX_TO_OA0 = tri6_nn(BETE_SPR_I_TO_OAM_An, SIG_VCC.out_new());
-  /*_p28.WYDU*/ triwire WYDU_FETCHX_TO_OA1 = tri6_nn(BETE_SPR_I_TO_OAM_An, SIG_VCC.out_new());
+  /*_p28.GECA*/ triwire GECA_FETCHX_TO_OA0 = tri6_nn(BETE_SPR_I_TO_OAM_An, gbs.SIG_VCC.out_new());
+  /*_p28.WYDU*/ triwire WYDU_FETCHX_TO_OA1 = tri6_nn(BETE_SPR_I_TO_OAM_An, gbs.SIG_VCC.out_new());
   /*_p28.GYBU*/ triwire GYBU_FETCH0_TO_OA2 = tri6_nn(BETE_SPR_I_TO_OAM_An, sprite_ibus.BUS_SPR_I0.out_new());
   /*_p28.GYKA*/ triwire GYKA_FETCH1_TO_OA3 = tri6_nn(BETE_SPR_I_TO_OAM_An, sprite_ibus.BUS_SPR_I1.out_new());
   /*_p28.FABY*/ triwire FABY_FETCH2_TO_OA4 = tri6_nn(BETE_SPR_I_TO_OAM_An, sprite_ibus.BUS_SPR_I2.out_new());

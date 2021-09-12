@@ -153,14 +153,14 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
     /*_p32.LESO*/ wire LESO_LATCH_TILE_DBn = not1(MOFU_LATCH_TILE_DBp);
     /*_p32.LUVE*/ wire LUVE_LATCH_TILE_DBp = not1(LESO_LATCH_TILE_DBn); // Schematic wrong, was labeled AJAR
     /*_p32.LABU*/ wire LABU_LATCH_TILE_DBn = not1(LUVE_LATCH_TILE_DBp);
-    /*_p32.RAWU*/ tile_temp_b.RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D00p.out_old());
-    /*_p32.POZO*/ tile_temp_b.POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D01p.out_old());
-    /*_p32.PYZO*/ tile_temp_b.PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D02p.out_old());
-    /*_p32.POXA*/ tile_temp_b.POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D03p.out_old());
-    /*_p32.PULO*/ tile_temp_b.PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D04p.out_old());
-    /*_p32.POJU*/ tile_temp_b.POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D05p.out_old());
-    /*_p32.POWY*/ tile_temp_b.POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D06p.out_old());
-    /*_p32.PYJU*/ tile_temp_b.PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D07p.out_old());
+    /*_p32.RAWU*/ tile_temp_b.RAWU_TILE_DB0p.dff11(LABU_LATCH_TILE_DBn, gbs.SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D00p.out_old());
+    /*_p32.POZO*/ tile_temp_b.POZO_TILE_DB1p.dff11(LABU_LATCH_TILE_DBn, gbs.SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D01p.out_old());
+    /*_p32.PYZO*/ tile_temp_b.PYZO_TILE_DB2p.dff11(LABU_LATCH_TILE_DBn, gbs.SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D02p.out_old());
+    /*_p32.POXA*/ tile_temp_b.POXA_TILE_DB3p.dff11(LABU_LATCH_TILE_DBn, gbs.SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D03p.out_old());
+    /*_p32.PULO*/ tile_temp_b.PULO_TILE_DB4p.dff11(LABU_LATCH_TILE_DBn, gbs.SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D04p.out_old());
+    /*_p32.POJU*/ tile_temp_b.POJU_TILE_DB5p.dff11(LABU_LATCH_TILE_DBn, gbs.SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D05p.out_old());
+    /*_p32.POWY*/ tile_temp_b.POWY_TILE_DB6p.dff11(LABU_LATCH_TILE_DBn, gbs.SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D06p.out_old());
+    /*_p32.PYJU*/ tile_temp_b.PYJU_TILE_DB7p.dff11(LABU_LATCH_TILE_DBn, gbs.SIG_VCC.out_new(), vram_dbus.BUS_VRAM_D07p.out_old());
   }
 
   {
@@ -250,7 +250,7 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
     /*_p33.LESU*/ spr_pipe_a.LESU_SPR_PIPE_A3.dff22(SACU_CLKPIPE_new, MAME_SPR_PIX_SET3, LUFY_SPR_PIX_RST3, spr_pipe_a.LEFE_SPR_PIPE_A2.qp_old());
     /*_p33.LEFE*/ spr_pipe_a.LEFE_SPR_PIPE_A2.dff22(SACU_CLKPIPE_new, LELA_SPR_PIX_SET2, LYDE_SPR_PIX_RST2, spr_pipe_a.MASO_SPR_PIPE_A1.qp_old());
     /*_p33.MASO*/ spr_pipe_a.MASO_SPR_PIPE_A1.dff22(SACU_CLKPIPE_new, MYTO_SPR_PIX_SET1, MADA_SPR_PIX_RST1, spr_pipe_a.NURO_SPR_PIPE_A0.qp_old());
-    /*_p33.NURO*/ spr_pipe_a.NURO_SPR_PIPE_A0.dff22(SACU_CLKPIPE_new, PABE_SPR_PIX_SET0, PYZU_SPR_PIX_RST0, SIG_GND.out_new());
+    /*_p33.NURO*/ spr_pipe_a.NURO_SPR_PIPE_A0.dff22(SACU_CLKPIPE_new, PABE_SPR_PIX_SET0, PYZU_SPR_PIX_RST0, gbs.SIG_GND.out_new());
   }
 
   //----------------------------------------
@@ -290,7 +290,7 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
     /*_p33.PYJO*/ spr_pipe_b.PYJO_SPR_PIPE_B3.dff22(SACU_CLKPIPE_new, RANO_SPR_PIX_SET3, REHU_SPR_PIX_RST3, spr_pipe_b.NATY_SPR_PIPE_B2.qp_old());
     /*_p33.NATY*/ spr_pipe_b.NATY_SPR_PIPE_B2.dff22(SACU_CLKPIPE_new, MYXA_SPR_PIX_SET2, MAJO_SPR_PIX_RST2, spr_pipe_b.PEFU_SPR_PIPE_B1.qp_old());
     /*_p33.PEFU*/ spr_pipe_b.PEFU_SPR_PIPE_B1.dff22(SACU_CLKPIPE_new, RUSY_SPR_PIX_SET1, RUCA_SPR_PIX_RST1, spr_pipe_b.NYLU_SPR_PIPE_B0.qp_old());
-    /*_p33.NYLU*/ spr_pipe_b.NYLU_SPR_PIPE_B0.dff22(SACU_CLKPIPE_new, MEZU_SPR_PIX_SET0, MOFY_SPR_PIX_RST0, SIG_GND.out_new());
+    /*_p33.NYLU*/ spr_pipe_b.NYLU_SPR_PIPE_B0.dff22(SACU_CLKPIPE_new, MEZU_SPR_PIX_SET0, MOFY_SPR_PIX_RST0, gbs.SIG_GND.out_new());
   }
 
   //----------------------------------------
@@ -331,7 +331,7 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
     /*_p32.MACU*/ bgw_pipe_a.MACU_BGW_PIPE_A3.dff22(SACU_CLKPIPE_new, LYDU_BG_PIX_SET3, LUJA_BG_PIX_RST3, bgw_pipe_a.MOJU_BGW_PIPE_A2.qp_old());
     /*_p32.MOJU*/ bgw_pipe_a.MOJU_BGW_PIPE_A2.dff22(SACU_CLKPIPE_new, LOTO_BG_PIX_SET2, LUTU_BG_PIX_RST2, bgw_pipe_a.NOZO_BGW_PIPE_A1.qp_old());
     /*_p32.NOZO*/ bgw_pipe_a.NOZO_BGW_PIPE_A1.dff22(SACU_CLKPIPE_new, NYXO_BG_PIX_SET1, NEXA_BG_PIX_RST1, bgw_pipe_a.MYDE_BGW_PIPE_A0.qp_old());
-    /*_p32.MYDE*/ bgw_pipe_a.MYDE_BGW_PIPE_A0.dff22(SACU_CLKPIPE_new, LAKY_BG_PIX_SET0, LOTY_BG_PIX_RST0, SIG_GND.out_new());
+    /*_p32.MYDE*/ bgw_pipe_a.MYDE_BGW_PIPE_A0.dff22(SACU_CLKPIPE_new, LAKY_BG_PIX_SET0, LOTY_BG_PIX_RST0, gbs.SIG_GND.out_new());
   }
 
   //----------------------------------------
@@ -372,7 +372,7 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
     /*_p32.RYSA*/ bgw_pipe_b.RYSA_BGW_PIPE_B3.dff22(SACU_CLKPIPE_new, RYJA_BG_PIX_SET3, SEBO_BG_PIX_RST3, bgw_pipe_b.SADY_BGW_PIPE_B2.qp_old());
     /*_p32.SADY*/ bgw_pipe_b.SADY_BGW_PIPE_B2.dff22(SACU_CLKPIPE_new, RUCE_BG_PIX_SET2, SURE_BG_PIX_RST2, bgw_pipe_b.TACA_BGW_PIPE_B1.qp_old());
     /*_p32.TACA*/ bgw_pipe_b.TACA_BGW_PIPE_B1.dff22(SACU_CLKPIPE_new, SOLY_BG_PIX_SET1, SENO_BG_PIX_RST1, bgw_pipe_b.TOMY_BGW_PIPE_B0.qp_old());
-    /*_p32.TOMY*/ bgw_pipe_b.TOMY_BGW_PIPE_B0.dff22(SACU_CLKPIPE_new, TUXE_BG_PIX_SET0, SEJA_BG_PIX_RST0, SIG_GND.out_new());
+    /*_p32.TOMY*/ bgw_pipe_b.TOMY_BGW_PIPE_B0.dff22(SACU_CLKPIPE_new, TUXE_BG_PIX_SET0, SEJA_BG_PIX_RST0, gbs.SIG_GND.out_new());
   }
 
   //----------------------------------------
@@ -412,7 +412,7 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
     /*_p26.WYFU*/ mask_pipe.WYFU_MASK_PIPE_3.dff22(SACU_CLKPIPE_new, XYRU_MASK_PIPE_SET3, WEVO_MASK_PIPE_RST3, mask_pipe.VOSA_MASK_PIPE_2.qp_old());
     /*_p26.VOSA*/ mask_pipe.VOSA_MASK_PIPE_2.dff22(SACU_CLKPIPE_new, TYRA_MASK_PIPE_SET2, TUFO_MASK_PIPE_RST2, mask_pipe.WURU_MASK_PIPE_1.qp_old());
     /*_p26.WURU*/ mask_pipe.WURU_MASK_PIPE_1.dff22(SACU_CLKPIPE_new, XALA_MASK_PIPE_SET1, WEDE_MASK_PIPE_RST1, mask_pipe.VEZO_MASK_PIPE_0.qp_old());
-    /*_p26.VEZO*/ mask_pipe.VEZO_MASK_PIPE_0.dff22(SACU_CLKPIPE_new, TEDE_MASK_PIPE_SET0, WOKA_MASK_PIPE_RST0, SIG_VCC.out_new());
+    /*_p26.VEZO*/ mask_pipe.VEZO_MASK_PIPE_0.dff22(SACU_CLKPIPE_new, TEDE_MASK_PIPE_SET0, WOKA_MASK_PIPE_RST0, gbs.SIG_VCC.out_new());
   }
 
   //----------------------------------------
@@ -452,7 +452,7 @@ void GateBoy::tock_pix_pipes_gates(wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
     /*_p34.SOMY*/ pal_pipe.SOMY_PAL_PIPE_D3.dff22(SACU_CLKPIPE_new, SUKY_PAL_PIPE_SET3, TOWA_PAL_PIPE_RST3, pal_pipe.ROSA_PAL_PIPE_D2.qp_old());
     /*_p34.ROSA*/ pal_pipe.ROSA_PAL_PIPE_D2.dff22(SACU_CLKPIPE_new, PAMO_PAL_PIPE_SET2, PYZY_PAL_PIPE_RST2, pal_pipe.SATA_PAL_PIPE_D1.qp_old());
     /*_p34.SATA*/ pal_pipe.SATA_PAL_PIPE_D1.dff22(SACU_CLKPIPE_new, SORO_PAL_PIPE_SET1, TAFA_PAL_PIPE_RST1, pal_pipe.RUGO_PAL_PIPE_D0.qp_old());
-    /*_p34.RUGO*/ pal_pipe.RUGO_PAL_PIPE_D0.dff22(SACU_CLKPIPE_new, PUME_PAL_PIPE_SET0, SUCO_PAL_PIPE_RST0, SIG_GND.out_new());
+    /*_p34.RUGO*/ pal_pipe.RUGO_PAL_PIPE_D0.dff22(SACU_CLKPIPE_new, PUME_PAL_PIPE_SET0, SUCO_PAL_PIPE_RST0, gbs.SIG_GND.out_new());
   }
 
   //----------------------------------------

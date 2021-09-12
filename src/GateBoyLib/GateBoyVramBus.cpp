@@ -157,7 +157,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   /*_p26.ACEN*/ wire ACEN_BG_MAP_READp = and2(POTU_BGW_MAP_READp, AXAD_WIN_MODEn);
   /*_p26.BAFY*/ wire BAFY_BG_MAP_READn = not1(ACEN_BG_MAP_READp);
 
-  /*#p26.ATAD*/ Adder ATAD_TILE_X0 = add3(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), SIG_GND.out_new());
+  /*#p26.ATAD*/ Adder ATAD_TILE_X0 = add3(pix_count.XEHO_PX0p.qp_new(), reg_scx.DATY_SCX0n.qn_new(), gbs.SIG_GND.out_new());
   /*_p26.BEHU*/ Adder BEHU_TILE_X1 = add3(pix_count.SAVY_PX1p.qp_new(), reg_scx.DUZU_SCX1n.qn_new(), ATAD_TILE_X0.carry);
   /*_p26.APYH*/ Adder APYH_TILE_X2 = add3(pix_count.XODU_PX2p.qp_new(), reg_scx.CYXU_SCX2n.qn_new(), BEHU_TILE_X1.carry);
   /*_p26.BABE*/ Adder BABE_MAP_X0  = add3(pix_count.XYDO_PX3p.qp_new(), reg_scx.GUBO_SCX3n.qn_new(), APYH_TILE_X2.carry);
@@ -166,7 +166,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   /*_p26.BYCA*/ Adder BYCA_MAP_X3  = add3(pix_count.TAKO_PX6p.qp_new(), reg_scx.CABU_SCX6n.qn_new(), BEWY_MAP_X2.carry);
   /*_p26.ACUL*/ Adder ACUL_MAP_X4  = add3(pix_count.SYBE_PX7p.qp_new(), reg_scx.BAKE_SCX7n.qn_new(), BYCA_MAP_X3.carry);
 
-  /*#p26.FAFO*/ Adder FAFO_TILE_Y0 = add3(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), SIG_GND.out_new());
+  /*#p26.FAFO*/ Adder FAFO_TILE_Y0 = add3(reg_ly.MUWY_LY0p.qp_new(), reg_scy.GAVE_SCY0n.qn_new(), gbs.SIG_GND.out_new());
   /*_p26.EMUX*/ Adder EMUX_TILE_Y1 = add3(reg_ly.MYRO_LY1p.qp_new(), reg_scy.FYMO_SCY1n.qn_new(), FAFO_TILE_Y0.carry);
   /*_p26.ECAB*/ Adder ECAB_TILE_Y2 = add3(reg_ly.LEXA_LY2p.qp_new(), reg_scy.FEZU_SCY2n.qn_new(), EMUX_TILE_Y1.carry);
   /*_p26.ETAM*/ Adder ETAM_MAP_Y0  = add3(reg_ly.LYDO_LY3p.qp_new(), reg_scy.FUJO_SCY3n.qn_new(), ECAB_TILE_Y2.carry);
@@ -186,8 +186,8 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   /*_p26.CETA*/ triwire CETA_MY03_TO_VA08 = tri6_nn(BAFY_BG_MAP_READn, EFYK_MAP_Y3.sum);
   /*_p26.DAFE*/ triwire DAFE_MY04_TO_VA09 = tri6_nn(BAFY_BG_MAP_READn, EJOK_MAP_Y4.sum);
   /*#p26.AMUV*/ triwire AMUV_BMAP_TO_VA10 = tri6_nn(BAFY_BG_MAP_READn, reg_lcdc.XAFO_LCDC_BGMAPn.qn_new());
-  /*_p26.COVE*/ triwire COVE_BMAP_TO_VA11 = tri6_nn(BAFY_BG_MAP_READn, SIG_VCC.out_new());
-  /*_p26.COXO*/ triwire COXO_BMAP_TO_VA12 = tri6_nn(BAFY_BG_MAP_READn, SIG_VCC.out_new());
+  /*_p26.COVE*/ triwire COVE_BMAP_TO_VA11 = tri6_nn(BAFY_BG_MAP_READn, gbs.SIG_VCC.out_new());
+  /*_p26.COXO*/ triwire COXO_BMAP_TO_VA12 = tri6_nn(BAFY_BG_MAP_READn, gbs.SIG_VCC.out_new());
 
   /*_BUS_VRAM_A00n*/ vram_abus.BUS_VRAM_A00n.tri_bus(AXEP_MX00_TO_VA00);
   /*_BUS_VRAM_A01n*/ vram_abus.BUS_VRAM_A01n.tri_bus(AFEB_MX01_TO_VA01);
@@ -244,8 +244,8 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   /*_p27.VOVO*/ triwire VOVO_WY06_TO_VA08 = tri6_nn(WUKO_WIN_MAP_READn, win_y.TATE_WIN_MAP_Y3.qp_new());
   /*_p27.VULO*/ triwire VULO_WY07_TO_VA09 = tri6_nn(WUKO_WIN_MAP_READn, win_y.TEKE_WIN_MAP_Y4.qp_new());
   /*#p27.VEVY*/ triwire VEVY_WMAP_TO_VA10 = tri6_nn(WUKO_WIN_MAP_READn, reg_lcdc.WOKY_LCDC_WINMAPn.qn_new());
-  /*_p27.VEZA*/ triwire VEZA_WMAP_TO_VA11 = tri6_nn(WUKO_WIN_MAP_READn, SIG_VCC.out_new());
-  /*_p27.VOGU*/ triwire VOGU_WMAP_TO_VA12 = tri6_nn(WUKO_WIN_MAP_READn, SIG_VCC.out_new());
+  /*_p27.VEZA*/ triwire VEZA_WMAP_TO_VA11 = tri6_nn(WUKO_WIN_MAP_READn, gbs.SIG_VCC.out_new());
+  /*_p27.VOGU*/ triwire VOGU_WMAP_TO_VA12 = tri6_nn(WUKO_WIN_MAP_READn, gbs.SIG_VCC.out_new());
 
   /*_BUS_VRAM_A00n*/ vram_abus.BUS_VRAM_A00n.tri_bus(XEJA_WX03_TO_VA00);
   /*_BUS_VRAM_A01n*/ vram_abus.BUS_VRAM_A01n.tri_bus(XAMO_WX04_TO_VA01);
@@ -340,7 +340,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   /*_p29.GOTU*/ triwire GOTU_ODA5_TO_VA09 = tri6_nn(ABON_SFETCHINGn, oam_temp_a.WYSO_OAM_DA5p.qp_new());
   /*_p29.GEGU*/ triwire GEGU_ODA6_TO_VA10 = tri6_nn(ABON_SFETCHINGn, oam_temp_a.XOTE_OAM_DA6p.qp_new());
   /*_p29.XEHE*/ triwire XEHE_ODA7_TO_VA11 = tri6_nn(ABON_SFETCHINGn, oam_temp_a.YZAB_OAM_DA7p.qp_new());
-  /*_p29.DYSO*/ triwire DYSO_BANK_TO_VA12 = tri6_nn(ABON_SFETCHINGn, SIG_GND.out_new());   // sprites always in low half of tile store
+  /*_p29.DYSO*/ triwire DYSO_BANK_TO_VA12 = tri6_nn(ABON_SFETCHINGn, gbs.SIG_GND.out_new());   // sprites always in low half of tile store
 
   /*_BUS_VRAM_A00n*/ vram_abus.BUS_VRAM_A00n.tri_bus(ABEM_HILO_TO_VA00);
   /*_BUS_VRAM_A01n*/ vram_abus.BUS_VRAM_A01n.tri_bus(BAXE_SPL0_TO_VA01);
@@ -465,7 +465,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
     //probe_wire(12, "TOLE_CPU_VRM_RDp", TOLE_CPU_VRAM_RDp());
 
     ///*_p25.SUDO*/ wire SUDO_MWRp = not1(/*vram_pins.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
-    /*_p25.SUDO*/ wire SUDO_MWRp = not1(SIG_VCC.out_new()); // Ignoring debug stuff for now
+    /*_p25.SUDO*/ wire SUDO_MWRp = not1(gbs.SIG_VCC.out_new()); // Ignoring debug stuff for now
 
     /*#p25.TYJY*/ wire TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp(), SUDO_MWRp, TUJA_CPU_VRAM_WRp());
     /*#p25.SOHY*/ wire SOHY_MWRn     = nand2(TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp);

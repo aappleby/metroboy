@@ -40,6 +40,13 @@ struct GateBoy;
 void print_field_at(int offset);
 void diff_gb(GateBoy* gba, GateBoy* gbb, uint8_t mask);
 
+#pragma pack(push, 1)
+struct GateBoyState {
+  /*_SIG_VCC*/ SigIn SIG_VCC;
+  /*_SIG_GND*/ SigIn SIG_GND;
+};
+#pragma pack(pop)
+
 //-----------------------------------------------------------------------------
 
 #pragma pack(push, 1)
@@ -422,8 +429,7 @@ struct GateBoy {
 
   //----------
 
-  /*_SIG_VCC*/ SigIn SIG_VCC;
-  /*_SIG_GND*/ SigIn SIG_GND;
+  GateBoyState gbs;
 
   GateBoyCpuSignals cpu_signals;
   GateBoyCpuABus cpu_abus_old;

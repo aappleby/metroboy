@@ -3066,49 +3066,71 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto cpu_oam_wr_new = cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110);
 
 
-
-    if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp) {
-      reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
-    }
-    else if (reg_new.sprite_scanner.ACYL_SCANNINGp) {
-      reg.oam_ctrl.SIG_OAM_CLKn  = (gen_clk_new(0b10011001)) && (gen_clk_new(0b11001100)) && (!cpu_addr_oam_new || !gen_clk_new(0b00001111));
-    }
-    else if (!reg_new.XYMU_RENDERINGn) {
-      reg.oam_ctrl.SIG_OAM_CLKn  = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || (reg.sfetch_control.TYFO_SFETCH_S0p_D1 && !reg.sfetch_counter.TOXE_SFETCH_S0p)) && (!cpu_addr_oam_new || !gen_clk_new(0b00001111));
-    }
-    else if (cpu_addr_oam_new) {
-      reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
+    if (gen_clk_new(0b11110000)) {
+      if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp) {
+        reg.oam_ctrl.SIG_OAM_CLKn  = 1;
+      }
+      else if (reg_new.sprite_scanner.ACYL_SCANNINGp) {
+        reg.oam_ctrl.SIG_OAM_CLKn  = (gen_clk_new(0b10011001)) && (gen_clk_new(0b11001100)) && (!cpu_addr_oam_new || 1);
+      }
+      else if (!reg_new.XYMU_RENDERINGn) {
+        reg.oam_ctrl.SIG_OAM_CLKn  = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || (reg.sfetch_control.TYFO_SFETCH_S0p_D1 && !reg.sfetch_counter.TOXE_SFETCH_S0p)) && (!cpu_addr_oam_new || 1);
+      }
+      else if (cpu_addr_oam_new) {
+        reg.oam_ctrl.SIG_OAM_CLKn  = 1;
+      }
+      else {
+        reg.oam_ctrl.SIG_OAM_CLKn  = 1;
+      }
     }
     else {
-      reg.oam_ctrl.SIG_OAM_CLKn  = 1;
+      if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp) {
+        reg.oam_ctrl.SIG_OAM_CLKn  = 0;
+      }
+      else if (reg_new.sprite_scanner.ACYL_SCANNINGp) {
+        reg.oam_ctrl.SIG_OAM_CLKn  = (gen_clk_new(0b10011001)) && (gen_clk_new(0b11001100)) && (!cpu_addr_oam_new || 0);
+      }
+      else if (!reg_new.XYMU_RENDERINGn) {
+        reg.oam_ctrl.SIG_OAM_CLKn  = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || (reg.sfetch_control.TYFO_SFETCH_S0p_D1 && !reg.sfetch_counter.TOXE_SFETCH_S0p)) && (!cpu_addr_oam_new || 0);
+      }
+      else if (cpu_addr_oam_new) {
+        reg.oam_ctrl.SIG_OAM_CLKn  = 0;
+      }
+      else {
+        reg.oam_ctrl.SIG_OAM_CLKn  = 1;
+      }
     }
 
+
+
+    reg.oam_ctrl.SIG_OAM_WRn_A = 1;
+    reg.oam_ctrl.SIG_OAM_WRn_B = 1;
 
     if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp) {
       reg.oam_ctrl.SIG_OAM_WRn_A = gen_clk_new(0b11110000) || !reg.oam_abus.BUS_OAM_A00n;
       reg.oam_ctrl.SIG_OAM_WRn_B = gen_clk_new(0b11110000) ||  reg.oam_abus.BUS_OAM_A00n;
+    }
+    else if (cpu_addr_oam_new && reg_new.XYMU_RENDERINGn && !reg_new.sprite_scanner.ACYL_SCANNINGp) {
+      reg.oam_ctrl.SIG_OAM_WRn_A = !cpu_oam_wr_new || !reg.oam_abus.BUS_OAM_A00n;
+      reg.oam_ctrl.SIG_OAM_WRn_B = !cpu_oam_wr_new ||  reg.oam_abus.BUS_OAM_A00n;
+    }
+
+    if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp) {
       reg.oam_ctrl.SIG_OAM_OEn   = !cpu_oam_rd_new;
     }
     else if (reg_new.sprite_scanner.ACYL_SCANNINGp) {
-      reg.oam_ctrl.SIG_OAM_WRn_A = 1;
-      reg.oam_ctrl.SIG_OAM_WRn_B = 1;
       reg.oam_ctrl.SIG_OAM_OEn   = (gen_clk_new(0b10011001)) && !cpu_oam_rd_new;
     }
     else if (!reg_new.XYMU_RENDERINGn) {
-      reg.oam_ctrl.SIG_OAM_WRn_A = 1;
-      reg.oam_ctrl.SIG_OAM_WRn_B = 1;
       reg.oam_ctrl.SIG_OAM_OEn   = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || !reg.sfetch_control.TYFO_SFETCH_S0p_D1) && !cpu_oam_rd_new;
     }
     else if (cpu_addr_oam_new) {
-      reg.oam_ctrl.SIG_OAM_WRn_A = !cpu_oam_wr_new || !reg.oam_abus.BUS_OAM_A00n;
-      reg.oam_ctrl.SIG_OAM_WRn_B = !cpu_oam_wr_new ||  reg.oam_abus.BUS_OAM_A00n;
       reg.oam_ctrl.SIG_OAM_OEn   = !reg.cpu_signals.SIG_IN_CPU_RDp || reg.cpu_signals.SIG_IN_CPU_LATCH_EXT;
     }
     else {
-      reg.oam_ctrl.SIG_OAM_WRn_A = 1;
-      reg.oam_ctrl.SIG_OAM_WRn_B = 1;
       reg.oam_ctrl.SIG_OAM_OEn   = 1;
     }
+
 
 
 

@@ -1373,14 +1373,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   uint8_t phase_new = 1 << (7 - ((sys.phase_total + 1) & 7));
 
 
-  bool SYLO_WIN_HITn_old = !reg_old.win_ctrl.RYDY_WIN_HITp;
-  bool TOMU_WIN_HITp_old = !SYLO_WIN_HITn_old;
-  bool SOCY_WIN_HITn_old = !TOMU_WIN_HITp_old;
-  bool VYBO_CLKPIPE_old = !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp &&  !(phase_old & 0b10101010);
-  bool TYFA_CLKPIPE_old = SOCY_WIN_HITn_old && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && VYBO_CLKPIPE_old;
-  bool SEGU_CLKPIPE_old = !TYFA_CLKPIPE_old;
-  bool SACU_CLKPIPE_old = SEGU_CLKPIPE_old || reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
-  bool ROCO_CLKPIPE_old = !SEGU_CLKPIPE_old;
+  bool SACU_CLKPIPE_old = !(!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp &&  !(phase_old & 0b10101010)) || reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
 
   bool clkpipe_en_old = 1;
   if (reg_old.win_ctrl.RYDY_WIN_HITp) clkpipe_en_old = 0;
@@ -1850,7 +1843,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.XYMU_RENDERINGn.state = 1;
 
     if (DELTA_EVEN) {
-      reg.sprite_fetcher.SOBU_SFETCH_REQp.  state = reg.FEPO_STORE_MATCHp.state && !TOMU_WIN_HITp_old && reg.tile_fetcher.LYRY_BFETCH_DONEp.state && !reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state;
+      reg.sprite_fetcher.SOBU_SFETCH_REQp.  state = reg.FEPO_STORE_MATCHp.state && !reg_old.win_ctrl.RYDY_WIN_HITp && reg.tile_fetcher.LYRY_BFETCH_DONEp.state && !reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state;
     }
     if (DELTA_ODD) {
       reg.sprite_fetcher.SUDA_SFETCH_REQp  .state = reg.sprite_fetcher.SOBU_SFETCH_REQp.state;
@@ -1951,7 +1944,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp.state) reg.XYMU_RENDERINGn.state = 0;
 
     if (DELTA_EVEN) {
-      reg.sprite_fetcher.SOBU_SFETCH_REQp.  state = reg.FEPO_STORE_MATCHp.state && !TOMU_WIN_HITp_old && reg.tile_fetcher.LYRY_BFETCH_DONEp.state && !reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state;
+      reg.sprite_fetcher.SOBU_SFETCH_REQp.  state = reg.FEPO_STORE_MATCHp.state && !reg_old.win_ctrl.RYDY_WIN_HITp && reg.tile_fetcher.LYRY_BFETCH_DONEp.state && !reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state;
       reg.sprite_fetcher.VONU_SFETCH_S1p_D4.state = reg.sprite_fetcher.TOBU_SFETCH_S1p_D2;
       reg.sprite_fetcher.TOBU_SFETCH_S1p_D2.state = reg.sprite_fetcher.TULY_SFETCH_S1p;
 
@@ -2371,10 +2364,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // WY/WX/window match
 
   {
-    wire VYBO_CLKPIPE_odd = !reg.FEPO_STORE_MATCHp.state && !reg.WODU_HBLANKp.state && gen_clk_new(0b01010101);
-    wire ROCO_CLKPIPE_new = !reg.win_ctrl.RYDY_WIN_HITp.state && reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && VYBO_CLKPIPE_odd;
-
-    if (!ROCO_CLKPIPE_old && ROCO_CLKPIPE_new) {
+    if (!(!reg_old.win_ctrl.RYDY_WIN_HITp.state && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp.state && !reg_old.FEPO_STORE_MATCHp.state && !reg_old.WODU_HBLANKp.state && !(phase_old & 0b10101010)) &&
+         (!reg_new.win_ctrl.RYDY_WIN_HITp.state && reg_new.tile_fetcher.POKY_PRELOAD_LATCHp.state && !reg_new.FEPO_STORE_MATCHp.state && !reg_new.WODU_HBLANKp.state && gen_clk_new(0b01010101))) {
       reg.win_ctrl.PYCO_WIN_MATCHp.state = reg.win_ctrl.NUKO_WX_MATCHp.state;
     }
   }
@@ -2477,7 +2468,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   {
     wire TYFA_CLKPIPE_new = (!reg.win_ctrl.RYDY_WIN_HITp.state && reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && !reg.FEPO_STORE_MATCHp.state && !wodu_hblank_new && CLK_xBxDxFxG);
     auto fs_old = bit_pack(&reg.fine_scroll.RYKU_FINE_CNT0, 3);
-    if (fs_old != 7 && (TYFA_CLKPIPE_old && !TYFA_CLKPIPE_new)) {
+    if (fs_old != 7 && ((!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp &&  !(phase_old & 0b10101010)) && !TYFA_CLKPIPE_new)) {
       bit_unpack(&reg.fine_scroll.RYKU_FINE_CNT0, 3, fs_old + 1);
     }
 

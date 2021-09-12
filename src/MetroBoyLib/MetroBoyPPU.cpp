@@ -235,14 +235,14 @@ void MetroBoyPPU::tick(int phase_total, const Req& req, Ack& ack) {
   bool vblank    = line >= 144;
   bool scanning  = phase_count < 160;
 
-  if (DELTA_HA) {
+  if (MB_DELTA_HA) {
     if (hblank && !vblank)   stat_int |= EI_HBLANK;
     if (vblank)              stat_int |= EI_VBLANK;
     if (scanning && !vblank) stat_int |= EI_OAM;
     if (lyc_match)           stat_int |= EI_LYC;
   }
 
-  if (DELTA_BC) {
+  if (MB_DELTA_BC) {
     lyc_match = (line == reg_lyc);
   }
 
@@ -287,7 +287,7 @@ void MetroBoyPPU::tock(int phase_total, const Req& req, const Ack /*vbus_ack*/, 
   // interrupt glitch - oam stat fires on vblank
   // interrupt glitch - writing to stat during hblank/vblank triggers stat interrupt
 
-  if (DELTA_GH && req.write) {
+  if (MB_DELTA_GH && req.write) {
     write(req.addr, req.data_lo);
   }
 

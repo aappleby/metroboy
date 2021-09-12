@@ -38,14 +38,14 @@ void MetroBoyTimer::tick(int phase_total, const Req& req, Ack& ack) {
 
 void MetroBoyTimer::tock(int phase_total, const Req& req) {
 
-  if (DELTA_CD) {
+  if (MB_DELTA_CD) {
     div++;
     timer_int = tima_7_sync && !(tima & 0x80);
     tima_7_sync = (tima & 0x80);
     update_tima();
   }
 
-  if (DELTA_FG && req.write) {
+  if (MB_DELTA_FG && req.write) {
     switch(req.addr) {
     case ADDR_DIV:  div  = 0; break;
     case ADDR_TIMA: tima = req.data_lo; tima_7_sync = false; break;

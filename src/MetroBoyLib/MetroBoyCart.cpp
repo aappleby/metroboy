@@ -128,7 +128,7 @@ void MetroBoyCart::tock(int phase_total, const Req& req) {
   const uint16_t ram_addr = req.addr & 0x1FFF;
   const uint16_t rom_addr = req.addr & 0x7FFF;
 
-  if (DELTA_GH && req.write) {
+  if (MB_DELTA_GH && req.write) {
     if (region == 0) {
       // cart_rom
       ram_enable = (req.data_lo & 0x0F) == 0x0A;

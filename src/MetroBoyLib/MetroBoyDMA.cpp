@@ -54,10 +54,10 @@ void MetroBoyDMA::tick(int phase_total, const Req& req, Ack& ack) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyDMA::tock(int phase_total, const Req& req) {
-  bool DMA_WR = (req.addr == 0xFF46) && req.write && (DELTA_FG || DELTA_GH || DELTA_HA);
+  bool DMA_WR = (req.addr == 0xFF46) && req.write && (MB_DELTA_FG || MB_DELTA_GH || MB_DELTA_HA);
   bool DMA_RST = DMA_RUN_TRIG_d4;
 
-  if (DELTA_BC) {
+  if (MB_DELTA_BC) {
     // something wrong here, inverting this until we figure it out.
     // bool LUPA = nor4(DMA_WR, DMA_WR_LATCH);
     bool LUPA = DMA_WR || DMA_WR_LATCH;
@@ -66,7 +66,7 @@ void MetroBoyDMA::tock(int phase_total, const Req& req) {
     if (DMA_RUN_READ) addr++;
   }
 
-  if (DELTA_FG) {
+  if (MB_DELTA_FG) {
     /*_p04.LENE*/ DMA_RUN_TRIG_d4 = DMA_RUN_TRIG_d0;
     /*_p04.MYTE*/ DMA_DONE = (addr & 0xFF) == 159;
     if (req.write && req.addr == 0xFF46) {

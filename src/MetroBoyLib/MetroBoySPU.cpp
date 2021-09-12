@@ -47,9 +47,9 @@ void MetroBoySPU::tick(int phase_total, const Req& req, Ack& ack) const {
 //-----------------------------------------------------------------------------
 
 void MetroBoySPU::tock(int phase_total, const Req& req) {
-  if (DELTA_GH && req.write) bus_write(req);
+  if (MB_DELTA_GH && req.write) bus_write(req);
 
-  if (!DELTA_HA) return;
+  if (!MB_DELTA_HA) return;
 
   bool sound_on = (nr52 & 0x80);
   uint16_t spu_clock_ = (spu_clock + 1) & 0x3FFF;

@@ -115,7 +115,7 @@ void MetroBoy::next_phase() {
   DCHECK_N(vbus_ack.read > 1);
   DCHECK_N(obus_ack.read > 1);
 
-  if (DELTA_HA) {
+  if (MB_DELTA_HA) {
     bool cpu_has_ibus_req = cpu_req.addr >= ADDR_IOBUS_BEGIN;
     bool cpu_has_vbus_req = cpu_req.addr >= ADDR_VRAM_BEGIN && cpu_req.addr <= ADDR_VRAM_END;
     bool cpu_has_obus_req = cpu_req.addr >= ADDR_OAM_BEGIN  && cpu_req.addr <= ADDR_OAM_END;
@@ -163,7 +163,7 @@ void MetroBoy::next_phase() {
   //-----------------------------------
   // prioritize reqs
 
-  if (DELTA_AB) {
+  if (MB_DELTA_AB) {
     cpu_req.addr  = gb_cpu._bus_addr;
     cpu_req.data  = gb_cpu._bus_data;
     cpu_req.read  = gb_cpu._bus_read;
@@ -208,7 +208,7 @@ void MetroBoy::next_phase() {
     ebus_req.write = 0;
   }
 
-  if (DELTA_EF && dma.DMA_RUN_WRITE) {
+  if (MB_DELTA_EF && dma.DMA_RUN_WRITE) {
     obus_req.addr = uint16_t(0xFE00 | (dma.addr & 0xFF));
     obus_req.data = dma_data_latch;
     obus_req.read = 0;

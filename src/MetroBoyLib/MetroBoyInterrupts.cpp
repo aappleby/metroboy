@@ -30,11 +30,11 @@ void MetroBoyInterrupts::tock(int phase_total, const Req& req,
                       bool serial_int,
                       bool joypad_int) {
 
-  if (DELTA_AB) {
+  if (MB_DELTA_AB) {
     intf &= ~cpu_int_ack;
   }
 
-  if (DELTA_GH) {
+  if (MB_DELTA_GH) {
     if (req.write) {
       if (req.addr == ADDR_IF) intf  = (uint8_t)req.data | 0b11100000;
       if (req.addr == ADDR_IE) imask = (uint8_t)req.data;

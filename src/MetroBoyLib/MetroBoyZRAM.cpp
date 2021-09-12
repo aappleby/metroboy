@@ -21,7 +21,7 @@ void MetroBoyZRAM::tick(int phase_total, const Req& req, Ack& ack) const {
 }
 
 void MetroBoyZRAM::tock(int phase_total, const Req& req) {
-  if (DELTA_GH && req.write && (req.addr >= 0xFF80) && (req.addr <= 0xFFFE)) {
+  if (MB_DELTA_GH && req.write && (req.addr >= 0xFF80) && (req.addr <= 0xFFFE)) {
     ram[req.addr & 0x007F] = (uint8_t)req.data_lo;
   }
 }

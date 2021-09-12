@@ -30,7 +30,7 @@ void MetroBoyOAM::tick(int phase_total, const Req& req, Ack& ack) const {
 // FIXME this probably writes on phases other than GH during DMA...
 
 void MetroBoyOAM::tock(int phase_total, const Req& req) {
-  if (DELTA_GH && req.write && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
+  if (MB_DELTA_GH && req.write && (req.addr >= ADDR_OAM_BEGIN) && (req.addr <= ADDR_OAM_END)) {
     uint16_t oam_addr = req.addr & 0x00FF;
     uint16_t d = ram[oam_addr >> 1];
     if (oam_addr & 1) d = (d & 0x00FF) | (req.data_lo << 8);

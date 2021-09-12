@@ -95,13 +95,13 @@ int main(int argc, char** argv) {
   load_blob("LinksAwakening.gb", b);
   results += test_regression_cart(b, 1000000, false);
   
-  LOG_G("Regression testing Zelda intro dump\n");
-  load_blob("zelda_intro.dump", b);
-  results += test_regression_dump(b, 1000000);
-  
-  LOG_G("Regression testing Zelda overworld dump\n");
-  load_blob("zelda_overworld.dump", b);
-  results += test_regression_dump(b, 1000000);
+  //LOG_G("Regression testing Zelda intro dump\n");
+  //load_blob("zelda_intro.dump", b);
+  //results += test_regression_dump(b, 1000000);
+  //
+  //LOG_G("Regression testing Zelda overworld dump\n");
+  //load_blob("zelda_overworld.dump", b);
+  //results += test_regression_dump(b, 1000000);
 
 #if 0
   results += t.test_reset_cart_vs_dump();
@@ -172,8 +172,8 @@ int main(int argc, char** argv) {
 GateBoyPair GateBoyTests::create_debug_gb(const blob& cart_blob) {
   GateBoyPair gbp(false, true);
   gbp.reset_to_bootrom(cart_blob, true);
-  gbp.gba.gbs.sys_cpu_en = 0;
-  gbp.gbb.gbs.sys_cpu_en = 0;
+  gbp.gba.sys.cpu_en = 0;
+  gbp.gbb.sys.cpu_en = 0;
   return gbp;
 }
 
@@ -267,15 +267,14 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot() {
   LOG_G("reset_to_bootrom with fastboot = false done\n");
 
   // Clear the fastboot bit on the first gameboy, since that obviously won't match
-  gbp1.gba.gbs.sys_fastboot = 0;
-  gbp1.gbb.gbs.sys_fastboot = 0;
-
-  int start = 0;
-  int end   = offsetof(GateBoy, sentinel3);
+  gbp1.gba.sys.fastboot = 0;
+  gbp1.gbb.sys.fastboot = 0;
 
   uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
 
-  results += diff_blob(&gbp1.gba, start, end, &gbp2.gba, start, end, mask);
+  results += diff_blob(&gbp1.gba.reg, 0, sizeof(GateBoyReg),
+                       &gbp2.gba.reg, 0, sizeof(GateBoyReg),
+                       mask);
 
   TEST_DONE();
 }
@@ -303,12 +302,11 @@ TestResults GateBoyTests::test_reset_cart_vs_dump() {
   gb2.reset_to_cart(Assembler::create_dummy_cart());
   LOG_G("reset_cart done\n");
 
-  int start = 0;
-  int end   = offsetof(GateBoy, sentinel3);
-
   uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
 
-  results += diff_blob(&gb1, start, end, &gb2, start, end, mask);
+  results += diff_blob(&gb1.reg, 0, sizeof(GateBoyReg),
+                       &gb2.reg, 0, sizeof(GateBoyReg),
+                       mask);
 
   TEST_DONE();
 }
@@ -916,19 +914,19 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
 
   int timeout = 150000 * 8;
 
-  while(gbp.gba.gbs.phase_total < timeout) {
+  while(gbp.gba.sys.phase_total < timeout) {
     if (!gbp.next_phase(cart_blob)) break;
-    if (gbp.gba.gbm.zero_ram[2]) break;
+    if (gbp.gba.mem.zero_ram[2]) break;
   }
 
-  uint8_t result_a = gbp.gba.gbm.zero_ram[0]; // actual
-  uint8_t result_b = gbp.gba.gbm.zero_ram[1]; // expected
-  uint8_t result_c = gbp.gba.gbm.zero_ram[2]; // 0x01 if test passes, 0xFF if test fails
+  uint8_t result_a = gbp.gba.mem.zero_ram[0]; // actual
+  uint8_t result_b = gbp.gba.mem.zero_ram[1]; // expected
+  uint8_t result_c = gbp.gba.mem.zero_ram[2]; // 0x01 if test passes, 0xFF if test fails
 
-  bool pass = (result_c == 0x01) && (gbp.gba.gbs.phase_total < timeout);
+  bool pass = (result_c == 0x01) && (gbp.gba.sys.phase_total < timeout);
 
   if (pass) {
-    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, gbp.gba.gbs.phase_total);
+    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, gbp.gba.sys.phase_total);
     results.test_pass++;
     return results;
   }
@@ -936,11 +934,11 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
     if (!verbose) LOG_B("%-30s ", filename);
 
     const char* reason = "ERROR";
-    if      (gbp.gba.gbs.phase_total == timeout) reason = "TIMEOUT";
+    if      (gbp.gba.sys.phase_total == timeout) reason = "TIMEOUT";
     else if (result_a != result_b)           reason = "MISMATCH";
     else if (result_c == 0xFF)               reason = "FAIL";
 
-    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gbp.gba.gbs.phase_total);
+    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gbp.gba.sys.phase_total);
     results.test_fail++;
     return results;
   }
@@ -958,18 +956,18 @@ TestResults GateBoyTests::test_init() {
 
   LOG_G("Checking mem\n");
   // Mem should be clear
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.gbm.cart_ram[i]);
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.gbm.cart_ram[i]);
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.gbm.int_ram[i]);
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.gbm.int_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.mem.cart_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.mem.cart_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.mem.int_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.mem.int_ram[i]);
 
   // Framebuffer should be 0x04 (yellow) except for the first pixel, which
   // always gets written to because XONA_LCDCENn is 0 at boot
 
   LOG_G("Checking framebuffer\n");
   for (int i = 1; i < 160*144; i++) {
-    ASSERT_EQ(4, gbp.gba.gbm.framebuffer[i], "bad framebuffer at %d\n", i);
-    ASSERT_EQ(4, gbp.gbb.gbm.framebuffer[i], "bad framebuffer at %d\n", i);
+    ASSERT_EQ(4, gbp.gba.mem.framebuffer[i], "bad framebuffer at %d\n", i);
+    ASSERT_EQ(4, gbp.gbb.mem.framebuffer[i], "bad framebuffer at %d\n", i);
   }
 
   LOG_G("Checking reg values\n");
@@ -1011,10 +1009,10 @@ TestResults GateBoyTests::test_clk() {
   gbp.dbg_write(cart_blob, ADDR_LCDC, 0x80);
   gbp.run_phases(cart_blob, 8);
 
-  auto& clk = gbp.gba.gbr.clk;
+  auto& clk = gbp.gba.reg.clk;
 
   for (int i = 0; i < 32; i++) {
-    int phase = gbp.gba.gbs.phase_total & 7;
+    int phase = gbp.gba.sys.phase_total & 7;
     EXPECT_CLK(clk.AFUR_xxxxEFGH.qp_old(), (uint8_t)0b00001111);
     EXPECT_CLK(clk.ALEF_AxxxxFGH.qp_old(), (uint8_t)0b10000111);
     EXPECT_CLK(clk.APUK_ABxxxxGH.qp_old(), (uint8_t)0b11000011);
@@ -1024,15 +1022,15 @@ TestResults GateBoyTests::test_clk() {
     EXPECT_CLK(clk.VENA_xxCDEFxx.qp_old(), (uint8_t)0b00111100);
     EXPECT_CLK(clk.WOSU_AxxDExxH.qp_old(), (uint8_t)0b10011001);
 
-    EXPECT_CLK(gbp.gba.gbr.clk.SIG_CPU_BOWA_Axxxxxxx.out_old(), 0b10000000);
-    EXPECT_CLK(gbp.gba.gbr.clk.SIG_CPU_BEDO_xBCDEFGH.out_old(), 0b01111111);
-    EXPECT_CLK(gbp.gba.gbr.clk.SIG_CPU_BEKO_ABCDxxxx.out_old(), 0b11110000);
-    EXPECT_CLK(gbp.gba.gbr.clk.SIG_CPU_BUDE_xxxxEFGH.out_old(), 0b00001111);
-    EXPECT_CLK(gbp.gba.gbr.clk.SIG_CPU_BOLO_ABCDEFxx.out_old(), 0b11111100);
-    EXPECT_CLK(gbp.gba.gbr.clk.SIG_CPU_BUKE_AxxxxxGH.out_old(), 0b10000011);
-    EXPECT_CLK(gbp.gba.gbr.clk.SIG_CPU_BOMA_xBCDEFGH.out_old(), 0b01111111);
-    EXPECT_CLK(gbp.gba.gbr.clk.SIG_CPU_BOGA_Axxxxxxx.out_old(), 0b10000000);
-    EXPECT_CLK(gbp.gba.gbr.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
+    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BOWA_Axxxxxxx.out_old(), 0b10000000);
+    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BEDO_xBCDEFGH.out_old(), 0b01111111);
+    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BEKO_ABCDxxxx.out_old(), 0b11110000);
+    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BUDE_xxxxEFGH.out_old(), 0b00001111);
+    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BOLO_ABCDEFxx.out_old(), 0b11111100);
+    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BUKE_AxxxxxGH.out_old(), 0b10000011);
+    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BOMA_xBCDEFGH.out_old(), 0b01111111);
+    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BOGA_Axxxxxxx.out_old(), 0b10000000);
+    EXPECT_CLK(gbp.gba.reg.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
     gbp.next_phase(cart_blob);
   }
 
@@ -1107,36 +1105,36 @@ TestResults GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
-      char CLK = cp_ext(gbp.gba.gbr.clk.PIN_75_CLK_OUT .state);
-      char WRn = cp_ext(gbp.gba.gbr.ext_ctrl.PIN_78_WRn.state);
-      char RDn = cp_ext(gbp.gba.gbr.ext_ctrl.PIN_79_RDn.state);
-      char CSn = cp_ext(gbp.gba.gbr.ext_ctrl.PIN_80_CSn.state);
+      char CLK = cp_ext(gbp.gba.reg.clk.PIN_75_CLK_OUT .state);
+      char WRn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_80_CSn.state);
 
-      char A00 = cp_ext(gbp.gba.gbr.ext_abus.PIN_01_A00.state);
-      char A01 = cp_ext(gbp.gba.gbr.ext_abus.PIN_02_A01.state);
-      char A02 = cp_ext(gbp.gba.gbr.ext_abus.PIN_03_A02.state);
-      char A03 = cp_ext(gbp.gba.gbr.ext_abus.PIN_04_A03.state);
-      char A04 = cp_ext(gbp.gba.gbr.ext_abus.PIN_05_A04.state);
-      char A05 = cp_ext(gbp.gba.gbr.ext_abus.PIN_06_A05.state);
-      char A06 = cp_ext(gbp.gba.gbr.ext_abus.PIN_07_A06.state);
-      char A07 = cp_ext(gbp.gba.gbr.ext_abus.PIN_08_A07.state);
-      char A08 = cp_ext(gbp.gba.gbr.ext_abus.PIN_09_A08.state);
-      char A09 = cp_ext(gbp.gba.gbr.ext_abus.PIN_10_A09.state);
-      char A10 = cp_ext(gbp.gba.gbr.ext_abus.PIN_11_A10.state);
-      char A11 = cp_ext(gbp.gba.gbr.ext_abus.PIN_12_A11.state);
-      char A12 = cp_ext(gbp.gba.gbr.ext_abus.PIN_13_A12.state);
-      char A13 = cp_ext(gbp.gba.gbr.ext_abus.PIN_14_A13.state);
-      char A14 = cp_ext(gbp.gba.gbr.ext_abus.PIN_15_A14.state);
-      char A15 = cp_ext(gbp.gba.gbr.ext_abus.PIN_16_A15.state);
+      char A00 = cp_ext(gbp.gba.reg.ext_abus.PIN_01_A00.state);
+      char A01 = cp_ext(gbp.gba.reg.ext_abus.PIN_02_A01.state);
+      char A02 = cp_ext(gbp.gba.reg.ext_abus.PIN_03_A02.state);
+      char A03 = cp_ext(gbp.gba.reg.ext_abus.PIN_04_A03.state);
+      char A04 = cp_ext(gbp.gba.reg.ext_abus.PIN_05_A04.state);
+      char A05 = cp_ext(gbp.gba.reg.ext_abus.PIN_06_A05.state);
+      char A06 = cp_ext(gbp.gba.reg.ext_abus.PIN_07_A06.state);
+      char A07 = cp_ext(gbp.gba.reg.ext_abus.PIN_08_A07.state);
+      char A08 = cp_ext(gbp.gba.reg.ext_abus.PIN_09_A08.state);
+      char A09 = cp_ext(gbp.gba.reg.ext_abus.PIN_10_A09.state);
+      char A10 = cp_ext(gbp.gba.reg.ext_abus.PIN_11_A10.state);
+      char A11 = cp_ext(gbp.gba.reg.ext_abus.PIN_12_A11.state);
+      char A12 = cp_ext(gbp.gba.reg.ext_abus.PIN_13_A12.state);
+      char A13 = cp_ext(gbp.gba.reg.ext_abus.PIN_14_A13.state);
+      char A14 = cp_ext(gbp.gba.reg.ext_abus.PIN_15_A14.state);
+      char A15 = cp_ext(gbp.gba.reg.ext_abus.PIN_16_A15.state);
 
-      char D00 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_17_D00.state);
-      char D01 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_18_D01.state);
-      char D02 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_19_D02.state);
-      char D03 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_20_D03.state);
-      char D04 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_21_D04.state);
-      char D05 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_22_D05.state);
-      char D06 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_23_D06.state);
-      char D07 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_24_D07.state);
+      char D00 = cp_ext(gbp.gba.reg.ext_dbus.PIN_17_D00.state);
+      char D01 = cp_ext(gbp.gba.reg.ext_dbus.PIN_18_D01.state);
+      char D02 = cp_ext(gbp.gba.reg.ext_dbus.PIN_19_D02.state);
+      char D03 = cp_ext(gbp.gba.reg.ext_dbus.PIN_20_D03.state);
+      char D04 = cp_ext(gbp.gba.reg.ext_dbus.PIN_21_D04.state);
+      char D05 = cp_ext(gbp.gba.reg.ext_dbus.PIN_22_D05.state);
+      char D06 = cp_ext(gbp.gba.reg.ext_dbus.PIN_23_D06.state);
+      char D07 = cp_ext(gbp.gba.reg.ext_dbus.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1231,36 +1229,36 @@ TestResults GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = cp_ext(gbp.gba.gbr.clk.PIN_75_CLK_OUT. state);
-      char WRn = cp_ext(gbp.gba.gbr.ext_ctrl.PIN_78_WRn.state);
-      char RDn = cp_ext(gbp.gba.gbr.ext_ctrl.PIN_79_RDn.state);
-      char CSn = cp_ext(gbp.gba.gbr.ext_ctrl.PIN_80_CSn.state);
+      char CLK = cp_ext(gbp.gba.reg.clk.PIN_75_CLK_OUT. state);
+      char WRn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_80_CSn.state);
 
-      char A00 = cp_ext(gbp.gba.gbr.ext_abus.PIN_01_A00.state);
-      char A01 = cp_ext(gbp.gba.gbr.ext_abus.PIN_02_A01.state);
-      char A02 = cp_ext(gbp.gba.gbr.ext_abus.PIN_03_A02.state);
-      char A03 = cp_ext(gbp.gba.gbr.ext_abus.PIN_04_A03.state);
-      char A04 = cp_ext(gbp.gba.gbr.ext_abus.PIN_05_A04.state);
-      char A05 = cp_ext(gbp.gba.gbr.ext_abus.PIN_06_A05.state);
-      char A06 = cp_ext(gbp.gba.gbr.ext_abus.PIN_07_A06.state);
-      char A07 = cp_ext(gbp.gba.gbr.ext_abus.PIN_08_A07.state);
-      char A08 = cp_ext(gbp.gba.gbr.ext_abus.PIN_09_A08.state);
-      char A09 = cp_ext(gbp.gba.gbr.ext_abus.PIN_10_A09.state);
-      char A10 = cp_ext(gbp.gba.gbr.ext_abus.PIN_11_A10.state);
-      char A11 = cp_ext(gbp.gba.gbr.ext_abus.PIN_12_A11.state);
-      char A12 = cp_ext(gbp.gba.gbr.ext_abus.PIN_13_A12.state);
-      char A13 = cp_ext(gbp.gba.gbr.ext_abus.PIN_14_A13.state);
-      char A14 = cp_ext(gbp.gba.gbr.ext_abus.PIN_15_A14.state);
-      char A15 = cp_ext(gbp.gba.gbr.ext_abus.PIN_16_A15.state);
+      char A00 = cp_ext(gbp.gba.reg.ext_abus.PIN_01_A00.state);
+      char A01 = cp_ext(gbp.gba.reg.ext_abus.PIN_02_A01.state);
+      char A02 = cp_ext(gbp.gba.reg.ext_abus.PIN_03_A02.state);
+      char A03 = cp_ext(gbp.gba.reg.ext_abus.PIN_04_A03.state);
+      char A04 = cp_ext(gbp.gba.reg.ext_abus.PIN_05_A04.state);
+      char A05 = cp_ext(gbp.gba.reg.ext_abus.PIN_06_A05.state);
+      char A06 = cp_ext(gbp.gba.reg.ext_abus.PIN_07_A06.state);
+      char A07 = cp_ext(gbp.gba.reg.ext_abus.PIN_08_A07.state);
+      char A08 = cp_ext(gbp.gba.reg.ext_abus.PIN_09_A08.state);
+      char A09 = cp_ext(gbp.gba.reg.ext_abus.PIN_10_A09.state);
+      char A10 = cp_ext(gbp.gba.reg.ext_abus.PIN_11_A10.state);
+      char A11 = cp_ext(gbp.gba.reg.ext_abus.PIN_12_A11.state);
+      char A12 = cp_ext(gbp.gba.reg.ext_abus.PIN_13_A12.state);
+      char A13 = cp_ext(gbp.gba.reg.ext_abus.PIN_14_A13.state);
+      char A14 = cp_ext(gbp.gba.reg.ext_abus.PIN_15_A14.state);
+      char A15 = cp_ext(gbp.gba.reg.ext_abus.PIN_16_A15.state);
 
-      char D00 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_17_D00.state);
-      char D01 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_18_D01.state);
-      char D02 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_19_D02.state);
-      char D03 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_20_D03.state);
-      char D04 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_21_D04.state);
-      char D05 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_22_D05.state);
-      char D06 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_23_D06.state);
-      char D07 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_24_D07.state);
+      char D00 = cp_ext(gbp.gba.reg.ext_dbus.PIN_17_D00.state);
+      char D01 = cp_ext(gbp.gba.reg.ext_dbus.PIN_18_D01.state);
+      char D02 = cp_ext(gbp.gba.reg.ext_dbus.PIN_19_D02.state);
+      char D03 = cp_ext(gbp.gba.reg.ext_dbus.PIN_20_D03.state);
+      char D04 = cp_ext(gbp.gba.reg.ext_dbus.PIN_21_D04.state);
+      char D05 = cp_ext(gbp.gba.reg.ext_dbus.PIN_22_D05.state);
+      char D06 = cp_ext(gbp.gba.reg.ext_dbus.PIN_23_D06.state);
+      char D07 = cp_ext(gbp.gba.reg.ext_dbus.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1401,36 +1399,36 @@ TestResults GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = cp_ext(gbp.gba.gbr.clk.PIN_75_CLK_OUT .state);
-      char WRn = cp_ext(gbp.gba.gbr.ext_ctrl.PIN_78_WRn.state);
-      char RDn = cp_ext(gbp.gba.gbr.ext_ctrl.PIN_79_RDn.state);
-      char CSn = cp_ext(gbp.gba.gbr.ext_ctrl.PIN_80_CSn.state);
+      char CLK = cp_ext(gbp.gba.reg.clk.PIN_75_CLK_OUT .state);
+      char WRn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_80_CSn.state);
 
-      char A00 = cp_ext(gbp.gba.gbr.ext_abus.PIN_01_A00.state);
-      char A01 = cp_ext(gbp.gba.gbr.ext_abus.PIN_02_A01.state);
-      char A02 = cp_ext(gbp.gba.gbr.ext_abus.PIN_03_A02.state);
-      char A03 = cp_ext(gbp.gba.gbr.ext_abus.PIN_04_A03.state);
-      char A04 = cp_ext(gbp.gba.gbr.ext_abus.PIN_05_A04.state);
-      char A05 = cp_ext(gbp.gba.gbr.ext_abus.PIN_06_A05.state);
-      char A06 = cp_ext(gbp.gba.gbr.ext_abus.PIN_07_A06.state);
-      char A07 = cp_ext(gbp.gba.gbr.ext_abus.PIN_08_A07.state);
-      char A08 = cp_ext(gbp.gba.gbr.ext_abus.PIN_09_A08.state);
-      char A09 = cp_ext(gbp.gba.gbr.ext_abus.PIN_10_A09.state);
-      char A10 = cp_ext(gbp.gba.gbr.ext_abus.PIN_11_A10.state);
-      char A11 = cp_ext(gbp.gba.gbr.ext_abus.PIN_12_A11.state);
-      char A12 = cp_ext(gbp.gba.gbr.ext_abus.PIN_13_A12.state);
-      char A13 = cp_ext(gbp.gba.gbr.ext_abus.PIN_14_A13.state);
-      char A14 = cp_ext(gbp.gba.gbr.ext_abus.PIN_15_A14.state);
-      char A15 = cp_ext(gbp.gba.gbr.ext_abus.PIN_16_A15.state);
+      char A00 = cp_ext(gbp.gba.reg.ext_abus.PIN_01_A00.state);
+      char A01 = cp_ext(gbp.gba.reg.ext_abus.PIN_02_A01.state);
+      char A02 = cp_ext(gbp.gba.reg.ext_abus.PIN_03_A02.state);
+      char A03 = cp_ext(gbp.gba.reg.ext_abus.PIN_04_A03.state);
+      char A04 = cp_ext(gbp.gba.reg.ext_abus.PIN_05_A04.state);
+      char A05 = cp_ext(gbp.gba.reg.ext_abus.PIN_06_A05.state);
+      char A06 = cp_ext(gbp.gba.reg.ext_abus.PIN_07_A06.state);
+      char A07 = cp_ext(gbp.gba.reg.ext_abus.PIN_08_A07.state);
+      char A08 = cp_ext(gbp.gba.reg.ext_abus.PIN_09_A08.state);
+      char A09 = cp_ext(gbp.gba.reg.ext_abus.PIN_10_A09.state);
+      char A10 = cp_ext(gbp.gba.reg.ext_abus.PIN_11_A10.state);
+      char A11 = cp_ext(gbp.gba.reg.ext_abus.PIN_12_A11.state);
+      char A12 = cp_ext(gbp.gba.reg.ext_abus.PIN_13_A12.state);
+      char A13 = cp_ext(gbp.gba.reg.ext_abus.PIN_14_A13.state);
+      char A14 = cp_ext(gbp.gba.reg.ext_abus.PIN_15_A14.state);
+      char A15 = cp_ext(gbp.gba.reg.ext_abus.PIN_16_A15.state);
 
-      char D00 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_17_D00.state);
-      char D01 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_18_D01.state);
-      char D02 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_19_D02.state);
-      char D03 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_20_D03.state);
-      char D04 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_21_D04.state);
-      char D05 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_22_D05.state);
-      char D06 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_23_D06.state);
-      char D07 = cp_ext(gbp.gba.gbr.ext_dbus.PIN_24_D07.state);
+      char D00 = cp_ext(gbp.gba.reg.ext_dbus.PIN_17_D00.state);
+      char D01 = cp_ext(gbp.gba.reg.ext_dbus.PIN_18_D01.state);
+      char D02 = cp_ext(gbp.gba.reg.ext_dbus.PIN_19_D02.state);
+      char D03 = cp_ext(gbp.gba.reg.ext_dbus.PIN_20_D03.state);
+      char D04 = cp_ext(gbp.gba.reg.ext_dbus.PIN_21_D04.state);
+      char D05 = cp_ext(gbp.gba.reg.ext_dbus.PIN_22_D05.state);
+      char D06 = cp_ext(gbp.gba.reg.ext_dbus.PIN_23_D06.state);
+      char D07 = cp_ext(gbp.gba.reg.ext_dbus.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1528,15 +1526,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000100);
 
-    EXPECT_EQ(0xFD, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0xFE, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0xFF, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0x80, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0x81, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 2048);
     if (results.ok()) LOG_B("TAC 0b100 pass\n");
   }
@@ -1550,15 +1548,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000101);
 
-    EXPECT_EQ(0xFD, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0xFE, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0xFF, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0x80, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0x81, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 32);
     if (results.ok()) LOG_B("TAC 0b101 pass\n");
   }
@@ -1571,15 +1569,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000110);
 
-    EXPECT_EQ(0xFD, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0xFE, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0xFF, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0x80, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0x81, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 128);
     if (results.ok()) LOG_B("TAC 0b110 pass\n");
   }
@@ -1592,15 +1590,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000111);
 
-    EXPECT_EQ(0xFD, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0xFE, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0xFF, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0x80, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0x81, bit_pack(gbp.gba.gbr.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.tima));
     gbp.run_phases(cart_blob, 512);
     if (results.ok()) LOG_B("TAC 0b111 pass\n");
   }
@@ -1643,22 +1641,22 @@ uint8_t* get_flat_ptr(GateBoy& gb, blob& cart_blob, uint16_t addr) {
     return cart_blob.data() + (addr & 0x7FFF);
   }
   else if (addr >= 0x8000 && addr <= 0x9FFF) {
-    return gb.gbm.vid_ram + (addr & 0x1FFF);
+    return gb.mem.vid_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xA000 && addr <= 0xBFFF) {
-    return gb.gbm.cart_ram + (addr & 0x1FFF);
+    return gb.mem.cart_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xC000 && addr <= 0xDFFF) {
-    return gb.gbm.int_ram + (addr & 0x1FFF);
+    return gb.mem.int_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xE000 && addr <= 0xFDFF) {
-    return gb.gbm.int_ram + (addr & 0x1FFF);
+    return gb.mem.int_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xFE00 && addr <= 0xFEFF) {
-    return gb.gbm.oam_ram + (addr & 0x00FF);
+    return gb.mem.oam_ram + (addr & 0x00FF);
   }
   else if (addr >= 0xFF80 && addr <= 0xFFFE) {
-    return gb.gbm.zero_ram + (addr & 0x007F);
+    return gb.mem.zero_ram + (addr & 0x007F);
   }
   else {
     debugbreak();
@@ -1674,8 +1672,8 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
   blob cart_blob = Assembler::create_dummy_cart();
   GateBoyPair gbp(false, true);
   gbp.reset_to_cart(cart_blob);
-  gbp.gba.gbs.sys_cpu_en = 0;
-  gbp.gbb.gbs.sys_cpu_en = 0;
+  gbp.gba.sys.cpu_en = 0;
+  gbp.gbb.sys.cpu_en = 0;
   gbp.dbg_write(cart_blob, ADDR_LCDC, 0);
   gbp.dbg_write(cart_blob, 0x0000, 0x0A); // enable mbc1 ram
 
@@ -1685,8 +1683,8 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
     uint8_t r = (uint8_t)rand();
     mem_a[i] = r;
     mem_b[i] = r;
-    gbp.gba.gbm.oam_ram[i] = 0xFF;
-    gbp.gbb.gbm.oam_ram[i] = 0xFF;
+    gbp.gba.mem.oam_ram[i] = 0xFF;
+    gbp.gbb.mem.oam_ram[i] = 0xFF;
   }
 
   gbp.dbg_write(cart_blob, 0xFF46, uint8_t(src >> 8));
@@ -1694,12 +1692,12 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
 
   for (int i = 0; i < 160; i++) {
     uint8_t src_a = mem_a[i];
-    uint8_t dst_a = gbp.gba.gbm.oam_ram[i];
+    uint8_t dst_a = gbp.gba.mem.oam_ram[i];
     ASSERT_EQ(src_a, dst_a, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_a, dst_a);
 
     if (config_regression) {
       uint8_t src_b = mem_b[i];
-      uint8_t dst_b = gbp.gbb.gbm.oam_ram[i];
+      uint8_t dst_b = gbp.gbb.mem.oam_ram[i];
       ASSERT_EQ(src_b, dst_b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_b, dst_b);
     }
   }
@@ -1721,20 +1719,20 @@ TestResults GateBoyTests::test_ppu() {
 
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
     for (uint32_t i = 0; i < 153; i++) {
-      EXPECT_EQ(i, bit_pack(gbp.gba.gbr.reg_ly));
+      EXPECT_EQ(i, bit_pack(gbp.gba.reg.reg_ly));
       gbp.run_phases(cart_blob, 114 * 8);
     }
 
     // LY is reset early on the last line, we should be at 0 now.
-    EXPECT_EQ(0, bit_pack(gbp.gba.gbr.reg_ly));
+    EXPECT_EQ(0, bit_pack(gbp.gba.reg.reg_ly));
     gbp.run_phases(cart_blob, 114 * 8);
 
     // And we should be at 0 again
-    EXPECT_EQ(0, bit_pack(gbp.gba.gbr.reg_ly));
+    EXPECT_EQ(0, bit_pack(gbp.gba.reg.reg_ly));
     gbp.run_phases(cart_blob, 114 * 8);
 
     // And now we should be at 1.
-    EXPECT_EQ(1, bit_pack(gbp.gba.gbr.reg_ly));
+    EXPECT_EQ(1, bit_pack(gbp.gba.reg.reg_ly));
 
     if (results.ok()) LOG_B("Pass");
   }
@@ -1806,12 +1804,12 @@ void GateBoyTests::run_benchmark() {
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
     gb.reset_to_bootrom(cart_blob, true);
-    gb.gbc.bus_req_new.addr = 0x0150;
-    gb.gbc.bus_req_new.data = 0;
-    gb.gbc.bus_req_new.read = 1;
-    gb.gbc.bus_req_new.write = 0;
-    gb.gbs.sys_cpu_en = false;
-    gb.gbs.phase_total = 0;
+    gb.cpu.bus_req_new.addr = 0x0150;
+    gb.cpu.bus_req_new.data = 0;
+    gb.cpu.bus_req_new.read = 1;
+    gb.cpu.bus_req_new.write = 0;
+    gb.sys.cpu_en = false;
+    gb.sys.phase_total = 0;
 
     auto start = timestamp();
     gb.run_phases(cart_blob, phase_per_iter);
@@ -1820,7 +1818,7 @@ void GateBoyTests::run_benchmark() {
     if (iter >= warmup) {
       double time = (finish - start);
 
-      double phase_rate = double(gb.gbs.phase_total) / time;
+      double phase_rate = double(gb.sys.phase_total) / time;
       phase_rate_sum1 += phase_rate;
       phase_rate_sum2 += phase_rate * phase_rate;
       phase_rate_n++;
@@ -1829,7 +1827,7 @@ void GateBoyTests::run_benchmark() {
   }
   LOG("Done\n");
 
-  LOG("Phase total %d\n", gb.gbs.phase_total);
+  LOG("Phase total %d\n", gb.sys.phase_total);
 
   double phase_rate_mean     = phase_rate_sum1 / phase_rate_n;
   double phase_rate_variance = (phase_rate_sum2 / phase_rate_n) - (phase_rate_mean * phase_rate_mean);
@@ -1988,10 +1986,10 @@ TestResults GateBoyTests::run_mooneye_test(const char* path, const char* filenam
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
     gbp.run_phases(rom, 8);
-    if (gbp.gba.gbc.gb_cpu.op == 0x40) break;
+    if (gbp.gba.cpu.core.op == 0x40) break;
   }
 
-  if ((gbp.gba.gbc.gb_cpu.a == 0x00) && (mcycle != timeout)) {
+  if ((gbp.gba.cpu.core.a == 0x00) && (mcycle != timeout)) {
     if (verbose) LOG_G("PASS @ %d\n", mcycle);
   }
   else {

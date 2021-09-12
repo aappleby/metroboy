@@ -88,8 +88,8 @@ struct GateBoyThread {
   void save_raw_dump(blob& dump_blob);
 
   void set_buttons(uint8_t buttons) {
-    gbp->gba.gbs.sys_buttons = buttons;
-    gbp->gbb.gbs.sys_buttons = buttons;
+    gbp->gba.sys.buttons = buttons;
+    gbp->gbb.sys.buttons = buttons;
   }
 
   const int REQ_PAUSE = 0b0001;

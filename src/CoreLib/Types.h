@@ -95,16 +95,16 @@ const uint32_t COL_HINT3 = 0x00333333;
 
 //-----------------------------------------------------------------------------
 
-#define DELTA_AB   ((gbs.phase_total & 7) == 0)
-#define DELTA_BC   ((gbs.phase_total & 7) == 1)
-#define DELTA_CD   ((gbs.phase_total & 7) == 2)
-#define DELTA_DE   ((gbs.phase_total & 7) == 3)
-#define DELTA_EF   ((gbs.phase_total & 7) == 4)
-#define DELTA_FG   ((gbs.phase_total & 7) == 5)
-#define DELTA_GH   ((gbs.phase_total & 7) == 6)
-#define DELTA_HA   ((gbs.phase_total & 7) == 7)
-#define DELTA_EVEN ((gbs.phase_total & 1) == 0)
-#define DELTA_ODD  ((gbs.phase_total & 1) == 1)
+#define DELTA_AB   ((sys.phase_total & 7) == 0)
+#define DELTA_BC   ((sys.phase_total & 7) == 1)
+#define DELTA_CD   ((sys.phase_total & 7) == 2)
+#define DELTA_DE   ((sys.phase_total & 7) == 3)
+#define DELTA_EF   ((sys.phase_total & 7) == 4)
+#define DELTA_FG   ((sys.phase_total & 7) == 5)
+#define DELTA_GH   ((sys.phase_total & 7) == 6)
+#define DELTA_HA   ((sys.phase_total & 7) == 7)
+#define DELTA_EVEN ((sys.phase_total & 1) == 0)
+#define DELTA_ODD  ((sys.phase_total & 1) == 1)
 
 #define MB_DELTA_AB   ((phase_total & 7) == 0)
 #define MB_DELTA_BC   ((phase_total & 7) == 1)

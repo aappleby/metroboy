@@ -7,13 +7,13 @@ void print_field_at(int offset);
 
 struct GateBoyPair {
   GateBoyPair() {
-    gba.gbs.logic_mode = false;
-    gbb.gbs.logic_mode = true;
+    gba.sys.logic_mode = false;
+    gbb.sys.logic_mode = true;
   }
 
   GateBoyPair(bool logic_a, bool logic_b) {
-    gba.gbs.logic_mode = logic_a;
-    gbb.gbs.logic_mode = logic_b;
+    gba.sys.logic_mode = logic_a;
+    gbb.sys.logic_mode = logic_b;
   }
 
   GateBoy gba;
@@ -23,8 +23,8 @@ struct GateBoyPair {
     gba.reset_to_bootrom(cart_blob, fastboot);
     gbb.reset_to_bootrom(cart_blob, fastboot);
 
-    if (gba.gbs.logic_mode) gba.wipe_flags();
-    if (gbb.gbs.logic_mode) gbb.wipe_flags();
+    if (gba.sys.logic_mode) gba.wipe_flags();
+    if (gbb.sys.logic_mode) gbb.wipe_flags();
 
     return check_sync();
   }
@@ -33,8 +33,8 @@ struct GateBoyPair {
     gba.reset_to_cart(cart_blob);
     gbb.reset_to_cart(cart_blob);
 
-    if (gba.gbs.logic_mode) gba.wipe_flags();
-    if (gbb.gbs.logic_mode) gbb.wipe_flags();
+    if (gba.sys.logic_mode) gba.wipe_flags();
+    if (gbb.sys.logic_mode) gbb.wipe_flags();
 
     return check_sync();
   }
@@ -43,16 +43,16 @@ struct GateBoyPair {
     gba.from_blob(b);
     gbb.from_blob(b);
 
-    if (gba.gbs.logic_mode) gba.wipe_flags();
-    if (gbb.gbs.logic_mode) gbb.wipe_flags();
+    if (gba.sys.logic_mode) gba.wipe_flags();
+    if (gbb.sys.logic_mode) gbb.wipe_flags();
 
     return check_sync();
   }
 
   bool next_phase(const blob& cart_blob) {
 
-    if (gba.gbs.logic_mode) gba.check_no_flags();
-    if (gbb.gbs.logic_mode) gbb.check_no_flags();
+    if (gba.sys.logic_mode) gba.check_no_flags();
+    if (gbb.sys.logic_mode) gbb.check_no_flags();
 
     bool result = true;
     result &= gba.next_phase(cart_blob);
@@ -60,8 +60,8 @@ struct GateBoyPair {
       result &= gbb.next_phase(cart_blob);
     }
 
-    if (gba.gbs.logic_mode) gba.check_no_flags();
-    if (gbb.gbs.logic_mode) gbb.check_no_flags();
+    if (gba.sys.logic_mode) gba.check_no_flags();
+    if (gbb.sys.logic_mode) gbb.check_no_flags();
 
     result &= check_sync();
     return result;
@@ -82,10 +82,10 @@ struct GateBoyPair {
 
     result &= check_sync();
 
-    CHECK_P((gba.gbs.phase_total & 7) == 0);
+    CHECK_P((gba.sys.phase_total & 7) == 0);
 
-    Req old_req = gba.gbc.bus_req_new;
-    bool old_cpu_en = gba.gbs.sys_cpu_en;
+    Req old_req = gba.cpu.bus_req_new;
+    bool old_cpu_en = gba.sys.cpu_en;
 
     Req req_new;
     req_new.addr = uint16_t(addr);
@@ -93,10 +93,10 @@ struct GateBoyPair {
     req_new.read = 0;
     req_new.write = 1;
 
-    gba.gbc.bus_req_new = req_new;
-    gbb.gbc.bus_req_new = req_new;
-    gba.gbs.sys_cpu_en = false;
-    gbb.gbs.sys_cpu_en = false;
+    gba.cpu.bus_req_new = req_new;
+    gbb.cpu.bus_req_new = req_new;
+    gba.sys.cpu_en = false;
+    gbb.sys.cpu_en = false;
 
     result &= next_phase(cart_blob);
     result &= next_phase(cart_blob);
@@ -107,10 +107,10 @@ struct GateBoyPair {
     result &= next_phase(cart_blob);
     result &= next_phase(cart_blob);
 
-    gba.gbc.bus_req_new = old_req;
-    gbb.gbc.bus_req_new = old_req;
-    gba.gbs.sys_cpu_en = old_cpu_en;
-    gbb.gbs.sys_cpu_en = old_cpu_en;
+    gba.cpu.bus_req_new = old_req;
+    gbb.cpu.bus_req_new = old_req;
+    gba.sys.cpu_en = old_cpu_en;
+    gbb.sys.cpu_en = old_cpu_en;
 
     return result;
   }
@@ -120,10 +120,10 @@ struct GateBoyPair {
 
     result &= check_sync();
 
-    CHECK_P((gba.gbs.phase_total & 7) == 0);
+    CHECK_P((gba.sys.phase_total & 7) == 0);
 
-    Req old_req = gba.gbc.bus_req_new;
-    bool old_cpu_en = gba.gbs.sys_cpu_en;
+    Req old_req = gba.cpu.bus_req_new;
+    bool old_cpu_en = gba.sys.cpu_en;
 
     Req req_new;
     req_new.addr = uint16_t(addr);
@@ -131,10 +131,10 @@ struct GateBoyPair {
     req_new.read = 1;
     req_new.write = 0;
 
-    gba.gbc.bus_req_new = req_new;
-    gbb.gbc.bus_req_new = req_new;
-    gba.gbs.sys_cpu_en = false;
-    gbb.gbs.sys_cpu_en = false;
+    gba.cpu.bus_req_new = req_new;
+    gbb.cpu.bus_req_new = req_new;
+    gba.sys.cpu_en = false;
+    gbb.sys.cpu_en = false;
 
     result &= next_phase(cart_blob);
     result &= next_phase(cart_blob);
@@ -145,19 +145,19 @@ struct GateBoyPair {
     result &= next_phase(cart_blob);
     result &= next_phase(cart_blob);
 
-    gba.gbc.bus_req_new = old_req;
-    gbb.gbc.bus_req_new = old_req;
-    gba.gbs.sys_cpu_en = old_cpu_en;
-    gbb.gbs.sys_cpu_en = old_cpu_en;
+    gba.cpu.bus_req_new = old_req;
+    gbb.cpu.bus_req_new = old_req;
+    gba.sys.cpu_en = old_cpu_en;
+    gbb.sys.cpu_en = old_cpu_en;
 
-    out = gba.gbc.cpu_data_latch;
+    out = gba.cpu.cpu_data_latch;
     return result;
   }
 
   bool check_sync() {
     if (config_regression) {
       if (gba.hash_regression() != gbb.hash_regression()) {
-        LOG_R("Regression test mismatch @ phase %lld!\n", gba.gbs.phase_total);
+        LOG_R("Regression test mismatch @ phase %lld!\n", gba.sys.phase_total);
         diff_gb(&gba, &gbb, 0x01);
         //__debugbreak();
         return false;

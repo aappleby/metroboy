@@ -329,9 +329,9 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   auto& gb = show_gb_ab ? gb_thread.gbp->gbb : gb_thread.gbp->gba;
 
-  uint8_t* framebuffer = gb.gbm.framebuffer;
-  uint8_t* vid_ram = gb.gbm.vid_ram;
-  uint64_t phase_total = gb.gbs.phase_total;
+  uint8_t* framebuffer = gb.mem.framebuffer;
+  uint8_t* vid_ram = gb.mem.vid_ram;
+  uint64_t phase_total = gb.sys.phase_total;
 
 
   StringDumper d;
@@ -360,7 +360,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   static double smooth_fps = 0.0;
   smooth_fps = ease(smooth_fps, fps, delta);
   d("App fps       : %d\n", (int)round(smooth_fps));
-  d("Logic mode    : %d\n", gb.gbs.logic_mode);
+  d("Logic mode    : %d\n", gb.sys.logic_mode);
 
   if (app_paused) {
     d("\003GB_THREAD IS PAUSED\001\n");
@@ -376,7 +376,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   d("\n");
 
   d("\002===== CPU =====\001\n");
-  gb.gbc.gb_cpu.dump(d);
+  gb.cpu.core.dump(d);
   d("\n");
 
   d("\002===== Clocks =====\001\n");
@@ -522,17 +522,17 @@ Step controls:
 
   // Probe dump
   d("\002========== Debug Probes ==========\001\n");
-  gb.gbs.probes.dump(d);
+  gb.sys.probes.dump(d);
   d("\n");
 
   d("\002========== Disassembly ==========\001\n");
   {
-    int pc = gb.gbc.gb_cpu.op_addr;
+    int pc = gb.cpu.core.op_addr;
     const uint8_t* code = nullptr;
     int code_size = 0;
     int code_base = 0;
 
-    if (!bit(gb.gbr.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
+    if (!bit(gb.reg.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
       code      = DMG_ROM_blob.data();
       code_size = (int)DMG_ROM_blob.size();
       code_base = ADDR_BOOT_ROM_BEGIN;
@@ -544,7 +544,7 @@ Step controls:
       code_base = ADDR_CART_ROM_BEGIN;
     }
     else if (pc >= 0xFF80 && pc <= 0xFFFE) {
-      code      = gb.gbm.zero_ram;
+      code      = gb.mem.zero_ram;
       code_size = 127;
       code_base = ADDR_ZEROPAGE_BEGIN;
     }
@@ -585,14 +585,14 @@ Step controls:
     show_golden ? "GOLDEN IMAGE " : "");
 
   d("%c %c %c %c %c %c %c %c\n",
-    gb.gbs.sys_buttons & 0x01 ? 'R' : '-',
-    gb.gbs.sys_buttons & 0x02 ? 'L' : '-',
-    gb.gbs.sys_buttons & 0x04 ? 'U' : '-',
-    gb.gbs.sys_buttons & 0x08 ? 'D' : '-',
-    gb.gbs.sys_buttons & 0x10 ? 'A' : '-',
-    gb.gbs.sys_buttons & 0x20 ? 'B' : '-',
-    gb.gbs.sys_buttons & 0x40 ? 'E' : '-',
-    gb.gbs.sys_buttons & 0x80 ? 'S' : '-');
+    gb.sys.buttons & 0x01 ? 'R' : '-',
+    gb.sys.buttons & 0x02 ? 'L' : '-',
+    gb.sys.buttons & 0x04 ? 'U' : '-',
+    gb.sys.buttons & 0x08 ? 'D' : '-',
+    gb.sys.buttons & 0x10 ? 'A' : '-',
+    gb.sys.buttons & 0x20 ? 'B' : '-',
+    gb.sys.buttons & 0x40 ? 'E' : '-',
+    gb.sys.buttons & 0x80 ? 'S' : '-');
 
 
   text_painter.render_string(view, screen_size, d.s, col6, gb_screen_y + 144 * 2);
@@ -603,8 +603,8 @@ Step controls:
   {
     memset(overlay, 0, sizeof(overlay));
 
-    int fb_x = bit_pack(gb.gbr.pix_count) - 8;
-    int fb_y = bit_pack(gb.gbr.reg_ly);
+    int fb_x = bit_pack(gb.reg.pix_count) - 8;
+    int fb_y = bit_pack(gb.reg.reg_ly);
 
     if (fb_y >= 0 && fb_y < 144) {
       for (int x = 0; x < 160; x++) {
@@ -635,18 +635,18 @@ Step controls:
   {
     text_painter.render_string(view, screen_size, "\002========== Flat memory view ==========\001", col6, 768);
     update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread.get_cart().data());
-    update_texture_u8(ram_tex, 0x00, 0x80, 256, 32,  gb.gbm.vid_ram);
-    update_texture_u8(ram_tex, 0x00, 0xA0, 256, 32,  gb.gbm.cart_ram);
-    update_texture_u8(ram_tex, 0x00, 0xC0, 256, 32,  gb.gbm.int_ram);
-    update_texture_u8(ram_tex, 0x00, 0xFE, 256, 1,   gb.gbm.oam_ram);
-    update_texture_u8(ram_tex, 0x80, 0xFF, 128, 1,   gb.gbm.zero_ram);
+    update_texture_u8(ram_tex, 0x00, 0x80, 256, 32,  gb.mem.vid_ram);
+    update_texture_u8(ram_tex, 0x00, 0xA0, 256, 32,  gb.mem.cart_ram);
+    update_texture_u8(ram_tex, 0x00, 0xC0, 256, 32,  gb.mem.int_ram);
+    update_texture_u8(ram_tex, 0x00, 0xFE, 256, 1,   gb.mem.oam_ram);
+    update_texture_u8(ram_tex, 0x80, 0xFF, 128, 1,   gb.mem.zero_ram);
     blitter.blit_mono(view, screen_size, ram_tex, 256, 256, 0, 0, 256, 256, col6, 784, 256, 256);
   }
 
   d("\002========== OAM ==========\001\n");
   for (int y = 0; y < 10; y++) {
     for (int x = 0; x < 16; x++) {
-      d("%02x ", gb.gbm.oam_ram[x + y * 16]);
+      d("%02x ", gb.mem.oam_ram[x + y * 16]);
     }
     d("\n");
   }
@@ -655,7 +655,7 @@ Step controls:
   d("\002========== Ram (first 128 bytes) ==========\001\n");
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 16; x++) {
-      d("%02x ", gb.gbm.int_ram[x + y * 16]);
+      d("%02x ", gb.mem.int_ram[x + y * 16]);
     }
     d("\n");
   }
@@ -664,7 +664,7 @@ Step controls:
   d("\002========== ZRAM ==========\001\n");
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 16; x++) {
-      d("%02x ", gb.gbm.zero_ram[x + y * 16]);
+      d("%02x ", gb.mem.zero_ram[x + y * 16]);
     }
     d("\n");
   }
@@ -682,11 +682,11 @@ Step controls:
   int row3 = 640;
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 0 ==========\001", col7, row1);
-  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, vid_ram, 0,  (int)bit(gb.gbr.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, vid_ram, 0,  (int)bit(gb.reg.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
   //gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, vid_ram, (int)bit(gb.reg_lcdc.XAFO_LCDC_BGMAPn.qn_old()),  (int)bit(gb.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 1 ==========\001", col7, row2);
-  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, vid_ram, 1, (int)bit(gb.gbr.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, vid_ram, 1, (int)bit(gb.reg.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
   //gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, vid_ram, (int)bit(gb.reg_lcdc.WOKY_LCDC_WINMAPn.qn_old()), (int)bit(gb.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Tiles ==========\001", col7, row3);

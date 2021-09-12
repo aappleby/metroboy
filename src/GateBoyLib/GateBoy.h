@@ -261,7 +261,6 @@ struct GateBoyMem {
 
 #pragma pack(push, 1)
 struct GateBoySys {
-  //-----------------------------------------------------------------------------
   // External signals
 
   uint8_t sys_rst = 0;
@@ -274,9 +273,7 @@ struct GateBoySys {
   uint8_t sys_fastboot = 0;
   uint8_t sys_buttons = 0;
 
-  //-----------------------------------------------------------------------------
   // Debug stuff
-
   bool     logic_mode = config_fastmode; // Fastmode builds use logic mode by default.
   uint64_t phase_total = 0;
   double   sim_time = 0;
@@ -358,13 +355,11 @@ struct GateBoy {
     bool old_logic_mode = gbs.logic_mode;
     memset(this, 0, sizeof(*this));
 
-    uint8_t* a = (uint8_t*)(&sentinel1) + sizeof(sentinel1);
-    uint8_t* b = (uint8_t*)(&sentinel2);
-
     if (!old_logic_mode) {
-      for (auto c = a; c != b; c++) {
-        *c = 0b00011000;
-      }
+      memset(&gbr, 0b00011000, sizeof(gbr));
+    }
+    else {
+      memset(&gbr, 0, sizeof(gbr));
     }
 
     sentinel1 = SENTINEL1;
@@ -375,51 +370,37 @@ struct GateBoy {
   }
 
   void wipe_flags() {
-    uint8_t* blob = (uint8_t*)this;
-    for (int i = offsetof(GateBoy, sentinel1) + sizeof(GateBoy::sentinel1); i < offsetof(GateBoy, sentinel2); i++) {
+    uint8_t* blob = (uint8_t*)&gbr;
+    for (int i = 0; i < sizeof(gbr); i++) {
       blob[i] &= 1;
     }
   }
 
   bool check_no_flags() {
-    uint8_t* blob = (uint8_t*)this;
-    for (int i = offsetof(GateBoy, sentinel1) + sizeof(GateBoy::sentinel1); i < offsetof(GateBoy, sentinel2); i++) {
+    uint8_t* blob = (uint8_t*)&gbr;
+    for (int i = 0; i < sizeof(gbr); i++) {
       CHECK_N(blob[i] & ~1);
     }
     return true;
   }
 
   int64_t hash_regression() {
-    uint64_t h = HASH_INIT;
-    uint8_t* blob = (uint8_t*)this;
-    int reg_a = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
-    int reg_b = offsetof(GateBoy, sentinel2);
-    h = hash_low_bit(blob + reg_a, reg_b - reg_a, h);
-    return h;
+    return hash_low_bit(&gbr, sizeof(gbr), HASH_INIT);
   }
 
   int64_t hash_all() {
-    uint64_t h = HASH_INIT;
-    uint8_t* blob = (uint8_t*)this;
-    int reg_a = offsetof(GateBoy, sentinel1) + sizeof(sentinel1);
-    int reg_b = offsetof(GateBoy, sentinel2);
-    h = hash_all_bits(blob + reg_a, reg_b - reg_a, h);
-    return h;
+    return hash_all_bits(&gbr, sizeof(gbr), HASH_INIT);
   }
 
   void commit() {
-    uint8_t* a = (uint8_t*)(&sentinel1) + sizeof(sentinel1);
-    uint8_t* b = (uint8_t*)(&sentinel2);
-    commit_blob(a, b - a);
+    commit_blob(&gbr, sizeof(gbr));
   }
 
   void check_state_old_and_driven_or_pulled() {
     if (config_drive_flags) {
-      uint8_t* a = (uint8_t*)(&sentinel1) + sizeof(sentinel1);
-      uint8_t* b = (uint8_t*)(&sentinel2);
-      auto s = b - a;
-      for (auto i = 0; i < s; i++) {
-        auto r = a[i];
+      uint8_t* blob = (uint8_t*)&gbr;
+      for (auto i = 0; i < sizeof(GateBoyRegisters); i++) {
+        auto r = blob[i];
         (void)r;
         CHECK_P((r & 0xF0) == BIT_OLD);
         CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));

@@ -1866,7 +1866,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     if (gen_clk_new(0b01010101)) {
       reg_new.VOGA_HBLANKp = reg_old.WODU_HBLANKp;
-      reg.sprite_fetcher.SOBU_SFETCH_REQp.  state = reg.FEPO_STORE_MATCHp && !reg_old.win_ctrl.RYDY_WIN_HITp && reg.tile_fetcher.LYRY_BFETCH_DONEp && !reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp;
+      reg.sprite_fetcher.SOBU_SFETCH_REQp   = reg.FEPO_STORE_MATCHp && !reg_old.win_ctrl.RYDY_WIN_HITp && reg.tile_fetcher.LYRY_BFETCH_DONEp && !reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp;
       reg.sprite_fetcher.VONU_SFETCH_S1p_D4 = reg.sprite_fetcher.TOBU_SFETCH_S1p_D2;
       reg.sprite_fetcher.TOBU_SFETCH_S1p_D2 = reg.sprite_fetcher.TULY_SFETCH_S1p;
 
@@ -1898,88 +1898,111 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.tile_fetcher.PORY_FETCH_DONEp = reg.tile_fetcher.NYKA_FETCH_DONEp;
     }
 
-    reg_new.sprite_scanner.FETO_SCAN_DONEp = bit_pack(reg.scan_counter) == 39;
-    if (reg_new.VOGA_HBLANKp) reg_new.XYMU_RENDERINGn = 1;
-    if (reg_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp) reg_new.XYMU_RENDERINGn = 0;
-
-    if (reg_new.ATEJ_LINE_RSTp) {
-      bit_clear(&reg.sprite_fetcher.TOXE_SFETCH_S0p, 3);
-    }
-
-    if (reg_new.XYMU_RENDERINGn) {
-      reg.sprite_fetcher.TOBU_SFETCH_S1p_D2 = 0;
-      reg.sprite_fetcher.VONU_SFETCH_S1p_D4 = 0;
-      reg.sprite_fetcher.SEBA_SFETCH_S1p_D5 = 0;
-    }
-
-
-
-
-    reg.sprite_fetcher.TEXY_SFETCHINGp = (reg.sprite_fetcher.TULY_SFETCH_S1p || reg.sprite_fetcher.VONU_SFETCH_S1p_D4) && !reg_new.XYMU_RENDERINGn;
-
-    reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp = reg.sprite_fetcher.TYFO_SFETCH_S0p_D1 && reg.sprite_fetcher.TOXE_SFETCH_S0p && reg.sprite_fetcher.SEBA_SFETCH_S1p_D5 && reg.sprite_fetcher.VONU_SFETCH_S1p_D4;
-
-    if (reg.win_ctrl.NUNU_WIN_MATCHp) {
-      reg.win_ctrl.PYNU_WIN_MODE_Ap = 1;
-    }
-
-    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn) {
-      reg.win_ctrl.PYNU_WIN_MODE_Ap = 0;
-    }
-
-    if (reg_new.ATEJ_LINE_RSTp) {
-      reg.win_ctrl.PYNU_WIN_MODE_Ap = 0;
-    }
-
-    if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
-      reg.tile_fetcher.PORY_FETCH_DONEp = 0;
-      reg.tile_fetcher.NYKA_FETCH_DONEp = 0;
-    }
-
-    if (reg.tile_fetcher.PYGO_FETCH_DONEp) {
-      reg.tile_fetcher.POKY_PRELOAD_LATCHp = 1;
-    }
-
-    if (reg_new.XYMU_RENDERINGn) {
-      reg.tile_fetcher.PYGO_FETCH_DONEp = 0;
-      reg.tile_fetcher.PORY_FETCH_DONEp = 0;
-      reg.tile_fetcher.NYKA_FETCH_DONEp = 0;
-      reg.tile_fetcher.POKY_PRELOAD_LATCHp = 0;
-    }
-
-    if (reg.tile_fetcher.PORY_FETCH_DONEp) {
-      reg.win_ctrl.RYDY_WIN_HITp = 0;
-      reg.win_ctrl.PUKU_WIN_HITn = 1;
-    }
-
-    if (!reg.tile_fetcher.PORY_FETCH_DONEp) {
-      if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
-        reg.win_ctrl.RYDY_WIN_HITp = 1;
-        reg.win_ctrl.PUKU_WIN_HITn = 0;
-      }
-    }
-
-    if (reg_new.ATEJ_LINE_RSTp) {
-      reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp = 1;
-    }
-
     if (reg.sprite_fetcher.SOBU_SFETCH_REQp && !reg.sprite_fetcher.SUDA_SFETCH_REQp) {
       reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp = 1;
     }
 
-    if (!reg_new.XYMU_RENDERINGn && !reg.tile_fetcher.POKY_PRELOAD_LATCHp && reg.tile_fetcher.NYKA_FETCH_DONEp && reg.tile_fetcher.PORY_FETCH_DONEp) {
-      reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp = 0;
+    reg_new.sprite_scanner.FETO_SCAN_DONEp = bit_pack(reg.scan_counter) == 39;
+
+
+
+    if (reg_new.ATEJ_LINE_RSTp) {
+      bit_clear(&reg.sprite_fetcher.TOXE_SFETCH_S0p, 3);
+      reg.win_ctrl.PYNU_WIN_MODE_Ap = 0;
+      reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp = 1;
     }
 
-    if (reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp) {
-      reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp = 0;
+    if (reg_new.VOGA_HBLANKp) reg_new.XYMU_RENDERINGn = 1;
+    if (reg_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp) reg_new.XYMU_RENDERINGn = 0;
+    if (reg_new.XYMU_RENDERINGn) {
+      reg.sprite_fetcher.TOBU_SFETCH_S1p_D2 = 0;
+      reg.sprite_fetcher.VONU_SFETCH_S1p_D4 = 0;
+      reg.sprite_fetcher.SEBA_SFETCH_S1p_D5 = 0;
+      reg.sprite_fetcher.TEXY_SFETCHINGp = 0;
+      reg.tile_fetcher.PYGO_FETCH_DONEp = 0;
+      reg.tile_fetcher.PORY_FETCH_DONEp = 0;
+      reg.tile_fetcher.NYKA_FETCH_DONEp = 0;
+      reg.tile_fetcher.POKY_PRELOAD_LATCHp = 0;
+      reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp = 0;
+    }
+    else {
+      reg.sprite_fetcher.TEXY_SFETCHINGp = (reg.sprite_fetcher.TULY_SFETCH_S1p || reg.sprite_fetcher.VONU_SFETCH_S1p_D4);
+      if (!reg.tile_fetcher.POKY_PRELOAD_LATCHp && reg.tile_fetcher.NYKA_FETCH_DONEp && reg.tile_fetcher.PORY_FETCH_DONEp) {
+        reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp = 0;
+      }
+      reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp =
+        reg.sprite_fetcher.TYFO_SFETCH_S0p_D1 &&
+        reg.sprite_fetcher.TOXE_SFETCH_S0p &&
+        reg.sprite_fetcher.SEBA_SFETCH_S1p_D5 &&
+        reg.sprite_fetcher.VONU_SFETCH_S1p_D4;
+
+      if (reg.tile_fetcher.PYGO_FETCH_DONEp) {
+        reg.tile_fetcher.POKY_PRELOAD_LATCHp = 1;
+      }
+
+      if (reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp) {
+        reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp = 0;
+      }
+
+      if (!reg_old.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp && reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp) {
+        bit_unpack(reg_new.sprite_reset_flags, bit_pack(reg_old.sprite_match_flags));
+      }
+    }
+
+
+
+    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn) {
+      reg.win_ctrl.PYNU_WIN_MODE_Ap = 0;
+      if (reg.tile_fetcher.PORY_FETCH_DONEp) {
+        reg.win_ctrl.RYDY_WIN_HITp = 0;
+        reg.win_ctrl.PUKU_WIN_HITn = 1;
+      }
+      else {
+        if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
+          reg.win_ctrl.RYDY_WIN_HITp = 1;
+          reg.win_ctrl.PUKU_WIN_HITn = 0;
+        }
+      }
+    }
+    else {
+      
+      if (reg.win_ctrl.NUNU_WIN_MATCHp) {
+        reg.win_ctrl.PYNU_WIN_MODE_Ap = 1;
+      }
+      
+      if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
+        reg.tile_fetcher.PORY_FETCH_DONEp = 0;
+        reg.tile_fetcher.NYKA_FETCH_DONEp = 0;
+      }
+
+      if (reg.tile_fetcher.PORY_FETCH_DONEp) {
+        reg.win_ctrl.RYDY_WIN_HITp = 0;
+        reg.win_ctrl.PUKU_WIN_HITn = 1;
+      }
+      else {
+        if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
+          reg.win_ctrl.RYDY_WIN_HITp = 1;
+          reg.win_ctrl.PUKU_WIN_HITn = 0;
+        }
+      }
+    }
+  }
+
+  uint8_t sfetch_phase_old = pack(!(reg_old.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg_old.sprite_fetcher.TOXE_SFETCH_S0p), reg_old.sprite_fetcher.TOXE_SFETCH_S0p, reg_old.sprite_fetcher.TULY_SFETCH_S1p, reg_old.sprite_fetcher.TESE_SFETCH_S2p);
+  uint8_t sfetch_phase_new = pack(!(reg_new.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg_new.sprite_fetcher.TOXE_SFETCH_S0p), reg_new.sprite_fetcher.TOXE_SFETCH_S0p, reg_new.sprite_fetcher.TULY_SFETCH_S1p, reg_new.sprite_fetcher.TESE_SFETCH_S2p);
+
+  if (!reg_old.XYMU_RENDERINGn) {
+    if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || reg_new.XYMU_RENDERINGn)) {
+      bit_copy_inv(reg_new.sprite_pix_a, reg_old.flipped_sprite);
+    }
+
+    if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || reg_new.XYMU_RENDERINGn)) {
+      bit_copy_inv(reg_new.sprite_pix_b, reg_old.flipped_sprite);
     }
   }
 
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
-
-  uint8_t sfetch_phase_new = pack(~(reg_new.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg_new.sprite_fetcher.TOXE_SFETCH_S0p), reg_new.sprite_fetcher.TOXE_SFETCH_S0p, reg_new.sprite_fetcher.TULY_SFETCH_S1p, reg_new.sprite_fetcher.TESE_SFETCH_S2p);
 
   reg_new.sprite_scanner.ACYL_SCANNINGp = !reg_new.dma_ctrl.MATU_DMA_RUNNINGp && reg.sprite_scanner.BESU_SCANNINGn;
 
@@ -1994,8 +2017,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     uint8_t BYCU_OAM_CLKp_old = 1;
     if (reg_old.sprite_scanner.ACYL_SCANNINGp)  BYCU_OAM_CLKp_old &= gen_clk_old(0b10001000);
     if (oam_busy_old)  BYCU_OAM_CLKp_old &= gen_clk_old(0b11110000);
-
-    uint8_t sfetch_phase_old = pack(!(reg_old.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg_old.sprite_fetcher.TOXE_SFETCH_S0p), reg_old.sprite_fetcher.TOXE_SFETCH_S0p, reg_old.sprite_fetcher.TULY_SFETCH_S1p, reg_old.sprite_fetcher.TESE_SFETCH_S2p);
     if (!reg_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old &= sfetch_phase_old != 3;
 
     uint8_t BYCU_OAM_CLKp_new = 1;
@@ -2011,8 +2032,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
-
-  // FIXME need to ditch these adders
 
   if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
   }
@@ -2039,6 +2058,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_set(reg.store_x9);
   }
   else {
+    // FIXME need to ditch these adders
     Adder ERUC_YDIFF0 = add3(!get_bit(bit_pack(reg_new.reg_ly), 0), get_bit(bit_pack(reg_new.oam_temp_a), 0), 0);
     Adder ENEF_YDIFF1 = add3(!get_bit(bit_pack(reg_new.reg_ly), 1), get_bit(bit_pack(reg_new.oam_temp_a), 1), ERUC_YDIFF0.carry);
     Adder FECO_YDIFF2 = add3(!get_bit(bit_pack(reg_new.reg_ly), 2), get_bit(bit_pack(reg_new.oam_temp_a), 2), ENEF_YDIFF1.carry);
@@ -2081,11 +2101,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.DEZY_COUNT_CLKp = ssf_clk;
     }
 
-
-    if (!reg_old.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp && reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp) {
-      auto pack_sprite_match_flags = bit_pack(reg_old.sprite_match_flags);
-      bit_unpack(reg_new.sprite_reset_flags, pack_sprite_match_flags);
-    }
 
     for (int i = 0; i < 10; i++) {
       (&reg.sprite_store_flags.DYHU_STORE0_CLKn)[i] = (i == (int)bit_pack(reg_new.sprite_counter)) && !bit(ssf_clk);
@@ -2265,15 +2280,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (reg.sprite_match_flags.FOXA_SPRITE8_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l8);
   if (reg.sprite_match_flags.GUZE_SPRITE9_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l9);
 
-  if (reg.sprite_scanner.CENO_SCANNINGn || reg_new.XYMU_RENDERINGn) {
-    auto pack_sprite_index = bit_pack(reg.sprite_index);
-    bit_unpack(reg.sprite_ibus, pack_sprite_index);
+  if (reg.sprite_scanner.CENO_SCANNINGn) {
+    bit_unpack(reg.sprite_ibus, bit_pack(reg.sprite_index));
+  }
+
+  if (reg_new.XYMU_RENDERINGn) {
+    bit_unpack(reg.sprite_ibus, bit_pack(reg.sprite_index));
   }
 
   if (!reg.FEPO_STORE_MATCHp) {
-    auto pack_ly_new = bit_pack(reg_new.reg_ly);
-    auto pack_oam_temp_a_new = bit_pack(reg_new.oam_temp_a);
-    auto pack_ydiff = ~pack_ly_new + pack_oam_temp_a_new;
+    auto pack_ydiff = ~bit_pack(reg_new.reg_ly) + bit_pack(reg_new.oam_temp_a);
     bit_unpack(&reg.sprite_lbus, 4, pack_ydiff);
   }
 
@@ -2281,7 +2297,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // WY/WX/window match
 
   {
-    if (!(!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp && !(phase_old & 0b10101010)) &&
+    if (!(!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp && gen_clk_old(0b01010101)) &&
          (!reg_new.win_ctrl.RYDY_WIN_HITp && reg_new.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_new.FEPO_STORE_MATCHp && !reg_new.WODU_HBLANKp && gen_clk_new(0b01010101))) {
       reg.win_ctrl.PYCO_WIN_MATCHp = reg.win_ctrl.NUKO_WX_MATCHp;
     }
@@ -2312,8 +2328,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (cpu_addr_new == 0xFF4B) bit_copy_inv(reg.cpu_dbus_new, reg.reg_wx);
   }
 
+  // FIXME get rid of this signal
+  reg_new.win_ctrl.ROGE_WY_MATCHp = (bit_pack(reg_new.reg_ly) == bit_pack_inv(reg_new.reg_wy)) && !reg_new.reg_lcdc.WYMO_LCDC_WINENn;
+
   if (gen_clk_new(0b00100000)) {
-    reg.win_ctrl.SARY_WY_MATCHp = reg.win_ctrl.ROGE_WY_MATCHp;
+    reg.win_ctrl.SARY_WY_MATCHp = reg_old.win_ctrl.ROGE_WY_MATCHp;
   }
 
   if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
@@ -2321,10 +2340,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.win_ctrl.SARY_WY_MATCHp = 0;
   }
 
-  reg.win_ctrl.ROGE_WY_MATCHp = (bit_pack(reg.reg_ly) == bit_pack_inv(reg.reg_wy)) && !reg_new.reg_lcdc.WYMO_LCDC_WINENn;
 
   if (reg.win_ctrl.SARY_WY_MATCHp) reg.win_ctrl.REJO_WY_MATCH_LATCHp = 1;
-  if (reg.lcd.POPU_y144p || reg_new.reg_lcdc.XONA_LCDC_LCDENn) reg.win_ctrl.REJO_WY_MATCH_LATCHp = 0;
+  if (reg.lcd.POPU_y144p) reg.win_ctrl.REJO_WY_MATCH_LATCHp = 0;
+  if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) reg.win_ctrl.REJO_WY_MATCH_LATCHp = 0;
 
   reg.win_ctrl.NUKO_WX_MATCHp = (bit_pack_inv(reg.reg_wx) == bit_pack(reg.pix_count)) && reg.win_ctrl.REJO_WY_MATCH_LATCHp;
 
@@ -2373,6 +2392,22 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   uint8_t bfetch_phase_new = pack(!(reg.tile_fetcher.LYZU_BFETCH_S0p_D1 ^ reg.tile_fetcher.LAXU_BFETCH_S0p), reg.tile_fetcher.LAXU_BFETCH_S0p, reg.tile_fetcher.MESU_BFETCH_S1p, reg.tile_fetcher.NYVA_BFETCH_S2p);
 
+  if (!reg_old.XYMU_RENDERINGn) {
+    // These ffs are weird because they latches on phase change _or_ if rendering stops in the middle of a fetch
+    // Good example of gate-level behavior that doesn't matter
+
+    if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || reg_new.XYMU_RENDERINGn)) {
+      bit_copy_inv(reg.tile_temp_a, reg.vram_dbus);
+    }
+
+    if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || reg_new.XYMU_RENDERINGn)) {
+      bit_copy(reg.tile_temp_b, reg.vram_dbus);
+    }
+
+    if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || reg_new.XYMU_RENDERINGn)) {
+      bit_copy(reg.tile_temp_b, reg.vram_dbus);
+    }
+  }
 
   //----------------------------------------
   // Fine match counter
@@ -2407,33 +2442,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // PPU / LCD output
 
   {
-    auto& sf = reg.sprite_fetcher;
 
-    // These ffs are weird because they latches on phase change _or_ if rendering stops in the middle of a fetch
-    // Good example of gate-level behavior that doesn't matter
 
-    if (!reg_old.XYMU_RENDERINGn) {
-      if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || reg_new.XYMU_RENDERINGn)) {
-        bit_copy_inv(reg.tile_temp_a, reg.vram_dbus);
-      }
-
-      if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || reg_new.XYMU_RENDERINGn)) {
-        bit_copy(reg.tile_temp_b, reg.vram_dbus);
-      }
-
-      if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || reg_new.XYMU_RENDERINGn)) {
-        bit_copy(reg.tile_temp_b, reg.vram_dbus);
-      }
-
-      uint8_t sfetch_phase_old = pack(!(reg_old.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg_old.sprite_fetcher.TOXE_SFETCH_S0p), reg_old.sprite_fetcher.TOXE_SFETCH_S0p, reg_old.sprite_fetcher.TULY_SFETCH_S1p, reg_old.sprite_fetcher.TESE_SFETCH_S2p);
-      if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || reg_new.XYMU_RENDERINGn)) {
-        bit_copy_inv(reg.sprite_pix_a, reg.flipped_sprite);
-      }
-
-      if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || reg_new.XYMU_RENDERINGn)) {
-        bit_copy_inv(reg.sprite_pix_b, reg.flipped_sprite);
-      }
-    }
 
     //----------------------------------------
     // Pal reg read/write
@@ -2479,7 +2489,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bpipe_b = tpix_b;
     }
 
-    if (sf.WUTY_SFETCH_DONE_TRIGp) {
+    if (reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp) {
       auto smask = (spipe_a | spipe_b);
       spipe_a = (spipe_a & smask) | (spix_a & ~smask);
       spipe_b = (spipe_b & smask) | (spix_b & ~smask);

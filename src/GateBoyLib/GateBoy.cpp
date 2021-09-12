@@ -2968,14 +2968,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // oam
 
   {
-    wire cpu_rd = reg.cpu_signals.SIG_IN_CPU_RDp;
-    wire cpu_wr = reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110);
-  
-    wire dbus_free = reg.cpu_signals.SIG_IN_CPU_LATCH_EXT;
-    wire dbus_busy = !dbus_free;
-
-    wire addr_oam = (cpu_addr_new >= 0xFE00) && (cpu_addr_new <= 0xFEFF);
-
     // this is weird, why is it always 0 when not in reset?
     reg.oam_ctrl.MAKA_LATCH_EXTp = 0;
 
@@ -2987,7 +2979,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.oam_ctrl.WUJE_CPU_OAM_WRn = 1;
     }
 
-    if (addr_oam && cpu_wr) {
+    if (cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110)) {
       reg.oam_ctrl.WUJE_CPU_OAM_WRn = 0;
     }
 
@@ -3006,17 +2998,17 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
       reg.oam_ctrl.SIG_OAM_WRn_A = gen_clk_new(0b11110000) || !reg.oam_abus.BUS_OAM_A00n;
       reg.oam_ctrl.SIG_OAM_WRn_B = gen_clk_new(0b11110000) ||  reg.oam_abus.BUS_OAM_A00n;
-      reg.oam_ctrl.SIG_OAM_OEn   = !(dbus_busy && addr_oam && cpu_rd);
+      reg.oam_ctrl.SIG_OAM_OEn   = !(!reg.cpu_signals.SIG_IN_CPU_LATCH_EXT && cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_RDp);
     }
     else if (reg_new.sprite_scanner.ACYL_SCANNINGp) {
       reg.oam_abus.BUS_OAM_A00n = 1;
       reg.oam_abus.BUS_OAM_A01n = 1;
       bit_copy_inv(&reg.oam_abus.BUS_OAM_A02n, 6, &reg.scan_counter);
 
-      reg.oam_ctrl.SIG_OAM_CLKn  = (gen_clk_new(0b10011001)) && (gen_clk_new(0b11001100)) && (!addr_oam || !gen_clk_new(0b00001111));
+      reg.oam_ctrl.SIG_OAM_CLKn  = (gen_clk_new(0b10011001)) && (gen_clk_new(0b11001100)) && (!cpu_addr_oam_new || !gen_clk_new(0b00001111));
       reg.oam_ctrl.SIG_OAM_WRn_A = 1;
       reg.oam_ctrl.SIG_OAM_WRn_B = 1;
-      reg.oam_ctrl.SIG_OAM_OEn   = (gen_clk_new(0b10011001)) && !(dbus_busy && addr_oam && cpu_rd);
+      reg.oam_ctrl.SIG_OAM_OEn   = (gen_clk_new(0b10011001)) && !(!reg.cpu_signals.SIG_IN_CPU_LATCH_EXT && cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_RDp);
     }
     else if (!reg_new.XYMU_RENDERINGn) {
       reg.oam_abus.BUS_OAM_A00n = 0;
@@ -3025,23 +3017,23 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
       reg.oam_ctrl.SIG_OAM_CLKn  = 
         (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || (reg.sfetch_control.TYFO_SFETCH_S0p_D1 && !reg.sfetch_counter.TOXE_SFETCH_S0p)) && 
-        (!addr_oam || !gen_clk_new(0b00001111));
+        (!cpu_addr_oam_new || !gen_clk_new(0b00001111));
       reg.oam_ctrl.SIG_OAM_WRn_A = 1;
       reg.oam_ctrl.SIG_OAM_WRn_B = 1;
       reg.oam_ctrl.SIG_OAM_OEn   = 
         (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || !reg.sfetch_control.TYFO_SFETCH_S0p_D1) && 
-        !(dbus_busy && addr_oam && cpu_rd);
+        !(!reg.cpu_signals.SIG_IN_CPU_LATCH_EXT && cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_RDp);
     }
-    else if (addr_oam) {
+    else if (cpu_addr_oam_new) {
       bit_copy_inv(reg.oam_abus, reg.cpu_abus);
       if (!reg.oam_ctrl.WUJE_CPU_OAM_WRn) {
         bit_copy_inv(reg.oam_dbus_a, reg.cpu_dbus);
         bit_copy_inv(reg.oam_dbus_b, reg.cpu_dbus);
       }
       reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
-      reg.oam_ctrl.SIG_OAM_WRn_A = (!cpu_wr || !reg.oam_abus.BUS_OAM_A00n);
-      reg.oam_ctrl.SIG_OAM_WRn_B = (!cpu_wr ||  reg.oam_abus.BUS_OAM_A00n);
-      reg.oam_ctrl.SIG_OAM_OEn   = (!cpu_rd || !dbus_busy);
+      reg.oam_ctrl.SIG_OAM_WRn_A = (!(reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110)) || !reg.oam_abus.BUS_OAM_A00n);
+      reg.oam_ctrl.SIG_OAM_WRn_B = (!(reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110)) ||  reg.oam_abus.BUS_OAM_A00n);
+      reg.oam_ctrl.SIG_OAM_OEn   = (!reg.cpu_signals.SIG_IN_CPU_RDp || reg.cpu_signals.SIG_IN_CPU_LATCH_EXT);
     }
     else {
       bit_copy_inv(reg.oam_abus,   reg.cpu_abus);
@@ -3053,7 +3045,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.oam_ctrl.SIG_OAM_OEn   = 1;
     }
 
+    //----------------------------------------
     // data in from oam
+
     uint8_t oam_data_a, oam_data_b;
     uint8_t oam_addr = (uint8_t)bit_pack_inv(reg.oam_abus) >> 1;
     oam_data_a = (uint8_t)bit_pack_inv(reg.oam_dbus_a);
@@ -3070,7 +3064,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
     bool latch_oam = false;
-    latch_oam |= (dbus_busy && addr_oam && cpu_rd);
+    latch_oam |= (!reg.cpu_signals.SIG_IN_CPU_LATCH_EXT && cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_RDp);
     latch_oam |= reg_new.sprite_scanner.ACYL_SCANNINGp && gen_clk_new(0b01100110);
     latch_oam |= !reg_new.XYMU_RENDERINGn && !reg.sfetch_counter.TULY_SFETCH_S1p && !reg.sfetch_counter.TESE_SFETCH_S2p && reg.sfetch_control.TYFO_SFETCH_S0p_D1;
 
@@ -3081,7 +3075,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_copy(reg.oam_latch_b, reg.oam_dbus_b);
     }
 
-    if (cpu_rd && dbus_free && addr_oam && !latch_oam && !reg_new.dma_ctrl.MATU_DMA_RUNNINGp && !reg_new.sprite_scanner.ACYL_SCANNINGp && reg_new.XYMU_RENDERINGn) {
+    if (reg.cpu_signals.SIG_IN_CPU_RDp && reg.cpu_signals.SIG_IN_CPU_LATCH_EXT && cpu_addr_oam_new && !latch_oam && !reg_new.dma_ctrl.MATU_DMA_RUNNINGp && !reg_new.sprite_scanner.ACYL_SCANNINGp && reg_new.XYMU_RENDERINGn) {
       if (reg.oam_abus.BUS_OAM_A00n) {
         bit_copy_inv(reg.cpu_dbus, reg.oam_latch_a);
       }

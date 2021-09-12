@@ -40,10 +40,104 @@ struct GateBoy;
 void print_field_at(int offset);
 void diff_gb(GateBoy* gba, GateBoy* gbb, uint8_t mask);
 
+//-----------------------------------------------------------------------------
+
 #pragma pack(push, 1)
 struct GateBoyState {
   /*_SIG_VCC*/ SigIn SIG_VCC;
   /*_SIG_GND*/ SigIn SIG_GND;
+  GateBoyCpuSignals cpu_signals;
+  GateBoyCpuABus cpu_abus_old;
+  GateBoyCpuDBus cpu_dbus_old;
+  GateBoyCpuABus cpu_abus_new;
+  GateBoyCpuDBus cpu_dbus_new;
+  VramABus       vram_abus;
+  VramDBus       vram_dbus;
+  VramExtControl vram_ext_ctrl;
+  VramExtABus    vram_ext_abus;
+  VramExtDBus    vram_ext_dbus;
+  SpriteIBus     sprite_ibus;
+  SpriteLBus     sprite_lbus;
+                 
+  OamControl     oam_ctrl;
+  OamABus        oam_abus;
+  OamDBusA       oam_dbus_a;
+  OamDBusB       oam_dbus_b;
+  OamLatchA      oam_latch_a;
+  OamLatchB      oam_latch_b;
+  OamTempA       oam_temp_a;
+  OamTempB       oam_temp_b;
+                 
+  ExtControl     ext_ctrl;
+  ExtABus        ext_abus;
+  ExtDBus        ext_dbus;
+  ExtDataLatch   ext_data_latch;
+  ExtAddrLatch   ext_addr_latch;
+  GateBoyMBC     ext_mbc;
+
+  GateBoyZram    zram_bus;
+
+  /*#p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
+  /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
+
+  GateBoyResetDebug rst;
+  GateBoyClock      clk;
+  RegDIV        div;
+  RegTIMA tima;
+  RegTMA  tma;
+  RegTAC  tac;
+
+  DmaControl dma_ctrl;
+  RegDmaLo   dma_lo;
+  RegDmaHi   dma_hi;
+  
+  InterruptControl int_ctrl;
+
+  RegIF   reg_if;
+  RegIE   reg_ie;
+  LatchIF latch_if;
+  CpuInt  cpu_int;
+  CpuAck  cpu_ack;
+
+  JoyInt   joy_int;
+  JoyReg   joy_reg;
+  JoyLatch joy_latch;
+  JoyExt   joy_ext;
+
+  StoreI0 store_i0;
+  StoreI1 store_i1;
+  StoreI2 store_i2;
+  StoreI3 store_i3;
+  StoreI4 store_i4;
+  StoreI5 store_i5;
+  StoreI6 store_i6;
+  StoreI7 store_i7;
+  StoreI8 store_i8;
+  StoreI9 store_i9;
+
+  StoreL0 store_l0;
+  StoreL1 store_l1;
+  StoreL2 store_l2;
+  StoreL3 store_l3;
+  StoreL4 store_l4;
+  StoreL5 store_l5;
+  StoreL6 store_l6;
+  StoreL7 store_l7;
+  StoreL8 store_l8;
+  StoreL9 store_l9;
+
+  StoreX0 store_x0;
+  StoreX1 store_x1;
+  StoreX2 store_x2;
+  StoreX3 store_x3;
+  StoreX4 store_x4;
+  StoreX5 store_x5;
+  StoreX6 store_x6;
+  StoreX7 store_x7;
+  StoreX8 store_x8;
+  StoreX9 store_x9;
+
+
 };
 #pragma pack(pop)
 
@@ -86,7 +180,7 @@ struct GateBoy {
   //----------------------------------------
 
   void check_div() const {
-    int div_val = bit_pack(div);
+    int div_val = bit_pack(gbs.div);
     if (div_val != BOOT_DIV) {
       LOG_R("div fail!\n");
       *reinterpret_cast<int*>(SENTINEL4) = 1;
@@ -232,7 +326,7 @@ struct GateBoy {
 
   //----------------------------------------
 
-  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(rst.AFER_SYS_RSTp.qp_new(), rst.ASOL_POR_DONEn.qp_new()); }
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(gbs.rst.AFER_SYS_RSTp.qp_new(), gbs.rst.ASOL_POR_DONEn.qp_new()); }
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
   /*#p01.DULA*/ wire DULA_SYS_RSTp() const { return not1(ALUR_SYS_RSTn()); }
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn() const { return not1(DULA_SYS_RSTp()); }
@@ -254,20 +348,20 @@ struct GateBoy {
   /*_p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /*_p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
 
-  /*_p07.UBET*/ wire UBETp()           const { return not1(rst.PIN_77_T1.qp_int_new()); }
-  /*_p07.UVAR*/ wire UVARp()           const { return not1(rst.PIN_76_T2.qp_int_new()); }
-  /*_p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(rst.PIN_77_T1.qp_int_new(), UVARp()); }
-  /*_p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(rst.PIN_76_T2.qp_int_new(), UBETp()); }
-  /*_p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), rst.PIN_71_RST.qp_int_new()); }
+  /*_p07.UBET*/ wire UBETp()           const { return not1(gbs.rst.PIN_77_T1.qp_int_new()); }
+  /*_p07.UVAR*/ wire UVARp()           const { return not1(gbs.rst.PIN_76_T2.qp_int_new()); }
+  /*_p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(gbs.rst.PIN_77_T1.qp_int_new(), UVARp()); }
+  /*_p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(gbs.rst.PIN_76_T2.qp_int_new(), UBETp()); }
+  /*_p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), gbs.rst.PIN_71_RST.qp_int_new()); }
   /*_p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /*_p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /*_p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
-  /*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), rst.SOTO_DBG_VRAMp.qn_new()); }
+  /*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), gbs.rst.SOTO_DBG_VRAMp.qn_new()); }
 
-  /*_p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(clk.PIN_74_CLK.clkgood()); }
-  /*_p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(clk.PIN_74_CLK.clkgood()); }
+  /*_p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(gbs.clk.PIN_74_CLK.clkgood()); }
+  /*_p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(gbs.clk.PIN_74_CLK.clkgood()); }
 
-  /*_p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(clk.SIG_CPU_CLKREQ.out_new()); }
+  /*_p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(gbs.clk.SIG_CPU_CLKREQ.out_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
   wire gen_clk_old(uint8_t mask) {
@@ -281,7 +375,7 @@ struct GateBoy {
   }
 
   wire AZOF_AxCxExGx() const {
-    /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(clk.AVET_DEGLITCH.out_mid());
+    /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(gbs.clk.AVET_DEGLITCH.out_mid());
     /*_p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
     return AZOF_AxCxExGx;
   }
@@ -298,10 +392,10 @@ struct GateBoy {
   /*_p27.MOXE*/ wire MOXE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
   /*_p27.TAVA*/ wire TAVA_xBxDxFxH() const { return not1(LAPE_AxCxExGx()); }
 
-  /*#p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not1(clk.AFUR_xxxxEFGH.qp_new()); }
-  /*#p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not1(clk.ALEF_AxxxxFGH.qn_new()); }
-  /*#p01.AROV*/ wire AROV_xxCDEFxx() const { return not1(clk.APUK_ABxxxxGH.qp_new()); }
-  /*#p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(clk.ADYK_ABCxxxxH.qn_new()); }
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not1(gbs.clk.AFUR_xxxxEFGH.qp_new()); }
+  /*#p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not1(gbs.clk.ALEF_AxxxxFGH.qn_new()); }
+  /*#p01.AROV*/ wire AROV_xxCDEFxx() const { return not1(gbs.clk.APUK_ABxxxxGH.qp_new()); }
+  /*#p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(gbs.clk.ADYK_ABCxxxxH.qn_new()); }
 
   /*#p01.BEKO*/ wire BEKO_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); } // BEKO+BAVY parallel
   /*#p01.BAPY*/ wire BAPY_xxxxxxGH() const { return nor3(ABOL_CLKREQn(), AROV_xxCDEFxx(), ATYP_ABCDxxxx()); }
@@ -333,10 +427,10 @@ struct GateBoy {
   /*_p04.MOPA*/ wire MOPA_xxxxEFGH() const { return not1(UVYT_ABCDxxxx()); }
   /*_p28.XYNY*/ wire XYNY_ABCDxxxx() const { return not1(MOPA_xxxxEFGH()); }
 
-  /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(clk.VENA_xxCDEFxx.qn_new()); }
-  /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(clk.WUVU_ABxxEFxx.qn_new()); }
-  /*#p29.XOCE*/ wire XOCE_xBCxxFGx() const { return not1(clk.WOSU_AxxDExxH.qp_new()); }
-  /*#p29.WOJO*/ wire WOJO_AxxxExxx() const { return nor2(clk.WOSU_AxxDExxH.qn_new(), clk.WUVU_ABxxEFxx.qn_new()); }
+  /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(gbs.clk.VENA_xxCDEFxx.qn_new()); }
+  /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(gbs.clk.WUVU_ABxxEFxx.qn_new()); }
+  /*#p29.XOCE*/ wire XOCE_xBCxxFGx() const { return not1(gbs.clk.WOSU_AxxDExxH.qp_new()); }
+  /*#p29.WOJO*/ wire WOJO_AxxxExxx() const { return nor2(gbs.clk.WOSU_AxxDExxH.qn_new(), gbs.clk.WUVU_ABxxEFxx.qn_new()); }
   /*#p21.SONO*/ wire SONO_ABxxxxGH() const { return not1(TALU_xxCDEFxx()); }
   /*_p29.XYSO*/ wire XYSO_xBCDxFGH() const { return not1(WOJO_AxxxExxx()); }
   /*#p30.CYKE*/ wire CYKE_ABxxEFxx() const { return not1(XUPY_ABxxEFxx()); }
@@ -346,24 +440,24 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  /*_p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(cpu_signals.TEDO_CPU_RDp.out_new()); }
-  /*_p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(cpu_signals.TAPU_CPU_WRp.out_new()); }
+  /*_p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(gbs.cpu_signals.TEDO_CPU_RDp.out_new()); }
+  /*_p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(gbs.cpu_signals.TAPU_CPU_WRp.out_new()); }
   /*_p07.ASOT*/ wire ASOT_CPU_RDp      () const { return not1(AJAS_CPU_RDn()); }
   /*_p28.MYNU*/ wire MYNU_CPU_RDn      () const { return nand2(ASOT_CPU_RDp(), CATY_LATCH_EXTp()); }
   /*_p28.LEKO*/ wire LEKO_CPU_RDp      () const { return not1(MYNU_CPU_RDn()); }
   /*_p07.CUPA*/ wire CUPA_CPU_WRp      () const { return not1(DYKY_CPU_WRn()); }
-  /*_p08.REDU*/ wire REDU_CPU_RDn      () const { return not1(cpu_signals.TEDO_CPU_RDp.out_new()); }
-  /*_p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(cpu_signals.APOV_CPU_WRp.out_new()); }
+  /*_p08.REDU*/ wire REDU_CPU_RDn      () const { return not1(gbs.cpu_signals.TEDO_CPU_RDp.out_new()); }
+  /*_p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(gbs.cpu_signals.APOV_CPU_WRp.out_new()); }
 
-  /*_p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(cpu_signals.SIG_IN_CPU_LATCH_EXT.out_new()); }
+  /*_p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(gbs.cpu_signals.SIG_IN_CPU_LATCH_EXT.out_new()); }
   /*_p04.CATY*/ wire CATY_LATCH_EXTp   () const { return not1(DECY_LATCH_EXTn()); }
   /*#p28.BOFE*/ wire BOFE_LATCH_EXTn   () const { return not1(CATY_LATCH_EXTp()); }
 
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new(), cpu_abus_new.TEVY_ADDR_VRAMn()); }
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(cpu_abus_new.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), cpu_abus_new.BUS_CPU_A15p.out_new()); }
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(gbs.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new(), gbs.cpu_abus_new.TEVY_ADDR_VRAMn()); }
+  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(gbs.cpu_abus_new.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
+  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), gbs.cpu_abus_new.BUS_CPU_A15p.out_new()); }
   /*_p08.LEVO*/ wire LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
-  /*_p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), cpu_signals.APOV_CPU_WRp.out_new()); }
+  /*_p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), gbs.cpu_signals.APOV_CPU_WRp.out_new()); }
 
   wire TOLE_CPU_VRAM_RDp() const
   {
@@ -373,7 +467,7 @@ struct GateBoy {
     ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
     ///*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = mux2p(TEFY_VRAM_MCSp, TUTO_DBG_VRAMp, TUCA_CPU_VRAM_RDp);
 
-    /*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new());
+    /*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), gbs.cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new());
     /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = not1(TUCA_CPU_VRAM_RDp);
 
     return TOLE_CPU_VRAM_RDp;
@@ -387,7 +481,7 @@ struct GateBoy {
     ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
     ///*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = mux2p(TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
 
-    /*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), cpu_signals.SIG_IN_CPU_WRp.out_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
+    /*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), gbs.cpu_signals.SIG_IN_CPU_WRp.out_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
     /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = not1(TEGU_CPU_VRAM_WRn);
 
     return SALE_CPU_VRAM_WRn;
@@ -431,100 +525,7 @@ struct GateBoy {
 
   GateBoyState gbs;
 
-  GateBoyCpuSignals cpu_signals;
-  GateBoyCpuABus cpu_abus_old;
-  GateBoyCpuDBus cpu_dbus_old;
-  GateBoyCpuABus cpu_abus_new;
-  GateBoyCpuDBus cpu_dbus_new;
-
-  VramABus       vram_abus;
-  VramDBus       vram_dbus;
-  VramExtControl vram_ext_ctrl;
-  VramExtABus    vram_ext_abus;
-  VramExtDBus    vram_ext_dbus;
-
-  SpriteIBus     sprite_ibus;
-  SpriteLBus     sprite_lbus;
-                 
-  OamControl     oam_ctrl;
-  OamABus        oam_abus;
-  OamDBusA       oam_dbus_a;
-  OamDBusB       oam_dbus_b;
-  OamLatchA      oam_latch_a;
-  OamLatchB      oam_latch_b;
-  OamTempA       oam_temp_a;
-  OamTempB       oam_temp_b;
-                 
-  ExtControl     ext_ctrl;
-  ExtABus        ext_abus;
-  ExtDBus        ext_dbus;
-  ExtDataLatch   ext_data_latch;
-  ExtAddrLatch   ext_addr_latch;
-  GateBoyMBC     ext_mbc;
-
-  GateBoyZram    zram_bus;
-
-  /*#p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
-  /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
-
-  GateBoyResetDebug rst;
-  GateBoyClock      clk;
-  RegDIV        div;
-  RegTIMA tima;
-  RegTMA  tma;
-  RegTAC  tac;
-
-  DmaControl dma_ctrl;
-  RegDmaLo   dma_lo;
-  RegDmaHi   dma_hi;
-  
-  InterruptControl int_ctrl;
-
-  RegIF   reg_if;
-  RegIE   reg_ie;
-  LatchIF latch_if;
-  CpuInt  cpu_int;
-  CpuAck  cpu_ack;
-
-  JoyInt   joy_int;
-  JoyReg   joy_reg;
-  JoyLatch joy_latch;
-  JoyExt   joy_ext;
-
   //GateBoySerial     serial;
-
-  StoreI0 store_i0;
-  StoreI1 store_i1;
-  StoreI2 store_i2;
-  StoreI3 store_i3;
-  StoreI4 store_i4;
-  StoreI5 store_i5;
-  StoreI6 store_i6;
-  StoreI7 store_i7;
-  StoreI8 store_i8;
-  StoreI9 store_i9;
-
-  StoreL0 store_l0;
-  StoreL1 store_l1;
-  StoreL2 store_l2;
-  StoreL3 store_l3;
-  StoreL4 store_l4;
-  StoreL5 store_l5;
-  StoreL6 store_l6;
-  StoreL7 store_l7;
-  StoreL8 store_l8;
-  StoreL9 store_l9;
-
-  StoreX0 store_x0;
-  StoreX1 store_x1;
-  StoreX2 store_x2;
-  StoreX3 store_x3;
-  StoreX4 store_x4;
-  StoreX5 store_x5;
-  StoreX6 store_x6;
-  StoreX7 store_x7;
-  StoreX8 store_x8;
-  StoreX9 store_x9;
 
   /*_p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;    // AxCxExGx
   SpriteCounter sprite_counter;

@@ -532,7 +532,7 @@ Step controls:
     int code_size = 0;
     int code_base = 0;
 
-    if (!bit(gb.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
+    if (!bit(gb.gbs.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
       code      = DMG_ROM_blob.data();
       code_size = (int)DMG_ROM_blob.size();
       code_base = ADDR_BOOT_ROM_BEGIN;

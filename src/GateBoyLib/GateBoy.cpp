@@ -855,15 +855,15 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   tock_div_gates();
   tock_reset_gates(bit(sys.fastboot) ? reg.div.TERO_DIV03p : reg.div.UPOF_DIV15p);
-  tock_lcdc_gates(reg_old.cpu_dbus); // LCDC has to be near the top as it controls the video reset signal
+  tock_lcdc_gates(reg_old); // LCDC has to be near the top as it controls the video reset signal
   tock_vid_clocks_gates();
-  tock_lyc_gates(reg_old.cpu_dbus);
+  tock_lyc_gates(reg_old);
   tock_lcd_gates();
-  tock_joypad_gates(reg_old.cpu_dbus);
+  tock_joypad_gates(reg_old);
   tock_serial_gates();
-  tock_timer_gates(reg_old.cpu_dbus);
+  tock_timer_gates(reg_old);
   tock_bootrom_gates();
-  tock_dma_gates(reg_old.cpu_dbus);
+  tock_dma_gates(reg_old);
 
   //----------------------------------------
 
@@ -1174,7 +1174,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
   // WY/WX/window match
 
-  tock_window_gates(reg_old.cpu_dbus, SEGU_CLKPIPE_evn, REPU_VBLANKp);
+  tock_window_gates(reg_old, SEGU_CLKPIPE_evn, REPU_VBLANKp);
 
   //----------------------------------------
   // Tile fetch sequencer
@@ -1221,7 +1221,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // PPU / LCD output
 
-  tock_pix_pipes_gates(reg_old.cpu_dbus, SACU_CLKPIPE_new, NYXU_BFETCH_RSTn);
+  tock_pix_pipes_gates(reg_old, SACU_CLKPIPE_new, NYXU_BFETCH_RSTn);
   set_lcd_pins_gates(SACU_CLKPIPE_new);
 
   //----------------------------------------
@@ -1233,14 +1233,14 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // Memory buses
 
   tock_ext_gates(cart_blob);
-  tock_vram_bus_gates(reg_old.cpu_dbus, TEVO_WIN_FETCH_TRIGp);
+  tock_vram_bus_gates(reg_old, TEVO_WIN_FETCH_TRIGp);
   tock_oam_bus_gates();
-  tock_zram_gates(reg_old.cpu_dbus);
+  tock_zram_gates(reg_old);
 
   //----------------------------------------
   // And finally, interrupts.
 
-  tock_interrupts_gates(reg_old.cpu_dbus);
+  tock_interrupts_gates(reg_old);
 
   commit();
 }
@@ -1364,16 +1364,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_logic(const blob& cart_blob) {
-  const GateBoyReg  reg_old = reg;
+  const GateBoyReg reg_old = reg;
   GateBoyReg& reg_new = reg;
 
 
   uint8_t phase_old = 1 << (7 - ((sys.phase_total + 0) & 7));
   uint8_t phase_new = 1 << (7 - ((sys.phase_total + 1) & 7));
-
-  wire pause_rendering_old = reg_old.win_ctrl.RYDY_WIN_HITp || !reg_old.tfetch_control.POKY_PRELOAD_LATCHp || reg_old.FEPO_STORE_MATCHp || reg_old.WODU_HBLANKp;
-
-  bool SACU_CLKPIPE_old = gen_clk_old(0b10101010) || pause_rendering_old || reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
 
   //----------
 
@@ -2174,8 +2170,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   pause_rendering_new = reg_new.win_ctrl.RYDY_WIN_HITp || !reg_new.tfetch_control.POKY_PRELOAD_LATCHp || reg_new.FEPO_STORE_MATCHp || reg_new.WODU_HBLANKp;
 
-
+  wire pause_rendering_old = reg_old.win_ctrl.RYDY_WIN_HITp || !reg_old.tfetch_control.POKY_PRELOAD_LATCHp || reg_old.FEPO_STORE_MATCHp || reg_old.WODU_HBLANKp;
+  bool SACU_CLKPIPE_old = gen_clk_old(0b10101010) || pause_rendering_old || reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
   wire SACU_CLKPIPE_new = gen_clk_new(0b10101010) || pause_rendering_new || reg.fine_scroll.ROXY_FINE_SCROLL_DONEn;
+
+  if (reg_new.ATEJ_LINE_RSTp) CHECK_P(SACU_CLKPIPE_new);
 
   if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
     bit_unpack(reg.pix_count, bit_pack(reg.pix_count) + 1);
@@ -2225,12 +2224,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
   reg.WODU_HBLANKp = !reg.FEPO_STORE_MATCHp && (bit_pack(reg.pix_count) & 167) == 167;
 
-  {
-    wire clk_old = (!pause_rendering_old) && gen_clk_old(0b01010101);
-    wire clk_new = (!pause_rendering_new) && gen_clk_new(0b01010101);
-    if (!clk_old && clk_new) {
-      reg.lcd.PAHO_X_8_SYNC = reg_old.pix_count.XYDO_PX3p;
-    }
+  if (gen_clk_new(0b01010101)) {
+    if (!pause_rendering_new) reg.lcd.PAHO_X_8_SYNC = reg_old.pix_count.XYDO_PX3p;
   }
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2276,13 +2271,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
   // WY/WX/window match
 
-  {
-    if (!(!pause_rendering_old && gen_clk_old(0b01010101)) &&
-         (!pause_rendering_new && gen_clk_new(0b01010101))) {
-      reg.win_ctrl.PYCO_WIN_MATCHp = reg.win_ctrl.NUKO_WX_MATCHp;
-    }
+  if (gen_clk_new(0b01010101)) {
+    if (!pause_rendering_new) reg.win_ctrl.PYCO_WIN_MATCHp = reg.win_ctrl.NUKO_WX_MATCHp;
   }
-
 
   if (!reg_new.XYMU_RENDERINGn) {
     if (gen_clk_new(0b01010101)) {

@@ -408,25 +408,25 @@ struct GateBoy {
 
   void tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new);
 
-  void tock_lcdc_gates(const GateBoyCpuDBus& cpu_dbus_old);
-  void tock_lyc_gates(const GateBoyCpuDBus& cpu_dbus_old);
+  void tock_lcdc_gates(const GateBoyReg& reg_old);
+  void tock_lyc_gates(const GateBoyReg& reg_old);
   void tock_lcd_gates();
-  void tock_dma_gates(const GateBoyCpuDBus& cpu_dbus_old);
-  void tock_joypad_gates(const GateBoyCpuDBus& cpu_dbus_old);
-  void tock_interrupts_gates(const GateBoyCpuDBus& cpu_dbus_old);
+  void tock_dma_gates(const GateBoyReg& reg_old);
+  void tock_joypad_gates(const GateBoyReg& reg_old);
+  void tock_interrupts_gates(const GateBoyReg& reg_old);
   void tock_clocks_gates();
   void tock_vid_clocks_gates();
   void tock_div_gates();
-  void tock_timer_gates(const GateBoyCpuDBus& cpu_dbus_old);
+  void tock_timer_gates(const GateBoyReg& reg_old);
   void tock_reset_gates(DFF17 UPOF_DIV15p);
   void tock_ext_gates(const blob& cart_blob);
   void tock_oam_bus_gates();
   void tock_serial_gates();
-  void tock_vram_bus_gates(const GateBoyCpuDBus& cpu_dbus_old, wire TEVO_WIN_FETCH_TRIGp);
-  void tock_zram_gates(const GateBoyCpuDBus& cpu_dbus_old);
-  void tock_pix_pipes_gates(const GateBoyCpuDBus& cpu_dbus_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
+  void tock_vram_bus_gates(const GateBoyReg& reg_old, wire TEVO_WIN_FETCH_TRIGp);
+  void tock_zram_gates(const GateBoyReg& reg_old);
+  void tock_pix_pipes_gates(const GateBoyReg& reg_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
   void tock_bootrom_gates();
-  void tock_window_gates(const GateBoyCpuDBus& cpu_dbus_old, wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
+  void tock_window_gates(const GateBoyReg& reg_old, wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
   void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
 
   void tock_spu_gates();

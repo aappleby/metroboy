@@ -11,13 +11,13 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_zram_gates(const GateBoyCpuDBus& cpu_dbus_old)
+void GateBoy::tock_zram_gates(const GateBoyReg& reg_old)
 {
   auto addr = bit_pack(reg.cpu_abus);
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   if (bit(reg.zram_bus.clk_old.out_old() & ~reg.cpu_signals.TAPU_CPU_WRp.out_new() & CSp)) {
-    mem.zero_ram[addr & 0x007F] = (uint8_t)bit_pack(cpu_dbus_old);
+    mem.zero_ram[addr & 0x007F] = (uint8_t)bit_pack(reg_old.cpu_dbus);
   }
   reg.zram_bus.clk_old = reg.cpu_signals.TAPU_CPU_WRp.out_new();
 

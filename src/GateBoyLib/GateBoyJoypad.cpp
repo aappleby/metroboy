@@ -7,7 +7,7 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_joypad_gates(const GateBoyCpuDBus& cpu_dbus_old) {
+void GateBoy::tock_joypad_gates(const GateBoyReg& reg_old) {
   // has to be new_bus or sim isn't stable.
 
   /*_p10.BYKO*/ wire BYKO_A05n = not1(reg.cpu_abus.BUS_CPU_A05p.out_any());
@@ -26,8 +26,8 @@ void GateBoy::tock_joypad_gates(const GateBoyCpuDBus& cpu_dbus_old) {
 
   // this _has_ to reset to 1
 
-  /*#p05.KELY*/ reg.joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D04p.out_old());
-  /*#p05.COFY*/ reg.joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D05p.out_old());
+  /*#p05.KELY*/ reg.joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*#p05.COFY*/ reg.joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
 
   ///*_p05.KUKO*/ KUKO_DBG_D6    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[6].qp_old());
   ///*_p05.KERU*/ KERU_DBG_D7    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[7].qp_old());

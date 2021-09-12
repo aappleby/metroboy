@@ -8,7 +8,7 @@ void GateBoy::tock_serial_gates()
 {
 #if 0
   /*#p06.UWAM*/ wire UWAM_FF02_WRn = nand4(cpu_abus_new.TOVY_A00n(), cpu_abus_new.BUS_CPU_A01p.out_new(), cpu_signals.TAPU_CPU_WRp.out_new(), cpu_abus_new.SANO_FF00_FF03p());
-  /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(UWAM_FF02_WRn, ALUR_SYS_RSTn(), cpu_dbus_old.BUS_CPU_D00p.out_old());
+  /*#p06.CULY*/ serial.CULY_SER_DIR.dff17(UWAM_FF02_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
 
   /*#p01.UVYN*/ wire UVYN_DIV05n = not1(div.TAMA_DIV05p.qp_new());
   /*#p06.COTY*/ serial.COTY_SER_CLK.dff17(UVYN_DIV05n, UWAM_FF02_WRn, serial.COTY_SER_CLK.qn_old());
@@ -32,7 +32,7 @@ void GateBoy::tock_serial_gates()
     {
       /*#p06.COBA*/ wire COBA_SER_CNT3n = not1(serial.CALY_SER_CNT3.qp_any());
       /*#p06.CABY*/ wire CABY_XFER_RESET = and2(COBA_SER_CNT3n, ALUR_SYS_RSTn());
-      /*#p06.ETAF*/ serial.ETAF_SER_RUN.dff17_any(UWAM_FF02_WRn, CABY_XFER_RESET, cpu_dbus_old.BUS_CPU_D07p.out_old());
+      /*#p06.ETAF*/ serial.ETAF_SER_RUN.dff17_any(UWAM_FF02_WRn, CABY_XFER_RESET, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
     }
 
     {
@@ -144,7 +144,7 @@ void GateBoy::tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_a
 
   wire culy_old = bit(serial.CULY_SER_DIR.state);
   if (cpu_signals.SIG_IN_CPU_WRp.state && (new_addr == 0xFF02 && DELTA_GH)) {
-    serial.CULY_SER_DIR.state = cpu_dbus_old.BUS_CPU_D00p.state;
+    serial.CULY_SER_DIR.state = reg_old.cpu_dbus.BUS_CPU_D00p.state;
   }
   wire culy_new = bit(serial.CULY_SER_DIR.state);
 
@@ -168,7 +168,7 @@ void GateBoy::tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_a
 
   wire etaf_old = bit(serial.ETAF_SER_RUN.state);
   if (posedge(uwam_old, uwam_new)) {
-    serial.ETAF_SER_RUN.state = cpu_dbus_old.BUS_CPU_D07p.state;
+    serial.ETAF_SER_RUN.state = reg_old.cpu_dbus.BUS_CPU_D07p.state;
   }
   if (bit(serial.CALY_SER_CNT3.state)) {
     serial.ETAF_SER_RUN.state = 0;
@@ -206,7 +206,7 @@ void GateBoy::tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_a
   serial.CYDE_SER_CNT2.dff17_any(~serial.CYLO_SER_CNT1.state, UWAM_FF02_WRn, ~serial.CYDE_SER_CNT2.state);
   serial.CALY_SER_CNT3.dff17_any(~serial.CYDE_SER_CNT2.state, UWAM_FF02_WRn, ~serial.CALY_SER_CNT3.state);
 
-  serial.ETAF_SER_RUN.dff17_any(UWAM_FF02_WRn, ~serial.CALY_SER_CNT3.state, cpu_dbus_old.BUS_CPU_D07p.out_old());
+  serial.ETAF_SER_RUN.dff17_any(UWAM_FF02_WRn, ~serial.CALY_SER_CNT3.state, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
   {
     wire KEXU = or2(~serial.CULY_SER_DIR.state, ~DAWA_SER_CLK);

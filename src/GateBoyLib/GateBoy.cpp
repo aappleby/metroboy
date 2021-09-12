@@ -1984,45 +1984,50 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  if (vid_rst_new || line_rst_new) {
-    bit_clear(&reg.sprite_fetcher.TOXE_SFETCH_S0p, 3);
-  }
+  //-----------------------
+  // VID RST BRANCH
 
-  if (!rendering_new) {
+  if (vid_rst_new) {
+    reg.sprite_fetcher.TOXE_SFETCH_S0p.state = 0;
+    reg.sprite_fetcher.TULY_SFETCH_S1p.state = 0;
+    reg.sprite_fetcher.TESE_SFETCH_S2p.state = 0;
     reg.sprite_fetcher.TOBU_SFETCH_S1p_D2.state = 0;
     reg.sprite_fetcher.VONU_SFETCH_S1p_D4.state = 0;
     reg.sprite_fetcher.SEBA_SFETCH_S1p_D5.state = 0;
-  }
 
-  reg.sprite_fetcher.TEXY_SFETCHINGp = (reg.sprite_fetcher.TULY_SFETCH_S1p || reg.sprite_fetcher.VONU_SFETCH_S1p_D4) && rendering_new;
+    reg.sprite_fetcher.TEXY_SFETCHINGp = 0;
 
-  wire WUTY_SFETCH_DONE_TRIGp_old = reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp;
+    reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp = 0;
 
-  reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp = reg.sprite_fetcher.TYFO_SFETCH_S0p_D1 && reg.sprite_fetcher.TOXE_SFETCH_S0p && reg.sprite_fetcher.SEBA_SFETCH_S1p_D5 && reg.sprite_fetcher.VONU_SFETCH_S1p_D4;
-
-  uint8_t sfetch_phase_new = pack(~(reg.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg.sprite_fetcher.TOXE_SFETCH_S0p), reg.sprite_fetcher.TOXE_SFETCH_S0p, reg.sprite_fetcher.TULY_SFETCH_S1p, reg.sprite_fetcher.TESE_SFETCH_S2p);
-
-  //----------------------------------------
-  // Window state has some interaction with the tile fetcher here.
-
-
-
-
-  if (vid_rst_new) {
     reg.win_ctrl.NUNU_WIN_MATCHp.state = 0;
     reg.win_ctrl.NOPA_WIN_MODE_Bp.state = 0;
     reg.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
+    reg.win_ctrl.SOVY_WIN_HITp.state = 0;
+    reg.win_ctrl.RYDY_WIN_HITp = 0;
+    reg.win_ctrl.PUKU_WIN_HITn = 1;
 
-    if (DELTA_EVEN) {
-      reg.tile_fetcher.PYGO_FETCH_DONEp.state = reg.tile_fetcher.PORY_FETCH_DONEp.state;
-      reg.tile_fetcher.NYKA_FETCH_DONEp.state = reg.tile_fetcher.LYRY_BFETCH_DONEp.state;
-    }
+    reg.tile_fetcher.PYGO_FETCH_DONEp.state = 0;
+    reg.tile_fetcher.PORY_FETCH_DONEp.state = 0;
+    reg.tile_fetcher.NYKA_FETCH_DONEp.state = 0;
+    reg.tile_fetcher.POKY_PRELOAD_LATCHp.state = 0;
 
-    if (DELTA_ODD) {
-      reg.tile_fetcher.PORY_FETCH_DONEp.state = reg.tile_fetcher.NYKA_FETCH_DONEp.state;
-    }
+    reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
   }
   else {
+    if (line_rst_new) {
+      bit_clear(&reg.sprite_fetcher.TOXE_SFETCH_S0p, 3);
+    }
+
+    if (!rendering_new) {
+      reg.sprite_fetcher.TOBU_SFETCH_S1p_D2.state = 0;
+      reg.sprite_fetcher.VONU_SFETCH_S1p_D4.state = 0;
+      reg.sprite_fetcher.SEBA_SFETCH_S1p_D5.state = 0;
+    }
+
+    reg.sprite_fetcher.TEXY_SFETCHINGp = (reg.sprite_fetcher.TULY_SFETCH_S1p || reg.sprite_fetcher.VONU_SFETCH_S1p_D4) && rendering_new;
+
+    reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp = reg.sprite_fetcher.TYFO_SFETCH_S0p_D1 && reg.sprite_fetcher.TOXE_SFETCH_S0p && reg.sprite_fetcher.SEBA_SFETCH_S1p_D5 && reg.sprite_fetcher.VONU_SFETCH_S1p_D4;
+
     if (DELTA_ODD) {
       reg.win_ctrl.NUNU_WIN_MATCHp.state = reg.win_ctrl.PYCO_WIN_MATCHp.state;
     }
@@ -2057,34 +2062,17 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.tile_fetcher.NYKA_FETCH_DONEp.state = 0;
     }
 
-  }
+    if (reg.tile_fetcher.PYGO_FETCH_DONEp.state) {
+      reg.tile_fetcher.POKY_PRELOAD_LATCHp.state = 1;
+    }
 
+    if (!rendering_new) {
+      reg.tile_fetcher.PYGO_FETCH_DONEp.state = 0;
+      reg.tile_fetcher.PORY_FETCH_DONEp.state = 0;
+      reg.tile_fetcher.NYKA_FETCH_DONEp.state = 0;
+      reg.tile_fetcher.POKY_PRELOAD_LATCHp.state = 0;
+    }
 
-  //----------
-
-
-
-  if (reg.tile_fetcher.PYGO_FETCH_DONEp.state) {
-    reg.tile_fetcher.POKY_PRELOAD_LATCHp.state = 1;
-  }
-
-  if (!rendering_new) {
-    reg.tile_fetcher.PYGO_FETCH_DONEp.state = 0;
-    reg.tile_fetcher.PORY_FETCH_DONEp.state = 0;
-    reg.tile_fetcher.NYKA_FETCH_DONEp.state = 0;
-    reg.tile_fetcher.POKY_PRELOAD_LATCHp.state = 0;
-  }
-
-  //----------
-
-
-  if (vid_rst_new) {
-    reg.win_ctrl.SOVY_WIN_HITp.state = 0;
-    reg.win_ctrl.RYDY_WIN_HITp = 0;
-    reg.win_ctrl.PUKU_WIN_HITn = 1;
-    reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
-  }
-  else {
     if (DELTA_EVEN) {
       reg.win_ctrl.SOVY_WIN_HITp.state = reg.win_ctrl.RYDY_WIN_HITp.state;
     }
@@ -2101,27 +2089,27 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       }
     }
 
-  }
+    if (line_rst_new) {
+      reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
+    }
 
+    if (reg.sprite_fetcher.SOBU_SFETCH_REQp && !reg.sprite_fetcher.SUDA_SFETCH_REQp) {
+      reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
+    }
 
-  if (line_rst_new) {
-    reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
-  }
+    if (rendering_new && !reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && reg.tile_fetcher.NYKA_FETCH_DONEp.state && reg.tile_fetcher.PORY_FETCH_DONEp.state) {
+      reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 0;
+    }
 
-  if (reg.sprite_fetcher.SOBU_SFETCH_REQp && !reg.sprite_fetcher.SUDA_SFETCH_REQp) {
-    reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
-  }
-
-  if (rendering_new && !reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && reg.tile_fetcher.NYKA_FETCH_DONEp.state && reg.tile_fetcher.PORY_FETCH_DONEp.state) {
-    reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 0;
-  }
-
-  if (reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state) {
-    reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 0;
+    if (reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.state) {
+      reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 0;
+    }
   }
 
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
+
+  uint8_t sfetch_phase_new = pack(~(reg.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg.sprite_fetcher.TOXE_SFETCH_S0p), reg.sprite_fetcher.TOXE_SFETCH_S0p, reg.sprite_fetcher.TULY_SFETCH_S1p, reg.sprite_fetcher.TESE_SFETCH_S2p);
 
   {
     wire oam_busy_old = (cpu_addr_old >= 0xFE00 && cpu_addr_old <= 0xFEFF) || dma_running_old;
@@ -2244,9 +2232,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     auto sprite_count_new = bit_pack(reg.sprite_counter);
 
-    if (!WUTY_SFETCH_DONE_TRIGp_old && reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp) {
-      auto pack_sprite_match_flags = bit_pack(reg.sprite_match_flags);
-      bit_unpack(reg.sprite_reset_flags, pack_sprite_match_flags);
+    if (!reg_old.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp && reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp) {
+      auto pack_sprite_match_flags = bit_pack(reg_old.sprite_match_flags);
+      bit_unpack(reg_new.sprite_reset_flags, pack_sprite_match_flags);
     }
 
     auto store_rst = bit_pack(reg.sprite_reset_flags);

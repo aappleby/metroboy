@@ -1596,28 +1596,21 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // LYC
 
   if (cpu_addr_new == 0xFF45) {
-    if (cpu_rd_new) bit_copy_inv(reg_new.cpu_dbus_new, reg_new.reg_lyc);
-    if (cpu_wr_new && DELTA_GH) bit_copy_inv(reg_new.reg_lyc, reg_new.cpu_dbus_old);
+    if (cpu_rd_new) bit_copy_inv(reg_new.cpu_dbus_new, reg_old.reg_lyc);
+    if (cpu_wr_new && DELTA_GH) bit_copy_inv(reg_new.reg_lyc, reg_old.cpu_dbus_old);
   }
 
   if (!vid_rst_new && DELTA_BC) {
-    auto ly = bit_pack(reg_new.reg_ly);
-    auto lyc = bit_pack_inv(reg_new.reg_lyc);
+    auto ly = bit_pack(reg_old.reg_ly);
+    auto lyc = bit_pack_inv(reg_old.reg_lyc);
     reg_new.ROPO_LY_MATCH_SYNCp = ly == lyc;
   }
 
   //----------
   /// LX, LY, lcd flags
 
-  bool rutu_x113p_old = reg_old.lcd.RUTU_x113p;
-  bool popu_y144p_old = reg_old.lcd.POPU_y144p;
-  bool nype_x113p_old = reg_old.lcd.NYPE_x113p;
-
   auto lx_old = bit_pack(reg_old.reg_lx);
-  auto ly_old = bit_pack(reg_old.reg_ly);
   
-  bool line_rst_old = reg_old.ATEJ_LINE_RSTp;
-
   if (vid_rst_new) {
     reg_new.lcd.ANEL_x113p = 0;
     reg_new.lcd.CATU_x113p = 0;
@@ -1633,11 +1626,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_clear(reg_new.reg_ly);
   }
   else {
-    wire ly_144 = (ly_old & 144) == 144;
-    wire ly_153 = (ly_old & 153) == 153;
+    wire ly_144_old = (bit_pack(reg_old.reg_ly) & 144) == 144;
+    wire ly_153_old = (bit_pack(reg_old.reg_ly) & 153) == 153;
 
     if (DELTA_HA) {
-      reg_new.lcd.CATU_x113p = reg_new.lcd.RUTU_x113p.state && !ly_144;
+      reg_new.lcd.CATU_x113p = reg_new.lcd.RUTU_x113p.state && !ly_144_old;
     }
 
     if (DELTA_BC) {
@@ -1648,15 +1641,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
       bool nype_new = reg_new.lcd.NYPE_x113p;
       if (!nype_old && nype_new) {
-        reg_new.lcd.POPU_y144p = ly_144;
-        reg_new.lcd.MYTA_y153p = ly_153;
+        reg_new.lcd.POPU_y144p = ly_144_old;
+        reg_new.lcd.MYTA_y153p = ly_153_old;
       }
 
       bit_unpack(reg_new.reg_lx, lx_old + 1);
     }
 
     if (DELTA_DE) {
-      reg_new.lcd.CATU_x113p = reg_new.lcd.RUTU_x113p.state && !ly_144;
+      reg_new.lcd.CATU_x113p = reg_new.lcd.RUTU_x113p.state && !ly_144_old;
     }
 
     if (DELTA_FG) {
@@ -1667,7 +1660,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
       bool rutu_new = reg_new.lcd.RUTU_x113p;
       if (!rutu_old && rutu_new) {
-        bit_unpack(reg_new.reg_ly, ly_old + 1);
+        bit_unpack(reg_new.reg_ly, bit_pack(reg_old.reg_ly) + 1);
       }
 
       wire strobe = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
@@ -1685,7 +1678,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   bool rutu_x113p_new = reg_new.lcd.RUTU_x113p;
   bool popu_y144p_new = reg_new.lcd.POPU_y144p;
-  bool nype_x113p_new = reg_new.lcd.NYPE_x113p;
 
   bool line_rst_new = reg_new.ATEJ_LINE_RSTp;
 
@@ -2653,12 +2645,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (!vid_rst_new) {
     reg.lcd.PIN_52_LCD_CNTRL.state = !reg.lcd.SYGU_LINE_STROBE.state && !reg.lcd.RUTU_x113p.state;
 
-    if (rutu_x113p_old && !rutu_x113p_new) {
+    if (reg_old.lcd.RUTU_x113p && !rutu_x113p_new) {
       reg.lcd.LUCA_LINE_EVENp.state = !reg.lcd.LUCA_LINE_EVENp.state;
     }
 
 
-    if (!popu_y144p_old && popu_y144p_new) {
+    if (!reg_old.lcd.POPU_y144p && popu_y144p_new) {
       reg.lcd.NAPO_FRAME_EVENp.state = !reg.lcd.NAPO_FRAME_EVENp.state;
     }
 
@@ -2667,7 +2659,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     auto ly = bit_pack(reg.reg_ly);
 
-    if (nype_x113p_old && !nype_x113p_new) {
+    if (reg_old.lcd.NYPE_x113p && !reg_new.lcd.NYPE_x113p) {
       reg.lcd.MEDA_VSYNC_OUTn.state = ly == 0;
     }
 

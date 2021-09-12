@@ -1776,7 +1776,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.sprite_scanner.BYBA_SCAN_DONE_Ap = 0;
     reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp = 0;
     reg.sprite_scanner.BESU_SCANNINGn = 0;
-    reg.sprite_scanner.ACYL_SCANNINGp = 0;
     reg.sprite_scanner.CENO_SCANNINGn = 0;
     bit_clear(reg.scan_counter);
     reg.sprite_scanner.FETO_SCAN_DONEp = 0;
@@ -2004,7 +2003,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
 
-  reg_new.sprite_scanner.ACYL_SCANNINGp = !reg_new.dma_ctrl.MATU_DMA_RUNNINGp && reg.sprite_scanner.BESU_SCANNINGn;
+  reg_new.sprite_scanner.ACYL_SCANNINGp = !reg_new.dma_ctrl.MATU_DMA_RUNNINGp && reg.sprite_scanner.BESU_SCANNINGn && !reg_new.reg_lcdc.XONA_LCDC_LCDENn;
 
   {
     wire oam_busy_old = (cpu_addr_old >= 0xFE00 && cpu_addr_old <= 0xFEFF) || reg_new.dma_ctrl.MATU_DMA_RUNNINGp;

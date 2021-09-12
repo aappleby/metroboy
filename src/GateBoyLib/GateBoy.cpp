@@ -2936,7 +2936,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
       bit_unpack(&reg.vram_abus.BUS_VRAM_A00n, 5, wx);
       bit_unpack(&reg.vram_abus.BUS_VRAM_A05n, 5, wy);
-      bit_copy_inv(&reg.vram_abus.BUS_VRAM_A05n, 5, &reg.win_y.TUFU_WIN_MAP_Y0);
 
       addr |= reg.reg_lcdc.WOKY_LCDC_WINMAPn.state << 10;
 
@@ -3207,25 +3206,24 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // And finally, interrupts.
 
-  // FIXME this seems slightly wrong...
-  if (reg_new.cpu_signals.SIG_IN_CPU_WRp.state && CLK_xxxxEFGx && cpu_addr_new == 0xFF41) {
-  }
-  else {
-    reg_new.RUPO_LYC_MATCHn = 1;
-  }
-
-  // but the "reset" arm of the latch overrides the "set" arm, so it doesn't completely break?
-  if (reg_new.ROPO_LY_MATCH_SYNCp) {
-    reg_new.RUPO_LYC_MATCHn = 0;
-  }
-
-
   {
-    auto pack_cpu_dbus_old = bit_pack(reg.cpu_dbus_old);
-    auto pack_cpu_dbus_new = bit_pack(reg.cpu_dbus_new);
+    auto pack_cpu_dbus_old = bit_pack(reg_old.cpu_dbus_old);
+    auto pack_cpu_dbus_new = bit_pack(reg_new.cpu_dbus_new);
     auto pack_ie = bit_pack(reg.reg_ie);
     auto pack_if = bit_pack(reg.reg_if);
     auto pack_stat = bit_pack(reg.reg_stat);
+
+    // FIXME this seems slightly wrong...
+    if (reg_new.cpu_signals.SIG_IN_CPU_WRp.state && CLK_xxxxEFGx && cpu_addr_new == 0xFF41) {
+    }
+    else {
+      reg_new.RUPO_LYC_MATCHn = 1;
+    }
+
+    // but the "reset" arm of the latch overrides the "set" arm, so it doesn't completely break?
+    if (reg_new.ROPO_LY_MATCH_SYNCp) {
+      reg_new.RUPO_LYC_MATCHn = 0;
+    }
 
     if (cpu_addr_new == 0xFFFF && reg.cpu_signals.SIG_IN_CPU_WRp.state && DELTA_GH) {
       pack_ie = pack_cpu_dbus_old;

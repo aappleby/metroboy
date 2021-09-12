@@ -2928,23 +2928,17 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // Win coord x
 
-    auto win_map_x_old = bit_pack(reg.win_x);
-
     if (!(TEVO_WIN_FETCH_TRIGp_old && reg_old.win_ctrl.PYNU_WIN_MODE_Ap.state) && TEVO_WIN_FETCH_TRIGp_new && reg.win_ctrl.PYNU_WIN_MODE_Ap.state) {
-      bit_unpack(reg.win_x, win_map_x_old + 1);
+      bit_unpack(reg.win_x, bit_pack(reg_old.win_x) + 1);
     }
 
     if (reg_new.reg_lcdc.WYMO_LCDC_WINENn || reg_new.ATEJ_LINE_RSTp || reg.reg_lcdc.XONA_LCDC_LCDENn.state) bit_clear(reg.win_x);
 
-    auto win_map_x_new = bit_pack(reg.win_x);
-
     //--------------------------------------------
     // Win coord y
 
-    auto win_y_old = bit_pack(reg_old.win_y);
-
     if (reg_old.win_ctrl.PYNU_WIN_MODE_Ap.state && !reg.win_ctrl.PYNU_WIN_MODE_Ap.state) {
-      bit_unpack(reg.win_y, win_y_old + 1);
+      bit_unpack(reg.win_y, bit_pack(reg_old.win_y) + 1);
     }
 
     if (reg.lcd.POPU_y144p || reg.reg_lcdc.XONA_LCDC_LCDENn) {
@@ -2957,9 +2951,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.win_y.TATE_WIN_MAP_Y3  = 0;
       reg.win_y.TEKE_WIN_MAP_Y4  = 0;
     }
-
-    auto win_y_new = bit_pack(reg.win_y);
-
 
     if (reg.tile_fetcher.LONY_FETCHINGp.state && !reg.tile_fetcher.MESU_BFETCH_S1p.state && !reg.tile_fetcher.NYVA_BFETCH_S2p.state && reg.win_ctrl.PYNU_WIN_MODE_Ap.state) {
       uint32_t addr = 0;
@@ -3029,41 +3020,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // Vram control pins
 
     if (reg.XYMU_RENDERINGn.state) {
-      wire APOV_CPU_WRp = CLK_xxxxEFGx && reg.cpu_signals.SIG_IN_CPU_WRp.state;
-      wire ABUZ_EXT_RAM_CS_CLK = CLK_xxCDEFGH && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
-
-      if (dma_addr_vram_new) {
-        reg.vram_ext_ctrl.PIN_43_VRAM_CSn.state = 1;
-        reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state = 1;
-      }
-      else {
-        reg.vram_ext_ctrl.PIN_43_VRAM_CSn.state = cpu_addr_vram_new && ABUZ_EXT_RAM_CS_CLK;
-        reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state = !cpu_addr_vram_new || !reg.cpu_signals.SIG_IN_CPU_WRp.state;
-      }
-
-      reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state = cpu_addr_vram_new && APOV_CPU_WRp && ABUZ_EXT_RAM_CS_CLK;
+      reg.vram_ext_ctrl.PIN_43_VRAM_CSn.state = (cpu_addr_vram_new && CLK_xxCDEFGH && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp.state) || dma_addr_vram_new;
+      reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state = (!cpu_addr_vram_new || !reg.cpu_signals.SIG_IN_CPU_WRp.state) || dma_addr_vram_new;
+      reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state = cpu_addr_vram_new && CLK_xxxxEFGx && reg.cpu_signals.SIG_IN_CPU_WRp.state && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
     }
     else {
-      if (dma_addr_vram_new) {
-        reg.vram_ext_ctrl.PIN_43_VRAM_CSn.state = 1;
-        reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state = 0;
-        reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state = 1;
-      }
-      else if (reg.tile_fetcher.LONY_FETCHINGp.state) {
-        reg.vram_ext_ctrl.PIN_43_VRAM_CSn.state = 1;
-        reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state = 0;
-        reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state = 1;
-      }
-      else if (reg.sprite_fetcher.TEXY_SFETCHINGp.state) {
-        reg.vram_ext_ctrl.PIN_43_VRAM_CSn.state = 1;
-        reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state = 0;
-        reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state = !reg.sprite_fetcher.TYFO_SFETCH_S0p_D1.state || reg.sprite_fetcher.TOXE_SFETCH_S0p.state;
-      }
-      else {
-        reg.vram_ext_ctrl.PIN_43_VRAM_CSn.state = 0;
-        reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state = 0;
-        reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state = 0;
-      }
+      reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state = dma_addr_vram_new || reg.tile_fetcher.LONY_FETCHINGp.state || (reg.sprite_fetcher.TEXY_SFETCHINGp.state && (!reg.sprite_fetcher.TYFO_SFETCH_S0p_D1.state || reg.sprite_fetcher.TOXE_SFETCH_S0p.state));
+      reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state = 0;
+      reg.vram_ext_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || reg.tile_fetcher.LONY_FETCHINGp.state || reg.sprite_fetcher.TEXY_SFETCHINGp.state;
     }
 
     auto vram_addr = bit_pack_inv(reg.vram_ext_abus);

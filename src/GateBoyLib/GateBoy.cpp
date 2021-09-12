@@ -3013,10 +3013,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.oam_abus.BUS_OAM_A01n = 1;
       bit_copy_inv(&reg.oam_abus.BUS_OAM_A02n, 6, &reg.scan_counter);
 
-      reg.oam_ctrl.SIG_OAM_CLKn  = (!reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b10011001)) && (!reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b11001100)) && (!addr_oam || !gen_clk_new(0b00001111));
+      reg.oam_ctrl.SIG_OAM_CLKn  = (gen_clk_new(0b10011001)) && (gen_clk_new(0b11001100)) && (!addr_oam || !gen_clk_new(0b00001111));
       reg.oam_ctrl.SIG_OAM_WRn_A = 1;
       reg.oam_ctrl.SIG_OAM_WRn_B = 1;
-      reg.oam_ctrl.SIG_OAM_OEn   = (!reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b10011001)) && !(dbus_busy && addr_oam && cpu_rd);
+      reg.oam_ctrl.SIG_OAM_OEn   = (gen_clk_new(0b10011001)) && !(dbus_busy && addr_oam && cpu_rd);
     }
     else if (!reg_new.XYMU_RENDERINGn) {
       reg.oam_abus.BUS_OAM_A00n = 0;

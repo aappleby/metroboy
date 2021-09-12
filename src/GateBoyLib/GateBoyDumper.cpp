@@ -354,9 +354,9 @@ void GateBoy::dump_ppu(Dumper& d) {
   d.dump_bitp("SARY_WY_MATCH          : ", reg.win_ctrl.SARY_WY_MATCHp.state);
   d.dump_bitp("RYFA_FETCHn_A          : ", reg.win_ctrl.RYFA_WIN_FETCHn_A.state);
   d.dump_bitp("RENE_FETCHn_B          : ", reg.win_ctrl.RENE_WIN_FETCHn_B.state);
-  d.dump_bitp("RYKU_FINE_CNT0         : ", reg.fine_scroll.RYKU_FINE_CNT0.state);
-  d.dump_bitp("ROGA_FINE_CNT1         : ", reg.fine_scroll.ROGA_FINE_CNT1.state);
-  d.dump_bitp("RUBU_FINE_CNT2         : ", reg.fine_scroll.RUBU_FINE_CNT2.state);
+  d.dump_bitp("RYKU_FINE_CNT0         : ", reg.fine_count.RYKU_FINE_CNT0.state);
+  d.dump_bitp("ROGA_FINE_CNT1         : ", reg.fine_count.ROGA_FINE_CNT1.state);
+  d.dump_bitp("RUBU_FINE_CNT2         : ", reg.fine_count.RUBU_FINE_CNT2.state);
   d.dump_bitp("PUXA_FINE_MATCH_A      : ", reg.fine_scroll.PUXA_SCX_FINE_MATCH_A.state);
   d.dump_bitp("NYZE_FINE_MATCH_B      : ", reg.fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn : ", reg.fine_scroll.ROXY_FINE_SCROLL_DONEn.state);

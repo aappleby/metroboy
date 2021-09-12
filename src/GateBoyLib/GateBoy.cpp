@@ -440,6 +440,7 @@ MemberOffset gb_offsets[] = {
   GEN_OFFSET(reg.win_tile_y),
   GEN_OFFSET(reg.win_map_y),
   GEN_OFFSET(reg.win_ctrl),
+  GEN_OFFSET(reg.fine_count),
   GEN_OFFSET(reg.fine_scroll),
   GEN_OFFSET(reg.pix_count),
   GEN_OFFSET(reg.mask_pipe),
@@ -1096,9 +1097,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   //for (int feedback = 0; feedback < 2; feedback++) {
   {
-    /*_p27.SUHA*/ wire SUHA_SCX_FINE_MATCHp_old = xnor2(reg.reg_scx.DATY_SCX0n.qn_old(), reg.fine_scroll.RYKU_FINE_CNT0.qp_old());
-    /*_p27.SYBY*/ wire SYBY_SCX_FINE_MATCHp_old = xnor2(reg.reg_scx.DUZU_SCX1n.qn_old(), reg.fine_scroll.ROGA_FINE_CNT1.qp_old());
-    /*_p27.SOZU*/ wire SOZU_SCX_FINE_MATCHp_old = xnor2(reg.reg_scx.CYXU_SCX2n.qn_old(), reg.fine_scroll.RUBU_FINE_CNT2.qp_old());
+    /*_p27.SUHA*/ wire SUHA_SCX_FINE_MATCHp_old = xnor2(reg.reg_scx.DATY_SCX0n.qn_old(), reg.fine_count.RYKU_FINE_CNT0.qp_old());
+    /*_p27.SYBY*/ wire SYBY_SCX_FINE_MATCHp_old = xnor2(reg.reg_scx.DUZU_SCX1n.qn_old(), reg.fine_count.ROGA_FINE_CNT1.qp_old());
+    /*_p27.SOZU*/ wire SOZU_SCX_FINE_MATCHp_old = xnor2(reg.reg_scx.CYXU_SCX2n.qn_old(), reg.fine_count.RUBU_FINE_CNT2.qp_old());
     /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn_old = nand4(reg.fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_any(), SUHA_SCX_FINE_MATCHp_old, SYBY_SCX_FINE_MATCHp_old, SOZU_SCX_FINE_MATCHp_old);
     /*#p27.POHU*/ wire POHU_SCX_FINE_MATCHp_old = not1(RONE_SCX_FINE_MATCHn_old);
 
@@ -1210,11 +1211,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p27.PASO*/ wire PASO_FINE_RST = nor2(PAHA_RENDERINGn, TEVO_WIN_FETCH_TRIGp);
 
   for (int feedback = 0; feedback < 2; feedback++) {
-    /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n = nand3(reg.fine_scroll.RUBU_FINE_CNT2.qp_any(), reg.fine_scroll.ROGA_FINE_CNT1.qp_any(), reg.fine_scroll.RYKU_FINE_CNT0.qp_any());
+    /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n = nand3(reg.fine_count.RUBU_FINE_CNT2.qp_any(), reg.fine_count.ROGA_FINE_CNT1.qp_any(), reg.fine_count.RYKU_FINE_CNT0.qp_any());
     /*#p27.PECU*/ wire PECU_FINE_CLK = nand2(ROXO_CLKPIPE_odd, ROZE_FINE_COUNT_7n);
-    /*#p27.RYKU*/ reg.fine_scroll.RYKU_FINE_CNT0.dff17_any(PECU_FINE_CLK, PASO_FINE_RST, reg.fine_scroll.RYKU_FINE_CNT0.qn_any());
-    /*#p27.ROGA*/ reg.fine_scroll.ROGA_FINE_CNT1.dff17_any(reg.fine_scroll.RYKU_FINE_CNT0.qn_any(), PASO_FINE_RST, reg.fine_scroll.ROGA_FINE_CNT1.qn_any());
-    /*#p27.RUBU*/ reg.fine_scroll.RUBU_FINE_CNT2.dff17_any(reg.fine_scroll.ROGA_FINE_CNT1.qn_any(), PASO_FINE_RST, reg.fine_scroll.RUBU_FINE_CNT2.qn_any());
+    /*#p27.RYKU*/ reg.fine_count.RYKU_FINE_CNT0.dff17_any(PECU_FINE_CLK, PASO_FINE_RST, reg.fine_count.RYKU_FINE_CNT0.qn_any());
+    /*#p27.ROGA*/ reg.fine_count.ROGA_FINE_CNT1.dff17_any(reg.fine_count.RYKU_FINE_CNT0.qn_any(), PASO_FINE_RST, reg.fine_count.ROGA_FINE_CNT1.qn_any());
+    /*#p27.RUBU*/ reg.fine_count.RUBU_FINE_CNT2.dff17_any(reg.fine_count.ROGA_FINE_CNT1.qn_any(), PASO_FINE_RST, reg.fine_count.RUBU_FINE_CNT2.qn_any());
   }
 
   //----------------------------------------
@@ -1372,18 +1373,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   uint8_t phase_old = 1 << (7 - ((sys.phase_total + 0) & 7));
   uint8_t phase_new = 1 << (7 - ((sys.phase_total + 1) & 7));
 
+  wire pause_rendering_old = reg_old.win_ctrl.RYDY_WIN_HITp || !reg_old.tile_fetcher.POKY_PRELOAD_LATCHp || reg_old.FEPO_STORE_MATCHp || reg_old.WODU_HBLANKp;
 
-  bool SACU_CLKPIPE_old = !(!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp &&  !(phase_old & 0b10101010)) || reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
-
-  bool clkpipe_en_old = 1;
-  if (reg_old.win_ctrl.RYDY_WIN_HITp) clkpipe_en_old = 0;
-  if (!reg_old.tile_fetcher.POKY_PRELOAD_LATCHp) clkpipe_en_old = 0;
-  if (reg_old.FEPO_STORE_MATCHp) clkpipe_en_old = 0;
-  if (reg_old.WODU_HBLANKp) clkpipe_en_old = 0;
-
-  bool CLKPIPE_old = phase_old & 0b10101010;
-  if (!clkpipe_en_old) CLKPIPE_old = 1;
-  if (reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn) CLKPIPE_old = 1;
+  bool SACU_CLKPIPE_old = gen_clk_old(0b10101010) || pause_rendering_old || reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
 
   //----------
 
@@ -1836,7 +1828,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //-----------------------
   // VID RUN BRANCH
 
-  else {
+  if (!reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
     if (reg_new.ATEJ_LINE_RSTp) {
       reg.sprite_scanner.DOBA_SCAN_DONE_Bp = 0;
       reg.sprite_scanner.BYBA_SCAN_DONE_Ap = 0;
@@ -1947,45 +1939,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
         bit_unpack(reg_new.sprite_reset_flags, bit_pack(reg_old.sprite_match_flags));
       }
     }
-
-
-
-    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn) {
-      reg.win_ctrl.PYNU_WIN_MODE_Ap = 0;
-      if (reg.tile_fetcher.PORY_FETCH_DONEp) {
-        reg.win_ctrl.RYDY_WIN_HITp = 0;
-        reg.win_ctrl.PUKU_WIN_HITn = 1;
-      }
-      else {
-        if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
-          reg.win_ctrl.RYDY_WIN_HITp = 1;
-          reg.win_ctrl.PUKU_WIN_HITn = 0;
-        }
-      }
-    }
-    else {
-      
-      if (reg.win_ctrl.NUNU_WIN_MATCHp) {
-        reg.win_ctrl.PYNU_WIN_MODE_Ap = 1;
-      }
-      
-      if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
-        reg.tile_fetcher.PORY_FETCH_DONEp = 0;
-        reg.tile_fetcher.NYKA_FETCH_DONEp = 0;
-      }
-
-      if (reg.tile_fetcher.PORY_FETCH_DONEp) {
-        reg.win_ctrl.RYDY_WIN_HITp = 0;
-        reg.win_ctrl.PUKU_WIN_HITn = 1;
-      }
-      else {
-        if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
-          reg.win_ctrl.RYDY_WIN_HITp = 1;
-          reg.win_ctrl.PUKU_WIN_HITn = 0;
-        }
-      }
-    }
   }
+
 
   uint8_t sfetch_phase_old = pack(!(reg_old.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg_old.sprite_fetcher.TOXE_SFETCH_S0p), reg_old.sprite_fetcher.TOXE_SFETCH_S0p, reg_old.sprite_fetcher.TULY_SFETCH_S1p, reg_old.sprite_fetcher.TESE_SFETCH_S2p);
   uint8_t sfetch_phase_new = pack(!(reg_new.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg_new.sprite_fetcher.TOXE_SFETCH_S0p), reg_new.sprite_fetcher.TOXE_SFETCH_S0p, reg_new.sprite_fetcher.TULY_SFETCH_S1p, reg_new.sprite_fetcher.TESE_SFETCH_S2p);
@@ -2003,9 +1958,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
 
-  reg_new.sprite_scanner.ACYL_SCANNINGp = !reg_new.dma_ctrl.MATU_DMA_RUNNINGp && reg.sprite_scanner.BESU_SCANNINGn && !reg_new.reg_lcdc.XONA_LCDC_LCDENn;
 
   {
+    reg_new.sprite_scanner.ACYL_SCANNINGp = !reg_new.dma_ctrl.MATU_DMA_RUNNINGp && reg.sprite_scanner.BESU_SCANNINGn && !reg_new.reg_lcdc.XONA_LCDC_LCDENn;
+
     wire oam_busy_old = (cpu_addr_old >= 0xFE00 && cpu_addr_old <= 0xFEFF) || reg_new.dma_ctrl.MATU_DMA_RUNNINGp;
     wire oam_busy_new = (cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFEFF) || reg_new.dma_ctrl.MATU_DMA_RUNNINGp;
 
@@ -2168,14 +2124,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Fine scroll match, sprite store match, clock pipe, and pixel counter are intertwined here.
 
-  auto XYDO_PX3p_old = reg_old.pix_count.XYDO_PX3p;
-  auto scx_old = bit_pack_inv(&reg_old.reg_scx.DATY_SCX0n, 3);
-  auto fine_cnt_old = bit_pack(&reg_old.fine_scroll.RYKU_FINE_CNT0, 3);
-  wire fine_match_old = reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn && (scx_old == fine_cnt_old);
+  // NOTE we reassign this below because there's a bit of a feedback loop
+  wire pause_rendering_new = reg_new.win_ctrl.RYDY_WIN_HITp || !reg_new.tile_fetcher.POKY_PRELOAD_LATCHp || reg_new.FEPO_STORE_MATCHp || reg_new.WODU_HBLANKp;
 
   if (gen_clk_new(0b01010101)) {
-    if (!reg.win_ctrl.RYDY_WIN_HITp && reg.tile_fetcher.POKY_PRELOAD_LATCHp && !reg.FEPO_STORE_MATCHp && !reg.WODU_HBLANKp) {
-      reg.fine_scroll.PUXA_SCX_FINE_MATCH_A = fine_match_old;
+    if (!pause_rendering_new) {
+      reg.fine_scroll.PUXA_SCX_FINE_MATCH_A = reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn && (bit_pack_inv(&reg_old.reg_scx.DATY_SCX0n, 3) == bit_pack(&reg_old.fine_count.RYKU_FINE_CNT0, 3));
     }
   }
   else {
@@ -2192,11 +2146,40 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.fine_scroll.ROXY_FINE_SCROLL_DONEn = 0;
   }
 
-  wire CLKPIPE_new = gen_clk_new(0b10101010);
-  if (!(!reg.win_ctrl.RYDY_WIN_HITp && reg.tile_fetcher.POKY_PRELOAD_LATCHp && !reg.FEPO_STORE_MATCHp && !reg.WODU_HBLANKp)) CLKPIPE_new = 1;
-  if (reg.fine_scroll.ROXY_FINE_SCROLL_DONEn) CLKPIPE_new = 1;
+  if (!reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
+    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn) {
+      reg.win_ctrl.PYNU_WIN_MODE_Ap = 0;
+      reg.win_ctrl.RYDY_WIN_HITp = 0;
+      reg.win_ctrl.PUKU_WIN_HITn = 1;
+    }
+    else {
+      
+      if (reg.win_ctrl.NUNU_WIN_MATCHp) {
+        reg.win_ctrl.PYNU_WIN_MODE_Ap = 1;
+      }
+      
+      if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
+        reg.tile_fetcher.PORY_FETCH_DONEp = 0;
+        reg.tile_fetcher.NYKA_FETCH_DONEp = 0;
+      }
 
-  if (!CLKPIPE_old && CLKPIPE_new) {
+      if (reg.tile_fetcher.PORY_FETCH_DONEp) {
+        reg.win_ctrl.RYDY_WIN_HITp = 0;
+        reg.win_ctrl.PUKU_WIN_HITn = 1;
+      }
+      else if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
+        reg.win_ctrl.RYDY_WIN_HITp = 1;
+        reg.win_ctrl.PUKU_WIN_HITn = 0;
+      }
+    }
+  }
+
+  pause_rendering_new = reg_new.win_ctrl.RYDY_WIN_HITp || !reg_new.tile_fetcher.POKY_PRELOAD_LATCHp || reg_new.FEPO_STORE_MATCHp || reg_new.WODU_HBLANKp;
+
+
+  wire SACU_CLKPIPE_new = gen_clk_new(0b10101010) || pause_rendering_new || reg.fine_scroll.ROXY_FINE_SCROLL_DONEn;
+
+  if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
     bit_unpack(reg.pix_count, bit_pack(reg.pix_count) + 1);
   }
 
@@ -2245,10 +2228,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   reg.WODU_HBLANKp = !reg.FEPO_STORE_MATCHp && (bit_pack(reg.pix_count) & 167) == 167;
 
   {
-    wire clk_old = (!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp) && gen_clk_old(0b01010101);
-    wire clk_new = (!reg_new.win_ctrl.RYDY_WIN_HITp && reg_new.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_new.FEPO_STORE_MATCHp && !reg_new.WODU_HBLANKp) && gen_clk_new(0b01010101);
+    wire clk_old = (!pause_rendering_old) && gen_clk_old(0b01010101);
+    wire clk_new = (!pause_rendering_new) && gen_clk_new(0b01010101);
     if (!clk_old && clk_new) {
-      reg.lcd.PAHO_X_8_SYNC = XYDO_PX3p_old;
+      reg.lcd.PAHO_X_8_SYNC = reg_old.pix_count.XYDO_PX3p;
     }
   }
 
@@ -2296,8 +2279,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // WY/WX/window match
 
   {
-    if (!(!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp && gen_clk_old(0b01010101)) &&
-         (!reg_new.win_ctrl.RYDY_WIN_HITp && reg_new.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_new.FEPO_STORE_MATCHp && !reg_new.WODU_HBLANKp && gen_clk_new(0b01010101))) {
+    if (!(!pause_rendering_old && gen_clk_old(0b01010101)) &&
+         (!pause_rendering_new && gen_clk_new(0b01010101))) {
       reg.win_ctrl.PYCO_WIN_MATCHp = reg.win_ctrl.NUKO_WX_MATCHp;
     }
   }
@@ -2308,8 +2291,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.win_ctrl.RENE_WIN_FETCHn_B = reg.win_ctrl.RYFA_WIN_FETCHn_A;
     }
 
-    if (!CLKPIPE_old && CLKPIPE_new) {
-      reg.win_ctrl.RYFA_WIN_FETCHn_A = !reg.win_ctrl.NUKO_WX_MATCHp && reg.fine_scroll.RUBU_FINE_CNT2 && reg.fine_scroll.ROGA_FINE_CNT1 && reg.fine_scroll.RYKU_FINE_CNT0;
+    if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
+      reg.win_ctrl.RYFA_WIN_FETCHn_A = !reg.win_ctrl.NUKO_WX_MATCHp && reg.fine_count.RUBU_FINE_CNT2 && reg.fine_count.ROGA_FINE_CNT1 && reg.fine_count.RYKU_FINE_CNT0;
     }
   }
   else {
@@ -2351,12 +2334,25 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   uint8_t bfetch_phase_old = pack(!(reg.tile_fetcher.LYZU_BFETCH_S0p_D1 ^ reg.tile_fetcher.LAXU_BFETCH_S0p), reg.tile_fetcher.LAXU_BFETCH_S0p, reg.tile_fetcher.MESU_BFETCH_S1p, reg.tile_fetcher.NYVA_BFETCH_S2p);
 
-  wire BFETCH_RSTp =
+  auto restart_fetch = [](GateBoyReg& reg) {
+    return !reg.XYMU_RENDERINGn && !reg.tile_fetcher.POKY_PRELOAD_LATCHp && reg.tile_fetcher.NYKA_FETCH_DONEp && reg.tile_fetcher.PORY_FETCH_DONEp;
+  };
+
+  auto trigger_win_fetch = [&](GateBoyReg& reg) {
+    bool TEVO_WIN_FETCH_TRIGp = 0;
+    if (reg.win_ctrl.RYFA_WIN_FETCHn_A && !reg.win_ctrl.RENE_WIN_FETCHn_B) TEVO_WIN_FETCH_TRIGp = 1;
+    if (!reg.win_ctrl.RYDY_WIN_HITp && reg.win_ctrl.SOVY_WIN_HITp) TEVO_WIN_FETCH_TRIGp = 1;
+    if (restart_fetch(reg)) TEVO_WIN_FETCH_TRIGp = 1;
+    return TEVO_WIN_FETCH_TRIGp;
+  };
+
+
+  wire BFETCH_RSTp_new =
     reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp ||
     (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) ||
     (reg.win_ctrl.RYFA_WIN_FETCHn_A && !reg.win_ctrl.RENE_WIN_FETCHn_B) ||
     (reg.win_ctrl.SOVY_WIN_HITp && !reg.win_ctrl.RYDY_WIN_HITp) ||
-    (!reg_new.XYMU_RENDERINGn && !reg.tile_fetcher.POKY_PRELOAD_LATCHp && reg.tile_fetcher.NYKA_FETCH_DONEp && reg.tile_fetcher.PORY_FETCH_DONEp);
+    restart_fetch(reg_new);
 
   if (gen_clk_new(0b01010101)) {
     reg.tile_fetcher.LYZU_BFETCH_S0p_D1 = reg.tile_fetcher.LAXU_BFETCH_S0p;
@@ -2366,7 +2362,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.tile_fetcher.LYZU_BFETCH_S0p_D1 = 0;
   }
 
-  if (BFETCH_RSTp) {
+  if (BFETCH_RSTp_new) {
     reg.tile_fetcher.LAXU_BFETCH_S0p = 0;
     reg.tile_fetcher.MESU_BFETCH_S1p = 0;
     reg.tile_fetcher.NYVA_BFETCH_S2p = 0;
@@ -2411,31 +2407,44 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Fine match counter
 
-  wire TEVO_WIN_FETCH_TRIGp_new = 0;
-  if (reg.win_ctrl.RYFA_WIN_FETCHn_A && !reg.win_ctrl.RENE_WIN_FETCHn_B) TEVO_WIN_FETCH_TRIGp_new = 1;
-  if (!reg.win_ctrl.RYDY_WIN_HITp && reg.win_ctrl.SOVY_WIN_HITp) TEVO_WIN_FETCH_TRIGp_new = 1;
-  if (!reg.XYMU_RENDERINGn && !reg.tile_fetcher.POKY_PRELOAD_LATCHp && reg.tile_fetcher.NYKA_FETCH_DONEp && reg.tile_fetcher.PORY_FETCH_DONEp) TEVO_WIN_FETCH_TRIGp_new = 1;
-
-  {
-    auto fs_old = bit_pack(&reg.fine_scroll.RYKU_FINE_CNT0, 3);
-    if (fs_old != 7 &&
-        ((!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp &&  !(phase_old & 0b10101010)) &&
-        !(!reg_new.win_ctrl.RYDY_WIN_HITp && reg_new.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_new.FEPO_STORE_MATCHp && !reg_new.WODU_HBLANKp && gen_clk_new(0b01010101)))) {
-      bit_unpack(&reg.fine_scroll.RYKU_FINE_CNT0, 3, fs_old + 1);
-    }
-
-    if (TEVO_WIN_FETCH_TRIGp_new || reg.XYMU_RENDERINGn) {
-      bit_clear(&reg.fine_scroll.RYKU_FINE_CNT0, 3);
-    }
+  wire TEVO_WIN_FETCH_TRIGp_old = trigger_win_fetch(reg_old);
+  wire TEVO_WIN_FETCH_TRIGp_new = trigger_win_fetch(reg_new);;
+  
+  if (bit_pack(&reg.fine_count.RYKU_FINE_CNT0, 3) != 7 && !pause_rendering_old && gen_clk_new(0b10101010)) {
+    bit_unpack(&reg.fine_count.RYKU_FINE_CNT0, 3, bit_pack(&reg.fine_count.RYKU_FINE_CNT0, 3) + 1);
   }
 
-  wire SACU_CLKPIPE_new =
-    gen_clk_new(0b10101010) ||
-    reg.win_ctrl.RYDY_WIN_HITp ||
-    !reg.tile_fetcher.POKY_PRELOAD_LATCHp ||
-    reg.FEPO_STORE_MATCHp ||
-    reg_new.WODU_HBLANKp ||
-    reg.fine_scroll.ROXY_FINE_SCROLL_DONEn;
+  if (TEVO_WIN_FETCH_TRIGp_new || reg.XYMU_RENDERINGn) {
+    bit_clear(&reg.fine_count.RYKU_FINE_CNT0, 3);
+  }
+
+  if (!(TEVO_WIN_FETCH_TRIGp_old && reg_old.win_ctrl.PYNU_WIN_MODE_Ap) && TEVO_WIN_FETCH_TRIGp_new && reg.win_ctrl.PYNU_WIN_MODE_Ap) {
+    bit_unpack(reg.win_map_x, bit_pack(reg_old.win_map_x) + 1);
+  }
+
+  if (reg_new.reg_lcdc.WYMO_LCDC_WINENn) {
+    bit_clear(reg.win_map_x);
+  }
+
+  if (reg_new.ATEJ_LINE_RSTp) {
+    bit_clear(reg.win_map_x);
+  }
+
+  if (reg.reg_lcdc.XONA_LCDC_LCDENn) {
+    bit_clear(reg.win_map_x);
+  }
+
+  if (reg_old.win_ctrl.PYNU_WIN_MODE_Ap && !reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
+    // note we're adding adjacent bits in win tile/map y
+    uint8_t win = (uint8_t)bit_pack(&reg_old.win_tile_y, 8);
+    bit_unpack(&reg.win_tile_y, 8, win + 1);
+  }
+
+  if (reg_new.lcd.POPU_y144p || reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
+    bit_clear(reg.win_tile_y);
+    bit_clear(reg.win_map_y);
+  }
+
 
   //----------------------------------------
   // PPU / LCD output
@@ -2483,7 +2492,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       ppipe   = (ppipe   << 1) | 0;
     }
     
-    if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp || !(!reg.win_ctrl.PYNU_WIN_MODE_Ap || reg.win_ctrl.NOPA_WIN_MODE_Bp) || TEVO_WIN_FETCH_TRIGp_new) {
+    if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp || (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) || TEVO_WIN_FETCH_TRIGp_new) {
       bpipe_a = tpix_a;
       bpipe_b = tpix_b;
     }
@@ -2839,43 +2848,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       }
     }
 
-    //--------------------------------------------
-    // Win coord x
-
-    bool TEVO_WIN_FETCH_TRIGp_old = 0;
-    if (reg_old.win_ctrl.RYFA_WIN_FETCHn_A && !reg_old.win_ctrl.RENE_WIN_FETCHn_B) TEVO_WIN_FETCH_TRIGp_old = 1;
-    if (!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.win_ctrl.SOVY_WIN_HITp) TEVO_WIN_FETCH_TRIGp_old = 1;
-    if (!reg_old.XYMU_RENDERINGn && !reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && reg_old.tile_fetcher.NYKA_FETCH_DONEp && reg_old.tile_fetcher.PORY_FETCH_DONEp) TEVO_WIN_FETCH_TRIGp_old = 1;
-
-    if (!(TEVO_WIN_FETCH_TRIGp_old && reg_old.win_ctrl.PYNU_WIN_MODE_Ap) && TEVO_WIN_FETCH_TRIGp_new && reg.win_ctrl.PYNU_WIN_MODE_Ap) {
-      bit_unpack(reg.win_map_x, bit_pack(reg_old.win_map_x) + 1);
-    }
-
-    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn) {
-      bit_clear(reg.win_map_x);
-    }
-
-    if (reg_new.ATEJ_LINE_RSTp) {
-      bit_clear(reg.win_map_x);
-    }
-
-    if (reg.reg_lcdc.XONA_LCDC_LCDENn) {
-      bit_clear(reg.win_map_x);
-    }
-
-    //--------------------------------------------
-    // Win coord y
-
-    if (reg_old.win_ctrl.PYNU_WIN_MODE_Ap && !reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
-      // note we're adding adjacent bits in win tile/map y
-      uint8_t win = (uint8_t)bit_pack(&reg_old.win_tile_y, 8);
-      bit_unpack(&reg.win_tile_y, 8, win + 1);
-    }
-
-    if (reg_new.lcd.POPU_y144p || reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-      bit_clear(reg.win_tile_y);
-      bit_clear(reg.win_map_y);
-    }
 
     if ( reg_new.tile_fetcher.LONY_FETCHINGp &&
         !reg_new.tile_fetcher.MESU_BFETCH_S1p &&

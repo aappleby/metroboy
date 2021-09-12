@@ -22,15 +22,16 @@ struct WindowRegisters {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-struct FineScroll {
+struct FineCount {
   /*#p27.RYKU*/ DFF17 RYKU_FINE_CNT0;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
   /*#p27.ROGA*/ DFF17 ROGA_FINE_CNT1;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
   /*#p27.RUBU*/ DFF17 RUBU_FINE_CNT2;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
+};
 
+struct FineScroll {
   /*#p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;        // xxxxxFxH
   /*#p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;        // AxxxxxGx
   /*#p27.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
-  ///*#p27.POHU*/ Gate POHU_SCX_FINE_MATCHp; // only old used
 };
 
 //------------------------------------------------------------------------------------------------------------------------

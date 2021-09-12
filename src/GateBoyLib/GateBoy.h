@@ -173,6 +173,7 @@ struct GateBoyReg {
   WinMapY  win_map_y;
 
   WindowRegisters win_ctrl;
+  FineCount       fine_count;
   FineScroll      fine_scroll;
 
   PixCount pix_count;

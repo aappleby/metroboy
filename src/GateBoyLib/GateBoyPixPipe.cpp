@@ -15,7 +15,7 @@ void GateBoy::tock_window_gates(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
 
   /*_p27.PYCO*/ reg.win_ctrl.PYCO_WIN_MATCHp.dff17(ROCO_CLKPIPE_odd, XAPO_VID_RSTn(), reg.win_ctrl.NUKO_WX_MATCHp.out_old());
 
-  /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n_old = nand3(reg.fine_scroll.RUBU_FINE_CNT2.qp_old(), reg.fine_scroll.ROGA_FINE_CNT1.qp_old(), reg.fine_scroll.RYKU_FINE_CNT0.qp_old());
+  /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n_old = nand3(reg.fine_count.RUBU_FINE_CNT2.qp_old(), reg.fine_count.ROGA_FINE_CNT1.qp_old(), reg.fine_count.RYKU_FINE_CNT0.qp_old());
   /*_p27.PANY*/ wire PANY_WIN_FETCHn_old = nor2(reg.win_ctrl.NUKO_WX_MATCHp.out_old(), ROZE_FINE_COUNT_7n_old);
 
   /*_p27.RENE*/ reg.win_ctrl.RENE_WIN_FETCHn_B.dff17(ALET_xBxDxFxH(),  reg.XYMU_RENDERINGn.qn_new(), reg.win_ctrl.RYFA_WIN_FETCHn_A.qp_old());

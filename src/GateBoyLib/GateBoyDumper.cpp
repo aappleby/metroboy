@@ -259,16 +259,16 @@ void GateBoy::dump_vram_bus(Dumper& d) {
 }
 
 void GateBoy::dump_sprite_fetcher(Dumper& d) {
-  d.dump_bitp   ("TAKA_SFETCH_RUNNINGp : ", reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state);
-  d.dump_bitp   ("SOBU_SFETCH_REQp     : ", reg.sprite_fetcher.SOBU_SFETCH_REQp    .state);
-  d.dump_bitp   ("SUDA_SFETCH_REQp     : ", reg.sprite_fetcher.SUDA_SFETCH_REQp    .state);
-  d.dump_bitp   ("TOXE_SFETCH_S0       : ", reg.sprite_fetcher.TOXE_SFETCH_S0p     .state);
-  d.dump_bitp   ("TULY_SFETCH_S1       : ", reg.sprite_fetcher.TULY_SFETCH_S1p     .state);
-  d.dump_bitp   ("TESE_SFETCH_S2       : ", reg.sprite_fetcher.TESE_SFETCH_S2p     .state);
-  d.dump_bitp   ("TYFO_SFETCH_S0_D1    : ", reg.sprite_fetcher.TYFO_SFETCH_S0p_D1  .state);
-  d.dump_bitp   ("TOBU_SFETCH_S1_D2    : ", reg.sprite_fetcher.TOBU_SFETCH_S1p_D2  .state);
-  d.dump_bitp   ("VONU_SFETCH_S1_D4    : ", reg.sprite_fetcher.VONU_SFETCH_S1p_D4  .state);
-  d.dump_bitp   ("SEBA_SFETCH_S1_D5    : ", reg.sprite_fetcher.SEBA_SFETCH_S1p_D5  .state);
+  d.dump_bitp   ("TOXE_SFETCH_S0       : ", reg.sfetch_counter.TOXE_SFETCH_S0p     .state);
+  d.dump_bitp   ("TULY_SFETCH_S1       : ", reg.sfetch_counter.TULY_SFETCH_S1p     .state);
+  d.dump_bitp   ("TESE_SFETCH_S2       : ", reg.sfetch_counter.TESE_SFETCH_S2p     .state);
+  d.dump_bitp   ("TAKA_SFETCH_RUNNINGp : ", reg.sfetch_control.TAKA_SFETCH_RUNNINGp.state);
+  d.dump_bitp   ("SOBU_SFETCH_REQp     : ", reg.sfetch_control.SOBU_SFETCH_REQp    .state);
+  d.dump_bitp   ("SUDA_SFETCH_REQp     : ", reg.sfetch_control.SUDA_SFETCH_REQp    .state);
+  d.dump_bitp   ("TYFO_SFETCH_S0_D1    : ", reg.sfetch_control.TYFO_SFETCH_S0p_D1  .state);
+  d.dump_bitp   ("TOBU_SFETCH_S1_D2    : ", reg.sfetch_control.TOBU_SFETCH_S1p_D2  .state);
+  d.dump_bitp   ("VONU_SFETCH_S1_D4    : ", reg.sfetch_control.VONU_SFETCH_S1p_D4  .state);
+  d.dump_bitp   ("SEBA_SFETCH_S1_D5    : ", reg.sfetch_control.SEBA_SFETCH_S1p_D5  .state);
   d.dump_slice2n("Temp A : ", &reg.sprite_pix_a.REWO_SPRITE_DA0n, 8);
   d.dump_slice2n("Temp B : ", &reg.sprite_pix_b.PEFO_SPRITE_DB0n, 8);
 }

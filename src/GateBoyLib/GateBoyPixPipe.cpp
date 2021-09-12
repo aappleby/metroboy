@@ -124,15 +124,15 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyCpuDBus& cpu_dbus_old, wire SACU
   /*#p27.LAXE*/ wire LAXE_BFETCH_S0n = not1(reg.tile_fetcher.LAXU_BFETCH_S0p.qp_new());
   /*#p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(reg.tile_fetcher.MESU_BFETCH_S1p.qp_new());
   /*#p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(reg.tile_fetcher.NYVA_BFETCH_S2p.qp_new());
-  /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(reg.sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
-  /*_p29.SYCU*/ wire SYCU_SFETCH_S0pe = nor3(TYTU_SFETCH_S0n, LOBY_RENDERINGn, reg.sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
+  /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(reg.sfetch_counter.TOXE_SFETCH_S0p.qp_new());
+  /*_p29.SYCU*/ wire SYCU_SFETCH_S0pe = nor3(TYTU_SFETCH_S0n, LOBY_RENDERINGn, reg.sfetch_control.TYFO_SFETCH_S0p_D1.qp_new());
 
   /*#p27.MYSO*/ wire MYSO_STORE_VRAM_DATA_TRIGp = nor3(LOBY_RENDERINGn, LAXE_BFETCH_S0n, reg.tile_fetcher.LYZU_BFETCH_S0p_D1.qp_new()); // MYSO fires on fetch phase 2, 6, 10
 
   /*#p27.NYDY*/ wire NYDY_LATCH_TILE_DAn = nand3(MYSO_STORE_VRAM_DATA_TRIGp, reg.tile_fetcher.MESU_BFETCH_S1p.qp_new(), NOFU_BFETCH_S2n); // NYDY on fetch phase 6
   /*_p27.MOFU*/ wire MOFU_LATCH_TILE_DBp = and2(MYSO_STORE_VRAM_DATA_TRIGp, NAKO_BFETCH_S1n); // MOFU fires on fetch phase 2 and 10
-  /*#p29.TOPU*/ wire TOPU_STORE_SPRITE_Ap = and2(reg.sprite_fetcher.TULY_SFETCH_S1p.qp_new(), SYCU_SFETCH_S0pe);
-  /*#p29.RACA*/ wire RACA_STORE_SPRITE_Bp = and2(reg.sprite_fetcher.VONU_SFETCH_S1p_D4.qp_new(), SYCU_SFETCH_S0pe);
+  /*#p29.TOPU*/ wire TOPU_STORE_SPRITE_Ap = and2(reg.sfetch_counter.TULY_SFETCH_S1p.qp_new(), SYCU_SFETCH_S0pe);
+  /*#p29.RACA*/ wire RACA_STORE_SPRITE_Bp = and2(reg.sfetch_control.VONU_SFETCH_S1p_D4.qp_new(), SYCU_SFETCH_S0pe);
 
   {
     /*#p32.METE*/ wire METE_LATCH_TILE_DAp = not1(NYDY_LATCH_TILE_DAn);
@@ -191,7 +191,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyCpuDBus& cpu_dbus_old, wire SACU
     /*_p33.RYDU*/ reg.sprite_pix_b.RYDU_SPRITE_DB7n.dff8n(PUCO_STORE_SPRITE_Bn, reg.flipped_sprite.PULY_FLIP7p.out_old());
   }
 
-  /*_p29.XEFY*/ wire XEFY_SPRITE_DONEn = not1(reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp.out_new());
+  /*_p29.XEFY*/ wire XEFY_SPRITE_DONEn = not1(reg.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new());
 
   // FIXME - old? well,i guess there's another feedback loop here...
 

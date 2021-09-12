@@ -319,7 +319,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyCpuDBus& cpu_dbus_old, wire TEVO_
   /*#p29.WUKY*/ wire WUKY_FLIP_Yp = not1(reg.oam_temp_b.YZOS_OAM_DB6p.qp_new());
   /*#p29.FUFO*/ wire FUFO_LCDC_SPSIZEn = not1(reg.reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
 
-  /*#p29.XUQU*/ wire XUQU_SPRITE_AB = not1(reg.sprite_fetcher.VONU_SFETCH_S1p_D4.qn_new());
+  /*#p29.XUQU*/ wire XUQU_SPRITE_AB = not1(reg.sfetch_control.VONU_SFETCH_S1p_D4.qn_new());
 
   /*#p29.CYVU*/ wire CYVU_L0 = xor2(WUKY_FLIP_Yp, reg.sprite_lbus.BUS_SPR_L0.out_new());
   /*#p29.BORE*/ wire BORE_L1 = xor2(WUKY_FLIP_Yp, reg.sprite_lbus.BUS_SPR_L1.out_new());
@@ -327,7 +327,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyCpuDBus& cpu_dbus_old, wire TEVO_
   /*#p29.WAGO*/ wire WAGO_L3 = xor2(WUKY_FLIP_Yp, reg.sprite_lbus.BUS_SPR_L3.out_new());
   /*#p29.GEJY*/ wire GEJY_L3 = amux2(reg.oam_temp_a.XUSO_OAM_DA0p.qp_new(), FUFO_LCDC_SPSIZEn, reg.reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), WAGO_L3);
 
-  /*_p29.ABON*/ wire ABON_SFETCHINGn = not1(reg.sprite_fetcher.TEXY_SFETCHINGp.out_new());
+  /*_p29.ABON*/ wire ABON_SFETCHINGn = not1(reg.sfetch_control.TEXY_SFETCHINGp.out_new());
   /*_p29.ABEM*/ triwire ABEM_HILO_TO_VA00 = tri6_nn(ABON_SFETCHINGn, XUQU_SPRITE_AB);
   /*_p29.BAXE*/ triwire BAXE_SPL0_TO_VA01 = tri6_nn(ABON_SFETCHINGn, CYVU_L0);
   /*_p29.ARAS*/ triwire ARAS_SPL1_TO_VA02 = tri6_nn(ABON_SFETCHINGn, BORE_L1);
@@ -444,7 +444,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyCpuDBus& cpu_dbus_old, wire TEVO_
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(reg.XYMU_RENDERINGn.qn_new());
     /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
     /*#p25.RACO*/ wire RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp());
-    /*#p25.SUTU*/ wire SUTU_MCSn = nor4(LENA_BFETCHINGp, LUFA_DMA_VRAMp, reg.sprite_fetcher.TEXY_SFETCHINGp.out_new(), SERE_CPU_VRAM_RDp);
+    /*#p25.SUTU*/ wire SUTU_MCSn = nor4(LENA_BFETCHINGp, LUFA_DMA_VRAMp, reg.sfetch_control.TEXY_SFETCHINGp.out_new(), SERE_CPU_VRAM_RDp);
     /*_p25.TODE*/ wire TODE_MCSn_A = and2(SUTU_MCSn, RACO_DBG_VRAMn);
     /*_p25.SEWO*/ wire SEWO_MCSn_D =  or2(SUTU_MCSn, TUTO_VRAM_DBGp());
     /*_p25.SOKY*/ wire SOKY_MCSp_A = not1(TODE_MCSn_A);
@@ -479,9 +479,9 @@ void GateBoy::tock_vram_bus_gates(const GateBoyCpuDBus& cpu_dbus_old, wire TEVO_
     /*_PIN_49*/ reg.vram_ext_ctrl.PIN_49_VRAM_WRn.pin_out(SYSY_MWRp_A, RAGU_MWRp_D);
 
     /*_p25.RYLU*/ wire RYLU_CPU_VRAM_RDn = nand2(SALE_CPU_VRAM_WRn(), XANE_VRAM_LOCKn);
-    /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(reg.sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
-    /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(reg.sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n);
-    /*_p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and2(TACU_SPR_SEQ_5_TRIG, reg.sprite_fetcher.TEXY_SFETCHINGp.out_new());
+    /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(reg.sfetch_counter.TOXE_SFETCH_S0p.qp_new());
+    /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(reg.sfetch_control.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n);
+    /*_p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and2(TACU_SPR_SEQ_5_TRIG, reg.sfetch_control.TEXY_SFETCHINGp.out_new());
     /*_p25.RAWA*/ wire RAWA_SPR_VRAM_RDn = not1(SOHO_SPR_VRAM_RDp);
     /*_p27.MYMA*/ wire MYMA_BGW_VRAM_RDn = not1(reg.tile_fetcher.LONY_FETCHINGp.qp_new());
     /*_p25.APAM*/ wire APAM_DMA_VRAMn    = not1(LUFA_DMA_VRAMp);
@@ -652,7 +652,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyCpuDBus& cpu_dbus_old, wire TEVO_
   // Vram bus to sprite x flipper
 
   {
-    /*#p29.XONO*/ wire XONO_FLIP_X = and2(reg.oam_temp_b.BAXO_OAM_DB5p.qp_new(), reg.sprite_fetcher.TEXY_SFETCHINGp.out_new());
+    /*#p29.XONO*/ wire XONO_FLIP_X = and2(reg.oam_temp_b.BAXO_OAM_DB5p.qp_new(), reg.sfetch_control.TEXY_SFETCHINGp.out_new());
     /*_p33.PUTE*/ wire PUTE_FLIP0p = mux2p(XONO_FLIP_X, reg.vram_dbus.BUS_VRAM_D07p.out_new(), reg.vram_dbus.BUS_VRAM_D00p.out_new());
     /*_p33.PELO*/ wire PELO_FLIP1p = mux2p(XONO_FLIP_X, reg.vram_dbus.BUS_VRAM_D06p.out_new(), reg.vram_dbus.BUS_VRAM_D01p.out_new());
     /*_p33.PONO*/ wire PONO_FLIP2p = mux2p(XONO_FLIP_X, reg.vram_dbus.BUS_VRAM_D05p.out_new(), reg.vram_dbus.BUS_VRAM_D02p.out_new());

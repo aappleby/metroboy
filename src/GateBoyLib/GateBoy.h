@@ -149,7 +149,8 @@ struct GateBoyReg {
   ScanCounter   scan_counter;
   SpriteIndex   sprite_index;
 
-  SpriteFetcher sprite_fetcher;
+  SpriteFetchCounter sfetch_counter;
+  SpriteFetchControl sfetch_control;
   SpritePixA    sprite_pix_a;
   SpritePixB    sprite_pix_b;
 

@@ -270,10 +270,10 @@ void GateBoy::tock_oam_bus_gates()
 
   /*_p25.AVER*/ wire AVER_AxxxExxx = nand2(reg.sprite_scanner.ACYL_SCANNINGp.out_new(), XYSO_xBCDxFGH());
   /*_p25.CUFE*/ wire CUFE_OAM_CLKp = not_or_and3(reg.cpu_abus.SARO_ADDR_OAMp(), reg.dma_ctrl.MATU_DMA_RUNNINGp.qp_new(), MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
-  /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(reg.sprite_fetcher.TOXE_SFETCH_S0p.qp_new());
-  /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(reg.sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n);
+  /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(reg.sfetch_counter.TOXE_SFETCH_S0p.qp_new());
+  /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(reg.sfetch_control.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n);
   /*_p29.TEPA*/ wire TEPA_RENDERINGp = not1(reg.XYMU_RENDERINGn.qn_new());
-  /*_p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(TEPA_RENDERINGp, reg.sprite_fetcher.TULY_SFETCH_S1p.qp_new(), reg.sprite_fetcher.TESE_SFETCH_S2p.qp_new());
+  /*_p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(TEPA_RENDERINGp, reg.sfetch_counter.TULY_SFETCH_S1p.qp_new(), reg.sfetch_counter.TESE_SFETCH_S2p.qp_new());
   /*_p25.VAPE*/ wire VAPE_OAM_CLKENn = and2(TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
   /*_p25.XUJY*/ wire XUJY_OAM_CLKENp = not1(VAPE_OAM_CLKENn);
   /*_p25.BYCU*/ wire BYCU_OAM_CLKp = nand3(AVER_AxxxExxx, XUJY_OAM_CLKENp, CUFE_OAM_CLKp);
@@ -298,7 +298,7 @@ void GateBoy::tock_oam_bus_gates()
   /*_SIG_OAM_WRn_B*/ reg.oam_ctrl.SIG_OAM_WRn_B.sig_out(ZONE_OAM_B_WRn);
 
   /*#p28.AJEP*/ wire AJEP_SCAN_OAM_LATCHn = nand2(reg.sprite_scanner.ACYL_SCANNINGp.out_new(), XOCE_xBCxxFGx()); // schematic wrong, is def nand2
-  /*_p28.WEFY*/ wire WEFY_SPR_READp = and2(TUVO_PPU_OAM_RDp, reg.sprite_fetcher.TYFO_SFETCH_S0p_D1.qp_new());
+  /*_p28.WEFY*/ wire WEFY_SPR_READp = and2(TUVO_PPU_OAM_RDp, reg.sfetch_control.TYFO_SFETCH_S0p_D1.qp_new());
   /*#p28.XUJA*/ wire XUJA_SPR_OAM_LATCHn  = not1(WEFY_SPR_READp);
 
   /*#p28.BOTA*/ wire BOTA_OAM_OEn  = nand3(BOFE_LATCH_EXTn(), reg.cpu_abus.SARO_ADDR_OAMp(), ASOT_CPU_RDp()); // Schematic wrong, this is NAND

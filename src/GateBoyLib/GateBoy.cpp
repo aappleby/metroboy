@@ -1664,23 +1664,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     
   if (!gen_clk_old(0b10000000) && gen_clk_new(0b10000000)) {
-    wire MERY_TIMER_OVERFLOWp_old = !reg_new.tima.NUGA_TIMA7p && reg_new.int_ctrl.NYDU_TIMA7p_DELAY;
-    reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp = MERY_TIMER_OVERFLOWp_old;
+    reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp = !reg_old.tima.NUGA_TIMA7p && reg_old.int_ctrl.NYDU_TIMA7p_DELAY;
   }
-
-  wire TOPE_FF05_WRn = !gen_clk_new(0b00001110) || !reg_new.cpu_signals.SIG_IN_CPU_WRp || cpu_addr_new != 0xFF05;
-
-  wire MUZU_CPU_LOAD_TIMAn = reg_new.cpu_signals.SIG_IN_CPU_LATCH_EXT || TOPE_FF05_WRn;
-  wire MEXU_TIMA_LOADp = !MUZU_CPU_LOAD_TIMAn || reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp;
 
   if (!gen_clk_old(0b10000000) && gen_clk_new(0b10000000)) {
-    reg_new.int_ctrl.NYDU_TIMA7p_DELAY = reg_new.tima.NUGA_TIMA7p;
+    reg_new.int_ctrl.NYDU_TIMA7p_DELAY = reg_old.tima.NUGA_TIMA7p;
   }
-
-  if (MEXU_TIMA_LOADp) {
-    reg_new.int_ctrl.NYDU_TIMA7p_DELAY = 0;
-  }
-
   {
     wire UKAP_CLK_MUXa_new = reg_new.tac.SOPU_TAC0p ? reg_new.div.TAMA_DIV05p : reg_new.div.TERO_DIV03p;
     wire TEKO_CLK_MUXb_new = reg_new.tac.SOPU_TAC0p ? reg_new.div.UFOR_DIV01p : reg_new.div.TULU_DIV07p;
@@ -1697,8 +1686,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (MEXU_TIMA_LOADp) {
-    if (TOPE_FF05_WRn) {
+  if (!(reg_new.cpu_signals.SIG_IN_CPU_LATCH_EXT || !gen_clk_new(0b00001110) || !reg_new.cpu_signals.SIG_IN_CPU_WRp || cpu_addr_new != 0xFF05) || reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
+    reg_new.int_ctrl.NYDU_TIMA7p_DELAY = 0;
+    if (!gen_clk_new(0b00001110) || !reg_new.cpu_signals.SIG_IN_CPU_WRp || cpu_addr_new != 0xFF05) {
       bit_copy(reg_new.tima, reg_new.tma);
     }
     else {

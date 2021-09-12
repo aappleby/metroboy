@@ -2363,9 +2363,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (BFETCH_RSTp_new) {
-    reg.tfetch_counter.LAXU_BFETCH_S0p = 0;
-    reg.tfetch_counter.MESU_BFETCH_S1p = 0;
-    reg.tfetch_counter.NYVA_BFETCH_S2p = 0;
+    bit_clear(reg.tfetch_counter);
     reg.tfetch_control.LOVY_FETCH_DONEp = 0;
     reg.tfetch_control.LONY_FETCHINGp = 1;
     reg.tfetch_control.LYRY_BFETCH_DONEp = 0;

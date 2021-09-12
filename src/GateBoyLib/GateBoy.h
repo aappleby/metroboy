@@ -264,8 +264,8 @@ struct GateBoy {
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
   wire gen_clk_old(uint8_t mask) {
-    uint8_t phase_mask_new = 1 << (7 - ((phase_total + 0) & 7));
-    return !!(phase_mask_new & mask);
+    uint8_t phase_mask_old = 1 << (7 - ((phase_total + 0) & 7));
+    return !!(phase_mask_old & mask);
   }
 
   wire gen_clk_new(uint8_t mask) {

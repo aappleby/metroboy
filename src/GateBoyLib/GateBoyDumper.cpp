@@ -218,8 +218,8 @@ void GateBoy::dump_cpu_bus(Dumper& d) {
   d.dump_bitp   ("TEDO_CPU_RDp      : ", reg.cpu_signals.TEDO_CPU_RDp.state);
   d.dump_bitp   ("APOV_CPU_WRp      : ", reg.cpu_signals.APOV_CPU_WRp.state);
   d.dump_bitp   ("TAPU_CPU_WRp      : ", reg.cpu_signals.TAPU_CPU_WRp.state);
-  d.dump_slice2p("BUS_CPU_A : ",     (BitBase*)&reg.cpu_abus_new.BUS_CPU_A00p, 16);
-  dump_slice_int(d,  "BUS_CPU_D : ", (BitBase*)&reg.cpu_dbus_new.BUS_CPU_D00p, 8);
+  d.dump_slice2p("BUS_CPU_A : ",     (BitBase*)&reg.cpu_abus.BUS_CPU_A00p, 16);
+  dump_slice_int(d,  "BUS_CPU_D : ", (BitBase*)&reg.cpu_dbus.BUS_CPU_D00p, 8);
 }
 
 void GateBoy::dump_dma(Dumper& d) {

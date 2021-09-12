@@ -47,10 +47,8 @@ struct GateBoyReg {
   /*_SIG_VCC*/ SigIn SIG_VCC;
   /*_SIG_GND*/ SigIn SIG_GND;
   GateBoyCpuSignals cpu_signals;
-  GateBoyCpuABus cpu_abus_old;
-  GateBoyCpuDBus cpu_dbus_old;
-  GateBoyCpuABus cpu_abus_new;
-  GateBoyCpuDBus cpu_dbus_new;
+  GateBoyCpuABus cpu_abus;
+  GateBoyCpuDBus cpu_dbus;
   VramABus       vram_abus;
   VramDBus       vram_dbus;
   VramExtControl vram_ext_ctrl;
@@ -408,25 +406,25 @@ struct GateBoy {
 
   void tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new);
 
-  void tock_lcdc_gates(); // logic is inlined
-  void tock_lyc_gates();
+  void tock_lcdc_gates(GateBoyReg& reg_old);
+  void tock_lyc_gates(GateBoyReg& reg_old);
   void tock_lcd_gates();
-  void tock_dma_gates();
-  void tock_joypad_gates();
-  void tock_interrupts_gates();
+  void tock_dma_gates(GateBoyReg& reg_old);
+  void tock_joypad_gates(GateBoyReg& reg_old);
+  void tock_interrupts_gates(GateBoyReg& reg_old);
   void tock_clocks_gates();
   void tock_vid_clocks_gates();
   void tock_div_gates();
-  void tock_timer_gates();
+  void tock_timer_gates(GateBoyReg& reg_old);
   void tock_reset_gates(DFF17 UPOF_DIV15p);
   void tock_ext_gates(const blob& cart_blob);
   void tock_oam_bus_gates();
   void tock_serial_gates();
-  void tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp);
-  void tock_zram_gates();
-  void tock_pix_pipes_gates(wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
+  void tock_vram_bus_gates(GateBoyReg& reg_old, wire TEVO_WIN_FETCH_TRIGp);
+  void tock_zram_gates(GateBoyReg& reg_old);
+  void tock_pix_pipes_gates(GateBoyReg& reg_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
   void tock_bootrom_gates();
-  void tock_window_gates(wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
+  void tock_window_gates(GateBoyReg& reg_old, wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
   void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
 
   void tock_spu_gates();
@@ -574,9 +572,9 @@ struct GateBoy {
   /*_p04.CATY*/ wire CATY_LATCH_EXTp   () const { return not1(DECY_LATCH_EXTn()); }
   /*#p28.BOFE*/ wire BOFE_LATCH_EXTn   () const { return not1(CATY_LATCH_EXTp()); }
 
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(reg.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new(), reg.cpu_abus_new.TEVY_ADDR_VRAMn()); }
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(reg.cpu_abus_new.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), reg.cpu_abus_new.BUS_CPU_A15p.out_new()); }
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(reg.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new(), reg.cpu_abus.TEVY_ADDR_VRAMn()); }
+  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(reg.cpu_abus.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
+  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), reg.cpu_abus.BUS_CPU_A15p.out_new()); }
   /*_p08.LEVO*/ wire LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
   /*_p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), reg.cpu_signals.APOV_CPU_WRp.out_new()); }
 

@@ -7,13 +7,13 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_joypad_gates() {
+void GateBoy::tock_joypad_gates(GateBoyReg& reg_old) {
   // has to be new_bus or sim isn't stable.
 
-  /*_p10.BYKO*/ wire BYKO_A05n = not1(reg.cpu_abus_new.BUS_CPU_A05p.out_any());
-  /*_p10.AKUG*/ wire AKUG_A06n = not1(reg.cpu_abus_new.BUS_CPU_A06p.out_any());
-  /*_p10.AMUS*/ wire AMUS_XX_0xx00000 = nor6(reg.cpu_abus_new.BUS_CPU_A00p.out_any(), reg.cpu_abus_new.BUS_CPU_A01p.out_any(), reg.cpu_abus_new.BUS_CPU_A02p.out_any(), reg.cpu_abus_new.BUS_CPU_A03p.out_any(), reg.cpu_abus_new.BUS_CPU_A04p.out_any(), reg.cpu_abus_new.BUS_CPU_A07p.out_any());
-  /*_p10.ANAP*/ wire ANAP_FF_0xx00000 = and2(reg.cpu_abus_new.SYKE_ADDR_HIp(), AMUS_XX_0xx00000);
+  /*_p10.BYKO*/ wire BYKO_A05n = not1(reg.cpu_abus.BUS_CPU_A05p.out_any());
+  /*_p10.AKUG*/ wire AKUG_A06n = not1(reg.cpu_abus.BUS_CPU_A06p.out_any());
+  /*_p10.AMUS*/ wire AMUS_XX_0xx00000 = nor6(reg.cpu_abus.BUS_CPU_A00p.out_any(), reg.cpu_abus.BUS_CPU_A01p.out_any(), reg.cpu_abus.BUS_CPU_A02p.out_any(), reg.cpu_abus.BUS_CPU_A03p.out_any(), reg.cpu_abus.BUS_CPU_A04p.out_any(), reg.cpu_abus.BUS_CPU_A07p.out_any());
+  /*_p10.ANAP*/ wire ANAP_FF_0xx00000 = and2(reg.cpu_abus.SYKE_ADDR_HIp(), AMUS_XX_0xx00000);
 
   /*_p10.ACAT*/ wire ACAT_FF00_RDp = and4(reg.cpu_signals.TEDO_CPU_RDp.out_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
   /*_p05.BYZO*/ wire BYZO_FF00_RDn = not1(ACAT_FF00_RDp);
@@ -26,8 +26,8 @@ void GateBoy::tock_joypad_gates() {
 
   // this _has_ to reset to 1
 
-  /*#p05.KELY*/ reg.joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg.cpu_dbus_old.BUS_CPU_D04p.out_old());
-  /*#p05.COFY*/ reg.joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg.cpu_dbus_old.BUS_CPU_D05p.out_old());
+  /*#p05.KELY*/ reg.joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*#p05.COFY*/ reg.joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
 
   ///*_p05.KUKO*/ KUKO_DBG_D6    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[6].qp_old());
   ///*_p05.KERU*/ KERU_DBG_D7    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[7].qp_old());
@@ -165,12 +165,12 @@ void GateBoy::tock_joypad_gates() {
   /*#p05.KOCE*/ triwire KOCE_JOY4_TO_CD4 = tri6_nn(BYZO_FF00_RDn, reg.joy.KELY_JOYP_UDLRp.qn_new());
   /*#p05.CUDY*/ triwire CUDY_JOY5_TO_CD5 = tri6_nn(BYZO_FF00_RDn, reg.joy.COFY_JOYP_ABCSp.qn_new());
 
-  /*_BUS_CPU_D00p*/ reg.cpu_dbus_new.BUS_CPU_D00p.tri_bus(KEMA_JOY0_TO_CD0);
-  /*_BUS_CPU_D01p*/ reg.cpu_dbus_new.BUS_CPU_D01p.tri_bus(KURO_JOY1_TO_CD1);
-  /*_BUS_CPU_D02p*/ reg.cpu_dbus_new.BUS_CPU_D02p.tri_bus(KUVE_JOY2_TO_CD2);
-  /*_BUS_CPU_D03p*/ reg.cpu_dbus_new.BUS_CPU_D03p.tri_bus(JEKU_JOY3_TO_CD3);
-  /*_BUS_CPU_D04p*/ reg.cpu_dbus_new.BUS_CPU_D04p.tri_bus(KOCE_JOY4_TO_CD4);
-  /*_BUS_CPU_D05p*/ reg.cpu_dbus_new.BUS_CPU_D05p.tri_bus(CUDY_JOY5_TO_CD5);
+  /*_BUS_CPU_D00p*/ reg.cpu_dbus.BUS_CPU_D00p.tri_bus(KEMA_JOY0_TO_CD0);
+  /*_BUS_CPU_D01p*/ reg.cpu_dbus.BUS_CPU_D01p.tri_bus(KURO_JOY1_TO_CD1);
+  /*_BUS_CPU_D02p*/ reg.cpu_dbus.BUS_CPU_D02p.tri_bus(KUVE_JOY2_TO_CD2);
+  /*_BUS_CPU_D03p*/ reg.cpu_dbus.BUS_CPU_D03p.tri_bus(JEKU_JOY3_TO_CD3);
+  /*_BUS_CPU_D04p*/ reg.cpu_dbus.BUS_CPU_D04p.tri_bus(KOCE_JOY4_TO_CD4);
+  /*_BUS_CPU_D05p*/ reg.cpu_dbus.BUS_CPU_D05p.tri_bus(CUDY_JOY5_TO_CD5);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

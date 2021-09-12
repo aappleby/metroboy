@@ -4,17 +4,17 @@
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void GateBoy::tock_dma_gates() {
-  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(), reg.cpu_abus_new.XEDA_FF46p());
+void GateBoy::tock_dma_gates(GateBoyReg& reg_old) {
+  /*#p04.LAVY*/ wire LAVY_FF46_WRp = and2(CUPA_CPU_WRp(), reg.cpu_abus.XEDA_FF46p());
   /*#p04.LORU*/ wire LORU_FF46_WRn = not1(LAVY_FF46_WRp);
-  /*#p04.NAFA*/ reg.dma_hi.NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, reg.cpu_dbus_old.BUS_CPU_D00p.out_old());
-  /*_p04.PYNE*/ reg.dma_hi.PYNE_DMA_A09n.dff8p(LORU_FF46_WRn, reg.cpu_dbus_old.BUS_CPU_D01p.out_old());
-  /*_p04.PARA*/ reg.dma_hi.PARA_DMA_A10n.dff8p(LORU_FF46_WRn, reg.cpu_dbus_old.BUS_CPU_D02p.out_old());
-  /*_p04.NYDO*/ reg.dma_hi.NYDO_DMA_A11n.dff8p(LORU_FF46_WRn, reg.cpu_dbus_old.BUS_CPU_D03p.out_old());
-  /*_p04.NYGY*/ reg.dma_hi.NYGY_DMA_A12n.dff8p(LORU_FF46_WRn, reg.cpu_dbus_old.BUS_CPU_D04p.out_old());
-  /*_p04.PULA*/ reg.dma_hi.PULA_DMA_A13n.dff8p(LORU_FF46_WRn, reg.cpu_dbus_old.BUS_CPU_D05p.out_old());
-  /*_p04.POKU*/ reg.dma_hi.POKU_DMA_A14n.dff8p(LORU_FF46_WRn, reg.cpu_dbus_old.BUS_CPU_D06p.out_old());
-  /*_p04.MARU*/ reg.dma_hi.MARU_DMA_A15n.dff8p(LORU_FF46_WRn, reg.cpu_dbus_old.BUS_CPU_D07p.out_old());
+  /*#p04.NAFA*/ reg.dma_hi.NAFA_DMA_A08n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+  /*_p04.PYNE*/ reg.dma_hi.PYNE_DMA_A09n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+  /*_p04.PARA*/ reg.dma_hi.PARA_DMA_A10n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+  /*_p04.NYDO*/ reg.dma_hi.NYDO_DMA_A11n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p04.NYGY*/ reg.dma_hi.NYGY_DMA_A12n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p04.PULA*/ reg.dma_hi.PULA_DMA_A13n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p04.POKU*/ reg.dma_hi.POKU_DMA_A14n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p04.MARU*/ reg.dma_hi.MARU_DMA_A15n.dff8p(LORU_FF46_WRn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
   /*#p04.LUPA*/ wire LUPA_DMA_TRIG_old = nor2(LAVY_FF46_WRp, reg.dma_ctrl.LYXE_DMA_LATCHp.qn_old());
   /*#p04.LENE*/ reg.dma_ctrl.LENE_DMA_TRIG_d4.dff17(MOPA_xxxxEFGH(), CUNU_SYS_RSTn(), reg.dma_ctrl.LUVY_DMA_TRIG_d0.qp_old());
@@ -46,7 +46,7 @@ void GateBoy::tock_dma_gates() {
   /*_p04.NUTO*/ reg.dma_lo.NUTO_DMA_A06p.dff17(reg.dma_lo.PYLO_DMA_A05p.qn_new(), LAPA_DMA_RSTn, reg.dma_lo.NUTO_DMA_A06p.qn_old());
   /*_p04.MUGU*/ reg.dma_lo.MUGU_DMA_A07p.dff17(reg.dma_lo.NUTO_DMA_A06p.qn_new(), LAPA_DMA_RSTn, reg.dma_lo.MUGU_DMA_A07p.qn_old());
 
-  /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(ASOT_CPU_RDp(), reg.cpu_abus_new.XEDA_FF46p());
+  /*#p04.MOLU*/ wire MOLU_FF46_RDp = and2(ASOT_CPU_RDp(), reg.cpu_abus.XEDA_FF46p());
   /*#p04.NYGO*/ wire NYGO_FF46_RDn = not1(MOLU_FF46_RDp);
   /*#p04.PUSY*/ wire PUSY_FF46_RDp = not1(NYGO_FF46_RDn);
 
@@ -59,14 +59,14 @@ void GateBoy::tock_dma_gates() {
   /*_p04.RESU*/ triwire RESU_DMA6_TO_CD6 = tri6_pn(PUSY_FF46_RDp, reg.dma_hi.POKU_DMA_A14n.qp_new());
   /*_p04.NUVY*/ triwire NUVY_DMA7_TO_CD7 = tri6_pn(PUSY_FF46_RDp, reg.dma_hi.MARU_DMA_A15n.qp_new());
 
-  /*_BUS_CPU_D00p*/ reg.cpu_dbus_new.BUS_CPU_D00p.tri_bus(POLY_DMA0_TO_CD0);
-  /*_BUS_CPU_D01p*/ reg.cpu_dbus_new.BUS_CPU_D01p.tri_bus(ROFO_DMA1_TO_CD1);
-  /*_BUS_CPU_D02p*/ reg.cpu_dbus_new.BUS_CPU_D02p.tri_bus(REMA_DMA2_TO_CD2);
-  /*_BUS_CPU_D03p*/ reg.cpu_dbus_new.BUS_CPU_D03p.tri_bus(PANE_DMA3_TO_CD3);
-  /*_BUS_CPU_D04p*/ reg.cpu_dbus_new.BUS_CPU_D04p.tri_bus(PARE_DMA4_TO_CD4);
-  /*_BUS_CPU_D05p*/ reg.cpu_dbus_new.BUS_CPU_D05p.tri_bus(RALY_DMA5_TO_CD5);
-  /*_BUS_CPU_D06p*/ reg.cpu_dbus_new.BUS_CPU_D06p.tri_bus(RESU_DMA6_TO_CD6);
-  /*_BUS_CPU_D07p*/ reg.cpu_dbus_new.BUS_CPU_D07p.tri_bus(NUVY_DMA7_TO_CD7);
+  /*_BUS_CPU_D00p*/ reg.cpu_dbus.BUS_CPU_D00p.tri_bus(POLY_DMA0_TO_CD0);
+  /*_BUS_CPU_D01p*/ reg.cpu_dbus.BUS_CPU_D01p.tri_bus(ROFO_DMA1_TO_CD1);
+  /*_BUS_CPU_D02p*/ reg.cpu_dbus.BUS_CPU_D02p.tri_bus(REMA_DMA2_TO_CD2);
+  /*_BUS_CPU_D03p*/ reg.cpu_dbus.BUS_CPU_D03p.tri_bus(PANE_DMA3_TO_CD3);
+  /*_BUS_CPU_D04p*/ reg.cpu_dbus.BUS_CPU_D04p.tri_bus(PARE_DMA4_TO_CD4);
+  /*_BUS_CPU_D05p*/ reg.cpu_dbus.BUS_CPU_D05p.tri_bus(RALY_DMA5_TO_CD5);
+  /*_BUS_CPU_D06p*/ reg.cpu_dbus.BUS_CPU_D06p.tri_bus(RESU_DMA6_TO_CD6);
+  /*_BUS_CPU_D07p*/ reg.cpu_dbus.BUS_CPU_D07p.tri_bus(NUVY_DMA7_TO_CD7);
 }
 
 //------------------------------------------------------------------------------------------------------------------------

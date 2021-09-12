@@ -29,6 +29,13 @@ inline wire get_bit(uint32_t w, int i) { return wire((w >> i) & 1); }
 uint32_t swap(uint32_t x);
 uint64_t swap(uint64_t x);
 
+inline uint8_t bit_reverse(uint8_t b) {
+   b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+   b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+   b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+   return b;
+}
+
 static const char* phase_names[] = {
   "\002A_______\001",
   "\003_B______\001",

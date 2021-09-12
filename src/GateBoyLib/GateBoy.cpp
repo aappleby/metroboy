@@ -3030,11 +3030,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.vram_ext_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || reg.tile_fetcher.LONY_FETCHINGp.state || reg.sprite_fetcher.TEXY_SFETCHINGp.state;
     }
 
-    auto vram_addr = bit_pack_inv(reg.vram_ext_abus);
     uint8_t data = 0xFF;
 
     if (reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state) {
-      data = mem.vid_ram[vram_addr];
+      data = mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)];
     }
 
     //--------------------------------------------
@@ -3043,11 +3042,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_clear(reg.vram_ext_dbus);
 
     if (reg.vram_ext_ctrl.PIN_45_VRAM_OEn.state) {
-      bit_unpack_inv(reg.vram_ext_dbus, mem.vid_ram[vram_addr]);
+      bit_unpack_inv(reg.vram_ext_dbus, mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)]);
     }
 
     if (reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state) {
-      mem.vid_ram[vram_addr] = (uint8_t)bit_pack_inv(reg.vram_ext_dbus);
+      mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)] = (uint8_t)bit_pack_inv(reg.vram_ext_dbus);
     }
 
     if (cpu_addr_vram_new && reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK.state && reg.XYMU_RENDERINGn.state && reg.cpu_signals.SIG_IN_CPU_WRp.state) {
@@ -3057,7 +3056,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
 
     if (reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state) {
-      mem.vid_ram[vram_addr] = (uint8_t)bit_pack_inv(reg.vram_ext_dbus);
+      mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)] = (uint8_t)bit_pack_inv(reg.vram_ext_dbus);
     }
 
     //--------------------------------------------
@@ -3077,18 +3076,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
     // Vram bus to sprite x flipper
 
-    wire XONO_FLIP_X = reg.oam_temp_b.BAXO_OAM_DB5p.state && reg.sprite_fetcher.TEXY_SFETCHINGp.state;
-
-    reg.flipped_sprite = {
-      XONO_FLIP_X ? reg.vram_dbus.BUS_VRAM_D07p.state : reg.vram_dbus.BUS_VRAM_D00p.state,
-      XONO_FLIP_X ? reg.vram_dbus.BUS_VRAM_D06p.state : reg.vram_dbus.BUS_VRAM_D01p.state,
-      XONO_FLIP_X ? reg.vram_dbus.BUS_VRAM_D05p.state : reg.vram_dbus.BUS_VRAM_D02p.state,
-      XONO_FLIP_X ? reg.vram_dbus.BUS_VRAM_D04p.state : reg.vram_dbus.BUS_VRAM_D03p.state,
-      XONO_FLIP_X ? reg.vram_dbus.BUS_VRAM_D03p.state : reg.vram_dbus.BUS_VRAM_D04p.state,
-      XONO_FLIP_X ? reg.vram_dbus.BUS_VRAM_D02p.state : reg.vram_dbus.BUS_VRAM_D05p.state,
-      XONO_FLIP_X ? reg.vram_dbus.BUS_VRAM_D01p.state : reg.vram_dbus.BUS_VRAM_D06p.state,
-      XONO_FLIP_X ? reg.vram_dbus.BUS_VRAM_D00p.state : reg.vram_dbus.BUS_VRAM_D07p.state,
-    };
+    uint8_t pix = (uint8_t)bit_pack(reg.vram_dbus);
+    if (reg.oam_temp_b.BAXO_OAM_DB5p.state && reg.sprite_fetcher.TEXY_SFETCHINGp.state) pix = bit_reverse(pix);
+    bit_unpack(reg.flipped_sprite, pix);
   }
 
 

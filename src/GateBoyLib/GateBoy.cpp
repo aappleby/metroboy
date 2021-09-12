@@ -2129,7 +2129,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (gen_clk_new(0b01010101)) {
     if (!pause_rendering_new) {
-      reg.fine_scroll.PUXA_SCX_FINE_MATCH_A = reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn && (bit_pack_inv(&reg_old.reg_scx.DATY_SCX0n, 3) == bit_pack(&reg_old.fine_count.RYKU_FINE_CNT0, 3));
+      reg.fine_scroll.PUXA_SCX_FINE_MATCH_A = reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn && (bit_pack_inv(&reg_old.reg_scx.DATY_SCX0n, 3) == bit_pack(reg_old.fine_count));
     }
   }
   else {
@@ -2291,8 +2291,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.win_ctrl.RENE_WIN_FETCHn_B = reg.win_ctrl.RYFA_WIN_FETCHn_A;
     }
 
+    auto fine_count_new = bit_pack(reg.fine_count);
+
     if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-      reg.win_ctrl.RYFA_WIN_FETCHn_A = !reg.win_ctrl.NUKO_WX_MATCHp && reg.fine_count.RUBU_FINE_CNT2 && reg.fine_count.ROGA_FINE_CNT1 && reg.fine_count.RYKU_FINE_CNT0;
+      reg.win_ctrl.RYFA_WIN_FETCHn_A = !reg.win_ctrl.NUKO_WX_MATCHp && fine_count_new == 7;
     }
   }
   else {

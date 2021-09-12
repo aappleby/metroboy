@@ -1583,7 +1583,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_copy_inv(reg_new.cpu_dbus_new, reg_new.reg_lcdc);
   }
   bool vid_rst_new = reg_new.reg_lcdc.XONA_LCDC_LCDENn;
-  bool winen_new = !reg_new.reg_lcdc.WYMO_LCDC_WINENn;
 
   //----------
   // Video clocks
@@ -1678,8 +1677,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   bool rutu_x113p_new = reg_new.lcd.RUTU_x113p;
   bool popu_y144p_new = reg_new.lcd.POPU_y144p;
-
-  bool line_rst_new = reg_new.ATEJ_LINE_RSTp;
 
   //----------
 
@@ -1930,7 +1927,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // VID RUN BRANCH
 
   else {
-    if (line_rst_new) {
+    if (reg_new.ATEJ_LINE_RSTp) {
       reg.sprite_scanner.DOBA_SCAN_DONE_Bp = 0;
       reg.sprite_scanner.BYBA_SCAN_DONE_Ap = 0;
       reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp = 0;
@@ -1941,7 +1938,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp = !reg.sprite_scanner.DOBA_SCAN_DONE_Bp && reg.sprite_scanner.BYBA_SCAN_DONE_Ap;
     }
 
-    if (line_rst_new) {
+    if (reg_new.ATEJ_LINE_RSTp) {
       reg.sprite_scanner.BESU_SCANNINGn = 1;
     }
     else {
@@ -1956,7 +1953,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.sprite_scanner.CENO_SCANNINGn = reg_old.sprite_scanner.BESU_SCANNINGn;
     }
 
-    if (line_rst_new) {
+    if (reg_new.ATEJ_LINE_RSTp) {
       bit_clear(reg.scan_counter);
     }
     else if ((DELTA_HA || DELTA_DE) && (bit_pack(reg_old.scan_counter) != 39)) {
@@ -1969,7 +1966,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.VOGA_HBLANKp.state = wodu_hblank_old;
     }
 
-    if (line_rst_new) {
+    if (reg_new.ATEJ_LINE_RSTp) {
       reg.VOGA_HBLANKp.state = 0;
     }
 
@@ -1997,7 +1994,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.sprite_fetcher.SEBA_SFETCH_S1p_D5.state = reg.sprite_fetcher.VONU_SFETCH_S1p_D4.state;
     }
 
-    if (line_rst_new) {
+    if (reg_new.ATEJ_LINE_RSTp) {
       bit_clear(&reg.sprite_fetcher.TOXE_SFETCH_S0p, 3);
     }
 
@@ -2023,11 +2020,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.win_ctrl.PYNU_WIN_MODE_Ap.state = 1;
     }
 
-    if (!winen_new) {
+    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn) {
       reg.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
     }
 
-    if (line_rst_new) {
+    if (reg_new.ATEJ_LINE_RSTp) {
       reg.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
     }
 
@@ -2072,7 +2069,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       }
     }
 
-    if (line_rst_new) {
+    if (reg_new.ATEJ_LINE_RSTp) {
       reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
     }
 
@@ -2127,7 +2124,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (vid_rst_new) {
   }
-  else if (line_rst_new) {
+  else if (reg_new.ATEJ_LINE_RSTp) {
 
     // FIXME does this even matter?
     if (DELTA_ODD) {
@@ -2305,7 +2302,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_unpack(reg.pix_count, px_old + 1);
   }
 
-  if (line_rst_new || vid_rst_new) {
+  if (reg_new.ATEJ_LINE_RSTp || vid_rst_new) {
     bit_clear(reg.pix_count);
   }
 
@@ -2439,7 +2436,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.win_ctrl.SARY_WY_MATCHp.state = 0;
   }
 
-  reg.win_ctrl.ROGE_WY_MATCHp = (bit_pack(reg.reg_ly) == bit_pack_inv(reg.reg_wy)) && winen_new;
+  reg.win_ctrl.ROGE_WY_MATCHp = (bit_pack(reg.reg_ly) == bit_pack_inv(reg.reg_wy)) && !reg_new.reg_lcdc.WYMO_LCDC_WINENn;
 
   if (reg.win_ctrl.SARY_WY_MATCHp.state) reg.win_ctrl.REJO_WY_MATCH_LATCHp.state = 1;
   if (reg.lcd.POPU_y144p.state || vid_rst_new) reg.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
@@ -2937,14 +2934,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_unpack(reg.win_x, win_map_x_old + 1);
     }
 
-    if (!winen_new || line_rst_new || reg.reg_lcdc.XONA_LCDC_LCDENn.state) bit_clear(reg.win_x);
+    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn || reg_new.ATEJ_LINE_RSTp || reg.reg_lcdc.XONA_LCDC_LCDENn.state) bit_clear(reg.win_x);
 
     auto win_map_x_new = bit_pack(reg.win_x);
 
     //--------------------------------------------
     // Win coord y
 
-    auto win_y_old = reg.lcd.POPU_y144p || reg.reg_lcdc.XONA_LCDC_LCDENn ? 0 : bit_pack(reg.win_y);
+    auto win_y_old = bit_pack(reg_old.win_y);
 
     if (reg_old.win_ctrl.PYNU_WIN_MODE_Ap.state && !reg.win_ctrl.PYNU_WIN_MODE_Ap.state) {
       bit_unpack(reg.win_y, win_y_old + 1);

@@ -234,6 +234,13 @@ struct GateBoyRegisters {
 
 #pragma pack(push, 1)
 struct GateBoyCPU {
+  MetroBoyCPU gb_cpu;
+  Req      bus_req_new = {0};
+  uint8_t  cpu_data_latch = 0;
+  uint8_t  imask_latch = 0;
+  uint8_t  intf_latch = 0;
+  uint8_t  intf_latch_delay = 0;
+  uint8_t  intf_halt_latch = 0;
 };
 #pragma pack(pop)
 
@@ -241,6 +248,12 @@ struct GateBoyCPU {
 
 #pragma pack(push, 1)
 struct GateBoyMem {
+  uint8_t vid_ram [8192];
+  uint8_t cart_ram[32768];
+  uint8_t int_ram [8192];
+  uint8_t oam_ram [256];
+  uint8_t zero_ram[128];
+  uint8_t framebuffer[160*144];
 };
 #pragma pack(pop)
 
@@ -663,23 +676,12 @@ struct GateBoy {
   //-----------------------------------------------------------------------------
   // CPU
 
-  MetroBoyCPU gbc_gb_cpu;
-  Req      gbc_bus_req_new = {0};
-  uint8_t  gbc_cpu_data_latch = 0;
-  uint8_t  gbc_imask_latch = 0;
-  uint8_t  gbc_intf_latch = 0;
-  uint8_t  gbc_intf_latch_delay = 0;
-  uint8_t  gbc_intf_halt_latch = 0;
+  GateBoyCPU gbc;
 
   //-----------------------------------------------------------------------------
   // Memory
 
-  uint8_t gbm_vid_ram [8192];
-  uint8_t gbm_cart_ram[32768];
-  uint8_t gbm_int_ram [8192];
-  uint8_t gbm_oam_ram [256];
-  uint8_t gbm_zero_ram[128];
-  uint8_t gbm_framebuffer[160*144];
+  GateBoyMem gbm;
 
   uint64_t sentinel3 = SENTINEL3;
 

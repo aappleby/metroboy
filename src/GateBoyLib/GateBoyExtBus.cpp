@@ -279,7 +279,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
         if (mbc1_ram_addr >= 32768) debugbreak();
 
         EXT_rd_en = mbc1_ram_en;
-        data_in = gbm_cart_ram[mbc1_ram_addr];
+        data_in = gbm.cart_ram[mbc1_ram_addr];
       }
     }
     else {
@@ -295,7 +295,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
     if (region == 6 || region == 7) {
       EXT_rd_en = true;
-      data_in = gbm_int_ram[ext_addr & 0x1FFF];
+      data_in = gbm.int_ram[ext_addr & 0x1FFF];
     }
   }
 
@@ -368,18 +368,18 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
         uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
         if (mbc1_ram_addr >= 32768) debugbreak();
 
-        gbm_cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = data_out;
+        gbm.cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = data_out;
       }
       else if (region == 5 && cart_has_ram(cart_blob) && 0) {
-        gbm_cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] = data_out;
+        gbm.cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] = data_out;
       }
       else if (region == 6 || region == 7) {
-        gbm_int_ram[ext_addr & 0x1FFF]  = data_out;
+        gbm.int_ram[ext_addr & 0x1FFF]  = data_out;
       }
     }
     else {
       if (region == 6 || region == 7) {
-        gbm_int_ram[ext_addr & 0x1FFF]  = data_out;
+        gbm.int_ram[ext_addr & 0x1FFF]  = data_out;
       }
     }
 

@@ -316,12 +316,12 @@ void GateBoy::tock_oam_bus_gates()
   uint8_t oam_data_b = (uint8_t)bit_pack_inv(gbr.oam_dbus_b);
 
   if (bit(~gbr.oam_ctrl.old_oam_clk.out_old()) && bit(~gbr.oam_ctrl.SIG_OAM_CLKn.out_new())) {
-    if (bit(~gbr.oam_ctrl.SIG_OAM_WRn_A.out_new())) gbm_oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-    if (bit(~gbr.oam_ctrl.SIG_OAM_WRn_B.out_new())) gbm_oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+    if (bit(~gbr.oam_ctrl.SIG_OAM_WRn_A.out_new())) gbm.oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+    if (bit(~gbr.oam_ctrl.SIG_OAM_WRn_B.out_new())) gbm.oam_ram[(oam_addr << 1) + 1] = oam_data_b;
   }
 
-  oam_data_a = gbm_oam_ram[(oam_addr << 1) + 0];
-  oam_data_b = gbm_oam_ram[(oam_addr << 1) + 1];
+  oam_data_a = gbm.oam_ram[(oam_addr << 1) + 0];
+  oam_data_b = gbm.oam_ram[(oam_addr << 1) + 1];
 
   gbr.oam_ctrl.old_oam_clk = bit(~gbr.oam_ctrl.SIG_OAM_CLKn.out_new());
 

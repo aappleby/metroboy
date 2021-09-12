@@ -19,7 +19,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   // Put some recognizable pattern in vram so we can see that we're in the bootrom
   for (int i = 0; i < 8192; i++) {
     uint32_t h = i * 0x1234567;
-    gbm_vid_ram[i] = uint8_t(h ^ (h >> 4));
+    gbm.vid_ram[i] = uint8_t(h ^ (h >> 4));
   }
 
   gbr.cpu_abus_new.reset_to_bootrom();
@@ -126,7 +126,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
     gbr.div.UPOF_DIV15p.state = 0b00011011;
   }
 
-  memset(gbm_framebuffer, 4, sizeof(gbm_framebuffer));
+  memset(gbm.framebuffer, 4, sizeof(gbm.framebuffer));
 
   gbs.probes.reset_to_cart();
 
@@ -250,25 +250,25 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   gbs.sys_clkreq = true;
   gbs.sys_fastboot = true;
 
-  gbc_gb_cpu.reset_to_cart();
+  gbc.gb_cpu.reset_to_cart();
 
-  gbc_bus_req_new.addr = 0xFF50;
-  gbc_bus_req_new.data = 1;
-  gbc_bus_req_new.read = 0;
-  gbc_bus_req_new.write = 1;
+  gbc.bus_req_new.addr = 0xFF50;
+  gbc.bus_req_new.data = 1;
+  gbc.bus_req_new.read = 0;
+  gbc.bus_req_new.write = 1;
 
-  gbc_cpu_data_latch = 1;
-  gbc_intf_latch = 1;
-  gbc_intf_latch_delay = 0;
-  gbc_intf_halt_latch = 0;
+  gbc.cpu_data_latch = 1;
+  gbc.intf_latch = 1;
+  gbc.intf_latch_delay = 0;
+  gbc.intf_halt_latch = 0;
 
-  memcpy(gbm_vid_ram, vram_boot, 8192);
+  memcpy(gbm.vid_ram, vram_boot, 8192);
 
-  gbm_zero_ram[0x7A] = 0x39;
-  gbm_zero_ram[0x7B] = 0x01;
-  gbm_zero_ram[0x7C] = 0x2E;
+  gbm.zero_ram[0x7A] = 0x39;
+  gbm.zero_ram[0x7B] = 0x01;
+  gbm.zero_ram[0x7C] = 0x2E;
 
-  memcpy(gbm_framebuffer, framebuffer_boot, 160*144);
+  memcpy(gbm.framebuffer, framebuffer_boot, 160*144);
 
   gbs.sim_time = 169.62587129999756;
   gbs.phase_total = 0;
@@ -284,20 +284,20 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
 bool GateBoy::dbg_read(const blob& cart_blob, int addr, uint8_t& out) {
   CHECK_P((gbs.phase_total & 7) == 0);
 
-  Req old_req = gbc_bus_req_new;
+  Req old_req = gbc.bus_req_new;
   bool old_cpu_en = gbs.sys_cpu_en;
   gbs.sys_cpu_en = false;
 
-  gbc_bus_req_new.addr = uint16_t(addr);
-  gbc_bus_req_new.data = 0;
-  gbc_bus_req_new.read = 1;
-  gbc_bus_req_new.write = 0;
+  gbc.bus_req_new.addr = uint16_t(addr);
+  gbc.bus_req_new.data = 0;
+  gbc.bus_req_new.read = 1;
+  gbc.bus_req_new.write = 0;
   run_phases(cart_blob, 8);
 
-  gbc_bus_req_new = old_req;
+  gbc.bus_req_new = old_req;
   gbs.sys_cpu_en = old_cpu_en;
 
-  out = gbc_cpu_data_latch;
+  out = gbc.cpu_data_latch;
   return true;
 }
 
@@ -306,17 +306,17 @@ bool GateBoy::dbg_read(const blob& cart_blob, int addr, uint8_t& out) {
 bool GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
   CHECK_P((gbs.phase_total & 7) == 0);
 
-  Req old_req = gbc_bus_req_new;
+  Req old_req = gbc.bus_req_new;
   bool old_cpu_en = gbs.sys_cpu_en;
   gbs.sys_cpu_en = false;
 
-  gbc_bus_req_new.addr = uint16_t(addr);
-  gbc_bus_req_new.data = data;
-  gbc_bus_req_new.read = 0;
-  gbc_bus_req_new.write = 1;
+  gbc.bus_req_new.addr = uint16_t(addr);
+  gbc.bus_req_new.data = data;
+  gbc.bus_req_new.read = 0;
+  gbc.bus_req_new.write = 1;
   run_phases(cart_blob, 8);
 
-  gbc_bus_req_new = old_req;
+  gbc.bus_req_new = old_req;
   gbs.sys_cpu_en = old_cpu_en;
   return true;
 }
@@ -464,20 +464,20 @@ MemberOffset gb_offsets[] = {
 
   GEN_OFFSET(sentinel2),
 
-  GEN_OFFSET(gbc_gb_cpu),
-  GEN_OFFSET(gbc_bus_req_new),
-  GEN_OFFSET(gbc_cpu_data_latch),
-  GEN_OFFSET(gbc_imask_latch),
-  GEN_OFFSET(gbc_intf_latch),
-  GEN_OFFSET(gbc_intf_latch_delay),
-  GEN_OFFSET(gbc_intf_halt_latch),
+  GEN_OFFSET(gbc.gb_cpu),
+  GEN_OFFSET(gbc.bus_req_new),
+  GEN_OFFSET(gbc.cpu_data_latch),
+  GEN_OFFSET(gbc.imask_latch),
+  GEN_OFFSET(gbc.intf_latch),
+  GEN_OFFSET(gbc.intf_latch_delay),
+  GEN_OFFSET(gbc.intf_halt_latch),
 
-  GEN_OFFSET(gbm_vid_ram),
-  GEN_OFFSET(gbm_cart_ram),
-  GEN_OFFSET(gbm_int_ram),
-  GEN_OFFSET(gbm_oam_ram),
-  GEN_OFFSET(gbm_zero_ram),
-  GEN_OFFSET(gbm_framebuffer),
+  GEN_OFFSET(gbm.vid_ram),
+  GEN_OFFSET(gbm.cart_ram),
+  GEN_OFFSET(gbm.int_ram),
+  GEN_OFFSET(gbm.oam_ram),
+  GEN_OFFSET(gbm.zero_ram),
+  GEN_OFFSET(gbm.framebuffer),
 
   GEN_OFFSET(sentinel3),
 
@@ -578,7 +578,7 @@ void GateBoy::update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1)
     wire p1 = bit(DATA1);
     auto new_pix = p0 + p1 * 2;
 
-    gbm_framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
+    gbm.framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
   }
 
 #if 0
@@ -619,52 +619,52 @@ void GateBoy::update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1)
 //------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_cpu() {
-  gbc_cpu_data_latch &= (uint8_t)bit_pack(gbr.cpu_dbus_new);
-  gbc_imask_latch = (uint8_t)bit_pack(gbr.reg_ie);
+  gbc.cpu_data_latch &= (uint8_t)bit_pack(gbr.cpu_dbus_new);
+  gbc.imask_latch = (uint8_t)bit_pack(gbr.reg_ie);
 
   if (DELTA_HA) {
-    if (gbc_gb_cpu.op == 0x76 && (gbc_imask_latch & gbc_intf_halt_latch)) gbc_gb_cpu.state_ = 0;
-    gbc_intf_halt_latch = 0;
+    if (gbc.gb_cpu.op == 0x76 && (gbc.imask_latch & gbc.intf_halt_latch)) gbc.gb_cpu.state_ = 0;
+    gbc.intf_halt_latch = 0;
   }
 
   // +ha -ab -bc -cd -de -ef -fg -gh
   if (DELTA_HA) {
     // this one latches funny, some hardware bug
-    if (bit(gbr.reg_if.NYBO_FF0F_D2p.state)) gbc_intf_halt_latch |= INT_TIMER_MASK;
+    if (bit(gbr.reg_if.NYBO_FF0F_D2p.state)) gbc.intf_halt_latch |= INT_TIMER_MASK;
   }
 
   // -ha +ab -bc
   if (DELTA_AB) {
     if (gbs.sys_cpu_en) {
-      gbc_gb_cpu.tock_ab(gbc_imask_latch, gbc_intf_latch, gbc_cpu_data_latch);
+      gbc.gb_cpu.tock_ab(gbc.imask_latch, gbc.intf_latch, gbc.cpu_data_latch);
     }
   }
 
   if (DELTA_AB) {
     if (gbs.sys_cpu_en) {
-      gbc_bus_req_new.addr = gbc_gb_cpu._bus_addr;
-      gbc_bus_req_new.data = gbc_gb_cpu._bus_data;
-      gbc_bus_req_new.read = gbc_gb_cpu._bus_read;
-      gbc_bus_req_new.write = gbc_gb_cpu._bus_write;
+      gbc.bus_req_new.addr = gbc.gb_cpu._bus_addr;
+      gbc.bus_req_new.data = gbc.gb_cpu._bus_data;
+      gbc.bus_req_new.read = gbc.gb_cpu._bus_read;
+      gbc.bus_req_new.write = gbc.gb_cpu._bus_write;
     }
   }
 
   // -bc +cd +de -ef -fg -gh -ha -ab
   if (DELTA_DE) {
-    if (bit(gbr.reg_if.LOPE_FF0F_D0p.state)) gbc_intf_halt_latch |= INT_VBLANK_MASK;
-    if (bit(gbr.reg_if.LALU_FF0F_D1p.state)) gbc_intf_halt_latch |= INT_STAT_MASK;
-    if (bit(gbr.reg_if.UBUL_FF0F_D3p.state)) gbc_intf_halt_latch |= INT_SERIAL_MASK;
-    if (bit(gbr.reg_if.ULAK_FF0F_D4p.state)) gbc_intf_halt_latch |= INT_JOYPAD_MASK;
+    if (bit(gbr.reg_if.LOPE_FF0F_D0p.state)) gbc.intf_halt_latch |= INT_VBLANK_MASK;
+    if (bit(gbr.reg_if.LALU_FF0F_D1p.state)) gbc.intf_halt_latch |= INT_STAT_MASK;
+    if (bit(gbr.reg_if.UBUL_FF0F_D3p.state)) gbc.intf_halt_latch |= INT_SERIAL_MASK;
+    if (bit(gbr.reg_if.ULAK_FF0F_D4p.state)) gbc.intf_halt_latch |= INT_JOYPAD_MASK;
   }
 
   // -ha -ab -bc -cd -de -ef +fg +gh
   if (DELTA_GH) {
-    gbc_cpu_data_latch = 0xFF;
+    gbc.cpu_data_latch = 0xFF;
   }
 
   // +ha -ab -bc -cd -de -ef -fg +gh
   if (DELTA_GH) {
-    gbc_intf_latch = (uint8_t)bit_pack(gbr.reg_if);
+    gbc.intf_latch = (uint8_t)bit_pack(gbr.reg_if);
   }
 }
 
@@ -761,8 +761,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
     if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
       // Data has to be driven on EFGH or we fail the wave tests
-      gbr.cpu_dbus_new.set_data(gbc_bus_req_new.write, gbc_bus_req_new.data_lo);
-      EXT_cpu_latch_ext = gbc_bus_req_new.read;
+      gbr.cpu_dbus_new.set_data(gbc.bus_req_new.write, gbc.bus_req_new.data_lo);
+      EXT_cpu_latch_ext = gbc.bus_req_new.read;
     }
     else {
       gbr.cpu_dbus_new.set_data(false, 0);
@@ -770,11 +770,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     }
     /*_SIG_IN_CPU_LATCH_EXT*/ gbr.cpu_signals.SIG_IN_CPU_LATCH_EXT.sig_in(EXT_cpu_latch_ext);
 
-    bool EXT_addr_new = (gbc_bus_req_new.read || gbc_bus_req_new.write);
+    bool EXT_addr_new = (gbc.bus_req_new.read || gbc.bus_req_new.write);
     bool in_bootrom = bit(~gbr.cpu_signals.TEPU_BOOT_BITn.qp_old());
-    bool addr_boot = (gbc_bus_req_new.addr <= 0x00FF) && in_bootrom;
-    bool addr_vram = (gbc_bus_req_new.addr >= 0x8000) && (gbc_bus_req_new.addr < 0x9FFF);
-    bool addr_high = (gbc_bus_req_new.addr >= 0xFE00);
+    bool addr_boot = (gbc.bus_req_new.addr <= 0x00FF) && in_bootrom;
+    bool addr_vram = (gbc.bus_req_new.addr >= 0x8000) && (gbc.bus_req_new.addr < 0x9FFF);
+    bool addr_high = (gbc.bus_req_new.addr >= 0xFE00);
 
     bool EXT_cpu_rd;
     bool EXT_cpu_wr;
@@ -782,16 +782,16 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     if (DELTA_HA) {
       EXT_cpu_rd = 0;
       EXT_cpu_wr = 0;
-      gbr.cpu_abus_new.set_addr(gbc_bus_req_new.addr & 0x00FF);
+      gbr.cpu_abus_new.set_addr(gbc.bus_req_new.addr & 0x00FF);
 
       if (addr_high) EXT_addr_new = false;
       if (addr_boot) EXT_addr_new = false;
       if (addr_vram) EXT_addr_new = false;
     }
     else {
-      EXT_cpu_rd = gbc_bus_req_new.read;
-      EXT_cpu_wr = gbc_bus_req_new.write;
-      gbr.cpu_abus_new.set_addr(gbc_bus_req_new.addr);
+      EXT_cpu_rd = gbc.bus_req_new.read;
+      EXT_cpu_wr = gbc.bus_req_new.write;
+      gbr.cpu_abus_new.set_addr(gbc.bus_req_new.addr);
 
       if (addr_high) EXT_addr_new = false;
       if (addr_boot) EXT_addr_new = false;
@@ -818,11 +818,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_PIN_76*/ gbr.rst.PIN_76_T2.pin_in(EXT_sys_t2);
     /*_PIN_77*/ gbr.rst.PIN_77_T1.pin_in(EXT_sys_t1);
 
-    wire EXT_ack_vblank = get_bit(gbc_gb_cpu.int_ack, BIT_VBLANK);
-    wire EXT_ack_stat = get_bit(gbc_gb_cpu.int_ack, BIT_STAT);
-    wire EXT_ack_timer = get_bit(gbc_gb_cpu.int_ack, BIT_TIMER);
-    wire EXT_ack_serial = get_bit(gbc_gb_cpu.int_ack, BIT_SERIAL);
-    wire EXT_ack_joypad = get_bit(gbc_gb_cpu.int_ack, BIT_JOYPAD);
+    wire EXT_ack_vblank = get_bit(gbc.gb_cpu.int_ack, BIT_VBLANK);
+    wire EXT_ack_stat = get_bit(gbc.gb_cpu.int_ack, BIT_STAT);
+    wire EXT_ack_timer = get_bit(gbc.gb_cpu.int_ack, BIT_TIMER);
+    wire EXT_ack_serial = get_bit(gbc.gb_cpu.int_ack, BIT_SERIAL);
+    wire EXT_ack_joypad = get_bit(gbc.gb_cpu.int_ack, BIT_JOYPAD);
 
     /*_SIG_CPU_ACK_VBLANK*/ gbr.cpu_ack.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
     /*_SIG_CPU_ACK_STAT  */ gbr.cpu_ack.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
@@ -1437,18 +1437,18 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
     // Data has to be driven on EFGH or we fail the wave tests
-    if (gbc_bus_req_new.write) bit_unpack(gbr.cpu_dbus_new, gbc_bus_req_new.data_lo);
-    gbr.cpu_signals.SIG_IN_CPU_LATCH_EXT.state = gbc_bus_req_new.read;
+    if (gbc.bus_req_new.write) bit_unpack(gbr.cpu_dbus_new, gbc.bus_req_new.data_lo);
+    gbr.cpu_signals.SIG_IN_CPU_LATCH_EXT.state = gbc.bus_req_new.read;
   }
   else {
     gbr.cpu_signals.SIG_IN_CPU_LATCH_EXT.state = 0;
   }
 
-  bool EXT_addr_new = (gbc_bus_req_new.read || gbc_bus_req_new.write);
+  bool EXT_addr_new = (gbc.bus_req_new.read || gbc.bus_req_new.write);
   bool in_bootrom = !gbr.cpu_signals.TEPU_BOOT_BITn.state;
-  bool addr_boot = (gbc_bus_req_new.addr <= 0x00FF) && in_bootrom;
-  bool addr_vram = (gbc_bus_req_new.addr >= 0x8000) && (gbc_bus_req_new.addr < 0x9FFF);
-  bool addr_high = (gbc_bus_req_new.addr >= 0xFE00);
+  bool addr_boot = (gbc.bus_req_new.addr <= 0x00FF) && in_bootrom;
+  bool addr_vram = (gbc.bus_req_new.addr >= 0x8000) && (gbc.bus_req_new.addr < 0x9FFF);
+  bool addr_high = (gbc.bus_req_new.addr >= 0xFE00);
 
   bool EXT_cpu_rd;
   bool EXT_cpu_wr;
@@ -1456,16 +1456,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (DELTA_HA) {
     EXT_cpu_rd = 0;
     EXT_cpu_wr = 0;
-    bit_unpack(gbr.cpu_abus_new, gbc_bus_req_new.addr & 0x00FF);
+    bit_unpack(gbr.cpu_abus_new, gbc.bus_req_new.addr & 0x00FF);
 
     if (addr_high) EXT_addr_new = false;
     if (addr_boot) EXT_addr_new = false;
     if (addr_vram) EXT_addr_new = false;
   }
   else {
-    EXT_cpu_rd = gbc_bus_req_new.read;
-    EXT_cpu_wr = gbc_bus_req_new.write;
-    bit_unpack(gbr.cpu_abus_new, gbc_bus_req_new.addr);
+    EXT_cpu_rd = gbc.bus_req_new.read;
+    EXT_cpu_wr = gbc.bus_req_new.write;
+    bit_unpack(gbr.cpu_abus_new, gbc.bus_req_new.addr);
 
     if (addr_high) EXT_addr_new = false;
     if (addr_boot) EXT_addr_new = false;
@@ -1493,11 +1493,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   gbr.rst.PIN_76_T2 = 0;
   gbr.rst.PIN_77_T1 = 0;
 
-  gbr.cpu_ack.SIG_CPU_ACK_VBLANK = get_bit(gbc_gb_cpu.int_ack, BIT_VBLANK);
-  gbr.cpu_ack.SIG_CPU_ACK_STAT   = get_bit(gbc_gb_cpu.int_ack, BIT_STAT);
-  gbr.cpu_ack.SIG_CPU_ACK_TIMER  = get_bit(gbc_gb_cpu.int_ack, BIT_TIMER);
-  gbr.cpu_ack.SIG_CPU_ACK_SERIAL = get_bit(gbc_gb_cpu.int_ack, BIT_SERIAL);
-  gbr.cpu_ack.SIG_CPU_ACK_JOYPAD = get_bit(gbc_gb_cpu.int_ack, BIT_JOYPAD);
+  gbr.cpu_ack.SIG_CPU_ACK_VBLANK = get_bit(gbc.gb_cpu.int_ack, BIT_VBLANK);
+  gbr.cpu_ack.SIG_CPU_ACK_STAT   = get_bit(gbc.gb_cpu.int_ack, BIT_STAT);
+  gbr.cpu_ack.SIG_CPU_ACK_TIMER  = get_bit(gbc.gb_cpu.int_ack, BIT_TIMER);
+  gbr.cpu_ack.SIG_CPU_ACK_SERIAL = get_bit(gbc.gb_cpu.int_ack, BIT_SERIAL);
+  gbr.cpu_ack.SIG_CPU_ACK_JOYPAD = get_bit(gbc.gb_cpu.int_ack, BIT_JOYPAD);
 
   gbr.clk.SIG_CPU_CLKREQ.state = 1;
 
@@ -2831,9 +2831,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       case 2: ext_read_en = true; data_in = cart_blob[mbc1_rom1_addr]; break;
       case 3: ext_read_en = true; data_in = cart_blob[mbc1_rom1_addr]; break;
       case 4: data_in = 0x00; break;
-      case 5: ext_read_en = true; data_in = mbc1_ram_en ? gbm_cart_ram[mbc1_ram_addr] : 0xFF; break;
-      case 6: ext_read_en = true; data_in = gbm_int_ram[ext_addr & 0x1FFF]; break;
-      case 7: ext_read_en = true; data_in = gbm_int_ram[ext_addr & 0x1FFF]; break;
+      case 5: ext_read_en = true; data_in = mbc1_ram_en ? gbm.cart_ram[mbc1_ram_addr] : 0xFF; break;
+      case 6: ext_read_en = true; data_in = gbm.int_ram[ext_addr & 0x1FFF]; break;
+      case 7: ext_read_en = true; data_in = gbm.int_ram[ext_addr & 0x1FFF]; break;
       }
     }
     else {
@@ -2844,8 +2844,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       case 3: ext_read_en = true; data_in = cart_blob[ext_addr & rom_addr_mask]; break;
       case 4: data_in = 0x00; break;
       case 5: data_in = 0x00; break;
-      case 6: ext_read_en = true; data_in = gbm_int_ram[ext_addr & 0x1FFF]; break;
-      case 7: ext_read_en = true; data_in = gbm_int_ram[ext_addr & 0x1FFF]; break;
+      case 6: ext_read_en = true; data_in = gbm.int_ram[ext_addr & 0x1FFF]; break;
+      case 7: ext_read_en = true; data_in = gbm.int_ram[ext_addr & 0x1FFF]; break;
       }
     }
 
@@ -2875,9 +2875,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       case 2: bit_unpack(&gbr.ext_mbc.MBC1_BANK5, 2, data_out); break;
       case 3: gbr.ext_mbc.MBC1_MODE = (data_out & 1); break;
       case 4: break;
-      case 5: if (cart_has_ram(cart_blob) && mbc1_ram_en) gbm_cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = (uint8_t)data_out; break;
-      case 6: gbm_int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out; break;
-      case 7: gbm_int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out; break;
+      case 5: if (cart_has_ram(cart_blob) && mbc1_ram_en) gbm.cart_ram[mbc1_ram_addr & cart_ram_addr_mask(cart_blob)] = (uint8_t)data_out; break;
+      case 6: gbm.int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out; break;
+      case 7: gbm.int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out; break;
       }
     }
     else {
@@ -2887,9 +2887,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       case 2: break;
       case 3: break;
       case 4: break;
-      case 5: if (cart_has_ram(cart_blob)) gbm_cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] = (uint8_t)data_out; break;
-      case 6: gbm_int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out;break;
-      case 7: gbm_int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out;break;
+      case 5: if (cart_has_ram(cart_blob)) gbm.cart_ram[ext_addr & cart_ram_addr_mask(cart_blob)] = (uint8_t)data_out; break;
+      case 6: gbm.int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out;break;
+      case 7: gbm.int_ram[ext_addr & 0x1FFF] = (uint8_t)data_out;break;
       }
     }
   }
@@ -3097,7 +3097,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     uint8_t data = 0xFF;
 
     if (gbr.vram_ext_ctrl.PIN_45_VRAM_OEn.state) {
-      data = gbm_vid_ram[vram_addr];
+      data = gbm.vid_ram[vram_addr];
     }
 
     //--------------------------------------------
@@ -3106,11 +3106,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_clear(gbr.vram_ext_dbus);
 
     if (gbr.vram_ext_ctrl.PIN_45_VRAM_OEn.state) {
-      bit_unpack_inv(gbr.vram_ext_dbus, gbm_vid_ram[vram_addr]);
+      bit_unpack_inv(gbr.vram_ext_dbus, gbm.vid_ram[vram_addr]);
     }
 
     if (gbr.vram_ext_ctrl.PIN_49_VRAM_WRn.state) {
-      gbm_vid_ram[vram_addr] = (uint8_t)bit_pack_inv(gbr.vram_ext_dbus);
+      gbm.vid_ram[vram_addr] = (uint8_t)bit_pack_inv(gbr.vram_ext_dbus);
     }
 
     if (cpu_addr_vram_new && gbr.cpu_signals.ABUZ_EXT_RAM_CS_CLK.state && gbr.XYMU_RENDERINGn.state && gbr.cpu_signals.SIG_IN_CPU_WRp.state) {
@@ -3120,7 +3120,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     //--------------------------------------------
 
     if (gbr.vram_ext_ctrl.PIN_49_VRAM_WRn.state) {
-      gbm_vid_ram[vram_addr] = (uint8_t)bit_pack_inv(gbr.vram_ext_dbus);
+      gbm.vid_ram[vram_addr] = (uint8_t)bit_pack_inv(gbr.vram_ext_dbus);
     }
 
     //--------------------------------------------
@@ -3259,13 +3259,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       oam_data_b = (uint8_t)bit_pack_inv(gbr.oam_dbus_b);
 
       if (oam_clk_old && !oam_clk_new) {
-        if (!gbr.oam_ctrl.SIG_OAM_WRn_A.state) gbm_oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-        if (!gbr.oam_ctrl.SIG_OAM_WRn_B.state) gbm_oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+        if (!gbr.oam_ctrl.SIG_OAM_WRn_A.state) gbm.oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+        if (!gbr.oam_ctrl.SIG_OAM_WRn_B.state) gbm.oam_ram[(oam_addr << 1) + 1] = oam_data_b;
       }
       gbr.oam_ctrl.old_oam_clk = !gbr.oam_ctrl.SIG_OAM_CLKn.state;
 
-      oam_data_a = gbm_oam_ram[(oam_addr << 1) + 0];
-      oam_data_b = gbm_oam_ram[(oam_addr << 1) + 1];
+      oam_data_a = gbm.oam_ram[(oam_addr << 1) + 0];
+      oam_data_b = gbm.oam_ram[(oam_addr << 1) + 1];
     }
 
 
@@ -3302,11 +3302,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     wire CSp = (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE);
 
     if (gbr.zram_bus.clk_old.state && !gbr.cpu_signals.TAPU_CPU_WRp.state && CSp) {
-      gbm_zero_ram[cpu_addr_new & 0x007F] = (uint8_t)bit_pack(gbr.cpu_dbus_old);
+      gbm.zero_ram[cpu_addr_new & 0x007F] = (uint8_t)bit_pack(gbr.cpu_dbus_old);
     }
     gbr.zram_bus.clk_old = gbr.cpu_signals.TAPU_CPU_WRp.state;
 
-    uint8_t data = gbm_zero_ram[cpu_addr_new & 0x007F];
+    uint8_t data = gbm.zero_ram[cpu_addr_new & 0x007F];
 
     if (CSp && gbr.cpu_signals.TEDO_CPU_RDp.state) {
       bit_unpack(gbr.cpu_dbus_new, data);

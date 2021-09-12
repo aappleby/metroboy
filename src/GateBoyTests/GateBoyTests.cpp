@@ -918,12 +918,12 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
 
   while(gbp.gba.gbs.phase_total < timeout) {
     if (!gbp.next_phase(cart_blob)) break;
-    if (gbp.gba.gbm_zero_ram[2]) break;
+    if (gbp.gba.gbm.zero_ram[2]) break;
   }
 
-  uint8_t result_a = gbp.gba.gbm_zero_ram[0]; // actual
-  uint8_t result_b = gbp.gba.gbm_zero_ram[1]; // expected
-  uint8_t result_c = gbp.gba.gbm_zero_ram[2]; // 0x01 if test passes, 0xFF if test fails
+  uint8_t result_a = gbp.gba.gbm.zero_ram[0]; // actual
+  uint8_t result_b = gbp.gba.gbm.zero_ram[1]; // expected
+  uint8_t result_c = gbp.gba.gbm.zero_ram[2]; // 0x01 if test passes, 0xFF if test fails
 
   bool pass = (result_c == 0x01) && (gbp.gba.gbs.phase_total < timeout);
 
@@ -958,18 +958,18 @@ TestResults GateBoyTests::test_init() {
 
   LOG_G("Checking mem\n");
   // Mem should be clear
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.gbm_cart_ram[i]);
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.gbm_cart_ram[i]);
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.gbm_int_ram[i]);
-  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.gbm_int_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.gbm.cart_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.gbm.cart_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gba.gbm.int_ram[i]);
+  for (int i = 0; i < 8192; i++)  ASSERT_EQ(0, gbp.gbb.gbm.int_ram[i]);
 
   // Framebuffer should be 0x04 (yellow) except for the first pixel, which
   // always gets written to because XONA_LCDCENn is 0 at boot
 
   LOG_G("Checking framebuffer\n");
   for (int i = 1; i < 160*144; i++) {
-    ASSERT_EQ(4, gbp.gba.gbm_framebuffer[i], "bad framebuffer at %d\n", i);
-    ASSERT_EQ(4, gbp.gbb.gbm_framebuffer[i], "bad framebuffer at %d\n", i);
+    ASSERT_EQ(4, gbp.gba.gbm.framebuffer[i], "bad framebuffer at %d\n", i);
+    ASSERT_EQ(4, gbp.gbb.gbm.framebuffer[i], "bad framebuffer at %d\n", i);
   }
 
   LOG_G("Checking reg values\n");
@@ -1643,22 +1643,22 @@ uint8_t* get_flat_ptr(GateBoy& gb, blob& cart_blob, uint16_t addr) {
     return cart_blob.data() + (addr & 0x7FFF);
   }
   else if (addr >= 0x8000 && addr <= 0x9FFF) {
-    return gb.gbm_vid_ram + (addr & 0x1FFF);
+    return gb.gbm.vid_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xA000 && addr <= 0xBFFF) {
-    return gb.gbm_cart_ram + (addr & 0x1FFF);
+    return gb.gbm.cart_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xC000 && addr <= 0xDFFF) {
-    return gb.gbm_int_ram + (addr & 0x1FFF);
+    return gb.gbm.int_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xE000 && addr <= 0xFDFF) {
-    return gb.gbm_int_ram + (addr & 0x1FFF);
+    return gb.gbm.int_ram + (addr & 0x1FFF);
   }
   else if (addr >= 0xFE00 && addr <= 0xFEFF) {
-    return gb.gbm_oam_ram + (addr & 0x00FF);
+    return gb.gbm.oam_ram + (addr & 0x00FF);
   }
   else if (addr >= 0xFF80 && addr <= 0xFFFE) {
-    return gb.gbm_zero_ram + (addr & 0x007F);
+    return gb.gbm.zero_ram + (addr & 0x007F);
   }
   else {
     debugbreak();
@@ -1685,8 +1685,8 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
     uint8_t r = (uint8_t)rand();
     mem_a[i] = r;
     mem_b[i] = r;
-    gbp.gba.gbm_oam_ram[i] = 0xFF;
-    gbp.gbb.gbm_oam_ram[i] = 0xFF;
+    gbp.gba.gbm.oam_ram[i] = 0xFF;
+    gbp.gbb.gbm.oam_ram[i] = 0xFF;
   }
 
   gbp.dbg_write(cart_blob, 0xFF46, uint8_t(src >> 8));
@@ -1694,12 +1694,12 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
 
   for (int i = 0; i < 160; i++) {
     uint8_t src_a = mem_a[i];
-    uint8_t dst_a = gbp.gba.gbm_oam_ram[i];
+    uint8_t dst_a = gbp.gba.gbm.oam_ram[i];
     ASSERT_EQ(src_a, dst_a, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_a, dst_a);
 
     if (config_regression) {
       uint8_t src_b = mem_b[i];
-      uint8_t dst_b = gbp.gbb.gbm_oam_ram[i];
+      uint8_t dst_b = gbp.gbb.gbm.oam_ram[i];
       ASSERT_EQ(src_b, dst_b, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_b, dst_b);
     }
   }
@@ -1806,10 +1806,10 @@ void GateBoyTests::run_benchmark() {
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
     gb.reset_to_bootrom(cart_blob, true);
-    gb.gbc_bus_req_new.addr = 0x0150;
-    gb.gbc_bus_req_new.data = 0;
-    gb.gbc_bus_req_new.read = 1;
-    gb.gbc_bus_req_new.write = 0;
+    gb.gbc.bus_req_new.addr = 0x0150;
+    gb.gbc.bus_req_new.data = 0;
+    gb.gbc.bus_req_new.read = 1;
+    gb.gbc.bus_req_new.write = 0;
     gb.gbs.sys_cpu_en = false;
     gb.gbs.phase_total = 0;
 
@@ -1988,10 +1988,10 @@ TestResults GateBoyTests::run_mooneye_test(const char* path, const char* filenam
   int mcycle = 0;
   for (; mcycle < timeout; mcycle++) {
     gbp.run_phases(rom, 8);
-    if (gbp.gba.gbc_gb_cpu.op == 0x40) break;
+    if (gbp.gba.gbc.gb_cpu.op == 0x40) break;
   }
 
-  if ((gbp.gba.gbc_gb_cpu.a == 0x00) && (mcycle != timeout)) {
+  if ((gbp.gba.gbc.gb_cpu.a == 0x00) && (mcycle != timeout)) {
     if (verbose) LOG_G("PASS @ %d\n", mcycle);
   }
   else {

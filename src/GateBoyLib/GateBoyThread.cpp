@@ -186,11 +186,11 @@ void GateBoyThread::load_flat_dump(const blob& flat_dump) {
   CHECK_P(sim_paused());
 
   cart_blob = flat_dump;
-  memcpy(gbp->gba.gbm_vid_ram,  flat_dump.data() + 0x8000, 8192);
-  memcpy(gbp->gba.gbm_cart_ram, flat_dump.data() + 0xA000, 8192);
-  memcpy(gbp->gba.gbm_int_ram,  flat_dump.data() + 0xC000, 8192);
-  memcpy(gbp->gba.gbm_oam_ram,  flat_dump.data() + 0xFE00, 256);
-  memcpy(gbp->gba.gbm_zero_ram, flat_dump.data() + 0xFF80, 128);
+  memcpy(gbp->gba.gbm.vid_ram,  flat_dump.data() + 0x8000, 8192);
+  memcpy(gbp->gba.gbm.cart_ram, flat_dump.data() + 0xA000, 8192);
+  memcpy(gbp->gba.gbm.int_ram,  flat_dump.data() + 0xC000, 8192);
+  memcpy(gbp->gba.gbm.oam_ram,  flat_dump.data() + 0xFE00, 256);
+  memcpy(gbp->gba.gbm.zero_ram, flat_dump.data() + 0xFF80, 128);
 
   gbp->gba.dbg_write(flat_dump, ADDR_BGP,  flat_dump[ADDR_BGP]);
   gbp->gba.dbg_write(flat_dump, ADDR_OBP0, flat_dump[ADDR_OBP0]);

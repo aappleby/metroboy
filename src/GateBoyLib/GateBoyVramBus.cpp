@@ -495,7 +495,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
 
   uint8_t data = 0xFF;
   if (bit(~gbr.vram_ext_ctrl.PIN_45_VRAM_OEn.qp_ext_new())) {
-    data = gbm_vid_ram[addr];
+    data = gbm.vid_ram[addr];
   }
 
   //--------------------------------------------
@@ -576,7 +576,7 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   //--------------------------------------------
 
   if (bit(~gbr.vram_ext_ctrl.PIN_49_VRAM_WRn.qp_ext_new())) {
-    gbm_vid_ram[addr] = (uint8_t)bit_pack_inv(gbr.vram_ext_dbus);
+    gbm.vid_ram[addr] = (uint8_t)bit_pack_inv(gbr.vram_ext_dbus);
   }
 
   //--------------------------------------------

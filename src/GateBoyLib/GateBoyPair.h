@@ -84,7 +84,7 @@ struct GateBoyPair {
 
     CHECK_P((gba.gbs.phase_total & 7) == 0);
 
-    Req old_req = gba.gbc_bus_req_new;
+    Req old_req = gba.gbc.bus_req_new;
     bool old_cpu_en = gba.gbs.sys_cpu_en;
 
     Req req_new;
@@ -93,8 +93,8 @@ struct GateBoyPair {
     req_new.read = 0;
     req_new.write = 1;
 
-    gba.gbc_bus_req_new = req_new;
-    gbb.gbc_bus_req_new = req_new;
+    gba.gbc.bus_req_new = req_new;
+    gbb.gbc.bus_req_new = req_new;
     gba.gbs.sys_cpu_en = false;
     gbb.gbs.sys_cpu_en = false;
 
@@ -107,8 +107,8 @@ struct GateBoyPair {
     result &= next_phase(cart_blob);
     result &= next_phase(cart_blob);
 
-    gba.gbc_bus_req_new = old_req;
-    gbb.gbc_bus_req_new = old_req;
+    gba.gbc.bus_req_new = old_req;
+    gbb.gbc.bus_req_new = old_req;
     gba.gbs.sys_cpu_en = old_cpu_en;
     gbb.gbs.sys_cpu_en = old_cpu_en;
 
@@ -122,7 +122,7 @@ struct GateBoyPair {
 
     CHECK_P((gba.gbs.phase_total & 7) == 0);
 
-    Req old_req = gba.gbc_bus_req_new;
+    Req old_req = gba.gbc.bus_req_new;
     bool old_cpu_en = gba.gbs.sys_cpu_en;
 
     Req req_new;
@@ -131,8 +131,8 @@ struct GateBoyPair {
     req_new.read = 1;
     req_new.write = 0;
 
-    gba.gbc_bus_req_new = req_new;
-    gbb.gbc_bus_req_new = req_new;
+    gba.gbc.bus_req_new = req_new;
+    gbb.gbc.bus_req_new = req_new;
     gba.gbs.sys_cpu_en = false;
     gbb.gbs.sys_cpu_en = false;
 
@@ -145,12 +145,12 @@ struct GateBoyPair {
     result &= next_phase(cart_blob);
     result &= next_phase(cart_blob);
 
-    gba.gbc_bus_req_new = old_req;
-    gbb.gbc_bus_req_new = old_req;
+    gba.gbc.bus_req_new = old_req;
+    gbb.gbc.bus_req_new = old_req;
     gba.gbs.sys_cpu_en = old_cpu_en;
     gbb.gbs.sys_cpu_en = old_cpu_en;
 
-    out = gba.gbc_cpu_data_latch;
+    out = gba.gbc.cpu_data_latch;
     return result;
   }
 

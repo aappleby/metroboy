@@ -154,7 +154,8 @@ struct GateBoyReg {
   SpritePixA    sprite_pix_a;
   SpritePixB    sprite_pix_b;
 
-  TileFetcher   tile_fetcher;
+  TileFetchCounter tfetch_counter;
+  TileFetchControl tfetch_control;
   TileTempA tile_temp_a;
   TileTempB tile_temp_b;
 

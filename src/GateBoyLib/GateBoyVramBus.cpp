@@ -146,11 +146,11 @@ void GateBoy::tock_vram_bus_gates(const GateBoyCpuDBus& cpu_dbus_old, wire TEVO_
   /*_BUS_CPU_D06p*/ reg.cpu_dbus.BUS_CPU_D06p.tri_bus(DOXE_SCX6_TO_CD6);
   /*_BUS_CPU_D07p*/ reg.cpu_dbus.BUS_CPU_D07p.tri_bus(CASY_SCX7_TO_CD7);
 
-  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(reg.tile_fetcher.NYVA_BFETCH_S2p.qp_new());
-  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(reg.tile_fetcher.MESU_BFETCH_S1p.qp_new());
+  /*#p27.NOFU*/ wire NOFU_BFETCH_S2n = not1(reg.tfetch_counter.NYVA_BFETCH_S2p.qp_new());
+  /*#p27.NAKO*/ wire NAKO_BFETCH_S1n = not1(reg.tfetch_counter.MESU_BFETCH_S1p.qp_new());
   /*_p27.NOGU*/ wire NOGU_BFETCH_01p = nand2(NAKO_BFETCH_S1n, NOFU_BFETCH_S2n);
   /*_p27.NENY*/ wire NENY_BFETCH_01n = not1(NOGU_BFETCH_01p);
-  /*_p27.LUSU*/ wire LUSU_FETCHINGn = not1(reg.tile_fetcher.LONY_FETCHINGp.qp_new());
+  /*_p27.LUSU*/ wire LUSU_FETCHINGn = not1(reg.tfetch_control.LONY_FETCHINGp.qp_new());
   /*_p27.LENA*/ wire LENA_BFETCHINGp = not1(LUSU_FETCHINGn);
   /*_p27.POTU*/ wire POTU_BGW_MAP_READp  = and2(LENA_BFETCHINGp, NENY_BFETCH_01n);
 
@@ -483,7 +483,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyCpuDBus& cpu_dbus_old, wire TEVO_
     /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(reg.sfetch_control.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n);
     /*_p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and2(TACU_SPR_SEQ_5_TRIG, reg.sfetch_control.TEXY_SFETCHINGp.out_new());
     /*_p25.RAWA*/ wire RAWA_SPR_VRAM_RDn = not1(SOHO_SPR_VRAM_RDp);
-    /*_p27.MYMA*/ wire MYMA_BGW_VRAM_RDn = not1(reg.tile_fetcher.LONY_FETCHINGp.qp_new());
+    /*_p27.MYMA*/ wire MYMA_BGW_VRAM_RDn = not1(reg.tfetch_control.LONY_FETCHINGp.qp_new());
     /*_p25.APAM*/ wire APAM_DMA_VRAMn    = not1(LUFA_DMA_VRAMp);
     /*_p25.RACU*/ wire RACU_MOEn   = and4(RYLU_CPU_VRAM_RDn, RAWA_SPR_VRAM_RDn, MYMA_BGW_VRAM_RDn, APAM_DMA_VRAMn); // def and
     /*_p25.SEMA*/ wire SEMA_MOEn_A = and2(RACU_MOEn, RACO_DBG_VRAMn);

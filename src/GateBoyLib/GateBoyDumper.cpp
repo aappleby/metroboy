@@ -63,16 +63,16 @@ void GateBoy::dump_sys(Dumper& d) const {
 }
 
 void GateBoy::dump_tile_fetcher(Dumper& d) {
-  d.dump_bitp   ("POKY_PRELOAD_LATCHp : ", reg.tile_fetcher.POKY_PRELOAD_LATCHp.state);
-  d.dump_bitp   ("LONY_FETCHINGp      : ", reg.tile_fetcher.LONY_FETCHINGp.state);
-  d.dump_bitp   ("LOVY_FETCH_DONEp    : ", reg.tile_fetcher.LOVY_FETCH_DONEp.state);
-  d.dump_bitp   ("NYKA_FETCH_DONEp    : ", reg.tile_fetcher.NYKA_FETCH_DONEp.state);
-  d.dump_bitp   ("PORY_FETCH_DONEp    : ", reg.tile_fetcher.PORY_FETCH_DONEp.state);
-  d.dump_bitp   ("PYGO_FETCH_DONEp    : ", reg.tile_fetcher.PYGO_FETCH_DONEp.state);
-  d.dump_bitp   ("LAXU_BFETCH_S0p     : ", reg.tile_fetcher.LAXU_BFETCH_S0p.state);
-  d.dump_bitp   ("MESU_BFETCH_S1p     : ", reg.tile_fetcher.MESU_BFETCH_S1p.state);
-  d.dump_bitp   ("NYVA_BFETCH_S2p     : ", reg.tile_fetcher.NYVA_BFETCH_S2p.state);
-  d.dump_bitp   ("LYZU_BFETCH_S0p_D1  : ", reg.tile_fetcher.LYZU_BFETCH_S0p_D1.state);
+  d.dump_bitp   ("LAXU_BFETCH_S0p     : ", reg.tfetch_counter.LAXU_BFETCH_S0p.state);
+  d.dump_bitp   ("MESU_BFETCH_S1p     : ", reg.tfetch_counter.MESU_BFETCH_S1p.state);
+  d.dump_bitp   ("NYVA_BFETCH_S2p     : ", reg.tfetch_counter.NYVA_BFETCH_S2p.state);
+  d.dump_bitp   ("POKY_PRELOAD_LATCHp : ", reg.tfetch_control.POKY_PRELOAD_LATCHp.state);
+  d.dump_bitp   ("LONY_FETCHINGp      : ", reg.tfetch_control.LONY_FETCHINGp.state);
+  d.dump_bitp   ("LOVY_FETCH_DONEp    : ", reg.tfetch_control.LOVY_FETCH_DONEp.state);
+  d.dump_bitp   ("NYKA_FETCH_DONEp    : ", reg.tfetch_control.NYKA_FETCH_DONEp.state);
+  d.dump_bitp   ("PORY_FETCH_DONEp    : ", reg.tfetch_control.PORY_FETCH_DONEp.state);
+  d.dump_bitp   ("PYGO_FETCH_DONEp    : ", reg.tfetch_control.PYGO_FETCH_DONEp.state);
+  d.dump_bitp   ("LYZU_BFETCH_S0p_D1  : ", reg.tfetch_control.LYZU_BFETCH_S0p_D1.state);
   d.dump_slice2n("Temp A : ", &reg.tile_temp_a.LEGU_TILE_DA0n, 8);
   d.dump_slice2p("Temp B : ", &reg.tile_temp_b.RAWU_TILE_DB0p, 8);
 }

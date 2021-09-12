@@ -1955,8 +1955,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (reg.VOGA_HBLANKp.state) reg.XYMU_RENDERINGn.state = 1;
   if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp.state) reg.XYMU_RENDERINGn.state = 0;
 
-  bool rendering_new = !reg.XYMU_RENDERINGn.state;
-
   uint8_t sfetch_phase_old = pack(!(reg_old.sprite_fetcher.TYFO_SFETCH_S0p_D1.state ^ reg_old.sprite_fetcher.TOXE_SFETCH_S0p.state), reg_old.sprite_fetcher.TOXE_SFETCH_S0p.state, reg_old.sprite_fetcher.TULY_SFETCH_S1p.state, reg_old.sprite_fetcher.TESE_SFETCH_S2p.state);
 
   //-----------------------
@@ -2026,13 +2024,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_clear(&reg.sprite_fetcher.TOXE_SFETCH_S0p, 3);
     }
 
-    if (!rendering_new) {
+    if (reg_new.XYMU_RENDERINGn.state) {
       reg.sprite_fetcher.TOBU_SFETCH_S1p_D2.state = 0;
       reg.sprite_fetcher.VONU_SFETCH_S1p_D4.state = 0;
       reg.sprite_fetcher.SEBA_SFETCH_S1p_D5.state = 0;
     }
 
-    reg.sprite_fetcher.TEXY_SFETCHINGp = (reg.sprite_fetcher.TULY_SFETCH_S1p || reg.sprite_fetcher.VONU_SFETCH_S1p_D4) && rendering_new;
+    reg.sprite_fetcher.TEXY_SFETCHINGp = (reg.sprite_fetcher.TULY_SFETCH_S1p || reg.sprite_fetcher.VONU_SFETCH_S1p_D4) && !reg_new.XYMU_RENDERINGn.state;
 
     reg.sprite_fetcher.WUTY_SFETCH_DONE_TRIGp = reg.sprite_fetcher.TYFO_SFETCH_S0p_D1 && reg.sprite_fetcher.TOXE_SFETCH_S0p && reg.sprite_fetcher.SEBA_SFETCH_S1p_D5 && reg.sprite_fetcher.VONU_SFETCH_S1p_D4;
 
@@ -2074,7 +2072,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.tile_fetcher.POKY_PRELOAD_LATCHp.state = 1;
     }
 
-    if (!rendering_new) {
+    if (reg_new.XYMU_RENDERINGn.state) {
       reg.tile_fetcher.PYGO_FETCH_DONEp.state = 0;
       reg.tile_fetcher.PORY_FETCH_DONEp.state = 0;
       reg.tile_fetcher.NYKA_FETCH_DONEp.state = 0;
@@ -2105,7 +2103,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 1;
     }
 
-    if (rendering_new && !reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && reg.tile_fetcher.NYKA_FETCH_DONEp.state && reg.tile_fetcher.PORY_FETCH_DONEp.state) {
+    if (!reg_new.XYMU_RENDERINGn.state && !reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && reg.tile_fetcher.NYKA_FETCH_DONEp.state && reg.tile_fetcher.PORY_FETCH_DONEp.state) {
       reg.sprite_fetcher.TAKA_SFETCH_RUNNINGp.state = 0;
     }
 
@@ -2117,14 +2115,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
 
-  uint8_t sfetch_phase_new = pack(~(reg.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg.sprite_fetcher.TOXE_SFETCH_S0p), reg.sprite_fetcher.TOXE_SFETCH_S0p, reg.sprite_fetcher.TULY_SFETCH_S1p, reg.sprite_fetcher.TESE_SFETCH_S2p);
+  uint8_t sfetch_phase_new = pack(~(reg_new.sprite_fetcher.TYFO_SFETCH_S0p_D1 ^ reg_new.sprite_fetcher.TOXE_SFETCH_S0p), reg_new.sprite_fetcher.TOXE_SFETCH_S0p, reg_new.sprite_fetcher.TULY_SFETCH_S1p, reg_new.sprite_fetcher.TESE_SFETCH_S2p);
 
   {
     wire oam_busy_old = (cpu_addr_old >= 0xFE00 && cpu_addr_old <= 0xFEFF) || dma_running_old;
     wire oam_busy_new = (cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFEFF) || dma_running_new;
 
     CHECK_N(rendering_old && scanning_new);
-    CHECK_N(rendering_new && scanning_new);
+    CHECK_N(!reg_new.XYMU_RENDERINGn.state && scanning_new);
     CHECK_N(rendering_old && reg_old.sprite_scanner.ACYL_SCANNINGp);
 
     uint8_t BYCU_OAM_CLKp_old = 1;
@@ -2135,7 +2133,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     uint8_t BYCU_OAM_CLKp_new = 1;
     if (scanning_new)  BYCU_OAM_CLKp_new &= gen_clk_new(0b10001000);
     if (oam_busy_new)  BYCU_OAM_CLKp_new &= gen_clk_new(0b11110000);
-    if (rendering_new) BYCU_OAM_CLKp_new &= sfetch_phase_new != 3;
+    if (!reg_new.XYMU_RENDERINGn.state) BYCU_OAM_CLKp_new &= sfetch_phase_new != 3;
 
     if (!BYCU_OAM_CLKp_old && BYCU_OAM_CLKp_new) {
       bit_copy_inv(reg.oam_temp_a, reg.oam_latch_a);
@@ -2147,31 +2145,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
   // FIXME need to ditch these adders
-
-  auto pack_ly_new = bit_pack(reg.reg_ly);
-  auto pack_oam_temp_a = bit_pack(reg.oam_temp_a);
-
-  Adder ERUC_YDIFF0 = add3(!get_bit(pack_ly_new, 0), get_bit(pack_oam_temp_a, 0), 0);
-  Adder ENEF_YDIFF1 = add3(!get_bit(pack_ly_new, 1), get_bit(pack_oam_temp_a, 1), ERUC_YDIFF0.carry);
-  Adder FECO_YDIFF2 = add3(!get_bit(pack_ly_new, 2), get_bit(pack_oam_temp_a, 2), ENEF_YDIFF1.carry);
-  Adder GYKY_YDIFF3 = add3(!get_bit(pack_ly_new, 3), get_bit(pack_oam_temp_a, 3), FECO_YDIFF2.carry);
-  Adder GOPU_YDIFF4 = add3(!get_bit(pack_ly_new, 4), get_bit(pack_oam_temp_a, 4), GYKY_YDIFF3.carry);
-  Adder FUWA_YDIFF5 = add3(!get_bit(pack_ly_new, 5), get_bit(pack_oam_temp_a, 5), GOPU_YDIFF4.carry);
-  Adder GOJU_YDIFF6 = add3(!get_bit(pack_ly_new, 6), get_bit(pack_oam_temp_a, 6), FUWA_YDIFF5.carry);
-  Adder WUHU_YDIFF7 = add3(!get_bit(pack_ly_new, 7), get_bit(pack_oam_temp_a, 7), GOJU_YDIFF6.carry);
-
-  auto pack_ydiff = ~pack_ly_new + pack_oam_temp_a;
-
-  SpriteDeltaY sprite_delta_y = {
-    ERUC_YDIFF0,
-    ENEF_YDIFF1,
-    FECO_YDIFF2,
-    GYKY_YDIFF3,
-    GOPU_YDIFF4,
-    FUWA_YDIFF5,
-    GOJU_YDIFF6,
-    WUHU_YDIFF7,
-  };
 
   if (vid_rst_new) {
     reg.DEZY_COUNT_CLKp.state = 0;
@@ -2214,6 +2187,29 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_set(reg.store_x9);
   }
   else {
+    auto pack_ly_new = bit_pack(reg_new.reg_ly);
+    auto pack_oam_temp_a_new = bit_pack(reg_new.oam_temp_a);
+
+    Adder ERUC_YDIFF0 = add3(!get_bit(pack_ly_new, 0), get_bit(pack_oam_temp_a_new, 0), 0);
+    Adder ENEF_YDIFF1 = add3(!get_bit(pack_ly_new, 1), get_bit(pack_oam_temp_a_new, 1), ERUC_YDIFF0.carry);
+    Adder FECO_YDIFF2 = add3(!get_bit(pack_ly_new, 2), get_bit(pack_oam_temp_a_new, 2), ENEF_YDIFF1.carry);
+    Adder GYKY_YDIFF3 = add3(!get_bit(pack_ly_new, 3), get_bit(pack_oam_temp_a_new, 3), FECO_YDIFF2.carry);
+    Adder GOPU_YDIFF4 = add3(!get_bit(pack_ly_new, 4), get_bit(pack_oam_temp_a_new, 4), GYKY_YDIFF3.carry);
+    Adder FUWA_YDIFF5 = add3(!get_bit(pack_ly_new, 5), get_bit(pack_oam_temp_a_new, 5), GOPU_YDIFF4.carry);
+    Adder GOJU_YDIFF6 = add3(!get_bit(pack_ly_new, 6), get_bit(pack_oam_temp_a_new, 6), FUWA_YDIFF5.carry);
+    Adder WUHU_YDIFF7 = add3(!get_bit(pack_ly_new, 7), get_bit(pack_oam_temp_a_new, 7), GOJU_YDIFF6.carry);
+
+    SpriteDeltaY sprite_delta_y = {
+      ERUC_YDIFF0,
+      ENEF_YDIFF1,
+      FECO_YDIFF2,
+      GYKY_YDIFF3,
+      GOPU_YDIFF4,
+      FUWA_YDIFF5,
+      GOJU_YDIFF6,
+      WUHU_YDIFF7,
+    };
+
     auto ssf_clk =
       !CLK_xBCxxFGx ||
       !reg.sprite_scanner.CENO_SCANNINGn.state ||
@@ -2316,10 +2312,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Fine scroll match, sprite store match, clock pipe, and pixel counter are intertwined here.
 
-  auto XYDO_PX3p_old = reg.pix_count.XYDO_PX3p;
-  auto scx_old = bit_pack_inv(&reg.reg_scx.DATY_SCX0n, 3);
-  auto fine_cnt_old = bit_pack(&reg.fine_scroll.RYKU_FINE_CNT0, 3);
-  wire fine_match_old = reg.fine_scroll.ROXY_FINE_SCROLL_DONEn.state && (scx_old == fine_cnt_old);
+  auto XYDO_PX3p_old = reg_old.pix_count.XYDO_PX3p;
+  auto scx_old = bit_pack_inv(&reg_old.reg_scx.DATY_SCX0n, 3);
+  auto fine_cnt_old = bit_pack(&reg_old.fine_scroll.RYKU_FINE_CNT0, 3);
+  wire fine_match_old = reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn.state && (scx_old == fine_cnt_old);
 
   wire clkpipe_en_new = 1;
   if (reg.win_ctrl.RYDY_WIN_HITp.state) clkpipe_en_new = 0;
@@ -2336,7 +2332,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.fine_scroll.NYZE_SCX_FINE_MATCH_B.state = reg.fine_scroll.PUXA_SCX_FINE_MATCH_A.state;
   }
 
-  if (!rendering_new) {
+  if (reg_new.XYMU_RENDERINGn.state) {
     reg.fine_scroll.ROXY_FINE_SCROLL_DONEn.state = 1;
     reg.fine_scroll.NYZE_SCX_FINE_MATCH_B.state = 0;
     reg.fine_scroll.PUXA_SCX_FINE_MATCH_A.state = 0;
@@ -2360,7 +2356,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_clear(reg.pix_count);
   }
 
-  if (!rendering_new || reg.sprite_scanner.CENO_SCANNINGn.state || reg.reg_lcdc.XYLO_LCDC_SPENn.state) {
+  if (reg_new.XYMU_RENDERINGn.state || reg.sprite_scanner.CENO_SCANNINGn.state || reg.reg_lcdc.XYLO_LCDC_SPENn.state) {
     bit_clear(reg.sprite_match_flags);
   }
   else {
@@ -2432,12 +2428,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (reg.sprite_match_flags.FOXA_SPRITE8_GETp.state) bit_copy_inv(reg.sprite_lbus, reg.store_l8);
   if (reg.sprite_match_flags.GUZE_SPRITE9_GETp.state) bit_copy_inv(reg.sprite_lbus, reg.store_l9);
 
-  if (reg.sprite_scanner.CENO_SCANNINGn.state || !rendering_new) {
+  if (reg.sprite_scanner.CENO_SCANNINGn.state || reg_new.XYMU_RENDERINGn.state) {
     auto pack_sprite_index = bit_pack(reg.sprite_index);
     bit_unpack(reg.sprite_ibus, pack_sprite_index);
   }
 
   if (!reg.FEPO_STORE_MATCHp.state) {
+    auto pack_ly_new = bit_pack(reg_new.reg_ly);
+    auto pack_oam_temp_a_new = bit_pack(reg_new.oam_temp_a);
+    auto pack_ydiff = ~pack_ly_new + pack_oam_temp_a_new;
     bit_unpack(&reg.sprite_lbus, 4, pack_ydiff);
   }
 
@@ -2454,7 +2453,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  if (rendering_new) {
+  if (!reg_new.XYMU_RENDERINGn.state) {
     if (DELTA_EVEN) {
       reg.win_ctrl.RENE_WIN_FETCHn_B.state = reg.win_ctrl.RYFA_WIN_FETCHn_A.state;
     }
@@ -2504,13 +2503,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     (reg.win_ctrl.PYNU_WIN_MODE_Ap.state && !reg.win_ctrl.NOPA_WIN_MODE_Bp.state) ||
     (reg.win_ctrl.RYFA_WIN_FETCHn_A.state && !reg.win_ctrl.RENE_WIN_FETCHn_B.state) ||
     (reg.win_ctrl.SOVY_WIN_HITp.state && !reg.win_ctrl.RYDY_WIN_HITp.state) ||
-    (rendering_new && !reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && reg.tile_fetcher.NYKA_FETCH_DONEp.state && reg.tile_fetcher.PORY_FETCH_DONEp.state);
+    (!reg_new.XYMU_RENDERINGn.state && !reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && reg.tile_fetcher.NYKA_FETCH_DONEp.state && reg.tile_fetcher.PORY_FETCH_DONEp.state);
 
   if (gen_clk_new(0b01010101)) {
     reg.tile_fetcher.LYZU_BFETCH_S0p_D1.state = reg.tile_fetcher.LAXU_BFETCH_S0p.state;
   }
 
-  if (!rendering_new) {
+  if (reg_new.XYMU_RENDERINGn.state) {
     reg.tile_fetcher.LYZU_BFETCH_S0p_D1.state = 0;
   }
 
@@ -2533,7 +2532,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.tile_fetcher.LYRY_BFETCH_DONEp = reg.tile_fetcher.LAXU_BFETCH_S0p.state && reg.tile_fetcher.NYVA_BFETCH_S2p.state;
   }
 
-  if (reg.tile_fetcher.LOVY_FETCH_DONEp.state || !rendering_new) {
+  if (reg.tile_fetcher.LOVY_FETCH_DONEp.state || reg_new.XYMU_RENDERINGn.state) {
     reg.tile_fetcher.LONY_FETCHINGp.state = 0;
   }
 
@@ -2578,23 +2577,23 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // Good example of gate-level behavior that doesn't matter
 
     if (rendering_old) {
-      if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || !rendering_new)) {
+      if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || reg_new.XYMU_RENDERINGn.state)) {
         bit_copy_inv(reg.tile_temp_a, reg.vram_dbus);
       }
 
-      if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || !rendering_new)) {
+      if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || reg_new.XYMU_RENDERINGn.state)) {
         bit_copy(reg.tile_temp_b, reg.vram_dbus);
       }
 
-      if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || !rendering_new)) {
+      if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || reg_new.XYMU_RENDERINGn.state)) {
         bit_copy(reg.tile_temp_b, reg.vram_dbus);
       }
 
-      if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || !rendering_new)) {
+      if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || reg_new.XYMU_RENDERINGn.state)) {
         bit_copy_inv(reg.sprite_pix_a, reg.flipped_sprite);
       }
 
-      if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || !rendering_new)) {
+      if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || reg_new.XYMU_RENDERINGn.state)) {
         bit_copy_inv(reg.sprite_pix_b, reg.flipped_sprite);
       }
     }
@@ -3236,7 +3235,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.oam_ctrl.SIG_OAM_WRn_B.state = 1;
       reg.oam_ctrl.SIG_OAM_OEn  .state = (!vid_rst_new && gen_clk_new(0b10011001)) && !(dbus_busy && addr_oam && cpu_rd);
     }
-    else if (rendering_new) {
+    else if (!reg_new.XYMU_RENDERINGn.state) {
       reg.oam_abus.BUS_OAM_A00n.state = 0;
       reg.oam_abus.BUS_OAM_A01n.state = 0;
       bit_copy_inv(&reg.oam_abus.BUS_OAM_A02n, 6, &reg.sprite_ibus.BUS_SPR_I0);
@@ -3299,7 +3298,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bool latch_oam = false;
     latch_oam |= (dbus_busy && addr_oam && cpu_rd);
     latch_oam |= scanning_new && gen_clk_new(0b01100110);
-    latch_oam |= rendering_new && !reg.sprite_fetcher.TULY_SFETCH_S1p.state && !reg.sprite_fetcher.TESE_SFETCH_S2p.state && reg.sprite_fetcher.TYFO_SFETCH_S0p_D1.state;
+    latch_oam |= !reg_new.XYMU_RENDERINGn.state && !reg.sprite_fetcher.TULY_SFETCH_S1p.state && !reg.sprite_fetcher.TESE_SFETCH_S2p.state && reg.sprite_fetcher.TYFO_SFETCH_S0p_D1.state;
 
     if (latch_oam) {
       bit_unpack_inv(reg.oam_dbus_a, oam_data_a);
@@ -3308,7 +3307,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_copy(reg.oam_latch_b, reg.oam_dbus_b);
     }
 
-    if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running_new && !scanning_new && !rendering_new) {
+    if (cpu_rd && dbus_free && addr_oam && !latch_oam && !dma_running_new && !scanning_new && reg_new.XYMU_RENDERINGn.state) {
       if (reg.oam_abus.BUS_OAM_A00n.state) {
         bit_copy_inv(reg.cpu_dbus_new, reg.oam_latch_a);
       }

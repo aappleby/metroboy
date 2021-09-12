@@ -3,6 +3,7 @@
 #pragma warning(disable:4189) // unused local variable
 #pragma warning(disable:4100) // unused param
 #pragma warning(disable:4127) // conditional expression is constant
+#pragma warning(disable:4201) // anonymous struct/union
 
 //#pragma optimize("", off)
 

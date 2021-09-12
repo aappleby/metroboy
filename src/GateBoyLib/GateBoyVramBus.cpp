@@ -213,36 +213,36 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   /*_p27.XAHY*/ wire XAHY_LINE_RSTn = not1(reg.ATEJ_LINE_RSTp.out_new());
   /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(reg.reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn, XAPO_VID_RSTn());
   /*_p27.XACO*/ wire XACO_WIN_RSTn = not1(XOFO_WIN_RSTp);
-  /*_p27.WYKA*/ reg.win_x.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp,                       XACO_WIN_RSTn, reg.win_x.WYKA_WIN_MAP_X0.qn_old());
-  /*_p27.WODY*/ reg.win_x.WODY_WIN_MAP_X1.dff17(reg.win_x.WYKA_WIN_MAP_X0.qn_new(), XACO_WIN_RSTn, reg.win_x.WODY_WIN_MAP_X1.qn_old());
-  /*_p27.WOBO*/ reg.win_x.WOBO_WIN_MAP_X2.dff17(reg.win_x.WODY_WIN_MAP_X1.qn_new(), XACO_WIN_RSTn, reg.win_x.WOBO_WIN_MAP_X2.qn_old());
-  /*_p27.WYKO*/ reg.win_x.WYKO_WIN_MAP_X3.dff17(reg.win_x.WOBO_WIN_MAP_X2.qn_new(), XACO_WIN_RSTn, reg.win_x.WYKO_WIN_MAP_X3.qn_old());
-  /*_p27.XOLO*/ reg.win_x.XOLO_WIN_MAP_X4.dff17(reg.win_x.WYKO_WIN_MAP_X3.qn_new(), XACO_WIN_RSTn, reg.win_x.XOLO_WIN_MAP_X4.qn_old());
+  /*_p27.WYKA*/ reg.win_map_x.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp,                       XACO_WIN_RSTn,    reg.win_map_x.WYKA_WIN_MAP_X0.qn_old());
+  /*_p27.WODY*/ reg.win_map_x.WODY_WIN_MAP_X1.dff17(reg.win_map_x.WYKA_WIN_MAP_X0.qn_new(), XACO_WIN_RSTn, reg.win_map_x.WODY_WIN_MAP_X1.qn_old());
+  /*_p27.WOBO*/ reg.win_map_x.WOBO_WIN_MAP_X2.dff17(reg.win_map_x.WODY_WIN_MAP_X1.qn_new(), XACO_WIN_RSTn, reg.win_map_x.WOBO_WIN_MAP_X2.qn_old());
+  /*_p27.WYKO*/ reg.win_map_x.WYKO_WIN_MAP_X3.dff17(reg.win_map_x.WOBO_WIN_MAP_X2.qn_new(), XACO_WIN_RSTn, reg.win_map_x.WYKO_WIN_MAP_X3.qn_old());
+  /*_p27.XOLO*/ reg.win_map_x.XOLO_WIN_MAP_X4.dff17(reg.win_map_x.WYKO_WIN_MAP_X3.qn_new(), XACO_WIN_RSTn, reg.win_map_x.XOLO_WIN_MAP_X4.qn_old());
 
   // Every time we leave win mode we increment win_y
   /*_p27.WAZY*/ wire WAZY_WIN_MODEn = not1(PORE_WIN_MODEp);
   /*#p21.PARU*/ wire PARU_VBLANKp = not1(reg.lcd.POPU_y144p.qn_new());
   /*_p27.REPU*/ wire REPU_VBLANKp   = or2(PARU_VBLANKp, PYRY_VID_RSTp());
   /*_p27.SYNY*/ wire SYNY_VBLANKn   = not1(REPU_VBLANKp);
-  /*_p27.VYNO*/ reg.win_y.VYNO_WIN_TILE_Y0.dff17(WAZY_WIN_MODEn,                  SYNY_VBLANKn, reg.win_y.VYNO_WIN_TILE_Y0.qn_old());
-  /*_p27.VUJO*/ reg.win_y.VUJO_WIN_TILE_Y1.dff17(reg.win_y.VYNO_WIN_TILE_Y0.qn_new(), SYNY_VBLANKn, reg.win_y.VUJO_WIN_TILE_Y1.qn_old());
-  /*_p27.VYMU*/ reg.win_y.VYMU_WIN_TILE_Y2.dff17(reg.win_y.VUJO_WIN_TILE_Y1.qn_new(), SYNY_VBLANKn, reg.win_y.VYMU_WIN_TILE_Y2.qn_old());
-  /*_p27.TUFU*/ reg.win_y.TUFU_WIN_MAP_Y0. dff17(reg.win_y.VYMU_WIN_TILE_Y2.qn_new(), SYNY_VBLANKn, reg.win_y.TUFU_WIN_MAP_Y0.qn_old());
-  /*_p27.TAXA*/ reg.win_y.TAXA_WIN_MAP_Y1. dff17(reg.win_y.TUFU_WIN_MAP_Y0.qn_new(),  SYNY_VBLANKn, reg.win_y.TAXA_WIN_MAP_Y1.qn_old());
-  /*_p27.TOZO*/ reg.win_y.TOZO_WIN_MAP_Y2. dff17(reg.win_y.TAXA_WIN_MAP_Y1.qn_new(),  SYNY_VBLANKn, reg.win_y.TOZO_WIN_MAP_Y2.qn_old());
-  /*_p27.TATE*/ reg.win_y.TATE_WIN_MAP_Y3. dff17(reg.win_y.TOZO_WIN_MAP_Y2.qn_new(),  SYNY_VBLANKn, reg.win_y.TATE_WIN_MAP_Y3.qn_old());
-  /*_p27.TEKE*/ reg.win_y.TEKE_WIN_MAP_Y4. dff17(reg.win_y.TATE_WIN_MAP_Y3.qn_new(),  SYNY_VBLANKn, reg.win_y.TEKE_WIN_MAP_Y4.qn_old());
+  /*_p27.VYNO*/ reg.win_tile_y.VYNO_WIN_TILE_Y0.dff17(WAZY_WIN_MODEn,                           SYNY_VBLANKn, reg.win_tile_y.VYNO_WIN_TILE_Y0.qn_old());
+  /*_p27.VUJO*/ reg.win_tile_y.VUJO_WIN_TILE_Y1.dff17(reg.win_tile_y.VYNO_WIN_TILE_Y0.qn_new(), SYNY_VBLANKn, reg.win_tile_y.VUJO_WIN_TILE_Y1.qn_old());
+  /*_p27.VYMU*/ reg.win_tile_y.VYMU_WIN_TILE_Y2.dff17(reg.win_tile_y.VUJO_WIN_TILE_Y1.qn_new(), SYNY_VBLANKn, reg.win_tile_y.VYMU_WIN_TILE_Y2.qn_old());
+  /*_p27.TUFU*/ reg.win_map_y. TUFU_WIN_MAP_Y0. dff17(reg.win_tile_y.VYMU_WIN_TILE_Y2.qn_new(), SYNY_VBLANKn, reg.win_map_y.TUFU_WIN_MAP_Y0.qn_old());
+  /*_p27.TAXA*/ reg.win_map_y. TAXA_WIN_MAP_Y1. dff17(reg.win_map_y. TUFU_WIN_MAP_Y0.qn_new(),  SYNY_VBLANKn, reg.win_map_y.TAXA_WIN_MAP_Y1.qn_old());
+  /*_p27.TOZO*/ reg.win_map_y. TOZO_WIN_MAP_Y2. dff17(reg.win_map_y. TAXA_WIN_MAP_Y1.qn_new(),  SYNY_VBLANKn, reg.win_map_y.TOZO_WIN_MAP_Y2.qn_old());
+  /*_p27.TATE*/ reg.win_map_y. TATE_WIN_MAP_Y3. dff17(reg.win_map_y. TOZO_WIN_MAP_Y2.qn_new(),  SYNY_VBLANKn, reg.win_map_y.TATE_WIN_MAP_Y3.qn_old());
+  /*_p27.TEKE*/ reg.win_map_y. TEKE_WIN_MAP_Y4. dff17(reg.win_map_y. TATE_WIN_MAP_Y3.qn_new(),  SYNY_VBLANKn, reg.win_map_y.TEKE_WIN_MAP_Y4.qn_old());
 
-  /*#p27.XEJA*/ triwire XEJA_WX03_TO_VA00 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_x.WYKA_WIN_MAP_X0.qp_new());
-  /*_p27.XAMO*/ triwire XAMO_WX04_TO_VA01 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_x.WODY_WIN_MAP_X1.qp_new());
-  /*_p27.XAHE*/ triwire XAHE_WX05_TO_VA02 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_x.WOBO_WIN_MAP_X2.qp_new());
-  /*_p27.XULO*/ triwire XULO_WX06_TO_VA03 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_x.WYKO_WIN_MAP_X3.qp_new());
-  /*_p27.WUJU*/ triwire WUJU_WX07_TO_VA04 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_x.XOLO_WIN_MAP_X4.qp_new());
-  /*#p27.VYTO*/ triwire VYTO_WY03_TO_VA05 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_y.TUFU_WIN_MAP_Y0.qp_new());
-  /*_p27.VEHA*/ triwire VEHA_WY04_TO_VA06 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_y.TAXA_WIN_MAP_Y1.qp_new());
-  /*_p27.VACE*/ triwire VACE_WY05_TO_VA07 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_y.TOZO_WIN_MAP_Y2.qp_new());
-  /*_p27.VOVO*/ triwire VOVO_WY06_TO_VA08 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_y.TATE_WIN_MAP_Y3.qp_new());
-  /*_p27.VULO*/ triwire VULO_WY07_TO_VA09 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_y.TEKE_WIN_MAP_Y4.qp_new());
+  /*#p27.XEJA*/ triwire XEJA_WX03_TO_VA00 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_x.WYKA_WIN_MAP_X0.qp_new());
+  /*_p27.XAMO*/ triwire XAMO_WX04_TO_VA01 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_x.WODY_WIN_MAP_X1.qp_new());
+  /*_p27.XAHE*/ triwire XAHE_WX05_TO_VA02 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_x.WOBO_WIN_MAP_X2.qp_new());
+  /*_p27.XULO*/ triwire XULO_WX06_TO_VA03 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_x.WYKO_WIN_MAP_X3.qp_new());
+  /*_p27.WUJU*/ triwire WUJU_WX07_TO_VA04 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_x.XOLO_WIN_MAP_X4.qp_new());
+  /*#p27.VYTO*/ triwire VYTO_WY03_TO_VA05 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_y.TUFU_WIN_MAP_Y0.qp_new());
+  /*_p27.VEHA*/ triwire VEHA_WY04_TO_VA06 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_y.TAXA_WIN_MAP_Y1.qp_new());
+  /*_p27.VACE*/ triwire VACE_WY05_TO_VA07 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_y.TOZO_WIN_MAP_Y2.qp_new());
+  /*_p27.VOVO*/ triwire VOVO_WY06_TO_VA08 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_y.TATE_WIN_MAP_Y3.qp_new());
+  /*_p27.VULO*/ triwire VULO_WY07_TO_VA09 = tri6_nn(WUKO_WIN_MAP_READn, reg.win_map_y.TEKE_WIN_MAP_Y4.qp_new());
   /*#p27.VEVY*/ triwire VEVY_WMAP_TO_VA10 = tri6_nn(WUKO_WIN_MAP_READn, reg.reg_lcdc.WOKY_LCDC_WINMAPn.qn_new());
   /*_p27.VEZA*/ triwire VEZA_WMAP_TO_VA11 = tri6_nn(WUKO_WIN_MAP_READn, reg.SIG_VCC.out_new());
   /*_p27.VOGU*/ triwire VOGU_WMAP_TO_VA12 = tri6_nn(WUKO_WIN_MAP_READn, reg.SIG_VCC.out_new());
@@ -281,9 +281,9 @@ void GateBoy::tock_vram_bus_gates(wire TEVO_WIN_FETCH_TRIGp) {
   /*_BUS_VRAM_A03n*/ reg.vram_abus.BUS_VRAM_A03n.tri_bus(DODE_TLY2_TO_VA03);
 
   /*#p25.XONU*/ triwire XONU_HILO_TO_VA00 = tri6_nn(XUCY_WIN_TILE_READn, XUHA_FETCH_HILOp);
-  /*#p25.WUDO*/ triwire WUDO_WNY0_TO_VA01 = tri6_nn(XUCY_WIN_TILE_READn, reg.win_y.VYNO_WIN_TILE_Y0.qp_new());
-  /*#p25.WAWE*/ triwire WAWE_WNY1_TO_VA02 = tri6_nn(XUCY_WIN_TILE_READn, reg.win_y.VUJO_WIN_TILE_Y1.qp_new());
-  /*#p25.WOLU*/ triwire WOLU_WNY2_TO_VA03 = tri6_nn(XUCY_WIN_TILE_READn, reg.win_y.VYMU_WIN_TILE_Y2.qp_new());
+  /*#p25.WUDO*/ triwire WUDO_WNY0_TO_VA01 = tri6_nn(XUCY_WIN_TILE_READn, reg.win_tile_y.VYNO_WIN_TILE_Y0.qp_new());
+  /*#p25.WAWE*/ triwire WAWE_WNY1_TO_VA02 = tri6_nn(XUCY_WIN_TILE_READn, reg.win_tile_y.VUJO_WIN_TILE_Y1.qp_new());
+  /*#p25.WOLU*/ triwire WOLU_WNY2_TO_VA03 = tri6_nn(XUCY_WIN_TILE_READn, reg.win_tile_y.VYMU_WIN_TILE_Y2.qp_new());
 
   /*_BUS_VRAM_A00n*/ reg.vram_abus.BUS_VRAM_A00n.tri_bus(XONU_HILO_TO_VA00);
   /*_BUS_VRAM_A01n*/ reg.vram_abus.BUS_VRAM_A01n.tri_bus(WUDO_WNY0_TO_VA01);

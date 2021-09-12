@@ -525,7 +525,7 @@ struct SpritePixB {
 
 //-----------------------------------------------------------------------------
 
-struct WindowX {
+struct WinMapX {
   /*_p27.WYKA*/ DFF17 WYKA_WIN_MAP_X0;   // AxCxExGx
   /*_p27.WODY*/ DFF17 WODY_WIN_MAP_X1;   // AxCxExGx
   /*_p27.WOBO*/ DFF17 WOBO_WIN_MAP_X2;   // AxCxExGx
@@ -533,7 +533,21 @@ struct WindowX {
   /*_p27.XOLO*/ DFF17 XOLO_WIN_MAP_X4;   // AxCxExGx
 };
 
-struct WindowY {
+struct WinTileY {
+  /*_p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
+  /*_p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
+  /*_p27.VYMU*/ DFF17 VYMU_WIN_TILE_Y2;  // AxCxExGh probably, but not enough data.
+};
+
+struct WinMapY {
+  /*_p27.TUFU*/ DFF17 TUFU_WIN_MAP_Y0;   // AxCxExGh probably, but not enough data.
+  /*_p27.TAXA*/ DFF17 TAXA_WIN_MAP_Y1;   // AxCxExGh probably, but not enough data.
+  /*_p27.TOZO*/ DFF17 TOZO_WIN_MAP_Y2;   // AxCxExGh probably, but not enough data.
+  /*_p27.TATE*/ DFF17 TATE_WIN_MAP_Y3;   // AxCxExGh probably, but not enough data.
+  /*_p27.TEKE*/ DFF17 TEKE_WIN_MAP_Y4;   // AxCxExGh probably, but not enough data.
+};
+
+struct WinY {
   /*_p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
   /*_p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
   /*_p27.VYMU*/ DFF17 VYMU_WIN_TILE_Y2;  // AxCxExGh probably, but not enough data.

@@ -168,8 +168,9 @@ struct GateBoyReg {
   RegWY   reg_wy;
   RegWX   reg_wx;
 
-  WindowX win_x;
-  WindowY win_y;
+  WinMapX  win_map_x;
+  WinTileY win_tile_y;
+  WinMapY  win_map_y;
 
   WindowRegisters win_ctrl;
   FineScroll      fine_scroll;

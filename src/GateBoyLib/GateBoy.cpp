@@ -436,8 +436,9 @@ MemberOffset gb_offsets[] = {
   GEN_OFFSET(reg.reg_scy),
   GEN_OFFSET(reg.reg_wy),
   GEN_OFFSET(reg.reg_wx),
-  GEN_OFFSET(reg.win_x),
-  GEN_OFFSET(reg.win_y),
+  GEN_OFFSET(reg.win_map_x),
+  GEN_OFFSET(reg.win_tile_y),
+  GEN_OFFSET(reg.win_map_y),
   GEN_OFFSET(reg.win_ctrl),
   GEN_OFFSET(reg.fine_scroll),
   GEN_OFFSET(reg.pix_count),
@@ -2885,54 +2886,82 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       if (cpu_addr_new == 0xFF43) bit_copy_inv(reg.cpu_dbus_new, reg.reg_scx);
     }
 
-    auto px  = bit_pack(reg.pix_count);
-    auto ly  = bit_pack(reg.reg_ly);
-    auto scx = bit_pack_inv(reg.reg_scx);
-    auto scy = bit_pack_inv(reg.reg_scy);
+    if (reg.tile_fetcher.LONY_FETCHINGp.state) {
+      auto px  = bit_pack(reg.pix_count);
+      auto ly  = bit_pack(reg.reg_ly);
+      auto scx = bit_pack_inv(reg.reg_scx);
+      auto scy = bit_pack_inv(reg.reg_scy);
 
-    auto sum_x = px + scx;
-    auto sum_y = ly + scy;
+      auto sum_x = px + scx;
+      auto sum_y = ly + scy;
 
-    if (reg.tile_fetcher.LONY_FETCHINGp.state && !reg.tile_fetcher.MESU_BFETCH_S1p.state && !reg.tile_fetcher.NYVA_BFETCH_S2p.state && !reg.win_ctrl.PYNU_WIN_MODE_Ap.state) {
-      bit_unpack_inv(&reg.vram_abus.BUS_VRAM_A00n, 5, sum_x >> 3);
-      bit_unpack_inv(&reg.vram_abus.BUS_VRAM_A05n, 5, sum_y >> 3);
-      reg.vram_abus.BUS_VRAM_A10n.state = reg.reg_lcdc.XAFO_LCDC_BGMAPn.state;
-      reg.vram_abus.BUS_VRAM_A11n.state = 0;
-      reg.vram_abus.BUS_VRAM_A12n.state = 0;
+      //--------------------------------------------
+      // BG map read address
+
+      if (!reg.tile_fetcher.MESU_BFETCH_S1p.state && !reg.tile_fetcher.NYVA_BFETCH_S2p.state && !reg.win_ctrl.PYNU_WIN_MODE_Ap.state) {
+        bit_unpack_inv(&reg.vram_abus.BUS_VRAM_A00n, 5, sum_x >> 3);
+        bit_unpack_inv(&reg.vram_abus.BUS_VRAM_A05n, 5, sum_y >> 3);
+        reg.vram_abus.BUS_VRAM_A10n.state = reg.reg_lcdc.XAFO_LCDC_BGMAPn.state;
+        reg.vram_abus.BUS_VRAM_A11n.state = 0;
+        reg.vram_abus.BUS_VRAM_A12n.state = 0;
+      }
+
+      //--------------------------------------------
+      // BG/Win tile read address
+
+      if (reg.tile_fetcher.MESU_BFETCH_S1p.state || reg.tile_fetcher.NYVA_BFETCH_S2p.state) {
+        uint32_t addr  = 0;
+
+        addr |= reg.tile_fetcher.NYVA_BFETCH_S2p.state << 0;
+        addr |= (reg.win_ctrl.PYNU_WIN_MODE_Ap.state ? bit_pack(reg.win_tile_y) : bit_mask(sum_y, 3)) << 1;
+        addr |= bit_pack(reg.tile_temp_b) << 4;
+        addr |= (!reg.tile_temp_b.PYJU_TILE_DB7p.state && reg.reg_lcdc.WEXU_LCDC_BGTILEn.state) << 12;
+
+        bit_unpack_inv(reg.vram_abus, addr);
+      }
     }
 
     //--------------------------------------------
     // Win coord x
 
     if (!(TEVO_WIN_FETCH_TRIGp_old && reg_old.win_ctrl.PYNU_WIN_MODE_Ap.state) && TEVO_WIN_FETCH_TRIGp_new && reg.win_ctrl.PYNU_WIN_MODE_Ap.state) {
-      bit_unpack(reg.win_x, bit_pack(reg_old.win_x) + 1);
+      bit_unpack(reg.win_map_x, bit_pack(reg_old.win_map_x) + 1);
     }
 
-    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn || reg_new.ATEJ_LINE_RSTp || reg.reg_lcdc.XONA_LCDC_LCDENn.state) bit_clear(reg.win_x);
+    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn) {
+      bit_clear(reg.win_map_x);
+    }
+
+    if (reg_new.ATEJ_LINE_RSTp) {
+      bit_clear(reg.win_map_x);
+    }
+
+    if (reg.reg_lcdc.XONA_LCDC_LCDENn.state) {
+      bit_clear(reg.win_map_x);
+    }
 
     //--------------------------------------------
     // Win coord y
 
-    if (reg_old.win_ctrl.PYNU_WIN_MODE_Ap.state && !reg.win_ctrl.PYNU_WIN_MODE_Ap.state) {
-      bit_unpack(reg.win_y, bit_pack(reg_old.win_y) + 1);
+    if (reg_old.win_ctrl.PYNU_WIN_MODE_Ap.state && !reg_new.win_ctrl.PYNU_WIN_MODE_Ap.state) {
+      // note we're adding adjacent bits in win tile/map y
+      uint8_t win = (uint8_t)bit_pack(&reg_old.win_tile_y, 8);
+      bit_unpack(&reg.win_tile_y, 8, win + 1);
     }
 
-    if (reg.lcd.POPU_y144p || reg.reg_lcdc.XONA_LCDC_LCDENn) {
-      reg.win_y.VYNO_WIN_TILE_Y0 = 0;
-      reg.win_y.VUJO_WIN_TILE_Y1 = 0;
-      reg.win_y.VYMU_WIN_TILE_Y2 = 0;
-      reg.win_y.TUFU_WIN_MAP_Y0  = 0;
-      reg.win_y.TAXA_WIN_MAP_Y1  = 0;
-      reg.win_y.TOZO_WIN_MAP_Y2  = 0;
-      reg.win_y.TATE_WIN_MAP_Y3  = 0;
-      reg.win_y.TEKE_WIN_MAP_Y4  = 0;
+    if (reg_new.lcd.POPU_y144p || reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
+      bit_clear(reg.win_tile_y);
+      bit_clear(reg.win_map_y);
     }
 
-    if (reg.tile_fetcher.LONY_FETCHINGp.state && !reg.tile_fetcher.MESU_BFETCH_S1p.state && !reg.tile_fetcher.NYVA_BFETCH_S2p.state && reg.win_ctrl.PYNU_WIN_MODE_Ap.state) {
+    if ( reg_new.tile_fetcher.LONY_FETCHINGp.state &&
+        !reg_new.tile_fetcher.MESU_BFETCH_S1p.state &&
+        !reg_new.tile_fetcher.NYVA_BFETCH_S2p.state &&
+         reg_new.win_ctrl.PYNU_WIN_MODE_Ap.state) {
       uint32_t addr = 0;
 
-      auto wx = bit_pack_inv(&reg.win_x.WYKA_WIN_MAP_X0, 5);
-      auto wy = bit_pack_inv(&reg.win_y.TUFU_WIN_MAP_Y0, 5);
+      auto wx = bit_pack_inv(reg.win_map_x);
+      auto wy = bit_pack_inv(reg.win_map_y);
 
       bit_unpack(&reg.vram_abus.BUS_VRAM_A00n, 5, wx);
       bit_unpack(&reg.vram_abus.BUS_VRAM_A05n, 5, wy);
@@ -2942,20 +2971,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.vram_abus.BUS_VRAM_A10n.state = get_bit(addr, 10);
       reg.vram_abus.BUS_VRAM_A11n.state = get_bit(addr, 11);
       reg.vram_abus.BUS_VRAM_A12n.state = get_bit(addr, 12);
-    }
-
-    //--------------------------------------------
-    // BG/Win tile read address
-
-    if (reg.tile_fetcher.LONY_FETCHINGp.state && (reg.tile_fetcher.MESU_BFETCH_S1p.state || reg.tile_fetcher.NYVA_BFETCH_S2p.state)) {
-      uint32_t addr  = 0;
-
-      addr |= reg.tile_fetcher.NYVA_BFETCH_S2p.state << 0;
-      addr |= (reg.win_ctrl.PYNU_WIN_MODE_Ap.state ? bit_pack(&reg.win_y, 3) : bit_mask(sum_y, 3)) << 1;
-      addr |= bit_pack(reg.tile_temp_b) << 4;
-      addr |= (!reg.tile_temp_b.PYJU_TILE_DB7p.state && reg.reg_lcdc.WEXU_LCDC_BGTILEn.state) << 12;
-
-      bit_unpack_inv(reg.vram_abus, addr);
     }
 
     //--------------------------------------------

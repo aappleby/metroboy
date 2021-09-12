@@ -2466,9 +2466,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (!reg.XYMU_RENDERINGn.state && !reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && reg.tile_fetcher.NYKA_FETCH_DONEp.state && reg.tile_fetcher.PORY_FETCH_DONEp.state) TEVO_WIN_FETCH_TRIGp_new = 1;
 
   {
-    wire TYFA_CLKPIPE_new = (!reg.win_ctrl.RYDY_WIN_HITp.state && reg.tile_fetcher.POKY_PRELOAD_LATCHp.state && !reg.FEPO_STORE_MATCHp.state && !wodu_hblank_new && CLK_xBxDxFxG);
     auto fs_old = bit_pack(&reg.fine_scroll.RYKU_FINE_CNT0, 3);
-    if (fs_old != 7 && ((!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp &&  !(phase_old & 0b10101010)) && !TYFA_CLKPIPE_new)) {
+    if (fs_old != 7 &&
+        ((!reg_old.win_ctrl.RYDY_WIN_HITp && reg_old.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_old.FEPO_STORE_MATCHp && !reg_old.WODU_HBLANKp &&  !(phase_old & 0b10101010)) &&
+        !(!reg_new.win_ctrl.RYDY_WIN_HITp && reg_new.tile_fetcher.POKY_PRELOAD_LATCHp && !reg_new.FEPO_STORE_MATCHp && !reg_new.WODU_HBLANKp && CLK_xBxDxFxG))) {
       bit_unpack(&reg.fine_scroll.RYKU_FINE_CNT0, 3, fs_old + 1);
     }
 
@@ -2482,7 +2483,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.win_ctrl.RYDY_WIN_HITp.state ||
     !reg.tile_fetcher.POKY_PRELOAD_LATCHp.state ||
     reg.FEPO_STORE_MATCHp.state ||
-    wodu_hblank_new ||
+    reg_new.WODU_HBLANKp ||
     reg.fine_scroll.ROXY_FINE_SCROLL_DONEn.state;
 
   //----------------------------------------

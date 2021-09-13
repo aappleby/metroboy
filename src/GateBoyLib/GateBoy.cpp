@@ -2723,189 +2723,159 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_unpack_inv(reg.ext_data_latch, bit_pack_inv(reg.ext_dbus));
   }
 
-  {
-    bit_unpack(reg.vram_abus, 0xFFFF);
-    bit_unpack(reg.vram_dbus, 0xFF);
+  bit_unpack(reg.vram_abus, 0xFFFF);
+  bit_unpack(reg.vram_dbus, 0xFF);
+
+  //--------------------------------------------
+  // CPU vram read address
+
+  if (!dma_addr_vram_new && reg.XYMU_RENDERINGn) {
+    bit_unpack_inv(reg.vram_abus, cpu_addr_new);
+  }
+
+  //--------------------------------------------
+  // DMA vram read address
+
+  if (dma_addr_vram_new) {
+    bit_unpack_inv(reg.vram_abus, bit_pack(reg.dma_lo));
+    bit_unpack_inv(reg.vram_abus.hi, bit_pack_inv(reg.reg_dma));
+  }
+
+  //--------------------------------------------
+  // SCX/SCY regs and BG map read address
+
+  if (reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    if (cpu_addr_new == 0xFF42) bit_unpack_inv(reg.reg_scy, bit_pack(reg_old.cpu_dbus));
+    if (cpu_addr_new == 0xFF43) bit_unpack_inv(reg.reg_scx, bit_pack(reg_old.cpu_dbus));
+  }
+
+  if (reg.cpu_signals.SIG_IN_CPU_RDp) {
+    if (cpu_addr_new == 0xFF42) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_scy));
+    if (cpu_addr_new == 0xFF43) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_scx));
+  }
+
+  if (reg.tfetch_control.LONY_FETCHINGp) {
+    const auto px  = bit_pack(reg.pix_count);
+    const auto scx = bit_pack_inv(reg.reg_scx);
+    const auto scy = bit_pack_inv(reg.reg_scy);
+
+    const auto sum_x = px + scx;
+    const auto sum_y = reg_ly_new + scy;
 
     //--------------------------------------------
-    // CPU vram read address
+    // BG map read address
 
-    if (!dma_addr_vram_new && reg.XYMU_RENDERINGn) {
-      bit_unpack_inv(reg.vram_abus, cpu_addr_new);
-    }
-
-    //--------------------------------------------
-    // DMA vram read address
-
-    if (dma_addr_vram_new) {
-      bit_unpack_inv(reg.vram_abus, bit_pack(reg.dma_lo));
-      bit_unpack_inv(reg.vram_abus.hi, bit_pack_inv(reg.reg_dma));
-    }
-
-    //--------------------------------------------
-    // SCX/SCY regs and BG map read address
-
-    if (reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-      if (cpu_addr_new == 0xFF42) bit_unpack_inv(reg.reg_scy, bit_pack(reg_old.cpu_dbus));
-      if (cpu_addr_new == 0xFF43) bit_unpack_inv(reg.reg_scx, bit_pack(reg_old.cpu_dbus));
-    }
-
-    if (reg.cpu_signals.SIG_IN_CPU_RDp) {
-      if (cpu_addr_new == 0xFF42) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_scy));
-      if (cpu_addr_new == 0xFF43) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_scx));
-    }
-
-    if (reg.tfetch_control.LONY_FETCHINGp) {
-      const auto px  = bit_pack(reg.pix_count);
-      const auto scx = bit_pack_inv(reg.reg_scx);
-      const auto scy = bit_pack_inv(reg.reg_scy);
-
-      const auto sum_x = px + scx;
-      const auto sum_y = reg_ly_new + scy;
-
-      //--------------------------------------------
-      // BG map read address
-
-      if (!reg.tfetch_counter.MESU_BFETCH_S1p && !reg.tfetch_counter.NYVA_BFETCH_S2p && !reg.win_ctrl.PYNU_WIN_MODE_Ap) {
-        const auto bgmap_en = !reg.reg_lcdc.XAFO_LCDC_BGMAPn.state;
-
-        uint32_t addr = 0;
-        bit_cat(addr,  0,  4, (px + scx) >> 3);
-        bit_cat(addr,  5,  9, (reg_ly_new + scy) >> 3);
-        bit_cat(addr, 10, 10, bgmap_en);
-        bit_cat(addr, 11, 11, 1);
-        bit_cat(addr, 12, 12, 1);
-        bit_unpack_inv(reg.vram_abus, addr);
-      }
-
-      //--------------------------------------------
-      // BG/Win tile read address
-
-      if (reg.tfetch_counter.MESU_BFETCH_S1p || reg.tfetch_counter.NYVA_BFETCH_S2p) {
-        const auto hilo = reg.tfetch_counter.NYVA_BFETCH_S2p.state;
-        const auto tile_y = (reg.win_ctrl.PYNU_WIN_MODE_Ap ? bit_pack(reg.win_y.tile) : (sum_y & 0b111));
-        const auto map_y = bit_pack(reg.tile_temp_b);
-        const auto map = (!reg.tile_temp_b.PYJU_TILE_DB7p && reg.reg_lcdc.WEXU_LCDC_BGTILEn);
-
-        uint32_t addr  = 0;
-        bit_cat(addr,  0,  0, hilo);
-        bit_cat(addr,  1,  3, tile_y);
-        bit_cat(addr,  4, 11, map_y);
-        bit_cat(addr, 12, 12, map);
-        bit_unpack_inv(reg.vram_abus, addr);
-      }
-    }
-
-
-    if ( reg_new.tfetch_control.LONY_FETCHINGp &&
-        !reg_new.tfetch_counter.MESU_BFETCH_S1p &&
-        !reg_new.tfetch_counter.NYVA_BFETCH_S2p &&
-         reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
-      uint32_t addr = 0;
-      bit_cat(addr,  0,  4, bit_pack_inv(reg.win_x.map));
-      bit_cat(addr,  5,  9, bit_pack_inv(reg.win_y.map));
-      bit_cat(addr, 10, 10, reg.reg_lcdc.WOKY_LCDC_WINMAPn.state);
-      bit_unpack(reg.vram_abus, addr);
-    }
-
-    //--------------------------------------------
-    // Sprite read address
-
-    if (reg.sfetch_control.TEXY_SFETCHINGp) {
-      const bool hilo = reg.sfetch_control.VONU_SFETCH_S1p_D4;
-      const auto line = bit_pack(reg.sprite_lbus) ^ (reg.oam_temp_b.YZOS_OAM_DB6p ? 0b0000 : 0b1111);
-      const auto tile = bit_pack(reg.oam_temp_a);
+    if (!reg.tfetch_counter.MESU_BFETCH_S1p && !reg.tfetch_counter.NYVA_BFETCH_S2p && !reg.win_ctrl.PYNU_WIN_MODE_Ap) {
+      const auto bgmap_en = !reg.reg_lcdc.XAFO_LCDC_BGMAPn.state;
 
       uint32_t addr = 0;
-      bit_cat(addr,  0,  0, hilo);
-      if (reg.reg_lcdc.XYMO_LCDC_SPSIZEn) {
-        bit_cat(addr,  1,  3, line);
-        bit_cat(addr,  4, 11, tile);
-      }
-      else {
-        bit_cat(addr,  1,  4, line);
-        bit_cat(addr,  5, 11, tile >> 1);
-      }
+      bit_cat(addr,  0,  4, (px + scx) >> 3);
+      bit_cat(addr,  5,  9, (reg_ly_new + scy) >> 3);
+      bit_cat(addr, 10, 10, bgmap_en);
+      bit_cat(addr, 11, 11, 1);
+      bit_cat(addr, 12, 12, 1);
       bit_unpack_inv(reg.vram_abus, addr);
     }
 
     //--------------------------------------------
-    // Vram address pin driver
+    // BG/Win tile read address
 
-    bit_unpack_inv(reg.vram_ext_abus, bit_pack_inv(reg.vram_abus));
+    if (reg.tfetch_counter.MESU_BFETCH_S1p || reg.tfetch_counter.NYVA_BFETCH_S2p) {
+      const auto hilo = reg.tfetch_counter.NYVA_BFETCH_S2p.state;
+      const auto tile_y = (reg.win_ctrl.PYNU_WIN_MODE_Ap ? bit_pack(reg.win_y.tile) : (sum_y & 0b111));
+      const auto map_y = bit_pack(reg.tile_temp_b);
+      const auto map = (!reg.tile_temp_b.PYJU_TILE_DB7p && reg.reg_lcdc.WEXU_LCDC_BGTILEn);
 
-    //--------------------------------------------
-    // CPU bus to Vram data bus
-
-    if (reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && reg.XYMU_RENDERINGn && cpu_addr_vram_new && reg.cpu_signals.SIG_IN_CPU_WRp) {
-      bit_unpack(reg.vram_dbus, bit_pack(reg.cpu_dbus));
+      uint32_t addr  = 0;
+      bit_cat(addr,  0,  0, hilo);
+      bit_cat(addr,  1,  3, tile_y);
+      bit_cat(addr,  4, 11, map_y);
+      bit_cat(addr, 12, 12, map);
+      bit_unpack_inv(reg.vram_abus, addr);
     }
-
-    //--------------------------------------------
-    // Vram control pins
-
-    if (reg.XYMU_RENDERINGn) {
-      reg.vram_ext_ctrl.PIN_43_VRAM_CSn = (cpu_addr_vram_new && gen_clk_new(0b00111111) && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp) || dma_addr_vram_new;
-      reg.vram_ext_ctrl.PIN_45_VRAM_OEn = (!cpu_addr_vram_new || !reg.cpu_signals.SIG_IN_CPU_WRp) || dma_addr_vram_new;
-      reg.vram_ext_ctrl.PIN_49_VRAM_WRn = cpu_addr_vram_new && gen_clk_new(0b00001110) && reg.cpu_signals.SIG_IN_CPU_WRp && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp;
-    }
-    else {
-      reg.vram_ext_ctrl.PIN_45_VRAM_OEn = dma_addr_vram_new || reg.tfetch_control.LONY_FETCHINGp || (reg.sfetch_control.TEXY_SFETCHINGp && (!reg.sfetch_control.TYFO_SFETCH_S0p_D1 || reg.sfetch_counter.TOXE_SFETCH_S0p));
-      reg.vram_ext_ctrl.PIN_49_VRAM_WRn = 0;
-      reg.vram_ext_ctrl.PIN_43_VRAM_CSn = dma_addr_vram_new || reg.tfetch_control.LONY_FETCHINGp || reg.sfetch_control.TEXY_SFETCHINGp;
-    }
-
-    uint8_t data = 0xFF;
-
-    if (reg.vram_ext_ctrl.PIN_45_VRAM_OEn) {
-      data = mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)];
-    }
-
-    //--------------------------------------------
-    // Vram data pin driver
-
-    bit_unpack(reg.vram_ext_dbus, 0);
-
-    if (reg.vram_ext_ctrl.PIN_45_VRAM_OEn) {
-      bit_unpack_inv(reg.vram_ext_dbus, mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)]);
-    }
-
-    if (reg.vram_ext_ctrl.PIN_49_VRAM_WRn) {
-      mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)] = (uint8_t)bit_pack_inv(reg.vram_ext_dbus);
-    }
-
-    if (cpu_addr_vram_new && reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && reg.XYMU_RENDERINGn && reg.cpu_signals.SIG_IN_CPU_WRp) {
-      bit_unpack_inv(reg.vram_ext_dbus, bit_pack(reg.vram_dbus));
-    }
-
-    //--------------------------------------------
-
-    if (reg.vram_ext_ctrl.PIN_49_VRAM_WRn) {
-      mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)] = (uint8_t)bit_pack_inv(reg.vram_ext_dbus);
-    }
-
-    //--------------------------------------------
-    // Vram pins to vram bus
-
-    if (!cpu_addr_vram_new || !reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK || !reg.XYMU_RENDERINGn || !reg.cpu_signals.SIG_IN_CPU_WRp) {
-      bit_unpack(reg.vram_dbus, bit_pack_inv(reg.vram_ext_dbus));
-    }
-
-    //--------------------------------------------
-    // Vram bus to cpu bus
-
-    if (cpu_addr_vram_new && reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && reg.XYMU_RENDERINGn && reg.cpu_signals.SIG_IN_CPU_RDp && reg.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
-      bit_unpack(reg.cpu_dbus, bit_pack(reg.vram_dbus));
-    }
-
-    //--------------------------------------------
-    // Vram bus to sprite x flipper
-
-    uint8_t pix = (uint8_t)bit_pack(reg.vram_dbus);
-    if (reg.oam_temp_b.BAXO_OAM_DB5p && reg.sfetch_control.TEXY_SFETCHINGp) pix = bit_reverse(pix);
-    bit_unpack(reg.flipped_sprite, pix);
   }
 
+
+  if ( reg_new.tfetch_control.LONY_FETCHINGp &&
+      !reg_new.tfetch_counter.MESU_BFETCH_S1p &&
+      !reg_new.tfetch_counter.NYVA_BFETCH_S2p &&
+        reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
+    uint32_t addr = 0;
+    bit_cat(addr,  0,  4, bit_pack_inv(reg.win_x.map));
+    bit_cat(addr,  5,  9, bit_pack_inv(reg.win_y.map));
+    bit_cat(addr, 10, 10, reg.reg_lcdc.WOKY_LCDC_WINMAPn.state);
+    bit_unpack(reg.vram_abus, addr);
+  }
+
+  //--------------------------------------------
+  // Sprite read address
+
+  if (reg.sfetch_control.TEXY_SFETCHINGp) {
+    const bool hilo = reg.sfetch_control.VONU_SFETCH_S1p_D4;
+    const auto line = bit_pack(reg.sprite_lbus) ^ (reg.oam_temp_b.YZOS_OAM_DB6p ? 0b0000 : 0b1111);
+    const auto tile = bit_pack(reg.oam_temp_a);
+
+    uint32_t addr = 0;
+    bit_cat(addr,  0,  0, hilo);
+    if (reg.reg_lcdc.XYMO_LCDC_SPSIZEn) {
+      bit_cat(addr,  1,  3, line);
+      bit_cat(addr,  4, 11, tile);
+    }
+    else {
+      bit_cat(addr,  1,  4, line);
+      bit_cat(addr,  5, 11, tile >> 1);
+    }
+    bit_unpack_inv(reg.vram_abus, addr);
+  }
+
+  //--------------------------------------------
+  // Vram address pin driver
+
+  bit_unpack_inv(reg.vram_ext_abus, bit_pack_inv(reg.vram_abus));
+
+  //--------------------------------------------
+  // CPU bus to Vram data bus
+
+  if (reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && reg.XYMU_RENDERINGn && cpu_addr_vram_new && reg.cpu_signals.SIG_IN_CPU_WRp) {
+    bit_unpack(reg.vram_dbus, bit_pack(reg.cpu_dbus));
+  }
+
+  //--------------------------------------------
+  // Vram control pins
+
+  if (reg.XYMU_RENDERINGn) {
+    reg.vram_ext_ctrl.PIN_43_VRAM_CSn = (cpu_addr_vram_new && gen_clk_new(0b00111111) && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp) || dma_addr_vram_new;
+    reg.vram_ext_ctrl.PIN_45_VRAM_OEn = (!cpu_addr_vram_new || !reg.cpu_signals.SIG_IN_CPU_WRp) || dma_addr_vram_new;
+    reg.vram_ext_ctrl.PIN_49_VRAM_WRn = cpu_addr_vram_new && gen_clk_new(0b00001110) && reg.cpu_signals.SIG_IN_CPU_WRp && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp;
+  }
+  else {
+    reg.vram_ext_ctrl.PIN_45_VRAM_OEn = dma_addr_vram_new || reg.tfetch_control.LONY_FETCHINGp || (reg.sfetch_control.TEXY_SFETCHINGp && (!reg.sfetch_control.TYFO_SFETCH_S0p_D1 || reg.sfetch_counter.TOXE_SFETCH_S0p));
+    reg.vram_ext_ctrl.PIN_49_VRAM_WRn = 0;
+    reg.vram_ext_ctrl.PIN_43_VRAM_CSn = dma_addr_vram_new || reg.tfetch_control.LONY_FETCHINGp || reg.sfetch_control.TEXY_SFETCHINGp;
+  }
+
+  uint8_t data = 0xFF;
+
+  if (reg.vram_ext_ctrl.PIN_45_VRAM_OEn) {
+    data = mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)];
+  }
+
+  //--------------------------------------------
+  // Vram data pin driver
+
+  bit_unpack(reg.vram_ext_dbus, 0);
+
+  if (reg.vram_ext_ctrl.PIN_45_VRAM_OEn) {
+    bit_unpack_inv(reg.vram_ext_dbus, mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)]);
+  }
+
+  if (reg.vram_ext_ctrl.PIN_49_VRAM_WRn) {
+    mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)] = (uint8_t)bit_pack_inv(reg.vram_ext_dbus);
+  }
+
+  if (cpu_addr_vram_new && reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && reg.XYMU_RENDERINGn && reg.cpu_signals.SIG_IN_CPU_WRp) {
+    bit_unpack_inv(reg.vram_ext_dbus, bit_pack(reg.vram_dbus));
+  }
 
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2915,6 +2885,34 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
 
+
+
+  //--------------------------------------------
+
+  if (state_new.vram_ext_ctrl.PIN_49_VRAM_WRn) {
+    mem.vid_ram[state_new.vram_ext_abus ^ 0b1111111111111] = (uint8_t)~state_new.vram_ext_dbus;
+  }
+
+  //--------------------------------------------
+  // Vram pins to vram bus
+
+  if (!cpu_addr_vram_new || !state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK || !state_new.XYMU_RENDERINGn || !state_new.cpu_signals.SIG_IN_CPU_WRp) {
+    state_new.vram_dbus = ~state_new.vram_ext_dbus;
+  }
+
+  //--------------------------------------------
+  // Vram bus to cpu bus
+
+  if (cpu_addr_vram_new && state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK && state_new.XYMU_RENDERINGn && state_new.cpu_signals.SIG_IN_CPU_RDp && state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
+    state_new.cpu_dbus = state_new.vram_dbus;
+  }
+
+  //--------------------------------------------
+  // Vram bus to sprite x flipper
+
+  uint8_t pix = state_new.vram_dbus;
+  if (get_bit(state_new.oam_temp_b, 5) && state_new.sfetch_control.TEXY_SFETCHINGp) pix = bit_reverse(pix);
+  state_new.flipped_sprite = pix;
 
   //----------------------------------------
   // oam
@@ -3067,10 +3065,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
     state_new.zram_bus.clk_old = state_new.cpu_signals.TAPU_CPU_WRp;
 
-    uint8_t data = mem.zero_ram[cpu_addr_new & 0x007F];
+    uint8_t zdata = mem.zero_ram[cpu_addr_new & 0x007F];
 
     if (CSp && state_new.cpu_signals.TEDO_CPU_RDp) {
-      state_new.cpu_dbus = data;
+      state_new.cpu_dbus = zdata;
     }
   }
 
@@ -3106,14 +3104,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (cpu_addr_new == 0xFF41 && state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    uint8_t data = 0x80;
+    uint8_t stat = 0x80;
 
-    data |= (!state_new.XYMU_RENDERINGn || state_new.lcd.POPU_y144p) << 0;
-    data |= (!state_new.XYMU_RENDERINGn || state_new.ACYL_SCANNINGp) << 1;
-    data |= (!state_new.int_ctrl.RUPO_LYC_MATCHn) << 2;
-    data |= (pack_stat ^ 0b1111) << 3;
+    stat |= (!state_new.XYMU_RENDERINGn || state_new.lcd.POPU_y144p) << 0;
+    stat |= (!state_new.XYMU_RENDERINGn || state_new.ACYL_SCANNINGp) << 1;
+    stat |= (!state_new.int_ctrl.RUPO_LYC_MATCHn) << 2;
+    stat |= (pack_stat ^ 0b1111) << 3;
 
-    pack_cpu_dbus_new = data;
+    pack_cpu_dbus_new = stat;
   }
 
   bool int_stat_old = 0;

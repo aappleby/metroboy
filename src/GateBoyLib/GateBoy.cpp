@@ -2761,12 +2761,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
       if (!reg.tfetch_counter.MESU_BFETCH_S1p && !reg.tfetch_counter.NYVA_BFETCH_S2p && !reg.win_ctrl.PYNU_WIN_MODE_Ap) {
         uint32_t addr = 0;
+        auto bgmap_en = !reg.reg_lcdc.XAFO_LCDC_BGMAPn.state;
 
-        addr |= (sum_x >> 3);
-        addr |= (sum_y >> 3) << 5;
-        addr |= !reg.reg_lcdc.XAFO_LCDC_BGMAPn.state << 10;
-        addr |= 1 << 11;
-        addr |= 1 << 12;
+        bit_cat(addr,  0,  4, (px + scx) >> 3);
+        bit_cat(addr,  5,  9, (ly + scy) >> 3);
+        bit_cat(addr, 10, 10, bgmap_en);
+        bit_cat(addr, 11, 11, 1);
+        bit_cat(addr, 12, 12, 1);
 
         bit_unpack_inv(reg.vram_abus, addr);
       }
@@ -2777,10 +2778,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       if (reg.tfetch_counter.MESU_BFETCH_S1p || reg.tfetch_counter.NYVA_BFETCH_S2p) {
         uint32_t addr  = 0;
 
-        addr |= reg.tfetch_counter.NYVA_BFETCH_S2p.state << 0;
-        addr |= (reg.win_ctrl.PYNU_WIN_MODE_Ap ? bit_pack(reg.win_y.tile) : (sum_y & 0b111)) << 1;
-        addr |= bit_pack(reg.tile_temp_b) << 4;
-        addr |= (!reg.tile_temp_b.PYJU_TILE_DB7p && reg.reg_lcdc.WEXU_LCDC_BGTILEn) << 12;
+        auto hilo = reg.tfetch_counter.NYVA_BFETCH_S2p.state;
+        auto tile_y = (reg.win_ctrl.PYNU_WIN_MODE_Ap ? bit_pack(reg.win_y.tile) : (sum_y & 0b111));
+        auto map_y = bit_pack(reg.tile_temp_b);
+        auto map = (!reg.tile_temp_b.PYJU_TILE_DB7p && reg.reg_lcdc.WEXU_LCDC_BGTILEn);
+
+        bit_cat(addr,  0,  0, hilo);
+        bit_cat(addr,  1,  3, tile_y);
+        bit_cat(addr,  4, 11, map_y);
+        bit_cat(addr, 12, 12, map);
 
         bit_unpack_inv(reg.vram_abus, addr);
       }
@@ -2793,9 +2799,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
          reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
       uint32_t addr = 0;
 
-      addr |= bit_pack_inv(reg.win_x.map) << 0;
-      addr |= bit_pack_inv(reg.win_y.map) << 5;
-      addr |= reg.reg_lcdc.WOKY_LCDC_WINMAPn.state << 10;
+      bit_cat(addr,  0,  4, bit_pack_inv(reg.win_x.map));
+      bit_cat(addr,  5,  9, bit_pack_inv(reg.win_y.map));
+      bit_cat(addr, 10, 10, reg.reg_lcdc.WOKY_LCDC_WINMAPn.state);
 
       bit_unpack(reg.vram_abus, addr);
     }
@@ -2815,10 +2821,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       auto tile = bit_pack(reg.oam_temp_a);
 
       if (reg.reg_lcdc.XYMO_LCDC_SPSIZEn) {
-        addr |= ((tile & 0b11111111) << 4) | ((line & 0b01111) << 1);
+        addr |= (tile & 0b11111111) << 4;
+        addr |= (line & 0b01111) << 1;
       }
       else {
-        addr |= ((tile & 0b11111110) << 4) | ((line & 0b11111) << 1);
+        addr |= (tile & 0b11111110) << 4;
+        addr |= (line & 0b11111) << 1;
       }
 
       bit_unpack_inv(&reg.vram_abus.lo.BUS_VRAM_A00n, 13, addr);

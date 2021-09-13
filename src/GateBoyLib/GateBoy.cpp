@@ -2571,12 +2571,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
     reg.ext_ctrl.PIN_80_CSn = !reg.reg_dma.MARU_DMA_A15n;
-    bit_copy_inv(reg.ext_abus.lo, reg.dma_lo);
-    bit_copy(reg.ext_abus.hi, reg.reg_dma);
+    bit_unpack_inv(reg.ext_abus.lo, bit_pack(reg.dma_lo));
+    bit_unpack_inv(reg.ext_abus.hi, bit_pack_inv(reg.reg_dma));
   }
   else {
     reg.ext_ctrl.PIN_80_CSn = reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && cpu_addr_ram_new;
-    bit_copy_inv(&reg.ext_abus.lo.PIN_01_A00, 15, &reg.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p);
+    bit_unpack_inv(reg.ext_abus, bit_pack(reg.ext_addr_latch));
   }
 
   //----------------------------------------
@@ -2603,7 +2603,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   CHECK_N(reg.cpu_signals.SIG_IN_CPU_RDp && reg.cpu_signals.SIG_IN_CPU_WRp);
 
   if (reg.cpu_signals.SIG_IN_CPU_EXT_BUSp && reg.cpu_signals.SIG_IN_CPU_WRp && !cpu_addr_vram_new) {
-    bit_copy_inv(reg.ext_dbus, reg.cpu_dbus);
+    bit_unpack_inv(reg.ext_dbus, bit_pack(reg.cpu_dbus));
   }
   else {
     bit_clear(reg.ext_dbus);
@@ -2709,10 +2709,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
   if (reg.cpu_signals.SIG_IN_CPU_RDp && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new && reg.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
-    bit_copy_inv(reg.cpu_dbus, reg.ext_data_latch);
+    bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.ext_data_latch));
   }
   else {
-    bit_copy(reg.ext_data_latch, reg.ext_dbus);
+    bit_unpack_inv(reg.ext_data_latch, bit_pack_inv(reg.ext_dbus));
   }
 
   {
@@ -2723,15 +2723,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // CPU vram read address
 
     if (!dma_addr_vram_new && reg.XYMU_RENDERINGn) {
-      bit_copy_inv(reg.vram_abus, reg.cpu_abus);
+      bit_unpack_inv(reg.vram_abus, bit_pack(reg.cpu_abus));
     }
 
     //--------------------------------------------
     // DMA vram read address
 
     if (dma_addr_vram_new) {
-      bit_copy_inv(reg.vram_abus, reg.dma_lo);
-      bit_copy(&reg.vram_abus.BUS_VRAM_A08n, 5, &reg.reg_dma.NAFA_DMA_A08n);
+      bit_unpack_inv(reg.vram_abus, bit_pack(reg.dma_lo));
+      bit_unpack_inv(&reg.vram_abus.BUS_VRAM_A08n, 5, bit_pack_inv(reg.reg_dma));
     }
 
     //--------------------------------------------

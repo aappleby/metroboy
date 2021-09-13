@@ -2795,51 +2795,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-
-  if ( reg_new.tfetch_control.LONY_FETCHINGp &&
-      !reg_new.tfetch_counter.MESU_BFETCH_S1p &&
-      !reg_new.tfetch_counter.NYVA_BFETCH_S2p &&
-        reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
-    uint32_t addr = 0;
-    bit_cat(addr,  0,  4, bit_pack_inv(reg.win_x.map));
-    bit_cat(addr,  5,  9, bit_pack_inv(reg.win_y.map));
-    bit_cat(addr, 10, 10, reg.reg_lcdc.WOKY_LCDC_WINMAPn.state);
-    bit_unpack(reg.vram_abus, addr);
-  }
-
-  //--------------------------------------------
-  // Sprite read address
-
-  if (reg.sfetch_control.TEXY_SFETCHINGp) {
-    const bool hilo = reg.sfetch_control.VONU_SFETCH_S1p_D4;
-    const auto line = bit_pack(reg.sprite_lbus) ^ (reg.oam_temp_b.YZOS_OAM_DB6p ? 0b0000 : 0b1111);
-    const auto tile = bit_pack(reg.oam_temp_a);
-
-    uint32_t addr = 0;
-    bit_cat(addr,  0,  0, hilo);
-    if (reg.reg_lcdc.XYMO_LCDC_SPSIZEn) {
-      bit_cat(addr,  1,  3, line);
-      bit_cat(addr,  4, 11, tile);
-    }
-    else {
-      bit_cat(addr,  1,  4, line);
-      bit_cat(addr,  5, 11, tile >> 1);
-    }
-    bit_unpack_inv(reg.vram_abus, addr);
-  }
-
-  //--------------------------------------------
-  // Vram address pin driver
-
-  bit_unpack_inv(reg.vram_ext_abus, bit_pack_inv(reg.vram_abus));
-
-  //--------------------------------------------
-  // CPU bus to Vram data bus
-
-  if (reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && reg.XYMU_RENDERINGn && cpu_addr_vram_new && reg.cpu_signals.SIG_IN_CPU_WRp) {
-    bit_unpack(reg.vram_dbus, bit_pack(reg.cpu_dbus));
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2847,6 +2802,50 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  if (state_new.tfetch_control.LONY_FETCHINGp &&
+      !get_bit(state_new.tfetch_counter, 1) &&
+      !get_bit(state_new.tfetch_counter, 2) &&
+       state_new.win_ctrl.PYNU_WIN_MODE_Ap) {
+    uint32_t addr = 0;
+    bit_cat(addr,  0,  4, ~state_new.win_x.map);
+    bit_cat(addr,  5,  9, ~state_new.win_y.map);
+    bit_cat(addr, 10, 10, get_bit(state_new.reg_lcdc, 6));
+    state_new.vram_abus = uint16_t(addr);
+  }
+
+  //--------------------------------------------
+  // Sprite read address
+
+  if (state_new.sfetch_control.TEXY_SFETCHINGp) {
+    const bool hilo = state_new.sfetch_control.VONU_SFETCH_S1p_D4;
+    const auto line = state_new.sprite_lbus ^ (get_bit(state_new.oam_temp_b, 6) ? 0b0000 : 0b1111);
+    const auto tile = state_new.oam_temp_a;
+
+    uint32_t addr = 0;
+    bit_cat(addr,  0,  0, hilo);
+    if (get_bit(state_new.reg_lcdc, 2)) {
+      bit_cat(addr,  1,  3, line);
+      bit_cat(addr,  4, 11, tile);
+    }
+    else {
+      bit_cat(addr,  1,  4, line);
+      bit_cat(addr,  5, 11, tile >> 1);
+    }
+    state_new.vram_abus = uint16_t(addr ^ 0b1111111111111);
+  }
+
+  //--------------------------------------------
+  // Vram address pin driver
+
+  state_new.vram_ext_abus = state_new.vram_abus;
+
+  //--------------------------------------------
+  // CPU bus to Vram data bus
+
+  if (state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK && state_new.XYMU_RENDERINGn && cpu_addr_vram_new && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+    state_new.vram_dbus = state_new.cpu_dbus;
+  }
 
   //--------------------------------------------
   // Vram control pins

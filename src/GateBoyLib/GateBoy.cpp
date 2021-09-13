@@ -2571,8 +2571,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
     reg.ext_ctrl.PIN_80_CSn = !reg.reg_dma.MARU_DMA_A15n;
-    bit_copy_inv(reg.ext_abus, reg.dma_lo);
-    bit_copy(&reg.ext_abus.hi.PIN_09_A08, 7, &reg.reg_dma.NAFA_DMA_A08n);
+    bit_copy_inv(reg.ext_abus.lo, reg.dma_lo);
+    bit_copy(reg.ext_abus.hi, reg.reg_dma);
   }
   else {
     reg.ext_ctrl.PIN_80_CSn = reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && cpu_addr_ram_new;

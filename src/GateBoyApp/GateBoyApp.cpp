@@ -56,7 +56,6 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   gb_thread.start();
-  gb_thread.pause();
 
   /*
   {
@@ -81,19 +80,10 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   }
   */
 
-  blob cart;
-  load_blob("tests/microtests/dmg/win0_scx3_a.gb", cart);
-  gb_thread.load_cart_blob(cart);
-  gb_thread.reset_to_cart();
+  blob dump;
+  load_blob("sml_broken.dump", dump);
+  gb_thread.load_raw_dump(dump);
 
-  gb_thread.add_steps(409);
-  gb_thread.run_steps();
-
-  //gb_thread.load_blob(Assembler::create_dummy_cart());
-  //gb_thread.reset_to_bootrom();
-
-  //gb_thread.load_raw_dump("zelda_overworld.dump");
-  //gb_thread.load_rom("LinksAwakening.gb");
   gb_thread.resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail

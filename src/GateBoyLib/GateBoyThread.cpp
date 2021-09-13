@@ -20,6 +20,11 @@ GateBoyThread::GateBoyThread()
 void GateBoyThread::start() {
   if (main) return;
   main = new std::thread([this] { thread_main(); });
+  pause();
+
+  auto cart = Assembler::create_dummy_cart();
+  load_cart_blob(cart);
+  reset_to_bootrom();
 }
 
 //----------------------------------------
@@ -265,6 +270,7 @@ void GateBoyThread::run_normal() {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::run_regression() {
+  /*
   auto& gba = gbp->gba;
   auto& gbb = gbp->gbb;
 
@@ -282,6 +288,12 @@ void GateBoyThread::run_regression() {
       return;
     }
 
+    step_count--;
+  }
+  */
+
+  while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
+    gbp->next_phase(cart_blob);
     step_count--;
   }
 }

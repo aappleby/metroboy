@@ -51,8 +51,8 @@ struct GateBoyPair {
 
   bool next_phase(const blob& cart_blob) {
 
-    if (gba.sys.logic_mode) gba.check_no_flags();
-    if (gbb.sys.logic_mode) gbb.check_no_flags();
+    //if (gba.sys.logic_mode) gba.check_no_flags();
+    //if (gbb.sys.logic_mode) gbb.check_no_flags();
 
     bool result = true;
     result &= gba.next_phase(cart_blob);
@@ -60,8 +60,8 @@ struct GateBoyPair {
       result &= gbb.next_phase(cart_blob);
     }
 
-    if (gba.sys.logic_mode) gba.check_no_flags();
-    if (gbb.sys.logic_mode) gbb.check_no_flags();
+    //if (gba.sys.logic_mode) gba.check_no_flags();
+    //if (gbb.sys.logic_mode) gbb.check_no_flags();
 
     result &= check_sync();
     return result;

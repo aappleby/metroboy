@@ -1366,8 +1366,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_logic(const blob& cart_blob) {
-  const GateBoyState state_old = state;
-  GateBoyState& state_new = state;
+  //const GateBoyState state_old = state;
+  //GateBoyState& state_new = state;
 
   const GateBoyReg reg_old = reg;
   GateBoyReg& reg_new = reg;
@@ -3073,7 +3073,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // And finally, interrupts.
 
-  auto pack_cpu_dbus_old = state.cpu_dbus;
+  auto pack_cpu_dbus_old = bit_pack(reg_old.cpu_dbus);
   auto pack_cpu_dbus_new = bit_pack(reg_new.cpu_dbus);
   auto pack_ie = bit_pack(reg.reg_ie);
   auto pack_if = bit_pack(reg.reg_if);
@@ -3146,30 +3146,33 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   // PACK IT UP!
-  state_new.from_reg(reg_new);
+  pack_if &= bit_pack_inv(reg_new.cpu_ack);
 
-  pack_if &= ~state_new.cpu_ack;
-
-  if (cpu_addr_new == 0xFFFF && state_new.cpu_signals.SIG_IN_CPU_RDp) {
+  if (cpu_addr_new == 0xFFFF && reg_new.cpu_signals.SIG_IN_CPU_RDp) {
     pack_cpu_dbus_new = pack_ie | 0b11100000;
   }
 
-  if (cpu_addr_new == 0xFF0F && state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    state_new.int_latch = (uint8_t)pack_if;
+  if (cpu_addr_new == 0xFF0F && reg_new.cpu_signals.SIG_IN_CPU_RDp) {
+    bit_unpack(reg_new.int_latch, pack_if);
     pack_cpu_dbus_new = pack_if | 0b11100000;
   }
 
-  state_new.cpu_dbus = (uint8_t)pack_cpu_dbus_new;
-  state_new.cpu_int = (uint8_t)pack_if;
-  state_new.reg_ie = (uint8_t)pack_ie;
-  state_new.reg_if = (uint8_t)pack_if;
-  state_new.reg_stat = (uint8_t)pack_stat;
+
+  bit_unpack(reg_new.cpu_dbus, pack_cpu_dbus_new);
+
+
+  bit_unpack(reg_new.cpu_int, pack_if);
+  bit_unpack(reg_new.reg_ie, pack_ie);
+  bit_unpack(reg_new.reg_if,  pack_if);
+  bit_unpack(reg_new.reg_stat, pack_stat);
+
+  //state_new.from_reg(reg_new);
 
   // POSTCONDITIONS
 
-  if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);
-  if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
+  //if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);
+  //if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
 
   // UNPACK IT UP!
-  state_new.to_reg(reg_new);
+  //state_new.to_reg(reg_new);
 }

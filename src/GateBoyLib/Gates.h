@@ -896,13 +896,7 @@ inline void bit_unpack_inv(DST& dst, const uint32_t src) {
 
 //-----------------------------------------------------------------------------
 
-inline void bit_merge(uint32_t& dst, uint32_t src, int shift, int width) {
-  uint32_t mask = (1 << width) - 1;
-  //dst &= ~(mask << shift);
-  dst |= (src & mask) << shift;
-}
-
-inline void bit_merge2(uint32_t& dst, int bit_min, int bit_max, uint32_t src) {
+inline void bit_cat(uint32_t& dst, int bit_min, int bit_max, uint32_t src) {
   int width = (bit_max - bit_min) + 1;
   uint32_t mask = (1 << width) - 1;
   dst |= (src & mask) << bit_min;

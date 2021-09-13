@@ -16,6 +16,7 @@
 #include <SDL2/SDL.h>
 #endif
 
+#include "GateBoyLib/GateBoyPacked.h"
 
 //-----------------------------------------------------------------------------
 
@@ -23,6 +24,8 @@ int main(int argc, char** argv) {
 #ifdef _MSC_VER
   SetPriorityClass(GetCurrentProcess(), 0x00000080);
 #endif
+
+  printf("%d %d\n", (int)sizeof(GateBoyReg), (int)sizeof(GateBoyPacked));
 
   App* app = new GateBoyApp();
   AppHost* app_host = new AppHost(app);

@@ -5,6 +5,7 @@
 #include "CoreLib/Constants.h"
 #include "CoreLib/Tests.h"
 #include "GateBoyLib/Probe.h"
+#include "GateBoyPacked.h"
 
 //-----------------------------------------------------------------------------
 
@@ -1364,6 +1365,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_logic(const blob& cart_blob) {
+  GateBoyPacked packed_old;
+
   const GateBoyReg reg_old = reg;
   GateBoyReg& reg_new = reg;
 
@@ -3063,7 +3066,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // And finally, interrupts.
 
   {
-    auto pack_cpu_dbus_old = bit_pack(reg_old.cpu_dbus);
+    auto pack_cpu_dbus_old = packed.cpu_dbus;
     auto pack_cpu_dbus_new = bit_pack(reg_new.cpu_dbus);
     auto pack_ie = bit_pack(reg.reg_ie);
     auto pack_if = bit_pack(reg.reg_if);
@@ -3158,5 +3161,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (reg_new.ACYL_SCANNINGp) CHECK_P(reg_new.XYMU_RENDERINGn);
   if (!reg_new.XYMU_RENDERINGn)              CHECK_N(reg_new.ACYL_SCANNINGp);
 
+  // PACK IT UP!
+
+  packed.from_reg(reg_new);
+  packed.to_reg(reg_new);
 
 }

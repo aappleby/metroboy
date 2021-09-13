@@ -26,6 +26,7 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
+#include "GateBoyLib/GateBoyPacked.h"
 
 #include <atomic>
 #include <cstring>
@@ -661,6 +662,8 @@ struct GateBoy {
   GateBoyCpu cpu;
   GateBoyMem mem;
   GateBoySys sys;
+
+  GateBoyPacked packed;
 
   uint64_t sentinel2 = SENTINEL2;
 };

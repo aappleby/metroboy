@@ -28,6 +28,7 @@
     <ClCompile Include="GateBoyInterrupts.cpp" />
     <ClCompile Include="GateBoyJoypad.cpp" />
     <ClCompile Include="GateBoyOamBus.cpp" />
+    <ClCompile Include="GateBoyPacked.cpp" />
     <ClCompile Include="GateBoyPixPipe.cpp" />
     <ClCompile Include="GateBoyRegisters.cpp" />
     <ClCompile Include="GateBoyResetDebug.cpp" />
@@ -53,6 +54,7 @@
   <ItemGroup>
     <ClInclude Include="GateBoy.h" />
     <ClInclude Include="GateBoyCpuBus.h" />
+    <ClInclude Include="GateBoyPacked.h" />
     <ClInclude Include="GateBoyPair.h" />
     <ClInclude Include="GateBoyRegisters.h" />
     <ClInclude Include="GateBoyResetDebug.h" />

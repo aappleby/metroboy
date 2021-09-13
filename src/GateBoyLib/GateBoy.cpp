@@ -1412,7 +1412,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp = EXT_addr_new;
 
   uint16_t cpu_addr_new = (uint16_t)bit_pack(reg_new.cpu_abus);
-  uint8_t cpu_data_new = (uint8_t)bit_pack(reg_new.cpu_dbus);
 
   bool cpu_addr_vram_new = (cpu_addr_new >= 0x8000) && (cpu_addr_new <= 0x9FFF);
   bool cpu_addr_ram_new = (cpu_addr_new >= 0xA000) && (cpu_addr_new <= 0xFDFF);
@@ -2974,6 +2973,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_set(reg.oam_abus);
     bit_set(reg.oam_dbus_a);
     bit_set(reg.oam_dbus_b);
+    reg.oam_ctrl.SIG_OAM_CLKn  = 1;
+    reg.oam_ctrl.SIG_OAM_WRn_A = 1;
+    reg.oam_ctrl.SIG_OAM_WRn_B = 1;
+    reg.oam_ctrl.SIG_OAM_OEn   = 1;
 
     if (gen_clk_new(0b11110000)) {
       reg.oam_ctrl.WUJE_CPU_OAM_WRn = 1;
@@ -2983,194 +2986,66 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.oam_ctrl.WUJE_CPU_OAM_WRn = 0;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp) {
-      bit_copy_inv(reg.oam_abus, reg.dma_lo);
-    }
-    else if (reg_new.sprite_scanner.ACYL_SCANNINGp) {
-      reg.oam_abus.BUS_OAM_A00n = 1;
-      reg.oam_abus.BUS_OAM_A01n = 1;
-      bit_copy_inv(&reg.oam_abus.BUS_OAM_A02n, 6, &reg.scan_counter);
-    }
-    else if (!reg_new.XYMU_RENDERINGn) {
-      reg.oam_abus.BUS_OAM_A00n = 0;
-      reg.oam_abus.BUS_OAM_A01n = 0;
-      bit_copy_inv(&reg.oam_abus.BUS_OAM_A02n, 6, &reg.sprite_ibus.BUS_SPR_I0);
-    }
-    else {
-      bit_copy_inv(reg.oam_abus,   reg.cpu_abus);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp && dma_addr_vram_new) {
-      bit_copy_inv(reg.oam_dbus_a, reg.vram_dbus);
-      bit_copy_inv(reg.oam_dbus_b, reg.vram_dbus);
-    }
-    else if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
-      bit_copy(reg.oam_dbus_a, reg.ext_dbus);
-      bit_copy(reg.oam_dbus_b, reg.ext_dbus);
-    }
-    else if (reg_new.sprite_scanner.ACYL_SCANNINGp) {
-    }
-    else if (!reg_new.XYMU_RENDERINGn) {
-    }
-    else if (cpu_addr_oam_new) {
-      if (!reg.oam_ctrl.WUJE_CPU_OAM_WRn) {
-        bit_copy_inv(reg.oam_dbus_a, reg.cpu_dbus);
-        bit_copy_inv(reg.oam_dbus_b, reg.cpu_dbus);
-      }
-    }
-    else {
-      bit_copy_inv(reg.oam_dbus_a, reg.cpu_dbus);
-      bit_copy_inv(reg.oam_dbus_b, reg.cpu_dbus);
-    }
-
-
-
-
-
-
-
-
-
-
+    //----------
+    // oam address
 
     auto cpu_oam_rd_new = cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_RDp && !reg.cpu_signals.SIG_IN_CPU_LATCH_EXT;
     auto cpu_oam_wr_new = cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110);
 
+    auto sfetch_oam_clk_new = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || (reg.sfetch_control.TYFO_SFETCH_S0p_D1 && !reg.sfetch_counter.TOXE_SFETCH_S0p));
+    auto sfetch_oam_oen_new = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || !reg.sfetch_control.TYFO_SFETCH_S0p_D1);
 
+    auto sscan_oam_addr_new  = (bit_pack(reg.scan_counter) << 2) | 0b00;
+    auto sfetch_oam_addr_new = (bit_pack(reg.sprite_ibus)  << 2) | 0b11;
+    auto dma_oam_addr_new    = bit_pack(reg.dma_lo);
+
+    if      (reg_new.dma_ctrl.MATU_DMA_RUNNINGp)    bit_unpack_inv(reg.oam_abus, dma_oam_addr_new);
+    else if (reg_new.sprite_scanner.ACYL_SCANNINGp) bit_unpack_inv(reg.oam_abus, sscan_oam_addr_new );
+    else if (!reg_new.XYMU_RENDERINGn)              bit_unpack_inv(reg.oam_abus, sfetch_oam_addr_new);
+    else                                            bit_unpack_inv(reg.oam_abus, cpu_addr_new);
+
+    //----------
+    // oam control signals depend on address
 
     if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp) {
       reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
-    }
-    else if (reg_new.sprite_scanner.ACYL_SCANNINGp) {
-      reg.oam_ctrl.SIG_OAM_CLKn  = (gen_clk_new(0b10011001)) && (gen_clk_new(0b11001100)) && (!cpu_addr_oam_new || gen_clk_new(0b11110000));
-    }
-    else if (!reg_new.XYMU_RENDERINGn) {
-      reg.oam_ctrl.SIG_OAM_CLKn  = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || (reg.sfetch_control.TYFO_SFETCH_S0p_D1 && !reg.sfetch_counter.TOXE_SFETCH_S0p)) && (!cpu_addr_oam_new || gen_clk_new(0b11110000));
-    }
-    else if (cpu_addr_oam_new) {
-      reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
-    }
-    else {
-      reg.oam_ctrl.SIG_OAM_CLKn  = 1;
-    }
-
-
-    reg.oam_ctrl.SIG_OAM_WRn_A = 1;
-    reg.oam_ctrl.SIG_OAM_WRn_B = 1;
-
-    if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp) {
       reg.oam_ctrl.SIG_OAM_WRn_A = gen_clk_new(0b11110000) || !reg.oam_abus.BUS_OAM_A00n;
       reg.oam_ctrl.SIG_OAM_WRn_B = gen_clk_new(0b11110000) ||  reg.oam_abus.BUS_OAM_A00n;
-    }
-    else if (cpu_addr_oam_new && reg_new.XYMU_RENDERINGn && !reg_new.sprite_scanner.ACYL_SCANNINGp) {
-      reg.oam_ctrl.SIG_OAM_WRn_A = !cpu_oam_wr_new || !reg.oam_abus.BUS_OAM_A00n;
-      reg.oam_ctrl.SIG_OAM_WRn_B = !cpu_oam_wr_new ||  reg.oam_abus.BUS_OAM_A00n;
-    }
-
-    if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp) {
       reg.oam_ctrl.SIG_OAM_OEn   = !cpu_oam_rd_new;
     }
     else if (reg_new.sprite_scanner.ACYL_SCANNINGp) {
+      reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b10001000) && (!cpu_addr_oam_new || gen_clk_new(0b11110000));
+      reg.oam_ctrl.SIG_OAM_WRn_A = 1;
+      reg.oam_ctrl.SIG_OAM_WRn_B = 1;
       reg.oam_ctrl.SIG_OAM_OEn   = (gen_clk_new(0b10011001)) && !cpu_oam_rd_new;
     }
     else if (!reg_new.XYMU_RENDERINGn) {
-      reg.oam_ctrl.SIG_OAM_OEn   = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || !reg.sfetch_control.TYFO_SFETCH_S0p_D1) && !cpu_oam_rd_new;
+      reg.oam_ctrl.SIG_OAM_CLKn  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk_new(0b11110000));
+      reg.oam_ctrl.SIG_OAM_WRn_A = 1;
+      reg.oam_ctrl.SIG_OAM_WRn_B = 1;
+      reg.oam_ctrl.SIG_OAM_OEn   = sfetch_oam_oen_new && !cpu_oam_rd_new;
     }
     else if (cpu_addr_oam_new) {
+      reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
+      reg.oam_ctrl.SIG_OAM_WRn_A = !cpu_oam_wr_new || !reg.oam_abus.BUS_OAM_A00n;
+      reg.oam_ctrl.SIG_OAM_WRn_B = !cpu_oam_wr_new ||  reg.oam_abus.BUS_OAM_A00n;
       reg.oam_ctrl.SIG_OAM_OEn   = !reg.cpu_signals.SIG_IN_CPU_RDp || reg.cpu_signals.SIG_IN_CPU_LATCH_EXT;
     }
-    else {
-      reg.oam_ctrl.SIG_OAM_OEn   = 1;
+
+    if (!reg.oam_ctrl.SIG_OAM_OEn) {
+      uint8_t oam_addr_new = (uint8_t)bit_pack_inv(reg.oam_abus) >> 1;
+      bit_unpack_inv(reg.oam_dbus_a, mem.oam_ram[(oam_addr_new << 1) + 0]);
+      bit_unpack_inv(reg.oam_dbus_b, mem.oam_ram[(oam_addr_new << 1) + 1]);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //----------------------------------------
-    // data in from oam
-
-    uint8_t oam_data_a, oam_data_b;
-    uint8_t oam_addr = (uint8_t)bit_pack_inv(reg.oam_abus) >> 1;
-    oam_data_a = (uint8_t)bit_pack_inv(reg.oam_dbus_a);
-    oam_data_b = (uint8_t)bit_pack_inv(reg.oam_dbus_b);
-
-    if (reg_old.oam_ctrl.SIG_OAM_CLKn && !reg_new.oam_ctrl.SIG_OAM_CLKn) {
-      if (!reg.oam_ctrl.SIG_OAM_WRn_A) mem.oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-      if (!reg.oam_ctrl.SIG_OAM_WRn_B) mem.oam_ram[(oam_addr << 1) + 1] = oam_data_b;
-    }
-    reg.oam_ctrl.old_oam_clk = !reg.oam_ctrl.SIG_OAM_CLKn;
-
-    oam_data_a = mem.oam_ram[(oam_addr << 1) + 0];
-    oam_data_b = mem.oam_ram[(oam_addr << 1) + 1];
-
 
     bool latch_oam = false;
-    latch_oam |= (!reg.cpu_signals.SIG_IN_CPU_LATCH_EXT && cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_RDp);
-    latch_oam |= reg_new.sprite_scanner.ACYL_SCANNINGp && gen_clk_new(0b01100110);
-    latch_oam |= !reg_new.XYMU_RENDERINGn && !reg.sfetch_counter.TULY_SFETCH_S1p && !reg.sfetch_counter.TESE_SFETCH_S2p && reg.sfetch_control.TYFO_SFETCH_S0p_D1;
+
+    latch_oam = 
+      cpu_oam_rd_new || 
+      reg_new.sprite_scanner.ACYL_SCANNINGp && gen_clk_new(0b01100110) || 
+      !reg_new.XYMU_RENDERINGn && !sfetch_oam_oen_new;
 
     if (latch_oam) {
-      bit_unpack_inv(reg.oam_dbus_a, oam_data_a);
-      bit_unpack_inv(reg.oam_dbus_b, oam_data_b);
       bit_copy(reg.oam_latch_a, reg.oam_dbus_a);
       bit_copy(reg.oam_latch_b, reg.oam_dbus_b);
     }
@@ -3183,6 +3058,41 @@ void GateBoy::tock_logic(const blob& cart_blob) {
         bit_copy_inv(reg.cpu_dbus, reg.oam_latch_b);
       }
     }
+
+    //----------
+    // to oam dbus
+
+    auto vram_data_new    = bit_pack(reg.vram_dbus);
+    auto ext_data_new     = bit_pack_inv(reg.ext_dbus);
+    auto cpu_oam_data_new = bit_pack(reg.cpu_dbus); // have to repack here...
+
+    if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp && dma_addr_vram_new) {
+      bit_unpack_inv(reg.oam_dbus_a, vram_data_new);
+      bit_unpack_inv(reg.oam_dbus_b, vram_data_new);
+    }
+    else if (reg_new.dma_ctrl.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
+      bit_unpack_inv(reg.oam_dbus_a, ext_data_new);
+      bit_unpack_inv(reg.oam_dbus_b, ext_data_new);
+    }
+    else if (!reg_new.sprite_scanner.ACYL_SCANNINGp && reg_new.XYMU_RENDERINGn) {
+      if (cpu_addr_oam_new) {
+        if (!reg.oam_ctrl.WUJE_CPU_OAM_WRn) {
+          bit_unpack_inv(reg.oam_dbus_a, cpu_oam_data_new);
+          bit_unpack_inv(reg.oam_dbus_b, cpu_oam_data_new);
+        }
+      }
+      else {
+        bit_unpack_inv(reg.oam_dbus_a, cpu_oam_data_new);
+        bit_unpack_inv(reg.oam_dbus_b, cpu_oam_data_new);
+      }
+    }
+
+    if (reg_old.oam_ctrl.SIG_OAM_CLKn && !reg_new.oam_ctrl.SIG_OAM_CLKn) {
+      uint8_t oam_addr_new = (uint8_t)bit_pack_inv(reg.oam_abus) >> 1;
+      if (!reg.oam_ctrl.SIG_OAM_WRn_A) mem.oam_ram[(oam_addr_new << 1) + 0] = (uint8_t)bit_pack_inv(reg.oam_dbus_a);
+      if (!reg.oam_ctrl.SIG_OAM_WRn_B) mem.oam_ram[(oam_addr_new << 1) + 1] = (uint8_t)bit_pack_inv(reg.oam_dbus_b);
+    }
+    reg.oam_ctrl.old_oam_clk = !reg.oam_ctrl.SIG_OAM_CLKn; // vestige of gate mode
   }
 
   //----------------------------------------

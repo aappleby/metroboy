@@ -2840,43 +2840,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_unpack(reg.vram_dbus, bit_pack(reg.cpu_dbus));
   }
 
-  //--------------------------------------------
-  // Vram control pins
-
-  if (reg.XYMU_RENDERINGn) {
-    reg.vram_ext_ctrl.PIN_43_VRAM_CSn = (cpu_addr_vram_new && gen_clk_new(0b00111111) && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp) || dma_addr_vram_new;
-    reg.vram_ext_ctrl.PIN_45_VRAM_OEn = (!cpu_addr_vram_new || !reg.cpu_signals.SIG_IN_CPU_WRp) || dma_addr_vram_new;
-    reg.vram_ext_ctrl.PIN_49_VRAM_WRn = cpu_addr_vram_new && gen_clk_new(0b00001110) && reg.cpu_signals.SIG_IN_CPU_WRp && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp;
-  }
-  else {
-    reg.vram_ext_ctrl.PIN_45_VRAM_OEn = dma_addr_vram_new || reg.tfetch_control.LONY_FETCHINGp || (reg.sfetch_control.TEXY_SFETCHINGp && (!reg.sfetch_control.TYFO_SFETCH_S0p_D1 || reg.sfetch_counter.TOXE_SFETCH_S0p));
-    reg.vram_ext_ctrl.PIN_49_VRAM_WRn = 0;
-    reg.vram_ext_ctrl.PIN_43_VRAM_CSn = dma_addr_vram_new || reg.tfetch_control.LONY_FETCHINGp || reg.sfetch_control.TEXY_SFETCHINGp;
-  }
-
-  uint8_t data = 0xFF;
-
-  if (reg.vram_ext_ctrl.PIN_45_VRAM_OEn) {
-    data = mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)];
-  }
-
-  //--------------------------------------------
-  // Vram data pin driver
-
-  bit_unpack(reg.vram_ext_dbus, 0);
-
-  if (reg.vram_ext_ctrl.PIN_45_VRAM_OEn) {
-    bit_unpack_inv(reg.vram_ext_dbus, mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)]);
-  }
-
-  if (reg.vram_ext_ctrl.PIN_49_VRAM_WRn) {
-    mem.vid_ram[bit_pack_inv(reg.vram_ext_abus)] = (uint8_t)bit_pack_inv(reg.vram_ext_dbus);
-  }
-
-  if (cpu_addr_vram_new && reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && reg.XYMU_RENDERINGn && reg.cpu_signals.SIG_IN_CPU_WRp) {
-    bit_unpack_inv(reg.vram_ext_dbus, bit_pack(reg.vram_dbus));
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2884,6 +2847,44 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  //--------------------------------------------
+  // Vram control pins
+
+  if (state_new.XYMU_RENDERINGn) {
+    state_new.vram_ext_ctrl.PIN_43_VRAM_CSn = (cpu_addr_vram_new && gen_clk_new(0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) || dma_addr_vram_new;
+    state_new.vram_ext_ctrl.PIN_45_VRAM_OEn = (!cpu_addr_vram_new || !state_new.cpu_signals.SIG_IN_CPU_WRp) || dma_addr_vram_new;
+    state_new.vram_ext_ctrl.PIN_49_VRAM_WRn = cpu_addr_vram_new && gen_clk_new(0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp;
+  }
+  else {
+    state_new.vram_ext_ctrl.PIN_45_VRAM_OEn = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || (state_new.sfetch_control.TEXY_SFETCHINGp && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
+    state_new.vram_ext_ctrl.PIN_49_VRAM_WRn = 0;
+    state_new.vram_ext_ctrl.PIN_43_VRAM_CSn = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || state_new.sfetch_control.TEXY_SFETCHINGp;
+  }
+
+  uint8_t vdata = 0xFF;
+
+  if (state_new.vram_ext_ctrl.PIN_45_VRAM_OEn) {
+    vdata = mem.vid_ram[state_new.vram_ext_abus ^ 0b1111111111111];
+  }
+
+  //--------------------------------------------
+  // Vram data pin driver
+
+  state_new.vram_ext_dbus = 0;
+
+  if (state_new.vram_ext_ctrl.PIN_45_VRAM_OEn) {
+    state_new.vram_ext_dbus = ~vdata;
+  }
+
+  if (state_new.vram_ext_ctrl.PIN_49_VRAM_WRn) {
+    mem.vid_ram[state_new.vram_ext_abus ^ 0b1111111111111] = ~state_new.vram_ext_dbus;
+  }
+
+  if (cpu_addr_vram_new && state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK && state_new.XYMU_RENDERINGn && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+    state_new.vram_ext_dbus = ~state_new.vram_dbus;
+  }
+
 
 
 

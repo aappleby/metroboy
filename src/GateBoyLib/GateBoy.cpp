@@ -7,6 +7,8 @@
 #include "GateBoyLib/Probe.h"
 #include "GateBoyLib/GateBoyState.h"
 
+const uint16_t VRAM_ADDR_MASK = 0b1111111111111;
+
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
@@ -2723,37 +2725,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_unpack_inv(reg.ext_data_latch, bit_pack_inv(reg.ext_dbus));
   }
 
-  bit_unpack(reg.vram_abus, 0xFFFF);
-  bit_unpack(reg.vram_dbus, 0xFF);
-
-  //--------------------------------------------
-  // CPU vram read address
-
-  if (!dma_addr_vram_new && reg.XYMU_RENDERINGn) {
-    bit_unpack_inv(reg.vram_abus, cpu_addr_new);
-  }
-
-  //--------------------------------------------
-  // DMA vram read address
-
-  if (dma_addr_vram_new) {
-    bit_unpack_inv(reg.vram_abus, bit_pack(reg.dma_lo));
-    bit_unpack_inv(reg.vram_abus.hi, bit_pack_inv(reg.reg_dma));
-  }
-
-  //--------------------------------------------
-  // SCX/SCY regs and BG map read address
-
-  if (reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-    if (cpu_addr_new == 0xFF42) bit_unpack_inv(reg.reg_scy, bit_pack(reg_old.cpu_dbus));
-    if (cpu_addr_new == 0xFF43) bit_unpack_inv(reg.reg_scx, bit_pack(reg_old.cpu_dbus));
-  }
-
-  if (reg.cpu_signals.SIG_IN_CPU_RDp) {
-    if (cpu_addr_new == 0xFF42) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_scy));
-    if (cpu_addr_new == 0xFF43) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_scx));
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2761,6 +2732,38 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  state_new.vram_abus = VRAM_ADDR_MASK;
+  state_new.vram_dbus = 0xFF;
+
+  //--------------------------------------------
+  // CPU vram read address
+
+  if (!dma_addr_vram_new && state_new.XYMU_RENDERINGn) {
+    state_new.vram_abus = (~cpu_addr_new) & VRAM_ADDR_MASK;
+  }
+
+  //--------------------------------------------
+  // DMA vram read address
+
+  if (dma_addr_vram_new) {
+    state_new.vram_abus = uint8_t(~state_new.dma_lo);
+    state_new.vram_abus |= (state_new.reg_dma << 8);
+    state_new.vram_abus &= VRAM_ADDR_MASK;
+  }
+
+  //--------------------------------------------
+  // SCX/SCY regs and BG map read address
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    if (cpu_addr_new == 0xFF42) state_new.reg_scy = ~state_old.cpu_dbus;
+    if (cpu_addr_new == 0xFF43) state_new.reg_scx = ~state_old.cpu_dbus;
+  }
+
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (cpu_addr_new == 0xFF42) state_new.cpu_dbus = ~state_new.reg_scy;
+    if (cpu_addr_new == 0xFF43) state_new.cpu_dbus = ~state_new.reg_scx;
+  }
 
   if (state_new.tfetch_control.LONY_FETCHINGp) {
     const auto px  = state_new.pix_count;
@@ -2783,7 +2786,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_cat(addr, 11, 11, 1);
       bit_cat(addr, 12, 12, 1);
 
-      state_new.vram_abus = uint16_t(addr ^ 0b1111111111111);
+      state_new.vram_abus = uint16_t(addr ^ VRAM_ADDR_MASK);
     }
 
     //--------------------------------------------
@@ -2801,7 +2804,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_cat(addr,  4, 11, map_y);
       bit_cat(addr, 12, 12, map);
       
-      state_new.vram_abus = uint16_t(addr ^ 0b1111111111111);
+      state_new.vram_abus = uint16_t(addr ^ VRAM_ADDR_MASK);
     }
   }
 
@@ -2834,7 +2837,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       bit_cat(addr,  1,  4, line);
       bit_cat(addr,  5, 11, tile >> 1);
     }
-    state_new.vram_abus = uint16_t(addr ^ 0b1111111111111);
+    state_new.vram_abus = uint16_t(addr ^ VRAM_ADDR_MASK);
   }
 
   //--------------------------------------------
@@ -2866,7 +2869,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   uint8_t vdata = 0xFF;
 
   if (state_new.vram_ext_ctrl.PIN_45_VRAM_OEn) {
-    vdata = mem.vid_ram[state_new.vram_ext_abus ^ 0b1111111111111];
+    vdata = mem.vid_ram[state_new.vram_ext_abus ^ VRAM_ADDR_MASK];
   }
 
   //--------------------------------------------
@@ -2879,7 +2882,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (state_new.vram_ext_ctrl.PIN_49_VRAM_WRn) {
-    mem.vid_ram[state_new.vram_ext_abus ^ 0b1111111111111] = ~state_new.vram_ext_dbus;
+    mem.vid_ram[state_new.vram_ext_abus ^ VRAM_ADDR_MASK] = ~state_new.vram_ext_dbus;
   }
 
   if (cpu_addr_vram_new && state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK && state_new.XYMU_RENDERINGn && state_new.cpu_signals.SIG_IN_CPU_WRp) {
@@ -2892,7 +2895,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //--------------------------------------------
 
   if (state_new.vram_ext_ctrl.PIN_49_VRAM_WRn) {
-    mem.vid_ram[state_new.vram_ext_abus ^ 0b1111111111111] = (uint8_t)~state_new.vram_ext_dbus;
+    mem.vid_ram[state_new.vram_ext_abus ^ VRAM_ADDR_MASK] = (uint8_t)~state_new.vram_ext_dbus;
   }
 
   //--------------------------------------------

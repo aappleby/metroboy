@@ -2622,8 +2622,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Ext read
 
-  if (reg.ext_ctrl.PIN_79_RDn) {
-    const uint16_t ext_addr = (uint16_t)bit_pack_inv(reg.ext_abus);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+
+  if (state_new.ext_ctrl.PIN_79_RDn) {
+    const uint16_t ext_addr = ~(state_new.ext_abus.lo | (state_new.ext_abus.hi << 8));
     
     const auto rom_addr_mask = cart_rom_addr_mask(cart_blob);
     const auto ram_addr_mask = cart_ram_addr_mask(cart_blob);
@@ -2635,17 +2643,17 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     if (cart_has_mbc1(cart_blob)) {
 
-      const bool mbc1_ram_en = reg.ext_mbc.MBC1_RAM_EN;
-      const bool mbc1_mode = reg.ext_mbc.MBC1_MODE;
+      const bool mbc1_ram_en = state_new.ext_mbc.MBC1_RAM_EN;
+      const bool mbc1_mode = state_new.ext_mbc.MBC1_MODE;
 
-      const uint32_t mbc1_rom0_bank = mbc1_mode ? bit_pack(&reg.ext_mbc.MBC1_BANK5, 2) : 0;
+      const uint32_t mbc1_rom0_bank = mbc1_mode ? bit_pack(&state_new.ext_mbc.MBC1_BANK5, 2) : 0;
       const uint32_t mbc1_rom0_addr = ((ext_addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & rom_addr_mask;
 
-      uint32_t mbc1_rom1_bank = bit_pack(&reg.ext_mbc.MBC1_BANK0, 7);
+      uint32_t mbc1_rom1_bank = bit_pack(&state_new.ext_mbc.MBC1_BANK0, 7);
       if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
       const uint32_t mbc1_rom1_addr = ((ext_addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & rom_addr_mask;
 
-      const uint32_t mbc1_ram_bank = mbc1_mode ? bit_pack(&reg.ext_mbc.MBC1_BANK5, 2) : 0;
+      const uint32_t mbc1_ram_bank = mbc1_mode ? bit_pack(&state_new.ext_mbc.MBC1_BANK5, 2) : 0;
       const uint32_t mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & ram_addr_mask;
 
       switch (region) {
@@ -2672,19 +2680,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       }
     }
 
-    if (ext_read_en) bit_unpack_inv(reg.ext_dbus, data_in);
+    if (ext_read_en) state_new.ext_dbus = uint8_t(~data_in);
   }
 
   //----------------------------------------
   // Ext write
-
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
 
   const uint16_t ext_addr = ~(state_new.ext_abus.lo | (state_new.ext_abus.hi << 8));
   const auto region = ext_addr >> 13;

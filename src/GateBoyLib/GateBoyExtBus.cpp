@@ -178,21 +178,21 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.LEVA*/ wire LEVA = nor2(MUCE_A13p, UNOR_MODE_DBG2p());
   /*_p08.PAHY*/ wire PAHY = nor2(PEGE_A14p, UNOR_MODE_DBG2p());
 
-  /*_PIN_01*/ reg.ext_abus.PIN_01_A00.pin_out(KUPO, KOTY);
-  /*_PIN_02*/ reg.ext_abus.PIN_02_A01.pin_out(CABA, COTU);
-  /*_PIN_03*/ reg.ext_abus.PIN_03_A02.pin_out(BOKU, BAJO);
-  /*_PIN_04*/ reg.ext_abus.PIN_04_A03.pin_out(BOTY, BOLA);
-  /*_PIN_05*/ reg.ext_abus.PIN_05_A04.pin_out(BYLA, BEVO);
-  /*_PIN_06*/ reg.ext_abus.PIN_06_A05.pin_out(BADU, AJAV);
-  /*_PIN_07*/ reg.ext_abus.PIN_07_A06.pin_out(CEPU, CYKA);
-  /*_PIN_08*/ reg.ext_abus.PIN_08_A07.pin_out(DEFY, COLO);
-  /*_PIN_09*/ reg.ext_abus.PIN_09_A08.pin_out(MYNY, MEGO);
-  /*_PIN_10*/ reg.ext_abus.PIN_10_A09.pin_out(MUNE, MENY);
-  /*_PIN_11*/ reg.ext_abus.PIN_11_A10.pin_out(ROXU, RORE);
-  /*_PIN_12*/ reg.ext_abus.PIN_12_A11.pin_out(LEPY, LYNY);
-  /*_PIN_13*/ reg.ext_abus.PIN_13_A12.pin_out(LUCE, LOSO);
-  /*_PIN_14*/ reg.ext_abus.PIN_14_A13.pin_out(LABE, LEVA);
-  /*_PIN_15*/ reg.ext_abus.PIN_15_A14.pin_out(PUHE, PAHY);
+  /*_PIN_01*/ reg.ext_abus.lo.PIN_01_A00.pin_out(KUPO, KOTY);
+  /*_PIN_02*/ reg.ext_abus.lo.PIN_02_A01.pin_out(CABA, COTU);
+  /*_PIN_03*/ reg.ext_abus.lo.PIN_03_A02.pin_out(BOKU, BAJO);
+  /*_PIN_04*/ reg.ext_abus.lo.PIN_04_A03.pin_out(BOTY, BOLA);
+  /*_PIN_05*/ reg.ext_abus.lo.PIN_05_A04.pin_out(BYLA, BEVO);
+  /*_PIN_06*/ reg.ext_abus.lo.PIN_06_A05.pin_out(BADU, AJAV);
+  /*_PIN_07*/ reg.ext_abus.lo.PIN_07_A06.pin_out(CEPU, CYKA);
+  /*_PIN_08*/ reg.ext_abus.lo.PIN_08_A07.pin_out(DEFY, COLO);
+  /*_PIN_09*/ reg.ext_abus.hi.PIN_09_A08.pin_out(MYNY, MEGO);
+  /*_PIN_10*/ reg.ext_abus.hi.PIN_10_A09.pin_out(MUNE, MENY);
+  /*_PIN_11*/ reg.ext_abus.hi.PIN_11_A10.pin_out(ROXU, RORE);
+  /*_PIN_12*/ reg.ext_abus.hi.PIN_12_A11.pin_out(LEPY, LYNY);
+  /*_PIN_13*/ reg.ext_abus.hi.PIN_13_A12.pin_out(LUCE, LOSO);
+  /*_PIN_14*/ reg.ext_abus.hi.PIN_14_A13.pin_out(LABE, LEVA);
+  /*_PIN_15*/ reg.ext_abus.hi.PIN_15_A14.pin_out(PUHE, PAHY);
 
   // A15 is "special"
   /*_p07.TERA*/ wire TERA_BOOT_BITp = not1(reg.cpu_signals.TEPU_BOOT_BITn.qp_new());
@@ -202,7 +202,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.TAZY*/ wire TAZY_A15p = mux2p (LUMA_DMA_CARTp, reg.reg_dma.MARU_DMA_A15n.qn_new(), SEPY_A15p);
   /*_p08.SUZE*/ wire SUZE_A15n = nand2(TAZY_A15p, RYCA_MODE_DBG2n());
   /*_p08.RULO*/ wire RULO_A15n = nor2 (TAZY_A15p, UNOR_MODE_DBG2p());
-  /*_PIN_16*/ reg.ext_abus.PIN_16_A15.pin_out(SUZE_A15n, RULO_A15n);
+  /*_PIN_16*/ reg.ext_abus.hi.PIN_16_A15.pin_out(SUZE_A15n, RULO_A15n);
 
   // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_out
   // will actually end up in oam?

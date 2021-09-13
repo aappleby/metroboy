@@ -164,7 +164,8 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   reg.oam_temp_b.reset_to_cart();
 
   reg.ext_ctrl.reset_to_cart();
-  reg.ext_abus.reset_to_cart();
+  reg.ext_abus.lo.reset_to_cart();
+  reg.ext_abus.hi.reset_to_cart();
   reg.ext_dbus.reset_to_cart();
   reg.ext_addr_latch.reset_to_cart();
   reg.ext_data_latch.reset_to_cart();
@@ -352,7 +353,8 @@ MemberOffset gb_offsets[] = {
   GEN_OFFSET(reg.oam_temp_a),
   GEN_OFFSET(reg.oam_temp_b),
   GEN_OFFSET(reg.ext_ctrl),
-  GEN_OFFSET(reg.ext_abus),
+  GEN_OFFSET(reg.ext_abus.lo),
+  GEN_OFFSET(reg.ext_abus.hi),
   GEN_OFFSET(reg.ext_dbus),
   GEN_OFFSET(reg.ext_data_latch),
   GEN_OFFSET(reg.ext_addr_latch),
@@ -2570,11 +2572,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
     reg.ext_ctrl.PIN_80_CSn = !reg.reg_dma.MARU_DMA_A15n;
     bit_copy_inv(reg.ext_abus, reg.dma_lo);
-    bit_copy(&reg.ext_abus.PIN_09_A08, 7, &reg.reg_dma.NAFA_DMA_A08n);
+    bit_copy(&reg.ext_abus.hi.PIN_09_A08, 7, &reg.reg_dma.NAFA_DMA_A08n);
   }
   else {
     reg.ext_ctrl.PIN_80_CSn = reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && cpu_addr_ram_new;
-    bit_copy_inv(&reg.ext_abus.PIN_01_A00, 15, &reg.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p);
+    bit_copy_inv(&reg.ext_abus.lo.PIN_01_A00, 15, &reg.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p);
   }
 
   //----------------------------------------
@@ -2589,13 +2591,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
-    reg.ext_abus.PIN_16_A15 = reg.reg_dma.MARU_DMA_A15n;
+    reg.ext_abus.hi.PIN_16_A15 = reg.reg_dma.MARU_DMA_A15n;
   }
   else if (!reg.cpu_signals.TEPU_BOOT_BITn && cpu_addr_new <= 0x00FF) {
-    reg.ext_abus.PIN_16_A15 = 0;
+    reg.ext_abus.hi.PIN_16_A15 = 0;
   }
   else {
-    reg.ext_abus.PIN_16_A15 = reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && !reg.cpu_abus.BUS_CPU_A15p;
+    reg.ext_abus.hi.PIN_16_A15 = reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && !reg.cpu_abus.BUS_CPU_A15p;
   }
 
   CHECK_N(reg.cpu_signals.SIG_IN_CPU_RDp && reg.cpu_signals.SIG_IN_CPU_WRp);

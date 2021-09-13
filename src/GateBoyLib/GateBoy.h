@@ -106,7 +106,12 @@ struct GateBoyReg {
   OamTempB       oam_temp_b;
                  
   ExtControl     ext_ctrl;
-  ExtABus        ext_abus;
+  
+  struct {
+    ExtABusLo      lo;
+    ExtABusHi      hi;
+  } ext_abus;
+
   ExtDBus        ext_dbus;
   ExtDataLatch   ext_data_latch;
   ExtAddrLatch   ext_addr_latch;

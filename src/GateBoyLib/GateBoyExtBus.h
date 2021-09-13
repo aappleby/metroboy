@@ -82,7 +82,7 @@ struct ExtControl {
 
 //-----------------------------------------------------------------------------
 
-struct ExtABus {
+struct ExtABusLo {
   void reset_to_cart() {
     PIN_01_A00.state = 0b00011000;
     PIN_02_A01.state = 0b00011001;
@@ -92,14 +92,6 @@ struct ExtABus {
     PIN_06_A05.state = 0b00011001;
     PIN_07_A06.state = 0b00011000;
     PIN_08_A07.state = 0b00011001;
-    PIN_09_A08.state = 0b00011001;
-    PIN_10_A09.state = 0b00011001;
-    PIN_11_A10.state = 0b00011001;
-    PIN_12_A11.state = 0b00011001;
-    PIN_13_A12.state = 0b00011001;
-    PIN_14_A13.state = 0b00011001;
-    PIN_15_A14.state = 0b00011001;
-    PIN_16_A15.state = 0b00011000;
   }
 
   /*_PIN_01*/ PinOut PIN_01_A00;
@@ -110,6 +102,20 @@ struct ExtABus {
   /*_PIN_06*/ PinOut PIN_06_A05;
   /*_PIN_07*/ PinOut PIN_07_A06;
   /*_PIN_08*/ PinOut PIN_08_A07;
+};
+
+struct ExtABusHi {
+  void reset_to_cart() {
+    PIN_09_A08.state = 0b00011001;
+    PIN_10_A09.state = 0b00011001;
+    PIN_11_A10.state = 0b00011001;
+    PIN_12_A11.state = 0b00011001;
+    PIN_13_A12.state = 0b00011001;
+    PIN_14_A13.state = 0b00011001;
+    PIN_15_A14.state = 0b00011001;
+    PIN_16_A15.state = 0b00011000;
+  }
+
   /*_PIN_09*/ PinOut PIN_09_A08;
   /*_PIN_10*/ PinOut PIN_10_A09;
   /*_PIN_11*/ PinOut PIN_11_A10;

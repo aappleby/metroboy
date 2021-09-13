@@ -237,7 +237,7 @@ void GateBoy::dump_dma(Dumper& d) {
 
 
 void GateBoy::dump_ext_bus(Dumper& d) {
-  d.dump_slice2n("PIN_01_ADDR : ", &reg.ext_abus.PIN_01_A00, 16);
+  d.dump_slice2n("PIN_01_ADDR : ", &reg.ext_abus.lo.PIN_01_A00, 16);
 
   //d.dump_slice2n(   "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
   //dump_slice2b  (d, "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);

@@ -3052,21 +3052,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // zram
 
-  {
-    wire CSp = (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE);
-
-    if (reg.zram_bus.clk_old && !reg.cpu_signals.TAPU_CPU_WRp && CSp) {
-      mem.zero_ram[cpu_addr_new & 0x007F] = (uint8_t)bit_pack(reg_old.cpu_dbus);
-    }
-    reg.zram_bus.clk_old = reg.cpu_signals.TAPU_CPU_WRp;
-
-    uint8_t data = mem.zero_ram[cpu_addr_new & 0x007F];
-
-    if (CSp && reg.cpu_signals.TEDO_CPU_RDp) {
-      bit_unpack(reg.cpu_dbus, data);
-    }
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -3074,6 +3059,22 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  {
+    wire CSp = (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE);
+
+    if (state_new.zram_bus.clk_old && !state_new.cpu_signals.TAPU_CPU_WRp && CSp) {
+      mem.zero_ram[cpu_addr_new & 0x007F] = state_old.cpu_dbus;
+    }
+    state_new.zram_bus.clk_old = state_new.cpu_signals.TAPU_CPU_WRp;
+
+    uint8_t data = mem.zero_ram[cpu_addr_new & 0x007F];
+
+    if (CSp && state_new.cpu_signals.TEDO_CPU_RDp) {
+      state_new.cpu_dbus = data;
+    }
+  }
+
 
 
   //----------------------------------------

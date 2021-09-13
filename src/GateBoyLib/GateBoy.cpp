@@ -3067,46 +3067,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  //----------------------------------------
-  // And finally, interrupts.
-
-  auto pack_cpu_dbus_old = bit_pack(reg_old.cpu_dbus);
-  auto pack_cpu_dbus_new = bit_pack(reg_new.cpu_dbus);
-  auto pack_ie = bit_pack(reg.reg_ie);
-  auto pack_if = bit_pack(reg.reg_if);
-  auto pack_stat = bit_pack(reg.reg_stat);
-
-  // FIXME this seems slightly wrong...
-  if (reg_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110) && cpu_addr_new == 0xFF41) {
-  }
-  else {
-    reg_new.int_ctrl.RUPO_LYC_MATCHn = 1;
-  }
-
-  // but the "reset" arm of the latch overrides the "set" arm, so it doesn't completely break?
-  if (reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp) {
-    reg_new.int_ctrl.RUPO_LYC_MATCHn = 0;
-  }
-
-  if (cpu_addr_new == 0xFFFF && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-    pack_ie = pack_cpu_dbus_old;
-  }
-
-  if (cpu_addr_new == 0xFF41 && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-    pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
-  }
-
-  if (cpu_addr_new == 0xFF41 && reg_new.cpu_signals.SIG_IN_CPU_RDp) {
-    uint8_t data = 0x80;
-
-    data |= (!reg.XYMU_RENDERINGn || reg.lcd.POPU_y144p) << 0;
-    data |= (!reg.XYMU_RENDERINGn || reg.ACYL_SCANNINGp) << 1;
-    data |= (!reg.int_ctrl.RUPO_LYC_MATCHn) << 2;
-    data |= (pack_stat ^ 0b1111) << 3;
-
-    pack_cpu_dbus_new = data;
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -3114,6 +3074,47 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+
+  //----------------------------------------
+  // And finally, interrupts.
+
+  auto pack_cpu_dbus_old = state_old.cpu_dbus;
+  auto pack_cpu_dbus_new = state_new.cpu_dbus;
+  auto pack_ie = state_new.reg_ie;
+  auto pack_if = state_new.reg_if;
+  auto pack_stat = state_new.reg_stat;
+
+  // FIXME this seems slightly wrong...
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110) && cpu_addr_new == 0xFF41) {
+  }
+  else {
+    state_new.int_ctrl.RUPO_LYC_MATCHn = 1;
+  }
+
+  // but the "reset" arm of the latch overrides the "set" arm, so it doesn't completely break?
+  if (state_new.int_ctrl.ROPO_LY_MATCH_SYNCp) {
+    state_new.int_ctrl.RUPO_LYC_MATCHn = 0;
+  }
+
+  if (cpu_addr_new == 0xFFFF && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    pack_ie = pack_cpu_dbus_old;
+  }
+
+  if (cpu_addr_new == 0xFF41 && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
+  }
+
+  if (cpu_addr_new == 0xFF41 && state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    uint8_t data = 0x80;
+
+    data |= (!state_new.XYMU_RENDERINGn || state_new.lcd.POPU_y144p) << 0;
+    data |= (!state_new.XYMU_RENDERINGn || state_new.ACYL_SCANNINGp) << 1;
+    data |= (!state_new.int_ctrl.RUPO_LYC_MATCHn) << 2;
+    data |= (pack_stat ^ 0b1111) << 3;
+
+    pack_cpu_dbus_new = data;
+  }
 
   bool int_stat_old = 0;
   if (!get_bit(state_old.reg_stat, 0) && state_old.WODU_HBLANKp && !state_old.lcd.POPU_y144p) int_stat_old = 1;

@@ -835,7 +835,7 @@ inline uint8_t pack(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire
 //-----------------------------------------------------------------------------
 
 template<typename SRC>
-inline uint32_t bit_pack(const SRC* psrc, int c) {
+/*__declspec(noinline)*/ inline uint32_t bit_pack(const SRC* psrc, int c) {
   uint8_t* src = (uint8_t*)psrc;
   uint32_t result = 0;
   for (int i = 0; i < c; i++) result |= (bit(src[i]) << i);
@@ -843,14 +843,14 @@ inline uint32_t bit_pack(const SRC* psrc, int c) {
 }
 
 template<typename SRC>
-inline uint32_t bit_pack(const SRC& src) {
+/*__declspec(noinline)*/ inline uint32_t bit_pack(const SRC& src) {
   return bit_pack(&src, sizeof(SRC));
 }
 
 //-----------------------------------------------------------------------------
 
 template<typename SRC>
-inline uint32_t bit_pack_inv(const SRC* psrc, int c) {
+/*__declspec(noinline)*/ inline uint32_t bit_pack_inv(const SRC* psrc, int c) {
   uint8_t* src = (uint8_t*)psrc;
   uint32_t result = 0;
   for (int i = 0; i < c; i++) result |= (!bit(src[i]) << i);
@@ -858,14 +858,14 @@ inline uint32_t bit_pack_inv(const SRC* psrc, int c) {
 }
 
 template<class SRC>
-inline uint32_t bit_pack_inv(const SRC& src) {
+/*__declspec(noinline)*/ inline uint32_t bit_pack_inv(const SRC& src) {
   return bit_pack_inv(&src, sizeof(SRC));
 }
 
 //-----------------------------------------------------------------------------
 
 template<class DST>
-inline void bit_unpack(DST* pdst, int c, const uint32_t src) {
+/*__declspec(noinline)*/ inline void bit_unpack(DST* pdst, int c, const uint32_t src) {
   uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {
     dst[i] &= ~1;
@@ -874,14 +874,14 @@ inline void bit_unpack(DST* pdst, int c, const uint32_t src) {
 }
 
 template<class DST>
-inline void bit_unpack(DST& dst, const uint32_t src) {
+/*__declspec(noinline)*/ inline void bit_unpack(DST& dst, const uint32_t src) {
   bit_unpack(&dst, sizeof(DST), src);
 }
 
 //-----------------------------------------------------------------------------
 
 template<class DST>
-inline void bit_unpack_inv(DST* pdst, int c, const uint32_t src) {
+/*__declspec(noinline)*/ inline void bit_unpack_inv(DST* pdst, int c, const uint32_t src) {
   uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {
     dst[i] &= ~1;
@@ -890,13 +890,13 @@ inline void bit_unpack_inv(DST* pdst, int c, const uint32_t src) {
 }
 
 template<class DST>
-inline void bit_unpack_inv(DST& dst, const uint32_t src) {
+/*__declspec(noinline)*/ inline void bit_unpack_inv(DST& dst, const uint32_t src) {
   bit_unpack_inv(&dst, sizeof(DST), src);
 }
 
 //-----------------------------------------------------------------------------
 
-inline void bit_cat(uint32_t& dst, int bit_min, int bit_max, uint32_t src) {
+/*__declspec(noinline)*/ inline void bit_cat(uint32_t& dst, int bit_min, int bit_max, uint32_t src) {
   int width = (bit_max - bit_min) + 1;
   uint32_t mask = (1 << width) - 1;
   dst |= (src & mask) << bit_min;

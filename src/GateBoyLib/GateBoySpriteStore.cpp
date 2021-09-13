@@ -785,7 +785,7 @@ void GateBoy::get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags
 
 
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag)
 {
@@ -1023,7 +1023,7 @@ void GateBoy::sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag)
   /*_BUS_SPR_L3*/ reg.sprite_lbus.BUS_SPR_L3.tri_bus(CAWO_STORE9_GET_L5);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 
 
@@ -1077,7 +1077,7 @@ void GateBoy::sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag)
 
 
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
 {
@@ -1112,5 +1112,5 @@ void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYM
   /*_BUS_SPR_L3*/ reg.sprite_lbus.BUS_SPR_L3.tri_bus(WENU_STORE_L3);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 

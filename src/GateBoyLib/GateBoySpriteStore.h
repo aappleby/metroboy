@@ -54,16 +54,6 @@ struct SpriteLBus {
   /*_BUS_SPR_L3*/ Bus BUS_SPR_L3; // AxCxExGx
 };
 
-//-----------------------------------------------------------------------------
-// Sprite counter tracks how many sprites have been selected for this line.
-
-struct SpriteCounter {
-  /*_p29.BESE*/ DFF17 BESE_SPRITE_COUNT0; // AxxxExxx
-  /*_p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1; // AxxxExxx
-  /*_p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2; // AxxxExxx
-  /*_p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3; // AxxxExxx
-};
-
 //----------------------------------------
 // 10 match signals + 1 global match signal
 
@@ -384,4 +374,4 @@ struct StoreX9 {
   /*_p31.YZOF*/ DFF9 YZOF_STORE9_X7p;
 };
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

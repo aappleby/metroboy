@@ -5,7 +5,7 @@
 // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
 // That also means that _both_ P14 and P15 are selected at reset :/
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_joypad_gates(const GateBoyReg& reg_old) {
   // has to be new_bus or sim isn't stable.
@@ -173,4 +173,4 @@ void GateBoy::tock_joypad_gates(const GateBoyReg& reg_old) {
   /*_BUS_CPU_D05p*/ reg.cpu_dbus.BUS_CPU_D05p.tri_bus(CUDY_JOY5_TO_CD5);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

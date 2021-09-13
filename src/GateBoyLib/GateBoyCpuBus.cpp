@@ -2,7 +2,7 @@
 
 #include "GateBoyLib/GateBoy.h"
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoyCpuSignals::reset_to_bootrom() {
   TEPU_BOOT_BITn.state = 0b00011010;
@@ -13,7 +13,7 @@ void GateBoyCpuSignals::reset_to_cart() {
   SIG_CPU_BOOTp.state = 0b00011000;
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_bootrom_gates() {
   /*_p07.TUGE*/ wire TUGE_FF50_WRn = nand4(reg.cpu_signals.TAPU_CPU_WRp.out_new(), reg.cpu_abus.SYKE_ADDR_HIp(), reg.cpu_abus.TYRO_XX_0x0x0000p(), reg.cpu_abus.TUFA_XX_x1x1xxxxp());
@@ -65,4 +65,4 @@ void GateBoy::tock_bootrom_gates() {
   /*_p07.SATO*/ reg.SATO_BOOT_BITn = or2(reg.cpu_dbus.BUS_CPU_D00p.out_new(), reg.cpu_signals.TEPU_BOOT_BITn.qp_new());
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

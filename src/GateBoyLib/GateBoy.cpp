@@ -87,10 +87,10 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   sys.clkgood = 1;
   run_phases(cart_blob, 2);
 
-  CHECK_N(bit(reg.clk.AFUR_xxxxEFGH.qp_old()));
-  CHECK_P(bit(reg.clk.ALEF_AxxxxFGH.qp_old()));
-  CHECK_P(bit(reg.clk.APUK_ABxxxxGH.qp_old()));
-  CHECK_P(bit(reg.clk.ADYK_ABCxxxxH.qp_old()));
+  CHECK_N(bit(reg.sys_clk.AFUR_xxxxEFGH.qp_old()));
+  CHECK_P(bit(reg.sys_clk.ALEF_AxxxxFGH.qp_old()));
+  CHECK_P(bit(reg.sys_clk.APUK_ABxxxxGH.qp_old()));
+  CHECK_P(bit(reg.sys_clk.ADYK_ABCxxxxH.qp_old()));
 
   sys.phase_total = 0;
   sys.phase_origin = 46880720;
@@ -99,7 +99,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   //----------------------------------------
   // Wait for SIG_CPU_START
 
-  while(bit(~reg.rst.SIG_CPU_STARTp.out_old())) {
+  while(bit(~reg.sys_rst.SIG_CPU_STARTp.out_old())) {
     run_phases(cart_blob, 8);
   }
 
@@ -173,8 +173,8 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
 
 
 
-  reg.rst.reset_to_cart();
-  reg.clk.reset_to_cart();
+  reg.sys_rst.reset_to_cart();
+  reg.sys_clk.reset_to_cart();
   reg.reg_div.reset_to_cart();
   
   //interrupts.reset_to_cart();
@@ -187,7 +187,6 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   //serial.reset_to_cart();
 
   //reset_sprite_store();
-  reg.DEZY_COUNT_CLKp.state = 0b00011011;
   reg.sprite_counter.BESE_SPRITE_COUNT0.state = 0b00011010;
   reg.sprite_counter.CUXY_SPRITE_COUNT1.state = 0b00011010;
   reg.sprite_counter.BEGO_SPRITE_COUNT2.state = 0b00011010;
@@ -205,8 +204,8 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   reg.reg_stat.reset_to_cart();
   reg.pix_count.reset_to_cart();
   reg.mask_pipe.reset_to_cart();
-  reg.REMY_LD0n.state = 0b00011000;
-  reg.RAVO_LD1n.state = 0b00011000;
+  reg.lcd.REMY_LD0n.state = 0b00011000;
+  reg.lcd.RAVO_LD1n.state = 0b00011000;
 
   reg.dma_lo.reset_to_cart();
   reg.reg_dma.reset_to_cart();
@@ -361,8 +360,8 @@ MemberOffset gb_offsets[] = {
   GEN_OFFSET(reg.zram_bus),
   GEN_OFFSET(reg.VOGA_HBLANKp),
   GEN_OFFSET(reg.XYMU_RENDERINGn),
-  GEN_OFFSET(reg.rst),
-  GEN_OFFSET(reg.clk),
+  GEN_OFFSET(reg.sys_rst),
+  GEN_OFFSET(reg.sys_clk),
   GEN_OFFSET(reg.reg_div),
   GEN_OFFSET(reg.reg_tima),
   GEN_OFFSET(reg.reg_tma),
@@ -412,7 +411,6 @@ MemberOffset gb_offsets[] = {
   GEN_OFFSET(reg.store_x7),
   GEN_OFFSET(reg.store_x8),
   GEN_OFFSET(reg.store_x9),
-  GEN_OFFSET(reg.DEZY_COUNT_CLKp),
   GEN_OFFSET(reg.sprite_counter),
   GEN_OFFSET(reg.FEPO_STORE_MATCHp),
   GEN_OFFSET(reg.sprite_match_flags),
@@ -447,8 +445,8 @@ MemberOffset gb_offsets[] = {
   GEN_OFFSET(reg.spr_pipe_a),
   GEN_OFFSET(reg.spr_pipe_b),
   GEN_OFFSET(reg.pal_pipe),
-  GEN_OFFSET(reg.REMY_LD0n),
-  GEN_OFFSET(reg.RAVO_LD1n),
+  GEN_OFFSET(reg.lcd.REMY_LD0n),
+  GEN_OFFSET(reg.lcd.RAVO_LD1n),
   GEN_OFFSET(reg.lcd),
   GEN_OFFSET(reg.reg_lx),
   GEN_OFFSET(reg.reg_ly),
@@ -810,10 +808,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire EXT_clkin = !(sys.phase_total & 1) && sys.clken;
     wire EXT_clkgood = bit(~sys.clkgood);
 
-    /*_PIN_74*/ reg.clk.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
-    /*_PIN_71*/ reg.rst.PIN_71_RST.pin_in(EXT_sys_rst);
-    /*_PIN_76*/ reg.rst.PIN_76_T2.pin_in(EXT_sys_t2);
-    /*_PIN_77*/ reg.rst.PIN_77_T1.pin_in(EXT_sys_t1);
+    /*_PIN_74*/ reg.sys_clk.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
+    /*_PIN_71*/ reg.sys_rst.PIN_71_RST.pin_in(EXT_sys_rst);
+    /*_PIN_76*/ reg.sys_rst.PIN_76_T2.pin_in(EXT_sys_t2);
+    /*_PIN_77*/ reg.sys_rst.PIN_77_T1.pin_in(EXT_sys_t1);
 
     wire EXT_ack_vblank = get_bit(cpu.core.int_ack, BIT_VBLANK);
     wire EXT_ack_stat = get_bit(cpu.core.int_ack, BIT_STAT);
@@ -827,7 +825,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_SIG_CPU_ACK_SERIAL*/ reg.cpu_ack.SIG_CPU_ACK_SERIAL.sig_in(EXT_ack_serial);
     /*_SIG_CPU_ACK_JOYPAD*/ reg.cpu_ack.SIG_CPU_ACK_JOYPAD.sig_in(EXT_ack_joypad);
 
-    /*_SIG_CPU_CLKREQ*/ reg.clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
+    /*_SIG_CPU_CLKREQ*/ reg.sys_clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
 
     /*_SIG_CPU_ADDR_HIp*/ reg.cpu_signals.SIG_CPU_ADDR_HIp.sig_out(reg.cpu_abus.SYRO_FE00_FFFF());
     /*_SIG_CPU_UNOR_DBG*/ reg.cpu_signals.SIG_CPU_UNOR_DBG.sig_out(UNOR_MODE_DBG2p());
@@ -1053,12 +1051,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p29.CEHA*/ wire CEHA_SCANNINGp = not1(reg.sprite_scanner.CENO_SCANNINGn.qn_new());
     /*_p29.CARE*/ wire CARE_COUNT_CLKn = and3(XOCE_xBCxxFGx(), CEHA_SCANNINGp, GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /*_p29.DYTY*/ wire DYTY_COUNT_CLKp = not1(CARE_COUNT_CLKn);
-    /*_p29.DEZY*/ reg.DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx(), XAPO_VID_RSTn(), DYTY_COUNT_CLKp);
+    /*_p29.DEZY*/ reg.sprite_scanner.DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx(), XAPO_VID_RSTn(), DYTY_COUNT_CLKp);
 
     // There's a feedback loop here, but we don't actually need to loop - BAKY holds the clock line high once the sprite store is full, so doing a second logic pass
     // doesn't actually change any of the dffs.
     /*#p29.BAKY*/ wire BAKY_SPRITES_FULL_new = and2(reg.sprite_counter.CUXY_SPRITE_COUNT1.qp_any(), reg.sprite_counter.DYBE_SPRITE_COUNT3.qp_any());
-    /*#p29.CAKE*/ wire CAKE_COUNT_CLKp_new = or2(BAKY_SPRITES_FULL_new, reg.DEZY_COUNT_CLKp.qp_any());
+    /*#p29.CAKE*/ wire CAKE_COUNT_CLKp_new = or2(BAKY_SPRITES_FULL_new, reg.sprite_scanner.DEZY_COUNT_CLKp.qp_any());
     /*#p28.AZYB*/ wire AZYB_LINE_TRIGn = not1(reg.ATEJ_LINE_RSTp.out_new());
     /*_p29.BESE*/ reg.sprite_counter.BESE_SPRITE_COUNT0.dff17_any(CAKE_COUNT_CLKp_new, AZYB_LINE_TRIGn, reg.sprite_counter.BESE_SPRITE_COUNT0.qn_any());
     /*_p29.CUXY*/ reg.sprite_counter.CUXY_SPRITE_COUNT1.dff17_any(reg.sprite_counter.BESE_SPRITE_COUNT0.qn_any(), AZYB_LINE_TRIGn, reg.sprite_counter.CUXY_SPRITE_COUNT1.qn_any());
@@ -1419,12 +1417,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //-----------------------------------------------------------------------------
 
-  reg_new.clk.PIN_74_CLK.CLK = gen_clk_new(0b10101010);
-  reg_new.clk.PIN_74_CLK.CLKGOOD = 1;
+  reg_new.sys_clk.PIN_74_CLK.CLK = gen_clk_new(0b10101010);
+  reg_new.sys_clk.PIN_74_CLK.CLKGOOD = 1;
 
-  reg_new.rst.PIN_71_RST = 0;
-  reg_new.rst.PIN_76_T2 = 0;
-  reg_new.rst.PIN_77_T1 = 0;
+  reg_new.sys_rst.PIN_71_RST = 0;
+  reg_new.sys_rst.PIN_76_T2 = 0;
+  reg_new.sys_rst.PIN_77_T1 = 0;
 
   reg_new.cpu_ack.SIG_CPU_ACK_VBLANK = get_bit(cpu.core.int_ack, BIT_VBLANK);
   reg_new.cpu_ack.SIG_CPU_ACK_STAT   = get_bit(cpu.core.int_ack, BIT_STAT);
@@ -1432,7 +1430,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   reg_new.cpu_ack.SIG_CPU_ACK_SERIAL = get_bit(cpu.core.int_ack, BIT_SERIAL);
   reg_new.cpu_ack.SIG_CPU_ACK_JOYPAD = get_bit(cpu.core.int_ack, BIT_JOYPAD);
 
-  reg_new.clk.SIG_CPU_CLKREQ = 1;
+  reg_new.sys_clk.SIG_CPU_CLKREQ = 1;
 
   reg_new.cpu_signals.SIG_CPU_ADDR_HIp = cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFFFF;
   reg_new.cpu_signals.SIG_CPU_UNOR_DBG = 0;
@@ -1441,25 +1439,25 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //-----------------------------------------------------------------------------
   // Sys clock signals
 
-  reg_new.clk.PIN_73_CLK_DRIVE = reg_new.clk.PIN_74_CLK.CLK;
-  reg_new.clk.AVET_DEGLITCH = reg_new.clk.PIN_74_CLK.CLK;
-  reg_new.clk.ANOS_DEGLITCH = !reg_new.clk.PIN_74_CLK.CLK;
+  reg_new.sys_clk.PIN_73_CLK_DRIVE = reg_new.sys_clk.PIN_74_CLK.CLK;
+  reg_new.sys_clk.AVET_DEGLITCH = reg_new.sys_clk.PIN_74_CLK.CLK;
+  reg_new.sys_clk.ANOS_DEGLITCH = !reg_new.sys_clk.PIN_74_CLK.CLK;
 
-  reg_new.clk.AFUR_xxxxEFGH = gen_clk_new(0b00001111);
-  reg_new.clk.ALEF_AxxxxFGH = gen_clk_new(0b10000111);
-  reg_new.clk.APUK_ABxxxxGH = gen_clk_new(0b11000011);
-  reg_new.clk.ADYK_ABCxxxxH = gen_clk_new(0b11100001);
+  reg_new.sys_clk.AFUR_xxxxEFGH = gen_clk_new(0b00001111);
+  reg_new.sys_clk.ALEF_AxxxxFGH = gen_clk_new(0b10000111);
+  reg_new.sys_clk.APUK_ABxxxxGH = gen_clk_new(0b11000011);
+  reg_new.sys_clk.ADYK_ABCxxxxH = gen_clk_new(0b11100001);
 
-  reg_new.clk.PIN_75_CLK_OUT = gen_clk_new(0b00001111);
+  reg_new.sys_clk.PIN_75_CLK_OUT = gen_clk_new(0b00001111);
 
-  reg_new.clk.SIG_CPU_BOWA_Axxxxxxx = gen_clk_new(0b10000000);
-  reg_new.clk.SIG_CPU_BEDO_xBCDEFGH = gen_clk_new(0b01111111);
-  reg_new.clk.SIG_CPU_BEKO_ABCDxxxx = gen_clk_new(0b11110000);
-  reg_new.clk.SIG_CPU_BUDE_xxxxEFGH = gen_clk_new(0b00001111);
-  reg_new.clk.SIG_CPU_BOLO_ABCDEFxx = gen_clk_new(0b11111100);
-  reg_new.clk.SIG_CPU_BUKE_AxxxxxGH = gen_clk_new(0b10000011);
-  reg_new.clk.SIG_CPU_BOMA_xBCDEFGH = gen_clk_new(0b01111111);
-  reg_new.clk.SIG_CPU_BOGA_Axxxxxxx = gen_clk_new(0b10000000);
+  reg_new.sys_clk.SIG_CPU_BOWA_Axxxxxxx = gen_clk_new(0b10000000);
+  reg_new.sys_clk.SIG_CPU_BEDO_xBCDEFGH = gen_clk_new(0b01111111);
+  reg_new.sys_clk.SIG_CPU_BEKO_ABCDxxxx = gen_clk_new(0b11110000);
+  reg_new.sys_clk.SIG_CPU_BUDE_xxxxEFGH = gen_clk_new(0b00001111);
+  reg_new.sys_clk.SIG_CPU_BOLO_ABCDEFxx = gen_clk_new(0b11111100);
+  reg_new.sys_clk.SIG_CPU_BUKE_AxxxxxGH = gen_clk_new(0b10000011);
+  reg_new.sys_clk.SIG_CPU_BOMA_xBCDEFGH = gen_clk_new(0b01111111);
+  reg_new.sys_clk.SIG_CPU_BOGA_Axxxxxxx = gen_clk_new(0b10000000);
 
   reg_new.cpu_signals.TEDO_CPU_RDp = reg_new.cpu_signals.SIG_IN_CPU_RDp;
   reg_new.cpu_signals.APOV_CPU_WRp = gen_clk_new(0b00001110) && reg_new.cpu_signals.SIG_IN_CPU_WRp;
@@ -1477,14 +1475,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // In logic mode we don't care about the power-on behavior, we only want behavior to match when running code. So, we set
   // this stuff to zeroes.
 
-  reg_new.rst.AFER_SYS_RSTp = 0;
-  reg_new.rst.TUBO_WAITINGp = 0;
-  reg_new.rst.ASOL_POR_DONEn = 0;
-  reg_new.rst.SIG_CPU_EXT_CLKGOOD = 1;
-  reg_new.rst.SIG_CPU_EXT_RESETp = 0;
-  reg_new.rst.SIG_CPU_STARTp = 0;
-  reg_new.rst.SIG_CPU_INT_RESETp = 0;;
-  reg_new.rst.SOTO_DBG_VRAMp = 0;
+  reg_new.sys_rst.AFER_SYS_RSTp = 0;
+  reg_new.sys_rst.TUBO_WAITINGp = 0;
+  reg_new.sys_rst.ASOL_POR_DONEn = 0;
+  reg_new.sys_rst.SIG_CPU_EXT_CLKGOOD = 1;
+  reg_new.sys_rst.SIG_CPU_EXT_RESETp = 0;
+  reg_new.sys_rst.SIG_CPU_STARTp = 0;
+  reg_new.sys_rst.SIG_CPU_INT_RESETp = 0;;
+  reg_new.sys_rst.SOTO_DBG_VRAMp = 0;
 
   //----------
   // LCDC
@@ -1501,9 +1499,9 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------
   // Video clocks
 
-  reg_new.clk.WOSU_AxxDExxH = !reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b10011001);
-  reg_new.clk.WUVU_ABxxEFxx = !reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b11001100);
-  reg_new.clk.VENA_xxCDEFxx = !reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b00111100);
+  reg_new.sys_clk.WOSU_AxxDExxH = !reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b10011001);
+  reg_new.sys_clk.WUVU_ABxxEFxx = !reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b11001100);
+  reg_new.sys_clk.VENA_xxCDEFxx = !reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b00111100);
 
   //----------
   // LYC
@@ -1800,7 +1798,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     reg.sfetch_control.TAKA_SFETCH_RUNNINGp = 1;
 
-    reg.DEZY_COUNT_CLKp = 0;
+    reg.sprite_scanner.DEZY_COUNT_CLKp = 0;
 
     bit_clear(reg.sprite_counter);
     bit_clear(reg.sprite_reset_flags);
@@ -1981,15 +1979,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
-  if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-  }
-  else if (reg_new.ATEJ_LINE_RSTp) {
-
-    // FIXME does this even matter?
-    if (gen_clk_new(0b10101010)) {
-      reg.DEZY_COUNT_CLKp = 1;
-    }
-
+  if (reg_new.reg_lcdc.XONA_LCDC_LCDENn || reg_new.ATEJ_LINE_RSTp) {
     bit_clear(reg.sprite_counter);
     bit_clear(reg.sprite_reset_flags);
     bit_clear(reg.sprite_store_flags);
@@ -2006,56 +1996,31 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_set(reg.store_x9);
   }
   else {
-    // FIXME need to ditch these adders
-    Adder ERUC_YDIFF0 = add3(!get_bit(bit_pack(reg_new.reg_ly), 0), get_bit(bit_pack(reg_new.oam_temp_a), 0), 0);
-    Adder ENEF_YDIFF1 = add3(!get_bit(bit_pack(reg_new.reg_ly), 1), get_bit(bit_pack(reg_new.oam_temp_a), 1), ERUC_YDIFF0.carry);
-    Adder FECO_YDIFF2 = add3(!get_bit(bit_pack(reg_new.reg_ly), 2), get_bit(bit_pack(reg_new.oam_temp_a), 2), ENEF_YDIFF1.carry);
-    Adder GYKY_YDIFF3 = add3(!get_bit(bit_pack(reg_new.reg_ly), 3), get_bit(bit_pack(reg_new.oam_temp_a), 3), FECO_YDIFF2.carry);
-    Adder GOPU_YDIFF4 = add3(!get_bit(bit_pack(reg_new.reg_ly), 4), get_bit(bit_pack(reg_new.oam_temp_a), 4), GYKY_YDIFF3.carry);
-    Adder FUWA_YDIFF5 = add3(!get_bit(bit_pack(reg_new.reg_ly), 5), get_bit(bit_pack(reg_new.oam_temp_a), 5), GOPU_YDIFF4.carry);
-    Adder GOJU_YDIFF6 = add3(!get_bit(bit_pack(reg_new.reg_ly), 6), get_bit(bit_pack(reg_new.oam_temp_a), 6), FUWA_YDIFF5.carry);
-    Adder WUHU_YDIFF7 = add3(!get_bit(bit_pack(reg_new.reg_ly), 7), get_bit(bit_pack(reg_new.oam_temp_a), 7), GOJU_YDIFF6.carry);
+    bool ssf_clk = gen_clk_new(0b10011001) || !reg.sprite_scanner.CENO_SCANNINGn;
 
-    SpriteDeltaY sprite_delta_y = {
-      ERUC_YDIFF0,
-      ENEF_YDIFF1,
-      FECO_YDIFF2,
-      GYKY_YDIFF3,
-      GOPU_YDIFF4,
-      FUWA_YDIFF5,
-      GOJU_YDIFF6,
-      WUHU_YDIFF7,
-    };
+    int ly = (int)bit_pack(reg_new.reg_ly);
+    int sy = (int)bit_pack(reg_new.oam_temp_a) - 16;
+    int sprite_height = reg_new.reg_lcdc.XYMO_LCDC_SPSIZEn ? 8 : 16;
 
-    auto ssf_clk =
-      !gen_clk_new(0b01100110) ||
-      !reg.sprite_scanner.CENO_SCANNINGn ||
-      sprite_delta_y.GOPU_YDIFF4.sum ||
-      sprite_delta_y.FUWA_YDIFF5.sum ||
-      sprite_delta_y.GOJU_YDIFF6.sum ||
-      sprite_delta_y.WUHU_YDIFF7.sum ||
-      !sprite_delta_y.WUHU_YDIFF7.carry ||
-      (reg.reg_lcdc.XYMO_LCDC_SPSIZEn && !sprite_delta_y.GYKY_YDIFF3.sum);
-
-
+    if (ly < sy || ly >= sy + sprite_height) ssf_clk = 1;
 
     if (gen_clk_new(0b10101010)) {
-      if (!reg.DEZY_COUNT_CLKp && ssf_clk) {
+      reg.sprite_scanner.DEZY_COUNT_CLKp = ssf_clk;
+      if (!reg_old.sprite_scanner.DEZY_COUNT_CLKp && reg_new.sprite_scanner.DEZY_COUNT_CLKp) {
         if (bit_pack(reg_old.sprite_counter) != 10) {
           bit_unpack(reg_new.sprite_counter, bit_pack(reg_old.sprite_counter) + 1);
         }
       }
-
-      reg.DEZY_COUNT_CLKp = ssf_clk;
+    }
+    else {
+      for (int i = 0; i < 10; i++) {
+        (&reg.sprite_store_flags.DYHU_STORE0_CLKn)[i] = (i == (int)bit_pack(reg_new.sprite_counter)) && !bit(ssf_clk);
+      }
     }
 
 
-    for (int i = 0; i < 10; i++) {
-      (&reg.sprite_store_flags.DYHU_STORE0_CLKn)[i] = (i == (int)bit_pack(reg_new.sprite_counter)) && !bit(ssf_clk);
-    }
-
-    auto store_clk_pe = (~bit_pack_inv(reg_old.sprite_store_flags)) & bit_pack_inv(reg.sprite_store_flags);
-    auto store_clk_ne = bit_pack_inv(reg_old.sprite_store_flags) & (~bit_pack_inv(reg.sprite_store_flags));
+    auto store_clk_pe = (~bit_pack_inv(reg_old.sprite_store_flags)) & bit_pack_inv(reg_new.sprite_store_flags);
+    auto store_clk_ne = bit_pack_inv(reg_old.sprite_store_flags) & (~bit_pack_inv(reg_new.sprite_store_flags));
 
     if (get_bit(store_clk_ne, 0)) bit_copy_inv(reg.store_i0, reg.sprite_ibus);
     if (get_bit(store_clk_ne, 1)) bit_copy_inv(reg.store_i1, reg.sprite_ibus);
@@ -2439,101 +2404,91 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
+  //----------------------------------------
+  // Pal reg read/write
 
+  if (reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    if (cpu_addr_new == 0xFF47) bit_copy_inv(reg.reg_bgp,  reg_old.cpu_dbus);
+    if (cpu_addr_new == 0xFF48) bit_copy_inv(reg.reg_obp0, reg_old.cpu_dbus);
+    if (cpu_addr_new == 0xFF49) bit_copy_inv(reg.reg_obp1, reg_old.cpu_dbus);
+  }
+
+  if (reg.cpu_signals.SIG_IN_CPU_RDp) {
+    if (cpu_addr_new == 0xFF47) bit_copy_inv(reg.cpu_dbus, reg.reg_bgp);
+    if (cpu_addr_new == 0xFF48) bit_copy_inv(reg.cpu_dbus, reg.reg_obp0);
+    if (cpu_addr_new == 0xFF49) bit_copy_inv(reg.cpu_dbus, reg.reg_obp1);
+  }
 
   //----------------------------------------
-  // PPU / LCD output
+  // Pixel pipes
 
-  {
+  auto tpix_a = bit_pack_inv(reg.tile_temp_a);
+  auto tpix_b = bit_pack(reg.tile_temp_b);
+  auto spix_a = bit_pack_inv(reg.sprite_pix_a);
+  auto spix_b = bit_pack_inv(reg.sprite_pix_b);
 
+  auto spipe_a = bit_pack(reg.spr_pipe_a);
+  auto spipe_b = bit_pack(reg.spr_pipe_b);
+  auto bpipe_a = bit_pack(reg.bgw_pipe_a);
+  auto bpipe_b = bit_pack(reg.bgw_pipe_b);
+  auto mpipe   = bit_pack(reg.mask_pipe);
+  auto ppipe   = bit_pack(reg.pal_pipe);
 
-
-    //----------------------------------------
-    // Pal reg read/write
-
-    if (reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-      if (cpu_addr_new == 0xFF47) bit_copy_inv(reg.reg_bgp,  reg_old.cpu_dbus);
-      if (cpu_addr_new == 0xFF48) bit_copy_inv(reg.reg_obp0, reg_old.cpu_dbus);
-      if (cpu_addr_new == 0xFF49) bit_copy_inv(reg.reg_obp1, reg_old.cpu_dbus);
-    }
-
-    if (reg.cpu_signals.SIG_IN_CPU_RDp) {
-      if (cpu_addr_new == 0xFF47) bit_copy_inv(reg.cpu_dbus, reg.reg_bgp);
-      if (cpu_addr_new == 0xFF48) bit_copy_inv(reg.cpu_dbus, reg.reg_obp0);
-      if (cpu_addr_new == 0xFF49) bit_copy_inv(reg.cpu_dbus, reg.reg_obp1);
-    }
-
-    //----------------------------------------
-    // Pixel pipes
-
-    auto tpix_a = bit_pack_inv(reg.tile_temp_a);
-    auto tpix_b = bit_pack(reg.tile_temp_b);
-    auto spix_a = bit_pack_inv(reg.sprite_pix_a);
-    auto spix_b = bit_pack_inv(reg.sprite_pix_b);
-
-    auto spipe_a = bit_pack(reg.spr_pipe_a);
-    auto spipe_b = bit_pack(reg.spr_pipe_b);
-    auto bpipe_a = bit_pack(reg.bgw_pipe_a);
-    auto bpipe_b = bit_pack(reg.bgw_pipe_b);
-    auto mpipe   = bit_pack(reg.mask_pipe);
-    auto ppipe   = bit_pack(reg.pal_pipe);
-
-    if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-      spipe_a = (spipe_a << 1) | 0;
-      spipe_b = (spipe_b << 1) | 0;
-      bpipe_a = (bpipe_a << 1) | 0;
-      bpipe_b = (bpipe_b << 1) | 0;
-      mpipe   = (mpipe   << 1) | 1;
-      ppipe   = (ppipe   << 1) | 0;
-    }
-    
-    if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp || (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) || TEVO_WIN_FETCH_TRIGp_new) {
-      bpipe_a = tpix_a;
-      bpipe_b = tpix_b;
-    }
-
-    if (reg.sfetch_control.WUTY_SFETCH_DONE_TRIGp) {
-      auto smask = (spipe_a | spipe_b);
-      spipe_a = (spipe_a & smask) | (spix_a & ~smask);
-      spipe_b = (spipe_b & smask) | (spix_b & ~smask);
-      mpipe = reg.oam_temp_b.DEPO_OAM_DB7p ? mpipe | ~smask : mpipe & smask;
-      ppipe = reg.oam_temp_b.GOMO_OAM_DB4p ? ppipe | ~smask : ppipe & smask;
-    }
-
-    bit_unpack(reg.spr_pipe_a, spipe_a);
-    bit_unpack(reg.spr_pipe_b, spipe_b);
-    bit_unpack(reg.bgw_pipe_a, bpipe_a);
-    bit_unpack(reg.bgw_pipe_b, bpipe_b);
-    bit_unpack(reg.mask_pipe, mpipe);
-    bit_unpack(reg.pal_pipe, ppipe);
-
-    //----------------------------------------
-    // Pipe merge and output
-
-    wire PIX_BG_LOp = reg.bgw_pipe_a.PYBO_BGW_PIPE_A7 && !reg.reg_lcdc.VYXE_LCDC_BGENn;
-    wire PIX_BG_HIp = reg.bgw_pipe_b.SOHU_BGW_PIPE_B7 && !reg.reg_lcdc.VYXE_LCDC_BGENn;
-    wire PIX_SP_LOp = reg.spr_pipe_a.WUFY_SPR_PIPE_A7 && !reg.reg_lcdc.XYLO_LCDC_SPENn;
-    wire PIX_SP_HIp = reg.spr_pipe_b.VUPY_SPR_PIPE_B7 && !reg.reg_lcdc.XYLO_LCDC_SPENn;
-
-    auto pal_idx = 0;
-    auto pal = 0;
-
-    auto bgp  = bit_pack_inv(reg.reg_bgp);
-    auto obp0 = bit_pack_inv(reg.reg_obp0);
-    auto obp1 = bit_pack_inv(reg.reg_obp1);
-
-    if (PIX_SP_HIp || PIX_SP_LOp) {
-      pal_idx = pack(PIX_SP_LOp, PIX_SP_HIp);
-      pal = reg.pal_pipe.LYME_PAL_PIPE_D7 ? obp1 : obp0;
-    }
-    else {
-      pal_idx = pack(PIX_BG_LOp, PIX_BG_HIp);
-      pal = bgp;
-    }
-
-    reg.REMY_LD0n = (pal >> (pal_idx * 2 + 0)) & 1;
-    reg.RAVO_LD1n = (pal >> (pal_idx * 2 + 1)) & 1;
+  if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
+    spipe_a = (spipe_a << 1) | 0;
+    spipe_b = (spipe_b << 1) | 0;
+    bpipe_a = (bpipe_a << 1) | 0;
+    bpipe_b = (bpipe_b << 1) | 0;
+    mpipe   = (mpipe   << 1) | 1;
+    ppipe   = (ppipe   << 1) | 0;
   }
+    
+  if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp || (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) || TEVO_WIN_FETCH_TRIGp_new) {
+    bpipe_a = tpix_a;
+    bpipe_b = tpix_b;
+  }
+
+  if (reg.sfetch_control.WUTY_SFETCH_DONE_TRIGp) {
+    auto smask = (spipe_a | spipe_b);
+    spipe_a = (spipe_a & smask) | (spix_a & ~smask);
+    spipe_b = (spipe_b & smask) | (spix_b & ~smask);
+    mpipe = reg.oam_temp_b.DEPO_OAM_DB7p ? mpipe | ~smask : mpipe & smask;
+    ppipe = reg.oam_temp_b.GOMO_OAM_DB4p ? ppipe | ~smask : ppipe & smask;
+  }
+
+  bit_unpack(reg.spr_pipe_a, spipe_a);
+  bit_unpack(reg.spr_pipe_b, spipe_b);
+  bit_unpack(reg.bgw_pipe_a, bpipe_a);
+  bit_unpack(reg.bgw_pipe_b, bpipe_b);
+  bit_unpack(reg.mask_pipe, mpipe);
+  bit_unpack(reg.pal_pipe, ppipe);
+
+  //----------------------------------------
+  // Pipe merge and output
+
+  wire PIX_BG_LOp = reg.bgw_pipe_a.PYBO_BGW_PIPE_A7 && !reg.reg_lcdc.VYXE_LCDC_BGENn;
+  wire PIX_BG_HIp = reg.bgw_pipe_b.SOHU_BGW_PIPE_B7 && !reg.reg_lcdc.VYXE_LCDC_BGENn;
+  wire PIX_SP_LOp = reg.spr_pipe_a.WUFY_SPR_PIPE_A7 && !reg.reg_lcdc.XYLO_LCDC_SPENn;
+  wire PIX_SP_HIp = reg.spr_pipe_b.VUPY_SPR_PIPE_B7 && !reg.reg_lcdc.XYLO_LCDC_SPENn;
+
+  auto pal_idx = 0;
+  auto pal = 0;
+
+  auto bgp  = bit_pack_inv(reg.reg_bgp);
+  auto obp0 = bit_pack_inv(reg.reg_obp0);
+  auto obp1 = bit_pack_inv(reg.reg_obp1);
+
+  if (PIX_SP_HIp || PIX_SP_LOp) {
+    pal_idx = pack(PIX_SP_LOp, PIX_SP_HIp);
+    pal = reg.pal_pipe.LYME_PAL_PIPE_D7 ? obp1 : obp0;
+  }
+  else {
+    pal_idx = pack(PIX_BG_LOp, PIX_BG_HIp);
+    pal = bgp;
+  }
+
+  reg.lcd.REMY_LD0n = (pal >> (pal_idx * 2 + 0)) & 1;
+  reg.lcd.RAVO_LD1n = (pal >> (pal_idx * 2 + 1)) & 1;
 
   //----------------------------------------
   // LCD pins
@@ -2541,15 +2496,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (!reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
     reg.lcd.PIN_52_LCD_CNTRL = !reg.lcd.SYGU_LINE_STROBE && !reg.lcd.RUTU_x113p;
 
-    if (reg_old.lcd.RUTU_x113p && !reg_new.lcd.RUTU_x113p) {
-      reg.lcd.LUCA_LINE_EVENp = !reg.lcd.LUCA_LINE_EVENp;
-    }
-
-
-    if (!reg_old.lcd.POPU_y144p && reg_new.lcd.POPU_y144p) {
-      reg.lcd.NAPO_FRAME_EVENp = !reg.lcd.NAPO_FRAME_EVENp;
-    }
-
+    if (reg_old.lcd.RUTU_x113p && !reg_new.lcd.RUTU_x113p) reg.lcd.LUCA_LINE_EVENp = !reg.lcd.LUCA_LINE_EVENp;
+    if (!reg_old.lcd.POPU_y144p && reg_new.lcd.POPU_y144p) reg.lcd.NAPO_FRAME_EVENp = !reg.lcd.NAPO_FRAME_EVENp;
     reg.lcd.PIN_56_LCD_FLIPS = reg.lcd.NAPO_FRAME_EVENp ^ reg.lcd.LUCA_LINE_EVENp;
 
 
@@ -2577,17 +2525,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       reg.lcd.POFY = 0;
     }
 
-    reg.lcd.PIN_50_LCD_DATA1 = reg.RAVO_LD1n;
-    reg.lcd.PIN_51_LCD_DATA0 = reg.REMY_LD0n;
+    reg.lcd.PIN_50_LCD_DATA1 = reg.lcd.RAVO_LD1n;
+    reg.lcd.PIN_51_LCD_DATA0 = reg.lcd.REMY_LD0n;
     reg.lcd.PIN_54_LCD_HSYNC = !reg.lcd.POFY;
     reg.lcd.PIN_55_LCD_LATCH = !reg.lcd.RUTU_x113p;
 
-    if (reg.pix_count.XEHO_PX0p && reg.pix_count.XYDO_PX3p) {
-      reg.lcd.WUSA_LCD_CLOCK_GATE = 1;
-    }
-    if (reg.VOGA_HBLANKp) {
-      reg.lcd.WUSA_LCD_CLOCK_GATE = 0;
-    }
+    if (reg.pix_count.XEHO_PX0p && reg.pix_count.XYDO_PX3p) reg.lcd.WUSA_LCD_CLOCK_GATE = 1;
+    if (reg.VOGA_HBLANKp) reg.lcd.WUSA_LCD_CLOCK_GATE = 0;
 
     reg.lcd.PIN_53_LCD_CLOCK = (!reg.lcd.WUSA_LCD_CLOCK_GATE || !SACU_CLKPIPE_new) && (!reg.fine_scroll.PUXA_SCX_FINE_MATCH_A || reg.fine_scroll.NYZE_SCX_FINE_MATCH_B);
   }
@@ -2601,8 +2545,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.lcd.RUJU = 1;
     reg.lcd.POFY = 0;
 
-    reg.lcd.PIN_50_LCD_DATA1 = reg.RAVO_LD1n;
-    reg.lcd.PIN_51_LCD_DATA0 = reg.REMY_LD0n;
+    reg.lcd.PIN_50_LCD_DATA1 = reg.lcd.RAVO_LD1n;
+    reg.lcd.PIN_51_LCD_DATA0 = reg.lcd.REMY_LD0n;
     reg.lcd.PIN_52_LCD_CNTRL = 1;
     reg.lcd.PIN_53_LCD_CLOCK = 1;
     reg.lcd.PIN_54_LCD_HSYNC = 1;
@@ -2622,8 +2566,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (reg.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new) {
     bit_copy(&reg.ext_addr_latch, 15, &reg.cpu_abus);
   }
-
-  //----------------------------------------
 
   if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
     reg.ext_ctrl.PIN_80_CSn = !reg.reg_dma.MARU_DMA_A15n;
@@ -2645,9 +2587,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.ext_ctrl.PIN_79_RDn = 1;
     reg.ext_ctrl.PIN_78_WRn = 0;
   }
-
-  //----------------------------------------
-
 
   if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
     reg.ext_abus.PIN_16_A15 = reg.reg_dma.MARU_DMA_A15n;
@@ -2724,10 +2663,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (ext_read_en) bit_unpack_inv(reg.ext_dbus, data_in);
   }
 
-
   //----------------------------------------
   // Ext write
-
 
   if (reg.ext_ctrl.PIN_78_WRn) {
     auto ext_addr = bit_pack_inv(reg.ext_abus);
@@ -2991,10 +2928,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto sfetch_oam_addr_new = (bit_pack(reg.sprite_ibus)  << 2) | 0b11;
     auto dma_oam_addr_new    = bit_pack(reg.dma_lo);
 
-    if      (reg_new.MATU_DMA_RUNNINGp)    bit_unpack_inv(reg.oam_abus, dma_oam_addr_new);
-    else if (reg_new.ACYL_SCANNINGp) bit_unpack_inv(reg.oam_abus, sscan_oam_addr_new );
-    else if (!reg_new.XYMU_RENDERINGn)              bit_unpack_inv(reg.oam_abus, sfetch_oam_addr_new);
-    else                                            bit_unpack_inv(reg.oam_abus, cpu_addr_new);
+    if      (reg_new.MATU_DMA_RUNNINGp) bit_unpack_inv(reg.oam_abus, dma_oam_addr_new);
+    else if (reg_new.ACYL_SCANNINGp)    bit_unpack_inv(reg.oam_abus, sscan_oam_addr_new );
+    else if (!reg_new.XYMU_RENDERINGn)  bit_unpack_inv(reg.oam_abus, sfetch_oam_addr_new);
+    else                                bit_unpack_inv(reg.oam_abus, cpu_addr_new);
 
     //----------
     // oam control signals depend on address

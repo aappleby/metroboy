@@ -78,14 +78,14 @@ void GateBoy::dump_tile_fetcher(Dumper& d) {
 }
 
 void GateBoy::dump_clocks(Dumper& d) {
-  d.dump_bitp("AFUR_xxxxEFGHp : ", reg.clk.AFUR_xxxxEFGH.state);
-  d.dump_bitp("ALEF_AxxxxFGHp : ", reg.clk.ALEF_AxxxxFGH.state);
-  d.dump_bitp("APUK_ABxxxxGHp : ", reg.clk.APUK_ABxxxxGH.state);
-  d.dump_bitp("ADYK_ABCxxxxHp : ", reg.clk.ADYK_ABCxxxxH.state);
+  d.dump_bitp("AFUR_xxxxEFGHp : ", reg.sys_clk.AFUR_xxxxEFGH.state);
+  d.dump_bitp("ALEF_AxxxxFGHp : ", reg.sys_clk.ALEF_AxxxxFGH.state);
+  d.dump_bitp("APUK_ABxxxxGHp : ", reg.sys_clk.APUK_ABxxxxGH.state);
+  d.dump_bitp("ADYK_ABCxxxxHp : ", reg.sys_clk.ADYK_ABCxxxxH.state);
   d("\n");
-  d.dump_bitp("WUVU_ABxxEFxxp : ", reg.clk.WUVU_ABxxEFxx.state);
-  d.dump_bitp("VENA_xxCDEFxxp : ", reg.clk.VENA_xxCDEFxx.state);
-  d.dump_bitp("WOSU_AxxDExxHp : ", reg.clk.WOSU_AxxDExxH.state);
+  d.dump_bitp("WUVU_ABxxEFxxp : ", reg.sys_clk.WUVU_ABxxEFxx.state);
+  d.dump_bitp("VENA_xxCDEFxxp : ", reg.sys_clk.VENA_xxCDEFxx.state);
+  d.dump_bitp("WOSU_AxxDExxHp : ", reg.sys_clk.WOSU_AxxDExxH.state);
 }
 
 void GateBoy::dump_interrupts(Dumper& d) {
@@ -184,7 +184,6 @@ void GateBoy::dump_oam_bus(Dumper& d) {
 void GateBoy::dump_sprite_store(Dumper& d) {
   //d.dump_slice2p("SPRITE INDEX   : ", &XADU_SPRITE_IDX0p.state, 6);
   d.dump_slice2p("SPRITE COUNT   : ", &reg.sprite_counter.BESE_SPRITE_COUNT0, 4);
-  d.dump_bitp   ("DEZY_STORE_ENn : ", reg.DEZY_COUNT_CLKp.state);
   d("\n");
   d("STORE0 R%d I%02d L%02d X%03d\n", reg.sprite_reset_flags.EBOJ_STORE0_RSTp.state, bit_pack_inv(reg.store_i0), bit_pack_inv(reg.store_l0), bit_pack_inv(reg.store_x0));
   d("STORE1 R%d I%02d L%02d X%03d\n", reg.sprite_reset_flags.CEDY_STORE1_RSTp.state, bit_pack_inv(reg.store_i1), bit_pack_inv(reg.store_l1), bit_pack_inv(reg.store_x1));
@@ -284,25 +283,26 @@ void GateBoy::dump_timer(Dumper& d) {
 }
 
 void GateBoy::dump_resets(Dumper& d) {
-  d.dump_bitp("PIN_71_RST     : ", reg.rst.PIN_71_RST.state);
-  d.dump_bitp("PIN_77_T1      : ", reg.rst.PIN_77_T1.state);
-  d.dump_bitp("PIN_76_T2      : ", reg.rst.PIN_76_T2.state);
+  d.dump_bitp("PIN_71_RST     : ", reg.sys_rst.PIN_71_RST.state);
+  d.dump_bitp("PIN_77_T1      : ", reg.sys_rst.PIN_77_T1.state);
+  d.dump_bitp("PIN_76_T2      : ", reg.sys_rst.PIN_76_T2.state);
 
-  d.dump_bitp("TUBO_WAITINGp  : ", reg.rst.TUBO_WAITINGp.state);
-  d.dump_bitn("ASOL_POR_DONEn : ", reg.rst.ASOL_POR_DONEn.state);
-  d.dump_bitp("AFER_SYS_RSTp  : ", reg.rst.AFER_SYS_RSTp.state);
-  d.dump_bitp("SOTO_DBG_VRAMp : ", reg.rst.SOTO_DBG_VRAMp.state);
+  d.dump_bitp("TUBO_WAITINGp  : ", reg.sys_rst.TUBO_WAITINGp.state);
+  d.dump_bitn("ASOL_POR_DONEn : ", reg.sys_rst.ASOL_POR_DONEn.state);
+  d.dump_bitp("AFER_SYS_RSTp  : ", reg.sys_rst.AFER_SYS_RSTp.state);
+  d.dump_bitp("SOTO_DBG_VRAMp : ", reg.sys_rst.SOTO_DBG_VRAMp.state);
 
-  d.dump_bitp("SIG_CPU_EXT_CLKGOOD : ", reg.rst.SIG_CPU_EXT_CLKGOOD.state);
-  d.dump_bitp("SIG_CPU_EXT_RESETp  : ", reg.rst.SIG_CPU_EXT_RESETp .state);
-  d.dump_bitp("SIG_CPU_STARTp      : ", reg.rst.SIG_CPU_STARTp     .state);
-  d.dump_bitp("SIG_CPU_INT_RESETp  : ", reg.rst.SIG_CPU_INT_RESETp .state);
+  d.dump_bitp("SIG_CPU_EXT_CLKGOOD : ", reg.sys_rst.SIG_CPU_EXT_CLKGOOD.state);
+  d.dump_bitp("SIG_CPU_EXT_RESETp  : ", reg.sys_rst.SIG_CPU_EXT_RESETp .state);
+  d.dump_bitp("SIG_CPU_STARTp      : ", reg.sys_rst.SIG_CPU_STARTp     .state);
+  d.dump_bitp("SIG_CPU_INT_RESETp  : ", reg.sys_rst.SIG_CPU_INT_RESETp .state);
 }
 
 void GateBoy::dump_sprite_scanner(Dumper& d) {
   d.dump_slice2p("SCAN INDEX        : ", &reg.scan_counter.YFEL_SCAN0, 6);
   d.dump_bitp   ("BESU_SCANNINGp    : ", reg.sprite_scanner.BESU_SCANNINGn.state);
   d.dump_bitp   ("CENO_SCANNINGp    : ", reg.sprite_scanner.CENO_SCANNINGn.state);
+  d.dump_bitp   ("DEZY_COUNT_CLKp   : ", reg.sprite_scanner.DEZY_COUNT_CLKp.state);
   d.dump_bitp   ("BYBA_SCAN_DONE_Ap : ", reg.sprite_scanner.BYBA_SCAN_DONE_Ap.state);
   d.dump_bitp   ("DOBA_SCAN_DONE_Bp : ", reg.sprite_scanner.DOBA_SCAN_DONE_Bp.state);
 }
@@ -339,8 +339,8 @@ void GateBoy::dump_ppu(Dumper& d) {
   d.dump_slice2p("SPR PIPE B : ", &reg.spr_pipe_b, 8);
   d.dump_slice2p("PAL PIPE   : ", &reg.pal_pipe, 8);
   d.dump_slice2p("MASK PIPE  : ", &reg.mask_pipe, 8);
-  d.dump_bitn   ("REMY_LD0n  : ", reg.REMY_LD0n.state);
-  d.dump_bitn   ("RAVO_LD1n  : ", reg.RAVO_LD1n.state);
+  d.dump_bitn   ("REMY_LD0n  : ", reg.lcd.REMY_LD0n.state);
+  d.dump_bitn   ("RAVO_LD1n  : ", reg.lcd.RAVO_LD1n.state);
   d("\n");
   d.dump_bitp("XYMU_RENDERINGn        : ", reg.XYMU_RENDERINGn.state);
   d.dump_bitp("PYNU_WIN_MODE_Ap       : ", reg.win_ctrl.PYNU_WIN_MODE_Ap.state);

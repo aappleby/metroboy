@@ -2,7 +2,7 @@
 
 #include "GateBoyLib/GateBoy.h"
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_vram_bus_gates(const GateBoyReg& reg_old, wire TEVO_WIN_FETCH_TRIGp) {
   memset(&reg.vram_abus, BIT_NEW | BIT_PULLED | 1, sizeof(reg.vram_abus));

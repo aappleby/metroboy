@@ -3,9 +3,9 @@
 
 #include "GateBoyLib/GateBoyRegisters.h"
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-struct GateBoyLCDControl {
+struct LCDControl {
 
   void reset_to_cart() {
     CATU_x113p.state = 0b00011010;
@@ -53,6 +53,9 @@ struct GateBoyLCDControl {
   /*_p24.PAHO*/ DFF17 PAHO_X_8_SYNC;          // xBxDxFxH
   /*#p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE; // xBxDxFGH High on G at beginning of line, low on H at end of line. Not sure what's up with the others. Scroll/sprite count?
 
+  Gate REMY_LD0n;
+  Gate RAVO_LD1n;
+
   /*_PIN_50*/ PinOut PIN_50_LCD_DATA1;
   /*_PIN_51*/ PinOut PIN_51_LCD_DATA0;
   /*_PIN_54*/ PinOut PIN_54_LCD_HSYNC;
@@ -63,4 +66,4 @@ struct GateBoyLCDControl {
   /*_PIN_57*/ PinOut PIN_57_LCD_VSYNC;
 };
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

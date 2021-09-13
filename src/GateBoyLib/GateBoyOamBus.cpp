@@ -2,7 +2,7 @@
 
 #include "GateBoyLib/GateBoy.h"
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& oam_latch_a, OamTempA& oam_temp_a)
 {
@@ -30,7 +30,7 @@ void GateBoy::oam_latch_to_temp_b(wire COTA_OAM_CLKn, const OamLatchB& oam_latch
   /*_p31.DEPO*/ oam_temp_b.DEPO_OAM_DB7p.dff8n(XEGA_OAM_CLKp, oam_latch_b.ECED_OAM_LATCH_DB7n.qp_old());
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_oam_bus_gates()
 {
@@ -420,4 +420,4 @@ void GateBoy::tock_oam_bus_gates()
   /*_BUS_CPU_D07p*/ reg.cpu_dbus.BUS_CPU_D07p.tri_bus(FYRA_OLB_TO_CBD7);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

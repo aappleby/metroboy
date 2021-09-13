@@ -1,7 +1,7 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 struct GateBoyCpuSignals {
   void reset_to_bootrom();
@@ -29,7 +29,7 @@ struct GateBoyCpuSignals {
   ///*_SIG_CPU_6*/         SigOut SIG_CPU_6;             // top left port PORTD_00: -> LEXY, doesn't do anything. FROM_CPU6? Drives an unwired pad.
 };
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 struct GateBoyCpuABus {
   void reset_to_cart_new() {

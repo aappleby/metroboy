@@ -47,29 +47,32 @@ struct GateBoyReg {
   /*_SIG_VCC*/ SigIn SIG_VCC;
   /*_SIG_GND*/ SigIn SIG_GND;
   
-  RegDIV  reg_div;
-  RegTIMA reg_tima;
-  RegTMA  reg_tma;
-  RegTAC  reg_tac;
-  RegLCDC reg_lcdc;
-  RegStat reg_stat;
-  RegSCX  reg_scx;
-  RegSCY  reg_scy;
-  RegWY   reg_wy;
-  RegWX   reg_wx;
-  RegLX   reg_lx;
-  RegLY   reg_ly;
-  RegLYC  reg_lyc;
-  RegBGP  reg_bgp;
-  RegOBP0 reg_obp0;
-  RegOBP1 reg_obp1;
-  RegIF   reg_if;
-  RegIE   reg_ie;
-  RegJoy  reg_joy;
-  RegDma  reg_dma;
+  RegJoy  reg_joy;  // 0xFF00
+  //RegSB   reg_sb;   // 0xFF01
+  //RegSC   reg_sc;   // 0xFF02
+  RegDIV  reg_div;  // 0xFF04
+  RegTIMA reg_tima; // 0xFF05
+  RegTMA  reg_tma;  // 0xFF06
+  RegTAC  reg_tac;  // 0xFF07
+  RegIF   reg_if;   // 0xFF0F
 
-  GateBoyResetDebug rst;
-  GateBoyClock      clk;
+  RegLCDC reg_lcdc; // 0xFF40
+  RegStat reg_stat; // 0xFF41
+  RegSCY  reg_scy;  // 0xFF42
+  RegSCX  reg_scx;  // 0xFF43
+  RegLY   reg_ly;   // 0xFF44
+  RegLYC  reg_lyc;  // 0xFF45
+  RegDma  reg_dma;  // 0xFF46
+  RegBGP  reg_bgp;  // 0xFF47
+  RegOBP0 reg_obp0; // 0xFF48
+  RegOBP1 reg_obp1; // 0xFF49
+  RegWY   reg_wy;   // 0xFF4A
+  RegWX   reg_wx;   // 0xFF4B
+  RegLX   reg_lx;   // Not mapped
+  RegIE   reg_ie;   // 0xFFFF
+
+  GateBoyResetDebug sys_rst;
+  GateBoyClock      sys_clk;
 
   /*#p21.VOGA*/ DFF17    VOGA_HBLANKp;
   /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;
@@ -92,10 +95,7 @@ struct GateBoyReg {
   VramExtControl vram_ext_ctrl;
   VramExtABus    vram_ext_abus;
   VramExtDBus    vram_ext_dbus;
-
-  SpriteIBus     sprite_ibus;
-  SpriteLBus     sprite_lbus;
-                 
+                
   OamControl     oam_ctrl;
   OamABus        oam_abus;
   OamDBusA       oam_dbus_a;
@@ -126,6 +126,19 @@ struct GateBoyReg {
   JoyInt   joy_int;
   JoyLatch joy_latch;
   JoyExt   joy_ext;
+
+  //----------
+
+  SpriteScanner    sprite_scanner;
+  ScanCounter      scan_counter;
+  SpriteCounter    sprite_counter;
+  SpriteIndex      sprite_index;
+  SpriteMatchFlags sprite_match_flags;
+  SpriteResetFlags sprite_reset_flags;
+  SpriteStoreFlags sprite_store_flags;
+
+  SpriteIBus sprite_ibus;
+  SpriteLBus sprite_lbus;
 
   StoreI0 store_i0;
   StoreI1 store_i1;
@@ -160,40 +173,35 @@ struct GateBoyReg {
   StoreX8 store_x8;
   StoreX9 store_x9;
 
-  //GateBoySerial     serial;
-
-  /*_p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;
-  SpriteScanner sprite_scanner;
-  ScanCounter   scan_counter;
-  SpriteCounter sprite_counter;
-  SpriteIndex   sprite_index;
-
-  SpriteMatchFlags sprite_match_flags;
-  SpriteResetFlags sprite_reset_flags;
-  SpriteStoreFlags sprite_store_flags;
-
+  //----------
 
 
   SpriteFetchCounter sfetch_counter;
   SpriteFetchControl sfetch_control;
-  SpritePixA sprite_pix_a;
-  SpritePixB sprite_pix_b;
+  //----------
 
   TileFetchCounter tfetch_counter;
   TileFetchControl tfetch_control;
   TileTempA tile_temp_a;
   TileTempB tile_temp_b;
 
-  WinMapX  win_map_x;
-  WinTileY win_tile_y;
-  WinMapY  win_map_y;
+  //----------
 
-  WindowRegisters win_ctrl;
-  FineCount       fine_count;
-  FineScroll      fine_scroll;
+  WinControl win_ctrl;
+  WinMapX    win_map_x;
+  WinTileY   win_tile_y;
+  WinMapY    win_map_y;
+
+  FineCount  fine_count;
+  FineScroll fine_scroll;
+
+  //----------
+
+  SpritePix flipped_sprite;
+  SpritePixA sprite_pix_a;
+  SpritePixB sprite_pix_b;
 
   PixCount pix_count;
-  
   MaskPipe mask_pipe;
   BgwPipeA bgw_pipe_a;
   BgwPipeB bgw_pipe_b;
@@ -201,13 +209,7 @@ struct GateBoyReg {
   SprPipeB spr_pipe_b;
   PalPipe  pal_pipe;
 
-  Gate REMY_LD0n;
-  Gate RAVO_LD1n;
-
-  GateBoyLCDControl lcd;
-
-
-  SpritePix flipped_sprite;
+  LCDControl lcd;
 
   //NR10 reg_NR10;
   //NR11 reg_NR11;
@@ -449,7 +451,7 @@ struct GateBoy {
 
   //----------------------------------------
 
-  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(reg.rst.AFER_SYS_RSTp.qp_new(), reg.rst.ASOL_POR_DONEn.qp_new()); }
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(reg.sys_rst.AFER_SYS_RSTp.qp_new(), reg.sys_rst.ASOL_POR_DONEn.qp_new()); }
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
   /*#p01.DULA*/ wire DULA_SYS_RSTp() const { return not1(ALUR_SYS_RSTn()); }
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn() const { return not1(DULA_SYS_RSTp()); }
@@ -471,20 +473,20 @@ struct GateBoy {
   /*_p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
   /*_p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
 
-  /*_p07.UBET*/ wire UBETp()           const { return not1(reg.rst.PIN_77_T1.qp_int_new()); }
-  /*_p07.UVAR*/ wire UVARp()           const { return not1(reg.rst.PIN_76_T2.qp_int_new()); }
-  /*_p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(reg.rst.PIN_77_T1.qp_int_new(), UVARp()); }
-  /*_p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(reg.rst.PIN_76_T2.qp_int_new(), UBETp()); }
-  /*_p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), reg.rst.PIN_71_RST.qp_int_new()); }
+  /*_p07.UBET*/ wire UBETp()           const { return not1(reg.sys_rst.PIN_77_T1.qp_int_new()); }
+  /*_p07.UVAR*/ wire UVARp()           const { return not1(reg.sys_rst.PIN_76_T2.qp_int_new()); }
+  /*_p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(reg.sys_rst.PIN_77_T1.qp_int_new(), UVARp()); }
+  /*_p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(reg.sys_rst.PIN_76_T2.qp_int_new(), UBETp()); }
+  /*_p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), reg.sys_rst.PIN_71_RST.qp_int_new()); }
   /*_p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /*_p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /*_p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
-  /*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), reg.rst.SOTO_DBG_VRAMp.qn_new()); }
+  /*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), reg.sys_rst.SOTO_DBG_VRAMp.qn_new()); }
 
-  /*_p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(reg.clk.PIN_74_CLK.clkgood()); }
-  /*_p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(reg.clk.PIN_74_CLK.clkgood()); }
+  /*_p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(reg.sys_clk.PIN_74_CLK.clkgood()); }
+  /*_p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(reg.sys_clk.PIN_74_CLK.clkgood()); }
 
-  /*_p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(reg.clk.SIG_CPU_CLKREQ.out_new()); }
+  /*_p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(reg.sys_clk.SIG_CPU_CLKREQ.out_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
   wire gen_clk_old(uint8_t mask) {
@@ -498,7 +500,7 @@ struct GateBoy {
   }
 
   wire AZOF_AxCxExGx() const {
-    /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg.clk.AVET_DEGLITCH.out_mid());
+    /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg.sys_clk.AVET_DEGLITCH.out_mid());
     /*_p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
     return AZOF_AxCxExGx;
   }
@@ -515,10 +517,10 @@ struct GateBoy {
   /*_p27.MOXE*/ wire MOXE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
   /*_p27.TAVA*/ wire TAVA_xBxDxFxH() const { return not1(LAPE_AxCxExGx()); }
 
-  /*#p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not1(reg.clk.AFUR_xxxxEFGH.qp_new()); }
-  /*#p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not1(reg.clk.ALEF_AxxxxFGH.qn_new()); }
-  /*#p01.AROV*/ wire AROV_xxCDEFxx() const { return not1(reg.clk.APUK_ABxxxxGH.qp_new()); }
-  /*#p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(reg.clk.ADYK_ABCxxxxH.qn_new()); }
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not1(reg.sys_clk.AFUR_xxxxEFGH.qp_new()); }
+  /*#p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not1(reg.sys_clk.ALEF_AxxxxFGH.qn_new()); }
+  /*#p01.AROV*/ wire AROV_xxCDEFxx() const { return not1(reg.sys_clk.APUK_ABxxxxGH.qp_new()); }
+  /*#p01.ADAR*/ wire ADAR_ABCxxxxH() const { return not1(reg.sys_clk.ADYK_ABCxxxxH.qn_new()); }
 
   /*#p01.BEKO*/ wire BEKO_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); } // BEKO+BAVY parallel
   /*#p01.BAPY*/ wire BAPY_xxxxxxGH() const { return nor3(ABOL_CLKREQn(), AROV_xxCDEFxx(), ATYP_ABCDxxxx()); }
@@ -550,10 +552,10 @@ struct GateBoy {
   /*_p04.MOPA*/ wire MOPA_xxxxEFGH() const { return not1(UVYT_ABCDxxxx()); }
   /*_p28.XYNY*/ wire XYNY_ABCDxxxx() const { return not1(MOPA_xxxxEFGH()); }
 
-  /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(reg.clk.VENA_xxCDEFxx.qn_new()); }
-  /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(reg.clk.WUVU_ABxxEFxx.qn_new()); }
-  /*#p29.XOCE*/ wire XOCE_xBCxxFGx() const { return not1(reg.clk.WOSU_AxxDExxH.qp_new()); }
-  /*#p29.WOJO*/ wire WOJO_AxxxExxx() const { return nor2(reg.clk.WOSU_AxxDExxH.qn_new(), reg.clk.WUVU_ABxxEFxx.qn_new()); }
+  /*#p21.TALU*/ wire TALU_xxCDEFxx() const { return not1(reg.sys_clk.VENA_xxCDEFxx.qn_new()); }
+  /*#p29.XUPY*/ wire XUPY_ABxxEFxx() const { return not1(reg.sys_clk.WUVU_ABxxEFxx.qn_new()); }
+  /*#p29.XOCE*/ wire XOCE_xBCxxFGx() const { return not1(reg.sys_clk.WOSU_AxxDExxH.qp_new()); }
+  /*#p29.WOJO*/ wire WOJO_AxxxExxx() const { return nor2(reg.sys_clk.WOSU_AxxDExxH.qn_new(), reg.sys_clk.WUVU_ABxxEFxx.qn_new()); }
   /*#p21.SONO*/ wire SONO_ABxxxxGH() const { return not1(TALU_xxCDEFxx()); }
   /*_p29.XYSO*/ wire XYSO_xBCDxFGH() const { return not1(WOJO_AxxxExxx()); }
   /*#p30.CYKE*/ wire CYKE_ABxxEFxx() const { return not1(XUPY_ABxxEFxx()); }

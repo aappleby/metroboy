@@ -1,26 +1,28 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 struct SpriteScanner {
   void reset_to_cart() {
     BESU_SCANNINGn.state = 0b00011000;
     CENO_SCANNINGn.state = 0b00011010;
+    DEZY_COUNT_CLKp.state = 0b00011011;
     BYBA_SCAN_DONE_Ap.state = 0b00011011;
     DOBA_SCAN_DONE_Bp.state = 0b00011001;
   }
 
-  /*#p28.FETO*/ Gate FETO_SCAN_DONEp; // old used
-  /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp; // new used
-
-  /*#p28.BESU*/ NorLatch BESU_SCANNINGn; // Axxxxxxx
-  /*#p29.CENO*/ DFF17 CENO_SCANNINGn;    // xxxxExxx
-  /*#p29.BYBA*/ DFF17 BYBA_SCAN_DONE_Ap; // Axxxxxxx
-  /*#p29.DOBA*/ DFF17 DOBA_SCAN_DONE_Bp; // ABxxxxxx Cleared on A, set on B
+  /*#p28.FETO*/ Gate FETO_SCAN_DONEp;
+  /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp;
+  /*#p28.BESU*/ NorLatch BESU_SCANNINGn;
+  /*#p29.CENO*/ DFF17 CENO_SCANNINGn;
+  /*_p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;
+  /*#p29.BYBA*/ DFF17 BYBA_SCAN_DONE_Ap;
+  /*#p29.DOBA*/ DFF17 DOBA_SCAN_DONE_Bp;
 };
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Scan counter tracks which of the 40 sprites in OAM we're scanning.
 
 struct ScanCounter {
   void reset_to_cart() {
@@ -32,15 +34,15 @@ struct ScanCounter {
     FONY_SCAN5.state = 0b00011011;
   }
 
-  /*#p28.YFEL*/ DFF17 YFEL_SCAN0;        // AxxxExxx
-  /*_p28.WEWY*/ DFF17 WEWY_SCAN1;        // Axxxxxxx
-  /*_p28.GOSO*/ DFF17 GOSO_SCAN2;        // Axxxxxxx
-  /*_p28.ELYN*/ DFF17 ELYN_SCAN3;        // Axxxxxxx
-  /*_p28.FAHA*/ DFF17 FAHA_SCAN4;        // Axxxxxxx
-  /*_p28.FONY*/ DFF17 FONY_SCAN5;        // Axxxxxxx
+  /*#p28.YFEL*/ DFF17 YFEL_SCAN0;
+  /*_p28.WEWY*/ DFF17 WEWY_SCAN1;
+  /*_p28.GOSO*/ DFF17 GOSO_SCAN2;
+  /*_p28.ELYN*/ DFF17 ELYN_SCAN3;
+  /*_p28.FAHA*/ DFF17 FAHA_SCAN4;
+  /*_p28.FONY*/ DFF17 FONY_SCAN5;
 };
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Sprite index selects which store to write
 
 struct SpriteIndex {
@@ -53,12 +55,22 @@ struct SpriteIndex {
     XECU_SPRITE_IDX5p.state = 0b00011010;
   }
 
-  /*_p30.XADU*/ DFF13 XADU_SPRITE_IDX0p; // AxxxExxx
-  /*_p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p; // AxxxExxx
-  /*_p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p; // AxxxExxx
-  /*_p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p; // AxxxExxx
-  /*_p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p; // AxxxExxx
-  /*_p30.XECU*/ DFF13 XECU_SPRITE_IDX5p; // AxxxExxx
+  /*_p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
+  /*_p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;
+  /*_p30.ZUZE*/ DFF13 ZUZE_SPRITE_IDX2p;
+  /*_p30.XOBE*/ DFF13 XOBE_SPRITE_IDX3p;
+  /*_p30.YDUF*/ DFF13 YDUF_SPRITE_IDX4p;
+  /*_p30.XECU*/ DFF13 XECU_SPRITE_IDX5p;
 };
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Sprite counter tracks how many sprites have been selected for this line.
+
+struct SpriteCounter {
+  /*_p29.BESE*/ DFF17 BESE_SPRITE_COUNT0; // AxxxExxx
+  /*_p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1; // AxxxExxx
+  /*_p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2; // AxxxExxx
+  /*_p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3; // AxxxExxx
+};
+
+//-----------------------------------------------------------------------------

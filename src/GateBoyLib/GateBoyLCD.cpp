@@ -2,7 +2,7 @@
 
 #include "GateBoyLib/GateBoy.h"
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_lyc_gates(const GateBoyReg& reg_old) {
   {
@@ -67,7 +67,7 @@ void GateBoy::tock_lyc_gates(const GateBoyReg& reg_old) {
   }
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_lcd_gates() {
   {
@@ -169,7 +169,7 @@ void GateBoy::tock_lcd_gates() {
   }
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*#p21.RYNO*/ wire RYNO = or2(reg.lcd.SYGU_LINE_STROBE.qp_new(), reg.lcd.RUTU_x113p.qp_new());
@@ -215,8 +215,8 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(reg.lcd.POFY.out_mid());
   /*_PIN_54*/ reg.lcd.PIN_54_LCD_HSYNC.pin_out(RUZE_HSYNCn, RUZE_HSYNCn);
 
-  /*_PIN_51*/ reg.lcd.PIN_51_LCD_DATA0.pin_out(reg.REMY_LD0n.out_new(), reg.REMY_LD0n.out_new());
-  /*_PIN_50*/ reg.lcd.PIN_50_LCD_DATA1.pin_out(reg.RAVO_LD1n.out_new(), reg.RAVO_LD1n.out_new());
+  /*_PIN_51*/ reg.lcd.PIN_51_LCD_DATA0.pin_out(reg.lcd.REMY_LD0n.out_new(), reg.lcd.REMY_LD0n.out_new());
+  /*_PIN_50*/ reg.lcd.PIN_50_LCD_DATA1.pin_out(reg.lcd.RAVO_LD1n.out_new(), reg.lcd.RAVO_LD1n.out_new());
 
   /*_p01.UMEK*/ wire UMEK_DIV06n = not1(reg.reg_div.UGOT_DIV06p.qp_new());
   /*#p21.PURE*/ wire PURE_x113n = not1(reg.lcd.RUTU_x113p.qp_new());

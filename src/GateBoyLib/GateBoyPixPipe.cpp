@@ -8,7 +8,7 @@
 // WUTY        fires  on HA/BC/DE/FG
 // NYXU        fires  on HA/BC/DE/FG
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_window_gates(const GateBoyReg& reg_old, wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp) {
   /*_p27.ROCO*/ wire ROCO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
@@ -115,7 +115,7 @@ void GateBoy::tock_window_gates(const GateBoyReg& reg_old, wire SEGU_CLKPIPE_evn
   /*_BUS_CPU_D07p*/ reg.cpu_dbus.BUS_CPU_D07p.tri_bus(MARA_WX7_TO_CD7);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_pix_pipes_gates(const GateBoyReg& reg_old, wire SACU_CLKPIPE_new, wire NYXU_BFETCH_RSTn)
 {
@@ -629,6 +629,6 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyReg& reg_old, wire SACU_CLKPIPE_
   /*#p35.PERO*/ wire PERO_COL_LO = or3(NELO_COL_BG_LO, WALY_COL_OBP0_LO, MUFA_COL_OBP1_LO);
   /*#p35.PATY*/ wire PATY_COL_HI = or3(NURA_COL_BG_HI, WUFU_COL_OBP0_HI, MOKA_COL_OBP1_HI);
 
-  /*#p35.REMY*/ reg.REMY_LD0n = not1(PERO_COL_LO);
-  /*#p35.RAVO*/ reg.RAVO_LD1n = not1(PATY_COL_HI);
+  /*#p35.REMY*/ reg.lcd.REMY_LD0n = not1(PERO_COL_LO);
+  /*#p35.RAVO*/ reg.lcd.RAVO_LD1n = not1(PATY_COL_HI);
 }

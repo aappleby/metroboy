@@ -2,14 +2,14 @@
 
 #include "GateBoyLib/GateBoy.h"
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // this is hacked up because we're ignoring the debug reg for the moment
 ///*_p01.ULUR*/ wire ULUR_DIV_06_clknew = /*mux2p(FF60_1, BOGA_Axxxxxxx,*/ TAMA_DIV05p.qn_new() /*)*/;
 ///*_p01.UGOT*/ UGOT_DIV06p.dff17_clk(ULUR_DIV_06_clknew,  UGOT_DIV06p.qn_old());
 
 void GateBoy::tock_div_gates() {
   /*_p01.TAPE*/ wire TAPE_FF04_WRp = and4(reg.cpu_signals.TAPU_CPU_WRp.out_new(), reg.cpu_abus.RYFO_FF04_FF07p(), reg.cpu_abus.TOLA_A01n(), reg.cpu_abus.TOVY_A00n());
-  /*_p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(UCOB_CLKBADp(), reg.rst.PIN_71_RST.qp_int_new(), TAPE_FF04_WRp);
+  /*_p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(UCOB_CLKBADp(), reg.sys_rst.PIN_71_RST.qp_int_new(), TAPE_FF04_WRp);
 
   /*_p01.UKUP*/ reg.reg_div.UKUP_DIV00p.dff17(BOGA_Axxxxxxx(),          UFOL_DIV_RSTn, reg.reg_div.UKUP_DIV00p.qn_old());
   /*_p01.UFOR*/ reg.reg_div.UFOR_DIV01p.dff17(reg.reg_div.UKUP_DIV00p.qn_any(), UFOL_DIV_RSTn, reg.reg_div.UFOR_DIV01p.qn_old());
@@ -57,7 +57,7 @@ void GateBoy::tock_div_gates() {
   /*_BUS_CPU_D07p*/ reg.cpu_dbus.BUS_CPU_D07p.tri_bus(TATU_DIV13_TO_CD7);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_timer_gates(const GateBoyReg& reg_old) {
   /*_p03.TYJU*/ wire TYJU_FF06_WRn = nand4(reg.cpu_signals.TAPU_CPU_WRp.out_new(), reg.cpu_abus.RYFO_FF04_FF07p(), reg.cpu_abus.BUS_CPU_A01p.out_new(), reg.cpu_abus.TOVY_A00n());
@@ -174,4 +174,4 @@ void GateBoy::tock_timer_gates(const GateBoyReg& reg_old) {
   /*_BUS_CPU_D02p*/ reg.cpu_dbus.BUS_CPU_D02p.tri_bus(SUPE_TAC2_TO_CD2);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

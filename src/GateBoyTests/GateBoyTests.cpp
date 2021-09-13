@@ -1009,7 +1009,7 @@ TestResults GateBoyTests::test_clk() {
   gbp.dbg_write(cart_blob, ADDR_LCDC, 0x80);
   gbp.run_phases(cart_blob, 8);
 
-  auto& clk = gbp.gba.reg.clk;
+  auto& clk = gbp.gba.reg.sys_clk;
 
   for (int i = 0; i < 32; i++) {
     int phase = gbp.gba.sys.phase_total & 7;
@@ -1022,15 +1022,15 @@ TestResults GateBoyTests::test_clk() {
     EXPECT_CLK(clk.VENA_xxCDEFxx.qp_old(), (uint8_t)0b00111100);
     EXPECT_CLK(clk.WOSU_AxxDExxH.qp_old(), (uint8_t)0b10011001);
 
-    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BOWA_Axxxxxxx.out_old(), 0b10000000);
-    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BEDO_xBCDEFGH.out_old(), 0b01111111);
-    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BEKO_ABCDxxxx.out_old(), 0b11110000);
-    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BUDE_xxxxEFGH.out_old(), 0b00001111);
-    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BOLO_ABCDEFxx.out_old(), 0b11111100);
-    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BUKE_AxxxxxGH.out_old(), 0b10000011);
-    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BOMA_xBCDEFGH.out_old(), 0b01111111);
-    EXPECT_CLK(gbp.gba.reg.clk.SIG_CPU_BOGA_Axxxxxxx.out_old(), 0b10000000);
-    EXPECT_CLK(gbp.gba.reg.clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
+    EXPECT_CLK(gbp.gba.reg.sys_clk.SIG_CPU_BOWA_Axxxxxxx.out_old(), 0b10000000);
+    EXPECT_CLK(gbp.gba.reg.sys_clk.SIG_CPU_BEDO_xBCDEFGH.out_old(), 0b01111111);
+    EXPECT_CLK(gbp.gba.reg.sys_clk.SIG_CPU_BEKO_ABCDxxxx.out_old(), 0b11110000);
+    EXPECT_CLK(gbp.gba.reg.sys_clk.SIG_CPU_BUDE_xxxxEFGH.out_old(), 0b00001111);
+    EXPECT_CLK(gbp.gba.reg.sys_clk.SIG_CPU_BOLO_ABCDEFxx.out_old(), 0b11111100);
+    EXPECT_CLK(gbp.gba.reg.sys_clk.SIG_CPU_BUKE_AxxxxxGH.out_old(), 0b10000011);
+    EXPECT_CLK(gbp.gba.reg.sys_clk.SIG_CPU_BOMA_xBCDEFGH.out_old(), 0b01111111);
+    EXPECT_CLK(gbp.gba.reg.sys_clk.SIG_CPU_BOGA_Axxxxxxx.out_old(), 0b10000000);
+    EXPECT_CLK(gbp.gba.reg.sys_clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
     gbp.next_phase(cart_blob);
   }
 
@@ -1105,7 +1105,7 @@ TestResults GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
-      char CLK = cp_ext(gbp.gba.reg.clk.PIN_75_CLK_OUT .state);
+      char CLK = cp_ext(gbp.gba.reg.sys_clk.PIN_75_CLK_OUT .state);
       char WRn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_78_WRn.state);
       char RDn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_79_RDn.state);
       char CSn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_80_CSn.state);
@@ -1229,7 +1229,7 @@ TestResults GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = cp_ext(gbp.gba.reg.clk.PIN_75_CLK_OUT. state);
+      char CLK = cp_ext(gbp.gba.reg.sys_clk.PIN_75_CLK_OUT. state);
       char WRn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_78_WRn.state);
       char RDn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_79_RDn.state);
       char CSn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_80_CSn.state);
@@ -1399,7 +1399,7 @@ TestResults GateBoyTests::test_ext_bus() {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      char CLK = cp_ext(gbp.gba.reg.clk.PIN_75_CLK_OUT .state);
+      char CLK = cp_ext(gbp.gba.reg.sys_clk.PIN_75_CLK_OUT .state);
       char WRn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_78_WRn.state);
       char RDn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_79_RDn.state);
       char CSn = cp_ext(gbp.gba.reg.ext_ctrl.PIN_80_CSn.state);

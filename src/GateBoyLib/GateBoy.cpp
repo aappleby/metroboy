@@ -3008,35 +3008,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------
   // if we're writing to oam, put source data on oam bus
 
-  const auto vram_data_new    = bit_pack(reg.vram_dbus);
-  const auto ext_data_new     = bit_pack_inv(reg.ext_dbus);
-  const auto cpu_oam_data_new = bit_pack(reg.cpu_dbus); // have to repack here...
-
-  // WUJE is weird, not sure why it's necessary.
-  if (gen_clk_new(0b11110000)) reg.oam_ctrl.WUJE_CPU_OAM_WRn = 1;
-  if (cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110)) reg.oam_ctrl.WUJE_CPU_OAM_WRn = 0;
-
-  if (reg_new.MATU_DMA_RUNNINGp && dma_addr_vram_new) {
-    bit_unpack_inv(reg.oam_dbus_a, vram_data_new);
-    bit_unpack_inv(reg.oam_dbus_b, vram_data_new);
-  }
-  else if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
-    bit_unpack_inv(reg.oam_dbus_a, ext_data_new);
-    bit_unpack_inv(reg.oam_dbus_b, ext_data_new);
-  }
-  else if (!reg_new.ACYL_SCANNINGp && reg_new.XYMU_RENDERINGn) {
-    if (cpu_addr_oam_new) {
-      if (!reg.oam_ctrl.WUJE_CPU_OAM_WRn) {
-        bit_unpack_inv(reg.oam_dbus_a, cpu_oam_data_new);
-        bit_unpack_inv(reg.oam_dbus_b, cpu_oam_data_new);
-      }
-    }
-    else {
-      bit_unpack_inv(reg.oam_dbus_a, cpu_oam_data_new);
-      bit_unpack_inv(reg.oam_dbus_b, cpu_oam_data_new);
-    }
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -3044,6 +3015,35 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  const auto vram_data_new    = state_new.vram_dbus;
+  const auto ext_data_new     = ~state_new.ext_dbus;
+  const auto cpu_oam_data_new = state_new.cpu_dbus; // have to repack here...
+
+  // WUJE is weird, not sure why it's necessary.
+  if (gen_clk_new(0b11110000)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn = 1;
+  if (cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn = 0;
+
+  if (state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new) {
+    state_new.oam_dbus_a = ~vram_data_new;
+    state_new.oam_dbus_b = ~vram_data_new;
+  }
+  else if (state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
+    state_new.oam_dbus_a = uint8_t(~ext_data_new);
+    state_new.oam_dbus_b = uint8_t(~ext_data_new);
+  }
+  else if (!state_new.ACYL_SCANNINGp && state_new.XYMU_RENDERINGn) {
+    if (cpu_addr_oam_new) {
+      if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn) {
+        state_new.oam_dbus_a = ~cpu_oam_data_new;
+        state_new.oam_dbus_b = ~cpu_oam_data_new;
+      }
+    }
+    else {
+      state_new.oam_dbus_a = ~cpu_oam_data_new;
+      state_new.oam_dbus_b = ~cpu_oam_data_new;
+    }
+  }
 
   //----------
   // the actual oam write
@@ -3053,14 +3053,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (!state_new.oam_ctrl.SIG_OAM_WRn_A) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
     if (!state_new.oam_ctrl.SIG_OAM_WRn_B) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
   }
-
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
 
   state_new.oam_ctrl.old_oam_clk = !state_new.oam_ctrl.SIG_OAM_CLKn; // vestige of gate mode
 

@@ -1489,11 +1489,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // has to be near the top as it controls the video reset signal
 
   if (reg_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF40 && gen_clk_new(0b00000001)) {
-    bit_copy_inv(reg_new.reg_lcdc, reg_old.cpu_dbus);
+    bit_unpack_inv(reg_new.reg_lcdc, bit_pack(reg_old.cpu_dbus));
   }
 
   if (reg_new.cpu_signals.SIG_IN_CPU_RDp && (cpu_addr_new == 0xFF40)) {
-    bit_copy_inv(reg_new.cpu_dbus, reg_new.reg_lcdc);
+    bit_unpack(reg_new.cpu_dbus, bit_pack_inv(reg_new.reg_lcdc));
   }
 
   //----------
@@ -1507,8 +1507,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // LYC
 
   if (cpu_addr_new == 0xFF45) {
-    if (reg_new.cpu_signals.SIG_IN_CPU_RDp) bit_copy_inv(reg_new.cpu_dbus, reg_old.reg_lyc);
-    if (reg_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) bit_copy_inv(reg_new.reg_lyc, reg_old.cpu_dbus);
+    if (reg_new.cpu_signals.SIG_IN_CPU_RDp) bit_unpack(reg_new.cpu_dbus, bit_pack_inv(reg_old.reg_lyc));
+    if (reg_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) bit_unpack_inv(reg_new.reg_lyc, bit_pack(reg_old.cpu_dbus));
   }
 
   if (!reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b00100000)) {
@@ -1572,7 +1572,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (reg_new.cpu_signals.SIG_IN_CPU_RDp && (cpu_addr_new == 0xFF44)) {
-    bit_copy(reg_new.cpu_dbus, reg_new.reg_ly);
+    bit_unpack(reg_new.cpu_dbus, bit_pack(reg_new.reg_ly));
   }
 
   //----------
@@ -1638,8 +1638,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //tock_timer_logic();
 
   if (reg_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-    if (cpu_addr_new == 0xFF06) bit_copy(reg_new.reg_tma, reg_new.cpu_dbus);
-    if (cpu_addr_new == 0xFF07) bit_copy(&reg_new.reg_tac, 3, &reg_new.cpu_dbus);
+    if (cpu_addr_new == 0xFF06) bit_unpack(reg_new.reg_tma, bit_pack(reg_new.cpu_dbus));
+    if (cpu_addr_new == 0xFF07) bit_unpack(reg_new.reg_tac, bit_pack(reg_new.cpu_dbus));
   }
 
   if (gen_clk_new(0b10000000)) {
@@ -1666,21 +1666,21 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (cpu_addr_new == 0xFF05 && gen_clk_new(0b00001110) && reg_new.cpu_signals.SIG_IN_CPU_WRp) {
     if (!reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE || reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
       reg_new.int_ctrl.NYDU_TIMA7p_DELAY = 0;
-      bit_copy(reg_new.reg_tima, reg_new.cpu_dbus);
+      bit_unpack(reg_new.reg_tima, bit_pack(reg_new.cpu_dbus));
     }
   }
   else {
     if (reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
       reg_new.int_ctrl.NYDU_TIMA7p_DELAY = 0;
-      bit_copy(reg_new.reg_tima, reg_new.reg_tma);
+      bit_unpack(reg_new.reg_tima, bit_pack(reg_new.reg_tma));
     }
   }
 
 
   if (reg_new.cpu_signals.SIG_IN_CPU_RDp) {
-    if (cpu_addr_new == 0xFF05) bit_copy(reg_new.cpu_dbus, reg_new.reg_tima);
-    if (cpu_addr_new == 0xFF06) bit_copy(reg_new.cpu_dbus, reg_new.reg_tma);
-    if (cpu_addr_new == 0xFF07) bit_copy(reg_new.cpu_dbus, reg_new.reg_tac);
+    if (cpu_addr_new == 0xFF05) bit_unpack(reg_new.cpu_dbus, bit_pack(reg_new.reg_tima));
+    if (cpu_addr_new == 0xFF06) bit_unpack(reg_new.cpu_dbus, bit_pack(reg_new.reg_tma));
+    if (cpu_addr_new == 0xFF07) bit_unpack(reg_new.cpu_dbus, bit_pack(reg_new.reg_tac) | 0b11111000);
   }
 
   if (reg_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF50 && gen_clk_new(0b00000001)) {
@@ -1869,7 +1869,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     if (gen_clk_new(0b10101010)) {
       if (gen_clk_new(0b10001000)) {
-        bit_copy_inv(&reg.sprite_index, 6, &reg.oam_abus.BUS_OAM_A02n);
+        bit_unpack_inv(reg.sprite_index, bit_pack(reg.oam_abus) >> 2);
         reg.sprite_scanner.CENO_SCANNINGn = reg_old.sprite_scanner.BESU_SCANNINGn;
       }
 
@@ -1938,11 +1938,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (!reg_old.XYMU_RENDERINGn) {
     if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || reg_new.XYMU_RENDERINGn)) {
-      bit_copy_inv(reg_new.sprite_pix_a, reg_old.flipped_sprite);
+      bit_unpack_inv(reg_new.sprite_pix_a, bit_pack(reg_old.flipped_sprite));
     }
 
     if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || reg_new.XYMU_RENDERINGn)) {
-      bit_copy_inv(reg_new.sprite_pix_b, reg_old.flipped_sprite);
+      bit_unpack_inv(reg_new.sprite_pix_b, bit_pack(reg_old.flipped_sprite));
     }
   }
 
@@ -1971,8 +1971,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (!reg_new.XYMU_RENDERINGn) BYCU_OAM_CLKp_new &= sfetch_phase_new != 3;
 
     if (!BYCU_OAM_CLKp_old && BYCU_OAM_CLKp_new) {
-      bit_copy_inv(reg.oam_temp_a, reg.oam_latch_a);
-      bit_copy_inv(reg.oam_temp_b, reg.oam_latch_b);
+      bit_unpack(reg.oam_temp_a, bit_pack_inv(reg.oam_latch_a));
+      bit_unpack(reg.oam_temp_b, bit_pack_inv(reg.oam_latch_b));
     }
   }
 
@@ -2022,49 +2022,49 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto store_clk_pe = (~bit_pack_inv(reg_old.sprite_store_flags)) & bit_pack_inv(reg_new.sprite_store_flags);
     auto store_clk_ne = bit_pack_inv(reg_old.sprite_store_flags) & (~bit_pack_inv(reg_new.sprite_store_flags));
 
-    if (get_bit(store_clk_ne, 0)) bit_copy_inv(reg.store_i0, reg.sprite_ibus);
-    if (get_bit(store_clk_ne, 1)) bit_copy_inv(reg.store_i1, reg.sprite_ibus);
-    if (get_bit(store_clk_ne, 2)) bit_copy_inv(reg.store_i2, reg.sprite_ibus);
-    if (get_bit(store_clk_ne, 3)) bit_copy_inv(reg.store_i3, reg.sprite_ibus);
-    if (get_bit(store_clk_ne, 4)) bit_copy_inv(reg.store_i4, reg.sprite_ibus);
-    if (get_bit(store_clk_ne, 5)) bit_copy_inv(reg.store_i5, reg.sprite_ibus);
-    if (get_bit(store_clk_ne, 6)) bit_copy_inv(reg.store_i6, reg.sprite_ibus);
-    if (get_bit(store_clk_ne, 7)) bit_copy_inv(reg.store_i7, reg.sprite_ibus);
-    if (get_bit(store_clk_ne, 8)) bit_copy_inv(reg.store_i8, reg.sprite_ibus);
-    if (get_bit(store_clk_ne, 9)) bit_copy_inv(reg.store_i9, reg.sprite_ibus);
+    if (get_bit(store_clk_ne, 0)) bit_unpack_inv(reg.store_i0, bit_pack(reg.sprite_ibus));
+    if (get_bit(store_clk_ne, 1)) bit_unpack_inv(reg.store_i1, bit_pack(reg.sprite_ibus));
+    if (get_bit(store_clk_ne, 2)) bit_unpack_inv(reg.store_i2, bit_pack(reg.sprite_ibus));
+    if (get_bit(store_clk_ne, 3)) bit_unpack_inv(reg.store_i3, bit_pack(reg.sprite_ibus));
+    if (get_bit(store_clk_ne, 4)) bit_unpack_inv(reg.store_i4, bit_pack(reg.sprite_ibus));
+    if (get_bit(store_clk_ne, 5)) bit_unpack_inv(reg.store_i5, bit_pack(reg.sprite_ibus));
+    if (get_bit(store_clk_ne, 6)) bit_unpack_inv(reg.store_i6, bit_pack(reg.sprite_ibus));
+    if (get_bit(store_clk_ne, 7)) bit_unpack_inv(reg.store_i7, bit_pack(reg.sprite_ibus));
+    if (get_bit(store_clk_ne, 8)) bit_unpack_inv(reg.store_i8, bit_pack(reg.sprite_ibus));
+    if (get_bit(store_clk_ne, 9)) bit_unpack_inv(reg.store_i9, bit_pack(reg.sprite_ibus));
 
-    if (get_bit(store_clk_ne, 0)) bit_copy_inv(reg.store_l0, reg.sprite_lbus);
-    if (get_bit(store_clk_ne, 1)) bit_copy_inv(reg.store_l1, reg.sprite_lbus);
-    if (get_bit(store_clk_ne, 2)) bit_copy_inv(reg.store_l2, reg.sprite_lbus);
-    if (get_bit(store_clk_ne, 3)) bit_copy_inv(reg.store_l3, reg.sprite_lbus);
-    if (get_bit(store_clk_ne, 4)) bit_copy_inv(reg.store_l4, reg.sprite_lbus);
-    if (get_bit(store_clk_ne, 5)) bit_copy_inv(reg.store_l5, reg.sprite_lbus);
-    if (get_bit(store_clk_ne, 6)) bit_copy_inv(reg.store_l6, reg.sprite_lbus);
-    if (get_bit(store_clk_ne, 7)) bit_copy_inv(reg.store_l7, reg.sprite_lbus);
-    if (get_bit(store_clk_ne, 8)) bit_copy_inv(reg.store_l8, reg.sprite_lbus);
-    if (get_bit(store_clk_ne, 9)) bit_copy_inv(reg.store_l9, reg.sprite_lbus);
+    if (get_bit(store_clk_ne, 0)) bit_unpack_inv(reg.store_l0, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 1)) bit_unpack_inv(reg.store_l1, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 2)) bit_unpack_inv(reg.store_l2, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 3)) bit_unpack_inv(reg.store_l3, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 4)) bit_unpack_inv(reg.store_l4, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 5)) bit_unpack_inv(reg.store_l5, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 6)) bit_unpack_inv(reg.store_l6, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 7)) bit_unpack_inv(reg.store_l7, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 8)) bit_unpack_inv(reg.store_l8, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 9)) bit_unpack_inv(reg.store_l9, bit_pack(reg.sprite_lbus));
 
-    if (get_bit(store_clk_pe, 0)) bit_copy(reg.store_x0, reg.oam_temp_b);
-    if (get_bit(store_clk_pe, 1)) bit_copy(reg.store_x1, reg.oam_temp_b);
-    if (get_bit(store_clk_pe, 2)) bit_copy(reg.store_x2, reg.oam_temp_b);
-    if (get_bit(store_clk_pe, 3)) bit_copy(reg.store_x3, reg.oam_temp_b);
-    if (get_bit(store_clk_pe, 4)) bit_copy(reg.store_x4, reg.oam_temp_b);
-    if (get_bit(store_clk_pe, 5)) bit_copy(reg.store_x5, reg.oam_temp_b);
-    if (get_bit(store_clk_pe, 6)) bit_copy(reg.store_x6, reg.oam_temp_b);
-    if (get_bit(store_clk_pe, 7)) bit_copy(reg.store_x7, reg.oam_temp_b);
-    if (get_bit(store_clk_pe, 8)) bit_copy(reg.store_x8, reg.oam_temp_b);
-    if (get_bit(store_clk_pe, 9)) bit_copy(reg.store_x9, reg.oam_temp_b);
+    if (get_bit(store_clk_pe, 0)) bit_unpack(reg.store_x0, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_pe, 1)) bit_unpack(reg.store_x1, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_pe, 2)) bit_unpack(reg.store_x2, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_pe, 3)) bit_unpack(reg.store_x3, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_pe, 4)) bit_unpack(reg.store_x4, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_pe, 5)) bit_unpack(reg.store_x5, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_pe, 6)) bit_unpack(reg.store_x6, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_pe, 7)) bit_unpack(reg.store_x7, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_pe, 8)) bit_unpack(reg.store_x8, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_pe, 9)) bit_unpack(reg.store_x9, bit_pack(reg.oam_temp_b));
 
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 0)) bit_set(reg.store_x0);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 1)) bit_set(reg.store_x1);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 2)) bit_set(reg.store_x2);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 3)) bit_set(reg.store_x3);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 4)) bit_set(reg.store_x4);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 5)) bit_set(reg.store_x5);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 6)) bit_set(reg.store_x6);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 7)) bit_set(reg.store_x7);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 8)) bit_set(reg.store_x8);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 9)) bit_set(reg.store_x9);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 0)) bit_unpack(reg.store_x0, 0xFF);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 1)) bit_unpack(reg.store_x1, 0xFF);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 2)) bit_unpack(reg.store_x2, 0xFF);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 3)) bit_unpack(reg.store_x3, 0xFF);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 4)) bit_unpack(reg.store_x4, 0xFF);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 5)) bit_unpack(reg.store_x5, 0xFF);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 6)) bit_unpack(reg.store_x6, 0xFF);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 7)) bit_unpack(reg.store_x7, 0xFF);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 8)) bit_unpack(reg.store_x8, 0xFF);
+    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 9)) bit_unpack(reg.store_x9, 0xFF);
 
   }
 
@@ -2194,30 +2194,30 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  bit_set(reg.sprite_ibus);
-  bit_set(reg.sprite_lbus);
+  bit_unpack(reg.sprite_ibus, 0xFF);
+  bit_unpack(reg.sprite_lbus, 0xFF);
 
-  if (reg.sprite_match_flags.GUVA_SPRITE0_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i0);
-  if (reg.sprite_match_flags.ENUT_SPRITE1_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i1);
-  if (reg.sprite_match_flags.EMOL_SPRITE2_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i2);
-  if (reg.sprite_match_flags.GYFY_SPRITE3_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i3);
-  if (reg.sprite_match_flags.GONO_SPRITE4_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i4);
-  if (reg.sprite_match_flags.GEGA_SPRITE5_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i5);
-  if (reg.sprite_match_flags.XOJA_SPRITE6_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i6);
-  if (reg.sprite_match_flags.GUTU_SPRITE7_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i7);
-  if (reg.sprite_match_flags.FOXA_SPRITE8_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i8);
-  if (reg.sprite_match_flags.GUZE_SPRITE9_GETp) bit_copy_inv(reg.sprite_ibus, reg.store_i9);
+  if (reg.sprite_match_flags.GUVA_SPRITE0_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i0));
+  if (reg.sprite_match_flags.ENUT_SPRITE1_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i1));
+  if (reg.sprite_match_flags.EMOL_SPRITE2_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i2));
+  if (reg.sprite_match_flags.GYFY_SPRITE3_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i3));
+  if (reg.sprite_match_flags.GONO_SPRITE4_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i4));
+  if (reg.sprite_match_flags.GEGA_SPRITE5_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i5));
+  if (reg.sprite_match_flags.XOJA_SPRITE6_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i6));
+  if (reg.sprite_match_flags.GUTU_SPRITE7_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i7));
+  if (reg.sprite_match_flags.FOXA_SPRITE8_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i8));
+  if (reg.sprite_match_flags.GUZE_SPRITE9_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i9));
 
-  if (reg.sprite_match_flags.GUVA_SPRITE0_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l0);
-  if (reg.sprite_match_flags.ENUT_SPRITE1_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l1);
-  if (reg.sprite_match_flags.EMOL_SPRITE2_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l2);
-  if (reg.sprite_match_flags.GYFY_SPRITE3_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l3);
-  if (reg.sprite_match_flags.GONO_SPRITE4_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l4);
-  if (reg.sprite_match_flags.GEGA_SPRITE5_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l5);
-  if (reg.sprite_match_flags.XOJA_SPRITE6_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l6);
-  if (reg.sprite_match_flags.GUTU_SPRITE7_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l7);
-  if (reg.sprite_match_flags.FOXA_SPRITE8_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l8);
-  if (reg.sprite_match_flags.GUZE_SPRITE9_GETp) bit_copy_inv(reg.sprite_lbus, reg.store_l9);
+  if (reg.sprite_match_flags.GUVA_SPRITE0_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l0));
+  if (reg.sprite_match_flags.ENUT_SPRITE1_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l1));
+  if (reg.sprite_match_flags.EMOL_SPRITE2_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l2));
+  if (reg.sprite_match_flags.GYFY_SPRITE3_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l3));
+  if (reg.sprite_match_flags.GONO_SPRITE4_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l4));
+  if (reg.sprite_match_flags.GEGA_SPRITE5_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l5));
+  if (reg.sprite_match_flags.XOJA_SPRITE6_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l6));
+  if (reg.sprite_match_flags.GUTU_SPRITE7_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l7));
+  if (reg.sprite_match_flags.FOXA_SPRITE8_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l8));
+  if (reg.sprite_match_flags.GUZE_SPRITE9_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l9));
 
   if (reg.sprite_scanner.CENO_SCANNINGn) {
     bit_unpack(reg.sprite_ibus, bit_pack(reg.sprite_index));

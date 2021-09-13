@@ -2940,35 +2940,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   else if (!reg_new.XYMU_RENDERINGn)  bit_unpack_inv(reg.oam_abus, sfetch_oam_addr_new);
   else                                bit_unpack_inv(reg.oam_abus, cpu_addr_new);
 
-  //----------
-  // oam control signals depend on address
-  // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
-
-  if (reg_new.MATU_DMA_RUNNINGp) {
-    reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
-    reg.oam_ctrl.SIG_OAM_WRn_A = gen_clk_new(0b11110000) || !reg.oam_abus.BUS_OAM_A00n;
-    reg.oam_ctrl.SIG_OAM_WRn_B = gen_clk_new(0b11110000) ||  reg.oam_abus.BUS_OAM_A00n;
-    reg.oam_ctrl.SIG_OAM_OEn   = 1;
-  }
-  else if (reg_new.ACYL_SCANNINGp) {
-    reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b10001000) && (!cpu_addr_oam_new || gen_clk_new(0b11110000));
-    reg.oam_ctrl.SIG_OAM_WRn_A = 1;
-    reg.oam_ctrl.SIG_OAM_WRn_B = 1;
-    reg.oam_ctrl.SIG_OAM_OEn   = gen_clk_new(0b10011001) && !(cpu_oam_rd_new && !reg.cpu_signals.SIG_IN_CPU_DBUS_FREE);
-  }
-  else if (!reg_new.XYMU_RENDERINGn) {
-    reg.oam_ctrl.SIG_OAM_CLKn  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk_new(0b11110000));
-    reg.oam_ctrl.SIG_OAM_WRn_A = 1;
-    reg.oam_ctrl.SIG_OAM_WRn_B = 1;
-    reg.oam_ctrl.SIG_OAM_OEn   = sfetch_oam_oen_new && !(cpu_oam_rd_new && !reg.cpu_signals.SIG_IN_CPU_DBUS_FREE);
-  }
-  else if (cpu_addr_oam_new) {
-    reg.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
-    reg.oam_ctrl.SIG_OAM_WRn_A = !cpu_oam_wr_new || !reg.oam_abus.BUS_OAM_A00n;
-    reg.oam_ctrl.SIG_OAM_WRn_B = !cpu_oam_wr_new ||  reg.oam_abus.BUS_OAM_A00n;
-    reg.oam_ctrl.SIG_OAM_OEn   = !reg.cpu_signals.SIG_IN_CPU_RDp || reg.cpu_signals.SIG_IN_CPU_DBUS_FREE;
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2976,6 +2947,35 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  //----------
+  // oam control signals depend on address
+  // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
+
+  if (state_new.MATU_DMA_RUNNINGp) {
+    state_new.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
+    state_new.oam_ctrl.SIG_OAM_WRn_A = gen_clk_new(0b11110000) || !get_bit(state_new.oam_abus, 0);
+    state_new.oam_ctrl.SIG_OAM_WRn_B = gen_clk_new(0b11110000) ||  get_bit(state_new.oam_abus, 0);
+    state_new.oam_ctrl.SIG_OAM_OEn   = 1;
+  }
+  else if (state_new.ACYL_SCANNINGp) {
+    state_new.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b10001000) && (!cpu_addr_oam_new || gen_clk_new(0b11110000));
+    state_new.oam_ctrl.SIG_OAM_WRn_A = 1;
+    state_new.oam_ctrl.SIG_OAM_WRn_B = 1;
+    state_new.oam_ctrl.SIG_OAM_OEn   = gen_clk_new(0b10011001) && !(cpu_oam_rd_new && !state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE);
+  }
+  else if (!state_new.XYMU_RENDERINGn) {
+    state_new.oam_ctrl.SIG_OAM_CLKn  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk_new(0b11110000));
+    state_new.oam_ctrl.SIG_OAM_WRn_A = 1;
+    state_new.oam_ctrl.SIG_OAM_WRn_B = 1;
+    state_new.oam_ctrl.SIG_OAM_OEn   = sfetch_oam_oen_new && !(cpu_oam_rd_new && !state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE);
+  }
+  else if (cpu_addr_oam_new) {
+    state_new.oam_ctrl.SIG_OAM_CLKn  = gen_clk_new(0b11110000);
+    state_new.oam_ctrl.SIG_OAM_WRn_A = !cpu_oam_wr_new || !get_bit(state_new.oam_abus, 0);
+    state_new.oam_ctrl.SIG_OAM_WRn_B = !cpu_oam_wr_new ||  get_bit(state_new.oam_abus, 0);
+    state_new.oam_ctrl.SIG_OAM_OEn   = !state_new.cpu_signals.SIG_IN_CPU_RDp || state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE;
+  }
 
   //----------
   // the actual oam read

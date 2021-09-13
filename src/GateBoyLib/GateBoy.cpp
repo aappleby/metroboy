@@ -2256,13 +2256,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-    if (cpu_addr_new == 0xFF4A) bit_copy_inv(reg.reg_wy, reg_old.cpu_dbus);
-    if (cpu_addr_new == 0xFF4B) bit_copy_inv(reg.reg_wx, reg_old.cpu_dbus);
+    if (cpu_addr_new == 0xFF4A) bit_unpack_inv(reg.reg_wy, bit_pack(reg_old.cpu_dbus));
+    if (cpu_addr_new == 0xFF4B) bit_unpack_inv(reg.reg_wx, bit_pack(reg_old.cpu_dbus));
   }
 
   if (reg.cpu_signals.SIG_IN_CPU_RDp) {
-    if (cpu_addr_new == 0xFF4A) bit_copy_inv(reg.cpu_dbus, reg.reg_wy);
-    if (cpu_addr_new == 0xFF4B) bit_copy_inv(reg.cpu_dbus, reg.reg_wx);
+    if (cpu_addr_new == 0xFF4A) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_wy));
+    if (cpu_addr_new == 0xFF4B) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_wx));
   }
 
   // FIXME get rid of this signal
@@ -2345,15 +2345,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // Good example of gate-level behavior that doesn't matter
 
     if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || reg_new.XYMU_RENDERINGn)) {
-      bit_copy_inv(reg.tile_temp_a, reg.vram_dbus);
+      bit_unpack_inv(reg.tile_temp_a, bit_pack(reg.vram_dbus));
     }
 
     if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || reg_new.XYMU_RENDERINGn)) {
-      bit_copy(reg.tile_temp_b, reg.vram_dbus);
+      bit_unpack(reg.tile_temp_b, bit_pack(reg.vram_dbus));
     }
 
     if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || reg_new.XYMU_RENDERINGn)) {
-      bit_copy(reg.tile_temp_b, reg.vram_dbus);
+      bit_unpack(reg.tile_temp_b, bit_pack(reg.vram_dbus));
     }
   }
 
@@ -2366,11 +2366,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (reg_new.ATEJ_LINE_RSTp) CHECK_P(reg.XYMU_RENDERINGn);
 
   if (reg.reg_lcdc.XONA_LCDC_LCDENn) {
-    bit_clear(reg.fine_count);
-    bit_clear(reg.win_map_x);
-    bit_clear(reg.win_map_x);
-    bit_clear(reg.win_tile_y);
-    bit_clear(reg.win_map_y);
+    bit_unpack(reg.fine_count, 0);
+    bit_unpack(reg.win_map_x, 0);
+    bit_unpack(reg.win_map_x, 0);
+    bit_unpack(reg.win_tile_y, 0);
+    bit_unpack(reg.win_map_y, 0);
   }
   else {
     if (bit_pack(reg.fine_count) != 7 && !pause_rendering_old && gen_clk_new(0b10101010)) {
@@ -2378,14 +2378,14 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (reg.XYMU_RENDERINGn) {
-      bit_clear(reg.fine_count);
+      bit_unpack(reg.fine_count, 0);
     }
 
     if (reg_new.ATEJ_LINE_RSTp) {
-      bit_clear(reg.win_map_x);
+      bit_unpack(reg.win_map_x, 0);
     }
     else if (TEVO_WIN_FETCH_TRIGp_new) {
-      bit_clear(reg.fine_count);
+      bit_unpack(reg.fine_count, 0);
       if (reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
         bit_unpack(reg.win_map_x, bit_pack(reg_old.win_map_x) + 1);
       }
@@ -2399,8 +2399,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (reg_new.lcd.POPU_y144p) {
-      bit_clear(reg.win_tile_y);
-      bit_clear(reg.win_map_y);
+      bit_unpack(reg.win_tile_y, 0);
+      bit_unpack(reg.win_map_y, 0);
     }
   }
 
@@ -2408,15 +2408,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // Pal reg read/write
 
   if (reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-    if (cpu_addr_new == 0xFF47) bit_copy_inv(reg.reg_bgp,  reg_old.cpu_dbus);
-    if (cpu_addr_new == 0xFF48) bit_copy_inv(reg.reg_obp0, reg_old.cpu_dbus);
-    if (cpu_addr_new == 0xFF49) bit_copy_inv(reg.reg_obp1, reg_old.cpu_dbus);
+    if (cpu_addr_new == 0xFF47) bit_unpack_inv(reg.reg_bgp,  bit_pack(reg_old.cpu_dbus));
+    if (cpu_addr_new == 0xFF48) bit_unpack_inv(reg.reg_obp0, bit_pack(reg_old.cpu_dbus));
+    if (cpu_addr_new == 0xFF49) bit_unpack_inv(reg.reg_obp1, bit_pack(reg_old.cpu_dbus));
   }
 
   if (reg.cpu_signals.SIG_IN_CPU_RDp) {
-    if (cpu_addr_new == 0xFF47) bit_copy_inv(reg.cpu_dbus, reg.reg_bgp);
-    if (cpu_addr_new == 0xFF48) bit_copy_inv(reg.cpu_dbus, reg.reg_obp0);
-    if (cpu_addr_new == 0xFF49) bit_copy_inv(reg.cpu_dbus, reg.reg_obp1);
+    if (cpu_addr_new == 0xFF47) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_bgp));
+    if (cpu_addr_new == 0xFF48) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_obp0));
+    if (cpu_addr_new == 0xFF49) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_obp1));
   }
 
   //----------------------------------------

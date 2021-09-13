@@ -2564,7 +2564,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // Memory buses
 
   if (reg.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new) {
-    bit_copy(&reg.ext_addr_latch, 15, &reg.cpu_abus);
+    bit_unpack(reg.ext_addr_latch, bit_pack(reg.cpu_abus));
   }
 
   if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {

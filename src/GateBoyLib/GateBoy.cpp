@@ -2969,45 +2969,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.oam_ctrl.SIG_OAM_OEn   = !reg.cpu_signals.SIG_IN_CPU_RDp || reg.cpu_signals.SIG_IN_CPU_DBUS_FREE;
   }
 
-  //----------
-  // the actual oam read
-
-  if (!reg.oam_ctrl.SIG_OAM_OEn) {
-    uint8_t oam_addr_new = (uint8_t)bit_pack_inv(reg.oam_abus) >> 1;
-    bit_unpack_inv(reg.oam_dbus_a, mem.oam_ram[(oam_addr_new << 1) + 0]);
-    bit_unpack_inv(reg.oam_dbus_b, mem.oam_ram[(oam_addr_new << 1) + 1]);
-  }
-
-  //----------
-  // latch data from oam
-
-  bool latch_oam = false;
-  if (reg_new.ACYL_SCANNINGp) latch_oam = gen_clk_new(0b01100110);
-  else if (!reg_new.XYMU_RENDERINGn)         latch_oam = !sfetch_oam_oen_new;
-  else                                       latch_oam = cpu_oam_rd_new && !reg.cpu_signals.SIG_IN_CPU_DBUS_FREE;
-
-  if (latch_oam) {
-    bit_unpack_inv(reg.oam_latch_a, bit_pack_inv(reg.oam_dbus_a));
-    bit_unpack_inv(reg.oam_latch_b, bit_pack_inv(reg.oam_dbus_b));
-  }
-
-  //----------
-  // put oam latch on cpu bus
-
-  if (!reg_new.MATU_DMA_RUNNINGp && !reg_new.ACYL_SCANNINGp && reg_new.XYMU_RENDERINGn) {
-    if (cpu_oam_rd_new && reg.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
-      if (reg.oam_abus.BUS_OAM_A00n) {
-        bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.oam_latch_a));
-      }
-      else {
-        bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.oam_latch_b));
-      }
-    }
-  }
-
-  //----------
-  // if we're writing to oam, put source data on oam bus
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -3015,6 +2976,45 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  //----------
+  // the actual oam read
+
+  if (!state_new.oam_ctrl.SIG_OAM_OEn) {
+    uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+    state_new.oam_dbus_a = ~mem.oam_ram[(oam_addr_new << 1) + 0];
+    state_new.oam_dbus_b = ~mem.oam_ram[(oam_addr_new << 1) + 1];
+  }
+
+  //----------
+  // latch data from oam
+
+  bool latch_oam = false;
+  if (state_new.ACYL_SCANNINGp) latch_oam = gen_clk_new(0b01100110);
+  else if (!state_new.XYMU_RENDERINGn)         latch_oam = !sfetch_oam_oen_new;
+  else                                       latch_oam = cpu_oam_rd_new && !state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE;
+
+  if (latch_oam) {
+    state_new.oam_latch_a = state_new.oam_dbus_a;
+    state_new.oam_latch_b = state_new.oam_dbus_b;
+  }
+
+  //----------
+  // put oam latch on cpu bus
+
+  if (!state_new.MATU_DMA_RUNNINGp && !state_new.ACYL_SCANNINGp && state_new.XYMU_RENDERINGn) {
+    if (cpu_oam_rd_new && state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
+      if (get_bit(state_new.oam_abus, 0)) {
+        state_new.cpu_dbus = ~state_new.oam_latch_a;
+      }
+      else {
+        state_new.cpu_dbus = ~state_new.oam_latch_b;
+      }
+    }
+  }
+
+  //----------
+  // if we're writing to oam, put source data on oam bus
 
   const auto vram_data_new    = state_new.vram_dbus;
   const auto ext_data_new     = ~state_new.ext_dbus;

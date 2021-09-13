@@ -2907,39 +2907,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-
-  //----------------------------------------
-  // oam
-
-  // this is weird, why is it always 0 when not in reset?
-  reg.oam_ctrl.MAKA_LATCH_EXTp = 0;
-
-  bit_unpack(reg.oam_abus, 0xFF);
-  bit_unpack(reg.oam_dbus_a, 0xFF);
-  bit_unpack(reg.oam_dbus_b, 0xFF);
-  reg.oam_ctrl.SIG_OAM_CLKn  = 1;
-  reg.oam_ctrl.SIG_OAM_WRn_A = 1;
-  reg.oam_ctrl.SIG_OAM_WRn_B = 1;
-  reg.oam_ctrl.SIG_OAM_OEn   = 1;
-
-  //----------
-  // oam address
-
-  const auto cpu_oam_rd_new = cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_RDp;
-  const auto cpu_oam_wr_new = cpu_addr_oam_new && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110);
-
-  const auto sfetch_oam_clk_new = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || (reg.sfetch_control.TYFO_SFETCH_S0p_D1 && !reg.sfetch_counter.TOXE_SFETCH_S0p));
-  const auto sfetch_oam_oen_new = (reg.sfetch_counter.TULY_SFETCH_S1p || reg.sfetch_counter.TESE_SFETCH_S2p || !reg.sfetch_control.TYFO_SFETCH_S0p_D1);
-
-  const auto sscan_oam_addr_new  = (bit_pack(reg.scan_counter) << 2) | 0b00;
-  const auto sfetch_oam_addr_new = (bit_pack(reg.sprite_ibus)  << 2) | 0b11;
-  const auto dma_oam_addr_new    = bit_pack(reg.dma_lo);
-
-  if      (reg_new.MATU_DMA_RUNNINGp) bit_unpack_inv(reg.oam_abus, dma_oam_addr_new);
-  else if (reg_new.ACYL_SCANNINGp)    bit_unpack_inv(reg.oam_abus, sscan_oam_addr_new );
-  else if (!reg_new.XYMU_RENDERINGn)  bit_unpack_inv(reg.oam_abus, sfetch_oam_addr_new);
-  else                                bit_unpack_inv(reg.oam_abus, cpu_addr_new);
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2947,6 +2914,39 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+
+  //----------------------------------------
+  // oam
+
+  // this is weird, why is it always 0 when not in reset?
+  state_new.oam_ctrl.MAKA_LATCH_EXTp = 0;
+
+  state_new.oam_abus = 0xFF;
+  state_new.oam_dbus_a = 0xFF;
+  state_new.oam_dbus_b = 0xFF;
+  state_new.oam_ctrl.SIG_OAM_CLKn  = 1;
+  state_new.oam_ctrl.SIG_OAM_WRn_A = 1;
+  state_new.oam_ctrl.SIG_OAM_WRn_B = 1;
+  state_new.oam_ctrl.SIG_OAM_OEn   = 1;
+
+  //----------
+  // oam address
+
+  const auto cpu_oam_rd_new = cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_RDp;
+  const auto cpu_oam_wr_new = cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110);
+
+  const auto sfetch_oam_clk_new = (get_bit(state_new.sfetch_counter, 1) || get_bit(state_new.sfetch_counter, 2) || (state_new.sfetch_control.TYFO_SFETCH_S0p_D1 && !get_bit(state_new.sfetch_counter, 0)));
+  const auto sfetch_oam_oen_new = (get_bit(state_new.sfetch_counter, 1) || get_bit(state_new.sfetch_counter, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1);
+
+  const auto sscan_oam_addr_new  = (state_new.scan_counter << 2) | 0b00;
+  const auto sfetch_oam_addr_new = (state_new.sprite_ibus  << 2) | 0b11;
+  const auto dma_oam_addr_new    = state_new.dma_lo;
+
+  if      (state_new.MATU_DMA_RUNNINGp) state_new.oam_abus = (uint8_t)~dma_oam_addr_new;
+  else if (state_new.ACYL_SCANNINGp)    state_new.oam_abus = (uint8_t)~sscan_oam_addr_new ;
+  else if (!state_new.XYMU_RENDERINGn)  state_new.oam_abus = (uint8_t)~sfetch_oam_addr_new;
+  else                                  state_new.oam_abus = (uint8_t)~cpu_addr_new;
 
   //----------
   // oam control signals depend on address

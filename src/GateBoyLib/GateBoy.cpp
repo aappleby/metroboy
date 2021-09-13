@@ -1366,8 +1366,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_logic(const blob& cart_blob) {
-  //const GateBoyState state_old = state;
-  //GateBoyState& state_new = state;
+  const GateBoyState state_old = state;
+  GateBoyState& state_new = state;
 
   const GateBoyReg reg_old = reg;
   GateBoyReg& reg_new = reg;
@@ -3107,28 +3107,36 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     pack_cpu_dbus_new = data;
   }
 
-  bool int_stat_old = 0;
-  if (!reg_old.reg_stat.RUGU_STAT_LYI_ENn && reg_old.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_old = 1;
-  if (!reg_old.reg_stat.REFE_STAT_OAI_ENn && !reg_old.lcd.POPU_y144p && reg_old.lcd.RUTU_x113p) int_stat_old = 1;
-  if (!reg_old.reg_stat.RUFO_STAT_VBI_ENn && reg_old.lcd.POPU_y144p) int_stat_old = 1;
-  if (!reg_old.reg_stat.ROXE_STAT_HBI_ENn && reg_old.WODU_HBLANKp && !reg_old.lcd.POPU_y144p) int_stat_old = 1;
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
 
-  const bool int_lcd_old = reg_old.lcd.POPU_y144p;
-  const bool int_joy_old = !reg_old.joy_int.APUG_JP_GLITCH3 || !reg_old.joy_int.BATU_JP_GLITCH0;
-  const bool int_tim_old = reg_old.int_ctrl.MOBA_TIMER_OVERFLOWp;
+  bool int_stat_old = 0;
+  if (!get_bit(state_old.reg_stat, 0) && state_old.WODU_HBLANKp && !state_old.lcd.POPU_y144p) int_stat_old = 1;
+  if (!get_bit(state_old.reg_stat, 1) && state_old.lcd.POPU_y144p) int_stat_old = 1;
+  if (!get_bit(state_old.reg_stat, 2) && !state_old.lcd.POPU_y144p && state_old.lcd.RUTU_x113p) int_stat_old = 1;
+  if (!get_bit(state_old.reg_stat, 3) && state_old.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_old = 1;
+
+  const bool int_lcd_old = state_old.lcd.POPU_y144p;
+  const bool int_joy_old = !state_old.joy_int.APUG_JP_GLITCH3 || !state_old.joy_int.BATU_JP_GLITCH0;
+  const bool int_tim_old = state_old.int_ctrl.MOBA_TIMER_OVERFLOWp;
   //const bool int_ser_old = serial.CALY_SER_CNT3;
   const bool int_ser_old = 0;
 
   bool int_stat_new = 0;
-  if (!get_bit(pack_stat, 0) && reg_new.WODU_HBLANKp && !reg_new.lcd.POPU_y144p) int_stat_new = 1;
-  if (!get_bit(pack_stat, 1) && reg_new.lcd.POPU_y144p) int_stat_new = 1;
-  if (!get_bit(pack_stat, 2) && !reg_new.lcd.POPU_y144p && reg_new.lcd.RUTU_x113p) int_stat_new = 1;
-  if (!get_bit(pack_stat, 3) && reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_new = 1;
+  if (!get_bit(pack_stat, 0) && state_new.WODU_HBLANKp && !state_new.lcd.POPU_y144p) int_stat_new = 1;
+  if (!get_bit(pack_stat, 1) && state_new.lcd.POPU_y144p) int_stat_new = 1;
+  if (!get_bit(pack_stat, 2) && !state_new.lcd.POPU_y144p && state_new.lcd.RUTU_x113p) int_stat_new = 1;
+  if (!get_bit(pack_stat, 3) && state_new.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_new = 1;
 
-  const wire int_lcd_new = reg.lcd.POPU_y144p;
-  const wire int_joy_new = !reg.joy_int.APUG_JP_GLITCH3 || !reg.joy_int.BATU_JP_GLITCH0;
-  const wire int_tim_new = reg.int_ctrl.MOBA_TIMER_OVERFLOWp;
-  //const wire int_ser = serial.CALY_SER_CNT3;
+  const wire int_lcd_new = state_new.lcd.POPU_y144p;
+  const wire int_joy_new = !state_new.joy_int.APUG_JP_GLITCH3 || !state_new.joy_int.BATU_JP_GLITCH0;
+  const wire int_tim_new = state_new.int_ctrl.MOBA_TIMER_OVERFLOWp;
+  //const wire int_ser = state_new.serial.CALY_SER_CNT3;
   const wire int_ser_new = 0;
 
   if (!int_lcd_old  && int_lcd_new)  pack_if |= (1 << 0);
@@ -3138,37 +3146,34 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (!int_joy_old  && int_joy_new)  pack_if |= (1 << 4);
 
   // note this is an async set so it doesn't happen on the GH clock edge like other writes
-  if (reg.cpu_signals.SIG_IN_CPU_WRp && (cpu_addr_new == 0xFF0F) && gen_clk_new(0b00001110)) {
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && (cpu_addr_new == 0xFF0F) && gen_clk_new(0b00001110)) {
     pack_if = pack_cpu_dbus_new;
   }
 
-  pack_if &= bit_pack_inv(reg_new.cpu_ack);
+  pack_if &= ~state_new.cpu_ack;
 
-  if (cpu_addr_new == 0xFFFF && reg_new.cpu_signals.SIG_IN_CPU_RDp) {
+  if (cpu_addr_new == 0xFFFF && state_new.cpu_signals.SIG_IN_CPU_RDp) {
     pack_cpu_dbus_new = pack_ie | 0b11100000;
   }
 
-  if (cpu_addr_new == 0xFF0F && reg_new.cpu_signals.SIG_IN_CPU_RDp) {
-    bit_unpack(reg_new.int_latch, pack_if);
+  if (cpu_addr_new == 0xFF0F && state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    state_new.int_latch = (uint8_t)pack_if;
     pack_cpu_dbus_new = pack_if | 0b11100000;
   }
 
 
-  bit_unpack(reg_new.cpu_dbus, pack_cpu_dbus_new);
+  state_new.cpu_dbus = (uint8_t)pack_cpu_dbus_new;
+  state_new.cpu_int = (uint8_t)pack_if;
+  state_new.reg_ie = (uint8_t)pack_ie;
+  state_new.reg_if = (uint8_t)pack_if;
+  state_new.reg_stat = (uint8_t)pack_stat;
 
-
-  bit_unpack(reg_new.cpu_int, pack_if);
-  bit_unpack(reg_new.reg_ie, pack_ie);
-  bit_unpack(reg_new.reg_if,  pack_if);
-  bit_unpack(reg_new.reg_stat, pack_stat);
-
-  //state_new.from_reg(reg_new);
 
   // POSTCONDITIONS
 
-  //if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);
-  //if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
+  if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);
+  if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
 
   // UNPACK IT UP!
-  //state_new.to_reg(reg_new);
+  state_new.to_reg(reg_new);
 }

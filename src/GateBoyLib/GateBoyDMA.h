@@ -25,7 +25,7 @@ struct RegDmaLo {
   /*_p04.MUGU*/ DFF17 MUGU_DMA_A07p;      // Axxxxxxx
 };
 
-struct RegDmaHi {
+struct RegDma {
   void reset_to_cart() {
     NAFA_DMA_A08n.state = 0b00011010;
     PYNE_DMA_A09n.state = 0b00011010;
@@ -49,7 +49,6 @@ struct RegDmaHi {
 
 struct DmaControl {
   void reset_to_cart() {
-    MATU_DMA_RUNNINGp.state = 0b00011010;
     LYXE_DMA_LATCHp.state = 0b00011000;
     MYTE_DMA_DONE.state = 0b00011000;
     LUVY_DMA_TRIG_d0.state = 0b00011010;
@@ -58,7 +57,6 @@ struct DmaControl {
     LOKY_DMA_LATCHp.state = 0b00011000;
   }
 
-  /*#p04.MATU*/ DFF17 MATU_DMA_RUNNINGp;  // Axxxxxxx
   /*#p04.LYXE*/ NorLatch LYXE_DMA_LATCHp; // xxxxExxx
   /*#p04.MYTE*/ DFF17 MYTE_DMA_DONE;      // xxxxExxx
   /*#p04.LUVY*/ DFF17 LUVY_DMA_TRIG_d0;   // Axxxxxxx

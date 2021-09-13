@@ -26,8 +26,8 @@ void GateBoy::tock_joypad_gates(const GateBoyReg& reg_old) {
 
   // this _has_ to reset to 1
 
-  /*#p05.KELY*/ reg.joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*#p05.COFY*/ reg.joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*#p05.KELY*/ reg.reg_joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*#p05.COFY*/ reg.reg_joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
 
   ///*_p05.KUKO*/ KUKO_DBG_D6    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[6].qp_old());
   ///*_p05.KERU*/ KERU_DBG_D7    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[7].qp_old());
@@ -76,11 +76,11 @@ void GateBoy::tock_joypad_gates(const GateBoyReg& reg_old) {
 
   // at boot p14 and p15 are low externally, so p14.a = p14.d = p15.a = p15.d = 1
 
-  /*_p05.KARU*/ wire KARU = or2(reg.joy.KELY_JOYP_UDLRp.qn_new(), KURA_FF60_D0n);
-  /*_p05.CELA*/ wire CELA = or2(reg.joy.COFY_JOYP_ABCSp.qn_new(), KURA_FF60_D0n);
+  /*_p05.KARU*/ wire KARU = or2(reg.reg_joy.KELY_JOYP_UDLRp.qn_new(), KURA_FF60_D0n);
+  /*_p05.CELA*/ wire CELA = or2(reg.reg_joy.COFY_JOYP_ABCSp.qn_new(), KURA_FF60_D0n);
 
-  /*#PIN_63*/ reg.joy_ext.PIN_63_JOY_P14.pin_out(KARU, reg.joy.KELY_JOYP_UDLRp.qn_new());
-  /*#PIN_62*/ reg.joy_ext.PIN_62_JOY_P15.pin_out(CELA, reg.joy.COFY_JOYP_ABCSp.qn_new());
+  /*#PIN_63*/ reg.joy_ext.PIN_63_JOY_P14.pin_out(KARU, reg.reg_joy.KELY_JOYP_UDLRp.qn_new());
+  /*#PIN_62*/ reg.joy_ext.PIN_62_JOY_P15.pin_out(CELA, reg.reg_joy.COFY_JOYP_ABCSp.qn_new());
 
   bool EXT_button0, EXT_button1, EXT_button2, EXT_button3;
 
@@ -162,8 +162,8 @@ void GateBoy::tock_joypad_gates(const GateBoyReg& reg_old) {
   /*#p05.KURO*/ triwire KURO_JOY1_TO_CD1 = tri6_nn(BYZO_FF00_RDn, reg.joy_latch.KAPA_JOYP_L1n.qp_new());
   /*#p05.KUVE*/ triwire KUVE_JOY2_TO_CD2 = tri6_nn(BYZO_FF00_RDn, reg.joy_latch.KEJA_JOYP_L2n.qp_new());
   /*#p05.JEKU*/ triwire JEKU_JOY3_TO_CD3 = tri6_nn(BYZO_FF00_RDn, reg.joy_latch.KOLO_JOYP_L3n.qp_new());
-  /*#p05.KOCE*/ triwire KOCE_JOY4_TO_CD4 = tri6_nn(BYZO_FF00_RDn, reg.joy.KELY_JOYP_UDLRp.qn_new());
-  /*#p05.CUDY*/ triwire CUDY_JOY5_TO_CD5 = tri6_nn(BYZO_FF00_RDn, reg.joy.COFY_JOYP_ABCSp.qn_new());
+  /*#p05.KOCE*/ triwire KOCE_JOY4_TO_CD4 = tri6_nn(BYZO_FF00_RDn, reg.reg_joy.KELY_JOYP_UDLRp.qn_new());
+  /*#p05.CUDY*/ triwire CUDY_JOY5_TO_CD5 = tri6_nn(BYZO_FF00_RDn, reg.reg_joy.COFY_JOYP_ABCSp.qn_new());
 
   /*_BUS_CPU_D00p*/ reg.cpu_dbus.BUS_CPU_D00p.tri_bus(KEMA_JOY0_TO_CD0);
   /*_BUS_CPU_D01p*/ reg.cpu_dbus.BUS_CPU_D01p.tri_bus(KURO_JOY1_TO_CD1);

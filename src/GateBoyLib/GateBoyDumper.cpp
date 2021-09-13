@@ -91,9 +91,13 @@ void GateBoy::dump_clocks(Dumper& d) {
 void GateBoy::dump_interrupts(Dumper& d) {
   d.dump_slice2p("FF0F IF : ", &reg.reg_if, 5);
   d.dump_slice2p("FFFF IE : ", &reg.reg_ie, 5);
-  d.dump_slice2p("LATCH   : ", &reg.latch_if, 5);
+  d.dump_slice2p("LATCH   : ", &reg.int_latch, 5);
   d.dump_slice2p("CPU_INT : ", &reg.cpu_int, 5);
   d.dump_slice2p("CPU_ACK : ", &reg.cpu_ack, 5);
+  d.dump_bitp   ("ROPO_LY_MATCH   : ", reg.int_ctrl.ROPO_LY_MATCH_SYNCp.state);
+  d.dump_bitp   ("RUPO_LYC_MATCHn : ", reg.int_ctrl.RUPO_LYC_MATCHn.state);
+  d.dump_bitp   ("NYDU_TIMA7p_DELAY    : ", reg.int_ctrl.NYDU_TIMA7p_DELAY.state);
+  d.dump_bitp   ("MOBA_TIMER_OVERFLOWp : ", reg.int_ctrl.MOBA_TIMER_OVERFLOWp.state);
 }
 
 void GateBoy::dump_joypad(Dumper& d) {
@@ -121,8 +125,8 @@ void GateBoy::dump_joypad(Dumper& d) {
   //d.dump_bitp("KECY_DBG_D1     : ", joy.KECY_DBG_D1.state);
   //d.dump_bitp("JALE_DBG_D2     : ", joy.JALE_DBG_D2.state);
   //d.dump_bitp("KYME_DBG_D3     : ", joy.KYME_DBG_D3.state);
-  d.dump_bitp("KELY_JOYP_UDLR  : ", reg.joy.KELY_JOYP_UDLRp.state);
-  d.dump_bitp("COFY_JOYP_ABCS  : ", reg.joy.COFY_JOYP_ABCSp.state);
+  d.dump_bitp("KELY_JOYP_UDLR  : ", reg.reg_joy.KELY_JOYP_UDLRp.state);
+  d.dump_bitp("COFY_JOYP_ABCS  : ", reg.reg_joy.COFY_JOYP_ABCSp.state);
   //d.dump_bitp("KUKO_DBG_D6     : ", joy.KUKO_DBG_D6.state);
   //d.dump_bitp("KERU_DBG_D7     : ", joy.KERU_DBG_D7.state);
 }
@@ -157,8 +161,6 @@ void GateBoy::dump_lcd(Dumper& d) {
   d.dump_slice2p("LX              : ", &reg.reg_lx.SAXO_LX0p.state,  7);
   d.dump_slice2p("FF44 LY         : ", &reg.reg_ly.MUWY_LY0p.state,  8);
   d.dump_slice2n("FF45 LYC        : ", &reg.reg_lyc.SYRY_LYC0n.state, 8);
-  d.dump_bitp   ("ROPO_LY_MATCH   : ", reg.ROPO_LY_MATCH_SYNCp.state);
-  d.dump_bitp   ("RUPO_LYC_MATCHn : ", reg.RUPO_LYC_MATCHn.state);
 }
 
 void GateBoy::dump_oam_bus(Dumper& d) {
@@ -212,7 +214,7 @@ void GateBoy::dump_cpu_bus(Dumper& d) {
   d.dump_bitp   ("SIG_CPU_UMUT_DBG  : ", reg.cpu_signals.SIG_CPU_UMUT_DBG.state);
   d.dump_bitp   ("SIG_CPU_EXT_BUSp  : ", reg.cpu_signals.SIG_IN_CPU_EXT_BUSp.state);
   //d.dump_bitp   ("SIG_CPU_6         : ", SIG_CPU_6.state);
-  d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", reg.cpu_signals.SIG_IN_CPU_LATCH_EXT.state);
+  d.dump_bitp   ("SIG_CPU_LATCH_EXT : ", reg.cpu_signals.SIG_IN_CPU_DBUS_FREE.state);
   d.dump_bitp   ("BOOT_BITn         : ", reg.cpu_signals.TEPU_BOOT_BITn.state);
   d.dump_bitp   ("SIG_CPU_BOOTp     : ", reg.cpu_signals.SIG_CPU_BOOTp.state);
   d.dump_bitp   ("TEDO_CPU_RDp      : ", reg.cpu_signals.TEDO_CPU_RDp.state);
@@ -224,9 +226,9 @@ void GateBoy::dump_cpu_bus(Dumper& d) {
 
 void GateBoy::dump_dma(Dumper& d) {
   d.dump_slice2p("DMA_A_LOW  : ", &reg.dma_lo.NAKY_DMA_A00p, 8);
-  d.dump_slice2n("DMA_A_HIGH : ", &reg.dma_hi.NAFA_DMA_A08n, 8);
-  d             ("DMA Addr   : 0x%02x:%02x\n", bit_pack_inv(reg.dma_hi), bit_pack(reg.dma_lo));
-  d.dump_bitp   ("MATU_DMA_RUNNINGp : ", reg.dma_ctrl.MATU_DMA_RUNNINGp.state);
+  d.dump_slice2n("DMA_A_HIGH : ", &reg.reg_dma.NAFA_DMA_A08n, 8);
+  d             ("DMA Addr   : 0x%02x:%02x\n", bit_pack_inv(reg.reg_dma), bit_pack(reg.dma_lo));
+  d.dump_bitp   ("MATU_DMA_RUNNINGp : ", reg.MATU_DMA_RUNNINGp.state);
   d.dump_bitp   ("LYXE_DMA_LATCHp   : ", reg.dma_ctrl.LYXE_DMA_LATCHp  .state);
   d.dump_bitp   ("MYTE_DMA_DONE     : ", reg.dma_ctrl.MYTE_DMA_DONE    .state);
   d.dump_bitp   ("LUVY_DMA_TRIG_d0  : ", reg.dma_ctrl.LUVY_DMA_TRIG_d0 .state);
@@ -274,13 +276,11 @@ void GateBoy::dump_sprite_fetcher(Dumper& d) {
 }
 
 void GateBoy::dump_timer(Dumper& d) {
-  d.dump_slice2p("DIV16 : ", &reg.div.UKUP_DIV00p, 16);
-  d.dump_slice2p("FF04 DIV  : ", &reg.div.UGOT_DIV06p, 8);
-  d.dump_slice2p("FF05 TIMA : ", &reg.tima, 8);
-  d.dump_slice2p("FF06 TMA  : ", &reg.tma, 8);
-  d.dump_slice2p("FF07 TAC  : ", &reg.tac, 3);
-  d.dump_bitp   ("NYDU_TIMA7p_DELAY    : ", reg.int_ctrl.NYDU_TIMA7p_DELAY.state);
-  d.dump_bitp   ("MOBA_TIMER_OVERFLOWp : ", reg.int_ctrl.MOBA_TIMER_OVERFLOWp.state);
+  d.dump_slice2p("DIV16 : ", &reg.reg_div.UKUP_DIV00p, 16);
+  d.dump_slice2p("FF04 DIV  : ", &reg.reg_div.UGOT_DIV06p, 8);
+  d.dump_slice2p("FF05 TIMA : ", &reg.reg_tima, 8);
+  d.dump_slice2p("FF06 TMA  : ", &reg.reg_tma, 8);
+  d.dump_slice2p("FF07 TAC  : ", &reg.reg_tac, 3);
 }
 
 void GateBoy::dump_resets(Dumper& d) {

@@ -46,14 +46,53 @@ void diff_gb(GateBoy* gba, GateBoy* gbb, uint8_t mask);
 struct GateBoyReg {
   /*_SIG_VCC*/ SigIn SIG_VCC;
   /*_SIG_GND*/ SigIn SIG_GND;
+  
+  RegDIV  reg_div;
+  RegTIMA reg_tima;
+  RegTMA  reg_tma;
+  RegTAC  reg_tac;
+  RegLCDC reg_lcdc;
+  RegStat reg_stat;
+  RegSCX  reg_scx;
+  RegSCY  reg_scy;
+  RegWY   reg_wy;
+  RegWX   reg_wx;
+  RegLX   reg_lx;
+  RegLY   reg_ly;
+  RegLYC  reg_lyc;
+  RegBGP  reg_bgp;
+  RegOBP0 reg_obp0;
+  RegOBP1 reg_obp1;
+  RegIF   reg_if;
+  RegIE   reg_ie;
+  RegJoy  reg_joy;
+  RegDma  reg_dma;
+
+  GateBoyResetDebug rst;
+  GateBoyClock      clk;
+
+  /*#p21.VOGA*/ DFF17    VOGA_HBLANKp;
+  /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;
+  /*#p04.MATU*/ DFF17    MATU_DMA_RUNNINGp;
+  /*#p28.ACYL*/ Gate     ACYL_SCANNINGp;
+  /*#p21.WODU*/ Gate     WODU_HBLANKp;
+  /*_p07.SATO*/ Gate     SATO_BOOT_BITn;
+  /*_p28.ATEJ*/ Gate     ATEJ_LINE_RSTp;
+  /*_p29.FEPO*/ Gate     FEPO_STORE_MATCHp;
+
   GateBoyCpuSignals cpu_signals;
-  GateBoyCpuABus cpu_abus;
-  GateBoyCpuDBus cpu_dbus;
+  GateBoyCpuABus    cpu_abus;
+  GateBoyCpuDBus    cpu_dbus;
+
+  InterruptControl int_ctrl;
+  InterruptLatch   int_latch;
+
   VramABus       vram_abus;
   VramDBus       vram_dbus;
   VramExtControl vram_ext_ctrl;
   VramExtABus    vram_ext_abus;
   VramExtDBus    vram_ext_dbus;
+
   SpriteIBus     sprite_ibus;
   SpriteLBus     sprite_lbus;
                  
@@ -71,34 +110,20 @@ struct GateBoyReg {
   ExtDBus        ext_dbus;
   ExtDataLatch   ext_data_latch;
   ExtAddrLatch   ext_addr_latch;
+
   GateBoyMBC     ext_mbc;
 
   GateBoyZram    zram_bus;
 
-  /*#p21.VOGA*/ DFF17 VOGA_HBLANKp;                   // ABxDxFxH Clocked on odd, reset on A
-  /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;             // ABxDxFxH Cleared on A, set on BDFH
-
-  GateBoyResetDebug rst;
-  GateBoyClock      clk;
-  RegDIV        div;
-  RegTIMA tima;
-  RegTMA  tma;
-  RegTAC  tac;
 
   DmaControl dma_ctrl;
   RegDmaLo   dma_lo;
-  RegDmaHi   dma_hi;
   
-  InterruptControl int_ctrl;
 
-  RegIF   reg_if;
-  RegIE   reg_ie;
-  LatchIF latch_if;
   CpuInt  cpu_int;
   CpuAck  cpu_ack;
 
   JoyInt   joy_int;
-  JoyReg   joy;
   JoyLatch joy_latch;
   JoyExt   joy_ext;
 
@@ -137,36 +162,27 @@ struct GateBoyReg {
 
   //GateBoySerial     serial;
 
-  /*_p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;    // AxCxExGx
+  /*_p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;
+  SpriteScanner sprite_scanner;
+  ScanCounter   scan_counter;
   SpriteCounter sprite_counter;
+  SpriteIndex   sprite_index;
 
-  /*_p29.FEPO*/ Gate FEPO_STORE_MATCHp;
   SpriteMatchFlags sprite_match_flags;
   SpriteResetFlags sprite_reset_flags;
   SpriteStoreFlags sprite_store_flags;
 
-  SpriteScanner sprite_scanner;
-  ScanCounter   scan_counter;
-  SpriteIndex   sprite_index;
+
 
   SpriteFetchCounter sfetch_counter;
   SpriteFetchControl sfetch_control;
-  SpritePixA    sprite_pix_a;
-  SpritePixB    sprite_pix_b;
+  SpritePixA sprite_pix_a;
+  SpritePixB sprite_pix_b;
 
   TileFetchCounter tfetch_counter;
   TileFetchControl tfetch_control;
   TileTempA tile_temp_a;
   TileTempB tile_temp_b;
-
-  /*_p21.RUPO*/ NorLatch RUPO_LYC_MATCHn;       // xxCxxxxx
-
-  RegLCDC reg_lcdc;
-  RegStat reg_stat;
-  RegSCX  reg_scx;
-  RegSCY  reg_scy;
-  RegWY   reg_wy;
-  RegWX   reg_wx;
 
   WinMapX  win_map_x;
   WinTileY win_tile_y;
@@ -190,20 +206,6 @@ struct GateBoyReg {
 
   GateBoyLCDControl lcd;
 
-  RegLX  reg_lx;
-  RegLY  reg_ly;
-
-  /*#p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
-
-  RegLYC reg_lyc;
-
-  RegBGP  reg_bgp;
-  RegOBP0 reg_obp0;
-  RegOBP1 reg_obp1;
-
-  /*#p21.WODU*/ Gate WODU_HBLANKp;
-  /*_p07.SATO*/ Gate SATO_BOOT_BITn;
-  /*_p28.ATEJ*/ Gate ATEJ_LINE_RSTp; // this is always 1 during vid_rst
 
   SpritePix flipped_sprite;
 
@@ -319,7 +321,7 @@ struct GateBoy {
   //----------------------------------------
 
   void check_div() const {
-    int div_val = bit_pack(reg.div);
+    int div_val = bit_pack(reg.reg_div);
     if (div_val != BOOT_DIV) {
       LOG_R("div fail!\n");
       *reinterpret_cast<int*>(SENTINEL4) = 1;
@@ -570,7 +572,7 @@ struct GateBoy {
   /*_p08.REDU*/ wire REDU_CPU_RDn      () const { return not1(reg.cpu_signals.TEDO_CPU_RDp.out_new()); }
   /*_p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(reg.cpu_signals.APOV_CPU_WRp.out_new()); }
 
-  /*_p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(reg.cpu_signals.SIG_IN_CPU_LATCH_EXT.out_new()); }
+  /*_p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(reg.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new()); }
   /*_p04.CATY*/ wire CATY_LATCH_EXTp   () const { return not1(DECY_LATCH_EXTn()); }
   /*#p28.BOFE*/ wire BOFE_LATCH_EXTn   () const { return not1(CATY_LATCH_EXTp()); }
 

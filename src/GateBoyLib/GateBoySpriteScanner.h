@@ -11,7 +11,6 @@ struct SpriteScanner {
     DOBA_SCAN_DONE_Bp.state = 0b00011001;
   }
 
-  /*#p28.ACYL*/ Gate ACYL_SCANNINGp; // new used
   /*#p28.FETO*/ Gate FETO_SCAN_DONEp; // old used
   /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp; // new used
 

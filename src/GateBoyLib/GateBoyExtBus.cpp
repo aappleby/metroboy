@@ -80,10 +80,10 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 {
   /*_p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn(), UMUT_MODE_DBG1p());
 
-  /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(reg.dma_hi.MARU_DMA_A15n.qn_new());
-  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(reg.dma_hi.PULA_DMA_A13n.qn_new(), reg.dma_hi.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
+  /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(reg.reg_dma.MARU_DMA_A15n.qn_new());
+  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(reg.reg_dma.PULA_DMA_A13n.qn_new(), reg.reg_dma.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
   /*_p04.LOGO*/ wire LOGO_DMA_VRAMn = not1(MUDA_DMA_VRAMp);
-  /*_p04.MORY*/ wire MORY_DMA_CARTn = nand2(reg.dma_ctrl.MATU_DMA_RUNNINGp.qp_new(), LOGO_DMA_VRAMn);
+  /*_p04.MORY*/ wire MORY_DMA_CARTn = nand2(reg.MATU_DMA_RUNNINGp.qp_new(), LOGO_DMA_VRAMn);
   /*_p04.LUMA*/ wire LUMA_DMA_CARTp = not1(MORY_DMA_CARTn);
 
   {
@@ -106,7 +106,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
   {
     /*_p08.TOZA*/ wire TOZA_CS_A = and3(reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new(), reg.cpu_abus.TYNU_A000_FFFFp(), reg.cpu_abus.TUNA_0000_FDFF());
-    /*_p08.TYHO*/ wire TYHO_CS_A = mux2p(LUMA_DMA_CARTp, reg.dma_hi.MARU_DMA_A15n.qn_new(), TOZA_CS_A);
+    /*_p08.TYHO*/ wire TYHO_CS_A = mux2p(LUMA_DMA_CARTp, reg.reg_dma.MARU_DMA_A15n.qn_new(), TOZA_CS_A);
     /*_PIN_80*/ reg.ext_ctrl.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
   }
 
@@ -138,13 +138,13 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.ATOV*/ wire ATOV_A05p = mux2p(LUMA_DMA_CARTp, reg.dma_lo.PYLO_DMA_A05p.qp_new(), reg.ext_addr_latch.ATEV_EXT_ADDR_LATCH_05p.qp_new());
   /*_p08.ATYR*/ wire ATYR_A06p = mux2p(LUMA_DMA_CARTp, reg.dma_lo.NUTO_DMA_A06p.qp_new(), reg.ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.qp_new());
   /*#p08.ASUR*/ wire ASUR_A07p = mux2p(LUMA_DMA_CARTp, reg.dma_lo.MUGU_DMA_A07p.qp_new(), reg.ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.qp_new());
-  /*#p08.MANO*/ wire MANO_A08p = mux2p(LUMA_DMA_CARTp, reg.dma_hi.NAFA_DMA_A08n.qn_new(), reg.ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.qp_new());
-  /*_p08.MASU*/ wire MASU_A09p = mux2p(LUMA_DMA_CARTp, reg.dma_hi.PYNE_DMA_A09n.qn_new(), reg.ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.qp_new());
-  /*_p08.PAMY*/ wire PAMY_A10p = mux2p(LUMA_DMA_CARTp, reg.dma_hi.PARA_DMA_A10n.qn_new(), reg.ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.qp_new());
-  /*_p08.MALE*/ wire MALE_A11p = mux2p(LUMA_DMA_CARTp, reg.dma_hi.NYDO_DMA_A11n.qn_new(), reg.ext_addr_latch.LUMY_EXT_ADDR_LATCH_11p.qp_new());
-  /*_p08.MOJY*/ wire MOJY_A12p = mux2p(LUMA_DMA_CARTp, reg.dma_hi.NYGY_DMA_A12n.qn_new(), reg.ext_addr_latch.LOBU_EXT_ADDR_LATCH_12p.qp_new());
-  /*_p08.MUCE*/ wire MUCE_A13p = mux2p(LUMA_DMA_CARTp, reg.dma_hi.PULA_DMA_A13n.qn_new(), reg.ext_addr_latch.LONU_EXT_ADDR_LATCH_13p.qp_new());
-  /*_p08.PEGE*/ wire PEGE_A14p = mux2p(LUMA_DMA_CARTp, reg.dma_hi.POKU_DMA_A14n.qn_new(), reg.ext_addr_latch.NYRE_EXT_ADDR_LATCH_14p.qp_new());
+  /*#p08.MANO*/ wire MANO_A08p = mux2p(LUMA_DMA_CARTp, reg.reg_dma.NAFA_DMA_A08n.qn_new(), reg.ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.qp_new());
+  /*_p08.MASU*/ wire MASU_A09p = mux2p(LUMA_DMA_CARTp, reg.reg_dma.PYNE_DMA_A09n.qn_new(), reg.ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.qp_new());
+  /*_p08.PAMY*/ wire PAMY_A10p = mux2p(LUMA_DMA_CARTp, reg.reg_dma.PARA_DMA_A10n.qn_new(), reg.ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.qp_new());
+  /*_p08.MALE*/ wire MALE_A11p = mux2p(LUMA_DMA_CARTp, reg.reg_dma.NYDO_DMA_A11n.qn_new(), reg.ext_addr_latch.LUMY_EXT_ADDR_LATCH_11p.qp_new());
+  /*_p08.MOJY*/ wire MOJY_A12p = mux2p(LUMA_DMA_CARTp, reg.reg_dma.NYGY_DMA_A12n.qn_new(), reg.ext_addr_latch.LOBU_EXT_ADDR_LATCH_12p.qp_new());
+  /*_p08.MUCE*/ wire MUCE_A13p = mux2p(LUMA_DMA_CARTp, reg.reg_dma.PULA_DMA_A13n.qn_new(), reg.ext_addr_latch.LONU_EXT_ADDR_LATCH_13p.qp_new());
+  /*_p08.PEGE*/ wire PEGE_A14p = mux2p(LUMA_DMA_CARTp, reg.reg_dma.POKU_DMA_A14n.qn_new(), reg.ext_addr_latch.NYRE_EXT_ADDR_LATCH_14p.qp_new());
 
   /*_p08.KUPO*/ wire KUPO = nand2(AMET_A00p, TOVA_MODE_DBG2n());
   /*_p08.CABA*/ wire CABA = nand2(ATOL_A01p, TOVA_MODE_DBG2n());
@@ -199,7 +199,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p07.TUTU*/ wire TUTU_READ_BOOTROMp = and2(TERA_BOOT_BITp, reg.cpu_abus.TULO_ADDR_BOOTROMp());
   /*_p08.SOBY*/ wire SOBY_A15n = nor2 (reg.cpu_abus.BUS_CPU_A15p.out_new(), TUTU_READ_BOOTROMp);
   /*_p08.SEPY*/ wire SEPY_A15p = nand2(reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new(), SOBY_A15n);
-  /*_p08.TAZY*/ wire TAZY_A15p = mux2p (LUMA_DMA_CARTp, reg.dma_hi.MARU_DMA_A15n.qn_new(), SEPY_A15p);
+  /*_p08.TAZY*/ wire TAZY_A15p = mux2p (LUMA_DMA_CARTp, reg.reg_dma.MARU_DMA_A15n.qn_new(), SEPY_A15p);
   /*_p08.SUZE*/ wire SUZE_A15n = nand2(TAZY_A15p, RYCA_MODE_DBG2n());
   /*_p08.RULO*/ wire RULO_A15n = nor2 (TAZY_A15p, UNOR_MODE_DBG2p());
   /*_PIN_16*/ reg.ext_abus.PIN_16_A15.pin_out(SUZE_A15n, RULO_A15n);
@@ -387,7 +387,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
   //----------------------------------------
 
-  /*_p08.LAVO*/ wire LAVO_HOLDn = nand3(reg.cpu_signals.SIG_IN_CPU_RDp.out_new(), TEXO_ADDR_VRAMn(), reg.cpu_signals.SIG_IN_CPU_LATCH_EXT.out_new());
+  /*_p08.LAVO*/ wire LAVO_HOLDn = nand3(reg.cpu_signals.SIG_IN_CPU_RDp.out_new(), TEXO_ADDR_VRAMn(), reg.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new());
 
   //probe_wire(1, "LAVO",  LAVO_HOLDn);
   //probe_wire(2, "RD",    cpu_signals.SIG_IN_CPU_RDp.qp_new());

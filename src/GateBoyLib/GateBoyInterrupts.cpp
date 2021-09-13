@@ -38,11 +38,11 @@ void GateBoy::tock_interrupts_gates(const GateBoyReg& reg_old)
 
   /*#p21.PARU*/ wire PARU_VBLANKp = not1(reg.lcd.POPU_y144p.qn_new());
   /*#p21.SADU*/ wire SADU_STAT_MODE0n = nor2(reg.XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
-  /*#p21.XATY*/ wire XATY_STAT_MODE1n = nor2(reg.sprite_scanner.ACYL_SCANNINGp.out_new(), reg.XYMU_RENDERINGn.qn_new()); // die NOR
+  /*#p21.XATY*/ wire XATY_STAT_MODE1n = nor2(reg.ACYL_SCANNINGp.out_new(), reg.XYMU_RENDERINGn.qn_new()); // die NOR
 
   //probe_wire(24, "POPU VBLANK", lcd.POPU_y144p.qp_new());
   //probe_wire(25, "XYMU RENDER", ~XYMU_RENDERINGn.qp_new());
-  //probe_wire(26, "ACYL SCAN",   sprite_scanner.ACYL_SCANNINGp.out_new());
+  //probe_wire(26, "ACYL SCAN",   ACYL_SCANNINGp.out_new());
   //probe_wire(27, "SADU STAT0",  ~SADU_STAT_MODE0n);
   //probe_wire(28, "XATY STAT1",  ~XATY_STAT_MODE1n);
   //probe_wire(29, "RUPO STAT2",  ~RUPO_LYC_MATCHn.qp_new());
@@ -51,7 +51,7 @@ void GateBoy::tock_interrupts_gates(const GateBoyReg& reg_old)
 
   /*#p21.TEBY*/ triwire TEBY_STAT0_TO_CD0 = tri6_pn(TOBE_FF41_RDp, SADU_STAT_MODE0n);
   /*#p21.WUGA*/ triwire WUGA_STAT1_TO_CD1 = tri6_pn(TOBE_FF41_RDp, XATY_STAT_MODE1n);
-  /*#p21.SEGO*/ triwire SEGO_STAT2_TO_CD2 = tri6_pn(TOBE_FF41_RDp, reg.RUPO_LYC_MATCHn.qp_new());
+  /*#p21.SEGO*/ triwire SEGO_STAT2_TO_CD2 = tri6_pn(TOBE_FF41_RDp, reg.int_ctrl.RUPO_LYC_MATCHn.qp_new());
   /*_p21.PUZO*/ triwire PUZO_STAT3_TO_CD3 = tri6_nn(VAVE_FF41_RDn, reg.reg_stat.ROXE_STAT_HBI_ENn.qp_new());
   /*_p21.POFO*/ triwire POFO_STAT4_TO_CD4 = tri6_nn(VAVE_FF41_RDn, reg.reg_stat.RUFO_STAT_VBI_ENn.qp_new());
   /*_p21.SASY*/ triwire SASY_STAT5_TO_CD5 = tri6_nn(VAVE_FF41_RDn, reg.reg_stat.REFE_STAT_OAI_ENn.qp_new());
@@ -70,7 +70,7 @@ void GateBoy::tock_interrupts_gates(const GateBoyReg& reg_old)
   /*#p21.SELA*/ wire SELA_x113p = not1(PURE_x113n);
   /*#p21.TAPA*/ wire TAPA_INT_OAM   = and2(TOLU_VBLANKn, SELA_x113p);
   /*#p21.TARU*/ wire TARU_INT_HBL   = and2(reg.WODU_HBLANKp.out_new(), TOLU_VBLANKn);
-  /*#p21.SUKO*/ wire SUKO_INT_STATp = amux4(reg.reg_stat.RUGU_STAT_LYI_ENn.qn_new(), reg.ROPO_LY_MATCH_SYNCp.qp_new(), reg.reg_stat.REFE_STAT_OAI_ENn.qn_new(), TAPA_INT_OAM, reg.reg_stat.RUFO_STAT_VBI_ENn.qn_new(), PARU_VBLANKp, reg.reg_stat.ROXE_STAT_HBI_ENn.qn_new(), TARU_INT_HBL);
+  /*#p21.SUKO*/ wire SUKO_INT_STATp = amux4(reg.reg_stat.RUGU_STAT_LYI_ENn.qn_new(), reg.int_ctrl.ROPO_LY_MATCH_SYNCp.qp_new(), reg.reg_stat.REFE_STAT_OAI_ENn.qn_new(), TAPA_INT_OAM, reg.reg_stat.RUFO_STAT_VBI_ENn.qn_new(), PARU_VBLANKp, reg.reg_stat.ROXE_STAT_HBI_ENn.qn_new(), TARU_INT_HBL);
 
   /*#p21.VYPU*/ wire VYPU_INT_VBLANKp = not1(TOLU_VBLANKn);
   /*#p21.TUVA*/ wire TUVA_INT_STATn   = not1(SUKO_INT_STATp);
@@ -137,17 +137,17 @@ void GateBoy::tock_interrupts_gates(const GateBoyReg& reg_old)
 
   // FIXME why is this latch different from the others? MATY is one of those big yellow latchy things.
 
-  /*_p02.MATY*/ reg.latch_if.MATY_FF0F_L0p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.LOPE_FF0F_D0p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.MOPO*/ reg.latch_if.MOPO_FF0F_L1p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.LALU_FF0F_D1p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.PAVY*/ reg.latch_if.PAVY_FF0F_L2p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.NYBO_FF0F_D2p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.NEJY*/ reg.latch_if.NEJY_FF0F_L3p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
-  /*_p02.NUTY*/ reg.latch_if.NUTY_FF0F_L4p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.MATY*/ reg.int_latch.MATY_FF0F_L0p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.LOPE_FF0F_D0p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.MOPO*/ reg.int_latch.MOPO_FF0F_L1p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.LALU_FF0F_D1p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.PAVY*/ reg.int_latch.PAVY_FF0F_L2p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.NYBO_FF0F_D2p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.NEJY*/ reg.int_latch.NEJY_FF0F_L3p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.UBUL_FF0F_D3p.qp_new()); // OUTPUT ON RUNG 10
+  /*_p02.NUTY*/ reg.int_latch.NUTY_FF0F_L4p.tp_latchp(ROLO_FF0F_RDn, reg.reg_if.ULAK_FF0F_D4p.qp_new()); // OUTPUT ON RUNG 10
 
-  /*#p02.NELA*/ triwire NELA_IF0_TO_CD0 = tri6_pn(POLA_FF0F_RDp, reg.latch_if.MATY_FF0F_L0p.qn_new());
-  /*#p02.NABO*/ triwire NABO_IF1_TO_CD1 = tri6_pn(POLA_FF0F_RDp, reg.latch_if.MOPO_FF0F_L1p.qn_new());
-  /*#p02.ROVA*/ triwire ROVA_IF2_TO_CD2 = tri6_pn(POLA_FF0F_RDp, reg.latch_if.PAVY_FF0F_L2p.qn_new());
-  /*#p02.PADO*/ triwire PADO_IF3_TO_CD3 = tri6_pn(POLA_FF0F_RDp, reg.latch_if.NEJY_FF0F_L3p.qn_new());
-  /*#p02.PEGY*/ triwire PEGY_IF4_TO_CD4 = tri6_pn(POLA_FF0F_RDp, reg.latch_if.NUTY_FF0F_L4p.qn_new());
+  /*#p02.NELA*/ triwire NELA_IF0_TO_CD0 = tri6_pn(POLA_FF0F_RDp, reg.int_latch.MATY_FF0F_L0p.qn_new());
+  /*#p02.NABO*/ triwire NABO_IF1_TO_CD1 = tri6_pn(POLA_FF0F_RDp, reg.int_latch.MOPO_FF0F_L1p.qn_new());
+  /*#p02.ROVA*/ triwire ROVA_IF2_TO_CD2 = tri6_pn(POLA_FF0F_RDp, reg.int_latch.PAVY_FF0F_L2p.qn_new());
+  /*#p02.PADO*/ triwire PADO_IF3_TO_CD3 = tri6_pn(POLA_FF0F_RDp, reg.int_latch.NEJY_FF0F_L3p.qn_new());
+  /*#p02.PEGY*/ triwire PEGY_IF4_TO_CD4 = tri6_pn(POLA_FF0F_RDp, reg.int_latch.NUTY_FF0F_L4p.qn_new());
 
   /*_BUS_CPU_D00p*/ reg.cpu_dbus.BUS_CPU_D00p.tri_bus(NELA_IF0_TO_CD0);
   /*_BUS_CPU_D01p*/ reg.cpu_dbus.BUS_CPU_D01p.tri_bus(NABO_IF1_TO_CD1);

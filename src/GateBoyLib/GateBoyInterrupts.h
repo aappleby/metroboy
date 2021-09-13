@@ -36,7 +36,7 @@ struct RegIE {
   DFF IE_D4;
 };
 
-struct LatchIF {
+struct InterruptLatch {
   void reset_to_cart() {
     MATY_FF0F_L0p.state = 0b00011000;
     MOPO_FF0F_L1p.state = 0b00011000;
@@ -91,6 +91,9 @@ struct InterruptControl {
 
   /*#p03.NYDU*/ DFF17 NYDU_TIMA7p_DELAY;    // Axxxxxxx
   /*#p03.MOBA*/ DFF17 MOBA_TIMER_OVERFLOWp; // AxxxExxx
+
+  /*_p21.RUPO*/ NorLatch RUPO_LYC_MATCHn;
+  /*#p21.ROPO*/ DFF17 ROPO_LY_MATCH_SYNCp;   // xxCxxxxx
 };
 
 //------------------------------------------------------------------------------------------------------------------------

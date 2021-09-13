@@ -24,7 +24,7 @@ struct JoyInt {
   /*#p02.APUG*/ DFF17 APUG_JP_GLITCH3;
 };
 
-struct JoyReg {
+struct RegJoy {
   void reset_to_bootrom() {
     KELY_JOYP_UDLRp.state = 0b00011011;
     COFY_JOYP_ABCSp.state = 0b00011011;

@@ -15,9 +15,9 @@ void GateBoy::tock_vram_bus_gates(const GateBoyReg& reg_old, wire TEVO_WIN_FETCH
   //--------------------------------------------
   // CPU vram read address
 
-  /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(reg.dma_hi.MARU_DMA_A15n.qn_new());
-  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(reg.dma_hi.PULA_DMA_A13n.qn_new(), reg.dma_hi.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
-  /*_p04.MUHO*/ wire MUHO_DMA_VRAMp = nand2(reg.dma_ctrl.MATU_DMA_RUNNINGp.qp_new(), MUDA_DMA_VRAMp);
+  /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(reg.reg_dma.MARU_DMA_A15n.qn_new());
+  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(reg.reg_dma.PULA_DMA_A13n.qn_new(), reg.reg_dma.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
+  /*_p04.MUHO*/ wire MUHO_DMA_VRAMp = nand2(reg.MATU_DMA_RUNNINGp.qp_new(), MUDA_DMA_VRAMp);
   /*_p04.LUFA*/ wire LUFA_DMA_VRAMp = not1(MUHO_DMA_VRAMp);
   /*#p25.XANE*/ wire XANE_VRAM_LOCKn = nor2(LUFA_DMA_VRAMp, reg.XYMU_RENDERINGn.qn_new());
   /*_p25.XEDU*/ wire XEDU_VRAM_LOCKp = not1(XANE_VRAM_LOCKn);
@@ -61,11 +61,11 @@ void GateBoy::tock_vram_bus_gates(const GateBoyReg& reg_old, wire TEVO_WIN_FETCH
   /*_p04.DAVA*/ triwire DAVA_DA05_TO_VA05 = tri6_nn(AHOC_DMA_VRAMn_new, reg.dma_lo.PYLO_DMA_A05p.qp_new());
   /*_p04.ETEG*/ triwire ETEG_DA06_TO_VA06 = tri6_nn(AHOC_DMA_VRAMn_new, reg.dma_lo.NUTO_DMA_A06p.qp_new());
   /*#p04.EREW*/ triwire EREW_DA07_TO_VA07 = tri6_nn(AHOC_DMA_VRAMn_new, reg.dma_lo.MUGU_DMA_A07p.qp_new());
-  /*#p04.EVAX*/ triwire EVAX_DA08_TO_VA08 = tri6_nn(AHOC_DMA_VRAMn_new, reg.dma_hi.NAFA_DMA_A08n.qn_new());
-  /*_p04.DUVE*/ triwire DUVE_DA09_TO_VA09 = tri6_nn(AHOC_DMA_VRAMn_new, reg.dma_hi.PYNE_DMA_A09n.qn_new());
-  /*_p04.ERAF*/ triwire ERAF_DA10_TO_VA10 = tri6_nn(AHOC_DMA_VRAMn_new, reg.dma_hi.PARA_DMA_A10n.qn_new());
-  /*_p04.FUSY*/ triwire FUSY_DA11_TO_VA11 = tri6_nn(AHOC_DMA_VRAMn_new, reg.dma_hi.NYDO_DMA_A11n.qn_new());
-  /*_p04.EXYF*/ triwire EXYF_DA12_TO_VA12 = tri6_nn(AHOC_DMA_VRAMn_new, reg.dma_hi.NYGY_DMA_A12n.qn_new());
+  /*#p04.EVAX*/ triwire EVAX_DA08_TO_VA08 = tri6_nn(AHOC_DMA_VRAMn_new, reg.reg_dma.NAFA_DMA_A08n.qn_new());
+  /*_p04.DUVE*/ triwire DUVE_DA09_TO_VA09 = tri6_nn(AHOC_DMA_VRAMn_new, reg.reg_dma.PYNE_DMA_A09n.qn_new());
+  /*_p04.ERAF*/ triwire ERAF_DA10_TO_VA10 = tri6_nn(AHOC_DMA_VRAMn_new, reg.reg_dma.PARA_DMA_A10n.qn_new());
+  /*_p04.FUSY*/ triwire FUSY_DA11_TO_VA11 = tri6_nn(AHOC_DMA_VRAMn_new, reg.reg_dma.NYDO_DMA_A11n.qn_new());
+  /*_p04.EXYF*/ triwire EXYF_DA12_TO_VA12 = tri6_nn(AHOC_DMA_VRAMn_new, reg.reg_dma.NYGY_DMA_A12n.qn_new());
 
   /*_BUS_VRAM_A00n*/ reg.vram_abus.BUS_VRAM_A00n.tri_bus(ECAL_DA00_TO_VA00);
   /*_BUS_VRAM_A01n*/ reg.vram_abus.BUS_VRAM_A01n.tri_bus(EGEZ_DA01_TO_VA01);

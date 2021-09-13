@@ -1526,15 +1526,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000100);
 
-    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 2048);
-    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 2048);
     if (results.ok()) LOG_B("TAC 0b100 pass\n");
   }
@@ -1548,15 +1548,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000101);
 
-    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 32);
-    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 32);
     if (results.ok()) LOG_B("TAC 0b101 pass\n");
   }
@@ -1569,15 +1569,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000110);
 
-    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 128);
-    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 128);
     if (results.ok()) LOG_B("TAC 0b110 pass\n");
   }
@@ -1590,15 +1590,15 @@ TestResults GateBoyTests::test_timer() {
     gbp.dbg_write(cart_blob, ADDR_DIV, 0x00);
     gbp.dbg_write(cart_blob, ADDR_TAC, 0b00000111);
 
-    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFD, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFE, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0xFF, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0x80, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 512);
-    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.tima));
+    EXPECT_EQ(0x81, bit_pack(gbp.gba.reg.reg_tima));
     gbp.run_phases(cart_blob, 512);
     if (results.ok()) LOG_B("TAC 0b111 pass\n");
   }

@@ -22,7 +22,7 @@ void GateBoy::tock_lyc_gates(const GateBoyReg& reg_old) {
     /*#p21.RAPE*/ wire RAPE_LY_MATCHn_old = nand2(SOVU_LY_MATCHA_old,  SUBO_LY_MATCHB_old);
     /*#p21.PALY*/ wire PALY_LY_MATCHa_old = not1 (RAPE_LY_MATCHn_old);
 
-    /*#p21.ROPO*/ reg.ROPO_LY_MATCH_SYNCp.dff17(TALU_xxCDEFxx(), WESY_SYS_RSTn(), PALY_LY_MATCHa_old);
+    /*#p21.ROPO*/ reg.int_ctrl.ROPO_LY_MATCH_SYNCp.dff17(TALU_xxCDEFxx(), WESY_SYS_RSTn(), PALY_LY_MATCHa_old);
   }
 
   {
@@ -63,7 +63,7 @@ void GateBoy::tock_lyc_gates(const GateBoyReg& reg_old) {
     /*_p21.SEPA*/ wire SEPA_FF41_WRp = and2(CUPA_CPU_WRp(), reg.cpu_abus.VARY_FF41p());
     /*_p21.RYJU*/ wire RYJU_FF41_WRn = not1(SEPA_FF41_WRp);
     /*_p21.PAGO*/ wire PAGO_LYC_MATCH_RST = or2(WESY_SYS_RSTn(), RYJU_FF41_WRn);
-    /*_p21.RUPO*/ reg.RUPO_LYC_MATCHn.nor_latch(PAGO_LYC_MATCH_RST, reg.ROPO_LY_MATCH_SYNCp.qp_new());
+    /*_p21.RUPO*/ reg.int_ctrl.RUPO_LYC_MATCHn.nor_latch(PAGO_LYC_MATCH_RST, reg.int_ctrl.ROPO_LY_MATCH_SYNCp.qp_new());
   }
 }
 
@@ -185,7 +185,7 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*#p24.MAGU*/ wire MAGU = xor2(reg.lcd.NAPO_FRAME_EVENp.qp_new(), reg.lcd.LUCA_LINE_EVENp.qn_new());
   /*#p24.MECO*/ wire MECO = not1(MAGU);
   /*#p24.KEBO*/ wire KEBO = not1(MECO);
-  /*_p01.UREK*/ wire UREK_DIV07n = not1(reg.div.TULU_DIV07p.qp_new());
+  /*_p01.UREK*/ wire UREK_DIV07n = not1(reg.reg_div.TULU_DIV07p.qp_new());
   /*#p24.USEC*/ wire USEC_DIV07p = not1(UREK_DIV07n);
   /*#p24.KEDY*/ wire KEDY_LCDC_ENn = not1(reg.reg_lcdc.XONA_LCDC_LCDENn.qn_new());
   /*#p24.KUPA*/ wire KUPA = amux2(reg.reg_lcdc.XONA_LCDC_LCDENn.qn_new(), KEBO, KEDY_LCDC_ENn, USEC_DIV07p);
@@ -218,7 +218,7 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*_PIN_51*/ reg.lcd.PIN_51_LCD_DATA0.pin_out(reg.REMY_LD0n.out_new(), reg.REMY_LD0n.out_new());
   /*_PIN_50*/ reg.lcd.PIN_50_LCD_DATA1.pin_out(reg.RAVO_LD1n.out_new(), reg.RAVO_LD1n.out_new());
 
-  /*_p01.UMEK*/ wire UMEK_DIV06n = not1(reg.div.UGOT_DIV06p.qp_new());
+  /*_p01.UMEK*/ wire UMEK_DIV06n = not1(reg.reg_div.UGOT_DIV06p.qp_new());
   /*#p21.PURE*/ wire PURE_x113n = not1(reg.lcd.RUTU_x113p.qp_new());
   /*#p24.KASA*/ wire KASA_LINE_ENDp = not1(PURE_x113n);
   /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(UMEK_DIV06n);

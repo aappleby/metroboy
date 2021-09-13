@@ -434,7 +434,7 @@ MemberOffset gb_offsets[] = {
   GEN_OFFSET(reg.reg_scy),
   GEN_OFFSET(reg.reg_wy),
   GEN_OFFSET(reg.reg_wx),
-  GEN_OFFSET(reg.win_map_x),
+  GEN_OFFSET(reg.win_x.map),
   GEN_OFFSET(reg.win_y.tile),
   GEN_OFFSET(reg.win_y.map),
   GEN_OFFSET(reg.win_ctrl),
@@ -2369,7 +2369,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (reg.reg_lcdc.XONA_LCDC_LCDENn) {
     bit_unpack(reg.fine_count, 0);
-    bit_unpack(reg.win_map_x, 0);
+    bit_unpack(reg.win_x.map, 0);
     bit_unpack(reg.win_y, 0);
   }
   else {
@@ -2382,12 +2382,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (reg_new.ATEJ_LINE_RSTp) {
-      bit_unpack(reg.win_map_x, 0);
+      bit_unpack(reg.win_x.map, 0);
     }
     else if (TEVO_WIN_FETCH_TRIGp_new) {
       bit_unpack(reg.fine_count, 0);
       if (reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
-        bit_unpack(reg.win_map_x, bit_pack(reg_old.win_map_x) + 1);
+        bit_unpack(reg.win_x.map, bit_pack(reg_old.win_x.map) + 1);
       }
     }
 
@@ -2784,7 +2784,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
          reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
       uint32_t addr = 0;
 
-      auto wx = bit_pack_inv(reg.win_map_x);
+      auto wx = bit_pack_inv(reg.win_x.map);
       auto wy = bit_pack_inv(reg.win_y.map);
 
       bit_unpack(&reg.vram_abus.BUS_VRAM_A00n, 5, wx);

@@ -193,7 +193,10 @@ struct GateBoyReg {
   //----------
 
   WinControl win_ctrl;
-  WinMapX    win_map_x;
+
+  struct {
+    WinMapX    map;
+  } win_x;
 
   struct {
     WinTileY   tile;

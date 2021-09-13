@@ -2754,47 +2754,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (cpu_addr_new == 0xFF43) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_scx));
   }
 
-  if (reg.tfetch_control.LONY_FETCHINGp) {
-    const auto px  = bit_pack(reg.pix_count);
-    const auto scx = bit_pack_inv(reg.reg_scx);
-    const auto scy = bit_pack_inv(reg.reg_scy);
-
-    const auto sum_x = px + scx;
-    const auto sum_y = reg_ly_new + scy;
-
-    //--------------------------------------------
-    // BG map read address
-
-    if (!reg.tfetch_counter.MESU_BFETCH_S1p && !reg.tfetch_counter.NYVA_BFETCH_S2p && !reg.win_ctrl.PYNU_WIN_MODE_Ap) {
-      const auto bgmap_en = !reg.reg_lcdc.XAFO_LCDC_BGMAPn.state;
-
-      uint32_t addr = 0;
-      bit_cat(addr,  0,  4, (px + scx) >> 3);
-      bit_cat(addr,  5,  9, (reg_ly_new + scy) >> 3);
-      bit_cat(addr, 10, 10, bgmap_en);
-      bit_cat(addr, 11, 11, 1);
-      bit_cat(addr, 12, 12, 1);
-      bit_unpack_inv(reg.vram_abus, addr);
-    }
-
-    //--------------------------------------------
-    // BG/Win tile read address
-
-    if (reg.tfetch_counter.MESU_BFETCH_S1p || reg.tfetch_counter.NYVA_BFETCH_S2p) {
-      const auto hilo = reg.tfetch_counter.NYVA_BFETCH_S2p.state;
-      const auto tile_y = (reg.win_ctrl.PYNU_WIN_MODE_Ap ? bit_pack(reg.win_y.tile) : (sum_y & 0b111));
-      const auto map_y = bit_pack(reg.tile_temp_b);
-      const auto map = (!reg.tile_temp_b.PYJU_TILE_DB7p && reg.reg_lcdc.WEXU_LCDC_BGTILEn);
-
-      uint32_t addr  = 0;
-      bit_cat(addr,  0,  0, hilo);
-      bit_cat(addr,  1,  3, tile_y);
-      bit_cat(addr,  4, 11, map_y);
-      bit_cat(addr, 12, 12, map);
-      bit_unpack_inv(reg.vram_abus, addr);
-    }
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2802,6 +2761,49 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  if (state_new.tfetch_control.LONY_FETCHINGp) {
+    const auto px  = state_new.pix_count;
+    const auto scx = ~state_new.reg_scx;
+    const auto scy = ~state_new.reg_scy;
+
+    const auto sum_x = px + scx;
+    const auto sum_y = reg_ly_new + scy;
+
+    //--------------------------------------------
+    // BG map read address
+
+    if (!get_bit(state_new.tfetch_counter, 1) && !get_bit(state_new.tfetch_counter, 2) && !state_new.win_ctrl.PYNU_WIN_MODE_Ap) {
+      const auto bgmap_en = !get_bit(state_new.reg_lcdc, 3);
+
+      uint32_t addr = 0;
+      bit_cat(addr,  0,  4, (px + scx) >> 3);
+      bit_cat(addr,  5,  9, (reg_ly_new + scy) >> 3);
+      bit_cat(addr, 10, 10, bgmap_en);
+      bit_cat(addr, 11, 11, 1);
+      bit_cat(addr, 12, 12, 1);
+
+      state_new.vram_abus = uint16_t(addr ^ 0b1111111111111);
+    }
+
+    //--------------------------------------------
+    // BG/Win tile read address
+
+    if (get_bit(state_new.tfetch_counter, 1) || get_bit(state_new.tfetch_counter, 2)) {
+      const auto hilo = get_bit(state_new.tfetch_counter, 2);
+      const auto tile_y = (state_new.win_ctrl.PYNU_WIN_MODE_Ap ? state_new.win_y.tile : (sum_y & 0b111));
+      const auto map_y = state_new.tile_temp_b;
+      const auto map = !get_bit(state_new.tile_temp_b, 7) && get_bit(state_new.reg_lcdc, 4);
+
+      uint32_t addr  = 0;
+      bit_cat(addr,  0,  0, hilo);
+      bit_cat(addr,  1,  3, tile_y);
+      bit_cat(addr,  4, 11, map_y);
+      bit_cat(addr, 12, 12, map);
+      
+      state_new.vram_abus = uint16_t(addr ^ 0b1111111111111);
+    }
+  }
 
   if (state_new.tfetch_control.LONY_FETCHINGp &&
       !get_bit(state_new.tfetch_counter, 1) &&

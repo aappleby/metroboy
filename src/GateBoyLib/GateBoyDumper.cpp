@@ -329,8 +329,8 @@ void GateBoy::dump_ppu(Dumper& d) {
   d.dump_slice2n("FF4A WY    : ", &reg.reg_wy.NESO_WY0n, 8);
   d.dump_slice2n("FF4B WX    : ", &reg.reg_wx.MYPA_WX0n, 8);
   d.dump_slice2p("WIN MAP X  : ", &reg.win_map_x.WYKA_WIN_MAP_X0, 5);
-  d.dump_slice2p("WIN MAP Y  : ", &reg.win_map_y.TUFU_WIN_MAP_Y0, 8);
-  d.dump_slice2p("WIN TILE Y : ", &reg.win_tile_y.VYNO_WIN_TILE_Y0, 3);
+  d.dump_slice2p("WIN MAP Y  : ", &reg.win_y.map.TUFU_WIN_MAP_Y0, 5);
+  d.dump_slice2p("WIN TILE Y : ", &reg.win_y.tile.VYNO_WIN_TILE_Y0, 3);
   d("\n");
   d.dump_slice2p("PIX COUNT  : ", &reg.pix_count.XEHO_PX0p, 8);
   d.dump_slice2p("BG PIPE A  : ", &reg.bgw_pipe_a, 8);

@@ -194,8 +194,11 @@ struct GateBoyReg {
 
   WinControl win_ctrl;
   WinMapX    win_map_x;
-  WinTileY   win_tile_y;
-  WinMapY    win_map_y;
+
+  struct {
+    WinTileY   tile;
+    WinMapY    map;
+  } win_y;
 
   FineCount  fine_count;
   FineScroll fine_scroll;

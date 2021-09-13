@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-struct VramABus {
+struct VramABusLo {
   void reset_to_cart() {
     BUS_VRAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_VRAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -13,11 +13,6 @@ struct VramABus {
     BUS_VRAM_A05n.state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_VRAM_A06n.state = BIT_OLD | BIT_DRIVEN | 0;
     BUS_VRAM_A07n.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_VRAM_A08n.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_VRAM_A09n.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_VRAM_A10n.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_VRAM_A11n.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_VRAM_A12n.state = BIT_OLD | BIT_DRIVEN | 1;
   }
 
   /*_BUS_VRAM_A00n*/ Bus BUS_VRAM_A00n;
@@ -28,6 +23,17 @@ struct VramABus {
   /*_BUS_VRAM_A05n*/ Bus BUS_VRAM_A05n;
   /*_BUS_VRAM_A06n*/ Bus BUS_VRAM_A06n;
   /*_BUS_VRAM_A07n*/ Bus BUS_VRAM_A07n;
+};
+
+struct VramABusHi {
+  void reset_to_cart() {
+    BUS_VRAM_A08n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A09n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A10n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A11n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A12n.state = BIT_OLD | BIT_DRIVEN | 1;
+  }
+
   /*_BUS_VRAM_A08n*/ Bus BUS_VRAM_A08n;
   /*_BUS_VRAM_A09n*/ Bus BUS_VRAM_A09n;
   /*_BUS_VRAM_A10n*/ Bus BUS_VRAM_A10n;

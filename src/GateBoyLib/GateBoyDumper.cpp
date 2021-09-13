@@ -255,7 +255,7 @@ void GateBoy::dump_vram_bus(Dumper& d) {
   d.dump_bitp   ("PIN_49_VRAM_WRn  : ", reg.vram_ext_ctrl.PIN_49_VRAM_WRn.state);
   d.dump_slice2p("PIN_34_VRAM_ADDR : ", &reg.vram_ext_abus.PIN_34_VRAM_A00, 13);
   d.dump_slice2p("PIN_25_VRAM_DATA : ", &reg.vram_ext_dbus.PIN_33_VRAM_D00, 8);
-  d.dump_slice2n("BUS_VRAM_An      : ", &reg.vram_abus.BUS_VRAM_A00n, 13);
+  d.dump_slice2n("BUS_VRAM_An      : ", &reg.vram_abus.lo.BUS_VRAM_A00n, 13);
   d.dump_slice2p("BUS_VRAM_Dp      : ", &reg.vram_dbus.BUS_VRAM_D00p, 8);
 }
 

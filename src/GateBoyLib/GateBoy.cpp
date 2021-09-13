@@ -5,7 +5,7 @@
 #include "CoreLib/Constants.h"
 #include "CoreLib/Tests.h"
 #include "GateBoyLib/Probe.h"
-#include "GateBoyPacked.h"
+#include "GateBoyLib/GateBoyState.h"
 
 //-----------------------------------------------------------------------------
 
@@ -146,7 +146,8 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   reg.cpu_abus.reset_to_cart_new();
   reg.cpu_dbus.reset_to_cart_new();
 
-  reg.vram_abus.reset_to_cart();
+  reg.vram_abus.lo.reset_to_cart();
+  reg.vram_abus.hi.reset_to_cart();
   reg.vram_dbus.reset_to_cart();
   reg.vram_ext_ctrl.reset_to_cart();
   reg.vram_ext_abus.reset_to_cart();
@@ -1365,7 +1366,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_logic(const blob& cart_blob) {
-  GateBoyPacked packed_old;
+  const GateBoyState state_old = state;
+  GateBoyState& state_new = state;
 
   const GateBoyReg reg_old = reg;
   GateBoyReg& reg_new = reg;
@@ -2729,7 +2731,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     if (dma_addr_vram_new) {
       bit_unpack_inv(reg.vram_abus, bit_pack(reg.dma_lo));
-      bit_unpack_inv(&reg.vram_abus.BUS_VRAM_A08n, 5, bit_pack_inv(reg.reg_dma));
+      bit_unpack_inv(reg.vram_abus.hi, bit_pack_inv(reg.reg_dma));
     }
 
     //--------------------------------------------
@@ -2758,11 +2760,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       // BG map read address
 
       if (!reg.tfetch_counter.MESU_BFETCH_S1p && !reg.tfetch_counter.NYVA_BFETCH_S2p && !reg.win_ctrl.PYNU_WIN_MODE_Ap) {
-        bit_unpack_inv(&reg.vram_abus.BUS_VRAM_A00n, 5, sum_x >> 3);
-        bit_unpack_inv(&reg.vram_abus.BUS_VRAM_A05n, 5, sum_y >> 3);
-        reg.vram_abus.BUS_VRAM_A10n = reg.reg_lcdc.XAFO_LCDC_BGMAPn;
-        reg.vram_abus.BUS_VRAM_A11n = 0;
-        reg.vram_abus.BUS_VRAM_A12n = 0;
+        bit_unpack_inv(&reg.vram_abus.lo.BUS_VRAM_A00n, 5, sum_x >> 3);
+        bit_unpack_inv(&reg.vram_abus.lo.BUS_VRAM_A05n, 5, sum_y >> 3);
+        reg.vram_abus.hi.BUS_VRAM_A10n = reg.reg_lcdc.XAFO_LCDC_BGMAPn;
+        reg.vram_abus.hi.BUS_VRAM_A11n = 0;
+        reg.vram_abus.hi.BUS_VRAM_A12n = 0;
       }
 
       //--------------------------------------------
@@ -2790,21 +2792,21 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       auto wx = bit_pack_inv(reg.win_x.map);
       auto wy = bit_pack_inv(reg.win_y.map);
 
-      bit_unpack(&reg.vram_abus.BUS_VRAM_A00n, 5, wx);
-      bit_unpack(&reg.vram_abus.BUS_VRAM_A05n, 5, wy);
+      bit_unpack(&reg.vram_abus.lo.BUS_VRAM_A00n, 5, wx);
+      bit_unpack(&reg.vram_abus.lo.BUS_VRAM_A05n, 5, wy);
 
       addr |= reg.reg_lcdc.WOKY_LCDC_WINMAPn.state << 10;
 
-      reg.vram_abus.BUS_VRAM_A10n = get_bit(addr, 10);
-      reg.vram_abus.BUS_VRAM_A11n = get_bit(addr, 11);
-      reg.vram_abus.BUS_VRAM_A12n = get_bit(addr, 12);
+      reg.vram_abus.hi.BUS_VRAM_A10n = get_bit(addr, 10);
+      reg.vram_abus.hi.BUS_VRAM_A11n = get_bit(addr, 11);
+      reg.vram_abus.hi.BUS_VRAM_A12n = get_bit(addr, 12);
     }
 
     //--------------------------------------------
     // Sprite read address
 
     if (reg.sfetch_control.TEXY_SFETCHINGp) {
-      uint32_t addr = 1 << 12;
+      uint32_t addr = 0;
 
       addr |= reg.sfetch_control.VONU_SFETCH_S1p_D4.state;
 
@@ -2821,7 +2823,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
         addr |= ((tile & 0b11111110) << 4) | ((line & 0b11111) << 1);
       }
 
-      bit_unpack_inv(&reg.vram_abus.BUS_VRAM_A00n, 12, addr);
+      bit_unpack_inv(&reg.vram_abus.lo.BUS_VRAM_A00n, 13, addr);
     }
 
     //--------------------------------------------
@@ -3065,105 +3067,103 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // And finally, interrupts.
 
-  {
-    auto pack_cpu_dbus_old = packed.cpu_dbus;
-    auto pack_cpu_dbus_new = bit_pack(reg_new.cpu_dbus);
-    auto pack_ie = bit_pack(reg.reg_ie);
-    auto pack_if = bit_pack(reg.reg_if);
-    auto pack_stat = bit_pack(reg.reg_stat);
+  auto pack_cpu_dbus_old = state.cpu_dbus;
+  auto pack_cpu_dbus_new = bit_pack(reg_new.cpu_dbus);
+  auto pack_ie = bit_pack(reg.reg_ie);
+  auto pack_if = bit_pack(reg.reg_if);
+  auto pack_stat = bit_pack(reg.reg_stat);
 
-    // FIXME this seems slightly wrong...
-    if (reg_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110) && cpu_addr_new == 0xFF41) {
-    }
-    else {
-      reg_new.int_ctrl.RUPO_LYC_MATCHn = 1;
-    }
-
-    // but the "reset" arm of the latch overrides the "set" arm, so it doesn't completely break?
-    if (reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp) {
-      reg_new.int_ctrl.RUPO_LYC_MATCHn = 0;
-    }
-
-    if (cpu_addr_new == 0xFFFF && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-      pack_ie = pack_cpu_dbus_old;
-    }
-
-    if (cpu_addr_new == 0xFF41 && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-      pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
-    }
-
-    if (cpu_addr_new == 0xFF41 && reg_new.cpu_signals.SIG_IN_CPU_RDp) {
-      uint8_t data = 0x80;
-
-      data |= (!reg.XYMU_RENDERINGn || reg.lcd.POPU_y144p) << 0;
-      data |= (!reg.XYMU_RENDERINGn || reg.ACYL_SCANNINGp) << 1;
-      data |= (!reg.int_ctrl.RUPO_LYC_MATCHn) << 2;
-      data |= (pack_stat ^ 0b1111) << 3;
-
-      pack_cpu_dbus_new = data;
-    }
-
-    bool int_stat_old = 0;
-    if (!reg_old.reg_stat.RUGU_STAT_LYI_ENn && reg_old.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_old = 1;
-    if (!reg_old.reg_stat.REFE_STAT_OAI_ENn && !reg_old.lcd.POPU_y144p && reg_old.lcd.RUTU_x113p) int_stat_old = 1;
-    if (!reg_old.reg_stat.RUFO_STAT_VBI_ENn && reg_old.lcd.POPU_y144p) int_stat_old = 1;
-    if (!reg_old.reg_stat.ROXE_STAT_HBI_ENn && reg_old.WODU_HBLANKp && !reg_old.lcd.POPU_y144p) int_stat_old = 1;
-
-    bool int_lcd_old = reg_old.lcd.POPU_y144p;
-    bool int_joy_old = !reg_old.joy_int.APUG_JP_GLITCH3 || !reg_old.joy_int.BATU_JP_GLITCH0;
-    bool int_tim_old = reg_old.int_ctrl.MOBA_TIMER_OVERFLOWp;
-    //wire int_ser_old = serial.CALY_SER_CNT3;
-    bool int_ser_old = 0;
-
-    bool int_stat_new = 0;
-    if (!get_bit(pack_stat, 0) && reg_new.WODU_HBLANKp && !reg_new.lcd.POPU_y144p) int_stat_new = 1;
-    if (!get_bit(pack_stat, 1) && reg_new.lcd.POPU_y144p) int_stat_new = 1;
-    if (!get_bit(pack_stat, 2) && !reg_new.lcd.POPU_y144p && reg_new.lcd.RUTU_x113p) int_stat_new = 1;
-    if (!get_bit(pack_stat, 3) && reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_new = 1;
-
-    wire int_lcd_new = reg.lcd.POPU_y144p;
-    wire int_joy_new = !reg.joy_int.APUG_JP_GLITCH3 || !reg.joy_int.BATU_JP_GLITCH0;
-    wire int_tim_new = reg.int_ctrl.MOBA_TIMER_OVERFLOWp;
-    //wire int_ser = serial.CALY_SER_CNT3;
-    wire int_ser_new = 0;
-
-    if (!int_lcd_old  && int_lcd_new)  pack_if |= (1 << 0);
-    if (!int_stat_old && int_stat_new) pack_if |= (1 << 1);
-    if (!int_tim_old  && int_tim_new)  pack_if |= (1 << 2);
-    if (!int_ser_old  && int_ser_new)  pack_if |= (1 << 3);
-    if (!int_joy_old  && int_joy_new)  pack_if |= (1 << 4);
-
-    // note this is an async set so it doesn't happen on the GH clock edge like other writes
-    if (reg.cpu_signals.SIG_IN_CPU_WRp && (cpu_addr_new == 0xFF0F) && gen_clk_new(0b00001110)) {
-      pack_if = pack_cpu_dbus_new;
-    }
-
-    pack_if &= ~bit_pack(reg.cpu_ack);
-
-    if (cpu_addr_new == 0xFFFF && reg.cpu_signals.SIG_IN_CPU_RDp) {
-      pack_cpu_dbus_new = pack_ie | 0b11100000;
-    }
-
-    if (cpu_addr_new == 0xFF0F && reg.cpu_signals.SIG_IN_CPU_RDp) {
-      bit_unpack(reg.int_latch,  pack_if);
-      pack_cpu_dbus_new = pack_if | 0b11100000;
-    }
-
-    bit_unpack(reg.cpu_dbus, pack_cpu_dbus_new);
-    bit_unpack(reg.cpu_int, pack_if);
-    bit_unpack(reg.reg_ie, pack_ie);
-    bit_unpack(reg.reg_if, pack_if);
-    bit_unpack(reg.reg_stat, pack_stat);
+  // FIXME this seems slightly wrong...
+  if (reg_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110) && cpu_addr_new == 0xFF41) {
   }
+  else {
+    reg_new.int_ctrl.RUPO_LYC_MATCHn = 1;
+  }
+
+  // but the "reset" arm of the latch overrides the "set" arm, so it doesn't completely break?
+  if (reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp) {
+    reg_new.int_ctrl.RUPO_LYC_MATCHn = 0;
+  }
+
+  if (cpu_addr_new == 0xFFFF && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    pack_ie = pack_cpu_dbus_old;
+  }
+
+  if (cpu_addr_new == 0xFF41 && reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
+  }
+
+  if (cpu_addr_new == 0xFF41 && reg_new.cpu_signals.SIG_IN_CPU_RDp) {
+    uint8_t data = 0x80;
+
+    data |= (!reg.XYMU_RENDERINGn || reg.lcd.POPU_y144p) << 0;
+    data |= (!reg.XYMU_RENDERINGn || reg.ACYL_SCANNINGp) << 1;
+    data |= (!reg.int_ctrl.RUPO_LYC_MATCHn) << 2;
+    data |= (pack_stat ^ 0b1111) << 3;
+
+    pack_cpu_dbus_new = data;
+  }
+
+  bool int_stat_old = 0;
+  if (!reg_old.reg_stat.RUGU_STAT_LYI_ENn && reg_old.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_old = 1;
+  if (!reg_old.reg_stat.REFE_STAT_OAI_ENn && !reg_old.lcd.POPU_y144p && reg_old.lcd.RUTU_x113p) int_stat_old = 1;
+  if (!reg_old.reg_stat.RUFO_STAT_VBI_ENn && reg_old.lcd.POPU_y144p) int_stat_old = 1;
+  if (!reg_old.reg_stat.ROXE_STAT_HBI_ENn && reg_old.WODU_HBLANKp && !reg_old.lcd.POPU_y144p) int_stat_old = 1;
+
+  bool int_lcd_old = reg_old.lcd.POPU_y144p;
+  bool int_joy_old = !reg_old.joy_int.APUG_JP_GLITCH3 || !reg_old.joy_int.BATU_JP_GLITCH0;
+  bool int_tim_old = reg_old.int_ctrl.MOBA_TIMER_OVERFLOWp;
+  //wire int_ser_old = serial.CALY_SER_CNT3;
+  bool int_ser_old = 0;
+
+  bool int_stat_new = 0;
+  if (!get_bit(pack_stat, 0) && reg_new.WODU_HBLANKp && !reg_new.lcd.POPU_y144p) int_stat_new = 1;
+  if (!get_bit(pack_stat, 1) && reg_new.lcd.POPU_y144p) int_stat_new = 1;
+  if (!get_bit(pack_stat, 2) && !reg_new.lcd.POPU_y144p && reg_new.lcd.RUTU_x113p) int_stat_new = 1;
+  if (!get_bit(pack_stat, 3) && reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_new = 1;
+
+  wire int_lcd_new = reg.lcd.POPU_y144p;
+  wire int_joy_new = !reg.joy_int.APUG_JP_GLITCH3 || !reg.joy_int.BATU_JP_GLITCH0;
+  wire int_tim_new = reg.int_ctrl.MOBA_TIMER_OVERFLOWp;
+  //wire int_ser = serial.CALY_SER_CNT3;
+  wire int_ser_new = 0;
+
+  if (!int_lcd_old  && int_lcd_new)  pack_if |= (1 << 0);
+  if (!int_stat_old && int_stat_new) pack_if |= (1 << 1);
+  if (!int_tim_old  && int_tim_new)  pack_if |= (1 << 2);
+  if (!int_ser_old  && int_ser_new)  pack_if |= (1 << 3);
+  if (!int_joy_old  && int_joy_new)  pack_if |= (1 << 4);
+
+  // note this is an async set so it doesn't happen on the GH clock edge like other writes
+  if (reg.cpu_signals.SIG_IN_CPU_WRp && (cpu_addr_new == 0xFF0F) && gen_clk_new(0b00001110)) {
+    pack_if = pack_cpu_dbus_new;
+  }
+
+  // PACK IT UP!
+  state_new.from_reg(reg_new);
+
+  pack_if &= ~state_new.cpu_ack;
+
+  if (cpu_addr_new == 0xFFFF && state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    pack_cpu_dbus_new = pack_ie | 0b11100000;
+  }
+
+  if (cpu_addr_new == 0xFF0F && state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    state_new.int_latch = (uint8_t)pack_if;
+    pack_cpu_dbus_new = pack_if | 0b11100000;
+  }
+
+  state_new.cpu_dbus = (uint8_t)pack_cpu_dbus_new;
+  state_new.cpu_int = (uint8_t)pack_if;
+  state_new.reg_ie = (uint8_t)pack_ie;
+  state_new.reg_if = (uint8_t)pack_if;
+  state_new.reg_stat = (uint8_t)pack_stat;
 
   // POSTCONDITIONS
 
-  if (reg_new.ACYL_SCANNINGp) CHECK_P(reg_new.XYMU_RENDERINGn);
-  if (!reg_new.XYMU_RENDERINGn)              CHECK_N(reg_new.ACYL_SCANNINGp);
+  if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);
+  if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
 
-  // PACK IT UP!
-
-  packed.from_reg(reg_new);
-  packed.to_reg(reg_new);
-
+  // UNPACK IT UP!
+  state_new.to_reg(reg_new);
 }

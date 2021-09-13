@@ -26,7 +26,7 @@
 #include "GateBoyLib/GateBoyResetDebug.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
-#include "GateBoyLib/GateBoyPacked.h"
+#include "GateBoyLib/GateBoyState.h"
 
 #include <atomic>
 #include <cstring>
@@ -91,7 +91,7 @@ struct GateBoyReg {
   InterruptControl int_ctrl;
   InterruptLatch   int_latch;
 
-  VramABus       vram_abus;
+  struct { VramABusLo lo; VramABusHi hi; } vram_abus;
   VramDBus       vram_dbus;
   VramExtControl vram_ext_ctrl;
   VramExtABus    vram_ext_abus;
@@ -663,7 +663,7 @@ struct GateBoy {
   GateBoyMem mem;
   GateBoySys sys;
 
-  GateBoyPacked packed;
+  GateBoyState state;
 
   uint64_t sentinel2 = SENTINEL2;
 };

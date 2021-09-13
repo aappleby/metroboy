@@ -95,10 +95,10 @@ int main(int argc, char** argv) {
   load_blob("LinksAwakening.gb", b);
   results += test_regression_cart(b, 1000000, false);
   
-  //LOG_G("Regression testing Zelda intro dump\n");
-  //load_blob("zelda_intro.dump", b);
-  //results += test_regression_dump(b, 1000000);
-  //
+  LOG_G("Regression testing Zelda intro dump\n");
+  load_blob("zelda_intro.dump", b);
+  results += test_regression_dump(b, 1000000);
+  
   //LOG_G("Regression testing Zelda overworld dump\n");
   //load_blob("zelda_overworld.dump", b);
   //results += test_regression_dump(b, 1000000);

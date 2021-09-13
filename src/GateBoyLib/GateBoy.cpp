@@ -3037,13 +3037,21 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+
   //----------
   // the actual oam write
 
-  if (reg_old.oam_ctrl.SIG_OAM_CLKn && !reg_new.oam_ctrl.SIG_OAM_CLKn) {
-    uint8_t oam_addr_new = (uint8_t)bit_pack_inv(reg.oam_abus) >> 1;
-    if (!reg.oam_ctrl.SIG_OAM_WRn_A) mem.oam_ram[(oam_addr_new << 1) + 0] = (uint8_t)bit_pack_inv(reg.oam_dbus_a);
-    if (!reg.oam_ctrl.SIG_OAM_WRn_B) mem.oam_ram[(oam_addr_new << 1) + 1] = (uint8_t)bit_pack_inv(reg.oam_dbus_b);
+  if (state_old.oam_ctrl.SIG_OAM_CLKn && !state_new.oam_ctrl.SIG_OAM_CLKn) {
+    uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+    if (!state_new.oam_ctrl.SIG_OAM_WRn_A) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+    if (!state_new.oam_ctrl.SIG_OAM_WRn_B) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
   }
 
   // STATE STEAMROLLER

@@ -84,6 +84,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   load_blob("sml_broken.dump", dump);
   gb_thread.load_raw_dump(dump);
 
+  gb_thread.add_steps(INT_MAX);
   gb_thread.resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail

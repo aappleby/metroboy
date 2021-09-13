@@ -1431,11 +1431,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   reg_new.sys_rst.PIN_76_T2 = 0;
   reg_new.sys_rst.PIN_77_T1 = 0;
 
-  reg_new.cpu_ack.SIG_CPU_ACK_VBLANK = get_bit(cpu.core.int_ack, BIT_VBLANK);
-  reg_new.cpu_ack.SIG_CPU_ACK_STAT   = get_bit(cpu.core.int_ack, BIT_STAT);
-  reg_new.cpu_ack.SIG_CPU_ACK_TIMER  = get_bit(cpu.core.int_ack, BIT_TIMER);
-  reg_new.cpu_ack.SIG_CPU_ACK_SERIAL = get_bit(cpu.core.int_ack, BIT_SERIAL);
-  reg_new.cpu_ack.SIG_CPU_ACK_JOYPAD = get_bit(cpu.core.int_ack, BIT_JOYPAD);
+  bit_unpack(reg_new.cpu_ack, cpu.core.int_ack);
 
   reg_new.sys_clk.SIG_CPU_CLKREQ = 1;
 
@@ -2029,49 +2025,55 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     auto store_clk_pe = (~bit_pack_inv(reg_old.sprite_store_flags)) & bit_pack_inv(reg_new.sprite_store_flags);
     auto store_clk_ne = bit_pack_inv(reg_old.sprite_store_flags) & (~bit_pack_inv(reg_new.sprite_store_flags));
 
-    if (get_bit(store_clk_ne, 0)) bit_unpack_inv(reg.store_i0, bit_pack(reg.sprite_ibus));
-    if (get_bit(store_clk_ne, 1)) bit_unpack_inv(reg.store_i1, bit_pack(reg.sprite_ibus));
-    if (get_bit(store_clk_ne, 2)) bit_unpack_inv(reg.store_i2, bit_pack(reg.sprite_ibus));
-    if (get_bit(store_clk_ne, 3)) bit_unpack_inv(reg.store_i3, bit_pack(reg.sprite_ibus));
-    if (get_bit(store_clk_ne, 4)) bit_unpack_inv(reg.store_i4, bit_pack(reg.sprite_ibus));
-    if (get_bit(store_clk_ne, 5)) bit_unpack_inv(reg.store_i5, bit_pack(reg.sprite_ibus));
-    if (get_bit(store_clk_ne, 6)) bit_unpack_inv(reg.store_i6, bit_pack(reg.sprite_ibus));
-    if (get_bit(store_clk_ne, 7)) bit_unpack_inv(reg.store_i7, bit_pack(reg.sprite_ibus));
-    if (get_bit(store_clk_ne, 8)) bit_unpack_inv(reg.store_i8, bit_pack(reg.sprite_ibus));
-    if (get_bit(store_clk_ne, 9)) bit_unpack_inv(reg.store_i9, bit_pack(reg.sprite_ibus));
+    auto sprite_ibus = bit_pack(reg.sprite_ibus);
+    auto sprite_lbus = bit_pack(reg.sprite_lbus);
+    auto sprite_reset_flags = bit_pack(reg_new.sprite_reset_flags);
+    auto oam_temp_b = bit_pack(reg.oam_temp_b);
 
-    if (get_bit(store_clk_ne, 0)) bit_unpack_inv(reg.store_l0, bit_pack(reg.sprite_lbus));
-    if (get_bit(store_clk_ne, 1)) bit_unpack_inv(reg.store_l1, bit_pack(reg.sprite_lbus));
-    if (get_bit(store_clk_ne, 2)) bit_unpack_inv(reg.store_l2, bit_pack(reg.sprite_lbus));
-    if (get_bit(store_clk_ne, 3)) bit_unpack_inv(reg.store_l3, bit_pack(reg.sprite_lbus));
-    if (get_bit(store_clk_ne, 4)) bit_unpack_inv(reg.store_l4, bit_pack(reg.sprite_lbus));
-    if (get_bit(store_clk_ne, 5)) bit_unpack_inv(reg.store_l5, bit_pack(reg.sprite_lbus));
-    if (get_bit(store_clk_ne, 6)) bit_unpack_inv(reg.store_l6, bit_pack(reg.sprite_lbus));
-    if (get_bit(store_clk_ne, 7)) bit_unpack_inv(reg.store_l7, bit_pack(reg.sprite_lbus));
-    if (get_bit(store_clk_ne, 8)) bit_unpack_inv(reg.store_l8, bit_pack(reg.sprite_lbus));
-    if (get_bit(store_clk_ne, 9)) bit_unpack_inv(reg.store_l9, bit_pack(reg.sprite_lbus));
+    if (get_bit(store_clk_ne, 0)) bit_unpack_inv(reg.store_i0, sprite_ibus);
+    if (get_bit(store_clk_ne, 1)) bit_unpack_inv(reg.store_i1, sprite_ibus);
+    if (get_bit(store_clk_ne, 2)) bit_unpack_inv(reg.store_i2, sprite_ibus);
+    if (get_bit(store_clk_ne, 3)) bit_unpack_inv(reg.store_i3, sprite_ibus);
+    if (get_bit(store_clk_ne, 4)) bit_unpack_inv(reg.store_i4, sprite_ibus);
+    if (get_bit(store_clk_ne, 5)) bit_unpack_inv(reg.store_i5, sprite_ibus);
+    if (get_bit(store_clk_ne, 6)) bit_unpack_inv(reg.store_i6, sprite_ibus);
+    if (get_bit(store_clk_ne, 7)) bit_unpack_inv(reg.store_i7, sprite_ibus);
+    if (get_bit(store_clk_ne, 8)) bit_unpack_inv(reg.store_i8, sprite_ibus);
+    if (get_bit(store_clk_ne, 9)) bit_unpack_inv(reg.store_i9, sprite_ibus);
 
-    if (get_bit(store_clk_pe, 0)) bit_unpack(reg.store_x0, bit_pack(reg.oam_temp_b));
-    if (get_bit(store_clk_pe, 1)) bit_unpack(reg.store_x1, bit_pack(reg.oam_temp_b));
-    if (get_bit(store_clk_pe, 2)) bit_unpack(reg.store_x2, bit_pack(reg.oam_temp_b));
-    if (get_bit(store_clk_pe, 3)) bit_unpack(reg.store_x3, bit_pack(reg.oam_temp_b));
-    if (get_bit(store_clk_pe, 4)) bit_unpack(reg.store_x4, bit_pack(reg.oam_temp_b));
-    if (get_bit(store_clk_pe, 5)) bit_unpack(reg.store_x5, bit_pack(reg.oam_temp_b));
-    if (get_bit(store_clk_pe, 6)) bit_unpack(reg.store_x6, bit_pack(reg.oam_temp_b));
-    if (get_bit(store_clk_pe, 7)) bit_unpack(reg.store_x7, bit_pack(reg.oam_temp_b));
-    if (get_bit(store_clk_pe, 8)) bit_unpack(reg.store_x8, bit_pack(reg.oam_temp_b));
-    if (get_bit(store_clk_pe, 9)) bit_unpack(reg.store_x9, bit_pack(reg.oam_temp_b));
+    if (get_bit(store_clk_ne, 0)) bit_unpack_inv(reg.store_l0, sprite_lbus);
+    if (get_bit(store_clk_ne, 1)) bit_unpack_inv(reg.store_l1, sprite_lbus);
+    if (get_bit(store_clk_ne, 2)) bit_unpack_inv(reg.store_l2, sprite_lbus);
+    if (get_bit(store_clk_ne, 3)) bit_unpack_inv(reg.store_l3, sprite_lbus);
+    if (get_bit(store_clk_ne, 4)) bit_unpack_inv(reg.store_l4, sprite_lbus);
+    if (get_bit(store_clk_ne, 5)) bit_unpack_inv(reg.store_l5, sprite_lbus);
+    if (get_bit(store_clk_ne, 6)) bit_unpack_inv(reg.store_l6, sprite_lbus);
+    if (get_bit(store_clk_ne, 7)) bit_unpack_inv(reg.store_l7, sprite_lbus);
+    if (get_bit(store_clk_ne, 8)) bit_unpack_inv(reg.store_l8, sprite_lbus);
+    if (get_bit(store_clk_ne, 9)) bit_unpack_inv(reg.store_l9, sprite_lbus);
 
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 0)) bit_unpack(reg.store_x0, 0xFF);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 1)) bit_unpack(reg.store_x1, 0xFF);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 2)) bit_unpack(reg.store_x2, 0xFF);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 3)) bit_unpack(reg.store_x3, 0xFF);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 4)) bit_unpack(reg.store_x4, 0xFF);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 5)) bit_unpack(reg.store_x5, 0xFF);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 6)) bit_unpack(reg.store_x6, 0xFF);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 7)) bit_unpack(reg.store_x7, 0xFF);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 8)) bit_unpack(reg.store_x8, 0xFF);
-    if (get_bit(bit_pack(reg_new.sprite_reset_flags), 9)) bit_unpack(reg.store_x9, 0xFF);
+    if (get_bit(store_clk_pe, 0)) bit_unpack(reg.store_x0, oam_temp_b);
+    if (get_bit(store_clk_pe, 1)) bit_unpack(reg.store_x1, oam_temp_b);
+    if (get_bit(store_clk_pe, 2)) bit_unpack(reg.store_x2, oam_temp_b);
+    if (get_bit(store_clk_pe, 3)) bit_unpack(reg.store_x3, oam_temp_b);
+    if (get_bit(store_clk_pe, 4)) bit_unpack(reg.store_x4, oam_temp_b);
+    if (get_bit(store_clk_pe, 5)) bit_unpack(reg.store_x5, oam_temp_b);
+    if (get_bit(store_clk_pe, 6)) bit_unpack(reg.store_x6, oam_temp_b);
+    if (get_bit(store_clk_pe, 7)) bit_unpack(reg.store_x7, oam_temp_b);
+    if (get_bit(store_clk_pe, 8)) bit_unpack(reg.store_x8, oam_temp_b);
+    if (get_bit(store_clk_pe, 9)) bit_unpack(reg.store_x9, oam_temp_b);
+
+
+    if (get_bit(sprite_reset_flags, 0)) bit_unpack(reg.store_x0, 0xFF);
+    if (get_bit(sprite_reset_flags, 1)) bit_unpack(reg.store_x1, 0xFF);
+    if (get_bit(sprite_reset_flags, 2)) bit_unpack(reg.store_x2, 0xFF);
+    if (get_bit(sprite_reset_flags, 3)) bit_unpack(reg.store_x3, 0xFF);
+    if (get_bit(sprite_reset_flags, 4)) bit_unpack(reg.store_x4, 0xFF);
+    if (get_bit(sprite_reset_flags, 5)) bit_unpack(reg.store_x5, 0xFF);
+    if (get_bit(sprite_reset_flags, 6)) bit_unpack(reg.store_x6, 0xFF);
+    if (get_bit(sprite_reset_flags, 7)) bit_unpack(reg.store_x7, 0xFF);
+    if (get_bit(sprite_reset_flags, 8)) bit_unpack(reg.store_x8, 0xFF);
+    if (get_bit(sprite_reset_flags, 9)) bit_unpack(reg.store_x9, 0xFF);
 
   }
 
@@ -2566,7 +2568,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // Memory buses
 
   if (reg.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new) {
-    bit_unpack(reg.ext_addr_latch, bit_pack(reg.cpu_abus));
+    bit_unpack(reg.ext_addr_latch, cpu_addr_new);
   }
 
   if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
@@ -2723,7 +2725,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // CPU vram read address
 
     if (!dma_addr_vram_new && reg.XYMU_RENDERINGn) {
-      bit_unpack_inv(reg.vram_abus, bit_pack(reg.cpu_abus));
+      bit_unpack_inv(reg.vram_abus, cpu_addr_new);
     }
 
     //--------------------------------------------

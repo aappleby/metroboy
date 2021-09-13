@@ -2760,11 +2760,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       // BG map read address
 
       if (!reg.tfetch_counter.MESU_BFETCH_S1p && !reg.tfetch_counter.NYVA_BFETCH_S2p && !reg.win_ctrl.PYNU_WIN_MODE_Ap) {
-        bit_unpack_inv(&reg.vram_abus.lo.BUS_VRAM_A00n, 5, sum_x >> 3);
-        bit_unpack_inv(&reg.vram_abus.lo.BUS_VRAM_A05n, 5, sum_y >> 3);
-        reg.vram_abus.hi.BUS_VRAM_A10n = reg.reg_lcdc.XAFO_LCDC_BGMAPn;
-        reg.vram_abus.hi.BUS_VRAM_A11n = 0;
-        reg.vram_abus.hi.BUS_VRAM_A12n = 0;
+        uint32_t addr = 0;
+
+        addr |= (sum_x >> 3);
+        addr |= (sum_y >> 3) << 5;
+        addr |= !reg.reg_lcdc.XAFO_LCDC_BGMAPn.state << 10;
+        addr |= 1 << 11;
+        addr |= 1 << 12;
+
+        bit_unpack_inv(reg.vram_abus, addr);
       }
 
       //--------------------------------------------
@@ -2789,17 +2793,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
          reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
       uint32_t addr = 0;
 
-      auto wx = bit_pack_inv(reg.win_x.map);
-      auto wy = bit_pack_inv(reg.win_y.map);
-
-      bit_unpack(&reg.vram_abus.lo.BUS_VRAM_A00n, 5, wx);
-      bit_unpack(&reg.vram_abus.lo.BUS_VRAM_A05n, 5, wy);
-
+      addr |= bit_pack_inv(reg.win_x.map) << 0;
+      addr |= bit_pack_inv(reg.win_y.map) << 5;
       addr |= reg.reg_lcdc.WOKY_LCDC_WINMAPn.state << 10;
 
-      reg.vram_abus.hi.BUS_VRAM_A10n = get_bit(addr, 10);
-      reg.vram_abus.hi.BUS_VRAM_A11n = get_bit(addr, 11);
-      reg.vram_abus.hi.BUS_VRAM_A12n = get_bit(addr, 12);
+      bit_unpack(reg.vram_abus, addr);
     }
 
     //--------------------------------------------

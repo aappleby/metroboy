@@ -2715,16 +2715,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  //----------------------------------------
-
-
-  if (reg.cpu_signals.SIG_IN_CPU_RDp && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new && reg.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
-    bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.ext_data_latch));
-  }
-  else {
-    bit_unpack_inv(reg.ext_data_latch, bit_pack_inv(reg.ext_dbus));
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2732,6 +2722,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+
+  //----------------------------------------
+
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new && state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
+    state_new.cpu_dbus = ~state_new.ext_data_latch;
+  }
+  else {
+    state_new.ext_data_latch = state_new.ext_dbus;
+  }
 
   state_new.vram_abus = VRAM_ADDR_MASK;
   state_new.vram_dbus = 0xFF;

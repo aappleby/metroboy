@@ -99,9 +99,9 @@ int main(int argc, char** argv) {
   load_blob("zelda_intro.dump", b);
   results += test_regression_dump(b, 1000000);
   
-  //LOG_G("Regression testing SML intro dump\n");
-  //load_blob("sml_intro.dump", b);
-  //results += test_regression_dump(b, 1000000);
+  LOG_G("Regression testing SML intro dump\n");
+  load_blob("sml_intro.dump", b);
+  results += test_regression_dump(b, 1000000);
 
 #if 0
   results += t.test_reset_cart_vs_dump();

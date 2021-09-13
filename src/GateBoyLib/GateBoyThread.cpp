@@ -162,6 +162,8 @@ void GateBoyThread::load_raw_dump(const blob& raw_dump) {
   gbp->gba.sys.logic_mode = config_fastmode;
   gbp->gbb.sys.logic_mode = config_regression;
 
+  gbp->wipe_flags();
+
   int cart_size = (int)raw_dump.size() - sizeof(GateBoy);
   cart_blob.resize(cart_size);
   memcpy(cart_blob.data(), raw_dump.data() + sizeof(GateBoy), cart_size);

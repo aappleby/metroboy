@@ -397,6 +397,7 @@ struct GateBoy {
   }
 
   int64_t hash_regression() {
+    if (sys.logic_mode) check_no_flags();
     return hash_low_bit(&reg, sizeof(reg), HASH_INIT);
   }
 

@@ -2810,26 +2810,22 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // Sprite read address
 
     if (reg.sfetch_control.TEXY_SFETCHINGp) {
-      uint32_t addr = 0;
-
-      addr |= reg.sfetch_control.VONU_SFETCH_S1p_D4.state;
-
-      auto line = bit_pack(reg.sprite_lbus);
-
-      if (!reg.oam_temp_b.YZOS_OAM_DB6p) line ^= 0b1111;
-
+      bool hilo = reg.sfetch_control.VONU_SFETCH_S1p_D4;
+      auto line = bit_pack(reg.sprite_lbus) ^ (reg.oam_temp_b.YZOS_OAM_DB6p ? 0b0000 : 0b1111);
       auto tile = bit_pack(reg.oam_temp_a);
 
+      uint32_t addr = 0;
+
+      bit_cat(addr,  0,  0, hilo);
       if (reg.reg_lcdc.XYMO_LCDC_SPSIZEn) {
-        addr |= (tile & 0b11111111) << 4;
-        addr |= (line & 0b01111) << 1;
+        bit_cat(addr,  1,  3, line);
+        bit_cat(addr,  4, 11, tile);
       }
       else {
-        addr |= (tile & 0b11111110) << 4;
-        addr |= (line & 0b11111) << 1;
+        bit_cat(addr,  1,  4, line);
+        bit_cat(addr,  5, 11, tile >> 1);
       }
-
-      bit_unpack_inv(&reg.vram_abus.lo.BUS_VRAM_A00n, 13, addr);
+      bit_unpack_inv(reg.vram_abus, addr);
     }
 
     //--------------------------------------------
@@ -3145,7 +3141,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     pack_if = pack_cpu_dbus_new;
   }
 
-  // PACK IT UP!
   pack_if &= bit_pack_inv(reg_new.cpu_ack);
 
   if (cpu_addr_new == 0xFFFF && reg_new.cpu_signals.SIG_IN_CPU_RDp) {

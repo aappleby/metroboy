@@ -1,5 +1,5 @@
-
 #include "GateBoyApp/GateBoyApp.h"
+#include "GateBoyLib/GateBoyDumper.h"
 
 #include "CoreLib/Constants.h"
 #include "CoreLib/Debug.h" // for StringDumper
@@ -344,6 +344,8 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   const int col6 = 32 * 40;
   const int col7 = 32 * 51;
 
+  GateBoyDumper dumper;
+
   //----------------------------------------
   // Column 1
 
@@ -366,7 +368,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   d("\n");
 
   d("\002===== GateBoy Top =====\001\n");
-  gb.dump_sys(d);
+  dumper.dump_sys(gb, d);
   d("\n");
 
   d("\002===== CPU =====\001\n");
@@ -374,16 +376,16 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   d("\n");
 
   d("\002===== Clocks =====\001\n");
-  gb.dump_clocks(d);
+  dumper.dump_clocks(gb, d);
   d("\n");
 
   d("\002===== Resets =====\001\n");
-  gb.dump_resets(d);
+  dumper.dump_resets(gb, d);
   d("\n");
 
 
   d("\002===== Interrupts =====\001\n");
-  gb.dump_interrupts(d);
+  dumper.dump_interrupts(gb, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col1, row1);
@@ -393,35 +395,35 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   // Column 2
 
   d("\002===== DMA =====\001\n");
-  gb.dump_dma(d);
+  dumper.dump_dma(gb, d);
   d("\n");
 
   d("\002===== CPU Bus =====\001\n");
-  gb.dump_cpu_bus(d);
+  dumper.dump_cpu_bus(gb, d);
   d("\n");
 
   d("\002===== EXT Bus =====\001\n");
-  gb.dump_ext_bus(d);
+  dumper.dump_ext_bus(gb, d);
   d("\n");
 
   d("\002===== OAM Bus =====\001\n");
-  gb.dump_oam_bus(d);
+  dumper.dump_oam_bus(gb, d);
   d("\n");
 
   d("\002===== VRAM Bus =====\001\n");
-  gb.dump_vram_bus(d);
+  dumper.dump_vram_bus(gb, d);
   d("\n");
 
   d("\002===== MBC1 =====\001\n");
-  gb.dump_mbc1(d);
+  dumper.dump_mbc1(gb, d);
   d("\n");
 
   d("\002===== Timer =====\001\n");
-  gb.dump_timer(d);
+  dumper.dump_timer(gb, d);
   d("\n");
 
   d("\002===== SPU =====\001\n");
-  gb.dump_spu(d);
+  dumper.dump_spu(gb, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col2, row1);
@@ -431,27 +433,27 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   // Column 3
 
   d("\002===== TileFetcher =====\001\n");
-  gb.dump_tile_fetcher(d);
+  dumper.dump_tile_fetcher(gb, d);
   d("\n");
 
   d("\002===== Sprite Fetch =====\001\n");
-  gb.dump_sprite_fetcher(d);
+  dumper.dump_sprite_fetcher(gb, d);
   d("\n");
 
   d("\002===== SpriteStore =====\001\n");
-  gb.dump_sprite_store(d);
+  dumper.dump_sprite_store(gb, d);
   d("\n");
 
   d("\002===== Sprite Scan =====\001\n");
-  gb.dump_sprite_scanner(d);
+  dumper.dump_sprite_scanner(gb, d);
   d("\n");
 
   d("\002===== Joypad =====\001\n");
-  gb.dump_joypad(d);
+  dumper.dump_joypad(gb, d);
   d("\n");
 
   d("\002===== Serial =====\001\n");
-  gb.dump_serial(d);
+  dumper.dump_serial(gb, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col3, row1);
@@ -461,11 +463,11 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   // Column 4
 
   d("\002===== PPU =====\001\n");
-  gb.dump_ppu(d);
+  dumper.dump_ppu(gb, d);
   d("\n");
 
   d("\002===== LCD =====\001\n");
-  gb.dump_lcd(d);
+  dumper.dump_lcd(gb, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col4, row1);

@@ -4,7 +4,7 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& oam_latch_a, OamTempA& oam_temp_a)
+void GateBoy::oam_latch_to_temp_a_gates(wire COTA_OAM_CLKn, const OamLatchA& oam_latch_a, OamTempA& oam_temp_a)
 {
   /*_p29.YWOK*/ wire YWOK_OAM_CLKp = not1(COTA_OAM_CLKn); // inverting this clock does not break anything
   /*#p29.XUSO*/ oam_temp_a.XUSO_OAM_DA0p.dff8n(YWOK_OAM_CLKp, oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
@@ -17,7 +17,7 @@ void GateBoy::oam_latch_to_temp_a(wire COTA_OAM_CLKn, const OamLatchA& oam_latch
   /*_p29.YZAB*/ oam_temp_a.YZAB_OAM_DA7p.dff8n(YWOK_OAM_CLKp, oam_latch_a.ZECA_OAM_LATCH_DA7n.qp_old());
 }
 
-void GateBoy::oam_latch_to_temp_b(wire COTA_OAM_CLKn, const OamLatchB& oam_latch_b, OamTempB& oam_temp_b)
+void GateBoy::oam_latch_to_temp_b_gates(wire COTA_OAM_CLKn, const OamLatchB& oam_latch_b, OamTempB& oam_temp_b)
 {
   /*#p31.XEGA*/ wire XEGA_OAM_CLKp = not1(COTA_OAM_CLKn); // inverting this clock does not break anything
   /*_p31.YLOR*/ oam_temp_b.YLOR_OAM_DB0p.dff8n(XEGA_OAM_CLKp, oam_latch_b.XYKY_OAM_LATCH_DB0n.qp_old());

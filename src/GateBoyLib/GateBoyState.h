@@ -51,7 +51,7 @@ struct GateBoyState {
   uint8_t  reg_lx;   // Not mapped
   uint8_t  reg_ie;   // 0xFFFF
 
-  GateBoyResetDebug sys_rst;
+  GateBoyResetDebug2 sys_rst;
   GateBoyClock      sys_clk;
 
   /*#p21.VOGA*/ uint8_t VOGA_HBLANKp;

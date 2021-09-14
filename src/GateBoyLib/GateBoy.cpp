@@ -86,8 +86,8 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   // Release reset, start clock, and sync with phase
 
   sys.rst = 0;
-  sys.clken = 1;
-  sys.clkgood = 1;
+  sys.clk_en = 1;
+  sys.clk_good = 1;
   run_phases(cart_blob, 2);
 
   CHECK_N(bit(reg.sys_clk.AFUR_xxxxEFGH.qp_old()));
@@ -120,7 +120,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   //----------------------------------------
   // We're ready to go, release the CPU so it can start running the bootrom.
 
-  sys.clkreq = 1;
+  sys.clk_req = 1;
   sys.cpu_en = true;
 
   if (fastboot) {
@@ -250,9 +250,9 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   sys.rst = false;
   sys.t1 = false;
   sys.t2 = false;
-  sys.clken = true;
-  sys.clkgood = true;
-  sys.clkreq = true;
+  sys.clk_en = true;
+  sys.clk_good = true;
+  sys.clk_req = true;
   sys.fastboot = true;
 
   cpu.core.reset_to_cart();
@@ -487,9 +487,9 @@ MemberOffset gb_offsets[] = {
   GEN_OFFSET(sys.rst),
   GEN_OFFSET(sys.t1),
   GEN_OFFSET(sys.t2),
-  GEN_OFFSET(sys.clken),
-  GEN_OFFSET(sys.clkgood),
-  GEN_OFFSET(sys.clkreq),
+  GEN_OFFSET(sys.clk_en),
+  GEN_OFFSET(sys.clk_good),
+  GEN_OFFSET(sys.clk_req),
   GEN_OFFSET(sys.cpu_en),
   GEN_OFFSET(sys.fastboot),
   GEN_OFFSET(sys.buttons),
@@ -550,7 +550,7 @@ void diff_gb(GateBoy* gba, GateBoy* gbb, uint8_t mask) {
 //------------------------------------------------------------------------------------------------------------------------
 
 bool GateBoy::next_phase(const blob& cart_blob) {
-  CHECK_N(!sys.clkreq && sys.logic_mode);
+  CHECK_N(!sys.clk_req && sys.logic_mode);
 
   tock_cpu();
 
@@ -811,13 +811,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //-----------------------------------------------------------------------------
 
   {
-    wire EXT_sys_clkreq = bit(sys.clkreq);
+    wire EXT_sys_clkreq = bit(sys.clk_req);
     wire EXT_sys_rst = bit(~sys.rst);
     wire EXT_sys_t2 = bit(~sys.t2);
     wire EXT_sys_t1 = bit(~sys.t1);
 
-    wire EXT_clkin = !(sys.phase_total & 1) && sys.clken;
-    wire EXT_clkgood = bit(~sys.clkgood);
+    wire EXT_clkin = !(sys.phase_total & 1) && sys.clk_en;
+    wire EXT_clkgood = bit(~sys.clk_good);
 
     /*_PIN_74*/ reg.sys_clk.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
     /*_PIN_71*/ reg.sys_rst.PIN_71_RST.pin_in(EXT_sys_rst);
@@ -1041,8 +1041,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p25.XUJY*/ wire XUJY_OAM_CLKENp = not1(VAPE_OAM_CLKENn);
     /*_p25.BYCU*/ wire BYCU_OAM_CLKp = nand3(AVER_AxxxExxx, XUJY_OAM_CLKENp, CUFE_OAM_CLKp);
     /*_p25.COTA*/ wire COTA_OAM_CLKn = not1(BYCU_OAM_CLKp);
-    oam_latch_to_temp_a(COTA_OAM_CLKn, reg.oam_latch_a, reg.oam_temp_a);
-    oam_latch_to_temp_b(COTA_OAM_CLKn, reg.oam_latch_b, reg.oam_temp_b);
+    oam_latch_to_temp_a_gates(COTA_OAM_CLKn, reg.oam_latch_a, reg.oam_temp_a);
+    oam_latch_to_temp_b_gates(COTA_OAM_CLKn, reg.oam_latch_b, reg.oam_temp_b);
   }
 
   //----------------------------------------

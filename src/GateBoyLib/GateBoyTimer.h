@@ -1,5 +1,6 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
+#include "CoreLib/Constants.h"
 
 //-----------------------------------------------------------------------------
 
@@ -43,6 +44,14 @@ struct RegDIV {
     TEKA_DIV13p.state = ((div_a >> 13) & 1) | ((div_b >> 13) & 2);
     UKET_DIV14p.state = ((div_a >> 14) & 1) | ((div_b >> 14) & 2);
     UPOF_DIV15p.state = ((div_a >> 15) & 1) | ((div_b >> 15) & 2);
+  }
+
+  void check_div() const {
+    int div_val = bit_pack(*this);
+    if (div_val != BOOT_DIV) {
+      LOG_R("div fail!\n");
+      *reinterpret_cast<int*>(SENTINEL4) = 1;
+    }
   }
 
   /*_p01.UKUP*/ DFF17 UKUP_DIV00p; // AxxxExxx

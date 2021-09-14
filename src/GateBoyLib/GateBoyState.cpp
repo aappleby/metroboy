@@ -181,7 +181,9 @@ void GateBoyState::from_reg(const GateBoyReg& src) {
   dst.reg_wx = bit_pack(src.reg_wx);
   dst.reg_lx = bit_pack(src.reg_lx);
   dst.reg_ie = bit_pack(src.reg_ie);
-  dst.sys_rst = (src.sys_rst);
+
+  memcpy(&dst.sys_rst, &src.sys_rst, sizeof(GateBoyResetDebug));
+
   dst.sys_clk = (src.sys_clk);
   dst.VOGA_HBLANKp = bit_pack(src.VOGA_HBLANKp);
   dst.XYMU_RENDERINGn = bit_pack(src.XYMU_RENDERINGn);

@@ -1945,23 +1945,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-
-  const uint8_t sfetch_phase_old = pack(!(reg_old.sfetch_control.TYFO_SFETCH_S0p_D1 ^ reg_old.sfetch_counter.TOXE_SFETCH_S0p), reg_old.sfetch_counter.TOXE_SFETCH_S0p, reg_old.sfetch_counter.TULY_SFETCH_S1p, reg_old.sfetch_counter.TESE_SFETCH_S2p);
-  const uint8_t sfetch_phase_new = pack(!(reg_new.sfetch_control.TYFO_SFETCH_S0p_D1 ^ reg_new.sfetch_counter.TOXE_SFETCH_S0p), reg_new.sfetch_counter.TOXE_SFETCH_S0p, reg_new.sfetch_counter.TULY_SFETCH_S1p, reg_new.sfetch_counter.TESE_SFETCH_S2p);
-
-  if (!reg_old.XYMU_RENDERINGn) {
-    if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || reg_new.XYMU_RENDERINGn)) {
-      bit_unpack_inv(reg_new.sprite_pix_a, bit_pack(reg_old.flipped_sprite));
-    }
-
-    if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || reg_new.XYMU_RENDERINGn)) {
-      bit_unpack_inv(reg_new.sprite_pix_b, bit_pack(reg_old.flipped_sprite));
-    }
-  }
-
-  //----------------------------------------
-  // OAM latch from last cycle gets moved into temp registers.
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -1969,6 +1952,34 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+
+  const uint8_t sfetch_phase_old = pack(
+    !(state_old.sfetch_control.TYFO_SFETCH_S0p_D1.state ^ get_bit(state_old.sfetch_counter, 0)),
+    get_bit(state_old.sfetch_counter, 0),
+    get_bit(state_old.sfetch_counter, 1),
+    get_bit(state_old.sfetch_counter, 2));
+
+  const uint8_t sfetch_phase_new = pack(
+    !(reg_new.sfetch_control.TYFO_SFETCH_S0p_D1.state ^ get_bit(state_new.sfetch_counter, 0)),
+    get_bit(state_new.sfetch_counter, 0),
+    get_bit(state_new.sfetch_counter, 1),
+    get_bit(state_new.sfetch_counter, 2));
+
+  if (!state_old.XYMU_RENDERINGn) {
+    if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || state_new.XYMU_RENDERINGn)) {
+      state_new.sprite_pix_a = ~state_old.flipped_sprite;
+      //bit_unpack_inv(reg_new.sprite_pix_a, bit_pack(reg_old.flipped_sprite));
+    }
+
+    if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || state_new.XYMU_RENDERINGn)) {
+      state_new.sprite_pix_b = ~state_old.flipped_sprite;
+      //bit_unpack_inv(reg_new.sprite_pix_b, bit_pack(reg_old.flipped_sprite));
+    }
+  }
+
+  //----------------------------------------
+  // OAM latch from last cycle gets moved into temp registers.
 
   {
     state_new.ACYL_SCANNINGp = !state_new.MATU_DMA_RUNNINGp && state_new.sprite_scanner.BESU_SCANNINGn && !get_bit(state_new.reg_lcdc, 7);

@@ -1496,20 +1496,28 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // LCDC
   // has to be near the top as it controls the video reset signal
 
-  if (reg_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF40 && gen_clk_new(0b00000001)) {
-    bit_unpack_inv(reg_new.reg_lcdc, bit_pack(reg_old.cpu_dbus));
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF40 && gen_clk_new(0b00000001)) {
+    state_new.reg_lcdc = ~state_old.cpu_dbus;
   }
 
-  if (reg_new.cpu_signals.SIG_IN_CPU_RDp && (cpu_addr_new == 0xFF40)) {
-    bit_unpack(reg_new.cpu_dbus, bit_pack_inv(reg_new.reg_lcdc));
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp && (cpu_addr_new == 0xFF40)) {
+    state_new.cpu_dbus = ~state_new.reg_lcdc;
   }
 
   //----------
   // Video clocks
 
-  reg_new.sys_clk.WOSU_AxxDExxH = !reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b10011001);
-  reg_new.sys_clk.WUVU_ABxxEFxx = !reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b11001100);
-  reg_new.sys_clk.VENA_xxCDEFxx = !reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b00111100);
+  state_new.sys_clk.WOSU_AxxDExxH = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(0b10011001);
+  state_new.sys_clk.WUVU_ABxxEFxx = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(0b11001100);
+  state_new.sys_clk.VENA_xxCDEFxx = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(0b00111100);
 
   //----------
   // LYC
@@ -1518,24 +1526,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   const auto reg_lyc_old = bit_pack_inv(reg_old.reg_lyc);
 
   if (cpu_addr_new == 0xFF45) {
-    if (reg_new.cpu_signals.SIG_IN_CPU_RDp) bit_unpack(reg_new.cpu_dbus, reg_lyc_old);
-    if (reg_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) bit_unpack_inv(reg_new.reg_lyc, cpu_data_old);
+    if (state_new.cpu_signals.SIG_IN_CPU_RDp) state_new.cpu_dbus = uint8_t(reg_lyc_old);
+    if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) state_new.reg_lyc = uint8_t(~cpu_data_old);
   }
 
-  if (!reg_new.reg_lcdc.XONA_LCDC_LCDENn && gen_clk_new(0b00100000)) {
-    reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp = reg_ly_old == reg_lyc_old;
+  if (!get_bit(state_new.reg_lcdc, 7) && gen_clk_new(0b00100000)) {
+    state_new.int_ctrl.ROPO_LY_MATCH_SYNCp = reg_ly_old == reg_lyc_old;
   }
 
   //----------
   /// LX, LY, lcd flags
-
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
 
   if (get_bit(state_new.reg_lcdc, 7)) {
     state_new.lcd.ANEL_x113p = 0;

@@ -1962,36 +1962,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
 
-
-  {
-    reg_new.ACYL_SCANNINGp = !reg_new.MATU_DMA_RUNNINGp && reg.sprite_scanner.BESU_SCANNINGn && !reg_new.reg_lcdc.XONA_LCDC_LCDENn;
-
-    const wire oam_busy_old = (cpu_addr_old >= 0xFE00 && cpu_addr_old <= 0xFEFF) || reg_new.MATU_DMA_RUNNINGp;
-    const wire oam_busy_new = (cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFEFF) || reg_new.MATU_DMA_RUNNINGp;
-
-    CHECK_N(!reg_old.XYMU_RENDERINGn && reg_new.ACYL_SCANNINGp);
-    CHECK_N(!reg_new.XYMU_RENDERINGn && reg_new.ACYL_SCANNINGp);
-    CHECK_N(!reg_old.XYMU_RENDERINGn && reg_old.ACYL_SCANNINGp);
-
-    uint8_t BYCU_OAM_CLKp_old = 1;
-    if (reg_old.ACYL_SCANNINGp)  BYCU_OAM_CLKp_old &= gen_clk_old(0b10001000);
-    if (oam_busy_old)  BYCU_OAM_CLKp_old &= gen_clk_old(0b11110000);
-    if (!reg_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old &= sfetch_phase_old != 3;
-
-    uint8_t BYCU_OAM_CLKp_new = 1;
-    if (reg_new.ACYL_SCANNINGp)  BYCU_OAM_CLKp_new &= gen_clk_new(0b10001000);
-    if (oam_busy_new)  BYCU_OAM_CLKp_new &= gen_clk_new(0b11110000);
-    if (!reg_new.XYMU_RENDERINGn) BYCU_OAM_CLKp_new &= sfetch_phase_new != 3;
-
-    if (!BYCU_OAM_CLKp_old && BYCU_OAM_CLKp_new) {
-      bit_unpack(reg.oam_temp_a, bit_pack_inv(reg.oam_latch_a));
-      bit_unpack(reg.oam_temp_b, bit_pack_inv(reg.oam_latch_b));
-    }
-  }
-
-  //----------------------------------------
-  // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -1999,6 +1969,35 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  {
+    state_new.ACYL_SCANNINGp = !state_new.MATU_DMA_RUNNINGp && state_new.sprite_scanner.BESU_SCANNINGn && !get_bit(state_new.reg_lcdc, 7);
+
+    const wire oam_busy_old = (cpu_addr_old >= 0xFE00 && cpu_addr_old <= 0xFEFF) || state_new.MATU_DMA_RUNNINGp;
+    const wire oam_busy_new = (cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFEFF) || state_new.MATU_DMA_RUNNINGp;
+
+    CHECK_N(!state_old.XYMU_RENDERINGn && state_new.ACYL_SCANNINGp);
+    CHECK_N(!state_new.XYMU_RENDERINGn && state_new.ACYL_SCANNINGp);
+    CHECK_N(!state_old.XYMU_RENDERINGn && state_old.ACYL_SCANNINGp);
+
+    uint8_t BYCU_OAM_CLKp_old = 1;
+    if (state_old.ACYL_SCANNINGp)  BYCU_OAM_CLKp_old &= gen_clk_old(0b10001000);
+    if (oam_busy_old)  BYCU_OAM_CLKp_old &= gen_clk_old(0b11110000);
+    if (!state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old &= sfetch_phase_old != 3;
+
+    uint8_t BYCU_OAM_CLKp_new = 1;
+    if (state_new.ACYL_SCANNINGp)  BYCU_OAM_CLKp_new &= gen_clk_new(0b10001000);
+    if (oam_busy_new)  BYCU_OAM_CLKp_new &= gen_clk_new(0b11110000);
+    if (!state_new.XYMU_RENDERINGn) BYCU_OAM_CLKp_new &= sfetch_phase_new != 3;
+
+    if (!BYCU_OAM_CLKp_old && BYCU_OAM_CLKp_new) {
+      state_new.oam_temp_a = ~state_new.oam_latch_a;
+      state_new.oam_temp_b = ~state_new.oam_latch_b;
+    }
+  }
+
+  //----------------------------------------
+  // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
   if (get_bit(state_new.reg_lcdc, 7) || state_new.ATEJ_LINE_RSTp) {
     state_new.sprite_counter = 0;
@@ -2040,11 +2039,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       else {
         state_new.sprite_store_flags = 0;
       }
-      /*
-      for (int i = 0; i < 10; i++) {
-        (&reg.sprite_store_flags.DYHU_STORE0_CLKn)[i] = (i == (int)bit_pack(reg_new.sprite_counter)) && !bit(ssf_clk);
-      }
-      */
     }
 
     const auto sprite_store_flags_old = state_old.sprite_store_flags ^ 0b1111111111;

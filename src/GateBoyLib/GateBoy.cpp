@@ -2314,6 +2314,10 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     return !reg.XYMU_RENDERINGn && !reg.tfetch_control.POKY_PRELOAD_LATCHp && reg.tfetch_control.NYKA_FETCH_DONEp && reg.tfetch_control.PORY_FETCH_DONEp;
   };
 
+  auto restart_fetch_state = [](const GateBoyState& state) {
+    return !state.XYMU_RENDERINGn && !state.tfetch_control.POKY_PRELOAD_LATCHp && state.tfetch_control.NYKA_FETCH_DONEp && state.tfetch_control.PORY_FETCH_DONEp;
+  };
+
   auto trigger_win_fetch = [&](const GateBoyReg& reg) {
     bool TEVO_WIN_FETCH_TRIGp = 0;
     if (reg.win_ctrl.RYFA_WIN_FETCHn_A && !reg.win_ctrl.RENE_WIN_FETCHn_B) TEVO_WIN_FETCH_TRIGp = 1;
@@ -2322,6 +2326,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     return TEVO_WIN_FETCH_TRIGp;
   };
 
+  auto trigger_win_fetch_state = [&](const GateBoyState& state) {
+    bool TEVO_WIN_FETCH_TRIGp = 0;
+    if (state.win_ctrl.RYFA_WIN_FETCHn_A && !state.win_ctrl.RENE_WIN_FETCHn_B) TEVO_WIN_FETCH_TRIGp = 1;
+    if (!state.win_ctrl.RYDY_WIN_HITp && state.win_ctrl.SOVY_WIN_HITp) TEVO_WIN_FETCH_TRIGp = 1;
+    if (restart_fetch_state(state)) TEVO_WIN_FETCH_TRIGp = 1;
+    return TEVO_WIN_FETCH_TRIGp;
+  };
 
   const wire BFETCH_RSTp_new =
     reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp ||
@@ -2355,89 +2366,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     reg.tfetch_control.LYRY_BFETCH_DONEp = reg.tfetch_counter.LAXU_BFETCH_S0p && reg.tfetch_counter.NYVA_BFETCH_S2p;
   }
 
-  if (reg.tfetch_control.LOVY_FETCH_DONEp || reg_new.XYMU_RENDERINGn) {
-    reg.tfetch_control.LONY_FETCHINGp = 0;
-  }
-
-  const uint8_t bfetch_phase_new = pack(!(reg.tfetch_control.LYZU_BFETCH_S0p_D1 ^ reg.tfetch_counter.LAXU_BFETCH_S0p), reg.tfetch_counter.LAXU_BFETCH_S0p, reg.tfetch_counter.MESU_BFETCH_S1p, reg.tfetch_counter.NYVA_BFETCH_S2p);
-
-  if (!reg_old.XYMU_RENDERINGn) {
-    // These ffs are weird because they latches on phase change _or_ if rendering stops in the middle of a fetch
-    // Good example of gate-level behavior that doesn't matter
-
-    if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || reg_new.XYMU_RENDERINGn)) {
-      bit_unpack_inv(reg.tile_temp_a, bit_pack(reg.vram_dbus));
-    }
-
-    if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || reg_new.XYMU_RENDERINGn)) {
-      bit_unpack(reg.tile_temp_b, bit_pack(reg.vram_dbus));
-    }
-
-    if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || reg_new.XYMU_RENDERINGn)) {
-      bit_unpack(reg.tile_temp_b, bit_pack(reg.vram_dbus));
-    }
-  }
-
-  //----------------------------------------
-  // Fine match counter
-
-  const wire TEVO_WIN_FETCH_TRIGp_old = trigger_win_fetch(reg_old);
-  const wire TEVO_WIN_FETCH_TRIGp_new = trigger_win_fetch(reg_new);
-  
-  if (reg_new.ATEJ_LINE_RSTp) CHECK_P(reg.XYMU_RENDERINGn);
-
-  if (reg.reg_lcdc.XONA_LCDC_LCDENn) {
-    bit_unpack(reg.fine_count, 0);
-    bit_unpack(reg.win_x.map, 0);
-    bit_unpack(reg.win_y, 0);
-  }
-  else {
-    if (bit_pack(reg.fine_count) != 7 && !pause_rendering_old && gen_clk_new(0b10101010)) {
-      bit_unpack(reg.fine_count, bit_pack(reg.fine_count) + 1);
-    }
-
-    if (reg.XYMU_RENDERINGn) {
-      bit_unpack(reg.fine_count, 0);
-    }
-
-    if (reg_new.ATEJ_LINE_RSTp) {
-      bit_unpack(reg.win_x.map, 0);
-    }
-    else if (TEVO_WIN_FETCH_TRIGp_new) {
-      bit_unpack(reg.fine_count, 0);
-      if (reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
-        bit_unpack(reg.win_x.map, bit_pack(reg_old.win_x.map) + 1);
-      }
-    }
-
-
-    if (reg_old.win_ctrl.PYNU_WIN_MODE_Ap && !reg_new.win_ctrl.PYNU_WIN_MODE_Ap) {
-      bit_unpack(reg.win_y, bit_pack(reg_old.win_y) + 1);
-    }
-
-    if (reg_new.lcd.POPU_y144p) {
-      bit_unpack(reg.win_y, 0);
-    }
-  }
-
-  //----------------------------------------
-  // Pal reg read/write
-
-  if (reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-    if (cpu_addr_new == 0xFF47) bit_unpack_inv(reg.reg_bgp,  bit_pack(reg_old.cpu_dbus));
-    if (cpu_addr_new == 0xFF48) bit_unpack_inv(reg.reg_obp0, bit_pack(reg_old.cpu_dbus));
-    if (cpu_addr_new == 0xFF49) bit_unpack_inv(reg.reg_obp1, bit_pack(reg_old.cpu_dbus));
-  }
-
-  if (reg.cpu_signals.SIG_IN_CPU_RDp) {
-    if (cpu_addr_new == 0xFF47) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_bgp));
-    if (cpu_addr_new == 0xFF48) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_obp0));
-    if (cpu_addr_new == 0xFF49) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_obp1));
-  }
-
-  //----------------------------------------
-  // Pixel pipes
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2445,6 +2373,97 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+
+  if (state_new.tfetch_control.LOVY_FETCH_DONEp || state_new.XYMU_RENDERINGn) {
+    state_new.tfetch_control.LONY_FETCHINGp = 0;
+  }
+
+  const uint8_t bfetch_phase_new = pack(!(state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_new.tfetch_counter, 0)), get_bit(state_new.tfetch_counter, 0), get_bit(state_new.tfetch_counter, 1), get_bit(state_new.tfetch_counter, 2));
+
+  if (!state_old.XYMU_RENDERINGn) {
+    // These ffs are weird because they latches on phase change _or_ if rendering stops in the middle of a fetch
+    // Good example of gate-level behavior that doesn't matter
+
+    if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || state_new.XYMU_RENDERINGn)) {
+      state_new.tile_temp_a = ~state_new.vram_dbus;
+    }
+
+    if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || reg_new.XYMU_RENDERINGn)) {
+      state_new.tile_temp_b = state_new.vram_dbus;
+    }
+
+    if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || reg_new.XYMU_RENDERINGn)) {
+      state_new.tile_temp_b = state_new.vram_dbus;
+    }
+  }
+
+  //----------------------------------------
+  // Fine match counter
+
+  const wire TEVO_WIN_FETCH_TRIGp_old = trigger_win_fetch_state(state_old);
+  const wire TEVO_WIN_FETCH_TRIGp_new = trigger_win_fetch_state(state_new);
+  
+  if (state_new.ATEJ_LINE_RSTp) CHECK_P(state_new.XYMU_RENDERINGn);
+
+  if (get_bit(state_new.reg_lcdc, 7)) {
+    state_new.fine_count = 0;
+    state_new.win_x.map = 0;
+    state_new.win_y.tile = 0;
+    state_new.win_y.map = 0;
+  }
+  else {
+    if (state_new.fine_count != 7 && !pause_rendering_old && gen_clk_new(0b10101010)) {
+      state_new.fine_count = state_new.fine_count + 1;
+    }
+
+    if (state_new.XYMU_RENDERINGn) {
+      state_new.fine_count = 0;
+    }
+
+    if (state_new.ATEJ_LINE_RSTp) {
+      state_new.win_x.map = 0;
+    }
+    else if (TEVO_WIN_FETCH_TRIGp_new) {
+      state_new.fine_count = 0;
+      if (state_new.win_ctrl.PYNU_WIN_MODE_Ap) {
+        state_new.win_x.map = state_old.win_x.map + 1;
+      }
+    }
+
+
+    if (state_old.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.PYNU_WIN_MODE_Ap) {
+      uint8_t win_old = state_old.win_y.tile | (state_old.win_y.map << 3);
+
+      uint8_t win_new = win_old + 1;
+
+      state_new.win_y.tile = win_new & 0b111;
+      state_new.win_y.map = win_new >> 3;
+    }
+
+    if (state_new.lcd.POPU_y144p) {
+      state_new.win_y.tile = 0;
+      state_new.win_y.map = 0;
+    }
+  }
+
+  //----------------------------------------
+  // Pal reg read/write
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    if (cpu_addr_new == 0xFF47) state_new.reg_bgp  = ~state_old.cpu_dbus;
+    if (cpu_addr_new == 0xFF48) state_new.reg_obp0 = ~state_old.cpu_dbus;
+    if (cpu_addr_new == 0xFF49) state_new.reg_obp1 = ~state_old.cpu_dbus;
+  }
+
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (cpu_addr_new == 0xFF47) state_new.cpu_dbus = ~state_new.reg_bgp;
+    if (cpu_addr_new == 0xFF48) state_new.cpu_dbus = ~state_new.reg_obp0;
+    if (cpu_addr_new == 0xFF49) state_new.cpu_dbus = ~state_new.reg_obp1;
+  }
+
+  //----------------------------------------
+  // Pixel pipes
 
   uint8_t tpix_a = (uint8_t)~state_new.tile_temp_a;
   uint8_t tpix_b = (uint8_t)state_new.tile_temp_b;

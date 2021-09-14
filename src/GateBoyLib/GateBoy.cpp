@@ -1661,41 +1661,45 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
 
   {
-    const wire UKAP_CLK_MUXa_new = reg_new.reg_tac.SOPU_TAC0p ? reg_new.reg_div.TAMA_DIV05p : reg_new.reg_div.TERO_DIV03p;
-    const wire TEKO_CLK_MUXb_new = reg_new.reg_tac.SOPU_TAC0p ? reg_new.reg_div.UFOR_DIV01p : reg_new.reg_div.TULU_DIV07p;
-    const wire TECY_CLK_MUXc_new = reg_new.reg_tac.SAMY_TAC1p ? UKAP_CLK_MUXa_new : TEKO_CLK_MUXb_new;
-    const wire SOGU_TIMA_CLKn_new = TECY_CLK_MUXc_new && reg_new.reg_tac.SABO_TAC2p;
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    state_new.from_reg(reg_new);
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
 
-    const wire UKAP_CLK_MUXa_old = reg_old.reg_tac.SOPU_TAC0p ? reg_old.reg_div.TAMA_DIV05p : reg_old.reg_div.TERO_DIV03p;
-    const wire TEKO_CLK_MUXb_old = reg_old.reg_tac.SOPU_TAC0p ? reg_old.reg_div.UFOR_DIV01p : reg_old.reg_div.TULU_DIV07p;
-    const wire TECY_CLK_MUXc_old = reg_old.reg_tac.SAMY_TAC1p ? UKAP_CLK_MUXa_old : TEKO_CLK_MUXb_old;
-    const wire SOGU_TIMA_CLKn_old = TECY_CLK_MUXc_old && reg_old.reg_tac.SABO_TAC2p;
+    const wire UKAP_CLK_MUXa_new = get_bit(state_new.reg_tac, 0) ? get_bit(state_new.reg_div, 5) : get_bit(state_new.reg_div, 3);
+    const wire TEKO_CLK_MUXb_new = get_bit(state_new.reg_tac, 0) ? get_bit(state_new.reg_div, 1) : get_bit(state_new.reg_div, 7);
+    const wire TECY_CLK_MUXc_new = get_bit(state_new.reg_tac, 1) ? UKAP_CLK_MUXa_new : TEKO_CLK_MUXb_new;
+    const wire SOGU_TIMA_CLKn_new = TECY_CLK_MUXc_new && get_bit(state_new.reg_tac, 2);
+
+    const wire UKAP_CLK_MUXa_old = get_bit(state_old.reg_tac, 0) ? get_bit(state_old.reg_div, 5) : get_bit(state_old.reg_div, 3);
+    const wire TEKO_CLK_MUXb_old = get_bit(state_old.reg_tac, 0) ? get_bit(state_old.reg_div, 1) : get_bit(state_old.reg_div, 7);
+
+
+    const wire TECY_CLK_MUXc_old = get_bit(state_old.reg_tac, 1) ? UKAP_CLK_MUXa_old : TEKO_CLK_MUXb_old;
+
+    const wire SOGU_TIMA_CLKn_old = TECY_CLK_MUXc_old && get_bit(state_old.reg_tac, 2);
+
 
     if (SOGU_TIMA_CLKn_old && !SOGU_TIMA_CLKn_new) {
-      bit_unpack(reg_new.reg_tima, bit_pack(reg_new.reg_tima) + 1);
+      state_new.reg_tima = state_new.reg_tima + 1;
     }
   }
 
-  if (cpu_addr_new == 0xFF05 && gen_clk_new(0b00001110) && reg_new.cpu_signals.SIG_IN_CPU_WRp) {
-    if (!reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE || reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
-      reg_new.int_ctrl.NYDU_TIMA7p_DELAY = 0;
-      bit_unpack(reg_new.reg_tima, bit_pack(reg_new.cpu_dbus));
+  if (cpu_addr_new == 0xFF05 && gen_clk_new(0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+    if (!state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE || state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
+      state_new.int_ctrl.NYDU_TIMA7p_DELAY = 0;
+      state_new.reg_tima = state_new.cpu_dbus;
     }
   }
   else {
-    if (reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
-      reg_new.int_ctrl.NYDU_TIMA7p_DELAY = 0;
-      bit_unpack(reg_new.reg_tima, bit_pack(reg_new.reg_tma));
+    if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
+      state_new.int_ctrl.NYDU_TIMA7p_DELAY = 0;
+      state_new.reg_tima = state_new.reg_tma;
     }
   }
-
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
 
   if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
     if (cpu_addr_new == 0xFF05) state_new.cpu_dbus = state_new.reg_tima;

@@ -98,7 +98,7 @@ struct GateBoy {
     CHECK_P(sentinel1 == SENTINEL1);
     CHECK_P(sentinel2 == SENTINEL2);
     sys.logic_mode = old_logic_mode;
-    lb_state.from_gb_state(gb_state);
+    lb_state.from_gb_state(gb_state, sys.phase_total);
   }
 
   void to_blob(blob& b) {
@@ -127,7 +127,7 @@ struct GateBoy {
 
   void tock_cpu();
   void tock_gates(const blob& cart_blob);
-  void tock_logic(const blob& cart_blob);
+  void tock_logic(const blob& cart_blob, int64_t phase_total);
 
   void commit() {
     commit_blob(&gb_state, sizeof(gb_state));
@@ -226,18 +226,6 @@ struct GateBoy {
     /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = not1(TEGU_CPU_VRAM_WRn);
 
     return SALE_CPU_VRAM_WRn;
-  }
-
-  //----------------------------------------
-
-  wire gen_clk_old(uint8_t mask) {
-    uint8_t phase_mask_old = 1 << (7 - ((sys.phase_total + 0) & 7));
-    return !!(phase_mask_old & mask);
-  }
-
-  wire gen_clk_new(uint8_t mask) {
-    uint8_t phase_mask_new = 1 << (7 - ((sys.phase_total + 1) & 7));
-    return !!(phase_mask_new & mask);
   }
 
   //-----------------------------------------------------------------------------

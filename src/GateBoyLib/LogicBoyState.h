@@ -24,8 +24,8 @@ struct GateBoyState;
 
 #pragma pack(push, 1)
 struct LogicBoyState {
-  void to_gb_state(GateBoyState& dst) const;
-  void from_gb_state(const GateBoyState& src);
+  void to_gb_state(GateBoyState& dst, int64_t phase_total) const;
+  void from_gb_state(const GateBoyState& src, int64_t phase_total);
 
   uint8_t  reg_joy;  // 0xFF00
   uint8_t  reg_sb; // 0xFF01

@@ -103,7 +103,7 @@ struct LogicBoy {
 
   bool next_phase(const blob& cart_blob);
   void tock_cpu();
-  void tock_logic(const blob& cart_blob);
+  void tock_logic(const blob& cart_blob, int64_t phase_total);
   void update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1);
 
   void wipe() {
@@ -120,18 +120,6 @@ struct LogicBoy {
 
   void tock_spu_logic();
   void tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new);
-
-  //----------------------------------------
-
-  wire gen_clk_old(uint8_t mask) {
-    uint8_t phase_mask_old = 1 << (7 - ((sys.phase_total + 0) & 7));
-    return !!(phase_mask_old & mask);
-  }
-
-  wire gen_clk_new(uint8_t mask) {
-    uint8_t phase_mask_new = 1 << (7 - ((sys.phase_total + 1) & 7));
-    return !!(phase_mask_new & mask);
-  }
 
   //-----------------------------------------------------------------------------
 

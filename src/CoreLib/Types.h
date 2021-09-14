@@ -53,6 +53,16 @@ static const char* phase_names[] = {
   "\003_______H\001",
 };
 
+inline wire gen_clk_old(int64_t phase_total, uint8_t mask) {
+  uint8_t phase_mask_old = 1 << (7 - ((phase_total + 0) & 7));
+  return !!(phase_mask_old & mask);
+}
+
+inline wire gen_clk_new(int64_t phase_total, uint8_t mask) {
+  uint8_t phase_mask_new = 1 << (7 - ((phase_total + 1) & 7));
+  return !!(phase_mask_new & mask);
+}
+
 constexpr uint64_t HASH_INIT = 0x12345678;
 uint32_t mix(uint32_t h);
 uint64_t mix(uint64_t h);

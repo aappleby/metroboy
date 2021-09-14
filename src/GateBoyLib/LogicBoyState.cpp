@@ -7,7 +7,7 @@ static_assert(sizeof(GateBoyReset) == sizeof(LogicBoyReset));
 
 //-----------------------------------------------------------------------------
 
-void LogicBoyState::to_gb_state(GateBoyState& dst) const {
+void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   const LogicBoyState& src = *this;
 
   dst.SIG_VCC = 1;
@@ -162,7 +162,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst) const {
 
 //-----------------------------------------------------------------------------
 
-void LogicBoyState::from_gb_state(const GateBoyState& src) {
+void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) {
   LogicBoyState& dst = *this;
   
   dst.reg_joy = bit_pack(src.reg_joy);

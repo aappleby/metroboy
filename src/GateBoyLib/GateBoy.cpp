@@ -134,7 +134,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   sys.logic_mode = old_logic_mode;
   //if (sys.logic_mode) wipe_flags();
 
-  lb_state.from_gb_state(gb_state);
+  lb_state.from_gb_state(gb_state, sys.phase_total);
 }
 
 //-----------------------------------------------------------------------------
@@ -281,7 +281,7 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
 
   //if (sys.logic_mode) wipe_flags();
 
-  lb_state.from_gb_state(gb_state);
+  lb_state.from_gb_state(gb_state, sys.phase_total);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -335,8 +335,8 @@ bool GateBoy::next_phase(const blob& cart_blob) {
   tock_cpu();
 
   if (sys.logic_mode) {
-    tock_logic(cart_blob);
-    lb_state.to_gb_state(gb_state);
+    tock_logic(cart_blob, sys.phase_total);
+    lb_state.to_gb_state(gb_state, sys.phase_total);
     update_framebuffer(bit_pack(gb_state.pix_count) - 8, bit_pack(gb_state.reg_ly), ~gb_state.lcd.PIN_51_LCD_DATA0.state, ~gb_state.lcd.PIN_50_LCD_DATA1.state);
     sys.phase_total++;
     return true;

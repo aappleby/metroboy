@@ -526,7 +526,7 @@ void diff_gb(GateBoy* gba, GateBoy* gbb, uint8_t mask) {
   uint8_t* bytes_a = (uint8_t*)gba;
   uint8_t* bytes_b = (uint8_t*)gbb;
 
-  for (int i = 0; i < sizeof(GateBoy); i++) {
+  for (int i = 0; i < sizeof(uint64_t) + sizeof(GateBoyReg); i++) {
     // Ignore the logic mode flag, that's _supposed_ to be different.
     if (i == offsetof(GateBoy, sys.logic_mode)) continue;
 
@@ -2509,28 +2509,24 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // LCD pins
 
-  if (!reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-    reg.lcd.PIN_52_LCD_CNTRL = !reg.lcd.SYGU_LINE_STROBE && !reg.lcd.RUTU_x113p;
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
 
-    if (reg_old.lcd.RUTU_x113p && !reg_new.lcd.RUTU_x113p) reg.lcd.LUCA_LINE_EVENp = !reg.lcd.LUCA_LINE_EVENp;
-    if (!reg_old.lcd.POPU_y144p && reg_new.lcd.POPU_y144p) reg.lcd.NAPO_FRAME_EVENp = !reg.lcd.NAPO_FRAME_EVENp;
+  if (!get_bit(state_new.reg_lcdc, 7)) {
+    state_new.lcd.PIN_52_LCD_CNTRL = !state_new.lcd.SYGU_LINE_STROBE && !state_new.lcd.RUTU_x113p;
 
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    state_new.from_reg(reg_new);
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-
-
+    if (state_old.lcd.RUTU_x113p && !state_new.lcd.RUTU_x113p) state_new.lcd.LUCA_LINE_EVENp = !state_new.lcd.LUCA_LINE_EVENp;
+    if (!state_old.lcd.POPU_y144p && state_new.lcd.POPU_y144p) state_new.lcd.NAPO_FRAME_EVENp = !state_new.lcd.NAPO_FRAME_EVENp;
     state_new.lcd.PIN_56_LCD_FLIPS = state_new.lcd.NAPO_FRAME_EVENp ^ state_new.lcd.LUCA_LINE_EVENp;
-
 
     if (state_old.lcd.NYPE_x113p && !state_new.lcd.NYPE_x113p) {
       state_new.lcd.MEDA_VSYNC_OUTn = reg_ly_new == 0;
     }
-
 
     state_new.lcd.PIN_57_LCD_VSYNC = !state_new.lcd.MEDA_VSYNC_OUTn;
 
@@ -2561,14 +2557,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.PIN_53_LCD_CLOCK = (!state_new.lcd.WUSA_LCD_CLOCK_GATE || !SACU_CLKPIPE_new) && (!state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A || state_new.fine_scroll.NYZE_SCX_FINE_MATCH_B);
   }
   else {
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    state_new.from_reg(reg_new);
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-
     state_new.lcd.LUCA_LINE_EVENp = 0;
     state_new.lcd.NAPO_FRAME_EVENp = 0;
     state_new.lcd.MEDA_VSYNC_OUTn = 0;

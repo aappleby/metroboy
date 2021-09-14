@@ -8,6 +8,7 @@ extern const char* op_strings[256];
 extern const char* op_strings2[256];
 
 constexpr uint16_t BOOT_DIV = 0xEAF3;
+constexpr uint16_t VRAM_ADDR_MASK = 0b1111111111111;
 
 constexpr uint64_t SENTINEL1 = 0xBEEFBEEFBEEFBEEF;
 constexpr uint64_t SENTINEL2 = 0xC0DEC0DEC0DEC0DE;

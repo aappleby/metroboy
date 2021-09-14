@@ -1,4 +1,4 @@
-#include "GateBoyLib/GateBoyResetDebug.h"
+#include "GateBoyLib/GateBoyReset.h"
 
 #include "GateBoyLib/GateBoy.h"
 

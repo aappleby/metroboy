@@ -155,9 +155,9 @@ struct GateBoyPair {
 
   bool check_sync() {
     if (config_regression) {
-      if (gba.hash_regression() != gbb.hash_regression()) {
+      if (gba.gb_state.hash_regression() != gbb.gb_state.hash_regression()) {
         LOG_R("Regression test mismatch @ phase %lld!\n", gba.sys.phase_total);
-        diff_gb(&gba, &gbb, 0x01);
+        gba.gb_state.diff(gbb.gb_state, 0x01);
         //__debugbreak();
         return false;
       }

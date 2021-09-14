@@ -2,7 +2,7 @@
 #include "GateBoyLib/Gates.h"
 
 struct GateBoyDMA;
-struct GateBoyResetDebug;
+struct GateBoyReset;
 
 //-----------------------------------------------------------------------------
 

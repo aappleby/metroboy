@@ -6,9 +6,8 @@
 #include "CoreLib/Log.h"
 
 #include "GateBoyLib/Probe.h"
-
-#include "GateBoyLib/GateBoyReg.h"
 #include "GateBoyLib/GateBoyState.h"
+#include "GateBoyLib/LogicBoyState.h"
 
 #include <atomic>
 #include <cstring>
@@ -21,8 +20,6 @@ bool cart_has_ram(const blob & cart_blob);
 struct GateBoy;
 
 void print_field_at(int offset);
-void diff_gb(GateBoy* gba, GateBoy* gbb, uint8_t mask);
-
 
 //-----------------------------------------------------------------------------
 
@@ -140,38 +137,14 @@ struct GateBoy {
 
   void wipe() {
     bool old_logic_mode = sys.logic_mode;
+    // FIXME probably don't need this memset
     memset(this, 0, sizeof(*this));
 
-    if (!old_logic_mode) {
-      memset(&gb_state, 0b00011000, sizeof(gb_state));
-    }
-    else {
-      memset(&gb_state, 0, sizeof(gb_state));
-    }
+    gb_state.wipe();
 
     sentinel1 = SENTINEL1;
     sentinel2 = SENTINEL2;
     sys.logic_mode = old_logic_mode;
-  }
-
-  int64_t hash_regression() {
-    return hash_low_bit(&gb_state, sizeof(gb_state), HASH_INIT);
-  }
-
-  int64_t hash_all() {
-    return hash_all_bits(&gb_state, sizeof(gb_state), HASH_INIT);
-  }
-
-  void check_state_old_and_driven_or_pulled() {
-    if (config_drive_flags) {
-      uint8_t* blob = (uint8_t*)&gb_state;
-      for (auto i = 0; i < sizeof(GateBoyState); i++) {
-        auto r = blob[i];
-        (void)r;
-        CHECK_P((r & 0xF0) == BIT_OLD);
-        CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
-      }
-    }
   }
 
   //-----------------------------------------------------------------------------
@@ -268,8 +241,6 @@ struct GateBoy {
   }
 
   //-----------------------------------------------------------------------------
-  // All the SOC registers, pins, buses. Everything between sentinel 1 and
-  // sentinel 2 _must_ derive from BitBase.
 
   uint64_t sentinel1 = SENTINEL1;
 

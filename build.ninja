@@ -111,7 +111,7 @@ build obj/GateBoyLib/GateBoyLCD.o           : compile src/GateBoyLib/GateBoyLCD.
 build obj/GateBoyLib/GateBoyOamBus.o        : compile src/GateBoyLib/GateBoyOamBus.cpp
 build obj/GateBoyLib/GateBoyPixPipe.o       : compile src/GateBoyLib/GateBoyPixPipe.cpp
 build obj/GateBoyLib/GateBoyRegisters.o     : compile src/GateBoyLib/GateBoyRegisters.cpp
-build obj/GateBoyLib/GateBoyResetDebug.o    : compile src/GateBoyLib/GateBoyResetDebug.cpp
+build obj/GateBoyLib/GateBoyReset.o         : compile src/GateBoyLib/GateBoyReset.cpp
 build obj/GateBoyLib/GateBoySerial.o        : compile src/GateBoyLib/GateBoySerial.cpp
 build obj/GateBoyLib/GateBoySpriteFetcher.o : compile src/GateBoyLib/GateBoySpriteFetcher.cpp
 build obj/GateBoyLib/GateBoySpriteScanner.o : compile src/GateBoyLib/GateBoySpriteScanner.cpp
@@ -143,7 +143,7 @@ build bin/GateBoyLib.a : lib $
   obj/GateBoyLib/GateBoyOamBus.o $
   obj/GateBoyLib/GateBoyPixPipe.o $
   obj/GateBoyLib/GateBoyRegisters.o $
-  obj/GateBoyLib/GateBoyResetDebug.o $
+  obj/GateBoyLib/GateBoyReset.o $
   obj/GateBoyLib/GateBoySerial.o $
   obj/GateBoyLib/GateBoySpriteFetcher.o $
   obj/GateBoyLib/GateBoySpriteScanner.o $

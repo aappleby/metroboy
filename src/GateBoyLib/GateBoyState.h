@@ -16,85 +16,84 @@
 #include "GateBoyLib/GateBoyOamBus.h"
 #include "GateBoyLib/GateBoyVramBus.h"
 #include "GateBoyLib/GateBoyZramBus.h"
-#include "GateBoyLib/GateBoyResetDebug.h"
+#include "GateBoyLib/GateBoyReset.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
 
-struct GateBoyState;
+//-----------------------------------------------------------------------------
+// All the SOC registers, pins, buses. Everything in GateBoyState _must_
+// derive from BitBase.
 
 #pragma pack(push, 1)
-struct LogicBoyState {
-  void to_gb_state(GateBoyState& dst) const;
-  void from_gb_state(const GateBoyState& src);
+struct GateBoyState {
+  /*_SIG_VCC*/ SigIn SIG_VCC;
+  /*_SIG_GND*/ SigIn SIG_GND;
+  
+  RegJoy  reg_joy;  // 0xFF00
+  //RegSB   reg_sb;   // 0xFF01
+  //RegSC   reg_sc;   // 0xFF02
+  RegDIV  reg_div;  // 0xFF04
+  RegTIMA reg_tima; // 0xFF05
+  RegTMA  reg_tma;  // 0xFF06
+  RegTAC  reg_tac;  // 0xFF07
+  RegIF   reg_if;   // 0xFF0F
 
-  uint8_t  reg_joy;  // 0xFF00
-  uint8_t  reg_sb; // 0xFF01
-  uint8_t  reg_sc; // 0xFF02
-  uint16_t reg_div;  // 0xFF04
-  uint8_t  reg_tima; // 0xFF05
-  uint8_t  reg_tma;  // 0xFF06
-  uint8_t  reg_tac;  // 0xFF07
-  uint8_t  reg_if;   // 0xFF0F
+  RegLCDC reg_lcdc; // 0xFF40
+  RegStat reg_stat; // 0xFF41
+  RegSCY  reg_scy;  // 0xFF42
+  RegSCX  reg_scx;  // 0xFF43
+  RegLY   reg_ly;   // 0xFF44
+  RegLYC  reg_lyc;  // 0xFF45
+  RegDma  reg_dma;  // 0xFF46
+  RegBGP  reg_bgp;  // 0xFF47
+  RegOBP0 reg_obp0; // 0xFF48
+  RegOBP1 reg_obp1; // 0xFF49
+  RegWY   reg_wy;   // 0xFF4A
+  RegWX   reg_wx;   // 0xFF4B
+  RegLX   reg_lx;   // Not mapped
+  RegIE   reg_ie;   // 0xFFFF
 
-  uint8_t  reg_lcdc; // 0xFF40
-  uint8_t  reg_stat; // 0xFF41
-  uint8_t  reg_scy;  // 0xFF42
-  uint8_t  reg_scx;  // 0xFF43
-  uint8_t  reg_ly;   // 0xFF44
-  uint8_t  reg_lyc;  // 0xFF45
-  uint8_t  reg_dma;  // 0xFF46
-  uint8_t  reg_bgp;  // 0xFF47
-  uint8_t  reg_obp0; // 0xFF48
-  uint8_t  reg_obp1; // 0xFF49
-  uint8_t  reg_wy;   // 0xFF4A
-  uint8_t  reg_wx;   // 0xFF4B
-  uint8_t  reg_lx;   // Not mapped
-  uint8_t  reg_ie;   // 0xFFFF
+  GateBoyReset sys_rst;
+  GateBoyClock sys_clk;
 
-  GateBoyResetDebug2 sys_rst;
-  GateBoyClock      sys_clk;
-
-  /*#p21.VOGA*/ uint8_t VOGA_HBLANKp;
-  /*#p21.XYMU*/ uint8_t XYMU_RENDERINGn;
-  /*#p04.MATU*/ uint8_t MATU_DMA_RUNNINGp;
-  /*#p28.ACYL*/ uint8_t ACYL_SCANNINGp;
-  /*#p21.WODU*/ uint8_t WODU_HBLANKp;
-  /*_p07.SATO*/ uint8_t SATO_BOOT_BITn;
-  /*_p28.ATEJ*/ uint8_t ATEJ_LINE_RSTp;
-  /*_p29.FEPO*/ uint8_t FEPO_STORE_MATCHp;
+  /*#p21.VOGA*/ DFF17    VOGA_HBLANKp;
+  /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;
+  /*#p04.MATU*/ DFF17    MATU_DMA_RUNNINGp;
+  /*#p28.ACYL*/ Gate     ACYL_SCANNINGp;
+  /*#p21.WODU*/ Gate     WODU_HBLANKp;
+  /*_p07.SATO*/ Gate     SATO_BOOT_BITn;
+  /*_p28.ATEJ*/ Gate     ATEJ_LINE_RSTp;
+  /*_p29.FEPO*/ Gate     FEPO_STORE_MATCHp;
 
   GateBoyCpuSignals cpu_signals;
-  uint16_t cpu_abus;
-  uint8_t cpu_dbus;
+  GateBoyCpuABus    cpu_abus;
+  GateBoyCpuDBus    cpu_dbus;
 
   InterruptControl int_ctrl;
-  uint8_t int_latch;
+  InterruptLatch   int_latch;
 
-  uint16_t vram_abus;
-  uint8_t vram_dbus;
+  struct { VramABusLo lo; VramABusHi hi; } vram_abus;
+  VramDBus       vram_dbus;
   VramExtControl vram_ext_ctrl;
-  uint16_t vram_ext_abus;
-  uint8_t vram_ext_dbus;
+  VramExtABus    vram_ext_abus;
+  VramExtDBus    vram_ext_dbus;
                 
-  OamControl oam_ctrl;
-  uint8_t  oam_abus;
-  uint8_t  oam_dbus_a;
-  uint8_t  oam_dbus_b;
-  uint8_t  oam_latch_a;
-  uint8_t  oam_latch_b;
-  uint8_t  oam_temp_a;
-  uint8_t  oam_temp_b;
+  OamControl     oam_ctrl;
+  OamABus        oam_abus;
+  OamDBusA       oam_dbus_a;
+  OamDBusB       oam_dbus_b;
+  OamLatchA      oam_latch_a;
+  OamLatchB      oam_latch_b;
+  OamTempA       oam_temp_a;
+  OamTempB       oam_temp_b;
                  
   ExtControl     ext_ctrl;
   
-  struct {
-    uint8_t lo;
-    uint8_t hi;
-  } ext_abus;
+  struct { ExtABusLo lo; ExtABusHi hi; } ext_abus;
 
-  uint8_t ext_dbus;
-  uint8_t ext_data_latch;
-  uint16_t ext_addr_latch;
+  ExtDBus        ext_dbus;
+  ExtDataLatch   ext_data_latch;
+  ExtAddrLatch   ext_addr_latch;
 
   GateBoyMBC     ext_mbc;
 
@@ -102,103 +101,103 @@ struct LogicBoyState {
 
 
   DmaControl dma_ctrl;
-  uint8_t dma_lo;
+  RegDmaLo   dma_lo;
   
 
-  uint8_t cpu_int;
-  uint8_t cpu_ack;
+  CpuInt  cpu_int;
+  CpuAck  cpu_ack;
 
   JoyInt   joy_int;
-  uint8_t joy_latch;
-  uint8_t joy_ext;
+  JoyLatch joy_latch;
+  JoyExt   joy_ext;
 
   //----------
 
   SpriteScanner    sprite_scanner;
-  uint8_t scan_counter;
-  uint8_t sprite_counter;
-  uint8_t sprite_index;
-  uint16_t sprite_match_flags;
-  uint16_t sprite_reset_flags;
-  uint16_t sprite_store_flags;
+  ScanCounter      scan_counter;
+  SpriteCounter    sprite_counter;
+  SpriteIndex      sprite_index;
+  SpriteMatchFlags sprite_match_flags;
+  SpriteResetFlags sprite_reset_flags;
+  SpriteStoreFlags sprite_store_flags;
 
-  uint8_t sprite_ibus;
-  uint8_t sprite_lbus;
+  SpriteIBus sprite_ibus;
+  SpriteLBus sprite_lbus;
 
-  uint8_t store_i0;
-  uint8_t store_i1;
-  uint8_t store_i2;
-  uint8_t store_i3;
-  uint8_t store_i4;
-  uint8_t store_i5;
-  uint8_t store_i6;
-  uint8_t store_i7;
-  uint8_t store_i8;
-  uint8_t store_i9;
+  StoreI0 store_i0;
+  StoreI1 store_i1;
+  StoreI2 store_i2;
+  StoreI3 store_i3;
+  StoreI4 store_i4;
+  StoreI5 store_i5;
+  StoreI6 store_i6;
+  StoreI7 store_i7;
+  StoreI8 store_i8;
+  StoreI9 store_i9;
 
-  uint8_t store_l0;
-  uint8_t store_l1;
-  uint8_t store_l2;
-  uint8_t store_l3;
-  uint8_t store_l4;
-  uint8_t store_l5;
-  uint8_t store_l6;
-  uint8_t store_l7;
-  uint8_t store_l8;
-  uint8_t store_l9;
+  StoreL0 store_l0;
+  StoreL1 store_l1;
+  StoreL2 store_l2;
+  StoreL3 store_l3;
+  StoreL4 store_l4;
+  StoreL5 store_l5;
+  StoreL6 store_l6;
+  StoreL7 store_l7;
+  StoreL8 store_l8;
+  StoreL9 store_l9;
 
-  uint8_t store_x0;
-  uint8_t store_x1;
-  uint8_t store_x2;
-  uint8_t store_x3;
-  uint8_t store_x4;
-  uint8_t store_x5;
-  uint8_t store_x6;
-  uint8_t store_x7;
-  uint8_t store_x8;
-  uint8_t store_x9;
+  StoreX0 store_x0;
+  StoreX1 store_x1;
+  StoreX2 store_x2;
+  StoreX3 store_x3;
+  StoreX4 store_x4;
+  StoreX5 store_x5;
+  StoreX6 store_x6;
+  StoreX7 store_x7;
+  StoreX8 store_x8;
+  StoreX9 store_x9;
 
   //----------
 
 
-  uint8_t sfetch_counter;
+  SpriteFetchCounter sfetch_counter;
   SpriteFetchControl sfetch_control;
   //----------
 
-  uint8_t tfetch_counter;
+  TileFetchCounter tfetch_counter;
   TileFetchControl tfetch_control;
-  uint8_t tile_temp_a;
-  uint8_t tile_temp_b;
+  TileTempA tile_temp_a;
+  TileTempB tile_temp_b;
 
   //----------
 
   WinControl win_ctrl;
 
   struct {
-    uint8_t map;
+    WinMapX    map;
   } win_x;
 
   struct {
-    uint8_t tile;
-    uint8_t map;
+    WinTileY   tile;
+    WinMapY    map;
   } win_y;
 
-  uint8_t fine_count;
+  FineCount  fine_count;
   FineScroll fine_scroll;
 
   //----------
 
-  uint8_t flipped_sprite;
-  uint8_t sprite_pix_a;
-  uint8_t sprite_pix_b;
+  SpritePix flipped_sprite;
+  SpritePixA sprite_pix_a;
+  SpritePixB sprite_pix_b;
 
-  uint8_t pix_count;
-  uint8_t mask_pipe;
-  uint8_t bgw_pipe_a;
-  uint8_t bgw_pipe_b;
-  uint8_t spr_pipe_a;
-  uint8_t spr_pipe_b;
-  uint8_t pal_pipe;
+  PixCount pix_count;
+  MaskPipe mask_pipe;
+  BgwPipeA bgw_pipe_a;
+  BgwPipeB bgw_pipe_b;
+  SprPipeA spr_pipe_a;
+  SprPipeB spr_pipe_b;
+  PalPipe  pal_pipe;
 
   LCDControl lcd;
 
@@ -224,5 +223,31 @@ struct LogicBoyState {
   //NR50 reg_NR50;
   //NR51 reg_NR51;
   //NR52 reg_NR52;
+
+  void wipe() {
+    memset(this, 0, sizeof(GateBoyState));
+  }
+
+  int64_t hash_regression() {
+    return hash_low_bit(this, sizeof(GateBoyState), HASH_INIT);
+  }
+
+  int64_t hash_all() {
+    return hash_all_bits(this, sizeof(GateBoyState), HASH_INIT);
+  }
+
+  void check_state_old_and_driven_or_pulled() {
+    if (config_drive_flags) {
+      uint8_t* blob = (uint8_t*)this;
+      for (auto i = 0; i < sizeof(GateBoyState); i++) {
+        auto r = blob[i];
+        (void)r;
+        CHECK_P((r & 0xF0) == BIT_OLD);
+        CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
+      }
+    }
+  }
+
+  void diff(const GateBoyState& gbb, uint8_t mask) const;
 };
 #pragma pack(pop)

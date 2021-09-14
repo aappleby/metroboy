@@ -2308,22 +2308,22 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Tile fetch sequencer
 
-  const uint8_t bfetch_phase_old = pack(!(reg.tfetch_control.LYZU_BFETCH_S0p_D1 ^ reg.tfetch_counter.LAXU_BFETCH_S0p), reg.tfetch_counter.LAXU_BFETCH_S0p, reg.tfetch_counter.MESU_BFETCH_S1p, reg.tfetch_counter.NYVA_BFETCH_S2p);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
 
-  auto restart_fetch = [](const GateBoyReg& reg) {
-    return !reg.XYMU_RENDERINGn && !reg.tfetch_control.POKY_PRELOAD_LATCHp && reg.tfetch_control.NYKA_FETCH_DONEp && reg.tfetch_control.PORY_FETCH_DONEp;
-  };
+  const uint8_t bfetch_phase_old = pack(
+    !(state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_new.tfetch_counter, 0)),
+    get_bit(state_new.tfetch_counter, 0),
+    get_bit(state_new.tfetch_counter, 1),
+    get_bit(state_new.tfetch_counter, 2));
 
   auto restart_fetch_state = [](const GateBoyState& state) {
     return !state.XYMU_RENDERINGn && !state.tfetch_control.POKY_PRELOAD_LATCHp && state.tfetch_control.NYKA_FETCH_DONEp && state.tfetch_control.PORY_FETCH_DONEp;
-  };
-
-  auto trigger_win_fetch = [&](const GateBoyReg& reg) {
-    bool TEVO_WIN_FETCH_TRIGp = 0;
-    if (reg.win_ctrl.RYFA_WIN_FETCHn_A && !reg.win_ctrl.RENE_WIN_FETCHn_B) TEVO_WIN_FETCH_TRIGp = 1;
-    if (!reg.win_ctrl.RYDY_WIN_HITp && reg.win_ctrl.SOVY_WIN_HITp) TEVO_WIN_FETCH_TRIGp = 1;
-    if (restart_fetch(reg)) TEVO_WIN_FETCH_TRIGp = 1;
-    return TEVO_WIN_FETCH_TRIGp;
   };
 
   auto trigger_win_fetch_state = [&](const GateBoyState& state) {
@@ -2333,14 +2333,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (restart_fetch_state(state)) TEVO_WIN_FETCH_TRIGp = 1;
     return TEVO_WIN_FETCH_TRIGp;
   };
-
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
 
   const wire BFETCH_RSTp_new =
     state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp ||

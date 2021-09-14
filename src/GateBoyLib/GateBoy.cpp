@@ -135,6 +135,8 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
 
   sys.logic_mode = old_logic_mode;
   if (sys.logic_mode) wipe_flags();
+
+  _state.from_reg(reg);
 }
 
 //-----------------------------------------------------------------------------
@@ -280,6 +282,8 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   sys.probes.reset_to_cart();
 
   if (sys.logic_mode) wipe_flags();
+
+  _state.from_reg(reg);
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -1368,29 +1372,16 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_logic(const blob& cart_blob) {
-  GateBoyState state_old;
-  state_old.from_reg(reg);
-
-  GateBoyState state_new = state_old;
-
-  const GateBoyReg reg_old = reg;
-  GateBoyReg& reg_new = reg;
-
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
+  GateBoyState  state_old = _state;
+  GateBoyState& state_new = _state;
 
   const uint8_t phase_old = 1 << (7 - ((sys.phase_total + 0) & 7));
   const uint8_t phase_new = 1 << (7 - ((sys.phase_total + 1) & 7));
 
   //-----------------------------------------------------------------------------
 
-  const uint16_t cpu_addr_old = (uint16_t)bit_pack(reg_old.cpu_abus);
-  const auto cpu_data_old = bit_pack(reg_old.cpu_dbus);
+  const uint16_t cpu_addr_old = state_old.cpu_abus;
+  const auto cpu_data_old = state_old.cpu_dbus;
 
   const bool cpu_addr_vram_old = (cpu_addr_old >= 0x8000) && (cpu_addr_old <= 0x9FFF);
   const bool cpu_addr_oam_old = (cpu_addr_old >= 0xFE00) && (cpu_addr_old <= 0xFEFF);
@@ -1516,8 +1507,8 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------
   // LYC
 
-  const auto reg_ly_old = bit_pack(reg_old.reg_ly);
-  const auto reg_lyc_old = bit_pack_inv(reg_old.reg_lyc);
+  const auto reg_ly_old = state_old.reg_ly;
+  const auto reg_lyc_old = state_old.reg_lyc ^ 0xFF;
 
   if (cpu_addr_new == 0xFF45) {
     if (state_new.cpu_signals.SIG_IN_CPU_RDp) state_new.cpu_dbus = uint8_t(reg_lyc_old);
@@ -1896,8 +1887,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
       if (gen_clk_new(0b10001000)) {
         
         state_new.sprite_index = (state_new.oam_abus >> 2) ^ 0b111111;
-        //bit_unpack_inv(reg.sprite_index, bit_pack(reg.oam_abus) >> 2);
-
         state_new.sprite_scanner.CENO_SCANNINGn = state_old.sprite_scanner.BESU_SCANNINGn;
       }
 

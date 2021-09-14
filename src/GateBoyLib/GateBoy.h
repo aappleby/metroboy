@@ -325,6 +325,7 @@ struct GateBoy {
     CHECK_P(sentinel1 == SENTINEL1);
     CHECK_P(sentinel2 == SENTINEL2);
     sys.logic_mode = old_logic_mode;
+    _state.from_reg(reg);
   }
 
   void to_blob(blob& b) {

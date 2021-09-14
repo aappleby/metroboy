@@ -1733,6 +1733,13 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     if (reg_new.dma_ctrl.LOKY_DMA_LATCHp && !reg_new.dma_ctrl.LENE_DMA_TRIG_d4) {
       bit_unpack(reg_new.dma_lo, bit_pack(reg_old.dma_lo) + 1);
     }
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    state_new.from_reg(reg_new);
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
   }
   else if (gen_clk_new(0b00001000)) {
     if (cpu_addr_new == 0xFF46 && reg_new.cpu_signals.SIG_IN_CPU_WRp) {
@@ -1747,27 +1754,44 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     reg_new.dma_ctrl.LENE_DMA_TRIG_d4 = reg_old.dma_ctrl.LUVY_DMA_TRIG_d0;
 
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    state_new.from_reg(reg_new);
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+
     if (reg_new.dma_ctrl.LUVY_DMA_TRIG_d0) {
-      reg_new.dma_ctrl.MYTE_DMA_DONE = 0;
-      reg_new.dma_ctrl.LYXE_DMA_LATCHp = 0;
-      bit_unpack(reg_new.dma_lo, 0);
-      reg_new.dma_ctrl.LARA_DMA_LATCHn = 0;
-      reg_new.dma_ctrl.LOKY_DMA_LATCHp = 1;
+      state_new.dma_ctrl.MYTE_DMA_DONE = 0;
+      state_new.dma_ctrl.LYXE_DMA_LATCHp = 0;
+      state_new.dma_lo = 0;
+      state_new.dma_ctrl.LARA_DMA_LATCHn = 0;
+      state_new.dma_ctrl.LOKY_DMA_LATCHp = 1;
     }
   }
   else if (gen_clk_new(0b00000001)) {
-    if (cpu_addr_new == 0xFF46 && reg_new.cpu_signals.SIG_IN_CPU_WRp) {
-      bit_unpack_inv(reg_new.reg_dma, bit_pack(reg_old.cpu_dbus));
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    state_new.from_reg(reg_new);
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    if (cpu_addr_new == 0xFF46 && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+      state_new.reg_dma = state_old.cpu_dbus ^ 0xFF;
     }
   }
+  else {
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    state_new.from_reg(reg_new);
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+  }
 
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
 
   const auto dma_addr_new = ((state_new.reg_dma ^ 0xFF) << 8) | state_new.dma_lo;
   const auto dma_addr_vram_new = state_new.MATU_DMA_RUNNINGp && (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
@@ -1840,14 +1864,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // VID RUN BRANCH
 
   if (!get_bit(state_new.reg_lcdc, 7)) {
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    state_new.from_reg(reg_new);
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-
     if (state_new.ATEJ_LINE_RSTp) {
       state_new.sprite_scanner.DOBA_SCAN_DONE_Bp = 0;
       state_new.sprite_scanner.BYBA_SCAN_DONE_Ap = 0;

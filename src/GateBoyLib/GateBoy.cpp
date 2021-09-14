@@ -1841,32 +1841,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // VID RUN BRANCH
 
   if (!reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-    if (reg_new.ATEJ_LINE_RSTp) {
-      reg.sprite_scanner.DOBA_SCAN_DONE_Bp = 0;
-      reg.sprite_scanner.BYBA_SCAN_DONE_Ap = 0;
-      reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp = 0;
-      bit_unpack(reg.scan_counter, 0);
-      reg.sprite_scanner.BESU_SCANNINGn = 1;
-      reg_new.VOGA_HBLANKp = 0;
-    }
-    else {
-      if (gen_clk_new(0b01010101)) {
-        reg.sprite_scanner.DOBA_SCAN_DONE_Bp = reg_old.sprite_scanner.BYBA_SCAN_DONE_Ap;
-        reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp = !reg.sprite_scanner.DOBA_SCAN_DONE_Bp && reg.sprite_scanner.BYBA_SCAN_DONE_Ap;
-      }
-      else if (gen_clk_new(0b10001000)) {
-        reg.sprite_scanner.BYBA_SCAN_DONE_Ap = bit_pack(reg_old.scan_counter) == 39;
-        reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp = !reg.sprite_scanner.DOBA_SCAN_DONE_Bp && reg.sprite_scanner.BYBA_SCAN_DONE_Ap;
-        
-        if (bit_pack(reg_old.scan_counter) != 39) {
-          bit_unpack(reg.scan_counter, bit_pack(reg_old.scan_counter) + 1);
-        }
-      }
-
-      if (reg.lcd.CATU_x113p) reg.sprite_scanner.BESU_SCANNINGn = 1;
-      if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp) reg.sprite_scanner.BESU_SCANNINGn = 0;
-    }
-
     // STATE STEAMROLLER
     // STATE STEAMROLLER
     // STATE STEAMROLLER
@@ -1874,6 +1848,32 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // STATE STEAMROLLER
     // STATE STEAMROLLER
     // STATE STEAMROLLER
+
+    if (state_new.ATEJ_LINE_RSTp) {
+      state_new.sprite_scanner.DOBA_SCAN_DONE_Bp = 0;
+      state_new.sprite_scanner.BYBA_SCAN_DONE_Ap = 0;
+      state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp = 0;
+      state_new.scan_counter = 0;
+      state_new.sprite_scanner.BESU_SCANNINGn = 1;
+      state_new.VOGA_HBLANKp = 0;
+    }
+    else {
+      if (gen_clk_new(0b01010101)) {
+        state_new.sprite_scanner.DOBA_SCAN_DONE_Bp = state_old.sprite_scanner.BYBA_SCAN_DONE_Ap;
+        state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp = !state_new.sprite_scanner.DOBA_SCAN_DONE_Bp && state_new.sprite_scanner.BYBA_SCAN_DONE_Ap;
+      }
+      else if (gen_clk_new(0b10001000)) {
+        state_new.sprite_scanner.BYBA_SCAN_DONE_Ap = (state_old.scan_counter == 39);
+        state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp = !state_new.sprite_scanner.DOBA_SCAN_DONE_Bp && state_new.sprite_scanner.BYBA_SCAN_DONE_Ap;
+        
+        if (state_old.scan_counter != 39) {
+          state_new.scan_counter = state_old.scan_counter + 1;
+        }
+      }
+
+      if (state_new.lcd.CATU_x113p) state_new.sprite_scanner.BESU_SCANNINGn = 1;
+      if (state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp) state_new.sprite_scanner.BESU_SCANNINGn = 0;
+    }
 
     if (gen_clk_new(0b01010101)) {
       state_new.VOGA_HBLANKp = state_new.WODU_HBLANKp;

@@ -1529,77 +1529,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------
   /// LX, LY, lcd flags
 
-  if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-    reg_new.lcd.ANEL_x113p = 0;
-    reg_new.lcd.CATU_x113p = 0;
-    reg_new.lcd.NYPE_x113p = 0;
-    reg_new.lcd.RUTU_x113p = 0;
-    reg_new.lcd.POPU_y144p = 0;
-    reg_new.lcd.MYTA_y153p = 0;
-    reg_new.lcd.SYGU_LINE_STROBE = 0;
-    reg_new.ATEJ_LINE_RSTp = 1;
-    bit_unpack(reg_new.reg_lx, 0);
-    bit_unpack(reg_new.reg_ly, 0);
-  }
-  else {
-    wire ly_144_old = (reg_ly_old & 144) == 144;
-    wire ly_153_old = (reg_ly_old & 153) == 153;
-
-    if (gen_clk_new(0b10000000)) {
-      reg_new.lcd.CATU_x113p = reg_new.lcd.RUTU_x113p && !ly_144_old;
-    }
-
-    if (gen_clk_new(0b00100000)) {
-      reg_new.lcd.ANEL_x113p = reg_old.lcd.CATU_x113p;
-      reg_new.lcd.NYPE_x113p = reg_old.lcd.RUTU_x113p;
-
-      if (!reg_old.lcd.NYPE_x113p && reg_new.lcd.NYPE_x113p) {
-        reg_new.lcd.POPU_y144p = ly_144_old;
-        reg_new.lcd.MYTA_y153p = ly_153_old;
-      }
-
-      bit_unpack(reg_new.reg_lx, bit_pack(reg_old.reg_lx) + 1);
-    }
-
-    if (gen_clk_new(0b00001000)) {
-      reg_new.lcd.CATU_x113p = reg_new.lcd.RUTU_x113p && !ly_144_old;
-    }
-
-    if (gen_clk_new(0b00000010)) {
-      reg_new.lcd.ANEL_x113p = reg_old.lcd.CATU_x113p;
-      reg_new.lcd.RUTU_x113p = bit_pack(reg_old.reg_lx) == 113;
-
-      if (!reg_old.lcd.RUTU_x113p && reg_new.lcd.RUTU_x113p) {
-        bit_unpack(reg_new.reg_ly, reg_ly_old + 1);
-      }
-
-      uint8_t lx_old = (uint8_t)bit_pack(reg_old.reg_lx);
-      reg_new.lcd.SYGU_LINE_STROBE = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
-    }
-
-    reg_new.ATEJ_LINE_RSTp = !reg_new.lcd.ANEL_x113p && reg_new.lcd.CATU_x113p;
-    if (reg_new.lcd.RUTU_x113p) bit_unpack(reg_new.reg_lx, 0);
-    if (reg_new.lcd.MYTA_y153p) bit_unpack(reg_new.reg_ly, 0);
-  }
-
-  const auto reg_ly_new = bit_pack(reg_new.reg_ly);
-
-  if (reg_new.cpu_signals.SIG_IN_CPU_RDp && (cpu_addr_new == 0xFF44)) {
-    bit_unpack(reg_new.cpu_dbus, reg_ly_new);
-  }
-
-  //----------
-
-  /*
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF00 && gen_clk_new(0b00000001)) {
-    set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
-    set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
-
-    set_bit(state_new.joy_ext, 4, get_bit(state_new.reg_joy, 0));
-    set_bit(state_new.joy_ext, 5, get_bit(state_new.reg_joy, 1));
-  }
-  */
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -1607,6 +1536,67 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  if (get_bit(state_new.reg_lcdc, 7)) {
+    state_new.lcd.ANEL_x113p = 0;
+    state_new.lcd.CATU_x113p = 0;
+    state_new.lcd.NYPE_x113p = 0;
+    state_new.lcd.RUTU_x113p = 0;
+    state_new.lcd.POPU_y144p = 0;
+    state_new.lcd.MYTA_y153p = 0;
+    state_new.lcd.SYGU_LINE_STROBE = 0;
+    state_new.ATEJ_LINE_RSTp = 1;
+    state_new.reg_lx = 0;
+    state_new.reg_ly = 0;
+  }
+  else {
+    wire ly_144_old = (reg_ly_old & 144) == 144;
+    wire ly_153_old = (reg_ly_old & 153) == 153;
+
+    if (gen_clk_new(0b10000000)) {
+      state_new.lcd.CATU_x113p = state_new.lcd.RUTU_x113p && !ly_144_old;
+    }
+
+    if (gen_clk_new(0b00100000)) {
+      state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
+      state_new.lcd.NYPE_x113p = state_old.lcd.RUTU_x113p;
+
+      if (!state_old.lcd.NYPE_x113p && state_new.lcd.NYPE_x113p) {
+        state_new.lcd.POPU_y144p = ly_144_old;
+        state_new.lcd.MYTA_y153p = ly_153_old;
+      }
+
+      state_new.reg_lx = state_old.reg_lx + 1;
+    }
+
+    if (gen_clk_new(0b00001000)) {
+      state_new.lcd.CATU_x113p = state_new.lcd.RUTU_x113p && !ly_144_old;
+    }
+
+    if (gen_clk_new(0b00000010)) {
+      state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
+      state_new.lcd.RUTU_x113p = (state_old.reg_lx == 113);
+
+      if (!state_old.lcd.RUTU_x113p && state_new.lcd.RUTU_x113p) {
+        state_new.reg_ly = uint8_t(reg_ly_old + 1);
+      }
+
+      uint8_t lx_old = (uint8_t)state_old.reg_lx;
+      state_new.lcd.SYGU_LINE_STROBE = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
+    }
+
+    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
+    if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
+    if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
+  }
+
+  const auto reg_ly_new = state_new.reg_ly;
+
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp && (cpu_addr_new == 0xFF44)) {
+    state_new.cpu_dbus = reg_ly_new;
+  }
+
+  //----------
 
   if (state_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF00 && gen_clk_new(0b00000001)) {
     set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));

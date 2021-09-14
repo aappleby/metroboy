@@ -1767,14 +1767,15 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //-----------------------
   // VID RST BRANCH
 
-  if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    state_new.from_reg(reg_new);
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+
+  if (get_bit(state_new.reg_lcdc, 7)) {
 
     state_new.sprite_scanner.DOBA_SCAN_DONE_Bp = 0;
     state_new.sprite_scanner.BYBA_SCAN_DONE_Ap = 0;
@@ -1838,7 +1839,7 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //-----------------------
   // VID RUN BRANCH
 
-  if (!reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
+  if (!get_bit(state_new.reg_lcdc, 7)) {
     // STATE STEAMROLLER
     // STATE STEAMROLLER
     // STATE STEAMROLLER

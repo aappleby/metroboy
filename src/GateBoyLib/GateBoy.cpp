@@ -1768,66 +1768,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // VID RST BRANCH
 
   if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-    reg.sprite_scanner.DOBA_SCAN_DONE_Bp = 0;
-    reg.sprite_scanner.BYBA_SCAN_DONE_Ap = 0;
-    reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp = 0;
-    reg.sprite_scanner.BESU_SCANNINGn = 0;
-    reg.sprite_scanner.CENO_SCANNINGn = 0;
-    bit_unpack(reg.scan_counter, 0);
-    reg.sprite_scanner.FETO_SCAN_DONEp = 0;
-    reg.VOGA_HBLANKp = 0;
-    reg.XYMU_RENDERINGn = 1;
-
-    if (gen_clk_new(0b01010101)) {
-      reg.sfetch_control.SOBU_SFETCH_REQp.  state = reg.FEPO_STORE_MATCHp && !reg_old.win_ctrl.RYDY_WIN_HITp && reg.tfetch_control.LYRY_BFETCH_DONEp && !reg.sfetch_control.TAKA_SFETCH_RUNNINGp;
-    }
-    if (gen_clk_new(0b10101010)) {
-      reg.sfetch_control.SUDA_SFETCH_REQp   = reg.sfetch_control.SOBU_SFETCH_REQp;
-      reg.sfetch_control.TYFO_SFETCH_S0p_D1 = reg.sfetch_counter.TOXE_SFETCH_S0p;
-    }
-
-    reg.sfetch_counter.TOXE_SFETCH_S0p = 0;
-    reg.sfetch_counter.TULY_SFETCH_S1p = 0;
-    reg.sfetch_counter.TESE_SFETCH_S2p = 0;
-    reg.sfetch_control.TOBU_SFETCH_S1p_D2 = 0;
-    reg.sfetch_control.VONU_SFETCH_S1p_D4 = 0;
-    reg.sfetch_control.SEBA_SFETCH_S1p_D5 = 0;
-
-    reg.sfetch_control.TEXY_SFETCHINGp = 0;
-
-    reg.sfetch_control.WUTY_SFETCH_DONE_TRIGp = 0;
-
-    reg.win_ctrl.NUNU_WIN_MATCHp = 0;
-    reg.win_ctrl.NOPA_WIN_MODE_Bp = 0;
-    reg.win_ctrl.PYNU_WIN_MODE_Ap = 0;
-    reg.win_ctrl.SOVY_WIN_HITp = 0;
-    reg.win_ctrl.RYDY_WIN_HITp = 0;
-    reg.win_ctrl.PUKU_WIN_HITn = 1;
-
-    reg.tfetch_control.PYGO_FETCH_DONEp = 0;
-    reg.tfetch_control.PORY_FETCH_DONEp = 0;
-    reg.tfetch_control.NYKA_FETCH_DONEp = 0;
-    reg.tfetch_control.POKY_PRELOAD_LATCHp = 0;
-
-    reg.sfetch_control.TAKA_SFETCH_RUNNINGp = 1;
-
-    reg.sprite_scanner.DEZY_COUNT_CLKp = 0;
-
-    bit_unpack(reg.sprite_counter, 0);
-    bit_unpack(reg.sprite_reset_flags, 0);
-    bit_unpack(reg.sprite_store_flags, 0);
-
-    bit_unpack(reg.store_x0, 0xFF);
-    bit_unpack(reg.store_x1, 0xFF);
-    bit_unpack(reg.store_x2, 0xFF);
-    bit_unpack(reg.store_x3, 0xFF);
-    bit_unpack(reg.store_x4, 0xFF);
-    bit_unpack(reg.store_x5, 0xFF);
-    bit_unpack(reg.store_x6, 0xFF);
-    bit_unpack(reg.store_x7, 0xFF);
-    bit_unpack(reg.store_x8, 0xFF);
-    bit_unpack(reg.store_x9, 0xFF);
-
     // STATE STEAMROLLER
     // STATE STEAMROLLER
     // STATE STEAMROLLER
@@ -1835,6 +1775,64 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     // STATE STEAMROLLER
     // STATE STEAMROLLER
     // STATE STEAMROLLER
+
+    state_new.sprite_scanner.DOBA_SCAN_DONE_Bp = 0;
+    state_new.sprite_scanner.BYBA_SCAN_DONE_Ap = 0;
+    state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp = 0;
+    state_new.sprite_scanner.BESU_SCANNINGn = 0;
+    state_new.sprite_scanner.CENO_SCANNINGn = 0;
+    state_new.scan_counter = 0;
+    state_new.sprite_scanner.FETO_SCAN_DONEp = 0;
+    state_new.VOGA_HBLANKp = 0;
+    state_new.XYMU_RENDERINGn = 1;
+
+    if (gen_clk_new(0b01010101)) {
+      state_new.sfetch_control.SOBU_SFETCH_REQp.  state = state_new.FEPO_STORE_MATCHp && !state_old.win_ctrl.RYDY_WIN_HITp && state_new.tfetch_control.LYRY_BFETCH_DONEp && !state_new.sfetch_control.TAKA_SFETCH_RUNNINGp;
+    }
+    if (gen_clk_new(0b10101010)) {
+      state_new.sfetch_control.SUDA_SFETCH_REQp   = state_new.sfetch_control.SOBU_SFETCH_REQp;
+      state_new.sfetch_control.TYFO_SFETCH_S0p_D1 = get_bit(state_new.sfetch_counter, 0);
+    }
+
+    state_new.sfetch_counter = 0;
+    state_new.sfetch_control.TOBU_SFETCH_S1p_D2 = 0;
+    state_new.sfetch_control.VONU_SFETCH_S1p_D4 = 0;
+    state_new.sfetch_control.SEBA_SFETCH_S1p_D5 = 0;
+
+    state_new.sfetch_control.TEXY_SFETCHINGp = 0;
+
+    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp = 0;
+
+    state_new.win_ctrl.NUNU_WIN_MATCHp = 0;
+    state_new.win_ctrl.NOPA_WIN_MODE_Bp = 0;
+    state_new.win_ctrl.PYNU_WIN_MODE_Ap = 0;
+    state_new.win_ctrl.SOVY_WIN_HITp = 0;
+    state_new.win_ctrl.RYDY_WIN_HITp = 0;
+    state_new.win_ctrl.PUKU_WIN_HITn = 1;
+
+    state_new.tfetch_control.PYGO_FETCH_DONEp = 0;
+    state_new.tfetch_control.PORY_FETCH_DONEp = 0;
+    state_new.tfetch_control.NYKA_FETCH_DONEp = 0;
+    state_new.tfetch_control.POKY_PRELOAD_LATCHp = 0;
+
+    state_new.sfetch_control.TAKA_SFETCH_RUNNINGp = 1;
+
+    state_new.sprite_scanner.DEZY_COUNT_CLKp = 0;
+
+    state_new.sprite_counter = 0;
+    state_new.sprite_reset_flags = 0;
+    state_new.sprite_store_flags = 0;
+
+    state_new.store_x0 = 0xFF;
+    state_new.store_x1 = 0xFF;
+    state_new.store_x2 = 0xFF;
+    state_new.store_x3 = 0xFF;
+    state_new.store_x4 = 0xFF;
+    state_new.store_x5 = 0xFF;
+    state_new.store_x6 = 0xFF;
+    state_new.store_x7 = 0xFF;
+    state_new.store_x8 = 0xFF;
+    state_new.store_x9 = 0xFF;
   }
 
   //-----------------------

@@ -1590,85 +1590,97 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------
 
-  if (reg_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF00 && gen_clk_new(0b00000001)) {
-    reg_new.reg_joy.KELY_JOYP_UDLRp = reg_old.cpu_dbus.BUS_CPU_D04p;
-    reg_new.reg_joy.COFY_JOYP_ABCSp = reg_old.cpu_dbus.BUS_CPU_D05p;
+  /*
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF00 && gen_clk_new(0b00000001)) {
+    set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
+    set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
 
-    reg_new.joy_ext.PIN_63_JOY_P14 = !reg_new.reg_joy.KELY_JOYP_UDLRp;
-    reg_new.joy_ext.PIN_62_JOY_P15 = !reg_new.reg_joy.COFY_JOYP_ABCSp;
+    set_bit(state_new.joy_ext, 4, get_bit(state_new.reg_joy, 0));
+    set_bit(state_new.joy_ext, 5, get_bit(state_new.reg_joy, 1));
+  }
+  */
+
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF00 && gen_clk_new(0b00000001)) {
+    set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
+    set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
+
+    set_bit(state_new.joy_ext, 4, !get_bit(state_new.reg_joy, 0));
+    set_bit(state_new.joy_ext, 5, !get_bit(state_new.reg_joy, 1));
   }
 
   bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
 
-  if (reg_new.joy_ext.PIN_63_JOY_P14) {
+  if (get_bit(state_new.joy_ext, 4)) {
     EXT_button0 = get_bit(sys.buttons, 0); // RIGHT
     EXT_button1 = get_bit(sys.buttons, 1); // LEFT
     EXT_button2 = get_bit(sys.buttons, 2); // UP
     EXT_button3 = get_bit(sys.buttons, 3); // DOWN
   }
-  else if (reg_new.joy_ext.PIN_62_JOY_P15) {
+  else if (get_bit(state_new.joy_ext, 5)) {
     EXT_button0 = get_bit(sys.buttons, 4); // A
     EXT_button1 = get_bit(sys.buttons, 5); // B
     EXT_button2 = get_bit(sys.buttons, 6); // SELECT
     EXT_button3 = get_bit(sys.buttons, 7); // START
   }
 
-  reg_new.joy_ext.PIN_67_JOY_P10 = EXT_button0;
-  reg_new.joy_ext.PIN_66_JOY_P11 = EXT_button1;
-  reg_new.joy_ext.PIN_65_JOY_P12 = EXT_button2;
-  reg_new.joy_ext.PIN_64_JOY_P13 = EXT_button3;
+  set_bit(state_new.joy_ext, 0, EXT_button0);
+  set_bit(state_new.joy_ext, 1, EXT_button1);
+  set_bit(state_new.joy_ext, 2, EXT_button2);
+  set_bit(state_new.joy_ext, 3, EXT_button3);
 
   wire any_button = EXT_button0 || EXT_button1 || EXT_button2 || EXT_button3;
 
+
   if (gen_clk_new(0b10000000)) {
-    reg_new.int_ctrl.AWOB_WAKE_CPU = !any_button;
-    reg_new.int_ctrl.SIG_CPU_WAKE = !any_button;
+    state_new.int_ctrl.AWOB_WAKE_CPU = !any_button;
+    state_new.int_ctrl.SIG_CPU_WAKE = !any_button;
   }
 
   if (gen_clk_new(0b10000000)) {
-    reg_new.joy_int.APUG_JP_GLITCH3 = reg_new.joy_int.AGEM_JP_GLITCH2;
-    reg_new.joy_int.AGEM_JP_GLITCH2 = reg_new.joy_int.ACEF_JP_GLITCH1;
-    reg_new.joy_int.ACEF_JP_GLITCH1 = reg_new.joy_int.BATU_JP_GLITCH0;
-    reg_new.joy_int.BATU_JP_GLITCH0 = !any_button;
+    state_new.joy_int.APUG_JP_GLITCH3 = state_new.joy_int.AGEM_JP_GLITCH2;
+    state_new.joy_int.AGEM_JP_GLITCH2 = state_new.joy_int.ACEF_JP_GLITCH1;
+    state_new.joy_int.ACEF_JP_GLITCH1 = state_new.joy_int.BATU_JP_GLITCH0;
+    state_new.joy_int.BATU_JP_GLITCH0 = !any_button;
   }
 
-  if (cpu_addr_new == 0xFF00 && reg_new.cpu_signals.SIG_IN_CPU_RDp) {
-    reg_new.cpu_dbus.BUS_CPU_D00p = !reg_new.joy_latch.KEVU_JOYP_L0n;
-    reg_new.cpu_dbus.BUS_CPU_D01p = !reg_new.joy_latch.KAPA_JOYP_L1n;
-    reg_new.cpu_dbus.BUS_CPU_D02p = !reg_new.joy_latch.KEJA_JOYP_L2n;
-    reg_new.cpu_dbus.BUS_CPU_D03p = !reg_new.joy_latch.KOLO_JOYP_L3n;
-    reg_new.cpu_dbus.BUS_CPU_D04p =  reg_new.reg_joy.KELY_JOYP_UDLRp;
-    reg_new.cpu_dbus.BUS_CPU_D05p =  reg_new.reg_joy.COFY_JOYP_ABCSp;
+  if (cpu_addr_new == 0xFF00 && state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    set_bit(state_new.cpu_dbus, 0, !get_bit(state_new.joy_latch, 0));
+    set_bit(state_new.cpu_dbus, 1, !get_bit(state_new.joy_latch, 1));
+    set_bit(state_new.cpu_dbus, 2, !get_bit(state_new.joy_latch, 2));
+    set_bit(state_new.cpu_dbus, 3, !get_bit(state_new.joy_latch, 3));
+    set_bit(state_new.cpu_dbus, 4,  get_bit(state_new.reg_joy, 0));
+    set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
   }
   else {
-    reg_new.joy_latch.KEVU_JOYP_L0n = reg_new.joy_ext.PIN_67_JOY_P10;
-    reg_new.joy_latch.KAPA_JOYP_L1n = reg_new.joy_ext.PIN_66_JOY_P11;
-    reg_new.joy_latch.KEJA_JOYP_L2n = reg_new.joy_ext.PIN_65_JOY_P12;
-    reg_new.joy_latch.KOLO_JOYP_L3n = reg_new.joy_ext.PIN_64_JOY_P13;
+    set_bit(state_new.joy_latch, 0, get_bit(state_new.joy_ext, 0));
+    set_bit(state_new.joy_latch, 1, get_bit(state_new.joy_ext, 1));
+    set_bit(state_new.joy_latch, 2, get_bit(state_new.joy_ext, 2));
+    set_bit(state_new.joy_latch, 3, get_bit(state_new.joy_ext, 3));
   }
 
   //tock_serial_logic();
   //tock_timer_logic();
 
-  if (reg_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-    if (cpu_addr_new == 0xFF06) bit_unpack(reg_new.reg_tma, bit_pack(reg_new.cpu_dbus));
-    if (cpu_addr_new == 0xFF07) bit_unpack(reg_new.reg_tac, bit_pack(reg_new.cpu_dbus));
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    if (cpu_addr_new == 0xFF06) state_new.reg_tma = state_new.cpu_dbus;
+    if (cpu_addr_new == 0xFF07) state_new.reg_tac = state_new.cpu_dbus;
   }
 
   if (gen_clk_new(0b10000000)) {
-    reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp = !reg_old.reg_tima.NUGA_TIMA7p && reg_old.int_ctrl.NYDU_TIMA7p_DELAY;
-    reg_new.int_ctrl.NYDU_TIMA7p_DELAY = reg_old.reg_tima.NUGA_TIMA7p;
+    state_new.int_ctrl.MOBA_TIMER_OVERFLOWp = !get_bit(state_old.reg_tima, 7) && state_old.int_ctrl.NYDU_TIMA7p_DELAY;
+    state_new.int_ctrl.NYDU_TIMA7p_DELAY = get_bit(state_old.reg_tima, 7);
   }
 
   {
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    state_new.from_reg(reg_new);
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-
     const wire UKAP_CLK_MUXa_new = get_bit(state_new.reg_tac, 0) ? get_bit(state_new.reg_div, 5) : get_bit(state_new.reg_div, 3);
     const wire TEKO_CLK_MUXb_new = get_bit(state_new.reg_tac, 0) ? get_bit(state_new.reg_div, 1) : get_bit(state_new.reg_div, 7);
     const wire TECY_CLK_MUXc_new = get_bit(state_new.reg_tac, 1) ? UKAP_CLK_MUXa_new : TEKO_CLK_MUXb_new;

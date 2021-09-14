@@ -1761,12 +1761,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  const auto dma_addr_new = (bit_pack_inv(reg_new.reg_dma) << 8) | bit_pack(reg_new.dma_lo);
-  const auto dma_addr_vram_new = reg_new.MATU_DMA_RUNNINGp && (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
-
-  //-----------------------
-  // VID RST BRANCH
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -1774,6 +1768,12 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  const auto dma_addr_new = ((state_new.reg_dma ^ 0xFF) << 8) | state_new.dma_lo;
+  const auto dma_addr_vram_new = state_new.MATU_DMA_RUNNINGp && (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
+
+  //-----------------------
+  // VID RST BRANCH
 
   if (get_bit(state_new.reg_lcdc, 7)) {
 

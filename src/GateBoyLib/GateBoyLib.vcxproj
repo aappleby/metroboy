@@ -43,6 +43,7 @@
     <ClCompile Include="GateBoyVramBus.cpp" />
     <ClCompile Include="GateBoyZramBus.cpp" />
     <ClCompile Include="Gates.cpp" />
+    <ClCompile Include="LogicBoy.cpp" />
     <ClCompile Include="Probe.cpp" />
     <ClCompile Include="GateBoyLCD.cpp" />
     <ClCompile Include="GateBoySpriteStore.cpp" />
@@ -65,6 +66,7 @@
     <ClInclude Include="GateBoyThread.h" />
     <ClInclude Include="GateBoyZramBus.h" />
     <ClInclude Include="Gates.h" />
+    <ClInclude Include="LogicBoy.h" />
     <ClInclude Include="Probe.h" />
     <ClInclude Include="GateBoyLCD.h" />
     <ClInclude Include="Sch_ApuControl.h" />

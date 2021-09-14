@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
   SetPriorityClass(GetCurrentProcess(), 0x00000080);
 #endif
 
-  printf("%d %d\n", (int)sizeof(GateBoyReg), (int)sizeof(GateBoyState));
+  printf("%d %d\n", (int)sizeof(GateBoyState), (int)sizeof(LogicBoyState));
 
   App* app = new GateBoyApp();
   AppHost* app_host = new AppHost(app);
@@ -528,7 +528,7 @@ Step controls:
     int code_size = 0;
     int code_base = 0;
 
-    if (!bit(gb.reg.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
+    if (!bit(gb.gb_state.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
       code      = DMG_ROM_blob.data();
       code_size = (int)DMG_ROM_blob.size();
       code_base = ADDR_BOOT_ROM_BEGIN;
@@ -599,8 +599,8 @@ Step controls:
   {
     memset(overlay, 0, sizeof(overlay));
 
-    int fb_x = bit_pack(gb.reg.pix_count) - 8;
-    int fb_y = bit_pack(gb.reg.reg_ly);
+    int fb_x = bit_pack(gb.gb_state.pix_count) - 8;
+    int fb_y = bit_pack(gb.gb_state.reg_ly);
 
     if (fb_y >= 0 && fb_y < 144) {
       for (int x = 0; x < 160; x++) {
@@ -678,11 +678,11 @@ Step controls:
   int row3 = 640;
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 0 ==========\001", col7, row1);
-  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, vid_ram, 0,  (int)bit(gb.reg.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, vid_ram, 0,  (int)bit(gb.gb_state.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
   //gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, vid_ram, (int)bit(gb.reg_lcdc.XAFO_LCDC_BGMAPn.qn_old()),  (int)bit(gb.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 1 ==========\001", col7, row2);
-  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, vid_ram, 1, (int)bit(gb.reg.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, vid_ram, 1, (int)bit(gb.gb_state.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
   //gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, vid_ram, (int)bit(gb.reg_lcdc.WOKY_LCDC_WINMAPn.qn_old()), (int)bit(gb.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Tiles ==========\001", col7, row3);

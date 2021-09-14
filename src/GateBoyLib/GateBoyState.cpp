@@ -3,8 +3,10 @@
 
 #pragma warning(disable:4244) // conversion from uint32_t to uint8_t
 
-void GateBoyState::to_reg(GateBoyReg& dst) const {
-  const GateBoyState& src = *this;
+//-----------------------------------------------------------------------------
+
+void LogicBoyState::to_gb_state(GateBoyState& dst) const {
+  const LogicBoyState& src = *this;
 
   dst.SIG_VCC = 1;
   dst.SIG_GND = 0;
@@ -156,8 +158,10 @@ void GateBoyState::to_reg(GateBoyReg& dst) const {
   //bit_unpack(dst.reg_NR52, src.reg_NR52);
 }
 
-void GateBoyState::from_reg(const GateBoyReg& src) {
-  GateBoyState& dst = *this;
+//-----------------------------------------------------------------------------
+
+void LogicBoyState::from_gb_state(const GateBoyState& src) {
+  LogicBoyState& dst = *this;
   
   dst.reg_joy = bit_pack(src.reg_joy);
   //dst.reg_sb = bit_pack(src.reg_sb);
@@ -307,3 +311,5 @@ void GateBoyState::from_reg(const GateBoyReg& src) {
   //dst.reg_NR51 = (src.reg_NR51);
   //dst.reg_NR52 = (src.reg_NR52);
 }
+
+//-----------------------------------------------------------------------------

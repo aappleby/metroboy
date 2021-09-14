@@ -20,12 +20,12 @@
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
 
-struct GateBoyReg;
+struct GateBoyState;
 
 #pragma pack(push, 1)
-struct GateBoyState {
-  void to_reg(GateBoyReg& dst) const;
-  void from_reg(const GateBoyReg& src);
+struct LogicBoyState {
+  void to_gb_state(GateBoyState& dst) const;
+  void from_gb_state(const GateBoyState& src);
 
   uint8_t  reg_joy;  // 0xFF00
   uint8_t  reg_sb; // 0xFF01

@@ -1429,73 +1429,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //-----------------------------------------------------------------------------
 
-  reg_new.sys_clk.PIN_74_CLK.CLK = gen_clk_new(0b10101010);
-  reg_new.sys_clk.PIN_74_CLK.CLKGOOD = 1;
-
-  reg_new.sys_rst.PIN_71_RST = 0;
-  reg_new.sys_rst.PIN_76_T2 = 0;
-  reg_new.sys_rst.PIN_77_T1 = 0;
-
-  bit_unpack(reg_new.cpu_ack, cpu.core.int_ack);
-
-  reg_new.sys_clk.SIG_CPU_CLKREQ = 1;
-
-  reg_new.cpu_signals.SIG_CPU_ADDR_HIp = cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFFFF;
-  reg_new.cpu_signals.SIG_CPU_UNOR_DBG = 0;
-  reg_new.cpu_signals.SIG_CPU_UMUT_DBG = 0;
-
-  //-----------------------------------------------------------------------------
-  // Sys clock signals
-
-  reg_new.sys_clk.PIN_73_CLK_DRIVE = reg_new.sys_clk.PIN_74_CLK.CLK;
-  reg_new.sys_clk.AVET_DEGLITCH = reg_new.sys_clk.PIN_74_CLK.CLK;
-  reg_new.sys_clk.ANOS_DEGLITCH = !reg_new.sys_clk.PIN_74_CLK.CLK;
-
-  reg_new.sys_clk.AFUR_xxxxEFGH = gen_clk_new(0b00001111);
-  reg_new.sys_clk.ALEF_AxxxxFGH = gen_clk_new(0b10000111);
-  reg_new.sys_clk.APUK_ABxxxxGH = gen_clk_new(0b11000011);
-  reg_new.sys_clk.ADYK_ABCxxxxH = gen_clk_new(0b11100001);
-
-  reg_new.sys_clk.PIN_75_CLK_OUT = gen_clk_new(0b00001111);
-
-  reg_new.sys_clk.SIG_CPU_BOWA_Axxxxxxx = gen_clk_new(0b10000000);
-  reg_new.sys_clk.SIG_CPU_BEDO_xBCDEFGH = gen_clk_new(0b01111111);
-  reg_new.sys_clk.SIG_CPU_BEKO_ABCDxxxx = gen_clk_new(0b11110000);
-  reg_new.sys_clk.SIG_CPU_BUDE_xxxxEFGH = gen_clk_new(0b00001111);
-  reg_new.sys_clk.SIG_CPU_BOLO_ABCDEFxx = gen_clk_new(0b11111100);
-  reg_new.sys_clk.SIG_CPU_BUKE_AxxxxxGH = gen_clk_new(0b10000011);
-  reg_new.sys_clk.SIG_CPU_BOMA_xBCDEFGH = gen_clk_new(0b01111111);
-  reg_new.sys_clk.SIG_CPU_BOGA_Axxxxxxx = gen_clk_new(0b10000000);
-
-  reg_new.cpu_signals.TEDO_CPU_RDp = reg_new.cpu_signals.SIG_IN_CPU_RDp;
-  reg_new.cpu_signals.APOV_CPU_WRp = gen_clk_new(0b00001110) && reg_new.cpu_signals.SIG_IN_CPU_WRp;
-  reg_new.cpu_signals.TAPU_CPU_WRp = reg_new.cpu_signals.APOV_CPU_WRp;
-  reg_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK = gen_clk_new(0b00111111) && reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp;
-
-  //----------
-  // DIV
-
-  if (gen_clk_new(0b10000000)) bit_unpack(reg_new.reg_div, bit_pack(reg_new.reg_div) + 1);
-  if (cpu_addr_new == 0xFF04 && reg_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110)) bit_unpack(reg_new.reg_div, 0);
-  if (cpu_addr_new == 0xFF04 && reg_new.cpu_signals.SIG_IN_CPU_RDp) bit_unpack(reg_new.cpu_dbus, bit_pack(reg_new.reg_div) >> 6);
-
-  //----------
-  // In logic mode we don't care about the power-on behavior, we only want behavior to match when running code. So, we set
-  // this stuff to zeroes.
-
-  reg_new.sys_rst.AFER_SYS_RSTp = 0;
-  reg_new.sys_rst.TUBO_WAITINGp = 0;
-  reg_new.sys_rst.ASOL_POR_DONEn = 0;
-  reg_new.sys_rst.SIG_CPU_EXT_CLKGOOD = 1;
-  reg_new.sys_rst.SIG_CPU_EXT_RESETp = 0;
-  reg_new.sys_rst.SIG_CPU_STARTp = 0;
-  reg_new.sys_rst.SIG_CPU_INT_RESETp = 0;;
-  reg_new.sys_rst.SOTO_DBG_VRAMp = 0;
-
-  //----------
-  // LCDC
-  // has to be near the top as it controls the video reset signal
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -1503,6 +1436,73 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  state_new.sys_clk.PIN_74_CLK.CLK = gen_clk_new(0b10101010);
+  state_new.sys_clk.PIN_74_CLK.CLKGOOD = 1;
+
+  state_new.sys_rst.PIN_71_RST = 0;
+  state_new.sys_rst.PIN_76_T2 = 0;
+  state_new.sys_rst.PIN_77_T1 = 0;
+
+  state_new.cpu_ack = cpu.core.int_ack;
+
+  state_new.sys_clk.SIG_CPU_CLKREQ = 1;
+
+  state_new.cpu_signals.SIG_CPU_ADDR_HIp = cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFFFF;
+  state_new.cpu_signals.SIG_CPU_UNOR_DBG = 0;
+  state_new.cpu_signals.SIG_CPU_UMUT_DBG = 0;
+
+  //-----------------------------------------------------------------------------
+  // Sys clock signals
+
+  state_new.sys_clk.PIN_73_CLK_DRIVE = state_new.sys_clk.PIN_74_CLK.CLK;
+  state_new.sys_clk.AVET_DEGLITCH = state_new.sys_clk.PIN_74_CLK.CLK;
+  state_new.sys_clk.ANOS_DEGLITCH = !state_new.sys_clk.PIN_74_CLK.CLK;
+
+  state_new.sys_clk.AFUR_xxxxEFGH = gen_clk_new(0b00001111);
+  state_new.sys_clk.ALEF_AxxxxFGH = gen_clk_new(0b10000111);
+  state_new.sys_clk.APUK_ABxxxxGH = gen_clk_new(0b11000011);
+  state_new.sys_clk.ADYK_ABCxxxxH = gen_clk_new(0b11100001);
+
+  state_new.sys_clk.PIN_75_CLK_OUT = gen_clk_new(0b00001111);
+
+  state_new.sys_clk.SIG_CPU_BOWA_Axxxxxxx = gen_clk_new(0b10000000);
+  state_new.sys_clk.SIG_CPU_BEDO_xBCDEFGH = gen_clk_new(0b01111111);
+  state_new.sys_clk.SIG_CPU_BEKO_ABCDxxxx = gen_clk_new(0b11110000);
+  state_new.sys_clk.SIG_CPU_BUDE_xxxxEFGH = gen_clk_new(0b00001111);
+  state_new.sys_clk.SIG_CPU_BOLO_ABCDEFxx = gen_clk_new(0b11111100);
+  state_new.sys_clk.SIG_CPU_BUKE_AxxxxxGH = gen_clk_new(0b10000011);
+  state_new.sys_clk.SIG_CPU_BOMA_xBCDEFGH = gen_clk_new(0b01111111);
+  state_new.sys_clk.SIG_CPU_BOGA_Axxxxxxx = gen_clk_new(0b10000000);
+
+  state_new.cpu_signals.TEDO_CPU_RDp = state_new.cpu_signals.SIG_IN_CPU_RDp;
+  state_new.cpu_signals.APOV_CPU_WRp = gen_clk_new(0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp;
+  state_new.cpu_signals.TAPU_CPU_WRp = state_new.cpu_signals.APOV_CPU_WRp;
+  state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK = gen_clk_new(0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp;
+
+  //----------
+  // DIV
+
+  if (gen_clk_new(0b10000000)) state_new.reg_div = state_new.reg_div + 1;
+  if (cpu_addr_new == 0xFF04 && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00001110)) state_new.reg_div = 0;
+  if (cpu_addr_new == 0xFF04 && state_new.cpu_signals.SIG_IN_CPU_RDp) state_new.cpu_dbus = uint8_t(state_new.reg_div >> 6);
+
+  //----------
+  // In logic mode we don't care about the power-on behavior, we only want behavior to match when running code. So, we set
+  // this stuff to zeroes.
+
+  state_new.sys_rst.AFER_SYS_RSTp = 0;
+  state_new.sys_rst.TUBO_WAITINGp = 0;
+  state_new.sys_rst.ASOL_POR_DONEn = 0;
+  state_new.sys_rst.SIG_CPU_EXT_CLKGOOD = 1;
+  state_new.sys_rst.SIG_CPU_EXT_RESETp = 0;
+  state_new.sys_rst.SIG_CPU_STARTp = 0;
+  state_new.sys_rst.SIG_CPU_INT_RESETp = 0;;
+  state_new.sys_rst.SOTO_DBG_VRAMp = 0;
+
+  //----------
+  // LCDC
+  // has to be near the top as it controls the video reset signal
 
   if (state_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF40 && gen_clk_new(0b00000001)) {
     state_new.reg_lcdc = ~state_old.cpu_dbus;

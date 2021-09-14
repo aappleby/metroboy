@@ -2187,30 +2187,20 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   if (!state_new.XYMU_RENDERINGn && !state_new.sprite_scanner.CENO_SCANNINGn && !get_bit(state_new.reg_lcdc, 1)) {
     const uint8_t px = (uint8_t)bit_pack(reg.pix_count);
-
-    bool M0 = px == state_new.store_x0;
-    bool M1 = px == state_new.store_x1;
-    bool M2 = px == state_new.store_x2;
-    bool M3 = px == state_new.store_x3;
-    bool M4 = px == state_new.store_x4;
-    bool M5 = px == state_new.store_x5;
-    bool M6 = px == state_new.store_x6;
-    bool M7 = px == state_new.store_x7;
-    bool M8 = px == state_new.store_x8;
-    bool M9 = px == state_new.store_x9;
-
-    state_new.FEPO_STORE_MATCHp = M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9;
+    
+    state_new.FEPO_STORE_MATCHp = 0;
     state_new.sprite_match_flags = 0;
-    state_new.sprite_match_flags |= !!(M0 & !(0)) << 0;
-    state_new.sprite_match_flags |= !!(M1 & !(M0)) << 1;
-    state_new.sprite_match_flags |= !!(M2 & !(M0 | M1)) << 2;
-    state_new.sprite_match_flags |= !!(M3 & !(M0 | M1 | M2)) << 3;
-    state_new.sprite_match_flags |= !!(M4 & !(M0 | M1 | M2 | M3)) << 4;
-    state_new.sprite_match_flags |= !!(M5 & !(M0 | M1 | M2 | M3 | M4)) << 5;
-    state_new.sprite_match_flags |= !!(M6 & !(M0 | M1 | M2 | M3 | M4 | M5)) << 6;
-    state_new.sprite_match_flags |= !!(M7 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6)) << 7;
-    state_new.sprite_match_flags |= !!(M8 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7)) << 8;
-    state_new.sprite_match_flags |= !!(M9 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8)) << 9;
+
+    if      (px == state_new.store_x0) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000000001; }
+    else if (px == state_new.store_x1) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000000010; }
+    else if (px == state_new.store_x2) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000000100; }
+    else if (px == state_new.store_x3) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000001000; }
+    else if (px == state_new.store_x4) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000010000; }
+    else if (px == state_new.store_x5) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000100000; }
+    else if (px == state_new.store_x6) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0001000000; }
+    else if (px == state_new.store_x7) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0010000000; }
+    else if (px == state_new.store_x8) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0100000000; }
+    else if (px == state_new.store_x9) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b1000000000; }
   }
 
 

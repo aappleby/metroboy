@@ -2099,60 +2099,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
 
-
-  //----------------------------------------
-  // Fine scroll match, sprite store match, clock pipe, and pixel counter are intertwined here.
-
-  // NOTE we reassign this below because there's a bit of a feedback loop
-  wire pause_rendering_new = reg_new.win_ctrl.RYDY_WIN_HITp || !reg_new.tfetch_control.POKY_PRELOAD_LATCHp || reg_new.FEPO_STORE_MATCHp || reg_new.WODU_HBLANKp;
-
-  if (gen_clk_new(0b01010101)) {
-    if (!pause_rendering_new) {
-      reg.fine_scroll.PUXA_SCX_FINE_MATCH_A = reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn && (bit_pack_inv(&reg_old.reg_scx.DATY_SCX0n, 3) == bit_pack(reg_old.fine_count));
-    }
-  }
-  else {
-    reg.fine_scroll.NYZE_SCX_FINE_MATCH_B = reg.fine_scroll.PUXA_SCX_FINE_MATCH_A;
-  }
-
-  if (reg_new.XYMU_RENDERINGn) {
-    reg.fine_scroll.ROXY_FINE_SCROLL_DONEn = 1;
-    reg.fine_scroll.NYZE_SCX_FINE_MATCH_B = 0;
-    reg.fine_scroll.PUXA_SCX_FINE_MATCH_A = 0;
-  }
-
-  if (reg.fine_scroll.PUXA_SCX_FINE_MATCH_A && !reg.fine_scroll.NYZE_SCX_FINE_MATCH_B) {
-    reg.fine_scroll.ROXY_FINE_SCROLL_DONEn = 0;
-  }
-
-  if (!reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-    if (reg_new.reg_lcdc.WYMO_LCDC_WINENn) {
-      reg.win_ctrl.PYNU_WIN_MODE_Ap = 0;
-      reg.win_ctrl.RYDY_WIN_HITp = 0;
-      reg.win_ctrl.PUKU_WIN_HITn = 1;
-    }
-    else {
-      
-      if (reg.win_ctrl.NUNU_WIN_MATCHp) {
-        reg.win_ctrl.PYNU_WIN_MODE_Ap = 1;
-      }
-      
-      if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
-        reg.tfetch_control.PORY_FETCH_DONEp = 0;
-        reg.tfetch_control.NYKA_FETCH_DONEp = 0;
-      }
-
-      if (reg.tfetch_control.PORY_FETCH_DONEp) {
-        reg.win_ctrl.RYDY_WIN_HITp = 0;
-        reg.win_ctrl.PUKU_WIN_HITn = 1;
-      }
-      else if (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) {
-        reg.win_ctrl.RYDY_WIN_HITp = 1;
-        reg.win_ctrl.PUKU_WIN_HITn = 0;
-      }
-    }
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2160,6 +2106,60 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+
+  //----------------------------------------
+  // Fine scroll match, sprite store match, clock pipe, and pixel counter are intertwined here.
+
+  // NOTE we reassign this below because there's a bit of a feedback loop
+  wire pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || state_new.WODU_HBLANKp;
+
+  if (gen_clk_new(0b01010101)) {
+    if (!pause_rendering_new) {
+      state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn && (((state_old.reg_scx & 0b111) ^ 0b111) == state_old.fine_count);
+    }
+  }
+  else {
+    state_new.fine_scroll.NYZE_SCX_FINE_MATCH_B = state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A;
+  }
+
+  if (state_new.XYMU_RENDERINGn) {
+    state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn = 1;
+    state_new.fine_scroll.NYZE_SCX_FINE_MATCH_B = 0;
+    state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A = 0;
+  }
+
+  if (state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A && !state_new.fine_scroll.NYZE_SCX_FINE_MATCH_B) {
+    state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn = 0;
+  }
+
+  if (!get_bit(state_new.reg_lcdc, 7)) {
+    if (get_bit(state_new.reg_lcdc, 5)) {
+      state_new.win_ctrl.PYNU_WIN_MODE_Ap = 0;
+      state_new.win_ctrl.RYDY_WIN_HITp = 0;
+      state_new.win_ctrl.PUKU_WIN_HITn = 1;
+    }
+    else {
+      
+      if (state_new.win_ctrl.NUNU_WIN_MATCHp) {
+        state_new.win_ctrl.PYNU_WIN_MODE_Ap = 1;
+      }
+      
+      if (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
+        state_new.tfetch_control.PORY_FETCH_DONEp = 0;
+        state_new.tfetch_control.NYKA_FETCH_DONEp = 0;
+      }
+
+      if (state_new.tfetch_control.PORY_FETCH_DONEp) {
+        state_new.win_ctrl.RYDY_WIN_HITp = 0;
+        state_new.win_ctrl.PUKU_WIN_HITn = 1;
+      }
+      else if (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
+        state_new.win_ctrl.RYDY_WIN_HITp = 1;
+        state_new.win_ctrl.PUKU_WIN_HITn = 0;
+      }
+    }
+  }
 
   pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || state_new.WODU_HBLANKp;
 

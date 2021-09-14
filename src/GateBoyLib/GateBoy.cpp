@@ -2177,44 +2177,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     bit_unpack(reg.sprite_match_flags, 0);
   }
 
-  if (!reg_new.XYMU_RENDERINGn && !reg.sprite_scanner.CENO_SCANNINGn && !reg.reg_lcdc.XYLO_LCDC_SPENn) {
-    const uint8_t px = (uint8_t)bit_pack(reg.pix_count);
-
-    bool M0 = px == bit_pack(reg.store_x0);
-    bool M1 = px == bit_pack(reg.store_x1);
-    bool M2 = px == bit_pack(reg.store_x2);
-    bool M3 = px == bit_pack(reg.store_x3);
-    bool M4 = px == bit_pack(reg.store_x4);
-    bool M5 = px == bit_pack(reg.store_x5);
-    bool M6 = px == bit_pack(reg.store_x6);
-    bool M7 = px == bit_pack(reg.store_x7);
-    bool M8 = px == bit_pack(reg.store_x8);
-    bool M9 = px == bit_pack(reg.store_x9);
-
-    reg.FEPO_STORE_MATCHp = M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9;
-
-    reg.sprite_match_flags.GUVA_SPRITE0_GETp = M0 & !(0);
-    reg.sprite_match_flags.ENUT_SPRITE1_GETp = M1 & !(M0);
-    reg.sprite_match_flags.EMOL_SPRITE2_GETp = M2 & !(M0 | M1);
-    reg.sprite_match_flags.GYFY_SPRITE3_GETp = M3 & !(M0 | M1 | M2);
-    reg.sprite_match_flags.GONO_SPRITE4_GETp = M4 & !(M0 | M1 | M2 | M3);
-    reg.sprite_match_flags.GEGA_SPRITE5_GETp = M5 & !(M0 | M1 | M2 | M3 | M4);
-    reg.sprite_match_flags.XOJA_SPRITE6_GETp = M6 & !(M0 | M1 | M2 | M3 | M4 | M5);
-    reg.sprite_match_flags.GUTU_SPRITE7_GETp = M7 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6);
-    reg.sprite_match_flags.FOXA_SPRITE8_GETp = M8 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7);
-    reg.sprite_match_flags.GUZE_SPRITE9_GETp = M9 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8);
-  }
-
-
-  // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
-  reg.WODU_HBLANKp = !reg.FEPO_STORE_MATCHp && (bit_pack(reg.pix_count) & 167) == 167;
-
-  if (gen_clk_new(0b01010101)) {
-    if (!pause_rendering_new) reg.lcd.PAHO_X_8_SYNC = reg_old.pix_count.XYDO_PX3p;
-  }
-
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2222,6 +2184,44 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  if (!state_new.XYMU_RENDERINGn && !state_new.sprite_scanner.CENO_SCANNINGn && !get_bit(state_new.reg_lcdc, 1)) {
+    const uint8_t px = (uint8_t)bit_pack(reg.pix_count);
+
+    bool M0 = px == state_new.store_x0;
+    bool M1 = px == state_new.store_x1;
+    bool M2 = px == state_new.store_x2;
+    bool M3 = px == state_new.store_x3;
+    bool M4 = px == state_new.store_x4;
+    bool M5 = px == state_new.store_x5;
+    bool M6 = px == state_new.store_x6;
+    bool M7 = px == state_new.store_x7;
+    bool M8 = px == state_new.store_x8;
+    bool M9 = px == state_new.store_x9;
+
+    state_new.FEPO_STORE_MATCHp = M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8 | M9;
+    state_new.sprite_match_flags = 0;
+    state_new.sprite_match_flags |= !!(M0 & !(0)) << 0;
+    state_new.sprite_match_flags |= !!(M1 & !(M0)) << 1;
+    state_new.sprite_match_flags |= !!(M2 & !(M0 | M1)) << 2;
+    state_new.sprite_match_flags |= !!(M3 & !(M0 | M1 | M2)) << 3;
+    state_new.sprite_match_flags |= !!(M4 & !(M0 | M1 | M2 | M3)) << 4;
+    state_new.sprite_match_flags |= !!(M5 & !(M0 | M1 | M2 | M3 | M4)) << 5;
+    state_new.sprite_match_flags |= !!(M6 & !(M0 | M1 | M2 | M3 | M4 | M5)) << 6;
+    state_new.sprite_match_flags |= !!(M7 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6)) << 7;
+    state_new.sprite_match_flags |= !!(M8 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7)) << 8;
+    state_new.sprite_match_flags |= !!(M9 & !(M0 | M1 | M2 | M3 | M4 | M5 | M6 | M7 | M8)) << 9;
+  }
+
+
+  // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
+  state_new.WODU_HBLANKp = !state_new.FEPO_STORE_MATCHp && (state_new.pix_count & 167) == 167;
+
+  if (gen_clk_new(0b01010101)) {
+    if (!pause_rendering_new) state_new.lcd.PAHO_X_8_SYNC = get_bit(state_old.pix_count, 3);
+  }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   state_new.sprite_ibus = 0b00111111;
   state_new.sprite_lbus = 0b00001111;

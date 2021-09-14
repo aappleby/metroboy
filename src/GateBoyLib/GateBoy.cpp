@@ -2153,30 +2153,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  pause_rendering_new = reg_new.win_ctrl.RYDY_WIN_HITp || !reg_new.tfetch_control.POKY_PRELOAD_LATCHp || reg_new.FEPO_STORE_MATCHp || reg_new.WODU_HBLANKp;
-
-  const wire pause_rendering_old = reg_old.win_ctrl.RYDY_WIN_HITp || !reg_old.tfetch_control.POKY_PRELOAD_LATCHp || reg_old.FEPO_STORE_MATCHp || reg_old.WODU_HBLANKp;
-  const bool SACU_CLKPIPE_old = gen_clk_old(0b10101010) || pause_rendering_old || reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
-  const wire SACU_CLKPIPE_new = gen_clk_new(0b10101010) || pause_rendering_new || reg.fine_scroll.ROXY_FINE_SCROLL_DONEn;
-
-  if (reg_new.ATEJ_LINE_RSTp) CHECK_P(SACU_CLKPIPE_new);
-
-  if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-    bit_unpack(reg.pix_count, bit_pack(reg.pix_count) + 1);
-  }
-
-  if (reg_new.ATEJ_LINE_RSTp) {
-    bit_unpack(reg.pix_count, 0);
-  }
-
-  if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-    bit_unpack(reg.pix_count, 0);
-  }
-
-  if (reg_new.XYMU_RENDERINGn || reg.sprite_scanner.CENO_SCANNINGn || reg.reg_lcdc.XYLO_LCDC_SPENn) {
-    bit_unpack(reg.sprite_match_flags, 0);
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2185,8 +2161,32 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
 
+  pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || state_new.WODU_HBLANKp;
+
+  const wire pause_rendering_old = state_old.win_ctrl.RYDY_WIN_HITp || !state_old.tfetch_control.POKY_PRELOAD_LATCHp || state_old.FEPO_STORE_MATCHp || state_old.WODU_HBLANKp;
+  const bool SACU_CLKPIPE_old = gen_clk_old(0b10101010) || pause_rendering_old || state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
+  const wire SACU_CLKPIPE_new = gen_clk_new(0b10101010) || pause_rendering_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn;
+
+  if (state_new.ATEJ_LINE_RSTp) CHECK_P(SACU_CLKPIPE_new);
+
+  if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
+    state_new.pix_count = state_new.pix_count + 1;
+  }
+
+  if (state_new.ATEJ_LINE_RSTp) {
+    state_new.pix_count = 0;
+  }
+
+  if (get_bit(state_new.reg_lcdc, 7)) {
+    state_new.pix_count = 0;
+  }
+
+  if (state_new.XYMU_RENDERINGn || state_new.sprite_scanner.CENO_SCANNINGn || get_bit(state_new.reg_lcdc, 1)) {
+    state_new.sprite_match_flags = 0;
+  }
+
   if (!state_new.XYMU_RENDERINGn && !state_new.sprite_scanner.CENO_SCANNINGn && !get_bit(state_new.reg_lcdc, 1)) {
-    const uint8_t px = (uint8_t)bit_pack(reg.pix_count);
+    const uint8_t px = state_new.pix_count;
     
     state_new.FEPO_STORE_MATCHp = 0;
     state_new.sprite_match_flags = 0;

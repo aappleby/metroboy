@@ -2438,17 +2438,25 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Pixel pipes
 
-  auto tpix_a = bit_pack_inv(reg.tile_temp_a);
-  auto tpix_b = bit_pack(reg.tile_temp_b);
-  auto spix_a = bit_pack_inv(reg.sprite_pix_a);
-  auto spix_b = bit_pack_inv(reg.sprite_pix_b);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
 
-  auto spipe_a = bit_pack(reg.spr_pipe_a);
-  auto spipe_b = bit_pack(reg.spr_pipe_b);
-  auto bpipe_a = bit_pack(reg.bgw_pipe_a);
-  auto bpipe_b = bit_pack(reg.bgw_pipe_b);
-  auto mpipe   = bit_pack(reg.mask_pipe);
-  auto ppipe   = bit_pack(reg.pal_pipe);
+  uint8_t tpix_a = (uint8_t)~state_new.tile_temp_a;
+  uint8_t tpix_b = (uint8_t)state_new.tile_temp_b;
+  uint8_t spix_a = (uint8_t)~state_new.sprite_pix_a;
+  uint8_t spix_b = (uint8_t)~state_new.sprite_pix_b;
+
+  uint8_t spipe_a = (uint8_t)state_new.spr_pipe_a;
+  uint8_t spipe_b = (uint8_t)state_new.spr_pipe_b;
+  uint8_t bpipe_a = (uint8_t)state_new.bgw_pipe_a;
+  uint8_t bpipe_b = (uint8_t)state_new.bgw_pipe_b;
+  uint8_t mpipe   = (uint8_t)state_new.mask_pipe;
+  uint8_t ppipe   = (uint8_t)state_new.pal_pipe;
 
   if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
     spipe_a = (spipe_a << 1) | 0;
@@ -2459,36 +2467,28 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     ppipe   = (ppipe   << 1) | 0;
   }
     
-  if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp || (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) || TEVO_WIN_FETCH_TRIGp_new) {
+  if (state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp || (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) || TEVO_WIN_FETCH_TRIGp_new) {
     bpipe_a = tpix_a;
     bpipe_b = tpix_b;
   }
 
-  if (reg.sfetch_control.WUTY_SFETCH_DONE_TRIGp) {
+  if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp) {
     auto smask = (spipe_a | spipe_b);
     spipe_a = (spipe_a & smask) | (spix_a & ~smask);
     spipe_b = (spipe_b & smask) | (spix_b & ~smask);
-    mpipe = reg.oam_temp_b.DEPO_OAM_DB7p ? mpipe | ~smask : mpipe & smask;
-    ppipe = reg.oam_temp_b.GOMO_OAM_DB4p ? ppipe | ~smask : ppipe & smask;
+    mpipe = uint8_t(get_bit(state_new.oam_temp_b, 7) ? mpipe | ~smask : mpipe & smask);
+    ppipe = uint8_t(get_bit(state_new.oam_temp_b, 4) ? ppipe | ~smask : ppipe & smask);
   }
 
-  bit_unpack(reg.spr_pipe_a, spipe_a);
-  bit_unpack(reg.spr_pipe_b, spipe_b);
-  bit_unpack(reg.bgw_pipe_a, bpipe_a);
-  bit_unpack(reg.bgw_pipe_b, bpipe_b);
-  bit_unpack(reg.mask_pipe, mpipe);
-  bit_unpack(reg.pal_pipe, ppipe);
+  state_new.spr_pipe_a = spipe_a;
+  state_new.spr_pipe_b = spipe_b;
+  state_new.bgw_pipe_a = bpipe_a;
+  state_new.bgw_pipe_b = bpipe_b;
+  state_new.mask_pipe = mpipe;
+  state_new.pal_pipe = ppipe;
 
   //----------------------------------------
   // Pipe merge and output
-
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
 
   const wire PIX_BG_LOp = get_bit(state_new.bgw_pipe_a, 7) && !get_bit(state_new.reg_lcdc, 0);
   const wire PIX_BG_HIp = get_bit(state_new.bgw_pipe_b, 7) && !get_bit(state_new.reg_lcdc, 0);

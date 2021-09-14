@@ -2334,38 +2334,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     return TEVO_WIN_FETCH_TRIGp;
   };
 
-  const wire BFETCH_RSTp_new =
-    reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp ||
-    (reg.win_ctrl.PYNU_WIN_MODE_Ap && !reg.win_ctrl.NOPA_WIN_MODE_Bp) ||
-    (reg.win_ctrl.RYFA_WIN_FETCHn_A && !reg.win_ctrl.RENE_WIN_FETCHn_B) ||
-    (reg.win_ctrl.SOVY_WIN_HITp && !reg.win_ctrl.RYDY_WIN_HITp) ||
-    restart_fetch(reg_new);
-
-  if (gen_clk_new(0b01010101)) {
-    reg.tfetch_control.LYZU_BFETCH_S0p_D1 = reg.tfetch_counter.LAXU_BFETCH_S0p;
-  }
-
-  if (reg_new.XYMU_RENDERINGn) {
-    reg.tfetch_control.LYZU_BFETCH_S0p_D1 = 0;
-  }
-
-  if (BFETCH_RSTp_new) {
-    bit_unpack(reg.tfetch_counter, 0);
-    reg.tfetch_control.LOVY_FETCH_DONEp = 0;
-    reg.tfetch_control.LONY_FETCHINGp = 1;
-    reg.tfetch_control.LYRY_BFETCH_DONEp = 0;
-  }
-  else {
-    if ((bfetch_phase_old < 10) && gen_clk_new(0b10101010)) {
-      bit_unpack(reg.tfetch_counter, (bfetch_phase_old >> 1) + 1);
-    }
-
-    if (gen_clk_new(0b10101010)) {
-      reg.tfetch_control.LOVY_FETCH_DONEp = reg.tfetch_control.LYRY_BFETCH_DONEp;
-    }
-    reg.tfetch_control.LYRY_BFETCH_DONEp = reg.tfetch_counter.LAXU_BFETCH_S0p && reg.tfetch_counter.NYVA_BFETCH_S2p;
-  }
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2374,6 +2342,37 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
 
+  const wire BFETCH_RSTp_new =
+    state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp ||
+    (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) ||
+    (state_new.win_ctrl.RYFA_WIN_FETCHn_A && !state_new.win_ctrl.RENE_WIN_FETCHn_B) ||
+    (state_new.win_ctrl.SOVY_WIN_HITp && !state_new.win_ctrl.RYDY_WIN_HITp) ||
+    restart_fetch_state(state_new);
+
+  if (gen_clk_new(0b01010101)) {
+    state_new.tfetch_control.LYZU_BFETCH_S0p_D1 = get_bit(state_new.tfetch_counter, 0);
+  }
+
+  if (state_new.XYMU_RENDERINGn) {
+    state_new.tfetch_control.LYZU_BFETCH_S0p_D1 = 0;
+  }
+
+  if (BFETCH_RSTp_new) {
+    state_new.tfetch_counter = 0;
+    state_new.tfetch_control.LOVY_FETCH_DONEp = 0;
+    state_new.tfetch_control.LONY_FETCHINGp = 1;
+    state_new.tfetch_control.LYRY_BFETCH_DONEp = 0;
+  }
+  else {
+    if ((bfetch_phase_old < 10) && gen_clk_new(0b10101010)) {
+      state_new.tfetch_counter = (bfetch_phase_old >> 1) + 1;
+    }
+
+    if (gen_clk_new(0b10101010)) {
+      state_new.tfetch_control.LOVY_FETCH_DONEp = state_new.tfetch_control.LYRY_BFETCH_DONEp;
+    }
+    state_new.tfetch_control.LYRY_BFETCH_DONEp = get_bit(state_new.tfetch_counter, 0) && get_bit(state_new.tfetch_counter, 2);
+  }
 
   if (state_new.tfetch_control.LOVY_FETCH_DONEp || state_new.XYMU_RENDERINGn) {
     state_new.tfetch_control.LONY_FETCHINGp = 0;

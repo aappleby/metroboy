@@ -1689,39 +1689,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-
-  if (reg_new.cpu_signals.SIG_IN_CPU_RDp) {
-    if (cpu_addr_new == 0xFF05) bit_unpack(reg_new.cpu_dbus, bit_pack(reg_new.reg_tima));
-    if (cpu_addr_new == 0xFF06) bit_unpack(reg_new.cpu_dbus, bit_pack(reg_new.reg_tma));
-    if (cpu_addr_new == 0xFF07) bit_unpack(reg_new.cpu_dbus, bit_pack(reg_new.reg_tac) | 0b11111000);
-  }
-
-  if (reg_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF50 && gen_clk_new(0b00000001)) {
-    reg_new.cpu_signals.TEPU_BOOT_BITn = reg_new.SATO_BOOT_BITn;
-  }
-
-  reg_new.cpu_signals.SIG_CPU_BOOTp = 0;
-  reg_new.cpu_signals.SIG_BOOT_CSp = 0;
-
-  if (cpu_addr_new <= 0x00FF) {
-
-    reg_new.cpu_signals.SIG_CPU_BOOTp = !reg_new.cpu_signals.TEPU_BOOT_BITn;
-
-    if (reg_new.cpu_signals.SIG_IN_CPU_RDp && !reg_new.cpu_signals.TEPU_BOOT_BITn) {
-      reg_new.cpu_signals.SIG_BOOT_CSp = 1;
-      bit_unpack(reg_new.cpu_dbus, DMG_ROM_blob[cpu_addr_new & 0xFF]);
-    }
-  }
-
-  if (reg_new.cpu_signals.SIG_IN_CPU_RDp && (cpu_addr_new == 0xFF50)) {
-    reg_new.cpu_dbus.BUS_CPU_D00p = reg_new.cpu_signals.TEPU_BOOT_BITn;
-  }
-
-  reg_new.SATO_BOOT_BITn = reg_new.cpu_dbus.BUS_CPU_D00p || reg_new.cpu_signals.TEPU_BOOT_BITn;
-
-  //----------------------------------------
-  // dma
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -1730,9 +1697,41 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
 
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (cpu_addr_new == 0xFF05) state_new.cpu_dbus = state_new.reg_tima;
+    if (cpu_addr_new == 0xFF06) state_new.cpu_dbus = state_new.reg_tma;
+    if (cpu_addr_new == 0xFF07) state_new.cpu_dbus = state_new.reg_tac | 0b11111000;
+  }
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && cpu_addr_new == 0xFF50 && gen_clk_new(0b00000001)) {
+    state_new.cpu_signals.TEPU_BOOT_BITn = state_new.SATO_BOOT_BITn;
+  }
+
+  state_new.cpu_signals.SIG_CPU_BOOTp = 0;
+  state_new.cpu_signals.SIG_BOOT_CSp = 0;
+
+  if (cpu_addr_new <= 0x00FF) {
+
+    state_new.cpu_signals.SIG_CPU_BOOTp = !state_new.cpu_signals.TEPU_BOOT_BITn;
+
+    if (state_new.cpu_signals.SIG_IN_CPU_RDp && !state_new.cpu_signals.TEPU_BOOT_BITn) {
+      state_new.cpu_signals.SIG_BOOT_CSp = 1;
+      state_new.cpu_dbus = DMG_ROM_blob[cpu_addr_new & 0xFF];
+    }
+  }
+
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp && (cpu_addr_new == 0xFF50)) {
+    state_new.cpu_dbus &= ~1;
+    state_new.cpu_dbus |= state_new.cpu_signals.TEPU_BOOT_BITn.state;
+  }
+
+  state_new.SATO_BOOT_BITn = get_bit(state_new.cpu_dbus, 0) || state_new.cpu_signals.TEPU_BOOT_BITn;
+
+  //----------------------------------------
+  // dma
+
   if (cpu_addr_new == 0xFF46 && state_new.cpu_signals.SIG_IN_CPU_RDp) {
     state_new.cpu_dbus = ~state_old.reg_dma;
-    //bit_unpack(reg_new.cpu_dbus, bit_pack_inv(reg_old.reg_dma));
   }
 
   if (gen_clk_new(0b10000000)) {
@@ -1766,7 +1765,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   }
   else if (gen_clk_new(0b00000001)) {
     if (cpu_addr_new == 0xFF46 && state_new.cpu_signals.SIG_IN_CPU_WRp) {
-      //bit_unpack_inv(reg_new.reg_dma, bit_pack(reg_old.cpu_dbus));
       state_new.reg_dma = ~state_old.cpu_dbus;
     }
   }

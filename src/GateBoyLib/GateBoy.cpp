@@ -1368,8 +1368,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void GateBoy::tock_logic(const blob& cart_blob) {
-  const GateBoyState state_old = state;
-  GateBoyState& state_new = state;
+  GateBoyState state_old;
+  state_old.from_reg(reg);
+
+  GateBoyState state_new = state_old;
 
   const GateBoyReg reg_old = reg;
   GateBoyReg& reg_new = reg;
@@ -2512,59 +2514,78 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
     if (reg_old.lcd.RUTU_x113p && !reg_new.lcd.RUTU_x113p) reg.lcd.LUCA_LINE_EVENp = !reg.lcd.LUCA_LINE_EVENp;
     if (!reg_old.lcd.POPU_y144p && reg_new.lcd.POPU_y144p) reg.lcd.NAPO_FRAME_EVENp = !reg.lcd.NAPO_FRAME_EVENp;
-    reg.lcd.PIN_56_LCD_FLIPS = reg.lcd.NAPO_FRAME_EVENp ^ reg.lcd.LUCA_LINE_EVENp;
+
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    state_new.from_reg(reg_new);
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
 
 
-    if (reg_old.lcd.NYPE_x113p && !reg_new.lcd.NYPE_x113p) {
-      reg.lcd.MEDA_VSYNC_OUTn = reg_ly_new == 0;
+    state_new.lcd.PIN_56_LCD_FLIPS = state_new.lcd.NAPO_FRAME_EVENp ^ state_new.lcd.LUCA_LINE_EVENp;
+
+
+    if (state_old.lcd.NYPE_x113p && !state_new.lcd.NYPE_x113p) {
+      state_new.lcd.MEDA_VSYNC_OUTn = reg_ly_new == 0;
     }
 
-    reg.lcd.PIN_57_LCD_VSYNC = !reg.lcd.MEDA_VSYNC_OUTn;
 
-    if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp && reg.lcd.PAHO_X_8_SYNC) {
-      reg.lcd.POME = 0;
-      reg.lcd.RUJU = 1;
-      reg.lcd.POFY = 0;
+    state_new.lcd.PIN_57_LCD_VSYNC = !state_new.lcd.MEDA_VSYNC_OUTn;
+
+    if (state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp && state_new.lcd.PAHO_X_8_SYNC) {
+      state_new.lcd.POME = 0;
+      state_new.lcd.RUJU = 1;
+      state_new.lcd.POFY = 0;
     }
-    else if (reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp) {
-      reg.lcd.POME = 0;
-      reg.lcd.RUJU = 0;
-      reg.lcd.POFY = 1;
+    else if (state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp) {
+      state_new.lcd.POME = 0;
+      state_new.lcd.RUJU = 0;
+      state_new.lcd.POFY = 1;
     }
-    else if (reg.lcd.PAHO_X_8_SYNC) {
-      reg.lcd.POME = 1;
-      reg.lcd.RUJU = 1;
-      reg.lcd.POFY = 0;
+    else if (state_new.lcd.PAHO_X_8_SYNC) {
+      state_new.lcd.POME = 1;
+      state_new.lcd.RUJU = 1;
+      state_new.lcd.POFY = 0;
     }
 
-    reg.lcd.PIN_50_LCD_DATA1 = reg.lcd.RAVO_LD1n;
-    reg.lcd.PIN_51_LCD_DATA0 = reg.lcd.REMY_LD0n;
-    reg.lcd.PIN_54_LCD_HSYNC = !reg.lcd.POFY;
-    reg.lcd.PIN_55_LCD_LATCH = !reg.lcd.RUTU_x113p;
+    state_new.lcd.PIN_50_LCD_DATA1 = state_new.lcd.RAVO_LD1n;
+    state_new.lcd.PIN_51_LCD_DATA0 = state_new.lcd.REMY_LD0n;
+    state_new.lcd.PIN_54_LCD_HSYNC = !state_new.lcd.POFY;
+    state_new.lcd.PIN_55_LCD_LATCH = !state_new.lcd.RUTU_x113p;
 
-    if (reg.pix_count.XEHO_PX0p && reg.pix_count.XYDO_PX3p) reg.lcd.WUSA_LCD_CLOCK_GATE = 1;
-    if (reg.VOGA_HBLANKp) reg.lcd.WUSA_LCD_CLOCK_GATE = 0;
+    if (get_bit(state_new.pix_count, 0) && get_bit(state_new.pix_count, 3)) state_new.lcd.WUSA_LCD_CLOCK_GATE = 1;
+    if (state_new.VOGA_HBLANKp) state_new.lcd.WUSA_LCD_CLOCK_GATE = 0;
 
-    reg.lcd.PIN_53_LCD_CLOCK = (!reg.lcd.WUSA_LCD_CLOCK_GATE || !SACU_CLKPIPE_new) && (!reg.fine_scroll.PUXA_SCX_FINE_MATCH_A || reg.fine_scroll.NYZE_SCX_FINE_MATCH_B);
+    state_new.lcd.PIN_53_LCD_CLOCK = (!state_new.lcd.WUSA_LCD_CLOCK_GATE || !SACU_CLKPIPE_new) && (!state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A || state_new.fine_scroll.NYZE_SCX_FINE_MATCH_B);
   }
   else {
-    reg.lcd.LUCA_LINE_EVENp = 0;
-    reg.lcd.NAPO_FRAME_EVENp = 0;
-    reg.lcd.MEDA_VSYNC_OUTn = 0;
-    reg.lcd.WUSA_LCD_CLOCK_GATE = 0;
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    state_new.from_reg(reg_new);
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
+    // STATE STEAMROLLER
 
-    reg.lcd.POME = 1;
-    reg.lcd.RUJU = 1;
-    reg.lcd.POFY = 0;
+    state_new.lcd.LUCA_LINE_EVENp = 0;
+    state_new.lcd.NAPO_FRAME_EVENp = 0;
+    state_new.lcd.MEDA_VSYNC_OUTn = 0;
+    state_new.lcd.WUSA_LCD_CLOCK_GATE = 0;
 
-    reg.lcd.PIN_50_LCD_DATA1 = reg.lcd.RAVO_LD1n;
-    reg.lcd.PIN_51_LCD_DATA0 = reg.lcd.REMY_LD0n;
-    reg.lcd.PIN_52_LCD_CNTRL = 1;
-    reg.lcd.PIN_53_LCD_CLOCK = 1;
-    reg.lcd.PIN_54_LCD_HSYNC = 1;
-    reg.lcd.PIN_55_LCD_LATCH = !reg.reg_div.UGOT_DIV06p;
-    reg.lcd.PIN_56_LCD_FLIPS = !reg.reg_div.TULU_DIV07p;
-    reg.lcd.PIN_57_LCD_VSYNC = 1;
+    state_new.lcd.POME = 1;
+    state_new.lcd.RUJU = 1;
+    state_new.lcd.POFY = 0;
+
+    state_new.lcd.PIN_50_LCD_DATA1 = state_new.lcd.RAVO_LD1n;
+    state_new.lcd.PIN_51_LCD_DATA0 = state_new.lcd.REMY_LD0n;
+    state_new.lcd.PIN_52_LCD_CNTRL = 1;
+    state_new.lcd.PIN_53_LCD_CLOCK = 1;
+    state_new.lcd.PIN_54_LCD_HSYNC = 1;
+    state_new.lcd.PIN_55_LCD_LATCH = !get_bit(state_new.reg_div, 6);
+    state_new.lcd.PIN_56_LCD_FLIPS = !get_bit(state_new.reg_div, 7);
+    state_new.lcd.PIN_57_LCD_VSYNC = 1;
   }
 
   //----------------------------------------
@@ -2575,13 +2596,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Memory buses
 
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
 
 
   if (state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new) {
@@ -3179,5 +3193,5 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
 
   // UNPACK IT UP!
-  state_new.to_reg(reg_new);
+  state_new.to_reg(reg);
 }

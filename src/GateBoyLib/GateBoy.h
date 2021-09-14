@@ -664,7 +664,7 @@ struct GateBoy {
   GateBoyMem mem;
   GateBoySys sys;
 
-  GateBoyState state;
+  GateBoyState _state;
 
   uint64_t sentinel2 = SENTINEL2;
 };

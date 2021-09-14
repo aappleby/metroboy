@@ -26,8 +26,8 @@ void GateBoy::tock_joypad_gates(const GateBoyReg& reg_old) {
 
   // this _has_ to reset to 1
 
-  /*#p05.KELY*/ reg.reg_joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*#p05.COFY*/ reg.reg_joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*#p05.KELY*/ reg.reg_joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, reg.sys_rst.ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*#p05.COFY*/ reg.reg_joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, reg.sys_rst.ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
 
   ///*_p05.KUKO*/ KUKO_DBG_D6    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[6].qp_old());
   ///*_p05.KERU*/ KERU_DBG_D7    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[7].qp_old());
@@ -127,7 +127,7 @@ void GateBoy::tock_joypad_gates(const GateBoyReg& reg_old) {
 
   /*#p02.KERY*/ wire KERY_ANY_BUTTONp = nor4(reg.joy_ext.PIN_64_JOY_P13.qp_int_new(), reg.joy_ext.PIN_65_JOY_P12.qp_int_new(), reg.joy_ext.PIN_66_JOY_P11.qp_int_new(), reg.joy_ext.PIN_67_JOY_P10.qp_int_new());
 
-  /*_p02.AWOB*/ reg.int_ctrl.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), KERY_ANY_BUTTONp);
+  /*_p02.AWOB*/ reg.int_ctrl.AWOB_WAKE_CPU.tp_latchn(reg.sys_clk.BOGA_Axxxxxxx(), KERY_ANY_BUTTONp);
   /*_SIG_CPU_WAKE*/ reg.int_ctrl.SIG_CPU_WAKE.sig_out(reg.int_ctrl.AWOB_WAKE_CPU.qp_new());
 
   // DFF17_01 SC
@@ -148,10 +148,10 @@ void GateBoy::tock_joypad_gates(const GateBoyReg& reg_old) {
   // DFF17_16 >> QN   _MUST_ be QN - see TERO
   // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
-  /*#p02.APUG*/ reg.joy_int.APUG_JP_GLITCH3.dff17(BOGA_Axxxxxxx(), ALUR_SYS_RSTn(), reg.joy_int.AGEM_JP_GLITCH2.qp_old());
-  /*_p02.AGEM*/ reg.joy_int.AGEM_JP_GLITCH2.dff17(BOGA_Axxxxxxx(), ALUR_SYS_RSTn(), reg.joy_int.ACEF_JP_GLITCH1.qp_old());
-  /*_p02.ACEF*/ reg.joy_int.ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx(), ALUR_SYS_RSTn(), reg.joy_int.BATU_JP_GLITCH0.qp_old());
-  /*_p02.BATU*/ reg.joy_int.BATU_JP_GLITCH0.dff17(BOGA_Axxxxxxx(), ALUR_SYS_RSTn(), KERY_ANY_BUTTONp);
+  /*#p02.APUG*/ reg.joy_int.APUG_JP_GLITCH3.dff17(reg.sys_clk.BOGA_Axxxxxxx(), reg.sys_rst.ALUR_SYS_RSTn(), reg.joy_int.AGEM_JP_GLITCH2.qp_old());
+  /*_p02.AGEM*/ reg.joy_int.AGEM_JP_GLITCH2.dff17(reg.sys_clk.BOGA_Axxxxxxx(), reg.sys_rst.ALUR_SYS_RSTn(), reg.joy_int.ACEF_JP_GLITCH1.qp_old());
+  /*_p02.ACEF*/ reg.joy_int.ACEF_JP_GLITCH1.dff17(reg.sys_clk.BOGA_Axxxxxxx(), reg.sys_rst.ALUR_SYS_RSTn(), reg.joy_int.BATU_JP_GLITCH0.qp_old());
+  /*_p02.BATU*/ reg.joy_int.BATU_JP_GLITCH0.dff17(reg.sys_clk.BOGA_Axxxxxxx(), reg.sys_rst.ALUR_SYS_RSTn(), KERY_ANY_BUTTONp);
 
   /*#p05.KEVU*/ reg.joy_latch.KEVU_JOYP_L0n.tp_latchn(BYZO_FF00_RDn, reg.joy_ext.PIN_67_JOY_P10.qp_int_new()); // A / Right
   /*#p05.KAPA*/ reg.joy_latch.KAPA_JOYP_L1n.tp_latchn(BYZO_FF00_RDn, reg.joy_ext.PIN_66_JOY_P11.qp_int_new()); // B / Left

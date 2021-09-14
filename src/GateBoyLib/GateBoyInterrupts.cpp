@@ -25,15 +25,15 @@ void GateBoy::tock_interrupts_gates(const GateBoyReg& reg_old)
   reg.reg_ie.IE_D3.dff_r(FFFF_WRn_ext, ~reg.sys_rst.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
   reg.reg_ie.IE_D4.dff_r(FFFF_WRn_ext, ~reg.sys_rst.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
 
-  /*_p21.SEPA*/ wire SEPA_FF41_WRp = and2(CUPA_CPU_WRp(), reg.cpu_abus.VARY_FF41p());
+  /*_p21.SEPA*/ wire SEPA_FF41_WRp = and2(reg.cpu_signals.CUPA_CPU_WRp(), reg.cpu_abus.VARY_FF41p());
   /*_p21.RYVE*/ wire RYVE_FF41_WRn = not1(SEPA_FF41_WRp);
 
-  /*_p21.ROXE*/ reg.reg_stat.ROXE_STAT_HBI_ENn.dff9(RYVE_FF41_WRn, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p21.RUFO*/ reg.reg_stat.RUFO_STAT_VBI_ENn.dff9(RYVE_FF41_WRn, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p21.REFE*/ reg.reg_stat.REFE_STAT_OAI_ENn.dff9(RYVE_FF41_WRn, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p21.RUGU*/ reg.reg_stat.RUGU_STAT_LYI_ENn.dff9(RYVE_FF41_WRn, WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p21.ROXE*/ reg.reg_stat.ROXE_STAT_HBI_ENn.dff9(RYVE_FF41_WRn, reg.sys_rst.WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p21.RUFO*/ reg.reg_stat.RUFO_STAT_VBI_ENn.dff9(RYVE_FF41_WRn, reg.sys_rst.WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p21.REFE*/ reg.reg_stat.REFE_STAT_OAI_ENn.dff9(RYVE_FF41_WRn, reg.sys_rst.WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p21.RUGU*/ reg.reg_stat.RUGU_STAT_LYI_ENn.dff9(RYVE_FF41_WRn, reg.sys_rst.WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
 
-  /*_p21.TOBE*/ wire TOBE_FF41_RDp = and2(ASOT_CPU_RDp(), reg.cpu_abus.VARY_FF41p());
+  /*_p21.TOBE*/ wire TOBE_FF41_RDp = and2(reg.cpu_signals.ASOT_CPU_RDp(), reg.cpu_abus.VARY_FF41p());
   /*_p21.VAVE*/ wire VAVE_FF41_RDn = not1(TOBE_FF41_RDp);
 
   /*#p21.PARU*/ wire PARU_VBLANKp = not1(reg.lcd.POPU_y144p.qn_new());
@@ -78,7 +78,7 @@ void GateBoy::tock_interrupts_gates(const GateBoyReg& reg_old)
 
   /*#p02.ASOK*/ wire ASOK_INT_JOYp = nand2(reg.joy_int.APUG_JP_GLITCH3.qp_new(), reg.joy_int.BATU_JP_GLITCH0.qp_new());
 
-  /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp());
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(reg.sys_rst.AVOR_SYS_RSTp());
   /*_p07.REFA*/ wire REFA_FF0F_WRn = nand4(reg.cpu_signals.TAPU_CPU_WRp.out_new(), reg.cpu_abus.SYKE_ADDR_HIp(), reg.cpu_abus.SEMY_XX_0000xxxxp(), reg.cpu_abus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
 
   /*_p02.LETY*/ wire LETY_INT_VBL_ACKn  = not1(reg.cpu_ack.SIG_CPU_ACK_VBLANK.out_new());

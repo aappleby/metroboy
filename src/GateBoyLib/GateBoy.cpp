@@ -134,7 +134,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   sys.probes.reset_to_cart();
 
   sys.logic_mode = old_logic_mode;
-  if (sys.logic_mode) wipe_flags();
+  //if (sys.logic_mode) wipe_flags();
 
   _state.from_reg(reg);
 }
@@ -281,7 +281,7 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
 
   sys.probes.reset_to_cart();
 
-  if (sys.logic_mode) wipe_flags();
+  //if (sys.logic_mode) wipe_flags();
 
   _state.from_reg(reg);
 }
@@ -839,8 +839,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_SIG_CPU_CLKREQ*/ reg.sys_clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
 
     /*_SIG_CPU_ADDR_HIp*/ reg.cpu_signals.SIG_CPU_ADDR_HIp.sig_out(reg.cpu_abus.SYRO_FE00_FFFF());
-    /*_SIG_CPU_UNOR_DBG*/ reg.cpu_signals.SIG_CPU_UNOR_DBG.sig_out(UNOR_MODE_DBG2p());
-    /*_SIG_CPU_UMUT_DBG*/ reg.cpu_signals.SIG_CPU_UMUT_DBG.sig_out(UMUT_MODE_DBG1p());
+    /*_SIG_CPU_UNOR_DBG*/ reg.cpu_signals.SIG_CPU_UNOR_DBG.sig_out(reg.sys_rst.UNOR_MODE_DBG2p());
+    /*_SIG_CPU_UMUT_DBG*/ reg.cpu_signals.SIG_CPU_UMUT_DBG.sig_out(reg.sys_rst.UMUT_MODE_DBG1p());
   }
 
   //-----------------------------------------------------------------------------
@@ -851,15 +851,15 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p07.UJYV*/ wire UJYV_CPU_RDn = not1(reg.cpu_signals.SIG_IN_CPU_RDp.out_new());
   /*_p07.TEDO*/ reg.cpu_signals.TEDO_CPU_RDp = not1(UJYV_CPU_RDn);
 
-  /*#p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(ADAR_ABCxxxxH(), ATYP_ABCDxxxx());
+  /*#p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(reg.sys_clk.ADAR_ABCxxxxH(), reg.sys_clk.ATYP_ABCDxxxx());
   /*_p01.AREV*/ wire AREV_CPU_WRn = nand2(reg.cpu_signals.SIG_IN_CPU_WRp.out_new(), AFAS_xxxxEFGx);
   /*_p01.APOV*/ reg.cpu_signals.APOV_CPU_WRp = not1(AREV_CPU_WRn);
 
   /*_p07.UBAL*/ wire UBAL_CPU_WRn = not1(reg.cpu_signals.APOV_CPU_WRp.out_new());
   /*_p07.TAPU*/ reg.cpu_signals.TAPU_CPU_WRp = not1(UBAL_CPU_WRn); // xxxxEFGx
 
-  /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(AROV_xxCDEFxx(), AJAX_xxxxEFGH(), reg.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new());
-  /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(UNOR_MODE_DBG2p(), AGUT_xxCDEFGH);
+  /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(reg.sys_clk.AROV_xxCDEFxx(), reg.sys_clk.AJAX_xxxxEFGH(), reg.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new());
+  /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(reg.sys_rst.UNOR_MODE_DBG2p(), AGUT_xxCDEFGH);
   /*#p01.ABUZ*/ reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK = not1(AWOD_ABxxxxxx);
 
   tock_div_gates();
@@ -892,13 +892,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // Sprite scanner
 
   {
-    /*#p29.DOBA*/ reg.sprite_scanner.DOBA_SCAN_DONE_Bp.dff17(ALET_xBxDxFxH(), BAGY_LINE_RSTn, reg_old.sprite_scanner.BYBA_SCAN_DONE_Ap.qp_old());
-    /*#p29.BYBA*/ reg.sprite_scanner.BYBA_SCAN_DONE_Ap.dff17(XUPY_ABxxEFxx(), BAGY_LINE_RSTn, reg_old.sprite_scanner.FETO_SCAN_DONEp.out_old());
+    /*#p29.DOBA*/ reg.sprite_scanner.DOBA_SCAN_DONE_Bp.dff17(reg.sys_clk.ALET_xBxDxFxH(), BAGY_LINE_RSTn, reg_old.sprite_scanner.BYBA_SCAN_DONE_Ap.qp_old());
+    /*#p29.BYBA*/ reg.sprite_scanner.BYBA_SCAN_DONE_Ap.dff17(reg.sys_clk.XUPY_ABxxEFxx(), BAGY_LINE_RSTn, reg_old.sprite_scanner.FETO_SCAN_DONEp.out_old());
     /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(reg.sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp, reg.sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new());
     /*#p29.AVAP*/ reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
 
     /*#p28.ASEN*/ wire ASEN_SCAN_DONE_TRIGp = or2(ATAR_VID_RSTp(), reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new());
-    /*#p29.CENO*/ reg.sprite_scanner.CENO_SCANNINGn.dff17(XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), reg_old.sprite_scanner.BESU_SCANNINGn.qp_old());
+    /*#p29.CENO*/ reg.sprite_scanner.CENO_SCANNINGn.dff17(reg.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), reg_old.sprite_scanner.BESU_SCANNINGn.qp_old());
     /*#p28.BESU*/ reg.sprite_scanner.BESU_SCANNINGn.nor_latch(reg.lcd.CATU_x113p.qp_new(), ASEN_SCAN_DONE_TRIGp);
 
     /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(reg.MATU_DMA_RUNNINGp.qp_new());
@@ -911,12 +911,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p28.YMEV*/ wire YMEV_OAM_A5p_old = not1(reg_old.oam_abus.BUS_OAM_A05n.out_old());
     /*_p28.XEMU*/ wire XEMU_OAM_A6p_old = not1(reg_old.oam_abus.BUS_OAM_A06n.out_old());
     /*_p28.YZET*/ wire YZET_OAM_A7p_old = not1(reg_old.oam_abus.BUS_OAM_A07n.out_old());
-    /*_p30.XADU*/ reg.sprite_index.XADU_SPRITE_IDX0p.dff13(WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YFOT_OAM_A2p_old);
-    /*_p30.XEDY*/ reg.sprite_index.XEDY_SPRITE_IDX1p.dff13(WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YFOC_OAM_A3p_old);
-    /*_p30.ZUZE*/ reg.sprite_index.ZUZE_SPRITE_IDX2p.dff13(WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YVOM_OAM_A4p_old);
-    /*_p30.XOBE*/ reg.sprite_index.XOBE_SPRITE_IDX3p.dff13(WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YMEV_OAM_A5p_old);
-    /*_p30.YDUF*/ reg.sprite_index.YDUF_SPRITE_IDX4p.dff13(WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), XEMU_OAM_A6p_old);
-    /*_p30.XECU*/ reg.sprite_index.XECU_SPRITE_IDX5p.dff13(WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YZET_OAM_A7p_old);
+    /*_p30.XADU*/ reg.sprite_index.XADU_SPRITE_IDX0p.dff13(reg.sys_clk.WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YFOT_OAM_A2p_old);
+    /*_p30.XEDY*/ reg.sprite_index.XEDY_SPRITE_IDX1p.dff13(reg.sys_clk.WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YFOC_OAM_A3p_old);
+    /*_p30.ZUZE*/ reg.sprite_index.ZUZE_SPRITE_IDX2p.dff13(reg.sys_clk.WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YVOM_OAM_A4p_old);
+    /*_p30.XOBE*/ reg.sprite_index.XOBE_SPRITE_IDX3p.dff13(reg.sys_clk.WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YMEV_OAM_A5p_old);
+    /*_p30.YDUF*/ reg.sprite_index.YDUF_SPRITE_IDX4p.dff13(reg.sys_clk.WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), XEMU_OAM_A6p_old);
+    /*_p30.XECU*/ reg.sprite_index.XECU_SPRITE_IDX5p.dff13(reg.sys_clk.WUDA_xxCDxxGH(), reg.SIG_VCC.out_new(), YZET_OAM_A7p_old);
 
     // FIXME is this OK without the second assignment of FETO?
 
@@ -924,7 +924,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
       // 32 + 4 + 2 + 1 = 39
       /*#p28.FETO*/ reg.sprite_scanner.FETO_SCAN_DONEp = and4(reg.scan_counter.YFEL_SCAN0.qp_mid(), reg.scan_counter.WEWY_SCAN1.qp_mid(), reg.scan_counter.GOSO_SCAN2.qp_mid(), reg.scan_counter.FONY_SCAN5.qp_mid());
 
-      /*#p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(reg.sprite_scanner.FETO_SCAN_DONEp.out_new(), XUPY_ABxxEFxx());
+      /*#p28.GAVA*/ wire GAVA_SCAN_CLOCKp = or2(reg.sprite_scanner.FETO_SCAN_DONEp.out_new(), reg.sys_clk.XUPY_ABxxEFxx());
 
       /*#p28.YFEL*/ reg.scan_counter.YFEL_SCAN0.dff17_any(GAVA_SCAN_CLOCKp,                 ANOM_LINE_RSTn, reg.scan_counter.YFEL_SCAN0.qn_any());
       /*_p28.WEWY*/ reg.scan_counter.WEWY_SCAN1.dff17_any(reg.scan_counter.YFEL_SCAN0.qn_any(), ANOM_LINE_RSTn, reg.scan_counter.WEWY_SCAN1.qn_any());
@@ -941,7 +941,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Global rendering flag 'XYMU'
 
-  /*#p21.VOGA*/ reg.VOGA_HBLANKp.dff17(ALET_xBxDxFxH(), TADY_LINE_RSTn, reg_old.WODU_HBLANKp.out_old());
+  /*#p21.VOGA*/ reg.VOGA_HBLANKp.dff17(reg.sys_clk.ALET_xBxDxFxH(), TADY_LINE_RSTn, reg_old.WODU_HBLANKp.out_old());
   /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(TOFU_VID_RSTp(), reg.VOGA_HBLANKp.qp_new());
   /*#p21.XYMU*/ reg.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, reg.sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new());
   /*_p24.LOBY*/ wire LOBY_RENDERINGn = not1(reg.XYMU_RENDERINGn.qn_new());
@@ -955,14 +955,14 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p27.TUKU*/ wire TUKU_WIN_HITn_old = not1(TOMU_WIN_HITp_old);
     /*_p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_old = not1(reg_old.sfetch_control.TAKA_SFETCH_RUNNINGp.qp_old());
     /*_p27.TEKY*/ wire TEKY_SFETCH_REQp_old = and4(reg_old.FEPO_STORE_MATCHp.out_old(), TUKU_WIN_HITn_old, reg_old.tfetch_control.LYRY_BFETCH_DONEp.out_old(), SOWO_SFETCH_RUNNINGn_old);
-    /*_p27.SUDA*/ reg.sfetch_control.SUDA_SFETCH_REQp.dff17(LAPE_AxCxExGx(), reg.SIG_VCC.out_new(), reg_old.sfetch_control.SOBU_SFETCH_REQp.qp_old());
-    /*_p27.SOBU*/ reg.sfetch_control.SOBU_SFETCH_REQp.dff17(TAVA_xBxDxFxH(), reg.SIG_VCC.out_new(), TEKY_SFETCH_REQp_old);
+    /*_p27.SUDA*/ reg.sfetch_control.SUDA_SFETCH_REQp.dff17(reg.sys_clk.LAPE_AxCxExGx(), reg.SIG_VCC.out_new(), reg_old.sfetch_control.SOBU_SFETCH_REQp.qp_old());
+    /*_p27.SOBU*/ reg.sfetch_control.SOBU_SFETCH_REQp.dff17(reg.sys_clk.TAVA_xBxDxFxH(), reg.SIG_VCC.out_new(), TEKY_SFETCH_REQp_old);
 
-    /*#p29.TYFO*/ reg.sfetch_control.TYFO_SFETCH_S0p_D1.dff17(LAPE_AxCxExGx(), reg.SIG_VCC.out_new(),        reg_old.sfetch_counter.TOXE_SFETCH_S0p.qp_old());
+    /*#p29.TYFO*/ reg.sfetch_control.TYFO_SFETCH_S0p_D1.dff17(reg.sys_clk.LAPE_AxCxExGx(), reg.SIG_VCC.out_new(),        reg_old.sfetch_counter.TOXE_SFETCH_S0p.qp_old());
     
-    /*#p29.TOBU*/ reg.sfetch_control.TOBU_SFETCH_S1p_D2.dff17(TAVA_xBxDxFxH(), reg.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_counter.TULY_SFETCH_S1p.qp_old());
-    /*#p29.VONU*/ reg.sfetch_control.VONU_SFETCH_S1p_D4.dff17(TAVA_xBxDxFxH(), reg.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_control.TOBU_SFETCH_S1p_D2.qp_old());
-    /*#p29.SEBA*/ reg.sfetch_control.SEBA_SFETCH_S1p_D5.dff17(LAPE_AxCxExGx(), reg.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_control.VONU_SFETCH_S1p_D4.qp_old());
+    /*#p29.TOBU*/ reg.sfetch_control.TOBU_SFETCH_S1p_D2.dff17(reg.sys_clk.TAVA_xBxDxFxH(), reg.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_counter.TULY_SFETCH_S1p.qp_old());
+    /*#p29.VONU*/ reg.sfetch_control.VONU_SFETCH_S1p_D4.dff17(reg.sys_clk.TAVA_xBxDxFxH(), reg.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_control.TOBU_SFETCH_S1p_D2.qp_old());
+    /*#p29.SEBA*/ reg.sfetch_control.SEBA_SFETCH_S1p_D5.dff17(reg.sys_clk.LAPE_AxCxExGx(), reg.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_control.VONU_SFETCH_S1p_D4.qp_old());
 
     /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp = and2(reg.sfetch_control.SOBU_SFETCH_REQp.qp_new(), reg.sfetch_control.SUDA_SFETCH_REQp.qn_new());
     /*#p27.SECA*/ wire SECA_SFETCH_STARTn = nor3(RYCE_SFETCH_TRIGp, ROSY_VID_RSTp(), reg.ATEJ_LINE_RSTp.out_new());
@@ -970,7 +970,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     // Feedback loop
     for (int feedback = 0; feedback < 2; feedback++) {
       /*#p29.TAME*/ wire TAME_SFETCH_CLK_GATE = nand2(reg.sfetch_counter.TESE_SFETCH_S2p.qp_any(), reg.sfetch_counter.TOXE_SFETCH_S0p.qp_any());
-      /*#p29.TOMA*/ wire TOMA_SFETCH_xBxDxFxH = nand2(LAPE_AxCxExGx(), TAME_SFETCH_CLK_GATE);
+      /*#p29.TOMA*/ wire TOMA_SFETCH_xBxDxFxH = nand2(reg.sys_clk.LAPE_AxCxExGx(), TAME_SFETCH_CLK_GATE);
       /*#p29.TOXE*/ reg.sfetch_counter.TOXE_SFETCH_S0p.dff17_any(TOMA_SFETCH_xBxDxFxH,                        SECA_SFETCH_STARTn, reg.sfetch_counter.TOXE_SFETCH_S0p.qn_any());
       /*#p29.TULY*/ reg.sfetch_counter.TULY_SFETCH_S1p.dff17_any(reg.sfetch_counter.TOXE_SFETCH_S0p.qn_any(), SECA_SFETCH_STARTn, reg.sfetch_counter.TULY_SFETCH_S1p.qn_any());
       /*#p29.TESE*/ reg.sfetch_counter.TESE_SFETCH_S2p.dff17_any(reg.sfetch_counter.TULY_SFETCH_S1p.qn_any(), SECA_SFETCH_STARTn, reg.sfetch_counter.TESE_SFETCH_S2p.qn_any());
@@ -992,8 +992,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // Window state has some interaction with the tile fetcher here.
 
   /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(reg.reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn, XAPO_VID_RSTn());
-  /*_p27.NUNU*/ reg.win_ctrl.NUNU_WIN_MATCHp.dff17(MEHE_AxCxExGx(), XAPO_VID_RSTn(), reg_old.win_ctrl.PYCO_WIN_MATCHp.qp_old());
-  /*_p27.NOPA*/ reg.win_ctrl.NOPA_WIN_MODE_Bp.dff17(ALET_xBxDxFxH(), XAPO_VID_RSTn(), reg_old.win_ctrl.PYNU_WIN_MODE_Ap.qp_old());
+  /*_p27.NUNU*/ reg.win_ctrl.NUNU_WIN_MATCHp.dff17(reg.sys_clk.MEHE_AxCxExGx(), XAPO_VID_RSTn(), reg_old.win_ctrl.PYCO_WIN_MATCHp.qp_old());
+  /*_p27.NOPA*/ reg.win_ctrl.NOPA_WIN_MODE_Bp.dff17(reg.sys_clk.ALET_xBxDxFxH(), XAPO_VID_RSTn(), reg_old.win_ctrl.PYNU_WIN_MODE_Ap.qp_old());
   /*_p27.PYNU*/ reg.win_ctrl.PYNU_WIN_MODE_Ap.nor_latch(reg.win_ctrl.NUNU_WIN_MATCHp.qp_new(), XOFO_WIN_RSTp);
 
   /*#p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp = and2(reg.win_ctrl.PYNU_WIN_MODE_Ap.qp_new(), reg.win_ctrl.NOPA_WIN_MODE_Bp.qn_new());
@@ -1001,12 +1001,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not1(NYFO_WIN_MODE_TRIGn);
   /*_p24.NAFY*/ wire NAFY_WIN_MODE_TRIGn = nor2(MOSU_WIN_MODE_TRIGp, LOBY_RENDERINGn);
 
-  /*_p24.PYGO*/ reg.tfetch_control.PYGO_FETCH_DONEp.dff17(ALET_xBxDxFxH(), reg.XYMU_RENDERINGn.qn_new(), reg_old.tfetch_control.PORY_FETCH_DONEp.qp_old());
-  /*_p24.PORY*/ reg.tfetch_control.PORY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NAFY_WIN_MODE_TRIGn, reg_old.tfetch_control.NYKA_FETCH_DONEp.qp_old());
-  /*_p24.NYKA*/ reg.tfetch_control.NYKA_FETCH_DONEp.dff17(ALET_xBxDxFxH(), NAFY_WIN_MODE_TRIGn, reg_old.tfetch_control.LYRY_BFETCH_DONEp.out_old());
+  /*_p24.PYGO*/ reg.tfetch_control.PYGO_FETCH_DONEp.dff17(reg.sys_clk.ALET_xBxDxFxH(), reg.XYMU_RENDERINGn.qn_new(), reg_old.tfetch_control.PORY_FETCH_DONEp.qp_old());
+  /*_p24.PORY*/ reg.tfetch_control.PORY_FETCH_DONEp.dff17(reg.sys_clk.MYVO_AxCxExGx(), NAFY_WIN_MODE_TRIGn, reg_old.tfetch_control.NYKA_FETCH_DONEp.qp_old());
+  /*_p24.NYKA*/ reg.tfetch_control.NYKA_FETCH_DONEp.dff17(reg.sys_clk.ALET_xBxDxFxH(), NAFY_WIN_MODE_TRIGn, reg_old.tfetch_control.LYRY_BFETCH_DONEp.out_old());
   /*_p24.POKY*/ reg.tfetch_control.POKY_PRELOAD_LATCHp.nor_latch(reg.tfetch_control.PYGO_FETCH_DONEp.qp_new(), LOBY_RENDERINGn);
 
-  /*_p27.SOVY*/ reg.win_ctrl.SOVY_WIN_HITp.dff17(ALET_xBxDxFxH(), XAPO_VID_RSTn(), reg_old.win_ctrl.RYDY_WIN_HITp.out_old());
+  /*_p27.SOVY*/ reg.win_ctrl.SOVY_WIN_HITp.dff17(reg.sys_clk.ALET_xBxDxFxH(), XAPO_VID_RSTn(), reg_old.win_ctrl.RYDY_WIN_HITp.out_old());
   /*_p27.RYDY*/ reg.win_ctrl.RYDY_WIN_HITp = nor3(reg.win_ctrl.PUKU_WIN_HITn.out_mid(), reg.tfetch_control.PORY_FETCH_DONEp.qp_new(), PYRY_VID_RSTp());
   /*_p27.PUKU*/ reg.win_ctrl.PUKU_WIN_HITn = nor2(reg.win_ctrl.RYDY_WIN_HITp.out_mid(), NUNY_WIN_MODE_TRIGp);
   /*_p27.RYDY*/ reg.win_ctrl.RYDY_WIN_HITp = nor3(reg.win_ctrl.PUKU_WIN_HITn.out_mid(), reg.tfetch_control.PORY_FETCH_DONEp.qp_new(), PYRY_VID_RSTp());
@@ -1032,8 +1032,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // OAM latch from last cycle gets moved into temp registers.
 
   {
-    /*_p25.CUFE*/ wire CUFE_OAM_CLKp = not_or_and3(reg.cpu_abus.SARO_ADDR_OAMp(), reg.MATU_DMA_RUNNINGp.qp_new(), MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
-    /*_p25.AVER*/ wire AVER_AxxxExxx = nand2(reg.ACYL_SCANNINGp.out_new(), XYSO_xBCDxFGH());
+    /*_p25.CUFE*/ wire CUFE_OAM_CLKp = not_or_and3(reg.cpu_abus.SARO_ADDR_OAMp(), reg.MATU_DMA_RUNNINGp.qp_new(), reg.sys_clk.MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
+    /*_p25.AVER*/ wire AVER_AxxxExxx = nand2(reg.ACYL_SCANNINGp.out_new(), reg.sys_clk.XYSO_xBCDxFGH());
     /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(reg.sfetch_counter.TOXE_SFETCH_S0p.qp_new());
     /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(reg.sfetch_control.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n);
     /*_p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(TEPA_RENDERINGp, reg.sfetch_counter.TULY_SFETCH_S1p.qp_new(), reg.sfetch_counter.TESE_SFETCH_S2p.qp_new());
@@ -1060,9 +1060,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, sprite_delta_y.WUHU_YDIFF7.carry, GOVU_SPSIZE_MATCH);
     /*_p29.GESE*/ wire GESE_SCAN_MATCH_Yp = not1(WOTA_SCAN_MATCH_Yn);
     /*_p29.CEHA*/ wire CEHA_SCANNINGp = not1(reg.sprite_scanner.CENO_SCANNINGn.qn_new());
-    /*_p29.CARE*/ wire CARE_COUNT_CLKn = and3(XOCE_xBCxxFGx(), CEHA_SCANNINGp, GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
+    /*_p29.CARE*/ wire CARE_COUNT_CLKn = and3(reg.sys_clk.XOCE_xBCxxFGx(), CEHA_SCANNINGp, GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /*_p29.DYTY*/ wire DYTY_COUNT_CLKp = not1(CARE_COUNT_CLKn);
-    /*_p29.DEZY*/ reg.sprite_scanner.DEZY_COUNT_CLKp.dff17_any(ZEME_AxCxExGx(), XAPO_VID_RSTn(), DYTY_COUNT_CLKp);
+    /*_p29.DEZY*/ reg.sprite_scanner.DEZY_COUNT_CLKp.dff17_any(reg.sys_clk.ZEME_AxCxExGx(), XAPO_VID_RSTn(), DYTY_COUNT_CLKp);
 
     // There's a feedback loop here, but we don't actually need to loop - BAKY holds the clock line high once the sprite store is full, so doing a second logic pass
     // doesn't actually change any of the dffs.
@@ -1117,12 +1117,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(reg.XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn);
     /*#p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, reg.reg_lcdc.XYLO_LCDC_SPENn.qn_new());
 
-    /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(reg.FEPO_STORE_MATCHp.out_mid(), reg_old.WODU_HBLANKp.out_old(), MYVO_AxCxExGx());
+    /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(reg.FEPO_STORE_MATCHp.out_mid(), reg_old.WODU_HBLANKp.out_old(), reg.sys_clk.MYVO_AxCxExGx());
     /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, reg.tfetch_control.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
     /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
     /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
 
-    /*#p27.NYZE*/ reg.fine_scroll.NYZE_SCX_FINE_MATCH_B.dff17_any(MOXE_AxCxExGx(), reg.XYMU_RENDERINGn.qn_new(), reg.fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_any());
+    /*#p27.NYZE*/ reg.fine_scroll.NYZE_SCX_FINE_MATCH_B.dff17_any(reg.sys_clk.MOXE_AxCxExGx(), reg.XYMU_RENDERINGn.qn_new(), reg.fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_any());
     /*#p27.PUXA*/ reg.fine_scroll.PUXA_SCX_FINE_MATCH_A.dff17_any(ROXO_CLKPIPE_odd, reg.XYMU_RENDERINGn.qn_new(), POHU_SCX_FINE_MATCHp_old);
 
     /*#p27.POVA*/ wire POVA_FINE_MATCH_TRIGp = and2(reg.fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_any(), reg.fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_any());
@@ -1164,7 +1164,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p21.WODU*/ reg.WODU_HBLANKp = and2(XENA_STORE_MATCHn, XANO_PX167p); // WODU goes high on odd, cleared on H
   }
 
-  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(reg.FEPO_STORE_MATCHp.out_new(), reg.WODU_HBLANKp.out_new(), MYVO_AxCxExGx());
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_odd = nor3(reg.FEPO_STORE_MATCHp.out_new(), reg.WODU_HBLANKp.out_new(), reg.sys_clk.MYVO_AxCxExGx());
   /*#p24.TYFA*/ wire TYFA_CLKPIPE_odd = and3(SOCY_WIN_HITn, reg.tfetch_control.POKY_PRELOAD_LATCHp.qp_new(), VYBO_CLKPIPE_odd);
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_evn = not1(TYFA_CLKPIPE_odd);
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
@@ -1188,7 +1188,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Tile fetch sequencer
 
-  /*_p27.LYZU*/ reg.tfetch_control.LYZU_BFETCH_S0p_D1.dff17(ALET_xBxDxFxH(), reg.XYMU_RENDERINGn.qn_new(), reg_old.tfetch_counter.LAXU_BFETCH_S0p.qp_old());
+  /*_p27.LYZU*/ reg.tfetch_control.LYZU_BFETCH_S0p_D1.dff17(reg.sys_clk.ALET_xBxDxFxH(), reg.XYMU_RENDERINGn.qn_new(), reg_old.tfetch_counter.LAXU_BFETCH_S0p.qp_old());
 
   /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp = nor2(reg.win_ctrl.RYFA_WIN_FETCHn_A.qn_new(), reg.win_ctrl.RENE_WIN_FETCHn_B.qp_new());
   /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne = nand2(SYLO_WIN_HITn, reg.win_ctrl.SOVY_WIN_HITp.qp_new());
@@ -1198,14 +1198,14 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   for (int feedback = 0; feedback < 2; feedback++) {
     /*_p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(reg.tfetch_counter.LAXU_BFETCH_S0p.qp_any(), reg.tfetch_counter.NYVA_BFETCH_S2p.qp_any(), NYXU_BFETCH_RSTn);
-    /*_p27.LEBO*/ wire LEBO_AxCxExGx = nand2(ALET_xBxDxFxH(), MOCE_BFETCH_DONEn);
+    /*_p27.LEBO*/ wire LEBO_AxCxExGx = nand2(reg.sys_clk.ALET_xBxDxFxH(), MOCE_BFETCH_DONEn);
 
     /*_p27.LAXU*/ reg.tfetch_counter.LAXU_BFETCH_S0p.dff17_any(LEBO_AxCxExGx,                               NYXU_BFETCH_RSTn, reg.tfetch_counter.LAXU_BFETCH_S0p.qn_any());
     /*_p27.MESU*/ reg.tfetch_counter.MESU_BFETCH_S1p.dff17_any(reg.tfetch_counter.LAXU_BFETCH_S0p.qn_any(), NYXU_BFETCH_RSTn, reg.tfetch_counter.MESU_BFETCH_S1p.qn_any());
     /*_p27.NYVA*/ reg.tfetch_counter.NYVA_BFETCH_S2p.dff17_any(reg.tfetch_counter.MESU_BFETCH_S1p.qn_any(), NYXU_BFETCH_RSTn, reg.tfetch_counter.NYVA_BFETCH_S2p.qn_any());
   }
 
-  /*_p27.LOVY*/ reg.tfetch_control.LOVY_FETCH_DONEp.dff17(MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, reg_old.tfetch_control.LYRY_BFETCH_DONEp.out_old());
+  /*_p27.LOVY*/ reg.tfetch_control.LOVY_FETCH_DONEp.dff17(reg.sys_clk.MYVO_AxCxExGx(), NYXU_BFETCH_RSTn, reg_old.tfetch_control.LYRY_BFETCH_DONEp.out_old());
 
   /*_p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(reg.tfetch_counter.LAXU_BFETCH_S0p.qp_new(), reg.tfetch_counter.NYVA_BFETCH_S2p.qp_new(), NYXU_BFETCH_RSTn);
   /*_p27.LYRY*/ reg.tfetch_control.LYRY_BFETCH_DONEp = not1(MOCE_BFETCH_DONEn);

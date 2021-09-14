@@ -21,28 +21,28 @@ void GateBoy::tock_clocks_gates() {
   DFF9 ALEF_AxxxxFGH_old = reg.sys_clk.ALEF_AxxxxFGH;
   DFF9 APUK_ABxxxxGH_old = reg.sys_clk.APUK_ABxxxxGH;
 
-  /*_p01.AFUR*/ reg.sys_clk.AFUR_xxxxEFGH.dff9(ATAN_AxCxExGx, UPOJ_MODE_PRODn(), ADYK_ABCxxxxH_old.qp_old());
-  /*_p01.ALEF*/ reg.sys_clk.ALEF_AxxxxFGH.dff9(ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), AFUR_xxxxEFGH_old.qn_old());
-  /*_p01.APUK*/ reg.sys_clk.APUK_ABxxxxGH.dff9(ATAN_AxCxExGx, UPOJ_MODE_PRODn(), ALEF_AxxxxFGH_old.qn_old());
-  /*_p01.ADYK*/ reg.sys_clk.ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, UPOJ_MODE_PRODn(), APUK_ABxxxxGH_old.qn_old());
+  /*_p01.AFUR*/ reg.sys_clk.AFUR_xxxxEFGH.dff9(ATAN_AxCxExGx, reg.sys_rst.UPOJ_MODE_PRODn(), ADYK_ABCxxxxH_old.qp_old());
+  /*_p01.ALEF*/ reg.sys_clk.ALEF_AxxxxFGH.dff9(ATAL_xBxDxFxH, reg.sys_rst.UPOJ_MODE_PRODn(), AFUR_xxxxEFGH_old.qn_old());
+  /*_p01.APUK*/ reg.sys_clk.APUK_ABxxxxGH.dff9(ATAN_AxCxExGx, reg.sys_rst.UPOJ_MODE_PRODn(), ALEF_AxxxxFGH_old.qn_old());
+  /*_p01.ADYK*/ reg.sys_clk.ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, reg.sys_rst.UPOJ_MODE_PRODn(), APUK_ABxxxxGH_old.qn_old());
 
-  /*_PIN_75*/ reg.sys_clk.PIN_75_CLK_OUT.pin_out(BUDE_xxxxEFGH(), BUDE_xxxxEFGH());
+  /*_PIN_75*/ reg.sys_clk.PIN_75_CLK_OUT.pin_out(reg.sys_clk.BUDE_xxxxEFGH(), reg.sys_clk.BUDE_xxxxEFGH());
 
-  /*_SIG_CPU_BOWA_Axxxxxxx*/ reg.sys_clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
-  /*_SIG_CPU_BEDO_xBCDEFGH*/ reg.sys_clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(BEDO_Axxxxxxx());
-  /*_SIG_CPU_BEKO_ABCDxxxx*/ reg.sys_clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(BEKO_ABCDxxxx());
-  /*_SIG_CPU_BUDE_xxxxEFGH*/ reg.sys_clk.SIG_CPU_BUDE_xxxxEFGH.sig_out(BUDE_xxxxEFGH());
-  /*_SIG_CPU_BOLO_ABCDEFxx*/ reg.sys_clk.SIG_CPU_BOLO_ABCDEFxx.sig_out(BOLO_ABCDEFxx());
-  /*_SIG_CPU_BUKE_AxxxxxGH*/ reg.sys_clk.SIG_CPU_BUKE_AxxxxxGH.sig_out(BUKE_AxxxxxGH());
-  /*_SIG_CPU_BOMA_xBCDEFGH*/ reg.sys_clk.SIG_CPU_BOMA_xBCDEFGH.sig_out(BOMA_xBCDEFGH());
-  /*_SIG_CPU_BOGA_Axxxxxxx*/ reg.sys_clk.SIG_CPU_BOGA_Axxxxxxx.sig_out(BOGA_Axxxxxxx());
+  /*_SIG_CPU_BOWA_Axxxxxxx*/ reg.sys_clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(reg.sys_clk.BOWA_xBCDEFGH());
+  /*_SIG_CPU_BEDO_xBCDEFGH*/ reg.sys_clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(reg.sys_clk.BEDO_Axxxxxxx());
+  /*_SIG_CPU_BEKO_ABCDxxxx*/ reg.sys_clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(reg.sys_clk.BEKO_ABCDxxxx());
+  /*_SIG_CPU_BUDE_xxxxEFGH*/ reg.sys_clk.SIG_CPU_BUDE_xxxxEFGH.sig_out(reg.sys_clk.BUDE_xxxxEFGH());
+  /*_SIG_CPU_BOLO_ABCDEFxx*/ reg.sys_clk.SIG_CPU_BOLO_ABCDEFxx.sig_out(reg.sys_clk.BOLO_ABCDEFxx());
+  /*_SIG_CPU_BUKE_AxxxxxGH*/ reg.sys_clk.SIG_CPU_BUKE_AxxxxxGH.sig_out(reg.sys_clk.BUKE_AxxxxxGH());
+  /*_SIG_CPU_BOMA_xBCDEFGH*/ reg.sys_clk.SIG_CPU_BOMA_xBCDEFGH.sig_out(reg.sys_clk.BOMA_xBCDEFGH());
+  /*_SIG_CPU_BOGA_Axxxxxxx*/ reg.sys_clk.SIG_CPU_BOGA_Axxxxxxx.sig_out(reg.sys_clk.BOGA_Axxxxxxx());
 }
 
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_vid_clocks_gates() {
-  /*_p29.WOSU*/ reg.sys_clk.WOSU_AxxDExxH.dff17(XYFY_xBxDxFxH(),            XAPO_VID_RSTn(), reg.sys_clk.WUVU_ABxxEFxx.qn_old());
-  /*_p29.WUVU*/ reg.sys_clk.WUVU_ABxxEFxx.dff17(XOTA_AxCxExGx(),            XAPO_VID_RSTn(), reg.sys_clk.WUVU_ABxxEFxx.qn_old());
+  /*_p29.WOSU*/ reg.sys_clk.WOSU_AxxDExxH.dff17(reg.sys_clk.XYFY_xBxDxFxH(),            XAPO_VID_RSTn(), reg.sys_clk.WUVU_ABxxEFxx.qn_old());
+  /*_p29.WUVU*/ reg.sys_clk.WUVU_ABxxEFxx.dff17(reg.sys_clk.XOTA_AxCxExGx(),            XAPO_VID_RSTn(), reg.sys_clk.WUVU_ABxxEFxx.qn_old());
   /*_p21.VENA*/ reg.sys_clk.VENA_xxCDEFxx.dff17(reg.sys_clk.WUVU_ABxxEFxx.qn_new(), XAPO_VID_RSTn(), reg.sys_clk.VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
 }
 

@@ -7,6 +7,22 @@ struct GateBoyCpuSignals {
   void reset_to_bootrom();
   void reset_to_cart();
 
+  /*_p07.AJAS*/ wire AJAS_CPU_RDn      () const { return not1(TEDO_CPU_RDp.out_new()); }
+  /*_p07.DYKY*/ wire DYKY_CPU_WRn      () const { return not1(TAPU_CPU_WRp.out_new()); }
+
+  /*_p07.ASOT*/ wire ASOT_CPU_RDp      () const { return not1(AJAS_CPU_RDn()); }
+  /*_p07.CUPA*/ wire CUPA_CPU_WRp      () const { return not1(DYKY_CPU_WRn()); }
+  /*_p28.MYNU*/ wire MYNU_CPU_RDn      () const { return nand2(ASOT_CPU_RDp(), CATY_LATCH_EXTp()); }
+  /*_p28.LEKO*/ wire LEKO_CPU_RDp      () const { return not1(MYNU_CPU_RDn()); }
+  /*_p08.REDU*/ wire REDU_CPU_RDn      () const { return not1(TEDO_CPU_RDp.out_new()); }
+  /*_p08.MEXO*/ wire MEXO_CPU_WRn      () const { return not1(APOV_CPU_WRp.out_new()); }
+
+  /*_p04.DECY*/ wire DECY_LATCH_EXTn   () const { return not1(SIG_IN_CPU_DBUS_FREE.out_new()); }
+  /*_p04.CATY*/ wire CATY_LATCH_EXTp   () const { return not1(DECY_LATCH_EXTn()); }
+  /*#p28.BOFE*/ wire BOFE_LATCH_EXTn   () const { return not1(CATY_LATCH_EXTp()); }
+
+  //----------------------------------------
+
   Gate ABUZ_EXT_RAM_CS_CLK;
 
   /*_SIG_IN_CPU_RDp     */  SigIn  SIG_IN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO

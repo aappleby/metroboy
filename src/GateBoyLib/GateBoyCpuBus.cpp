@@ -19,7 +19,7 @@ void GateBoy::tock_bootrom_gates() {
   /*_p07.TUGE*/ wire TUGE_FF50_WRn = nand4(reg.cpu_signals.TAPU_CPU_WRp.out_new(), reg.cpu_abus.SYKE_ADDR_HIp(), reg.cpu_abus.TYRO_XX_0x0x0000p(), reg.cpu_abus.TUFA_XX_x1x1xxxxp());
   // FF50 - disable bootrom bit
 
-  /*_p07.TEPU*/ reg.cpu_signals.TEPU_BOOT_BITn.dff17(TUGE_FF50_WRn, ALUR_SYS_RSTn(), reg.SATO_BOOT_BITn.out_old());
+  /*_p07.TEPU*/ reg.cpu_signals.TEPU_BOOT_BITn.dff17(TUGE_FF50_WRn, reg.sys_rst.ALUR_SYS_RSTn(), reg.SATO_BOOT_BITn.out_old());
 
   // BOOT -> CBD
   // this is kind of a hack
@@ -33,7 +33,7 @@ void GateBoy::tock_bootrom_gates() {
   /*_p07.ZORO*/ wire ZORO_0000xxxx_XX = nor4(reg.cpu_abus.BUS_CPU_A15p.out_new(), reg.cpu_abus.BUS_CPU_A14p.out_new(), reg.cpu_abus.BUS_CPU_A13p.out_new(), reg.cpu_abus.BUS_CPU_A12p.out_new());
   /*_p07.ZADU*/ wire ZADU_xxxx0000_XX = nor4(reg.cpu_abus.BUS_CPU_A11p.out_new(), reg.cpu_abus.BUS_CPU_A10p.out_new(), reg.cpu_abus.BUS_CPU_A09p.out_new(), reg.cpu_abus.BUS_CPU_A08p.out_new());
   /*_p07.ZUFA*/ wire ZUFA_0000_00FF  = and2(ZORO_0000xxxx_XX, ZADU_xxxx0000_XX);
-  /*_p07.YAZA*/ wire YAZA_MODE_DBG1n = not1(UMUT_MODE_DBG1p());
+  /*_p07.YAZA*/ wire YAZA_MODE_DBG1n = not1(reg.sys_rst.UMUT_MODE_DBG1p());
   /*_p07.YULA*/ wire YULA_BOOT_RDp   = and3(reg.cpu_signals.TEDO_CPU_RDp.out_new(), YAZA_MODE_DBG1n, TUTU_READ_BOOTROMp); // def AND
   /*_p07.ZADO*/ wire ZADO_BOOT_CSn   = nand2(YULA_BOOT_RDp, ZUFA_0000_00FF);
   /*_p07.ZERY*/ wire ZERY_BOOT_CSp   = not1(ZADO_BOOT_CSn);

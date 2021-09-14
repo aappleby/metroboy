@@ -78,7 +78,7 @@ bool cart_has_ram(const blob& cart_blob) {
 
 void GateBoy::tock_ext_gates(const blob& cart_blob)
 {
-  /*_p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn(), UMUT_MODE_DBG1p());
+  /*_p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn(), reg.sys_rst.UMUT_MODE_DBG1p());
 
   /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(reg.reg_dma.MARU_DMA_A15n.qn_new());
   /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(reg.reg_dma.PULA_DMA_A13n.qn_new(), reg.reg_dma.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
@@ -91,16 +91,16 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
     /*_p08.LYWE*/ wire LYWE = not1(LAGU);
     /*_p08.MOTY*/ wire MOTY_CPU_EXT_RD = or2(MOCA_DBG_EXT_RD, LYWE);
     /*_p08.TYMU*/ wire TYMU_EXT_RDn = nor2(LUMA_DMA_CARTp, MOTY_CPU_EXT_RD);
-    /*_p08.UGAC*/ wire UGAC_RD_A = nand2(TYMU_EXT_RDn, TOVA_MODE_DBG2n());
-    /*_p08.URUN*/ wire URUN_RD_D = nor2 (TYMU_EXT_RDn, UNOR_MODE_DBG2p());
+    /*_p08.UGAC*/ wire UGAC_RD_A = nand2(TYMU_EXT_RDn, reg.sys_rst.TOVA_MODE_DBG2n());
+    /*_p08.URUN*/ wire URUN_RD_D = nor2 (TYMU_EXT_RDn, reg.sys_rst.UNOR_MODE_DBG2p());
     /*_PIN_79*/ reg.ext_ctrl.PIN_79_RDn.pin_out(UGAC_RD_A, URUN_RD_D);
   }
 
   {
-    /*_p08.NEVY*/ wire NEVY = or2(MEXO_CPU_WRn(), MOCA_DBG_EXT_RD);
+    /*_p08.NEVY*/ wire NEVY = or2(reg.cpu_signals.MEXO_CPU_WRn(), MOCA_DBG_EXT_RD);
     /*_p08.PUVA*/ wire PUVA_EXT_WRn = or2(NEVY, LUMA_DMA_CARTp);
-    /*_p08.UVER*/ wire UVER_WR_A = nand2(PUVA_EXT_WRn, TOVA_MODE_DBG2n());
-    /*_p08.USUF*/ wire USUF_WR_D = nor2 (PUVA_EXT_WRn, UNOR_MODE_DBG2p());
+    /*_p08.UVER*/ wire UVER_WR_A = nand2(PUVA_EXT_WRn, reg.sys_rst.TOVA_MODE_DBG2n());
+    /*_p08.USUF*/ wire USUF_WR_D = nor2 (PUVA_EXT_WRn, reg.sys_rst.UNOR_MODE_DBG2p());
     /*_PIN_78*/ reg.ext_ctrl.PIN_78_WRn.pin_out(UVER_WR_A, USUF_WR_D);
   }
 
@@ -110,7 +110,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
     /*_PIN_80*/ reg.ext_ctrl.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
   }
 
-  /*_p08.LOXO*/ wire LOXO_HOLDn = and_or3(MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn(), UMUT_MODE_DBG1p());
+  /*_p08.LOXO*/ wire LOXO_HOLDn = and_or3(reg.sys_rst.MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn(), reg.sys_rst.UMUT_MODE_DBG1p());
   /*_p08.LASY*/ wire LASY_HOLDp = not1(LOXO_HOLDn);
   /*_p08.MATE*/ wire MATE_HOLDn = not1(LASY_HOLDp);
   /*_p08.ALOR*/ reg.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.tp_latchn(MATE_HOLDn, reg.cpu_abus.BUS_CPU_A00p.out_new());
@@ -146,37 +146,37 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.MUCE*/ wire MUCE_A13p = mux2p(LUMA_DMA_CARTp, reg.reg_dma.PULA_DMA_A13n.qn_new(), reg.ext_addr_latch.LONU_EXT_ADDR_LATCH_13p.qp_new());
   /*_p08.PEGE*/ wire PEGE_A14p = mux2p(LUMA_DMA_CARTp, reg.reg_dma.POKU_DMA_A14n.qn_new(), reg.ext_addr_latch.NYRE_EXT_ADDR_LATCH_14p.qp_new());
 
-  /*_p08.KUPO*/ wire KUPO = nand2(AMET_A00p, TOVA_MODE_DBG2n());
-  /*_p08.CABA*/ wire CABA = nand2(ATOL_A01p, TOVA_MODE_DBG2n());
-  /*_p08.BOKU*/ wire BOKU = nand2(APOK_A02p, TOVA_MODE_DBG2n());
-  /*_p08.BOTY*/ wire BOTY = nand2(AMER_A03p, TOVA_MODE_DBG2n());
-  /*_p08.BYLA*/ wire BYLA = nand2(ATEM_A04p, TOVA_MODE_DBG2n());
-  /*_p08.BADU*/ wire BADU = nand2(ATOV_A05p, TOVA_MODE_DBG2n());
-  /*_p08.CEPU*/ wire CEPU = nand2(ATYR_A06p, TOVA_MODE_DBG2n());
-  /*_p08.DEFY*/ wire DEFY = nand2(ASUR_A07p, TOVA_MODE_DBG2n());
-  /*_p08.MYNY*/ wire MYNY = nand2(MANO_A08p, TOVA_MODE_DBG2n());
-  /*_p08.MUNE*/ wire MUNE = nand2(MASU_A09p, TOVA_MODE_DBG2n());
-  /*_p08.ROXU*/ wire ROXU = nand2(PAMY_A10p, TOVA_MODE_DBG2n());
-  /*_p08.LEPY*/ wire LEPY = nand2(MALE_A11p, TOVA_MODE_DBG2n());
-  /*_p08.LUCE*/ wire LUCE = nand2(MOJY_A12p, TOVA_MODE_DBG2n());
-  /*_p08.LABE*/ wire LABE = nand2(MUCE_A13p, TOVA_MODE_DBG2n());
-  /*_p08.PUHE*/ wire PUHE = nand2(PEGE_A14p, TOVA_MODE_DBG2n());
+  /*_p08.KUPO*/ wire KUPO = nand2(AMET_A00p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.CABA*/ wire CABA = nand2(ATOL_A01p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.BOKU*/ wire BOKU = nand2(APOK_A02p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.BOTY*/ wire BOTY = nand2(AMER_A03p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.BYLA*/ wire BYLA = nand2(ATEM_A04p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.BADU*/ wire BADU = nand2(ATOV_A05p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.CEPU*/ wire CEPU = nand2(ATYR_A06p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.DEFY*/ wire DEFY = nand2(ASUR_A07p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.MYNY*/ wire MYNY = nand2(MANO_A08p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.MUNE*/ wire MUNE = nand2(MASU_A09p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.ROXU*/ wire ROXU = nand2(PAMY_A10p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.LEPY*/ wire LEPY = nand2(MALE_A11p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.LUCE*/ wire LUCE = nand2(MOJY_A12p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.LABE*/ wire LABE = nand2(MUCE_A13p, reg.sys_rst.TOVA_MODE_DBG2n());
+  /*_p08.PUHE*/ wire PUHE = nand2(PEGE_A14p, reg.sys_rst.TOVA_MODE_DBG2n());
 
-  /*_p08.KOTY*/ wire KOTY = nor2(AMET_A00p, UNOR_MODE_DBG2p());
-  /*_p08.COTU*/ wire COTU = nor2(ATOL_A01p, UNOR_MODE_DBG2p());
-  /*_p08.BAJO*/ wire BAJO = nor2(APOK_A02p, UNOR_MODE_DBG2p());
-  /*_p08.BOLA*/ wire BOLA = nor2(AMER_A03p, UNOR_MODE_DBG2p());
-  /*_p08.BEVO*/ wire BEVO = nor2(ATEM_A04p, UNOR_MODE_DBG2p());
-  /*_p08.AJAV*/ wire AJAV = nor2(ATOV_A05p, UNOR_MODE_DBG2p());
-  /*_p08.CYKA*/ wire CYKA = nor2(ATYR_A06p, UNOR_MODE_DBG2p());
-  /*_p08.COLO*/ wire COLO = nor2(ASUR_A07p, UNOR_MODE_DBG2p());
-  /*_p08.MEGO*/ wire MEGO = nor2(MANO_A08p, UNOR_MODE_DBG2p());
-  /*_p08.MENY*/ wire MENY = nor2(MASU_A09p, UNOR_MODE_DBG2p());
-  /*_p08.RORE*/ wire RORE = nor2(PAMY_A10p, UNOR_MODE_DBG2p());
-  /*_p08.LYNY*/ wire LYNY = nor2(MALE_A11p, UNOR_MODE_DBG2p());
-  /*_p08.LOSO*/ wire LOSO = nor2(MOJY_A12p, UNOR_MODE_DBG2p());
-  /*_p08.LEVA*/ wire LEVA = nor2(MUCE_A13p, UNOR_MODE_DBG2p());
-  /*_p08.PAHY*/ wire PAHY = nor2(PEGE_A14p, UNOR_MODE_DBG2p());
+  /*_p08.KOTY*/ wire KOTY = nor2(AMET_A00p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.COTU*/ wire COTU = nor2(ATOL_A01p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.BAJO*/ wire BAJO = nor2(APOK_A02p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.BOLA*/ wire BOLA = nor2(AMER_A03p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.BEVO*/ wire BEVO = nor2(ATEM_A04p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.AJAV*/ wire AJAV = nor2(ATOV_A05p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.CYKA*/ wire CYKA = nor2(ATYR_A06p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.COLO*/ wire COLO = nor2(ASUR_A07p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.MEGO*/ wire MEGO = nor2(MANO_A08p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.MENY*/ wire MENY = nor2(MASU_A09p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.RORE*/ wire RORE = nor2(PAMY_A10p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.LYNY*/ wire LYNY = nor2(MALE_A11p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.LOSO*/ wire LOSO = nor2(MOJY_A12p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.LEVA*/ wire LEVA = nor2(MUCE_A13p, reg.sys_rst.UNOR_MODE_DBG2p());
+  /*_p08.PAHY*/ wire PAHY = nor2(PEGE_A14p, reg.sys_rst.UNOR_MODE_DBG2p());
 
   /*_PIN_01*/ reg.ext_abus.lo.PIN_01_A00.pin_out(KUPO, KOTY);
   /*_PIN_02*/ reg.ext_abus.lo.PIN_02_A01.pin_out(CABA, COTU);
@@ -200,8 +200,8 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.SOBY*/ wire SOBY_A15n = nor2 (reg.cpu_abus.BUS_CPU_A15p.out_new(), TUTU_READ_BOOTROMp);
   /*_p08.SEPY*/ wire SEPY_A15p = nand2(reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new(), SOBY_A15n);
   /*_p08.TAZY*/ wire TAZY_A15p = mux2p (LUMA_DMA_CARTp, reg.reg_dma.MARU_DMA_A15n.qn_new(), SEPY_A15p);
-  /*_p08.SUZE*/ wire SUZE_A15n = nand2(TAZY_A15p, RYCA_MODE_DBG2n());
-  /*_p08.RULO*/ wire RULO_A15n = nor2 (TAZY_A15p, UNOR_MODE_DBG2p());
+  /*_p08.SUZE*/ wire SUZE_A15n = nand2(TAZY_A15p, reg.sys_rst.RYCA_MODE_DBG2n());
+  /*_p08.RULO*/ wire RULO_A15n = nor2 (TAZY_A15p, reg.sys_rst.UNOR_MODE_DBG2p());
   /*_PIN_16*/ reg.ext_abus.hi.PIN_16_A15.pin_out(SUZE_A15n, RULO_A15n);
 
   // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_out
@@ -210,7 +210,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.LAGU*/ wire LAGU = and_or3(reg.cpu_signals.SIG_IN_CPU_RDp.out_new(), LEVO_ADDR_VRAMn(), reg.cpu_signals.SIG_IN_CPU_WRp.out_new());
   /*_p08.LYWE*/ wire LYWE = not1(LAGU);
   /*_p08.MOTY*/ wire MOTY_CPU_EXT_RD = or2(MOCA_DBG_EXT_RD, LYWE);
-  /*_p08.RORU*/ wire RORU_CBD_TO_EPDn = mux2p(UNOR_MODE_DBG2p(), REDU_CPU_RDn(), MOTY_CPU_EXT_RD);
+  /*_p08.RORU*/ wire RORU_CBD_TO_EPDn = mux2p(reg.sys_rst.UNOR_MODE_DBG2p(), reg.cpu_signals.REDU_CPU_RDn(), MOTY_CPU_EXT_RD);
   /*_p08.LULA*/ wire LULA_CBD_TO_EPDp = not1(RORU_CBD_TO_EPDn);
 
   /*_p25.RUXA*/ wire RUXA = nand2(reg.cpu_dbus.BUS_CPU_D00p.out_new(), LULA_CBD_TO_EPDp);

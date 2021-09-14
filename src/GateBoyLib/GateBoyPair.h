@@ -19,16 +19,16 @@ struct GateBoyPair {
   GateBoy gba;
   GateBoy gbb;
 
-  void wipe_flags() {
-    if (gba.sys.logic_mode) gba.wipe_flags();
-    if (gbb.sys.logic_mode) gbb.wipe_flags();
-  }
+  //void wipe_flags() {
+  //  if (gba.sys.logic_mode) gba.wipe_flags();
+  //  if (gbb.sys.logic_mode) gbb.wipe_flags();
+  //}
 
   bool reset_to_bootrom(const blob& cart_blob, bool fastboot) {
     gba.reset_to_bootrom(cart_blob, fastboot);
     gbb.reset_to_bootrom(cart_blob, fastboot);
 
-    wipe_flags();
+    //wipe_flags();
     return check_sync();
   }
 
@@ -36,7 +36,7 @@ struct GateBoyPair {
     gba.reset_to_cart(cart_blob);
     gbb.reset_to_cart(cart_blob);
 
-    wipe_flags();
+    //wipe_flags();
     return check_sync();
   }
 
@@ -44,7 +44,7 @@ struct GateBoyPair {
     gba.from_blob(b);
     gbb.from_blob(b);
 
-    wipe_flags();
+    //wipe_flags();
     return check_sync();
   }
 

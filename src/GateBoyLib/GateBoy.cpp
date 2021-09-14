@@ -556,6 +556,7 @@ bool GateBoy::next_phase(const blob& cart_blob) {
 
   if (sys.logic_mode) {
     tock_logic(cart_blob);
+    _state.to_reg(reg);
     update_framebuffer(bit_pack(reg.pix_count) - 8, bit_pack(reg.reg_ly), ~reg.lcd.PIN_51_LCD_DATA0.state, ~reg.lcd.PIN_50_LCD_DATA1.state);
     sys.phase_total++;
     return true;
@@ -3175,10 +3176,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
 
   // POSTCONDITIONS
-
   if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);
   if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
-
-  // UNPACK IT UP!
-  state_new.to_reg(reg);
 }

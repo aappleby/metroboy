@@ -1376,14 +1376,16 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   const GateBoyReg reg_old = reg;
   GateBoyReg& reg_new = reg;
 
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
 
   const uint8_t phase_old = 1 << (7 - ((sys.phase_total + 0) & 7));
   const uint8_t phase_new = 1 << (7 - ((sys.phase_total + 1) & 7));
-
-  //----------
-
-  reg_new.SIG_VCC = 1;
-  reg_new.SIG_GND = 0;
 
   //-----------------------------------------------------------------------------
 
@@ -1393,49 +1395,41 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   const bool cpu_addr_vram_old = (cpu_addr_old >= 0x8000) && (cpu_addr_old <= 0x9FFF);
   const bool cpu_addr_oam_old = (cpu_addr_old >= 0xFE00) && (cpu_addr_old <= 0xFEFF);
 
-  bit_unpack(reg_new.cpu_abus, 0xFFFF);
-  bit_unpack(reg_new.cpu_dbus, 0xFF);
+  state_new.cpu_abus = 0xFFFF;
+  state_new.cpu_dbus = 0xFF;
 
   if (gen_clk_new(0b00001111)) {
     // Data has to be driven on EFGH or we fail the wave tests
-    if (cpu.bus_req_new.write) bit_unpack(reg_new.cpu_dbus, cpu.bus_req_new.data_lo);
-    reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE = cpu.bus_req_new.read;
+    if (cpu.bus_req_new.write) state_new.cpu_dbus = cpu.bus_req_new.data_lo;
+    state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE = cpu.bus_req_new.read;
   }
   else {
-    reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE = 0;
+    state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE = 0;
   }
 
   if (gen_clk_new(0b10000000)) {
-    reg_new.cpu_signals.SIG_IN_CPU_RDp = 0;
-    reg_new.cpu_signals.SIG_IN_CPU_WRp = 0;
-    bit_unpack(reg_new.cpu_abus, cpu.bus_req_new.addr & 0x00FF);
+    state_new.cpu_signals.SIG_IN_CPU_RDp = 0;
+    state_new.cpu_signals.SIG_IN_CPU_WRp = 0;
+    state_new.cpu_abus = cpu.bus_req_new.addr & 0x00FF;
   }
   else {
-    reg_new.cpu_signals.SIG_IN_CPU_RDp = cpu.bus_req_new.read;
-    reg_new.cpu_signals.SIG_IN_CPU_WRp = cpu.bus_req_new.write;
-    bit_unpack(reg_new.cpu_abus, cpu.bus_req_new.addr);
+    state_new.cpu_signals.SIG_IN_CPU_RDp = cpu.bus_req_new.read;
+    state_new.cpu_signals.SIG_IN_CPU_WRp = cpu.bus_req_new.write;
+    state_new.cpu_abus = cpu.bus_req_new.addr;
   }
 
   bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
   if ((cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr < 0x9FFF) && gen_clk_new(0b10000000)) EXT_addr_new = false;
   if ((cpu.bus_req_new.addr >= 0xFE00)) EXT_addr_new = false;
-  if ((cpu.bus_req_new.addr <= 0x00FF) && !reg_new.cpu_signals.TEPU_BOOT_BITn) EXT_addr_new = false;
-  reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp = EXT_addr_new;
+  if ((cpu.bus_req_new.addr <= 0x00FF) && !state_new.cpu_signals.TEPU_BOOT_BITn) EXT_addr_new = false;
+  state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp = EXT_addr_new;
 
-  const uint16_t cpu_addr_new = (uint16_t)bit_pack(reg_new.cpu_abus);
+  const uint16_t cpu_addr_new = state_new.cpu_abus;
   const bool cpu_addr_vram_new = (cpu_addr_new >= 0x8000) && (cpu_addr_new <= 0x9FFF);
   const bool cpu_addr_ram_new = (cpu_addr_new >= 0xA000) && (cpu_addr_new <= 0xFDFF);
   const bool cpu_addr_oam_new = (cpu_addr_new >= 0xFE00) && (cpu_addr_new <= 0xFEFF);
 
   //-----------------------------------------------------------------------------
-
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  state_new.from_reg(reg_new);
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
-  // STATE STEAMROLLER
 
   state_new.sys_clk.PIN_74_CLK.CLK = gen_clk_new(0b10101010);
   state_new.sys_clk.PIN_74_CLK.CLKGOOD = 1;

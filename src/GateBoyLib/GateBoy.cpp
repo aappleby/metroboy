@@ -2482,33 +2482,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Pipe merge and output
 
-  const wire PIX_BG_LOp = reg.bgw_pipe_a.PYBO_BGW_PIPE_A7 && !reg.reg_lcdc.VYXE_LCDC_BGENn;
-  const wire PIX_BG_HIp = reg.bgw_pipe_b.SOHU_BGW_PIPE_B7 && !reg.reg_lcdc.VYXE_LCDC_BGENn;
-  const wire PIX_SP_LOp = reg.spr_pipe_a.WUFY_SPR_PIPE_A7 && !reg.reg_lcdc.XYLO_LCDC_SPENn;
-  const wire PIX_SP_HIp = reg.spr_pipe_b.VUPY_SPR_PIPE_B7 && !reg.reg_lcdc.XYLO_LCDC_SPENn;
-
-  auto pal_idx = 0;
-  auto pal = 0;
-
-  const auto bgp  = bit_pack_inv(reg.reg_bgp);
-  const auto obp0 = bit_pack_inv(reg.reg_obp0);
-  const auto obp1 = bit_pack_inv(reg.reg_obp1);
-
-  if (PIX_SP_HIp || PIX_SP_LOp) {
-    pal_idx = pack(PIX_SP_LOp, PIX_SP_HIp);
-    pal = reg.pal_pipe.LYME_PAL_PIPE_D7 ? obp1 : obp0;
-  }
-  else {
-    pal_idx = pack(PIX_BG_LOp, PIX_BG_HIp);
-    pal = bgp;
-  }
-
-  reg.lcd.REMY_LD0n = (pal >> (pal_idx * 2 + 0)) & 1;
-  reg.lcd.RAVO_LD1n = (pal >> (pal_idx * 2 + 1)) & 1;
-
-  //----------------------------------------
-  // LCD pins
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2516,6 +2489,33 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  const wire PIX_BG_LOp = get_bit(state_new.bgw_pipe_a, 7) && !get_bit(state_new.reg_lcdc, 0);
+  const wire PIX_BG_HIp = get_bit(state_new.bgw_pipe_b, 7) && !get_bit(state_new.reg_lcdc, 0);
+  const wire PIX_SP_LOp = get_bit(state_new.spr_pipe_a, 7) && !get_bit(state_new.reg_lcdc, 1);
+  const wire PIX_SP_HIp = get_bit(state_new.spr_pipe_b, 7) && !get_bit(state_new.reg_lcdc, 1);
+
+  auto pal_idx = 0;
+  auto pal = 0;
+
+  const auto bgp  = state_new.reg_bgp ^ 0xFF;
+  const auto obp0 = state_new.reg_obp0 ^ 0xFF;
+  const auto obp1 = state_new.reg_obp1 ^ 0xFF;
+
+  if (PIX_SP_HIp || PIX_SP_LOp) {
+    pal_idx = pack(PIX_SP_LOp, PIX_SP_HIp);
+    pal = get_bit(state_new.pal_pipe, 7) ? obp1 : obp0;
+  }
+  else {
+    pal_idx = pack(PIX_BG_LOp, PIX_BG_HIp);
+    pal = bgp;
+  }
+
+  state_new.lcd.REMY_LD0n = (pal >> (pal_idx * 2 + 0)) & 1;
+  state_new.lcd.RAVO_LD1n = (pal >> (pal_idx * 2 + 1)) & 1;
+
+  //----------------------------------------
+  // LCD pins
 
   if (!get_bit(state_new.reg_lcdc, 7)) {
     state_new.lcd.PIN_52_LCD_CNTRL = !state_new.lcd.SYGU_LINE_STROBE && !state_new.lcd.RUTU_x113p;

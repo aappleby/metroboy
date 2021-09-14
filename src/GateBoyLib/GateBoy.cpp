@@ -1992,113 +1992,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
-  if (reg_new.reg_lcdc.XONA_LCDC_LCDENn || reg_new.ATEJ_LINE_RSTp) {
-    bit_unpack(reg.sprite_counter, 0);
-    bit_unpack(reg.sprite_reset_flags, 0);
-    bit_unpack(reg.sprite_store_flags, 0);
-
-    bit_unpack(reg.store_x0, 0xFF);
-    bit_unpack(reg.store_x1, 0xFF);
-    bit_unpack(reg.store_x2, 0xFF);
-    bit_unpack(reg.store_x3, 0xFF);
-    bit_unpack(reg.store_x4, 0xFF);
-    bit_unpack(reg.store_x5, 0xFF);
-    bit_unpack(reg.store_x6, 0xFF);
-    bit_unpack(reg.store_x7, 0xFF);
-    bit_unpack(reg.store_x8, 0xFF);
-    bit_unpack(reg.store_x9, 0xFF);
-  }
-  else {
-    bool ssf_clk = gen_clk_new(0b10011001) || !reg.sprite_scanner.CENO_SCANNINGn;
-
-    int ly = (int)reg_ly_new;
-    int sy = (int)bit_pack(reg_new.oam_temp_a) - 16;
-    int sprite_height = reg_new.reg_lcdc.XYMO_LCDC_SPSIZEn ? 8 : 16;
-
-    if (ly < sy || ly >= sy + sprite_height) ssf_clk = 1;
-
-    if (gen_clk_new(0b10101010)) {
-      reg.sprite_scanner.DEZY_COUNT_CLKp = ssf_clk;
-      if (!reg_old.sprite_scanner.DEZY_COUNT_CLKp && reg_new.sprite_scanner.DEZY_COUNT_CLKp) {
-        if (bit_pack(reg_old.sprite_counter) != 10) {
-          bit_unpack(reg_new.sprite_counter, bit_pack(reg_old.sprite_counter) + 1);
-        }
-      }
-    }
-    else {
-      for (int i = 0; i < 10; i++) {
-        (&reg.sprite_store_flags.DYHU_STORE0_CLKn)[i] = (i == (int)bit_pack(reg_new.sprite_counter)) && !bit(ssf_clk);
-      }
-    }
-
-    const auto sprite_store_flags_old = bit_pack_inv(reg_old.sprite_store_flags);
-    const auto sprite_store_flags_new = bit_pack_inv(reg_new.sprite_store_flags);
-
-    const auto store_clk_pe = ~sprite_store_flags_old & sprite_store_flags_new;
-    const auto store_clk_ne = sprite_store_flags_old & ~sprite_store_flags_new;
-
-    const auto sprite_ibus = bit_pack(reg.sprite_ibus);
-    const auto sprite_lbus = bit_pack(reg.sprite_lbus);
-    const auto sprite_reset_flags = bit_pack(reg_new.sprite_reset_flags);
-    const auto oam_temp_b = bit_pack(reg.oam_temp_b);
-
-    if (get_bit(store_clk_ne, 0)) bit_unpack_inv(reg.store_i0, sprite_ibus);
-    if (get_bit(store_clk_ne, 1)) bit_unpack_inv(reg.store_i1, sprite_ibus);
-    if (get_bit(store_clk_ne, 2)) bit_unpack_inv(reg.store_i2, sprite_ibus);
-    if (get_bit(store_clk_ne, 3)) bit_unpack_inv(reg.store_i3, sprite_ibus);
-    if (get_bit(store_clk_ne, 4)) bit_unpack_inv(reg.store_i4, sprite_ibus);
-    if (get_bit(store_clk_ne, 5)) bit_unpack_inv(reg.store_i5, sprite_ibus);
-    if (get_bit(store_clk_ne, 6)) bit_unpack_inv(reg.store_i6, sprite_ibus);
-    if (get_bit(store_clk_ne, 7)) bit_unpack_inv(reg.store_i7, sprite_ibus);
-    if (get_bit(store_clk_ne, 8)) bit_unpack_inv(reg.store_i8, sprite_ibus);
-    if (get_bit(store_clk_ne, 9)) bit_unpack_inv(reg.store_i9, sprite_ibus);
-
-    if (get_bit(store_clk_ne, 0)) bit_unpack_inv(reg.store_l0, sprite_lbus);
-    if (get_bit(store_clk_ne, 1)) bit_unpack_inv(reg.store_l1, sprite_lbus);
-    if (get_bit(store_clk_ne, 2)) bit_unpack_inv(reg.store_l2, sprite_lbus);
-    if (get_bit(store_clk_ne, 3)) bit_unpack_inv(reg.store_l3, sprite_lbus);
-    if (get_bit(store_clk_ne, 4)) bit_unpack_inv(reg.store_l4, sprite_lbus);
-    if (get_bit(store_clk_ne, 5)) bit_unpack_inv(reg.store_l5, sprite_lbus);
-    if (get_bit(store_clk_ne, 6)) bit_unpack_inv(reg.store_l6, sprite_lbus);
-    if (get_bit(store_clk_ne, 7)) bit_unpack_inv(reg.store_l7, sprite_lbus);
-    if (get_bit(store_clk_ne, 8)) bit_unpack_inv(reg.store_l8, sprite_lbus);
-    if (get_bit(store_clk_ne, 9)) bit_unpack_inv(reg.store_l9, sprite_lbus);
-
-    if (get_bit(store_clk_pe, 0)) bit_unpack(reg.store_x0, oam_temp_b);
-    if (get_bit(store_clk_pe, 1)) bit_unpack(reg.store_x1, oam_temp_b);
-    if (get_bit(store_clk_pe, 2)) bit_unpack(reg.store_x2, oam_temp_b);
-    if (get_bit(store_clk_pe, 3)) bit_unpack(reg.store_x3, oam_temp_b);
-    if (get_bit(store_clk_pe, 4)) bit_unpack(reg.store_x4, oam_temp_b);
-    if (get_bit(store_clk_pe, 5)) bit_unpack(reg.store_x5, oam_temp_b);
-    if (get_bit(store_clk_pe, 6)) bit_unpack(reg.store_x6, oam_temp_b);
-    if (get_bit(store_clk_pe, 7)) bit_unpack(reg.store_x7, oam_temp_b);
-    if (get_bit(store_clk_pe, 8)) bit_unpack(reg.store_x8, oam_temp_b);
-    if (get_bit(store_clk_pe, 9)) bit_unpack(reg.store_x9, oam_temp_b);
-
-
-    if (get_bit(sprite_reset_flags, 0)) bit_unpack(reg.store_x0, 0xFF);
-    if (get_bit(sprite_reset_flags, 1)) bit_unpack(reg.store_x1, 0xFF);
-    if (get_bit(sprite_reset_flags, 2)) bit_unpack(reg.store_x2, 0xFF);
-    if (get_bit(sprite_reset_flags, 3)) bit_unpack(reg.store_x3, 0xFF);
-    if (get_bit(sprite_reset_flags, 4)) bit_unpack(reg.store_x4, 0xFF);
-    if (get_bit(sprite_reset_flags, 5)) bit_unpack(reg.store_x5, 0xFF);
-    if (get_bit(sprite_reset_flags, 6)) bit_unpack(reg.store_x6, 0xFF);
-    if (get_bit(sprite_reset_flags, 7)) bit_unpack(reg.store_x7, 0xFF);
-    if (get_bit(sprite_reset_flags, 8)) bit_unpack(reg.store_x8, 0xFF);
-    if (get_bit(sprite_reset_flags, 9)) bit_unpack(reg.store_x9, 0xFF);
-
-  }
-
-
-
-
-
-
-
-
-
-
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2106,6 +1999,120 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  if (get_bit(state_new.reg_lcdc, 7) || state_new.ATEJ_LINE_RSTp) {
+    state_new.sprite_counter = 0;
+    state_new.sprite_reset_flags = 0;
+    state_new.sprite_store_flags = 0;
+
+    state_new.store_x0 = 0xFF;
+    state_new.store_x1 = 0xFF;
+    state_new.store_x2 = 0xFF;
+    state_new.store_x3 = 0xFF;
+    state_new.store_x4 = 0xFF;
+    state_new.store_x5 = 0xFF;
+    state_new.store_x6 = 0xFF;
+    state_new.store_x7 = 0xFF;
+    state_new.store_x8 = 0xFF;
+    state_new.store_x9 = 0xFF;
+  }
+  else {
+    bool ssf_clk = gen_clk_new(0b10011001) || !state_new.sprite_scanner.CENO_SCANNINGn;
+
+    int ly = (int)reg_ly_new;
+    int sy = (int)state_new.oam_temp_a - 16;
+    int sprite_height = get_bit(state_new.reg_lcdc, 2) ? 8 : 16;
+
+    if (ly < sy || ly >= sy + sprite_height) ssf_clk = 1;
+
+    if (gen_clk_new(0b10101010)) {
+      state_new.sprite_scanner.DEZY_COUNT_CLKp = ssf_clk;
+      if (!state_old.sprite_scanner.DEZY_COUNT_CLKp && state_new.sprite_scanner.DEZY_COUNT_CLKp) {
+        if (state_old.sprite_counter != 10) {
+          state_new.sprite_counter = state_old.sprite_counter + 1;
+        }
+      }
+    }
+    else {
+      if (!ssf_clk) {
+        state_new.sprite_store_flags = (1 << state_new.sprite_counter);
+      }
+      else {
+        state_new.sprite_store_flags = 0;
+      }
+      /*
+      for (int i = 0; i < 10; i++) {
+        (&reg.sprite_store_flags.DYHU_STORE0_CLKn)[i] = (i == (int)bit_pack(reg_new.sprite_counter)) && !bit(ssf_clk);
+      }
+      */
+    }
+
+    const auto sprite_store_flags_old = state_old.sprite_store_flags ^ 0b1111111111;
+    const auto sprite_store_flags_new = state_new.sprite_store_flags ^ 0b1111111111;
+
+    const auto store_clk_pe = ~sprite_store_flags_old & sprite_store_flags_new;
+    const auto store_clk_ne = sprite_store_flags_old & ~sprite_store_flags_new;
+
+    const auto sprite_ibus = state_new.sprite_ibus;
+    const auto sprite_lbus = state_new.sprite_lbus;
+    const auto sprite_reset_flags = state_new.sprite_reset_flags;
+    const auto oam_temp_b = state_new.oam_temp_b;
+
+    if (get_bit(store_clk_ne, 0)) state_new.store_i0 = sprite_ibus ^ 0b111111;
+    if (get_bit(store_clk_ne, 1)) state_new.store_i1 = sprite_ibus ^ 0b111111;
+    if (get_bit(store_clk_ne, 2)) state_new.store_i2 = sprite_ibus ^ 0b111111;
+    if (get_bit(store_clk_ne, 3)) state_new.store_i3 = sprite_ibus ^ 0b111111;
+    if (get_bit(store_clk_ne, 4)) state_new.store_i4 = sprite_ibus ^ 0b111111;
+    if (get_bit(store_clk_ne, 5)) state_new.store_i5 = sprite_ibus ^ 0b111111;
+    if (get_bit(store_clk_ne, 6)) state_new.store_i6 = sprite_ibus ^ 0b111111;
+    if (get_bit(store_clk_ne, 7)) state_new.store_i7 = sprite_ibus ^ 0b111111;
+    if (get_bit(store_clk_ne, 8)) state_new.store_i8 = sprite_ibus ^ 0b111111;
+    if (get_bit(store_clk_ne, 9)) state_new.store_i9 = sprite_ibus ^ 0b111111;
+
+    if (get_bit(store_clk_ne, 0)) state_new.store_l0 = sprite_lbus ^ 0b1111;
+    if (get_bit(store_clk_ne, 1)) state_new.store_l1 = sprite_lbus ^ 0b1111;
+    if (get_bit(store_clk_ne, 2)) state_new.store_l2 = sprite_lbus ^ 0b1111;
+    if (get_bit(store_clk_ne, 3)) state_new.store_l3 = sprite_lbus ^ 0b1111;
+    if (get_bit(store_clk_ne, 4)) state_new.store_l4 = sprite_lbus ^ 0b1111;
+    if (get_bit(store_clk_ne, 5)) state_new.store_l5 = sprite_lbus ^ 0b1111;
+    if (get_bit(store_clk_ne, 6)) state_new.store_l6 = sprite_lbus ^ 0b1111;
+    if (get_bit(store_clk_ne, 7)) state_new.store_l7 = sprite_lbus ^ 0b1111;
+    if (get_bit(store_clk_ne, 8)) state_new.store_l8 = sprite_lbus ^ 0b1111;
+    if (get_bit(store_clk_ne, 9)) state_new.store_l9 = sprite_lbus ^ 0b1111;
+
+    if (get_bit(store_clk_pe, 0)) state_new.store_x0 = oam_temp_b;
+    if (get_bit(store_clk_pe, 1)) state_new.store_x1 = oam_temp_b;
+    if (get_bit(store_clk_pe, 2)) state_new.store_x2 = oam_temp_b;
+    if (get_bit(store_clk_pe, 3)) state_new.store_x3 = oam_temp_b;
+    if (get_bit(store_clk_pe, 4)) state_new.store_x4 = oam_temp_b;
+    if (get_bit(store_clk_pe, 5)) state_new.store_x5 = oam_temp_b;
+    if (get_bit(store_clk_pe, 6)) state_new.store_x6 = oam_temp_b;
+    if (get_bit(store_clk_pe, 7)) state_new.store_x7 = oam_temp_b;
+    if (get_bit(store_clk_pe, 8)) state_new.store_x8 = oam_temp_b;
+    if (get_bit(store_clk_pe, 9)) state_new.store_x9 = oam_temp_b;
+
+
+    if (get_bit(sprite_reset_flags, 0)) state_new.store_x0 = 0xFF;
+    if (get_bit(sprite_reset_flags, 1)) state_new.store_x1 = 0xFF;
+    if (get_bit(sprite_reset_flags, 2)) state_new.store_x2 = 0xFF;
+    if (get_bit(sprite_reset_flags, 3)) state_new.store_x3 = 0xFF;
+    if (get_bit(sprite_reset_flags, 4)) state_new.store_x4 = 0xFF;
+    if (get_bit(sprite_reset_flags, 5)) state_new.store_x5 = 0xFF;
+    if (get_bit(sprite_reset_flags, 6)) state_new.store_x6 = 0xFF;
+    if (get_bit(sprite_reset_flags, 7)) state_new.store_x7 = 0xFF;
+    if (get_bit(sprite_reset_flags, 8)) state_new.store_x8 = 0xFF;
+    if (get_bit(sprite_reset_flags, 9)) state_new.store_x9 = 0xFF;
+
+  }
+
+
+
+
+
+
+
+
+
 
 
   //----------------------------------------

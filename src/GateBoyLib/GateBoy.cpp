@@ -2215,47 +2215,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  bit_unpack(reg.sprite_ibus, 0xFF);
-  bit_unpack(reg.sprite_lbus, 0xFF);
-
-  if (reg.sprite_match_flags.GUVA_SPRITE0_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i0));
-  if (reg.sprite_match_flags.ENUT_SPRITE1_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i1));
-  if (reg.sprite_match_flags.EMOL_SPRITE2_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i2));
-  if (reg.sprite_match_flags.GYFY_SPRITE3_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i3));
-  if (reg.sprite_match_flags.GONO_SPRITE4_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i4));
-  if (reg.sprite_match_flags.GEGA_SPRITE5_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i5));
-  if (reg.sprite_match_flags.XOJA_SPRITE6_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i6));
-  if (reg.sprite_match_flags.GUTU_SPRITE7_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i7));
-  if (reg.sprite_match_flags.FOXA_SPRITE8_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i8));
-  if (reg.sprite_match_flags.GUZE_SPRITE9_GETp) bit_unpack(reg.sprite_ibus, bit_pack_inv(reg.store_i9));
-
-  if (reg.sprite_match_flags.GUVA_SPRITE0_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l0));
-  if (reg.sprite_match_flags.ENUT_SPRITE1_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l1));
-  if (reg.sprite_match_flags.EMOL_SPRITE2_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l2));
-  if (reg.sprite_match_flags.GYFY_SPRITE3_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l3));
-  if (reg.sprite_match_flags.GONO_SPRITE4_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l4));
-  if (reg.sprite_match_flags.GEGA_SPRITE5_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l5));
-  if (reg.sprite_match_flags.XOJA_SPRITE6_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l6));
-  if (reg.sprite_match_flags.GUTU_SPRITE7_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l7));
-  if (reg.sprite_match_flags.FOXA_SPRITE8_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l8));
-  if (reg.sprite_match_flags.GUZE_SPRITE9_GETp) bit_unpack(reg.sprite_lbus, bit_pack_inv(reg.store_l9));
-
-  if (reg.sprite_scanner.CENO_SCANNINGn) {
-    bit_unpack(reg.sprite_ibus, bit_pack(reg.sprite_index));
-  }
-
-  if (reg_new.XYMU_RENDERINGn) {
-    bit_unpack(reg.sprite_ibus, bit_pack(reg.sprite_index));
-  }
-
-  if (!reg.FEPO_STORE_MATCHp) {
-    const auto pack_ydiff = ~reg_ly_new + bit_pack(reg_new.oam_temp_a);
-    bit_unpack(reg.sprite_lbus, pack_ydiff);
-  }
-
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-  // WY/WX/window match
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2263,6 +2222,36 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  state_new.sprite_ibus = 0b00111111;
+  state_new.sprite_lbus = 0b00001111;
+
+  if (get_bit(state_new.sprite_match_flags, 0)) { state_new.sprite_ibus = state_new.store_i0 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l0 ^ 0b00001111; } 
+  if (get_bit(state_new.sprite_match_flags, 1)) { state_new.sprite_ibus = state_new.store_i1 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l1 ^ 0b00001111; } 
+  if (get_bit(state_new.sprite_match_flags, 2)) { state_new.sprite_ibus = state_new.store_i2 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l2 ^ 0b00001111; } 
+  if (get_bit(state_new.sprite_match_flags, 3)) { state_new.sprite_ibus = state_new.store_i3 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l3 ^ 0b00001111; } 
+  if (get_bit(state_new.sprite_match_flags, 4)) { state_new.sprite_ibus = state_new.store_i4 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l4 ^ 0b00001111; } 
+  if (get_bit(state_new.sprite_match_flags, 5)) { state_new.sprite_ibus = state_new.store_i5 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l5 ^ 0b00001111; } 
+  if (get_bit(state_new.sprite_match_flags, 6)) { state_new.sprite_ibus = state_new.store_i6 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l6 ^ 0b00001111; } 
+  if (get_bit(state_new.sprite_match_flags, 7)) { state_new.sprite_ibus = state_new.store_i7 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l7 ^ 0b00001111; } 
+  if (get_bit(state_new.sprite_match_flags, 8)) { state_new.sprite_ibus = state_new.store_i8 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l8 ^ 0b00001111; } 
+  if (get_bit(state_new.sprite_match_flags, 9)) { state_new.sprite_ibus = state_new.store_i9 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l9 ^ 0b00001111; } 
+
+  if (state_new.sprite_scanner.CENO_SCANNINGn) {
+    state_new.sprite_ibus = state_new.sprite_index;
+  }
+
+  if (state_new.XYMU_RENDERINGn) {
+    state_new.sprite_ibus = state_new.sprite_index;
+  }
+
+  if (!state_new.FEPO_STORE_MATCHp) {
+    const auto pack_ydiff = ~reg_ly_new + state_new.oam_temp_a;
+    state_new.sprite_lbus = pack_ydiff & 0b00001111;
+  }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+  // WY/WX/window match
 
   if (gen_clk_new(0b01010101)) {
     if (!pause_rendering_new) state_new.win_ctrl.PYCO_WIN_MATCHp = state_new.win_ctrl.NUKO_WX_MATCHp;

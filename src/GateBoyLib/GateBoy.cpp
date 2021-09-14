@@ -2575,53 +2575,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Memory buses
 
-  if (reg.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new) {
-    bit_unpack(reg.ext_addr_latch, cpu_addr_new);
-  }
-
-  if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
-    reg.ext_ctrl.PIN_80_CSn = !reg.reg_dma.MARU_DMA_A15n;
-    bit_unpack_inv(reg.ext_abus.lo, bit_pack(reg.dma_lo));
-    bit_unpack_inv(reg.ext_abus.hi, bit_pack_inv(reg.reg_dma));
-  }
-  else {
-    reg.ext_ctrl.PIN_80_CSn = reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && cpu_addr_ram_new;
-    bit_unpack_inv(reg.ext_abus, bit_pack(reg.ext_addr_latch));
-  }
-
-  //----------------------------------------
-
-  if (!(reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) && reg.cpu_signals.SIG_IN_CPU_EXT_BUSp && reg.cpu_signals.SIG_IN_CPU_WRp) {
-    reg.ext_ctrl.PIN_79_RDn = cpu_addr_vram_new;
-    reg.ext_ctrl.PIN_78_WRn = gen_clk_new(0b00001110) && !cpu_addr_vram_new;
-  }
-  else {
-    reg.ext_ctrl.PIN_79_RDn = 1;
-    reg.ext_ctrl.PIN_78_WRn = 0;
-  }
-
-  if (reg_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
-    reg.ext_abus.hi.PIN_16_A15 = reg.reg_dma.MARU_DMA_A15n;
-  }
-  else if (!reg.cpu_signals.TEPU_BOOT_BITn && cpu_addr_new <= 0x00FF) {
-    reg.ext_abus.hi.PIN_16_A15 = 0;
-  }
-  else {
-    reg.ext_abus.hi.PIN_16_A15 = reg.cpu_signals.ABUZ_EXT_RAM_CS_CLK && !reg.cpu_abus.BUS_CPU_A15p;
-  }
-
-  CHECK_N(reg.cpu_signals.SIG_IN_CPU_RDp && reg.cpu_signals.SIG_IN_CPU_WRp);
-
-  if (reg.cpu_signals.SIG_IN_CPU_EXT_BUSp && reg.cpu_signals.SIG_IN_CPU_WRp && !cpu_addr_vram_new) {
-    bit_unpack_inv(reg.ext_dbus, bit_pack(reg.cpu_dbus));
-  }
-  else {
-    bit_unpack(reg.ext_dbus, 0);
-  }
-
-  //----------------------------------------
-  // Ext read
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2629,6 +2582,54 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+
+  if (state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new) {
+    state_new.ext_addr_latch = cpu_addr_new & 0x7FFF;
+  }
+
+  if (state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
+    state_new.ext_ctrl.PIN_80_CSn = !get_bit(state_new.reg_dma, 7);
+    state_new.ext_abus.lo = uint8_t(~state_new.dma_lo);
+    state_new.ext_abus.hi = state_new.reg_dma;
+  }
+  else {
+    state_new.ext_ctrl.PIN_80_CSn = state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK && cpu_addr_ram_new;
+    state_new.ext_abus.lo = ((state_new.ext_addr_latch >> 0) & 0xFF) ^ 0xFF;
+    state_new.ext_abus.hi = ((state_new.ext_addr_latch >> 8) & 0x7F) ^ 0x7F;
+  }
+
+  if (!(state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+    state_new.ext_ctrl.PIN_79_RDn = cpu_addr_vram_new;
+    state_new.ext_ctrl.PIN_78_WRn = gen_clk_new(0b00001110) && !cpu_addr_vram_new;
+  }
+  else {
+    state_new.ext_ctrl.PIN_79_RDn = 1;
+    state_new.ext_ctrl.PIN_78_WRn = 0;
+  }
+
+  state_new.ext_abus.hi &= 0b01111111;
+  if (state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
+    state_new.ext_abus.hi |= state_new.reg_dma & 0b10000000;
+  }
+  else if (!state_new.cpu_signals.TEPU_BOOT_BITn && cpu_addr_new <= 0x00FF) {
+  }
+  else {
+    uint8_t bit = state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK && !get_bit(state_new.cpu_abus, 15);
+    state_new.ext_abus.hi |= (bit << 7);
+  }
+
+  CHECK_N(state_new.cpu_signals.SIG_IN_CPU_RDp && state_new.cpu_signals.SIG_IN_CPU_WRp);
+
+  if (state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && state_new.cpu_signals.SIG_IN_CPU_WRp && !cpu_addr_vram_new) {
+    state_new.ext_dbus = ~state_new.cpu_dbus;
+  }
+  else {
+    state_new.ext_dbus = 0;
+  }
+
+  //----------------------------------------
+  // Ext read
 
   if (state_new.ext_ctrl.PIN_79_RDn) {
     const uint16_t ext_addr = ~(state_new.ext_abus.lo | (state_new.ext_abus.hi << 8));

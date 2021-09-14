@@ -1722,47 +1722,41 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // dma
 
-  if (cpu_addr_new == 0xFF46 && reg_new.cpu_signals.SIG_IN_CPU_RDp) {
-    bit_unpack(reg_new.cpu_dbus, bit_pack_inv(reg_old.reg_dma));
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  state_new.from_reg(reg_new);
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+  // STATE STEAMROLLER
+
+  if (cpu_addr_new == 0xFF46 && state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    state_new.cpu_dbus = ~state_old.reg_dma;
+    //bit_unpack(reg_new.cpu_dbus, bit_pack_inv(reg_old.reg_dma));
   }
 
   if (gen_clk_new(0b10000000)) {
-    reg_new.dma_ctrl.LUVY_DMA_TRIG_d0 = reg_new.dma_ctrl.LYXE_DMA_LATCHp;
-    reg_new.MATU_DMA_RUNNINGp = reg_new.dma_ctrl.LOKY_DMA_LATCHp;
+    state_new.dma_ctrl.LUVY_DMA_TRIG_d0 = state_new.dma_ctrl.LYXE_DMA_LATCHp;
+    state_new.MATU_DMA_RUNNINGp = state_new.dma_ctrl.LOKY_DMA_LATCHp;
 
-    if (reg_new.dma_ctrl.LOKY_DMA_LATCHp && !reg_new.dma_ctrl.LENE_DMA_TRIG_d4) {
-      bit_unpack(reg_new.dma_lo, bit_pack(reg_old.dma_lo) + 1);
+    if (state_new.dma_ctrl.LOKY_DMA_LATCHp && !state_new.dma_ctrl.LENE_DMA_TRIG_d4) {
+      state_new.dma_lo = state_old.dma_lo + 1;
     }
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    state_new.from_reg(reg_new);
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
   }
   else if (gen_clk_new(0b00001000)) {
-    if (cpu_addr_new == 0xFF46 && reg_new.cpu_signals.SIG_IN_CPU_WRp) {
-      reg_new.dma_ctrl.LYXE_DMA_LATCHp.state = 1;
+    if (cpu_addr_new == 0xFF46 && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+      state_new.dma_ctrl.LYXE_DMA_LATCHp.state = 1;
     }
 
-    if (bit_pack(reg_old.dma_lo) == 159) {
-      reg_new.dma_ctrl.MYTE_DMA_DONE = 1;
-      reg_new.dma_ctrl.LARA_DMA_LATCHn = 1;
-      reg_new.dma_ctrl.LOKY_DMA_LATCHp = 0;
+    if (state_old.dma_lo == 159) {
+      state_new.dma_ctrl.MYTE_DMA_DONE = 1;
+      state_new.dma_ctrl.LARA_DMA_LATCHn = 1;
+      state_new.dma_ctrl.LOKY_DMA_LATCHp = 0;
     }
 
-    reg_new.dma_ctrl.LENE_DMA_TRIG_d4 = reg_old.dma_ctrl.LUVY_DMA_TRIG_d0;
+    state_new.dma_ctrl.LENE_DMA_TRIG_d4 = state_old.dma_ctrl.LUVY_DMA_TRIG_d0;
 
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    state_new.from_reg(reg_new);
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-
-    if (reg_new.dma_ctrl.LUVY_DMA_TRIG_d0) {
+    if (state_new.dma_ctrl.LUVY_DMA_TRIG_d0) {
       state_new.dma_ctrl.MYTE_DMA_DONE = 0;
       state_new.dma_ctrl.LYXE_DMA_LATCHp = 0;
       state_new.dma_lo = 0;
@@ -1771,27 +1765,11 @@ void GateBoy::tock_logic(const blob& cart_blob) {
     }
   }
   else if (gen_clk_new(0b00000001)) {
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    state_new.from_reg(reg_new);
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
     if (cpu_addr_new == 0xFF46 && state_new.cpu_signals.SIG_IN_CPU_WRp) {
-      state_new.reg_dma = state_old.cpu_dbus ^ 0xFF;
+      //bit_unpack_inv(reg_new.reg_dma, bit_pack(reg_old.cpu_dbus));
+      state_new.reg_dma = ~state_old.cpu_dbus;
     }
   }
-  else {
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    state_new.from_reg(reg_new);
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-    // STATE STEAMROLLER
-  }
-
 
   const auto dma_addr_new = ((state_new.reg_dma ^ 0xFF) << 8) | state_new.dma_lo;
   const auto dma_addr_vram_new = state_new.MATU_DMA_RUNNINGp && (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);

@@ -2256,58 +2256,6 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------
   // WY/WX/window match
 
-  if (gen_clk_new(0b01010101)) {
-    if (!pause_rendering_new) reg.win_ctrl.PYCO_WIN_MATCHp = reg.win_ctrl.NUKO_WX_MATCHp;
-  }
-
-  if (!reg_new.XYMU_RENDERINGn) {
-    if (gen_clk_new(0b01010101)) {
-      reg.win_ctrl.RENE_WIN_FETCHn_B = reg.win_ctrl.RYFA_WIN_FETCHn_A;
-    }
-
-    const auto fine_count_new = bit_pack(reg.fine_count);
-
-    if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-      reg.win_ctrl.RYFA_WIN_FETCHn_A = !reg.win_ctrl.NUKO_WX_MATCHp && fine_count_new == 7;
-    }
-  }
-  else {
-    reg.win_ctrl.RENE_WIN_FETCHn_B = 0;
-    reg.win_ctrl.RYFA_WIN_FETCHn_A = 0;
-  }
-
-  if (reg.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
-    if (cpu_addr_new == 0xFF4A) bit_unpack_inv(reg.reg_wy, bit_pack(reg_old.cpu_dbus));
-    if (cpu_addr_new == 0xFF4B) bit_unpack_inv(reg.reg_wx, bit_pack(reg_old.cpu_dbus));
-  }
-
-  if (reg.cpu_signals.SIG_IN_CPU_RDp) {
-    if (cpu_addr_new == 0xFF4A) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_wy));
-    if (cpu_addr_new == 0xFF4B) bit_unpack(reg.cpu_dbus, bit_pack_inv(reg.reg_wx));
-  }
-
-  // FIXME get rid of this signal
-  reg_new.win_ctrl.ROGE_WY_MATCHp = (reg_ly_new == bit_pack_inv(reg_new.reg_wy)) && !reg_new.reg_lcdc.WYMO_LCDC_WINENn;
-
-  if (gen_clk_new(0b00100000)) {
-    reg.win_ctrl.SARY_WY_MATCHp = reg_old.win_ctrl.ROGE_WY_MATCHp;
-  }
-
-  if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) {
-    reg.win_ctrl.PYCO_WIN_MATCHp = 0;
-    reg.win_ctrl.SARY_WY_MATCHp = 0;
-  }
-
-
-  if (reg.win_ctrl.SARY_WY_MATCHp) reg.win_ctrl.REJO_WY_MATCH_LATCHp = 1;
-  if (reg.lcd.POPU_y144p) reg.win_ctrl.REJO_WY_MATCH_LATCHp = 0;
-  if (reg_new.reg_lcdc.XONA_LCDC_LCDENn) reg.win_ctrl.REJO_WY_MATCH_LATCHp = 0;
-
-  reg.win_ctrl.NUKO_WX_MATCHp = (bit_pack_inv(reg.reg_wx) == bit_pack(reg.pix_count)) && reg.win_ctrl.REJO_WY_MATCH_LATCHp;
-
-  //----------------------------------------
-  // Tile fetch sequencer
-
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
@@ -2315,6 +2263,57 @@ void GateBoy::tock_logic(const blob& cart_blob) {
   // STATE STEAMROLLER
   // STATE STEAMROLLER
   // STATE STEAMROLLER
+
+  if (gen_clk_new(0b01010101)) {
+    if (!pause_rendering_new) state_new.win_ctrl.PYCO_WIN_MATCHp = state_new.win_ctrl.NUKO_WX_MATCHp;
+  }
+
+  if (!state_new.XYMU_RENDERINGn) {
+    if (gen_clk_new(0b01010101)) {
+      state_new.win_ctrl.RENE_WIN_FETCHn_B = state_new.win_ctrl.RYFA_WIN_FETCHn_A;
+    }
+
+    const auto fine_count_new = state_new.fine_count;
+
+    if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
+      state_new.win_ctrl.RYFA_WIN_FETCHn_A = !state_new.win_ctrl.NUKO_WX_MATCHp && fine_count_new == 7;
+    }
+  }
+  else {
+    state_new.win_ctrl.RENE_WIN_FETCHn_B = 0;
+    state_new.win_ctrl.RYFA_WIN_FETCHn_A = 0;
+  }
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(0b00000001)) {
+    if (cpu_addr_new == 0xFF4A) state_new.reg_wy = ~state_old.cpu_dbus;
+    if (cpu_addr_new == 0xFF4B) state_new.reg_wx = ~state_old.cpu_dbus;
+  }
+
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (cpu_addr_new == 0xFF4A) state_new.cpu_dbus = ~state_new.reg_wy;
+    if (cpu_addr_new == 0xFF4B) state_new.cpu_dbus = ~state_new.reg_wx;
+  }
+
+  // FIXME get rid of this signal
+  state_new.win_ctrl.ROGE_WY_MATCHp = (reg_ly_new == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
+
+  if (gen_clk_new(0b00100000)) {
+    state_new.win_ctrl.SARY_WY_MATCHp = state_old.win_ctrl.ROGE_WY_MATCHp;
+  }
+
+  if (get_bit(state_new.reg_lcdc, 7)) {
+    state_new.win_ctrl.PYCO_WIN_MATCHp = 0;
+    state_new.win_ctrl.SARY_WY_MATCHp = 0;
+  }
+
+  if (state_new.win_ctrl.SARY_WY_MATCHp) state_new.win_ctrl.REJO_WY_MATCH_LATCHp = 1;
+  if (state_new.lcd.POPU_y144p) state_new.win_ctrl.REJO_WY_MATCH_LATCHp = 0;
+  if (get_bit(state_new.reg_lcdc, 7)) state_new.win_ctrl.REJO_WY_MATCH_LATCHp = 0;
+
+  state_new.win_ctrl.NUKO_WX_MATCHp = (uint8_t(~state_new.reg_wx) == state_new.pix_count) && state_new.win_ctrl.REJO_WY_MATCH_LATCHp;
+
+  //----------------------------------------
+  // Tile fetch sequencer
 
   const uint8_t bfetch_phase_old = pack(
     !(state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_new.tfetch_counter, 0)),

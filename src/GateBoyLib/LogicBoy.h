@@ -6,7 +6,6 @@
 
 //-----------------------------------------------------------------------------
 
-#pragma pack(push, 1)
 struct LogicBoyCpu {
   MetroBoyCPU core;
   Req      bus_req_new = {0};
@@ -16,11 +15,9 @@ struct LogicBoyCpu {
   uint8_t  intf_latch_delay = 0;
   uint8_t  intf_halt_latch = 0;
 };
-#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 
-#pragma pack(push, 1)
 struct LogicBoyMem {
   uint8_t vid_ram [8192];
   uint8_t cart_ram[32768];
@@ -29,11 +26,9 @@ struct LogicBoyMem {
   uint8_t zero_ram[128];
   uint8_t framebuffer[160*144];
 };
-#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 
-#pragma pack(push, 1)
 struct LogicBoySys {
   // External signals
 
@@ -50,13 +45,10 @@ struct LogicBoySys {
   // Debug stuff
   uint64_t phase_total = 0;
   double   sim_time = 0;
-  uint64_t phase_origin = 0;
 };
-#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 
-#pragma pack(push, 1)
 struct LogicBoy {
   void reset_to_bootrom(const blob& cart_blob, bool fastboot);
   void reset_to_cart(const blob& cart_blob);
@@ -104,14 +96,10 @@ struct LogicBoy {
   bool next_phase(const blob& cart_blob);
   void tock_cpu();
   void tock_logic(const blob& cart_blob, int64_t phase_total);
-  void update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1);
+  void update_framebuffer();
 
   void wipe() {
-    // FIXME probably don't need this memset
-    memset(this, 0, sizeof(*this));
-
-    //lb_state.wipe();
-
+    lb_state.wipe();
     sentinel1 = SENTINEL1;
     sentinel2 = SENTINEL2;
   }
@@ -124,14 +112,11 @@ struct LogicBoy {
   //-----------------------------------------------------------------------------
 
   uint64_t sentinel1 = SENTINEL1;
-
   LogicBoyState lb_state;
   LogicBoyCpu cpu;
   LogicBoyMem mem;
   LogicBoySys sys;
-
   uint64_t sentinel2 = SENTINEL2;
 };
-#pragma pack(pop)
 
 //-----------------------------------------------------------------------------

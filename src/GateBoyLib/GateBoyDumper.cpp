@@ -59,8 +59,6 @@ void GateBoyDumper::dump_sys(const GateBoy& gb, Dumper& d) {
   //d("\n");
   d             ("sim_time     : %f\n",      gb.sys.sim_time);
   d             ("phase_total  : %lld\n",    gb.sys.phase_total);
-  d             ("phase_origin : %lld\n",    gb.sys.phase_origin);
-  d             ("phase_delta  : %lld\n",    gb.sys.phase_total - gb.sys.phase_origin);
 }
 
 void GateBoyDumper::dump_tile_fetcher(const GateBoy& gb, Dumper& d) {

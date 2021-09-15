@@ -5,6 +5,7 @@
 #include "CoreLib/Constants.h"
 #include "CoreLib/Log.h"
 
+#include "GateBoyLib/IGateBoy.h"
 #include "GateBoyLib/Probe.h"
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/LogicBoyState.h"
@@ -19,11 +20,8 @@ bool cart_has_ram(const blob & cart_blob);
 
 struct GateBoy;
 
-void print_field_at(int offset);
-
 //-----------------------------------------------------------------------------
 
-#pragma pack(push, 1)
 struct GateBoyCpu {
   MetroBoyCPU core;
   Req      bus_req_new = {0};
@@ -33,11 +31,9 @@ struct GateBoyCpu {
   uint8_t  intf_latch_delay = 0;
   uint8_t  intf_halt_latch = 0;
 };
-#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 
-#pragma pack(push, 1)
 struct GateBoyMem {
   uint8_t vid_ram [8192];
   uint8_t cart_ram[32768];
@@ -46,14 +42,11 @@ struct GateBoyMem {
   uint8_t zero_ram[128];
   uint8_t framebuffer[160*144];
 };
-#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 
-#pragma pack(push, 1)
 struct GateBoySys {
   // External signals
-
   uint8_t rst = 0;
   uint8_t t1 = 0;
   uint8_t t2 = 0;
@@ -65,20 +58,53 @@ struct GateBoySys {
   uint8_t buttons = 0;
 
   // Debug stuff
-  bool     logic_mode = config_fastmode; // Fastmode builds use logic mode by default.
   uint64_t phase_total = 0;
   double   sim_time = 0;
-  uint64_t phase_origin = 0;
-  Probes   probes;
 };
-#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 
-#pragma pack(push, 1)
-struct GateBoy {
-  void reset_to_bootrom(const blob& cart_blob, bool fastboot);
-  void reset_to_cart(const blob& cart_blob);
+struct GateBoy  : public IGateBoy {
+  virtual ~GateBoy() {}
+
+  //----------------------------------------
+
+  void reset_to_bootrom(const blob& cart_blob, bool fastboot) override;
+  void reset_to_cart(const blob& cart_blob) override;
+
+  Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const override;
+  Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) override;
+
+  Result<uint8_t, Error> dbg_read (const blob& cart_blob, int addr) override;
+  Result<uint8_t, Error> dbg_write(const blob& cart_blob, int addr, uint8_t data) override;
+
+  void run_phases(const blob& cart_blob, int phase_count) override;
+  bool next_phase(const blob& cart_blob) override;
+
+  virtual void set_buttons(uint8_t buttons) { sys.buttons = buttons; }
+
+  const uint8_t* get_framebuffer() const { return mem.framebuffer; }
+  const uint8_t* get_vram() const { return mem.vid_ram; }
+  void get_state(blob& state_out) const {
+    state_out.resize(sizeof(gb_state));
+    memcpy(state_out.data(), &gb_state, sizeof(gb_state));
+  }
+
+  void load_raw_dump(const blob& dump_in) override {
+    CHECK_P(dump_in.size() >= sizeof(GateBoy));
+    memcpy(this, dump_in.data(), sizeof(GateBoy));
+    CHECK_P(sentinel1 == SENTINEL1);
+    CHECK_P(sentinel2 == SENTINEL2);
+  }
+
+  void save_raw_dump(blob& dump_out) const override {
+    uint8_t* bytes = (uint8_t*)this;
+    dump_out.insert(dump_out.end(), bytes, bytes + sizeof(*this));
+  }
+
+  const FieldInfo* get_field_info() const override {
+    return GateBoyState::fields;
+  }
 
   //----------------------------------------
 
@@ -91,25 +117,7 @@ struct GateBoy {
     return true;
   }
 
-  void from_blob(const blob& b) {
-    bool old_logic_mode = sys.logic_mode;
-    CHECK_P(b.size() >= sizeof(GateBoy));
-    memcpy(this, b.data(), sizeof(GateBoy));
-    CHECK_P(sentinel1 == SENTINEL1);
-    CHECK_P(sentinel2 == SENTINEL2);
-    sys.logic_mode = old_logic_mode;
-    lb_state.from_gb_state(gb_state, sys.phase_total);
-  }
-
-  void to_blob(blob& b) {
-    uint8_t* bytes = (uint8_t*)this;
-    b.insert(b.end(), bytes, bytes + sizeof(*this));
-  }
-
   //----------------------------------------
-
-  bool dbg_read (const blob& cart_blob, int addr, uint8_t& out);
-  bool dbg_write(const blob& cart_blob, int addr, uint8_t data);
 
   void set_boot_bit(const blob& cart_blob) {
     dbg_write(cart_blob, 0xFF50, 0xFF);
@@ -117,40 +125,20 @@ struct GateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void run_phases(const blob& cart_blob, int phase_count) {
-    for (int i = 0; i < phase_count; i++) {
-      next_phase(cart_blob);
-    }
-  }
-
-  bool next_phase(const blob& cart_blob);
-
   void tock_cpu();
   void tock_gates(const blob& cart_blob);
-  void tock_logic(const blob& cart_blob, int64_t phase_total);
-
-  void commit() {
-    commit_blob(&gb_state, sizeof(gb_state));
-  }
-
-  void update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1);
+  void update_framebuffer();
 
   void wipe() {
-    bool old_logic_mode = sys.logic_mode;
-    // FIXME probably don't need this memset
-    memset(this, 0, sizeof(*this));
-
     gb_state.wipe();
-
     sentinel1 = SENTINEL1;
     sentinel2 = SENTINEL2;
-    sys.logic_mode = old_logic_mode;
   }
 
   //-----------------------------------------------------------------------------
 
-  void tock_spu_logic();
-  void tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new);
+  //void tock_spu_logic();
+  //void tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new);
 
   void tock_lcdc_gates(const GateBoyState& reg_old);
   void tock_lyc_gates(const GateBoyState& reg_old);
@@ -237,10 +225,7 @@ struct GateBoy {
   GateBoyMem mem;
   GateBoySys sys;
 
-  LogicBoyState lb_state;
-
   uint64_t sentinel2 = SENTINEL2;
 };
-#pragma pack(pop)
 
 //-----------------------------------------------------------------------------

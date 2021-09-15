@@ -7,8 +7,8 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_spu_gates() {
 #if 0
+void GateBoy::tock_spu_gates() {
   /*#p09.HAPO*/ wire HAPO_SYS_RESETp = not1(ALUR_SYS_RSTn());
   /*#p09.GUFO*/ wire GUFO_SYS_RESETn = not1(HAPO_SYS_RESETp);
 
@@ -190,13 +190,13 @@ void GateBoy::tock_spu_gates() {
   /*_BUS_CPU_D05p*/ cpu_dbus_new.BUS_CPU_D05p.tri_bus(CADA_NR51_TO_CD5);
   /*_BUS_CPU_D06p*/ cpu_dbus_new.BUS_CPU_D06p.tri_bus(CAVU_NR51_TO_CD6);
   /*_BUS_CPU_D07p*/ cpu_dbus_new.BUS_CPU_D07p.tri_bus(CUDU_NR51_TO_CD7);
-#endif
 }
+#endif
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_spu_logic() {
 #if 0
+void GateBoy::tock_spu_logic() {
   auto cpu_addr_new = pack(cpu_abus_new);
   auto cpu_rd_new = bit(cpu_signals.SIG_IN_CPU_RDp);
   auto cpu_wr_new = bit(cpu_signals.SIG_IN_CPU_WRp);
@@ -271,7 +271,7 @@ void GateBoy::tock_spu_logic() {
   if (cpu_rd_new && (cpu_addr_new == 0xFF25)) {
     unpack2(cpu_dbus_new, pack(reg_NR51));
   }
-#endif
 }
+#endif
 
 //-----------------------------------------------------------------------------

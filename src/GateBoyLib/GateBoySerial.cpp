@@ -130,9 +130,9 @@ void GateBoy::tock_serial_gates()
 
 //-----------------------------------------------------------------------------
 
+#if 0
 void GateBoy::tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new)
 {
-#if 0
   wire CLK_xxxxEFGx = gen_clk_new(phase_total, 0b00001110);
   auto new_addr = pack(cpu_abus_new);
 
@@ -248,7 +248,7 @@ void GateBoy::tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_a
     cpu_dbus_new.BUS_CPU_D00p.state = serial.CULY_SER_DIR.state;
     cpu_dbus_new.BUS_CPU_D07p.state = serial.ETAF_SER_RUN.state;
   }
-#endif
 }
+#endif
 
 //-----------------------------------------------------------------------------

@@ -26,6 +26,24 @@
 
 #pragma pack(push, 1)
 struct GateBoyState {
+
+  //----------------------------------------
+
+  void wipe();
+  int64_t hash_regression();
+  int64_t hash_all();
+
+  Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const;
+  Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in);
+
+  void commit();
+  void check_state_old_and_driven_or_pulled();
+  bool diff(const GateBoyState& gbb, uint8_t mask) const;
+
+  static FieldInfo fields[];
+
+  //----------------------------------------
+
   /*_SIG_VCC*/ SigIn SIG_VCC;
   /*_SIG_GND*/ SigIn SIG_GND;
   
@@ -223,31 +241,5 @@ struct GateBoyState {
   //NR50 reg_NR50;
   //NR51 reg_NR51;
   //NR52 reg_NR52;
-
-  void wipe() {
-    memset(this, 0, sizeof(GateBoyState));
-  }
-
-  int64_t hash_regression() {
-    return hash_low_bit(this, sizeof(GateBoyState), HASH_INIT);
-  }
-
-  int64_t hash_all() {
-    return hash_all_bits(this, sizeof(GateBoyState), HASH_INIT);
-  }
-
-  void check_state_old_and_driven_or_pulled() {
-    if (config_drive_flags) {
-      uint8_t* blob = (uint8_t*)this;
-      for (auto i = 0; i < sizeof(GateBoyState); i++) {
-        auto r = blob[i];
-        (void)r;
-        CHECK_P((r & 0xF0) == BIT_OLD);
-        CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
-      }
-    }
-  }
-
-  void diff(const GateBoyState& gbb, uint8_t mask) const;
 };
 #pragma pack(pop)

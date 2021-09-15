@@ -22,8 +22,8 @@
 
 struct GateBoyState;
 
-#pragma pack(push, 1)
 struct LogicBoyState {
+  void wipe() { memset(this, 0, sizeof(*this)); }
   void to_gb_state(GateBoyState& dst, int64_t phase_total) const;
   void from_gb_state(const GateBoyState& src, int64_t phase_total);
 
@@ -225,4 +225,3 @@ struct LogicBoyState {
   //NR51 reg_NR51;
   //NR52 reg_NR52;
 };
-#pragma pack(pop)

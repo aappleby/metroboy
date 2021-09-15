@@ -13,10 +13,6 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
 {
   wipe();
 
-  // Can't run logic mode during power-on-reset, so save and restore it.
-  bool old_logic_mode = sys.logic_mode;
-  sys.logic_mode = false;
-
   // Put some recognizable pattern in vram so we can see that we're in the bootrom
   for (int i = 0; i < 8192; i++) {
     uint32_t h = i * 0x1234567;
@@ -33,7 +29,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   gb_state.reg_dma.PYNE_DMA_A09n.state = 0b00011010;
   gb_state.reg_dma.PARA_DMA_A10n.state = 0b00011010;
   gb_state.reg_dma.NYDO_DMA_A11n.state = 0b00011010;
-  gb_state.reg_dma.NYGY_DMA_A12n.state = 0b00011010;
+  gb_state.reg_dma.NYGY_DMA_A12n.state = 0b00011010;                           
   gb_state.reg_dma.PULA_DMA_A13n.state = 0b00011010;
   gb_state.reg_dma.POKU_DMA_A14n.state = 0b00011010;
   gb_state.reg_dma.MARU_DMA_A15n.state = 0b00011010;
@@ -79,6 +75,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
 
   tock_cpu();
   tock_gates(cart_blob);
+  gb_state.commit();
 
   //----------------------------------------
   // Release reset, start clock, and sync with phase
@@ -94,7 +91,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   CHECK_P(bit(gb_state.sys_clk.ADYK_ABCxxxxH.qp_old()));
 
   sys.phase_total = 0;
-  sys.phase_origin = 46880720;
+  //sys.phase_origin = 46880720;
 ;
 
   //----------------------------------------
@@ -112,8 +109,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   //----------------------------------------
   // Fetch the first instruction in the bootrom
 
-  uint8_t data_out;
-  dbg_read(cart_blob, 0x0000, data_out);
+  uint8_t data_out = dbg_read(cart_blob, 0x0000);
 
   //----------------------------------------
   // We're ready to go, release the CPU so it can start running the bootrom.
@@ -128,13 +124,6 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   }
 
   memset(mem.framebuffer, 4, sizeof(mem.framebuffer));
-
-  sys.probes.reset_to_cart();
-
-  sys.logic_mode = old_logic_mode;
-  //if (sys.logic_mode) wipe_flags();
-
-  lb_state.from_gb_state(gb_state, sys.phase_total);
 }
 
 //-----------------------------------------------------------------------------
@@ -175,8 +164,6 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   gb_state.ext_data_latch.reset_to_cart();
 
   //zram_bus.reset_to_cart();
-
-
 
   gb_state.sys_rst.reset_to_cart();
   gb_state.sys_clk.reset_to_cart();
@@ -273,20 +260,78 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
 
   memcpy(mem.framebuffer, framebuffer_boot, 160*144);
 
-  sys.sim_time = 169.62587129999756;
+  sys.sim_time = 0;
   sys.phase_total = 0;
-  sys.phase_origin = 0;
-
-  sys.probes.reset_to_cart();
-
-  //if (sys.logic_mode) wipe_flags();
-
-  lb_state.from_gb_state(gb_state, sys.phase_total);
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-bool GateBoy::dbg_read(const blob& cart_blob, int addr, uint8_t& out) {
+/*
+const uint8_t* get_flat_ptr(const GateBoy& gb, const blob& cart_blob, int addr) {
+  if (addr >= 0x0000 && addr <= 0x7FFF) return cart_blob.data() + addr - 0x0000;
+  if (addr >= 0x8000 && addr <= 0x9FFF) return gb.mem.vid_ram   + addr - 0x8000;
+  if (addr >= 0xA000 && addr <= 0xBFFF) return gb.mem.cart_ram  + addr - 0xA000;
+  if (addr >= 0xC000 && addr <= 0xDFFF) return gb.mem.int_ram   + addr - 0xC000;
+  if (addr >= 0xE000 && addr <= 0xFDFF) return gb.mem.int_ram   + addr - 0xE000;
+  if (addr >= 0xFE00 && addr <= 0xFEFF) return gb.mem.oam_ram   + addr - 0xFE00;
+  if (addr >= 0xFF80 && addr <= 0xFFFE) return gb.mem.zero_ram  + addr - 0xFF80;
+  debugbreak();
+  return nullptr;
+}
+
+uint8_t* get_flat_ptr(GateBoy& gb, blob& cart_blob, int addr) {
+  if (addr >= 0x0000 && addr <= 0x7FFF) return cart_blob.data() + addr - 0x0000;
+  if (addr >= 0x8000 && addr <= 0x9FFF) return gb.mem.vid_ram   + addr - 0x8000;
+  if (addr >= 0xA000 && addr <= 0xBFFF) return gb.mem.cart_ram  + addr - 0xA000;
+  if (addr >= 0xC000 && addr <= 0xDFFF) return gb.mem.int_ram   + addr - 0xC000;
+  if (addr >= 0xE000 && addr <= 0xFDFF) return gb.mem.int_ram   + addr - 0xE000;
+  if (addr >= 0xFE00 && addr <= 0xFEFF) return gb.mem.oam_ram   + addr - 0xFE00;
+  if (addr >= 0xFF80 && addr <= 0xFFFE) return gb.mem.zero_ram  + addr - 0xFF80;
+
+
+
+  debugbreak();
+  return nullptr;
+}
+*/
+
+Result<uint8_t, Error> GateBoy::peek(const blob& cart_blob, int addr) const {
+  if (addr >= 0x0000 && addr <= 0x7FFF) { return cart_blob.data()[addr - 0x0000]; }
+  if (addr >= 0x8000 && addr <= 0x9FFF) { return mem.vid_ram[addr - 0x8000];      }
+  if (addr >= 0xA000 && addr <= 0xBFFF) { return mem.cart_ram[addr - 0xA000];     }
+  if (addr >= 0xC000 && addr <= 0xDFFF) { return mem.int_ram[addr - 0xC000];      }
+  if (addr >= 0xE000 && addr <= 0xFDFF) { return mem.int_ram[addr - 0xE000];      }
+  if (addr >= 0xFE00 && addr <= 0xFEFF) { return mem.oam_ram[addr - 0xFE00];      }
+  if (addr >= 0xFF80 && addr <= 0xFFFE) { return mem.zero_ram[addr - 0xFF80];     }
+
+  switch(addr) {
+  case ADDR_LCDC: return bit_pack_inv(gb_state.reg_lcdc);
+  default:
+    LOG_R("GateBoy::peek - bad address 0x%04x\n", addr);
+    return Error::NOT_FOUND;
+  }
+}
+
+Result<uint8_t, Error> GateBoy::poke(blob& cart_blob, int addr, uint8_t data_in) {
+  if (addr >= 0x0000 && addr <= 0x7FFF) { cart_blob.data()[addr - 0x0000] = data_in; return data_in; }
+  if (addr >= 0x8000 && addr <= 0x9FFF) { mem.vid_ram[addr - 0x8000] = data_in; return data_in; }
+  if (addr >= 0xA000 && addr <= 0xBFFF) { mem.cart_ram[addr - 0xA000] = data_in; return data_in; }
+  if (addr >= 0xC000 && addr <= 0xDFFF) { mem.int_ram[addr - 0xC000] = data_in; return data_in; }
+  if (addr >= 0xE000 && addr <= 0xFDFF) { mem.int_ram[addr - 0xE000] = data_in; return data_in; }
+  if (addr >= 0xFE00 && addr <= 0xFEFF) { mem.oam_ram[addr - 0xFE00] = data_in; return data_in; }
+  if (addr >= 0xFF80 && addr <= 0xFFFE) { mem.zero_ram[addr - 0xFF80] = data_in; return data_in; }
+
+  switch(addr) {
+  case ADDR_LCDC: { bit_unpack_inv(gb_state.reg_lcdc, data_in); return data_in; }
+  default:
+    LOG_R("GateBoy::poke - bad address 0x%04x\n", addr);
+    return Error::NOT_FOUND;
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+Result<uint8_t, Error> GateBoy::dbg_read(const blob& cart_blob, int addr) {
   CHECK_P((sys.phase_total & 7) == 0);
 
   Req old_req = cpu.bus_req_new;
@@ -302,13 +347,12 @@ bool GateBoy::dbg_read(const blob& cart_blob, int addr, uint8_t& out) {
   cpu.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
 
-  out = cpu.cpu_data_latch;
-  return true;
+  return cpu.cpu_data_latch;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-bool GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
+Result<uint8_t, Error> GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
   CHECK_P((sys.phase_total & 7) == 0);
 
   Req old_req = cpu.bus_req_new;
@@ -323,39 +367,38 @@ bool GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
 
   cpu.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
+  return data;
+}
+
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::run_phases(const blob& cart_blob, int phase_count) {
+  for (int i = 0; i < phase_count; i++) {
+    next_phase(cart_blob);
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+bool GateBoy::next_phase(const blob& cart_blob) {
+  tock_cpu();
+  tock_gates(cart_blob);
+  gb_state.commit();
+  update_framebuffer();
+  sys.phase_total++;
   return true;
 }
 
+#pragma warning(disable:4127) // conditional expression is constant
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-bool GateBoy::next_phase(const blob& cart_blob) {
-  CHECK_N(!sys.clk_req && sys.logic_mode);
-
-  tock_cpu();
-
-  if (sys.logic_mode) {
-    tock_logic(cart_blob, sys.phase_total);
-    lb_state.to_gb_state(gb_state, sys.phase_total);
-    update_framebuffer(bit_pack(gb_state.pix_count) - 8, bit_pack(gb_state.reg_ly), ~gb_state.lcd.PIN_51_LCD_DATA0.state, ~gb_state.lcd.PIN_50_LCD_DATA1.state);
-    sys.phase_total++;
-    return true;
-  }
-  else {
-    tock_gates(cart_blob);
-    update_framebuffer(bit_pack(gb_state.pix_count) - 8, bit_pack(gb_state.reg_ly), gb_state.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gb_state.lcd.PIN_50_LCD_DATA1.qp_ext_old());
-    sys.phase_total++;
-    return true;
-  }
-
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void GateBoy::update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1)
-{
-  //int lcd_x = pix_count.get_new() - 8;
-  //int lcd_y = reg_ly.get_new();
+void GateBoy::update_framebuffer() {
+  int lcd_x = bit_pack(gb_state.pix_count) - 8;
+  int lcd_y = bit_pack(gb_state.reg_ly);
+  int DATA0 = gb_state.lcd.PIN_51_LCD_DATA0.qp_ext_old();
+  int DATA1 = gb_state.lcd.PIN_50_LCD_DATA1.qp_ext_old();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
     wire p0 = bit(DATA0);
@@ -400,7 +443,7 @@ void GateBoy::update_framebuffer(int lcd_x, int lcd_y, wire DATA0, wire DATA1)
 #endif
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_cpu() {
   cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
@@ -452,7 +495,7 @@ void GateBoy::tock_cpu() {
   }
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void GateBoy::tock_gates(const blob& cart_blob) {
   const GateBoyState  reg_old = gb_state;
@@ -471,12 +514,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_SIG_VCC*/ gb_state.SIG_VCC.sig_in(EXT_vcc);
   /*_SIG_GND*/ gb_state.SIG_GND.sig_in(EXT_gnd);
 
-  //-----------------------------------------------------------------------------
+  //----------------------------------------
 
   memset(&gb_state.cpu_abus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_abus));
   memset(&gb_state.cpu_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_dbus));
 
-  //-----------------------------------------------------------------------------
+  //----------------------------------------
 
   {
     bool EXT_cpu_latch_ext;
@@ -524,7 +567,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_SIG_IN_CPU_EXT_BUSp*/ gb_state.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
   }
 
-  //-----------------------------------------------------------------------------
+  //----------------------------------------
 
   {
     wire EXT_sys_clkreq = bit(sys.clk_req);
@@ -559,7 +602,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_SIG_CPU_UMUT_DBG*/ gb_state.cpu_signals.SIG_CPU_UMUT_DBG.sig_out(gb_state.sys_rst.UMUT_MODE_DBG1p());
   }
 
-  //-----------------------------------------------------------------------------
+  //----------------------------------------
   // Sys clock signals
 
   tock_clocks_gates();
@@ -585,7 +628,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   tock_lyc_gates(reg_old);
   tock_lcd_gates();
   tock_joypad_gates(reg_old);
-  tock_serial_gates();
+  //tock_serial_gates();
   tock_timer_gates(reg_old);
   tock_bootrom_gates();
   tock_dma_gates(reg_old);
@@ -888,7 +931,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   /*_p24.PAHO*/ gb_state.lcd.PAHO_X_8_SYNC.dff17(ROXO_CLKPIPE_odd, gb_state.XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
 
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //----------------------------------------
 
   memset(&gb_state.sprite_ibus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.sprite_ibus));
   memset(&gb_state.sprite_lbus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.sprite_lbus));
@@ -896,7 +939,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   sprite_match_to_bus_gates(gb_state.sprite_match_flags);
   sprite_scan_to_bus_gates(sprite_delta_y, gb_state.XYMU_RENDERINGn, gb_state.FEPO_STORE_MATCHp);
 
-  //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //----------------------------------------
   // WY/WX/window match
 
   tock_window_gates(reg_old, SEGU_CLKPIPE_evn, REPU_VBLANKp);
@@ -952,7 +995,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Audio
 
-  tock_spu_gates();
+  //tock_spu_gates();
 
   //----------------------------------------
   // Memory buses
@@ -966,8 +1009,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // And finally, interrupts.
 
   tock_interrupts_gates(reg_old);
-
-  commit();
 }
 
-//------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

@@ -80,9 +80,9 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   }
   */
 
-  blob dump;
-  load_blob("sml_broken.dump", dump);
-  gb_thread.load_raw_dump(dump);
+  //blob dump;
+  //load_blob("sml_broken.dump", dump);
+  //gb_thread.load_raw_dump(dump);
 
   gb_thread.add_steps(INT_MAX);
   gb_thread.resume();
@@ -321,7 +321,8 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   gb_thread.pause();
 
-  auto& gb = show_gb_ab ? gb_thread.gbp->gbb : gb_thread.gbp->gba;
+  //auto& gb = show_gb_ab ? gb_thread.gbp->gbb : gb_thread.gbp->gba;
+  auto& gb = gb_thread.gbp->gba;
 
   uint8_t* framebuffer = gb.mem.framebuffer;
   uint8_t* vid_ram = gb.mem.vid_ram;
@@ -356,7 +357,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   static double smooth_fps = 0.0;
   smooth_fps = ease(smooth_fps, fps, delta);
   d("App fps       : %d\n", (int)round(smooth_fps));
-  d("Logic mode    : %d\n", gb.sys.logic_mode);
+  //d("Logic mode    : %d\n", gb.sys.logic_mode);
 
   if (app_paused) {
     d("\003GB_THREAD IS PAUSED\001\n");
@@ -517,9 +518,9 @@ Step controls:
 )");
 
   // Probe dump
-  d("\002========== Debug Probes ==========\001\n");
-  gb.sys.probes.dump(d);
-  d("\n");
+  //d("\002========== Debug Probes ==========\001\n");
+  //gb.sys.probes.dump(d);
+  //d("\n");
 
   d("\002========== Disassembly ==========\001\n");
   {

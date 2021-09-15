@@ -3,6 +3,7 @@
 #include "CoreLib/File.h"
 #include "CoreLib/Tests.h"
 #include "GateBoyLib/GateBoyPair.h"
+#include <memory>
 
 //-----------------------------------------------------------------------------
 
@@ -54,7 +55,7 @@ struct GateBoyTests {
   TestResults test_mooneye_ppu();
   TestResults run_mooneye_test(const char* path, const char* filename);
 
-  GateBoyPair create_debug_gb(const blob& cart_blob);
+  std::unique_ptr<IGateBoy> create_debug_gb(const blob& cart_blob);
 
   bool verbose = false;
 };

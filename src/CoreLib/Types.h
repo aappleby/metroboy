@@ -145,7 +145,6 @@ const uint32_t COL_HINT3 = 0x00333333;
 #pragma warning(push)
 #pragma warning(disable:4201)
 
-#pragma pack(push, 1)
 struct Req {
   uint16_t addr = 0;
   union {
@@ -163,7 +162,6 @@ struct Req {
     return read || write;
   }
 };
-#pragma pack(pop)
 
 static_assert(sizeof(Req) == 8, "Req size != 8");
 
@@ -290,6 +288,20 @@ struct Dumper {
 
 //-----------------------------------------------------------------------------
 
+struct FieldInfo {
+  const char* name;
+  int offset;
+  int size;
+};
+
+#define DECLARE_FIELD(T, A) { #A, offsetof(T, A), sizeof(T::A) }
+#define END_FIELDS() { nullptr, 0, 0 }
+
+void print_field_at(int offset, const FieldInfo* fields);
+bool diff_blobs(const void* blob_a, const void* blob_b, size_t size, uint8_t mask, const FieldInfo* fields);
+
+//-----------------------------------------------------------------------------
+
 // Checks that always happen in every build.
 #define CHECK_P(A)  if (!(A)) { LOG_R("ASSERT_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
 #define CHECK_N(A)  if ((A))  { LOG_R("ASSERT_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A); debugbreak(); }
@@ -297,5 +309,43 @@ struct Dumper {
 // Checks that only happen if "config_dcheck" is on.
 #define DCHECK_P(A)   if (config_dcheck) {if (!(A)) { LOG_R("CHECK_P fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }}
 #define DCHECK_N(A)   if (config_dcheck) {if ((A))  { LOG_R("CHECK_N fail @ %s:%d : %s\n", __FILE__, __LINE__, #A);  debugbreak(); }}
+
+//-----------------------------------------------------------------------------
+
+template<typename RES, typename ERR>
+struct Result {
+  RES res;
+  ERR err;
+  bool ok;
+
+  Result(RES _res) : err(static_cast<ERR>(0)),    res(_res), ok(true) {}
+  Result(ERR _err) : err(_err), res(static_cast<RES>(0)),   ok(false) {}
+
+  operator RES() const {
+    CHECK_P(ok);
+    return res;
+  }
+
+  operator ERR() const {
+    CHECK_N(ok);
+    return err;
+  }
+
+  bool operator==(const RES& x) const {
+    CHECK_P(ok);
+    return res == x;
+  }
+
+  RES unwrap() const {
+    CHECK_P(ok);
+    return res;
+  }
+};
+
+enum struct Error {
+  NONE = 0,
+  NULLPTR,
+  NOT_FOUND,
+};
 
 //-----------------------------------------------------------------------------

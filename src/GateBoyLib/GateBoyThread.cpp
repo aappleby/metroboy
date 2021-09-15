@@ -59,9 +59,7 @@ void GateBoyThread::resume() {
 void GateBoyThread::reset_gb() {
   gbp.reset_states();
   gbp->gba.wipe();
-  gbp->gbb.wipe();
-  gbp->gba.sys.logic_mode = config_fastmode;
-  gbp->gbb.sys.logic_mode = config_regression;
+  //gbp->gbb.wipe();
 }
 
 //----------------------------------------
@@ -72,7 +70,7 @@ void GateBoyThread::reset_to_bootrom() {
   clear_steps();
   reset_gb();
   gbp->gba.reset_to_bootrom(cart_blob, true);
-  gbp->gbb.reset_to_bootrom(cart_blob, true);
+  //gbp->gbb.reset_to_bootrom(cart_blob, true);
 }
 
 void GateBoyThread::reset_to_cart() {
@@ -80,7 +78,7 @@ void GateBoyThread::reset_to_cart() {
   clear_steps();
   reset_gb();
   gbp->gba.reset_to_cart(cart_blob);
-  gbp->gbb.reset_to_cart(cart_blob);
+  //gbp->gbb.reset_to_cart(cart_blob);
 }
 
 //----------------------------------------
@@ -157,12 +155,7 @@ void GateBoyThread::load_raw_dump(const blob& raw_dump) {
 
   reset_gb();
   clear_steps();
-  gbp->gba.from_blob(raw_dump);
-  gbp->gbb.from_blob(raw_dump);
-  gbp->gba.sys.logic_mode = config_fastmode;
-  gbp->gbb.sys.logic_mode = config_regression;
-
-  //gbp->wipe_flags();
+  gbp->gba.load_raw_dump(raw_dump);
 
   int cart_size = (int)raw_dump.size() - sizeof(GateBoy);
   cart_blob.resize(cart_size);
@@ -174,7 +167,7 @@ void GateBoyThread::load_raw_dump(const blob& raw_dump) {
 void GateBoyThread::save_raw_dump(blob& raw_dump) {
   CHECK_P(sim_paused());
   clear_steps();
-  gbp->gba.to_blob(raw_dump);
+  gbp->gba.save_raw_dump(raw_dump);
   raw_dump.insert(raw_dump.end(), cart_blob.begin(), cart_blob.end());
 }
 
@@ -208,7 +201,7 @@ void GateBoyThread::load_flat_dump(const blob& flat_dump) {
   gbp->gba.dbg_write(flat_dump, ADDR_WX,   flat_dump[ADDR_WX]);
   gbp->gba.dbg_write(flat_dump, ADDR_LCDC, flat_dump[ADDR_LCDC]);
 
-  memcpy(&gbp->gbb, &gbp->gba, sizeof(GateBoy));
+  //memcpy(&gbp->gbb, &gbp->gba, sizeof(GateBoy));
 }
 
 
@@ -239,7 +232,7 @@ void GateBoyThread::thread_main() {
 
     // Update stats
     gbp->gba.sys.sim_time += (time_end - time_begin);
-    gbp->gbb.sys.sim_time += (time_end - time_begin);
+    //gbp->gbb.sys.sim_time += (time_end - time_begin);
 
     if (sync.test(REQ_EXIT)) {
       sync.set(ACK_EXIT);
@@ -303,25 +296,23 @@ void GateBoyThread::run_regression() {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::run_idempotence() {
-  auto& gba = gbp->gba;
-  auto& gbb = gbp->gbb;
+  //auto& gba = gbp->gba;
+  //auto& gbb = gbp->gbb;
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    gba.tock_cpu();
+    gbp->next_phase(cart_blob);
+    //gba.tock_cpu();
+    //gba.tock_gates(cart_blob);
+    //gba.gb_state.commit();
+    //gba.update_framebuffer();
 
-    gba.tock_gates(cart_blob);
-    gba.update_framebuffer(bit_pack(gba.gb_state.pix_count) - 8, bit_pack(gba.gb_state.reg_ly), gba.gb_state.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gba.gb_state.lcd.PIN_50_LCD_DATA1.qp_ext_old());
-
+    /*
     uint64_t hash_a = gba.gb_state.hash_all();
 
     memcpy(&gbp->gbb, &gbp->gba, sizeof(GateBoy));
-
     gbb.tock_gates(cart_blob);
     gbb.update_framebuffer(bit_pack(gbb.gb_state.pix_count) - 8, bit_pack(gbb.gb_state.reg_ly), gbb.gb_state.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gbb.gb_state.lcd.PIN_50_LCD_DATA1.qp_ext_old());
-
     uint64_t hash_b = gbb.gb_state.hash_all();
-
-    gba.sys.phase_total++;
 
     if (hash_a != hash_b) {
       LOG_R("Sim not stable after second pass!\n");
@@ -330,7 +321,9 @@ void GateBoyThread::run_idempotence() {
       step_count = 0;
       return;
     }
+    */
 
+    //gba.sys.phase_total++;
     step_count--;
   }
 }

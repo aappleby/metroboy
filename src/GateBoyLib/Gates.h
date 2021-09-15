@@ -8,10 +8,6 @@ inline void combine_hash(uint64_t& a, uint64_t b) {
   a = swap((a ^ b) * 0xff51afd7ed558ccd);
 }
 
-uint64_t hash_blob(void* blob, size_t size, uint8_t mask);
-void     commit_blob(void* blob, size_t size);
-TestResults diff_blob(void* blob_a, int start_a, int end_a, void* blob_b, int start_b, int end_b, uint8_t mask);
-
 uint64_t hash_all_bits(const void* key, const int len, uint64_t seed);
 uint64_t hash_low_bit(const void* key, const int len, uint64_t seed);
 

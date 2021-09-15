@@ -3,7 +3,419 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
+void LogicBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
+{
+#if 0
+  wipe();
+
+  // Put some recognizable pattern in vram so we can see that we're in the bootrom
+  for (int i = 0; i < 8192; i++) {
+    uint32_t h = i * 0x1234567;
+    mem.vid_ram[i] = uint8_t(h ^ (h >> 4));
+  }
+
+  lb_state.cpu_abus.reset_to_bootrom();
+  lb_state.cpu_dbus.reset_to_bootrom();
+
+  lb_state.sprite_ibus.reset_to_bootrom();
+  lb_state.sprite_lbus.reset_to_bootrom();
+
+  lb_state.reg_dma.NAFA_DMA_A08n.state = 0b00011010;
+  lb_state.reg_dma.PYNE_DMA_A09n.state = 0b00011010;
+  lb_state.reg_dma.PARA_DMA_A10n.state = 0b00011010;
+  lb_state.reg_dma.NYDO_DMA_A11n.state = 0b00011010;
+  lb_state.reg_dma.NYGY_DMA_A12n.state = 0b00011010;
+  lb_state.reg_dma.PULA_DMA_A13n.state = 0b00011010;
+  lb_state.reg_dma.POKU_DMA_A14n.state = 0b00011010;
+  lb_state.reg_dma.MARU_DMA_A15n.state = 0b00011010;
+
+  lb_state.reg_bgp.PAVO_BGP_D0n.state = 0b00011010;
+  lb_state.reg_bgp.NUSY_BGP_D1n.state = 0b00011010;
+  lb_state.reg_bgp.PYLU_BGP_D2n.state = 0b00011010;
+  lb_state.reg_bgp.MAXY_BGP_D3n.state = 0b00011010;
+  lb_state.reg_bgp.MUKE_BGP_D4n.state = 0b00011010;
+  lb_state.reg_bgp.MORU_BGP_D5n.state = 0b00011010;
+  lb_state.reg_bgp.MOGY_BGP_D6n.state = 0b00011010;
+  lb_state.reg_bgp.MENA_BGP_D7n.state = 0b00011010;
+
+  lb_state.reg_obp0.XUFU_OBP0_D0n.state = 0b00011010;
+  lb_state.reg_obp0.XUKY_OBP0_D1n.state = 0b00011010;
+  lb_state.reg_obp0.XOVA_OBP0_D2n.state = 0b00011010;
+  lb_state.reg_obp0.XALO_OBP0_D3n.state = 0b00011010;
+  lb_state.reg_obp0.XERU_OBP0_D4n.state = 0b00011010;
+  lb_state.reg_obp0.XYZE_OBP0_D5n.state = 0b00011010;
+  lb_state.reg_obp0.XUPO_OBP0_D6n.state = 0b00011010;
+  lb_state.reg_obp0.XANA_OBP0_D7n.state = 0b00011010;
+
+  lb_state.reg_obp1.MOXY_OBP1_D0n.state = 0b00011010;
+  lb_state.reg_obp1.LAWO_OBP1_D1n.state = 0b00011010;
+  lb_state.reg_obp1.MOSA_OBP1_D2n.state = 0b00011010;
+  lb_state.reg_obp1.LOSE_OBP1_D3n.state = 0b00011010;
+  lb_state.reg_obp1.LUNE_OBP1_D4n.state = 0b00011010;
+  lb_state.reg_obp1.LUGU_OBP1_D5n.state = 0b00011010;
+  lb_state.reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
+  lb_state.reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
+
+  lb_state.joy_int.reset_to_bootrom();
+  lb_state.reg_joy.reset_to_bootrom();
+
+  lb_state.check_state_old_and_driven_or_pulled();
+
+  sys.fastboot = fastboot;
+
+  //----------------------------------------
+  // Update the sim without ticking the clock to to settle initial reset signals.
+
+  sys.rst = 1;
+
+  tock_cpu();
+  tock_gates(cart_blob);
+
+  //----------------------------------------
+  // Release reset, start clock, and sync with phase
+
+  sys.rst = 0;
+  sys.clk_en = 1;
+  sys.clk_good = 1;
+  run_phases(cart_blob, 2);
+
+  CHECK_N(bit(lb_state.sys_clk.AFUR_xxxxEFGH.qp_old()));
+  CHECK_P(bit(lb_state.sys_clk.ALEF_AxxxxFGH.qp_old()));
+  CHECK_P(bit(lb_state.sys_clk.APUK_ABxxxxGH.qp_old()));
+  CHECK_P(bit(lb_state.sys_clk.ADYK_ABCxxxxH.qp_old()));
+
+  sys.phase_total = 0;
+  sys.phase_origin = 46880720;
+;
+
+  //----------------------------------------
+  // Wait for SIG_CPU_START
+
+  while(bit(~lb_state.sys_rst.SIG_CPU_STARTp.out_old())) {
+    run_phases(cart_blob, 8);
+  }
+
+  //----------------------------------------
+  // Delay to sync up with expected div value
+
+  run_phases(cart_blob, 16);
+
+  //----------------------------------------
+  // Fetch the first instruction in the bootrom
+
+  uint8_t data_out;
+  dbg_read(cart_blob, 0x0000, data_out);
+
+  //----------------------------------------
+  // We're ready to go, release the CPU so it can start running the bootrom.
+
+  sys.clk_req = 1;
+  sys.cpu_en = true;
+
+  if (fastboot) {
+    lb_state.reg_div.TERO_DIV03p.state = 0b00011010;
+    lb_state.reg_div.UNYK_DIV04p.state = 0b00011010;
+    lb_state.reg_div.UPOF_DIV15p.state = 0b00011011;
+  }
+
+  memset(mem.framebuffer, 4, sizeof(mem.framebuffer));
+
+  sys.probes.reset_to_cart();
+
+  sys.logic_mode = old_logic_mode;
+  //if (sys.logic_mode) wipe_flags();
+#endif
+}
+
+//-----------------------------------------------------------------------------
+
+void LogicBoy::reset_to_cart(const blob& cart_blob) {
+  reset_to_bootrom(cart_blob, true);
+
+  lb_state.VOGA_HBLANKp = 0b00011001;
+  lb_state.cpu_signals.reset_to_cart();
+  lb_state.cpu_abus = 0b0000101000000000;
+  lb_state.cpu_dbus = 0;
+  //lb_state.vram_abus.lo.reset_to_cart();
+  //lb_state.vram_abus.hi.reset_to_cart();
+  //lb_state.vram_dbus.reset_to_cart();
+  //lb_state.vram_ext_ctrl.reset_to_cart();
+  //lb_state.vram_ext_abus.reset_to_cart();
+  //lb_state.vram_ext_dbus.reset_to_cart();
+  //lb_state.sprite_ibus.reset_to_cart();
+  //lb_state.sprite_lbus.reset_to_cart();
+  //lb_state.oam_ctrl.reset_to_cart();
+  //lb_state.oam_abus.reset_to_cart();
+  //lb_state.oam_dbus_a.reset_to_cart();
+  //lb_state.oam_dbus_b.reset_to_cart();
+  //lb_state.oam_latch_a.reset_to_cart();
+  //lb_state.oam_latch_b.reset_to_cart();
+  //lb_state.oam_temp_a.reset_to_cart();
+  //lb_state.oam_temp_b.reset_to_cart();
+  //lb_state.ext_ctrl.reset_to_cart();
+  //lb_state.ext_abus.lo.reset_to_cart();
+  //lb_state.ext_abus.hi.reset_to_cart();
+  //lb_state.ext_dbus.reset_to_cart();
+  //lb_state.ext_addr_latch.reset_to_cart();
+  //lb_state.ext_data_latch.reset_to_cart();
+  //zram_bus.reset_to_cart();
+  lb_state.sys_rst.reset_to_cart();
+  lb_state.sys_clk.reset_to_cart();
+  //lb_state.reg_div.reset_to_cart();
+  //interrupts.reset_to_cart();
+  //lb_state.reg_if.reset_to_cart();
+  lb_state.reg_ie = 0;
+  lb_state.int_latch = 0;
+  lb_state.cpu_int = 0;
+  lb_state.cpu_ack = 0;
+  //serial.reset_to_cart();
+  //reset_sprite_store();
+  lb_state.sprite_counter = 0;
+  //lb_state.sprite_counter.CUXY_SPRITE_COUNT1.state = 0b00011010;
+  //lb_state.sprite_counter.BEGO_SPRITE_COUNT2.state = 0b00011010;
+  //lb_state.sprite_counter.DYBE_SPRITE_COUNT3.state = 0b00011010;
+
+  lb_state.sprite_scanner.reset_to_cart();
+  //lb_state.scan_counter.reset_to_cart();
+  //lb_state.sprite_index.reset_to_cart();
+
+  //lb_state.sfetch_counter.reset_to_cart();
+  lb_state.sfetch_control.reset_to_cart();
+
+  lb_state.int_ctrl.RUPO_LYC_MATCHn.state = 0b00011000;
+
+  //lb_state.reg_stat.reset_to_cart();
+  //lb_state.pix_count.reset_to_cart();
+  //lb_state.mask_pipe.reset_to_cart();
+  lb_state.lcd.REMY_LD0n.state = 0b00011000;
+  lb_state.lcd.RAVO_LD1n.state = 0b00011000;
+
+  //lb_state.dma_lo.reset_to_cart();
+  //lb_state.reg_dma.reset_to_cart();
+  //lb_state.MATU_DMA_RUNNINGp.state = 0b00011010;
+  lb_state.dma_ctrl.reset_to_cart();
+
+  //lb_state.reg_bgp.reset_to_cart();
+  //lb_state.reg_obp0.reset_to_cart();
+  //lb_state.reg_obp1.reset_to_cart();
+  
+  //joy.reset_to_cart();
+  lb_state.joy_int.reset_to_cart();
+  //lb_state.reg_joy.reset_to_cart();
+
+  //lb_state.reg_lcdc.reset_to_cart();
+  lb_state.lcd.reset_to_cart();
+
+  //lb_state.reg_lx.reset_to_cart();
+  //lb_state.reg_ly.reset_to_cart();
+  
+  lb_state.int_ctrl.ROPO_LY_MATCH_SYNCp.state = 0b00011001;
+  //lb_state.reg_lyc.reset_to_cart();
+
+  //lb_state.WODU_HBLANKp.state = 0b00011001;
+
+  lb_state.sprite_scanner.FETO_SCAN_DONEp.state = 0b00011001;
+  //lb_state.ATEJ_LINE_RSTp.state = 0b00011000;
+
+  //reg_NR50.reset_to_cart();
+  //reg_NR51.reset_to_cart();
+  //reg_NR52.reset_to_cart();
+
+  sys.rst = false;
+  sys.t1 = false;
+  sys.t2 = false;
+  sys.clk_en = true;
+  sys.clk_good = true;
+  sys.clk_req = true;
+  sys.fastboot = true;
+
+  cpu.core.reset_to_cart();
+
+  cpu.bus_req_new.addr = 0xFF50;
+  cpu.bus_req_new.data = 1;
+  cpu.bus_req_new.read = 0;
+  cpu.bus_req_new.write = 1;
+
+  cpu.cpu_data_latch = 1;
+  cpu.intf_latch = 1;
+  cpu.intf_latch_delay = 0;
+  cpu.intf_halt_latch = 0;
+
+  memcpy(mem.vid_ram, vram_boot, 8192);
+
+  mem.zero_ram[0x7A] = 0x39;
+  mem.zero_ram[0x7B] = 0x01;
+  mem.zero_ram[0x7C] = 0x2E;
+
+  memcpy(mem.framebuffer, framebuffer_boot, 160*144);
+
+  sys.sim_time = 169.62587129999756;
+  sys.phase_total = 0;
+}
+
+//-----------------------------------------------------------------------------
+
+bool LogicBoy::dbg_read(const blob& cart_blob, int addr, uint8_t& out) {
+  CHECK_P((sys.phase_total & 7) == 0);
+
+  Req old_req = cpu.bus_req_new;
+  bool old_cpu_en = sys.cpu_en;
+  sys.cpu_en = false;
+
+  cpu.bus_req_new.addr = uint16_t(addr);
+  cpu.bus_req_new.data = 0;
+  cpu.bus_req_new.read = 1;
+  cpu.bus_req_new.write = 0;
+  run_phases(cart_blob, 8);
+
+  cpu.bus_req_new = old_req;
+  sys.cpu_en = old_cpu_en;
+
+  out = cpu.cpu_data_latch;
+  return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool LogicBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
+  CHECK_P((sys.phase_total & 7) == 0);
+
+  Req old_req = cpu.bus_req_new;
+  bool old_cpu_en = sys.cpu_en;
+  sys.cpu_en = false;
+
+  cpu.bus_req_new.addr = uint16_t(addr);
+  cpu.bus_req_new.data = data;
+  cpu.bus_req_new.read = 0;
+  cpu.bus_req_new.write = 1;
+  run_phases(cart_blob, 8);
+
+  cpu.bus_req_new = old_req;
+  sys.cpu_en = old_cpu_en;
+  return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+bool LogicBoy::next_phase(const blob& cart_blob) {
+  CHECK_N(!sys.clk_req);
+  tock_cpu();
+  tock_logic(cart_blob, sys.phase_total);
+  update_framebuffer();
+  sys.phase_total++;
+  return true;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void LogicBoy::update_framebuffer()
+{
+  int lcd_x = lb_state.pix_count - 8;
+  int lcd_y = lb_state.reg_ly;
+  int DATA0 = ~lb_state.lcd.PIN_51_LCD_DATA0.state;
+  int DATA1 = ~lb_state.lcd.PIN_50_LCD_DATA1.state;
+
+  //int lcd_x = pix_count.get_new() - 8;
+  //int lcd_y = reg_ly.get_new();
+
+  if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
+    wire p0 = bit(DATA0);
+    wire p1 = bit(DATA1);
+    auto new_pix = p0 + p1 * 2;
+
+    mem.framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
+  }
+
+#if 0
+  if (bit(~lcd.old_lcd_clock.qp_old()) && lcd.PIN_53_LCD_CLOCK.qp_new()) {
+    gb_screen_x++;
+  }
+  if (lcd.PIN_54_LCD_HSYNC.qp_new() || lcd.PIN_55_LCD_LATCH.qp_new()) {
+    gb_screen_x = 0;
+  }
+
+  if (bit(~lcd.old_lcd_latch.qp_old()) && lcd.PIN_55_LCD_LATCH.qp_new()) {
+    if (gb_screen_y < 144) {
+      for (int x = 0; x < 159; x++) {
+        uint8_t p0 = lcd.lcd_pipe_lo[x + 1].qp_new();
+        uint8_t p1 = lcd.lcd_pipe_hi[x + 1].qp_new();
+        framebuffer[x + gb_screen_y * 160] = p0 + p1 * 2;
+      }
+      {
+        uint8_t p0 = lcd.lcd_pix_lo.qp_new();
+        uint8_t p1 = lcd.lcd_pix_hi.qp_new();
+        framebuffer[159 + gb_screen_y * 160] = p0 + p1 * 2;
+      }
+    }
+
+    if (lcd.PIN_57_LCD_VSYNC.qp_new()) {
+      gb_screen_y = 0;
+    }
+    else {
+      gb_screen_y++;
+    }
+  }
+
+  lcd.old_lcd_clock.set_new(lcd.PIN_53_LCD_CLOCK.qp_new());
+  lcd.old_lcd_latch.set_new(lcd.PIN_55_LCD_LATCH.qp_new());
+#endif
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+
+void LogicBoy::tock_cpu() {
+  cpu.cpu_data_latch &= lb_state.cpu_dbus;
+  cpu.imask_latch = lb_state.reg_ie;
+
+  if (DELTA_HA) {
+    if (cpu.core.op == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state_ = 0;
+    cpu.intf_halt_latch = 0;
+  }
+
+  // +ha -ab -bc -cd -de -ef -fg -gh
+  if (DELTA_HA) {
+    // this one latches funny, some hardware bug
+    if (get_bit(lb_state.reg_if, 2)) cpu.intf_halt_latch |= INT_TIMER_MASK;
+  }
+
+  // -ha +ab -bc
+  if (DELTA_AB) {
+    if (sys.cpu_en) {
+      cpu.core.tock_ab(cpu.imask_latch, cpu.intf_latch, cpu.cpu_data_latch);
+    }
+  }
+
+  if (DELTA_AB) {
+    if (sys.cpu_en) {
+      cpu.bus_req_new.addr = cpu.core._bus_addr;
+      cpu.bus_req_new.data = cpu.core._bus_data;
+      cpu.bus_req_new.read = cpu.core._bus_read;
+      cpu.bus_req_new.write = cpu.core._bus_write;
+    }
+  }
+
+  // -bc +cd +de -ef -fg -gh -ha -ab
+  if (DELTA_DE) {
+    if (get_bit(lb_state.reg_if, 0)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
+    if (get_bit(lb_state.reg_if, 1)) cpu.intf_halt_latch |= INT_STAT_MASK;
+    if (get_bit(lb_state.reg_if, 3)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
+    if (get_bit(lb_state.reg_if, 4)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
+  }
+
+  // -ha -ab -bc -cd -de -ef +fg +gh
+  if (DELTA_GH) {
+    cpu.cpu_data_latch = 0xFF;
+  }
+
+  // +ha -ab -bc -cd -de -ef -fg +gh
+  if (DELTA_GH) {
+    cpu.intf_latch = lb_state.reg_if;
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   LogicBoyState  state_old = lb_state;
   LogicBoyState& state_new = lb_state;
 
@@ -1801,7 +2213,6 @@ void GateBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   state_new.reg_ie = (uint8_t)pack_ie;
   state_new.reg_if = (uint8_t)pack_if;
   state_new.reg_stat = (uint8_t)pack_stat;
-
 
   // POSTCONDITIONS
   if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);

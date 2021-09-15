@@ -1,175 +1,90 @@
 #include "GateBoyLib/GateBoyState.h"
 
-//------------------------------------------------------------------------------------------------------------------------
-
-struct MemberOffset {
-  const char* name;
-  int offset;
-};
-
-#define GEN_OFFSET(A) { #A, offsetof(GateBoyState, A) }
-
-MemberOffset gb_offsets[] = {
-  GEN_OFFSET(SIG_VCC),
-  GEN_OFFSET(SIG_GND),
-  GEN_OFFSET(cpu_signals),
-  GEN_OFFSET(cpu_abus),
-  GEN_OFFSET(cpu_dbus),
-  GEN_OFFSET(vram_abus),
-  GEN_OFFSET(vram_dbus),
-  GEN_OFFSET(vram_ext_ctrl),
-  GEN_OFFSET(vram_ext_abus),
-  GEN_OFFSET(vram_ext_dbus),
-  GEN_OFFSET(sprite_ibus),
-  GEN_OFFSET(sprite_lbus),
-  GEN_OFFSET(oam_ctrl),
-  GEN_OFFSET(oam_abus),
-  GEN_OFFSET(oam_dbus_a),
-  GEN_OFFSET(oam_dbus_b),
-  GEN_OFFSET(oam_latch_a),
-  GEN_OFFSET(oam_latch_b),
-  GEN_OFFSET(oam_temp_a),
-  GEN_OFFSET(oam_temp_b),
-  GEN_OFFSET(ext_ctrl),
-  GEN_OFFSET(ext_abus.lo),
-  GEN_OFFSET(ext_abus.hi),
-  GEN_OFFSET(ext_dbus),
-  GEN_OFFSET(ext_data_latch),
-  GEN_OFFSET(ext_addr_latch),
-  GEN_OFFSET(ext_mbc),
-  GEN_OFFSET(zram_bus),
-  GEN_OFFSET(VOGA_HBLANKp),
-  GEN_OFFSET(XYMU_RENDERINGn),
-  GEN_OFFSET(sys_rst),
-  GEN_OFFSET(sys_clk),
-  GEN_OFFSET(reg_div),
-  GEN_OFFSET(reg_tima),
-  GEN_OFFSET(reg_tma),
-  GEN_OFFSET(reg_tac),
-  GEN_OFFSET(MATU_DMA_RUNNINGp),
-  GEN_OFFSET(dma_ctrl),
-  GEN_OFFSET(dma_lo),
-  GEN_OFFSET(reg_dma),
-  GEN_OFFSET(int_ctrl),
-  GEN_OFFSET(reg_if),
-  GEN_OFFSET(reg_ie),
-  GEN_OFFSET(int_latch),
-  GEN_OFFSET(cpu_int),
-  GEN_OFFSET(cpu_ack),
-  GEN_OFFSET(joy_int),
-  GEN_OFFSET(reg_joy),
-  GEN_OFFSET(joy_latch),
-  GEN_OFFSET(joy_ext),
-  //GEN_OFFSET(serial),
-  GEN_OFFSET(store_i0),
-  GEN_OFFSET(store_i1),
-  GEN_OFFSET(store_i2),
-  GEN_OFFSET(store_i3),
-  GEN_OFFSET(store_i4),
-  GEN_OFFSET(store_i5),
-  GEN_OFFSET(store_i6),
-  GEN_OFFSET(store_i7),
-  GEN_OFFSET(store_i8),
-  GEN_OFFSET(store_i9),
-  GEN_OFFSET(store_l0),
-  GEN_OFFSET(store_l1),
-  GEN_OFFSET(store_l2),
-  GEN_OFFSET(store_l3),
-  GEN_OFFSET(store_l4),
-  GEN_OFFSET(store_l5),
-  GEN_OFFSET(store_l6),
-  GEN_OFFSET(store_l7),
-  GEN_OFFSET(store_l8),
-  GEN_OFFSET(store_l9),
-  GEN_OFFSET(store_x0),
-  GEN_OFFSET(store_x1),
-  GEN_OFFSET(store_x2),
-  GEN_OFFSET(store_x3),
-  GEN_OFFSET(store_x4),
-  GEN_OFFSET(store_x5),
-  GEN_OFFSET(store_x6),
-  GEN_OFFSET(store_x7),
-  GEN_OFFSET(store_x8),
-  GEN_OFFSET(store_x9),
-  GEN_OFFSET(sprite_counter),
-  GEN_OFFSET(FEPO_STORE_MATCHp),
-  GEN_OFFSET(sprite_match_flags),
-  GEN_OFFSET(sprite_reset_flags),
-  GEN_OFFSET(sprite_store_flags),
-  GEN_OFFSET(sprite_scanner),
-  GEN_OFFSET(scan_counter),
-  GEN_OFFSET(sprite_index),
-  GEN_OFFSET(sfetch_control),
-  GEN_OFFSET(sprite_pix_a),
-  GEN_OFFSET(sprite_pix_b),
-  GEN_OFFSET(tfetch_counter),
-  GEN_OFFSET(tfetch_control),
-  GEN_OFFSET(tile_temp_a),
-  GEN_OFFSET(tile_temp_b),
-  GEN_OFFSET(reg_lcdc),
-  GEN_OFFSET(reg_stat),
-  GEN_OFFSET(reg_scx),
-  GEN_OFFSET(reg_scy),
-  GEN_OFFSET(reg_wy),
-  GEN_OFFSET(reg_wx),
-  GEN_OFFSET(win_x.map),
-  GEN_OFFSET(win_y.tile),
-  GEN_OFFSET(win_y.map),
-  GEN_OFFSET(win_ctrl),
-  GEN_OFFSET(fine_count),
-  GEN_OFFSET(fine_scroll),
-  GEN_OFFSET(pix_count),
-  GEN_OFFSET(mask_pipe),
-  GEN_OFFSET(bgw_pipe_a),
-  GEN_OFFSET(bgw_pipe_b),
-  GEN_OFFSET(spr_pipe_a),
-  GEN_OFFSET(spr_pipe_b),
-  GEN_OFFSET(pal_pipe),
-  GEN_OFFSET(lcd.REMY_LD0n),
-  GEN_OFFSET(lcd.RAVO_LD1n),
-  GEN_OFFSET(lcd),
-  GEN_OFFSET(reg_lx),
-  GEN_OFFSET(reg_ly),
-  GEN_OFFSET(reg_lyc),
-  GEN_OFFSET(reg_bgp),
-  GEN_OFFSET(reg_obp0),
-  GEN_OFFSET(reg_obp1),
-  GEN_OFFSET(WODU_HBLANKp),
-  GEN_OFFSET(SATO_BOOT_BITn),
-  GEN_OFFSET(ATEJ_LINE_RSTp),
-  GEN_OFFSET(flipped_sprite),
-};
-
 //-----------------------------------------------------------------------------
 
-void print_field_at(int offset) {
-  int len = sizeof(gb_offsets) / sizeof(gb_offsets[0]);
+void GateBoyState::wipe() {
+  memset(this, BIT_OLD | BIT_PULLED, sizeof(GateBoyState));
+}
 
-  int min_idx = -1;
-  int min_delta = 1000000;
+int64_t GateBoyState::hash_regression() {
+  return hash_low_bit(this, sizeof(GateBoyState), HASH_INIT);
+}
 
-  for (int i = 0; i < len; i++) {
-    int delta = offset - gb_offsets[i].offset;
-    if (delta >= 0 && delta < min_delta) {
-      min_idx = i;
-      min_delta = delta;
-    }
+int64_t GateBoyState::hash_all() {
+  return hash_all_bits(this, sizeof(GateBoyState), HASH_INIT);
+}
+
+Result<uint8_t, Error> GateBoyState::peek(const blob& cart_blob, int addr) const {
+  switch(addr) {
+  case ADDR_LCDC: return bit_pack_inv(reg_lcdc);
+  default:
+    LOG_R("GateBoy::peek - bad address 0x%04x\n", addr);
+    return Error::NOT_FOUND;
   }
+}
 
-  if (min_idx >= 0) {
-    LOG_R("%12.12s + %d", gb_offsets[min_idx].name, min_delta);
-  }
-  else {
-    LOG_R("<could not find field>");
+Result<uint8_t, Error> GateBoyState::poke(blob& cart_blob, int addr, uint8_t data_in) {
+  switch(addr) {
+  case ADDR_LCDC: { bit_unpack_inv(reg_lcdc, data_in); return data_in; }
+  default:
+    LOG_R("GateBoy::poke - bad address 0x%04x\n", addr);
+    return Error::NOT_FOUND;
   }
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoyState::diff(const GateBoyState& gbb, uint8_t mask) const {
+void GateBoyState::commit() {
+  if (!config_drive_flags && !config_oldnew_flags) return;
+
+  uint8_t* base = (uint8_t*)this;
+  bool bad_bits = false;
+  for (size_t i = 0; i < sizeof(GateBoyState); i++) {
+    uint8_t s = base[i];
+
+    if (config_drive_flags) {
+      if (bool(s & BIT_DRIVEN) && bool(s & BIT_PULLED)) {
+        LOG_Y("Bit %d both driven and pulled up!\n", i);
+        bad_bits = true;
+      }
+
+      if (!bool(s & BIT_DRIVEN) && !bool(s & BIT_PULLED)) {
+        LOG_Y("Bit %d floating!\n", i);
+        bad_bits = true;
+      }
+    }
+
+    if (config_oldnew_flags) {
+      if ((s & (BIT_OLD | BIT_NEW)) != BIT_NEW) {
+        LOG_Y("Bit %d not dirty after sim pass!\n", i);
+        bad_bits = true;
+      }
+      base[i] = (s & 0b00001111) | BIT_OLD;
+    }
+  }
+  CHECK_N(bad_bits);
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoyState::check_state_old_and_driven_or_pulled() {
+  if (config_drive_flags) {
+    uint8_t* blob = (uint8_t*)this;
+    for (auto i = 0; i < sizeof(GateBoyState); i++) {
+      auto r = blob[i];
+      (void)r;
+      CHECK_P((r & 0xF0) == BIT_OLD);
+      CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+bool GateBoyState::diff(const GateBoyState& gbb, uint8_t mask) const {
   const GateBoyState& gba = *this;
 
-  TestResults results;
+  bool result = true;
 
   uint8_t* bytes_a = (uint8_t*)&gba;
   uint8_t* bytes_b = (uint8_t*)&gbb;
@@ -180,12 +95,147 @@ void GateBoyState::diff(const GateBoyState& gbb, uint8_t mask) const {
 
     if (byte_a != byte_b) {
       LOG_R("MISMATCH @ %5d - ", i);
-      print_field_at(i);
+      print_field_at(i, GateBoyState::fields);
       LOG_R(": 0x%02x 0x%02x\n", byte_a, byte_b);
+      result = false;
     }
-
-    //EXPECT_EQ(byte_a, byte_b, ": [%5d] = 0x%02x, [%5d] = 0x%02x\n", ia, byte_a, ib, byte_b);
   }
+
+  return result;
 }
+
+//-----------------------------------------------------------------------------
+
+FieldInfo GateBoyState::fields[] = {
+  DECLARE_FIELD(GateBoyState, SIG_VCC),
+  DECLARE_FIELD(GateBoyState, SIG_GND),
+  DECLARE_FIELD(GateBoyState, cpu_signals),
+  DECLARE_FIELD(GateBoyState, cpu_abus),
+  DECLARE_FIELD(GateBoyState, cpu_dbus),
+  DECLARE_FIELD(GateBoyState, vram_abus),
+  DECLARE_FIELD(GateBoyState, vram_dbus),
+  DECLARE_FIELD(GateBoyState, vram_ext_ctrl),
+  DECLARE_FIELD(GateBoyState, vram_ext_abus),
+  DECLARE_FIELD(GateBoyState, vram_ext_dbus),
+  DECLARE_FIELD(GateBoyState, sprite_ibus),
+  DECLARE_FIELD(GateBoyState, sprite_lbus),
+  DECLARE_FIELD(GateBoyState, oam_ctrl),
+  DECLARE_FIELD(GateBoyState, oam_abus),
+  DECLARE_FIELD(GateBoyState, oam_dbus_a),
+  DECLARE_FIELD(GateBoyState, oam_dbus_b),
+  DECLARE_FIELD(GateBoyState, oam_latch_a),
+  DECLARE_FIELD(GateBoyState, oam_latch_b),
+  DECLARE_FIELD(GateBoyState, oam_temp_a),
+  DECLARE_FIELD(GateBoyState, oam_temp_b),
+  DECLARE_FIELD(GateBoyState, ext_ctrl),
+  DECLARE_FIELD(GateBoyState, ext_abus.lo),
+  DECLARE_FIELD(GateBoyState, ext_abus.hi),
+  DECLARE_FIELD(GateBoyState, ext_dbus),
+  DECLARE_FIELD(GateBoyState, ext_data_latch),
+  DECLARE_FIELD(GateBoyState, ext_addr_latch),
+  DECLARE_FIELD(GateBoyState, ext_mbc),
+  DECLARE_FIELD(GateBoyState, zram_bus),
+  DECLARE_FIELD(GateBoyState, VOGA_HBLANKp),
+  DECLARE_FIELD(GateBoyState, XYMU_RENDERINGn),
+  DECLARE_FIELD(GateBoyState, sys_rst),
+  DECLARE_FIELD(GateBoyState, sys_clk),
+  DECLARE_FIELD(GateBoyState, reg_div),
+  DECLARE_FIELD(GateBoyState, reg_tima),
+  DECLARE_FIELD(GateBoyState, reg_tma),
+  DECLARE_FIELD(GateBoyState, reg_tac),
+  DECLARE_FIELD(GateBoyState, MATU_DMA_RUNNINGp),
+  DECLARE_FIELD(GateBoyState, dma_ctrl),
+  DECLARE_FIELD(GateBoyState, dma_lo),
+  DECLARE_FIELD(GateBoyState, reg_dma),
+  DECLARE_FIELD(GateBoyState, int_ctrl),
+  DECLARE_FIELD(GateBoyState, reg_if),
+  DECLARE_FIELD(GateBoyState, reg_ie),
+  DECLARE_FIELD(GateBoyState, int_latch),
+  DECLARE_FIELD(GateBoyState, cpu_int),
+  DECLARE_FIELD(GateBoyState, cpu_ack),
+  DECLARE_FIELD(GateBoyState, joy_int),
+  DECLARE_FIELD(GateBoyState, reg_joy),
+  DECLARE_FIELD(GateBoyState, joy_latch),
+  DECLARE_FIELD(GateBoyState, joy_ext),
+  //GEN_OFFSET(GateBoyState, serial),
+  DECLARE_FIELD(GateBoyState, store_i0),
+  DECLARE_FIELD(GateBoyState, store_i1),
+  DECLARE_FIELD(GateBoyState, store_i2),
+  DECLARE_FIELD(GateBoyState, store_i3),
+  DECLARE_FIELD(GateBoyState, store_i4),
+  DECLARE_FIELD(GateBoyState, store_i5),
+  DECLARE_FIELD(GateBoyState, store_i6),
+  DECLARE_FIELD(GateBoyState, store_i7),
+  DECLARE_FIELD(GateBoyState, store_i8),
+  DECLARE_FIELD(GateBoyState, store_i9),
+  DECLARE_FIELD(GateBoyState, store_l0),
+  DECLARE_FIELD(GateBoyState, store_l1),
+  DECLARE_FIELD(GateBoyState, store_l2),
+  DECLARE_FIELD(GateBoyState, store_l3),
+  DECLARE_FIELD(GateBoyState, store_l4),
+  DECLARE_FIELD(GateBoyState, store_l5),
+  DECLARE_FIELD(GateBoyState, store_l6),
+  DECLARE_FIELD(GateBoyState, store_l7),
+  DECLARE_FIELD(GateBoyState, store_l8),
+  DECLARE_FIELD(GateBoyState, store_l9),
+  DECLARE_FIELD(GateBoyState, store_x0),
+  DECLARE_FIELD(GateBoyState, store_x1),
+  DECLARE_FIELD(GateBoyState, store_x2),
+  DECLARE_FIELD(GateBoyState, store_x3),
+  DECLARE_FIELD(GateBoyState, store_x4),
+  DECLARE_FIELD(GateBoyState, store_x5),
+  DECLARE_FIELD(GateBoyState, store_x6),
+  DECLARE_FIELD(GateBoyState, store_x7),
+  DECLARE_FIELD(GateBoyState, store_x8),
+  DECLARE_FIELD(GateBoyState, store_x9),
+  DECLARE_FIELD(GateBoyState, sprite_counter),
+  DECLARE_FIELD(GateBoyState, FEPO_STORE_MATCHp),
+  DECLARE_FIELD(GateBoyState, sprite_match_flags),
+  DECLARE_FIELD(GateBoyState, sprite_reset_flags),
+  DECLARE_FIELD(GateBoyState, sprite_store_flags),
+  DECLARE_FIELD(GateBoyState, sprite_scanner),
+  DECLARE_FIELD(GateBoyState, scan_counter),
+  DECLARE_FIELD(GateBoyState, sprite_index),
+  DECLARE_FIELD(GateBoyState, sfetch_control),
+  DECLARE_FIELD(GateBoyState, sprite_pix_a),
+  DECLARE_FIELD(GateBoyState, sprite_pix_b),
+  DECLARE_FIELD(GateBoyState, tfetch_counter),
+  DECLARE_FIELD(GateBoyState, tfetch_control),
+  DECLARE_FIELD(GateBoyState, tile_temp_a),
+  DECLARE_FIELD(GateBoyState, tile_temp_b),
+  DECLARE_FIELD(GateBoyState, reg_lcdc),
+  DECLARE_FIELD(GateBoyState, reg_stat),
+  DECLARE_FIELD(GateBoyState, reg_scx),
+  DECLARE_FIELD(GateBoyState, reg_scy),
+  DECLARE_FIELD(GateBoyState, reg_wy),
+  DECLARE_FIELD(GateBoyState, reg_wx),
+  DECLARE_FIELD(GateBoyState, win_x.map),
+  DECLARE_FIELD(GateBoyState, win_y.tile),
+  DECLARE_FIELD(GateBoyState, win_y.map),
+  DECLARE_FIELD(GateBoyState, win_ctrl),
+  DECLARE_FIELD(GateBoyState, fine_count),
+  DECLARE_FIELD(GateBoyState, fine_scroll),
+  DECLARE_FIELD(GateBoyState, pix_count),
+  DECLARE_FIELD(GateBoyState, mask_pipe),
+  DECLARE_FIELD(GateBoyState, bgw_pipe_a),
+  DECLARE_FIELD(GateBoyState, bgw_pipe_b),
+  DECLARE_FIELD(GateBoyState, spr_pipe_a),
+  DECLARE_FIELD(GateBoyState, spr_pipe_b),
+  DECLARE_FIELD(GateBoyState, pal_pipe),
+  DECLARE_FIELD(GateBoyState, lcd.REMY_LD0n),
+  DECLARE_FIELD(GateBoyState, lcd.RAVO_LD1n),
+  DECLARE_FIELD(GateBoyState, lcd),
+  DECLARE_FIELD(GateBoyState, reg_lx),
+  DECLARE_FIELD(GateBoyState, reg_ly),
+  DECLARE_FIELD(GateBoyState, reg_lyc),
+  DECLARE_FIELD(GateBoyState, reg_bgp),
+  DECLARE_FIELD(GateBoyState, reg_obp0),
+  DECLARE_FIELD(GateBoyState, reg_obp1),
+  DECLARE_FIELD(GateBoyState, WODU_HBLANKp),
+  DECLARE_FIELD(GateBoyState, SATO_BOOT_BITn),
+  DECLARE_FIELD(GateBoyState, ATEJ_LINE_RSTp),
+  DECLARE_FIELD(GateBoyState, flipped_sprite),
+  END_FIELDS()
+};
 
 //-----------------------------------------------------------------------------

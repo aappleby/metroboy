@@ -49,14 +49,6 @@ void GateBoyState::reset_to_bootrom() {
 
   SIG_VCC = BIT_OLD | BIT_DRIVEN | BIT_DATA;
 
-  //gb_state.cpu_abus.reset_to_poweron();
-  //gb_state.cpu_dbus.reset_to_poweron();
-
-  //gb_state.sprite_ibus.reset_to_poweron();
-  //gb_state.sprite_lbus.reset_to_poweron();
-
-  //gb_state.joy_int.reset_to_poweron();
-
   reg_joy.reset_to_bootrom();
   reg_tima.reset_to_bootrom();
 
@@ -64,7 +56,10 @@ void GateBoyState::reset_to_bootrom() {
 }
 
 void GateBoyState::reset_to_cart() {
+#if 0
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
+
+#endif
 
   VOGA_HBLANKp.state = 0b00011001;
 
@@ -98,10 +93,13 @@ void GateBoyState::reset_to_cart() {
   ext_addr_latch.reset_to_cart();
   ext_data_latch.reset_to_cart();
 
+  //zram_bus.reset_to_cart();
+
   sys_rst.reset_to_cart();
   sys_clk.reset_to_cart();
   reg_div.reset_to_cart();
   
+  //interrupts.reset_to_cart();
   reg_if.reset_to_cart();
   reg_ie.reset_to_cart();
   int_latch.reset_to_cart();
@@ -110,6 +108,7 @@ void GateBoyState::reset_to_cart() {
 
   //serial.reset_to_cart();
 
+  //reset_sprite_store();
   sprite_counter.BESE_SPRITE_COUNT0.state = 0b00011010;
   sprite_counter.CUXY_SPRITE_COUNT1.state = 0b00011010;
   sprite_counter.BEGO_SPRITE_COUNT2.state = 0b00011010;
@@ -162,6 +161,7 @@ void GateBoyState::reset_to_cart() {
   //reg_NR52.reset_to_cart();
 
   check_state_old_and_driven_or_pulled();
+
 }
 
 //-----------------------------------------------------------------------------

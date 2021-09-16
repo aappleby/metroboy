@@ -4,6 +4,11 @@
 
 void GateBoyState::reset_to_poweron() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
+
+  memset(&reg_dma, 0b00011010, sizeof(reg_dma));
+  memset(&reg_bgp, 0b00011010, sizeof(reg_dma));
+  memset(&reg_obp0, 0b00011010, sizeof(reg_dma));
+  memset(&reg_obp1, 0b00011010, sizeof(reg_dma));
 }
 
 void GateBoyState::reset_to_bootrom() {
@@ -11,43 +16,25 @@ void GateBoyState::reset_to_bootrom() {
 
   reg_joy.reset_to_bootrom();
 
-  reg_dma.NAFA_DMA_A08n.state = 0b00011010;
-  reg_dma.PYNE_DMA_A09n.state = 0b00011010;
-  reg_dma.PARA_DMA_A10n.state = 0b00011010;
-  reg_dma.NYDO_DMA_A11n.state = 0b00011010;
-  reg_dma.NYGY_DMA_A12n.state = 0b00011010;                           
-  reg_dma.PULA_DMA_A13n.state = 0b00011010;
-  reg_dma.POKU_DMA_A14n.state = 0b00011010;
-  reg_dma.MARU_DMA_A15n.state = 0b00011010;
-
-  reg_bgp.PAVO_BGP_D0n.state = 0b00011010;
-  reg_bgp.NUSY_BGP_D1n.state = 0b00011010;
-  reg_bgp.PYLU_BGP_D2n.state = 0b00011010;
-  reg_bgp.MAXY_BGP_D3n.state = 0b00011010;
-  reg_bgp.MUKE_BGP_D4n.state = 0b00011010;
-  reg_bgp.MORU_BGP_D5n.state = 0b00011010;
-  reg_bgp.MOGY_BGP_D6n.state = 0b00011010;
-  reg_bgp.MENA_BGP_D7n.state = 0b00011010;
-
-  reg_obp0.XUFU_OBP0_D0n.state = 0b00011010;
-  reg_obp0.XUKY_OBP0_D1n.state = 0b00011010;
-  reg_obp0.XOVA_OBP0_D2n.state = 0b00011010;
-  reg_obp0.XALO_OBP0_D3n.state = 0b00011010;
-  reg_obp0.XERU_OBP0_D4n.state = 0b00011010;
-  reg_obp0.XYZE_OBP0_D5n.state = 0b00011010;
-  reg_obp0.XUPO_OBP0_D6n.state = 0b00011010;
-  reg_obp0.XANA_OBP0_D7n.state = 0b00011010;
-
-  reg_obp1.MOXY_OBP1_D0n.state = 0b00011010;
-  reg_obp1.LAWO_OBP1_D1n.state = 0b00011010;
-  reg_obp1.MOSA_OBP1_D2n.state = 0b00011010;
-  reg_obp1.LOSE_OBP1_D3n.state = 0b00011010;
-  reg_obp1.LUNE_OBP1_D4n.state = 0b00011010;
-  reg_obp1.LUGU_OBP1_D5n.state = 0b00011010;
-  reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
-  reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
+  memset(&reg_dma, 0b00011010, sizeof(reg_dma));
+  memset(&reg_bgp, 0b00011010, sizeof(reg_dma));
+  memset(&reg_obp0, 0b00011010, sizeof(reg_dma));
+  memset(&reg_obp1, 0b00011010, sizeof(reg_dma));
 
   SIG_VCC = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+
+  reg_joy.reset_to_bootrom();
+  reg_tima.reset_to_bootrom();
+
+  SIG_VCC = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+
+  //cpu_abus.reset_to_poweron();
+  //cpu_dbus.reset_to_poweron();
+
+  //sprite_ibus.reset_to_poweron();
+  //sprite_lbus.reset_to_poweron();
+
+  //joy_int.reset_to_poweron();
 
   reg_joy.reset_to_bootrom();
   reg_tima.reset_to_bootrom();

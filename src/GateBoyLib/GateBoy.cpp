@@ -45,9 +45,7 @@ void GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   CHECK_P(bit(gb_state.sys_clk.ADYK_ABCxxxxH.qp_old()));
 
   sys.phase_total = 0;
-  //sys.phase_origin = 46880720;
-;
-
+  
   //----------------------------------------
   // Wait for SIG_CPU_START
 
@@ -63,7 +61,7 @@ void GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   //----------------------------------------
   // Fetch the first instruction in the bootrom
 
-  uint8_t data_out = dbg_read(cart_blob, 0x0000);
+  dbg_read(cart_blob, 0x0000);
 
   //----------------------------------------
   // We're ready to go, release the CPU so it can start running the bootrom.
@@ -81,12 +79,13 @@ void GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot) {
-  reset_to_poweron(cart_blob);
-
-  gb_state.reset_to_bootrom();
+  gb_state.reset_to_poweron();
+  cpu.reset_to_poweron();
+  mem.reset_to_poweron();
+  sys.reset_to_poweron();
+  probes.reset_to_poweron();
 
   run_poweron_reset(cart_blob, fastboot);
-  memset(mem.framebuffer, 4, sizeof(mem.framebuffer));
 }
 
 //-----------------------------------------------------------------------------
@@ -97,36 +96,14 @@ void GateBoy::reset_to_bootrom2(const blob& cart_blob, bool fastboot) {
   mem.reset_to_bootrom();
   sys.reset_to_bootrom();
   probes.reset_to_bootrom();
-
-  gb_state.SIG_VCC = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-
-
-  //gb_state.cpu_abus.reset_to_poweron();
-  //gb_state.cpu_dbus.reset_to_poweron();
-
-  //gb_state.sprite_ibus.reset_to_poweron();
-  //gb_state.sprite_lbus.reset_to_poweron();
-
-  //gb_state.joy_int.reset_to_poweron();
-
-  gb_state.reg_joy.reset_to_bootrom();
-  gb_state.reg_tima.reset_to_bootrom();
-
-  gb_state.check_state_old_and_driven_or_pulled();
-
-  // Put some recognizable pattern in vram so we can see that we're in the bootrom
-  for (int i = 0; i < 8192; i++) {
-    uint32_t h = i * 0x1234567;
-    mem.vid_ram[i] = uint8_t(h ^ (h >> 4));
-  }
-
-  memset(mem.framebuffer, 4, sizeof(mem.framebuffer));
 }
 
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset_to_cart(const blob& cart_blob) {
-  reset_to_bootrom(cart_blob, true);
+  reset_to_poweron(cart_blob);
+  gb_state.reset_to_bootrom();
+  run_poweron_reset(cart_blob, true);
 
   gb_state.reset_to_cart();
   cpu.reset_to_cart();

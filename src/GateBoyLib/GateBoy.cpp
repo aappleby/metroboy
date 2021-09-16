@@ -9,25 +9,18 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
-{
-  gb_state.wipe();
-  cpu.wipe();
-  mem.wipe();
-  sys.wipe();
-  probes.wipe();
+void GateBoy::reset_to_poweron(const blob& cart_blob) {
+  gb_state.reset_to_poweron();
+  cpu.reset_to_poweron();
+  mem.reset_to_poweron();
+  sys.reset_to_poweron();
+  probes.reset_to_poweron();
 
-  // Put some recognizable pattern in vram so we can see that we're in the bootrom
-  for (int i = 0; i < 8192; i++) {
-    uint32_t h = i * 0x1234567;
-    mem.vid_ram[i] = uint8_t(h ^ (h >> 4));
-  }
+  gb_state.cpu_abus.reset_to_poweron();
+  gb_state.cpu_dbus.reset_to_poweron();
 
-  gb_state.cpu_abus.reset_to_bootrom();
-  gb_state.cpu_dbus.reset_to_bootrom();
-
-  gb_state.sprite_ibus.reset_to_bootrom();
-  gb_state.sprite_lbus.reset_to_bootrom();
+  gb_state.sprite_ibus.reset_to_poweron();
+  gb_state.sprite_lbus.reset_to_poweron();
 
   gb_state.reg_dma.NAFA_DMA_A08n.state = 0b00011010;
   gb_state.reg_dma.PYNE_DMA_A09n.state = 0b00011010;
@@ -65,11 +58,21 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
   gb_state.reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
   gb_state.reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
 
-  gb_state.joy_int.reset_to_bootrom();
-  gb_state.reg_joy.reset_to_bootrom();
+  gb_state.joy_int.reset_to_poweron();
+  gb_state.reg_joy.reset_to_poweron();
 
   gb_state.check_state_old_and_driven_or_pulled();
 
+  // Put some recognizable pattern in vram so we can see that we're in the bootrom
+  for (int i = 0; i < 8192; i++) {
+    uint32_t h = i * 0x1234567;
+    mem.vid_ram[i] = uint8_t(h ^ (h >> 4));
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   sys.fastboot = fastboot;
 
   //----------------------------------------
@@ -125,6 +128,82 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
     gb_state.reg_div.TERO_DIV03p.state = 0b00011010;
     gb_state.reg_div.UNYK_DIV04p.state = 0b00011010;
     gb_state.reg_div.UPOF_DIV15p.state = 0b00011011;
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot) {
+  reset_to_poweron(cart_blob);
+  run_poweron_reset(cart_blob, fastboot);
+  memset(mem.framebuffer, 4, sizeof(mem.framebuffer));
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::reset_to_bootrom2(const blob& cart_blob, bool fastboot) {
+  gb_state.reset_to_bootrom();
+  cpu.reset_to_bootrom();
+  mem.reset_to_bootrom();
+  sys.reset_to_bootrom();
+  probes.reset_to_bootrom();
+
+  gb_state.SIG_VCC = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+
+
+  gb_state.cpu_abus.reset_to_poweron();
+  gb_state.cpu_dbus.reset_to_poweron();
+
+  gb_state.sprite_ibus.reset_to_poweron();
+  gb_state.sprite_lbus.reset_to_poweron();
+
+  gb_state.reg_dma.NAFA_DMA_A08n.state = 0b00011010;
+  gb_state.reg_dma.PYNE_DMA_A09n.state = 0b00011010;
+  gb_state.reg_dma.PARA_DMA_A10n.state = 0b00011010;
+  gb_state.reg_dma.NYDO_DMA_A11n.state = 0b00011010;
+  gb_state.reg_dma.NYGY_DMA_A12n.state = 0b00011010;                           
+  gb_state.reg_dma.PULA_DMA_A13n.state = 0b00011010;
+  gb_state.reg_dma.POKU_DMA_A14n.state = 0b00011010;
+  gb_state.reg_dma.MARU_DMA_A15n.state = 0b00011010;
+
+  gb_state.reg_bgp.PAVO_BGP_D0n.state = 0b00011010;
+  gb_state.reg_bgp.NUSY_BGP_D1n.state = 0b00011010;
+  gb_state.reg_bgp.PYLU_BGP_D2n.state = 0b00011010;
+  gb_state.reg_bgp.MAXY_BGP_D3n.state = 0b00011010;
+  gb_state.reg_bgp.MUKE_BGP_D4n.state = 0b00011010;
+  gb_state.reg_bgp.MORU_BGP_D5n.state = 0b00011010;
+  gb_state.reg_bgp.MOGY_BGP_D6n.state = 0b00011010;
+  gb_state.reg_bgp.MENA_BGP_D7n.state = 0b00011010;
+
+  gb_state.reg_obp0.XUFU_OBP0_D0n.state = 0b00011010;
+  gb_state.reg_obp0.XUKY_OBP0_D1n.state = 0b00011010;
+  gb_state.reg_obp0.XOVA_OBP0_D2n.state = 0b00011010;
+  gb_state.reg_obp0.XALO_OBP0_D3n.state = 0b00011010;
+  gb_state.reg_obp0.XERU_OBP0_D4n.state = 0b00011010;
+  gb_state.reg_obp0.XYZE_OBP0_D5n.state = 0b00011010;
+  gb_state.reg_obp0.XUPO_OBP0_D6n.state = 0b00011010;
+  gb_state.reg_obp0.XANA_OBP0_D7n.state = 0b00011010;
+
+  gb_state.reg_obp1.MOXY_OBP1_D0n.state = 0b00011010;
+  gb_state.reg_obp1.LAWO_OBP1_D1n.state = 0b00011010;
+  gb_state.reg_obp1.MOSA_OBP1_D2n.state = 0b00011010;
+  gb_state.reg_obp1.LOSE_OBP1_D3n.state = 0b00011010;
+  gb_state.reg_obp1.LUNE_OBP1_D4n.state = 0b00011010;
+  gb_state.reg_obp1.LUGU_OBP1_D5n.state = 0b00011010;
+  gb_state.reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
+  gb_state.reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
+
+  gb_state.joy_int.reset_to_poweron();
+
+  gb_state.reg_joy.reset_to_bootrom();
+  gb_state.reg_tima.reset_to_bootrom();
+
+  gb_state.check_state_old_and_driven_or_pulled();
+
+  // Put some recognizable pattern in vram so we can see that we're in the bootrom
+  for (int i = 0; i < 8192; i++) {
+    uint32_t h = i * 0x1234567;
+    mem.vid_ram[i] = uint8_t(h ^ (h >> 4));
   }
 
   memset(mem.framebuffer, 4, sizeof(mem.framebuffer));

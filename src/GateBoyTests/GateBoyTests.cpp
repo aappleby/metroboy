@@ -91,6 +91,8 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
+  //results += t.test_reset_to_bootrom();
+
 #if 1
   LOG_G("Regression testing bootrom start\n");
   results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
@@ -176,10 +178,10 @@ int main(int argc, char** argv) {
 
 //-----------------------------------------------------------------------------
 
-std::unique_ptr<IGateBoy> GateBoyTests::create_debug_gb(const blob& cart_blob) {
+std::unique_ptr<IGateBoy> GateBoyTests::create_debug_gb(const blob& cart_blob, bool cpu_en) {
   auto gb = std::make_unique<GateBoy>();
   gb->reset_to_bootrom(cart_blob, true);
-  gb->sys.cpu_en = false;
+  gb->sys.cpu_en = cpu_en;
   return gb;
 }
 
@@ -189,7 +191,7 @@ TestResults GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask)
   TEST_INIT("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   blob cart_blob = Assembler::create_dummy_cart();
-  auto gb = create_debug_gb(cart_blob);
+  auto gb = create_debug_gb(cart_blob, false);
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
@@ -206,7 +208,7 @@ TestResults GateBoyTests::test_spu_reg(const char* tag, uint16_t addr, uint8_t m
   TEST_INIT("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   blob cart_blob = Assembler::create_dummy_cart();
-  auto gb = create_debug_gb(cart_blob);
+  auto gb = create_debug_gb(cart_blob, false);
   gb->dbg_write(cart_blob, ADDR_NR52, 0x80).unwrap();
 
   for (int i = 0; i < 256; i++) {
@@ -282,17 +284,38 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot() {
 }
 
 //-----------------------------------------------------------------------------
+
+TestResults GateBoyTests::test_reset_to_bootrom() {
+  TEST_INIT();
+
+  blob cart_blob = Assembler::create_dummy_cart();
+
+  LOG_B("reset_to_bootrom1\n");
+  GateBoy gb1;
+  gb1.reset_to_bootrom(cart_blob, true);
+  LOG_G("reset_to_bootrom1\n");
+
+  LOG_B("reset_to_bootrom2\n");
+  GateBoy gb2;
+  gb2.reset_to_bootrom2(cart_blob, true);
+  LOG_G("reset_to_bootrom2 done\n");
+
+
+  uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
+
+  EXPECT_EQ(true, gb1.gb_state.diff(gb2.gb_state, mask));
+
+  TEST_DONE();
+}
+
+//-----------------------------------------------------------------------------
 // reset_cart() should match dumped reset state.
 
 TestResults GateBoyTests::test_reset_cart_vs_dump() {
   TEST_INIT();
 
-  GateBoy gateboy1;
-  GateBoy gateboy2;
-
-  IGateBoy* gb1 = &gateboy1;
-  IGateBoy* gb2 = &gateboy2;
-
+  auto gb1 = create_debug_gb(Assembler::create_dummy_cart(), false);
+  auto gb2 = create_debug_gb(Assembler::create_dummy_cart(), false);
 
   blob dump;
   load_blob("gateboy_post_bootrom.raw.dump", dump);
@@ -922,25 +945,24 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
 
   if (verbose) LOG_B("%-30s ", filename);
 
-  auto gb = make_unique<GateBoy>();
+  auto gb = create_debug_gb(cart_blob, true);
   gb->reset_to_cart(cart_blob);
-
 
   int timeout = 150000 * 8;
 
-  while(gb->sys.phase_total < timeout) {
+  while(timeout--) {
     if (!gb->next_phase(cart_blob)) break;
-    if (gb->mem.zero_ram[2]) break;
+    if (gb->peek(cart_blob, 0xFF82).unwrap()) break;
   }
 
-  uint8_t result_a = gb->mem.zero_ram[0]; // actual
-  uint8_t result_b = gb->mem.zero_ram[1]; // expected
-  uint8_t result_c = gb->mem.zero_ram[2]; // 0x01 if test passes, 0xFF if test fails
+  uint8_t result_a = gb->peek(cart_blob, 0xFF80); // actual
+  uint8_t result_b = gb->peek(cart_blob, 0xFF81); // expected
+  uint8_t result_c = gb->peek(cart_blob, 0xFF82); // 0x01 if test passes, 0xFF if test fails
 
-  bool pass = (result_c == 0x01) && (gb->sys.phase_total < timeout);
+  bool pass = (result_c == 0x01) && (timeout > 0);
 
   if (pass) {
-    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, gb->sys.phase_total);
+    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, gb->phase_total());
     results.test_pass++;
     return results;
   }
@@ -948,11 +970,11 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
     if (!verbose) LOG_B("%-30s ", filename);
 
     const char* reason = "ERROR";
-    if      (gb->sys.phase_total == timeout) reason = "TIMEOUT";
-    else if (result_a != result_b)           reason = "MISMATCH";
-    else if (result_c == 0xFF)               reason = "FAIL";
+    if      (timeout == 0)         reason = "TIMEOUT";
+    else if (result_a != result_b) reason = "MISMATCH";
+    else if (result_c == 0xFF)     reason = "FAIL";
 
-    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gb->sys.phase_total);
+    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gb->phase_total());
     results.test_fail++;
     return results;
   }
@@ -964,7 +986,7 @@ TestResults GateBoyTests::test_init() {
   TEST_INIT();
 
   blob cart_blob = Assembler::create_dummy_cart();
-  auto gb = create_debug_gb(cart_blob);
+  auto gb = create_debug_gb(cart_blob, false);
 
   LOG_G("Checking reg flags\n");
 
@@ -1512,7 +1534,7 @@ TestResults GateBoyTests::test_bootrom() {
   TEST_INIT();
 
   blob cart_blob = Assembler::create_dummy_cart();
-  auto gb = create_debug_gb(cart_blob);
+  auto gb = create_debug_gb(cart_blob, false);
 
   for (int i = 0; i < 16; i++) {
     uint8_t data_out = gb->dbg_read(cart_blob, i);

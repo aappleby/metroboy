@@ -12,6 +12,7 @@ struct GateBoyTests {
   TestResults test_regs();
 
   TestResults test_fastboot_vs_slowboot();
+  TestResults test_reset_to_bootrom();
   TestResults test_reset_cart_vs_dump();
 
   TestResults test_init();
@@ -55,7 +56,7 @@ struct GateBoyTests {
   TestResults test_mooneye_ppu();
   TestResults run_mooneye_test(const char* path, const char* filename);
 
-  std::unique_ptr<IGateBoy> create_debug_gb(const blob& cart_blob);
+  std::unique_ptr<IGateBoy> create_debug_gb(const blob& cart_blob, bool cpu_en);
 
   bool verbose = false;
 };

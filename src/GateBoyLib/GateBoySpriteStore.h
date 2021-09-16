@@ -5,7 +5,7 @@
 // Tristate buses to move sprite index & line in/out of sprite store
 
 struct SpriteIBus {
-  void reset_to_bootrom() {
+  void reset_to_poweron() {
     BUS_SPR_I0.state = BIT_OLD | BIT_PULLED | 1;
     BUS_SPR_I1.state = BIT_OLD | BIT_PULLED | 1;
     BUS_SPR_I2.state = BIT_OLD | BIT_PULLED | 1;
@@ -34,7 +34,7 @@ struct SpriteIBus {
 //-----------------------------------------------------------------------------
 
 struct SpriteLBus {
-  void reset_to_bootrom() {
+  void reset_to_poweron() {
     BUS_SPR_L0.state = BIT_OLD | BIT_PULLED | 1;
     BUS_SPR_L1.state = BIT_OLD | BIT_PULLED | 1;
     BUS_SPR_L2.state = BIT_OLD | BIT_PULLED | 1;

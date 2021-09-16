@@ -23,9 +23,14 @@ struct GateBoy;
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpu {
-
-  void wipe() {
+  void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
   }
 
   MetroBoyCPU core;
@@ -40,8 +45,14 @@ struct GateBoyCpu {
 //-----------------------------------------------------------------------------
 
 struct GateBoyMem {
-  void wipe() {
+  void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
   }
 
   uint8_t vid_ram [8192];
@@ -55,8 +66,14 @@ struct GateBoyMem {
 //-----------------------------------------------------------------------------
 
 struct GateBoySys {
-  void wipe() {
+  void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
   }
 
   // External signals
@@ -82,8 +99,16 @@ struct GateBoy  : public IGateBoy {
 
   //----------------------------------------
 
+  void reset_to_poweron(const blob& cart_blob);
+  void run_poweron_reset(const blob& cart_blob, bool fastboot);
+
   void reset_to_bootrom(const blob& cart_blob, bool fastboot) override;
+  void reset_to_bootrom2(const blob& cart_blob, bool fastboot);
   void reset_to_cart(const blob& cart_blob) override;
+
+  int64_t phase_total() const override { 
+    return sys.phase_total;
+  };
 
   Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const override;
   Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) override;

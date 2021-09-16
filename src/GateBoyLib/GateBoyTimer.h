@@ -75,6 +75,17 @@ struct RegDIV {
 //-----------------------------------------------------------------------------
 
 struct RegTIMA {
+  void reset_to_bootrom() {
+    REGA_TIMA0p.state = 0x1a;
+    POVY_TIMA1p.state = 0x1a;
+    PERU_TIMA2p.state = 0x1a;
+    RATE_TIMA3p.state = 0x1a;
+    RUBY_TIMA4p.state = 0x1a;
+    RAGE_TIMA5p.state = 0x1a;
+    PEDA_TIMA6p.state = 0x1a;
+    NUGA_TIMA7p.state = 0x1a;
+  }
+
   void force_set_tima(uint8_t tima) {
     uint16_t tima_a = tima;
     uint16_t tima_b = ((~tima) << 2);

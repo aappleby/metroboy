@@ -188,6 +188,7 @@
     <ClCompile Include="PlaitApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\GateBoyLib\GateBoyReset.h" />
     <ClInclude Include="CellDB.h" />
     <ClInclude Include="Plait.h" />
     <ClInclude Include="PlaitApp.h" />

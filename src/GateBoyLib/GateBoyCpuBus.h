@@ -67,7 +67,7 @@ struct GateBoyCpuABus {
     BUS_CPU_A15p.state = BIT_OLD | BIT_DRIVEN | 0;
   }
 
-  void reset_to_bootrom() {
+  void reset_to_poweron() {
     BUS_CPU_A00p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_A01p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_A02p.state = BIT_OLD | BIT_PULLED | 1;
@@ -228,7 +228,7 @@ struct GateBoyCpuDBus {
     BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
   }
 
-  void reset_to_bootrom() {
+  void reset_to_poweron() {
     BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;

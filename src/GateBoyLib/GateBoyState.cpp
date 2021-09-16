@@ -2,9 +2,20 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoyState::wipe() {
-  memset(this, BIT_OLD | BIT_PULLED, sizeof(GateBoyState));
+void GateBoyState::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
+  reg_joy.reset_to_poweron();
 }
+
+void GateBoyState::reset_to_bootrom() {
+  reg_joy.reset_to_bootrom();
+}
+
+void GateBoyState::reset_to_cart() {
+  reg_joy.reset_to_cart();
+}
+
+//-----------------------------------------------------------------------------
 
 int64_t GateBoyState::hash_regression() {
   return hash_low_bit(this, sizeof(GateBoyState), HASH_INIT);
@@ -274,6 +285,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, sprite_scanner),
   DECLARE_FIELD(GateBoyState, scan_counter),
   DECLARE_FIELD(GateBoyState, sprite_index),
+  DECLARE_FIELD(GateBoyState, sfetch_counter),
   DECLARE_FIELD(GateBoyState, sfetch_control),
   DECLARE_FIELD(GateBoyState, sprite_pix_a),
   DECLARE_FIELD(GateBoyState, sprite_pix_b),

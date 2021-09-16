@@ -4,6 +4,13 @@
 //-----------------------------------------------------------------------------
 
 struct JoyInt {
+  void reset_to_poweron() {
+    BATU_JP_GLITCH0.state = 0b00011011;
+    ACEF_JP_GLITCH1.state = 0b00011011;
+    AGEM_JP_GLITCH2.state = 0b00011011;
+    APUG_JP_GLITCH3.state = 0b00011011;
+  }
+
   void reset_to_bootrom() {
     BATU_JP_GLITCH0.state = 0b00011011;
     ACEF_JP_GLITCH1.state = 0b00011011;
@@ -24,15 +31,22 @@ struct JoyInt {
   /*#p02.APUG*/ DFF17 APUG_JP_GLITCH3;
 };
 
+//-----------------------------------------------------------------------------
+
 struct RegJoy {
+  void reset_to_poweron() {
+    KELY_JOYP_UDLRp.state = 0b00011001;
+    COFY_JOYP_ABCSp.state = 0b00011001;
+  }
+
   void reset_to_bootrom() {
     KELY_JOYP_UDLRp.state = 0b00011011;
     COFY_JOYP_ABCSp.state = 0b00011011;
   }
 
   void reset_to_cart() {
-    KELY_JOYP_UDLRp.state = 0b00011010; // wat?
-    COFY_JOYP_ABCSp.state = 0b00011010; // wat?
+    KELY_JOYP_UDLRp.state = 0b00011010;
+    COFY_JOYP_ABCSp.state = 0b00011010;
   }
 
   // Ignoring debug stuff for now
@@ -46,16 +60,37 @@ struct RegJoy {
   ///*_p05.KERU*/ DFF17 KERU_DBG_D7;
 };
 
+//-----------------------------------------------------------------------------
+
 struct JoyLatch {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*#p05.KEVU*/ TpLatch KEVU_JOYP_L0n;
   /*#p05.KAPA*/ TpLatch KAPA_JOYP_L1n;
   /*#p05.KEJA*/ TpLatch KEJA_JOYP_L2n;
   /*#p05.KOLO*/ TpLatch KOLO_JOYP_L3n;
 };
 
+//-----------------------------------------------------------------------------
 // Pressing a button pulls the corresponding pin _down_.
 
 struct JoyExt {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_PIN_67*/ PinIn  PIN_67_JOY_P10;
   /*_PIN_66*/ PinIn  PIN_66_JOY_P11;
   /*_PIN_65*/ PinIn  PIN_65_JOY_P12;

@@ -29,7 +29,10 @@ struct GateBoyState {
 
   //----------------------------------------
 
-  void wipe();
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
+
   int64_t hash_regression();
   int64_t hash_all();
 
@@ -180,6 +183,7 @@ struct GateBoyState {
 
   SpriteFetchCounter sfetch_counter;
   SpriteFetchControl sfetch_control;
+
   //----------
 
   TileFetchCounter tfetch_counter;

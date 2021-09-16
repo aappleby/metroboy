@@ -3,7 +3,10 @@
 
 struct Probes {
   Probes();
-  void wipe();
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
+
   void probe_wire(int index, const char* signal_name, char s);
   void begin_pass(int phase_tag);
   void end_pass();

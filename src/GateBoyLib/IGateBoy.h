@@ -8,6 +8,8 @@ public:
   virtual void reset_to_bootrom(const blob& cart_blob, bool fastboot) = 0;
   virtual void reset_to_cart   (const blob& cart_blob) = 0;
 
+  virtual int64_t phase_total() const = 0;
+
   virtual Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const = 0;
   virtual Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) = 0;
 

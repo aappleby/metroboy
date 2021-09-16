@@ -41,6 +41,9 @@ struct SpriteLBus {
     BUS_SPR_L3.state = BIT_OLD | BIT_PULLED | 1;
   }
 
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -58,6 +61,15 @@ struct SpriteLBus {
 // 10 match signals + 1 global match signal
 
 struct SpriteMatchFlags {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
   /*_p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
   /*_p29.EMOL*/ Gate EMOL_SPRITE2_GETp;
@@ -71,6 +83,15 @@ struct SpriteMatchFlags {
 };
 
 struct SpriteResetFlags {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p29.EBOJ*/ DFF17 EBOJ_STORE0_RSTp;   // AxCxExGx
   /*_p29.CEDY*/ DFF17 CEDY_STORE1_RSTp;   // AxCxExGx
   /*_p29.EGAV*/ DFF17 EGAV_STORE2_RSTp;   // AxCxExGx
@@ -84,6 +105,15 @@ struct SpriteResetFlags {
 };
 
 struct SpriteStoreFlags {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p29.DYHU*/ Gate DYHU_STORE0_CLKn;
   /*_p29.BUCO*/ Gate BUCO_STORE1_CLKn;
   /*_p29.GYFO*/ Gate GYFO_STORE2_CLKn;
@@ -104,6 +134,15 @@ struct SpriteStoreFlags {
 // STORE_X - During scan, xxxDxxxH. During line, AxCxExGx
 
 struct StoreI0 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.YGUS*/ DFF8n YGUS_STORE0_I0n;
   /*_p30.YSOK*/ DFF8n YSOK_STORE0_I1n;
   /*_p30.YZEP*/ DFF8n YZEP_STORE0_I2n;
@@ -113,6 +152,15 @@ struct StoreI0 {
 };
 
 struct StoreL0 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.GYHO*/ DFF8n GYHO_STORE0_L0n;
   /*_p30.CUFO*/ DFF8n CUFO_STORE0_L1n;
   /*_p30.BOZU*/ DFF8n BOZU_STORE0_L2n;
@@ -120,6 +168,15 @@ struct StoreL0 {
 };
 
 struct StoreX0 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*#p31.XEPE*/ DFF9 XEPE_STORE0_X0p;
   /*_p31.YLAH*/ DFF9 YLAH_STORE0_X1p;
   /*_p31.ZOLA*/ DFF9 ZOLA_STORE0_X2p;
@@ -131,6 +188,15 @@ struct StoreX0 {
 };
 
 struct StoreI1 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.CADU*/ DFF8n CADU_STORE1_I0n;
   /*_p30.CEBO*/ DFF8n CEBO_STORE1_I1n;
   /*_p30.CUFA*/ DFF8n CUFA_STORE1_I2n;
@@ -140,6 +206,15 @@ struct StoreI1 {
 };
 
 struct StoreL1 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.AMES*/ DFF8n AMES_STORE1_L0n;
   /*_p30.AROF*/ DFF8n AROF_STORE1_L1n;
   /*_p30.ABOP*/ DFF8n ABOP_STORE1_L2n;
@@ -147,6 +222,15 @@ struct StoreL1 {
 };
 
 struct StoreX1 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p31.DANY*/ DFF9 DANY_STORE1_X0p;
   /*_p31.DUKO*/ DFF9 DUKO_STORE1_X1p;
   /*_p31.DESU*/ DFF9 DESU_STORE1_X2p;
@@ -158,6 +242,15 @@ struct StoreX1 {
 };
 
 struct StoreI2 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.BUHE*/ DFF8n BUHE_STORE2_I0n;
   /*_p30.BYHU*/ DFF8n BYHU_STORE2_I1n;
   /*_p30.BECA*/ DFF8n BECA_STORE2_I2n;
@@ -167,6 +260,15 @@ struct StoreI2 {
 };
 
 struct StoreL2 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.YLOV*/ DFF8n YLOV_STORE2_L0n;
   /*_p30.XOSY*/ DFF8n XOSY_STORE2_L1n;
   /*_p30.XAZY*/ DFF8n XAZY_STORE2_L2n;
@@ -174,6 +276,15 @@ struct StoreL2 {
 };
 
 struct StoreX2 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p31.FOKA*/ DFF9 FOKA_STORE2_X0p;
   /*_p31.FYTY*/ DFF9 FYTY_STORE2_X1p;
   /*_p31.FUBY*/ DFF9 FUBY_STORE2_X2p;
@@ -185,6 +296,15 @@ struct StoreX2 {
 };
 
 struct StoreI3 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.DEVY*/ DFF8n DEVY_STORE3_I0n;
   /*_p30.DESE*/ DFF8n DESE_STORE3_I1n;
   /*_p30.DUNY*/ DFF8n DUNY_STORE3_I2n;
@@ -194,6 +314,15 @@ struct StoreI3 {
 };
 
 struct StoreL3 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.ZURO*/ DFF8n ZURO_STORE3_L0n;
   /*_p30.ZYLU*/ DFF8n ZYLU_STORE3_L1n;
   /*_p30.ZENE*/ DFF8n ZENE_STORE3_L2n;
@@ -201,6 +330,15 @@ struct StoreL3 {
 };
 
 struct StoreX3 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p31.XOLY*/ DFF9 XOLY_STORE3_X0p;
   /*_p31.XYBA*/ DFF9 XYBA_STORE3_X1p;
   /*_p31.XABE*/ DFF9 XABE_STORE3_X2p;
@@ -212,6 +350,15 @@ struct StoreX3 {
 };
 
 struct StoreI4 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.XAVE*/ DFF8n XAVE_STORE4_I0n;
   /*_p30.XEFE*/ DFF8n XEFE_STORE4_I1n;
   /*_p30.WANU*/ DFF8n WANU_STORE4_I2n;
@@ -221,6 +368,15 @@ struct StoreI4 {
 };
 
 struct StoreL4 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.CAPO*/ DFF8n CAPO_STORE4_L0n;
   /*_p30.CAJU*/ DFF8n CAJU_STORE4_L1n;
   /*_p30.CONO*/ DFF8n CONO_STORE4_L2n;
@@ -228,6 +384,15 @@ struct StoreL4 {
 };
 
 struct StoreX4 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p31.WEDU*/ DFF9 WEDU_STORE4_X0p;
   /*_p31.YGAJ*/ DFF9 YGAJ_STORE4_X1p;
   /*_p31.ZYJO*/ DFF9 ZYJO_STORE4_X2p;
@@ -239,6 +404,15 @@ struct StoreX4 {
 };
 
 struct StoreI5 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.EKOP*/ DFF8n EKOP_STORE5_I0n;
   /*_p30.ETYM*/ DFF8n ETYM_STORE5_I1n;
   /*_p30.GORU*/ DFF8n GORU_STORE5_I2n;
@@ -249,6 +423,15 @@ struct StoreI5 {
 
 
 struct StoreL5 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.ACEP*/ DFF8n ACEP_STORE5_L0n;
   /*_p30.ABEG*/ DFF8n ABEG_STORE5_L1n;
   /*_p30.ABUX*/ DFF8n ABUX_STORE5_L2n;
@@ -256,6 +439,15 @@ struct StoreL5 {
 };
 
 struct StoreX5 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p31.FUSA*/ DFF9 FUSA_STORE5_X0p;
   /*_p31.FAXA*/ DFF9 FAXA_STORE5_X1p;
   /*_p31.FOZY*/ DFF9 FOZY_STORE5_X2p;
@@ -267,6 +459,15 @@ struct StoreX5 {
 };
 
 struct StoreI6 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.GABO*/ DFF8n GABO_STORE6_I0n;
   /*_p30.GACY*/ DFF8n GACY_STORE6_I1n;
   /*_p30.FOGO*/ DFF8n FOGO_STORE6_I2n;
@@ -276,6 +477,15 @@ struct StoreI6 {
 };
 
 struct StoreL6 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.ZUMY*/ DFF8n ZUMY_STORE6_L0n;
   /*_p30.ZAFU*/ DFF8n ZAFU_STORE6_L1n;
   /*_p30.ZEXO*/ DFF8n ZEXO_STORE6_L2n;
@@ -283,6 +493,15 @@ struct StoreL6 {
 };
 
 struct StoreX6 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p31.YCOL*/ DFF9 YCOL_STORE6_X0p;
   /*_p31.YRAC*/ DFF9 YRAC_STORE6_X1p;
   /*_p31.YMEM*/ DFF9 YMEM_STORE6_X2p;
@@ -294,6 +513,15 @@ struct StoreX6 {
 };
 
 struct StoreI7 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.GULE*/ DFF8n GULE_STORE7_I0n;
   /*_p30.GYNO*/ DFF8n GYNO_STORE7_I1n;
   /*_p30.FEFA*/ DFF8n FEFA_STORE7_I2n;
@@ -303,6 +531,15 @@ struct StoreI7 {
 };
 
 struct StoreL7 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.XYNA*/ DFF8n XYNA_STORE7_L0n;
   /*_p30.YGUM*/ DFF8n YGUM_STORE7_L1n;
   /*_p30.XAKU*/ DFF8n XAKU_STORE7_L2n;
@@ -310,6 +547,15 @@ struct StoreL7 {
 };
 
 struct StoreX7 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p31.ERAZ*/ DFF9 ERAZ_STORE7_X0p;
   /*_p31.EPUM*/ DFF9 EPUM_STORE7_X1p;
   /*_p31.EROL*/ DFF9 EROL_STORE7_X2p;
@@ -321,6 +567,15 @@ struct StoreX7 {
 };
 
 struct StoreI8 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.AXUV*/ DFF8n AXUV_STORE8_I0n;
   /*_p30.BADA*/ DFF8n BADA_STORE8_I1n;
   /*_p30.APEV*/ DFF8n APEV_STORE8_I2n;
@@ -330,6 +585,15 @@ struct StoreI8 {
 };
 
 struct StoreL8 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.AZAP*/ DFF8n AZAP_STORE8_L0n;
   /*_p30.AFYX*/ DFF8n AFYX_STORE8_L1n;
   /*_p30.AFUT*/ DFF8n AFUT_STORE8_L2n;
@@ -337,6 +601,15 @@ struct StoreL8 {
 };
 
 struct StoreX8 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p31.EZUF*/ DFF9 EZUF_STORE8_X0p;
   /*_p31.ENAD*/ DFF9 ENAD_STORE8_X1p;
   /*_p31.EBOW*/ DFF9 EBOW_STORE8_X2p;
@@ -348,6 +621,15 @@ struct StoreX8 {
 };
 
 struct StoreI9 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.YBER*/ DFF8n YBER_STORE9_I0n;
   /*_p30.YZOR*/ DFF8n YZOR_STORE9_I1n;
   /*_p30.XYFE*/ DFF8n XYFE_STORE9_I2n;
@@ -357,6 +639,15 @@ struct StoreI9 {
 };
 
 struct StoreL9 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p30.CANA*/ DFF8n CANA_STORE9_L0n;
   /*_p30.FOFO*/ DFF8n FOFO_STORE9_L1n;
   /*_p30.DYSY*/ DFF8n DYSY_STORE9_L2n;
@@ -364,6 +655,15 @@ struct StoreL9 {
 };
 
 struct StoreX9 {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p31.XUVY*/ DFF9 XUVY_STORE9_X0p;
   /*_p31.XERE*/ DFF9 XERE_STORE9_X1p;
   /*_p31.XUZO*/ DFF9 XUZO_STORE9_X2p;

@@ -6,6 +6,11 @@
 //-----------------------------------------------------------------------------
 
 struct LCDControl {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
 
   void reset_to_cart() {
     CATU_x113p.state = 0b00011010;

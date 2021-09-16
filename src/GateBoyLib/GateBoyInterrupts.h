@@ -4,6 +4,14 @@
 //-----------------------------------------------------------------------------
 
 struct RegIF {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
   void reset_to_cart() {
     LOPE_FF0F_D0p.state = 0b00011011;
     LALU_FF0F_D1p.state = 0b00011000;
@@ -21,6 +29,14 @@ struct RegIF {
 
 // This is technically in the CPU, but we're going to implement it here for now.
 struct RegIE {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
   void reset_to_cart() {
     IE_D0.state = 0b00011010;
     IE_D1.state = 0b00011010;
@@ -37,6 +53,14 @@ struct RegIE {
 };
 
 struct InterruptLatch {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
   void reset_to_cart() {
     MATY_FF0F_L0p.state = 0b00011000;
     MOPO_FF0F_L1p.state = 0b00011000;
@@ -53,6 +77,14 @@ struct InterruptLatch {
 };
 
 struct CpuInt {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
   void reset_to_cart() {
     SIG_CPU_INT_VBLANK.state = 0b00011001;
     SIG_CPU_INT_STAT.state   = 0b00011000;
@@ -69,6 +101,14 @@ struct CpuInt {
 };
 
 struct CpuAck {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
   void reset_to_cart() {
     SIG_CPU_ACK_VBLANK.state = 0b00011000;
     SIG_CPU_ACK_STAT.state   = 0b00011000;
@@ -85,6 +125,18 @@ struct CpuAck {
 };
 
 struct InterruptControl {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_cart() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*_p02.AWOB*/ TpLatch AWOB_WAKE_CPU;
   /*_SIG_CPU_WAKE*/ SigOut SIG_CPU_WAKE;  // top right wire by itself <- P02.AWOB

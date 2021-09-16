@@ -101,14 +101,13 @@ void GateBoy::reset_to_bootrom2(const blob& cart_blob, bool fastboot) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset_to_cart(const blob& cart_blob) {
-  reset_to_poweron(cart_blob);
-  gb_state.reset_to_bootrom();
-  run_poweron_reset(cart_blob, true);
+  reset_to_bootrom(cart_blob, true);
 
   gb_state.reset_to_cart();
   cpu.reset_to_cart();
   mem.reset_to_cart();
   sys.reset_to_cart();
+  probes.reset_to_cart();
 }
 
 //-----------------------------------------------------------------------------

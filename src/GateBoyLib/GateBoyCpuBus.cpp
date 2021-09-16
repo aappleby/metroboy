@@ -4,11 +4,17 @@
 
 //-----------------------------------------------------------------------------
 
+void GateBoyCpuSignals::reset_to_poweron() {
+  //memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
 void GateBoyCpuSignals::reset_to_bootrom() {
+  //memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   TEPU_BOOT_BITn.state = 0b00011010;
 }
 
 void GateBoyCpuSignals::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   TEPU_BOOT_BITn.state = 0b00011011;
   SIG_CPU_BOOTp.state = 0b00011000;
 }

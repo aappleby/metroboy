@@ -5,6 +5,15 @@
 //-----------------------------------------------------------------------------
 
 struct WinControl {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p27.NUKO*/ Gate NUKO_WX_MATCHp; // old used
   /*_p27.ROGE*/ Gate ROGE_WY_MATCHp; // old used
   /*_p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;      // AxxxxxGx
@@ -23,12 +32,30 @@ struct WinControl {
 //-----------------------------------------------------------------------------
 
 struct FineCount {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*#p27.RYKU*/ DFF17 RYKU_FINE_CNT0;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
   /*#p27.ROGA*/ DFF17 ROGA_FINE_CNT1;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
   /*#p27.RUBU*/ DFF17 RUBU_FINE_CNT2;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
 };
 
 struct FineScroll {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*#p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;        // xxxxxFxH
   /*#p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;        // AxxxxxGx
   /*#p27.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
@@ -37,6 +64,12 @@ struct FineScroll {
 //-----------------------------------------------------------------------------
 
 struct MaskPipe {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     VEZO_MASK_PIPE_0.state = 0b00011011;
     WURU_MASK_PIPE_1.state = 0b00011011;
@@ -61,6 +94,15 @@ struct MaskPipe {
 //-----------------------------------------------------------------------------
 
 struct BgwPipeA {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p32.MYDE*/ DFF22 MYDE_BGW_PIPE_A0; // AxCxExGx
   /*_p32.NOZO*/ DFF22 NOZO_BGW_PIPE_A1; // AxCxExGx
   /*_p32.MOJU*/ DFF22 MOJU_BGW_PIPE_A2; // AxCxExGx
@@ -74,6 +116,15 @@ struct BgwPipeA {
 //-----------------------------------------------------------------------------
 
 struct BgwPipeB {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p32.TOMY*/ DFF22 TOMY_BGW_PIPE_B0; // AxCxExGx
   /*_p32.TACA*/ DFF22 TACA_BGW_PIPE_B1; // AxCxExGx
   /*_p32.SADY*/ DFF22 SADY_BGW_PIPE_B2; // AxCxExGx
@@ -87,6 +138,15 @@ struct BgwPipeB {
 //-----------------------------------------------------------------------------
 
 struct SprPipeA {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p33.NURO*/ DFF22 NURO_SPR_PIPE_A0; // AxCxExGx
   /*_p33.MASO*/ DFF22 MASO_SPR_PIPE_A1; // AxCxExGx
   /*_p33.LEFE*/ DFF22 LEFE_SPR_PIPE_A2; // AxCxExGx
@@ -100,6 +160,15 @@ struct SprPipeA {
 //-----------------------------------------------------------------------------
 
 struct SprPipeB {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p33.NYLU*/ DFF22 NYLU_SPR_PIPE_B0; // AxCxExGx
   /*_p33.PEFU*/ DFF22 PEFU_SPR_PIPE_B1; // AxCxExGx
   /*_p33.NATY*/ DFF22 NATY_SPR_PIPE_B2; // AxCxExGx
@@ -113,6 +182,15 @@ struct SprPipeB {
 //-----------------------------------------------------------------------------
 
 struct PalPipe {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p34.RUGO*/ DFF22 RUGO_PAL_PIPE_D0;
   /*_p34.SATA*/ DFF22 SATA_PAL_PIPE_D1;
   /*_p34.ROSA*/ DFF22 ROSA_PAL_PIPE_D2;

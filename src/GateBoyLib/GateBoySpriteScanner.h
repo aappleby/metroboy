@@ -4,6 +4,12 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     BESU_SCANNINGn.state = 0b00011000;
     CENO_SCANNINGn.state = 0b00011010;
@@ -25,6 +31,12 @@ struct SpriteScanner {
 // Scan counter tracks which of the 40 sprites in OAM we're scanning.
 
 struct ScanCounter {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     YFEL_SCAN0.state = 0b00011011;
     WEWY_SCAN1.state = 0b00011001;
@@ -46,6 +58,12 @@ struct ScanCounter {
 // Sprite index selects which store to write
 
 struct SpriteIndex {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     XADU_SPRITE_IDX0p.state = 0b00011010;
     XEDY_SPRITE_IDX1p.state = 0b00011010;
@@ -67,6 +85,15 @@ struct SpriteIndex {
 // Sprite counter tracks how many sprites have been selected for this line.
 
 struct SpriteCounter {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p29.BESE*/ DFF17 BESE_SPRITE_COUNT0; // AxxxExxx
   /*_p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1; // AxxxExxx
   /*_p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2; // AxxxExxx

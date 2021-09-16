@@ -40,8 +40,8 @@ struct RegJoy {
   }
 
   void reset_to_bootrom() {
-    KELY_JOYP_UDLRp.state = 0b00011011;
-    COFY_JOYP_ABCSp.state = 0b00011011;
+    KELY_JOYP_UDLRp.state = 0x1A;
+    COFY_JOYP_ABCSp.state = 0x1A;
   }
 
   void reset_to_cart() {

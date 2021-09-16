@@ -6,6 +6,13 @@ struct GateBoyReset;
 //-----------------------------------------------------------------------------
 
 struct GateBoyClock {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
 
   void reset_to_cart() {
     ANOS_DEGLITCH.state = 0b00011000;

@@ -5,6 +5,12 @@
 //-----------------------------------------------------------------------------
 
 struct OamControl {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     MAKA_LATCH_EXTp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0;
     WUJE_CPU_OAM_WRn.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -29,6 +35,12 @@ struct OamControl {
 //-----------------------------------------------------------------------------
 
 struct OamABus {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     BUS_OAM_A00n. state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_OAM_A01n. state = BIT_OLD | BIT_DRIVEN | 1;
@@ -53,6 +65,12 @@ struct OamABus {
 //-----------------------------------------------------------------------------
 
 struct OamDBusA {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     BUS_OAM_DA00n.state = BIT_OLD | BIT_DRIVEN | 0;
     BUS_OAM_DA01n.state = BIT_OLD | BIT_DRIVEN | 0;
@@ -77,6 +95,12 @@ struct OamDBusA {
 //-----------------------------------------------------------------------------
 
 struct OamDBusB {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     BUS_OAM_DB00n.state = BIT_OLD | BIT_DRIVEN | 0;
     BUS_OAM_DB01n.state = BIT_OLD | BIT_DRIVEN | 0;

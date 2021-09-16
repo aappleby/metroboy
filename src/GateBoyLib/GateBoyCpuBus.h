@@ -4,6 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpuSignals {
+  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -48,25 +49,6 @@ struct GateBoyCpuSignals {
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpuABus {
-  void reset_to_cart_new() {
-    BUS_CPU_A00p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A01p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A02p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A03p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A04p.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_CPU_A05p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A06p.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_CPU_A07p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A08p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A09p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A10p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A11p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A12p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A13p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A14p.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_CPU_A15p.state = BIT_OLD | BIT_DRIVEN | 0;
-  }
-
   void reset_to_poweron() {
     BUS_CPU_A00p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_A01p.state = BIT_OLD | BIT_PULLED | 1;
@@ -84,6 +66,44 @@ struct GateBoyCpuABus {
     BUS_CPU_A13p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_A14p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_A15p.state = BIT_OLD | BIT_PULLED | 1;
+  }
+
+  void reset_to_bootrom() {
+    BUS_CPU_A00p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A01p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A02p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A03p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A04p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A05p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A06p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A07p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A08p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A09p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A10p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A11p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A12p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A13p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A14p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_A15p.state = BIT_OLD | BIT_PULLED | 1;
+  }
+
+  void reset_to_cart() {
+    BUS_CPU_A00p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A01p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A02p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A03p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A04p.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_CPU_A05p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A06p.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_CPU_A07p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A08p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A09p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A10p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A11p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A12p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A13p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A14p.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_CPU_A15p.state = BIT_OLD | BIT_DRIVEN | 0;
   }
 
   void set_addr(uint16_t bus_addr_new)
@@ -217,7 +237,7 @@ struct GateBoyCpuABus {
 //---------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyCpuDBus {
-  void reset_to_cart_new() {
+  void reset_to_poweron() {
     BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
@@ -228,7 +248,18 @@ struct GateBoyCpuDBus {
     BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
   }
 
-  void reset_to_poweron() {
+  void reset_to_bootrom() {
+    BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
+    BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
+  }
+
+  void reset_to_cart() {
     BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
     BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;

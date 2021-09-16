@@ -65,7 +65,7 @@ struct GateBoyState {
   RegSCX  reg_scx;  // 0xFF43
   RegLY   reg_ly;   // 0xFF44
   RegLYC  reg_lyc;  // 0xFF45
-  RegDma  reg_dma;  // 0xFF46
+  RegDmaHi  reg_dma;  // 0xFF46
   RegBGP  reg_bgp;  // 0xFF47
   RegOBP0 reg_obp0; // 0xFF48
   RegOBP1 reg_obp1; // 0xFF49

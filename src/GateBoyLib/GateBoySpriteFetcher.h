@@ -4,6 +4,12 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteFetchCounter {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     TOXE_SFETCH_S0p.state = 0b00011011;
     TULY_SFETCH_S1p.state = 0b00011000;
@@ -16,6 +22,12 @@ struct SpriteFetchCounter {
 };
 
 struct SpriteFetchControl {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     TAKA_SFETCH_RUNNINGp.state = 0b00011000;
     SOBU_SFETCH_REQp.state = 0b00011000;

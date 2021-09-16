@@ -4,6 +4,12 @@
 //-----------------------------------------------------------------------------
 
 struct VramABusLo {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     BUS_VRAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_VRAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -26,6 +32,12 @@ struct VramABusLo {
 };
 
 struct VramABusHi {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     BUS_VRAM_A08n.state = BIT_OLD | BIT_DRIVEN | 1;
     BUS_VRAM_A09n.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -44,6 +56,12 @@ struct VramABusHi {
 //-----------------------------------------------------------------------------
 
 struct VramDBus {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     BUS_VRAM_D00p.state = BIT_OLD | BIT_DRIVEN | 0;
     BUS_VRAM_D01p.state = BIT_OLD | BIT_DRIVEN | 0;
@@ -68,6 +86,12 @@ struct VramDBus {
 //-----------------------------------------------------------------------------
 
 struct VramExtControl {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     PIN_43_VRAM_CSn.state = BIT_OLD | BIT_DRIVEN | 0;
     PIN_45_VRAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -82,6 +106,12 @@ struct VramExtControl {
 //-----------------------------------------------------------------------------
 
 struct VramExtABus {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     PIN_34_VRAM_A00.state = BIT_OLD | BIT_DRIVEN | 1;
     PIN_35_VRAM_A01.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -116,6 +146,12 @@ struct VramExtABus {
 //-----------------------------------------------------------------------------
 
 struct VramExtDBus {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     PIN_33_VRAM_D00.state = BIT_OLD | BIT_DRIVEN | 1;
     PIN_31_VRAM_D01.state = BIT_OLD | BIT_DRIVEN | 1;

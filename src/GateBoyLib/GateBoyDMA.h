@@ -4,6 +4,12 @@
 //-----------------------------------------------------------------------------
 
 struct RegDmaLo {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     NAKY_DMA_A00p.state = 0b00011000;
     PYRO_DMA_A01p.state = 0b00011010;
@@ -25,7 +31,15 @@ struct RegDmaLo {
   /*_p04.MUGU*/ DFF17 MUGU_DMA_A07p;      // Axxxxxxx
 };
 
-struct RegDma {
+struct RegDmaHi {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
   void reset_to_cart() {
     NAFA_DMA_A08n.state = 0b00011010;
     PYNE_DMA_A09n.state = 0b00011010;
@@ -48,6 +62,12 @@ struct RegDma {
 };
 
 struct DmaControl {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     LYXE_DMA_LATCHp.state = 0b00011000;
     MYTE_DMA_DONE.state = 0b00011000;

@@ -7,6 +7,12 @@ struct GateBoyReset;
 //-----------------------------------------------------------------------------
 
 struct ExtDataLatch {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     SOMA_EXT_DATA_LATCH_D0n.state = 0b00011000;
     RONY_EXT_DATA_LATCH_D1n.state = 0b00011000;
@@ -31,6 +37,12 @@ struct ExtDataLatch {
 //-----------------------------------------------------------------------------
 
 struct ExtAddrLatch {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     ALOR_EXT_ADDR_LATCH_00p.state = 0b00011001;
     APUR_EXT_ADDR_LATCH_01p.state = 0b00011000;
@@ -69,6 +81,12 @@ struct ExtAddrLatch {
 //-----------------------------------------------------------------------------
 
 struct ExtControl {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     PIN_80_CSn.state = 0b00011000;
     PIN_79_RDn.state = 0b00011001;
@@ -83,6 +101,12 @@ struct ExtControl {
 //-----------------------------------------------------------------------------
 
 struct ExtABusLo {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     PIN_01_A00.state = 0b00011000;
     PIN_02_A01.state = 0b00011001;
@@ -105,6 +129,12 @@ struct ExtABusLo {
 };
 
 struct ExtABusHi {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     PIN_09_A08.state = 0b00011001;
     PIN_10_A09.state = 0b00011001;
@@ -129,6 +159,12 @@ struct ExtABusHi {
 //-----------------------------------------------------------------------------
 
 struct ExtDBus {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     PIN_17_D00.state = 0b00010100;
     PIN_18_D01.state = 0b00010100;
@@ -153,6 +189,15 @@ struct ExtDBus {
 //-----------------------------------------------------------------------------
 
 struct GateBoyMBC {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   Gate MBC1_RAM_EN;
   Gate MBC1_MODE;
 

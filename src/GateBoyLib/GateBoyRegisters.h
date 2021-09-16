@@ -20,6 +20,16 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteDeltaY {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p29.ERUC*/ Adder ERUC_YDIFF0;
   /*_p29.ENEF*/ Adder ENEF_YDIFF1;
   /*_p29.FECO*/ Adder FECO_YDIFF2;
@@ -34,6 +44,13 @@ struct SpriteDeltaY {
 // Pixel counter
 
 struct PixCount {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     XEHO_PX0p.state = 0b00011011;
     SAVY_PX1p.state = 0b00011011;
@@ -58,6 +75,16 @@ struct PixCount {
 //-----------------------------------------------------------------------------
 
 struct BGScrollX {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   Adder ATAD_TILE_X0;
   Adder BEHU_TILE_X1;
   Adder APYH_TILE_X2;
@@ -71,6 +98,16 @@ struct BGScrollX {
 //-----------------------------------------------------------------------------
 
 struct BGScrollY {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   Adder FAFO_TILE_Y0;
   Adder EMUX_TILE_Y1;
   Adder ECAB_TILE_Y2;
@@ -84,6 +121,16 @@ struct BGScrollY {
 //-----------------------------------------------------------------------------
 
 struct SpritePix {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   Gate PUTE_FLIP0p;
   Gate PELO_FLIP1p;
   Gate PONO_FLIP2p;
@@ -98,6 +145,13 @@ struct SpritePix {
 // FF40 LCDC
 
 struct RegLCDC {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     VYXE_LCDC_BGENn.state = 0b00011010;
     XYLO_LCDC_SPENn.state = 0b00011011;
@@ -123,6 +177,12 @@ struct RegLCDC {
 // FF41 - STAT
 
 struct RegStat {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
 
   void reset_to_cart() {
     ROXE_STAT_HBI_ENn.state = 0b00011011;
@@ -141,6 +201,16 @@ struct RegStat {
 // FF42 SCY
 
 struct RegSCY {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p23.GAVE*/ DFF9 GAVE_SCY0n;          // xxxxxxxH
   /*_p23.FYMO*/ DFF9 FYMO_SCY1n;          // xxxxxxxH
   /*_p23.FEZU*/ DFF9 FEZU_SCY2n;          // xxxxxxxH
@@ -155,6 +225,16 @@ struct RegSCY {
 // FF43 SCX
 
 struct RegSCX {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p23.DATY*/ DFF9 DATY_SCX0n;          // xxxxxxxH
   /*_p23.DUZU*/ DFF9 DUZU_SCX1n;          // xxxxxxxH
   /*_p23.CYXU*/ DFF9 CYXU_SCX2n;          // xxxxxxxH
@@ -169,6 +249,13 @@ struct RegSCX {
 // FF44 LY
 
 struct RegLY {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     MUWY_LY0p.state = 0b00011000;
     MYRO_LY1p.state = 0b00011010;
@@ -194,6 +281,13 @@ struct RegLY {
 // LCD x counter isn't exposed to CPU
 
 struct RegLX {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     SAXO_LX0p.state = 0b00011000;
     TYPO_LX1p.state = 0b00011011;
@@ -217,6 +311,13 @@ struct RegLX {
 // FF45 LYC
 
 struct RegLYC {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     SYRY_LYC0n.state = 0b00011011;
     VUCE_LYC1n.state = 0b00011011;
@@ -244,6 +345,13 @@ struct RegLYC {
 // FF47 - BGP
 
 struct RegBGP {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     PAVO_BGP_D0n.state = 0b00011011;
     NUSY_BGP_D1n.state = 0b00011011;
@@ -269,6 +377,13 @@ struct RegBGP {
 // FF48 - OBP0
 
 struct RegOBP0 {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     XUFU_OBP0_D0n.state = 0b00011010;
     XUKY_OBP0_D1n.state = 0b00011010;
@@ -294,6 +409,13 @@ struct RegOBP0 {
 // FF49 - OBP1
 
 struct RegOBP1 {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
   void reset_to_cart() {
     MOXY_OBP1_D0n.state = 0b00011010;
     LAWO_OBP1_D1n.state = 0b00011010;
@@ -319,6 +441,16 @@ struct RegOBP1 {
 // FF4A - WY
 
 struct RegWY {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   void set(uint8_t wy) {
     NESO_WY0n.state = BIT_CLOCK | get_bit(~wy, 0);
     NYRO_WY1n.state = BIT_CLOCK | get_bit(~wy, 1);
@@ -346,6 +478,16 @@ struct RegWY {
 // FF4B - WX
 
 struct RegWX {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   void set(uint8_t wx) {
     MYPA_WX0n.state = BIT_CLOCK | get_bit(~wx, 0);
     NOFE_WX1n.state = BIT_CLOCK | get_bit(~wx, 1);
@@ -372,6 +514,12 @@ struct RegWX {
 //-----------------------------------------------------------------------------
 
 struct OamLatchA {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
 
   void reset_to_cart() {
     YDYV_OAM_LATCH_DA0n.state = 0b00011001;
@@ -397,6 +545,12 @@ struct OamLatchA {
 //-----------------------------------------------------------------------------
 
 struct OamLatchB {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
 
   void reset_to_cart() {
     XYKY_OAM_LATCH_DB0n.state = 0b00011001;
@@ -423,6 +577,12 @@ struct OamLatchB {
 // oam byte 0, byte 2
 
 struct OamTempA {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
 
   void reset_to_cart() {
     XUSO_OAM_DA0p.state = 0b00011010;
@@ -449,6 +609,12 @@ struct OamTempA {
 // oam byte 1, byte 3
 
 struct OamTempB {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
 
   void reset_to_cart() {
     YLOR_OAM_DB0p.state = 0b00011010;
@@ -474,6 +640,16 @@ struct OamTempB {
 //-----------------------------------------------------------------------------
 
 struct TileTempA {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p32.LEGU*/ DFF8p LEGU_TILE_DA0n;   // xBxDxFxH
   /*_p32.NUDU*/ DFF8p NUDU_TILE_DA1n;   // xBxDxFxH
   /*_p32.MUKU*/ DFF8p MUKU_TILE_DA2n;   // xBxDxFxH
@@ -487,6 +663,16 @@ struct TileTempA {
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p32.RAWU*/ DFF11 RAWU_TILE_DB0p;   // xBxDxFxH
   /*_p32.POZO*/ DFF11 POZO_TILE_DB1p;   // xBxDxFxH
   /*_p32.PYZO*/ DFF11 PYZO_TILE_DB2p;   // xBxDxFxH
@@ -500,6 +686,16 @@ struct TileTempB {
 //-----------------------------------------------------------------------------
 
 struct SpritePixA {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p33.REWO*/ DFF8n REWO_SPRITE_DA0n; // xBxDxFxH
   /*_p33.PEBA*/ DFF8n PEBA_SPRITE_DA1n; // xBxDxFxH
   /*_p33.MOFO*/ DFF8n MOFO_SPRITE_DA2n; // xBxDxFxH
@@ -513,6 +709,16 @@ struct SpritePixA {
 //-----------------------------------------------------------------------------
 
 struct SpritePixB {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p33.PEFO*/ DFF8n PEFO_SPRITE_DB0n; // xBxDxFxH
   /*_p33.ROKA*/ DFF8n ROKA_SPRITE_DB1n; // xBxDxFxH
   /*_p33.MYTU*/ DFF8n MYTU_SPRITE_DB2n; // xBxDxFxH
@@ -526,6 +732,16 @@ struct SpritePixB {
 //-----------------------------------------------------------------------------
 
 struct WinMapX {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p27.WYKA*/ DFF17 WYKA_WIN_MAP_X0;   // AxCxExGx
   /*_p27.WODY*/ DFF17 WODY_WIN_MAP_X1;   // AxCxExGx
   /*_p27.WOBO*/ DFF17 WOBO_WIN_MAP_X2;   // AxCxExGx
@@ -534,12 +750,32 @@ struct WinMapX {
 };
 
 struct WinTileY {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
   /*_p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
   /*_p27.VYMU*/ DFF17 VYMU_WIN_TILE_Y2;  // AxCxExGh probably, but not enough data.
 };
 
 struct WinMapY {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p27.TUFU*/ DFF17 TUFU_WIN_MAP_Y0;   // AxCxExGh probably, but not enough data.
   /*_p27.TAXA*/ DFF17 TAXA_WIN_MAP_Y1;   // AxCxExGh probably, but not enough data.
   /*_p27.TOZO*/ DFF17 TOZO_WIN_MAP_Y2;   // AxCxExGh probably, but not enough data.
@@ -548,6 +784,16 @@ struct WinMapY {
 };
 
 struct WinY {
+  void reset_to_poweron() {
+    memset(this, 0b00011010, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
   /*_p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
   /*_p27.VYMU*/ DFF17 VYMU_WIN_TILE_Y2;  // AxCxExGh probably, but not enough data.

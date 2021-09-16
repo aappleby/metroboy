@@ -5,6 +5,44 @@
 //-----------------------------------------------------------------------------
 
 struct RegDIV {
+  void reset_to_poweron() {
+    UKUP_DIV00p.state = 0b00011000;
+    UFOR_DIV01p.state = 0b00011000;
+    UNER_DIV02p.state = 0b00011000;
+    TERO_DIV03p.state = 0b00011000;
+    UNYK_DIV04p.state = 0b00011000;
+    TAMA_DIV05p.state = 0b00011000;
+    UGOT_DIV06p.state = 0b00011000;
+    TULU_DIV07p.state = 0b00011000;
+    TUGO_DIV08p.state = 0b00011000;
+    TOFE_DIV09p.state = 0b00011000;
+    TERU_DIV10p.state = 0b00011000;
+    SOLA_DIV11p.state = 0b00011000;
+    SUBU_DIV12p.state = 0b00011000;
+    TEKA_DIV13p.state = 0b00011000;
+    UKET_DIV14p.state = 0b00011000;
+    UPOF_DIV15p.state = 0b00011000;
+  }
+
+  void reset_to_bootrom() {
+    UKUP_DIV00p.state = 0x1b;
+    UFOR_DIV01p.state = 0x19;
+    UNER_DIV02p.state = 0x18;
+    TERO_DIV03p.state = 0x1a;
+    UNYK_DIV04p.state = 0x1a;
+    TAMA_DIV05p.state = 0x1a;
+    UGOT_DIV06p.state = 0x1a;
+    TULU_DIV07p.state = 0x1a;
+    TUGO_DIV08p.state = 0x1a;
+    TOFE_DIV09p.state = 0x1a;
+    TERU_DIV10p.state = 0x1a;
+    SOLA_DIV11p.state = 0x1a;
+    SUBU_DIV12p.state = 0x1a;
+    TEKA_DIV13p.state = 0x1a;
+    UKET_DIV14p.state = 0x1a;
+    UPOF_DIV15p.state = 0x1b;
+  }
+
   void reset_to_cart() {
     UKUP_DIV00p.state = 0b00011011;
     UFOR_DIV01p.state = 0b00011001;
@@ -67,6 +105,9 @@ struct RegDIV {
 //-----------------------------------------------------------------------------
 
 struct RegTIMA {
+  void reset_to_poweron() {
+  }
+
   void reset_to_bootrom() {
     REGA_TIMA0p.state = 0x1a;
     POVY_TIMA1p.state = 0x1a;
@@ -76,6 +117,9 @@ struct RegTIMA {
     RAGE_TIMA5p.state = 0x1a;
     PEDA_TIMA6p.state = 0x1a;
     NUGA_TIMA7p.state = 0x1a;
+  }
+
+  void reset_to_cart() {
   }
 
   void force_set_tima(uint8_t tima) {
@@ -105,6 +149,15 @@ struct RegTIMA {
 //-----------------------------------------------------------------------------
 
 struct RegTMA {
+  void reset_to_poweron() {
+  }
+
+  void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p03.SABU*/ DFF17 SABU_TMA0p; // xxxxxxxH
   /*_p03.NYKE*/ DFF17 NYKE_TMA1p; // xxxxxxxH
   /*_p03.MURU*/ DFF17 MURU_TMA2p; // xxxxxxxH
@@ -118,6 +171,15 @@ struct RegTMA {
 //-----------------------------------------------------------------------------
 
 struct RegTAC {
+  void reset_to_poweron() {
+  }
+
+    void reset_to_bootrom() {
+  }
+
+  void reset_to_cart() {
+  }
+
   /*_p03.SOPU*/ DFF17 SOPU_TAC0p; // xxxxxxxH
   /*_p03.SAMY*/ DFF17 SAMY_TAC1p; // xxxxxxxH
   /*_p03.SABO*/ DFF17 SABO_TAC2p; // xxxxxxxH

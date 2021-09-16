@@ -4,6 +4,14 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyReset {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
   void reset_to_cart() {
     PIN_71_RST.state = 0b00011000;
     PIN_77_T1. state = 0b00011000;

@@ -88,8 +88,6 @@ int main(int argc, char** argv) {
 
   //results += t.test_reset_to_bootrom();
 
-  //results += t.test_reset_cart_vs_dump();
-
 #if 1
   {
     LOG_G("Regression testing bootrom start\n");
@@ -307,9 +305,7 @@ TestResults GateBoyTests::test_reset_to_bootrom() {
   gb2.reset_to_bootrom2(cart_blob, true);
   LOG_G("reset_to_bootrom2 done\n");
 
-
   uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
-
   EXPECT_EQ(true, gb1.gb_state.diff(gb2.gb_state, mask));
 
   TEST_DONE();

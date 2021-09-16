@@ -11,7 +11,11 @@
 
 void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
 {
-  wipe();
+  gb_state.wipe();
+  cpu.wipe();
+  mem.wipe();
+  sys.wipe();
+  probes.wipe();
 
   // Put some recognizable pattern in vram so we can see that we're in the bootrom
   for (int i = 0; i < 8192; i++) {
@@ -303,13 +307,7 @@ Result<uint8_t, Error> GateBoy::peek(const blob& cart_blob, int addr) const {
   if (addr >= 0xE000 && addr <= 0xFDFF) { return mem.int_ram[addr - 0xE000];      }
   if (addr >= 0xFE00 && addr <= 0xFEFF) { return mem.oam_ram[addr - 0xFE00];      }
   if (addr >= 0xFF80 && addr <= 0xFFFE) { return mem.zero_ram[addr - 0xFF80];     }
-
-  switch(addr) {
-  case ADDR_LCDC: return bit_pack_inv(gb_state.reg_lcdc);
-  default:
-    LOG_R("GateBoy::peek - bad address 0x%04x\n", addr);
-    return Error::NOT_FOUND;
-  }
+  return gb_state.peek(cart_blob, addr);
 }
 
 Result<uint8_t, Error> GateBoy::poke(blob& cart_blob, int addr, uint8_t data_in) {
@@ -320,13 +318,7 @@ Result<uint8_t, Error> GateBoy::poke(blob& cart_blob, int addr, uint8_t data_in)
   if (addr >= 0xE000 && addr <= 0xFDFF) { mem.int_ram[addr - 0xE000] = data_in; return data_in; }
   if (addr >= 0xFE00 && addr <= 0xFEFF) { mem.oam_ram[addr - 0xFE00] = data_in; return data_in; }
   if (addr >= 0xFF80 && addr <= 0xFFFE) { mem.zero_ram[addr - 0xFF80] = data_in; return data_in; }
-
-  switch(addr) {
-  case ADDR_LCDC: { bit_unpack_inv(gb_state.reg_lcdc, data_in); return data_in; }
-  default:
-    LOG_R("GateBoy::poke - bad address 0x%04x\n", addr);
-    return Error::NOT_FOUND;
-  }
+  return gb_state.poke(cart_blob, addr, data_in);
 }
 
 //-----------------------------------------------------------------------------
@@ -382,11 +374,13 @@ void GateBoy::run_phases(const blob& cart_blob, int phase_count) {
 //-----------------------------------------------------------------------------
 
 bool GateBoy::next_phase(const blob& cart_blob) {
+  probes.begin_pass((sys.phase_total + 1) & 7);
   tock_cpu();
   tock_gates(cart_blob);
   gb_state.commit();
   update_framebuffer();
   sys.phase_total++;
+  probes.end_pass();
   return true;
 }
 
@@ -495,6 +489,7 @@ void GateBoy::tock_cpu() {
   }
 }
 
+
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_gates(const blob& cart_blob) {
@@ -518,6 +513,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   memset(&gb_state.cpu_abus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_abus));
   memset(&gb_state.cpu_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_dbus));
+
+  probe_wire(0, "DELTA_HA",  DELTA_HA);
 
   //----------------------------------------
 

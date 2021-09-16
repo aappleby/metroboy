@@ -170,9 +170,9 @@ void GateBoyDumper::dump_oam_bus(const GateBoy& gb, Dumper& d) {
   d.dump_bitp   ("SIG_OAM_WRn_B    : ", gb.gb_state.oam_ctrl.SIG_OAM_WRn_B.state);
   d.dump_bitp   ("SIG_OAM_OEn      : ", gb.gb_state.oam_ctrl.SIG_OAM_OEn.state);
 
-  //dump_slicen(d, "BUS_OAM_An  : ", &oam_bus.BUS_OAM_A00n, 8);
-  //dump_slicen(d, "BUS_OAM_DAn : ", &oam_bus.BUS_OAM_DA00n, 8);
-  //dump_slicen(d, "BUS_OAM_DBn : ", &oam_bus.BUS_OAM_DB00n, 8);
+  d.dump_slice2n("BUS_OAM_An  : ", &gb.gb_state.oam_abus.BUS_OAM_A00n, 8);
+  d.dump_slice2n("BUS_OAM_DAn : ", &gb.gb_state.oam_dbus_a.BUS_OAM_DA00n, 8);
+  d.dump_slice2n("BUS_OAM_DBn : ", &gb.gb_state.oam_dbus_b.BUS_OAM_DB00n, 8);
   d.dump_slice2n("OAM LATCH A : ", &gb.gb_state.oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
   d.dump_slice2n("OAM LATCH B : ", &gb.gb_state.oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
   d.dump_slice2p("OAM TEMP A  : ", &gb.gb_state.oam_temp_a.XUSO_OAM_DA0p, 8);
@@ -181,7 +181,7 @@ void GateBoyDumper::dump_oam_bus(const GateBoy& gb, Dumper& d) {
 }
 
 void GateBoyDumper::dump_sprite_store(const GateBoy& gb, Dumper& d) {
-  //d.dump_slice2p("SPRITE INDEX   : ", &XADU_SPRITE_IDX0p.state, 6);
+  d.dump_slice2p("SPRITE INDEX   : ", &gb.gb_state.sprite_index.XADU_SPRITE_IDX0p.state, 6);
   d.dump_slice2p("SPRITE COUNT   : ", &gb.gb_state.sprite_counter.BESE_SPRITE_COUNT0, 4);
   d("\n");
   d("STORE0 R%d I%02d L%02d X%03d\n", gb.gb_state.sprite_reset_flags.EBOJ_STORE0_RSTp.state, bit_pack_inv(gb.gb_state.store_i0), bit_pack_inv(gb.gb_state.store_l0), bit_pack_inv(gb.gb_state.store_x0));
@@ -236,16 +236,31 @@ void GateBoyDumper::dump_dma(const GateBoy& gb, Dumper& d) {
 
 
 void GateBoyDumper::dump_ext_bus(const GateBoy& gb, Dumper& d) {
+  /*
+  struct GateBoyMBC {
+  Gate MBC1_RAM_EN;
+  Gate MBC1_MODE;
+
+  Gate MBC1_BANK0;
+  Gate MBC1_BANK1;
+  Gate MBC1_BANK2;
+  Gate MBC1_BANK3;
+  Gate MBC1_BANK4;
+  Gate MBC1_BANK5;
+  Gate MBC1_BANK6;
+  };
+  */
+
   d.dump_slice2n("PIN_01_ADDR : ", &gb.gb_state.ext_abus.lo.PIN_01_A00, 16);
-
-  //d.dump_slice2n(   "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
-  //dump_slice2b  (d, "PIN_17_DATA : ", &ext_pins.PIN_17_D00, 8);
-
+  d.dump_slice2n("PIN_17_DATA : ", &gb.gb_state.ext_dbus.PIN_17_D00, 8);
   d.dump_bitn   ("PIN_80_CSn  : ", gb.gb_state.ext_ctrl.PIN_80_CSn.state);
   d.dump_bitn   ("PIN_79_RDn  : ", gb.gb_state.ext_ctrl.PIN_79_RDn.state);
   d.dump_bitn   ("PIN_78_WRn  : ", gb.gb_state.ext_ctrl.PIN_78_WRn.state);
   d.dump_slice2p("ADDR LATCH  : ", &gb.gb_state.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
   d.dump_slice2n("DATA LATCH  : ", &gb.gb_state.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
+  d.dump_bitp   ("MBC1 RAM EN : ", gb.gb_state.ext_mbc.MBC1_RAM_EN);
+  d.dump_bitp   ("MBC1 MODE   : ", gb.gb_state.ext_mbc.MBC1_MODE);
+  d.dump_slice2p("MBC1 BANK   : ", &gb.gb_state.ext_mbc.MBC1_BANK0, 6);
 }
 
 void GateBoyDumper::dump_vram_bus(const GateBoy& gb, Dumper& d) {

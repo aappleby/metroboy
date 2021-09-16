@@ -91,9 +91,7 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-  results += t.test_dma();
-
-#if 0
+#if 1
   LOG_G("Regression testing bootrom start\n");
   results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
   
@@ -925,7 +923,8 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
   if (verbose) LOG_B("%-30s ", filename);
 
   auto gb = make_unique<GateBoy>();
-  gb->reset_to_bootrom(cart_blob, true);
+  gb->reset_to_cart(cart_blob);
+
 
   int timeout = 150000 * 8;
 
@@ -1663,27 +1662,25 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
   TEST_INIT("0x%04x", src);
 
   blob cart_blob = Assembler::create_dummy_cart();
-  auto gb = create_debug_gb(cart_blob);
 
-  gb->poke(cart_blob, ADDR_LCDC, 0);
-  gb->poke(cart_blob, 0x0000, 0x0A); // enable mbc1 ram
+  auto gb = std::make_unique<GateBoy>();
+  gb->reset_to_cart(cart_blob);
+  gb->sys.cpu_en = false;
+
+  gb->dbg_write(cart_blob, ADDR_LCDC, 0);
+  gb->dbg_write(cart_blob, 0x0000, 0x0A); // enable mbc1 ram
 
   for (int i = 0; i < 256; i++) {
-    gb->poke(cart_blob, src + i, (uint8_t)rand());
+    //uint8_t r = (uint8_t)rand();
+    uint8_t r = (uint8_t)i;
+    gb->poke(cart_blob, src + i, r);
     gb->poke(cart_blob, ADDR_OAM_BEGIN + i, 0xFF);
   }
 
-  /*
-  uint8_t* mem_a = get_flat_ptr(gbp.gba, cart_blob, src);
-  for (int i = 0; i < 256; i++) {
-    uint8_t r = (uint8_t)rand();
-    mem_a[i] = r;
-    gbp.gba.mem.oam_ram[i] = 0xFF;
-  }
-  */
-
   gb->dbg_write(cart_blob, 0xFF46, uint8_t(src >> 8));
-  gb->run_phases(cart_blob, 1288);
+  gb->run_phases(cart_blob, 644);
+
+  gb->run_phases(cart_blob, 644);
 
   for (int i = 0; i < 160; i++) {
     uint8_t src_a = gb->peek(cart_blob, src + i);

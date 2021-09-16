@@ -389,10 +389,10 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
   /*_p08.LAVO*/ wire LAVO_HOLDn = nand3(gb_state.cpu_signals.SIG_IN_CPU_RDp.out_new(), TEXO_ADDR_VRAMn(), gb_state.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new());
 
-  //probe_wire(1, "LAVO",  LAVO_HOLDn);
-  //probe_wire(2, "RD",    cpu_signals.SIG_IN_CPU_RDp.qp_new());
-  //probe_wire(3, "TEXO",  TEXO_ADDR_VRAMn());
-  //probe_wire(4, "LATCH", cpu_signals.SIG_IN_CPU_LATCH_EXT.qp_new());
+  probe_wire(1, "LAVO",  LAVO_HOLDn);
+  probe_wire(2, "RD",    gb_state.cpu_signals.SIG_IN_CPU_RDp.qp_new());
+  probe_wire(3, "TEXO",  TEXO_ADDR_VRAMn());
+  probe_wire(4, "LATCH", gb_state.cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_new());
 
   //probe_char( 8, "PIN_17 ext", ext_pins.PIN_17_D00.cp_ext());
   //probe_char( 9, "PIN_18 ext", ext_pins.PIN_18_D01.cp_ext());

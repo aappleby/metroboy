@@ -21,10 +21,6 @@ void GateBoyThread::start() {
   if (main) return;
   main = new std::thread([this] { thread_main(); });
   pause();
-
-  auto cart = Assembler::create_dummy_cart();
-  load_cart_blob(cart);
-  reset_to_bootrom();
 }
 
 //----------------------------------------
@@ -58,7 +54,7 @@ void GateBoyThread::resume() {
 
 void GateBoyThread::reset_gb() {
   gbp.reset_states();
-  gbp->gba.wipe();
+  //gbp->gba.wipe();
   //gbp->gbb.wipe();
 }
 
@@ -252,12 +248,8 @@ void GateBoyThread::run_steps() {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::run_normal() {
-  auto& gba = gbp->gba;
-
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-
-    gba.next_phase(cart_blob);
-
+    gbp->next_phase(cart_blob);
     step_count--;
   }
 }

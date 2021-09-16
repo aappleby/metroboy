@@ -57,34 +57,20 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   gb_thread.start();
 
-  /*
-  {
-    const char* app = R"(
-    0150:
-      ld a, $40
-      ld hl, $FF46
-      ld (hl), a
-      jr -2
-    )";
-
-    Assembler as;
-    as.assemble(app);
-    auto blob = as.link();
-
-    for (size_t i = 0; i < 256; i++) {
-      blob[i + 0x4000] = 0xDA;
-    }
-
-    gb_thread.load_cart_blob(blob);
-    gb_thread.reset_to_cart();
-  }
-  */
+  auto cart = Assembler::create_dummy_cart();
+  gb_thread.load_cart_blob(cart);
+  gb_thread.reset_to_bootrom();
+  
+  //blob cart;
+  //load_blob("tests/microtests/DMG/dma_0xA000.gb", cart);
+  //gb_thread.load_cart_blob(cart);
+  //gb_thread.reset_to_cart();
 
   //blob dump;
   //load_blob("sml_broken.dump", dump);
   //gb_thread.load_raw_dump(dump);
 
-  gb_thread.add_steps(INT_MAX);
+  //gb_thread.add_steps(INT_MAX);
   gb_thread.resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
@@ -518,9 +504,9 @@ Step controls:
 )");
 
   // Probe dump
-  //d("\002========== Debug Probes ==========\001\n");
-  //gb.sys.probes.dump(d);
-  //d("\n");
+  d("\002========== Debug Probes ==========\001\n");
+  gb.probes.dump(d);
+  d("\n");
 
   d("\002========== Disassembly ==========\001\n");
   {

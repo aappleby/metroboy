@@ -7,6 +7,9 @@
 void GateBoy::oam_latch_to_temp_a_gates(wire COTA_OAM_CLKn, const OamLatchA& oam_latch_a, OamTempA& oam_temp_a)
 {
   /*_p29.YWOK*/ wire YWOK_OAM_CLKp = not1(COTA_OAM_CLKn); // inverting this clock does not break anything
+
+  probe_wire(8, "YWOK", YWOK_OAM_CLKp);
+
   /*#p29.XUSO*/ oam_temp_a.XUSO_OAM_DA0p.dff8n(YWOK_OAM_CLKp, oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
   /*_p29.XEGU*/ oam_temp_a.XEGU_OAM_DA1p.dff8n(YWOK_OAM_CLKp, oam_latch_a.YCEB_OAM_LATCH_DA1n.qp_old());
   /*_p29.YJEX*/ oam_temp_a.YJEX_OAM_DA2p.dff8n(YWOK_OAM_CLKp, oam_latch_a.ZUCA_OAM_LATCH_DA2n.qp_old());
@@ -190,6 +193,8 @@ void GateBoy::tock_oam_bus_gates()
   /*_p04.LUMA*/ wire LUMA_DMA_CARTp = not1(MORY_DMA_CARTn);
   /*_p25.CEDE*/ wire CEDE_EBD_TO_OBDn = not1(LUMA_DMA_CARTp);
 
+  probe_wire(10, "CEDE", CEDE_EBD_TO_OBDn);
+
   /*_p25.WASA*/ triwire WASA_ED0_TO_ODA0 = tri6_nn(CEDE_EBD_TO_OBDn, RALO_EXT_D0p);
   /*_p25.BOMO*/ triwire BOMO_ED1_TO_ODA1 = tri6_nn(CEDE_EBD_TO_OBDn, TUNE_EXT_D1p);
   /*_p25.BASA*/ triwire BASA_ED2_TO_ODA2 = tri6_nn(CEDE_EBD_TO_OBDn, SERA_EXT_D2p);
@@ -310,12 +315,13 @@ void GateBoy::tock_oam_bus_gates()
   /*#p28.ZODO*/ wire ZODO_OAM_OEn = not1(YRYV_OAM_OEp);   // schematic thinks this is OAM_CLK?
   /*_SIG_OAM_OEn*/ gb_state.oam_ctrl.SIG_OAM_OEn.sig_out(ZODO_OAM_OEn);
 
-  // FIXME do the pack
   uint8_t oam_addr   = (uint8_t)bit_pack_inv(gb_state.oam_abus) >> 1;
   uint8_t oam_data_a = (uint8_t)bit_pack_inv(gb_state.oam_dbus_a);
   uint8_t oam_data_b = (uint8_t)bit_pack_inv(gb_state.oam_dbus_b);
 
   if (bit(~gb_state.oam_ctrl.old_oam_clk.out_old()) && bit(~gb_state.oam_ctrl.SIG_OAM_CLKn.out_new())) {
+    //printf("oam writing 0x%02x 0x%02x 0x%02x\n", oam_addr, oam_data_a, oam_data_b);
+
     if (bit(~gb_state.oam_ctrl.SIG_OAM_WRn_A.out_new())) mem.oam_ram[(oam_addr << 1) + 0] = oam_data_a;
     if (bit(~gb_state.oam_ctrl.SIG_OAM_WRn_B.out_new())) mem.oam_ram[(oam_addr << 1) + 1] = oam_data_b;
   }
@@ -360,6 +366,8 @@ void GateBoy::tock_oam_bus_gates()
   gb_state.oam_dbus_b.BUS_OAM_DB05n.tri_bus(oam_data_b5);
   gb_state.oam_dbus_b.BUS_OAM_DB06n.tri_bus(oam_data_b6);
   gb_state.oam_dbus_b.BUS_OAM_DB07n.tri_bus(oam_data_b7);
+
+  probe_wire(9, "BODE", BODE_OAM_OEp);
 
   /*#p29.YDYV*/ gb_state.oam_latch_a.YDYV_OAM_LATCH_DA0n.tp_latchn(BODE_OAM_OEp, gb_state.oam_dbus_a.BUS_OAM_DA00n.out_new());
   /*_p29.YCEB*/ gb_state.oam_latch_a.YCEB_OAM_LATCH_DA1n.tp_latchn(BODE_OAM_OEp, gb_state.oam_dbus_a.BUS_OAM_DA01n.out_new());

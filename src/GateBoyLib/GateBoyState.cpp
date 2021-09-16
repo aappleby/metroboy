@@ -14,22 +14,100 @@ int64_t GateBoyState::hash_all() {
   return hash_all_bits(this, sizeof(GateBoyState), HASH_INIT);
 }
 
+//-----------------------------------------------------------------------------
+
 Result<uint8_t, Error> GateBoyState::peek(const blob& cart_blob, int addr) const {
   switch(addr) {
-  case ADDR_LCDC: return bit_pack_inv(reg_lcdc);
-  default:
-    LOG_R("GateBoy::peek - bad address 0x%04x\n", addr);
-    return Error::NOT_FOUND;
+  case ADDR_P1  : break; 
+  case ADDR_SB  : break;
+  case ADDR_SC  : break;
+  case ADDR_DIV : return (uint8_t)bit_pack(reg_div) >> 6;
+  case ADDR_TIMA: return (uint8_t)bit_pack(reg_tima);
+  case ADDR_TMA : return (uint8_t)bit_pack(reg_tma);
+  case ADDR_TAC : return (uint8_t)bit_pack(reg_tac);
+  case ADDR_IF  : break;
+  case ADDR_NR10: break;
+  case ADDR_NR11: break;
+  case ADDR_NR12: break;
+  case ADDR_NR14: break;
+  case ADDR_NR21: break;
+  case ADDR_NR22: break;
+  case ADDR_NR24: break;
+  case ADDR_NR30: break;
+  case ADDR_NR31: break;
+  case ADDR_NR32: break;
+  case ADDR_NR34: break;
+  case ADDR_NR41: break;
+  case ADDR_NR42: break;
+  case ADDR_NR43: break;
+  case ADDR_NR44: break;
+  case ADDR_NR50: break;
+  case ADDR_NR51: break;
+  case ADDR_NR52: break;
+  case ADDR_LCDC: return (uint8_t)bit_pack_inv(reg_lcdc);
+  case ADDR_STAT: break;
+  case ADDR_SCY : return (uint8_t)bit_pack_inv(reg_scy);
+  case ADDR_SCX : return (uint8_t)bit_pack_inv(reg_scx);
+  case ADDR_LY  : return (uint8_t)bit_pack_inv(reg_ly);
+  case ADDR_LYC : return (uint8_t)bit_pack_inv(reg_lyc);
+  case ADDR_DMA : return (uint8_t)bit_pack_inv(reg_dma);
+  case ADDR_BGP : return (uint8_t)bit_pack_inv(reg_bgp);
+  case ADDR_OBP0: return (uint8_t)bit_pack_inv(reg_obp0);
+  case ADDR_OBP1: return (uint8_t)bit_pack_inv(reg_obp1);
+  case ADDR_WY  : return (uint8_t)bit_pack_inv(reg_wy);
+  case ADDR_WX  : return (uint8_t)bit_pack_inv(reg_wx);
   }
+
+  LOG_R("GateBoy::peek - bad address 0x%04x\n", addr);
+  return Error::NOT_FOUND;
 }
+
+//-----------------------------------------------------------------------------
 
 Result<uint8_t, Error> GateBoyState::poke(blob& cart_blob, int addr, uint8_t data_in) {
   switch(addr) {
+  case ADDR_P1  : break; 
+  case ADDR_SB  : break;
+  case ADDR_SC  : break;
+  case ADDR_DIV : break;
+  case ADDR_TIMA: break;
+  case ADDR_TMA : break;
+  case ADDR_TAC : break;
+  case ADDR_IF  : break;
+  case ADDR_NR10: break;
+  case ADDR_NR11: break;
+  case ADDR_NR12: break;
+  case ADDR_NR14: break;
+  case ADDR_NR21: break;
+  case ADDR_NR22: break;
+  case ADDR_NR24: break;
+  case ADDR_NR30: break;
+  case ADDR_NR31: break;
+  case ADDR_NR32: break;
+  case ADDR_NR34: break;
+  case ADDR_NR41: break;
+  case ADDR_NR42: break;
+  case ADDR_NR43: break;
+  case ADDR_NR44: break;
+  case ADDR_NR50: break;
+  case ADDR_NR51: break;
+  case ADDR_NR52: break;
   case ADDR_LCDC: { bit_unpack_inv(reg_lcdc, data_in); return data_in; }
-  default:
-    LOG_R("GateBoy::poke - bad address 0x%04x\n", addr);
-    return Error::NOT_FOUND;
+  case ADDR_STAT: break;
+  case ADDR_SCY : break;
+  case ADDR_SCX : break;
+  case ADDR_LY  : break;
+  case ADDR_LYC : break;
+  case ADDR_DMA : break;
+  case ADDR_BGP : break;
+  case ADDR_OBP0: break;
+  case ADDR_OBP1: break;
+  case ADDR_WY  : break;
+  case ADDR_WX  : break;
   }
+
+  LOG_R("GateBoy::poke - bad address 0x%04x\n", addr);
+  return Error::NOT_FOUND;
 }
 
 //-----------------------------------------------------------------------------

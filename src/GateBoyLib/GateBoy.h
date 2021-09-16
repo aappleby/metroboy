@@ -23,6 +23,11 @@ struct GateBoy;
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpu {
+
+  void wipe() {
+    memset(this, 0, sizeof(*this));
+  }
+
   MetroBoyCPU core;
   Req      bus_req_new = {0};
   uint8_t  cpu_data_latch = 0;
@@ -35,6 +40,10 @@ struct GateBoyCpu {
 //-----------------------------------------------------------------------------
 
 struct GateBoyMem {
+  void wipe() {
+    memset(this, 0, sizeof(*this));
+  }
+
   uint8_t vid_ram [8192];
   uint8_t cart_ram[32768];
   uint8_t int_ram [8192];
@@ -46,6 +55,10 @@ struct GateBoyMem {
 //-----------------------------------------------------------------------------
 
 struct GateBoySys {
+  void wipe() {
+    memset(this, 0, sizeof(*this));
+  }
+
   // External signals
   uint8_t rst = 0;
   uint8_t t1 = 0;
@@ -128,12 +141,6 @@ struct GateBoy  : public IGateBoy {
   void tock_cpu();
   void tock_gates(const blob& cart_blob);
   void update_framebuffer();
-
-  void wipe() {
-    gb_state.wipe();
-    sentinel1 = SENTINEL1;
-    sentinel2 = SENTINEL2;
-  }
 
   //-----------------------------------------------------------------------------
 
@@ -224,6 +231,7 @@ struct GateBoy  : public IGateBoy {
   GateBoyCpu cpu;
   GateBoyMem mem;
   GateBoySys sys;
+  Probes probes;
 
   uint64_t sentinel2 = SENTINEL2;
 };

@@ -11,10 +11,10 @@
 thread_local Probes* thread_probes = nullptr;
 
 Probes::Probes() {
-  reset_to_cart();
+  wipe();
 }
 
-void Probes::reset_to_cart() {
+void Probes::wipe() {
   phase_cursor = 0;
   for (int i = 0; i < channel_count; i++) {
     memset(names[i], 0, 32);

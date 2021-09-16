@@ -174,31 +174,28 @@ struct GateBoy  : public IGateBoy {
     memcpy(state_out.data(), &gb_state, sizeof(gb_state));
   }
 
-  void load_raw_dump(const blob& dump_in) override {
-    CHECK_P(dump_in.size() >= sizeof(GateBoy));
-    memcpy(this, dump_in.data(), sizeof(GateBoy));
-    CHECK_P(sentinel1 == SENTINEL1);
-    CHECK_P(sentinel2 == SENTINEL2);
+  bool load_raw_dump(BlobStream& bs) override {
+    bool result = true;
+    result &= bs.read(gb_state);
+    result &= bs.read(cpu);
+    result &= bs.read(mem);
+    result &= bs.read(sys);
+    result &= bs.read(probes);
+    return result;
   }
 
-  void save_raw_dump(blob& dump_out) const override {
-    uint8_t* bytes = (uint8_t*)this;
-    dump_out.insert(dump_out.end(), bytes, bytes + sizeof(*this));
+  bool save_raw_dump(BlobStream& bs) const override {
+    bool result = true;
+    result &= bs.write(gb_state);
+    result &= bs.write(cpu);
+    result &= bs.write(mem);
+    result &= bs.write(sys);
+    result &= bs.write(probes);
+    return result;
   }
 
   const FieldInfo* get_field_info() const override {
     return GateBoyState::fields;
-  }
-
-  //----------------------------------------
-
-  static bool check_sentinel(const blob& b) {
-    if (b.size() < sizeof(GateBoy)) return false;
-
-    GateBoy* gb = (GateBoy*)b.data();
-    if (gb->sentinel1 != SENTINEL1) return false;
-    if (gb->sentinel2 != SENTINEL2) return false;
-    return true;
   }
 
   //----------------------------------------
@@ -296,15 +293,11 @@ struct GateBoy  : public IGateBoy {
 
   //-----------------------------------------------------------------------------
 
-  uint64_t sentinel1 = SENTINEL1;
-
   GateBoyState gb_state;
   GateBoyCpu cpu;
   GateBoyMem mem;
   GateBoySys sys;
   Probes probes;
-
-  uint64_t sentinel2 = SENTINEL2;
 };
 
 //-----------------------------------------------------------------------------

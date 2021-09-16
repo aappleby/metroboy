@@ -33,7 +33,7 @@ struct GateBoyPair {
     return check_sync();
   }
 
-  bool from_blob(const blob& b) {
+  bool load_raw_dump(BlobStream& b) {
     gba.load_raw_dump(b);
     return check_sync();
   }

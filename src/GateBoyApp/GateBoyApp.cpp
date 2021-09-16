@@ -199,19 +199,17 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     case SDLK_F1: {
       const char* filename = "gateboy.raw.dump";
       LOG_B("Loading raw dump from %s\n", filename);
-      blob raw_dump;
-      ::load_blob(filename, raw_dump);
-      if (!raw_dump.empty()) {
-        gb_thread.load_raw_dump(raw_dump);
-      }
+      BlobStream bs;
+      ::load_blob(filename, bs.b);
+      gb_thread.load_raw_dump(bs);
       break;
     }
     case SDLK_F4: {
       const char* filename = "gateboy.raw.dump";
       LOG_B("Saving raw dump to %s\n", filename);
-      blob raw_dump;
-      gb_thread.save_raw_dump(raw_dump);
-      save_blob(filename, raw_dump);
+      BlobStream bs;
+      gb_thread.save_raw_dump(bs);
+      save_blob(filename, bs.b);
       break;
     }
     case SDLK_r: {
@@ -264,9 +262,9 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
       }
       else if (filename.ends_with("dump")) {
         LOG_B("Loading raw dump from %s\n", filename.c_str());
-        blob dump;
-        load_blob(event.drop.file, dump);
-        gb_thread.load_raw_dump(dump);
+        BlobStream bs;
+        load_blob(event.drop.file, bs.b);
+        gb_thread.load_raw_dump(bs);
       }
       SDL_free(event.drop.file);
     }

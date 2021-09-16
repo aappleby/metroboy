@@ -81,11 +81,12 @@ struct GateBoyThread {
 
   void rewind(int steps);
 
-  void load_raw_dump(const blob& dump_blob);
-  void load_flat_dump(const blob& flat_dump);
-  void load_cart_blob(const blob& cart_blob);
+  void load_raw_dump(BlobStream& bs);
+  void save_raw_dump(BlobStream& bs);
+  void load_flat_dump(BlobStream& bs);
 
-  void save_raw_dump(blob& dump_blob);
+  void load_cart_blob(blob& bs);
+
 
   void set_buttons(uint8_t buttons) {
     gbp->gba.sys.buttons = buttons;

@@ -145,59 +145,52 @@ void GateBoyThread::dump(Dumper& d) {
 
 //------------------------------------------------------------------------------
 
-void GateBoyThread::load_raw_dump(const blob& raw_dump) {
+void GateBoyThread::load_raw_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
-  CHECK_N(raw_dump.empty());
-
   reset_gb();
   clear_steps();
-  gbp->gba.load_raw_dump(raw_dump);
-
-  int cart_size = (int)raw_dump.size() - sizeof(GateBoy);
-  cart_blob.resize(cart_size);
-  memcpy(cart_blob.data(), raw_dump.data() + sizeof(GateBoy), cart_size);
+  gbp->gba.load_raw_dump(bs);
+  cart_blob = bs.rest();
 }
 
 //------------------------------------------------------------------------------
 
-void GateBoyThread::save_raw_dump(blob& raw_dump) {
+void GateBoyThread::save_raw_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
   clear_steps();
-  gbp->gba.save_raw_dump(raw_dump);
-  raw_dump.insert(raw_dump.end(), cart_blob.begin(), cart_blob.end());
+  gbp->gba.save_raw_dump(bs);
+  bs.write(cart_blob.data(), cart_blob.size());
 }
 
 //------------------------------------------------------------------------------
 
-void GateBoyThread::load_cart_blob(const blob& _cart_blob) {
+void GateBoyThread::load_cart_blob(blob& b) {
   CHECK_P(sim_paused());
-  cart_blob = _cart_blob;
+  cart_blob = b;
 }
 
 //------------------------------------------------------------------------------
 // Load a flat (just raw contents of memory addresses, no individual regs) dump
 // and copy it into the various regs and memory chunks.
 
-void GateBoyThread::load_flat_dump(const blob& flat_dump) {
+void GateBoyThread::load_flat_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
 
-  cart_blob = flat_dump;
-  memcpy(gbp->gba.mem.vid_ram,  flat_dump.data() + 0x8000, 8192);
-  memcpy(gbp->gba.mem.cart_ram, flat_dump.data() + 0xA000, 8192);
-  memcpy(gbp->gba.mem.int_ram,  flat_dump.data() + 0xC000, 8192);
-  memcpy(gbp->gba.mem.oam_ram,  flat_dump.data() + 0xFE00, 256);
-  memcpy(gbp->gba.mem.zero_ram, flat_dump.data() + 0xFF80, 128);
+  cart_blob = bs.rest();
+  memcpy(gbp->gba.mem.vid_ram,  cart_blob.data() + 0x8000, 8192);
+  memcpy(gbp->gba.mem.cart_ram, cart_blob.data() + 0xA000, 8192);
+  memcpy(gbp->gba.mem.int_ram,  cart_blob.data() + 0xC000, 8192);
+  memcpy(gbp->gba.mem.oam_ram,  cart_blob.data() + 0xFE00, 256);
+  memcpy(gbp->gba.mem.zero_ram, cart_blob.data() + 0xFF80, 128);
 
-  gbp->gba.dbg_write(flat_dump, ADDR_BGP,  flat_dump[ADDR_BGP]);
-  gbp->gba.dbg_write(flat_dump, ADDR_OBP0, flat_dump[ADDR_OBP0]);
-  gbp->gba.dbg_write(flat_dump, ADDR_OBP1, flat_dump[ADDR_OBP1]);
-  gbp->gba.dbg_write(flat_dump, ADDR_SCY,  flat_dump[ADDR_SCY]);
-  gbp->gba.dbg_write(flat_dump, ADDR_SCX,  flat_dump[ADDR_SCX]);
-  gbp->gba.dbg_write(flat_dump, ADDR_WY,   flat_dump[ADDR_WY]);
-  gbp->gba.dbg_write(flat_dump, ADDR_WX,   flat_dump[ADDR_WX]);
-  gbp->gba.dbg_write(flat_dump, ADDR_LCDC, flat_dump[ADDR_LCDC]);
-
-  //memcpy(&gbp->gbb, &gbp->gba, sizeof(GateBoy));
+  gbp->gba.dbg_write(cart_blob, ADDR_BGP,  cart_blob[ADDR_BGP]);
+  gbp->gba.dbg_write(cart_blob, ADDR_OBP0, cart_blob[ADDR_OBP0]);
+  gbp->gba.dbg_write(cart_blob, ADDR_OBP1, cart_blob[ADDR_OBP1]);
+  gbp->gba.dbg_write(cart_blob, ADDR_SCY,  cart_blob[ADDR_SCY]);
+  gbp->gba.dbg_write(cart_blob, ADDR_SCX,  cart_blob[ADDR_SCX]);
+  gbp->gba.dbg_write(cart_blob, ADDR_WY,   cart_blob[ADDR_WY]);
+  gbp->gba.dbg_write(cart_blob, ADDR_WX,   cart_blob[ADDR_WX]);
+  gbp->gba.dbg_write(cart_blob, ADDR_LCDC, cart_blob[ADDR_LCDC]);
 }
 
 

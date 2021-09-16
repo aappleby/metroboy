@@ -25,8 +25,8 @@ public:
   virtual const uint8_t* get_vram() const = 0;
   virtual void get_state(blob& state_out) const = 0;
 
-  virtual void load_raw_dump(const blob& dump_in) = 0;
-  virtual void save_raw_dump(blob& dump_out) const = 0;
+  virtual bool load_raw_dump(BlobStream& dump_in) = 0;
+  virtual bool save_raw_dump(BlobStream& dump_out) const = 0;
 
   virtual const FieldInfo* get_field_info() const = 0;
 };

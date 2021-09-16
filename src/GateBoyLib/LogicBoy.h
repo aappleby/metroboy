@@ -55,20 +55,9 @@ struct LogicBoy {
 
   //----------------------------------------
 
-  static bool check_sentinel(const blob& b) {
-    if (b.size() < sizeof(LogicBoy)) return false;
-
-    LogicBoy* gb = (LogicBoy*)b.data();
-    if (gb->sentinel1 != SENTINEL1) return false;
-    if (gb->sentinel2 != SENTINEL2) return false;
-    return true;
-  }
-
   void from_blob(const blob& b) {
     CHECK_P(b.size() >= sizeof(LogicBoy));
     memcpy(this, b.data(), sizeof(LogicBoy));
-    CHECK_P(sentinel1 == SENTINEL1);
-    CHECK_P(sentinel2 == SENTINEL2);
   }
 
   void to_blob(blob& b) {
@@ -100,8 +89,6 @@ struct LogicBoy {
 
   void wipe() {
     lb_state.wipe();
-    sentinel1 = SENTINEL1;
-    sentinel2 = SENTINEL2;
   }
 
   //-----------------------------------------------------------------------------
@@ -111,12 +98,10 @@ struct LogicBoy {
 
   //-----------------------------------------------------------------------------
 
-  uint64_t sentinel1 = SENTINEL1;
   LogicBoyState lb_state;
   LogicBoyCpu cpu;
   LogicBoyMem mem;
   LogicBoySys sys;
-  uint64_t sentinel2 = SENTINEL2;
 };
 
 //-----------------------------------------------------------------------------

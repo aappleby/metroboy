@@ -46,14 +46,6 @@ struct RegDIV {
     UPOF_DIV15p.state = ((div_a >> 15) & 1) | ((div_b >> 15) & 2);
   }
 
-  void check_div() const {
-    int div_val = bit_pack(*this);
-    if (div_val != BOOT_DIV) {
-      LOG_R("div fail!\n");
-      *reinterpret_cast<int*>(SENTINEL4) = 1;
-    }
-  }
-
   /*_p01.UKUP*/ DFF17 UKUP_DIV00p; // AxxxExxx
   /*_p01.UFOR*/ DFF17 UFOR_DIV01p; // AxxxExxx
   /*_p01.UNER*/ DFF17 UNER_DIV02p; // AxxxExxx

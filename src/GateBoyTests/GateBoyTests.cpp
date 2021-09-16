@@ -987,6 +987,7 @@ TestResults GateBoyTests::test_init() {
 
   blob cart_blob = Assembler::create_dummy_cart();
   auto gb = create_debug_gb(cart_blob, false);
+  gb->reset_to_bootrom(cart_blob, true);
 
   LOG_G("Checking reg flags\n");
 

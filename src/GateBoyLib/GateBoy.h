@@ -31,6 +31,15 @@ struct GateBoyCpu {
   }
 
   void reset_to_cart() {
+    core.reset_to_cart();
+    bus_req_new.addr = 0xFF50;
+    bus_req_new.data = 1;
+    bus_req_new.read = 0;
+    bus_req_new.write = 1;
+    cpu_data_latch = 1;
+    intf_latch = 1;
+    intf_latch_delay = 0;
+    intf_halt_latch = 0;
   }
 
   MetroBoyCPU core;
@@ -47,12 +56,38 @@ struct GateBoyCpu {
 struct GateBoyMem {
   void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
+
+    // The first thing the bootrom does is clear VRAM, so put some recognizable
+    // pattern in vram so we can see it running.
+    for (int i = 0; i < 8192; i++) {
+      uint32_t h = i * 0x1234567;
+      vid_ram[i] = uint8_t(h ^ (h >> 4));
+    }
+
+    memset(framebuffer, 4, sizeof(framebuffer));
   }
 
   void reset_to_bootrom() {
+    memset(this, 0, sizeof(*this));
+
+    // The first thing the bootrom does is clear VRAM, so put some recognizable
+    // pattern in vram so we can see it running.
+    for (int i = 0; i < 8192; i++) {
+      uint32_t h = i * 0x1234567;
+      vid_ram[i] = uint8_t(h ^ (h >> 4));
+    }
+
+    memset(framebuffer, 4, sizeof(framebuffer));
   }
 
   void reset_to_cart() {
+    memset(this, 0, sizeof(*this));
+
+    memcpy(vid_ram, vram_boot, 8192);
+    zero_ram[0x7A] = 0x39;
+    zero_ram[0x7B] = 0x01;
+    zero_ram[0x7C] = 0x2E;
+    memcpy(framebuffer, framebuffer_boot, 160*144);
   }
 
   uint8_t vid_ram [8192];
@@ -74,6 +109,17 @@ struct GateBoySys {
   }
 
   void reset_to_cart() {
+    rst = false;
+    t1 = false;
+    t2 = false;
+    clk_en = true;
+    clk_good = true;
+    clk_req = true;
+    cpu_en = true;
+    fastboot = true;
+    buttons = 0;
+    phase_total = 0;
+    sim_time = 0;
   }
 
   // External signals

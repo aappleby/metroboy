@@ -4,15 +4,164 @@
 
 void GateBoyState::reset_to_poweron() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
-  reg_joy.reset_to_poweron();
 }
 
 void GateBoyState::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
+
   reg_joy.reset_to_bootrom();
+
+  reg_dma.NAFA_DMA_A08n.state = 0b00011010;
+  reg_dma.PYNE_DMA_A09n.state = 0b00011010;
+  reg_dma.PARA_DMA_A10n.state = 0b00011010;
+  reg_dma.NYDO_DMA_A11n.state = 0b00011010;
+  reg_dma.NYGY_DMA_A12n.state = 0b00011010;                           
+  reg_dma.PULA_DMA_A13n.state = 0b00011010;
+  reg_dma.POKU_DMA_A14n.state = 0b00011010;
+  reg_dma.MARU_DMA_A15n.state = 0b00011010;
+
+  reg_bgp.PAVO_BGP_D0n.state = 0b00011010;
+  reg_bgp.NUSY_BGP_D1n.state = 0b00011010;
+  reg_bgp.PYLU_BGP_D2n.state = 0b00011010;
+  reg_bgp.MAXY_BGP_D3n.state = 0b00011010;
+  reg_bgp.MUKE_BGP_D4n.state = 0b00011010;
+  reg_bgp.MORU_BGP_D5n.state = 0b00011010;
+  reg_bgp.MOGY_BGP_D6n.state = 0b00011010;
+  reg_bgp.MENA_BGP_D7n.state = 0b00011010;
+
+  reg_obp0.XUFU_OBP0_D0n.state = 0b00011010;
+  reg_obp0.XUKY_OBP0_D1n.state = 0b00011010;
+  reg_obp0.XOVA_OBP0_D2n.state = 0b00011010;
+  reg_obp0.XALO_OBP0_D3n.state = 0b00011010;
+  reg_obp0.XERU_OBP0_D4n.state = 0b00011010;
+  reg_obp0.XYZE_OBP0_D5n.state = 0b00011010;
+  reg_obp0.XUPO_OBP0_D6n.state = 0b00011010;
+  reg_obp0.XANA_OBP0_D7n.state = 0b00011010;
+
+  reg_obp1.MOXY_OBP1_D0n.state = 0b00011010;
+  reg_obp1.LAWO_OBP1_D1n.state = 0b00011010;
+  reg_obp1.MOSA_OBP1_D2n.state = 0b00011010;
+  reg_obp1.LOSE_OBP1_D3n.state = 0b00011010;
+  reg_obp1.LUNE_OBP1_D4n.state = 0b00011010;
+  reg_obp1.LUGU_OBP1_D5n.state = 0b00011010;
+  reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
+  reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
+
+  SIG_VCC = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+
+  //gb_state.cpu_abus.reset_to_poweron();
+  //gb_state.cpu_dbus.reset_to_poweron();
+
+  //gb_state.sprite_ibus.reset_to_poweron();
+  //gb_state.sprite_lbus.reset_to_poweron();
+
+  //gb_state.joy_int.reset_to_poweron();
+
+  reg_joy.reset_to_bootrom();
+  reg_tima.reset_to_bootrom();
+
+  check_state_old_and_driven_or_pulled();
 }
 
 void GateBoyState::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
+
+  VOGA_HBLANKp.state = 0b00011001;
+
+  cpu_signals.reset_to_cart();
+  cpu_abus.reset_to_cart_new();
+  cpu_dbus.reset_to_cart_new();
+
+  vram_abus.lo.reset_to_cart();
+  vram_abus.hi.reset_to_cart();
+  vram_dbus.reset_to_cart();
+  vram_ext_ctrl.reset_to_cart();
+  vram_ext_abus.reset_to_cart();
+  vram_ext_dbus.reset_to_cart();
+
+  sprite_ibus.reset_to_cart();
+  sprite_lbus.reset_to_cart();
+
+  oam_ctrl.reset_to_cart();
+  oam_abus.reset_to_cart();
+  oam_dbus_a.reset_to_cart();
+  oam_dbus_b.reset_to_cart();
+  oam_latch_a.reset_to_cart();
+  oam_latch_b.reset_to_cart();
+  oam_temp_a.reset_to_cart();
+  oam_temp_b.reset_to_cart();
+
+  ext_ctrl.reset_to_cart();
+  ext_abus.lo.reset_to_cart();
+  ext_abus.hi.reset_to_cart();
+  ext_dbus.reset_to_cart();
+  ext_addr_latch.reset_to_cart();
+  ext_data_latch.reset_to_cart();
+
+  sys_rst.reset_to_cart();
+  sys_clk.reset_to_cart();
+  reg_div.reset_to_cart();
+  
+  reg_if.reset_to_cart();
+  reg_ie.reset_to_cart();
+  int_latch.reset_to_cart();
+  cpu_int.reset_to_cart();
+  cpu_ack.reset_to_cart();
+
+  //serial.reset_to_cart();
+
+  sprite_counter.BESE_SPRITE_COUNT0.state = 0b00011010;
+  sprite_counter.CUXY_SPRITE_COUNT1.state = 0b00011010;
+  sprite_counter.BEGO_SPRITE_COUNT2.state = 0b00011010;
+  sprite_counter.DYBE_SPRITE_COUNT3.state = 0b00011010;
+
+  sprite_scanner.reset_to_cart();
+  scan_counter.reset_to_cart();
+  sprite_index.reset_to_cart();
+
+  sfetch_counter.reset_to_cart();
+  sfetch_control.reset_to_cart();
+
+  int_ctrl.RUPO_LYC_MATCHn.state = 0b00011000;
+
+  reg_stat.reset_to_cart();
+  pix_count.reset_to_cart();
+  mask_pipe.reset_to_cart();
+  lcd.REMY_LD0n.state = 0b00011000;
+  lcd.RAVO_LD1n.state = 0b00011000;
+
+  dma_lo.reset_to_cart();
+  reg_dma.reset_to_cart();
+  MATU_DMA_RUNNINGp.state = 0b00011010;
+  dma_ctrl.reset_to_cart();
+
+  reg_bgp.reset_to_cart();
+  reg_obp0.reset_to_cart();
+  reg_obp1.reset_to_cart();
+  
+  //joy.reset_to_cart();
+  joy_int.reset_to_cart();
   reg_joy.reset_to_cart();
+
+  reg_lcdc.reset_to_cart();
+  lcd.reset_to_cart();
+
+  reg_lx.reset_to_cart();
+  reg_ly.reset_to_cart();
+
+  int_ctrl.ROPO_LY_MATCH_SYNCp.state = 0b00011001;
+  reg_lyc.reset_to_cart();
+
+  WODU_HBLANKp.state = 0b00011001;
+
+  sprite_scanner.FETO_SCAN_DONEp.state = 0b00011001;
+  ATEJ_LINE_RSTp.state = 0b00011000;
+
+  //reg_NR50.reset_to_cart();
+  //reg_NR51.reset_to_cart();
+  //reg_NR52.reset_to_cart();
+
+  check_state_old_and_driven_or_pulled();
 }
 
 //-----------------------------------------------------------------------------

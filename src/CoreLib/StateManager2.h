@@ -29,3 +29,33 @@ struct StateStack {
 };
 
 //-----------------------------------------------------------------------------
+
+template<class T>
+struct StatePointerStack {
+  StatePointerStack(T* prototype) {
+    this->prototype = prototype;
+    states.push_back(prototype->clone());
+  }
+  StatePointerStack(const StatePointerStack&) = delete;
+  StatePointerStack& operator=(const StatePointerStack&) = delete;
+
+  T* state()      { return states.back(); }
+  T* operator->() { return states.back(); }
+
+  size_t state_count() const      { return states.size(); }
+  size_t state_size_bytes() const { return states.size() * prototype->size_bytes(); }
+
+  void push() { states.push_back(states.back()->clone()); }
+  void pop()  { if (states.size() > 1) { delete states.back(); states.pop_back(); } }
+
+  void reset_states() {
+    for (auto s : states) delete s;
+    states.clear();
+    states.push_back(prototype->clone());
+  }
+
+  T* prototype;
+  std::vector<T*> states;
+};
+
+//-----------------------------------------------------------------------------

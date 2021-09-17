@@ -5,39 +5,119 @@ void print_field_at(int offset);
 
 //---------------------------------------------------------------------------------------------------------------------
 
-struct GateBoyPair {
-  GateBoyPair() {
+struct GateBoyPair : public IGateBoy {
+  GateBoyPair(IGateBoy* gb1, IGateBoy* gb2) : gb1(gb1), gb2(gb2) {}
+
+  IGateBoy* clone() override {
+    auto c1 = gb1->clone();
+    auto c2 = gb2->clone();
+    return new GateBoyPair(c1, c2);
   }
 
-  GateBoy gba;
-  //GateBoy gbb;
-
-  //void wipe_flags() {
-  //  if (gba.sys.logic_mode) gba.wipe_flags();
-  //  if (gbb.sys.logic_mode) gbb.wipe_flags();
-  //}
-
-  bool reset_to_bootrom(const blob& cart_blob) {
-    gba.reset_to_bootrom(cart_blob);
-    //gbb.reset_to_bootrom(cart_blob, fastboot);
-
-    //wipe_flags();
-    return check_sync();
+  int size_bytes() override {
+    return gb1->size_bytes() + gb2->size_bytes();
   }
 
-  bool reset_to_cart(const blob& cart_blob) {
-    gba.reset_to_cart(cart_blob);
-    //gbb.reset_to_cart(cart_blob);
-
-    //wipe_flags();
-    return check_sync();
+  bool load_raw_dump(BlobStream& dump_in) override {
+    auto old_cursor = dump_in.cursor;
+    bool result = true;
+    result &= gb1->load_raw_dump(dump_in);
+    dump_in.cursor = old_cursor;
+    result &= gb2->load_raw_dump(dump_in);
+    check_sync();
+    return result;
   }
 
-  bool load_raw_dump(BlobStream& b) {
-    gba.load_raw_dump(b);
-    return check_sync();
+  bool save_raw_dump(BlobStream& dump_out) const override {
+    check_sync();
+    return gb1->save_raw_dump(dump_out);
   }
 
+  void reset_to_poweron(const blob& cart_blob) override {
+    gb1->reset_to_poweron(cart_blob);
+    gb2->reset_to_poweron(cart_blob);
+    check_sync();
+  }
+
+  void run_poweron_reset(const blob& cart_blob, bool fastboot) override {
+    gb1->run_poweron_reset(cart_blob, fastboot);
+    gb2->run_poweron_reset(cart_blob, fastboot);
+    check_sync();
+  }
+
+  void reset_to_bootrom(const blob& cart_blob) override {
+    gb1->reset_to_bootrom(cart_blob);
+    gb2->reset_to_bootrom(cart_blob);
+    check_sync();
+  }
+
+  void reset_to_cart   (const blob& cart_blob) override {
+    gb1->reset_to_cart(cart_blob);
+    gb2->reset_to_cart(cart_blob);
+    check_sync();
+  }
+
+  Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const override {
+    auto result1 = gb1->peek(cart_blob, addr);
+    auto result2 = gb2->peek(cart_blob, addr);
+    CHECK_P(result1 == result2);
+    return result1;
+  }
+
+  Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) override {
+    auto result1 = gb1->poke(cart_blob, addr, data_in);
+    auto result2 = gb2->poke(cart_blob, addr, data_in);
+    CHECK_P(result1 == result2);
+    return result1;
+  }
+
+  Result<uint8_t, Error> dbg_read(const blob& cart_blob, int addr) override {
+    auto result1 = gb1->dbg_read(cart_blob, addr);
+    auto result2 = gb2->dbg_read(cart_blob, addr);
+    CHECK_P(result1 == result2);
+    check_sync();
+    return result1;
+  }
+
+  Result<uint8_t, Error> dbg_write (const blob& cart_blob, int addr, uint8_t data_in) override {
+    auto result1 = gb1->dbg_write(cart_blob, addr, data_in);
+    auto result2 = gb2->dbg_write(cart_blob, addr, data_in);
+    CHECK_P(result1 == result2);
+    check_sync();
+    return result1;
+  }
+
+  bool run_phases(const blob& cart_blob, int phase_count) override {
+    bool result = true;
+    result &= gb1->run_phases(cart_blob, phase_count);
+    result &= gb2->run_phases(cart_blob, phase_count);
+    check_sync();
+    return result;
+  }
+
+  bool next_phase(const blob& cart_blob) override {
+    bool result = true;
+    result &= gb1->next_phase(cart_blob);
+    result &= gb2->next_phase(cart_blob);
+    check_sync();
+    return result;
+  }
+
+  void set_buttons(uint8_t buttons) override {
+    gb1->set_buttons(buttons);
+    gb2->set_buttons(buttons);
+  }
+
+  const GateBoyCpu&   get_cpu() const override    { return gb1->get_cpu(); }
+  const GateBoyMem&   get_mem() const override    { return gb1->get_mem(); }
+  const GateBoyState& get_state() const override  { return gb1->get_state(); }
+  const GateBoySys&   get_sys() const override    { return gb1->get_sys(); }
+  const Probes&       get_probes() const override { return gb1->get_probes(); }
+
+  IGateBoy* gb1;
+  IGateBoy* gb2;
+
+#if 0
   bool next_phase(const blob& cart_blob) {
 
     //if (gba.sys.logic_mode) gba.check_no_flags();
@@ -142,19 +222,16 @@ struct GateBoyPair {
     out = gba.cpu.cpu_data_latch;
     return result;
   }
+#endif
 
-  bool check_sync() {
-    /*
-    if (config_regression) {
-      if (gba.gb_state.hash_regression() != gbb.gb_state.hash_regression()) {
-        LOG_R("Regression test mismatch @ phase %lld!\n", gba.sys.phase_total);
-        gba.gb_state.diff(gbb.gb_state, 0x01);
-        //__debugbreak();
-        return false;
-      }
+  bool check_sync() const {
+    const auto& state1 = gb1->get_state();
+    const auto& state2 = gb2->get_state();
+
+    if (state1.diff(state2, 0x01)) {
+      LOG_R("Regression test mismatch @ phase %lld!\n", gb1->get_sys().phase_total);
+      __debugbreak();
     }
-    */
-
     return true;
   }
 };

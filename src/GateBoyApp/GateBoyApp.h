@@ -36,7 +36,7 @@ private:
 
   const uint8_t* keyboard_state = nullptr;
 
-  GateBoyThread gb_thread;
+  GateBoyThread* gb_thread;
 
   GridPainter grid_painter;
   TextPainter text_painter;

@@ -166,10 +166,12 @@ Result<uint8_t, Error> GateBoy::dbg_write(const blob& cart_blob, int addr, uint8
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::run_phases(const blob& cart_blob, int phase_count) {
+bool GateBoy::run_phases(const blob& cart_blob, int phase_count) {
+  bool result = true;
   for (int i = 0; i < phase_count; i++) {
-    next_phase(cart_blob);
+    result &= next_phase(cart_blob);
   }
+  return result;
 }
 
 //-----------------------------------------------------------------------------

@@ -20,11 +20,11 @@ const wire BIT_CLOCK  = 0b00000010;
 
 // These are only used for error checking and can be disabled in fast builds.
 
-const wire BIT_PULLED = config_drive_flags  ? 0b00000100 : 0b00000000;
-const wire BIT_DRIVEN = config_drive_flags  ? 0b00001000 : 0b00000000;
-const wire BIT_OLD    = config_oldnew_flags ? 0b00010000 : 0b00000000;
-const wire BIT_NEW    = config_oldnew_flags ? 0b00100000 : 0b00000000;
-const wire TRI_NEW    = config_oldnew_flags ? 0b00100000 : 0b00000000;
+const wire BIT_PULLED = config_use_flags ? 0b00000100 : 0b00000000;
+const wire BIT_DRIVEN = config_use_flags ? 0b00001000 : 0b00000000;
+const wire BIT_OLD    = config_use_flags ? 0b00010000 : 0b00000000;
+const wire BIT_NEW    = config_use_flags ? 0b00100000 : 0b00000000;
+const wire TRI_NEW    = config_use_flags ? 0b00100000 : 0b00000000;
 
 inline bool posedge(wire a, wire b) {
   return !bit(a) && bit(b);
@@ -80,21 +80,15 @@ struct BitBase {
   //----------
 
   void check_old() const {
-    if (config_drive_flags) {
+    if (config_check_flags) {
       DCHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-    }
-
-    if (config_oldnew_flags) {
       DCHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_OLD);
     }
   }
 
   void check_new() const {
-    if (config_drive_flags) {
+    if (config_check_flags) {
       DCHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-    }
-
-    if (config_oldnew_flags) {
       DCHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
     }
   }

@@ -7,6 +7,102 @@ static_assert(sizeof(GateBoyReset) == sizeof(LogicBoyReset));
 
 //-----------------------------------------------------------------------------
 
+Result<uint8_t, Error> LogicBoyState::peek(const blob& cart_blob, int addr) const {
+  switch(addr) {
+  case ADDR_P1  : break; 
+  case ADDR_SB  : break;
+  case ADDR_SC  : break;
+  case ADDR_DIV : return uint8_t(reg_div >> 6);
+  case ADDR_TIMA: return reg_tima;
+  case ADDR_TMA : return reg_tma;
+  case ADDR_TAC : return reg_tac;
+  case ADDR_IF  : break;
+  case ADDR_NR10: break;
+  case ADDR_NR11: break;
+  case ADDR_NR12: break;
+  case ADDR_NR14: break;
+  case ADDR_NR21: break;
+  case ADDR_NR22: break;
+  case ADDR_NR24: break;
+  case ADDR_NR30: break;
+  case ADDR_NR31: break;
+  case ADDR_NR32: break;
+  case ADDR_NR34: break;
+  case ADDR_NR41: break;
+  case ADDR_NR42: break;
+  case ADDR_NR43: break;
+  case ADDR_NR44: break;
+  case ADDR_NR50: break;
+  case ADDR_NR51: break;
+  case ADDR_NR52: break;
+  case ADDR_LCDC: return ~reg_lcdc;
+  case ADDR_STAT: break;
+  case ADDR_SCY : return ~reg_scy;
+  case ADDR_SCX : return ~reg_scx;
+  case ADDR_LY  : return ~reg_ly;
+  case ADDR_LYC : return ~reg_lyc;
+  case ADDR_DMA : return ~reg_dma;
+  case ADDR_BGP : return ~reg_bgp;
+  case ADDR_OBP0: return ~reg_obp0;
+  case ADDR_OBP1: return ~reg_obp1;
+  case ADDR_WY  : return ~reg_wy;
+  case ADDR_WX  : return ~reg_wx;
+  }
+
+  LOG_R("LogicBoy::peek - bad address 0x%04x\n", addr);
+  return Error::NOT_FOUND;
+}
+
+//-----------------------------------------------------------------------------
+
+Result<uint8_t, Error> LogicBoyState::poke(blob& cart_blob, int addr, uint8_t data_in) {
+  switch(addr) {
+  case ADDR_P1  : break; 
+  case ADDR_SB  : break;
+  case ADDR_SC  : break;
+  case ADDR_DIV : break;
+  case ADDR_TIMA: break;
+  case ADDR_TMA : break;
+  case ADDR_TAC : break;
+  case ADDR_IF  : break;
+  case ADDR_NR10: break;
+  case ADDR_NR11: break;
+  case ADDR_NR12: break;
+  case ADDR_NR14: break;
+  case ADDR_NR21: break;
+  case ADDR_NR22: break;
+  case ADDR_NR24: break;
+  case ADDR_NR30: break;
+  case ADDR_NR31: break;
+  case ADDR_NR32: break;
+  case ADDR_NR34: break;
+  case ADDR_NR41: break;
+  case ADDR_NR42: break;
+  case ADDR_NR43: break;
+  case ADDR_NR44: break;
+  case ADDR_NR50: break;
+  case ADDR_NR51: break;
+  case ADDR_NR52: break;
+  case ADDR_LCDC: { reg_lcdc = ~data_in; return data_in; }
+  case ADDR_STAT: break;
+  case ADDR_SCY : break;
+  case ADDR_SCX : break;
+  case ADDR_LY  : break;
+  case ADDR_LYC : break;
+  case ADDR_DMA : break;
+  case ADDR_BGP : break;
+  case ADDR_OBP0: break;
+  case ADDR_OBP1: break;
+  case ADDR_WY  : break;
+  case ADDR_WX  : break;
+  }
+
+  LOG_R("LogicBoy::poke - bad address 0x%04x\n", addr);
+  return Error::NOT_FOUND;
+}
+
+//-----------------------------------------------------------------------------
+
 void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   const LogicBoyState& src = *this;
 

@@ -10,7 +10,7 @@
 
 //------------------------------------------------------------------------------
 
-GateBoyThread::GateBoyThread()
+GateBoyThread::GateBoyThread(IGateBoy* prototype) : gb(prototype)
 {
   reset_gb();
 }
@@ -53,9 +53,7 @@ void GateBoyThread::resume() {
 //----------------------------------------
 
 void GateBoyThread::reset_gb() {
-  gbp.reset_states();
-  //gbp->gba.wipe();
-  //gbp->gbb.wipe();
+  gb.reset_states();
 }
 
 //----------------------------------------
@@ -65,23 +63,21 @@ void GateBoyThread::reset_to_bootrom() {
   CHECK_P(sim_paused());
   clear_steps();
   reset_gb();
-  gbp->gba.reset_to_bootrom(cart_blob);
-  //gbp->gbb.reset_to_bootrom(cart_blob, true);
+  gb->reset_to_bootrom(cart_blob);
 }
 
 void GateBoyThread::reset_to_cart() {
   CHECK_P(sim_paused());
   clear_steps();
   reset_gb();
-  gbp->gba.reset_to_cart(cart_blob);
-  //gbp->gbb.reset_to_cart(cart_blob);
+  gb->reset_to_cart(cart_blob);
 }
 
 //----------------------------------------
 
 void GateBoyThread::add_steps(int steps) {
   CHECK_P(sim_paused());
-  gbp.push();
+  gb.push();
   step_count += steps;
 }
 
@@ -89,7 +85,7 @@ void GateBoyThread::rewind(int steps) {
   CHECK_P(sim_paused());
   clear_steps();
   while (steps--) {
-    gbp.pop();
+    gb.pop();
   }
 }
 
@@ -108,20 +104,17 @@ void GateBoyThread::clear_steps() {
 void GateBoyThread::dump(Dumper& d) {
   CHECK_P(sim_paused());
 
-  d("State count A  : %d\n", gbp.state_count());
+  auto new_phase_total = gb->get_sys().phase_total;
 
-  size_t state_size = gbp.state_size_bytes();
-  if (state_size < 1024 * 1024) {
-    d("State size    : %d K\n", state_size / 1024);
-  }
-  else {
-    d("State size    : %d M\n", state_size / (1024 * 1024));
-  }
+  d("State count A  : %d\n", gb.state_count());
+
+  size_t state_size = gb.state_size_bytes();
+  d("State size    : %d K\n", state_size / 1024);
   //d("BGB cycle     : 0x%08x\n",  (gb->phase_total / 4) - 0x10000);
-  d("Sim clock     : %f\n",      double(gbp->gba.sys.phase_total) / (4194304.0 * 2));
+  d("Sim clock     : %f\n",      double(new_phase_total) / (4194304.0 * 2));
   d("Steps left    : %d\n", step_count.load());
 
-  double phase_rate = (gbp->gba.sys.phase_total - old_phase_total) / (sim_time - old_sim_time);
+  double phase_rate = (new_phase_total - old_phase_total) / (sim_time - old_sim_time);
 
   if (phase_rate > 0) {
     if (sim_time == old_sim_time) {
@@ -139,7 +132,7 @@ void GateBoyThread::dump(Dumper& d) {
   //d("sig_exit      : %d\n", (int)sig_exit);
 
 
-  old_phase_total = gbp->gba.sys.phase_total;
+  old_phase_total = new_phase_total;
   old_sim_time = sim_time;
 }
 
@@ -149,7 +142,7 @@ void GateBoyThread::load_raw_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
   reset_gb();
   clear_steps();
-  gbp->gba.load_raw_dump(bs);
+  gb->load_raw_dump(bs);
   cart_blob = bs.rest();
 }
 
@@ -158,7 +151,7 @@ void GateBoyThread::load_raw_dump(BlobStream& bs) {
 void GateBoyThread::save_raw_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
   clear_steps();
-  gbp->gba.save_raw_dump(bs);
+  gb->save_raw_dump(bs);
   bs.write(cart_blob.data(), cart_blob.size());
 }
 
@@ -173,9 +166,9 @@ void GateBoyThread::load_cart_blob(blob& b) {
 // Load a flat (just raw contents of memory addresses, no individual regs) dump
 // and copy it into the various regs and memory chunks.
 
+/*
 void GateBoyThread::load_flat_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
-
   cart_blob = bs.rest();
   memcpy(gbp->gba.mem.vid_ram,  cart_blob.data() + 0x8000, 8192);
   memcpy(gbp->gba.mem.cart_ram, cart_blob.data() + 0xA000, 8192);
@@ -192,6 +185,7 @@ void GateBoyThread::load_flat_dump(BlobStream& bs) {
   gbp->gba.dbg_write(cart_blob, ADDR_WX,   cart_blob[ADDR_WX]);
   gbp->gba.dbg_write(cart_blob, ADDR_LCDC, cart_blob[ADDR_LCDC]);
 }
+*/
 
 
 //=====================================================================================================================
@@ -242,7 +236,7 @@ void GateBoyThread::run_steps() {
 
 void GateBoyThread::run_normal() {
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    gbp->next_phase(cart_blob);
+    gb->next_phase(cart_blob);
     step_count--;
   }
 }
@@ -273,7 +267,7 @@ void GateBoyThread::run_regression() {
   */
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    gbp->next_phase(cart_blob);
+    gb->next_phase(cart_blob);
     step_count--;
   }
 }
@@ -285,7 +279,7 @@ void GateBoyThread::run_idempotence() {
   //auto& gbb = gbp->gbb;
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    gbp->next_phase(cart_blob);
+    gb->next_phase(cart_blob);
     //gba.tock_cpu();
     //gba.tock_gates(cart_blob);
     //gba.gb_state.commit();

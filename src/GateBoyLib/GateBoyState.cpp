@@ -581,32 +581,34 @@ Result<uint8_t, Error> GateBoyState::poke(blob& cart_blob, int addr, uint8_t dat
 //-----------------------------------------------------------------------------
 
 void GateBoyState::commit() {
-  if (!config_drive_flags && !config_oldnew_flags) return;
+  if (!config_check_flags && !config_use_flags) return;
 
-  uint8_t* base = (uint8_t*)this;
+  uint8_t* cursor = (uint8_t*)this;
   bool bad_bits = false;
   for (size_t i = 0; i < sizeof(GateBoyState); i++) {
-    uint8_t s = base[i];
+    uint8_t s = *cursor;
+    if (config_check_flags) {
+      auto drive_flags = s & (BIT_DRIVEN | BIT_PULLED);
 
-    if (config_drive_flags) {
-      if (bool(s & BIT_DRIVEN) && bool(s & BIT_PULLED)) {
+      if (drive_flags == (BIT_DRIVEN | BIT_PULLED)) {
         LOG_Y("Bit %d both driven and pulled up!\n", i);
         bad_bits = true;
       }
 
-      if (!bool(s & BIT_DRIVEN) && !bool(s & BIT_PULLED)) {
+      if (drive_flags == 0) {
         LOG_Y("Bit %d floating!\n", i);
+        bad_bits = true;
+      }
+
+      auto oldnew_flags = s & (BIT_OLD | BIT_NEW);
+
+      if (oldnew_flags != BIT_NEW) {
+        LOG_Y("Bit %d not dirty after sim pass!\n", i);
         bad_bits = true;
       }
     }
 
-    if (config_oldnew_flags) {
-      if ((s & (BIT_OLD | BIT_NEW)) != BIT_NEW) {
-        LOG_Y("Bit %d not dirty after sim pass!\n", i);
-        bad_bits = true;
-      }
-      base[i] = (s & 0b00001111) | BIT_OLD;
-    }
+    *cursor++ = (s & 0b00001111) | BIT_OLD;
   }
   CHECK_N(bad_bits);
 }
@@ -614,7 +616,7 @@ void GateBoyState::commit() {
 //-----------------------------------------------------------------------------
 
 void GateBoyState::check_state_old_and_driven_or_pulled() {
-  if (config_drive_flags) {
+  if (config_check_flags) {
     uint8_t* blob = (uint8_t*)this;
     for (auto i = 0; i < sizeof(GateBoyState); i++) {
       auto r = blob[i];
@@ -644,7 +646,7 @@ void GateBoyState::check_state_old_and_driven_or_pulled() {
 bool GateBoyState::diff(const GateBoyState& gbb, uint8_t mask) const {
   const GateBoyState& gba = *this;
 
-  bool result = true;
+  bool mismatch = false;
 
   uint8_t* bytes_a = (uint8_t*)&gba;
   uint8_t* bytes_b = (uint8_t*)&gbb;
@@ -657,11 +659,11 @@ bool GateBoyState::diff(const GateBoyState& gbb, uint8_t mask) const {
       LOG_R("MISMATCH @ %5d - ", i);
       print_field_at(i, GateBoyState::fields);
       LOG_R(": 0x%02x 0x%02x\n", byte_a, byte_b);
-      result = false;
+      mismatch = true;
     }
   }
 
-  return result;
+  return mismatch;
 }
 
 //-----------------------------------------------------------------------------

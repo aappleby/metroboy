@@ -1,11 +1,14 @@
 #pragma once
 
+#include "GateBoyLib/IGateBoy.h"
 #include "CoreLib/MetroBoyCPU.h"
 #include "CoreLib/Constants.h"
 #include "GateBoyLib/LogicBoyState.h"
+#include "GateBoyLib/GateBoy.h"
 
 //-----------------------------------------------------------------------------
 
+#pragma pack(push, 1)
 struct LogicBoyCpu {
   MetroBoyCPU core;
   Req      bus_req_new = {0};
@@ -15,9 +18,13 @@ struct LogicBoyCpu {
   uint8_t  intf_latch_delay = 0;
   uint8_t  intf_halt_latch = 0;
 };
+#pragma pack(pop)
+
+static_assert(sizeof(GateBoyCpu) == sizeof(LogicBoyCpu));
 
 //-----------------------------------------------------------------------------
 
+/*
 struct LogicBoyMem {
   uint8_t vid_ram [8192];
   uint8_t cart_ram[32768];
@@ -26,12 +33,12 @@ struct LogicBoyMem {
   uint8_t zero_ram[128];
   uint8_t framebuffer[160*144];
 };
+*/
 
 //-----------------------------------------------------------------------------
 
+#pragma pack(push, 1)
 struct LogicBoySys {
-  // External signals
-
   uint8_t rst = 0;
   uint8_t t1 = 0;
   uint8_t t2 = 0;
@@ -41,20 +48,57 @@ struct LogicBoySys {
   uint8_t cpu_en = 0;
   uint8_t fastboot = 0;
   uint8_t buttons = 0;
-
-  // Debug stuff
   uint64_t phase_total = 0;
-  double   sim_time = 0;
 };
+#pragma pack(pop)
+
+static_assert(sizeof(GateBoySys) == sizeof(LogicBoySys));
 
 //-----------------------------------------------------------------------------
 
-struct LogicBoy {
-  void reset_to_bootrom(const blob& cart_blob, bool fastboot);
-  void reset_to_cart(const blob& cart_blob);
+struct LogicBoy : public IGateBoy {
+  virtual ~LogicBoy() {}
+
+  IGateBoy* clone() override {
+    LogicBoy* result = new LogicBoy();
+    result->lb_state = lb_state;
+    result->cpu = cpu;
+    result->mem = mem;
+    result->sys = sys;
+    result->probes = probes;
+    return result;
+  }
+
+  int size_bytes() override { return sizeof(LogicBoy); }
+
+  bool load_raw_dump(BlobStream& dump_in) override        { return false; }
+  bool save_raw_dump(BlobStream& dump_out) const override { return false; }
+
+  void reset_to_poweron(const blob& cart_blob) override { CHECK_P(false); }
+  void run_poweron_reset(const blob& cart_blob, bool fastboot) override { CHECK_P(false); }
+  void reset_to_bootrom(const blob& cart_blob) override;
+  void reset_to_cart   (const blob& cart_blob) override;
+
+  Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const override;
+  Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) override;
+
+  Result<uint8_t, Error> dbg_read(const blob& cart_blob, int addr) override;
+  Result<uint8_t, Error> dbg_write (const blob& cart_blob, int addr, uint8_t data) override;
+
+  bool run_phases(const blob& cart_blob, int phase_count) override;
+  bool next_phase(const blob& cart_blob) override;
+
+  void set_buttons(uint8_t buttons) override { sys.buttons = buttons; }
+
+  const GateBoyCpu&   get_cpu() const override    { return *(GateBoyCpu*)&cpu; }
+  const GateBoyMem&   get_mem() const override    { return mem; }
+  const GateBoyState& get_state() const override  { lb_state.to_gb_state(const_cast<GateBoyState&>(gb_state), sys.phase_total); return gb_state; }
+  const GateBoySys&   get_sys() const override    { return *(GateBoySys*)&sys; }
+  const Probes&       get_probes() const override { return probes; }
 
   //----------------------------------------
 
+  /*
   void from_blob(const blob& b) {
     CHECK_P(b.size() >= sizeof(LogicBoy));
     memcpy(this, b.data(), sizeof(LogicBoy));
@@ -64,11 +108,9 @@ struct LogicBoy {
     uint8_t* bytes = (uint8_t*)this;
     b.insert(b.end(), bytes, bytes + sizeof(*this));
   }
+  */
 
   //----------------------------------------
-
-  bool dbg_read (const blob& cart_blob, int addr, uint8_t& out);
-  bool dbg_write(const blob& cart_blob, int addr, uint8_t data);
 
   void set_boot_bit(const blob& cart_blob) {
     dbg_write(cart_blob, 0xFF50, 0xFF);
@@ -76,13 +118,7 @@ struct LogicBoy {
 
   //-----------------------------------------------------------------------------
 
-  void run_phases(const blob& cart_blob, int phase_count) {
-    for (int i = 0; i < phase_count; i++) {
-      next_phase(cart_blob);
-    }
-  }
 
-  bool next_phase(const blob& cart_blob);
   void tock_cpu();
   void tock_logic(const blob& cart_blob, int64_t phase_total);
   void update_framebuffer();
@@ -100,8 +136,11 @@ struct LogicBoy {
 
   LogicBoyState lb_state;
   LogicBoyCpu cpu;
-  LogicBoyMem mem;
+  GateBoyMem  mem;
   LogicBoySys sys;
+  Probes      probes;
+
+  GateBoyState gb_state;
 };
 
 //-----------------------------------------------------------------------------

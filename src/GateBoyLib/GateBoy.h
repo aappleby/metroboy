@@ -164,36 +164,25 @@ struct GateBoySys {
 //-----------------------------------------------------------------------------
 
 struct GateBoy  : public IGateBoy {
+  GateBoy() {}
+
   virtual ~GateBoy() {}
 
-  //----------------------------------------
-
-  void reset_to_poweron(const blob& cart_blob);
-  void run_poweron_reset(const blob& cart_blob, bool fastboot);
-  void reset_to_bootrom(const blob& cart_blob) override;
-  void reset_to_cart(const blob& cart_blob) override;
-
-  int64_t phase_total() const override { 
-    return sys.phase_total;
-  };
-
-  Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const override;
-  Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) override;
-
-  Result<uint8_t, Error> dbg_read (const blob& cart_blob, int addr) override;
-  Result<uint8_t, Error> dbg_write(const blob& cart_blob, int addr, uint8_t data) override;
-
-  void run_phases(const blob& cart_blob, int phase_count) override;
-  bool next_phase(const blob& cart_blob) override;
-
-  virtual void set_buttons(uint8_t buttons) { sys.buttons = buttons; }
-
-  const uint8_t* get_framebuffer() const { return mem.framebuffer; }
-  const uint8_t* get_vram() const { return mem.vid_ram; }
-  void get_state(blob& state_out) const {
-    state_out.resize(sizeof(gb_state));
-    memcpy(state_out.data(), &gb_state, sizeof(gb_state));
+  IGateBoy* clone() override {
+    GateBoy* gb2 = new GateBoy();
+    gb2->gb_state = gb_state;
+    gb2->cpu = cpu;
+    gb2->mem = mem;
+    gb2->sys = sys;
+    gb2->probes = probes;
+    return gb2;
   }
+
+  int size_bytes() override {
+    return sizeof(GateBoy);
+  }
+
+  //----------------------------------------
 
   bool load_raw_dump(BlobStream& bs) override {
     bool result = true;
@@ -215,9 +204,28 @@ struct GateBoy  : public IGateBoy {
     return result;
   }
 
-  const FieldInfo* get_field_info() const override {
-    return GateBoyState::fields;
-  }
+  void reset_to_poweron(const blob& cart_blob) override;
+  void run_poweron_reset(const blob& cart_blob, bool fastboot) override;
+  void reset_to_bootrom(const blob& cart_blob) override;
+  void reset_to_cart(const blob& cart_blob) override;
+
+  Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const override;
+  Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) override;
+
+  Result<uint8_t, Error> dbg_read (const blob& cart_blob, int addr) override;
+  Result<uint8_t, Error> dbg_write(const blob& cart_blob, int addr, uint8_t data) override;
+
+  bool run_phases(const blob& cart_blob, int phase_count) override;
+  bool next_phase(const blob& cart_blob) override;
+
+  virtual void set_buttons(uint8_t buttons) { sys.buttons = buttons; }
+  const uint8_t* get_vram() const { return mem.vid_ram; }
+  
+  const GateBoyCpu&   get_cpu() const override    { return cpu; }
+  const GateBoyMem&   get_mem() const override    { return mem; }
+  const GateBoyState& get_state() const override  { return gb_state; }
+  const GateBoySys&   get_sys() const override    { return sys; }
+  const Probes&       get_probes() const override { return probes; }
 
   //----------------------------------------
 

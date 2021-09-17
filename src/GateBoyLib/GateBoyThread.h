@@ -65,7 +65,7 @@ struct AtomicFlags {
 
 struct GateBoyThread {
 
-  GateBoyThread();
+  GateBoyThread(IGateBoy* prototype);
 
   void start();
   void stop();
@@ -89,7 +89,7 @@ struct GateBoyThread {
 
 
   void set_buttons(uint8_t buttons) {
-    gbp->gba.sys.buttons = buttons;
+    //gbp->gba.sys.buttons = buttons;
     //gbp->gbb.sys.buttons = buttons;
   }
 
@@ -110,7 +110,7 @@ struct GateBoyThread {
 
   void dump(Dumper& d);
 
-  StateStack<GateBoyPair> gbp;
+  StatePointerStack<IGateBoy> gb;
 
   void run_steps();
 

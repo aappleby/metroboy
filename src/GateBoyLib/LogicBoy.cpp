@@ -3,7 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
-void LogicBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
+void LogicBoy::reset_to_bootrom(const blob& cart_blob)
 {
 #if 0
   wipe();
@@ -130,7 +130,7 @@ void LogicBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot)
 //-----------------------------------------------------------------------------
 
 void LogicBoy::reset_to_cart(const blob& cart_blob) {
-  reset_to_bootrom(cart_blob, true);
+  reset_to_bootrom(cart_blob);
 
   lb_state.VOGA_HBLANKp = 0b00011001;
   lb_state.cpu_signals.reset_to_cart();
@@ -249,13 +249,36 @@ void LogicBoy::reset_to_cart(const blob& cart_blob) {
 
   memcpy(mem.framebuffer, framebuffer_boot, 160*144);
 
-  sys.sim_time = 169.62587129999756;
   sys.phase_total = 0;
 }
 
 //-----------------------------------------------------------------------------
 
-bool LogicBoy::dbg_read(const blob& cart_blob, int addr, uint8_t& out) {
+Result<uint8_t, Error> LogicBoy::peek(const blob& cart_blob, int addr) const {
+  if (addr >= 0x0000 && addr <= 0x7FFF) { return cart_blob.data()[addr - 0x0000]; }
+  if (addr >= 0x8000 && addr <= 0x9FFF) { return mem.vid_ram[addr - 0x8000];      }
+  if (addr >= 0xA000 && addr <= 0xBFFF) { return mem.cart_ram[addr - 0xA000];     }
+  if (addr >= 0xC000 && addr <= 0xDFFF) { return mem.int_ram[addr - 0xC000];      }
+  if (addr >= 0xE000 && addr <= 0xFDFF) { return mem.int_ram[addr - 0xE000];      }
+  if (addr >= 0xFE00 && addr <= 0xFEFF) { return mem.oam_ram[addr - 0xFE00];      }
+  if (addr >= 0xFF80 && addr <= 0xFFFE) { return mem.zero_ram[addr - 0xFF80];     }
+  return lb_state.peek(cart_blob, addr);
+}
+
+Result<uint8_t, Error> LogicBoy::poke(blob& cart_blob, int addr, uint8_t data_in) {
+  if (addr >= 0x0000 && addr <= 0x7FFF) { cart_blob.data()[addr - 0x0000] = data_in; return data_in; }
+  if (addr >= 0x8000 && addr <= 0x9FFF) { mem.vid_ram[addr - 0x8000] = data_in; return data_in; }
+  if (addr >= 0xA000 && addr <= 0xBFFF) { mem.cart_ram[addr - 0xA000] = data_in; return data_in; }
+  if (addr >= 0xC000 && addr <= 0xDFFF) { mem.int_ram[addr - 0xC000] = data_in; return data_in; }
+  if (addr >= 0xE000 && addr <= 0xFDFF) { mem.int_ram[addr - 0xE000] = data_in; return data_in; }
+  if (addr >= 0xFE00 && addr <= 0xFEFF) { mem.oam_ram[addr - 0xFE00] = data_in; return data_in; }
+  if (addr >= 0xFF80 && addr <= 0xFFFE) { mem.zero_ram[addr - 0xFF80] = data_in; return data_in; }
+  return lb_state.poke(cart_blob, addr, data_in);
+}
+
+//-----------------------------------------------------------------------------
+
+Result<uint8_t, Error> LogicBoy::dbg_read(const blob& cart_blob, int addr) {
   CHECK_P((sys.phase_total & 7) == 0);
 
   Req old_req = cpu.bus_req_new;
@@ -271,13 +294,12 @@ bool LogicBoy::dbg_read(const blob& cart_blob, int addr, uint8_t& out) {
   cpu.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
 
-  out = cpu.cpu_data_latch;
-  return true;
+  return cpu.cpu_data_latch;
 }
 
 //------------------------------------------------------------------------------
 
-bool LogicBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
+Result<uint8_t, Error> LogicBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data_in) {
   CHECK_P((sys.phase_total & 7) == 0);
 
   Req old_req = cpu.bus_req_new;
@@ -285,17 +307,25 @@ bool LogicBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
   sys.cpu_en = false;
 
   cpu.bus_req_new.addr = uint16_t(addr);
-  cpu.bus_req_new.data = data;
+  cpu.bus_req_new.data = data_in;
   cpu.bus_req_new.read = 0;
   cpu.bus_req_new.write = 1;
   run_phases(cart_blob, 8);
 
   cpu.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
-  return true;
+  return data_in;
 }
 
 //------------------------------------------------------------------------------------------------------------------------
+
+bool LogicBoy::run_phases(const blob& cart_blob, int phase_count) {
+  bool result = true;
+  for (int i = 0; i < phase_count; i++) {
+    result &= next_phase(cart_blob);
+  }
+  return result;
+}
 
 bool LogicBoy::next_phase(const blob& cart_blob) {
   CHECK_N(!sys.clk_req);

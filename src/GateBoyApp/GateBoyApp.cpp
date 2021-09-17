@@ -17,6 +17,7 @@
 #endif
 
 #include "GateBoyLib/GateBoyState.h"
+#include "GateBoyLib/LogicBoy.h"
 
 //-----------------------------------------------------------------------------
 
@@ -55,11 +56,16 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   overlay_tex = create_texture_u32(160, 144, nullptr, false);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-  gb_thread.start();
+  //auto gb = new GateBoyPair(new GateBoy(), new GateBoy());
+  auto gb = new GateBoy();
+  //auto gb = new LogicBoy();
+
+  gb_thread = new GateBoyThread(gb);
+  gb_thread->start();
 
   auto cart = Assembler::create_dummy_cart();
-  gb_thread.load_cart_blob(cart);
-  gb_thread.reset_to_bootrom();
+  gb_thread->load_cart_blob(cart);
+  gb_thread->reset_to_cart();
   //gb_thread.reset_to_cart();
   
   //blob cart;
@@ -69,10 +75,10 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   //BlobStream bs;
   //load_blob("zelda_intro.dump", bs.b);
-  //gb_thread.load_raw_dump(bs);
+  //gb_thread->load_raw_dump(bs);
 
   //gb_thread.add_steps(INT_MAX);
-  gb_thread.resume();
+  gb_thread->resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
   //load_rom("tests/mooneye-gb/tests/build/acceptance/ppu/lcdon_timing-GS.gb"); // dmg pass, gateboy fail
@@ -127,7 +133,9 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 //-----------------------------------------------------------------------------
 
 void GateBoyApp::app_close() {
-  gb_thread.stop();
+  gb_thread->stop();
+  delete gb_thread;
+  gb_thread = nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -139,7 +147,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
 
   SDL_Event event;
 
-  gb_thread.pause();
+  gb_thread->pause();
 
   while (SDL_PollEvent(&event)) {
 
@@ -171,18 +179,18 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     case SDLK_f: {
       if (app_paused) {
         app_paused = false;
-        gb_thread.resume();
+        gb_thread->resume();
       }
-      gb_thread.clear_steps();
-      gb_thread.add_steps(INT_MAX);
+      gb_thread->clear_steps();
+      gb_thread->add_steps(INT_MAX);
       break;
     }
     case SDLK_s: {
       if (app_paused) {
         app_paused = false;
-        gb_thread.resume();
+        gb_thread->resume();
       }
-      gb_thread.clear_steps();
+      gb_thread->clear_steps();
       break;
     }
 
@@ -190,10 +198,10 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     case SDLK_b: {
       if (app_paused) {
         app_paused = false;
-        gb_thread.resume();
+        gb_thread->resume();
       }
-      gb_thread.clear_steps();
-      gb_thread.add_steps(46880640);
+      gb_thread->clear_steps();
+      gb_thread->add_steps(46880640);
       break;
     }
 
@@ -202,23 +210,23 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
       LOG_B("Loading raw dump from %s\n", filename);
       BlobStream bs;
       ::load_blob(filename, bs.b);
-      gb_thread.load_raw_dump(bs);
+      gb_thread->load_raw_dump(bs);
       break;
     }
     case SDLK_F4: {
       const char* filename = "gateboy.raw.dump";
       LOG_B("Saving raw dump to %s\n", filename);
       BlobStream bs;
-      gb_thread.save_raw_dump(bs);
+      gb_thread->save_raw_dump(bs);
       save_blob(filename, bs.b);
       break;
     }
     case SDLK_r: {
       if (app_paused) {
         app_paused = false;
-        gb_thread.resume();
+        gb_thread->resume();
       }
-      gb_thread.reset_to_cart(); break;
+      gb_thread->reset_to_cart(); break;
     }
     case SDLK_d:    show_diff   = !show_diff; break;
     case SDLK_g:    show_golden = !show_golden; break;
@@ -227,26 +235,26 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
 
     case SDLK_LEFT:   {
       if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        gb_thread.rewind(8);
+        gb_thread->rewind(8);
       }
       else {
-        gb_thread.rewind(1);
+        gb_thread->rewind(1);
       }
       break;
     }
 
     case SDLK_RIGHT:  {
       if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
-        gb_thread.add_steps(114 * 8 * 8);
+        gb_thread->add_steps(114 * 8 * 8);
       }
       else if (keyboard_state[SDL_SCANCODE_LALT]) {
-        gb_thread.add_steps(114 * 8);
+        gb_thread->add_steps(114 * 8);
       }
       else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
-        gb_thread.add_steps(8);
+        gb_thread->add_steps(8);
       }
       else {
-        gb_thread.add_steps(1);
+        gb_thread->add_steps(1);
       }
       break;
     }
@@ -258,14 +266,14 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
         LOG_B("Loading cart rom from %s\n", filename.c_str());
         blob rom;
         load_blob(event.drop.file, rom);
-        gb_thread.load_cart_blob(rom);
-        gb_thread.reset_to_cart();
+        gb_thread->load_cart_blob(rom);
+        gb_thread->reset_to_cart();
       }
       else if (filename.ends_with("dump")) {
         LOG_B("Loading raw dump from %s\n", filename.c_str());
         BlobStream bs;
         load_blob(event.drop.file, bs.b);
-        gb_thread.load_raw_dump(bs);
+        gb_thread->load_raw_dump(bs);
       }
       SDL_free(event.drop.file);
     }
@@ -284,13 +292,13 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
   if (keyboard_state[SDL_SCANCODE_Z])      buttons |= 0x20; // B
   if (keyboard_state[SDL_SCANCODE_RSHIFT]) buttons |= 0x40; // SELECT
   if (keyboard_state[SDL_SCANCODE_RETURN]) buttons |= 0x80; // START
-  gb_thread.set_buttons(buttons);
+  gb_thread->set_buttons(buttons);
 
   view_control.update(delta);
 
   //----------------------------------------
 
-  if (!app_paused) gb_thread.resume();
+  if (!app_paused) gb_thread->resume();
 }
 
 //-----------------------------------------------------------------------------
@@ -304,15 +312,18 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   auto& view = view_control.view_smooth_snap;
 
-  gb_thread.pause();
+  gb_thread->pause();
 
   //auto& gb = show_gb_ab ? gb_thread.gbp->gbb : gb_thread.gbp->gba;
-  auto& gb = gb_thread.gbp->gba;
+  auto gb = gb_thread->gb.state();
 
-  uint8_t* framebuffer = gb.mem.framebuffer;
-  uint8_t* vid_ram = gb.mem.vid_ram;
-  uint64_t phase_total = gb.sys.phase_total;
+  uint64_t phase_total = gb->get_sys().phase_total;
 
+  auto& cpu = gb_thread->gb->get_cpu();
+  auto& mem = gb_thread->gb->get_mem();
+  auto& state = gb_thread->gb->get_state();
+  auto& sys = gb_thread->gb->get_sys();
+  auto& probes = gb_thread->gb->get_probes();
 
   StringDumper d;
 
@@ -336,13 +347,12 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   // Column 1
 
   d("\002===== Thread =====\001\n");
-  gb_thread.dump(d);
+  gb_thread->dump(d);
 
   double fps = 1.0f / delta;
   static double smooth_fps = 0.0;
   smooth_fps = ease(smooth_fps, fps, delta);
   d("App fps       : %d\n", (int)round(smooth_fps));
-  //d("Logic mode    : %d\n", gb.sys.logic_mode);
 
   if (app_paused) {
     d("\003GB_THREAD IS PAUSED\001\n");
@@ -354,24 +364,24 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   d("\n");
 
   d("\002===== GateBoy Top =====\001\n");
-  dumper.dump_sys(gb, d);
+  dumper.dump_sys(sys, d);
   d("\n");
 
   d("\002===== CPU =====\001\n");
-  gb.cpu.core.dump(d);
+  cpu.core.dump(d);
   d("\n");
 
   d("\002===== Clocks =====\001\n");
-  dumper.dump_clocks(gb, d);
+  dumper.dump_clocks(state, d);
   d("\n");
 
   d("\002===== Resets =====\001\n");
-  dumper.dump_resets(gb, d);
+  dumper.dump_resets(state, d);
   d("\n");
 
 
   d("\002===== Interrupts =====\001\n");
-  dumper.dump_interrupts(gb, d);
+  dumper.dump_interrupts(state, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col1, row1);
@@ -381,35 +391,35 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   // Column 2
 
   d("\002===== DMA =====\001\n");
-  dumper.dump_dma(gb, d);
+  dumper.dump_dma(state, d);
   d("\n");
 
   d("\002===== CPU Bus =====\001\n");
-  dumper.dump_cpu_bus(gb, d);
+  dumper.dump_cpu_bus(state, d);
   d("\n");
 
   d("\002===== EXT Bus =====\001\n");
-  dumper.dump_ext_bus(gb, d);
+  dumper.dump_ext_bus(state, d);
   d("\n");
 
   d("\002===== OAM Bus =====\001\n");
-  dumper.dump_oam_bus(gb, d);
+  dumper.dump_oam_bus(state, d);
   d("\n");
 
   d("\002===== VRAM Bus =====\001\n");
-  dumper.dump_vram_bus(gb, d);
+  dumper.dump_vram_bus(state, d);
   d("\n");
 
   d("\002===== MBC1 =====\001\n");
-  dumper.dump_mbc1(gb, d);
+  dumper.dump_mbc1(state, d);
   d("\n");
 
   d("\002===== Timer =====\001\n");
-  dumper.dump_timer(gb, d);
+  dumper.dump_timer(state, d);
   d("\n");
 
   d("\002===== SPU =====\001\n");
-  dumper.dump_spu(gb, d);
+  dumper.dump_spu(state, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col2, row1);
@@ -419,45 +429,47 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   // Column 3
 
   d("\002===== TileFetcher =====\001\n");
-  dumper.dump_tile_fetcher(gb, d);
+  dumper.dump_tile_fetcher(state, d);
   d("\n");
 
   d("\002===== Sprite Fetch =====\001\n");
-  dumper.dump_sprite_fetcher(gb, d);
+  dumper.dump_sprite_fetcher(state, d);
   d("\n");
 
   d("\002===== SpriteStore =====\001\n");
-  dumper.dump_sprite_store(gb, d);
+  dumper.dump_sprite_store(state, d);
   d("\n");
 
   d("\002===== Sprite Scan =====\001\n");
-  dumper.dump_sprite_scanner(gb, d);
+  dumper.dump_sprite_scanner(state, d);
   d("\n");
 
   d("\002===== Joypad =====\001\n");
-  dumper.dump_joypad(gb, d);
+  dumper.dump_joypad(state, d);
   d("\n");
 
   d("\002===== Serial =====\001\n");
-  dumper.dump_serial(gb, d);
+  dumper.dump_serial(state, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col3, row1);
   d.clear();
 
+
   //----------------------------------------
   // Column 4
 
   d("\002===== PPU =====\001\n");
-  dumper.dump_ppu(gb, d);
+  dumper.dump_ppu(state, d);
   d("\n");
 
   d("\002===== LCD =====\001\n");
-  dumper.dump_lcd(gb, d);
+  dumper.dump_lcd(state, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col4, row1);
   d.clear();
+
 
   //----------------------------------------
   // Column 5
@@ -504,33 +516,33 @@ Step controls:
 
   // Probe dump
   d("\002========== Debug Probes ==========\001\n");
-  gb.probes.dump(d);
+  gb->get_probes().dump(d);
   d("\n");
 
   d("\002========== Disassembly ==========\001\n");
   {
-    int pc = gb.cpu.core.op_addr;
+    int pc = gb->get_cpu().core.op_addr;
     const uint8_t* code = nullptr;
     int code_size = 0;
     int code_base = 0;
-
-    if (!bit(gb.gb_state.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
+  
+    if (!bit(state.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
       code      = DMG_ROM_blob.data();
       code_size = (int)DMG_ROM_blob.size();
       code_base = ADDR_BOOT_ROM_BEGIN;
     }
     else if (pc >= 0x0000 && pc <= 0x7FFF) {
       // FIXME needs to account for mbc1 mem mapping
-      code      = gb_thread.get_cart().data();
-      code_size = (int)gb_thread.get_cart().size();
+      code      = gb_thread->get_cart().data();
+      code_size = (int)gb_thread->get_cart().size();
       code_base = ADDR_CART_ROM_BEGIN;
     }
     else if (pc >= 0xFF80 && pc <= 0xFFFE) {
-      code      = gb.mem.zero_ram;
+      code      = mem.zero_ram;
       code_size = 127;
       code_base = ADDR_ZEROPAGE_BEGIN;
     }
-
+  
     assembler.disassemble(code, code_size, code_base, pc, 16, d, /*collapse_nops*/ false);
   }
   d("\n");
@@ -546,13 +558,13 @@ Step controls:
   text_painter.render_string(view, screen_size, "\002========== Game Boy Screen ==========\001", col6, row1);
 
   if (has_golden && show_diff) {
-    gb_blitter.blit_diff(view, screen_size, col6, gb_screen_y, 2, framebuffer, golden_u8);
+    gb_blitter.blit_diff(view, screen_size, col6, gb_screen_y, 2, mem.framebuffer, golden_u8);
   }
   else if (show_golden) {
     gb_blitter.blit_screen(view, screen_size, col6, gb_screen_y, 2, golden_u8);
   }
   else {
-    gb_blitter.blit_screen(view, screen_size, col6, gb_screen_y, 2, framebuffer);
+    gb_blitter.blit_screen(view, screen_size, col6, gb_screen_y, 2, mem.framebuffer);
   }
 
   // Status bar under screen
@@ -566,27 +578,26 @@ Step controls:
     phase_names[phase_total & 7],
     show_golden ? "GOLDEN IMAGE " : "");
 
-  d("%c %c %c %c %c %c %c %c\n",
-    gb.sys.buttons & 0x01 ? 'R' : '-',
-    gb.sys.buttons & 0x02 ? 'L' : '-',
-    gb.sys.buttons & 0x04 ? 'U' : '-',
-    gb.sys.buttons & 0x08 ? 'D' : '-',
-    gb.sys.buttons & 0x10 ? 'A' : '-',
-    gb.sys.buttons & 0x20 ? 'B' : '-',
-    gb.sys.buttons & 0x40 ? 'E' : '-',
-    gb.sys.buttons & 0x80 ? 'S' : '-');
-
+  d("%c %c %c %c %c %c %c %c",
+    sys.buttons & 0x01 ? 'R' : '-',
+    sys.buttons & 0x02 ? 'L' : '-',
+    sys.buttons & 0x04 ? 'U' : '-',
+    sys.buttons & 0x08 ? 'D' : '-',
+    sys.buttons & 0x10 ? 'A' : '-',
+    sys.buttons & 0x20 ? 'B' : '-',
+    sys.buttons & 0x40 ? 'E' : '-',
+    sys.buttons & 0x80 ? 'S' : '-');
+  d("\n");
 
   text_painter.render_string(view, screen_size, d.s, col6, gb_screen_y + 144 * 2);
   d.clear();
-
 
   // Draw screen overlay
   {
     memset(overlay, 0, sizeof(overlay));
 
-    int fb_x = bit_pack(gb.gb_state.pix_count) - 8;
-    int fb_y = bit_pack(gb.gb_state.reg_ly);
+    int fb_x = bit_pack(state.pix_count) - 8;
+    int fb_y = bit_pack(state.reg_ly);
 
     if (fb_y >= 0 && fb_y < 144) {
       for (int x = 0; x < 160; x++) {
@@ -616,19 +627,19 @@ Step controls:
   // Draw flat memory view
   {
     text_painter.render_string(view, screen_size, "\002========== Flat memory view ==========\001", col6, 768);
-    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread.get_cart().data());
-    update_texture_u8(ram_tex, 0x00, 0x80, 256, 32,  gb.mem.vid_ram);
-    update_texture_u8(ram_tex, 0x00, 0xA0, 256, 32,  gb.mem.cart_ram);
-    update_texture_u8(ram_tex, 0x00, 0xC0, 256, 32,  gb.mem.int_ram);
-    update_texture_u8(ram_tex, 0x00, 0xFE, 256, 1,   gb.mem.oam_ram);
-    update_texture_u8(ram_tex, 0x80, 0xFF, 128, 1,   gb.mem.zero_ram);
+    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread->get_cart().data());
+    update_texture_u8(ram_tex, 0x00, 0x80, 256, 32,  mem.vid_ram);
+    update_texture_u8(ram_tex, 0x00, 0xA0, 256, 32,  mem.cart_ram);
+    update_texture_u8(ram_tex, 0x00, 0xC0, 256, 32,  mem.int_ram);
+    update_texture_u8(ram_tex, 0x00, 0xFE, 256, 1,   mem.oam_ram);
+    update_texture_u8(ram_tex, 0x80, 0xFF, 128, 1,   mem.zero_ram);
     blitter.blit_mono(view, screen_size, ram_tex, 256, 256, 0, 0, 256, 256, col6, 784, 256, 256);
   }
 
   d("\002========== OAM ==========\001\n");
   for (int y = 0; y < 10; y++) {
     for (int x = 0; x < 16; x++) {
-      d("%02x ", gb.mem.oam_ram[x + y * 16]);
+      d("%02x ", mem.oam_ram[x + y * 16]);
     }
     d("\n");
   }
@@ -637,7 +648,7 @@ Step controls:
   d("\002========== Ram (first 128 bytes) ==========\001\n");
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 16; x++) {
-      d("%02x ", gb.mem.int_ram[x + y * 16]);
+      d("%02x ", mem.int_ram[x + y * 16]);
     }
     d("\n");
   }
@@ -646,7 +657,7 @@ Step controls:
   d("\002========== ZRAM ==========\001\n");
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 16; x++) {
-      d("%02x ", gb.mem.zero_ram[x + y * 16]);
+      d("%02x ", mem.zero_ram[x + y * 16]);
     }
     d("\n");
   }
@@ -664,17 +675,15 @@ Step controls:
   int row3 = 640;
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 0 ==========\001", col7, row1);
-  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, vid_ram, 0,  (int)bit(gb.gb_state.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
-  //gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, vid_ram, (int)bit(gb.reg_lcdc.XAFO_LCDC_BGMAPn.qn_old()),  (int)bit(gb.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, mem.vid_ram, 0, (int)bit(state.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 1 ==========\001", col7, row2);
-  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, vid_ram, 1, (int)bit(gb.gb_state.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
-  //gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, vid_ram, (int)bit(gb.reg_lcdc.WOKY_LCDC_WINMAPn.qn_old()), (int)bit(gb.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, mem.vid_ram, 1, (int)bit(state.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Tiles ==========\001", col7, row3);
-  gb_blitter.blit_tiles (view, screen_size, col7, row3 + 16, 1, vid_ram);
+  gb_blitter.blit_tiles (view, screen_size, col7, row3 + 16, 1, mem.vid_ram);
 
-  if (!app_paused) gb_thread.resume();
+  if (!app_paused) gb_thread->resume();
 
   frame_count++;
   frame_end = timestamp();

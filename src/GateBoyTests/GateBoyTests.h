@@ -11,9 +11,9 @@ struct GateBoyTests {
 
   TestResults test_regs();
 
-  TestResults test_fastboot_vs_slowboot();
-  TestResults test_reset_to_bootrom();
-  TestResults test_reset_to_cart();
+  TestResults test_fastboot_vs_slowboot(IGateBoy* gb1, IGateBoy* gb2);
+  TestResults test_reset_to_bootrom(IGateBoy* gb1, IGateBoy* gb2);
+  TestResults test_reset_to_cart(IGateBoy* gb1, IGateBoy* gb2);
 
   TestResults test_init();
   TestResults test_bootrom();

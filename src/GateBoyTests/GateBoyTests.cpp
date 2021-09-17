@@ -430,7 +430,11 @@ TestResults GateBoyTests::test_reset_to_cart(const IGateBoy* proto1, const IGate
 
   LOG_B("load gateboy_reset_to_cart.raw.dump\n");
   BlobStream bs;
-  load_blob("gateboy_reset_to_cart.raw.dump", bs.b);
+  if (!load_blob("gateboy_reset_to_cart.raw.dump", bs.b)) {
+    LOG_Y("Warning : can't load gateboy_reset_to_cart_raw.dump\n");
+    TEST_DONE();
+  }
+
   if (!gb1->load_raw_dump(bs)) {
     LOG_Y("Warning : gateboy_reset_to_cart_raw.dump not valid\n");
     TEST_DONE();

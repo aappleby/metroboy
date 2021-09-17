@@ -19,6 +19,7 @@
 #include "GateBoyLib/GateBoyReset.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
+#include "GateBoyLib/GateBoyPins.h"
 
 //-----------------------------------------------------------------------------
 // All the SOC registers, pins, buses. Everything in GateBoyState _must_
@@ -50,6 +51,8 @@ struct GateBoyState {
   /*_SIG_VCC*/ SigIn SIG_VCC;
   /*_SIG_GND*/ SigIn SIG_GND;
   
+  GateBoyPins pins;
+
   RegJoy  reg_joy;  // 0xFF00
   //RegSB   reg_sb;   // 0xFF01
   //RegSC   reg_sc;   // 0xFF02
@@ -130,7 +133,6 @@ struct GateBoyState {
 
   JoyInt   joy_int;
   JoyLatch joy_latch;
-  JoyExt   joy_ext;
 
   //----------
 

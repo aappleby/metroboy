@@ -19,6 +19,7 @@
 #include "GateBoyLib/LogicBoyReset.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
+#include "GateBoyLib/GateBoyPins.h"
 
 struct GateBoyState;
 
@@ -31,6 +32,8 @@ struct LogicBoyState {
 
   void to_gb_state(GateBoyState& dst, int64_t phase_total) const;
   void from_gb_state(const GateBoyState& src, int64_t phase_total);
+
+  GateBoyPins pins;
 
   uint8_t  reg_joy;  // 0xFF00
   uint8_t  reg_sb; // 0xFF01
@@ -115,7 +118,6 @@ struct LogicBoyState {
 
   JoyInt   joy_int;
   uint8_t joy_latch;
-  uint8_t joy_ext;
 
   //----------
 

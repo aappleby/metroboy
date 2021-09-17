@@ -72,7 +72,7 @@ void GateBoyState::reset_to_poweron() {
   cpu_ack.reset_to_poweron();
   joy_int.reset_to_poweron();
   joy_latch.reset_to_poweron();
-  joy_ext.reset_to_poweron();
+  pins.reset_to_poweron();
   sprite_scanner.reset_to_poweron();
   scan_counter.reset_to_poweron();
   sprite_counter.reset_to_poweron();
@@ -229,7 +229,7 @@ void GateBoyState::reset_to_bootrom() {
   cpu_ack.reset_to_bootrom();
   joy_int.reset_to_bootrom();
   joy_latch.reset_to_bootrom();
-  joy_ext.reset_to_bootrom();
+  pins.reset_to_bootrom();
   sprite_scanner.reset_to_bootrom();
   scan_counter.reset_to_bootrom();
   sprite_counter.reset_to_bootrom();
@@ -388,7 +388,7 @@ void GateBoyState::reset_to_cart() {
   cpu_ack.reset_to_cart();
   joy_int.reset_to_cart();
   joy_latch.reset_to_cart();
-  joy_ext.reset_to_cart();
+  pins.reset_to_cart();
   sprite_scanner.reset_to_cart();
   scan_counter.reset_to_cart();
   sprite_counter.reset_to_cart();
@@ -719,7 +719,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, joy_int),
   DECLARE_FIELD(GateBoyState, reg_joy),
   DECLARE_FIELD(GateBoyState, joy_latch),
-  DECLARE_FIELD(GateBoyState, joy_ext),
+  DECLARE_FIELD(GateBoyState, pins),
   //GEN_OFFSET(GateBoyState, serial),
   DECLARE_FIELD(GateBoyState, store_i0),
   DECLARE_FIELD(GateBoyState, store_i1),

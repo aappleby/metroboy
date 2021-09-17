@@ -57,6 +57,7 @@
     <ClInclude Include="GateBoy.h" />
     <ClInclude Include="GateBoyCpuBus.h" />
     <ClInclude Include="GateBoyDumper.h" />
+    <ClInclude Include="GateBoyPins.h" />
     <ClInclude Include="GateBoyState.h" />
     <ClInclude Include="IGateBoy.h" />
     <ClInclude Include="LogicBoyReset.h" />

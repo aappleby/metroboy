@@ -676,29 +676,30 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
     set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
 
-    set_bit(state_new.joy_ext, 4, !get_bit(state_new.reg_joy, 0));
-    set_bit(state_new.joy_ext, 5, !get_bit(state_new.reg_joy, 1));
+    state_new.pins.PIN_63_JOY_P14.pin_out(get_bit(state_new.reg_joy, 0), get_bit(state_new.reg_joy, 0));
+    state_new.pins.PIN_62_JOY_P15.pin_out(get_bit(state_new.reg_joy, 1), get_bit(state_new.reg_joy, 1));
+
   }
 
   bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
 
-  if (get_bit(state_new.joy_ext, 4)) {
+  if (!bit(state_new.pins.PIN_63_JOY_P14.qp_ext_new())) {
     EXT_button0 = get_bit(sys.buttons, 0); // RIGHT
     EXT_button1 = get_bit(sys.buttons, 1); // LEFT
     EXT_button2 = get_bit(sys.buttons, 2); // UP
     EXT_button3 = get_bit(sys.buttons, 3); // DOWN
   }
-  else if (get_bit(state_new.joy_ext, 5)) {
+  else if (!bit(state_new.pins.PIN_62_JOY_P15.qp_ext_new())) {
     EXT_button0 = get_bit(sys.buttons, 4); // A
     EXT_button1 = get_bit(sys.buttons, 5); // B
     EXT_button2 = get_bit(sys.buttons, 6); // SELECT
     EXT_button3 = get_bit(sys.buttons, 7); // START
   }
 
-  set_bit(state_new.joy_ext, 0, EXT_button0);
-  set_bit(state_new.joy_ext, 1, EXT_button1);
-  set_bit(state_new.joy_ext, 2, EXT_button2);
-  set_bit(state_new.joy_ext, 3, EXT_button3);
+  state_new.pins.PIN_67_JOY_P10.state = EXT_button0;
+  state_new.pins.PIN_66_JOY_P11.state = EXT_button1;
+  state_new.pins.PIN_65_JOY_P12.state = EXT_button2;
+  state_new.pins.PIN_64_JOY_P13.state = EXT_button3;
 
   wire any_button = EXT_button0 || EXT_button1 || EXT_button2 || EXT_button3;
 
@@ -724,10 +725,10 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
   }
   else {
-    set_bit(state_new.joy_latch, 0, get_bit(state_new.joy_ext, 0));
-    set_bit(state_new.joy_latch, 1, get_bit(state_new.joy_ext, 1));
-    set_bit(state_new.joy_latch, 2, get_bit(state_new.joy_ext, 2));
-    set_bit(state_new.joy_latch, 3, get_bit(state_new.joy_ext, 3));
+    set_bit(state_new.joy_latch, 0, state_new.pins.PIN_67_JOY_P10.qp_int_new());
+    set_bit(state_new.joy_latch, 1, state_new.pins.PIN_66_JOY_P11.qp_int_new());
+    set_bit(state_new.joy_latch, 2, state_new.pins.PIN_65_JOY_P12.qp_int_new());
+    set_bit(state_new.joy_latch, 3, state_new.pins.PIN_64_JOY_P13.qp_int_new());
   }
 
   //----------------------------------------

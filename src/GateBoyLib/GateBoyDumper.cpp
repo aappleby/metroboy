@@ -105,12 +105,12 @@ void GateBoyDumper::dump_joypad(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("AWOB_WAKE_CPU   : ", s.int_ctrl.AWOB_WAKE_CPU.state);
   d.dump_bitp("SIG_CPU_WAKE    : ", s.int_ctrl.SIG_CPU_WAKE.state);
   d("\n");
-  d.dump_bitp("PIN_67_JOY_P10   : ", s.joy_ext.PIN_67_JOY_P10.state);
-  d.dump_bitp("PIN_66_JOY_P11   : ", s.joy_ext.PIN_66_JOY_P11.state);
-  d.dump_bitp("PIN_65_JOY_P12   : ", s.joy_ext.PIN_65_JOY_P12.state);
-  d.dump_bitp("PIN_64_JOY_P13   : ", s.joy_ext.PIN_64_JOY_P13.state);
-  d.dump_bitp("PIN_63_JOY_P14   : ", s.joy_ext.PIN_63_JOY_P14.state);
-  d.dump_bitp("PIN_62_JOY_P15   : ", s.joy_ext.PIN_62_JOY_P15.state);
+  d.dump_bitp("PIN_67_JOY_P10   : ", s.pins.PIN_67_JOY_P10.state);
+  d.dump_bitp("PIN_66_JOY_P11   : ", s.pins.PIN_66_JOY_P11.state);
+  d.dump_bitp("PIN_65_JOY_P12   : ", s.pins.PIN_65_JOY_P12.state);
+  d.dump_bitp("PIN_64_JOY_P13   : ", s.pins.PIN_64_JOY_P13.state);
+  d.dump_bitp("PIN_63_JOY_P14   : ", s.pins.PIN_63_JOY_P14.state);
+  d.dump_bitp("PIN_62_JOY_P15   : ", s.pins.PIN_62_JOY_P15.state);
   d("\n");
   d.dump_bitp("KEVU_JOYP_L0n   : ", s.joy_latch.KEVU_JOYP_L0n.state);
   d.dump_bitp("KAPA_JOYP_L1n   : ", s.joy_latch.KAPA_JOYP_L1n.state);

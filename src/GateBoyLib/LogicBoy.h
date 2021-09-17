@@ -111,6 +111,10 @@ struct LogicBoy : public IGateBoy {
 
   int size_bytes() override { return sizeof(LogicBoy); }
 
+  uint8_t get_flags() const override {
+    return BIT_DATA;
+  }
+
   bool load_raw_dump(BlobStream& dump_in) override        { return false; }
   bool save_raw_dump(BlobStream& dump_out) const override { return false; }
 

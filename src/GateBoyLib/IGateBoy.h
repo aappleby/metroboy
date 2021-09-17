@@ -14,6 +14,8 @@ public:
   virtual IGateBoy* clone() const = 0;
   virtual int size_bytes() = 0;
 
+  virtual uint8_t get_flags() const = 0;
+
   virtual bool load_raw_dump(BlobStream& dump_in) = 0;
   virtual bool save_raw_dump(BlobStream& dump_out) const = 0;
 

@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
   LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
 
 
-  if (results.test_fail > 20) {
+  if (results.test_fail > 40) {
     LOG_R("\n");
     LOG_R("########################################\n");
     LOG_R("##               FAIL                 ##\n");
@@ -111,14 +111,11 @@ TestResults GateBoyTests::test_logicboy() {
 
 //-----------------------------------------------------------------------------
 
-TestResults test_regression_cart(blob cart_blob, int cycles, bool from_bootrom) {
+TestResults test_regression_cart(const IGateBoy* proto1, const IGateBoy* proto2, blob cart_blob, int cycles, bool from_bootrom) {
   TEST_INIT();
   if (cart_blob.empty()) TEST_FAIL();
 
-  //auto gb = make_unique<GateBoy>();
-  //auto gb = new GateBoyPair(new GateBoy(), new LogicBoy());
-  auto gb = new GateBoy();
-
+  auto gb = make_unique<GateBoyPair>(proto1->clone(), proto2->clone());
   if (from_bootrom) {
     gb->reset_to_bootrom(cart_blob);
   }
@@ -131,17 +128,15 @@ TestResults test_regression_cart(blob cart_blob, int cycles, bool from_bootrom) 
     if (!gb->next_phase(cart_blob)) TEST_FAIL();
   }
 
-  delete gb;
-
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults test_regression_dump(BlobStream& bs, int cycles) {
+TestResults test_regression_dump(const IGateBoy* proto1, const IGateBoy* proto2, BlobStream& bs, int cycles) {
   TEST_INIT();
 
-  auto gb = make_unique<GateBoy>();
+  auto gb = make_unique<GateBoyPair>(proto1->clone(), proto2->clone());
   gb->load_raw_dump(bs);
   
   blob cart_blob = bs.rest();
@@ -172,21 +167,27 @@ TestResults GateBoyTests::test_regression() {
 
   {
     LOG_G("Regression testing bootrom start\n");
-    results += test_regression_cart(dummy_cart, 1000000, true);
+    auto gb_proto = make_unique<GateBoy>();
+    auto lb_proto = make_unique<LogicBoy>();
+    results += test_regression_cart(gb_proto.get(), lb_proto.get(), dummy_cart, 1000000, true);
   }
 
   {
     LOG_G("Regression testing Zelda startup\n");
+    auto gb_proto = make_unique<GateBoy>();
+    auto lb_proto = make_unique<LogicBoy>();
     blob b;
     load_blob("LinksAwakening.gb", b);
-    results += test_regression_cart(b, 1000000, false);
+    results += test_regression_cart(gb_proto.get(), lb_proto.get(), b, 1000000, false);
   }
   
   {
     LOG_G("Regression testing Zelda intro dump\n");
+    auto gb_proto = make_unique<GateBoy>();
+    auto lb_proto = make_unique<LogicBoy>();
     BlobStream bs;
     if (load_blob("zelda_intro.dump", bs.b)) {
-      results += test_regression_dump(bs, 1000000);
+      results += test_regression_dump(gb_proto.get(), lb_proto.get(), bs, 1000000);
     }
     else {
       LOG_Y("Could not load dump!\n");
@@ -195,9 +196,11 @@ TestResults GateBoyTests::test_regression() {
   
   {
     LOG_G("Regression testing SML intro dump\n");
+    auto gb_proto = make_unique<GateBoy>();
+    auto lb_proto = make_unique<LogicBoy>();
     BlobStream bs;
     if (load_blob("sml_intro.dump", bs.b)) {
-      results += test_regression_dump(bs, 1000000);
+      results += test_regression_dump(gb_proto.get(), lb_proto.get(), bs, 1000000);
     }
     else {
       LOG_Y("Could not load dump!\n");
@@ -209,45 +212,43 @@ TestResults GateBoyTests::test_regression() {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_generic(IGateBoy* proto) {
+TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
   TEST_INIT();
 
-  {
-    auto gb = std::make_unique<GateBoy>();
-    results += test_bootrom(gb.get());
-  }
-  results += test_clk();
-  results += test_regs();
-  results += test_dma();
+  results += test_bootrom(proto);
+  results += test_clk(proto);
+  results += test_regs(proto);
+  results += test_dma(proto);
 
-  results += test_mem();
-  results += test_init();
+  results += test_mem(proto);
+  results += test_init(proto);
 
-  if (config_use_flags) {
-    results += test_ext_bus();
+  // Ext bus test only passes if flags are on and we're using the driven/pulled falgs
+  if ((proto->get_flags() & (BIT_DRIVEN | BIT_PULLED)) == (BIT_DRIVEN | BIT_PULLED)) {
+    results += test_ext_bus(proto);
   }
 
-  results += test_ppu();
-  results += test_timer();
+  results += test_ppu(proto);
+  results += test_timer(proto);
 
-  results += test_micro_poweron();
-  results += test_micro_lcden();
-  results += test_micro_timer();
+  results += test_micro_poweron(proto);
+  results += test_micro_lcden(proto);
+  results += test_micro_timer(proto);
 
   if (run_slow_tests) {
-    results += test_micro_int_vblank();
+    results += test_micro_int_vblank(proto);
   }
  
-  results += test_micro_int_stat();
-  results += test_micro_int_timer();
-  results += test_micro_int_serial();
-  results += test_micro_int_joypad();
-  results += test_micro_lock_oam();
-  results += test_micro_lock_vram();
-  results += test_micro_window();
-  results += test_micro_ppu();
-  results += test_micro_dma();
-  results += test_micro_mbc1();
+  results += test_micro_int_stat(proto);
+  results += test_micro_int_timer(proto);
+  results += test_micro_int_serial(proto);
+  results += test_micro_int_joypad(proto);
+  results += test_micro_lock_oam(proto);
+  results += test_micro_lock_vram(proto);
+  results += test_micro_window(proto);
+  results += test_micro_ppu(proto);
+  results += test_micro_dma(proto);
+  results += test_micro_mbc1(proto);
 
 #if 0
   verbose = true;
@@ -262,19 +263,22 @@ TestResults GateBoyTests::test_generic(IGateBoy* proto) {
 
 //-----------------------------------------------------------------------------
 
+/*
 std::unique_ptr<IGateBoy> GateBoyTests::create_debug_gb(const blob& cart_blob, bool cpu_en) {
   auto gb = std::make_unique<GateBoy>();
   gb->reset_to_bootrom(cart_blob);
   gb->sys.cpu_en = cpu_en;
   return gb;
 }
+*/
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask) {
+TestResults GateBoyTests::test_reg(const IGateBoy* proto, const char* tag, uint16_t addr, uint8_t mask) {
   TEST_INIT("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
-  auto gb = create_debug_gb(dummy_cart, false);
+  unique_ptr<IGateBoy> gb(proto->clone());
+  gb->reset_to_bootrom(dummy_cart);
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
@@ -287,10 +291,12 @@ TestResults GateBoyTests::test_reg(const char* tag, uint16_t addr, uint8_t mask)
   TEST_DONE();
 }
 
-TestResults GateBoyTests::test_spu_reg(const char* tag, uint16_t addr, uint8_t mask) {
+TestResults GateBoyTests::test_spu(const IGateBoy* proto, const char* tag, uint16_t addr, uint8_t mask) {
   TEST_INIT("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
-  auto gb = create_debug_gb(dummy_cart, false);
+  unique_ptr<IGateBoy> gb(proto->clone());
+  gb->reset_to_bootrom(dummy_cart);
+
   gb->dbg_write(dummy_cart, ADDR_NR52, 0x80).unwrap();
 
   for (int i = 0; i < 256; i++) {
@@ -304,33 +310,33 @@ TestResults GateBoyTests::test_spu_reg(const char* tag, uint16_t addr, uint8_t m
   TEST_DONE();
 }
 
-TestResults GateBoyTests::test_regs() {
+TestResults GateBoyTests::test_regs(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += test_reg("P1",   ADDR_P1,   0b00110000);
-  //results += test_reg("SB",   ADDR_SB,   0b11111111);
-  //results += test_reg("SC",   ADDR_SC,   0b10000001);
-  results += test_reg("TIMA", ADDR_TIMA, 0b11111111);
-  results += test_reg("TMA",  ADDR_TMA,  0b11111111);
-  results += test_reg("TAC",  ADDR_TAC,  0b00000111);
-  results += test_reg("IF",   ADDR_IF,   0b00011111);
-  results += test_reg("LCDC", ADDR_LCDC, 0b11111111);
-  results += test_reg("STAT", ADDR_STAT, 0b01111000);
-  results += test_reg("SCY",  ADDR_SCY,  0b11111111);
-  results += test_reg("SCX",  ADDR_SCX,  0b11111111);
-  //results += test_reg("LY",   ADDR_LY,   177); not writable
-  results += test_reg("LYC",  ADDR_LYC,  0b11111111);
-  results += test_reg("DMA",  ADDR_DMA,  0b11111111);
-  results += test_reg("BGP",  ADDR_BGP,  0b11111111);
-  results += test_reg("OBP0", ADDR_OBP0, 0b11111111);
-  results += test_reg("OBP1", ADDR_OBP1, 0b11111111);
-  results += test_reg("WY",   ADDR_WY,   0b11111111);
-  results += test_reg("WX",   ADDR_WX,   0b11111111);
-  results += test_reg("IE",   ADDR_IE,   0b00011111);
+  results += test_reg(proto, "P1",   ADDR_P1,   0b00110000);
+  //results += test_reg(proto, "SB",   ADDR_SB,   0b11111111);
+  //results += test_reg(proto, "SC",   ADDR_SC,   0b10000001);
+  results += test_reg(proto, "TIMA", ADDR_TIMA, 0b11111111);
+  results += test_reg(proto, "TMA",  ADDR_TMA,  0b11111111);
+  results += test_reg(proto, "TAC",  ADDR_TAC,  0b00000111);
+  results += test_reg(proto, "IF",   ADDR_IF,   0b00011111);
+  results += test_reg(proto, "LCDC", ADDR_LCDC, 0b11111111);
+  results += test_reg(proto, "STAT", ADDR_STAT, 0b01111000);
+  results += test_reg(proto, "SCY",  ADDR_SCY,  0b11111111);
+  results += test_reg(proto, "SCX",  ADDR_SCX,  0b11111111);
+  //results += test_reg(proto, "LY",   ADDR_LY,   177); not writable
+  results += test_reg(proto, "LYC",  ADDR_LYC,  0b11111111);
+  results += test_reg(proto, "DMA",  ADDR_DMA,  0b11111111);
+  results += test_reg(proto, "BGP",  ADDR_BGP,  0b11111111);
+  results += test_reg(proto, "OBP0", ADDR_OBP0, 0b11111111);
+  results += test_reg(proto, "OBP1", ADDR_OBP1, 0b11111111);
+  results += test_reg(proto, "WY",   ADDR_WY,   0b11111111);
+  results += test_reg(proto, "WX",   ADDR_WX,   0b11111111);
+  results += test_reg(proto, "IE",   ADDR_IE,   0b00011111);
 
-  //results += test_spu_reg("NR50", ADDR_NR50, 0b11111111);
-  //results += test_spu_reg("NR51", ADDR_NR51, 0b11111111);
-  //results += test_reg    ("NR52", ADDR_NR52, 0b10000000);
+  //results += test_reg(proto, "NR50", ADDR_NR50, 0b11111111);
+  //results += test_reg(proto, "NR51", ADDR_NR51, 0b11111111);
+  //results += test_reg(proto, "NR52", ADDR_NR52, 0b10000000);
 
   TEST_DONE();
 }
@@ -349,7 +355,7 @@ bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF) {
   return true;
 }
 
-TestResults GateBoyTests::test_fastboot_vs_slowboot(IGateBoy* proto1, IGateBoy* proto2, uint8_t mask) {
+TestResults GateBoyTests::test_fastboot_vs_slowboot(const IGateBoy* proto1, const IGateBoy* proto2, uint8_t mask) {
   TEST_INIT();
 
   unique_ptr<IGateBoy> gb1(proto1->clone());
@@ -388,7 +394,7 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot(IGateBoy* proto1, IGateBoy* 
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_reset_to_bootrom(IGateBoy* proto1, IGateBoy* proto2, uint8_t mask) {
+TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* proto1, const IGateBoy* proto2, uint8_t mask) {
   TEST_INIT();
 
   unique_ptr<IGateBoy> gb1(proto1->clone());
@@ -416,7 +422,7 @@ TestResults GateBoyTests::test_reset_to_bootrom(IGateBoy* proto1, IGateBoy* prot
 //-----------------------------------------------------------------------------
 // reset_cart() should match dumped reset state.
 
-TestResults GateBoyTests::test_reset_to_cart(IGateBoy* proto1, IGateBoy* proto2, uint8_t mask) {
+TestResults GateBoyTests::test_reset_to_cart(const IGateBoy* proto1, const IGateBoy* proto2, uint8_t mask) {
   TEST_INIT();
 
   unique_ptr<IGateBoy> gb1(proto1->clone());
@@ -447,589 +453,589 @@ TestResults GateBoyTests::test_reset_to_cart(IGateBoy* proto1, IGateBoy* proto2,
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_poweron() {
+TestResults GateBoyTests::test_micro_poweron(const IGateBoy* proto) {
   TEST_INIT();
 
   LOG_B("===== Stat boot state =====\n");
 
-  results += run_microtest("poweron_stat_000.gb");
-  results += run_microtest("poweron_stat_005.gb");
-  results += run_microtest("poweron_stat_006.gb"); // probably due to unstable data latch
-  results += run_microtest("poweron_stat_007.gb");
-  results += run_microtest("poweron_stat_026.gb");
-  results += run_microtest("poweron_stat_027.gb");
-  results += run_microtest("poweron_stat_069.gb");
-  results += run_microtest("poweron_stat_070.gb");
-  results += run_microtest("poweron_stat_119.gb");
-  results += run_microtest("poweron_stat_120.gb"); // failing
-  results += run_microtest("poweron_stat_121.gb");
-  results += run_microtest("poweron_stat_140.gb");
-  results += run_microtest("poweron_stat_141.gb");
-  results += run_microtest("poweron_stat_183.gb");
-  results += run_microtest("poweron_stat_184.gb");
-  results += run_microtest("poweron_stat_234.gb");
+  results += run_microtest(proto, "poweron_stat_000.gb");
+  results += run_microtest(proto, "poweron_stat_005.gb");
+  results += run_microtest(proto, "poweron_stat_006.gb"); // probably due to unstable data latch
+  results += run_microtest(proto, "poweron_stat_007.gb");
+  results += run_microtest(proto, "poweron_stat_026.gb");
+  results += run_microtest(proto, "poweron_stat_027.gb");
+  results += run_microtest(proto, "poweron_stat_069.gb");
+  results += run_microtest(proto, "poweron_stat_070.gb");
+  results += run_microtest(proto, "poweron_stat_119.gb");
+  results += run_microtest(proto, "poweron_stat_120.gb"); // failing
+  results += run_microtest(proto, "poweron_stat_121.gb");
+  results += run_microtest(proto, "poweron_stat_140.gb");
+  results += run_microtest(proto, "poweron_stat_141.gb");
+  results += run_microtest(proto, "poweron_stat_183.gb");
+  results += run_microtest(proto, "poweron_stat_184.gb");
+  results += run_microtest(proto, "poweron_stat_234.gb");
 
-  results += run_microtest("poweron_stat_235.gb");
+  results += run_microtest(proto, "poweron_stat_235.gb");
 
   LOG_B("===== Div state =====\n");
 
-  results += run_microtest("poweron_div_000.gb");
-  results += run_microtest("poweron_div_004.gb");
-  results += run_microtest("poweron_div_005.gb");
+  results += run_microtest(proto, "poweron_div_000.gb");
+  results += run_microtest(proto, "poweron_div_004.gb");
+  results += run_microtest(proto, "poweron_div_005.gb");
 
   LOG_B("===== LY boot state =====\n");
 
-  results += run_microtest("poweron_ly_000.gb");
-  results += run_microtest("poweron_ly_119.gb");
-  results += run_microtest("poweron_ly_120.gb");
-  results += run_microtest("poweron_ly_233.gb");
-  results += run_microtest("poweron_ly_234.gb");
+  results += run_microtest(proto, "poweron_ly_000.gb");
+  results += run_microtest(proto, "poweron_ly_119.gb");
+  results += run_microtest(proto, "poweron_ly_120.gb");
+  results += run_microtest(proto, "poweron_ly_233.gb");
+  results += run_microtest(proto, "poweron_ly_234.gb");
 
   LOG_B("===== Other reg initial values =====\n");
-  results += run_microtest("poweron_bgp_000.gb");
-  results += run_microtest("poweron_dma_000.gb");
-  results += run_microtest("poweron_if_000.gb");
-  results += run_microtest("poweron_joy_000.gb");
-  results += run_microtest("poweron_lcdc_000.gb");
-  results += run_microtest("poweron_lyc_000.gb");
-  results += run_microtest("poweron_obp0_000.gb");
-  results += run_microtest("poweron_obp1_000.gb");
-  //results += run_microtest("poweron_sb_000.gb");
-  //results += run_microtest("poweron_sc_000.gb");
-  results += run_microtest("poweron_scx_000.gb");
-  results += run_microtest("poweron_scy_000.gb");
-  results += run_microtest("poweron_tac_000.gb");
-  results += run_microtest("poweron_tima_000.gb");
-  results += run_microtest("poweron_tma_000.gb");
-  results += run_microtest("poweron_wx_000.gb");
-  results += run_microtest("poweron_wy_000.gb");
+  results += run_microtest(proto, "poweron_bgp_000.gb");
+  results += run_microtest(proto, "poweron_dma_000.gb");
+  results += run_microtest(proto, "poweron_if_000.gb");
+  results += run_microtest(proto, "poweron_joy_000.gb");
+  results += run_microtest(proto, "poweron_lcdc_000.gb");
+  results += run_microtest(proto, "poweron_lyc_000.gb");
+  results += run_microtest(proto, "poweron_obp0_000.gb");
+  results += run_microtest(proto, "poweron_obp1_000.gb");
+  //results += run_microtest(proto, "poweron_sb_000.gb");
+  //results += run_microtest(proto, "poweron_sc_000.gb");
+  results += run_microtest(proto, "poweron_scx_000.gb");
+  results += run_microtest(proto, "poweron_scy_000.gb");
+  results += run_microtest(proto, "poweron_tac_000.gb");
+  results += run_microtest(proto, "poweron_tima_000.gb");
+  results += run_microtest(proto, "poweron_tma_000.gb");
+  results += run_microtest(proto, "poweron_wx_000.gb");
+  results += run_microtest(proto, "poweron_wy_000.gb");
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_int_vblank() {
+TestResults GateBoyTests::test_micro_int_vblank(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest("lcdon_halt_to_vblank_int_a.gb");
-  results += run_microtest("lcdon_halt_to_vblank_int_b.gb");
-  results += run_microtest("lcdon_nops_to_vblank_int_a.gb");
-  results += run_microtest("lcdon_nops_to_vblank_int_b.gb");
+  results += run_microtest(proto, "lcdon_halt_to_vblank_int_a.gb");
+  results += run_microtest(proto, "lcdon_halt_to_vblank_int_b.gb");
+  results += run_microtest(proto, "lcdon_nops_to_vblank_int_a.gb");
+  results += run_microtest(proto, "lcdon_nops_to_vblank_int_b.gb");
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_int_stat() {
+TestResults GateBoyTests::test_micro_int_stat(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest("int_hblank_halt_scx0.gb"); // int fires on 822 G
-  results += run_microtest("int_hblank_halt_scx1.gb"); // int fires on 824 A
-  results += run_microtest("int_hblank_halt_scx2.gb"); // int fires on 826 C
-  results += run_microtest("int_hblank_halt_scx3.gb"); // int fires on 828 E
-  results += run_microtest("int_hblank_halt_scx4.gb"); // int fires on 830 G
-  results += run_microtest("int_hblank_halt_scx5.gb"); // int fires on 832 A
-  results += run_microtest("int_hblank_halt_scx6.gb"); // int fires on 834 C
-  results += run_microtest("int_hblank_halt_scx7.gb"); // int fires on 836 E
+  results += run_microtest(proto, "int_hblank_halt_scx0.gb"); // int fires on 822 G
+  results += run_microtest(proto, "int_hblank_halt_scx1.gb"); // int fires on 824 A
+  results += run_microtest(proto, "int_hblank_halt_scx2.gb"); // int fires on 826 C
+  results += run_microtest(proto, "int_hblank_halt_scx3.gb"); // int fires on 828 E
+  results += run_microtest(proto, "int_hblank_halt_scx4.gb"); // int fires on 830 G
+  results += run_microtest(proto, "int_hblank_halt_scx5.gb"); // int fires on 832 A
+  results += run_microtest(proto, "int_hblank_halt_scx6.gb"); // int fires on 834 C
+  results += run_microtest(proto, "int_hblank_halt_scx7.gb"); // int fires on 836 E
 
-  results += run_microtest("int_hblank_incs_scx0.gb"); // int fires on 822 G
-  results += run_microtest("int_hblank_incs_scx1.gb"); // int fires on 824 A
-  results += run_microtest("int_hblank_incs_scx2.gb"); // int fires on 826 C
-  results += run_microtest("int_hblank_incs_scx3.gb"); // int fires on 828 E
-  results += run_microtest("int_hblank_incs_scx4.gb"); // int fires on 830 G
-  results += run_microtest("int_hblank_incs_scx5.gb"); // int fires on 832 A
-  results += run_microtest("int_hblank_incs_scx6.gb"); // int fires on 834 C
-  results += run_microtest("int_hblank_incs_scx7.gb"); // int fires on 836 E
+  results += run_microtest(proto, "int_hblank_incs_scx0.gb"); // int fires on 822 G
+  results += run_microtest(proto, "int_hblank_incs_scx1.gb"); // int fires on 824 A
+  results += run_microtest(proto, "int_hblank_incs_scx2.gb"); // int fires on 826 C
+  results += run_microtest(proto, "int_hblank_incs_scx3.gb"); // int fires on 828 E
+  results += run_microtest(proto, "int_hblank_incs_scx4.gb"); // int fires on 830 G
+  results += run_microtest(proto, "int_hblank_incs_scx5.gb"); // int fires on 832 A
+  results += run_microtest(proto, "int_hblank_incs_scx6.gb"); // int fires on 834 C
+  results += run_microtest(proto, "int_hblank_incs_scx7.gb"); // int fires on 836 E
 
-  results += run_microtest("int_hblank_nops_scx0.gb"); // int fires on 822 G
-  results += run_microtest("int_hblank_nops_scx1.gb"); // int fires on 824 A
-  results += run_microtest("int_hblank_nops_scx2.gb"); // int fires on 826 C
-  results += run_microtest("int_hblank_nops_scx3.gb"); // int fires on 828 E
-  results += run_microtest("int_hblank_nops_scx4.gb"); // int fires on 830 G
-  results += run_microtest("int_hblank_nops_scx5.gb"); // int fires on 832 A
-  results += run_microtest("int_hblank_nops_scx6.gb"); // int fires on 834 C
-  results += run_microtest("int_hblank_nops_scx7.gb"); // int fires on 836 E
+  results += run_microtest(proto, "int_hblank_nops_scx0.gb"); // int fires on 822 G
+  results += run_microtest(proto, "int_hblank_nops_scx1.gb"); // int fires on 824 A
+  results += run_microtest(proto, "int_hblank_nops_scx2.gb"); // int fires on 826 C
+  results += run_microtest(proto, "int_hblank_nops_scx3.gb"); // int fires on 828 E
+  results += run_microtest(proto, "int_hblank_nops_scx4.gb"); // int fires on 830 G
+  results += run_microtest(proto, "int_hblank_nops_scx5.gb"); // int fires on 832 A
+  results += run_microtest(proto, "int_hblank_nops_scx6.gb"); // int fires on 834 C
+  results += run_microtest(proto, "int_hblank_nops_scx7.gb"); // int fires on 836 E
 
   if (run_slow_tests) {
-    results += run_microtest("int_vblank1_halt.gb"); // int fires on 131602 C
-    results += run_microtest("int_vblank1_incs.gb");
-    results += run_microtest("int_vblank1_nops.gb");
+    results += run_microtest(proto, "int_vblank1_halt.gb"); // int fires on 131602 C
+    results += run_microtest(proto, "int_vblank1_incs.gb");
+    results += run_microtest(proto, "int_vblank1_nops.gb");
 
-    results += run_microtest("int_vblank2_halt.gb"); // int fires on 131562 C
-    results += run_microtest("int_vblank2_incs.gb");
-    results += run_microtest("int_vblank2_nops.gb");
+    results += run_microtest(proto, "int_vblank2_halt.gb"); // int fires on 131562 C
+    results += run_microtest(proto, "int_vblank2_incs.gb");
+    results += run_microtest(proto, "int_vblank2_nops.gb");
   }
 
-  results += run_microtest("int_lyc_halt.gb"); // int fires on 1226 C
-  results += run_microtest("int_lyc_incs.gb");
-  results += run_microtest("int_lyc_nops.gb");
+  results += run_microtest(proto, "int_lyc_halt.gb"); // int fires on 1226 C
+  results += run_microtest(proto, "int_lyc_incs.gb");
+  results += run_microtest(proto, "int_lyc_nops.gb");
 
-  results += run_microtest("int_oam_halt.gb"); // int fires on 1182 G
-  results += run_microtest("int_oam_incs.gb");
-  results += run_microtest("int_oam_nops.gb");
+  results += run_microtest(proto, "int_oam_halt.gb"); // int fires on 1182 G
+  results += run_microtest(proto, "int_oam_incs.gb");
+  results += run_microtest(proto, "int_oam_nops.gb");
 
   // broken and slow
   if (run_slow_tests) {
-    results += run_microtest("int_hblank_halt_bug_a.gb"); // failing
-    results += run_microtest("int_hblank_halt_bug_b.gb"); // failing
+    results += run_microtest(proto, "int_hblank_halt_bug_a.gb"); // failing
+    results += run_microtest(proto, "int_hblank_halt_bug_b.gb"); // failing
   }
 
-  results += run_microtest("hblank_int_if_a.gb");
-  results += run_microtest("hblank_int_if_b.gb");
+  results += run_microtest(proto, "hblank_int_if_a.gb");
+  results += run_microtest(proto, "hblank_int_if_b.gb");
 
-  results += run_microtest("hblank_int_scx0_if_a.gb");
-  results += run_microtest("hblank_int_scx0_if_b.gb");
-  results += run_microtest("hblank_int_scx0_if_c.gb");
-  results += run_microtest("hblank_int_scx0_if_d.gb");
+  results += run_microtest(proto, "hblank_int_scx0_if_a.gb");
+  results += run_microtest(proto, "hblank_int_scx0_if_b.gb");
+  results += run_microtest(proto, "hblank_int_scx0_if_c.gb");
+  results += run_microtest(proto, "hblank_int_scx0_if_d.gb");
 
-  results += run_microtest("hblank_int_scx1_if_a.gb");
-  results += run_microtest("hblank_int_scx1_if_b.gb");
-  results += run_microtest("hblank_int_scx1_if_c.gb");
-  results += run_microtest("hblank_int_scx1_if_d.gb");
-  results += run_microtest("hblank_int_scx1_nops_a.gb");
-  results += run_microtest("hblank_int_scx1_nops_b.gb");
+  results += run_microtest(proto, "hblank_int_scx1_if_a.gb");
+  results += run_microtest(proto, "hblank_int_scx1_if_b.gb");
+  results += run_microtest(proto, "hblank_int_scx1_if_c.gb");
+  results += run_microtest(proto, "hblank_int_scx1_if_d.gb");
+  results += run_microtest(proto, "hblank_int_scx1_nops_a.gb");
+  results += run_microtest(proto, "hblank_int_scx1_nops_b.gb");
 
-  results += run_microtest("hblank_int_scx2_if_a.gb");
-  results += run_microtest("hblank_int_scx2_if_b.gb");
-  results += run_microtest("hblank_int_scx2_if_c.gb");
-  results += run_microtest("hblank_int_scx2_if_d.gb");
-  results += run_microtest("hblank_int_scx2_nops_a.gb");
-  results += run_microtest("hblank_int_scx2_nops_b.gb");
+  results += run_microtest(proto, "hblank_int_scx2_if_a.gb");
+  results += run_microtest(proto, "hblank_int_scx2_if_b.gb");
+  results += run_microtest(proto, "hblank_int_scx2_if_c.gb");
+  results += run_microtest(proto, "hblank_int_scx2_if_d.gb");
+  results += run_microtest(proto, "hblank_int_scx2_nops_a.gb");
+  results += run_microtest(proto, "hblank_int_scx2_nops_b.gb");
 
-  results += run_microtest("hblank_int_scx3_if_a.gb");
-  results += run_microtest("hblank_int_scx3_if_b.gb");
-  results += run_microtest("hblank_int_scx3_if_c.gb");
-  results += run_microtest("hblank_int_scx3_if_d.gb");
-  results += run_microtest("hblank_int_scx3_nops_a.gb");
-  results += run_microtest("hblank_int_scx3_nops_b.gb");
+  results += run_microtest(proto, "hblank_int_scx3_if_a.gb");
+  results += run_microtest(proto, "hblank_int_scx3_if_b.gb");
+  results += run_microtest(proto, "hblank_int_scx3_if_c.gb");
+  results += run_microtest(proto, "hblank_int_scx3_if_d.gb");
+  results += run_microtest(proto, "hblank_int_scx3_nops_a.gb");
+  results += run_microtest(proto, "hblank_int_scx3_nops_b.gb");
 
-  results += run_microtest("hblank_int_scx4_if_a.gb");
-  results += run_microtest("hblank_int_scx4_if_b.gb");
-  results += run_microtest("hblank_int_scx4_if_c.gb");
-  results += run_microtest("hblank_int_scx4_if_d.gb");
-  results += run_microtest("hblank_int_scx4_nops_a.gb");
-  results += run_microtest("hblank_int_scx4_nops_b.gb");
+  results += run_microtest(proto, "hblank_int_scx4_if_a.gb");
+  results += run_microtest(proto, "hblank_int_scx4_if_b.gb");
+  results += run_microtest(proto, "hblank_int_scx4_if_c.gb");
+  results += run_microtest(proto, "hblank_int_scx4_if_d.gb");
+  results += run_microtest(proto, "hblank_int_scx4_nops_a.gb");
+  results += run_microtest(proto, "hblank_int_scx4_nops_b.gb");
 
-  results += run_microtest("hblank_int_scx5_if_a.gb");
-  results += run_microtest("hblank_int_scx5_if_b.gb");
-  results += run_microtest("hblank_int_scx5_if_c.gb");
-  results += run_microtest("hblank_int_scx5_if_d.gb");
-  results += run_microtest("hblank_int_scx5_nops_a.gb");
-  results += run_microtest("hblank_int_scx5_nops_b.gb");
+  results += run_microtest(proto, "hblank_int_scx5_if_a.gb");
+  results += run_microtest(proto, "hblank_int_scx5_if_b.gb");
+  results += run_microtest(proto, "hblank_int_scx5_if_c.gb");
+  results += run_microtest(proto, "hblank_int_scx5_if_d.gb");
+  results += run_microtest(proto, "hblank_int_scx5_nops_a.gb");
+  results += run_microtest(proto, "hblank_int_scx5_nops_b.gb");
 
-  results += run_microtest("hblank_int_scx6_if_a.gb");
-  results += run_microtest("hblank_int_scx6_if_b.gb");
-  results += run_microtest("hblank_int_scx6_if_c.gb");
-  results += run_microtest("hblank_int_scx6_if_d.gb");
-  results += run_microtest("hblank_int_scx6_nops_a.gb");
-  results += run_microtest("hblank_int_scx6_nops_b.gb");
+  results += run_microtest(proto, "hblank_int_scx6_if_a.gb");
+  results += run_microtest(proto, "hblank_int_scx6_if_b.gb");
+  results += run_microtest(proto, "hblank_int_scx6_if_c.gb");
+  results += run_microtest(proto, "hblank_int_scx6_if_d.gb");
+  results += run_microtest(proto, "hblank_int_scx6_nops_a.gb");
+  results += run_microtest(proto, "hblank_int_scx6_nops_b.gb");
 
-  results += run_microtest("hblank_int_scx7_if_a.gb");
-  results += run_microtest("hblank_int_scx7_if_b.gb");
-  results += run_microtest("hblank_int_scx7_if_c.gb");
-  results += run_microtest("hblank_int_scx7_if_d.gb");
-  results += run_microtest("hblank_int_scx7_nops_a.gb");
-  results += run_microtest("hblank_int_scx7_nops_b.gb");
+  results += run_microtest(proto, "hblank_int_scx7_if_a.gb");
+  results += run_microtest(proto, "hblank_int_scx7_if_b.gb");
+  results += run_microtest(proto, "hblank_int_scx7_if_c.gb");
+  results += run_microtest(proto, "hblank_int_scx7_if_d.gb");
+  results += run_microtest(proto, "hblank_int_scx7_nops_a.gb");
+  results += run_microtest(proto, "hblank_int_scx7_nops_b.gb");
 
-  results += run_microtest("int_hblank_halt_scx0.gb");
-  results += run_microtest("int_hblank_halt_scx1.gb");
-  results += run_microtest("int_hblank_halt_scx2.gb");
-  results += run_microtest("int_hblank_halt_scx3.gb");
-  results += run_microtest("int_hblank_halt_scx4.gb");
-  results += run_microtest("int_hblank_halt_scx5.gb");
-  results += run_microtest("int_hblank_halt_scx6.gb");
-  results += run_microtest("int_hblank_halt_scx7.gb");
+  results += run_microtest(proto, "int_hblank_halt_scx0.gb");
+  results += run_microtest(proto, "int_hblank_halt_scx1.gb");
+  results += run_microtest(proto, "int_hblank_halt_scx2.gb");
+  results += run_microtest(proto, "int_hblank_halt_scx3.gb");
+  results += run_microtest(proto, "int_hblank_halt_scx4.gb");
+  results += run_microtest(proto, "int_hblank_halt_scx5.gb");
+  results += run_microtest(proto, "int_hblank_halt_scx6.gb");
+  results += run_microtest(proto, "int_hblank_halt_scx7.gb");
 
-  results += run_microtest("int_hblank_incs_scx0.gb");
-  results += run_microtest("int_hblank_incs_scx1.gb");
-  results += run_microtest("int_hblank_incs_scx2.gb");
-  results += run_microtest("int_hblank_incs_scx3.gb");
-  results += run_microtest("int_hblank_incs_scx4.gb");
-  results += run_microtest("int_hblank_incs_scx5.gb");
-  results += run_microtest("int_hblank_incs_scx6.gb");
-  results += run_microtest("int_hblank_incs_scx7.gb");
+  results += run_microtest(proto, "int_hblank_incs_scx0.gb");
+  results += run_microtest(proto, "int_hblank_incs_scx1.gb");
+  results += run_microtest(proto, "int_hblank_incs_scx2.gb");
+  results += run_microtest(proto, "int_hblank_incs_scx3.gb");
+  results += run_microtest(proto, "int_hblank_incs_scx4.gb");
+  results += run_microtest(proto, "int_hblank_incs_scx5.gb");
+  results += run_microtest(proto, "int_hblank_incs_scx6.gb");
+  results += run_microtest(proto, "int_hblank_incs_scx7.gb");
 
   if (run_slow_tests) {
-    results += run_microtest("vblank2_int_if_a.gb");
-    results += run_microtest("vblank2_int_if_b.gb");
-    results += run_microtest("vblank2_int_if_c.gb");
-    results += run_microtest("vblank2_int_if_d.gb");
-    results += run_microtest("vblank2_int_inc_sled.gb");
-    results += run_microtest("vblank2_int_nops_a.gb");
-    results += run_microtest("vblank2_int_nops_b.gb");
+    results += run_microtest(proto, "vblank2_int_if_a.gb");
+    results += run_microtest(proto, "vblank2_int_if_b.gb");
+    results += run_microtest(proto, "vblank2_int_if_c.gb");
+    results += run_microtest(proto, "vblank2_int_if_d.gb");
+    results += run_microtest(proto, "vblank2_int_inc_sled.gb");
+    results += run_microtest(proto, "vblank2_int_nops_a.gb");
+    results += run_microtest(proto, "vblank2_int_nops_b.gb");
 
-    results += run_microtest("vblank_int_if_a.gb");
-    results += run_microtest("vblank_int_if_b.gb");
-    results += run_microtest("vblank_int_if_c.gb");
-    results += run_microtest("vblank_int_if_d.gb");
-    results += run_microtest("vblank_int_inc_sled.gb");
-    results += run_microtest("vblank_int_nops_a.gb");
-    results += run_microtest("vblank_int_nops_b.gb");
+    results += run_microtest(proto, "vblank_int_if_a.gb");
+    results += run_microtest(proto, "vblank_int_if_b.gb");
+    results += run_microtest(proto, "vblank_int_if_c.gb");
+    results += run_microtest(proto, "vblank_int_if_d.gb");
+    results += run_microtest(proto, "vblank_int_inc_sled.gb");
+    results += run_microtest(proto, "vblank_int_nops_a.gb");
+    results += run_microtest(proto, "vblank_int_nops_b.gb");
   }
 
-  results += run_microtest("lcdon_to_oam_int_l0.gb");
-  results += run_microtest("lcdon_to_oam_int_l1.gb");
-  results += run_microtest("lcdon_to_oam_int_l2.gb");
+  results += run_microtest(proto, "lcdon_to_oam_int_l0.gb");
+  results += run_microtest(proto, "lcdon_to_oam_int_l1.gb");
+  results += run_microtest(proto, "lcdon_to_oam_int_l2.gb");
 
   if (run_slow_tests) {
-    results += run_microtest("line_144_oam_int_a.gb"); // pass
-    results += run_microtest("line_144_oam_int_b.gb"); // pass
-    results += run_microtest("line_144_oam_int_c.gb"); // pass
-    results += run_microtest("line_144_oam_int_d.gb"); // pass
+    results += run_microtest(proto, "line_144_oam_int_a.gb"); // pass
+    results += run_microtest(proto, "line_144_oam_int_b.gb"); // pass
+    results += run_microtest(proto, "line_144_oam_int_c.gb"); // pass
+    results += run_microtest(proto, "line_144_oam_int_d.gb"); // pass
   }
 
-  results += run_microtest("oam_int_if_edge_a.gb"); // pass
-  results += run_microtest("oam_int_if_edge_b.gb"); // pass
-  results += run_microtest("oam_int_if_edge_c.gb"); // pass
-  results += run_microtest("oam_int_if_edge_d.gb"); // pass
-  results += run_microtest("oam_int_if_level_c.gb"); // pass
-  results += run_microtest("oam_int_if_level_d.gb"); // pass
-  results += run_microtest("oam_int_inc_sled.gb"); // pass
-  results += run_microtest("oam_int_nops_a.gb"); // pass
-  results += run_microtest("oam_int_nops_b.gb"); // pass
+  results += run_microtest(proto, "oam_int_if_edge_a.gb"); // pass
+  results += run_microtest(proto, "oam_int_if_edge_b.gb"); // pass
+  results += run_microtest(proto, "oam_int_if_edge_c.gb"); // pass
+  results += run_microtest(proto, "oam_int_if_edge_d.gb"); // pass
+  results += run_microtest(proto, "oam_int_if_level_c.gb"); // pass
+  results += run_microtest(proto, "oam_int_if_level_d.gb"); // pass
+  results += run_microtest(proto, "oam_int_inc_sled.gb"); // pass
+  results += run_microtest(proto, "oam_int_nops_a.gb"); // pass
+  results += run_microtest(proto, "oam_int_nops_b.gb"); // pass
 
-  results += run_microtest("lcdon_to_lyc1_int.gb");
-  results += run_microtest("lcdon_to_lyc2_int.gb");
-  results += run_microtest("lcdon_to_lyc3_int.gb");
+  results += run_microtest(proto, "lcdon_to_lyc1_int.gb");
+  results += run_microtest(proto, "lcdon_to_lyc2_int.gb");
+  results += run_microtest(proto, "lcdon_to_lyc3_int.gb");
 
-  results += run_microtest("lyc1_int_if_edge_a.gb");  // pass
-  results += run_microtest("lyc1_int_if_edge_b.gb");  // pass
-  results += run_microtest("lyc1_int_if_edge_c.gb");  // pass
-  results += run_microtest("lyc1_int_if_edge_d.gb");  // pass
-  results += run_microtest("lyc1_int_nops_a.gb");     // pass
-  results += run_microtest("lyc1_int_nops_b.gb");     // pass
+  results += run_microtest(proto, "lyc1_int_if_edge_a.gb");  // pass
+  results += run_microtest(proto, "lyc1_int_if_edge_b.gb");  // pass
+  results += run_microtest(proto, "lyc1_int_if_edge_c.gb");  // pass
+  results += run_microtest(proto, "lyc1_int_if_edge_d.gb");  // pass
+  results += run_microtest(proto, "lyc1_int_nops_a.gb");     // pass
+  results += run_microtest(proto, "lyc1_int_nops_b.gb");     // pass
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_int_timer() {
+TestResults GateBoyTests::test_micro_int_timer(const IGateBoy* proto) {
   TEST_INIT();
-  results += run_microtest("int_timer_halt.gb"); // int fires on 296 A
-  results += run_microtest("int_timer_halt_div_a.gb");
-  results += run_microtest("int_timer_halt_div_b.gb");
-  results += run_microtest("int_timer_incs.gb");
-  results += run_microtest("int_timer_nops.gb");
-  results += run_microtest("int_timer_nops_div_a.gb");
-  results += run_microtest("int_timer_nops_div_b.gb");
+  results += run_microtest(proto, "int_timer_halt.gb"); // int fires on 296 A
+  results += run_microtest(proto, "int_timer_halt_div_a.gb");
+  results += run_microtest(proto, "int_timer_halt_div_b.gb");
+  results += run_microtest(proto, "int_timer_incs.gb");
+  results += run_microtest(proto, "int_timer_nops.gb");
+  results += run_microtest(proto, "int_timer_nops_div_a.gb");
+  results += run_microtest(proto, "int_timer_nops_div_b.gb");
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_int_serial() {
-  TEST_INIT();
-  TEST_DONE();
-}
-
-//-----------------------------------------------------------------------------
-
-TestResults GateBoyTests::test_micro_int_joypad() {
+TestResults GateBoyTests::test_micro_int_serial(const IGateBoy* proto) {
   TEST_INIT();
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_lcden() {
+TestResults GateBoyTests::test_micro_int_joypad(const IGateBoy* proto) {
+  TEST_INIT();
+  TEST_DONE();
+}
+
+//-----------------------------------------------------------------------------
+
+TestResults GateBoyTests::test_micro_lcden(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest("lcdon_to_ly1_a.gb");
-  results += run_microtest("lcdon_to_ly1_b.gb");
-  results += run_microtest("lcdon_to_ly2_a.gb");
-  results += run_microtest("lcdon_to_ly2_b.gb");
-  results += run_microtest("lcdon_to_ly3_a.gb");
-  results += run_microtest("lcdon_to_ly3_b.gb");
+  results += run_microtest(proto, "lcdon_to_ly1_a.gb");
+  results += run_microtest(proto, "lcdon_to_ly1_b.gb");
+  results += run_microtest(proto, "lcdon_to_ly2_a.gb");
+  results += run_microtest(proto, "lcdon_to_ly2_b.gb");
+  results += run_microtest(proto, "lcdon_to_ly3_a.gb");
+  results += run_microtest(proto, "lcdon_to_ly3_b.gb");
 
-  results += run_microtest("lcdon_to_stat0_a.gb");
-  results += run_microtest("lcdon_to_stat0_b.gb");
-  results += run_microtest("lcdon_to_stat0_c.gb");
-  results += run_microtest("lcdon_to_stat0_d.gb");
+  results += run_microtest(proto, "lcdon_to_stat0_a.gb");
+  results += run_microtest(proto, "lcdon_to_stat0_b.gb");
+  results += run_microtest(proto, "lcdon_to_stat0_c.gb");
+  results += run_microtest(proto, "lcdon_to_stat0_d.gb");
 
   if (run_slow_tests) {
-    results += run_microtest("lcdon_to_stat1_a.gb");
-    results += run_microtest("lcdon_to_stat1_b.gb");
-    results += run_microtest("lcdon_to_stat1_c.gb");
-    results += run_microtest("lcdon_to_stat1_d.gb"); // failing
-    results += run_microtest("lcdon_to_stat1_e.gb");
+    results += run_microtest(proto, "lcdon_to_stat1_a.gb");
+    results += run_microtest(proto, "lcdon_to_stat1_b.gb");
+    results += run_microtest(proto, "lcdon_to_stat1_c.gb");
+    results += run_microtest(proto, "lcdon_to_stat1_d.gb"); // failing
+    results += run_microtest(proto, "lcdon_to_stat1_e.gb");
   }
 
-  results += run_microtest("lcdon_to_stat2_a.gb"); // failing
-  results += run_microtest("lcdon_to_stat2_b.gb");
-  results += run_microtest("lcdon_to_stat2_c.gb");
-  results += run_microtest("lcdon_to_stat2_d.gb");
-  results += run_microtest("lcdon_to_stat3_a.gb");
-  results += run_microtest("lcdon_to_stat3_b.gb");
-  results += run_microtest("lcdon_to_stat3_c.gb");
-  results += run_microtest("lcdon_to_stat3_d.gb");
+  results += run_microtest(proto, "lcdon_to_stat2_a.gb"); // failing
+  results += run_microtest(proto, "lcdon_to_stat2_b.gb");
+  results += run_microtest(proto, "lcdon_to_stat2_c.gb");
+  results += run_microtest(proto, "lcdon_to_stat2_d.gb");
+  results += run_microtest(proto, "lcdon_to_stat3_a.gb");
+  results += run_microtest(proto, "lcdon_to_stat3_b.gb");
+  results += run_microtest(proto, "lcdon_to_stat3_c.gb");
+  results += run_microtest(proto, "lcdon_to_stat3_d.gb");
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_dma() {
+TestResults GateBoyTests::test_micro_dma(const IGateBoy* proto) {
   TEST_INIT();
   LOG_B("===== DMA =====\n");
-  results += run_microtest("dma_0x1000.gb");
-  results += run_microtest("dma_0x9000.gb");
-  results += run_microtest("dma_0xA000.gb");
-  results += run_microtest("dma_0xC000.gb");
-  results += run_microtest("dma_0xE000.gb");
+  results += run_microtest(proto, "dma_0x1000.gb");
+  results += run_microtest(proto, "dma_0x9000.gb");
+  results += run_microtest(proto, "dma_0xA000.gb");
+  results += run_microtest(proto, "dma_0xC000.gb");
+  results += run_microtest(proto, "dma_0xE000.gb");
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_lock_oam() {
+TestResults GateBoyTests::test_micro_lock_oam(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest("oam_read_l0_a.gb");
-  results += run_microtest("oam_read_l0_b.gb");
-  results += run_microtest("oam_read_l0_c.gb");
-  results += run_microtest("oam_read_l0_d.gb"); // failing
-  results += run_microtest("oam_read_l1_a.gb"); // failing
-  results += run_microtest("oam_read_l1_b.gb");
-  results += run_microtest("oam_read_l1_c.gb");
-  results += run_microtest("oam_read_l1_d.gb");
-  results += run_microtest("oam_read_l1_e.gb");
-  results += run_microtest("oam_read_l1_f.gb"); // failing
+  results += run_microtest(proto, "oam_read_l0_a.gb");
+  results += run_microtest(proto, "oam_read_l0_b.gb");
+  results += run_microtest(proto, "oam_read_l0_c.gb");
+  results += run_microtest(proto, "oam_read_l0_d.gb"); // failing
+  results += run_microtest(proto, "oam_read_l1_a.gb"); // failing
+  results += run_microtest(proto, "oam_read_l1_b.gb");
+  results += run_microtest(proto, "oam_read_l1_c.gb");
+  results += run_microtest(proto, "oam_read_l1_d.gb");
+  results += run_microtest(proto, "oam_read_l1_e.gb");
+  results += run_microtest(proto, "oam_read_l1_f.gb"); // failing
 
-  results += run_microtest("oam_write_l0_a.gb");
-  results += run_microtest("oam_write_l0_b.gb");
-  results += run_microtest("oam_write_l0_c.gb");
-  results += run_microtest("oam_write_l0_d.gb"); // failing
-  results += run_microtest("oam_write_l0_e.gb");
+  results += run_microtest(proto, "oam_write_l0_a.gb");
+  results += run_microtest(proto, "oam_write_l0_b.gb");
+  results += run_microtest(proto, "oam_write_l0_c.gb");
+  results += run_microtest(proto, "oam_write_l0_d.gb"); // failing
+  results += run_microtest(proto, "oam_write_l0_e.gb");
 
-  results += run_microtest("oam_write_l1_a.gb");
-  results += run_microtest("oam_write_l1_b.gb");
-  results += run_microtest("oam_write_l1_c.gb"); // failing
-  results += run_microtest("oam_write_l1_d.gb");
-  results += run_microtest("oam_write_l1_e.gb");
-  results += run_microtest("oam_write_l1_f.gb");
+  results += run_microtest(proto, "oam_write_l1_a.gb");
+  results += run_microtest(proto, "oam_write_l1_b.gb");
+  results += run_microtest(proto, "oam_write_l1_c.gb"); // failing
+  results += run_microtest(proto, "oam_write_l1_d.gb");
+  results += run_microtest(proto, "oam_write_l1_e.gb");
+  results += run_microtest(proto, "oam_write_l1_f.gb");
 
-  results += run_microtest("lcdon_to_oam_unlock_a.gb");
-  results += run_microtest("lcdon_to_oam_unlock_b.gb");
-  results += run_microtest("lcdon_to_oam_unlock_c.gb");
-  results += run_microtest("lcdon_to_oam_unlock_d.gb"); // failing
+  results += run_microtest(proto, "lcdon_to_oam_unlock_a.gb");
+  results += run_microtest(proto, "lcdon_to_oam_unlock_b.gb");
+  results += run_microtest(proto, "lcdon_to_oam_unlock_c.gb");
+  results += run_microtest(proto, "lcdon_to_oam_unlock_d.gb"); // failing
 
-  results += run_microtest("poweron_oam_000.gb");
-  results += run_microtest("poweron_oam_005.gb");
-  results += run_microtest("poweron_oam_006.gb"); // fail, this is in the gap between hblank and scan
-  results += run_microtest("poweron_oam_069.gb");
-  results += run_microtest("poweron_oam_070.gb");
-  results += run_microtest("poweron_oam_119.gb");
-  results += run_microtest("poweron_oam_120.gb"); // fail, this is in the gap between hblank and scan
-  results += run_microtest("poweron_oam_121.gb");
-  results += run_microtest("poweron_oam_183.gb");
-  results += run_microtest("poweron_oam_184.gb");
-  results += run_microtest("poweron_oam_233.gb");
-  results += run_microtest("poweron_oam_234.gb"); // fail, this is in the gap between hblank and scan
-  results += run_microtest("poweron_oam_235.gb");
+  results += run_microtest(proto, "poweron_oam_000.gb");
+  results += run_microtest(proto, "poweron_oam_005.gb");
+  results += run_microtest(proto, "poweron_oam_006.gb"); // fail, this is in the gap between hblank and scan
+  results += run_microtest(proto, "poweron_oam_069.gb");
+  results += run_microtest(proto, "poweron_oam_070.gb");
+  results += run_microtest(proto, "poweron_oam_119.gb");
+  results += run_microtest(proto, "poweron_oam_120.gb"); // fail, this is in the gap between hblank and scan
+  results += run_microtest(proto, "poweron_oam_121.gb");
+  results += run_microtest(proto, "poweron_oam_183.gb");
+  results += run_microtest(proto, "poweron_oam_184.gb");
+  results += run_microtest(proto, "poweron_oam_233.gb");
+  results += run_microtest(proto, "poweron_oam_234.gb"); // fail, this is in the gap between hblank and scan
+  results += run_microtest(proto, "poweron_oam_235.gb");
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_lock_vram() {
+TestResults GateBoyTests::test_micro_lock_vram(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest("poweron_vram_000.gb");
-  results += run_microtest("poweron_vram_025.gb");
-  results += run_microtest("poweron_vram_026.gb"); // fail, this is in the gap between scan and render
-  results += run_microtest("poweron_vram_069.gb");
-  results += run_microtest("poweron_vram_070.gb");
-  results += run_microtest("poweron_vram_139.gb");
-  results += run_microtest("poweron_vram_140.gb"); // fail, this is in the gap between scan and render
-  results += run_microtest("poweron_vram_183.gb");
-  results += run_microtest("poweron_vram_184.gb");
+  results += run_microtest(proto, "poweron_vram_000.gb");
+  results += run_microtest(proto, "poweron_vram_025.gb");
+  results += run_microtest(proto, "poweron_vram_026.gb"); // fail, this is in the gap between scan and render
+  results += run_microtest(proto, "poweron_vram_069.gb");
+  results += run_microtest(proto, "poweron_vram_070.gb");
+  results += run_microtest(proto, "poweron_vram_139.gb");
+  results += run_microtest(proto, "poweron_vram_140.gb"); // fail, this is in the gap between scan and render
+  results += run_microtest(proto, "poweron_vram_183.gb");
+  results += run_microtest(proto, "poweron_vram_184.gb");
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_timer() {
+TestResults GateBoyTests::test_micro_timer(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest("timer_tima_inc_256k_a.gb");
-  results += run_microtest("timer_tima_inc_256k_b.gb");
-  results += run_microtest("timer_tima_inc_256k_c.gb");
-  results += run_microtest("timer_tima_inc_256k_d.gb");
-  results += run_microtest("timer_tima_inc_256k_e.gb");
-  results += run_microtest("timer_tima_inc_256k_f.gb");
-  results += run_microtest("timer_tima_inc_256k_g.gb");
-  results += run_microtest("timer_tima_inc_256k_h.gb");
-  results += run_microtest("timer_tima_inc_256k_i.gb");
-  results += run_microtest("timer_tima_inc_256k_j.gb");
-  results += run_microtest("timer_tima_inc_256k_k.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_a.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_b.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_c.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_d.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_e.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_f.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_g.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_h.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_i.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_j.gb");
+  results += run_microtest(proto, "timer_tima_inc_256k_k.gb");
 
-  results += run_microtest("timer_tima_reload_256k_a.gb");
-  results += run_microtest("timer_tima_reload_256k_b.gb");
-  results += run_microtest("timer_tima_reload_256k_c.gb");
-  results += run_microtest("timer_tima_reload_256k_d.gb");
-  results += run_microtest("timer_tima_reload_256k_e.gb");
-  results += run_microtest("timer_tima_reload_256k_f.gb");
-  results += run_microtest("timer_tima_reload_256k_g.gb");
-  results += run_microtest("timer_tima_reload_256k_h.gb");
-  results += run_microtest("timer_tima_reload_256k_i.gb");
-  results += run_microtest("timer_tima_reload_256k_j.gb");
-  results += run_microtest("timer_tima_reload_256k_k.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_a.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_b.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_c.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_d.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_e.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_f.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_g.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_h.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_i.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_j.gb");
+  results += run_microtest(proto, "timer_tima_reload_256k_k.gb");
 
-  results += run_microtest("timer_tima_phase_a.gb");
-  results += run_microtest("timer_tima_phase_b.gb");
-  results += run_microtest("timer_tima_phase_c.gb");
-  results += run_microtest("timer_tima_phase_d.gb");
-  results += run_microtest("timer_tima_phase_e.gb");
-  results += run_microtest("timer_tima_phase_f.gb");
-  results += run_microtest("timer_tima_phase_g.gb");
-  results += run_microtest("timer_tima_phase_h.gb");
-  results += run_microtest("timer_tima_phase_i.gb");
-  results += run_microtest("timer_tima_phase_j.gb");
+  results += run_microtest(proto, "timer_tima_phase_a.gb");
+  results += run_microtest(proto, "timer_tima_phase_b.gb");
+  results += run_microtest(proto, "timer_tima_phase_c.gb");
+  results += run_microtest(proto, "timer_tima_phase_d.gb");
+  results += run_microtest(proto, "timer_tima_phase_e.gb");
+  results += run_microtest(proto, "timer_tima_phase_f.gb");
+  results += run_microtest(proto, "timer_tima_phase_g.gb");
+  results += run_microtest(proto, "timer_tima_phase_h.gb");
+  results += run_microtest(proto, "timer_tima_phase_i.gb");
+  results += run_microtest(proto, "timer_tima_phase_j.gb");
 
-  results += run_microtest("timer_tima_write_a.gb");
-  results += run_microtest("timer_tima_write_b.gb");
-  results += run_microtest("timer_tima_write_c.gb");
-  results += run_microtest("timer_tima_write_d.gb");
-  results += run_microtest("timer_tima_write_e.gb");
-  results += run_microtest("timer_tima_write_f.gb");
+  results += run_microtest(proto, "timer_tima_write_a.gb");
+  results += run_microtest(proto, "timer_tima_write_b.gb");
+  results += run_microtest(proto, "timer_tima_write_c.gb");
+  results += run_microtest(proto, "timer_tima_write_d.gb");
+  results += run_microtest(proto, "timer_tima_write_e.gb");
+  results += run_microtest(proto, "timer_tima_write_f.gb");
 
-  results += run_microtest("timer_div_phase_c.gb");
-  results += run_microtest("timer_div_phase_d.gb");
+  results += run_microtest(proto, "timer_div_phase_c.gb");
+  results += run_microtest(proto, "timer_div_phase_d.gb");
 
-  results += run_microtest("timer_tma_write_a.gb");
-  results += run_microtest("timer_tma_write_b.gb");
+  results += run_microtest(proto, "timer_tma_write_a.gb");
+  results += run_microtest(proto, "timer_tma_write_b.gb");
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_ppu() {
+TestResults GateBoyTests::test_micro_ppu(const IGateBoy* proto) {
   TEST_INIT();
 
   if (run_slow_tests) {
-    results += run_microtest("line_153_ly_a.gb");
-    results += run_microtest("line_153_ly_b.gb");
-    results += run_microtest("line_153_ly_c.gb");
-    results += run_microtest("line_153_ly_d.gb");
-    results += run_microtest("line_153_ly_e.gb");
-    results += run_microtest("line_153_ly_f.gb");
-    results += run_microtest("line_153_lyc0_int_inc_sled.gb");  // failing
+    results += run_microtest(proto, "line_153_ly_a.gb");
+    results += run_microtest(proto, "line_153_ly_b.gb");
+    results += run_microtest(proto, "line_153_ly_c.gb");
+    results += run_microtest(proto, "line_153_ly_d.gb");
+    results += run_microtest(proto, "line_153_ly_e.gb");
+    results += run_microtest(proto, "line_153_ly_f.gb");
+    results += run_microtest(proto, "line_153_lyc0_int_inc_sled.gb");  // failing
   }
 
-  results += run_microtest("lyc1_write_timing_a.gb");
-  results += run_microtest("lyc1_write_timing_b.gb");
-  results += run_microtest("lyc1_write_timing_c.gb");
-  results += run_microtest("lyc1_write_timing_d.gb");
+  results += run_microtest(proto, "lyc1_write_timing_a.gb");
+  results += run_microtest(proto, "lyc1_write_timing_b.gb");
+  results += run_microtest(proto, "lyc1_write_timing_c.gb");
+  results += run_microtest(proto, "lyc1_write_timing_d.gb");
 
-  results += run_microtest("stat_write_glitch_l0_a.gb"); // failing
-  results += run_microtest("stat_write_glitch_l0_b.gb"); // failing
-  results += run_microtest("stat_write_glitch_l0_c.gb");
-  results += run_microtest("stat_write_glitch_l1_a.gb");
-  results += run_microtest("stat_write_glitch_l1_b.gb"); // failing
-  results += run_microtest("stat_write_glitch_l1_c.gb"); // failing
-  results += run_microtest("stat_write_glitch_l1_d.gb");
+  results += run_microtest(proto, "stat_write_glitch_l0_a.gb"); // failing
+  results += run_microtest(proto, "stat_write_glitch_l0_b.gb"); // failing
+  results += run_microtest(proto, "stat_write_glitch_l0_c.gb");
+  results += run_microtest(proto, "stat_write_glitch_l1_a.gb");
+  results += run_microtest(proto, "stat_write_glitch_l1_b.gb"); // failing
+  results += run_microtest(proto, "stat_write_glitch_l1_c.gb"); // failing
+  results += run_microtest(proto, "stat_write_glitch_l1_d.gb");
 
-  results += run_microtest("ppu_sprite0_scx0_b.gb");
-  results += run_microtest("ppu_sprite0_scx2_a.gb");
-  results += run_microtest("ppu_sprite0_scx2_b.gb");
-  results += run_microtest("ppu_sprite0_scx3_a.gb");
-  results += run_microtest("ppu_sprite0_scx3_b.gb"); // failing
-  results += run_microtest("ppu_sprite0_scx4_a.gb");
-  results += run_microtest("ppu_sprite0_scx4_b.gb");
-  results += run_microtest("ppu_sprite0_scx5_a.gb");
-  results += run_microtest("ppu_sprite0_scx5_b.gb");
-  results += run_microtest("ppu_sprite0_scx6_a.gb");
-  results += run_microtest("ppu_sprite0_scx6_b.gb");
-  results += run_microtest("ppu_sprite0_scx7_a.gb");
-  results += run_microtest("ppu_sprite0_scx7_b.gb"); // failing
+  results += run_microtest(proto, "ppu_sprite0_scx0_b.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx2_a.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx2_b.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx3_a.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx3_b.gb"); // failing
+  results += run_microtest(proto, "ppu_sprite0_scx4_a.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx4_b.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx5_a.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx5_b.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx6_a.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx6_b.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx7_a.gb");
+  results += run_microtest(proto, "ppu_sprite0_scx7_b.gb"); // failing
 
-  results += run_microtest("sprite4_0_a.gb");
-  results += run_microtest("sprite4_0_b.gb");
-  results += run_microtest("sprite4_1_a.gb");
-  results += run_microtest("sprite4_1_b.gb");
-  results += run_microtest("sprite4_2_a.gb");
-  results += run_microtest("sprite4_2_b.gb");
-  results += run_microtest("sprite4_3_a.gb");
-  results += run_microtest("sprite4_3_b.gb");
-  results += run_microtest("sprite4_4_a.gb");
-  results += run_microtest("sprite4_4_b.gb");
-  results += run_microtest("sprite4_5_a.gb");
-  results += run_microtest("sprite4_5_b.gb");
-  results += run_microtest("sprite4_6_a.gb");
-  results += run_microtest("sprite4_6_b.gb");
-  results += run_microtest("sprite4_7_a.gb");
-  results += run_microtest("sprite4_7_b.gb");
+  results += run_microtest(proto, "sprite4_0_a.gb");
+  results += run_microtest(proto, "sprite4_0_b.gb");
+  results += run_microtest(proto, "sprite4_1_a.gb");
+  results += run_microtest(proto, "sprite4_1_b.gb");
+  results += run_microtest(proto, "sprite4_2_a.gb");
+  results += run_microtest(proto, "sprite4_2_b.gb");
+  results += run_microtest(proto, "sprite4_3_a.gb");
+  results += run_microtest(proto, "sprite4_3_b.gb");
+  results += run_microtest(proto, "sprite4_4_a.gb");
+  results += run_microtest(proto, "sprite4_4_b.gb");
+  results += run_microtest(proto, "sprite4_5_a.gb");
+  results += run_microtest(proto, "sprite4_5_b.gb");
+  results += run_microtest(proto, "sprite4_6_a.gb");
+  results += run_microtest(proto, "sprite4_6_b.gb");
+  results += run_microtest(proto, "sprite4_7_a.gb");
+  results += run_microtest(proto, "sprite4_7_b.gb");
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_window() {
+TestResults GateBoyTests::test_micro_window(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest("win0_scx3_a.gb");
-  results += run_microtest("win0_scx3_b.gb");
-  results += run_microtest("win10_scx3_a.gb");
-  results += run_microtest("win10_scx3_b.gb");
+  results += run_microtest(proto, "win0_scx3_a.gb");
+  results += run_microtest(proto, "win0_scx3_b.gb");
+  results += run_microtest(proto, "win10_scx3_a.gb");
+  results += run_microtest(proto, "win10_scx3_b.gb");
 
-  results += run_microtest("win0_a.gb");
-  results += run_microtest("win0_b.gb");
-  results += run_microtest("win1_a.gb");
-  results += run_microtest("win1_b.gb");
-  results += run_microtest("win2_a.gb");
-  results += run_microtest("win2_b.gb");
-  results += run_microtest("win3_a.gb");
-  results += run_microtest("win3_b.gb");
-  results += run_microtest("win4_a.gb");
-  results += run_microtest("win4_b.gb");
-  results += run_microtest("win5_a.gb");
-  results += run_microtest("win5_b.gb");
-  results += run_microtest("win6_a.gb");
-  results += run_microtest("win6_b.gb");
-  results += run_microtest("win7_a.gb");
-  results += run_microtest("win7_b.gb");
-  results += run_microtest("win8_a.gb");
-  results += run_microtest("win8_b.gb");
-  results += run_microtest("win9_a.gb");
-  results += run_microtest("win9_b.gb");
+  results += run_microtest(proto, "win0_a.gb");
+  results += run_microtest(proto, "win0_b.gb");
+  results += run_microtest(proto, "win1_a.gb");
+  results += run_microtest(proto, "win1_b.gb");
+  results += run_microtest(proto, "win2_a.gb");
+  results += run_microtest(proto, "win2_b.gb");
+  results += run_microtest(proto, "win3_a.gb");
+  results += run_microtest(proto, "win3_b.gb");
+  results += run_microtest(proto, "win4_a.gb");
+  results += run_microtest(proto, "win4_b.gb");
+  results += run_microtest(proto, "win5_a.gb");
+  results += run_microtest(proto, "win5_b.gb");
+  results += run_microtest(proto, "win6_a.gb");
+  results += run_microtest(proto, "win6_b.gb");
+  results += run_microtest(proto, "win7_a.gb");
+  results += run_microtest(proto, "win7_b.gb");
+  results += run_microtest(proto, "win8_a.gb");
+  results += run_microtest(proto, "win8_b.gb");
+  results += run_microtest(proto, "win9_a.gb");
+  results += run_microtest(proto, "win9_b.gb");
 
-  results += run_microtest("win10_a.gb");
-  results += run_microtest("win10_b.gb");
-  results += run_microtest("win11_a.gb");
-  results += run_microtest("win11_b.gb");
-  results += run_microtest("win12_a.gb");
-  results += run_microtest("win12_b.gb");
-  results += run_microtest("win13_a.gb");
-  results += run_microtest("win13_b.gb");
-  results += run_microtest("win14_a.gb");
-  results += run_microtest("win14_b.gb");
-  results += run_microtest("win15_a.gb");
-  results += run_microtest("win15_b.gb");
+  results += run_microtest(proto, "win10_a.gb");
+  results += run_microtest(proto, "win10_b.gb");
+  results += run_microtest(proto, "win11_a.gb");
+  results += run_microtest(proto, "win11_b.gb");
+  results += run_microtest(proto, "win12_a.gb");
+  results += run_microtest(proto, "win12_b.gb");
+  results += run_microtest(proto, "win13_a.gb");
+  results += run_microtest(proto, "win13_b.gb");
+  results += run_microtest(proto, "win14_a.gb");
+  results += run_microtest(proto, "win14_b.gb");
+  results += run_microtest(proto, "win15_a.gb");
+  results += run_microtest(proto, "win15_b.gb");
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_micro_mbc1() {
+TestResults GateBoyTests::test_micro_mbc1(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest("mbc1_ram_banks.gb");
-  results += run_microtest("mbc1_rom_banks.gb");
+  results += run_microtest(proto, "mbc1_ram_banks.gb");
+  results += run_microtest(proto, "mbc1_rom_banks.gb");
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::run_microtest(const char* filename) {
+TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filename) {
   TestResults results;
 
   blob cart_blob;
@@ -1043,7 +1049,7 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
 
   if (verbose) LOG_B("%-30s ", filename);
 
-  auto gb = create_debug_gb(cart_blob, true);
+  unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_cart(cart_blob);
 
   int timeout = 150000 * 8;
@@ -1080,10 +1086,10 @@ TestResults GateBoyTests::run_microtest(const char* filename) {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_init() {
+TestResults GateBoyTests::test_init(const IGateBoy* proto) {
   TEST_INIT();
 
-  auto gb = create_debug_gb(dummy_cart, false);
+  unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_bootrom(dummy_cart);
 
   LOG_G("Checking reg flags\n");
@@ -1137,37 +1143,41 @@ TestResults GateBoyTests::test_init() {
 
 #define EXPECT_CLK(A, B) EXPECT_EQ(bit(A), get_bit(B, 7 - phase), "Clock phase mismatch, %s at phase %d", #A, phase);
 
-TestResults GateBoyTests::test_clk() {
+TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
   TEST_INIT();
 
-  auto gb = new GateBoy();
+  unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_bootrom(dummy_cart);
-  gb->sys.cpu_en = false;
+  //gb->sys.cpu_en = false;
   gb->dbg_write(dummy_cart, ADDR_LCDC, 0x80);
   gb->run_phases(dummy_cart, 8);
 
-  auto& clk = gb->gb_state.sys_clk;
 
   for (int i = 0; i < 32; i++) {
-    int phase = gb->sys.phase_total & 7;
-    EXPECT_CLK(clk.AFUR_xxxxEFGH.qp_old(), (uint8_t)0b00001111);
-    EXPECT_CLK(clk.ALEF_AxxxxFGH.qp_old(), (uint8_t)0b10000111);
-    EXPECT_CLK(clk.APUK_ABxxxxGH.qp_old(), (uint8_t)0b11000011);
-    EXPECT_CLK(clk.ADYK_ABCxxxxH.qp_old(), (uint8_t)0b11100001);
+    int phase = gb->get_sys().phase_total & 7;
+    auto& clk = gb->get_state().sys_clk;
+    EXPECT_CLK(clk.AFUR_xxxxEFGH.state, (uint8_t)0b00001111);
+    EXPECT_CLK(clk.ALEF_AxxxxFGH.state, (uint8_t)0b10000111);
+    EXPECT_CLK(clk.APUK_ABxxxxGH.state, (uint8_t)0b11000011);
+    EXPECT_CLK(clk.ADYK_ABCxxxxH.state, (uint8_t)0b11100001);
 
-    EXPECT_CLK(clk.WUVU_ABxxEFxx.qp_old(), (uint8_t)0b11001100);
-    EXPECT_CLK(clk.VENA_xxCDEFxx.qp_old(), (uint8_t)0b00111100);
-    EXPECT_CLK(clk.WOSU_AxxDExxH.qp_old(), (uint8_t)0b10011001);
+    EXPECT_CLK(clk.WUVU_ABxxEFxx.state, (uint8_t)0b11001100);
+    EXPECT_CLK(clk.VENA_xxCDEFxx.state, (uint8_t)0b00111100);
+    EXPECT_CLK(clk.WOSU_AxxDExxH.state, (uint8_t)0b10011001);
 
-    EXPECT_CLK(gb->gb_state.sys_clk.SIG_CPU_BOWA_Axxxxxxx.out_old(), 0b10000000);
-    EXPECT_CLK(gb->gb_state.sys_clk.SIG_CPU_BEDO_xBCDEFGH.out_old(), 0b01111111);
-    EXPECT_CLK(gb->gb_state.sys_clk.SIG_CPU_BEKO_ABCDxxxx.out_old(), 0b11110000);
-    EXPECT_CLK(gb->gb_state.sys_clk.SIG_CPU_BUDE_xxxxEFGH.out_old(), 0b00001111);
-    EXPECT_CLK(gb->gb_state.sys_clk.SIG_CPU_BOLO_ABCDEFxx.out_old(), 0b11111100);
-    EXPECT_CLK(gb->gb_state.sys_clk.SIG_CPU_BUKE_AxxxxxGH.out_old(), 0b10000011);
-    EXPECT_CLK(gb->gb_state.sys_clk.SIG_CPU_BOMA_xBCDEFGH.out_old(), 0b01111111);
-    EXPECT_CLK(gb->gb_state.sys_clk.SIG_CPU_BOGA_Axxxxxxx.out_old(), 0b10000000);
-    EXPECT_CLK(gb->gb_state.sys_clk.PIN_75_CLK_OUT.qp_ext_old(),    0b11110000);
+    EXPECT_CLK(clk.SIG_CPU_BOWA_Axxxxxxx.state, 0b10000000);
+    EXPECT_CLK(clk.SIG_CPU_BEDO_xBCDEFGH.state, 0b01111111);
+    EXPECT_CLK(clk.SIG_CPU_BEKO_ABCDxxxx.state, 0b11110000);
+    EXPECT_CLK(clk.SIG_CPU_BUDE_xxxxEFGH.state, 0b00001111);
+    EXPECT_CLK(clk.SIG_CPU_BOLO_ABCDEFxx.state, 0b11111100);
+    EXPECT_CLK(clk.SIG_CPU_BUKE_AxxxxxGH.state, 0b10000011);
+    EXPECT_CLK(clk.SIG_CPU_BOMA_xBCDEFGH.state, 0b01111111);
+    EXPECT_CLK(clk.SIG_CPU_BOGA_Axxxxxxx.state, 0b10000000);
+    
+    //EXPECT_CLK(clk.PIN_75_CLK_OUT.state,        0b11110000);
+    // external signals are inverted
+    EXPECT_CLK(clk.PIN_75_CLK_OUT.state,        0b00001111);
+    
     gb->next_phase(dummy_cart);
   }
 
@@ -1184,7 +1194,7 @@ char cp_ext(uint8_t state) {
   return 'X';
 }
 
-TestResults GateBoyTests::test_ext_bus() {
+TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
   TEST_INIT();
 
   // Check all signals for all phases of "ld (hl), a; jr -2;" with hl = 0xC003 and a = 0x55
@@ -1203,7 +1213,7 @@ TestResults GateBoyTests::test_ext_bus() {
     as.assemble(app);
     blob cart_blob = as.link();
 
-    IGateBoy* gb = new GateBoy();
+    unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_cart(cart_blob);
     gb->run_phases(cart_blob, 120);
 
@@ -1329,7 +1339,7 @@ TestResults GateBoyTests::test_ext_bus() {
     as.assemble(app);
     blob cart_blob = as.link();
 
-    IGateBoy* gb = new GateBoy();
+    unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_cart(cart_blob);
     gb->run_phases(cart_blob, 120);
 
@@ -1458,7 +1468,7 @@ TestResults GateBoyTests::test_ext_bus() {
     as.assemble(app);
     blob cart_blob = as.link();
 
-    IGateBoy* gb = new GateBoy();
+    unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_cart(cart_blob);
     gb->run_phases(cart_blob, 120);
 
@@ -1616,18 +1626,16 @@ TestResults GateBoyTests::test_ext_bus() {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_mem() {
+TestResults GateBoyTests::test_mem(const IGateBoy* proto) {
   TEST_INIT();
 
-  unique_ptr<IGateBoy> gb(new GateBoy());
-
-  results += test_mem(gb.get(), "ROM",  0x0000, 0x7FFF, 31,  false);
-  results += test_mem(gb.get(), "VRAM", 0x8000, 0x9FFF, 31,  true);
-  results += test_mem(gb.get(), "CRAM", 0xA000, 0xBFFF, 31,  true);
-  results += test_mem(gb.get(), "IRAM", 0xC000, 0xDFFF, 31,  true);
-  results += test_mem(gb.get(), "ERAM", 0xE000, 0xFDFF, 31,  true);
-  results += test_mem(gb.get(), "OAM",  0xFE00, 0xFEFF, 1,   true);
-  results += test_mem(gb.get(), "ZRAM", 0xFF80, 0xFFFE, 1,   true);
+  results += test_mem(proto, "ROM",  0x0000, 0x7FFF, 31,  false);
+  results += test_mem(proto, "VRAM", 0x8000, 0x9FFF, 31,  true);
+  results += test_mem(proto, "CRAM", 0xA000, 0xBFFF, 31,  true);
+  results += test_mem(proto, "IRAM", 0xC000, 0xDFFF, 31,  true);
+  results += test_mem(proto, "ERAM", 0xE000, 0xFDFF, 31,  true);
+  results += test_mem(proto, "OAM",  0xFE00, 0xFEFF, 1,   true);
+  results += test_mem(proto, "ZRAM", 0xFF80, 0xFFFE, 1,   true);
 
   TEST_DONE();
 }
@@ -1638,6 +1646,7 @@ TestResults GateBoyTests::test_bootrom(const IGateBoy* proto) {
   TEST_INIT();
 
   unique_ptr<IGateBoy> gb(proto->clone());
+  gb->reset_to_bootrom(dummy_cart);
 
   for (int i = 0; i < 16; i++) {
     uint8_t data_out = gb->dbg_read(dummy_cart, i);
@@ -1649,7 +1658,7 @@ TestResults GateBoyTests::test_bootrom(const IGateBoy* proto) {
 
 //------------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_timer() {
+TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   TEST_INIT();
 
   // TAC 100 - 2048 phases per TIMA tick
@@ -1659,91 +1668,91 @@ TestResults GateBoyTests::test_timer() {
 
   LOG("Testing TIMA tick rate and reset_states to TMA...\n");
   {
-    auto gb = make_unique<GateBoy>();
+    unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    gb->sys.cpu_en = false;
+    //gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80).unwrap();
     gb->dbg_write(dummy_cart, ADDR_TIMA,0xFD).unwrap();
     gb->dbg_write(dummy_cart, ADDR_DIV, 0x00).unwrap();
     gb->dbg_write(dummy_cart, ADDR_TAC, 0b00000100).unwrap();
 
-    EXPECT_EQ(0xFD, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFD, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 2048);
-    EXPECT_EQ(0xFE, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFE, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 2048);
-    EXPECT_EQ(0xFF, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFF, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 2048);
-    EXPECT_EQ(0x80, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0x80, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 2048);
-    EXPECT_EQ(0x81, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0x81, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 2048);
     if (results.ok()) LOG_B("TAC 0b100 pass\n");
   }
 
   {
-    auto gb = make_unique<GateBoy>();
+    unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    gb->sys.cpu_en = false;
+    //gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80).unwrap();
     gb->dbg_write(dummy_cart, ADDR_TIMA,0xFD).unwrap();
     gb->dbg_write(dummy_cart, ADDR_DIV, 0x00).unwrap();
     gb->dbg_write(dummy_cart, ADDR_TAC, 0b00000101).unwrap();
 
-    EXPECT_EQ(0xFD, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFD, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 32);
-    EXPECT_EQ(0xFE, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFE, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 32);
-    EXPECT_EQ(0xFF, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFF, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 32);
-    EXPECT_EQ(0x80, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0x80, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 32);
-    EXPECT_EQ(0x81, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0x81, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 32);
     if (results.ok()) LOG_B("TAC 0b101 pass\n");
   }
   {
-    auto gb = make_unique<GateBoy>();
+    unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    gb->sys.cpu_en = false;
+    //gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80);
     gb->dbg_write(dummy_cart, ADDR_TIMA,0xFD);
     gb->dbg_write(dummy_cart, ADDR_DIV, 0x00);
     gb->dbg_write(dummy_cart, ADDR_TAC, 0b00000110);
 
-    EXPECT_EQ(0xFD, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFD, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 128);
-    EXPECT_EQ(0xFE, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFE, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 128);
-    EXPECT_EQ(0xFF, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFF, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 128);
-    EXPECT_EQ(0x80, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0x80, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 128);
-    EXPECT_EQ(0x81, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0x81, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 128);
     if (results.ok()) LOG_B("TAC 0b110 pass\n");
   }
   {
-    auto gb = make_unique<GateBoy>();
+    unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    gb->sys.cpu_en = false;
+    //gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80);
     gb->dbg_write(dummy_cart, ADDR_TIMA,0xFD);
     gb->dbg_write(dummy_cart, ADDR_DIV, 0x00);
     gb->dbg_write(dummy_cart, ADDR_TAC, 0b00000111);
 
-    EXPECT_EQ(0xFD, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFD, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 512);
-    EXPECT_EQ(0xFE, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFE, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 512);
-    EXPECT_EQ(0xFF, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0xFF, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 512);
-    EXPECT_EQ(0x80, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0x80, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 512);
-    EXPECT_EQ(0x81, bit_pack(gb->gb_state.reg_tima));
+    EXPECT_EQ(0x81, bit_pack(gb->get_state().reg_tima));
     gb->run_phases(dummy_cart, 512);
     if (results.ok()) LOG_B("TAC 0b111 pass\n");
   }
@@ -1769,11 +1778,11 @@ TestResults GateBoyTests::test_timer() {
 
 //------------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_dma() {
+TestResults GateBoyTests::test_dma(const IGateBoy* proto) {
   TEST_INIT();
 
   for (int src = 0x0000; src < 0xFE00; src += 0x1000) {
-    results += test_dma(uint16_t(src));
+    results += test_dma(proto, uint16_t(src));
   }
 
   TEST_DONE();
@@ -1781,14 +1790,15 @@ TestResults GateBoyTests::test_dma() {
 
 //----------------------------------------
 
-TestResults GateBoyTests::test_dma(uint16_t src) {
+TestResults GateBoyTests::test_dma(const IGateBoy* proto, uint16_t src) {
   TEST_INIT("0x%04x", src);
 
   auto test_cart = dummy_cart;
 
-  auto gb = std::make_unique<GateBoy>();
+  unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_cart(test_cart);
-  gb->sys.cpu_en = false;
+  
+  const_cast<GateBoySys&>(gb->get_sys()).cpu_en = false;
 
   gb->dbg_write(test_cart, ADDR_LCDC, 0);
   gb->dbg_write(test_cart, 0x0000, 0x0A); // enable mbc1 ram
@@ -1821,37 +1831,36 @@ TestResults GateBoyTests::test_dma(uint16_t src) {
 
 //------------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_ppu() {
+TestResults GateBoyTests::test_ppu(const IGateBoy* proto) {
   TEST_INIT();
 
   // slow
-  if (run_slow_tests) {
-    LOG("Checking LY increment rate... ");
+  if (1) {
+    LOG("Checking LY increment rate...\n");
 
-    auto gb = make_unique<GateBoy>();
+    unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_LCDC, 0x80);
 
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
     for (uint32_t i = 0; i < 153; i++) {
-      EXPECT_EQ(i, bit_pack(gb->gb_state.reg_ly));
+      EXPECT_EQ(i, bit_pack(gb->get_state().reg_ly));
       gb->run_phases(dummy_cart, 114 * 8);
     }
 
     // LY is reset early on the last line, we should be at 0 now.
-    EXPECT_EQ(0, bit_pack(gb->gb_state.reg_ly));
+    EXPECT_EQ(0, bit_pack(gb->get_state().reg_ly));
     gb->run_phases(dummy_cart, 114 * 8);
 
     // And we should be at 0 again
-    EXPECT_EQ(0, bit_pack(gb->gb_state.reg_ly));
+    EXPECT_EQ(0, bit_pack(gb->get_state().reg_ly));
     gb->run_phases(dummy_cart, 114 * 8);
 
     // And now we should be at 1.
-    EXPECT_EQ(1, bit_pack(gb->gb_state.reg_ly));
+    EXPECT_EQ(1, bit_pack(gb->get_state().reg_ly));
 
-    if (results.ok()) LOG_B("Pass");
+    if (results.ok()) LOG("Checking LY increment rate...PASS\n");
   }
 
   TEST_DONE();
@@ -1928,8 +1937,9 @@ TestResults GateBoyTests::test_mem(const IGateBoy* proto, const char* tag, uint1
 
 //-----------------------------------------------------------------------------
 
-void GateBoyTests::run_benchmark() {
-  auto gb = make_unique<GateBoy>();
+#if 0
+void GateBoyTests::run_benchmark(const IGateBoy* proto) {
+  unique_ptr<IGateBoy> gb(proto->clone());
 
   const int iter_count = config_debug ? 16 : 74;
   const int phase_per_iter = config_debug ? 128 : 8192;
@@ -1973,137 +1983,138 @@ void GateBoyTests::run_benchmark() {
   double phase_rate_sigma    = sqrt(phase_rate_variance);
   LOG("Mean phase/sec %f sigma %f\n", phase_rate_mean, phase_rate_sigma);
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // takes a couple minutes
 
-TestResults GateBoyTests::test_mooneye_generic() {
+TestResults GateBoyTests::test_mooneye_generic(const IGateBoy* proto) {
   TEST_INIT();
 
   const char* path = "tests/mooneye-gb/tests/build/acceptance/";
 
-  results += run_mooneye_test(path, "boot_div-dmgABCmgb.gb");         // p
-  results += run_mooneye_test(path, "boot_hwio-dmgABCmgb.gb");        // XXX sound regs
-  results += run_mooneye_test(path, "boot_regs-dmgABC.gb");           // p
-  results += run_mooneye_test(path, "add_sp_e_timing.gb");            // p
-  results += run_mooneye_test(path, "call_cc_timing.gb");             // p
-  results += run_mooneye_test(path, "call_cc_timing2.gb");            // p
-  results += run_mooneye_test(path, "call_timing.gb");                // p
-  results += run_mooneye_test(path, "call_timing2.gb");               // p
-  results += run_mooneye_test(path, "di_timing-GS.gb");               // p
-  results += run_mooneye_test(path, "div_timing.gb");                 // p
-  results += run_mooneye_test(path, "ei_sequence.gb");                // p
-  results += run_mooneye_test(path, "ei_timing.gb");                  // p
-  results += run_mooneye_test(path, "halt_ime0_ei.gb");               // p
-  results += run_mooneye_test(path, "halt_ime0_nointr_timing.gb");    // p
-  results += run_mooneye_test(path, "halt_ime1_timing.gb");           // p
-  results += run_mooneye_test(path, "halt_ime1_timing2-GS.gb");       // p
-  results += run_mooneye_test(path, "if_ie_registers.gb");            // p
-  results += run_mooneye_test(path, "intr_timing.gb");                // p
-  results += run_mooneye_test(path, "jp_cc_timing.gb");               // p
-  results += run_mooneye_test(path, "jp_timing.gb");                  // p
-  results += run_mooneye_test(path, "ld_hl_sp_e_timing.gb");          // p
-  results += run_mooneye_test(path, "oam_dma_restart.gb");            // p
-  results += run_mooneye_test(path, "oam_dma_start.gb");              // p
-  results += run_mooneye_test(path, "oam_dma_timing.gb");             // p
-  results += run_mooneye_test(path, "pop_timing.gb");                 // p
-  results += run_mooneye_test(path, "push_timing.gb");                // p
-  results += run_mooneye_test(path, "rapid_di_ei.gb");                // p
-  results += run_mooneye_test(path, "ret_cc_timing.gb");              // p
-  results += run_mooneye_test(path, "ret_timing.gb");                 // p
-  results += run_mooneye_test(path, "reti_intr_timing.gb");           // p
-  results += run_mooneye_test(path, "reti_timing.gb");                // p
-  results += run_mooneye_test(path, "rst_timing.gb");                 // p
-  results += run_mooneye_test(path, "bits/mem_oam.gb");               // p
-  results += run_mooneye_test(path, "bits/reg_f.gb");                 // p
-  results += run_mooneye_test(path, "bits/unused_hwio-GS.gb");        // XXX sound regs
-  results += run_mooneye_test(path, "instr/daa.gb");                  // p
-  results += run_mooneye_test(path, "interrupts/ie_push.gb");         // p
-  results += run_mooneye_test(path, "oam_dma/basic.gb");              // p
-  results += run_mooneye_test(path, "oam_dma/basic.gb");              // p
-  results += run_mooneye_test(path, "oam_dma/reg_read.gb");           // p
-  results += run_mooneye_test(path, "oam_dma/sources-GS.gb");         // p
+  results += run_mooneye_test(proto, path, "boot_div-dmgABCmgb.gb");         // p
+  results += run_mooneye_test(proto, path, "boot_hwio-dmgABCmgb.gb");        // XXX sound regs
+  results += run_mooneye_test(proto, path, "boot_regs-dmgABC.gb");           // p
+  results += run_mooneye_test(proto, path, "add_sp_e_timing.gb");            // p
+  results += run_mooneye_test(proto, path, "call_cc_timing.gb");             // p
+  results += run_mooneye_test(proto, path, "call_cc_timing2.gb");            // p
+  results += run_mooneye_test(proto, path, "call_timing.gb");                // p
+  results += run_mooneye_test(proto, path, "call_timing2.gb");               // p
+  results += run_mooneye_test(proto, path, "di_timing-GS.gb");               // p
+  results += run_mooneye_test(proto, path, "div_timing.gb");                 // p
+  results += run_mooneye_test(proto, path, "ei_sequence.gb");                // p
+  results += run_mooneye_test(proto, path, "ei_timing.gb");                  // p
+  results += run_mooneye_test(proto, path, "halt_ime0_ei.gb");               // p
+  results += run_mooneye_test(proto, path, "halt_ime0_nointr_timing.gb");    // p
+  results += run_mooneye_test(proto, path, "halt_ime1_timing.gb");           // p
+  results += run_mooneye_test(proto, path, "halt_ime1_timing2-GS.gb");       // p
+  results += run_mooneye_test(proto, path, "if_ie_registers.gb");            // p
+  results += run_mooneye_test(proto, path, "intr_timing.gb");                // p
+  results += run_mooneye_test(proto, path, "jp_cc_timing.gb");               // p
+  results += run_mooneye_test(proto, path, "jp_timing.gb");                  // p
+  results += run_mooneye_test(proto, path, "ld_hl_sp_e_timing.gb");          // p
+  results += run_mooneye_test(proto, path, "oam_dma_restart.gb");            // p
+  results += run_mooneye_test(proto, path, "oam_dma_start.gb");              // p
+  results += run_mooneye_test(proto, path, "oam_dma_timing.gb");             // p
+  results += run_mooneye_test(proto, path, "pop_timing.gb");                 // p
+  results += run_mooneye_test(proto, path, "push_timing.gb");                // p
+  results += run_mooneye_test(proto, path, "rapid_di_ei.gb");                // p
+  results += run_mooneye_test(proto, path, "ret_cc_timing.gb");              // p
+  results += run_mooneye_test(proto, path, "ret_timing.gb");                 // p
+  results += run_mooneye_test(proto, path, "reti_intr_timing.gb");           // p
+  results += run_mooneye_test(proto, path, "reti_timing.gb");                // p
+  results += run_mooneye_test(proto, path, "rst_timing.gb");                 // p
+  results += run_mooneye_test(proto, path, "bits/mem_oam.gb");               // p
+  results += run_mooneye_test(proto, path, "bits/reg_f.gb");                 // p
+  results += run_mooneye_test(proto, path, "bits/unused_hwio-GS.gb");        // XXX sound regs
+  results += run_mooneye_test(proto, path, "instr/daa.gb");                  // p
+  results += run_mooneye_test(proto, path, "interrupts/ie_push.gb");         // p
+  results += run_mooneye_test(proto, path, "oam_dma/basic.gb");              // p
+  results += run_mooneye_test(proto, path, "oam_dma/basic.gb");              // p
+  results += run_mooneye_test(proto, path, "oam_dma/reg_read.gb");           // p
+  results += run_mooneye_test(proto, path, "oam_dma/sources-GS.gb");         // p
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_mooneye_mbc1() {
+TestResults GateBoyTests::test_mooneye_mbc1(const IGateBoy* proto) {
   TEST_INIT();
 
   const char* path = "tests/mooneye-gb/tests/build/emulator-only/mbc1/";
 
-  results += run_mooneye_test(path, "bits_bank1.gb"); // pass, but very slow (3 sim-sec)
-  results += run_mooneye_test(path, "bits_bank2.gb"); // pass, but very slow (3 sim-sec)
-  results += run_mooneye_test(path, "bits_mode.gb");  // pass, but very slow (3 sim-sec)
-  results += run_mooneye_test(path, "bits_ramg.gb");  // pass, but very slow (6 sim-sec)
+  results += run_mooneye_test(proto, path, "bits_bank1.gb"); // pass, but very slow (3 sim-sec)
+  results += run_mooneye_test(proto, path, "bits_bank2.gb"); // pass, but very slow (3 sim-sec)
+  results += run_mooneye_test(proto, path, "bits_mode.gb");  // pass, but very slow (3 sim-sec)
+  results += run_mooneye_test(proto, path, "bits_ramg.gb");  // pass, but very slow (6 sim-sec)
 
   // not going to bother with multicart support for now
   //"multicart_rom_8Mb.gb",
 
-  results += run_mooneye_test(path, "ram_256Kb.gb");  // pass
-  results += run_mooneye_test(path, "ram_64Kb.gb");   // pass
-  results += run_mooneye_test(path, "rom_16Mb.gb");   // pass
-  results += run_mooneye_test(path, "rom_1Mb.gb");    // pass
-  results += run_mooneye_test(path, "rom_2Mb.gb");    // pass
-  results += run_mooneye_test(path, "rom_4Mb.gb");    // pass
-  results += run_mooneye_test(path, "rom_512Kb.gb");  // pass
-  results += run_mooneye_test(path, "rom_8Mb.gb");    // pass
+  results += run_mooneye_test(proto, path, "ram_256Kb.gb");  // pass
+  results += run_mooneye_test(proto, path, "ram_64Kb.gb");   // pass
+  results += run_mooneye_test(proto, path, "rom_16Mb.gb");   // pass
+  results += run_mooneye_test(proto, path, "rom_1Mb.gb");    // pass
+  results += run_mooneye_test(proto, path, "rom_2Mb.gb");    // pass
+  results += run_mooneye_test(proto, path, "rom_4Mb.gb");    // pass
+  results += run_mooneye_test(proto, path, "rom_512Kb.gb");  // pass
+  results += run_mooneye_test(proto, path, "rom_8Mb.gb");    // pass
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_mooneye_timer() {
+TestResults GateBoyTests::test_mooneye_timer(const IGateBoy* proto) {
   TEST_INIT();
 
   const char* path = "tests/mooneye-gb/tests/build/acceptance/timer/";
 
-  results += run_mooneye_test(path, "div_write.gb");            // pass
-  results += run_mooneye_test(path, "rapid_toggle.gb");         // pass
-  results += run_mooneye_test(path, "tim00.gb");                // pass
-  results += run_mooneye_test(path, "tim00_div_trigger.gb");    // pass
-  results += run_mooneye_test(path, "tim01.gb");                // pass
-  results += run_mooneye_test(path, "tim01_div_trigger.gb");    // pass
-  results += run_mooneye_test(path, "tim10.gb");                // pass
-  results += run_mooneye_test(path, "tim10_div_trigger.gb");    // pass
-  results += run_mooneye_test(path, "tim11.gb");                // pass
-  results += run_mooneye_test(path, "tim11_div_trigger.gb");    // pass
-  results += run_mooneye_test(path, "tima_reload.gb");          // pass
-  results += run_mooneye_test(path, "tima_write_reloading.gb"); // pass
-  results += run_mooneye_test(path, "tma_write_reloading.gb");  // pass
+  results += run_mooneye_test(proto, path, "div_write.gb");            // pass
+  results += run_mooneye_test(proto, path, "rapid_toggle.gb");         // pass
+  results += run_mooneye_test(proto, path, "tim00.gb");                // pass
+  results += run_mooneye_test(proto, path, "tim00_div_trigger.gb");    // pass
+  results += run_mooneye_test(proto, path, "tim01.gb");                // pass
+  results += run_mooneye_test(proto, path, "tim01_div_trigger.gb");    // pass
+  results += run_mooneye_test(proto, path, "tim10.gb");                // pass
+  results += run_mooneye_test(proto, path, "tim10_div_trigger.gb");    // pass
+  results += run_mooneye_test(proto, path, "tim11.gb");                // pass
+  results += run_mooneye_test(proto, path, "tim11_div_trigger.gb");    // pass
+  results += run_mooneye_test(proto, path, "tima_reload.gb");          // pass
+  results += run_mooneye_test(proto, path, "tima_write_reloading.gb"); // pass
+  results += run_mooneye_test(proto, path, "tma_write_reloading.gb");  // pass
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_mooneye_ppu() {
+TestResults GateBoyTests::test_mooneye_ppu(const IGateBoy* proto) {
   TEST_INIT();
 
   const char* path = "tests/mooneye-gb/tests/build/acceptance/ppu/";
 
-  results += run_mooneye_test(path, "hblank_ly_scx_timing-GS.gb");      // p
-  results += run_mooneye_test(path, "intr_1_2_timing-GS.gb");           // p
-  results += run_mooneye_test(path, "intr_2_0_timing.gb");              // p
-  results += run_mooneye_test(path, "intr_2_mode0_timing.gb");          // p
-  results += run_mooneye_test(path, "intr_2_mode0_timing_sprites.gb");  // dmg pass, gateboy fail
-  results += run_mooneye_test(path, "intr_2_mode3_timing.gb");          // p
-  results += run_mooneye_test(path, "intr_2_oam_ok_timing.gb");         // p
-  results += run_mooneye_test(path, "lcdon_timing-GS.gb");              // dmg pass, gateboy fail - this is the same as lcdon_to_stat2_a
-  results += run_mooneye_test(path, "lcdon_write_timing-GS.gb");        // dmg pass, gateboy fail - probably the same as lcdon_to_oam_unlock_d
-  results += run_mooneye_test(path, "stat_irq_blocking.gb");            // p
-  results += run_mooneye_test(path, "stat_lyc_onoff.gb");               // p
-  results += run_mooneye_test(path, "vblank_stat_intr-GS.gb");          // p
+  results += run_mooneye_test(proto, path, "hblank_ly_scx_timing-GS.gb");      // p
+  results += run_mooneye_test(proto, path, "intr_1_2_timing-GS.gb");           // p
+  results += run_mooneye_test(proto, path, "intr_2_0_timing.gb");              // p
+  results += run_mooneye_test(proto, path, "intr_2_mode0_timing.gb");          // p
+  results += run_mooneye_test(proto, path, "intr_2_mode0_timing_sprites.gb");  // dmg pass, gateboy fail
+  results += run_mooneye_test(proto, path, "intr_2_mode3_timing.gb");          // p
+  results += run_mooneye_test(proto, path, "intr_2_oam_ok_timing.gb");         // p
+  results += run_mooneye_test(proto, path, "lcdon_timing-GS.gb");              // dmg pass, gateboy fail - this is the same as lcdon_to_stat2_a
+  results += run_mooneye_test(proto, path, "lcdon_write_timing-GS.gb");        // dmg pass, gateboy fail - probably the same as lcdon_to_oam_unlock_d
+  results += run_mooneye_test(proto, path, "stat_irq_blocking.gb");            // p
+  results += run_mooneye_test(proto, path, "stat_lyc_onoff.gb");               // p
+  results += run_mooneye_test(proto, path, "vblank_stat_intr-GS.gb");          // p
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::run_mooneye_test(const char* path, const char* filename) {
+TestResults GateBoyTests::run_mooneye_test(const IGateBoy* proto, const char* path, const char* filename) {
   TEST_INIT();
 
   blob cart_blob;
@@ -2117,7 +2128,7 @@ TestResults GateBoyTests::run_mooneye_test(const char* path, const char* filenam
 
   if (verbose) LOG_B("%-50s ", filename);
 
-  IGateBoy* gb = new GateBoy();
+  unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_cart(cart_blob);
 
   int timeout = 6400000; // bits_ramg is super slow

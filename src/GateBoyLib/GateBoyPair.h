@@ -18,6 +18,10 @@ struct GateBoyPair : public IGateBoy {
     return gb1->size_bytes() + gb2->size_bytes();
   }
 
+  uint8_t get_flags() const override {
+    return gb1->get_flags() & gb2->get_flags();
+  }
+
   bool load_raw_dump(BlobStream& dump_in) override {
     auto old_cursor = dump_in.cursor;
     bool result = true;

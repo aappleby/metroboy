@@ -182,6 +182,10 @@ struct GateBoy  : public IGateBoy {
     return sizeof(GateBoy);
   }
 
+  uint8_t get_flags() const override {
+    return BIT_NEW | BIT_OLD | BIT_DRIVEN | BIT_PULLED | BIT_CLOCK | BIT_DATA;
+  }
+
   //----------------------------------------
 
   bool load_raw_dump(BlobStream& bs) override {

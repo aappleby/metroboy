@@ -57,10 +57,14 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   //auto gb = new GateBoyPair(new GateBoy(), new GateBoy());
-  //auto gb = new GateBoy();
-  auto gb = new LogicBoy();
 
-  gb_thread = new GateBoyThread(gb);
+  if (config_fastmode) {
+    gb_thread = new GateBoyThread(new LogicBoy());
+  }
+  else {
+    gb_thread = new GateBoyThread(new GateBoy());
+  }
+
   gb_thread->start();
 
   auto cart = Assembler::create_dummy_cart();

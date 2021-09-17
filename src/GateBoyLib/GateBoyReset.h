@@ -9,7 +9,19 @@ struct GateBoyReset {
   }
 
   void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+    PIN_71_RST.state = BIT_OLD | BIT_DRIVEN;
+    PIN_77_T1. state = BIT_OLD | BIT_DRIVEN;
+    PIN_76_T2. state = BIT_OLD | BIT_DRIVEN;
+
+    TUBO_WAITINGp.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+    ASOL_POR_DONEn.state = BIT_OLD | BIT_DRIVEN;
+    AFER_SYS_RSTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    SOTO_DBG_VRAMp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+
+    SIG_CPU_EXT_CLKGOOD.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+    SIG_CPU_EXT_RESETp.state  = BIT_OLD | BIT_DRIVEN;
+    SIG_CPU_STARTp.state      = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+    SIG_CPU_INT_RESETp.state  = BIT_OLD | BIT_DRIVEN;
   }
 
   void reset_to_cart() {

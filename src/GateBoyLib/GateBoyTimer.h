@@ -6,22 +6,7 @@
 
 struct RegDIV {
   void reset_to_poweron() {
-    UKUP_DIV00p.state = 0b00011000;
-    UFOR_DIV01p.state = 0b00011000;
-    UNER_DIV02p.state = 0b00011000;
-    TERO_DIV03p.state = 0b00011000;
-    UNYK_DIV04p.state = 0b00011000;
-    TAMA_DIV05p.state = 0b00011000;
-    UGOT_DIV06p.state = 0b00011000;
-    TULU_DIV07p.state = 0b00011000;
-    TUGO_DIV08p.state = 0b00011000;
-    TOFE_DIV09p.state = 0b00011000;
-    TERU_DIV10p.state = 0b00011000;
-    SOLA_DIV11p.state = 0b00011000;
-    SUBU_DIV12p.state = 0b00011000;
-    TEKA_DIV13p.state = 0b00011000;
-    UKET_DIV14p.state = 0b00011000;
-    UPOF_DIV15p.state = 0b00011000;
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
@@ -106,17 +91,11 @@ struct RegDIV {
 
 struct RegTIMA {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
-    REGA_TIMA0p.state = 0x1a;
-    POVY_TIMA1p.state = 0x1a;
-    PERU_TIMA2p.state = 0x1a;
-    RATE_TIMA3p.state = 0x1a;
-    RUBY_TIMA4p.state = 0x1a;
-    RAGE_TIMA5p.state = 0x1a;
-    PEDA_TIMA6p.state = 0x1a;
-    NUGA_TIMA7p.state = 0x1a;
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
   }
 
   void reset_to_cart() {
@@ -150,9 +129,11 @@ struct RegTIMA {
 
 struct RegTMA {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
   }
 
   void reset_to_cart() {
@@ -172,9 +153,11 @@ struct RegTMA {
 
 struct RegTAC {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
-    void reset_to_bootrom() {
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
   }
 
   void reset_to_cart() {

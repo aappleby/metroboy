@@ -6,19 +6,27 @@
 
 struct OamControl {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    MAKA_LATCH_EXTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0;
+    WUJE_CPU_OAM_WRn.state = BIT_OLD | BIT_DRIVEN | 1;
+    SIG_OAM_CLKn.state     = BIT_OLD | BIT_DRIVEN | 1;
+    SIG_OAM_WRn_A.state    = BIT_OLD | BIT_DRIVEN | 1;
+    SIG_OAM_WRn_B.state    = BIT_OLD | BIT_DRIVEN | 1;
+    SIG_OAM_OEn.state      = BIT_OLD | BIT_DRIVEN | 1;
+    old_oam_clk.state      = BIT_OLD | BIT_DRIVEN | 0;
   }
 
   void reset_to_cart() {
-    MAKA_LATCH_EXTp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0;
+    MAKA_LATCH_EXTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0;
     WUJE_CPU_OAM_WRn.state = BIT_OLD | BIT_DRIVEN | 1;
-    SIG_OAM_CLKn.state = BIT_OLD | BIT_DRIVEN | 1;
-    SIG_OAM_WRn_A.state = BIT_OLD | BIT_DRIVEN | 1;
-    SIG_OAM_WRn_B.state = BIT_OLD | BIT_DRIVEN | 1;
-    SIG_OAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
-    old_oam_clk.state = BIT_OLD | BIT_DRIVEN | 0;
+    SIG_OAM_CLKn.state     = BIT_OLD | BIT_DRIVEN | 1;
+    SIG_OAM_WRn_A.state    = BIT_OLD | BIT_DRIVEN | 1;
+    SIG_OAM_WRn_B.state    = BIT_OLD | BIT_DRIVEN | 1;
+    SIG_OAM_OEn.state      = BIT_OLD | BIT_DRIVEN | 1;
+    old_oam_clk.state      = BIT_OLD | BIT_DRIVEN | 0;
   }
 
   /*_p04.MAKA*/ DFF17 MAKA_LATCH_EXTp;       // AxxxExxx
@@ -36,20 +44,22 @@ struct OamControl {
 
 struct OamABus {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
   }
 
   void reset_to_cart() {
-    BUS_OAM_A00n. state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_OAM_A01n. state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_OAM_A02n. state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_OAM_A03n. state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_OAM_A04n. state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_A05n. state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_OAM_A06n. state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_A07n. state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A02n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A03n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A04n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_A05n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_OAM_A06n.state = BIT_OLD | BIT_DRIVEN | 0;
+    BUS_OAM_A07n.state = BIT_OLD | BIT_DRIVEN | 1;
   }
 
   /*_BUS_OAM_A00n*/ Bus BUS_OAM_A00n;  // ABCDEFGH
@@ -66,20 +76,15 @@ struct OamABus {
 
 struct OamDBusA {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_cart() {
-    BUS_OAM_DA00n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA01n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA02n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA03n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA04n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA05n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA06n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DA07n.state = BIT_OLD | BIT_DRIVEN | 0;
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   /*_BUS_OAM_DA00n*/ Bus BUS_OAM_DA00n;
@@ -96,20 +101,15 @@ struct OamDBusA {
 
 struct OamDBusB {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_cart() {
-    BUS_OAM_DB00n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB01n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB02n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB03n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB04n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB05n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB06n.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_OAM_DB07n.state = BIT_OLD | BIT_DRIVEN | 0;
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   /*_BUS_OAM_DB00n*/ Bus BUS_OAM_DB00n;

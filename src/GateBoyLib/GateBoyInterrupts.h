@@ -9,7 +9,11 @@ struct RegIF {
   }
 
   void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+    LOPE_FF0F_D0p.state = 0b00011000;
+    LALU_FF0F_D1p.state = 0b00011000;
+    NYBO_FF0F_D2p.state = 0b00011000;
+    UBUL_FF0F_D3p.state = 0b00011000;
+    ULAK_FF0F_D4p.state = 0b00011010;
   }
 
   void reset_to_cart() {
@@ -34,7 +38,7 @@ struct RegIE {
   }
 
   void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
   }
 
   void reset_to_cart() {
@@ -130,7 +134,12 @@ struct InterruptControl {
   }
 
   void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+    AWOB_WAKE_CPU.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+    SIG_CPU_WAKE.state         = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+    NYDU_TIMA7p_DELAY.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    MOBA_TIMER_OVERFLOWp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    RUPO_LYC_MATCHn.state      = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+    ROPO_LY_MATCH_SYNCp.state  = BIT_OLD | BIT_DRIVEN;
   }
 
   void reset_to_cart() {

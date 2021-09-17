@@ -188,14 +188,14 @@ void GateBoyState::reset_to_bootrom() {
   reg_ie.reset_to_bootrom();
   sys_rst.reset_to_bootrom();
   sys_clk.reset_to_bootrom();
-  //VOGA_HBLANKp;
-  //XYMU_RENDERINGn;
-  //MATU_DMA_RUNNINGp;
-  //ACYL_SCANNINGp;
-  //WODU_HBLANKp;
-  //SATO_BOOT_BITn;
-  //ATEJ_LINE_RSTp;
-  //FEPO_STORE_MATCHp;
+  VOGA_HBLANKp.state = BIT_OLD | BIT_DRIVEN;
+  XYMU_RENDERINGn.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  MATU_DMA_RUNNINGp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  ACYL_SCANNINGp.state = BIT_OLD | BIT_DRIVEN;
+  WODU_HBLANKp.state = BIT_OLD | BIT_DRIVEN;
+  SATO_BOOT_BITn.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  ATEJ_LINE_RSTp.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  FEPO_STORE_MATCHp.state = BIT_OLD | BIT_DRIVEN;
   cpu_signals.reset_to_bootrom();
   cpu_abus.reset_to_bootrom();
   cpu_dbus.reset_to_bootrom();
@@ -230,87 +230,86 @@ void GateBoyState::reset_to_bootrom() {
   joy_int.reset_to_bootrom();
   joy_latch.reset_to_bootrom();
   joy_ext.reset_to_bootrom();
-
-  sprite_scanner;
-  scan_counter;
-  sprite_counter;
-  sprite_index;
-  sprite_match_flags;
-  sprite_reset_flags;
-  sprite_store_flags;
-  sprite_ibus;
-  sprite_lbus;
-  store_i0;
-  store_i1;
-  store_i2;
-  store_i3;
-  store_i4;
-  store_i5;
-  store_i6;
-  store_i7;
-  store_i8;
-  store_i9;
-  store_l0;
-  store_l1;
-  store_l2;
-  store_l3;
-  store_l4;
-  store_l5;
-  store_l6;
-  store_l7;
-  store_l8;
-  store_l9;
-  store_x0;
-  store_x1;
-  store_x2;
-  store_x3;
-  store_x4;
-  store_x5;
-  store_x6;
-  store_x7;
-  store_x8;
-  store_x9;
-  sfetch_counter;
-  sfetch_control;
-  tfetch_counter;
-  tfetch_control;
-  tile_temp_a;
-  tile_temp_b;
-  win_ctrl;
-  win_x.map;
-  win_y.tile;
-  win_y.map;
-  fine_count;
-  fine_scroll;
-  flipped_sprite;
-  sprite_pix_a;
-  sprite_pix_b;
-  pix_count;
-  mask_pipe;
-  bgw_pipe_a;
-  bgw_pipe_b;
-  spr_pipe_a;
-  spr_pipe_b;
-  pal_pipe;
-  lcd;
-  //NR10 reg_NR10;
-  //NR11 reg_NR11;
-  //NR12 reg_NR12;
-  //NR14 reg_NR14;
-  //NR21 reg_NR21;
-  //NR22 reg_NR22;
-  //NR24 reg_NR24;
-  //NR30 reg_NR30;
-  //NR31 reg_NR31;
-  //NR32 reg_NR32;
-  //NR34 reg_NR34;
-  //NR41 reg_NR41;
-  //NR42 reg_NR42;
-  //NR43 reg_NR43;
-  //NR44 reg_NR44;
-  //NR50 reg_NR50;
-  //NR51 reg_NR51;
-  //NR52 reg_NR52;
+  sprite_scanner.reset_to_bootrom();
+  scan_counter.reset_to_bootrom();
+  sprite_counter.reset_to_bootrom();
+  sprite_index.reset_to_bootrom();
+  sprite_match_flags.reset_to_bootrom();
+  sprite_reset_flags.reset_to_bootrom();
+  sprite_store_flags.reset_to_bootrom();
+  sprite_ibus.reset_to_bootrom();
+  sprite_lbus.reset_to_bootrom();
+  store_i0.reset_to_bootrom();
+  store_i1.reset_to_bootrom();
+  store_i2.reset_to_bootrom();
+  store_i3.reset_to_bootrom();
+  store_i4.reset_to_bootrom();
+  store_i5.reset_to_bootrom();
+  store_i6.reset_to_bootrom();
+  store_i7.reset_to_bootrom();
+  store_i8.reset_to_bootrom();
+  store_i9.reset_to_bootrom();
+  store_l0.reset_to_bootrom();
+  store_l1.reset_to_bootrom();
+  store_l2.reset_to_bootrom();
+  store_l3.reset_to_bootrom();
+  store_l4.reset_to_bootrom();
+  store_l5.reset_to_bootrom();
+  store_l6.reset_to_bootrom();
+  store_l7.reset_to_bootrom();
+  store_l8.reset_to_bootrom();
+  store_l9.reset_to_bootrom();
+  store_x0.reset_to_bootrom();
+  store_x1.reset_to_bootrom();
+  store_x2.reset_to_bootrom();
+  store_x3.reset_to_bootrom();
+  store_x4.reset_to_bootrom();
+  store_x5.reset_to_bootrom();
+  store_x6.reset_to_bootrom();
+  store_x7.reset_to_bootrom();
+  store_x8.reset_to_bootrom();
+  store_x9.reset_to_bootrom();
+  sfetch_counter.reset_to_bootrom();
+  sfetch_control.reset_to_bootrom();
+  tfetch_counter.reset_to_bootrom();
+  tfetch_control.reset_to_bootrom();
+  tile_temp_a.reset_to_bootrom();
+  tile_temp_b.reset_to_bootrom();
+  win_ctrl.reset_to_bootrom();
+  win_x.map.reset_to_bootrom();
+  win_y.tile.reset_to_bootrom();
+  win_y.map.reset_to_bootrom();
+  fine_count.reset_to_bootrom();
+  fine_scroll.reset_to_bootrom();
+  flipped_sprite.reset_to_bootrom();
+  sprite_pix_a.reset_to_bootrom();
+  sprite_pix_b.reset_to_bootrom();
+  pix_count.reset_to_bootrom();
+  mask_pipe.reset_to_bootrom();
+  bgw_pipe_a.reset_to_bootrom();
+  bgw_pipe_b.reset_to_bootrom();
+  spr_pipe_a.reset_to_bootrom();
+  spr_pipe_b.reset_to_bootrom();
+  pal_pipe.reset_to_bootrom();
+  lcd.reset_to_bootrom();
+  //reg_NR10.reset_to_bootrom();
+  //reg_NR11.reset_to_bootrom();
+  //reg_NR12.reset_to_bootrom();
+  //reg_NR14.reset_to_bootrom();
+  //reg_NR21.reset_to_bootrom();
+  //reg_NR22.reset_to_bootrom();
+  //reg_NR24.reset_to_bootrom();
+  //reg_NR30.reset_to_bootrom();
+  //reg_NR31.reset_to_bootrom();
+  //reg_NR32.reset_to_bootrom();
+  //reg_NR34.reset_to_bootrom();
+  //reg_NR41.reset_to_bootrom();
+  //reg_NR42.reset_to_bootrom();
+  //reg_NR43.reset_to_bootrom();
+  //reg_NR44.reset_to_bootrom();
+  //reg_NR50.reset_to_bootrom();
+  //reg_NR51.reset_to_bootrom();
+  //reg_NR52.reset_to_bootrom();
 
   check_state_old_and_driven_or_pulled();
 }
@@ -350,9 +349,9 @@ void GateBoyState::reset_to_cart() {
   //XYMU_RENDERINGn;
   //MATU_DMA_RUNNINGp;
   //ACYL_SCANNINGp;
-  //WODU_HBLANKp;
+  WODU_HBLANKp.state = 0b00011001;
   //SATO_BOOT_BITn;
-  //ATEJ_LINE_RSTp;
+  ATEJ_LINE_RSTp.state = 0b00011000;
   //FEPO_STORE_MATCHp;
 
   cpu_signals.reset_to_cart();
@@ -476,10 +475,7 @@ void GateBoyState::reset_to_cart() {
   int_ctrl.ROPO_LY_MATCH_SYNCp.state = 0b00011001;
   reg_lyc.reset_to_cart();
 
-  WODU_HBLANKp.state = 0b00011001;
-
   sprite_scanner.FETO_SCAN_DONEp.state = 0b00011001;
-  ATEJ_LINE_RSTp.state = 0b00011000;
 
   //reg_NR50.reset_to_cart();
   //reg_NR51.reset_to_cart();
@@ -637,8 +633,22 @@ void GateBoyState::check_state_old_and_driven_or_pulled() {
     for (auto i = 0; i < sizeof(GateBoyState); i++) {
       auto r = blob[i];
       (void)r;
-      CHECK_P((r & 0xF0) == BIT_OLD);
-      CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
+
+      if ((r & 0xF0) != BIT_OLD) {
+        LOG_R("BAD OLD STATE ");
+        print_field_at(i, GateBoyState::fields);
+        LOG_R(" = 0x%02x\n", r);
+      }
+
+      //CHECK_P((r & 0xF0) == BIT_OLD);
+
+      if (!(r & BIT_DRIVEN) && !(r & BIT_PULLED)) {
+        LOG_R("BAD OLD STATE ");
+        print_field_at(i, GateBoyState::fields);
+        LOG_R(" = 0x%02x\n", r);
+      }
+
+      //CHECK_P(bool(r & BIT_DRIVEN) != bool(r & BIT_PULLED));
     }
   }
 }

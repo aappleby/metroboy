@@ -4,18 +4,24 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
-  void reset_to_poweron() {
-  }
-
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
   void reset_to_bootrom() {
+    FETO_SCAN_DONEp.state      = 0b00011000;
+    AVAP_SCAN_DONE_TRIGp.state = 0b00011000;
+    BESU_SCANNINGn.state       = 0b00011000;
+    CENO_SCANNINGn.state       = 0b00011000;
+    DEZY_COUNT_CLKp.state      = 0b00011010;
+    BYBA_SCAN_DONE_Ap.state    = 0b00011000;
+    DOBA_SCAN_DONE_Bp.state    = 0b00011000;
   }
-
-  void reset_to_cart() {
-    BESU_SCANNINGn.state = 0b00011000;
-    CENO_SCANNINGn.state = 0b00011010;
-    DEZY_COUNT_CLKp.state = 0b00011011;
-    BYBA_SCAN_DONE_Ap.state = 0b00011011;
-    DOBA_SCAN_DONE_Bp.state = 0b00011001;
+  void reset_to_cart()    {
+    FETO_SCAN_DONEp.state      = 0b00011000;
+    AVAP_SCAN_DONE_TRIGp.state = 0b00011000;
+    BESU_SCANNINGn.state       = 0b00011000;
+    CENO_SCANNINGn.state       = 0b00011000;
+    DEZY_COUNT_CLKp.state      = 0b00011010;
+    BYBA_SCAN_DONE_Ap.state    = 0b00011000;
+    DOBA_SCAN_DONE_Bp.state    = 0b00011000;
   }
 
   /*#p28.FETO*/ Gate FETO_SCAN_DONEp;
@@ -32,9 +38,21 @@ struct SpriteScanner {
 
 struct ScanCounter {
   void reset_to_poweron() {
+    YFEL_SCAN0.state = 0b00011000;
+    WEWY_SCAN1.state = 0b00011000;
+    GOSO_SCAN2.state = 0b00011000;
+    ELYN_SCAN3.state = 0b00011000;
+    FAHA_SCAN4.state = 0b00011000;
+    FONY_SCAN5.state = 0b00011000;
   }
 
   void reset_to_bootrom() {
+    YFEL_SCAN0.state = 0b00011000;
+    WEWY_SCAN1.state = 0b00011010;
+    GOSO_SCAN2.state = 0b00011010;
+    ELYN_SCAN3.state = 0b00011010;
+    FAHA_SCAN4.state = 0b00011010;
+    FONY_SCAN5.state = 0b00011010;
   }
 
   void reset_to_cart() {
@@ -58,20 +76,9 @@ struct ScanCounter {
 // Sprite index selects which store to write
 
 struct SpriteIndex {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-    XADU_SPRITE_IDX0p.state = 0b00011010;
-    XEDY_SPRITE_IDX1p.state = 0b00011010;
-    ZUZE_SPRITE_IDX2p.state = 0b00011011;
-    XOBE_SPRITE_IDX3p.state = 0b00011010;
-    YDUF_SPRITE_IDX4p.state = 0b00011011;
-    XECU_SPRITE_IDX5p.state = 0b00011010;
-  }
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x18); }
 
   /*_p30.XADU*/ DFF13 XADU_SPRITE_IDX0p;
   /*_p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p;
@@ -85,13 +92,18 @@ struct SpriteIndex {
 // Sprite counter tracks how many sprites have been selected for this line.
 
 struct SpriteCounter {
-  void reset_to_poweron() {
-  }
-
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
   void reset_to_bootrom() {
+    BESE_SPRITE_COUNT0.state = BIT_OLD | BIT_DRIVEN;
+    CUXY_SPRITE_COUNT1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    BEGO_SPRITE_COUNT2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    DYBE_SPRITE_COUNT3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   }
-
-  void reset_to_cart() {
+  void reset_to_cart()    {
+    BESE_SPRITE_COUNT0.state = BIT_OLD | BIT_DRIVEN;
+    CUXY_SPRITE_COUNT1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    BEGO_SPRITE_COUNT2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    DYBE_SPRITE_COUNT3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   }
 
   /*_p29.BESE*/ DFF17 BESE_SPRITE_COUNT0; // AxxxExxx

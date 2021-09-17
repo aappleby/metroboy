@@ -86,9 +86,9 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-  //results += t.test_reset_to_bootrom();
+  results += t.test_reset_to_bootrom();
 
-#if 1
+#if 0
   {
     LOG_G("Regression testing bootrom start\n");
     results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);

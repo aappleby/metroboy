@@ -5,9 +5,15 @@
 
 struct SpriteFetchCounter {
   void reset_to_poweron() {
+    TOXE_SFETCH_S0p.state = 0b00011000;
+    TULY_SFETCH_S1p.state = 0b00011000;
+    TESE_SFETCH_S2p.state = 0b00011000;
   }
 
   void reset_to_bootrom() {
+    TOXE_SFETCH_S0p.state = 0b00011000;
+    TULY_SFETCH_S1p.state = 0b00011010;
+    TESE_SFETCH_S2p.state = 0b00011010;
   }
 
   void reset_to_cart() {
@@ -23,19 +29,39 @@ struct SpriteFetchCounter {
 
 struct SpriteFetchControl {
   void reset_to_poweron() {
+    WUTY_SFETCH_DONE_TRIGp.state = 0b00011000;
+    TEXY_SFETCHINGp.state        = 0b00011000;
+    TAKA_SFETCH_RUNNINGp.state   = 0b00011000;
+    SOBU_SFETCH_REQp.state       = 0b00011000;
+    SUDA_SFETCH_REQp.state       = 0b00011000;
+    TYFO_SFETCH_S0p_D1.state     = 0b00011000;
+    TOBU_SFETCH_S1p_D2.state     = 0b00011000;
+    VONU_SFETCH_S1p_D4.state     = 0b00011000;
+    SEBA_SFETCH_S1p_D5.state     = 0b00011000;
   }
 
   void reset_to_bootrom() {
+    WUTY_SFETCH_DONE_TRIGp.state = 0b00011000;
+    TEXY_SFETCHINGp.state        = 0b00011000;
+    TAKA_SFETCH_RUNNINGp.state   = 0b00011001;
+    SOBU_SFETCH_REQp.state       = 0b00011000;
+    SUDA_SFETCH_REQp.state       = 0b00011010;
+    TYFO_SFETCH_S0p_D1.state     = 0b00011010;
+    TOBU_SFETCH_S1p_D2.state     = 0b00011000;
+    VONU_SFETCH_S1p_D4.state     = 0b00011000;
+    SEBA_SFETCH_S1p_D5.state     = 0b00011010;
   }
 
   void reset_to_cart() {
-    TAKA_SFETCH_RUNNINGp.state = 0b00011000;
-    SOBU_SFETCH_REQp.state = 0b00011000;
-    SUDA_SFETCH_REQp.state = 0b00011010;
-    TYFO_SFETCH_S0p_D1.state = 0b00011011;
-    TOBU_SFETCH_S1p_D2.state = 0b00011000;
-    VONU_SFETCH_S1p_D4.state = 0b00011000;
-    SEBA_SFETCH_S1p_D5.state = 0b00011010;
+    WUTY_SFETCH_DONE_TRIGp.state = 0b00011000;
+    TEXY_SFETCHINGp.state        = 0b00011000;
+    TAKA_SFETCH_RUNNINGp.state   = 0b00011001;
+    SOBU_SFETCH_REQp.state       = 0b00011000;
+    SUDA_SFETCH_REQp.state       = 0b00011010;
+    TYFO_SFETCH_S0p_D1.state     = 0b00011010;
+    TOBU_SFETCH_S1p_D2.state     = 0b00011000;
+    VONU_SFETCH_S1p_D4.state     = 0b00011000;
+    SEBA_SFETCH_S1p_D5.state     = 0b00011010;
   }
 
   /*_p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp; // new used

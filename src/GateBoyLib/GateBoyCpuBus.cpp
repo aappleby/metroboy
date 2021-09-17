@@ -9,8 +9,24 @@ void GateBoyCpuSignals::reset_to_poweron() {
 }
 
 void GateBoyCpuSignals::reset_to_bootrom() {
-  //memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  TEPU_BOOT_BITn.state = 0b00011010;
+  ABUZ_EXT_RAM_CS_CLK.state = BIT_OLD | BIT_DRIVEN;
+
+  SIG_IN_CPU_RDp.state = BIT_OLD | BIT_DRIVEN;
+  SIG_IN_CPU_WRp.state = BIT_OLD | BIT_DRIVEN;
+  SIG_IN_CPU_EXT_BUSp.state = BIT_OLD | BIT_DRIVEN;
+  SIG_IN_CPU_DBUS_FREE.state = BIT_OLD | BIT_DRIVEN;
+
+  SIG_CPU_UNOR_DBG.state = BIT_OLD | BIT_DRIVEN;
+  SIG_CPU_ADDR_HIp.state = BIT_OLD | BIT_DRIVEN;
+  SIG_CPU_UMUT_DBG.state = BIT_OLD | BIT_DRIVEN;
+  SIG_CPU_BOOTp.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  SIG_BOOT_CSp.state = BIT_OLD | BIT_DRIVEN;
+
+  TEPU_BOOT_BITn.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+
+  TEDO_CPU_RDp.state = BIT_OLD | BIT_DRIVEN;
+  APOV_CPU_WRp.state = BIT_OLD | BIT_DRIVEN;
+  TAPU_CPU_WRp.state = BIT_OLD | BIT_DRIVEN;
 }
 
 void GateBoyCpuSignals::reset_to_cart() {

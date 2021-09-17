@@ -877,6 +877,21 @@ template<class DST>
 //-----------------------------------------------------------------------------
 
 template<class DST>
+/*__declspec(noinline)*/ inline void bit_init(DST* pdst, int c, const uint8_t flags, const uint32_t src) {
+  uint8_t* dst = (uint8_t*)pdst;
+  for (int i = 0; i < c; i++) {
+    dst[i] = flags | get_bit(src, i);
+  }
+}
+
+template<class DST>
+/*__declspec(noinline)*/ inline void bit_init(DST& dst, const uint8_t flags, const uint32_t src) {
+  bit_init(&dst, sizeof(DST), flags, src);
+}
+
+//-----------------------------------------------------------------------------
+
+template<class DST>
 /*__declspec(noinline)*/ inline void bit_unpack_inv(DST* pdst, int c, const uint32_t src) {
   uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {

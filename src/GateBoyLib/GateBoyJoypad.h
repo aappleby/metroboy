@@ -4,26 +4,9 @@
 //-----------------------------------------------------------------------------
 
 struct JoyInt {
-  void reset_to_poweron() {
-    BATU_JP_GLITCH0.state = 0b00011011;
-    ACEF_JP_GLITCH1.state = 0b00011011;
-    AGEM_JP_GLITCH2.state = 0b00011011;
-    APUG_JP_GLITCH3.state = 0b00011011;
-  }
-
-  void reset_to_bootrom() {
-    BATU_JP_GLITCH0.state = 0b00011011;
-    ACEF_JP_GLITCH1.state = 0b00011011;
-    AGEM_JP_GLITCH2.state = 0b00011011;
-    APUG_JP_GLITCH3.state = 0b00011011;
-  }
-
-  void reset_to_cart() {
-    BATU_JP_GLITCH0.state = 0b00011011;
-    ACEF_JP_GLITCH1.state = 0b00011011;
-    AGEM_JP_GLITCH2.state = 0b00011011;
-    APUG_JP_GLITCH3.state = 0b00011011;
-  }
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x0F); }
+  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x07); }
+  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x07); }
 
   /*_p02.BATU*/ DFF17 BATU_JP_GLITCH0;
   /*_p02.ACEF*/ DFF17 ACEF_JP_GLITCH1;
@@ -34,20 +17,9 @@ struct JoyInt {
 //-----------------------------------------------------------------------------
 
 struct RegJoy {
-  void reset_to_poweron() {
-    KELY_JOYP_UDLRp.state = 0b00011001;
-    COFY_JOYP_ABCSp.state = 0b00011001;
-  }
-
-  void reset_to_bootrom() {
-    KELY_JOYP_UDLRp.state = 0x1A;
-    COFY_JOYP_ABCSp.state = 0x1A;
-  }
-
-  void reset_to_cart() {
-    KELY_JOYP_UDLRp.state = 0b00011010;
-    COFY_JOYP_ABCSp.state = 0b00011010;
-  }
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
   // Ignoring debug stuff for now
   ///*_p05.JUTE*/ DFF17 JUTE_DBG_D0;
@@ -63,14 +35,9 @@ struct RegJoy {
 //-----------------------------------------------------------------------------
 
 struct JoyLatch {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
 
   /*#p05.KEVU*/ TpLatch KEVU_JOYP_L0n;
   /*#p05.KAPA*/ TpLatch KAPA_JOYP_L1n;
@@ -82,14 +49,9 @@ struct JoyLatch {
 // Pressing a button pulls the corresponding pin _down_.
 
 struct JoyExt {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x30); }
+  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x30); }
+  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x30); }
 
   /*_PIN_67*/ PinIn  PIN_67_JOY_P10;
   /*_PIN_66*/ PinIn  PIN_66_JOY_P11;

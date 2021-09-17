@@ -5,9 +5,18 @@
 
 struct VramABusLo {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    BUS_VRAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A02n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A03n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A04n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A05n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A06n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A07n.state = BIT_OLD | BIT_DRIVEN | 1;
   }
 
   void reset_to_cart() {
@@ -33,9 +42,15 @@ struct VramABusLo {
 
 struct VramABusHi {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    BUS_VRAM_A08n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A09n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A10n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A11n.state = BIT_OLD | BIT_DRIVEN | 1;
+    BUS_VRAM_A12n.state = BIT_OLD | BIT_DRIVEN | 1;
   }
 
   void reset_to_cart() {
@@ -57,9 +72,11 @@ struct VramABusHi {
 
 struct VramDBus {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_cart() {
@@ -87,9 +104,13 @@ struct VramDBus {
 
 struct VramExtControl {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    PIN_43_VRAM_CSn.state = BIT_OLD | BIT_DRIVEN | 0;
+    PIN_45_VRAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_49_VRAM_WRn.state = BIT_OLD | BIT_DRIVEN | 0;
   }
 
   void reset_to_cart() {
@@ -107,9 +128,11 @@ struct VramExtControl {
 
 struct VramExtABus {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
   }
 
   void reset_to_cart() {
@@ -147,20 +170,15 @@ struct VramExtABus {
 
 struct VramExtDBus {
   void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
   }
 
   void reset_to_cart() {
-    PIN_33_VRAM_D00.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_31_VRAM_D01.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_30_VRAM_D02.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_29_VRAM_D03.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_28_VRAM_D04.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_27_VRAM_D05.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_26_VRAM_D06.state = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_25_VRAM_D07.state = BIT_OLD | BIT_DRIVEN | 1;
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
   }
 
   /*_PIN_33*/ PinIO PIN_33_VRAM_D00;

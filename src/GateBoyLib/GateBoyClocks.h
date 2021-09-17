@@ -5,25 +5,58 @@ struct GateBoyReset;
 
 //-----------------------------------------------------------------------------
 
+#pragma pack(push, 1)
 struct GateBoyClock {
   void reset_to_poweron() {
     memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
   }
 
   void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
+    PIN_73_CLK_DRIVE.state   = 0b00011001;
+    PIN_74_CLK.CLK.state     = 0b00011001;
+    PIN_74_CLK.CLKGOOD.state = 0b00011001;
+    PIN_75_CLK_OUT.state     = 0b00011000;
 
-  void reset_to_cart() {
     ANOS_DEGLITCH.state = 0b00011000;
     AVET_DEGLITCH.state = 0b00011001;
     AFUR_xxxxEFGH.state = 0b00011010;
     ALEF_AxxxxFGH.state = 0b00011001;
     APUK_ABxxxxGH.state = 0b00011011;
     ADYK_ABCxxxxH.state = 0b00011001;
+
+    WUVU_ABxxEFxx.state = 0b00011010;
+    VENA_xxCDEFxx.state = 0b00011010;
+    WOSU_AxxDExxH.state = 0b00011000;
+
+    SIG_CPU_CLKREQ.state        = 0b00011000;
+    SIG_CPU_BOWA_Axxxxxxx.state = 0b00011001;
+    SIG_CPU_BEDO_xBCDEFGH.state = 0b00011000;
+    SIG_CPU_BEKO_ABCDxxxx.state = 0b00011001;
+    SIG_CPU_BUDE_xxxxEFGH.state = 0b00011000;
+    SIG_CPU_BOLO_ABCDEFxx.state = 0b00011001;
+    SIG_CPU_BUKE_AxxxxxGH.state = 0b00011000;
+    SIG_CPU_BOMA_xBCDEFGH.state = 0b00011000;
+    SIG_CPU_BOGA_Axxxxxxx.state = 0b00011001;
+  }
+
+  void reset_to_cart() {
+    PIN_73_CLK_DRIVE.state = 0b00011000;
+    PIN_74_CLK.CLK.state = 0b00011000;
+    PIN_74_CLK.CLKGOOD.state = 0b00011000;
+    PIN_75_CLK_OUT.state = 0b00011000;
+
+    ANOS_DEGLITCH.state = 0b00011000;
+    AVET_DEGLITCH.state = 0b00011001;
+
+    AFUR_xxxxEFGH.state = 0b00011010;
+    ALEF_AxxxxFGH.state = 0b00011001;
+    APUK_ABxxxxGH.state = 0b00011011;
+    ADYK_ABCxxxxH.state = 0b00011001;
+
     WUVU_ABxxEFxx.state = 0b00011011;
     VENA_xxCDEFxx.state = 0b00011000;
     WOSU_AxxDExxH.state = 0b00011001;
+
     SIG_CPU_CLKREQ.state = 0b00011001;
     SIG_CPU_BOWA_Axxxxxxx.state = 0b00011001;
     SIG_CPU_BEDO_xBCDEFGH.state = 0b00011000;
@@ -131,5 +164,6 @@ struct GateBoyClock {
   /*_SIG_CPU_BOMA_xBCDEFGH*/ SigOut SIG_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
   /*_SIG_CPU_BOGA_Axxxxxxx*/ SigOut SIG_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
 };
+#pragma pack(pop)
 
 //-----------------------------------------------------------------------------

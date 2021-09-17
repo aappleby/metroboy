@@ -4,12 +4,17 @@
 //-----------------------------------------------------------------------------
 
 struct RegDmaLo {
-  void reset_to_poweron() {
-  }
-
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
   void reset_to_bootrom() {
+    NAKY_DMA_A00p.state = 0b00011000;
+    PYRO_DMA_A01p.state = 0b00011010;
+    NEFY_DMA_A02p.state = 0b00011010;
+    MUTY_DMA_A03p.state = 0b00011010;
+    NYKO_DMA_A04p.state = 0b00011010;
+    PYLO_DMA_A05p.state = 0b00011010;
+    NUTO_DMA_A06p.state = 0b00011010;
+    MUGU_DMA_A07p.state = 0b00011010;
   }
-
   void reset_to_cart() {
     NAKY_DMA_A00p.state = 0b00011000;
     PYRO_DMA_A01p.state = 0b00011010;
@@ -32,24 +37,9 @@ struct RegDmaLo {
 };
 
 struct RegDmaHi {
-  void reset_to_poweron() {
-    memset(this, 0b00011010, sizeof(*this));
-  }
-
-  void reset_to_bootrom() {
-    memset(this, 0b00011010, sizeof(*this));
-  }
-
-  void reset_to_cart() {
-    NAFA_DMA_A08n.state = 0b00011010;
-    PYNE_DMA_A09n.state = 0b00011010;
-    PARA_DMA_A10n.state = 0b00011010;
-    NYDO_DMA_A11n.state = 0b00011010;
-    NYGY_DMA_A12n.state = 0b00011010;
-    PULA_DMA_A13n.state = 0b00011010;
-    POKU_DMA_A14n.state = 0b00011010;
-    MARU_DMA_A15n.state = 0b00011010;
-  }
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
   /*#p04.NAFA*/ DFF8p NAFA_DMA_A08n;      // xxxxxxxH
   /*_p04.PYNE*/ DFF8p PYNE_DMA_A09n;      // xxxxxxxH
@@ -62,19 +52,22 @@ struct RegDmaHi {
 };
 
 struct DmaControl {
-  void reset_to_poweron() {
-  }
-
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, sizeof(*this)); }
   void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-    LYXE_DMA_LATCHp.state = 0b00011000;
-    MYTE_DMA_DONE.state = 0b00011000;
+    LYXE_DMA_LATCHp.state  = 0b00011000;
+    MYTE_DMA_DONE.state    = 0b00011000;
     LUVY_DMA_TRIG_d0.state = 0b00011010;
     LENE_DMA_TRIG_d4.state = 0b00011000;
-    LARA_DMA_LATCHn.state = 0b00011001;
-    LOKY_DMA_LATCHp.state = 0b00011000;
+    LARA_DMA_LATCHn.state  = 0b00011001;
+    LOKY_DMA_LATCHp.state  = 0b00011000;
+  }
+  void reset_to_cart() {
+    LYXE_DMA_LATCHp.state  = 0b00011000;
+    MYTE_DMA_DONE.state    = 0b00011000;
+    LUVY_DMA_TRIG_d0.state = 0b00011010;
+    LENE_DMA_TRIG_d4.state = 0b00011000;
+    LARA_DMA_LATCHn.state  = 0b00011001;
+    LOKY_DMA_LATCHp.state  = 0b00011000;
   }
 
   /*#p04.LYXE*/ NorLatch LYXE_DMA_LATCHp; // xxxxExxx

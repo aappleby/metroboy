@@ -25,15 +25,15 @@ struct WinControl {
     NUKO_WX_MATCHp.state       = BIT_OLD | BIT_DRIVEN;
     ROGE_WY_MATCHp.state       = BIT_OLD | BIT_DRIVEN;
     PYNU_WIN_MODE_Ap.state     = BIT_OLD | BIT_DRIVEN;
-    PUKU_WIN_HITn.state        = BIT_OLD | BIT_DRIVEN;
+    PUKU_WIN_HITn.state        = BIT_OLD | BIT_DRIVEN | 1;
     RYDY_WIN_HITp.state        = BIT_OLD | BIT_DRIVEN;
     SOVY_WIN_HITp.state        = BIT_OLD | BIT_DRIVEN;
     NOPA_WIN_MODE_Bp.state     = BIT_OLD | BIT_DRIVEN;
     PYCO_WIN_MATCHp.state      = BIT_OLD | BIT_DRIVEN;
-    NUNU_WIN_MATCHp.state      = BIT_OLD | BIT_DRIVEN;
+    NUNU_WIN_MATCHp.state      = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     REJO_WY_MATCH_LATCHp.state = BIT_OLD | BIT_DRIVEN;
     SARY_WY_MATCHp.state       = BIT_OLD | BIT_DRIVEN;
-    RYFA_WIN_FETCHn_A.state    = BIT_OLD | BIT_DRIVEN;
+    RYFA_WIN_FETCHn_A.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     RENE_WIN_FETCHn_B.state    = BIT_OLD | BIT_DRIVEN;
   }
 

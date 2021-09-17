@@ -55,10 +55,10 @@ struct SpriteFetchControl {
   void reset_to_cart() {
     WUTY_SFETCH_DONE_TRIGp.state = 0b00011000;
     TEXY_SFETCHINGp.state        = 0b00011000;
-    TAKA_SFETCH_RUNNINGp.state   = 0b00011001;
+    TAKA_SFETCH_RUNNINGp.state   = 0b00011000;
     SOBU_SFETCH_REQp.state       = 0b00011000;
     SUDA_SFETCH_REQp.state       = 0b00011010;
-    TYFO_SFETCH_S0p_D1.state     = 0b00011010;
+    TYFO_SFETCH_S0p_D1.state     = 0b00011011;
     TOBU_SFETCH_S1p_D2.state     = 0b00011000;
     VONU_SFETCH_S1p_D4.state     = 0b00011000;
     SEBA_SFETCH_S1p_D5.state     = 0b00011010;

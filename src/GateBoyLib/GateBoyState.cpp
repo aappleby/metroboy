@@ -388,100 +388,86 @@ void GateBoyState::reset_to_cart() {
   joy_int.reset_to_cart();
   joy_latch.reset_to_cart();
   joy_ext.reset_to_cart();
-
-#if 0
-  cpu_signals.reset_to_cart();
-  cpu_abus.reset_to_cart();
-  cpu_dbus.reset_to_cart();
-
-  vram_abus.lo.reset_to_cart();
-  vram_abus.hi.reset_to_cart();
-  vram_dbus.reset_to_cart();
-  vram_ext_ctrl.reset_to_cart();
-  vram_ext_abus.reset_to_cart();
-  vram_ext_dbus.reset_to_cart();
-
-  sprite_ibus.reset_to_cart();
-  sprite_lbus.reset_to_cart();
-
-  oam_ctrl.reset_to_cart();
-  oam_abus.reset_to_cart();
-  oam_dbus_a.reset_to_cart();
-  oam_dbus_b.reset_to_cart();
-  oam_latch_a.reset_to_cart();
-  oam_latch_b.reset_to_cart();
-  oam_temp_a.reset_to_cart();
-  oam_temp_b.reset_to_cart();
-
-  ext_ctrl.reset_to_cart();
-  ext_abus.lo.reset_to_cart();
-  ext_abus.hi.reset_to_cart();
-  ext_dbus.reset_to_cart();
-  ext_addr_latch.reset_to_cart();
-  ext_data_latch.reset_to_cart();
-
-  sys_rst.reset_to_cart();
-  sys_clk.reset_to_cart();
-  reg_div.reset_to_cart();
-  
-  reg_if.reset_to_cart();
-  reg_ie.reset_to_cart();
-  int_latch.reset_to_cart();
-  cpu_int.reset_to_cart();
-  cpu_ack.reset_to_cart();
-
-  //serial.reset_to_cart();
-
-  //reset_sprite_store();
-  sprite_counter.BESE_SPRITE_COUNT0.state = 0b00011010;
-  sprite_counter.CUXY_SPRITE_COUNT1.state = 0b00011010;
-  sprite_counter.BEGO_SPRITE_COUNT2.state = 0b00011010;
-  sprite_counter.DYBE_SPRITE_COUNT3.state = 0b00011010;
-
   sprite_scanner.reset_to_cart();
   scan_counter.reset_to_cart();
+  sprite_counter.reset_to_cart();
   sprite_index.reset_to_cart();
-
+  sprite_match_flags.reset_to_cart();
+  sprite_reset_flags.reset_to_cart();
+  sprite_store_flags.reset_to_cart();
+  sprite_ibus.reset_to_cart();
+  sprite_lbus.reset_to_cart();
+  store_i0.reset_to_cart();
+  store_i1.reset_to_cart();
+  store_i2.reset_to_cart();
+  store_i3.reset_to_cart();
+  store_i4.reset_to_cart();
+  store_i5.reset_to_cart();
+  store_i6.reset_to_cart();
+  store_i7.reset_to_cart();
+  store_i8.reset_to_cart();
+  store_i9.reset_to_cart();
+  store_l0.reset_to_cart();
+  store_l1.reset_to_cart();
+  store_l2.reset_to_cart();
+  store_l3.reset_to_cart();
+  store_l4.reset_to_cart();
+  store_l5.reset_to_cart();
+  store_l6.reset_to_cart();
+  store_l7.reset_to_cart();
+  store_l8.reset_to_cart();
+  store_l9.reset_to_cart();
+  store_x0.reset_to_cart();
+  store_x1.reset_to_cart();
+  store_x2.reset_to_cart();
+  store_x3.reset_to_cart();
+  store_x4.reset_to_cart();
+  store_x5.reset_to_cart();
+  store_x6.reset_to_cart();
+  store_x7.reset_to_cart();
+  store_x8.reset_to_cart();
+  store_x9.reset_to_cart();
   sfetch_counter.reset_to_cart();
   sfetch_control.reset_to_cart();
-
-  int_ctrl.RUPO_LYC_MATCHn.state = 0b00011000;
-
-  reg_stat.reset_to_cart();
+  tfetch_counter.reset_to_cart();
+  tfetch_control.reset_to_cart();
+  tile_temp_a.reset_to_cart();
+  tile_temp_b.reset_to_cart();
+  win_ctrl.reset_to_cart();
+  win_x.map.reset_to_cart();
+  win_y.tile.reset_to_cart();
+  win_y.map.reset_to_cart();
+  fine_count.reset_to_cart();
+  fine_scroll.reset_to_cart();
+  flipped_sprite.reset_to_cart();
+  sprite_pix_a.reset_to_cart();
+  sprite_pix_b.reset_to_cart();
   pix_count.reset_to_cart();
   mask_pipe.reset_to_cart();
-  lcd.REMY_LD0n.state = 0b00011000;
-  lcd.RAVO_LD1n.state = 0b00011000;
-
-  dma_lo.reset_to_cart();
-  reg_dma.reset_to_cart();
-  MATU_DMA_RUNNINGp.state = 0b00011010;
-  dma_ctrl.reset_to_cart();
-
-  reg_bgp.reset_to_cart();
-  reg_obp0.reset_to_cart();
-  reg_obp1.reset_to_cart();
-  
-  //joy.reset_to_cart();
-  joy_int.reset_to_cart();
-  reg_joy.reset_to_cart();
-
-  reg_lcdc.reset_to_cart();
+  bgw_pipe_a.reset_to_cart();
+  bgw_pipe_b.reset_to_cart();
+  spr_pipe_a.reset_to_cart();
+  spr_pipe_b.reset_to_cart();
+  pal_pipe.reset_to_cart();
   lcd.reset_to_cart();
-
-  reg_lx.reset_to_cart();
-  reg_ly.reset_to_cart();
-
-  int_ctrl.ROPO_LY_MATCH_SYNCp.state = 0b00011001;
-  reg_lyc.reset_to_cart();
-
-  sprite_scanner.FETO_SCAN_DONEp.state = 0b00011001;
-
+  //reg_NR10.reset_to_cart();
+  //reg_NR11.reset_to_cart();
+  //reg_NR12.reset_to_cart();
+  //reg_NR14.reset_to_cart();
+  //reg_NR21.reset_to_cart();
+  //reg_NR22.reset_to_cart();
+  //reg_NR24.reset_to_cart();
+  //reg_NR30.reset_to_cart();
+  //reg_NR31.reset_to_cart();
+  //reg_NR32.reset_to_cart();
+  //reg_NR34.reset_to_cart();
+  //reg_NR41.reset_to_cart();
+  //reg_NR42.reset_to_cart();
+  //reg_NR43.reset_to_cart();
+  //reg_NR44.reset_to_cart();
   //reg_NR50.reset_to_cart();
   //reg_NR51.reset_to_cart();
   //reg_NR52.reset_to_cart();
-
-#endif
 
   check_state_old_and_driven_or_pulled();
 }

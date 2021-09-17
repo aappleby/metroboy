@@ -143,7 +143,12 @@ struct InterruptControl {
   }
 
   void reset_to_cart() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+    AWOB_WAKE_CPU.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+    SIG_CPU_WAKE.state         = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+    NYDU_TIMA7p_DELAY.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    MOBA_TIMER_OVERFLOWp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    RUPO_LYC_MATCHn.state      = BIT_OLD | BIT_DRIVEN;
+    ROPO_LY_MATCH_SYNCp.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
   }
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?

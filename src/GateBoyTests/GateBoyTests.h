@@ -13,7 +13,7 @@ struct GateBoyTests {
 
   TestResults test_fastboot_vs_slowboot();
   TestResults test_reset_to_bootrom();
-  TestResults test_reset_cart_vs_dump();
+  TestResults test_reset_to_cart();
 
   TestResults test_init();
   TestResults test_bootrom();

@@ -87,6 +87,7 @@ int main(int argc, char** argv) {
   GateBoyTests t;
 
   results += t.test_reset_to_bootrom();
+  results += t.test_reset_to_cart();
 
 #if 0
   {
@@ -293,10 +294,9 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot() {
 TestResults GateBoyTests::test_reset_to_bootrom() {
   TEST_INIT();
 
-  blob cart_blob = Assembler::create_dummy_cart();
-
   LOG_B("reset_to_bootrom1\n");
   GateBoy gb1;
+  blob cart_blob = Assembler::create_dummy_cart();
   gb1.reset_to_bootrom(cart_blob, true);
   LOG_G("reset_to_bootrom1\n");
 
@@ -306,7 +306,8 @@ TestResults GateBoyTests::test_reset_to_bootrom() {
   LOG_G("reset_to_bootrom2 done\n");
 
   uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
-  EXPECT_EQ(true, gb1.gb_state.diff(gb2.gb_state, mask));
+  auto result = gb1.gb_state.diff(gb2.gb_state, mask);
+  EXPECT_EQ(true, result);
 
   TEST_DONE();
 }
@@ -314,42 +315,27 @@ TestResults GateBoyTests::test_reset_to_bootrom() {
 //-----------------------------------------------------------------------------
 // reset_cart() should match dumped reset state.
 
-TestResults GateBoyTests::test_reset_cart_vs_dump() {
+TestResults GateBoyTests::test_reset_to_cart() {
   TEST_INIT();
 
-  auto gb1 = create_debug_gb(Assembler::create_dummy_cart(), false);
-  auto gb2 = create_debug_gb(Assembler::create_dummy_cart(), false);
-
+  LOG_B("gateboy_reset_to_cart.raw.dump\n");
+  GateBoy gb1;
   BlobStream bs;
   load_blob("gateboy_reset_to_cart.raw.dump", bs.b);
-
-  LOG_B("gateboy_reset_to_cart.raw.dump\n");
-  bool result = gb1->load_raw_dump(bs);
-  if (!result) {
+  if (!gb1.load_raw_dump(bs)) {
     LOG_Y("Warning : gateboy_reset_to_cart_raw.dump not valid\n");
     TEST_DONE();
   }
-  else {
-    LOG_G("gateboy_reset_to_cart.raw.dump done\n");
-  }
+  LOG_G("gateboy_reset_to_cart.raw.dump done\n");
 
-  /*
-  LOG_B("reset_to_cart with fastboot = true\n");
-  gb2->reset_to_cart(Assembler::create_dummy_cart());
-  LOG_G("reset_cart done\n");
+  LOG_B("gateboy.reset_to_cart()\n");
+  GateBoy gb2;
+  gb2.reset_to_cart(Assembler::create_dummy_cart());
+  LOG_G("gateboy.reset_to_cart() done\n");
 
   uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
-  */
-
-  //blob blob_a;
-  //blob blob_b;
-  //
-  //gb1->get_state(blob_a);
-  //gb2->get_state(blob_b);
-  //
-  //EXPECT_EQ(true, diff_blobs(blob_a.data(), blob_b.data(), blob_a.size(), mask, gb1->get_field_info()));
-
-  //EXPECT_EQ(true, gb1->gb_state.diff(gb2->gb_state, mask));
+  auto result = gb1.gb_state.diff(gb2.gb_state, mask);
+  EXPECT_EQ(true, result);
 
   TEST_DONE();
 }

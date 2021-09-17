@@ -40,9 +40,9 @@ struct GateBoyClock {
   }
 
   void reset_to_cart() {
-    PIN_73_CLK_DRIVE.state = 0b00011000;
-    PIN_74_CLK.CLK.state = 0b00011000;
-    PIN_74_CLK.CLKGOOD.state = 0b00011000;
+    PIN_73_CLK_DRIVE.state = 0b00011001;
+    PIN_74_CLK.CLK.state = 0b00011001;
+    PIN_74_CLK.CLKGOOD.state = 0b00011001;
     PIN_75_CLK_OUT.state = 0b00011000;
 
     ANOS_DEGLITCH.state = 0b00011000;

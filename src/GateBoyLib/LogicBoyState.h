@@ -26,8 +26,8 @@ struct LogicBoyState {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const;
-  Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in);
+  Result<uint8_t, Error> peek(int addr) const;
+  Result<uint8_t, Error> poke(int addr, uint8_t data_in);
 
   void to_gb_state(GateBoyState& dst, int64_t phase_total) const;
   void from_gb_state(const GateBoyState& src, int64_t phase_total);

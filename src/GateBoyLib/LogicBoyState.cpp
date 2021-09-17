@@ -205,7 +205,7 @@ void LogicBoyState::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-Result<uint8_t, Error> LogicBoyState::peek(const blob& cart_blob, int addr) const {
+Result<uint8_t, Error> LogicBoyState::peek(int addr) const {
   switch(addr) {
   case ADDR_P1  : break; 
   case ADDR_SB  : break;
@@ -253,7 +253,7 @@ Result<uint8_t, Error> LogicBoyState::peek(const blob& cart_blob, int addr) cons
 
 //-----------------------------------------------------------------------------
 
-Result<uint8_t, Error> LogicBoyState::poke(blob& cart_blob, int addr, uint8_t data_in) {
+Result<uint8_t, Error> LogicBoyState::poke(int addr, uint8_t data_in) {
   switch(addr) {
   case ADDR_P1  : break; 
   case ADDR_SB  : break;

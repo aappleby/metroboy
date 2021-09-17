@@ -485,7 +485,7 @@ int64_t GateBoyState::hash_all() {
 
 //-----------------------------------------------------------------------------
 
-Result<uint8_t, Error> GateBoyState::peek(const blob& cart_blob, int addr) const {
+Result<uint8_t, Error> GateBoyState::peek(int addr) const {
   switch(addr) {
   case ADDR_P1  : break; 
   case ADDR_SB  : break;
@@ -533,7 +533,7 @@ Result<uint8_t, Error> GateBoyState::peek(const blob& cart_blob, int addr) const
 
 //-----------------------------------------------------------------------------
 
-Result<uint8_t, Error> GateBoyState::poke(blob& cart_blob, int addr, uint8_t data_in) {
+Result<uint8_t, Error> GateBoyState::poke(int addr, uint8_t data_in) {
   switch(addr) {
   case ADDR_P1  : break; 
   case ADDR_SB  : break;

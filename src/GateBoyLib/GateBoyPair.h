@@ -8,7 +8,7 @@ void print_field_at(int offset);
 struct GateBoyPair : public IGateBoy {
   GateBoyPair(IGateBoy* gb1, IGateBoy* gb2) : gb1(gb1), gb2(gb2) {}
 
-  IGateBoy* clone() override {
+  IGateBoy* clone() const override {
     auto c1 = gb1->clone();
     auto c2 = gb2->clone();
     return new GateBoyPair(c1, c2);
@@ -57,16 +57,16 @@ struct GateBoyPair : public IGateBoy {
     check_sync();
   }
 
-  Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const override {
-    auto result1 = gb1->peek(cart_blob, addr);
-    auto result2 = gb2->peek(cart_blob, addr);
+  Result<uint8_t, Error> peek(int addr) const override {
+    auto result1 = gb1->peek(addr);
+    auto result2 = gb2->peek(addr);
     CHECK_P(result1 == result2);
     return result1;
   }
 
-  Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) override {
-    auto result1 = gb1->poke(cart_blob, addr, data_in);
-    auto result2 = gb2->poke(cart_blob, addr, data_in);
+  Result<uint8_t, Error> poke(int addr, uint8_t data_in) override {
+    auto result1 = gb1->poke(addr, data_in);
+    auto result2 = gb2->poke(addr, data_in);
     CHECK_P(result1 == result2);
     return result1;
   }

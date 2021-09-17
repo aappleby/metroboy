@@ -11,7 +11,7 @@ class IGateBoy {
 public:
   virtual ~IGateBoy() {}
 
-  virtual IGateBoy* clone() = 0;
+  virtual IGateBoy* clone() const = 0;
   virtual int size_bytes() = 0;
 
   virtual bool load_raw_dump(BlobStream& dump_in) = 0;
@@ -22,8 +22,8 @@ public:
   virtual void reset_to_bootrom(const blob& cart_blob) = 0;
   virtual void reset_to_cart   (const blob& cart_blob) = 0;
 
-  virtual Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const = 0;
-  virtual Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) = 0;
+  virtual Result<uint8_t, Error> peek(int addr) const = 0;
+  virtual Result<uint8_t, Error> poke(int addr, uint8_t data_in) = 0;
 
   virtual Result<uint8_t, Error> dbg_read(const blob& cart_blob, int addr) = 0;
   virtual Result<uint8_t, Error> dbg_write (const blob& cart_blob, int addr, uint8_t data) = 0;

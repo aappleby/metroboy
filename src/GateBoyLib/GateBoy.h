@@ -168,7 +168,7 @@ struct GateBoy  : public IGateBoy {
 
   virtual ~GateBoy() {}
 
-  IGateBoy* clone() override {
+  IGateBoy* clone() const override {
     GateBoy* gb2 = new GateBoy();
     gb2->gb_state = gb_state;
     gb2->cpu = cpu;
@@ -209,8 +209,8 @@ struct GateBoy  : public IGateBoy {
   void reset_to_bootrom(const blob& cart_blob) override;
   void reset_to_cart(const blob& cart_blob) override;
 
-  Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const override;
-  Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in) override;
+  Result<uint8_t, Error> peek(int addr) const override;
+  Result<uint8_t, Error> poke(int addr, uint8_t data_in) override;
 
   Result<uint8_t, Error> dbg_read (const blob& cart_blob, int addr) override;
   Result<uint8_t, Error> dbg_write(const blob& cart_blob, int addr, uint8_t data) override;

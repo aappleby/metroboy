@@ -8,6 +8,12 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyTests {
+  GateBoyTests();
+
+  TestResults test_gateboy();
+  TestResults test_logicboy();
+  TestResults test_regression();
+  TestResults test_generic(IGateBoy* proto);
 
   TestResults test_regs();
 
@@ -16,7 +22,7 @@ struct GateBoyTests {
   TestResults test_reset_to_cart(IGateBoy* gb1, IGateBoy* gb2, uint8_t mask);
 
   TestResults test_init();
-  TestResults test_bootrom();
+  TestResults test_bootrom(const IGateBoy* proto);
   TestResults test_clk();
   TestResults test_ext_bus();
   TestResults test_mem();
@@ -45,7 +51,7 @@ struct GateBoyTests {
 
   TestResults test_dma(uint16_t src);
   TestResults test_reg(const char* tag, uint16_t addr, uint8_t data_in);
-  TestResults test_mem(const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
+  TestResults test_mem(const IGateBoy* proto, const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
   TestResults test_spu_reg(const char* tag, uint16_t addr, uint8_t data_in);
 
   void run_benchmark();
@@ -59,6 +65,7 @@ struct GateBoyTests {
   std::unique_ptr<IGateBoy> create_debug_gb(const blob& cart_blob, bool cpu_en);
 
   bool verbose = false;
+  const blob dummy_cart;
 };
 
 //-----------------------------------------------------------------------------

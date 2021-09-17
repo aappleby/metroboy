@@ -91,15 +91,6 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-  //results += t.test_reset_to_bootrom();
-  //results += t.test_reset_to_cart();
-  //results += t.test_fastboot_vs_slowboot();
-
-  //results += t.test_fastboot_vs_slowboot(new GateBoy(), new GateBoy(), 0xFF);
-  //results += t.test_reset_to_bootrom    (new GateBoy(), new GateBoy(), 0xFF);
-  //results += t.test_reset_to_cart       (new GateBoy(), new GateBoy(), 0xFF);
-
-  //results += t.test_reset_to_bootrom    (new GateBoy(), new LogicBoy(), 0x01);
   //results += t.test_reset_to_cart       (new GateBoy(), new LogicBoy(), 0x01);
 
 #if 1
@@ -137,9 +128,12 @@ int main(int argc, char** argv) {
     }
   }
 
+  results += t.test_fastboot_vs_slowboot(new GateBoy(), new GateBoy(), 0xFF);
   results += t.test_reset_to_bootrom(new GateBoy(), new GateBoy(), 0xFF);
   results += t.test_reset_to_cart(new GateBoy(), new GateBoy(), 0xFF);
-  results += t.test_fastboot_vs_slowboot(new GateBoy(), new GateBoy(), 0xFF);
+
+  results += t.test_reset_to_bootrom(new GateBoy(), new LogicBoy(), 0x01);
+  results += t.test_reset_to_cart   (new GateBoy(), new LogicBoy(), 0x01);
 
   results += t.test_bootrom();
   results += t.test_clk();

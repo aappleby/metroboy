@@ -89,6 +89,7 @@ struct GateBoyThread {
 
 
   void set_buttons(uint8_t buttons) {
+    gb->set_buttons(buttons);
     //gbp->gba.sys.buttons = buttons;
     //gbp->gbb.sys.buttons = buttons;
   }

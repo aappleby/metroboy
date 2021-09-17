@@ -484,7 +484,8 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
 
   memcpy(&dst.sys_rst, &src.sys_rst, sizeof(GateBoyReset));
 
-  dst.sys_clk = (src.sys_clk);
+  memcpy(&dst.sys_clk, &src.sys_clk, sizeof(GateBoyClock));
+
   dst.VOGA_HBLANKp = bit_pack(src.VOGA_HBLANKp);
   dst.XYMU_RENDERINGn = bit_pack(src.XYMU_RENDERINGn);
   dst.MATU_DMA_RUNNINGp = bit_pack(src.MATU_DMA_RUNNINGp);
@@ -517,9 +518,11 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.ext_dbus = bit_pack(src.ext_dbus);
   dst.ext_data_latch = bit_pack(src.ext_data_latch);
   dst.ext_addr_latch = bit_pack(src.ext_addr_latch);
+  
   dst.ext_mbc = (src.ext_mbc);
   dst.zram_bus = (src.zram_bus);
   dst.dma_ctrl = (src.dma_ctrl);
+
   dst.dma_lo = bit_pack(src.dma_lo);
   dst.cpu_int = bit_pack(src.cpu_int);
   dst.cpu_ack = bit_pack(src.cpu_ack);

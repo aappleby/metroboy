@@ -260,8 +260,8 @@ void GateBoyDumper::dump_ext_bus(const GateBoyState& s, Dumper& d) {
   d.dump_bitn   ("PIN_78_WRn  : ", s.ext_ctrl.PIN_78_WRn.state);
   d.dump_slice2p("ADDR LATCH  : ", &s.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
   d.dump_slice2n("DATA LATCH  : ", &s.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
-  d.dump_bitp   ("MBC1 RAM EN : ", s.ext_mbc.MBC1_RAM_EN);
-  d.dump_bitp   ("MBC1 MODE   : ", s.ext_mbc.MBC1_MODE);
+  d.dump_bitp   ("MBC1 RAM EN : ", s.ext_mbc.MBC1_RAM_EN.state);
+  d.dump_bitp   ("MBC1 MODE   : ", s.ext_mbc.MBC1_MODE.state);
   d.dump_slice2p("MBC1 BANK   : ", &s.ext_mbc.MBC1_BANK0, 6);
 }
 

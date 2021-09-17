@@ -37,7 +37,8 @@ inline bool negedge(wire a, wire b) {
 //-----------------------------------------------------------------------------
 
 struct BitBase {
-  uint8_t state;
+  BitBase() : state(0) {}
+  BitBase(uint8_t _state) : state(_state) {}
 
   wire qp_old() const { check_old(); return state; }
   wire qn_old() const { check_old(); return ~state; }
@@ -54,10 +55,7 @@ struct BitBase {
   //----------
   // stuff in this section for logic mode only
 
-  operator wire() const { return get_data(); }
   operator bool() const { return get_data(); }
-  BitBase& operator = (wire w) { state = w; return *this; }
-  BitBase& operator = (const BitBase& b) { state = b.state; return *this; }
   BitBase operator~() const { return BitBase(~state); }
   BitBase operator^(const BitBase& b) const { return BitBase(state ^ b.state); }
 
@@ -92,6 +90,8 @@ struct BitBase {
       DCHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
     }
   }
+
+  uint8_t state;
 };
 
 static_assert(sizeof(BitBase) == 1, "Bad BitBase size");
@@ -102,12 +102,8 @@ inline wire bit(const BitBase& b) { return b.get_data(); }
 //-----------------------------------------------------------------------------
 
 struct Gate : public BitBase {
-  using BitBase::operator=;
-
-  Gate() {}
-  Gate(uint8_t _state) { state = _state; }
-
-  using BitBase::state;
+  Gate() : BitBase(0) {}
+  Gate(uint8_t _state) : BitBase(_state) {}
 
   wire out_old() const { check_old(); return state; }
   wire out_mid() const { return state; }
@@ -115,6 +111,10 @@ struct Gate : public BitBase {
 
   void hold() {
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(state));
+  }
+
+  void set(wire D) {
+    state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
   }
 
   void operator=(wire D) {
@@ -125,8 +125,7 @@ struct Gate : public BitBase {
 //-----------------------------------------------------------------------------
 
 struct SigIn : public BitBase {
-  using BitBase::operator=;
-
+  SigIn() : BitBase(0) {}
   wire out_new() const { check_new(); return state; }
 
   void sig_in(wire D) {
@@ -138,8 +137,7 @@ struct SigIn : public BitBase {
 //-----------------------------------------------------------------------------
 
 struct SigOut : public BitBase {
-  using BitBase::operator=;
-
+  SigOut() : BitBase(0) {}
   wire out_old() const { check_old(); return state; }
   wire out_new() const { check_new(); return state; }
 
@@ -153,8 +151,7 @@ struct SigOut : public BitBase {
 // Generic DFF
 
 struct DFF : public BitBase {
-  using BitBase::operator=;
-
+  DFF() : BitBase(0) {}
   void dff_r(wire CLKp, wire RSTn, wire Dp) {
     check_old();
 
@@ -181,8 +178,7 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public BitBase {
-  using BitBase::operator=;
-
+  DFF8n() : BitBase(0) {}
   void dff8n(wire CLKn, wire Dn) {
     check_old();
 
@@ -209,8 +205,7 @@ struct DFF8n : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8p : public BitBase {
-  using BitBase::operator=;
-
+  DFF8p() : BitBase(0) {}
   void dff8p(wire CLKp, wire Dn) {
     check_old();
 
@@ -239,8 +234,7 @@ struct DFF8p : public BitBase {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public BitBase {
-  using BitBase::operator=;
-
+  DFF9() : BitBase(0) {}
   void dff9(wire CLKp, wire SETn, wire Dn) {
     check_old();
 
@@ -270,8 +264,7 @@ struct DFF9 : public BitBase {
 // DFF11_11 >> Qp?
 
 struct DFF11 : public BitBase {
-  using BitBase::operator=;
-
+  DFF11() : BitBase(0) {}
   void dff11(wire CLKp, wire RSTn, wire Dp) {
     check_old();
     wire clk_old = state & BIT_CLOCK;
@@ -300,8 +293,7 @@ struct DFF11 : public BitBase {
 // DFF13_13 >> Q
 
 struct DFF13 : public BitBase {
-  using BitBase::operator=;
-
+  DFF13() : BitBase(0) {}
   void dff13(wire CLKp, wire RSTn, wire Dp) {
     check_old();
     wire clk_old = state & BIT_CLOCK;
@@ -333,7 +325,7 @@ struct DFF13 : public BitBase {
 // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
 struct DFF17 : public BitBase {
-  using BitBase::operator=;
+  DFF17() : BitBase(0) {}
 
   void dff(wire CLKp, wire Dp) {
     check_old();
@@ -391,7 +383,7 @@ struct DFF17 : public BitBase {
 // DFF20_20 << CLKn
 
 struct DFF20 : public BitBase {
-  using BitBase::operator=;
+  DFF20() : BitBase(0) {}
 
   void dff20_any(wire CLKn, wire LOADp, wire newD) {
     wire clk_old = bit(state >> 1);
@@ -448,7 +440,7 @@ struct DFF20 : public BitBase {
 // DFF22_22 << CLKp
 
 struct DFF22 : public BitBase {
-  using BitBase::operator=;
+  DFF22() : BitBase(0) {}
 
   void dff22_any(wire CLKp, wire SETn, wire RSTn, wire Dp) {
     wire clk_old = state & BIT_CLOCK;
@@ -506,8 +498,7 @@ inline triwire tri10_np(wire OEn, wire Dp) {
 }
 
 struct Bus : public BitBase {
-  using BitBase::operator=;
-
+  Bus() : BitBase(0) {}
   wire out_old() const { check_old(); return state; }
   wire out_any() const { return state; }
   wire out_mid() const { return state; }
@@ -528,7 +519,7 @@ struct Bus : public BitBase {
 // when traveling across the chip boundary.
 
 struct PinBase : public BitBase {
-  using BitBase::operator=;
+  PinBase(uint8_t _state) : BitBase(_state) {}
 
   wire qp_int_old() const { return qp_old(); }
   wire qp_int_any() const { return qp_any(); }
@@ -540,8 +531,7 @@ struct PinBase : public BitBase {
 };
 
 struct PinIO : public PinBase {
-  using BitBase::operator=;
-
+  PinIO() : PinBase(0) {}
   void pin_io(wire int_PUn, wire int_HI, wire int_LO, wire ext_OEp, wire ext_Dp) {
     check_old();
     pin_io_any(int_PUn, int_HI, int_LO, ext_OEp, ext_Dp);
@@ -584,7 +574,8 @@ struct PinIO : public PinBase {
 //-----------------------------------------------------------------------------
 
 struct PinIn : public PinBase {
-  using BitBase::operator=;
+  PinIn() : PinBase(0) {};
+  PinIn(uint8_t _state) : PinBase(_state) {}
 
   void pin_in(wire ext_Dp) {
     check_old();
@@ -595,8 +586,7 @@ struct PinIn : public PinBase {
 //-----------------------------------------------------------------------------
 
 struct PinOut : public PinBase {
-  using BitBase::operator=;
-
+  PinOut() : PinBase(0) {}
   void pin_out(wire int_HI, wire int_LO) {
     check_old();
 
@@ -621,6 +611,7 @@ struct PinOut : public PinBase {
 //-----------------------------------------------------------------------------
 
 struct PinClock {
+  PinClock() : CLK(0), CLKGOOD(0) {}
 
   wire clkgood() const { return CLKGOOD.qp_int_new(); }
   wire clk() const { return CLK.qp_int_new(); }
@@ -645,8 +636,7 @@ struct PinClock {
 // NORLATCH_06 << RST
 
 struct NorLatch : public BitBase {
-  using BitBase::operator=;
-
+  NorLatch() : BitBase(0) {}
   void rst() {
     state = BIT_DRIVEN | BIT_NEW | 0;
   }
@@ -671,8 +661,7 @@ struct NorLatch : public BitBase {
 // NANDLATCH_06 << RSTn
 
 struct NandLatch : public BitBase {
-  using BitBase::operator=;
-
+  NandLatch() : BitBase(0) {}
   void nand_latch(wire SETn, wire RSTn) {
     check_old();
     state |= ~SETn;
@@ -702,8 +691,7 @@ struct NandLatch : public BitBase {
 // FIXME - why do we have latchN and latchP?
 
 struct TpLatch : public BitBase {
-  using BitBase::operator=;
-
+  TpLatch() : BitBase(0) {}
   void tp_latchn(wire HOLDn, wire Dp) {
     check_old();
     wire SETp = HOLDn & Dp;

@@ -57,8 +57,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
   //auto gb = new GateBoyPair(new GateBoy(), new GateBoy());
-  auto gb = new GateBoy();
-  //auto gb = new LogicBoy();
+  //auto gb = new GateBoy();
+  auto gb = new LogicBoy();
 
   gb_thread = new GateBoyThread(gb);
   gb_thread->start();

@@ -3,6 +3,7 @@
 
 //-----------------------------------------------------------------------------
 
+#pragma pack(push, 1)
 struct MetroBoyCPU {
   void reset_to_bootrom();
   void reset_to_cart();
@@ -94,5 +95,6 @@ struct MetroBoyCPU {
 
 #pragma warning(pop)
 };
+#pragma pack(pop)
 
 //-----------------------------------------------------------------------------

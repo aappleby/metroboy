@@ -57,7 +57,7 @@ void GateBoyDumper::dump_sys(const GateBoy& gb, Dumper& d) {
   //d.dump_slice2p("lcd_pipe_lo  : ", lcd.lcd_pipe_lo, 8);
   //d.dump_slice2p("lcd_pipe_hi  : ", lcd.lcd_pipe_hi, 8);
   //d("\n");
-  d             ("sim_time     : %f\n",      gb.sys.sim_time);
+  //d             ("sim_time     : %f\n",      gb.sys.sim_time);
   d             ("phase_total  : %lld\n",    gb.sys.phase_total);
 }
 

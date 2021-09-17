@@ -50,10 +50,10 @@ struct LCDControl {
     POME.state                = BIT_OLD | BIT_DRIVEN | 1;
     PAHO_X_8_SYNC.state       = BIT_OLD | BIT_DRIVEN;
     WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
-    REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN;
-    RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN;
-    PIN_50_LCD_DATA1.state    = BIT_OLD | BIT_DRIVEN;
-    PIN_51_LCD_DATA0.state    = BIT_OLD | BIT_DRIVEN;
+    REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN | 1;
+    RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_50_LCD_DATA1.state    = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_51_LCD_DATA0.state    = BIT_OLD | BIT_DRIVEN | 1;
     PIN_54_LCD_HSYNC.state    = BIT_OLD | BIT_DRIVEN | 1;
     PIN_56_LCD_FLIPS.state    = BIT_OLD | BIT_DRIVEN | 1;
     PIN_52_LCD_CNTRL.state    = BIT_OLD | BIT_DRIVEN | 1;
@@ -78,6 +78,8 @@ struct LCDControl {
     POME.state                = 0b00011001;
     PAHO_X_8_SYNC.state       = 0b00011000;
     WUSA_LCD_CLOCK_GATE.state = 0b00011000;
+    REMY_LD0n.state           = 0b00011000;
+    RAVO_LD1n.state           = 0b00011000;
     PIN_50_LCD_DATA1.state    = 0b00011000;
     PIN_51_LCD_DATA0.state    = 0b00011000;
     PIN_54_LCD_HSYNC.state    = 0b00011001;

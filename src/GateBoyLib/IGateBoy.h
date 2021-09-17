@@ -5,7 +5,7 @@ class IGateBoy {
 public:
   virtual ~IGateBoy() {}
 
-  virtual void reset_to_bootrom(const blob& cart_blob, bool fastboot) = 0;
+  virtual void reset_to_bootrom(const blob& cart_blob) = 0;
   virtual void reset_to_cart   (const blob& cart_blob) = 0;
 
   virtual int64_t phase_total() const = 0;

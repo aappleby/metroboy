@@ -60,15 +60,16 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   auto cart = Assembler::create_dummy_cart();
   gb_thread.load_cart_blob(cart);
   gb_thread.reset_to_bootrom();
+  //gb_thread.reset_to_cart();
   
   //blob cart;
   //load_blob("tests/microtests/DMG/dma_0xA000.gb", cart);
   //gb_thread.load_cart_blob(cart);
   //gb_thread.reset_to_cart();
 
-  //blob dump;
-  //load_blob("sml_broken.dump", dump);
-  //gb_thread.load_raw_dump(dump);
+  //BlobStream bs;
+  //load_blob("zelda_intro.dump", bs.b);
+  //gb_thread.load_raw_dump(bs);
 
   //gb_thread.add_steps(INT_MAX);
   gb_thread.resume();

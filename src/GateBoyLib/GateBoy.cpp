@@ -78,19 +78,7 @@ void GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_to_bootrom(const blob& cart_blob, bool fastboot) {
-  gb_state.reset_to_poweron();
-  cpu.reset_to_poweron();
-  mem.reset_to_poweron();
-  sys.reset_to_poweron();
-  probes.reset_to_poweron();
-
-  run_poweron_reset(cart_blob, fastboot);
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::reset_to_bootrom2(const blob& cart_blob, bool fastboot) {
+void GateBoy::reset_to_bootrom(const blob& cart_blob) {
   gb_state.reset_to_bootrom();
   cpu.reset_to_bootrom();
   mem.reset_to_bootrom();
@@ -101,7 +89,7 @@ void GateBoy::reset_to_bootrom2(const blob& cart_blob, bool fastboot) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::reset_to_cart(const blob& cart_blob) {
-  reset_to_bootrom(cart_blob, true);
+  reset_to_bootrom(cart_blob);
 
   gb_state.reset_to_cart();
   cpu.reset_to_cart();
@@ -111,35 +99,6 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
 }
 
 //-----------------------------------------------------------------------------
-
-/*
-const uint8_t* get_flat_ptr(const GateBoy& gb, const blob& cart_blob, int addr) {
-  if (addr >= 0x0000 && addr <= 0x7FFF) return cart_blob.data() + addr - 0x0000;
-  if (addr >= 0x8000 && addr <= 0x9FFF) return gb.mem.vid_ram   + addr - 0x8000;
-  if (addr >= 0xA000 && addr <= 0xBFFF) return gb.mem.cart_ram  + addr - 0xA000;
-  if (addr >= 0xC000 && addr <= 0xDFFF) return gb.mem.int_ram   + addr - 0xC000;
-  if (addr >= 0xE000 && addr <= 0xFDFF) return gb.mem.int_ram   + addr - 0xE000;
-  if (addr >= 0xFE00 && addr <= 0xFEFF) return gb.mem.oam_ram   + addr - 0xFE00;
-  if (addr >= 0xFF80 && addr <= 0xFFFE) return gb.mem.zero_ram  + addr - 0xFF80;
-  debugbreak();
-  return nullptr;
-}
-
-uint8_t* get_flat_ptr(GateBoy& gb, blob& cart_blob, int addr) {
-  if (addr >= 0x0000 && addr <= 0x7FFF) return cart_blob.data() + addr - 0x0000;
-  if (addr >= 0x8000 && addr <= 0x9FFF) return gb.mem.vid_ram   + addr - 0x8000;
-  if (addr >= 0xA000 && addr <= 0xBFFF) return gb.mem.cart_ram  + addr - 0xA000;
-  if (addr >= 0xC000 && addr <= 0xDFFF) return gb.mem.int_ram   + addr - 0xC000;
-  if (addr >= 0xE000 && addr <= 0xFDFF) return gb.mem.int_ram   + addr - 0xE000;
-  if (addr >= 0xFE00 && addr <= 0xFEFF) return gb.mem.oam_ram   + addr - 0xFE00;
-  if (addr >= 0xFF80 && addr <= 0xFFFE) return gb.mem.zero_ram  + addr - 0xFF80;
-
-
-
-  debugbreak();
-  return nullptr;
-}
-*/
 
 Result<uint8_t, Error> GateBoy::peek(const blob& cart_blob, int addr) const {
   if (addr >= 0x0000 && addr <= 0x7FFF) { return cart_blob.data()[addr - 0x0000]; }

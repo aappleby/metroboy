@@ -22,12 +22,23 @@ struct GateBoy;
 
 //-----------------------------------------------------------------------------
 
+#pragma pack(push, 1)
 struct GateBoyCpu {
   void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    core.reset_to_bootrom();
+    bus_req_new.addr = 0x0000;
+    bus_req_new.data = 0;
+    bus_req_new.read = 0;
+    bus_req_new.write = 0;
+    cpu_data_latch = 49;
+    imask_latch = 0;
+    intf_latch = 0;
+    intf_latch_delay = 0;
+    intf_halt_latch = 0;
   }
 
   void reset_to_cart() {
@@ -37,6 +48,7 @@ struct GateBoyCpu {
     bus_req_new.read = 0;
     bus_req_new.write = 1;
     cpu_data_latch = 1;
+    imask_latch = 0;
     intf_latch = 1;
     intf_latch_delay = 0;
     intf_halt_latch = 0;
@@ -50,9 +62,11 @@ struct GateBoyCpu {
   uint8_t  intf_latch_delay = 0;
   uint8_t  intf_halt_latch = 0;
 };
+#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 
+#pragma pack(push, 1)
 struct GateBoyMem {
   void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
@@ -97,15 +111,27 @@ struct GateBoyMem {
   uint8_t zero_ram[128];
   uint8_t framebuffer[160*144];
 };
+#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 
+#pragma pack(push, 1)
 struct GateBoySys {
   void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
   }
 
   void reset_to_bootrom() {
+    rst = false;
+    t1 = false;
+    t2 = false;
+    clk_en = true;
+    clk_good = true;
+    clk_req = true;
+    cpu_en = true;
+    fastboot = true;
+    buttons = 0;
+    phase_total = 80;
   }
 
   void reset_to_cart() {
@@ -118,25 +144,22 @@ struct GateBoySys {
     cpu_en = true;
     fastboot = true;
     buttons = 0;
-    phase_total = 0;
-    sim_time = 0;
+    phase_total = 46880720;
   }
 
   // External signals
-  uint8_t rst = 0;
-  uint8_t t1 = 0;
-  uint8_t t2 = 0;
-  uint8_t clk_en = 0;
-  uint8_t clk_good = 0;
-  uint8_t clk_req = 0;
-  uint8_t cpu_en = 0;
-  uint8_t fastboot = 0;
-  uint8_t buttons = 0;
-
-  // Debug stuff
+  uint8_t  rst = 0;
+  uint8_t  t1 = 0;
+  uint8_t  t2 = 0;
+  uint8_t  clk_en = 0;
+  uint8_t  clk_good = 0;
+  uint8_t  clk_req = 0;
+  uint8_t  cpu_en = 0;
+  uint8_t  fastboot = 0;
+  uint8_t  buttons = 0;
   uint64_t phase_total = 0;
-  double   sim_time = 0;
 };
+#pragma pack(pop)
 
 //-----------------------------------------------------------------------------
 
@@ -147,9 +170,7 @@ struct GateBoy  : public IGateBoy {
 
   void reset_to_poweron(const blob& cart_blob);
   void run_poweron_reset(const blob& cart_blob, bool fastboot);
-
-  void reset_to_bootrom(const blob& cart_blob, bool fastboot) override;
-  void reset_to_bootrom2(const blob& cart_blob, bool fastboot);
+  void reset_to_bootrom(const blob& cart_blob) override;
   void reset_to_cart(const blob& cart_blob) override;
 
   int64_t phase_total() const override { 

@@ -292,8 +292,8 @@ struct RegLYC {
 // FF47 - BGP
 
 struct RegBGP {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
   void reset_to_cart() {
     PAVO_BGP_D0n.state = 0b00011011;
@@ -320,8 +320,8 @@ struct RegBGP {
 // FF48 - OBP0
 
 struct RegOBP0 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
   void reset_to_cart() {
     XUFU_OBP0_D0n.state = 0b00011010;
@@ -348,13 +348,8 @@ struct RegOBP0 {
 // FF49 - OBP1
 
 struct RegOBP1 {
-  void reset_to_poweron() {
-    memset(this, 0b00011010, sizeof(*this));
-  }
-
-  void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
-  }
+  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
   void reset_to_cart() {
     MOXY_OBP1_D0n.state = 0b00011010;

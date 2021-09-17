@@ -65,7 +65,7 @@ void GateBoyThread::reset_to_bootrom() {
   CHECK_P(sim_paused());
   clear_steps();
   reset_gb();
-  gbp->gba.reset_to_bootrom(cart_blob, true);
+  gbp->gba.reset_to_bootrom(cart_blob);
   //gbp->gbb.reset_to_bootrom(cart_blob, true);
 }
 
@@ -121,10 +121,10 @@ void GateBoyThread::dump(Dumper& d) {
   d("Sim clock     : %f\n",      double(gbp->gba.sys.phase_total) / (4194304.0 * 2));
   d("Steps left    : %d\n", step_count.load());
 
-  double phase_rate = (gbp->gba.sys.phase_total - old_phase_total) / (gbp->gba.sys.sim_time - old_sim_time);
+  double phase_rate = (gbp->gba.sys.phase_total - old_phase_total) / (sim_time - old_sim_time);
 
   if (phase_rate > 0) {
-    if (gbp->gba.sys.sim_time == old_sim_time) {
+    if (sim_time == old_sim_time) {
       phase_rate = 0;
     }
 
@@ -140,7 +140,7 @@ void GateBoyThread::dump(Dumper& d) {
 
 
   old_phase_total = gbp->gba.sys.phase_total;
-  old_sim_time = gbp->gba.sys.sim_time;
+  old_sim_time = sim_time;
 }
 
 //------------------------------------------------------------------------------
@@ -220,7 +220,7 @@ void GateBoyThread::thread_main() {
     double time_end = timestamp();
 
     // Update stats
-    gbp->gba.sys.sim_time += (time_end - time_begin);
+    sim_time += (time_end - time_begin);
     //gbp->gbb.sys.sim_time += (time_end - time_begin);
 
     if (sync.test(REQ_EXIT)) {

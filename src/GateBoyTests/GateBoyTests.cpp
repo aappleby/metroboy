@@ -34,7 +34,7 @@ TestResults test_regression_cart(blob cart_blob, int cycles, bool from_bootrom) 
   auto gb = make_unique<GateBoy>();
 
   if (from_bootrom) {
-    gb->reset_to_bootrom(cart_blob, true);
+    gb->reset_to_bootrom(cart_blob);
   }
   else {
     gb->reset_to_cart(cart_blob);
@@ -86,10 +86,11 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-  results += t.test_reset_to_bootrom();
-  results += t.test_reset_to_cart();
+  //results += t.test_reset_to_bootrom();
+  //results += t.test_reset_to_cart();
+  //results += t.test_fastboot_vs_slowboot();
 
-#if 0
+#if 1
   {
     LOG_G("Regression testing bootrom start\n");
     results += test_regression_cart(Assembler::create_dummy_cart(), 1000000, true);
@@ -105,21 +106,28 @@ int main(int argc, char** argv) {
   {
     LOG_G("Regression testing Zelda intro dump\n");
     BlobStream bs;
-    load_blob("zelda_intro.dump", bs.b);
-    results += test_regression_dump(bs, 1000000);
+    if (load_blob("zelda_intro.dump", bs.b)) {
+      results += test_regression_dump(bs, 1000000);
+    }
+    else {
+      LOG_Y("Could not load dump!\n");
+    }
   }
   
   {
     LOG_G("Regression testing SML intro dump\n");
     BlobStream bs;
-    load_blob("sml_intro.dump", bs.b);
-    results += test_regression_dump(bs, 1000000);
+    if (load_blob("sml_intro.dump", bs.b)) {
+      results += test_regression_dump(bs, 1000000);
+    }
+    else {
+      LOG_Y("Could not load dump!\n");
+    }
   }
 
-#if 1
-  results += t.test_reset_cart_vs_dump();
+  results += t.test_reset_to_bootrom();
+  results += t.test_reset_to_cart();
   results += t.test_fastboot_vs_slowboot();
-#endif
 
   results += t.test_bootrom();
   results += t.test_clk();
@@ -186,7 +194,7 @@ int main(int argc, char** argv) {
 
 std::unique_ptr<IGateBoy> GateBoyTests::create_debug_gb(const blob& cart_blob, bool cpu_en) {
   auto gb = std::make_unique<GateBoy>();
-  gb->reset_to_bootrom(cart_blob, true);
+  gb->reset_to_bootrom(cart_blob);
   gb->sys.cpu_en = cpu_en;
   return gb;
 }
@@ -270,21 +278,22 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot() {
 
   LOG_B("reset_to_bootrom with fastboot = true\n");
   GateBoy gb1;
-  gb1.reset_to_bootrom(cart_blob, true);
+  gb1.reset_to_bootrom(cart_blob);
   LOG_G("reset_to_bootrom with fastboot = true done\n");
 
   LOG_B("reset_to_bootrom with fastboot = false\n");
   GateBoy gb2;
-  gb2.reset_to_bootrom(cart_blob, false);
+  gb2.reset_to_bootrom(cart_blob);
   LOG_G("reset_to_bootrom with fastboot = false done\n");
 
   // Clear the fastboot bit on the first gameboy, since that obviously won't match
   gb1.sys.fastboot = 0;
   gb2.sys.fastboot = 0;
 
-  uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
-
-  EXPECT_EQ(true, gb1.gb_state.diff(gb2.gb_state, mask));
+  EXPECT_EQ(0, memcmp(&gb1.gb_state, &gb2.gb_state, sizeof(gb1.gb_state)));
+  EXPECT_EQ(0, memcmp(&gb1.cpu,      &gb2.cpu,      sizeof(gb1.cpu)));
+  EXPECT_EQ(0, memcmp(&gb1.mem,      &gb2.mem,      sizeof(gb1.mem)));
+  EXPECT_EQ(0, memcmp(&gb1.sys,      &gb2.sys,      sizeof(gb1.sys)));
 
   TEST_DONE();
 }
@@ -294,20 +303,24 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot() {
 TestResults GateBoyTests::test_reset_to_bootrom() {
   TEST_INIT();
 
-  LOG_B("reset_to_bootrom1\n");
+  LOG_B("run_poweron_reset()\n");
   GateBoy gb1;
   blob cart_blob = Assembler::create_dummy_cart();
-  gb1.reset_to_bootrom(cart_blob, true);
-  LOG_G("reset_to_bootrom1\n");
+  gb1.reset_to_poweron(cart_blob);
+  gb1.run_poweron_reset(cart_blob, true);
+  LOG_G("run_poweron_reset() done\n");
 
-  LOG_B("reset_to_bootrom2\n");
+  LOG_B("reset_to_bootrom()\n");
   GateBoy gb2;
-  gb2.reset_to_bootrom2(cart_blob, true);
-  LOG_G("reset_to_bootrom2 done\n");
+  gb2.reset_to_bootrom(cart_blob);
+  LOG_G("reset_to_bootrom() done\n");
 
-  uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
-  auto result = gb1.gb_state.diff(gb2.gb_state, mask);
-  EXPECT_EQ(true, result);
+  EXPECT_EQ(0, memcmp(&gb1.gb_state, &gb2.gb_state, sizeof(gb1.gb_state)));
+  EXPECT_EQ(0, memcmp(&gb1.cpu,      &gb2.cpu,      sizeof(gb1.cpu)));
+  EXPECT_EQ(0, memcmp(&gb1.mem,      &gb2.mem,      sizeof(gb1.mem)));
+  EXPECT_EQ(0, memcmp(&gb1.sys,      &gb2.sys,      sizeof(gb1.sys)));
+
+  gb1.gb_state.diff(gb2.gb_state, 0xFF);
 
   TEST_DONE();
 }
@@ -318,7 +331,7 @@ TestResults GateBoyTests::test_reset_to_bootrom() {
 TestResults GateBoyTests::test_reset_to_cart() {
   TEST_INIT();
 
-  LOG_B("gateboy_reset_to_cart.raw.dump\n");
+  LOG_B("load gateboy_reset_to_cart.raw.dump\n");
   GateBoy gb1;
   BlobStream bs;
   load_blob("gateboy_reset_to_cart.raw.dump", bs.b);
@@ -326,16 +339,19 @@ TestResults GateBoyTests::test_reset_to_cart() {
     LOG_Y("Warning : gateboy_reset_to_cart_raw.dump not valid\n");
     TEST_DONE();
   }
-  LOG_G("gateboy_reset_to_cart.raw.dump done\n");
+  LOG_G("load gateboy_reset_to_cart.raw.dump done\n");
 
-  LOG_B("gateboy.reset_to_cart()\n");
+  LOG_B("reset_to_cart()\n");
   GateBoy gb2;
   gb2.reset_to_cart(Assembler::create_dummy_cart());
-  LOG_G("gateboy.reset_to_cart() done\n");
+  LOG_G("reset_to_cart() done\n");
 
-  uint8_t mask = BIT_DATA | BIT_CLOCK | BIT_PULLED | BIT_DRIVEN | BIT_OLD | BIT_NEW;
-  auto result = gb1.gb_state.diff(gb2.gb_state, mask);
-  EXPECT_EQ(true, result);
+  EXPECT_EQ(0, memcmp(&gb1.gb_state, &gb2.gb_state, sizeof(gb1.gb_state)));
+  EXPECT_EQ(0, memcmp(&gb1.cpu,      &gb2.cpu,      sizeof(gb1.cpu)));
+  EXPECT_EQ(0, memcmp(&gb1.mem,      &gb2.mem,      sizeof(gb1.mem)));
+  EXPECT_EQ(0, memcmp(&gb1.sys,      &gb2.sys,      sizeof(gb1.sys)));
+
+  gb1.gb_state.diff(gb2.gb_state, 0xFF);
 
   TEST_DONE();
 }
@@ -980,7 +996,7 @@ TestResults GateBoyTests::test_init() {
 
   blob cart_blob = Assembler::create_dummy_cart();
   auto gb = create_debug_gb(cart_blob, false);
-  gb->reset_to_bootrom(cart_blob, true);
+  gb->reset_to_bootrom(cart_blob);
 
   LOG_G("Checking reg flags\n");
 
@@ -1039,7 +1055,7 @@ TestResults GateBoyTests::test_clk() {
   blob cart_blob = Assembler::create_dummy_cart();
 
   auto gb = new GateBoy();
-  gb->reset_to_bootrom(cart_blob, true);
+  gb->reset_to_bootrom(cart_blob);
   gb->sys.cpu_en = false;
   gb->dbg_write(cart_blob, ADDR_LCDC, 0x80);
   gb->run_phases(cart_blob, 8);
@@ -1553,7 +1569,7 @@ TestResults GateBoyTests::test_timer() {
   LOG("Testing TIMA tick rate and reset_states to TMA...\n");
   {
     auto gb = make_unique<GateBoy>();
-    gb->reset_to_bootrom(cart_blob, true);
+    gb->reset_to_bootrom(cart_blob);
     gb->sys.cpu_en = false;
 
     gb->dbg_write(cart_blob, ADDR_TMA, 0x80).unwrap();
@@ -1576,7 +1592,7 @@ TestResults GateBoyTests::test_timer() {
 
   {
     auto gb = make_unique<GateBoy>();
-    gb->reset_to_bootrom(cart_blob, true);
+    gb->reset_to_bootrom(cart_blob);
     gb->sys.cpu_en = false;
 
     gb->dbg_write(cart_blob, ADDR_TMA, 0x80).unwrap();
@@ -1598,7 +1614,7 @@ TestResults GateBoyTests::test_timer() {
   }
   {
     auto gb = make_unique<GateBoy>();
-    gb->reset_to_bootrom(cart_blob, true);
+    gb->reset_to_bootrom(cart_blob);
     gb->sys.cpu_en = false;
 
     gb->dbg_write(cart_blob, ADDR_TMA, 0x80);
@@ -1620,7 +1636,7 @@ TestResults GateBoyTests::test_timer() {
   }
   {
     auto gb = make_unique<GateBoy>();
-    gb->reset_to_bootrom(cart_blob, true);
+    gb->reset_to_bootrom(cart_blob);
     gb->sys.cpu_en = false;
 
     gb->dbg_write(cart_blob, ADDR_TMA, 0x80);
@@ -1643,7 +1659,7 @@ TestResults GateBoyTests::test_timer() {
 
   if (run_slow_tests) {
     auto gb = make_unique<GateBoy>();
-    gb->reset_to_bootrom(cart_blob, true);
+    gb->reset_to_bootrom(cart_blob);
     gb->sys.cpu_en = false;
 
     // passes, but slow :/
@@ -1718,7 +1734,7 @@ TestResults GateBoyTests::test_ppu() {
     blob cart_blob = Assembler::create_dummy_cart();
 
     auto gb = make_unique<GateBoy>();
-    gb->reset_to_bootrom(cart_blob, true);
+    gb->reset_to_bootrom(cart_blob);
     gb->sys.cpu_en = false;
 
     gb->dbg_write(cart_blob, ADDR_LCDC, 0x80);
@@ -1753,7 +1769,7 @@ TestResults GateBoyTests::test_mem(const char* tag, uint16_t addr_start, uint16_
 
   blob cart_blob = Assembler::create_dummy_cart();
   auto gb = make_unique<GateBoy>();
-  gb->reset_to_bootrom(cart_blob, true);
+  gb->reset_to_bootrom(cart_blob);
   gb->sys.cpu_en = false;
 
   gb->dbg_write(cart_blob, 0xFF50, 0x01); // disable bootrom
@@ -1811,7 +1827,7 @@ void GateBoyTests::run_benchmark() {
   LOG("Running perf test");
   for (int iter = 0; iter < iter_count; iter++) {
     // FIXME should probably benchmark something other than the bootrom...
-    gb->reset_to_bootrom(cart_blob, true);
+    gb->reset_to_bootrom(cart_blob);
     gb->cpu.bus_req_new.addr = 0x0150;
     gb->cpu.bus_req_new.data = 0;
     gb->cpu.bus_req_new.read = 1;

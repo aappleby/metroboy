@@ -17,8 +17,8 @@ struct GateBoyPair {
   //  if (gbb.sys.logic_mode) gbb.wipe_flags();
   //}
 
-  bool reset_to_bootrom(const blob& cart_blob, bool fastboot) {
-    gba.reset_to_bootrom(cart_blob, fastboot);
+  bool reset_to_bootrom(const blob& cart_blob) {
+    gba.reset_to_bootrom(cart_blob);
     //gbb.reset_to_bootrom(cart_blob, fastboot);
 
     //wipe_flags();

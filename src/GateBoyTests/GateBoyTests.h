@@ -18,8 +18,8 @@ struct GateBoyTests {
   TestResults test_regs(const IGateBoy* proto);
 
   TestResults test_fastboot_vs_slowboot(const IGateBoy* proto1, const IGateBoy* proto2, uint8_t mask);
-  TestResults test_reset_to_bootrom    (const IGateBoy* proto1, const IGateBoy* proto2, uint8_t mask);
-  TestResults test_reset_to_cart       (const IGateBoy* proto1, const IGateBoy* proto2, uint8_t mask);
+  TestResults test_reset_to_bootrom    (const IGateBoy* proto, uint8_t mask);
+  TestResults test_reset_to_cart       (const IGateBoy* proto, uint8_t mask);
 
   TestResults test_init(const IGateBoy* proto);
   TestResults test_bootrom(const IGateBoy* proto);

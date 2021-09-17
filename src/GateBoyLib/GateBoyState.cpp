@@ -58,10 +58,6 @@ void GateBoyState::reset_to_poweron() {
   oam_latch_b.reset_to_poweron();
   oam_temp_a.reset_to_poweron();
   oam_temp_b.reset_to_poweron();
-  ext_ctrl.reset_to_poweron();
-  ext_abus.lo.reset_to_poweron();
-  ext_abus.hi.reset_to_poweron();
-  ext_dbus.reset_to_poweron();
   ext_data_latch.reset_to_poweron();
   ext_addr_latch.reset_to_poweron();
   ext_mbc.reset_to_poweron();
@@ -215,10 +211,6 @@ void GateBoyState::reset_to_bootrom() {
   oam_latch_b.reset_to_bootrom();
   oam_temp_a.reset_to_bootrom();
   oam_temp_b.reset_to_bootrom();
-  ext_ctrl.reset_to_bootrom();
-  ext_abus.lo.reset_to_bootrom();
-  ext_abus.hi.reset_to_bootrom();
-  ext_dbus.reset_to_bootrom();
   ext_data_latch.reset_to_bootrom();
   ext_addr_latch.reset_to_bootrom();
   ext_mbc.reset_to_bootrom();
@@ -374,10 +366,6 @@ void GateBoyState::reset_to_cart() {
   oam_latch_b.reset_to_cart();
   oam_temp_a.reset_to_cart();
   oam_temp_b.reset_to_cart();
-  ext_ctrl.reset_to_cart();
-  ext_abus.lo.reset_to_cart();
-  ext_abus.hi.reset_to_cart();
-  ext_dbus.reset_to_cart();
   ext_data_latch.reset_to_cart();
   ext_addr_latch.reset_to_cart();
   ext_mbc.reset_to_cart();
@@ -690,10 +678,6 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, oam_latch_b),
   DECLARE_FIELD(GateBoyState, oam_temp_a),
   DECLARE_FIELD(GateBoyState, oam_temp_b),
-  DECLARE_FIELD(GateBoyState, ext_ctrl),
-  DECLARE_FIELD(GateBoyState, ext_abus.lo),
-  DECLARE_FIELD(GateBoyState, ext_abus.hi),
-  DECLARE_FIELD(GateBoyState, ext_dbus),
   DECLARE_FIELD(GateBoyState, ext_data_latch),
   DECLARE_FIELD(GateBoyState, ext_addr_latch),
   DECLARE_FIELD(GateBoyState, ext_mbc),

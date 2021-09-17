@@ -177,14 +177,14 @@ void GateBoy::tock_oam_bus_gates()
 
   // ext dma to oam data bus
 
-  /*_p25.RALO*/ wire RALO_EXT_D0p = not1(gb_state.ext_dbus.PIN_17_D00.qp_int_new());
-  /*_p25.TUNE*/ wire TUNE_EXT_D1p = not1(gb_state.ext_dbus.PIN_18_D01.qp_int_new());
-  /*_p25.SERA*/ wire SERA_EXT_D2p = not1(gb_state.ext_dbus.PIN_19_D02.qp_int_new());
-  /*_p25.TENU*/ wire TENU_EXT_D3p = not1(gb_state.ext_dbus.PIN_20_D03.qp_int_new());
-  /*_p25.SYSA*/ wire SYSA_EXT_D4p = not1(gb_state.ext_dbus.PIN_21_D04.qp_int_new());
-  /*_p25.SUGY*/ wire SUGY_EXT_D5p = not1(gb_state.ext_dbus.PIN_22_D05.qp_int_new());
-  /*_p25.TUBE*/ wire TUBE_EXT_D6p = not1(gb_state.ext_dbus.PIN_23_D06.qp_int_new());
-  /*_p25.SYZO*/ wire SYZO_EXT_D7p = not1(gb_state.ext_dbus.PIN_24_D07.qp_int_new());
+  /*_p25.RALO*/ wire RALO_EXT_D0p = not1(gb_state.pins.dbus.PIN_17_D00.qp_int_new());
+  /*_p25.TUNE*/ wire TUNE_EXT_D1p = not1(gb_state.pins.dbus.PIN_18_D01.qp_int_new());
+  /*_p25.SERA*/ wire SERA_EXT_D2p = not1(gb_state.pins.dbus.PIN_19_D02.qp_int_new());
+  /*_p25.TENU*/ wire TENU_EXT_D3p = not1(gb_state.pins.dbus.PIN_20_D03.qp_int_new());
+  /*_p25.SYSA*/ wire SYSA_EXT_D4p = not1(gb_state.pins.dbus.PIN_21_D04.qp_int_new());
+  /*_p25.SUGY*/ wire SUGY_EXT_D5p = not1(gb_state.pins.dbus.PIN_22_D05.qp_int_new());
+  /*_p25.TUBE*/ wire TUBE_EXT_D6p = not1(gb_state.pins.dbus.PIN_23_D06.qp_int_new());
+  /*_p25.SYZO*/ wire SYZO_EXT_D7p = not1(gb_state.pins.dbus.PIN_24_D07.qp_int_new());
 
   /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(gb_state.reg_dma.MARU_DMA_A15n.qn_new());
   /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(gb_state.reg_dma.PULA_DMA_A13n.qn_new(), gb_state.reg_dma.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);

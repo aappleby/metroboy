@@ -357,10 +357,6 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.oam_latch_b, src.oam_latch_b);
   bit_unpack(dst.oam_temp_a, src.oam_temp_a);
   bit_unpack(dst.oam_temp_b, src.oam_temp_b);
-  bit_unpack(dst.ext_ctrl, bit_pack(src.ext_ctrl));
-  bit_unpack(dst.ext_abus.lo, src.ext_abus.lo);
-  bit_unpack(dst.ext_abus.hi, src.ext_abus.hi);
-  bit_unpack(dst.ext_dbus, src.ext_dbus);
   bit_unpack(dst.ext_data_latch, src.ext_data_latch);
   bit_unpack(dst.ext_addr_latch, src.ext_addr_latch);
   bit_unpack(dst.ext_mbc, bit_pack(src.ext_mbc));
@@ -512,10 +508,6 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.oam_latch_b = bit_pack(src.oam_latch_b);
   dst.oam_temp_a = bit_pack(src.oam_temp_a);
   dst.oam_temp_b = bit_pack(src.oam_temp_b);
-  dst.ext_ctrl = (src.ext_ctrl);
-  dst.ext_abus.lo = bit_pack(src.ext_abus.lo);
-  dst.ext_abus.hi = bit_pack(src.ext_abus.hi);
-  dst.ext_dbus = bit_pack(src.ext_dbus);
   dst.ext_data_latch = bit_pack(src.ext_data_latch);
   dst.ext_addr_latch = bit_pack(src.ext_addr_latch);
   

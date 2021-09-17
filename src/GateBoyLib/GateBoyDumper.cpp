@@ -105,12 +105,12 @@ void GateBoyDumper::dump_joypad(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("AWOB_WAKE_CPU   : ", s.int_ctrl.AWOB_WAKE_CPU.state);
   d.dump_bitp("SIG_CPU_WAKE    : ", s.int_ctrl.SIG_CPU_WAKE.state);
   d("\n");
-  d.dump_bitp("PIN_67_JOY_P10   : ", s.pins.PIN_67_JOY_P10.state);
-  d.dump_bitp("PIN_66_JOY_P11   : ", s.pins.PIN_66_JOY_P11.state);
-  d.dump_bitp("PIN_65_JOY_P12   : ", s.pins.PIN_65_JOY_P12.state);
-  d.dump_bitp("PIN_64_JOY_P13   : ", s.pins.PIN_64_JOY_P13.state);
-  d.dump_bitp("PIN_63_JOY_P14   : ", s.pins.PIN_63_JOY_P14.state);
-  d.dump_bitp("PIN_62_JOY_P15   : ", s.pins.PIN_62_JOY_P15.state);
+  d.dump_bitp("PIN_67_JOY_P10   : ", s.pins.joy.PIN_67_JOY_P10.state);
+  d.dump_bitp("PIN_66_JOY_P11   : ", s.pins.joy.PIN_66_JOY_P11.state);
+  d.dump_bitp("PIN_65_JOY_P12   : ", s.pins.joy.PIN_65_JOY_P12.state);
+  d.dump_bitp("PIN_64_JOY_P13   : ", s.pins.joy.PIN_64_JOY_P13.state);
+  d.dump_bitp("PIN_63_JOY_P14   : ", s.pins.joy.PIN_63_JOY_P14.state);
+  d.dump_bitp("PIN_62_JOY_P15   : ", s.pins.joy.PIN_62_JOY_P15.state);
   d("\n");
   d.dump_bitp("KEVU_JOYP_L0n   : ", s.joy_latch.KEVU_JOYP_L0n.state);
   d.dump_bitp("KAPA_JOYP_L1n   : ", s.joy_latch.KAPA_JOYP_L1n.state);
@@ -253,11 +253,11 @@ void GateBoyDumper::dump_ext_bus(const GateBoyState& s, Dumper& d) {
   };
   */
 
-  d.dump_slice2n("PIN_01_ADDR : ", &s.ext_abus.lo.PIN_01_A00, 16);
-  d.dump_slice2n("PIN_17_DATA : ", &s.ext_dbus.PIN_17_D00, 8);
-  d.dump_bitn   ("PIN_80_CSn  : ", s.ext_ctrl.PIN_80_CSn.state);
-  d.dump_bitn   ("PIN_79_RDn  : ", s.ext_ctrl.PIN_79_RDn.state);
-  d.dump_bitn   ("PIN_78_WRn  : ", s.ext_ctrl.PIN_78_WRn.state);
+  d.dump_slice2n("PIN_01_ADDR : ", &s.pins.abus_lo, 16);
+  d.dump_slice2n("PIN_17_DATA : ", &s.pins.dbus, 8);
+  d.dump_bitn   ("PIN_80_CSn  : ", s.pins.control.PIN_80_CSn.state);
+  d.dump_bitn   ("PIN_79_RDn  : ", s.pins.control.PIN_79_RDn.state);
+  d.dump_bitn   ("PIN_78_WRn  : ", s.pins.control.PIN_78_WRn.state);
   d.dump_slice2p("ADDR LATCH  : ", &s.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
   d.dump_slice2n("DATA LATCH  : ", &s.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
   d.dump_bitp   ("MBC1 RAM EN : ", s.ext_mbc.MBC1_RAM_EN.state);

@@ -93,7 +93,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
     /*_p08.TYMU*/ wire TYMU_EXT_RDn = nor2(LUMA_DMA_CARTp, MOTY_CPU_EXT_RD);
     /*_p08.UGAC*/ wire UGAC_RD_A = nand2(TYMU_EXT_RDn, gb_state.sys_rst.TOVA_MODE_DBG2n());
     /*_p08.URUN*/ wire URUN_RD_D = nor2 (TYMU_EXT_RDn, gb_state.sys_rst.UNOR_MODE_DBG2p());
-    /*_PIN_79*/ gb_state.ext_ctrl.PIN_79_RDn.pin_out(UGAC_RD_A, URUN_RD_D);
+    /*_PIN_79*/ gb_state.pins.control.PIN_79_RDn.pin_out(UGAC_RD_A, URUN_RD_D);
   }
 
   {
@@ -101,13 +101,13 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
     /*_p08.PUVA*/ wire PUVA_EXT_WRn = or2(NEVY, LUMA_DMA_CARTp);
     /*_p08.UVER*/ wire UVER_WR_A = nand2(PUVA_EXT_WRn, gb_state.sys_rst.TOVA_MODE_DBG2n());
     /*_p08.USUF*/ wire USUF_WR_D = nor2 (PUVA_EXT_WRn, gb_state.sys_rst.UNOR_MODE_DBG2p());
-    /*_PIN_78*/ gb_state.ext_ctrl.PIN_78_WRn.pin_out(UVER_WR_A, USUF_WR_D);
+    /*_PIN_78*/ gb_state.pins.control.PIN_78_WRn.pin_out(UVER_WR_A, USUF_WR_D);
   }
 
   {
     /*_p08.TOZA*/ wire TOZA_CS_A = and3(gb_state.cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new(), gb_state.cpu_abus.TYNU_A000_FFFFp(), gb_state.cpu_abus.TUNA_0000_FDFF());
     /*_p08.TYHO*/ wire TYHO_CS_A = mux2p(LUMA_DMA_CARTp, gb_state.reg_dma.MARU_DMA_A15n.qn_new(), TOZA_CS_A);
-    /*_PIN_80*/ gb_state.ext_ctrl.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
+    /*_PIN_80*/ gb_state.pins.control.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
   }
 
   /*_p08.LOXO*/ wire LOXO_HOLDn = and_or3(gb_state.sys_rst.MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn(), gb_state.sys_rst.UMUT_MODE_DBG1p());
@@ -178,21 +178,21 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.LEVA*/ wire LEVA = nor2(MUCE_A13p, gb_state.sys_rst.UNOR_MODE_DBG2p());
   /*_p08.PAHY*/ wire PAHY = nor2(PEGE_A14p, gb_state.sys_rst.UNOR_MODE_DBG2p());
 
-  /*_PIN_01*/ gb_state.ext_abus.lo.PIN_01_A00.pin_out(KUPO, KOTY);
-  /*_PIN_02*/ gb_state.ext_abus.lo.PIN_02_A01.pin_out(CABA, COTU);
-  /*_PIN_03*/ gb_state.ext_abus.lo.PIN_03_A02.pin_out(BOKU, BAJO);
-  /*_PIN_04*/ gb_state.ext_abus.lo.PIN_04_A03.pin_out(BOTY, BOLA);
-  /*_PIN_05*/ gb_state.ext_abus.lo.PIN_05_A04.pin_out(BYLA, BEVO);
-  /*_PIN_06*/ gb_state.ext_abus.lo.PIN_06_A05.pin_out(BADU, AJAV);
-  /*_PIN_07*/ gb_state.ext_abus.lo.PIN_07_A06.pin_out(CEPU, CYKA);
-  /*_PIN_08*/ gb_state.ext_abus.lo.PIN_08_A07.pin_out(DEFY, COLO);
-  /*_PIN_09*/ gb_state.ext_abus.hi.PIN_09_A08.pin_out(MYNY, MEGO);
-  /*_PIN_10*/ gb_state.ext_abus.hi.PIN_10_A09.pin_out(MUNE, MENY);
-  /*_PIN_11*/ gb_state.ext_abus.hi.PIN_11_A10.pin_out(ROXU, RORE);
-  /*_PIN_12*/ gb_state.ext_abus.hi.PIN_12_A11.pin_out(LEPY, LYNY);
-  /*_PIN_13*/ gb_state.ext_abus.hi.PIN_13_A12.pin_out(LUCE, LOSO);
-  /*_PIN_14*/ gb_state.ext_abus.hi.PIN_14_A13.pin_out(LABE, LEVA);
-  /*_PIN_15*/ gb_state.ext_abus.hi.PIN_15_A14.pin_out(PUHE, PAHY);
+  /*_PIN_01*/ gb_state.pins.abus_lo.PIN_01_A00.pin_out(KUPO, KOTY);
+  /*_PIN_02*/ gb_state.pins.abus_lo.PIN_02_A01.pin_out(CABA, COTU);
+  /*_PIN_03*/ gb_state.pins.abus_lo.PIN_03_A02.pin_out(BOKU, BAJO);
+  /*_PIN_04*/ gb_state.pins.abus_lo.PIN_04_A03.pin_out(BOTY, BOLA);
+  /*_PIN_05*/ gb_state.pins.abus_lo.PIN_05_A04.pin_out(BYLA, BEVO);
+  /*_PIN_06*/ gb_state.pins.abus_lo.PIN_06_A05.pin_out(BADU, AJAV);
+  /*_PIN_07*/ gb_state.pins.abus_lo.PIN_07_A06.pin_out(CEPU, CYKA);
+  /*_PIN_08*/ gb_state.pins.abus_lo.PIN_08_A07.pin_out(DEFY, COLO);
+  /*_PIN_09*/ gb_state.pins.abus_hi.PIN_09_A08.pin_out(MYNY, MEGO);
+  /*_PIN_10*/ gb_state.pins.abus_hi.PIN_10_A09.pin_out(MUNE, MENY);
+  /*_PIN_11*/ gb_state.pins.abus_hi.PIN_11_A10.pin_out(ROXU, RORE);
+  /*_PIN_12*/ gb_state.pins.abus_hi.PIN_12_A11.pin_out(LEPY, LYNY);
+  /*_PIN_13*/ gb_state.pins.abus_hi.PIN_13_A12.pin_out(LUCE, LOSO);
+  /*_PIN_14*/ gb_state.pins.abus_hi.PIN_14_A13.pin_out(LABE, LEVA);
+  /*_PIN_15*/ gb_state.pins.abus_hi.PIN_15_A14.pin_out(PUHE, PAHY);
 
   // A15 is "special"
   /*_p07.TERA*/ wire TERA_BOOT_BITp = not1(gb_state.cpu_signals.TEPU_BOOT_BITn.qp_new());
@@ -202,7 +202,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.TAZY*/ wire TAZY_A15p = mux2p (LUMA_DMA_CARTp, gb_state.reg_dma.MARU_DMA_A15n.qn_new(), SEPY_A15p);
   /*_p08.SUZE*/ wire SUZE_A15n = nand2(TAZY_A15p, gb_state.sys_rst.RYCA_MODE_DBG2n());
   /*_p08.RULO*/ wire RULO_A15n = nor2 (TAZY_A15p, gb_state.sys_rst.UNOR_MODE_DBG2p());
-  /*_PIN_16*/ gb_state.ext_abus.hi.PIN_16_A15.pin_out(SUZE_A15n, RULO_A15n);
+  /*_PIN_16*/ gb_state.pins.abus_hi.PIN_16_A15.pin_out(SUZE_A15n, RULO_A15n);
 
   // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_out
   // will actually end up in oam?
@@ -241,7 +241,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   // region 6 = iram
   // region 7 = eram
 
-  auto ext_addr = bit_pack_inv(gb_state.ext_abus);
+  auto ext_addr = bit_pack_inv(gb_state.pins.abus_lo) | (bit_pack_inv(gb_state.pins.abus_hi) << 8);
   const int region = ext_addr >> 13;
 
   //----------------------------------------
@@ -249,7 +249,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   bool EXT_rd_en = false;
   uint8_t data_in = 0xFF;
 
-  if (bit(~gb_state.ext_ctrl.PIN_79_RDn.qp_ext_new())) {
+  if (bit(~gb_state.pins.control.PIN_79_RDn.qp_ext_new())) {
 
     if (cart_has_mbc1(cart_blob)) {
       bool mbc1_mode   = bit(gb_state.ext_mbc.MBC1_MODE.out_old());
@@ -309,14 +309,14 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   wire EXT_data_in7 = get_bit(data_in, 7);
 
 
-  /*_PIN_17*/ gb_state.ext_dbus.PIN_17_D00.pin_io(LULA_CBD_TO_EPDp, RUXA, RUNE, EXT_rd_en, EXT_data_in0);
-  /*_PIN_18*/ gb_state.ext_dbus.PIN_18_D01.pin_io(LULA_CBD_TO_EPDp, RUJA, RYPU, EXT_rd_en, EXT_data_in1);
-  /*_PIN_19*/ gb_state.ext_dbus.PIN_19_D02.pin_io(LULA_CBD_TO_EPDp, RABY, SULY, EXT_rd_en, EXT_data_in2);
-  /*_PIN_20*/ gb_state.ext_dbus.PIN_20_D03.pin_io(LULA_CBD_TO_EPDp, RERA, SEZE, EXT_rd_en, EXT_data_in3);
-  /*_PIN_21*/ gb_state.ext_dbus.PIN_21_D04.pin_io(LULA_CBD_TO_EPDp, RORY, RESY, EXT_rd_en, EXT_data_in4);
-  /*_PIN_22*/ gb_state.ext_dbus.PIN_22_D05.pin_io(LULA_CBD_TO_EPDp, RYVO, TAMU, EXT_rd_en, EXT_data_in5);
-  /*_PIN_23*/ gb_state.ext_dbus.PIN_23_D06.pin_io(LULA_CBD_TO_EPDp, RAFY, ROGY, EXT_rd_en, EXT_data_in6);
-  /*_PIN_24*/ gb_state.ext_dbus.PIN_24_D07.pin_io(LULA_CBD_TO_EPDp, RAVU, RYDA, EXT_rd_en, EXT_data_in7);
+  /*_PIN_17*/ gb_state.pins.dbus.PIN_17_D00.pin_io(LULA_CBD_TO_EPDp, RUXA, RUNE, EXT_rd_en, EXT_data_in0);
+  /*_PIN_18*/ gb_state.pins.dbus.PIN_18_D01.pin_io(LULA_CBD_TO_EPDp, RUJA, RYPU, EXT_rd_en, EXT_data_in1);
+  /*_PIN_19*/ gb_state.pins.dbus.PIN_19_D02.pin_io(LULA_CBD_TO_EPDp, RABY, SULY, EXT_rd_en, EXT_data_in2);
+  /*_PIN_20*/ gb_state.pins.dbus.PIN_20_D03.pin_io(LULA_CBD_TO_EPDp, RERA, SEZE, EXT_rd_en, EXT_data_in3);
+  /*_PIN_21*/ gb_state.pins.dbus.PIN_21_D04.pin_io(LULA_CBD_TO_EPDp, RORY, RESY, EXT_rd_en, EXT_data_in4);
+  /*_PIN_22*/ gb_state.pins.dbus.PIN_22_D05.pin_io(LULA_CBD_TO_EPDp, RYVO, TAMU, EXT_rd_en, EXT_data_in5);
+  /*_PIN_23*/ gb_state.pins.dbus.PIN_23_D06.pin_io(LULA_CBD_TO_EPDp, RAFY, ROGY, EXT_rd_en, EXT_data_in6);
+  /*_PIN_24*/ gb_state.pins.dbus.PIN_24_D07.pin_io(LULA_CBD_TO_EPDp, RAVU, RYDA, EXT_rd_en, EXT_data_in7);
 
   //----------------------------------------
 
@@ -331,16 +331,16 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   gb_state.ext_mbc.MBC1_BANK6.hold();
 
   uint8_t data_out = 0;
-  data_out |= bit(gb_state.ext_dbus.PIN_17_D00.qp_ext_new()) << 0;
-  data_out |= bit(gb_state.ext_dbus.PIN_18_D01.qp_ext_new()) << 1;
-  data_out |= bit(gb_state.ext_dbus.PIN_19_D02.qp_ext_new()) << 2;
-  data_out |= bit(gb_state.ext_dbus.PIN_20_D03.qp_ext_new()) << 3;
-  data_out |= bit(gb_state.ext_dbus.PIN_21_D04.qp_ext_new()) << 4;
-  data_out |= bit(gb_state.ext_dbus.PIN_22_D05.qp_ext_new()) << 5;
-  data_out |= bit(gb_state.ext_dbus.PIN_23_D06.qp_ext_new()) << 6;
-  data_out |= bit(gb_state.ext_dbus.PIN_24_D07.qp_ext_new()) << 7;
+  data_out |= bit(gb_state.pins.dbus.PIN_17_D00.qp_ext_new()) << 0;
+  data_out |= bit(gb_state.pins.dbus.PIN_18_D01.qp_ext_new()) << 1;
+  data_out |= bit(gb_state.pins.dbus.PIN_19_D02.qp_ext_new()) << 2;
+  data_out |= bit(gb_state.pins.dbus.PIN_20_D03.qp_ext_new()) << 3;
+  data_out |= bit(gb_state.pins.dbus.PIN_21_D04.qp_ext_new()) << 4;
+  data_out |= bit(gb_state.pins.dbus.PIN_22_D05.qp_ext_new()) << 5;
+  data_out |= bit(gb_state.pins.dbus.PIN_23_D06.qp_ext_new()) << 6;
+  data_out |= bit(gb_state.pins.dbus.PIN_24_D07.qp_ext_new()) << 7;
 
-  if (!bit(gb_state.ext_ctrl.PIN_78_WRn.qp_ext_new())) {
+  if (!bit(gb_state.pins.control.PIN_78_WRn.qp_ext_new())) {
     if (cart_has_mbc1(cart_blob)) {
       bool mbc1_mode   = bit(gb_state.ext_mbc.MBC1_MODE.out_new());
       bool mbc1_ram_en = bit(gb_state.ext_mbc.MBC1_RAM_EN.out_new());
@@ -403,14 +403,14 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   //probe_char(14, "PIN_23 ext", ext_pins.PIN_23_D06.cp_ext());
   //probe_char(15, "PIN_24 ext", ext_pins.PIN_24_D07.cp_ext());
 
-  /*#p08.SOMA*/ gb_state.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(LAVO_HOLDn, gb_state.ext_dbus.PIN_17_D00.qp_int_new());
-  /*_p08.RONY*/ gb_state.ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(LAVO_HOLDn, gb_state.ext_dbus.PIN_18_D01.qp_int_new());
-  /*_p08.RAXY*/ gb_state.ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latchn(LAVO_HOLDn, gb_state.ext_dbus.PIN_19_D02.qp_int_new());
-  /*_p08.SELO*/ gb_state.ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latchn(LAVO_HOLDn, gb_state.ext_dbus.PIN_20_D03.qp_int_new());
-  /*_p08.SODY*/ gb_state.ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latchn(LAVO_HOLDn, gb_state.ext_dbus.PIN_21_D04.qp_int_new());
-  /*_p08.SAGO*/ gb_state.ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latchn(LAVO_HOLDn, gb_state.ext_dbus.PIN_22_D05.qp_int_new());
-  /*_p08.RUPA*/ gb_state.ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latchn(LAVO_HOLDn, gb_state.ext_dbus.PIN_23_D06.qp_int_new());
-  /*_p08.SAZY*/ gb_state.ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latchn(LAVO_HOLDn, gb_state.ext_dbus.PIN_24_D07.qp_int_new());
+  /*#p08.SOMA*/ gb_state.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(LAVO_HOLDn, gb_state.pins.dbus.PIN_17_D00.qp_int_new());
+  /*_p08.RONY*/ gb_state.ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(LAVO_HOLDn, gb_state.pins.dbus.PIN_18_D01.qp_int_new());
+  /*_p08.RAXY*/ gb_state.ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latchn(LAVO_HOLDn, gb_state.pins.dbus.PIN_19_D02.qp_int_new());
+  /*_p08.SELO*/ gb_state.ext_data_latch.SELO_EXT_DATA_LATCH_D3n.tp_latchn(LAVO_HOLDn, gb_state.pins.dbus.PIN_20_D03.qp_int_new());
+  /*_p08.SODY*/ gb_state.ext_data_latch.SODY_EXT_DATA_LATCH_D4n.tp_latchn(LAVO_HOLDn, gb_state.pins.dbus.PIN_21_D04.qp_int_new());
+  /*_p08.SAGO*/ gb_state.ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latchn(LAVO_HOLDn, gb_state.pins.dbus.PIN_22_D05.qp_int_new());
+  /*_p08.RUPA*/ gb_state.ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latchn(LAVO_HOLDn, gb_state.pins.dbus.PIN_23_D06.qp_int_new());
+  /*_p08.SAZY*/ gb_state.ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latchn(LAVO_HOLDn, gb_state.pins.dbus.PIN_24_D07.qp_int_new());
 
   //probe_wire(24, "SOMA", ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
   //probe_wire(25, "RONY", ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());

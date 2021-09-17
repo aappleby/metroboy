@@ -93,14 +93,6 @@ struct LogicBoyState {
   uint8_t  oam_temp_a;
   uint8_t  oam_temp_b;
                  
-  ExtControl     ext_ctrl;
-  
-  struct {
-    uint8_t lo;
-    uint8_t hi;
-  } ext_abus;
-
-  uint8_t ext_dbus;
   uint8_t ext_data_latch;
   uint16_t ext_addr_latch;
 

@@ -23,7 +23,8 @@
 struct GateBoyState;
 
 struct LogicBoyState {
-  void wipe() { memset(this, 0, sizeof(*this)); }
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   Result<uint8_t, Error> peek(const blob& cart_blob, int addr) const;
   Result<uint8_t, Error> poke(blob& cart_blob, int addr, uint8_t data_in);

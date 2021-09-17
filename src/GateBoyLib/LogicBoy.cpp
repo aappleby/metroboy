@@ -5,6 +5,12 @@
 
 void LogicBoy::reset_to_bootrom(const blob& cart_blob)
 {
+  lb_state.reset_to_bootrom();
+  cpu.reset_to_bootrom();
+  mem.reset_to_bootrom();
+  sys.reset_to_bootrom();
+  probes.reset_to_bootrom();
+
 #if 0
   wipe();
 
@@ -130,6 +136,13 @@ void LogicBoy::reset_to_bootrom(const blob& cart_blob)
 //-----------------------------------------------------------------------------
 
 void LogicBoy::reset_to_cart(const blob& cart_blob) {
+  lb_state.reset_to_cart();
+  cpu.reset_to_cart();
+  mem.reset_to_cart();
+  sys.reset_to_cart();
+  probes.reset_to_cart();
+
+#if 0
   reset_to_bootrom(cart_blob);
 
   lb_state.VOGA_HBLANKp = 0b00011001;
@@ -250,6 +263,7 @@ void LogicBoy::reset_to_cart(const blob& cart_blob) {
   memcpy(mem.framebuffer, framebuffer_boot, 160*144);
 
   sys.phase_total = 0;
+#endif
 }
 
 //-----------------------------------------------------------------------------

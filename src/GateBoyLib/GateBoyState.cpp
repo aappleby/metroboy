@@ -5,8 +5,8 @@
 void GateBoyState::reset_to_poweron() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
 
-  SIG_VCC = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  SIG_GND = BIT_OLD | BIT_DRIVEN;
+  SIG_VCC.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  SIG_GND.state = BIT_OLD | BIT_DRIVEN;
   reg_joy.reset_to_bootrom();
   //reg_sb;
   //reg_sc;
@@ -162,8 +162,8 @@ void GateBoyState::reset_to_poweron() {
 void GateBoyState::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
 
-  SIG_VCC = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  SIG_GND = BIT_OLD | BIT_DRIVEN;
+  SIG_VCC.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  SIG_GND.state = BIT_OLD | BIT_DRIVEN;
   reg_joy.reset_to_bootrom();
   //reg_sb.reset_to_bootrom();
   //reg_sc.reset_to_bootrom();
@@ -317,9 +317,10 @@ void GateBoyState::reset_to_bootrom() {
 //-----------------------------------------------------------------------------
 
 void GateBoyState::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
 
-  SIG_VCC = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  SIG_GND = BIT_OLD | BIT_DRIVEN;
+  SIG_VCC.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  SIG_GND.state = BIT_OLD | BIT_DRIVEN;
   reg_joy.reset_to_cart();
   //reg_sb.reset_to_cart();
   //reg_sc.reset_to_cart();
@@ -346,13 +347,13 @@ void GateBoyState::reset_to_cart() {
   sys_clk.reset_to_cart();
   
   VOGA_HBLANKp.state = 0b00011001;
-  //XYMU_RENDERINGn;
-  //MATU_DMA_RUNNINGp;
-  //ACYL_SCANNINGp;
+  XYMU_RENDERINGn.state = 0x19;
+  MATU_DMA_RUNNINGp.state = 0x1A;
+  ACYL_SCANNINGp.state = 0x18;
   WODU_HBLANKp.state = 0b00011001;
-  //SATO_BOOT_BITn;
+  SATO_BOOT_BITn.state = 0x19;
   ATEJ_LINE_RSTp.state = 0b00011000;
-  //FEPO_STORE_MATCHp;
+  FEPO_STORE_MATCHp.state = 0x18;
 
   cpu_signals.reset_to_cart();
   cpu_abus.reset_to_cart();

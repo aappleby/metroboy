@@ -10,6 +10,32 @@
 
 #pragma pack(push, 1)
 struct LogicBoyCpu {
+  void reset_to_bootrom() {
+    core.reset_to_bootrom();
+    bus_req_new.addr = 0x0000;
+    bus_req_new.data = 0;
+    bus_req_new.read = 0;
+    bus_req_new.write = 0;
+    cpu_data_latch = 49;
+    imask_latch = 0;
+    intf_latch = 0;
+    intf_latch_delay = 0;
+    intf_halt_latch = 0;
+  }
+
+  void reset_to_cart() {
+    core.reset_to_cart();
+    bus_req_new.addr = 0xFF50;
+    bus_req_new.data = 1;
+    bus_req_new.read = 0;
+    bus_req_new.write = 1;
+    cpu_data_latch = 1;
+    imask_latch = 0;
+    intf_latch = 1;
+    intf_latch_delay = 0;
+    intf_halt_latch = 0;
+  }
+
   MetroBoyCPU core;
   Req      bus_req_new = {0};
   uint8_t  cpu_data_latch = 0;
@@ -24,21 +50,35 @@ static_assert(sizeof(GateBoyCpu) == sizeof(LogicBoyCpu));
 
 //-----------------------------------------------------------------------------
 
-/*
-struct LogicBoyMem {
-  uint8_t vid_ram [8192];
-  uint8_t cart_ram[32768];
-  uint8_t int_ram [8192];
-  uint8_t oam_ram [256];
-  uint8_t zero_ram[128];
-  uint8_t framebuffer[160*144];
-};
-*/
-
-//-----------------------------------------------------------------------------
-
 #pragma pack(push, 1)
 struct LogicBoySys {
+  void reset_to_bootrom() {
+    rst = false;
+    t1 = false;
+    t2 = false;
+    clk_en = true;
+    clk_good = true;
+    clk_req = true;
+    cpu_en = true;
+    fastboot = true;
+    buttons = 0;
+    phase_total = 80;
+  }
+
+  void reset_to_cart() {
+    rst = false;
+    t1 = false;
+    t2 = false;
+    clk_en = true;
+    clk_good = true;
+    clk_req = true;
+    cpu_en = true;
+    fastboot = true;
+    buttons = 0;
+    phase_total = 46880720;
+  }
+
+
   uint8_t rst = 0;
   uint8_t t1 = 0;
   uint8_t t2 = 0;
@@ -123,9 +163,9 @@ struct LogicBoy : public IGateBoy {
   void tock_logic(const blob& cart_blob, int64_t phase_total);
   void update_framebuffer();
 
-  void wipe() {
-    lb_state.wipe();
-  }
+  //void wipe() {
+  //  lb_state.wipe();
+  //}
 
   //-----------------------------------------------------------------------------
 

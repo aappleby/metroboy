@@ -3,6 +3,7 @@
 
 #include "CoreLib/Assembler.h"
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/LogicBoy.h"
 #include "CoreLib/Constants.h"
 #include "CoreLib/Tests.h"
 #include "CoreLib/File.h"
@@ -31,7 +32,9 @@ TestResults test_regression_cart(blob cart_blob, int cycles, bool from_bootrom) 
   TEST_INIT();
   if (cart_blob.empty()) TEST_FAIL();
 
-  auto gb = make_unique<GateBoy>();
+  //auto gb = make_unique<GateBoy>();
+  //auto gb = new GateBoyPair(new GateBoy(), new LogicBoy());
+  auto gb = new GateBoy();
 
   if (from_bootrom) {
     gb->reset_to_bootrom(cart_blob);
@@ -44,6 +47,8 @@ TestResults test_regression_cart(blob cart_blob, int cycles, bool from_bootrom) 
     if (i && (i % 1000000) == 0) LOG_G("Phase %d\n", i);
     if (!gb->next_phase(cart_blob)) TEST_FAIL();
   }
+
+  delete gb;
 
   TEST_DONE();
 }
@@ -90,6 +95,13 @@ int main(int argc, char** argv) {
   //results += t.test_reset_to_cart();
   //results += t.test_fastboot_vs_slowboot();
 
+  //results += t.test_fastboot_vs_slowboot(new GateBoy(), new GateBoy(), 0xFF);
+  //results += t.test_reset_to_bootrom    (new GateBoy(), new GateBoy(), 0xFF);
+  //results += t.test_reset_to_cart       (new GateBoy(), new GateBoy(), 0xFF);
+
+  //results += t.test_reset_to_bootrom    (new GateBoy(), new LogicBoy(), 0x01);
+  //results += t.test_reset_to_cart       (new GateBoy(), new LogicBoy(), 0x01);
+
 #if 1
   {
     LOG_G("Regression testing bootrom start\n");
@@ -125,9 +137,9 @@ int main(int argc, char** argv) {
     }
   }
 
-  results += t.test_reset_to_bootrom(new GateBoy(), new GateBoy());
-  results += t.test_reset_to_cart(new GateBoy(), new GateBoy());
-  results += t.test_fastboot_vs_slowboot(new GateBoy(), new GateBoy());
+  results += t.test_reset_to_bootrom(new GateBoy(), new GateBoy(), 0xFF);
+  results += t.test_reset_to_cart(new GateBoy(), new GateBoy(), 0xFF);
+  results += t.test_fastboot_vs_slowboot(new GateBoy(), new GateBoy(), 0xFF);
 
   results += t.test_bootrom();
   results += t.test_clk();
@@ -271,36 +283,55 @@ TestResults GateBoyTests::test_regs() {
 //-----------------------------------------------------------------------------
 // Power-on reset state should be stable
 
-TestResults GateBoyTests::test_fastboot_vs_slowboot(IGateBoy* gb1, IGateBoy* gb2) {
+template<typename T>
+bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF) {
+  const uint8_t* pa = (const uint8_t*)&a;
+  const uint8_t* pb = (const uint8_t*)&b;
+  for (size_t i = 0; i < sizeof(T); i++) {
+    if ((pa[i] & mask) != (pb[i] & mask)) return false;
+  }
+  return true;
+}
+
+TestResults GateBoyTests::test_fastboot_vs_slowboot(IGateBoy* gb1, IGateBoy* gb2, uint8_t mask) {
   TEST_INIT();
 
   blob cart_blob = Assembler::create_dummy_cart();
 
-  LOG_B("reset_to_bootrom with fastboot = true\n");
-  gb1->reset_to_bootrom(cart_blob);
-  LOG_G("reset_to_bootrom with fastboot = true done\n");
+  LOG_B("run_poweron_reset with fastboot = true\n");
+  gb1->reset_to_poweron(cart_blob);
+  gb1->run_poweron_reset(cart_blob, true);
+  LOG_G("run_poweron_reset with fastboot = true done\n");
 
-  LOG_B("reset_to_bootrom with fastboot = false\n");
-  gb2->reset_to_bootrom(cart_blob);
-  LOG_G("reset_to_bootrom with fastboot = false done\n");
+  LOG_B("run_poweron_reset with fastboot = false\n");
+  gb2->reset_to_poweron(cart_blob);
+  gb2->run_poweron_reset(cart_blob, false);
+  LOG_G("run_poweron_reset with fastboot = false done\n");
 
   // Clear the fastboot bit on the first gameboy, since that obviously won't match
   const_cast<GateBoySys&>(gb1->get_sys()).fastboot = 0;
   const_cast<GateBoySys&>(gb2->get_sys()).fastboot = 0;
+  const_cast<GateBoySys&>(gb1->get_sys()).phase_total = 0;
+  const_cast<GateBoySys&>(gb2->get_sys()).phase_total = 0;
 
-  EXPECT_EQ(0, memcmp(&gb1->get_state(), &gb2->get_state(), sizeof(GateBoyState)));
-  EXPECT_EQ(0, memcmp(&gb1->get_cpu(),   &gb2->get_cpu(),   sizeof(GateBoyCpu)));
-  EXPECT_EQ(0, memcmp(&gb1->get_mem(),   &gb2->get_mem(),   sizeof(GateBoyMem)));
-  EXPECT_EQ(0, memcmp(&gb1->get_sys(),   &gb2->get_sys(),   sizeof(GateBoySys)));
+  //EXPECT_EQ(0, memcmp(&gb1->get_state(), &gb2->get_state(), sizeof(GateBoyState)));
+  //EXPECT_EQ(0, memcmp(&gb1->get_cpu(),   &gb2->get_cpu(),   sizeof(GateBoyCpu)));
+  //EXPECT_EQ(0, memcmp(&gb1->get_mem(),   &gb2->get_mem(),   sizeof(GateBoyMem)));
+  //EXPECT_EQ(0, memcmp(&gb1->get_sys(),   &gb2->get_sys(),   sizeof(GateBoySys)));
 
-  gb1->get_state().diff(gb2->get_state(), 0xFF);
+  EXPECT_EQ(true, bit_cmp(gb1->get_state(), gb2->get_state(), mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask));
+
+  gb1->get_state().diff(gb2->get_state(), mask);
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_reset_to_bootrom(IGateBoy* gb1, IGateBoy* gb2) {
+TestResults GateBoyTests::test_reset_to_bootrom(IGateBoy* gb1, IGateBoy* gb2, uint8_t mask) {
   TEST_INIT();
 
   LOG_B("run_poweron_reset()\n");
@@ -313,12 +344,12 @@ TestResults GateBoyTests::test_reset_to_bootrom(IGateBoy* gb1, IGateBoy* gb2) {
   gb2->reset_to_bootrom(cart_blob);
   LOG_G("reset_to_bootrom() done\n");
 
-  EXPECT_EQ(0, memcmp(&gb1->get_state(), &gb2->get_state(), sizeof(GateBoyState)));
-  EXPECT_EQ(0, memcmp(&gb1->get_cpu(),   &gb2->get_cpu(),   sizeof(GateBoyCpu)));
-  EXPECT_EQ(0, memcmp(&gb1->get_mem(),   &gb2->get_mem(),   sizeof(GateBoyMem)));
-  EXPECT_EQ(0, memcmp(&gb1->get_sys(),   &gb2->get_sys(),   sizeof(GateBoySys)));
+  EXPECT_EQ(true, bit_cmp(gb1->get_state(), gb2->get_state(), mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask));
 
-  gb1->get_state().diff(gb2->get_state(), 0xFF);
+  gb1->get_state().diff(gb2->get_state(), mask);
 
   TEST_DONE();
 }
@@ -326,7 +357,7 @@ TestResults GateBoyTests::test_reset_to_bootrom(IGateBoy* gb1, IGateBoy* gb2) {
 //-----------------------------------------------------------------------------
 // reset_cart() should match dumped reset state.
 
-TestResults GateBoyTests::test_reset_to_cart(IGateBoy* gb1, IGateBoy* gb2) {
+TestResults GateBoyTests::test_reset_to_cart(IGateBoy* gb1, IGateBoy* gb2, uint8_t mask) {
   TEST_INIT();
 
   LOG_B("load gateboy_reset_to_cart.raw.dump\n");
@@ -342,12 +373,12 @@ TestResults GateBoyTests::test_reset_to_cart(IGateBoy* gb1, IGateBoy* gb2) {
   gb2->reset_to_cart(Assembler::create_dummy_cart());
   LOG_G("reset_to_cart() done\n");
 
-  EXPECT_EQ(0, memcmp(&gb1->get_state(), &gb2->get_state(), sizeof(GateBoyState)));
-  EXPECT_EQ(0, memcmp(&gb1->get_cpu(),   &gb2->get_cpu(),   sizeof(GateBoyCpu)));
-  EXPECT_EQ(0, memcmp(&gb1->get_mem(),   &gb2->get_mem(),   sizeof(GateBoyMem)));
-  EXPECT_EQ(0, memcmp(&gb1->get_sys(),   &gb2->get_sys(),   sizeof(GateBoySys)));
+  EXPECT_EQ(true, bit_cmp(gb1->get_state(), gb2->get_state(), mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask));
 
-  gb1->get_state().diff(gb2->get_state(), 0xFF);
+  gb1->get_state().diff(gb2->get_state(), mask);
 
   TEST_DONE();
 }

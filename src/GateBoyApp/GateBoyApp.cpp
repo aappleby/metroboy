@@ -65,8 +65,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   auto cart = Assembler::create_dummy_cart();
   gb_thread->load_cart_blob(cart);
-  gb_thread->reset_to_cart();
-  //gb_thread.reset_to_cart();
+  gb_thread->reset_to_bootrom();
   
   //blob cart;
   //load_blob("tests/microtests/DMG/dma_0xA000.gb", cart);

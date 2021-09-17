@@ -99,6 +99,7 @@ struct RegTIMA {
   }
 
   void reset_to_cart() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
   }
 
   void force_set_tima(uint8_t tima) {
@@ -137,6 +138,7 @@ struct RegTMA {
   }
 
   void reset_to_cart() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
   }
 
   /*_p03.SABU*/ DFF17 SABU_TMA0p; // xxxxxxxH
@@ -161,6 +163,7 @@ struct RegTAC {
   }
 
   void reset_to_cart() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
   }
 
   /*_p03.SOPU*/ DFF17 SOPU_TAC0p; // xxxxxxxH

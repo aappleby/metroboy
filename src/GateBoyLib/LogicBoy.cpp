@@ -406,21 +406,19 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
   }
 
-  const auto reg_ly_new = state_new.reg_ly;
-
   if (state_new.cpu_signals.SIG_IN_CPU_RDp && (state_new.cpu_abus == 0xFF44)) {
-    state_new.cpu_dbus = reg_ly_new;
+    state_new.cpu_dbus = state_new.reg_ly;
   }
 
   //----------------------------------------
   // Joypad
 
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && state_new.cpu_abus == 0xFF00 && gen_clk_new(phase_total, 0b00000001)) {
-    set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
-    set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
+    if (state_new.cpu_abus == 0xFF00) set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
+    if (state_new.cpu_abus == 0xFF00) set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
 
-    pins.joy.PIN_63_JOY_P14.state = get_bit(state_new.reg_joy, 0);
-    pins.joy.PIN_62_JOY_P15.state = get_bit(state_new.reg_joy, 1);
+    if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_63_JOY_P14.state = get_bit(state_new.reg_joy, 0);
+    if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_62_JOY_P15.state = get_bit(state_new.reg_joy, 1);
 
   }
 
@@ -870,7 +868,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   else {
     bool ssf_clk = gen_clk_new(phase_total, 0b10011001) || !state_new.sprite_scanner.CENO_SCANNINGn;
 
-    int ly = (int)reg_ly_new;
+    int ly = (int)state_new.reg_ly;
     int sy = (int)state_new.oam_temp_a - 16;
     int sprite_height = get_bit(state_new.reg_lcdc, 2) ? 8 : 16;
 
@@ -1079,7 +1077,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   if (!state_new.FEPO_STORE_MATCHp) {
-    const auto pack_ydiff = ~reg_ly_new + state_new.oam_temp_a;
+    const auto pack_ydiff = ~state_new.reg_ly + state_new.oam_temp_a;
     state_new.sprite_lbus = pack_ydiff & 0b00001111;
   }
 
@@ -1105,7 +1103,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   // FIXME get rid of this signal
-  state_new.win_ctrl.ROGE_WY_MATCHp = (reg_ly_new == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
+  state_new.win_ctrl.ROGE_WY_MATCHp = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
 
   if (gen_clk_new(phase_total, 0b00100000)) {
     state_new.win_ctrl.SARY_WY_MATCHp.state = state_old.win_ctrl.ROGE_WY_MATCHp;
@@ -1313,7 +1311,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     pins.lcd.PIN_56_LCD_FLIPS.state = state_new.lcd.NAPO_FRAME_EVENp ^ state_new.lcd.LUCA_LINE_EVENp;
 
     if (state_old.lcd.NYPE_x113p && !state_new.lcd.NYPE_x113p) {
-      state_new.lcd.MEDA_VSYNC_OUTn.state = reg_ly_new == 0;
+      state_new.lcd.MEDA_VSYNC_OUTn.state = state_new.reg_ly == 0;
     }
 
     pins.lcd.PIN_57_LCD_VSYNC.state = !state_new.lcd.MEDA_VSYNC_OUTn;
@@ -1569,7 +1567,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     const auto scy = ~state_new.reg_scy;
 
     const auto sum_x = px + scx;
-    const auto sum_y = reg_ly_new + scy;
+    const auto sum_y = state_new.reg_ly + scy;
 
     //--------------------------------------------
     // BG map read address
@@ -1582,7 +1580,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
       uint32_t addr = 0;
       bit_cat(addr,  0,  4, (px + scx) >> 3);
-      bit_cat(addr,  5,  9, (reg_ly_new + scy) >> 3);
+      bit_cat(addr,  5,  9, (state_new.reg_ly + scy) >> 3);
       bit_cat(addr, 10, 10, bgmap_en);
       bit_cat(addr, 11, 11, 1);
       bit_cat(addr, 12, 12, 1);

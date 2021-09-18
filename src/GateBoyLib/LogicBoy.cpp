@@ -250,51 +250,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = EXT_addr_new;
 
   //----------------------------------------
-
-  pins.sys.PIN_74_CLK.CLK.state = gen_clk_new(phase_total, 0b10101010); // dead signal
-  pins.sys.PIN_74_CLK.CLKGOOD.state = 1; // dead signal
-
-  pins.sys.PIN_71_RST = 0; // dead signal
-  pins.sys.PIN_76_T2 = 0; // dead signal
-  pins.sys.PIN_77_T1 = 0; // dead signal
-
-  state_new.cpu_ack = cpu.core.int_ack;
-
-  state_new.sys_clk.SIG_CPU_CLKREQ.state = 1; // dead signal
-
-  state_new.cpu_signals.SIG_CPU_ADDR_HIp.state = state_new.cpu_abus >= 0xFE00 && state_new.cpu_abus <= 0xFFFF; // dead signal
-  state_new.cpu_signals.SIG_CPU_UNOR_DBG.state = 0; // dead signal
-  state_new.cpu_signals.SIG_CPU_UMUT_DBG.state = 0; // dead signal
-
-  //----------------------------------------
-  // Sys clock signals
-
-  pins.sys.PIN_73_CLK_DRIVE.state = pins.sys.PIN_74_CLK.CLK; // dead signal
-  state_new.sys_clk.AVET_DEGLITCH.state = pins.sys.PIN_74_CLK.CLK; // dead signal
-  state_new.sys_clk.ANOS_DEGLITCH.state = !pins.sys.PIN_74_CLK.CLK; // dead signal
-
-  state_new.sys_clk.AFUR_xxxxEFGH.state = gen_clk_new(phase_total, 0b00001111); // dead signal
-  state_new.sys_clk.ALEF_AxxxxFGH.state = gen_clk_new(phase_total, 0b10000111); // dead signal
-  state_new.sys_clk.APUK_ABxxxxGH.state = gen_clk_new(phase_total, 0b11000011); // dead signal
-  state_new.sys_clk.ADYK_ABCxxxxH.state = gen_clk_new(phase_total, 0b11100001); // dead signal
-
-  pins.sys.PIN_75_CLK_OUT.state = gen_clk_new(phase_total, 0b00001111); // dead signal
-
-  state_new.sys_clk.SIG_CPU_BOWA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000); // dead signal
-  state_new.sys_clk.SIG_CPU_BEDO_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111); // dead signal
-  state_new.sys_clk.SIG_CPU_BEKO_ABCDxxxx.state = gen_clk_new(phase_total, 0b11110000); // dead signal
-  state_new.sys_clk.SIG_CPU_BUDE_xxxxEFGH.state = gen_clk_new(phase_total, 0b00001111); // dead signal
-  state_new.sys_clk.SIG_CPU_BOLO_ABCDEFxx.state = gen_clk_new(phase_total, 0b11111100); // dead signal
-  state_new.sys_clk.SIG_CPU_BUKE_AxxxxxGH.state = gen_clk_new(phase_total, 0b10000011); // dead signal
-  state_new.sys_clk.SIG_CPU_BOMA_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111); // dead signal
-  state_new.sys_clk.SIG_CPU_BOGA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000); // dead signal
-
-  state_new.cpu_signals.TEDO_CPU_RDp.state = state_new.cpu_signals.SIG_IN_CPU_RDp; // dead signal
-  state_new.cpu_signals.APOV_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp; // dead signal
-  state_new.cpu_signals.TAPU_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp; // dead signal
-  state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK = (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp); // dead signal
-
-  //----------------------------------------
   // DIV
 
   if (DELTA_HA) {
@@ -304,23 +259,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (state_new.cpu_signals.SIG_IN_CPU_WRp && (DELTA_DE || DELTA_EF || DELTA_FG)) {
     if (state_new.cpu_abus == 0xFF04) state_new.reg_div = 0;
   }
-
-  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    if (state_new.cpu_abus == 0xFF04) state_new.cpu_dbus = uint8_t(state_new.reg_div >> 6);
-  }
-
-  //----------------------------------------
-  // In logic mode we don't care about the power-on behavior, we only want behavior to match when running code. So, we set
-  // this stuff to zeroes.
-
-  state_new.sys_rst.AFER_SYS_RSTp = 0; // dead signal
-  state_new.sys_rst.TUBO_WAITINGp = 0; // dead signal
-  state_new.sys_rst.ASOL_POR_DONEn = 0; // dead signal
-  state_new.sys_rst.SIG_CPU_EXT_CLKGOOD = 1; // dead signal
-  state_new.sys_rst.SIG_CPU_EXT_RESETp = 0; // dead signal
-  state_new.sys_rst.SIG_CPU_STARTp = 0; // dead signal
-  state_new.sys_rst.SIG_CPU_INT_RESETp = 0; // dead signal
-  state_new.sys_rst.SOTO_DBG_VRAMp = 0; // dead signal
 
   //----------------------------------------
   // LCDC
@@ -332,16 +270,10 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (state_new.cpu_abus == 0xFF04) state_new.cpu_dbus = uint8_t(state_new.reg_div >> 6);
     if (state_new.cpu_abus == 0xFF40) state_new.cpu_dbus = ~state_new.reg_lcdc;
     if (state_new.cpu_abus == 0xFF45) state_new.cpu_dbus = ~state_old.reg_lyc;
   }
-
-  //----------------------------------------
-  // Video clocks
-
-  state_new.sys_clk.WOSU_AxxDExxH.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b10011001); // dead signal
-  state_new.sys_clk.WUVU_ABxxEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b11001100); // dead signal
-  state_new.sys_clk.VENA_xxCDEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b00111100); // dead signal
 
   //----------------------------------------
   // LYC
@@ -1844,17 +1776,16 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // zram
 
   {
-    wire CSp = (state_new.cpu_abus >= 0xFF80) && (state_new.cpu_abus <= 0xFFFE);
+    wire cpu_addr_zram_new = (state_new.cpu_abus >= 0xFF80) && (state_new.cpu_abus <= 0xFFFE);
 
-    if (state_new.zram_bus.clk_old && !(gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp) && CSp) {
-      mem.zero_ram[state_new.cpu_abus & 0x007F] = state_old.cpu_dbus;
+    if ( (gen_clk_old(phase_total, 0b00001110) && state_old.cpu_signals.SIG_IN_CPU_WRp) &&
+        !(gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp)) {
+      if (cpu_addr_zram_new) mem.zero_ram[state_new.cpu_abus & 0x007F] = state_old.cpu_dbus;
     }
     state_new.zram_bus.clk_old = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp;
 
-    uint8_t zdata = mem.zero_ram[state_new.cpu_abus & 0x007F];
-
-    if (CSp && state_new.cpu_signals.SIG_IN_CPU_RDp) {
-      state_new.cpu_dbus = zdata;
+    if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+      if (cpu_addr_zram_new) state_new.cpu_dbus = mem.zero_ram[state_new.cpu_abus & 0x007F];
     }
   }
 
@@ -1929,19 +1860,16 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (!int_joy_old  && int_joy_new)  pack_if |= (1 << 4);
 
   // note this is an async set so it doesn't happen on the GH clock edge like other writes
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && (state_new.cpu_abus == 0xFF0F) && gen_clk_new(phase_total, 0b00001110)) {
-    pack_if = pack_cpu_dbus_new;
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00001110)) {
+    if (state_new.cpu_abus == 0xFF0F) pack_if = pack_cpu_dbus_new;
   }
 
-  pack_if &= ~state_new.cpu_ack;
+  pack_if &= ~cpu.core.int_ack;
 
-  if (state_new.cpu_abus == 0xFFFF && state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    pack_cpu_dbus_new = pack_ie | 0b11100000;
-  }
-
-  if (state_new.cpu_abus == 0xFF0F && state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    state_new.int_latch = (uint8_t)pack_if;
-    pack_cpu_dbus_new = pack_if | 0b11100000;
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (state_new.cpu_abus == 0xFFFF) pack_cpu_dbus_new = pack_ie | 0b11100000;
+    if (state_new.cpu_abus == 0xFF0F) state_new.int_latch = (uint8_t)pack_if;
+    if (state_new.cpu_abus == 0xFF0F) pack_cpu_dbus_new = pack_if | 0b11100000;
   }
 
 
@@ -1954,4 +1882,61 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // POSTCONDITIONS
   if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);
   if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
+
+  //----------------------------------------
+  // These are all dead (unused) signals
+
+  state_new.cpu_ack = cpu.core.int_ack;
+
+  pins.sys.PIN_74_CLK.CLK.state = gen_clk_new(phase_total, 0b10101010); // dead signal
+  pins.sys.PIN_74_CLK.CLKGOOD.state = 1; // dead signal
+
+  pins.sys.PIN_71_RST = 0; // dead signal
+  pins.sys.PIN_76_T2 = 0; // dead signal
+  pins.sys.PIN_77_T1 = 0; // dead signal
+
+  state_new.sys_clk.SIG_CPU_CLKREQ.state = 1; // dead signal
+
+  state_new.cpu_signals.SIG_CPU_ADDR_HIp.state = state_new.cpu_abus >= 0xFE00 && state_new.cpu_abus <= 0xFFFF; // dead signal
+  state_new.cpu_signals.SIG_CPU_UNOR_DBG.state = 0; // dead signal
+  state_new.cpu_signals.SIG_CPU_UMUT_DBG.state = 0; // dead signal
+
+  pins.sys.PIN_73_CLK_DRIVE.state = pins.sys.PIN_74_CLK.CLK; // dead signal
+  state_new.sys_clk.AVET_DEGLITCH.state = pins.sys.PIN_74_CLK.CLK; // dead signal
+  state_new.sys_clk.ANOS_DEGLITCH.state = !pins.sys.PIN_74_CLK.CLK; // dead signal
+
+  state_new.sys_clk.AFUR_xxxxEFGH.state = gen_clk_new(phase_total, 0b00001111); // dead signal
+  state_new.sys_clk.ALEF_AxxxxFGH.state = gen_clk_new(phase_total, 0b10000111); // dead signal
+  state_new.sys_clk.APUK_ABxxxxGH.state = gen_clk_new(phase_total, 0b11000011); // dead signal
+  state_new.sys_clk.ADYK_ABCxxxxH.state = gen_clk_new(phase_total, 0b11100001); // dead signal
+
+  pins.sys.PIN_75_CLK_OUT.state = gen_clk_new(phase_total, 0b00001111); // dead signal
+
+  state_new.sys_clk.SIG_CPU_BOWA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000); // dead signal
+  state_new.sys_clk.SIG_CPU_BEDO_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111); // dead signal
+  state_new.sys_clk.SIG_CPU_BEKO_ABCDxxxx.state = gen_clk_new(phase_total, 0b11110000); // dead signal
+  state_new.sys_clk.SIG_CPU_BUDE_xxxxEFGH.state = gen_clk_new(phase_total, 0b00001111); // dead signal
+  state_new.sys_clk.SIG_CPU_BOLO_ABCDEFxx.state = gen_clk_new(phase_total, 0b11111100); // dead signal
+  state_new.sys_clk.SIG_CPU_BUKE_AxxxxxGH.state = gen_clk_new(phase_total, 0b10000011); // dead signal
+  state_new.sys_clk.SIG_CPU_BOMA_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111); // dead signal
+  state_new.sys_clk.SIG_CPU_BOGA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000); // dead signal
+
+  state_new.cpu_signals.TEDO_CPU_RDp.state = state_new.cpu_signals.SIG_IN_CPU_RDp; // dead signal
+  state_new.cpu_signals.APOV_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp; // dead signal
+  state_new.cpu_signals.TAPU_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp; // dead signal
+  state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK = (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp); // dead signal
+
+  state_new.sys_rst.AFER_SYS_RSTp = 0; // dead signal
+  state_new.sys_rst.TUBO_WAITINGp = 0; // dead signal
+  state_new.sys_rst.ASOL_POR_DONEn = 0; // dead signal
+  state_new.sys_rst.SIG_CPU_EXT_CLKGOOD = 1; // dead signal
+  state_new.sys_rst.SIG_CPU_EXT_RESETp = 0; // dead signal
+  state_new.sys_rst.SIG_CPU_STARTp = 0; // dead signal
+  state_new.sys_rst.SIG_CPU_INT_RESETp = 0; // dead signal
+  state_new.sys_rst.SOTO_DBG_VRAMp = 0; // dead signal
+
+  state_new.sys_clk.WOSU_AxxDExxH.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b10011001); // dead signal
+  state_new.sys_clk.WUVU_ABxxEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b11001100); // dead signal
+  state_new.sys_clk.VENA_xxCDEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b00111100); // dead signal
+
 }

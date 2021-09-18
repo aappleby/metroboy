@@ -194,6 +194,7 @@ struct GateBoy  : public IGateBoy {
     result &= bs.read(cpu);
     result &= bs.read(mem);
     result &= bs.read(sys);
+    result &= bs.read(pins);
     result &= bs.read(probes);
     return result;
   }
@@ -204,6 +205,7 @@ struct GateBoy  : public IGateBoy {
     result &= bs.write(cpu);
     result &= bs.write(mem);
     result &= bs.write(sys);
+    result &= bs.write(pins);
     result &= bs.write(probes);
     return result;
   }

@@ -901,10 +901,16 @@ template<typename T>
 bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF) {
   const uint8_t* pa = (const uint8_t*)&a;
   const uint8_t* pb = (const uint8_t*)&b;
+  bool result = true;
   for (size_t i = 0; i < sizeof(T); i++) {
-    if ((pa[i] & mask) != (pb[i] & mask)) return false;
+    auto ba = pa[i] & mask;
+    auto bb = pb[i] & mask;
+    if (ba != bb) {
+      LOG_R("bit_cmp mismatch at offset %d - 0x%02x 0x%02x\n",  (int)i, ba, bb);
+      result = false;
+    }
   }
-  return true;
+  return result;
 }
 
 //-----------------------------------------------------------------------------

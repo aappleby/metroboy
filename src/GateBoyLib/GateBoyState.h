@@ -51,8 +51,6 @@ struct GateBoyState {
   /*_SIG_VCC*/ SigIn SIG_VCC;
   /*_SIG_GND*/ SigIn SIG_GND;
   
-  GateBoyPins pins;
-
   RegJoy  reg_joy;  // 0xFF00
   //RegSB   reg_sb;   // 0xFF01
   //RegSC   reg_sc;   // 0xFF02

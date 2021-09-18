@@ -33,8 +33,6 @@ struct LogicBoyState {
   void to_gb_state(GateBoyState& dst, int64_t phase_total) const;
   void from_gb_state(const GateBoyState& src, int64_t phase_total);
 
-  GateBoyPins pins;
-
   uint8_t  reg_joy;  // 0xFF00
   uint8_t  reg_sb; // 0xFF01
   uint8_t  reg_sc; // 0xFF02

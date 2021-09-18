@@ -5,6 +5,7 @@ struct GateBoyCpu;
 struct GateBoyMem;
 struct GateBoyState;
 struct GateBoySys;
+struct GateBoyPins;
 struct Probes;
 
 class IGateBoy {
@@ -39,5 +40,6 @@ public:
   virtual const GateBoyMem&   get_mem() const = 0;
   virtual const GateBoyState& get_state() const = 0;
   virtual const GateBoySys&   get_sys() const = 0;
+  virtual const GateBoyPins&  get_pins() const = 0;
   virtual const Probes&       get_probes() const = 0;
 };

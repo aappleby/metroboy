@@ -1180,7 +1180,7 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
     
     //EXPECT_CLK(clk.PIN_75_CLK_OUT.state,        0b11110000);
     // external signals are inverted
-    EXPECT_CLK(gb->get_state().pins.sys.PIN_75_CLK_OUT.state,        0b00001111);
+    EXPECT_CLK(gb->get_pins().sys.PIN_75_CLK_OUT.state,        0b00001111);
     
     gb->next_phase(dummy_cart);
   }
@@ -1256,38 +1256,38 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     const char* D07_WAVE = "^^000000 ^1110000 ^^000000 ^^111111 ^^^^^^^^"; // #
 
     for (int i = 0; i < 40; i++) {
-      const auto& state = gb->get_state();
+      const auto& pins = gb->get_pins();
 
-      char CLK = cp_ext(state.pins.sys.PIN_75_CLK_OUT .state);
-      char WRn = cp_ext(state.pins.ctrl.PIN_78_WRn.state);
-      char RDn = cp_ext(state.pins.ctrl.PIN_79_RDn.state);
-      char CSn = cp_ext(state.pins.ctrl.PIN_80_CSn.state);
+      char CLK = cp_ext(pins.sys.PIN_75_CLK_OUT .state);
+      char WRn = cp_ext(pins.ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(pins.ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(pins.ctrl.PIN_80_CSn.state);
 
-      char A00 = cp_ext(state.pins.abus_lo.PIN_01_A00.state);
-      char A01 = cp_ext(state.pins.abus_lo.PIN_02_A01.state);
-      char A02 = cp_ext(state.pins.abus_lo.PIN_03_A02.state);
-      char A03 = cp_ext(state.pins.abus_lo.PIN_04_A03.state);
-      char A04 = cp_ext(state.pins.abus_lo.PIN_05_A04.state);
-      char A05 = cp_ext(state.pins.abus_lo.PIN_06_A05.state);
-      char A06 = cp_ext(state.pins.abus_lo.PIN_07_A06.state);
-      char A07 = cp_ext(state.pins.abus_lo.PIN_08_A07.state);
-      char A08 = cp_ext(state.pins.abus_hi.PIN_09_A08.state);
-      char A09 = cp_ext(state.pins.abus_hi.PIN_10_A09.state);
-      char A10 = cp_ext(state.pins.abus_hi.PIN_11_A10.state);
-      char A11 = cp_ext(state.pins.abus_hi.PIN_12_A11.state);
-      char A12 = cp_ext(state.pins.abus_hi.PIN_13_A12.state);
-      char A13 = cp_ext(state.pins.abus_hi.PIN_14_A13.state);
-      char A14 = cp_ext(state.pins.abus_hi.PIN_15_A14.state);
-      char A15 = cp_ext(state.pins.abus_hi.PIN_16_A15.state);
+      char A00 = cp_ext(pins.abus_lo.PIN_01_A00.state);
+      char A01 = cp_ext(pins.abus_lo.PIN_02_A01.state);
+      char A02 = cp_ext(pins.abus_lo.PIN_03_A02.state);
+      char A03 = cp_ext(pins.abus_lo.PIN_04_A03.state);
+      char A04 = cp_ext(pins.abus_lo.PIN_05_A04.state);
+      char A05 = cp_ext(pins.abus_lo.PIN_06_A05.state);
+      char A06 = cp_ext(pins.abus_lo.PIN_07_A06.state);
+      char A07 = cp_ext(pins.abus_lo.PIN_08_A07.state);
+      char A08 = cp_ext(pins.abus_hi.PIN_09_A08.state);
+      char A09 = cp_ext(pins.abus_hi.PIN_10_A09.state);
+      char A10 = cp_ext(pins.abus_hi.PIN_11_A10.state);
+      char A11 = cp_ext(pins.abus_hi.PIN_12_A11.state);
+      char A12 = cp_ext(pins.abus_hi.PIN_13_A12.state);
+      char A13 = cp_ext(pins.abus_hi.PIN_14_A13.state);
+      char A14 = cp_ext(pins.abus_hi.PIN_15_A14.state);
+      char A15 = cp_ext(pins.abus_hi.PIN_16_A15.state);
 
-      char D00 = cp_ext(state.pins.dbus.PIN_17_D00.state);
-      char D01 = cp_ext(state.pins.dbus.PIN_18_D01.state);
-      char D02 = cp_ext(state.pins.dbus.PIN_19_D02.state);
-      char D03 = cp_ext(state.pins.dbus.PIN_20_D03.state);
-      char D04 = cp_ext(state.pins.dbus.PIN_21_D04.state);
-      char D05 = cp_ext(state.pins.dbus.PIN_22_D05.state);
-      char D06 = cp_ext(state.pins.dbus.PIN_23_D06.state);
-      char D07 = cp_ext(state.pins.dbus.PIN_24_D07.state);
+      char D00 = cp_ext(pins.dbus.PIN_17_D00.state);
+      char D01 = cp_ext(pins.dbus.PIN_18_D01.state);
+      char D02 = cp_ext(pins.dbus.PIN_19_D02.state);
+      char D03 = cp_ext(pins.dbus.PIN_20_D03.state);
+      char D04 = cp_ext(pins.dbus.PIN_21_D04.state);
+      char D05 = cp_ext(pins.dbus.PIN_22_D05.state);
+      char D06 = cp_ext(pins.dbus.PIN_23_D06.state);
+      char D07 = cp_ext(pins.dbus.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1382,38 +1382,38 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      const auto& state = gb->get_state();
+      const auto& pins = gb->get_pins();
 
-      char CLK = cp_ext(state.pins.sys.PIN_75_CLK_OUT. state);
-      char WRn = cp_ext(state.pins.ctrl.PIN_78_WRn.state);
-      char RDn = cp_ext(state.pins.ctrl.PIN_79_RDn.state);
-      char CSn = cp_ext(state.pins.ctrl.PIN_80_CSn.state);
+      char CLK = cp_ext(pins.sys.PIN_75_CLK_OUT. state);
+      char WRn = cp_ext(pins.ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(pins.ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(pins.ctrl.PIN_80_CSn.state);
 
-      char A00 = cp_ext(state.pins.abus_lo.PIN_01_A00.state);
-      char A01 = cp_ext(state.pins.abus_lo.PIN_02_A01.state);
-      char A02 = cp_ext(state.pins.abus_lo.PIN_03_A02.state);
-      char A03 = cp_ext(state.pins.abus_lo.PIN_04_A03.state);
-      char A04 = cp_ext(state.pins.abus_lo.PIN_05_A04.state);
-      char A05 = cp_ext(state.pins.abus_lo.PIN_06_A05.state);
-      char A06 = cp_ext(state.pins.abus_lo.PIN_07_A06.state);
-      char A07 = cp_ext(state.pins.abus_lo.PIN_08_A07.state);
-      char A08 = cp_ext(state.pins.abus_hi.PIN_09_A08.state);
-      char A09 = cp_ext(state.pins.abus_hi.PIN_10_A09.state);
-      char A10 = cp_ext(state.pins.abus_hi.PIN_11_A10.state);
-      char A11 = cp_ext(state.pins.abus_hi.PIN_12_A11.state);
-      char A12 = cp_ext(state.pins.abus_hi.PIN_13_A12.state);
-      char A13 = cp_ext(state.pins.abus_hi.PIN_14_A13.state);
-      char A14 = cp_ext(state.pins.abus_hi.PIN_15_A14.state);
-      char A15 = cp_ext(state.pins.abus_hi.PIN_16_A15.state);
+      char A00 = cp_ext(pins.abus_lo.PIN_01_A00.state);
+      char A01 = cp_ext(pins.abus_lo.PIN_02_A01.state);
+      char A02 = cp_ext(pins.abus_lo.PIN_03_A02.state);
+      char A03 = cp_ext(pins.abus_lo.PIN_04_A03.state);
+      char A04 = cp_ext(pins.abus_lo.PIN_05_A04.state);
+      char A05 = cp_ext(pins.abus_lo.PIN_06_A05.state);
+      char A06 = cp_ext(pins.abus_lo.PIN_07_A06.state);
+      char A07 = cp_ext(pins.abus_lo.PIN_08_A07.state);
+      char A08 = cp_ext(pins.abus_hi.PIN_09_A08.state);
+      char A09 = cp_ext(pins.abus_hi.PIN_10_A09.state);
+      char A10 = cp_ext(pins.abus_hi.PIN_11_A10.state);
+      char A11 = cp_ext(pins.abus_hi.PIN_12_A11.state);
+      char A12 = cp_ext(pins.abus_hi.PIN_13_A12.state);
+      char A13 = cp_ext(pins.abus_hi.PIN_14_A13.state);
+      char A14 = cp_ext(pins.abus_hi.PIN_15_A14.state);
+      char A15 = cp_ext(pins.abus_hi.PIN_16_A15.state);
 
-      char D00 = cp_ext(state.pins.dbus.PIN_17_D00.state);
-      char D01 = cp_ext(state.pins.dbus.PIN_18_D01.state);
-      char D02 = cp_ext(state.pins.dbus.PIN_19_D02.state);
-      char D03 = cp_ext(state.pins.dbus.PIN_20_D03.state);
-      char D04 = cp_ext(state.pins.dbus.PIN_21_D04.state);
-      char D05 = cp_ext(state.pins.dbus.PIN_22_D05.state);
-      char D06 = cp_ext(state.pins.dbus.PIN_23_D06.state);
-      char D07 = cp_ext(state.pins.dbus.PIN_24_D07.state);
+      char D00 = cp_ext(pins.dbus.PIN_17_D00.state);
+      char D01 = cp_ext(pins.dbus.PIN_18_D01.state);
+      char D02 = cp_ext(pins.dbus.PIN_19_D02.state);
+      char D03 = cp_ext(pins.dbus.PIN_20_D03.state);
+      char D04 = cp_ext(pins.dbus.PIN_21_D04.state);
+      char D05 = cp_ext(pins.dbus.PIN_22_D05.state);
+      char D06 = cp_ext(pins.dbus.PIN_23_D06.state);
+      char D07 = cp_ext(pins.dbus.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 
@@ -1554,38 +1554,38 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     const char* D07_WAVE = "^^000000 ^^^^^^^^ ^^000000 ^^111111 ^^^^^^^^";
 
     for (int i = 0; i < 40; i++) {
-      const auto& state = gb->get_state();
+      const auto& pins = gb->get_pins();
 
-      char CLK = cp_ext(state.pins.sys.PIN_75_CLK_OUT .state);
-      char WRn = cp_ext(state.pins.ctrl.PIN_78_WRn.state);
-      char RDn = cp_ext(state.pins.ctrl.PIN_79_RDn.state);
-      char CSn = cp_ext(state.pins.ctrl.PIN_80_CSn.state);
+      char CLK = cp_ext(pins.sys.PIN_75_CLK_OUT .state);
+      char WRn = cp_ext(pins.ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(pins.ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(pins.ctrl.PIN_80_CSn.state);
 
-      char A00 = cp_ext(state.pins.abus_lo.PIN_01_A00.state);
-      char A01 = cp_ext(state.pins.abus_lo.PIN_02_A01.state);
-      char A02 = cp_ext(state.pins.abus_lo.PIN_03_A02.state);
-      char A03 = cp_ext(state.pins.abus_lo.PIN_04_A03.state);
-      char A04 = cp_ext(state.pins.abus_lo.PIN_05_A04.state);
-      char A05 = cp_ext(state.pins.abus_lo.PIN_06_A05.state);
-      char A06 = cp_ext(state.pins.abus_lo.PIN_07_A06.state);
-      char A07 = cp_ext(state.pins.abus_lo.PIN_08_A07.state);
-      char A08 = cp_ext(state.pins.abus_hi.PIN_09_A08.state);
-      char A09 = cp_ext(state.pins.abus_hi.PIN_10_A09.state);
-      char A10 = cp_ext(state.pins.abus_hi.PIN_11_A10.state);
-      char A11 = cp_ext(state.pins.abus_hi.PIN_12_A11.state);
-      char A12 = cp_ext(state.pins.abus_hi.PIN_13_A12.state);
-      char A13 = cp_ext(state.pins.abus_hi.PIN_14_A13.state);
-      char A14 = cp_ext(state.pins.abus_hi.PIN_15_A14.state);
-      char A15 = cp_ext(state.pins.abus_hi.PIN_16_A15.state);
+      char A00 = cp_ext(pins.abus_lo.PIN_01_A00.state);
+      char A01 = cp_ext(pins.abus_lo.PIN_02_A01.state);
+      char A02 = cp_ext(pins.abus_lo.PIN_03_A02.state);
+      char A03 = cp_ext(pins.abus_lo.PIN_04_A03.state);
+      char A04 = cp_ext(pins.abus_lo.PIN_05_A04.state);
+      char A05 = cp_ext(pins.abus_lo.PIN_06_A05.state);
+      char A06 = cp_ext(pins.abus_lo.PIN_07_A06.state);
+      char A07 = cp_ext(pins.abus_lo.PIN_08_A07.state);
+      char A08 = cp_ext(pins.abus_hi.PIN_09_A08.state);
+      char A09 = cp_ext(pins.abus_hi.PIN_10_A09.state);
+      char A10 = cp_ext(pins.abus_hi.PIN_11_A10.state);
+      char A11 = cp_ext(pins.abus_hi.PIN_12_A11.state);
+      char A12 = cp_ext(pins.abus_hi.PIN_13_A12.state);
+      char A13 = cp_ext(pins.abus_hi.PIN_14_A13.state);
+      char A14 = cp_ext(pins.abus_hi.PIN_15_A14.state);
+      char A15 = cp_ext(pins.abus_hi.PIN_16_A15.state);
 
-      char D00 = cp_ext(state.pins.dbus.PIN_17_D00.state);
-      char D01 = cp_ext(state.pins.dbus.PIN_18_D01.state);
-      char D02 = cp_ext(state.pins.dbus.PIN_19_D02.state);
-      char D03 = cp_ext(state.pins.dbus.PIN_20_D03.state);
-      char D04 = cp_ext(state.pins.dbus.PIN_21_D04.state);
-      char D05 = cp_ext(state.pins.dbus.PIN_22_D05.state);
-      char D06 = cp_ext(state.pins.dbus.PIN_23_D06.state);
-      char D07 = cp_ext(state.pins.dbus.PIN_24_D07.state);
+      char D00 = cp_ext(pins.dbus.PIN_17_D00.state);
+      char D01 = cp_ext(pins.dbus.PIN_18_D01.state);
+      char D02 = cp_ext(pins.dbus.PIN_19_D02.state);
+      char D03 = cp_ext(pins.dbus.PIN_20_D03.state);
+      char D04 = cp_ext(pins.dbus.PIN_21_D04.state);
+      char D05 = cp_ext(pins.dbus.PIN_22_D05.state);
+      char D06 = cp_ext(pins.dbus.PIN_23_D06.state);
+      char D07 = cp_ext(pins.dbus.PIN_24_D07.state);
 
       int wave_idx = ((i / 8) * 9) + (i % 8);
 

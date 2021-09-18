@@ -14,6 +14,7 @@ void GateBoy::reset_to_poweron(const blob& cart_blob) {
   cpu.reset_to_poweron();
   mem.reset_to_poweron();
   sys.reset_to_poweron();
+  pins.reset_to_poweron();
   probes.reset_to_poweron();
 }
 
@@ -83,6 +84,7 @@ void GateBoy::reset_to_bootrom(const blob& cart_blob) {
   cpu.reset_to_bootrom();
   mem.reset_to_bootrom();
   sys.reset_to_bootrom();
+  pins.reset_to_bootrom();
   probes.reset_to_bootrom();
 }
 
@@ -95,6 +97,7 @@ void GateBoy::reset_to_cart(const blob& cart_blob) {
   cpu.reset_to_cart();
   mem.reset_to_cart();
   sys.reset_to_cart();
+  pins.reset_to_cart();
   probes.reset_to_cart();
 }
 
@@ -194,8 +197,8 @@ bool GateBoy::next_phase(const blob& cart_blob) {
 void GateBoy::update_framebuffer() {
   int lcd_x = bit_pack(gb_state.pix_count) - 8;
   int lcd_y = bit_pack(gb_state.reg_ly);
-  int DATA0 = gb_state.pins.lcd.PIN_51_LCD_DATA0.qp_ext_old();
-  int DATA1 = gb_state.pins.lcd.PIN_50_LCD_DATA1.qp_ext_old();
+  int DATA0 = pins.lcd.PIN_51_LCD_DATA0.qp_ext_old();
+  int DATA1 = pins.lcd.PIN_50_LCD_DATA1.qp_ext_old();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
     wire p0 = bit(DATA0);
@@ -378,10 +381,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire EXT_clkin = !(sys.phase_total & 1) && sys.clk_en;
     wire EXT_clkgood = bit(~sys.clk_good);
 
-    /*_PIN_74*/ gb_state.pins.sys.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
-    /*_PIN_71*/ gb_state.pins.sys.PIN_71_RST.pin_in(EXT_sys_rst);
-    /*_PIN_76*/ gb_state.pins.sys.PIN_76_T2.pin_in(EXT_sys_t2);
-    /*_PIN_77*/ gb_state.pins.sys.PIN_77_T1.pin_in(EXT_sys_t1);
+    /*_PIN_74*/ pins.sys.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
+    /*_PIN_71*/ pins.sys.PIN_71_RST.pin_in(EXT_sys_rst);
+    /*_PIN_76*/ pins.sys.PIN_76_T2.pin_in(EXT_sys_t2);
+    /*_PIN_77*/ pins.sys.PIN_77_T1.pin_in(EXT_sys_t1);
 
     wire EXT_ack_vblank = get_bit(cpu.core.int_ack, BIT_VBLANK);
     wire EXT_ack_stat = get_bit(cpu.core.int_ack, BIT_STAT);
@@ -398,8 +401,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_SIG_CPU_CLKREQ*/ gb_state.sys_clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
 
     /*_SIG_CPU_ADDR_HIp*/ gb_state.cpu_signals.SIG_CPU_ADDR_HIp.sig_out(gb_state.cpu_abus.SYRO_FE00_FFFF());
-    /*_SIG_CPU_UNOR_DBG*/ gb_state.cpu_signals.SIG_CPU_UNOR_DBG.sig_out(gb_state.pins.sys.UNOR_MODE_DBG2p());
-    /*_SIG_CPU_UMUT_DBG*/ gb_state.cpu_signals.SIG_CPU_UMUT_DBG.sig_out(gb_state.pins.sys.UMUT_MODE_DBG1p());
+    /*_SIG_CPU_UNOR_DBG*/ gb_state.cpu_signals.SIG_CPU_UNOR_DBG.sig_out(pins.sys.UNOR_MODE_DBG2p());
+    /*_SIG_CPU_UMUT_DBG*/ gb_state.cpu_signals.SIG_CPU_UMUT_DBG.sig_out(pins.sys.UMUT_MODE_DBG1p());
   }
 
   //----------------------------------------
@@ -418,7 +421,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p07.TAPU*/ gb_state.cpu_signals.TAPU_CPU_WRp = not1(UBAL_CPU_WRn); // xxxxEFGx
 
   /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(gb_state.sys_clk.AROV_xxCDEFxx(), gb_state.sys_clk.AJAX_xxxxEFGH(), gb_state.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new());
-  /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(gb_state.pins.sys.UNOR_MODE_DBG2p(), AGUT_xxCDEFGH);
+  /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(pins.sys.UNOR_MODE_DBG2p(), AGUT_xxCDEFGH);
   /*#p01.ABUZ*/ gb_state.cpu_signals.ABUZ_EXT_RAM_CS_CLK = not1(AWOD_ABxxxxxx);
 
   tock_div_gates();

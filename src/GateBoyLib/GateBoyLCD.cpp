@@ -174,7 +174,7 @@ void GateBoy::tock_lcd_gates() {
 void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*#p21.RYNO*/ wire RYNO = or2(gb_state.lcd.SYGU_LINE_STROBE.qp_new(), gb_state.lcd.RUTU_x113p.qp_new());
   /*#p21.POGU*/ wire POGU = not1(RYNO);
-  /*_PIN_52*/ gb_state.pins.lcd.PIN_52_LCD_CNTRL.pin_out(POGU, POGU);
+  /*_PIN_52*/ pins.lcd.PIN_52_LCD_CNTRL.pin_out(POGU, POGU);
 
   // if LCDC_ENn, PIN_56_LCD_FLIPS = 4k div clock. Otherwise PIN_LCD_FLIPS = xor(LINE_evn,FRAME_evn)
 
@@ -190,12 +190,12 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*#p24.KEDY*/ wire KEDY_LCDC_ENn = not1(gb_state.reg_lcdc.XONA_LCDC_LCDENn.qn_new());
   /*#p24.KUPA*/ wire KUPA = amux2(gb_state.reg_lcdc.XONA_LCDC_LCDENn.qn_new(), KEBO, KEDY_LCDC_ENn, USEC_DIV07p);
   /*#p24.KOFO*/ wire KOFO = not1(KUPA);
-  /*_PIN_56*/ gb_state.pins.lcd.PIN_56_LCD_FLIPS.pin_out(KOFO, KOFO);
+  /*_PIN_56*/ pins.lcd.PIN_56_LCD_FLIPS.pin_out(KOFO, KOFO);
 
   /*#p24.NERU*/ wire NERU_VSYNCp = nor8(gb_state.reg_ly.LAFO_LY7p.qp_new(), gb_state.reg_ly.LOVU_LY4p.qp_new(), gb_state.reg_ly.LYDO_LY3p.qp_new(), gb_state.reg_ly.MUWY_LY0p.qp_new(), gb_state.reg_ly.MYRO_LY1p.qp_new(), gb_state.reg_ly.LEXA_LY2p.qp_new(), gb_state.reg_ly.LEMA_LY5p.qp_new(), gb_state.reg_ly.MATO_LY6p.qp_new());
   /*#p24.MEDA*/ gb_state.lcd.MEDA_VSYNC_OUTn.dff17(gb_state.lcd.NYPE_x113p.qn_new(), LYFE_VID_RSTn(), NERU_VSYNCp);
   /*#p24.MURE*/ wire MURE_VSYNC = not1(gb_state.lcd.MEDA_VSYNC_OUTn.qp_new());
-  /*_PIN_57*/ gb_state.pins.lcd.PIN_57_LCD_VSYNC.pin_out(MURE_VSYNC, MURE_VSYNC);
+  /*_PIN_57*/ pins.lcd.PIN_57_LCD_VSYNC.pin_out(MURE_VSYNC, MURE_VSYNC);
 
   // FIXME inversion
   // I don't know why ROXO has to be inverted here but it extends HSYNC by one phase, which
@@ -213,10 +213,10 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*#p24.POFY*/ gb_state.lcd.POFY = not1(gb_state.lcd.RUJU.out_mid());
 
   /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(gb_state.lcd.POFY.out_mid());
-  /*_PIN_54*/ gb_state.pins.lcd.PIN_54_LCD_HSYNC.pin_out(RUZE_HSYNCn, RUZE_HSYNCn);
+  /*_PIN_54*/ pins.lcd.PIN_54_LCD_HSYNC.pin_out(RUZE_HSYNCn, RUZE_HSYNCn);
 
-  /*_PIN_51*/ gb_state.pins.lcd.PIN_51_LCD_DATA0.pin_out(gb_state.lcd.REMY_LD0n.out_new(), gb_state.lcd.REMY_LD0n.out_new());
-  /*_PIN_50*/ gb_state.pins.lcd.PIN_50_LCD_DATA1.pin_out(gb_state.lcd.RAVO_LD1n.out_new(), gb_state.lcd.RAVO_LD1n.out_new());
+  /*_PIN_51*/ pins.lcd.PIN_51_LCD_DATA0.pin_out(gb_state.lcd.REMY_LD0n.out_new(), gb_state.lcd.REMY_LD0n.out_new());
+  /*_PIN_50*/ pins.lcd.PIN_50_LCD_DATA1.pin_out(gb_state.lcd.RAVO_LD1n.out_new(), gb_state.lcd.RAVO_LD1n.out_new());
 
   /*_p01.UMEK*/ wire UMEK_DIV06n = not1(gb_state.reg_div.UGOT_DIV06p.qp_new());
   /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_x113p.qp_new());
@@ -224,7 +224,7 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(UMEK_DIV06n);
   /*#p24.KAHE*/ wire KAHE_LINE_ENDp = amux2(gb_state.reg_lcdc.XONA_LCDC_LCDENn.qn_new(), KASA_LINE_ENDp, KEDY_LCDC_ENn, UMOB_DIV_06p);
   /*#p24.KYMO*/ wire KYMO_LINE_ENDn = not1(KAHE_LINE_ENDp);
-  /*_PIN_55*/ gb_state.pins.lcd.PIN_55_LCD_LATCH.pin_out(KYMO_LINE_ENDn, KYMO_LINE_ENDn);
+  /*_PIN_55*/ pins.lcd.PIN_55_LCD_LATCH.pin_out(KYMO_LINE_ENDn, KYMO_LINE_ENDn);
 
   /*#p21.XAJO*/ wire XAJO_X_009p = and2(gb_state.pix_count.XEHO_PX0p.qp_new(), gb_state.pix_count.XYDO_PX3p.qp_new());
   /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(TOFU_VID_RSTp(), gb_state.VOGA_HBLANKp.qp_new());
@@ -233,7 +233,7 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*#p27.POVA*/ wire POVA_FINE_MATCH_TRIGp = and2(gb_state.fine_scroll.PUXA_SCX_FINE_MATCH_A.qp_new(), gb_state.fine_scroll.NYZE_SCX_FINE_MATCH_B.qn_new());
   /*#p21.SEMU*/ wire SEMU_LCD_CLOCK = or2(TOBA_LCD_CLOCK, POVA_FINE_MATCH_TRIGp);
   /*#p21.RYPO*/ wire RYPO_LCD_CLOCK = not1(SEMU_LCD_CLOCK);
-  /*_PIN_53*/ gb_state.pins.lcd.PIN_53_LCD_CLOCK.pin_out(RYPO_LCD_CLOCK, RYPO_LCD_CLOCK);
+  /*_PIN_53*/ pins.lcd.PIN_53_LCD_CLOCK.pin_out(RYPO_LCD_CLOCK, RYPO_LCD_CLOCK);
 
   /*
   lcd_pix_lo.nor_latch(PIN_51_LCD_DATA0.qp_new(), PIN_53_LCD_CLOCK.qp_new() | PIN_54_LCD_HSYNC.qp_new());

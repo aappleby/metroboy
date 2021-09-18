@@ -19,11 +19,11 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   wire FFFF_RDn_ext = nand2(gb_state.cpu_signals.TEDO_CPU_RDp.out_new(), FFFF_HIT_ext);
   wire FFFF_WRn_ext = nand2(gb_state.cpu_signals.TAPU_CPU_WRp.out_new(), FFFF_HIT_ext);
 
-  gb_state.reg_ie.IE_D0.dff_r(FFFF_WRn_ext, ~gb_state.pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  gb_state.reg_ie.IE_D1.dff_r(FFFF_WRn_ext, ~gb_state.pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  gb_state.reg_ie.IE_D2.dff_r(FFFF_WRn_ext, ~gb_state.pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-  gb_state.reg_ie.IE_D3.dff_r(FFFF_WRn_ext, ~gb_state.pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  gb_state.reg_ie.IE_D4.dff_r(FFFF_WRn_ext, ~gb_state.pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  gb_state.reg_ie.IE_D0.dff_r(FFFF_WRn_ext, ~pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+  gb_state.reg_ie.IE_D1.dff_r(FFFF_WRn_ext, ~pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+  gb_state.reg_ie.IE_D2.dff_r(FFFF_WRn_ext, ~pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+  gb_state.reg_ie.IE_D3.dff_r(FFFF_WRn_ext, ~pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  gb_state.reg_ie.IE_D4.dff_r(FFFF_WRn_ext, ~pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
 
   /*_p21.SEPA*/ wire SEPA_FF41_WRp = and2(gb_state.cpu_signals.CUPA_CPU_WRp(), gb_state.cpu_abus.VARY_FF41p());
   /*_p21.RYVE*/ wire RYVE_FF41_WRn = not1(SEPA_FF41_WRp);

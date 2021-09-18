@@ -65,7 +65,6 @@ void GateBoyState::reset_to_poweron() {
   cpu_ack.reset_to_poweron();
   joy_int.reset_to_poweron();
   joy_latch.reset_to_poweron();
-  pins.reset_to_poweron();
   sprite_scanner.reset_to_poweron();
   scan_counter.reset_to_poweron();
   sprite_counter.reset_to_poweron();
@@ -215,7 +214,6 @@ void GateBoyState::reset_to_bootrom() {
   cpu_ack.reset_to_bootrom();
   joy_int.reset_to_bootrom();
   joy_latch.reset_to_bootrom();
-  pins.reset_to_bootrom();
   sprite_scanner.reset_to_bootrom();
   scan_counter.reset_to_bootrom();
   sprite_counter.reset_to_bootrom();
@@ -367,7 +365,6 @@ void GateBoyState::reset_to_cart() {
   cpu_ack.reset_to_cart();
   joy_int.reset_to_cart();
   joy_latch.reset_to_cart();
-  pins.reset_to_cart();
   sprite_scanner.reset_to_cart();
   scan_counter.reset_to_cart();
   sprite_counter.reset_to_cart();
@@ -651,15 +648,6 @@ bool GateBoyState::diff(const GateBoyState& gbb, uint8_t mask) const {
 FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, SIG_VCC),
   DECLARE_FIELD(GateBoyState, SIG_GND),
-
-  DECLARE_FIELD(GateBoyState, pins.abus_lo),
-  DECLARE_FIELD(GateBoyState, pins.abus_hi),
-  DECLARE_FIELD(GateBoyState, pins.dbus),
-  DECLARE_FIELD(GateBoyState, pins.vram_dbus),
-  DECLARE_FIELD(GateBoyState, pins.vram_abus),
-  DECLARE_FIELD(GateBoyState, pins.vram_ctrl),
-  DECLARE_FIELD(GateBoyState, pins.joy),
-  DECLARE_FIELD(GateBoyState, pins.ctrl),
 
   DECLARE_FIELD(GateBoyState, cpu_signals),
   DECLARE_FIELD(GateBoyState, cpu_abus),

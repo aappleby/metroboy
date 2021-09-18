@@ -116,6 +116,7 @@ struct GateBoyPair : public IGateBoy {
   const GateBoyMem&   get_mem() const override    { return gb1->get_mem(); }
   const GateBoyState& get_state() const override  { return gb1->get_state(); }
   const GateBoySys&   get_sys() const override    { return gb1->get_sys(); }
+  const GateBoyPins&  get_pins() const override   { return gb1->get_pins(); }
   const Probes&       get_probes() const override { return gb1->get_probes(); }
 
   IGateBoy* gb1;

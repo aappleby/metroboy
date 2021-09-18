@@ -138,6 +138,7 @@ struct LogicBoy : public IGateBoy {
   const GateBoyMem&   get_mem() const override    { return mem; }
   const GateBoyState& get_state() const override  { lb_state.to_gb_state(const_cast<GateBoyState&>(gb_state), sys.phase_total); return gb_state; }
   const GateBoySys&   get_sys() const override    { return *(GateBoySys*)&sys; }
+  const GateBoyPins&  get_pins() const override   { return pins; }
   const Probes&       get_probes() const override { return probes; }
 
   //----------------------------------------
@@ -179,12 +180,12 @@ struct LogicBoy : public IGateBoy {
   //-----------------------------------------------------------------------------
 
   LogicBoyState lb_state;
-  LogicBoyCpu cpu;
-  GateBoyMem  mem;
-  LogicBoySys sys;
-  Probes      probes;
-
-  GateBoyState gb_state;
+  GateBoyState  gb_state;
+  LogicBoyCpu   cpu;
+  GateBoyMem    mem;
+  LogicBoySys   sys;
+  GateBoyPins   pins;
+  Probes        probes;
 };
 
 //-----------------------------------------------------------------------------

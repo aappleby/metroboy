@@ -364,7 +364,6 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.cpu_ack, src.cpu_ack);
   bit_unpack(dst.joy_int, bit_pack(src.joy_int));
   bit_unpack(dst.joy_latch, src.joy_latch);
-  dst.pins = src.pins;
   bit_unpack(dst.sprite_scanner, bit_pack(src.sprite_scanner));
   bit_unpack(dst.scan_counter, src.scan_counter);
   bit_unpack(dst.sprite_counter, src.sprite_counter);
@@ -514,7 +513,6 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.cpu_ack = bit_pack(src.cpu_ack);
   dst.joy_int = (src.joy_int);
   dst.joy_latch = bit_pack(src.joy_latch);
-  dst.pins = src.pins;
   dst.sprite_scanner = (src.sprite_scanner);
   dst.scan_counter = bit_pack(src.scan_counter);
   dst.sprite_counter = bit_pack(src.sprite_counter);

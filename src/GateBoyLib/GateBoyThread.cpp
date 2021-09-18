@@ -227,17 +227,23 @@ void GateBoyThread::thread_main() {
 //------------------------------------------------------------------------------
 
 void GateBoyThread::run_steps() {
-  if      (config_regression)  run_regression();
-  else if (config_idempotence) run_idempotence();
-  else                         run_normal();
+  run_normal();
+  //if      (config_regression)  run_regression();
+  //else if (config_idempotence) run_idempotence();
+  //else                         run_normal();
 }
 
 //------------------------------------------------------------------------------
 
 void GateBoyThread::run_normal() {
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    gb->next_phase(cart_blob);
-    step_count--;
+    if (gb->next_phase(cart_blob)) {
+      step_count--;
+    }
+    else {
+      step_count = 0;
+      break;
+    }
   }
 }
 

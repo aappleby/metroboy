@@ -174,6 +174,7 @@ struct GateBoy  : public IGateBoy {
     gb2->cpu = cpu;
     gb2->mem = mem;
     gb2->sys = sys;
+    gb2->pins = pins;
     gb2->probes = probes;
     return gb2;
   }

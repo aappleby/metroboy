@@ -28,8 +28,7 @@ struct GateBoyPair : public IGateBoy {
     result &= gb1->load_raw_dump(dump_in);
     dump_in.cursor = old_cursor;
     result &= gb2->load_raw_dump(dump_in);
-    check_sync();
-    return result;
+    return result & check_sync();
   }
 
   bool save_raw_dump(BlobStream& dump_out) const override {
@@ -65,37 +64,35 @@ struct GateBoyPair : public IGateBoy {
     auto result1 = gb1->peek(addr);
     auto result2 = gb2->peek(addr);
     CHECK_P(result1 == result2);
-    return result1;
+    return result1.unwrap() && check_sync();
   }
 
   Result<uint8_t, Error> poke(int addr, uint8_t data_in) override {
     auto result1 = gb1->poke(addr, data_in);
     auto result2 = gb2->poke(addr, data_in);
     CHECK_P(result1 == result2);
-    return result1;
+    return result1.unwrap() && check_sync();
   }
 
   Result<uint8_t, Error> dbg_read(const blob& cart_blob, int addr) override {
     auto result1 = gb1->dbg_read(cart_blob, addr);
     auto result2 = gb2->dbg_read(cart_blob, addr);
     CHECK_P(result1 == result2);
-    check_sync();
-    return result1;
+    return result1.unwrap() && check_sync();
   }
 
   Result<uint8_t, Error> dbg_write (const blob& cart_blob, int addr, uint8_t data_in) override {
     auto result1 = gb1->dbg_write(cart_blob, addr, data_in);
     auto result2 = gb2->dbg_write(cart_blob, addr, data_in);
     CHECK_P(result1 == result2);
-    check_sync();
-    return result1;
+    return result1.unwrap() && check_sync();
   }
 
   bool run_phases(const blob& cart_blob, int phase_count) override {
     bool result = true;
     result &= gb1->run_phases(cart_blob, phase_count);
     result &= gb2->run_phases(cart_blob, phase_count);
-    check_sync();
+    result &= check_sync();
     return result;
   }
 
@@ -103,7 +100,7 @@ struct GateBoyPair : public IGateBoy {
     bool result = true;
     result &= gb1->next_phase(cart_blob);
     result &= gb2->next_phase(cart_blob);
-    check_sync();
+    result &= check_sync();
     return result;
   }
 
@@ -128,7 +125,8 @@ struct GateBoyPair : public IGateBoy {
 
     if (state1.diff(state2, 0x01)) {
       LOG_R("Regression test mismatch @ phase %lld!\n", gb1->get_sys().phase_total);
-      __debugbreak();
+      //__debugbreak();
+      return false;
     }
     return true;
   }

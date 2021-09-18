@@ -76,6 +76,12 @@ struct GateBoyThread {
   void reset_to_cart();
 
   void add_steps(int steps);
+
+  void run_to(int64_t phase) {
+    uint64_t delta = phase - gb->get_sys().phase_total;
+    add_steps((int)delta);
+  }
+
   void clear_steps();
   int  get_steps() const { return step_count; }
 

@@ -22,10 +22,6 @@ struct GateBoySerial {
     EJAB_SER_DATA5.state = 0b00011010;
     EROD_SER_DATA6.state = 0b00011010;
     EDER_SER_DATA7.state = 0b00011010;
-
-    PIN_68_SCK. state = 0b00010100;
-    PIN_69_SIN. state = 0b00011000;
-    PIN_70_SOUT.state = 0b00011000;
   }
 
   /*#p06.ETAF*/ DFF17 ETAF_SER_RUN; // xxxxxxxH ?
@@ -46,10 +42,6 @@ struct GateBoySerial {
   /*_p06.EJAB*/ DFF22 EJAB_SER_DATA5; // xxxxExxx
   /*_p06.EROD*/ DFF22 EROD_SER_DATA6; // xxxxExxx
   /*_p06.EDER*/ DFF22 EDER_SER_DATA7; // xxxxExxx
-
-  /*_PIN_68*/ PinIO  PIN_68_SCK;
-  /*_PIN_69*/ PinIn  PIN_69_SIN;
-  /*_PIN_70*/ PinOut PIN_70_SOUT;
 };
 
 //-----------------------------------------------------------------------------

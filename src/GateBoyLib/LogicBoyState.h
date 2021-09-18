@@ -80,9 +80,6 @@ struct LogicBoyState {
 
   uint16_t vram_abus;
   uint8_t vram_dbus;
-  VramExtControl vram_ext_ctrl;
-  uint16_t vram_ext_abus;
-  uint8_t vram_ext_dbus;
                 
   OamControl oam_ctrl;
   uint8_t  oam_abus;

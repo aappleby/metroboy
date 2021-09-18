@@ -152,7 +152,7 @@ void LogicBoy::reset_to_cart(const blob& cart_blob) {
   //lb_state.vram_abus.lo.reset_to_cart();
   //lb_state.vram_abus.hi.reset_to_cart();
   //lb_state.vram_dbus.reset_to_cart();
-  //lb_state.vram_ext_ctrl.reset_to_cart();
+  //lb_state.pins.vram_ctrl.reset_to_cart();
   //lb_state.vram_ext_abus.reset_to_cart();
   //lb_state.vram_ext_dbus.reset_to_cart();
   //lb_state.sprite_ibus.reset_to_cart();
@@ -1669,14 +1669,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   if (state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
-    state_new.pins.control.PIN_80_CSn.state = !get_bit(state_new.reg_dma, 7);
+    state_new.pins.ctrl.PIN_80_CSn.state = !get_bit(state_new.reg_dma, 7);
     //state_new.pins.abus_lo = uint8_t(~state_new.dma_lo);
     //state_new.pins.abus_hi = state_new.reg_dma;
     bit_unpack_inv(state_new.pins.abus_lo, state_new.dma_lo);
     bit_unpack(state_new.pins.abus_hi,     state_new.reg_dma);
   }
   else {
-    state_new.pins.control.PIN_80_CSn.state = state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK && cpu_addr_ram_new;
+    state_new.pins.ctrl.PIN_80_CSn.state = state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK && cpu_addr_ram_new;
     //state_new.pins.abus_lo = ((state_new.ext_addr_latch >> 0) & 0xFF) ^ 0xFF;
     //state_new.pins.abus_hi = ((state_new.ext_addr_latch >> 8) & 0x7F) ^ 0x7F;
     bit_unpack_inv(state_new.pins.abus_lo, (state_new.ext_addr_latch >> 0) & 0xFF);
@@ -1684,12 +1684,12 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   if (!(state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && state_new.cpu_signals.SIG_IN_CPU_WRp) {
-    state_new.pins.control.PIN_79_RDn.state = cpu_addr_vram_new;
-    state_new.pins.control.PIN_78_WRn.state = gen_clk_new(phase_total, 0b00001110) && !cpu_addr_vram_new;
+    state_new.pins.ctrl.PIN_79_RDn.state = cpu_addr_vram_new;
+    state_new.pins.ctrl.PIN_78_WRn.state = gen_clk_new(phase_total, 0b00001110) && !cpu_addr_vram_new;
   }
   else {
-    state_new.pins.control.PIN_79_RDn.state = 1;
-    state_new.pins.control.PIN_78_WRn.state = 0;
+    state_new.pins.ctrl.PIN_79_RDn.state = 1;
+    state_new.pins.ctrl.PIN_78_WRn.state = 0;
   }
 
   //state_new.pins.abus_hi &= 0b01111111;
@@ -1719,7 +1719,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Ext read
 
-  if (state_new.pins.control.PIN_79_RDn) {
+  if (state_new.pins.ctrl.PIN_79_RDn) {
     const uint16_t ext_addr_lo = (uint16_t)bit_pack_inv(state_new.pins.abus_lo);
     const uint16_t ext_addr_hi = (uint16_t)bit_pack_inv(state_new.pins.abus_hi);
     const uint16_t ext_addr = (ext_addr_lo << 0) | (ext_addr_hi << 8);
@@ -1796,7 +1796,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     const auto mbc1_ram_bank = mbc1_mode ? bit_pack(&state_new.ext_mbc.MBC1_BANK5, 2) : 0;
     const auto mbc1_ram_addr = ((ext_addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
 
-    if (state_new.pins.control.PIN_78_WRn && cart_has_mbc1(cart_blob)) {
+    if (state_new.pins.ctrl.PIN_78_WRn && cart_has_mbc1(cart_blob)) {
       switch (region) {
       case 0: state_new.ext_mbc.MBC1_RAM_EN = (data_out & 0x0F) == 0x0A; break;
       case 1: bit_unpack(&state_new.ext_mbc.MBC1_BANK0, 5, data_out); break;
@@ -1809,7 +1809,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       }
     }
 
-    if (state_new.pins.control.PIN_78_WRn && !cart_has_mbc1(cart_blob)) {
+    if (state_new.pins.ctrl.PIN_78_WRn && !cart_has_mbc1(cart_blob)) {
       switch (region) {
       case 0: break;
       case 1: break;
@@ -1952,7 +1952,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //--------------------------------------------
   // Vram address pin driver
 
-  state_new.vram_ext_abus = state_new.vram_abus;
+  //state_new.vram_ext_abus = state_new.vram_abus;
+  bit_unpack(state_new.pins.vram_abus, state_new.vram_abus);
 
   //--------------------------------------------
   // CPU bus to Vram data bus
@@ -1965,53 +1966,41 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // Vram control pins
 
   if (state_new.XYMU_RENDERINGn) {
-    state_new.vram_ext_ctrl.PIN_43_VRAM_CSn.state = (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) || dma_addr_vram_new;
-    state_new.vram_ext_ctrl.PIN_45_VRAM_OEn.state = (!cpu_addr_vram_new || !state_new.cpu_signals.SIG_IN_CPU_WRp) || dma_addr_vram_new;
-    state_new.vram_ext_ctrl.PIN_49_VRAM_WRn.state = cpu_addr_vram_new && gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp;
+    state_new.pins.vram_ctrl.PIN_43_VRAM_CSn.state = (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) || dma_addr_vram_new;
+    state_new.pins.vram_ctrl.PIN_45_VRAM_OEn.state = (!cpu_addr_vram_new || !state_new.cpu_signals.SIG_IN_CPU_WRp) || dma_addr_vram_new;
+    state_new.pins.vram_ctrl.PIN_49_VRAM_WRn.state = cpu_addr_vram_new && gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp;
   }
   else {
-    state_new.vram_ext_ctrl.PIN_45_VRAM_OEn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || (state_new.sfetch_control.TEXY_SFETCHINGp && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
-    state_new.vram_ext_ctrl.PIN_49_VRAM_WRn.state = 0;
-    state_new.vram_ext_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || state_new.sfetch_control.TEXY_SFETCHINGp;
+    state_new.pins.vram_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || state_new.sfetch_control.TEXY_SFETCHINGp;
+    state_new.pins.vram_ctrl.PIN_45_VRAM_OEn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || (state_new.sfetch_control.TEXY_SFETCHINGp && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
+    state_new.pins.vram_ctrl.PIN_49_VRAM_WRn.state = 0;
   }
 
   uint8_t vdata = 0xFF;
 
-  if (state_new.vram_ext_ctrl.PIN_45_VRAM_OEn) {
-    vdata = mem.vid_ram[state_new.vram_ext_abus ^ VRAM_ADDR_MASK];
+  if (state_new.pins.vram_ctrl.PIN_45_VRAM_OEn) {
+    //vdata = mem.vid_ram[state_new.pins.vram_abus ^ VRAM_ADDR_MASK];
+    vdata = mem.vid_ram[bit_pack_inv(state_new.pins.vram_abus)];
   }
 
   //--------------------------------------------
   // Vram data pin driver
 
-  state_new.vram_ext_dbus = 0;
+  bit_unpack(state_new.pins.vram_dbus, 0);
 
-  if (state_new.vram_ext_ctrl.PIN_45_VRAM_OEn) {
-    state_new.vram_ext_dbus = ~vdata;
-  }
-
-  if (state_new.vram_ext_ctrl.PIN_49_VRAM_WRn) {
-    mem.vid_ram[state_new.vram_ext_abus ^ VRAM_ADDR_MASK] = ~state_new.vram_ext_dbus;
+  if (state_new.pins.vram_ctrl.PIN_45_VRAM_OEn) {
+    bit_unpack_inv(state_new.pins.vram_dbus, vdata);
   }
 
   if (cpu_addr_vram_new && state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK && state_new.XYMU_RENDERINGn && state_new.cpu_signals.SIG_IN_CPU_WRp) {
-    state_new.vram_ext_dbus = ~state_new.vram_dbus;
+    bit_unpack_inv(state_new.pins.vram_dbus, state_new.vram_dbus);
+  }
+  else {
+    state_new.vram_dbus = (uint8_t)bit_pack_inv(state_new.pins.vram_dbus);
   }
 
-
-
-
-  //--------------------------------------------
-
-  if (state_new.vram_ext_ctrl.PIN_49_VRAM_WRn) {
-    mem.vid_ram[state_new.vram_ext_abus ^ VRAM_ADDR_MASK] = (uint8_t)~state_new.vram_ext_dbus;
-  }
-
-  //--------------------------------------------
-  // Vram pins to vram bus
-
-  if (!cpu_addr_vram_new || !state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK || !state_new.XYMU_RENDERINGn || !state_new.cpu_signals.SIG_IN_CPU_WRp) {
-    state_new.vram_dbus = ~state_new.vram_ext_dbus;
+  if (state_new.pins.vram_ctrl.PIN_49_VRAM_WRn) {
+    mem.vid_ram[bit_pack_inv(state_new.pins.vram_abus)] = (uint8_t)bit_pack_inv(state_new.pins.vram_dbus);
   }
 
   //--------------------------------------------

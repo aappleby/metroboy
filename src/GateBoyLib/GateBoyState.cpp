@@ -47,9 +47,6 @@ void GateBoyState::reset_to_poweron() {
   vram_abus.lo.reset_to_poweron();
   vram_abus.hi.reset_to_poweron();
   vram_dbus.reset_to_poweron();
-  vram_ext_ctrl.reset_to_poweron();
-  vram_ext_abus.reset_to_poweron();
-  vram_ext_dbus.reset_to_poweron();
   oam_ctrl.reset_to_poweron();
   oam_abus.reset_to_poweron();
   oam_dbus_a.reset_to_poweron();
@@ -200,9 +197,6 @@ void GateBoyState::reset_to_bootrom() {
   vram_abus.lo.reset_to_bootrom();
   vram_abus.hi.reset_to_bootrom();
   vram_dbus.reset_to_bootrom();
-  vram_ext_ctrl.reset_to_bootrom();
-  vram_ext_abus.reset_to_bootrom();
-  vram_ext_dbus.reset_to_bootrom();
   oam_ctrl.reset_to_bootrom();
   oam_abus.reset_to_bootrom();
   oam_dbus_a.reset_to_bootrom();
@@ -355,9 +349,6 @@ void GateBoyState::reset_to_cart() {
   vram_abus.lo.reset_to_cart();
   vram_abus.hi.reset_to_cart();
   vram_dbus.reset_to_cart();
-  vram_ext_ctrl.reset_to_cart();
-  vram_ext_abus.reset_to_cart();
-  vram_ext_dbus.reset_to_cart();
   oam_ctrl.reset_to_cart();
   oam_abus.reset_to_cart();
   oam_dbus_a.reset_to_cart();
@@ -660,14 +651,21 @@ bool GateBoyState::diff(const GateBoyState& gbb, uint8_t mask) const {
 FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, SIG_VCC),
   DECLARE_FIELD(GateBoyState, SIG_GND),
+
+  DECLARE_FIELD(GateBoyState, pins.abus_lo),
+  DECLARE_FIELD(GateBoyState, pins.abus_hi),
+  DECLARE_FIELD(GateBoyState, pins.dbus),
+  DECLARE_FIELD(GateBoyState, pins.vram_dbus),
+  DECLARE_FIELD(GateBoyState, pins.vram_abus),
+  DECLARE_FIELD(GateBoyState, pins.vram_ctrl),
+  DECLARE_FIELD(GateBoyState, pins.joy),
+  DECLARE_FIELD(GateBoyState, pins.ctrl),
+
   DECLARE_FIELD(GateBoyState, cpu_signals),
   DECLARE_FIELD(GateBoyState, cpu_abus),
   DECLARE_FIELD(GateBoyState, cpu_dbus),
   DECLARE_FIELD(GateBoyState, vram_abus),
   DECLARE_FIELD(GateBoyState, vram_dbus),
-  DECLARE_FIELD(GateBoyState, vram_ext_ctrl),
-  DECLARE_FIELD(GateBoyState, vram_ext_abus),
-  DECLARE_FIELD(GateBoyState, vram_ext_dbus),
   DECLARE_FIELD(GateBoyState, sprite_ibus),
   DECLARE_FIELD(GateBoyState, sprite_lbus),
   DECLARE_FIELD(GateBoyState, oam_ctrl),
@@ -703,7 +701,6 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, joy_int),
   DECLARE_FIELD(GateBoyState, reg_joy),
   DECLARE_FIELD(GateBoyState, joy_latch),
-  DECLARE_FIELD(GateBoyState, pins),
   //GEN_OFFSET(GateBoyState, serial),
   DECLARE_FIELD(GateBoyState, store_i0),
   DECLARE_FIELD(GateBoyState, store_i1),

@@ -255,9 +255,9 @@ void GateBoyDumper::dump_ext_bus(const GateBoyState& s, Dumper& d) {
 
   d.dump_slice2n("PIN_01_ADDR : ", &s.pins.abus_lo, 16);
   d.dump_slice2n("PIN_17_DATA : ", &s.pins.dbus, 8);
-  d.dump_bitn   ("PIN_80_CSn  : ", s.pins.control.PIN_80_CSn.state);
-  d.dump_bitn   ("PIN_79_RDn  : ", s.pins.control.PIN_79_RDn.state);
-  d.dump_bitn   ("PIN_78_WRn  : ", s.pins.control.PIN_78_WRn.state);
+  d.dump_bitn   ("PIN_80_CSn  : ", s.pins.ctrl.PIN_80_CSn.state);
+  d.dump_bitn   ("PIN_79_RDn  : ", s.pins.ctrl.PIN_79_RDn.state);
+  d.dump_bitn   ("PIN_78_WRn  : ", s.pins.ctrl.PIN_78_WRn.state);
   d.dump_slice2p("ADDR LATCH  : ", &s.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p, 15);
   d.dump_slice2n("DATA LATCH  : ", &s.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n, 8);
   d.dump_bitp   ("MBC1 RAM EN : ", s.ext_mbc.MBC1_RAM_EN.state);
@@ -266,11 +266,11 @@ void GateBoyDumper::dump_ext_bus(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_vram_bus(const GateBoyState& s, Dumper& d) {
-  d.dump_bitp   ("PIN_43_VRAM_CSn  : ", s.vram_ext_ctrl.PIN_43_VRAM_CSn.state);
-  d.dump_bitp   ("PIN_45_VRAM_OEn  : ", s.vram_ext_ctrl.PIN_45_VRAM_OEn.state);
-  d.dump_bitp   ("PIN_49_VRAM_WRn  : ", s.vram_ext_ctrl.PIN_49_VRAM_WRn.state);
-  d.dump_slice2p("PIN_34_VRAM_ADDR : ", &s.vram_ext_abus.PIN_34_VRAM_A00, 13);
-  d.dump_slice2p("PIN_25_VRAM_DATA : ", &s.vram_ext_dbus.PIN_33_VRAM_D00, 8);
+  d.dump_bitp   ("PIN_43_VRAM_CSn  : ", s.pins.vram_ctrl.PIN_43_VRAM_CSn.state);
+  d.dump_bitp   ("PIN_45_VRAM_OEn  : ", s.pins.vram_ctrl.PIN_45_VRAM_OEn.state);
+  d.dump_bitp   ("PIN_49_VRAM_WRn  : ", s.pins.vram_ctrl.PIN_49_VRAM_WRn.state);
+  d.dump_slice2p("PIN_34_VRAM_ADDR : ", &s.pins.vram_abus.PIN_34_VRAM_A00, 13);
+  d.dump_slice2p("PIN_25_VRAM_DATA : ", &s.pins.vram_dbus.PIN_33_VRAM_D00, 8);
   d.dump_slice2n("BUS_VRAM_An      : ", &s.vram_abus.lo.BUS_VRAM_A00n, 13);
   d.dump_slice2p("BUS_VRAM_Dp      : ", &s.vram_dbus.BUS_VRAM_D00p, 8);
 }

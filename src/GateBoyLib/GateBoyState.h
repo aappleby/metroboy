@@ -98,9 +98,6 @@ struct GateBoyState {
 
   struct { VramABusLo lo; VramABusHi hi; } vram_abus;
   VramDBus       vram_dbus;
-  VramExtControl vram_ext_ctrl;
-  VramExtABus    vram_ext_abus;
-  VramExtDBus    vram_ext_dbus;
                 
   OamControl     oam_ctrl;
   OamABus        oam_abus;

@@ -1259,9 +1259,9 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
       const auto& state = gb->get_state();
 
       char CLK = cp_ext(state.sys_clk.PIN_75_CLK_OUT .state);
-      char WRn = cp_ext(state.pins.control.PIN_78_WRn.state);
-      char RDn = cp_ext(state.pins.control.PIN_79_RDn.state);
-      char CSn = cp_ext(state.pins.control.PIN_80_CSn.state);
+      char WRn = cp_ext(state.pins.ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(state.pins.ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(state.pins.ctrl.PIN_80_CSn.state);
 
       char A00 = cp_ext(state.pins.abus_lo.PIN_01_A00.state);
       char A01 = cp_ext(state.pins.abus_lo.PIN_02_A01.state);
@@ -1385,9 +1385,9 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
       const auto& state = gb->get_state();
 
       char CLK = cp_ext(state.sys_clk.PIN_75_CLK_OUT. state);
-      char WRn = cp_ext(state.pins.control.PIN_78_WRn.state);
-      char RDn = cp_ext(state.pins.control.PIN_79_RDn.state);
-      char CSn = cp_ext(state.pins.control.PIN_80_CSn.state);
+      char WRn = cp_ext(state.pins.ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(state.pins.ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(state.pins.ctrl.PIN_80_CSn.state);
 
       char A00 = cp_ext(state.pins.abus_lo.PIN_01_A00.state);
       char A01 = cp_ext(state.pins.abus_lo.PIN_02_A01.state);
@@ -1557,9 +1557,9 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
       const auto& state = gb->get_state();
 
       char CLK = cp_ext(state.sys_clk.PIN_75_CLK_OUT .state);
-      char WRn = cp_ext(state.pins.control.PIN_78_WRn.state);
-      char RDn = cp_ext(state.pins.control.PIN_79_RDn.state);
-      char CSn = cp_ext(state.pins.control.PIN_80_CSn.state);
+      char WRn = cp_ext(state.pins.ctrl.PIN_78_WRn.state);
+      char RDn = cp_ext(state.pins.ctrl.PIN_79_RDn.state);
+      char CSn = cp_ext(state.pins.ctrl.PIN_80_CSn.state);
 
       char A00 = cp_ext(state.pins.abus_lo.PIN_01_A00.state);
       char A01 = cp_ext(state.pins.abus_lo.PIN_02_A01.state);

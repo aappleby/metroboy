@@ -82,36 +82,154 @@ struct PinsJoypad {
 
 //-----------------------------------------------------------------------------
 
+struct PinsSerial {
+  void reset_to_cart() {
+    PIN_68_SCK. state = 0b00010100;
+    PIN_69_SIN. state = 0b00011000;
+    PIN_70_SOUT.state = 0b00011000;
+  }
+
+  /*_PIN_68*/ PinIO  PIN_68_SCK;
+  /*_PIN_69*/ PinIn  PIN_69_SIN;
+  /*_PIN_70*/ PinOut PIN_70_SOUT;
+};
+
+//-----------------------------------------------------------------------------
+
+struct PinsVramControl {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    PIN_43_VRAM_CSn.state = BIT_OLD | BIT_DRIVEN | 0;
+    PIN_45_VRAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_49_VRAM_WRn.state = BIT_OLD | BIT_DRIVEN | 0;
+  }
+
+  void reset_to_cart() {
+    PIN_43_VRAM_CSn.state = BIT_OLD | BIT_DRIVEN | 0;
+    PIN_45_VRAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_49_VRAM_WRn.state = BIT_OLD | BIT_DRIVEN | 0;
+  }
+
+  /*_PIN_43*/ PinOut PIN_43_VRAM_CSn;
+  /*_PIN_45*/ PinOut PIN_45_VRAM_OEn;
+  /*_PIN_49*/ PinOut PIN_49_VRAM_WRn;
+};
+
+//-----------------------------------------------------------------------------
+
+struct PinsVramABus {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
+  }
+
+  void reset_to_cart() {
+    PIN_34_VRAM_A00.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_35_VRAM_A01.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_36_VRAM_A02.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_37_VRAM_A03.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_38_VRAM_A04.state = BIT_OLD | BIT_DRIVEN | 0;
+    PIN_39_VRAM_A05.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_40_VRAM_A06.state = BIT_OLD | BIT_DRIVEN | 0;
+    PIN_41_VRAM_A07.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_48_VRAM_A08.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_47_VRAM_A09.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_44_VRAM_A10.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_46_VRAM_A11.state = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_42_VRAM_A12.state = BIT_OLD | BIT_DRIVEN | 1;
+  }
+
+  /*_PIN_34*/ PinOut PIN_34_VRAM_A00;
+  /*_PIN_35*/ PinOut PIN_35_VRAM_A01;
+  /*_PIN_36*/ PinOut PIN_36_VRAM_A02;
+  /*_PIN_37*/ PinOut PIN_37_VRAM_A03;
+  /*_PIN_38*/ PinOut PIN_38_VRAM_A04;
+  /*_PIN_39*/ PinOut PIN_39_VRAM_A05;
+  /*_PIN_40*/ PinOut PIN_40_VRAM_A06;
+  /*_PIN_41*/ PinOut PIN_41_VRAM_A07;
+  /*_PIN_48*/ PinOut PIN_48_VRAM_A08;
+  /*_PIN_47*/ PinOut PIN_47_VRAM_A09;
+  /*_PIN_44*/ PinOut PIN_44_VRAM_A10;
+  /*_PIN_46*/ PinOut PIN_46_VRAM_A11;
+  /*_PIN_42*/ PinOut PIN_42_VRAM_A12;
+};
+
+//-----------------------------------------------------------------------------
+
+struct PinsVramDBus {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
+  }
+
+  void reset_to_cart() {
+    memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
+  }
+
+  /*_PIN_33*/ PinIO PIN_33_VRAM_D00;
+  /*_PIN_31*/ PinIO PIN_31_VRAM_D01;
+  /*_PIN_30*/ PinIO PIN_30_VRAM_D02;
+  /*_PIN_29*/ PinIO PIN_29_VRAM_D03;
+  /*_PIN_28*/ PinIO PIN_28_VRAM_D04;
+  /*_PIN_27*/ PinIO PIN_27_VRAM_D05;
+  /*_PIN_26*/ PinIO PIN_26_VRAM_D06;
+  /*_PIN_25*/ PinIO PIN_25_VRAM_D07;
+};
+
+//-----------------------------------------------------------------------------
+
 struct GateBoyPins {
 
-  PinsABusLo  abus_lo; // 01-08
-  PinsABusHi  abus_hi; // 09-16
-  PinsDBus    dbus;    // 17-24
-  PinsJoypad  joy;     // 62-67
-  PinsControl control; // 78-80
+  PinsABusLo      abus_lo;   // 01-08
+  PinsABusHi      abus_hi;   // 09-16
+  PinsDBus        dbus;      // 17-24
+  PinsVramDBus    vram_dbus; // 25-33
+  PinsVramABus    vram_abus; // 34-42
+  PinsVramControl vram_ctrl; // 43/45/49
+  PinsJoypad      joy;       // 62-67
+  //PinsSerial      serial;    // 68-70
+  PinsControl     ctrl;   // 78-80
 
   void reset_to_poweron() {
     abus_lo.reset_to_poweron();
     abus_hi.reset_to_poweron();
     dbus.reset_to_poweron();
+    vram_dbus.reset_to_poweron();
+    vram_abus.reset_to_poweron();
+    vram_ctrl.reset_to_poweron();
     joy.reset_to_poweron();
-    control.reset_to_poweron();
+    ctrl.reset_to_poweron();
   }
   
   void reset_to_bootrom() {
     abus_lo.reset_to_bootrom();
     abus_hi.reset_to_bootrom();
     dbus.reset_to_bootrom();
+    vram_dbus.reset_to_bootrom();
+    vram_abus.reset_to_bootrom();
+    vram_ctrl.reset_to_bootrom();
     joy.reset_to_bootrom();
-    control.reset_to_bootrom();
+    ctrl.reset_to_bootrom();
   }
   
   void reset_to_cart()    {
     abus_lo.reset_to_cart();
     abus_hi.reset_to_cart();
     dbus.reset_to_cart();
+    vram_dbus.reset_to_cart();
+    vram_abus.reset_to_cart();
+    vram_ctrl.reset_to_cart();
     joy.reset_to_cart();
-    control.reset_to_cart();
+    ctrl.reset_to_cart();
   }
 };
 

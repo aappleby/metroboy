@@ -93,7 +93,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
     /*_p08.TYMU*/ wire TYMU_EXT_RDn = nor2(LUMA_DMA_CARTp, MOTY_CPU_EXT_RD);
     /*_p08.UGAC*/ wire UGAC_RD_A = nand2(TYMU_EXT_RDn, gb_state.sys_rst.TOVA_MODE_DBG2n());
     /*_p08.URUN*/ wire URUN_RD_D = nor2 (TYMU_EXT_RDn, gb_state.sys_rst.UNOR_MODE_DBG2p());
-    /*_PIN_79*/ gb_state.pins.control.PIN_79_RDn.pin_out(UGAC_RD_A, URUN_RD_D);
+    /*_PIN_79*/ gb_state.pins.ctrl.PIN_79_RDn.pin_out(UGAC_RD_A, URUN_RD_D);
   }
 
   {
@@ -101,13 +101,13 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
     /*_p08.PUVA*/ wire PUVA_EXT_WRn = or2(NEVY, LUMA_DMA_CARTp);
     /*_p08.UVER*/ wire UVER_WR_A = nand2(PUVA_EXT_WRn, gb_state.sys_rst.TOVA_MODE_DBG2n());
     /*_p08.USUF*/ wire USUF_WR_D = nor2 (PUVA_EXT_WRn, gb_state.sys_rst.UNOR_MODE_DBG2p());
-    /*_PIN_78*/ gb_state.pins.control.PIN_78_WRn.pin_out(UVER_WR_A, USUF_WR_D);
+    /*_PIN_78*/ gb_state.pins.ctrl.PIN_78_WRn.pin_out(UVER_WR_A, USUF_WR_D);
   }
 
   {
     /*_p08.TOZA*/ wire TOZA_CS_A = and3(gb_state.cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new(), gb_state.cpu_abus.TYNU_A000_FFFFp(), gb_state.cpu_abus.TUNA_0000_FDFF());
     /*_p08.TYHO*/ wire TYHO_CS_A = mux2p(LUMA_DMA_CARTp, gb_state.reg_dma.MARU_DMA_A15n.qn_new(), TOZA_CS_A);
-    /*_PIN_80*/ gb_state.pins.control.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
+    /*_PIN_80*/ gb_state.pins.ctrl.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
   }
 
   /*_p08.LOXO*/ wire LOXO_HOLDn = and_or3(gb_state.sys_rst.MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn(), gb_state.sys_rst.UMUT_MODE_DBG1p());
@@ -249,7 +249,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   bool EXT_rd_en = false;
   uint8_t data_in = 0xFF;
 
-  if (bit(~gb_state.pins.control.PIN_79_RDn.qp_ext_new())) {
+  if (bit(~gb_state.pins.ctrl.PIN_79_RDn.qp_ext_new())) {
 
     if (cart_has_mbc1(cart_blob)) {
       bool mbc1_mode   = bit(gb_state.ext_mbc.MBC1_MODE.out_old());
@@ -340,7 +340,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   data_out |= bit(gb_state.pins.dbus.PIN_23_D06.qp_ext_new()) << 6;
   data_out |= bit(gb_state.pins.dbus.PIN_24_D07.qp_ext_new()) << 7;
 
-  if (!bit(gb_state.pins.control.PIN_78_WRn.qp_ext_new())) {
+  if (!bit(gb_state.pins.ctrl.PIN_78_WRn.qp_ext_new())) {
     if (cart_has_mbc1(cart_blob)) {
       bool mbc1_mode   = bit(gb_state.ext_mbc.MBC1_MODE.out_new());
       bool mbc1_ram_en = bit(gb_state.ext_mbc.MBC1_RAM_EN.out_new());

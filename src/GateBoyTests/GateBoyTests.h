@@ -10,13 +10,13 @@
 struct GateBoyTests {
   GateBoyTests();
 
-  TestResults test_gateboy();
-  TestResults test_logicboy();
-  TestResults test_regression();
+  TestResults test_gateboy(const IGateBoy* proto);
+  TestResults test_logicboy(const IGateBoy* proto);
   
   TestResults test_generic(const IGateBoy* proto);
   TestResults test_regs(const IGateBoy* proto);
 
+  TestResults test_regression          (const IGateBoy* proto1, const IGateBoy* proto2);
   TestResults test_fastboot_vs_slowboot(const IGateBoy* proto1, const IGateBoy* proto2, uint8_t mask);
   TestResults test_reset_to_bootrom    (const IGateBoy* proto, uint8_t mask);
   TestResults test_reset_to_cart       (const IGateBoy* proto, uint8_t mask);

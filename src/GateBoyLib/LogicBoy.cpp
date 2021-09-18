@@ -11,127 +11,6 @@ void LogicBoy::reset_to_bootrom(const blob& cart_blob)
   sys.reset_to_bootrom();
   pins.reset_to_bootrom();
   probes.reset_to_bootrom();
-
-#if 0
-  wipe();
-
-  // Put some recognizable pattern in vram so we can see that we're in the bootrom
-  for (int i = 0; i < 8192; i++) {
-    uint32_t h = i * 0x1234567;
-    mem.vid_ram[i] = uint8_t(h ^ (h >> 4));
-  }
-
-  lb_state.cpu_abus.reset_to_bootrom();
-  lb_state.cpu_dbus.reset_to_bootrom();
-
-  lb_state.sprite_ibus.reset_to_bootrom();
-  lb_state.sprite_lbus.reset_to_bootrom();
-
-  lb_state.reg_dma.NAFA_DMA_A08n.state = 0b00011010;
-  lb_state.reg_dma.PYNE_DMA_A09n.state = 0b00011010;
-  lb_state.reg_dma.PARA_DMA_A10n.state = 0b00011010;
-  lb_state.reg_dma.NYDO_DMA_A11n.state = 0b00011010;
-  lb_state.reg_dma.NYGY_DMA_A12n.state = 0b00011010;
-  lb_state.reg_dma.PULA_DMA_A13n.state = 0b00011010;
-  lb_state.reg_dma.POKU_DMA_A14n.state = 0b00011010;
-  lb_state.reg_dma.MARU_DMA_A15n.state = 0b00011010;
-
-  lb_state.reg_bgp.PAVO_BGP_D0n.state = 0b00011010;
-  lb_state.reg_bgp.NUSY_BGP_D1n.state = 0b00011010;
-  lb_state.reg_bgp.PYLU_BGP_D2n.state = 0b00011010;
-  lb_state.reg_bgp.MAXY_BGP_D3n.state = 0b00011010;
-  lb_state.reg_bgp.MUKE_BGP_D4n.state = 0b00011010;
-  lb_state.reg_bgp.MORU_BGP_D5n.state = 0b00011010;
-  lb_state.reg_bgp.MOGY_BGP_D6n.state = 0b00011010;
-  lb_state.reg_bgp.MENA_BGP_D7n.state = 0b00011010;
-
-  lb_state.reg_obp0.XUFU_OBP0_D0n.state = 0b00011010;
-  lb_state.reg_obp0.XUKY_OBP0_D1n.state = 0b00011010;
-  lb_state.reg_obp0.XOVA_OBP0_D2n.state = 0b00011010;
-  lb_state.reg_obp0.XALO_OBP0_D3n.state = 0b00011010;
-  lb_state.reg_obp0.XERU_OBP0_D4n.state = 0b00011010;
-  lb_state.reg_obp0.XYZE_OBP0_D5n.state = 0b00011010;
-  lb_state.reg_obp0.XUPO_OBP0_D6n.state = 0b00011010;
-  lb_state.reg_obp0.XANA_OBP0_D7n.state = 0b00011010;
-
-  lb_state.reg_obp1.MOXY_OBP1_D0n.state = 0b00011010;
-  lb_state.reg_obp1.LAWO_OBP1_D1n.state = 0b00011010;
-  lb_state.reg_obp1.MOSA_OBP1_D2n.state = 0b00011010;
-  lb_state.reg_obp1.LOSE_OBP1_D3n.state = 0b00011010;
-  lb_state.reg_obp1.LUNE_OBP1_D4n.state = 0b00011010;
-  lb_state.reg_obp1.LUGU_OBP1_D5n.state = 0b00011010;
-  lb_state.reg_obp1.LEPU_OBP1_D6n.state = 0b00011010;
-  lb_state.reg_obp1.LUXO_OBP1_D7n.state = 0b00011010;
-
-  lb_state.joy_int.reset_to_bootrom();
-  lb_state.reg_joy.reset_to_bootrom();
-
-  lb_state.check_state_old_and_driven_or_pulled();
-
-  sys.fastboot = fastboot;
-
-  //----------------------------------------
-  // Update the sim without ticking the clock to to settle initial reset signals.
-
-  sys.rst = 1;
-
-  tock_cpu();
-  tock_gates(cart_blob);
-
-  //----------------------------------------
-  // Release reset, start clock, and sync with phase
-
-  sys.rst = 0;
-  sys.clk_en = 1;
-  sys.clk_good = 1;
-  run_phases(cart_blob, 2);
-
-  CHECK_N(bit(lb_state.sys_clk.AFUR_xxxxEFGH.qp_old()));
-  CHECK_P(bit(lb_state.sys_clk.ALEF_AxxxxFGH.qp_old()));
-  CHECK_P(bit(lb_state.sys_clk.APUK_ABxxxxGH.qp_old()));
-  CHECK_P(bit(lb_state.sys_clk.ADYK_ABCxxxxH.qp_old()));
-
-  sys.phase_total = 0;
-  sys.phase_origin = 46880720;
-;
-
-  //----------------------------------------
-  // Wait for SIG_CPU_START
-
-  while(bit(~lb_state.sys_rst.SIG_CPU_STARTp.out_old())) {
-    run_phases(cart_blob, 8);
-  }
-
-  //----------------------------------------
-  // Delay to sync up with expected div value
-
-  run_phases(cart_blob, 16);
-
-  //----------------------------------------
-  // Fetch the first instruction in the bootrom
-
-  uint8_t data_out;
-  dbg_read(cart_blob, 0x0000, data_out);
-
-  //----------------------------------------
-  // We're ready to go, release the CPU so it can start running the bootrom.
-
-  sys.clk_req = 1;
-  sys.cpu_en = true;
-
-  if (fastboot) {
-    lb_state.reg_div.TERO_DIV03p.state = 0b00011010;
-    lb_state.reg_div.UNYK_DIV04p.state = 0b00011010;
-    lb_state.reg_div.UPOF_DIV15p.state = 0b00011011;
-  }
-
-  memset(mem.framebuffer, 4, sizeof(mem.framebuffer));
-
-  sys.probes.reset_to_cart();
-
-  sys.logic_mode = old_logic_mode;
-  //if (sys.logic_mode) wipe_flags();
-#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -143,135 +22,11 @@ void LogicBoy::reset_to_cart(const blob& cart_blob) {
   sys.reset_to_cart();
   pins.reset_to_cart();
   probes.reset_to_cart();
-
-#if 0
-  reset_to_bootrom(cart_blob);
-
-  lb_state.VOGA_HBLANKp = 0b00011001;
-  lb_state.cpu_signals.reset_to_cart();
-  lb_state.cpu_abus = 0b0000101000000000;
-  lb_state.cpu_dbus = 0;
-  //lb_state.vram_abus.lo.reset_to_cart();
-  //lb_state.vram_abus.hi.reset_to_cart();
-  //lb_state.vram_dbus.reset_to_cart();
-  //lb_state.pins.vram_ctrl.reset_to_cart();
-  //lb_state.vram_ext_abus.reset_to_cart();
-  //lb_state.vram_ext_dbus.reset_to_cart();
-  //lb_state.sprite_ibus.reset_to_cart();
-  //lb_state.sprite_lbus.reset_to_cart();
-  //lb_state.oam_ctrl.reset_to_cart();
-  //lb_state.oam_abus.reset_to_cart();
-  //lb_state.oam_dbus_a.reset_to_cart();
-  //lb_state.oam_dbus_b.reset_to_cart();
-  //lb_state.oam_latch_a.reset_to_cart();
-  //lb_state.oam_latch_b.reset_to_cart();
-  //lb_state.oam_temp_a.reset_to_cart();
-  //lb_state.oam_temp_b.reset_to_cart();
-  //lb_state.ext_ctrl.reset_to_cart();
-  //lb_state.ext_abus.lo.reset_to_cart();
-  //lb_state.ext_abus.hi.reset_to_cart();
-  //lb_state.ext_dbus.reset_to_cart();
-  //lb_state.ext_addr_latch.reset_to_cart();
-  //lb_state.ext_data_latch.reset_to_cart();
-  //zram_bus.reset_to_cart();
-  lb_state.sys_rst.reset_to_cart();
-  lb_state.sys_clk.reset_to_cart();
-  //lb_state.reg_div.reset_to_cart();
-  //interrupts.reset_to_cart();
-  //lb_state.reg_if.reset_to_cart();
-  lb_state.reg_ie = 0;
-  lb_state.int_latch = 0;
-  lb_state.cpu_int = 0;
-  lb_state.cpu_ack = 0;
-  //serial.reset_to_cart();
-  //reset_sprite_store();
-  lb_state.sprite_counter = 0;
-  //lb_state.sprite_counter.CUXY_SPRITE_COUNT1.state = 0b00011010;
-  //lb_state.sprite_counter.BEGO_SPRITE_COUNT2.state = 0b00011010;
-  //lb_state.sprite_counter.DYBE_SPRITE_COUNT3.state = 0b00011010;
-
-  lb_state.sprite_scanner.reset_to_cart();
-  //lb_state.scan_counter.reset_to_cart();
-  //lb_state.sprite_index.reset_to_cart();
-
-  //lb_state.sfetch_counter.reset_to_cart();
-  lb_state.sfetch_control.reset_to_cart();
-
-  lb_state.int_ctrl.RUPO_LYC_MATCHn.state = 0b00011000;
-
-  //lb_state.reg_stat.reset_to_cart();
-  //lb_state.pix_count.reset_to_cart();
-  //lb_state.mask_pipe.reset_to_cart();
-  lb_state.lcd.REMY_LD0n.state = 0b00011000;
-  lb_state.lcd.RAVO_LD1n.state = 0b00011000;
-
-  //lb_state.dma_lo.reset_to_cart();
-  //lb_state.reg_dma.reset_to_cart();
-  //lb_state.MATU_DMA_RUNNINGp.state = 0b00011010;
-  lb_state.dma_ctrl.reset_to_cart();
-
-  //lb_state.reg_bgp.reset_to_cart();
-  //lb_state.reg_obp0.reset_to_cart();
-  //lb_state.reg_obp1.reset_to_cart();
-  
-  //joy.reset_to_cart();
-  lb_state.joy_int.reset_to_cart();
-  //lb_state.reg_joy.reset_to_cart();
-
-  //lb_state.reg_lcdc.reset_to_cart();
-  lb_state.lcd.reset_to_cart();
-
-  //lb_state.reg_lx.reset_to_cart();
-  //lb_state.reg_ly.reset_to_cart();
-  
-  lb_state.int_ctrl.ROPO_LY_MATCH_SYNCp.state = 0b00011001;
-  //lb_state.reg_lyc.reset_to_cart();
-
-  //lb_state.WODU_HBLANKp.state = 0b00011001;
-
-  lb_state.sprite_scanner.FETO_SCAN_DONEp.state = 0b00011001;
-  //lb_state.ATEJ_LINE_RSTp.state = 0b00011000;
-
-  //reg_NR50.reset_to_cart();
-  //reg_NR51.reset_to_cart();
-  //reg_NR52.reset_to_cart();
-
-  sys.rst = false;
-  sys.t1 = false;
-  sys.t2 = false;
-  sys.clk_en = true;
-  sys.clk_good = true;
-  sys.clk_req = true;
-  sys.fastboot = true;
-
-  cpu.core.reset_to_cart();
-
-  cpu.bus_req_new.addr = 0xFF50;
-  cpu.bus_req_new.data = 1;
-  cpu.bus_req_new.read = 0;
-  cpu.bus_req_new.write = 1;
-
-  cpu.cpu_data_latch = 1;
-  cpu.intf_latch = 1;
-  cpu.intf_latch_delay = 0;
-  cpu.intf_halt_latch = 0;
-
-  memcpy(mem.vid_ram, vram_boot, 8192);
-
-  mem.zero_ram[0x7A] = 0x39;
-  mem.zero_ram[0x7B] = 0x01;
-  mem.zero_ram[0x7C] = 0x2E;
-
-  memcpy(mem.framebuffer, framebuffer_boot, 160*144);
-
-  sys.phase_total = 0;
-#endif
 }
 
 //-----------------------------------------------------------------------------
 
 Result<uint8_t, Error> LogicBoy::peek(int addr) const {
-  //if (addr >= 0x0000 && addr <= 0x7FFF) { return cart_blob.data()[addr - 0x0000]; }
   if (addr >= 0x8000 && addr <= 0x9FFF) { return mem.vid_ram[addr - 0x8000];      }
   if (addr >= 0xA000 && addr <= 0xBFFF) { return mem.cart_ram[addr - 0xA000];     }
   if (addr >= 0xC000 && addr <= 0xDFFF) { return mem.int_ram[addr - 0xC000];      }
@@ -282,7 +37,6 @@ Result<uint8_t, Error> LogicBoy::peek(int addr) const {
 }
 
 Result<uint8_t, Error> LogicBoy::poke(int addr, uint8_t data_in) {
-  //if (addr >= 0x0000 && addr <= 0x7FFF) { cart_blob.data()[addr - 0x0000] = data_in; return data_in; }
   if (addr >= 0x8000 && addr <= 0x9FFF) { mem.vid_ram[addr - 0x8000] = data_in; return data_in; }
   if (addr >= 0xA000 && addr <= 0xBFFF) { mem.cart_ram[addr - 0xA000] = data_in; return data_in; }
   if (addr >= 0xC000 && addr <= 0xDFFF) { mem.int_ram[addr - 0xC000] = data_in; return data_in; }
@@ -360,9 +114,6 @@ void LogicBoy::update_framebuffer()
   int lcd_y = lb_state.reg_ly;
   int DATA0 = ~pins.lcd.PIN_51_LCD_DATA0.state;
   int DATA1 = ~pins.lcd.PIN_50_LCD_DATA1.state;
-
-  //int lcd_x = pix_count.get_new() - 8;
-  //int lcd_y = reg_ly.get_new();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
     wire p0 = bit(DATA0);
@@ -678,20 +429,20 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
     set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
 
-    pins.joy.PIN_63_JOY_P14.pin_out(get_bit(state_new.reg_joy, 0), get_bit(state_new.reg_joy, 0));
-    pins.joy.PIN_62_JOY_P15.pin_out(get_bit(state_new.reg_joy, 1), get_bit(state_new.reg_joy, 1));
+    pins.joy.PIN_63_JOY_P14.state = get_bit(state_new.reg_joy, 0);
+    pins.joy.PIN_62_JOY_P15.state = get_bit(state_new.reg_joy, 1);
 
   }
 
   bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
 
-  if (!bit(pins.joy.PIN_63_JOY_P14.qp_ext_new())) {
+  if (bit(pins.joy.PIN_63_JOY_P14.state)) {
     EXT_button0 = get_bit(sys.buttons, 0); // RIGHT
     EXT_button1 = get_bit(sys.buttons, 1); // LEFT
     EXT_button2 = get_bit(sys.buttons, 2); // UP
     EXT_button3 = get_bit(sys.buttons, 3); // DOWN
   }
-  else if (!bit(pins.joy.PIN_62_JOY_P15.qp_ext_new())) {
+  else if (bit(pins.joy.PIN_62_JOY_P15.state)) {
     EXT_button0 = get_bit(sys.buttons, 4); // A
     EXT_button1 = get_bit(sys.buttons, 5); // B
     EXT_button2 = get_bit(sys.buttons, 6); // SELECT
@@ -727,10 +478,10 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
   }
   else {
-    set_bit(state_new.joy_latch, 0, pins.joy.PIN_67_JOY_P10.qp_int_new());
-    set_bit(state_new.joy_latch, 1, pins.joy.PIN_66_JOY_P11.qp_int_new());
-    set_bit(state_new.joy_latch, 2, pins.joy.PIN_65_JOY_P12.qp_int_new());
-    set_bit(state_new.joy_latch, 3, pins.joy.PIN_64_JOY_P13.qp_int_new());
+    set_bit(state_new.joy_latch, 0, pins.joy.PIN_67_JOY_P10.state);
+    set_bit(state_new.joy_latch, 1, pins.joy.PIN_66_JOY_P11.state);
+    set_bit(state_new.joy_latch, 2, pins.joy.PIN_65_JOY_P12.state);
+    set_bit(state_new.joy_latch, 3, pins.joy.PIN_64_JOY_P13.state);
   }
 
   //----------------------------------------

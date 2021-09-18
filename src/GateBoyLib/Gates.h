@@ -894,3 +894,17 @@ template<class DST>
   uint32_t mask = (1 << width) - 1;
   dst |= (src & mask) << bit_min;
 }
+
+//-----------------------------------------------------------------------------
+
+template<typename T>
+bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF) {
+  const uint8_t* pa = (const uint8_t*)&a;
+  const uint8_t* pb = (const uint8_t*)&b;
+  for (size_t i = 0; i < sizeof(T); i++) {
+    if ((pa[i] & mask) != (pb[i] & mask)) return false;
+  }
+  return true;
+}
+
+//-----------------------------------------------------------------------------

@@ -31,6 +31,7 @@ void GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   tock_cpu();
   tock_gates(cart_blob);
   gb_state.commit();
+  pins.commit();
 
   //----------------------------------------
   // Release reset, start clock, and sync with phase
@@ -184,6 +185,7 @@ bool GateBoy::next_phase(const blob& cart_blob) {
   tock_cpu();
   tock_gates(cart_blob);
   gb_state.commit();
+  pins.commit();
   update_framebuffer();
   sys.phase_total++;
   probes.end_pass();

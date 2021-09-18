@@ -35,24 +35,25 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-  //results += t.test_reset_to_cart       (new GateBoy(), new LogicBoy(), 0x01);
+  const auto gb_proto = make_unique<GateBoy>();
+  const auto lb_proto = make_unique<LogicBoy>();
 
   LOG_B("================================================================================\n");
   LOG_B("==========                           GateBoy                          ==========\n");
   LOG_B("================================================================================\n");
-  results += t.test_gateboy();
+  results += t.test_gateboy(gb_proto.get());
   LOG_B("\n");
 
   LOG_B("================================================================================\n");
   LOG_B("==========                           LogicBoy                         ==========\n");
   LOG_B("================================================================================\n");
-  results += t.test_logicboy();
+  results += t.test_logicboy(lb_proto.get());
   LOG_B("\n");
 
   LOG_B("================================================================================\n");
   LOG_B("==========                           Regression                       ==========\n");
   LOG_B("================================================================================\n");
-  results += t.test_regression();
+  results += t.test_regression(gb_proto.get(), lb_proto.get());
   LOG_B("\n");
 
   LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
@@ -79,32 +80,27 @@ GateBoyTests::GateBoyTests() : dummy_cart(Assembler::create_dummy_cart()) {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_gateboy() {
+TestResults GateBoyTests::test_gateboy(const IGateBoy* proto) {
   TEST_INIT();
 
-  auto gb_proto = make_unique<GateBoy>();
+  results += test_fastboot_vs_slowboot(proto, proto, 0xFF);
+  results += test_reset_to_bootrom(proto, 0xFF);
+  results += test_reset_to_cart(proto, 0xFF);
 
-  results += test_fastboot_vs_slowboot(gb_proto.get(), gb_proto.get(), 0xFF);
-  results += test_reset_to_bootrom(gb_proto.get(), 0xFF);
-  results += test_reset_to_cart(gb_proto.get(), 0xFF);
-
-  results += test_generic(gb_proto.get());
+  results += test_generic(proto);
 
   TEST_DONE();
 }
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_logicboy() {
+TestResults GateBoyTests::test_logicboy(const IGateBoy* proto) {
   TEST_INIT();
 
-  auto gb_proto = make_unique<GateBoy>();
-  auto lb_proto = make_unique<LogicBoy>();
+  results += test_reset_to_bootrom(proto, 0x01);
+  results += test_reset_to_cart   (proto, 0x01);
 
-  results += test_reset_to_bootrom(lb_proto.get(), 0x01);
-  results += test_reset_to_cart   (lb_proto.get(), 0x01);
-
-  results += test_generic(lb_proto.get());
+  results += test_generic(proto);
 
   TEST_DONE();
 }
@@ -162,32 +158,26 @@ TestResults fake_test() {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_regression() {
+TestResults GateBoyTests::test_regression(const IGateBoy* proto1, const IGateBoy* proto2) {
   TEST_INIT();
 
   {
     LOG_G("Regression testing bootrom start\n");
-    auto gb_proto = make_unique<GateBoy>();
-    auto lb_proto = make_unique<LogicBoy>();
-    results += test_regression_cart(gb_proto.get(), lb_proto.get(), dummy_cart, 1000000, true);
+    results += test_regression_cart(proto1, proto2, dummy_cart, 1000000, true);
   }
 
   {
     LOG_G("Regression testing Zelda startup\n");
-    auto gb_proto = make_unique<GateBoy>();
-    auto lb_proto = make_unique<LogicBoy>();
     blob b;
     load_blob("LinksAwakening.gb", b);
-    results += test_regression_cart(gb_proto.get(), lb_proto.get(), b, 1000000, false);
+    results += test_regression_cart(proto1, proto2, b, 1000000, false);
   }
   
   {
     LOG_G("Regression testing Zelda intro dump\n");
-    auto gb_proto = make_unique<GateBoy>();
-    auto lb_proto = make_unique<LogicBoy>();
     BlobStream bs;
     if (load_blob("zelda_intro.dump", bs.b)) {
-      results += test_regression_dump(gb_proto.get(), lb_proto.get(), bs, 1000000);
+      results += test_regression_dump(proto1, proto2, bs, 1000000);
     }
     else {
       LOG_Y("Could not load dump!\n");
@@ -196,11 +186,9 @@ TestResults GateBoyTests::test_regression() {
   
   {
     LOG_G("Regression testing SML intro dump\n");
-    auto gb_proto = make_unique<GateBoy>();
-    auto lb_proto = make_unique<LogicBoy>();
     BlobStream bs;
     if (load_blob("sml_intro.dump", bs.b)) {
-      results += test_regression_dump(gb_proto.get(), lb_proto.get(), bs, 1000000);
+      results += test_regression_dump(proto1, proto2, bs, 1000000);
     }
     else {
       LOG_Y("Could not load dump!\n");
@@ -260,17 +248,6 @@ TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
 
   TEST_DONE();
 }
-
-//-----------------------------------------------------------------------------
-
-/*
-std::unique_ptr<IGateBoy> GateBoyTests::create_debug_gb(const blob& cart_blob, bool cpu_en) {
-  auto gb = std::make_unique<GateBoy>();
-  gb->reset_to_bootrom(cart_blob);
-  gb->sys.cpu_en = cpu_en;
-  return gb;
-}
-*/
 
 //-----------------------------------------------------------------------------
 
@@ -345,16 +322,6 @@ TestResults GateBoyTests::test_regs(const IGateBoy* proto) {
 //-----------------------------------------------------------------------------
 // Power-on reset state should be stable
 
-template<typename T>
-bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF) {
-  const uint8_t* pa = (const uint8_t*)&a;
-  const uint8_t* pb = (const uint8_t*)&b;
-  for (size_t i = 0; i < sizeof(T); i++) {
-    if ((pa[i] & mask) != (pb[i] & mask)) return false;
-  }
-  return true;
-}
-
 TestResults GateBoyTests::test_fastboot_vs_slowboot(const IGateBoy* proto1, const IGateBoy* proto2, uint8_t mask) {
   TEST_INIT();
 
@@ -377,15 +344,11 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot(const IGateBoy* proto1, cons
   const_cast<GateBoySys&>(gb1->get_sys()).phase_total = 0;
   const_cast<GateBoySys&>(gb2->get_sys()).phase_total = 0;
 
-  //EXPECT_EQ(0, memcmp(&gb1->get_state(), &gb2->get_state(), sizeof(GateBoyState)));
-  //EXPECT_EQ(0, memcmp(&gb1->get_cpu(),   &gb2->get_cpu(),   sizeof(GateBoyCpu)));
-  //EXPECT_EQ(0, memcmp(&gb1->get_mem(),   &gb2->get_mem(),   sizeof(GateBoyMem)));
-  //EXPECT_EQ(0, memcmp(&gb1->get_sys(),   &gb2->get_sys(),   sizeof(GateBoySys)));
-
   EXPECT_EQ(true, bit_cmp(gb1->get_state(), gb2->get_state(), mask));
   EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
   EXPECT_EQ(true, bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask));
   EXPECT_EQ(true, bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_pins(),  gb2->get_pins(),  mask));
 
   gb1->get_state().diff(gb2->get_state(), mask);
 
@@ -413,6 +376,7 @@ TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* proto, uint8_t m
   EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
   EXPECT_EQ(true, bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask));
   EXPECT_EQ(true, bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_pins(),  gb2->get_pins(),  mask));
 
   gb1->get_state().diff(gb2->get_state(), mask);
 
@@ -449,6 +413,7 @@ TestResults GateBoyTests::test_reset_to_cart(const IGateBoy* proto, uint8_t mask
   EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
   EXPECT_EQ(true, bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask));
   EXPECT_EQ(true, bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask));
+  EXPECT_EQ(true, bit_cmp(gb1->get_pins(),  gb2->get_pins(),  mask));
 
   gb1->get_state().diff(gb2->get_state(), mask);
 
@@ -1762,9 +1727,9 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   }
 
   if (run_slow_tests) {
-    auto gb = make_unique<GateBoy>();
+    unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    gb->sys.cpu_en = false;
+    //gb->sys.cpu_en = false;
 
     // passes, but slow :/
     LOG("Testing div reset_states + rollover, this takes a minute...");

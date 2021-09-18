@@ -3,9 +3,11 @@
 
 struct GateBoySys;
 struct GateBoyState;
+struct GateBoyPins;
 
 class GateBoyDumper {
 public:
+  void dump_pins(const GateBoyPins& p, Dumper& d);
   void dump_sys(const GateBoySys& s, Dumper& d);
   void dump_cpu_bus(const GateBoyState& s, Dumper& d);
   void dump_ext_bus(const GateBoyState& s, Dumper& d);

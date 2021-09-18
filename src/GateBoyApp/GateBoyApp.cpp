@@ -326,6 +326,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   auto& mem = gb_thread->gb->get_mem();
   auto& state = gb_thread->gb->get_state();
   auto& sys = gb_thread->gb->get_sys();
+  auto& pins = gb_thread->gb->get_pins();
   auto& probes = gb_thread->gb->get_probes();
 
   StringDumper d;
@@ -366,13 +367,23 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   d("\n");
 
-  d("\002===== GateBoy Top =====\001\n");
+  d("\002===== Sys =====\001\n");
   dumper.dump_sys(sys, d);
   d("\n");
 
   d("\002===== CPU =====\001\n");
   cpu.core.dump(d);
   d("\n");
+
+  d("\002===== Pins =====\001\n");
+  dumper.dump_pins(pins, d);
+  d("\n");
+
+  text_painter.render_string(view, screen_size, d.s.c_str(), col1, row1);
+  d.clear();
+
+  //----------------------------------------
+  // Column 2
 
   d("\002===== Clocks =====\001\n");
   dumper.dump_clocks(state, d);
@@ -382,16 +393,9 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   dumper.dump_resets(state, d);
   d("\n");
 
-
   d("\002===== Interrupts =====\001\n");
   dumper.dump_interrupts(state, d);
   d("\n");
-
-  text_painter.render_string(view, screen_size, d.s.c_str(), col1, row1);
-  d.clear();
-
-  //----------------------------------------
-  // Column 2
 
   d("\002===== DMA =====\001\n");
   dumper.dump_dma(state, d);
@@ -411,18 +415,6 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   d("\002===== VRAM Bus =====\001\n");
   dumper.dump_vram_bus(state, d);
-  d("\n");
-
-  d("\002===== MBC1 =====\001\n");
-  dumper.dump_mbc1(state, d);
-  d("\n");
-
-  d("\002===== Timer =====\001\n");
-  dumper.dump_timer(state, d);
-  d("\n");
-
-  d("\002===== SPU =====\001\n");
-  dumper.dump_spu(state, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col2, row1);
@@ -451,8 +443,12 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   dumper.dump_joypad(state, d);
   d("\n");
 
-  d("\002===== Serial =====\001\n");
-  dumper.dump_serial(state, d);
+  d("\002===== MBC1 =====\001\n");
+  dumper.dump_mbc1(state, d);
+  d("\n");
+
+  d("\002===== Timer =====\001\n");
+  dumper.dump_timer(state, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col3, row1);
@@ -468,6 +464,14 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   d("\002===== LCD =====\001\n");
   dumper.dump_lcd(state, d);
+  d("\n");
+
+  d("\002===== SPU =====\001\n");
+  dumper.dump_spu(state, d);
+  d("\n");
+
+  d("\002===== Serial =====\001\n");
+  dumper.dump_serial(state, d);
   d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col4, row1);

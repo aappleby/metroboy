@@ -143,34 +143,15 @@ struct LogicBoy : public IGateBoy {
 
   //----------------------------------------
 
-  /*
-  void from_blob(const blob& b) {
-    CHECK_P(b.size() >= sizeof(LogicBoy));
-    memcpy(this, b.data(), sizeof(LogicBoy));
-  }
-
-  void to_blob(blob& b) {
-    uint8_t* bytes = (uint8_t*)this;
-    b.insert(b.end(), bytes, bytes + sizeof(*this));
-  }
-  */
-
-  //----------------------------------------
-
   void set_boot_bit(const blob& cart_blob) {
     dbg_write(cart_blob, 0xFF50, 0xFF);
   }
 
   //-----------------------------------------------------------------------------
 
-
   void tock_cpu();
   void tock_logic(const blob& cart_blob, int64_t phase_total);
   void update_framebuffer();
-
-  //void wipe() {
-  //  lb_state.wipe();
-  //}
 
   //-----------------------------------------------------------------------------
 

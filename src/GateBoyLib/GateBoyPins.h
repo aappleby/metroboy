@@ -226,13 +226,12 @@ struct PinsSys {
   /*_p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
   /*_p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN_71_RST.qp_int_new()); }
 
-  /*_PIN_71*/ PinIn  PIN_71_RST;
-  /*_PIN_77*/ PinIn  PIN_77_T1;
-  /*_PIN_76*/ PinIn  PIN_76_T2;
-
+  /*_PIN_71*/ PinIn    PIN_71_RST;
   /*_PIN_73*/ PinOut   PIN_73_CLK_DRIVE;
   /*_PIN_74*/ PinClock PIN_74_CLK;
   /*_PIN_75*/ PinOut   PIN_75_CLK_OUT;
+  /*_PIN_76*/ PinIn    PIN_76_T2;
+  /*_PIN_77*/ PinIn    PIN_77_T1;
 };
 
 //-----------------------------------------------------------------------------
@@ -334,6 +333,39 @@ struct GateBoyPins {
     joy.reset_to_cart();
     sys.reset_to_cart();
     ctrl.reset_to_cart();
+  }
+
+  void commit() {
+    if (!config_check_flags && !config_use_flags) return;
+
+    uint8_t* cursor = (uint8_t*)this;
+    bool bad_bits = false;
+    for (size_t i = 0; i < sizeof(*this); i++) {
+      uint8_t s = *cursor;
+      if (config_check_flags) {
+        auto drive_flags = s & (BIT_DRIVEN | BIT_PULLED);
+
+        if (drive_flags == (BIT_DRIVEN | BIT_PULLED)) {
+          LOG_Y("Bit %d both driven and pulled up!\n", i);
+          bad_bits = true;
+        }
+
+        if (drive_flags == 0) {
+          LOG_Y("Bit %d floating!\n", i);
+          bad_bits = true;
+        }
+
+        auto oldnew_flags = s & (BIT_OLD | BIT_NEW);
+
+        if (oldnew_flags != BIT_NEW) {
+          LOG_Y("Bit %d not dirty after sim pass!\n", i);
+          bad_bits = true;
+        }
+      }
+
+      *cursor++ = (s & 0b00001111) | BIT_OLD;
+    }
+    CHECK_N(bad_bits);
   }
 };
 

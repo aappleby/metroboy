@@ -345,63 +345,41 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Joypad
 
+  // FIXME what if both scan bits are set?
+
   if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
     if (state_new.cpu_abus == 0xFF00) set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
     if (state_new.cpu_abus == 0xFF00) set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
-
-    if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_63_JOY_P14.state = get_bit(state_new.reg_joy, 0);
-    if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_62_JOY_P15.state = get_bit(state_new.reg_joy, 1);
-
   }
 
-  bool EXT_button0 = 0, EXT_button1 = 0, EXT_button2 = 0, EXT_button3 = 0;
+  if (DELTA_HA) {
+    uint8_t button_mask = 0b00000000;
+    if (!get_bit(state_new.reg_joy, 0)) button_mask |= 0b00001111;
+    if (!get_bit(state_new.reg_joy, 1)) button_mask |= 0b11110000;
 
-  if (!pins.joy.PIN_63_JOY_P14.state) {
-    EXT_button0 = get_bit(sys.buttons, 0); // RIGHT
-    EXT_button1 = get_bit(sys.buttons, 1); // LEFT
-    EXT_button2 = get_bit(sys.buttons, 2); // UP
-    EXT_button3 = get_bit(sys.buttons, 3); // DOWN
-  }
-  else if (!pins.joy.PIN_62_JOY_P15.state) {
-    EXT_button0 = get_bit(sys.buttons, 4); // A
-    EXT_button1 = get_bit(sys.buttons, 5); // B
-    EXT_button2 = get_bit(sys.buttons, 6); // SELECT
-    EXT_button3 = get_bit(sys.buttons, 7); // START
+    state_new.int_ctrl.AWOB_WAKE_CPU.state  = !(sys.buttons & button_mask);
+    state_new.int_ctrl.SIG_CPU_WAKE.state   = !(sys.buttons & button_mask);
+    state_new.joy_int.APUG_JP_GLITCH3       = state_new.joy_int.AGEM_JP_GLITCH2;
+    state_new.joy_int.AGEM_JP_GLITCH2       = state_new.joy_int.ACEF_JP_GLITCH1;
+    state_new.joy_int.ACEF_JP_GLITCH1       = state_new.joy_int.BATU_JP_GLITCH0;
+    state_new.joy_int.BATU_JP_GLITCH0.state = !(sys.buttons & button_mask);
   }
 
-  pins.joy.PIN_67_JOY_P10.state = EXT_button0;
-  pins.joy.PIN_66_JOY_P11.state = EXT_button1;
-  pins.joy.PIN_65_JOY_P12.state = EXT_button2;
-  pins.joy.PIN_64_JOY_P13.state = EXT_button3;
-
-  wire any_button = EXT_button0 || EXT_button1 || EXT_button2 || EXT_button3;
-
-
-  if (gen_clk_new(phase_total, 0b10000000)) {
-    state_new.int_ctrl.AWOB_WAKE_CPU.state = !any_button;
-    state_new.int_ctrl.SIG_CPU_WAKE.state = !any_button;
-  }
-
-  if (gen_clk_new(phase_total, 0b10000000)) {
-    state_new.joy_int.APUG_JP_GLITCH3 = state_new.joy_int.AGEM_JP_GLITCH2;
-    state_new.joy_int.AGEM_JP_GLITCH2 = state_new.joy_int.ACEF_JP_GLITCH1;
-    state_new.joy_int.ACEF_JP_GLITCH1 = state_new.joy_int.BATU_JP_GLITCH0;
-    state_new.joy_int.BATU_JP_GLITCH0.state = !any_button;
-  }
-
-  if (state_new.cpu_abus == 0xFF00 && state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    set_bit(state_new.cpu_dbus, 0, !get_bit(state_new.joy_latch, 0));
-    set_bit(state_new.cpu_dbus, 1, !get_bit(state_new.joy_latch, 1));
-    set_bit(state_new.cpu_dbus, 2, !get_bit(state_new.joy_latch, 2));
-    set_bit(state_new.cpu_dbus, 3, !get_bit(state_new.joy_latch, 3));
-    set_bit(state_new.cpu_dbus, 4,  get_bit(state_new.reg_joy, 0));
-    set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (state_new.cpu_abus == 0xFF00) {
+      set_bit(state_new.cpu_dbus, 0, !get_bit(state_new.joy_latch, 0));
+      set_bit(state_new.cpu_dbus, 1, !get_bit(state_new.joy_latch, 1));
+      set_bit(state_new.cpu_dbus, 2, !get_bit(state_new.joy_latch, 2));
+      set_bit(state_new.cpu_dbus, 3, !get_bit(state_new.joy_latch, 3));
+      set_bit(state_new.cpu_dbus, 4,  get_bit(state_new.reg_joy, 0));
+      set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
+    }
   }
   else {
-    set_bit(state_new.joy_latch, 0, pins.joy.PIN_67_JOY_P10.state);
-    set_bit(state_new.joy_latch, 1, pins.joy.PIN_66_JOY_P11.state);
-    set_bit(state_new.joy_latch, 2, pins.joy.PIN_65_JOY_P12.state);
-    set_bit(state_new.joy_latch, 3, pins.joy.PIN_64_JOY_P13.state);
+    uint8_t button_mask = 0b00000000;
+    if (!get_bit(state_new.reg_joy, 0)) button_mask |= 0b00001111;
+    if (!get_bit(state_new.reg_joy, 1)) button_mask |= 0b11110000;
+    state_new.joy_latch = (((sys.buttons & button_mask) >> 0) | ((sys.buttons & button_mask) >> 4)) & 0b1111;
   }
 
   //----------------------------------------
@@ -1894,6 +1872,24 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
   // These are all dead (unused) signals
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
+    if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_63_JOY_P14.state = get_bit(state_old.cpu_dbus, 4);
+    if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_62_JOY_P15.state = get_bit(state_old.cpu_dbus, 5);
+  }
+
+  if (!get_bit(state_new.reg_joy, 0)) {
+    pins.joy.PIN_67_JOY_P10.state = get_bit(sys.buttons, 0); // RIGHT
+    pins.joy.PIN_66_JOY_P11.state = get_bit(sys.buttons, 1); // LEFT
+    pins.joy.PIN_65_JOY_P12.state = get_bit(sys.buttons, 2); // UP
+    pins.joy.PIN_64_JOY_P13.state = get_bit(sys.buttons, 3); // DOWN
+  }
+  else if (!get_bit(state_new.reg_joy, 1)) {
+    pins.joy.PIN_67_JOY_P10.state = get_bit(sys.buttons, 4); // A
+    pins.joy.PIN_66_JOY_P11.state = get_bit(sys.buttons, 5); // B
+    pins.joy.PIN_65_JOY_P12.state = get_bit(sys.buttons, 6); // SELECT
+    pins.joy.PIN_64_JOY_P13.state = get_bit(sys.buttons, 7); // START
+  }
 
   if (get_bit(state_new.oam_temp_b, 5) && state_new.sfetch_control.TEXY_SFETCHINGp) {
     state_new.flipped_sprite = bit_reverse(state_new.vram_dbus);

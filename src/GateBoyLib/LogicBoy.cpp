@@ -287,66 +287,81 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // LX, LY, lcd flags
 
   if (get_bit(state_new.reg_lcdc, 7)) {
-    state_new.lcd.ANEL_x113p.state = 0;
-    state_new.lcd.CATU_x113p.state = 0;
     state_new.lcd.NYPE_x113p.state = 0;
     state_new.lcd.RUTU_x113p.state = 0;
     state_new.lcd.POPU_y144p.state = 0;
     state_new.lcd.MYTA_y153p.state = 0;
-    state_new.lcd.SYGU_LINE_STROBE.state = 0;
     state_new.ATEJ_LINE_RSTp = 1;
     state_new.reg_lx = 0;
     state_new.reg_ly = 0;
   }
   else {
-    if (DELTA_HA) {
-      state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && !((state_old.reg_ly & 144) == 144);
-      state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.RUTU_x113p && !((state_old.reg_ly & 144) == 144);
-    }
-    else if (DELTA_AB) {
-    }
-    else if (DELTA_BC) {
-      state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
-      state_new.lcd.NYPE_x113p = state_old.lcd.RUTU_x113p;
 
-      if (!state_old.lcd.NYPE_x113p && state_old.lcd.RUTU_x113p) {
+    if (DELTA_BC) {
+      if (!state_new.lcd.NYPE_x113p && state_new.lcd.RUTU_x113p) {
         state_new.lcd.POPU_y144p.state = ((state_new.reg_ly & 144) == 144);
         state_new.lcd.MYTA_y153p.state = ((state_new.reg_ly & 153) == 153);
         if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
       }
-
-      if (state_new.lcd.RUTU_x113p) {
-        state_new.reg_lx = 0;
-      }
-      else {
-        state_new.reg_lx++;
-      }
-      state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
     }
-    else if (DELTA_CD) {
+
+
+
+
+
+    if (DELTA_FG) state_new.lcd.RUTU_x113p.state = (state_new.reg_lx == 113);
+    if (DELTA_BC) state_new.lcd.NYPE_x113p.state = state_new.lcd.RUTU_x113p.state;
+
+
+    if (DELTA_BC) {
+      state_new.reg_lx = state_new.lcd.RUTU_x113p ? 0 : state_new.reg_lx + 1;
+    }
+    if (DELTA_CD) {
       if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
     }
-    else if (DELTA_DE) {
-      state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && !((state_old.reg_ly & 144) == 144);
-      state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
-    }
-    else if (DELTA_FG) {
-      state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
-      state_new.lcd.RUTU_x113p.state = (state_new.reg_lx == 113);
-      if (state_new.reg_lx == 113) state_new.reg_lx = 0;
-
-      if (!state_new.lcd.MYTA_y153p && !state_old.lcd.RUTU_x113p && state_new.lcd.RUTU_x113p) {
+    if (DELTA_FG) {
+      if (!state_new.lcd.MYTA_y153p && !state_old.lcd.RUTU_x113p && (state_new.reg_lx == 113)) {
         state_new.reg_ly = uint8_t(state_old.reg_ly + 1);
       }
-
-      state_new.lcd.SYGU_LINE_STROBE.state = (state_old.reg_lx == 0) || (state_old.reg_lx == 7) || (state_old.reg_lx == 45) || (state_old.reg_lx == 83);
-      state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
-    }
-    else if (DELTA_GH) {
-      state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
+      if (state_new.reg_lx == 113) state_new.reg_lx = 0;
     }
   }
 
+  //----------------------------------------
+
+  if (get_bit(state_new.reg_lcdc, 7)) {
+    state_new.lcd.ANEL_x113p.state = 0;
+    state_new.lcd.CATU_x113p.state = 0;
+  }
+  else {
+    if (DELTA_HA || DELTA_DE) {
+      state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && !((state_new.reg_ly & 144) == 144);
+    }
+    if (DELTA_BC || DELTA_FG) {
+      state_new.lcd.ANEL_x113p = state_new.lcd.CATU_x113p;
+    }
+  }
+
+  //----------------------------------------
+
+  if (get_bit(state_new.reg_lcdc, 7)) {
+    state_new.ATEJ_LINE_RSTp = 1;
+  }
+  else if (DELTA_HA || DELTA_AB || DELTA_DE || DELTA_EF) {
+    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.RUTU_x113p && (state_new.reg_ly < 144);
+  }
+  else {
+    state_new.ATEJ_LINE_RSTp = 0;
+  }
+
+  //----------------------------------------
+
+  if (get_bit(state_new.reg_lcdc, 7)) {
+    state_new.lcd.SYGU_LINE_STROBE.state = 0;
+  }
+  else if (DELTA_FG) {
+    state_new.lcd.SYGU_LINE_STROBE.state = (state_old.reg_lx == 0) || (state_old.reg_lx == 7) || (state_old.reg_lx == 45) || (state_old.reg_lx == 83);
+  }
 
   //----------------------------------------
 

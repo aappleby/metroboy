@@ -219,9 +219,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
 
-  const bool cpu_addr_vram_old = (state_old.cpu_abus >= 0x8000) && (state_old.cpu_abus <= 0x9FFF);
-  const bool cpu_addr_oam_old  = (state_old.cpu_abus >= 0xFE00) && (state_old.cpu_abus <= 0xFEFF);
-
   state_new.cpu_dbus = 0xFF; // must be pulled up or we fail regression
 
   if (gen_clk_new(phase_total, 0b00001111)) {
@@ -251,10 +248,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if ((cpu.bus_req_new.addr >= 0xFE00)) EXT_addr_new = false;
   if ((cpu.bus_req_new.addr <= 0x00FF) && !state_new.cpu_signals.TEPU_BOOT_BITn) EXT_addr_new = false;
   state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = EXT_addr_new;
-
-  const bool cpu_addr_vram_new = (state_new.cpu_abus >= 0x8000) && (state_new.cpu_abus <= 0x9FFF);
-  const bool cpu_addr_ram_new =  (state_new.cpu_abus >= 0xA000) && (state_new.cpu_abus <= 0xFDFF);
-  const bool cpu_addr_oam_new =  (state_new.cpu_abus >= 0xFE00) && (state_new.cpu_abus <= 0xFEFF);
 
   //----------------------------------------
 
@@ -304,51 +297,61 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // DIV
 
-  if (gen_clk_new(phase_total, 0b10000000)) state_new.reg_div = state_new.reg_div + 1;
-  if (state_new.cpu_abus == 0xFF04 && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00001110)) state_new.reg_div = 0;
-  if (state_new.cpu_abus == 0xFF04 && state_new.cpu_signals.SIG_IN_CPU_RDp) state_new.cpu_dbus = uint8_t(state_new.reg_div >> 6);
+  if (DELTA_HA) {
+    state_new.reg_div = state_new.reg_div + 1;
+  }
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && (DELTA_DE || DELTA_EF || DELTA_FG)) {
+    if (state_new.cpu_abus == 0xFF04) state_new.reg_div = 0;
+  }
+
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (state_new.cpu_abus == 0xFF04) state_new.cpu_dbus = uint8_t(state_new.reg_div >> 6);
+  }
 
   //----------------------------------------
   // In logic mode we don't care about the power-on behavior, we only want behavior to match when running code. So, we set
   // this stuff to zeroes.
 
-  state_new.sys_rst.AFER_SYS_RSTp = 0;
-  state_new.sys_rst.TUBO_WAITINGp = 0;
-  state_new.sys_rst.ASOL_POR_DONEn = 0;
-  state_new.sys_rst.SIG_CPU_EXT_CLKGOOD = 1;
-  state_new.sys_rst.SIG_CPU_EXT_RESETp = 0;
-  state_new.sys_rst.SIG_CPU_STARTp = 0;
-  state_new.sys_rst.SIG_CPU_INT_RESETp = 0;;
-  state_new.sys_rst.SOTO_DBG_VRAMp = 0;
+  state_new.sys_rst.AFER_SYS_RSTp = 0; // dead signal
+  state_new.sys_rst.TUBO_WAITINGp = 0; // dead signal
+  state_new.sys_rst.ASOL_POR_DONEn = 0; // dead signal
+  state_new.sys_rst.SIG_CPU_EXT_CLKGOOD = 1; // dead signal
+  state_new.sys_rst.SIG_CPU_EXT_RESETp = 0; // dead signal
+  state_new.sys_rst.SIG_CPU_STARTp = 0; // dead signal
+  state_new.sys_rst.SIG_CPU_INT_RESETp = 0; // dead signal
+  state_new.sys_rst.SOTO_DBG_VRAMp = 0; // dead signal
 
   //----------------------------------------
   // LCDC
   // has to be near the top as it controls the video reset signal
 
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && state_new.cpu_abus == 0xFF40 && gen_clk_new(phase_total, 0b00000001)) {
-    state_new.reg_lcdc = ~state_old.cpu_dbus;
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
+    if (state_new.cpu_abus == 0xFF40) state_new.reg_lcdc = ~state_old.cpu_dbus;
   }
 
-  if (state_new.cpu_signals.SIG_IN_CPU_RDp && (state_new.cpu_abus == 0xFF40)) {
-    state_new.cpu_dbus = ~state_new.reg_lcdc;
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (state_new.cpu_abus == 0xFF40) state_new.cpu_dbus = ~state_new.reg_lcdc;
   }
 
   //----------------------------------------
   // Video clocks
 
-  state_new.sys_clk.WOSU_AxxDExxH.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b10011001);
-  state_new.sys_clk.WUVU_ABxxEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b11001100);
-  state_new.sys_clk.VENA_xxCDEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b00111100);
+  state_new.sys_clk.WOSU_AxxDExxH.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b10011001); // dead signal
+  state_new.sys_clk.WUVU_ABxxEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b11001100); // dead signal
+  state_new.sys_clk.VENA_xxCDEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b00111100); // dead signal
 
   //----------------------------------------
   // LYC
 
-  if (state_new.cpu_abus == 0xFF45) {
-    if (state_new.cpu_signals.SIG_IN_CPU_RDp) state_new.cpu_dbus = uint8_t(state_old.reg_lyc ^ 0xFF);
-    if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00000001)) state_new.reg_lyc = uint8_t(~state_old.cpu_dbus);
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (state_new.cpu_abus == 0xFF45) state_new.cpu_dbus = uint8_t(state_old.reg_lyc ^ 0xFF);
+  }
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
+    if (state_new.cpu_abus == 0xFF45) state_new.reg_lyc = uint8_t(~state_old.cpu_dbus);
   }
 
-  if (!get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b00100000)) {
+  if (!get_bit(state_new.reg_lcdc, 7) && DELTA_BC) {
     state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = state_old.reg_ly == (state_old.reg_lyc ^ 0xFF);
   }
 
@@ -1374,6 +1377,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Memory buses
 
+  const bool cpu_addr_vram_new = (state_new.cpu_abus >= 0x8000) && (state_new.cpu_abus <= 0x9FFF);
   if (state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new) {
     state_new.ext_addr_latch = state_new.cpu_abus & 0x7FFF;
   }
@@ -1384,6 +1388,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     bit_unpack(pins.abus_hi,     state_new.reg_dma);
   }
   else {
+    const bool cpu_addr_ram_new =  (state_new.cpu_abus >= 0xA000) && (state_new.cpu_abus <= 0xFDFF);
     pins.ctrl.PIN_80_CSn.state = (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && cpu_addr_ram_new;
     bit_unpack_inv(pins.abus_lo, (state_new.ext_addr_latch >> 0) & 0xFF);
     bit_unpack_inv(pins.abus_hi, (state_new.ext_addr_latch >> 8) & 0x7F);
@@ -1707,6 +1712,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------
   // OAM bus and control signals.
   // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
+
+  const bool cpu_addr_oam_new =  (state_new.cpu_abus >= 0xFE00) && (state_new.cpu_abus <= 0xFEFF);
 
   if (state_new.ACYL_SCANNINGp) {
     state_new.oam_abus = (uint8_t)~((state_new.scan_counter << 2) | 0b00);

@@ -243,11 +243,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   CHECK_N(state_new.cpu_signals.SIG_IN_CPU_RDp.state && state_new.cpu_signals.SIG_IN_CPU_WRp);
 
-  bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
-  if ((cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr < 0x9FFF) && gen_clk_new(phase_total, 0b10000000)) EXT_addr_new = false;
-  if ((cpu.bus_req_new.addr >= 0xFE00)) EXT_addr_new = false;
-  if ((cpu.bus_req_new.addr <= 0x00FF) && !state_new.cpu_signals.TEPU_BOOT_BITn) EXT_addr_new = false;
-  state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = EXT_addr_new;
+  // This chunk is weird...
+  {
+    bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
+    if ((cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr < 0x9FFF) && gen_clk_new(phase_total, 0b10000000)) EXT_addr_new = false;
+    if ((cpu.bus_req_new.addr >= 0xFE00)) EXT_addr_new = false;
+    if ((cpu.bus_req_new.addr <= 0x00FF) && !state_new.cpu_signals.TEPU_BOOT_BITn) EXT_addr_new = false;
+    state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = EXT_addr_new;
+  }
 
   //----------------------------------------
   // DIV
@@ -283,6 +286,63 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // LX, LY, lcd flags
 
+  if (DELTA_HA) {
+    state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && !((state_old.reg_ly & 144) == 144);
+    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
+    if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
+    if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
+  }
+  else if (DELTA_AB) {
+    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
+    if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
+    if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
+  }
+  else if (DELTA_BC) {
+    state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
+    state_new.lcd.NYPE_x113p = state_old.lcd.RUTU_x113p;
+
+    if (!state_old.lcd.NYPE_x113p && state_new.lcd.NYPE_x113p) {
+      state_new.lcd.POPU_y144p.state = ((state_old.reg_ly & 144) == 144);
+      state_new.lcd.MYTA_y153p.state = ((state_old.reg_ly & 153) == 153);
+    }
+
+    state_new.reg_lx = state_old.reg_lx + 1;
+    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
+    if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
+    if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
+  }
+  else if (DELTA_CD) {
+    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
+    if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
+    if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
+  }
+  else if (DELTA_DE) {
+    state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && !((state_old.reg_ly & 144) == 144);
+    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
+    if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
+    if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
+  }
+  else if (DELTA_FG) {
+    state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
+    state_new.lcd.RUTU_x113p.state = (state_old.reg_lx == 113);
+
+    if (!state_old.lcd.RUTU_x113p && state_new.lcd.RUTU_x113p) {
+      state_new.reg_ly = uint8_t(state_old.reg_ly + 1);
+    }
+
+    uint8_t lx_old = (uint8_t)state_old.reg_lx;
+    state_new.lcd.SYGU_LINE_STROBE.state = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
+    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
+    if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
+    if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
+  }
+  else if (DELTA_GH) {
+    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
+    if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
+    if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
+  }
+
+
   if (get_bit(state_new.reg_lcdc, 7)) {
     state_new.lcd.ANEL_x113p.state = 0;
     state_new.lcd.CATU_x113p.state = 0;
@@ -294,46 +354,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.ATEJ_LINE_RSTp = 1;
     state_new.reg_lx = 0;
     state_new.reg_ly = 0;
-  }
-  else {
-    wire ly_144_old = (state_old.reg_ly & 144) == 144;
-    wire ly_153_old = (state_old.reg_ly & 153) == 153;
-
-    if (DELTA_HA) {
-      state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && !ly_144_old;
-    }
-
-    if (DELTA_BC) {
-      state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
-      state_new.lcd.NYPE_x113p = state_old.lcd.RUTU_x113p;
-
-      if (!state_old.lcd.NYPE_x113p && state_new.lcd.NYPE_x113p) {
-        state_new.lcd.POPU_y144p.state = ly_144_old;
-        state_new.lcd.MYTA_y153p.state = ly_153_old;
-      }
-
-      state_new.reg_lx = state_old.reg_lx + 1;
-    }
-
-    if (DELTA_DE) {
-      state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && !ly_144_old;
-    }
-
-    if (DELTA_FG) {
-      state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
-      state_new.lcd.RUTU_x113p.state = (state_old.reg_lx == 113);
-
-      if (!state_old.lcd.RUTU_x113p && state_new.lcd.RUTU_x113p) {
-        state_new.reg_ly = uint8_t(state_old.reg_ly + 1);
-      }
-
-      uint8_t lx_old = (uint8_t)state_old.reg_lx;
-      state_new.lcd.SYGU_LINE_STROBE.state = (lx_old == 0) || (lx_old == 7) || (lx_old == 45) || (lx_old == 83);
-    }
-
-    state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
-    if (state_new.lcd.RUTU_x113p) state_new.reg_lx = 0;
-    if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
   }
 
   //----------------------------------------
@@ -347,7 +367,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       set_bit(state_new.cpu_dbus, 4,  get_bit(state_new.reg_joy, 0));
       set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
     }
-    if (state_new.cpu_abus == 0xFF04) state_new.cpu_dbus = uint8_t(state_new.reg_div >> 6);
+    if (state_new.cpu_abus == 0xFF04) state_new.cpu_dbus =  (uint8_t)(state_new.reg_div >> 6);
     if (state_new.cpu_abus == 0xFF05) state_new.cpu_dbus =  state_new.reg_tima;
     if (state_new.cpu_abus == 0xFF06) state_new.cpu_dbus =  state_new.reg_tma;
     if (state_new.cpu_abus == 0xFF07) state_new.cpu_dbus =  state_new.reg_tac | 0b11111000;

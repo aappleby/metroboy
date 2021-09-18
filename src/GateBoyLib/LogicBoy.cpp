@@ -1743,8 +1743,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // oam control signals depend on address
   // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
 
-  const auto cpu_oam_rd_new = cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_RDp;
-
   // WUJE is weird, not sure why it's necessary.
   if (gen_clk_new(phase_total, 0b11110000)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 1;
   if (cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00001110)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 0;
@@ -1764,11 +1762,10 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       latch_oam = gen_clk_new(phase_total, 0b01100110);
     }
     else if (!state_new.XYMU_RENDERINGn) {
-      const auto sfetch_oam_oen_new = (get_bit(state_new.sfetch_counter, 1) || get_bit(state_new.sfetch_counter, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1);
-      latch_oam = !sfetch_oam_oen_new;
+      latch_oam = !get_bit(state_new.sfetch_counter, 1) && !get_bit(state_new.sfetch_counter, 2) && state_new.sfetch_control.TYFO_SFETCH_S0p_D1;
     }
     else {
-      latch_oam = cpu_oam_rd_new && !state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE;
+      latch_oam = cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_RDp && !state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE;
     }
 
     if (latch_oam) {
@@ -1787,9 +1784,15 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.oam_dbus_a = uint8_t(~ext_data_new);
       state_new.oam_dbus_b = uint8_t(~ext_data_new);
     }
+    if (state_old.oam_ctrl.SIG_OAM_CLKn && !state_new.oam_ctrl.SIG_OAM_CLKn) {
+      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_A) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_B) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
+    }
   }
   else if (state_new.ACYL_SCANNINGp) {
     const auto sscan_oam_addr_new  = (state_new.scan_counter << 2) | 0b00;
+    const auto cpu_oam_rd_new = cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_RDp;
     state_new.oam_abus = (uint8_t)~sscan_oam_addr_new ;
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = gen_clk_new(phase_total, 0b10001000) && (!cpu_addr_oam_new || gen_clk_new(phase_total, 0b11110000));
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
@@ -1810,6 +1813,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     const auto sfetch_oam_addr_new = (state_new.sprite_ibus  << 2) | 0b11;
     const auto sfetch_oam_clk_new = (get_bit(state_new.sfetch_counter, 1) || get_bit(state_new.sfetch_counter, 2) || (state_new.sfetch_control.TYFO_SFETCH_S0p_D1 && !get_bit(state_new.sfetch_counter, 0)));
     const auto sfetch_oam_oen_new = (get_bit(state_new.sfetch_counter, 1) || get_bit(state_new.sfetch_counter, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1);
+    const auto cpu_oam_rd_new = cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_RDp;
     state_new.oam_abus = (uint8_t)~sfetch_oam_addr_new;
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk_new(phase_total, 0b11110000));
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
@@ -1830,10 +1834,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
         state_new.oam_dbus_b = ~mem.oam_ram[(oam_addr_new << 1) + 1];
       }
     }
-
   }
   else if (cpu_addr_oam_new) {
-    const auto cpu_oam_wr_new = cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00001110);
+    const auto cpu_oam_wr_new = state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00001110);
     state_new.oam_abus = (uint8_t)~cpu_addr_new;
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = gen_clk_new(phase_total, 0b11110000);
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = !cpu_oam_wr_new || !get_bit(state_new.oam_abus, 0);
@@ -1846,7 +1849,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.oam_dbus_b = ~mem.oam_ram[(oam_addr_new << 1) + 1];
     }
 
-    if (cpu_oam_rd_new) {
+    if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
       if (state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
         state_new.cpu_dbus = get_bit(state_new.oam_abus, 0) ? ~state_new.oam_latch_a : ~state_new.oam_latch_b;
       }
@@ -1856,53 +1859,25 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       }
     }
 
-    if (cpu_addr_oam_new) {
-      if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn) {
-        state_new.oam_dbus_a = ~state_new.cpu_dbus;
-        state_new.oam_dbus_b = ~state_new.cpu_dbus;
-      }
-    }
-    else {
+    if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn) {
       state_new.oam_dbus_a = ~state_new.cpu_dbus;
       state_new.oam_dbus_b = ~state_new.cpu_dbus;
     }
+
+    if (state_old.oam_ctrl.SIG_OAM_CLKn && !state_new.oam_ctrl.SIG_OAM_CLKn) {
+      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_A) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_B) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
+    }
   }
   else {
-    state_new.oam_abus = (uint8_t)~cpu_addr_new;
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
     state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-
-    if (cpu_oam_rd_new) {
-      if (state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
-        state_new.cpu_dbus = get_bit(state_new.oam_abus, 0) ? ~state_new.oam_latch_a : ~state_new.oam_latch_b;
-      }
-      else {
-        state_new.oam_latch_a = state_new.oam_dbus_a;
-        state_new.oam_latch_b = state_new.oam_dbus_b;
-      }
-    }
-
-    if (cpu_addr_oam_new) {
-      if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn) {
-        state_new.oam_dbus_a = ~state_new.cpu_dbus;
-        state_new.oam_dbus_b = ~state_new.cpu_dbus;
-      }
-    }
-    else {
-      state_new.oam_dbus_a = ~state_new.cpu_dbus;
-      state_new.oam_dbus_b = ~state_new.cpu_dbus;
-    }
-  }
-
-  //----------
-  // the actual oam write
-
-  if (state_old.oam_ctrl.SIG_OAM_CLKn && !state_new.oam_ctrl.SIG_OAM_CLKn) {
-    uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
-    if (!state_new.oam_ctrl.SIG_OAM_WRn_A) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
-    if (!state_new.oam_ctrl.SIG_OAM_WRn_B) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
+    state_new.oam_abus = (uint8_t)~cpu_addr_new;
+    state_new.oam_dbus_a = ~state_new.cpu_dbus;
+    state_new.oam_dbus_b = ~state_new.cpu_dbus;
   }
 
   state_new.oam_ctrl.old_oam_clk = !state_new.oam_ctrl.SIG_OAM_CLKn; // vestige of gate mode

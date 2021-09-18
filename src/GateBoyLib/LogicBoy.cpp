@@ -931,89 +931,53 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
   // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
-  state_new.WODU_HBLANKp = !state_new.FEPO_STORE_MATCHp && (state_new.pix_count & 167) == 167;
+
+  state_new.WODU_HBLANKp = !state_old.FEPO_STORE_MATCHp && (state_new.pix_count & 167) == 167;
 
   if (state_new.XYMU_RENDERINGn) {
-    if (gen_clk_new(phase_total, 0b01010101)) {
-      if (!pause_rendering_new) state_new.lcd.PAHO_X_8_SYNC.state = get_bit(state_old.pix_count, 3);
-    }
-
+    state_new.lcd.PAHO_X_8_SYNC.state = 0;
     state_new.sprite_match_flags = 0;
     state_new.sprite_ibus = state_new.sprite_index;
     state_new.sprite_lbus = (~state_new.reg_ly + state_new.oam_temp_a) & 0b00001111;
   }
-  else if (!state_new.sprite_scanner.CENO_SCANNINGn) {
-    if (gen_clk_new(phase_total, 0b01010101)) {
-      if (!pause_rendering_new) state_new.lcd.PAHO_X_8_SYNC.state = get_bit(state_old.pix_count, 3);
-    }
+  else if (!state_new.sprite_scanner.CENO_SCANNINGn) { // FIXME this polarity seems wrong
+    auto& s = state_new;
+    auto& pc = s.pix_count;
+    auto& sf = s.sprite_match_flags;
+    auto& si = s.sprite_ibus;
+    auto& sl = s.sprite_lbus;
 
-    state_new.sprite_ibus = 0b00111111;
-    state_new.sprite_lbus = 0b00001111;
+    sf = 0;
+    si = 0x3F;
+    sl = 0x0F;
 
-    state_new.sprite_match_flags = 0;
-
-    if (!get_bit(state_new.reg_lcdc, 1)) {
-      state_new.FEPO_STORE_MATCHp = 0;
-
-      if      (state_new.pix_count == state_new.store_x0) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000000001; }
-      else if (state_new.pix_count == state_new.store_x1) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000000010; }
-      else if (state_new.pix_count == state_new.store_x2) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000000100; }
-      else if (state_new.pix_count == state_new.store_x3) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000001000; }
-      else if (state_new.pix_count == state_new.store_x4) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000010000; }
-      else if (state_new.pix_count == state_new.store_x5) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0000100000; }
-      else if (state_new.pix_count == state_new.store_x6) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0001000000; }
-      else if (state_new.pix_count == state_new.store_x7) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0010000000; }
-      else if (state_new.pix_count == state_new.store_x8) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b0100000000; }
-      else if (state_new.pix_count == state_new.store_x9) { state_new.FEPO_STORE_MATCHp = 1; state_new.sprite_match_flags = 0b1000000000; }
-    }
-
-    if (get_bit(state_new.sprite_match_flags, 0)) { state_new.sprite_ibus = state_new.store_i0 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l0 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 1)) { state_new.sprite_ibus = state_new.store_i1 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l1 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 2)) { state_new.sprite_ibus = state_new.store_i2 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l2 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 3)) { state_new.sprite_ibus = state_new.store_i3 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l3 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 4)) { state_new.sprite_ibus = state_new.store_i4 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l4 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 5)) { state_new.sprite_ibus = state_new.store_i5 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l5 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 6)) { state_new.sprite_ibus = state_new.store_i6 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l6 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 7)) { state_new.sprite_ibus = state_new.store_i7 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l7 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 8)) { state_new.sprite_ibus = state_new.store_i8 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l8 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 9)) { state_new.sprite_ibus = state_new.store_i9 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l9 ^ 0b00001111; } 
-
-    if (!state_new.FEPO_STORE_MATCHp) {
-      const auto pack_ydiff = ~state_new.reg_ly + state_new.oam_temp_a;
-      state_new.sprite_lbus = pack_ydiff & 0b00001111;
+    if (!get_bit(s.reg_lcdc, 1)) {
+      s.FEPO_STORE_MATCHp = 0;
+      if      (pc == s.store_x0) { s.FEPO_STORE_MATCHp = 1; sf = 0x001;  si = s.store_i0 ^ 0x3F; sl = s.store_l0 ^ 0x0F; }
+      else if (pc == s.store_x1) { s.FEPO_STORE_MATCHp = 1; sf = 0x002;  si = s.store_i1 ^ 0x3F; sl = s.store_l1 ^ 0x0F; }
+      else if (pc == s.store_x2) { s.FEPO_STORE_MATCHp = 1; sf = 0x004;  si = s.store_i2 ^ 0x3F; sl = s.store_l2 ^ 0x0F; }
+      else if (pc == s.store_x3) { s.FEPO_STORE_MATCHp = 1; sf = 0x008;  si = s.store_i3 ^ 0x3F; sl = s.store_l3 ^ 0x0F; }
+      else if (pc == s.store_x4) { s.FEPO_STORE_MATCHp = 1; sf = 0x010;  si = s.store_i4 ^ 0x3F; sl = s.store_l4 ^ 0x0F; }
+      else if (pc == s.store_x5) { s.FEPO_STORE_MATCHp = 1; sf = 0x020;  si = s.store_i5 ^ 0x3F; sl = s.store_l5 ^ 0x0F; }
+      else if (pc == s.store_x6) { s.FEPO_STORE_MATCHp = 1; sf = 0x040;  si = s.store_i6 ^ 0x3F; sl = s.store_l6 ^ 0x0F; }
+      else if (pc == s.store_x7) { s.FEPO_STORE_MATCHp = 1; sf = 0x080;  si = s.store_i7 ^ 0x3F; sl = s.store_l7 ^ 0x0F; }
+      else if (pc == s.store_x8) { s.FEPO_STORE_MATCHp = 1; sf = 0x100;  si = s.store_i8 ^ 0x3F; sl = s.store_l8 ^ 0x0F; }
+      else if (pc == s.store_x9) { s.FEPO_STORE_MATCHp = 1; sf = 0x200;  si = s.store_i9 ^ 0x3F; sl = s.store_l9 ^ 0x0F; }
     }
   }
   else {
-    if (gen_clk_new(phase_total, 0b01010101)) {
-      if (!pause_rendering_new) state_new.lcd.PAHO_X_8_SYNC.state = get_bit(state_old.pix_count, 3);
-    }
-
-    state_new.sprite_ibus = 0b00111111;
-    state_new.sprite_lbus = 0b00001111;
-
-    if (get_bit(state_new.reg_lcdc, 1)) {
-      state_new.sprite_match_flags = 0;
-    }
-
-    if (get_bit(state_new.sprite_match_flags, 0)) { state_new.sprite_ibus = state_new.store_i0 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l0 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 1)) { state_new.sprite_ibus = state_new.store_i1 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l1 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 2)) { state_new.sprite_ibus = state_new.store_i2 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l2 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 3)) { state_new.sprite_ibus = state_new.store_i3 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l3 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 4)) { state_new.sprite_ibus = state_new.store_i4 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l4 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 5)) { state_new.sprite_ibus = state_new.store_i5 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l5 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 6)) { state_new.sprite_ibus = state_new.store_i6 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l6 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 7)) { state_new.sprite_ibus = state_new.store_i7 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l7 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 8)) { state_new.sprite_ibus = state_new.store_i8 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l8 ^ 0b00001111; } 
-    if (get_bit(state_new.sprite_match_flags, 9)) { state_new.sprite_ibus = state_new.store_i9 ^ 0b00111111; state_new.sprite_lbus = state_new.store_l9 ^ 0b00001111; } 
-
     state_new.sprite_ibus = state_new.sprite_index;
-
-    if (!state_new.FEPO_STORE_MATCHp) {
-      const auto pack_ydiff = ~state_new.reg_ly + state_new.oam_temp_a;
-      state_new.sprite_lbus = pack_ydiff & 0b00001111;
-    }
+    state_new.sprite_lbus = 0b00001111;
   }
 
+  if (!state_new.XYMU_RENDERINGn && gen_clk_new(phase_total, 0b01010101)) {
+    if (!pause_rendering_new) state_new.lcd.PAHO_X_8_SYNC.state = get_bit(state_old.pix_count, 3);
+  }
+
+  if (!state_new.XYMU_RENDERINGn && !state_new.FEPO_STORE_MATCHp) {
+    const auto pack_ydiff = ~state_new.reg_ly + state_new.oam_temp_a;
+    state_new.sprite_lbus = pack_ydiff & 0b00001111;
+  }
 
   //----------------------------------------
   // WY/WX/window match
@@ -1036,11 +1000,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = 0;
   }
 
-  // FIXME get rid of this signal
-  state_new.win_ctrl.ROGE_WY_MATCHp = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
-
   if (gen_clk_new(phase_total, 0b00100000)) {
-    state_new.win_ctrl.SARY_WY_MATCHp.state = state_old.win_ctrl.ROGE_WY_MATCHp;
+    state_new.win_ctrl.SARY_WY_MATCHp.state = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
   }
 
   if (get_bit(state_new.reg_lcdc, 7)) {
@@ -1898,6 +1859,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
   // These are all dead (unused) signals
+
+  state_new.win_ctrl.ROGE_WY_MATCHp = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
 
   if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
     if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_63_JOY_P14.state = get_bit(state_old.cpu_dbus, 4);

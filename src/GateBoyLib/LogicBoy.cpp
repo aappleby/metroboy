@@ -338,19 +338,48 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
   }
 
-  if (state_new.cpu_signals.SIG_IN_CPU_RDp && (state_new.cpu_abus == 0xFF44)) {
-    state_new.cpu_dbus = state_new.reg_ly;
+  //----------------------------------------
+
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (state_new.cpu_abus == 0xFF00) {
+      set_bit(state_new.cpu_dbus, 0, !get_bit(state_new.joy_latch, 0));
+      set_bit(state_new.cpu_dbus, 1, !get_bit(state_new.joy_latch, 1));
+      set_bit(state_new.cpu_dbus, 2, !get_bit(state_new.joy_latch, 2));
+      set_bit(state_new.cpu_dbus, 3, !get_bit(state_new.joy_latch, 3));
+      set_bit(state_new.cpu_dbus, 4,  get_bit(state_new.reg_joy, 0));
+      set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
+    }
+    if (state_new.cpu_abus == 0xFF05) state_new.cpu_dbus = state_new.reg_tima;
+    if (state_new.cpu_abus == 0xFF06) state_new.cpu_dbus = state_new.reg_tma;
+    if (state_new.cpu_abus == 0xFF07) state_new.cpu_dbus = state_new.reg_tac | 0b11111000;
+    if (state_new.cpu_abus == 0xFF44) state_new.cpu_dbus = state_new.reg_ly;
+    if (state_new.cpu_abus == 0xFF47) state_new.cpu_dbus = ~state_new.reg_bgp;
+    if (state_new.cpu_abus == 0xFF48) state_new.cpu_dbus = ~state_new.reg_obp0;
+    if (state_new.cpu_abus == 0xFF49) state_new.cpu_dbus = ~state_new.reg_obp1;
+    if (state_new.cpu_abus == 0xFF4A) state_new.cpu_dbus = ~state_new.reg_wy;
+    if (state_new.cpu_abus == 0xFF4B) state_new.cpu_dbus = ~state_new.reg_wx;
   }
+
+  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
+    if (state_new.cpu_abus == 0xFF00) {
+      set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
+      set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
+    }
+    if (state_new.cpu_abus == 0xFF06) state_new.reg_tma  =  state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF07) state_new.reg_tac  =  state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF46) state_new.reg_dma  = ~state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF47) state_new.reg_bgp  = ~state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF48) state_new.reg_obp0 = ~state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF49) state_new.reg_obp1 = ~state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF4A) state_new.reg_wy   = ~state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF4B) state_new.reg_wx   = ~state_old.cpu_dbus;
+  }
+
 
   //----------------------------------------
   // Joypad
 
   // FIXME what if both scan bits are set?
-
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
-    if (state_new.cpu_abus == 0xFF00) set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
-    if (state_new.cpu_abus == 0xFF00) set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
-  }
 
   if (DELTA_HA) {
     uint8_t button_mask = 0b00000000;
@@ -365,45 +394,11 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.joy_int.BATU_JP_GLITCH0.state = !(sys.buttons & button_mask);
   }
 
-  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    if (state_new.cpu_abus == 0xFF00) {
-      set_bit(state_new.cpu_dbus, 0, !get_bit(state_new.joy_latch, 0));
-      set_bit(state_new.cpu_dbus, 1, !get_bit(state_new.joy_latch, 1));
-      set_bit(state_new.cpu_dbus, 2, !get_bit(state_new.joy_latch, 2));
-      set_bit(state_new.cpu_dbus, 3, !get_bit(state_new.joy_latch, 3));
-      set_bit(state_new.cpu_dbus, 4,  get_bit(state_new.reg_joy, 0));
-      set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
-    }
-  }
-  else {
+  if (!state_new.cpu_signals.SIG_IN_CPU_RDp) {
     uint8_t button_mask = 0b00000000;
     if (!get_bit(state_new.reg_joy, 0)) button_mask |= 0b00001111;
     if (!get_bit(state_new.reg_joy, 1)) button_mask |= 0b11110000;
     state_new.joy_latch = (((sys.buttons & button_mask) >> 0) | ((sys.buttons & button_mask) >> 4)) & 0b1111;
-  }
-
-  //----------------------------------------
-
-  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    if (state_new.cpu_abus == 0xFF05) state_new.cpu_dbus = state_new.reg_tima;
-    if (state_new.cpu_abus == 0xFF06) state_new.cpu_dbus = state_new.reg_tma;
-    if (state_new.cpu_abus == 0xFF07) state_new.cpu_dbus = state_new.reg_tac | 0b11111000;
-    if (state_new.cpu_abus == 0xFF47) state_new.cpu_dbus = ~state_new.reg_bgp;
-    if (state_new.cpu_abus == 0xFF48) state_new.cpu_dbus = ~state_new.reg_obp0;
-    if (state_new.cpu_abus == 0xFF49) state_new.cpu_dbus = ~state_new.reg_obp1;
-    if (state_new.cpu_abus == 0xFF4A) state_new.cpu_dbus = ~state_new.reg_wy;
-    if (state_new.cpu_abus == 0xFF4B) state_new.cpu_dbus = ~state_new.reg_wx;
-  }
-
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00000001)) {
-    if (state_new.cpu_abus == 0xFF06) state_new.reg_tma  =  state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF07) state_new.reg_tac  =  state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF46) state_new.reg_dma  = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF47) state_new.reg_bgp  = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF48) state_new.reg_obp0 = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF49) state_new.reg_obp1 = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF4A) state_new.reg_wy   = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF4B) state_new.reg_wx   = ~state_old.cpu_dbus;
   }
 
   //----------------------------------------

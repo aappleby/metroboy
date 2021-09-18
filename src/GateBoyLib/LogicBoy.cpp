@@ -740,12 +740,18 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     get_bit(state_new.sfetch_counter, 2));
 
   if (!state_old.XYMU_RENDERINGn) {
+    uint8_t sprite_pix = state_old.vram_dbus;
+
+    if (get_bit(state_old.oam_temp_b, 5) && state_old.sfetch_control.TEXY_SFETCHINGp) {
+      sprite_pix = bit_reverse(state_old.vram_dbus);
+    }
+
     if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6 || state_new.XYMU_RENDERINGn)) {
-      state_new.sprite_pix_a = ~state_old.flipped_sprite;
+      state_new.sprite_pix_a = ~sprite_pix;
     }
 
     if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10 || state_new.XYMU_RENDERINGn)) {
-      state_new.sprite_pix_b = ~state_old.flipped_sprite;
+      state_new.sprite_pix_b = ~sprite_pix;
     }
   }
 
@@ -1575,77 +1581,38 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //--------------------------------------------
   // Vram address pin driver
 
+  bit_unpack(pins.vram_abus, state_new.vram_abus);
+
+  state_new.vram_dbus = 0xFF;
+
   if (!state_new.XYMU_RENDERINGn) {
-    bit_unpack(pins.vram_abus, state_new.vram_abus);
-
-    if ((gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.XYMU_RENDERINGn && cpu_addr_vram_new && state_new.cpu_signals.SIG_IN_CPU_WRp) {
-      state_new.vram_dbus = state_new.cpu_dbus;
-    }
-
-    if (state_new.XYMU_RENDERINGn) {
-      pins.vram_ctrl.PIN_43_VRAM_CSn.state = (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) || dma_addr_vram_new;
-      pins.vram_ctrl.PIN_45_VRAM_OEn.state = (!cpu_addr_vram_new || !state_new.cpu_signals.SIG_IN_CPU_WRp) || dma_addr_vram_new;
-      pins.vram_ctrl.PIN_49_VRAM_WRn.state = cpu_addr_vram_new && gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp;
-    }
-    else {
-      pins.vram_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || state_new.sfetch_control.TEXY_SFETCHINGp;
-      pins.vram_ctrl.PIN_45_VRAM_OEn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || (state_new.sfetch_control.TEXY_SFETCHINGp && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
-      pins.vram_ctrl.PIN_49_VRAM_WRn.state = 0;
-    }
-
-    uint8_t vdata = 0xFF;
+    pins.vram_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || state_new.sfetch_control.TEXY_SFETCHINGp;
+    pins.vram_ctrl.PIN_45_VRAM_OEn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || (state_new.sfetch_control.TEXY_SFETCHINGp && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
+    pins.vram_ctrl.PIN_49_VRAM_WRn.state = 0;
 
     if (pins.vram_ctrl.PIN_45_VRAM_OEn) {
-      vdata = mem.vid_ram[bit_pack_inv(pins.vram_abus)];
+      state_new.vram_dbus = mem.vid_ram[state_new.vram_abus ^ 0x1FFF];
     }
 
-    bit_unpack(pins.vram_dbus, 0);
-
-    if (pins.vram_ctrl.PIN_45_VRAM_OEn) {
-      bit_unpack_inv(pins.vram_dbus, vdata);
-    }
-
-    if (cpu_addr_vram_new && (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.XYMU_RENDERINGn && state_new.cpu_signals.SIG_IN_CPU_WRp) {
-      bit_unpack_inv(pins.vram_dbus, state_new.vram_dbus);
-    }
-    else {
-      state_new.vram_dbus = (uint8_t)bit_pack_inv(pins.vram_dbus);
-    }
-
-    if (pins.vram_ctrl.PIN_49_VRAM_WRn) {
-      mem.vid_ram[bit_pack_inv(pins.vram_abus)] = (uint8_t)bit_pack_inv(pins.vram_dbus);
-    }
-
-    if (cpu_addr_vram_new && (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.XYMU_RENDERINGn && state_new.cpu_signals.SIG_IN_CPU_RDp && state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
-      state_new.cpu_dbus = state_new.vram_dbus;
-    }
-
-    uint8_t pix = state_new.vram_dbus;
-    if (get_bit(state_new.oam_temp_b, 5) && state_new.sfetch_control.TEXY_SFETCHINGp) pix = bit_reverse(pix);
-    state_new.flipped_sprite = pix;
+    bit_unpack_inv(pins.vram_dbus, state_new.vram_dbus);
   }
+
+
+
+
   else {
-    bit_unpack(pins.vram_abus, state_new.vram_abus);
-
-    if ((gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.XYMU_RENDERINGn && cpu_addr_vram_new && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+    if ((gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && 1 && cpu_addr_vram_new && state_new.cpu_signals.SIG_IN_CPU_WRp) {
       state_new.vram_dbus = state_new.cpu_dbus;
     }
 
-    if (state_new.XYMU_RENDERINGn) {
-      pins.vram_ctrl.PIN_43_VRAM_CSn.state = (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) || dma_addr_vram_new;
-      pins.vram_ctrl.PIN_45_VRAM_OEn.state = (!cpu_addr_vram_new || !state_new.cpu_signals.SIG_IN_CPU_WRp) || dma_addr_vram_new;
-      pins.vram_ctrl.PIN_49_VRAM_WRn.state = cpu_addr_vram_new && gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp;
-    }
-    else {
-      pins.vram_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || state_new.sfetch_control.TEXY_SFETCHINGp;
-      pins.vram_ctrl.PIN_45_VRAM_OEn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || (state_new.sfetch_control.TEXY_SFETCHINGp && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
-      pins.vram_ctrl.PIN_49_VRAM_WRn.state = 0;
-    }
+    pins.vram_ctrl.PIN_43_VRAM_CSn.state = (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) || dma_addr_vram_new;
+    pins.vram_ctrl.PIN_45_VRAM_OEn.state = (!cpu_addr_vram_new || !state_new.cpu_signals.SIG_IN_CPU_WRp) || dma_addr_vram_new;
+    pins.vram_ctrl.PIN_49_VRAM_WRn.state = cpu_addr_vram_new && gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp;
 
     uint8_t vdata = 0xFF;
 
     if (pins.vram_ctrl.PIN_45_VRAM_OEn) {
-      vdata = mem.vid_ram[bit_pack_inv(pins.vram_abus)];
+      vdata = mem.vid_ram[state_new.vram_abus ^ 0x1FFF];
     }
 
     bit_unpack(pins.vram_dbus, 0);
@@ -1654,7 +1621,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       bit_unpack_inv(pins.vram_dbus, vdata);
     }
 
-    if (cpu_addr_vram_new && (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.XYMU_RENDERINGn && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+    if (cpu_addr_vram_new && (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.cpu_signals.SIG_IN_CPU_WRp) {
       bit_unpack_inv(pins.vram_dbus, state_new.vram_dbus);
     }
     else {
@@ -1662,18 +1629,13 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
 
     if (pins.vram_ctrl.PIN_49_VRAM_WRn) {
-      mem.vid_ram[bit_pack_inv(pins.vram_abus)] = (uint8_t)bit_pack_inv(pins.vram_dbus);
+      mem.vid_ram[state_new.vram_abus ^ 0x1FFF] = (uint8_t)bit_pack_inv(pins.vram_dbus);
     }
 
-    if (cpu_addr_vram_new && (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.XYMU_RENDERINGn && state_new.cpu_signals.SIG_IN_CPU_RDp && state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
+    if (cpu_addr_vram_new && (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.cpu_signals.SIG_IN_CPU_RDp && state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
       state_new.cpu_dbus = state_new.vram_dbus;
     }
-
-    uint8_t pix = state_new.vram_dbus;
-    if (get_bit(state_new.oam_temp_b, 5) && state_new.sfetch_control.TEXY_SFETCHINGp) pix = bit_reverse(pix);
-    state_new.flipped_sprite = pix;
   }
-
 
   //----------------------------------------
   // oam
@@ -1932,6 +1894,13 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
   // These are all dead (unused) signals
+
+  if (get_bit(state_new.oam_temp_b, 5) && state_new.sfetch_control.TEXY_SFETCHINGp) {
+    state_new.flipped_sprite = bit_reverse(state_new.vram_dbus);
+  }
+  else {
+    state_new.flipped_sprite = state_new.vram_dbus;
+  }
 
   state_new.oam_ctrl.old_oam_clk = !state_new.oam_ctrl.SIG_OAM_CLKn; // Vestige of gate mode
   state_new.zram_bus.clk_old = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp;

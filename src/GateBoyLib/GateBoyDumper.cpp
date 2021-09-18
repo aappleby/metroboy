@@ -299,9 +299,9 @@ void GateBoyDumper::dump_timer(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_resets(const GateBoyState& s, Dumper& d) {
-  d.dump_bitp("PIN_71_RST     : ", s.sys_rst.PIN_71_RST.state);
-  d.dump_bitp("PIN_77_T1      : ", s.sys_rst.PIN_77_T1.state);
-  d.dump_bitp("PIN_76_T2      : ", s.sys_rst.PIN_76_T2.state);
+  d.dump_bitp("PIN_71_RST     : ", s.pins.sys.PIN_71_RST.state);
+  d.dump_bitp("PIN_77_T1      : ", s.pins.sys.PIN_77_T1.state);
+  d.dump_bitp("PIN_76_T2      : ", s.pins.sys.PIN_76_T2.state);
 
   d.dump_bitp("TUBO_WAITINGp  : ", s.sys_rst.TUBO_WAITINGp.state);
   d.dump_bitn("ASOL_POR_DONEn : ", s.sys_rst.ASOL_POR_DONEn.state);

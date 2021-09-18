@@ -441,12 +441,13 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   // Vram control pins
 
   {
+    /*_p25.TUTO*/ wire TUTO_VRAM_DBGp = and2(gb_state.pins.sys.UNOR_MODE_DBG2p(), gb_state.sys_rst.SOTO_DBG_VRAMp.qn_new());
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
     /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
-    /*#p25.RACO*/ wire RACO_DBG_VRAMn = not1(gb_state.sys_rst.TUTO_VRAM_DBGp());
+    /*#p25.RACO*/ wire RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp);
     /*#p25.SUTU*/ wire SUTU_MCSn = nor4(LENA_BFETCHINGp, LUFA_DMA_VRAMp, gb_state.sfetch_control.TEXY_SFETCHINGp.out_new(), SERE_CPU_VRAM_RDp);
     /*_p25.TODE*/ wire TODE_MCSn_A = and2(SUTU_MCSn, RACO_DBG_VRAMn);
-    /*_p25.SEWO*/ wire SEWO_MCSn_D =  or2(SUTU_MCSn, gb_state.sys_rst.TUTO_VRAM_DBGp());
+    /*_p25.SEWO*/ wire SEWO_MCSn_D =  or2(SUTU_MCSn, TUTO_VRAM_DBGp);
     /*_p25.SOKY*/ wire SOKY_MCSp_A = not1(TODE_MCSn_A);
     /*_p25.SETY*/ wire SETY_MCSp_D = not1(SEWO_MCSn_D);
 
@@ -467,12 +468,13 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
     ///*_p25.SUDO*/ wire SUDO_MWRp = not1(/*vram_pins.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
     /*_p25.SUDO*/ wire SUDO_MWRp = not1(gb_state.SIG_VCC.out_new()); // Ignoring debug stuff for now
 
-    /*#p25.TYJY*/ wire TYJY_VRAM_WRp = mux2p(gb_state.sys_rst.TUTO_VRAM_DBGp(), SUDO_MWRp, TUJA_CPU_VRAM_WRp());
+    /*_p25.TUTO*/ wire TUTO_VRAM_DBGp = and2(gb_state.pins.sys.UNOR_MODE_DBG2p(), gb_state.sys_rst.SOTO_DBG_VRAMp.qn_new());
+    /*#p25.TYJY*/ wire TYJY_VRAM_WRp = mux2p(TUTO_VRAM_DBGp, SUDO_MWRp, TUJA_CPU_VRAM_WRp());
     /*#p25.SOHY*/ wire SOHY_MWRn     = nand2(TYJY_VRAM_WRp, SERE_CPU_VRAM_RDp);
 
-    /*#p25.RACO*/ wire RACO_DBG_VRAMn = not1(gb_state.sys_rst.TUTO_VRAM_DBGp());
+    /*#p25.RACO*/ wire RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp);
     /*_p25.TAXY*/ wire TAXY_MWRn_A = and2(SOHY_MWRn, RACO_DBG_VRAMn);
-    /*_p25.SOFY*/ wire SOFY_MWRn_D =  or2(SOHY_MWRn, gb_state.sys_rst.TUTO_VRAM_DBGp());
+    /*_p25.SOFY*/ wire SOFY_MWRn_D =  or2(SOHY_MWRn, TUTO_VRAM_DBGp);
     /*_p25.SYSY*/ wire SYSY_MWRp_A = not1(TAXY_MWRn_A);
     /*_p25.RAGU*/ wire RAGU_MWRp_D = not1(SOFY_MWRn_D);
 
@@ -487,7 +489,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
     /*_p25.APAM*/ wire APAM_DMA_VRAMn    = not1(LUFA_DMA_VRAMp);
     /*_p25.RACU*/ wire RACU_MOEn   = and4(RYLU_CPU_VRAM_RDn, RAWA_SPR_VRAM_RDn, MYMA_BGW_VRAM_RDn, APAM_DMA_VRAMn); // def and
     /*_p25.SEMA*/ wire SEMA_MOEn_A = and2(RACU_MOEn, RACO_DBG_VRAMn);
-    /*_p25.RUTE*/ wire RUTE_MOEn_D =  or2(RACU_MOEn, gb_state.sys_rst.TUTO_VRAM_DBGp()); // schematic wrong, second input is RACU
+    /*_p25.RUTE*/ wire RUTE_MOEn_D =  or2(RACU_MOEn, TUTO_VRAM_DBGp); // schematic wrong, second input is RACU
     /*_p25.REFO*/ wire REFO_MOEn_A = not1(SEMA_MOEn_A);
     /*_p25.SAHA*/ wire SAHA_MOEn_D = not1(RUTE_MOEn_D);
     /*_PIN_45*/ gb_state.pins.vram_ctrl.PIN_45_VRAM_OEn.pin_out(REFO_MOEn_A, SAHA_MOEn_D);

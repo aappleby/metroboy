@@ -2,11 +2,23 @@
 #include <stdint.h>
 
 struct LogicBoyReset {
-  void reset_to_cart() {
-    PIN_71_RST = 0;
-    PIN_77_T1  = 0;
-    PIN_76_T2  = 0;
+  //void reset_to_poweron() {
+  //  memset(this, 0, sizeof(*this));
+  //}
 
+  //void reset_to_bootrom() {
+  //  TUBO_WAITINGp  = 0;
+  //  ASOL_POR_DONEn = 0;
+  //  AFER_SYS_RSTp  = 0;
+  //  SOTO_DBG_VRAMp = 0;
+  //
+  //  SIG_CPU_EXT_CLKGOOD = 1;
+  //  SIG_CPU_EXT_RESETp  = 0;
+  //  SIG_CPU_STARTp      = 0;
+  //  SIG_CPU_INT_RESETp  = 0;
+  //}
+
+  void reset_to_cart() {
     TUBO_WAITINGp  = 0;
     ASOL_POR_DONEn = 0;
     AFER_SYS_RSTp  = 0;
@@ -17,10 +29,6 @@ struct LogicBoyReset {
     SIG_CPU_STARTp      = 0;
     SIG_CPU_INT_RESETp  = 0;
   }
-
-  uint8_t PIN_71_RST;
-  uint8_t PIN_77_T1;
-  uint8_t PIN_76_T2;
 
   uint8_t TUBO_WAITINGp;
   uint8_t ASOL_POR_DONEn;

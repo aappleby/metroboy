@@ -185,6 +185,37 @@ struct PinsVramDBus {
   /*_PIN_25*/ PinIO PIN_25_VRAM_D07;
 };
 
+struct PinsSys {
+  void reset_to_poweron() {
+    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  }
+
+  void reset_to_bootrom() {
+    PIN_71_RST.state = BIT_OLD | BIT_DRIVEN;
+    PIN_77_T1. state = BIT_OLD | BIT_DRIVEN;
+    PIN_76_T2. state = BIT_OLD | BIT_DRIVEN;
+  }
+
+  void reset_to_cart() {
+    PIN_71_RST.state = 0b00011000;
+    PIN_77_T1. state = 0b00011000;
+    PIN_76_T2. state = 0b00011000;
+  }
+
+  /*_p07.UBET*/ wire UBETp()           const { return not1(PIN_77_T1.qp_int_new()); }
+  /*_p07.UVAR*/ wire UVARp()           const { return not1(PIN_76_T2.qp_int_new()); }
+  /*_p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN_77_T1.qp_int_new(), UVARp()); }
+  /*_p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
+  /*_p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN_76_T2.qp_int_new(), UBETp()); }
+  /*_p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
+  /*_p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
+  /*_p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN_71_RST.qp_int_new()); }
+
+  /*_PIN_71*/ PinIn  PIN_71_RST;
+  /*_PIN_77*/ PinIn  PIN_77_T1;
+  /*_PIN_76*/ PinIn  PIN_76_T2;
+};
+
 //-----------------------------------------------------------------------------
 
 struct GateBoyPins {
@@ -197,6 +228,7 @@ struct GateBoyPins {
   PinsVramControl vram_ctrl; // 43/45/49
   PinsJoypad      joy;       // 62-67
   //PinsSerial      serial;    // 68-70
+  PinsSys         sys;    // 71/76/77
   PinsControl     ctrl;   // 78-80
 
   void reset_to_poweron() {

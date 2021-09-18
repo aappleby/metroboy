@@ -379,9 +379,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire EXT_clkgood = bit(~sys.clk_good);
 
     /*_PIN_74*/ gb_state.sys_clk.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
-    /*_PIN_71*/ gb_state.sys_rst.PIN_71_RST.pin_in(EXT_sys_rst);
-    /*_PIN_76*/ gb_state.sys_rst.PIN_76_T2.pin_in(EXT_sys_t2);
-    /*_PIN_77*/ gb_state.sys_rst.PIN_77_T1.pin_in(EXT_sys_t1);
+    /*_PIN_71*/ gb_state.pins.sys.PIN_71_RST.pin_in(EXT_sys_rst);
+    /*_PIN_76*/ gb_state.pins.sys.PIN_76_T2.pin_in(EXT_sys_t2);
+    /*_PIN_77*/ gb_state.pins.sys.PIN_77_T1.pin_in(EXT_sys_t1);
 
     wire EXT_ack_vblank = get_bit(cpu.core.int_ack, BIT_VBLANK);
     wire EXT_ack_stat = get_bit(cpu.core.int_ack, BIT_STAT);
@@ -398,8 +398,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_SIG_CPU_CLKREQ*/ gb_state.sys_clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
 
     /*_SIG_CPU_ADDR_HIp*/ gb_state.cpu_signals.SIG_CPU_ADDR_HIp.sig_out(gb_state.cpu_abus.SYRO_FE00_FFFF());
-    /*_SIG_CPU_UNOR_DBG*/ gb_state.cpu_signals.SIG_CPU_UNOR_DBG.sig_out(gb_state.sys_rst.UNOR_MODE_DBG2p());
-    /*_SIG_CPU_UMUT_DBG*/ gb_state.cpu_signals.SIG_CPU_UMUT_DBG.sig_out(gb_state.sys_rst.UMUT_MODE_DBG1p());
+    /*_SIG_CPU_UNOR_DBG*/ gb_state.cpu_signals.SIG_CPU_UNOR_DBG.sig_out(gb_state.pins.sys.UNOR_MODE_DBG2p());
+    /*_SIG_CPU_UMUT_DBG*/ gb_state.cpu_signals.SIG_CPU_UMUT_DBG.sig_out(gb_state.pins.sys.UMUT_MODE_DBG1p());
   }
 
   //----------------------------------------
@@ -418,7 +418,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p07.TAPU*/ gb_state.cpu_signals.TAPU_CPU_WRp = not1(UBAL_CPU_WRn); // xxxxEFGx
 
   /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(gb_state.sys_clk.AROV_xxCDEFxx(), gb_state.sys_clk.AJAX_xxxxEFGH(), gb_state.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new());
-  /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(gb_state.sys_rst.UNOR_MODE_DBG2p(), AGUT_xxCDEFGH);
+  /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(gb_state.pins.sys.UNOR_MODE_DBG2p(), AGUT_xxCDEFGH);
   /*#p01.ABUZ*/ gb_state.cpu_signals.ABUZ_EXT_RAM_CS_CLK = not1(AWOD_ABxxxxxx);
 
   tock_div_gates();

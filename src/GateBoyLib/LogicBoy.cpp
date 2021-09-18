@@ -513,9 +513,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   state_new.sys_clk.PIN_74_CLK.CLK.state = gen_clk_new(phase_total, 0b10101010);
   state_new.sys_clk.PIN_74_CLK.CLKGOOD.state = 1;
 
-  state_new.sys_rst.PIN_71_RST = 0;
-  state_new.sys_rst.PIN_76_T2 = 0;
-  state_new.sys_rst.PIN_77_T1 = 0;
+  state_new.pins.sys.PIN_71_RST = 0;
+  state_new.pins.sys.PIN_76_T2 = 0;
+  state_new.pins.sys.PIN_77_T1 = 0;
 
   state_new.cpu_ack = cpu.core.int_ack;
 

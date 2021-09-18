@@ -21,10 +21,10 @@ void GateBoy::tock_clocks_gates() {
   DFF9 ALEF_AxxxxFGH_old = gb_state.sys_clk.ALEF_AxxxxFGH;
   DFF9 APUK_ABxxxxGH_old = gb_state.sys_clk.APUK_ABxxxxGH;
 
-  /*_p01.AFUR*/ gb_state.sys_clk.AFUR_xxxxEFGH.dff9(ATAN_AxCxExGx, gb_state.sys_rst.UPOJ_MODE_PRODn(), ADYK_ABCxxxxH_old.qp_old());
-  /*_p01.ALEF*/ gb_state.sys_clk.ALEF_AxxxxFGH.dff9(ATAL_xBxDxFxH, gb_state.sys_rst.UPOJ_MODE_PRODn(), AFUR_xxxxEFGH_old.qn_old());
-  /*_p01.APUK*/ gb_state.sys_clk.APUK_ABxxxxGH.dff9(ATAN_AxCxExGx, gb_state.sys_rst.UPOJ_MODE_PRODn(), ALEF_AxxxxFGH_old.qn_old());
-  /*_p01.ADYK*/ gb_state.sys_clk.ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, gb_state.sys_rst.UPOJ_MODE_PRODn(), APUK_ABxxxxGH_old.qn_old());
+  /*_p01.AFUR*/ gb_state.sys_clk.AFUR_xxxxEFGH.dff9(ATAN_AxCxExGx, gb_state.pins.sys.UPOJ_MODE_PRODn(), ADYK_ABCxxxxH_old.qp_old());
+  /*_p01.ALEF*/ gb_state.sys_clk.ALEF_AxxxxFGH.dff9(ATAL_xBxDxFxH, gb_state.pins.sys.UPOJ_MODE_PRODn(), AFUR_xxxxEFGH_old.qn_old());
+  /*_p01.APUK*/ gb_state.sys_clk.APUK_ABxxxxGH.dff9(ATAN_AxCxExGx, gb_state.pins.sys.UPOJ_MODE_PRODn(), ALEF_AxxxxFGH_old.qn_old());
+  /*_p01.ADYK*/ gb_state.sys_clk.ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, gb_state.pins.sys.UPOJ_MODE_PRODn(), APUK_ABxxxxGH_old.qn_old());
 
   /*_PIN_75*/ gb_state.sys_clk.PIN_75_CLK_OUT.pin_out(gb_state.sys_clk.BUDE_xxxxEFGH(), gb_state.sys_clk.BUDE_xxxxEFGH());
 

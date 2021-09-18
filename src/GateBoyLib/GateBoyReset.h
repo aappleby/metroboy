@@ -9,10 +9,6 @@ struct GateBoyReset {
   }
 
   void reset_to_bootrom() {
-    PIN_71_RST.state = BIT_OLD | BIT_DRIVEN;
-    PIN_77_T1. state = BIT_OLD | BIT_DRIVEN;
-    PIN_76_T2. state = BIT_OLD | BIT_DRIVEN;
-
     TUBO_WAITINGp.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
     ASOL_POR_DONEn.state = BIT_OLD | BIT_DRIVEN;
     AFER_SYS_RSTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
@@ -25,10 +21,6 @@ struct GateBoyReset {
   }
 
   void reset_to_cart() {
-    PIN_71_RST.state = 0b00011000;
-    PIN_77_T1. state = 0b00011000;
-    PIN_76_T2. state = 0b00011000;
-
     TUBO_WAITINGp.state  = 0b00011000;
     ASOL_POR_DONEn.state = 0b00011000;
     AFER_SYS_RSTp.state  = 0b00011010;
@@ -40,15 +32,7 @@ struct GateBoyReset {
     SIG_CPU_INT_RESETp.state  = 0b00011000;
   }
 
-  /*_p07.UBET*/ wire UBETp()           const { return not1(PIN_77_T1.qp_int_new()); }
-  /*_p07.UVAR*/ wire UVARp()           const { return not1(PIN_76_T2.qp_int_new()); }
-  /*_p07.UMUT*/ wire UMUT_MODE_DBG1p() const { return and2(PIN_77_T1.qp_int_new(), UVARp()); }
-  /*_p07.UNOR*/ wire UNOR_MODE_DBG2p() const { return and2(PIN_76_T2.qp_int_new(), UBETp()); }
-  /*_p07.UPOJ*/ wire UPOJ_MODE_PRODn() const { return nand3(UBETp(), UVARp(), PIN_71_RST.qp_int_new()); }
-  /*_p08.RYCA*/ wire RYCA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
-  /*_p08.TOVA*/ wire TOVA_MODE_DBG2n() const { return not1(UNOR_MODE_DBG2p()); }
-  /*_p08.MULE*/ wire MULE_MODE_DBG1n() const { return not1(UMUT_MODE_DBG1p()); }
-  /*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
+  ///*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_new(), ASOL_POR_DONEn.qp_new()); }
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
@@ -62,10 +46,6 @@ struct GateBoyReset {
   /*_p03.MULO*/ wire MULO_SYS_RSTn() const { return not1(ALUR_SYS_RSTn()); }
 
   //----------------------------------------
-
-  /*_PIN_71*/ PinIn  PIN_71_RST;
-  /*_PIN_77*/ PinIn  PIN_77_T1;
-  /*_PIN_76*/ PinIn  PIN_76_T2;
 
   /*_p01.TUBO*/ NorLatch TUBO_WAITINGp;  // Must be 0 in run mode, otherwise we'd ping SIG_CPU_INT_RESETp when UPOF_DIV_15 changed
   /*_p01.ASOL*/ NorLatch ASOL_POR_DONEn; // Schematic wrong, this is a latch.

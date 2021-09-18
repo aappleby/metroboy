@@ -6,7 +6,7 @@
 
 void GateBoy::tock_reset_gates(DFF17 UPOF_DIV15p) {
 
-  /*_p01.AFER*/ gb_state.sys_rst.AFER_SYS_RSTp.dff13(gb_state.sys_clk.BOGA_Axxxxxxx(), gb_state.pins.sys.UPOJ_MODE_PRODn(), gb_state.sys_rst.ASOL_POR_DONEn.qp_old());
+  /*_p01.AFER*/ gb_state.sys_rst.AFER_SYS_RSTp.dff13(BOGA_Axxxxxxx(), gb_state.pins.sys.UPOJ_MODE_PRODn(), gb_state.sys_rst.ASOL_POR_DONEn.qp_old());
 
   /*_p01.UPYF*/ wire UPYF = or2(gb_state.pins.sys.PIN_71_RST.qp_int_new(), gb_state.sys_clk.UCOB_CLKBADp());
   /*_p01.TUBO*/ gb_state.sys_rst.TUBO_WAITINGp.nor_latch(UPYF, gb_state.sys_clk.SIG_CPU_CLKREQ.out_new());

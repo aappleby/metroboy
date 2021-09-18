@@ -28,14 +28,14 @@ void GateBoy::tock_clocks_gates() {
 
   /*_PIN_75*/ gb_state.sys_clk.PIN_75_CLK_OUT.pin_out(gb_state.sys_clk.BUDE_xxxxEFGH(), gb_state.sys_clk.BUDE_xxxxEFGH());
 
-  /*_SIG_CPU_BOWA_Axxxxxxx*/ gb_state.sys_clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(gb_state.sys_clk.BOWA_xBCDEFGH());
-  /*_SIG_CPU_BEDO_xBCDEFGH*/ gb_state.sys_clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(gb_state.sys_clk.BEDO_Axxxxxxx());
+  /*_SIG_CPU_BOWA_Axxxxxxx*/ gb_state.sys_clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
+  /*_SIG_CPU_BEDO_xBCDEFGH*/ gb_state.sys_clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(BEDO_Axxxxxxx());
   /*_SIG_CPU_BEKO_ABCDxxxx*/ gb_state.sys_clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(gb_state.sys_clk.BEKO_ABCDxxxx());
   /*_SIG_CPU_BUDE_xxxxEFGH*/ gb_state.sys_clk.SIG_CPU_BUDE_xxxxEFGH.sig_out(gb_state.sys_clk.BUDE_xxxxEFGH());
   /*_SIG_CPU_BOLO_ABCDEFxx*/ gb_state.sys_clk.SIG_CPU_BOLO_ABCDEFxx.sig_out(gb_state.sys_clk.BOLO_ABCDEFxx());
   /*_SIG_CPU_BUKE_AxxxxxGH*/ gb_state.sys_clk.SIG_CPU_BUKE_AxxxxxGH.sig_out(gb_state.sys_clk.BUKE_AxxxxxGH());
-  /*_SIG_CPU_BOMA_xBCDEFGH*/ gb_state.sys_clk.SIG_CPU_BOMA_xBCDEFGH.sig_out(gb_state.sys_clk.BOMA_xBCDEFGH());
-  /*_SIG_CPU_BOGA_Axxxxxxx*/ gb_state.sys_clk.SIG_CPU_BOGA_Axxxxxxx.sig_out(gb_state.sys_clk.BOGA_Axxxxxxx());
+  /*_SIG_CPU_BOMA_xBCDEFGH*/ gb_state.sys_clk.SIG_CPU_BOMA_xBCDEFGH.sig_out(BOMA_xBCDEFGH());
+  /*_SIG_CPU_BOGA_Axxxxxxx*/ gb_state.sys_clk.SIG_CPU_BOGA_Axxxxxxx.sig_out(BOGA_Axxxxxxx());
 }
 
 //-----------------------------------------------------------------------------

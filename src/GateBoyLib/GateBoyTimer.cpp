@@ -11,7 +11,7 @@ void GateBoy::tock_div_gates() {
   /*_p01.TAPE*/ wire TAPE_FF04_WRp = and4(gb_state.cpu_signals.TAPU_CPU_WRp.out_new(), gb_state.cpu_abus.RYFO_FF04_FF07p(), gb_state.cpu_abus.TOLA_A01n(), gb_state.cpu_abus.TOVY_A00n());
   /*_p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(gb_state.sys_clk.UCOB_CLKBADp(), gb_state.pins.sys.PIN_71_RST.qp_int_new(), TAPE_FF04_WRp);
 
-  /*_p01.UKUP*/ gb_state.reg_div.UKUP_DIV00p.dff17(gb_state.sys_clk.BOGA_Axxxxxxx(),          UFOL_DIV_RSTn, gb_state.reg_div.UKUP_DIV00p.qn_old());
+  /*_p01.UKUP*/ gb_state.reg_div.UKUP_DIV00p.dff17(BOGA_Axxxxxxx(),                       UFOL_DIV_RSTn, gb_state.reg_div.UKUP_DIV00p.qn_old());
   /*_p01.UFOR*/ gb_state.reg_div.UFOR_DIV01p.dff17(gb_state.reg_div.UKUP_DIV00p.qn_any(), UFOL_DIV_RSTn, gb_state.reg_div.UFOR_DIV01p.qn_old());
   /*_p01.UNER*/ gb_state.reg_div.UNER_DIV02p.dff17(gb_state.reg_div.UFOR_DIV01p.qn_any(), UFOL_DIV_RSTn, gb_state.reg_div.UNER_DIV02p.qn_old());
   /*#p01.TERO*/ gb_state.reg_div.TERO_DIV03p.dff17(gb_state.reg_div.UNER_DIV02p.qn_any(), UFOL_DIV_RSTn, gb_state.reg_div.TERO_DIV03p.qn_old());
@@ -76,14 +76,14 @@ void GateBoy::tock_timer_gates(const GateBoyState& reg_old) {
   /*_p03.SABO*/ gb_state.reg_tac.SABO_TAC2p.dff17(SARA_FF07_WRn, gb_state.sys_rst.ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
 
   /*#p03.MERY*/ wire MERY_TIMER_OVERFLOWp_old = nor2(gb_state.reg_tima.NUGA_TIMA7p.qp_old(), gb_state.int_ctrl.NYDU_TIMA7p_DELAY.qn_old());
-  /*#p03.MOBA*/ gb_state.int_ctrl.MOBA_TIMER_OVERFLOWp.dff17(gb_state.sys_clk.BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), MERY_TIMER_OVERFLOWp_old);
+  /*#p03.MOBA*/ gb_state.int_ctrl.MOBA_TIMER_OVERFLOWp.dff17(BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), MERY_TIMER_OVERFLOWp_old);
 
   /*#p03.TOPE*/ wire TOPE_FF05_WRn = nand4(gb_state.cpu_signals.TAPU_CPU_WRp.out_new(), gb_state.cpu_abus.RYFO_FF04_FF07p(),  gb_state.cpu_abus.TOLA_A01n(), gb_state.cpu_abus.BUS_CPU_A00p.out_new());
   /*#p03.MUZU*/ wire MUZU_CPU_LOAD_TIMAn  = or2(gb_state.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new(), TOPE_FF05_WRn);
   /*#p03.MEKE*/ wire MEKE_TIMER_OVERFLOWn = not1(gb_state.int_ctrl.MOBA_TIMER_OVERFLOWp.qp_new());
   /*#p03.MEXU*/ wire MEXU_TIMA_LOADp      = nand3(MUZU_CPU_LOAD_TIMAn, gb_state.sys_rst.ALUR_SYS_RSTn(), MEKE_TIMER_OVERFLOWn);
   /*#p03.MUGY*/ wire MUGY_TIMA_MAX_RSTn   = not1(MEXU_TIMA_LOADp);
-  /*#p03.NYDU*/ gb_state.int_ctrl.NYDU_TIMA7p_DELAY.dff17(gb_state.sys_clk.BOGA_Axxxxxxx(), MUGY_TIMA_MAX_RSTn, gb_state.reg_tima.NUGA_TIMA7p.qp_old());
+  /*#p03.NYDU*/ gb_state.int_ctrl.NYDU_TIMA7p_DELAY.dff17(BOGA_Axxxxxxx(), MUGY_TIMA_MAX_RSTn, gb_state.reg_tima.NUGA_TIMA7p.qp_old());
 
   /*#p03.UBOT*/ wire UBOT_DIV01n = not1(gb_state.reg_div.UFOR_DIV01p.qp_new());
   /*#p03.UVYR*/ wire UVYR_DIV03n = not1(gb_state.reg_div.TERO_DIV03p.qp_new());

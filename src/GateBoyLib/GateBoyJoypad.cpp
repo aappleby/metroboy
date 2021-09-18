@@ -131,7 +131,7 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
     gb_state.pins.joy.PIN_66_JOY_P11.qp_int_new(),
     gb_state.pins.joy.PIN_67_JOY_P10.qp_int_new());
 
-  /*_p02.AWOB*/ gb_state.int_ctrl.AWOB_WAKE_CPU.tp_latchn(gb_state.sys_clk.BOGA_Axxxxxxx(), KERY_ANY_BUTTONp);
+  /*_p02.AWOB*/ gb_state.int_ctrl.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), KERY_ANY_BUTTONp);
   /*_SIG_CPU_WAKE*/ gb_state.int_ctrl.SIG_CPU_WAKE.sig_out(gb_state.int_ctrl.AWOB_WAKE_CPU.qp_new());
 
   // DFF17_01 SC
@@ -152,10 +152,10 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
   // DFF17_16 >> QN   _MUST_ be QN - see TERO
   // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
-  /*#p02.APUG*/ gb_state.joy_int.APUG_JP_GLITCH3.dff17(gb_state.sys_clk.BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.joy_int.AGEM_JP_GLITCH2.qp_old());
-  /*_p02.AGEM*/ gb_state.joy_int.AGEM_JP_GLITCH2.dff17(gb_state.sys_clk.BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.joy_int.ACEF_JP_GLITCH1.qp_old());
-  /*_p02.ACEF*/ gb_state.joy_int.ACEF_JP_GLITCH1.dff17(gb_state.sys_clk.BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.joy_int.BATU_JP_GLITCH0.qp_old());
-  /*_p02.BATU*/ gb_state.joy_int.BATU_JP_GLITCH0.dff17(gb_state.sys_clk.BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), KERY_ANY_BUTTONp);
+  /*#p02.APUG*/ gb_state.joy_int.APUG_JP_GLITCH3.dff17(BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.joy_int.AGEM_JP_GLITCH2.qp_old());
+  /*_p02.AGEM*/ gb_state.joy_int.AGEM_JP_GLITCH2.dff17(BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.joy_int.ACEF_JP_GLITCH1.qp_old());
+  /*_p02.ACEF*/ gb_state.joy_int.ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.joy_int.BATU_JP_GLITCH0.qp_old());
+  /*_p02.BATU*/ gb_state.joy_int.BATU_JP_GLITCH0.dff17(BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), KERY_ANY_BUTTONp);
 
   /*#p05.KEVU*/ gb_state.joy_latch.KEVU_JOYP_L0n.tp_latchn(BYZO_FF00_RDn, gb_state.pins.joy.PIN_67_JOY_P10.qp_int_new()); // A / Right
   /*#p05.KAPA*/ gb_state.joy_latch.KAPA_JOYP_L1n.tp_latchn(BYZO_FF00_RDn, gb_state.pins.joy.PIN_66_JOY_P11.qp_int_new()); // B / Left

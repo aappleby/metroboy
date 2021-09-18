@@ -328,10 +328,12 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
     if (state_new.cpu_abus == 0xFF40) state_new.reg_lcdc = ~state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF45) state_new.reg_lyc = ~state_old.cpu_dbus;
   }
 
   if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
     if (state_new.cpu_abus == 0xFF40) state_new.cpu_dbus = ~state_new.reg_lcdc;
+    if (state_new.cpu_abus == 0xFF45) state_new.cpu_dbus = ~state_old.reg_lyc;
   }
 
   //----------------------------------------
@@ -343,13 +345,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
   // LYC
-
-  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    if (state_new.cpu_abus == 0xFF45) state_new.cpu_dbus = uint8_t(state_old.reg_lyc ^ 0xFF);
-  }
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
-    if (state_new.cpu_abus == 0xFF45) state_new.reg_lyc = uint8_t(~state_old.cpu_dbus);
-  }
 
   if (!get_bit(state_new.reg_lcdc, 7) && DELTA_BC) {
     state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = state_old.reg_ly == (state_old.reg_lyc ^ 0xFF);
@@ -374,11 +369,11 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     wire ly_144_old = (state_old.reg_ly & 144) == 144;
     wire ly_153_old = (state_old.reg_ly & 153) == 153;
 
-    if (gen_clk_new(phase_total, 0b10000000)) {
+    if (DELTA_HA) {
       state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && !ly_144_old;
     }
 
-    if (gen_clk_new(phase_total, 0b00100000)) {
+    if (DELTA_BC) {
       state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
       state_new.lcd.NYPE_x113p = state_old.lcd.RUTU_x113p;
 
@@ -390,11 +385,11 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.reg_lx = state_old.reg_lx + 1;
     }
 
-    if (gen_clk_new(phase_total, 0b00001000)) {
+    if (DELTA_DE) {
       state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && !ly_144_old;
     }
 
-    if (gen_clk_new(phase_total, 0b00000010)) {
+    if (DELTA_FG) {
       state_new.lcd.ANEL_x113p = state_old.lcd.CATU_x113p;
       state_new.lcd.RUTU_x113p.state = (state_old.reg_lx == 113);
 

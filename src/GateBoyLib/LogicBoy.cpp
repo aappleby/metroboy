@@ -1360,23 +1360,23 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
         state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
       }
 
-      if (!VUNE_SPR_PIX_SET7) state_new.spr_pipe_a |= 0b10000000;
-      if (!TUXA_SPR_PIX_SET6) state_new.spr_pipe_a |= 0b01000000;
-      if (!VABY_SPR_PIX_SET5) state_new.spr_pipe_a |= 0b00100000;
-      if (!VEXU_SPR_PIX_SET4) state_new.spr_pipe_a |= 0b00010000;
-      if (!MAME_SPR_PIX_SET3) state_new.spr_pipe_a |= 0b00001000;
-      if (!LELA_SPR_PIX_SET2) state_new.spr_pipe_a |= 0b00000100;
-      if (!MYTO_SPR_PIX_SET1) state_new.spr_pipe_a |= 0b00000010;
-      if (!PABE_SPR_PIX_SET0) state_new.spr_pipe_a |= 0b00000001;
+      if (!bit(VUNE_SPR_PIX_SET7)) state_new.spr_pipe_a |= 0b10000000;
+      if (!bit(TUXA_SPR_PIX_SET6)) state_new.spr_pipe_a |= 0b01000000;
+      if (!bit(VABY_SPR_PIX_SET5)) state_new.spr_pipe_a |= 0b00100000;
+      if (!bit(VEXU_SPR_PIX_SET4)) state_new.spr_pipe_a |= 0b00010000;
+      if (!bit(MAME_SPR_PIX_SET3)) state_new.spr_pipe_a |= 0b00001000;
+      if (!bit(LELA_SPR_PIX_SET2)) state_new.spr_pipe_a |= 0b00000100;
+      if (!bit(MYTO_SPR_PIX_SET1)) state_new.spr_pipe_a |= 0b00000010;
+      if (!bit(PABE_SPR_PIX_SET0)) state_new.spr_pipe_a |= 0b00000001;
 
-      if (!XYVE_SPR_PIX_RST7) state_new.spr_pipe_a &= ~0b10000000;
-      if (!TUPE_SPR_PIX_RST6) state_new.spr_pipe_a &= ~0b01000000;
-      if (!XEXU_SPR_PIX_RST5) state_new.spr_pipe_a &= ~0b00100000;
-      if (!XATO_SPR_PIX_RST4) state_new.spr_pipe_a &= ~0b00010000;
-      if (!LUFY_SPR_PIX_RST3) state_new.spr_pipe_a &= ~0b00001000;
-      if (!LYDE_SPR_PIX_RST2) state_new.spr_pipe_a &= ~0b00000100;
-      if (!MADA_SPR_PIX_RST1) state_new.spr_pipe_a &= ~0b00000010;
-      if (!PYZU_SPR_PIX_RST0) state_new.spr_pipe_a &= ~0b00000001;
+      if (!bit(XYVE_SPR_PIX_RST7)) state_new.spr_pipe_a &= ~0b10000000;
+      if (!bit(TUPE_SPR_PIX_RST6)) state_new.spr_pipe_a &= ~0b01000000;
+      if (!bit(XEXU_SPR_PIX_RST5)) state_new.spr_pipe_a &= ~0b00100000;
+      if (!bit(XATO_SPR_PIX_RST4)) state_new.spr_pipe_a &= ~0b00010000;
+      if (!bit(LUFY_SPR_PIX_RST3)) state_new.spr_pipe_a &= ~0b00001000;
+      if (!bit(LYDE_SPR_PIX_RST2)) state_new.spr_pipe_a &= ~0b00000100;
+      if (!bit(MADA_SPR_PIX_RST1)) state_new.spr_pipe_a &= ~0b00000010;
+      if (!bit(PYZU_SPR_PIX_RST0)) state_new.spr_pipe_a &= ~0b00000001;
     }
 
     //----------------------------------------
@@ -1422,23 +1422,23 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
         state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
       }
 
-      if (!TESO_SPR_PIX_SET7) state_new.spr_pipe_b |= 0b10000000;
-      if (!TAPO_SPR_PIX_SET6) state_new.spr_pipe_b |= 0b01000000;
-      if (!VUME_SPR_PIX_SET5) state_new.spr_pipe_b |= 0b00100000;
-      if (!TYGA_SPR_PIX_SET4) state_new.spr_pipe_b |= 0b00010000;
-      if (!RANO_SPR_PIX_SET3) state_new.spr_pipe_b |= 0b00001000;
-      if (!MYXA_SPR_PIX_SET2) state_new.spr_pipe_b |= 0b00000100;
-      if (!RUSY_SPR_PIX_SET1) state_new.spr_pipe_b |= 0b00000010;
-      if (!MEZU_SPR_PIX_SET0) state_new.spr_pipe_b |= 0b00000001;
+      if (!bit(TESO_SPR_PIX_SET7)) state_new.spr_pipe_b |= 0b10000000;
+      if (!bit(TAPO_SPR_PIX_SET6)) state_new.spr_pipe_b |= 0b01000000;
+      if (!bit(VUME_SPR_PIX_SET5)) state_new.spr_pipe_b |= 0b00100000;
+      if (!bit(TYGA_SPR_PIX_SET4)) state_new.spr_pipe_b |= 0b00010000;
+      if (!bit(RANO_SPR_PIX_SET3)) state_new.spr_pipe_b |= 0b00001000;
+      if (!bit(MYXA_SPR_PIX_SET2)) state_new.spr_pipe_b |= 0b00000100;
+      if (!bit(RUSY_SPR_PIX_SET1)) state_new.spr_pipe_b |= 0b00000010;
+      if (!bit(MEZU_SPR_PIX_SET0)) state_new.spr_pipe_b |= 0b00000001;
 
-      if (!TULA_SPR_PIX_RST7) state_new.spr_pipe_b &= ~0b10000000;
-      if (!TABY_SPR_PIX_RST6) state_new.spr_pipe_b &= ~0b01000000;
-      if (!XOLE_SPR_PIX_RST5) state_new.spr_pipe_b &= ~0b00100000;
-      if (!WAXO_SPR_PIX_RST4) state_new.spr_pipe_b &= ~0b00010000;
-      if (!REHU_SPR_PIX_RST3) state_new.spr_pipe_b &= ~0b00001000;
-      if (!MAJO_SPR_PIX_RST2) state_new.spr_pipe_b &= ~0b00000100;
-      if (!RUCA_SPR_PIX_RST1) state_new.spr_pipe_b &= ~0b00000010;
-      if (!MOFY_SPR_PIX_RST0) state_new.spr_pipe_b &= ~0b00000001;
+      if (!bit(TULA_SPR_PIX_RST7)) state_new.spr_pipe_b &= ~0b10000000;
+      if (!bit(TABY_SPR_PIX_RST6)) state_new.spr_pipe_b &= ~0b01000000;
+      if (!bit(XOLE_SPR_PIX_RST5)) state_new.spr_pipe_b &= ~0b00100000;
+      if (!bit(WAXO_SPR_PIX_RST4)) state_new.spr_pipe_b &= ~0b00010000;
+      if (!bit(REHU_SPR_PIX_RST3)) state_new.spr_pipe_b &= ~0b00001000;
+      if (!bit(MAJO_SPR_PIX_RST2)) state_new.spr_pipe_b &= ~0b00000100;
+      if (!bit(RUCA_SPR_PIX_RST1)) state_new.spr_pipe_b &= ~0b00000010;
+      if (!bit(MOFY_SPR_PIX_RST0)) state_new.spr_pipe_b &= ~0b00000001;
     }
 
     wire NUNY_WIN_MODE_TRIGp = and2(state_new.win_ctrl.PYNU_WIN_MODE_Ap, !state_new.win_ctrl.NOPA_WIN_MODE_Bp);
@@ -1492,23 +1492,23 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
         state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
       }
 
-      if (!NAJA_BG_PIX_SET7) state_new.bgw_pipe_a |= 0b10000000;
-      if (!NUTE_BG_PIX_SET6) state_new.bgw_pipe_a |= 0b01000000;
-      if (!LODO_BG_PIX_SET5) state_new.bgw_pipe_a |= 0b00100000;
-      if (!MYVY_BG_PIX_SET4) state_new.bgw_pipe_a |= 0b00010000;
-      if (!LYDU_BG_PIX_SET3) state_new.bgw_pipe_a |= 0b00001000;
-      if (!LOTO_BG_PIX_SET2) state_new.bgw_pipe_a |= 0b00000100;
-      if (!NYXO_BG_PIX_SET1) state_new.bgw_pipe_a |= 0b00000010;
-      if (!LAKY_BG_PIX_SET0) state_new.bgw_pipe_a |= 0b00000001;
+      if (!bit(NAJA_BG_PIX_SET7)) state_new.bgw_pipe_a |= 0b10000000;
+      if (!bit(NUTE_BG_PIX_SET6)) state_new.bgw_pipe_a |= 0b01000000;
+      if (!bit(LODO_BG_PIX_SET5)) state_new.bgw_pipe_a |= 0b00100000;
+      if (!bit(MYVY_BG_PIX_SET4)) state_new.bgw_pipe_a |= 0b00010000;
+      if (!bit(LYDU_BG_PIX_SET3)) state_new.bgw_pipe_a |= 0b00001000;
+      if (!bit(LOTO_BG_PIX_SET2)) state_new.bgw_pipe_a |= 0b00000100;
+      if (!bit(NYXO_BG_PIX_SET1)) state_new.bgw_pipe_a |= 0b00000010;
+      if (!bit(LAKY_BG_PIX_SET0)) state_new.bgw_pipe_a |= 0b00000001;
 
-      if (!NADY_BG_PIX_RST7) state_new.bgw_pipe_a &= ~0b10000000;
-      if (!NYHA_BG_PIX_RST6) state_new.bgw_pipe_a &= ~0b01000000;
-      if (!LERU_BG_PIX_RST5) state_new.bgw_pipe_a &= ~0b00100000;
-      if (!MOSY_BG_PIX_RST4) state_new.bgw_pipe_a &= ~0b00010000;
-      if (!LUJA_BG_PIX_RST3) state_new.bgw_pipe_a &= ~0b00001000;
-      if (!LUTU_BG_PIX_RST2) state_new.bgw_pipe_a &= ~0b00000100;
-      if (!NEXA_BG_PIX_RST1) state_new.bgw_pipe_a &= ~0b00000010;
-      if (!LOTY_BG_PIX_RST0) state_new.bgw_pipe_a &= ~0b00000001;
+      if (!bit(NADY_BG_PIX_RST7)) state_new.bgw_pipe_a &= ~0b10000000;
+      if (!bit(NYHA_BG_PIX_RST6)) state_new.bgw_pipe_a &= ~0b01000000;
+      if (!bit(LERU_BG_PIX_RST5)) state_new.bgw_pipe_a &= ~0b00100000;
+      if (!bit(MOSY_BG_PIX_RST4)) state_new.bgw_pipe_a &= ~0b00010000;
+      if (!bit(LUJA_BG_PIX_RST3)) state_new.bgw_pipe_a &= ~0b00001000;
+      if (!bit(LUTU_BG_PIX_RST2)) state_new.bgw_pipe_a &= ~0b00000100;
+      if (!bit(NEXA_BG_PIX_RST1)) state_new.bgw_pipe_a &= ~0b00000010;
+      if (!bit(LOTY_BG_PIX_RST0)) state_new.bgw_pipe_a &= ~0b00000001;
     }
 
     //----------------------------------------
@@ -1555,23 +1555,23 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
         state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
       }
 
-      if (!RAGA_BG_PIX_SET7) state_new.bgw_pipe_b |= 0b10000000;
-      if (!RAJO_BG_PIX_SET6) state_new.bgw_pipe_b |= 0b01000000;
-      if (!RAJA_BG_PIX_SET5) state_new.bgw_pipe_b |= 0b00100000;
-      if (!RUTO_BG_PIX_SET4) state_new.bgw_pipe_b |= 0b00010000;
-      if (!RYJA_BG_PIX_SET3) state_new.bgw_pipe_b |= 0b00001000;
-      if (!RUCE_BG_PIX_SET2) state_new.bgw_pipe_b |= 0b00000100;
-      if (!SOLY_BG_PIX_SET1) state_new.bgw_pipe_b |= 0b00000010;
-      if (!TUXE_BG_PIX_SET0) state_new.bgw_pipe_b |= 0b00000001;
+      if (!bit(RAGA_BG_PIX_SET7)) state_new.bgw_pipe_b |= 0b10000000;
+      if (!bit(RAJO_BG_PIX_SET6)) state_new.bgw_pipe_b |= 0b01000000;
+      if (!bit(RAJA_BG_PIX_SET5)) state_new.bgw_pipe_b |= 0b00100000;
+      if (!bit(RUTO_BG_PIX_SET4)) state_new.bgw_pipe_b |= 0b00010000;
+      if (!bit(RYJA_BG_PIX_SET3)) state_new.bgw_pipe_b |= 0b00001000;
+      if (!bit(RUCE_BG_PIX_SET2)) state_new.bgw_pipe_b |= 0b00000100;
+      if (!bit(SOLY_BG_PIX_SET1)) state_new.bgw_pipe_b |= 0b00000010;
+      if (!bit(TUXE_BG_PIX_SET0)) state_new.bgw_pipe_b |= 0b00000001;
 
-      if (!RYJY_BG_PIX_RST7) state_new.bgw_pipe_b &= ~0b10000000;
-      if (!SUPU_BG_PIX_RST6) state_new.bgw_pipe_b &= ~0b01000000;
-      if (!SYWE_BG_PIX_RST5) state_new.bgw_pipe_b &= ~0b00100000;
-      if (!SUCA_BG_PIX_RST4) state_new.bgw_pipe_b &= ~0b00010000;
-      if (!SEBO_BG_PIX_RST3) state_new.bgw_pipe_b &= ~0b00001000;
-      if (!SURE_BG_PIX_RST2) state_new.bgw_pipe_b &= ~0b00000100;
-      if (!SENO_BG_PIX_RST1) state_new.bgw_pipe_b &= ~0b00000010;
-      if (!SEJA_BG_PIX_RST0) state_new.bgw_pipe_b &= ~0b00000001;
+      if (!bit(RYJY_BG_PIX_RST7)) state_new.bgw_pipe_b &= ~0b10000000;
+      if (!bit(SUPU_BG_PIX_RST6)) state_new.bgw_pipe_b &= ~0b01000000;
+      if (!bit(SYWE_BG_PIX_RST5)) state_new.bgw_pipe_b &= ~0b00100000;
+      if (!bit(SUCA_BG_PIX_RST4)) state_new.bgw_pipe_b &= ~0b00010000;
+      if (!bit(SEBO_BG_PIX_RST3)) state_new.bgw_pipe_b &= ~0b00001000;
+      if (!bit(SURE_BG_PIX_RST2)) state_new.bgw_pipe_b &= ~0b00000100;
+      if (!bit(SENO_BG_PIX_RST1)) state_new.bgw_pipe_b &= ~0b00000010;
+      if (!bit(SEJA_BG_PIX_RST0)) state_new.bgw_pipe_b &= ~0b00000001;
     }
 
     //----------------------------------------
@@ -1617,23 +1617,23 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
         state_new.mask_pipe = (state_new.mask_pipe << 1) | 1;
       }
 
-      if (!TUWU_MASK_PIPE_SET7) state_new.mask_pipe |= 0b10000000;
-      if (!TYKO_MASK_PIPE_SET6) state_new.mask_pipe |= 0b01000000;
-      if (!XELY_MASK_PIPE_SET5) state_new.mask_pipe |= 0b00100000;
-      if (!XUKU_MASK_PIPE_SET4) state_new.mask_pipe |= 0b00010000;
-      if (!XYRU_MASK_PIPE_SET3) state_new.mask_pipe |= 0b00001000;
-      if (!TYRA_MASK_PIPE_SET2) state_new.mask_pipe |= 0b00000100;
-      if (!XALA_MASK_PIPE_SET1) state_new.mask_pipe |= 0b00000010;
-      if (!TEDE_MASK_PIPE_SET0) state_new.mask_pipe |= 0b00000001;
+      if (!bit(TUWU_MASK_PIPE_SET7)) state_new.mask_pipe |= 0b10000000;
+      if (!bit(TYKO_MASK_PIPE_SET6)) state_new.mask_pipe |= 0b01000000;
+      if (!bit(XELY_MASK_PIPE_SET5)) state_new.mask_pipe |= 0b00100000;
+      if (!bit(XUKU_MASK_PIPE_SET4)) state_new.mask_pipe |= 0b00010000;
+      if (!bit(XYRU_MASK_PIPE_SET3)) state_new.mask_pipe |= 0b00001000;
+      if (!bit(TYRA_MASK_PIPE_SET2)) state_new.mask_pipe |= 0b00000100;
+      if (!bit(XALA_MASK_PIPE_SET1)) state_new.mask_pipe |= 0b00000010;
+      if (!bit(TEDE_MASK_PIPE_SET0)) state_new.mask_pipe |= 0b00000001;
 
-      if (!WUBU_MASK_PIPE_RST7) state_new.mask_pipe &= ~0b10000000;
-      if (!TENA_MASK_PIPE_RST6) state_new.mask_pipe &= ~0b01000000;
-      if (!WUJA_MASK_PIPE_RST5) state_new.mask_pipe &= ~0b00100000;
-      if (!WEDY_MASK_PIPE_RST4) state_new.mask_pipe &= ~0b00010000;
-      if (!WEVO_MASK_PIPE_RST3) state_new.mask_pipe &= ~0b00001000;
-      if (!TUFO_MASK_PIPE_RST2) state_new.mask_pipe &= ~0b00000100;
-      if (!WEDE_MASK_PIPE_RST1) state_new.mask_pipe &= ~0b00000010;
-      if (!WOKA_MASK_PIPE_RST0) state_new.mask_pipe &= ~0b00000001;
+      if (!bit(WUBU_MASK_PIPE_RST7)) state_new.mask_pipe &= ~0b10000000;
+      if (!bit(TENA_MASK_PIPE_RST6)) state_new.mask_pipe &= ~0b01000000;
+      if (!bit(WUJA_MASK_PIPE_RST5)) state_new.mask_pipe &= ~0b00100000;
+      if (!bit(WEDY_MASK_PIPE_RST4)) state_new.mask_pipe &= ~0b00010000;
+      if (!bit(WEVO_MASK_PIPE_RST3)) state_new.mask_pipe &= ~0b00001000;
+      if (!bit(TUFO_MASK_PIPE_RST2)) state_new.mask_pipe &= ~0b00000100;
+      if (!bit(WEDE_MASK_PIPE_RST1)) state_new.mask_pipe &= ~0b00000010;
+      if (!bit(WOKA_MASK_PIPE_RST0)) state_new.mask_pipe &= ~0b00000001;
 
     }
 
@@ -1677,26 +1677,26 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       //state_new.pal_pipe.RUGO_PAL_PIPE_D0.dff22(SACU_CLKPIPE_new, PUME_PAL_PIPE_SET0, SUCO_PAL_PIPE_RST0, state_new.SIG_GND.out_new());
 
       if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-        state_new.pal_pipe = (state_new.pal_pipe << 1) | 1;
+        state_new.pal_pipe = (state_new.pal_pipe << 1) | 0;
       }
 
-      if (!LAMY_PAL_PIPE_SET7) state_new.mask_pipe |= 0b10000000;
-      if (!LUKE_PAL_PIPE_SET6) state_new.mask_pipe |= 0b01000000;
-      if (!MENE_PAL_PIPE_SET5) state_new.mask_pipe |= 0b00100000;
-      if (!RORA_PAL_PIPE_SET4) state_new.mask_pipe |= 0b00010000;
-      if (!SUKY_PAL_PIPE_SET3) state_new.mask_pipe |= 0b00001000;
-      if (!PAMO_PAL_PIPE_SET2) state_new.mask_pipe |= 0b00000100;
-      if (!SORO_PAL_PIPE_SET1) state_new.mask_pipe |= 0b00000010;
-      if (!PUME_PAL_PIPE_SET0) state_new.mask_pipe |= 0b00000001;
+      if (!bit(LAMY_PAL_PIPE_SET7)) state_new.pal_pipe |= 0b10000000;
+      if (!bit(LUKE_PAL_PIPE_SET6)) state_new.pal_pipe |= 0b01000000;
+      if (!bit(MENE_PAL_PIPE_SET5)) state_new.pal_pipe |= 0b00100000;
+      if (!bit(RORA_PAL_PIPE_SET4)) state_new.pal_pipe |= 0b00010000;
+      if (!bit(SUKY_PAL_PIPE_SET3)) state_new.pal_pipe |= 0b00001000;
+      if (!bit(PAMO_PAL_PIPE_SET2)) state_new.pal_pipe |= 0b00000100;
+      if (!bit(SORO_PAL_PIPE_SET1)) state_new.pal_pipe |= 0b00000010;
+      if (!bit(PUME_PAL_PIPE_SET0)) state_new.pal_pipe |= 0b00000001;
 
-      if (!LUNU_PAL_PIPE_RST7) state_new.mask_pipe &= ~0b10000000;
-      if (!LOWA_PAL_PIPE_RST6) state_new.mask_pipe &= ~0b01000000;
-      if (!PAZO_PAL_PIPE_RST5) state_new.mask_pipe &= ~0b00100000;
-      if (!RUDU_PAL_PIPE_RST4) state_new.mask_pipe &= ~0b00010000;
-      if (!TOWA_PAL_PIPE_RST3) state_new.mask_pipe &= ~0b00001000;
-      if (!PYZY_PAL_PIPE_RST2) state_new.mask_pipe &= ~0b00000100;
-      if (!TAFA_PAL_PIPE_RST1) state_new.mask_pipe &= ~0b00000010;
-      if (!SUCO_PAL_PIPE_RST0) state_new.mask_pipe &= ~0b00000001;
+      if (!bit(LUNU_PAL_PIPE_RST7)) state_new.pal_pipe &= ~0b10000000;
+      if (!bit(LOWA_PAL_PIPE_RST6)) state_new.pal_pipe &= ~0b01000000;
+      if (!bit(PAZO_PAL_PIPE_RST5)) state_new.pal_pipe &= ~0b00100000;
+      if (!bit(RUDU_PAL_PIPE_RST4)) state_new.pal_pipe &= ~0b00010000;
+      if (!bit(TOWA_PAL_PIPE_RST3)) state_new.pal_pipe &= ~0b00001000;
+      if (!bit(PYZY_PAL_PIPE_RST2)) state_new.pal_pipe &= ~0b00000100;
+      if (!bit(TAFA_PAL_PIPE_RST1)) state_new.pal_pipe &= ~0b00000010;
+      if (!bit(SUCO_PAL_PIPE_RST0)) state_new.pal_pipe &= ~0b00000001;
     }
 
     //----------------------------------------

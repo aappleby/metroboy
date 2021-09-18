@@ -24,7 +24,7 @@ const bool run_slow_tests = false;
 
 //#define TEST_MOONEYE
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 //-----------------------------------------------------------------------------
 
@@ -176,7 +176,7 @@ TestResults GateBoyTests::test_regression(const IGateBoy* proto1, const IGateBoy
   results += test_regression_cart("LinksAwakening.gb",               proto1, proto2, phases, false);
   results += test_regression_dump("sprites.dump",                    proto1, proto2, phases);
   results += test_regression_dump("zoomer.dump",                     proto1, proto2, phases);
-  //results += test_regression_dump("eyes.dump",                       proto1, proto2, phases); // broken because sprite mask
+  results += test_regression_dump("eyes.dump",                       proto1, proto2, phases); // broken because sprite mask
   results += test_regression_dump("scroller.dump",                   proto1, proto2, phases);
 
   TEST_DONE();

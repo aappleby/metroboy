@@ -95,7 +95,7 @@ void GateBoyThread::clear_steps() {
   CHECK_P(sim_paused());
   step_count = 0;
   old_sim_time = 0;
-  old_phase_total = 0;
+  old_phase_total = gb->get_sys().phase_total;
   phase_rate_smooth = 0;
 }
 
@@ -107,30 +107,21 @@ void GateBoyThread::dump(Dumper& d) {
   auto new_phase_total = gb->get_sys().phase_total;
 
   d("State count A  : %d\n", gb.state_count());
-
-  size_t state_size = gb.state_size_bytes();
-  d("State size    : %d K\n", state_size / 1024);
+  d("State size    : %d K\n", gb.state_size_bytes() / 1024);
   //d("BGB cycle     : 0x%08x\n",  (gb->phase_total / 4) - 0x10000);
   d("Sim clock     : %f\n",      double(new_phase_total) / (4194304.0 * 2));
   d("Steps left    : %d\n", step_count.load());
 
   double phase_rate = (new_phase_total - old_phase_total) / (sim_time - old_sim_time);
 
-  if (phase_rate > 0) {
-    if (sim_time == old_sim_time) {
-      phase_rate = 0;
-    }
-
+  if (sim_time > old_sim_time && phase_rate > 0) {
+    if (sim_time == old_sim_time) phase_rate = 0;
     phase_rate_smooth = (phase_rate_smooth * 0.99) + (phase_rate * 0.01);
   }
 
   d("Phase rate    : %f\n",      phase_rate_smooth);
   d("Sim fps       : %f\n",      60.0 * phase_rate_smooth / PHASES_PER_SECOND);
-
   d("Sim paused    : %d\n", sim_paused());
-  //d("sig_break     : %d\n", (int)sig_break);
-  //d("sig_exit      : %d\n", (int)sig_exit);
-
 
   old_phase_total = new_phase_total;
   old_sim_time = sim_time;
@@ -144,6 +135,7 @@ void GateBoyThread::load_raw_dump(BlobStream& bs) {
   clear_steps();
   gb->load_raw_dump(bs);
   cart_blob = bs.rest();
+  old_phase_total = gb->get_sys().phase_total;
 }
 
 //------------------------------------------------------------------------------
@@ -215,7 +207,6 @@ void GateBoyThread::thread_main() {
 
     // Update stats
     sim_time += (time_end - time_begin);
-    //gbp->gbb.sys.sim_time += (time_end - time_begin);
 
     if (sync.test(REQ_EXIT)) {
       sync.set(ACK_EXIT);

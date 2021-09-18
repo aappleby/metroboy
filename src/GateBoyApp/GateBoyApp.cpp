@@ -56,8 +56,6 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   overlay_tex = create_texture_u32(160, 144, nullptr, false);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-  //auto gb = new GateBoyPair(new GateBoy(), new GateBoy());
-
   if (config_fastmode) {
     gb_thread = new GateBoyThread(new LogicBoy());
   }
@@ -66,7 +64,6 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   }
   else {
     gb_thread = new GateBoyThread(new GateBoy());
-    //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
   }
 
   gb_thread->start();
@@ -75,16 +72,16 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //gb_thread->load_cart_blob(cart);
   //gb_thread->reset_to_bootrom();
   
-  //blob cart;
-  //load_blob("tests/microtests/DMG/dma_0xA000.gb", cart);
-  //gb_thread.load_cart_blob(cart);
-  //gb_thread.reset_to_cart();
+  blob cart;
+  load_blob("LinksAwakening.gb", cart);
+  gb_thread->load_cart_blob(cart);
+  gb_thread->reset_to_cart();
 
-  BlobStream bs;
-  load_blob("eyes.dump", bs.b);
-  gb_thread->load_raw_dump(bs);
+  //BlobStream bs;
+  //load_blob("eyes.dump", bs.b);
+  //gb_thread->load_raw_dump(bs);
 
-  gb_thread->run_to(645148682 - 1);
+  //gb_thread->run_to(645148682 - 1);
 
   //BlobStream bs;
   //load_blob("zelda_intro.dump", bs.b);
@@ -618,23 +615,9 @@ Step controls:
 
     if (fb_y >= 0 && fb_y < 144) {
       for (int x = 0; x < 160; x++) {
-        //uint8_t p0 = gb->lcd.lcd_pipe_lo[159 - fb_x + x + 1].qp_old();
-        //uint8_t p1 = gb->lcd.lcd_pipe_hi[159 - fb_x + x + 1].qp_old();
-        //int r = (3 - (p0 + p1 * 2)) * 30 + 50;
-        //int g = (3 - (p0 + p1 * 2)) * 30 + 50;
-        //int b = (3 - (p0 + p1 * 2)) * 30 + 30;
-
         uint32_t c = (x == fb_x) ? 0x77FFFFFF : 0x2200FFFF;
         overlay[x + fb_y * 160] = c; //0xFF000000 | (b << 16) | (g << 8) | (r << 0);
       }
-      /*
-      {
-        uint8_t p0 = gb->lcd.lcd_pix_lo.qp_old();
-        uint8_t p1 = gb->lcd.lcd_pix_hi.qp_old();
-        int c = (3 - (p0 + p1 * 2)) * 85;
-        overlay[fb_x + fb_y * 160] = 0xFF000000 | (c << 16) | (c << 8) | (c << 0);
-      }
-      */
     }
 
     update_texture_u32(overlay_tex, 160, 144, overlay);

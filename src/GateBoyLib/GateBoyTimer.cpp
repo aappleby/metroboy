@@ -9,7 +9,7 @@
 
 void GateBoy::tock_div_gates() {
   /*_p01.TAPE*/ wire TAPE_FF04_WRp = and4(gb_state.cpu_signals.TAPU_CPU_WRp.out_new(), gb_state.cpu_abus.RYFO_FF04_FF07p(), gb_state.cpu_abus.TOLA_A01n(), gb_state.cpu_abus.TOVY_A00n());
-  /*_p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(gb_state.sys_clk.UCOB_CLKBADp(), gb_state.pins.sys.PIN_71_RST.qp_int_new(), TAPE_FF04_WRp);
+  /*_p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(gb_state.pins.sys.UCOB_CLKBADp(), gb_state.pins.sys.PIN_71_RST.qp_int_new(), TAPE_FF04_WRp);
 
   /*_p01.UKUP*/ gb_state.reg_div.UKUP_DIV00p.dff17(BOGA_Axxxxxxx(),                       UFOL_DIV_RSTn, gb_state.reg_div.UKUP_DIV00p.qn_old());
   /*_p01.UFOR*/ gb_state.reg_div.UFOR_DIV01p.dff17(gb_state.reg_div.UKUP_DIV00p.qn_any(), UFOL_DIV_RSTn, gb_state.reg_div.UFOR_DIV01p.qn_old());

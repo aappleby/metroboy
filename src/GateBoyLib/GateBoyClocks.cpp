@@ -5,13 +5,13 @@
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_clocks_gates() {
-  /*_PIN_73*/ gb_state.sys_clk.PIN_73_CLK_DRIVE.pin_out(gb_state.sys_clk.PIN_74_CLK.clk(), gb_state.sys_clk.PIN_74_CLK.clk());
+  /*_PIN_73*/ gb_state.pins.sys.PIN_73_CLK_DRIVE.pin_out(gb_state.pins.sys.PIN_74_CLK.clk(), gb_state.pins.sys.PIN_74_CLK.clk());
 
-  /*_p01.ARYS*/ wire ARYS_CLKIN = not1(gb_state.sys_clk.PIN_74_CLK.clk());
+  /*_p01.ARYS*/ wire ARYS_CLKIN = not1(gb_state.pins.sys.PIN_74_CLK.clk());
   /*_p01.AVET*/ gb_state.sys_clk.AVET_DEGLITCH = nand2(gb_state.sys_clk.ANOS_DEGLITCH.out_mid(), ARYS_CLKIN);
-  /*_p01.ANOS*/ gb_state.sys_clk.ANOS_DEGLITCH = nand2(gb_state.sys_clk.PIN_74_CLK.clk(), gb_state.sys_clk.AVET_DEGLITCH.out_mid());
+  /*_p01.ANOS*/ gb_state.sys_clk.ANOS_DEGLITCH = nand2(gb_state.pins.sys.PIN_74_CLK.clk(), gb_state.sys_clk.AVET_DEGLITCH.out_mid());
   /*_p01.AVET*/ gb_state.sys_clk.AVET_DEGLITCH = nand2(gb_state.sys_clk.ANOS_DEGLITCH.out_mid(), ARYS_CLKIN);
-  /*_p01.ANOS*/ gb_state.sys_clk.ANOS_DEGLITCH = nand2(gb_state.sys_clk.PIN_74_CLK.clk(), gb_state.sys_clk.AVET_DEGLITCH.out_mid());
+  /*_p01.ANOS*/ gb_state.sys_clk.ANOS_DEGLITCH = nand2(gb_state.pins.sys.PIN_74_CLK.clk(), gb_state.sys_clk.AVET_DEGLITCH.out_mid());
 
   /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(gb_state.sys_clk.AVET_DEGLITCH.out_new());
   /*_p01.ATAN*/ wire ATAN_AxCxExGx = not1(ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
@@ -26,7 +26,7 @@ void GateBoy::tock_clocks_gates() {
   /*_p01.APUK*/ gb_state.sys_clk.APUK_ABxxxxGH.dff9(ATAN_AxCxExGx, gb_state.pins.sys.UPOJ_MODE_PRODn(), ALEF_AxxxxFGH_old.qn_old());
   /*_p01.ADYK*/ gb_state.sys_clk.ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, gb_state.pins.sys.UPOJ_MODE_PRODn(), APUK_ABxxxxGH_old.qn_old());
 
-  /*_PIN_75*/ gb_state.sys_clk.PIN_75_CLK_OUT.pin_out(gb_state.sys_clk.BUDE_xxxxEFGH(), gb_state.sys_clk.BUDE_xxxxEFGH());
+  /*_PIN_75*/ gb_state.pins.sys.PIN_75_CLK_OUT.pin_out(gb_state.sys_clk.BUDE_xxxxEFGH(), gb_state.sys_clk.BUDE_xxxxEFGH());
 
   /*_SIG_CPU_BOWA_Axxxxxxx*/ gb_state.sys_clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
   /*_SIG_CPU_BEDO_xBCDEFGH*/ gb_state.sys_clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(BEDO_Axxxxxxx());

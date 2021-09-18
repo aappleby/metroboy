@@ -378,7 +378,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire EXT_clkin = !(sys.phase_total & 1) && sys.clk_en;
     wire EXT_clkgood = bit(~sys.clk_good);
 
-    /*_PIN_74*/ gb_state.sys_clk.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
+    /*_PIN_74*/ gb_state.pins.sys.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
     /*_PIN_71*/ gb_state.pins.sys.PIN_71_RST.pin_in(EXT_sys_rst);
     /*_PIN_76*/ gb_state.pins.sys.PIN_76_T2.pin_in(EXT_sys_t2);
     /*_PIN_77*/ gb_state.pins.sys.PIN_77_T1.pin_in(EXT_sys_t1);

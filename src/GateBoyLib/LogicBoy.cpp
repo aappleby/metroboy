@@ -510,8 +510,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
 
-  state_new.sys_clk.PIN_74_CLK.CLK.state = gen_clk_new(phase_total, 0b10101010);
-  state_new.sys_clk.PIN_74_CLK.CLKGOOD.state = 1;
+  state_new.pins.sys.PIN_74_CLK.CLK.state = gen_clk_new(phase_total, 0b10101010);
+  state_new.pins.sys.PIN_74_CLK.CLKGOOD.state = 1;
 
   state_new.pins.sys.PIN_71_RST = 0;
   state_new.pins.sys.PIN_76_T2 = 0;
@@ -528,16 +528,16 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Sys clock signals
 
-  state_new.sys_clk.PIN_73_CLK_DRIVE.state = state_new.sys_clk.PIN_74_CLK.CLK;
-  state_new.sys_clk.AVET_DEGLITCH.state = state_new.sys_clk.PIN_74_CLK.CLK;
-  state_new.sys_clk.ANOS_DEGLITCH.state = !state_new.sys_clk.PIN_74_CLK.CLK;
+  state_new.pins.sys.PIN_73_CLK_DRIVE.state = state_new.pins.sys.PIN_74_CLK.CLK;
+  state_new.sys_clk.AVET_DEGLITCH.state = state_new.pins.sys.PIN_74_CLK.CLK;
+  state_new.sys_clk.ANOS_DEGLITCH.state = !state_new.pins.sys.PIN_74_CLK.CLK;
 
   state_new.sys_clk.AFUR_xxxxEFGH.state = gen_clk_new(phase_total, 0b00001111);
   state_new.sys_clk.ALEF_AxxxxFGH.state = gen_clk_new(phase_total, 0b10000111);
   state_new.sys_clk.APUK_ABxxxxGH.state = gen_clk_new(phase_total, 0b11000011);
   state_new.sys_clk.ADYK_ABCxxxxH.state = gen_clk_new(phase_total, 0b11100001);
 
-  state_new.sys_clk.PIN_75_CLK_OUT.state = gen_clk_new(phase_total, 0b00001111);
+  state_new.pins.sys.PIN_75_CLK_OUT.state = gen_clk_new(phase_total, 0b00001111);
 
   state_new.sys_clk.SIG_CPU_BOWA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000);
   state_new.sys_clk.SIG_CPU_BEDO_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111);

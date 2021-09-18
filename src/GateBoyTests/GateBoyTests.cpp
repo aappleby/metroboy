@@ -1180,7 +1180,7 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
     
     //EXPECT_CLK(clk.PIN_75_CLK_OUT.state,        0b11110000);
     // external signals are inverted
-    EXPECT_CLK(clk.PIN_75_CLK_OUT.state,        0b00001111);
+    EXPECT_CLK(gb->get_state().pins.sys.PIN_75_CLK_OUT.state,        0b00001111);
     
     gb->next_phase(dummy_cart);
   }
@@ -1258,7 +1258,7 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     for (int i = 0; i < 40; i++) {
       const auto& state = gb->get_state();
 
-      char CLK = cp_ext(state.sys_clk.PIN_75_CLK_OUT .state);
+      char CLK = cp_ext(state.pins.sys.PIN_75_CLK_OUT .state);
       char WRn = cp_ext(state.pins.ctrl.PIN_78_WRn.state);
       char RDn = cp_ext(state.pins.ctrl.PIN_79_RDn.state);
       char CSn = cp_ext(state.pins.ctrl.PIN_80_CSn.state);
@@ -1384,7 +1384,7 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     for (int i = 0; i < 40; i++) {
       const auto& state = gb->get_state();
 
-      char CLK = cp_ext(state.sys_clk.PIN_75_CLK_OUT. state);
+      char CLK = cp_ext(state.pins.sys.PIN_75_CLK_OUT. state);
       char WRn = cp_ext(state.pins.ctrl.PIN_78_WRn.state);
       char RDn = cp_ext(state.pins.ctrl.PIN_79_RDn.state);
       char CSn = cp_ext(state.pins.ctrl.PIN_80_CSn.state);
@@ -1556,7 +1556,7 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     for (int i = 0; i < 40; i++) {
       const auto& state = gb->get_state();
 
-      char CLK = cp_ext(state.sys_clk.PIN_75_CLK_OUT .state);
+      char CLK = cp_ext(state.pins.sys.PIN_75_CLK_OUT .state);
       char WRn = cp_ext(state.pins.ctrl.PIN_78_WRn.state);
       char RDn = cp_ext(state.pins.ctrl.PIN_79_RDn.state);
       char CSn = cp_ext(state.pins.ctrl.PIN_80_CSn.state);

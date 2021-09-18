@@ -280,7 +280,7 @@ struct GateBoy  : public IGateBoy {
 
   //----------------------------------------
 
-  /*#p01.BYJU*/ wire BYJU_Axxxxxxx() const { return or2(gb_state.sys_clk.BELE_Axxxxxxx(), gb_state.sys_clk.ATEZ_CLKBADp()); }
+  /*#p01.BYJU*/ wire BYJU_Axxxxxxx() const { return or2(gb_state.sys_clk.BELE_Axxxxxxx(), gb_state.pins.sys.ATEZ_CLKBADp()); }
   /*#p01.BALY*/ wire BALY_xBCDEFGH() const { return not1(BYJU_Axxxxxxx()); }
   /*_p01.BOGA*/ wire BOGA_Axxxxxxx() const { return not1(BALY_xBCDEFGH()); }
   /*#p01.BUVU*/ wire BUVU_Axxxxxxx() const { return and2(BALY_xBCDEFGH(), gb_state.sys_clk.BUTY_CLKREQp()); }

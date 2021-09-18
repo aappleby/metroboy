@@ -194,13 +194,26 @@ struct PinsSys {
     PIN_71_RST.state = BIT_OLD | BIT_DRIVEN;
     PIN_77_T1. state = BIT_OLD | BIT_DRIVEN;
     PIN_76_T2. state = BIT_OLD | BIT_DRIVEN;
+
+    PIN_73_CLK_DRIVE.state   = 0b00011001;
+    PIN_74_CLK.CLK.state     = 0b00011001;
+    PIN_74_CLK.CLKGOOD.state = 0b00011001;
+    PIN_75_CLK_OUT.state     = 0b00011000;
   }
 
   void reset_to_cart() {
     PIN_71_RST.state = 0b00011000;
     PIN_77_T1. state = 0b00011000;
     PIN_76_T2. state = 0b00011000;
+
+    PIN_73_CLK_DRIVE.state = 0b00011001;
+    PIN_74_CLK.CLK.state = 0b00011001;
+    PIN_74_CLK.CLKGOOD.state = 0b00011001;
+    PIN_75_CLK_OUT.state = 0b00011000;
   }
+
+  /*_p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_74_CLK.clkgood()); }
+  /*_p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_74_CLK.clkgood()); }
 
   /*_p07.UBET*/ wire UBETp()           const { return not1(PIN_77_T1.qp_int_new()); }
   /*_p07.UVAR*/ wire UVARp()           const { return not1(PIN_76_T2.qp_int_new()); }
@@ -214,6 +227,10 @@ struct PinsSys {
   /*_PIN_71*/ PinIn  PIN_71_RST;
   /*_PIN_77*/ PinIn  PIN_77_T1;
   /*_PIN_76*/ PinIn  PIN_76_T2;
+
+  /*_PIN_73*/ PinOut   PIN_73_CLK_DRIVE;
+  /*_PIN_74*/ PinClock PIN_74_CLK;
+  /*_PIN_75*/ PinOut   PIN_75_CLK_OUT;
 };
 
 //-----------------------------------------------------------------------------
@@ -239,6 +256,7 @@ struct GateBoyPins {
     vram_abus.reset_to_poweron();
     vram_ctrl.reset_to_poweron();
     joy.reset_to_poweron();
+    sys.reset_to_poweron();
     ctrl.reset_to_poweron();
   }
   
@@ -250,6 +268,7 @@ struct GateBoyPins {
     vram_abus.reset_to_bootrom();
     vram_ctrl.reset_to_bootrom();
     joy.reset_to_bootrom();
+    sys.reset_to_bootrom();
     ctrl.reset_to_bootrom();
   }
   
@@ -261,6 +280,7 @@ struct GateBoyPins {
     vram_abus.reset_to_cart();
     vram_ctrl.reset_to_cart();
     joy.reset_to_cart();
+    sys.reset_to_cart();
     ctrl.reset_to_cart();
   }
 };

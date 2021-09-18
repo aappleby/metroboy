@@ -12,11 +12,6 @@ struct GateBoyClock {
   }
 
   void reset_to_bootrom() {
-    PIN_73_CLK_DRIVE.state   = 0b00011001;
-    PIN_74_CLK.CLK.state     = 0b00011001;
-    PIN_74_CLK.CLKGOOD.state = 0b00011001;
-    PIN_75_CLK_OUT.state     = 0b00011000;
-
     ANOS_DEGLITCH.state = 0b00011000;
     AVET_DEGLITCH.state = 0b00011001;
     AFUR_xxxxEFGH.state = 0b00011010;
@@ -40,11 +35,6 @@ struct GateBoyClock {
   }
 
   void reset_to_cart() {
-    PIN_73_CLK_DRIVE.state = 0b00011001;
-    PIN_74_CLK.CLK.state = 0b00011001;
-    PIN_74_CLK.CLKGOOD.state = 0b00011001;
-    PIN_75_CLK_OUT.state = 0b00011000;
-
     ANOS_DEGLITCH.state = 0b00011000;
     AVET_DEGLITCH.state = 0b00011001;
 
@@ -67,9 +57,6 @@ struct GateBoyClock {
     SIG_CPU_BOMA_xBCDEFGH.state = 0b00011000;
     SIG_CPU_BOGA_Axxxxxxx.state = 0b00011001;
   }
-
-/*_p01.UCOB*/ wire UCOB_CLKBADp() const { return not1(PIN_74_CLK.clkgood()); }
-  /*_p01.ATEZ*/ wire ATEZ_CLKBADp() const { return not1(PIN_74_CLK.clkgood()); }
 
   /*_p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ.out_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
@@ -129,10 +116,6 @@ struct GateBoyClock {
   /*#p30.WUDA*/ wire WUDA_xxCDxxGH() const { return not1(CYKE_ABxxEFxx()); }
   /*#p28.AWOH*/ wire AWOH_xxCDxxGH() const { return not1(XUPY_ABxxEFxx()); }
   /*#p01.AJAX*/ wire AJAX_xxxxEFGH() const { return not1(ATYP_ABCDxxxx()); }
-
-  /*_PIN_73*/ PinOut   PIN_73_CLK_DRIVE;
-  /*_PIN_74*/ PinClock PIN_74_CLK;
-  /*_PIN_75*/ PinOut   PIN_75_CLK_OUT;
 
   /*_p01.ANOS*/ Gate ANOS_DEGLITCH; // NAND latch deglitcher
   /*_p01.AVET*/ Gate AVET_DEGLITCH; // NAND latch deglitcher

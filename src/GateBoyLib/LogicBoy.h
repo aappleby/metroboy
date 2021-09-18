@@ -115,7 +115,18 @@ struct LogicBoy : public IGateBoy {
     return BIT_DATA;
   }
 
-  bool load_raw_dump(BlobStream& dump_in) override        { return false; }
+  bool load_raw_dump(BlobStream& bs) override        {
+    bool result = true;
+    result &= bs.read(gb_state);
+    result &= bs.read(cpu);
+    result &= bs.read(mem);
+    result &= bs.read(sys);
+    result &= bs.read(pins);
+    result &= bs.read(probes);
+    lb_state.from_gb_state(gb_state, sys.phase_total);
+    return result;
+  }
+
   bool save_raw_dump(BlobStream& dump_out) const override { return false; }
 
   void reset_to_poweron(const blob& cart_blob) override { CHECK_P(false); }

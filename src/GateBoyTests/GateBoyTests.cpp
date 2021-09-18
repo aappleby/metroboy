@@ -38,21 +38,18 @@ int main(int argc, char** argv) {
   const auto gb_proto = make_unique<GateBoy>();
   const auto lb_proto = make_unique<LogicBoy>();
 
-  LOG_B("================================================================================\n");
-  LOG_B("==========                           GateBoy                          ==========\n");
-  LOG_B("================================================================================\n");
+  //results += t.test_regression_dump("eyes.dump", gb_proto.get(), lb_proto.get(), 1000000);
+
+#if 1
+  LOG_B("========== GateBoy ==========\n");
   results += t.test_gateboy(gb_proto.get());
   LOG_B("\n");
 
-  LOG_B("================================================================================\n");
-  LOG_B("==========                           LogicBoy                         ==========\n");
-  LOG_B("================================================================================\n");
+  LOG_B("========== LogicBoy ==========\n");
   results += t.test_logicboy(lb_proto.get());
   LOG_B("\n");
 
-  LOG_B("================================================================================\n");
-  LOG_B("==========                           Regression                       ==========\n");
-  LOG_B("================================================================================\n");
+  LOG_B("========== Regression ==========\n");
   results += t.test_regression(gb_proto.get(), lb_proto.get());
   LOG_B("\n");
 
@@ -61,7 +58,6 @@ int main(int argc, char** argv) {
   LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
   LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
 
-
   if (results.test_fail > 40) {
     LOG_R("\n");
     LOG_R("########################################\n");
@@ -69,6 +65,7 @@ int main(int argc, char** argv) {
     LOG_R("########################################\n");
     LOG_R("\n");
   }
+#endif
 
   return results.test_fail != 0;
 }
@@ -107,9 +104,14 @@ TestResults GateBoyTests::test_logicboy(const IGateBoy* proto) {
 
 //-----------------------------------------------------------------------------
 
-TestResults test_regression_cart(const IGateBoy* proto1, const IGateBoy* proto2, blob cart_blob, int cycles, bool from_bootrom) {
-  TEST_INIT();
-  if (cart_blob.empty()) TEST_FAIL();
+TestResults GateBoyTests::test_regression_cart(const char* filename, const IGateBoy* proto1, const IGateBoy* proto2, int cycles, bool from_bootrom) {
+  TEST_INIT("%s", filename);
+  blob cart_blob;
+  load_blob(filename, cart_blob);
+  if (cart_blob.empty()) {
+    LOG_Y("Could not load %s!\n", filename);
+    TEST_DONE();
+  }
 
   auto gb = make_unique<GateBoyPair>(proto1->clone(), proto2->clone());
   if (from_bootrom) {
@@ -129,8 +131,15 @@ TestResults test_regression_cart(const IGateBoy* proto1, const IGateBoy* proto2,
 
 //-----------------------------------------------------------------------------
 
-TestResults test_regression_dump(const IGateBoy* proto1, const IGateBoy* proto2, BlobStream& bs, int cycles) {
-  TEST_INIT();
+TestResults GateBoyTests::test_regression_dump(const char* filename, const IGateBoy* proto1, const IGateBoy* proto2, int cycles) {
+  TEST_INIT("%s", filename);
+
+  BlobStream bs;
+  load_blob(filename, bs.b);
+  if (bs.b.empty()) {
+    LOG_Y("Could not load %s!\n", filename);
+    TEST_DONE();
+  }
 
   auto gb = make_unique<GateBoyPair>(proto1->clone(), proto2->clone());
   gb->load_raw_dump(bs);
@@ -161,39 +170,14 @@ TestResults fake_test() {
 TestResults GateBoyTests::test_regression(const IGateBoy* proto1, const IGateBoy* proto2) {
   TEST_INIT();
 
-  {
-    LOG_G("Regression testing bootrom start\n");
-    results += test_regression_cart(proto1, proto2, dummy_cart, 1000000, true);
-  }
+  auto phases = MCYCLES_PER_FRAME * 8 * 3;
 
-  {
-    LOG_G("Regression testing Zelda startup\n");
-    blob b;
-    load_blob("LinksAwakening.gb", b);
-    results += test_regression_cart(proto1, proto2, b, 1000000, false);
-  }
-  
-  {
-    LOG_G("Regression testing Zelda intro dump\n");
-    BlobStream bs;
-    if (load_blob("zelda_intro.dump", bs.b)) {
-      results += test_regression_dump(proto1, proto2, bs, 1000000);
-    }
-    else {
-      LOG_Y("Could not load dump!\n");
-    }
-  }
-  
-  {
-    LOG_G("Regression testing SML intro dump\n");
-    BlobStream bs;
-    if (load_blob("sml_intro.dump", bs.b)) {
-      results += test_regression_dump(proto1, proto2, bs, 1000000);
-    }
-    else {
-      LOG_Y("Could not load dump!\n");
-    }
-  }
+  results += test_regression_cart("tests/microtests/DMG/minimal.gb", proto1, proto2, phases, true);
+  results += test_regression_cart("LinksAwakening.gb",               proto1, proto2, phases, false);
+  results += test_regression_dump("sprites.dump",                    proto1, proto2, phases);
+  results += test_regression_dump("zoomer.dump",                     proto1, proto2, phases);
+  //results += test_regression_dump("eyes.dump",                       proto1, proto2, phases); // broken because sprite mask
+  results += test_regression_dump("scroller.dump",                   proto1, proto2, phases);
 
   TEST_DONE();
 }

@@ -1317,6 +1317,15 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     wire SOKA_SPRITE_MASK6p = not1(TORY_SPRITE_MASK6n);
     wire XOVU_SPRITE_MASK7p = not1(WOPE_SPRITE_MASK7n);
 
+    if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
+      state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
+      state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
+      state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
+      state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
+      state_new.mask_pipe  = (state_new.mask_pipe  << 1) | 1;
+      state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
+    }
+
     //----------------------------------------
     // Sprite pipe A
     {
@@ -1355,10 +1364,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       //state_new.spr_pipe_a.LEFE_SPR_PIPE_A2.dff22(SACU_CLKPIPE_new, LELA_SPR_PIX_SET2, LYDE_SPR_PIX_RST2, state_new.spr_pipe_a.MASO_SPR_PIPE_A1.qp_old());
       //state_new.spr_pipe_a.MASO_SPR_PIPE_A1.dff22(SACU_CLKPIPE_new, MYTO_SPR_PIX_SET1, MADA_SPR_PIX_RST1, state_new.spr_pipe_a.NURO_SPR_PIPE_A0.qp_old());
       //state_new.spr_pipe_a.NURO_SPR_PIPE_A0.dff22(SACU_CLKPIPE_new, PABE_SPR_PIX_SET0, PYZU_SPR_PIX_RST0, state_new.SIG_GND.out_new());
-
-      if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-        state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
-      }
 
       if (!bit(VUNE_SPR_PIX_SET7)) state_new.spr_pipe_a |= 0b10000000;
       if (!bit(TUXA_SPR_PIX_SET6)) state_new.spr_pipe_a |= 0b01000000;
@@ -1418,10 +1423,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       //state_new.spr_pipe_b.PEFU_SPR_PIPE_B1.dff22(SACU_CLKPIPE_new, RUSY_SPR_PIX_SET1, RUCA_SPR_PIX_RST1, state_new.spr_pipe_b.NYLU_SPR_PIPE_B0.qp_old());
       //state_new.spr_pipe_b.NYLU_SPR_PIPE_B0.dff22(SACU_CLKPIPE_new, MEZU_SPR_PIX_SET0, MOFY_SPR_PIX_RST0, state_new.SIG_GND.out_new());
 
-      if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-        state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
-      }
-
       if (!bit(TESO_SPR_PIX_SET7)) state_new.spr_pipe_b |= 0b10000000;
       if (!bit(TAPO_SPR_PIX_SET6)) state_new.spr_pipe_b |= 0b01000000;
       if (!bit(VUME_SPR_PIX_SET5)) state_new.spr_pipe_b |= 0b00100000;
@@ -1445,11 +1446,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     wire NYXU_BFETCH_RSTn = !BFETCH_RSTp;
 
     //----------------------------------------
-
-    if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-      state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
-      state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
-    }
 
     if (bit(BFETCH_RSTp)) {
       state_new.bgw_pipe_a = ~state_new.tile_temp_a;
@@ -1485,10 +1481,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       wire WUJA_MASK_PIPE_RST5 = nand2(TYCO_SPRITE_MASK5p, XABA_MASK_PIPE_DB7n);
       wire TENA_MASK_PIPE_RST6 = nand2(SOKA_SPRITE_MASK6p, TAFU_MASK_PIPE_DB7n);
       wire WUBU_MASK_PIPE_RST7 = nand2(XOVU_SPRITE_MASK7p, XUHO_MASK_PIPE_DB7n);
-
-      if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-        state_new.mask_pipe = (state_new.mask_pipe << 1) | 1;
-      }
 
       if (!bit(TUWU_MASK_PIPE_SET7)) state_new.mask_pipe |= 0b10000000;
       if (!bit(TYKO_MASK_PIPE_SET6)) state_new.mask_pipe |= 0b01000000;
@@ -1539,10 +1531,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       wire PAZO_PAL_PIPE_RST5 = nand2(TYCO_SPRITE_MASK5p, RYFE_PAL_PIPE_DB4n);
       wire LOWA_PAL_PIPE_RST6 = nand2(SOKA_SPRITE_MASK6p, LADY_PAL_PIPE_DB4n);
       wire LUNU_PAL_PIPE_RST7 = nand2(XOVU_SPRITE_MASK7p, LAFY_PAL_PIPE_DB4n);
-
-      if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-        state_new.pal_pipe = (state_new.pal_pipe << 1) | 0;
-      }
 
       if (!bit(LAMY_PAL_PIPE_SET7)) state_new.pal_pipe |= 0b10000000;
       if (!bit(LUKE_PAL_PIPE_SET6)) state_new.pal_pipe |= 0b01000000;

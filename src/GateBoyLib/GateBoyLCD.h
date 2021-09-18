@@ -24,14 +24,6 @@ struct LCDControl {
     WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
     REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN;
     RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN;
-    PIN_50_LCD_DATA1.state    = BIT_OLD | BIT_DRIVEN;
-    PIN_51_LCD_DATA0.state    = BIT_OLD | BIT_DRIVEN;
-    PIN_54_LCD_HSYNC.state    = BIT_OLD | BIT_DRIVEN;
-    PIN_56_LCD_FLIPS.state    = BIT_OLD | BIT_DRIVEN;
-    PIN_52_LCD_CNTRL.state    = BIT_OLD | BIT_DRIVEN;
-    PIN_55_LCD_LATCH.state    = BIT_OLD | BIT_DRIVEN;
-    PIN_53_LCD_CLOCK.state    = BIT_OLD | BIT_DRIVEN;
-    PIN_57_LCD_VSYNC.state    = BIT_OLD | BIT_DRIVEN;
   }
 
   void reset_to_bootrom() {
@@ -52,14 +44,6 @@ struct LCDControl {
     WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
     REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN | 1;
     RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_50_LCD_DATA1.state    = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_51_LCD_DATA0.state    = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_54_LCD_HSYNC.state    = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_56_LCD_FLIPS.state    = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_52_LCD_CNTRL.state    = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_55_LCD_LATCH.state    = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_53_LCD_CLOCK.state    = BIT_OLD | BIT_DRIVEN | 1;
-    PIN_57_LCD_VSYNC.state    = BIT_OLD | BIT_DRIVEN | 1;
   }
 
   void reset_to_cart() {
@@ -80,14 +64,6 @@ struct LCDControl {
     WUSA_LCD_CLOCK_GATE.state = 0b00011000;
     REMY_LD0n.state           = 0b00011000;
     RAVO_LD1n.state           = 0b00011000;
-    PIN_50_LCD_DATA1.state    = 0b00011000;
-    PIN_51_LCD_DATA0.state    = 0b00011000;
-    PIN_54_LCD_HSYNC.state    = 0b00011001;
-    PIN_56_LCD_FLIPS.state    = 0b00011001;
-    PIN_52_LCD_CNTRL.state    = 0b00011001;
-    PIN_55_LCD_LATCH.state    = 0b00011001;
-    PIN_53_LCD_CLOCK.state    = 0b00011001;
-    PIN_57_LCD_VSYNC.state    = 0b00011000;
   }
 
   // H deltas are due to reg writes
@@ -112,15 +88,6 @@ struct LCDControl {
 
   Gate REMY_LD0n;
   Gate RAVO_LD1n;
-
-  /*_PIN_50*/ PinOut PIN_50_LCD_DATA1;
-  /*_PIN_51*/ PinOut PIN_51_LCD_DATA0;
-  /*_PIN_54*/ PinOut PIN_54_LCD_HSYNC;
-  /*_PIN_56*/ PinOut PIN_56_LCD_FLIPS;
-  /*_PIN_52*/ PinOut PIN_52_LCD_CNTRL;
-  /*_PIN_55*/ PinOut PIN_55_LCD_LATCH;
-  /*_PIN_53*/ PinOut PIN_53_LCD_CLOCK;
-  /*_PIN_57*/ PinOut PIN_57_LCD_VSYNC;
 };
 
 //-----------------------------------------------------------------------------

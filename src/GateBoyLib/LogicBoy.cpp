@@ -356,8 +356,8 @@ void LogicBoy::update_framebuffer()
 {
   int lcd_x = lb_state.pix_count - 8;
   int lcd_y = lb_state.reg_ly;
-  int DATA0 = ~lb_state.lcd.PIN_51_LCD_DATA0.state;
-  int DATA1 = ~lb_state.lcd.PIN_50_LCD_DATA1.state;
+  int DATA0 = ~lb_state.pins.lcd.PIN_51_LCD_DATA0.state;
+  int DATA1 = ~lb_state.pins.lcd.PIN_50_LCD_DATA1.state;
 
   //int lcd_x = pix_count.get_new() - 8;
   //int lcd_y = reg_ly.get_new();
@@ -1598,17 +1598,17 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // LCD pins
 
   if (!get_bit(state_new.reg_lcdc, 7)) {
-    state_new.lcd.PIN_52_LCD_CNTRL.state = !state_new.lcd.SYGU_LINE_STROBE && !state_new.lcd.RUTU_x113p;
+    state_new.pins.lcd.PIN_52_LCD_CNTRL.state = !state_new.lcd.SYGU_LINE_STROBE && !state_new.lcd.RUTU_x113p;
 
     if (state_old.lcd.RUTU_x113p && !state_new.lcd.RUTU_x113p) state_new.lcd.LUCA_LINE_EVENp.state = !state_new.lcd.LUCA_LINE_EVENp;
     if (!state_old.lcd.POPU_y144p && state_new.lcd.POPU_y144p) state_new.lcd.NAPO_FRAME_EVENp.state = !state_new.lcd.NAPO_FRAME_EVENp;
-    state_new.lcd.PIN_56_LCD_FLIPS.state = state_new.lcd.NAPO_FRAME_EVENp ^ state_new.lcd.LUCA_LINE_EVENp;
+    state_new.pins.lcd.PIN_56_LCD_FLIPS.state = state_new.lcd.NAPO_FRAME_EVENp ^ state_new.lcd.LUCA_LINE_EVENp;
 
     if (state_old.lcd.NYPE_x113p && !state_new.lcd.NYPE_x113p) {
       state_new.lcd.MEDA_VSYNC_OUTn.state = reg_ly_new == 0;
     }
 
-    state_new.lcd.PIN_57_LCD_VSYNC.state = !state_new.lcd.MEDA_VSYNC_OUTn;
+    state_new.pins.lcd.PIN_57_LCD_VSYNC.state = !state_new.lcd.MEDA_VSYNC_OUTn;
 
     if (state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp && state_new.lcd.PAHO_X_8_SYNC) {
       state_new.lcd.POME = 0;
@@ -1626,15 +1626,15 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.lcd.POFY = 0;
     }
 
-    state_new.lcd.PIN_50_LCD_DATA1.state = state_new.lcd.RAVO_LD1n;
-    state_new.lcd.PIN_51_LCD_DATA0.state = state_new.lcd.REMY_LD0n;
-    state_new.lcd.PIN_54_LCD_HSYNC.state = !state_new.lcd.POFY;
-    state_new.lcd.PIN_55_LCD_LATCH.state = !state_new.lcd.RUTU_x113p;
+    state_new.pins.lcd.PIN_50_LCD_DATA1.state = state_new.lcd.RAVO_LD1n;
+    state_new.pins.lcd.PIN_51_LCD_DATA0.state = state_new.lcd.REMY_LD0n;
+    state_new.pins.lcd.PIN_54_LCD_HSYNC.state = !state_new.lcd.POFY;
+    state_new.pins.lcd.PIN_55_LCD_LATCH.state = !state_new.lcd.RUTU_x113p;
 
     if (get_bit(state_new.pix_count, 0) && get_bit(state_new.pix_count, 3)) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 1;
     if (state_new.VOGA_HBLANKp) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
 
-    state_new.lcd.PIN_53_LCD_CLOCK.state = (!state_new.lcd.WUSA_LCD_CLOCK_GATE || !SACU_CLKPIPE_new) && (!state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A || state_new.fine_scroll.NYZE_SCX_FINE_MATCH_B);
+    state_new.pins.lcd.PIN_53_LCD_CLOCK.state = (!state_new.lcd.WUSA_LCD_CLOCK_GATE || !SACU_CLKPIPE_new) && (!state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A || state_new.fine_scroll.NYZE_SCX_FINE_MATCH_B);
   }
   else {
     state_new.lcd.LUCA_LINE_EVENp.state = 0;
@@ -1646,14 +1646,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.lcd.RUJU = 1;
     state_new.lcd.POFY = 0;
 
-    state_new.lcd.PIN_50_LCD_DATA1.state = state_new.lcd.RAVO_LD1n;
-    state_new.lcd.PIN_51_LCD_DATA0.state = state_new.lcd.REMY_LD0n;
-    state_new.lcd.PIN_52_LCD_CNTRL.state = 1;
-    state_new.lcd.PIN_53_LCD_CLOCK.state = 1;
-    state_new.lcd.PIN_54_LCD_HSYNC.state = 1;
-    state_new.lcd.PIN_55_LCD_LATCH.state = !get_bit(state_new.reg_div, 6);
-    state_new.lcd.PIN_56_LCD_FLIPS.state = !get_bit(state_new.reg_div, 7);
-    state_new.lcd.PIN_57_LCD_VSYNC.state = 1;
+    state_new.pins.lcd.PIN_50_LCD_DATA1.state = state_new.lcd.RAVO_LD1n;
+    state_new.pins.lcd.PIN_51_LCD_DATA0.state = state_new.lcd.REMY_LD0n;
+    state_new.pins.lcd.PIN_52_LCD_CNTRL.state = 1;
+    state_new.pins.lcd.PIN_53_LCD_CLOCK.state = 1;
+    state_new.pins.lcd.PIN_54_LCD_HSYNC.state = 1;
+    state_new.pins.lcd.PIN_55_LCD_LATCH.state = !get_bit(state_new.reg_div, 6);
+    state_new.pins.lcd.PIN_56_LCD_FLIPS.state = !get_bit(state_new.reg_div, 7);
+    state_new.pins.lcd.PIN_57_LCD_VSYNC.state = 1;
   }
 
   //----------------------------------------

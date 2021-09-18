@@ -185,6 +185,8 @@ struct PinsVramDBus {
   /*_PIN_25*/ PinIO PIN_25_VRAM_D07;
 };
 
+//-----------------------------------------------------------------------------
+
 struct PinsSys {
   void reset_to_poweron() {
     memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
@@ -235,6 +237,52 @@ struct PinsSys {
 
 //-----------------------------------------------------------------------------
 
+struct PinsLCD {
+  void reset_to_poweron() {
+    PIN_50_LCD_DATA1.state    = BIT_OLD | BIT_DRIVEN;
+    PIN_51_LCD_DATA0.state    = BIT_OLD | BIT_DRIVEN;
+    PIN_54_LCD_HSYNC.state    = BIT_OLD | BIT_DRIVEN;
+    PIN_56_LCD_FLIPS.state    = BIT_OLD | BIT_DRIVEN;
+    PIN_52_LCD_CNTRL.state    = BIT_OLD | BIT_DRIVEN;
+    PIN_55_LCD_LATCH.state    = BIT_OLD | BIT_DRIVEN;
+    PIN_53_LCD_CLOCK.state    = BIT_OLD | BIT_DRIVEN;
+    PIN_57_LCD_VSYNC.state    = BIT_OLD | BIT_DRIVEN;
+  }
+
+  void reset_to_bootrom() {
+    PIN_50_LCD_DATA1.state    = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_51_LCD_DATA0.state    = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_54_LCD_HSYNC.state    = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_56_LCD_FLIPS.state    = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_52_LCD_CNTRL.state    = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_55_LCD_LATCH.state    = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_53_LCD_CLOCK.state    = BIT_OLD | BIT_DRIVEN | 1;
+    PIN_57_LCD_VSYNC.state    = BIT_OLD | BIT_DRIVEN | 1;
+  }
+
+  void reset_to_cart() {
+    PIN_50_LCD_DATA1.state    = 0b00011000;
+    PIN_51_LCD_DATA0.state    = 0b00011000;
+    PIN_54_LCD_HSYNC.state    = 0b00011001;
+    PIN_56_LCD_FLIPS.state    = 0b00011001;
+    PIN_52_LCD_CNTRL.state    = 0b00011001;
+    PIN_55_LCD_LATCH.state    = 0b00011001;
+    PIN_53_LCD_CLOCK.state    = 0b00011001;
+    PIN_57_LCD_VSYNC.state    = 0b00011000;
+  }
+
+  /*_PIN_50*/ PinOut PIN_50_LCD_DATA1;
+  /*_PIN_51*/ PinOut PIN_51_LCD_DATA0;
+  /*_PIN_54*/ PinOut PIN_54_LCD_HSYNC;
+  /*_PIN_56*/ PinOut PIN_56_LCD_FLIPS;
+  /*_PIN_52*/ PinOut PIN_52_LCD_CNTRL;
+  /*_PIN_55*/ PinOut PIN_55_LCD_LATCH;
+  /*_PIN_53*/ PinOut PIN_53_LCD_CLOCK;
+  /*_PIN_57*/ PinOut PIN_57_LCD_VSYNC;
+};
+
+//-----------------------------------------------------------------------------
+
 struct GateBoyPins {
 
   PinsABusLo      abus_lo;   // 01-08
@@ -243,10 +291,11 @@ struct GateBoyPins {
   PinsVramDBus    vram_dbus; // 25-33
   PinsVramABus    vram_abus; // 34-42
   PinsVramControl vram_ctrl; // 43/45/49
+  PinsLCD         lcd;       // 50-57
   PinsJoypad      joy;       // 62-67
   //PinsSerial      serial;    // 68-70
-  PinsSys         sys;    // 71/76/77
-  PinsControl     ctrl;   // 78-80
+  PinsSys         sys;       // 71/76/77
+  PinsControl     ctrl;      // 78-80
 
   void reset_to_poweron() {
     abus_lo.reset_to_poweron();
@@ -255,6 +304,7 @@ struct GateBoyPins {
     vram_dbus.reset_to_poweron();
     vram_abus.reset_to_poweron();
     vram_ctrl.reset_to_poweron();
+    lcd.reset_to_poweron();
     joy.reset_to_poweron();
     sys.reset_to_poweron();
     ctrl.reset_to_poweron();
@@ -267,6 +317,7 @@ struct GateBoyPins {
     vram_dbus.reset_to_bootrom();
     vram_abus.reset_to_bootrom();
     vram_ctrl.reset_to_bootrom();
+    lcd.reset_to_bootrom();
     joy.reset_to_bootrom();
     sys.reset_to_bootrom();
     ctrl.reset_to_bootrom();
@@ -279,6 +330,7 @@ struct GateBoyPins {
     vram_dbus.reset_to_cart();
     vram_abus.reset_to_cart();
     vram_ctrl.reset_to_cart();
+    lcd.reset_to_cart();
     joy.reset_to_cart();
     sys.reset_to_cart();
     ctrl.reset_to_cart();

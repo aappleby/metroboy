@@ -194,8 +194,8 @@ bool GateBoy::next_phase(const blob& cart_blob) {
 void GateBoy::update_framebuffer() {
   int lcd_x = bit_pack(gb_state.pix_count) - 8;
   int lcd_y = bit_pack(gb_state.reg_ly);
-  int DATA0 = gb_state.lcd.PIN_51_LCD_DATA0.qp_ext_old();
-  int DATA1 = gb_state.lcd.PIN_50_LCD_DATA1.qp_ext_old();
+  int DATA0 = gb_state.pins.lcd.PIN_51_LCD_DATA0.qp_ext_old();
+  int DATA1 = gb_state.pins.lcd.PIN_50_LCD_DATA1.qp_ext_old();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
     wire p0 = bit(DATA0);

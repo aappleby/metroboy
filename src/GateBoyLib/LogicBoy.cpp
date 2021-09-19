@@ -475,6 +475,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // VID RST BRANCH
 
+  const bool wuty_sfetch_done_old =
+        !get_bit(state_old.reg_lcdc, 7) &&
+        !state_old.XYMU_RENDERINGn &&
+        state_old.sfetch_control.TYFO_SFETCH_S0p_D1 &&
+        get_bit(state_old.sfetch_counter, 0) &&
+        state_old.sfetch_control.SEBA_SFETCH_S1p_D5 &&
+        state_old.sfetch_control.VONU_SFETCH_S1p_D4;
+
   if (get_bit(state_new.reg_lcdc, 7)) {
 
     state_new.sprite_scanner.DOBA_SCAN_DONE_Bp.state = 0;
@@ -500,7 +508,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.sfetch_control.VONU_SFETCH_S1p_D4.state = 0;
     state_new.sfetch_control.SEBA_SFETCH_S1p_D5.state = 0;
 
-    state_new.sfetch_control.TEXY_SFETCHINGp = 0;
 
     state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp = 0;
 
@@ -539,7 +546,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // VID RUN BRANCH
 
-  bool hblank_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count & 167) == 167;
+  const bool hblank_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count & 167) == 167;
 
   if (!get_bit(state_new.reg_lcdc, 7)) {
     if (line_reset) {
@@ -626,7 +633,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.sfetch_control.TOBU_SFETCH_S1p_D2.state = 0;
       state_new.sfetch_control.VONU_SFETCH_S1p_D4.state = 0;
       state_new.sfetch_control.SEBA_SFETCH_S1p_D5.state = 0;
-      state_new.sfetch_control.TEXY_SFETCHINGp = 0;
       state_new.tfetch_control.PYGO_FETCH_DONEp.state = 0;
       state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
       state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
@@ -634,8 +640,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp = 0;
     }
     else {
-      state_new.sfetch_control.TEXY_SFETCHINGp = (get_bit(state_new.sfetch_counter, 1) || state_new.sfetch_control.VONU_SFETCH_S1p_D4);
-
       if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp && state_new.tfetch_control.NYKA_FETCH_DONEp && state_new.tfetch_control.PORY_FETCH_DONEp) {
         state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 0;
       }
@@ -654,13 +658,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
         state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 0;
       }
 
-      if (!state_old.sfetch_control.WUTY_SFETCH_DONE_TRIGp && state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp) {
+      if (!wuty_sfetch_done_old && state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp) {
         state_new.sprite_reset_flags = state_old.sprite_match_flags;
       }
     }
   }
 
 
+  bool sfetching_old = !get_bit(state_old.reg_lcdc, 7) && !state_old.XYMU_RENDERINGn && ((get_bit(state_old.sfetch_counter, 1) || state_old.sfetch_control.VONU_SFETCH_S1p_D4));
 
   const uint8_t sfetch_phase_old = pack(
     !(state_old.sfetch_control.TYFO_SFETCH_S0p_D1.state ^ get_bit(state_old.sfetch_counter, 0)),
@@ -677,7 +682,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (!state_old.XYMU_RENDERINGn) {
     uint8_t sprite_pix = state_old.vram_dbus;
 
-    if (get_bit(state_old.oam_temp_b, 5) && state_old.sfetch_control.TEXY_SFETCHINGp) {
+    if (get_bit(state_old.oam_temp_b, 5) && sfetching_old) {
       sprite_pix = bit_reverse(state_old.vram_dbus);
     }
 
@@ -1099,6 +1104,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Pixel pipes
 
+  const bool wuty_sfetch_done_new =
+        !get_bit(state_new.reg_lcdc, 7) &&
+        !state_new.XYMU_RENDERINGn &&
+        state_new.sfetch_control.TYFO_SFETCH_S0p_D1 &&
+        get_bit(state_new.sfetch_counter, 0) &&
+        state_new.sfetch_control.SEBA_SFETCH_S1p_D5 &&
+        state_new.sfetch_control.VONU_SFETCH_S1p_D4;
+
   if (!state_new.XYMU_RENDERINGn) {
     if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
       state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
@@ -1109,7 +1122,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
     }
 
-    if (bit(state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state)) {
+    if (wuty_sfetch_done_new) {
       uint8_t sprite_mask = state_new.spr_pipe_b | state_new.spr_pipe_a;
 
       state_new.spr_pipe_a = (state_new.spr_pipe_a & sprite_mask) | (~state_new.sprite_pix_a & ~sprite_mask);
@@ -1474,7 +1487,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //--------------------------------------------
   // Sprite read address
 
-  if (state_new.sfetch_control.TEXY_SFETCHINGp) {
+  const bool sfetching_new = !get_bit(state_new.reg_lcdc, 7) && !state_new.XYMU_RENDERINGn && ((get_bit(state_new.sfetch_counter, 1) || state_new.sfetch_control.VONU_SFETCH_S1p_D4));
+
+  if (sfetching_new) {
     const bool hilo = state_new.sfetch_control.VONU_SFETCH_S1p_D4;
     const auto line = state_new.sprite_lbus ^ (get_bit(state_new.oam_temp_b, 6) ? 0b0000 : 0b1111);
     const auto tile = state_new.oam_temp_a;
@@ -1500,8 +1515,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   uint8_t pins_vram_dbus = 0xFF;
 
   if (!state_new.XYMU_RENDERINGn) {
-    pins.vram_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || state_new.sfetch_control.TEXY_SFETCHINGp;
-    pins.vram_ctrl.PIN_45_VRAM_OEn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || (state_new.sfetch_control.TEXY_SFETCHINGp && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
+    pins.vram_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || sfetching_new;
+    pins.vram_ctrl.PIN_45_VRAM_OEn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || (sfetching_new && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
     pins.vram_ctrl.PIN_49_VRAM_WRn.state = 0;
 
     if (pins.vram_ctrl.PIN_45_VRAM_OEn) {
@@ -1883,6 +1898,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp = wuty_sfetch_done_new;
+    state_new.sfetch_control.TEXY_SFETCHINGp = sfetching_new;
     state_new.WODU_HBLANKp = hblank_new;
     state_new.ACYL_SCANNINGp = scanning_new;
     state_new.sprite_scanner.FETO_SCAN_DONEp = (state_new.scan_counter == 39) && !get_bit(state_new.reg_lcdc, 7);

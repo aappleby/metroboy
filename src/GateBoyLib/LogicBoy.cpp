@@ -98,7 +98,6 @@ bool LogicBoy::run_phases(const blob& cart_blob, int phase_count) {
 }
 
 bool LogicBoy::next_phase(const blob& cart_blob) {
-  CHECK_N(!sys.clk_req);
   tock_cpu();
   tock_logic(cart_blob, sys.phase_total);
   sys.phase_total++;
@@ -189,8 +188,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.cpu_signals.SIG_IN_CPU_WRp.state = cpu.bus_req_new.write;
     state_new.cpu_abus = cpu.bus_req_new.addr;
   }
-
-  CHECK_N(state_new.cpu_signals.SIG_IN_CPU_RDp.state && state_new.cpu_signals.SIG_IN_CPU_WRp);
 
   // This chunk is weird...
   {
@@ -713,7 +710,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.store_x9 = 0xFF;
   }
   else {
-    bool ssf_clk = gen_clk_new(phase_total, 0b10011001) || !state_new.sprite_scanner.CENO_SCANNINGn;
+    bool ssf_clk = (DELTA_HA || DELTA_CD || DELTA_DE || DELTA_GH) || !state_new.sprite_scanner.CENO_SCANNINGn;
 
     int ly = (int)state_new.reg_ly;
     int sy = (int)state_new.oam_temp_a - 16;
@@ -721,7 +718,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
     if (ly < sy || ly >= sy + sprite_height) ssf_clk = 1;
 
-    if (gen_clk_new(phase_total, 0b10101010)) {
+    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
       state_new.sprite_scanner.DEZY_COUNT_CLKp.state = ssf_clk;
       if (!state_old.sprite_scanner.DEZY_COUNT_CLKp && state_new.sprite_scanner.DEZY_COUNT_CLKp) {
         if (state_old.sprite_counter != 10) {
@@ -738,62 +735,24 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       }
     }
 
-    const auto sprite_store_flags_old = state_old.sprite_store_flags ^ 0b1111111111;
-    const auto sprite_store_flags_new = state_new.sprite_store_flags ^ 0b1111111111;
+    int sprite_index_old = 32 - __lzcnt(state_old.sprite_store_flags - 1);
+    int sprite_index_new = 32 - __lzcnt(state_new.sprite_store_flags - 1);
+    int sprite_reset_index = 32 - __lzcnt(state_new.sprite_reset_flags - 1);
 
-    const auto store_clk_pe = ~sprite_store_flags_old & sprite_store_flags_new;
-    const auto store_clk_ne = sprite_store_flags_old & ~sprite_store_flags_new;
+    if (sprite_index_old != sprite_index_new) {
+      if (sprite_index_new != 32) {
+        (&state_new.store_i0)[sprite_index_new] = state_new.sprite_ibus ^ 0b111111;
+        (&state_new.store_l0)[sprite_index_new] = state_new.sprite_lbus ^ 0b1111;
+      }
 
-    const auto sprite_ibus = state_new.sprite_ibus;
-    const auto sprite_lbus = state_new.sprite_lbus;
-    const auto sprite_reset_flags = state_new.sprite_reset_flags;
-    const auto oam_temp_b = state_new.oam_temp_b;
+      if (sprite_index_old != 32) {
+        (&state_new.store_x0)[sprite_index_old] = state_new.oam_temp_b;
+      }
+    }
 
-    if (get_bit(store_clk_ne, 0)) state_new.store_i0 = sprite_ibus ^ 0b111111;
-    if (get_bit(store_clk_ne, 1)) state_new.store_i1 = sprite_ibus ^ 0b111111;
-    if (get_bit(store_clk_ne, 2)) state_new.store_i2 = sprite_ibus ^ 0b111111;
-    if (get_bit(store_clk_ne, 3)) state_new.store_i3 = sprite_ibus ^ 0b111111;
-    if (get_bit(store_clk_ne, 4)) state_new.store_i4 = sprite_ibus ^ 0b111111;
-    if (get_bit(store_clk_ne, 5)) state_new.store_i5 = sprite_ibus ^ 0b111111;
-    if (get_bit(store_clk_ne, 6)) state_new.store_i6 = sprite_ibus ^ 0b111111;
-    if (get_bit(store_clk_ne, 7)) state_new.store_i7 = sprite_ibus ^ 0b111111;
-    if (get_bit(store_clk_ne, 8)) state_new.store_i8 = sprite_ibus ^ 0b111111;
-    if (get_bit(store_clk_ne, 9)) state_new.store_i9 = sprite_ibus ^ 0b111111;
-
-    if (get_bit(store_clk_ne, 0)) state_new.store_l0 = sprite_lbus ^ 0b1111;
-    if (get_bit(store_clk_ne, 1)) state_new.store_l1 = sprite_lbus ^ 0b1111;
-    if (get_bit(store_clk_ne, 2)) state_new.store_l2 = sprite_lbus ^ 0b1111;
-    if (get_bit(store_clk_ne, 3)) state_new.store_l3 = sprite_lbus ^ 0b1111;
-    if (get_bit(store_clk_ne, 4)) state_new.store_l4 = sprite_lbus ^ 0b1111;
-    if (get_bit(store_clk_ne, 5)) state_new.store_l5 = sprite_lbus ^ 0b1111;
-    if (get_bit(store_clk_ne, 6)) state_new.store_l6 = sprite_lbus ^ 0b1111;
-    if (get_bit(store_clk_ne, 7)) state_new.store_l7 = sprite_lbus ^ 0b1111;
-    if (get_bit(store_clk_ne, 8)) state_new.store_l8 = sprite_lbus ^ 0b1111;
-    if (get_bit(store_clk_ne, 9)) state_new.store_l9 = sprite_lbus ^ 0b1111;
-
-    if (get_bit(store_clk_pe, 0)) state_new.store_x0 = oam_temp_b;
-    if (get_bit(store_clk_pe, 1)) state_new.store_x1 = oam_temp_b;
-    if (get_bit(store_clk_pe, 2)) state_new.store_x2 = oam_temp_b;
-    if (get_bit(store_clk_pe, 3)) state_new.store_x3 = oam_temp_b;
-    if (get_bit(store_clk_pe, 4)) state_new.store_x4 = oam_temp_b;
-    if (get_bit(store_clk_pe, 5)) state_new.store_x5 = oam_temp_b;
-    if (get_bit(store_clk_pe, 6)) state_new.store_x6 = oam_temp_b;
-    if (get_bit(store_clk_pe, 7)) state_new.store_x7 = oam_temp_b;
-    if (get_bit(store_clk_pe, 8)) state_new.store_x8 = oam_temp_b;
-    if (get_bit(store_clk_pe, 9)) state_new.store_x9 = oam_temp_b;
-
-
-    if (get_bit(sprite_reset_flags, 0)) state_new.store_x0 = 0xFF;
-    if (get_bit(sprite_reset_flags, 1)) state_new.store_x1 = 0xFF;
-    if (get_bit(sprite_reset_flags, 2)) state_new.store_x2 = 0xFF;
-    if (get_bit(sprite_reset_flags, 3)) state_new.store_x3 = 0xFF;
-    if (get_bit(sprite_reset_flags, 4)) state_new.store_x4 = 0xFF;
-    if (get_bit(sprite_reset_flags, 5)) state_new.store_x5 = 0xFF;
-    if (get_bit(sprite_reset_flags, 6)) state_new.store_x6 = 0xFF;
-    if (get_bit(sprite_reset_flags, 7)) state_new.store_x7 = 0xFF;
-    if (get_bit(sprite_reset_flags, 8)) state_new.store_x8 = 0xFF;
-    if (get_bit(sprite_reset_flags, 9)) state_new.store_x9 = 0xFF;
-
+    if (sprite_reset_index != 32) {
+      (&state_new.store_x0)[sprite_reset_index] = 0xFF;
+    }
   }
 
   //----------------------------------------
@@ -852,10 +811,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || hblank_old;
 
   const wire pause_rendering_old = state_old.win_ctrl.RYDY_WIN_HITp || !state_old.tfetch_control.POKY_PRELOAD_LATCHp || state_old.FEPO_STORE_MATCHp || hblank_old;
-  const bool SACU_CLKPIPE_old = gen_clk_old(phase_total, 0b10101010) || pause_rendering_old || state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
-  const wire SACU_CLKPIPE_new = gen_clk_new(phase_total, 0b10101010) || pause_rendering_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn;
-
-  if (line_reset_new) CHECK_P(SACU_CLKPIPE_new);
+  const bool SACU_CLKPIPE_old = (DELTA_HA_OLD || DELTA_BC_OLD || DELTA_DE_OLD || DELTA_FG_OLD) || pause_rendering_old || state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
+  const wire SACU_CLKPIPE_new = (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) || pause_rendering_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn;
 
   if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
     state_new.pix_count = state_new.pix_count + 1;
@@ -1027,8 +984,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Fine match counter
 
-  if (line_reset_new) CHECK_P(state_new.XYMU_RENDERINGn);
-
   if (state_new.fine_count != 7 && !pause_rendering_old && gen_clk_new(phase_total, 0b10101010)) {
     state_new.fine_count = state_new.fine_count + 1;
   }
@@ -1041,7 +996,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.win_x.map = 0;
   }
   else if (trigger_win_fetch_state(state_new)) {
-    CHECK_N(state_new.XYMU_RENDERINGn);
     state_new.fine_count = 0;
     if (state_new.win_ctrl.PYNU_WIN_MODE_Ap) {
       state_new.win_x.map = state_old.win_x.map + 1;
@@ -1049,7 +1003,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   if (state_old.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.PYNU_WIN_MODE_Ap) {
-    //CHECK_N(state_new.XYMU_RENDERINGn); nope
     uint8_t win_old = state_old.win_y.tile | (state_old.win_y.map << 3);
     uint8_t win_new = win_old + 1;
 
@@ -1768,9 +1721,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   state_new.reg_if = (uint8_t)pack_if;
   state_new.reg_stat = (uint8_t)pack_stat;
 
-  // POSTCONDITIONS
-  if (scanning_new)    CHECK_P(state_new.XYMU_RENDERINGn);
-  if (!state_new.XYMU_RENDERINGn)  CHECK_N(scanning_new);
 
 
 

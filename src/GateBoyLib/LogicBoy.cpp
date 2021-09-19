@@ -421,15 +421,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     if (state_new.cpu_abus == 0xFF50) state_new.cpu_signals.TEPU_BOOT_BITn.state = state_new.SATO_BOOT_BITn;
   }
 
-  state_new.cpu_signals.SIG_CPU_BOOTp.state = 0;
-  state_new.cpu_signals.SIG_BOOT_CSp.state = 0;
-
   if (state_new.cpu_abus <= 0x00FF) {
-
-    state_new.cpu_signals.SIG_CPU_BOOTp.state = !state_new.cpu_signals.TEPU_BOOT_BITn;
-
     if (state_new.cpu_signals.SIG_IN_CPU_RDp && !state_new.cpu_signals.TEPU_BOOT_BITn) {
-      state_new.cpu_signals.SIG_BOOT_CSp.state = 1;
       state_new.cpu_dbus = DMG_ROM_blob[state_new.cpu_abus & 0xFF];
     }
   }
@@ -1897,6 +1890,18 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.cpu_signals.SIG_CPU_BOOTp.state = 0;
+    state_new.cpu_signals.SIG_BOOT_CSp.state = 0;
+
+    if (state_new.cpu_abus <= 0x00FF) {
+
+      state_new.cpu_signals.SIG_CPU_BOOTp.state = !state_new.cpu_signals.TEPU_BOOT_BITn;
+
+      if (state_new.cpu_signals.SIG_IN_CPU_RDp && !state_new.cpu_signals.TEPU_BOOT_BITn) {
+        state_new.cpu_signals.SIG_BOOT_CSp.state = 1;
+      }
+    }
+
     bit_unpack(pins.vram_dbus, pins_vram_dbus);
     bit_unpack(pins.vram_abus, state_new.vram_abus);
 

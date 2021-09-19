@@ -254,7 +254,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
 
   // SIGNALS TO KILL:
-  //Gate     ACYL_SCANNINGp; // old used?
   //Gate     WODU_HBLANKp; // old used
   //Gate     SATO_BOOT_BITn;
   //Gate     FEPO_STORE_MATCHp; // old used
@@ -540,6 +539,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // VID RUN BRANCH
 
+  bool hblank_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count & 167) == 167;
+
   if (!get_bit(state_new.reg_lcdc, 7)) {
     if (line_reset) {
       state_new.sprite_scanner.DOBA_SCAN_DONE_Bp.state = 0;
@@ -566,7 +567,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
 
     if (gen_clk_new(phase_total, 0b01010101)) {
-      state_new.VOGA_HBLANKp = state_new.WODU_HBLANKp;
+      state_new.VOGA_HBLANKp = hblank_old;
       state_new.sfetch_control.SOBU_SFETCH_REQp.state   = state_new.FEPO_STORE_MATCHp && !state_old.win_ctrl.RYDY_WIN_HITp && state_new.tfetch_control.LYRY_BFETCH_DONEp && !state_new.sfetch_control.TAKA_SFETCH_RUNNINGp;
       state_new.sfetch_control.VONU_SFETCH_S1p_D4 = state_new.sfetch_control.TOBU_SFETCH_S1p_D2;
       state_new.sfetch_control.TOBU_SFETCH_S1p_D2.state = get_bit(state_new.sfetch_counter, 1);
@@ -820,7 +821,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // Fine scroll match, sprite store match, clock pipe, and pixel counter are intertwined here.
 
   // NOTE we reassign this below because there's a bit of a feedback loop
-  wire pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || state_new.WODU_HBLANKp;
+  wire pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || hblank_old;
 
   if (gen_clk_new(phase_total, 0b01010101)) {
     if (!pause_rendering_new) {
@@ -869,9 +870,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
   }
 
-  pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || state_new.WODU_HBLANKp;
+  pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || hblank_old;
 
-  const wire pause_rendering_old = state_old.win_ctrl.RYDY_WIN_HITp || !state_old.tfetch_control.POKY_PRELOAD_LATCHp || state_old.FEPO_STORE_MATCHp || state_old.WODU_HBLANKp;
+  const wire pause_rendering_old = state_old.win_ctrl.RYDY_WIN_HITp || !state_old.tfetch_control.POKY_PRELOAD_LATCHp || state_old.FEPO_STORE_MATCHp || hblank_old;
   const bool SACU_CLKPIPE_old = gen_clk_old(phase_total, 0b10101010) || pause_rendering_old || state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
   const wire SACU_CLKPIPE_new = gen_clk_new(phase_total, 0b10101010) || pause_rendering_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn;
 
@@ -892,7 +893,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Pix counter triggers HBLANK if there's no sprite store match and enables the pixel pipe clocks for later
 
-  state_new.WODU_HBLANKp = !state_old.FEPO_STORE_MATCHp && (state_new.pix_count & 167) == 167;
+  bool hblank_new = !state_old.FEPO_STORE_MATCHp && (state_new.pix_count & 167) == 167;
 
   if (state_new.XYMU_RENDERINGn) {
     state_new.lcd.PAHO_X_8_SYNC.state = 0;
@@ -1788,7 +1789,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   bool int_stat_old = 0;
-  if (!get_bit(state_old.reg_stat, 0) && state_old.WODU_HBLANKp && !state_old.lcd.POPU_y144p) int_stat_old = 1;
+  if (!get_bit(state_old.reg_stat, 0) && hblank_old && !state_old.lcd.POPU_y144p) int_stat_old = 1;
   if (!get_bit(state_old.reg_stat, 1) && state_old.lcd.POPU_y144p) int_stat_old = 1;
   if (!get_bit(state_old.reg_stat, 2) && !state_old.lcd.POPU_y144p && state_old.lcd.RUTU_x113p) int_stat_old = 1;
   if (!get_bit(state_old.reg_stat, 3) && state_old.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_old = 1;
@@ -1800,7 +1801,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   const bool int_ser_old = 0;
 
   bool int_stat_new = 0;
-  if (!get_bit(pack_stat, 0) && state_new.WODU_HBLANKp && !state_new.lcd.POPU_y144p) int_stat_new = 1;
+  if (!get_bit(pack_stat, 0) && hblank_new && !state_new.lcd.POPU_y144p) int_stat_new = 1;
   if (!get_bit(pack_stat, 1) && state_new.lcd.POPU_y144p) int_stat_new = 1;
   if (!get_bit(pack_stat, 2) && !state_new.lcd.POPU_y144p && state_new.lcd.RUTU_x113p) int_stat_new = 1;
   if (!get_bit(pack_stat, 3) && state_new.int_ctrl.ROPO_LY_MATCH_SYNCp) int_stat_new = 1;
@@ -1882,6 +1883,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.WODU_HBLANKp = hblank_new;
     state_new.ACYL_SCANNINGp = scanning_new;
     state_new.sprite_scanner.FETO_SCAN_DONEp = (state_new.scan_counter == 39) && !get_bit(state_new.reg_lcdc, 7);
     state_new.SATO_BOOT_BITn = get_bit(state_new.cpu_dbus, 0) || state_new.cpu_signals.TEPU_BOOT_BITn;

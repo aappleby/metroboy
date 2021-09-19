@@ -327,9 +327,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (DELTA_HA) {
     state_new.int_ctrl.MOBA_TIMER_OVERFLOWp.state = !get_bit(state_old.reg_tima, 7) && state_old.int_ctrl.NYDU_TIMA7p_DELAY;
     state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = get_bit(state_old.reg_tima, 7);
-  }
 
-  {
+    // A for the div tick
     bool SOGU_TIMA_CLKn_old = 0;
     bool SOGU_TIMA_CLKn_new = 0;
 
@@ -346,26 +345,66 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     if (SOGU_TIMA_CLKn_old && !SOGU_TIMA_CLKn_new) {
       state_new.reg_tima = state_new.reg_tima + 1;
     }
-  }
-
-  if (state_new.cpu_abus == 0xFF05 && (DELTA_DE || DELTA_EF || DELTA_FG) && state_new.cpu_signals.SIG_IN_CPU_WRp) {
-    if (!state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE || state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
+    if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
       state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
-      state_new.reg_tima = state_new.cpu_dbus;
+      state_new.reg_tima = state_new.reg_tma;
     }
   }
-  else {
+  else if (DELTA_AB || DELTA_BC || DELTA_CD) {
+    if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
+      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
+      state_new.reg_tima = state_new.reg_tma;
+    }
+  }
+  else if (DELTA_DE || DELTA_EF || DELTA_FG) {
+    // EFG for the div reset
+    bool SOGU_TIMA_CLKn_old = 0;
+    bool SOGU_TIMA_CLKn_new = 0;
+
+    if (state_old.reg_tac == 4) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 7) & 1;
+    if (state_old.reg_tac == 5) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 1) & 1;
+    if (state_old.reg_tac == 6) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 3) & 1;
+    if (state_old.reg_tac == 7) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 5) & 1;
+
+    if (state_new.reg_tac == 4) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 7) & 1;
+    if (state_new.reg_tac == 5) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 1) & 1;
+    if (state_new.reg_tac == 6) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 3) & 1;
+    if (state_new.reg_tac == 7) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 5) & 1;
+
+    if (SOGU_TIMA_CLKn_old && !SOGU_TIMA_CLKn_new) {
+      state_new.reg_tima = state_new.reg_tima + 1;
+    }
+
+    if (state_new.cpu_abus == 0xFF05 && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+      if (!state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE || state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
+        state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
+        state_new.reg_tima = state_new.cpu_dbus;
+      }
+    }
+    else {
+      if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
+        state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
+        state_new.reg_tima = state_new.reg_tma;
+      }
+    }
+  }
+  else if (DELTA_GH) {
     if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
       state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
       state_new.reg_tima = state_new.reg_tma;
     }
   }
 
+  //----------------------------------------
+  // bootrom read
+
   if (state_new.cpu_abus <= 0x00FF) {
     if (state_new.cpu_signals.SIG_IN_CPU_RDp && !state_new.cpu_signals.TEPU_BOOT_BITn) {
       state_new.cpu_dbus = DMG_ROM_blob[state_new.cpu_abus & 0xFF];
     }
   }
+
+  // boot bit read
 
   if (state_new.cpu_signals.SIG_IN_CPU_RDp && (state_new.cpu_abus == 0xFF50)) {
     state_new.cpu_dbus &= ~1;

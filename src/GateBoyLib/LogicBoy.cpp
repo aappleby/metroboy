@@ -679,13 +679,13 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   const wire oam_busy_new = (state_new.cpu_abus >= 0xFE00 && state_new.cpu_abus <= 0xFEFF) || state_new.MATU_DMA_RUNNINGp;
 
   uint8_t BYCU_OAM_CLKp_old = 1;
-  if (scanning_old)  BYCU_OAM_CLKp_old &= gen_clk_old(phase_total, 0b10001000);
-  if (oam_busy_old)  BYCU_OAM_CLKp_old &= gen_clk_old(phase_total, 0b11110000);
+  if (scanning_old)  BYCU_OAM_CLKp_old &= (DELTA_HA_OLD || DELTA_DE_OLD);
+  if (oam_busy_old)  BYCU_OAM_CLKp_old &= (DELTA_HA_OLD || DELTA_AB_OLD || DELTA_BC_OLD || DELTA_CD_OLD);
   if (!state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old &= sfetch_phase_old != 3;
 
   uint8_t BYCU_OAM_CLKp_new = 1;
-  if (scanning_new)  BYCU_OAM_CLKp_new &= gen_clk_new(phase_total, 0b10001000);
-  if (oam_busy_new)  BYCU_OAM_CLKp_new &= gen_clk_new(phase_total, 0b11110000);
+  if (scanning_new)  BYCU_OAM_CLKp_new &= (DELTA_HA || DELTA_DE);
+  if (oam_busy_new)  BYCU_OAM_CLKp_new &= (DELTA_HA || DELTA_AB || DELTA_BC || DELTA_CD);
   if (!state_new.XYMU_RENDERINGn) BYCU_OAM_CLKp_new &= sfetch_phase_new != 3;
 
   if (!BYCU_OAM_CLKp_old && BYCU_OAM_CLKp_new) {

@@ -167,27 +167,13 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
 
-  state_new.cpu_dbus = 0xFF; // must be pulled up or we fail regression
+  // Data has to be driven on EFGH or we fail the wave tests
+  state_new.cpu_dbus = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.write ? cpu.bus_req_new.data_lo : 0xFF; // must be pulled up or we fail regression
+  state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read;
 
-  if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
-    // Data has to be driven on EFGH or we fail the wave tests
-    if (cpu.bus_req_new.write) state_new.cpu_dbus = cpu.bus_req_new.data_lo;
-    state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = cpu.bus_req_new.read;
-  }
-  else {
-    state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = 0;
-  }
-
-  if (DELTA_HA) {
-    state_new.cpu_signals.SIG_IN_CPU_RDp.state = 0;
-    state_new.cpu_signals.SIG_IN_CPU_WRp.state = 0;
-    state_new.cpu_abus = cpu.bus_req_new.addr & 0x00FF;
-  }
-  else {
-    state_new.cpu_signals.SIG_IN_CPU_RDp.state = cpu.bus_req_new.read;
-    state_new.cpu_signals.SIG_IN_CPU_WRp.state = cpu.bus_req_new.write;
-    state_new.cpu_abus = cpu.bus_req_new.addr;
-  }
+  state_new.cpu_signals.SIG_IN_CPU_RDp.state = DELTA_HA ? 0 : cpu.bus_req_new.read;
+  state_new.cpu_signals.SIG_IN_CPU_WRp.state = DELTA_HA ? 0 : cpu.bus_req_new.write;
+  state_new.cpu_abus = DELTA_HA ? cpu.bus_req_new.addr & 0x00FF : cpu.bus_req_new.addr;
 
   // This chunk is weird...
   {
@@ -345,16 +331,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     if (SOGU_TIMA_CLKn_old && !SOGU_TIMA_CLKn_new) {
       state_new.reg_tima = state_new.reg_tima + 1;
     }
-    if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
-      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
-      state_new.reg_tima = state_new.reg_tma;
-    }
   }
   else if (DELTA_AB || DELTA_BC || DELTA_CD) {
-    if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
-      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
-      state_new.reg_tima = state_new.reg_tma;
-    }
   }
   else if (DELTA_DE || DELTA_EF || DELTA_FG) {
     // EFG for the div reset
@@ -375,24 +353,19 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.reg_tima = state_new.reg_tima + 1;
     }
 
-    if (state_new.cpu_abus == 0xFF05 && state_new.cpu_signals.SIG_IN_CPU_WRp) {
-      if (!state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE || state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
+    if (state_new.cpu_signals.SIG_IN_CPU_WRp) {
+      if (state_new.cpu_abus == 0xFF05 && !state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
         state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
         state_new.reg_tima = state_new.cpu_dbus;
       }
     }
-    else {
-      if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
-        state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
-        state_new.reg_tima = state_new.reg_tma;
-      }
-    }
   }
   else if (DELTA_GH) {
-    if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
-      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
-      state_new.reg_tima = state_new.reg_tma;
-    }
+  }
+
+  if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp) {
+    state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
+    state_new.reg_tima = state_new.reg_tma;
   }
 
   //----------------------------------------

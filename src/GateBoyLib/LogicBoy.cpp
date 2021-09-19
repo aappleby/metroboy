@@ -903,14 +903,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || hblank_old;
 
-  const wire pause_rendering_old = state_old.win_ctrl.RYDY_WIN_HITp || !state_old.tfetch_control.POKY_PRELOAD_LATCHp || state_old.FEPO_STORE_MATCHp || hblank_old;
-  const bool SACU_CLKPIPE_old = (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) || pause_rendering_old || state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
-  const wire SACU_CLKPIPE_new = (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) || pause_rendering_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn;
 
-  if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-    state_new.pix_count = state_new.pix_count + 1;
-    state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = !nuko_wx_match_old && state_new.fine_count == 7;
+  if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
+    if (!state_old.win_ctrl.RYDY_WIN_HITp && state_old.tfetch_control.POKY_PRELOAD_LATCHp && !state_old.FEPO_STORE_MATCHp && !hblank_old && !state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn) {
+      state_new.pix_count = state_new.pix_count + 1;
+      state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = !nuko_wx_match_old && state_new.fine_count == 7;
+    }
   }
+
+  const wire pause_rendering_old = (state_old.win_ctrl.RYDY_WIN_HITp || !state_old.tfetch_control.POKY_PRELOAD_LATCHp || state_old.FEPO_STORE_MATCHp || hblank_old);
+  const bool SACU_CLKPIPE_old = DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH || pause_rendering_old || state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
+  const wire SACU_CLKPIPE_new = DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG || pause_rendering_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn;
 
   if (line_reset_new) {
     state_new.pix_count = 0;

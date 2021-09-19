@@ -356,7 +356,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   // boot bit read
 
-  if ((cpu.bus_req_new.read && !DELTA_HA) && (state_new.cpu_abus == 0xFF50)) {
+  if (cpu.bus_req_new.read && !DELTA_HA && state_new.cpu_abus == 0xFF50) {
     state_new.cpu_dbus &= ~1;
     state_new.cpu_dbus |= state_new.cpu_signals.TEPU_BOOT_BITn.state;
   }
@@ -399,22 +399,22 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
     
   const auto dma_addr_new = ((state_new.reg_dma ^ 0xFF) << 8) | state_new.dma_lo;
-  const auto dma_addr_vram_new = state_new.MATU_DMA_RUNNINGp && (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
-
-  auto restart_fetch_state = [](const LogicBoyState& state) {
-    return !state.XYMU_RENDERINGn && !state.tfetch_control.POKY_PRELOAD_LATCHp && state.tfetch_control.NYKA_FETCH_DONEp && state.tfetch_control.PORY_FETCH_DONEp;
-  };
+  const bool dma_addr_vram_new = (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
 
   const bool avap_scan_done_old = !(state_old.sprite_scanner.DOBA_SCAN_DONE_Bp || line_reset_old || get_bit(state_old.reg_lcdc, 7) || !state_old.sprite_scanner.BYBA_SCAN_DONE_Ap);
 
   const wire BFETCH_RSTp_old =
-    avap_scan_done_old ||
+    !(state_old.sprite_scanner.DOBA_SCAN_DONE_Bp || line_reset_old || get_bit(state_old.reg_lcdc, 7) || !state_old.sprite_scanner.BYBA_SCAN_DONE_Ap) ||
     (state_old.win_ctrl.PYNU_WIN_MODE_Ap && !state_old.win_ctrl.NOPA_WIN_MODE_Bp) ||
     (state_old.win_ctrl.RYFA_WIN_FETCHn_A && !state_old.win_ctrl.RENE_WIN_FETCHn_B) ||
     (state_old.win_ctrl.SOVY_WIN_HITp && !state_old.win_ctrl.RYDY_WIN_HITp) ||
-    restart_fetch_state(state_old);
+    (!state_old.XYMU_RENDERINGn && !state_old.tfetch_control.POKY_PRELOAD_LATCHp && state_old.tfetch_control.NYKA_FETCH_DONEp && state_old.tfetch_control.PORY_FETCH_DONEp);
 
-  const bool lyry_bfetch_done_old = !BFETCH_RSTp_old && get_bit(state_old.tfetch_counter, 0) && get_bit(state_old.tfetch_counter, 2);
+  const bool lyry_bfetch_done_old = (
+    !BFETCH_RSTp_old &&
+    get_bit(state_old.tfetch_counter, 0) &&
+    get_bit(state_old.tfetch_counter, 2)
+  );
 
   //----------------------------------------
   // VID RST BRANCH
@@ -439,7 +439,11 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.XYMU_RENDERINGn = 1;
 
     if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
-      state_new.sfetch_control.SOBU_SFETCH_REQp.  state = state_new.FEPO_STORE_MATCHp && !state_old.win_ctrl.RYDY_WIN_HITp && lyry_bfetch_done_old && !state_new.sfetch_control.TAKA_SFETCH_RUNNINGp;
+      state_new.sfetch_control.SOBU_SFETCH_REQp.state =
+        state_new.FEPO_STORE_MATCHp &&
+        !state_old.win_ctrl.RYDY_WIN_HITp &&
+        lyry_bfetch_done_old &&
+        !state_new.sfetch_control.TAKA_SFETCH_RUNNINGp;
     }
 
     if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
@@ -890,20 +894,12 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     get_bit(state_new.tfetch_counter, 1),
     get_bit(state_new.tfetch_counter, 2));
 
-  auto trigger_win_fetch_state = [&](const LogicBoyState& state) {
-    bool TEVO_WIN_FETCH_TRIGp = 0;
-    if (state.win_ctrl.RYFA_WIN_FETCHn_A && !state.win_ctrl.RENE_WIN_FETCHn_B) TEVO_WIN_FETCH_TRIGp = 1;
-    if (!state.win_ctrl.RYDY_WIN_HITp && state.win_ctrl.SOVY_WIN_HITp) TEVO_WIN_FETCH_TRIGp = 1;
-    if (restart_fetch_state(state)) TEVO_WIN_FETCH_TRIGp = 1;
-    return TEVO_WIN_FETCH_TRIGp;
-  };
-
   const wire BFETCH_RSTp_new =
     avap_scan_done_new ||
     (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) ||
     (state_new.win_ctrl.RYFA_WIN_FETCHn_A && !state_new.win_ctrl.RENE_WIN_FETCHn_B) ||
     (state_new.win_ctrl.SOVY_WIN_HITp && !state_new.win_ctrl.RYDY_WIN_HITp) ||
-    restart_fetch_state(state_new);
+    (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp && state_new.tfetch_control.NYKA_FETCH_DONEp && state_new.tfetch_control.PORY_FETCH_DONEp);
 
   if (gen_clk_new(phase_total, 0b01010101)) {
     state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = get_bit(state_new.tfetch_counter, 0);
@@ -953,6 +949,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Fine match counter
 
+
   if (state_new.fine_count != 7 && !pause_rendering_old && gen_clk_new(phase_total, 0b10101010)) {
     state_new.fine_count = state_new.fine_count + 1;
   }
@@ -964,10 +961,19 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (line_reset_new) {
     state_new.win_x.map = 0;
   }
-  else if (trigger_win_fetch_state(state_new)) {
+  else if (
+    (state_new.win_ctrl.RYFA_WIN_FETCHn_A && !state_new.win_ctrl.RENE_WIN_FETCHn_B) ||
+    (!state_new.win_ctrl.RYDY_WIN_HITp && state_new.win_ctrl.SOVY_WIN_HITp) || 
+    (
+      !state_new.XYMU_RENDERINGn &&
+      !state_new.tfetch_control.POKY_PRELOAD_LATCHp &&
+      state_new.tfetch_control.NYKA_FETCH_DONEp &&
+      state_new.tfetch_control.PORY_FETCH_DONEp)
+    )
+  {
     state_new.fine_count = 0;
     if (state_new.win_ctrl.PYNU_WIN_MODE_Ap) {
-      state_new.win_x.map = state_old.win_x.map + 1;
+      state_new.win_x.map++;
     }
   }
 
@@ -1079,32 +1085,43 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   uint8_t pins_abus_hi = 0xFF;
 
   const bool cpu_addr_vram_new = (state_new.cpu_abus >= 0x8000) && (state_new.cpu_abus <= 0x9FFF);
-  if ((cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn) && !cpu_addr_vram_new) {
+
+  if (
+    (cpu.bus_req_new.read || cpu.bus_req_new.write) &&
+    !(req_addr_vram && DELTA_HA) &&
+    !req_addr_hi &&
+    !(req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn) &&
+    !cpu_addr_vram_new)
+  {
     state_new.ext_addr_latch = state_new.cpu_abus & 0x7FFF;
   }
 
-  if (state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
-    pins_ctrl_csn_new = !get_bit(state_new.reg_dma, 7);
-    pins_abus_lo = ~state_new.dma_lo;
-    pins_abus_hi = state_new.reg_dma;
+  if (state_new.MATU_DMA_RUNNINGp && !(state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new)) {
+    pins_ctrl_csn_new = !(dma_addr_new & 0x1000);
+    pins_abus_lo = (~dma_addr_new >> 0) & 0xFF;
+    pins_abus_hi = (~dma_addr_new >> 8) & 0xFF;
   }
   else {
-    const bool cpu_addr_ram_new =  (state_new.cpu_abus >= 0xA000) && (state_new.cpu_abus <= 0xFDFF);
-    pins_ctrl_csn_new = (gen_clk_new(phase_total, 0b00111111) && (cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn)) && cpu_addr_ram_new;
+    pins_ctrl_csn_new = (gen_clk_new(phase_total, 0b00111111) &&
+                        (cpu.bus_req_new.read || cpu.bus_req_new.write) &&
+                        !(req_addr_vram && DELTA_HA) &&
+                        !req_addr_hi &&
+                        !(req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn)) &&
+                        (state_new.cpu_abus >= 0xA000) && (state_new.cpu_abus <= 0xFDFF);
     pins_abus_lo = ~((state_new.ext_addr_latch >> 0) & 0xFF);
     pins_abus_hi = ~((state_new.ext_addr_latch >> 8) & 0x7F);
   }
 
   pins_ctrl_rdn_new = 1;
   pins_ctrl_wrn_new = 0;
-  if (!(state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) && (cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn) && (DELTA_HA ? 0 : cpu.bus_req_new.write)) {
+  if (!(state_new.MATU_DMA_RUNNINGp && !(state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new)) && (cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn) && (DELTA_HA ? 0 : cpu.bus_req_new.write)) {
     pins_ctrl_rdn_new = cpu_addr_vram_new;
     pins_ctrl_wrn_new = gen_clk_new(phase_total, 0b00001110) && !cpu_addr_vram_new;
   }
 
   pins_abus_hi &= 0b01111111;
-  if (state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
-    pins_abus_hi |= (!!(state_new.reg_dma & 0b10000000)) << 7;
+  if (state_new.MATU_DMA_RUNNINGp && !(state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new)) {
+    pins_abus_hi |= (!!((~dma_addr_new >> 8) & 0b10000000)) << 7;
   }
   else if (!state_new.cpu_signals.TEPU_BOOT_BITn && state_new.cpu_abus <= 0x00FF) {
   }
@@ -1236,16 +1253,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   // CPU vram read address
 
-  if (!dma_addr_vram_new && state_new.XYMU_RENDERINGn) {
+  if (!(state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new) && state_new.XYMU_RENDERINGn) {
     state_new.vram_abus = (~state_new.cpu_abus) & VRAM_ADDR_MASK;
   }
 
   // DMA vram read address
 
-  if (dma_addr_vram_new) {
-    state_new.vram_abus = uint8_t(~state_new.dma_lo);
-    state_new.vram_abus |= (state_new.reg_dma << 8);
-    state_new.vram_abus &= VRAM_ADDR_MASK;
+  if ((state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new)) {
+    state_new.vram_abus = ~dma_addr_new & VRAM_ADDR_MASK;
   }
 
   //--------------------------------------------
@@ -1344,8 +1359,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
 
   if (!state_new.XYMU_RENDERINGn) {
-    pins_vram_ctrl_csn_new = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || sfetching_new;
-    pins_vram_ctrl_oen_new = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || (sfetching_new && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
+    pins_vram_ctrl_csn_new = (state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new) || state_new.tfetch_control.LONY_FETCHINGp || sfetching_new;
+    pins_vram_ctrl_oen_new = (state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new) || state_new.tfetch_control.LONY_FETCHINGp || (sfetching_new && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
     pins_vram_ctrl_wrn_new = 0;
 
     if (pins_vram_ctrl_oen_new) {
@@ -1361,8 +1376,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.vram_dbus = state_new.cpu_dbus;
     }
 
-    pins_vram_ctrl_csn_new = (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && 1) || dma_addr_vram_new;
-    pins_vram_ctrl_oen_new = (!cpu_addr_vram_new || !(DELTA_HA ? 0 : cpu.bus_req_new.write)) || dma_addr_vram_new;
+    pins_vram_ctrl_csn_new = (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && 1) || (state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new);
+    pins_vram_ctrl_oen_new = (!cpu_addr_vram_new || !(DELTA_HA ? 0 : cpu.bus_req_new.write))  || (state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new);
     pins_vram_ctrl_wrn_new = cpu_addr_vram_new && gen_clk_new(phase_total, 0b00001110) && (DELTA_HA ? 0 : cpu.bus_req_new.write) && 1;
 
     uint8_t vdata = 0xFF;
@@ -1396,8 +1411,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
 
   else {
-    pins_vram_ctrl_csn_new = dma_addr_vram_new;
-    pins_vram_ctrl_oen_new = (!cpu_addr_vram_new || !(DELTA_HA ? 0 : cpu.bus_req_new.write)) || dma_addr_vram_new;
+    pins_vram_ctrl_csn_new = (state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new);
+    pins_vram_ctrl_oen_new = (!cpu_addr_vram_new || !(DELTA_HA ? 0 : cpu.bus_req_new.write)) || (state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new);
     pins_vram_ctrl_wrn_new = cpu_addr_vram_new && gen_clk_new(phase_total, 0b00001110) && (DELTA_HA ? 0 : cpu.bus_req_new.write) && 0;
 
     uint8_t vdata = 0xFF;
@@ -1554,7 +1569,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
     }
 
-    if (dma_addr_vram_new) {
+    if ((state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new)) {
       state_new.oam_dbus_a = ~state_new.vram_dbus;
       state_new.oam_dbus_b = ~state_new.vram_dbus;
     }

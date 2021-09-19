@@ -670,13 +670,40 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (sprite_reset_index != 32) (&state_new.store_x0)[sprite_reset_index] = 0xFF;
   }
 
+  //----------------------------------------
+  // Tile fetch sequencer
 
-  if (vid_rst_new || state_new.XYMU_RENDERINGn)
+  const uint8_t bfetch_phase_old = pack(
+    !(state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_old.tfetch_counter, 0)),
+    get_bit(state_old.tfetch_counter, 0),
+    get_bit(state_old.tfetch_counter, 1),
+    get_bit(state_old.tfetch_counter, 2));
+
+  // BFETCH_RSTp_new below will reset LOVY, LONY, and the counter
+
+  if (vid_rst_new)
   {
     state_new.tfetch_control.PYGO_FETCH_DONEp.state = 0;
     state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
     state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
     state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 0;
+  }
+  else if (state_new.XYMU_RENDERINGn) {
+    state_new.tfetch_control.PYGO_FETCH_DONEp.state = 0;
+    state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
+    state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
+    state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 0;
+    state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
+    state_new.tfetch_control.LONY_FETCHINGp.state = 0;
+
+    if ((bfetch_phase_old < 10) && (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG)) {
+      state_new.tfetch_counter = (bfetch_phase_old >> 1) + 1;
+    }
+
+    if ((DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG)) {
+      state_new.tfetch_control.LOVY_FETCH_DONEp.state = (!BFETCH_RSTp_old && get_bit(state_old.tfetch_counter, 0) && get_bit(state_old.tfetch_counter, 2));
+    }
+
   }
   else
   {
@@ -689,48 +716,41 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.tfetch_control.PORY_FETCH_DONEp = state_new.tfetch_control.NYKA_FETCH_DONEp;
     }
 
+    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+      if (!state_new.XYMU_RENDERINGn) {
+        state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = get_bit(state_new.tfetch_counter, 0);
+      }
+    }
+
+    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
+      if (bfetch_phase_old < 10) {
+        state_new.tfetch_counter = (bfetch_phase_old >> 1) + 1;
+      }
+    }
+
+    if ((DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG)) {
+      state_new.tfetch_control.LOVY_FETCH_DONEp.state = (!BFETCH_RSTp_old && get_bit(state_old.tfetch_counter, 0) && get_bit(state_old.tfetch_counter, 2));
+    }
+
     if (state_new.tfetch_control.PYGO_FETCH_DONEp) {
       state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 1;
     }
+
+    if (state_new.tfetch_control.LOVY_FETCH_DONEp) {
+      state_new.tfetch_control.LONY_FETCHINGp.state = 0;
+    }
   }
 
-  //----------------------------------------
-  // Tile fetch sequencer
 
+  //----------------------------------------
+
+
+  // where does this go?
   if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
     if (!pause_pipe_old && !state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn) {
       state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = !nuko_wx_match_old && state_new.fine_count == 7;
     }
   }
-
-  const uint8_t bfetch_phase_old = pack(
-    !(state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_old.tfetch_counter, 0)),
-    get_bit(state_old.tfetch_counter, 0),
-    get_bit(state_old.tfetch_counter, 1),
-    get_bit(state_old.tfetch_counter, 2));
-
-  if (gen_clk_new(phase_total_old, 0b01010101)) {
-    state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = get_bit(state_new.tfetch_counter, 0);
-  }
-
-  if (state_new.XYMU_RENDERINGn) {
-    state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
-  }
-
-  if ((bfetch_phase_old < 10) && gen_clk_new(phase_total_old, 0b10101010)) {
-    state_new.tfetch_counter = (bfetch_phase_old >> 1) + 1;
-  }
-
-  if (gen_clk_new(phase_total_old, 0b10101010)) {
-    state_new.tfetch_control.LOVY_FETCH_DONEp.state = (!BFETCH_RSTp_old && get_bit(state_old.tfetch_counter, 0) && get_bit(state_old.tfetch_counter, 2));
-  }
-
-  if (state_new.tfetch_control.LOVY_FETCH_DONEp || state_new.XYMU_RENDERINGn) {
-    state_new.tfetch_control.LONY_FETCHINGp.state = 0;
-  }
-
-
-
 
 
 
@@ -756,7 +776,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
     }
   }
-
 
   bool sfetching_old = !vid_rst_old && !state_old.XYMU_RENDERINGn && ((get_bit(state_old.sfetch_counter, 1) || state_old.sfetch_control.VONU_SFETCH_S1p_D4));
 

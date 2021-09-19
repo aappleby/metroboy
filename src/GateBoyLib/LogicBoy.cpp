@@ -1279,20 +1279,19 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     bit_unpack_inv(pins.abus_lo, state_new.dma_lo);
     bit_unpack(pins.abus_hi,     state_new.reg_dma);
   }
-  else {
+
+  if (!state_new.MATU_DMA_RUNNINGp || dma_addr_vram_new) {
     const bool cpu_addr_ram_new =  (state_new.cpu_abus >= 0xA000) && (state_new.cpu_abus <= 0xFDFF);
     pins.ctrl.PIN_80_CSn.state = (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && cpu_addr_ram_new;
     bit_unpack_inv(pins.abus_lo, (state_new.ext_addr_latch >> 0) & 0xFF);
     bit_unpack_inv(pins.abus_hi, (state_new.ext_addr_latch >> 8) & 0x7F);
   }
 
+  pins.ctrl.PIN_79_RDn.state = 1;
+  pins.ctrl.PIN_78_WRn.state = 0;
   if (!(state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && state_new.cpu_signals.SIG_IN_CPU_WRp) {
     pins.ctrl.PIN_79_RDn.state = cpu_addr_vram_new;
     pins.ctrl.PIN_78_WRn.state = gen_clk_new(phase_total, 0b00001110) && !cpu_addr_vram_new;
-  }
-  else {
-    pins.ctrl.PIN_79_RDn.state = 1;
-    pins.ctrl.PIN_78_WRn.state = 0;
   }
 
   pins.abus_hi.PIN_16_A15.state = 0;
@@ -1306,11 +1305,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     pins.abus_hi.PIN_16_A15.state = bit;
   }
 
+  uint8_t pins_dbus = 0;
   if (state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && state_new.cpu_signals.SIG_IN_CPU_WRp && !cpu_addr_vram_new) {
-    bit_unpack_inv(pins.dbus, state_new.cpu_dbus);
-  }
-  else {
-    bit_unpack(pins.dbus, 0);
+    pins_dbus = ~state_new.cpu_dbus;
   }
 
   //----------------------------------------
@@ -1371,7 +1368,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
 
     if (ext_read_en) {
-      bit_unpack_inv(pins.dbus, data_in);
+      pins_dbus = ~data_in;
     }
   }
 
@@ -1384,7 +1381,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     const uint16_t ext_addr = (ext_addr_lo << 0) | (ext_addr_hi << 8);
 
     const auto region = ext_addr >> 13;
-    const uint8_t data_out = (uint8_t)bit_pack_inv(pins.dbus);
+    const uint8_t data_out = ~pins_dbus;
     const bool mbc1_ram_en = state_new.ext_mbc.MBC1_RAM_EN;
     const bool mbc1_mode = state_new.ext_mbc.MBC1_MODE;
 
@@ -1438,7 +1435,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.cpu_dbus = ~state_new.ext_data_latch;
   }
   else {
-    state_new.ext_data_latch = (uint8_t)bit_pack(pins.dbus);
+    state_new.ext_data_latch = pins_dbus;
   }
 
   state_new.vram_abus = VRAM_ADDR_MASK;
@@ -1706,8 +1703,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.oam_dbus_b = ~state_new.vram_dbus;
     }
     else {
-      state_new.oam_dbus_a = (uint8_t)bit_pack(pins.dbus);
-      state_new.oam_dbus_b = (uint8_t)bit_pack(pins.dbus);
+      state_new.oam_dbus_a = pins_dbus;
+      state_new.oam_dbus_b = pins_dbus;
     }
   }
 
@@ -1859,6 +1856,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
   // These are all dead (unused) signals
+
+  bit_unpack(pins.dbus, pins_dbus);
 
   state_new.win_ctrl.ROGE_WY_MATCHp = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
 

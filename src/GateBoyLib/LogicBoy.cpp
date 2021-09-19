@@ -508,9 +508,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.sfetch_control.VONU_SFETCH_S1p_D4.state = 0;
     state_new.sfetch_control.SEBA_SFETCH_S1p_D5.state = 0;
 
-
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp = 0;
-
     state_new.win_ctrl.NUNU_WIN_MATCHp.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp.state = 0;
     state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
@@ -628,7 +625,20 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
     if (state_new.VOGA_HBLANKp) state_new.XYMU_RENDERINGn = 1;
     if (state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp) state_new.XYMU_RENDERINGn = 0;
+  }
 
+
+  const bool wuty_sfetch_done_new =
+        !get_bit(state_new.reg_lcdc, 7) &&
+        !state_new.XYMU_RENDERINGn &&
+        state_new.sfetch_control.TYFO_SFETCH_S0p_D1 &&
+        get_bit(state_new.sfetch_counter, 0) &&
+        state_new.sfetch_control.SEBA_SFETCH_S1p_D5 &&
+        state_new.sfetch_control.VONU_SFETCH_S1p_D4;
+
+
+
+  if (!get_bit(state_new.reg_lcdc, 7)) {
     if (state_new.XYMU_RENDERINGn) {
       state_new.sfetch_control.TOBU_SFETCH_S1p_D2.state = 0;
       state_new.sfetch_control.VONU_SFETCH_S1p_D4.state = 0;
@@ -637,28 +647,21 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
       state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
       state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 0;
-      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp = 0;
     }
     else {
       if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp && state_new.tfetch_control.NYKA_FETCH_DONEp && state_new.tfetch_control.PORY_FETCH_DONEp) {
         state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 0;
       }
 
-      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp =
-        state_new.sfetch_control.TYFO_SFETCH_S0p_D1 &&
-        get_bit(state_new.sfetch_counter, 0) &&
-        state_new.sfetch_control.SEBA_SFETCH_S1p_D5 &&
-        state_new.sfetch_control.VONU_SFETCH_S1p_D4;
-
       if (state_new.tfetch_control.PYGO_FETCH_DONEp) {
         state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 1;
       }
 
-      if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp) {
+      if (wuty_sfetch_done_new) {
         state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 0;
       }
 
-      if (!wuty_sfetch_done_old && state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp) {
+      if (!wuty_sfetch_done_old && wuty_sfetch_done_new) {
         state_new.sprite_reset_flags = state_old.sprite_match_flags;
       }
     }
@@ -1104,14 +1107,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Pixel pipes
 
-  const bool wuty_sfetch_done_new =
-        !get_bit(state_new.reg_lcdc, 7) &&
-        !state_new.XYMU_RENDERINGn &&
-        state_new.sfetch_control.TYFO_SFETCH_S0p_D1 &&
-        get_bit(state_new.sfetch_counter, 0) &&
-        state_new.sfetch_control.SEBA_SFETCH_S1p_D5 &&
-        state_new.sfetch_control.VONU_SFETCH_S1p_D4;
-
   if (!state_new.XYMU_RENDERINGn) {
     if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
       state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
@@ -1124,7 +1119,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
     if (wuty_sfetch_done_new) {
       uint8_t sprite_mask = state_new.spr_pipe_b | state_new.spr_pipe_a;
-
       state_new.spr_pipe_a = (state_new.spr_pipe_a & sprite_mask) | (~state_new.sprite_pix_a & ~sprite_mask);
       state_new.spr_pipe_b = (state_new.spr_pipe_b & sprite_mask) | (~state_new.sprite_pix_b & ~sprite_mask);
       state_new.mask_pipe  = get_bit(state_new.oam_temp_b, 7) ? state_new.mask_pipe | ~sprite_mask : state_new.mask_pipe & sprite_mask;

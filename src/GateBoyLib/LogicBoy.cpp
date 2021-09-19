@@ -874,7 +874,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   bool hblank_new = !state_old.FEPO_STORE_MATCHp && (state_new.pix_count & 167) == 167;
 
   if (state_new.XYMU_RENDERINGn) {
-    state_new.lcd.PAHO_X_8_SYNC.state = 0;
+    state_new.lcd.PAHO_X8_SYNC.state = 0;
     state_new.sprite_match_flags = 0;
     state_new.sprite_ibus = state_new.sprite_index;
     state_new.sprite_lbus = (~state_new.reg_ly + state_new.oam_temp_a) & 0b00001111;
@@ -910,7 +910,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   if (!state_new.XYMU_RENDERINGn && gen_clk_new(phase_total, 0b01010101)) {
-    if (!pause_rendering_new) state_new.lcd.PAHO_X_8_SYNC.state = get_bit(state_old.pix_count, 3);
+    if (!pause_rendering_new) state_new.lcd.PAHO_X8_SYNC.state = get_bit(state_old.pix_count, 3);
   }
 
   if (!state_new.XYMU_RENDERINGn && !state_new.FEPO_STORE_MATCHp) {
@@ -1071,126 +1071,96 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Pixel pipes
 
-  if (!state_new.XYMU_RENDERINGn) {
-    if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-      state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
-      state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
-      state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
-      state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
-      state_new.mask_pipe  = (state_new.mask_pipe  << 1) | 1;
-      state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
-    }
-
-    if (wuty_sfetch_done_new) {
-      uint8_t sprite_mask = state_new.spr_pipe_b | state_new.spr_pipe_a;
-      state_new.spr_pipe_a = (state_new.spr_pipe_a & sprite_mask) | (~state_new.sprite_pix_a & ~sprite_mask);
-      state_new.spr_pipe_b = (state_new.spr_pipe_b & sprite_mask) | (~state_new.sprite_pix_b & ~sprite_mask);
-      state_new.mask_pipe  = get_bit(state_new.oam_temp_b, 7) ? state_new.mask_pipe | ~sprite_mask : state_new.mask_pipe & sprite_mask;
-      state_new.pal_pipe   = get_bit(state_new.oam_temp_b, 4) ? state_new.pal_pipe  | ~sprite_mask : state_new.pal_pipe  & sprite_mask;
-    }
-
-    if (bit(BFETCH_RSTp_new)) {
-      state_new.bgw_pipe_a = ~state_new.tile_temp_a;
-      state_new.bgw_pipe_b =  state_new.tile_temp_b;
-    }
-
-    uint8_t bg_en = !get_bit(state_new.reg_lcdc, 0);
-    uint8_t sp_en = !get_bit(state_new.reg_lcdc, 1);
-
-    uint8_t bgw_pix_a = get_bit(state_new.bgw_pipe_a, 7) & bg_en;
-    uint8_t bgw_pix_b = get_bit(state_new.bgw_pipe_b, 7) & bg_en;
-    uint8_t spr_pix_a = get_bit(state_new.spr_pipe_a, 7) & sp_en;
-    uint8_t spr_pix_b = get_bit(state_new.spr_pipe_b, 7) & sp_en;
-    uint8_t mask_pix  = get_bit(state_new.mask_pipe,  7);
-    uint8_t pal_pix   = get_bit(state_new.pal_pipe,   7);
-
-    uint8_t spr_col = pack(spr_pix_a, spr_pix_b);
-    uint8_t bgw_col = pack(bgw_pix_a, bgw_pix_b);
-    
-    uint8_t pal = 0;
-    uint8_t col = 0;
-
-    if (spr_col == 0 || (mask_pix & (bgw_col != 0))) {
-      pal = state_new.reg_bgp ^ 0xFF;
-      col = bgw_col;
-    }
-    else if (pal_pix) {
-      pal = state_new.reg_obp1 ^ 0xFF;
-      col = spr_col;
-    }
-    else {
-      pal = state_new.reg_obp0 ^ 0xFF;
-      col = spr_col;
-    }
-
-    state_new.lcd.REMY_LD0n = (pal >> (col * 2 + 0)) & 1;
-    state_new.lcd.RAVO_LD1n = (pal >> (col * 2 + 1)) & 1;
+  if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
+    state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
+    state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
+    state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
+    state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
+    state_new.mask_pipe  = (state_new.mask_pipe  << 1) | 1;
+    state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
   }
+
+  if (wuty_sfetch_done_new) {
+    uint8_t sprite_mask = state_new.spr_pipe_b | state_new.spr_pipe_a;
+    state_new.spr_pipe_a = (state_new.spr_pipe_a & sprite_mask) | (~state_new.sprite_pix_a & ~sprite_mask);
+    state_new.spr_pipe_b = (state_new.spr_pipe_b & sprite_mask) | (~state_new.sprite_pix_b & ~sprite_mask);
+    state_new.mask_pipe  = get_bit(state_new.oam_temp_b, 7) ? state_new.mask_pipe | ~sprite_mask : state_new.mask_pipe & sprite_mask;
+    state_new.pal_pipe   = get_bit(state_new.oam_temp_b, 4) ? state_new.pal_pipe  | ~sprite_mask : state_new.pal_pipe  & sprite_mask;
+  }
+
+  if (bit(BFETCH_RSTp_new)) {
+    state_new.bgw_pipe_a = ~state_new.tile_temp_a;
+    state_new.bgw_pipe_b =  state_new.tile_temp_b;
+  }
+
+  uint8_t bg_en = !get_bit(state_new.reg_lcdc, 0);
+  uint8_t sp_en = !get_bit(state_new.reg_lcdc, 1);
+
+  uint8_t bgw_pix_a = get_bit(state_new.bgw_pipe_a, 7) & bg_en;
+  uint8_t bgw_pix_b = get_bit(state_new.bgw_pipe_b, 7) & bg_en;
+  uint8_t spr_pix_a = get_bit(state_new.spr_pipe_a, 7) & sp_en;
+  uint8_t spr_pix_b = get_bit(state_new.spr_pipe_b, 7) & sp_en;
+  uint8_t mask_pix  = get_bit(state_new.mask_pipe,  7);
+  uint8_t pal_pix   = get_bit(state_new.pal_pipe,   7);
+
+  uint8_t spr_col = pack(spr_pix_a, spr_pix_b);
+  uint8_t bgw_col = pack(bgw_pix_a, bgw_pix_b);
+    
+  uint8_t pal = 0;
+  uint8_t col = 0;
+
+  if (spr_col == 0 || (mask_pix & (bgw_col != 0))) {
+    pal = state_new.reg_bgp ^ 0xFF;
+    col = bgw_col;
+  }
+  else if (pal_pix) {
+    pal = state_new.reg_obp1 ^ 0xFF;
+    col = spr_col;
+  }
+  else {
+    pal = state_new.reg_obp0 ^ 0xFF;
+    col = spr_col;
+  }
+
+  uint8_t REMY_LD0n = (pal >> (col * 2 + 0)) & 1;
+  uint8_t RAVO_LD1n = (pal >> (col * 2 + 1)) & 1;
 
   //----------------------------------------
   // LCD pins
+
+  // the "avap_scan_done_new && state_new.lcd.PAHO_X_8_SYNC" latch branch is never hit, would probably cause
+  // latch oscillation or something
+  if (get_bit(state_new.reg_lcdc, 7)) {
+    state_new.lcd.POME_X8_LATCH = 1;
+  }
+  else if (avap_scan_done_new) {
+    state_new.lcd.POME_X8_LATCH = 0;
+  }
+  else if (state_new.lcd.PAHO_X8_SYNC) {
+    state_new.lcd.POME_X8_LATCH = 1;
+  }
 
   if (!get_bit(state_new.reg_lcdc, 7)) {
     if (DELTA_FG) {
       state_new.lcd.SYGU_LINE_STROBE.state = (state_old.reg_lx == 0) || (state_old.reg_lx == 7) || (state_old.reg_lx == 45) || (state_old.reg_lx == 83);
     }
-    pins.lcd.PIN_52_LCD_CNTRL.state = !state_new.lcd.SYGU_LINE_STROBE && !state_new.lcd.RUTU_x113p;
 
     if (state_old.lcd.RUTU_x113p && !state_new.lcd.RUTU_x113p) state_new.lcd.LUCA_LINE_EVENp.state = !state_new.lcd.LUCA_LINE_EVENp;
     if (!state_old.lcd.POPU_y144p && state_new.lcd.POPU_y144p) state_new.lcd.NAPO_FRAME_EVENp.state = !state_new.lcd.NAPO_FRAME_EVENp;
-    pins.lcd.PIN_56_LCD_FLIPS.state = state_new.lcd.NAPO_FRAME_EVENp ^ state_new.lcd.LUCA_LINE_EVENp;
 
     if (state_old.lcd.NYPE_x113p && !state_new.lcd.NYPE_x113p) {
       state_new.lcd.MEDA_VSYNC_OUTn.state = state_new.reg_ly == 0;
     }
 
-    pins.lcd.PIN_57_LCD_VSYNC.state = !state_new.lcd.MEDA_VSYNC_OUTn;
-
-    if (avap_scan_done_new && state_new.lcd.PAHO_X_8_SYNC) {
-      state_new.lcd.POME = 0;
-      state_new.lcd.RUJU = 1;
-      state_new.lcd.POFY = 0;
-    }
-    else if (avap_scan_done_new) {
-      state_new.lcd.POME = 0;
-      state_new.lcd.RUJU = 0;
-      state_new.lcd.POFY = 1;
-    }
-    else if (state_new.lcd.PAHO_X_8_SYNC) {
-      state_new.lcd.POME = 1;
-      state_new.lcd.RUJU = 1;
-      state_new.lcd.POFY = 0;
-    }
-
-    pins.lcd.PIN_50_LCD_DATA1.state = state_new.lcd.RAVO_LD1n;
-    pins.lcd.PIN_51_LCD_DATA0.state = state_new.lcd.REMY_LD0n;
-    pins.lcd.PIN_54_LCD_HSYNC.state = !state_new.lcd.POFY;
-    pins.lcd.PIN_55_LCD_LATCH.state = !state_new.lcd.RUTU_x113p;
-
     if (get_bit(state_new.pix_count, 0) && get_bit(state_new.pix_count, 3)) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 1;
     if (state_new.VOGA_HBLANKp) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
-
-    pins.lcd.PIN_53_LCD_CLOCK.state = (!state_new.lcd.WUSA_LCD_CLOCK_GATE || !SACU_CLKPIPE_new) && (!state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A || state_new.fine_scroll.NYZE_SCX_FINE_MATCH_B);
   }
-  else {
+  if (get_bit(state_new.reg_lcdc, 7)) {
     state_new.lcd.SYGU_LINE_STROBE.state = 0;
     state_new.lcd.LUCA_LINE_EVENp.state = 0;
     state_new.lcd.NAPO_FRAME_EVENp.state = 0;
     state_new.lcd.MEDA_VSYNC_OUTn.state = 0;
     state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
-
-    state_new.lcd.POME = 1;
-    state_new.lcd.RUJU = 1;
-    state_new.lcd.POFY = 0;
-
-    pins.lcd.PIN_50_LCD_DATA1.state = state_new.lcd.RAVO_LD1n;
-    pins.lcd.PIN_51_LCD_DATA0.state = state_new.lcd.REMY_LD0n;
-    pins.lcd.PIN_52_LCD_CNTRL.state = 1;
-    pins.lcd.PIN_53_LCD_CLOCK.state = 1;
-    pins.lcd.PIN_54_LCD_HSYNC.state = 1;
-    pins.lcd.PIN_55_LCD_LATCH.state = !get_bit(state_new.reg_div, 6);
-    pins.lcd.PIN_56_LCD_FLIPS.state = !get_bit(state_new.reg_div, 7);
-    pins.lcd.PIN_57_LCD_VSYNC.state = 1;
   }
 
   //----------------------------------------
@@ -1821,8 +1791,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   int lcd_y = lb_state.reg_ly;
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
-    wire p0 = !pins.lcd.PIN_51_LCD_DATA0.state;
-    wire p1 = !pins.lcd.PIN_50_LCD_DATA1.state;
+    wire p0 = !REMY_LD0n;
+    wire p1 = !RAVO_LD1n;
     auto new_pix = p0 + p1 * 2;
 
     mem.framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
@@ -1866,6 +1836,32 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    if (!get_bit(state_new.reg_lcdc, 7)) {
+      pins.lcd.PIN_50_LCD_DATA1.state = RAVO_LD1n;
+      pins.lcd.PIN_51_LCD_DATA0.state = REMY_LD0n;
+      pins.lcd.PIN_52_LCD_CNTRL.state = !state_new.lcd.SYGU_LINE_STROBE && !state_new.lcd.RUTU_x113p;
+      pins.lcd.PIN_53_LCD_CLOCK.state = (!state_new.lcd.WUSA_LCD_CLOCK_GATE || !SACU_CLKPIPE_new) && (!state_new.fine_scroll.PUXA_SCX_FINE_MATCH_A || state_new.fine_scroll.NYZE_SCX_FINE_MATCH_B);
+      pins.lcd.PIN_54_LCD_HSYNC.state = state_new.lcd.POME_X8_LATCH;
+      pins.lcd.PIN_55_LCD_LATCH.state = !state_new.lcd.RUTU_x113p;
+      pins.lcd.PIN_56_LCD_FLIPS.state = state_new.lcd.NAPO_FRAME_EVENp ^ state_new.lcd.LUCA_LINE_EVENp;
+      pins.lcd.PIN_57_LCD_VSYNC.state = !state_new.lcd.MEDA_VSYNC_OUTn;
+    }
+    else {
+      pins.lcd.PIN_50_LCD_DATA1.state = RAVO_LD1n;
+      pins.lcd.PIN_51_LCD_DATA0.state = REMY_LD0n;
+      pins.lcd.PIN_52_LCD_CNTRL.state = 1;
+      pins.lcd.PIN_53_LCD_CLOCK.state = 1;
+      pins.lcd.PIN_54_LCD_HSYNC.state = 1;
+      pins.lcd.PIN_55_LCD_LATCH.state = !get_bit(state_new.reg_div, 6);
+      pins.lcd.PIN_56_LCD_FLIPS.state = !get_bit(state_new.reg_div, 7);
+      pins.lcd.PIN_57_LCD_VSYNC.state = 1;
+    }
+
+
+    state_new.lcd.RUJU = state_new.lcd.POME_X8_LATCH;
+    state_new.lcd.POFY = !state_new.lcd.POME_X8_LATCH;
+    state_new.lcd.REMY_LD0n = REMY_LD0n;
+    state_new.lcd.RAVO_LD1n = RAVO_LD1n;
     state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp = avap_scan_done_new;
     state_new.tfetch_control.LYRY_BFETCH_DONEp = !BFETCH_RSTp_new && get_bit(state_new.tfetch_counter, 0) && get_bit(state_new.tfetch_counter, 2);
     state_new.win_ctrl.NUKO_WX_MATCHp = (uint8_t(~state_new.reg_wx) == state_new.pix_count) && state_new.win_ctrl.REJO_WY_MATCH_LATCHp;

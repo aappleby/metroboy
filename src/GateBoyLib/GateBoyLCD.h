@@ -19,8 +19,8 @@ struct LCDControl {
     NAPO_FRAME_EVENp.state    = BIT_OLD | BIT_DRIVEN;
     RUJU.state                = BIT_OLD | BIT_DRIVEN;
     POFY.state                = BIT_OLD | BIT_DRIVEN;
-    POME.state                = BIT_OLD | BIT_DRIVEN;
-    PAHO_X_8_SYNC.state       = BIT_OLD | BIT_DRIVEN;
+    POME_X8_LATCH.state                = BIT_OLD | BIT_DRIVEN;
+    PAHO_X8_SYNC.state       = BIT_OLD | BIT_DRIVEN;
     WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
     REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN;
     RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN;
@@ -39,8 +39,8 @@ struct LCDControl {
     NAPO_FRAME_EVENp.state    = BIT_OLD | BIT_DRIVEN;
     RUJU.state                = BIT_OLD | BIT_DRIVEN | 1;
     POFY.state                = BIT_OLD | BIT_DRIVEN | 0;
-    POME.state                = BIT_OLD | BIT_DRIVEN | 1;
-    PAHO_X_8_SYNC.state       = BIT_OLD | BIT_DRIVEN;
+    POME_X8_LATCH.state                = BIT_OLD | BIT_DRIVEN | 1;
+    PAHO_X8_SYNC.state       = BIT_OLD | BIT_DRIVEN;
     WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
     REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN | 1;
     RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN | 1;
@@ -59,8 +59,8 @@ struct LCDControl {
     NAPO_FRAME_EVENp.state    = 0b00011010;
     RUJU.state                = 0b00011001;
     POFY.state                = 0b00011000;
-    POME.state                = 0b00011001;
-    PAHO_X_8_SYNC.state       = 0b00011000;
+    POME_X8_LATCH.state                = 0b00011001;
+    PAHO_X8_SYNC.state       = 0b00011000;
     WUSA_LCD_CLOCK_GATE.state = 0b00011000;
     REMY_LD0n.state           = 0b00011000;
     RAVO_LD1n.state           = 0b00011000;
@@ -82,8 +82,8 @@ struct LCDControl {
   // RUJU+POFY+POME form a nor latch
   /*#p24.RUJU*/ Gate RUJU;                    // AxxxxFxx
   /*#p24.POFY*/ Gate POFY;                    // AxxxxFxx
-  /*#p24.POME*/ Gate POME;                    // AxxxxFxx
-  /*_p24.PAHO*/ DFF17 PAHO_X_8_SYNC;          // xBxDxFxH
+  /*#p24.POME*/ Gate POME_X8_LATCH;                    // AxxxxFxx
+  /*_p24.PAHO*/ DFF17 PAHO_X8_SYNC;          // xBxDxFxH
   /*#p21.WUSA*/ NorLatch WUSA_LCD_CLOCK_GATE; // xBxDxFGH High on G at beginning of line, low on H at end of line. Not sure what's up with the others. Scroll/sprite count?
 
   Gate REMY_LD0n;

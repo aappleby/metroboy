@@ -178,8 +178,8 @@ void GateBoyDumper::dump_lcd(const GateBoyState& s, Dumper& d) {
   d.dump_bitp   ("NAPO_FRAME_EVENp    : ", s.lcd.NAPO_FRAME_EVENp.state);
   d.dump_bitp   ("RUJU                : ", s.lcd.RUJU.state);
   d.dump_bitp   ("POFY                : ", s.lcd.POFY.state);
-  d.dump_bitp   ("POME                : ", s.lcd.POME.state);
-  d.dump_bitp   ("PAHO_X_8_SYNC       : ", s.lcd.PAHO_X_8_SYNC.state);
+  d.dump_bitp   ("POME                : ", s.lcd.POME_X8_LATCH.state);
+  d.dump_bitp   ("PAHO_X_8_SYNC       : ", s.lcd.PAHO_X8_SYNC.state);
   d.dump_bitp   ("WUSA_LCD_CLOCK_GATE : ", s.lcd.WUSA_LCD_CLOCK_GATE.state);
   d("\n");
   d("\n");

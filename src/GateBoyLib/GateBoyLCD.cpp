@@ -205,11 +205,11 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   // Could we possibly be incrementing X3p one phase early?
 
   // LCD horizontal sync pin latch
-  /*#p24.POME*/ gb_state.lcd.POME = nor2(gb_state.sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new(), gb_state.lcd.POFY.out_mid());
-  /*#p24.RUJU*/ gb_state.lcd.RUJU = or3(gb_state.lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), gb_state.lcd.POME.out_mid());
+  /*#p24.POME*/ gb_state.lcd.POME_X8_LATCH = nor2(gb_state.sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new(), gb_state.lcd.POFY.out_mid());
+  /*#p24.RUJU*/ gb_state.lcd.RUJU = or3(gb_state.lcd.PAHO_X8_SYNC.qp_new(), TOFU_VID_RSTp(), gb_state.lcd.POME_X8_LATCH.out_mid());
   /*#p24.POFY*/ gb_state.lcd.POFY = not1(gb_state.lcd.RUJU.out_mid());
-  /*#p24.POME*/ gb_state.lcd.POME = nor2(gb_state.sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new(), gb_state.lcd.POFY.out_mid());
-  /*#p24.RUJU*/ gb_state.lcd.RUJU = or3(gb_state.lcd.PAHO_X_8_SYNC.qp_new(), TOFU_VID_RSTp(), gb_state.lcd.POME.out_mid());
+  /*#p24.POME*/ gb_state.lcd.POME_X8_LATCH = nor2(gb_state.sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new(), gb_state.lcd.POFY.out_mid());
+  /*#p24.RUJU*/ gb_state.lcd.RUJU = or3(gb_state.lcd.PAHO_X8_SYNC.qp_new(), TOFU_VID_RSTp(), gb_state.lcd.POME_X8_LATCH.out_mid());
   /*#p24.POFY*/ gb_state.lcd.POFY = not1(gb_state.lcd.RUJU.out_mid());
 
   /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(gb_state.lcd.POFY.out_mid());

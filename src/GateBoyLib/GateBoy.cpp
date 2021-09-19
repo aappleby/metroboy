@@ -734,7 +734,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_odd = not1(SEGU_CLKPIPE_evn);
   /*#p24.SACU*/ wire SACU_CLKPIPE_new = or2(SEGU_CLKPIPE_evn, gb_state.fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
 
-  /*_p24.PAHO*/ gb_state.lcd.PAHO_X_8_SYNC.dff17(ROXO_CLKPIPE_odd, gb_state.XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
+  /*_p24.PAHO*/ gb_state.lcd.PAHO_X8_SYNC.dff17(ROXO_CLKPIPE_odd, gb_state.XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
 
   //----------------------------------------
 

@@ -326,11 +326,11 @@ void GateBoyDumper::dump_resets(const GateBoyState& s, Dumper& d) {
 
 void GateBoyDumper::dump_sprite_scanner(const GateBoyState& s, Dumper& d) {
   d.dump_slice2p("SCAN INDEX        : ", &s.scan_counter.YFEL_SCAN0, 6);
-  d.dump_bitp   ("BESU_SCANNINGp    : ", s.sprite_scanner.BESU_SCANNINGn.state);
-  d.dump_bitp   ("CENO_SCANNINGp    : ", s.sprite_scanner.CENO_SCANNINGn.state);
-  d.dump_bitp   ("DEZY_COUNT_CLKp   : ", s.sprite_scanner.DEZY_COUNT_CLKp.state);
-  d.dump_bitp   ("BYBA_SCAN_DONE_Ap : ", s.sprite_scanner.BYBA_SCAN_DONE_Ap.state);
-  d.dump_bitp   ("DOBA_SCAN_DONE_Bp : ", s.sprite_scanner.DOBA_SCAN_DONE_Bp.state);
+  d.dump_bitp   ("BESU_SCANNINGp    : ", s.sprite_scanner.BESU_SCAN_DONEn.state);
+  d.dump_bitp   ("CENO_SCANNINGp    : ", s.sprite_scanner.CENO_SCAN_DONEn.state);
+  d.dump_bitp   ("DEZY_COUNT_CLKp   : ", s.sprite_scanner.DEZY_INC_COUNTn.state);
+  d.dump_bitp   ("BYBA_SCAN_DONE_Ap : ", s.sprite_scanner.BYBA_SCAN_DONEp.state);
+  d.dump_bitp   ("DOBA_SCAN_DONE_Bp : ", s.sprite_scanner.DOBA_SCAN_DONEp.state);
 }
 
 void GateBoyDumper::dump_serial(const GateBoyState& s, Dumper& d) {

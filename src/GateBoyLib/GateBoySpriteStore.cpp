@@ -1081,7 +1081,7 @@ void GateBoy::sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag)
 
 void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
 {
-  /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn_new = and2(gb_state.sprite_scanner.CENO_SCANNINGn.qn_new(), XYMU_RENDERINGn.qn_new());
+  /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn_new = and2(gb_state.sprite_scanner.CENO_SCAN_DONEn.qn_new(), XYMU_RENDERINGn.qn_new());
   /*#p30.WUZY*/ triwire WUZY_STORE_I0 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XADU_SPRITE_IDX0p.qn_new());
   /*_p30.WYSE*/ triwire WYSE_STORE_I1 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XEDY_SPRITE_IDX1p.qn_new());
   /*_p30.ZYSU*/ triwire ZYSU_STORE_I2 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.ZUZE_SPRITE_IDX2p.qn_new());

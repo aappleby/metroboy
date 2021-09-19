@@ -8,29 +8,29 @@ struct SpriteScanner {
   void reset_to_bootrom() {
     FETO_SCAN_DONEp.state      = 0b00011000;
     AVAP_SCAN_DONE_TRIGp.state = 0b00011000;
-    BESU_SCANNINGn.state       = 0b00011000;
-    CENO_SCANNINGn.state       = 0b00011000;
-    DEZY_COUNT_CLKp.state      = 0b00011010;
-    BYBA_SCAN_DONE_Ap.state    = 0b00011000;
-    DOBA_SCAN_DONE_Bp.state    = 0b00011000;
+    BESU_SCAN_DONEn.state       = 0b00011000;
+    CENO_SCAN_DONEn.state       = 0b00011000;
+    DEZY_INC_COUNTn.state      = 0b00011010;
+    BYBA_SCAN_DONEp.state    = 0b00011000;
+    DOBA_SCAN_DONEp.state    = 0b00011000;
   }
   void reset_to_cart()    {
     FETO_SCAN_DONEp.state      = 0b00011001;
     AVAP_SCAN_DONE_TRIGp.state = 0b00011000;
-    BESU_SCANNINGn.state       = 0b00011000;
-    CENO_SCANNINGn.state       = 0b00011010;
-    DEZY_COUNT_CLKp.state      = 0b00011011;
-    BYBA_SCAN_DONE_Ap.state    = 0b00011011;
-    DOBA_SCAN_DONE_Bp.state    = 0b00011001;
+    BESU_SCAN_DONEn.state       = 0b00011000;
+    CENO_SCAN_DONEn.state       = 0b00011010;
+    DEZY_INC_COUNTn.state      = 0b00011011;
+    BYBA_SCAN_DONEp.state    = 0b00011011;
+    DOBA_SCAN_DONEp.state    = 0b00011001;
   }
 
   /*#p28.FETO*/ Gate FETO_SCAN_DONEp;
   /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_TRIGp;
-  /*#p28.BESU*/ NorLatch BESU_SCANNINGn;
-  /*#p29.CENO*/ DFF17 CENO_SCANNINGn;
-  /*_p29.DEZY*/ DFF17 DEZY_COUNT_CLKp;
-  /*#p29.BYBA*/ DFF17 BYBA_SCAN_DONE_Ap;
-  /*#p29.DOBA*/ DFF17 DOBA_SCAN_DONE_Bp;
+  /*#p28.BESU*/ NorLatch BESU_SCAN_DONEn;
+  /*#p29.CENO*/ DFF17 CENO_SCAN_DONEn;
+  /*_p29.DEZY*/ DFF17 DEZY_INC_COUNTn;
+  /*#p29.BYBA*/ DFF17 BYBA_SCAN_DONEp;
+  /*#p29.DOBA*/ DFF17 DOBA_SCAN_DONEp;
 };
 
 //-----------------------------------------------------------------------------

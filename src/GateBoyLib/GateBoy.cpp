@@ -456,17 +456,17 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // Sprite scanner
 
   {
-    /*#p29.DOBA*/ gb_state.sprite_scanner.DOBA_SCAN_DONE_Bp.dff17(gb_state.sys_clk.ALET_xBxDxFxH(), BAGY_LINE_RSTn, reg_old.sprite_scanner.BYBA_SCAN_DONE_Ap.qp_old());
-    /*#p29.BYBA*/ gb_state.sprite_scanner.BYBA_SCAN_DONE_Ap.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), BAGY_LINE_RSTn, reg_old.sprite_scanner.FETO_SCAN_DONEp.out_old());
-    /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(gb_state.sprite_scanner.DOBA_SCAN_DONE_Bp.qp_new(), BALU_LINE_RSTp, gb_state.sprite_scanner.BYBA_SCAN_DONE_Ap.qn_new());
+    /*#p29.DOBA*/ gb_state.sprite_scanner.DOBA_SCAN_DONEp.dff17(gb_state.sys_clk.ALET_xBxDxFxH(), BAGY_LINE_RSTn, reg_old.sprite_scanner.BYBA_SCAN_DONEp.qp_old());
+    /*#p29.BYBA*/ gb_state.sprite_scanner.BYBA_SCAN_DONEp.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), BAGY_LINE_RSTn, reg_old.sprite_scanner.FETO_SCAN_DONEp.out_old());
+    /*#p29.BEBU*/ wire BEBU_SCAN_DONE_TRIGn = or3(gb_state.sprite_scanner.DOBA_SCAN_DONEp.qp_new(), BALU_LINE_RSTp, gb_state.sprite_scanner.BYBA_SCAN_DONEp.qn_new());
     /*#p29.AVAP*/ gb_state.sprite_scanner.AVAP_SCAN_DONE_TRIGp = not1(BEBU_SCAN_DONE_TRIGn);
 
     /*#p28.ASEN*/ wire ASEN_SCAN_DONE_TRIGp = or2(ATAR_VID_RSTp(), gb_state.sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new());
-    /*#p29.CENO*/ gb_state.sprite_scanner.CENO_SCANNINGn.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), reg_old.sprite_scanner.BESU_SCANNINGn.qp_old());
-    /*#p28.BESU*/ gb_state.sprite_scanner.BESU_SCANNINGn.nor_latch(gb_state.lcd.CATU_x113p.qp_new(), ASEN_SCAN_DONE_TRIGp);
+    /*#p29.CENO*/ gb_state.sprite_scanner.CENO_SCAN_DONEn.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), reg_old.sprite_scanner.BESU_SCAN_DONEn.qp_old());
+    /*#p28.BESU*/ gb_state.sprite_scanner.BESU_SCAN_DONEn.nor_latch(gb_state.lcd.CATU_x113p.qp_new(), ASEN_SCAN_DONE_TRIGp);
 
     /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(gb_state.MATU_DMA_RUNNINGp.qp_new());
-    /*#p28.ACYL*/ gb_state.ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, gb_state.sprite_scanner.BESU_SCANNINGn.qp_new());
+    /*#p28.ACYL*/ gb_state.ACYL_SCANNINGp = and2(BOGE_DMA_RUNNINGn, gb_state.sprite_scanner.BESU_SCAN_DONEn.qp_new());
 
     // Sprite scanner grabs the sprite index off the _old_ oam address bus
     /*_p28.YFOT*/ wire YFOT_OAM_A2p_old = not1(reg_old.oam_abus.BUS_OAM_A02n.out_old());
@@ -623,15 +623,15 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or2(gb_state.reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), sprite_delta_y.GYKY_YDIFF3.sum);
     /*_p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, sprite_delta_y.WUHU_YDIFF7.carry, GOVU_SPSIZE_MATCH);
     /*_p29.GESE*/ wire GESE_SCAN_MATCH_Yp = not1(WOTA_SCAN_MATCH_Yn);
-    /*_p29.CEHA*/ wire CEHA_SCANNINGp = not1(gb_state.sprite_scanner.CENO_SCANNINGn.qn_new());
+    /*_p29.CEHA*/ wire CEHA_SCANNINGp = not1(gb_state.sprite_scanner.CENO_SCAN_DONEn.qn_new());
     /*_p29.CARE*/ wire CARE_COUNT_CLKn = and3(gb_state.sys_clk.XOCE_xBCxxFGx(), CEHA_SCANNINGp, GESE_SCAN_MATCH_Yp); // Dots on VCC, this is AND. Die shot and schematic wrong.
     /*_p29.DYTY*/ wire DYTY_COUNT_CLKp = not1(CARE_COUNT_CLKn);
-    /*_p29.DEZY*/ gb_state.sprite_scanner.DEZY_COUNT_CLKp.dff17_any(gb_state.sys_clk.ZEME_AxCxExGx(), XAPO_VID_RSTn(), DYTY_COUNT_CLKp);
+    /*_p29.DEZY*/ gb_state.sprite_scanner.DEZY_INC_COUNTn.dff17_any(gb_state.sys_clk.ZEME_AxCxExGx(), XAPO_VID_RSTn(), DYTY_COUNT_CLKp);
 
     // There's a feedback loop here, but we don't actually need to loop - BAKY holds the clock line high once the sprite store is full, so doing a second logic pass
     // doesn't actually change any of the dffs.
     /*#p29.BAKY*/ wire BAKY_SPRITES_FULL_new = and2(gb_state.sprite_counter.CUXY_SPRITE_COUNT1.qp_any(), gb_state.sprite_counter.DYBE_SPRITE_COUNT3.qp_any());
-    /*#p29.CAKE*/ wire CAKE_COUNT_CLKp_new = or2(BAKY_SPRITES_FULL_new, gb_state.sprite_scanner.DEZY_COUNT_CLKp.qp_any());
+    /*#p29.CAKE*/ wire CAKE_COUNT_CLKp_new = or2(BAKY_SPRITES_FULL_new, gb_state.sprite_scanner.DEZY_INC_COUNTn.qp_any());
     /*#p28.AZYB*/ wire AZYB_LINE_TRIGn = not1(gb_state.ATEJ_LINE_RSTp.out_new());
     /*_p29.BESE*/ gb_state.sprite_counter.BESE_SPRITE_COUNT0.dff17_any(CAKE_COUNT_CLKp_new, AZYB_LINE_TRIGn, gb_state.sprite_counter.BESE_SPRITE_COUNT0.qn_any());
     /*_p29.CUXY*/ gb_state.sprite_counter.CUXY_SPRITE_COUNT1.dff17_any(gb_state.sprite_counter.BESE_SPRITE_COUNT0.qn_any(), AZYB_LINE_TRIGn, gb_state.sprite_counter.CUXY_SPRITE_COUNT1.qn_any());
@@ -676,7 +676,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn_old = nand4(gb_state.fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_any(), SUHA_SCX_FINE_MATCHp_old, SYBY_SCX_FINE_MATCHp_old, SOZU_SCX_FINE_MATCHp_old);
     /*#p27.POHU*/ wire POHU_SCX_FINE_MATCHp_old = not1(RONE_SCX_FINE_MATCHn_old);
 
-    /*_p29.CEHA*/ wire CEHA_SCANNINGp = not1(gb_state.sprite_scanner.CENO_SCANNINGn.qn_new());
+    /*_p29.CEHA*/ wire CEHA_SCANNINGp = not1(gb_state.sprite_scanner.CENO_SCAN_DONEn.qn_new());
     /*#p29.BYJO*/ wire BYJO_SCANNINGn = not1(CEHA_SCANNINGp);
     /*#p29.AZEM*/ wire AZEM_RENDERINGp = and2(gb_state.XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn);
     /*#p29.AROR*/ wire AROR_MATCH_ENp = and2(AZEM_RENDERINGp, gb_state.reg_lcdc.XYLO_LCDC_SPENn.qn_new());

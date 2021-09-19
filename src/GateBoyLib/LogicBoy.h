@@ -160,8 +160,8 @@ struct LogicBoy : public IGateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void tock_cpu(int64_t phase_total);
-  void tock_logic(const blob& cart_blob, int64_t phase_total);
+  void tock_cpu();
+  void tock_logic(const blob& cart_blob);
 
   //-----------------------------------------------------------------------------
 

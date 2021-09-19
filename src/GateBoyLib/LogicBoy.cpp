@@ -512,7 +512,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.win_ctrl.NOPA_WIN_MODE_Bp.state = 0;
     state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
     state_new.win_ctrl.SOVY_WIN_HITp.state = 0;
-    state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
     state_new.win_ctrl.PUKU_WIN_HITn.state = 1;
 
     state_new.tfetch_control.PYGO_FETCH_DONEp.state = 0;
@@ -593,7 +592,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.tfetch_control.PYGO_FETCH_DONEp = state_new.tfetch_control.PORY_FETCH_DONEp;
       state_new.tfetch_control.NYKA_FETCH_DONEp.state = state_new.tfetch_control.LYRY_BFETCH_DONEp;
 
-      state_new.win_ctrl.SOVY_WIN_HITp.state = state_new.win_ctrl.RYDY_WIN_HITp;
+      state_new.win_ctrl.SOVY_WIN_HITp.state = state_old.win_ctrl.RYDY_WIN_HITp;
     }
 
     if (gen_clk_new(phase_total, 0b10101010)) {
@@ -951,8 +950,10 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // WY/WX/window match
 
+  const bool nuko_wx_match_old = (uint8_t(~state_old.reg_wx) == state_old.pix_count) && state_old.win_ctrl.REJO_WY_MATCH_LATCHp;
+
   if (gen_clk_new(phase_total, 0b01010101)) {
-    if (!pause_rendering_new) state_new.win_ctrl.PYCO_WIN_MATCHp.state = state_new.win_ctrl.NUKO_WX_MATCHp;
+    if (!pause_rendering_new) state_new.win_ctrl.PYCO_WIN_MATCHp.state = nuko_wx_match_old;
   }
 
   if (!state_new.XYMU_RENDERINGn) {
@@ -961,7 +962,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
 
     if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-      state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = !state_new.win_ctrl.NUKO_WX_MATCHp && state_new.fine_count == 7;
+      state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = !nuko_wx_match_old && state_new.fine_count == 7;
     }
   }
   else {
@@ -981,8 +982,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (state_new.win_ctrl.SARY_WY_MATCHp) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 1;
   if (state_new.lcd.POPU_y144p) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
   if (get_bit(state_new.reg_lcdc, 7)) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
-
-  state_new.win_ctrl.NUKO_WX_MATCHp = (uint8_t(~state_new.reg_wx) == state_new.pix_count) && state_new.win_ctrl.REJO_WY_MATCH_LATCHp;
 
   //----------------------------------------
   // Tile fetch sequencer
@@ -1892,6 +1891,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.win_ctrl.NUKO_WX_MATCHp = (uint8_t(~state_new.reg_wx) == state_new.pix_count) && state_new.win_ctrl.REJO_WY_MATCH_LATCHp;
     state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp = wuty_sfetch_done_new;
     state_new.sfetch_control.TEXY_SFETCHINGp = sfetching_new;
     state_new.WODU_HBLANKp = hblank_new;

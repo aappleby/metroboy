@@ -1140,29 +1140,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.lcd.POME_X8_LATCH = 1;
   }
 
-  if (!get_bit(state_new.reg_lcdc, 7)) {
-    if (DELTA_FG) {
-      state_new.lcd.SYGU_LINE_STROBE.state = (state_old.reg_lx == 0) || (state_old.reg_lx == 7) || (state_old.reg_lx == 45) || (state_old.reg_lx == 83);
-    }
-
-    if (state_old.lcd.RUTU_x113p && !state_new.lcd.RUTU_x113p) state_new.lcd.LUCA_LINE_EVENp.state = !state_new.lcd.LUCA_LINE_EVENp;
-    if (!state_old.lcd.POPU_y144p && state_new.lcd.POPU_y144p) state_new.lcd.NAPO_FRAME_EVENp.state = !state_new.lcd.NAPO_FRAME_EVENp;
-
-    if (state_old.lcd.NYPE_x113p && !state_new.lcd.NYPE_x113p) {
-      state_new.lcd.MEDA_VSYNC_OUTn.state = state_new.reg_ly == 0;
-    }
-
-    if (get_bit(state_new.pix_count, 0) && get_bit(state_new.pix_count, 3)) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 1;
-    if (state_new.VOGA_HBLANKp) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
-  }
-  if (get_bit(state_new.reg_lcdc, 7)) {
-    state_new.lcd.SYGU_LINE_STROBE.state = 0;
-    state_new.lcd.LUCA_LINE_EVENp.state = 0;
-    state_new.lcd.NAPO_FRAME_EVENp.state = 0;
-    state_new.lcd.MEDA_VSYNC_OUTn.state = 0;
-    state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
-  }
-
   //----------------------------------------
   // Audio
 
@@ -1845,6 +1822,29 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    if (!get_bit(state_new.reg_lcdc, 7)) {
+      if (DELTA_FG) {
+        state_new.lcd.SYGU_LINE_STROBE.state = (state_old.reg_lx == 0) || (state_old.reg_lx == 7) || (state_old.reg_lx == 45) || (state_old.reg_lx == 83);
+      }
+
+      if (state_old.lcd.RUTU_x113p && !state_new.lcd.RUTU_x113p) state_new.lcd.LUCA_LINE_EVENp.state = !state_new.lcd.LUCA_LINE_EVENp;
+      if (!state_old.lcd.POPU_y144p && state_new.lcd.POPU_y144p) state_new.lcd.NAPO_FRAME_EVENp.state = !state_new.lcd.NAPO_FRAME_EVENp;
+
+      if (state_old.lcd.NYPE_x113p && !state_new.lcd.NYPE_x113p) {
+        state_new.lcd.MEDA_VSYNC_OUTn.state = state_new.reg_ly == 0;
+      }
+
+      if (get_bit(state_new.pix_count, 0) && get_bit(state_new.pix_count, 3)) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 1;
+      if (state_new.VOGA_HBLANKp) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
+    }
+    if (get_bit(state_new.reg_lcdc, 7)) {
+      state_new.lcd.SYGU_LINE_STROBE.state = 0;
+      state_new.lcd.LUCA_LINE_EVENp.state = 0;
+      state_new.lcd.NAPO_FRAME_EVENp.state = 0;
+      state_new.lcd.MEDA_VSYNC_OUTn.state = 0;
+      state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
+    }
+
     bit_unpack(pins.abus_lo, pins_abus_lo);
     bit_unpack(pins.abus_hi, pins_abus_hi);
 

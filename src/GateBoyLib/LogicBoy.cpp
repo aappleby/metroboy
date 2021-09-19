@@ -198,12 +198,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = EXT_addr_new;
   }
 
-
-  // SIGNALS TO KILL:
-  //Gate     WODU_HBLANKp; // old used
-  //Gate     SATO_BOOT_BITn;
-  //Gate     FEPO_STORE_MATCHp; // old used
-
   //----------------------------------------
   // DIV
 
@@ -227,12 +221,16 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     if (state_new.cpu_abus == 0xFF45) state_new.reg_lyc = ~state_old.cpu_dbus;
     if (state_new.cpu_abus == 0xFF06) state_new.reg_tma  =  state_old.cpu_dbus;
     if (state_new.cpu_abus == 0xFF07) state_new.reg_tac  =  state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF42) state_new.reg_scy = ~state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF43) state_new.reg_scx = ~state_old.cpu_dbus;
     if (state_new.cpu_abus == 0xFF46) state_new.reg_dma  = ~state_old.cpu_dbus;
     if (state_new.cpu_abus == 0xFF47) state_new.reg_bgp  = ~state_old.cpu_dbus;
     if (state_new.cpu_abus == 0xFF48) state_new.reg_obp0 = ~state_old.cpu_dbus;
     if (state_new.cpu_abus == 0xFF49) state_new.reg_obp1 = ~state_old.cpu_dbus;
     if (state_new.cpu_abus == 0xFF4A) state_new.reg_wy   = ~state_old.cpu_dbus;
     if (state_new.cpu_abus == 0xFF4B) state_new.reg_wx   = ~state_old.cpu_dbus;
+    if (state_new.cpu_abus == 0xFF50) state_new.cpu_signals.TEPU_BOOT_BITn.state = get_bit(state_old.cpu_dbus, 0) || state_old.cpu_signals.TEPU_BOOT_BITn;
+    if ((state_new.cpu_abus >= 0xFF80) && (state_new.cpu_abus <= 0xFFFE)) mem.zero_ram[state_new.cpu_abus & 0x007F] = state_old.cpu_dbus;
   }
 
   //----------------------------------------
@@ -250,9 +248,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
     if (DELTA_BC) {
       if (!state_new.lcd.NYPE_x113p && state_new.lcd.RUTU_x113p) {
-        state_new.lcd.POPU_y144p.state = ((state_new.reg_ly & 144) == 144);
-        state_new.lcd.MYTA_y153p.state = ((state_new.reg_ly & 153) == 153);
-        if (state_new.lcd.MYTA_y153p) state_new.reg_ly = 0;
+        state_new.lcd.POPU_y144p.state = state_new.reg_ly >= 144;
+        state_new.lcd.MYTA_y153p.state = state_new.reg_ly == 153;
+        if (state_new.reg_ly == 153) state_new.reg_ly = 0;
       }
     }
 
@@ -332,19 +330,18 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   {
-    const wire UKAP_CLK_MUXa_new = get_bit(state_new.reg_tac, 0) ? get_bit(state_new.reg_div, 5) : get_bit(state_new.reg_div, 3);
-    const wire TEKO_CLK_MUXb_new = get_bit(state_new.reg_tac, 0) ? get_bit(state_new.reg_div, 1) : get_bit(state_new.reg_div, 7);
-    const wire TECY_CLK_MUXc_new = get_bit(state_new.reg_tac, 1) ? UKAP_CLK_MUXa_new : TEKO_CLK_MUXb_new;
-    const wire SOGU_TIMA_CLKn_new = TECY_CLK_MUXc_new && get_bit(state_new.reg_tac, 2);
+    bool SOGU_TIMA_CLKn_old = 0;
+    bool SOGU_TIMA_CLKn_new = 0;
 
-    const wire UKAP_CLK_MUXa_old = get_bit(state_old.reg_tac, 0) ? get_bit(state_old.reg_div, 5) : get_bit(state_old.reg_div, 3);
-    const wire TEKO_CLK_MUXb_old = get_bit(state_old.reg_tac, 0) ? get_bit(state_old.reg_div, 1) : get_bit(state_old.reg_div, 7);
+    if (state_old.reg_tac == 4) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 7) & 1;
+    if (state_old.reg_tac == 5) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 1) & 1;
+    if (state_old.reg_tac == 6) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 3) & 1;
+    if (state_old.reg_tac == 7) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 5) & 1;
 
-
-    const wire TECY_CLK_MUXc_old = get_bit(state_old.reg_tac, 1) ? UKAP_CLK_MUXa_old : TEKO_CLK_MUXb_old;
-
-    const wire SOGU_TIMA_CLKn_old = TECY_CLK_MUXc_old && get_bit(state_old.reg_tac, 2);
-
+    if (state_new.reg_tac == 4) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 7) & 1;
+    if (state_new.reg_tac == 5) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 1) & 1;
+    if (state_new.reg_tac == 6) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 3) & 1;
+    if (state_new.reg_tac == 7) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 5) & 1;
 
     if (SOGU_TIMA_CLKn_old && !SOGU_TIMA_CLKn_new) {
       state_new.reg_tima = state_new.reg_tima + 1;
@@ -362,10 +359,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
       state_new.reg_tima = state_new.reg_tma;
     }
-  }
-
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
-    if (state_new.cpu_abus == 0xFF50) state_new.cpu_signals.TEPU_BOOT_BITn.state = get_bit(state_old.cpu_dbus, 0) || state_old.cpu_signals.TEPU_BOOT_BITn;
   }
 
   if (state_new.cpu_abus <= 0x00FF) {
@@ -1239,14 +1232,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
   }
 
-  //--------------------------------------------
-  // SCX/SCY regs
-
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00000001)) {
-    if (state_new.cpu_abus == 0xFF42) state_new.reg_scy = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF43) state_new.reg_scx = ~state_old.cpu_dbus;
-  }
-
   //----------------------------------------
   // VRAM bus
 
@@ -1385,7 +1370,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
 
   else {
-    if ((gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && 1 && cpu_addr_vram_new && state_new.cpu_signals.SIG_IN_CPU_WRp) {
+    if ((gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && cpu_addr_vram_new && state_new.cpu_signals.SIG_IN_CPU_WRp) {
       state_new.vram_dbus = state_new.cpu_dbus;
     }
 
@@ -1605,10 +1590,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
  
   //----------------------------------------
   // zram
-
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
-    if ((state_new.cpu_abus >= 0xFF80) && (state_new.cpu_abus <= 0xFFFE)) mem.zero_ram[state_new.cpu_abus & 0x007F] = state_old.cpu_dbus;
-  }
 
   if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
     if ((state_new.cpu_abus >= 0xFF80) && (state_new.cpu_abus <= 0xFFFE)) state_new.cpu_dbus = mem.zero_ram[state_new.cpu_abus & 0x007F];

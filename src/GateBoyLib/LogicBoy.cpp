@@ -692,18 +692,19 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
 
-  state_new.ACYL_SCANNINGp = !state_new.MATU_DMA_RUNNINGp && state_new.sprite_scanner.BESU_SCANNINGn && !get_bit(state_new.reg_lcdc, 7);
+  const bool scanning_old = !state_old.MATU_DMA_RUNNINGp && state_old.sprite_scanner.BESU_SCANNINGn && !get_bit(state_old.reg_lcdc, 7);
+  const bool scanning_new = !state_new.MATU_DMA_RUNNINGp && state_new.sprite_scanner.BESU_SCANNINGn && !get_bit(state_new.reg_lcdc, 7);
 
   const wire oam_busy_old = (state_old.cpu_abus >= 0xFE00 && state_old.cpu_abus <= 0xFEFF) || state_new.MATU_DMA_RUNNINGp;
   const wire oam_busy_new = (state_new.cpu_abus >= 0xFE00 && state_new.cpu_abus <= 0xFEFF) || state_new.MATU_DMA_RUNNINGp;
 
   uint8_t BYCU_OAM_CLKp_old = 1;
-  if (state_old.ACYL_SCANNINGp)  BYCU_OAM_CLKp_old &= gen_clk_old(phase_total, 0b10001000);
+  if (scanning_old)  BYCU_OAM_CLKp_old &= gen_clk_old(phase_total, 0b10001000);
   if (oam_busy_old)  BYCU_OAM_CLKp_old &= gen_clk_old(phase_total, 0b11110000);
   if (!state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old &= sfetch_phase_old != 3;
 
   uint8_t BYCU_OAM_CLKp_new = 1;
-  if (state_new.ACYL_SCANNINGp)  BYCU_OAM_CLKp_new &= gen_clk_new(phase_total, 0b10001000);
+  if (scanning_new)  BYCU_OAM_CLKp_new &= gen_clk_new(phase_total, 0b10001000);
   if (oam_busy_new)  BYCU_OAM_CLKp_new &= gen_clk_new(phase_total, 0b11110000);
   if (!state_new.XYMU_RENDERINGn) BYCU_OAM_CLKp_new &= sfetch_phase_new != 3;
 
@@ -1598,7 +1599,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   const bool cpu_addr_oam_new =  (state_new.cpu_abus >= 0xFE00) && (state_new.cpu_abus <= 0xFEFF);
 
-  if (state_new.ACYL_SCANNINGp) {
+  if (scanning_new) {
     state_new.oam_abus = (uint8_t)~((state_new.scan_counter << 2) | 0b00);
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
@@ -1705,7 +1706,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   // OAM latch operates on the overridden bus
 
-  if (state_new.ACYL_SCANNINGp) {
+  if (scanning_new) {
     if (DELTA_AB || DELTA_BC || DELTA_EF || DELTA_FG) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
@@ -1779,7 +1780,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     uint8_t stat = 0x80;
 
     stat |= (!state_new.XYMU_RENDERINGn || state_new.lcd.POPU_y144p) << 0;
-    stat |= (!state_new.XYMU_RENDERINGn || state_new.ACYL_SCANNINGp) << 1;
+    stat |= (!state_new.XYMU_RENDERINGn || scanning_new) << 1;
     stat |= (!state_new.int_ctrl.RUPO_LYC_MATCHn) << 2;
     stat |= (pack_stat ^ 0b1111) << 3;
 
@@ -1837,8 +1838,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   state_new.reg_stat = (uint8_t)pack_stat;
 
   // POSTCONDITIONS
-  if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);
-  if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
+  if (scanning_new)    CHECK_P(state_new.XYMU_RENDERINGn);
+  if (!state_new.XYMU_RENDERINGn)  CHECK_N(scanning_new);
 
 
 
@@ -1881,6 +1882,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.ACYL_SCANNINGp = scanning_new;
     state_new.sprite_scanner.FETO_SCAN_DONEp = (state_new.scan_counter == 39) && !get_bit(state_new.reg_lcdc, 7);
     state_new.SATO_BOOT_BITn = get_bit(state_new.cpu_dbus, 0) || state_new.cpu_signals.TEPU_BOOT_BITn;
     state_new.ATEJ_LINE_RSTp = line_reset;

@@ -1138,8 +1138,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   uint8_t pins_abus_lo = 0xFF;
   uint8_t pins_abus_hi = 0xFF;
 
-  if (ext_addr_new && !cpu_addr_vram_new)
-  {
+  if (ext_addr_new && !cpu_addr_vram_new) {
     state_new.ext_addr_latch = state_new.cpu_abus & 0x7FFF;
   }
 
@@ -1156,24 +1155,19 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   pins_ctrl_rdn_new = 1;
   pins_ctrl_wrn_new = 0;
-  if (!(state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new) &&
-      (cpu.bus_req_new.read || cpu.bus_req_new.write) &&
-      !(req_addr_vram && DELTA_HA) &&
-      !req_addr_hi &&
-      !(cpu_addr_bootrom_new) &&
-      cpu_wr) {
+  if (!(state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new) && ext_addr_new && cpu_wr) {
     pins_ctrl_rdn_new = cpu_addr_vram_new;
     pins_ctrl_wrn_new = gen_clk_new(phase_total, 0b00001110) && !cpu_addr_vram_new;
   }
 
   pins_abus_hi &= 0b01111111;
-  if (state_new.MATU_DMA_RUNNINGp && !(state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new)) {
+  if (state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
     pins_abus_hi |= (!!((~dma_addr_new >> 8) & 0b10000000)) << 7;
   }
   else if (!state_new.cpu_signals.TEPU_BOOT_BITn && state_new.cpu_abus <= 0x00FF) {
   }
   else {
-    uint8_t bit = (gen_clk_new(phase_total, 0b00111111) && (cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(cpu_addr_bootrom_new)) && !get_bit(state_new.cpu_abus, 15);
+    uint8_t bit = gen_clk_new(phase_total, 0b00111111) && ext_addr_new && !get_bit(state_new.cpu_abus, 15);
     pins_abus_hi |= bit << 7;
   }
 

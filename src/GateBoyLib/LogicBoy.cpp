@@ -693,17 +693,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
     state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
     state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 0;
-    state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
-    state_new.tfetch_control.LONY_FETCHINGp.state = 0;
-
-    if ((bfetch_phase_old < 10) && (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG)) {
-      state_new.tfetch_counter = (bfetch_phase_old >> 1) + 1;
-    }
-
-    if ((DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG)) {
-      state_new.tfetch_control.LOVY_FETCH_DONEp.state = (!BFETCH_RSTp_old && get_bit(state_old.tfetch_counter, 0) && get_bit(state_old.tfetch_counter, 2));
-    }
-
   }
   else
   {
@@ -722,6 +711,20 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
     }
 
+    if (state_new.tfetch_control.PYGO_FETCH_DONEp) {
+      state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 1;
+    }
+  }
+
+  //----------------------------------------
+
+  if (vid_rst_new)
+  {
+  }
+  else if (state_new.XYMU_RENDERINGn) {
+    state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
+    state_new.tfetch_control.LONY_FETCHINGp.state = 0;
+
     if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
       if (bfetch_phase_old < 10) {
         state_new.tfetch_counter = (bfetch_phase_old >> 1) + 1;
@@ -732,8 +735,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.tfetch_control.LOVY_FETCH_DONEp.state = (!BFETCH_RSTp_old && get_bit(state_old.tfetch_counter, 0) && get_bit(state_old.tfetch_counter, 2));
     }
 
-    if (state_new.tfetch_control.PYGO_FETCH_DONEp) {
-      state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 1;
+  }
+  else
+  {
+    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
+      if (bfetch_phase_old < 10) {
+        state_new.tfetch_counter = (bfetch_phase_old >> 1) + 1;
+      }
+    }
+
+    if ((DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG)) {
+      state_new.tfetch_control.LOVY_FETCH_DONEp.state = (!BFETCH_RSTp_old && get_bit(state_old.tfetch_counter, 0) && get_bit(state_old.tfetch_counter, 2));
     }
 
     if (state_new.tfetch_control.LOVY_FETCH_DONEp) {

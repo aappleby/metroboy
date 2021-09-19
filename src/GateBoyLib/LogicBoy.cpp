@@ -1567,6 +1567,10 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
   // CPU read registers
+  
+  // This has to be before OAM, because the OAM dbus mirrors CPU dbus if it's not doing other things
+
+  // But ZRAM can't be before OAM because ZRAM _doesn't_ show up on the oam bus? That seems wrong...
 
   if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
     if (state_new.cpu_abus == 0xFF00) {
@@ -1706,6 +1710,15 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
   }
 
+  // WUJE is weird, not sure why it's necessary. Bugfix?
+  if (gen_clk_new(phase_total, 0b11110000)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 1;
+  if (cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00001110)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 0;
+
+  if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn) {
+    state_new.oam_dbus_a = ~state_new.cpu_dbus;
+    state_new.oam_dbus_b = ~state_new.cpu_dbus;
+  }
+
   // OAM latch operates on the overridden bus
 
   if (state_new.ACYL_SCANNINGp) {
@@ -1725,15 +1738,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
-  }
-
-  // WUJE is weird, not sure why it's necessary. Bugfix?
-  if (gen_clk_new(phase_total, 0b11110000)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 1;
-  if (cpu_addr_oam_new && state_new.cpu_signals.SIG_IN_CPU_WRp && gen_clk_new(phase_total, 0b00001110)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 0;
-
-  if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn) {
-    state_new.oam_dbus_a = ~state_new.cpu_dbus;
-    state_new.oam_dbus_b = ~state_new.cpu_dbus;
   }
 
   // Actual OAM write

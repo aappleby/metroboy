@@ -1586,7 +1586,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // DMA overrides oam bus
 
-  if (state_new.MATU_DMA_RUNNINGp) {
+  if (dma_running_new) {
     state_new.oam_abus = (uint8_t)~state_new.dma_lo;
 
     if (DELTA_HA || DELTA_AB || DELTA_BC || DELTA_CD) {
@@ -1602,14 +1602,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
     }
 
-    if ((state_new.MATU_DMA_RUNNINGp && dma_addr_vram_new)) {
-      state_new.oam_dbus_a = ~state_new.vram_dbus;
-      state_new.oam_dbus_b = ~state_new.vram_dbus;
-    }
-    else {
-      state_new.oam_dbus_a = pins_dbus;
-      state_new.oam_dbus_b = pins_dbus;
-    }
+    state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : pins_dbus;
+    state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : pins_dbus;
   }
 
   // WUJE is weird, not sure why it's necessary. Bugfix?

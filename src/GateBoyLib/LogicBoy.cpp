@@ -449,11 +449,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   if (vid_rst_new) {
 
-    state_new.sprite_scanner.DOBA_SCAN_DONE_Bp.state = 0;
-    state_new.sprite_scanner.BYBA_SCAN_DONE_Ap.state = 0;
-    state_new.sprite_scanner.CENO_SCANNINGn.state = 0;
-    state_new.scan_counter = 0;
-    state_new.sprite_scanner.FETO_SCAN_DONEp = 0;
     state_new.VOGA_HBLANKp = 0;
     state_new.XYMU_RENDERINGn = 1;
 
@@ -488,8 +483,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
     state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 1;
 
-    state_new.sprite_scanner.DEZY_COUNT_CLKp.state = 0;
-
     state_new.sprite_counter = 0;
     state_new.sprite_reset_flags = 0;
     state_new.sprite_store_flags = 0;
@@ -506,19 +499,23 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.store_x9 = 0xFF;
   }
 
-  //----------------------------------------
-  // VID RUN BRANCH
-
   const bool hblank_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count == 167);
 
+  //----------------------------------------
+
   if (vid_rst_new || line_reset_new) {
+    state_new.scan_counter = 0;
     state_new.sprite_scanner.DOBA_SCAN_DONE_Bp.state = 0;
     state_new.sprite_scanner.BYBA_SCAN_DONE_Ap.state = 0;
-    state_new.scan_counter = 0;
     state_new.sprite_scanner.BESU_SCANNINGn.state = line_reset_new && !vid_rst_new;
+    if (vid_rst_new) {
+      state_new.sprite_scanner.CENO_SCANNINGn.state = 0;
+      state_new.sprite_scanner.DEZY_COUNT_CLKp.state = 0;
+    }
   }
   else {
     if (DELTA_HA || DELTA_DE) {
+      state_new.sprite_scanner.CENO_SCANNINGn.state = state_old.sprite_scanner.BESU_SCANNINGn;
       if (state_old.scan_counter == 39) {
         state_new.sprite_scanner.BYBA_SCAN_DONE_Ap.state = 1;
         state_new.sprite_scanner.BESU_SCANNINGn.state = 0;
@@ -537,6 +534,56 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
   }
 
+  //----------------------------------------
+  // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
+
+  if (vid_rst_new || line_reset_new) {
+    state_new.sprite_counter = 0;
+    state_new.sprite_store_flags = 0;
+
+    state_new.store_x0 = 0xFF;
+    state_new.store_x1 = 0xFF;
+    state_new.store_x2 = 0xFF;
+    state_new.store_x3 = 0xFF;
+    state_new.store_x4 = 0xFF;
+    state_new.store_x5 = 0xFF;
+    state_new.store_x6 = 0xFF;
+    state_new.store_x7 = 0xFF;
+    state_new.store_x8 = 0xFF;
+    state_new.store_x9 = 0xFF;
+  }
+  else {
+    int ly = (int)state_new.reg_ly;
+    int sy = (int)state_new.oam_temp_a - 16;
+    int sprite_height = get_bit(state_new.reg_lcdc, 2) ? 8 : 16;
+
+    if (DELTA_HA || DELTA_DE) {
+      if (!state_new.sprite_scanner.DEZY_COUNT_CLKp && state_new.sprite_counter != 10) state_new.sprite_counter++;
+      state_new.sprite_scanner.DEZY_COUNT_CLKp.state = 1;
+    }
+    if (DELTA_AB || DELTA_EF) {
+      if ((ly < sy || ly >= sy + sprite_height) || !state_new.sprite_scanner.CENO_SCANNINGn) {
+        state_new.sprite_store_flags = 0;
+      }
+      else {
+        state_new.sprite_store_flags = (1 << state_new.sprite_counter);
+        (&state_new.store_i0)[state_old.sprite_counter] = state_new.sprite_ibus ^ 0b111111;
+        (&state_new.store_l0)[state_old.sprite_counter] = state_new.sprite_lbus ^ 0b1111;
+      }
+    }
+    if (DELTA_BC || DELTA_FG) {
+      state_new.sprite_scanner.DEZY_COUNT_CLKp.state = ly < sy || ly >= sy + sprite_height || !state_new.sprite_scanner.CENO_SCANNINGn;
+    }
+    if (DELTA_CD || DELTA_GH) {
+      if (state_old.sprite_store_flags) {
+        (&state_new.store_x0)[state_old.sprite_counter] = state_new.oam_temp_b;
+      }
+      state_new.sprite_store_flags = 0;
+    }
+  }
+
+  //----------------------------------------
+
   const bool avap_scan_done_new =
     !vid_rst_new &&
     !line_reset_new &&
@@ -546,11 +593,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (!vid_rst_new) {
     if (line_reset_new) {
       state_new.VOGA_HBLANKp = 0;
-      //state_new.sprite_scanner.BESU_SCANNINGn.state = 1;
     }
 
-
-    //if (avap_scan_done_new) state_new.sprite_scanner.BESU_SCANNINGn.state = 0;
 
     if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
       state_new.VOGA_HBLANKp = hblank_old;
@@ -580,7 +624,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
     if (DELTA_HA || DELTA_DE) {
       state_new.sprite_index = (state_new.oam_abus >> 2) ^ 0b111111;
-      state_new.sprite_scanner.CENO_SCANNINGn.state = state_old.sprite_scanner.BESU_SCANNINGn;
     }
 
     if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
@@ -612,6 +655,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
 
 
+
+
+
+
+
+
+
+
   const bool wuty_sfetch_done_new =
         !vid_rst_new &&
         !state_new.XYMU_RENDERINGn &&
@@ -619,6 +670,29 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
         get_bit(state_new.sfetch_counter, 0) &&
         state_new.sfetch_control.SEBA_SFETCH_S1p_D5 &&
         state_new.sfetch_control.VONU_SFETCH_S1p_D4;
+
+
+
+  if (!vid_rst_new) {
+    if (state_new.XYMU_RENDERINGn) {
+    }
+    else {
+      if (!wuty_sfetch_done_old && wuty_sfetch_done_new) {
+        state_new.sprite_reset_flags = state_old.sprite_match_flags;
+      }
+    }
+  }
+
+
+
+
+  if (vid_rst_new || line_reset_new) {
+    state_new.sprite_reset_flags = 0;
+  }
+  else {
+    int sprite_reset_index = 32 - __lzcnt(state_new.sprite_reset_flags - 1);
+    if (sprite_reset_index != 32) (&state_new.store_x0)[sprite_reset_index] = 0xFF;
+  }
 
 
 
@@ -644,13 +718,10 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       if (wuty_sfetch_done_new) {
         state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 0;
       }
-
-      if (!wuty_sfetch_done_old && wuty_sfetch_done_new) {
-        state_new.sprite_reset_flags = state_old.sprite_match_flags;
-      }
     }
   }
 
+  //----------------------------------------
 
   bool sfetching_old = !vid_rst_old && !state_old.XYMU_RENDERINGn && ((get_bit(state_old.sfetch_counter, 1) || state_old.sfetch_control.VONU_SFETCH_S1p_D4));
 
@@ -706,58 +777,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (!BYCU_OAM_CLKp_old && BYCU_OAM_CLKp_new) {
     state_new.oam_temp_a = ~state_new.oam_latch_a;
     state_new.oam_temp_b = ~state_new.oam_latch_b;
-  }
-
-  //----------------------------------------
-  // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
-
-  if (vid_rst_new || line_reset_new) {
-    state_new.sprite_counter = 0;
-    state_new.sprite_reset_flags = 0;
-    state_new.sprite_store_flags = 0;
-
-    state_new.store_x0 = 0xFF;
-    state_new.store_x1 = 0xFF;
-    state_new.store_x2 = 0xFF;
-    state_new.store_x3 = 0xFF;
-    state_new.store_x4 = 0xFF;
-    state_new.store_x5 = 0xFF;
-    state_new.store_x6 = 0xFF;
-    state_new.store_x7 = 0xFF;
-    state_new.store_x8 = 0xFF;
-    state_new.store_x9 = 0xFF;
-  }
-  else {
-    int ly = (int)state_new.reg_ly;
-    int sy = (int)state_new.oam_temp_a - 16;
-    int sprite_height = get_bit(state_new.reg_lcdc, 2) ? 8 : 16;
-
-    if (DELTA_HA || DELTA_DE) {
-      if (!state_new.sprite_scanner.DEZY_COUNT_CLKp && state_new.sprite_counter != 10) state_new.sprite_counter++;
-      state_new.sprite_scanner.DEZY_COUNT_CLKp.state = 1;
-    }
-    if (DELTA_AB || DELTA_EF) {
-      if ((ly < sy || ly >= sy + sprite_height) || !state_new.sprite_scanner.CENO_SCANNINGn) {
-        state_new.sprite_store_flags = 0;
-      }
-      else {
-        state_new.sprite_store_flags = (1 << state_new.sprite_counter);
-        (&state_new.store_i0)[state_old.sprite_counter] = state_new.sprite_ibus ^ 0b111111;
-        (&state_new.store_l0)[state_old.sprite_counter] = state_new.sprite_lbus ^ 0b1111;
-      }
-    }
-    if (DELTA_BC || DELTA_FG) {
-      state_new.sprite_scanner.DEZY_COUNT_CLKp.state = ly < sy || ly >= sy + sprite_height || !state_new.sprite_scanner.CENO_SCANNINGn;
-    }
-    if (DELTA_CD || DELTA_GH) {
-      if (state_old.sprite_store_flags) {
-        (&state_new.store_x0)[state_old.sprite_counter] = state_new.oam_temp_b;
-      }
-      state_new.sprite_store_flags = 0;
-    }
-
-    int sprite_reset_index = 32 - __lzcnt(state_new.sprite_reset_flags - 1);
-    if (sprite_reset_index != 32) (&state_new.store_x0)[sprite_reset_index] = 0xFF;
   }
 
   //----------------------------------------

@@ -828,29 +828,25 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
   }
 
-  if (win_en_new) {
-    if (state_new.win_ctrl.NUNU_WIN_MATCHp) {
-      state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 1;
-    }
-      
-    if (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
-      state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
-      state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
-    }
-
-    if (state_new.tfetch_control.PORY_FETCH_DONEp) {
-      state_new.win_ctrl.RYDY_WIN_HITp = 0;
-      state_new.win_ctrl.PUKU_WIN_HITn = 1;
-    }
-    else if (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
-      state_new.win_ctrl.RYDY_WIN_HITp = 1;
-      state_new.win_ctrl.PUKU_WIN_HITn = 0;
-    }
+  if (state_new.win_ctrl.NUNU_WIN_MATCHp) {
+    state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 1;
   }
-  else {
+      
+  if (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
+    state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
+    state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
+  }
+
+  if (state_new.tfetch_control.PORY_FETCH_DONEp) {
+    state_new.win_ctrl.RYDY_WIN_HITp = 0;
+  }
+  else if (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
+    state_new.win_ctrl.RYDY_WIN_HITp = 1;
+  }
+
+  if (!win_en_new) {
     state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
     state_new.win_ctrl.RYDY_WIN_HITp = 0;
-    state_new.win_ctrl.PUKU_WIN_HITn = 1;
   }
 
   if (DELTA_BC) {
@@ -872,7 +868,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.win_ctrl.NOPA_WIN_MODE_Bp.state = 0;
     state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
     state_new.win_ctrl.SOVY_WIN_HITp.state = 0;
-    state_new.win_ctrl.PUKU_WIN_HITn.state = 1;
     state_new.win_ctrl.PYCO_WIN_MATCHp.state = 0;
     state_new.win_ctrl.SARY_WY_MATCHp.state = 0;
     state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
@@ -1842,6 +1837,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.win_ctrl.PUKU_WIN_HITn = !state_new.win_ctrl.RYDY_WIN_HITp;
     state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
     state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read);
     state_new.cpu_signals.SIG_IN_CPU_WRp.state = cpu_wr;

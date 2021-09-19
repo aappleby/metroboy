@@ -247,6 +247,15 @@ void GateBoy::update_framebuffer() {
 
 //-----------------------------------------------------------------------------
 
+#define DELTA_AB   ((sys.phase_total & 7) == 0)
+#define DELTA_BC   ((sys.phase_total & 7) == 1)
+#define DELTA_CD   ((sys.phase_total & 7) == 2)
+#define DELTA_DE   ((sys.phase_total & 7) == 3)
+#define DELTA_EF   ((sys.phase_total & 7) == 4)
+#define DELTA_FG   ((sys.phase_total & 7) == 5)
+#define DELTA_GH   ((sys.phase_total & 7) == 6)
+#define DELTA_HA   ((sys.phase_total & 7) == 7)
+
 void GateBoy::tock_cpu() {
   cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
   cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);

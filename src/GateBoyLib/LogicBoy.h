@@ -62,7 +62,7 @@ struct LogicBoySys {
     cpu_en = true;
     fastboot = true;
     buttons = 0;
-    phase_total = 80;
+    _phase_total = 80;
   }
 
   void reset_to_cart() {
@@ -75,7 +75,7 @@ struct LogicBoySys {
     cpu_en = true;
     fastboot = true;
     buttons = 0;
-    phase_total = 46880720;
+    _phase_total = 46880720;
   }
 
 
@@ -88,7 +88,7 @@ struct LogicBoySys {
   uint8_t cpu_en = 0;
   uint8_t fastboot = 0;
   uint8_t buttons = 0;
-  uint64_t phase_total = 0;
+  uint64_t _phase_total = 0;
 };
 #pragma pack(pop)
 
@@ -123,7 +123,7 @@ struct LogicBoy : public IGateBoy {
     result &= bs.read(sys);
     result &= bs.read(pins);
     result &= bs.read(probes);
-    lb_state.from_gb_state(gb_state, sys.phase_total);
+    lb_state.from_gb_state(gb_state, sys._phase_total);
     return result;
   }
 
@@ -147,7 +147,7 @@ struct LogicBoy : public IGateBoy {
 
   const GateBoyCpu&   get_cpu() const override    { return *(GateBoyCpu*)&cpu; }
   const GateBoyMem&   get_mem() const override    { return mem; }
-  const GateBoyState& get_state() const override  { lb_state.to_gb_state(const_cast<GateBoyState&>(gb_state), sys.phase_total); return gb_state; }
+  const GateBoyState& get_state() const override  { lb_state.to_gb_state(const_cast<GateBoyState&>(gb_state), sys._phase_total); return gb_state; }
   const GateBoySys&   get_sys() const override    { return *(GateBoySys*)&sys; }
   const GateBoyPins&  get_pins() const override   { return pins; }
   const Probes&       get_probes() const override { return probes; }
@@ -160,7 +160,7 @@ struct LogicBoy : public IGateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void tock_cpu();
+  void tock_cpu(int64_t phase_total);
   void tock_logic(const blob& cart_blob, int64_t phase_total);
 
   //-----------------------------------------------------------------------------

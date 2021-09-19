@@ -49,7 +49,7 @@ Result<uint8_t, Error> LogicBoy::poke(int addr, uint8_t data_in) {
 //-----------------------------------------------------------------------------
 
 Result<uint8_t, Error> LogicBoy::dbg_read(const blob& cart_blob, int addr) {
-  CHECK_P((sys.phase_total & 7) == 0);
+  CHECK_P((sys._phase_total & 7) == 0);
 
   Req old_req = cpu.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
@@ -70,7 +70,7 @@ Result<uint8_t, Error> LogicBoy::dbg_read(const blob& cart_blob, int addr) {
 //------------------------------------------------------------------------------
 
 Result<uint8_t, Error> LogicBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data_in) {
-  CHECK_P((sys.phase_total & 7) == 0);
+  CHECK_P((sys._phase_total & 7) == 0);
 
   Req old_req = cpu.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
@@ -98,37 +98,67 @@ bool LogicBoy::run_phases(const blob& cart_blob, int phase_count) {
 }
 
 bool LogicBoy::next_phase(const blob& cart_blob) {
-  tock_cpu();
-  tock_logic(cart_blob, sys.phase_total);
-  sys.phase_total++;
+  tock_cpu(sys._phase_total);
+  tock_logic(cart_blob, sys._phase_total);
+  sys._phase_total++;
   return true;
 }
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void LogicBoy::tock_cpu() {
+#define DELTA_AB   (phase_old == 0)
+#define DELTA_BC   (phase_old == 1)
+#define DELTA_CD   (phase_old == 2)
+#define DELTA_DE   (phase_old == 3)
+#define DELTA_EF   (phase_old == 4)
+#define DELTA_FG   (phase_old == 5)
+#define DELTA_GH   (phase_old == 6)
+#define DELTA_HA   (phase_old == 7)
+
+#define DELTA_AB_OLD   (phase_old == 1)
+#define DELTA_BC_OLD   (phase_old == 2)
+#define DELTA_CD_OLD   (phase_old == 3)
+#define DELTA_DE_OLD   (phase_old == 4)
+#define DELTA_EF_OLD   (phase_old == 5)
+#define DELTA_FG_OLD   (phase_old == 6)
+#define DELTA_GH_OLD   (phase_old == 7)
+#define DELTA_HA_OLD   (phase_old == 0)
+
+#define PHASE_A_NEW (phase_new == 0)
+#define PHASE_B_NEW (phase_new == 1)
+#define PHASE_C_NEW (phase_new == 2)
+#define PHASE_D_NEW (phase_new == 3)
+#define PHASE_E_NEW (phase_new == 4)
+#define PHASE_F_NEW (phase_new == 5)
+#define PHASE_G_NEW (phase_new == 6)
+#define PHASE_H_NEW (phase_new == 7)
+
+void LogicBoy::tock_cpu(int64_t phase_total) {
+  auto phase_old = (phase_total + 0) & 7;
+  auto phase_new = (phase_total + 1) & 7;
+
   cpu.cpu_data_latch &= lb_state.cpu_dbus;
   cpu.imask_latch = lb_state.reg_ie;
 
-  if (DELTA_HA) {
+  if (PHASE_A_NEW) {
     if (cpu.core.op == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state_ = 0;
     cpu.intf_halt_latch = 0;
   }
 
   // +ha -ab -bc -cd -de -ef -fg -gh
-  if (DELTA_HA) {
+  if (PHASE_A_NEW) {
     // this one latches funny, some hardware bug
     if (get_bit(lb_state.reg_if, 2)) cpu.intf_halt_latch |= INT_TIMER_MASK;
   }
 
   // -ha +ab -bc
-  if (DELTA_AB) {
+  if (PHASE_B_NEW) {
     if (sys.cpu_en) {
       cpu.core.tock_ab(cpu.imask_latch, cpu.intf_latch, cpu.cpu_data_latch);
     }
   }
 
-  if (DELTA_AB) {
+  if (PHASE_B_NEW) {
     if (sys.cpu_en) {
       cpu.bus_req_new.addr = cpu.core._bus_addr;
       cpu.bus_req_new.data = cpu.core._bus_data;
@@ -138,7 +168,7 @@ void LogicBoy::tock_cpu() {
   }
 
   // -bc +cd +de -ef -fg -gh -ha -ab
-  if (DELTA_DE) {
+  if (PHASE_E_NEW) {
     if (get_bit(lb_state.reg_if, 0)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
     if (get_bit(lb_state.reg_if, 1)) cpu.intf_halt_latch |= INT_STAT_MASK;
     if (get_bit(lb_state.reg_if, 3)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
@@ -146,12 +176,12 @@ void LogicBoy::tock_cpu() {
   }
 
   // -ha -ab -bc -cd -de -ef +fg +gh
-  if (DELTA_GH) {
+  if (PHASE_H_NEW) {
     cpu.cpu_data_latch = 0xFF;
   }
 
   // +ha -ab -bc -cd -de -ef -fg +gh
-  if (DELTA_GH) {
+  if (PHASE_H_NEW) {
     cpu.intf_latch = lb_state.reg_if;
   }
 }
@@ -162,8 +192,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   LogicBoyState  state_old = lb_state;
   LogicBoyState& state_new = lb_state;
 
-  const uint8_t phase_old = 1 << (7 - ((sys.phase_total + 0) & 7));
-  const uint8_t phase_new = 1 << (7 - ((sys.phase_total + 1) & 7));
+  const uint8_t phase_old = (phase_total + 0) & 7;
+  const uint8_t phase_new = (phase_total + 1) & 7;
 
   //----------------------------------------
 

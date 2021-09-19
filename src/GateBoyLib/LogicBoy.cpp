@@ -464,8 +464,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // VID RST BRANCH
 
   if (vid_rst_new) {
-
-    state_new.VOGA_HBLANKp = 0;
     state_new.XYMU_RENDERINGn = 1;
 
     state_new.sfetch_counter = 0;
@@ -495,27 +493,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x7 = 0xFF;
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
-  }
-
-  if (vid_rst_new) {
-    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
-      state_new.sfetch_control.SOBU_SFETCH_REQp.state =
-        state_new.FEPO_STORE_MATCHp &&
-        !state_old.win_ctrl.RYDY_WIN_HITp &&
-        lyry_bfetch_done_old &&
-        !state_new.sfetch_control.TAKA_SFETCH_RUNNINGp;
-    }
-
-    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
-      state_new.sfetch_control.SUDA_SFETCH_REQp   = state_new.sfetch_control.SOBU_SFETCH_REQp;
-      state_new.sfetch_control.TYFO_SFETCH_S0p_D1.state = get_bit(state_new.sfetch_counter, 0);
-    }
-
-    state_new.sfetch_control.TOBU_SFETCH_S1p_D2.state = 0;
-    state_new.sfetch_control.VONU_SFETCH_S1p_D4.state = 0;
-    state_new.sfetch_control.SEBA_SFETCH_S1p_D5.state = 0;
-
-    state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 1;
   }
 
   const bool hblank_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count == 167);
@@ -599,14 +576,47 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  if (!vid_rst_new) {
-    if (line_reset_new) {
-      state_new.VOGA_HBLANKp = 0;
+  if (vid_rst_new) {
+    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+      state_new.sfetch_control.SOBU_SFETCH_REQp.state =
+        state_new.FEPO_STORE_MATCHp &&
+        !state_old.win_ctrl.RYDY_WIN_HITp &&
+        lyry_bfetch_done_old &&
+        !state_new.sfetch_control.TAKA_SFETCH_RUNNINGp;
     }
 
+    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
+      state_new.sfetch_control.SUDA_SFETCH_REQp   = state_new.sfetch_control.SOBU_SFETCH_REQp;
+      state_new.sfetch_control.TYFO_SFETCH_S0p_D1.state = get_bit(state_new.sfetch_counter, 0);
+    }
 
+    state_new.sfetch_control.TOBU_SFETCH_S1p_D2.state = 0;
+    state_new.sfetch_control.VONU_SFETCH_S1p_D4.state = 0;
+    state_new.sfetch_control.SEBA_SFETCH_S1p_D5.state = 0;
+
+    state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 1;
+  }
+
+  //----------------------------------------
+
+  if (vid_rst_new || line_reset_new) {
+    state_new.VOGA_HBLANKp = 0;
+  }
+  else {
     if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
       state_new.VOGA_HBLANKp = hblank_old;
+    }
+  }
+
+  if (!vid_rst_new) {
+    if (state_new.VOGA_HBLANKp) state_new.XYMU_RENDERINGn = 1;
+    if (!vid_rst_new && !line_reset_new && state_new.sprite_scanner.BYBA_SCAN_DONEp && !state_new.sprite_scanner.DOBA_SCAN_DONEp)     state_new.XYMU_RENDERINGn = 0;
+  }
+
+  //----------------------------------------
+
+  if (!vid_rst_new) {
+    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
       state_new.sfetch_control.SOBU_SFETCH_REQp.state   = state_new.FEPO_STORE_MATCHp && !state_old.win_ctrl.RYDY_WIN_HITp && lyry_bfetch_done_old && !state_new.sfetch_control.TAKA_SFETCH_RUNNINGp;
       state_new.sfetch_control.VONU_SFETCH_S1p_D4 = state_new.sfetch_control.TOBU_SFETCH_S1p_D2;
       state_new.sfetch_control.TOBU_SFETCH_S1p_D2.state = get_bit(state_new.sfetch_counter, 1);
@@ -650,32 +660,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.sfetch_counter = 0;
       state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 1;
     }
-    if (state_new.VOGA_HBLANKp) state_new.XYMU_RENDERINGn = 1;
   }
-
-  if (!vid_rst_new) {
-    if (avap_scan_done_new) state_new.XYMU_RENDERINGn = 0;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   const bool wuty_sfetch_done_old =
         !vid_rst_old &&
@@ -693,6 +678,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
         get_bit(state_new.sfetch_counter, 0) &&
         state_new.sfetch_control.SEBA_SFETCH_S1p_D5 &&
         state_new.sfetch_control.VONU_SFETCH_S1p_D4;
+
+  //----------------------------------------
 
   if (!vid_rst_new) {
     if (state_new.XYMU_RENDERINGn) {

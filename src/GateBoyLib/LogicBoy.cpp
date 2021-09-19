@@ -693,6 +693,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
     state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
     state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 0;
+    state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
   }
   else
   {
@@ -706,9 +707,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
-      if (!state_new.XYMU_RENDERINGn) {
-        state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = get_bit(state_new.tfetch_counter, 0);
-      }
+      state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = get_bit(state_new.tfetch_counter, 0);
     }
 
     if (state_new.tfetch_control.PYGO_FETCH_DONEp) {

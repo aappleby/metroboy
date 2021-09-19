@@ -183,42 +183,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   const bool cpu_addr_oam_new  = req_addr_oam && !DELTA_HA;
 
 
-  const bool cpu_rd = cpu.bus_req_new.read  /**/ && !DELTA_HA;
-  const bool cpu_wr = cpu.bus_req_new.write /**/ && !DELTA_HA;
-
-
-#if 0
-  bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
-  bool in_bootrom = bit(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
-  bool addr_boot = (cpu.bus_req_new.addr <= 0x00FF) && in_bootrom;
-  bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
-  bool addr_high = (cpu.bus_req_new.addr >= 0xFE00);
-
-  bool EXT_cpu_rd;
-  bool EXT_cpu_wr;
-
-  if (DELTA_HA) {
-    EXT_cpu_rd = 0;
-    EXT_cpu_wr = 0;
-    gb_state.cpu_abus.set_addr(cpu.bus_req_new.addr & 0x00FF);
-
-    if (addr_high) EXT_addr_new = false;
-    if (addr_boot) EXT_addr_new = false;
-    if (addr_vram) EXT_addr_new = false;
-  }
-  else {
-    EXT_cpu_rd = cpu.bus_req_new.read;
-    EXT_cpu_wr = cpu.bus_req_new.write;
-    gb_state.cpu_abus.set_addr(cpu.bus_req_new.addr);
-
-    if (addr_high) EXT_addr_new = false;
-    if (addr_boot) EXT_addr_new = false;
-  }
-
-  /*_SIG_IN_CPU_RDp*/ gb_state.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
-  /*_SIG_IN_CPU_WRp*/ gb_state.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
-  /*_SIG_IN_CPU_EXT_BUSp*/ gb_state.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
-#endif
+  const bool cpu_rd = cpu.bus_req_new.read  && !DELTA_HA;
+  const bool cpu_wr = cpu.bus_req_new.write && !DELTA_HA;
 
   //----------------------------------------
   // DIV
@@ -233,7 +199,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   //----------------------------------------
 
-  if (cpu.bus_req_new.write && DELTA_GH) {
+  if (cpu_wr && DELTA_GH) {
     if (state_new.cpu_abus == 0xFF00) {
       set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
       set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
@@ -263,10 +229,13 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   bool cpu_addr_bootrom_new = req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn;
 
+  const bool vid_rst_old = get_bit(state_old.reg_lcdc, 7);
+  const bool vid_rst_new = get_bit(state_new.reg_lcdc, 7);
+
   //----------------------------------------
   // LX, LY, lcd flags
 
-  if (get_bit(state_new.reg_lcdc, 7)) {
+  if (vid_rst_new) {
     state_new.lcd.NYPE_x113p.state = 0;
     state_new.lcd.RUTU_x113p.state = 0;
     state_new.lcd.POPU_y144p.state = 0;
@@ -305,7 +274,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Line reset trigger
 
-  if (get_bit(state_new.reg_lcdc, 7)) {
+  if (vid_rst_new) {
     state_new.lcd.ANEL_x113p.state = 0;
     state_new.lcd.CATU_x113p.state = 0;
   }
@@ -319,8 +288,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
   }
 
-  bool line_reset_old = !((state_old.lcd.ANEL_x113p || !state_old.lcd.CATU_x113p) && !get_bit(state_old.reg_lcdc, 7));
-  bool line_reset_new = !((state_new.lcd.ANEL_x113p || !state_new.lcd.CATU_x113p) && !get_bit(state_new.reg_lcdc, 7));
+  bool line_reset_old = !((state_old.lcd.ANEL_x113p || !state_old.lcd.CATU_x113p) && !vid_rst_old);
+  bool line_reset_new = !((state_new.lcd.ANEL_x113p || !state_new.lcd.CATU_x113p) && !vid_rst_new);
 
   //----------------------------------------
   // Joypad
@@ -339,8 +308,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.joy_int.ACEF_JP_GLITCH1       = state_new.joy_int.BATU_JP_GLITCH0;
     state_new.joy_int.BATU_JP_GLITCH0.state = !(sys.buttons & button_mask);
   }
-
-  if (!(cpu.bus_req_new.read && !DELTA_HA)) {
+  else if (!cpu_rd) {
     uint8_t button_mask = 0b00000000;
     if (!get_bit(state_new.reg_joy, 0)) button_mask |= 0b00001111;
     if (!get_bit(state_new.reg_joy, 1)) button_mask |= 0b11110000;
@@ -384,7 +352,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.reg_tima = state_new.reg_tima + 1;
     }
 
-    if (cpu.bus_req_new.write && !cpu.bus_req_new.read && state_new.cpu_abus == 0xFF05) {
+    if (cpu_wr && !cpu_rd && state_new.cpu_abus == 0xFF05) {
       state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
       state_new.reg_tima = state_new.cpu_dbus;
     }
@@ -453,10 +421,10 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   const auto dma_addr_new = ((state_new.reg_dma ^ 0xFF) << 8) | state_new.dma_lo;
   const bool dma_addr_vram_new = (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
 
-  const bool avap_scan_done_old = !(state_old.sprite_scanner.DOBA_SCAN_DONE_Bp || line_reset_old || get_bit(state_old.reg_lcdc, 7) || !state_old.sprite_scanner.BYBA_SCAN_DONE_Ap);
+  const bool avap_scan_done_old = !(state_old.sprite_scanner.DOBA_SCAN_DONE_Bp || line_reset_old || vid_rst_old || !state_old.sprite_scanner.BYBA_SCAN_DONE_Ap);
 
   const wire BFETCH_RSTp_old =
-    !(state_old.sprite_scanner.DOBA_SCAN_DONE_Bp || line_reset_old || get_bit(state_old.reg_lcdc, 7) || !state_old.sprite_scanner.BYBA_SCAN_DONE_Ap) ||
+    !(state_old.sprite_scanner.DOBA_SCAN_DONE_Bp || line_reset_old || vid_rst_old || !state_old.sprite_scanner.BYBA_SCAN_DONE_Ap) ||
     (state_old.win_ctrl.PYNU_WIN_MODE_Ap && !state_old.win_ctrl.NOPA_WIN_MODE_Bp) ||
     (state_old.win_ctrl.RYFA_WIN_FETCHn_A && !state_old.win_ctrl.RENE_WIN_FETCHn_B) ||
     (state_old.win_ctrl.SOVY_WIN_HITp && !state_old.win_ctrl.RYDY_WIN_HITp) ||
@@ -472,18 +440,17 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // VID RST BRANCH
 
   const bool wuty_sfetch_done_old =
-        !get_bit(state_old.reg_lcdc, 7) &&
+        !vid_rst_old &&
         !state_old.XYMU_RENDERINGn &&
         state_old.sfetch_control.TYFO_SFETCH_S0p_D1 &&
         get_bit(state_old.sfetch_counter, 0) &&
         state_old.sfetch_control.SEBA_SFETCH_S1p_D5 &&
         state_old.sfetch_control.VONU_SFETCH_S1p_D4;
 
-  if (get_bit(state_new.reg_lcdc, 7)) {
+  if (vid_rst_new) {
 
     state_new.sprite_scanner.DOBA_SCAN_DONE_Bp.state = 0;
     state_new.sprite_scanner.BYBA_SCAN_DONE_Ap.state = 0;
-    state_new.sprite_scanner.BESU_SCANNINGn.state = 0;
     state_new.sprite_scanner.CENO_SCANNINGn.state = 0;
     state_new.scan_counter = 0;
     state_new.sprite_scanner.FETO_SCAN_DONEp = 0;
@@ -542,36 +509,48 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // VID RUN BRANCH
 
-  const bool hblank_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count & 167) == 167;
+  const bool hblank_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count == 167);
 
-  if (!get_bit(state_new.reg_lcdc, 7)) {
-    if (line_reset_new) {
-      state_new.sprite_scanner.DOBA_SCAN_DONE_Bp.state = 0;
-      state_new.sprite_scanner.BYBA_SCAN_DONE_Ap.state = 0;
-      state_new.scan_counter = 0;
-      state_new.sprite_scanner.BESU_SCANNINGn.state = 1;
-      state_new.VOGA_HBLANKp = 0;
+  if (vid_rst_new || line_reset_new) {
+    state_new.sprite_scanner.DOBA_SCAN_DONE_Bp.state = 0;
+    state_new.sprite_scanner.BYBA_SCAN_DONE_Ap.state = 0;
+    state_new.scan_counter = 0;
+    state_new.sprite_scanner.BESU_SCANNINGn.state = line_reset_new && !vid_rst_new;
+  }
+  else {
+    if (DELTA_HA || DELTA_DE) {
+      if (state_old.scan_counter == 39) {
+        state_new.sprite_scanner.BYBA_SCAN_DONE_Ap.state = 1;
+        state_new.sprite_scanner.BESU_SCANNINGn.state = 0;
+      }
+      else {
+        state_new.scan_counter++;
+      }
     }
-    else {
-      if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
-        state_new.sprite_scanner.DOBA_SCAN_DONE_Bp = state_old.sprite_scanner.BYBA_SCAN_DONE_Ap;
-      }
-      else if (DELTA_HA || DELTA_DE) {
-        state_new.sprite_scanner.BYBA_SCAN_DONE_Ap.state = (state_old.scan_counter == 39);
-        
-        if (state_new.scan_counter != 39) state_new.scan_counter++;
-      }
-
-      if (state_new.lcd.CATU_x113p) state_new.sprite_scanner.BESU_SCANNINGn.state = 1;
+    if (DELTA_AB || DELTA_EF) {
+      state_new.sprite_scanner.DOBA_SCAN_DONE_Bp = state_old.sprite_scanner.BYBA_SCAN_DONE_Ap;
+    }
+    if (DELTA_BC || DELTA_FG) {
+    }
+    if (DELTA_CD || DELTA_GH) {
+      state_new.sprite_scanner.DOBA_SCAN_DONE_Bp = state_old.sprite_scanner.BYBA_SCAN_DONE_Ap;
     }
   }
 
+  const bool avap_scan_done_new =
+    !vid_rst_new &&
+    !line_reset_new &&
+     state_new.sprite_scanner.BYBA_SCAN_DONE_Ap &&
+    !state_new.sprite_scanner.DOBA_SCAN_DONE_Bp;
+
+  if (!vid_rst_new) {
+    if (line_reset_new) {
+      state_new.VOGA_HBLANKp = 0;
+      //state_new.sprite_scanner.BESU_SCANNINGn.state = 1;
+    }
 
 
-  const bool avap_scan_done_new = !(state_new.sprite_scanner.DOBA_SCAN_DONE_Bp || line_reset_new || get_bit(state_new.reg_lcdc, 7) || !state_new.sprite_scanner.BYBA_SCAN_DONE_Ap);
-
-  if (!get_bit(state_new.reg_lcdc, 7)) {
-    if (!line_reset_new && avap_scan_done_new) state_new.sprite_scanner.BESU_SCANNINGn.state = 0;
+    //if (avap_scan_done_new) state_new.sprite_scanner.BESU_SCANNINGn.state = 0;
 
     if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
       state_new.VOGA_HBLANKp = hblank_old;
@@ -599,13 +578,12 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.win_ctrl.SOVY_WIN_HITp.state = state_old.win_ctrl.RYDY_WIN_HITp;
     }
 
-    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
-      if (DELTA_HA || DELTA_DE) {
-        
-        state_new.sprite_index = (state_new.oam_abus >> 2) ^ 0b111111;
-        state_new.sprite_scanner.CENO_SCANNINGn.state = state_old.sprite_scanner.BESU_SCANNINGn;
-      }
+    if (DELTA_HA || DELTA_DE) {
+      state_new.sprite_index = (state_new.oam_abus >> 2) ^ 0b111111;
+      state_new.sprite_scanner.CENO_SCANNINGn.state = state_old.sprite_scanner.BESU_SCANNINGn;
+    }
 
+    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
       state_new.sfetch_control.SUDA_SFETCH_REQp   = state_new.sfetch_control.SOBU_SFETCH_REQp;
       state_new.sfetch_control.TYFO_SFETCH_S0p_D1.state = get_bit(state_new.sfetch_counter, 0);
       state_new.sfetch_control.SEBA_SFETCH_S1p_D5 = state_new.sfetch_control.VONU_SFETCH_S1p_D4;
@@ -627,7 +605,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     if (state_new.VOGA_HBLANKp) state_new.XYMU_RENDERINGn = 1;
   }
 
-  if (!get_bit(state_new.reg_lcdc, 7)) {
+  if (!vid_rst_new) {
     if (avap_scan_done_new) state_new.XYMU_RENDERINGn = 0;
   }
 
@@ -635,7 +613,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
 
   const bool wuty_sfetch_done_new =
-        !get_bit(state_new.reg_lcdc, 7) &&
+        !vid_rst_new &&
         !state_new.XYMU_RENDERINGn &&
         state_new.sfetch_control.TYFO_SFETCH_S0p_D1 &&
         get_bit(state_new.sfetch_counter, 0) &&
@@ -644,7 +622,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
 
 
-  if (!get_bit(state_new.reg_lcdc, 7)) {
+  if (!vid_rst_new) {
     if (state_new.XYMU_RENDERINGn) {
       state_new.sfetch_control.TOBU_SFETCH_S1p_D2.state = 0;
       state_new.sfetch_control.VONU_SFETCH_S1p_D4.state = 0;
@@ -674,7 +652,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
 
-  bool sfetching_old = !get_bit(state_old.reg_lcdc, 7) && !state_old.XYMU_RENDERINGn && ((get_bit(state_old.sfetch_counter, 1) || state_old.sfetch_control.VONU_SFETCH_S1p_D4));
+  bool sfetching_old = !vid_rst_old && !state_old.XYMU_RENDERINGn && ((get_bit(state_old.sfetch_counter, 1) || state_old.sfetch_control.VONU_SFETCH_S1p_D4));
 
   const uint8_t sfetch_phase_old = pack(
     !(state_old.sfetch_control.TYFO_SFETCH_S0p_D1.state ^ get_bit(state_old.sfetch_counter, 0)),
@@ -707,8 +685,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
 
-  const bool scanning_old = !state_old.MATU_DMA_RUNNINGp && state_old.sprite_scanner.BESU_SCANNINGn && !get_bit(state_old.reg_lcdc, 7);
-  const bool scanning_new = !state_new.MATU_DMA_RUNNINGp && state_new.sprite_scanner.BESU_SCANNINGn && !get_bit(state_new.reg_lcdc, 7);
+  const bool scanning_old = !state_old.MATU_DMA_RUNNINGp && state_old.sprite_scanner.BESU_SCANNINGn && !vid_rst_old;
+  const bool scanning_new = !state_new.MATU_DMA_RUNNINGp && state_new.sprite_scanner.BESU_SCANNINGn && !vid_rst_new;
 
   const bool cpu_addr_oam_old  = (state_old.cpu_abus >= 0xFE00) && (state_old.cpu_abus <= 0xFEFF) && !DELTA_HA;
 
@@ -733,7 +711,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
-  if (get_bit(state_new.reg_lcdc, 7) || line_reset_new) {
+  if (vid_rst_new || line_reset_new) {
     state_new.sprite_counter = 0;
     state_new.sprite_reset_flags = 0;
     state_new.sprite_store_flags = 0;
@@ -807,7 +785,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn.state = 0;
   }
 
-  if (!get_bit(state_new.reg_lcdc, 7)) {
+  if (!vid_rst_new) {
     if (get_bit(state_new.reg_lcdc, 5)) {
       state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
       state_new.win_ctrl.RYDY_WIN_HITp = 0;
@@ -849,7 +827,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.pix_count = 0;
   }
 
-  if (get_bit(state_new.reg_lcdc, 7)) {
+  if (vid_rst_new) {
     state_new.pix_count = 0;
   }
 
@@ -930,14 +908,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.win_ctrl.SARY_WY_MATCHp.state = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
   }
 
-  if (get_bit(state_new.reg_lcdc, 7)) {
+  if (vid_rst_new) {
     state_new.win_ctrl.PYCO_WIN_MATCHp.state = 0;
     state_new.win_ctrl.SARY_WY_MATCHp.state = 0;
   }
 
   if (state_new.win_ctrl.SARY_WY_MATCHp) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 1;
   if (state_new.lcd.POPU_y144p) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
-  if (get_bit(state_new.reg_lcdc, 7)) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
+  if (vid_rst_new) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
 
   //----------------------------------------
   // Tile fetch sequencer
@@ -1044,7 +1022,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.win_y.map = 0;
   }
 
-  if (get_bit(state_new.reg_lcdc, 7)) {
+  if (vid_rst_new) {
     state_new.fine_count = 0;
     state_new.win_x.map = 0;
     state_new.win_y.tile = 0;
@@ -1113,7 +1091,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   // the "avap_scan_done_new && state_new.lcd.PAHO_X_8_SYNC" latch branch is never hit, would probably cause
   // latch oscillation or something
-  if (get_bit(state_new.reg_lcdc, 7)) {
+  if (vid_rst_new) {
     state_new.lcd.POME_X8_LATCH = 1;
   }
   else if (avap_scan_done_new) {
@@ -1374,7 +1352,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //--------------------------------------------
   // Sprite read address
 
-  const bool sfetching_new = (!get_bit(state_new.reg_lcdc, 7) && !state_new.XYMU_RENDERINGn && ((get_bit(state_new.sfetch_counter, 1) || state_new.sfetch_control.VONU_SFETCH_S1p_D4)));
+  const bool sfetching_new = (!vid_rst_new && !state_new.XYMU_RENDERINGn && ((get_bit(state_new.sfetch_counter, 1) || state_new.sfetch_control.VONU_SFETCH_S1p_D4)));
 
   if (sfetching_new) {
     const bool hilo = state_new.sfetch_control.VONU_SFETCH_S1p_D4;
@@ -1413,7 +1391,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     pins_vram_ctrl_csn_new = state_new.tfetch_control.LONY_FETCHINGp || sfetching_new;
     pins_vram_ctrl_oen_new = state_new.tfetch_control.LONY_FETCHINGp || (sfetching_new && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1 || get_bit(state_new.sfetch_counter, 0)));
   }
-  else if ((cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(cpu_addr_bootrom_new)) {
+  else if (ext_addr_new) {
     pins_vram_ctrl_csn_new = (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && 1);
     pins_vram_ctrl_oen_new = !cpu_addr_vram_new || !cpu.bus_req_new.write || DELTA_HA;
   }
@@ -1426,7 +1404,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (!state_new.XYMU_RENDERINGn) {
     pins_vram_ctrl_wrn_new = 0;
   }
-  else if ((cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(cpu_addr_bootrom_new)) {
+  else if (ext_addr_new) {
     pins_vram_ctrl_wrn_new = cpu_addr_vram_new && gen_clk_new(phase_total, 0b00001110) && cpu_wr && 1;
   }
   else {
@@ -1440,7 +1418,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
     pins_vram_dbus = state_new.vram_dbus;
   }
-  else if ((cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(cpu_addr_bootrom_new)) {
+  else if (ext_addr_new) {
     if ((gen_clk_new(phase_total, 0b00111111) && 1) && cpu_addr_vram_new && cpu_wr) {
       state_new.vram_dbus = state_new.cpu_dbus;
     }
@@ -1672,7 +1650,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   auto pack_if = state_new.reg_if;
   auto pack_stat = state_new.reg_stat;
 
-  if (!get_bit(state_new.reg_lcdc, 7) && DELTA_BC) {
+  if (!vid_rst_new && DELTA_BC) {
     state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = state_old.reg_ly == (state_old.reg_lyc ^ 0xFF);
   }
 
@@ -1836,11 +1814,11 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
-    state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = (cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn);
+    state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
     state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read);
     state_new.cpu_signals.SIG_IN_CPU_WRp.state = cpu_wr;
-    state_new.cpu_signals.SIG_IN_CPU_RDp.state = DELTA_HA ? 0 : cpu.bus_req_new.read;
-    if (!get_bit(state_new.reg_lcdc, 7)) {
+    state_new.cpu_signals.SIG_IN_CPU_RDp.state = cpu_rd;
+    if (!vid_rst_new) {
       if (DELTA_FG) {
         state_new.lcd.SYGU_LINE_STROBE.state = (state_old.reg_lx == 0) || (state_old.reg_lx == 7) || (state_old.reg_lx == 45) || (state_old.reg_lx == 83);
       }
@@ -1855,7 +1833,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       if (get_bit(state_new.pix_count, 0) && get_bit(state_new.pix_count, 3)) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 1;
       if (state_new.VOGA_HBLANKp) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
     }
-    if (get_bit(state_new.reg_lcdc, 7)) {
+    if (vid_rst_new) {
       state_new.lcd.SYGU_LINE_STROBE.state = 0;
       state_new.lcd.LUCA_LINE_EVENp.state = 0;
       state_new.lcd.NAPO_FRAME_EVENp.state = 0;
@@ -1874,7 +1852,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     pins.vram_ctrl.PIN_45_VRAM_OEn.state = pins_vram_ctrl_oen_new;
     pins.vram_ctrl.PIN_49_VRAM_WRn.state = pins_vram_ctrl_wrn_new;
 
-    if (!get_bit(state_new.reg_lcdc, 7)) {
+    if (!vid_rst_new) {
       pins.lcd.PIN_50_LCD_DATA1.state = RAVO_LD1n;
       pins.lcd.PIN_51_LCD_DATA0.state = REMY_LD0n;
       pins.lcd.PIN_52_LCD_CNTRL.state = !state_new.lcd.SYGU_LINE_STROBE && !state_new.lcd.RUTU_x113p;
@@ -1907,7 +1885,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.sfetch_control.TEXY_SFETCHINGp = sfetching_new;
     state_new.WODU_HBLANKp = hblank_new;
     state_new.ACYL_SCANNINGp = scanning_new;
-    state_new.sprite_scanner.FETO_SCAN_DONEp = (state_new.scan_counter == 39) && !get_bit(state_new.reg_lcdc, 7);
+    state_new.sprite_scanner.FETO_SCAN_DONEp = (state_new.scan_counter == 39) && !vid_rst_new;
     state_new.SATO_BOOT_BITn = get_bit(state_new.cpu_dbus, 0) || state_new.cpu_signals.TEPU_BOOT_BITn;
     state_new.ATEJ_LINE_RSTp = line_reset_new;
     state_new.cpu_signals.SIG_CPU_BOOTp.state = 0;
@@ -2006,8 +1984,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.sys_rst.SIG_CPU_INT_RESETp = 0; // dead signal
     state_new.sys_rst.SOTO_DBG_VRAMp = 0; // dead signal
 
-    state_new.sys_clk.WOSU_AxxDExxH.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b10011001); // dead signal
-    state_new.sys_clk.WUVU_ABxxEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b11001100); // dead signal
-    state_new.sys_clk.VENA_xxCDEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b00111100); // dead signal
+    state_new.sys_clk.WOSU_AxxDExxH.state = !vid_rst_new && gen_clk_new(phase_total, 0b10011001); // dead signal
+    state_new.sys_clk.WUVU_ABxxEFxx.state = !vid_rst_new && gen_clk_new(phase_total, 0b11001100); // dead signal
+    state_new.sys_clk.VENA_xxCDEFxx.state = !vid_rst_new && gen_clk_new(phase_total, 0b00111100); // dead signal
   }
 }

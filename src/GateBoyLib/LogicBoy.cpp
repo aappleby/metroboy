@@ -798,6 +798,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   //----------------------------------------
+  // Window stuff
+
+  const bool nuko_wx_match_old = (uint8_t(~state_old.reg_wx) == state_old.pix_count) && state_old.win_ctrl.REJO_WY_MATCH_LATCHp;
 
   if (vid_rst_new) {
     state_new.win_ctrl.NUNU_WIN_MATCHp.state = 0;
@@ -805,6 +808,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
     state_new.win_ctrl.SOVY_WIN_HITp.state = 0;
     state_new.win_ctrl.PUKU_WIN_HITn.state = 1;
+    state_new.win_ctrl.PYCO_WIN_MATCHp.state = 0;
+    state_new.win_ctrl.SARY_WY_MATCHp.state = 0;
+    state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
   }
   else {
     if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
@@ -819,67 +825,53 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     if (line_reset_new) {
       state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
     }
-  }
 
-  if (!vid_rst_new) {
     if (get_bit(state_new.reg_lcdc, 5)) {
       state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
       state_new.win_ctrl.RYDY_WIN_HITp = 0;
       state_new.win_ctrl.PUKU_WIN_HITn = 1;
     }
+
+    if (!get_bit(state_new.reg_lcdc, 5) && state_new.win_ctrl.NUNU_WIN_MATCHp) {
+      state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 1;
+    }
+      
+    if (!vid_rst_new && !get_bit(state_new.reg_lcdc, 5) && state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
+      state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
+      state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
+    }
+
+    if (!get_bit(state_new.reg_lcdc, 5) && state_new.tfetch_control.PORY_FETCH_DONEp) {
+      state_new.win_ctrl.RYDY_WIN_HITp = 0;
+      state_new.win_ctrl.PUKU_WIN_HITn = 1;
+    }
+    else if (!get_bit(state_new.reg_lcdc, 5) && state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
+      state_new.win_ctrl.RYDY_WIN_HITp = 1;
+      state_new.win_ctrl.PUKU_WIN_HITn = 0;
+    }
+
+    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+      if (!pause_rendering_new) state_new.win_ctrl.PYCO_WIN_MATCHp.state = nuko_wx_match_old;
+    }
+
+    if (!state_new.XYMU_RENDERINGn) {
+      if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+        state_new.win_ctrl.RENE_WIN_FETCHn_B = state_new.win_ctrl.RYFA_WIN_FETCHn_A;
+      }
+    }
     else {
-      
-      if (state_new.win_ctrl.NUNU_WIN_MATCHp) {
-        state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 1;
-      }
-      
-      if (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
-        state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
-        state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
-      }
-
-      if (state_new.tfetch_control.PORY_FETCH_DONEp) {
-        state_new.win_ctrl.RYDY_WIN_HITp = 0;
-        state_new.win_ctrl.PUKU_WIN_HITn = 1;
-      }
-      else if (state_new.win_ctrl.PYNU_WIN_MODE_Ap && !state_new.win_ctrl.NOPA_WIN_MODE_Bp) {
-        state_new.win_ctrl.RYDY_WIN_HITp = 1;
-        state_new.win_ctrl.PUKU_WIN_HITn = 0;
-      }
+      state_new.win_ctrl.RENE_WIN_FETCHn_B.state = 0;
+      state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = 0;
     }
-  }
 
-  //----------------------------------------
-  // WY/WX/window match
-
-  const bool nuko_wx_match_old = (uint8_t(~state_old.reg_wx) == state_old.pix_count) && state_old.win_ctrl.REJO_WY_MATCH_LATCHp;
-
-  if (gen_clk_new(phase_total, 0b01010101)) {
-    if (!pause_rendering_new) state_new.win_ctrl.PYCO_WIN_MATCHp.state = nuko_wx_match_old;
-  }
-
-  if (!state_new.XYMU_RENDERINGn) {
-    if (gen_clk_new(phase_total, 0b01010101)) {
-      state_new.win_ctrl.RENE_WIN_FETCHn_B = state_new.win_ctrl.RYFA_WIN_FETCHn_A;
+    if (DELTA_BC) {
+      state_new.win_ctrl.SARY_WY_MATCHp.state = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
     }
-  }
-  else {
-    state_new.win_ctrl.RENE_WIN_FETCHn_B.state = 0;
-    state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = 0;
+
+    if (state_new.win_ctrl.SARY_WY_MATCHp) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 1;
+    if (state_new.lcd.POPU_y144p) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
   }
 
-  if (gen_clk_new(phase_total, 0b00100000)) {
-    state_new.win_ctrl.SARY_WY_MATCHp.state = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
-  }
-
-  if (vid_rst_new) {
-    state_new.win_ctrl.PYCO_WIN_MATCHp.state = 0;
-    state_new.win_ctrl.SARY_WY_MATCHp.state = 0;
-  }
-
-  if (state_new.win_ctrl.SARY_WY_MATCHp) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 1;
-  if (state_new.lcd.POPU_y144p) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
-  if (vid_rst_new) state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 0;
 
 
   //----------------------------------------
@@ -892,6 +884,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
     state_new.pix_count = state_new.pix_count + 1;
+    state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = !nuko_wx_match_old && state_new.fine_count == 7;
   }
 
   if (line_reset_new) {
@@ -900,12 +893,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   if (vid_rst_new) {
     state_new.pix_count = 0;
-  }
-
-  if (!state_new.XYMU_RENDERINGn) {
-    if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-      state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = !nuko_wx_match_old && state_new.fine_count == 7;
-    }
   }
 
   //----------------------------------------

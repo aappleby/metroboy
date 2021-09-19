@@ -463,36 +463,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // VID RST BRANCH
 
-  const bool wuty_sfetch_done_old =
-        !vid_rst_old &&
-        !state_old.XYMU_RENDERINGn &&
-        state_old.sfetch_control.TYFO_SFETCH_S0p_D1 &&
-        get_bit(state_old.sfetch_counter, 0) &&
-        state_old.sfetch_control.SEBA_SFETCH_S1p_D5 &&
-        state_old.sfetch_control.VONU_SFETCH_S1p_D4;
-
   if (vid_rst_new) {
 
     state_new.VOGA_HBLANKp = 0;
     state_new.XYMU_RENDERINGn = 1;
 
-    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
-      state_new.sfetch_control.SOBU_SFETCH_REQp.state =
-        state_new.FEPO_STORE_MATCHp &&
-        !state_old.win_ctrl.RYDY_WIN_HITp &&
-        lyry_bfetch_done_old &&
-        !state_new.sfetch_control.TAKA_SFETCH_RUNNINGp;
-    }
-
-    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
-      state_new.sfetch_control.SUDA_SFETCH_REQp   = state_new.sfetch_control.SOBU_SFETCH_REQp;
-      state_new.sfetch_control.TYFO_SFETCH_S0p_D1.state = get_bit(state_new.sfetch_counter, 0);
-    }
-
     state_new.sfetch_counter = 0;
-    state_new.sfetch_control.TOBU_SFETCH_S1p_D2.state = 0;
-    state_new.sfetch_control.VONU_SFETCH_S1p_D4.state = 0;
-    state_new.sfetch_control.SEBA_SFETCH_S1p_D5.state = 0;
 
     state_new.win_ctrl.NUNU_WIN_MATCHp.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp.state = 0;
@@ -504,8 +480,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.tfetch_control.PORY_FETCH_DONEp.state = 0;
     state_new.tfetch_control.NYKA_FETCH_DONEp.state = 0;
     state_new.tfetch_control.POKY_PRELOAD_LATCHp.state = 0;
-
-    state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 1;
 
     state_new.sprite_counter = 0;
     state_new.sprite_reset_flags = 0;
@@ -521,6 +495,27 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x7 = 0xFF;
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
+  }
+
+  if (vid_rst_new) {
+    if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+      state_new.sfetch_control.SOBU_SFETCH_REQp.state =
+        state_new.FEPO_STORE_MATCHp &&
+        !state_old.win_ctrl.RYDY_WIN_HITp &&
+        lyry_bfetch_done_old &&
+        !state_new.sfetch_control.TAKA_SFETCH_RUNNINGp;
+    }
+
+    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
+      state_new.sfetch_control.SUDA_SFETCH_REQp   = state_new.sfetch_control.SOBU_SFETCH_REQp;
+      state_new.sfetch_control.TYFO_SFETCH_S0p_D1.state = get_bit(state_new.sfetch_counter, 0);
+    }
+
+    state_new.sfetch_control.TOBU_SFETCH_S1p_D2.state = 0;
+    state_new.sfetch_control.VONU_SFETCH_S1p_D4.state = 0;
+    state_new.sfetch_control.SEBA_SFETCH_S1p_D5.state = 0;
+
+    state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 1;
   }
 
   const bool hblank_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count == 167);
@@ -682,6 +677,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
+  const bool wuty_sfetch_done_old =
+        !vid_rst_old &&
+        !state_old.XYMU_RENDERINGn &&
+        state_old.sfetch_control.TYFO_SFETCH_S0p_D1 &&
+        get_bit(state_old.sfetch_counter, 0) &&
+        state_old.sfetch_control.SEBA_SFETCH_S1p_D5 &&
+        state_old.sfetch_control.VONU_SFETCH_S1p_D4;
+
 
   const bool wuty_sfetch_done_new =
         !vid_rst_new &&
@@ -690,8 +693,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
         get_bit(state_new.sfetch_counter, 0) &&
         state_new.sfetch_control.SEBA_SFETCH_S1p_D5 &&
         state_new.sfetch_control.VONU_SFETCH_S1p_D4;
-
-
 
   if (!vid_rst_new) {
     if (state_new.XYMU_RENDERINGn) {
@@ -755,6 +756,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     get_bit(state_new.sfetch_counter, 1),
     get_bit(state_new.sfetch_counter, 2));
 
+
   //----------------------------------------
 
   if (!state_old.XYMU_RENDERINGn) {
@@ -801,7 +803,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Fine scroll match, sprite store match, clock pipe, and pixel counter are intertwined here.
 
   // NOTE we reassign this below because there's a bit of a feedback loop
-  wire pause_rendering_new = state_old.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || hblank_old;
+  wire pause_rendering_new = (state_old.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_old.FEPO_STORE_MATCHp || hblank_old);
 
   if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
     if (!pause_rendering_new) {
@@ -901,7 +903,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  pause_rendering_new = state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || hblank_old;
+  pause_rendering_new = (state_new.win_ctrl.RYDY_WIN_HITp || !state_new.tfetch_control.POKY_PRELOAD_LATCHp || state_new.FEPO_STORE_MATCHp || hblank_old);
 
 
   if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
@@ -910,10 +912,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = !nuko_wx_match_old && state_new.fine_count == 7;
     }
   }
-
-  const wire pause_rendering_old = (state_old.win_ctrl.RYDY_WIN_HITp || !state_old.tfetch_control.POKY_PRELOAD_LATCHp || state_old.FEPO_STORE_MATCHp || hblank_old);
-  const bool SACU_CLKPIPE_old = DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH || pause_rendering_old || state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
-  const wire SACU_CLKPIPE_new = DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG || pause_rendering_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn;
 
   if (line_reset_new) {
     state_new.pix_count = 0;
@@ -967,8 +965,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (!state_new.XYMU_RENDERINGn && gen_clk_new(phase_total_old, 0b01010101)) {
-    if (!pause_rendering_new) state_new.lcd.PAHO_X8_SYNC.state = get_bit(state_old.pix_count, 3);
+  if (DELTA_AB || DELTA_CD || DELTA_EF || DELTA_GH) {
+    if (!state_new.XYMU_RENDERINGn) {
+      if (!pause_rendering_new) state_new.lcd.PAHO_X8_SYNC.state = get_bit(state_old.pix_count, 3);
+    }
   }
 
   if (!state_new.XYMU_RENDERINGn && !state_new.FEPO_STORE_MATCHp) {
@@ -1040,10 +1040,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Fine match counter
 
-
-  if (state_new.fine_count != 7 && !pause_rendering_old && gen_clk_new(phase_total_old, 0b10101010)) {
-    state_new.fine_count = state_new.fine_count + 1;
+  if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
+    if (!state_old.win_ctrl.RYDY_WIN_HITp && state_old.tfetch_control.POKY_PRELOAD_LATCHp && !state_old.FEPO_STORE_MATCHp && !hblank_old) {
+      if (state_new.fine_count < 7) state_new.fine_count++;
+    }
   }
+
 
   if (state_new.XYMU_RENDERINGn) {
     state_new.fine_count = 0;
@@ -1091,13 +1093,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Pixel pipes
 
-  if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
-    state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
-    state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
-    state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
-    state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
-    state_new.mask_pipe  = (state_new.mask_pipe  << 1) | 1;
-    state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
+  if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
+    if (!state_old.win_ctrl.RYDY_WIN_HITp && state_old.tfetch_control.POKY_PRELOAD_LATCHp && !state_old.FEPO_STORE_MATCHp && !hblank_old) {
+      if (!state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn) {
+        state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
+        state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
+        state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
+        state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
+        state_new.mask_pipe  = (state_new.mask_pipe  << 1) | 1;
+        state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
+      }
+    }
   }
 
   if (wuty_sfetch_done_new) {
@@ -1914,6 +1920,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pins.vram_ctrl.PIN_49_VRAM_WRn.state = pins_vram_ctrl_wrn_new;
 
     if (!vid_rst_new) {
+      const bool SACU_CLKPIPE_new = DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG || pause_rendering_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn;
+
       pins.lcd.PIN_50_LCD_DATA1.state = RAVO_LD1n;
       pins.lcd.PIN_51_LCD_DATA0.state = REMY_LD0n;
       pins.lcd.PIN_52_LCD_CNTRL.state = !state_new.lcd.SYGU_LINE_STROBE && !state_new.lcd.RUTU_x113p;

@@ -343,7 +343,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
     bool in_bootrom = bit(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
     bool addr_boot = (cpu.bus_req_new.addr <= 0x00FF) && in_bootrom;
-    bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr < 0x9FFF);
+    bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
     bool addr_high = (cpu.bus_req_new.addr >= 0xFE00);
 
     bool EXT_cpu_rd;

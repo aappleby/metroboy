@@ -101,59 +101,8 @@ bool LogicBoy::next_phase(const blob& cart_blob) {
   CHECK_N(!sys.clk_req);
   tock_cpu();
   tock_logic(cart_blob, sys.phase_total);
-  update_framebuffer();
   sys.phase_total++;
   return true;
-}
-
-//------------------------------------------------------------------------------------------------------------------------
-
-void LogicBoy::update_framebuffer()
-{
-  int lcd_x = lb_state.pix_count - 8;
-  int lcd_y = lb_state.reg_ly;
-
-  if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
-    wire p0 = !pins.lcd.PIN_51_LCD_DATA0.state;
-    wire p1 = !pins.lcd.PIN_50_LCD_DATA1.state;
-    auto new_pix = p0 + p1 * 2;
-
-    mem.framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
-  }
-
-#if 0
-  if (bit(~lcd.old_lcd_clock.qp_old()) && lcd.PIN_53_LCD_CLOCK.qp_new()) {
-    gb_screen_x++;
-  }
-  if (lcd.PIN_54_LCD_HSYNC.qp_new() || lcd.PIN_55_LCD_LATCH.qp_new()) {
-    gb_screen_x = 0;
-  }
-
-  if (bit(~lcd.old_lcd_latch.qp_old()) && lcd.PIN_55_LCD_LATCH.qp_new()) {
-    if (gb_screen_y < 144) {
-      for (int x = 0; x < 159; x++) {
-        uint8_t p0 = lcd.lcd_pipe_lo[x + 1].qp_new();
-        uint8_t p1 = lcd.lcd_pipe_hi[x + 1].qp_new();
-        framebuffer[x + gb_screen_y * 160] = p0 + p1 * 2;
-      }
-      {
-        uint8_t p0 = lcd.lcd_pix_lo.qp_new();
-        uint8_t p1 = lcd.lcd_pix_hi.qp_new();
-        framebuffer[159 + gb_screen_y * 160] = p0 + p1 * 2;
-      }
-    }
-
-    if (lcd.PIN_57_LCD_VSYNC.qp_new()) {
-      gb_screen_y = 0;
-    }
-    else {
-      gb_screen_y++;
-    }
-  }
-
-  lcd.old_lcd_clock.set_new(lcd.PIN_53_LCD_CLOCK.qp_new());
-  lcd.old_lcd_latch.set_new(lcd.PIN_55_LCD_LATCH.qp_new());
-#endif
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -1868,6 +1817,16 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
 
 
+  int lcd_x = lb_state.pix_count - 8;
+  int lcd_y = lb_state.reg_ly;
+
+  if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
+    wire p0 = !pins.lcd.PIN_51_LCD_DATA0.state;
+    wire p1 = !pins.lcd.PIN_50_LCD_DATA1.state;
+    auto new_pix = p0 + p1 * 2;
+
+    mem.framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
+  }
 
 
 

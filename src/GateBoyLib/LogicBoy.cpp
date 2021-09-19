@@ -1175,6 +1175,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   uint8_t pins_ctrl_rdn_new = 1;
   uint8_t pins_ctrl_wrn_new = 1;
 
+  uint8_t pins_abus_lo = 0xFF;
+  uint8_t pins_abus_hi = 0xFF;
+
   const bool cpu_addr_vram_new = (state_new.cpu_abus >= 0x8000) && (state_new.cpu_abus <= 0x9FFF);
   if (state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp && !cpu_addr_vram_new) {
     state_new.ext_addr_latch = state_new.cpu_abus & 0x7FFF;
@@ -1182,15 +1185,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   if (state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
     pins_ctrl_csn_new = !get_bit(state_new.reg_dma, 7);
-    bit_unpack_inv(pins.abus_lo, state_new.dma_lo);
-    bit_unpack(pins.abus_hi,     state_new.reg_dma);
+    pins_abus_lo = ~state_new.dma_lo;
+    pins_abus_hi = state_new.reg_dma;
   }
-
-  if (!state_new.MATU_DMA_RUNNINGp || dma_addr_vram_new) {
+  else {
     const bool cpu_addr_ram_new =  (state_new.cpu_abus >= 0xA000) && (state_new.cpu_abus <= 0xFDFF);
     pins_ctrl_csn_new = (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && cpu_addr_ram_new;
-    bit_unpack_inv(pins.abus_lo, (state_new.ext_addr_latch >> 0) & 0xFF);
-    bit_unpack_inv(pins.abus_hi, (state_new.ext_addr_latch >> 8) & 0x7F);
+    pins_abus_lo = ~((state_new.ext_addr_latch >> 0) & 0xFF);
+    pins_abus_hi = ~((state_new.ext_addr_latch >> 8) & 0x7F);
   }
 
   pins_ctrl_rdn_new = 1;
@@ -1200,15 +1202,15 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     pins_ctrl_wrn_new = gen_clk_new(phase_total, 0b00001110) && !cpu_addr_vram_new;
   }
 
-  pins.abus_hi.PIN_16_A15.state = 0;
+  pins_abus_hi &= 0b01111111;
   if (state_new.MATU_DMA_RUNNINGp && !dma_addr_vram_new) {
-    pins.abus_hi.PIN_16_A15.state = !!(state_new.reg_dma & 0b10000000);
+    pins_abus_hi |= (!!(state_new.reg_dma & 0b10000000)) << 7;
   }
   else if (!state_new.cpu_signals.TEPU_BOOT_BITn && state_new.cpu_abus <= 0x00FF) {
   }
   else {
     uint8_t bit = (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && !get_bit(state_new.cpu_abus, 15);
-    pins.abus_hi.PIN_16_A15.state = bit;
+    pins_abus_hi |= bit << 7;
   }
 
   uint8_t pins_dbus = 0;
@@ -1220,12 +1222,10 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // Ext read
 
   if (pins_ctrl_rdn_new) {
-    const uint16_t ext_addr_lo = (uint16_t)bit_pack_inv(pins.abus_lo);
-    const uint16_t ext_addr_hi = (uint16_t)bit_pack_inv(pins.abus_hi);
+    const uint16_t ext_addr_lo = pins_abus_lo ^ 0xFF;
+    const uint16_t ext_addr_hi = pins_abus_hi ^ 0xFF;
     const uint16_t ext_addr = (ext_addr_lo << 0) | (ext_addr_hi << 8);
 
-    //const uint16_t ext_addr = ~(pins.abus_lo | (pins.abus_hi << 8));
-    
     const auto rom_addr_mask = cart_rom_addr_mask(cart_blob);
     const auto ram_addr_mask = cart_ram_addr_mask(cart_blob);
 
@@ -1282,8 +1282,8 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // Ext write
 
   {
-    const uint16_t ext_addr_lo = (uint16_t)bit_pack_inv(pins.abus_lo);
-    const uint16_t ext_addr_hi = (uint16_t)bit_pack_inv(pins.abus_hi);
+    const uint16_t ext_addr_lo = pins_abus_lo ^ 0xFF;
+    const uint16_t ext_addr_hi = pins_abus_hi ^ 0xFF;
     const uint16_t ext_addr = (ext_addr_lo << 0) | (ext_addr_hi << 8);
 
     const auto region = ext_addr >> 13;
@@ -1845,6 +1845,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    bit_unpack(pins.abus_lo, pins_abus_lo);
+    bit_unpack(pins.abus_hi, pins_abus_hi);
+
     pins.ctrl.PIN_78_WRn.state = pins_ctrl_wrn_new;
     pins.ctrl.PIN_79_RDn.state = pins_ctrl_rdn_new;
     pins.ctrl.PIN_80_CSn.state = pins_ctrl_csn_new;

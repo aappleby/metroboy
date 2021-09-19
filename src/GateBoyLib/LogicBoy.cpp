@@ -288,7 +288,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.joy_int.BATU_JP_GLITCH0.state = !(sys.buttons & button_mask);
   }
 
-  if (!(DELTA_HA ? 0 : cpu.bus_req_new.read)) {
+  if (!(cpu.bus_req_new.read && !DELTA_HA)) {
     uint8_t button_mask = 0b00000000;
     if (!get_bit(state_new.reg_joy, 0)) button_mask |= 0b00001111;
     if (!get_bit(state_new.reg_joy, 1)) button_mask |= 0b11110000;
@@ -302,24 +302,24 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Timer
 
+  bool SOGU_TIMA_CLKn_old = 0;
+  bool SOGU_TIMA_CLKn_new = 0;
+
+  if (state_old.reg_tac == 4) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 7) & 1;
+  if (state_old.reg_tac == 5) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 1) & 1;
+  if (state_old.reg_tac == 6) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 3) & 1;
+  if (state_old.reg_tac == 7) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 5) & 1;
+
+  if (state_new.reg_tac == 4) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 7) & 1;
+  if (state_new.reg_tac == 5) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 1) & 1;
+  if (state_new.reg_tac == 6) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 3) & 1;
+  if (state_new.reg_tac == 7) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 5) & 1;
+
   if (DELTA_HA) {
     state_new.int_ctrl.MOBA_TIMER_OVERFLOWp.state = !get_bit(state_old.reg_tima, 7) && state_old.int_ctrl.NYDU_TIMA7p_DELAY;
     state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = get_bit(state_old.reg_tima, 7);
 
     // A for the div tick
-    bool SOGU_TIMA_CLKn_old = 0;
-    bool SOGU_TIMA_CLKn_new = 0;
-
-    if (state_old.reg_tac == 4) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 7) & 1;
-    if (state_old.reg_tac == 5) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 1) & 1;
-    if (state_old.reg_tac == 6) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 3) & 1;
-    if (state_old.reg_tac == 7) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 5) & 1;
-
-    if (state_new.reg_tac == 4) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 7) & 1;
-    if (state_new.reg_tac == 5) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 1) & 1;
-    if (state_new.reg_tac == 6) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 3) & 1;
-    if (state_new.reg_tac == 7) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 5) & 1;
-
     if (SOGU_TIMA_CLKn_old && !SOGU_TIMA_CLKn_new) {
       state_new.reg_tima = state_new.reg_tima + 1;
     }
@@ -328,28 +328,13 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
   else if (DELTA_DE || DELTA_EF || DELTA_FG) {
     // EFG for the div reset
-    bool SOGU_TIMA_CLKn_old = 0;
-    bool SOGU_TIMA_CLKn_new = 0;
-
-    if (state_old.reg_tac == 4) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 7) & 1;
-    if (state_old.reg_tac == 5) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 1) & 1;
-    if (state_old.reg_tac == 6) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 3) & 1;
-    if (state_old.reg_tac == 7) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 5) & 1;
-
-    if (state_new.reg_tac == 4) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 7) & 1;
-    if (state_new.reg_tac == 5) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 1) & 1;
-    if (state_new.reg_tac == 6) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 3) & 1;
-    if (state_new.reg_tac == 7) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 5) & 1;
-
     if (SOGU_TIMA_CLKn_old && !SOGU_TIMA_CLKn_new) {
       state_new.reg_tima = state_new.reg_tima + 1;
     }
 
-    if ((DELTA_HA ? 0 : cpu.bus_req_new.write)) {
-      if (state_new.cpu_abus == 0xFF05 && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
-        state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
-        state_new.reg_tima = state_new.cpu_dbus;
-      }
+    if (cpu.bus_req_new.write && !cpu.bus_req_new.read && state_new.cpu_abus == 0xFF05) {
+      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
+      state_new.reg_tima = state_new.cpu_dbus;
     }
   }
   else if (DELTA_GH) {
@@ -364,14 +349,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // bootrom read
 
   if (state_new.cpu_abus <= 0x00FF) {
-    if ((DELTA_HA ? 0 : cpu.bus_req_new.read) && !state_new.cpu_signals.TEPU_BOOT_BITn) {
+    if (cpu.bus_req_new.read && !DELTA_HA && !state_new.cpu_signals.TEPU_BOOT_BITn) {
       state_new.cpu_dbus = DMG_ROM_blob[state_new.cpu_abus & 0xFF];
     }
   }
 
   // boot bit read
 
-  if ((DELTA_HA ? 0 : cpu.bus_req_new.read) && (state_new.cpu_abus == 0xFF50)) {
+  if ((cpu.bus_req_new.read && !DELTA_HA) && (state_new.cpu_abus == 0xFF50)) {
     state_new.cpu_dbus &= ~1;
     state_new.cpu_dbus |= state_new.cpu_signals.TEPU_BOOT_BITn.state;
   }
@@ -379,7 +364,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // DMA
 
-  if (state_new.cpu_abus == 0xFF46 && (DELTA_HA ? 0 : cpu.bus_req_new.read)) {
+  if (state_new.cpu_abus == 0xFF46 && cpu.bus_req_new.read && !DELTA_HA) {
     state_new.cpu_dbus = ~state_old.reg_dma;
   }
 
@@ -392,7 +377,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
   }
   else if (DELTA_DE) {
-    if (state_new.cpu_abus == 0xFF46 && (DELTA_HA ? 0 : cpu.bus_req_new.write)) {
+    if (state_new.cpu_abus == 0xFF46 && cpu.bus_req_new.write) {
       state_new.dma_ctrl.LYXE_DMA_LATCHp.state = 1;
     }
 
@@ -1239,7 +1224,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // VRAM bus
 
-  if ((DELTA_HA ? 0 : cpu.bus_req_new.read) && (cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn) && !cpu_addr_vram_new && ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
+  if ((cpu.bus_req_new.read && !DELTA_HA) && (cpu.bus_req_new.read || cpu.bus_req_new.write) && !(req_addr_vram && DELTA_HA) && !req_addr_hi && !(req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn) && !cpu_addr_vram_new && ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
     state_new.cpu_dbus = ~state_new.ext_data_latch;
   }
   else {
@@ -1403,7 +1388,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       mem.vid_ram[state_new.vram_abus ^ 0x1FFF] = ~pins_vram_dbus;
     }
 
-    if (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && (DELTA_HA ? 0 : cpu.bus_req_new.read) && ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
+    if (cpu_addr_vram_new && gen_clk_new(phase_total, 0b00111111) && (cpu.bus_req_new.read && !DELTA_HA) && ((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
       state_new.cpu_dbus = state_new.vram_dbus;
     }
   }
@@ -1441,7 +1426,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   // But ZRAM can't be before OAM because ZRAM _doesn't_ show up on the oam bus? That seems wrong...
 
-  if ((DELTA_HA ? 0 : cpu.bus_req_new.read)) {
+  if ((cpu.bus_req_new.read && !DELTA_HA)) {
     if (state_new.cpu_abus == 0xFF00) {
       set_bit(state_new.cpu_dbus, 0, !get_bit(state_new.joy_latch, 0));
       set_bit(state_new.cpu_dbus, 1, !get_bit(state_new.joy_latch, 1));
@@ -1492,7 +1477,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
     if (DELTA_GH || DELTA_HA || DELTA_CD || DELTA_DE) {
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = (DELTA_DE && !cpu_addr_oam_new) || DELTA_HA;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = !(cpu_addr_oam_new && (DELTA_HA ? 0 : cpu.bus_req_new.read) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read));
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = !(cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read));
     }
 
     if (!state_new.oam_ctrl.SIG_OAM_OEn) {
@@ -1508,13 +1493,13 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk_new(phase_total, 0b11110000));
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-    state_new.oam_ctrl.SIG_OAM_OEn.state   = sfetch_oam_oen_new && !(cpu_addr_oam_new && (DELTA_HA ? 0 : cpu.bus_req_new.read) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read));
+    state_new.oam_ctrl.SIG_OAM_OEn.state   = sfetch_oam_oen_new && !(cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read));
 
     if (!sfetch_oam_oen_new) {
       state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
       state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
     }
-    else if (cpu_addr_oam_new && (DELTA_HA ? 0 : cpu.bus_req_new.read) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
+    else if (cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
       state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
       state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
     }
@@ -1524,14 +1509,14 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = DELTA_HA || DELTA_AB || DELTA_BC || DELTA_CD;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-    state_new.oam_ctrl.SIG_OAM_OEn.state   = !((DELTA_HA ? 0 : cpu.bus_req_new.read) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read));
+    state_new.oam_ctrl.SIG_OAM_OEn.state   = !((cpu.bus_req_new.read && !DELTA_HA) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read));
 
     if (DELTA_DE || DELTA_EF || DELTA_FG) {
       state_new.oam_ctrl.SIG_OAM_WRn_A.state = !(DELTA_HA ? 0 : cpu.bus_req_new.write) || !get_bit(state_new.oam_abus, 0);
       state_new.oam_ctrl.SIG_OAM_WRn_B.state = !(DELTA_HA ? 0 : cpu.bus_req_new.write) ||  get_bit(state_new.oam_abus, 0);
     }
 
-    if ((DELTA_HA ? 0 : cpu.bus_req_new.read)) {
+    if ((cpu.bus_req_new.read && !DELTA_HA)) {
       if (((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
         state_new.cpu_dbus = get_bit(state_new.oam_abus, 0) ? ~state_new.oam_latch_a : ~state_new.oam_latch_b;
       }
@@ -1603,7 +1588,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     }
   }
   else {
-    if (cpu_addr_oam_new && (DELTA_HA ? 0 : cpu.bus_req_new.read) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
+    if (cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA) && !((DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.read)) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
@@ -1619,7 +1604,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // zram
 
-  if ((DELTA_HA ? 0 : cpu.bus_req_new.read)) {
+  if ((cpu.bus_req_new.read && !DELTA_HA)) {
     if ((state_new.cpu_abus >= 0xFF80) && (state_new.cpu_abus <= 0xFFFE)) state_new.cpu_dbus = mem.zero_ram[state_new.cpu_abus & 0x007F];
   }
 
@@ -1656,7 +1641,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
   }
 
-  if (state_new.cpu_abus == 0xFF41 && (DELTA_HA ? 0 : cpu.bus_req_new.read)) {
+  if (state_new.cpu_abus == 0xFF41 && (cpu.bus_req_new.read && !DELTA_HA)) {
     uint8_t stat = 0x80;
 
     stat |= (!state_new.XYMU_RENDERINGn || state_new.lcd.POPU_y144p) << 0;
@@ -1704,7 +1689,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
   pack_if &= ~cpu.core.int_ack;
 
-  if ((DELTA_HA ? 0 : cpu.bus_req_new.read)) {
+  if ((cpu.bus_req_new.read && !DELTA_HA)) {
     if (state_new.cpu_abus == 0xFFFF) pack_cpu_dbus_new = pack_ie | 0b11100000;
     if (state_new.cpu_abus == 0xFF0F) state_new.int_latch = (uint8_t)pack_if;
     if (state_new.cpu_abus == 0xFF0F) pack_cpu_dbus_new = pack_if | 0b11100000;
@@ -1877,7 +1862,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
       state_new.cpu_signals.SIG_CPU_BOOTp.state = !state_new.cpu_signals.TEPU_BOOT_BITn;
 
-      if ((DELTA_HA ? 0 : cpu.bus_req_new.read) && !state_new.cpu_signals.TEPU_BOOT_BITn) {
+      if ((cpu.bus_req_new.read && !DELTA_HA) && !state_new.cpu_signals.TEPU_BOOT_BITn) {
         state_new.cpu_signals.SIG_BOOT_CSp.state = 1;
       }
     }
@@ -1952,7 +1937,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.sys_clk.SIG_CPU_BOMA_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111); // dead signal
     state_new.sys_clk.SIG_CPU_BOGA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000); // dead signal
 
-    state_new.cpu_signals.TEDO_CPU_RDp.state = (DELTA_HA ? 0 : cpu.bus_req_new.read); // dead signal
+    state_new.cpu_signals.TEDO_CPU_RDp.state = (cpu.bus_req_new.read && !DELTA_HA); // dead signal
     state_new.cpu_signals.APOV_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && (DELTA_HA ? 0 : cpu.bus_req_new.write); // dead signal
     state_new.cpu_signals.TAPU_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && (DELTA_HA ? 0 : cpu.bus_req_new.write); // dead signal
     state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK = (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp); // dead signal

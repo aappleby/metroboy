@@ -348,31 +348,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   }
 
   //----------------------------------------
-
-  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    if (state_new.cpu_abus == 0xFF00) {
-      set_bit(state_new.cpu_dbus, 0, !get_bit(state_new.joy_latch, 0));
-      set_bit(state_new.cpu_dbus, 1, !get_bit(state_new.joy_latch, 1));
-      set_bit(state_new.cpu_dbus, 2, !get_bit(state_new.joy_latch, 2));
-      set_bit(state_new.cpu_dbus, 3, !get_bit(state_new.joy_latch, 3));
-      set_bit(state_new.cpu_dbus, 4,  get_bit(state_new.reg_joy, 0));
-      set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
-    }
-    if (state_new.cpu_abus == 0xFF04) state_new.cpu_dbus =  (uint8_t)(state_new.reg_div >> 6);
-    if (state_new.cpu_abus == 0xFF05) state_new.cpu_dbus =  state_new.reg_tima;
-    if (state_new.cpu_abus == 0xFF06) state_new.cpu_dbus =  state_new.reg_tma;
-    if (state_new.cpu_abus == 0xFF07) state_new.cpu_dbus =  state_new.reg_tac | 0b11111000;
-    if (state_new.cpu_abus == 0xFF40) state_new.cpu_dbus = ~state_new.reg_lcdc;
-    if (state_new.cpu_abus == 0xFF44) state_new.cpu_dbus =  state_new.reg_ly;
-    if (state_new.cpu_abus == 0xFF45) state_new.cpu_dbus = ~state_old.reg_lyc;
-    if (state_new.cpu_abus == 0xFF47) state_new.cpu_dbus = ~state_new.reg_bgp;
-    if (state_new.cpu_abus == 0xFF48) state_new.cpu_dbus = ~state_new.reg_obp0;
-    if (state_new.cpu_abus == 0xFF49) state_new.cpu_dbus = ~state_new.reg_obp1;
-    if (state_new.cpu_abus == 0xFF4A) state_new.cpu_dbus = ~state_new.reg_wy;
-    if (state_new.cpu_abus == 0xFF4B) state_new.cpu_dbus = ~state_new.reg_wx;
-  }
-
-  //----------------------------------------
   // Joypad
 
   // FIXME what if both scan bits are set?
@@ -1423,11 +1398,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     if (state_new.cpu_abus == 0xFF43) state_new.reg_scx = ~state_old.cpu_dbus;
   }
 
-  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
-    if (state_new.cpu_abus == 0xFF42) state_new.cpu_dbus = ~state_new.reg_scy;
-    if (state_new.cpu_abus == 0xFF43) state_new.cpu_dbus = ~state_new.reg_scx;
-  }
-
   //----------------------------------------
   // VRAM bus
 
@@ -1539,9 +1509,9 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //--------------------------------------------
   // Vram address pin driver
 
-  bit_unpack(pins.vram_abus, state_new.vram_abus);
-
   state_new.vram_dbus = 0xFF;
+
+  uint8_t pins_vram_dbus = 0xFF;
 
   if (!state_new.XYMU_RENDERINGn) {
     pins.vram_ctrl.PIN_43_VRAM_CSn.state = dma_addr_vram_new || state_new.tfetch_control.LONY_FETCHINGp || state_new.sfetch_control.TEXY_SFETCHINGp;
@@ -1552,7 +1522,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       state_new.vram_dbus = mem.vid_ram[state_new.vram_abus ^ 0x1FFF];
     }
 
-    bit_unpack_inv(pins.vram_dbus, state_new.vram_dbus);
+    pins_vram_dbus = state_new.vram_dbus;
   }
 
 
@@ -1573,26 +1543,54 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
       vdata = mem.vid_ram[state_new.vram_abus ^ 0x1FFF];
     }
 
-    bit_unpack(pins.vram_dbus, 0);
+    pins_vram_dbus = 0;
 
     if (pins.vram_ctrl.PIN_45_VRAM_OEn) {
-      bit_unpack_inv(pins.vram_dbus, vdata);
+      pins_vram_dbus = ~vdata;
     }
 
     if (cpu_addr_vram_new && (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.cpu_signals.SIG_IN_CPU_WRp) {
-      bit_unpack_inv(pins.vram_dbus, state_new.vram_dbus);
+      pins_vram_dbus = ~state_new.vram_dbus;
     }
     else {
-      state_new.vram_dbus = (uint8_t)bit_pack_inv(pins.vram_dbus);
+      state_new.vram_dbus = ~pins_vram_dbus;
     }
 
     if (pins.vram_ctrl.PIN_49_VRAM_WRn) {
-      mem.vid_ram[state_new.vram_abus ^ 0x1FFF] = (uint8_t)bit_pack_inv(pins.vram_dbus);
+      mem.vid_ram[state_new.vram_abus ^ 0x1FFF] = ~pins_vram_dbus;
     }
 
     if (cpu_addr_vram_new && (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp) && state_new.cpu_signals.SIG_IN_CPU_RDp && state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE) {
       state_new.cpu_dbus = state_new.vram_dbus;
     }
+  }
+
+  //----------------------------------------
+  // CPU read registers
+
+  if (state_new.cpu_signals.SIG_IN_CPU_RDp) {
+    if (state_new.cpu_abus == 0xFF00) {
+      set_bit(state_new.cpu_dbus, 0, !get_bit(state_new.joy_latch, 0));
+      set_bit(state_new.cpu_dbus, 1, !get_bit(state_new.joy_latch, 1));
+      set_bit(state_new.cpu_dbus, 2, !get_bit(state_new.joy_latch, 2));
+      set_bit(state_new.cpu_dbus, 3, !get_bit(state_new.joy_latch, 3));
+      set_bit(state_new.cpu_dbus, 4,  get_bit(state_new.reg_joy, 0));
+      set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
+    }
+    if (state_new.cpu_abus == 0xFF04) state_new.cpu_dbus =  (uint8_t)(state_new.reg_div >> 6);
+    if (state_new.cpu_abus == 0xFF05) state_new.cpu_dbus =  state_new.reg_tima;
+    if (state_new.cpu_abus == 0xFF06) state_new.cpu_dbus =  state_new.reg_tma;
+    if (state_new.cpu_abus == 0xFF07) state_new.cpu_dbus =  state_new.reg_tac | 0b11111000;
+    if (state_new.cpu_abus == 0xFF40) state_new.cpu_dbus = ~state_new.reg_lcdc;
+    if (state_new.cpu_abus == 0xFF42) state_new.cpu_dbus = ~state_new.reg_scy;
+    if (state_new.cpu_abus == 0xFF43) state_new.cpu_dbus = ~state_new.reg_scx;
+    if (state_new.cpu_abus == 0xFF44) state_new.cpu_dbus =  state_new.reg_ly;
+    if (state_new.cpu_abus == 0xFF45) state_new.cpu_dbus = ~state_old.reg_lyc;
+    if (state_new.cpu_abus == 0xFF47) state_new.cpu_dbus = ~state_new.reg_bgp;
+    if (state_new.cpu_abus == 0xFF48) state_new.cpu_dbus = ~state_new.reg_obp0;
+    if (state_new.cpu_abus == 0xFF49) state_new.cpu_dbus = ~state_new.reg_obp1;
+    if (state_new.cpu_abus == 0xFF4A) state_new.cpu_dbus = ~state_new.reg_wy;
+    if (state_new.cpu_abus == 0xFF4B) state_new.cpu_dbus = ~state_new.reg_wx;
   }
 
   //----------------------------------------
@@ -1854,92 +1852,133 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (state_new.ACYL_SCANNINGp)    CHECK_P(state_new.XYMU_RENDERINGn);
   if (!state_new.XYMU_RENDERINGn)  CHECK_N(state_new.ACYL_SCANNINGp);
 
-  //----------------------------------------
-  // These are all dead (unused) signals
 
-  bit_unpack(pins.dbus, pins_dbus);
 
-  state_new.win_ctrl.ROGE_WY_MATCHp = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
 
-  if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
-    if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_63_JOY_P14.state = get_bit(state_old.cpu_dbus, 4);
-    if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_62_JOY_P15.state = get_bit(state_old.cpu_dbus, 5);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  //===========================================================================
+  // These are all dead (unused) signals that are only needed for regression tests
+
+  if (!config_fastmode) {
+    bit_unpack(pins.vram_dbus, pins_vram_dbus);
+    bit_unpack(pins.vram_abus, state_new.vram_abus);
+
+    bit_unpack(pins.dbus, pins_dbus);
+
+    state_new.win_ctrl.ROGE_WY_MATCHp = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && !get_bit(state_new.reg_lcdc, 5);
+
+    if (state_new.cpu_signals.SIG_IN_CPU_WRp && DELTA_GH) {
+      if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_63_JOY_P14.state = get_bit(state_old.cpu_dbus, 4);
+      if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_62_JOY_P15.state = get_bit(state_old.cpu_dbus, 5);
+    }
+
+    if (!get_bit(state_new.reg_joy, 0)) {
+      pins.joy.PIN_67_JOY_P10.state = get_bit(sys.buttons, 0); // RIGHT
+      pins.joy.PIN_66_JOY_P11.state = get_bit(sys.buttons, 1); // LEFT
+      pins.joy.PIN_65_JOY_P12.state = get_bit(sys.buttons, 2); // UP
+      pins.joy.PIN_64_JOY_P13.state = get_bit(sys.buttons, 3); // DOWN
+    }
+    else if (!get_bit(state_new.reg_joy, 1)) {
+      pins.joy.PIN_67_JOY_P10.state = get_bit(sys.buttons, 4); // A
+      pins.joy.PIN_66_JOY_P11.state = get_bit(sys.buttons, 5); // B
+      pins.joy.PIN_65_JOY_P12.state = get_bit(sys.buttons, 6); // SELECT
+      pins.joy.PIN_64_JOY_P13.state = get_bit(sys.buttons, 7); // START
+    }
+
+    if (get_bit(state_new.oam_temp_b, 5) && state_new.sfetch_control.TEXY_SFETCHINGp) {
+      state_new.flipped_sprite = bit_reverse(state_new.vram_dbus);
+    }
+    else {
+      state_new.flipped_sprite = state_new.vram_dbus;
+    }
+
+    state_new.oam_ctrl.old_oam_clk = !state_new.oam_ctrl.SIG_OAM_CLKn; // Vestige of gate mode
+    state_new.zram_bus.clk_old = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp;
+
+    state_new.cpu_ack = cpu.core.int_ack;
+
+    pins.sys.PIN_74_CLK.CLK.state = gen_clk_new(phase_total, 0b10101010); // dead signal
+    pins.sys.PIN_74_CLK.CLKGOOD.state = 1; // dead signal
+
+    pins.sys.PIN_71_RST = 0; // dead signal
+    pins.sys.PIN_76_T2 = 0; // dead signal
+    pins.sys.PIN_77_T1 = 0; // dead signal
+
+    state_new.sys_clk.SIG_CPU_CLKREQ.state = 1; // dead signal
+
+    state_new.cpu_signals.SIG_CPU_ADDR_HIp.state = state_new.cpu_abus >= 0xFE00 && state_new.cpu_abus <= 0xFFFF; // dead signal
+    state_new.cpu_signals.SIG_CPU_UNOR_DBG.state = 0; // dead signal
+    state_new.cpu_signals.SIG_CPU_UMUT_DBG.state = 0; // dead signal
+
+    pins.sys.PIN_73_CLK_DRIVE.state = pins.sys.PIN_74_CLK.CLK; // dead signal
+    state_new.sys_clk.AVET_DEGLITCH.state = pins.sys.PIN_74_CLK.CLK; // dead signal
+    state_new.sys_clk.ANOS_DEGLITCH.state = !pins.sys.PIN_74_CLK.CLK; // dead signal
+
+    state_new.sys_clk.AFUR_xxxxEFGH.state = gen_clk_new(phase_total, 0b00001111); // dead signal
+    state_new.sys_clk.ALEF_AxxxxFGH.state = gen_clk_new(phase_total, 0b10000111); // dead signal
+    state_new.sys_clk.APUK_ABxxxxGH.state = gen_clk_new(phase_total, 0b11000011); // dead signal
+    state_new.sys_clk.ADYK_ABCxxxxH.state = gen_clk_new(phase_total, 0b11100001); // dead signal
+
+    pins.sys.PIN_75_CLK_OUT.state = gen_clk_new(phase_total, 0b00001111); // dead signal
+
+    state_new.sys_clk.SIG_CPU_BOWA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000); // dead signal
+    state_new.sys_clk.SIG_CPU_BEDO_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111); // dead signal
+    state_new.sys_clk.SIG_CPU_BEKO_ABCDxxxx.state = gen_clk_new(phase_total, 0b11110000); // dead signal
+    state_new.sys_clk.SIG_CPU_BUDE_xxxxEFGH.state = gen_clk_new(phase_total, 0b00001111); // dead signal
+    state_new.sys_clk.SIG_CPU_BOLO_ABCDEFxx.state = gen_clk_new(phase_total, 0b11111100); // dead signal
+    state_new.sys_clk.SIG_CPU_BUKE_AxxxxxGH.state = gen_clk_new(phase_total, 0b10000011); // dead signal
+    state_new.sys_clk.SIG_CPU_BOMA_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111); // dead signal
+    state_new.sys_clk.SIG_CPU_BOGA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000); // dead signal
+
+    state_new.cpu_signals.TEDO_CPU_RDp.state = state_new.cpu_signals.SIG_IN_CPU_RDp; // dead signal
+    state_new.cpu_signals.APOV_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp; // dead signal
+    state_new.cpu_signals.TAPU_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp; // dead signal
+    state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK = (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp); // dead signal
+
+    state_new.sys_rst.AFER_SYS_RSTp = 0; // dead signal
+    state_new.sys_rst.TUBO_WAITINGp = 0; // dead signal
+    state_new.sys_rst.ASOL_POR_DONEn = 0; // dead signal
+    state_new.sys_rst.SIG_CPU_EXT_CLKGOOD = 1; // dead signal
+    state_new.sys_rst.SIG_CPU_EXT_RESETp = 0; // dead signal
+    state_new.sys_rst.SIG_CPU_STARTp = 0; // dead signal
+    state_new.sys_rst.SIG_CPU_INT_RESETp = 0; // dead signal
+    state_new.sys_rst.SOTO_DBG_VRAMp = 0; // dead signal
+
+    state_new.sys_clk.WOSU_AxxDExxH.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b10011001); // dead signal
+    state_new.sys_clk.WUVU_ABxxEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b11001100); // dead signal
+    state_new.sys_clk.VENA_xxCDEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b00111100); // dead signal
   }
-
-  if (!get_bit(state_new.reg_joy, 0)) {
-    pins.joy.PIN_67_JOY_P10.state = get_bit(sys.buttons, 0); // RIGHT
-    pins.joy.PIN_66_JOY_P11.state = get_bit(sys.buttons, 1); // LEFT
-    pins.joy.PIN_65_JOY_P12.state = get_bit(sys.buttons, 2); // UP
-    pins.joy.PIN_64_JOY_P13.state = get_bit(sys.buttons, 3); // DOWN
-  }
-  else if (!get_bit(state_new.reg_joy, 1)) {
-    pins.joy.PIN_67_JOY_P10.state = get_bit(sys.buttons, 4); // A
-    pins.joy.PIN_66_JOY_P11.state = get_bit(sys.buttons, 5); // B
-    pins.joy.PIN_65_JOY_P12.state = get_bit(sys.buttons, 6); // SELECT
-    pins.joy.PIN_64_JOY_P13.state = get_bit(sys.buttons, 7); // START
-  }
-
-  if (get_bit(state_new.oam_temp_b, 5) && state_new.sfetch_control.TEXY_SFETCHINGp) {
-    state_new.flipped_sprite = bit_reverse(state_new.vram_dbus);
-  }
-  else {
-    state_new.flipped_sprite = state_new.vram_dbus;
-  }
-
-  state_new.oam_ctrl.old_oam_clk = !state_new.oam_ctrl.SIG_OAM_CLKn; // Vestige of gate mode
-  state_new.zram_bus.clk_old = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp;
-
-  state_new.cpu_ack = cpu.core.int_ack;
-
-  pins.sys.PIN_74_CLK.CLK.state = gen_clk_new(phase_total, 0b10101010); // dead signal
-  pins.sys.PIN_74_CLK.CLKGOOD.state = 1; // dead signal
-
-  pins.sys.PIN_71_RST = 0; // dead signal
-  pins.sys.PIN_76_T2 = 0; // dead signal
-  pins.sys.PIN_77_T1 = 0; // dead signal
-
-  state_new.sys_clk.SIG_CPU_CLKREQ.state = 1; // dead signal
-
-  state_new.cpu_signals.SIG_CPU_ADDR_HIp.state = state_new.cpu_abus >= 0xFE00 && state_new.cpu_abus <= 0xFFFF; // dead signal
-  state_new.cpu_signals.SIG_CPU_UNOR_DBG.state = 0; // dead signal
-  state_new.cpu_signals.SIG_CPU_UMUT_DBG.state = 0; // dead signal
-
-  pins.sys.PIN_73_CLK_DRIVE.state = pins.sys.PIN_74_CLK.CLK; // dead signal
-  state_new.sys_clk.AVET_DEGLITCH.state = pins.sys.PIN_74_CLK.CLK; // dead signal
-  state_new.sys_clk.ANOS_DEGLITCH.state = !pins.sys.PIN_74_CLK.CLK; // dead signal
-
-  state_new.sys_clk.AFUR_xxxxEFGH.state = gen_clk_new(phase_total, 0b00001111); // dead signal
-  state_new.sys_clk.ALEF_AxxxxFGH.state = gen_clk_new(phase_total, 0b10000111); // dead signal
-  state_new.sys_clk.APUK_ABxxxxGH.state = gen_clk_new(phase_total, 0b11000011); // dead signal
-  state_new.sys_clk.ADYK_ABCxxxxH.state = gen_clk_new(phase_total, 0b11100001); // dead signal
-
-  pins.sys.PIN_75_CLK_OUT.state = gen_clk_new(phase_total, 0b00001111); // dead signal
-
-  state_new.sys_clk.SIG_CPU_BOWA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000); // dead signal
-  state_new.sys_clk.SIG_CPU_BEDO_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111); // dead signal
-  state_new.sys_clk.SIG_CPU_BEKO_ABCDxxxx.state = gen_clk_new(phase_total, 0b11110000); // dead signal
-  state_new.sys_clk.SIG_CPU_BUDE_xxxxEFGH.state = gen_clk_new(phase_total, 0b00001111); // dead signal
-  state_new.sys_clk.SIG_CPU_BOLO_ABCDEFxx.state = gen_clk_new(phase_total, 0b11111100); // dead signal
-  state_new.sys_clk.SIG_CPU_BUKE_AxxxxxGH.state = gen_clk_new(phase_total, 0b10000011); // dead signal
-  state_new.sys_clk.SIG_CPU_BOMA_xBCDEFGH.state = gen_clk_new(phase_total, 0b01111111); // dead signal
-  state_new.sys_clk.SIG_CPU_BOGA_Axxxxxxx.state = gen_clk_new(phase_total, 0b10000000); // dead signal
-
-  state_new.cpu_signals.TEDO_CPU_RDp.state = state_new.cpu_signals.SIG_IN_CPU_RDp; // dead signal
-  state_new.cpu_signals.APOV_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp; // dead signal
-  state_new.cpu_signals.TAPU_CPU_WRp = gen_clk_new(phase_total, 0b00001110) && state_new.cpu_signals.SIG_IN_CPU_WRp; // dead signal
-  state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK = (gen_clk_new(phase_total, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp); // dead signal
-
-  state_new.sys_rst.AFER_SYS_RSTp = 0; // dead signal
-  state_new.sys_rst.TUBO_WAITINGp = 0; // dead signal
-  state_new.sys_rst.ASOL_POR_DONEn = 0; // dead signal
-  state_new.sys_rst.SIG_CPU_EXT_CLKGOOD = 1; // dead signal
-  state_new.sys_rst.SIG_CPU_EXT_RESETp = 0; // dead signal
-  state_new.sys_rst.SIG_CPU_STARTp = 0; // dead signal
-  state_new.sys_rst.SIG_CPU_INT_RESETp = 0; // dead signal
-  state_new.sys_rst.SOTO_DBG_VRAMp = 0; // dead signal
-
-  state_new.sys_clk.WOSU_AxxDExxH.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b10011001); // dead signal
-  state_new.sys_clk.WUVU_ABxxEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b11001100); // dead signal
-  state_new.sys_clk.VENA_xxCDEFxx.state = !get_bit(state_new.reg_lcdc, 7) && gen_clk_new(phase_total, 0b00111100); // dead signal
-
 }

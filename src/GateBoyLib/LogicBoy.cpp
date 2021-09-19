@@ -710,49 +710,72 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.store_x9 = 0xFF;
   }
   else {
-    bool ssf_clk = (DELTA_HA || DELTA_CD || DELTA_DE || DELTA_GH) || !state_new.sprite_scanner.CENO_SCANNINGn;
-
     int ly = (int)state_new.reg_ly;
     int sy = (int)state_new.oam_temp_a - 16;
     int sprite_height = get_bit(state_new.reg_lcdc, 2) ? 8 : 16;
 
-    if (ly < sy || ly >= sy + sprite_height) ssf_clk = 1;
 
-    if (DELTA_HA || DELTA_BC || DELTA_DE || DELTA_FG) {
-      state_new.sprite_scanner.DEZY_COUNT_CLKp.state = ssf_clk;
-      if (!state_old.sprite_scanner.DEZY_COUNT_CLKp && state_new.sprite_scanner.DEZY_COUNT_CLKp) {
-        if (state_old.sprite_counter != 10) {
-          state_new.sprite_counter = state_old.sprite_counter + 1;
+
+
+    if (DELTA_HA || DELTA_DE) {
+      if (!state_new.sprite_scanner.DEZY_COUNT_CLKp && state_new.sprite_counter != 10) state_new.sprite_counter++;
+      state_new.sprite_scanner.DEZY_COUNT_CLKp.state = 1;
+      int sprite_index_old = 32 - __lzcnt(state_old.sprite_store_flags - 1);
+      int sprite_index_new = 32 - __lzcnt(state_new.sprite_store_flags - 1);
+
+      if (sprite_index_old != sprite_index_new) {
+        if (sprite_index_new != 32) (&state_new.store_i0)[sprite_index_new] = state_new.sprite_ibus ^ 0b111111;
+        if (sprite_index_new != 32) (&state_new.store_l0)[sprite_index_new] = state_new.sprite_lbus ^ 0b1111;
+        if (sprite_index_old != 32) (&state_new.store_x0)[sprite_index_old] = state_new.oam_temp_b;
+      }
+    }
+    
+    
+    
+    if (DELTA_AB || DELTA_EF) {
+      if ((ly < sy || ly >= sy + sprite_height) || !state_new.sprite_scanner.CENO_SCANNINGn) {
+        state_new.sprite_store_flags = 0;
+        int sprite_index_old = 32 - __lzcnt(state_old.sprite_store_flags - 1);
+        if (sprite_index_old != 32) (&state_new.store_x0)[sprite_index_old] = state_new.oam_temp_b;
+      }
+      else {
+        state_new.sprite_store_flags = (1 << state_new.sprite_counter);
+        int sprite_index_old = 32 - __lzcnt(state_old.sprite_store_flags - 1);
+        int sprite_index_new = state_new.sprite_counter;
+        if (sprite_index_old != sprite_index_new) {
+          if (sprite_index_new != 32) (&state_new.store_i0)[sprite_index_new] = state_new.sprite_ibus ^ 0b111111;
+          if (sprite_index_new != 32) (&state_new.store_l0)[sprite_index_new] = state_new.sprite_lbus ^ 0b1111;
+          if (sprite_index_old != 32) (&state_new.store_x0)[sprite_index_old] = state_new.oam_temp_b;
         }
       }
     }
-    else {
-      if (!ssf_clk) {
-        state_new.sprite_store_flags = (1 << state_new.sprite_counter);
-      }
-      else {
-        state_new.sprite_store_flags = 0;
+    
+    
+    if (DELTA_BC || DELTA_FG) {
+      state_new.sprite_scanner.DEZY_COUNT_CLKp.state = ly < sy || ly >= sy + sprite_height || !state_new.sprite_scanner.CENO_SCANNINGn;
+      int sprite_index_old = 32 - __lzcnt(state_old.sprite_store_flags - 1);
+      int sprite_index_new = 32 - __lzcnt(state_new.sprite_store_flags - 1);
+
+      if (sprite_index_old != sprite_index_new) {
+        if (sprite_index_new != 32) (&state_new.store_i0)[sprite_index_new] = state_new.sprite_ibus ^ 0b111111;
+        if (sprite_index_new != 32) (&state_new.store_l0)[sprite_index_new] = state_new.sprite_lbus ^ 0b1111;
+        if (sprite_index_old != 32) (&state_new.store_x0)[sprite_index_old] = state_new.oam_temp_b;
       }
     }
 
-    int sprite_index_old = 32 - __lzcnt(state_old.sprite_store_flags - 1);
-    int sprite_index_new = 32 - __lzcnt(state_new.sprite_store_flags - 1);
+
+    if (DELTA_CD || DELTA_GH) {
+      state_new.sprite_store_flags = 0;
+      int sprite_index_old = 32 - __lzcnt(state_old.sprite_store_flags - 1);
+
+      if (sprite_index_old != 32) (&state_new.store_x0)[sprite_index_old] = state_new.oam_temp_b;
+    }
+
+
     int sprite_reset_index = 32 - __lzcnt(state_new.sprite_reset_flags - 1);
+    if (sprite_reset_index != 32) (&state_new.store_x0)[sprite_reset_index] = 0xFF;
 
-    if (sprite_index_old != sprite_index_new) {
-      if (sprite_index_new != 32) {
-        (&state_new.store_i0)[sprite_index_new] = state_new.sprite_ibus ^ 0b111111;
-        (&state_new.store_l0)[sprite_index_new] = state_new.sprite_lbus ^ 0b1111;
-      }
 
-      if (sprite_index_old != 32) {
-        (&state_new.store_x0)[sprite_index_old] = state_new.oam_temp_b;
-      }
-    }
-
-    if (sprite_reset_index != 32) {
-      (&state_new.store_x0)[sprite_reset_index] = 0xFF;
-    }
   }
 
   //----------------------------------------

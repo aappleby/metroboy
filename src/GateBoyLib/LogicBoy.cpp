@@ -291,7 +291,6 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.lcd.RUTU_x113p.state = 0;
     state_new.lcd.POPU_y144p.state = 0;
     state_new.lcd.MYTA_y153p.state = 0;
-    state_new.ATEJ_LINE_RSTp = 1;
     state_new.reg_lx = 0;
     state_new.reg_ly = 0;
   }
@@ -329,23 +328,18 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   if (get_bit(state_new.reg_lcdc, 7)) {
     state_new.lcd.ANEL_x113p.state = 0;
     state_new.lcd.CATU_x113p.state = 0;
-    state_new.ATEJ_LINE_RSTp = 1;
   }
   else {
     if (DELTA_HA || DELTA_DE) {
       state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && (state_new.reg_ly < 144);
-      state_new.ATEJ_LINE_RSTp = !state_new.lcd.ANEL_x113p && state_new.lcd.CATU_x113p;
     }
 
     if (DELTA_BC || DELTA_FG) {
       state_new.lcd.ANEL_x113p = state_new.lcd.CATU_x113p;
-      state_new.ATEJ_LINE_RSTp = 0;
-    }
-
-    if (DELTA_GH) {
-      state_new.ATEJ_LINE_RSTp = 0; // if this is removed we fail 4 tests? doesn't seem like it should be required...
     }
   }
+
+  bool line_reset = !((state_new.lcd.ANEL_x113p || !state_new.lcd.CATU_x113p) && !get_bit(state_new.reg_lcdc, 7));
 
   //----------------------------------------
   // Joypad
@@ -542,7 +536,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // VID RUN BRANCH
 
   if (!get_bit(state_new.reg_lcdc, 7)) {
-    if (state_new.ATEJ_LINE_RSTp) {
+    if (line_reset) {
       state_new.sprite_scanner.DOBA_SCAN_DONE_Bp.state = 0;
       state_new.sprite_scanner.BYBA_SCAN_DONE_Ap.state = 0;
       state_new.sprite_scanner.AVAP_SCAN_DONE_TRIGp = 0;
@@ -616,7 +610,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
 
 
 
-    if (state_new.ATEJ_LINE_RSTp) {
+    if (line_reset) {
       state_new.sfetch_counter = 0;
       state_new.win_ctrl.PYNU_WIN_MODE_Ap.state = 0;
       state_new.sfetch_control.TAKA_SFETCH_RUNNINGp.state = 1;
@@ -724,7 +718,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Sprite scanner triggers the sprite store clock, increments the sprite counter, and puts the sprite in the sprite store if it overlaps the current LCD Y coordinate.
 
-  if (get_bit(state_new.reg_lcdc, 7) || state_new.ATEJ_LINE_RSTp) {
+  if (get_bit(state_new.reg_lcdc, 7) || line_reset) {
     state_new.sprite_counter = 0;
     state_new.sprite_reset_flags = 0;
     state_new.sprite_store_flags = 0;
@@ -883,13 +877,13 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   const bool SACU_CLKPIPE_old = gen_clk_old(phase_total, 0b10101010) || pause_rendering_old || state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn;
   const wire SACU_CLKPIPE_new = gen_clk_new(phase_total, 0b10101010) || pause_rendering_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn;
 
-  if (state_new.ATEJ_LINE_RSTp) CHECK_P(SACU_CLKPIPE_new);
+  if (line_reset) CHECK_P(SACU_CLKPIPE_new);
 
   if (!SACU_CLKPIPE_old && SACU_CLKPIPE_new) {
     state_new.pix_count = state_new.pix_count + 1;
   }
 
-  if (state_new.ATEJ_LINE_RSTp) {
+  if (line_reset) {
     state_new.pix_count = 0;
   }
 
@@ -1061,7 +1055,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   //----------------------------------------
   // Fine match counter
 
-  if (state_new.ATEJ_LINE_RSTp) CHECK_P(state_new.XYMU_RENDERINGn);
+  if (line_reset) CHECK_P(state_new.XYMU_RENDERINGn);
 
   if (state_new.fine_count != 7 && !pause_rendering_old && gen_clk_new(phase_total, 0b10101010)) {
     state_new.fine_count = state_new.fine_count + 1;
@@ -1071,7 +1065,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
     state_new.fine_count = 0;
   }
 
-  if (state_new.ATEJ_LINE_RSTp) {
+  if (line_reset) {
     state_new.win_x.map = 0;
   }
   else if (trigger_win_fetch_state(state_new)) {
@@ -1890,6 +1884,7 @@ void LogicBoy::tock_logic(const blob& cart_blob, int64_t phase_total) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.ATEJ_LINE_RSTp = line_reset;
     state_new.cpu_signals.SIG_CPU_BOOTp.state = 0;
     state_new.cpu_signals.SIG_BOOT_CSp.state = 0;
 

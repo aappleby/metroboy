@@ -18,95 +18,93 @@ struct GateBoyPair : public IGateBoy {
     return gb1->size_bytes() + gb2->size_bytes();
   }
 
-  uint8_t get_flags() const override {
-    return gb1->get_flags() & gb2->get_flags();
+  GBResult get_flags() const override {
+    GBResult r1 = gb1->get_flags();
+    GBResult r2 = gb2->get_flags();
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  bool load_raw_dump(BlobStream& dump_in) override {
+  GBResult load_raw_dump(BlobStream& dump_in) override {
     auto old_cursor = dump_in.cursor;
-    bool result = true;
-    result &= gb1->load_raw_dump(dump_in);
+    GBResult r1 = gb1->load_raw_dump(dump_in);
     dump_in.cursor = old_cursor;
-    result &= gb2->load_raw_dump(dump_in);
-    return result & check_sync();
+    GBResult r2 = gb2->load_raw_dump(dump_in);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  bool save_raw_dump(BlobStream& dump_out) const override {
-    check_sync();
+  GBResult save_raw_dump(BlobStream& dump_out) const override {
+    if (!check_sync()) return Error::MISMATCH;
     return gb1->save_raw_dump(dump_out);
   }
 
-  void reset_to_poweron(const blob& cart_blob) override {
-    gb1->reset_to_poweron(cart_blob);
-    gb2->reset_to_poweron(cart_blob);
-    check_sync();
+  GBResult reset_to_poweron(const blob& cart_blob) override {
+    GBResult r1 = gb1->reset_to_poweron(cart_blob);
+    GBResult r2 = gb2->reset_to_poweron(cart_blob);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  void run_poweron_reset(const blob& cart_blob, bool fastboot) override {
-    gb1->run_poweron_reset(cart_blob, fastboot);
-    gb2->run_poweron_reset(cart_blob, fastboot);
-    check_sync();
+  GBResult run_poweron_reset(const blob& cart_blob, bool fastboot) override {
+    GBResult r1 = gb1->run_poweron_reset(cart_blob, fastboot);
+    GBResult r2 = gb2->run_poweron_reset(cart_blob, fastboot);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  void reset_to_bootrom(const blob& cart_blob) override {
-    gb1->reset_to_bootrom(cart_blob);
-    gb2->reset_to_bootrom(cart_blob);
-    check_sync();
+  GBResult reset_to_bootrom(const blob& cart_blob) override {
+    GBResult r1 = gb1->reset_to_bootrom(cart_blob);
+    GBResult r2 = gb2->reset_to_bootrom(cart_blob);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  void reset_to_cart   (const blob& cart_blob) override {
-    gb1->reset_to_cart(cart_blob);
-    gb2->reset_to_cart(cart_blob);
-    check_sync();
+  GBResult reset_to_cart   (const blob& cart_blob) override {
+    GBResult r1 = gb1->reset_to_cart(cart_blob);
+    GBResult r2 = gb2->reset_to_cart(cart_blob);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  Result<uint8_t, Error> peek(int addr) const override {
-    auto result1 = gb1->peek(addr);
-    auto result2 = gb2->peek(addr);
-    CHECK_P(result1 == result2);
-    return result1.unwrap() && check_sync();
+  GBResult peek(int addr) const override {
+    GBResult r1 = gb1->peek(addr);
+    GBResult r2 = gb2->peek(addr);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  Result<uint8_t, Error> poke(int addr, uint8_t data_in) override {
-    auto result1 = gb1->poke(addr, data_in);
-    auto result2 = gb2->poke(addr, data_in);
-    CHECK_P(result1 == result2);
-    return result1.unwrap() && check_sync();
+  GBResult poke(int addr, uint8_t data_in) override {
+    GBResult r1 = gb1->poke(addr, data_in);
+    GBResult r2 = gb2->poke(addr, data_in);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  Result<uint8_t, Error> dbg_read(const blob& cart_blob, int addr) override {
-    auto result1 = gb1->dbg_read(cart_blob, addr);
-    auto result2 = gb2->dbg_read(cart_blob, addr);
-    CHECK_P(result1 == result2);
-    return result1.unwrap() && check_sync();
+  GBResult dbg_read(const blob& cart_blob, int addr) override {
+    GBResult r1 = gb1->dbg_read(cart_blob, addr);
+    GBResult r2 = gb2->dbg_read(cart_blob, addr);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  Result<uint8_t, Error> dbg_write (const blob& cart_blob, int addr, uint8_t data_in) override {
-    auto result1 = gb1->dbg_write(cart_blob, addr, data_in);
-    auto result2 = gb2->dbg_write(cart_blob, addr, data_in);
-    CHECK_P(result1 == result2);
-    return result1.unwrap() && check_sync();
+  GBResult dbg_write (const blob& cart_blob, int addr, uint8_t data_in) override {
+    GBResult r1 = gb1->dbg_write(cart_blob, addr, data_in);
+    GBResult r2 = gb2->dbg_write(cart_blob, addr, data_in);
+    //return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+
+    auto res = r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    //if (res.is_err()) debugbreak();
+    return res;
   }
 
-  bool run_phases(const blob& cart_blob, int phase_count) override {
-    bool result = true;
-    result &= gb1->run_phases(cart_blob, phase_count);
-    result &= gb2->run_phases(cart_blob, phase_count);
-    result &= check_sync();
-    return result;
+  GBResult run_phases(const blob& cart_blob, int phase_count) override {
+    GBResult r1 = gb1->run_phases(cart_blob, phase_count);
+    GBResult r2 = gb2->run_phases(cart_blob, phase_count);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  bool next_phase(const blob& cart_blob) override {
-    bool result = true;
-    result &= gb1->next_phase(cart_blob);
-    result &= gb2->next_phase(cart_blob);
-    result &= check_sync();
-    return result;
+  GBResult next_phase(const blob& cart_blob) override {
+    GBResult r1 = gb1->next_phase(cart_blob);
+    GBResult r2 = gb2->next_phase(cart_blob);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
-  void set_buttons(uint8_t buttons) override {
-    gb1->set_buttons(buttons);
-    gb2->set_buttons(buttons);
+  GBResult set_buttons(uint8_t buttons) override {
+    GBResult r1 = gb1->set_buttons(buttons);
+    GBResult r2 = gb2->set_buttons(buttons);
+    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
   }
 
   const GateBoyCpu&   get_cpu() const override    { return gb1->get_cpu(); }

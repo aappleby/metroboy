@@ -9,18 +9,19 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_to_poweron(const blob& cart_blob) {
+GBResult GateBoy::reset_to_poweron(const blob& cart_blob) {
   gb_state.reset_to_poweron();
   cpu.reset_to_poweron();
   mem.reset_to_poweron();
   sys.reset_to_poweron();
   pins.reset_to_poweron();
   probes.reset_to_poweron();
+  return GBResult::ok();
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
+GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   sys.fastboot = fastboot;
 
   //----------------------------------------
@@ -76,59 +77,61 @@ void GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
     gb_state.reg_div.UNYK_DIV04p.state = 0b00011010;
     gb_state.reg_div.UPOF_DIV15p.state = 0b00011011;
   }
+  return GBResult::ok();
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_to_bootrom(const blob& cart_blob) {
+GBResult GateBoy::reset_to_bootrom(const blob& cart_blob) {
   gb_state.reset_to_bootrom();
   cpu.reset_to_bootrom();
   mem.reset_to_bootrom();
   sys.reset_to_bootrom();
   pins.reset_to_bootrom();
   probes.reset_to_bootrom();
+  return GBResult::ok();
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::reset_to_cart(const blob& cart_blob) {
+GBResult GateBoy::reset_to_cart(const blob& cart_blob) {
   reset_to_bootrom(cart_blob);
-
   gb_state.reset_to_cart();
   cpu.reset_to_cart();
   mem.reset_to_cart();
   sys.reset_to_cart();
   pins.reset_to_cart();
   probes.reset_to_cart();
+  return GBResult::ok();
 }
 
 //-----------------------------------------------------------------------------
 
-Result<uint8_t, Error> GateBoy::peek(int addr) const {
+GBResult GateBoy::peek(int addr) const {
   //if (addr >= 0x0000 && addr <= 0x7FFF) { return cart_blob.data()[addr - 0x0000]; }
-  if (addr >= 0x8000 && addr <= 0x9FFF) { return mem.vid_ram[addr - 0x8000];      }
-  if (addr >= 0xA000 && addr <= 0xBFFF) { return mem.cart_ram[addr - 0xA000];     }
-  if (addr >= 0xC000 && addr <= 0xDFFF) { return mem.int_ram[addr - 0xC000];      }
-  if (addr >= 0xE000 && addr <= 0xFDFF) { return mem.int_ram[addr - 0xE000];      }
-  if (addr >= 0xFE00 && addr <= 0xFEFF) { return mem.oam_ram[addr - 0xFE00];      }
-  if (addr >= 0xFF80 && addr <= 0xFFFE) { return mem.zero_ram[addr - 0xFF80];     }
+  if (addr >= 0x8000 && addr <= 0x9FFF) { return GBResult(mem.vid_ram[addr - 0x8000]);  }
+  if (addr >= 0xA000 && addr <= 0xBFFF) { return GBResult(mem.cart_ram[addr - 0xA000]); }
+  if (addr >= 0xC000 && addr <= 0xDFFF) { return GBResult(mem.int_ram[addr - 0xC000]);  }
+  if (addr >= 0xE000 && addr <= 0xFDFF) { return GBResult(mem.int_ram[addr - 0xE000]);  }
+  if (addr >= 0xFE00 && addr <= 0xFEFF) { return GBResult(mem.oam_ram[addr - 0xFE00]);  }
+  if (addr >= 0xFF80 && addr <= 0xFFFE) { return GBResult(mem.zero_ram[addr - 0xFF80]); }
   return gb_state.peek(addr);
 }
 
-Result<uint8_t, Error> GateBoy::poke(int addr, uint8_t data_in) {
+GBResult GateBoy::poke(int addr, uint8_t data_in) {
   //if (addr >= 0x0000 && addr <= 0x7FFF) { cart_blob.data()[addr - 0x0000] = data_in; return data_in; }
-  if (addr >= 0x8000 && addr <= 0x9FFF) { mem.vid_ram[addr - 0x8000] = data_in; return data_in; }
-  if (addr >= 0xA000 && addr <= 0xBFFF) { mem.cart_ram[addr - 0xA000] = data_in; return data_in; }
-  if (addr >= 0xC000 && addr <= 0xDFFF) { mem.int_ram[addr - 0xC000] = data_in; return data_in; }
-  if (addr >= 0xE000 && addr <= 0xFDFF) { mem.int_ram[addr - 0xE000] = data_in; return data_in; }
-  if (addr >= 0xFE00 && addr <= 0xFEFF) { mem.oam_ram[addr - 0xFE00] = data_in; return data_in; }
-  if (addr >= 0xFF80 && addr <= 0xFFFE) { mem.zero_ram[addr - 0xFF80] = data_in; return data_in; }
+  if (addr >= 0x8000 && addr <= 0x9FFF) { mem.vid_ram[addr - 0x8000] = data_in;  return GBResult::ok(); }
+  if (addr >= 0xA000 && addr <= 0xBFFF) { mem.cart_ram[addr - 0xA000] = data_in; return GBResult::ok(); }
+  if (addr >= 0xC000 && addr <= 0xDFFF) { mem.int_ram[addr - 0xC000] = data_in;  return GBResult::ok(); }
+  if (addr >= 0xE000 && addr <= 0xFDFF) { mem.int_ram[addr - 0xE000] = data_in;  return GBResult::ok(); }
+  if (addr >= 0xFE00 && addr <= 0xFEFF) { mem.oam_ram[addr - 0xFE00] = data_in;  return GBResult::ok(); }
+  if (addr >= 0xFF80 && addr <= 0xFFFE) { mem.zero_ram[addr - 0xFF80] = data_in; return GBResult::ok(); }
   return gb_state.poke(addr, data_in);
 }
 
 //-----------------------------------------------------------------------------
 
-Result<uint8_t, Error> GateBoy::dbg_read(const blob& cart_blob, int addr) {
+GBResult GateBoy::dbg_read(const blob& cart_blob, int addr) {
   CHECK_P((sys.phase_total & 7) == 0);
 
   Req old_req = cpu.bus_req_new;
@@ -144,12 +147,12 @@ Result<uint8_t, Error> GateBoy::dbg_read(const blob& cart_blob, int addr) {
   cpu.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
 
-  return cpu.cpu_data_latch;
+  return GBResult(cpu.cpu_data_latch);
 }
 
 //-----------------------------------------------------------------------------
 
-Result<uint8_t, Error> GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
+GBResult GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
   CHECK_P((sys.phase_total & 7) == 0);
 
   Req old_req = cpu.bus_req_new;
@@ -164,23 +167,23 @@ Result<uint8_t, Error> GateBoy::dbg_write(const blob& cart_blob, int addr, uint8
 
   cpu.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
-  return data;
+  return GBResult::ok();
 }
 
 
 //-----------------------------------------------------------------------------
 
-bool GateBoy::run_phases(const blob& cart_blob, int phase_count) {
-  bool result = true;
+GBResult GateBoy::run_phases(const blob& cart_blob, int phase_count) {
+  GBResult res = GBResult::ok();
   for (int i = 0; i < phase_count; i++) {
-    result &= next_phase(cart_blob);
+    res &= next_phase(cart_blob);
   }
-  return result;
+  return res;
 }
 
 //-----------------------------------------------------------------------------
 
-bool GateBoy::next_phase(const blob& cart_blob) {
+GBResult GateBoy::next_phase(const blob& cart_blob) {
   probes.begin_pass((sys.phase_total + 1) & 7);
   tock_cpu();
   tock_gates(cart_blob);
@@ -189,10 +192,10 @@ bool GateBoy::next_phase(const blob& cart_blob) {
   update_framebuffer();
   sys.phase_total++;
   probes.end_pass();
-  return true;
+  return GBResult::ok();
 }
 
-#pragma warning(disable:4127) // conditional expression is constant
+//#pragma warning(disable:4127) // conditional expression is constant
 
 //-----------------------------------------------------------------------------
 

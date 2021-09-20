@@ -228,7 +228,7 @@ void GateBoyThread::run_steps() {
 
 void GateBoyThread::run_normal() {
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    if (gb->next_phase(cart_blob)) {
+    if (gb->next_phase(cart_blob).is_ok()) {
       step_count--;
     }
     else {

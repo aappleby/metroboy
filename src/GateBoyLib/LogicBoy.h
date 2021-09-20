@@ -111,39 +111,39 @@ struct LogicBoy : public IGateBoy {
 
   int size_bytes() override { return sizeof(LogicBoy); }
 
-  uint8_t get_flags() const override {
-    return BIT_DATA;
+  GBResult get_flags() const override {
+    return GBResult(BIT_DATA);
   }
 
-  bool load_raw_dump(BlobStream& bs) override        {
-    bool result = true;
-    result &= bs.read(gb_state);
-    result &= bs.read(cpu);
-    result &= bs.read(mem);
-    result &= bs.read(sys);
-    result &= bs.read(pins);
-    result &= bs.read(probes);
+  GBResult load_raw_dump(BlobStream& bs) override        {
+    bool load_ok = true;
+    load_ok &= bs.read(gb_state);
+    load_ok &= bs.read(cpu);
+    load_ok &= bs.read(mem);
+    load_ok &= bs.read(sys);
+    load_ok &= bs.read(pins);
+    load_ok &= bs.read(probes);
     lb_state.from_gb_state(gb_state, sys._phase_total);
-    return result;
+    return load_ok ? GBResult::ok() : Error::CORRUPT;
   }
 
-  bool save_raw_dump(BlobStream& dump_out) const override { return false; }
+  GBResult save_raw_dump(BlobStream& dump_out) const override { return Error::CORRUPT; }
 
-  void reset_to_poweron(const blob& cart_blob) override { CHECK_P(false); }
-  void run_poweron_reset(const blob& cart_blob, bool fastboot) override { CHECK_P(false); }
-  void reset_to_bootrom(const blob& cart_blob) override;
-  void reset_to_cart   (const blob& cart_blob) override;
+  GBResult reset_to_poweron(const blob& cart_blob) override { return Error::CORRUPT; }
+  GBResult run_poweron_reset(const blob& cart_blob, bool fastboot) override { return Error::CORRUPT; }
+  GBResult reset_to_bootrom(const blob& cart_blob) override;
+  GBResult reset_to_cart   (const blob& cart_blob) override;
 
-  Result<uint8_t, Error> peek(int addr) const override;
-  Result<uint8_t, Error> poke(int addr, uint8_t data_in) override;
+  GBResult peek(int addr) const override;
+  GBResult poke(int addr, uint8_t data_in) override;
 
-  Result<uint8_t, Error> dbg_read(const blob& cart_blob, int addr) override;
-  Result<uint8_t, Error> dbg_write (const blob& cart_blob, int addr, uint8_t data) override;
+  GBResult dbg_read(const blob& cart_blob, int addr) override;
+  GBResult dbg_write (const blob& cart_blob, int addr, uint8_t data) override;
 
-  bool run_phases(const blob& cart_blob, int phase_count) override;
-  bool next_phase(const blob& cart_blob) override;
+  GBResult run_phases(const blob& cart_blob, int phase_count) override;
+  GBResult next_phase(const blob& cart_blob) override;
 
-  void set_buttons(uint8_t buttons) override { sys.buttons = buttons; }
+  GBResult set_buttons(uint8_t buttons) override { sys.buttons = buttons; return GBResult::ok(); }
 
   const GateBoyCpu&   get_cpu() const override    { return *(GateBoyCpu*)&cpu; }
   const GateBoyMem&   get_mem() const override    { return mem; }

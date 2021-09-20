@@ -306,39 +306,65 @@ bool diff_blobs(const void* blob_a, const void* blob_b, size_t size, uint8_t mas
 
 template<typename RES, typename ERR>
 struct Result {
-  RES res;
-  ERR err;
-  bool ok;
+  Result() = delete;
+  explicit Result(RES r) : _err(static_cast<ERR>(0)), _res(r), _ok(1) {}
+  Result(ERR e) : _err(e), _res(static_cast<RES>(0)), _ok(0) {}
 
-  Result(RES _res) : err(static_cast<ERR>(0)),    res(_res), ok(true) {}
-  Result(ERR _err) : err(_err), res(static_cast<RES>(0)),   ok(false) {}
+  //operator RES() const {
+  //  CHECK_P(_ok);
+  //  return _res;
+  //}
+  //
+  //operator ERR() const {
+  //  CHECK_N(_ok);
+  //  return _err;
+  //}
 
-  operator RES() const {
-    CHECK_P(ok);
-    return res;
+  bool operator==(const Result& x) const {
+    return _ok == x._ok && _res == x._res && _err == x._err;
   }
 
-  operator ERR() const {
-    CHECK_N(ok);
-    return err;
+  //bool operator==(const RES& x) const {
+  //  CHECK_P(_ok);
+  //  return _res == x;
+  //}
+
+  Result& operator &= (const Result r) {
+    if (r.is_err()) {
+      _res = r._res;
+      _err = r._err;
+      _ok = r._ok;
+    }
+    return *this;
   }
 
-  bool operator==(const RES& x) const {
-    CHECK_P(ok);
-    return res == x;
-  }
+  static Result ok() { return Result(static_cast<RES>(0)); }
+
+  bool is_ok()  const { return  _ok; }
+  bool is_err() const { return !_ok; }
 
   RES unwrap() const {
-    CHECK_P(ok);
-    return res;
+    CHECK_P(_ok);
+    return _res;
   }
+
+private:
+  //Result() : _err(static_cast<ERR>(0)), _res(static_cast<RES>(0)), _ok(1) {}
+
+  RES _res;
+  ERR _err;
+  bool _ok;
 };
 
 enum struct Error {
   NONE = 0,
   NULLPTR,
   NOT_FOUND,
+  CORRUPT,
+  MISMATCH
 };
+
+typedef Result<uint8_t, Error> GBResult;
 
 //-----------------------------------------------------------------------------
 

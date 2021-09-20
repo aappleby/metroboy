@@ -37,8 +37,8 @@ struct GateBoyState {
   int64_t hash_regression();
   int64_t hash_all();
 
-  Result<uint8_t, Error> peek(int addr) const;
-  Result<uint8_t, Error> poke(int addr, uint8_t data_in);
+  GBResult peek(int addr) const;
+  GBResult poke(int addr, uint8_t data_in);
 
   void commit();
   void check_state_old_and_driven_or_pulled();

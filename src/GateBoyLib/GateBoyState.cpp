@@ -461,15 +461,15 @@ int64_t GateBoyState::hash_all() {
 
 //-----------------------------------------------------------------------------
 
-Result<uint8_t, Error> GateBoyState::peek(int addr) const {
+GBResult GateBoyState::peek(int addr) const {
   switch(addr) {
   case ADDR_P1  : break; 
   case ADDR_SB  : break;
   case ADDR_SC  : break;
-  case ADDR_DIV : return (uint8_t)bit_pack(reg_div) >> 6;
-  case ADDR_TIMA: return (uint8_t)bit_pack(reg_tima);
-  case ADDR_TMA : return (uint8_t)bit_pack(reg_tma);
-  case ADDR_TAC : return (uint8_t)bit_pack(reg_tac);
+  case ADDR_DIV : return GBResult((uint8_t)bit_pack(reg_div) >> 6);
+  case ADDR_TIMA: return GBResult((uint8_t)bit_pack(reg_tima));
+  case ADDR_TMA : return GBResult((uint8_t)bit_pack(reg_tma));
+  case ADDR_TAC : return GBResult((uint8_t)bit_pack(reg_tac));
   case ADDR_IF  : break;
   case ADDR_NR10: break;
   case ADDR_NR11: break;
@@ -489,18 +489,18 @@ Result<uint8_t, Error> GateBoyState::peek(int addr) const {
   case ADDR_NR50: break;
   case ADDR_NR51: break;
   case ADDR_NR52: break;
-  case ADDR_LCDC: return (uint8_t)bit_pack_inv(reg_lcdc);
+  case ADDR_LCDC: return GBResult((uint8_t)bit_pack_inv(reg_lcdc));
   case ADDR_STAT: break;
-  case ADDR_SCY : return (uint8_t)bit_pack_inv(reg_scy);
-  case ADDR_SCX : return (uint8_t)bit_pack_inv(reg_scx);
-  case ADDR_LY  : return (uint8_t)bit_pack_inv(reg_ly);
-  case ADDR_LYC : return (uint8_t)bit_pack_inv(reg_lyc);
-  case ADDR_DMA : return (uint8_t)bit_pack_inv(reg_dma);
-  case ADDR_BGP : return (uint8_t)bit_pack_inv(reg_bgp);
-  case ADDR_OBP0: return (uint8_t)bit_pack_inv(reg_obp0);
-  case ADDR_OBP1: return (uint8_t)bit_pack_inv(reg_obp1);
-  case ADDR_WY  : return (uint8_t)bit_pack_inv(reg_wy);
-  case ADDR_WX  : return (uint8_t)bit_pack_inv(reg_wx);
+  case ADDR_SCY : return GBResult((uint8_t)bit_pack_inv(reg_scy));
+  case ADDR_SCX : return GBResult((uint8_t)bit_pack_inv(reg_scx));
+  case ADDR_LY  : return GBResult((uint8_t)bit_pack_inv(reg_ly));
+  case ADDR_LYC : return GBResult((uint8_t)bit_pack_inv(reg_lyc));
+  case ADDR_DMA : return GBResult((uint8_t)bit_pack_inv(reg_dma));
+  case ADDR_BGP : return GBResult((uint8_t)bit_pack_inv(reg_bgp));
+  case ADDR_OBP0: return GBResult((uint8_t)bit_pack_inv(reg_obp0));
+  case ADDR_OBP1: return GBResult((uint8_t)bit_pack_inv(reg_obp1));
+  case ADDR_WY  : return GBResult((uint8_t)bit_pack_inv(reg_wy));
+  case ADDR_WX  : return GBResult((uint8_t)bit_pack_inv(reg_wx));
   }
 
   LOG_R("GateBoy::peek - bad address 0x%04x\n", addr);
@@ -509,7 +509,7 @@ Result<uint8_t, Error> GateBoyState::peek(int addr) const {
 
 //-----------------------------------------------------------------------------
 
-Result<uint8_t, Error> GateBoyState::poke(int addr, uint8_t data_in) {
+GBResult GateBoyState::poke(int addr, uint8_t data_in) {
   switch(addr) {
   case ADDR_P1  : break; 
   case ADDR_SB  : break;
@@ -537,7 +537,7 @@ Result<uint8_t, Error> GateBoyState::poke(int addr, uint8_t data_in) {
   case ADDR_NR50: break;
   case ADDR_NR51: break;
   case ADDR_NR52: break;
-  case ADDR_LCDC: { bit_unpack_inv(reg_lcdc, data_in); return data_in; }
+  case ADDR_LCDC: { bit_unpack_inv(reg_lcdc, data_in); return GBResult::ok(); }
   case ADDR_STAT: break;
   case ADDR_SCY : break;
   case ADDR_SCX : break;

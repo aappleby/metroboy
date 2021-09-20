@@ -39,26 +39,27 @@ int main(int argc, char** argv) {
   const auto lb_proto = make_unique<LogicBoy>();
   const auto pair_proto = make_unique<GateBoyPair>(gb_proto.get(), lb_proto.get());
 
-  //results += t.test_bootrom(pair_proto.get());
+  //results += t.test_regs(pair_proto.get()); // tac fail, lcdc fail
+  //results += t.test_dma(pair_proto.get()); // big fail
+  //results += t.test_mem(pair_proto.get()); // oam fail
+  //results += t.test_micro_poweron(pair_proto.get());  // fail
+  //results += t.test_micro_lcden(pair_proto.get());  // fail
+  //results += t.test_micro_timer(pair_proto.get()); fail
+  //results += t.test_micro_lock_oam(pair_proto.get()); // fail
+  //results += t.test_micro_lock_vram(pair_proto.get()); // fail
+  //results += t.test_micro_ppu(pair_proto.get());  // fail
+  //results += t.test_micro_dma(pair_proto.get()); // fail
+
+  //results += t.test_bootrom(pair_proto.get()); // PASS
   //results += t.test_clk(pair_proto.get()); // PASS
-  //results += t.test_regs(pair_proto.get());
-  //results += t.test_dma(pair_proto.get());
-  //results += t.test_mem(pair_proto.get());
-  results += t.test_init(pair_proto.get());
+  //results += t.test_init(pair_proto.get()); // pass
   //results += t.test_ppu(pair_proto.get()); // PASS
   //results += t.test_timer(pair_proto.get());  // PASS
-  //results += t.test_micro_poweron(pair_proto.get());  // PASS
-  //results += t.test_micro_lcden(pair_proto.get());  // PASS
-  //results += t.test_micro_timer(pair_proto.get());
   //results += t.test_micro_int_stat(pair_proto.get());  // PASS
   //results += t.test_micro_int_timer(pair_proto.get());  // PASS
   //results += t.test_micro_int_serial(pair_proto.get()); // PASS
   //results += t.test_micro_int_joypad(pair_proto.get()); // PASS
-  //results += t.test_micro_lock_oam(pair_proto.get());
-  //results += t.test_micro_lock_vram(pair_proto.get()); // PASS
   //results += t.test_micro_window(pair_proto.get());  // PASS
-  //results += t.test_micro_ppu(pair_proto.get());  // PASS
-  //results += t.test_micro_dma(pair_proto.get());
   //results += t.test_micro_mbc1(pair_proto.get());  // PASS
 
 #if 0
@@ -119,7 +120,7 @@ TestResults GateBoyTests::test_regression_cart(const char* filename, const IGate
 
   for (int i = 0; i < cycles; i++) {
     if (i && (i % 1000000) == 0) LOG_G("Phase %d\n", i);
-    if (!gb->next_phase(cart_blob)) TEST_FAIL();
+    if (gb->next_phase(cart_blob).is_err()) TEST_FAIL();
   }
 
   TEST_DONE();
@@ -144,7 +145,7 @@ TestResults GateBoyTests::test_regression_dump(const char* filename, const IGate
 
   for (int i = 0; i < cycles; i++) {
     if (i && (i % 1000000) == 0) LOG_G("Phase %d\n", i);
-    if (!gb->next_phase(cart_blob)) TEST_FAIL();
+    if (gb->next_phase(cart_blob).is_err()) TEST_FAIL();
   }
 
   TEST_DONE();
@@ -192,7 +193,7 @@ TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
   results += test_init(proto);
 
   // Ext bus test only passes if flags are on and we're using the driven/pulled falgs
-  if ((proto->get_flags() & (BIT_DRIVEN | BIT_PULLED)) == (BIT_DRIVEN | BIT_PULLED)) {
+  if ((proto->get_flags().unwrap() & (BIT_DRIVEN | BIT_PULLED)) == (BIT_DRIVEN | BIT_PULLED)) {
     results += test_ext_bus(proto);
   }
 
@@ -239,9 +240,12 @@ TestResults GateBoyTests::test_reg(const IGateBoy* proto, const char* tag, uint1
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
-    gb->dbg_write(dummy_cart, addr, data_in).unwrap();
-    
-    uint8_t data_out = gb->dbg_read(dummy_cart, addr).unwrap() & mask;
+    auto res1 = gb->dbg_write(dummy_cart, addr, data_in);
+    ASSERT_EQ(true, res1.is_ok(), "dbg_write failed");
+
+    auto res2 = gb->dbg_read(dummy_cart, addr);
+    ASSERT_EQ(true, res2.is_ok(), "dbg_read failed");
+    uint8_t data_out = res2.unwrap() & mask;
     ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
@@ -259,7 +263,7 @@ TestResults GateBoyTests::test_spu(const IGateBoy* proto, const char* tag, uint1
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
     gb->dbg_write(dummy_cart, addr, data_in).unwrap();
-    uint8_t data_out = gb->dbg_read(dummy_cart, addr);
+    uint8_t data_out = gb->dbg_read(dummy_cart, addr).unwrap();
     data_out &= mask;
     ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
@@ -380,7 +384,7 @@ TestResults GateBoyTests::test_reset_to_cart(const IGateBoy* proto, uint8_t mask
     TEST_DONE();
   }
 
-  if (!gb1->load_raw_dump(bs)) {
+  if (gb1->load_raw_dump(bs).is_err()) {
     LOG_Y("Warning : gateboy_reset_to_cart_raw.dump not valid\n");
     TEST_DONE();
   }
@@ -1005,13 +1009,13 @@ TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filen
   int timeout = 150000 * 8;
 
   while(timeout--) {
-    if (!gb->next_phase(cart_blob)) break;
+    if (gb->next_phase(cart_blob).is_err()) break;
     if (gb->peek(0xFF82).unwrap()) break;
   }
 
-  uint8_t result_a = gb->peek(0xFF80); // actual
-  uint8_t result_b = gb->peek(0xFF81); // expected
-  uint8_t result_c = gb->peek(0xFF82); // 0x01 if test passes, 0xFF if test fails
+  uint8_t result_a = gb->peek(0xFF80).unwrap(); // actual
+  uint8_t result_b = gb->peek(0xFF81).unwrap(); // expected
+  uint8_t result_c = gb->peek(0xFF82).unwrap(); // 0x01 if test passes, 0xFF if test fails
 
   bool pass = (result_c == 0x01) && (timeout > 0);
 
@@ -1599,7 +1603,7 @@ TestResults GateBoyTests::test_bootrom(const IGateBoy* proto) {
   gb->reset_to_bootrom(dummy_cart);
 
   for (int i = 0; i < 16; i++) {
-    uint8_t data_out = gb->dbg_read(dummy_cart, i);
+    uint8_t data_out = gb->dbg_read(dummy_cart, i).unwrap();
     EXPECT_EQ(data_out, DMG_ROM_blob[i], "bootrom @ 0x%04x = 0x%02x, expected 0x%02x", i, data_out, DMG_ROM_bin[i]);
   }
 
@@ -1716,7 +1720,7 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
     LOG("Testing div reset_states + rollover, this takes a minute...");
     gb->dbg_write(dummy_cart, ADDR_DIV, 0);
     for (int i = 1; i < 32768; i++) {
-      uint8_t div_a = gb->dbg_read(dummy_cart, ADDR_DIV);
+      uint8_t div_a = gb->dbg_read(dummy_cart, ADDR_DIV).unwrap();
       uint8_t div_b = (i >> 6) & 0xFF;
       EXPECT_EQ(div_a, div_b, "div match fail");
     }
@@ -1772,7 +1776,7 @@ TestResults GateBoyTests::test_dma(const IGateBoy* proto, uint16_t src) {
 
   for (int i = 0; i < 160; i++) {
     uint8_t src_a = src < 0x8000 ? test_cart[src + i] : gb->peek(src + i).unwrap();
-    uint8_t dst_a = gb->peek(ADDR_OAM_BEGIN + i);
+    uint8_t dst_a = gb->peek(ADDR_OAM_BEGIN + i).unwrap();
     ASSERT_EQ(src_a, dst_a, "dma mismatch @ 0x%04x : expected 0x%02x, got 0x%02x", src + i, src_a, dst_a);
   }
 
@@ -1852,7 +1856,7 @@ TestResults GateBoyTests::test_mem(const IGateBoy* proto, const char* tag, uint1
 
     uint8_t data_rd = addr < 0x8000 ? test_cart[addr] : gb->peek(addr).unwrap();
     ASSERT_EQ(data_rd, data_wr, "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
-    data_rd = gb->dbg_read(test_cart, addr);
+    data_rd = gb->dbg_read(test_cart, addr).unwrap();
     ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
   }
 
@@ -1878,7 +1882,7 @@ TestResults GateBoyTests::test_mem(const IGateBoy* proto, const char* tag, uint1
 
     uint8_t data_rd = addr < 0x8000 ? test_cart[addr] : gb->peek(addr).unwrap();
     ASSERT_EQ(data_rd, data_wr, "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
-    data_rd = gb->dbg_read(test_cart, addr);
+    data_rd = gb->dbg_read(test_cart, addr).unwrap();
     ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
   }
 

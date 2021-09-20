@@ -450,7 +450,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
 
 
-  /*#p21.PARU*/ wire PARU_VBLANKp = not1(gb_state.lcd.POPU_y144p.qn_new());
+  /*#p21.PARU*/ wire PARU_VBLANKp = not1(gb_state.lcd.POPU_VBLANKp.qn_new());
   /*_p27.REPU*/ wire REPU_VBLANKp = or2(PARU_VBLANKp, PYRY_VID_RSTp());
 
   /*_p21.TADY*/ wire TADY_LINE_RSTn = nor2(gb_state.ATEJ_LINE_RSTp.out_new(), TOFU_VID_RSTp());

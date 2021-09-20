@@ -167,7 +167,7 @@ void GateBoyDumper::dump_joypad(const GateBoyState& s, Dumper& d) {
 void GateBoyDumper::dump_lcd(const GateBoyState& s, Dumper& d) {
   d.dump_bitp   ("CATU : ", s.lcd.CATU_x113p.state);
   d.dump_bitp   ("ANEL : ", s.lcd.ANEL_x113p.state);
-  d.dump_bitp   ("POPU : ", s.lcd.POPU_y144p.state);
+  d.dump_bitp   ("POPU : ", s.lcd.POPU_VBLANKp.state);
   d.dump_bitp   ("MYTA : ", s.lcd.MYTA_y153p.state);
   d.dump_bitp   ("RUTU : ", s.lcd.RUTU_x113p.state);
   d.dump_bitp   ("NYPE : ", s.lcd.NYPE_x113p.state);

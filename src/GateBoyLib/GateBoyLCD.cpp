@@ -90,7 +90,7 @@ void GateBoy::tock_lcd_gates() {
     /*_p28.BYHA*/ wire BYHA_LINE_RSTn = or_and3(gb_state.lcd.ANEL_x113p.qp_new(), ABAF_x113n, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
     /*_p28.ATEJ*/ gb_state.ATEJ_LINE_RSTp = not1(BYHA_LINE_RSTn);
 
-    /*#p21.POPU*/ gb_state.lcd.POPU_y144p.dff17(gb_state.lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p);
+    /*#p21.POPU*/ gb_state.lcd.POPU_VBLANKp.dff17(gb_state.lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p);
     /*#p21.MYTA*/ gb_state.lcd.MYTA_y153p.dff17(gb_state.lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), NOKO_y153p);
   }
 
@@ -180,7 +180,7 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
 
   /*#p24.LOFU*/ wire LOFU_x113n = not1(gb_state.lcd.RUTU_x113p.qp_new());
   /*#p24.LUCA*/ gb_state.lcd.LUCA_LINE_EVENp .dff17(LOFU_x113n, LYFE_VID_RSTn(), gb_state.lcd.LUCA_LINE_EVENp.qn_old());
-  /*#p21.NAPO*/ gb_state.lcd.NAPO_FRAME_EVENp.dff17(gb_state.lcd.POPU_y144p.qp_new(),   LYFE_VID_RSTn(), gb_state.lcd.NAPO_FRAME_EVENp.qn_old());
+  /*#p21.NAPO*/ gb_state.lcd.NAPO_FRAME_EVENp.dff17(gb_state.lcd.POPU_VBLANKp.qp_new(),   LYFE_VID_RSTn(), gb_state.lcd.NAPO_FRAME_EVENp.qn_old());
 
   /*#p24.MAGU*/ wire MAGU = xor2(gb_state.lcd.NAPO_FRAME_EVENp.qp_new(), gb_state.lcd.LUCA_LINE_EVENp.qn_new());
   /*#p24.MECO*/ wire MECO = not1(MAGU);

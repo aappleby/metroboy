@@ -9,7 +9,7 @@ struct LCDControl {
   void reset_to_poweron() {
     CATU_x113p.state          = BIT_OLD | BIT_DRIVEN;
     ANEL_x113p.state          = BIT_OLD | BIT_DRIVEN;
-    POPU_y144p.state          = BIT_OLD | BIT_DRIVEN;
+    POPU_VBLANKp.state          = BIT_OLD | BIT_DRIVEN;
     MYTA_y153p.state          = BIT_OLD | BIT_DRIVEN;
     RUTU_x113p.state          = BIT_OLD | BIT_DRIVEN;
     NYPE_x113p.state          = BIT_OLD | BIT_DRIVEN;
@@ -29,7 +29,7 @@ struct LCDControl {
   void reset_to_bootrom() {
     CATU_x113p.state          = BIT_OLD | BIT_DRIVEN;
     ANEL_x113p.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    POPU_y144p.state          = BIT_OLD | BIT_DRIVEN;
+    POPU_VBLANKp.state          = BIT_OLD | BIT_DRIVEN;
     MYTA_y153p.state          = BIT_OLD | BIT_DRIVEN;
     RUTU_x113p.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     NYPE_x113p.state          = BIT_OLD | BIT_DRIVEN;
@@ -49,7 +49,7 @@ struct LCDControl {
   void reset_to_cart() {
     CATU_x113p.state          = 0b00011010;
     ANEL_x113p.state          = 0b00011000;
-    POPU_y144p.state          = 0b00011001;
+    POPU_VBLANKp.state          = 0b00011001;
     MYTA_y153p.state          = 0b00011001;
     RUTU_x113p.state          = 0b00011010;
     NYPE_x113p.state          = 0b00011000;
@@ -69,7 +69,7 @@ struct LCDControl {
   // H deltas are due to reg writes
   /*#p29.CATU*/ DFF17 CATU_x113p; // Axxxxxxx
   /*#p28.ANEL*/ DFF17 ANEL_x113p; // xxCxxxxx
-  /*#p21.POPU*/ DFF17 POPU_y144p; // xxCxxxxH
+  /*#p21.POPU*/ DFF17 POPU_VBLANKp; // xxCxxxxH
   /*#p21.MYTA*/ DFF17 MYTA_y153p; // xxCxxxxH
   /*#p21.RUTU*/ DFF17 RUTU_x113p; // xxxxxxGx
   /*#p21.NYPE*/ DFF17 NYPE_x113p; // xxCxxxxx

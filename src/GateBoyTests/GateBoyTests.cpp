@@ -37,20 +37,43 @@ int main(int argc, char** argv) {
 
   const auto gb_proto = make_unique<GateBoy>();
   const auto lb_proto = make_unique<LogicBoy>();
+  const auto pair_proto = make_unique<GateBoyPair>(gb_proto.get(), lb_proto.get());
 
-  //results += t.test_regression_dump("eyes.dump", gb_proto.get(), lb_proto.get(), 1000000);
+  //results += t.test_bootrom(pair_proto.get());
+  //results += t.test_clk(pair_proto.get()); // PASS
+  //results += t.test_regs(pair_proto.get());
+  //results += t.test_dma(pair_proto.get());
+  //results += t.test_mem(pair_proto.get());
+  results += t.test_init(pair_proto.get());
+  //results += t.test_ppu(pair_proto.get()); // PASS
+  //results += t.test_timer(pair_proto.get());  // PASS
+  //results += t.test_micro_poweron(pair_proto.get());  // PASS
+  //results += t.test_micro_lcden(pair_proto.get());  // PASS
+  //results += t.test_micro_timer(pair_proto.get());
+  //results += t.test_micro_int_stat(pair_proto.get());  // PASS
+  //results += t.test_micro_int_timer(pair_proto.get());  // PASS
+  //results += t.test_micro_int_serial(pair_proto.get()); // PASS
+  //results += t.test_micro_int_joypad(pair_proto.get()); // PASS
+  //results += t.test_micro_lock_oam(pair_proto.get());
+  //results += t.test_micro_lock_vram(pair_proto.get()); // PASS
+  //results += t.test_micro_window(pair_proto.get());  // PASS
+  //results += t.test_micro_ppu(pair_proto.get());  // PASS
+  //results += t.test_micro_dma(pair_proto.get());
+  //results += t.test_micro_mbc1(pair_proto.get());  // PASS
 
-#if 1
-  LOG_B("========== GateBoy ==========\n");
-  results += t.test_gateboy(gb_proto.get());
+#if 0
+  LOG_B("========== GateBoy tests ==========\n");
+  results += t.test_fastboot        (gb_proto.get(), 0xFF);
+  results += t.test_reset_to_bootrom(gb_proto.get(), 0xFF);
+  results += t.test_reset_to_cart   (gb_proto.get(), 0xFF);
+  results += t.test_generic         (gb_proto.get());
   LOG_B("\n");
 
-  LOG_B("========== LogicBoy ==========\n");
-  results += t.test_logicboy(lb_proto.get());
-  LOG_B("\n");
-
-  LOG_B("========== Regression ==========\n");
-  results += t.test_regression(gb_proto.get(), lb_proto.get());
+  LOG_B("========== LogicBoy regression tests ==========\n");
+  results += t.test_reset_to_bootrom(pair_proto.get(), 0x01); // OK
+  results += t.test_reset_to_cart   (pair_proto.get(), 0x01); // OK
+  results += t.test_generic         (pair_proto.get());
+  results += t.test_regression      (pair_proto.get()); // OK
   LOG_B("\n");
 
   LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
@@ -77,34 +100,7 @@ GateBoyTests::GateBoyTests() : dummy_cart(Assembler::create_dummy_cart()) {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_gateboy(const IGateBoy* proto) {
-  TEST_INIT();
-
-  results += test_fastboot_vs_slowboot(proto, proto, 0xFF);
-  results += test_reset_to_bootrom(proto, 0xFF);
-  results += test_reset_to_cart(proto, 0xFF);
-
-  results += test_generic(proto);
-
-  TEST_DONE();
-}
-
-//-----------------------------------------------------------------------------
-
-TestResults GateBoyTests::test_logicboy(const IGateBoy* proto) {
-  TEST_INIT();
-
-  results += test_reset_to_bootrom(proto, 0x01);
-  results += test_reset_to_cart   (proto, 0x01);
-
-  results += test_generic(proto);
-
-  TEST_DONE();
-}
-
-//-----------------------------------------------------------------------------
-
-TestResults GateBoyTests::test_regression_cart(const char* filename, const IGateBoy* proto1, const IGateBoy* proto2, int cycles, bool from_bootrom) {
+TestResults GateBoyTests::test_regression_cart(const char* filename, const IGateBoy* proto, int cycles, bool from_bootrom) {
   TEST_INIT("%s", filename);
   blob cart_blob;
   load_blob(filename, cart_blob);
@@ -113,7 +109,7 @@ TestResults GateBoyTests::test_regression_cart(const char* filename, const IGate
     TEST_DONE();
   }
 
-  auto gb = make_unique<GateBoyPair>(proto1->clone(), proto2->clone());
+  unique_ptr<IGateBoy> gb(proto->clone());
   if (from_bootrom) {
     gb->reset_to_bootrom(cart_blob);
   }
@@ -131,7 +127,7 @@ TestResults GateBoyTests::test_regression_cart(const char* filename, const IGate
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_regression_dump(const char* filename, const IGateBoy* proto1, const IGateBoy* proto2, int cycles) {
+TestResults GateBoyTests::test_regression_dump(const char* filename, const IGateBoy* proto, int cycles) {
   TEST_INIT("%s", filename);
 
   BlobStream bs;
@@ -141,7 +137,7 @@ TestResults GateBoyTests::test_regression_dump(const char* filename, const IGate
     TEST_DONE();
   }
 
-  auto gb = make_unique<GateBoyPair>(proto1->clone(), proto2->clone());
+  unique_ptr<IGateBoy> gb(proto->clone());
   gb->load_raw_dump(bs);
   
   blob cart_blob = bs.rest();
@@ -167,17 +163,17 @@ TestResults fake_test() {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_regression(const IGateBoy* proto1, const IGateBoy* proto2) {
+TestResults GateBoyTests::test_regression(const IGateBoy* proto) {
   TEST_INIT();
 
   auto phases = MCYCLES_PER_FRAME * 8 * 3;
 
-  results += test_regression_cart("tests/microtests/DMG/minimal.gb", proto1, proto2, phases, true);
-  results += test_regression_cart("LinksAwakening.gb",               proto1, proto2, phases, false);
-  results += test_regression_dump("sprites.dump",                    proto1, proto2, phases);
-  results += test_regression_dump("zoomer.dump",                     proto1, proto2, phases);
-  results += test_regression_dump("eyes.dump",                       proto1, proto2, phases); // broken because sprite mask
-  results += test_regression_dump("scroller.dump",                   proto1, proto2, phases);
+  results += test_regression_cart("tests/microtests/DMG/minimal.gb", proto, phases, true);
+  results += test_regression_cart("LinksAwakening.gb",               proto, phases, false);
+  results += test_regression_dump("sprites.dump",                    proto, phases);
+  results += test_regression_dump("zoomer.dump",                     proto, phases);
+  results += test_regression_dump("eyes.dump",                       proto, phases); // broken because sprite mask
+  results += test_regression_dump("scroller.dump",                   proto, phases);
 
   TEST_DONE();
 }
@@ -306,11 +302,11 @@ TestResults GateBoyTests::test_regs(const IGateBoy* proto) {
 //-----------------------------------------------------------------------------
 // Power-on reset state should be stable
 
-TestResults GateBoyTests::test_fastboot_vs_slowboot(const IGateBoy* proto1, const IGateBoy* proto2, uint8_t mask) {
+TestResults GateBoyTests::test_fastboot(const IGateBoy* proto, uint8_t mask) {
   TEST_INIT();
 
-  unique_ptr<IGateBoy> gb1(proto1->clone());
-  unique_ptr<IGateBoy> gb2(proto2->clone());
+  unique_ptr<IGateBoy> gb1(proto->clone());
+  unique_ptr<IGateBoy> gb2(proto->clone());
 
   LOG_B("run_poweron_reset with fastboot = true\n");
   gb1->reset_to_poweron(dummy_cart);
@@ -340,6 +336,7 @@ TestResults GateBoyTests::test_fastboot_vs_slowboot(const IGateBoy* proto1, cons
 }
 
 //-----------------------------------------------------------------------------
+// Compare 
 
 TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* proto, uint8_t mask) {
   TEST_INIT();

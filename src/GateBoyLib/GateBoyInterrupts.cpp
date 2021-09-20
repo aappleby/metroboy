@@ -65,7 +65,7 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*_BUS_CPU_D05p*/ gb_state.cpu_dbus.BUS_CPU_D05p.tri_bus(SASY_STAT5_TO_CD5);
   /*_BUS_CPU_D06p*/ gb_state.cpu_dbus.BUS_CPU_D06p.tri_bus(POTE_STAT6_TO_CD6);
 
-  /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_x113p.qp_new());
+  /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_LINE_ENDp.qp_new());
   /*#p21.TOLU*/ wire TOLU_VBLANKn   = not1(PARU_VBLANKp);
   /*#p21.SELA*/ wire SELA_x113p = not1(PURE_x113n);
   /*#p21.TAPA*/ wire TAPA_INT_OAM   = and2(TOLU_VBLANKn, SELA_x113p);

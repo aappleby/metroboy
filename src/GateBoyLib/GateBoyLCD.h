@@ -10,9 +10,9 @@ struct LCDControl {
     CATU_x113p.state          = BIT_OLD | BIT_DRIVEN;
     ANEL_x113p.state          = BIT_OLD | BIT_DRIVEN;
     POPU_VBLANKp.state          = BIT_OLD | BIT_DRIVEN;
-    MYTA_y153p.state          = BIT_OLD | BIT_DRIVEN;
-    RUTU_x113p.state          = BIT_OLD | BIT_DRIVEN;
-    NYPE_x113p.state          = BIT_OLD | BIT_DRIVEN;
+    MYTA_FRAME_ENDp.state          = BIT_OLD | BIT_DRIVEN;
+    RUTU_LINE_ENDp.state          = BIT_OLD | BIT_DRIVEN;
+    NYPE_LINE_ENDp.state          = BIT_OLD | BIT_DRIVEN;
     SYGU_LINE_STROBE.state    = BIT_OLD | BIT_DRIVEN;
     MEDA_VSYNC_OUTn.state     = BIT_OLD | BIT_DRIVEN;
     LUCA_LINE_EVENp.state     = BIT_OLD | BIT_DRIVEN;
@@ -30,9 +30,9 @@ struct LCDControl {
     CATU_x113p.state          = BIT_OLD | BIT_DRIVEN;
     ANEL_x113p.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     POPU_VBLANKp.state          = BIT_OLD | BIT_DRIVEN;
-    MYTA_y153p.state          = BIT_OLD | BIT_DRIVEN;
-    RUTU_x113p.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    NYPE_x113p.state          = BIT_OLD | BIT_DRIVEN;
+    MYTA_FRAME_ENDp.state          = BIT_OLD | BIT_DRIVEN;
+    RUTU_LINE_ENDp.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    NYPE_LINE_ENDp.state          = BIT_OLD | BIT_DRIVEN;
     SYGU_LINE_STROBE.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     MEDA_VSYNC_OUTn.state     = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     LUCA_LINE_EVENp.state     = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
@@ -50,9 +50,9 @@ struct LCDControl {
     CATU_x113p.state          = 0b00011010;
     ANEL_x113p.state          = 0b00011000;
     POPU_VBLANKp.state          = 0b00011001;
-    MYTA_y153p.state          = 0b00011001;
-    RUTU_x113p.state          = 0b00011010;
-    NYPE_x113p.state          = 0b00011000;
+    MYTA_FRAME_ENDp.state          = 0b00011001;
+    RUTU_LINE_ENDp.state          = 0b00011010;
+    NYPE_LINE_ENDp.state          = 0b00011000;
     SYGU_LINE_STROBE.state    = 0b00011010;
     MEDA_VSYNC_OUTn.state     = 0b00011011;
     LUCA_LINE_EVENp.state     = 0b00011011;
@@ -70,9 +70,9 @@ struct LCDControl {
   /*#p29.CATU*/ DFF17 CATU_x113p; // Axxxxxxx
   /*#p28.ANEL*/ DFF17 ANEL_x113p; // xxCxxxxx
   /*#p21.POPU*/ DFF17 POPU_VBLANKp; // xxCxxxxH
-  /*#p21.MYTA*/ DFF17 MYTA_y153p; // xxCxxxxH
-  /*#p21.RUTU*/ DFF17 RUTU_x113p; // xxxxxxGx
-  /*#p21.NYPE*/ DFF17 NYPE_x113p; // xxCxxxxx
+  /*#p21.MYTA*/ DFF17 MYTA_FRAME_ENDp; // xxCxxxxH
+  /*#p21.RUTU*/ DFF17 RUTU_LINE_ENDp; // xxxxxxGx
+  /*#p21.NYPE*/ DFF17 NYPE_LINE_ENDp; // xxCxxxxx
 
   /*#p21.SYGU*/ DFF17 SYGU_LINE_STROBE; // xxxxxxGH
   /*#p24.MEDA*/ DFF17 MEDA_VSYNC_OUTn;  // xxCxxxxH

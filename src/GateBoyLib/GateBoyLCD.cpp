@@ -76,22 +76,22 @@ void GateBoy::tock_lcd_gates() {
 
     /*#p28.ANEL*/ gb_state.lcd.ANEL_x113p.dff17(gb_state.sys_clk.AWOH_xxCDxxGH(), ABEZ_VID_RSTn(), gb_state.lcd.CATU_x113p.qp_old());
 
-    /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_x113p.qp_old());
+    /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_LINE_ENDp.qp_old());
     /*#p29.ALES*/ wire ALES_y144n = not1(XYVO_y144p);
     /*#p21.SELA*/ wire SELA_x113p = not1(PURE_x113n);
     /*#p29.ABOV*/ wire ABOV_x113p = and2(SELA_x113p, ALES_y144n);
     /*#p29.CATU*/ gb_state.lcd.CATU_x113p.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), ABOV_x113p);
 
-    /*#p21.NYPE*/ gb_state.lcd.NYPE_x113p.dff17(gb_state.sys_clk.TALU_xxCDEFxx(),         LYFE_VID_RSTn(), gb_state.lcd.RUTU_x113p.qp_old());
+    /*#p21.NYPE*/ gb_state.lcd.NYPE_LINE_ENDp.dff17(gb_state.sys_clk.TALU_xxCDEFxx(),         LYFE_VID_RSTn(), gb_state.lcd.RUTU_LINE_ENDp.qp_old());
     /*#p21.SANU*/ wire SANU_x113p = and4(gb_state.reg_lx.TYRY_LX6p.qp_old(), gb_state.reg_lx.TAHA_LX5p.qp_old(), gb_state.reg_lx.SUDE_LX4p.qp_old(), gb_state.reg_lx.SAXO_LX0p.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
-    /*#p21.RUTU*/ gb_state.lcd.RUTU_x113p.dff17(gb_state.sys_clk.SONO_ABxxxxGH(),         LYFE_VID_RSTn(), SANU_x113p);
+    /*#p21.RUTU*/ gb_state.lcd.RUTU_LINE_ENDp.dff17(gb_state.sys_clk.SONO_ABxxxxGH(),         LYFE_VID_RSTn(), SANU_x113p);
 
     /*_p28.ABAF*/ wire ABAF_x113n = not1(gb_state.lcd.CATU_x113p.qp_new());
     /*_p28.BYHA*/ wire BYHA_LINE_RSTn = or_and3(gb_state.lcd.ANEL_x113p.qp_new(), ABAF_x113n, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
     /*_p28.ATEJ*/ gb_state.ATEJ_LINE_RSTp = not1(BYHA_LINE_RSTn);
 
-    /*#p21.POPU*/ gb_state.lcd.POPU_VBLANKp.dff17(gb_state.lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), XYVO_y144p);
-    /*#p21.MYTA*/ gb_state.lcd.MYTA_y153p.dff17(gb_state.lcd.NYPE_x113p.qp_new(), LYFE_VID_RSTn(), NOKO_y153p);
+    /*#p21.POPU*/ gb_state.lcd.POPU_VBLANKp.dff17(gb_state.lcd.NYPE_LINE_ENDp.qp_new(), LYFE_VID_RSTn(), XYVO_y144p);
+    /*#p21.MYTA*/ gb_state.lcd.MYTA_FRAME_ENDp.dff17(gb_state.lcd.NYPE_LINE_ENDp.qp_new(), LYFE_VID_RSTn(), NOKO_y153p);
   }
 
   {
@@ -114,7 +114,7 @@ void GateBoy::tock_lcd_gates() {
   }
 
   {
-    /*#p21.MUDE*/ wire MUDE_X_RSTn = nor2(gb_state.lcd.RUTU_x113p.qp_new(), LYHA_VID_RSTp());
+    /*#p21.MUDE*/ wire MUDE_X_RSTn = nor2(gb_state.lcd.RUTU_LINE_ENDp.qp_new(), LYHA_VID_RSTp());
     /*#p21.SAXO*/ gb_state.reg_lx.SAXO_LX0p.dff17(gb_state.sys_clk.TALU_xxCDEFxx(),           MUDE_X_RSTn, gb_state.reg_lx.SAXO_LX0p.qn_old());
     /*#p21.TYPO*/ gb_state.reg_lx.TYPO_LX1p.dff17(gb_state.reg_lx.SAXO_LX0p.qn_new(), MUDE_X_RSTn, gb_state.reg_lx.TYPO_LX1p.qn_old());
     /*#p21.VYZO*/ gb_state.reg_lx.VYZO_LX2p.dff17(gb_state.reg_lx.TYPO_LX1p.qn_new(), MUDE_X_RSTn, gb_state.reg_lx.VYZO_LX2p.qn_old());
@@ -125,8 +125,8 @@ void GateBoy::tock_lcd_gates() {
   }
 
   {
-    /*#p21.LAMA*/ wire LAMA_Y_RSTn = nor2(gb_state.lcd.MYTA_y153p.qp_new(), LYHA_VID_RSTp());
-    /*#p21.MUWY*/ gb_state.reg_ly.MUWY_LY0p.dff17(gb_state.lcd.RUTU_x113p.qp_new(), LAMA_Y_RSTn, gb_state.reg_ly.MUWY_LY0p.qn_old());
+    /*#p21.LAMA*/ wire LAMA_Y_RSTn = nor2(gb_state.lcd.MYTA_FRAME_ENDp.qp_new(), LYHA_VID_RSTp());
+    /*#p21.MUWY*/ gb_state.reg_ly.MUWY_LY0p.dff17(gb_state.lcd.RUTU_LINE_ENDp.qp_new(), LAMA_Y_RSTn, gb_state.reg_ly.MUWY_LY0p.qn_old());
     /*#p21.MYRO*/ gb_state.reg_ly.MYRO_LY1p.dff17(gb_state.reg_ly.MUWY_LY0p.qn_new(),  LAMA_Y_RSTn, gb_state.reg_ly.MYRO_LY1p.qn_old());
     /*#p21.LEXA*/ gb_state.reg_ly.LEXA_LY2p.dff17(gb_state.reg_ly.MYRO_LY1p.qn_new(),  LAMA_Y_RSTn, gb_state.reg_ly.LEXA_LY2p.qn_old());
     /*#p21.LYDO*/ gb_state.reg_ly.LYDO_LY3p.dff17(gb_state.reg_ly.LEXA_LY2p.qn_new(),  LAMA_Y_RSTn, gb_state.reg_ly.LYDO_LY3p.qn_old());
@@ -172,13 +172,13 @@ void GateBoy::tock_lcd_gates() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
-  /*#p21.RYNO*/ wire RYNO = or2(gb_state.lcd.SYGU_LINE_STROBE.qp_new(), gb_state.lcd.RUTU_x113p.qp_new());
+  /*#p21.RYNO*/ wire RYNO = or2(gb_state.lcd.SYGU_LINE_STROBE.qp_new(), gb_state.lcd.RUTU_LINE_ENDp.qp_new());
   /*#p21.POGU*/ wire POGU = not1(RYNO);
   /*_PIN_52*/ pins.lcd.PIN_52_LCD_CNTRL.pin_out(POGU, POGU);
 
   // if LCDC_ENn, PIN_56_LCD_FLIPS = 4k div clock. Otherwise PIN_LCD_FLIPS = xor(LINE_evn,FRAME_evn)
 
-  /*#p24.LOFU*/ wire LOFU_x113n = not1(gb_state.lcd.RUTU_x113p.qp_new());
+  /*#p24.LOFU*/ wire LOFU_x113n = not1(gb_state.lcd.RUTU_LINE_ENDp.qp_new());
   /*#p24.LUCA*/ gb_state.lcd.LUCA_LINE_EVENp .dff17(LOFU_x113n, LYFE_VID_RSTn(), gb_state.lcd.LUCA_LINE_EVENp.qn_old());
   /*#p21.NAPO*/ gb_state.lcd.NAPO_FRAME_EVENp.dff17(gb_state.lcd.POPU_VBLANKp.qp_new(),   LYFE_VID_RSTn(), gb_state.lcd.NAPO_FRAME_EVENp.qn_old());
 
@@ -193,7 +193,7 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*_PIN_56*/ pins.lcd.PIN_56_LCD_FLIPS.pin_out(KOFO, KOFO);
 
   /*#p24.NERU*/ wire NERU_VSYNCp = nor8(gb_state.reg_ly.LAFO_LY7p.qp_new(), gb_state.reg_ly.LOVU_LY4p.qp_new(), gb_state.reg_ly.LYDO_LY3p.qp_new(), gb_state.reg_ly.MUWY_LY0p.qp_new(), gb_state.reg_ly.MYRO_LY1p.qp_new(), gb_state.reg_ly.LEXA_LY2p.qp_new(), gb_state.reg_ly.LEMA_LY5p.qp_new(), gb_state.reg_ly.MATO_LY6p.qp_new());
-  /*#p24.MEDA*/ gb_state.lcd.MEDA_VSYNC_OUTn.dff17(gb_state.lcd.NYPE_x113p.qn_new(), LYFE_VID_RSTn(), NERU_VSYNCp);
+  /*#p24.MEDA*/ gb_state.lcd.MEDA_VSYNC_OUTn.dff17(gb_state.lcd.NYPE_LINE_ENDp.qn_new(), LYFE_VID_RSTn(), NERU_VSYNCp);
   /*#p24.MURE*/ wire MURE_VSYNC = not1(gb_state.lcd.MEDA_VSYNC_OUTn.qp_new());
   /*_PIN_57*/ pins.lcd.PIN_57_LCD_VSYNC.pin_out(MURE_VSYNC, MURE_VSYNC);
 
@@ -219,7 +219,7 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   /*_PIN_50*/ pins.lcd.PIN_50_LCD_DATA1.pin_out(gb_state.lcd.RAVO_LD1n.out_new(), gb_state.lcd.RAVO_LD1n.out_new());
 
   /*_p01.UMEK*/ wire UMEK_DIV06n = not1(gb_state.reg_div.UGOT_DIV06p.qp_new());
-  /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_x113p.qp_new());
+  /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_LINE_ENDp.qp_new());
   /*#p24.KASA*/ wire KASA_LINE_ENDp = not1(PURE_x113n);
   /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(UMEK_DIV06n);
   /*#p24.KAHE*/ wire KAHE_LINE_ENDp = amux2(gb_state.reg_lcdc.XONA_LCDC_LCDENn.qn_new(), KASA_LINE_ENDp, KEDY_LCDC_ENn, UMOB_DIV_06p);

@@ -168,9 +168,9 @@ void GateBoyDumper::dump_lcd(const GateBoyState& s, Dumper& d) {
   d.dump_bitp   ("CATU : ", s.lcd.CATU_x113p.state);
   d.dump_bitp   ("ANEL : ", s.lcd.ANEL_x113p.state);
   d.dump_bitp   ("POPU : ", s.lcd.POPU_VBLANKp.state);
-  d.dump_bitp   ("MYTA : ", s.lcd.MYTA_y153p.state);
-  d.dump_bitp   ("RUTU : ", s.lcd.RUTU_x113p.state);
-  d.dump_bitp   ("NYPE : ", s.lcd.NYPE_x113p.state);
+  d.dump_bitp   ("MYTA : ", s.lcd.MYTA_FRAME_ENDp.state);
+  d.dump_bitp   ("RUTU : ", s.lcd.RUTU_LINE_ENDp.state);
+  d.dump_bitp   ("NYPE : ", s.lcd.NYPE_LINE_ENDp.state);
   d("\n");
   d.dump_bitp   ("SYGU_LINE_STROBE    : ", s.lcd.SYGU_LINE_STROBE.state);
   d.dump_bitn   ("MEDA_VSYNC_OUTn     : ", s.lcd.MEDA_VSYNC_OUTn.state);

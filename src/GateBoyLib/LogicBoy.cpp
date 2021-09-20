@@ -193,7 +193,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // Data has to be driven on EFGH or we fail the wave tests
   state_new.cpu_dbus = (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) && cpu.bus_req_new.write ? cpu.bus_req_new.data_lo : 0xFF; // must be pulled up or we fail regression
-
   state_new.cpu_abus = (DELTA_HA ? cpu.bus_req_new.addr & 0x00FF : cpu.bus_req_new.addr);
 
   const bool req_addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
@@ -206,44 +205,47 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   const bool cpu_addr_ram_new  = req_addr_ram && !DELTA_HA;
   const bool cpu_addr_oam_new  = req_addr_oam && !DELTA_HA;
 
-
   const bool cpu_rd = cpu.bus_req_new.read  && !DELTA_HA;
   const bool cpu_wr = cpu.bus_req_new.write && !DELTA_HA;
 
+  const auto cpu_addr_new = state_new.cpu_abus;
+
   //----------------------------------------
   // DIV
+
+  const uint16_t div_old = state_old.reg_div;
 
   if (DELTA_HA) {
     state_new.reg_div = state_new.reg_div + 1;
   }
 
   if (cpu_wr && (DELTA_DE || DELTA_EF || DELTA_FG)) {
-    if (state_new.cpu_abus == 0xFF04) state_new.reg_div = 0;
+    if (cpu_addr_new == 0xFF04) state_new.reg_div = 0;
   }
+
+  const uint16_t div_new = state_new.reg_div;
 
   //----------------------------------------
 
-  if (cpu_wr && DELTA_GH) {
-    if (state_new.cpu_abus == 0xFF00) {
-      set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
-      set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
-    }
-    // LCDC write has to be near the top as it controls the video reset signal
-    if (state_new.cpu_abus == 0xFF40) state_new.reg_lcdc = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF45) state_new.reg_lyc = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF06) state_new.reg_tma  =  state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF07) state_new.reg_tac  =  state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF42) state_new.reg_scy = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF43) state_new.reg_scx = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF46) state_new.reg_dma  = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF47) state_new.reg_bgp  = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF48) state_new.reg_obp0 = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF49) state_new.reg_obp1 = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF4A) state_new.reg_wy   = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF4B) state_new.reg_wx   = ~state_old.cpu_dbus;
-    if (state_new.cpu_abus == 0xFF50) state_new.cpu_signals.TEPU_BOOT_BITn.state = get_bit(state_old.cpu_dbus, 0) || state_old.cpu_signals.TEPU_BOOT_BITn;
-    if ((state_new.cpu_abus >= 0xFF80) && (state_new.cpu_abus <= 0xFFFE)) mem.zero_ram[state_new.cpu_abus & 0x007F] = state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF00) {
+    set_bit(state_new.reg_joy, 0, get_bit(state_old.cpu_dbus, 4));
+    set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
   }
+  // LCDC write has to be near the top as it controls the video reset signal
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF40) state_new.reg_lcdc = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF45) state_new.reg_lyc  = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF06) state_new.reg_tma  =  state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF07) state_new.reg_tac  =  state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF42) state_new.reg_scy  = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF43) state_new.reg_scx  = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF47) state_new.reg_bgp  = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF48) state_new.reg_obp0 = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF49) state_new.reg_obp1 = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF4A) state_new.reg_wy   = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF4B) state_new.reg_wx   = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF50) state_new.cpu_signals.TEPU_BOOT_BITn.state = get_bit(state_old.cpu_dbus, 0) || state_old.cpu_signals.TEPU_BOOT_BITn;
+
+  if (cpu_wr && DELTA_GH && (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE)) mem.zero_ram[cpu_addr_new & 0x007F] = state_old.cpu_dbus;
 
   const bool req_addr_boot = (cpu.bus_req_new.addr >= 0x0000) && (cpu.bus_req_new.addr <= 0x00FF) && !state_new.cpu_signals.TEPU_BOOT_BITn;
 
@@ -253,14 +255,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   bool cpu_addr_bootrom_new = req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn;
 
-  /*
-  Bit 7 - LCD Display Enable             (0=Off, 1=On)
-  Bit 6 - Window Tile Map Display Select (0=9800-9BFF, 1=9C00-9FFF)
-  Bit 5 - Window Display Enable          (0=Off, 1=On)
-  Bit 4 - BG & Window Tile Data Select   (0=8800-97FF, 1=8000-8FFF)
-  */
-
-  const bool vid_rst_old = get_bit(state_old.reg_lcdc, 7);
+  const bool vid_rst_old  =  get_bit(state_old.reg_lcdc, 7);
 
   const bool bgw_en_new   = !get_bit(state_new.reg_lcdc, 0);
   const bool spr_en_new   = !get_bit(state_new.reg_lcdc, 1);
@@ -276,6 +271,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // LX, LY, lcd flags
 
   const bool vblank_old = state_old.lcd.POPU_VBLANKp.state;
+  const uint8_t ly_old = state_old.reg_ly;
 
   if (vid_rst_new) {
     state_new.lcd.NYPE_x113p.state = 0;
@@ -308,6 +304,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   const bool vblank_new = state_new.lcd.POPU_VBLANKp.state;
+  const uint8_t ly_new = state_new.reg_ly;
 
   //----------------------------------------
   // Line reset trigger
@@ -318,7 +315,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   else {
     if (DELTA_HA || DELTA_DE) {
-      state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && (state_new.reg_ly < 144);
+      state_new.lcd.CATU_x113p.state = state_new.lcd.RUTU_x113p && (ly_new < 144);
     }
 
     if (DELTA_BC || DELTA_FG) {
@@ -363,15 +360,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   bool SOGU_TIMA_CLKn_old = 0;
   bool SOGU_TIMA_CLKn_new = 0;
 
-  if (state_old.reg_tac == 4) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 7) & 1;
-  if (state_old.reg_tac == 5) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 1) & 1;
-  if (state_old.reg_tac == 6) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 3) & 1;
-  if (state_old.reg_tac == 7) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 5) & 1;
+  if (state_old.reg_tac == 4) SOGU_TIMA_CLKn_old = (div_old >> 7) & 1;
+  if (state_old.reg_tac == 5) SOGU_TIMA_CLKn_old = (div_old >> 1) & 1;
+  if (state_old.reg_tac == 6) SOGU_TIMA_CLKn_old = (div_old >> 3) & 1;
+  if (state_old.reg_tac == 7) SOGU_TIMA_CLKn_old = (div_old >> 5) & 1;
 
-  if (state_new.reg_tac == 4) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 7) & 1;
-  if (state_new.reg_tac == 5) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 1) & 1;
-  if (state_new.reg_tac == 6) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 3) & 1;
-  if (state_new.reg_tac == 7) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 5) & 1;
+  if (state_new.reg_tac == 4) SOGU_TIMA_CLKn_new = (div_new >> 7) & 1;
+  if (state_new.reg_tac == 5) SOGU_TIMA_CLKn_new = (div_new >> 1) & 1;
+  if (state_new.reg_tac == 6) SOGU_TIMA_CLKn_new = (div_new >> 3) & 1;
+  if (state_new.reg_tac == 7) SOGU_TIMA_CLKn_new = (div_new >> 5) & 1;
 
   if (DELTA_HA) {
     state_new.int_ctrl.MOBA_TIMER_OVERFLOWp.state = !get_bit(state_old.reg_tima, 7) && state_old.int_ctrl.NYDU_TIMA7p_DELAY;
@@ -390,7 +387,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.reg_tima = state_new.reg_tima + 1;
     }
 
-    if (cpu_wr && !cpu_rd && state_new.cpu_abus == 0xFF05) {
+    if (cpu_wr && !cpu_rd && cpu_addr_new == 0xFF05) {
       state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
       state_new.reg_tima = state_new.cpu_dbus;
     }
@@ -406,60 +403,63 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // bootrom read
 
-  if (state_new.cpu_abus <= 0x00FF) {
+  if (cpu_addr_new <= 0x00FF) {
     if (cpu_rd && !state_new.cpu_signals.TEPU_BOOT_BITn) {
-      state_new.cpu_dbus = DMG_ROM_blob[state_new.cpu_abus & 0xFF];
+      state_new.cpu_dbus = DMG_ROM_blob[cpu_addr_new & 0xFF];
     }
   }
 
   // boot bit read
 
-  if (cpu_rd && state_new.cpu_abus == 0xFF50) {
+  if (cpu_rd && cpu_addr_new == 0xFF50) {
     state_new.cpu_dbus &= ~1;
     state_new.cpu_dbus |= state_new.cpu_signals.TEPU_BOOT_BITn.state;
   }
 
   //----------------------------------------
   // DMA
-
-  if (state_new.cpu_abus == 0xFF46 && cpu_rd) {
-    state_new.cpu_dbus = ~state_old.reg_dma;
-  }
+  // this block is all sealed up
+  // +dma_ctrl +reg_dma +dma_lo
 
   const auto dma_running_old = state_old.MATU_DMA_RUNNINGp;
 
-  if (DELTA_HA) {
-    state_new.dma_ctrl.LUVY_DMA_TRIG_d0.state = state_new.dma_ctrl.LYXE_DMA_LATCHp;
-    state_new.MATU_DMA_RUNNINGp = state_new.dma_ctrl.LOKY_DMA_LATCHp;
+  {
+    auto& ctrl = state_new.dma_ctrl;
+    auto& dma_lo = state_new.dma_lo;
+    auto& dma_hi = state_new.reg_dma;
 
-    if (state_new.dma_ctrl.LOKY_DMA_LATCHp && !state_new.dma_ctrl.LENE_DMA_TRIG_d4) {
-      state_new.dma_lo = state_old.dma_lo + 1;
+    if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF46) dma_hi  = ~state_old.cpu_dbus;
+    if (cpu_rd && cpu_addr_new == 0xFF46) state_new.cpu_dbus = ~dma_hi;
+
+    if (DELTA_HA) {
+      ctrl.LUVY_DMA_TRIG_d0.state = ctrl.LYXE_DMA_LATCHp;
+      if (ctrl.LOKY_DMA_LATCHp && !ctrl.LENE_DMA_TRIG_d4) dma_lo++;
+      state_new.MATU_DMA_RUNNINGp = ctrl.LOKY_DMA_LATCHp;
     }
-  }
-  else if (DELTA_DE) {
-    if (cpu_wr && state_new.cpu_abus == 0xFF46) {
-      state_new.dma_ctrl.LYXE_DMA_LATCHp.state = 1;
-    }
+    else if (DELTA_DE) {
+      if (cpu_wr && cpu_addr_new == 0xFF46) {
+        ctrl.LYXE_DMA_LATCHp.state = 1;
+      }
 
-    if (state_old.dma_lo == 159) {
-      state_new.dma_ctrl.MYTE_DMA_DONE.state = 1;
-      state_new.dma_ctrl.LARA_DMA_LATCHn = 1;
-      state_new.dma_ctrl.LOKY_DMA_LATCHp = 0;
-    }
+      if (state_old.dma_lo == 159) {
+        ctrl.MYTE_DMA_DONE.state = 1;
+        ctrl.LARA_DMA_LATCHn = 1;
+        ctrl.LOKY_DMA_LATCHp = 0;
+      }
 
-    state_new.dma_ctrl.LENE_DMA_TRIG_d4 = state_old.dma_ctrl.LUVY_DMA_TRIG_d0;
+      ctrl.LENE_DMA_TRIG_d4 = state_old.dma_ctrl.LUVY_DMA_TRIG_d0;
 
-    if (state_new.dma_ctrl.LUVY_DMA_TRIG_d0) {
-      state_new.dma_ctrl.MYTE_DMA_DONE.state = 0;
-      state_new.dma_ctrl.LYXE_DMA_LATCHp.state = 0;
-      state_new.dma_lo = 0;
-      state_new.dma_ctrl.LARA_DMA_LATCHn = 0;
-      state_new.dma_ctrl.LOKY_DMA_LATCHp = 1;
+      if (ctrl.LUVY_DMA_TRIG_d0) {
+        ctrl.MYTE_DMA_DONE.state = 0;
+        ctrl.LYXE_DMA_LATCHp.state = 0;
+        ctrl.LARA_DMA_LATCHn = 0;
+        ctrl.LOKY_DMA_LATCHp = 1;
+        dma_lo = 0;
+      }
     }
   }
     
   const auto dma_running_new = state_new.MATU_DMA_RUNNINGp;
-
   const auto dma_addr_new = ((state_new.reg_dma ^ 0xFF) << 8) | state_new.dma_lo;
   const bool dma_addr_vram_new = (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
 
@@ -469,19 +469,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   const bool hblank_old = (!state_old.FEPO_STORE_MATCHp && (state_old.pix_count == 167));
   const bool pause_pipe_old = state_old.win_ctrl.RYDY_WIN_HITp || !state_old.tfetch_control.POKY_PRELOAD_LATCHp || state_old.FEPO_STORE_MATCHp || hblank_old;
 
+  const bool rendering_old = !state_old.XYMU_RENDERINGn;
+
   const bool win_mode_trig_old   = state_old.win_ctrl.PYNU_WIN_MODE_Ap && !state_old.win_ctrl.NOPA_WIN_MODE_Bp;
   const bool win_fetch_trig_old  = state_old.win_ctrl.RYFA_WIN_FETCHn_A && !state_old.win_ctrl.RENE_WIN_FETCHn_B;
   const bool win_hit_trig_old    = state_old.win_ctrl.SOVY_WIN_HITp && !state_old.win_ctrl.RYDY_WIN_HITp;
-  const bool tile_fetch_trig_old = state_old.tfetch_control.NYKA_FETCH_DONEp && state_old.tfetch_control.PORY_FETCH_DONEp;
+  const bool tile_fetch_trig_old = rendering_old && !state_old.tfetch_control.POKY_PRELOAD_LATCHp && state_old.tfetch_control.NYKA_FETCH_DONEp && state_old.tfetch_control.PORY_FETCH_DONEp;
 
-  const bool rendering_old = !state_old.XYMU_RENDERINGn;
 
-  const wire BFETCH_RSTp_old =
-    (!line_rst_old && !vid_rst_old && scan_done_trig_old) ||
-    win_mode_trig_old ||
-    win_fetch_trig_old ||
-    win_hit_trig_old ||
-    (rendering_old && !state_old.tfetch_control.POKY_PRELOAD_LATCHp && tile_fetch_trig_old);
+  const wire BFETCH_RSTp_old = (!line_rst_old && !vid_rst_old && scan_done_trig_old) || win_mode_trig_old || win_fetch_trig_old || win_hit_trig_old || tile_fetch_trig_old;
 
   //----------------------------------------
   // Sprite scanner
@@ -512,7 +508,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
   else {
-    int ly = (int)state_new.reg_ly;
+    int ly = (int)ly_new;
     int sy = (int)state_new.oam_temp_a - 16;
     int sprite_height = spr_size_new ? 8 : 16;
     const bool sprite_hit = ly >= sy && ly < sy + sprite_height && state_new.sprite_scanner.CENO_SCAN_DONEn;
@@ -894,7 +890,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (DELTA_BC) {
     if (win_en_new) {
-      state_new.win_ctrl.SARY_WY_MATCHp.state = state_new.reg_ly == uint8_t(~state_new.reg_wy);
+      state_new.win_ctrl.SARY_WY_MATCHp.state = ly_new == uint8_t(~state_new.reg_wy);
       if (state_new.win_ctrl.SARY_WY_MATCHp) {
         state_new.win_ctrl.REJO_WY_MATCH_LATCHp.state = 1;
       }
@@ -949,7 +945,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (!rendering_new) {
     state_new.sprite_ibus = state_new.sprite_index;
-    state_new.sprite_lbus = (~state_new.reg_ly + state_new.oam_temp_a) & 0b00001111;
+    state_new.sprite_lbus = (~ly_new + state_new.oam_temp_a) & 0b00001111;
   }
   else if (!state_new.sprite_scanner.CENO_SCAN_DONEn) {
   }
@@ -995,7 +991,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (rendering_new && !state_new.FEPO_STORE_MATCHp) {
-    const auto pack_ydiff = ~state_new.reg_ly + state_new.oam_temp_a;
+    const auto pack_ydiff = ~ly_new + state_new.oam_temp_a;
     state_new.sprite_lbus = pack_ydiff & 0b00001111;
   }
 
@@ -1174,7 +1170,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   uint8_t pins_abus_hi = 0xFF;
 
   if (ext_addr_new && !cpu_addr_vram_new) {
-    state_new.ext_addr_latch = state_new.cpu_abus & 0x7FFF;
+    state_new.ext_addr_latch = cpu_addr_new & 0x7FFF;
   }
 
   if (dma_running_new && !dma_addr_vram_new) {
@@ -1199,10 +1195,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (dma_running_new && !dma_addr_vram_new) {
     pins_abus_hi |= (!!((~dma_addr_new >> 8) & 0b10000000)) << 7;
   }
-  else if (!state_new.cpu_signals.TEPU_BOOT_BITn && state_new.cpu_abus <= 0x00FF) {
+  else if (!state_new.cpu_signals.TEPU_BOOT_BITn && cpu_addr_new <= 0x00FF) {
   }
   else {
-    uint8_t bit = gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new && !get_bit(state_new.cpu_abus, 15);
+    uint8_t bit = gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new && !get_bit(cpu_addr_new, 15);
     pins_abus_hi |= bit << 7;
   }
 
@@ -1337,7 +1333,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // CPU vram read address
 
   if (!(dma_running_new && dma_addr_vram_new) && !rendering_new) {
-    state_new.vram_abus = (~state_new.cpu_abus) & VRAM_ADDR_MASK;
+    state_new.vram_abus = (~cpu_addr_new) & VRAM_ADDR_MASK;
   }
 
   // DMA vram read address
@@ -1354,7 +1350,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     const auto scy = ~state_new.reg_scy;
 
     const auto sum_x = px + scx;
-    const auto sum_y = state_new.reg_ly + scy;
+    const auto sum_y = ly_new + scy;
 
     //--------------------------------------------
     // BG map read address
@@ -1386,7 +1382,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       else {
         uint32_t addr = 0;
         bit_cat(addr,  0,  4, (px + scx) >> 3);
-        bit_cat(addr,  5,  9, (state_new.reg_ly + scy) >> 3);
+        bit_cat(addr,  5,  9, (ly_new + scy) >> 3);
         bit_cat(addr, 10, 10, !bg_map_new);
         bit_cat(addr, 11, 11, 1);
         bit_cat(addr, 12, 12, 1);
@@ -1510,7 +1506,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // But ZRAM can't be before OAM because ZRAM _doesn't_ show up on the oam bus? That seems wrong...
 
   if ((cpu.bus_req_new.read && !DELTA_HA)) {
-    if (state_new.cpu_abus == 0xFF00) {
+    if (cpu_addr_new == 0xFF00) {
       set_bit(state_new.cpu_dbus, 0, !get_bit(state_new.joy_latch, 0));
       set_bit(state_new.cpu_dbus, 1, !get_bit(state_new.joy_latch, 1));
       set_bit(state_new.cpu_dbus, 2, !get_bit(state_new.joy_latch, 2));
@@ -1518,20 +1514,20 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       set_bit(state_new.cpu_dbus, 4,  get_bit(state_new.reg_joy, 0));
       set_bit(state_new.cpu_dbus, 5,  get_bit(state_new.reg_joy, 1));
     }
-    if (state_new.cpu_abus == 0xFF04) state_new.cpu_dbus =  (uint8_t)(state_new.reg_div >> 6);
-    if (state_new.cpu_abus == 0xFF05) state_new.cpu_dbus =  state_new.reg_tima;
-    if (state_new.cpu_abus == 0xFF06) state_new.cpu_dbus =  state_new.reg_tma;
-    if (state_new.cpu_abus == 0xFF07) state_new.cpu_dbus =  state_new.reg_tac | 0b11111000;
-    if (state_new.cpu_abus == 0xFF40) state_new.cpu_dbus = ~state_new.reg_lcdc;
-    if (state_new.cpu_abus == 0xFF42) state_new.cpu_dbus = ~state_new.reg_scy;
-    if (state_new.cpu_abus == 0xFF43) state_new.cpu_dbus = ~state_new.reg_scx;
-    if (state_new.cpu_abus == 0xFF44) state_new.cpu_dbus =  state_new.reg_ly;
-    if (state_new.cpu_abus == 0xFF45) state_new.cpu_dbus = ~state_old.reg_lyc;
-    if (state_new.cpu_abus == 0xFF47) state_new.cpu_dbus = ~state_new.reg_bgp;
-    if (state_new.cpu_abus == 0xFF48) state_new.cpu_dbus = ~state_new.reg_obp0;
-    if (state_new.cpu_abus == 0xFF49) state_new.cpu_dbus = ~state_new.reg_obp1;
-    if (state_new.cpu_abus == 0xFF4A) state_new.cpu_dbus = ~state_new.reg_wy;
-    if (state_new.cpu_abus == 0xFF4B) state_new.cpu_dbus = ~state_new.reg_wx;
+    if (cpu_addr_new == 0xFF04) state_new.cpu_dbus =  (uint8_t)(state_new.reg_div >> 6);
+    if (cpu_addr_new == 0xFF05) state_new.cpu_dbus =  state_new.reg_tima;
+    if (cpu_addr_new == 0xFF06) state_new.cpu_dbus =  state_new.reg_tma;
+    if (cpu_addr_new == 0xFF07) state_new.cpu_dbus =  state_new.reg_tac | 0b11111000;
+    if (cpu_addr_new == 0xFF40) state_new.cpu_dbus = ~state_new.reg_lcdc;
+    if (cpu_addr_new == 0xFF42) state_new.cpu_dbus = ~state_new.reg_scy;
+    if (cpu_addr_new == 0xFF43) state_new.cpu_dbus = ~state_new.reg_scx;
+    if (cpu_addr_new == 0xFF44) state_new.cpu_dbus =  state_new.reg_ly;
+    if (cpu_addr_new == 0xFF45) state_new.cpu_dbus = ~state_old.reg_lyc;
+    if (cpu_addr_new == 0xFF47) state_new.cpu_dbus = ~state_new.reg_bgp;
+    if (cpu_addr_new == 0xFF48) state_new.cpu_dbus = ~state_new.reg_obp0;
+    if (cpu_addr_new == 0xFF49) state_new.cpu_dbus = ~state_new.reg_obp1;
+    if (cpu_addr_new == 0xFF4A) state_new.cpu_dbus = ~state_new.reg_wy;
+    if (cpu_addr_new == 0xFF4B) state_new.cpu_dbus = ~state_new.reg_wx;
   }
 
   //----------------------------------------
@@ -1586,7 +1582,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
   else if (cpu_addr_oam_new) {
-    state_new.oam_abus = (uint8_t)~state_new.cpu_abus;
+    state_new.oam_abus = (uint8_t)~cpu_addr_new;
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = DELTA_HA || DELTA_AB || DELTA_BC || DELTA_CD;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
@@ -1612,7 +1608,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
     state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-    state_new.oam_abus = (uint8_t)~state_new.cpu_abus;
+    state_new.oam_abus = (uint8_t)~cpu_addr_new;
     state_new.oam_dbus_a = ~state_new.cpu_dbus;
     state_new.oam_dbus_b = ~state_new.cpu_dbus;
   }
@@ -1680,7 +1676,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // zram
 
   if ((cpu.bus_req_new.read && !DELTA_HA)) {
-    if ((state_new.cpu_abus >= 0xFF80) && (state_new.cpu_abus <= 0xFFFE)) state_new.cpu_dbus = mem.zero_ram[state_new.cpu_abus & 0x007F];
+    if ((cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE)) state_new.cpu_dbus = mem.zero_ram[cpu_addr_new & 0x007F];
   }
 
   //----------------------------------------
@@ -1693,11 +1689,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   auto pack_stat = state_new.reg_stat;
 
   if (!vid_rst_new && DELTA_BC) {
-    state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = state_old.reg_ly == (state_old.reg_lyc ^ 0xFF);
+    state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = ly_old == (state_old.reg_lyc ^ 0xFF);
   }
 
   // FIXME this seems slightly wrong...
-  if (cpu_wr && gen_clk_new(phase_total_old, 0b00001110) && state_new.cpu_abus == 0xFF41) {
+  if (cpu_wr && gen_clk_new(phase_total_old, 0b00001110) && cpu_addr_new == 0xFF41) {
   }
   else {
     state_new.int_ctrl.RUPO_LYC_MATCHn.state = 1;
@@ -1708,15 +1704,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.int_ctrl.RUPO_LYC_MATCHn.state = 0;
   }
 
-  if (state_new.cpu_abus == 0xFFFF && cpu_wr && gen_clk_new(phase_total_old, 0b00000001)) {
+  if (cpu_addr_new == 0xFFFF && cpu_wr && gen_clk_new(phase_total_old, 0b00000001)) {
     pack_ie = pack_cpu_dbus_old;
   }
 
-  if (state_new.cpu_abus == 0xFF41 && cpu_wr && gen_clk_new(phase_total_old, 0b00000001)) {
+  if (cpu_addr_new == 0xFF41 && cpu_wr && gen_clk_new(phase_total_old, 0b00000001)) {
     pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
   }
 
-  if (state_new.cpu_abus == 0xFF41 && (cpu.bus_req_new.read && !DELTA_HA)) {
+  if (cpu_addr_new == 0xFF41 && (cpu.bus_req_new.read && !DELTA_HA)) {
     uint8_t stat = 0x80;
 
     stat |= (rendering_new || vblank_new) << 0;
@@ -1761,15 +1757,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // note this is an async set so it doesn't happen on the GH clock edge like other writes
   if (cpu_wr && gen_clk_new(phase_total_old, 0b00001110)) {
-    if (state_new.cpu_abus == 0xFF0F) pack_if = pack_cpu_dbus_new;
+    if (cpu_addr_new == 0xFF0F) pack_if = pack_cpu_dbus_new;
   }
 
   pack_if &= ~cpu.core.int_ack;
 
   if ((cpu.bus_req_new.read && !DELTA_HA)) {
-    if (state_new.cpu_abus == 0xFFFF) pack_cpu_dbus_new = pack_ie | 0b11100000;
-    if (state_new.cpu_abus == 0xFF0F) state_new.int_latch = (uint8_t)pack_if;
-    if (state_new.cpu_abus == 0xFF0F) pack_cpu_dbus_new = pack_if | 0b11100000;
+    if (cpu_addr_new == 0xFFFF) pack_cpu_dbus_new = pack_ie | 0b11100000;
+    if (cpu_addr_new == 0xFF0F) state_new.int_latch = (uint8_t)pack_if;
+    if (cpu_addr_new == 0xFF0F) pack_cpu_dbus_new = pack_if | 0b11100000;
   }
 
 
@@ -1783,7 +1779,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
   int lcd_x = lb_state.pix_count - 8;
-  int lcd_y = lb_state.reg_ly;
+  int lcd_y = ly_new;
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
     wire p0 = !REMY_LD0n;
@@ -1942,7 +1938,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.cpu_signals.SIG_CPU_BOOTp.state = 0;
     state_new.cpu_signals.SIG_BOOT_CSp.state = 0;
 
-    if (state_new.cpu_abus <= 0x00FF) {
+    if (cpu_addr_new <= 0x00FF) {
 
       state_new.cpu_signals.SIG_CPU_BOOTp.state = !state_new.cpu_signals.TEPU_BOOT_BITn;
 
@@ -1959,8 +1955,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.win_ctrl.ROGE_WY_MATCHp = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && win_en_new;
 
     if (cpu_wr && DELTA_GH) {
-      if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_63_JOY_P14.state = get_bit(state_old.cpu_dbus, 4);
-      if (state_new.cpu_abus == 0xFF00) pins.joy.PIN_62_JOY_P15.state = get_bit(state_old.cpu_dbus, 5);
+      if (cpu_addr_new == 0xFF00) pins.joy.PIN_63_JOY_P14.state = get_bit(state_old.cpu_dbus, 4);
+      if (cpu_addr_new == 0xFF00) pins.joy.PIN_62_JOY_P15.state = get_bit(state_old.cpu_dbus, 5);
     }
 
     if (!get_bit(state_new.reg_joy, 0)) {
@@ -1997,7 +1993,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     state_new.sys_clk.SIG_CPU_CLKREQ.state = 1; // dead signal
 
-    state_new.cpu_signals.SIG_CPU_ADDR_HIp.state = state_new.cpu_abus >= 0xFE00 && state_new.cpu_abus <= 0xFFFF; // dead signal
+    state_new.cpu_signals.SIG_CPU_ADDR_HIp.state = cpu_addr_new >= 0xFE00 && cpu_addr_new <= 0xFFFF; // dead signal
     state_new.cpu_signals.SIG_CPU_UNOR_DBG.state = 0; // dead signal
     state_new.cpu_signals.SIG_CPU_UMUT_DBG.state = 0; // dead signal
 

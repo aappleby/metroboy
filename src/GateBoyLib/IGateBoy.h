@@ -30,6 +30,7 @@ public:
 
   virtual GBResult dbg_read(const blob& cart_blob, int addr) = 0;
   virtual GBResult dbg_write (const blob& cart_blob, int addr, uint8_t data) = 0;
+  virtual GBResult dbg_flip() { return GBResult::ok(); }
 
   virtual GBResult run_phases(const blob& cart_blob, int phase_count) = 0;
   virtual GBResult next_phase(const blob& cart_blob) = 0;

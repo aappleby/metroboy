@@ -105,6 +105,7 @@ struct LogicBoy : public IGateBoy {
     result->cpu = cpu;
     result->mem = mem;
     result->sys = sys;
+    result->pins = pins;
     result->probes = probes;
     return result;
   }

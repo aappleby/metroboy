@@ -89,6 +89,11 @@ struct GateBoyPair : public IGateBoy {
     return res;
   }
 
+  GBResult dbg_flip() {
+    select_ab = !select_ab;
+    return GBResult::ok();
+  };
+
   GBResult run_phases(const blob& cart_blob, int phase_count) override {
     GBResult r1 = gb1->run_phases(cart_blob, phase_count);
     GBResult r2 = gb2->run_phases(cart_blob, phase_count);
@@ -104,28 +109,41 @@ struct GateBoyPair : public IGateBoy {
   GBResult set_buttons(uint8_t buttons) override {
     GBResult r1 = gb1->set_buttons(buttons);
     GBResult r2 = gb2->set_buttons(buttons);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    // if we check sync after buttons, we spam mismatch messages once a single one happens
+    //return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return GBResult::ok();
   }
 
-  const GateBoyCpu&   get_cpu() const override    { return gb1->get_cpu(); }
-  const GateBoyMem&   get_mem() const override    { return gb1->get_mem(); }
-  const GateBoyState& get_state() const override  { return gb1->get_state(); }
-  const GateBoySys&   get_sys() const override    { return gb1->get_sys(); }
-  const GateBoyPins&  get_pins() const override   { return gb1->get_pins(); }
-  const Probes&       get_probes() const override { return gb1->get_probes(); }
+  const GateBoyCpu&   get_cpu() const override    { return select_ab ? gb1->get_cpu()    : gb2->get_cpu();    }
+  const GateBoyMem&   get_mem() const override    { return select_ab ? gb1->get_mem()    : gb2->get_mem();    }
+  const GateBoyState& get_state() const override  { return select_ab ? gb1->get_state()  : gb2->get_state();  }
+  const GateBoySys&   get_sys() const override    { return select_ab ? gb1->get_sys()    : gb2->get_sys();    }
+  const GateBoyPins&  get_pins() const override   { return select_ab ? gb1->get_pins()   : gb2->get_pins();   }
+  const Probes&       get_probes() const override { return select_ab ? gb1->get_probes() : gb2->get_probes(); }
 
   IGateBoy* gb1;
   IGateBoy* gb2;
+  bool select_ab = true;
 
   bool check_sync() const {
     const auto& state1 = gb1->get_state();
     const auto& state2 = gb2->get_state();
 
     if (state1.diff(state2, 0x01)) {
-      LOG_R("Regression test mismatch @ phase %lld!\n", gb1->get_sys().phase_total);
+      LOG_R("Regression test state mismatch @ phase %lld!\n", gb1->get_sys().phase_total);
       //__debugbreak();
       return false;
     }
+
+    const auto& pins1 = gb1->get_pins();
+    const auto& pins2 = gb2->get_pins();
+    
+    //if (memcmp(&pins1, &pins2, sizeof(GateBoyPins))) {
+    if (!bit_cmp(pins1, pins2, 0x01)) {
+      LOG_R("Regression test pins mismatch @ phase %lld!\n", gb1->get_sys().phase_total);
+      return false;
+    }
+
     return true;
   }
 };

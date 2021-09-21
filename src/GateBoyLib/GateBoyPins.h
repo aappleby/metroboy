@@ -1,6 +1,8 @@
 #pragma once
 #include "GateBoyLib/Gates.h"
 
+#pragma pack(push, 1)
+
 //-----------------------------------------------------------------------------
 
 struct PinsControl {
@@ -370,3 +372,5 @@ struct GateBoyPins {
 };
 
 //-----------------------------------------------------------------------------
+
+#pragma pack(pop)

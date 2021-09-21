@@ -42,13 +42,13 @@ int main(int argc, char** argv) {
   //results += t.test_regs(pair_proto.get()); // tac fail, lcdc fail
   //results += t.test_dma(pair_proto.get()); // big fail
   //results += t.test_mem(pair_proto.get()); // oam fail
-  //results += t.test_micro_poweron(pair_proto.get());  // fail
-  //results += t.test_micro_lcden(pair_proto.get());  // fail
-  //results += t.test_micro_timer(pair_proto.get()); fail
-  //results += t.test_micro_lock_oam(pair_proto.get()); // fail
-  //results += t.test_micro_lock_vram(pair_proto.get()); // fail
-  //results += t.test_micro_ppu(pair_proto.get());  // fail
-  //results += t.test_micro_dma(pair_proto.get()); // fail
+  //results += t.test_micro_poweron(pair_proto.get());
+  //results += t.test_micro_lcden(pair_proto.get());
+  //results += t.test_micro_timer(pair_proto.get()); // FAIL
+  //results += t.test_micro_lock_oam(pair_proto.get()); // FAIL
+  //results += t.test_micro_lock_vram(pair_proto.get());
+  //results += t.test_micro_ppu(pair_proto.get());
+  results += t.test_micro_dma(pair_proto.get()); // FAIL
 
   //results += t.test_bootrom(pair_proto.get()); // PASS
   //results += t.test_clk(pair_proto.get()); // PASS
@@ -991,6 +991,7 @@ TestResults GateBoyTests::test_micro_mbc1(const IGateBoy* proto) {
 
 TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filename) {
   TestResults results;
+  LOG_B("- %s\n", filename);
 
   blob cart_blob;
   load_blob((std::string("tests/microtests/DMG/") + filename).c_str(), cart_blob);

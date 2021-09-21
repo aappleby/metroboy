@@ -56,6 +56,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   overlay_tex = create_texture_u32(160, 144, nullptr, false);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
+  /*
   if (config_fastmode) {
     gb_thread = new GateBoyThread(new LogicBoy());
   }
@@ -65,29 +66,23 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   else {
     gb_thread = new GateBoyThread(new GateBoy());
   }
+  */
 
+  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
   gb_thread->start();
 
-  //auto cart = Assembler::create_dummy_cart();
-  //gb_thread->load_cart_blob(cart);
-  //gb_thread->reset_to_bootrom();
-  
   blob cart;
-  load_blob("LinksAwakening.gb", cart);
+  //load_blob("LinksAwakening.gb", cart);
+  load_blob("tests/microtests/DMG/dma_0x1000.gb", cart);
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
 
-  //BlobStream bs;
-  //load_blob("eyes.dump", bs.b);
-  //gb_thread->load_raw_dump(bs);
-
-  //gb_thread->run_to(645148682 - 1);
+  gb_thread->run_to(46882592 - 1);
 
   //BlobStream bs;
   //load_blob("zelda_intro.dump", bs.b);
   //gb_thread->load_raw_dump(bs);
 
-  //gb_thread->add_steps(INT_MAX);
   gb_thread->resume();
 
   //load_rom("tests/mooneye-gb/tests/build/acceptance/" "ppu/lcdon_write_timing-GS.gb"); // dmg pass, gateboy fail
@@ -204,6 +199,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
       break;
     }
 
+
     // Run to end of bootrom
     case SDLK_b: {
       if (app_paused) {
@@ -241,7 +237,11 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     case SDLK_d:    show_diff   = !show_diff; break;
     case SDLK_g:    show_golden = !show_golden; break;
 
-    case SDLK_t: show_gb_ab = !show_gb_ab; break;
+    case SDLK_t: {
+      show_gb_ab = !show_gb_ab;
+      gb_thread->gb->dbg_flip();
+      break;
+    }
 
     case SDLK_LEFT:   {
       if (keyboard_state[SDL_SCANCODE_LCTRL]) {
@@ -540,7 +540,7 @@ Step controls:
     int code_size = 0;
     int code_base = 0;
   
-    if (!bit(state.cpu_signals.TEPU_BOOT_BITn.qp_old())) {
+    if (!bit(state.cpu_signals.TEPU_BOOT_BITn.state)) {
       code      = DMG_ROM_blob.data();
       code_size = (int)DMG_ROM_blob.size();
       code_base = ADDR_BOOT_ROM_BEGIN;
@@ -675,10 +675,10 @@ Step controls:
   int row3 = 640;
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 0 ==========\001", col7, row1);
-  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, mem.vid_ram, 0, (int)bit(state.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, mem.vid_ram, 0, (int)!bit(state.reg_lcdc.WEXU_LCDC_BGTILEn.state));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 1 ==========\001", col7, row2);
-  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, mem.vid_ram, 1, (int)bit(state.reg_lcdc.WEXU_LCDC_BGTILEn.qn_old()));
+  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, mem.vid_ram, 1, (int)!bit(state.reg_lcdc.WEXU_LCDC_BGTILEn.state));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Tiles ==========\001", col7, row3);
   gb_blitter.blit_tiles (view, screen_size, col7, row3 + 16, 1, mem.vid_ram);

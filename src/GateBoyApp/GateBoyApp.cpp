@@ -77,7 +77,9 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
 
-  gb_thread->run_to(46882592 - 1);
+  //gb_thread->run_to(46882592 - 1);
+  //gb_thread->run_to(46882588 - 2);
+  gb_thread->run_to(46882836 - 2);
 
   //BlobStream bs;
   //load_blob("zelda_intro.dump", bs.b);

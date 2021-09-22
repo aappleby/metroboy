@@ -204,6 +204,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   const bool req_addr_hi   = (cpu.bus_req_new.addr >= 0xFE00);
   const bool req_addr_lo   = (cpu.bus_req_new.addr <= 0x00FF);
 
+  const bool cpu_addr_oam_old  = (state_old.cpu_abus >= 0xFE00) && (state_old.cpu_abus <= 0xFEFF);
+
   const bool cpu_addr_vram_new = req_addr_vram && !DELTA_HA;
   const bool cpu_addr_ram_new  = req_addr_ram && !DELTA_HA;
   const bool cpu_addr_oam_new  = req_addr_oam && !DELTA_HA;
@@ -744,6 +746,37 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // OAM latch from last cycle gets moved into temp registers.
 
   {
+    wire XYSO_xBCDxFGH_old = !vid_rst_old && gen_clk(phase_old, 0b01110111);
+    wire XYSO_xBCDxFGH_new = !vid_rst_new && gen_clk(phase_new, 0b01110111);
+
+    wire CUFE_OAM_CLKp_old       = !((cpu_addr_oam_old || dma_running_old) && (DELTA_EF || DELTA_FG || DELTA_GH || DELTA_HA));
+    wire acyl_old                = (!dma_running_old && state_old.sprite_scanner.BESU_SCAN_DONEn.state && !vid_rst_old);
+    wire AVER_AxxxExxx_old       = !(acyl_old && XYSO_xBCDxFGH_old);
+    wire TYTU_SFETCH_S0n_old     = !get_bit(state_old.sfetch_counter, 0);
+    wire TACU_SPR_SEQ_5_TRIG_old = !(state_old.sfetch_control.TYFO_SFETCH_S0p_D1.state && TYTU_SFETCH_S0n_old);
+    wire TUVO_PPU_OAM_RDp_old    = !(!rendering_old || get_bit(state_old.sfetch_counter, 1) || get_bit(state_old.sfetch_counter, 2));
+    wire VAPE_OAM_CLKENn_old     = (TUVO_PPU_OAM_RDp_old && TACU_SPR_SEQ_5_TRIG_old);
+    wire XUJY_OAM_CLKENp_old     = !VAPE_OAM_CLKENn_old;
+    wire BYCU_OAM_CLKp_old       = !(AVER_AxxxExxx_old && XUJY_OAM_CLKENp_old && CUFE_OAM_CLKp_old);
+
+    wire CUFE_OAM_CLKp_new       = !((cpu_addr_oam_new || dma_running_new) && (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH));
+    wire acyl_new                = (!dma_running_new && state_new.sprite_scanner.BESU_SCAN_DONEn.state && !vid_rst_new);
+    wire AVER_AxxxExxx_new       = !(acyl_new && XYSO_xBCDxFGH_new);
+    wire TYTU_SFETCH_S0n_new     = !get_bit(state_new.sfetch_counter, 0);
+    wire TACU_SPR_SEQ_5_TRIG_new = !(state_new.sfetch_control.TYFO_SFETCH_S0p_D1.state && TYTU_SFETCH_S0n_new);
+    wire TUVO_PPU_OAM_RDp_new    = !(!rendering_new || get_bit(state_new.sfetch_counter, 1) || get_bit(state_new.sfetch_counter, 2));
+    wire VAPE_OAM_CLKENn_new     = (TUVO_PPU_OAM_RDp_new && TACU_SPR_SEQ_5_TRIG_new);
+    wire XUJY_OAM_CLKENp_new     = !VAPE_OAM_CLKENn_new;
+    wire BYCU_OAM_CLKp_new       = !(AVER_AxxxExxx_new && XUJY_OAM_CLKENp_new &&  CUFE_OAM_CLKp_new);
+
+    if (bit(BYCU_OAM_CLKp_old) && !bit(BYCU_OAM_CLKp_new)) {
+      state_new.oam_temp_a = ~state_new.oam_latch_a;
+      state_new.oam_temp_b = ~state_new.oam_latch_b;
+    }
+  }
+
+  /*
+  {
     const bool cpu_addr_oam_old  = (state_old.cpu_abus >= 0xFE00) && (state_old.cpu_abus <= 0xFEFF) && !DELTA_HA;
 
     uint8_t BYCU_OAM_CLKp_old = 1;
@@ -761,6 +794,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_temp_b = ~state_new.oam_latch_b;
     }
   }
+  */
 
   //----------------------------------------
   // This bit of sprite bus drive has to come after oam_temp_a is set.

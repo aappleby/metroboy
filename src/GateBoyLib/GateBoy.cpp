@@ -522,7 +522,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p21.XYMU*/ gb_state.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp, gb_state.sprite_scanner.AVAP_SCAN_DONE_TRIGp.out_new());
   /*_p24.LOBY*/ wire LOBY_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
   /*#p27.PAHA*/ wire PAHA_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
-  /*_p29.TEPA*/ wire TEPA_RENDERINGp = not1(gb_state.XYMU_RENDERINGn.qn_new());
+  /*_p29.TEPA*/ wire TEPA_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
 
   //----------------------------------------
   // Sprite fetch sequencer
@@ -553,7 +553,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     }
 
     /*_p29.SAKY*/ wire SAKY_SFETCHn = nor2(gb_state.sfetch_counter.TULY_SFETCH_S1p.qp_new(), gb_state.sfetch_control.VONU_SFETCH_S1p_D4.qp_new());
-    /*_p29.TYSO*/ wire TYSO_SFETCHINGn = or2(SAKY_SFETCHn, TEPA_RENDERINGp); // def or
+    /*_p29.TYSO*/ wire TYSO_SFETCHINGn = or2(SAKY_SFETCHn, TEPA_RENDERINGn); // def or
     /*_p29.TEXY*/ gb_state.sfetch_control.TEXY_SFETCHINGp = not1(TYSO_SFETCHINGn);
 
     /*_p29.TYNO*/ wire TYNO = nand3(gb_state.sfetch_counter.TOXE_SFETCH_S0p.qp_new(), gb_state.sfetch_control.SEBA_SFETCH_S1p_D5.qp_new(), gb_state.sfetch_control.VONU_SFETCH_S1p_D4.qp_new());
@@ -612,7 +612,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p25.AVER*/ wire AVER_AxxxExxx = nand2(gb_state.ACYL_SCANNINGp.out_new(), gb_state.sys_clk.XYSO_xBCDxFGH());
     /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(gb_state.sfetch_counter.TOXE_SFETCH_S0p.qp_new());
     /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(gb_state.sfetch_control.TYFO_SFETCH_S0p_D1.qp_new(), TYTU_SFETCH_S0n);
-    /*_p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(TEPA_RENDERINGp, gb_state.sfetch_counter.TULY_SFETCH_S1p.qp_new(), gb_state.sfetch_counter.TESE_SFETCH_S2p.qp_new());
+    /*_p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(TEPA_RENDERINGn, gb_state.sfetch_counter.TULY_SFETCH_S1p.qp_new(), gb_state.sfetch_counter.TESE_SFETCH_S2p.qp_new());
     /*_p25.VAPE*/ wire VAPE_OAM_CLKENn = and2(TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
     /*_p25.XUJY*/ wire XUJY_OAM_CLKENp = not1(VAPE_OAM_CLKENn);
     /*_p25.BYCU*/ wire BYCU_OAM_CLKp = nand3(AVER_AxxxExxx, XUJY_OAM_CLKENp, CUFE_OAM_CLKp);

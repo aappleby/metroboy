@@ -53,6 +53,12 @@ static const char* phase_names[] = {
   "\003_______H\001",
 };
 
+inline wire gen_clk(int64_t phase, uint8_t mask) {
+  if (phase < 0 || phase >> 7) debugbreak();
+  uint8_t phase_mask = 1 << (7 - phase);
+  return !!(phase_mask & mask);
+}
+
 inline wire gen_clk_old(int64_t phase_total, uint8_t mask) {
   uint8_t phase_mask_old = 1 << (7 - ((phase_total + 0) & 7));
   return !!(phase_mask_old & mask);

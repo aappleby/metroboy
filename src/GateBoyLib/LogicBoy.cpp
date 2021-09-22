@@ -1460,7 +1460,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (pins_vram_ctrl_oen_new) {
       state_new.vram_dbus = mem.vid_ram[state_new.vram_abus ^ 0x1FFF];
     }
-    pins_vram_dbus = state_new.vram_dbus;
+    pins_vram_dbus = ~state_new.vram_dbus;
   }
   else if (ext_addr_new) {
     if ((gen_clk_new(phase_total_old, 0b00111111) && 1) && cpu_addr_vram_new && cpu_wr) {

@@ -35,32 +35,33 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-  const auto gb_proto = make_unique<GateBoy>();
-  const auto lb_proto = make_unique<LogicBoy>();
-  const auto pair_proto = make_unique<GateBoyPair>(gb_proto.get(), lb_proto.get());
+  //const auto proto = make_unique<GateBoy>();
+  //const auto proto = make_unique<LogicBoy>();
+  const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
 
-  //results += t.test_regs(pair_proto.get()); // tac fail, lcdc fail
-  //results += t.test_dma(pair_proto.get()); // big fail
-  //results += t.test_mem(pair_proto.get()); // oam fail
-  //results += t.test_micro_poweron(pair_proto.get());
-  //results += t.test_micro_lcden(pair_proto.get());
-  //results += t.test_micro_timer(pair_proto.get()); // FAIL
-  //results += t.test_micro_lock_oam(pair_proto.get()); // FAIL
-  //results += t.test_micro_lock_vram(pair_proto.get());
-  //results += t.test_micro_ppu(pair_proto.get());
-  results += t.test_micro_dma(pair_proto.get()); // FAIL
+  //results += t.test_regs(proto.get()); // p1, tac, lcdc, dma mismatch
+  //results += t.test_micro_timer(proto.get()); // timer_tima_write_e.gb mismatch
+  //results += t.test_dma(proto.get()); // 0x0000 mismatch
+  //results += t.test_micro_lock_oam(proto.get()); // oam_write_l0_b.gb mismatch
 
-  //results += t.test_bootrom(pair_proto.get()); // PASS
-  //results += t.test_clk(pair_proto.get()); // PASS
-  //results += t.test_init(pair_proto.get()); // pass
-  //results += t.test_ppu(pair_proto.get()); // PASS
-  //results += t.test_timer(pair_proto.get());  // PASS
-  //results += t.test_micro_int_stat(pair_proto.get());  // PASS
-  //results += t.test_micro_int_timer(pair_proto.get());  // PASS
-  //results += t.test_micro_int_serial(pair_proto.get()); // PASS
-  //results += t.test_micro_int_joypad(pair_proto.get()); // PASS
-  //results += t.test_micro_window(pair_proto.get());  // PASS
-  //results += t.test_micro_mbc1(pair_proto.get());  // PASS
+  // PASS
+  results += t.test_micro_lcden(proto.get());
+  results += t.test_micro_lock_vram(proto.get());
+  results += t.test_micro_ppu(proto.get());
+  results += t.test_micro_poweron(proto.get());
+  results += t.test_mem(proto.get());
+  results += t.test_micro_dma(proto.get());
+  results += t.test_bootrom(proto.get());
+  results += t.test_clk(proto.get());
+  results += t.test_init(proto.get());
+  results += t.test_ppu(proto.get());
+  results += t.test_timer(proto.get());
+  results += t.test_micro_int_stat(proto.get());
+  results += t.test_micro_int_timer(proto.get());
+  results += t.test_micro_int_serial(proto.get());
+  results += t.test_micro_int_joypad(proto.get());
+  results += t.test_micro_window(proto.get());
+  results += t.test_micro_mbc1(proto.get());
 
 #if 0
   LOG_B("========== GateBoy tests ==========\n");
@@ -76,6 +77,7 @@ int main(int argc, char** argv) {
   results += t.test_generic         (pair_proto.get());
   results += t.test_regression      (pair_proto.get()); // OK
   LOG_B("\n");
+#endif
 
   LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
   LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
@@ -89,7 +91,6 @@ int main(int argc, char** argv) {
     LOG_R("########################################\n");
     LOG_R("\n");
   }
-#endif
 
   return results.test_fail != 0;
 }

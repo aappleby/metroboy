@@ -21,6 +21,9 @@ void GateBoyThread::start() {
   if (main) return;
   main = new std::thread([this] { thread_main(); });
   pause();
+
+  cart_blob = Assembler::create_dummy_cart();
+  gb->reset_to_bootrom(cart_blob);
 }
 
 //----------------------------------------

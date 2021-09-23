@@ -32,51 +32,37 @@ int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
 
+  if (config_fastmode) {
+    LOG_R("Don't run tests in fast mode!\n");
+    return 0;
+  }
+
   TestResults results;
   GateBoyTests t;
 
-  //const auto proto = make_unique<GateBoy>();
-  //const auto proto = make_unique<LogicBoy>();
-  const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
 
-  //results += t.test_regs(proto.get()); // p1, tac, lcdc, dma mismatch
-  results += t.test_micro_timer(proto.get()); // timer_tima_write_e.gb mismatch
-  //results += t.test_dma(proto.get()); // 0x0000 mismatch
 
-  // PASS
-  //results += t.test_micro_lock_oam(proto.get());
-  //results += t.test_micro_lcden(proto.get());
-  //results += t.test_micro_lock_vram(proto.get());
-  //results += t.test_micro_ppu(proto.get());
-  //results += t.test_micro_poweron(proto.get());
-  //results += t.test_mem(proto.get());
-  //results += t.test_micro_dma(proto.get());
-  //results += t.test_bootrom(proto.get());
-  //results += t.test_clk(proto.get());
-  //results += t.test_init(proto.get());
-  //results += t.test_ppu(proto.get());
-  //results += t.test_timer(proto.get());
-  //results += t.test_micro_int_stat(proto.get());
-  //results += t.test_micro_int_timer(proto.get());
-  //results += t.test_micro_int_serial(proto.get());
-  //results += t.test_micro_int_joypad(proto.get());
-  //results += t.test_micro_window(proto.get());
-  //results += t.test_micro_mbc1(proto.get());
 
-#if 0
-  LOG_B("========== GateBoy tests ==========\n");
-  results += t.test_fastboot        (gb_proto.get(), 0xFF);
-  results += t.test_reset_to_bootrom(gb_proto.get(), 0xFF);
-  results += t.test_reset_to_cart   (gb_proto.get(), 0xFF);
-  results += t.test_generic         (gb_proto.get());
-  LOG_B("\n");
+#if 1
+  {
+    LOG_B("========== GateBoy tests ==========\n");
+    const auto proto = make_unique<GateBoy>();
+    results += t.test_fastboot        (proto.get(), 0xFF);
+    results += t.test_reset_to_bootrom(proto.get(), 0xFF);
+    results += t.test_reset_to_cart   (proto.get(), 0xFF);
+    results += t.test_generic         (proto.get());
+    LOG_B("\n");
+  }
 
-  LOG_B("========== LogicBoy regression tests ==========\n");
-  results += t.test_reset_to_bootrom(pair_proto.get(), 0x01); // OK
-  results += t.test_reset_to_cart   (pair_proto.get(), 0x01); // OK
-  results += t.test_generic         (pair_proto.get());
-  results += t.test_regression      (pair_proto.get()); // OK
-  LOG_B("\n");
+  {
+    LOG_B("========== LogicBoy regression tests ==========\n");
+    const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
+    results += t.test_reset_to_bootrom(proto.get(), 0x01); // OK
+    results += t.test_reset_to_cart   (proto.get(), 0x01); // OK
+    results += t.test_generic         (proto.get());
+    results += t.test_regression      (proto.get()); // OK
+    LOG_B("\n");
+  }
 #endif
 
   LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
@@ -240,12 +226,13 @@ TestResults GateBoyTests::test_reg(const IGateBoy* proto, const char* tag, uint1
   gb->reset_to_bootrom(dummy_cart);
 
   for (int i = 0; i < 256; i++) {
+    //printf("%d\n", i);
     uint8_t data_in = uint8_t(i & mask);
     auto res1 = gb->dbg_write(dummy_cart, addr, data_in);
-    ASSERT_EQ(true, res1.is_ok(), "dbg_write failed");
+    ASSERT_EQ(true, res1.is_ok(), "dbg_write failed @ %d", i);
 
     auto res2 = gb->dbg_read(dummy_cart, addr);
-    ASSERT_EQ(true, res2.is_ok(), "dbg_read failed");
+    ASSERT_EQ(true, res2.is_ok(), "dbg_read failed @ %d", i);
     uint8_t data_out = res2.unwrap() & mask;
     ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
@@ -992,7 +979,7 @@ TestResults GateBoyTests::test_micro_mbc1(const IGateBoy* proto) {
 
 TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filename) {
   TestResults results;
-  LOG_B("- %s\n", filename);
+  //LOG_B("- %s\n", filename);
 
   blob cart_blob;
   load_blob((std::string("tests/microtests/DMG/") + filename).c_str(), cart_blob);
@@ -1754,8 +1741,8 @@ TestResults GateBoyTests::test_dma(const IGateBoy* proto, uint16_t src) {
   unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_cart(test_cart);
   
-  const_cast<GateBoySys&>(gb->get_sys()).cpu_en = false;
-
+  gb->set_cpu_en(false);
+  
   gb->dbg_write(test_cart, ADDR_LCDC, 0);
   gb->dbg_write(test_cart, 0x0000, 0x0A); // enable mbc1 ram
 

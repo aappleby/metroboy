@@ -111,6 +111,10 @@ struct GateBoyThread {
     return step_count != 0;
   }
 
+  blob& get_cart() {
+    return cart_blob;
+  }
+
   const blob& get_cart() const {
     return cart_blob;
   }

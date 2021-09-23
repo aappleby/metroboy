@@ -227,6 +227,12 @@ struct GateBoy  : public IGateBoy {
 
   GBResult set_buttons(uint8_t buttons) override { sys.buttons = buttons; return GBResult::ok(); }
  
+  GBResult set_cpu_en(bool enabled) override {
+    sys.cpu_en = enabled;
+    return GBResult::ok();
+  };
+
+
   const GateBoyCpu&   get_cpu() const override    { return cpu; }
   const GateBoyMem&   get_mem() const override    { return mem; }
   const GateBoyState& get_state() const override  { return gb_state; }

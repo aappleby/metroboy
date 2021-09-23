@@ -36,6 +36,7 @@ public:
   virtual GBResult next_phase(const blob& cart_blob) = 0;
 
   virtual GBResult set_buttons(uint8_t buttons) = 0;
+  virtual GBResult set_cpu_en(bool enabled) { return GBResult::ok(); };
 
   virtual const GateBoyCpu&   get_cpu() const = 0;
   virtual const GateBoyMem&   get_mem() const = 0;

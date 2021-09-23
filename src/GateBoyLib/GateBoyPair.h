@@ -21,7 +21,9 @@ struct GateBoyPair : public IGateBoy {
   GBResult get_flags() const override {
     GBResult r1 = gb1->get_flags();
     GBResult r2 = gb2->get_flags();
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    if (r1.is_err()) { LOG_R("gb1 result.is_err()\n"); return r1; }
+    if (r2.is_err()) { LOG_R("gb2 result.is_err()\n"); return r2; }
+    return GBResult(r1.unwrap() & r2.unwrap());
   }
 
   GBResult load_raw_dump(BlobStream& dump_in) override {
@@ -29,7 +31,7 @@ struct GateBoyPair : public IGateBoy {
     GBResult r1 = gb1->load_raw_dump(dump_in);
     dump_in.cursor = old_cursor;
     GBResult r2 = gb2->load_raw_dump(dump_in);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult save_raw_dump(BlobStream& dump_out) const override {
@@ -40,53 +42,49 @@ struct GateBoyPair : public IGateBoy {
   GBResult reset_to_poweron(const blob& cart_blob) override {
     GBResult r1 = gb1->reset_to_poweron(cart_blob);
     GBResult r2 = gb2->reset_to_poweron(cart_blob);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult run_poweron_reset(const blob& cart_blob, bool fastboot) override {
     GBResult r1 = gb1->run_poweron_reset(cart_blob, fastboot);
     GBResult r2 = gb2->run_poweron_reset(cart_blob, fastboot);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult reset_to_bootrom(const blob& cart_blob) override {
     GBResult r1 = gb1->reset_to_bootrom(cart_blob);
     GBResult r2 = gb2->reset_to_bootrom(cart_blob);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult reset_to_cart   (const blob& cart_blob) override {
     GBResult r1 = gb1->reset_to_cart(cart_blob);
     GBResult r2 = gb2->reset_to_cart(cart_blob);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult peek(int addr) const override {
     GBResult r1 = gb1->peek(addr);
     GBResult r2 = gb2->peek(addr);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult poke(int addr, uint8_t data_in) override {
     GBResult r1 = gb1->poke(addr, data_in);
     GBResult r2 = gb2->poke(addr, data_in);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult dbg_read(const blob& cart_blob, int addr) override {
     GBResult r1 = gb1->dbg_read(cart_blob, addr);
     GBResult r2 = gb2->dbg_read(cart_blob, addr);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult dbg_write (const blob& cart_blob, int addr, uint8_t data_in) override {
     GBResult r1 = gb1->dbg_write(cart_blob, addr, data_in);
     GBResult r2 = gb2->dbg_write(cart_blob, addr, data_in);
-    //return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
-
-    auto res = r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
-    //if (res.is_err()) debugbreak();
-    return res;
+    return check_results(r1, r2);
   }
 
   GBResult dbg_flip() {
@@ -97,13 +95,13 @@ struct GateBoyPair : public IGateBoy {
   GBResult run_phases(const blob& cart_blob, int phase_count) override {
     GBResult r1 = gb1->run_phases(cart_blob, phase_count);
     GBResult r2 = gb2->run_phases(cart_blob, phase_count);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult next_phase(const blob& cart_blob) override {
     GBResult r1 = gb1->next_phase(cart_blob);
     GBResult r2 = gb2->next_phase(cart_blob);
-    return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
+    return check_results(r1, r2);
   }
 
   GBResult set_buttons(uint8_t buttons) override {
@@ -113,6 +111,12 @@ struct GateBoyPair : public IGateBoy {
     //return r1 == r2  && check_sync() ? r1 : Error::MISMATCH;
     return GBResult::ok();
   }
+
+  GBResult set_cpu_en(bool enabled) override {
+    GBResult r1 = gb1->set_cpu_en(enabled);
+    GBResult r2 = gb2->set_cpu_en(enabled);
+    return check_results(r1, r2);
+  };
 
   const GateBoyCpu&   get_cpu() const override    { return select_ab ? gb1->get_cpu()    : gb2->get_cpu();    }
   const GateBoyMem&   get_mem() const override    { return select_ab ? gb1->get_mem()    : gb2->get_mem();    }
@@ -124,6 +128,14 @@ struct GateBoyPair : public IGateBoy {
   IGateBoy* gb1;
   IGateBoy* gb2;
   bool select_ab = true;
+
+  GBResult check_results(GBResult r1, GBResult r2) const {
+    if (r1.is_err()) { LOG_R("gb1 result.is_err()\n"); return r1; }
+    if (r2.is_err()) { LOG_R("gb2 result.is_err()\n"); return r2; }
+    if (!(r1 == r2)) { LOG_R("gb1 result != gb2 result\n"); return Error::MISMATCH; }
+    if (!check_sync()) return Error::MISMATCH;
+    return r1;
+  }
 
   bool check_sync() const {
     const auto& state1 = gb1->get_state();

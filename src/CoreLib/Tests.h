@@ -30,7 +30,7 @@ struct TestResults {
       LOG_R("%s: %d expect failures, %d test failures\n", function_name, expect_fail, test_fail);
     }
     else {
-      LOG_G("PASS!\n");
+      //LOG_G("PASS!\n");
     }
     return *this;
   }

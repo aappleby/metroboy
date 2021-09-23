@@ -56,7 +56,6 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   overlay_tex = create_texture_u32(160, 144, nullptr, false);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-  /*
   if (config_fastmode) {
     gb_thread = new GateBoyThread(new LogicBoy());
   }
@@ -66,22 +65,16 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   else {
     gb_thread = new GateBoyThread(new GateBoy());
   }
-  */
 
-  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
   gb_thread->start();
 
   blob cart;
-  //load_blob("LinksAwakening.gb", cart);
-  load_blob("tests/microtests/DMG/timer_tima_write_e.gb", cart);
+  load_blob("LinksAwakening.gb", cart);
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
 
-  gb_thread->run_to(46880849 - 1);
-  //gb_thread->run_to(46881052 - 1);
-
   //BlobStream bs;
-  //load_blob("zelda_intro.dump", bs.b);
+  //load_blob("zoomer.dump", bs.b);
   //gb_thread->load_raw_dump(bs);
 
   gb_thread->resume();

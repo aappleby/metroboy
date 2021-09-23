@@ -40,28 +40,28 @@ int main(int argc, char** argv) {
   const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
 
   //results += t.test_regs(proto.get()); // p1, tac, lcdc, dma mismatch
-  //results += t.test_micro_timer(proto.get()); // timer_tima_write_e.gb mismatch
+  results += t.test_micro_timer(proto.get()); // timer_tima_write_e.gb mismatch
   //results += t.test_dma(proto.get()); // 0x0000 mismatch
-  //results += t.test_micro_lock_oam(proto.get()); // oam_write_l0_b.gb mismatch
 
   // PASS
-  results += t.test_micro_lcden(proto.get());
-  results += t.test_micro_lock_vram(proto.get());
-  results += t.test_micro_ppu(proto.get());
-  results += t.test_micro_poweron(proto.get());
-  results += t.test_mem(proto.get());
-  results += t.test_micro_dma(proto.get());
-  results += t.test_bootrom(proto.get());
-  results += t.test_clk(proto.get());
-  results += t.test_init(proto.get());
-  results += t.test_ppu(proto.get());
-  results += t.test_timer(proto.get());
-  results += t.test_micro_int_stat(proto.get());
-  results += t.test_micro_int_timer(proto.get());
-  results += t.test_micro_int_serial(proto.get());
-  results += t.test_micro_int_joypad(proto.get());
-  results += t.test_micro_window(proto.get());
-  results += t.test_micro_mbc1(proto.get());
+  //results += t.test_micro_lock_oam(proto.get());
+  //results += t.test_micro_lcden(proto.get());
+  //results += t.test_micro_lock_vram(proto.get());
+  //results += t.test_micro_ppu(proto.get());
+  //results += t.test_micro_poweron(proto.get());
+  //results += t.test_mem(proto.get());
+  //results += t.test_micro_dma(proto.get());
+  //results += t.test_bootrom(proto.get());
+  //results += t.test_clk(proto.get());
+  //results += t.test_init(proto.get());
+  //results += t.test_ppu(proto.get());
+  //results += t.test_timer(proto.get());
+  //results += t.test_micro_int_stat(proto.get());
+  //results += t.test_micro_int_timer(proto.get());
+  //results += t.test_micro_int_serial(proto.get());
+  //results += t.test_micro_int_joypad(proto.get());
+  //results += t.test_micro_window(proto.get());
+  //results += t.test_micro_mbc1(proto.get());
 
 #if 0
   LOG_B("========== GateBoy tests ==========\n");

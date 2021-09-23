@@ -1541,11 +1541,33 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   state_new.oam_dbus_a = 0xFF;
   state_new.oam_dbus_b = 0xFF;
 
+  if (gen_clk_new(phase_total_old, 0b11110000)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 1;
+  if (cpu_addr_oam_new && cpu_wr && gen_clk_new(phase_total_old, 0b00001110)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 0;
+
   //----------
   // OAM bus and control signals.
   // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
 
-  if ((!dma_running_new && state_new.sprite_scanner.BESU_SCAN_DONEn && !vid_rst_new)) {
+  if (dma_running_new) {
+    state_new.oam_abus = (uint8_t)~state_new.dma_lo;
+
+    if (DELTA_HA || DELTA_AB || DELTA_BC || DELTA_CD) {
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
+      state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
+      state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+    }
+    else {
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+      state_new.oam_ctrl.SIG_OAM_WRn_A.state = !get_bit(state_new.oam_abus, 0);
+      state_new.oam_ctrl.SIG_OAM_WRn_B.state =  get_bit(state_new.oam_abus, 0);
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+    }
+
+    state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : pins_dbus;
+    state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : pins_dbus;
+  }
+  else if (state_new.sprite_scanner.BESU_SCAN_DONEn && !vid_rst_new) {
     state_new.oam_abus = (uint8_t)~((state_new.scan_counter << 2) | 0b00);
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
@@ -1602,6 +1624,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
         state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
       }
     }
+
+    wire XUPA_CPU_OAM_WRp  = !state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state;
+    wire AJUJ_OAM_BUSYn    = !(state_new.sprite_scanner.BESU_SCAN_DONEn && !vid_rst_new) && !rendering_new;
+    wire APAG_CBD_TO_OBDp  = (XUPA_CPU_OAM_WRp && AJUJ_OAM_BUSYn);
+    if (APAG_CBD_TO_OBDp) {
+      state_new.oam_dbus_a = ~state_new.cpu_dbus;
+      state_new.oam_dbus_b = ~state_new.cpu_dbus;
+    }
   }
   else {
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
@@ -1611,40 +1641,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_abus = (uint8_t)~cpu_addr_new;
     state_new.oam_dbus_a = ~state_new.cpu_dbus;
     state_new.oam_dbus_b = ~state_new.cpu_dbus;
-  }
 
-  // DMA overrides oam bus
-
-  if (dma_running_new) {
-    state_new.oam_abus = (uint8_t)~state_new.dma_lo;
-
-    if (DELTA_HA || DELTA_AB || DELTA_BC || DELTA_CD) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
-      state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
-      state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+    wire APAG_CBD_TO_OBDp  = !(state_new.sprite_scanner.BESU_SCAN_DONEn && !vid_rst_new) && !rendering_new;
+    if (APAG_CBD_TO_OBDp) {
+      state_new.oam_dbus_a = ~state_new.cpu_dbus;
+      state_new.oam_dbus_b = ~state_new.cpu_dbus;
     }
-    else {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_WRn_A.state = !get_bit(state_new.oam_abus, 0);
-      state_new.oam_ctrl.SIG_OAM_WRn_B.state =  get_bit(state_new.oam_abus, 0);
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-    }
-
-    state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : pins_dbus;
-    state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : pins_dbus;
   }
 
-  // WUJE is weird, not sure why it's necessary. Bugfix?
-  if (gen_clk_new(phase_total_old, 0b11110000)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 1;
-  if (cpu_addr_oam_new && cpu_wr && gen_clk_new(phase_total_old, 0b00001110)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 0;
-
-  if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn) {
-    state_new.oam_dbus_a = ~state_new.cpu_dbus;
-    state_new.oam_dbus_b = ~state_new.cpu_dbus;
-  }
-
-  // OAM latch operates on the overridden bus
+  // OAM latch stores the contents of the oam dbus
 
   if ((!dma_running_new && state_new.sprite_scanner.BESU_SCAN_DONEn && !vid_rst_new)) {
     if (DELTA_AB || DELTA_BC || DELTA_EF || DELTA_FG) {

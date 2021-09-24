@@ -529,104 +529,104 @@ void GateBoy::store_sprite_gates(
 // and update the match flags and FEPO_STORE_MATCHp.
 
 void GateBoy::get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags& sprite_match_flags) {
-  /*#p21.ACAM*/ wire ACAM_PX0n = not1(gb_state.pix_count.XEHO_PX0p.qp_new());
-  /*_p21.AZUB*/ wire AZUB_PX1n = not1(gb_state.pix_count.SAVY_PX1p.qp_new());
-  /*_p21.AMEL*/ wire AMEL_PX2n = not1(gb_state.pix_count.XODU_PX2p.qp_new());
-  /*_p21.AHAL*/ wire AHAL_PX3n = not1(gb_state.pix_count.XYDO_PX3p.qp_new());
-  /*_p21.APUX*/ wire APUX_PX4n = not1(gb_state.pix_count.TUHU_PX4p.qp_new());
-  /*_p21.ABEF*/ wire ABEF_PX5n = not1(gb_state.pix_count.TUKY_PX5p.qp_new());
-  /*_p21.ADAZ*/ wire ADAZ_PX6n = not1(gb_state.pix_count.TAKO_PX6p.qp_new());
-  /*_p21.ASAH*/ wire ASAH_PX7n = not1(gb_state.pix_count.SYBE_PX7p.qp_new());
+  /*#p21.ACAM*/ wire ACAM_PX0n_odd = not1(gb_state.pix_count.XEHO_PX0p_odd.qp_new());
+  /*_p21.AZUB*/ wire AZUB_PX1n_odd = not1(gb_state.pix_count.SAVY_PX1p_odd.qp_new());
+  /*_p21.AMEL*/ wire AMEL_PX2n_odd = not1(gb_state.pix_count.XODU_PX2p_odd.qp_new());
+  /*_p21.AHAL*/ wire AHAL_PX3n_odd = not1(gb_state.pix_count.XYDO_PX3p_odd.qp_new());
+  /*_p21.APUX*/ wire APUX_PX4n_odd = not1(gb_state.pix_count.TUHU_PX4p_odd.qp_new());
+  /*_p21.ABEF*/ wire ABEF_PX5n_odd = not1(gb_state.pix_count.TUKY_PX5p_odd.qp_new());
+  /*_p21.ADAZ*/ wire ADAZ_PX6n_odd = not1(gb_state.pix_count.TAKO_PX6p_odd.qp_new());
+  /*_p21.ASAH*/ wire ASAH_PX7n_odd = not1(gb_state.pix_count.SYBE_PX7p_odd.qp_new());
 
-  /*#p31.ZOGY*/ wire ZOGY_STORE0_MATCH0n = xor2(gb_state.store_x0.XEPE_STORE0_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.ZEBA*/ wire ZEBA_STORE0_MATCH1n = xor2(gb_state.store_x0.YLAH_STORE0_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.ZAHA*/ wire ZAHA_STORE0_MATCH2n = xor2(gb_state.store_x0.ZOLA_STORE0_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.ZOKY*/ wire ZOKY_STORE0_MATCH3n = xor2(gb_state.store_x0.ZULU_STORE0_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.WOJU*/ wire WOJU_STORE0_MATCH4n = xor2(gb_state.store_x0.WELO_STORE0_X4p.qn_new(), APUX_PX4n);
-  /*_p31.YFUN*/ wire YFUN_STORE0_MATCH5n = xor2(gb_state.store_x0.XUNY_STORE0_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.WYZA*/ wire WYZA_STORE0_MATCH6n = xor2(gb_state.store_x0.WOTE_STORE0_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.YPUK*/ wire YPUK_STORE0_MATCH7n = xor2(gb_state.store_x0.XAKO_STORE0_X7p.qn_new(), ASAH_PX7n);
+  /*#p31.ZOGY*/ wire ZOGY_STORE0_MATCH0n = xor2(gb_state.store_x0.XEPE_STORE0_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.ZEBA*/ wire ZEBA_STORE0_MATCH1n = xor2(gb_state.store_x0.YLAH_STORE0_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.ZAHA*/ wire ZAHA_STORE0_MATCH2n = xor2(gb_state.store_x0.ZOLA_STORE0_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.ZOKY*/ wire ZOKY_STORE0_MATCH3n = xor2(gb_state.store_x0.ZULU_STORE0_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.WOJU*/ wire WOJU_STORE0_MATCH4n = xor2(gb_state.store_x0.WELO_STORE0_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.YFUN*/ wire YFUN_STORE0_MATCH5n = xor2(gb_state.store_x0.XUNY_STORE0_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.WYZA*/ wire WYZA_STORE0_MATCH6n = xor2(gb_state.store_x0.WOTE_STORE0_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.YPUK*/ wire YPUK_STORE0_MATCH7n = xor2(gb_state.store_x0.XAKO_STORE0_X7p.qn_new(), ASAH_PX7n_odd);
 
-  /*_p31.EDYM*/ wire EDYM_STORE1_MATCH0n = xor2(gb_state.store_x1.DANY_STORE1_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.EMYB*/ wire EMYB_STORE1_MATCH1n = xor2(gb_state.store_x1.DUKO_STORE1_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.EBEF*/ wire EBEF_STORE1_MATCH2n = xor2(gb_state.store_x1.DESU_STORE1_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.EWOK*/ wire EWOK_STORE1_MATCH3n = xor2(gb_state.store_x1.DAZO_STORE1_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.COLA*/ wire COLA_STORE1_MATCH4n = xor2(gb_state.store_x1.DAKE_STORE1_X4p.qn_new(), APUX_PX4n);
-  /*_p31.BOBA*/ wire BOBA_STORE1_MATCH5n = xor2(gb_state.store_x1.CESO_STORE1_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.COLU*/ wire COLU_STORE1_MATCH6n = xor2(gb_state.store_x1.DYFU_STORE1_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.BAHU*/ wire BAHU_STORE1_MATCH7n = xor2(gb_state.store_x1.CUSY_STORE1_X7p.qn_new(), ASAH_PX7n);
+  /*_p31.EDYM*/ wire EDYM_STORE1_MATCH0n = xor2(gb_state.store_x1.DANY_STORE1_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.EMYB*/ wire EMYB_STORE1_MATCH1n = xor2(gb_state.store_x1.DUKO_STORE1_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.EBEF*/ wire EBEF_STORE1_MATCH2n = xor2(gb_state.store_x1.DESU_STORE1_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.EWOK*/ wire EWOK_STORE1_MATCH3n = xor2(gb_state.store_x1.DAZO_STORE1_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.COLA*/ wire COLA_STORE1_MATCH4n = xor2(gb_state.store_x1.DAKE_STORE1_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.BOBA*/ wire BOBA_STORE1_MATCH5n = xor2(gb_state.store_x1.CESO_STORE1_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.COLU*/ wire COLU_STORE1_MATCH6n = xor2(gb_state.store_x1.DYFU_STORE1_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.BAHU*/ wire BAHU_STORE1_MATCH7n = xor2(gb_state.store_x1.CUSY_STORE1_X7p.qn_new(), ASAH_PX7n_odd);
 
-  /*_p31.FUZU*/ wire FUZU_STORE2_MATCH0n = xor2(gb_state.store_x2.FOKA_STORE2_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.FESO*/ wire FESO_STORE2_MATCH1n = xor2(gb_state.store_x2.FYTY_STORE2_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.FOKY*/ wire FOKY_STORE2_MATCH2n = xor2(gb_state.store_x2.FUBY_STORE2_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.FYVA*/ wire FYVA_STORE2_MATCH3n = xor2(gb_state.store_x2.GOXU_STORE2_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.CEKO*/ wire CEKO_STORE2_MATCH4n = xor2(gb_state.store_x2.DUHY_STORE2_X4p.qn_new(), APUX_PX4n);
-  /*_p31.DETY*/ wire DETY_STORE2_MATCH5n = xor2(gb_state.store_x2.EJUF_STORE2_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.DOZO*/ wire DOZO_STORE2_MATCH6n = xor2(gb_state.store_x2.ENOR_STORE2_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.CONY*/ wire CONY_STORE2_MATCH7n = xor2(gb_state.store_x2.DEPY_STORE2_X7p.qn_new(), ASAH_PX7n);
+  /*_p31.FUZU*/ wire FUZU_STORE2_MATCH0n = xor2(gb_state.store_x2.FOKA_STORE2_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.FESO*/ wire FESO_STORE2_MATCH1n = xor2(gb_state.store_x2.FYTY_STORE2_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.FOKY*/ wire FOKY_STORE2_MATCH2n = xor2(gb_state.store_x2.FUBY_STORE2_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.FYVA*/ wire FYVA_STORE2_MATCH3n = xor2(gb_state.store_x2.GOXU_STORE2_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.CEKO*/ wire CEKO_STORE2_MATCH4n = xor2(gb_state.store_x2.DUHY_STORE2_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.DETY*/ wire DETY_STORE2_MATCH5n = xor2(gb_state.store_x2.EJUF_STORE2_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.DOZO*/ wire DOZO_STORE2_MATCH6n = xor2(gb_state.store_x2.ENOR_STORE2_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.CONY*/ wire CONY_STORE2_MATCH7n = xor2(gb_state.store_x2.DEPY_STORE2_X7p.qn_new(), ASAH_PX7n_odd);
 
-  /*_p31.YHOK*/ wire YHOK_STORE3_MATCH0n = xor2(gb_state.store_x3.XOLY_STORE3_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.YCAH*/ wire YCAH_STORE3_MATCH1n = xor2(gb_state.store_x3.XYBA_STORE3_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.YDAJ*/ wire YDAJ_STORE3_MATCH2n = xor2(gb_state.store_x3.XABE_STORE3_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.YVUZ*/ wire YVUZ_STORE3_MATCH3n = xor2(gb_state.store_x3.XEKA_STORE3_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.YVAP*/ wire YVAP_STORE3_MATCH4n = xor2(gb_state.store_x3.XOMY_STORE3_X4p.qn_new(), APUX_PX4n);
-  /*_p31.XENY*/ wire XENY_STORE3_MATCH5n = xor2(gb_state.store_x3.WUHA_STORE3_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.XAVU*/ wire XAVU_STORE3_MATCH6n = xor2(gb_state.store_x3.WYNA_STORE3_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.XEVA*/ wire XEVA_STORE3_MATCH7n = xor2(gb_state.store_x3.WECO_STORE3_X7p.qn_new(), ASAH_PX7n);
+  /*_p31.YHOK*/ wire YHOK_STORE3_MATCH0n = xor2(gb_state.store_x3.XOLY_STORE3_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.YCAH*/ wire YCAH_STORE3_MATCH1n = xor2(gb_state.store_x3.XYBA_STORE3_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.YDAJ*/ wire YDAJ_STORE3_MATCH2n = xor2(gb_state.store_x3.XABE_STORE3_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.YVUZ*/ wire YVUZ_STORE3_MATCH3n = xor2(gb_state.store_x3.XEKA_STORE3_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.YVAP*/ wire YVAP_STORE3_MATCH4n = xor2(gb_state.store_x3.XOMY_STORE3_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.XENY*/ wire XENY_STORE3_MATCH5n = xor2(gb_state.store_x3.WUHA_STORE3_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.XAVU*/ wire XAVU_STORE3_MATCH6n = xor2(gb_state.store_x3.WYNA_STORE3_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.XEVA*/ wire XEVA_STORE3_MATCH7n = xor2(gb_state.store_x3.WECO_STORE3_X7p.qn_new(), ASAH_PX7n_odd);
 
-  /*_p31.XEJU*/ wire XEJU_STORE4_MATCH0n = xor2(gb_state.store_x4.WEDU_STORE4_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.ZATE*/ wire ZATE_STORE4_MATCH1n = xor2(gb_state.store_x4.YGAJ_STORE4_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.ZAKU*/ wire ZAKU_STORE4_MATCH2n = xor2(gb_state.store_x4.ZYJO_STORE4_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.YBOX*/ wire YBOX_STORE4_MATCH3n = xor2(gb_state.store_x4.XURY_STORE4_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.ZYKU*/ wire ZYKU_STORE4_MATCH4n = xor2(gb_state.store_x4.YBED_STORE4_X4p.qn_new(), APUX_PX4n);
-  /*_p31.ZYPU*/ wire ZYPU_STORE4_MATCH5n = xor2(gb_state.store_x4.ZALA_STORE4_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.XAHA*/ wire XAHA_STORE4_MATCH6n = xor2(gb_state.store_x4.WYDE_STORE4_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.ZEFE*/ wire ZEFE_STORE4_MATCH7n = xor2(gb_state.store_x4.XEPA_STORE4_X7p.qn_new(), ASAH_PX7n);
+  /*_p31.XEJU*/ wire XEJU_STORE4_MATCH0n = xor2(gb_state.store_x4.WEDU_STORE4_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.ZATE*/ wire ZATE_STORE4_MATCH1n = xor2(gb_state.store_x4.YGAJ_STORE4_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.ZAKU*/ wire ZAKU_STORE4_MATCH2n = xor2(gb_state.store_x4.ZYJO_STORE4_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.YBOX*/ wire YBOX_STORE4_MATCH3n = xor2(gb_state.store_x4.XURY_STORE4_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.ZYKU*/ wire ZYKU_STORE4_MATCH4n = xor2(gb_state.store_x4.YBED_STORE4_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.ZYPU*/ wire ZYPU_STORE4_MATCH5n = xor2(gb_state.store_x4.ZALA_STORE4_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.XAHA*/ wire XAHA_STORE4_MATCH6n = xor2(gb_state.store_x4.WYDE_STORE4_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.ZEFE*/ wire ZEFE_STORE4_MATCH7n = xor2(gb_state.store_x4.XEPA_STORE4_X7p.qn_new(), ASAH_PX7n_odd);
 
-  /*_p31.GUZO*/ wire GUZO_STORE5_MATCH0n = xor2(gb_state.store_x5.FUSA_STORE5_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.GOLA*/ wire GOLA_STORE5_MATCH1n = xor2(gb_state.store_x5.FAXA_STORE5_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.GEVE*/ wire GEVE_STORE5_MATCH2n = xor2(gb_state.store_x5.FOZY_STORE5_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.GUDE*/ wire GUDE_STORE5_MATCH3n = xor2(gb_state.store_x5.FESY_STORE5_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.BAZY*/ wire BAZY_STORE5_MATCH4n = xor2(gb_state.store_x5.CYWE_STORE5_X4p.qn_new(), APUX_PX4n);
-  /*_p31.CYLE*/ wire CYLE_STORE5_MATCH5n = xor2(gb_state.store_x5.DYBY_STORE5_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.CEVA*/ wire CEVA_STORE5_MATCH6n = xor2(gb_state.store_x5.DURY_STORE5_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.BUMY*/ wire BUMY_STORE5_MATCH7n = xor2(gb_state.store_x5.CUVY_STORE5_X7p.qn_new(), ASAH_PX7n);
+  /*_p31.GUZO*/ wire GUZO_STORE5_MATCH0n = xor2(gb_state.store_x5.FUSA_STORE5_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.GOLA*/ wire GOLA_STORE5_MATCH1n = xor2(gb_state.store_x5.FAXA_STORE5_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.GEVE*/ wire GEVE_STORE5_MATCH2n = xor2(gb_state.store_x5.FOZY_STORE5_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.GUDE*/ wire GUDE_STORE5_MATCH3n = xor2(gb_state.store_x5.FESY_STORE5_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.BAZY*/ wire BAZY_STORE5_MATCH4n = xor2(gb_state.store_x5.CYWE_STORE5_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.CYLE*/ wire CYLE_STORE5_MATCH5n = xor2(gb_state.store_x5.DYBY_STORE5_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.CEVA*/ wire CEVA_STORE5_MATCH6n = xor2(gb_state.store_x5.DURY_STORE5_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.BUMY*/ wire BUMY_STORE5_MATCH7n = xor2(gb_state.store_x5.CUVY_STORE5_X7p.qn_new(), ASAH_PX7n_odd);
 
-  /*_p31.XOSU*/ wire XOSU_STORE6_MATCH0n = xor2(gb_state.store_x6.YCOL_STORE6_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.ZUVU*/ wire ZUVU_STORE6_MATCH1n = xor2(gb_state.store_x6.YRAC_STORE6_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.XUCO*/ wire XUCO_STORE6_MATCH2n = xor2(gb_state.store_x6.YMEM_STORE6_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.ZULO*/ wire ZULO_STORE6_MATCH3n = xor2(gb_state.store_x6.YVAG_STORE6_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.ZARE*/ wire ZARE_STORE6_MATCH4n = xor2(gb_state.store_x6.ZOLY_STORE6_X4p.qn_new(), APUX_PX4n);
-  /*_p31.ZEMU*/ wire ZEMU_STORE6_MATCH5n = xor2(gb_state.store_x6.ZOGO_STORE6_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.ZYGO*/ wire ZYGO_STORE6_MATCH6n = xor2(gb_state.store_x6.ZECU_STORE6_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.ZUZY*/ wire ZUZY_STORE6_MATCH7n = xor2(gb_state.store_x6.ZESA_STORE6_X7p.qn_new(), ASAH_PX7n);
+  /*_p31.XOSU*/ wire XOSU_STORE6_MATCH0n = xor2(gb_state.store_x6.YCOL_STORE6_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.ZUVU*/ wire ZUVU_STORE6_MATCH1n = xor2(gb_state.store_x6.YRAC_STORE6_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.XUCO*/ wire XUCO_STORE6_MATCH2n = xor2(gb_state.store_x6.YMEM_STORE6_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.ZULO*/ wire ZULO_STORE6_MATCH3n = xor2(gb_state.store_x6.YVAG_STORE6_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.ZARE*/ wire ZARE_STORE6_MATCH4n = xor2(gb_state.store_x6.ZOLY_STORE6_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.ZEMU*/ wire ZEMU_STORE6_MATCH5n = xor2(gb_state.store_x6.ZOGO_STORE6_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.ZYGO*/ wire ZYGO_STORE6_MATCH6n = xor2(gb_state.store_x6.ZECU_STORE6_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.ZUZY*/ wire ZUZY_STORE6_MATCH7n = xor2(gb_state.store_x6.ZESA_STORE6_X7p.qn_new(), ASAH_PX7n_odd);
 
-  /*_p31.DUSE*/ wire DUSE_STORE7_MATCH0n = xor2(gb_state.store_x7.ERAZ_STORE7_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.DAGU*/ wire DAGU_STORE7_MATCH1n = xor2(gb_state.store_x7.EPUM_STORE7_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.DYZE*/ wire DYZE_STORE7_MATCH2n = xor2(gb_state.store_x7.EROL_STORE7_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.DESO*/ wire DESO_STORE7_MATCH3n = xor2(gb_state.store_x7.EHYN_STORE7_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.EJOT*/ wire EJOT_STORE7_MATCH4n = xor2(gb_state.store_x7.FAZU_STORE7_X4p.qn_new(), APUX_PX4n);
-  /*_p31.ESAJ*/ wire ESAJ_STORE7_MATCH5n = xor2(gb_state.store_x7.FAXE_STORE7_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.DUCU*/ wire DUCU_STORE7_MATCH6n = xor2(gb_state.store_x7.EXUK_STORE7_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.EWUD*/ wire EWUD_STORE7_MATCH7n = xor2(gb_state.store_x7.FEDE_STORE7_X7p.qn_new(), ASAH_PX7n);
+  /*_p31.DUSE*/ wire DUSE_STORE7_MATCH0n = xor2(gb_state.store_x7.ERAZ_STORE7_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.DAGU*/ wire DAGU_STORE7_MATCH1n = xor2(gb_state.store_x7.EPUM_STORE7_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.DYZE*/ wire DYZE_STORE7_MATCH2n = xor2(gb_state.store_x7.EROL_STORE7_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.DESO*/ wire DESO_STORE7_MATCH3n = xor2(gb_state.store_x7.EHYN_STORE7_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.EJOT*/ wire EJOT_STORE7_MATCH4n = xor2(gb_state.store_x7.FAZU_STORE7_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.ESAJ*/ wire ESAJ_STORE7_MATCH5n = xor2(gb_state.store_x7.FAXE_STORE7_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.DUCU*/ wire DUCU_STORE7_MATCH6n = xor2(gb_state.store_x7.EXUK_STORE7_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.EWUD*/ wire EWUD_STORE7_MATCH7n = xor2(gb_state.store_x7.FEDE_STORE7_X7p.qn_new(), ASAH_PX7n_odd);
 
-  /*_p31.DUZE*/ wire DUZE_STORE8_MATCH0n = xor2(gb_state.store_x8.EZUF_STORE8_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.DAGA*/ wire DAGA_STORE8_MATCH1n = xor2(gb_state.store_x8.ENAD_STORE8_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.DAWU*/ wire DAWU_STORE8_MATCH2n = xor2(gb_state.store_x8.EBOW_STORE8_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.EJAW*/ wire EJAW_STORE8_MATCH3n = xor2(gb_state.store_x8.FYCA_STORE8_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.GOHO*/ wire GOHO_STORE8_MATCH4n = xor2(gb_state.store_x8.GAVY_STORE8_X4p.qn_new(), APUX_PX4n);
-  /*_p31.GASU*/ wire GASU_STORE8_MATCH5n = xor2(gb_state.store_x8.GYPU_STORE8_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.GABU*/ wire GABU_STORE8_MATCH6n = xor2(gb_state.store_x8.GADY_STORE8_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.GAFE*/ wire GAFE_STORE8_MATCH7n = xor2(gb_state.store_x8.GAZA_STORE8_X7p.qn_new(), ASAH_PX7n);
+  /*_p31.DUZE*/ wire DUZE_STORE8_MATCH0n = xor2(gb_state.store_x8.EZUF_STORE8_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.DAGA*/ wire DAGA_STORE8_MATCH1n = xor2(gb_state.store_x8.ENAD_STORE8_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.DAWU*/ wire DAWU_STORE8_MATCH2n = xor2(gb_state.store_x8.EBOW_STORE8_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.EJAW*/ wire EJAW_STORE8_MATCH3n = xor2(gb_state.store_x8.FYCA_STORE8_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.GOHO*/ wire GOHO_STORE8_MATCH4n = xor2(gb_state.store_x8.GAVY_STORE8_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.GASU*/ wire GASU_STORE8_MATCH5n = xor2(gb_state.store_x8.GYPU_STORE8_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.GABU*/ wire GABU_STORE8_MATCH6n = xor2(gb_state.store_x8.GADY_STORE8_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.GAFE*/ wire GAFE_STORE8_MATCH7n = xor2(gb_state.store_x8.GAZA_STORE8_X7p.qn_new(), ASAH_PX7n_odd);
 
-  /*_p31.YMAM*/ wire YMAM_STORE9_MATCH0n = xor2(gb_state.store_x9.XUVY_STORE9_X0p.qn_new(), ACAM_PX0n);
-  /*_p31.YTYP*/ wire YTYP_STORE9_MATCH1n = xor2(gb_state.store_x9.XERE_STORE9_X1p.qn_new(), AZUB_PX1n);
-  /*_p31.YFOP*/ wire YFOP_STORE9_MATCH2n = xor2(gb_state.store_x9.XUZO_STORE9_X2p.qn_new(), AMEL_PX2n);
-  /*_p31.YVAC*/ wire YVAC_STORE9_MATCH3n = xor2(gb_state.store_x9.XEXA_STORE9_X3p.qn_new(), AHAL_PX3n);
-  /*_p31.ZYWU*/ wire ZYWU_STORE9_MATCH4n = xor2(gb_state.store_x9.YPOD_STORE9_X4p.qn_new(), APUX_PX4n);
-  /*_p31.ZUZA*/ wire ZUZA_STORE9_MATCH5n = xor2(gb_state.store_x9.YROP_STORE9_X5p.qn_new(), ABEF_PX5n);
-  /*_p31.ZEJO*/ wire ZEJO_STORE9_MATCH6n = xor2(gb_state.store_x9.YNEP_STORE9_X6p.qn_new(), ADAZ_PX6n);
-  /*_p31.ZEDA*/ wire ZEDA_STORE9_MATCH7n = xor2(gb_state.store_x9.YZOF_STORE9_X7p.qn_new(), ASAH_PX7n);
+  /*_p31.YMAM*/ wire YMAM_STORE9_MATCH0n = xor2(gb_state.store_x9.XUVY_STORE9_X0p.qn_new(), ACAM_PX0n_odd);
+  /*_p31.YTYP*/ wire YTYP_STORE9_MATCH1n = xor2(gb_state.store_x9.XERE_STORE9_X1p.qn_new(), AZUB_PX1n_odd);
+  /*_p31.YFOP*/ wire YFOP_STORE9_MATCH2n = xor2(gb_state.store_x9.XUZO_STORE9_X2p.qn_new(), AMEL_PX2n_odd);
+  /*_p31.YVAC*/ wire YVAC_STORE9_MATCH3n = xor2(gb_state.store_x9.XEXA_STORE9_X3p.qn_new(), AHAL_PX3n_odd);
+  /*_p31.ZYWU*/ wire ZYWU_STORE9_MATCH4n = xor2(gb_state.store_x9.YPOD_STORE9_X4p.qn_new(), APUX_PX4n_odd);
+  /*_p31.ZUZA*/ wire ZUZA_STORE9_MATCH5n = xor2(gb_state.store_x9.YROP_STORE9_X5p.qn_new(), ABEF_PX5n_odd);
+  /*_p31.ZEJO*/ wire ZEJO_STORE9_MATCH6n = xor2(gb_state.store_x9.YNEP_STORE9_X6p.qn_new(), ADAZ_PX6n_odd);
+  /*_p31.ZEDA*/ wire ZEDA_STORE9_MATCH7n = xor2(gb_state.store_x9.YZOF_STORE9_X7p.qn_new(), ASAH_PX7n_odd);
 
   /*_p31.ZAKO*/ wire ZAKO_STORE0_MATCHAp = nor4(ZOGY_STORE0_MATCH0n, ZEBA_STORE0_MATCH1n, ZAHA_STORE0_MATCH2n, ZOKY_STORE0_MATCH3n);
   /*_p31.XEBA*/ wire XEBA_STORE0_MATCHBp = nor4(WOJU_STORE0_MATCH4n, YFUN_STORE0_MATCH5n, WYZA_STORE0_MATCH6n, YPUK_STORE0_MATCH7n);
@@ -662,7 +662,7 @@ void GateBoy::get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags
 
   /*_p29.FEFY*/ wire FEFY_STORE_MATCHp = nand5(XAGE_STORE4_MATCHn, YLOZ_STORE3_MATCHn, DEGO_STORE2_MATCHn, DYDU_STORE1_MATCHn, YDUG_STORE0_MATCHn);
   /*_p29.FOVE*/ wire FOVE_STORE_MATCHp = nand5(YGEM_STORE9_MATCHn, EFYL_STORE8_MATCHn, DYKA_STORE7_MATCHn, YBEZ_STORE6_MATCHn, EGOM_STORE5_MATCHn);
-  /*_p29.FEPO*/ gb_state.FEPO_STORE_MATCHp = or2(FEFY_STORE_MATCHp, FOVE_STORE_MATCHp);
+  /*_p29.FEPO*/ gb_state.FEPO_STORE_MATCHp_odd = or2(FEFY_STORE_MATCHp, FOVE_STORE_MATCHp);
 
   // Update one-hot priority encoder to flag the first matching sprite.
 
@@ -1081,13 +1081,13 @@ void GateBoy::sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag)
 
 void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
 {
-  /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn_new = and2(gb_state.sprite_scanner.CENO_SCAN_DONEn.qn_new(), XYMU_RENDERINGn.qn_new());
-  /*#p30.WUZY*/ triwire WUZY_STORE_I0 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XADU_SPRITE_IDX0p.qn_new());
-  /*_p30.WYSE*/ triwire WYSE_STORE_I1 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XEDY_SPRITE_IDX1p.qn_new());
-  /*_p30.ZYSU*/ triwire ZYSU_STORE_I2 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.ZUZE_SPRITE_IDX2p.qn_new());
-  /*_p30.WYDA*/ triwire WYDA_STORE_I3 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XOBE_SPRITE_IDX3p.qn_new());
-  /*_p30.WUCO*/ triwire WUCO_STORE_I4 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.YDUF_SPRITE_IDX4p.qn_new());
-  /*_p30.WEZA*/ triwire WEZA_STORE_I5 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XECU_SPRITE_IDX5p.qn_new());
+  /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn_new = and2(gb_state.sprite_scanner.CENO_SCAN_DONEn_odd.qn_new(), XYMU_RENDERINGn.qn_new());
+  /*#p30.WUZY*/ triwire WUZY_STORE_I0 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XADU_SPRITE_IDX0p_odd.qn_new());
+  /*_p30.WYSE*/ triwire WYSE_STORE_I1 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XEDY_SPRITE_IDX1p_odd.qn_new());
+  /*_p30.ZYSU*/ triwire ZYSU_STORE_I2 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.ZUZE_SPRITE_IDX2p_odd.qn_new());
+  /*_p30.WYDA*/ triwire WYDA_STORE_I3 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XOBE_SPRITE_IDX3p_odd.qn_new());
+  /*_p30.WUCO*/ triwire WUCO_STORE_I4 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.YDUF_SPRITE_IDX4p_odd.qn_new());
+  /*_p30.WEZA*/ triwire WEZA_STORE_I5 = tri6_nn(BUZA_STORE_SPRITE_INDXn_new, gb_state.sprite_index.XECU_SPRITE_IDX5p_odd.qn_new());
 
   /*_BUS_SPR_I0*/ gb_state.sprite_ibus.BUS_SPR_I0.tri_bus(WUZY_STORE_I0);
   /*_BUS_SPR_I1*/ gb_state.sprite_ibus.BUS_SPR_I1.tri_bus(WYSE_STORE_I1);

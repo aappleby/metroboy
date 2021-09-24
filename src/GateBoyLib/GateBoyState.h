@@ -78,14 +78,14 @@ struct GateBoyState {
   GateBoyReset sys_rst;
   GateBoyClock sys_clk;
 
-  /*#p21.VOGA*/ DFF17    VOGA_HBLANKp;
+  /*#p21.VOGA*/ DFF17    VOGA_HBLANKp_evn;
   /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;
-  /*#p04.MATU*/ DFF17    MATU_DMA_RUNNINGp;
-  /*#p28.ACYL*/ Gate     ACYL_SCANNINGp;
+  /*#p04.MATU*/ DFF17    MATU_DMA_RUNNINGp_odd;
+  /*#p28.ACYL*/ Gate     ACYL_SCANNINGp_odd;
   /*#p21.WODU*/ Gate     WODU_HBLANKp;
   /*_p07.SATO*/ Gate     SATO_BOOT_BITn;
-  /*_p28.ATEJ*/ Gate     ATEJ_LINE_RSTp;
-  /*_p29.FEPO*/ Gate     FEPO_STORE_MATCHp;
+  /*_p28.ATEJ*/ Gate     ATEJ_LINE_RSTp_odd;
+  /*_p29.FEPO*/ Gate     FEPO_STORE_MATCHp_odd;
 
   GateBoyCpuSignals cpu_signals;
   GateBoyCpuABus    cpu_abus;
@@ -173,7 +173,7 @@ struct GateBoyState {
   //----------
 
 
-  SpriteFetchCounter sfetch_counter;
+  SpriteFetchCounter sfetch_counter_evn;
   SpriteFetchControl sfetch_control;
 
   //----------
@@ -205,7 +205,7 @@ struct GateBoyState {
   SpritePixA sprite_pix_a;
   SpritePixB sprite_pix_b;
 
-  PixCount pix_count;
+  PixCount pix_count;   // odd
   MaskPipe mask_pipe;
   BgwPipeA bgw_pipe_a;
   BgwPipeB bgw_pipe_b;

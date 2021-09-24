@@ -36,9 +36,9 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*_p21.TOBE*/ wire TOBE_FF41_RDp = and2(gb_state.cpu_signals.ASOT_CPU_RDp(), gb_state.cpu_abus.VARY_FF41p());
   /*_p21.VAVE*/ wire VAVE_FF41_RDn = not1(TOBE_FF41_RDp);
 
-  /*#p21.PARU*/ wire PARU_VBLANKp = not1(gb_state.lcd.POPU_VBLANKp.qn_new());
+  /*#p21.PARU*/ wire PARU_VBLANKp = not1(gb_state.lcd.POPU_VBLANKp_odd.qn_new());
   /*#p21.SADU*/ wire SADU_STAT_MODE0n = nor2(gb_state.XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
-  /*#p21.XATY*/ wire XATY_STAT_MODE1n = nor2(gb_state.ACYL_SCANNINGp.out_new(), gb_state.XYMU_RENDERINGn.qn_new()); // die NOR
+  /*#p21.XATY*/ wire XATY_STAT_MODE1n = nor2(gb_state.ACYL_SCANNINGp_odd.out_new(), gb_state.XYMU_RENDERINGn.qn_new()); // die NOR
 
   //probe_wire(24, "POPU VBLANK", lcd.POPU_y144p.qp_new());
   //probe_wire(25, "XYMU RENDER", ~XYMU_RENDERINGn.qp_new());
@@ -65,7 +65,7 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*_BUS_CPU_D05p*/ gb_state.cpu_dbus.BUS_CPU_D05p.tri_bus(SASY_STAT5_TO_CD5);
   /*_BUS_CPU_D06p*/ gb_state.cpu_dbus.BUS_CPU_D06p.tri_bus(POTE_STAT6_TO_CD6);
 
-  /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_LINE_ENDp.qp_new());
+  /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_LINE_ENDp_odd.qp_new());
   /*#p21.TOLU*/ wire TOLU_VBLANKn   = not1(PARU_VBLANKp);
   /*#p21.SELA*/ wire SELA_x113p = not1(PURE_x113n);
   /*#p21.TAPA*/ wire TAPA_INT_OAM   = and2(TOLU_VBLANKn, SELA_x113p);

@@ -83,7 +83,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(gb_state.reg_dma.MARU_DMA_A15n.qn_new());
   /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(gb_state.reg_dma.PULA_DMA_A13n.qn_new(), gb_state.reg_dma.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
   /*_p04.LOGO*/ wire LOGO_DMA_VRAMn = not1(MUDA_DMA_VRAMp);
-  /*_p04.MORY*/ wire MORY_DMA_CARTn = nand2(gb_state.MATU_DMA_RUNNINGp.qp_new(), LOGO_DMA_VRAMn);
+  /*_p04.MORY*/ wire MORY_DMA_CARTn = nand2(gb_state.MATU_DMA_RUNNINGp_odd.qp_new(), LOGO_DMA_VRAMn);
   /*_p04.LUMA*/ wire LUMA_DMA_CARTp = not1(MORY_DMA_CARTn);
 
   {
@@ -130,14 +130,14 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.NYRE*/ gb_state.ext_addr_latch.NYRE_EXT_ADDR_LATCH_14p.tp_latchn(MATE_HOLDn, gb_state.cpu_abus.BUS_CPU_A14p.out_new());
 
 
-  /*_p08.AMET*/ wire AMET_A00p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.NAKY_DMA_A00p.qp_new(), gb_state.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.qp_new());
-  /*_p08.ATOL*/ wire ATOL_A01p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.PYRO_DMA_A01p.qp_new(), gb_state.ext_addr_latch.APUR_EXT_ADDR_LATCH_01p.qp_new());
-  /*_p08.APOK*/ wire APOK_A02p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.NEFY_DMA_A02p.qp_new(), gb_state.ext_addr_latch.ALYR_EXT_ADDR_LATCH_02p.qp_new());
-  /*_p08.AMER*/ wire AMER_A03p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.MUTY_DMA_A03p.qp_new(), gb_state.ext_addr_latch.ARET_EXT_ADDR_LATCH_03p.qp_new());
-  /*_p08.ATEM*/ wire ATEM_A04p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.NYKO_DMA_A04p.qp_new(), gb_state.ext_addr_latch.AVYS_EXT_ADDR_LATCH_04p.qp_new());
-  /*_p08.ATOV*/ wire ATOV_A05p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.PYLO_DMA_A05p.qp_new(), gb_state.ext_addr_latch.ATEV_EXT_ADDR_LATCH_05p.qp_new());
-  /*_p08.ATYR*/ wire ATYR_A06p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.NUTO_DMA_A06p.qp_new(), gb_state.ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.qp_new());
-  /*#p08.ASUR*/ wire ASUR_A07p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.MUGU_DMA_A07p.qp_new(), gb_state.ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.qp_new());
+  /*_p08.AMET*/ wire AMET_A00p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.NAKY_DMA_A00p_odd.qp_new(), gb_state.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.qp_new());
+  /*_p08.ATOL*/ wire ATOL_A01p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.PYRO_DMA_A01p_odd.qp_new(), gb_state.ext_addr_latch.APUR_EXT_ADDR_LATCH_01p.qp_new());
+  /*_p08.APOK*/ wire APOK_A02p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.NEFY_DMA_A02p_odd.qp_new(), gb_state.ext_addr_latch.ALYR_EXT_ADDR_LATCH_02p.qp_new());
+  /*_p08.AMER*/ wire AMER_A03p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.MUTY_DMA_A03p_odd.qp_new(), gb_state.ext_addr_latch.ARET_EXT_ADDR_LATCH_03p.qp_new());
+  /*_p08.ATEM*/ wire ATEM_A04p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.NYKO_DMA_A04p_odd.qp_new(), gb_state.ext_addr_latch.AVYS_EXT_ADDR_LATCH_04p.qp_new());
+  /*_p08.ATOV*/ wire ATOV_A05p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.PYLO_DMA_A05p_odd.qp_new(), gb_state.ext_addr_latch.ATEV_EXT_ADDR_LATCH_05p.qp_new());
+  /*_p08.ATYR*/ wire ATYR_A06p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.NUTO_DMA_A06p_odd.qp_new(), gb_state.ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.qp_new());
+  /*#p08.ASUR*/ wire ASUR_A07p = mux2p(LUMA_DMA_CARTp, gb_state.dma_lo.MUGU_DMA_A07p_odd.qp_new(), gb_state.ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.qp_new());
   /*#p08.MANO*/ wire MANO_A08p = mux2p(LUMA_DMA_CARTp, gb_state.reg_dma.NAFA_DMA_A08n.qn_new(), gb_state.ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.qp_new());
   /*_p08.MASU*/ wire MASU_A09p = mux2p(LUMA_DMA_CARTp, gb_state.reg_dma.PYNE_DMA_A09n.qn_new(), gb_state.ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.qp_new());
   /*_p08.PAMY*/ wire PAMY_A10p = mux2p(LUMA_DMA_CARTp, gb_state.reg_dma.PARA_DMA_A10n.qn_new(), gb_state.ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.qp_new());

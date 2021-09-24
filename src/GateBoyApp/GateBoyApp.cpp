@@ -72,8 +72,9 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   gb_thread->start();
   gb_thread->reset_to_bootrom();
-  gb_thread->gb->set_cpu_en(false);
+  //gb_thread->gb->set_cpu_en(false);
 
+#if 0
   // [003.293]   test_fuzz_reg failed at 0292:0429 - write 0xf1 to 0xff40
   // [008.844]   test_fuzz_reg failed at 0786:0215 - write 0xf7 to 0xff40
   {
@@ -108,11 +109,12 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   }
 
   gb_thread->gb->run_phases(gb_thread->get_cart(), 6);
+#endif
 
-  //blob cart;
-  //load_blob("LinksAwakening.gb", cart);
-  //gb_thread->load_cart_blob(cart);
-  //gb_thread->reset_to_cart();
+  blob cart;
+  load_blob("LinksAwakening.gb", cart);
+  gb_thread->load_cart_blob(cart);
+  gb_thread->reset_to_cart();
 
   //BlobStream bs;
   //load_blob("zoomer.dump", bs.b);
@@ -362,7 +364,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   //auto& gb = show_gb_ab ? gb_thread.gbp->gbb : gb_thread.gbp->gba;
   auto gb = gb_thread->gb.state();
 
-  uint64_t phase_total = gb->get_sys().phase_total;
+  uint64_t phase_total = gb->get_sys().gb_phase_total;
 
   auto& cpu = gb_thread->gb->get_cpu();
   auto& mem = gb_thread->gb->get_mem();

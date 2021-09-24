@@ -42,24 +42,24 @@ struct PixCount {
   void reset_to_bootrom() { memset(this, 0b00011010, sizeof(*this)); }
 
   void reset_to_cart() {
-    XEHO_PX0p.state = 0b00011011;
-    SAVY_PX1p.state = 0b00011011;
-    XODU_PX2p.state = 0b00011011;
-    XYDO_PX3p.state = 0b00011010;
-    TUHU_PX4p.state = 0b00011010;
-    TUKY_PX5p.state = 0b00011011;
-    TAKO_PX6p.state = 0b00011010;
-    SYBE_PX7p.state = 0b00011011;
+    XEHO_PX0p_odd.state = 0b00011011;
+    SAVY_PX1p_odd.state = 0b00011011;
+    XODU_PX2p_odd.state = 0b00011011;
+    XYDO_PX3p_odd.state = 0b00011010;
+    TUHU_PX4p_odd.state = 0b00011010;
+    TUKY_PX5p_odd.state = 0b00011011;
+    TAKO_PX6p_odd.state = 0b00011010;
+    SYBE_PX7p_odd.state = 0b00011011;
   }
 
-  /*_p21.XEHO*/ DFF17 XEHO_PX0p; // AxCxExGx
-  /*_p21.SAVY*/ DFF17 SAVY_PX1p; // AxCxExGx
-  /*_p21.XODU*/ DFF17 XODU_PX2p; // AxCxExGx
-  /*_p21.XYDO*/ DFF17 XYDO_PX3p; // AxCxExGx
-  /*_p21.TUHU*/ DFF17 TUHU_PX4p; // AxCxExGx
-  /*_p21.TUKY*/ DFF17 TUKY_PX5p; // AxCxExGx
-  /*_p21.TAKO*/ DFF17 TAKO_PX6p; // AxCxExGx
-  /*_p21.SYBE*/ DFF17 SYBE_PX7p; // AxCxExGx
+  /*_p21.XEHO*/ DFF17 XEHO_PX0p_odd; // AxCxExGx
+  /*_p21.SAVY*/ DFF17 SAVY_PX1p_odd; // AxCxExGx
+  /*_p21.XODU*/ DFF17 XODU_PX2p_odd; // AxCxExGx
+  /*_p21.XYDO*/ DFF17 XYDO_PX3p_odd; // AxCxExGx
+  /*_p21.TUHU*/ DFF17 TUHU_PX4p_odd; // AxCxExGx
+  /*_p21.TUKY*/ DFF17 TUKY_PX5p_odd; // AxCxExGx
+  /*_p21.TAKO*/ DFF17 TAKO_PX6p_odd; // AxCxExGx
+  /*_p21.SYBE*/ DFF17 SYBE_PX7p_odd; // AxCxExGx
 };
 
 //-----------------------------------------------------------------------------
@@ -196,35 +196,35 @@ struct RegSCX {
 struct RegLY {
   void reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
   void reset_to_bootrom() {
-    MUWY_LY0p.state = 0b00011000;
-    MYRO_LY1p.state = 0b00011010;
-    LEXA_LY2p.state = 0b00011010;
-    LYDO_LY3p.state = 0b00011010;
-    LOVU_LY4p.state = 0b00011010;
-    LEMA_LY5p.state = 0b00011010;
-    MATO_LY6p.state = 0b00011010;
-    LAFO_LY7p.state = 0b00011010;
+    MUWY_LY0p_odd.state = 0b00011000;
+    MYRO_LY1p_odd.state = 0b00011010;
+    LEXA_LY2p_odd.state = 0b00011010;
+    LYDO_LY3p_odd.state = 0b00011010;
+    LOVU_LY4p_odd.state = 0b00011010;
+    LEMA_LY5p_odd.state = 0b00011010;
+    MATO_LY6p_odd.state = 0b00011010;
+    LAFO_LY7p_odd.state = 0b00011010;
   }
 
   void reset_to_cart() {
-    MUWY_LY0p.state = 0b00011000;
-    MYRO_LY1p.state = 0b00011010;
-    LEXA_LY2p.state = 0b00011010;
-    LYDO_LY3p.state = 0b00011010;
-    LOVU_LY4p.state = 0b00011010;
-    LEMA_LY5p.state = 0b00011010;
-    MATO_LY6p.state = 0b00011010;
-    LAFO_LY7p.state = 0b00011010;
+    MUWY_LY0p_odd.state = 0b00011000;
+    MYRO_LY1p_odd.state = 0b00011010;
+    LEXA_LY2p_odd.state = 0b00011010;
+    LYDO_LY3p_odd.state = 0b00011010;
+    LOVU_LY4p_odd.state = 0b00011010;
+    LEMA_LY5p_odd.state = 0b00011010;
+    MATO_LY6p_odd.state = 0b00011010;
+    LAFO_LY7p_odd.state = 0b00011010;
   }
 
-  /*#p21.MUWY*/ DFF17 MUWY_LY0p;  // xxCxxxGx Ticks on G, reset on C
-  /*#p21.MYRO*/ DFF17 MYRO_LY1p;  // xxCxxxGx Ticks on G, reset on C
-  /*#p21.LEXA*/ DFF17 LEXA_LY2p;  // xxCxxxGx Ticks on G, reset on C
-  /*#p21.LYDO*/ DFF17 LYDO_LY3p;  // xxCxxxGx Ticks on G, reset on C
-  /*#p21.LOVU*/ DFF17 LOVU_LY4p;  // xxCxxxGx Ticks on G, reset on C
-  /*#p21.LEMA*/ DFF17 LEMA_LY5p;  // xxCxxxGx Ticks on G, reset on C
-  /*#p21.MATO*/ DFF17 MATO_LY6p;  // xxCxxxGx Ticks on G, reset on C
-  /*#p21.LAFO*/ DFF17 LAFO_LY7p;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.MUWY*/ DFF17 MUWY_LY0p_odd;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.MYRO*/ DFF17 MYRO_LY1p_odd;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LEXA*/ DFF17 LEXA_LY2p_odd;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LYDO*/ DFF17 LYDO_LY3p_odd;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LOVU*/ DFF17 LOVU_LY4p_odd;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LEMA*/ DFF17 LEMA_LY5p_odd;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.MATO*/ DFF17 MATO_LY6p_odd;  // xxCxxxGx Ticks on G, reset on C
+  /*#p21.LAFO*/ DFF17 LAFO_LY7p_odd;  // xxCxxxGx Ticks on G, reset on C
 };
 
 //-----------------------------------------------------------------------------
@@ -237,26 +237,26 @@ struct RegLX {
 
   void reset_to_bootrom() {
     memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
-    SAXO_LX0p.state = BIT_OLD | BIT_DRIVEN;
+    SAXO_LX0p_odd.state = BIT_OLD | BIT_DRIVEN;
   }
 
   void reset_to_cart() {
-    SAXO_LX0p.state = 0b00011000;
-    TYPO_LX1p.state = 0b00011011;
-    VYZO_LX2p.state = 0b00011000;
-    TELU_LX3p.state = 0b00011010;
-    SUDE_LX4p.state = 0b00011010;
-    TAHA_LX5p.state = 0b00011011;
-    TYRY_LX6p.state = 0b00011001;
+    SAXO_LX0p_odd.state = 0b00011000;
+    TYPO_LX1p_odd.state = 0b00011011;
+    VYZO_LX2p_odd.state = 0b00011000;
+    TELU_LX3p_odd.state = 0b00011010;
+    SUDE_LX4p_odd.state = 0b00011010;
+    TAHA_LX5p_odd.state = 0b00011011;
+    TYRY_LX6p_odd.state = 0b00011001;
   }
 
-  /*#p21.SAXO*/ DFF17 SAXO_LX0p; // xxCxxxGx Ticks on C, reset on G
-  /*#p21.TYPO*/ DFF17 TYPO_LX1p; // xxCxxxGx Ticks on C, reset on G
-  /*#p21.VYZO*/ DFF17 VYZO_LX2p; // xxCxxxGx Ticks on C, reset on G
-  /*#p21.TELU*/ DFF17 TELU_LX3p; // xxCxxxGx Ticks on C, reset on G
-  /*#p21.SUDE*/ DFF17 SUDE_LX4p; // xxCxxxGx Ticks on C, reset on G
-  /*#p21.TAHA*/ DFF17 TAHA_LX5p; // xxCxxxGx Ticks on C, reset on G
-  /*#p21.TYRY*/ DFF17 TYRY_LX6p; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.SAXO*/ DFF17 SAXO_LX0p_odd; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.TYPO*/ DFF17 TYPO_LX1p_odd; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.VYZO*/ DFF17 VYZO_LX2p_odd; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.TELU*/ DFF17 TELU_LX3p_odd; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.SUDE*/ DFF17 SUDE_LX4p_odd; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.TAHA*/ DFF17 TAHA_LX5p_odd; // xxCxxxGx Ticks on C, reset on G
+  /*#p21.TYRY*/ DFF17 TYRY_LX6p_odd; // xxCxxxGx Ticks on C, reset on G
 };
 
 //-----------------------------------------------------------------------------

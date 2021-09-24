@@ -5,14 +5,14 @@
 //-----------------------------------------------------------------------------
 
 SpriteDeltaY GateBoy::sub_sprite_y_gates() {
-  /*#p29.EBOS*/ wire EBOS_LY0n = not1(gb_state.reg_ly.MUWY_LY0p.qp_new());
-  /*_p29.DASA*/ wire DASA_LY1n = not1(gb_state.reg_ly.MYRO_LY1p.qp_new());
-  /*_p29.FUKY*/ wire FUKY_LY2n = not1(gb_state.reg_ly.LEXA_LY2p.qp_new());
-  /*_p29.FUVE*/ wire FUVE_LY3n = not1(gb_state.reg_ly.LYDO_LY3p.qp_new());
-  /*_p29.FEPU*/ wire FEPU_LY4n = not1(gb_state.reg_ly.LOVU_LY4p.qp_new());
-  /*_p29.FOFA*/ wire FOFA_LY5n = not1(gb_state.reg_ly.LEMA_LY5p.qp_new());
-  /*_p29.FEMO*/ wire FEMO_LY6n = not1(gb_state.reg_ly.MATO_LY6p.qp_new());
-  /*_p29.GUSU*/ wire GUSU_LY7n = not1(gb_state.reg_ly.LAFO_LY7p.qp_new());
+  /*#p29.EBOS*/ wire EBOS_LY0n = not1(gb_state.reg_ly.MUWY_LY0p_odd.qp_new());
+  /*_p29.DASA*/ wire DASA_LY1n = not1(gb_state.reg_ly.MYRO_LY1p_odd.qp_new());
+  /*_p29.FUKY*/ wire FUKY_LY2n = not1(gb_state.reg_ly.LEXA_LY2p_odd.qp_new());
+  /*_p29.FUVE*/ wire FUVE_LY3n = not1(gb_state.reg_ly.LYDO_LY3p_odd.qp_new());
+  /*_p29.FEPU*/ wire FEPU_LY4n = not1(gb_state.reg_ly.LOVU_LY4p_odd.qp_new());
+  /*_p29.FOFA*/ wire FOFA_LY5n = not1(gb_state.reg_ly.LEMA_LY5p_odd.qp_new());
+  /*_p29.FEMO*/ wire FEMO_LY6n = not1(gb_state.reg_ly.MATO_LY6p_odd.qp_new());
+  /*_p29.GUSU*/ wire GUSU_LY7n = not1(gb_state.reg_ly.LAFO_LY7p_odd.qp_new());
 
   /*_p29.ERUC*/ Adder ERUC_YDIFF0 = add3(EBOS_LY0n, gb_state.oam_temp_a.XUSO_OAM_DA0p.qp_new(), gb_state.SIG_GND.out_new());
   /*_p29.ENEF*/ Adder ENEF_YDIFF1 = add3(DASA_LY1n, gb_state.oam_temp_a.XEGU_OAM_DA1p.qp_new(), ERUC_YDIFF0.carry);

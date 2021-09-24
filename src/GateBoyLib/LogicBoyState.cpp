@@ -149,14 +149,14 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.reg_ie, src.reg_ie);
   bit_unpack(dst.sys_rst, bit_pack(src.sys_rst));
   bit_unpack(dst.sys_clk, bit_pack(src.sys_clk));
-  bit_unpack(dst.VOGA_HBLANKp, bit_pack(src.VOGA_HBLANKp));
+  bit_unpack(dst.VOGA_HBLANKp_evn, bit_pack(src.VOGA_HBLANKp));
   bit_unpack(dst.XYMU_RENDERINGn, bit_pack(src.XYMU_RENDERINGn));
-  bit_unpack(dst.MATU_DMA_RUNNINGp, bit_pack(src.MATU_DMA_RUNNINGp));
-  bit_unpack(dst.ACYL_SCANNINGp, bit_pack(src.ACYL_SCANNINGp));
+  bit_unpack(dst.MATU_DMA_RUNNINGp_odd, bit_pack(src.MATU_DMA_RUNNINGp));
+  bit_unpack(dst.ACYL_SCANNINGp_odd, bit_pack(src.ACYL_SCANNINGp));
   bit_unpack(dst.WODU_HBLANKp, bit_pack(src.WODU_HBLANKp));
   bit_unpack(dst.SATO_BOOT_BITn, bit_pack(src.SATO_BOOT_BITn));
-  bit_unpack(dst.ATEJ_LINE_RSTp, bit_pack(src.ATEJ_LINE_RSTp));
-  bit_unpack(dst.FEPO_STORE_MATCHp, bit_pack(src.FEPO_STORE_MATCHp));
+  bit_unpack(dst.ATEJ_LINE_RSTp_odd, bit_pack(src.ATEJ_LINE_RSTp));
+  bit_unpack(dst.FEPO_STORE_MATCHp_odd, bit_pack(src.FEPO_STORE_MATCHp_odd));
   bit_unpack(dst.cpu_signals, bit_pack(src.cpu_signals));
   bit_unpack(dst.cpu_abus, src.cpu_abus);
   bit_unpack(dst.cpu_dbus, src.cpu_dbus);
@@ -221,7 +221,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.store_x7, src.store_x7);
   bit_unpack(dst.store_x8, src.store_x8);
   bit_unpack(dst.store_x9, src.store_x9);
-  bit_unpack(dst.sfetch_counter, src.sfetch_counter);
+  bit_unpack(dst.sfetch_counter_evn, src.sfetch_counter_evn);
   bit_unpack(dst.sfetch_control, bit_pack(src.sfetch_control));
   bit_unpack(dst.tfetch_counter, src.tfetch_counter);
   bit_unpack(dst.tfetch_control, bit_pack(src.tfetch_control));
@@ -296,14 +296,14 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
 
   memcpy(&dst.sys_clk, &src.sys_clk, sizeof(GateBoyClock));
 
-  dst.VOGA_HBLANKp = bit_pack(src.VOGA_HBLANKp);
+  dst.VOGA_HBLANKp = bit_pack(src.VOGA_HBLANKp_evn);
   dst.XYMU_RENDERINGn = bit_pack(src.XYMU_RENDERINGn);
-  dst.MATU_DMA_RUNNINGp = bit_pack(src.MATU_DMA_RUNNINGp);
-  dst.ACYL_SCANNINGp = bit_pack(src.ACYL_SCANNINGp);
+  dst.MATU_DMA_RUNNINGp = bit_pack(src.MATU_DMA_RUNNINGp_odd);
+  dst.ACYL_SCANNINGp = bit_pack(src.ACYL_SCANNINGp_odd);
   dst.WODU_HBLANKp = bit_pack(src.WODU_HBLANKp);
   dst.SATO_BOOT_BITn = bit_pack(src.SATO_BOOT_BITn);
-  dst.ATEJ_LINE_RSTp = bit_pack(src.ATEJ_LINE_RSTp);
-  dst.FEPO_STORE_MATCHp = bit_pack(src.FEPO_STORE_MATCHp);
+  dst.ATEJ_LINE_RSTp = bit_pack(src.ATEJ_LINE_RSTp_odd);
+  dst.FEPO_STORE_MATCHp_odd = bit_pack(src.FEPO_STORE_MATCHp_odd);
   dst.cpu_signals = (src.cpu_signals);
   dst.cpu_abus = bit_pack(src.cpu_abus);
   dst.cpu_dbus = bit_pack(src.cpu_dbus);
@@ -370,7 +370,7 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.store_x7 = bit_pack(src.store_x7);
   dst.store_x8 = bit_pack(src.store_x8);
   dst.store_x9 = bit_pack(src.store_x9);
-  dst.sfetch_counter = bit_pack(src.sfetch_counter);
+  dst.sfetch_counter_evn = bit_pack(src.sfetch_counter_evn);
   dst.sfetch_control = (src.sfetch_control);
   dst.tfetch_counter = bit_pack(src.tfetch_counter);
   dst.tfetch_control = (src.tfetch_control);

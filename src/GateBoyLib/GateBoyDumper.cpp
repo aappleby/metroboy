@@ -76,8 +76,8 @@ void GateBoyDumper::dump_sys(const GateBoySys& s, Dumper& d) {
   };
 
 #if 1
-  d             ("phase_total  : %lld\n",    s.phase_total);
-  d             ("phase        : %s\n", phases[s.phase_total & 7]);
+  d             ("phase_total  : %lld\n",    s.gb_phase_total);
+  d             ("phase        : %s\n", phases[s.gb_phase_total & 7]);
   d             ("sys_rst      : %d\n", s.rst);
   d             ("sys_t1       : %d\n", s.t1);
   d             ("sys_t2       : %d\n", s.t2);
@@ -102,15 +102,15 @@ void GateBoyDumper::dump_sys(const GateBoySys& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_tile_fetcher(const GateBoyState& s, Dumper& d) {
-  d.dump_bitp   ("LAXU_BFETCH_S0p     : ", s.tfetch_counter.LAXU_BFETCH_S0p.state);
-  d.dump_bitp   ("MESU_BFETCH_S1p     : ", s.tfetch_counter.MESU_BFETCH_S1p.state);
-  d.dump_bitp   ("NYVA_BFETCH_S2p     : ", s.tfetch_counter.NYVA_BFETCH_S2p.state);
-  d.dump_bitp   ("POKY_PRELOAD_LATCHp : ", s.tfetch_control.POKY_PRELOAD_LATCHp.state);
+  d.dump_bitp   ("LAXU_BFETCH_S0p     : ", s.tfetch_counter.LAXU_BFETCH_S0p_odd.state);
+  d.dump_bitp   ("MESU_BFETCH_S1p     : ", s.tfetch_counter.MESU_BFETCH_S1p_odd.state);
+  d.dump_bitp   ("NYVA_BFETCH_S2p     : ", s.tfetch_counter.NYVA_BFETCH_S2p_odd.state);
+  d.dump_bitp   ("POKY_PRELOAD_LATCHp : ", s.tfetch_control.POKY_PRELOAD_LATCHp_evn.state);
   d.dump_bitp   ("LONY_FETCHINGp      : ", s.tfetch_control.LONY_FETCHINGp.state);
   d.dump_bitp   ("LOVY_FETCH_DONEp    : ", s.tfetch_control.LOVY_FETCH_DONEp.state);
-  d.dump_bitp   ("NYKA_FETCH_DONEp    : ", s.tfetch_control.NYKA_FETCH_DONEp.state);
-  d.dump_bitp   ("PORY_FETCH_DONEp    : ", s.tfetch_control.PORY_FETCH_DONEp.state);
-  d.dump_bitp   ("PYGO_FETCH_DONEp    : ", s.tfetch_control.PYGO_FETCH_DONEp.state);
+  d.dump_bitp   ("NYKA_FETCH_DONEp    : ", s.tfetch_control.NYKA_FETCH_DONEp_evn.state);
+  d.dump_bitp   ("PORY_FETCH_DONEp    : ", s.tfetch_control.PORY_FETCH_DONEp_odd.state);
+  d.dump_bitp   ("PYGO_FETCH_DONEp    : ", s.tfetch_control.PYGO_FETCH_DONEp_evn.state);
   d.dump_bitp   ("LYZU_BFETCH_S0p_D1  : ", s.tfetch_control.LYZU_BFETCH_S0p_D1.state);
   d.dump_slice2n("Temp A : ", &s.tile_temp_a.LEGU_TILE_DA0n, 8);
   d.dump_slice2p("Temp B : ", &s.tile_temp_b.RAWU_TILE_DB0p, 8);
@@ -165,12 +165,12 @@ void GateBoyDumper::dump_joypad(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_lcd(const GateBoyState& s, Dumper& d) {
-  d.dump_bitp   ("CATU : ", s.lcd.CATU_x113p.state);
-  d.dump_bitp   ("ANEL : ", s.lcd.ANEL_x113p.state);
-  d.dump_bitp   ("POPU : ", s.lcd.POPU_VBLANKp.state);
-  d.dump_bitp   ("MYTA : ", s.lcd.MYTA_FRAME_ENDp.state);
-  d.dump_bitp   ("RUTU : ", s.lcd.RUTU_LINE_ENDp.state);
-  d.dump_bitp   ("NYPE : ", s.lcd.NYPE_LINE_ENDp.state);
+  d.dump_bitp   ("CATU : ", s.lcd.CATU_x113p_odd.state);
+  d.dump_bitp   ("ANEL : ", s.lcd.ANEL_x113p_odd.state);
+  d.dump_bitp   ("POPU : ", s.lcd.POPU_VBLANKp_odd.state);
+  d.dump_bitp   ("MYTA : ", s.lcd.MYTA_FRAME_ENDp_odd.state);
+  d.dump_bitp   ("RUTU : ", s.lcd.RUTU_LINE_ENDp_odd.state);
+  d.dump_bitp   ("NYPE : ", s.lcd.NYPE_LINE_ENDp_odd.state);
   d("\n");
   d.dump_bitp   ("SYGU_LINE_STROBE    : ", s.lcd.SYGU_LINE_STROBE.state);
   d.dump_bitn   ("MEDA_VSYNC_OUTn     : ", s.lcd.MEDA_VSYNC_OUTn.state);
@@ -183,8 +183,8 @@ void GateBoyDumper::dump_lcd(const GateBoyState& s, Dumper& d) {
   d.dump_bitp   ("WUSA_LCD_CLOCK_GATE : ", s.lcd.WUSA_LCD_CLOCK_GATE.state);
   d("\n");
   d("\n");
-  d.dump_slice2p("LX              : ", &s.reg_lx.SAXO_LX0p.state,  7);
-  d.dump_slice2p("FF44 LY         : ", &s.reg_ly.MUWY_LY0p.state,  8);
+  d.dump_slice2p("LX              : ", &s.reg_lx.SAXO_LX0p_odd.state,  7);
+  d.dump_slice2p("FF44 LY         : ", &s.reg_ly.MUWY_LY0p_odd.state,  8);
   d.dump_slice2n("FF45 LYC        : ", &s.reg_lyc.SYRY_LYC0n.state, 8);
 }
 
@@ -207,7 +207,7 @@ void GateBoyDumper::dump_oam_bus(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_sprite_store(const GateBoyState& s, Dumper& d) {
-  d.dump_slice2p("SPRITE INDEX   : ", &s.sprite_index.XADU_SPRITE_IDX0p.state, 6);
+  d.dump_slice2p("SPRITE INDEX   : ", &s.sprite_index.XADU_SPRITE_IDX0p_odd.state, 6);
   d.dump_slice2p("SPRITE COUNT   : ", &s.sprite_counter.BESE_SPRITE_COUNT0, 4);
   d("\n");
   d("STORE0 R%d I%02d L%02d X%03d\n", s.sprite_reset_flags.EBOJ_STORE0_RSTp.state & 1, bit_pack_inv(s.store_i0), bit_pack_inv(s.store_l0), bit_pack_inv(s.store_x0));
@@ -250,15 +250,15 @@ void GateBoyDumper::dump_cpu_bus(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_dma(const GateBoyState& s, Dumper& d) {
-  d.dump_slice2p("DMA_A_LOW  : ", &s.dma_lo.NAKY_DMA_A00p, 8);
+  d.dump_slice2p("DMA_A_LOW  : ", &s.dma_lo.NAKY_DMA_A00p_odd, 8);
   d.dump_slice2n("DMA_A_HIGH : ", &s.reg_dma.NAFA_DMA_A08n, 8);
   d             ("DMA Addr   : 0x%02x:%02x\n", bit_pack_inv(s.reg_dma), bit_pack(s.dma_lo));
-  d.dump_bitp   ("MATU_DMA_RUNNINGp : ", s.MATU_DMA_RUNNINGp.state);
+  d.dump_bitp   ("MATU_DMA_RUNNINGp : ", s.MATU_DMA_RUNNINGp_odd.state);
   d.dump_bitp   ("LYXE_DMA_LATCHp   : ", s.dma_ctrl.LYXE_DMA_LATCHp  .state);
-  d.dump_bitp   ("MYTE_DMA_DONE     : ", s.dma_ctrl.MYTE_DMA_DONE    .state);
-  d.dump_bitp   ("LUVY_DMA_TRIG_d0  : ", s.dma_ctrl.LUVY_DMA_TRIG_d0 .state);
-  d.dump_bitp   ("LENE_DMA_TRIG_d4  : ", s.dma_ctrl.LENE_DMA_TRIG_d4 .state);
-  d.dump_bitp   ("LOKY_DMA_LATCHp   : ", s.dma_ctrl.LOKY_DMA_LATCHp  .state);
+  d.dump_bitp   ("MYTE_DMA_DONE     : ", s.dma_ctrl.MYTE_DMA_DONE_odd    .state);
+  d.dump_bitp   ("LUVY_DMA_TRIG_d0  : ", s.dma_ctrl.LUVY_DMA_TRIG_d0_odd .state);
+  d.dump_bitp   ("LENE_DMA_TRIG_d4  : ", s.dma_ctrl.LENE_DMA_TRIG_d4_odd .state);
+  d.dump_bitp   ("LOKY_DMA_LATCHp   : ", s.dma_ctrl.LOKY_DMA_LATCHp_odd  .state);
 }
 
 
@@ -291,16 +291,16 @@ void GateBoyDumper::dump_vram_bus(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_sprite_fetcher(const GateBoyState& s, Dumper& d) {
-  d.dump_bitp   ("TOXE_SFETCH_S0       : ", s.sfetch_counter.TOXE_SFETCH_S0p     .state);
-  d.dump_bitp   ("TULY_SFETCH_S1       : ", s.sfetch_counter.TULY_SFETCH_S1p     .state);
-  d.dump_bitp   ("TESE_SFETCH_S2       : ", s.sfetch_counter.TESE_SFETCH_S2p     .state);
-  d.dump_bitp   ("TAKA_SFETCH_RUNNINGp : ", s.sfetch_control.TAKA_SFETCH_RUNNINGp.state);
-  d.dump_bitp   ("SOBU_SFETCH_REQp     : ", s.sfetch_control.SOBU_SFETCH_REQp    .state);
-  d.dump_bitp   ("SUDA_SFETCH_REQp     : ", s.sfetch_control.SUDA_SFETCH_REQp    .state);
-  d.dump_bitp   ("TYFO_SFETCH_S0_D1    : ", s.sfetch_control.TYFO_SFETCH_S0p_D1  .state);
-  d.dump_bitp   ("TOBU_SFETCH_S1_D2    : ", s.sfetch_control.TOBU_SFETCH_S1p_D2  .state);
-  d.dump_bitp   ("VONU_SFETCH_S1_D4    : ", s.sfetch_control.VONU_SFETCH_S1p_D4  .state);
-  d.dump_bitp   ("SEBA_SFETCH_S1_D5    : ", s.sfetch_control.SEBA_SFETCH_S1p_D5  .state);
+  d.dump_bitp   ("TOXE_SFETCH_S0       : ", s.sfetch_counter_evn.TOXE_SFETCH_S0p_evn     .state);
+  d.dump_bitp   ("TULY_SFETCH_S1       : ", s.sfetch_counter_evn.TULY_SFETCH_S1p_evn     .state);
+  d.dump_bitp   ("TESE_SFETCH_S2       : ", s.sfetch_counter_evn.TESE_SFETCH_S2p_evn     .state);
+  d.dump_bitp   ("TAKA_SFETCH_RUNNINGp : ", s.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state);
+  d.dump_bitp   ("SOBU_SFETCH_REQp     : ", s.sfetch_control.SOBU_SFETCH_REQp_evn    .state);
+  d.dump_bitp   ("SUDA_SFETCH_REQp     : ", s.sfetch_control.SUDA_SFETCH_REQp_odd    .state);
+  d.dump_bitp   ("TYFO_SFETCH_S0_D1    : ", s.sfetch_control.TYFO_SFETCH_S0p_D1_odd  .state);
+  d.dump_bitp   ("TOBU_SFETCH_S1_D2    : ", s.sfetch_control.TOBU_SFETCH_S1p_D2_evn  .state);
+  d.dump_bitp   ("VONU_SFETCH_S1_D4    : ", s.sfetch_control.VONU_SFETCH_S1p_D4_evn  .state);
+  d.dump_bitp   ("SEBA_SFETCH_S1_D5    : ", s.sfetch_control.SEBA_SFETCH_S1p_D5_odd  .state);
   d.dump_slice2n("Temp A : ", &s.sprite_pix_a.REWO_SPRITE_DA0n, 8);
   d.dump_slice2n("Temp B : ", &s.sprite_pix_b.PEFO_SPRITE_DB0n, 8);
 }
@@ -326,12 +326,13 @@ void GateBoyDumper::dump_resets(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_sprite_scanner(const GateBoyState& s, Dumper& d) {
-  d.dump_slice2p("SCAN INDEX        : ", &s.scan_counter.YFEL_SCAN0, 6);
-  d.dump_bitp   ("BESU_SCANNINGp    : ", s.sprite_scanner.BESU_SCAN_DONEn.state);
-  d.dump_bitp   ("CENO_SCANNINGp    : ", s.sprite_scanner.CENO_SCAN_DONEn.state);
-  d.dump_bitp   ("DEZY_COUNT_CLKp   : ", s.sprite_scanner.DEZY_INC_COUNTn.state);
-  d.dump_bitp   ("BYBA_SCAN_DONE_Ap : ", s.sprite_scanner.BYBA_SCAN_DONEp.state);
-  d.dump_bitp   ("DOBA_SCAN_DONE_Bp : ", s.sprite_scanner.DOBA_SCAN_DONEp.state);
+  d.dump_slice2p("SCAN INDEX        : ", &s.scan_counter.YFEL_SCAN0_odd, 6);
+  d.dump_bitp   ("BESU_SCANNINGp    : ", s.sprite_scanner.BESU_SCAN_DONEn_odd.state);
+  d.dump_bitp   ("CENO_SCANNINGp    : ", s.sprite_scanner.CENO_SCAN_DONEn_odd.state);
+  d.dump_bitp   ("DEZY_COUNT_CLKp   : ", s.sprite_scanner.DEZY_INC_COUNTn_odd.state);
+  d.dump_bitp   ("BYBA_SCAN_DONE_Ap : ", s.sprite_scanner.BYBA_SCAN_DONEp_odd.state);
+  d.dump_bitp   ("DOBA_SCAN_DONE_Bp : ", s.sprite_scanner.DOBA_SCAN_DONEp_evn.state);
+  d.dump_bitp   ("AVAP_SCAN_DONE_Tp : ", s.sprite_scanner.AVAP_SCAN_DONE_tp_odd.state);
 }
 
 void GateBoyDumper::dump_serial(const GateBoyState& s, Dumper& d) {
@@ -359,7 +360,7 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_slice2p("WIN MAP Y  : ", &s.win_y.map.TUFU_WIN_MAP_Y0, 5);
   d.dump_slice2p("WIN TILE Y : ", &s.win_y.tile.VYNO_WIN_TILE_Y0, 3);
   d("\n");
-  d.dump_slice2p("PIX COUNT  : ", &s.pix_count.XEHO_PX0p, 8);
+  d.dump_slice2p("PIX COUNT  : ", &s.pix_count.XEHO_PX0p_odd, 8);
   d.dump_slice2p("BG PIPE A  : ", &s.bgw_pipe_a, 8);
   d.dump_slice2p("BG PIPE B  : ", &s.bgw_pipe_b, 8);
   d.dump_slice2p("SPR PIPE A : ", &s.spr_pipe_a, 8);
@@ -370,24 +371,24 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_bitn   ("RAVO_LD1n  : ", s.lcd.RAVO_LD1n.state);
   d("\n");
   d.dump_bitp("XYMU_RENDERINGn        : ", s.XYMU_RENDERINGn.state);
-  d.dump_bitp("PYNU_WIN_MODE_Ap       : ", s.win_ctrl.PYNU_WIN_MODE_Ap.state);
-  d.dump_bitp("PUKU_WIN_HITn          : ", s.win_ctrl.PUKU_WIN_HITn.state);
-  d.dump_bitp("RYDY_WIN_HITp          : ", s.win_ctrl.RYDY_WIN_HITp.state);
-  d.dump_bitp("SOVY_WIN_FIRST_TILE_B  : ", s.win_ctrl.SOVY_WIN_HITp.state);
-  d.dump_bitp("NOPA_WIN_MODE_B        : ", s.win_ctrl.NOPA_WIN_MODE_Bp.state);
-  d.dump_bitp("PYCO_WX_MATCH_A        : ", s.win_ctrl.PYCO_WIN_MATCHp.state);
-  d.dump_bitp("NUNU_WX_MATCH_B        : ", s.win_ctrl.NUNU_WIN_MATCHp.state);
+  d.dump_bitp("PYNU_WIN_MODE_Ap       : ", s.win_ctrl.PYNU_WIN_MODE_Ap_odd.state);
+  d.dump_bitp("PUKU_WIN_HITn          : ", s.win_ctrl.PUKU_WIN_HITn_odd.state);
+  d.dump_bitp("RYDY_WIN_HITp          : ", s.win_ctrl.RYDY_WIN_HITp_odd.state);
+  d.dump_bitp("SOVY_WIN_FIRST_TILE_B  : ", s.win_ctrl.SOVY_WIN_HITp_evn.state);
+  d.dump_bitp("NOPA_WIN_MODE_B        : ", s.win_ctrl.NOPA_WIN_MODE_Bp_evn.state);
+  d.dump_bitp("PYCO_WX_MATCH_A        : ", s.win_ctrl.PYCO_WIN_MATCHp_evn.state);
+  d.dump_bitp("NUNU_WX_MATCH_B        : ", s.win_ctrl.NUNU_WIN_MATCHp_odd.state);
   d.dump_bitp("REJO_WY_MATCH_LATCH    : ", s.win_ctrl.REJO_WY_MATCH_LATCHp.state);
-  d.dump_bitp("SARY_WY_MATCH          : ", s.win_ctrl.SARY_WY_MATCHp.state);
-  d.dump_bitp("RYFA_FETCHn_A          : ", s.win_ctrl.RYFA_WIN_FETCHn_A.state);
-  d.dump_bitp("RENE_FETCHn_B          : ", s.win_ctrl.RENE_WIN_FETCHn_B.state);
+  d.dump_bitp("SARY_WY_MATCH          : ", s.win_ctrl.SARY_WY_MATCHp_odd.state);
+  d.dump_bitp("RYFA_FETCHn_A          : ", s.win_ctrl.RYFA_WIN_FETCHn_A_evn.state);
+  d.dump_bitp("RENE_FETCHn_B          : ", s.win_ctrl.RENE_WIN_FETCHn_B_evn.state);
   d.dump_bitp("RYKU_FINE_CNT0         : ", s.fine_count.RYKU_FINE_CNT0.state);
   d.dump_bitp("ROGA_FINE_CNT1         : ", s.fine_count.ROGA_FINE_CNT1.state);
   d.dump_bitp("RUBU_FINE_CNT2         : ", s.fine_count.RUBU_FINE_CNT2.state);
-  d.dump_bitp("PUXA_FINE_MATCH_A      : ", s.fine_scroll.PUXA_SCX_FINE_MATCH_A.state);
-  d.dump_bitp("NYZE_FINE_MATCH_B      : ", s.fine_scroll.NYZE_SCX_FINE_MATCH_B.state);
+  d.dump_bitp("PUXA_FINE_MATCH_A      : ", s.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state);
+  d.dump_bitp("NYZE_FINE_MATCH_B      : ", s.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn : ", s.fine_scroll.ROXY_FINE_SCROLL_DONEn.state);
-  d.dump_bitp("VOGA_HBLANKp           : ", s.VOGA_HBLANKp.state);
+  d.dump_bitp("VOGA_HBLANKp           : ", s.VOGA_HBLANKp_evn.state);
   d("\n");
 }
 

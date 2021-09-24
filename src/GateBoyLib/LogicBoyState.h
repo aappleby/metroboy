@@ -67,7 +67,7 @@ struct LogicBoyState {
   /*#p21.WODU*/ uint8_t WODU_HBLANKp;
   /*_p07.SATO*/ uint8_t SATO_BOOT_BITn;
   /*_p28.ATEJ*/ uint8_t ATEJ_LINE_RSTp;
-  /*_p29.FEPO*/ uint8_t FEPO_STORE_MATCHp;
+  /*_p29.FEPO*/ uint8_t FEPO_STORE_MATCHp_odd;
 
   GateBoyCpuSignals cpu_signals;
   uint16_t cpu_abus;
@@ -155,7 +155,7 @@ struct LogicBoyState {
   //----------
 
 
-  uint8_t sfetch_counter;
+  uint8_t sfetch_counter_evn;
   SpriteFetchControl sfetch_control;
   //----------
 

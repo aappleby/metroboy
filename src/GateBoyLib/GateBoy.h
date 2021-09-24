@@ -131,7 +131,7 @@ struct GateBoySys {
     cpu_en = true;
     fastboot = true;
     buttons = 0;
-    phase_total = 80;
+    gb_phase_total = 80;
   }
 
   void reset_to_cart() {
@@ -144,7 +144,7 @@ struct GateBoySys {
     cpu_en = true;
     fastboot = true;
     buttons = 0;
-    phase_total = 46880720;
+    gb_phase_total = 46880720;
   }
 
   // External signals
@@ -157,7 +157,7 @@ struct GateBoySys {
   uint8_t  cpu_en = 0;
   uint8_t  fastboot = 0;
   uint8_t  buttons = 0;
-  uint64_t phase_total = 0;
+  uint64_t gb_phase_total = 0;
 };
 #pragma pack(pop)
 

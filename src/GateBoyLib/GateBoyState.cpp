@@ -104,7 +104,7 @@ void GateBoyState::reset_to_poweron() {
   store_x7.reset_to_poweron();
   store_x8.reset_to_poweron();
   store_x9.reset_to_poweron();
-  sfetch_counter.reset_to_poweron();
+  sfetch_counter_evn.reset_to_poweron();
   sfetch_control.reset_to_poweron();
   tfetch_counter.reset_to_poweron();
   tfetch_control.reset_to_poweron();
@@ -180,14 +180,14 @@ void GateBoyState::reset_to_bootrom() {
   reg_ie.reset_to_bootrom();
   sys_rst.reset_to_bootrom();
   sys_clk.reset_to_bootrom();
-  VOGA_HBLANKp.state = BIT_OLD | BIT_DRIVEN;
+  VOGA_HBLANKp_evn.state = BIT_OLD | BIT_DRIVEN;
   XYMU_RENDERINGn.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  MATU_DMA_RUNNINGp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  ACYL_SCANNINGp.state = BIT_OLD | BIT_DRIVEN;
+  MATU_DMA_RUNNINGp_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  ACYL_SCANNINGp_odd.state = BIT_OLD | BIT_DRIVEN;
   WODU_HBLANKp.state = BIT_OLD | BIT_DRIVEN;
   SATO_BOOT_BITn.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  ATEJ_LINE_RSTp.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  FEPO_STORE_MATCHp.state = BIT_OLD | BIT_DRIVEN;
+  ATEJ_LINE_RSTp_odd.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  FEPO_STORE_MATCHp_odd.state = BIT_OLD | BIT_DRIVEN;
   cpu_signals.reset_to_bootrom();
   cpu_abus.reset_to_bootrom();
   cpu_dbus.reset_to_bootrom();
@@ -253,7 +253,7 @@ void GateBoyState::reset_to_bootrom() {
   store_x7.reset_to_bootrom();
   store_x8.reset_to_bootrom();
   store_x9.reset_to_bootrom();
-  sfetch_counter.reset_to_bootrom();
+  sfetch_counter_evn.reset_to_bootrom();
   sfetch_control.reset_to_bootrom();
   tfetch_counter.reset_to_bootrom();
   tfetch_control.reset_to_bootrom();
@@ -330,14 +330,14 @@ void GateBoyState::reset_to_cart() {
   sys_rst.reset_to_cart();
   sys_clk.reset_to_cart();
   
-  VOGA_HBLANKp.state = 0b00011001;
+  VOGA_HBLANKp_evn.state = 0b00011001;
   XYMU_RENDERINGn.state = 0x19;
-  MATU_DMA_RUNNINGp.state = 0x1A;
-  ACYL_SCANNINGp.state = 0x18;
+  MATU_DMA_RUNNINGp_odd.state = 0x1A;
+  ACYL_SCANNINGp_odd.state = 0x18;
   WODU_HBLANKp.state = 0b00011001;
   SATO_BOOT_BITn.state = 0x19;
-  ATEJ_LINE_RSTp.state = 0b00011000;
-  FEPO_STORE_MATCHp.state = 0x18;
+  ATEJ_LINE_RSTp_odd.state = 0b00011000;
+  FEPO_STORE_MATCHp_odd.state = 0x18;
 
   cpu_signals.reset_to_cart();
   cpu_abus.reset_to_cart();
@@ -404,7 +404,7 @@ void GateBoyState::reset_to_cart() {
   store_x7.reset_to_cart();
   store_x8.reset_to_cart();
   store_x9.reset_to_cart();
-  sfetch_counter.reset_to_cart();
+  sfetch_counter_evn.reset_to_cart();
   sfetch_control.reset_to_cart();
   tfetch_counter.reset_to_cart();
   tfetch_control.reset_to_cart();
@@ -668,7 +668,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, ext_addr_latch),
   DECLARE_FIELD(GateBoyState, ext_mbc),
   DECLARE_FIELD(GateBoyState, zram_bus),
-  DECLARE_FIELD(GateBoyState, VOGA_HBLANKp),
+  DECLARE_FIELD(GateBoyState, VOGA_HBLANKp_evn),
   DECLARE_FIELD(GateBoyState, XYMU_RENDERINGn),
   DECLARE_FIELD(GateBoyState, sys_rst),
   DECLARE_FIELD(GateBoyState, sys_clk),
@@ -676,7 +676,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, reg_tima),
   DECLARE_FIELD(GateBoyState, reg_tma),
   DECLARE_FIELD(GateBoyState, reg_tac),
-  DECLARE_FIELD(GateBoyState, MATU_DMA_RUNNINGp),
+  DECLARE_FIELD(GateBoyState, MATU_DMA_RUNNINGp_odd),
   DECLARE_FIELD(GateBoyState, dma_ctrl),
   DECLARE_FIELD(GateBoyState, dma_lo),
   DECLARE_FIELD(GateBoyState, reg_dma),
@@ -721,14 +721,14 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, store_x8),
   DECLARE_FIELD(GateBoyState, store_x9),
   DECLARE_FIELD(GateBoyState, sprite_counter),
-  DECLARE_FIELD(GateBoyState, FEPO_STORE_MATCHp),
+  DECLARE_FIELD(GateBoyState, FEPO_STORE_MATCHp_odd),
   DECLARE_FIELD(GateBoyState, sprite_match_flags),
   DECLARE_FIELD(GateBoyState, sprite_reset_flags),
   DECLARE_FIELD(GateBoyState, sprite_store_flags),
   DECLARE_FIELD(GateBoyState, sprite_scanner),
   DECLARE_FIELD(GateBoyState, scan_counter),
   DECLARE_FIELD(GateBoyState, sprite_index),
-  DECLARE_FIELD(GateBoyState, sfetch_counter),
+  DECLARE_FIELD(GateBoyState, sfetch_counter_evn),
   DECLARE_FIELD(GateBoyState, sfetch_control),
   DECLARE_FIELD(GateBoyState, sprite_pix_a),
   DECLARE_FIELD(GateBoyState, sprite_pix_b),
@@ -766,7 +766,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, reg_obp1),
   DECLARE_FIELD(GateBoyState, WODU_HBLANKp),
   DECLARE_FIELD(GateBoyState, SATO_BOOT_BITn),
-  DECLARE_FIELD(GateBoyState, ATEJ_LINE_RSTp),
+  DECLARE_FIELD(GateBoyState, ATEJ_LINE_RSTp_odd),
   DECLARE_FIELD(GateBoyState, flipped_sprite),
   END_FIELDS()
 };

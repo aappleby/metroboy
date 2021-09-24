@@ -98,7 +98,7 @@ void GateBoyThread::clear_steps() {
   CHECK_P(sim_paused());
   step_count = 0;
   old_sim_time = 0;
-  old_phase_total = gb->get_sys().phase_total;
+  old_phase_total = gb->get_sys().gb_phase_total;
   phase_rate_smooth = 0;
 }
 
@@ -107,7 +107,7 @@ void GateBoyThread::clear_steps() {
 void GateBoyThread::dump(Dumper& d) {
   CHECK_P(sim_paused());
 
-  auto new_phase_total = gb->get_sys().phase_total;
+  auto new_phase_total = gb->get_sys().gb_phase_total;
 
   d("State count A  : %d\n", gb.state_count());
   d("State size    : %d K\n", gb.state_size_bytes() / 1024);
@@ -138,7 +138,7 @@ void GateBoyThread::load_raw_dump(BlobStream& bs) {
   clear_steps();
   gb->load_raw_dump(bs);
   cart_blob = bs.rest();
-  old_phase_total = gb->get_sys().phase_total;
+  old_phase_total = gb->get_sys().gb_phase_total;
 }
 
 //------------------------------------------------------------------------------

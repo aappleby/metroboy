@@ -9,47 +9,47 @@ struct WinControl {
   void reset_to_bootrom() {
     NUKO_WX_MATCHp.state       = BIT_OLD | BIT_DRIVEN;
     ROGE_WY_MATCHp.state       = BIT_OLD | BIT_DRIVEN;
-    PYNU_WIN_MODE_Ap.state     = BIT_OLD | BIT_DRIVEN;
-    PUKU_WIN_HITn.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-    RYDY_WIN_HITp.state        = BIT_OLD | BIT_DRIVEN;
-    SOVY_WIN_HITp.state        = BIT_OLD | BIT_DRIVEN;
-    NOPA_WIN_MODE_Bp.state     = BIT_OLD | BIT_DRIVEN;
-    PYCO_WIN_MATCHp.state      = BIT_OLD | BIT_DRIVEN;
-    NUNU_WIN_MATCHp.state      = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    PYNU_WIN_MODE_Ap_odd.state     = BIT_OLD | BIT_DRIVEN;
+    PUKU_WIN_HITn_odd.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+    RYDY_WIN_HITp_odd.state        = BIT_OLD | BIT_DRIVEN;
+    SOVY_WIN_HITp_evn.state        = BIT_OLD | BIT_DRIVEN;
+    NOPA_WIN_MODE_Bp_evn.state     = BIT_OLD | BIT_DRIVEN;
+    PYCO_WIN_MATCHp_evn.state      = BIT_OLD | BIT_DRIVEN;
+    NUNU_WIN_MATCHp_odd.state      = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     REJO_WY_MATCH_LATCHp.state = BIT_OLD | BIT_DRIVEN;
-    SARY_WY_MATCHp.state       = BIT_OLD | BIT_DRIVEN;
-    RYFA_WIN_FETCHn_A.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    RENE_WIN_FETCHn_B.state    = BIT_OLD | BIT_DRIVEN;
+    SARY_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
+    RYFA_WIN_FETCHn_A_evn.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    RENE_WIN_FETCHn_B_evn.state    = BIT_OLD | BIT_DRIVEN;
   }
   void reset_to_cart() {
     NUKO_WX_MATCHp.state       = BIT_OLD | BIT_DRIVEN;
     ROGE_WY_MATCHp.state       = BIT_OLD | BIT_DRIVEN;
-    PYNU_WIN_MODE_Ap.state     = BIT_OLD | BIT_DRIVEN;
-    PUKU_WIN_HITn.state        = BIT_OLD | BIT_DRIVEN | 1;
-    RYDY_WIN_HITp.state        = BIT_OLD | BIT_DRIVEN;
-    SOVY_WIN_HITp.state        = BIT_OLD | BIT_DRIVEN;
-    NOPA_WIN_MODE_Bp.state     = BIT_OLD | BIT_DRIVEN;
-    PYCO_WIN_MATCHp.state      = BIT_OLD | BIT_DRIVEN;
-    NUNU_WIN_MATCHp.state      = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    PYNU_WIN_MODE_Ap_odd.state     = BIT_OLD | BIT_DRIVEN;
+    PUKU_WIN_HITn_odd.state        = BIT_OLD | BIT_DRIVEN | 1;
+    RYDY_WIN_HITp_odd.state        = BIT_OLD | BIT_DRIVEN;
+    SOVY_WIN_HITp_evn.state        = BIT_OLD | BIT_DRIVEN;
+    NOPA_WIN_MODE_Bp_evn.state     = BIT_OLD | BIT_DRIVEN;
+    PYCO_WIN_MATCHp_evn.state      = BIT_OLD | BIT_DRIVEN;
+    NUNU_WIN_MATCHp_odd.state      = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     REJO_WY_MATCH_LATCHp.state = BIT_OLD | BIT_DRIVEN;
-    SARY_WY_MATCHp.state       = BIT_OLD | BIT_DRIVEN;
-    RYFA_WIN_FETCHn_A.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    RENE_WIN_FETCHn_B.state    = BIT_OLD | BIT_DRIVEN;
+    SARY_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
+    RYFA_WIN_FETCHn_A_evn.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    RENE_WIN_FETCHn_B_evn.state    = BIT_OLD | BIT_DRIVEN;
   }
 
   /*_p27.NUKO*/ Gate NUKO_WX_MATCHp; // old used
   /*_p27.ROGE*/ Gate ROGE_WY_MATCHp; // old used
-  /*_p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap;      // AxxxxxGx
-  /*_p27.PUKU*/ Gate PUKU_WIN_HITn;             // xxCxxxGx
-  /*_p27.RYDY*/ Gate RYDY_WIN_HITp;             // xxCxxxGx
-  /*_p27.SOVY*/ DFF17 SOVY_WIN_HITp;            // xxxDxxxH
-  /*_p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp;         // xBxDxFxH
-  /*_p27.PYCO*/ DFF17 PYCO_WIN_MATCHp;          // xxxDxxxH
-  /*_p27.NUNU*/ DFF17 NUNU_WIN_MATCHp;          // xxxxExGx
+  /*_p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_odd;      // AxxxxxGx
+  /*_p27.PUKU*/ Gate PUKU_WIN_HITn_odd;             // xxCxxxGx
+  /*_p27.RYDY*/ Gate RYDY_WIN_HITp_odd;             // xxCxxxGx
+  /*_p27.SOVY*/ DFF17 SOVY_WIN_HITp_evn;            // xxxDxxxH
+  /*_p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp_evn;         // xBxDxFxH
+  /*_p27.PYCO*/ DFF17 PYCO_WIN_MATCHp_evn;          // xxxDxxxH
+  /*_p27.NUNU*/ DFF17 NUNU_WIN_MATCHp_odd;          // xxxxExGx
   /*_p27.REJO*/ NorLatch REJO_WY_MATCH_LATCHp;  // xxCxxxxx
-  /*_p27.SARY*/ DFF17 SARY_WY_MATCHp;           // xxCxxxxx
-  /*_p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A;        // AxCxExGx
-  /*_p27.RENE*/ DFF17 RENE_WIN_FETCHn_B;        // xBxDxFxH
+  /*_p27.SARY*/ DFF17 SARY_WY_MATCHp_odd;           // xxCxxxxx
+  /*_p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A_evn;        // AxCxExGx
+  /*_p27.RENE*/ DFF17 RENE_WIN_FETCHn_B_evn;        // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------
@@ -66,25 +66,25 @@ struct FineCount {
 
 struct FineScroll {
   void reset_to_poweron() {
-    PUXA_SCX_FINE_MATCH_A.state = BIT_OLD | BIT_DRIVEN;
-    NYZE_SCX_FINE_MATCH_B.state = BIT_OLD | BIT_DRIVEN;
+    PUXA_SCX_FINE_MATCH_evn.state = BIT_OLD | BIT_DRIVEN;
+    NYZE_SCX_FINE_MATCH_odd.state = BIT_OLD | BIT_DRIVEN;
     ROXY_FINE_SCROLL_DONEn.state = BIT_OLD | BIT_DRIVEN;
   }
 
   void reset_to_bootrom() {
-    PUXA_SCX_FINE_MATCH_A.state = BIT_OLD | BIT_DRIVEN;
-    NYZE_SCX_FINE_MATCH_B.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    PUXA_SCX_FINE_MATCH_evn.state = BIT_OLD | BIT_DRIVEN;
+    NYZE_SCX_FINE_MATCH_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     ROXY_FINE_SCROLL_DONEn.state = BIT_OLD | BIT_DRIVEN | 1;
   }
 
   void reset_to_cart() {
-    PUXA_SCX_FINE_MATCH_A.state = BIT_OLD | BIT_DRIVEN;
-    NYZE_SCX_FINE_MATCH_B.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    PUXA_SCX_FINE_MATCH_evn.state = BIT_OLD | BIT_DRIVEN;
+    NYZE_SCX_FINE_MATCH_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
     ROXY_FINE_SCROLL_DONEn.state = BIT_OLD | BIT_DRIVEN | 1;
   }
 
-  /*#p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_A;        // xxxxxFxH
-  /*#p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_B;        // AxxxxxGx
+  /*#p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_evn;        // xxxxxFxH
+  /*#p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_odd;        // AxxxxxGx
   /*#p27.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
 };
 

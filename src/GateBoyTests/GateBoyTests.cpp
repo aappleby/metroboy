@@ -385,8 +385,8 @@ TestResults GateBoyTests::test_fastboot(const IGateBoy* proto, uint8_t mask) {
   // Clear the fastboot bit on the first gameboy, since that obviously won't match
   const_cast<GateBoySys&>(gb1->get_sys()).fastboot = 0;
   const_cast<GateBoySys&>(gb2->get_sys()).fastboot = 0;
-  const_cast<GateBoySys&>(gb1->get_sys()).phase_total = 0;
-  const_cast<GateBoySys&>(gb2->get_sys()).phase_total = 0;
+  const_cast<GateBoySys&>(gb1->get_sys()).gb_phase_total = 0;
+  const_cast<GateBoySys&>(gb2->get_sys()).gb_phase_total = 0;
 
   EXPECT_EQ(true, bit_cmp(gb1->get_state(), gb2->get_state(), mask));
   EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
@@ -1081,7 +1081,7 @@ TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filen
   bool pass = (result_c == 0x01) && (timeout > 0);
 
   if (pass) {
-    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, gb->get_sys().phase_total);
+    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, gb->get_sys().gb_phase_total);
     results.test_pass++;
     return results;
   }
@@ -1093,7 +1093,7 @@ TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filen
     else if (result_a != result_b) reason = "MISMATCH";
     else if (result_c == 0xFF)     reason = "FAIL";
 
-    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gb->get_sys().phase_total);
+    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gb->get_sys().gb_phase_total);
     results.test_fail++;
     return results;
   }
@@ -1169,7 +1169,7 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
 
 
   for (int i = 0; i < 32; i++) {
-    int phase = gb->get_sys().phase_total & 7;
+    int phase = gb->get_sys().gb_phase_total & 7;
     auto& clk = gb->get_state().sys_clk;
     EXPECT_CLK(clk.AFUR_xxxxEFGH.state, (uint8_t)0b00001111);
     EXPECT_CLK(clk.ALEF_AxxxxFGH.state, (uint8_t)0b10000111);

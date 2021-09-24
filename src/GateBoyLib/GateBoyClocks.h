@@ -61,23 +61,23 @@ struct GateBoyClock {
   /*_p01.ABOL*/ wire ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ.out_new()); }
   /*#p01.BUTY*/ wire BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
 
-  wire AZOF_AxCxExGx() const {
-    /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(AVET_DEGLITCH.out_mid());
-    /*_p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
-    return AZOF_AxCxExGx;
+  wire AZOF_ODD() const {
+    /*_p01.ATAL*/ wire ATAL_EVN = not1(AVET_DEGLITCH.out_mid());
+    /*_p01.AZOF*/ wire AZOF_ODD = not1(ATAL_EVN);
+    return AZOF_ODD;
   }
 
-  /*_p01.ZAXY*/ wire ZAXY_xBxDxFxH() const { return not1(AZOF_AxCxExGx()); }
-  /*#p01.ZEME*/ wire ZEME_AxCxExGx() const { return not1(ZAXY_xBxDxFxH()); }
-  /*_p29.XYVA*/ wire XYVA_xBxDxFxH() const { return not1(ZEME_AxCxExGx()); }
-  /*_p29.XOTA*/ wire XOTA_AxCxExGx() const { return not1(XYVA_xBxDxFxH()); }
-  /*_p29.XYFY*/ wire XYFY_xBxDxFxH() const { return not1(XOTA_AxCxExGx()); }
-  /*#p01.ALET*/ wire ALET_xBxDxFxH() const { return not1(ZEME_AxCxExGx()); }
-  /*_p01.LAPE*/ wire LAPE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
-  /*#p27.MEHE*/ wire MEHE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
-  /*#p27.MYVO*/ wire MYVO_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
-  /*_p27.MOXE*/ wire MOXE_AxCxExGx() const { return not1(ALET_xBxDxFxH()); }
-  /*_p27.TAVA*/ wire TAVA_xBxDxFxH() const { return not1(LAPE_AxCxExGx()); }
+  /*_p01.ZAXY*/ wire ZAXY_EVN() const { return not1(AZOF_ODD()); }
+  /*#p01.ZEME*/ wire ZEME_ODD() const { return not1(ZAXY_EVN()); }
+  /*_p29.XYVA*/ wire XYVA_EVN() const { return not1(ZEME_ODD()); }
+  /*_p29.XOTA*/ wire XOTA_ODD() const { return not1(XYVA_EVN()); }
+  /*_p29.XYFY*/ wire XYFY_EVN() const { return not1(XOTA_ODD()); }
+  /*#p01.ALET*/ wire ALET_evn() const { return not1(ZEME_ODD()); }
+  /*_p01.LAPE*/ wire LAPE_odd() const { return not1(ALET_evn()); }
+  /*#p27.MEHE*/ wire MEHE_odd() const { return not1(ALET_evn()); }
+  /*#p27.MYVO*/ wire MYVO_odd() const { return not1(ALET_evn()); }
+  /*_p27.MOXE*/ wire MOXE_ODD() const { return not1(ALET_evn()); }
+  /*_p27.TAVA*/ wire TAVA_evn() const { return not1(LAPE_odd()); }
 
   /*#p01.ATYP*/ wire ATYP_ABCDxxxx() const { return not1(AFUR_xxxxEFGH.qp_new()); }
   /*#p01.AFEP*/ wire AFEP_AxxxxFGH() const { return not1(ALEF_AxxxxFGH.qn_new()); }

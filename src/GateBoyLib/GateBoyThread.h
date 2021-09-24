@@ -78,7 +78,7 @@ struct GateBoyThread {
   void add_steps(int steps);
 
   void run_to(int64_t phase) {
-    uint64_t delta = phase - gb->get_sys().phase_total;
+    uint64_t delta = phase - gb->get_sys().gb_phase_total;
     add_steps((int)delta);
   }
 

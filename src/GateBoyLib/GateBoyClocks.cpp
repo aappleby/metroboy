@@ -41,8 +41,8 @@ void GateBoy::tock_clocks_gates() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_vid_clocks_gates() {
-  /*_p29.WOSU*/ gb_state.sys_clk.WOSU_AxxDExxH.dff17(gb_state.sys_clk.XYFY_xBxDxFxH(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
-  /*_p29.WUVU*/ gb_state.sys_clk.WUVU_ABxxEFxx.dff17(gb_state.sys_clk.XOTA_AxCxExGx(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
+  /*_p29.WOSU*/ gb_state.sys_clk.WOSU_AxxDExxH.dff17(gb_state.sys_clk.XYFY_EVN(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
+  /*_p29.WUVU*/ gb_state.sys_clk.WUVU_ABxxEFxx.dff17(gb_state.sys_clk.XOTA_ODD(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
   /*_p21.VENA*/ gb_state.sys_clk.VENA_xxCDEFxx.dff17(gb_state.sys_clk.WUVU_ABxxEFxx.qn_new(), XAPO_VID_RSTn(), gb_state.sys_clk.VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
 }
 

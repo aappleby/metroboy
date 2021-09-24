@@ -151,7 +151,7 @@ struct GateBoyPair : public IGateBoy {
     const auto& state2 = gb2->get_state();
 
     if (state1.diff(state2, 0x01)) {
-      LOG_R("Regression test state mismatch @ phase %lld!\n", gb1->get_sys().phase_total);
+      LOG_R("Regression test state mismatch @ phase %lld!\n", gb1->get_sys().gb_phase_total);
       //__debugbreak();
       return false;
     }
@@ -161,7 +161,7 @@ struct GateBoyPair : public IGateBoy {
     
     //if (memcmp(&pins1, &pins2, sizeof(GateBoyPins))) {
     if (!bit_cmp(pins1, pins2, 0x01)) {
-      LOG_R("Regression test pins mismatch @ phase %lld!\n", gb1->get_sys().phase_total);
+      LOG_R("Regression test pins mismatch @ phase %lld!\n", gb1->get_sys().gb_phase_total);
       return false;
     }
 

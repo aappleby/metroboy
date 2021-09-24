@@ -28,8 +28,10 @@ public:
   virtual GBResult peek(int addr) const = 0;
   virtual GBResult poke(int addr, uint8_t data_in) = 0;
 
-  virtual GBResult dbg_read(const blob& cart_blob, int addr) = 0;
-  virtual GBResult dbg_write (const blob& cart_blob, int addr, uint8_t data) = 0;
+  virtual GBResult dbg_req  (uint16_t addr, uint8_t data, bool write) = 0;
+  virtual GBResult dbg_read (const blob& cart_blob, int addr) = 0;
+  virtual GBResult dbg_write(const blob& cart_blob, int addr, uint8_t data) = 0;
+
   virtual GBResult dbg_flip() { return GBResult::ok(); }
 
   virtual GBResult run_phases(const blob& cart_blob, int phase_count) = 0;

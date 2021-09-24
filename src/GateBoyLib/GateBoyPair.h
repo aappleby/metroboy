@@ -75,6 +75,12 @@ struct GateBoyPair : public IGateBoy {
     return check_results(r1, r2);
   }
 
+  GBResult dbg_req(uint16_t addr, uint8_t data, bool write) override {
+    GBResult r1 = gb1->dbg_req(addr, data, write);
+    GBResult r2 = gb2->dbg_req(addr, data, write);
+    return check_results(r1, r2);
+  }
+
   GBResult dbg_read(const blob& cart_blob, int addr) override {
     GBResult r1 = gb1->dbg_read(cart_blob, addr);
     GBResult r2 = gb2->dbg_read(cart_blob, addr);
@@ -132,7 +138,10 @@ struct GateBoyPair : public IGateBoy {
   GBResult check_results(GBResult r1, GBResult r2) const {
     if (r1.is_err()) { LOG_R("gb1 result.is_err()\n"); return r1; }
     if (r2.is_err()) { LOG_R("gb2 result.is_err()\n"); return r2; }
-    if (!(r1 == r2)) { LOG_R("gb1 result != gb2 result\n"); return Error::MISMATCH; }
+
+    if (!(r1 == r2)) {
+      LOG_R("gb1 result != gb2 result\n"); return Error::MISMATCH;
+    }
     if (!check_sync()) return Error::MISMATCH;
     return r1;
   }

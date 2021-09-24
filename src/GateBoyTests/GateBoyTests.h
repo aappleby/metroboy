@@ -53,6 +53,9 @@ struct GateBoyTests {
   TestResults run_microtest(const IGateBoy* proto, const char* filename);
 
   TestResults test_dma(const IGateBoy* proto, uint16_t src);
+
+  TestResults test_fuzz_reg(const IGateBoy* proto, uint16_t addr);
+
   TestResults test_reg(const IGateBoy* proto, const char* tag, uint16_t addr, uint8_t data_in);
   TestResults test_mem(const IGateBoy* proto, const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
   TestResults test_spu(const IGateBoy* proto, const char* tag, uint16_t addr, uint8_t data_in);

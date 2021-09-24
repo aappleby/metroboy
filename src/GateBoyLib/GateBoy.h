@@ -219,6 +219,7 @@ struct GateBoy  : public IGateBoy {
   GBResult peek(int addr) const override;
   GBResult poke(int addr, uint8_t data_in) override;
 
+  GBResult dbg_req  (uint16_t addr, uint8_t data, bool write) override;
   GBResult dbg_read (const blob& cart_blob, int addr) override;
   GBResult dbg_write(const blob& cart_blob, int addr, uint8_t data) override;
 

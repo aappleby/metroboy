@@ -56,6 +56,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   overlay_tex = create_texture_u32(160, 144, nullptr, false);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
+  /*
   if (config_fastmode) {
     gb_thread = new GateBoyThread(new LogicBoy());
   }
@@ -65,13 +66,53 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   else {
     gb_thread = new GateBoyThread(new GateBoy());
   }
+  */
+
+  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
 
   gb_thread->start();
+  gb_thread->reset_to_bootrom();
+  gb_thread->gb->set_cpu_en(false);
 
-  blob cart;
-  load_blob("LinksAwakening.gb", cart);
-  gb_thread->load_cart_blob(cart);
-  gb_thread->reset_to_cart();
+  // [003.293]   test_fuzz_reg failed at 0292:0429 - write 0xf1 to 0xff40
+  // [008.844]   test_fuzz_reg failed at 0786:0215 - write 0xf7 to 0xff40
+  {
+    auto gb = gb_thread->gb.state();
+    auto addr = ADDR_LCDC;
+    auto& dummy_cart = gb_thread->get_cart();
+
+
+    uint32_t r = xorshift32(292);
+
+    for (int i = 0; i < 429; i++) {
+      r = xorshift32(r);
+      if (r & 1) {
+        r = xorshift32(r);
+        auto res = gb->dbg_write(dummy_cart, addr, uint8_t(r));
+        if (res.is_err()) printf("%d\n", i);
+      }
+      else {
+        auto res = gb->dbg_read(dummy_cart, addr);
+        if (res.is_err()) printf("%d\n", i);
+      }
+    }
+
+    r = xorshift32(r);
+    if (r & 1) {
+      r = xorshift32(r);
+      auto res = gb->dbg_req((uint16_t)addr, uint8_t(r), 1);
+    }
+    else {
+      gb->dbg_req((uint16_t)addr, 0, 0);
+    }
+  }
+
+  gb_thread->gb->run_phases(gb_thread->get_cart(), 6);
+
+  //blob cart;
+  //load_blob("LinksAwakening.gb", cart);
+  //gb_thread->load_cart_blob(cart);
+  //gb_thread->reset_to_cart();
 
   //BlobStream bs;
   //load_blob("zoomer.dump", bs.b);

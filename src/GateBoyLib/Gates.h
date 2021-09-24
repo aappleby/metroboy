@@ -79,15 +79,15 @@ struct BitBase {
 
   void check_old() const {
     if (config_check_flags) {
-      DCHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-      DCHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_OLD);
+      CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
+      CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_OLD);
     }
   }
 
   void check_new() const {
     if (config_check_flags) {
-      DCHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-      DCHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
+      CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
+      CHECK_P((state & (BIT_OLD | BIT_NEW)) == BIT_NEW);
     }
   }
 
@@ -898,7 +898,7 @@ template<class DST>
 //-----------------------------------------------------------------------------
 
 template<typename T>
-bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF) {
+bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF, FieldInfo* field_info = nullptr) {
   const uint8_t* pa = (const uint8_t*)&a;
   const uint8_t* pb = (const uint8_t*)&b;
   bool result = true;
@@ -906,7 +906,8 @@ bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF) {
     auto ba = pa[i] & mask;
     auto bb = pb[i] & mask;
     if (ba != bb) {
-      LOG_R("bit_cmp mismatch at offset %d - 0x%02x 0x%02x\n",  (int)i, ba, bb);
+      LOG_R("bit_cmp mismatch at offset %d - 0x%02x 0x%02x, mask 0x%02x\n",  (int)i, ba, bb, mask);
+      if (field_info) print_field_at((int)i, field_info);
       result = false;
     }
   }

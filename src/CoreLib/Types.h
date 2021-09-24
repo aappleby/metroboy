@@ -35,6 +35,14 @@ inline void set_bit(T& t, int c, bool x) {
 uint32_t swap(uint32_t x);
 uint64_t swap(uint64_t x);
 
+inline uint32_t xorshift32(uint32_t x)
+{
+  x ^= x << 13;
+  x ^= x >> 17;
+  x ^= x << 5;
+  return x;
+}
+
 inline uint8_t bit_reverse(uint8_t b) {
    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
@@ -124,9 +132,6 @@ const uint32_t COL_HINT3 = 0x00333333;
 
 //-----------------------------------------------------------------------------
 
-#define DELTA_EVEN ((sys.phase_total & 1) == 0)
-#define DELTA_ODD  ((sys.phase_total & 1) == 1)
-
 #define MB_DELTA_AB   ((phase_total & 7) == 0)
 #define MB_DELTA_BC   ((phase_total & 7) == 1)
 #define MB_DELTA_CD   ((phase_total & 7) == 2)
@@ -135,8 +140,6 @@ const uint32_t COL_HINT3 = 0x00333333;
 #define MB_DELTA_FG   ((phase_total & 7) == 5)
 #define MB_DELTA_GH   ((phase_total & 7) == 6)
 #define MB_DELTA_HA   ((phase_total & 7) == 7)
-#define MB_DELTA_EVEN ((phase_total & 1) == 0)
-#define MB_DELTA_ODD  ((phase_total & 1) == 1)
 
 //-----------------------------------------------------------------------------
 

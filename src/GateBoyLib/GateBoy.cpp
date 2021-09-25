@@ -189,11 +189,23 @@ GBResult GateBoy::run_phases(const blob& cart_blob, int phase_count) {
 GBResult GateBoy::next_phase(const blob& cart_blob) {
   probes.begin_pass((sys.gb_phase_total + 1) & 7);
   sys.gb_phase_total++;
+
   tock_cpu();
   tock_gates(cart_blob);
   gb_state.commit();
   pins.commit();
   update_framebuffer();
+
+  auto gb_state_old = gb_state;
+
+  tock_cpu();
+  tock_gates(cart_blob);
+  gb_state.commit();
+  pins.commit();
+  update_framebuffer();
+
+  gb_state.diff(gb_state_old, 0xFF);
+
   probes.end_pass();
   return GBResult::ok();
 }

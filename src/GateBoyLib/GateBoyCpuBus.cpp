@@ -84,7 +84,7 @@ void GateBoy::tock_bootrom_gates() {
   /*_p07.SYPU*/ triwire SYPU_BOOT_TO_CD0 = tri6_pn(TEXE_FF50_RDp, gb_state.cpu_signals.TEPU_BOOT_BITn.qp_new());
   /*_BUS_CPU_D00p*/ gb_state.cpu_dbus.BUS_CPU_D00p.tri_bus(SYPU_BOOT_TO_CD0);
 
-  /*_p07.SATO*/ gb_state.SATO_BOOT_BITn = or2(gb_state.cpu_dbus.BUS_CPU_D00p.out_new(), gb_state.cpu_signals.TEPU_BOOT_BITn.qp_new());
+  /*_p07.SATO*/ gb_state.SATO_BOOT_BITn <<= or2(gb_state.cpu_dbus.BUS_CPU_D00p.out_new(), gb_state.cpu_signals.TEPU_BOOT_BITn.qp_new());
 }
 
 //-----------------------------------------------------------------------------

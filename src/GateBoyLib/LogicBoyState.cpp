@@ -3,7 +3,7 @@
 
 #pragma warning(disable:4244) // conversion from uint32_t to uint8_t
 
-static_assert(sizeof(GateBoyReset) == sizeof(LogicBoyReset));
+//static_assert(sizeof(GateBoyReset) == sizeof(LogicBoyReset));
 
 //-----------------------------------------------------------------------------
 
@@ -292,9 +292,8 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.reg_lx = bit_pack(src.reg_lx);
   dst.reg_ie = bit_pack(src.reg_ie);
 
-  memcpy(&dst.sys_rst, &src.sys_rst, sizeof(GateBoyReset));
-
-  memcpy(&dst.sys_clk, &src.sys_clk, sizeof(GateBoyClock));
+  dst.sys_rst = bit_purge(src.sys_rst);
+  dst.sys_clk = bit_purge(src.sys_clk);
 
   dst.VOGA_HBLANKp = bit_pack(src.VOGA_HBLANKp_evn);
   dst.XYMU_RENDERINGn = bit_pack(src.XYMU_RENDERINGn);
@@ -304,14 +303,14 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.SATO_BOOT_BITn = bit_pack(src.SATO_BOOT_BITn);
   dst.ATEJ_LINE_RSTp = bit_pack(src.ATEJ_LINE_RSTp_odd);
   dst.FEPO_STORE_MATCHp_odd = bit_pack(src.FEPO_STORE_MATCHp_odd);
-  dst.cpu_signals = (src.cpu_signals);
+  dst.cpu_signals = bit_purge(src.cpu_signals);
   dst.cpu_abus = bit_pack(src.cpu_abus);
   dst.cpu_dbus = bit_pack(src.cpu_dbus);
-  dst.int_ctrl = (src.int_ctrl);
+  dst.int_ctrl = bit_purge(src.int_ctrl);
   dst.int_latch = bit_pack(src.int_latch);
   dst.vram_abus = bit_pack(src.vram_abus);
   dst.vram_dbus = bit_pack(src.vram_dbus);
-  dst.oam_ctrl = (src.oam_ctrl);
+  dst.oam_ctrl = bit_purge(src.oam_ctrl);
   dst.oam_abus = bit_pack(src.oam_abus);
   dst.oam_dbus_a = bit_pack(src.oam_dbus_a);
   dst.oam_dbus_b = bit_pack(src.oam_dbus_b);
@@ -322,16 +321,16 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.ext_data_latch = bit_pack(src.ext_data_latch);
   dst.ext_addr_latch = bit_pack(src.ext_addr_latch);
   
-  dst.ext_mbc = (src.ext_mbc);
-  dst.zram_bus = (src.zram_bus);
-  dst.dma_ctrl = (src.dma_ctrl);
+  dst.ext_mbc = bit_purge(src.ext_mbc);
+  dst.zram_bus = bit_purge(src.zram_bus);
+  dst.dma_ctrl = bit_purge(src.dma_ctrl);
 
   dst.dma_lo = bit_pack(src.dma_lo);
   dst.cpu_int = bit_pack(src.cpu_int);
   dst.cpu_ack = bit_pack(src.cpu_ack);
-  dst.joy_int = (src.joy_int);
+  dst.joy_int = bit_purge(src.joy_int);
   dst.joy_latch = bit_pack(src.joy_latch);
-  dst.sprite_scanner = (src.sprite_scanner);
+  dst.sprite_scanner = bit_purge(src.sprite_scanner);
   dst.scan_counter = bit_pack(src.scan_counter);
   dst.sprite_counter = bit_pack(src.sprite_counter);
   dst.sprite_index = bit_pack(src.sprite_index);
@@ -371,17 +370,17 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.store_x8 = bit_pack(src.store_x8);
   dst.store_x9 = bit_pack(src.store_x9);
   dst.sfetch_counter_evn = bit_pack(src.sfetch_counter_evn);
-  dst.sfetch_control = (src.sfetch_control);
+  dst.sfetch_control = bit_purge(src.sfetch_control);
   dst.tfetch_counter = bit_pack(src.tfetch_counter);
-  dst.tfetch_control = (src.tfetch_control);
+  dst.tfetch_control = bit_purge(src.tfetch_control);
   dst.tile_temp_a = bit_pack(src.tile_temp_a);
   dst.tile_temp_b = bit_pack(src.tile_temp_b);
-  dst.win_ctrl = (src.win_ctrl);
+  dst.win_ctrl = bit_purge(src.win_ctrl);
   dst.win_x.map = bit_pack(src.win_x.map);
   dst.win_y.tile = bit_pack(src.win_y.tile);
   dst.win_y.map = bit_pack(src.win_y.map);
   dst.fine_count = bit_pack(src.fine_count);
-  dst.fine_scroll = (src.fine_scroll);
+  dst.fine_scroll = bit_purge(src.fine_scroll);
   dst.flipped_sprite = bit_pack(src.flipped_sprite);
   dst.sprite_pix_a = bit_pack(src.sprite_pix_a);
   dst.sprite_pix_b = bit_pack(src.sprite_pix_b);
@@ -392,25 +391,25 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.spr_pipe_a = bit_pack(src.spr_pipe_a);
   dst.spr_pipe_b = bit_pack(src.spr_pipe_b);
   dst.pal_pipe = bit_pack(src.pal_pipe);
-  dst.lcd = (src.lcd);
-  //dst.reg_NR10 = (src.reg_NR10);
-  //dst.reg_NR11 = (src.reg_NR11);
-  //dst.reg_NR12 = (src.reg_NR12);
-  //dst.reg_NR14 = (src.reg_NR14);
-  //dst.reg_NR21 = (src.reg_NR21);
-  //dst.reg_NR22 = (src.reg_NR22);
-  //dst.reg_NR24 = (src.reg_NR24);
-  //dst.reg_NR30 = (src.reg_NR30);
-  //dst.reg_NR31 = (src.reg_NR31);
-  //dst.reg_NR32 = (src.reg_NR32);
-  //dst.reg_NR34 = (src.reg_NR34);
-  //dst.reg_NR41 = (src.reg_NR41);
-  //dst.reg_NR42 = (src.reg_NR42);
-  //dst.reg_NR43 = (src.reg_NR43);
-  //dst.reg_NR44 = (src.reg_NR44);
-  //dst.reg_NR50 = (src.reg_NR50);
-  //dst.reg_NR51 = (src.reg_NR51);
-  //dst.reg_NR52 = (src.reg_NR52);
+  dst.lcd = bit_purge(src.lcd);
+  //dst.reg_NR10 = bit_purge(src.reg_NR10);
+  //dst.reg_NR11 = bit_purge(src.reg_NR11);
+  //dst.reg_NR12 = bit_purge(src.reg_NR12);
+  //dst.reg_NR14 = bit_purge(src.reg_NR14);
+  //dst.reg_NR21 = bit_purge(src.reg_NR21);
+  //dst.reg_NR22 = bit_purge(src.reg_NR22);
+  //dst.reg_NR24 = bit_purge(src.reg_NR24);
+  //dst.reg_NR30 = bit_purge(src.reg_NR30);
+  //dst.reg_NR31 = bit_purge(src.reg_NR31);
+  //dst.reg_NR32 = bit_purge(src.reg_NR32);
+  //dst.reg_NR34 = bit_purge(src.reg_NR34);
+  //dst.reg_NR41 = bit_purge(src.reg_NR41);
+  //dst.reg_NR42 = bit_purge(src.reg_NR42);
+  //dst.reg_NR43 = bit_purge(src.reg_NR43);
+  //dst.reg_NR44 = bit_purge(src.reg_NR44);
+  //dst.reg_NR50 = bit_purge(src.reg_NR50);
+  //dst.reg_NR51 = bit_purge(src.reg_NR51);
+  //dst.reg_NR52 = bit_purge(src.reg_NR52);
 }
 
 //-----------------------------------------------------------------------------

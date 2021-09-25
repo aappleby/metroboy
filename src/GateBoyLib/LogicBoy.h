@@ -88,6 +88,8 @@ struct LogicBoy : public IGateBoy {
   void tock_spu_logic();
   void tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new);
 
+  void lb_bit_check();
+
   //-----------------------------------------------------------------------------
 
   LogicBoyState lb_state;

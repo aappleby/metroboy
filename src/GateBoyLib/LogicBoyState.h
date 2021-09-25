@@ -7,6 +7,7 @@
 #include "GateBoyLib/GateBoyClocks.h"
 #include "GateBoyLib/GateBoyPixPipe.h"
 #include "GateBoyLib/GateBoyJoypad.h"
+#include "GateBoyLib/GateBoyReset.h"
 #include "GateBoyLib/GateBoySerial.h"
 #include "GateBoyLib/GateBoyInterrupts.h"
 #include "GateBoyLib/GateBoySpriteFetcher.h"
@@ -16,7 +17,6 @@
 #include "GateBoyLib/GateBoyOamBus.h"
 #include "GateBoyLib/GateBoyVramBus.h"
 #include "GateBoyLib/GateBoyZramBus.h"
-#include "GateBoyLib/LogicBoyReset.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
 #include "GateBoyLib/GateBoyPins.h"
@@ -57,8 +57,8 @@ struct LogicBoyState {
   uint8_t  reg_lx;   // Not mapped
   uint8_t  reg_ie;   // 0xFFFF
 
-  LogicBoyReset sys_rst;
-  GateBoyClock  sys_clk;
+  GateBoyReset sys_rst;
+  GateBoyClock sys_clk;
 
   /*#p21.VOGA*/ uint8_t VOGA_HBLANKp;
   /*#p21.XYMU*/ uint8_t XYMU_RENDERINGn;

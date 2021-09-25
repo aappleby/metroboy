@@ -329,7 +329,7 @@ void GateBoy::tock_oam_bus_gates()
   oam_data_a = mem.oam_ram[(oam_addr << 1) + 0];
   oam_data_b = mem.oam_ram[(oam_addr << 1) + 1];
 
-  gb_state.oam_ctrl.old_oam_clk = bit(~gb_state.oam_ctrl.SIG_OAM_CLKn.out_new());
+  gb_state.oam_ctrl.old_oam_clk <<= bit(~gb_state.oam_ctrl.SIG_OAM_CLKn.out_new());
 
   triwire oam_data_a0 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 0));
   triwire oam_data_a1 = tri6_nn(ZODO_OAM_OEn, get_bit(oam_data_a, 1));

@@ -32,9 +32,9 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
 
   /*#p04.MATU*/ gb_state.MATU_DMA_RUNNINGp_odd.dff17(gb_state.sys_clk.UVYT_ABCDxxxx(), gb_state.sys_rst.CUNU_SYS_RSTn(), gb_state.dma_ctrl.LOKY_DMA_LATCHp_odd.out_old());
 
-  /*_p04.LARA*/ gb_state.dma_ctrl.LARA_DMA_LATCHn_odd = nand3(gb_state.dma_ctrl.LOKY_DMA_LATCHp_odd.out_mid(), gb_state.dma_ctrl.MYTE_DMA_DONE_odd.qn_any(), gb_state.sys_rst.CUNU_SYS_RSTn());
-  /*#p04.LOKY*/ gb_state.dma_ctrl.LOKY_DMA_LATCHp_odd = nand2(gb_state.dma_ctrl.LARA_DMA_LATCHn_odd.out_mid(), gb_state.dma_ctrl.LENE_DMA_TRIG_d4_odd.qn_any());
-  /*_p04.LARA*/ gb_state.dma_ctrl.LARA_DMA_LATCHn_odd = nand3(gb_state.dma_ctrl.LOKY_DMA_LATCHp_odd.out_mid(), gb_state.dma_ctrl.MYTE_DMA_DONE_odd.qn_any(), gb_state.sys_rst.CUNU_SYS_RSTn());
+  /*_p04.LARA*/ gb_state.dma_ctrl.LARA_DMA_LATCHn_odd <<= nand3(gb_state.dma_ctrl.LOKY_DMA_LATCHp_odd.out_mid(), gb_state.dma_ctrl.MYTE_DMA_DONE_odd.qn_any(), gb_state.sys_rst.CUNU_SYS_RSTn());
+  /*#p04.LOKY*/ gb_state.dma_ctrl.LOKY_DMA_LATCHp_odd <<= nand2(gb_state.dma_ctrl.LARA_DMA_LATCHn_odd.out_mid(), gb_state.dma_ctrl.LENE_DMA_TRIG_d4_odd.qn_any());
+  /*_p04.LARA*/ gb_state.dma_ctrl.LARA_DMA_LATCHn_odd <<= nand3(gb_state.dma_ctrl.LOKY_DMA_LATCHp_odd.out_mid(), gb_state.dma_ctrl.MYTE_DMA_DONE_odd.qn_any(), gb_state.sys_rst.CUNU_SYS_RSTn());
 
   /*#p04.META*/ wire META_DMA_CLKp_odd = and2(gb_state.sys_clk.UVYT_ABCDxxxx(), gb_state.dma_ctrl.LOKY_DMA_LATCHp_odd.out_new());
   /*#p04.NAKY*/ gb_state.dma_lo.NAKY_DMA_A00p_odd.dff17(META_DMA_CLKp_odd,                          LAPA_DMA_RSTn_odd, gb_state.dma_lo.NAKY_DMA_A00p_odd.qn_old());

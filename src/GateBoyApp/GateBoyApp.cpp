@@ -68,28 +68,24 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   }
   */
 
-  const auto proto = new GateBoy();
-  gb_thread = new GateBoyThread(proto);
-
-  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
-  //gb_thread = new GateBoyThread(proto.get());
+  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
 
   gb_thread->start();
   gb_thread->reset_to_bootrom();
-  //gb_thread->gb->set_cpu_en(false);
 
-#if 0
-  // [003.293]   test_fuzz_reg failed at 0292:0429 - write 0xf1 to 0xff40
-  // [008.844]   test_fuzz_reg failed at 0786:0215 - write 0xf7 to 0xff40
+#if 1
+  //  test_fuzz_reg failed at 0004:0188 - write 0xc0 to 0xff40
   {
+    gb_thread->gb->set_cpu_en(false);
+
     auto gb = gb_thread->gb.state();
     auto addr = ADDR_LCDC;
     auto& dummy_cart = gb_thread->get_cart();
 
 
-    uint32_t r = xorshift32(292);
+    uint32_t r = xorshift32(4);
 
-    for (int i = 0; i < 429; i++) {
+    for (int i = 0; i < 188; i++) {
       r = xorshift32(r);
       if (r & 1) {
         r = xorshift32(r);
@@ -112,13 +108,17 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
     }
   }
 
-  gb_thread->gb->run_phases(gb_thread->get_cart(), 6);
+  gb_thread->run_to(1586 - 1);
+  //gb_thread->run_to(1598 - 1);
+
 #endif
 
+#if 0
   blob cart;
   load_blob("tests/microtests/DMG/poweron_stat_000.gb", cart);
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
+#endif
 
   //BlobStream bs;
   //load_blob("zoomer.dump", bs.b);

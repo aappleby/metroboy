@@ -88,7 +88,7 @@ void GateBoy::tock_lcd_gates() {
 
     /*_p28.ABAF*/ wire ABAF_x113n_odd = not1(gb_state.lcd.CATU_x113p_odd.qp_new());
     /*_p28.BYHA*/ wire BYHA_LINE_RSTn_odd = or_and3(gb_state.lcd.ANEL_x113p_odd.qp_new(), ABAF_x113n_odd, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
-    /*_p28.ATEJ*/ gb_state.ATEJ_LINE_RSTp_odd = not1(BYHA_LINE_RSTn_odd);
+    /*_p28.ATEJ*/ gb_state.ATEJ_LINE_RSTp_odd <<= not1(BYHA_LINE_RSTn_odd);
 
     /*#p21.POPU*/ gb_state.lcd.POPU_VBLANKp_odd.dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), XYVO_y144p);
     /*#p21.MYTA*/ gb_state.lcd.MYTA_FRAME_ENDp_odd.dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), NOKO_y153p);
@@ -205,12 +205,12 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   // Could we possibly be incrementing X3p one phase early?
 
   // LCD horizontal sync pin latch
-  /*#p24.POME*/ gb_state.lcd.POME_X8_LATCH = nor2(gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), gb_state.lcd.POFY.out_mid());
-  /*#p24.RUJU*/ gb_state.lcd.RUJU = or3(gb_state.lcd.PAHO_X8_SYNC.qp_new(), TOFU_VID_RSTp(), gb_state.lcd.POME_X8_LATCH.out_mid());
-  /*#p24.POFY*/ gb_state.lcd.POFY = not1(gb_state.lcd.RUJU.out_mid());
-  /*#p24.POME*/ gb_state.lcd.POME_X8_LATCH = nor2(gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), gb_state.lcd.POFY.out_mid());
-  /*#p24.RUJU*/ gb_state.lcd.RUJU = or3(gb_state.lcd.PAHO_X8_SYNC.qp_new(), TOFU_VID_RSTp(), gb_state.lcd.POME_X8_LATCH.out_mid());
-  /*#p24.POFY*/ gb_state.lcd.POFY = not1(gb_state.lcd.RUJU.out_mid());
+  /*#p24.POME*/ gb_state.lcd.POME_X8_LATCH <<= nor2(gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), gb_state.lcd.POFY.out_mid());
+  /*#p24.RUJU*/ gb_state.lcd.RUJU <<= or3(gb_state.lcd.PAHO_X8_SYNC.qp_new(), TOFU_VID_RSTp(), gb_state.lcd.POME_X8_LATCH.out_mid());
+  /*#p24.POFY*/ gb_state.lcd.POFY <<= not1(gb_state.lcd.RUJU.out_mid());
+  /*#p24.POME*/ gb_state.lcd.POME_X8_LATCH <<= nor2(gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), gb_state.lcd.POFY.out_mid());
+  /*#p24.RUJU*/ gb_state.lcd.RUJU <<= or3(gb_state.lcd.PAHO_X8_SYNC.qp_new(), TOFU_VID_RSTp(), gb_state.lcd.POME_X8_LATCH.out_mid());
+  /*#p24.POFY*/ gb_state.lcd.POFY <<= not1(gb_state.lcd.RUJU.out_mid());
 
   /*#p24.RUZE*/ wire RUZE_HSYNCn = not1(gb_state.lcd.POFY.out_mid());
   /*_PIN_54*/ pins.lcd.PIN_54_LCD_HSYNC.pin_out(RUZE_HSYNCn, RUZE_HSYNCn);

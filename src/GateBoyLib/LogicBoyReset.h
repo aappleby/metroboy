@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 
+#if 0
+
 struct LogicBoyReset {
   //void reset_to_poweron() {
   //  memset(this, 0, sizeof(*this));
@@ -41,3 +43,4 @@ struct LogicBoyReset {
   uint8_t SIG_CPU_INT_RESETp;
 };
 
+#endif

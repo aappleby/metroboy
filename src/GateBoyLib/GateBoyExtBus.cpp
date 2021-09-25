@@ -346,21 +346,21 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
       bool mbc1_ram_en = bit(gb_state.ext_mbc.MBC1_RAM_EN.out_new());
 
       if (region == 0 && 1) {
-        gb_state.ext_mbc.MBC1_RAM_EN = bit((data_out & 0x0F) == 0x0A);
+        gb_state.ext_mbc.MBC1_RAM_EN <<= bit((data_out & 0x0F) == 0x0A);
       }
       else if (region == 1 && 1) {
-        gb_state.ext_mbc.MBC1_BANK0 = get_bit(data_out, 0);
-        gb_state.ext_mbc.MBC1_BANK1 = get_bit(data_out, 1);
-        gb_state.ext_mbc.MBC1_BANK2 = get_bit(data_out, 2);
-        gb_state.ext_mbc.MBC1_BANK3 = get_bit(data_out, 3);
-        gb_state.ext_mbc.MBC1_BANK4 = get_bit(data_out, 4);
+        gb_state.ext_mbc.MBC1_BANK0 <<= get_bit(data_out, 0);
+        gb_state.ext_mbc.MBC1_BANK1 <<= get_bit(data_out, 1);
+        gb_state.ext_mbc.MBC1_BANK2 <<= get_bit(data_out, 2);
+        gb_state.ext_mbc.MBC1_BANK3 <<= get_bit(data_out, 3);
+        gb_state.ext_mbc.MBC1_BANK4 <<= get_bit(data_out, 4);
       }
       else if (region == 2 && 1) {
-        gb_state.ext_mbc.MBC1_BANK5 = get_bit(data_out, 0);
-        gb_state.ext_mbc.MBC1_BANK6 = get_bit(data_out, 1);
+        gb_state.ext_mbc.MBC1_BANK5 <<= get_bit(data_out, 0);
+        gb_state.ext_mbc.MBC1_BANK6 <<= get_bit(data_out, 1);
       }
       else if (region == 3 && 1) {
-        gb_state.ext_mbc.MBC1_MODE = (data_out & 1);
+        gb_state.ext_mbc.MBC1_MODE <<= (data_out & 1);
       }
       else if (region == 5 && cart_has_ram(cart_blob) && 1 && mbc1_ram_en) {
         uint32_t mbc1_ram_bank = mbc1_mode ? bit_pack(&gb_state.ext_mbc.MBC1_BANK5, 2) : 0;

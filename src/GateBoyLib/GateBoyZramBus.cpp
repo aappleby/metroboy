@@ -19,7 +19,7 @@ void GateBoy::tock_zram_gates(const GateBoyState& reg_old)
   if (bit(gb_state.zram_bus.clk_old.out_old() & ~gb_state.cpu_signals.TAPU_CPU_WRp.out_new() & CSp)) {
     mem.zero_ram[addr & 0x007F] = (uint8_t)bit_pack(reg_old.cpu_dbus);
   }
-  gb_state.zram_bus.clk_old = gb_state.cpu_signals.TAPU_CPU_WRp.out_new();
+  gb_state.zram_bus.clk_old <<= gb_state.cpu_signals.TAPU_CPU_WRp.out_new();
 
   uint8_t data = mem.zero_ram[addr & 0x007F];
 

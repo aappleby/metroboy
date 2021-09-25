@@ -32,10 +32,10 @@ void GateBoyDumper::dump_pins(const GateBoyPins& p, Dumper& d) {
   d.dump_bitn   ("PIN_79_RDn       : ", p.ctrl.PIN_79_RDn.state);
   d.dump_bitn   ("PIN_78_WRn       : ", p.ctrl.PIN_78_WRn.state);
 
-  d.dump_bitp   ("PIN_73_CLK_DRIVE : ", p.sys.PIN_73_CLK_DRIVE);
-  d.dump_bitp   ("PIN_74_CLK       : ", p.sys.PIN_74_CLK.CLK);
-  d.dump_bitp   ("PIN_74_CLKGOOD   : ", p.sys.PIN_74_CLK.CLKGOOD);
-  d.dump_bitp   ("PIN_75_CLK_OUT   : ", p.sys.PIN_75_CLK_OUT);
+  d.dump_bitp   ("PIN_73_CLK_DRIVE : ", p.sys.PIN_73_CLK_DRIVE.state);
+  d.dump_bitp   ("PIN_74_CLK       : ", p.sys.PIN_74_CLK.CLK.state);
+  d.dump_bitp   ("PIN_74_CLKGOOD   : ", p.sys.PIN_74_CLK.CLKGOOD.state);
+  d.dump_bitp   ("PIN_75_CLK_OUT   : ", p.sys.PIN_75_CLK_OUT.state);
 
   d.dump_bitp   ("PIN_71_RST       : ", p.sys.PIN_71_RST.state);
   d.dump_bitp   ("PIN_77_T1        : ", p.sys.PIN_77_T1.state);
@@ -106,7 +106,7 @@ void GateBoyDumper::dump_tile_fetcher(const GateBoyState& s, Dumper& d) {
   d.dump_bitp   ("MESU_BFETCH_S1p     : ", s.tfetch_counter.MESU_BFETCH_S1p_odd.state);
   d.dump_bitp   ("NYVA_BFETCH_S2p     : ", s.tfetch_counter.NYVA_BFETCH_S2p_odd.state);
   d("\n");
-  d.dump_bitp   ("LYRY_BFETCH_DONEp   : ", s.tfetch_control.LYRY_BFETCH_DONEp_odd);
+  d.dump_bitp   ("LYRY_BFETCH_DONEp   : ", s.tfetch_control.LYRY_BFETCH_DONEp_odd.state);
   d.dump_bitp   ("POKY_PRELOAD_LATCHp : ", s.tfetch_control.POKY_PRELOAD_LATCHp_evn.state);
   d.dump_bitp   ("LONY_FETCHINGp      : ", s.tfetch_control.LONY_FETCHINGp.state);
   d.dump_bitp   ("LOVY_FETCH_DONEp    : ", s.tfetch_control.LOVY_FETCH_DONEp.state);

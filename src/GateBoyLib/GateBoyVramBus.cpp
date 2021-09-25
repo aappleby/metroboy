@@ -653,32 +653,16 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   //--------------------------------------------
   // Vram bus to sprite x flipper
 
-  {
-    /*#p29.XONO*/ wire XONO_FLIP_X = and2(gb_state.oam_temp_b.BAXO_OAM_DB5p.qp_new(), gb_state.sfetch_control.TEXY_SFETCHINGp_evn.out_new());
-    /*_p33.PUTE*/ wire PUTE_FLIP0p = mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D07p.out_new(), gb_state.vram_dbus.BUS_VRAM_D00p.out_new());
-    /*_p33.PELO*/ wire PELO_FLIP1p = mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D06p.out_new(), gb_state.vram_dbus.BUS_VRAM_D01p.out_new());
-    /*_p33.PONO*/ wire PONO_FLIP2p = mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D05p.out_new(), gb_state.vram_dbus.BUS_VRAM_D02p.out_new());
-    /*_p33.POBE*/ wire POBE_FLIP3p = mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D04p.out_new(), gb_state.vram_dbus.BUS_VRAM_D03p.out_new());
-    /*_p33.PACY*/ wire PACY_FLIP4p = mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D03p.out_new(), gb_state.vram_dbus.BUS_VRAM_D04p.out_new());
-    /*_p33.PUGU*/ wire PUGU_FLIP5p = mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D02p.out_new(), gb_state.vram_dbus.BUS_VRAM_D05p.out_new());
-    /*_p33.PAWE*/ wire PAWE_FLIP6p = mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D01p.out_new(), gb_state.vram_dbus.BUS_VRAM_D06p.out_new());
-    /*_p33.PULY*/ wire PULY_FLIP7p = mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D00p.out_new(), gb_state.vram_dbus.BUS_VRAM_D07p.out_new());
-
-    gb_state.flipped_sprite = {
-      PUTE_FLIP0p,
-      PELO_FLIP1p,
-      PONO_FLIP2p,
-      POBE_FLIP3p,
-      PACY_FLIP4p,
-      PUGU_FLIP5p,
-      PAWE_FLIP6p,
-      PULY_FLIP7p
-    };
-  }
+  /*#p29.XONO*/ wire XONO_FLIP_X = and2(gb_state.oam_temp_b.BAXO_OAM_DB5p.qp_new(), gb_state.sfetch_control.TEXY_SFETCHINGp_evn.out_new());
+  /*_p33.PUTE*/ gb_state.flipped_sprite.PUTE_FLIP0p <<= mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D07p.out_new(), gb_state.vram_dbus.BUS_VRAM_D00p.out_new());
+  /*_p33.PELO*/ gb_state.flipped_sprite.PELO_FLIP1p <<= mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D06p.out_new(), gb_state.vram_dbus.BUS_VRAM_D01p.out_new());
+  /*_p33.PONO*/ gb_state.flipped_sprite.PONO_FLIP2p <<= mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D05p.out_new(), gb_state.vram_dbus.BUS_VRAM_D02p.out_new());
+  /*_p33.POBE*/ gb_state.flipped_sprite.POBE_FLIP3p <<= mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D04p.out_new(), gb_state.vram_dbus.BUS_VRAM_D03p.out_new());
+  /*_p33.PACY*/ gb_state.flipped_sprite.PACY_FLIP4p <<= mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D03p.out_new(), gb_state.vram_dbus.BUS_VRAM_D04p.out_new());
+  /*_p33.PUGU*/ gb_state.flipped_sprite.PUGU_FLIP5p <<= mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D02p.out_new(), gb_state.vram_dbus.BUS_VRAM_D05p.out_new());
+  /*_p33.PAWE*/ gb_state.flipped_sprite.PAWE_FLIP6p <<= mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D01p.out_new(), gb_state.vram_dbus.BUS_VRAM_D06p.out_new());
+  /*_p33.PULY*/ gb_state.flipped_sprite.PULY_FLIP7p <<= mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D00p.out_new(), gb_state.vram_dbus.BUS_VRAM_D07p.out_new());
 }
-
-
-
 
 
 

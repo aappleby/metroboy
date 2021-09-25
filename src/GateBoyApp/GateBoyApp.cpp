@@ -68,7 +68,11 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   }
   */
 
-  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  const auto proto = new GateBoy();
+  gb_thread = new GateBoyThread(proto);
+
+  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  //gb_thread = new GateBoyThread(proto.get());
 
   gb_thread->start();
   gb_thread->reset_to_bootrom();
@@ -112,7 +116,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 #endif
 
   blob cart;
-  load_blob("LinksAwakening.gb", cart);
+  load_blob("tests/microtests/DMG/poweron_stat_000.gb", cart);
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
 

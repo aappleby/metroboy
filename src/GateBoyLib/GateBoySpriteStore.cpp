@@ -41,10 +41,10 @@ void GateBoy::update_sprite_store_flags_gates(
   wire DYTY_COUNT_CLKp,
   SpriteStoreFlags& sprite_store_flags)
 {
-  /*_p29.EDEN*/ wire EDEN_SPRITE_COUNT0n = not1(sprite_counter.BESE_SPRITE_COUNT0.qp_new());
-  /*_p29.CYPY*/ wire CYPY_SPRITE_COUNT1n = not1(sprite_counter.CUXY_SPRITE_COUNT1.qp_new());
-  /*_p29.CAPE*/ wire CAPE_SPRITE_COUNT2n = not1(sprite_counter.BEGO_SPRITE_COUNT2.qp_new());
-  /*_p29.CAXU*/ wire CAXU_SPRITE_COUNT3n = not1(sprite_counter.DYBE_SPRITE_COUNT3.qp_new());
+  /*_p29.EDEN*/ wire EDEN_SPRITE_COUNT0n = not1(sprite_counter.BESE_SPRITE_COUNT0_odd.qp_new());
+  /*_p29.CYPY*/ wire CYPY_SPRITE_COUNT1n = not1(sprite_counter.CUXY_SPRITE_COUNT1_odd.qp_new());
+  /*_p29.CAPE*/ wire CAPE_SPRITE_COUNT2n = not1(sprite_counter.BEGO_SPRITE_COUNT2_odd.qp_new());
+  /*_p29.CAXU*/ wire CAXU_SPRITE_COUNT3n = not1(sprite_counter.DYBE_SPRITE_COUNT3_odd.qp_new());
 
   /*_p29.FYCU*/ wire FYCU_SPRITE_COUNT0p = not1(EDEN_SPRITE_COUNT0n);
   /*_p29.FONE*/ wire FONE_SPRITE_COUNT1p = not1(CYPY_SPRITE_COUNT1n);

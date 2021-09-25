@@ -153,7 +153,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.XYMU_RENDERINGn, bit_pack(src.XYMU_RENDERINGn));
   bit_unpack(dst.MATU_DMA_RUNNINGp_odd, bit_pack(src.MATU_DMA_RUNNINGp));
   bit_unpack(dst.ACYL_SCANNINGp_odd, bit_pack(src.ACYL_SCANNINGp));
-  bit_unpack(dst.WODU_HBLANKp, bit_pack(src.WODU_HBLANKp));
+  bit_unpack(dst.WODU_HBLANKp_odd, bit_pack(src.WODU_HBLANKp));
   bit_unpack(dst.SATO_BOOT_BITn, bit_pack(src.SATO_BOOT_BITn));
   bit_unpack(dst.ATEJ_LINE_RSTp_odd, bit_pack(src.ATEJ_LINE_RSTp));
   bit_unpack(dst.FEPO_STORE_MATCHp_odd, bit_pack(src.FEPO_STORE_MATCHp_odd));
@@ -186,9 +186,9 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.scan_counter, src.scan_counter);
   bit_unpack(dst.sprite_counter, src.sprite_counter);
   bit_unpack(dst.sprite_index, src.sprite_index);
-  bit_unpack(dst.sprite_match_flags, src.sprite_match_flags);
-  bit_unpack(dst.sprite_reset_flags, src.sprite_reset_flags);
-  bit_unpack(dst.sprite_store_flags, src.sprite_store_flags);
+  bit_unpack(dst.sprite_match_flags_odd, src.sprite_match_flags);
+  bit_unpack(dst.sprite_reset_flags_odd, src.sprite_reset_flags);
+  bit_unpack(dst.sprite_store_flags_evn, src.sprite_store_flags);
   bit_unpack(dst.sprite_ibus, src.sprite_ibus);
   bit_unpack(dst.sprite_lbus, src.sprite_lbus);
   bit_unpack(dst.store_i0, src.store_i0);
@@ -300,7 +300,7 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.XYMU_RENDERINGn = bit_pack(src.XYMU_RENDERINGn);
   dst.MATU_DMA_RUNNINGp = bit_pack(src.MATU_DMA_RUNNINGp_odd);
   dst.ACYL_SCANNINGp = bit_pack(src.ACYL_SCANNINGp_odd);
-  dst.WODU_HBLANKp = bit_pack(src.WODU_HBLANKp);
+  dst.WODU_HBLANKp = bit_pack(src.WODU_HBLANKp_odd);
   dst.SATO_BOOT_BITn = bit_pack(src.SATO_BOOT_BITn);
   dst.ATEJ_LINE_RSTp = bit_pack(src.ATEJ_LINE_RSTp_odd);
   dst.FEPO_STORE_MATCHp_odd = bit_pack(src.FEPO_STORE_MATCHp_odd);
@@ -335,9 +335,9 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.scan_counter = bit_pack(src.scan_counter);
   dst.sprite_counter = bit_pack(src.sprite_counter);
   dst.sprite_index = bit_pack(src.sprite_index);
-  dst.sprite_match_flags = bit_pack(src.sprite_match_flags);
-  dst.sprite_reset_flags = bit_pack(src.sprite_reset_flags);
-  dst.sprite_store_flags = bit_pack(src.sprite_store_flags);
+  dst.sprite_match_flags = bit_pack(src.sprite_match_flags_odd);
+  dst.sprite_reset_flags = bit_pack(src.sprite_reset_flags_odd);
+  dst.sprite_store_flags = bit_pack(src.sprite_store_flags_evn);
   dst.sprite_ibus = bit_pack(src.sprite_ibus);
   dst.sprite_lbus = bit_pack(src.sprite_lbus);
   dst.store_i0 = bit_pack(src.store_i0);

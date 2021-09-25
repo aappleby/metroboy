@@ -69,9 +69,9 @@ void GateBoyState::reset_to_poweron() {
   scan_counter.reset_to_poweron();
   sprite_counter.reset_to_poweron();
   sprite_index.reset_to_poweron();
-  sprite_match_flags.reset_to_poweron();
-  sprite_reset_flags.reset_to_poweron();
-  sprite_store_flags.reset_to_poweron();
+  sprite_match_flags_odd.reset_to_poweron();
+  sprite_reset_flags_odd.reset_to_poweron();
+  sprite_store_flags_evn.reset_to_poweron();
   sprite_ibus.reset_to_poweron();
   sprite_lbus.reset_to_poweron();
   store_i0.reset_to_poweron();
@@ -184,7 +184,7 @@ void GateBoyState::reset_to_bootrom() {
   XYMU_RENDERINGn.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
   MATU_DMA_RUNNINGp_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   ACYL_SCANNINGp_odd.state = BIT_OLD | BIT_DRIVEN;
-  WODU_HBLANKp.state = BIT_OLD | BIT_DRIVEN;
+  WODU_HBLANKp_odd.state = BIT_OLD | BIT_DRIVEN;
   SATO_BOOT_BITn.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
   ATEJ_LINE_RSTp_odd.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
   FEPO_STORE_MATCHp_odd.state = BIT_OLD | BIT_DRIVEN;
@@ -218,9 +218,9 @@ void GateBoyState::reset_to_bootrom() {
   scan_counter.reset_to_bootrom();
   sprite_counter.reset_to_bootrom();
   sprite_index.reset_to_bootrom();
-  sprite_match_flags.reset_to_bootrom();
-  sprite_reset_flags.reset_to_bootrom();
-  sprite_store_flags.reset_to_bootrom();
+  sprite_match_flags_odd.reset_to_bootrom();
+  sprite_reset_flags_odd.reset_to_bootrom();
+  sprite_store_flags_evn.reset_to_bootrom();
   sprite_ibus.reset_to_bootrom();
   sprite_lbus.reset_to_bootrom();
   store_i0.reset_to_bootrom();
@@ -334,7 +334,7 @@ void GateBoyState::reset_to_cart() {
   XYMU_RENDERINGn.state = 0x19;
   MATU_DMA_RUNNINGp_odd.state = 0x1A;
   ACYL_SCANNINGp_odd.state = 0x18;
-  WODU_HBLANKp.state = 0b00011001;
+  WODU_HBLANKp_odd.state = 0b00011001;
   SATO_BOOT_BITn.state = 0x19;
   ATEJ_LINE_RSTp_odd.state = 0b00011000;
   FEPO_STORE_MATCHp_odd.state = 0x18;
@@ -369,9 +369,9 @@ void GateBoyState::reset_to_cart() {
   scan_counter.reset_to_cart();
   sprite_counter.reset_to_cart();
   sprite_index.reset_to_cart();
-  sprite_match_flags.reset_to_cart();
-  sprite_reset_flags.reset_to_cart();
-  sprite_store_flags.reset_to_cart();
+  sprite_match_flags_odd.reset_to_cart();
+  sprite_reset_flags_odd.reset_to_cart();
+  sprite_store_flags_evn.reset_to_cart();
   sprite_ibus.reset_to_cart();
   sprite_lbus.reset_to_cart();
   store_i0.reset_to_cart();
@@ -722,9 +722,9 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, store_x9),
   DECLARE_FIELD(GateBoyState, sprite_counter),
   DECLARE_FIELD(GateBoyState, FEPO_STORE_MATCHp_odd),
-  DECLARE_FIELD(GateBoyState, sprite_match_flags),
-  DECLARE_FIELD(GateBoyState, sprite_reset_flags),
-  DECLARE_FIELD(GateBoyState, sprite_store_flags),
+  DECLARE_FIELD(GateBoyState, sprite_match_flags_odd),
+  DECLARE_FIELD(GateBoyState, sprite_reset_flags_odd),
+  DECLARE_FIELD(GateBoyState, sprite_store_flags_evn),
   DECLARE_FIELD(GateBoyState, sprite_scanner),
   DECLARE_FIELD(GateBoyState, scan_counter),
   DECLARE_FIELD(GateBoyState, sprite_index),
@@ -764,7 +764,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, reg_bgp),
   DECLARE_FIELD(GateBoyState, reg_obp0),
   DECLARE_FIELD(GateBoyState, reg_obp1),
-  DECLARE_FIELD(GateBoyState, WODU_HBLANKp),
+  DECLARE_FIELD(GateBoyState, WODU_HBLANKp_odd),
   DECLARE_FIELD(GateBoyState, SATO_BOOT_BITn),
   DECLARE_FIELD(GateBoyState, ATEJ_LINE_RSTp_odd),
   DECLARE_FIELD(GateBoyState, flipped_sprite),

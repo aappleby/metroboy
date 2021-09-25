@@ -69,7 +69,7 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*#p21.TOLU*/ wire TOLU_VBLANKn   = not1(PARU_VBLANKp);
   /*#p21.SELA*/ wire SELA_x113p = not1(PURE_x113n);
   /*#p21.TAPA*/ wire TAPA_INT_OAM   = and2(TOLU_VBLANKn, SELA_x113p);
-  /*#p21.TARU*/ wire TARU_INT_HBL   = and2(gb_state.WODU_HBLANKp.out_new(), TOLU_VBLANKn);
+  /*#p21.TARU*/ wire TARU_INT_HBL   = and2(gb_state.WODU_HBLANKp_odd.out_new(), TOLU_VBLANKn);
   /*#p21.SUKO*/ wire SUKO_INT_STATp = amux4(gb_state.reg_stat.RUGU_STAT_LYI_ENn.qn_new(), gb_state.int_ctrl.ROPO_LY_MATCH_SYNCp.qp_new(), gb_state.reg_stat.REFE_STAT_OAI_ENn.qn_new(), TAPA_INT_OAM, gb_state.reg_stat.RUFO_STAT_VBI_ENn.qn_new(), PARU_VBLANKp, gb_state.reg_stat.ROXE_STAT_HBI_ENn.qn_new(), TARU_INT_HBL);
 
   /*#p21.VYPU*/ wire VYPU_INT_VBLANKp = not1(TOLU_VBLANKn);

@@ -101,22 +101,22 @@ struct SpriteIndex {
 struct SpriteCounter {
   void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
   void reset_to_bootrom() {
-    BESE_SPRITE_COUNT0.state = BIT_OLD | BIT_DRIVEN;
-    CUXY_SPRITE_COUNT1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    BEGO_SPRITE_COUNT2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    DYBE_SPRITE_COUNT3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    BESE_SPRITE_COUNT0_odd.state = BIT_OLD | BIT_DRIVEN;
+    CUXY_SPRITE_COUNT1_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    BEGO_SPRITE_COUNT2_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    DYBE_SPRITE_COUNT3_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   }
   void reset_to_cart()    {
-    BESE_SPRITE_COUNT0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    CUXY_SPRITE_COUNT1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    BEGO_SPRITE_COUNT2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    DYBE_SPRITE_COUNT3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    BESE_SPRITE_COUNT0_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    CUXY_SPRITE_COUNT1_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    BEGO_SPRITE_COUNT2_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+    DYBE_SPRITE_COUNT3_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   }
 
-  /*_p29.BESE*/ DFF17 BESE_SPRITE_COUNT0; // AxxxExxx
-  /*_p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1; // AxxxExxx
-  /*_p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2; // AxxxExxx
-  /*_p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3; // AxxxExxx
+  /*_p29.BESE*/ DFF17 BESE_SPRITE_COUNT0_odd; // AxxxExxx
+  /*_p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1_odd; // AxxxExxx
+  /*_p29.BEGO*/ DFF17 BEGO_SPRITE_COUNT2_odd; // AxxxExxx
+  /*_p29.DYBE*/ DFF17 DYBE_SPRITE_COUNT3_odd; // AxxxExxx
 };
 
 //-----------------------------------------------------------------------------

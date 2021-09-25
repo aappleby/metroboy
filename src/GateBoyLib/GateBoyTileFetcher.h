@@ -30,7 +30,7 @@ struct TileFetchCounter {
 
 struct TileFetchControl {
   void reset_to_poweron() {
-    LYRY_BFETCH_DONEp.state   = 0b00011000;
+    LYRY_BFETCH_DONEp_odd.state   = 0b00011000;
     POKY_PRELOAD_LATCHp_evn.state = 0b00011000;
     LONY_FETCHINGp.state      = 0b00011000;
     LOVY_FETCH_DONEp.state    = 0b00011000;
@@ -41,7 +41,7 @@ struct TileFetchControl {
   }
 
   void reset_to_bootrom() {
-    LYRY_BFETCH_DONEp.state   = 0b00011001;
+    LYRY_BFETCH_DONEp_odd.state   = 0b00011001;
     POKY_PRELOAD_LATCHp_evn.state = 0b00011000;
     LONY_FETCHINGp.state      = 0b00011000;
     LOVY_FETCH_DONEp.state    = 0b00011011;
@@ -52,7 +52,7 @@ struct TileFetchControl {
   }
 
   void reset_to_cart() {
-    LYRY_BFETCH_DONEp.state   = 0b00011001;
+    LYRY_BFETCH_DONEp_odd.state   = 0b00011001;
     POKY_PRELOAD_LATCHp_evn.state = 0b00011000;
     LONY_FETCHINGp.state      = 0b00011000;
     LOVY_FETCH_DONEp.state    = 0b00011011;
@@ -62,7 +62,7 @@ struct TileFetchControl {
     LYZU_BFETCH_S0p_D1.state  = 0b00011000;
   }
 
-  /*_p27.LYRY*/ Gate LYRY_BFETCH_DONEp;         // old used
+  /*_p27.LYRY*/ Gate LYRY_BFETCH_DONEp_odd;         // old used
   /*_p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp_evn;  // xBxDxFxG
   /*_p27.LONY*/ NandLatch LONY_FETCHINGp;       // Usually changes on even. Changes on odd phase at end of line if we're in a window?
 

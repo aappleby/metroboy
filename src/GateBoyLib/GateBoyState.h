@@ -82,7 +82,7 @@ struct GateBoyState {
   /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;
   /*#p04.MATU*/ DFF17    MATU_DMA_RUNNINGp_odd;
   /*#p28.ACYL*/ Gate     ACYL_SCANNINGp_odd;
-  /*#p21.WODU*/ Gate     WODU_HBLANKp;
+  /*#p21.WODU*/ Gate     WODU_HBLANKp_odd;
   /*_p07.SATO*/ Gate     SATO_BOOT_BITn;
   /*_p28.ATEJ*/ Gate     ATEJ_LINE_RSTp_odd;
   /*_p29.FEPO*/ Gate     FEPO_STORE_MATCHp_odd;
@@ -130,9 +130,9 @@ struct GateBoyState {
   ScanCounter      scan_counter;
   SpriteCounter    sprite_counter;
   SpriteIndex      sprite_index;
-  SpriteMatchFlags sprite_match_flags;
-  SpriteResetFlags sprite_reset_flags;
-  SpriteStoreFlags sprite_store_flags;
+  SpriteMatchFlags sprite_match_flags_odd;
+  SpriteResetFlags sprite_reset_flags_odd;
+  SpriteStoreFlags sprite_store_flags_evn;
 
   SpriteIBus sprite_ibus;
   SpriteLBus sprite_lbus;

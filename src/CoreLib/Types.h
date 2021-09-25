@@ -232,6 +232,15 @@ struct Dumper {
     }
     operator()(" 0x%02x %d\n", b, b);
   }
+  
+  void dump_flags(const char* tag, const void* blob, int byte_count) {
+    operator()(tag);
+    const uint8_t* d = (const uint8_t*)blob;
+    for (int i = byte_count - 1; i >= 0; i--) {
+      add_char((d[i] & 0x01) ? '1' : '0');
+    }
+    add_char('\n');
+  }
 
   void dump_slice2p(const char* tag, const void* blob, int byte_count) {
     operator()(tag);

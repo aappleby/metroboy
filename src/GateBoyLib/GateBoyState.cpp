@@ -114,7 +114,7 @@ void GateBoyState::reset_to_poweron() {
   win_x.map.reset_to_poweron();
   win_y.tile.reset_to_poweron();
   win_y.map.reset_to_poweron();
-  fine_count.reset_to_poweron();
+  fine_count_odd.reset_to_poweron();
   fine_scroll.reset_to_poweron();
   flipped_sprite.reset_to_poweron();
   sprite_pix_a.reset_to_poweron();
@@ -263,7 +263,7 @@ void GateBoyState::reset_to_bootrom() {
   win_x.map.reset_to_bootrom();
   win_y.tile.reset_to_bootrom();
   win_y.map.reset_to_bootrom();
-  fine_count.reset_to_bootrom();
+  fine_count_odd.reset_to_bootrom();
   fine_scroll.reset_to_bootrom();
   flipped_sprite.reset_to_bootrom();
   sprite_pix_a.reset_to_bootrom();
@@ -414,7 +414,7 @@ void GateBoyState::reset_to_cart() {
   win_x.map.reset_to_cart();
   win_y.tile.reset_to_cart();
   win_y.map.reset_to_cart();
-  fine_count.reset_to_cart();
+  fine_count_odd.reset_to_cart();
   fine_scroll.reset_to_cart();
   flipped_sprite.reset_to_cart();
   sprite_pix_a.reset_to_cart();
@@ -746,7 +746,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, win_y.tile),
   DECLARE_FIELD(GateBoyState, win_y.map),
   DECLARE_FIELD(GateBoyState, win_ctrl),
-  DECLARE_FIELD(GateBoyState, fine_count),
+  DECLARE_FIELD(GateBoyState, fine_count_odd),
   DECLARE_FIELD(GateBoyState, fine_scroll),
   DECLARE_FIELD(GateBoyState, pix_count),
   DECLARE_FIELD(GateBoyState, mask_pipe),

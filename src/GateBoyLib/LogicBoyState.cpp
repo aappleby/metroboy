@@ -153,7 +153,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.XYMU_RENDERINGn, bit_pack(src.XYMU_RENDERINGn));
   bit_unpack(dst.MATU_DMA_RUNNINGp_odd, bit_pack(src.MATU_DMA_RUNNINGp));
   bit_unpack(dst.ACYL_SCANNINGp_odd, bit_pack(src.ACYL_SCANNINGp));
-  bit_unpack(dst.WODU_HBLANKp_odd, bit_pack(src.WODU_HBLANKp));
+  bit_unpack(dst.WODU_HBLANKp_odd, bit_pack(src.WODU_HBLANKp_odd));
   bit_unpack(dst.SATO_BOOT_BITn, bit_pack(src.SATO_BOOT_BITn));
   bit_unpack(dst.ATEJ_LINE_RSTp_odd, bit_pack(src.ATEJ_LINE_RSTp));
   bit_unpack(dst.FEPO_STORE_MATCHp_odd, bit_pack(src.FEPO_STORE_MATCHp_odd));
@@ -231,7 +231,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.win_x.map, src.win_x.map);
   bit_unpack(dst.win_y.tile, src.win_y.tile);
   bit_unpack(dst.win_y.map, src.win_y.map);
-  bit_unpack(dst.fine_count, src.fine_count);
+  bit_unpack(dst.fine_count_odd, src.fine_count_odd);
   bit_unpack(dst.fine_scroll, bit_pack(src.fine_scroll));
   bit_unpack(dst.flipped_sprite, src.flipped_sprite);
   bit_unpack(dst.sprite_pix_a, src.sprite_pix_a);
@@ -299,7 +299,7 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.XYMU_RENDERINGn = bit_pack(src.XYMU_RENDERINGn);
   dst.MATU_DMA_RUNNINGp = bit_pack(src.MATU_DMA_RUNNINGp_odd);
   dst.ACYL_SCANNINGp = bit_pack(src.ACYL_SCANNINGp_odd);
-  dst.WODU_HBLANKp = bit_pack(src.WODU_HBLANKp_odd);
+  dst.WODU_HBLANKp_odd = bit_pack(src.WODU_HBLANKp_odd);
   dst.SATO_BOOT_BITn = bit_pack(src.SATO_BOOT_BITn);
   dst.ATEJ_LINE_RSTp = bit_pack(src.ATEJ_LINE_RSTp_odd);
   dst.FEPO_STORE_MATCHp_odd = bit_pack(src.FEPO_STORE_MATCHp_odd);
@@ -379,7 +379,7 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.win_x.map = bit_pack(src.win_x.map);
   dst.win_y.tile = bit_pack(src.win_y.tile);
   dst.win_y.map = bit_pack(src.win_y.map);
-  dst.fine_count = bit_pack(src.fine_count);
+  dst.fine_count_odd = bit_pack(src.fine_count_odd);
   dst.fine_scroll = bit_purge(src.fine_scroll);
   dst.flipped_sprite = bit_pack(src.flipped_sprite);
   dst.sprite_pix_a = bit_pack(src.sprite_pix_a);

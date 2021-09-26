@@ -64,7 +64,7 @@ struct LogicBoyState {
   /*#p21.XYMU*/ uint8_t XYMU_RENDERINGn;
   /*#p04.MATU*/ uint8_t MATU_DMA_RUNNINGp;
   /*#p28.ACYL*/ uint8_t ACYL_SCANNINGp;
-  /*#p21.WODU*/ uint8_t WODU_HBLANKp;
+  /*#p21.WODU*/ uint8_t WODU_HBLANKp_odd;
   /*_p07.SATO*/ uint8_t SATO_BOOT_BITn;
   /*_p28.ATEJ*/ uint8_t ATEJ_LINE_RSTp;
   /*_p29.FEPO*/ uint8_t FEPO_STORE_MATCHp_odd;
@@ -177,7 +177,7 @@ struct LogicBoyState {
     uint8_t map;
   } win_y;
 
-  uint8_t fine_count;
+  uint8_t fine_count_odd;
   FineScroll fine_scroll;
 
   //----------

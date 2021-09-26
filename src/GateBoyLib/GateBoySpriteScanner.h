@@ -1,5 +1,6 @@
 #pragma once
-#include "GateBoyLib/Gates.h"
+#include "GateBoyLib/Regs.h"
+#include "GateBoyLib/Utils.h"
 
 //-----------------------------------------------------------------------------
 

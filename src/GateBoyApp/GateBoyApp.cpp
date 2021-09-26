@@ -108,8 +108,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
     }
   }
 
-  gb_thread->run_to(1586 - 1);
-  //gb_thread->run_to(1598 - 1);
+  //gb_thread->run_to(1586 - 1);
+  gb_thread->run_to(1598 - 1);
 
 #endif
 

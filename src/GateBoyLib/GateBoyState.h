@@ -196,7 +196,7 @@ struct GateBoyState {
     WinMapY    map;
   } win_y;
 
-  FineCount  fine_count;
+  FineCount  fine_count_odd;
   FineScroll fine_scroll;
 
   //----------

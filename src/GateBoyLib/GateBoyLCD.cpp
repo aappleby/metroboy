@@ -71,16 +71,16 @@ void GateBoy::tock_lyc_gates(const GateBoyState& reg_old) {
 
 void GateBoy::tock_lcd_gates() {
   {
-    /*#p21.XYVO*/ wire XYVO_y144p = and2(gb_state.reg_ly.LOVU_LY4p_odd.qp_old(), gb_state.reg_ly.LAFO_LY7p_odd.qp_old()); // 128 + 16 = 144
-    /*#p21.NOKO*/ wire NOKO_y153p = and4(gb_state.reg_ly.LAFO_LY7p_odd.qp_old(), gb_state.reg_ly.LOVU_LY4p_odd.qp_old(), gb_state.reg_ly.LYDO_LY3p_odd.qp_old(), gb_state.reg_ly.MUWY_LY0p_odd.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
+    /*#p21.XYVO*/ wire XYVO_y144p_old = and2(gb_state.reg_ly.LOVU_LY4p_odd.qp_old(), gb_state.reg_ly.LAFO_LY7p_odd.qp_old()); // 128 + 16 = 144
+    /*#p21.NOKO*/ wire NOKO_y153p_old = and4(gb_state.reg_ly.LAFO_LY7p_odd.qp_old(), gb_state.reg_ly.LOVU_LY4p_odd.qp_old(), gb_state.reg_ly.LYDO_LY3p_odd.qp_old(), gb_state.reg_ly.MUWY_LY0p_odd.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
 
     /*#p28.ANEL*/ gb_state.lcd.ANEL_x113p_odd.dff17(gb_state.sys_clk.AWOH_xxCDxxGH(), ABEZ_VID_RSTn(), gb_state.lcd.CATU_x113p_odd.qp_old());
 
-    /*#p21.PURE*/ wire PURE_x113n = not1(gb_state.lcd.RUTU_LINE_ENDp_odd.qp_old());
-    /*#p29.ALES*/ wire ALES_y144n = not1(XYVO_y144p);
-    /*#p21.SELA*/ wire SELA_x113p = not1(PURE_x113n);
-    /*#p29.ABOV*/ wire ABOV_x113p = and2(SELA_x113p, ALES_y144n);
-    /*#p29.CATU*/ gb_state.lcd.CATU_x113p_odd.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), ABOV_x113p);
+    /*#p21.PURE*/ wire PURE_x113n_old = not1(gb_state.lcd.RUTU_LINE_ENDp_odd.qp_old());
+    /*#p29.ALES*/ wire ALES_y144n_old = not1(XYVO_y144p_old);
+    /*#p21.SELA*/ wire SELA_x113p_old = not1(PURE_x113n_old);
+    /*#p29.ABOV*/ wire ABOV_x113p_old = and2(SELA_x113p_old, ALES_y144n_old);
+    /*#p29.CATU*/ gb_state.lcd.CATU_x113p_odd.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), ABOV_x113p_old);
 
     /*#p21.NYPE*/ gb_state.lcd.NYPE_LINE_ENDp_odd.dff17(gb_state.sys_clk.TALU_xxCDEFxx(),         LYFE_VID_RSTn(), gb_state.lcd.RUTU_LINE_ENDp_odd.qp_old());
     /*#p21.SANU*/ wire SANU_x113p_odd_old = and4(gb_state.reg_lx.TYRY_LX6p_odd.qp_old(), gb_state.reg_lx.TAHA_LX5p_odd.qp_old(), gb_state.reg_lx.SUDE_LX4p_odd.qp_old(), gb_state.reg_lx.SAXO_LX0p_odd.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
@@ -90,8 +90,8 @@ void GateBoy::tock_lcd_gates() {
     /*_p28.BYHA*/ wire BYHA_LINE_RSTn_odd = or_and3(gb_state.lcd.ANEL_x113p_odd.qp_new(), ABAF_x113n_odd, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
     /*_p28.ATEJ*/ gb_state.ATEJ_LINE_RSTp_odd <<= not1(BYHA_LINE_RSTn_odd);
 
-    /*#p21.POPU*/ gb_state.lcd.POPU_VBLANKp_odd.dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), XYVO_y144p);
-    /*#p21.MYTA*/ gb_state.lcd.MYTA_FRAME_ENDp_odd.dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), NOKO_y153p);
+    /*#p21.POPU*/ gb_state.lcd.POPU_VBLANKp_odd.dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
+    /*#p21.MYTA*/ gb_state.lcd.MYTA_FRAME_ENDp_odd.dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), NOKO_y153p_old);
   }
 
   {

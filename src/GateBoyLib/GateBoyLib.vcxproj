@@ -47,11 +47,13 @@
     <ClCompile Include="Probe.cpp" />
     <ClCompile Include="GateBoyLCD.cpp" />
     <ClCompile Include="GateBoySpriteStore.cpp" />
+    <ClCompile Include="Regs.cpp" />
     <ClCompile Include="Sch_ApuControl.cpp" />
     <ClCompile Include="Sch_Channel1.cpp" />
     <ClCompile Include="Sch_Channel2.cpp" />
     <ClCompile Include="Sch_Channel3.cpp" />
     <ClCompile Include="Sch_Channel4.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GateBoy.h" />
@@ -71,6 +73,7 @@
     <ClInclude Include="LogicBoy.h" />
     <ClInclude Include="Probe.h" />
     <ClInclude Include="GateBoyLCD.h" />
+    <ClInclude Include="Regs.h" />
     <ClInclude Include="Sch_ApuControl.h" />
     <ClInclude Include="Sch_Channel1.h" />
     <ClInclude Include="Sch_Channel2.h" />
@@ -90,6 +93,7 @@
     <ClInclude Include="GateBoyTileFetcher.h" />
     <ClInclude Include="GateBoyTimer.h" />
     <ClInclude Include="GateBoyVramBus.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="GateBoy.natvis" />

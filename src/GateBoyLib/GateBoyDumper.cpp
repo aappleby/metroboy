@@ -392,9 +392,9 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("SARY_WY_MATCH          : ", s.win_ctrl.SARY_WY_MATCHp_odd.state);
   d.dump_bitp("RYFA_FETCHn_A          : ", s.win_ctrl.RYFA_WIN_FETCHn_A_evn.state);
   d.dump_bitp("RENE_FETCHn_B          : ", s.win_ctrl.RENE_WIN_FETCHn_B_evn.state);
-  d.dump_bitp("RYKU_FINE_CNT0         : ", s.fine_count.RYKU_FINE_CNT0_odd.state);
-  d.dump_bitp("ROGA_FINE_CNT1         : ", s.fine_count.ROGA_FINE_CNT1_odd.state);
-  d.dump_bitp("RUBU_FINE_CNT2         : ", s.fine_count.RUBU_FINE_CNT2_odd.state);
+  d.dump_bitp("RYKU_FINE_CNT0         : ", s.fine_count_odd.RYKU_FINE_CNT0_odd.state);
+  d.dump_bitp("ROGA_FINE_CNT1         : ", s.fine_count_odd.ROGA_FINE_CNT1_odd.state);
+  d.dump_bitp("RUBU_FINE_CNT2         : ", s.fine_count_odd.RUBU_FINE_CNT2_odd.state);
   d.dump_bitp("PUXA_FINE_MATCH_A      : ", s.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state);
   d.dump_bitp("NYZE_FINE_MATCH_B      : ", s.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn : ", s.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state);

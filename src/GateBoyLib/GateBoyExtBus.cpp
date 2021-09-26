@@ -2,6 +2,7 @@
 
 #include "CoreLib/Log.h"
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -439,3 +440,47 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_BUS_CPU_D06p*/ gb_state.cpu_dbus.BUS_CPU_D06p.tri_bus(SEVU_EL6_TO_CD6);
   /*_BUS_CPU_D07p*/ gb_state.cpu_dbus.BUS_CPU_D07p.tri_bus(TAJU_EL7_TO_CD7);
 }
+
+//-----------------------------------------------------------------------------
+
+void ExtDataLatch::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+void ExtDataLatch::reset_to_bootrom() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+void ExtDataLatch::reset_to_cart() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+//-----------------------------------------------------------------------------
+
+void ExtAddrLatch::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x0000);
+}
+
+void ExtAddrLatch::reset_to_bootrom() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x0000);
+}
+
+void ExtAddrLatch::reset_to_cart() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x004D);
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoyMBC::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+void GateBoyMBC::reset_to_bootrom() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+void GateBoyMBC::reset_to_cart() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+//-----------------------------------------------------------------------------

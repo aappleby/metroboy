@@ -47,18 +47,6 @@ inline wire not_or_and3(wire a, wire b, wire c) { return ~or_and3(a, b, c); }
 
 //-----------------------------------------------------------------------------
 
-struct Adder {
-  wire sum;
-  wire carry;
-};
-
-inline Adder add3(wire a, wire b, wire c) {
-  uint8_t s = bit(a) + bit(b) + bit(c);
-  return { get_bit(s, 0), get_bit(s, 1) };
-}
-
-//-----------------------------------------------------------------------------
-
 // Six-rung mux cells are _non_inverting_. m = 1 selects input A
 inline wire mux2p(wire m, wire a, wire b) {
   return bit(m) ? a : b;
@@ -85,3 +73,4 @@ inline wire amux6(wire a0, wire b0, wire a1, wire b1, wire a2, wire b2, wire a3,
   return (b0 & a0) | (b1 & a1) | (b2 & a2) | (b3 & a3) | (b4 & a4) | (b5 & a5);
 }
 
+//-----------------------------------------------------------------------------

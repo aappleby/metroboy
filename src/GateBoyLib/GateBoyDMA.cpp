@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyDMA.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -67,6 +68,72 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
   /*_BUS_CPU_D05p*/ gb_state.cpu_dbus.BUS_CPU_D05p.tri_bus(RALY_DMA5_TO_CD5);
   /*_BUS_CPU_D06p*/ gb_state.cpu_dbus.BUS_CPU_D06p.tri_bus(RESU_DMA6_TO_CD6);
   /*_BUS_CPU_D07p*/ gb_state.cpu_dbus.BUS_CPU_D07p.tri_bus(NUVY_DMA7_TO_CD7);
+}
+
+//-----------------------------------------------------------------------------
+
+void RegDmaLo::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+void RegDmaLo::reset_to_bootrom() {
+  NAKY_DMA_A00p_odd.state = 0b00011000;
+  PYRO_DMA_A01p_odd.state = 0b00011010;
+  NEFY_DMA_A02p_odd.state = 0b00011010;
+  MUTY_DMA_A03p_odd.state = 0b00011010;
+  NYKO_DMA_A04p_odd.state = 0b00011010;
+  PYLO_DMA_A05p_odd.state = 0b00011010;
+  NUTO_DMA_A06p_odd.state = 0b00011010;
+  MUGU_DMA_A07p_odd.state = 0b00011010;
+}
+
+void RegDmaLo::reset_to_cart() {
+  NAKY_DMA_A00p_odd.state = 0b00011000;
+  PYRO_DMA_A01p_odd.state = 0b00011010;
+  NEFY_DMA_A02p_odd.state = 0b00011010;
+  MUTY_DMA_A03p_odd.state = 0b00011010;
+  NYKO_DMA_A04p_odd.state = 0b00011010;
+  PYLO_DMA_A05p_odd.state = 0b00011010;
+  NUTO_DMA_A06p_odd.state = 0b00011010;
+  MUGU_DMA_A07p_odd.state = 0b00011010;
+}
+
+//-----------------------------------------------------------------------------
+
+void RegDmaHi::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+}
+
+void RegDmaHi::reset_to_bootrom() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+}
+
+void RegDmaHi::reset_to_cart() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+}
+
+//-----------------------------------------------------------------------------
+
+void DmaControl::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void DmaControl::reset_to_bootrom() {
+  LYXE_DMA_LATCHp.state  = 0b00011000;
+  MYTE_DMA_DONE_odd.state    = 0b00011000;
+  LUVY_DMA_TRIG_d0_odd.state = 0b00011010;
+  LENE_DMA_TRIG_d4_odd.state = 0b00011000;
+  LARA_DMA_LATCHn_odd.state  = 0b00011001;
+  LOKY_DMA_LATCHp_odd.state  = 0b00011000;
+}
+
+void DmaControl::reset_to_cart() {
+  LYXE_DMA_LATCHp.state  = 0b00011000;
+  MYTE_DMA_DONE_odd.state    = 0b00011000;
+  LUVY_DMA_TRIG_d0_odd.state = 0b00011010;
+  LENE_DMA_TRIG_d4_odd.state = 0b00011000;
+  LARA_DMA_LATCHn_odd.state  = 0b00011001;
+  LOKY_DMA_LATCHp_odd.state  = 0b00011000;
 }
 
 //-----------------------------------------------------------------------------

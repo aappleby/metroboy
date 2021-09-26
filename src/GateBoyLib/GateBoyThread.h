@@ -76,19 +76,9 @@ struct GateBoyThread {
   void reset_to_cart();
 
   void add_steps(int steps);
-
-  void run_to(uint64_t phase) {
-    //uint64_t delta = phase - gb->get_sys().gb_phase_total;
-    //add_steps((int)delta);
-
-    while(gb->get_sys().gb_phase_total != phase) {
-      gb->next_phase(cart_blob);
-    }
-
-  }
-
+  void run_to(uint64_t phase);
   void clear_steps();
-  int  get_steps() const { return step_count; }
+  int  get_steps() const;
 
   void rewind(int steps);
 
@@ -97,32 +87,17 @@ struct GateBoyThread {
   void load_flat_dump(BlobStream& bs);
 
   void load_cart_blob(blob& bs);
-
-
-  void set_buttons(uint8_t buttons) {
-    gb->set_buttons(buttons);
-    //gbp->gba.sys.buttons = buttons;
-    //gbp->gbb.sys.buttons = buttons;
-  }
+  void set_buttons(uint8_t buttons);
 
   const int REQ_PAUSE = 0b0001;
   const int ACK_PAUSE = 0b0010;
   const int REQ_EXIT  = 0b0100;
   const int ACK_EXIT  = 0b1000;
 
-  bool sim_paused() const { return sync.test(ACK_PAUSE); }
-
-  bool has_work() const {
-    return step_count != 0;
-  }
-
-  blob& get_cart() {
-    return cart_blob;
-  }
-
-  const blob& get_cart() const {
-    return cart_blob;
-  }
+  bool sim_paused() const;
+  bool has_work() const;
+  blob& get_cart();
+  const blob& get_cart() const;
 
   void dump(Dumper& d);
 

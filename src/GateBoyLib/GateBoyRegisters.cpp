@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyRegisters.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -73,4 +74,435 @@ void GateBoy::tock_lcdc_gates(const GateBoyState& reg_old)
 
 //-----------------------------------------------------------------------------
 
+void SpriteDeltaY::reset_to_poweron() { memset(this, 0b00011010, sizeof(*this)); }
+void SpriteDeltaY::reset_to_bootrom() { memset(this, 0b00011010, sizeof(*this)); }
+void SpriteDeltaY::reset_to_cart()    { memset(this, 0b00011010, sizeof(*this)); }
 
+//-----------------------------------------------------------------------------
+
+void PixCount::reset_to_poweron() {
+  memset(this, 0b00011010, sizeof(*this));
+}
+
+void PixCount::reset_to_bootrom() {
+  memset(this, 0b00011010, sizeof(*this));
+}
+
+void PixCount::reset_to_cart() {
+  XEHO_PX0p_odd.state = 0b00011011;
+  SAVY_PX1p_odd.state = 0b00011011;
+  XODU_PX2p_odd.state = 0b00011011;
+  XYDO_PX3p_odd.state = 0b00011010;
+  TUHU_PX4p_odd.state = 0b00011010;
+  TUKY_PX5p_odd.state = 0b00011011;
+  TAKO_PX6p_odd.state = 0b00011010;
+  SYBE_PX7p_odd.state = 0b00011011;
+}
+
+//-----------------------------------------------------------------------------
+
+void BGScrollX::reset_to_poweron() { memset(this, 0b00011010, sizeof(*this)); }
+void BGScrollX::reset_to_bootrom() { memset(this, 0b00011010, sizeof(*this)); }
+void BGScrollX::reset_to_cart()    { memset(this, 0b00011010, sizeof(*this)); }
+
+//-----------------------------------------------------------------------------
+
+void BGScrollY::reset_to_poweron() { memset(this, 0b00011010, sizeof(*this)); }
+void BGScrollY::reset_to_bootrom() { memset(this, 0b00011010, sizeof(*this)); }
+void BGScrollY::reset_to_cart()    { memset(this, 0b00011010, sizeof(*this)); }
+
+//-----------------------------------------------------------------------------
+
+void SpritePix::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
+void SpritePix::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
+void SpritePix::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
+
+//-----------------------------------------------------------------------------
+
+void RegLCDC::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+void RegLCDC::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+}
+
+void RegLCDC::reset_to_cart() {
+  VYXE_LCDC_BGENn.state   = 0b00011010;
+  XYLO_LCDC_SPENn.state   = 0b00011011;
+  XYMO_LCDC_SPSIZEn.state = 0b00011011;
+  XAFO_LCDC_BGMAPn.state  = 0b00011011;
+  WEXU_LCDC_BGTILEn.state = 0b00011010;
+  WYMO_LCDC_WINENn.state  = 0b00011011;
+  WOKY_LCDC_WINMAPn.state = 0b00011011;
+  XONA_LCDC_LCDENn.state  = 0b00011010;
+}
+
+//-----------------------------------------------------------------------------
+
+void RegStat::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+void RegStat::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+void RegStat::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+
+//-----------------------------------------------------------------------------
+
+void RegSCY::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+void RegSCY::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+void RegSCY::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+
+//-----------------------------------------------------------------------------
+
+void RegSCX::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+void RegSCX::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+void RegSCX::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+
+//-----------------------------------------------------------------------------
+
+void RegLY::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+void RegLY::reset_to_bootrom() {
+  MUWY_LY0p_odd.state = 0b00011000;
+  MYRO_LY1p_odd.state = 0b00011010;
+  LEXA_LY2p_odd.state = 0b00011010;
+  LYDO_LY3p_odd.state = 0b00011010;
+  LOVU_LY4p_odd.state = 0b00011010;
+  LEMA_LY5p_odd.state = 0b00011010;
+  MATO_LY6p_odd.state = 0b00011010;
+  LAFO_LY7p_odd.state = 0b00011010;
+}
+
+void RegLY::reset_to_cart() {
+  MUWY_LY0p_odd.state = 0b00011000;
+  MYRO_LY1p_odd.state = 0b00011010;
+  LEXA_LY2p_odd.state = 0b00011010;
+  LYDO_LY3p_odd.state = 0b00011010;
+  LOVU_LY4p_odd.state = 0b00011010;
+  LEMA_LY5p_odd.state = 0b00011010;
+  MATO_LY6p_odd.state = 0b00011010;
+  LAFO_LY7p_odd.state = 0b00011010;
+}
+
+//-----------------------------------------------------------------------------
+
+void RegLX::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+void RegLX::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+  SAXO_LX0p_odd.state = BIT_OLD | BIT_DRIVEN;
+}
+
+void RegLX::reset_to_cart() {
+  SAXO_LX0p_odd.state = 0b00011000;
+  TYPO_LX1p_odd.state = 0b00011011;
+  VYZO_LX2p_odd.state = 0b00011000;
+  TELU_LX3p_odd.state = 0b00011010;
+  SUDE_LX4p_odd.state = 0b00011010;
+  TAHA_LX5p_odd.state = 0b00011011;
+  TYRY_LX6p_odd.state = 0b00011001;
+}
+
+//-----------------------------------------------------------------------------
+
+void RegLYC::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF);
+}
+
+void RegLYC::reset_to_bootrom() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF);
+}
+
+void RegLYC::reset_to_cart() {
+  SYRY_LYC0n.state = 0b00011011;
+  VUCE_LYC1n.state = 0b00011011;
+  SEDY_LYC2n.state = 0b00011011;
+  SALO_LYC3n.state = 0b00011011;
+  SOTA_LYC4n.state = 0b00011011;
+  VAFA_LYC5n.state = 0b00011011;
+  VEVO_LYC6n.state = 0b00011011;
+  RAHA_LYC7n.state = 0b00011011;
+}
+
+uint8_t RegLYC::get() const {
+  return (uint8_t)bit_pack_inv(*this);
+}
+
+//-----------------------------------------------------------------------------
+
+void RegBGP::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+}
+
+void RegBGP::reset_to_bootrom() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+}
+
+void RegBGP::reset_to_cart() {
+  PAVO_BGP_D0n.state = 0b00011011;
+  NUSY_BGP_D1n.state = 0b00011011;
+  PYLU_BGP_D2n.state = 0b00011010;
+  MAXY_BGP_D3n.state = 0b00011010;
+  MUKE_BGP_D4n.state = 0b00011010;
+  MORU_BGP_D5n.state = 0b00011010;
+  MOGY_BGP_D6n.state = 0b00011010;
+  MENA_BGP_D7n.state = 0b00011010;
+}
+
+//-----------------------------------------------------------------------------
+
+void RegOBP0::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+}
+
+void RegOBP0::reset_to_bootrom() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+}
+
+void RegOBP0::reset_to_cart() {
+  XUFU_OBP0_D0n.state = 0b00011010;
+  XUKY_OBP0_D1n.state = 0b00011010;
+  XOVA_OBP0_D2n.state = 0b00011010;
+  XALO_OBP0_D3n.state = 0b00011010;
+  XERU_OBP0_D4n.state = 0b00011010;
+  XYZE_OBP0_D5n.state = 0b00011010;
+  XUPO_OBP0_D6n.state = 0b00011010;
+  XANA_OBP0_D7n.state = 0b00011010;
+}
+
+//-----------------------------------------------------------------------------
+
+void RegOBP1::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+}
+
+void RegOBP1::reset_to_bootrom() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+}
+
+void RegOBP1::reset_to_cart() {
+  MOXY_OBP1_D0n.state = 0b00011010;
+  LAWO_OBP1_D1n.state = 0b00011010;
+  MOSA_OBP1_D2n.state = 0b00011010;
+  LOSE_OBP1_D3n.state = 0b00011010;
+  LUNE_OBP1_D4n.state = 0b00011010;
+  LUGU_OBP1_D5n.state = 0b00011010;
+  LEPU_OBP1_D6n.state = 0b00011010;
+  LUXO_OBP1_D7n.state = 0b00011010;
+}
+
+//-----------------------------------------------------------------------------
+
+void RegWY::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+}
+
+void RegWY::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+}
+
+void RegWY::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+}
+
+void RegWY::set(uint8_t wy) {
+  NESO_WY0n.state = BIT_CLOCK | get_bit(~wy, 0);
+  NYRO_WY1n.state = BIT_CLOCK | get_bit(~wy, 1);
+  NAGA_WY2n.state = BIT_CLOCK | get_bit(~wy, 2);
+  MELA_WY3n.state = BIT_CLOCK | get_bit(~wy, 3);
+  NULO_WY4n.state = BIT_CLOCK | get_bit(~wy, 4);
+  NENE_WY5n.state = BIT_CLOCK | get_bit(~wy, 5);
+  NUKA_WY6n.state = BIT_CLOCK | get_bit(~wy, 6);
+  NAFU_WY7n.state = BIT_CLOCK | get_bit(~wy, 7);
+}
+
+int RegWY::get() const { return bit_pack_inv(*this); }
+
+//-----------------------------------------------------------------------------
+
+void RegWX::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+}
+
+void RegWX::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+}
+
+void RegWX::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+}
+
+void RegWX::set(uint8_t wx) {
+  MYPA_WX0n.state = BIT_CLOCK | get_bit(~wx, 0);
+  NOFE_WX1n.state = BIT_CLOCK | get_bit(~wx, 1);
+  NOKE_WX2n.state = BIT_CLOCK | get_bit(~wx, 2);
+  MEBY_WX3n.state = BIT_CLOCK | get_bit(~wx, 3);
+  MYPU_WX4n.state = BIT_CLOCK | get_bit(~wx, 4);
+  MYCE_WX5n.state = BIT_CLOCK | get_bit(~wx, 5);
+  MUVO_WX6n.state = BIT_CLOCK | get_bit(~wx, 6);
+  NUKU_WX7n.state = BIT_CLOCK | get_bit(~wx, 7);
+}
+
+int RegWX::get() const {
+  return bit_pack_inv(*this);
+}
+
+//-----------------------------------------------------------------------------
+
+void OamLatchA::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamLatchA::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamLatchA::reset_to_cart() {
+  YDYV_OAM_LATCH_DA0n.state = 0b00011001;
+  YCEB_OAM_LATCH_DA1n.state = 0b00011001;
+  ZUCA_OAM_LATCH_DA2n.state = 0b00011001;
+  WONE_OAM_LATCH_DA3n.state = 0b00011001;
+  ZAXE_OAM_LATCH_DA4n.state = 0b00011001;
+  XAFU_OAM_LATCH_DA5n.state = 0b00011001;
+  YSES_OAM_LATCH_DA6n.state = 0b00011001;
+  ZECA_OAM_LATCH_DA7n.state = 0b00011001;
+}
+
+//-----------------------------------------------------------------------------
+
+void OamLatchB::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamLatchB::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamLatchB::reset_to_cart() {
+  XYKY_OAM_LATCH_DB0n.state = 0b00011001;
+  YRUM_OAM_LATCH_DB1n.state = 0b00011001;
+  YSEX_OAM_LATCH_DB2n.state = 0b00011001;
+  YVEL_OAM_LATCH_DB3n.state = 0b00011001;
+  WYNO_OAM_LATCH_DB4n.state = 0b00011001;
+  CYRA_OAM_LATCH_DB5n.state = 0b00011001;
+  ZUVE_OAM_LATCH_DB6n.state = 0b00011001;
+  ECED_OAM_LATCH_DB7n.state = 0b00011001;
+}
+
+//-----------------------------------------------------------------------------
+
+void OamTempA::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamTempA::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+}
+
+void OamTempA::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+//-----------------------------------------------------------------------------
+
+void OamTempB::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamTempB::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+}
+
+void OamTempB::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+//-----------------------------------------------------------------------------
+
+void TileTempA::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void TileTempA::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void TileTempA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void TileTempB::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void TileTempB::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void TileTempB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+
+//-----------------------------------------------------------------------------
+
+void SpritePixA::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+void SpritePixA::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+void SpritePixA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+
+//-----------------------------------------------------------------------------
+
+void SpritePixB::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+void SpritePixB::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+void SpritePixB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+
+//-----------------------------------------------------------------------------
+
+void WinMapX::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+void WinMapX::reset_to_bootrom() {
+  WYKA_WIN_MAP_X0.state = BIT_OLD | BIT_DRIVEN;
+  WODY_WIN_MAP_X1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  WOBO_WIN_MAP_X2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  WYKO_WIN_MAP_X3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  XOLO_WIN_MAP_X4.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+}
+
+void WinMapX::reset_to_cart() {
+  WYKA_WIN_MAP_X0.state = BIT_OLD | BIT_DRIVEN;
+  WODY_WIN_MAP_X1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  WOBO_WIN_MAP_X2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  WYKO_WIN_MAP_X3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  XOLO_WIN_MAP_X4.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+}
+
+//-----------------------------------------------------------------------------
+
+void WinTileY::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+void WinTileY::reset_to_bootrom() {
+  VYNO_WIN_TILE_Y0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  VUJO_WIN_TILE_Y1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  VYMU_WIN_TILE_Y2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+}
+
+void WinTileY::reset_to_cart() {
+  VYNO_WIN_TILE_Y0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  VUJO_WIN_TILE_Y1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  VYMU_WIN_TILE_Y2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+}
+
+//-----------------------------------------------------------------------------
+
+void WinMapY::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
+}
+
+void WinMapY::reset_to_bootrom() {
+  TUFU_WIN_MAP_Y0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  TAXA_WIN_MAP_Y1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  TOZO_WIN_MAP_Y2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  TATE_WIN_MAP_Y3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  TEKE_WIN_MAP_Y4.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+}
+
+void WinMapY::reset_to_cart() {
+  TUFU_WIN_MAP_Y0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  TAXA_WIN_MAP_Y1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  TOZO_WIN_MAP_Y2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  TATE_WIN_MAP_Y3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  TEKE_WIN_MAP_Y4.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+}
+
+//-----------------------------------------------------------------------------

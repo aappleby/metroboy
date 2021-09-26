@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyZramBus.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 // ZRAM control signals are
 // clk_reg.SIG_CPU_BUKE_AxxxxxGH
@@ -40,6 +41,17 @@ void GateBoy::tock_zram_gates(const GateBoyState& reg_old)
   gb_state.cpu_dbus.BUS_CPU_D05p.tri_bus(tri5);
   gb_state.cpu_dbus.BUS_CPU_D06p.tri_bus(tri6);
   gb_state.cpu_dbus.BUS_CPU_D07p.tri_bus(tri7);
+}
+
+//-----------------------------------------------------------------------------
+
+void GateBoyZram::reset_to_poweron() {
+}
+
+void GateBoyZram::reset_to_bootrom() {
+}
+
+void GateBoyZram::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------

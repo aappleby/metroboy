@@ -1,12 +1,12 @@
 #pragma once
-#include "GateBoyLib/Gates.h"
+#include "GateBoyLib/Regs.h"
 
 //-----------------------------------------------------------------------------
 
 struct ExtDataLatch {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*#p08.SOMA*/ TpLatch SOMA_EXT_DATA_LATCH_D0n; // AxCxExxx
   /*_p08.RONY*/ TpLatch RONY_EXT_DATA_LATCH_D1n; // AxCxExxx
@@ -21,9 +21,9 @@ struct ExtDataLatch {
 //-----------------------------------------------------------------------------
 
 struct ExtAddrLatch {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x0000); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x0000); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x004D); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx
   /*_p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p; // xBxxxxxx
@@ -45,9 +45,9 @@ struct ExtAddrLatch {
 //-----------------------------------------------------------------------------
 
 struct GateBoyMBC {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   Gate MBC1_RAM_EN;
   Gate MBC1_MODE;

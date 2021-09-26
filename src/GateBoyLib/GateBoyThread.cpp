@@ -1,5 +1,7 @@
 #include "GateBoyThread.h"
 
+#include "GateBoyLib/GateBoy.h"
+
 #include "CoreLib/Constants.h"
 #include "CoreLib/Log.h"
 
@@ -84,12 +86,44 @@ void GateBoyThread::add_steps(int steps) {
   step_count += steps;
 }
 
+void GateBoyThread::run_to(uint64_t phase) {
+  //uint64_t delta = phase - gb->get_sys().gb_phase_total;
+  //add_steps((int)delta);
+
+  while(gb->get_sys().gb_phase_total != phase) {
+    gb->next_phase(cart_blob);
+  }
+
+}
+
 void GateBoyThread::rewind(int steps) {
   CHECK_P(sim_paused());
   clear_steps();
   while (steps--) {
     gb.pop();
   }
+}
+
+int GateBoyThread::get_steps() const {
+  return step_count;
+}
+
+void GateBoyThread::set_buttons(uint8_t buttons) {
+  gb->set_buttons(buttons);
+}
+
+bool GateBoyThread::sim_paused() const { return sync.test(ACK_PAUSE); }
+
+bool GateBoyThread::has_work() const {
+  return step_count != 0;
+}
+
+blob& GateBoyThread::get_cart() {
+  return cart_blob;
+}
+
+const blob& GateBoyThread::get_cart() const {
+  return cart_blob;
 }
 
 //----------------------------------------

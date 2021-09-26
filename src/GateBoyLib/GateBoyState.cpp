@@ -1,5 +1,8 @@
 #include "GateBoyLib/GateBoyState.h"
 
+#include "GateBoyLib/Utils.h"
+#include "CoreLib/Constants.h"
+
 //-----------------------------------------------------------------------------
 
 void GateBoyState::reset_to_poweron() {

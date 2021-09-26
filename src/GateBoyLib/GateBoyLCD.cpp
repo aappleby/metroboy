@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyLCD.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -248,3 +249,67 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
   lcd_pipe_hi[159].dff(bit(~PIN_53_LCD_CLOCK.qp_new()), 1, 1, lcd_pix_hi.qp_new());
   */
 }
+
+//-----------------------------------------------------------------------------
+
+void LCDControl::reset_to_poweron() {
+  CATU_x113p_odd.state          = BIT_OLD | BIT_DRIVEN;
+  ANEL_x113p_odd.state          = BIT_OLD | BIT_DRIVEN;
+  POPU_VBLANKp_odd.state          = BIT_OLD | BIT_DRIVEN;
+  MYTA_FRAME_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
+  RUTU_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
+  NYPE_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
+  SYGU_LINE_STROBE.state    = BIT_OLD | BIT_DRIVEN;
+  MEDA_VSYNC_OUTn.state     = BIT_OLD | BIT_DRIVEN;
+  LUCA_LINE_EVENp.state     = BIT_OLD | BIT_DRIVEN;
+  NAPO_FRAME_EVENp.state    = BIT_OLD | BIT_DRIVEN;
+  RUJU.state                = BIT_OLD | BIT_DRIVEN;
+  POFY.state                = BIT_OLD | BIT_DRIVEN;
+  POME_X8_LATCH.state                = BIT_OLD | BIT_DRIVEN;
+  PAHO_X8_SYNC.state       = BIT_OLD | BIT_DRIVEN;
+  WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
+  REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN;
+  RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN;
+}
+
+void LCDControl::reset_to_bootrom() {
+  CATU_x113p_odd.state          = BIT_OLD | BIT_DRIVEN;
+  ANEL_x113p_odd.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  POPU_VBLANKp_odd.state          = BIT_OLD | BIT_DRIVEN;
+  MYTA_FRAME_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
+  RUTU_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  NYPE_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
+  SYGU_LINE_STROBE.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  MEDA_VSYNC_OUTn.state     = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  LUCA_LINE_EVENp.state     = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  NAPO_FRAME_EVENp.state    = BIT_OLD | BIT_DRIVEN;
+  RUJU.state                = BIT_OLD | BIT_DRIVEN | 1;
+  POFY.state                = BIT_OLD | BIT_DRIVEN | 0;
+  POME_X8_LATCH.state                = BIT_OLD | BIT_DRIVEN | 1;
+  PAHO_X8_SYNC.state       = BIT_OLD | BIT_DRIVEN;
+  WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
+  REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN | 1;
+  RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN | 1;
+}
+
+void LCDControl::reset_to_cart() {
+  CATU_x113p_odd.state          = 0b00011010;
+  ANEL_x113p_odd.state          = 0b00011000;
+  POPU_VBLANKp_odd.state          = 0b00011001;
+  MYTA_FRAME_ENDp_odd.state          = 0b00011001;
+  RUTU_LINE_ENDp_odd.state          = 0b00011010;
+  NYPE_LINE_ENDp_odd.state          = 0b00011000;
+  SYGU_LINE_STROBE.state    = 0b00011010;
+  MEDA_VSYNC_OUTn.state     = 0b00011011;
+  LUCA_LINE_EVENp.state     = 0b00011011;
+  NAPO_FRAME_EVENp.state    = 0b00011010;
+  RUJU.state                = 0b00011001;
+  POFY.state                = 0b00011000;
+  POME_X8_LATCH.state                = 0b00011001;
+  PAHO_X8_SYNC.state       = 0b00011000;
+  WUSA_LCD_CLOCK_GATE.state = 0b00011000;
+  REMY_LD0n.state           = 0b00011000;
+  RAVO_LD1n.state           = 0b00011000;
+}
+
+//-----------------------------------------------------------------------------

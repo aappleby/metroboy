@@ -1,70 +1,12 @@
 #pragma once
-#include "GateBoyLib/Gates.h"
-
-#include "GateBoyLib/GateBoyRegisters.h"
+#include "GateBoyLib/Regs.h"
 
 //-----------------------------------------------------------------------------
 
 struct LCDControl {
-  void reset_to_poweron() {
-    CATU_x113p_odd.state          = BIT_OLD | BIT_DRIVEN;
-    ANEL_x113p_odd.state          = BIT_OLD | BIT_DRIVEN;
-    POPU_VBLANKp_odd.state          = BIT_OLD | BIT_DRIVEN;
-    MYTA_FRAME_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
-    RUTU_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
-    NYPE_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
-    SYGU_LINE_STROBE.state    = BIT_OLD | BIT_DRIVEN;
-    MEDA_VSYNC_OUTn.state     = BIT_OLD | BIT_DRIVEN;
-    LUCA_LINE_EVENp.state     = BIT_OLD | BIT_DRIVEN;
-    NAPO_FRAME_EVENp.state    = BIT_OLD | BIT_DRIVEN;
-    RUJU.state                = BIT_OLD | BIT_DRIVEN;
-    POFY.state                = BIT_OLD | BIT_DRIVEN;
-    POME_X8_LATCH.state                = BIT_OLD | BIT_DRIVEN;
-    PAHO_X8_SYNC.state       = BIT_OLD | BIT_DRIVEN;
-    WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
-    REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN;
-    RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN;
-  }
-
-  void reset_to_bootrom() {
-    CATU_x113p_odd.state          = BIT_OLD | BIT_DRIVEN;
-    ANEL_x113p_odd.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    POPU_VBLANKp_odd.state          = BIT_OLD | BIT_DRIVEN;
-    MYTA_FRAME_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
-    RUTU_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    NYPE_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
-    SYGU_LINE_STROBE.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    MEDA_VSYNC_OUTn.state     = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    LUCA_LINE_EVENp.state     = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    NAPO_FRAME_EVENp.state    = BIT_OLD | BIT_DRIVEN;
-    RUJU.state                = BIT_OLD | BIT_DRIVEN | 1;
-    POFY.state                = BIT_OLD | BIT_DRIVEN | 0;
-    POME_X8_LATCH.state                = BIT_OLD | BIT_DRIVEN | 1;
-    PAHO_X8_SYNC.state       = BIT_OLD | BIT_DRIVEN;
-    WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
-    REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN | 1;
-    RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN | 1;
-  }
-
-  void reset_to_cart() {
-    CATU_x113p_odd.state          = 0b00011010;
-    ANEL_x113p_odd.state          = 0b00011000;
-    POPU_VBLANKp_odd.state          = 0b00011001;
-    MYTA_FRAME_ENDp_odd.state          = 0b00011001;
-    RUTU_LINE_ENDp_odd.state          = 0b00011010;
-    NYPE_LINE_ENDp_odd.state          = 0b00011000;
-    SYGU_LINE_STROBE.state    = 0b00011010;
-    MEDA_VSYNC_OUTn.state     = 0b00011011;
-    LUCA_LINE_EVENp.state     = 0b00011011;
-    NAPO_FRAME_EVENp.state    = 0b00011010;
-    RUJU.state                = 0b00011001;
-    POFY.state                = 0b00011000;
-    POME_X8_LATCH.state                = 0b00011001;
-    PAHO_X8_SYNC.state       = 0b00011000;
-    WUSA_LCD_CLOCK_GATE.state = 0b00011000;
-    REMY_LD0n.state           = 0b00011000;
-    RAVO_LD1n.state           = 0b00011000;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   // H deltas are due to reg writes
   /*#p29.CATU*/ DFF17 CATU_x113p_odd; // Axxxxxxx

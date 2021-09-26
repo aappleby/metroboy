@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyJoypad.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 // JOYP should read as 0xCF at reset? So the RegQPs reset to 1 and the RegQNs reset to 0?
 // That also means that _both_ P14 and P15 are selected at reset :/
@@ -176,5 +177,30 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
   /*_BUS_CPU_D04p*/ gb_state.cpu_dbus.BUS_CPU_D04p.tri_bus(KOCE_JOY4_TO_CD4);
   /*_BUS_CPU_D05p*/ gb_state.cpu_dbus.BUS_CPU_D05p.tri_bus(CUDY_JOY5_TO_CD5);
 }
+
+//-----------------------------------------------------------------------------
+
+void JoyInt::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x0F); }
+void JoyInt::reset_to_bootrom() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x07);
+}
+void JoyInt::reset_to_cart()    {
+  BATU_JP_GLITCH0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
+  ACEF_JP_GLITCH1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
+  AGEM_JP_GLITCH2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
+  APUG_JP_GLITCH3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
+}
+
+//-----------------------------------------------------------------------------
+
+void RegJoy::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+void RegJoy::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void RegJoy::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+
+//-----------------------------------------------------------------------------
+
+void JoyLatch::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+void JoyLatch::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+void JoyLatch::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
 
 //-----------------------------------------------------------------------------

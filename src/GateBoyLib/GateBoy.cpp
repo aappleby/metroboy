@@ -6,6 +6,7 @@
 #include "CoreLib/Tests.h"
 #include "GateBoyLib/Probe.h"
 #include "GateBoyLib/GateBoyState.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -962,6 +963,61 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // And finally, interrupts.
 
   tock_interrupts_gates(reg_old);
+}
+
+//-----------------------------------------------------------------------------
+
+/*#p01.BYJU*/ wire GateBoy::BYJU_Axxxxxxx() const { return or2(gb_state.sys_clk.BELE_Axxxxxxx(), pins.sys.ATEZ_CLKBADp()); }
+/*#p01.BALY*/ wire GateBoy::BALY_xBCDEFGH() const { return not1(BYJU_Axxxxxxx()); }
+/*_p01.BOGA*/ wire GateBoy::BOGA_Axxxxxxx() const { return not1(BALY_xBCDEFGH()); }
+/*#p01.BUVU*/ wire GateBoy::BUVU_Axxxxxxx() const { return and2(BALY_xBCDEFGH(), gb_state.sys_clk.BUTY_CLKREQp()); }
+/*#p01.BYXO*/ wire GateBoy::BYXO_xBCDEFGH() const { return not1(BUVU_Axxxxxxx()); }
+/*#p01.BEDO*/ wire GateBoy::BEDO_Axxxxxxx() const { return not1(BYXO_xBCDEFGH()); }
+/*#p01.BOWA*/ wire GateBoy::BOWA_xBCDEFGH() const { return not1(BEDO_Axxxxxxx()); }
+/*#p01.BOMA*/ wire GateBoy::BOMA_xBCDEFGH() const { return not1(BOGA_Axxxxxxx()); }
+
+/*_p01.XODO*/ wire GateBoy::XODO_VID_RSTp() const { return nand2(gb_state.sys_rst.XEBE_SYS_RSTn(), gb_state.reg_lcdc.XONA_LCDC_LCDENn.qn_new()); }
+/*_p01.XAPO*/ wire GateBoy::XAPO_VID_RSTn() const { return not1(XODO_VID_RSTp()); }
+/*_p01.LYHA*/ wire GateBoy::LYHA_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*_p01.LYFE*/ wire GateBoy::LYFE_VID_RSTn() const { return not1(LYHA_VID_RSTp()); }
+/*_p01.TOFU*/ wire GateBoy::TOFU_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*_p01.ROSY*/ wire GateBoy::ROSY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*#p01.ATAR*/ wire GateBoy::ATAR_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*#p01.ABEZ*/ wire GateBoy::ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
+/*_p01.PYRY*/ wire GateBoy::PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*_p01.AMYG*/ wire GateBoy::AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*#p08.TEXO*/ wire GateBoy::TEXO_ADDR_VRAMn   () const { return and2(gb_state.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new(), gb_state.cpu_abus.TEVY_ADDR_VRAMn()); }
+/*#p25.TEFA*/ wire GateBoy::TEFA_ADDR_VRAMp   () const { return nor2(gb_state.cpu_abus.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
+/*#p25.SOSE*/ wire GateBoy::SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), gb_state.cpu_abus.BUS_CPU_A15p.out_new()); }
+/*_p08.LEVO*/ wire GateBoy::LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
+/*_p25.TUJA*/ wire GateBoy::TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), gb_state.cpu_signals.APOV_CPU_WRp.out_new()); }
+
+wire GateBoy::TOLE_CPU_VRAM_RDp() const
+{
+  // Ignoring debug for now
+  ///*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
+  ///*#p25.TAVY*/ wire TAVY_MOEp         = not1(vram_bus.PIN_45_VRAM_OEn.qn_new());
+  ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
+  ///*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = mux2p(TEFY_VRAM_MCSp, TUTO_DBG_VRAMp, TUCA_CPU_VRAM_RDp);
+
+  /*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), gb_state.cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new());
+  /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = not1(TUCA_CPU_VRAM_RDp);
+
+  return TOLE_CPU_VRAM_RDp;
+}
+
+wire GateBoy::SALE_CPU_VRAM_WRn() const
+{
+  // Ignoring debug for now
+  ///*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_ADDR_VRAMp(), SIG_IN_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
+  ///*#p25.TAVY*/ wire TAVY_MOEp         = not1(vram_bus.PIN_45_VRAM_OEn.qn_new());
+  ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
+  ///*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = mux2p(TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
+
+  /*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), gb_state.cpu_signals.SIG_IN_CPU_WRp.out_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
+  /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = not1(TEGU_CPU_VRAM_WRn);
+
+  return SALE_CPU_VRAM_WRn;
 }
 
 //-----------------------------------------------------------------------------

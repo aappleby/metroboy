@@ -4,6 +4,7 @@
 #include "CoreLib/Assembler.h"
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/LogicBoy.h"
+#include "GateBoyLib/Utils.h"
 #include "CoreLib/Constants.h"
 #include "CoreLib/Tests.h"
 #include "CoreLib/File.h"

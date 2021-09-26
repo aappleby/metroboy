@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoySerial.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -250,5 +251,26 @@ void GateBoy::tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_a
   }
 }
 #endif
+
+//-----------------------------------------------------------------------------
+
+void GateBoySerial::reset_to_cart() {
+  ETAF_SER_RUN.state = 0b00011010;
+  CULY_SER_DIR.state = 0b00011010;
+  COTY_SER_CLK.state = 0b00011000;
+  ELYS_SER_OUT.state = 0b00011000;
+  CAFA_SER_CNT0.state = 0b00011010;
+  CYLO_SER_CNT1.state = 0b00011010;
+  CYDE_SER_CNT2.state = 0b00011010;
+  CALY_SER_CNT3.state = 0b00011010;
+  CUBA_SER_DATA0.state = 0b00011010;
+  DEGU_SER_DATA1.state = 0b00011010;
+  DYRA_SER_DATA2.state = 0b00011010;
+  DOJO_SER_DATA3.state = 0b00011010;
+  DOVU_SER_DATA4.state = 0b00011010;
+  EJAB_SER_DATA5.state = 0b00011010;
+  EROD_SER_DATA6.state = 0b00011010;
+  EDER_SER_DATA7.state = 0b00011010;
+}
 
 //-----------------------------------------------------------------------------

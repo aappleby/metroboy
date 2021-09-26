@@ -1,5 +1,6 @@
 #include "GateBoyApp/GateBoyApp.h"
 #include "GateBoyLib/GateBoyDumper.h"
+#include "GateBoyLib/Utils.h"
 
 #include "CoreLib/Constants.h"
 #include "CoreLib/Debug.h" // for StringDumper

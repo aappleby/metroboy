@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyVramBus.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -664,6 +665,78 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*_p33.PULY*/ gb_state.flipped_sprite.PULY_FLIP7p <<= mux2p(XONO_FLIP_X, gb_state.vram_dbus.BUS_VRAM_D00p.out_new(), gb_state.vram_dbus.BUS_VRAM_D07p.out_new());
 }
 
+//-----------------------------------------------------------------------------
+
+void VramABusLo::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void VramABusLo::reset_to_bootrom() {
+  BUS_VRAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A02n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A03n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A04n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A05n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A06n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A07n.state = BIT_OLD | BIT_DRIVEN | 1;
+}
+
+void VramABusLo::reset_to_cart() {
+  BUS_VRAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A02n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A03n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A04n.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_VRAM_A05n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A06n.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_VRAM_A07n.state = BIT_OLD | BIT_DRIVEN | 1;
+}
+
+//-----------------------------------------------------------------------------
+
+void VramABusHi::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void VramABusHi::reset_to_bootrom() {
+  BUS_VRAM_A08n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A09n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A10n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A11n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A12n.state = BIT_OLD | BIT_DRIVEN | 1;
+}
+
+void VramABusHi::reset_to_cart() {
+  BUS_VRAM_A08n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A09n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A10n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A11n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A12n.state = BIT_OLD | BIT_DRIVEN | 1;
+}
+
+//-----------------------------------------------------------------------------
+
+void VramDBus::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void VramDBus::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void VramDBus::reset_to_cart() {
+  BUS_VRAM_D00p.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_VRAM_D01p.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_VRAM_D02p.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_VRAM_D03p.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_VRAM_D04p.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_VRAM_D05p.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_VRAM_D06p.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_VRAM_D07p.state = BIT_OLD | BIT_DRIVEN | 0;
+}
+
+//-----------------------------------------------------------------------------
 
 
 

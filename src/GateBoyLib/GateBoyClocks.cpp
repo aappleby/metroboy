@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyClocks.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 void GateBoyClock::reset_to_poweron() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));

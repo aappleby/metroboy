@@ -1,41 +1,12 @@
 #pragma once
-#include "GateBoyLib/Gates.h"
-
+#include "GateBoyLib/Regs.h"
 
 //-----------------------------------------------------------------------------
 
 struct WinControl {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
-  void reset_to_bootrom() {
-    NUKO_WX_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-    ROGE_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-    PYNU_WIN_MODE_Ap_odd.state     = BIT_OLD | BIT_DRIVEN;
-    PUKU_WIN_HITn_odd.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-    RYDY_WIN_HITp_odd.state        = BIT_OLD | BIT_DRIVEN;
-    SOVY_WIN_HITp_evn.state        = BIT_OLD | BIT_DRIVEN;
-    NOPA_WIN_MODE_Bp_evn.state     = BIT_OLD | BIT_DRIVEN;
-    PYCO_WIN_MATCHp_evn.state      = BIT_OLD | BIT_DRIVEN;
-    NUNU_WIN_MATCHp_odd.state      = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    REJO_WY_MATCH_LATCHp_odd.state = BIT_OLD | BIT_DRIVEN;
-    SARY_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-    RYFA_WIN_FETCHn_A_evn.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    RENE_WIN_FETCHn_B_evn.state    = BIT_OLD | BIT_DRIVEN;
-  }
-  void reset_to_cart() {
-    NUKO_WX_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-    ROGE_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-    PYNU_WIN_MODE_Ap_odd.state     = BIT_OLD | BIT_DRIVEN;
-    PUKU_WIN_HITn_odd.state        = BIT_OLD | BIT_DRIVEN | 1;
-    RYDY_WIN_HITp_odd.state        = BIT_OLD | BIT_DRIVEN;
-    SOVY_WIN_HITp_evn.state        = BIT_OLD | BIT_DRIVEN;
-    NOPA_WIN_MODE_Bp_evn.state     = BIT_OLD | BIT_DRIVEN;
-    PYCO_WIN_MATCHp_evn.state      = BIT_OLD | BIT_DRIVEN;
-    NUNU_WIN_MATCHp_odd.state      = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    REJO_WY_MATCH_LATCHp_odd.state = BIT_OLD | BIT_DRIVEN;
-    SARY_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-    RYFA_WIN_FETCHn_A_evn.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    RENE_WIN_FETCHn_B_evn.state    = BIT_OLD | BIT_DRIVEN;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p27.NUKO*/ Gate NUKO_WX_MATCHp_odd; // old used
   /*_p27.ROGE*/ Gate ROGE_WY_MATCHp_odd; // old used
@@ -55,9 +26,9 @@ struct WinControl {
 //-----------------------------------------------------------------------------
 
 struct FineCount {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*#p27.RYKU*/ DFF17 RYKU_FINE_CNT0_odd;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
   /*#p27.ROGA*/ DFF17 ROGA_FINE_CNT1_odd;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
@@ -65,23 +36,9 @@ struct FineCount {
 };
 
 struct FineScroll {
-  void reset_to_poweron() {
-    PUXA_SCX_FINE_MATCH_evn.state = BIT_OLD | BIT_DRIVEN;
-    NYZE_SCX_FINE_MATCH_odd.state = BIT_OLD | BIT_DRIVEN;
-    ROXY_FINE_SCROLL_DONEn_evn.state = BIT_OLD | BIT_DRIVEN;
-  }
-
-  void reset_to_bootrom() {
-    PUXA_SCX_FINE_MATCH_evn.state = BIT_OLD | BIT_DRIVEN;
-    NYZE_SCX_FINE_MATCH_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    ROXY_FINE_SCROLL_DONEn_evn.state = BIT_OLD | BIT_DRIVEN | 1;
-  }
-
-  void reset_to_cart() {
-    PUXA_SCX_FINE_MATCH_evn.state = BIT_OLD | BIT_DRIVEN;
-    NYZE_SCX_FINE_MATCH_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    ROXY_FINE_SCROLL_DONEn_evn.state = BIT_OLD | BIT_DRIVEN | 1;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*#p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_evn;        // xxxxxFxH
   /*#p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_odd;        // AxxxxxGx
@@ -91,9 +48,9 @@ struct FineScroll {
 //-----------------------------------------------------------------------------
 
 struct MaskPipe {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p26.VEZO*/ DFF22 VEZO_MASK_PIPE_0; // AxCxExGx
   /*_p26.WURU*/ DFF22 WURU_MASK_PIPE_1; // AxCxExGx
@@ -108,9 +65,9 @@ struct MaskPipe {
 //-----------------------------------------------------------------------------
 
 struct BgwPipeA {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p32.MYDE*/ DFF22 MYDE_BGW_PIPE_A0; // AxCxExGx
   /*_p32.NOZO*/ DFF22 NOZO_BGW_PIPE_A1; // AxCxExGx
@@ -125,9 +82,9 @@ struct BgwPipeA {
 //-----------------------------------------------------------------------------
 
 struct BgwPipeB {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p32.TOMY*/ DFF22 TOMY_BGW_PIPE_B0; // AxCxExGx
   /*_p32.TACA*/ DFF22 TACA_BGW_PIPE_B1; // AxCxExGx
@@ -142,9 +99,9 @@ struct BgwPipeB {
 //-----------------------------------------------------------------------------
 
 struct SprPipeA {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p33.NURO*/ DFF22 NURO_SPR_PIPE_A0; // AxCxExGx
   /*_p33.MASO*/ DFF22 MASO_SPR_PIPE_A1; // AxCxExGx
@@ -159,9 +116,9 @@ struct SprPipeA {
 //-----------------------------------------------------------------------------
 
 struct SprPipeB {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p33.NYLU*/ DFF22 NYLU_SPR_PIPE_B0; // AxCxExGx
   /*_p33.PEFU*/ DFF22 PEFU_SPR_PIPE_B1; // AxCxExGx
@@ -176,9 +133,9 @@ struct SprPipeB {
 //-----------------------------------------------------------------------------
 
 struct PalPipe {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p34.RUGO*/ DFF22 RUGO_PAL_PIPE_D0;
   /*_p34.SATA*/ DFF22 SATA_PAL_PIPE_D1;

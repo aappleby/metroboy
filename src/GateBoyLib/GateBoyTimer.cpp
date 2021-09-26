@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyTimer.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 // this is hacked up because we're ignoring the debug reg for the moment
@@ -172,6 +173,128 @@ void GateBoy::tock_timer_gates(const GateBoyState& reg_old) {
   /*_BUS_CPU_D00p*/ gb_state.cpu_dbus.BUS_CPU_D00p.tri_bus(RYLA_TAC0_TO_CD0);
   /*_BUS_CPU_D01p*/ gb_state.cpu_dbus.BUS_CPU_D01p.tri_bus(ROTE_TAC1_TO_CD1);
   /*_BUS_CPU_D02p*/ gb_state.cpu_dbus.BUS_CPU_D02p.tri_bus(SUPE_TAC2_TO_CD2);
+}
+
+//-----------------------------------------------------------------------------
+
+void RegDIV::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void RegDIV::reset_to_bootrom() {
+  UKUP_DIV00p.state = 0x1b;
+  UFOR_DIV01p.state = 0x19;
+  UNER_DIV02p.state = 0x18;
+  TERO_DIV03p.state = 0x1a;
+  UNYK_DIV04p.state = 0x1a;
+  TAMA_DIV05p.state = 0x1a;
+  UGOT_DIV06p.state = 0x1a;
+  TULU_DIV07p.state = 0x1a;
+  TUGO_DIV08p.state = 0x1a;
+  TOFE_DIV09p.state = 0x1a;
+  TERU_DIV10p.state = 0x1a;
+  SOLA_DIV11p.state = 0x1a;
+  SUBU_DIV12p.state = 0x1a;
+  TEKA_DIV13p.state = 0x1a;
+  UKET_DIV14p.state = 0x1a;
+  UPOF_DIV15p.state = 0x1b;
+}
+
+void RegDIV::reset_to_cart() {
+  UKUP_DIV00p.state = 0b00011011;
+  UFOR_DIV01p.state = 0b00011001;
+  UNER_DIV02p.state = 0b00011000;
+  TERO_DIV03p.state = 0b00011010;
+  UNYK_DIV04p.state = 0b00011011;
+  TAMA_DIV05p.state = 0b00011001;
+  UGOT_DIV06p.state = 0b00011001;
+  TULU_DIV07p.state = 0b00011001;
+  TUGO_DIV08p.state = 0b00011000;
+  TOFE_DIV09p.state = 0b00011011;
+  TERU_DIV10p.state = 0b00011000;
+  SOLA_DIV11p.state = 0b00011011;
+  SUBU_DIV12p.state = 0b00011000;
+  TEKA_DIV13p.state = 0b00011011;
+  UKET_DIV14p.state = 0b00011001;
+  UPOF_DIV15p.state = 0b00011001;
+}
+
+void RegDIV::force_set_div(uint16_t div) {
+  uint16_t div_a = div;
+  uint16_t div_b = ((~div) << 2);
+
+  UKUP_DIV00p.state = ((div_a >>  0) & 1) | ((div_b >>  0) & 2);
+  UFOR_DIV01p.state = ((div_a >>  1) & 1) | ((div_b >>  1) & 2);
+  UNER_DIV02p.state = ((div_a >>  2) & 1) | ((div_b >>  2) & 2);
+  TERO_DIV03p.state = ((div_a >>  3) & 1) | ((div_b >>  3) & 2);
+  UNYK_DIV04p.state = ((div_a >>  4) & 1) | ((div_b >>  4) & 2);
+  TAMA_DIV05p.state = ((div_a >>  5) & 1) | ((div_b >>  5) & 2);
+  UGOT_DIV06p.state = ((div_a >>  6) & 1) | ((div_b >>  6) & 2);
+  TULU_DIV07p.state = ((div_a >>  7) & 1) | ((div_b >>  7) & 2);
+  TUGO_DIV08p.state = ((div_a >>  8) & 1) | ((div_b >>  8) & 2);
+  TOFE_DIV09p.state = ((div_a >>  9) & 1) | ((div_b >>  9) & 2);
+  TERU_DIV10p.state = ((div_a >> 10) & 1) | ((div_b >> 10) & 2);
+  SOLA_DIV11p.state = ((div_a >> 11) & 1) | ((div_b >> 11) & 2);
+  SUBU_DIV12p.state = ((div_a >> 12) & 1) | ((div_b >> 12) & 2);
+  TEKA_DIV13p.state = ((div_a >> 13) & 1) | ((div_b >> 13) & 2);
+  UKET_DIV14p.state = ((div_a >> 14) & 1) | ((div_b >> 14) & 2);
+  UPOF_DIV15p.state = ((div_a >> 15) & 1) | ((div_b >> 15) & 2);
+}
+
+//-----------------------------------------------------------------------------
+
+void RegTIMA::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void RegTIMA::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+void RegTIMA::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+void RegTIMA::force_set_tima(uint8_t tima) {
+  uint16_t tima_a = tima;
+  uint16_t tima_b = ((~tima) << 2);
+
+  REGA_TIMA0p.state = ((tima_a >>  0) & 1) | ((tima_b >>  0) & 2);
+  POVY_TIMA1p.state = ((tima_a >>  1) & 1) | ((tima_b >>  1) & 2);
+  PERU_TIMA2p.state = ((tima_a >>  2) & 1) | ((tima_b >>  2) & 2);
+  RATE_TIMA3p.state = ((tima_a >>  3) & 1) | ((tima_b >>  3) & 2);
+  RUBY_TIMA4p.state = ((tima_a >>  4) & 1) | ((tima_b >>  4) & 2);
+  RAGE_TIMA5p.state = ((tima_a >>  5) & 1) | ((tima_b >>  5) & 2);
+  PEDA_TIMA6p.state = ((tima_a >>  6) & 1) | ((tima_b >>  6) & 2);
+  NUGA_TIMA7p.state = ((tima_a >>  7) & 1) | ((tima_b >>  7) & 2);
+}
+
+//-----------------------------------------------------------------------------
+
+void RegTMA::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void RegTMA::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+void RegTMA::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+//-----------------------------------------------------------------------------
+
+void RegTAC::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void RegTAC::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+void RegTAC::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------

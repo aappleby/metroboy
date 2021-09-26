@@ -2,6 +2,18 @@
 #include "CoreLib/Types.h"
 
 //-----------------------------------------------------------------------------
+
+struct Adder {
+  wire sum;
+  wire carry;
+};
+
+inline Adder add3(wire a, wire b, wire c) {
+  uint8_t s = bit(a) + bit(b) + bit(c);
+  return { get_bit(s, 0), get_bit(s, 1) };
+}
+
+//-----------------------------------------------------------------------------
 // These _must_ be defined for all builds.
 
 const wire BIT_DATA   = 0b00000001;

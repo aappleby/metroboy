@@ -1,37 +1,7 @@
 #include "GateBoyLib/GateBoySpriteStore.h"
 
 #include "GateBoyLib/GateBoy.h"
-
-#pragma warning(disable:4458)
-
-//-----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 // Turn the sprite counter into a one-hot clock signal.
@@ -84,68 +54,6 @@ void GateBoy::update_sprite_store_flags_gates(
   /*_p29.BUKA*/ sprite_store_flags.BUKA_STORE8_CLKn <<= not1(CAHO_STORE8_CLKp);
   /*_p29.DECU*/ sprite_store_flags.DECU_STORE9_CLKn <<= not1(CATO_STORE9_CLKp);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -439,91 +347,6 @@ void GateBoy::store_sprite_gates(
   /*_p30.DEWU*/ gb_state.store_l9.DEWU_STORE9_L3n.dff8n(FAKA_STORE9_CLKp, gb_state.sprite_lbus.BUS_SPR_L3.out_old());
 }
 
-
-//-----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //-----------------------------------------------------------------------------
 // Check the whole sprite store for a sprite at the current pixel coordinate
 // and update the match flags and FEPO_STORE_MATCHp.
@@ -697,93 +520,6 @@ void GateBoy::get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags
   /*_p29.FOXA*/ sprite_match_flags.FOXA_SPRITE8_GETp <<= nor2(EFYL_STORE8_MATCHn, FAVO_STORE7_MATCH);
   /*_p29.GUZE*/ sprite_match_flags.GUZE_SPRITE9_GETp <<= nor2(YGEM_STORE9_MATCHn, GYGA_STORE8_MATCH);
 }
-
-//-----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //-----------------------------------------------------------------------------
 
@@ -1025,60 +761,6 @@ void GateBoy::sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag)
 
 //-----------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//-----------------------------------------------------------------------------
-
 void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp)
 {
   /*#p29.BUZA*/ wire BUZA_STORE_SPRITE_INDXn_new = and2(gb_state.sprite_scanner.CENO_SCAN_DONEn_odd.qn_new(), XYMU_RENDERINGn.qn_new());
@@ -1114,3 +796,212 @@ void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYM
 
 //-----------------------------------------------------------------------------
 
+void SpriteIBus::reset_to_poweron() {
+  BUS_SPR_I0.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_SPR_I1.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_SPR_I2.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_SPR_I3.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_SPR_I4.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_SPR_I5.state = BIT_OLD | BIT_PULLED | 1;
+}
+
+void SpriteIBus::reset_to_bootrom() {
+  BUS_SPR_I0.state = BIT_OLD | BIT_DRIVEN;
+  BUS_SPR_I1.state = BIT_OLD | BIT_DRIVEN;
+  BUS_SPR_I2.state = BIT_OLD | BIT_DRIVEN;
+  BUS_SPR_I3.state = BIT_OLD | BIT_DRIVEN;
+  BUS_SPR_I4.state = BIT_OLD | BIT_DRIVEN;
+  BUS_SPR_I5.state = BIT_OLD | BIT_DRIVEN;
+}
+
+void SpriteIBus::reset_to_cart() {
+  BUS_SPR_I0.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_SPR_I1.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_SPR_I2.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_SPR_I3.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_SPR_I4.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_SPR_I5.state = BIT_OLD | BIT_DRIVEN | 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void SpriteLBus::reset_to_poweron() {
+  BUS_SPR_L0.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_SPR_L1.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_SPR_L2.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_SPR_L3.state = BIT_OLD | BIT_PULLED | 1;
+}
+
+void SpriteLBus::reset_to_bootrom() {
+  BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_SPR_L2.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_SPR_L3.state = BIT_OLD | BIT_DRIVEN | 1;
+}
+
+void SpriteLBus::reset_to_cart() {
+  BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_SPR_L2.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_SPR_L3.state = BIT_OLD | BIT_DRIVEN | 1;
+}
+
+//-----------------------------------------------------------------------------
+
+void SpriteMatchFlags::reset_to_poweron() {}
+void SpriteMatchFlags::reset_to_bootrom() {}
+void SpriteMatchFlags::reset_to_cart() {}
+
+//-----------------------------------------------------------------------------
+
+void SpriteResetFlags::reset_to_poweron() {}
+void SpriteResetFlags::reset_to_bootrom() {}
+void SpriteResetFlags::reset_to_cart() {}
+
+//-----------------------------------------------------------------------------
+
+void SpriteStoreFlags::reset_to_poweron() {}
+void SpriteStoreFlags::reset_to_bootrom() {}
+void SpriteStoreFlags::reset_to_cart() {}
+
+//-----------------------------------------------------------------------------
+
+void StoreI0::reset_to_poweron() {}
+void StoreI0::reset_to_bootrom() {}
+void StoreI0::reset_to_cart() {}
+
+void StoreL0::reset_to_poweron() {}
+void StoreL0::reset_to_bootrom() {}
+void StoreL0::reset_to_cart() {}
+
+void StoreX0::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX0::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX0::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void StoreI1::reset_to_poweron() {}
+void StoreI1::reset_to_bootrom() {}
+void StoreI1::reset_to_cart() {}
+
+void StoreL1::reset_to_poweron() {}
+void StoreL1::reset_to_bootrom() {}
+void StoreL1::reset_to_cart() {}
+
+void StoreX1::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX1::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX1::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void StoreI2::reset_to_poweron() {}
+void StoreI2::reset_to_bootrom() {}
+void StoreI2::reset_to_cart() {}
+
+void StoreL2::reset_to_poweron() {}
+void StoreL2::reset_to_bootrom() {}
+void StoreL2::reset_to_cart() {}
+
+void StoreX2::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX2::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX2::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void StoreI3::reset_to_poweron() {}
+void StoreI3::reset_to_bootrom() {}
+void StoreI3::reset_to_cart() {}
+
+void StoreL3::reset_to_poweron() {}
+void StoreL3::reset_to_bootrom() {}
+void StoreL3::reset_to_cart() {}
+
+void StoreX3::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX3::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX3::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void StoreI4::reset_to_poweron() {}
+void StoreI4::reset_to_bootrom() {}
+void StoreI4::reset_to_cart() {}
+
+void StoreL4::reset_to_poweron() {}
+void StoreL4::reset_to_bootrom() {}
+void StoreL4::reset_to_cart() {}
+
+void StoreX4::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX4::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX4::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void StoreI5::reset_to_poweron() {}
+void StoreI5::reset_to_bootrom() {}
+void StoreI5::reset_to_cart() {}
+
+void StoreL5::reset_to_poweron() {}
+void StoreL5::reset_to_bootrom() {}
+void StoreL5::reset_to_cart() {}
+
+void StoreX5::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX5::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX5::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void StoreI6::reset_to_poweron() {}
+void StoreI6::reset_to_bootrom() {}
+void StoreI6::reset_to_cart() {}
+
+void StoreL6::reset_to_poweron() {}
+void StoreL6::reset_to_bootrom() {}
+void StoreL6::reset_to_cart() {}
+
+void StoreX6::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX6::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX6::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void StoreI7::reset_to_poweron() {}
+void StoreI7::reset_to_bootrom() {}
+void StoreI7::reset_to_cart() {}
+
+void StoreL7::reset_to_poweron() {}
+void StoreL7::reset_to_bootrom() {}
+void StoreL7::reset_to_cart() {}
+
+void StoreX7::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX7::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX7::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void StoreI8::reset_to_poweron() {}
+void StoreI8::reset_to_bootrom() {}
+void StoreI8::reset_to_cart() {}
+
+void StoreL8::reset_to_poweron() {}
+void StoreL8::reset_to_bootrom() {}
+void StoreL8::reset_to_cart() {}
+
+void StoreX8::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX8::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX8::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------
+
+void StoreI9::reset_to_poweron() {}
+void StoreI9::reset_to_bootrom() {}
+void StoreI9::reset_to_cart() {}
+
+void StoreL9::reset_to_poweron() {}
+void StoreL9::reset_to_bootrom() {}
+void StoreL9::reset_to_cart() {}
+
+void StoreX9::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX9::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void StoreX9::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+
+//-----------------------------------------------------------------------------

@@ -290,58 +290,33 @@ struct GateBoy  : public IGateBoy {
 
   //----------------------------------------
 
-  /*#p01.BYJU*/ wire BYJU_Axxxxxxx() const { return or2(gb_state.sys_clk.BELE_Axxxxxxx(), pins.sys.ATEZ_CLKBADp()); }
-  /*#p01.BALY*/ wire BALY_xBCDEFGH() const { return not1(BYJU_Axxxxxxx()); }
-  /*_p01.BOGA*/ wire BOGA_Axxxxxxx() const { return not1(BALY_xBCDEFGH()); }
-  /*#p01.BUVU*/ wire BUVU_Axxxxxxx() const { return and2(BALY_xBCDEFGH(), gb_state.sys_clk.BUTY_CLKREQp()); }
-  /*#p01.BYXO*/ wire BYXO_xBCDEFGH() const { return not1(BUVU_Axxxxxxx()); }
-  /*#p01.BEDO*/ wire BEDO_Axxxxxxx() const { return not1(BYXO_xBCDEFGH()); }
-  /*#p01.BOWA*/ wire BOWA_xBCDEFGH() const { return not1(BEDO_Axxxxxxx()); }
-  /*#p01.BOMA*/ wire BOMA_xBCDEFGH() const { return not1(BOGA_Axxxxxxx()); }
+  wire BYJU_Axxxxxxx() const;
+  wire BALY_xBCDEFGH() const;
+  wire BOGA_Axxxxxxx() const;
+  wire BUVU_Axxxxxxx() const;
+  wire BYXO_xBCDEFGH() const;
+  wire BEDO_Axxxxxxx() const;
+  wire BOWA_xBCDEFGH() const;
+  wire BOMA_xBCDEFGH() const;
 
-  /*_p01.XODO*/ wire XODO_VID_RSTp() const { return nand2(gb_state.sys_rst.XEBE_SYS_RSTn(), gb_state.reg_lcdc.XONA_LCDC_LCDENn.qn_new()); }
-  /*_p01.XAPO*/ wire XAPO_VID_RSTn() const { return not1(XODO_VID_RSTp()); }
-  /*_p01.LYHA*/ wire LYHA_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*_p01.LYFE*/ wire LYFE_VID_RSTn() const { return not1(LYHA_VID_RSTp()); }
-  /*_p01.TOFU*/ wire TOFU_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*_p01.ROSY*/ wire ROSY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*#p01.ATAR*/ wire ATAR_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
-  /*_p01.PYRY*/ wire PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*_p01.AMYG*/ wire AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const { return and2(gb_state.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new(), gb_state.cpu_abus.TEVY_ADDR_VRAMn()); }
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const { return nor2(gb_state.cpu_abus.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), gb_state.cpu_abus.BUS_CPU_A15p.out_new()); }
-  /*_p08.LEVO*/ wire LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
-  /*_p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), gb_state.cpu_signals.APOV_CPU_WRp.out_new()); }
+  wire XODO_VID_RSTp() const;
+  wire XAPO_VID_RSTn() const;
+  wire LYHA_VID_RSTp() const;
+  wire LYFE_VID_RSTn() const;
+  wire TOFU_VID_RSTp() const;
+  wire ROSY_VID_RSTp() const;
+  wire ATAR_VID_RSTp() const;
+  wire ABEZ_VID_RSTn() const;
+  wire PYRY_VID_RSTp() const;
+  wire AMYG_VID_RSTp() const;
+  wire TEXO_ADDR_VRAMn   () const;
+  wire TEFA_ADDR_VRAMp   () const;
+  wire SOSE_ADDR_VRAMp   () const;
+  wire LEVO_ADDR_VRAMn   () const;
+  wire TUJA_CPU_VRAM_WRp () const;
 
-  wire TOLE_CPU_VRAM_RDp() const
-  {
-   // Ignoring debug for now
-    ///*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
-    ///*#p25.TAVY*/ wire TAVY_MOEp         = not1(vram_bus.PIN_45_VRAM_OEn.qn_new());
-    ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
-    ///*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = mux2p(TEFY_VRAM_MCSp, TUTO_DBG_VRAMp, TUCA_CPU_VRAM_RDp);
-
-    /*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), gb_state.cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new());
-    /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = not1(TUCA_CPU_VRAM_RDp);
-
-    return TOLE_CPU_VRAM_RDp;
-  }
-
-  wire SALE_CPU_VRAM_WRn() const
-  {
-    // Ignoring debug for now
-    ///*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_ADDR_VRAMp(), SIG_IN_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
-    ///*#p25.TAVY*/ wire TAVY_MOEp         = not1(vram_bus.PIN_45_VRAM_OEn.qn_new());
-    ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
-    ///*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = mux2p(TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
-
-    /*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), gb_state.cpu_signals.SIG_IN_CPU_WRp.out_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
-    /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = not1(TEGU_CPU_VRAM_WRn);
-
-    return SALE_CPU_VRAM_WRn;
-  }
+  wire TOLE_CPU_VRAM_RDp() const;
+  wire SALE_CPU_VRAM_WRn() const;
 
   //-----------------------------------------------------------------------------
 

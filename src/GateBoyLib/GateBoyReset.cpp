@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyReset.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -29,5 +30,48 @@ void GateBoy::tock_reset_gates(DFF17 UPOF_DIV15p) {
   // AMUT
   // BURO
 }
+
+//-----------------------------------------------------------------------------
+
+void GateBoyReset::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void GateBoyReset::reset_to_bootrom() {
+  TUBO_WAITINGp.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  ASOL_POR_DONEn.state = BIT_OLD | BIT_DRIVEN;
+  AFER_SYS_RSTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  SOTO_DBG_VRAMp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+
+  SIG_CPU_EXT_CLKGOOD.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  SIG_CPU_EXT_RESETp.state  = BIT_OLD | BIT_DRIVEN;
+  SIG_CPU_STARTp.state      = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  SIG_CPU_INT_RESETp.state  = BIT_OLD | BIT_DRIVEN;
+}
+
+void GateBoyReset::reset_to_cart() {
+  TUBO_WAITINGp.state  = 0b00011000;
+  ASOL_POR_DONEn.state = 0b00011000;
+  AFER_SYS_RSTp.state  = 0b00011010;
+  SOTO_DBG_VRAMp.state = 0b00011010;
+
+  SIG_CPU_EXT_CLKGOOD.state = 0b00011001;
+  SIG_CPU_EXT_RESETp.state  = 0b00011000;
+  SIG_CPU_STARTp.state      = 0b00011000;
+  SIG_CPU_INT_RESETp.state  = 0b00011000;
+}
+
+///*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
+
+/*#p01.AVOR*/ wire GateBoyReset::AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_new(), ASOL_POR_DONEn.qp_new()); }
+/*#p01.ALUR*/ wire GateBoyReset::ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
+/*#p01.DULA*/ wire GateBoyReset::DULA_SYS_RSTp() const { return not1(ALUR_SYS_RSTn()); }
+/*#p01.CUNU*/ wire GateBoyReset::CUNU_SYS_RSTn() const { return not1(DULA_SYS_RSTp()); }
+/*#p01.XORE*/ wire GateBoyReset::XORE_SYS_RSTp() const { return not1(CUNU_SYS_RSTn()); }
+/*_p01.XEBE*/ wire GateBoyReset::XEBE_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
+/*#p01.WALU*/ wire GateBoyReset::WALU_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
+/*_p01.WESY*/ wire GateBoyReset::WESY_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
+/*_p01.XARE*/ wire GateBoyReset::XARE_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
+/*_p03.MULO*/ wire GateBoyReset::MULO_SYS_RSTn() const { return not1(ALUR_SYS_RSTn()); }
 
 //-----------------------------------------------------------------------------

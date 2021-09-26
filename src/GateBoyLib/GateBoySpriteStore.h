@@ -1,36 +1,13 @@
 #pragma once
-#include "GateBoyLib/Gates.h"
+#include "GateBoyLib/Regs.h"
 
 //-----------------------------------------------------------------------------
 // Tristate buses to move sprite index & line in/out of sprite store
 
 struct SpriteIBus {
-  void reset_to_poweron() {
-    BUS_SPR_I0.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_I1.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_I2.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_I3.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_I4.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_I5.state = BIT_OLD | BIT_PULLED | 1;
-  }
-
-  void reset_to_bootrom() {
-    BUS_SPR_I0.state = BIT_OLD | BIT_DRIVEN;
-    BUS_SPR_I1.state = BIT_OLD | BIT_DRIVEN;
-    BUS_SPR_I2.state = BIT_OLD | BIT_DRIVEN;
-    BUS_SPR_I3.state = BIT_OLD | BIT_DRIVEN;
-    BUS_SPR_I4.state = BIT_OLD | BIT_DRIVEN;
-    BUS_SPR_I5.state = BIT_OLD | BIT_DRIVEN;
-  }
-
-  void reset_to_cart() {
-    BUS_SPR_I0.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_SPR_I1.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_SPR_I2.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_I3.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_SPR_I4.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_I5.state = BIT_OLD | BIT_DRIVEN | 0;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_BUS_SPR_I0*/ Bus BUS_SPR_I0; // AxCxExGx
   /*_BUS_SPR_I1*/ Bus BUS_SPR_I1; // AxCxExGx
@@ -43,26 +20,9 @@ struct SpriteIBus {
 //-----------------------------------------------------------------------------
 
 struct SpriteLBus {
-  void reset_to_poweron() {
-    BUS_SPR_L0.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_L1.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_L2.state = BIT_OLD | BIT_PULLED | 1;
-    BUS_SPR_L3.state = BIT_OLD | BIT_PULLED | 1;
-  }
-
-  void reset_to_bootrom() {
-    BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 0;
-    BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_L2.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_L3.state = BIT_OLD | BIT_DRIVEN | 1;
-  }
-
-  void reset_to_cart() {
-    BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_L2.state = BIT_OLD | BIT_DRIVEN | 1;
-    BUS_SPR_L3.state = BIT_OLD | BIT_DRIVEN | 1;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_BUS_SPR_L0*/ Bus BUS_SPR_L0; // AxCxExGx
   /*_BUS_SPR_L1*/ Bus BUS_SPR_L1; // AxCxExGx
@@ -70,18 +30,12 @@ struct SpriteLBus {
   /*_BUS_SPR_L3*/ Bus BUS_SPR_L3; // AxCxExGx
 };
 
-//----------------------------------------
-// 10 match signals + 1 global match signal
+//-----------------------------------------------------------------------------
 
 struct SpriteMatchFlags {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p29.GUVA*/ Gate GUVA_SPRITE0_GETp;
   /*_p29.ENUT*/ Gate ENUT_SPRITE1_GETp;
@@ -95,15 +49,12 @@ struct SpriteMatchFlags {
   /*_p29.GUZE*/ Gate GUZE_SPRITE9_GETp;
 };
 
+//-----------------------------------------------------------------------------
+
 struct SpriteResetFlags {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p29.EBOJ*/ DFF17 EBOJ_STORE0_RSTp;   // AxCxExGx
   /*_p29.CEDY*/ DFF17 CEDY_STORE1_RSTp;   // AxCxExGx
@@ -117,15 +68,12 @@ struct SpriteResetFlags {
   /*_p29.FONO*/ DFF17 FONO_STORE9_RSTp;   // AxCxExGx
 };
 
+//-----------------------------------------------------------------------------
+
 struct SpriteStoreFlags {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p29.DYHU*/ Gate DYHU_STORE0_CLKn;
   /*_p29.BUCO*/ Gate BUCO_STORE1_CLKn;
@@ -147,14 +95,9 @@ struct SpriteStoreFlags {
 // STORE_X - During scan, xxxDxxxH. During line, AxCxExGx
 
 struct StoreI0 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.YGUS*/ DFF8n YGUS_STORE0_I0n;
   /*_p30.YSOK*/ DFF8n YSOK_STORE0_I1n;
@@ -165,14 +108,9 @@ struct StoreI0 {
 };
 
 struct StoreL0 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.GYHO*/ DFF8n GYHO_STORE0_L0n;
   /*_p30.CUFO*/ DFF8n CUFO_STORE0_L1n;
@@ -181,9 +119,9 @@ struct StoreL0 {
 };
 
 struct StoreX0 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*#p31.XEPE*/ DFF9 XEPE_STORE0_X0p;
   /*_p31.YLAH*/ DFF9 YLAH_STORE0_X1p;
@@ -196,14 +134,9 @@ struct StoreX0 {
 };
 
 struct StoreI1 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.CADU*/ DFF8n CADU_STORE1_I0n;
   /*_p30.CEBO*/ DFF8n CEBO_STORE1_I1n;
@@ -214,14 +147,9 @@ struct StoreI1 {
 };
 
 struct StoreL1 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.AMES*/ DFF8n AMES_STORE1_L0n;
   /*_p30.AROF*/ DFF8n AROF_STORE1_L1n;
@@ -230,9 +158,9 @@ struct StoreL1 {
 };
 
 struct StoreX1 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p31.DANY*/ DFF9 DANY_STORE1_X0p;
   /*_p31.DUKO*/ DFF9 DUKO_STORE1_X1p;
@@ -245,14 +173,9 @@ struct StoreX1 {
 };
 
 struct StoreI2 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.BUHE*/ DFF8n BUHE_STORE2_I0n;
   /*_p30.BYHU*/ DFF8n BYHU_STORE2_I1n;
@@ -263,14 +186,9 @@ struct StoreI2 {
 };
 
 struct StoreL2 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.YLOV*/ DFF8n YLOV_STORE2_L0n;
   /*_p30.XOSY*/ DFF8n XOSY_STORE2_L1n;
@@ -279,9 +197,9 @@ struct StoreL2 {
 };
 
 struct StoreX2 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p31.FOKA*/ DFF9 FOKA_STORE2_X0p;
   /*_p31.FYTY*/ DFF9 FYTY_STORE2_X1p;
@@ -294,14 +212,9 @@ struct StoreX2 {
 };
 
 struct StoreI3 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.DEVY*/ DFF8n DEVY_STORE3_I0n;
   /*_p30.DESE*/ DFF8n DESE_STORE3_I1n;
@@ -312,14 +225,9 @@ struct StoreI3 {
 };
 
 struct StoreL3 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.ZURO*/ DFF8n ZURO_STORE3_L0n;
   /*_p30.ZYLU*/ DFF8n ZYLU_STORE3_L1n;
@@ -328,9 +236,9 @@ struct StoreL3 {
 };
 
 struct StoreX3 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p31.XOLY*/ DFF9 XOLY_STORE3_X0p;
   /*_p31.XYBA*/ DFF9 XYBA_STORE3_X1p;
@@ -343,14 +251,9 @@ struct StoreX3 {
 };
 
 struct StoreI4 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.XAVE*/ DFF8n XAVE_STORE4_I0n;
   /*_p30.XEFE*/ DFF8n XEFE_STORE4_I1n;
@@ -361,14 +264,9 @@ struct StoreI4 {
 };
 
 struct StoreL4 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.CAPO*/ DFF8n CAPO_STORE4_L0n;
   /*_p30.CAJU*/ DFF8n CAJU_STORE4_L1n;
@@ -377,9 +275,9 @@ struct StoreL4 {
 };
 
 struct StoreX4 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p31.WEDU*/ DFF9 WEDU_STORE4_X0p;
   /*_p31.YGAJ*/ DFF9 YGAJ_STORE4_X1p;
@@ -392,14 +290,9 @@ struct StoreX4 {
 };
 
 struct StoreI5 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.EKOP*/ DFF8n EKOP_STORE5_I0n;
   /*_p30.ETYM*/ DFF8n ETYM_STORE5_I1n;
@@ -411,14 +304,9 @@ struct StoreI5 {
 
 
 struct StoreL5 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.ACEP*/ DFF8n ACEP_STORE5_L0n;
   /*_p30.ABEG*/ DFF8n ABEG_STORE5_L1n;
@@ -427,9 +315,9 @@ struct StoreL5 {
 };
 
 struct StoreX5 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p31.FUSA*/ DFF9 FUSA_STORE5_X0p;
   /*_p31.FAXA*/ DFF9 FAXA_STORE5_X1p;
@@ -442,14 +330,9 @@ struct StoreX5 {
 };
 
 struct StoreI6 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.GABO*/ DFF8n GABO_STORE6_I0n;
   /*_p30.GACY*/ DFF8n GACY_STORE6_I1n;
@@ -460,14 +343,9 @@ struct StoreI6 {
 };
 
 struct StoreL6 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.ZUMY*/ DFF8n ZUMY_STORE6_L0n;
   /*_p30.ZAFU*/ DFF8n ZAFU_STORE6_L1n;
@@ -476,9 +354,9 @@ struct StoreL6 {
 };
 
 struct StoreX6 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p31.YCOL*/ DFF9 YCOL_STORE6_X0p;
   /*_p31.YRAC*/ DFF9 YRAC_STORE6_X1p;
@@ -491,14 +369,9 @@ struct StoreX6 {
 };
 
 struct StoreI7 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.GULE*/ DFF8n GULE_STORE7_I0n;
   /*_p30.GYNO*/ DFF8n GYNO_STORE7_I1n;
@@ -509,14 +382,9 @@ struct StoreI7 {
 };
 
 struct StoreL7 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.XYNA*/ DFF8n XYNA_STORE7_L0n;
   /*_p30.YGUM*/ DFF8n YGUM_STORE7_L1n;
@@ -525,9 +393,9 @@ struct StoreL7 {
 };
 
 struct StoreX7 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p31.ERAZ*/ DFF9 ERAZ_STORE7_X0p;
   /*_p31.EPUM*/ DFF9 EPUM_STORE7_X1p;
@@ -540,14 +408,9 @@ struct StoreX7 {
 };
 
 struct StoreI8 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.AXUV*/ DFF8n AXUV_STORE8_I0n;
   /*_p30.BADA*/ DFF8n BADA_STORE8_I1n;
@@ -558,14 +421,9 @@ struct StoreI8 {
 };
 
 struct StoreL8 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.AZAP*/ DFF8n AZAP_STORE8_L0n;
   /*_p30.AFYX*/ DFF8n AFYX_STORE8_L1n;
@@ -574,9 +432,9 @@ struct StoreL8 {
 };
 
 struct StoreX8 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p31.EZUF*/ DFF9 EZUF_STORE8_X0p;
   /*_p31.ENAD*/ DFF9 ENAD_STORE8_X1p;
@@ -589,14 +447,9 @@ struct StoreX8 {
 };
 
 struct StoreI9 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.YBER*/ DFF8n YBER_STORE9_I0n;
   /*_p30.YZOR*/ DFF8n YZOR_STORE9_I1n;
@@ -607,14 +460,9 @@ struct StoreI9 {
 };
 
 struct StoreL9 {
-  void reset_to_poweron() {
-  }
-
-  void reset_to_bootrom() {
-  }
-
-  void reset_to_cart() {
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p30.CANA*/ DFF8n CANA_STORE9_L0n;
   /*_p30.FOFO*/ DFF8n FOFO_STORE9_L1n;
@@ -623,9 +471,9 @@ struct StoreL9 {
 };
 
 struct StoreX9 {
-  void reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-  void reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p31.XUVY*/ DFF9 XUVY_STORE9_X0p;
   /*_p31.XERE*/ DFF9 XERE_STORE9_X1p;

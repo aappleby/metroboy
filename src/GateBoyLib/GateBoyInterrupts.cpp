@@ -1,8 +1,8 @@
 #include "GateBoyLib/GateBoyInterrupts.h"
 
-#include "CoreLib/Constants.h"
-
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
+#include "GateBoyLib/Utils.h"
 
 //-----------------------------------------------------------------------------
 
@@ -155,3 +155,125 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*_BUS_CPU_D03p*/ gb_state.cpu_dbus.BUS_CPU_D03p.tri_bus(PADO_IF3_TO_CD3);
   /*_BUS_CPU_D04p*/ gb_state.cpu_dbus.BUS_CPU_D04p.tri_bus(PEGY_IF4_TO_CD4);
 }
+
+//-----------------------------------------------------------------------------
+
+void RegIF::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void RegIF::reset_to_bootrom() {
+  LOPE_FF0F_D0p.state = 0b00011000;
+  LALU_FF0F_D1p.state = 0b00011000;
+  NYBO_FF0F_D2p.state = 0b00011000;
+  UBUL_FF0F_D3p.state = 0b00011000;
+  ULAK_FF0F_D4p.state = 0b00011010;
+}
+
+void RegIF::reset_to_cart() {
+  LOPE_FF0F_D0p.state = 0b00011011;
+  LALU_FF0F_D1p.state = 0b00011000;
+  NYBO_FF0F_D2p.state = 0b00011000;
+  UBUL_FF0F_D3p.state = 0b00011000;
+  ULAK_FF0F_D4p.state = 0b00011000;
+}
+
+//-----------------------------------------------------------------------------
+// This is technically in the CPU, but we're going to implement it here for now.
+
+void RegIE::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void RegIE::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+}
+
+void RegIE::reset_to_cart() {
+  IE_D0.state = 0b00011010;
+  IE_D1.state = 0b00011010;
+  IE_D2.state = 0b00011010;
+  IE_D3.state = 0b00011010;
+  IE_D4.state = 0b00011010;
+}
+
+//-----------------------------------------------------------------------------
+
+void InterruptLatch::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void InterruptLatch::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void InterruptLatch::reset_to_cart() {
+  MATY_FF0F_L0p.state = 0b00011000;
+  MOPO_FF0F_L1p.state = 0b00011000;
+  PAVY_FF0F_L2p.state = 0b00011000;
+  NEJY_FF0F_L3p.state = 0b00011000;
+  NUTY_FF0F_L4p.state = 0b00011000;
+}
+
+//-----------------------------------------------------------------------------
+
+void CpuInt::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void CpuInt::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void CpuInt::reset_to_cart() {
+  SIG_CPU_INT_VBLANK.state = 0b00011001;
+  SIG_CPU_INT_STAT.state   = 0b00011000;
+  SIG_CPU_INT_TIMER.state  = 0b00011000;
+  SIG_CPU_INT_SERIAL.state = 0b00011000;
+  SIG_CPU_INT_JOYPAD.state = 0b00011000;
+}
+
+//-----------------------------------------------------------------------------
+
+void CpuAck::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void CpuAck::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void CpuAck::reset_to_cart() {
+  SIG_CPU_ACK_VBLANK.state = 0b00011000;
+  SIG_CPU_ACK_STAT.state   = 0b00011000;
+  SIG_CPU_ACK_TIMER.state  = 0b00011000;
+  SIG_CPU_ACK_SERIAL.state = 0b00011000;
+  SIG_CPU_ACK_JOYPAD.state = 0b00011000;
+}
+
+//-----------------------------------------------------------------------------
+
+void InterruptControl::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void InterruptControl::reset_to_bootrom() {
+  AWOB_WAKE_CPU.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  SIG_CPU_WAKE.state         = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  NYDU_TIMA7p_DELAY.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  MOBA_TIMER_OVERFLOWp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  RUPO_LYC_MATCHn.state      = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  ROPO_LY_MATCH_SYNCp.state  = BIT_OLD | BIT_DRIVEN;
+}
+
+void InterruptControl::reset_to_cart() {
+  AWOB_WAKE_CPU.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  SIG_CPU_WAKE.state         = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  NYDU_TIMA7p_DELAY.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  MOBA_TIMER_OVERFLOWp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  RUPO_LYC_MATCHn.state      = BIT_OLD | BIT_DRIVEN;
+  ROPO_LY_MATCH_SYNCp.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+}
+
+//-----------------------------------------------------------------------------
+

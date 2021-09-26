@@ -1,28 +1,12 @@
 #pragma once
-#include "GateBoyLib/Gates.h"
+#include "GateBoyLib/Regs.h"
 
 //-----------------------------------------------------------------------------
 
 struct RegIF {
-  void reset_to_poweron() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
-
-  void reset_to_bootrom() {
-    LOPE_FF0F_D0p.state = 0b00011000;
-    LALU_FF0F_D1p.state = 0b00011000;
-    NYBO_FF0F_D2p.state = 0b00011000;
-    UBUL_FF0F_D3p.state = 0b00011000;
-    ULAK_FF0F_D4p.state = 0b00011010;
-  }
-
-  void reset_to_cart() {
-    LOPE_FF0F_D0p.state = 0b00011011;
-    LALU_FF0F_D1p.state = 0b00011000;
-    NYBO_FF0F_D2p.state = 0b00011000;
-    UBUL_FF0F_D3p.state = 0b00011000;
-    ULAK_FF0F_D4p.state = 0b00011000;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p02.LOPE*/ DFF22 LOPE_FF0F_D0p;
   /*_p02.LALU*/ DFF22 LALU_FF0F_D1p;
@@ -31,23 +15,13 @@ struct RegIF {
   /*_p02.ULAK*/ DFF22 ULAK_FF0F_D4p;
 };
 
+//-----------------------------------------------------------------------------
 // This is technically in the CPU, but we're going to implement it here for now.
+
 struct RegIE {
-  void reset_to_poweron() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
-
-  void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
-  }
-
-  void reset_to_cart() {
-    IE_D0.state = 0b00011010;
-    IE_D1.state = 0b00011010;
-    IE_D2.state = 0b00011010;
-    IE_D3.state = 0b00011010;
-    IE_D4.state = 0b00011010;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   DFF IE_D0;
   DFF IE_D1;
@@ -56,22 +30,12 @@ struct RegIE {
   DFF IE_D4;
 };
 
+//-----------------------------------------------------------------------------
+
 struct InterruptLatch {
-  void reset_to_poweron() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
-
-  void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
-
-  void reset_to_cart() {
-    MATY_FF0F_L0p.state = 0b00011000;
-    MOPO_FF0F_L1p.state = 0b00011000;
-    PAVY_FF0F_L2p.state = 0b00011000;
-    NEJY_FF0F_L3p.state = 0b00011000;
-    NUTY_FF0F_L4p.state = 0b00011000;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_p02.MATY*/ TpLatch MATY_FF0F_L0p;
   /*_p02.MOPO*/ TpLatch MOPO_FF0F_L1p;
@@ -80,22 +44,12 @@ struct InterruptLatch {
   /*_p02.NUTY*/ TpLatch NUTY_FF0F_L4p;
 };
 
+//-----------------------------------------------------------------------------
+
 struct CpuInt {
-  void reset_to_poweron() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
-
-  void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
-
-  void reset_to_cart() {
-    SIG_CPU_INT_VBLANK.state = 0b00011001;
-    SIG_CPU_INT_STAT.state   = 0b00011000;
-    SIG_CPU_INT_TIMER.state  = 0b00011000;
-    SIG_CPU_INT_SERIAL.state = 0b00011000;
-    SIG_CPU_INT_JOYPAD.state = 0b00011000;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_SIG_CPU_INT_VBLANK*/ SigOut SIG_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
   /*_SIG_CPU_INT_STAT  */ SigOut SIG_CPU_INT_STAT  ;    // bottom right port PORTB_07: <- P02.LALU, stat int
@@ -104,22 +58,12 @@ struct CpuInt {
   /*_SIG_CPU_INT_JOYPAD*/ SigOut SIG_CPU_INT_JOYPAD;    // bottom right port PORTB_19: <- P02.ULAK, joy int
 };
 
+//-----------------------------------------------------------------------------
+
 struct CpuAck {
-  void reset_to_poweron() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
-
-  void reset_to_bootrom() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
-
-  void reset_to_cart() {
-    SIG_CPU_ACK_VBLANK.state = 0b00011000;
-    SIG_CPU_ACK_STAT.state   = 0b00011000;
-    SIG_CPU_ACK_TIMER.state  = 0b00011000;
-    SIG_CPU_ACK_SERIAL.state = 0b00011000;
-    SIG_CPU_ACK_JOYPAD.state = 0b00011000;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   /*_SIG_CPU_ACK_VBLANK*/ SigIn  SIG_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
   /*_SIG_CPU_ACK_STAT  */ SigIn  SIG_CPU_ACK_STAT  ;    // bottom right port PORTB_05: -> P02.LEJA, stat int ack
@@ -128,28 +72,12 @@ struct CpuAck {
   /*_SIG_CPU_ACK_JOYPAD*/ SigIn  SIG_CPU_ACK_JOYPAD;    // bottom right port PORTB_17: -> P02.LAMO, joy int ack
 };
 
+//-----------------------------------------------------------------------------
+
 struct InterruptControl {
-  void reset_to_poweron() {
-    memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  }
-
-  void reset_to_bootrom() {
-    AWOB_WAKE_CPU.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-    SIG_CPU_WAKE.state         = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-    NYDU_TIMA7p_DELAY.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    MOBA_TIMER_OVERFLOWp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    RUPO_LYC_MATCHn.state      = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-    ROPO_LY_MATCH_SYNCp.state  = BIT_OLD | BIT_DRIVEN;
-  }
-
-  void reset_to_cart() {
-    AWOB_WAKE_CPU.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-    SIG_CPU_WAKE.state         = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-    NYDU_TIMA7p_DELAY.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    MOBA_TIMER_OVERFLOWp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-    RUPO_LYC_MATCHn.state      = BIT_OLD | BIT_DRIVEN;
-    ROPO_LY_MATCH_SYNCp.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  }
+  void reset_to_poweron();
+  void reset_to_bootrom();
+  void reset_to_cart();
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*_p02.AWOB*/ TpLatch AWOB_WAKE_CPU;

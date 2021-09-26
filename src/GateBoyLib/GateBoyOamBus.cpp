@@ -1,6 +1,7 @@
 #include "GateBoyLib/GateBoyOamBus.h"
 
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -426,6 +427,81 @@ void GateBoy::tock_oam_bus_gates()
   /*_BUS_CPU_D05p*/ gb_state.cpu_dbus.BUS_CPU_D05p.tri_bus(DEVE_OLB_TO_CBD5);
   /*_BUS_CPU_D06p*/ gb_state.cpu_dbus.BUS_CPU_D06p.tri_bus(ZEHA_OLB_TO_CBD6);
   /*_BUS_CPU_D07p*/ gb_state.cpu_dbus.BUS_CPU_D07p.tri_bus(FYRA_OLB_TO_CBD7);
+}
+
+//-----------------------------------------------------------------------------
+
+void OamControl::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamControl::reset_to_bootrom() {
+  MAKA_LATCH_EXTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0;
+  WUJE_CPU_OAM_WRn.state = BIT_OLD | BIT_DRIVEN | 1;
+  SIG_OAM_CLKn.state     = BIT_OLD | BIT_DRIVEN | 1;
+  SIG_OAM_WRn_A.state    = BIT_OLD | BIT_DRIVEN | 1;
+  SIG_OAM_WRn_B.state    = BIT_OLD | BIT_DRIVEN | 1;
+  SIG_OAM_OEn.state      = BIT_OLD | BIT_DRIVEN | 1;
+  old_oam_clk.state      = BIT_OLD | BIT_DRIVEN | 0;
+}
+
+void OamControl::reset_to_cart() {
+  MAKA_LATCH_EXTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0;
+  WUJE_CPU_OAM_WRn.state = BIT_OLD | BIT_DRIVEN | 1;
+  SIG_OAM_CLKn.state     = BIT_OLD | BIT_DRIVEN | 1;
+  SIG_OAM_WRn_A.state    = BIT_OLD | BIT_DRIVEN | 1;
+  SIG_OAM_WRn_B.state    = BIT_OLD | BIT_DRIVEN | 1;
+  SIG_OAM_OEn.state      = BIT_OLD | BIT_DRIVEN | 1;
+  old_oam_clk.state      = BIT_OLD | BIT_DRIVEN | 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void OamABus::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
+}
+
+void OamABus::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
+}
+
+void OamABus::reset_to_cart() {
+  BUS_OAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_OAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_OAM_A02n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_OAM_A03n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_OAM_A04n.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_OAM_A05n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_OAM_A06n.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_OAM_A07n.state = BIT_OLD | BIT_DRIVEN | 1;
+}
+
+//-----------------------------------------------------------------------------
+
+void OamDBusA::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamDBusA::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamDBusA::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+//-----------------------------------------------------------------------------
+
+void OamDBusB::reset_to_poweron() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamDBusB::reset_to_bootrom() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+}
+
+void OamDBusB::reset_to_cart() {
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------

@@ -1,6 +1,9 @@
 #include "GateBoyLib/LogicBoyState.h"
 #include "GateBoyLib/GateBoyState.h"
 
+#include "GateBoyLib/Utils.h"
+#include "CoreLib/Constants.h"
+
 #pragma warning(disable:4244) // conversion from uint32_t to uint8_t
 
 //static_assert(sizeof(GateBoyReset) == sizeof(LogicBoyReset));

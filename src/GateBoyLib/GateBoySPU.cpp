@@ -2,8 +2,7 @@
 
 #include "GateBoyLib/GateBoySPU.h"
 #include "GateBoyLib/GateBoy.h"
-
-#pragma warning(disable : 4189)
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -273,5 +272,35 @@ void GateBoy::tock_spu_logic() {
   }
 }
 #endif
+
+//-----------------------------------------------------------------------------
+
+void NR50::reset_to_cart() {
+  APEG_VOL_L0.state   = 0b00011010;
+  BYGA_VOL_L1.state   = 0b00011010;
+  AGER_VOL_L2.state   = 0b00011010;
+  APOS_VIN_TO_L.state = 0b00011011;
+  BYRE_VOL_R0.state   = 0b00011010;
+  BUMO_VOL_R1.state   = 0b00011010;
+  COZU_VOL_R2.state   = 0b00011010;
+  BEDU_VIN_TO_R.state = 0b00011011;
+}
+
+void NR51::reset_to_cart() {
+  ANEV_NR51_0.state = 0b00011010;
+  BOGU_NR51_1.state = 0b00011010;
+  BAFO_NR51_2.state = 0b00011011;
+  ATUF_NR51_3.state = 0b00011011;
+  BUME_NR51_4.state = 0b00011010;
+  BOFA_NR51_5.state = 0b00011010;
+  BEFO_NR51_6.state = 0b00011010;
+  BEPU_NR51_7.state = 0b00011010;
+}
+
+void NR52::reset_to_cart() {
+  FERO_DBG_APUp      .state = 0b00011011;
+  BOWY_DBG_SWEEPp    .state = 0b00011010;
+  HADA_ALL_SOUND_ONp .state = 0b00011011;
+}
 
 //-----------------------------------------------------------------------------

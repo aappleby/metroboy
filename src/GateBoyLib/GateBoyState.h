@@ -20,6 +20,7 @@
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
 #include "GateBoyLib/GateBoyPins.h"
+#include "GateBoyLib/GateBoyRegisters.h"
 
 //-----------------------------------------------------------------------------
 // All the SOC registers, pins, buses. Everything in GateBoyState _must_

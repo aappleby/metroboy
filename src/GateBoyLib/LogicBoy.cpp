@@ -616,12 +616,18 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  {
+  if (vid_rst_new) {
+    state_new.VOGA_HBLANKp = 0;
+    state_new.XYMU_RENDERINGn = 1;
+  }
+  else if (line_rst_new) {
+    state_new.VOGA_HBLANKp = 0;
+  }
+  else {
     if (DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new) state_new.VOGA_HBLANKp = (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167));
-    if (vid_rst_new || line_rst_new) state_new.VOGA_HBLANKp = 0;
 
-    if (vid_rst_new || state_new.VOGA_HBLANKp)      state_new.XYMU_RENDERINGn = 1;
-    if ((!line_rst_new && !vid_rst_new && scan_done_trig_new)) state_new.XYMU_RENDERINGn = 0;
+    if (state_new.VOGA_HBLANKp) state_new.XYMU_RENDERINGn = 1;
+    if (scan_done_trig_new)     state_new.XYMU_RENDERINGn = 0;
   }
 
   wire XYMU_RENDERINGn_new = state_new.XYMU_RENDERINGn;

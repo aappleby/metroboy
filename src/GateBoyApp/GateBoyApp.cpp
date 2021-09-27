@@ -75,7 +75,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->reset_to_bootrom();
 
 #if 1
-  //  test_fuzz_reg failed at 0004:0188 - write 0xc0 to 0xff40
+  // test_fuzz_reg failed at 1871:0268 - write 0xe5 to 0xff40
   {
     gb_thread->gb->set_cpu_en(false);
 
@@ -84,11 +84,12 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
     auto& dummy_cart = gb_thread->get_cart();
 
 
-    uint32_t r = xorshift32(4);
+    uint32_t r = xorshift32(1);
 
-    for (int i = 0; i < 188; i++) {
+    for (int i = 0; i < 203; i++) {
       r = xorshift32(r);
-      if (r & 1) {
+      //if (r & 1) {
+      if ((r % 100) >= 90) {
         r = xorshift32(r);
         auto res = gb->dbg_write(dummy_cart, addr, uint8_t(r));
         if (res.is_err()) printf("%d\n", i);
@@ -109,16 +110,19 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
     }
   }
 
-  //gb_thread->run_to(1586 - 1);
-  gb_thread->run_to(1598 - 1);
+  gb_thread->run_to(1707 - 2);
 
 #endif
 
 #if 0
   blob cart;
-  load_blob("tests/microtests/DMG/poweron_stat_000.gb", cart);
+  //load_blob("tests/microtests/DMG/poweron_stat_000.gb", cart);
+  load_blob("LinksAwakening.gb", cart);
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
+
+  gb_thread->run_to(46880840 - 1);
+
 #endif
 
   //BlobStream bs;

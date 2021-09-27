@@ -81,7 +81,7 @@ void print_field_at(int offset, const FieldInfo* fields) {
   }
 
   if (field != nullptr) {
-    LOG_R("%12.12s + %d", field->name, min_delta);
+    LOG_R("%40s + %d", field->name, min_delta);
   }
   else {
     LOG_R("<could not find field at offset %d>", offset);

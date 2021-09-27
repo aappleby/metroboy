@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
   TestResults results;
   GateBoyTests t;
 
-  //const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
+  const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
 
   //results += t.test_fuzz_reg(proto.get(), ADDR_P1  );
   //results += t.test_fuzz_reg(proto.get(), ADDR_SB  );
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
   //results += t.test_fuzz_reg(proto.get(), ADDR_TMA );
   //results += t.test_fuzz_reg(proto.get(), ADDR_TAC );
   //results += t.test_fuzz_reg(proto.get(), ADDR_IF  );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_LCDC); // hey this actually found some mismatches
+  results += t.test_fuzz_reg(proto.get(), ADDR_LCDC); // hey this actually found some mismatches
   //results += t.test_fuzz_reg(proto.get(), ADDR_STAT);
   //results += t.test_fuzz_reg(proto.get(), ADDR_SCY );
   //results += t.test_fuzz_reg(proto.get(), ADDR_SCX );
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
   //results += t.test_fuzz_reg(proto.get(), ADDR_WX  );
   //results += t.test_fuzz_reg(proto.get(), ADDR_IE  );
 
-#if 1
+#if 0
   {
     LOG_B("========== GateBoy tests ==========\n");
     const auto proto = make_unique<GateBoy>();
@@ -259,14 +259,14 @@ TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
 TestResults GateBoyTests::test_fuzz_reg(const IGateBoy* proto, uint16_t addr) {
   TEST_INIT("test_fuzz_reg 0x%04x", addr);
 
-  for (int j = 0; j < 1000; j++) {
+  for (int j = 0; j < 10000; j++) {
     uint32_t r = xorshift32(j);
     LOG_B(".");
     unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
     for (int i = 0; i < 1000; i++) {
       r = xorshift32(r);
-      if (r & 1) {
+      if ((r % 100) >= 90) {
         r = xorshift32(r);
         auto res = gb->dbg_write(dummy_cart, addr, uint8_t(r));
         if (res.is_err()) {

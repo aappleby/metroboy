@@ -276,19 +276,51 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   auto& cpu_dbus_new = state_new.cpu_dbus;
 
   //----------------------------------------
-  // DIV
+  // Timer & DIV
 
-  const uint16_t div_old = state_old.reg_div;
+  {
+    if (DELTA_HA_new) {
+      state_new.reg_div = state_new.reg_div + 1;
+    }
 
-  if (DELTA_HA_new) {
-    state_new.reg_div = state_new.reg_div + 1;
+    if (cpu_wr && (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new)) {
+      if (cpu_addr_new == 0xFF04) state_new.reg_div = 0;
+    }
+
+    if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF06) state_new.reg_tma  =  state_old.cpu_dbus;
+    if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF07) state_new.reg_tac  =  state_old.cpu_dbus & 0b111;
+
+    bool SOGU_TIMA_CLKn_old = 0;
+    bool SOGU_TIMA_CLKn_new = 0;
+
+    if ((state_old.reg_tac & 0b111) == 4) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 7) & 1;
+    if ((state_old.reg_tac & 0b111) == 5) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 1) & 1;
+    if ((state_old.reg_tac & 0b111) == 6) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 3) & 1;
+    if ((state_old.reg_tac & 0b111) == 7) SOGU_TIMA_CLKn_old = (state_old.reg_div >> 5) & 1;
+
+    if ((state_new.reg_tac & 0b111) == 4) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 7) & 1;
+    if ((state_new.reg_tac & 0b111) == 5) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 1) & 1;
+    if ((state_new.reg_tac & 0b111) == 6) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 3) & 1;
+    if ((state_new.reg_tac & 0b111) == 7) SOGU_TIMA_CLKn_new = (state_new.reg_div >> 5) & 1;
+
+    if (SOGU_TIMA_CLKn_old && !SOGU_TIMA_CLKn_new) {
+      state_new.reg_tima++;
+    }
+
+    if (DELTA_HA_new) {
+      state_new.int_ctrl.MOBA_TIMER_OVERFLOWp.state = !get_bit(state_old.reg_tima, 7) && state_old.int_ctrl.NYDU_TIMA7p_DELAY.state;
+      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = get_bit(state_old.reg_tima, 7);
+    }
+
+    if ((DELTA_DE_new || DELTA_EF_new || DELTA_FG_new) && cpu_wr && !cpu_rd && cpu_addr_new == 0xFF05) {
+      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
+      state_new.reg_tima = cpu_dbus_new; // must be new
+    }
+    else if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp.state) {
+      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
+      state_new.reg_tima = state_new.reg_tma;
+    }
   }
-
-  if (cpu_wr && (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new)) {
-    if (cpu_addr_new == 0xFF04) state_new.reg_div = 0;
-  }
-
-  const uint16_t div_new = state_new.reg_div;
 
   //----------------------------------------
 
@@ -299,8 +331,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // LCDC write has to be near the top as it controls the video reset signal
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF40) state_new.reg_lcdc = ~state_old.cpu_dbus;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF45) state_new.reg_lyc  = ~state_old.cpu_dbus;
-  if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF06) state_new.reg_tma  =  state_old.cpu_dbus;
-  if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF07) state_new.reg_tac  =  state_old.cpu_dbus & 0b111;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF42) state_new.reg_scy  = ~state_old.cpu_dbus;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF43) state_new.reg_scx  = ~state_old.cpu_dbus;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF47) state_new.reg_bgp  = ~state_old.cpu_dbus;
@@ -332,7 +362,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire win_en_new   = !get_bit(state_new.reg_lcdc, 5);
   wire win_map_new  =  get_bit(state_new.reg_lcdc, 6);
   wire vid_rst_new  =  get_bit(state_new.reg_lcdc, 7);
-
 
   //----------------------------------------
   // LX, LY, lcd flags
@@ -420,44 +449,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   //tock_serial_logic();
   //tock_timer_logic();
-
-  //----------------------------------------
-  // Timer
-
-  {
-    const auto& reg_tima_old = state_old.reg_tima;
-
-    bool SOGU_TIMA_CLKn_old = 0;
-    bool SOGU_TIMA_CLKn_new = 0;
-
-    if ((state_old.reg_tac & 0b111) == 4) SOGU_TIMA_CLKn_old = (div_old >> 7) & 1;
-    if ((state_old.reg_tac & 0b111) == 5) SOGU_TIMA_CLKn_old = (div_old >> 1) & 1;
-    if ((state_old.reg_tac & 0b111) == 6) SOGU_TIMA_CLKn_old = (div_old >> 3) & 1;
-    if ((state_old.reg_tac & 0b111) == 7) SOGU_TIMA_CLKn_old = (div_old >> 5) & 1;
-
-    if ((state_new.reg_tac & 0b111) == 4) SOGU_TIMA_CLKn_new = (div_new >> 7) & 1;
-    if ((state_new.reg_tac & 0b111) == 5) SOGU_TIMA_CLKn_new = (div_new >> 1) & 1;
-    if ((state_new.reg_tac & 0b111) == 6) SOGU_TIMA_CLKn_new = (div_new >> 3) & 1;
-    if ((state_new.reg_tac & 0b111) == 7) SOGU_TIMA_CLKn_new = (div_new >> 5) & 1;
-
-    if (SOGU_TIMA_CLKn_old && !SOGU_TIMA_CLKn_new) {
-      state_new.reg_tima++;
-    }
-
-    if (DELTA_HA_new) {
-      state_new.int_ctrl.MOBA_TIMER_OVERFLOWp.state = !get_bit(reg_tima_old, 7) && state_old.int_ctrl.NYDU_TIMA7p_DELAY.state;
-      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = get_bit(reg_tima_old, 7);
-    }
-
-    if ((DELTA_DE_new || DELTA_EF_new || DELTA_FG_new) && cpu_wr && !cpu_rd && cpu_addr_new == 0xFF05) {
-      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
-      state_new.reg_tima = cpu_dbus_new; // must be new
-    }
-    else if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp.state) {
-      state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
-      state_new.reg_tima = state_new.reg_tma;
-    }
-  }
 
   //----------------------------------------
   // bootrom read

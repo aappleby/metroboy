@@ -39,30 +39,6 @@ int main(int argc, char** argv) {
   }
 
 
-  //const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
-
-  //results += t.test_fuzz_reg(proto.get(), ADDR_P1  );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_SB  );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_SC  );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_DIV );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_TIMA);
-  //results += t.test_fuzz_reg(proto.get(), ADDR_TMA );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_TAC );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_IF  );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_LCDC); // hey this actually found some mismatches
-  //results += t.test_fuzz_reg(proto.get(), ADDR_STAT);
-  //results += t.test_fuzz_reg(proto.get(), ADDR_SCY );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_SCX );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_LY  );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_LYC );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_DMA );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_BGP );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_OBP0);
-  //results += t.test_fuzz_reg(proto.get(), ADDR_OBP1);
-  //results += t.test_fuzz_reg(proto.get(), ADDR_WY  );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_WX  );
-  //results += t.test_fuzz_reg(proto.get(), ADDR_IE  );
-
 #if 0
   {
     TestResults results;
@@ -118,6 +94,52 @@ int main(int argc, char** argv) {
     }
   }
 #endif
+
+  {
+    TestResults results;
+    GateBoyTests t;
+    const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
+
+    LOG_B("========== Register fuzz tests ==========\n");
+
+    const int reps = 100;
+
+    results += t.test_fuzz_reg(proto.get(), ADDR_P1  , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_SB  , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_SC  , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_DIV , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_TIMA, reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_TMA , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_TAC , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_IF  , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_LCDC, reps); // hey this actually found some mismatches
+    results += t.test_fuzz_reg(proto.get(), ADDR_STAT, reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_SCY , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_SCX , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_LY  , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_LYC , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_DMA , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_BGP , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_OBP0, reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_OBP1, reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_WY  , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_WX  , reps);
+    results += t.test_fuzz_reg(proto.get(), ADDR_IE  , reps);
+
+    LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
+    LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
+    LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
+    LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+
+    if (results.test_fail) {
+      LOG_R("\n");
+      LOG_R("########################################\n");
+      LOG_R("##               FAIL                 ##\n");
+      LOG_R("########################################\n");
+      LOG_R("\n");
+      return -1;
+    }
+  }
 
   return 0;
 }
@@ -260,10 +282,10 @@ TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_fuzz_reg(const IGateBoy* proto, uint16_t addr) {
+TestResults GateBoyTests::test_fuzz_reg(const IGateBoy* proto, uint16_t addr, int reps) {
   TEST_INIT("test_fuzz_reg 0x%04x", addr);
 
-  for (int j = 0; j < 10000; j++) {
+  for (int j = 0; j < reps; j++) {
     uint32_t r = xorshift32(j);
     LOG_B(".");
     unique_ptr<IGateBoy> gb(proto->clone());

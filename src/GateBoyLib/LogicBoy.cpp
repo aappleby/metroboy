@@ -799,8 +799,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // OAM latch from last cycle gets moved into temp registers.
 
   {
-    wire XYSO_xBCDxFGH_old = (!vid_rst_old && gen_clk(phase_old, 0b01110111));
-    wire XYSO_xBCDxFGH_new = (!vid_rst_new && gen_clk(phase_new, 0b01110111));
     
     bool BYCU_OAM_CLKp_old = false;
 
@@ -809,22 +807,26 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     auto b2 = get_bit(state_old.sfetch_counter_evn, 2);
     auto b1d = state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state;
 
-    auto clk = (state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_old && XYSO_xBCDxFGH_old);
+    auto clk = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_old && gen_clk(phase_old, 0b01110111);
     auto bphase = b1 || b2 || (b1d && !b0);
     auto delta = DELTA_DE_old || DELTA_EF_old || DELTA_FG_old || DELTA_GH_old;
 
-    if ( delta &&  MATU_DMA_RUNNINGp_old &&  state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = state_old.XYMU_RENDERINGn;
-    if ( delta &&  MATU_DMA_RUNNINGp_old && !state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = state_old.XYMU_RENDERINGn;
-    if (!delta &&  MATU_DMA_RUNNINGp_old &&  state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = 0;
-    if (!delta &&  MATU_DMA_RUNNINGp_old && !state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = bphase;
+    if (MATU_DMA_RUNNINGp_old) {
+      if (state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = delta;
+      else BYCU_OAM_CLKp_old = bphase && !delta;
 
-    if ( delta && !MATU_DMA_RUNNINGp_old &&  state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = clk || cpu_addr_oam_old;
-    if (!delta && !MATU_DMA_RUNNINGp_old &&  state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = clk;
-    if ( delta && !MATU_DMA_RUNNINGp_old && !state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = clk || !bphase || cpu_addr_oam_old;
-    if (!delta && !MATU_DMA_RUNNINGp_old && !state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = clk || !bphase || cpu_addr_oam_old;
-    
+    }
+    else if (!state_old.XYMU_RENDERINGn) {
+      BYCU_OAM_CLKp_old = clk || !bphase || cpu_addr_oam_old;   // this "cpu_addr_oam_old" seems like a bug
+    }
+    else {
+      BYCU_OAM_CLKp_old = clk || cpu_addr_oam_old && delta;
+    }
+
+  
 
 
+    wire XYSO_xBCDxFGH_new = (!vid_rst_new && gen_clk(phase_new, 0b01110111));
     wire CUFE_OAM_CLKp_new       = !((cpu_addr_oam_new || MATU_DMA_RUNNINGp_new) && (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new));
     wire acyl_new                = (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new);
     wire AVER_AxxxExxx_new       = !(acyl_new && XYSO_xBCDxFGH_new);

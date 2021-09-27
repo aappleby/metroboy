@@ -337,6 +337,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // LX, LY, lcd flags
 
+  wire ATEJ_LINE_RSTp_odd_old = !((state_old.lcd.ANEL_x113p_odd.state || !state_old.lcd.CATU_x113p_odd.state) && vid_rst_old);
+
   if (vid_rst_new) {
     state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
     state_new.lcd.NYPE_LINE_ENDp_odd.state = 0;
@@ -344,52 +346,53 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
     state_new.reg_ly = 0;
     state_new.reg_lx = 0;
+    state_new.lcd.CATU_x113p_odd.state = 0;
+    state_new.lcd.ANEL_x113p_odd.state = 0;
   }
-  else {
-    if (DELTA_ODD_new) {
-      if (DELTA_FG_new) {
-        state_new.lcd.RUTU_LINE_ENDp_odd.state = state_old.reg_lx >= 113;
-        if (!state_old.lcd.RUTU_LINE_ENDp_odd.state && state_new.lcd.RUTU_LINE_ENDp_odd.state) {
-          state_new.reg_ly++;
-        }
-      }
-
-      if (DELTA_BC_new) {
-        state_new.reg_lx++;
-        state_new.lcd.NYPE_LINE_ENDp_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state;
-        if (!state_old.lcd.NYPE_LINE_ENDp_odd.state && state_new.lcd.NYPE_LINE_ENDp_odd.state) {
-          state_new.lcd.POPU_VBLANKp_odd.state = state_old.reg_ly >= 144;
-          state_new.lcd.MYTA_FRAME_ENDp_odd.state = state_old.reg_ly >= 153;
-        }
-      }
-      if (state_new.lcd.MYTA_FRAME_ENDp_odd.state) state_new.reg_ly = 0;
-      if (state_new.lcd.RUTU_LINE_ENDp_odd.state) state_new.reg_lx = 0;
+  else if (DELTA_ODD_new) {
+    if (DELTA_HA_new) {
+      state_new.lcd.CATU_x113p_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state && (state_old.reg_ly < 144);
     }
+
+    if (DELTA_BC_new) {
+      if (!state_old.lcd.RUTU_LINE_ENDp_odd.state) state_new.reg_lx++;
+
+
+      if (!state_old.lcd.NYPE_LINE_ENDp_odd.state && state_old.lcd.RUTU_LINE_ENDp_odd.state) {
+        state_new.lcd.POPU_VBLANKp_odd.state = state_old.reg_ly >= 144;
+        state_new.lcd.MYTA_FRAME_ENDp_odd.state = state_old.reg_ly >= 153;
+        if (state_new.lcd.MYTA_FRAME_ENDp_odd.state) state_new.reg_ly = 0;
+      }
+
+      state_new.lcd.NYPE_LINE_ENDp_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state;
+      state_new.lcd.ANEL_x113p_odd.state = state_old.lcd.CATU_x113p_odd.state;
+    }
+
+    if (DELTA_DE_new) {
+      state_new.lcd.CATU_x113p_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state && (state_old.reg_ly < 144);
+    }
+
+    if (DELTA_FG_new) {
+      if (state_old.reg_lx == 113) {
+        state_new.reg_lx = 0;
+        state_new.reg_ly++;
+        state_new.lcd.RUTU_LINE_ENDp_odd.state = 1;
+      }
+      else {
+        state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
+      }
+
+      state_new.lcd.ANEL_x113p_odd.state = state_old.lcd.CATU_x113p_odd.state;
+      if (state_new.lcd.MYTA_FRAME_ENDp_odd.state) state_new.reg_ly = 0;
+    }
+
   }
 
-  //----------
 
   auto& reg_ly_new = state_new.reg_ly;
 
   wire RUTU_LINE_ENDp_odd_new = state_new.lcd.RUTU_LINE_ENDp_odd.state;
   wire POPU_VBLANKp_odd_new = state_new.lcd.POPU_VBLANKp_odd.state;
-
-  //----------------------------------------
-  // Line reset trigger
-
-  wire ATEJ_LINE_RSTp_odd_old = !((state_old.lcd.ANEL_x113p_odd.state || !state_old.lcd.CATU_x113p_odd.state) && vid_rst_old);
-
-  if (DELTA_HA_new || DELTA_DE_new) {
-    state_new.lcd.CATU_x113p_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state && (state_old.reg_ly & 144) != 144;
-  }
-  if (DELTA_BC_new || DELTA_FG_new) {
-    state_new.lcd.ANEL_x113p_odd.state = state_old.lcd.CATU_x113p_odd.state;
-  }
-
-  if (vid_rst_new) {
-    state_new.lcd.CATU_x113p_odd.state = 0;
-    state_new.lcd.ANEL_x113p_odd.state = 0;
-  }
 
   wire line_rst_new = state_new.lcd.CATU_x113p_odd.state && !state_new.lcd.ANEL_x113p_odd.state;
   wire ATEJ_LINE_RSTp_odd_new = line_rst_new || vid_rst_new;

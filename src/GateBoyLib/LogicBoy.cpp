@@ -624,58 +624,42 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.VOGA_HBLANKp = 0;
   }
   else {
-    if (DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new) state_new.VOGA_HBLANKp = (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167));
+    if (DELTA_EVEN_new) state_new.VOGA_HBLANKp = (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167));
 
     if (state_new.VOGA_HBLANKp) state_new.XYMU_RENDERINGn = 1;
     if (scan_done_trig_new)     state_new.XYMU_RENDERINGn = 0;
   }
 
-  wire XYMU_RENDERINGn_new = state_new.XYMU_RENDERINGn;
-
   //----------------------------------------
   // Sprite fetch state counter
 
-  auto& sfetch_counter_evn_old = state_old.sfetch_counter_evn;
-  auto& TAKA_SFETCH_RUNNINGp_evn_old = state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
-  auto& LYRY_BFETCH_DONEp_odd_old = state_old.tfetch_control.LYRY_BFETCH_DONEp_odd.state;
-
   // TYFO
-  auto& TYFO_SFETCH_S0p_D1_odd_old = state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state;
-  auto& TYFO_SFETCH_S0p_D1_odd_new = state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state;
-  if (DELTA_ODD_new) TYFO_SFETCH_S0p_D1_odd_new = get_bit(sfetch_counter_evn_old, 0);
+  if (DELTA_ODD_new) state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = get_bit(state_old.sfetch_counter_evn, 0);
 
   // TOBU
-  auto& TOBU_SFETCH_S1p_D2_evn_old = state_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state;
-  auto& TOBU_SFETCH_S1p_D2_evn_new = state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state;
-  if (DELTA_EVEN_new) TOBU_SFETCH_S1p_D2_evn_new = get_bit(sfetch_counter_evn_old, 1);
-  if (XYMU_RENDERINGn_new) TOBU_SFETCH_S1p_D2_evn_new = 0;
+  if (DELTA_EVEN_new) state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = get_bit(state_old.sfetch_counter_evn, 1);
+  if (state_new.XYMU_RENDERINGn) state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = 0;
 
   // VONU
-  auto& VONU_SFETCH_S1p_D4_evn_old = state_old.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
-  auto& VONU_SFETCH_S1p_D4_evn_new = state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
-  if (DELTA_EVEN_new) VONU_SFETCH_S1p_D4_evn_new = TOBU_SFETCH_S1p_D2_evn_old;
-  if (XYMU_RENDERINGn_new) VONU_SFETCH_S1p_D4_evn_new = 0;
+  if (DELTA_EVEN_new) state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = state_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state;
+  if (state_new.XYMU_RENDERINGn) state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = 0;
 
   // SOBU
-  auto& SOBU_SFETCH_REQp_evn_old = state_old.sfetch_control.SOBU_SFETCH_REQp_evn.state;
-  auto& SOBU_SFETCH_REQp_evn_new = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state;
-  wire TOMU_WIN_HITp_odd_old = !!state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
-  wire TUKU_WIN_HITn_odd_old = !TOMU_WIN_HITp_odd_old;
-  wire SOWO_SFETCH_RUNNINGn_evn_old = !TAKA_SFETCH_RUNNINGp_evn_old;
-  wire TEKY_SFETCH_REQp_odd_old = state_old.FEPO_STORE_MATCHp_odd && TUKU_WIN_HITn_odd_old && LYRY_BFETCH_DONEp_odd_old && SOWO_SFETCH_RUNNINGn_evn_old;
-  if (DELTA_EVEN_new) SOBU_SFETCH_REQp_evn_new = TEKY_SFETCH_REQp_odd_old;
+  wire SOWO_SFETCH_RUNNINGn_evn_old = !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
+  wire TEKY_SFETCH_REQp_odd_old = state_old.FEPO_STORE_MATCHp_odd && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_control.LYRY_BFETCH_DONEp_odd.state && SOWO_SFETCH_RUNNINGn_evn_old;
+  if (DELTA_EVEN_new) state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state = TEKY_SFETCH_REQp_odd_old;
 
   // SUDA
   auto& SUDA_SFETCH_REQp_odd_old = state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state;
   auto& SUDA_SFETCH_REQp_odd_new = state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state;
-  if (DELTA_ODD_new) SUDA_SFETCH_REQp_odd_new = SOBU_SFETCH_REQp_evn_old;
+  if (DELTA_ODD_new) SUDA_SFETCH_REQp_odd_new = state_old.sfetch_control.SOBU_SFETCH_REQp_evn.state;
 
-  wire RYCE_SFETCH_TRIGp_new = SOBU_SFETCH_REQp_evn_new && !SUDA_SFETCH_REQp_odd_new;
+  wire RYCE_SFETCH_TRIGp_new = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !SUDA_SFETCH_REQp_odd_new;
   wire SECA_SFETCH_STARTn_evn_new = !(RYCE_SFETCH_TRIGp_new || vid_rst_new || (line_rst_new || vid_rst_new));
 
   // sfetch_counter_evn
   auto& sfetch_counter_evn_new = state_new.sfetch_counter_evn;
-  wire TAME_SFETCH_CLK_GATE_old = !(get_bit(sfetch_counter_evn_old, 2) && get_bit(sfetch_counter_evn_old, 0));
+  wire TAME_SFETCH_CLK_GATE_old = !(get_bit(state_old.sfetch_counter_evn, 2) && get_bit(state_old.sfetch_counter_evn, 0));
   wire TOMA_SFETCH_evn_old = !DELTA_ODD_old || !TAME_SFETCH_CLK_GATE_old;
   wire TAME_SFETCH_CLK_GATE_new = !(get_bit(sfetch_counter_evn_new, 2) && get_bit(sfetch_counter_evn_new, 0));
   wire TOMA_SFETCH_evn_new = !DELTA_ODD_new || !TAME_SFETCH_CLK_GATE_new;
@@ -685,25 +669,25 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // SEBA
   auto& SEBA_SFETCH_S1p_D5_odd_old = state_old.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state;
   auto& SEBA_SFETCH_S1p_D5_odd_new = state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state;
-  if (DELTA_ODD_new)      SEBA_SFETCH_S1p_D5_odd_new = VONU_SFETCH_S1p_D4_evn_old;
-  if (XYMU_RENDERINGn_new) SEBA_SFETCH_S1p_D5_odd_new = 0;
+  if (DELTA_ODD_new)      SEBA_SFETCH_S1p_D5_odd_new = state_old.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
+  if (state_new.XYMU_RENDERINGn) SEBA_SFETCH_S1p_D5_odd_new = 0;
 
   // WUTY
   auto& WUTY_SFETCH_DONE_TRIGp_old = state_old.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state;
   auto& WUTY_SFETCH_DONE_TRIGp_new = state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state;
-  wire TYNO_new = !(get_bit(sfetch_counter_evn_new, 0) && SEBA_SFETCH_S1p_D5_odd_new && VONU_SFETCH_S1p_D4_evn_new);
-  wire VUSA_SPRITE_DONEn_new = (!TYFO_SFETCH_S0p_D1_odd_new || TYNO_new);
+  wire TYNO_new = !(get_bit(sfetch_counter_evn_new, 0) && SEBA_SFETCH_S1p_D5_odd_new && state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state);
+  wire VUSA_SPRITE_DONEn_new = (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state || TYNO_new);
   WUTY_SFETCH_DONE_TRIGp_new = !VUSA_SPRITE_DONEn_new;
 
   // PYGO
   if (DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new) state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
-  if (XYMU_RENDERINGn_new) state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = 0;
+  if (state_new.XYMU_RENDERINGn) state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = 0;
   auto PYGO_FETCH_DONEp_evn_new = state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state;
 
   // POKY
   auto& POKY_PRELOAD_LATCHp_evn_new = state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
   if (PYGO_FETCH_DONEp_evn_new) POKY_PRELOAD_LATCHp_evn_new = 1;
-  if (XYMU_RENDERINGn_new) POKY_PRELOAD_LATCHp_evn_new = 0;
+  if (state_new.XYMU_RENDERINGn) POKY_PRELOAD_LATCHp_evn_new = 0;
   wire ROMO_PRELOAD_DONEn_evn_new = !POKY_PRELOAD_LATCHp_evn_new;
 
 
@@ -726,11 +710,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire NUNY_WIN_MODE_tp_odd_new = PYNU_WIN_MODE_Ap_odd_new && !NOPA_WIN_MODE_Bp_evn_new;
   wire NYFO_WIN_MODE_tn_odd_new = !NUNY_WIN_MODE_tp_odd_new;
   wire MOSU_WIN_MODE_tp_odd_new = !NYFO_WIN_MODE_tn_odd_new;
-  wire NAFY_WIN_MODE_tn_odd_new = !(MOSU_WIN_MODE_tp_odd_new || XYMU_RENDERINGn_new);
+  wire NAFY_WIN_MODE_tn_odd_new = !(MOSU_WIN_MODE_tp_odd_new || state_new.XYMU_RENDERINGn);
 
   // NYKA
   auto& NYKA_FETCH_DONEp_evn_new = state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state;
-  if (DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new) NYKA_FETCH_DONEp_evn_new = LYRY_BFETCH_DONEp_odd_old;
+  if (DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new) NYKA_FETCH_DONEp_evn_new = state_old.tfetch_control.LYRY_BFETCH_DONEp_odd.state;
   if (!NAFY_WIN_MODE_tn_odd_new) NYKA_FETCH_DONEp_evn_new = 0;
 
   // PORY
@@ -739,7 +723,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (!NAFY_WIN_MODE_tn_odd_new) PORY_FETCH_DONEp_odd_new = 0;
 
 
-  wire SUVU_PRELOAD_DONE_TRIGn_new = !(!XYMU_RENDERINGn_new && ROMO_PRELOAD_DONEn_evn_new && NYKA_FETCH_DONEp_evn_new && PORY_FETCH_DONEp_odd_new);
+  wire SUVU_PRELOAD_DONE_TRIGn_new = !(!state_new.XYMU_RENDERINGn && ROMO_PRELOAD_DONEn_evn_new && NYKA_FETCH_DONEp_evn_new && PORY_FETCH_DONEp_odd_new);
   wire TAVE_PRELOAD_DONE_TRIGp_new = !SUVU_PRELOAD_DONE_TRIGn_new;
 
   // TAKA
@@ -804,7 +788,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // CLKPIPE is an even clock, it can only go high on even deltas. FEPO/WODU/SOCY are odd signals, they stay constant during even deltas.
   // SO, it is guaranteed safe to use the old values of FEPO/WODU/SOCY to compute CLKPIPE
 
-  wire SOCY_WIN_HITn_odd_old = !TOMU_WIN_HITp_odd_old;
+  wire SOCY_WIN_HITn_odd_old = !state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
   wire VYBO_CLKPIPE_evn_old = !state_old.FEPO_STORE_MATCHp_odd && !(!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) && !(DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new);
   wire TYFA_CLKPIPE_evn_old = SOCY_WIN_HITn_odd_old && state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && VYBO_CLKPIPE_evn_old;
   wire SEGU_CLKPIPE_odd_old = !TYFA_CLKPIPE_evn_old;
@@ -821,12 +805,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // RYVA
   if (!SEGU_CLKPIPE_odd_old && SEGU_CLKPIPE_odd_new) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = !nuko_wx_match_old && state_old.fine_count_odd == 7;
-  if (XYMU_RENDERINGn_new) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = 0;
+  if (state_new.XYMU_RENDERINGn) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = 0;
   auto& RYFA_WIN_FETCHn_A_evn_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
 
   // RENE
   if (DELTA_EVEN_new) state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state   = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
-  if (XYMU_RENDERINGn_new) state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = 0;
+  if (state_new.XYMU_RENDERINGn) state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = 0;
   auto& RENE_WIN_FETCHn_B_evn_new = state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
 
   wire SEKO_WIN_FETCH_TRIGp_evn_new = !(!RYFA_WIN_FETCHn_A_evn_new || RENE_WIN_FETCHn_B_evn_new);
@@ -865,14 +849,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // LOVY
   auto& LOVY_FETCH_DONEp_old = state_old.tfetch_control.LOVY_FETCH_DONEp.state;
   auto& LOVY_FETCH_DONEp_new = state_new.tfetch_control.LOVY_FETCH_DONEp.state;
-  if (DELTA_ODD_new) LOVY_FETCH_DONEp_new = LYRY_BFETCH_DONEp_odd_old;
+  if (DELTA_ODD_new) LOVY_FETCH_DONEp_new = state_old.tfetch_control.LYRY_BFETCH_DONEp_odd.state;
   if (!NYXU_BFETCH_RSTn_new) LOVY_FETCH_DONEp_new = 0;
 
   // LONY
   auto& LONY_FETCHINGp_old = state_old.tfetch_control.LONY_FETCHINGp.state;
   auto& LONY_FETCHINGp_new = state_new.tfetch_control.LONY_FETCHINGp.state;
   if (!NYXU_BFETCH_RSTn_new) LONY_FETCHINGp_new = 1;
-  if (LOVY_FETCH_DONEp_new || XYMU_RENDERINGn_new) LONY_FETCHINGp_new = 0;
+  if (LOVY_FETCH_DONEp_new || state_new.XYMU_RENDERINGn) LONY_FETCHINGp_new = 0;
 
   // sprite_reset_flags <- old.sprite_match_flags
   if (!WUTY_SFETCH_DONE_TRIGp_old && WUTY_SFETCH_DONE_TRIGp_new) state_new.sprite_reset_flags = state_old.sprite_match_flags;
@@ -885,20 +869,20 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  //wire tile_fetch_trig_new = !XYMU_RENDERINGn_new && !POKY_PRELOAD_LATCHp_evn_new && NYKA_FETCH_DONEp_evn_new && PORY_FETCH_DONEp_odd_new;
+  //wire tile_fetch_trig_new = !state_new.XYMU_RENDERINGn && !POKY_PRELOAD_LATCHp_evn_new && NYKA_FETCH_DONEp_evn_new && PORY_FETCH_DONEp_odd_new;
 
   //----------------------------------------
 
-  //bool sfetching_old = !vid_rst_old && !XYMU_RENDERINGn_new && ((get_bit(sfetch_counter_evn_old, 1) || VONU_SFETCH_S1p_D4_evn_old));
+  //bool sfetching_old = !vid_rst_old && !state_new.XYMU_RENDERINGn && ((get_bit(state_old.sfetch_counter_evn, 1) || state_old.sfetch_control.VONU_SFETCH_S1p_D4_evn.state));
 
   const uint8_t sfetch_phase_old = pack(
-    !(TYFO_SFETCH_S0p_D1_odd_old ^ get_bit(sfetch_counter_evn_old, 0)),
-    get_bit(sfetch_counter_evn_old, 0),
-    get_bit(sfetch_counter_evn_old, 1),
-    get_bit(sfetch_counter_evn_old, 2));
+    !(state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state ^ get_bit(state_old.sfetch_counter_evn, 0)),
+    get_bit(state_old.sfetch_counter_evn, 0),
+    get_bit(state_old.sfetch_counter_evn, 1),
+    get_bit(state_old.sfetch_counter_evn, 2));
 
   const uint8_t sfetch_phase_new = pack(
-    !(TYFO_SFETCH_S0p_D1_odd_new ^ get_bit(sfetch_counter_evn_new, 0)),
+    !(state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state ^ get_bit(sfetch_counter_evn_new, 0)),
     get_bit(sfetch_counter_evn_new, 0),
     get_bit(sfetch_counter_evn_new, 1),
     get_bit(sfetch_counter_evn_new, 2));
@@ -914,9 +898,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     wire CUFE_OAM_CLKp_old       = !((cpu_addr_oam_old || MATU_DMA_RUNNINGp_old) && (DELTA_EF_new || DELTA_FG_new || DELTA_GH_new || DELTA_HA_new));
     wire acyl_old                = (!MATU_DMA_RUNNINGp_old && state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_old);
     wire AVER_AxxxExxx_old       = !(acyl_old && XYSO_xBCDxFGH_old);
-    wire TYTU_SFETCH_S0n_old     = !get_bit(sfetch_counter_evn_old, 0);
-    wire TACU_SPR_SEQ_5_TRIG_old = !(TYFO_SFETCH_S0p_D1_odd_old && TYTU_SFETCH_S0n_old);
-    wire TUVO_PPU_OAM_RDp_old    = !(state_old.XYMU_RENDERINGn || get_bit(sfetch_counter_evn_old, 1) || get_bit(sfetch_counter_evn_old, 2));
+    wire TYTU_SFETCH_S0n_old     = !get_bit(state_old.sfetch_counter_evn, 0);
+    wire TACU_SPR_SEQ_5_TRIG_old = !(state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && TYTU_SFETCH_S0n_old);
+    wire TUVO_PPU_OAM_RDp_old    = !(state_old.XYMU_RENDERINGn || get_bit(state_old.sfetch_counter_evn, 1) || get_bit(state_old.sfetch_counter_evn, 2));
     wire VAPE_OAM_CLKENn_old     = (TUVO_PPU_OAM_RDp_old && TACU_SPR_SEQ_5_TRIG_old);
     wire XUJY_OAM_CLKENp_old     = !VAPE_OAM_CLKENn_old;
     wire BYCU_OAM_CLKp_old       = !(AVER_AxxxExxx_old && XUJY_OAM_CLKENp_old && CUFE_OAM_CLKp_old);
@@ -925,8 +909,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     wire acyl_new                = (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new);
     wire AVER_AxxxExxx_new       = !(acyl_new && XYSO_xBCDxFGH_new);
     wire TYTU_SFETCH_S0n_new     = !get_bit(sfetch_counter_evn_new, 0);
-    wire TACU_SPR_SEQ_5_TRIG_new = !(TYFO_SFETCH_S0p_D1_odd_new && TYTU_SFETCH_S0n_new);
-    wire TUVO_PPU_OAM_RDp_new    = !(XYMU_RENDERINGn_new || get_bit(sfetch_counter_evn_new, 1) || get_bit(sfetch_counter_evn_new, 2));
+    wire TACU_SPR_SEQ_5_TRIG_new = !(state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && TYTU_SFETCH_S0n_new);
+    wire TUVO_PPU_OAM_RDp_new    = !(state_new.XYMU_RENDERINGn || get_bit(sfetch_counter_evn_new, 1) || get_bit(sfetch_counter_evn_new, 2));
     wire VAPE_OAM_CLKENn_new     = (TUVO_PPU_OAM_RDp_new && TACU_SPR_SEQ_5_TRIG_new);
     wire XUJY_OAM_CLKENp_new     = !VAPE_OAM_CLKENn_new;
     wire BYCU_OAM_CLKp_new       = !(AVER_AxxxExxx_new && XUJY_OAM_CLKENp_new &&  CUFE_OAM_CLKp_new);
@@ -954,12 +938,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (XYMU_RENDERINGn_new) {
+  if (state_new.XYMU_RENDERINGn) {
     state_new.sprite_ibus = state_new.sprite_index;
     state_new.sprite_lbus = (~state_new.reg_ly + oam_temp_a_new) & 0b00001111;
   }
 
-  else if (!XYMU_RENDERINGn_new && state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state) {
+  else if (!state_new.XYMU_RENDERINGn && state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state) {
     state_new.sprite_ibus = state_new.sprite_index;
     state_new.sprite_lbus = 0b00001111;
   }
@@ -1041,7 +1025,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state;
   }
 
-  if (XYMU_RENDERINGn_new) {
+  if (state_new.XYMU_RENDERINGn) {
     state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state = 1;
     state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = 0;
     state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = 0;
@@ -1079,7 +1063,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // FEPO
 
   auto& FEPO_STORE_MATCHp_odd_new = state_new.FEPO_STORE_MATCHp_odd;
-  if (!XYMU_RENDERINGn_new && !state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state) {
+  if (!state_new.XYMU_RENDERINGn && !state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state) {
     auto& s = state_new;
     auto& sf = s.sprite_match_flags;
     auto& si = s.sprite_ibus;
@@ -1104,9 +1088,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (XYMU_RENDERINGn_new) state_new.sprite_match_flags = 0;
+  if (state_new.XYMU_RENDERINGn) state_new.sprite_match_flags = 0;
 
-  if (!XYMU_RENDERINGn_new && !FEPO_STORE_MATCHp_odd_new) {
+  if (!state_new.XYMU_RENDERINGn && !FEPO_STORE_MATCHp_odd_new) {
     const auto pack_ydiff = ~state_new.reg_ly + oam_temp_a_new;
     state_new.sprite_lbus = pack_ydiff & 0b00001111;
   }
@@ -1119,7 +1103,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.PAHO_X8_SYNC.state = get_bit(state_old.pix_count, 3);
   }
 
-  if (XYMU_RENDERINGn_new) {
+  if (state_new.XYMU_RENDERINGn) {
     state_new.lcd.PAHO_X8_SYNC.state = 0;
   }
 
@@ -1130,7 +1114,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   auto& LYZU_BFETCH_S0p_D1_old = state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state;
   auto& LYZU_BFETCH_S0p_D1_new = state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state;
   if (DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new) LYZU_BFETCH_S0p_D1_new = get_bit(tfetch_counter_old, 0);
-  if (XYMU_RENDERINGn_new) LYZU_BFETCH_S0p_D1_new = 0;
+  if (state_new.XYMU_RENDERINGn) LYZU_BFETCH_S0p_D1_new = 0;
 
 
   {
@@ -1150,7 +1134,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     wire LAXE_BFETCH_S0n_new = !get_bit(tfetch_counter_new, 0);
     wire NAKO_BFETCH_S1n_new = !get_bit(tfetch_counter_new, 1);
     wire NOFU_BFETCH_S2n_new = !get_bit(tfetch_counter_new, 2);
-    wire MYSO_STORE_VRAM_DATA_TRIGp_new = !(XYMU_RENDERINGn_new || LAXE_BFETCH_S0n_new || LYZU_BFETCH_S0p_D1_new);
+    wire MYSO_STORE_VRAM_DATA_TRIGp_new = !(state_new.XYMU_RENDERINGn || LAXE_BFETCH_S0n_new || LYZU_BFETCH_S0p_D1_new);
     wire NYDY_LATCH_TILE_DAn_new = !(MYSO_STORE_VRAM_DATA_TRIGp_new && get_bit(tfetch_counter_new, 1) && NOFU_BFETCH_S2n_new);
     wire METE_LATCH_TILE_DAp_new = !NYDY_LATCH_TILE_DAn_new;
     wire LOMA_LATCH_TILE_DAn_new = !METE_LATCH_TILE_DAp_new;
@@ -1185,15 +1169,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       get_bit(tfetch_counter_new, 2)
     );
 
-    if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || XYMU_RENDERINGn_new)) {
+    if ((bfetch_phase_old == 6) && (bfetch_phase_new == 7 || state_new.XYMU_RENDERINGn)) {
       state_new.tile_temp_a = ~state_new.vram_dbus;
     }
 
-    if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || XYMU_RENDERINGn_new)) {
+    if ((bfetch_phase_old == 2) && (bfetch_phase_new == 3 || state_new.XYMU_RENDERINGn)) {
       state_new.tile_temp_b = state_new.vram_dbus;
     }
 
-    if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || XYMU_RENDERINGn_new)) {
+    if ((bfetch_phase_old == 10) && (bfetch_phase_new == 11 || state_new.XYMU_RENDERINGn)) {
       state_new.tile_temp_b = state_new.vram_dbus;
     }
   }
@@ -1248,10 +1232,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  wire TEXY_SFETCHINGp_evn_new = (!vid_rst_new && !XYMU_RENDERINGn_new && ((get_bit(sfetch_counter_evn_new, 1) || VONU_SFETCH_S1p_D4_evn_new)));
+  wire TEXY_SFETCHINGp_evn_new = (!vid_rst_new && !state_new.XYMU_RENDERINGn && ((get_bit(sfetch_counter_evn_new, 1) || state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state)));
 
   uint8_t sprite_pix = state_old.vram_dbus;
-  if (!XYMU_RENDERINGn_new) {
+  if (!state_new.XYMU_RENDERINGn) {
 
     if (get_bit(state_old.oam_temp_b, 5) && TEXY_SFETCHINGp_evn_new) {
       sprite_pix = bit_reverse(state_old.vram_dbus);
@@ -1502,7 +1486,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // CPU vram read address
 
-  if (!(MATU_DMA_RUNNINGp_new && dma_addr_vram_new) && XYMU_RENDERINGn_new) {
+  if (!(MATU_DMA_RUNNINGp_new && dma_addr_vram_new) && state_new.XYMU_RENDERINGn) {
     state_new.vram_abus = (~cpu_addr_new) & VRAM_ADDR_MASK;
   }
 
@@ -1600,9 +1584,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pins_vram_ctrl_csn_new = 1;
     pins_vram_ctrl_oen_new = 1;
   }
-  else if (!XYMU_RENDERINGn_new) {
+  else if (!state_new.XYMU_RENDERINGn) {
     pins_vram_ctrl_csn_new = LONY_FETCHINGp_new || TEXY_SFETCHINGp_evn_new;
-    pins_vram_ctrl_oen_new = LONY_FETCHINGp_new || (TEXY_SFETCHINGp_evn_new && (!TYFO_SFETCH_S0p_D1_odd_new || get_bit(sfetch_counter_evn_new, 0)));
+    pins_vram_ctrl_oen_new = LONY_FETCHINGp_new || (TEXY_SFETCHINGp_evn_new && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state || get_bit(sfetch_counter_evn_new, 0)));
   }
   else if (ext_addr_new) {
     pins_vram_ctrl_csn_new = (cpu_addr_vram_new && gen_clk_new(phase_total_old, 0b00111111) && 1);
@@ -1614,7 +1598,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  if (!XYMU_RENDERINGn_new) {
+  if (!state_new.XYMU_RENDERINGn) {
     pins_vram_ctrl_wrn_new = 0;
   }
   else if (ext_addr_new) {
@@ -1625,7 +1609,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  if (!XYMU_RENDERINGn_new) {
+  if (!state_new.XYMU_RENDERINGn) {
     if (pins_vram_ctrl_oen_new) {
       state_new.vram_dbus = mem.vid_ram[state_new.vram_abus ^ 0x1FFF];
     }
@@ -1753,9 +1737,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
     }
   }
-  else if (!XYMU_RENDERINGn_new) {
-    const auto sfetch_oam_clk_new = (get_bit(sfetch_counter_evn_new, 1) || get_bit(sfetch_counter_evn_new, 2) || (TYFO_SFETCH_S0p_D1_odd_new && !get_bit(sfetch_counter_evn_new, 0)));
-    const auto sfetch_oam_oen_new = (get_bit(sfetch_counter_evn_new, 1) || get_bit(sfetch_counter_evn_new, 2) || !TYFO_SFETCH_S0p_D1_odd_new);
+  else if (!state_new.XYMU_RENDERINGn) {
+    const auto sfetch_oam_clk_new = (get_bit(sfetch_counter_evn_new, 1) || get_bit(sfetch_counter_evn_new, 2) || (state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && !get_bit(sfetch_counter_evn_new, 0)));
+    const auto sfetch_oam_oen_new = (get_bit(sfetch_counter_evn_new, 1) || get_bit(sfetch_counter_evn_new, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state);
 
     state_new.oam_abus = (uint8_t)~((sprite_ibus_new << 2) | 0b11);
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk_new(phase_total_old, 0b11110000));
@@ -1795,7 +1779,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
     wire XUPA_CPU_OAM_WRp  = !state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state;
-    wire AJUJ_OAM_BUSYn    = !(state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) && XYMU_RENDERINGn_new;
+    wire AJUJ_OAM_BUSYn    = !(state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) && state_new.XYMU_RENDERINGn;
     wire APAG_CBD_TO_OBDp  = (XUPA_CPU_OAM_WRp && AJUJ_OAM_BUSYn);
     if (APAG_CBD_TO_OBDp) {
       state_new.oam_dbus_a = ~state_new.cpu_dbus;
@@ -1811,7 +1795,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_dbus_a = ~state_new.cpu_dbus;
     state_new.oam_dbus_b = ~state_new.cpu_dbus;
 
-    wire APAG_CBD_TO_OBDp  = !(state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) && XYMU_RENDERINGn_new;
+    wire APAG_CBD_TO_OBDp  = !(state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) && state_new.XYMU_RENDERINGn;
     if (APAG_CBD_TO_OBDp) {
       state_new.oam_dbus_a = ~state_new.cpu_dbus;
       state_new.oam_dbus_b = ~state_new.cpu_dbus;
@@ -1826,8 +1810,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
   }
-  else if (!XYMU_RENDERINGn_new) {
-    if (!(get_bit(sfetch_counter_evn_new, 1) || get_bit(sfetch_counter_evn_new, 2) || !TYFO_SFETCH_S0p_D1_odd_new)) {
+  else if (!state_new.XYMU_RENDERINGn) {
+    if (!(get_bit(sfetch_counter_evn_new, 1) || get_bit(sfetch_counter_evn_new, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state)) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
@@ -1889,8 +1873,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (cpu_addr_new == 0xFF41 && (cpu.bus_req_new.read && !DELTA_HA_new)) {
     uint8_t stat = 0x80;
 
-    stat |= (!XYMU_RENDERINGn_new || state_new.lcd.POPU_VBLANKp_odd.state) << 0;
-    stat |= (!XYMU_RENDERINGn_new || (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new)) << 1;
+    stat |= (!state_new.XYMU_RENDERINGn || state_new.lcd.POPU_VBLANKp_odd.state) << 0;
+    stat |= (!state_new.XYMU_RENDERINGn || (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new)) << 1;
     stat |= (!state_new.int_ctrl.RUPO_LYC_MATCHn.state) << 2;
     stat |= (pack_stat ^ 0b1111) << 3;
 

@@ -273,6 +273,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire cpu_wr = cpu.bus_req_new.write && !DELTA_HA_new;
 
   const auto cpu_addr_new = state_new.cpu_abus;
+  auto& cpu_dbus_new = state_new.cpu_dbus;
 
   //----------------------------------------
   // DIV
@@ -374,27 +375,20 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // reg_ly
   wire LAMA_Y_RSTn_new = !(MYTA_FRAME_ENDp_odd_new || vid_rst_new);
-  if (DELTA_BC_new) {
-    if (!NYPE_LINE_ENDp_odd_new && RUTU_LINE_ENDp_odd_new) {
-      if (state_new.reg_ly == 153) state_new.reg_ly = 0;
-    }
-  }
   if (DELTA_FG_new) {
     if (!MYTA_FRAME_ENDp_odd_new && !RUTU_LINE_ENDp_odd_old && (state_new.reg_lx == 113)) {
       state_new.reg_ly++;
     }
   }
-  if (vid_rst_new) state_new.reg_ly = 0;
+  if (!LAMA_Y_RSTn_new) state_new.reg_ly = 0;
 
   // reg_lx
+  wire MUDE_X_RSTn_new = !(RUTU_LINE_ENDp_odd_new || vid_rst_new);
   if (DELTA_BC_new) {
     state_new.reg_lx++;
     if (RUTU_LINE_ENDp_odd_new) state_new.reg_lx = 0;
   }
-  if (DELTA_FG_new) {
-    if (state_new.reg_lx == 113) state_new.reg_lx = 0;
-  }
-  if (vid_rst_new) state_new.reg_lx = 0;
+  if (!MUDE_X_RSTn_new) state_new.reg_lx = 0;
 
   auto& reg_ly_new = state_new.reg_ly;
 
@@ -493,7 +487,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     if ((DELTA_DE_new || DELTA_EF_new || DELTA_FG_new) && cpu_wr && !cpu_rd && cpu_addr_new == 0xFF05) {
       state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;
-      state_new.reg_tima = cpu_dbus_old;
+      state_new.reg_tima = cpu_dbus_new; // must be new
     }
     else if (state_new.int_ctrl.MOBA_TIMER_OVERFLOWp.state) {
       state_new.int_ctrl.NYDU_TIMA7p_DELAY.state = 0;

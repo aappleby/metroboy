@@ -57,24 +57,17 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   overlay_tex = create_texture_u32(160, 144, nullptr, false);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-  /*
   if (config_fastmode) {
     gb_thread = new GateBoyThread(new LogicBoy());
   }
-  else if (config_regression) {
+  else {
     gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
   }
-  else {
-    gb_thread = new GateBoyThread(new GateBoy());
-  }
-  */
-
-  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
 
   gb_thread->start();
   gb_thread->reset_to_bootrom();
 
-#if 1
+#if 0
   // test_fuzz_reg failed at 1871:0268 - write 0xe5 to 0xff40
   {
     gb_thread->gb->set_cpu_en(false);
@@ -114,20 +107,21 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 0
+#if 1
   blob cart;
-  //load_blob("tests/microtests/DMG/poweron_stat_000.gb", cart);
-  load_blob("LinksAwakening.gb", cart);
+  load_blob("tests/microtests/DMG/timer_tima_inc_256k_a.gb", cart);
+  //load_blob("LinksAwakening.gb", cart);
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
 
-  gb_thread->run_to(46880840 - 1);
-
+  gb_thread->run_to(46880836 - 1);
 #endif
 
-  //BlobStream bs;
-  //load_blob("zoomer.dump", bs.b);
-  //gb_thread->load_raw_dump(bs);
+#if 0
+  BlobStream bs;
+  load_blob("gateboy.raw.dump", bs.b);
+  gb_thread->load_raw_dump(bs);
+#endif
 
   gb_thread->resume();
 

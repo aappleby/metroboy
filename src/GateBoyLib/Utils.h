@@ -159,7 +159,7 @@ void bit_check(T& a) {
   for (size_t i = 0; i < sizeof(T); i++) {
     if (pa[i] & ~1) {
       LOG_R("bit_check found non-bit at offset %d - 0x%02x\n",  (int)i, pa);
-      debugbreak();
+      //debugbreak();
     }
   }
 }

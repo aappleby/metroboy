@@ -38,10 +38,8 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  TestResults results;
-  GateBoyTests t;
 
-  const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
+  //const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
 
   //results += t.test_fuzz_reg(proto.get(), ADDR_P1  );
   //results += t.test_fuzz_reg(proto.get(), ADDR_SB  );
@@ -51,7 +49,7 @@ int main(int argc, char** argv) {
   //results += t.test_fuzz_reg(proto.get(), ADDR_TMA );
   //results += t.test_fuzz_reg(proto.get(), ADDR_TAC );
   //results += t.test_fuzz_reg(proto.get(), ADDR_IF  );
-  results += t.test_fuzz_reg(proto.get(), ADDR_LCDC); // hey this actually found some mismatches
+  //results += t.test_fuzz_reg(proto.get(), ADDR_LCDC); // hey this actually found some mismatches
   //results += t.test_fuzz_reg(proto.get(), ADDR_STAT);
   //results += t.test_fuzz_reg(proto.get(), ADDR_SCY );
   //results += t.test_fuzz_reg(proto.get(), ADDR_SCX );
@@ -67,6 +65,9 @@ int main(int argc, char** argv) {
 
 #if 0
   {
+    TestResults results;
+    GateBoyTests t;
+
     LOG_B("========== GateBoy tests ==========\n");
     const auto proto = make_unique<GateBoy>();
     results += t.test_fastboot        (proto.get(), 0xFF);
@@ -90,8 +91,11 @@ int main(int argc, char** argv) {
   }
 #endif
 
-#if 0
+#if 1
   {
+    TestResults results;
+    GateBoyTests t;
+
     LOG_B("========== LogicBoy regression tests ==========\n");
     const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
     results += t.test_reset_to_bootrom(proto.get(), 0x01); // OK
@@ -1091,7 +1095,7 @@ TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filen
 
     const char* reason = "ERROR";
     if      (timeout == 0)         reason = "TIMEOUT";
-    else if (result_a != result_b) reason = "MISMATCH";
+    else if (result_a != result_b) reason = "FAIL";
     else if (result_c == 0xFF)     reason = "FAIL";
 
     LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gb->get_sys().gb_phase_total);

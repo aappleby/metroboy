@@ -5,6 +5,7 @@
 #include "CoreLib/Constants.h"
 #include "GateBoyLib/LogicBoyState.h"
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Utils.h"
 
 //-----------------------------------------------------------------------------
 
@@ -35,7 +36,10 @@ struct LogicBoy : public IGateBoy {
     load_ok &= bs.read(cpu);
     load_ok &= bs.read(mem);
     load_ok &= bs.read(sys);
+    
     load_ok &= bs.read(pins);
+    pins = bit_purge(pins);
+
     load_ok &= bs.read(probes);
     lb_state.from_gb_state(gb_state, sys.gb_phase_total);
     return load_ok ? GBResult::ok() : Error::CORRUPT;

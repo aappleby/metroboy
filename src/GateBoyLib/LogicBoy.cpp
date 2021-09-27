@@ -337,51 +337,46 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // LX, LY, lcd flags
 
-  auto& reg_ly_old = state_old.reg_ly;
-  auto& reg_lx_old = state_old.reg_lx;
-
-  auto& RUTU_LINE_ENDp_odd_old = state_old.lcd.RUTU_LINE_ENDp_odd.state;
-  auto& NYPE_LINE_ENDp_odd_old = state_old.lcd.NYPE_LINE_ENDp_odd.state;
-
-  wire SANU_x113p_odd_old = (reg_lx_old & 113) == 113;
-  wire XYVO_y144p_old     = (reg_ly_old & 144) == 144;
-  wire NOKO_y153p_old     = (reg_ly_old & 153) == 153;
-  
-  // RUTU
-  auto& RUTU_LINE_ENDp_odd_new = state_new.lcd.RUTU_LINE_ENDp_odd.state;
-  if (DELTA_FG_new) RUTU_LINE_ENDp_odd_new = SANU_x113p_odd_old;
-  if (vid_rst_new)  RUTU_LINE_ENDp_odd_new = 0;
-
-  // NYPE
-  auto& NYPE_LINE_ENDp_odd_new = state_new.lcd.NYPE_LINE_ENDp_odd.state;
-  if (DELTA_BC_new) NYPE_LINE_ENDp_odd_new = RUTU_LINE_ENDp_odd_old;
-  if (vid_rst_new)  NYPE_LINE_ENDp_odd_new = 0;
-
-  // POPU
-  auto& POPU_VBLANKp_odd_new = state_new.lcd.POPU_VBLANKp_odd.state;
-  if (!NYPE_LINE_ENDp_odd_old && NYPE_LINE_ENDp_odd_new) POPU_VBLANKp_odd_new = XYVO_y144p_old;
-  if (vid_rst_new) POPU_VBLANKp_odd_new = 0;
-
-  // MYTA
-  auto& MYTA_FRAME_ENDp_odd_new = state_new.lcd.MYTA_FRAME_ENDp_odd.state;
-  if (!NYPE_LINE_ENDp_odd_old && NYPE_LINE_ENDp_odd_new) MYTA_FRAME_ENDp_odd_new = NOKO_y153p_old;
-  if (vid_rst_new) MYTA_FRAME_ENDp_odd_new = 0;
-
-  // reg_ly
   if (DELTA_FG_new) {
-    if (!RUTU_LINE_ENDp_odd_old && (state_new.reg_lx == 113)) {
+    state_new.lcd.RUTU_LINE_ENDp_odd.state = ((state_old.reg_lx & 113) == 113);
+    if (!state_old.lcd.RUTU_LINE_ENDp_odd.state && (state_new.reg_lx == 113)) {
       state_new.reg_ly++;
     }
   }
-  if (MYTA_FRAME_ENDp_odd_new || vid_rst_new) state_new.reg_ly = 0;
 
-  // reg_lx
   if (DELTA_BC_new) {
+    state_new.lcd.NYPE_LINE_ENDp_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state;
     state_new.reg_lx++;
   }
-  if (RUTU_LINE_ENDp_odd_new || vid_rst_new) state_new.reg_lx = 0;
+
+  if (!state_old.lcd.NYPE_LINE_ENDp_odd.state && state_new.lcd.NYPE_LINE_ENDp_odd.state) {
+    state_new.lcd.POPU_VBLANKp_odd.state = ((state_old.reg_ly & 144) == 144);
+    state_new.lcd.MYTA_FRAME_ENDp_odd.state = ((state_old.reg_ly & 153) == 153);
+  }
+  
+  if (state_new.lcd.MYTA_FRAME_ENDp_odd.state) {
+    state_new.reg_ly = 0;
+  }
+
+  if (state_new.lcd.RUTU_LINE_ENDp_odd.state) {
+    state_new.reg_lx = 0;
+  }
+
+  if (vid_rst_new) {
+    state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
+    state_new.lcd.NYPE_LINE_ENDp_odd.state = 0;
+    state_new.lcd.POPU_VBLANKp_odd.state = 0;
+    state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
+    state_new.reg_ly = 0;
+    state_new.reg_lx = 0;
+  }
+
+  //----------
 
   auto& reg_ly_new = state_new.reg_ly;
+
+  wire RUTU_LINE_ENDp_odd_new = state_new.lcd.RUTU_LINE_ENDp_odd.state;
+  wire POPU_VBLANKp_odd_new = state_new.lcd.POPU_VBLANKp_odd.state;
 
   //----------------------------------------
   // Line reset trigger
@@ -389,7 +384,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire ATEJ_LINE_RSTp_odd_old = !((state_old.lcd.ANEL_x113p_odd.state || !state_old.lcd.CATU_x113p_odd.state) && vid_rst_old);
 
   if (DELTA_HA_new || DELTA_DE_new) {
-    state_new.lcd.CATU_x113p_odd.state = RUTU_LINE_ENDp_odd_old && (reg_ly_old & 144) != 144;
+    state_new.lcd.CATU_x113p_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state && (state_old.reg_ly & 144) != 144;
   }
   if (DELTA_BC_new || DELTA_FG_new) {
     state_new.lcd.ANEL_x113p_odd.state = state_old.lcd.CATU_x113p_odd.state;
@@ -1904,7 +1899,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   auto pack_stat = state_new.reg_stat;
 
   if (!vid_rst_new && DELTA_BC_new) {
-    state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = reg_ly_old == (state_old.reg_lyc ^ 0xFF);
+    state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = state_old.reg_ly == (state_old.reg_lyc ^ 0xFF);
   }
 
   // FIXME this seems slightly wrong...

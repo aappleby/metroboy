@@ -129,6 +129,8 @@ int main(int argc, char** argv) {
 
     const int reps = 100;
 
+    results += t.test_fuzz_reg(proto.get(), ADDR_LCDC, reps); // hey this actually found some mismatches
+
     results += t.test_fuzz_reg(proto.get(), ADDR_P1  , reps);
     results += t.test_fuzz_reg(proto.get(), ADDR_SB  , reps);
     results += t.test_fuzz_reg(proto.get(), ADDR_SC  , reps);
@@ -137,7 +139,6 @@ int main(int argc, char** argv) {
     results += t.test_fuzz_reg(proto.get(), ADDR_TMA , reps);
     results += t.test_fuzz_reg(proto.get(), ADDR_TAC , reps);
     results += t.test_fuzz_reg(proto.get(), ADDR_IF  , reps);
-    results += t.test_fuzz_reg(proto.get(), ADDR_LCDC, reps); // hey this actually found some mismatches
     results += t.test_fuzz_reg(proto.get(), ADDR_STAT, reps);
     results += t.test_fuzz_reg(proto.get(), ADDR_SCY , reps);
     results += t.test_fuzz_reg(proto.get(), ADDR_SCX , reps);

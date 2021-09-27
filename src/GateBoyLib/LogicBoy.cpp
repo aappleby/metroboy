@@ -516,21 +516,40 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  wire DOBA_SCAN_DONEp_evn_old      = state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state;
-  wire WODU_HBLANKp_odd_old         = (!FEPO_STORE_MATCHp_odd_old && (pix_count_old == 167));
-  wire XYMU_RENDERINGn_old          = state_old.XYMU_RENDERINGn;
-  wire RYFA_WIN_FETCHn_A_evn_old    = state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
-  wire RENE_WIN_FETCHn_B_evn_old    = state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
-  wire SYLO_WIN_HITn_odd_old        = !RYDY_WIN_HITp_odd_old;
-  wire SOVY_WIN_HITp_evn_old        = state_old.win_ctrl.SOVY_WIN_HITp_evn.state;
-  wire POKY_PRELOAD_LATCHp_evn_old  = state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
-  wire ROMO_PRELOAD_DONEn_evn_old   = !POKY_PRELOAD_LATCHp_evn_old;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  wire ROMO_PRELOAD_DONEn_evn_old   = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
   wire NYKA_FETCH_DONEp_evn_old     = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state;
   wire PORY_FETCH_DONEp_odd_old     = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
-  wire SUVU_PRELOAD_DONE_TRIGn_old  = !(!XYMU_RENDERINGn_old && ROMO_PRELOAD_DONEn_evn_old && NYKA_FETCH_DONEp_evn_old && PORY_FETCH_DONEp_odd_old);
+  wire SUVU_PRELOAD_DONE_TRIGn_old  = !(!state_old.XYMU_RENDERINGn && ROMO_PRELOAD_DONEn_evn_old && NYKA_FETCH_DONEp_evn_old && PORY_FETCH_DONEp_odd_old);
   wire TAVE_PRELOAD_DONE_TRIGp_old  = !SUVU_PRELOAD_DONE_TRIGn_old;
-  wire SEKO_WIN_FETCH_TRIGp_evn_old = !(!RYFA_WIN_FETCHn_A_evn_old || RENE_WIN_FETCHn_B_evn_old);
-  wire TUXY_WIN_FIRST_TILEne_old    = !(SYLO_WIN_HITn_odd_old && SOVY_WIN_HITp_evn_old);
+  wire SEKO_WIN_FETCH_TRIGp_evn_old = !(!state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state || state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state);
+  wire TUXY_WIN_FIRST_TILEne_old    = !(!RYDY_WIN_HITp_odd_old && state_old.win_ctrl.SOVY_WIN_HITp_evn.state);
   wire SUZU_WIN_FIRST_TILEne_old    = !TUXY_WIN_FIRST_TILEne_old;
   wire TEVO_WIN_FETCH_TRIGp_old     = SEKO_WIN_FETCH_TRIGp_evn_old || SUZU_WIN_FIRST_TILEne_old || TAVE_PRELOAD_DONE_TRIGp_old;
   wire PYNU_WIN_MODE_Ap_odd_old     = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
@@ -539,7 +558,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire NYFO_WIN_MODE_TRIGn_old      = !NUNY_WIN_MODE_TRIGp_old;
   wire MOSU_WIN_MODE_TRIGp_old      = !NYFO_WIN_MODE_TRIGn_old;
 
-  wire BEBU_SCAN_DONE_tn_odd_old    = (DOBA_SCAN_DONEp_evn_old || !!(ATEJ_LINE_RSTp_odd_old || vid_rst_old) || !BYBA_SCAN_DONEp_odd_old);
+  wire BEBU_SCAN_DONE_tn_odd_old    = (state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state || !!(ATEJ_LINE_RSTp_odd_old || vid_rst_old) || !BYBA_SCAN_DONEp_odd_old);
   wire AVAP_SCAN_DONE_tp_odd_old    = !BEBU_SCAN_DONE_tn_odd_old;
   wire NYXU_BFETCH_RSTn_old         = !(AVAP_SCAN_DONE_tp_odd_old || MOSU_WIN_MODE_TRIGp_old || TEVO_WIN_FETCH_TRIGp_old);
 
@@ -641,7 +660,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire AVAP_SCAN_DONE_tp_odd_new    = !BEBU_SCAN_DONE_tn_odd_new;
 
   {
-    if (DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new) state_new.VOGA_HBLANKp = WODU_HBLANKp_odd_old;
+    if (DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new) state_new.VOGA_HBLANKp = (!FEPO_STORE_MATCHp_odd_old && (pix_count_old == 167));
     if (vid_rst_new || (line_rst_new || vid_rst_new)) state_new.VOGA_HBLANKp = 0;
     wire VOGA_HBLANKp_evn_new = state_new.VOGA_HBLANKp;
 
@@ -680,7 +699,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // SOBU
   auto& SOBU_SFETCH_REQp_evn_old = state_old.sfetch_control.SOBU_SFETCH_REQp_evn.state;
   auto& SOBU_SFETCH_REQp_evn_new = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state;
-  wire TOMU_WIN_HITp_odd_old = !SYLO_WIN_HITn_odd_old;
+  wire TOMU_WIN_HITp_odd_old = !!RYDY_WIN_HITp_odd_old;
   wire TUKU_WIN_HITn_odd_old = !TOMU_WIN_HITp_odd_old;
   wire SOWO_SFETCH_RUNNINGn_evn_old = !TAKA_SFETCH_RUNNINGp_evn_old;
   wire TEKY_SFETCH_REQp_odd_old = FEPO_STORE_MATCHp_odd_old && TUKU_WIN_HITn_odd_old && LYRY_BFETCH_DONEp_odd_old && SOWO_SFETCH_RUNNINGn_evn_old;
@@ -826,15 +845,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // SO, it is guaranteed safe to use the old values of FEPO/WODU/SOCY to compute CLKPIPE
 
   wire SOCY_WIN_HITn_odd_old = !TOMU_WIN_HITp_odd_old;
-  wire VYBO_CLKPIPE_evn_old = !FEPO_STORE_MATCHp_odd_old && !WODU_HBLANKp_odd_old && !(DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new);
-  wire TYFA_CLKPIPE_evn_old = SOCY_WIN_HITn_odd_old && POKY_PRELOAD_LATCHp_evn_old && VYBO_CLKPIPE_evn_old;
+  wire VYBO_CLKPIPE_evn_old = !FEPO_STORE_MATCHp_odd_old && !(!FEPO_STORE_MATCHp_odd_old && (pix_count_old == 167)) && !(DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new);
+  wire TYFA_CLKPIPE_evn_old = SOCY_WIN_HITn_odd_old && state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && VYBO_CLKPIPE_evn_old;
   wire SEGU_CLKPIPE_odd_old = !TYFA_CLKPIPE_evn_old;
   wire ROCO_CLKPIPE_evn_old = !SEGU_CLKPIPE_odd_old;
   wire ROXO_CLKPIPE_evn_old = !SEGU_CLKPIPE_odd_old;
 
   wire TOMU_WIN_HITp_odd_new = !SYLO_WIN_HITn_odd_new;
   wire SOCY_WIN_HITn_odd_new = !TOMU_WIN_HITp_odd_new;
-  wire VYBO_CLKPIPE_evn_new = !FEPO_STORE_MATCHp_odd_old && !WODU_HBLANKp_odd_old && !(DELTA_HA_new || DELTA_BC_new || DELTA_DE_new || DELTA_FG_new);
+  wire VYBO_CLKPIPE_evn_new = !FEPO_STORE_MATCHp_odd_old && !(!FEPO_STORE_MATCHp_odd_old && (pix_count_old == 167)) && !(DELTA_HA_new || DELTA_BC_new || DELTA_DE_new || DELTA_FG_new);
   wire TYFA_CLKPIPE_evn_new = SOCY_WIN_HITn_odd_new && POKY_PRELOAD_LATCHp_evn_new && VYBO_CLKPIPE_evn_new;
   wire SEGU_CLKPIPE_odd_new = !TYFA_CLKPIPE_evn_new;
   wire ROCO_CLKPIPE_evn_new = !SEGU_CLKPIPE_odd_new;
@@ -937,7 +956,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     wire AVER_AxxxExxx_old       = !(acyl_old && XYSO_xBCDxFGH_old);
     wire TYTU_SFETCH_S0n_old     = !get_bit(sfetch_counter_evn_old, 0);
     wire TACU_SPR_SEQ_5_TRIG_old = !(TYFO_SFETCH_S0p_D1_odd_old && TYTU_SFETCH_S0n_old);
-    wire TUVO_PPU_OAM_RDp_old    = !(XYMU_RENDERINGn_old || get_bit(sfetch_counter_evn_old, 1) || get_bit(sfetch_counter_evn_old, 2));
+    wire TUVO_PPU_OAM_RDp_old    = !(state_old.XYMU_RENDERINGn || get_bit(sfetch_counter_evn_old, 1) || get_bit(sfetch_counter_evn_old, 2));
     wire VAPE_OAM_CLKENn_old     = (TUVO_PPU_OAM_RDp_old && TACU_SPR_SEQ_5_TRIG_old);
     wire XUJY_OAM_CLKENp_old     = !VAPE_OAM_CLKENn_old;
     wire BYCU_OAM_CLKp_old       = !(AVER_AxxxExxx_old && XUJY_OAM_CLKENp_old && CUFE_OAM_CLKp_old);
@@ -1159,7 +1178,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     wire NAKO_BFETCH_S1n_old = !get_bit(tfetch_counter_old, 1);
     wire NOFU_BFETCH_S2n_old = !get_bit(tfetch_counter_old, 2);
 
-    wire MYSO_STORE_VRAM_DATA_TRIGp_old = !(XYMU_RENDERINGn_old || LAXE_BFETCH_S0n_old || LYZU_BFETCH_S0p_D1_old);
+    wire MYSO_STORE_VRAM_DATA_TRIGp_old = !(state_old.XYMU_RENDERINGn || LAXE_BFETCH_S0n_old || LYZU_BFETCH_S0p_D1_old);
     wire NYDY_LATCH_TILE_DAn_old = !(MYSO_STORE_VRAM_DATA_TRIGp_old && get_bit(tfetch_counter_old, 1) && NOFU_BFETCH_S2n_old);
     wire METE_LATCH_TILE_DAp_old = !NYDY_LATCH_TILE_DAn_old;
     wire LOMA_LATCH_TILE_DAn_old = !METE_LATCH_TILE_DAp_old;
@@ -1196,7 +1215,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
   /*
-  if (!XYMU_RENDERINGn_old) { // must be old
+  if (!state_old.XYMU_RENDERINGn) { // must be old
     // These ffs are weird because they latches on phase change _or_ if rendering stops in the middle of a fetch
     // Good example of gate-level behavior that doesn't matter
     const uint8_t bfetch_phase_new = pack(
@@ -1920,7 +1939,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   bool int_stat_old = 0;
   auto& POPU_VBLANKp_odd_old = state_old.lcd.POPU_VBLANKp_odd.state;
-  if (!get_bit(state_old.reg_stat, 0) && WODU_HBLANKp_odd_old && !POPU_VBLANKp_odd_old) int_stat_old = 1;
+  if (!get_bit(state_old.reg_stat, 0) && (!FEPO_STORE_MATCHp_odd_old && (pix_count_old == 167)) && !POPU_VBLANKp_odd_old) int_stat_old = 1;
   if (!get_bit(state_old.reg_stat, 1) && POPU_VBLANKp_odd_old) int_stat_old = 1;
   if (!get_bit(state_old.reg_stat, 2) && !POPU_VBLANKp_odd_old && state_old.lcd.RUTU_LINE_ENDp_odd.state) int_stat_old = 1;
   if (!get_bit(state_old.reg_stat, 3) && state_old.int_ctrl.ROPO_LY_MATCH_SYNCp.state) int_stat_old = 1;

@@ -69,21 +69,20 @@ int main(int argc, char** argv) {
 
 #if 1
   {
+    LOG_B("========== LogicBoy regression tests ==========\n");
     TestResults results;
     GateBoyTests t;
 
-    LOG_B("========== LogicBoy regression tests ==========\n");
     const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
     results += t.test_reset_to_bootrom(proto.get(), 0x01); // OK
     results += t.test_reset_to_cart   (proto.get(), 0x01); // OK
     results += t.test_generic         (proto.get());
-    results += t.test_regression      (proto.get()); // OK
-    LOG_B("\n");
 
     LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
     LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
     LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
     LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+    LOG_B("\n");
 
     if (results.test_fail > 20) {
       LOG_R("\n");
@@ -91,6 +90,32 @@ int main(int argc, char** argv) {
       LOG_R("##               FAIL                 ##\n");
       LOG_R("########################################\n");
       LOG_R("\n");
+      return -1;
+    }
+  }
+
+  {
+    LOG_B("========== LogicBoy regression dumps ==========\n");
+
+    TestResults results;
+    GateBoyTests t;
+
+    const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
+    results += t.test_regression      (proto.get()); // OK
+
+    LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
+    LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
+    LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
+    LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+    LOG_B("\n");
+
+    if (results.test_fail) {
+      LOG_R("\n");
+      LOG_R("########################################\n");
+      LOG_R("##               FAIL                 ##\n");
+      LOG_R("########################################\n");
+      LOG_R("\n");
+      return -1;
     }
   }
 #endif
@@ -130,6 +155,7 @@ int main(int argc, char** argv) {
     LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
     LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
     LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+    LOG_B("\n");
 
     if (results.test_fail) {
       LOG_R("\n");

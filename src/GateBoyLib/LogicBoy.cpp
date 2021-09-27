@@ -809,27 +809,30 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     auto b2 = get_bit(state_old.sfetch_counter_evn, 2);
     auto b1d = state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state;
 
+    auto clk = (state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_old && XYSO_xBCDxFGH_old);
+    auto bphase = b1 || b2 || (b1d && !b0);
+
     if (DELTA_DE_old || DELTA_EF_old || DELTA_FG_old || DELTA_GH_old) {
       if (MATU_DMA_RUNNINGp_old) {
         BYCU_OAM_CLKp_old = state_old.XYMU_RENDERINGn;
       }
       else if (state_old.XYMU_RENDERINGn) {
-        BYCU_OAM_CLKp_old = (state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_old && XYSO_xBCDxFGH_old) || cpu_addr_oam_old;
+        BYCU_OAM_CLKp_old = clk || cpu_addr_oam_old;
       }
       else {
-        BYCU_OAM_CLKp_old = (state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_old && XYSO_xBCDxFGH_old) || !(b1 || b2 || (b1d && !b0)) || cpu_addr_oam_old;
+        BYCU_OAM_CLKp_old = clk || !bphase || cpu_addr_oam_old;
       }
     }
     else {
       if (MATU_DMA_RUNNINGp_old) {
         if (state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = 0;
-        else                           BYCU_OAM_CLKp_old = (b1 || b2 || (b1d && !b0));
+        else                           BYCU_OAM_CLKp_old = bphase;
       }
       else if (state_old.XYMU_RENDERINGn) {
-        BYCU_OAM_CLKp_old = !(!(state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_old && XYSO_xBCDxFGH_old));
+        BYCU_OAM_CLKp_old = clk;
       }
       else {
-        BYCU_OAM_CLKp_old = !(!(state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_old && XYSO_xBCDxFGH_old) && (b1 || b2 || (b1d && !b0)) && !cpu_addr_oam_old);
+        BYCU_OAM_CLKp_old = clk || !bphase || cpu_addr_oam_old;
       }
     }
 

@@ -616,18 +616,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  wire BEBU_SCAN_DONE_tn_odd_new    = line_rst_new || vid_rst_new || !scan_done_trig_new;
-  wire AVAP_SCAN_DONE_tp_odd_new    = !BEBU_SCAN_DONE_tn_odd_new;
-
   {
     if (DELTA_AB_new || DELTA_CD_new || DELTA_EF_new || DELTA_GH_new) state_new.VOGA_HBLANKp = (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167));
-    if (vid_rst_new || (line_rst_new || vid_rst_new)) state_new.VOGA_HBLANKp = 0;
-    wire VOGA_HBLANKp_evn_new = state_new.VOGA_HBLANKp;
+    if (vid_rst_new || line_rst_new) state_new.VOGA_HBLANKp = 0;
 
-    wire WEGO_HBLANKp_evn_new = vid_rst_new || VOGA_HBLANKp_evn_new;
-
-    if (WEGO_HBLANKp_evn_new)      state_new.XYMU_RENDERINGn = 1;
-    if (AVAP_SCAN_DONE_tp_odd_new) state_new.XYMU_RENDERINGn = 0;
+    if (vid_rst_new || state_new.VOGA_HBLANKp)      state_new.XYMU_RENDERINGn = 1;
+    if ((!line_rst_new && !vid_rst_new && scan_done_trig_new)) state_new.XYMU_RENDERINGn = 0;
   }
 
   wire XYMU_RENDERINGn_new = state_new.XYMU_RENDERINGn;
@@ -834,7 +828,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire NUNY_WIN_MODE_TRIGp_new      = PYNU_WIN_MODE_Ap_odd_new && !NOPA_WIN_MODE_Bp_evn_new;
   wire NYFO_WIN_MODE_TRIGn_new      = !NUNY_WIN_MODE_TRIGp_new;
   wire MOSU_WIN_MODE_TRIGp_new      = !NYFO_WIN_MODE_TRIGn_new;
-  wire NYXU_BFETCH_RSTn_new         = !(AVAP_SCAN_DONE_tp_odd_new || MOSU_WIN_MODE_TRIGp_new || TEVO_WIN_FETCH_TRIGp_new);
+  wire NYXU_BFETCH_RSTn_new         = !((!line_rst_new && !vid_rst_new && scan_done_trig_new) || MOSU_WIN_MODE_TRIGp_new || TEVO_WIN_FETCH_TRIGp_new);
 
 
 

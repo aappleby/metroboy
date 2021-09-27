@@ -820,7 +820,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       BYCU_OAM_CLKp_old = clk || !bphase || cpu_addr_oam_old;   // this "cpu_addr_oam_old" seems like a bug
     }
     else {
-      BYCU_OAM_CLKp_old = clk || cpu_addr_oam_old && delta;
+      BYCU_OAM_CLKp_old = clk || (cpu_addr_oam_old && delta);
     }
 
   

@@ -334,8 +334,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF4B) state_new.reg_wx   = ~state_old.cpu_dbus;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF50) state_new.cpu_signals.TEPU_BOOT_BITn.state = get_bit(state_old.cpu_dbus, 0) || state_old.cpu_signals.TEPU_BOOT_BITn.state;
 
-  const auto& reg_wy_new = state_new.reg_wy;
-
   if (cpu_wr && DELTA_GH_new && (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE)) mem.zero_ram[cpu_addr_new & 0x007F] = state_old.cpu_dbus;
 
   wire req_addr_boot = (cpu.bus_req_new.addr >= 0x0000) && (cpu.bus_req_new.addr <= 0x00FF) && !state_new.cpu_signals.TEPU_BOOT_BITn.state;
@@ -870,52 +868,18 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sprite_lbus = 0b00001111;
   }
 
-  auto& sprite_ibus_new = state_new.sprite_ibus;
-  auto& sprite_lbus_new = state_new.sprite_lbus;
+  if (!TYFA_CLKPIPE_evn_old && TYFA_CLKPIPE_evn_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
+  if (vid_rst_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = 0;
 
-
-
-
-  //gb_state.win_ctrl.PYCO_WIN_MATCHp_evn.dff17(TYFA_CLKPIPE_evn_new, XAPO_VID_RSTn(), reg_old.win_ctrl.NUKO_WX_MATCHp_odd.out_old());
-
-  auto& PYCO_WIN_MATCHp_evn_new = state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state;
-  if (!TYFA_CLKPIPE_evn_old && TYFA_CLKPIPE_evn_new) PYCO_WIN_MATCHp_evn_new = nuko_wx_match_old;
-  if (vid_rst_new) PYCO_WIN_MATCHp_evn_new = 0;
-
-
-
-
-
-  wire win_mode_trig_new_odd = NUNY_WIN_MODE_TRIGp_new;
-
-
-
-
-
-
-
-
-
-
-
-
-  wire PAHA_RENDERINGn = bit(state_new.XYMU_RENDERINGn);
 
 
   // ROGE
-  auto& ROGE_WY_MATCHp_odd_old = state_old.win_ctrl.ROGE_WY_MATCHp_odd.state;
-  auto& ROGE_WY_MATCHp_odd_new = state_new.win_ctrl.ROGE_WY_MATCHp_odd.state;
-  ROGE_WY_MATCHp_odd_new = (state_new.reg_ly == uint8_t(~reg_wy_new)) && win_en_new;
+  state_new.win_ctrl.ROGE_WY_MATCHp_odd.state = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && win_en_new;
 
   // SARY
-  auto& SARY_WY_MATCHp_odd_old = state_old.win_ctrl.SARY_WY_MATCHp_odd.state;
-  auto& SARY_WY_MATCHp_odd_new = state_new.win_ctrl.SARY_WY_MATCHp_odd.state;
-  if (DELTA_BC_new) SARY_WY_MATCHp_odd_new = ROGE_WY_MATCHp_odd_old;
-  if (vid_rst_new) SARY_WY_MATCHp_odd_new = 0;
+  if (DELTA_BC_new) state_new.win_ctrl.SARY_WY_MATCHp_odd.state = state_old.win_ctrl.ROGE_WY_MATCHp_odd.state;
+  if (vid_rst_new) state_new.win_ctrl.SARY_WY_MATCHp_odd.state = 0;
 
-
-  wire SEKO_WIN_FETCH_TRIGp_evn = !(!bit(state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state) || bit(state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state));
-  wire TEVO_WIN_FETCH_TRIGp = (SEKO_WIN_FETCH_TRIGp_evn || (!state_new.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.win_ctrl.SOVY_WIN_HITp_evn.state) || (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state));
 
 
 
@@ -931,7 +895,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   wire PECU_FINE_CLK_odd_old = !(TYFA_CLKPIPE_evn_old && (state_old.fine_count_odd != 7));
   wire PECU_FINE_CLK_odd_new = !(TYFA_CLKPIPE_evn_new && (state_new.fine_count_odd != 7));
-  wire PASO_FINE_RST = !(bit(PAHA_RENDERINGn) || bit(TEVO_WIN_FETCH_TRIGp));
+  wire PASO_FINE_RST = !(state_new.XYMU_RENDERINGn || TEVO_WIN_FETCH_TRIGp_new);
   if (!PECU_FINE_CLK_odd_old && PECU_FINE_CLK_odd_new) {
     state_new.fine_count_odd++;
   }
@@ -1663,7 +1627,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     const auto sfetch_oam_clk_new = (get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || (state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && !get_bit(state_new.sfetch_counter_evn, 0)));
     const auto sfetch_oam_oen_new = (get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state);
 
-    state_new.oam_abus = (uint8_t)~((sprite_ibus_new << 2) | 0b11);
+    state_new.oam_abus = (uint8_t)~((state_new.sprite_ibus << 2) | 0b11);
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk_new(phase_total_old, 0b11110000));
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;

@@ -337,31 +337,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // LX, LY, lcd flags
 
-  if (DELTA_FG_new) {
-    state_new.lcd.RUTU_LINE_ENDp_odd.state = ((state_old.reg_lx & 113) == 113);
-    if (!state_old.lcd.RUTU_LINE_ENDp_odd.state && (state_new.reg_lx == 113)) {
-      state_new.reg_ly++;
-    }
-  }
-
-  if (DELTA_BC_new) {
-    state_new.lcd.NYPE_LINE_ENDp_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state;
-    state_new.reg_lx++;
-  }
-
-  if (!state_old.lcd.NYPE_LINE_ENDp_odd.state && state_new.lcd.NYPE_LINE_ENDp_odd.state) {
-    state_new.lcd.POPU_VBLANKp_odd.state = ((state_old.reg_ly & 144) == 144);
-    state_new.lcd.MYTA_FRAME_ENDp_odd.state = ((state_old.reg_ly & 153) == 153);
-  }
-  
-  if (state_new.lcd.MYTA_FRAME_ENDp_odd.state) {
-    state_new.reg_ly = 0;
-  }
-
-  if (state_new.lcd.RUTU_LINE_ENDp_odd.state) {
-    state_new.reg_lx = 0;
-  }
-
   if (vid_rst_new) {
     state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
     state_new.lcd.NYPE_LINE_ENDp_odd.state = 0;
@@ -369,6 +344,27 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
     state_new.reg_ly = 0;
     state_new.reg_lx = 0;
+  }
+  else {
+    if (DELTA_ODD_new) {
+      if (DELTA_FG_new) {
+        state_new.lcd.RUTU_LINE_ENDp_odd.state = state_old.reg_lx >= 113;
+        if (!state_old.lcd.RUTU_LINE_ENDp_odd.state && state_new.lcd.RUTU_LINE_ENDp_odd.state) {
+          state_new.reg_ly++;
+        }
+      }
+
+      if (DELTA_BC_new) {
+        state_new.reg_lx++;
+        state_new.lcd.NYPE_LINE_ENDp_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state;
+        if (!state_old.lcd.NYPE_LINE_ENDp_odd.state && state_new.lcd.NYPE_LINE_ENDp_odd.state) {
+          state_new.lcd.POPU_VBLANKp_odd.state = state_old.reg_ly >= 144;
+          state_new.lcd.MYTA_FRAME_ENDp_odd.state = state_old.reg_ly >= 153;
+        }
+      }
+      if (state_new.lcd.MYTA_FRAME_ENDp_odd.state) state_new.reg_ly = 0;
+      if (state_new.lcd.RUTU_LINE_ENDp_odd.state) state_new.reg_lx = 0;
+    }
   }
 
   //----------

@@ -543,12 +543,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  wire TEVO_WIN_FETCH_TRIGp_old =
-    (state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state) ||
-    (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.win_ctrl.SOVY_WIN_HITp_evn.state) ||
-    (!state_old.XYMU_RENDERINGn && !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state);
-
-  wire AVAP_SCAN_DONE_tp_odd_old    = (!ATEJ_LINE_RSTp_odd_old && !vid_rst_old && state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state);
 
 
   //----------------------------------------
@@ -625,11 +619,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  // FETO
-  state_new.sprite_scanner.FETO_SCAN_DONEp.state = state_new.scan_counter == 39;
 
   // BYBA
-  if (DELTA_HA_new || DELTA_DE_new) state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = state_old.sprite_scanner.FETO_SCAN_DONEp.state;
+  if (DELTA_HA_new || DELTA_DE_new) state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = state_old.scan_counter == 39;
   if (line_rst_new || vid_rst_new) state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
 
   wire scan_done_trig_old = state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state;
@@ -1013,14 +1005,21 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Win map x counter
 
+  wire TEVO_WIN_FETCH_TRIGp_old =
+    (state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state) ||
+    (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.win_ctrl.SOVY_WIN_HITp_evn.state) ||
+    (!state_old.XYMU_RENDERINGn && !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state);
+
   wire VETU_WIN_MAPp_old = TEVO_WIN_FETCH_TRIGp_old && state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
   wire VETU_WIN_MAPp_new = TEVO_WIN_FETCH_TRIGp_new && state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
 
-  if (!VETU_WIN_MAPp_old && VETU_WIN_MAPp_new) {
-    state_new.win_x.map++;
+  if (DELTA_ODD_new) {
+    if (!VETU_WIN_MAPp_old && VETU_WIN_MAPp_new) {
+      state_new.win_x.map++;
+    }
   }
 
-  if (vid_rst_new || (line_rst_new || vid_rst_new) || !win_en_new) {
+  if (vid_rst_new || line_rst_new || !win_en_new) {
     state_new.win_x.map = 0;
   }
 
@@ -1841,7 +1840,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (!config_fastmode) {
 
-    // LYRY
+    state_new.sprite_scanner.FETO_SCAN_DONEp.state = state_new.scan_counter == 39;
     state_new.tfetch_control.LYRY_BFETCH_DONEp_odd.state = state_new.tfetch_counter_odd >= 5;
 
 

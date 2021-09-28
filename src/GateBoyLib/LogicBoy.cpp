@@ -728,8 +728,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // CLKPIPE is an even clock, it can only go high on even deltas. FEPO/WODU/SOCY are odd signals, they stay constant during even deltas.
   // SO, it is guaranteed safe to use the old values of FEPO/WODU/SOCY to compute CLKPIPE
 
-  wire TYFA_CLKPIPE_evn_old = !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && (!state_old.FEPO_STORE_MATCHp_odd && !(!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) && !(DELTA_EVEN_new));
-  wire TYFA_CLKPIPE_evn_new = !state_new.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && (!state_old.FEPO_STORE_MATCHp_odd && !(!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) && !(DELTA_ODD_new));
+  wire TYFA_CLKPIPE_evn_old = !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_old;
+  wire TYFA_CLKPIPE_evn_new = !state_new.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_new;
 
   // RYVA
   if (TYFA_CLKPIPE_evn_old && !TYFA_CLKPIPE_evn_new) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = !nuko_wx_match_old && state_old.fine_count_odd == 7;

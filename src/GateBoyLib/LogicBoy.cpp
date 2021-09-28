@@ -1165,74 +1165,43 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Memory buses
 
-  uint8_t pins_ctrl_rdn_new = 1;
-  uint8_t pins_ctrl_wrn_new = 1;
 
-  uint8_t pins_abus_lo = 0xFF;
-  uint8_t pins_abus_hi = 0xFF;
+  uint16_t pins_abus = 0xFFFF;
+
+  uint8_t pins_ctrl_csn_new = 0;
+  if (ext_addr_new && cpu_addr_ram_new)             pins_ctrl_csn_new = gen_clk_new(phase_total_old, 0b00111111);
+  if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new)  pins_ctrl_csn_new = !!(dma_addr_new & 0x8000);
+
+  uint8_t pins_ctrl_rdn_new = 0;
+  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_rdn_new = 1;
+  if (!ext_addr_new || !cpu_wr)                     pins_ctrl_rdn_new = 1;
+  if (cpu_addr_vram_new)                            pins_ctrl_rdn_new = 1;
+
+  uint8_t pins_ctrl_wrn_new = 0;
+  if (ext_addr_new && cpu_wr && !cpu_addr_vram_new) pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110);
+  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_wrn_new = 0;
+
 
   if (ext_addr_new && !cpu_addr_vram_new) {
     state_new.ext_addr_latch = cpu_addr_new & 0x7FFF;
   }
 
+  pins_abus = state_new.ext_addr_latch ^ 0x7FFF;
+
+  if (!state_new.cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF) {
+  }
+  else {
+    if (gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new) {
+      pins_abus |= uint16_t(~cpu_addr_new & 0x8000);
+    }
+    else {
+    }
+  }
 
 
-  uint8_t pins_ctrl_csn_new = 1;
   if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new) {
-    pins_ctrl_csn_new = !!(dma_addr_new & 0x8000);
+    pins_abus = uint16_t(~dma_addr_new);
   }
-  else {
-    pins_ctrl_csn_new = gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new && cpu_addr_ram_new;
-  }
-
-
-
-  pins_ctrl_rdn_new = 0;
-  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_rdn_new = 1;
-  if (!ext_addr_new || !cpu_wr)                     pins_ctrl_rdn_new = 1;
-  if (cpu_addr_vram_new)                            pins_ctrl_rdn_new = 1;
-
-
-  pins_ctrl_wrn_new = 0;
-  if (ext_addr_new && cpu_wr && !cpu_addr_vram_new) pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110);
-  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_wrn_new = 0;
-
-
-  if (MATU_DMA_RUNNINGp_new) {
-    if (dma_addr_vram_new) {
-      pins_abus_lo = ~((state_new.ext_addr_latch >> 0) & 0xFF);
-      pins_abus_hi = ~((state_new.ext_addr_latch >> 8) & 0x7F);
-
-      pins_abus_hi &= 0b01111111;
-      if (!state_new.cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF) {
-      }
-      else {
-        uint8_t bit = gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new && !get_bit(cpu_addr_new, 15);
-        pins_abus_hi |= bit << 7;
-      }
-    }
-    else {
-      pins_abus_lo = (~dma_addr_new >> 0) & 0xFF;
-      pins_abus_hi = (~dma_addr_new >> 8) & 0xFF;
-
-      pins_abus_hi &= 0b01111111;
-      pins_abus_hi |= (!!((~dma_addr_new >> 8) & 0b10000000)) << 7;
-    }
-
-  }
-  else {
-    pins_abus_lo = ~((state_new.ext_addr_latch >> 0) & 0xFF);
-    pins_abus_hi = ~((state_new.ext_addr_latch >> 8) & 0x7F);
-
-    pins_abus_hi &= 0b01111111;
-    if (!state_new.cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF) {
-    }
-    else {
-      uint8_t bit = gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new && !get_bit(cpu_addr_new, 15);
-      pins_abus_hi |= bit << 7;
-    }
-  }
-
 
   uint8_t pins_dbus = 0;
   
@@ -1244,9 +1213,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Ext read
 
   if (pins_ctrl_rdn_new) {
-    const uint16_t ext_addr_lo = pins_abus_lo ^ 0xFF;
-    const uint16_t ext_addr_hi = pins_abus_hi ^ 0xFF;
-    const uint16_t ext_addr = (ext_addr_lo << 0) | (ext_addr_hi << 8);
+    const uint16_t ext_addr = pins_abus ^ 0xFFFF;
 
     const auto rom_addr_mask = cart_rom_addr_mask(cart_blob);
     const auto ram_addr_mask = cart_ram_addr_mask(cart_blob);
@@ -1304,9 +1271,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Ext write
 
   {
-    const uint16_t ext_addr_lo = pins_abus_lo ^ 0xFF;
-    const uint16_t ext_addr_hi = pins_abus_hi ^ 0xFF;
-    const uint16_t ext_addr = (ext_addr_lo << 0) | (ext_addr_hi << 8);
+    const uint16_t ext_addr = pins_abus ^ 0xFFFF;
 
     const auto region = ext_addr >> 13;
     const uint8_t data_out = ~pins_dbus;
@@ -1920,8 +1885,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
     }
 
-    bit_unpack(pins.abus_lo, pins_abus_lo);
-    bit_unpack(pins.abus_hi, pins_abus_hi);
+    bit_unpack(pins.abus_lo, (pins_abus >> 0) & 0xFF);
+    bit_unpack(pins.abus_hi, (pins_abus >> 8) & 0xFF);
 
     pins.ctrl.PIN_78_WRn.state = pins_ctrl_wrn_new;
     pins.ctrl.PIN_79_RDn.state = pins_ctrl_rdn_new;

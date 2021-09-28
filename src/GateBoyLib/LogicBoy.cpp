@@ -532,8 +532,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  wire TAVE_PRELOAD_DONE_TRIGp_old  = (!state_old.XYMU_RENDERINGn && !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state);
-  wire TEVO_WIN_FETCH_TRIGp_old     = (state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state) || (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.win_ctrl.SOVY_WIN_HITp_evn.state) || TAVE_PRELOAD_DONE_TRIGp_old;
+  wire TEVO_WIN_FETCH_TRIGp_old =
+    (state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state) ||
+    (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.win_ctrl.SOVY_WIN_HITp_evn.state) ||
+    (!state_old.XYMU_RENDERINGn && !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state);
 
   wire AVAP_SCAN_DONE_tp_odd_old    = (!ATEJ_LINE_RSTp_odd_old && !vid_rst_old && state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state);
   wire NYXU_BFETCH_RSTn_old         = !(AVAP_SCAN_DONE_tp_odd_old || (state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_old.win_ctrl.NOPA_WIN_MODE_Bp_evn.state) || TEVO_WIN_FETCH_TRIGp_old);
@@ -737,8 +739,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (DELTA_EVEN_new) state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state   = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
   if (state_new.XYMU_RENDERINGn) state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = 0;
 
-  wire TEVO_WIN_FETCH_TRIGp_new     = !(!state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state || state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state) || (!state_new.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.win_ctrl.SOVY_WIN_HITp_evn.state) || (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state); // Schematic wrong, this is OR
-  wire NYXU_BFETCH_RSTn_new         = !((!line_rst_new && !vid_rst_new && scan_done_trig_new) || NUNY_WIN_MODE_TRIGp_new || TEVO_WIN_FETCH_TRIGp_new);
+  wire TEVO_WIN_FETCH_TRIGp_new =
+    (state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state) ||
+    (state_new.win_ctrl.SOVY_WIN_HITp_evn.state && !state_new.win_ctrl.RYDY_WIN_HITp_odd.state) ||
+    (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state);
+
+  wire NYXU_BFETCH_RSTn_new = (line_rst_new || vid_rst_new || !scan_done_trig_new) && !NUNY_WIN_MODE_TRIGp_new && !TEVO_WIN_FETCH_TRIGp_new;
 
 
 

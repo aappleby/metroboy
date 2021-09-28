@@ -657,7 +657,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (state_new.XYMU_RENDERINGn) state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = 0;
 
   // SOBU
-  if (DELTA_EVEN_new) state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state = state_old.FEPO_STORE_MATCHp_odd && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_control.LYRY_BFETCH_DONEp_odd.state && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
+  if (DELTA_EVEN_new) state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state = state_old.FEPO_STORE_MATCHp_odd && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && (state_old.tfetch_counter >= 5) && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
 
   // SUDA
   if (DELTA_ODD_new) state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state = state_old.sfetch_control.SOBU_SFETCH_REQp_evn.state;
@@ -699,7 +699,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
 
   // NYKA
-  if (DELTA_EVEN_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_control.LYRY_BFETCH_DONEp_odd.state;
+  if (DELTA_EVEN_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter >= 5;
   if (NUNY_WIN_MODE_TRIGp_new || state_new.XYMU_RENDERINGn) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
 
   // PORY
@@ -760,25 +760,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  //wire NYXU_BFETCH_RSTn_old         = !(AVAP_SCAN_DONE_tp_odd_old || (state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_old.win_ctrl.NOPA_WIN_MODE_Bp_evn.state) || TEVO_WIN_FETCH_TRIGp_old);
   wire NYXU_BFETCH_RSTn_old = (line_rst_old || vid_rst_old || !scan_done_trig_old) && !NUNY_WIN_MODE_TRIGp_old && !TEVO_WIN_FETCH_TRIGp_old;
 
   // tfetch counter
-  {
-    wire LEBO_ODD_old = !((DELTA_EVEN_old) && !(get_bit(state_old.tfetch_counter, 0) && get_bit(state_old.tfetch_counter, 2) && NYXU_BFETCH_RSTn_old));
-    wire LEBO_ODD_new = !((DELTA_EVEN_new) && !(get_bit(state_new.tfetch_counter, 0) && get_bit(state_new.tfetch_counter, 2) && NYXU_BFETCH_RSTn_new));
+  if (DELTA_ODD_new && state_old.tfetch_counter < 5) state_new.tfetch_counter++;
+  if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_counter = 0;
+ 
 
-    if (!LEBO_ODD_old && LEBO_ODD_new) state_new.tfetch_counter++;
-    if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_counter = 0;
-  }
-    
-
-
-  // LYRY
-  state_new.tfetch_control.LYRY_BFETCH_DONEp_odd.state = NYXU_BFETCH_RSTn_new && get_bit(state_new.tfetch_counter, 0) && get_bit(state_new.tfetch_counter, 2);
 
   // LOVY
-  if (DELTA_ODD_new) state_new.tfetch_control.LOVY_FETCH_DONEp.state = state_old.tfetch_control.LYRY_BFETCH_DONEp_odd.state;
+  if (DELTA_ODD_new) state_new.tfetch_control.LOVY_FETCH_DONEp.state = state_old.tfetch_counter >= 5;
   if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_control.LOVY_FETCH_DONEp.state = 0;
 
   // LONY
@@ -995,22 +986,23 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (state_new.XYMU_RENDERINGn) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
 
 
+
+  const uint8_t tfetch_phase_old = pack(
+    !(state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_old.tfetch_counter, 0)),
+    get_bit(state_old.tfetch_counter, 0),
+    get_bit(state_old.tfetch_counter, 1),
+    get_bit(state_old.tfetch_counter, 2));
+
+  const uint8_t tfetch_phase_new = pack(
+    !(state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_new.tfetch_counter, 0)),
+    get_bit(state_new.tfetch_counter, 0),
+    get_bit(state_new.tfetch_counter, 1),
+    get_bit(state_new.tfetch_counter, 2));
+
   if (!state_old.XYMU_RENDERINGn) {
-    wire LOMA_LATCH_TILE_DAn_old = 0 || !get_bit(state_old.tfetch_counter, 0) || state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state || !get_bit(state_old.tfetch_counter, 1) || get_bit(state_old.tfetch_counter, 2);
-    wire LABU_LATCH_TILE_DBn_old = 0 || !get_bit(state_old.tfetch_counter, 0) || state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state ||  get_bit(state_old.tfetch_counter, 1);
-
-    wire LOMA_LATCH_TILE_DAn_new = state_new.XYMU_RENDERINGn || !get_bit(state_new.tfetch_counter, 0) || state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state || !get_bit(state_new.tfetch_counter, 1) || get_bit(state_new.tfetch_counter, 2);
-    wire LABU_LATCH_TILE_DBn_new = state_new.XYMU_RENDERINGn || !get_bit(state_new.tfetch_counter, 0) || state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state ||  get_bit(state_new.tfetch_counter, 1);
-
-
-    if (!LOMA_LATCH_TILE_DAn_old && LOMA_LATCH_TILE_DAn_new) {
-      state_new.tile_temp_a = ~state_old.vram_dbus;
-    }
-
-    if (!LABU_LATCH_TILE_DBn_old && LABU_LATCH_TILE_DBn_new) {
-      //printf("%2d %2d\n", sfetch_phase_old, sfetch_phase_new);
-      state_new.tile_temp_b = state_old.vram_dbus;
-    }
+    if (tfetch_phase_old == 6)  state_new.tile_temp_a = ~state_old.vram_dbus;
+    if (tfetch_phase_old == 2)  state_new.tile_temp_b =  state_old.vram_dbus;
+    if (tfetch_phase_old == 10) state_new.tile_temp_b =  state_old.vram_dbus;
   }
 
 
@@ -1836,6 +1828,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+
+    // LYRY
+    state_new.tfetch_control.LYRY_BFETCH_DONEp_odd.state = state_new.tfetch_counter >= 5;
+
 
     state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
     state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) && cpu.bus_req_new.read);

@@ -1165,7 +1165,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Memory buses
 
-  uint8_t pins_ctrl_csn_new = 1;
   uint8_t pins_ctrl_rdn_new = 1;
   uint8_t pins_ctrl_wrn_new = 1;
 
@@ -1176,6 +1175,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.ext_addr_latch = cpu_addr_new & 0x7FFF;
   }
 
+
+
+  uint8_t pins_ctrl_csn_new = 1;
   if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new) {
     pins_ctrl_csn_new = !!(dma_addr_new & 0x8000);
   }
@@ -1185,13 +1187,21 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
+  pins_ctrl_rdn_new = 0;
+  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_rdn_new = 1;
+  if (!ext_addr_new || !cpu_wr)                     pins_ctrl_rdn_new = 1;
+  if (cpu_addr_vram_new)                            pins_ctrl_rdn_new = 1;
+
+
+  pins_ctrl_wrn_new = 0;
+  if (ext_addr_new && cpu_wr && !cpu_addr_vram_new) pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110);
+  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_wrn_new = 0;
+
+
   if (MATU_DMA_RUNNINGp_new) {
     if (dma_addr_vram_new) {
       pins_abus_lo = ~((state_new.ext_addr_latch >> 0) & 0xFF);
       pins_abus_hi = ~((state_new.ext_addr_latch >> 8) & 0x7F);
-
-      pins_ctrl_rdn_new = 1;
-      pins_ctrl_wrn_new = 0;
 
       pins_abus_hi &= 0b01111111;
       if (!state_new.cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF) {
@@ -1205,13 +1215,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       pins_abus_lo = (~dma_addr_new >> 0) & 0xFF;
       pins_abus_hi = (~dma_addr_new >> 8) & 0xFF;
 
-      pins_ctrl_rdn_new = 1;
-      pins_ctrl_wrn_new = 0;
-      if (ext_addr_new && cpu_wr) {
-        pins_ctrl_rdn_new = cpu_addr_vram_new;
-        pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110) && !cpu_addr_vram_new;
-      }
-
       pins_abus_hi &= 0b01111111;
       pins_abus_hi |= (!!((~dma_addr_new >> 8) & 0b10000000)) << 7;
     }
@@ -1220,13 +1223,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   else {
     pins_abus_lo = ~((state_new.ext_addr_latch >> 0) & 0xFF);
     pins_abus_hi = ~((state_new.ext_addr_latch >> 8) & 0x7F);
-
-    pins_ctrl_rdn_new = 1;
-    pins_ctrl_wrn_new = 0;
-    if (ext_addr_new && cpu_wr) {
-      pins_ctrl_rdn_new = cpu_addr_vram_new;
-      pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110) && !cpu_addr_vram_new;
-    }
 
     pins_abus_hi &= 0b01111111;
     if (!state_new.cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF) {

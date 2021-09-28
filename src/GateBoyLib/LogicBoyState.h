@@ -159,7 +159,7 @@ struct LogicBoyState {
   SpriteFetchControl sfetch_control;
   //----------
 
-  uint8_t tfetch_counter;
+  uint8_t tfetch_counter_odd;
   TileFetchControl tfetch_control;
   uint8_t tile_temp_a;
   uint8_t tile_temp_b;

@@ -226,7 +226,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.store_x9, src.store_x9);
   bit_unpack(dst.sfetch_counter_evn, src.sfetch_counter_evn);
   bit_unpack(dst.sfetch_control, bit_pack(src.sfetch_control));
-  bit_unpack(dst.tfetch_counter, src.tfetch_counter);
+  bit_unpack(dst.tfetch_counter, src.tfetch_counter_odd);
   bit_unpack(dst.tfetch_control, bit_pack(src.tfetch_control));
   bit_unpack(dst.tile_temp_a, src.tile_temp_a);
   bit_unpack(dst.tile_temp_b, src.tile_temp_b);
@@ -374,7 +374,7 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.store_x9 = bit_pack(src.store_x9);
   dst.sfetch_counter_evn = bit_pack(src.sfetch_counter_evn);
   dst.sfetch_control = bit_purge(src.sfetch_control);
-  dst.tfetch_counter = bit_pack(src.tfetch_counter);
+  dst.tfetch_counter_odd = bit_pack(src.tfetch_counter);
   dst.tfetch_control = bit_purge(src.tfetch_control);
   dst.tile_temp_a = bit_pack(src.tile_temp_a);
   dst.tile_temp_b = bit_pack(src.tile_temp_b);

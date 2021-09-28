@@ -934,9 +934,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pix_count_new = 0;
   }
   else {
-    wire SACU_CLKPIPE_odd_old = !TYFA_CLKPIPE_evn_old;
-    wire SACU_CLKPIPE_odd_new = !TYFA_CLKPIPE_evn_new;
-    if (!bit(SACU_CLKPIPE_odd_old) && bit(SACU_CLKPIPE_odd_new)) {
+    if (TYFA_CLKPIPE_evn_old && !TYFA_CLKPIPE_evn_new) {
       if (!state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) pix_count_new++;
     }
   }
@@ -1072,15 +1070,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Pixel pipes
 
   if (DELTA_ODD_new) {
-    wire SACU_CLKPIPE_odd_old = !TYFA_CLKPIPE_evn_old || state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state;
-    wire SACU_CLKPIPE_odd_new = !TYFA_CLKPIPE_evn_new || state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state;
-    if (!SACU_CLKPIPE_odd_old && SACU_CLKPIPE_odd_new) {
-      state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
-      state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
-      state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
-      state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
-      state_new.mask_pipe  = (state_new.mask_pipe  << 1) | 1;
-      state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
+    if (!state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) {
+      if (TYFA_CLKPIPE_evn_old && !TYFA_CLKPIPE_evn_new) {
+        state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
+        state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
+        state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
+        state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
+        state_new.mask_pipe  = (state_new.mask_pipe  << 1) | 1;
+        state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
+      }
     }
   }
 

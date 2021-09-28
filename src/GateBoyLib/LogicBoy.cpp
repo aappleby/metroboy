@@ -1651,23 +1651,23 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // OAM latch stores the contents of the oam dbus
 
-  if ((!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new)) {
+  if (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) {
     if (DELTA_AB_new || DELTA_BC_new || DELTA_EF_new || DELTA_FG_new) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
   }
   else if (!state_new.XYMU_RENDERINGn) {
-    if (!(get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state)) {
+    //if (!(get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state)) {
+      //printf("%d\n", sfetch_phase_new);
+    if (sfetch_phase_new == 0 || sfetch_phase_new == 3) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
   }
-  else {
-    if (cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA_new) && !((DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) && cpu.bus_req_new.read)) {
-      state_new.oam_latch_a = state_new.oam_dbus_a;
-      state_new.oam_latch_b = state_new.oam_dbus_b;
-    }
+  else if (cpu.bus_req_new.read && cpu_addr_oam_new && (DELTA_AB_new || DELTA_BC_new || DELTA_CD_new)) {
+    state_new.oam_latch_a = state_new.oam_dbus_a;
+    state_new.oam_latch_b = state_new.oam_dbus_b;
   }
 
   // Actual OAM write

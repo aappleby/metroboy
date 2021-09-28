@@ -1203,14 +1203,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  uint8_t pins_dbus = 0;
-  
+  uint8_t cart_dbus = 0xFF;
   if (cpu_wr && !req_addr_hi && !cpu_addr_bootrom_new && !cpu_addr_vram_new) {
-    pins_dbus = ~state_new.cpu_dbus;
+    cart_dbus = state_new.cpu_dbus;
   }
 
   //----------------------------------------
   // Ext read
+
+
 
   if (pins_ctrl_rdn_new) {
 
@@ -1261,7 +1262,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (ext_read_en) {
-      pins_dbus = ~data_in;
+      cart_dbus = data_in;
     }
   }
 
@@ -1269,7 +1270,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Ext write
 
   {
-    const uint8_t data_out = ~pins_dbus;
+    const uint8_t data_out = cart_dbus;
     wire mbc1_ram_en = state_new.ext_mbc.MBC1_RAM_EN.state;
     wire mbc1_mode = state_new.ext_mbc.MBC1_MODE.state;
 
@@ -1316,7 +1317,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.cpu_dbus = ~state_new.ext_data_latch;
   }
   else {
-    state_new.ext_data_latch = pins_dbus;
+    state_new.ext_data_latch = ~cart_dbus;
   }
 
   // vram read address
@@ -1533,6 +1534,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (gen_clk_new(phase_total_old, 0b11110000)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 1;
   if (cpu_addr_oam_new && cpu_wr && gen_clk_new(phase_total_old, 0b00001110)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 0;
 
+
   //----------
   // OAM bus and control signals.
   // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
@@ -1553,8 +1555,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
     }
 
-    state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : pins_dbus;
-    state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : pins_dbus;
+    state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
+    state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
   }
   else if (state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) {
     state_new.oam_abus = (uint8_t)~((state_new.scan_counter << 2) | 0b00);
@@ -1939,7 +1941,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     bit_unpack(pins.vram_dbus, pins_vram_dbus);
     bit_unpack(pins.vram_abus, state_new.vram_abus);
 
-    bit_unpack(pins.dbus, pins_dbus);
+    bit_unpack(pins.dbus, ~cart_dbus);
 
 
     pins.joy.PIN_63_JOY_P14.state = !get_bit(state_new.reg_joy, 0);

@@ -1178,32 +1178,65 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new) {
     pins_ctrl_csn_new = !!(dma_addr_new & 0x8000);
-    pins_abus_lo = (~dma_addr_new >> 0) & 0xFF;
-    pins_abus_hi = (~dma_addr_new >> 8) & 0xFF;
   }
   else {
     pins_ctrl_csn_new = gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new && cpu_addr_ram_new;
-    pins_abus_lo = ~((state_new.ext_addr_latch >> 0) & 0xFF);
-    pins_abus_hi = ~((state_new.ext_addr_latch >> 8) & 0x7F);
   }
 
-  pins_ctrl_rdn_new = 1;
-  pins_ctrl_wrn_new = 0;
-  if (!(MATU_DMA_RUNNINGp_new && dma_addr_vram_new) && ext_addr_new && cpu_wr) {
-    pins_ctrl_rdn_new = cpu_addr_vram_new;
-    pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110) && !cpu_addr_vram_new;
-  }
 
-  pins_abus_hi &= 0b01111111;
-  if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new) {
-    pins_abus_hi |= (!!((~dma_addr_new >> 8) & 0b10000000)) << 7;
-  }
-  else if (!state_new.cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF) {
+
+  if (MATU_DMA_RUNNINGp_new) {
+    if (dma_addr_vram_new) {
+      pins_abus_lo = ~((state_new.ext_addr_latch >> 0) & 0xFF);
+      pins_abus_hi = ~((state_new.ext_addr_latch >> 8) & 0x7F);
+
+      pins_ctrl_rdn_new = 1;
+      pins_ctrl_wrn_new = 0;
+
+      pins_abus_hi &= 0b01111111;
+      if (!state_new.cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF) {
+      }
+      else {
+        uint8_t bit = gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new && !get_bit(cpu_addr_new, 15);
+        pins_abus_hi |= bit << 7;
+      }
+    }
+    else {
+      pins_abus_lo = (~dma_addr_new >> 0) & 0xFF;
+      pins_abus_hi = (~dma_addr_new >> 8) & 0xFF;
+
+      pins_ctrl_rdn_new = 1;
+      pins_ctrl_wrn_new = 0;
+      if (ext_addr_new && cpu_wr) {
+        pins_ctrl_rdn_new = cpu_addr_vram_new;
+        pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110) && !cpu_addr_vram_new;
+      }
+
+      pins_abus_hi &= 0b01111111;
+      pins_abus_hi |= (!!((~dma_addr_new >> 8) & 0b10000000)) << 7;
+    }
+
   }
   else {
-    uint8_t bit = gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new && !get_bit(cpu_addr_new, 15);
-    pins_abus_hi |= bit << 7;
+    pins_abus_lo = ~((state_new.ext_addr_latch >> 0) & 0xFF);
+    pins_abus_hi = ~((state_new.ext_addr_latch >> 8) & 0x7F);
+
+    pins_ctrl_rdn_new = 1;
+    pins_ctrl_wrn_new = 0;
+    if (ext_addr_new && cpu_wr) {
+      pins_ctrl_rdn_new = cpu_addr_vram_new;
+      pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110) && !cpu_addr_vram_new;
+    }
+
+    pins_abus_hi &= 0b01111111;
+    if (!state_new.cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF) {
+    }
+    else {
+      uint8_t bit = gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new && !get_bit(cpu_addr_new, 15);
+      pins_abus_hi |= bit << 7;
+    }
   }
+
 
   uint8_t pins_dbus = 0;
   
@@ -1625,12 +1658,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
     }
 
-    wire XUPA_CPU_OAM_WRp  = !state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state;
-    wire AJUJ_OAM_BUSYn    = !(state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) && state_new.XYMU_RENDERINGn;
-    wire APAG_CBD_TO_OBDp  = (XUPA_CPU_OAM_WRp && AJUJ_OAM_BUSYn);
-    if (APAG_CBD_TO_OBDp) {
-      state_new.oam_dbus_a = ~state_new.cpu_dbus;
-      state_new.oam_dbus_b = ~state_new.cpu_dbus;
+    if (vid_rst_new) {
+      if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state && state_new.XYMU_RENDERINGn) {
+        state_new.oam_dbus_a = ~state_new.cpu_dbus;
+        state_new.oam_dbus_b = ~state_new.cpu_dbus;
+      }
+    }
+    else {
+      if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state && !state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && state_new.XYMU_RENDERINGn) {
+        state_new.oam_dbus_a = ~state_new.cpu_dbus;
+        state_new.oam_dbus_b = ~state_new.cpu_dbus;
+      }
     }
   }
   else {
@@ -1658,8 +1696,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
   else if (!state_new.XYMU_RENDERINGn) {
-    //if (!(get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state)) {
-      //printf("%d\n", sfetch_phase_new);
     if (sfetch_phase_new == 0 || sfetch_phase_new == 3) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;

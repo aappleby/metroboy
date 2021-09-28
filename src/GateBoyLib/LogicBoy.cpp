@@ -995,31 +995,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (state_new.XYMU_RENDERINGn) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
 
 
-  {
-    wire LAXE_BFETCH_S0n_old = !get_bit(state_old.tfetch_counter, 0);
-    wire NAKO_BFETCH_S1n_old = !get_bit(state_old.tfetch_counter, 1);
-    wire NOFU_BFETCH_S2n_old = !get_bit(state_old.tfetch_counter, 2);
+  if (!state_old.XYMU_RENDERINGn) {
+    wire LOMA_LATCH_TILE_DAn_old = 0 || !get_bit(state_old.tfetch_counter, 0) || state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state || !get_bit(state_old.tfetch_counter, 1) || get_bit(state_old.tfetch_counter, 2);
+    wire LABU_LATCH_TILE_DBn_old = 0 || !get_bit(state_old.tfetch_counter, 0) || state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state ||  get_bit(state_old.tfetch_counter, 1);
 
-    wire MYSO_STORE_VRAM_DATA_TRIGp_old = !(state_old.XYMU_RENDERINGn || LAXE_BFETCH_S0n_old || state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state);
-    wire NYDY_LATCH_TILE_DAn_old = !(MYSO_STORE_VRAM_DATA_TRIGp_old && get_bit(state_old.tfetch_counter, 1) && NOFU_BFETCH_S2n_old);
-    wire METE_LATCH_TILE_DAp_old = !NYDY_LATCH_TILE_DAn_old;
-    wire LOMA_LATCH_TILE_DAn_old = !METE_LATCH_TILE_DAp_old;
-    wire MOFU_LATCH_TILE_DBp_old = (MYSO_STORE_VRAM_DATA_TRIGp_old && NAKO_BFETCH_S1n_old);
-    wire LESO_LATCH_TILE_DBn_old = !MOFU_LATCH_TILE_DBp_old;
-    wire LUVE_LATCH_TILE_DBp_old = !LESO_LATCH_TILE_DBn_old;
-    wire LABU_LATCH_TILE_DBn_old = !LUVE_LATCH_TILE_DBp_old;
-
-    wire LAXE_BFETCH_S0n_new = !get_bit(state_new.tfetch_counter, 0);
-    wire NAKO_BFETCH_S1n_new = !get_bit(state_new.tfetch_counter, 1);
-    wire NOFU_BFETCH_S2n_new = !get_bit(state_new.tfetch_counter, 2);
-    wire MYSO_STORE_VRAM_DATA_TRIGp_new = !(state_new.XYMU_RENDERINGn || LAXE_BFETCH_S0n_new || state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state);
-    wire NYDY_LATCH_TILE_DAn_new = !(MYSO_STORE_VRAM_DATA_TRIGp_new && get_bit(state_new.tfetch_counter, 1) && NOFU_BFETCH_S2n_new);
-    wire METE_LATCH_TILE_DAp_new = !NYDY_LATCH_TILE_DAn_new;
-    wire LOMA_LATCH_TILE_DAn_new = !METE_LATCH_TILE_DAp_new;
-    wire MOFU_LATCH_TILE_DBp_new = (MYSO_STORE_VRAM_DATA_TRIGp_new && NAKO_BFETCH_S1n_new);
-    wire LESO_LATCH_TILE_DBn_new = !MOFU_LATCH_TILE_DBp_new;
-    wire LUVE_LATCH_TILE_DBp_new = !LESO_LATCH_TILE_DBn_new;
-    wire LABU_LATCH_TILE_DBn_new = !LUVE_LATCH_TILE_DBp_new;
+    wire LOMA_LATCH_TILE_DAn_new = state_new.XYMU_RENDERINGn || !get_bit(state_new.tfetch_counter, 0) || state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state || !get_bit(state_new.tfetch_counter, 1) || get_bit(state_new.tfetch_counter, 2);
+    wire LABU_LATCH_TILE_DBn_new = state_new.XYMU_RENDERINGn || !get_bit(state_new.tfetch_counter, 0) || state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state ||  get_bit(state_new.tfetch_counter, 1);
 
 
     if (!LOMA_LATCH_TILE_DAn_old && LOMA_LATCH_TILE_DAn_new) {
@@ -1027,6 +1008,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (!LABU_LATCH_TILE_DBn_old && LABU_LATCH_TILE_DBn_new) {
+      //printf("%2d %2d\n", sfetch_phase_old, sfetch_phase_new);
       state_new.tile_temp_b = state_old.vram_dbus;
     }
   }

@@ -1005,15 +1005,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Win map x counter
 
-  wire TEVO_WIN_FETCH_TRIGp_old =
-    (state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state) ||
-    (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.win_ctrl.SOVY_WIN_HITp_evn.state) ||
-    (!state_old.XYMU_RENDERINGn && !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state);
-
-  wire VETU_WIN_MAPp_old = TEVO_WIN_FETCH_TRIGp_old && state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
-  wire VETU_WIN_MAPp_new = TEVO_WIN_FETCH_TRIGp_new && state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
-
   if (DELTA_ODD_new) {
+    wire TEVO_WIN_FETCH_TRIGp_old =
+      (state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state) ||
+      (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.win_ctrl.SOVY_WIN_HITp_evn.state) ||
+      (!state_old.XYMU_RENDERINGn && !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state);
+
+    wire VETU_WIN_MAPp_old = TEVO_WIN_FETCH_TRIGp_old && state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+    wire VETU_WIN_MAPp_new = TEVO_WIN_FETCH_TRIGp_new && state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+
     if (!VETU_WIN_MAPp_old && VETU_WIN_MAPp_new) {
       state_new.win_x.map++;
     }
@@ -1026,12 +1026,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Win map y counter - increments when we _leave_ window mode.
 
-  if (state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state) {
-    uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
-    uint8_t win_y_new = win_y_old + 1;
+  // fails fuzz test if we only update on odd
+  /*if (DELTA_ODD_new)*/ {
+    if (state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state) {
+      uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
+      uint8_t win_y_new = win_y_old + 1;
 
-    state_new.win_y.tile = win_y_new & 0b111;
-    state_new.win_y.map  = win_y_new >> 3;
+      state_new.win_y.tile = win_y_new & 0b111;
+      state_new.win_y.map  = win_y_new >> 3;
+    }
   }
 
   if (vid_rst_new || state_new.lcd.POPU_VBLANKp_odd.state) {
@@ -1305,32 +1308,41 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.ext_data_latch = ~cart_dbus;
   }
 
-  // vram read address
-
-  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new) {
-    state_new.vram_abus = ~dma_addr_new & VRAM_ADDR_MASK;
-  }
-  else if (state_new.XYMU_RENDERINGn) {
-    state_new.vram_abus = ~cpu_addr_new & VRAM_ADDR_MASK;
-  }
-  else {
-    state_new.vram_abus = VRAM_ADDR_MASK;
-  }
-
-
   //--------------------------------------------
+  // vram_abus driver
 
-  if (state_new.tfetch_control.LONY_FETCHINGp.state) {
+
+  if (TEXY_SFETCHINGp_evn_new) {
+
+    // Sprite read address
+
+    wire hilo = state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
+    const auto line = state_new.sprite_lbus ^ (get_bit(state_new.oam_temp_b, 6) ? 0b0000 : 0b1111);
+    const auto tile = state_new.oam_temp_a;
+
+    if (spr_size_new) {
+      bit_cat(state_new.vram_abus,  0,  0, hilo);
+      bit_cat(state_new.vram_abus,  1,  3, line);
+      bit_cat(state_new.vram_abus,  4, 11, tile);
+      bit_cat(state_new.vram_abus, 12, 12, 0);
+    }
+    else {
+      bit_cat(state_new.vram_abus,  0,  0, hilo);
+      bit_cat(state_new.vram_abus,  1,  4, line);
+      bit_cat(state_new.vram_abus,  5, 11, tile >> 1);
+      bit_cat(state_new.vram_abus, 12, 12, 0);
+    }
+  }
+  else if (state_new.tfetch_control.LONY_FETCHINGp.state) {
+
+    // BG map read address
+
     const auto px  = state_new.pix_count;
     const auto scx = ~state_new.reg_scx;
     const auto scy = ~state_new.reg_scy;
 
     const auto sum_x = px + scx;
     const auto sum_y = state_new.reg_ly + scy;
-
-    //--------------------------------------------
-    // BG map read address
-
 
     if (get_bit(state_new.tfetch_counter_odd, 1) || get_bit(state_new.tfetch_counter_odd, 2)) {
 
@@ -1339,57 +1351,39 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       const auto map_y = state_new.tile_temp_b;
       const auto map = !get_bit(state_new.tile_temp_b, 7) && bgw_tile_new;
 
-      uint32_t addr  = 0;
-      bit_cat(addr,  0,  0, hilo);
-      bit_cat(addr,  1,  3, tile_y);
-      bit_cat(addr,  4, 11, map_y);
-      bit_cat(addr, 12, 12, map);
-
-      state_new.vram_abus = uint16_t(addr ^ VRAM_ADDR_MASK);
+      bit_cat(state_new.vram_abus,  0,  0, hilo);
+      bit_cat(state_new.vram_abus,  1,  3, tile_y);
+      bit_cat(state_new.vram_abus,  4, 11, map_y);
+      bit_cat(state_new.vram_abus, 12, 12, map);
+    }
+    else if (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state) {
+      bit_cat(state_new.vram_abus,  0,  4, state_new.win_x.map);
+      bit_cat(state_new.vram_abus,  5,  9, state_new.win_y.map);
+      bit_cat(state_new.vram_abus, 10, 10, ~win_map_new);
+      bit_cat(state_new.vram_abus, 11, 12, 0b11);
     }
     else {
-      if (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state) {
-        uint32_t addr = 0;
-        bit_cat(addr,  0,  4, ~state_new.win_x.map);
-        bit_cat(addr,  5,  9, ~state_new.win_y.map);
-        bit_cat(addr, 10, 10, win_map_new);
-        state_new.vram_abus = uint16_t(addr);
-      }
-      else {
-        uint32_t addr = 0;
-        bit_cat(addr,  0,  4, (px + scx) >> 3);
-        bit_cat(addr,  5,  9, (state_new.reg_ly + scy) >> 3);
-        bit_cat(addr, 10, 10, !bg_map_new);
-        bit_cat(addr, 11, 11, 1);
-        bit_cat(addr, 12, 12, 1);
-
-        state_new.vram_abus = uint16_t(addr ^ VRAM_ADDR_MASK);
-      }
-
+      bit_cat(state_new.vram_abus,  0,  4, (px + scx) >> 3);
+      bit_cat(state_new.vram_abus,  5,  9, (state_new.reg_ly + scy) >> 3);
+      bit_cat(state_new.vram_abus, 10, 10, !bg_map_new);
+      bit_cat(state_new.vram_abus, 11, 11, 1);
+      bit_cat(state_new.vram_abus, 12, 12, 1);
     }
   }
-
-  //--------------------------------------------
-  // Sprite read address
-
-
-  if (TEXY_SFETCHINGp_evn_new) {
-    wire hilo = state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
-    const auto line = state_new.sprite_lbus ^ (get_bit(state_new.oam_temp_b, 6) ? 0b0000 : 0b1111);
-    const auto tile = state_new.oam_temp_a;
-
-    uint32_t addr = 0;
-    bit_cat(addr,  0,  0, hilo);
-    if (spr_size_new) {
-      bit_cat(addr,  1,  3, line);
-      bit_cat(addr,  4, 11, tile);
-    }
-    else {
-      bit_cat(addr,  1,  4, line);
-      bit_cat(addr,  5, 11, tile >> 1);
-    }
-    state_new.vram_abus = uint16_t(addr ^ VRAM_ADDR_MASK);
+  else if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new) {
+    // DMA vram read address
+    state_new.vram_abus = dma_addr_new;
   }
+  else if (state_new.XYMU_RENDERINGn) {
+    // CPU vram read address
+    state_new.vram_abus = cpu_addr_new;
+  }
+  else {
+    state_new.vram_abus = 0;
+  }
+
+  state_new.vram_abus = ~state_new.vram_abus & VRAM_ADDR_MASK;
+
 
   //--------------------------------------------
   // Vram address pin driver

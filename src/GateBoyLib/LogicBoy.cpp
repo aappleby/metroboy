@@ -502,7 +502,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   auto& MATU_DMA_RUNNINGp_new = state_new.MATU_DMA_RUNNINGp;
 
-  const auto dma_addr_new = ((state_new.reg_dma ^ 0xFF) << 8) | state_new.dma_lo;
+  const uint16_t dma_addr_new = ((state_new.reg_dma ^ 0xFF) << 8) | state_new.dma_lo;
   wire dma_addr_vram_new = (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
 
   //----------------------------------------
@@ -1166,8 +1166,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Memory buses
 
 
-  uint16_t pins_abus = 0xFFFF;
-
   uint8_t pins_ctrl_csn_new = 0;
   if (ext_addr_new && cpu_addr_ram_new)             pins_ctrl_csn_new = gen_clk_new(phase_total_old, 0b00111111);
   if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new)  pins_ctrl_csn_new = !!(dma_addr_new & 0x8000);
@@ -1186,22 +1184,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.ext_addr_latch = cpu_addr_new & 0x7FFF;
   }
 
-  pins_abus = state_new.ext_addr_latch ^ 0x7FFF;
+  uint16_t pins_abus = state_new.ext_addr_latch ^ 0x7FFF;
 
-  if (!state_new.cpu_signals.TEPU_BOOT_BITn.state && cpu_addr_new <= 0x00FF) {
-  }
-  else {
+  if (state_new.cpu_signals.TEPU_BOOT_BITn.state || cpu_addr_new > 0x00FF) {
     if (gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new) {
       pins_abus |= uint16_t(~cpu_addr_new & 0x8000);
     }
-    else {
-    }
   }
 
+  uint16_t ext_addr = pins_abus ^ 0xFFFF;
 
-  if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new) {
-    pins_abus = uint16_t(~dma_addr_new);
-  }
+  if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new) ext_addr = dma_addr_new;
 
   uint8_t pins_dbus = 0;
   
@@ -1213,7 +1206,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Ext read
 
   if (pins_ctrl_rdn_new) {
-    const uint16_t ext_addr = pins_abus ^ 0xFFFF;
 
     const auto rom_addr_mask = cart_rom_addr_mask(cart_blob);
     const auto ram_addr_mask = cart_ram_addr_mask(cart_blob);
@@ -1271,8 +1263,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Ext write
 
   {
-    const uint16_t ext_addr = pins_abus ^ 0xFFFF;
-
     const auto region = ext_addr >> 13;
     const uint8_t data_out = ~pins_dbus;
     wire mbc1_ram_en = state_new.ext_mbc.MBC1_RAM_EN.state;
@@ -1885,8 +1875,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 0;
     }
 
-    bit_unpack(pins.abus_lo, (pins_abus >> 0) & 0xFF);
-    bit_unpack(pins.abus_hi, (pins_abus >> 8) & 0xFF);
+    bit_unpack(pins.abus_lo, (~ext_addr >> 0) & 0xFF);
+    bit_unpack(pins.abus_hi, (~ext_addr >> 8) & 0xFF);
 
     pins.ctrl.PIN_78_WRn.state = pins_ctrl_wrn_new;
     pins.ctrl.PIN_79_RDn.state = pins_ctrl_rdn_new;

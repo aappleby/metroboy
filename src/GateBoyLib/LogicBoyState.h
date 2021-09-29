@@ -218,4 +218,8 @@ struct LogicBoyState {
   //NR50 reg_NR50;
   //NR51 reg_NR51;
   //NR52 reg_NR52;
+
+  // new stuff that doesn't translate to GBState
+
+  int scan_phase = 0;
 };

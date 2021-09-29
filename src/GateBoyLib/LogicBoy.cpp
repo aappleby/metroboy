@@ -629,18 +629,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  if (vid_rst_new) {
-    state_new.XYMU_RENDERINGn = 1;
-  }
-  else if (line_rst_new) {
-  }
-  else {
-    if (DELTA_EVEN_new) {
-      if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
-    }
-
-    if (scan_done_trig_new)     state_new.XYMU_RENDERINGn = 0;
-  }
+  if (DELTA_EVEN_new && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
+  if (scan_done_trig_new) state_new.XYMU_RENDERINGn = 0;
+  if (vid_rst_new) state_new.XYMU_RENDERINGn = 1;
 
   //----------------------------------------
   // Sprite fetch state counter

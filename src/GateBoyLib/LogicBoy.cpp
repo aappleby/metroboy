@@ -1070,6 +1070,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // FEPO
 
+  state_new.FEPO_STORE_MATCHp_odd = 0;
+
   if (!state_new.XYMU_RENDERINGn && !state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state) {
     auto& s = state_new;
     auto& sf = s.sprite_match_flags;

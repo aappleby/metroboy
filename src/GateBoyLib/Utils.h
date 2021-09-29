@@ -113,10 +113,12 @@ inline void bit_unpack_inv(DST& dst, const uint32_t src) {
 
 //-----------------------------------------------------------------------------
 
-inline void bit_cat(uint32_t& dst, int bit_min, int bit_max, uint32_t src) {
-  int width = (bit_max - bit_min) + 1;
-  uint32_t mask = (1 << width) - 1;
-  dst |= (src & mask) << bit_min;
+template<typename T>
+inline void bit_cat(T& dst, int bit_min, int bit_max, uint32_t src) {
+
+  int mask = (1 << (bit_max + 1)) - (1 << bit_min);
+
+  dst = T((dst & ~mask) | ((src << bit_min) & mask));
 }
 
 //-----------------------------------------------------------------------------

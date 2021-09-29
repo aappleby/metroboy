@@ -630,16 +630,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
   if (vid_rst_new) {
-    state_new.VOGA_HBLANKp = 0;
     state_new.XYMU_RENDERINGn = 1;
   }
   else if (line_rst_new) {
-    state_new.VOGA_HBLANKp = 0;
   }
   else {
-    if (DELTA_EVEN_new) state_new.VOGA_HBLANKp = (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167));
+    if (DELTA_EVEN_new) {
+      if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
+    }
 
-    if (state_new.VOGA_HBLANKp) state_new.XYMU_RENDERINGn = 1;
     if (scan_done_trig_new)     state_new.XYMU_RENDERINGn = 0;
   }
 
@@ -1849,6 +1848,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+
+    if (vid_rst_new || line_rst_new) {
+      state_new.VOGA_HBLANKp = 0;
+    }
+    else if (DELTA_EVEN_new) {
+      state_new.VOGA_HBLANKp = (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167));
+    }
 
     state_new.sprite_scanner.FETO_SCAN_DONEp.state = state_new.scan_counter == 39;
     state_new.tfetch_control.LYRY_BFETCH_DONEp_odd.state = state_new.tfetch_counter_odd >= 5;

@@ -685,10 +685,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  if (DELTA_EVEN_new && !vid_rst_new && line_rst_new) {
+  if (DELTA_EVEN_new && !vid_rst_new) {
     state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
     state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state = state_old.FEPO_STORE_MATCHp_odd && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_counter_odd >= 5 && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
+  }
 
+  //----------------------------------------
+
+  if (DELTA_EVEN_new && !vid_rst_new && line_rst_new) {
     if (state_new.XYMU_RENDERINGn) {
       state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = 0;
       state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
@@ -729,14 +733,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
   if (DELTA_EVEN_new && !vid_rst_new && !line_rst_new) {
-
     if (state_new.XYMU_RENDERINGn) {
-      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
-      state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state =
-        state_old.FEPO_STORE_MATCHp_odd
-        && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state
-        && state_old.tfetch_counter_odd >= 5
-        && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
       state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = 0;
       state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
       if (state_old.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
@@ -758,12 +755,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
     }
     else {
-      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
-      state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state =
-        state_old.FEPO_STORE_MATCHp_odd
-        && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state
-        && state_old.tfetch_counter_odd >= 5
-        && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
       state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
       state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = get_bit(state_old.sfetch_counter_evn, 1);
       state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = state_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state;

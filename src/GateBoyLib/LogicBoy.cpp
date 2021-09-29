@@ -622,16 +622,30 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // BYBA
   if (DELTA_HA_new || DELTA_DE_new) state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = state_old.scan_counter == 39;
-  if (line_rst_new || vid_rst_new) state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
 
-  wire scan_done_trig_old = state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state;
-  wire scan_done_trig_new = state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state;
+  if (vid_rst_new) {
+    state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
+    wire scan_done_trig_new = 0;
 
-  //----------------------------------------
+    if (DELTA_EVEN_new && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
+    if (vid_rst_new) state_new.XYMU_RENDERINGn = 1;
+  }
+  else if (line_rst_new) {
+    if (line_rst_new || vid_rst_new) state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
+    wire scan_done_trig_new = state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state;
 
-  if (DELTA_EVEN_new && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
-  if (scan_done_trig_new) state_new.XYMU_RENDERINGn = 0;
-  if (vid_rst_new) state_new.XYMU_RENDERINGn = 1;
+    if (DELTA_EVEN_new && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
+    if (scan_done_trig_new) state_new.XYMU_RENDERINGn = 0;
+    if (vid_rst_new) state_new.XYMU_RENDERINGn = 1;
+  }
+  else {
+    if (line_rst_new || vid_rst_new) state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
+    wire scan_done_trig_new = state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state;
+
+    if (DELTA_EVEN_new && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
+    if (scan_done_trig_new) state_new.XYMU_RENDERINGn = 0;
+    if (vid_rst_new) state_new.XYMU_RENDERINGn = 1;
+  }
 
   //----------------------------------------
   // Sprite fetch state counter
@@ -639,30 +653,21 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // DELTA_EVEN_NEW
   if (DELTA_EVEN_new) {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
-    state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state =
-      state_old.FEPO_STORE_MATCHp_odd
-      && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state
-      && state_old.tfetch_counter_odd >= 5
-      && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
 
-    state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
+    // vid_rst_new
+    if (vid_rst_new) {
+      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
+      state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state =
+        state_old.FEPO_STORE_MATCHp_odd
+        && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state
+        && state_old.tfetch_counter_odd >= 5
+        && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
 
-    if (state_new.XYMU_RENDERINGn) {
       state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = 0;
       state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = 0;
       state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state = 0;
       state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = 0;
       state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
-    }
-    else {
-      state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = get_bit(state_old.sfetch_counter_evn, 1);
-      state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = state_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state;
-      if (state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state) state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
-    }
-
-
-    if (vid_rst_new) {
       state_new.sfetch_counter_evn = 0;
       state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = 0;
       state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
@@ -671,80 +676,125 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
       state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
       state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
-    }
-    else if (line_rst_new) {
-      if (state_old.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
-      bool sfetch_req_trig = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state;
-      if (sfetch_req_trig || 1) state_new.sfetch_counter_evn = 0;
-
-      if (state_new.XYMU_RENDERINGn) {
-        if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
-        if (1 || !win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
-        state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
-        if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-        if (1) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-        state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
-        state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
-      }
-      else {
-        if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
-        if (1 || !win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
-        state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
-        state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
-        wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
-        if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
-        if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
-        if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-        if (1) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-        if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
-            && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
-            && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-          state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
-        }
-      }
-    }
-    else {
-      if (state_old.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
-      bool sfetch_req_trig = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state;
-      if (sfetch_req_trig || 0) state_new.sfetch_counter_evn = 0;
-
-      if (state_new.XYMU_RENDERINGn) {
-        if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
-        if (0 || !win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
-        state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
-        if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-        if (0) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-        state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
-        state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
-      }
-      else {
-        if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
-        if (0 || !win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
-        state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
-        state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
-        wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
-        if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
-        if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
-        if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-        if (0) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-        if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
-            && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
-            && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-          state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
-        }
-      }
-
-    }
-
-
-
-
-    if (vid_rst_new) {
       state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
       state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 1;
     }
 
+    // !vid_rst_new && line_rst_new
+    else if (line_rst_new) {
+      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
+      state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state =
+        state_old.FEPO_STORE_MATCHp_odd
+        && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state
+        && state_old.tfetch_counter_odd >= 5
+        && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
+
+      if (state_new.XYMU_RENDERINGn) {
+        state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = 0;
+        state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = 0;
+        state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state = 0;
+        state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = 0;
+        state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
+        if (state_old.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
+        bool sfetch_req_trig = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state;
+        if (sfetch_req_trig || 1) state_new.sfetch_counter_evn = 0;
+        if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
+        if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
+        state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+        if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+        state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+        state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
+        state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
+        wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
+        if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+          state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
+          state_new.win_ctrl.PUKU_WIN_HITn_odd.state = !NUNY_WIN_MODE_TRIGp_new;
+        }
+        else if (NUNY_WIN_MODE_TRIGp_new) {
+          state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 1;
+          state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 0;
+        }
+      }
+      else {
+        state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
+        state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = get_bit(state_old.sfetch_counter_evn, 1);
+        state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = state_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state;
+        if (state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state) state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
+        if (state_old.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
+        bool sfetch_req_trig = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state;
+        if (sfetch_req_trig || 1) state_new.sfetch_counter_evn = 0;
+        if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
+        state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
+        state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+        state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
+        wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
+        if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
+        if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
+        if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+        state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+        if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
+            && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
+            && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+          state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
+        }
+        if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+          state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
+          state_new.win_ctrl.PUKU_WIN_HITn_odd.state = !NUNY_WIN_MODE_TRIGp_new;
+        }
+        else if (NUNY_WIN_MODE_TRIGp_new) {
+          state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 1;
+          state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 0;
+        }
+      }
+    }
+
+    // !vid_rst_new && !line_rst_new
     else {
+      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
+      state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state =
+        state_old.FEPO_STORE_MATCHp_odd
+        && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state
+        && state_old.tfetch_counter_odd >= 5
+        && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
+
+      if (state_new.XYMU_RENDERINGn) {
+        state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = 0;
+        state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = 0;
+        state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state = 0;
+        state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = 0;
+        state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
+        if (state_old.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
+        bool sfetch_req_trig = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state;
+        if (sfetch_req_trig || 0) state_new.sfetch_counter_evn = 0;
+        if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
+        if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
+        state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+        if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+        state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
+        state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
+      }
+      else {
+        state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
+        state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = get_bit(state_old.sfetch_counter_evn, 1);
+        state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = state_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state;
+        if (state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state) state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
+        if (state_old.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
+        bool sfetch_req_trig = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state;
+        if (sfetch_req_trig || 0) state_new.sfetch_counter_evn = 0;
+        if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
+        if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
+        state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+        state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
+        wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
+        if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
+        if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
+        if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+        if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
+            && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
+            && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+          state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
+        }
+      }
       wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
       if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
         state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
@@ -882,6 +932,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     (win_hit_trig_new) ||
     (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state);
 
+  wire scan_done_trig_new = state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state;
   wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
   wire NYXU_BFETCH_RSTn_new = (line_rst_new || vid_rst_new || !scan_done_trig_new) && !NUNY_WIN_MODE_TRIGp_new && !TEVO_WIN_FETCH_TRIGp_new;
 

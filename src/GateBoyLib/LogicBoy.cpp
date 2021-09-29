@@ -241,7 +241,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   LogicBoyState  state_old = lb_state;
   auto phase_total_old = sys.gb_phase_total - 1;
-  auto phase_old = (sys.gb_phase_total - 1) & 7;
+  int phase_old = int((sys.gb_phase_total - 1) & 7);
 
   wire nuko_wx_match_old = (uint8_t(~state_old.reg_wx) == state_old.pix_count) && state_old.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state;
 
@@ -249,7 +249,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   LogicBoyState& state_new = lb_state;
   auto phase_total_new = sys.gb_phase_total - 0;
-  auto phase_new = (sys.gb_phase_total - 0) & 7;
+  int phase_new = int((sys.gb_phase_total - 0) & 7);
 
   //----------------------------------------
 
@@ -619,7 +619,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state;
 
       if (state_new.scan_counter < 39)  state_new.scan_counter++;
-      if (state_old.scan_phase == 158) {
+      if (state_old.scan_counter == 39) {
         state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = 0;
       }
 
@@ -628,6 +628,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = state_old.scan_counter == 39;
 
       if (state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state) {
+        //printf("%d\n", state_old.scan_phase);
         state_new.XYMU_RENDERINGn = 0;
       }
     }

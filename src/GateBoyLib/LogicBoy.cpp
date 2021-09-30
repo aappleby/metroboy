@@ -387,74 +387,59 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.reg_ly = 0;
     state_new.reg_lx = 0;
     state_new.phase_lcd = 0;
-    state_new.phase_lx = 0;
-    state_new.phase_ly = 0;
   }
   else {
     // if we're just coming out of reset, lcd phase is off by 8 (hardware glitch)
     if (vid_rst_old) {
       state_new.phase_lcd = 8;
-      state_new.phase_lx = 8;
     }
 
     state_new.phase_lcd++;
-    state_new.phase_lx++;
-    if (state_new.phase_lx == 912) {
-      state_new.phase_lx = 0;
-      state_new.phase_ly++;
-      if (state_new.phase_ly == 154) {
-        state_new.phase_ly = 0;
-      }
-    }
   }
 
-  int phase_lx2 = state_new.phase_lcd % 912;
-  int phase_ly2 = (state_new.phase_lcd / 912) % 154;
-  int phase_frame = int(state_new.phase_lcd / (154 * 912));
-
-  if (phase_lx2 != state_new.phase_lx) debugbreak();
-  if (phase_ly2 != state_new.phase_ly) debugbreak();
-
+  int phase_frame = state_new.phase_lcd % (154 * 912);
+  int phase_lx = phase_frame % 912;
+  int phase_ly = phase_frame / 912;
+  int frame_index = int(state_new.phase_lcd / (154 * 912));
+  bool first_line = state_new.phase_lcd < 912;
 
   state_new.lcd.NYPE_LINE_ENDp_odd.state = false;
-  state_new.reg_lx = (uint8_t)((state_new.phase_lx - 4) / 8);
+  state_new.reg_lx = (uint8_t)((phase_lx - 4) / 8);
   state_new.lcd.POPU_VBLANKp_odd.state = 0;
-  state_new.reg_ly = (uint8_t)state_new.phase_ly;
+  state_new.reg_ly = (uint8_t)phase_ly;
   state_new.lcd.CATU_x113p_odd.state = 0;
   state_new.lcd.ANEL_x113p_odd.state = 0;
   bool line_rst_new = false;
   state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
   state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
 
-  bool first_line = state_new.phase_lcd < 912;
   if (first_line) {
     state_new.lcd.CATU_x113p_odd.state = 0;
     state_new.lcd.ANEL_x113p_odd.state = 0;
-    line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
+    line_rst_new = (phase_lx == 2 || phase_lx == 3);
   }
   else {
-    state_new.lcd.RUTU_LINE_ENDp_odd.state = (state_new.phase_lx >= 0) && (state_new.phase_lx <= 7);
-    state_new.lcd.NYPE_LINE_ENDp_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
+    state_new.lcd.RUTU_LINE_ENDp_odd.state = (phase_lx >= 0) && (phase_lx <= 7);
+    state_new.lcd.NYPE_LINE_ENDp_odd.state = (phase_lx >= 4) && (phase_lx <= 11);
 
-    if (state_new.phase_ly == 0) {
-      state_new.lcd.POPU_VBLANKp_odd.state = state_new.phase_lx < 4;
-    }
+    state_new.lcd.POPU_VBLANKp_odd.state = phase_frame < 4;
 
-    if (state_new.phase_ly == 144 && state_new.phase_lx >= 4) state_new.lcd.POPU_VBLANKp_odd.state = 1;
-    if (state_new.phase_ly > 144) state_new.lcd.POPU_VBLANKp_odd.state = 1;
-    if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.reg_ly =  0;
-    if (state_new.phase_ly >= 0 && state_new.phase_ly < 144) {
-      state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
-      state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
+    if (phase_frame >= 4 + 144 * 912) state_new.lcd.POPU_VBLANKp_odd.state = 1;
+
+
+    if (phase_ly == 153 && phase_lx >= 4) state_new.reg_ly =  0;
+    if (phase_ly >= 0 && phase_ly < 144) {
+      state_new.lcd.CATU_x113p_odd.state = (phase_lx >= 2) && (phase_lx <= 9);
+      state_new.lcd.ANEL_x113p_odd.state = (phase_lx >= 4) && (phase_lx <= 11);
     }
-    if (state_new.phase_ly == 153) {
-      state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 6) && (state_new.phase_lx <= 9);
-      state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 8) && (state_new.phase_lx <= 11);
+    if (phase_ly == 153) {
+      state_new.lcd.CATU_x113p_odd.state = (phase_lx >= 6) && (phase_lx <= 9);
+      state_new.lcd.ANEL_x113p_odd.state = (phase_lx >= 8) && (phase_lx <= 11);
     }
-    if (state_new.phase_ly >= 0 && state_new.phase_ly < 144) line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
-    if (state_new.phase_ly == 153) line_rst_new = (state_new.phase_lx == 6 || state_new.phase_lx == 7);
-    if (state_new.phase_ly == 0 && state_new.phase_lx <= 3) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
-    if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
+    if (phase_ly >= 0 && phase_ly < 144) line_rst_new = (phase_lx == 2 || phase_lx == 3);
+    if (phase_ly == 153) line_rst_new = (phase_lx == 6 || phase_lx == 7);
+    if (phase_ly == 0 && phase_lx <= 3) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
+    if (phase_ly == 153 && phase_lx >= 4) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
   }
 
   //----------------------------------------

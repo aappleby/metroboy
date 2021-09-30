@@ -221,6 +221,4 @@ struct LogicBoyState {
   // new stuff that doesn't translate to GBState
 
   int64_t phase_lcd;
-
-  int scan_phase = 0;
 };

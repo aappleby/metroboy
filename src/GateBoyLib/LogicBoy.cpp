@@ -572,8 +572,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
 
     state_new.XYMU_RENDERINGn = 1;
-
-    state_new.scan_phase = 0;
   }
   else if (line_rst_new) {
     state_new.scan_counter = 0;
@@ -601,7 +599,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.XYMU_RENDERINGn = 1;
     }
 
-    state_new.scan_phase = 0;
   }
   else {
     int sy = (int)state_new.oam_temp_a - 16;
@@ -612,15 +609,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
     if (DELTA_HA_new || DELTA_DE_new) {
-      state_new.scan_phase++;
-
-      //state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = (state_new.scan_phase >= 1) && (state_new.scan_phase <= 41);
 
       state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state;
-
-      if (state_old.sprite_scanner.CENO_SCAN_DONEn_odd.state && !state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state) {
-        CHECK_P(state_new.scan_phase == 41);
-      }
 
       if (state_new.scan_counter < 39)  state_new.scan_counter++;
       if (state_old.scan_counter == 39) {
@@ -632,7 +622,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = state_old.scan_counter == 39;
 
       if (state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state) {
-        //printf("%d\n", state_old.scan_phase);
         state_new.XYMU_RENDERINGn = 0;
       }
     }
@@ -671,6 +660,41 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
       if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
     }
+  }
+
+  int scan_counter2 = 0;
+  if (first_line_new) {
+    scan_counter2 = (phase_lx_new - 6) / 4;
+    if (scan_counter2 < 0)  scan_counter2 = 39;
+    if (scan_counter2 > 39) scan_counter2 = 39;
+  }
+  else {
+    if (phase_ly_new < 144) {
+      scan_counter2 = (phase_lx_new - 2) / 4;
+      if (scan_counter2 > 39) scan_counter2 = 39;
+      if (phase_lx_new == 0) scan_counter2 = 39;
+      if (phase_lx_new == 1) scan_counter2 = 39;
+    }
+    else if (phase_ly_new < 153) {
+      scan_counter2 = 39;
+    }
+    else {
+      scan_counter2 = (phase_lx_new - 6) / 4;
+      if (scan_counter2 < 0)  scan_counter2 = 39;
+      if (scan_counter2 > 39) scan_counter2 = 39;
+      if (phase_lx_new == 0)  scan_counter2 = 39;
+      if (phase_lx_new == 1)  scan_counter2 = 39;
+      if (phase_lx_new == 2)  scan_counter2 = 39;
+      if (phase_lx_new == 3)  scan_counter2 = 39;
+      if (phase_lx_new == 4)  scan_counter2 = 39;
+      if (phase_lx_new == 5)  scan_counter2 = 39;
+    }
+  }
+
+  if (vid_rst_new) scan_counter2 = 0;
+
+  if (state_new.scan_counter != scan_counter2) {
+    printf("scan counter mismatch %d vs %d - fl%d @ (%d,%d)\n", state_new.scan_counter, scan_counter2, first_line_new, phase_lx_new, phase_ly_new);
   }
 
   //----------------------------------------

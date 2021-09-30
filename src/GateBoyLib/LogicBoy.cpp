@@ -480,8 +480,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
   else if (state_old.phase_ly > 0 && state_old.phase_ly < 144) {
-    if (!vid_rst_old) state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
-    //if (!vid_rst_old) anel2 = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
+    state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
+    state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
 
     if (state_new.phase_lx == 2 || state_new.phase_lx == 3) {
       line_rst_new = 1;
@@ -491,7 +491,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   else if (state_old.phase_ly == 153) {
     state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 6) && (state_new.phase_lx <= 9);
-    //anel2 = (state_new.phase_lx >= 8) && (state_new.phase_lx <= 11);
 
     if (state_new.phase_lx == 6 || state_new.phase_lx == 7) {
       line_rst_new = 1;

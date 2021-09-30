@@ -415,12 +415,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (!vid_rst_new && DELTA_ODD_new) {
     if (DELTA_BC_new) {
       if (!state_old.lcd.RUTU_LINE_ENDp_odd.state) state_new.reg_lx++;
-
-
-      if (!state_old.lcd.NYPE_LINE_ENDp_odd.state && state_old.lcd.RUTU_LINE_ENDp_odd.state) {
-        state_new.lcd.POPU_VBLANKp_odd.state = state_old.reg_ly >= 144;
-      }
-
       state_new.lcd.NYPE_LINE_ENDp_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state;
     }
 
@@ -431,30 +425,23 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
+  // reg_lx
+
+  uint8_t reg_lx = (uint8_t)((state_new.phase_lx - 4) / 8);
+  
+  if (state_new.reg_lx != reg_lx) {
+    printf("reg_lx %d %d %d %d (%d,%d)\n", state_new.first_frame, state_new.first_line, state_new.reg_lx, reg_lx, state_new.phase_lx, state_new.phase_ly);
+  }
 
   // popu
 
   uint8_t popu = 0;
-
-  if (state_new.first_line) {
+  if (!state_new.first_line) {
+    if (state_new.phase_ly == 0 && state_new.phase_lx < 4) popu = 1;
+    if (state_new.phase_ly == 144 && state_new.phase_lx >= 4) popu = 1;
+    if (state_new.phase_ly > 144) popu = 1;
   }
-  else {
-    if (state_new.phase_ly == 0 && state_new.phase_lx < 4) {
-      popu = 1;
-    }
-    else if (state_new.phase_ly == 144 && state_new.phase_lx >= 4) {
-      popu = 1;
-    }
-    else if (state_new.phase_ly > 144) {
-      popu = 1;
-    }
-  }
-
-  if (state_new.lcd.POPU_VBLANKp_odd.state != popu) {
-    printf("popu %d %d %d %d @ (%d,%d)\n", state_new.first_frame, state_new.first_line, state_new.lcd.POPU_VBLANKp_odd.state, popu, state_new.phase_lx, state_new.phase_ly);
-  }
-
-
+  state_new.lcd.POPU_VBLANKp_odd.state = popu;
 
   // reg_ly
 

@@ -7,7 +7,7 @@
 //-----------------------------------------------------------------------------
 
 #if 0
-void GateBoy::tock_spu_gates() {
+void GateBoy::tock_spu_gates(const GateBoyState& reg_old) {
   /*#p09.HAPO*/ wire HAPO_SYS_RESETp = not1(ALUR_SYS_RSTn());
   /*#p09.GUFO*/ wire GUFO_SYS_RESETn = not1(HAPO_SYS_RESETp);
 

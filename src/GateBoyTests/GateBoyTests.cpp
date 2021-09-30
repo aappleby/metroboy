@@ -38,6 +38,17 @@ int main(int argc, char** argv) {
     return 0;
   }
 
+#if 0
+  {
+    TestResults results;
+    GateBoyTests t;
+
+    const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
+    auto phases = MCYCLES_PER_FRAME * 8 * 3;
+    results += t.test_regression_cart("LinksAwakening.gb", proto.get(), phases, false);
+  }
+#endif
+
 
 #if 0
   {
@@ -93,7 +104,9 @@ int main(int argc, char** argv) {
       return -1;
     }
   }
+#endif
 
+#if 1
   {
     LOG_B("========== LogicBoy regression dumps ==========\n");
 
@@ -120,6 +133,7 @@ int main(int argc, char** argv) {
   }
 #endif
 
+#if 1
   {
     TestResults results;
     GateBoyTests t;
@@ -167,6 +181,7 @@ int main(int argc, char** argv) {
       return -1;
     }
   }
+#endif
 
   return 0;
 }
@@ -1915,7 +1930,11 @@ TestResults GateBoyTests::test_ppu(const IGateBoy* proto) {
     // LY should increment every 114*8 phases after LCD enable, except on the last line.
     for (uint32_t i = 0; i < 153; i++) {
       EXPECT_EQ(i, bit_pack(gb->get_state().reg_ly));
-      gb->run_phases(dummy_cart, 114 * 8);
+      gb->run_phases(dummy_cart, 112 * 8);
+      EXPECT_EQ(i, bit_pack(gb->get_state().reg_ly));
+      gb->run_phases(dummy_cart, 8);
+      EXPECT_EQ(i+1, bit_pack(gb->get_state().reg_ly));
+      gb->run_phases(dummy_cart, 8);
     }
 
     // LY is reset early on the last line, we should be at 0 now.

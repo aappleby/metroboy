@@ -70,7 +70,7 @@ void GateBoy::tock_lyc_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_lcd_gates() {
+void GateBoy::tock_lcd_gates(const GateBoyState& reg_old) {
   {
     /*#p21.XYVO*/ wire XYVO_y144p_old = and2(gb_state.reg_ly.LOVU_LY4p_odd.qp_old(), gb_state.reg_ly.LAFO_LY7p_odd.qp_old()); // 128 + 16 = 144
     /*#p21.NOKO*/ wire NOKO_y153p_old = and4(gb_state.reg_ly.LAFO_LY7p_odd.qp_old(), gb_state.reg_ly.LOVU_LY4p_odd.qp_old(), gb_state.reg_ly.LYDO_LY3p_odd.qp_old(), gb_state.reg_ly.MUWY_LY0p_odd.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153

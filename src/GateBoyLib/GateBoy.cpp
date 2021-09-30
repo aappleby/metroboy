@@ -133,10 +133,13 @@ GBResult GateBoy::poke(int addr, uint8_t data_in) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
+  CHECK_P((sys.gb_phase_total & 7) == 0);
+
   cpu.bus_req_new.addr = addr;
   cpu.bus_req_new.data = data;
   cpu.bus_req_new.read = !write;
   cpu.bus_req_new.write = write;
+
   return GBResult::ok();
 }
 
@@ -168,11 +171,11 @@ GBResult GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
   sys.cpu_en = false;
 
   dbg_req((uint16_t)addr, data, 1);
-  run_phases(cart_blob, 8);
+  GBResult res = run_phases(cart_blob, 8);
 
   cpu.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
-  return GBResult::ok();
+  return res;
 }
 
 //-----------------------------------------------------------------------------
@@ -450,7 +453,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Sys clock signals
 
-  tock_clocks_gates();
+  tock_clocks_gates(reg_old);
 
   /*_p07.UJYV*/ wire UJYV_CPU_RDn = not1(gb_state.cpu_signals.SIG_IN_CPU_RDp.out_new());
   /*_p07.TEDO*/ gb_state.cpu_signals.TEDO_CPU_RDp <<= not1(UJYV_CPU_RDn);
@@ -466,16 +469,16 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(pins.sys.UNOR_MODE_DBG2p(), AGUT_xxCDEFGH);
   /*#p01.ABUZ*/ gb_state.cpu_signals.ABUZ_EXT_RAM_CS_CLK <<= not1(AWOD_ABxxxxxx);
 
-  tock_div_gates();
-  tock_reset_gates(bit(sys.fastboot) ? gb_state.reg_div.TERO_DIV03p : gb_state.reg_div.UPOF_DIV15p);
+  tock_div_gates(reg_old);
+  tock_reset_gates(reg_old, bit(sys.fastboot) ? gb_state.reg_div.TERO_DIV03p : gb_state.reg_div.UPOF_DIV15p);
   tock_lcdc_gates(reg_old); // LCDC has to be near the top as it controls the video reset signal
-  tock_vid_clocks_gates();
+  tock_vid_clocks_gates(reg_old);
   tock_lyc_gates(reg_old);
-  tock_lcd_gates();
+  tock_lcd_gates(reg_old);
   tock_joypad_gates(reg_old);
-  //tock_serial_gates();
+  //tock_serial_gates(reg_old);
   tock_timer_gates(reg_old);
-  tock_bootrom_gates();
+  tock_bootrom_gates(reg_old);
   tock_dma_gates(reg_old);
 
   //----------------------------------------
@@ -949,14 +952,14 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Audio
 
-  //tock_spu_gates();
+  //tock_spu_gates(reg_old);
 
   //----------------------------------------
   // Memory buses
 
   tock_ext_gates(cart_blob);
   tock_vram_bus_gates(reg_old, TEVO_WIN_FETCH_TRIGp);
-  tock_oam_bus_gates();
+  tock_oam_bus_gates(reg_old);
   tock_zram_gates(reg_old);
 
   //----------------------------------------

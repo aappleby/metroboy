@@ -67,6 +67,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->start();
   gb_thread->reset_to_bootrom();
 
+  //gb_thread->run_to(459148 - 1);
+
 #if 0
   // test_fuzz_reg failed at 1871:0268 - write 0xe5 to 0xff40
   {
@@ -109,12 +111,13 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #if 1
   blob cart;
-  //load_blob("tests/microtests/DMG/timer_tima_inc_256k_a.gb", cart);
+  //load_blob("tests/microtests/DMG/poweron_stat_000.gb", cart);
   load_blob("LinksAwakening.gb", cart);
   gb_thread->load_cart_blob(cart);
-  gb_thread->reset_to_cart();
+  //gb_thread->reset_to_cart();
+  gb_thread->reset_to_bootrom();
 
-  gb_thread->run_to(46880836 - 1);
+  //gb_thread->run_to(46880836 - 1);
 #endif
 
 #if 0

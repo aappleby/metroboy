@@ -15,6 +15,9 @@ void LogicBoyState::reset_to_bootrom() {
   GateBoyState gb_state;
   gb_state.reset_to_bootrom();
   from_gb_state(gb_state, 0);
+
+  phase_lx = 802;
+  phase_ly = 0;
 }
 
 void LogicBoyState::reset_to_cart() {
@@ -22,6 +25,9 @@ void LogicBoyState::reset_to_cart() {
   GateBoyState gb_state;
   gb_state.reset_to_cart();
   from_gb_state(gb_state, 0);
+
+  phase_lx = 794;
+  phase_ly = 153;
 }
 
 //-----------------------------------------------------------------------------
@@ -157,7 +163,6 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.MATU_DMA_RUNNINGp_odd, bit_pack(src.MATU_DMA_RUNNINGp));
   bit_unpack(dst.ACYL_SCANNINGp_odd, bit_pack(src.ACYL_SCANNINGp_odd));
   bit_unpack(dst.WODU_HBLANKp_odd, bit_pack(src.WODU_HBLANKp_odd));
-  bit_unpack(dst.SATO_BOOT_BITn, bit_pack(src.SATO_BOOT_BITn));
   bit_unpack(dst.ATEJ_LINE_RSTp_odd, bit_pack(src.ATEJ_LINE_RSTp_odd));
   bit_unpack(dst.FEPO_STORE_MATCHp_odd, bit_pack(src.FEPO_STORE_MATCHp_odd));
   bit_unpack(dst.cpu_signals, bit_pack(src.cpu_signals));
@@ -303,7 +308,6 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.MATU_DMA_RUNNINGp = bit_pack(src.MATU_DMA_RUNNINGp_odd);
   dst.ACYL_SCANNINGp_odd = bit_pack(src.ACYL_SCANNINGp_odd);
   dst.WODU_HBLANKp_odd = bit_pack(src.WODU_HBLANKp_odd);
-  dst.SATO_BOOT_BITn = bit_pack(src.SATO_BOOT_BITn);
   dst.ATEJ_LINE_RSTp_odd = bit_pack(src.ATEJ_LINE_RSTp_odd);
   dst.FEPO_STORE_MATCHp_odd = bit_pack(src.FEPO_STORE_MATCHp_odd);
   dst.cpu_signals = bit_purge(src.cpu_signals);

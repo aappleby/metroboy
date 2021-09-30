@@ -5,7 +5,7 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_reset_gates(DFF17 UPOF_DIV15p) {
+void GateBoy::tock_reset_gates(const GateBoyState& reg_old, DFF17 UPOF_DIV15p) {
 
   /*_p01.AFER*/ gb_state.sys_rst.AFER_SYS_RSTp.dff13(BOGA_Axxxxxxx(), pins.sys.UPOJ_MODE_PRODn(), gb_state.sys_rst.ASOL_POR_DONEn.qp_old());
 

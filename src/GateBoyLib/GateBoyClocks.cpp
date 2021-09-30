@@ -115,7 +115,7 @@ wire GateBoyClock::AZOF_ODD() const {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_clocks_gates() {
+void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {
   /*_PIN_73*/ pins.sys.PIN_73_CLK_DRIVE.pin_out(pins.sys.PIN_74_CLK.clk(), pins.sys.PIN_74_CLK.clk());
 
   /*_p01.ARYS*/ wire ARYS_CLKIN = not1(pins.sys.PIN_74_CLK.clk());
@@ -151,7 +151,7 @@ void GateBoy::tock_clocks_gates() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_vid_clocks_gates() {
+void GateBoy::tock_vid_clocks_gates(const GateBoyState& reg_old) {
   /*_p29.WOSU*/ gb_state.sys_clk.WOSU_AxxDExxH.dff17(gb_state.sys_clk.XYFY_EVN(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
   /*_p29.WUVU*/ gb_state.sys_clk.WUVU_ABxxEFxx.dff17(gb_state.sys_clk.XOTA_ODD(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
   /*_p21.VENA*/ gb_state.sys_clk.VENA_xxCDEFxx.dff17(gb_state.sys_clk.WUVU_ABxxEFxx.qn_new(), XAPO_VID_RSTn(), gb_state.sys_clk.VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird

@@ -5,7 +5,7 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_serial_gates()
+void GateBoy::tock_serial_gates(const GateBoyState& reg_old)
 {
 #if 0
   /*#p06.UWAM*/ wire UWAM_FF02_WRn = nand4(cpu_abus_new.TOVY_A00n(), cpu_abus_new.BUS_CPU_A01p.out_new(), cpu_signals.TAPU_CPU_WRp.out_new(), cpu_abus_new.SANO_FF00_FF03p());

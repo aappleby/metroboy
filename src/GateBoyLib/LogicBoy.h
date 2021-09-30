@@ -15,7 +15,7 @@ struct LogicBoy : public IGateBoy {
   IGateBoy* clone() const override {
     LogicBoy* result = new LogicBoy();
     result->lb_state = lb_state;
-    result->gb_state = gb_state;
+    //result->gb_state = gb_state;
     result->cpu = cpu;
     result->mem = mem;
     result->sys = sys;
@@ -31,8 +31,9 @@ struct LogicBoy : public IGateBoy {
   }
 
   GBResult load_raw_dump(BlobStream& bs) override        {
+    /*
     bool load_ok = true;
-    load_ok &= bs.read(gb_state);
+    //load_ok &= bs.read(gb_state);
     load_ok &= bs.read(cpu);
     load_ok &= bs.read(mem);
     load_ok &= bs.read(sys);
@@ -43,6 +44,8 @@ struct LogicBoy : public IGateBoy {
     load_ok &= bs.read(probes);
     lb_state.from_gb_state(gb_state, sys.gb_phase_total);
     return load_ok ? GBResult::ok() : Error::CORRUPT;
+    */
+    return Error::CORRUPT;
   }
 
   GBResult save_raw_dump(BlobStream& dump_out) const override { return Error::CORRUPT; }
@@ -104,7 +107,7 @@ struct LogicBoy : public IGateBoy {
   GateBoyPins   pins;
   Probes        probes;
 
-  static FieldInfo fields[];
+  //static FieldInfo fields[];
 };
 
 //-----------------------------------------------------------------------------

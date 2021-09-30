@@ -5,11 +5,14 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_bootrom_gates() {
+void GateBoy::tock_bootrom_gates(const GateBoyState& reg_old) {
+  GateBoyState& reg_new = gb_state;
+
   /*_p07.TUGE*/ wire TUGE_FF50_WRn = nand4(gb_state.cpu_signals.TAPU_CPU_WRp.out_new(), gb_state.cpu_abus.SYKE_ADDR_HIp(), gb_state.cpu_abus.TYRO_XX_0x0x0000p(), gb_state.cpu_abus.TUFA_XX_x1x1xxxxp());
   // FF50 - disable bootrom bit
 
-  /*_p07.TEPU*/ gb_state.cpu_signals.TEPU_BOOT_BITn.dff17(TUGE_FF50_WRn, gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.SATO_BOOT_BITn.out_old());
+  /*_p07.SATO*/ wire SATO_BOOT_BITn_old = or2(reg_old.cpu_dbus.BUS_CPU_D00p.out_old(), reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
+  /*_p07.TEPU*/ gb_state.cpu_signals.TEPU_BOOT_BITn.dff17(TUGE_FF50_WRn, gb_state.sys_rst.ALUR_SYS_RSTn(), SATO_BOOT_BITn_old);
 
   // BOOT -> CBD
   // this is kind of a hack
@@ -51,8 +54,6 @@ void GateBoy::tock_bootrom_gates() {
   /*_p07.TEXE*/ wire TEXE_FF50_RDp =  and4(gb_state.cpu_signals.TEDO_CPU_RDp.out_new(), gb_state.cpu_abus.SYKE_ADDR_HIp(), gb_state.cpu_abus.TYRO_XX_0x0x0000p(), gb_state.cpu_abus.TUFA_XX_x1x1xxxxp());
   /*_p07.SYPU*/ triwire SYPU_BOOT_TO_CD0 = tri6_pn(TEXE_FF50_RDp, gb_state.cpu_signals.TEPU_BOOT_BITn.qp_new());
   /*_BUS_CPU_D00p*/ gb_state.cpu_dbus.BUS_CPU_D00p.tri_bus(SYPU_BOOT_TO_CD0);
-
-  /*_p07.SATO*/ gb_state.SATO_BOOT_BITn <<= or2(gb_state.cpu_dbus.BUS_CPU_D00p.out_new(), gb_state.cpu_signals.TEPU_BOOT_BITn.qp_new());
 }
 
 //-----------------------------------------------------------------------------

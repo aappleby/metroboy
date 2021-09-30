@@ -3,6 +3,7 @@
 
 #include "GateBoyLib/Utils.h"
 
+/*
 FieldInfo LogicBoy::fields[] = {
   DECLARE_FIELD(LogicBoy, lb_state),
   DECLARE_FIELD(LogicBoy, gb_state),
@@ -12,6 +13,7 @@ FieldInfo LogicBoy::fields[] = {
   DECLARE_FIELD(LogicBoy, pins),
   DECLARE_FIELD(LogicBoy, probes),
 };
+*/
 
 #define gb_state FORBIDDEN
 
@@ -332,7 +334,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     set_bit(state_new.reg_joy, 1, get_bit(state_old.cpu_dbus, 5));
   }
   // LCDC write has to be near the top as it controls the video reset signal
-  if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF40) state_new.reg_lcdc = ~state_old.cpu_dbus;
+  if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF40) {
+    //printf("lcdc write at %lld\n", sys.gb_phase_total);
+    state_new.reg_lcdc = ~state_old.cpu_dbus;
+  }
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF45) state_new.reg_lyc  = ~state_old.cpu_dbus;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF42) state_new.reg_scy  = ~state_old.cpu_dbus;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF43) state_new.reg_scx  = ~state_old.cpu_dbus;
@@ -341,7 +346,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF49) state_new.reg_obp1 = ~state_old.cpu_dbus;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF4A) state_new.reg_wy   = ~state_old.cpu_dbus;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF4B) state_new.reg_wx   = ~state_old.cpu_dbus;
-  if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF50) state_new.cpu_signals.TEPU_BOOT_BITn.state = get_bit(state_old.cpu_dbus, 0) || state_old.cpu_signals.TEPU_BOOT_BITn.state;
+
+  if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF50) {
+    wire SATO_BOOT_BITn_old = get_bit(state_old.cpu_dbus, 0) || state_old.cpu_signals.TEPU_BOOT_BITn.state;
+    state_new.cpu_signals.TEPU_BOOT_BITn.state = SATO_BOOT_BITn_old;
+  }
 
   if (cpu_wr && DELTA_GH_new && (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE)) mem.zero_ram[cpu_addr_new & 0x007F] = state_old.cpu_dbus;
 
@@ -381,7 +390,26 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.CATU_x113p_odd.state = 0;
     state_new.lcd.ANEL_x113p_odd.state = 0;
   }
-  else if (DELTA_ODD_new) {
+
+  if (vid_rst_new) {
+    state_new.phase_lx = 0;
+    state_new.phase_ly = 0;
+  }
+  else {
+    // if we're just coming out of reset, lcd phase is off by 8 (hardware glitch)
+    if (vid_rst_old) state_new.phase_lx = 8;
+
+    state_new.phase_lx++;
+    if (state_new.phase_lx == 912) {
+      state_new.phase_lx = 0;
+      state_new.phase_ly++;
+      if (state_new.phase_ly == 154) {
+        state_new.phase_ly = 0;
+      }
+    }
+  }
+
+  if (!vid_rst_new && DELTA_ODD_new) {
     if (DELTA_HA_new) {
       state_new.lcd.CATU_x113p_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state && (state_old.reg_ly < 144);
     }
@@ -406,6 +434,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     if (DELTA_FG_new) {
       if (state_old.reg_lx == 113) {
+        CHECK_P(state_old.phase_lx == 911);
+        //if (state_old.phase_lx != 911) {
+        //  printf("\nbad phase_lx %d\n", state_old.phase_lx);
+        //}
         state_new.reg_lx = 0;
         state_new.reg_ly++;
         state_new.lcd.RUTU_LINE_ENDp_odd.state = 1;
@@ -420,9 +452,19 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   }
 
-  wire line_rst_new = state_new.lcd.CATU_x113p_odd.state && !state_new.lcd.ANEL_x113p_odd.state;
+  //bool line_rst_new = state_new.lcd.CATU_x113p_odd.state && !state_new.lcd.ANEL_x113p_odd.state;
 
-  if (line_rst_new) CHECK_N(DELTA_BC_new || DELTA_CD_new || DELTA_FG_new || DELTA_GH_new);
+  bool line_rst_new = false;
+  if (state_old.phase_ly >= 0 && state_old.phase_ly <= 143) {
+    if (state_new.phase_lx == 2 || state_new.phase_lx == 3) {
+      line_rst_new = 1;
+    }
+  }
+  else if (state_old.phase_ly == 153) {
+    if (state_new.phase_lx == 6 || state_new.phase_lx == 7) {
+      line_rst_new = 1;
+    }
+  }
 
   //----------------------------------------
   // Joypad
@@ -615,8 +657,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
     if (DELTA_HA_new || DELTA_DE_new) {
+      state_new.scan_phase++;
+
+      //state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = (state_new.scan_phase >= 1) && (state_new.scan_phase <= 41);
 
       state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state;
+
+      if (state_old.sprite_scanner.CENO_SCAN_DONEn_odd.state && !state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state) {
+        CHECK_P(state_new.scan_phase == 41);
+      }
 
       if (state_new.scan_counter < 39)  state_new.scan_counter++;
       if (state_old.scan_counter == 39) {
@@ -667,8 +716,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
       if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
     }
-
-    state_new.scan_phase++;
   }
 
   //----------------------------------------
@@ -2091,7 +2138,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.WODU_HBLANKp_odd = hblank_new;
     state_new.ACYL_SCANNINGp_odd = (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new);
     state_new.ATEJ_LINE_RSTp_odd = line_rst_new || vid_rst_new;
-    state_new.SATO_BOOT_BITn = get_bit(state_new.cpu_dbus, 0) || state_new.cpu_signals.TEPU_BOOT_BITn.state;
     state_new.cpu_signals.SIG_CPU_BOOTp.state = 0;
     state_new.cpu_signals.SIG_BOOT_CSp.state = 0;
 

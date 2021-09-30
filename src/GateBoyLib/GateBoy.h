@@ -260,25 +260,26 @@ struct GateBoy  : public IGateBoy {
 
   void tock_lcdc_gates(const GateBoyState& reg_old);
   void tock_lyc_gates(const GateBoyState& reg_old);
-  void tock_lcd_gates();
+  void tock_lcd_gates(const GateBoyState& reg_old);
   void tock_dma_gates(const GateBoyState& reg_old);
   void tock_joypad_gates(const GateBoyState& reg_old);
   void tock_interrupts_gates(const GateBoyState& reg_old);
-  void tock_clocks_gates();
-  void tock_vid_clocks_gates();
-  void tock_div_gates();
+  void tock_clocks_gates(const GateBoyState& reg_old);
+  void tock_vid_clocks_gates(const GateBoyState& reg_old);
+  void tock_div_gates(const GateBoyState& reg_old);
   void tock_timer_gates(const GateBoyState& reg_old);
-  void tock_reset_gates(DFF17 UPOF_DIV15p);
+  void tock_reset_gates(const GateBoyState& reg_old, DFF17 UPOF_DIV15p);
   void tock_ext_gates(const blob& cart_blob);
-  void tock_oam_bus_gates();
-  void tock_serial_gates();
+  void tock_oam_bus_gates(const GateBoyState& reg_old);
+  void tock_serial_gates(const GateBoyState& reg_old);
   void tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FETCH_TRIGp);
   void tock_zram_gates(const GateBoyState& reg_old);
   void tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
-  void tock_bootrom_gates();
+  void tock_bootrom_gates(const GateBoyState& reg_old);
   void tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
+  void tock_spu_gates(const GateBoyState& reg_old);
+
   void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
-  void tock_spu_gates();
   void store_sprite_gates(SpriteStoreFlags& sprite_store_flags_old, SpriteStoreFlags& sprite_store_flags_new, SpriteResetFlags& sprite_reset_flags, wire BYVA_LINE_RSTn, OamTempB& oam_temp_b_old);
   void get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags& sprite_get_flag);
   void sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag);

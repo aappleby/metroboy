@@ -36,7 +36,7 @@ void GateBoy::oam_latch_to_temp_b_gates(wire COTA_OAM_CLKn, const OamLatchB& oam
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_oam_bus_gates()
+void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
 {
   memset(&gb_state.oam_abus,   BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.oam_abus));
   memset(&gb_state.oam_dbus_a, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.oam_dbus_a));

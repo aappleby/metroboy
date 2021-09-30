@@ -84,7 +84,6 @@ struct GateBoyState {
   /*#p04.MATU*/ DFF17    MATU_DMA_RUNNINGp_odd;
   /*#p28.ACYL*/ Gate     ACYL_SCANNINGp_odd;
   /*#p21.WODU*/ Gate     WODU_HBLANKp_odd;
-  /*_p07.SATO*/ Gate     SATO_BOOT_BITn;
   /*_p28.ATEJ*/ Gate     ATEJ_LINE_RSTp_odd;
   /*_p29.FEPO*/ Gate     FEPO_STORE_MATCHp_odd;
 

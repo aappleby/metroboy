@@ -65,7 +65,6 @@ struct LogicBoyState {
   /*#p04.MATU*/ uint8_t MATU_DMA_RUNNINGp;
   /*#p28.ACYL*/ uint8_t ACYL_SCANNINGp_odd;
   /*#p21.WODU*/ uint8_t WODU_HBLANKp_odd;
-  /*_p07.SATO*/ uint8_t SATO_BOOT_BITn;
   /*_p28.ATEJ*/ uint8_t ATEJ_LINE_RSTp_odd;
   /*_p29.FEPO*/ uint8_t FEPO_STORE_MATCHp_odd;
 
@@ -220,6 +219,9 @@ struct LogicBoyState {
   //NR52 reg_NR52;
 
   // new stuff that doesn't translate to GBState
+
+  int phase_lx = 0;
+  int phase_ly = 0;
 
   int scan_phase = 0;
 };

@@ -8,7 +8,7 @@
 ///*_p01.ULUR*/ wire ULUR_DIV_06_clknew = /*mux2p(FF60_1, BOGA_Axxxxxxx,*/ TAMA_DIV05p.qn_new() /*)*/;
 ///*_p01.UGOT*/ UGOT_DIV06p.dff17_clk(ULUR_DIV_06_clknew,  UGOT_DIV06p.qn_old());
 
-void GateBoy::tock_div_gates() {
+void GateBoy::tock_div_gates(const GateBoyState& reg_old) {
   /*_p01.TAPE*/ wire TAPE_FF04_WRp = and4(gb_state.cpu_signals.TAPU_CPU_WRp.out_new(), gb_state.cpu_abus.RYFO_FF04_FF07p(), gb_state.cpu_abus.TOLA_A01n(), gb_state.cpu_abus.TOVY_A00n());
   /*_p01.UFOL*/ wire UFOL_DIV_RSTn = nor3(pins.sys.UCOB_CLKBADp(), pins.sys.PIN_71_RST.qp_int_new(), TAPE_FF04_WRp);
 

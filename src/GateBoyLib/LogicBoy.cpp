@@ -414,9 +414,18 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   state_new.reg_lx = (uint8_t)((state_new.phase_lx - 4) / 8);
   state_new.lcd.POPU_VBLANKp_odd.state = 0;
   state_new.reg_ly = (uint8_t)state_new.phase_ly;
+  state_new.lcd.CATU_x113p_odd.state = 0;
+  state_new.lcd.ANEL_x113p_odd.state = 0;
+  bool line_rst_new = false;
+  state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
+  state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
 
   if (state_new.first_line) {
     if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.reg_ly =  0;
+    state_new.lcd.CATU_x113p_odd.state = 0;
+    state_new.lcd.ANEL_x113p_odd.state = 0;
+    if (state_new.phase_ly >= 0 && state_new.phase_ly < 144) line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
+    if (state_new.phase_ly == 153) line_rst_new = (state_new.phase_lx == 6 || state_new.phase_lx == 7);
   }
   else {
     state_new.lcd.NYPE_LINE_ENDp_odd.state= (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
@@ -424,52 +433,27 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (state_new.phase_ly == 144 && state_new.phase_lx >= 4) state_new.lcd.POPU_VBLANKp_odd.state = 1;
     if (state_new.phase_ly > 144) state_new.lcd.POPU_VBLANKp_odd.state = 1;
     if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.reg_ly =  0;
-  }
-
-
-  state_new.lcd.CATU_x113p_odd.state = 0;
-  state_new.lcd.ANEL_x113p_odd.state = 0;
-  if (state_new.first_line) {
-    state_new.lcd.CATU_x113p_odd.state = 0;
-    state_new.lcd.ANEL_x113p_odd.state = 0;
-  }
-  else if (state_new.phase_ly >= 0 && state_new.phase_ly < 144) {
-    state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
-    state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
-  }
-  else if (state_new.phase_ly == 153) {
-    state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 6) && (state_new.phase_lx <= 9);
-    state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 8) && (state_new.phase_lx <= 11);
-  }
-
-  // Line reset
-  bool line_rst_new = false;
-  if (state_new.phase_ly >= 0 && state_new.phase_ly < 144) {
-    line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
-  }
-  else if (state_new.phase_ly == 153) {
-    line_rst_new = (state_new.phase_lx == 6 || state_new.phase_lx == 7);
-  }
-
-  // RUTU
-  state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
-  if (!state_new.first_line) {
+    if (state_new.phase_ly >= 0 && state_new.phase_ly < 144) {
+      state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
+      state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
+    }
+    else if (state_new.phase_ly == 153) {
+      state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 6) && (state_new.phase_lx <= 9);
+      state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 8) && (state_new.phase_lx <= 11);
+    }
+    if (state_new.phase_ly >= 0 && state_new.phase_ly < 144) line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
+    if (state_new.phase_ly == 153) line_rst_new = (state_new.phase_lx == 6 || state_new.phase_lx == 7);
     state_new.lcd.RUTU_LINE_ENDp_odd.state = (state_new.phase_lx >= 0) && (state_new.phase_lx <= 7);
   }
 
-  // MYTA
-  state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
-  if (state_new.first_frame) {
-    if (state_new.first_line) {
-    }
-    else {
-      if ((state_new.phase_lx >= 4) && (state_new.phase_ly == 153)) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
-    }
+
+  if (!state_new.first_frame) {
+    if (state_new.phase_ly == 0 && state_new.phase_lx <= 3) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
   }
-  else {
-    if (state_new.phase_ly == 0 && state_new.phase_lx <= 3)     state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
-    if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
-  }
+  if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
+
+
+
 
   //----------------------------------------
   // Joypad

@@ -379,68 +379,50 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // LX, LY, lcd flags
 
+  // if we're just coming out of reset, lcd phase is off by 8 (hardware glitch)
   if (vid_rst_new) {
-    state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
-    state_new.lcd.NYPE_LINE_ENDp_odd.state = 0;
-    state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
-    state_new.reg_ly = 0;
-    state_new.reg_lx = 0;
     state_new.phase_lcd = 0;
   }
   else {
-    // if we're just coming out of reset, lcd phase is off by 8 (hardware glitch)
-    if (vid_rst_old) {
-      state_new.phase_lcd = 8;
-    }
-
+    if (vid_rst_old) state_new.phase_lcd = 8;
     state_new.phase_lcd++;
   }
 
-  int phase_frame = state_new.phase_lcd % (154 * 912);
+  int phase_frame = int(state_new.phase_lcd % (154 * 912));
+  int frame_index = int(state_new.phase_lcd / (154 * 912));
   int phase_lx = phase_frame % 912;
   int phase_ly = phase_frame / 912;
-  int frame_index = int(state_new.phase_lcd / (154 * 912));
   bool first_line = state_new.phase_lcd < 912;
 
   int phase_frame_d4 = (state_new.phase_lcd - 4) % (154 * 912);
-  int phase_lx_d4 = phase_frame_d4 % 912;
   int phase_ly_d4 = phase_frame_d4 / 912;
 
-  state_new.lcd.NYPE_LINE_ENDp_odd.state = false;
   state_new.reg_lx = (uint8_t)((phase_lx - 4) / 8);
-  state_new.reg_ly = (uint8_t)phase_ly;
-  state_new.lcd.CATU_x113p_odd.state = 0;
-  state_new.lcd.ANEL_x113p_odd.state = 0;
-  bool line_rst_new = false;
-  state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
+  state_new.reg_ly = phase_frame >= 153 * 912 + 4 ? 0 : (uint8_t)phase_ly;
 
-  if (first_line) {
+  bool line_rst_new = false;
+  if (phase_ly < 144)  line_rst_new = (phase_lx == 2 || phase_lx == 3);
+  if (phase_ly == 153) line_rst_new = (phase_lx == 6 || phase_lx == 7);
+
+  state_new.lcd.RUTU_LINE_ENDp_odd.state = !first_line && (phase_lx >= 0) && (phase_lx <= 7);
+  state_new.lcd.NYPE_LINE_ENDp_odd.state = !first_line && (phase_lx >= 4) && (phase_lx <= 11);
+
+
+  if (phase_ly < 144) {
+    state_new.lcd.CATU_x113p_odd.state = !first_line && (phase_lx >= 2) && (phase_lx <= 9);
+    state_new.lcd.ANEL_x113p_odd.state = !first_line && (phase_lx >= 4) && (phase_lx <= 11);
+  }
+  else if (phase_ly >= 144 && phase_ly < 153) {
     state_new.lcd.CATU_x113p_odd.state = 0;
     state_new.lcd.ANEL_x113p_odd.state = 0;
-    line_rst_new = (phase_lx == 2 || phase_lx == 3);
   }
-  else {
-    state_new.lcd.RUTU_LINE_ENDp_odd.state = (phase_lx >= 0) && (phase_lx <= 7);
-    state_new.lcd.NYPE_LINE_ENDp_odd.state = (phase_lx >= 4) && (phase_lx <= 11);
-
-
-
-    if (phase_ly == 153 && phase_lx >= 4) state_new.reg_ly =  0;
-    if (phase_ly >= 0 && phase_ly < 144) {
-      state_new.lcd.CATU_x113p_odd.state = (phase_lx >= 2) && (phase_lx <= 9);
-      state_new.lcd.ANEL_x113p_odd.state = (phase_lx >= 4) && (phase_lx <= 11);
-    }
-    if (phase_ly == 153) {
-      state_new.lcd.CATU_x113p_odd.state = (phase_lx >= 6) && (phase_lx <= 9);
-      state_new.lcd.ANEL_x113p_odd.state = (phase_lx >= 8) && (phase_lx <= 11);
-    }
-    if (phase_ly >= 0 && phase_ly < 144) line_rst_new = (phase_lx == 2 || phase_lx == 3);
-    if (phase_ly == 153) line_rst_new = (phase_lx == 6 || phase_lx == 7);
+  if (phase_ly == 153) {
+    state_new.lcd.CATU_x113p_odd.state = (phase_lx >= 6) && (phase_lx <= 9);
+    state_new.lcd.ANEL_x113p_odd.state = (phase_lx >= 8) && (phase_lx <= 11);
   }
 
   state_new.lcd.MYTA_FRAME_ENDp_odd.state = phase_ly_d4 == 153;
-
-  state_new.lcd.POPU_VBLANKp_odd.state = phase_frame_d4 >= 144 * 912;
+  state_new.lcd.POPU_VBLANKp_odd.state = phase_ly_d4 >= 144;
 
   //----------------------------------------
   // Joypad
@@ -1690,7 +1672,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (cpu_addr_new == 0xFF42) state_new.cpu_dbus = ~state_new.reg_scy;
     if (cpu_addr_new == 0xFF43) state_new.cpu_dbus = ~state_new.reg_scx;
     if (cpu_addr_new == 0xFF44) state_new.cpu_dbus =  state_new.reg_ly;
-    if (cpu_addr_new == 0xFF45) state_new.cpu_dbus = ~state_old.reg_lyc;
+    if (cpu_addr_new == 0xFF45) state_new.cpu_dbus = ~state_new.reg_lyc;
     if (cpu_addr_new == 0xFF47) state_new.cpu_dbus = ~state_new.reg_bgp;
     if (cpu_addr_new == 0xFF48) state_new.cpu_dbus = ~state_new.reg_obp0;
     if (cpu_addr_new == 0xFF49) state_new.cpu_dbus = ~state_new.reg_obp1;
@@ -1866,7 +1848,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   auto pack_stat = state_new.reg_stat;
 
   if (!vid_rst_new && DELTA_BC_new) {
-    state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = state_old.reg_ly == (state_old.reg_lyc ^ 0xFF);
+    state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = state_old.reg_ly == (state_old.reg_lyc ^ 0xFF); // must be state_old.reg_ly
   }
 
   // FIXME this seems slightly wrong...

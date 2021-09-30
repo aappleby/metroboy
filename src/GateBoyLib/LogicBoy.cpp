@@ -419,22 +419,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (phase_ly_new < 144)  line_rst_new = (phase_lx_new == 2 || phase_lx_new == 3);
   if (phase_ly_new == 153) line_rst_new = (phase_lx_new == 6 || phase_lx_new == 7);
 
-  state_new.lcd.RUTU_LINE_ENDp_odd.state = !first_line_new && (phase_lx_new >= 0) && (phase_lx_new <= 7);
-
-
-  if (phase_ly_new < 144) {
-    state_new.lcd.CATU_x113p_odd.state = !first_line_new && (phase_lx_new >= 2) && (phase_lx_new <= 9);
-    state_new.lcd.ANEL_x113p_odd.state = !first_line_new && (phase_lx_new >= 4) && (phase_lx_new <= 11);
-  }
-  else if (phase_ly_new >= 144 && phase_ly_new < 153) {
-    state_new.lcd.CATU_x113p_odd.state = 0;
-    state_new.lcd.ANEL_x113p_odd.state = 0;
-  }
-  if (phase_ly_new == 153) {
-    state_new.lcd.CATU_x113p_odd.state = (phase_lx_new >= 6) && (phase_lx_new <= 9);
-    state_new.lcd.ANEL_x113p_odd.state = (phase_lx_new >= 8) && (phase_lx_new <= 11);
-  }
-
 
   bool vblank_new = phase_ly_d4_new >= 144;
 
@@ -1895,6 +1879,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pack_cpu_dbus_new = stat;
   }
 
+  state_new.lcd.RUTU_LINE_ENDp_odd.state = !first_line_new && (phase_lx_new >= 0) && (phase_lx_new <= 7);
+
   bool int_stat_old = 0;
   if (!get_bit(state_old.reg_stat, 0) && (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) && !vblank_old) int_stat_old = 1;
   if (!get_bit(state_old.reg_stat, 1) && vblank_old) int_stat_old = 1;
@@ -2026,6 +2012,19 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    if (phase_ly_new < 144) {
+      state_new.lcd.CATU_x113p_odd.state = !first_line_new && (phase_lx_new >= 2) && (phase_lx_new <= 9);
+      state_new.lcd.ANEL_x113p_odd.state = !first_line_new && (phase_lx_new >= 4) && (phase_lx_new <= 11);
+    }
+    else if (phase_ly_new >= 144 && phase_ly_new < 153) {
+      state_new.lcd.CATU_x113p_odd.state = 0;
+      state_new.lcd.ANEL_x113p_odd.state = 0;
+    }
+    if (phase_ly_new == 153) {
+      state_new.lcd.CATU_x113p_odd.state = (phase_lx_new >= 6) && (phase_lx_new <= 9);
+      state_new.lcd.ANEL_x113p_odd.state = (phase_lx_new >= 8) && (phase_lx_new <= 11);
+    }
+
     state_new.lcd.POPU_VBLANKp_odd.state = vblank_new;
     state_new.lcd.MYTA_FRAME_ENDp_odd.state = phase_ly_d4_new == 153;
     state_new.lcd.NYPE_LINE_ENDp_odd.state = !first_line_new && (phase_lx_new >= 4) && (phase_lx_new <= 11);

@@ -421,11 +421,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
 
   if (state_new.first_line) {
-    if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.reg_ly =  0;
     state_new.lcd.CATU_x113p_odd.state = 0;
     state_new.lcd.ANEL_x113p_odd.state = 0;
-    if (state_new.phase_ly >= 0 && state_new.phase_ly < 144) line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
-    if (state_new.phase_ly == 153) line_rst_new = (state_new.phase_lx == 6 || state_new.phase_lx == 7);
+    line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
   }
   else {
     state_new.lcd.NYPE_LINE_ENDp_odd.state= (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
@@ -447,7 +445,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  if (!state_new.first_frame) {
+  if (!state_new.first_line) {
     if (state_new.phase_ly == 0 && state_new.phase_lx <= 3) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
   }
   if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;

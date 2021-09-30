@@ -259,7 +259,7 @@ TestResults fake_test() {
 TestResults GateBoyTests::test_regression(const IGateBoy* proto) {
   TEST_INIT();
 
-  auto phases = MCYCLES_PER_FRAME * 8 * 3;
+  auto phases = 114 * 154 * 8 * 6;
 
   results += test_regression_cart("tests/microtests/DMG/minimal.gb", proto, phases, true);
   results += test_regression_cart("LinksAwakening.gb",               proto, phases, false);

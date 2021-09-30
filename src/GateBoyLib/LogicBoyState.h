@@ -223,6 +223,7 @@ struct LogicBoyState {
   int phase_lx = 0;
   int phase_ly = 0;
   bool first_line = 0;
+  bool first_frame = 0;
 
   int scan_phase = 0;
 };

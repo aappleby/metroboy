@@ -379,6 +379,19 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // LX, LY, lcd flags
 
+  int64_t phase_lcd_old = state_new.phase_lcd;
+
+  int phase_frame_old = int(phase_lcd_old % (154 * 912));
+  int phase_lx_old = phase_frame_old % 912;
+  int phase_ly_old = phase_frame_old / 912;
+
+  uint8_t reg_lx_old = (uint8_t)((phase_lx_old - 4) / 8);
+  uint8_t reg_ly_old = (uint8_t)(phase_frame_old >= 153 * 912 + 4 ? 0 : phase_ly_old);
+
+  int phase_frame_d4_old = (phase_lcd_old - 4) % (154 * 912);
+  int phase_ly_d4_old = phase_frame_d4_old / 912;
+  bool vblank_old = phase_ly_d4_old >= 144;
+
   // if we're just coming out of reset, lcd phase is off by 8 (hardware glitch)
   if (vid_rst_new) {
     state_new.phase_lcd = 0;
@@ -388,41 +401,42 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.phase_lcd++;
   }
 
-  int phase_frame = int(state_new.phase_lcd % (154 * 912));
-  int frame_index = int(state_new.phase_lcd / (154 * 912));
-  int phase_lx = phase_frame % 912;
-  int phase_ly = phase_frame / 912;
-  bool first_line = state_new.phase_lcd < 912;
+  int64_t phase_lcd_new = state_new.phase_lcd;
 
-  int phase_frame_d4 = (state_new.phase_lcd - 4) % (154 * 912);
-  int phase_ly_d4 = phase_frame_d4 / 912;
+  int phase_frame_new = int(phase_lcd_new % (154 * 912));
+  int frame_index_new = int(phase_lcd_new / (154 * 912));
+  int phase_lx_new = phase_frame_new % 912;
+  int phase_ly_new = phase_frame_new / 912;
+  bool first_line_new = phase_lcd_new < 912;
 
-  state_new.reg_lx = (uint8_t)((phase_lx - 4) / 8);
-  state_new.reg_ly = phase_frame >= 153 * 912 + 4 ? 0 : (uint8_t)phase_ly;
+  int phase_frame_d4_new = (phase_lcd_new - 4) % (154 * 912);
+  int phase_ly_d4_new = phase_frame_d4_new / 912;
+
+  uint8_t reg_lx_new = (uint8_t)((phase_lx_new - 4) / 8);
+  uint8_t reg_ly_new = (uint8_t)(phase_frame_new >= 153 * 912 + 4 ? 0 : phase_ly_new);
 
   bool line_rst_new = false;
-  if (phase_ly < 144)  line_rst_new = (phase_lx == 2 || phase_lx == 3);
-  if (phase_ly == 153) line_rst_new = (phase_lx == 6 || phase_lx == 7);
+  if (phase_ly_new < 144)  line_rst_new = (phase_lx_new == 2 || phase_lx_new == 3);
+  if (phase_ly_new == 153) line_rst_new = (phase_lx_new == 6 || phase_lx_new == 7);
 
-  state_new.lcd.RUTU_LINE_ENDp_odd.state = !first_line && (phase_lx >= 0) && (phase_lx <= 7);
-  state_new.lcd.NYPE_LINE_ENDp_odd.state = !first_line && (phase_lx >= 4) && (phase_lx <= 11);
+  state_new.lcd.RUTU_LINE_ENDp_odd.state = !first_line_new && (phase_lx_new >= 0) && (phase_lx_new <= 7);
 
 
-  if (phase_ly < 144) {
-    state_new.lcd.CATU_x113p_odd.state = !first_line && (phase_lx >= 2) && (phase_lx <= 9);
-    state_new.lcd.ANEL_x113p_odd.state = !first_line && (phase_lx >= 4) && (phase_lx <= 11);
+  if (phase_ly_new < 144) {
+    state_new.lcd.CATU_x113p_odd.state = !first_line_new && (phase_lx_new >= 2) && (phase_lx_new <= 9);
+    state_new.lcd.ANEL_x113p_odd.state = !first_line_new && (phase_lx_new >= 4) && (phase_lx_new <= 11);
   }
-  else if (phase_ly >= 144 && phase_ly < 153) {
+  else if (phase_ly_new >= 144 && phase_ly_new < 153) {
     state_new.lcd.CATU_x113p_odd.state = 0;
     state_new.lcd.ANEL_x113p_odd.state = 0;
   }
-  if (phase_ly == 153) {
-    state_new.lcd.CATU_x113p_odd.state = (phase_lx >= 6) && (phase_lx <= 9);
-    state_new.lcd.ANEL_x113p_odd.state = (phase_lx >= 8) && (phase_lx <= 11);
+  if (phase_ly_new == 153) {
+    state_new.lcd.CATU_x113p_odd.state = (phase_lx_new >= 6) && (phase_lx_new <= 9);
+    state_new.lcd.ANEL_x113p_odd.state = (phase_lx_new >= 8) && (phase_lx_new <= 11);
   }
 
-  state_new.lcd.MYTA_FRAME_ENDp_odd.state = phase_ly_d4 == 153;
-  state_new.lcd.POPU_VBLANKp_odd.state = phase_ly_d4 >= 144;
+
+  bool vblank_new = phase_ly_d4_new >= 144;
 
   //----------------------------------------
   // Joypad
@@ -606,7 +620,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.scan_phase = 0;
   }
   else {
-    int ly = (int)state_new.reg_ly;
     int sy = (int)state_new.oam_temp_a - 16;
     int sprite_height = spr_size_new ? 8 : 16;
 
@@ -645,7 +658,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_AB_new || DELTA_EF_new) {
       state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state;
 
-      wire sprite_hit = ly >= sy && ly < sy + sprite_height && state_old.sprite_scanner.CENO_SCAN_DONEn_odd.state;
+      wire sprite_hit = (reg_ly_new >= sy) && (reg_ly_new < sy + sprite_height) && state_old.sprite_scanner.CENO_SCAN_DONEn_odd.state;
       if (sprite_hit) {
         state_new.sprite_store_flags = (1 << state_new.sprite_counter);
         (&state_new.store_i0)[state_new.sprite_counter] = state_new.sprite_ibus ^ 0b111111;
@@ -659,7 +672,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
     if (DELTA_BC_new || DELTA_FG_new) {
-      wire sprite_hit = ly >= sy && ly < sy + sprite_height && state_old.sprite_scanner.CENO_SCAN_DONEn_odd.state;
+      wire sprite_hit = (reg_ly_new >= sy) && (reg_ly_new < sy + sprite_height) && state_old.sprite_scanner.CENO_SCAN_DONEn_odd.state;
       if (sprite_hit) state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 0;
     }
 
@@ -1034,7 +1047,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (state_new.XYMU_RENDERINGn) {
     state_new.sprite_ibus = state_new.sprite_index;
-    state_new.sprite_lbus = (~state_new.reg_ly + state_new.oam_temp_a) & 0b00001111;
+    state_new.sprite_lbus = (~reg_ly_new + state_new.oam_temp_a) & 0b00001111;
   }
 
   else if (!state_new.XYMU_RENDERINGn && state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state) {
@@ -1048,7 +1061,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
   // ROGE
-  state_new.win_ctrl.ROGE_WY_MATCHp_odd.state = (state_new.reg_ly == uint8_t(~state_new.reg_wy)) && win_en_new;
+  state_new.win_ctrl.ROGE_WY_MATCHp_odd.state = (reg_ly_new == uint8_t(~state_new.reg_wy)) && win_en_new;
 
   // SARY
   if (DELTA_BC_new) state_new.win_ctrl.SARY_WY_MATCHp_odd.state = state_old.win_ctrl.ROGE_WY_MATCHp_odd.state;
@@ -1056,7 +1069,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // REJO
   if (state_new.win_ctrl.SARY_WY_MATCHp_odd.state) state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 1;
-  if (state_new.lcd.POPU_VBLANKp_odd.state) state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 0;
+  if (vblank_new) state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 0;
   if (vid_rst_new) state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 0;
 
 
@@ -1137,7 +1150,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (state_new.XYMU_RENDERINGn) state_new.sprite_match_flags = 0;
 
   if (!state_new.XYMU_RENDERINGn && !state_new.FEPO_STORE_MATCHp_odd) {
-    const auto pack_ydiff = ~state_new.reg_ly + state_new.oam_temp_a;
+    const auto pack_ydiff = ~reg_ly_new + state_new.oam_temp_a;
     state_new.sprite_lbus = pack_ydiff & 0b00001111;
   }
 
@@ -1218,7 +1231,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (vid_rst_new || state_new.lcd.POPU_VBLANKp_odd.state) {
+  if (vid_rst_new || vblank_new) {
     state_new.win_y.tile = 0;
     state_new.win_y.map = 0;
   }
@@ -1523,7 +1536,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     const auto scy = ~state_new.reg_scy;
 
     const auto sum_x = px + scx;
-    const auto sum_y = state_new.reg_ly + scy;
+    const auto sum_y = reg_ly_new + scy;
 
     if (get_bit(state_new.tfetch_counter_odd, 1) || get_bit(state_new.tfetch_counter_odd, 2)) {
 
@@ -1545,7 +1558,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
     else {
       bit_cat(state_new.vram_abus,  0,  4, (px + scx) >> 3);
-      bit_cat(state_new.vram_abus,  5,  9, (state_new.reg_ly + scy) >> 3);
+      bit_cat(state_new.vram_abus,  5,  9, (reg_ly_new + scy) >> 3);
       bit_cat(state_new.vram_abus, 10, 10, !bg_map_new);
       bit_cat(state_new.vram_abus, 11, 11, 1);
       bit_cat(state_new.vram_abus, 12, 12, 1);
@@ -1671,7 +1684,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (cpu_addr_new == 0xFF40) state_new.cpu_dbus = ~state_new.reg_lcdc;
     if (cpu_addr_new == 0xFF42) state_new.cpu_dbus = ~state_new.reg_scy;
     if (cpu_addr_new == 0xFF43) state_new.cpu_dbus = ~state_new.reg_scx;
-    if (cpu_addr_new == 0xFF44) state_new.cpu_dbus =  state_new.reg_ly;
+    if (cpu_addr_new == 0xFF44) state_new.cpu_dbus =  reg_ly_new;
     if (cpu_addr_new == 0xFF45) state_new.cpu_dbus = ~state_new.reg_lyc;
     if (cpu_addr_new == 0xFF47) state_new.cpu_dbus = ~state_new.reg_bgp;
     if (cpu_addr_new == 0xFF48) state_new.cpu_dbus = ~state_new.reg_obp0;
@@ -1848,7 +1861,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   auto pack_stat = state_new.reg_stat;
 
   if (!vid_rst_new && DELTA_BC_new) {
-    state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = state_old.reg_ly == (state_old.reg_lyc ^ 0xFF); // must be state_old.reg_ly
+    state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state = reg_ly_old == (state_old.reg_lyc ^ 0xFF); // must be reg_ly_old
   }
 
   // FIXME this seems slightly wrong...
@@ -1874,7 +1887,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (cpu_addr_new == 0xFF41 && (cpu.bus_req_new.read && !DELTA_HA_new)) {
     uint8_t stat = 0x80;
 
-    stat |= (!state_new.XYMU_RENDERINGn || state_new.lcd.POPU_VBLANKp_odd.state) << 0;
+    stat |= (!state_new.XYMU_RENDERINGn || vblank_new) << 0;
     stat |= (!state_new.XYMU_RENDERINGn || (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new)) << 1;
     stat |= (!state_new.int_ctrl.RUPO_LYC_MATCHn.state) << 2;
     stat |= (pack_stat ^ 0b1111) << 3;
@@ -1883,13 +1896,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   bool int_stat_old = 0;
-  auto& POPU_VBLANKp_odd_old = state_old.lcd.POPU_VBLANKp_odd.state;
-  if (!get_bit(state_old.reg_stat, 0) && (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) && !POPU_VBLANKp_odd_old) int_stat_old = 1;
-  if (!get_bit(state_old.reg_stat, 1) && POPU_VBLANKp_odd_old) int_stat_old = 1;
-  if (!get_bit(state_old.reg_stat, 2) && !POPU_VBLANKp_odd_old && state_old.lcd.RUTU_LINE_ENDp_odd.state) int_stat_old = 1;
+  if (!get_bit(state_old.reg_stat, 0) && (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) && !vblank_old) int_stat_old = 1;
+  if (!get_bit(state_old.reg_stat, 1) && vblank_old) int_stat_old = 1;
+  if (!get_bit(state_old.reg_stat, 2) && !vblank_old && state_old.lcd.RUTU_LINE_ENDp_odd.state) int_stat_old = 1;
   if (!get_bit(state_old.reg_stat, 3) && state_old.int_ctrl.ROPO_LY_MATCH_SYNCp.state) int_stat_old = 1;
 
-  wire int_lcd_old = POPU_VBLANKp_odd_old;
+  wire int_lcd_old = vblank_old;
   wire int_joy_old = !state_old.joy_int.APUG_JP_GLITCH3.state || !state_old.joy_int.BATU_JP_GLITCH0.state;
   wire int_tim_old = state_old.int_ctrl.MOBA_TIMER_OVERFLOWp.state;
   //wire int_ser_old = serial.CALY_SER_CNT3;
@@ -1898,12 +1910,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   bool hblank_new = !state_old.FEPO_STORE_MATCHp_odd && (state_new.pix_count & 167) == 167;
 
   bool int_stat_new = 0;
-  if (!get_bit(pack_stat, 0) && hblank_new && !state_new.lcd.POPU_VBLANKp_odd.state) int_stat_new = 1;
-  if (!get_bit(pack_stat, 1) && state_new.lcd.POPU_VBLANKp_odd.state) int_stat_new = 1;
-  if (!get_bit(pack_stat, 2) && !state_new.lcd.POPU_VBLANKp_odd.state && state_new.lcd.RUTU_LINE_ENDp_odd.state) int_stat_new = 1;
+  if (!get_bit(pack_stat, 0) && hblank_new && !vblank_new) int_stat_new = 1;
+  if (!get_bit(pack_stat, 1) && vblank_new) int_stat_new = 1;
+  if (!get_bit(pack_stat, 2) && !vblank_new && state_new.lcd.RUTU_LINE_ENDp_odd.state) int_stat_new = 1;
   if (!get_bit(pack_stat, 3) && state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state) int_stat_new = 1;
 
-  const wire int_lcd_new = state_new.lcd.POPU_VBLANKp_odd.state;
+  const wire int_lcd_new = vblank_new;
   const wire int_joy_new = !state_new.joy_int.APUG_JP_GLITCH3.state || !state_new.joy_int.BATU_JP_GLITCH0.state;
   const wire int_tim_new = state_new.int_ctrl.MOBA_TIMER_OVERFLOWp.state;
   //const wire int_ser = state_new.serial.CALY_SER_CNT3;
@@ -1939,7 +1951,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
   int lcd_x = pix_count_new - 8;
-  int lcd_y = state_new.reg_ly;
+  int lcd_y = reg_ly_new;
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
     wire p0 = !REMY_LD0n;
@@ -2014,6 +2026,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.lcd.POPU_VBLANKp_odd.state = vblank_new;
+    state_new.lcd.MYTA_FRAME_ENDp_odd.state = phase_ly_d4_new == 153;
+    state_new.lcd.NYPE_LINE_ENDp_odd.state = !first_line_new && (phase_lx_new >= 4) && (phase_lx_new <= 11);
+
+    state_new.reg_lx = reg_lx_new;
+    state_new.reg_ly = reg_ly_new;
 
     if (vid_rst_new || line_rst_new) {
       state_new.VOGA_HBLANKp = 0;
@@ -2032,14 +2050,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.cpu_signals.SIG_IN_CPU_RDp.state = cpu_rd;
     if (!vid_rst_new) {
       if (DELTA_FG_new) {
-        state_new.lcd.SYGU_LINE_STROBE.state = (state_old.reg_lx == 0) || (state_old.reg_lx == 7) || (state_old.reg_lx == 45) || (state_old.reg_lx == 83);
+        state_new.lcd.SYGU_LINE_STROBE.state = (reg_lx_old == 0) || (reg_lx_old == 7) || (reg_lx_old == 45) || (reg_lx_old == 83);
       }
 
       if (state_old.lcd.RUTU_LINE_ENDp_odd.state && !state_new.lcd.RUTU_LINE_ENDp_odd.state) state_new.lcd.LUCA_LINE_EVENp.state = !state_new.lcd.LUCA_LINE_EVENp.state;
-      if (!POPU_VBLANKp_odd_old && state_new.lcd.POPU_VBLANKp_odd.state) state_new.lcd.NAPO_FRAME_EVENp.state = !state_new.lcd.NAPO_FRAME_EVENp.state;
+      if (!vblank_old && vblank_new) state_new.lcd.NAPO_FRAME_EVENp.state = !state_new.lcd.NAPO_FRAME_EVENp.state;
 
       if (state_old.lcd.NYPE_LINE_ENDp_odd.state && !state_new.lcd.NYPE_LINE_ENDp_odd.state) {
-        state_new.lcd.MEDA_VSYNC_OUTn.state = state_new.reg_ly == 0;
+        state_new.lcd.MEDA_VSYNC_OUTn.state = reg_ly_new == 0;
       }
 
       if (get_bit(state_new.pix_count, 0) && get_bit(state_new.pix_count, 3)) state_new.lcd.WUSA_LCD_CLOCK_GATE.state = 1;

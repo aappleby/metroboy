@@ -389,7 +389,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.phase_lcd = 0;
     state_new.phase_lx = 0;
     state_new.phase_ly = 0;
-    state_new.first_line = 1;
   }
   else {
     // if we're just coming out of reset, lcd phase is off by 8 (hardware glitch)
@@ -401,7 +400,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.phase_lcd++;
     state_new.phase_lx++;
     if (state_new.phase_lx == 912) {
-      state_new.first_line = 0;
       state_new.phase_lx = 0;
       state_new.phase_ly++;
       if (state_new.phase_ly == 154) {
@@ -410,10 +408,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  bool first_line2 = state_new.phase_lcd < 912;
-  if (state_new.first_line != first_line2) {
-    printf("%d %d %d %d, %lld\n", state_new.first_line, first_line2, state_new.phase_lx, state_new.phase_ly, state_new.phase_lcd);
-  }
+  int phase_lx2 = state_new.phase_lcd % 912;
+  int phase_ly2 = (state_new.phase_lcd / 912) % 154;
+  int phase_frame = int(state_new.phase_lcd / (154 * 912));
+
+  if (phase_lx2 != state_new.phase_lx) debugbreak();
+  if (phase_ly2 != state_new.phase_ly) debugbreak();
+
 
   state_new.lcd.NYPE_LINE_ENDp_odd.state = false;
   state_new.reg_lx = (uint8_t)((state_new.phase_lx - 4) / 8);
@@ -425,7 +426,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
   state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
 
-  if (state_new.first_line) {
+  bool first_line = state_new.phase_lcd < 912;
+  if (first_line) {
     state_new.lcd.CATU_x113p_odd.state = 0;
     state_new.lcd.ANEL_x113p_odd.state = 0;
     line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);

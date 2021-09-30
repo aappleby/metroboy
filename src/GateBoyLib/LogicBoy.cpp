@@ -394,6 +394,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (vid_rst_new) {
     state_new.phase_lx = 0;
     state_new.phase_ly = 0;
+    state_new.first_line = 1;
   }
   else {
     // if we're just coming out of reset, lcd phase is off by 8 (hardware glitch)
@@ -401,6 +402,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     state_new.phase_lx++;
     if (state_new.phase_lx == 912) {
+      state_new.first_line = 0;
       state_new.phase_lx = 0;
       state_new.phase_ly++;
       if (state_new.phase_ly == 154) {
@@ -452,19 +454,61 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   }
 
-  //bool line_rst_new = state_new.lcd.CATU_x113p_odd.state && !state_new.lcd.ANEL_x113p_odd.state;
+  //bool line_rst_new_gates = state_new.lcd.CATU_x113p_odd.state && !state_new.lcd.ANEL_x113p_odd.state;
 
+  //bool catu2 = false;
+
+  //uint8_t anel2 = false;
+
+  state_new.lcd.CATU_x113p_odd.state = 0;
   bool line_rst_new = false;
-  if (state_old.phase_ly >= 0 && state_old.phase_ly <= 143) {
+  if (state_old.phase_ly == 0) {
+    if (state_old.first_line) {
+      state_new.lcd.CATU_x113p_odd.state = 0;
+      state_new.lcd.ANEL_x113p_odd.state = 0;
+    }
+    if (!state_old.first_line) {
+      state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
+      state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
+    }
+    //anel2 = (state_old.phase_lx >= 3) && (state_old.phase_lx <= 10);
+
+    //if (anel2 != state_new.lcd.ANEL_x113p_odd.state) printf("anel1 %d anel2 %d @ (%d,%d)\n", state_new.lcd.ANEL_x113p_odd.state, anel2, state_old.phase_lx, state_old.phase_ly);
+
     if (state_new.phase_lx == 2 || state_new.phase_lx == 3) {
       line_rst_new = 1;
     }
   }
+  else if (state_old.phase_ly > 0 && state_old.phase_ly < 144) {
+    if (!vid_rst_old) state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
+    //if (!vid_rst_old) anel2 = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
+
+    if (state_new.phase_lx == 2 || state_new.phase_lx == 3) {
+      line_rst_new = 1;
+    }
+  }
+  else if (state_old.phase_ly >= 144 && state_old.phase_ly < 153) {
+  }
   else if (state_old.phase_ly == 153) {
+    state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 6) && (state_new.phase_lx <= 9);
+    //anel2 = (state_new.phase_lx >= 8) && (state_new.phase_lx <= 11);
+
     if (state_new.phase_lx == 6 || state_new.phase_lx == 7) {
       line_rst_new = 1;
     }
   }
+
+  //if (line_rst_new != line_rst_new_gates) {
+  //  printf("line_rst_new mismatch @ (%d,%d)\n", state_new.phase_lx, state_new.phase_ly);
+  //}
+
+  //if (catu2 != (bool)state_new.lcd.CATU_x113p_odd.state) {
+  //  printf("catu mismatch @ (%d,%d)\n", state_new.phase_lx, state_new.phase_ly);
+  //}
+
+  //if (anel2 != (bool)state_new.lcd.ANEL_x113p_odd.state) {
+  //  printf("anel mismatch @ (%d,%d)\n", state_old.phase_lx, state_old.phase_ly);
+  //}
 
   //----------------------------------------
   // Joypad

@@ -220,10 +220,10 @@ struct LogicBoyState {
 
   // new stuff that doesn't translate to GBState
 
+  int64_t phase_lcd;
   int phase_lx = 0;
   int phase_ly = 0;
   bool first_line = 0;
-  bool first_frame = 0;
 
   int scan_phase = 0;
 };

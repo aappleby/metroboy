@@ -379,8 +379,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // LX, LY, lcd flags
 
-  wire ATEJ_LINE_RSTp_odd_old = !((state_old.lcd.ANEL_x113p_odd.state || !state_old.lcd.CATU_x113p_odd.state) && vid_rst_old);
-
   if (vid_rst_new) {
     state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
     state_new.lcd.NYPE_LINE_ENDp_odd.state = 0;
@@ -388,27 +386,34 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
     state_new.reg_ly = 0;
     state_new.reg_lx = 0;
+    state_new.phase_lcd = 0;
     state_new.phase_lx = 0;
     state_new.phase_ly = 0;
     state_new.first_line = 1;
-    state_new.first_frame = 1;
   }
   else {
     // if we're just coming out of reset, lcd phase is off by 8 (hardware glitch)
-    if (vid_rst_old) state_new.phase_lx = 8;
+    if (vid_rst_old) {
+      state_new.phase_lcd = 8;
+      state_new.phase_lx = 8;
+    }
 
+    state_new.phase_lcd++;
     state_new.phase_lx++;
     if (state_new.phase_lx == 912) {
       state_new.first_line = 0;
       state_new.phase_lx = 0;
       state_new.phase_ly++;
       if (state_new.phase_ly == 154) {
-        state_new.first_frame = 0;
         state_new.phase_ly = 0;
       }
     }
   }
 
+  bool first_line2 = state_new.phase_lcd < 912;
+  if (state_new.first_line != first_line2) {
+    printf("%d %d %d %d, %lld\n", state_new.first_line, first_line2, state_new.phase_lx, state_new.phase_ly, state_new.phase_lcd);
+  }
 
   state_new.lcd.NYPE_LINE_ENDp_odd.state = false;
   state_new.reg_lx = (uint8_t)((state_new.phase_lx - 4) / 8);
@@ -426,8 +431,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
   }
   else {
-    state_new.lcd.NYPE_LINE_ENDp_odd.state= (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
-    if (state_new.phase_ly == 0 && state_new.phase_lx < 4) state_new.lcd.POPU_VBLANKp_odd.state = 1;
+    state_new.lcd.RUTU_LINE_ENDp_odd.state = (state_new.phase_lx >= 0) && (state_new.phase_lx <= 7);
+    state_new.lcd.NYPE_LINE_ENDp_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
+
+    if (state_new.phase_ly == 0) {
+      state_new.lcd.POPU_VBLANKp_odd.state = state_new.phase_lx < 4;
+    }
+
     if (state_new.phase_ly == 144 && state_new.phase_lx >= 4) state_new.lcd.POPU_VBLANKp_odd.state = 1;
     if (state_new.phase_ly > 144) state_new.lcd.POPU_VBLANKp_odd.state = 1;
     if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.reg_ly =  0;
@@ -435,23 +445,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
       state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
     }
-    else if (state_new.phase_ly == 153) {
+    if (state_new.phase_ly == 153) {
       state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 6) && (state_new.phase_lx <= 9);
       state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 8) && (state_new.phase_lx <= 11);
     }
     if (state_new.phase_ly >= 0 && state_new.phase_ly < 144) line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
     if (state_new.phase_ly == 153) line_rst_new = (state_new.phase_lx == 6 || state_new.phase_lx == 7);
-    state_new.lcd.RUTU_LINE_ENDp_odd.state = (state_new.phase_lx >= 0) && (state_new.phase_lx <= 7);
-  }
-
-
-  if (!state_new.first_line) {
     if (state_new.phase_ly == 0 && state_new.phase_lx <= 3) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
+    if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
   }
-  if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
-
-
-
 
   //----------------------------------------
   // Joypad

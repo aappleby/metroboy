@@ -18,6 +18,7 @@ void LogicBoyState::reset_to_bootrom() {
 
   phase_lx = 802;
   phase_ly = 0;
+  phase_lcd = phase_lx + phase_ly * 912;
 }
 
 void LogicBoyState::reset_to_cart() {
@@ -28,6 +29,7 @@ void LogicBoyState::reset_to_cart() {
 
   phase_lx = 794;
   phase_ly = 153;
+  phase_lcd = phase_lx + phase_ly * 912;
 }
 
 //-----------------------------------------------------------------------------

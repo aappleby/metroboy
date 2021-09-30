@@ -413,62 +413,60 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (!vid_rst_new && DELTA_ODD_new) {
-    if (DELTA_HA_new) {
-    }
-
     if (DELTA_BC_new) {
       if (!state_old.lcd.RUTU_LINE_ENDp_odd.state) state_new.reg_lx++;
 
 
       if (!state_old.lcd.NYPE_LINE_ENDp_odd.state && state_old.lcd.RUTU_LINE_ENDp_odd.state) {
         state_new.lcd.POPU_VBLANKp_odd.state = state_old.reg_ly >= 144;
-        state_new.lcd.MYTA_FRAME_ENDp_odd.state = state_old.reg_ly >= 153;
-        if (state_old.reg_ly >= 153) state_new.reg_ly = 0;
       }
 
       state_new.lcd.NYPE_LINE_ENDp_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state;
     }
 
-    if (DELTA_DE_new) {
-    }
-
     if (DELTA_FG_new) {
       if (state_old.reg_lx == 113) {
         state_new.reg_lx = 0;
-        state_new.reg_ly++;
       }
-      else {
-      }
-      if (state_new.lcd.MYTA_FRAME_ENDp_odd.state) state_new.reg_ly = 0;
     }
   }
 
-  int reg_ly2 = state_new.phase_ly;
 
+  // popu
+
+  uint8_t popu = 0;
+
+  if (state_new.first_line) {
+  }
+  else {
+    if (state_new.phase_ly == 0 && state_new.phase_lx < 4) {
+      popu = 1;
+    }
+    else if (state_new.phase_ly == 144 && state_new.phase_lx >= 4) {
+      popu = 1;
+    }
+    else if (state_new.phase_ly > 144) {
+      popu = 1;
+    }
+  }
+
+  if (state_new.lcd.POPU_VBLANKp_odd.state != popu) {
+    printf("popu %d %d %d %d @ (%d,%d)\n", state_new.first_frame, state_new.first_line, state_new.lcd.POPU_VBLANKp_odd.state, popu, state_new.phase_lx, state_new.phase_ly);
+  }
+
+
+
+  // reg_ly
+
+  state_new.reg_ly = (uint8_t)state_new.phase_ly;
   if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) {
-    reg_ly2 = 0;
+    state_new.reg_ly =  0;
   }
-
-
-
-  if (reg_ly2 != state_new.reg_ly) {
-    printf("phase_ly != reg_ly @ %d %d (%d,%d) (%d,%d)\n", state_new.first_frame, state_new.first_line, state_new.phase_lx, state_new.phase_ly, state_new.reg_lx * 8, state_new.reg_ly);
-  }
-
-
-
-
-
-
-
-  state_new.lcd.CATU_x113p_odd.state = 0;
-  state_new.lcd.ANEL_x113p_odd.state = 0;
-  state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
-  //state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
-  bool line_rst_new = false;
 
   // CATU/ANEL
 
+  state_new.lcd.CATU_x113p_odd.state = 0;
+  state_new.lcd.ANEL_x113p_odd.state = 0;
   if (state_old.first_line) {
     state_new.lcd.CATU_x113p_odd.state = 0;
     state_new.lcd.ANEL_x113p_odd.state = 0;
@@ -484,6 +482,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // Line reset
 
+  bool line_rst_new = false;
   if (state_old.phase_ly >= 0 && state_old.phase_ly < 144) {
     line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
   }
@@ -493,12 +492,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // RUTU
 
+  state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
   if (!state_new.first_line) {
     state_new.lcd.RUTU_LINE_ENDp_odd.state = (state_new.phase_lx >= 0) && (state_new.phase_lx <= 7);
   }
 
   // MYTA
-  // can't remove the prev version until we factor out reg_ly
   uint8_t myta = false;
 
   if (state_new.first_frame) {

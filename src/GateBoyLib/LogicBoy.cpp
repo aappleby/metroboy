@@ -413,7 +413,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   state_new.lcd.ANEL_x113p_odd.state = 0;
   bool line_rst_new = false;
   state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
-  state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
 
   if (first_line) {
     state_new.lcd.CATU_x113p_odd.state = 0;
@@ -437,11 +436,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
     if (phase_ly >= 0 && phase_ly < 144) line_rst_new = (phase_lx == 2 || phase_lx == 3);
     if (phase_ly == 153) line_rst_new = (phase_lx == 6 || phase_lx == 7);
-    if (phase_ly == 0 && phase_lx <= 3) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
-
   }
 
-  if (phase_ly_d4 == 153) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
+  state_new.lcd.MYTA_FRAME_ENDp_odd.state = phase_ly_d4 == 153;
 
   state_new.lcd.POPU_VBLANKp_odd.state = phase_frame_d4 >= 144 * 912;
 

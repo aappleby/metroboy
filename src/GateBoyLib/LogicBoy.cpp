@@ -496,7 +496,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (!state_new.first_frame) {
+  if (state_new.first_frame) {
+    if (state_new.first_line) {
+      if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %3d %3d\n", state_new.phase_lx, state_new.phase_ly);
+    }
+    else {
+      //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %3d %3d\n", state_new.phase_lx, state_new.phase_ly);
+    }
+  }
+  else {
     //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %3d %3d\n", state_new.phase_lx, state_new.phase_ly);
     state_new.lcd.RUTU_LINE_ENDp_odd.state = (state_new.phase_lx >= 0) && (state_new.phase_lx <= 7);
   }

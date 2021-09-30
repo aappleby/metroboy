@@ -433,10 +433,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       if (state_old.reg_lx == 113) {
         state_new.reg_lx = 0;
         state_new.reg_ly++;
-        state_new.lcd.RUTU_LINE_ENDp_odd.state = 1;
       }
       else {
-        state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
       }
       if (state_new.lcd.MYTA_FRAME_ENDp_odd.state) state_new.reg_ly = 0;
     }
@@ -450,14 +448,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (state_old.phase_ly == 0) {
     if (state_old.first_line) {
-      //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("first line RUTU %d\n", state_new.phase_lx);
-      // rutu on 0
       state_new.lcd.CATU_x113p_odd.state = 0;
       state_new.lcd.ANEL_x113p_odd.state = 0;
     }
     if (!state_old.first_line) {
-      //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("line 0 RUTU %d\n", state_new.phase_lx);
-      // rutu on 1-7
       state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
       state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
     }
@@ -467,8 +461,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
   else if (state_old.phase_ly > 0 && state_old.phase_ly < 144) {
-    //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %d\n", state_new.phase_lx);
-    // rutu on 0-7
     state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
     state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
 
@@ -477,17 +469,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
   else if (state_old.phase_ly == 144) {
-    //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %d\n", state_new.phase_lx);
     state_new.lcd.CATU_x113p_odd.state = 0;
     state_new.lcd.ANEL_x113p_odd.state = 0;
   }
   else if (state_old.phase_ly > 144 && state_old.phase_ly < 153) {
-    //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %d\n", state_new.phase_lx);
     state_new.lcd.CATU_x113p_odd.state = 0;
     state_new.lcd.ANEL_x113p_odd.state = 0;
   }
   else if (state_old.phase_ly == 153) {
-    //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %d\n", state_old.phase_lx);
     state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 6) && (state_new.phase_lx <= 9);
     state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 8) && (state_new.phase_lx <= 11);
 
@@ -496,16 +485,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (state_new.first_frame) {
-    if (state_new.first_line) {
-      if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %3d %3d\n", state_new.phase_lx, state_new.phase_ly);
-    }
-    else {
-      //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %3d %3d\n", state_new.phase_lx, state_new.phase_ly);
-    }
+  if (state_new.first_line) {
+    state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
   }
   else {
-    //if (state_new.lcd.RUTU_LINE_ENDp_odd.state) printf("RUTU %3d %3d\n", state_new.phase_lx, state_new.phase_ly);
     state_new.lcd.RUTU_LINE_ENDp_odd.state = (state_new.phase_lx >= 0) && (state_new.phase_lx <= 7);
   }
 

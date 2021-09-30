@@ -380,6 +380,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // LX, LY, lcd flags
 
   int64_t phase_lcd_old = state_new.phase_lcd;
+  bool first_line_old = phase_lcd_old < 912;
 
   int phase_frame_old = int(phase_lcd_old % (154 * 912));
   int phase_lx_old = phase_frame_old % 912;
@@ -548,8 +549,31 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Sprite scanner
 
+  int scan_counter_old = 39;
+  if (first_line_old || phase_ly_old == 153) {
+    if (phase_lx_old >= 6) scan_counter_old = (phase_lx_old - 6) / 4;
+  }
+  else if (phase_ly_old < 144) {
+    if (phase_lx_old >= 2) scan_counter_old = (phase_lx_old - 2) / 4;
+  }
+
+  if (scan_counter_old > 39) scan_counter_old = 39;
+  if (vid_rst_old) scan_counter_old = 0;
+
+  int scan_counter_new = 39;
+  if (first_line_new || phase_ly_new == 153) {
+    if (phase_lx_new >= 6) scan_counter_new = (phase_lx_new - 6) / 4;
+  }
+  else if (phase_ly_new < 144) {
+    if (phase_lx_new >= 2) scan_counter_new = (phase_lx_new - 2) / 4;
+  }
+
+  if (scan_counter_new > 39) scan_counter_new = 39;
+  if (vid_rst_new) scan_counter_new = 0;
+
+
+
   if (vid_rst_new) {
-    state_new.scan_counter = 0;
     state_new.sprite_counter = 0;
     state_new.sprite_store_flags = 0;
 
@@ -574,7 +598,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.XYMU_RENDERINGn = 1;
   }
   else if (line_rst_new) {
-    state_new.scan_counter = 0;
     state_new.sprite_counter = 0;
     state_new.sprite_store_flags = 0;
 
@@ -612,14 +635,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
       state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state;
 
-      if (state_new.scan_counter < 39)  state_new.scan_counter++;
-      if (state_old.scan_counter == 39) {
+      if (scan_counter_old == 39) {
         state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = 0;
       }
 
       if (!state_old.sprite_scanner.DEZY_INC_COUNTn_odd.state && state_new.sprite_counter < 10) state_new.sprite_counter++;
       state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 1;
-      state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = state_old.scan_counter == 39;
+      state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = scan_counter_old == 39;
 
       if (state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state) {
         state_new.XYMU_RENDERINGn = 0;
@@ -660,21 +682,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
       if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
     }
-  }
-
-  int scan_counter2 = 39;
-  if (first_line_new || phase_ly_new == 153) {
-    if (phase_lx_new >= 6) scan_counter2 = (phase_lx_new - 6) / 4;
-  }
-  else if (phase_ly_new < 144) {
-    if (phase_lx_new >= 2) scan_counter2 = (phase_lx_new - 2) / 4;
-  }
-
-  if (scan_counter2 > 39) scan_counter2 = 39;
-  if (vid_rst_new) scan_counter2 = 0;
-
-  if (state_new.scan_counter != scan_counter2) {
-    printf("scan counter mismatch %d vs %d - fl%d @ (%d,%d)\n", state_new.scan_counter, scan_counter2, first_line_new, phase_lx_new, phase_ly_new);
   }
 
   //----------------------------------------
@@ -1720,7 +1727,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
   }
   else if (state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) {
-    state_new.oam_abus = (uint8_t)~((state_new.scan_counter << 2) | 0b00);
+    state_new.oam_abus = (uint8_t)~((scan_counter_new << 2) | 0b00);
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
@@ -2016,6 +2023,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.scan_counter = (uint8_t)scan_counter_new;
+
     if (phase_ly_new < 144) {
       state_new.lcd.CATU_x113p_odd.state = !first_line_new && (phase_lx_new >= 2) && (phase_lx_new <= 9);
       state_new.lcd.ANEL_x113p_odd.state = !first_line_new && (phase_lx_new >= 4) && (phase_lx_new <= 11);

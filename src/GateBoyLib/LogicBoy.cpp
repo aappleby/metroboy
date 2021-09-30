@@ -662,35 +662,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  int scan_counter2 = 0;
-  if (first_line_new) {
-    scan_counter2 = (phase_lx_new - 6) / 4;
-    if (scan_counter2 < 0)  scan_counter2 = 39;
-    if (scan_counter2 > 39) scan_counter2 = 39;
+  int scan_counter2 = 39;
+  if (first_line_new || phase_ly_new == 153) {
+    if (phase_lx_new >= 6) scan_counter2 = (phase_lx_new - 6) / 4;
   }
-  else {
-    if (phase_ly_new < 144) {
-      scan_counter2 = (phase_lx_new - 2) / 4;
-      if (scan_counter2 > 39) scan_counter2 = 39;
-      if (phase_lx_new == 0) scan_counter2 = 39;
-      if (phase_lx_new == 1) scan_counter2 = 39;
-    }
-    else if (phase_ly_new < 153) {
-      scan_counter2 = 39;
-    }
-    else {
-      scan_counter2 = (phase_lx_new - 6) / 4;
-      if (scan_counter2 < 0)  scan_counter2 = 39;
-      if (scan_counter2 > 39) scan_counter2 = 39;
-      if (phase_lx_new == 0)  scan_counter2 = 39;
-      if (phase_lx_new == 1)  scan_counter2 = 39;
-      if (phase_lx_new == 2)  scan_counter2 = 39;
-      if (phase_lx_new == 3)  scan_counter2 = 39;
-      if (phase_lx_new == 4)  scan_counter2 = 39;
-      if (phase_lx_new == 5)  scan_counter2 = 39;
-    }
+  else if (phase_ly_new < 144) {
+    if (phase_lx_new >= 2) scan_counter2 = (phase_lx_new - 2) / 4;
   }
 
+  if (scan_counter2 > 39) scan_counter2 = 39;
   if (vid_rst_new) scan_counter2 = 0;
 
   if (state_new.scan_counter != scan_counter2) {

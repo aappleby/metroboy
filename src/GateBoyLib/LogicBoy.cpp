@@ -420,24 +420,20 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   state_new.reg_lx = (uint8_t)((state_new.phase_lx - 4) / 8);
   
   // popu
-
-  uint8_t popu = 0;
+  state_new.lcd.POPU_VBLANKp_odd.state = 0;
   if (!state_new.first_line) {
-    if (state_new.phase_ly == 0 && state_new.phase_lx < 4) popu = 1;
-    if (state_new.phase_ly == 144 && state_new.phase_lx >= 4) popu = 1;
-    if (state_new.phase_ly > 144) popu = 1;
+    if (state_new.phase_ly == 0 && state_new.phase_lx < 4) state_new.lcd.POPU_VBLANKp_odd.state = 1;
+    if (state_new.phase_ly == 144 && state_new.phase_lx >= 4) state_new.lcd.POPU_VBLANKp_odd.state = 1;
+    if (state_new.phase_ly > 144) state_new.lcd.POPU_VBLANKp_odd.state = 1;
   }
-  state_new.lcd.POPU_VBLANKp_odd.state = popu;
 
   // reg_ly
-
   state_new.reg_ly = (uint8_t)state_new.phase_ly;
   if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) {
     state_new.reg_ly =  0;
   }
 
   // CATU/ANEL
-
   state_new.lcd.CATU_x113p_odd.state = 0;
   state_new.lcd.ANEL_x113p_odd.state = 0;
   if (state_old.first_line) {
@@ -454,7 +450,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   // Line reset
-
   bool line_rst_new = false;
   if (state_old.phase_ly >= 0 && state_old.phase_ly < 144) {
     line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
@@ -464,28 +459,24 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   // RUTU
-
   state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
   if (!state_new.first_line) {
     state_new.lcd.RUTU_LINE_ENDp_odd.state = (state_new.phase_lx >= 0) && (state_new.phase_lx <= 7);
   }
 
   // MYTA
-  uint8_t myta = false;
-
+  state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
   if (state_new.first_frame) {
     if (state_new.first_line) {
     }
     else {
-      if ((state_new.phase_lx >= 4) && (state_new.phase_ly == 153)) myta = 1;
+      if ((state_new.phase_lx >= 4) && (state_new.phase_ly == 153)) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
     }
   }
   else {
-    if (state_new.phase_ly == 0 && state_new.phase_lx <= 3)     myta = 1;
-    if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) myta = 1;
+    if (state_new.phase_ly == 0 && state_new.phase_lx <= 3)     state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
+    if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
   }
-
-  state_new.lcd.MYTA_FRAME_ENDp_odd.state = myta;
 
   //----------------------------------------
   // Joypad

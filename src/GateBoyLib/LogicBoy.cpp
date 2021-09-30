@@ -388,9 +388,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
     state_new.reg_ly = 0;
     state_new.reg_lx = 0;
-  }
-
-  if (vid_rst_new) {
     state_new.phase_lx = 0;
     state_new.phase_ly = 0;
     state_new.first_line = 1;
@@ -412,28 +409,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (!vid_rst_new && DELTA_ODD_new) {
-    if (DELTA_BC_new) {
-      state_new.lcd.NYPE_LINE_ENDp_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state;
-    }
 
-    if (DELTA_FG_new) {
-    }
-  }
-
-  uint8_t nype = false;
+  // nype
+  state_new.lcd.NYPE_LINE_ENDp_odd.state = false;
   if (!state_new.first_line) {
-    nype = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
+    state_new.lcd.NYPE_LINE_ENDp_odd.state= (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
   }
-
-  if (state_new.lcd.NYPE_LINE_ENDp_odd.state != nype) {
-    printf("xxx\n");
-  }
-
-
 
   // reg_lx
-
   state_new.reg_lx = (uint8_t)((state_new.phase_lx - 4) / 8);
   
   // popu

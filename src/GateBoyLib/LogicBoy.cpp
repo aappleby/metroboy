@@ -414,25 +414,28 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (!vid_rst_new && DELTA_ODD_new) {
     if (DELTA_BC_new) {
-      if (!state_old.lcd.RUTU_LINE_ENDp_odd.state) state_new.reg_lx++;
       state_new.lcd.NYPE_LINE_ENDp_odd.state = state_old.lcd.RUTU_LINE_ENDp_odd.state;
     }
 
     if (DELTA_FG_new) {
-      if (state_old.reg_lx == 113) {
-        state_new.reg_lx = 0;
-      }
     }
   }
 
-  // reg_lx
-
-  uint8_t reg_lx = (uint8_t)((state_new.phase_lx - 4) / 8);
-  
-  if (state_new.reg_lx != reg_lx) {
-    printf("reg_lx %d %d %d %d (%d,%d)\n", state_new.first_frame, state_new.first_line, state_new.reg_lx, reg_lx, state_new.phase_lx, state_new.phase_ly);
+  uint8_t nype = false;
+  if (!state_new.first_line) {
+    nype = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
   }
 
+  if (state_new.lcd.NYPE_LINE_ENDp_odd.state != nype) {
+    printf("xxx\n");
+  }
+
+
+
+  // reg_lx
+
+  state_new.reg_lx = (uint8_t)((state_new.phase_lx - 4) / 8);
+  
   // popu
 
   uint8_t popu = 0;

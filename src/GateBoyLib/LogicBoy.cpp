@@ -382,7 +382,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (vid_rst_new) {
     state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
     state_new.lcd.NYPE_LINE_ENDp_odd.state = 0;
-    state_new.lcd.POPU_VBLANKp_odd.state = 0;
     state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
     state_new.reg_ly = 0;
     state_new.reg_lx = 0;
@@ -403,9 +402,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   int frame_index = int(state_new.phase_lcd / (154 * 912));
   bool first_line = state_new.phase_lcd < 912;
 
+  int phase_frame_d4 = (state_new.phase_lcd - 4) % (154 * 912);
+  int phase_lx_d4 = phase_frame_d4 % 912;
+  int phase_ly_d4 = phase_frame_d4 / 912;
+
   state_new.lcd.NYPE_LINE_ENDp_odd.state = false;
   state_new.reg_lx = (uint8_t)((phase_lx - 4) / 8);
-  state_new.lcd.POPU_VBLANKp_odd.state = 0;
   state_new.reg_ly = (uint8_t)phase_ly;
   state_new.lcd.CATU_x113p_odd.state = 0;
   state_new.lcd.ANEL_x113p_odd.state = 0;
@@ -422,9 +424,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.RUTU_LINE_ENDp_odd.state = (phase_lx >= 0) && (phase_lx <= 7);
     state_new.lcd.NYPE_LINE_ENDp_odd.state = (phase_lx >= 4) && (phase_lx <= 11);
 
-    state_new.lcd.POPU_VBLANKp_odd.state = phase_frame < 4;
-
-    if (phase_frame >= 4 + 144 * 912) state_new.lcd.POPU_VBLANKp_odd.state = 1;
 
 
     if (phase_ly == 153 && phase_lx >= 4) state_new.reg_ly =  0;
@@ -439,8 +438,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (phase_ly >= 0 && phase_ly < 144) line_rst_new = (phase_lx == 2 || phase_lx == 3);
     if (phase_ly == 153) line_rst_new = (phase_lx == 6 || phase_lx == 7);
     if (phase_ly == 0 && phase_lx <= 3) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
-    if (phase_ly == 153 && phase_lx >= 4) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
+
   }
+
+  if (phase_ly_d4 == 153) state_new.lcd.MYTA_FRAME_ENDp_odd.state = 1;
+
+  state_new.lcd.POPU_VBLANKp_odd.state = phase_frame_d4 >= 144 * 912;
 
   //----------------------------------------
   // Joypad

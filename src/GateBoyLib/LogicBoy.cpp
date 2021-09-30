@@ -3,6 +3,8 @@
 
 #include "GateBoyLib/Utils.h"
 
+//#pragma optimize("", off)
+
 /*
 FieldInfo LogicBoy::fields[] = {
   DECLARE_FIELD(LogicBoy, lb_state),
@@ -236,6 +238,7 @@ void LogicBoy::tock_cpu() {
 #define DELTA_EVEN_old ((phase_old & 1) == 1)
 #define DELTA_ODD_old  ((phase_old & 1) == 0)
 
+
 void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
@@ -438,59 +441,79 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
       if (state_new.lcd.MYTA_FRAME_ENDp_odd.state) state_new.reg_ly = 0;
     }
-
   }
+
+  int reg_ly2 = state_new.phase_ly;
+
+  if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) {
+    reg_ly2 = 0;
+  }
+
+
+
+  if (reg_ly2 != state_new.reg_ly) {
+    printf("phase_ly != reg_ly @ %d %d (%d,%d) (%d,%d)\n", state_new.first_frame, state_new.first_line, state_new.phase_lx, state_new.phase_ly, state_new.reg_lx * 8, state_new.reg_ly);
+  }
+
+
+
+
+
 
 
   state_new.lcd.CATU_x113p_odd.state = 0;
   state_new.lcd.ANEL_x113p_odd.state = 0;
+  state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
+  //state_new.lcd.MYTA_FRAME_ENDp_odd.state = 0;
   bool line_rst_new = false;
 
-  if (state_old.phase_ly == 0) {
-    if (state_old.first_line) {
-      state_new.lcd.CATU_x113p_odd.state = 0;
-      state_new.lcd.ANEL_x113p_odd.state = 0;
-    }
-    if (!state_old.first_line) {
-      state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
-      state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
-    }
+  // CATU/ANEL
 
-    if (state_new.phase_lx == 2 || state_new.phase_lx == 3) {
-      line_rst_new = 1;
-    }
+  if (state_old.first_line) {
+    state_new.lcd.CATU_x113p_odd.state = 0;
+    state_new.lcd.ANEL_x113p_odd.state = 0;
   }
-  else if (state_old.phase_ly > 0 && state_old.phase_ly < 144) {
+  else if (state_old.phase_ly >= 0 && state_old.phase_ly < 144) {
     state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 2) && (state_new.phase_lx <= 9);
     state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 4) && (state_new.phase_lx <= 11);
-
-    if (state_new.phase_lx == 2 || state_new.phase_lx == 3) {
-      line_rst_new = 1;
-    }
-  }
-  else if (state_old.phase_ly == 144) {
-    state_new.lcd.CATU_x113p_odd.state = 0;
-    state_new.lcd.ANEL_x113p_odd.state = 0;
-  }
-  else if (state_old.phase_ly > 144 && state_old.phase_ly < 153) {
-    state_new.lcd.CATU_x113p_odd.state = 0;
-    state_new.lcd.ANEL_x113p_odd.state = 0;
   }
   else if (state_old.phase_ly == 153) {
     state_new.lcd.CATU_x113p_odd.state = (state_new.phase_lx >= 6) && (state_new.phase_lx <= 9);
     state_new.lcd.ANEL_x113p_odd.state = (state_new.phase_lx >= 8) && (state_new.phase_lx <= 11);
-
-    if (state_new.phase_lx == 6 || state_new.phase_lx == 7) {
-      line_rst_new = 1;
-    }
   }
 
-  if (state_new.first_line) {
-    state_new.lcd.RUTU_LINE_ENDp_odd.state = 0;
+  // Line reset
+
+  if (state_old.phase_ly >= 0 && state_old.phase_ly < 144) {
+    line_rst_new = (state_new.phase_lx == 2 || state_new.phase_lx == 3);
   }
-  else {
+  else if (state_old.phase_ly == 153) {
+    line_rst_new = (state_new.phase_lx == 6 || state_new.phase_lx == 7);
+  }
+
+  // RUTU
+
+  if (!state_new.first_line) {
     state_new.lcd.RUTU_LINE_ENDp_odd.state = (state_new.phase_lx >= 0) && (state_new.phase_lx <= 7);
   }
+
+  // MYTA
+  // can't remove the prev version until we factor out reg_ly
+  uint8_t myta = false;
+
+  if (state_new.first_frame) {
+    if (state_new.first_line) {
+    }
+    else {
+      if ((state_new.phase_lx >= 4) && (state_new.phase_ly == 153)) myta = 1;
+    }
+  }
+  else {
+    if (state_new.phase_ly == 0 && state_new.phase_lx <= 3)     myta = 1;
+    if (state_new.phase_ly == 153 && state_new.phase_lx >= 4) myta = 1;
+  }
+
+  state_new.lcd.MYTA_FRAME_ENDp_odd.state = myta;
 
   //----------------------------------------
   // Joypad

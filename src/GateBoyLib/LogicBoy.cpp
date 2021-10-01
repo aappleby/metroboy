@@ -661,7 +661,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       int sy = (int)state_new.oam_temp_a - 16;
       int sprite_height = spr_size_new ? 8 : 16;
       wire sprite_hit = (reg_ly_new >= sy) && (reg_ly_new < sy + sprite_height) && state_old.sprite_scanner.CENO_SCAN_DONEn_odd.state;
-      if (sprite_hit) {
+      if (sprite_hit && state_new.sprite_counter < 10) {
         state_new.sprite_store_flags = (1 << state_new.sprite_counter);
         (&state_new.store_i0)[state_new.sprite_counter] = state_new.sprite_ibus ^ 0b111111;
         (&state_new.store_l0)[state_new.sprite_counter] = state_new.sprite_lbus ^ 0b1111;
@@ -678,7 +678,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (DELTA_CD_new || DELTA_GH_new) {
-      if (state_new.sprite_store_flags) (&state_new.store_x0)[state_new.sprite_counter] = state_new.oam_temp_b;
+      if (state_new.sprite_store_flags && state_new.sprite_counter < 10) {
+        (&state_new.store_x0)[state_new.sprite_counter] = state_new.oam_temp_b;
+      }
       state_new.sprite_store_flags = 0;
 
       if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;

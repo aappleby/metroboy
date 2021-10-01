@@ -109,20 +109,21 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 1
+#if 0
   blob cart;
-  load_blob("tests/microtests/DMG/minimal.gb", cart);
-  //load_blob("LinksAwakening.gb", cart);
-  //gb_thread->load_cart_blob(cart);
-  //gb_thread->reset_to_cart();
+  //load_blob("tests/microtests/DMG/minimal.gb", cart);
+  load_blob("oh.gb", cart);
+  gb_thread->load_cart_blob(cart);
+  gb_thread->reset_to_cart();
   //gb_thread->reset_to_bootrom();
 
-  //gb_thread->run_to(47020378 - 1);
+  //gb_thread->run_to(80203541 - 1);
+  gb_thread->add_steps(int(80203541 - gb_thread->gb->get_sys().gb_phase_total - 1));
 #endif
 
-#if 0
+#if 1
   BlobStream bs;
-  load_blob("gateboy.raw.dump", bs.b);
+  load_blob("oh_mismatch.dump", bs.b);
   gb_thread->load_raw_dump(bs);
 #endif
 

@@ -671,6 +671,41 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
+
+  /*
+  if (!state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state && state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state) {
+    if (first_line_new) {
+      if (phase_lx_new != 167) printf("fl %3d \n", phase_lx_new);
+    }
+    else if (phase_ly_new == 153) {
+      if (phase_lx_new != 167) printf("   %3d %3d\n", phase_lx_new, phase_ly_new);
+    }
+    else {
+      if (phase_lx_new != 163) printf("   %3d %3d\n", phase_lx_new, phase_ly_new);
+    }
+  }
+  */
+
+  if (state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state) {
+    if (first_line_new) {
+      if (phase_lx_new != 0) printf("fl %3d \n", phase_lx_new);
+    }
+    else if (phase_ly_new == 153) {
+      if (phase_lx_new != 6) printf("   %3d %3d\n", phase_lx_new, phase_ly_new);
+    }
+    else {
+      if (phase_lx_new != 2) printf("   %3d %3d\n", phase_lx_new, phase_ly_new);
+    }
+  }
+
+
+  //int doba = 0;
+  //if (first_line_new) {
+  //}
+  //else if (phase_lx < 160
+
+
+
   //----------------------------------------
 
   if (state_new.XYMU_RENDERINGn) {

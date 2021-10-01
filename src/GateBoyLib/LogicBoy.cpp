@@ -573,6 +573,26 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
+
+
+  uint8_t doba = 0;
+  if (first_line_new) {
+    doba = phase_lx_new < 0 || phase_lx_new >= 167;
+  }
+  else if (phase_ly_new >= 0 && phase_ly_new < 144) {
+    doba = phase_lx_new < 2 || phase_lx_new >= 163;
+  }
+  else if (phase_ly_new >= 144 && phase_ly_new < 153) {
+    doba = 1;
+  }
+  else if (phase_ly_new == 153) {
+    doba = phase_lx_new < 6 || phase_lx_new >= 167;
+  }
+  if (vid_rst_new) doba = 0;
+
+  state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = doba;
+
+
   if (vid_rst_new) {
     state_new.sprite_counter = 0;
     state_new.sprite_store_flags = 0;
@@ -588,7 +608,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
 
-    state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = 0;
     state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
     state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = 0;
     state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = 0;
@@ -613,7 +632,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
 
-    state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = 0;
     state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
     state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = 1;
     state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
@@ -640,8 +658,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (DELTA_AB_new || DELTA_EF_new) {
-      state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state;
-
       int sy = (int)state_new.oam_temp_a - 16;
       int sprite_height = spr_size_new ? 8 : 16;
       wire sprite_hit = (reg_ly_new >= sy) && (reg_ly_new < sy + sprite_height) && state_old.sprite_scanner.CENO_SCAN_DONEn_odd.state;
@@ -662,8 +678,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (DELTA_CD_new || DELTA_GH_new) {
-      state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state;
-      
       if (state_new.sprite_store_flags) (&state_new.store_x0)[state_new.sprite_counter] = state_new.oam_temp_b;
       state_new.sprite_store_flags = 0;
 
@@ -672,37 +686,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  /*
-  if (!state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state && state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state) {
-    if (first_line_new) {
-      if (phase_lx_new != 167) printf("fl %3d \n", phase_lx_new);
-    }
-    else if (phase_ly_new == 153) {
-      if (phase_lx_new != 167) printf("   %3d %3d\n", phase_lx_new, phase_ly_new);
-    }
-    else {
-      if (phase_lx_new != 163) printf("   %3d %3d\n", phase_lx_new, phase_ly_new);
-    }
-  }
-  */
 
-  if (state_old.sprite_scanner.DOBA_SCAN_DONEp_evn.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state) {
-    if (first_line_new) {
-      if (phase_lx_new != 0) printf("fl %3d \n", phase_lx_new);
-    }
-    else if (phase_ly_new == 153) {
-      if (phase_lx_new != 6) printf("   %3d %3d\n", phase_lx_new, phase_ly_new);
-    }
-    else {
-      if (phase_lx_new != 2) printf("   %3d %3d\n", phase_lx_new, phase_ly_new);
-    }
-  }
-
-
-  //int doba = 0;
-  //if (first_line_new) {
-  //}
-  //else if (phase_lx < 160
 
 
 

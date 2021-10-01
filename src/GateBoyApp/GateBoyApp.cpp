@@ -111,10 +111,10 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #if 1
   blob cart;
-  //load_blob("tests/microtests/DMG/minimal.gb", cart);
-  load_blob("LinksAwakening.gb", cart);
-  gb_thread->load_cart_blob(cart);
-  gb_thread->reset_to_cart();
+  load_blob("tests/microtests/DMG/minimal.gb", cart);
+  //load_blob("LinksAwakening.gb", cart);
+  //gb_thread->load_cart_blob(cart);
+  //gb_thread->reset_to_cart();
   //gb_thread->reset_to_bootrom();
 
   //gb_thread->run_to(47020378 - 1);

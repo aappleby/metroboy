@@ -113,8 +113,7 @@ int main(int argc, char** argv) {
     TestResults results;
     GateBoyTests t;
 
-    const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());
-    results += t.test_regression      (proto.get()); // OK
+    results += t.test_regression(); // OK
 
     LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
     LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
@@ -193,7 +192,7 @@ GateBoyTests::GateBoyTests() : dummy_cart(Assembler::create_dummy_cart()) {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_regression_cart(const char* filename, const IGateBoy* proto, int cycles, bool from_bootrom) {
+TestResults GateBoyTests::test_regression_cart(const char* filename, int cycles, bool from_bootrom) {
   TEST_INIT("%s", filename);
   blob cart_blob;
   load_blob(filename, cart_blob);
@@ -202,7 +201,7 @@ TestResults GateBoyTests::test_regression_cart(const char* filename, const IGate
     TEST_DONE();
   }
 
-  unique_ptr<IGateBoy> gb(proto->clone());
+  auto gb = make_unique<GateBoyPair>();
   if (from_bootrom) {
     gb->reset_to_bootrom(cart_blob);
   }
@@ -220,7 +219,7 @@ TestResults GateBoyTests::test_regression_cart(const char* filename, const IGate
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_regression_dump(const char* filename, const IGateBoy* proto, int cycles) {
+TestResults GateBoyTests::test_regression_dump(const char* filename, int cycles) {
   TEST_INIT("%s", filename);
 
   BlobStream bs;
@@ -230,7 +229,7 @@ TestResults GateBoyTests::test_regression_dump(const char* filename, const IGate
     TEST_DONE();
   }
 
-  unique_ptr<IGateBoy> gb(proto->clone());
+  auto gb = make_unique<GateBoyPair>();
   gb->load_raw_dump(bs);
   
   blob cart_blob = bs.rest();
@@ -256,17 +255,17 @@ TestResults fake_test() {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::test_regression(const IGateBoy* proto) {
+TestResults GateBoyTests::test_regression() {
   TEST_INIT();
 
   auto phases = 114 * 154 * 8 * 6;
 
-  results += test_regression_cart("tests/microtests/DMG/minimal.gb", proto, phases, true);
-  results += test_regression_cart("LinksAwakening.gb",               proto, phases, false);
-  results += test_regression_dump("sprites.dump",                    proto, phases);
-  results += test_regression_dump("zoomer.dump",                     proto, phases);
-  results += test_regression_dump("eyes.dump",                       proto, phases); // broken because sprite mask
-  results += test_regression_dump("scroller.dump",                   proto, phases);
+  results += test_regression_cart("tests/microtests/DMG/minimal.gb", phases, true);
+  results += test_regression_cart("LinksAwakening.gb",               phases, false);
+  results += test_regression_dump("sprites.dump",                    phases);
+  results += test_regression_dump("zoomer.dump",                     phases);
+  results += test_regression_dump("eyes.dump",                       phases); // broken because sprite mask
+  results += test_regression_dump("scroller.dump",                   phases);
 
   TEST_DONE();
 }

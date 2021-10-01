@@ -168,7 +168,7 @@ struct GateBoy  : public IGateBoy {
 
   virtual ~GateBoy() {}
 
-  IGateBoy* clone() const override {
+  GateBoy* clone() const override {
     GateBoy* gb2 = new GateBoy();
     gb2->gb_state = gb_state;
     gb2->cpu = cpu;

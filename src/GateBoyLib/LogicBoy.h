@@ -12,10 +12,10 @@
 struct LogicBoy : public IGateBoy {
   virtual ~LogicBoy() {}
 
-  IGateBoy* clone() const override {
+  LogicBoy* clone() const override {
     LogicBoy* result = new LogicBoy();
     result->lb_state = lb_state;
-    //result->gb_state = gb_state;
+    result->gb_state = gb_state;
     result->cpu = cpu;
     result->mem = mem;
     result->sys = sys;
@@ -31,24 +31,28 @@ struct LogicBoy : public IGateBoy {
   }
 
   GBResult load_raw_dump(BlobStream& bs) override        {
-    /*
-    bool load_ok = true;
-    //load_ok &= bs.read(gb_state);
-    load_ok &= bs.read(cpu);
-    load_ok &= bs.read(mem);
-    load_ok &= bs.read(sys);
-    
-    load_ok &= bs.read(pins);
-    pins = bit_purge(pins);
-
-    load_ok &= bs.read(probes);
-    lb_state.from_gb_state(gb_state, sys.gb_phase_total);
-    return load_ok ? GBResult::ok() : Error::CORRUPT;
-    */
-    return Error::CORRUPT;
+    bool read_ok = true;
+    read_ok &= bs.read(lb_state);
+    read_ok &= bs.read(gb_state);
+    read_ok &= bs.read(cpu);
+    read_ok &= bs.read(mem);
+    read_ok &= bs.read(sys);
+    read_ok &= bs.read(pins);
+    read_ok &= bs.read(probes);
+    return read_ok ? GBResult::ok() : Error::CORRUPT;
   }
 
-  GBResult save_raw_dump(BlobStream& dump_out) const override { return Error::CORRUPT; }
+  GBResult save_raw_dump(BlobStream& bs) const override {
+    bool write_ok = true;
+    write_ok &= bs.write(lb_state);
+    write_ok &= bs.write(gb_state);
+    write_ok &= bs.write(cpu);
+    write_ok &= bs.write(mem);
+    write_ok &= bs.write(sys);
+    write_ok &= bs.write(pins);
+    write_ok &= bs.write(probes);
+    return write_ok ? GBResult::ok() : Error::CORRUPT;;
+  }
 
   GBResult reset_to_poweron(const blob& cart_blob) override { return Error::CORRUPT; }
   GBResult run_poweron_reset(const blob& cart_blob, bool fastboot) override { return Error::CORRUPT; }

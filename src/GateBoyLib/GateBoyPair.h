@@ -1,12 +1,16 @@
 #pragma once
 #include "GateBoyLib/IGateBoy.h"
 
+struct GateBoy;
+struct LogicBoy;
+
 void print_field_at(int offset);
 
 //---------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyPair : public IGateBoy {
-  GateBoyPair(IGateBoy* gb1, IGateBoy* gb2);
+  GateBoyPair();
+  GateBoyPair(GateBoy* gb1, LogicBoy* gb2);
 
   IGateBoy* clone() const override;
   int size_bytes() override;
@@ -35,8 +39,8 @@ struct GateBoyPair : public IGateBoy {
   const GateBoyPins&  get_pins() const override;
   const Probes&       get_probes() const override;
 
-  IGateBoy* gb1;
-  IGateBoy* gb2;
+  GateBoy* gb;
+  LogicBoy* lb;
   bool select_ab = true;
 
   GBResult check_results(GBResult r1, GBResult r2) const;

@@ -1041,11 +1041,21 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // CLKPIPE is an even clock, it can only go high on even deltas. FEPO/WODU/SOCY are odd signals, they stay constant during even deltas.
   // SO, it is guaranteed safe to use the old values of FEPO/WODU/SOCY to compute CLKPIPE
 
-  wire TYFA_CLKPIPE_evn_old = !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_old;
-  wire TYFA_CLKPIPE_evn_new = !state_new.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_new;
+  wire TYFA_CLKPIPE_evn_old = (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_old);
+  wire TYFA_CLKPIPE_evn_new = (!state_new.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_new);
+
+  wire tyfa_posedge =
+    (state_old.win_ctrl.RYDY_WIN_HITp_odd.state || !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state || state_old.FEPO_STORE_MATCHp_odd || !(state_old.pix_count != 167) || !DELTA_EVEN_old) &&
+    (!state_new.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_new);
+
+
+  wire tyfa_negedge =
+    ( TYFA_CLKPIPE_evn_old) &&
+    (!TYFA_CLKPIPE_evn_new);
+
 
   // RYVA
-  if (TYFA_CLKPIPE_evn_old && !TYFA_CLKPIPE_evn_new) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = !nuko_wx_match_old && state_old.fine_count_odd == 7;
+  if (tyfa_negedge) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = !nuko_wx_match_old && state_old.fine_count_odd == 7;
   if (state_new.XYMU_RENDERINGn) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = 0;
 
   // RENE
@@ -1160,7 +1170,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  if (!TYFA_CLKPIPE_evn_old && TYFA_CLKPIPE_evn_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
+  if (tyfa_posedge) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
   if (vid_rst_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = 0;
 
 
@@ -1181,7 +1191,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Pixel counter
 
-  if (TYFA_CLKPIPE_evn_old && !TYFA_CLKPIPE_evn_new) {
+  if (tyfa_negedge) {
     if (state_new.fine_count_odd < 7) state_new.fine_count_odd++;
   }
 
@@ -1189,7 +1199,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   auto& fine_count_odd_new = state_new.fine_count_odd;
 
 
-  if (!TYFA_CLKPIPE_evn_old && TYFA_CLKPIPE_evn_new) {
+  if (tyfa_posedge) {
     state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state && (((state_old.reg_scx & 0b111) ^ 0b111) == state_old.fine_count_odd);
   }
 
@@ -1214,7 +1224,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pix_count_new = 0;
   }
   else {
-    if (TYFA_CLKPIPE_evn_old && !TYFA_CLKPIPE_evn_new) {
+    if (tyfa_negedge) {
       if (!state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) pix_count_new++;
     }
   }
@@ -1261,6 +1271,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       else if (pix_count_new == s.store_x8) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x100;  si = s.store_i8 ^ 0x3F; sl = s.store_l8 ^ 0x0F; }
       else if (pix_count_new == s.store_x9) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x200;  si = s.store_i9 ^ 0x3F; sl = s.store_l9 ^ 0x0F; }
     }
+
     if (!state_new.FEPO_STORE_MATCHp_odd) {
       state_new.sprite_lbus = (~reg_ly_new + state_new.oam_temp_a) & 0b00001111;
     }
@@ -1270,7 +1281,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  if (!TYFA_CLKPIPE_evn_old && TYFA_CLKPIPE_evn_new) {
+  if (tyfa_posedge) {
     state_new.lcd.PAHO_X8_SYNC.state = get_bit(state_old.pix_count, 3);
   }
 
@@ -1355,7 +1366,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (DELTA_ODD_new) {
     if (!state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) {
-      if (TYFA_CLKPIPE_evn_old && !TYFA_CLKPIPE_evn_new) {
+      if (tyfa_negedge) {
         state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
         state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
         state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;

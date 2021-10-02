@@ -673,12 +673,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x7 = 0xFF;
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
-
-    if (DELTA_EVEN_new && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) {\
-      CHECK_P(false);
-      state_new.XYMU_RENDERINGn = 1;
-    }
-
+    state_new.XYMU_RENDERINGn = 1;
   }
   else {
     if (DELTA_HA_new || DELTA_DE_new) {
@@ -721,6 +716,57 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
+
+  //CHECK_P(ceno_scan_donen_odd_new == state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state);
+
+  auto& a = state_old.sprite_counter;
+  auto& b = state_new.sprite_counter;
+
+  /*
+  if (vid_rst_new) {
+    CHECK_N(b);
+    //if (a || b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
+    //if (a != b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
+  }
+  else if (first_line_new) {
+    // can go 0->1 on phase 10
+    if (a != b) CHECK_P(phase_lx_new == 10);
+    //CHECK_P(a == b);
+    //CHECK_N(a || b);
+    //CHECK_P(b == (phase_lx_new >= 10));
+    //if (a != b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
+  }
+  else if (phase_ly_new == 0) {
+    CHECK_N(b);
+    //CHECK_P(b);
+    //if (a != b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
+    //if (a || b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
+  }
+  else if (phase_ly_new > 0 && phase_ly_new < 144) {
+    // (2,1) 1 -> 0
+    // can increment every 4 phases starting w 10
+    // down on phase % 4 == 0
+    // up on phase % 4 == 2
+
+    if (a != b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
+    //if (a || b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
+  }
+  else if (phase_ly_new >= 144 && phase_ly_new < 153) {
+    // no change
+    //CHECK_P(b);
+    //if (a != b) printf("%d %d\n", phase_lx_new, phase_ly_new);
+  }
+  else if (phase_ly_new == 153) {
+    // no change
+    //CHECK_P(b);
+    //if (!a && b) CHECK_P(phase_lx_new == 10);
+    //if (a && !b) CHECK_P(phase_lx_new == 170);
+    //if (a != b) printf("%d %d\n", phase_lx_new, phase_ly_new);
+  }
+  */
+
+
+  /*
   //CHECK_P(ceno_scan_donen_odd_new == state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state);
 
   auto& a = state_old.sprite_scanner.DEZY_INC_COUNTn_odd.state;
@@ -762,6 +808,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
     if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
+  */
 
 
 

@@ -721,42 +721,47 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  /*
-  CHECK_P(ceno_scan_donen_odd_new == state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state);
+  //CHECK_P(ceno_scan_donen_odd_new == state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state);
 
-  auto& a = state_old.sprite_scanner.CENO_SCAN_DONEn_odd.state;
-  auto& b = state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state;
+  auto& a = state_old.sprite_scanner.DEZY_INC_COUNTn_odd.state;
+  auto& b = state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state;
 
   if (vid_rst_new) {
     CHECK_N(b);
   }
   else if (first_line_new) {
-    CHECK_N(b);
+    CHECK_P(b == (phase_lx_new >= 10));
+    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
+    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
   else if (phase_ly_new == 0) {
-    if (!a && b) CHECK_P(phase_lx_new == 6);
-    if (a && !b) CHECK_P(phase_lx_new == 166);
+    CHECK_P(b);
+    //if (!a && b) CHECK_P(phase_lx_new == 6);
+    //if (a && !b) CHECK_P(phase_lx_new == 166);
     //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
     //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
   else if (phase_ly_new > 0 && phase_ly_new < 144) {
-    if (!a && b) CHECK_P(phase_lx_new == 6);
-    if (a && !b) CHECK_P(phase_lx_new == 166);
+    // down on phase % 4 == 0
+    // up on phase % 4 == 2
+
+    if (!a && b) CHECK_P(phase_lx_new % 4 == 2);
+    if (a && !b) CHECK_P(phase_lx_new % 4 == 0);
     //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
     //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
   else if (phase_ly_new >= 144 && phase_ly_new < 153) {
-    CHECK_N(b);
+    CHECK_P(b);
     //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
     //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
   else if (phase_ly_new == 153) {
-    if (!a && b) CHECK_P(phase_lx_new == 10);
-    if (a && !b) CHECK_P(phase_lx_new == 170);
-    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
-    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
+    CHECK_P(b);
+    //if (!a && b) CHECK_P(phase_lx_new == 10);
+    //if (a && !b) CHECK_P(phase_lx_new == 170);
+    if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
+    if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
-  */
 
 
 

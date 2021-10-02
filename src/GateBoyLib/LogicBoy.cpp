@@ -1821,8 +1821,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   state_new.oam_dbus_a = 0xFF;
   state_new.oam_dbus_b = 0xFF;
 
-  if (gen_clk_new(phase_total_old, 0b11110000)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 1;
-  if (cpu_addr_oam_new && cpu_wr && gen_clk_new(phase_total_old, 0b00001110)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 0;
+  if (DELTA_HA_new || DELTA_AB_new || DELTA_BC_new || DELTA_CD_new) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 1;
+  if (cpu_addr_oam_new && cpu_wr && (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new)) state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = 0;
 
 
   //----------
@@ -1830,6 +1830,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
 
   if (MATU_DMA_RUNNINGp_new) {
+    // DMAing
+
     state_new.oam_abus = (uint8_t)~state_new.dma_lo;
     state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
     state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
@@ -1845,15 +1847,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_ctrl.SIG_OAM_WRn_A.state = !get_bit(state_new.oam_abus, 0);
       state_new.oam_ctrl.SIG_OAM_WRn_B.state =  get_bit(state_new.oam_abus, 0);
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-      if (1) {
-        uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
-        if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
-        if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
-      }
+      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
     }
 
   }
   else if (besu_scan_donen_odd_new && !vid_rst_new) {
+    // Scanning
+
     state_new.oam_abus = (uint8_t)~((scan_counter_new << 2) | 0b00);
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
@@ -1874,15 +1876,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
-
-    // Actual OAM write
-    if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
-      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
-      if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
-      if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
-    }
   }
   else if (!state_new.XYMU_RENDERINGn) {
+    // Rendering
+
     const auto sfetch_oam_clk_new = (get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || (state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && !get_bit(state_new.sfetch_counter_evn, 0)));
     const auto sfetch_oam_oen_new = (get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || !state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state);
 
@@ -1905,26 +1902,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
-
-    // Actual OAM write
-    if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
-      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
-      if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
-      if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
-    }
   }
   else if (cpu_addr_oam_new) {
+    // CPUing
+
     state_new.oam_abus = (uint8_t)~cpu_addr_new;
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = DELTA_HD_new;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
     state_new.oam_ctrl.SIG_OAM_OEn.state   = DELTA_HA_new || DELTA_DH_new || !cpu.bus_req_new.read;
 
-
-    if (DELTA_DG_new) {
-      state_new.oam_ctrl.SIG_OAM_WRn_A.state = !cpu_wr || !get_bit(state_new.oam_abus, 0);
-      state_new.oam_ctrl.SIG_OAM_WRn_B.state = !cpu_wr ||  get_bit(state_new.oam_abus, 0);
-    }
 
     if (cpu.bus_req_new.read && !DELTA_HA_new) {
       if (DELTA_DH_new) {
@@ -1936,32 +1923,31 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
     }
 
-    if (vid_rst_new) {
-      if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state && state_new.XYMU_RENDERINGn) {
+   //if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state) {
+   if (cpu_addr_oam_new && cpu_wr && (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new)) {
+      if (vid_rst_new || !besu_scan_donen_odd_new) {
         state_new.oam_dbus_a = ~state_new.cpu_dbus;
         state_new.oam_dbus_b = ~state_new.cpu_dbus;
       }
-    }
-    else {
-      if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state && !besu_scan_donen_odd_new && state_new.XYMU_RENDERINGn) {
-        state_new.oam_dbus_a = ~state_new.cpu_dbus;
-        state_new.oam_dbus_b = ~state_new.cpu_dbus;
-      }
-    }
+   }
 
     if (cpu.bus_req_new.read && DELTA_AD_new) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
 
-    // Actual OAM write
-    if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
-      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
-      if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
-      if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
+    if (DELTA_DG_new && cpu_wr) {
+      state_new.oam_ctrl.SIG_OAM_WRn_A.state = !get_bit(state_new.oam_abus, 0);
+      state_new.oam_ctrl.SIG_OAM_WRn_B.state =  get_bit(state_new.oam_abus, 0);
+      if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
+        uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+        if ( get_bit(state_new.oam_abus, 0)) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+        if (!get_bit(state_new.oam_abus, 0)) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
+      }
     }
   }
   else {
+    // Idle
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
@@ -1974,13 +1960,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (APAG_CBD_TO_OBDp) {
       state_new.oam_dbus_a = ~state_new.cpu_dbus;
       state_new.oam_dbus_b = ~state_new.cpu_dbus;
-    }
-
-    // Actual OAM write
-    if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
-      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
-      if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
-      if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
     }
   }
 

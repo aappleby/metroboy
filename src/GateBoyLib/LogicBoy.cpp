@@ -1149,8 +1149,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     //----------
 
     if (bit(BYCU_OAM_CLKp_old) && !bit(BYCU_OAM_CLKp_new)) {
-      state_new.oam_temp_a = ~state_new.oam_latch_a;
-      state_new.oam_temp_b = ~state_new.oam_latch_b;
+      state_new.oam_temp_a = ~state_old.oam_latch_a;
+      state_new.oam_temp_b = ~state_old.oam_latch_b;
     }
   }
 
@@ -1864,6 +1864,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
       state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
     }
+
+    if (DELTA_AC_new || DELTA_EG_new) {
+      state_new.oam_latch_a = state_new.oam_dbus_a;
+      state_new.oam_latch_b = state_new.oam_dbus_b;
+    }
   }
   else if (!state_new.XYMU_RENDERINGn) {
     const auto sfetch_oam_clk_new = (get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || (state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && !get_bit(state_new.sfetch_counter_evn, 0)));
@@ -1883,14 +1888,18 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
       state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
     }
+
+    if (sfetch_phase_new == 0 || sfetch_phase_new == 3) {
+      state_new.oam_latch_a = state_new.oam_dbus_a;
+      state_new.oam_latch_b = state_new.oam_dbus_b;
+    }
   }
   else if (cpu_addr_oam_new) {
     state_new.oam_abus = (uint8_t)~cpu_addr_new;
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = DELTA_HD_new;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-
-    state_new.oam_ctrl.SIG_OAM_OEn.state   = (DELTA_HA_new || DELTA_DH_new) || !cpu.bus_req_new.read;
+    state_new.oam_ctrl.SIG_OAM_OEn.state   = DELTA_HA_new || DELTA_DH_new || !cpu.bus_req_new.read;
 
 
     if (DELTA_DG_new) {
@@ -1900,7 +1909,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     if (cpu.bus_req_new.read && !DELTA_HA_new) {
       if (DELTA_DH_new) {
-        state_new.cpu_dbus = get_bit(state_new.oam_abus, 0) ? ~state_new.oam_latch_a : ~state_new.oam_latch_b;
+        state_new.cpu_dbus = get_bit(state_new.oam_abus, 0) ? ~state_old.oam_latch_a : ~state_old.oam_latch_b;
       }
       else {
         state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
@@ -1920,6 +1929,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
         state_new.oam_dbus_b = ~state_new.cpu_dbus;
       }
     }
+
+    if (cpu.bus_req_new.read && DELTA_AD_new) {
+      state_new.oam_latch_a = state_new.oam_dbus_a;
+      state_new.oam_latch_b = state_new.oam_dbus_b;
+    }
   }
   else {
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
@@ -1935,25 +1949,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_dbus_a = ~state_new.cpu_dbus;
       state_new.oam_dbus_b = ~state_new.cpu_dbus;
     }
-  }
-
-  // OAM latch stores the contents of the oam dbus
-
-  if (!MATU_DMA_RUNNINGp_new && besu_scan_donen_odd_new && !vid_rst_new) {
-    if (DELTA_AC_new || DELTA_EG_new) {
-      state_new.oam_latch_a = state_new.oam_dbus_a;
-      state_new.oam_latch_b = state_new.oam_dbus_b;
-    }
-  }
-  else if (!state_new.XYMU_RENDERINGn) {
-    if (sfetch_phase_new == 0 || sfetch_phase_new == 3) {
-      state_new.oam_latch_a = state_new.oam_dbus_a;
-      state_new.oam_latch_b = state_new.oam_dbus_b;
-    }
-  }
-  else if (cpu.bus_req_new.read && cpu_addr_oam_new && DELTA_AD_new) {
-    state_new.oam_latch_a = state_new.oam_dbus_a;
-    state_new.oam_latch_b = state_new.oam_dbus_b;
   }
 
   // Actual OAM write

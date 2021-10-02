@@ -596,12 +596,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   if (vid_rst_new) {
     doba_scan_donep_evn_new = 0;
-    byba_scan_donep_odd_new = 1;
+    byba_scan_donep_odd_new = 0;
   }
 
-  state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = doba_scan_donep_evn_new;
-  state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = byba_scan_donep_odd_new;
-
+  wire scan_done_trig_new = byba_scan_donep_odd_new && !doba_scan_donep_evn_new;
 
 
 
@@ -625,11 +623,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
 
-    state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
     state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = 0;
     state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = 0;
     state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 0;
-    state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
 
     state_new.XYMU_RENDERINGn = 1;
   }
@@ -649,9 +645,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
 
-    state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
     state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = 1;
-    state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = 0;
     if (DELTA_EVEN_new && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) {\
       CHECK_P(false);
       state_new.XYMU_RENDERINGn = 1;
@@ -667,9 +661,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
       if (!state_old.sprite_scanner.DEZY_INC_COUNTn_odd.state && state_new.sprite_counter < 10) state_new.sprite_counter++;
       state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 1;
-      state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = scan_counter_old == 39;
 
-      if (state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state) {
+      if (scan_done_trig_new) {
         state_new.XYMU_RENDERINGn = 0;
       }
     }
@@ -703,6 +696,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
     }
   }
+
+
+
+
+
+
+
 
 
 
@@ -967,7 +967,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     (win_hit_trig_new) ||
     (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state);
 
-  wire scan_done_trig_new = state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state;
   wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
   wire NYXU_BFETCH_RSTn_new = (line_rst_new || vid_rst_new || !scan_done_trig_new) && !NUNY_WIN_MODE_TRIGp_new && !TEVO_WIN_FETCH_TRIGp_new;
 
@@ -2047,6 +2046,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = doba_scan_donep_evn_new;
+    state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = byba_scan_donep_odd_new;
+
     state_new.scan_counter = (uint8_t)scan_counter_new;
 
     if (phase_ly_new < 144) {

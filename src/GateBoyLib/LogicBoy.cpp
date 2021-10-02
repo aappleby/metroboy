@@ -1825,11 +1825,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (MATU_DMA_RUNNINGp_new) {
     // DMAing
 
-    // OAM bus has to be pulled up or we fail regression
-    state_new.oam_abus = 0xFF;
-    state_new.oam_dbus_a = 0xFF;
-    state_new.oam_dbus_b = 0xFF;
-
     if (!DELTA_HD_new) {
       mem.oam_ram[state_new.dma_lo] = dma_addr_vram_new ? state_new.vram_dbus : cart_dbus;
     }
@@ -2005,9 +2000,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
         }
         if (DELTA_DE_new) {
           mem.oam_ram[cpu_addr_new & 0xFF] = state_new.cpu_dbus;
-          //uint8_t oam_addr_new = uint8_t(~uint8_t(~cpu_addr_new)) >> 1;
-          //if ( get_bit(uint8_t(~cpu_addr_new), 0)) mem.oam_ram[(oam_addr_new << 1) + 0] = state_new.cpu_dbus;
-          //if (!get_bit(uint8_t(~cpu_addr_new), 0)) mem.oam_ram[(oam_addr_new << 1) + 1] = state_new.cpu_dbus;
         }
       }
     }

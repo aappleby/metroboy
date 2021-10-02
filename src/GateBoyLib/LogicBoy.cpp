@@ -642,7 +642,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
 
-    state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = 0;
     state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = 0;
     state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 0;
 
@@ -664,7 +663,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
 
-    state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = 1;
     if (DELTA_EVEN_new && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) {\
       CHECK_P(false);
       state_new.XYMU_RENDERINGn = 1;
@@ -673,10 +671,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   else {
     if (DELTA_HA_new || DELTA_DE_new) {
-      state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state;
-      if (scan_counter_old == 39) {
-        state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = 0;
-      }
+      state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = besu_scan_donen_odd_old;
 
       if (!state_old.sprite_scanner.DEZY_INC_COUNTn_odd.state && state_new.sprite_counter < 10) state_new.sprite_counter++;
       state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 1;
@@ -717,10 +712,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  CHECK_P(besu_scan_donen_odd_new == state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state);
+  //CHECK_P( == state_new.sprite_scanner..state);
 
-  auto& a = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state;
-  auto& b = state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state;
+  //auto& a = state_old.sprite_scanner.;
+  //auto& b = state_new.sprite_scanner.;
 
   if (vid_rst_new) {
     //CHECK_N(b);
@@ -2099,6 +2094,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = besu_scan_donen_odd_new;
     state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = doba_scan_donep_evn_new;
     state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state = byba_scan_donep_odd_new;
 

@@ -1923,12 +1923,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
     }
 
-   //if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state) {
    if (cpu_addr_oam_new && cpu_wr && (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new)) {
-      if (vid_rst_new || !besu_scan_donen_odd_new) {
-        state_new.oam_dbus_a = ~state_new.cpu_dbus;
-        state_new.oam_dbus_b = ~state_new.cpu_dbus;
-      }
+      state_new.oam_dbus_a = ~state_new.cpu_dbus;
+      state_new.oam_dbus_b = ~state_new.cpu_dbus;
    }
 
     if (cpu.bus_req_new.read && DELTA_AD_new) {

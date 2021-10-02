@@ -592,6 +592,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   else if (phase_ly_new >= 144 && phase_ly_new < 153) {
     doba_scan_donep_evn_new = 1;
     byba_scan_donep_odd_new = 1;
+    scan_done_trig_new = 0;
   }
   else if (phase_ly_new == 153) {
     doba_scan_donep_evn_new = phase_lx_new < 6 || phase_lx_new >= 167;
@@ -699,6 +700,35 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
+  auto a = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state;
+  auto b = state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state;
+
+  if (first_line_new) {
+    CHECK_N(b);
+  }
+  else if (phase_ly_new == 0) {
+    if (!a && b) CHECK_P(phase_lx_new == 2);
+    if (a && !b) CHECK_P(phase_lx_new == 162);
+    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
+    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
+  }
+  else if (phase_ly_new > 0 && phase_ly_new < 144) {
+    if (!a && b) CHECK_P(phase_lx_new == 2);
+    if (a && !b) CHECK_P(phase_lx_new == 162);
+    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
+    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
+  }
+  else if (phase_ly_new >= 144 && phase_ly_new < 153) {
+    CHECK_N(b);
+    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
+    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
+  }
+  else if (phase_ly_new == 153) {
+    if (!a && b) CHECK_P(phase_lx_new == 6);
+    if (a && !b) CHECK_P(phase_lx_new == 166);
+  }
+  if (vid_rst_new) {
+  }
 
 
 

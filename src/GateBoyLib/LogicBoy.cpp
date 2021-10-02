@@ -811,7 +811,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
   if (vid_rst_new) {
-    state_new.sfetch_counter_evn = 0;
     state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = 0;
     state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
@@ -848,8 +847,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  if (DELTA_EVEN_new && !vid_rst_new && line_rst_new && state_new.XYMU_RENDERINGn) {
+  if (vid_rst_new || line_rst_new) {
     state_new.sfetch_counter_evn = 0;
+  }
+  else if (DELTA_EVEN_new) {
+    if (state_new.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
+    if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_counter_evn = 0;
+  }
+
+  //----------------------------------------
+
+  if (DELTA_EVEN_new && !vid_rst_new && line_rst_new && state_new.XYMU_RENDERINGn) {
     if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
     if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
@@ -870,9 +878,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-
   if (DELTA_EVEN_new && !vid_rst_new && line_rst_new && !state_new.XYMU_RENDERINGn) {
-    state_new.sfetch_counter_evn = 0;
     state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
@@ -887,9 +893,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
+
+
   if (DELTA_EVEN_new && !vid_rst_new && !line_rst_new && state_new.XYMU_RENDERINGn) {
-    if (state_old.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
-    if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_counter_evn = 0;
     if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
     if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
@@ -902,9 +908,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
   if (DELTA_EVEN_new && !vid_rst_new && !line_rst_new && !state_new.XYMU_RENDERINGn) {
-    if (state_old.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
-    bool sfetch_req_trig = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state;
-    if (sfetch_req_trig || 0) state_new.sfetch_counter_evn = 0;
     if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
     if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
@@ -928,7 +931,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
     state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = get_bit(state_old.sfetch_counter_evn, 0);
     state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state = state_old.sfetch_control.SOBU_SFETCH_REQp_evn.state;
-    state_new.sfetch_counter_evn = 0;
     state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = state_old.win_ctrl.PYCO_WIN_MATCHp_evn.state;
     state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state;
@@ -999,8 +1001,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (vid_rst_new) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
   if (vid_rst_new) state_new.win_ctrl.SOVY_WIN_HITp_evn.state = 0;
 
-  wire win_hit_trig_new  = state_new.win_ctrl.SOVY_WIN_HITp_evn.state && !state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
-
   // CLKPIPE is an even clock, it can only go high on even deltas. FEPO/WODU/SOCY are odd signals, they stay constant during even deltas.
   // SO, it is guaranteed safe to use the old values of FEPO/WODU/SOCY to compute CLKPIPE
 
@@ -1008,10 +1008,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire clkpipe_posedge = DELTA_EVEN_new && clkpipe_gate;
   wire clkpipe_negedge = DELTA_ODD_new && clkpipe_gate;
 
-  //----------------------------------------
-
-  wire something_trig_old = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
-  wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state;
 
   if (state_new.XYMU_RENDERINGn) {
     state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = 0;
@@ -1022,12 +1018,18 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_EVEN_new)  state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state; 
   }
 
-  wire TEVO_WIN_FETCH_TRIGp_old =
-    (state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state) ||
-    (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.win_ctrl.SOVY_WIN_HITp_evn.state) ||
-    (!state_old.XYMU_RENDERINGn && something_trig_old);
+  //----------------------------------------
 
+  wire win_hit_trig_old  = state_old.win_ctrl.SOVY_WIN_HITp_evn.state && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
+  wire win_hit_trig_new  = state_new.win_ctrl.SOVY_WIN_HITp_evn.state && !state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
+
+  wire win_fetch_trig_old = state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
   wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
+
+  wire something_trig_old = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
+  wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state;
+
+  wire TEVO_WIN_FETCH_TRIGp_old = (win_fetch_trig_old || win_hit_trig_old || something_trig_old) && !state_old.XYMU_RENDERINGn;
   wire TEVO_WIN_FETCH_TRIGp_new = (win_fetch_trig_new || win_hit_trig_new || something_trig_new) && !state_new.XYMU_RENDERINGn;
 
   wire NYXU_BFETCH_RSTn_new = (line_rst_new || vid_rst_new || !scan_done_trig_new) && !win_mode_trig_new && !TEVO_WIN_FETCH_TRIGp_new;

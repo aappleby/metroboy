@@ -891,14 +891,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = 0;
     state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
   }
-  else if (DELTA_EVEN_new) {
-    state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
+  else {
+    if (DELTA_EVEN_new) state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
     if (state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state) state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
   }
 
-  if (DELTA_ODD_new && !vid_rst_new && !line_rst_new && !state_new.XYMU_RENDERINGn) {
-    if (state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state) state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
-  }
 
   //----------------------------------------
 

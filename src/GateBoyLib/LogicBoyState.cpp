@@ -242,7 +242,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
   bit_unpack(dst.flipped_sprite, src.flipped_sprite);
   bit_unpack(dst.sprite_pix_a, src.sprite_pix_a);
   bit_unpack(dst.sprite_pix_b, src.sprite_pix_b);
-  bit_unpack(dst.pix_count, src.pix_count);
+  bit_unpack(dst.pix_count, src.pix_count_odd);
   bit_unpack(dst.mask_pipe, src.mask_pipe);
   bit_unpack(dst.bgw_pipe_a, src.bgw_pipe_a);
   bit_unpack(dst.bgw_pipe_b, src.bgw_pipe_b);
@@ -389,7 +389,7 @@ void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) 
   dst.flipped_sprite = bit_pack(src.flipped_sprite);
   dst.sprite_pix_a = bit_pack(src.sprite_pix_a);
   dst.sprite_pix_b = bit_pack(src.sprite_pix_b);
-  dst.pix_count = bit_pack(src.pix_count);
+  dst.pix_count_odd = bit_pack(src.pix_count);
   dst.mask_pipe = bit_pack(src.mask_pipe);
   dst.bgw_pipe_a = bit_pack(src.bgw_pipe_a);
   dst.bgw_pipe_b = bit_pack(src.bgw_pipe_b);

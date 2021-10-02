@@ -1816,10 +1816,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // this is weird, why is it always 0 when not in reset?
   state_new.oam_ctrl.MAKA_LATCH_EXTp.state = 0;
 
-  // OAM bus has to be pulled up or we fail regression
-  state_new.oam_abus = 0xFF;
-  state_new.oam_dbus_a = 0xFF;
-  state_new.oam_dbus_b = 0xFF;
 
 
   //----------
@@ -1828,6 +1824,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (MATU_DMA_RUNNINGp_new) {
     // DMAing
+
+    // OAM bus has to be pulled up or we fail regression
+    state_new.oam_abus = 0xFF;
+    state_new.oam_dbus_a = 0xFF;
+    state_new.oam_dbus_b = 0xFF;
 
     if (!DELTA_HD_new) {
       mem.oam_ram[state_new.dma_lo] = dma_addr_vram_new ? state_new.vram_dbus : cart_dbus;
@@ -1852,65 +1853,97 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   else if (besu_scan_donen_odd_new && !vid_rst_new) {
     // Scanning
+    if (DELTA_HA_new) {
+    }
+    if (DELTA_AB_new) {
+      state_new.oam_latch_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      state_new.oam_latch_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+    }
+    if (DELTA_BC_new) {
+      state_new.oam_latch_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      state_new.oam_latch_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+    }
+    if (DELTA_CD_new) {
+    }
+    if (DELTA_DE_new) {
+    }
+    if (DELTA_EF_new) {
+      state_new.oam_latch_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      state_new.oam_latch_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+    }
+    if (DELTA_FG_new) {
+      state_new.oam_latch_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      state_new.oam_latch_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+    }
+    if (DELTA_GH_new) {
+    }
+
+    //----------
 
     state_new.oam_abus = (scan_counter_new << 2) ^ 0xFF;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
 
     if (DELTA_HA_new) {
+      state_new.oam_dbus_a = 0xFF;
+      state_new.oam_dbus_b = 0xFF;
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
     }
     if (DELTA_AB_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
       state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
       state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
-      state_new.oam_latch_a = state_new.oam_dbus_a;
-      state_new.oam_latch_b = state_new.oam_dbus_b;
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
     }
     if (DELTA_BC_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
       state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
       state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
-      state_new.oam_latch_a = state_new.oam_dbus_a;
-      state_new.oam_latch_b = state_new.oam_dbus_b;
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
     }
     if (DELTA_CD_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = !(cpu_addr_oam_new && cpu.bus_req_new.read);
       if (cpu_addr_oam_new && cpu.bus_req_new.read) {
         state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
         state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
       }
+      else {
+        state_new.oam_dbus_a = 0xFF;
+        state_new.oam_dbus_b = 0xFF;
+      }
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = !(cpu_addr_oam_new && cpu.bus_req_new.read);
     }
     if (DELTA_DE_new) {
+      state_new.oam_dbus_a = 0xFF;
+      state_new.oam_dbus_b = 0xFF;
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = !cpu_addr_oam_new;
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
     }
     if (DELTA_EF_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
       state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
       state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
-      state_new.oam_latch_a = state_new.oam_dbus_a;
-      state_new.oam_latch_b = state_new.oam_dbus_b;
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
     }
     if (DELTA_FG_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
       state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
       state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
-      state_new.oam_latch_a = state_new.oam_dbus_a;
-      state_new.oam_latch_b = state_new.oam_dbus_b;
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
     }
     if (DELTA_GH_new) {
+      state_new.oam_dbus_a = 0xFF;
+      state_new.oam_dbus_b = 0xFF;
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
     }
   }
   else if (!state_new.XYMU_RENDERINGn) {
+    // OAM bus has to be pulled up or we fail regression
+    state_new.oam_abus = 0xFF;
+    state_new.oam_dbus_a = 0xFF;
+    state_new.oam_dbus_b = 0xFF;
     // Rendering
 
     const auto sfetch_oam_clk_new = (get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || (state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && !get_bit(state_new.sfetch_counter_evn, 0)));
@@ -1937,6 +1970,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
   else if (cpu_addr_oam_new) {
+    // OAM bus has to be pulled up or we fail regression
+    state_new.oam_abus = 0xFF;
+    state_new.oam_dbus_a = 0xFF;
+    state_new.oam_dbus_b = 0xFF;
     // CPUing
 
     state_new.oam_abus = (uint8_t)~cpu_addr_new;

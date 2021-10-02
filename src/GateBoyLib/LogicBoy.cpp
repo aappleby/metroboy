@@ -858,7 +858,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
   if (DELTA_EVEN_new && !vid_rst_new && line_rst_new && state_new.XYMU_RENDERINGn) {
-    if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
+    if (state_old.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
     if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
     state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
@@ -896,7 +896,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
   if (DELTA_EVEN_new && !vid_rst_new && !line_rst_new && state_new.XYMU_RENDERINGn) {
-    if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
+    if (state_old.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
     if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
     if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
@@ -908,7 +908,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
   if (DELTA_EVEN_new && !vid_rst_new && !line_rst_new && !state_new.XYMU_RENDERINGn) {
-    if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
+    if (state_old.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
     if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;

@@ -584,7 +584,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  int scan_counter_new = 39;
+  uint8_t scan_counter_new = 39;
   uint8_t doba_scan_donep_evn_new = 0;
   uint8_t byba_scan_donep_odd_new = 0;
   uint8_t scan_done_trig_new = 0;
@@ -600,7 +600,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     ceno_scan_donen_odd_new = 0;
   }
   else if (first_line_new) {
-    if (phase_lx_new >= 6) scan_counter_new = (phase_lx_new - 6) / 4;
+    if (phase_lx_new >= 6) scan_counter_new = uint8_t((phase_lx_new - 6) / 4);
     doba_scan_donep_evn_new = phase_lx_new < 0 || phase_lx_new >= 167;
     byba_scan_donep_odd_new = phase_lx_new < 0 || phase_lx_new >= 166;
     scan_done_trig_new = phase_lx_new == 166;
@@ -608,7 +608,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     ceno_scan_donen_odd_new = 0;
   }
   else if (phase_ly_new >= 0 && phase_ly_new < 144) {
-    if (phase_lx_new >= 2) scan_counter_new = (phase_lx_new - 2) / 4;
+    if (phase_lx_new >= 2) scan_counter_new = uint8_t((phase_lx_new - 2) / 4);
     doba_scan_donep_evn_new = phase_lx_new < 2 || phase_lx_new >= 163;
     byba_scan_donep_odd_new = phase_lx_new < 2 || phase_lx_new >= 162;
     scan_done_trig_new = phase_lx_new == 162;
@@ -624,7 +624,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     ceno_scan_donen_odd_new = 0;
   }
   else if (phase_ly_new == 153) {
-    if (phase_lx_new >= 6) scan_counter_new = (phase_lx_new - 6) / 4;
+    if (phase_lx_new >= 6) scan_counter_new = uint8_t((phase_lx_new - 6) / 4);
     doba_scan_donep_evn_new = phase_lx_new < 6 || phase_lx_new >= 167;
     byba_scan_donep_odd_new = phase_lx_new < 6 || phase_lx_new >= 166;
     scan_done_trig_new = phase_lx_new == 166;
@@ -1853,7 +1853,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   else if (besu_scan_donen_odd_new && !vid_rst_new) {
     // Scanning
 
-    state_new.oam_abus = (uint8_t)~((scan_counter_new << 2) | 0b00);
+    state_new.oam_abus = (scan_counter_new << 2) ^ 0xFF;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
 
@@ -1864,16 +1864,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_AB_new) {
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
-      state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
+      state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
     if (DELTA_BC_new) {
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
-      state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
+      state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
@@ -1881,8 +1881,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
       state_new.oam_ctrl.SIG_OAM_OEn.state   = !(cpu_addr_oam_new && cpu.bus_req_new.read);
       if (cpu_addr_oam_new && cpu.bus_req_new.read) {
-        state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
-        state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
+        state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+        state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
       }
     }
     if (DELTA_DE_new) {
@@ -1892,16 +1892,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_EF_new) {
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
-      state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
+      state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
     if (DELTA_FG_new) {
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
-      state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
+      state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }

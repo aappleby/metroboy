@@ -995,56 +995,39 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
   }
   else {
-    if (DELTA_EVEN_new && line_rst_new && state_new.XYMU_RENDERINGn) {
-      if (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state) {
-        state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 1;
-        state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 0;
+    wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
+
+    if (DELTA_EVEN_new) {
+      if (line_rst_new) {
+        if (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state) {
+          state_new.win_ctrl.RYDY_WIN_HITp_odd.state =  state_new.XYMU_RENDERINGn;
+        }
       }
-    }
-    if (DELTA_EVEN_new && line_rst_new && !state_new.XYMU_RENDERINGn) {
-      if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-        state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
-        state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 1;
-      }
-    }
-    if (DELTA_EVEN_new && !line_rst_new && state_new.XYMU_RENDERINGn) {
-      wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
-      if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-        state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
-        state_new.win_ctrl.PUKU_WIN_HITn_odd.state = !NUNY_WIN_MODE_TRIGp_new;
-      }
-      else if (NUNY_WIN_MODE_TRIGp_new) {
-        state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 1;
-        state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 0;
-      }
-    }
-    if (DELTA_EVEN_new && !line_rst_new && !state_new.XYMU_RENDERINGn) {
-      wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
-      if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-        state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
-        state_new.win_ctrl.PUKU_WIN_HITn_odd.state = !NUNY_WIN_MODE_TRIGp_new;
-      }
-      else if (NUNY_WIN_MODE_TRIGp_new) {
-        state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 1;
-        state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 0;
+
+      else {
+        if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+          state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
+        }
+        else if (NUNY_WIN_MODE_TRIGp_new) {
+          state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 1;
+        }
       }
     }
 
+
     if (DELTA_ODD_new) {
-      wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
       if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
         state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
-        state_new.win_ctrl.PUKU_WIN_HITn_odd.state = !NUNY_WIN_MODE_TRIGp_new;
       }
       else if (NUNY_WIN_MODE_TRIGp_new) {
         state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 1;
-        state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 0;
       }
     }
 
 
   }
 
+  state_new.win_ctrl.PUKU_WIN_HITn_odd.state = !state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
 
 
   //----------------------------------------

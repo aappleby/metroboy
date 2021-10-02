@@ -577,14 +577,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   uint8_t doba_scan_donep_evn_new = 0;
   uint8_t byba_scan_donep_odd_new = 0;
+  uint8_t scan_done_trig_new = 0;
 
   if (first_line_new) {
     doba_scan_donep_evn_new = phase_lx_new < 0 || phase_lx_new >= 167;
     byba_scan_donep_odd_new = phase_lx_new < 0 || phase_lx_new >= 166;
+    scan_done_trig_new = phase_lx_new == 166;
   }
   else if (phase_ly_new >= 0 && phase_ly_new < 144) {
     doba_scan_donep_evn_new = phase_lx_new < 2 || phase_lx_new >= 163;
     byba_scan_donep_odd_new = phase_lx_new < 2 || phase_lx_new >= 162;
+    scan_done_trig_new = phase_lx_new == 162;
   }
   else if (phase_ly_new >= 144 && phase_ly_new < 153) {
     doba_scan_donep_evn_new = 1;
@@ -593,15 +596,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   else if (phase_ly_new == 153) {
     doba_scan_donep_evn_new = phase_lx_new < 6 || phase_lx_new >= 167;
     byba_scan_donep_odd_new = phase_lx_new < 6 || phase_lx_new >= 166;
+    scan_done_trig_new = phase_lx_new == 166;
   }
   if (vid_rst_new) {
     doba_scan_donep_evn_new = 0;
     byba_scan_donep_odd_new = 0;
+    scan_done_trig_new = 0;
   }
-
-  wire scan_done_trig_new = byba_scan_donep_odd_new && !doba_scan_donep_evn_new;
-
-
 
 
 

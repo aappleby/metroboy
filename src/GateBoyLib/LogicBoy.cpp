@@ -550,67 +550,77 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Sprite scanner
 
   int scan_counter_old = 39;
-  if (first_line_old || phase_ly_old == 153) {
-    if (phase_lx_old >= 6) scan_counter_old = (phase_lx_old - 6) / 4;
+  uint8_t besu_scan_donen_odd_old = 0;
+
+  if (vid_rst_old) {
+    scan_counter_old = 0;
+    besu_scan_donen_odd_old = 0;
   }
-  else if (phase_ly_old < 144) {
+  else if (first_line_old) {
+    if (phase_lx_old >= 6) scan_counter_old = (phase_lx_old - 6) / 4;
+    besu_scan_donen_odd_old = 0;
+  }
+  else if (phase_ly_old >= 0 && phase_ly_old < 144) {
     if (phase_lx_old >= 2) scan_counter_old = (phase_lx_old - 2) / 4;
+    besu_scan_donen_odd_old = phase_lx_old >= 2 && phase_lx_old < 162;
+  }
+  else if (phase_ly_old >= 144 && phase_ly_old < 153) {
+    scan_counter_old = 39;
+    besu_scan_donen_odd_old = 0;
+  }
+  else if (phase_ly_old == 153) {
+    if (phase_lx_old >= 6) scan_counter_old = (phase_lx_old - 6) / 4;
+    besu_scan_donen_odd_old = phase_lx_old >= 6 && phase_lx_old < 166;
   }
 
-  if (scan_counter_old > 39) scan_counter_old = 39;
-  if (vid_rst_old) scan_counter_old = 0;
+
+
+
+
 
   int scan_counter_new = 39;
-  if (first_line_new || phase_ly_new == 153) {
-    if (phase_lx_new >= 6) scan_counter_new = (phase_lx_new - 6) / 4;
-  }
-  else if (phase_ly_new < 144) {
-    if (phase_lx_new >= 2) scan_counter_new = (phase_lx_new - 2) / 4;
-  }
-
-  if (scan_counter_new > 39) scan_counter_new = 39;
-  if (vid_rst_new) scan_counter_new = 0;
-
-
-
-
-
   uint8_t doba_scan_donep_evn_new = 0;
   uint8_t byba_scan_donep_odd_new = 0;
   uint8_t scan_done_trig_new = 0;
   uint8_t besu_scan_donen_odd_new = 0;
 
-  if (first_line_new) {
+  if (vid_rst_new) {
+    scan_counter_new = 0;
+    doba_scan_donep_evn_new = 0;
+    byba_scan_donep_odd_new = 0;
+    scan_done_trig_new = 0;
+    besu_scan_donen_odd_new = 0;
+  }
+  else if (first_line_new) {
+    if (phase_lx_new >= 6) scan_counter_new = (phase_lx_new - 6) / 4;
     doba_scan_donep_evn_new = phase_lx_new < 0 || phase_lx_new >= 167;
     byba_scan_donep_odd_new = phase_lx_new < 0 || phase_lx_new >= 166;
     scan_done_trig_new = phase_lx_new == 166;
     besu_scan_donen_odd_new = 0;
   }
   else if (phase_ly_new >= 0 && phase_ly_new < 144) {
+    if (phase_lx_new >= 2) scan_counter_new = (phase_lx_new - 2) / 4;
     doba_scan_donep_evn_new = phase_lx_new < 2 || phase_lx_new >= 163;
     byba_scan_donep_odd_new = phase_lx_new < 2 || phase_lx_new >= 162;
     scan_done_trig_new = phase_lx_new == 162;
     besu_scan_donen_odd_new = phase_lx_new >= 2 && phase_lx_new < 162;
   }
   else if (phase_ly_new >= 144 && phase_ly_new < 153) {
+    scan_counter_new = 39;
     doba_scan_donep_evn_new = 1;
     byba_scan_donep_odd_new = 1;
     scan_done_trig_new = 0;
     besu_scan_donen_odd_new = 0;
   }
   else if (phase_ly_new == 153) {
+    if (phase_lx_new >= 6) scan_counter_new = (phase_lx_new - 6) / 4;
     doba_scan_donep_evn_new = phase_lx_new < 6 || phase_lx_new >= 167;
     byba_scan_donep_odd_new = phase_lx_new < 6 || phase_lx_new >= 166;
     scan_done_trig_new = phase_lx_new == 166;
     besu_scan_donen_odd_new = phase_lx_new >= 6 && phase_lx_new < 166;
   }
-  if (vid_rst_new) {
-    doba_scan_donep_evn_new = 0;
-    byba_scan_donep_odd_new = 0;
-    scan_done_trig_new = 0;
-    besu_scan_donen_odd_new = 0;
-  }
 
+  if (scan_counter_new > 39) scan_counter_new = 39;
 
 
 
@@ -706,39 +716,40 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if(besu_scan_donen_odd_new != state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state) printf("%d %d\n", phase_lx_new, phase_ly_new);
 
-  auto a = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state;
-  auto b = state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state;
+  CHECK_P(besu_scan_donen_odd_new == state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state);
+
+  auto& a = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state;
+  auto& b = state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state;
 
   if (vid_rst_new) {
-    if(besu_scan_donen_odd_new != state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state) printf("%d %d\n", phase_lx_new, phase_ly_new);
-    CHECK_N(b);
+    //CHECK_N(b);
   }
   else if (first_line_new) {
-    if(besu_scan_donen_odd_new != state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state) printf("%d %d\n", phase_lx_new, phase_ly_new);
-    CHECK_N(b);
+    //CHECK_N(b);
   }
   else if (phase_ly_new == 0) {
-    if (!a && b) CHECK_P(phase_lx_new == 2);
-    if (a && !b) CHECK_P(phase_lx_new == 162);
+    //if (!a && b) CHECK_P(phase_lx_new == 2);
+    //if (a && !b) CHECK_P(phase_lx_new == 162);
     //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
     //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
   else if (phase_ly_new > 0 && phase_ly_new < 144) {
-    if (!a && b) CHECK_P(phase_lx_new == 2);
-    if (a && !b) CHECK_P(phase_lx_new == 162);
+    //if (!a && b) CHECK_P(phase_lx_new == 2);
+    //if (a && !b) CHECK_P(phase_lx_new == 162);
     //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
     //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
   else if (phase_ly_new >= 144 && phase_ly_new < 153) {
-    CHECK_N(b);
+    //CHECK_N(b);
     //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
     //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
   else if (phase_ly_new == 153) {
-    if (!a && b) CHECK_P(phase_lx_new == 6);
-    if (a && !b) CHECK_P(phase_lx_new == 166);
+    //if (!a && b) CHECK_P(phase_lx_new == 6);
+    //if (a && !b) CHECK_P(phase_lx_new == 166);
+    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
+    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
   }
 
 
@@ -1058,7 +1069,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     auto b2 = get_bit(state_old.sfetch_counter_evn, 2);
     auto b1d = state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state;
 
-    auto clk = state_old.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_old && gen_clk(phase_old, 0b01110111);
+    auto clk = besu_scan_donen_odd_old && !vid_rst_old && gen_clk(phase_old, 0b01110111);
     auto bphase = b1 || b2 || (b1d && !b0);
 
     if (MATU_DMA_RUNNINGp_old) {
@@ -1078,7 +1089,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     wire XYSO_xBCDxFGH_new = (!vid_rst_new && gen_clk(phase_new, 0b01110111));
     wire CUFE_OAM_CLKp_new       = !((cpu_addr_oam_new || MATU_DMA_RUNNINGp_new) && DELTA_DH_new);
-    wire acyl_new                = (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new);
+    wire acyl_new                = (!MATU_DMA_RUNNINGp_new && besu_scan_donen_odd_new && !vid_rst_new);
     wire AVER_AxxxExxx_new       = !(acyl_new && XYSO_xBCDxFGH_new);
     wire TYTU_SFETCH_S0n_new     = !get_bit(state_new.sfetch_counter_evn, 0);
     wire TACU_SPR_SEQ_5_TRIG_new = !(state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && TYTU_SFETCH_S0n_new);
@@ -1791,7 +1802,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
     state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
   }
-  else if (state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) {
+  else if (besu_scan_donen_odd_new && !vid_rst_new) {
     state_new.oam_abus = (uint8_t)~((scan_counter_new << 2) | 0b00);
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
@@ -1856,7 +1867,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
     }
     else {
-      if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state && !state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && state_new.XYMU_RENDERINGn) {
+      if (!state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state && !besu_scan_donen_odd_new && state_new.XYMU_RENDERINGn) {
         state_new.oam_dbus_a = ~state_new.cpu_dbus;
         state_new.oam_dbus_b = ~state_new.cpu_dbus;
       }
@@ -1871,7 +1882,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_dbus_a = ~state_new.cpu_dbus;
     state_new.oam_dbus_b = ~state_new.cpu_dbus;
 
-    wire APAG_CBD_TO_OBDp  = !(state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) && state_new.XYMU_RENDERINGn;
+    wire APAG_CBD_TO_OBDp  = !(besu_scan_donen_odd_new && !vid_rst_new) && state_new.XYMU_RENDERINGn;
     if (APAG_CBD_TO_OBDp) {
       state_new.oam_dbus_a = ~state_new.cpu_dbus;
       state_new.oam_dbus_b = ~state_new.cpu_dbus;
@@ -1880,7 +1891,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // OAM latch stores the contents of the oam dbus
 
-  if (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new) {
+  if (!MATU_DMA_RUNNINGp_new && besu_scan_donen_odd_new && !vid_rst_new) {
     if (DELTA_AC_new || DELTA_EG_new) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
@@ -1948,7 +1959,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     uint8_t stat = 0x80;
 
     stat |= (!state_new.XYMU_RENDERINGn || vblank_new) << 0;
-    stat |= (!state_new.XYMU_RENDERINGn || (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new)) << 1;
+    stat |= (!state_new.XYMU_RENDERINGn || (!MATU_DMA_RUNNINGp_new && besu_scan_donen_odd_new && !vid_rst_new)) << 1;
     stat |= (!state_new.int_ctrl.RUPO_LYC_MATCHn.state) << 2;
     stat |= (pack_stat ^ 0b1111) << 3;
 
@@ -2192,7 +2203,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.state = !vid_rst_new && !line_rst_new && scan_done_trig_new;
     state_new.sfetch_control.TEXY_SFETCHINGp_evn.state = TEXY_SFETCHINGp_evn_new;
     state_new.WODU_HBLANKp_odd = hblank_new;
-    state_new.ACYL_SCANNINGp_odd = (!MATU_DMA_RUNNINGp_new && state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state && !vid_rst_new);
+    state_new.ACYL_SCANNINGp_odd = (!MATU_DMA_RUNNINGp_new && besu_scan_donen_odd_new && !vid_rst_new);
     state_new.ATEJ_LINE_RSTp_odd = line_rst_new || vid_rst_new;
     state_new.cpu_signals.SIG_CPU_BOOTp.state = 0;
     state_new.cpu_signals.SIG_BOOT_CSp.state = 0;

@@ -671,8 +671,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_AB_new || DELTA_EF_new) {
       if (sprite_hit && state_new.sprite_counter < 10) {
         state_new.sprite_store_flags = (1 << state_new.sprite_counter);
-        (&state_new.store_i0)[state_new.sprite_counter] = state_new.sprite_ibus ^ 0b111111;
-        (&state_new.store_l0)[state_new.sprite_counter] = state_new.sprite_lbus ^ 0b1111;
+        (&state_new.store_i0)[state_new.sprite_counter] = state_old.sprite_ibus ^ 0b111111;
+        (&state_new.store_l0)[state_new.sprite_counter] = state_old.sprite_lbus ^ 0b1111;
       }
     }
 
@@ -1232,13 +1232,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // FEPO
 
-  if (state_new.XYMU_RENDERINGn) {
-    state_new.FEPO_STORE_MATCHp_odd = 0;
-    state_new.sprite_ibus = state_new.sprite_index;
-    state_new.sprite_lbus = (~reg_ly_new + state_new.oam_temp_a) & 0b00001111;
-    state_new.sprite_match_flags = 0;
-  }
-  else if (ceno_scan_donen_odd_new) {
+  if (state_new.XYMU_RENDERINGn || ceno_scan_donen_odd_new) {
     state_new.FEPO_STORE_MATCHp_odd = 0;
     state_new.sprite_ibus = state_new.sprite_index;
     state_new.sprite_lbus = (~reg_ly_new + state_new.oam_temp_a) & 0b00001111;
@@ -1268,8 +1262,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       else if (pix_count_new == s.store_x9) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x200;  si = s.store_i9 ^ 0x3F; sl = s.store_l9 ^ 0x0F; }
     }
     if (!state_new.FEPO_STORE_MATCHp_odd) {
-      const auto pack_ydiff = ~reg_ly_new + state_new.oam_temp_a;
-      state_new.sprite_lbus = pack_ydiff & 0b00001111;
+      state_new.sprite_lbus = (~reg_ly_new + state_new.oam_temp_a) & 0b00001111;
     }
   }
 

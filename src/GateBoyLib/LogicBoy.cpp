@@ -811,7 +811,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
   if (vid_rst_new) {
-    state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
     state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
@@ -870,8 +869,22 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
+  if (vid_rst_new) {
+    state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
+  }
+  else if (DELTA_EVEN_new) {
+    if (line_rst_new && !state_new.XYMU_RENDERINGn) {
+      state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
+    }
+    else {
+      state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+    }
+  }
+
+
+  //----------------------------------------
+
   if (DELTA_EVEN_new && !vid_rst_new && line_rst_new && state_new.XYMU_RENDERINGn) {
-    state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
     state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
@@ -891,7 +904,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
   if (DELTA_EVEN_new && !vid_rst_new && line_rst_new && !state_new.XYMU_RENDERINGn) {
-    state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
     state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
     if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
@@ -907,8 +919,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
+
   if (DELTA_EVEN_new && !vid_rst_new && !line_rst_new && state_new.XYMU_RENDERINGn) {
-    state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
     if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
@@ -918,8 +930,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
 
+
   if (DELTA_EVEN_new && !vid_rst_new && !line_rst_new && !state_new.XYMU_RENDERINGn) {
-    state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
     wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
     if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;

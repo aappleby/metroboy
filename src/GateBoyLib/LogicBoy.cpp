@@ -1044,16 +1044,20 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire TYFA_CLKPIPE_evn_old = (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_old);
   wire TYFA_CLKPIPE_evn_new = (!state_new.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_new);
 
-  bool tyfa_posedge, tyfa_negedge;
+  bool tyfa_posedge = 0, tyfa_negedge = 0;
 
   tyfa_posedge =
     (state_old.win_ctrl.RYDY_WIN_HITp_odd.state || !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state || state_old.FEPO_STORE_MATCHp_odd || !(state_old.pix_count != 167) || DELTA_EVEN_new) &&
     (!state_new.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_EVEN_new);
 
+  if (DELTA_EVEN_new) {
+    tyfa_negedge = 0;
+  }
 
-  tyfa_negedge =
-    ( (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167) && DELTA_ODD_new)) &&
-    ((state_new.win_ctrl.RYDY_WIN_HITp_odd.state || !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state || state_old.FEPO_STORE_MATCHp_odd || !(state_old.pix_count != 167) || DELTA_ODD_new));
+  if (DELTA_ODD_new) {
+    tyfa_negedge = !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count != 167);
+  }
+
 
 
   // RYVA

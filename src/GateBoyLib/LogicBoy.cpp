@@ -1831,6 +1831,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (MATU_DMA_RUNNINGp_new) {
     state_new.oam_abus = (uint8_t)~state_new.dma_lo;
+    state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
+    state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
 
     if (DELTA_HD_new) {
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
@@ -1843,10 +1845,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_ctrl.SIG_OAM_WRn_A.state = !get_bit(state_new.oam_abus, 0);
       state_new.oam_ctrl.SIG_OAM_WRn_B.state =  get_bit(state_new.oam_abus, 0);
       state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+      if (1) {
+        uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+        if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+        if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
+      }
     }
 
-    state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
-    state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
   }
   else if (besu_scan_donen_odd_new && !vid_rst_new) {
     state_new.oam_abus = (uint8_t)~((scan_counter_new << 2) | 0b00);
@@ -1868,6 +1873,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_AC_new || DELTA_EG_new) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
+    }
+
+    // Actual OAM write
+    if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
+      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
     }
   }
   else if (!state_new.XYMU_RENDERINGn) {
@@ -1892,6 +1904,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (sfetch_phase_new == 0 || sfetch_phase_new == 3) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
+    }
+
+    // Actual OAM write
+    if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
+      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
     }
   }
   else if (cpu_addr_oam_new) {
@@ -1934,6 +1953,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }
+
+    // Actual OAM write
+    if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
+      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
+    }
   }
   else {
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
@@ -1949,14 +1975,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_dbus_a = ~state_new.cpu_dbus;
       state_new.oam_dbus_b = ~state_new.cpu_dbus;
     }
+
+    // Actual OAM write
+    if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
+      uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
+      if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
+    }
   }
 
-  // Actual OAM write
-  if (state_old.oam_ctrl.SIG_OAM_CLKn.state && !state_new.oam_ctrl.SIG_OAM_CLKn.state) {
-    uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
-    if (!state_new.oam_ctrl.SIG_OAM_WRn_A.state) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
-    if (!state_new.oam_ctrl.SIG_OAM_WRn_B.state) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
-  }
 
   //----------------------------------------
   // zram

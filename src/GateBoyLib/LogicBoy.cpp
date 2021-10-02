@@ -816,7 +816,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
     state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
     state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-    state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 1;
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
   }
@@ -991,15 +990,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
+  wire nuny_win_mode_trig_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
 
   
-  if (NUNY_WIN_MODE_TRIGp_new) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = state_new.XYMU_RENDERINGn || !DELTA_EVEN_new || !line_rst_new;
-
+  if (nuny_win_mode_trig_new) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = state_new.XYMU_RENDERINGn || !DELTA_EVEN_new || !line_rst_new;
   if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
 
+
   if (vid_rst_new) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
-  state_new.win_ctrl.PUKU_WIN_HITn_odd.state = !state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
+
+
 
 
   //----------------------------------------
@@ -1034,7 +1034,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     (win_hit_trig_new) ||
     (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state);
 
-  wire nuny_win_mode_trig_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
 
   wire NYXU_BFETCH_RSTn_new = (line_rst_new || vid_rst_new || !scan_done_trig_new) && !nuny_win_mode_trig_new && !TEVO_WIN_FETCH_TRIGp_new;
 
@@ -2198,6 +2197,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.win_ctrl.PUKU_WIN_HITn_odd.state = !state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
+    if (vid_rst_new) state_new.win_ctrl.PUKU_WIN_HITn_odd.state = 1;
     state_new.oam_ctrl.WUJE_CPU_OAM_WRn.state = !(cpu_addr_oam_new && cpu_wr && DELTA_DH_new);
     state_new.sprite_scanner.CENO_SCAN_DONEn_odd.state = ceno_scan_donen_odd_new;
     state_new.sprite_scanner.BESU_SCAN_DONEn_odd.state = besu_scan_donen_odd_new;

@@ -642,7 +642,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (vid_rst_new) {
     state_new.sprite_counter = 0;
     state_new.sprite_store_flags = 0;
-
     state_new.store_x0 = 0xFF;
     state_new.store_x1 = 0xFF;
     state_new.store_x2 = 0xFF;
@@ -653,16 +652,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x7 = 0xFF;
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
-
     state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 0;
-
-    state_new.XYMU_RENDERINGn = 1;
   }
   else if (line_rst_new) {
     state_new.sprite_counter = 0;
     state_new.sprite_store_flags = 0;
-
-
     state_new.store_x0 = 0xFF;
     state_new.store_x1 = 0xFF;
     state_new.store_x2 = 0xFF;
@@ -673,36 +667,31 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.store_x7 = 0xFF;
     state_new.store_x8 = 0xFF;
     state_new.store_x9 = 0xFF;
-    state_new.XYMU_RENDERINGn = 1;
   }
   else {
-    if (DELTA_HA_new || DELTA_DE_new) {
-      if (!state_old.sprite_scanner.DEZY_INC_COUNTn_odd.state && state_new.sprite_counter < 10) state_new.sprite_counter++;
-      state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 1;
+    int sy = (int)state_new.oam_temp_a - 16;
+    int sprite_height = spr_size_new ? 8 : 16;
+    wire sprite_hit = (reg_ly_new >= sy) && (reg_ly_new < sy + sprite_height) && ceno_scan_donen_odd_old;
 
-      if (scan_done_trig_new) {
-        state_new.XYMU_RENDERINGn = 0;
+    if (DELTA_HA_new || DELTA_DE_new) {
+      if (!state_old.sprite_scanner.DEZY_INC_COUNTn_odd.state && state_new.sprite_counter < 10) {
+        state_new.sprite_counter++;
+      }
+      state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 1;
+    }
+
+    if (DELTA_BC_new || DELTA_FG_new) {
+      if (sprite_hit) {
+        state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 0;
       }
     }
 
     if (DELTA_AB_new || DELTA_EF_new) {
-      int sy = (int)state_new.oam_temp_a - 16;
-      int sprite_height = spr_size_new ? 8 : 16;
-      wire sprite_hit = (reg_ly_new >= sy) && (reg_ly_new < sy + sprite_height) && ceno_scan_donen_odd_old;
       if (sprite_hit && state_new.sprite_counter < 10) {
         state_new.sprite_store_flags = (1 << state_new.sprite_counter);
         (&state_new.store_i0)[state_new.sprite_counter] = state_new.sprite_ibus ^ 0b111111;
         (&state_new.store_l0)[state_new.sprite_counter] = state_new.sprite_lbus ^ 0b1111;
       }
-
-      if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
-    }
-
-    if (DELTA_BC_new || DELTA_FG_new) {
-      int sy = (int)state_new.oam_temp_a - 16;
-      int sprite_height = spr_size_new ? 8 : 16;
-      wire sprite_hit = (reg_ly_new >= sy) && (reg_ly_new < sy + sprite_height) && ceno_scan_donen_odd_old;
-      if (sprite_hit) state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 0;
     }
 
     if (DELTA_CD_new || DELTA_GH_new) {
@@ -710,11 +699,19 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
         (&state_new.store_x0)[state_new.sprite_counter] = state_new.oam_temp_b;
       }
       state_new.sprite_store_flags = 0;
-
-      if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
     }
   }
 
+
+  if (vid_rst_new || line_rst_new) {
+    state_new.XYMU_RENDERINGn = 1;
+  }
+  if (scan_done_trig_new) {
+    state_new.XYMU_RENDERINGn = 0;
+  }
+  if (DELTA_EVEN_new) {
+    if (!state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count == 167)) state_new.XYMU_RENDERINGn = 1;
+  }
 
 
   //CHECK_P(ceno_scan_donen_odd_new == state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state);

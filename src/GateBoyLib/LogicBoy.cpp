@@ -1912,7 +1912,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //wire int_ser_old = serial.CALY_SER_CNT3;
   wire int_ser_old = 0;
 
-  bool hblank_new = !state_old.FEPO_STORE_MATCHp_odd && (state_new.pix_count & 167) == 167;
+  bool hblank_new = !state_new.FEPO_STORE_MATCHp_odd && (state_new.pix_count & 167) == 167; // FEPO _must_ be new or we get a mismatch
 
   bool int_stat_new = 0;
   if (!get_bit(pack_stat, 0) && hblank_new && !vblank_new) int_stat_new = 1;

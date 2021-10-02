@@ -80,7 +80,7 @@ void GateBoyThread::reset_to_cart() {
 
 //----------------------------------------
 
-void GateBoyThread::add_steps(int steps) {
+void GateBoyThread::add_steps(int64_t steps) {
   CHECK_P(sim_paused());
   gb.push();
   step_count += steps;
@@ -104,7 +104,7 @@ void GateBoyThread::rewind(int steps) {
   }
 }
 
-int GateBoyThread::get_steps() const {
+int64_t GateBoyThread::get_steps() const {
   return step_count;
 }
 
@@ -147,7 +147,7 @@ void GateBoyThread::dump(Dumper& d) {
   d("State size    : %d K\n", gb.state_size_bytes() / 1024);
   //d("BGB cycle     : 0x%08x\n",  (gb->phase_total / 4) - 0x10000);
   d("Sim clock     : %f\n",      double(new_phase_total) / (4194304.0 * 2));
-  d("Steps left    : %d\n", step_count.load());
+  d("Steps left    : %lld\n", step_count.load());
 
   double phase_rate = (new_phase_total - old_phase_total) / (sim_time - old_sim_time);
 

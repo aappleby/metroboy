@@ -75,10 +75,10 @@ struct GateBoyThread {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  void add_steps(int steps);
+  void add_steps(int64_t steps);
   void run_to(uint64_t phase);
   void clear_steps();
-  int  get_steps() const;
+  int64_t get_steps() const;
 
   void rewind(int steps);
 
@@ -118,7 +118,7 @@ private:
   std::thread* main = nullptr;
 
   blob cart_blob;
-  std::atomic_int step_count = 0;
+  std::atomic_int64_t step_count = 0;
 
   double   sim_time = 0;
   double   old_sim_time = 0;

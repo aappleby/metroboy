@@ -1100,7 +1100,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // OAM latch from last cycle gets moved into temp registers.
 
   {
-
     bool BYCU_OAM_CLKp_old = false;
 
     auto b0_old = get_bit(state_old.sfetch_counter_evn, 0);
@@ -1123,6 +1122,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       BYCU_OAM_CLKp_old = clk_old || (cpu_addr_oam_old && DELTA_DH_old);
     }
 
+    //----------
 
     bool BYCU_OAM_CLKp_new = false;
 
@@ -1146,6 +1146,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       BYCU_OAM_CLKp_new = clk_new || (cpu_addr_oam_new && DELTA_DH_new);
     }
 
+    //----------
+
     if (bit(BYCU_OAM_CLKp_old) && !bit(BYCU_OAM_CLKp_new)) {
       state_new.oam_temp_a = ~state_new.oam_latch_a;
       state_new.oam_temp_b = ~state_new.oam_latch_b;
@@ -1168,8 +1170,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sprite_ibus = state_new.sprite_index;
     state_new.sprite_lbus = (~reg_ly_new + state_new.oam_temp_a) & 0b00001111;
   }
-
-  else if (!state_new.XYMU_RENDERINGn && ceno_scan_donen_odd_new) {
+  else if (ceno_scan_donen_odd_new) {
     state_new.sprite_ibus = state_new.sprite_index;
     state_new.sprite_lbus = 0b00001111;
   }
@@ -1224,7 +1225,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // pix count
   auto& pix_count_new = state_new.pix_count;
-  if (vid_rst_new || (line_rst_new || vid_rst_new)) {
+  if (vid_rst_new || line_rst_new) {
     pix_count_new = 0;
   }
   else {
@@ -1252,7 +1253,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     sl = 0x0F;
 
     if (spr_en_new) {
-      state_new.FEPO_STORE_MATCHp_odd = 0;
       if      (pix_count_new == s.store_x0) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x001;  si = s.store_i0 ^ 0x3F; sl = s.store_l0 ^ 0x0F; }
       else if (pix_count_new == s.store_x1) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x002;  si = s.store_i1 ^ 0x3F; sl = s.store_l1 ^ 0x0F; }
       else if (pix_count_new == s.store_x2) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x004;  si = s.store_i2 ^ 0x3F; sl = s.store_l2 ^ 0x0F; }
@@ -1473,15 +1473,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (ext_addr_new && cpu_addr_ram_new)             pins_ctrl_csn_new = gen_clk_new(phase_total_old, 0b00111111);
   if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new)  pins_ctrl_csn_new = !!(dma_addr_new & 0x8000);
 
-  uint8_t pins_ctrl_rdn_new = 0;
-  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_rdn_new = 1;
-  if (!ext_addr_new || !cpu_wr)                     pins_ctrl_rdn_new = 1;
-  if (cpu_addr_vram_new)                            pins_ctrl_rdn_new = 1;
-
-  uint8_t pins_ctrl_wrn_new = 0;
-  if (ext_addr_new && cpu_wr && !cpu_addr_vram_new) pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110);
-  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_wrn_new = 0;
-
   //----------------------------------------
 
   if (ext_addr_new && !cpu_addr_vram_new) {
@@ -1512,7 +1503,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Ext read
 
-
+  uint8_t pins_ctrl_rdn_new = 0;
+  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_rdn_new = 1;
+  if (!ext_addr_new || !cpu_wr)                     pins_ctrl_rdn_new = 1;
+  if (cpu_addr_vram_new)                            pins_ctrl_rdn_new = 1;
 
   if (pins_ctrl_rdn_new) {
 
@@ -1569,6 +1563,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
   // Ext write
+
+  uint8_t pins_ctrl_wrn_new = 0;
+  if (ext_addr_new && cpu_wr && !cpu_addr_vram_new) pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110);
+  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_wrn_new = 0;
 
   {
     const uint8_t data_out = cart_dbus;
@@ -1891,15 +1889,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = DELTA_HD_new;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-    state_new.oam_ctrl.SIG_OAM_OEn.state   = !((cpu.bus_req_new.read && !DELTA_HA_new) && !(DELTA_DH_new && cpu.bus_req_new.read));
+
+    state_new.oam_ctrl.SIG_OAM_OEn.state   = (DELTA_HA_new || DELTA_DH_new) || !cpu.bus_req_new.read;
+
 
     if (DELTA_DG_new) {
       state_new.oam_ctrl.SIG_OAM_WRn_A.state = !cpu_wr || !get_bit(state_new.oam_abus, 0);
       state_new.oam_ctrl.SIG_OAM_WRn_B.state = !cpu_wr ||  get_bit(state_new.oam_abus, 0);
     }
 
-    if ((cpu.bus_req_new.read && !DELTA_HA_new)) {
-      if (DELTA_DH_new && cpu.bus_req_new.read) {
+    if (cpu.bus_req_new.read && !DELTA_HA_new) {
+      if (DELTA_DH_new) {
         state_new.cpu_dbus = get_bit(state_new.oam_abus, 0) ? ~state_new.oam_latch_a : ~state_new.oam_latch_b;
       }
       else {

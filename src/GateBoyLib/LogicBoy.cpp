@@ -1940,10 +1940,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
   else if (!state_new.XYMU_RENDERINGn) {
-    // OAM bus has to be pulled up or we fail regression
-    state_new.oam_abus = 0xFF;
-    state_new.oam_dbus_a = 0xFF;
-    state_new.oam_dbus_b = 0xFF;
     // Rendering
 
     const auto sfetch_oam_clk_new = (get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2) || (state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && !get_bit(state_new.sfetch_counter_evn, 0)));
@@ -1955,14 +1951,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
     state_new.oam_ctrl.SIG_OAM_OEn.state   = sfetch_oam_oen_new && !(cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA_new) && !(DELTA_DH_new && cpu.bus_req_new.read));
 
+    state_new.oam_dbus_a = 0xFF;
+    state_new.oam_dbus_b = 0xFF;
     if (!sfetch_oam_oen_new) {
-      state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
+      state_new.oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
+      state_new.oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
     }
-    else if (cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA_new) && !(DELTA_DH_new && cpu.bus_req_new.read)) {
-      state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
+    else if (cpu_addr_oam_new && (!cpu.bus_req_new.read || DELTA_AD_new)) {
+      state_new.oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
+      state_new.oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
     }
+
 
     if (sfetch_phase_new == 0 || sfetch_phase_new == 3) {
       state_new.oam_latch_a = state_new.oam_dbus_a;

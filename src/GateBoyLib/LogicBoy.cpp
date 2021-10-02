@@ -990,22 +990,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  wire nuny_win_mode_trig_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
+  wire win_mode_trig_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
 
   
-  if (nuny_win_mode_trig_new) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = state_new.XYMU_RENDERINGn || !DELTA_EVEN_new || !line_rst_new;
+  if (win_mode_trig_new) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = state_new.XYMU_RENDERINGn || !DELTA_EVEN_new || !line_rst_new;
   if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
-
-
-  if (vid_rst_new) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
-
-
-
-
-  //----------------------------------------
-
-  // SOVY
   if (DELTA_EVEN_new) state_new.win_ctrl.SOVY_WIN_HITp_evn.state = state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
+  if (vid_rst_new) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
   if (vid_rst_new) state_new.win_ctrl.SOVY_WIN_HITp_evn.state = 0;
 
   wire win_hit_trig_new  = state_new.win_ctrl.SOVY_WIN_HITp_evn.state && !state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
@@ -1014,37 +1005,38 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // SO, it is guaranteed safe to use the old values of FEPO/WODU/SOCY to compute CLKPIPE
 
   wire clkpipe_gate = !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count_odd != 167);
-  wire tyfa_posedge = DELTA_EVEN_new && clkpipe_gate;
-  wire tyfa_negedge = DELTA_ODD_new && clkpipe_gate;
+  wire clkpipe_posedge = DELTA_EVEN_new && clkpipe_gate;
+  wire clkpipe_negedge = DELTA_ODD_new && clkpipe_gate;
 
   //----------------------------------------
 
-  // RYVA
-  if (tyfa_negedge) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = !nuko_wx_match_old && state_old.fine_count_odd == 7;
-  if (state_new.XYMU_RENDERINGn) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = 0;
+  wire something_trig_old = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
+  wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state;
 
-  // RENE
-  if (DELTA_EVEN_new) state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state   = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
-  if (state_new.XYMU_RENDERINGn) state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = 0;
+  if (state_new.XYMU_RENDERINGn) {
+    state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = 0;
+    state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = 0;
+  }
+  else {
+    if (clkpipe_negedge) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = !nuko_wx_match_old && state_old.fine_count_odd == 7;
+    if (DELTA_EVEN_new)  state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state; 
+  }
+
+  wire TEVO_WIN_FETCH_TRIGp_old =
+    (state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state) ||
+    (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.win_ctrl.SOVY_WIN_HITp_evn.state) ||
+    (!state_old.XYMU_RENDERINGn && something_trig_old);
 
   wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
+  wire TEVO_WIN_FETCH_TRIGp_new = (win_fetch_trig_new || win_hit_trig_new || something_trig_new) && !state_new.XYMU_RENDERINGn;
 
-  wire TEVO_WIN_FETCH_TRIGp_new =
-    (win_fetch_trig_new) ||
-    (win_hit_trig_new) ||
-    (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state);
+  wire NYXU_BFETCH_RSTn_new = (line_rst_new || vid_rst_new || !scan_done_trig_new) && !win_mode_trig_new && !TEVO_WIN_FETCH_TRIGp_new;
 
-
-  wire NYXU_BFETCH_RSTn_new = (line_rst_new || vid_rst_new || !scan_done_trig_new) && !nuny_win_mode_trig_new && !TEVO_WIN_FETCH_TRIGp_new;
 
   //----------------------------------------
   // Win map x counter
 
   if (DELTA_ODD_new) {
-    wire TEVO_WIN_FETCH_TRIGp_old =
-      (state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state) ||
-      (!state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.win_ctrl.SOVY_WIN_HITp_evn.state) ||
-      (!state_old.XYMU_RENDERINGn && !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state);
 
     wire VETU_WIN_MAPp_old = TEVO_WIN_FETCH_TRIGp_old && state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
     wire VETU_WIN_MAPp_new = TEVO_WIN_FETCH_TRIGp_new && state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
@@ -1175,7 +1167,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  if (tyfa_posedge) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
+  if (clkpipe_posedge) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
   if (vid_rst_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = 0;
 
 
@@ -1196,7 +1188,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Pixel counter
 
-  if (tyfa_negedge) {
+  if (clkpipe_negedge) {
     if (state_new.fine_count_odd < 7) state_new.fine_count_odd++;
   }
 
@@ -1204,7 +1196,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   auto& fine_count_odd_new = state_new.fine_count_odd;
 
 
-  if (tyfa_posedge) {
+  if (clkpipe_posedge) {
     state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state && (((state_old.reg_scx & 0b111) ^ 0b111) == state_old.fine_count_odd);
   }
 
@@ -1229,7 +1221,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pix_count_new = 0;
   }
   else {
-    if (tyfa_negedge) {
+    if (clkpipe_negedge) {
       if (!state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) {
         CHECK_P(DELTA_ODD_new);
         pix_count_new++;
@@ -1289,7 +1281,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
-  if (tyfa_posedge) {
+  if (clkpipe_posedge) {
     state_new.lcd.PAHO_X8_SYNC.state = get_bit(state_old.pix_count_odd, 3);
   }
 
@@ -1332,7 +1324,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (DELTA_ODD_new) {
     if (!state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) {
-      if (tyfa_negedge) {
+      if (clkpipe_negedge) {
         state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
         state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
         state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;

@@ -575,22 +575,22 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  uint8_t doba = 0;
+  uint8_t doba_scan_donep_evn_new = 0;
   if (first_line_new) {
-    doba = phase_lx_new < 0 || phase_lx_new >= 167;
+    doba_scan_donep_evn_new = phase_lx_new < 0 || phase_lx_new >= 167;
   }
   else if (phase_ly_new >= 0 && phase_ly_new < 144) {
-    doba = phase_lx_new < 2 || phase_lx_new >= 163;
+    doba_scan_donep_evn_new = phase_lx_new < 2 || phase_lx_new >= 163;
   }
   else if (phase_ly_new >= 144 && phase_ly_new < 153) {
-    doba = 1;
+    doba_scan_donep_evn_new = 1;
   }
   else if (phase_ly_new == 153) {
-    doba = phase_lx_new < 6 || phase_lx_new >= 167;
+    doba_scan_donep_evn_new = phase_lx_new < 6 || phase_lx_new >= 167;
   }
-  if (vid_rst_new) doba = 0;
+  if (vid_rst_new) doba_scan_donep_evn_new = 0;
 
-  state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = doba;
+  state_new.sprite_scanner.DOBA_SCAN_DONEp_evn.state = doba_scan_donep_evn_new;
 
 
   if (vid_rst_new) {
@@ -687,7 +687,43 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
+  // 162 166
 
+  if (first_line_new) {
+    if (!state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state) {
+      CHECK_P(phase_lx_new == 166);
+    }
+    if (state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state) {
+      CHECK_P(phase_lx_new == 0);
+    }
+  }
+  else {
+    if (phase_ly_new >= 0 && phase_ly_new < 144) {
+      if (!state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state) {
+        CHECK_P(phase_lx_new == 162);
+      }
+
+      if (state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state) {
+        CHECK_P(phase_lx_new == 2);
+        //printf("v %d %d\n", phase_lx_new, phase_ly_new);
+      }
+
+
+    }
+    else if (phase_ly_new == 153) {
+      if (!state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state) {
+        CHECK_P(phase_lx_new == 166);
+      }
+
+      if (state_old.sprite_scanner.BYBA_SCAN_DONEp_odd.state && !state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state) {
+        CHECK_P(phase_lx_new == 6);
+      }
+
+    }
+    else {
+      CHECK_P(state_new.sprite_scanner.BYBA_SCAN_DONEp_odd.state);
+    }
+  }
 
 
 

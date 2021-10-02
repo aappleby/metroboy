@@ -1975,7 +1975,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_dbus_b = 0xFF;
     // CPUing
 
-    state_new.oam_abus = (uint8_t)~cpu_addr_new;
+    state_new.oam_abus = uint8_t(~cpu_addr_new);
 
     state_new.oam_ctrl.SIG_OAM_CLKn.state  = DELTA_HD_new;
     state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
@@ -1984,15 +1984,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     if (DELTA_HD_new) {
       if (cpu.bus_req_new.read && !DELTA_HA_new) {
-        state_new.oam_dbus_a = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) & ~1];
-        state_new.oam_dbus_b = ~mem.oam_ram[(state_new.oam_abus ^ 0xFF) |  1];
-        state_new.oam_latch_a = state_new.oam_dbus_a;
-        state_new.oam_latch_b = state_new.oam_dbus_b;
+        state_new.oam_dbus_a = ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
+        state_new.oam_dbus_b = ~mem.oam_ram[(cpu_addr_new & 0xFF) |  1];
+        state_new.oam_latch_a = ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
+        state_new.oam_latch_b = ~mem.oam_ram[(cpu_addr_new & 0xFF) |  1];
       }
     }
     else if (DELTA_DH_new) {
       if (cpu.bus_req_new.read) {
-        state_new.cpu_dbus = get_bit(state_new.oam_abus, 0) ? ~state_old.oam_latch_a : ~state_old.oam_latch_b;
+        state_new.cpu_dbus = get_bit(uint8_t(~cpu_addr_new), 0) ? ~state_old.oam_latch_a : ~state_old.oam_latch_b;
       }
 
       if (cpu_wr) {
@@ -2000,13 +2000,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
         state_new.oam_dbus_b = ~state_new.cpu_dbus;
 
         if (!DELTA_GH_new) {
-          state_new.oam_ctrl.SIG_OAM_WRn_A.state = !get_bit(state_new.oam_abus, 0);
-          state_new.oam_ctrl.SIG_OAM_WRn_B.state =  get_bit(state_new.oam_abus, 0);
+          state_new.oam_ctrl.SIG_OAM_WRn_A.state =  get_bit(cpu_addr_new, 0);
+          state_new.oam_ctrl.SIG_OAM_WRn_B.state = !get_bit(cpu_addr_new, 0);
         }
         if (DELTA_DE_new) {
-          uint8_t oam_addr_new = uint8_t(~state_new.oam_abus) >> 1;
-          if ( get_bit(state_new.oam_abus, 0)) mem.oam_ram[(oam_addr_new << 1) + 0] = ~state_new.oam_dbus_a;
-          if (!get_bit(state_new.oam_abus, 0)) mem.oam_ram[(oam_addr_new << 1) + 1] = ~state_new.oam_dbus_b;
+          mem.oam_ram[cpu_addr_new & 0xFF] = state_new.cpu_dbus;
+          //uint8_t oam_addr_new = uint8_t(~uint8_t(~cpu_addr_new)) >> 1;
+          //if ( get_bit(uint8_t(~cpu_addr_new), 0)) mem.oam_ram[(oam_addr_new << 1) + 0] = state_new.cpu_dbus;
+          //if (!get_bit(uint8_t(~cpu_addr_new), 0)) mem.oam_ram[(oam_addr_new << 1) + 1] = state_new.cpu_dbus;
         }
       }
     }

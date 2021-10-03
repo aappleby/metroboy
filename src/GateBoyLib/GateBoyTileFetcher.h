@@ -22,9 +22,9 @@ struct TileFetchControl {
 
   /*_p27.LYRY*/ Gate LYRY_BFETCH_DONEp_odd;         // old used
   /*_p24.POKY*/ NorLatch  POKY_PRELOAD_LATCHp_evn;  // xBxDxFxG
-  /*_p27.LONY*/ NandLatch LONY_FETCHINGp;       // Usually changes on even. Changes on odd phase at end of line if we're in a window?
+  /*_p27.LONY*/ NandLatch LONY_TFETCHINGp;       // Usually changes on even. Changes on odd phase at end of line if we're in a window?
 
-  /*_p27.LOVY*/ DFF17 LOVY_FETCH_DONEp;         // AxCxExGx
+  /*_p27.LOVY*/ DFF17 LOVY_TFETCH_DONEp;         // AxCxExGx
   /*_p24.NYKA*/ DFF17 NYKA_FETCH_DONEp_evn;         // Usually changes on even. Changes on odd phase at end of line if we're in a window?
   /*_p24.PORY*/ DFF17 PORY_FETCH_DONEp_odd;         // Usually changes on even. Changes on odd phase at end of line if we're in a window?
   /*_p24.PYGO*/ DFF17 PYGO_FETCH_DONEp_evn;         // xBxDxFxG

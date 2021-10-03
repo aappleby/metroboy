@@ -773,8 +773,8 @@ FieldInfo GateBoyState::fields[] = {
 
   DECLARE_FIELD(GateBoyState, tfetch_control.LYRY_BFETCH_DONEp_odd),
   DECLARE_FIELD(GateBoyState, tfetch_control.POKY_PRELOAD_LATCHp_evn),
-  DECLARE_FIELD(GateBoyState, tfetch_control.LONY_FETCHINGp),
-  DECLARE_FIELD(GateBoyState, tfetch_control.LOVY_FETCH_DONEp),
+  DECLARE_FIELD(GateBoyState, tfetch_control.LONY_TFETCHINGp),
+  DECLARE_FIELD(GateBoyState, tfetch_control.LOVY_TFETCH_DONEp),
   DECLARE_FIELD(GateBoyState, tfetch_control.NYKA_FETCH_DONEp_evn),
   DECLARE_FIELD(GateBoyState, tfetch_control.PORY_FETCH_DONEp_odd),
   DECLARE_FIELD(GateBoyState, tfetch_control.PYGO_FETCH_DONEp_evn),

@@ -905,13 +905,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p27.NYVA*/ gb_state.tfetch_counter.NYVA_BFETCH_S2p_odd.dff17_any(gb_state.tfetch_counter.MESU_BFETCH_S1p_odd.qn_any(), NYXU_BFETCH_RSTn, gb_state.tfetch_counter.NYVA_BFETCH_S2p_odd.qn_any());
   }
 
-  /*_p27.LOVY*/ gb_state.tfetch_control.LOVY_FETCH_DONEp.dff17(gb_state.sys_clk.MYVO_odd(), NYXU_BFETCH_RSTn, reg_old.tfetch_control.LYRY_BFETCH_DONEp_odd.out_old());
+  /*_p27.LOVY*/ gb_state.tfetch_control.LOVY_TFETCH_DONEp.dff17(gb_state.sys_clk.MYVO_odd(), NYXU_BFETCH_RSTn, reg_old.tfetch_control.LYRY_BFETCH_DONEp_odd.out_old());
 
   /*_p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(gb_state.tfetch_counter.LAXU_BFETCH_S0p_odd.qp_new(), gb_state.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_new(), NYXU_BFETCH_RSTn);
   /*_p27.LYRY*/ gb_state.tfetch_control.LYRY_BFETCH_DONEp_odd <<= not1(MOCE_BFETCH_DONEn);
 
-  /*_p27.LURY*/ wire LURY_BG_FETCH_DONEn = and2(gb_state.tfetch_control.LOVY_FETCH_DONEp.qn_new(), gb_state.XYMU_RENDERINGn.qn_new());
-  /*_p27.LONY*/ gb_state.tfetch_control.LONY_FETCHINGp.nand_latch(NYXU_BFETCH_RSTn, LURY_BG_FETCH_DONEn);
+  /*_p27.LURY*/ wire LURY_BG_FETCH_DONEn = and2(gb_state.tfetch_control.LOVY_TFETCH_DONEp.qn_new(), gb_state.XYMU_RENDERINGn.qn_new());
+  /*_p27.LONY*/ gb_state.tfetch_control.LONY_TFETCHINGp.nand_latch(NYXU_BFETCH_RSTn, LURY_BG_FETCH_DONEn);
 
 
   //----------------------------------------

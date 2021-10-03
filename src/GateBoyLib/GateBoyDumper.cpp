@@ -110,8 +110,8 @@ void GateBoyDumper::dump_tile_fetcher(const GateBoyState& s, Dumper& d) {
   d("\n");
   d.dump_bitp   ("LYRY_BFETCH_DONEp   : ", s.tfetch_control.LYRY_BFETCH_DONEp_odd.state);
   d.dump_bitp   ("POKY_PRELOAD_LATCHp : ", s.tfetch_control.POKY_PRELOAD_LATCHp_evn.state);
-  d.dump_bitp   ("LONY_FETCHINGp      : ", s.tfetch_control.LONY_FETCHINGp.state);
-  d.dump_bitp   ("LOVY_FETCH_DONEp    : ", s.tfetch_control.LOVY_FETCH_DONEp.state);
+  d.dump_bitp   ("LONY_FETCHINGp      : ", s.tfetch_control.LONY_TFETCHINGp.state);
+  d.dump_bitp   ("LOVY_FETCH_DONEp    : ", s.tfetch_control.LOVY_TFETCH_DONEp.state);
   d.dump_bitp   ("NYKA_FETCH_DONEp    : ", s.tfetch_control.NYKA_FETCH_DONEp_evn.state);
   d.dump_bitp   ("PORY_FETCH_DONEp    : ", s.tfetch_control.PORY_FETCH_DONEp_odd.state);
   d.dump_bitp   ("PYGO_FETCH_DONEp    : ", s.tfetch_control.PYGO_FETCH_DONEp_evn.state);

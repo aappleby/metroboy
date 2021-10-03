@@ -35,7 +35,7 @@ inline void set_bit(T& t, int c, bool x) {
 uint32_t swap(uint32_t x);
 uint64_t swap(uint64_t x);
 
-inline uint32_t xorshift32(uint32_t x)
+constexpr uint32_t xorshift32(uint32_t x)
 {
   x ^= x << 13;
   x ^= x >> 17;
@@ -43,7 +43,7 @@ inline uint32_t xorshift32(uint32_t x)
   return x;
 }
 
-inline uint8_t bit_reverse(uint8_t b) {
+constexpr uint8_t bit_reverse(uint8_t b) {
    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
@@ -61,20 +61,9 @@ static const char* phase_names[] = {
   "\003_______H\001",
 };
 
-inline wire gen_clk(int64_t phase, uint8_t mask) {
+constexpr wire gen_clk(int64_t phase, uint8_t mask) {
   if (phase < 0 || phase >> 7) debugbreak();
-  uint8_t phase_mask = 1 << (7 - phase);
-  return !!(phase_mask & mask);
-}
-
-inline wire gen_clk_old(int64_t phase_total, uint8_t mask) {
-  uint8_t phase_mask_old = 1 << (7 - ((phase_total + 0) & 7));
-  return !!(phase_mask_old & mask);
-}
-
-inline wire gen_clk_new(int64_t phase_total, uint8_t mask) {
-  uint8_t phase_mask_new = 1 << (7 - ((phase_total + 1) & 7));
-  return !!(phase_mask_new & mask);
+  return !!(bit_reverse(mask) & (1 << phase));
 }
 
 constexpr uint64_t HASH_INIT = 0x12345678;

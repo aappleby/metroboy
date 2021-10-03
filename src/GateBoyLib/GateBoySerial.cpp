@@ -134,11 +134,11 @@ void GateBoy::tock_serial_gates(const GateBoyState& reg_old)
 #if 0
 void GateBoy::tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_addr_old, uint16_t cpu_addr_new, uint16_t div_old, uint16_t div_new)
 {
-  wire CLK_xxxxEFGx = gen_clk_new(phase_total, 0b00001110);
+  wire CLK_xxxxEFGx = gen_clk(phase_new, 0b00001110);
   auto new_addr = pack(cpu_abus_new);
 
-  wire uwam_old = !(cpu_wr_old && cpu_addr_old == 0xFF02 && gen_clk_old(phase_total, 0b00001110));
-  wire uwam_new = !(cpu_wr_new && cpu_addr_new == 0xFF02 && gen_clk_new(phase_total, 0b00001110));
+  wire uwam_old = !(cpu_wr_old && cpu_addr_old == 0xFF02 && gen_clk(phase_old, 0b00001110));
+  wire uwam_new = !(cpu_wr_new && cpu_addr_new == 0xFF02 && gen_clk(phase_new, 0b00001110));
 
 
   //----------------------------------------

@@ -690,7 +690,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // SOBU/SUDA
 
   if (DELTA_EVEN_new) {
-    state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state = state_old.FEPO_STORE_MATCHp_odd && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_counter_odd >= 5 && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
+    state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state = state_old.FEPO_STORE_MATCHp_odd && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && (state_old.phase_tfetch >= 10) && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
   }
   else {
     state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state = state_old.sfetch_control.SOBU_SFETCH_REQp_evn.state;
@@ -784,7 +784,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   else {
     if (DELTA_EVEN_new) {
-      state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
+      state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = (state_old.phase_tfetch >= 10);
     }
 
     if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
@@ -1157,14 +1157,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (state_new.phase_tfetch < 12) state_new.phase_tfetch++;
   }
 
-  state_new.tfetch_counter_odd = uint8_t(state_new.phase_tfetch / 2);
-  if (state_new.tfetch_counter_odd > 5) state_new.tfetch_counter_odd = 5;
-
   if (!NYXU_BFETCH_RSTn_new) {
     state_new.tfetch_control.LOVY_TFETCH_DONEp.state = 0;
   }
   else if (DELTA_ODD_new) {
-    state_new.tfetch_control.LOVY_TFETCH_DONEp.state = state_old.tfetch_counter_odd >= 5;
+    state_new.tfetch_control.LOVY_TFETCH_DONEp.state = state_old.phase_tfetch >= 10;
   }
 
   state_new.tfetch_control.LONY_TFETCHINGp.state = !state_new.XYMU_RENDERINGn && state_new.phase_tfetch < 12;
@@ -2026,6 +2023,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.tfetch_counter_odd = uint8_t(state_new.phase_tfetch / 2);
+    if (state_new.tfetch_counter_odd > 5) state_new.tfetch_counter_odd = 5;
+
     // ROGE
     state_new.win_ctrl.ROGE_WY_MATCHp_odd.state = (reg_ly_new == uint8_t(~state_new.reg_wy)) && win_en_new;
 

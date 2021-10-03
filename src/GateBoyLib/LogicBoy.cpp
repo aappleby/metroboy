@@ -699,7 +699,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // SOBU/SUDA
 
   if (DELTA_EVEN_new) {
-    state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state = state_old.FEPO_STORE_MATCHp_odd && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && (min(state_old.phase_tfetch, 12) >= 10) && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
+    state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state = state_old.FEPO_STORE_MATCHp_odd && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && (state_old.phase_tfetch >= 10) && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
   }
   else {
     state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state = state_old.sfetch_control.SOBU_SFETCH_REQp_evn.state;
@@ -762,6 +762,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
   // NYKA / PORY
+  // pory can be set on the phase after phase_tfetch gets reset to 0 by nyxu, so we can't use phase_tfetch to drive it?
 
   if (DELTA_EVEN_new) {
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.phase_tfetch >= 10;
@@ -777,13 +778,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
   }
 
-  //wire fetch_done_old = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state && state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
-
   uint8_t fetch_done_old = (state_old.phase_tfetch >= 10) && (state_old.phase_tfetch <= 14);
   if (vid_rst_evn_old || state_old.XYMU_RENDERINGn || line_rst_odd_old || NUNY_WIN_MODE_TRIGp_old) fetch_done_old = 0;
 
   uint8_t fetch_done_new = (state_old.phase_tfetch >= 11) && (state_old.phase_tfetch <= 15);
   if (vid_rst_evn_new || state_new.XYMU_RENDERINGn || line_rst_odd_new || NUNY_WIN_MODE_TRIGp_new) fetch_done_new = 0;
+
 
   //----------------------------------------
   // POKY
@@ -796,7 +796,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   else {
     if (DELTA_EVEN_new) {
-      if (state_old.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
+      if (state_old.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+        //printf("%d\n", state_old.phase_tfetch);
+        state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
+      }
     }
   }
 
@@ -934,6 +937,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
+
+  // FIXME untangle this
+
+  // gen_clk(phase_old, 0b01110111) ==  (phase_new == 2) || (phase_new == 3) || (phase_new == 4) || (phase_new == 6) || (phase_new == 7) || (phase_new == 0)
+  // gen_clk(phase_new, 0b01110111) ==  (phase_new == 1) || (phase_new == 2) || (phase_new == 3) || (phase_new == 5) || (phase_new == 6) || (phase_new == 7)
+
+  // DELTA_DH_old = (phase_new == 5) || (phase_new == 6) || (phase_new == 7) || (phase_new == 0)
+  // DELTA_DH_new = (phase_new == 4) || (phase_new == 5) || (phase_new == 6) || (phase_new == 7)
 
   {
     bool BYCU_OAM_CLKp_old = false;

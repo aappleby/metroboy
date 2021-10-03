@@ -1049,7 +1049,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // Fine match ROXY/NYZE/PUXA
 
-  if (state_new.XYMU_RENDERINGn) {
+  if (vid_rst_new || line_rst_new ||state_new.XYMU_RENDERINGn) {
     state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state = 1;
     state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = 0;
     state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = 0;

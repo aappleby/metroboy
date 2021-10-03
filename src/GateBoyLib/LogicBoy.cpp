@@ -1154,17 +1154,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.phase_tfetch = 0;
   }
   else {
-    state_new.phase_tfetch++;
+    if (state_new.phase_tfetch < 12) state_new.phase_tfetch++;
   }
 
-  if (!NYXU_BFETCH_RSTn_new) {
-    state_new.tfetch_counter_odd = 0;
-  }
-  else if (DELTA_ODD_new) {
-    if (state_old.tfetch_counter_odd < 5) {
-      state_new.tfetch_counter_odd++;
-    }
-  }
+  state_new.tfetch_counter_odd = uint8_t(state_new.phase_tfetch / 2);
+  if (state_new.tfetch_counter_odd > 5) state_new.tfetch_counter_odd = 5;
 
   if (!NYXU_BFETCH_RSTn_new) {
     state_new.tfetch_control.LOVY_TFETCH_DONEp.state = 0;
@@ -1176,9 +1170,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   state_new.tfetch_control.LONY_TFETCHINGp.state = !state_new.XYMU_RENDERINGn && state_new.phase_tfetch < 12;
 
   if (!state_old.XYMU_RENDERINGn) {
-    if (state_new.phase_tfetch ==  3) state_new.tile_temp_b =  state_old.vram_dbus;
-    if (state_new.phase_tfetch ==  7) state_new.tile_temp_a = ~state_old.vram_dbus;
-    if (state_new.phase_tfetch == 11) state_new.tile_temp_b =  state_old.vram_dbus;
+    if (state_old.phase_tfetch ==  2) state_new.tile_temp_b =  state_old.vram_dbus;
+    if (state_old.phase_tfetch ==  6) state_new.tile_temp_a = ~state_old.vram_dbus;
+    if (state_old.phase_tfetch == 10) state_new.tile_temp_b =  state_old.vram_dbus;
   }
 
   //----------------------------------------

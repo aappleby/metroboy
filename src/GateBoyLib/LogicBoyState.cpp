@@ -17,6 +17,7 @@ void LogicBoyState::reset_to_bootrom() {
   from_gb_state(gb_state, 0);
 
   phase_lcd = 802;
+  phase_tfetch = 10;
 }
 
 void LogicBoyState::reset_to_cart() {
@@ -26,6 +27,7 @@ void LogicBoyState::reset_to_cart() {
   from_gb_state(gb_state, 0);
 
   phase_lcd = 140330;
+  phase_tfetch = 10;
 }
 
 //-----------------------------------------------------------------------------

@@ -190,7 +190,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
     /*_p33.RYDU*/ gb_state.sprite_pix_b.RYDU_SPRITE_DB7n.dff8n(PUCO_STORE_SPRITE_Bn, gb_state.flipped_sprite.PULY_FLIP7p.out_old());
   }
 
-  /*_p29.XEFY*/ wire XEFY_SPRITE_DONEn = not1(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new());
+  /*_p29.XEFY*/ wire XEFY_SPRITE_DONEn = not1(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new());
 
   // FIXME - old? well,i guess there's another feedback loop here...
 

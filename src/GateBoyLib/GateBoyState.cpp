@@ -756,7 +756,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, sprite_index),
   DECLARE_FIELD(GateBoyState, sfetch_counter_evn),
 
-  DECLARE_FIELD(GateBoyState, sfetch_control.WUTY_SFETCH_DONE_TRIGp),
+  DECLARE_FIELD(GateBoyState, sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd),
   DECLARE_FIELD(GateBoyState, sfetch_control.TEXY_SFETCHINGp_evn),
   DECLARE_FIELD(GateBoyState, sfetch_control.TAKA_SFETCH_RUNNINGp_evn),
   DECLARE_FIELD(GateBoyState, sfetch_control.SOBU_SFETCH_REQp_evn),

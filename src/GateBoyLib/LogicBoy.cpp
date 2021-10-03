@@ -815,30 +815,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   //----------------------------------------
-  // SOBU
+  // SOBU/SUDA
 
   if (DELTA_EVEN_new) {
     state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state = state_old.FEPO_STORE_MATCHp_odd && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_old.tfetch_counter_odd >= 5 && !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
   }
-
-  // SUDA
-
-  if (DELTA_ODD_new) {
+  else {
     state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state = state_old.sfetch_control.SOBU_SFETCH_REQp_evn.state;
   }
 
-  //----------------------------------------
-  // WUTY
-
-  if (vid_rst_new) {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
-  }
-  else if (DELTA_EVEN_new) {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
-  }
-  else if (DELTA_ODD_new) {
-    if (line_rst_new) state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state = 0;
-  }
+  wire sfetch_trig = state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state;
 
   //----------------------------------------
   // sfetch_counter_evn
@@ -848,10 +834,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   else if (DELTA_EVEN_new) {
     if (state_new.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
-    if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_counter_evn = 0;
+    if (sfetch_trig) state_new.sfetch_counter_evn = 0;
   }
 
-  // TOBU/VONU/SEBA
+  // TOBU/VONU/SEBA/TYFO
 
   if (vid_rst_new) {
     state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = 0;
@@ -875,16 +861,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (DELTA_ODD_new) {
     state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = get_bit(state_old.sfetch_counter_evn, 0);
-  }
-
-  // WUTY
-
-  if (DELTA_ODD_new && !vid_rst_new && !line_rst_new) {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state =
-      state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state &&
-      get_bit(state_new.sfetch_counter_evn, 0) &&
-      state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state &&
-      state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
   }
 
   //----------------------------------------
@@ -981,58 +957,81 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   //----------------------------------------
+  // WUTY
+
+  if (vid_rst_new) {
+    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
+  }
+  else if (line_rst_new) {
+    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
+  }
+  else {
+    if (DELTA_EVEN_new) {
+      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
+    }
+    else {
+      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state =
+        state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state &&
+        get_bit(state_new.sfetch_counter_evn, 0) &&
+        state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state &&
+        state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
+    }
+  }
+
+  //----------------------------------------
 
   if (vid_rst_new) {
     state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
   }
-
-  if (DELTA_EVEN_new && !vid_rst_new && line_rst_new && state_new.XYMU_RENDERINGn) {
-    state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-  }
-  if (DELTA_EVEN_new && !vid_rst_new && line_rst_new && !state_new.XYMU_RENDERINGn) {
-    state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-    if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
-        && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
-        && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-      state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
-    }
-  }
-  if (DELTA_EVEN_new && !vid_rst_new && !line_rst_new && state_new.XYMU_RENDERINGn) {
-    if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-  }
-  if (DELTA_EVEN_new && !vid_rst_new && !line_rst_new && !state_new.XYMU_RENDERINGn) {
-    if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_old.sfetch_control.SUDA_SFETCH_REQp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-    if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
-        && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
-        && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-      state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
-    }
-  }
-  if (DELTA_ODD_new && !vid_rst_new && line_rst_new) {
-    state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-    if (!state_new.XYMU_RENDERINGn
-        && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
-        && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
-        && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-      state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
-    }
-  }
-
-  if (DELTA_ODD_new && !vid_rst_new && !line_rst_new) {
-    if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) {
+  else if (line_rst_new) {
+    if (DELTA_EVEN_new && state_new.XYMU_RENDERINGn) {
       state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
     }
-  }
-
-  if (DELTA_ODD_new && !vid_rst_new && !line_rst_new) {
-    if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state
-      || (!state_new.XYMU_RENDERINGn
-        && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
-        && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
-        && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state)) {
-      state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
+    if (DELTA_EVEN_new && !state_new.XYMU_RENDERINGn) {
+      state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+      if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
+          && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
+          && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+        state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
+      }
+    }
+    if (DELTA_ODD_new) {
+      state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+      if (!state_new.XYMU_RENDERINGn
+          && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
+          && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
+          && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+        state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
+      }
     }
   }
+  else {
+    if (DELTA_EVEN_new) {
+      if (sfetch_trig) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+
+      if (!state_new.XYMU_RENDERINGn) {
+        if (!state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
+            && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
+            && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+          state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
+        }
+      }
+    }
+
+    if (DELTA_ODD_new) {
+      if (sfetch_trig) {
+        state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+      }
+      if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state
+        || (!state_new.XYMU_RENDERINGn
+          && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state
+          && state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state
+          && state_new.tfetch_control.PORY_FETCH_DONEp_odd.state)) {
+        state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
+      }
+    }
+  }
+
 
   //----------------------------------------
 
@@ -1133,7 +1132,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (state_new.tfetch_control.LOVY_FETCH_DONEp.state || state_new.XYMU_RENDERINGn) state_new.tfetch_control.LONY_FETCHINGp.state = 0;
 
   // sprite_reset_flags <- old.sprite_match_flags
-  if (!state_old.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state && state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state) state_new.sprite_reset_flags = state_old.sprite_match_flags;
+  if (!state_old.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state && state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) state_new.sprite_reset_flags = state_old.sprite_match_flags;
   if (vid_rst_new || line_rst_new) state_new.sprite_reset_flags = 0;
 
   // sprite reset
@@ -1408,7 +1407,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp.state) {
+  if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) {
     uint8_t sprite_mask = state_new.spr_pipe_b | state_new.spr_pipe_a;
     state_new.spr_pipe_a = (state_new.spr_pipe_a & sprite_mask) | (~state_new.sprite_pix_a & ~sprite_mask);
     state_new.spr_pipe_b = (state_new.spr_pipe_b & sprite_mask) | (~state_new.sprite_pix_b & ~sprite_mask);

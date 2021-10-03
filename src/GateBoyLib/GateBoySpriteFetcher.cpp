@@ -26,7 +26,7 @@ void SpriteFetchCounter::reset_to_cart() {
 //-----------------------------------------------------------------------------
 
 void SpriteFetchControl::reset_to_poweron() {
-  WUTY_SFETCH_DONE_TRIGp.state = 0b00011000;
+  WUTY_SFETCH_DONE_TRIGp_odd.state = 0b00011000;
   TEXY_SFETCHINGp_evn.state        = 0b00011000;
   TAKA_SFETCH_RUNNINGp_evn.state   = 0b00011000;
   SOBU_SFETCH_REQp_evn.state       = 0b00011000;
@@ -38,7 +38,7 @@ void SpriteFetchControl::reset_to_poweron() {
 }
 
 void SpriteFetchControl::reset_to_bootrom() {
-  WUTY_SFETCH_DONE_TRIGp.state = 0b00011000;
+  WUTY_SFETCH_DONE_TRIGp_odd.state = 0b00011000;
   TEXY_SFETCHINGp_evn.state        = 0b00011000;
   TAKA_SFETCH_RUNNINGp_evn.state   = 0b00011001;
   SOBU_SFETCH_REQp_evn.state       = 0b00011000;
@@ -50,7 +50,7 @@ void SpriteFetchControl::reset_to_bootrom() {
 }
 
 void SpriteFetchControl::reset_to_cart() {
-  WUTY_SFETCH_DONE_TRIGp.state = 0b00011000;
+  WUTY_SFETCH_DONE_TRIGp_odd.state = 0b00011000;
   TEXY_SFETCHINGp_evn.state        = 0b00011000;
   TAKA_SFETCH_RUNNINGp_evn.state   = 0b00011000;
   SOBU_SFETCH_REQp_evn.state       = 0b00011000;

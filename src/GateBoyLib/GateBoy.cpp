@@ -593,7 +593,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
     /*_p29.TYNO*/ wire TYNO = nand3(gb_state.sfetch_counter_evn.TOXE_SFETCH_S0p_evn.qp_new(), gb_state.sfetch_control.SEBA_SFETCH_S1p_D5_odd.qp_new(), gb_state.sfetch_control.VONU_SFETCH_S1p_D4_evn.qp_new());
     /*_p29.VUSA*/ wire VUSA_SPRITE_DONEn = or2(gb_state.sfetch_control.TYFO_SFETCH_S0p_D1_odd.qn_new(), TYNO);
-    /*_p29.WUTY*/ gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp <<= not1(VUSA_SPRITE_DONEn);
+    /*_p29.WUTY*/ gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd <<= not1(VUSA_SPRITE_DONEn);
   }
 
   /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp_evn = and2(gb_state.sfetch_control.SOBU_SFETCH_REQp_evn.qp_new(), gb_state.sfetch_control.SUDA_SFETCH_REQp_odd.qn_new());
@@ -696,7 +696,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     gb_state.tfetch_control.PORY_FETCH_DONEp_odd.qp_new());
   /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
 
-  /*_p27.VEKU*/ wire VEKU_SFETCH_ENDn = nor2(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), TAVE_PRELOAD_DONE_TRIGp); // def nor
+  /*_p27.VEKU*/ wire VEKU_SFETCH_ENDn = nor2(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), TAVE_PRELOAD_DONE_TRIGp); // def nor
   /*_p27.TAKA*/ gb_state.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.nand_latch(SECA_SFETCH_STARTn_evn, VEKU_SFETCH_ENDn);
 
   //----------------------------------------
@@ -755,16 +755,16 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
     //update_sprite_reset_flags(sfetch_control.WUTY_SFETCH_DONE_TRIGp, BYVA_LINE_RSTn, sprite_match_flags, sprite_reset_flags);
 
-    /*_p29.EBOJ*/ gb_state.sprite_reset_flags_odd.EBOJ_STORE0_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GUVA_SPRITE0_GETp.out_old());
-    /*_p29.CEDY*/ gb_state.sprite_reset_flags_odd.CEDY_STORE1_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.ENUT_SPRITE1_GETp.out_old());
-    /*_p29.EGAV*/ gb_state.sprite_reset_flags_odd.EGAV_STORE2_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.EMOL_SPRITE2_GETp.out_old());
-    /*_p29.GOTA*/ gb_state.sprite_reset_flags_odd.GOTA_STORE3_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GYFY_SPRITE3_GETp.out_old());
-    /*_p29.XUDY*/ gb_state.sprite_reset_flags_odd.XUDY_STORE4_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GONO_SPRITE4_GETp.out_old());
-    /*_p29.WAFY*/ gb_state.sprite_reset_flags_odd.WAFY_STORE5_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GEGA_SPRITE5_GETp.out_old());
-    /*_p29.WOMY*/ gb_state.sprite_reset_flags_odd.WOMY_STORE6_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.XOJA_SPRITE6_GETp.out_old());
-    /*_p29.WAPO*/ gb_state.sprite_reset_flags_odd.WAPO_STORE7_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GUTU_SPRITE7_GETp.out_old());
-    /*_p29.EXUQ*/ gb_state.sprite_reset_flags_odd.EXUQ_STORE8_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.FOXA_SPRITE8_GETp.out_old());
-    /*_p29.FONO*/ gb_state.sprite_reset_flags_odd.FONO_STORE9_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GUZE_SPRITE9_GETp.out_old());
+    /*_p29.EBOJ*/ gb_state.sprite_reset_flags_odd.EBOJ_STORE0_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GUVA_SPRITE0_GETp.out_old());
+    /*_p29.CEDY*/ gb_state.sprite_reset_flags_odd.CEDY_STORE1_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.ENUT_SPRITE1_GETp.out_old());
+    /*_p29.EGAV*/ gb_state.sprite_reset_flags_odd.EGAV_STORE2_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.EMOL_SPRITE2_GETp.out_old());
+    /*_p29.GOTA*/ gb_state.sprite_reset_flags_odd.GOTA_STORE3_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GYFY_SPRITE3_GETp.out_old());
+    /*_p29.XUDY*/ gb_state.sprite_reset_flags_odd.XUDY_STORE4_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GONO_SPRITE4_GETp.out_old());
+    /*_p29.WAFY*/ gb_state.sprite_reset_flags_odd.WAFY_STORE5_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GEGA_SPRITE5_GETp.out_old());
+    /*_p29.WOMY*/ gb_state.sprite_reset_flags_odd.WOMY_STORE6_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.XOJA_SPRITE6_GETp.out_old());
+    /*_p29.WAPO*/ gb_state.sprite_reset_flags_odd.WAPO_STORE7_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GUTU_SPRITE7_GETp.out_old());
+    /*_p29.EXUQ*/ gb_state.sprite_reset_flags_odd.EXUQ_STORE8_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.FOXA_SPRITE8_GETp.out_old());
+    /*_p29.FONO*/ gb_state.sprite_reset_flags_odd.FONO_STORE9_RSTp.dff17(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GUZE_SPRITE9_GETp.out_old());
 
     SpriteStoreFlags sprite_store_flags_old = reg_old.sprite_store_flags_evn;
 

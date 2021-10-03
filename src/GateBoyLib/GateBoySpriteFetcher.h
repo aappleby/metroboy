@@ -20,7 +20,7 @@ struct SpriteFetchControl {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp; // new used
+  /*_p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp_odd; // new used
   /*_p29.TEXY*/ Gate TEXY_SFETCHINGp_evn; // new used
   /*_p27.TAKA*/ NandLatch TAKA_SFETCH_RUNNINGp_evn; // ABCDEFGH Set on odd, cleared on even
   /*_p27.SOBU*/ DFF17 SOBU_SFETCH_REQp_evn;         // xBxDxFxH

@@ -959,6 +959,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
+  wire something_trig_old = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_old;
+  wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new;
+
   //----------------------------------------
   // WUTY
 
@@ -1000,6 +1003,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_EVEN_new) state_new.win_ctrl.SOVY_WIN_HITp_evn.state = state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
   }
 
+  wire win_hit_trig_old  = state_old.win_ctrl.SOVY_WIN_HITp_evn.state && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
+  wire win_hit_trig_new  = state_new.win_ctrl.SOVY_WIN_HITp_evn.state && !state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
 
   //----------------------------------------
   // CLKPIPE is an even clock, it can only go high on even deltas. FEPO/WODU/SOCY are odd signals, they stay constant during even deltas.
@@ -1008,6 +1013,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire clkpipe_gate = !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count_odd != 167);
   wire clkpipe_posedge = DELTA_EVEN_new && clkpipe_gate;
   wire clkpipe_negedge = DELTA_ODD_new && clkpipe_gate;
+
+  //----------------------------------------
+  // RYFA/RENE
 
   if (state_new.XYMU_RENDERINGn) {
     state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = 0;
@@ -1018,16 +1026,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_EVEN_new)  state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state; 
   }
 
-  //----------------------------------------
-
-  wire win_hit_trig_old  = state_old.win_ctrl.SOVY_WIN_HITp_evn.state && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
-  wire win_hit_trig_new  = state_new.win_ctrl.SOVY_WIN_HITp_evn.state && !state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
-
   wire win_fetch_trig_old = state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
   wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
 
-  wire something_trig_old = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_old;
-  wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new;
+  //----------------------------------------
 
   wire TEVO_WIN_FETCH_TRIGp_old = (win_fetch_trig_old || win_hit_trig_old || something_trig_old) && !state_old.XYMU_RENDERINGn;
   wire TEVO_WIN_FETCH_TRIGp_new = (win_fetch_trig_new || win_hit_trig_new || something_trig_new) && !state_new.XYMU_RENDERINGn;
@@ -1053,17 +1055,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   //----------------------------------------
-  // Win map y counter - increments when we _leave_ window mode.
+  // Win map y counter - increments when we _leave_ window mode, fails fuzz test if we only update on odd
+  
+  if (state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state) {
+    uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
+    uint8_t win_y_new = win_y_old + 1;
 
-  // fails fuzz test if we only update on odd
-  /*if (DELTA_ODD_new)*/ {
-    if (state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state) {
-      uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
-      uint8_t win_y_new = win_y_old + 1;
-
-      state_new.win_y.tile = win_y_new & 0b111;
-      state_new.win_y.map  = win_y_new >> 3;
-    }
+    state_new.win_y.tile = win_y_new & 0b111;
+    state_new.win_y.map  = win_y_new >> 3;
   }
 
   if (vid_rst_new || vblank_new) {
@@ -1077,25 +1076,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  // tfetch counter
-  if (DELTA_ODD_new && state_old.tfetch_counter_odd < 5) state_new.tfetch_counter_odd++;
-  if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_counter_odd = 0;
 
 
-
-  // LOVY
-  if (DELTA_ODD_new) state_new.tfetch_control.LOVY_FETCH_DONEp.state = state_old.tfetch_counter_odd >= 5;
-  if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_control.LOVY_FETCH_DONEp.state = 0;
-
-  // LONY
-  if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_control.LONY_FETCHINGp.state = 1;
-  if (state_new.tfetch_control.LOVY_FETCH_DONEp.state || state_new.XYMU_RENDERINGn) state_new.tfetch_control.LONY_FETCHINGp.state = 0;
-
+  //----------------------------------------
   // sprite_reset_flags <- old.sprite_match_flags
+
   if (!state_old.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state && state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) state_new.sprite_reset_flags = state_old.sprite_match_flags;
   if (vid_rst_new || line_rst_new) state_new.sprite_reset_flags = 0;
 
+  //----------------------------------------
   // sprite reset
+
   int sprite_reset_index = 32 - __lzcnt(state_new.sprite_reset_flags - 1);
   if (sprite_reset_index != 32) (&state_new.store_x0)[sprite_reset_index] = 0xFF;
 
@@ -1292,25 +1283,27 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   //----------------------------------------
-  // Vram to tile temp
+  // tfetch counter
+
+  if (DELTA_ODD_new && state_old.tfetch_counter_odd < 5) state_new.tfetch_counter_odd++;
+  
+  if (!NYXU_BFETCH_RSTn_new) {
+    state_new.tfetch_counter_odd = 0;
+    state_new.phase_tfetch = 0;
+  }
+  else {
+    state_new.phase_tfetch++;
+  }
 
   // LYZU
   if (DELTA_EVEN_new) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = get_bit(state_old.tfetch_counter_odd, 0);
   if (state_new.XYMU_RENDERINGn) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
-
-
 
   const uint8_t tfetch_phase_old = pack(
     !(state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_old.tfetch_counter_odd, 0)),
     get_bit(state_old.tfetch_counter_odd, 0),
     get_bit(state_old.tfetch_counter_odd, 1),
     get_bit(state_old.tfetch_counter_odd, 2));
-
-  const uint8_t tfetch_phase_new = pack(
-    !(state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_new.tfetch_counter_odd, 0)),
-    get_bit(state_new.tfetch_counter_odd, 0),
-    get_bit(state_new.tfetch_counter_odd, 1),
-    get_bit(state_new.tfetch_counter_odd, 2));
 
   if (!state_old.XYMU_RENDERINGn) {
     if (tfetch_phase_old == 6)  state_new.tile_temp_a = ~state_old.vram_dbus;
@@ -1585,9 +1578,17 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.ext_data_latch = ~cart_dbus;
   }
 
+  //----------------------------------------
+  // LOVY/LONY
+
+  if (DELTA_ODD_new) state_new.tfetch_control.LOVY_FETCH_DONEp.state = state_old.tfetch_counter_odd >= 5;
+  if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_control.LOVY_FETCH_DONEp.state = 0;
+
+  if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_control.LONY_FETCHINGp.state = 1;
+  if (state_new.tfetch_control.LOVY_FETCH_DONEp.state || state_new.XYMU_RENDERINGn) state_new.tfetch_control.LONY_FETCHINGp.state = 0;
+
   //--------------------------------------------
   // vram_abus driver
-
 
   if (TEXY_SFETCHINGp_evn_new) {
 

@@ -585,54 +585,43 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
   uint8_t scan_counter_new = 39;
-  uint8_t doba_scan_donep_evn_new = 0;
-  uint8_t byba_scan_donep_odd_new = 0;
   uint8_t scan_done_trig_new = 0;
   uint8_t besu_scan_donen_odd_new = 0;
   uint8_t ceno_scan_donen_odd_new = 0;
 
   if (vid_rst_new) {
     scan_counter_new = 0;
-    doba_scan_donep_evn_new = 0;
-    byba_scan_donep_odd_new = 0;
     scan_done_trig_new = 0;
     besu_scan_donen_odd_new = 0;
     ceno_scan_donen_odd_new = 0;
   }
   else if (first_line_new) {
     if (phase_lx_new >= 6) scan_counter_new = uint8_t((phase_lx_new - 6) / 4);
-    doba_scan_donep_evn_new = phase_lx_new < 0 || phase_lx_new >= 167;
-    byba_scan_donep_odd_new = phase_lx_new < 0 || phase_lx_new >= 166;
     scan_done_trig_new = phase_lx_new == 166;
     besu_scan_donen_odd_new = 0;
     ceno_scan_donen_odd_new = 0;
   }
   else if (phase_ly_new >= 0 && phase_ly_new < 144) {
     if (phase_lx_new >= 2) scan_counter_new = uint8_t((phase_lx_new - 2) / 4);
-    doba_scan_donep_evn_new = phase_lx_new < 2 || phase_lx_new >= 163;
-    byba_scan_donep_odd_new = phase_lx_new < 2 || phase_lx_new >= 162;
     scan_done_trig_new = phase_lx_new == 162;
     besu_scan_donen_odd_new = phase_lx_new >= 2 && phase_lx_new < 162;
     ceno_scan_donen_odd_new = phase_lx_new >= 6 && phase_lx_new < 166;
   }
   else if (phase_ly_new >= 144 && phase_ly_new < 153) {
     scan_counter_new = 39;
-    doba_scan_donep_evn_new = 1;
-    byba_scan_donep_odd_new = 1;
     scan_done_trig_new = 0;
     besu_scan_donen_odd_new = 0;
     ceno_scan_donen_odd_new = 0;
   }
   else if (phase_ly_new == 153) {
     if (phase_lx_new >= 6) scan_counter_new = uint8_t((phase_lx_new - 6) / 4);
-    doba_scan_donep_evn_new = phase_lx_new < 6 || phase_lx_new >= 167;
-    byba_scan_donep_odd_new = phase_lx_new < 6 || phase_lx_new >= 166;
     scan_done_trig_new = phase_lx_new == 166;
     besu_scan_donen_odd_new = phase_lx_new >= 6 && phase_lx_new < 166;
     ceno_scan_donen_odd_new = phase_lx_new >= 10 && phase_lx_new < 170;
   }
 
   if (scan_counter_new > 39) scan_counter_new = 39;
+
 
 
 
@@ -696,123 +685,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  //CHECK_P(ceno_scan_donen_odd_new == state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state);
-
-  auto& a = state_old.sprite_counter;
-  auto& b = state_new.sprite_counter;
-
-  /*
-  if (vid_rst_new) {
-    CHECK_N(b);
-    //if (a || b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
-    //if (a != b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
-  }
-  else if (first_line_new) {
-    // can go 0->1 on phase 10
-    if (a != b) CHECK_P(phase_lx_new == 10);
-    //CHECK_P(a == b);
-    //CHECK_N(a || b);
-    //CHECK_P(b == (phase_lx_new >= 10));
-    //if (a != b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
-  }
-  else if (phase_ly_new == 0) {
-    CHECK_N(b);
-    //CHECK_P(b);
-    //if (a != b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
-    //if (a || b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
-  }
-  else if (phase_ly_new > 0 && phase_ly_new < 144) {
-    // (2,1) 1 -> 0
-    // can increment every 4 phases starting w 10
-    // down on phase % 4 == 0
-    // up on phase % 4 == 2
-
-    if (a != b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
-    //if (a || b) printf("(%d,%d) %d -> %d\n", phase_lx_new, phase_ly_new, a, b);
-  }
-  else if (phase_ly_new >= 144 && phase_ly_new < 153) {
-    // no change
-    //CHECK_P(b);
-    //if (a != b) printf("%d %d\n", phase_lx_new, phase_ly_new);
-  }
-  else if (phase_ly_new == 153) {
-    // no change
-    //CHECK_P(b);
-    //if (!a && b) CHECK_P(phase_lx_new == 10);
-    //if (a && !b) CHECK_P(phase_lx_new == 170);
-    //if (a != b) printf("%d %d\n", phase_lx_new, phase_ly_new);
-  }
-  */
-
-
-  /*
-  //CHECK_P(ceno_scan_donen_odd_new == state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state);
-
-  auto& a = state_old.sprite_scanner.DEZY_INC_COUNTn_odd.state;
-  auto& b = state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state;
-
-  if (vid_rst_new) {
-    CHECK_N(b);
-  }
-  else if (first_line_new) {
-    CHECK_P(b == (phase_lx_new >= 10));
-    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
-    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
-  }
-  else if (phase_ly_new == 0) {
-    CHECK_P(b);
-    //if (!a && b) CHECK_P(phase_lx_new == 6);
-    //if (a && !b) CHECK_P(phase_lx_new == 166);
-    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
-    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
-  }
-  else if (phase_ly_new > 0 && phase_ly_new < 144) {
-    // down on phase % 4 == 0
-    // up on phase % 4 == 2
-
-    if (!a && b) CHECK_P(phase_lx_new % 4 == 2);
-    if (a && !b) CHECK_P(phase_lx_new % 4 == 0);
-    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
-    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
-  }
-  else if (phase_ly_new >= 144 && phase_ly_new < 153) {
-    CHECK_P(b);
-    //if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
-    //if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
-  }
-  else if (phase_ly_new == 153) {
-    CHECK_P(b);
-    //if (!a && b) CHECK_P(phase_lx_new == 10);
-    //if (a && !b) CHECK_P(phase_lx_new == 170);
-    if (!a && b) printf("^ %d %d\n", phase_lx_new, phase_ly_new);
-    if (a && !b) printf("v %d %d\n", phase_lx_new, phase_ly_new);
-  }
-  */
-
-
-
-
-
-
-
-
-
-
-  //----------------------------------------
-
-  //----------------------------------------
-
-
-
-  //----------------------------------------
-  // NUNU
-
-  if (vid_rst_new) {
-    state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = 0;
-  }
-  else if (DELTA_ODD_new) {
-    state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = state_old.win_ctrl.PYCO_WIN_MATCHp_evn.state;
-  }
 
   //----------------------------------------
   // SOBU/SUDA
@@ -864,18 +736,22 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   //----------------------------------------
-  // PYNU
+  // NUNU
 
   if (vid_rst_new) {
-    state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
+    state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = 0;
   }
-  else if (line_rst_new) {
-    state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
+  else if (DELTA_ODD_new) {
+    state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = state_old.win_ctrl.PYCO_WIN_MATCHp_evn.state;
   }
-  else {
-    if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
-    if (!win_en_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
-  }
+
+  //----------------------------------------
+  // PYNU
+
+  if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
+  if (!win_en_new)  state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
+  if (vid_rst_new)  state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
+  if (line_rst_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
 
   //----------------------------------------
   // NOPA
@@ -963,34 +839,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new;
 
   //----------------------------------------
-  // WUTY
-
-  if (vid_rst_new) {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
-  }
-  else if (line_rst_new) {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
-  }
-  else {
-    if (DELTA_EVEN_new) {
-      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
-    }
-    else {
-      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state =
-        state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state &&
-        get_bit(state_new.sfetch_counter_evn, 0) &&
-        state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state &&
-        state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
-    }
-  }
-
-  //----------------------------------------
-
-  if (vid_rst_new || line_rst_new || sfetch_trig) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-  if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
-  if (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
-
-  //----------------------------------------
   // RYDY/SOVY
 
   if (vid_rst_new) {
@@ -1013,6 +861,34 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire clkpipe_gate = !state_old.win_ctrl.RYDY_WIN_HITp_odd.state && state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && !state_old.FEPO_STORE_MATCHp_odd && (state_old.pix_count_odd != 167);
   wire clkpipe_posedge = DELTA_EVEN_new && clkpipe_gate;
   wire clkpipe_negedge = DELTA_ODD_new && clkpipe_gate;
+
+  //----------------------------------------
+  // PYCO
+
+  if (clkpipe_posedge) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
+  if (vid_rst_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = 0;
+
+  //----------------------------------------
+  // WUTY
+
+  if (vid_rst_new) {
+    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
+  }
+  else if (line_rst_new) {
+    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
+  }
+  else {
+    if (DELTA_EVEN_new) {
+      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
+    }
+    else {
+      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state =
+        state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state &&
+        get_bit(state_new.sfetch_counter_evn, 0) &&
+        state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state &&
+        state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
+    }
+  }
 
   //----------------------------------------
   // RYFA/RENE
@@ -1070,6 +946,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.win_y.tile = 0;
     state_new.win_y.map = 0;
   }
+
+  //----------------------------------------
+  // TAKA - only old used
+
+  if (vid_rst_new || line_rst_new || sfetch_trig) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
+  if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
+  if (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
 
 
 
@@ -1161,80 +1044,81 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  if (clkpipe_posedge) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
-  if (vid_rst_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = 0;
-
-
-
-  // ROGE
-  state_new.win_ctrl.ROGE_WY_MATCHp_odd.state = (reg_ly_new == uint8_t(~state_new.reg_wy)) && win_en_new;
-
-  // SARY
-  if (DELTA_BC_new) state_new.win_ctrl.SARY_WY_MATCHp_odd.state = state_old.win_ctrl.ROGE_WY_MATCHp_odd.state;
-  if (vid_rst_new) state_new.win_ctrl.SARY_WY_MATCHp_odd.state = 0;
-
-  // REJO
-  if (state_new.win_ctrl.SARY_WY_MATCHp_odd.state) state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 1;
-  if (vblank_new) state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 0;
-  if (vid_rst_new) state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 0;
 
 
   //----------------------------------------
-  // Pixel counter
-
-  if (clkpipe_negedge) {
-    if (state_new.fine_count_odd < 7) state_new.fine_count_odd++;
-  }
-
-  if (state_new.XYMU_RENDERINGn || TEVO_WIN_FETCH_TRIGp_new) state_new.fine_count_odd = 0;
-  auto& fine_count_odd_new = state_new.fine_count_odd;
-
-
-  if (clkpipe_posedge) {
-    state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state && (((state_old.reg_scx & 0b111) ^ 0b111) == state_old.fine_count_odd);
-  }
-
-  if (DELTA_ODD_new) {
-    state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state;
-  }
+  // Fine match ROXY/NYZE/PUXA
 
   if (state_new.XYMU_RENDERINGn) {
     state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state = 1;
     state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = 0;
     state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = 0;
+    state_new.fine_count_odd = 0;
+  }
+  else {
+    if (clkpipe_negedge) {
+      if (state_new.fine_count_odd < 7) state_new.fine_count_odd++;
+    }
+
+    if (TEVO_WIN_FETCH_TRIGp_new) state_new.fine_count_odd = 0;
+
+
+    if (clkpipe_posedge) {
+      state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state && (((state_old.reg_scx & 0b111) ^ 0b111) == state_old.fine_count_odd);
+    }
+
+    if (DELTA_ODD_new) {
+      state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state;
+    }
+
+
+    if (state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state && !state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state) {
+      state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state = 0;
+    }
   }
 
-  if (state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state && !state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state) {
-    state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state = 0;
-  }
 
-
+  //----------------------------------------
   // pix count
-  auto& pix_count_new = state_new.pix_count_odd;
+
   if (vid_rst_new || line_rst_new) {
-    pix_count_new = 0;
+    state_new.pix_count_odd = 0;
   }
   else {
     if (clkpipe_negedge) {
       if (!state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) {
         CHECK_P(DELTA_ODD_new);
-        pix_count_new++;
+        state_new.pix_count_odd++;
       }
     }
   }
 
-  state_new.win_ctrl.NUKO_WX_MATCHp_odd.state = (uint8_t(~state_new.reg_wx) == state_new.pix_count_odd) && state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state;
+  //----------------------------------------
+  // Window match
+
+  if (vid_rst_new) {
+    state_new.win_ctrl.SARY_WY_MATCHp_odd.state = 0;
+    state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 0;
+    state_new.win_ctrl.NUKO_WX_MATCHp_odd.state = 0;
+  }
+  else {
+    if (DELTA_BC_new) state_new.win_ctrl.SARY_WY_MATCHp_odd.state = (reg_ly_new == uint8_t(~state_new.reg_wy)) && win_en_new;
+
+    if (state_new.win_ctrl.SARY_WY_MATCHp_odd.state) state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 1;
+    if (vblank_new) state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state = 0;
+
+    // old used
+    state_new.win_ctrl.NUKO_WX_MATCHp_odd.state = (uint8_t(~state_new.reg_wx) == state_new.pix_count_odd) && state_new.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state;
+  }
 
   //----------------------------------------
+  // FEPO
 
   if (!vid_rst_new) {
     if (DELTA_HA_new || DELTA_DE_new) {
       state_new.sprite_index = (state_old.oam_abus >> 2) ^ 0b111111;
     }
   }
-
-
-  // FEPO
 
   if (state_new.XYMU_RENDERINGn || ceno_scan_donen_odd_new) {
     state_new.FEPO_STORE_MATCHp_odd = 0;
@@ -1254,16 +1138,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     sl = 0x0F;
 
     if (spr_en_new) {
-      if      (pix_count_new == s.store_x0) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x001;  si = s.store_i0 ^ 0x3F; sl = s.store_l0 ^ 0x0F; }
-      else if (pix_count_new == s.store_x1) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x002;  si = s.store_i1 ^ 0x3F; sl = s.store_l1 ^ 0x0F; }
-      else if (pix_count_new == s.store_x2) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x004;  si = s.store_i2 ^ 0x3F; sl = s.store_l2 ^ 0x0F; }
-      else if (pix_count_new == s.store_x3) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x008;  si = s.store_i3 ^ 0x3F; sl = s.store_l3 ^ 0x0F; }
-      else if (pix_count_new == s.store_x4) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x010;  si = s.store_i4 ^ 0x3F; sl = s.store_l4 ^ 0x0F; }
-      else if (pix_count_new == s.store_x5) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x020;  si = s.store_i5 ^ 0x3F; sl = s.store_l5 ^ 0x0F; }
-      else if (pix_count_new == s.store_x6) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x040;  si = s.store_i6 ^ 0x3F; sl = s.store_l6 ^ 0x0F; }
-      else if (pix_count_new == s.store_x7) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x080;  si = s.store_i7 ^ 0x3F; sl = s.store_l7 ^ 0x0F; }
-      else if (pix_count_new == s.store_x8) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x100;  si = s.store_i8 ^ 0x3F; sl = s.store_l8 ^ 0x0F; }
-      else if (pix_count_new == s.store_x9) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x200;  si = s.store_i9 ^ 0x3F; sl = s.store_l9 ^ 0x0F; }
+      if      (state_new.pix_count_odd == s.store_x0) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x001;  si = s.store_i0 ^ 0x3F; sl = s.store_l0 ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x1) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x002;  si = s.store_i1 ^ 0x3F; sl = s.store_l1 ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x2) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x004;  si = s.store_i2 ^ 0x3F; sl = s.store_l2 ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x3) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x008;  si = s.store_i3 ^ 0x3F; sl = s.store_l3 ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x4) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x010;  si = s.store_i4 ^ 0x3F; sl = s.store_l4 ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x5) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x020;  si = s.store_i5 ^ 0x3F; sl = s.store_l5 ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x6) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x040;  si = s.store_i6 ^ 0x3F; sl = s.store_l6 ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x7) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x080;  si = s.store_i7 ^ 0x3F; sl = s.store_l7 ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x8) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x100;  si = s.store_i8 ^ 0x3F; sl = s.store_l8 ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x9) { state_new.FEPO_STORE_MATCHp_odd = 1; sf = 0x200;  si = s.store_i9 ^ 0x3F; sl = s.store_l9 ^ 0x0F; }
     }
 
     if (!state_new.FEPO_STORE_MATCHp_odd) {
@@ -1319,15 +1203,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Pixel pipes
 
   if (DELTA_ODD_new) {
-    if (!state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) {
-      if (clkpipe_negedge) {
-        state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
-        state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
-        state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
-        state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
-        state_new.mask_pipe  = (state_new.mask_pipe  << 1) | 1;
-        state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
-      }
+    if (clkpipe_negedge && !state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) {
+      state_new.spr_pipe_a = (state_new.spr_pipe_a << 1) | 0;
+      state_new.spr_pipe_b = (state_new.spr_pipe_b << 1) | 0;
+      state_new.bgw_pipe_a = (state_new.bgw_pipe_a << 1) | 0;
+      state_new.bgw_pipe_b = (state_new.bgw_pipe_b << 1) | 0;
+      state_new.mask_pipe  = (state_new.mask_pipe  << 1) | 1;
+      state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
     }
   }
 
@@ -2107,7 +1989,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  int lcd_x = pix_count_new - 8;
+  int lcd_x = state_new.pix_count_odd - 8;
   int lcd_y = reg_ly_new;
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
@@ -2183,6 +2065,33 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    // ROGE
+    state_new.win_ctrl.ROGE_WY_MATCHp_odd.state = (reg_ly_new == uint8_t(~state_new.reg_wy)) && win_en_new;
+
+    uint8_t doba_scan_donep_evn_new = 0;
+    uint8_t byba_scan_donep_odd_new = 0;
+
+    if (vid_rst_new) {
+      doba_scan_donep_evn_new = 0;
+      byba_scan_donep_odd_new = 0;
+    }
+    else if (first_line_new) {
+      doba_scan_donep_evn_new = phase_lx_new < 0 || phase_lx_new >= 167;
+      byba_scan_donep_odd_new = phase_lx_new < 0 || phase_lx_new >= 166;
+    }
+    else if (phase_ly_new >= 0 && phase_ly_new < 144) {
+      doba_scan_donep_evn_new = phase_lx_new < 2 || phase_lx_new >= 163;
+      byba_scan_donep_odd_new = phase_lx_new < 2 || phase_lx_new >= 162;
+    }
+    else if (phase_ly_new >= 144 && phase_ly_new < 153) {
+      doba_scan_donep_evn_new = 1;
+      byba_scan_donep_odd_new = 1;
+    }
+    else if (phase_ly_new == 153) {
+      doba_scan_donep_evn_new = phase_lx_new < 6 || phase_lx_new >= 167;
+      byba_scan_donep_odd_new = phase_lx_new < 6 || phase_lx_new >= 166;
+    }
+
     if (DELTA_EVEN_new) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = get_bit(state_old.tfetch_counter_odd, 0);
     if (state_new.XYMU_RENDERINGn) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
 

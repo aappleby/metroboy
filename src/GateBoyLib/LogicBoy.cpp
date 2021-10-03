@@ -1492,8 +1492,38 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pins_vram_ctrl_oen_new = 1;
   }
   else if (!state_new.XYMU_RENDERINGn) {
-    pins_vram_ctrl_csn_new = (state_new.phase_tfetch < 12) || ((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn);
-    pins_vram_ctrl_oen_new = (state_new.phase_tfetch < 12) || (((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn) && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state || get_bit(state_new.sfetch_counter_evn, 0)));
+    
+    if (vid_rst_evn_old) {
+      pins_vram_ctrl_csn_new = 0;
+      pins_vram_ctrl_oen_new = state_new.phase_tfetch < 12;
+    }
+    else {
+      
+      pins_vram_ctrl_csn_new = 0;
+      if (state_new.phase_tfetch < 12) {
+        pins_vram_ctrl_csn_new = 1;
+      }
+      else if (state_new.phase_sfetch >= 4 && state_new.phase_sfetch < 12) {
+        pins_vram_ctrl_csn_new = 1;
+      }
+
+
+      if (state_new.phase_tfetch < 12) {
+        pins_vram_ctrl_oen_new = 1;
+      }
+      else {
+
+        pins_vram_ctrl_oen_new = 0;
+        if (state_new.phase_sfetch >= 5 && state_new.phase_sfetch <=  7) pins_vram_ctrl_oen_new = 1;
+        if (state_new.phase_sfetch >= 9 && state_new.phase_sfetch <= 11) pins_vram_ctrl_oen_new = 1;
+
+        //pins_vram_ctrl_oen_new = (((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12)) && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state || get_bit(state_new.sfetch_counter_evn, 0)));
+        //
+        //if (pins_vram_ctrl_oen_new) printf("%d\n", state_new.phase_sfetch);
+      }
+
+    }
+
   }
   else if (ext_addr_new) {
     pins_vram_ctrl_csn_new = (cpu_addr_vram_new && gen_clk_new(phase_total_old, 0b00111111) && 1);

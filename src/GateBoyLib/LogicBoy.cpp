@@ -1286,34 +1286,34 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // tfetch counter
 
-  if (DELTA_ODD_new && state_old.tfetch_counter_odd < 5) state_new.tfetch_counter_odd++;
-  
   if (!NYXU_BFETCH_RSTn_new) {
-    state_new.tfetch_counter_odd = 0;
     state_new.phase_tfetch = 0;
   }
   else {
     state_new.phase_tfetch++;
   }
 
-  // LYZU
-  if (DELTA_EVEN_new) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = get_bit(state_old.tfetch_counter_odd, 0);
-  if (state_new.XYMU_RENDERINGn) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
-
-  const uint8_t tfetch_phase_old = pack(
-    !(state_old.tfetch_control.LYZU_BFETCH_S0p_D1.state ^ get_bit(state_old.tfetch_counter_odd, 0)),
-    get_bit(state_old.tfetch_counter_odd, 0),
-    get_bit(state_old.tfetch_counter_odd, 1),
-    get_bit(state_old.tfetch_counter_odd, 2));
-
-  if (!state_old.XYMU_RENDERINGn) {
-    if (tfetch_phase_old == 6)  state_new.tile_temp_a = ~state_old.vram_dbus;
-    if (tfetch_phase_old == 2)  state_new.tile_temp_b =  state_old.vram_dbus;
-    if (tfetch_phase_old == 10) state_new.tile_temp_b =  state_old.vram_dbus;
+  if (!NYXU_BFETCH_RSTn_new) {
+    state_new.tfetch_counter_odd = 0;
+    state_new.tfetch_control.LOVY_FETCH_DONEp.state = 0;
+  }
+  else if (DELTA_ODD_new) {
+    if (state_old.tfetch_counter_odd < 5) {
+      state_new.tfetch_counter_odd++;
+      state_new.tfetch_control.LOVY_FETCH_DONEp.state = 0;
+    }
+    else {
+      state_new.tfetch_control.LOVY_FETCH_DONEp.state = 1;
+    }
   }
 
+  state_new.tfetch_control.LONY_FETCHINGp.state = !state_new.XYMU_RENDERINGn && state_new.phase_tfetch < 12;
 
-
+  if (!state_old.XYMU_RENDERINGn) {
+    if (state_new.phase_tfetch ==  3) state_new.tile_temp_b =  state_old.vram_dbus;
+    if (state_new.phase_tfetch ==  7) state_new.tile_temp_a = ~state_old.vram_dbus;
+    if (state_new.phase_tfetch == 11) state_new.tile_temp_b =  state_old.vram_dbus;
+  }
 
   //----------------------------------------
   // Pixel pipes
@@ -1579,15 +1579,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.ext_data_latch = ~cart_dbus;
   }
 
-  //----------------------------------------
-  // LOVY/LONY
-
-  if (DELTA_ODD_new) state_new.tfetch_control.LOVY_FETCH_DONEp.state = state_old.tfetch_counter_odd >= 5;
-  if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_control.LOVY_FETCH_DONEp.state = 0;
-
-  if (!NYXU_BFETCH_RSTn_new) state_new.tfetch_control.LONY_FETCHINGp.state = 1;
-  if (state_new.tfetch_control.LOVY_FETCH_DONEp.state || state_new.XYMU_RENDERINGn) state_new.tfetch_control.LONY_FETCHINGp.state = 0;
-
   //--------------------------------------------
   // vram_abus driver
 
@@ -1623,8 +1614,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     const auto sum_x = px + scx;
     const auto sum_y = reg_ly_new + scy;
 
-    if (get_bit(state_new.tfetch_counter_odd, 1) || get_bit(state_new.tfetch_counter_odd, 2)) {
-
+    if (state_new.phase_tfetch >= 4 && state_new.phase_tfetch <= 11) {
       const auto hilo = get_bit(state_new.tfetch_counter_odd, 2);
       const auto tile_y = (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state ? state_new.win_y.tile : (sum_y & 0b111));
       const auto map_y = state_new.tile_temp_b;
@@ -2193,6 +2183,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    if (DELTA_EVEN_new) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = get_bit(state_old.tfetch_counter_odd, 0);
+    if (state_new.XYMU_RENDERINGn) state_new.tfetch_control.LYZU_BFETCH_S0p_D1.state = 0;
+
     if (vid_rst_new) {
       state_new.tfetch_control.PYGO_FETCH_DONEp_evn.state = 0;
     }

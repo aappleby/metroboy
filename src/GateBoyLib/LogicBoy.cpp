@@ -753,7 +753,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (DELTA_ODD_new) {
-    state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = get_bit(state_old.sfetch_counter_evn, 0);
+    state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = state_old.phase_sfetch > 10 ? get_bit(5, 0) : get_bit(state_old.phase_sfetch / 2, 0);
   }
 
   //----------------------------------------
@@ -898,18 +898,45 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   else if (line_rst_odd_new) {
     state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
   }
+  else if (DELTA_EVEN_new) {
+    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
+  }
   else {
-    if (DELTA_EVEN_new) {
-      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
-    }
-    else {
-      state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state =
-        state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state &&
-        get_bit(state_new.sfetch_counter_evn, 0) &&
-        state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state &&
-        state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
+    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state =
+      state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state &&
+      get_bit(state_new.sfetch_counter_evn, 0) &&
+      state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state &&
+      state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
+  }
+
+  uint8_t wuty = state_new.phase_sfetch == 11;
+  if (vid_rst_evn_new || line_rst_odd_new || DELTA_EVEN_new || state_new.XYMU_RENDERINGn) wuty = 0;
+
+
+  if (wuty != state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) {
+    printf("%d %d %d %d %d\n",
+      state_new.phase_sfetch,
+      state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state,
+      get_bit(state_new.sfetch_counter_evn, 0),
+      state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state,
+      state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state);
+
+  }
+
+  //if (!state_old.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state && state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) {
+  //  printf("%d\n", state_new.phase_sfetch);
+  //}
+
+  /*
+  if (state_new.phase_sfetch == 11) {
+    if (!vid_rst_evn_new && !line_rst_odd_new && !DELTA_EVEN_new) {
+      if (!state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) {
+        // 11, but under what circumstances?
+        printf("%d\n", state_new.phase_sfetch);
+      }
     }
   }
+  */
 
   //----------------------------------------
   // RYFA/RENE

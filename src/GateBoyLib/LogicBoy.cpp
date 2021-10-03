@@ -1180,36 +1180,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
   }
 
-  wire TEXY_SFETCHINGp_evn_old = !vid_rst_evn_old && !state_old.XYMU_RENDERINGn && (get_bit(state_old.sfetch_counter_evn, 1) || state_old.sfetch_control.VONU_SFETCH_S1p_D4_evn.state);
-  uint8_t TEXY_SFETCHINGp_evn_new = !vid_rst_evn_new && !state_new.XYMU_RENDERINGn && (get_bit(state_new.sfetch_counter_evn, 1) || state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state);
-
-  if (!TEXY_SFETCHINGp_evn_old && TEXY_SFETCHINGp_evn_new) {
-    // 4
-    //printf("%d\n", state_new.phase_sfetch);
-  }
-
-  if (TEXY_SFETCHINGp_evn_old && !TEXY_SFETCHINGp_evn_new) {
-    // 12
-    //printf("%d\n", state_new.phase_sfetch);
-  }
-
-  TEXY_SFETCHINGp_evn_new = (state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12);
-  if (vid_rst_evn_old || state_old.XYMU_RENDERINGn) TEXY_SFETCHINGp_evn_new = 0;
-
-  //if (TEXY_SFETCHINGp_evn_new) printf("%d\n", state_new.phase_sfetch);
-
-  //uint8_t texy = state_new.phase_sfetch >= 4;
-  //if (line_rst_odd_new || vid_rst_evn_new || state_new.XYMU_RENDERINGn) texy = 0;
-  //
-  //if (texy != TEXY_SFETCHINGp_evn_new) {
-  //  printf("%d\n", state_new.phase_sfetch);
-  //}
-
-
   uint8_t sprite_pix = state_old.vram_dbus;
   if (!state_new.XYMU_RENDERINGn) {
 
-    if (get_bit(state_old.oam_temp_b, 5) && TEXY_SFETCHINGp_evn_new) {
+    if (get_bit(state_old.oam_temp_b, 5) && ((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn)) {
       sprite_pix = bit_reverse(state_old.vram_dbus);
     }
 
@@ -1430,7 +1404,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //--------------------------------------------
   // vram_abus driver
 
-  if (TEXY_SFETCHINGp_evn_new) {
+  if (((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn)) {
 
     // Sprite read address
 
@@ -1518,8 +1492,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pins_vram_ctrl_oen_new = 1;
   }
   else if (!state_new.XYMU_RENDERINGn) {
-    pins_vram_ctrl_csn_new = (state_new.phase_tfetch < 12) || TEXY_SFETCHINGp_evn_new;
-    pins_vram_ctrl_oen_new = (state_new.phase_tfetch < 12) || (TEXY_SFETCHINGp_evn_new && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state || get_bit(state_new.sfetch_counter_evn, 0)));
+    pins_vram_ctrl_csn_new = (state_new.phase_tfetch < 12) || ((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn);
+    pins_vram_ctrl_oen_new = (state_new.phase_tfetch < 12) || (((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn) && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state || get_bit(state_new.sfetch_counter_evn, 0)));
   }
   else if (ext_addr_new) {
     pins_vram_ctrl_csn_new = (cpu_addr_vram_new && gen_clk_new(phase_total_old, 0b00111111) && 1);
@@ -2216,7 +2190,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.REMY_LD0n.state = REMY_LD0n;
     state_new.lcd.RAVO_LD1n.state = RAVO_LD1n;
     state_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.state = !vid_rst_evn_new && !line_rst_odd_new && scan_done_trig_new;
-    state_new.sfetch_control.TEXY_SFETCHINGp_evn.state = TEXY_SFETCHINGp_evn_new;
+    state_new.sfetch_control.TEXY_SFETCHINGp_evn.state = ((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn);
     state_new.WODU_HBLANKp_odd = hblank_new;
     state_new.ACYL_SCANNINGp_odd = (!MATU_DMA_RUNNINGp_new && besu_scan_donen_odd_new && !vid_rst_evn_new);
     state_new.ATEJ_LINE_RSTp_odd = line_rst_odd_new || vid_rst_evn_new;
@@ -2247,7 +2221,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pins.joy.PIN_64_JOY_P13.state = get_bit(state_new.joy_latch, 3);
 
 
-    if (get_bit(state_new.oam_temp_b, 5) && TEXY_SFETCHINGp_evn_new) {
+    if (get_bit(state_new.oam_temp_b, 5) && ((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn)) {
       state_new.flipped_sprite = bit_reverse(state_new.vram_dbus);
     }
     else {

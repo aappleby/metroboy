@@ -710,7 +710,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (line_rst_odd_old && !line_rst_odd_new) CHECK_P(DELTA_ODD_new);
   if (sfetch_trig_odd_old && !sfetch_trig_odd_new) CHECK_P(DELTA_ODD_new);
 
-  if (vid_rst_evn_new || line_rst_odd_new || sfetch_trig_odd_new) {
+  if (vid_rst_evn_new) {
+    state_new.phase_sfetch = 1;
+  }
+  else if (line_rst_odd_new || sfetch_trig_odd_new) {
     state_new.phase_sfetch = 0;
   }
   else {
@@ -729,7 +732,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (temp > 5) temp = 5;
 
     if (temp != state_new.sfetch_counter_evn) {
-      //printf("E %d %d\n", state_new.phase_sfetch, state_new.sfetch_counter_evn);
+      printf("E %d %d\n", state_new.phase_sfetch, state_new.sfetch_counter_evn);
     }
   }
 

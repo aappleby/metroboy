@@ -892,51 +892,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // WUTY
 
-  if (vid_rst_evn_new) {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
-  }
-  else if (line_rst_odd_new) {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
-  }
-  else if (DELTA_EVEN_new) {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = 0;
-  }
-  else {
-    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state =
-      state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state &&
-      get_bit(state_new.sfetch_counter_evn, 0) &&
-      state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state &&
-      state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
-  }
+  uint8_t sfetch_done_trig_old = state_old.phase_sfetch == 11;
+  if (vid_rst_evn_old || line_rst_odd_old || DELTA_EVEN_old || state_old.XYMU_RENDERINGn) sfetch_done_trig_old = 0;
 
-  uint8_t wuty = state_new.phase_sfetch == 11;
-  if (vid_rst_evn_new || line_rst_odd_new || DELTA_EVEN_new || state_new.XYMU_RENDERINGn) wuty = 0;
-
-
-  if (wuty != state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) {
-    printf("%d %d %d %d %d\n",
-      state_new.phase_sfetch,
-      state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state,
-      get_bit(state_new.sfetch_counter_evn, 0),
-      state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state,
-      state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state);
-
-  }
-
-  //if (!state_old.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state && state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) {
-  //  printf("%d\n", state_new.phase_sfetch);
-  //}
-
-  /*
-  if (state_new.phase_sfetch == 11) {
-    if (!vid_rst_evn_new && !line_rst_odd_new && !DELTA_EVEN_new) {
-      if (!state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) {
-        // 11, but under what circumstances?
-        printf("%d\n", state_new.phase_sfetch);
-      }
-    }
-  }
-  */
+  uint8_t sfetch_done_trig_new = state_new.phase_sfetch == 11;
+  if (vid_rst_evn_new || line_rst_odd_new || DELTA_EVEN_new || state_new.XYMU_RENDERINGn) sfetch_done_trig_new = 0;
 
   //----------------------------------------
   // RYFA/RENE
@@ -999,7 +959,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // TAKA - only old used
 
   if (vid_rst_evn_new || line_rst_odd_new || sfetch_trig_odd_new) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 1;
-  if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
+  if (sfetch_done_trig_new) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
   if (!state_new.XYMU_RENDERINGn && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
 
 
@@ -1013,7 +973,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // sprite_reset_flags <- old.sprite_match_flags
 
-  if (!state_old.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state && state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) state_new.sprite_reset_flags = state_old.sprite_match_flags;
+  if (!sfetch_done_trig_old && sfetch_done_trig_new) state_new.sprite_reset_flags = state_old.sprite_match_flags;
   if (vid_rst_evn_new || line_rst_odd_new) state_new.sprite_reset_flags = 0;
 
   //----------------------------------------
@@ -1253,7 +1213,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state) {
+  if (sfetch_done_trig_new) {
     uint8_t sprite_mask = state_new.spr_pipe_b | state_new.spr_pipe_a;
     state_new.spr_pipe_a = (state_new.spr_pipe_a & sprite_mask) | (~state_new.sprite_pix_a & ~sprite_mask);
     state_new.spr_pipe_b = (state_new.spr_pipe_b & sprite_mask) | (~state_new.sprite_pix_b & ~sprite_mask);
@@ -2062,6 +2022,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = sfetch_done_trig_new;
+
     state_new.tfetch_control.LONY_TFETCHINGp.state = !state_new.XYMU_RENDERINGn && state_new.phase_tfetch < 12;
 
     if (!NYXU_BFETCH_RSTn_new) {

@@ -720,30 +720,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.phase_sfetch++;
   }
 
-  if (vid_rst_evn_new || line_rst_odd_new || sfetch_trig_odd_new) {
-    state_new.sfetch_counter_evn = 0;
-  }
-  else if (DELTA_EVEN_new) {
-    if (state_new.sfetch_counter_evn < 5) state_new.sfetch_counter_evn++;
-  }
 
-  if (DELTA_EVEN_new) {
-    auto temp = state_new.phase_sfetch / 2; 
-    if (temp > 5) temp = 5;
+  auto temp = state_new.phase_sfetch / 2; 
+  if (temp > 5) temp = 5;
 
-    if (temp != state_new.sfetch_counter_evn) {
-      printf("E %d %d\n", state_new.phase_sfetch, state_new.sfetch_counter_evn);
-    }
-  }
-
-  if (DELTA_ODD_new) {
-    auto temp = state_new.phase_sfetch / 2; 
-    if (temp > 5) temp = 5;
-
-    if (temp != state_new.sfetch_counter_evn) {
-      printf("O %d %d\n", state_new.phase_sfetch, state_new.sfetch_counter_evn);
-    }
-  }
+  state_new.sfetch_counter_evn = uint8_t(temp);
 
 
   // TOBU/VONU/SEBA/TYFO

@@ -721,10 +721,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
 
-  auto temp = state_new.phase_sfetch / 2; 
-  if (temp > 5) temp = 5;
+  auto temp_old = state_old.phase_sfetch / 2; 
+  if (temp_old > 5) temp_old = 5;
 
-  state_new.sfetch_counter_evn = uint8_t(temp);
+  auto temp_new = state_new.phase_sfetch / 2; 
+  if (temp_new > 5) temp_new = 5;
+
+  state_new.sfetch_counter_evn = uint8_t(temp_new);
 
 
   // TOBU/VONU/SEBA/TYFO
@@ -741,7 +744,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   else {
     if (DELTA_EVEN_new) {
-      state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = get_bit(state_old.sfetch_counter_evn, 1);
+      state_new.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state = state_old.phase_sfetch > 10 ? get_bit(5, 1) : get_bit(state_old.phase_sfetch / 2, 1);
       state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state = state_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.state;
     }
     else {

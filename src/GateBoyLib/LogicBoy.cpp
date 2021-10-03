@@ -1157,15 +1157,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (state_new.phase_tfetch < 12) state_new.phase_tfetch++;
   }
 
-  if (!NYXU_BFETCH_RSTn_new) {
-    state_new.tfetch_control.LOVY_TFETCH_DONEp.state = 0;
-  }
-  else if (DELTA_ODD_new) {
-    state_new.tfetch_control.LOVY_TFETCH_DONEp.state = state_old.phase_tfetch >= 10;
-  }
-
-  state_new.tfetch_control.LONY_TFETCHINGp.state = !state_new.XYMU_RENDERINGn && state_new.phase_tfetch < 12;
-
   if (!state_old.XYMU_RENDERINGn) {
     if (state_old.phase_tfetch ==  2) state_new.tile_temp_b =  state_old.vram_dbus;
     if (state_old.phase_tfetch ==  6) state_new.tile_temp_a = ~state_old.vram_dbus;
@@ -1443,7 +1434,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       bit_cat(state_new.vram_abus, 12, 12, 0);
     }
   }
-  else if (state_new.tfetch_control.LONY_TFETCHINGp.state) {
+  else if (!state_new.XYMU_RENDERINGn && state_new.phase_tfetch < 12) {
 
     // BG map read address
 
@@ -1510,8 +1501,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pins_vram_ctrl_oen_new = 1;
   }
   else if (!state_new.XYMU_RENDERINGn) {
-    pins_vram_ctrl_csn_new = state_new.tfetch_control.LONY_TFETCHINGp.state || TEXY_SFETCHINGp_evn_new;
-    pins_vram_ctrl_oen_new = state_new.tfetch_control.LONY_TFETCHINGp.state || (TEXY_SFETCHINGp_evn_new && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state || get_bit(state_new.sfetch_counter_evn, 0)));
+    pins_vram_ctrl_csn_new = (state_new.phase_tfetch < 12) || TEXY_SFETCHINGp_evn_new;
+    pins_vram_ctrl_oen_new = (state_new.phase_tfetch < 12) || (TEXY_SFETCHINGp_evn_new && (!state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state || get_bit(state_new.sfetch_counter_evn, 0)));
   }
   else if (ext_addr_new) {
     pins_vram_ctrl_csn_new = (cpu_addr_vram_new && gen_clk_new(phase_total_old, 0b00111111) && 1);
@@ -2023,6 +2014,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    state_new.tfetch_control.LONY_TFETCHINGp.state = !state_new.XYMU_RENDERINGn && state_new.phase_tfetch < 12;
+
+    if (!NYXU_BFETCH_RSTn_new) {
+      state_new.tfetch_control.LOVY_TFETCH_DONEp.state = 0;
+    }
+    else if (DELTA_ODD_new) {
+      state_new.tfetch_control.LOVY_TFETCH_DONEp.state = state_old.phase_tfetch >= 10;
+    }
+
     state_new.tfetch_counter_odd = uint8_t(state_new.phase_tfetch / 2);
     if (state_new.tfetch_counter_odd > 5) state_new.tfetch_counter_odd = 5;
 

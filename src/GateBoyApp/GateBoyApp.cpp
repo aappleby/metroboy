@@ -109,24 +109,18 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 0
+#if 1
   blob cart;
   //load_blob("tests/microtests/DMG/minimal.gb", cart);
   load_blob("oh.gb", cart);
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
-  //gb_thread->reset_to_bootrom();
 
   //gb_thread->run_to(80203541 - 1);
   //gb_thread->add_steps(int(80203541 - gb_thread->gb->get_sys().gb_phase_total - 1));
-
-  //gb_thread->add_steps(2400000000);
-
-  gb_thread->add_steps(633150598 - gb_thread->gb->get_sys().gb_phase_total - 1);
-  //633150598
 #endif
 
-#if 1
+#if 0
   BlobStream bs;
   load_blob("bad_eyes.dump", bs.b);
   gb_thread->load_raw_dump(bs);

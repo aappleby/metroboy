@@ -113,7 +113,17 @@ int main(int argc, char** argv) {
     TestResults results;
     GateBoyTests t;
 
-    results += t.test_regression(); // OK
+    auto phases = 114 * 154 * 8 * 6;
+
+    results += t.test_regression_cart("tests/microtests/DMG/minimal.gb", phases, true);
+    results += t.test_regression_cart("LinksAwakening.gb", phases, false);
+
+    results += t.test_regression_dump("oh_jelly.dump", phases);
+    results += t.test_regression_dump("oh_eyes.dump", phases);
+    //results += t.test_regression_dump("sprites.dump", phases);
+    //results += t.test_regression_dump("zoomer.dump", phases);
+    //results += t.test_regression_dump("eyes.dump", phases); // broken because sprite mask
+    //results += t.test_regression_dump("scroller.dump", phases);
 
     LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
     LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
@@ -250,23 +260,6 @@ TestResults fake_test() {
   EXPECT_EQ(0, 0, "Should pass");
   EXPECT_EQ(1, 0, "Should fail");
   LOG_B("End\n");
-  TEST_DONE();
-}
-
-//-----------------------------------------------------------------------------
-
-TestResults GateBoyTests::test_regression() {
-  TEST_INIT();
-
-  auto phases = 114 * 154 * 8 * 6;
-
-  results += test_regression_cart("tests/microtests/DMG/minimal.gb", phases, true);
-  results += test_regression_cart("LinksAwakening.gb",               phases, false);
-  results += test_regression_dump("sprites.dump",                    phases);
-  results += test_regression_dump("zoomer.dump",                     phases);
-  results += test_regression_dump("eyes.dump",                       phases); // broken because sprite mask
-  results += test_regression_dump("scroller.dump",                   phases);
-
   TEST_DONE();
 }
 

@@ -893,10 +893,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // WUTY
 
   uint8_t sfetch_done_trig_old = state_old.phase_sfetch == 11;
-  if (vid_rst_evn_old || line_rst_odd_old || DELTA_EVEN_old || state_old.XYMU_RENDERINGn) sfetch_done_trig_old = 0;
+  if (vid_rst_evn_old || line_rst_odd_old || state_old.XYMU_RENDERINGn) sfetch_done_trig_old = 0;
 
   uint8_t sfetch_done_trig_new = state_new.phase_sfetch == 11;
-  if (vid_rst_evn_new || line_rst_odd_new || DELTA_EVEN_new || state_new.XYMU_RENDERINGn) sfetch_done_trig_new = 0;
+  if (vid_rst_evn_new || line_rst_odd_new || state_new.XYMU_RENDERINGn) sfetch_done_trig_new = 0;
 
   //----------------------------------------
   // RYFA/RENE
@@ -994,21 +994,19 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   {
     bool BYCU_OAM_CLKp_old = false;
 
-    auto b0_old = get_bit(state_old.sfetch_counter_evn, 0);
-    auto b1_old = get_bit(state_old.sfetch_counter_evn, 1);
-    auto b2_old = get_bit(state_old.sfetch_counter_evn, 2);
-    auto b1d_old = state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state;
-
     auto clk_old = besu_scan_donen_odd_old && !vid_rst_evn_old && gen_clk(phase_old, 0b01110111);
-    auto bphase_old = b1_old || b2_old || (b1d_old && !b0_old);
 
     if (MATU_DMA_RUNNINGp_old) {
-      if (state_old.XYMU_RENDERINGn) BYCU_OAM_CLKp_old = DELTA_DH_old;
-      else BYCU_OAM_CLKp_old = bphase_old && !DELTA_DH_old;
+      if (state_old.XYMU_RENDERINGn) {
+        BYCU_OAM_CLKp_old = DELTA_DH_old;
+      }
+      else {
+        BYCU_OAM_CLKp_old = (state_old.phase_sfetch < 1 || state_old.phase_sfetch > 3) && !DELTA_DH_old;
+      }
 
     }
     else if (!state_old.XYMU_RENDERINGn) {
-      BYCU_OAM_CLKp_old = clk_old || !bphase_old || cpu_addr_oam_old;   // this "cpu_addr_oam_old" seems like a bug
+      BYCU_OAM_CLKp_old = clk_old || !(state_old.phase_sfetch < 1 || state_old.phase_sfetch > 3) || cpu_addr_oam_old;   // this "cpu_addr_oam_old" seems like a bug
     }
     else {
       BYCU_OAM_CLKp_old = clk_old || (cpu_addr_oam_old && DELTA_DH_old);
@@ -1018,25 +1016,24 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     bool BYCU_OAM_CLKp_new = false;
 
-    auto b0_new = get_bit(state_new.sfetch_counter_evn, 0);
-    auto b1_new = get_bit(state_new.sfetch_counter_evn, 1);
-    auto b2_new = get_bit(state_new.sfetch_counter_evn, 2);
-    auto b1d_new = state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state;
-
     auto clk_new = besu_scan_donen_odd_new && !vid_rst_evn_new && gen_clk(phase_new, 0b01110111);
-    auto bphase_new = b1_new || b2_new || (b1d_new && !b0_new);
 
     if (MATU_DMA_RUNNINGp_new) {
-      if (state_new.XYMU_RENDERINGn) BYCU_OAM_CLKp_new = DELTA_DH_new;
-      else BYCU_OAM_CLKp_new = bphase_new && !DELTA_DH_new;
-
+      if (state_new.XYMU_RENDERINGn) {
+        BYCU_OAM_CLKp_new = DELTA_DH_new;
+      }
+      else {
+        // never hit, need test case?
+        BYCU_OAM_CLKp_new = (state_new.phase_sfetch < 1 || state_new.phase_sfetch > 3) && !DELTA_DH_new;
+      }
     }
     else if (!state_new.XYMU_RENDERINGn) {
-      BYCU_OAM_CLKp_new = clk_new || !bphase_new || cpu_addr_oam_new;   // this "cpu_addr_oam_new" seems like a bug
+      BYCU_OAM_CLKp_new = clk_new || !(state_new.phase_sfetch < 1 || state_new.phase_sfetch > 3) || cpu_addr_oam_new;
     }
     else {
       BYCU_OAM_CLKp_new = clk_new || (cpu_addr_oam_new && DELTA_DH_new);
     }
+
 
     //----------
 
@@ -1183,19 +1180,31 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.pal_pipe   = (state_new.pal_pipe   << 1) | 0;
   }
 
-  wire TEXY_SFETCHINGp_evn_new = (!vid_rst_evn_new && !state_new.XYMU_RENDERINGn && ((get_bit(state_new.sfetch_counter_evn, 1) || state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state)));
+  wire TEXY_SFETCHINGp_evn_old = !vid_rst_evn_old && !state_old.XYMU_RENDERINGn && (get_bit(state_old.sfetch_counter_evn, 1) || state_old.sfetch_control.VONU_SFETCH_S1p_D4_evn.state);
+  uint8_t TEXY_SFETCHINGp_evn_new = !vid_rst_evn_new && !state_new.XYMU_RENDERINGn && (get_bit(state_new.sfetch_counter_evn, 1) || state_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.state);
 
-  const uint8_t sfetch_phase_old = pack(
-    !(state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state ^ get_bit(state_old.sfetch_counter_evn, 0)),
-    get_bit(state_old.sfetch_counter_evn, 0),
-    get_bit(state_old.sfetch_counter_evn, 1),
-    get_bit(state_old.sfetch_counter_evn, 2));
+  if (!TEXY_SFETCHINGp_evn_old && TEXY_SFETCHINGp_evn_new) {
+    // 4
+    //printf("%d\n", state_new.phase_sfetch);
+  }
 
-  const uint8_t sfetch_phase_new = pack(
-    !(state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state ^ get_bit(state_new.sfetch_counter_evn, 0)),
-    get_bit(state_new.sfetch_counter_evn, 0),
-    get_bit(state_new.sfetch_counter_evn, 1),
-    get_bit(state_new.sfetch_counter_evn, 2));
+  if (TEXY_SFETCHINGp_evn_old && !TEXY_SFETCHINGp_evn_new) {
+    // 12
+    //printf("%d\n", state_new.phase_sfetch);
+  }
+
+  TEXY_SFETCHINGp_evn_new = (state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12);
+  if (vid_rst_evn_old || state_old.XYMU_RENDERINGn) TEXY_SFETCHINGp_evn_new = 0;
+
+  //if (TEXY_SFETCHINGp_evn_new) printf("%d\n", state_new.phase_sfetch);
+
+  //uint8_t texy = state_new.phase_sfetch >= 4;
+  //if (line_rst_odd_new || vid_rst_evn_new || state_new.XYMU_RENDERINGn) texy = 0;
+  //
+  //if (texy != TEXY_SFETCHINGp_evn_new) {
+  //  printf("%d\n", state_new.phase_sfetch);
+  //}
+
 
   uint8_t sprite_pix = state_old.vram_dbus;
   if (!state_new.XYMU_RENDERINGn) {
@@ -1204,11 +1213,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       sprite_pix = bit_reverse(state_old.vram_dbus);
     }
 
-    if ((sfetch_phase_old == 5) && (sfetch_phase_new == 6)) {
+    if (state_new.phase_sfetch == 6) {
       state_new.sprite_pix_a = ~sprite_pix;
     }
 
-    if ((sfetch_phase_old == 9) && (sfetch_phase_new == 10)) {
+    if (state_new.phase_sfetch == 10) {
       state_new.sprite_pix_b = ~sprite_pix;
     }
   }
@@ -1797,7 +1806,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
 
-    if (sfetch_phase_new == 0 || sfetch_phase_new == 3) {
+    if (state_new.phase_sfetch == 0 || state_new.phase_sfetch == 3) {
       state_new.oam_latch_a = state_new.oam_dbus_a;
       state_new.oam_latch_b = state_new.oam_dbus_b;
     }

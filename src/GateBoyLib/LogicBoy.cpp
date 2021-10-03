@@ -1615,7 +1615,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     const auto sum_y = reg_ly_new + scy;
 
     if (state_new.phase_tfetch >= 4 && state_new.phase_tfetch <= 11) {
-      const auto hilo = get_bit(state_new.tfetch_counter_odd, 2);
+      const auto hilo = state_new.phase_tfetch >= 8;
       const auto tile_y = (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state ? state_new.win_y.tile : (sum_y & 0b111));
       const auto map_y = state_new.tile_temp_b;
       const auto map = !get_bit(state_new.tile_temp_b, 7) && bgw_tile_new;

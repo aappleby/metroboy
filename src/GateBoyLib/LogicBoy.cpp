@@ -884,34 +884,19 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (vid_rst_new) {
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
   }
+  else if (state_new.XYMU_RENDERINGn) {
+    state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
+  }
   else if (line_rst_new) {
-
-    if (state_new.XYMU_RENDERINGn) {
-      state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
-    }
-    else {
-      if (DELTA_EVEN_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
-    }
-
+    state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
   }
   else {
-    if (state_new.XYMU_RENDERINGn) {
-      state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
-    }
-    else {
-      if (DELTA_EVEN_new) {
-        state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
-        wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
-        if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
-      }
-      if (DELTA_ODD_new) {
-        if (win_en_new) {
-          wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
-          if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
-        }
-      }
+    if (DELTA_EVEN_new) {
+      state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.tfetch_counter_odd >= 5;
     }
 
+    wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
+    if (NUNY_WIN_MODE_TRIGp_new) state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
   }
 
 

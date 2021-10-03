@@ -1,7 +1,9 @@
 #include "GateBoyLib/LogicBoy.h"
 #include "GateBoyLib/GateBoy.h"
-
 #include "GateBoyLib/Utils.h"
+
+#include <set>
+#include <string>
 
 //#pragma optimize("", off)
 
@@ -481,7 +483,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // this block is all sealed up
   // +dma_ctrl +reg_dma +dma_lo
 
-  auto& MATU_DMA_RUNNINGp_old = state_old.MATU_DMA_RUNNINGp;
+  auto& MATU_DMA_RUNNINGp_odd_old = state_old.MATU_DMA_RUNNINGp;
 
   {
     auto& ctrl = state_new.dma_ctrl;
@@ -519,7 +521,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  auto& MATU_DMA_RUNNINGp_new = state_new.MATU_DMA_RUNNINGp;
+  auto& MATU_DMA_RUNNINGp_odd_new = state_new.MATU_DMA_RUNNINGp;
 
   const uint16_t dma_addr_new = ((state_new.reg_dma ^ 0xFF) << 8) | state_new.dma_lo;
   wire dma_addr_vram_new = (dma_addr_new >= 0x8000) && (dma_addr_new <= 0x9FFF);
@@ -940,62 +942,23 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // FIXME untangle this
 
-  // gen_clk(phase_old, 0b01110111) ==  (phase_new == 2) || (phase_new == 3) || (phase_new == 4) || (phase_new == 6) || (phase_new == 7) || (phase_new == 0)
-  // gen_clk(phase_new, 0b01110111) ==  (phase_new == 1) || (phase_new == 2) || (phase_new == 3) || (phase_new == 5) || (phase_new == 6) || (phase_new == 7)
+  wire aver_old = !MATU_DMA_RUNNINGp_odd_old && besu_scan_donen_odd_old && gen_clk(phase_old, 0b01110111);
+  wire xujy_old = (state_old.phase_sfetch == 2 || state_old.phase_sfetch == 3 || state_old.phase_sfetch == 4) && !state_old.XYMU_RENDERINGn;
+  wire cufe_old = (cpu_addr_oam_old || MATU_DMA_RUNNINGp_odd_old) && gen_clk(phase_old, 0b00001111);
 
-  // DELTA_DH_old = (phase_new == 5) || (phase_new == 6) || (phase_new == 7) || (phase_new == 0)
-  // DELTA_DH_new = (phase_new == 4) || (phase_new == 5) || (phase_new == 6) || (phase_new == 7)
+  wire BYCU_OAM_CLKp_old = aver_old || xujy_old || cufe_old;
 
-  {
-    bool BYCU_OAM_CLKp_old = false;
+  wire aver_new = !MATU_DMA_RUNNINGp_odd_new && besu_scan_donen_odd_new && gen_clk(phase_new, 0b01110111);
+  wire xujy_new = (state_new.phase_sfetch == 2 || state_new.phase_sfetch == 3 || state_new.phase_sfetch == 4) && !state_new.XYMU_RENDERINGn;
+  wire cufe_new = (cpu_addr_oam_new || MATU_DMA_RUNNINGp_odd_new) && gen_clk(phase_new, 0b00001111);
 
-    auto clk_old = besu_scan_donen_odd_old && !vid_rst_evn_old && gen_clk(phase_old, 0b01110111);
+  wire BYCU_OAM_CLKp_new = aver_new || xujy_new || cufe_new;
 
-    if (MATU_DMA_RUNNINGp_old) {
-      if (state_old.XYMU_RENDERINGn) {
-        BYCU_OAM_CLKp_old = DELTA_DH_old;
-      }
-      else {
-        BYCU_OAM_CLKp_old = (state_old.phase_sfetch < 1 || state_old.phase_sfetch > 3) && !DELTA_DH_old;
-      }
+  uint8_t trig_a = BYCU_OAM_CLKp_old && !BYCU_OAM_CLKp_new;
 
-    }
-    else if (!state_old.XYMU_RENDERINGn) {
-      BYCU_OAM_CLKp_old = clk_old || !(state_old.phase_sfetch < 1 || state_old.phase_sfetch > 3) || cpu_addr_oam_old;   // this "cpu_addr_oam_old" seems like a bug
-    }
-    else {
-      BYCU_OAM_CLKp_old = clk_old || (cpu_addr_oam_old && DELTA_DH_old);
-    }
-
-    //----------
-
-    bool BYCU_OAM_CLKp_new = false;
-
-    auto clk_new = besu_scan_donen_odd_new && !vid_rst_evn_new && gen_clk(phase_new, 0b01110111);
-
-    if (MATU_DMA_RUNNINGp_new) {
-      if (state_new.XYMU_RENDERINGn) {
-        BYCU_OAM_CLKp_new = DELTA_DH_new;
-      }
-      else {
-        // never hit, need test case?
-        BYCU_OAM_CLKp_new = (state_new.phase_sfetch < 1 || state_new.phase_sfetch > 3) && !DELTA_DH_new;
-      }
-    }
-    else if (!state_new.XYMU_RENDERINGn) {
-      BYCU_OAM_CLKp_new = clk_new || !(state_new.phase_sfetch < 1 || state_new.phase_sfetch > 3) || cpu_addr_oam_new;
-    }
-    else {
-      BYCU_OAM_CLKp_new = clk_new || (cpu_addr_oam_new && DELTA_DH_new);
-    }
-
-
-    //----------
-
-    if (bit(BYCU_OAM_CLKp_old) && !bit(BYCU_OAM_CLKp_new)) {
-      state_new.oam_temp_a = ~state_old.oam_latch_a;
-      state_new.oam_temp_b = ~state_old.oam_latch_b;
-    }
+  if (trig_a) {
+    state_new.oam_temp_a = ~state_old.oam_latch_a;
+    state_new.oam_temp_b = ~state_old.oam_latch_b;
   }
 
 
@@ -1208,7 +1171,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   uint8_t pins_ctrl_csn_new = 0;
   if (ext_addr_new && cpu_addr_ram_new)             pins_ctrl_csn_new = gen_clk_new(phase_total_old, 0b00111111);
-  if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new)  pins_ctrl_csn_new = !!(dma_addr_new & 0x8000);
+  if (MATU_DMA_RUNNINGp_odd_new && !dma_addr_vram_new)  pins_ctrl_csn_new = !!(dma_addr_new & 0x8000);
 
   //----------------------------------------
 
@@ -1218,7 +1181,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   uint16_t cart_addr;
 
-  if (MATU_DMA_RUNNINGp_new && !dma_addr_vram_new) {
+  if (MATU_DMA_RUNNINGp_odd_new && !dma_addr_vram_new) {
     cart_addr = dma_addr_new;
   }
   else if ((state_new.cpu_signals.TEPU_BOOT_BITn.state || cpu_addr_new > 0x00FF) && gen_clk_new(phase_total_old, 0b00111111) && ext_addr_new) {
@@ -1241,7 +1204,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // Ext read
 
   uint8_t pins_ctrl_rdn_new = 0;
-  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_rdn_new = 1;
+  if (MATU_DMA_RUNNINGp_odd_new && dma_addr_vram_new)   pins_ctrl_rdn_new = 1;
   if (!ext_addr_new || !cpu_wr)                     pins_ctrl_rdn_new = 1;
   if (cpu_addr_vram_new)                            pins_ctrl_rdn_new = 1;
 
@@ -1303,7 +1266,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   uint8_t pins_ctrl_wrn_new = 0;
   if (ext_addr_new && cpu_wr && !cpu_addr_vram_new) pins_ctrl_wrn_new = gen_clk_new(phase_total_old, 0b00001110);
-  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new)   pins_ctrl_wrn_new = 0;
+  if (MATU_DMA_RUNNINGp_odd_new && dma_addr_vram_new)   pins_ctrl_wrn_new = 0;
 
   {
     const uint8_t data_out = cart_dbus;
@@ -1417,7 +1380,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       bit_cat(state_new.vram_abus, 12, 12, 1);
     }
   }
-  else if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new) {
+  else if (MATU_DMA_RUNNINGp_odd_new && dma_addr_vram_new) {
     // DMA vram read address
     state_new.vram_abus = dma_addr_new;
   }
@@ -1443,7 +1406,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   uint8_t pins_vram_ctrl_oen_new = 1;
   uint8_t pins_vram_ctrl_wrn_new = 1;
 
-  if (MATU_DMA_RUNNINGp_new && dma_addr_vram_new) {
+  if (MATU_DMA_RUNNINGp_odd_new && dma_addr_vram_new) {
     pins_vram_ctrl_csn_new = 1;
     pins_vram_ctrl_oen_new = 1;
   }
@@ -1584,7 +1547,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // OAM bus and control signals.
   // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
 
-  if (MATU_DMA_RUNNINGp_new) {
+  if (MATU_DMA_RUNNINGp_odd_new) {
     state_new.oam_abus = (uint8_t)~state_new.dma_lo;
     if (DELTA_HD_new) {
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
@@ -1673,7 +1636,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------
 
-  if (MATU_DMA_RUNNINGp_new) {
+  if (MATU_DMA_RUNNINGp_odd_new) {
     if (DELTA_DH_new) mem.oam_ram[state_new.dma_lo] = dma_addr_vram_new ? state_new.vram_dbus : cart_dbus;
     state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
     state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
@@ -1847,7 +1810,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     uint8_t stat = 0x80;
 
     stat |= (!state_new.XYMU_RENDERINGn || vblank_new) << 0;
-    stat |= (!state_new.XYMU_RENDERINGn || (!MATU_DMA_RUNNINGp_new && besu_scan_donen_odd_new && !vid_rst_evn_new)) << 1;
+    stat |= (!state_new.XYMU_RENDERINGn || (!MATU_DMA_RUNNINGp_odd_new && besu_scan_donen_odd_new && !vid_rst_evn_new)) << 1;
     stat |= (!state_new.int_ctrl.RUPO_LYC_MATCHn.state) << 2;
     stat |= (pack_stat ^ 0b1111) << 3;
 
@@ -2201,7 +2164,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.state = !vid_rst_evn_new && !line_rst_odd_new && scan_done_trig_new;
     state_new.sfetch_control.TEXY_SFETCHINGp_evn.state = ((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn);
     state_new.WODU_HBLANKp_odd = hblank_new;
-    state_new.ACYL_SCANNINGp_odd = (!MATU_DMA_RUNNINGp_new && besu_scan_donen_odd_new && !vid_rst_evn_new);
+    state_new.ACYL_SCANNINGp_odd = (!MATU_DMA_RUNNINGp_odd_new && besu_scan_donen_odd_new && !vid_rst_evn_new);
     state_new.ATEJ_LINE_RSTp_odd = line_rst_odd_new || vid_rst_evn_new;
     state_new.cpu_signals.SIG_CPU_BOOTp.state = 0;
     state_new.cpu_signals.SIG_BOOT_CSp.state = 0;

@@ -1036,6 +1036,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   wire NYXU_BFETCH_RSTn_new = (line_rst_new || vid_rst_new || !scan_done_trig_new) && !NUNY_WIN_MODE_TRIGp_new && !TEVO_WIN_FETCH_TRIGp_new;
 
+  if (state_new.XYMU_RENDERINGn) CHECK_P(NYXU_BFETCH_RSTn_new);
 
   //----------------------------------------
   // Win map x counter

@@ -723,8 +723,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.phase_sfetch++;
   }
 
-
-
+  state_new.sfetch_counter_evn = state_new.phase_sfetch > 10 ? 5 : uint8_t(state_new.phase_sfetch / 2);
 
   //----------------------------------------
   // NUNU
@@ -942,18 +941,37 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // There are three clocks combined into one here, and the logic does not untangle nicely. :P
 
-  wire aver_old = !MATU_DMA_RUNNINGp_odd_old && besu_scan_donen_odd_old && gen_clk(phase_old, 0b01110111);
-  wire aver_new = !MATU_DMA_RUNNINGp_odd_new && besu_scan_donen_odd_new && gen_clk(phase_new, 0b01110111);
+  wire AVER_AxxxExxx_old = !(!MATU_DMA_RUNNINGp_odd_old && besu_scan_donen_odd_old && gen_clk(phase_old, 0b01110111));
+  wire AVER_AxxxExxx_new = !(!MATU_DMA_RUNNINGp_odd_new && besu_scan_donen_odd_new && gen_clk(phase_new, 0b01110111));
 
-  wire xujy_old = (state_old.phase_sfetch == 2 || state_old.phase_sfetch == 3 || state_old.phase_sfetch == 4) && !state_old.XYMU_RENDERINGn;
-  wire xujy_new = (state_new.phase_sfetch == 2 || state_new.phase_sfetch == 3 || state_new.phase_sfetch == 4) && !state_new.XYMU_RENDERINGn;
+  if (DELTA_ODD_new) {
+    state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = state_old.phase_sfetch > 10 ? get_bit(5, 0) : get_bit(state_old.phase_sfetch / 2, 0);
+  }
 
-  wire cufe_old = (cpu_addr_oam_old || MATU_DMA_RUNNINGp_odd_old) && gen_clk(phase_old, 0b00001111);
-  wire cufe_new = (cpu_addr_oam_new || MATU_DMA_RUNNINGp_odd_new) && gen_clk(phase_new, 0b00001111);
+  wire TEPA_RENDERINGn_old = !(!state_old.XYMU_RENDERINGn);
+  wire TYTU_SFETCH_S0n_old = !(get_bit(state_old.sfetch_counter_evn, 0));
+  wire TACU_SPR_SEQ_5_TRIG_old = !(state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && TYTU_SFETCH_S0n_old);
+  wire TUVO_PPU_OAM_RDp_old = !(TEPA_RENDERINGn_old || get_bit(state_old.sfetch_counter_evn, 1) || get_bit(state_old.sfetch_counter_evn, 2));
+  wire VAPE_OAM_CLKENn_old = (TUVO_PPU_OAM_RDp_old && TACU_SPR_SEQ_5_TRIG_old);
+  wire XUJY_OAM_CLKENp_old = !VAPE_OAM_CLKENn_old;
 
-  uint8_t trig_a = (aver_old || xujy_old || cufe_old) && !(aver_new || xujy_new || cufe_new);
+  wire TEPA_RENDERINGn_new = !(!state_new.XYMU_RENDERINGn);
+  wire TYTU_SFETCH_S0n_new = !(get_bit(state_new.sfetch_counter_evn, 0));
+  wire TACU_SPR_SEQ_5_TRIG_new = !(state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && TYTU_SFETCH_S0n_new);
+  wire TUVO_PPU_OAM_RDp_new = !(TEPA_RENDERINGn_new || get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2));
+  wire VAPE_OAM_CLKENn_new = (TUVO_PPU_OAM_RDp_new && TACU_SPR_SEQ_5_TRIG_new);
+  wire XUJY_OAM_CLKENp_new = !VAPE_OAM_CLKENn_new;
 
-  if (trig_a) {
+  wire CUFE_OAM_CLKp_old = !((cpu_addr_oam_old || MATU_DMA_RUNNINGp_odd_old) && gen_clk(phase_old, 0b00001111));
+  wire CUFE_OAM_CLKp_new = !((cpu_addr_oam_new || MATU_DMA_RUNNINGp_odd_new) && gen_clk(phase_new, 0b00001111));
+
+  wire BYCU_OAM_CLKp_old = !(AVER_AxxxExxx_old && XUJY_OAM_CLKENp_old && CUFE_OAM_CLKp_old);
+  wire COTA_OAM_CLKn_old = !BYCU_OAM_CLKp_old;
+
+  wire BYCU_OAM_CLKp_new = !(AVER_AxxxExxx_new && XUJY_OAM_CLKENp_new && CUFE_OAM_CLKp_new);
+  wire COTA_OAM_CLKn_new = !BYCU_OAM_CLKp_new;
+
+  if (!COTA_OAM_CLKn_old && COTA_OAM_CLKn_new) {
     state_new.oam_temp_a = ~state_old.oam_latch_a;
     state_new.oam_temp_b = ~state_old.oam_latch_b;
   }
@@ -1527,108 +1545,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // oam
 
-  // this is weird, why is it always 0 when not in reset?
-  state_new.oam_ctrl.MAKA_LATCH_EXTp.state = 0;
-
-
-
-  //----------
-  // OAM bus and control signals.
-  // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
-
-  if (MATU_DMA_RUNNINGp_odd_new) {
-    state_new.oam_abus = (uint8_t)~state_new.dma_lo;
-    if (DELTA_HD_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
-      state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
-      state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-    }
-    else {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_WRn_A.state =  get_bit(state_new.dma_lo, 0);
-      state_new.oam_ctrl.SIG_OAM_WRn_B.state = !get_bit(state_new.dma_lo, 0);
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-    }
-  }
-  else if (besu_scan_donen_odd_new && !vid_rst_evn_new) {
-    state_new.oam_abus = (scan_counter_new << 2) ^ 0xFF;
-    state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
-    state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-
-    if (DELTA_HA_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-    }
-    if (DELTA_AB_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
-    }
-    if (DELTA_BC_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
-    }
-    if (DELTA_CD_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = !(cpu_addr_oam_new && cpu.bus_req_new.read);
-    }
-    if (DELTA_DE_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = !cpu_addr_oam_new;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-    }
-    if (DELTA_EF_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
-    }
-    if (DELTA_FG_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
-    }
-    if (DELTA_GH_new) {
-      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-    }
-  }
-  else if (!state_new.XYMU_RENDERINGn) {
-    uint8_t sfetch_oam_oen_new =  !(state_new.phase_sfetch == 0 || state_new.phase_sfetch == 3);
-    uint8_t sfetch_oam_clk_new =  !(state_new.phase_sfetch >= 1 && state_new.phase_sfetch <= 3);
-
-    state_new.oam_abus = (uint8_t)~((state_new.sprite_ibus << 2) | 0b11);
-    state_new.oam_ctrl.SIG_OAM_CLKn.state  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk(phase_new, 0b11110000));
-    state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
-    state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-    state_new.oam_ctrl.SIG_OAM_OEn.state   = sfetch_oam_oen_new && !(cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA_new) && !(DELTA_DH_new && cpu.bus_req_new.read));
-  }
-  else if (cpu_addr_oam_new) {
-    state_new.oam_abus = uint8_t(~cpu_addr_new);
-    state_new.oam_ctrl.SIG_OAM_CLKn.state  = DELTA_HD_new;
-    state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
-    state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-    state_new.oam_ctrl.SIG_OAM_OEn.state   = !DELTA_AD_new || !cpu.bus_req_new.read;
-
-    if (DELTA_DH_new) {
-      if (cpu_wr) {
-        if (!DELTA_GH_new) {
-          state_new.oam_ctrl.SIG_OAM_WRn_A.state =  get_bit(cpu_addr_new, 0);
-          state_new.oam_ctrl.SIG_OAM_WRn_B.state = !get_bit(cpu_addr_new, 0);
-        }
-      }
-    }
-  }
-  else {
-    state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
-    state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
-    state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-    state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
-    state_new.oam_abus = (uint8_t)~cpu_addr_new;
-  }
-
-  //----------
+  // OAM bus has to be pulled up or we fail regression
+  uint8_t oam_dbus_a = 0xFF;
+  uint8_t oam_dbus_b = 0xFF;
 
   if (MATU_DMA_RUNNINGp_odd_new) {
     if (DELTA_DH_new) mem.oam_ram[state_new.dma_lo] = dma_addr_vram_new ? state_new.vram_dbus : cart_dbus;
-    state_new.oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
-    state_new.oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
+    oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
+    oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
   }
   else if (besu_scan_donen_odd_new && !vid_rst_evn_new) {
     // Scanning
@@ -1658,42 +1582,32 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (DELTA_HA_new) {
-      state_new.oam_dbus_a = 0xFF;
-      state_new.oam_dbus_b = 0xFF;
     }
     if (DELTA_AB_new) {
-      state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+      oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
     }
     if (DELTA_BC_new) {
-      state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+      oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
     }
     if (DELTA_CD_new) {
       if (cpu_addr_oam_new && cpu.bus_req_new.read) {
-        state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-        state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
-      }
-      else {
-        state_new.oam_dbus_a = 0xFF;
-        state_new.oam_dbus_b = 0xFF;
+        oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+        oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
       }
     }
     if (DELTA_DE_new) {
-      state_new.oam_dbus_a = 0xFF;
-      state_new.oam_dbus_b = 0xFF;
     }
     if (DELTA_EF_new) {
-      state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+      oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
     }
     if (DELTA_FG_new) {
-      state_new.oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+      oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
     }
     if (DELTA_GH_new) {
-      state_new.oam_dbus_a = 0xFF;
-      state_new.oam_dbus_b = 0xFF;
     }
   }
   else if (!state_new.XYMU_RENDERINGn) {
@@ -1702,33 +1616,28 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     uint8_t sfetch_oam_oen_new =  !(state_new.phase_sfetch == 0 || state_new.phase_sfetch == 3);
     uint8_t sfetch_oam_clk_new =  !(state_new.phase_sfetch >= 1 && state_new.phase_sfetch <= 3);
 
-    state_new.oam_dbus_a = 0xFF;
-    state_new.oam_dbus_b = 0xFF;
     if (!sfetch_oam_oen_new) {
-      state_new.oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
+      oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
+      oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
     }
     else if (cpu_addr_oam_new && (!cpu.bus_req_new.read || DELTA_AD_new)) {
-      state_new.oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
-      state_new.oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
+      oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
+      oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
     }
 
 
     if (state_new.phase_sfetch == 0 || state_new.phase_sfetch == 3) {
-      state_new.oam_latch_a = state_new.oam_dbus_a;
-      state_new.oam_latch_b = state_new.oam_dbus_b;
+      state_new.oam_latch_a = oam_dbus_a;
+      state_new.oam_latch_b = oam_dbus_b;
     }
   }
   else if (cpu_addr_oam_new) {
-    // OAM bus has to be pulled up or we fail regression
-    state_new.oam_dbus_a = 0xFF;
-    state_new.oam_dbus_b = 0xFF;
     // CPUing
 
     if (DELTA_HD_new) {
       if (cpu.bus_req_new.read && !DELTA_HA_new) {
-        state_new.oam_dbus_a = ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
-        state_new.oam_dbus_b = ~mem.oam_ram[(cpu_addr_new & 0xFF) |  1];
+        oam_dbus_a = ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
+        oam_dbus_b = ~mem.oam_ram[(cpu_addr_new & 0xFF) |  1];
         state_new.oam_latch_a = ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
         state_new.oam_latch_b = ~mem.oam_ram[(cpu_addr_new & 0xFF) |  1];
       }
@@ -1743,17 +1652,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
 
       if (cpu_wr) {
-        state_new.oam_dbus_a = ~state_new.cpu_dbus;
-        state_new.oam_dbus_b = ~state_new.cpu_dbus;
+        oam_dbus_a = ~state_new.cpu_dbus;
+        oam_dbus_b = ~state_new.cpu_dbus;
       }
     }
   }
   else {
     // Idle
-    state_new.oam_dbus_a = ~state_new.cpu_dbus;
-    state_new.oam_dbus_b = ~state_new.cpu_dbus;
+    oam_dbus_a = ~state_new.cpu_dbus;
+    oam_dbus_b = ~state_new.cpu_dbus;
   }
-
 
   //----------------------------------------
   // zram
@@ -1939,6 +1847,106 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    // this is weird, why is it always 0 when not in reset?
+    state_new.oam_ctrl.MAKA_LATCH_EXTp.state = 0;
+
+
+
+    //----------
+    // OAM bus and control signals.
+    // The inclusion of cpu_addr_oam_new in the SCANNING and RENDERING branches is probably a hardware bug.
+
+    if (MATU_DMA_RUNNINGp_odd_new) {
+      state_new.oam_abus = (uint8_t)~state_new.dma_lo;
+      if (DELTA_HD_new) {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
+        state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
+        state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+      }
+      else {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+        state_new.oam_ctrl.SIG_OAM_WRn_A.state =  get_bit(state_new.dma_lo, 0);
+        state_new.oam_ctrl.SIG_OAM_WRn_B.state = !get_bit(state_new.dma_lo, 0);
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+      }
+    }
+    else if (besu_scan_donen_odd_new && !vid_rst_evn_new) {
+      state_new.oam_abus = (scan_counter_new << 2) ^ 0xFF;
+      state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
+      state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
+
+      if (DELTA_HA_new) {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+      }
+      if (DELTA_AB_new) {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
+      }
+      if (DELTA_BC_new) {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
+      }
+      if (DELTA_CD_new) {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = !(cpu_addr_oam_new && cpu.bus_req_new.read);
+      }
+      if (DELTA_DE_new) {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = !cpu_addr_oam_new;
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+      }
+      if (DELTA_EF_new) {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
+      }
+      if (DELTA_FG_new) {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = 0;
+      }
+      if (DELTA_GH_new) {
+        state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+      }
+    }
+    else if (!state_new.XYMU_RENDERINGn) {
+      uint8_t sfetch_oam_oen_new =  !(state_new.phase_sfetch == 0 || state_new.phase_sfetch == 3);
+      uint8_t sfetch_oam_clk_new =  !(state_new.phase_sfetch >= 1 && state_new.phase_sfetch <= 3);
+
+      state_new.oam_abus = (uint8_t)~((state_new.sprite_ibus << 2) | 0b11);
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk(phase_new, 0b11110000));
+      state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
+      state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = sfetch_oam_oen_new && !(cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA_new) && !(DELTA_DH_new && cpu.bus_req_new.read));
+    }
+    else if (cpu_addr_oam_new) {
+      state_new.oam_abus = uint8_t(~cpu_addr_new);
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = DELTA_HD_new;
+      state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
+      state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = !DELTA_AD_new || !cpu.bus_req_new.read;
+
+      if (DELTA_DH_new) {
+        if (cpu_wr) {
+          if (!DELTA_GH_new) {
+            state_new.oam_ctrl.SIG_OAM_WRn_A.state =  get_bit(cpu_addr_new, 0);
+            state_new.oam_ctrl.SIG_OAM_WRn_B.state = !get_bit(cpu_addr_new, 0);
+          }
+        }
+      }
+    }
+    else {
+      state_new.oam_ctrl.SIG_OAM_CLKn.state  = 1;
+      state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
+      state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = 1;
+      state_new.oam_abus = (uint8_t)~cpu_addr_new;
+    }
+
+    state_new.oam_dbus_a = oam_dbus_a;
+    state_new.oam_dbus_b = oam_dbus_b;
+
+
     // TOBU/VONU/SEBA/TYFO
 
     if (vid_rst_evn_new) {
@@ -1960,12 +1968,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
         state_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.state = state_old.sfetch_control.VONU_SFETCH_S1p_D4_evn.state;
       }
     }
-
-    if (DELTA_ODD_new) {
-      state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = state_old.phase_sfetch > 10 ? get_bit(5, 0) : get_bit(state_old.phase_sfetch / 2, 0);
-    }
-
-    state_new.sfetch_counter_evn = state_new.phase_sfetch > 10 ? 5 : uint8_t(state_new.phase_sfetch / 2);
 
     state_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.state = sfetch_done_trig_new;
 

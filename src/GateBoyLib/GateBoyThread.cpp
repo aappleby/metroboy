@@ -272,6 +272,10 @@ void GateBoyThread::run_normal() {
       step_count = 0;
       break;
     }
+
+    if (gb->get_sys().gb_phase_total % 1000000 == 0) {
+      gb.push();
+    }
   }
 }
 

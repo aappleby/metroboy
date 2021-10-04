@@ -110,6 +110,10 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 #endif
 
 #if 1
+  // oh is about 125 seconds
+  // gejmboj also around 120
+  // pocket around 140
+
   blob cart;
   //load_blob("tests/microtests/DMG/minimal.gb", cart);
   load_blob("oh.gb", cart);

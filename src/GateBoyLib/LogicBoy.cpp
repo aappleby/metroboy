@@ -941,39 +941,23 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // There are three clocks combined into one here, and the logic does not untangle nicely. :P
 
-  wire AVER_AxxxExxx_old = !(!MATU_DMA_RUNNINGp_odd_old && besu_scan_donen_odd_old && gen_clk(phase_old, 0b01110111));
-  wire AVER_AxxxExxx_new = !(!MATU_DMA_RUNNINGp_odd_new && besu_scan_donen_odd_new && gen_clk(phase_new, 0b01110111));
+  {
+    wire scan_oam_clk_old = !MATU_DMA_RUNNINGp_odd_old && besu_scan_donen_odd_old && gen_clk(phase_old, 0b01110111);
+    wire scan_oam_clk_new = !MATU_DMA_RUNNINGp_odd_new && besu_scan_donen_odd_new && gen_clk(phase_new, 0b01110111);
 
-  if (DELTA_ODD_new) {
-    state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = state_old.phase_sfetch > 10 ? get_bit(5, 0) : get_bit(state_old.phase_sfetch / 2, 0);
-  }
+    wire ppu_oam_clk_old = (state_old.phase_sfetch == 1 || state_old.phase_sfetch == 2 || state_old.phase_sfetch == 3) && !state_old.XYMU_RENDERINGn;
+    wire ppu_oam_clk_new = (state_new.phase_sfetch == 1 || state_new.phase_sfetch == 2 || state_new.phase_sfetch == 3) && !state_new.XYMU_RENDERINGn;
 
-  wire TEPA_RENDERINGn_old = !(!state_old.XYMU_RENDERINGn);
-  wire TYTU_SFETCH_S0n_old = !(get_bit(state_old.sfetch_counter_evn, 0));
-  wire TACU_SPR_SEQ_5_TRIG_old = !(state_old.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && TYTU_SFETCH_S0n_old);
-  wire TUVO_PPU_OAM_RDp_old = !(TEPA_RENDERINGn_old || get_bit(state_old.sfetch_counter_evn, 1) || get_bit(state_old.sfetch_counter_evn, 2));
-  wire VAPE_OAM_CLKENn_old = (TUVO_PPU_OAM_RDp_old && TACU_SPR_SEQ_5_TRIG_old);
-  wire XUJY_OAM_CLKENp_old = !VAPE_OAM_CLKENn_old;
+    wire dma_oam_clk_old = (cpu_addr_oam_old || MATU_DMA_RUNNINGp_odd_old) && gen_clk(phase_old, 0b00001111);
+    wire dma_oam_clk_new = (cpu_addr_oam_new || MATU_DMA_RUNNINGp_odd_new) && gen_clk(phase_new, 0b00001111);
 
-  wire TEPA_RENDERINGn_new = !(!state_new.XYMU_RENDERINGn);
-  wire TYTU_SFETCH_S0n_new = !(get_bit(state_new.sfetch_counter_evn, 0));
-  wire TACU_SPR_SEQ_5_TRIG_new = !(state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state && TYTU_SFETCH_S0n_new);
-  wire TUVO_PPU_OAM_RDp_new = !(TEPA_RENDERINGn_new || get_bit(state_new.sfetch_counter_evn, 1) || get_bit(state_new.sfetch_counter_evn, 2));
-  wire VAPE_OAM_CLKENn_new = (TUVO_PPU_OAM_RDp_new && TACU_SPR_SEQ_5_TRIG_new);
-  wire XUJY_OAM_CLKENp_new = !VAPE_OAM_CLKENn_new;
+    wire oam_clk_old = scan_oam_clk_old || ppu_oam_clk_old || dma_oam_clk_old;
+    wire oam_clk_new = scan_oam_clk_new || ppu_oam_clk_new || dma_oam_clk_new;
 
-  wire CUFE_OAM_CLKp_old = !((cpu_addr_oam_old || MATU_DMA_RUNNINGp_odd_old) && gen_clk(phase_old, 0b00001111));
-  wire CUFE_OAM_CLKp_new = !((cpu_addr_oam_new || MATU_DMA_RUNNINGp_odd_new) && gen_clk(phase_new, 0b00001111));
-
-  wire BYCU_OAM_CLKp_old = !(AVER_AxxxExxx_old && XUJY_OAM_CLKENp_old && CUFE_OAM_CLKp_old);
-  wire COTA_OAM_CLKn_old = !BYCU_OAM_CLKp_old;
-
-  wire BYCU_OAM_CLKp_new = !(AVER_AxxxExxx_new && XUJY_OAM_CLKENp_new && CUFE_OAM_CLKp_new);
-  wire COTA_OAM_CLKn_new = !BYCU_OAM_CLKp_new;
-
-  if (!COTA_OAM_CLKn_old && COTA_OAM_CLKn_new) {
-    state_new.oam_temp_a = ~state_old.oam_latch_a;
-    state_new.oam_temp_b = ~state_old.oam_latch_b;
+    if (oam_clk_old && !oam_clk_new) {
+      state_new.oam_temp_a = ~state_old.oam_latch_a;
+      state_new.oam_temp_b = ~state_old.oam_latch_b;
+    }
   }
 
   //----------------------------------------
@@ -1035,6 +1019,23 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
   // FEPO
+
+  if (MATU_DMA_RUNNINGp_odd_new) {
+    state_new.oam_abus = (uint8_t)~state_new.dma_lo;
+  }
+  else if (besu_scan_donen_odd_new && !vid_rst_evn_new) {
+    state_new.oam_abus = (scan_counter_new << 2) ^ 0xFF;
+  }
+  else if (!state_new.XYMU_RENDERINGn) {
+    state_new.oam_abus = (uint8_t)~((state_new.sprite_ibus << 2) | 0b11);
+  }
+  else if (cpu_addr_oam_new) {
+    state_new.oam_abus = uint8_t(~cpu_addr_new);
+  }
+  else {
+    state_new.oam_abus = (uint8_t)~cpu_addr_new;
+  }
+
 
   if (!vid_rst_evn_new) {
     if (DELTA_HA_new || DELTA_DE_new) {
@@ -1847,6 +1848,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // These are all dead (unused) signals that are only needed for regression tests
 
   if (!config_fastmode) {
+    if (DELTA_ODD_new) {
+      state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = state_old.phase_sfetch > 10 ? get_bit(5, 0) : get_bit(state_old.phase_sfetch / 2, 0);
+    }
+
     // this is weird, why is it always 0 when not in reset?
     state_new.oam_ctrl.MAKA_LATCH_EXTp.state = 0;
 

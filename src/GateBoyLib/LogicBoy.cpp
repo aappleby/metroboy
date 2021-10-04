@@ -1036,7 +1036,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_abus = (uint8_t)~cpu_addr_new;
   }
 
-
   if (!vid_rst_evn_new) {
     if (DELTA_HA_new || DELTA_DE_new) {
       state_new.sprite_index = (state_old.oam_abus >> 2) ^ 0b111111;

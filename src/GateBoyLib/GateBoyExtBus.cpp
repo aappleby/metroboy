@@ -390,20 +390,6 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
   /*_p08.LAVO*/ wire LAVO_HOLDn = nand3(gb_state.cpu_signals.SIG_IN_CPU_RDp.out_new(), TEXO_ADDR_VRAMn(), gb_state.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new());
 
-  probe_wire(1, "LAVO",  LAVO_HOLDn);
-  probe_wire(2, "RD",    gb_state.cpu_signals.SIG_IN_CPU_RDp.qp_new());
-  probe_wire(3, "TEXO",  TEXO_ADDR_VRAMn());
-  probe_wire(4, "LATCH", gb_state.cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_new());
-
-  //probe_char( 8, "PIN_17 ext", ext_pins.PIN_17_D00.cp_ext());
-  //probe_char( 9, "PIN_18 ext", ext_pins.PIN_18_D01.cp_ext());
-  //probe_char(10, "PIN_19 ext", ext_pins.PIN_19_D02.cp_ext());
-  //probe_char(11, "PIN_20 ext", ext_pins.PIN_20_D03.cp_ext());
-  //probe_char(12, "PIN_21 ext", ext_pins.PIN_21_D04.cp_ext());
-  //probe_char(13, "PIN_22 ext", ext_pins.PIN_22_D05.cp_ext());
-  //probe_char(14, "PIN_23 ext", ext_pins.PIN_23_D06.cp_ext());
-  //probe_char(15, "PIN_24 ext", ext_pins.PIN_24_D07.cp_ext());
-
   /*#p08.SOMA*/ gb_state.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(LAVO_HOLDn, pins.dbus.PIN_17_D00.qp_int_new());
   /*_p08.RONY*/ gb_state.ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(LAVO_HOLDn, pins.dbus.PIN_18_D01.qp_int_new());
   /*_p08.RAXY*/ gb_state.ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.tp_latchn(LAVO_HOLDn, pins.dbus.PIN_19_D02.qp_int_new());
@@ -412,15 +398,6 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p08.SAGO*/ gb_state.ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.tp_latchn(LAVO_HOLDn, pins.dbus.PIN_22_D05.qp_int_new());
   /*_p08.RUPA*/ gb_state.ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.tp_latchn(LAVO_HOLDn, pins.dbus.PIN_23_D06.qp_int_new());
   /*_p08.SAZY*/ gb_state.ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.tp_latchn(LAVO_HOLDn, pins.dbus.PIN_24_D07.qp_int_new());
-
-  //probe_wire(24, "SOMA", ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
-  //probe_wire(25, "RONY", ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());
-  //probe_wire(26, "RAXY", ext_data_latch.RAXY_EXT_DATA_LATCH_D2n.qp_new());
-  //probe_wire(27, "SELO", ext_data_latch.SELO_EXT_DATA_LATCH_D3n.qp_new());
-  //probe_wire(28, "SODY", ext_data_latch.SODY_EXT_DATA_LATCH_D4n.qp_new());
-  //probe_wire(29, "SAGO", ext_data_latch.SAGO_EXT_DATA_LATCH_D5n.qp_new());
-  //probe_wire(30, "RUPA", ext_data_latch.RUPA_EXT_DATA_LATCH_D6n.qp_new());
-  //probe_wire(31, "SAZY", ext_data_latch.SAZY_EXT_DATA_LATCH_D7n.qp_new());
 
   /*#p08.RYMA*/ triwire RYMA_EL0_TO_CD0 = tri6_nn(LAVO_HOLDn, gb_state.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.qp_new());
   /*_p08.RUVO*/ triwire RUVO_EL1_TO_CD1 = tri6_nn(LAVO_HOLDn, gb_state.ext_data_latch.RONY_EXT_DATA_LATCH_D1n.qp_new());

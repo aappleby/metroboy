@@ -365,8 +365,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   memset(&gb_state.cpu_abus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_abus));
   memset(&gb_state.cpu_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_dbus));
 
-  probe_wire(0, "DELTA_HA",  DELTA_HA_new);
-
   //----------------------------------------
 
   {
@@ -493,6 +491,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p29.BAGY*/ wire BAGY_LINE_RSTn_odd = not1(BALU_LINE_RSTp_odd);
   /*_p27.XAHY*/ wire XAHY_LINE_RSTn_odd = not1(gb_state.ATEJ_LINE_RSTp_odd.out_new());
 
+  probe_wire(18,  "ANOM", ANOM_LINE_RSTn_odd);
+
   //----------------------------------------
 
   //----------------------------------------
@@ -533,7 +533,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
       /*#p28.GAVA*/ wire GAVA_SCAN_CLOCKp_odd = or2(gb_state.sprite_scanner.FETO_SCAN_DONEp.out_new(), gb_state.sys_clk.XUPY_ABxxEFxx());
 
-      /*#p28.YFEL*/ gb_state.scan_counter.YFEL_SCAN0_odd.dff17_any(GAVA_SCAN_CLOCKp_odd,                      ANOM_LINE_RSTn_odd, gb_state.scan_counter.YFEL_SCAN0_odd.qn_any());
+      /*#p28.YFEL*/ gb_state.scan_counter.YFEL_SCAN0_odd.dff17_any(GAVA_SCAN_CLOCKp_odd,                          ANOM_LINE_RSTn_odd, gb_state.scan_counter.YFEL_SCAN0_odd.qn_any());
       /*_p28.WEWY*/ gb_state.scan_counter.WEWY_SCAN1_odd.dff17_any(gb_state.scan_counter.YFEL_SCAN0_odd.qn_any(), ANOM_LINE_RSTn_odd, gb_state.scan_counter.WEWY_SCAN1_odd.qn_any());
       /*_p28.GOSO*/ gb_state.scan_counter.GOSO_SCAN2_odd.dff17_any(gb_state.scan_counter.WEWY_SCAN1_odd.qn_any(), ANOM_LINE_RSTn_odd, gb_state.scan_counter.GOSO_SCAN2_odd.qn_any());
       /*_p28.ELYN*/ gb_state.scan_counter.ELYN_SCAN3_odd.dff17_any(gb_state.scan_counter.GOSO_SCAN2_odd.qn_any(), ANOM_LINE_RSTn_odd, gb_state.scan_counter.ELYN_SCAN3_odd.qn_any());
@@ -548,9 +548,34 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Global rendering flag 'XYMU'
 
+  // So XYMU must somehow end up 1 during line 0.
+  // WEGO could fire after AVAP_SCAN_DONE, or AVAP could fail to fire.
+  // Or they could both fire on the same cycle and something weird happens?
+  // If the scan failed to trigger on line 0, that might explain it...
+
+
   /*#p21.VOGA*/ gb_state.VOGA_HBLANKp_evn.dff17(gb_state.sys_clk.ALET_evn(), TADY_LINE_RSTn_odd, reg_old.WODU_HBLANKp_odd.out_old());
   /*#p21.WEGO*/ wire WEGO_HBLANKp_evn = or2(TOFU_VID_RSTp(), gb_state.VOGA_HBLANKp_evn.qp_new());
   /*#p21.XYMU*/ gb_state.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp_evn, gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new());
+
+
+  /*
+  {
+    int lcd_y = bit_pack(gb_state.reg_ly);
+    if (lcd_y == 0) {
+      gb_state.XYMU_RENDERINGn.nor_latch(1, 0);
+    }
+    else {
+      gb_state.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp_evn, gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new());
+    }
+  }
+  */
+
+
+  probe_wire(15, "XYMU", gb_state.XYMU_RENDERINGn.state);
+  probe_wire(16, "WEGO", WEGO_HBLANKp_evn);
+  probe_wire(17, "AVAP", gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.state);
+
   /*_p24.LOBY*/ wire LOBY_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
   /*#p27.PAHA*/ wire PAHA_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
   /*_p29.TEPA*/ wire TEPA_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
@@ -563,12 +588,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_evn_old = not1(reg_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.qp_old());
     /*_p27.TEKY*/ wire TEKY_SFETCH_REQp_odd_old = and4(reg_old.FEPO_STORE_MATCHp_odd.out_old(), TUKU_WIN_HITn_odd_old, reg_old.tfetch_control.LYRY_BFETCH_DONEp_odd.out_old(), SOWO_SFETCH_RUNNINGn_evn_old);
 
-    probe_wire(16, "TEKY_OLD",  TEKY_SFETCH_REQp_odd_old);
-
     /*_p27.SOBU*/ gb_state.sfetch_control.SOBU_SFETCH_REQp_evn.dff17(gb_state.sys_clk.TAVA_evn(), gb_state.SIG_VCC.out_new(), TEKY_SFETCH_REQp_odd_old);
     /*_p27.SUDA*/ gb_state.sfetch_control.SUDA_SFETCH_REQp_odd.dff17(gb_state.sys_clk.LAPE_odd(), gb_state.SIG_VCC.out_new(), reg_old.sfetch_control.SOBU_SFETCH_REQp_evn.qp_old());
-    probe_wire(18, "SOBU",  gb_state.sfetch_control.SOBU_SFETCH_REQp_evn.state & 1);
-    probe_wire(19, "SUDA",  gb_state.sfetch_control.SUDA_SFETCH_REQp_odd.state & 1);
 
     /*#p29.TYFO*/ gb_state.sfetch_control.TYFO_SFETCH_S0p_D1_odd.dff17(gb_state.sys_clk.LAPE_odd(), gb_state.SIG_VCC.out_new(),        reg_old.sfetch_counter_evn.TOXE_SFETCH_S0p_evn.qp_old());
     /*#p29.TOBU*/ gb_state.sfetch_control.TOBU_SFETCH_S1p_D2_evn.dff17(gb_state.sys_clk.TAVA_evn(), gb_state.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_counter_evn.TULY_SFETCH_S1p_evn.qp_old());
@@ -815,8 +836,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p21.XODU*/ reg_new.pix_count.XODU_PX2p_odd.dff17_any(SACU_CLKPIPE_odd_new, TADY_LINE_RSTn_odd, XEGY_old);
     /*_p21.XYDO*/ reg_new.pix_count.XYDO_PX3p_odd.dff17_any(SACU_CLKPIPE_odd_new, TADY_LINE_RSTn_odd, XORA_old);
 
-    probe_wire(25, "SACU", SACU_CLKPIPE_odd_new);
-
     /*_p24.TOCA*/ wire TOCA_new = not1(reg_new.pix_count.XYDO_PX3p_odd.qp_any());
     /*_p21.SAKE*/ wire SAKE_old = xor2(reg_old.pix_count.TUHU_PX4p_odd.qp_any(), reg_old.pix_count.TUKY_PX5p_odd.qp_any());
     /*_p21.TYBA*/ wire TYBA_old = and2(reg_old.pix_count.TUHU_PX4p_odd.qp_any(), reg_old.pix_count.TUKY_PX5p_odd.qp_any());
@@ -850,8 +869,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p21.WODU*/ gb_state.WODU_HBLANKp_odd <<= and2(XENA_STORE_MATCHn_odd, XANO_PX167p_odd); // WODU goes high on odd, cleared on H
   }
 
-  probe_wire(20, "MYVO", gb_state.sys_clk.MYVO_odd());
-
   /*_p27.PYCO*/ gb_state.win_ctrl.PYCO_WIN_MATCHp_evn.dff17(ROCO_CLKPIPE_evn_new, XAPO_VID_RSTn(), reg_old.win_ctrl.NUKO_WX_MATCHp_odd.out_old());
 
 
@@ -863,7 +880,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
 
 
-  probe_wire(21, "ROCO", ROCO_CLKPIPE_evn_new);
   /*#p24.SACU*/ wire SACU_CLKPIPE_odd_new = or2(SEGU_CLKPIPE_odd_new, gb_state.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.qp_new());
 
   /*_p24.PAHO*/ gb_state.lcd.PAHO_X8_SYNC.dff17(ROXO_CLKPIPE_evn_new, gb_state.XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
@@ -940,7 +956,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     ///*_p27.TUKU*/ wire TUKU_WIN_HITn_odd_new = not1(TOMU_WIN_HITp_odd_new);
     ///*_p27.SOWO*/ wire SOWO_SFETCH_RUNNINGn_evn_new = not1(reg_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.qp_new());
     ///*_p27.TEKY*/ wire TEKY_SFETCH_REQp_odd_new = and4(reg_new.FEPO_STORE_MATCHp_odd.out_new(), TUKU_WIN_HITn_odd_new, reg_new.tfetch_control.LYRY_BFETCH_DONEp_odd.out_new(), SOWO_SFETCH_RUNNINGn_evn_new);
-    //probe_wire(17, "TEKY_NEW",  TEKY_SFETCH_REQp_odd_new);
   }
 
   //----------------------------------------

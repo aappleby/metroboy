@@ -21,7 +21,7 @@
 
 using namespace std;
 
-const bool run_slow_tests = false;
+const bool run_slow_tests = true;
 
 //#define TEST_MOONEYE
 
@@ -593,10 +593,10 @@ TestResults GateBoyTests::test_micro_poweron(const IGateBoy* proto) {
 TestResults GateBoyTests::test_micro_int_vblank(const IGateBoy* proto) {
   TEST_INIT();
 
-  results += run_microtest(proto, "lcdon_halt_to_vblank_int_a.gb");
-  results += run_microtest(proto, "lcdon_halt_to_vblank_int_b.gb");
-  results += run_microtest(proto, "lcdon_nops_to_vblank_int_a.gb");
-  results += run_microtest(proto, "lcdon_nops_to_vblank_int_b.gb");
+  results += run_microtest(proto, "lcdon_halt_to_vblank_int_a.gb", true);
+  results += run_microtest(proto, "lcdon_halt_to_vblank_int_b.gb", true);
+  results += run_microtest(proto, "lcdon_nops_to_vblank_int_a.gb", true);
+  results += run_microtest(proto, "lcdon_nops_to_vblank_int_b.gb", true);
 
   TEST_DONE();
 }
@@ -634,13 +634,13 @@ TestResults GateBoyTests::test_micro_int_stat(const IGateBoy* proto) {
   results += run_microtest(proto, "int_hblank_nops_scx7.gb"); // int fires on 836 E
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "int_vblank1_halt.gb"); // int fires on 131602 C
-    results += run_microtest(proto, "int_vblank1_incs.gb");
-    results += run_microtest(proto, "int_vblank1_nops.gb");
+    results += run_microtest(proto, "int_vblank1_halt.gb", true); // int fires on 131602 C
+    results += run_microtest(proto, "int_vblank1_incs.gb", true);
+    results += run_microtest(proto, "int_vblank1_nops.gb", true);
 
-    results += run_microtest(proto, "int_vblank2_halt.gb"); // int fires on 131562 C
-    results += run_microtest(proto, "int_vblank2_incs.gb");
-    results += run_microtest(proto, "int_vblank2_nops.gb");
+    results += run_microtest(proto, "int_vblank2_halt.gb", true); // int fires on 131562 C
+    results += run_microtest(proto, "int_vblank2_incs.gb", true);
+    results += run_microtest(proto, "int_vblank2_nops.gb", true);
   }
 
   results += run_microtest(proto, "int_lyc_halt.gb"); // int fires on 1226 C
@@ -653,8 +653,8 @@ TestResults GateBoyTests::test_micro_int_stat(const IGateBoy* proto) {
 
   // broken and slow
   if (run_slow_tests) {
-    results += run_microtest(proto, "int_hblank_halt_bug_a.gb"); // failing
-    results += run_microtest(proto, "int_hblank_halt_bug_b.gb"); // failing
+    results += run_microtest(proto, "int_hblank_halt_bug_a.gb", true);
+    results += run_microtest(proto, "int_hblank_halt_bug_b.gb", true); // failing
   }
 
   results += run_microtest(proto, "hblank_int_if_a.gb");
@@ -733,21 +733,21 @@ TestResults GateBoyTests::test_micro_int_stat(const IGateBoy* proto) {
   results += run_microtest(proto, "int_hblank_incs_scx7.gb");
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "vblank2_int_if_a.gb");
-    results += run_microtest(proto, "vblank2_int_if_b.gb");
-    results += run_microtest(proto, "vblank2_int_if_c.gb");
-    results += run_microtest(proto, "vblank2_int_if_d.gb");
-    results += run_microtest(proto, "vblank2_int_inc_sled.gb");
-    results += run_microtest(proto, "vblank2_int_nops_a.gb");
-    results += run_microtest(proto, "vblank2_int_nops_b.gb");
+    results += run_microtest(proto, "vblank2_int_if_a.gb", true);
+    results += run_microtest(proto, "vblank2_int_if_b.gb", true);
+    results += run_microtest(proto, "vblank2_int_if_c.gb", true);
+    results += run_microtest(proto, "vblank2_int_if_d.gb", true);
+    results += run_microtest(proto, "vblank2_int_inc_sled.gb", true);
+    results += run_microtest(proto, "vblank2_int_nops_a.gb", true);
+    results += run_microtest(proto, "vblank2_int_nops_b.gb", true);
 
-    results += run_microtest(proto, "vblank_int_if_a.gb");
-    results += run_microtest(proto, "vblank_int_if_b.gb");
-    results += run_microtest(proto, "vblank_int_if_c.gb");
-    results += run_microtest(proto, "vblank_int_if_d.gb");
-    results += run_microtest(proto, "vblank_int_inc_sled.gb");
-    results += run_microtest(proto, "vblank_int_nops_a.gb");
-    results += run_microtest(proto, "vblank_int_nops_b.gb");
+    results += run_microtest(proto, "vblank_int_if_a.gb", true);
+    results += run_microtest(proto, "vblank_int_if_b.gb", true);
+    results += run_microtest(proto, "vblank_int_if_c.gb", true);
+    results += run_microtest(proto, "vblank_int_if_d.gb", true);
+    results += run_microtest(proto, "vblank_int_inc_sled.gb", true);
+    results += run_microtest(proto, "vblank_int_nops_a.gb", true);
+    results += run_microtest(proto, "vblank_int_nops_b.gb", true);
   }
 
   results += run_microtest(proto, "lcdon_to_oam_int_l0.gb");
@@ -755,10 +755,10 @@ TestResults GateBoyTests::test_micro_int_stat(const IGateBoy* proto) {
   results += run_microtest(proto, "lcdon_to_oam_int_l2.gb");
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "line_144_oam_int_a.gb"); // pass
-    results += run_microtest(proto, "line_144_oam_int_b.gb"); // pass
-    results += run_microtest(proto, "line_144_oam_int_c.gb"); // pass
-    results += run_microtest(proto, "line_144_oam_int_d.gb"); // pass
+    results += run_microtest(proto, "line_144_oam_int_a.gb", true); // pass
+    results += run_microtest(proto, "line_144_oam_int_b.gb", true); // pass
+    results += run_microtest(proto, "line_144_oam_int_c.gb", true); // pass
+    results += run_microtest(proto, "line_144_oam_int_d.gb", true); // pass
   }
 
   results += run_microtest(proto, "oam_int_if_edge_a.gb"); // pass
@@ -831,11 +831,11 @@ TestResults GateBoyTests::test_micro_lcden(const IGateBoy* proto) {
   results += run_microtest(proto, "lcdon_to_stat0_d.gb");
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "lcdon_to_stat1_a.gb");
-    results += run_microtest(proto, "lcdon_to_stat1_b.gb");
-    results += run_microtest(proto, "lcdon_to_stat1_c.gb");
-    results += run_microtest(proto, "lcdon_to_stat1_d.gb"); // failing
-    results += run_microtest(proto, "lcdon_to_stat1_e.gb");
+    results += run_microtest(proto, "lcdon_to_stat1_a.gb", true);
+    results += run_microtest(proto, "lcdon_to_stat1_b.gb", true);
+    results += run_microtest(proto, "lcdon_to_stat1_c.gb", true);
+    results += run_microtest(proto, "lcdon_to_stat1_d.gb", true); // failing
+    results += run_microtest(proto, "lcdon_to_stat1_e.gb", true);
   }
 
   results += run_microtest(proto, "lcdon_to_stat2_a.gb"); // failing
@@ -994,13 +994,13 @@ TestResults GateBoyTests::test_micro_ppu(const IGateBoy* proto) {
   TEST_INIT();
 
   if (run_slow_tests) {
-    results += run_microtest(proto, "line_153_ly_a.gb");
-    results += run_microtest(proto, "line_153_ly_b.gb");
-    results += run_microtest(proto, "line_153_ly_c.gb");
-    results += run_microtest(proto, "line_153_ly_d.gb");
-    results += run_microtest(proto, "line_153_ly_e.gb");
-    results += run_microtest(proto, "line_153_ly_f.gb");
-    results += run_microtest(proto, "line_153_lyc0_int_inc_sled.gb");  // failing
+    results += run_microtest(proto, "line_153_ly_a.gb", true);
+    results += run_microtest(proto, "line_153_ly_b.gb", true);
+    results += run_microtest(proto, "line_153_ly_c.gb", true);
+    results += run_microtest(proto, "line_153_ly_d.gb", true);
+    results += run_microtest(proto, "line_153_ly_e.gb", true);
+    results += run_microtest(proto, "line_153_ly_f.gb", true);
+    results += run_microtest(proto, "line_153_lyc0_int_inc_sled.gb", true);  // failing
   }
 
   results += run_microtest(proto, "lyc1_write_timing_a.gb");
@@ -1110,7 +1110,7 @@ TestResults GateBoyTests::test_micro_mbc1(const IGateBoy* proto) {
 
 //-----------------------------------------------------------------------------
 
-TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filename) {
+TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filename, bool verbose) {
   TestResults results;
   //LOG_B("- %s\n", filename);
 
@@ -1123,7 +1123,7 @@ TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filen
     TEST_FAIL();
   }
 
-  if (verbose) LOG_B("%-30s ", filename);
+  if (verbose) LOG_B("*%-30s ", filename);
 
   unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_cart(cart_blob);
@@ -2206,7 +2206,7 @@ TestResults GateBoyTests::run_mooneye_test(const IGateBoy* proto, const char* pa
     TEST_FAIL();
   }
 
-  if (verbose) LOG_B("%-50s ", filename);
+  //if (verbose) LOG_B("%-50s ", filename);
 
   unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_cart(cart_blob);

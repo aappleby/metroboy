@@ -46,7 +46,7 @@ struct GateBoyTests {
   TestResults test_micro_ppu(const IGateBoy* proto);
   TestResults test_micro_mbc1(const IGateBoy* proto);
 
-  TestResults run_microtest(const IGateBoy* proto, const char* filename);
+  TestResults run_microtest(const IGateBoy* proto, const char* filename, bool verbose = false);
 
   TestResults test_dma(const IGateBoy* proto, uint16_t src);
 
@@ -66,7 +66,7 @@ struct GateBoyTests {
 
   //std::unique_ptr<IGateBoy> create_debug_gb(const blob& cart_blob, bool cpu_en);
 
-  bool verbose = false;
+  //bool verbose = false;
   const blob dummy_cart;
 };
 

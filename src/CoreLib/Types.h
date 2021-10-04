@@ -262,7 +262,7 @@ struct Dumper {
     }
     add_char('\001');
 
-    uint8_t val = 0;
+    uint16_t val = 0;
     for (int i = 0; i < byte_count; i++) val |= ((~d[i] & 1) << i);
     if (byte_count <= 8) {
       operator()(" 0x%02x %d\n", val, val);

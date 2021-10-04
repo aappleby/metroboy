@@ -9,8 +9,6 @@ void GateBoy::oam_latch_to_temp_a_gates(wire COTA_OAM_CLKn, const OamLatchA& oam
 {
   /*_p29.YWOK*/ wire YWOK_OAM_CLKp = not1(COTA_OAM_CLKn); // inverting this clock does not break anything
 
-  probe_wire(8, "YWOK", YWOK_OAM_CLKp);
-
   /*#p29.XUSO*/ oam_temp_a.XUSO_OAM_DA0p.dff8n(YWOK_OAM_CLKp, oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
   /*_p29.XEGU*/ oam_temp_a.XEGU_OAM_DA1p.dff8n(YWOK_OAM_CLKp, oam_latch_a.YCEB_OAM_LATCH_DA1n.qp_old());
   /*_p29.YJEX*/ oam_temp_a.YJEX_OAM_DA2p.dff8n(YWOK_OAM_CLKp, oam_latch_a.ZUCA_OAM_LATCH_DA2n.qp_old());
@@ -124,11 +122,6 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   /*_BUS_OAM_A06n*/ gb_state.oam_abus.BUS_OAM_A06n.tri_bus(FUGU_FETCH4_TO_OA6);
   /*_BUS_OAM_A07n*/ gb_state.oam_abus.BUS_OAM_A07n.tri_bus(FYKE_FETCH5_TO_OA7);
 
-  //probe_wire(16, "ASAM CPU", ASAM_CPU_OAM_RDn);
-  //probe_wire(17, "DUGA DMA", DUGA_DMA_RUNNINGn);
-  //probe_wire(18, "APAR SCN", APAR_SCANNINGn);
-  //probe_wire(19, "BETE PPU", BETE_SPR_I_TO_OAM_An);
-
   // cpu to oam data bus
 
   /*_p28.XUTO*/ wire XUTO_CPU_OAM_WRp = and2(gb_state.cpu_abus.SARO_ADDR_OAMp(), gb_state.cpu_signals.CUPA_CPU_WRp());
@@ -193,8 +186,6 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   /*_p04.MORY*/ wire MORY_DMA_CARTn = nand2(gb_state.MATU_DMA_RUNNINGp_odd.qp_new(), LOGO_DMA_VRAMn);
   /*_p04.LUMA*/ wire LUMA_DMA_CARTp = not1(MORY_DMA_CARTn);
   /*_p25.CEDE*/ wire CEDE_EBD_TO_OBDn = not1(LUMA_DMA_CARTp);
-
-  probe_wire(10, "CEDE", CEDE_EBD_TO_OBDn);
 
   /*_p25.WASA*/ triwire WASA_ED0_TO_ODA0 = tri6_nn(CEDE_EBD_TO_OBDn, RALO_EXT_D0p);
   /*_p25.BOMO*/ triwire BOMO_ED1_TO_ODA1 = tri6_nn(CEDE_EBD_TO_OBDn, TUNE_EXT_D1p);
@@ -367,8 +358,6 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   gb_state.oam_dbus_b.BUS_OAM_DB05n.tri_bus(oam_data_b5);
   gb_state.oam_dbus_b.BUS_OAM_DB06n.tri_bus(oam_data_b6);
   gb_state.oam_dbus_b.BUS_OAM_DB07n.tri_bus(oam_data_b7);
-
-  probe_wire(9, "BODE", BODE_OAM_OEp);
 
   /*#p29.YDYV*/ gb_state.oam_latch_a.YDYV_OAM_LATCH_DA0n.tp_latchn(BODE_OAM_OEp, gb_state.oam_dbus_a.BUS_OAM_DA00n.out_new());
   /*_p29.YCEB*/ gb_state.oam_latch_a.YCEB_OAM_LATCH_DA1n.tp_latchn(BODE_OAM_OEp, gb_state.oam_dbus_a.BUS_OAM_DA01n.out_new());

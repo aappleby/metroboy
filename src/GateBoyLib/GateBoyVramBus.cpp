@@ -16,12 +16,19 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   //--------------------------------------------
   // CPU vram read address
 
+  // this lock is breaking grass in zelda when we scroll between screens
+  // We are definitely _not_ DMAing, which means XYMU _must_ be 1 during line 0...
+
+  //wire MUHO_DMA_VRAMp = gb_state.MATU_DMA_RUNNINGp_odd.state && gb_state.reg_dma.PULA_DMA_A13n.state && gb_state.reg_dma.POKU_DMA_A14n.state && gb_state.reg_dma.MARU_DMA_A15n.state;
+  //wire XEDU_VRAM_LOCKp = or2(MUHO_DMA_VRAMp, !gb_state.XYMU_RENDERINGn.state);
+
   /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(gb_state.reg_dma.MARU_DMA_A15n.qn_new());
   /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(gb_state.reg_dma.PULA_DMA_A13n.qn_new(), gb_state.reg_dma.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
-  /*_p04.MUHO*/ wire MUHO_DMA_VRAMp = nand2(gb_state.MATU_DMA_RUNNINGp_odd.qp_new(), MUDA_DMA_VRAMp);
-  /*_p04.LUFA*/ wire LUFA_DMA_VRAMp = not1(MUHO_DMA_VRAMp);
+  /*#p04.MUHO*/ wire MUHO_DMA_VRAMp = nand2(gb_state.MATU_DMA_RUNNINGp_odd.qp_new(), MUDA_DMA_VRAMp);
+  /*#p04.LUFA*/ wire LUFA_DMA_VRAMp = not1(MUHO_DMA_VRAMp);
   /*#p25.XANE*/ wire XANE_VRAM_LOCKn = nor2(LUFA_DMA_VRAMp, gb_state.XYMU_RENDERINGn.qn_new());
-  /*_p25.XEDU*/ wire XEDU_VRAM_LOCKp = not1(XANE_VRAM_LOCKn);
+  /*#p25.XEDU*/ wire XEDU_VRAM_LOCKp = not1(XANE_VRAM_LOCKn);
+
   /*_p25.XAKY*/ triwire XAKY_CA00_TO_VA00 = tri6_nn(XEDU_VRAM_LOCKp, gb_state.cpu_abus.BUS_CPU_A00p.out_new());
   /*_p25.XUXU*/ triwire XUXU_CA01_TO_VA01 = tri6_nn(XEDU_VRAM_LOCKp, gb_state.cpu_abus.BUS_CPU_A01p.out_new());
   /*_p25.XYNE*/ triwire XYNE_CA02_TO_VA02 = tri6_nn(XEDU_VRAM_LOCKp, gb_state.cpu_abus.BUS_CPU_A02p.out_new());
@@ -35,6 +42,8 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*_p25.RUSE*/ triwire RUSE_CA10_TO_VA10 = tri6_nn(XEDU_VRAM_LOCKp, gb_state.cpu_abus.BUS_CPU_A10p.out_new());
   /*_p25.RYNA*/ triwire RYNA_CA11_TO_VA11 = tri6_nn(XEDU_VRAM_LOCKp, gb_state.cpu_abus.BUS_CPU_A11p.out_new());
   /*_p25.RUMO*/ triwire RUMO_CA12_TO_VA12 = tri6_nn(XEDU_VRAM_LOCKp, gb_state.cpu_abus.BUS_CPU_A12p.out_new());
+
+  probe_wire(8, "XEDU", XEDU_VRAM_LOCKp);
 
   /*_BUS_VRAM_A00n*/ gb_state.vram_abus.lo.BUS_VRAM_A00n.tri_bus(XAKY_CA00_TO_VA00);
   /*_BUS_VRAM_A01n*/ gb_state.vram_abus.lo.BUS_VRAM_A01n.tri_bus(XUXU_CA01_TO_VA01);
@@ -458,13 +467,6 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   {
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
     /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
-
-    //probe_wire(8,  "RUVY_CPU_VRM_WRp", RUVY_CPU_VRAM_WRp);
-    //probe_wire(9,  "ROPY_RENDERINGn",  ROPY_RENDERINGn);
-    //probe_wire(10, "CPU_EXT_BUSp",     cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new());
-    //probe_wire(10, "ABUZ_EXT_RAM_CLK", cpu_signals.ABUZ_EXT_RAM_CS_CLK.qp_new());
-    //probe_wire(11, "SOSE_ADDR_VRAMp",  SOSE_ADDR_VRAMp());
-    //probe_wire(12, "TOLE_CPU_VRM_RDp", TOLE_CPU_VRAM_RDp());
 
     ///*_p25.SUDO*/ wire SUDO_MWRp = not1(/*vram_pins.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
     /*_p25.SUDO*/ wire SUDO_MWRp = not1(gb_state.SIG_VCC.out_new()); // Ignoring debug stuff for now

@@ -39,6 +39,9 @@ struct LogicBoy : public IGateBoy {
     read_ok &= bs.read(sys);
     read_ok &= bs.read(pins);
     read_ok &= bs.read(probes);
+
+    probes.reset_to_bootrom();
+
     return read_ok ? GBResult::ok() : Error::CORRUPT;
   }
 

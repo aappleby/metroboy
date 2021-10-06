@@ -8,3 +8,6 @@ imgui.ini
 .ninja_log
 obj
 bin
+*.o
+*.gb
+*.exe

@@ -97,7 +97,7 @@ void GateBoy::tock_lcd_gates(const GateBoyState& reg_old) {
     /*_p28.BYHA*/ wire BYHA_LINE_RST_TRIGn_odd = or_and3(gb_state.lcd.ANEL_LINE_ENDp_odd.qp_new(), ABAF_LINE_ENDn_odd, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
     /*_p28.ATEJ*/ gb_state.ATEJ_LINE_RST_TRIGp_odd <<= not1(BYHA_LINE_RST_TRIGn_odd);
 
-    /*#p21.NYPE*/ gb_state.lcd.NYPE_LINE_ENDp_odd .dff17(gb_state.sys_clk.TALU_xxCDEFxx(),         LYFE_VID_RSTn(), gb_state.lcd.RUTU_LINE_ENDp_odd.qp_old());
+    /*#p21.NYPE*/ gb_state.lcd.NYPE_LINE_ENDp_odd .dff17(gb_state.sys_clk.TALU_xxCDEFxx(),         LYFE_VID_RSTn(), reg_old.lcd.RUTU_LINE_ENDp_odd.qp_old());
     /*#p21.POPU*/ gb_state.lcd.POPU_VBLANKp_odd   .dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
     /*#p21.MYTA*/ gb_state.lcd.MYTA_FRAME_ENDp_odd.dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), NOKO_y153p_old);
   }

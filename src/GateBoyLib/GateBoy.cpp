@@ -554,7 +554,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // If the scan failed to trigger on line 0, that might explain it...
 
 
-  /*#p21.VOGA*/ gb_state.VOGA_HBLANKp_evn.dff17(gb_state.sys_clk.ALET_evn(), TADY_LINE_RSTn_odd, reg_old.WODU_HBLANKp_odd.out_old());
+  /*#p21.VOGA*/ gb_state.VOGA_HBLANKp_evn.dff17(gb_state.sys_clk.ALET_evn(), TADY_LINE_RSTn_odd, reg_old.WODU_HBLANK_GATEp_odd.out_old());
   /*#p21.WEGO*/ wire WEGO_HBLANKp_evn = or2(TOFU_VID_RSTp(), gb_state.VOGA_HBLANKp_evn.qp_new());
   /*#p21.XYMU*/ gb_state.XYMU_RENDERING_LATCHn.nor_latch(WEGO_HBLANKp_evn, gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new());
 
@@ -689,7 +689,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   wire pause_pipe_new1 = reg_new.win_ctrl.RYDY_WIN_HITp_odd.state || !reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state || reg_old.FEPO_STORE_MATCHp_odd.state || (!reg_old.FEPO_STORE_MATCHp_odd.state && (bit_pack(reg_old.pix_count) == 167));
 
-  wire pause_pipe_new2 = reg_new.win_ctrl.RYDY_WIN_HITp_odd.out_new() || !reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new() || reg_old.FEPO_STORE_MATCHp_odd.out_old() || reg_old.WODU_HBLANKp_odd.out_old();
+  wire pause_pipe_new2 = reg_new.win_ctrl.RYDY_WIN_HITp_odd.out_new() || !reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new() || reg_old.FEPO_STORE_MATCHp_odd.out_old() || reg_old.WODU_HBLANK_GATEp_odd.out_old();
 
   if (bit(pause_pipe_new1) != bit(pause_pipe_new2)) {
     debugbreak();
@@ -702,7 +702,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   // CLKPIPE is an even clock, it can only go high on even deltas. FEPO/WODU/SOCY are odd signals, they stay constant during even deltas.
   // SO, it is guaranteed safe to use the old values of FEPO/WODU/SOCY to compute CLKPIPE
-  /*#p24.VYBO*/ wire VYBO_CLKPIPE_evn_new = nor3(reg_old.FEPO_STORE_MATCHp_odd.out_old(), reg_old.WODU_HBLANKp_odd.out_old(), reg_new.sys_clk.MYVO_odd());
+  /*#p24.VYBO*/ wire VYBO_CLKPIPE_evn_new = nor3(reg_old.FEPO_STORE_MATCHp_odd.out_old(), reg_old.WODU_HBLANK_GATEp_odd.out_old(), reg_new.sys_clk.MYVO_odd());
   /*#p24.TYFA*/ wire TYFA_CLKPIPE_evn_new = and3(SOCY_WIN_HITn_odd_new, reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new(), VYBO_CLKPIPE_evn_new);
   /*#p24.SEGU*/ wire SEGU_CLKPIPE_odd_new = not1(TYFA_CLKPIPE_evn_new);
   /*_p27.ROCO*/ wire ROCO_CLKPIPE_evn_new = not1(SEGU_CLKPIPE_odd_new);
@@ -866,7 +866,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
       reg_new.pix_count.TUKY_PX5p_odd.qp_new(),
       reg_new.pix_count.SYBE_PX7p_odd.qp_new()); // 128 + 32 + 4 + 2 + 1 = 167
     /*#p21.XANO*/ wire XANO_PX167p_odd = not1(XUGU_PX167n_odd);
-    /*#p21.WODU*/ gb_state.WODU_HBLANKp_odd <<= and2(XENA_STORE_MATCHn_odd, XANO_PX167p_odd); // WODU goes high on odd, cleared on H
+    /*#p21.WODU*/ gb_state.WODU_HBLANK_GATEp_odd <<= and2(XENA_STORE_MATCHn_odd, XANO_PX167p_odd); // WODU goes high on odd, cleared on H
   }
 
   /*_p27.PYCO*/ gb_state.win_ctrl.PYCO_WIN_MATCHp_evn.dff17(ROCO_CLKPIPE_evn_new, XAPO_VID_RSTn(), reg_old.win_ctrl.NUKO_WX_MATCHp_odd.out_old());

@@ -170,8 +170,8 @@ void GateBoyDumper::dump_joypad(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_lcd(const GateBoyState& s, Dumper& d) {
-  d.dump_bitp   ("CATU : ", s.lcd.CATU_x113p_odd.state);
-  d.dump_bitp   ("ANEL : ", s.lcd.ANEL_x113p_odd.state);
+  d.dump_bitp   ("CATU : ", s.lcd.CATU_LINE_ENDp_odd.state);
+  d.dump_bitp   ("ANEL : ", s.lcd.ANEL_LINE_ENDp_odd.state);
   d.dump_bitp   ("POPU : ", s.lcd.POPU_VBLANKp_odd.state);
   d.dump_bitp   ("MYTA : ", s.lcd.MYTA_FRAME_ENDp_odd.state);
   d.dump_bitp   ("RUTU : ", s.lcd.RUTU_LINE_ENDp_odd.state);
@@ -382,7 +382,7 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_bitn   ("REMY_LD0n  : ", s.lcd.REMY_LD0n.state);
   d.dump_bitn   ("RAVO_LD1n  : ", s.lcd.RAVO_LD1n.state);
   d("\n");
-  d.dump_bitp("XYMU_RENDERINGn        : ", s.XYMU_RENDERINGn.state);
+  d.dump_bitp("XYMU_RENDERINGn        : ", s.XYMU_RENDERING_LATCHn.state);
   d.dump_bitp("PYNU_WIN_MODE_Ap       : ", s.win_ctrl.PYNU_WIN_MODE_Ap_odd.state);
   d.dump_bitp("PUKU_WIN_HITn          : ", s.win_ctrl.PUKU_WIN_HITn_odd.state);
   d.dump_bitp("RYDY_WIN_HITp          : ", s.win_ctrl.RYDY_WIN_HITp_odd.state);

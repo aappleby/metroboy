@@ -183,11 +183,11 @@ void GateBoyState::reset_to_bootrom() {
   sys_rst.reset_to_bootrom();
   sys_clk.reset_to_bootrom();
   VOGA_HBLANKp_evn.state = BIT_OLD | BIT_DRIVEN;
-  XYMU_RENDERINGn.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  XYMU_RENDERING_LATCHn.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
   MATU_DMA_RUNNINGp_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   ACYL_SCANNINGp_odd.state = BIT_OLD | BIT_DRIVEN;
   WODU_HBLANKp_odd.state = BIT_OLD | BIT_DRIVEN;
-  ATEJ_LINE_RSTp_odd.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  ATEJ_LINE_RST_TRIGp_odd.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
   FEPO_STORE_MATCHp_odd.state = BIT_OLD | BIT_DRIVEN;
   cpu_signals.reset_to_bootrom();
   cpu_abus.reset_to_bootrom();
@@ -332,11 +332,11 @@ void GateBoyState::reset_to_cart() {
   sys_clk.reset_to_cart();
   
   VOGA_HBLANKp_evn.state = 0b00011001;
-  XYMU_RENDERINGn.state = 0x19;
+  XYMU_RENDERING_LATCHn.state = 0x19;
   MATU_DMA_RUNNINGp_odd.state = 0x1A;
   ACYL_SCANNINGp_odd.state = 0x18;
   WODU_HBLANKp_odd.state = 0b00011001;
-  ATEJ_LINE_RSTp_odd.state = 0b00011000;
+  ATEJ_LINE_RST_TRIGp_odd.state = 0b00011000;
   FEPO_STORE_MATCHp_odd.state = 0x18;
 
   cpu_signals.reset_to_cart();
@@ -678,11 +678,11 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, zram_bus),
 
   DECLARE_FIELD(GateBoyState, VOGA_HBLANKp_evn),
-  DECLARE_FIELD(GateBoyState, XYMU_RENDERINGn),
+  DECLARE_FIELD(GateBoyState, XYMU_RENDERING_LATCHn),
   DECLARE_FIELD(GateBoyState, MATU_DMA_RUNNINGp_odd),
   DECLARE_FIELD(GateBoyState, ACYL_SCANNINGp_odd),
   DECLARE_FIELD(GateBoyState, WODU_HBLANKp_odd),
-  DECLARE_FIELD(GateBoyState, ATEJ_LINE_RSTp_odd),
+  DECLARE_FIELD(GateBoyState, ATEJ_LINE_RST_TRIGp_odd),
   DECLARE_FIELD(GateBoyState, FEPO_STORE_MATCHp_odd),
 
 

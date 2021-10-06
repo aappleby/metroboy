@@ -75,23 +75,30 @@ void GateBoy::tock_lcd_gates(const GateBoyState& reg_old) {
     /*#p21.XYVO*/ wire XYVO_y144p_old = and2(gb_state.reg_ly.LOVU_LY4p_odd.qp_old(), gb_state.reg_ly.LAFO_LY7p_odd.qp_old()); // 128 + 16 = 144
     /*#p21.NOKO*/ wire NOKO_y153p_old = and4(gb_state.reg_ly.LAFO_LY7p_odd.qp_old(), gb_state.reg_ly.LOVU_LY4p_odd.qp_old(), gb_state.reg_ly.LYDO_LY3p_odd.qp_old(), gb_state.reg_ly.MUWY_LY0p_odd.qp_old()); // Schematic wrong: NOKO = and2(V7, V4, V3, V0) = 128 + 16 + 8 + 1 = 153
 
-    /*#p28.ANEL*/ gb_state.lcd.ANEL_x113p_odd.dff17(gb_state.sys_clk.AWOH_xxCDxxGH(), ABEZ_VID_RSTn(), gb_state.lcd.CATU_x113p_odd.qp_old());
+    /*#p28.ANEL*/ gb_state.lcd.ANEL_LINE_ENDp_odd.dff17(gb_state.sys_clk.AWOH_xxCDxxGH(), ABEZ_VID_RSTn(), gb_state.lcd.CATU_LINE_ENDp_odd.qp_old());
 
-    /*#p21.PURE*/ wire PURE_x113n_old = not1(gb_state.lcd.RUTU_LINE_ENDp_odd.qp_old());
-    /*#p29.ALES*/ wire ALES_y144n_old = not1(XYVO_y144p_old);
-    /*#p21.SELA*/ wire SELA_x113p_old = not1(PURE_x113n_old);
-    /*#p29.ABOV*/ wire ABOV_x113p_old = and2(SELA_x113p_old, ALES_y144n_old);
-    /*#p29.CATU*/ gb_state.lcd.CATU_x113p_odd.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), ABOV_x113p_old);
+    /*#p21.PURE*/ wire PURE_LINE_ENDn_old  = not1(gb_state.lcd.RUTU_LINE_ENDp_odd.qp_old());
+    /*#p29.ALES*/ wire ALES_FRAME_ENDn_old = not1(XYVO_y144p_old);
+    /*#p21.SELA*/ wire SELA_LINE_ENDp_old  = not1(PURE_LINE_ENDn_old);
+    /*#p29.ABOV*/ wire ABOV_LINE_ENDp_old  = and2(SELA_LINE_ENDp_old, ALES_FRAME_ENDn_old);
+    /*#p29.CATU*/ gb_state.lcd.CATU_LINE_ENDp_odd.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), ABOV_LINE_ENDp_old);
 
-    /*#p21.NYPE*/ gb_state.lcd.NYPE_LINE_ENDp_odd.dff17(gb_state.sys_clk.TALU_xxCDEFxx(),         LYFE_VID_RSTn(), gb_state.lcd.RUTU_LINE_ENDp_odd.qp_old());
-    /*#p21.SANU*/ wire SANU_x113p_odd_old = and4(gb_state.reg_lx.TYRY_LX6p_odd.qp_old(), gb_state.reg_lx.TAHA_LX5p_odd.qp_old(), gb_state.reg_lx.SUDE_LX4p_odd.qp_old(), gb_state.reg_lx.SAXO_LX0p_odd.qp_old()); // 113 = 64 + 32 + 16 + 1, schematic is wrong
+
+    // 113 = 64 + 32 + 16 + 1, schematic is wrong
+    /*#p21.SANU*/ wire SANU_x113p_odd_old = and4(
+      gb_state.reg_lx.TYRY_LX6p_odd.qp_old(),
+      gb_state.reg_lx.TAHA_LX5p_odd.qp_old(),
+      gb_state.reg_lx.SUDE_LX4p_odd.qp_old(),
+      gb_state.reg_lx.SAXO_LX0p_odd.qp_old());
+
     /*#p21.RUTU*/ gb_state.lcd.RUTU_LINE_ENDp_odd.dff17(gb_state.sys_clk.SONO_ABxxxxGH(),         LYFE_VID_RSTn(), SANU_x113p_odd_old);
 
-    /*_p28.ABAF*/ wire ABAF_x113n_odd = not1(gb_state.lcd.CATU_x113p_odd.qp_new());
-    /*_p28.BYHA*/ wire BYHA_LINE_RSTn_odd = or_and3(gb_state.lcd.ANEL_x113p_odd.qp_new(), ABAF_x113n_odd, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
-    /*_p28.ATEJ*/ gb_state.ATEJ_LINE_RSTp_odd <<= not1(BYHA_LINE_RSTn_odd);
+    /*_p28.ABAF*/ wire ABAF_LINE_ENDn_odd = not1(gb_state.lcd.CATU_LINE_ENDp_odd.qp_new());
+    /*_p28.BYHA*/ wire BYHA_LINE_RST_TRIGn_odd = or_and3(gb_state.lcd.ANEL_LINE_ENDp_odd.qp_new(), ABAF_LINE_ENDn_odd, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
+    /*_p28.ATEJ*/ gb_state.ATEJ_LINE_RST_TRIGp_odd <<= not1(BYHA_LINE_RST_TRIGn_odd);
 
-    /*#p21.POPU*/ gb_state.lcd.POPU_VBLANKp_odd.dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
+    /*#p21.NYPE*/ gb_state.lcd.NYPE_LINE_ENDp_odd .dff17(gb_state.sys_clk.TALU_xxCDEFxx(),         LYFE_VID_RSTn(), gb_state.lcd.RUTU_LINE_ENDp_odd.qp_old());
+    /*#p21.POPU*/ gb_state.lcd.POPU_VBLANKp_odd   .dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), XYVO_y144p_old);
     /*#p21.MYTA*/ gb_state.lcd.MYTA_FRAME_ENDp_odd.dff17(gb_state.lcd.NYPE_LINE_ENDp_odd.qp_new(), LYFE_VID_RSTn(), NOKO_y153p_old);
   }
 
@@ -253,8 +260,8 @@ void GateBoy::set_lcd_pins_gates(wire SACU_CLKPIPE_evn) {
 //-----------------------------------------------------------------------------
 
 void LCDControl::reset_to_poweron() {
-  CATU_x113p_odd.state          = BIT_OLD | BIT_DRIVEN;
-  ANEL_x113p_odd.state          = BIT_OLD | BIT_DRIVEN;
+  CATU_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
+  ANEL_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
   POPU_VBLANKp_odd.state          = BIT_OLD | BIT_DRIVEN;
   MYTA_FRAME_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
   RUTU_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
@@ -273,8 +280,8 @@ void LCDControl::reset_to_poweron() {
 }
 
 void LCDControl::reset_to_bootrom() {
-  CATU_x113p_odd.state          = BIT_OLD | BIT_DRIVEN;
-  ANEL_x113p_odd.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  CATU_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
+  ANEL_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   POPU_VBLANKp_odd.state          = BIT_OLD | BIT_DRIVEN;
   MYTA_FRAME_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN;
   RUTU_LINE_ENDp_odd.state          = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
@@ -293,8 +300,8 @@ void LCDControl::reset_to_bootrom() {
 }
 
 void LCDControl::reset_to_cart() {
-  CATU_x113p_odd.state          = 0b00011010;
-  ANEL_x113p_odd.state          = 0b00011000;
+  CATU_LINE_ENDp_odd.state          = 0b00011010;
+  ANEL_LINE_ENDp_odd.state          = 0b00011000;
   POPU_VBLANKp_odd.state          = 0b00011001;
   MYTA_FRAME_ENDp_odd.state          = 0b00011001;
   RUTU_LINE_ENDp_odd.state          = 0b00011010;

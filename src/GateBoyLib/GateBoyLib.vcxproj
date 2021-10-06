@@ -27,6 +27,7 @@
     <ClCompile Include="GateBoyExtBus.cpp" />
     <ClCompile Include="GateBoyInterrupts.cpp" />
     <ClCompile Include="GateBoyJoypad.cpp" />
+    <ClCompile Include="GateBoyLatches.cpp" />
     <ClCompile Include="GateBoyOamBus.cpp" />
     <ClCompile Include="GateBoyPair.cpp" />
     <ClCompile Include="GateBoyPins.cpp" />

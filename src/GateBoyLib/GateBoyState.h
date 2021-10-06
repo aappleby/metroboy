@@ -80,11 +80,11 @@ struct GateBoyState {
   GateBoyClock sys_clk;
 
   /*#p21.VOGA*/ DFF17    VOGA_HBLANKp_evn;
-  /*#p21.XYMU*/ NorLatch XYMU_RENDERINGn;
+  /*#p21.XYMU*/ NorLatch XYMU_RENDERING_LATCHn;
   /*#p04.MATU*/ DFF17    MATU_DMA_RUNNINGp_odd;
   /*#p28.ACYL*/ Gate     ACYL_SCANNINGp_odd;
   /*#p21.WODU*/ Gate     WODU_HBLANKp_odd;
-  /*_p28.ATEJ*/ Gate     ATEJ_LINE_RSTp_odd;
+  /*_p28.ATEJ*/ Gate     ATEJ_LINE_RST_TRIGp_odd;
   /*_p29.FEPO*/ Gate     FEPO_STORE_MATCHp_odd;
 
   GateBoyCpuSignals cpu_signals;

@@ -2039,16 +2039,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.scan_counter = (uint8_t)scan_counter_new;
 
     if (phase_ly_new < 144) {
-      state_new.lcd.CATU_x113p_odd.state = !first_line_new && (phase_lx_new >= 2) && (phase_lx_new <= 9);
-      state_new.lcd.ANEL_x113p_odd.state = !first_line_new && (phase_lx_new >= 4) && (phase_lx_new <= 11);
+      state_new.lcd.CATU_LINE_ENDp_odd.state = !first_line_new && (phase_lx_new >= 2) && (phase_lx_new <= 9);
+      state_new.lcd.ANEL_LINE_ENDp_odd.state = !first_line_new && (phase_lx_new >= 4) && (phase_lx_new <= 11);
     }
     else if (phase_ly_new >= 144 && phase_ly_new < 153) {
-      state_new.lcd.CATU_x113p_odd.state = 0;
-      state_new.lcd.ANEL_x113p_odd.state = 0;
+      state_new.lcd.CATU_LINE_ENDp_odd.state = 0;
+      state_new.lcd.ANEL_LINE_ENDp_odd.state = 0;
     }
     if (phase_ly_new == 153) {
-      state_new.lcd.CATU_x113p_odd.state = (phase_lx_new >= 6) && (phase_lx_new <= 9);
-      state_new.lcd.ANEL_x113p_odd.state = (phase_lx_new >= 8) && (phase_lx_new <= 11);
+      state_new.lcd.CATU_LINE_ENDp_odd.state = (phase_lx_new >= 6) && (phase_lx_new <= 9);
+      state_new.lcd.ANEL_LINE_ENDp_odd.state = (phase_lx_new >= 8) && (phase_lx_new <= 11);
     }
 
     state_new.lcd.POPU_VBLANKp_odd.state = vblank_new;

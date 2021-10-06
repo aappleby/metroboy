@@ -41,7 +41,7 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   memset(&gb_state.oam_dbus_b, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.oam_dbus_b));
 
   // OAM address from CPU
-  /*_p28.ASAM*/ wire ASAM_CPU_OAM_RDn = or3(gb_state.ACYL_SCANNINGp_odd.out_new(), gb_state.XYMU_RENDERINGn.qn_new(), gb_state.MATU_DMA_RUNNINGp_odd.qp_new());
+  /*_p28.ASAM*/ wire ASAM_CPU_OAM_RDn = or3(gb_state.ACYL_SCANNINGp_odd.out_new(), gb_state.XYMU_RENDERING_LATCHn.qn_new(), gb_state.MATU_DMA_RUNNINGp_odd.qp_new());
   /*_p28.GARO*/ triwire GARO_CA0_TO_OA0 = tri6_nn(ASAM_CPU_OAM_RDn, gb_state.cpu_abus.BUS_CPU_A00p.out_new());
   /*_p28.WACU*/ triwire WACU_CA1_TO_OA1 = tri6_nn(ASAM_CPU_OAM_RDn, gb_state.cpu_abus.BUS_CPU_A01p.out_new());
   /*_p28.GOSE*/ triwire GOSE_CA2_TO_OA2 = tri6_nn(ASAM_CPU_OAM_RDn, gb_state.cpu_abus.BUS_CPU_A02p.out_new());
@@ -102,7 +102,7 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
 
   // OAM address from sprite fetcher
   /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn = not1(gb_state.MATU_DMA_RUNNINGp_odd.qp_new());
-  /*_p28.AJON*/ wire AJON_RENDERINGp = and2(BOGE_DMA_RUNNINGn, gb_state.XYMU_RENDERINGn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma
+  /*_p28.AJON*/ wire AJON_RENDERINGp = and2(BOGE_DMA_RUNNINGn, gb_state.XYMU_RENDERING_LATCHn.qn_new()); // def AND. ppu can read oam when there's rendering but no dma
   /*_p28.BETE*/ wire BETE_SPR_I_TO_OAM_An = not1(AJON_RENDERINGp);
   /*_p28.GECA*/ triwire GECA_FETCHX_TO_OA0 = tri6_nn(BETE_SPR_I_TO_OAM_An, gb_state.SIG_VCC.out_new());
   /*_p28.WYDU*/ triwire WYDU_FETCHX_TO_OA1 = tri6_nn(BETE_SPR_I_TO_OAM_An, gb_state.SIG_VCC.out_new());
@@ -269,7 +269,7 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   /*_p25.CUFE*/ wire CUFE_OAM_CLKp = not_or_and3(gb_state.cpu_abus.SARO_ADDR_OAMp(), gb_state.MATU_DMA_RUNNINGp_odd.qp_new(), gb_state.sys_clk.MOPA_xxxxEFGH()); // CUFE looks like BYHA minus an inverter
   /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(gb_state.sfetch_counter_evn.TOXE_SFETCH_S0p_evn.qp_new());
   /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(gb_state.sfetch_control.TYFO_SFETCH_S0p_D1_odd.qp_new(), TYTU_SFETCH_S0n);
-  /*_p29.TEPA*/ wire TEPA_RENDERINGp = not1(gb_state.XYMU_RENDERINGn.qn_new());
+  /*_p29.TEPA*/ wire TEPA_RENDERINGp = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
   /*_p29.TUVO*/ wire TUVO_PPU_OAM_RDp = nor3(TEPA_RENDERINGp, gb_state.sfetch_counter_evn.TULY_SFETCH_S1p_evn.qp_new(), gb_state.sfetch_counter_evn.TESE_SFETCH_S2p_evn.qp_new());
   /*_p25.VAPE*/ wire VAPE_OAM_CLKENn = and2(TUVO_PPU_OAM_RDp, TACU_SPR_SEQ_5_TRIG);
   /*_p25.XUJY*/ wire XUJY_OAM_CLKENp = not1(VAPE_OAM_CLKENn);

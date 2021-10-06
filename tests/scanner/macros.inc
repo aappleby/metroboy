@@ -226,15 +226,6 @@
 .endm
 
 //------------------------------------------------------------------------------
-// Short cycle-accurate delay
-
-.macro short_delay ARGS cycles
-.repeat cycles
-  nop
-.endr
-.endm
-
-//------------------------------------------------------------------------------
 // Long cycle-accurate delay w/ loop, clobbers ABC
 
 .macro long_delay ARGS cycles

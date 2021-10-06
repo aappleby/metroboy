@@ -485,11 +485,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p21.PARU*/ wire PARU_VBLANKp_odd = not1(gb_state.lcd.POPU_VBLANKp_odd.qn_new());
   /*_p27.REPU*/ wire REPU_VBLANKp_odd = or2(PARU_VBLANKp_odd, PYRY_VID_RSTp());
 
-  /*_p21.TADY*/ wire TADY_LINE_RSTn_odd = nor2(gb_state.ATEJ_LINE_RSTp_odd.out_new(), TOFU_VID_RSTp());
-  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_odd = nor2(gb_state.ATEJ_LINE_RSTp_odd.out_new(), ATAR_VID_RSTp());
+  /*_p21.TADY*/ wire TADY_LINE_RSTn_odd = nor2(gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new(), TOFU_VID_RSTp());
+  /*#p28.ANOM*/ wire ANOM_LINE_RSTn_odd = nor2(gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new(), ATAR_VID_RSTp());
   /*#p29.BALU*/ wire BALU_LINE_RSTp_odd = not1(ANOM_LINE_RSTn_odd);
   /*#p29.BAGY*/ wire BAGY_LINE_RSTn_odd = not1(BALU_LINE_RSTp_odd);
-  /*_p27.XAHY*/ wire XAHY_LINE_RSTn_odd = not1(gb_state.ATEJ_LINE_RSTp_odd.out_new());
+  /*_p27.XAHY*/ wire XAHY_LINE_RSTn_odd = not1(gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new());
 
   probe_wire(18,  "ANOM", ANOM_LINE_RSTn_odd);
 
@@ -505,7 +505,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p29.AVAP*/ gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd <<= not1(BEBU_SCAN_DONE_tn_odd);
 
     /*#p28.ASEN*/ wire ASEN_SCAN_DONE_tp_odd = or2(ATAR_VID_RSTp(), gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new());
-    /*#p28.BESU*/ gb_state.sprite_scanner.BESU_SCAN_DONEn_odd.nor_latch(gb_state.lcd.CATU_x113p_odd.qp_new(), ASEN_SCAN_DONE_tp_odd);
+    /*#p28.BESU*/ gb_state.sprite_scanner.BESU_SCAN_DONEn_odd.nor_latch(gb_state.lcd.CATU_LINE_ENDp_odd.qp_new(), ASEN_SCAN_DONE_tp_odd);
     /*#p29.CENO*/ gb_state.sprite_scanner.CENO_SCAN_DONEn_odd.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), reg_old.sprite_scanner.BESU_SCAN_DONEn_odd.qp_old());
 
     /*#p28.BOGE*/ wire BOGE_DMA_RUNNINGn_odd = not1(gb_state.MATU_DMA_RUNNINGp_odd.qp_new());
@@ -556,7 +556,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   /*#p21.VOGA*/ gb_state.VOGA_HBLANKp_evn.dff17(gb_state.sys_clk.ALET_evn(), TADY_LINE_RSTn_odd, reg_old.WODU_HBLANKp_odd.out_old());
   /*#p21.WEGO*/ wire WEGO_HBLANKp_evn = or2(TOFU_VID_RSTp(), gb_state.VOGA_HBLANKp_evn.qp_new());
-  /*#p21.XYMU*/ gb_state.XYMU_RENDERINGn.nor_latch(WEGO_HBLANKp_evn, gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new());
+  /*#p21.XYMU*/ gb_state.XYMU_RENDERING_LATCHn.nor_latch(WEGO_HBLANKp_evn, gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new());
 
 
   /*
@@ -572,13 +572,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   */
 
 
-  probe_wire(15, "XYMU", gb_state.XYMU_RENDERINGn.state);
+  probe_wire(15, "XYMU", gb_state.XYMU_RENDERING_LATCHn.state);
   probe_wire(16, "WEGO", WEGO_HBLANKp_evn);
   probe_wire(17, "AVAP", gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.state);
 
-  /*_p24.LOBY*/ wire LOBY_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
-  /*#p27.PAHA*/ wire PAHA_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
-  /*_p29.TEPA*/ wire TEPA_RENDERINGn = not1(gb_state.XYMU_RENDERINGn.qn_new());
+  /*_p24.LOBY*/ wire LOBY_RENDERINGn = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
+  /*#p27.PAHA*/ wire PAHA_RENDERINGn = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
+  /*_p29.TEPA*/ wire TEPA_RENDERINGn = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
 
   //----------------------------------------
   // Sprite fetch sequencer
@@ -592,12 +592,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p27.SUDA*/ gb_state.sfetch_control.SUDA_SFETCH_REQp_odd.dff17(gb_state.sys_clk.LAPE_odd(), gb_state.SIG_VCC.out_new(), reg_old.sfetch_control.SOBU_SFETCH_REQp_evn.qp_old());
 
     /*#p29.TYFO*/ gb_state.sfetch_control.TYFO_SFETCH_S0p_D1_odd.dff17(gb_state.sys_clk.LAPE_odd(), gb_state.SIG_VCC.out_new(),        reg_old.sfetch_counter_evn.TOXE_SFETCH_S0p_evn.qp_old());
-    /*#p29.TOBU*/ gb_state.sfetch_control.TOBU_SFETCH_S1p_D2_evn.dff17(gb_state.sys_clk.TAVA_evn(), gb_state.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_counter_evn.TULY_SFETCH_S1p_evn.qp_old());
-    /*#p29.VONU*/ gb_state.sfetch_control.VONU_SFETCH_S1p_D4_evn.dff17(gb_state.sys_clk.TAVA_evn(), gb_state.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.qp_old());
-    /*#p29.SEBA*/ gb_state.sfetch_control.SEBA_SFETCH_S1p_D5_odd.dff17(gb_state.sys_clk.LAPE_odd(), gb_state.XYMU_RENDERINGn.qn_new(), reg_old.sfetch_control.VONU_SFETCH_S1p_D4_evn.qp_old());
+    /*#p29.TOBU*/ gb_state.sfetch_control.TOBU_SFETCH_S1p_D2_evn.dff17(gb_state.sys_clk.TAVA_evn(), gb_state.XYMU_RENDERING_LATCHn.qn_new(), reg_old.sfetch_counter_evn.TULY_SFETCH_S1p_evn.qp_old());
+    /*#p29.VONU*/ gb_state.sfetch_control.VONU_SFETCH_S1p_D4_evn.dff17(gb_state.sys_clk.TAVA_evn(), gb_state.XYMU_RENDERING_LATCHn.qn_new(), reg_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.qp_old());
+    /*#p29.SEBA*/ gb_state.sfetch_control.SEBA_SFETCH_S1p_D5_odd.dff17(gb_state.sys_clk.LAPE_odd(), gb_state.XYMU_RENDERING_LATCHn.qn_new(), reg_old.sfetch_control.VONU_SFETCH_S1p_D4_evn.qp_old());
 
     /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp = and2(gb_state.sfetch_control.SOBU_SFETCH_REQp_evn.qp_new(), gb_state.sfetch_control.SUDA_SFETCH_REQp_odd.qn_new());
-    /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn = nor3(RYCE_SFETCH_TRIGp, ROSY_VID_RSTp(), gb_state.ATEJ_LINE_RSTp_odd.out_new());
+    /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn = nor3(RYCE_SFETCH_TRIGp, ROSY_VID_RSTp(), gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new());
 
     // Feedback loop
     for (int feedback = 0; feedback < 2; feedback++) {
@@ -618,7 +618,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   }
 
   /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp_evn = and2(gb_state.sfetch_control.SOBU_SFETCH_REQp_evn.qp_new(), gb_state.sfetch_control.SUDA_SFETCH_REQp_odd.qn_new());
-  /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn = nor3(RYCE_SFETCH_TRIGp_evn, ROSY_VID_RSTp(), gb_state.ATEJ_LINE_RSTp_odd.out_new());
+  /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn = nor3(RYCE_SFETCH_TRIGp_evn, ROSY_VID_RSTp(), gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new());
 
   //----------------------------------------
   // Window state has some interaction with the tile fetcher here.
@@ -658,7 +658,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p27.MOSU*/ wire MOSU_WIN_MODE_tp_odd = not1(NYFO_WIN_MODE_tn_odd);
   /*_p24.NAFY*/ wire NAFY_WIN_MODE_tn_odd = nor2(MOSU_WIN_MODE_tp_odd, LOBY_RENDERINGn);
 
-  /*_p24.PYGO*/ gb_state.tfetch_control.PYGO_FETCH_DONEp_evn.dff17(reg_new.sys_clk.ALET_evn(), reg_new.XYMU_RENDERINGn.qn_new(),  reg_old.tfetch_control.PORY_FETCH_DONEp_odd.qp_old());
+  /*_p24.PYGO*/ gb_state.tfetch_control.PYGO_FETCH_DONEp_evn.dff17(reg_new.sys_clk.ALET_evn(), reg_new.XYMU_RENDERING_LATCHn.qn_new(),  reg_old.tfetch_control.PORY_FETCH_DONEp_odd.qp_old());
   /*_p24.PORY*/ gb_state.tfetch_control.PORY_FETCH_DONEp_odd.dff17(reg_new.sys_clk.MYVO_odd(), NAFY_WIN_MODE_tn_odd,              reg_old.tfetch_control.NYKA_FETCH_DONEp_evn.qp_old());
   /*_p24.NYKA*/ gb_state.tfetch_control.NYKA_FETCH_DONEp_evn.dff17(reg_new.sys_clk.ALET_evn(), NAFY_WIN_MODE_tn_odd,              reg_old.tfetch_control.LYRY_BFETCH_DONEp_odd.out_old());
 
@@ -711,7 +711,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn = not1(gb_state.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new());
   /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(
-    gb_state.XYMU_RENDERINGn.qn_new(),
+    gb_state.XYMU_RENDERING_LATCHn.qn_new(),
     ROMO_PRELOAD_DONEn_evn,
     gb_state.tfetch_control.NYKA_FETCH_DONEp_evn.qp_new(),
     gb_state.tfetch_control.PORY_FETCH_DONEp_odd.qp_new());
@@ -765,13 +765,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     // doesn't actually change any of the dffs.
     /*#p29.BAKY*/ wire BAKY_SPRITES_FULL_new = and2(gb_state.sprite_counter.CUXY_SPRITE_COUNT1_odd.qp_any(), gb_state.sprite_counter.DYBE_SPRITE_COUNT3_odd.qp_any());
     /*#p29.CAKE*/ wire CAKE_COUNT_CLKp_new = or2(BAKY_SPRITES_FULL_new, gb_state.sprite_scanner.DEZY_INC_COUNTn_odd.qp_any());
-    /*#p28.AZYB*/ wire AZYB_LINE_TRIGn = not1(gb_state.ATEJ_LINE_RSTp_odd.out_new());
+    /*#p28.AZYB*/ wire AZYB_LINE_TRIGn = not1(gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new());
     /*_p29.BESE*/ gb_state.sprite_counter.BESE_SPRITE_COUNT0_odd.dff17_any(CAKE_COUNT_CLKp_new, AZYB_LINE_TRIGn, gb_state.sprite_counter.BESE_SPRITE_COUNT0_odd.qn_any());
     /*_p29.CUXY*/ gb_state.sprite_counter.CUXY_SPRITE_COUNT1_odd.dff17_any(gb_state.sprite_counter.BESE_SPRITE_COUNT0_odd.qn_any(), AZYB_LINE_TRIGn, gb_state.sprite_counter.CUXY_SPRITE_COUNT1_odd.qn_any());
     /*_p29.BEGO*/ gb_state.sprite_counter.BEGO_SPRITE_COUNT2_odd.dff17_any(gb_state.sprite_counter.CUXY_SPRITE_COUNT1_odd.qn_any(), AZYB_LINE_TRIGn, gb_state.sprite_counter.BEGO_SPRITE_COUNT2_odd.qn_any());
     /*_p29.DYBE*/ gb_state.sprite_counter.DYBE_SPRITE_COUNT3_odd.dff17_any(gb_state.sprite_counter.BEGO_SPRITE_COUNT2_odd.qn_any(), AZYB_LINE_TRIGn, gb_state.sprite_counter.DYBE_SPRITE_COUNT3_odd.qn_any());
 
-    /*_p28.ABAK*/ wire ABAK_LINE_RSTp = or2(gb_state.ATEJ_LINE_RSTp_odd.out_new(), AMYG_VID_RSTp());
+    /*_p28.ABAK*/ wire ABAK_LINE_RSTp = or2(gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new(), AMYG_VID_RSTp());
     /*_p28.BYVA*/ wire BYVA_LINE_RSTn = not1(ABAK_LINE_RSTp);
 
     //update_sprite_reset_flags(sfetch_control.WUTY_SFETCH_DONE_TRIGp, BYVA_LINE_RSTn, sprite_match_flags, sprite_reset_flags);
@@ -811,11 +811,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
     /*_p29.CEHA*/ wire CEHA_SCANNINGp_odd  = not1(gb_state.sprite_scanner.CENO_SCAN_DONEn_odd.qn_new());
     /*#p29.BYJO*/ wire BYJO_SCANNINGn_odd  = not1(CEHA_SCANNINGp_odd);
-    /*#p29.AZEM*/ wire AZEM_RENDERINGp_odd = and2(gb_state.XYMU_RENDERINGn.qn_new(), BYJO_SCANNINGn_odd);
+    /*#p29.AZEM*/ wire AZEM_RENDERINGp_odd = and2(gb_state.XYMU_RENDERING_LATCHn.qn_new(), BYJO_SCANNINGn_odd);
     /*#p29.AROR*/ wire AROR_MATCH_ENp_odd  = and2(AZEM_RENDERINGp_odd, gb_state.reg_lcdc.XYLO_LCDC_SPENn.qn_new());
 
-    /*#p27.PUXA*/ reg_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.dff17_any(ROXO_CLKPIPE_evn_new,        reg_new.XYMU_RENDERINGn.qn_new(), POHU_SCX_FINE_MATCHp_old_odd);
-    /*#p27.NYZE*/ reg_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.dff17_any(reg_new.sys_clk.MOXE_ODD(), reg_new.XYMU_RENDERINGn.qn_new(), reg_old.fine_scroll.PUXA_SCX_FINE_MATCH_evn.qp_old());
+    /*#p27.PUXA*/ reg_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.dff17_any(ROXO_CLKPIPE_evn_new,        reg_new.XYMU_RENDERING_LATCHn.qn_new(), POHU_SCX_FINE_MATCHp_old_odd);
+    /*#p27.NYZE*/ reg_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.dff17_any(reg_new.sys_clk.MOXE_ODD(), reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_old.fine_scroll.PUXA_SCX_FINE_MATCH_evn.qp_old());
 
     /*#p27.POVA*/ wire POVA_FINE_MATCH_TRIGp_evn = and2(reg_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.qp_any(), reg_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.qn_any());
     /*#p27.ROXY*/ reg_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.nor_latch(PAHA_RENDERINGn, POVA_FINE_MATCH_TRIGp_evn);
@@ -882,7 +882,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   /*#p24.SACU*/ wire SACU_CLKPIPE_odd_new = or2(SEGU_CLKPIPE_odd_new, gb_state.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.qp_new());
 
-  /*_p24.PAHO*/ gb_state.lcd.PAHO_X8_SYNC.dff17(ROXO_CLKPIPE_evn_new, gb_state.XYMU_RENDERINGn.qn_new(), XYDO_PX3p_old.qp_old());
+  /*_p24.PAHO*/ gb_state.lcd.PAHO_X8_SYNC.dff17(ROXO_CLKPIPE_evn_new, gb_state.XYMU_RENDERING_LATCHn.qn_new(), XYDO_PX3p_old.qp_old());
 
   //----------------------------------------
 
@@ -890,7 +890,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   memset(&gb_state.sprite_lbus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.sprite_lbus));
 
   sprite_match_to_bus_gates(gb_state.sprite_match_flags_odd);
-  sprite_scan_to_bus_gates(sprite_delta_y, gb_state.XYMU_RENDERINGn, gb_state.FEPO_STORE_MATCHp_odd);
+  sprite_scan_to_bus_gates(sprite_delta_y, gb_state.XYMU_RENDERING_LATCHn, gb_state.FEPO_STORE_MATCHp_odd);
 
   //----------------------------------------
   // WY/WX/window match
@@ -901,7 +901,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Tile fetch sequencer
 
-  /*_p27.LYZU*/ gb_state.tfetch_control.LYZU_BFETCH_S0p_D1.dff17(gb_state.sys_clk.ALET_evn(), gb_state.XYMU_RENDERINGn.qn_new(), reg_old.tfetch_counter.LAXU_BFETCH_S0p_odd.qp_old());
+  /*_p27.LYZU*/ gb_state.tfetch_control.LYZU_BFETCH_S0p_D1.dff17(gb_state.sys_clk.ALET_evn(), gb_state.XYMU_RENDERING_LATCHn.qn_new(), reg_old.tfetch_counter.LAXU_BFETCH_S0p_odd.qp_old());
 
   /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_evn = nor2(gb_state.win_ctrl.RYFA_WIN_FETCHn_A_evn.qn_new(), gb_state.win_ctrl.RENE_WIN_FETCHn_B_evn.qp_new());
   /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne = nand2(SYLO_WIN_HITn_odd_new, gb_state.win_ctrl.SOVY_WIN_HITp_evn.qp_new());
@@ -926,7 +926,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(gb_state.tfetch_counter.LAXU_BFETCH_S0p_odd.qp_new(), gb_state.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_new(), NYXU_BFETCH_RSTn);
   /*_p27.LYRY*/ gb_state.tfetch_control.LYRY_BFETCH_DONEp_odd <<= not1(MOCE_BFETCH_DONEn);
 
-  /*_p27.LURY*/ wire LURY_BG_FETCH_DONEn = and2(gb_state.tfetch_control.LOVY_TFETCH_DONEp.qn_new(), gb_state.XYMU_RENDERINGn.qn_new());
+  /*_p27.LURY*/ wire LURY_BG_FETCH_DONEn = and2(gb_state.tfetch_control.LOVY_TFETCH_DONEp.qn_new(), gb_state.XYMU_RENDERING_LATCHn.qn_new());
   /*_p27.LONY*/ gb_state.tfetch_control.LONY_TFETCHINGp.nand_latch(NYXU_BFETCH_RSTn, LURY_BG_FETCH_DONEn);
 
 

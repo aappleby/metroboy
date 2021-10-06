@@ -9,8 +9,8 @@ struct LCDControl {
   void reset_to_cart();
 
   // H deltas are due to reg writes
-  /*#p29.CATU*/ DFF17 CATU_x113p_odd; // Axxxxxxx
-  /*#p28.ANEL*/ DFF17 ANEL_x113p_odd; // xxCxxxxx
+  /*#p29.CATU*/ DFF17 CATU_LINE_ENDp_odd; // Axxxxxxx
+  /*#p28.ANEL*/ DFF17 ANEL_LINE_ENDp_odd; // xxCxxxxx
   /*#p21.POPU*/ DFF17 POPU_VBLANKp_odd; // xxCxxxxH
   /*#p21.MYTA*/ DFF17 MYTA_FRAME_ENDp_odd; // xxCxxxxH
   /*#p21.RUTU*/ DFF17 RUTU_LINE_ENDp_odd; // xxxxxxGx

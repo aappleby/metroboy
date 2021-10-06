@@ -37,8 +37,8 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*_p21.VAVE*/ wire VAVE_FF41_RDn = not1(TOBE_FF41_RDp);
 
   /*#p21.PARU*/ wire PARU_VBLANKp = not1(gb_state.lcd.POPU_VBLANKp_odd.qn_new());
-  /*#p21.SADU*/ wire SADU_STAT_MODE0n = nor2(gb_state.XYMU_RENDERINGn.qn_new(), PARU_VBLANKp);   // die NOR
-  /*#p21.XATY*/ wire XATY_STAT_MODE1n = nor2(gb_state.ACYL_SCANNINGp_odd.out_new(), gb_state.XYMU_RENDERINGn.qn_new()); // die NOR
+  /*#p21.SADU*/ wire SADU_STAT_MODE0n = nor2(gb_state.XYMU_RENDERING_LATCHn.qn_new(), PARU_VBLANKp);   // die NOR
+  /*#p21.XATY*/ wire XATY_STAT_MODE1n = nor2(gb_state.ACYL_SCANNINGp_odd.out_new(), gb_state.XYMU_RENDERING_LATCHn.qn_new()); // die NOR
 
   /*#p21.TEBY*/ triwire TEBY_STAT0_TO_CD0 = tri6_pn(TOBE_FF41_RDp, SADU_STAT_MODE0n);
   /*#p21.WUGA*/ triwire WUGA_STAT1_TO_CD1 = tri6_pn(TOBE_FF41_RDp, XATY_STAT_MODE1n);

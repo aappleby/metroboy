@@ -340,6 +340,11 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
   // Button input
 
   uint8_t buttons = 0;
+  if (keyboard_state[SDL_SCANCODE_L])      buttons |= 0x01; // RIGHT
+  if (keyboard_state[SDL_SCANCODE_J])      buttons |= 0x02; // LEFT
+  if (keyboard_state[SDL_SCANCODE_I])      buttons |= 0x04; // UP
+  if (keyboard_state[SDL_SCANCODE_K])      buttons |= 0x08; // DOWN
+
   if (keyboard_state[SDL_SCANCODE_KP_6])   buttons |= 0x01; // RIGHT
   if (keyboard_state[SDL_SCANCODE_KP_4])   buttons |= 0x02; // LEFT
   if (keyboard_state[SDL_SCANCODE_KP_8])   buttons |= 0x04; // UP
@@ -654,7 +659,7 @@ Step controls:
   d.clear();
 
   // Draw screen overlay
-  {
+  if (!config_fastmode) {
     memset(overlay, 0, sizeof(overlay));
 
     int fb_x = bit_pack(state.pix_count) - 8;
@@ -668,8 +673,8 @@ Step controls:
     }
 
     update_texture_u32(overlay_tex, 160, 144, overlay);
+    blitter.blit(view, screen_size, overlay_tex, col6, gb_screen_y, 160 * 2, 144 * 2);
   }
-  blitter.blit(view, screen_size, overlay_tex, col6, gb_screen_y, 160 * 2, 144 * 2);
 
   // Draw flat memory view
   {

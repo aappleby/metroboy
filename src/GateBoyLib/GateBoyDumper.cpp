@@ -1,5 +1,6 @@
 #include "GateBoyLib/GateBoyDumper.h"
 #include "GateBoyLib/GateBoy.h"
+#include "GateBoyLib/Gates.h"
 
 #include "GateBoyLib/Utils.h"
 
@@ -360,7 +361,25 @@ void GateBoyDumper::dump_serial(const GateBoyState& s, Dumper& d) {
 
 void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_slice2n("FF40 LCDC  : ", &s.reg_lcdc.VYXE_LCDC_BGENn, 8);
-  d.dump_slice2n("FF41 STAT  : ", &s.reg_stat.ROXE_STAT_HBI_ENn, 4);
+  
+  {
+    wire PARU_VBLANKp = not1(s.lcd.POPU_VBLANKp_odd.qn_old());
+    wire SADU_STAT_MODE0n = nor2(s.XYMU_RENDERING_LATCHn.qn_old(), PARU_VBLANKp);
+    wire XATY_STAT_MODE1n = nor2(s.ACYL_SCANNINGp_odd.out_old(), s.XYMU_RENDERING_LATCHn.qn_old());
+    wire STAT[8] = {
+      SADU_STAT_MODE0n,
+      XATY_STAT_MODE1n,
+      s.int_ctrl.RUPO_LYC_MATCHn.qp_old(),
+      s.reg_stat.ROXE_STAT_HBI_ENn.qp_old(),
+      s.reg_stat.RUFO_STAT_VBI_ENn.qp_old(),
+      s.reg_stat.REFE_STAT_OAI_ENn.qp_old(),
+      s.reg_stat.RUGU_STAT_LYI_ENn.qp_old(),
+      0,
+    };
+  
+    d.dump_slice2n("FF41 STAT  : ", STAT, 8);
+  }
+
   d.dump_slice2n("FF42 SCY   : ", &s.reg_scy.GAVE_SCY0n, 8);
   d.dump_slice2n("FF43 SCX   : ", &s.reg_scx.DATY_SCX0n, 8);
   d.dump_slice2n("FF47 BGP   : ", &s.reg_bgp.PAVO_BGP_D0n, 8);

@@ -116,7 +116,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   blob cart;
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
-  load_blob("tests/microtests/DMG/poweron_vram_026.gb", cart);
+  load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
   //load_blob("LinksAwakening.gb", cart);
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();

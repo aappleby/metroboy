@@ -101,6 +101,8 @@ void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   int_ack = 0;
   ime = ime_delay; // must be after int check, before op execution
 
+  // #define HALT (op == 0x76)
+
   if      (INT)       execute_int(imask, intf_gh);
   else if (HALT)      execute_halt(imask, intf_gh);
   else if (PREFIX_CB) execute_cb();

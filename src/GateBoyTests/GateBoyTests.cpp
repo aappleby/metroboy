@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 #endif
 
 
-#if 0
+#if 1
   {
     TestResults results;
     GateBoyTests t;
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
   }
 #endif
 
-#if 1
+#if 0
   {
     LOG_B("========== LogicBoy regression tests ==========\n");
     TestResults results;
@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
   }
 #endif
 
-#if 1
+#if 0
   {
     LOG_B("========== LogicBoy regression dumps ==========\n");
 
@@ -142,7 +142,7 @@ int main(int argc, char** argv) {
   }
 #endif
 
-#if 1
+#if 0
   {
     TestResults results;
     GateBoyTests t;

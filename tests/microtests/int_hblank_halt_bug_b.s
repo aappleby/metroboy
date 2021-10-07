@@ -1,13 +1,14 @@
 .include "header.inc"
 
 main:
-  cycle_init
+  ld a, %00001000
+  ldh (STAT), a
+  ld a, %00000010
+  ldh (IE), a
+  ld a, %00000010
+  ldh (IF), a
 
-  set_stat_int_hblank
-  set_ie_stat
-  set_if
-
-  xor a
+  ld a, 0
   halt
   inc a
 

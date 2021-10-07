@@ -128,6 +128,7 @@ void MetroBoyCPU::execute_int(uint8_t imask_, uint8_t intf_) {
     else                                       { int_ack = 0; }
   }
 
+  // we don't have to reset pc from _bus_addr...
   if      (state == 0) { pc = _bus_addr;     bus_pass(sp); }
   else if (state == 1) { sp = _bus_addr - 1; bus_write(sp, pch); }
   else if (state == 2) { sp = _bus_addr - 1; bus_write(sp, pcl); }

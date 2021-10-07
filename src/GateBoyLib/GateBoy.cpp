@@ -30,7 +30,7 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 
   sys.rst = 1;
 
-  tock_cpu();
+  tock_cpu_early();
   tock_gates(cart_blob);
   gb_state.commit();
   pins.commit();
@@ -194,15 +194,14 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   probes.begin_pass((sys.gb_phase_total + 1) & 7);
   sys.gb_phase_total++;
 
-  tock_cpu();
-
-  tock_gates(cart_blob);
-  gb_state.commit();
-  pins.commit();
-
   if (config_idempotence) {
-    auto gb_state_old = gb_state;
+    tock_cpu_early();
+    tock_gates(cart_blob);
+    tock_cpu_late();
 
+    gb_state.commit();
+    pins.commit();
+    auto gb_state_old = gb_state;
     tock_gates(cart_blob);
     gb_state.commit();
     pins.commit();
@@ -211,6 +210,15 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
       LOG_R("idempotence fail!\n");
       debugbreak();
     }
+
+  }
+  else {
+    tock_cpu_early();
+    tock_gates(cart_blob);
+    tock_cpu_late();
+
+    gb_state.commit();
+    pins.commit();
   }
 
   update_framebuffer();
@@ -290,7 +298,9 @@ void GateBoy::update_framebuffer() {
 #define CHECK_ODD(A)  CHECK_P(DELTA_ODD_new  || ((reg_old.A.state & 1) == (reg_new.A.state & 1)))
 #define CHECK_EVEN(A) CHECK_P(DELTA_EVEN_new || ((reg_old.A.state & 1) == (reg_new.A.state & 1)))
 
-void GateBoy::tock_cpu() {
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_cpu_early() {
   cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
   cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
 
@@ -340,6 +350,59 @@ void GateBoy::tock_cpu() {
   }
 }
 
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_cpu_late() {
+/*
+  cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
+  cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
+
+  if (DELTA_HA_new) {
+    if (cpu.core.op == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state_ = 0;
+    cpu.intf_halt_latch = 0;
+  }
+
+  // +ha -ab -bc -cd -de -ef -fg -gh
+  if (DELTA_HA_new) {
+    // this one latches funny, some hardware bug
+    if (bit(gb_state.reg_if.NYBO_FF0F_D2p.state)) cpu.intf_halt_latch |= INT_TIMER_MASK;
+  }
+
+  // -ha +ab -bc
+  if (DELTA_AB_new) {
+    if (sys.cpu_en) {
+      cpu.core.tock_ab(cpu.imask_latch, cpu.intf_latch, cpu.cpu_data_latch);
+    }
+  }
+
+  if (DELTA_AB_new) {
+    if (sys.cpu_en) {
+      cpu.bus_req_new.addr = cpu.core._bus_addr;
+      cpu.bus_req_new.data = cpu.core._bus_data;
+      cpu.bus_req_new.read = cpu.core._bus_read;
+      cpu.bus_req_new.write = cpu.core._bus_write;
+    }
+  }
+
+  // -bc +cd +de -ef -fg -gh -ha -ab
+  if (DELTA_DE_new) {
+    if (bit(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
+    if (bit(gb_state.reg_if.LALU_FF0F_D1p.state)) cpu.intf_halt_latch |= INT_STAT_MASK;
+    if (bit(gb_state.reg_if.UBUL_FF0F_D3p.state)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
+    if (bit(gb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
+  }
+
+  // -ha -ab -bc -cd -de -ef +fg +gh
+  if (DELTA_GH_new) {
+    cpu.cpu_data_latch = 0xFF;
+  }
+
+  // +ha -ab -bc -cd -de -ef -fg +gh
+  if (DELTA_GH_new) {
+    cpu.intf_latch = (uint8_t)bit_pack(gb_state.reg_if);
+  }
+  */
+}
 
 //-----------------------------------------------------------------------------
 

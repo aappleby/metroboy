@@ -71,7 +71,7 @@ line_153_lyc0_int_inc_sled.gb
 
 ppu_sprite0_scx3_b.gb
   // read goes on the bus on AB
-  // stat goes to 00 on the _next_ AB
+  // stat goes to 00 on the _next_ AB    SUGGESTS LATCH AT THE END OF AB
   // WODU goes high on HA
   // VOGA goes high on AB
   // the stat bits are driven off XYMU, which is driven off VOGA

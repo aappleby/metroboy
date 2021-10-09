@@ -30,7 +30,6 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 
   sys.rst = 1;
 
-  tock_cpu_early();
   tock_gates(cart_blob);
   gb_state.commit();
   pins.commit();
@@ -195,9 +194,9 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   sys.gb_phase_total++;
 
   if (config_idempotence) {
-    tock_cpu_early();
+    debugbreak()
+#if 0
     tock_gates(cart_blob);
-    tock_cpu_late();
 
     gb_state.commit();
     pins.commit();
@@ -210,12 +209,10 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
       LOG_R("idempotence fail!\n");
       debugbreak();
     }
-
+#endif
   }
   else {
-    tock_cpu_early();
     tock_gates(cart_blob);
-    tock_cpu_late();
 
     gb_state.commit();
     pins.commit();
@@ -300,27 +297,12 @@ void GateBoy::update_framebuffer() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_cpu_early() {
-  cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
-  cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
-
-  if (DELTA_HA_new) {
-    cpu.core.update_halt(cpu.imask_latch, cpu.intf_halt_latch);
-    cpu.intf_halt_latch = 0;
-  }
-
-  // +ha -ab -bc -cd -de -ef -fg -gh
-  if (DELTA_HA_new) {
-    // this one latches funny, some hardware bug
-    if (bit(gb_state.reg_if.NYBO_FF0F_D2p.state)) cpu.intf_halt_latch |= INT_TIMER_MASK;
-
-    if (sys.cpu_en) {
-      cpu.core.latch_bus_data(cpu.cpu_data_latch);
-    }
-  }
+void GateBoy::tock_gates(const blob& cart_blob) {
 
   // -ha +ab -bc
   if (DELTA_AB_new) {
+    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
+    cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
     if (sys.cpu_en) {
       cpu.core.latch_op(cpu.cpu_data_latch);
       cpu.core.check_int(cpu.imask_latch, cpu.intf_latch);
@@ -333,83 +315,43 @@ void GateBoy::tock_cpu_early() {
       cpu.bus_req_new.write = cpu.core.get_bus_write();
     }
   }
-
-  // -bc +cd +de -ef -fg -gh -ha -ab
-  if (DELTA_DE_new) {
+  else if (DELTA_BC_new) {
+  }
+  else if (DELTA_CD_new) {
+  }
+  else if (DELTA_DE_new) {
+    // -bc +cd +de -ef -fg -gh -ha -ab
     if (bit(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
     if (bit(gb_state.reg_if.LALU_FF0F_D1p.state)) cpu.intf_halt_latch |= INT_STAT_MASK;
     if (bit(gb_state.reg_if.UBUL_FF0F_D3p.state)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
     if (bit(gb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
   }
-
-  // -ha -ab -bc -cd -de -ef +fg +gh
-  if (DELTA_GH_new) {
-    cpu.cpu_data_latch = 0xFF;
+  else if (DELTA_EF_new) {
   }
+  else if (DELTA_FG_new) {
+  }
+  else if (DELTA_GH_new) {
 
-  // +ha -ab -bc -cd -de -ef -fg +gh
-  if (DELTA_GH_new) {
+    // -ha -ab -bc -cd -de -ef +fg +gh
+    cpu.cpu_data_latch = 0xFF;
+    // +ha -ab -bc -cd -de -ef -fg +gh
     cpu.intf_latch = (uint8_t)bit_pack(gb_state.reg_if);
   }
-}
+  else if (DELTA_HA_new) {
+    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
+    cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
 
-//-----------------------------------------------------------------------------
-
-void GateBoy::tock_cpu_late() {
-/*
-  cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
-  cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
-
-  if (DELTA_HA_new) {
-    if (cpu.core.op == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state_ = 0;
+    cpu.core.update_halt(cpu.imask_latch, cpu.intf_halt_latch);
     cpu.intf_halt_latch = 0;
-  }
-
-  // +ha -ab -bc -cd -de -ef -fg -gh
-  if (DELTA_HA_new) {
+    // +ha -ab -bc -cd -de -ef -fg -gh
     // this one latches funny, some hardware bug
     if (bit(gb_state.reg_if.NYBO_FF0F_D2p.state)) cpu.intf_halt_latch |= INT_TIMER_MASK;
-  }
 
-  // -ha +ab -bc
-  if (DELTA_AB_new) {
     if (sys.cpu_en) {
-      cpu.core.tock_ab(cpu.imask_latch, cpu.intf_latch, cpu.cpu_data_latch);
+      cpu.core.latch_bus_data(cpu.cpu_data_latch);
     }
   }
 
-  if (DELTA_AB_new) {
-    if (sys.cpu_en) {
-      cpu.bus_req_new.addr = cpu.core._bus_addr;
-      cpu.bus_req_new.data = cpu.core._bus_data;
-      cpu.bus_req_new.read = cpu.core._bus_read;
-      cpu.bus_req_new.write = cpu.core._bus_write;
-    }
-  }
-
-  // -bc +cd +de -ef -fg -gh -ha -ab
-  if (DELTA_DE_new) {
-    if (bit(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
-    if (bit(gb_state.reg_if.LALU_FF0F_D1p.state)) cpu.intf_halt_latch |= INT_STAT_MASK;
-    if (bit(gb_state.reg_if.UBUL_FF0F_D3p.state)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
-    if (bit(gb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
-  }
-
-  // -ha -ab -bc -cd -de -ef +fg +gh
-  if (DELTA_GH_new) {
-    cpu.cpu_data_latch = 0xFF;
-  }
-
-  // +ha -ab -bc -cd -de -ef -fg +gh
-  if (DELTA_GH_new) {
-    cpu.intf_latch = (uint8_t)bit_pack(gb_state.reg_if);
-  }
-  */
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::tock_gates(const blob& cart_blob) {
   const GateBoyState  reg_old = gb_state;
   GateBoyState& reg_new = gb_state;
 

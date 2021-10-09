@@ -8,15 +8,7 @@ struct MetroBoyCPU {
 public:
   void reset_to_bootrom();
   void reset_to_cart();
-
   void dump(Dumper& d) const;
-
-  void tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data);
-
-  void execute_int(uint8_t imask_, uint8_t intf_);
-  void execute_halt(uint8_t imask_, uint8_t intf_);
-  void execute_cb();
-  void execute_op();
 
   void latch_op(uint8_t _op) {
     if (state == 0) {
@@ -53,9 +45,6 @@ public:
     state = state_;
   }
 
-//private:
-  
-
   //----------------------------------------
 
   uint8_t  get_int_ack() const { return int_ack; }
@@ -71,6 +60,12 @@ public:
   //----------------------------------------
 
 private:
+
+  void execute_int(uint8_t imask_, uint8_t intf_);
+  void execute_halt(uint8_t imask_, uint8_t intf_);
+  void execute_cb();
+  void execute_op();
+
 
   uint8_t get_reg(int mux);
   void    set_reg(int mux, uint8_t data);

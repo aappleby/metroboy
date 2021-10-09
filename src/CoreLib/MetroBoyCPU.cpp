@@ -82,6 +82,7 @@ void MetroBoyCPU::dump(Dumper& d_) const {
 //-----------------------------------------------------------------------------
 // Do the meat of executing the instruction
 
+/*
 void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   state = state_;
 
@@ -108,6 +109,7 @@ void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
   else if (PREFIX_CB) execute_cb();
   else                execute_op();
 }
+*/
 
 //-----------------------------------------------------------------------------
 

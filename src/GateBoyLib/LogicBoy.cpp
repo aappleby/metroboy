@@ -212,6 +212,7 @@ void LogicBoy::tock_cpu() {
       //cpu.core.tock_ab(cpu.imask_latch, cpu.intf_latch, cpu.cpu_data_latch);
 
       // FIXME ONCE GATEBOY CPU IS CLEANED UP
+      debugbreak();
 #if 0
       cpu.core.state = cpu.core.state_;
 

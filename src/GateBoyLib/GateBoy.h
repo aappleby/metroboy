@@ -252,8 +252,6 @@ struct GateBoy  : public IGateBoy {
 
   //-----------------------------------------------------------------------------
 
-  void tock_cpu_early();
-  void tock_cpu_late();
   void tock_gates(const blob& cart_blob);
   void update_framebuffer();
 

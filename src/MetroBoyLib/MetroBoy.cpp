@@ -177,10 +177,11 @@ void MetroBoy::next_phase() {
   // prioritize reqs
 
   if (MB_DELTA_AB) {
-    cpu_req.addr  = gb_cpu.get_bus_addr();
-    cpu_req.data  = gb_cpu.get_bus_data();
-    cpu_req.read  = gb_cpu.get_bus_read();
-    cpu_req.write = gb_cpu.get_bus_write();
+    cpu_req = gb_cpu.get_bus_req();
+    //cpu_req.addr  = gb_cpu.get_bus_addr();
+    //cpu_req.data  = gb_cpu.get_bus_data();
+    //cpu_req.read  = gb_cpu.get_bus_read();
+    //cpu_req.write = gb_cpu.get_bus_write();
 
     ibus_req = {0};
     ebus_req = {0};

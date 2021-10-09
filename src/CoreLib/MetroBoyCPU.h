@@ -10,6 +10,7 @@ public:
   void reset_to_cart();
   void dump(Dumper& d) const;
 
+  /*
   void latch_op(uint8_t _op) {
     if (op_state == 0) {
       op_addr = _bus_addr;
@@ -28,14 +29,16 @@ public:
     int_ack = 0;
     ime = ime_delay; // must be after int check, before op execution
   }
+  */
 
   void execute(uint8_t _imask, uint8_t _intf) {
     if      (op_next == 0xF4) execute_int(_imask, _intf);   // INT
     else if (op_next == 0x76) execute_halt(_imask, _intf);  // HALT
     else if (op_next == 0xCB) execute_cb();                 // CB
-    else                 execute_op();
+    else                      execute_op();
   }
 
+  /*
   void update_halt(uint8_t _imask, uint8_t _intf_halt_latch) {
     if (op_next == 0x76 && (_imask & _intf_halt_latch)) op_state_ = 0;
   }
@@ -44,6 +47,7 @@ public:
     if (_bus_read) in = _data;
     op_state = op_state_;
   }
+  */
 
   //----------------------------------------
 
@@ -52,10 +56,21 @@ public:
   uint16_t get_op_addr() const { return op_addr; }
   uint8_t  get_a() const { return a; }
 
+  Req get_bus_req() const {
+    Req r;
+    r.addr  = _bus_addr;
+    r.data  = _bus_data;
+    r.read  = _bus_read;
+    r.write = _bus_write;
+    return r;
+  }
+
+  /*
   uint16_t get_bus_addr()  const { return _bus_addr; }
   uint8_t  get_bus_data()  const { return _bus_data; }
   uint8_t  get_bus_read()  const { return _bus_read; }
   uint8_t  get_bus_write() const { return _bus_write; }
+  */
 
   //----------------------------------------
 

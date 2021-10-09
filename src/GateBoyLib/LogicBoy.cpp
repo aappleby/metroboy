@@ -246,10 +246,11 @@ void LogicBoy::tock_cpu() {
 
   if (PHASE_B_NEW) {
     if (sys.cpu_en) {
-      cpu.bus_req_new.addr = cpu.core.get_bus_addr();
-      cpu.bus_req_new.data = cpu.core.get_bus_data();
-      cpu.bus_req_new.read = cpu.core.get_bus_read();
-      cpu.bus_req_new.write = cpu.core.get_bus_write();
+      cpu.bus_req_new = cpu.core.get_bus_req();
+      //cpu.bus_req_new.addr = cpu.core.get_bus_addr();
+      //cpu.bus_req_new.data = cpu.core.get_bus_data();
+      //cpu.bus_req_new.read = cpu.core.get_bus_read();
+      //cpu.bus_req_new.write = cpu.core.get_bus_write();
     }
   }
 

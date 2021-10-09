@@ -325,15 +325,15 @@ void MetroBoyCPU::execute_op() {
   if (op_state == 3 && STM_A16_SP)             /**/ { xy = adp; /**/                                          /**/ bus_write(xy, sph); op_state_ = 4; }
   if (op_state == 4 && STM_A16_SP)             /**/ { xy = adp; /**/                                          /**/ bus_done(pc);       op_state_ = 0; }
 
-  if (op_state == 0 && STM_A16_A)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc);     op_state_ = 1; }
-  if (op_state == 1 && STM_A16_A)              /**/ { pc = adp; /**/ xyl = in;                                /**/ bus_read(pc);     op_state_ = 2; }
-  if (op_state == 2 && STM_A16_A)              /**/ { pc = adp; /**/ xyh = in;                                /**/ bus_write(xy, a); op_state_ = 3; }
-  if (op_state == 3 && STM_A16_A)              /**/ {           /**/                                          /**/ bus_done(pc);     op_state_ = 0; }
+  if (op_state == 0 && STM_A16_A)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc);       op_state_ = 1; }
+  if (op_state == 1 && STM_A16_A)              /**/ { pc = adp; /**/ xyl = in;                                /**/ bus_read(pc);       op_state_ = 2; }
+  if (op_state == 2 && STM_A16_A)              /**/ { pc = adp; /**/ xyh = in;                                /**/ bus_write(xy, a);   op_state_ = 3; }
+  if (op_state == 3 && STM_A16_A)              /**/ {           /**/                                          /**/ bus_done(pc);       op_state_ = 0; }
 
-  if (op_state == 0 && LDM_A_A16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); op_state_ = 1; }
-  if (op_state == 1 && LDM_A_A16)              /**/ { pc = adp; /**/ xyl = in;                                /**/ bus_read(pc); op_state_ = 2; }
-  if (op_state == 2 && LDM_A_A16)              /**/ { pc = adp; /**/ xyh = in;                                /**/ bus_read(xy); op_state_ = 3; }
-  if (op_state == 3 && LDM_A_A16)              /**/ {           /**/ a = in;                                  /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 0 && LDM_A_A16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc);       op_state_ = 1; }
+  if (op_state == 1 && LDM_A_A16)              /**/ { pc = adp; /**/ xyl = in;                                /**/ bus_read(pc);       op_state_ = 2; }
+  if (op_state == 2 && LDM_A_A16)              /**/ { pc = adp; /**/ xyh = in;                                /**/ bus_read(xy);       op_state_ = 3; }
+  if (op_state == 3 && LDM_A_A16)              /**/ {           /**/ a = in;                                  /**/ bus_done(pc);       op_state_ = 0; }
 
   // indirect load/store                       /**/             /**/                                          /**/
 

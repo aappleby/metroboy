@@ -324,16 +324,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
       cpu.core.int_ack = 0;
       cpu.core.ime = cpu.core.ime_delay; // must be after int check, before op execution
 
+      cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
 
-      if      (cpu.core.op_next == 0xF4) cpu.core.execute_int(cpu.imask_latch, cpu.intf_latch);   // INT
-      else if (cpu.core.op_next == 0x76) cpu.core.execute_halt(cpu.imask_latch, cpu.intf_latch);  // HALT
-      else if (cpu.core.op_next == 0xCB) cpu.core.execute_cb();                 // CB
-      else                               cpu.core.execute_op();
-
-      cpu.bus_req_new.addr = cpu.core.get_bus_addr();
-      cpu.bus_req_new.data = cpu.core.get_bus_data();
-      cpu.bus_req_new.read = cpu.core.get_bus_read();
-      cpu.bus_req_new.write = cpu.core.get_bus_write();
+      cpu.bus_req_new = cpu.core.get_bus_req();
     }
   }
 

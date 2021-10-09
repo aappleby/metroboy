@@ -108,7 +108,6 @@ public:
     _bus_data  = 0;
     _bus_read  = 1;
     _bus_write = 0;
-    op_state_ = 0;
   }
 
   uint16_t op_addr;

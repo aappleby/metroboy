@@ -29,7 +29,7 @@ void MetroBoyCPU::reset_to_cart() {
   _bus_write = 1;
 
   op_addr = 0x00FE;
-  op = 0xe0;
+  op_next = 0xe0;
   op_cb = 0x11;
   op_state = 2;
   op_state_ = 2;
@@ -56,14 +56,14 @@ void MetroBoyCPU::reset_to_cart() {
 void MetroBoyCPU::dump(Dumper& d_) const {
   d_("bus req : %04x:%02x %s%s\n", _bus_addr, _bus_data, _bus_read  ? "\003R\001" : "-", _bus_write ? "\002W\001" : "-");
   d_("op addr : 0x%04x\n", op_addr);
-  d_("opname  : '%s' @ %d->%d\n", op_strings2[op], op_state, op_state_);
-  d_("opcode  : 0x%02x\n", op);
+  d_("opname  : '%s' @ %d->%d\n", op_strings2[op_next], op_state, op_state_);
+  d_("opcode  : 0x%02x\n", op_next);
   d_("CB      : 0x%02x\n", op_cb);
   d_("in      : 0x%02x\n", in);
   d_("\n");
   d_("IME     : %d\n", ime);
   d_("IME_    : %d\n", ime_delay);
-  d_("int #   : %d\n", INT);
+  d_("isr     : %d\n", (op_next == 0xF4));
   d_("int_ack : 0x%02x\n", int_ack);
   d_("\n");
   d_("alu_f   : 0x%02x\n", alu_f);
@@ -160,6 +160,8 @@ void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_cb() {
+  auto op = op_next;
+
   op_state_ = op_state + 1;
 
   uint16_t ad = _bus_addr;
@@ -191,6 +193,8 @@ void MetroBoyCPU::execute_cb() {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_op() {
+  auto op = op_next;
+
   op_state_ = op_state + 1;
 
   uint16_t ad = _bus_addr;
@@ -465,7 +469,7 @@ void MetroBoyCPU::execute_op() {
   if (op_state == 0 && RST_NN)                 /**/ { pc = adp; /**/                                          /**/ bus_pass(sp); }
   if (op_state == 1 && RST_NN)                 /**/ { sp = adm; /**/                                          /**/ bus_write(sp, pch); }
   if (op_state == 2 && RST_NN)                 /**/ { sp = adm; /**/                                          /**/ bus_write(sp, pcl); }
-  if (op_state == 3 && RST_NN)                 /**/ {           /**/ xy = op - 0xC7;                          /**/ bus_done(xy); }
+  if (op_state == 3 && RST_NN)                 /**/ {           /**/ xy = op_next - 0xC7;                          /**/ bus_done(xy); }
 
   // returns
 
@@ -523,6 +527,8 @@ void MetroBoyCPU::set_reg(int mux, uint8_t data) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::set_f(uint8_t mask) {
+  auto op = op_next;
+
   f = (f & ~mask) | (alu_f & mask);
   if (ADD_SP_R8)   { f &= ~(F_ZERO | F_NEGATIVE); }
   if (LD_HL_SP_R8) { f &= ~(F_ZERO | F_NEGATIVE); }

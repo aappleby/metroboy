@@ -13,14 +13,14 @@ public:
   void latch_op(uint8_t _op) {
     if (op_state == 0) {
       op_addr = _bus_addr;
-      op = _op;
+      op_next = _op;
     }
   }
 
   void check_int(uint8_t _imask, uint8_t _intf) {
     if (op_state == 0) {
       if ((_imask & _intf) && ime) {
-        op = 0xF4; // fake opcode
+        op_next = 0xF4; // fake opcode
         ime = false;
         ime_delay = false;
       }
@@ -30,14 +30,14 @@ public:
   }
 
   void execute(uint8_t _imask, uint8_t _intf) {
-    if      (op == 0xF4 /*INT*/ ) execute_int(_imask, _intf);
-    else if (op == 0x76 /*HALT*/) execute_halt(_imask, _intf);
-    else if (op == 0xCB /*CB*/  ) execute_cb();
-    else                          execute_op();
+    if      (op_next == 0xF4) execute_int(_imask, _intf);   // INT
+    else if (op_next == 0x76) execute_halt(_imask, _intf);  // HALT
+    else if (op_next == 0xCB) execute_cb();                 // CB
+    else                 execute_op();
   }
 
   void update_halt(uint8_t _imask, uint8_t _intf_halt_latch) {
-    if (op == 0x76 && (_imask & _intf_halt_latch)) op_state_ = 0;
+    if (op_next == 0x76 && (_imask & _intf_halt_latch)) op_state_ = 0;
   }
 
   void latch_bus_data(uint8_t _data) {
@@ -48,7 +48,7 @@ public:
   //----------------------------------------
 
   uint8_t  get_int_ack() const { return int_ack; }
-  uint8_t  get_op()      const { return op; }
+  uint8_t  get_op()      const { return op_next; }
   uint16_t get_op_addr() const { return op_addr; }
   uint8_t  get_a() const { return a; }
 
@@ -59,7 +59,7 @@ public:
 
   //----------------------------------------
 
-private:
+//private:
 
   void execute_int(uint8_t imask_, uint8_t intf_);
   void execute_halt(uint8_t imask_, uint8_t intf_);
@@ -112,7 +112,8 @@ private:
   }
 
   uint16_t op_addr;
-  uint8_t  op;
+  uint8_t  op_prev;
+  uint8_t  op_next;
   uint8_t  op_cb;
   int      op_state, op_state_;
   uint8_t  in;

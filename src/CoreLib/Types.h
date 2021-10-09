@@ -135,6 +135,7 @@ const uint32_t COL_HINT3 = 0x00333333;
 #pragma warning(push)
 #pragma warning(disable:4201)
 
+#pragma pack(push, 1)
 struct Req {
   uint16_t addr = 0;
   union {
@@ -152,6 +153,7 @@ struct Req {
     return read || write;
   }
 };
+#pragma pack(pop)
 
 static_assert(sizeof(Req) == 8, "Req size != 8");
 

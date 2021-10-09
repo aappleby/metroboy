@@ -195,7 +195,8 @@ void LogicBoy::tock_cpu() {
   cpu.imask_latch = lb_state.reg_ie;
 
   if (PHASE_A_NEW) {
-    cpu.core.update_halt(cpu.imask_latch, cpu.intf_halt_latch);
+    debugbreak();
+    //cpu.core.update_halt(cpu.imask_latch, cpu.intf_halt_latch);
     //if (cpu.core.op == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state_ = 0;
     //cpu.intf_halt_latch = 0;
   }

@@ -175,20 +175,21 @@ void MetroBoyCPU::execute_cb() {
 
   bool OP_CB_BIT = PREFIX_CB && (CB_QUAD == 1);
 
-  if (op_state == 0)     { pc = adp; bus_read(pc); }
-
-  if (OP_CB_R) {
+  if (op_state == 0) {
+    pc = adp; bus_read(pc);
+  }
+  else if (OP_CB_R) {
     if (op_state == 1)   { pc = adp; set_reg(CB_COL, alu_cb(get_reg(CB_COL), op_cb, f)); set_f(mask); bus_done(pc); op_state_ = 0; }
   }
   else {
     if (OP_CB_BIT) {
-      if (op_state == 1) { pc = adp;                                      bus_read(hl); }
-      if (op_state == 2) { alu_cb(in, op_cb, f); set_f(mask);        bus_done(pc); op_state_ = 0;}
+      if (op_state == 1) { pc = adp;                          bus_read(hl); op_state_ = 2;}
+      if (op_state == 2) { alu_cb(in, op_cb, f); set_f(mask); bus_done(pc); op_state_ = 0;}
     }
     else {
-      if (op_state == 1) { pc = adp;                                      bus_read(hl); }
-      if (op_state == 2) { alu_cb(in, op_cb, f); set_f(mask);        bus_write(hl, alu_o); }
-      if (op_state == 3) {                                                bus_done(pc); op_state_ = 0;}
+      if (op_state == 1) { pc = adp;                          bus_read(hl); }
+      if (op_state == 2) { alu_cb(in, op_cb, f); set_f(mask); bus_write(hl, alu_o); }
+      if (op_state == 3) {                                    bus_done(pc); op_state_ = 0;}
     }
   }
 }
@@ -217,31 +218,31 @@ void MetroBoyCPU::execute_op() {
 
   // misc
 
-  if (op_state == 0 && NOP)                    /**/ { pc = adp; /**/                                          /**/ bus_done(pc); op_state_ = 0;}
-  if (op_state == 0 && STOP)                   /**/ { pc = adp; /**/                                          /**/ bus_done(pc); op_state_ = 0;}
-  if (op_state == 0 && DI)                     /**/ { pc = adp; /**/ ime = false; ime_delay = false;          /**/ bus_done(pc); op_state_ = 0;}
-  if (op_state == 0 && EI)                     /**/ { pc = adp; /**/ ime = ime_delay;  ime_delay = true;      /**/ bus_done(pc); op_state_ = 0;}
-  if (op_state == 0 && MV_R_R)                 /**/ { pc = adp; /**/ set_reg(OP_ROW, get_reg(OP_COL));        /**/ bus_done(pc); op_state_ = 0;}
-  if (op_state == 0 && LD_SP_HL)               /**/ { pc = adp; /**/                                          /**/ bus_pass(hl); }
-  if (op_state == 1 && LD_SP_HL)               /**/ { sp = ad;  /**/                                          /**/ bus_done(pc); op_state_ = 0;}
+  if (op_state == 0 && NOP)                    /**/ { pc = adp; /**/                                          /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 0 && STOP)                   /**/ { pc = adp; /**/                                          /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 0 && DI)                     /**/ { pc = adp; /**/ ime = false; ime_delay = false;          /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 0 && EI)                     /**/ { pc = adp; /**/ ime = ime_delay;  ime_delay = true;      /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 0 && MV_R_R)                 /**/ { pc = adp; /**/ set_reg(OP_ROW, get_reg(OP_COL));        /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 0 && LD_SP_HL)               /**/ { pc = adp; /**/                                          /**/ bus_pass(hl); op_state_ = 1; }
+  if (op_state == 1 && LD_SP_HL)               /**/ { sp = ad;  /**/                                          /**/ bus_done(pc); op_state_ = 0; }
 
   // load immediate
 
-  if (op_state == 0 && LD_R_D8)                /**/ { pc = adp; /**/                                          /**/ bus_read(pc); }
-  if (op_state == 1 && LD_R_D8)                /**/ { pc = adp; /**/ set_reg(OP_ROW, in);                     /**/ bus_done(pc); op_state_ = 0;}
+  if (op_state == 0 && LD_R_D8)                /**/ { pc = adp; /**/                                          /**/ bus_read(pc); op_state_ = 1; }
+  if (op_state == 1 && LD_R_D8)                /**/ { pc = adp; /**/ set_reg(OP_ROW, in);                     /**/ bus_done(pc); op_state_ = 0; }
 
-  if (op_state == 0 && LD_BC_D16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); }
-  if (op_state == 0 && LD_DE_D16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); }
-  if (op_state == 0 && LD_HL_D16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); }
-  if (op_state == 0 && LD_SP_D16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); }
-  if (op_state == 1 && LD_BC_D16)              /**/ { pc = adp; /**/ c = in;                                  /**/ bus_read(pc); }
-  if (op_state == 1 && LD_DE_D16)              /**/ { pc = adp; /**/ e = in;                                  /**/ bus_read(pc); }
-  if (op_state == 1 && LD_HL_D16)              /**/ { pc = adp; /**/ l = in;                                  /**/ bus_read(pc); }
-  if (op_state == 1 && LD_SP_D16)              /**/ { pc = adp; /**/ spl = in;                                /**/ bus_read(pc); }
-  if (op_state == 2 && LD_BC_D16)              /**/ { pc = adp; /**/ b = in;                                  /**/ bus_done(pc); op_state_ = 0;}
-  if (op_state == 2 && LD_DE_D16)              /**/ { pc = adp; /**/ d = in;                                  /**/ bus_done(pc); op_state_ = 0;}
-  if (op_state == 2 && LD_HL_D16)              /**/ { pc = adp; /**/ h = in;                                  /**/ bus_done(pc); op_state_ = 0;}
-  if (op_state == 2 && LD_SP_D16)              /**/ { pc = adp; /**/ sph = in;                                /**/ bus_done(pc); op_state_ = 0;}
+  if (op_state == 0 && LD_BC_D16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); op_state_ = 1; }
+  if (op_state == 0 && LD_DE_D16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); op_state_ = 1; }
+  if (op_state == 0 && LD_HL_D16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); op_state_ = 1; }
+  if (op_state == 0 && LD_SP_D16)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); op_state_ = 1; }
+  if (op_state == 1 && LD_BC_D16)              /**/ { pc = adp; /**/ c = in;                                  /**/ bus_read(pc); op_state_ = 2; }
+  if (op_state == 1 && LD_DE_D16)              /**/ { pc = adp; /**/ e = in;                                  /**/ bus_read(pc); op_state_ = 2; }
+  if (op_state == 1 && LD_HL_D16)              /**/ { pc = adp; /**/ l = in;                                  /**/ bus_read(pc); op_state_ = 2; }
+  if (op_state == 1 && LD_SP_D16)              /**/ { pc = adp; /**/ spl = in;                                /**/ bus_read(pc); op_state_ = 2; }
+  if (op_state == 2 && LD_BC_D16)              /**/ { pc = adp; /**/ b = in;                                  /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 2 && LD_DE_D16)              /**/ { pc = adp; /**/ d = in;                                  /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 2 && LD_HL_D16)              /**/ { pc = adp; /**/ h = in;                                  /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 2 && LD_SP_D16)              /**/ { pc = adp; /**/ sph = in;                                /**/ bus_done(pc); op_state_ = 0; }
 
   // 8-bit alu
 
@@ -257,29 +258,29 @@ void MetroBoyCPU::execute_op() {
   if (op_state == 0 && SCF)                    /**/ { pc = adp; /**/ a = rlu(a, OP_ROW, f); set_f(0x70);      /**/ bus_done(pc); op_state_ = 0;}
   if (op_state == 0 && CCF)                    /**/ { pc = adp; /**/ a = rlu(a, OP_ROW, f); set_f(0x70);      /**/ bus_done(pc); op_state_ = 0;}
 
-  if (op_state == 0 && ALU_A_D8)               /**/ { pc = adp; /**/                                          /**/ bus_read(pc); }
+  if (op_state == 0 && ALU_A_D8)               /**/ { pc = adp; /**/                                          /**/ bus_read(pc); op_state_ = 1; }
   if (op_state == 1 && ALU_A_D8)               /**/ { pc = adp; /**/ a = alu(a, in, OP_ROW, f); set_f(0xF0);  /**/ bus_done(pc); op_state_ = 0; }
 
-  if (op_state == 0 && ALU_A_HL)               /**/ { pc = adp; /**/                                          /**/ bus_read(hl); }
+  if (op_state == 0 && ALU_A_HL)               /**/ { pc = adp; /**/                                          /**/ bus_read(hl); op_state_ = 1; }
   if (op_state == 1 && ALU_A_HL)               /**/ {           /**/ a = alu(a, in, OP_ROW, f); set_f(0xF0);  /**/ bus_done(pc); op_state_ = 0; }
 
-  if (op_state == 0 && INC_AT_HL)              /**/ { pc = adp; /**/                                          /**/ bus_read(hl); }
-  if (op_state == 1 && INC_AT_HL)              /**/ {           /**/ alu(in, 1, 1, 0); set_f(0xE0);           /**/ bus_write(hl, alu_o); }
-  if (op_state == 2 && INC_AT_HL)              /**/ {           /**/                                          /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 0 && INC_AT_HL)              /**/ { pc = adp; /**/                                          /**/ bus_read(hl);         op_state_ = 1; }
+  if (op_state == 1 && INC_AT_HL)              /**/ {           /**/ alu(in, 1, 1, 0); set_f(0xE0);           /**/ bus_write(hl, alu_o); op_state_ = 2; }
+  if (op_state == 2 && INC_AT_HL)              /**/ {           /**/                                          /**/ bus_done(pc);         op_state_ = 0; }
 
-  if (op_state == 0 && DEC_AT_HL)              /**/ { pc = adp; /**/                                          /**/ bus_read(hl); }
-  if (op_state == 1 && DEC_AT_HL)              /**/ {           /**/ alu(in, 1, 3, 0); set_f(0xE0);           /**/ bus_write(hl, alu_o); }
-  if (op_state == 2 && DEC_AT_HL)              /**/ {           /**/                                          /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 0 && DEC_AT_HL)              /**/ { pc = adp; /**/                                          /**/ bus_read(hl);         op_state_ = 1; }
+  if (op_state == 1 && DEC_AT_HL)              /**/ {           /**/ alu(in, 1, 3, 0); set_f(0xE0);           /**/ bus_write(hl, alu_o); op_state_ = 2; }
+  if (op_state == 2 && DEC_AT_HL)              /**/ {           /**/                                          /**/ bus_done(pc);         op_state_ = 0; }
 
   // 16-bit alu
 
-  if (op_state == 0 && ADD_SP_R8)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); }
-  if (op_state == 1 && ADD_SP_R8)              /**/ { pc = adp; /**/ spl = alu(in, spl, 0, f); set_f(0xF0);   /**/ bus_pass(pc); }
-  if (op_state == 2 && ADD_SP_R8)              /**/ {           /**/ sph = alu(sxt(in), sph, 1, f);           /**/ bus_pass(pc); }
+  if (op_state == 0 && ADD_SP_R8)              /**/ { pc = adp; /**/                                          /**/ bus_read(pc); op_state_ = 1; }
+  if (op_state == 1 && ADD_SP_R8)              /**/ { pc = adp; /**/ spl = alu(in, spl, 0, f); set_f(0xF0);   /**/ bus_pass(pc); op_state_ = 2; }
+  if (op_state == 2 && ADD_SP_R8)              /**/ {           /**/ sph = alu(sxt(in), sph, 1, f);           /**/ bus_pass(pc); op_state_ = 3; }
   if (op_state == 3 && ADD_SP_R8)              /**/ {           /**/                                          /**/ bus_done(pc); op_state_ = 0; }
 
-  if (op_state == 0 && LD_HL_SP_R8)            /**/ { pc = adp; /**/                                          /**/ bus_read(pc); }
-  if (op_state == 1 && LD_HL_SP_R8)            /**/ { pc = adp; /**/ l = alu(in, spl, 0, f); set_f(0xF0);     /**/ bus_pass(pc); }
+  if (op_state == 0 && LD_HL_SP_R8)            /**/ { pc = adp; /**/                                          /**/ bus_read(pc); op_state_ = 1; }
+  if (op_state == 1 && LD_HL_SP_R8)            /**/ { pc = adp; /**/ l = alu(in, spl, 0, f); set_f(0xF0);     /**/ bus_pass(pc); op_state_ = 2; }
   if (op_state == 2 && LD_HL_SP_R8)            /**/ {           /**/ h = alu(sxt(in), sph, 1, f);             /**/ bus_done(pc); op_state_ = 0; }
 
   if (op_state == 0 && INC_BC)                 /**/ { pc = adp; /**/                                          /**/ bus_pass(bc); }

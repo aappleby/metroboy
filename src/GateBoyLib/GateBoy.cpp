@@ -321,9 +321,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
         }
       }
 
-      cpu.core.op_state = cpu.core.op_state_;
-
-
       cpu.core.int_ack = 0;
       cpu.core.ime = cpu.core.ime_delay; // must be after int check, before op execution
 

@@ -114,6 +114,7 @@ void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_int(uint8_t imask_, uint8_t intf_) {
+  op_state = op_state_;
   op_state_ = op_state + 1;
 
   if (op_state == 2) {
@@ -143,6 +144,7 @@ void MetroBoyCPU::execute_int(uint8_t imask_, uint8_t intf_) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
+  op_state = op_state_;
   if (op_state == 0) {
     pc = _bus_addr + 1;
     bus_read(pc);
@@ -160,6 +162,7 @@ void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_cb() {
+  op_state = op_state_;
   auto op = op_next;
 
   op_state_ = op_state + 1;
@@ -193,6 +196,7 @@ void MetroBoyCPU::execute_cb() {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_op() {
+  op_state = op_state_;
   auto op = op_next;
 
   op_state_ = op_state + 1;

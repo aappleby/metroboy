@@ -121,17 +121,6 @@ const uint32_t COL_HINT3 = 0x00333333;
 
 //-----------------------------------------------------------------------------
 
-#define MB_DELTA_AB   ((phase_total & 7) == 0)
-#define MB_DELTA_BC   ((phase_total & 7) == 1)
-#define MB_DELTA_CD   ((phase_total & 7) == 2)
-#define MB_DELTA_DE   ((phase_total & 7) == 3)
-#define MB_DELTA_EF   ((phase_total & 7) == 4)
-#define MB_DELTA_FG   ((phase_total & 7) == 5)
-#define MB_DELTA_GH   ((phase_total & 7) == 6)
-#define MB_DELTA_HA   ((phase_total & 7) == 7)
-
-//-----------------------------------------------------------------------------
-
 #pragma warning(push)
 #pragma warning(disable:4201)
 

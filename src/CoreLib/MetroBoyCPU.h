@@ -11,14 +11,14 @@ public:
   void dump(Dumper& d) const;
 
   void latch_op(uint8_t _op) {
-    if (state == 0) {
+    if (op_state == 0) {
       op_addr = _bus_addr;
       op = _op;
     }
   }
 
   void check_int(uint8_t _imask, uint8_t _intf) {
-    if (state == 0) {
+    if (op_state == 0) {
       if ((_imask & _intf) && ime) {
         op = 0xF4; // fake opcode
         ime = false;
@@ -37,12 +37,12 @@ public:
   }
 
   void update_halt(uint8_t _imask, uint8_t _intf_halt_latch) {
-    if (op == 0x76 && (_imask & _intf_halt_latch)) state_ = 0;
+    if (op == 0x76 && (_imask & _intf_halt_latch)) op_state_ = 0;
   }
 
   void latch_bus_data(uint8_t _data) {
     if (_bus_read) in = _data;
-    state = state_;
+    op_state = op_state_;
   }
 
   //----------------------------------------
@@ -108,13 +108,13 @@ private:
     _bus_data  = 0;
     _bus_read  = 1;
     _bus_write = 0;
-    state_ = 0;
+    op_state_ = 0;
   }
 
   uint16_t op_addr;
   uint8_t  op;
-  uint8_t  cb;
-  int      state, state_;
+  uint8_t  op_cb;
+  int      op_state, op_state_;
   uint8_t  in;
 
   bool     ime, ime_delay;

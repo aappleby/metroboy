@@ -114,9 +114,9 @@
 #define POP_RR        ((op & 0b11001111) == 0b11000001)
 
 #define PREFIX_CB     (op == 0xCB)
-#define CB_QUAD       ((cb >> 6) & 3)
-#define CB_ROW        ((cb >> 3) & 7)
-#define CB_COL        ((cb >> 0) & 7)
+#define CB_QUAD       ((op_cb >> 6) & 3)
+#define CB_ROW        ((op_cb >> 3) & 7)
+#define CB_COL        ((op_cb >> 0) & 7)
 #define OP_CB_R       (PREFIX_CB && CB_COL != 6)
 #define OP_CB_HL      (PREFIX_CB && CB_COL == 6)
 

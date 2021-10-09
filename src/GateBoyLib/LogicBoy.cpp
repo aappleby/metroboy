@@ -154,61 +154,6 @@ GBResult LogicBoy::next_phase(const blob& cart_blob) {
 #define PHASE_G_NEW (phase_new == 6)
 #define PHASE_H_NEW (phase_new == 7)
 
-void LogicBoy::tock_cpu() {
-  auto phase_old = (sys.gb_phase_total - 1) & 7;
-  auto phase_new = (sys.gb_phase_total - 0) & 7;
-
-  cpu.cpu_data_latch &= lb_state.cpu_dbus;
-  cpu.imask_latch = lb_state.reg_ie;
-
-  if (PHASE_A_NEW) {
-    if (cpu.core.op == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state_ = 0;
-    cpu.intf_halt_latch = 0;
-  }
-
-  // +ha -ab -bc -cd -de -ef -fg -gh
-  if (PHASE_A_NEW) {
-    // this one latches funny, some hardware bug
-    if (get_bit(lb_state.reg_if, 2)) cpu.intf_halt_latch |= INT_TIMER_MASK;
-  }
-
-  // -ha +ab -bc
-  if (PHASE_B_NEW) {
-    if (sys.cpu_en) {
-      cpu.core.tock_ab(cpu.imask_latch, cpu.intf_latch, cpu.cpu_data_latch);
-    }
-  }
-
-  if (PHASE_B_NEW) {
-    if (sys.cpu_en) {
-      cpu.bus_req_new.addr = cpu.core._bus_addr;
-      cpu.bus_req_new.data = cpu.core._bus_data;
-      cpu.bus_req_new.read = cpu.core._bus_read;
-      cpu.bus_req_new.write = cpu.core._bus_write;
-    }
-  }
-
-  // -bc +cd +de -ef -fg -gh -ha -ab
-  if (PHASE_E_NEW) {
-    if (get_bit(lb_state.reg_if, 0)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
-    if (get_bit(lb_state.reg_if, 1)) cpu.intf_halt_latch |= INT_STAT_MASK;
-    if (get_bit(lb_state.reg_if, 3)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
-    if (get_bit(lb_state.reg_if, 4)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
-  }
-
-  // -ha -ab -bc -cd -de -ef +fg +gh
-  if (PHASE_H_NEW) {
-    cpu.cpu_data_latch = 0xFF;
-  }
-
-  // +ha -ab -bc -cd -de -ef -fg +gh
-  if (PHASE_H_NEW) {
-    cpu.intf_latch = lb_state.reg_if;
-  }
-}
-
-//-----------------------------------------------------------------------------
-
 #define DELTA_AB_old   (phase_old == 1)
 #define DELTA_BC_old   (phase_old == 2)
 #define DELTA_CD_old   (phase_old == 3)
@@ -242,6 +187,90 @@ void LogicBoy::tock_cpu() {
 #define DELTA_EVEN_old ((phase_old & 1) == 1)
 #define DELTA_ODD_old  ((phase_old & 1) == 0)
 
+void LogicBoy::tock_cpu() {
+  auto phase_old = (sys.gb_phase_total - 1) & 7;
+  auto phase_new = (sys.gb_phase_total - 0) & 7;
+
+  cpu.cpu_data_latch &= lb_state.cpu_dbus;
+  cpu.imask_latch = lb_state.reg_ie;
+
+  if (PHASE_A_NEW) {
+    cpu.core.update_halt(cpu.imask_latch, cpu.intf_halt_latch);
+    //if (cpu.core.op == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state_ = 0;
+    //cpu.intf_halt_latch = 0;
+  }
+
+  // +ha -ab -bc -cd -de -ef -fg -gh
+  if (PHASE_A_NEW) {
+    // this one latches funny, some hardware bug
+    if (get_bit(lb_state.reg_if, 2)) cpu.intf_halt_latch |= INT_TIMER_MASK;
+  }
+
+  // -ha +ab -bc
+  if (PHASE_B_NEW) {
+    if (sys.cpu_en) {
+      //cpu.core.tock_ab(cpu.imask_latch, cpu.intf_latch, cpu.cpu_data_latch);
+
+      // FIXME ONCE GATEBOY CPU IS CLEANED UP
+#if 0
+      cpu.core.state = cpu.core.state_;
+
+      if (cpu.core._bus_read) cpu.core.in = cpu.cpu_data_latch;
+
+      if (cpu.core.state == 0) {
+        cpu.core.op_addr = cpu.core._bus_addr;
+        cpu.core.op = cpu.cpu_data_latch;
+
+        if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.ime) {
+          cpu.core.op = 0xF4; // fake opcode
+          cpu.core.ime = false;
+          cpu.core.ime_delay = false;
+        }
+      }
+
+      cpu.core.int_ack = 0;
+      cpu.core.ime = cpu.core.ime_delay; // must be after int check, before op execution
+
+      // #define HALT (op == 0x76)
+
+      if      (cpu.core.op == 0xF4 /*INT*/ ) cpu.core.execute_int(cpu.imask_latch, cpu.intf_latch);
+      else if (cpu.core.op == 0x76 /*HALT*/) cpu.core.execute_halt(cpu.imask_latch, cpu.intf_latch);
+      else if (cpu.core.op == 0xCB /*CB*/  ) cpu.core.execute_cb();
+      else                                   cpu.core.execute_op();
+#endif
+
+    }
+  }
+
+  if (PHASE_B_NEW) {
+    if (sys.cpu_en) {
+      cpu.bus_req_new.addr = cpu.core.get_bus_addr();
+      cpu.bus_req_new.data = cpu.core.get_bus_data();
+      cpu.bus_req_new.read = cpu.core.get_bus_read();
+      cpu.bus_req_new.write = cpu.core.get_bus_write();
+    }
+  }
+
+  // -bc +cd +de -ef -fg -gh -ha -ab
+  if (PHASE_E_NEW) {
+    if (get_bit(lb_state.reg_if, 0)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
+    if (get_bit(lb_state.reg_if, 1)) cpu.intf_halt_latch |= INT_STAT_MASK;
+    if (get_bit(lb_state.reg_if, 3)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
+    if (get_bit(lb_state.reg_if, 4)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
+  }
+
+  // -ha -ab -bc -cd -de -ef +fg +gh
+  if (PHASE_H_NEW) {
+    cpu.cpu_data_latch = 0xFF;
+  }
+
+  // +ha -ab -bc -cd -de -ef -fg +gh
+  if (PHASE_H_NEW) {
+    cpu.intf_latch = lb_state.reg_if;
+  }
+}
+
+//-----------------------------------------------------------------------------
 
 void LogicBoy::tock_logic(const blob& cart_blob) {
 
@@ -1753,7 +1782,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (cpu_addr_new == 0xFF0F) pack_if = pack_cpu_dbus_new;
   }
 
-  pack_if &= ~cpu.core.int_ack;
+  pack_if &= ~cpu.core.get_int_ack();
 
   if ((cpu.bus_req_new.read && !DELTA_HA_new)) {
     if (cpu_addr_new == 0xFFFF) pack_cpu_dbus_new = pack_ie | 0b11100000;
@@ -2198,7 +2227,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.oam_ctrl.old_oam_clk.state = !state_new.oam_ctrl.SIG_OAM_CLKn.state; // Vestige of gate mode
     state_new.zram_bus.clk_old.state = gen_clk(phase_new, 0b00001110) && cpu_wr;
 
-    state_new.cpu_ack = cpu.core.int_ack;
+    state_new.cpu_ack = cpu.core.get_int_ack();
 
     pins.sys.PIN_74_CLK.CLK.state = gen_clk(phase_new, 0b10101010); // dead signal
     pins.sys.PIN_74_CLK.CLKGOOD.state = 1; // dead signal

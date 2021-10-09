@@ -305,7 +305,7 @@ void GateBoy::tock_cpu_early() {
   cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
 
   if (DELTA_HA_new) {
-    if (cpu.core.op == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state_ = 0;
+    cpu.core.update_halt(cpu.imask_latch, cpu.intf_halt_latch);
     cpu.intf_halt_latch = 0;
   }
 
@@ -313,21 +313,24 @@ void GateBoy::tock_cpu_early() {
   if (DELTA_HA_new) {
     // this one latches funny, some hardware bug
     if (bit(gb_state.reg_if.NYBO_FF0F_D2p.state)) cpu.intf_halt_latch |= INT_TIMER_MASK;
+
+    if (sys.cpu_en) {
+      cpu.core.latch_bus_data(cpu.cpu_data_latch);
+    }
   }
 
   // -ha +ab -bc
   if (DELTA_AB_new) {
     if (sys.cpu_en) {
-      cpu.core.tock_ab(cpu.imask_latch, cpu.intf_latch, cpu.cpu_data_latch);
-    }
-  }
+      cpu.core.latch_op(cpu.cpu_data_latch);
+      cpu.core.check_int(cpu.imask_latch, cpu.intf_latch);
 
-  if (DELTA_AB_new) {
-    if (sys.cpu_en) {
-      cpu.bus_req_new.addr = cpu.core._bus_addr;
-      cpu.bus_req_new.data = cpu.core._bus_data;
-      cpu.bus_req_new.read = cpu.core._bus_read;
-      cpu.bus_req_new.write = cpu.core._bus_write;
+      cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
+
+      cpu.bus_req_new.addr = cpu.core.get_bus_addr();
+      cpu.bus_req_new.data = cpu.core.get_bus_data();
+      cpu.bus_req_new.read = cpu.core.get_bus_read();
+      cpu.bus_req_new.write = cpu.core.get_bus_write();
     }
   }
 
@@ -492,11 +495,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_PIN_76*/ pins.sys.PIN_76_T2.pin_in(EXT_sys_t2);
     /*_PIN_77*/ pins.sys.PIN_77_T1.pin_in(EXT_sys_t1);
 
-    wire EXT_ack_vblank = get_bit(cpu.core.int_ack, BIT_VBLANK);
-    wire EXT_ack_stat = get_bit(cpu.core.int_ack, BIT_STAT);
-    wire EXT_ack_timer = get_bit(cpu.core.int_ack, BIT_TIMER);
-    wire EXT_ack_serial = get_bit(cpu.core.int_ack, BIT_SERIAL);
-    wire EXT_ack_joypad = get_bit(cpu.core.int_ack, BIT_JOYPAD);
+    auto cpu_ack = cpu.core.get_int_ack();
+    wire EXT_ack_vblank = get_bit(cpu_ack, BIT_VBLANK);
+    wire EXT_ack_stat = get_bit(cpu_ack, BIT_STAT);
+    wire EXT_ack_timer = get_bit(cpu_ack, BIT_TIMER);
+    wire EXT_ack_serial = get_bit(cpu_ack, BIT_SERIAL);
+    wire EXT_ack_joypad = get_bit(cpu_ack, BIT_JOYPAD);
 
     /*_SIG_CPU_ACK_VBLANK*/ gb_state.cpu_ack.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
     /*_SIG_CPU_ACK_STAT  */ gb_state.cpu_ack.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);

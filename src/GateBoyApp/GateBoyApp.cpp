@@ -109,7 +109,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 1
+#if 0
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140
@@ -542,7 +542,7 @@ Step controls:
 
   d("\002========== Disassembly ==========\001\n");
   {
-    int pc = gb->get_cpu().core.op_addr;
+    int pc = gb->get_cpu().core.get_op_addr();
     const uint8_t* code = nullptr;
     int code_size = 0;
     int code_base = 0;

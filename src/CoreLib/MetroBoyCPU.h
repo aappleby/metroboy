@@ -5,6 +5,7 @@
 
 #pragma pack(push, 1)
 struct MetroBoyCPU {
+public:
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -16,6 +17,73 @@ struct MetroBoyCPU {
   void execute_halt(uint8_t imask_, uint8_t intf_);
   void execute_cb();
   void execute_op();
+
+  void latch_op(uint8_t _op) {
+    if (state == 0) {
+      op_addr = _bus_addr;
+      op = _op;
+    }
+  }
+
+  void check_int(uint8_t _imask, uint8_t _intf) {
+    if (state == 0) {
+      if ((_imask & _intf) && ime) {
+        op = 0xF4; // fake opcode
+        ime = false;
+        ime_delay = false;
+      }
+    }
+    int_ack = 0;
+    ime = ime_delay; // must be after int check, before op execution
+  }
+
+  void execute(uint8_t _imask, uint8_t _intf) {
+    if      (op == 0xF4 /*INT*/ ) execute_int(_imask, _intf);
+    else if (op == 0x76 /*HALT*/) execute_halt(_imask, _intf);
+    else if (op == 0xCB /*CB*/  ) execute_cb();
+    else                          execute_op();
+  }
+
+  void update_halt(uint8_t _imask, uint8_t _intf_halt_latch) {
+    if (op == 0x76 && (_imask & _intf_halt_latch)) state_ = 0;
+  }
+
+  void latch_bus_data(uint8_t _data) {
+    if (_bus_read) in = _data;
+    state = state_;
+  }
+
+//private:
+  
+
+  //----------------------------------------
+
+  uint8_t  get_int_ack() const { return int_ack; }
+  uint8_t  get_op()      const { return op; }
+  uint16_t get_op_addr() const { return op_addr; }
+  uint8_t  get_a() const { return a; }
+
+  uint16_t get_bus_addr()  const { return _bus_addr; }
+  uint8_t  get_bus_data()  const { return _bus_data; }
+  uint8_t  get_bus_read()  const { return _bus_read; }
+  uint8_t  get_bus_write() const { return _bus_write; }
+
+  //----------------------------------------
+
+private:
+
+  uint8_t get_reg(int mux);
+  void    set_reg(int mux, uint8_t data);
+  void    set_f(uint8_t mask);
+  uint8_t alu(uint8_t x, uint8_t y, int op, uint8_t flags);
+  uint8_t rlu(uint8_t x, int op, uint8_t flags);
+  uint8_t daa(uint8_t x, uint8_t f);
+  uint8_t alu_cb(uint8_t arg1, int op, uint8_t flags);
+
+  uint16_t _bus_addr;
+  uint8_t  _bus_data;
+  uint8_t  _bus_read;
+  uint8_t  _bus_write;
 
   //----------------------------------------
 
@@ -47,23 +115,6 @@ struct MetroBoyCPU {
     _bus_write = 0;
     state_ = 0;
   }
-
-  //----------------------------------------
-
-  uint8_t get_reg(int mux);
-  void    set_reg(int mux, uint8_t data);
-  void    set_f(uint8_t mask);
-  uint8_t alu(uint8_t x, uint8_t y, int op, uint8_t flags);
-  uint8_t rlu(uint8_t x, int op, uint8_t flags);
-  uint8_t daa(uint8_t x, uint8_t f);
-  uint8_t alu_cb(uint8_t arg1, int op, uint8_t flags);
-
-  //----------------------------------------
-
-  uint16_t _bus_addr;
-  uint8_t  _bus_data;
-  uint8_t  _bus_read;
-  uint8_t  _bus_write;
 
   uint16_t op_addr;
   uint8_t  op;

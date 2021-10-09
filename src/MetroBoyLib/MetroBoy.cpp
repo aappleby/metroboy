@@ -149,7 +149,7 @@ void MetroBoy::next_phase() {
   cart.  tock(phase_total, ebus_req);
   vram.  tock(phase_total, vbus_req);
   oam.   tock(phase_total, obus_req);
-  ints.  tock(phase_total, ibus_req, gb_cpu.int_ack, ppu.vblank_int, ppu.stat_int, timer.timer_int, /*serial_int*/ 0, joy.get() != 0xFF);
+  ints.  tock(phase_total, ibus_req, gb_cpu.get_int_ack(), ppu.vblank_int, ppu.stat_int, timer.timer_int, /*serial_int*/ 0, joy.get() != 0xFF);
 
   //----------
 
@@ -164,10 +164,10 @@ void MetroBoy::next_phase() {
   // prioritize reqs
 
   if (MB_DELTA_AB) {
-    cpu_req.addr  = gb_cpu._bus_addr;
-    cpu_req.data  = gb_cpu._bus_data;
-    cpu_req.read  = gb_cpu._bus_read;
-    cpu_req.write = gb_cpu._bus_write;
+    cpu_req.addr  = gb_cpu.get_bus_addr();
+    cpu_req.data  = gb_cpu.get_bus_data();
+    cpu_req.read  = gb_cpu.get_bus_read();
+    cpu_req.write = gb_cpu.get_bus_write();
 
     ibus_req = {0};
     ebus_req = {0};
@@ -246,7 +246,7 @@ void MetroBoy::dump_bus(Dumper& d) {
 void MetroBoy::dump_disasm(Dumper& d) {
   d("\002--------------DISASM-----------\001\n");
 
-  uint16_t pc = gb_cpu.op_addr;
+  uint16_t pc = gb_cpu.get_op_addr();
 
   Assembler a;
   if (ADDR_CART_ROM_BEGIN <= pc && pc <= ADDR_CART_ROM_END) {

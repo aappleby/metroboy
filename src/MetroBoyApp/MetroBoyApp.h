@@ -38,7 +38,7 @@ public:
   }
 
   void run_to_breakpoint(uint16_t breakpoint) {
-    while (gb->gb_cpu.op_addr != breakpoint) step_cycle();
+    while (gb->gb_cpu.get_op_addr() != breakpoint) step_cycle();
   }
 
   void step_phase(int count = 1) {

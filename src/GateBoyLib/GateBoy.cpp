@@ -304,25 +304,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   // -ha +ab -bc
   if (DELTA_AB_new) {
-    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
-    cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
     if (sys.cpu_en) {
-
-      //cpu.core.latch_op(cpu.cpu_data_latch);
-
-      if (cpu.core.reg.op_state == 0) {
-        cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
-        cpu.core.reg.op_next = cpu.cpu_data_latch;
-      }
-
-      //cpu.core.check_int(cpu.imask_latch, cpu.intf_latch);
-      if (cpu.core.reg.op_state == 0) {
-        if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.reg.ime) {
-          cpu.core.reg.op_next = 0xF4; // fake opcode
-          cpu.core.reg.ime = false;
-          cpu.core.reg.ime_delay = false;
-        }
-      }
 
       cpu.core.reg.int_ack = 0;
       cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
@@ -386,6 +368,18 @@ void GateBoy::tock_gates(const blob& cart_blob) {
       //cpu.core.latch_bus_data(cpu.cpu_data_latch);
       if (cpu.core.reg.bus_read) cpu.core.reg.in = cpu.cpu_data_latch;
 
+      if (cpu.core.reg.op_state == 0) {
+        cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
+        cpu.core.reg.op_next = cpu.cpu_data_latch;
+      }
+
+      if (cpu.core.reg.op_state == 0) {
+        if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.reg.ime) {
+          cpu.core.reg.op_next = 0xF4; // fake opcode
+          cpu.core.reg.ime = false;
+          cpu.core.reg.ime_delay = false;
+        }
+      }
     }
   }
 

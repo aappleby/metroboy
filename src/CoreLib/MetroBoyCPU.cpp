@@ -139,7 +139,7 @@ void MetroBoyCPU::execute_cb() {
 
   if (reg_old.op_state == 0) {
     reg_new.pc = adp;
-    reg_new.cpu_bus_read(reg_new.pc);
+    reg_new.cpu_bus_read(adp);
     reg_new.op_state = 1;
   }
   else {
@@ -148,7 +148,6 @@ void MetroBoyCPU::execute_cb() {
     int cb_col = (reg_new.op_cb >> 0) & 7;
     int cb_quad = (reg_new.op_cb >> 6) & 3;
     uint8_t mask = cb_flag_mask[cb_quad];
-
 
     if (cb_col != 6) {
       if (reg_old.op_state == 1)   {

@@ -110,15 +110,18 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 0
+#if 1
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140
 
   blob cart;
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
-  load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
+  //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
   //load_blob("LinksAwakening.gb", cart);
+
+  load_blob("tests/instr_timing.gb", cart);
+
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
 

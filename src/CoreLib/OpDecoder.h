@@ -114,11 +114,6 @@
 #define POP_RR        ((op & 0b11001111) == 0b11000001)
 
 #define PREFIX_CB     (op == 0xCB)
-#define CB_QUAD       ((reg.op_cb >> 6) & 3)
-#define CB_ROW        ((reg.op_cb >> 3) & 7)
-#define CB_COL        ((reg.op_cb >> 0) & 7)
-#define OP_CB_R       (PREFIX_CB && CB_COL != 6)
-#define OP_CB_HL      (PREFIX_CB && CB_COL == 6)
 
 #define ALU_A_R       ((OP_QUAD == 2) && (OP_COL != 6))
 #define ALU_A_HL      ((OP_QUAD == 2) && (OP_COL == 6))

@@ -43,7 +43,7 @@ struct CpuState {
   uint8_t  op_prev;
   uint8_t  op_next;
   uint8_t  op_cb;
-  int      op_state, op_state_;
+  int      op_state_new;
   uint8_t  in;
 
   bool     ime, ime_delay;

@@ -542,8 +542,6 @@ uint8_t MetroBoyCPU::rlu(uint8_t x, int op, uint8_t flags) {
   reg.alu_f = flags;
   const uint8_t f = reg.alu_f;
 
-  uint8_t alu_o = 0;
-
   switch (op) {
   case 0:
     reg.alu_o = (x << 1) | (x >> 7);
@@ -616,7 +614,7 @@ uint8_t MetroBoyCPU::daa(uint8_t x, uint8_t f) {
   hi += d + (lo >> 4);
 
   // output
-  uint8_t alu_o = uint8_t((hi << 4) | (lo & 0xF));
+  reg.alu_o = uint8_t((hi << 4) | (lo & 0xF));
   reg.alu_f = 0;
   if (c) reg.alu_f |= F_CARRY;
   if ((hi >> 4) && !n) reg.alu_f |= F_CARRY;

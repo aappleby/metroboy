@@ -1008,19 +1008,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   tock_interrupts_gates(reg_old);
 
+
   if (DELTA_FG_new) {
-    cpu.cpu_data_latch &= (uint8_t)bit_pack(reg_new.cpu_dbus);
-  }
-
-  if (DELTA_GH_new) {
-    // -ha -ab -bc -cd -de -ef +fg +gh
     cpu.cpu_data_latch = 0xFF;
-    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
   }
 
-  if (DELTA_HA_new) {
-    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
-  }
+  cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
 }
 
 //-----------------------------------------------------------------------------

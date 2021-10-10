@@ -39,8 +39,8 @@ void MetroBoyCPU::reset_to_cart() {
   ime_delay = false;
   int_ack = 0x00;
 
-  alu_f = 0xb0;
-  alu_o = 0x00;
+  state.alu_f = 0xb0;
+  state.alu_o = 0x00;
 
   pc = 0x0100;
   sp = 0xFFFE;
@@ -66,8 +66,8 @@ void MetroBoyCPU::dump(Dumper& d_) const {
   d_("isr     : %d\n", (op_next == 0xF4));
   d_("int_ack : 0x%02x\n", int_ack);
   d_("\n");
-  d_("alu_f   : 0x%02x\n", alu_f);
-  d_("alu_o   : 0x%02x\n", alu_o);
+  d_("state.alu_f   : 0x%02x\n", state.alu_f);
+  d_("state.alu_o   : 0x%02x\n", state.alu_o);
   d_("\n");
   d_("PC      : 0x%04x 0x%02x 0x%02x\n", pc, pcl, pch);
   d_("SP      : 0x%04x 0x%02x 0x%02x\n", sp, sph, spl);
@@ -188,7 +188,7 @@ void MetroBoyCPU::execute_cb() {
     }
     else {
       if (op_state == 1) { pc = adp;                          bus_read(hl); }
-      if (op_state == 2) { alu_cb(in, op_cb, f); set_f(mask); bus_write(hl, alu_o); }
+      if (op_state == 2) { alu_cb(in, op_cb, f); set_f(mask); bus_write(hl, state.alu_o); }
       if (op_state == 3) {                                    bus_done(pc); op_state_ = 0;}
     }
   }
@@ -263,11 +263,11 @@ void MetroBoyCPU::execute_op() {
   if (op_state == 1 && ALU_A_HL)               /**/ {           /**/ a = alu(a, in, OP_ROW, f); set_f(0xF0);  /**/ bus_done(pc); op_state_ = 0; }
 
   if (op_state == 0 && INC_AT_HL)              /**/ { pc = adp; /**/                                          /**/ bus_read(hl);         op_state_ = 1; }
-  if (op_state == 1 && INC_AT_HL)              /**/ {           /**/ alu(in, 1, 1, 0); set_f(0xE0);           /**/ bus_write(hl, alu_o); op_state_ = 2; }
+  if (op_state == 1 && INC_AT_HL)              /**/ {           /**/ alu(in, 1, 1, 0); set_f(0xE0);           /**/ bus_write(hl, state.alu_o); op_state_ = 2; }
   if (op_state == 2 && INC_AT_HL)              /**/ {           /**/                                          /**/ bus_done(pc);         op_state_ = 0; }
 
   if (op_state == 0 && DEC_AT_HL)              /**/ { pc = adp; /**/                                          /**/ bus_read(hl);         op_state_ = 1; }
-  if (op_state == 1 && DEC_AT_HL)              /**/ {           /**/ alu(in, 1, 3, 0); set_f(0xE0);           /**/ bus_write(hl, alu_o); op_state_ = 2; }
+  if (op_state == 1 && DEC_AT_HL)              /**/ {           /**/ alu(in, 1, 3, 0); set_f(0xE0);           /**/ bus_write(hl, state.alu_o); op_state_ = 2; }
   if (op_state == 2 && DEC_AT_HL)              /**/ {           /**/                                          /**/ bus_done(pc);         op_state_ = 0; }
 
   // 16-bit alu
@@ -306,16 +306,16 @@ void MetroBoyCPU::execute_op() {
   if (op_state == 1 && DEC_SP)                 /**/ { sp = adm; /**/                                          /**/ bus_done(pc); op_state_ = 0; }
 
   if (op_state == 0 && ADD_HL_BC)              /**/ { pc = adp; /**/ l = alu(c,   l, 0, f);                   /**/ bus_pass(pc); op_state_ = 1; }
-  if (op_state == 1 && ADD_HL_BC)              /**/ {           /**/ h = alu(b,   h, 1, alu_f); set_f(0x70);  /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 1 && ADD_HL_BC)              /**/ {           /**/ h = alu(b,   h, 1, state.alu_f); set_f(0x70);  /**/ bus_done(pc); op_state_ = 0; }
 
   if (op_state == 0 && ADD_HL_DE)              /**/ { pc = adp; /**/ l = alu(e,   l, 0, f);                   /**/ bus_pass(pc); op_state_ = 1; }
-  if (op_state == 1 && ADD_HL_DE)              /**/ {           /**/ h = alu(d,   h, 1, alu_f); set_f(0x70);  /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 1 && ADD_HL_DE)              /**/ {           /**/ h = alu(d,   h, 1, state.alu_f); set_f(0x70);  /**/ bus_done(pc); op_state_ = 0; }
 
   if (op_state == 0 && ADD_HL_HL)              /**/ { pc = adp; /**/ l = alu(l,   l, 0, f);                   /**/ bus_pass(pc); op_state_ = 1; }
-  if (op_state == 1 && ADD_HL_HL)              /**/ {           /**/ h = alu(h,   h, 1, alu_f); set_f(0x70);  /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 1 && ADD_HL_HL)              /**/ {           /**/ h = alu(h,   h, 1, state.alu_f); set_f(0x70);  /**/ bus_done(pc); op_state_ = 0; }
 
   if (op_state == 0 && ADD_HL_SP)              /**/ { pc = adp; /**/ l = alu(spl, l, 0, f);                   /**/ bus_pass(pc); op_state_ = 1; }
-  if (op_state == 1 && ADD_HL_SP)              /**/ {           /**/ h = alu(sph, h, 1, alu_f); set_f(0x70);  /**/ bus_done(pc); op_state_ = 0; }
+  if (op_state == 1 && ADD_HL_SP)              /**/ {           /**/ h = alu(sph, h, 1, state.alu_f); set_f(0x70);  /**/ bus_done(pc); op_state_ = 0; }
 
   // load/store
 
@@ -532,7 +532,7 @@ void MetroBoyCPU::set_reg(int mux, uint8_t data) {
 void MetroBoyCPU::set_f(uint8_t mask) {
   auto op = op_next;
 
-  f = (f & ~mask) | (alu_f & mask);
+  f = (f & ~mask) | (state.alu_f & mask);
   if (ADD_SP_R8)   { f &= ~(F_ZERO | F_NEGATIVE); }
   if (LD_HL_SP_R8) { f &= ~(F_ZERO | F_NEGATIVE); }
 }
@@ -540,10 +540,10 @@ void MetroBoyCPU::set_f(uint8_t mask) {
 //-----------------------------------------------------------------------------
 
 uint8_t MetroBoyCPU::alu(uint8_t x, uint8_t y, int op, uint8_t flags) {
-  alu_f = flags;
+  state.alu_f = flags;
 
   uint16_t d1 = 0, d2 = 0;
-  const bool c = alu_f & F_CARRY;
+  const bool c = state.alu_f & F_CARRY;
 
   switch(op) {
   case 0: d1 = (x & 0xF) + (y & 0xF);     d2 = x + y;     break;
@@ -556,68 +556,68 @@ uint8_t MetroBoyCPU::alu(uint8_t x, uint8_t y, int op, uint8_t flags) {
   case 7: d1 = (x & 0xF) - (y & 0xF);     d2 = x - y;     break;
   }
 
-  alu_o = (uint8_t)d2;
-  alu_f = (op == 2 || op == 3 || op == 7) ? F_NEGATIVE : 0;
+  state.alu_o = (uint8_t)d2;
+  state.alu_f = (op == 2 || op == 3 || op == 7) ? F_NEGATIVE : 0;
 
-  if (d1 & 0x010) alu_f |= F_HALF_CARRY;
-  if (d2 & 0x100) alu_f |= F_CARRY;
-  if (alu_o == 0x000) alu_f |= F_ZERO;
-  if (op == 7)  alu_o = x;
+  if (d1 & 0x010) state.alu_f |= F_HALF_CARRY;
+  if (d2 & 0x100) state.alu_f |= F_CARRY;
+  if (state.alu_o == 0x000) state.alu_f |= F_ZERO;
+  if (op == 7)  state.alu_o = x;
 
-  return alu_o;
+  return state.alu_o;
 }
 
 //-----------------------------------------------------------------------------
 
 uint8_t MetroBoyCPU::rlu(uint8_t x, int op, uint8_t flags) {
-  alu_f = flags;
-  const uint8_t f = alu_f;
+  state.alu_f = flags;
+  const uint8_t f = state.alu_f;
 
   uint8_t alu_o = 0;
 
   switch (op) {
   case 0:
-    alu_o = (x << 1) | (x >> 7);
-    alu_f = (x >> 7) ? F_CARRY : 0;
-    alu_f &= ~F_ZERO;
+    state.alu_o = (x << 1) | (x >> 7);
+    state.alu_f = (x >> 7) ? F_CARRY : 0;
+    state.alu_f &= ~F_ZERO;
     break;
   case 1:
-    alu_o = (x >> 1) | (x << 7);
-    alu_f = (x & 1) ? F_CARRY : 0;
-    alu_f &= ~F_ZERO;
+    state.alu_o = (x >> 1) | (x << 7);
+    state.alu_f = (x & 1) ? F_CARRY : 0;
+    state.alu_f &= ~F_ZERO;
     break;
   case 2:
-    alu_o = (x << 1) | (f & F_CARRY ? 1 : 0);
-    alu_f = (x >> 7) ? F_CARRY : 0;
-    alu_f &= ~F_ZERO;
+    state.alu_o = (x << 1) | (f & F_CARRY ? 1 : 0);
+    state.alu_f = (x >> 7) ? F_CARRY : 0;
+    state.alu_f &= ~F_ZERO;
     break;
   case 3:
-    alu_o = (x >> 1) | ((f & F_CARRY ? 1 : 0) << 7);
-    alu_f = (x & 1) ? F_CARRY : 0;
-    alu_f &= ~F_ZERO;
+    state.alu_o = (x >> 1) | ((f & F_CARRY ? 1 : 0) << 7);
+    state.alu_f = (x & 1) ? F_CARRY : 0;
+    state.alu_f &= ~F_ZERO;
     break;
   case 4:
-    alu_o = daa(x, f);
-    if (!alu_o) alu_f |= F_ZERO;
+    state.alu_o = daa(x, f);
+    if (!state.alu_o) state.alu_f |= F_ZERO;
     break;
   case 5:
-    alu_o = ~x;
-    alu_f = f | 0x60;
-    if (!alu_o) alu_f |= F_ZERO;
+    state.alu_o = ~x;
+    state.alu_f = f | 0x60;
+    if (!state.alu_o) state.alu_f |= F_ZERO;
     break;
   case 6:
-    alu_o = x;
-    alu_f = (f & 0x80) | 0x10;
-    if (!alu_o) alu_f |= F_ZERO;
+    state.alu_o = x;
+    state.alu_f = (f & 0x80) | 0x10;
+    if (!state.alu_o) state.alu_f |= F_ZERO;
     break;
   case 7:
-    alu_o = x;
-    alu_f = (f & 0x90) ^ 0x10;
-    if (!alu_o) alu_f |= F_ZERO;
+    state.alu_o = x;
+    state.alu_f = (f & 0x90) ^ 0x10;
+    if (!state.alu_o) state.alu_f |= F_ZERO;
     break;
   }
 
-  return alu_o;
+  return state.alu_o;
 }
 
 //-----------------------------------------------------------------------------
@@ -648,80 +648,80 @@ uint8_t MetroBoyCPU::daa(uint8_t x, uint8_t f) {
 
   // output
   uint8_t alu_o = uint8_t((hi << 4) | (lo & 0xF));
-  alu_f = 0;
-  if (c) alu_f |= F_CARRY;
-  if ((hi >> 4) && !n) alu_f |= F_CARRY;
-  if (!alu_o) alu_f |= F_ZERO;
-  return alu_o;
+  state.alu_f = 0;
+  if (c) state.alu_f |= F_CARRY;
+  if ((hi >> 4) && !n) state.alu_f |= F_CARRY;
+  if (!state.alu_o) state.alu_f |= F_ZERO;
+  return state.alu_o;
 }
 
 //-----------------------------------------------------------------------------
 
 uint8_t MetroBoyCPU::alu_cb(uint8_t x, int op, uint8_t flags) {
-  alu_f = flags;
+  state.alu_f = flags;
   const uint8_t quad = ((op >> 6) & 3);
   const uint8_t row = ((op >> 3) & 7);
   const bool bit_mux = (x >> row) & 1;
 
-  alu_o = 0;
+  state.alu_o = 0;
 
   switch (quad) {
   case 0:
     switch (row) {
     case 0:
-      alu_o = (x << 1) | (x >> 7);
-      alu_f = (x >> 7) ? F_CARRY : 0;
+      state.alu_o = (x << 1) | (x >> 7);
+      state.alu_f = (x >> 7) ? F_CARRY : 0;
       break;
     case 1:
-      alu_o = (x >> 1) | (x << 7);
-      alu_f = (x & 1) ? F_CARRY : 0;
+      state.alu_o = (x >> 1) | (x << 7);
+      state.alu_f = (x & 1) ? F_CARRY : 0;
       break;
     case 2:
-      alu_o = (x << 1) | (f & F_CARRY ? 1 : 0);
-      alu_f = (x >> 7) ? F_CARRY : 0;
+      state.alu_o = (x << 1) | (f & F_CARRY ? 1 : 0);
+      state.alu_f = (x >> 7) ? F_CARRY : 0;
       break;
     case 3:
-      alu_o = (x >> 1) | ((f & F_CARRY ? 1 : 0) << 7);
-      alu_f = (x & 1) ? F_CARRY : 0;
+      state.alu_o = (x >> 1) | ((f & F_CARRY ? 1 : 0) << 7);
+      state.alu_f = (x & 1) ? F_CARRY : 0;
       break;
     case 4:
-      alu_o = (x << 1) & 0xFF;
-      alu_f = 0;
-      if (x >> 7)     alu_f |= F_CARRY;
+      state.alu_o = (x << 1) & 0xFF;
+      state.alu_f = 0;
+      if (x >> 7)     state.alu_f |= F_CARRY;
       break;
     case 5:
-      alu_o = ((x >> 1) | (x & 0x80)) & 0xFF;
-      alu_f = 0;
-      if (x & 1)      alu_f |= F_CARRY;
+      state.alu_o = ((x >> 1) | (x & 0x80)) & 0xFF;
+      state.alu_f = 0;
+      if (x & 1)      state.alu_f |= F_CARRY;
       break;
     case 6:
-      alu_o = ((x << 4) | (x >> 4)) & 0xFF;
-      alu_f = 0;
+      state.alu_o = ((x << 4) | (x >> 4)) & 0xFF;
+      state.alu_f = 0;
       break;
     case 7:
-      alu_o = (x >> 1) & 0xFF;
-      alu_f = 0;
-      if (x & 1)      alu_f |= F_CARRY;
+      state.alu_o = (x >> 1) & 0xFF;
+      state.alu_f = 0;
+      if (x & 1)      state.alu_f |= F_CARRY;
       break;
     }
-    if (alu_o == 0) alu_f |= F_ZERO;
+    if (state.alu_o == 0) state.alu_f |= F_ZERO;
     break;
   case 1:
-    alu_o = x;
-    alu_f = (f & 0x10) | 0x20;
-    if (!bit_mux) alu_f |= F_ZERO;
+    state.alu_o = x;
+    state.alu_f = (f & 0x10) | 0x20;
+    if (!bit_mux) state.alu_f |= F_ZERO;
     break;
   case 2:
-    alu_o = x & (~(1 << row));
-    alu_f = f;
+    state.alu_o = x & (~(1 << row));
+    state.alu_f = f;
     break;
   case 3:
-    alu_o = x | (1 << row);
-    alu_f = f;
+    state.alu_o = x | (1 << row);
+    state.alu_f = f;
     break;
   }
 
-  return alu_o;
+  return state.alu_o;
 }
 
 //-----------------------------------------------------------------------------

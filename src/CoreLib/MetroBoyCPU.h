@@ -4,6 +4,14 @@
 //-----------------------------------------------------------------------------
 
 #pragma pack(push, 1)
+
+struct CpuState {
+  uint8_t  alu_f;
+  uint8_t  alu_o;
+};
+
+//-----------------------------------------------------------------------------
+
 struct MetroBoyCPU {
 public:
   void reset_to_bootrom();
@@ -136,8 +144,7 @@ public:
   uint8_t  int_addr;
   uint8_t  int_ack;
 
-  uint8_t  alu_f;
-  uint8_t  alu_o;
+  CpuState state;
 
 #pragma warning(push)
 #pragma warning(disable : 4201)

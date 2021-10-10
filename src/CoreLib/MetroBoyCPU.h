@@ -6,10 +6,38 @@
 #pragma pack(push, 1)
 
 struct CpuState {
-  uint16_t _bus_addr;
-  uint8_t  _bus_data;
-  uint8_t  _bus_read;
-  uint8_t  _bus_write;
+  void cpu_bus_pass(uint16_t addr) {
+    bus_addr  = addr;
+    bus_data  = 0;
+    bus_read  = 0;
+    bus_write = 0;
+  }
+
+  void cpu_bus_read(uint16_t addr)  {
+    bus_addr  = addr;
+    bus_data  = 0;
+    bus_read  = 1;
+    bus_write = 0;
+  }
+
+  void cpu_bus_write(uint16_t addr, uint8_t data) {
+    bus_addr  = addr;
+    bus_data  = data;
+    bus_read  = 0;
+    bus_write = 1;
+  }
+
+  void cpu_bus_done(uint16_t addr) {
+    bus_addr  = addr;
+    bus_data  = 0;
+    bus_read  = 1;
+    bus_write = 0;
+  }
+
+  uint16_t bus_addr;
+  uint8_t  bus_data;
+  uint8_t  bus_read;
+  uint8_t  bus_write;
 
   uint16_t op_addr;
   uint8_t  op_prev;
@@ -73,9 +101,9 @@ public:
   */
 
   void execute(uint8_t _imask, uint8_t _intf) {
-    if      (state.op_next == 0xF4) execute_int(_imask, _intf);   // INT
-    else if (state.op_next == 0x76) execute_halt(_imask, _intf);  // HALT
-    else if (state.op_next == 0xCB) execute_cb();                 // CB
+    if      (reg.op_next == 0xF4) execute_int(_imask, _intf);   // INT
+    else if (reg.op_next == 0x76) execute_halt(_imask, _intf);  // HALT
+    else if (reg.op_next == 0xCB) execute_cb();                 // CB
     else                            execute_op();
   }
 
@@ -92,17 +120,17 @@ public:
 
   //----------------------------------------
 
-  uint8_t  get_int_ack() const { return state.int_ack; }
-  uint8_t  get_op()      const { return state.op_next; }
-  uint16_t get_op_addr() const { return state.op_addr; }
-  uint8_t  get_a()       const { return state.a; }
+  uint8_t  get_int_ack() const { return reg.int_ack; }
+  uint8_t  get_op()      const { return reg.op_next; }
+  uint16_t get_op_addr() const { return reg.op_addr; }
+  uint8_t  get_a()       const { return reg.a; }
 
   Req get_bus_req() const {
     Req r;
-    r.addr  = state._bus_addr;
-    r.data  = state._bus_data;
-    r.read  = state._bus_read;
-    r.write = state._bus_write;
+    r.addr  = reg.bus_addr;
+    r.data  = reg.bus_data;
+    r.read  = reg.bus_read;
+    r.write = reg.bus_write;
     return r;
   }
 
@@ -133,35 +161,7 @@ public:
 
   //----------------------------------------
 
-  void bus_pass(uint16_t addr) {
-    state._bus_addr  = addr;
-    state._bus_data  = 0;
-    state._bus_read  = 0;
-    state._bus_write = 0;
-  }
-
-  void bus_read(uint16_t addr)  {
-    state._bus_addr  = addr;
-    state._bus_data  = 0;
-    state._bus_read  = 1;
-    state._bus_write = 0;
-  }
-
-  void bus_write(uint16_t addr, uint8_t data) {
-    state._bus_addr  = addr;
-    state._bus_data  = data;
-    state._bus_read  = 0;
-    state._bus_write = 1;
-  }
-
-  void bus_done(uint16_t addr) {
-    state._bus_addr  = addr;
-    state._bus_data  = 0;
-    state._bus_read  = 1;
-    state._bus_write = 0;
-  }
-
-  CpuState state;
+  CpuState reg;
 };
 #pragma pack(pop)
 

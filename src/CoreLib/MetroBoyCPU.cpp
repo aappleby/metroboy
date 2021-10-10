@@ -23,59 +23,59 @@ void MetroBoyCPU::reset_to_bootrom() {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::reset_to_cart() {
-  state._bus_addr  = 0xff50;
-  state._bus_data  = 1;
-  state._bus_read  = 0;
-  state._bus_write = 1;
+  reg.bus_addr  = 0xff50;
+  reg.bus_data  = 1;
+  reg.bus_read  = 0;
+  reg.bus_write = 1;
 
-  state.op_addr = 0x00FE;
-  state.op_next = 0xe0;
-  state.op_cb = 0x11;
-  state.op_state = 1;
-  state.op_state_ = 2;
-  state.in = 0x50;
+  reg.op_addr = 0x00FE;
+  reg.op_next = 0xe0;
+  reg.op_cb = 0x11;
+  reg.op_state = 1;
+  reg.op_state_ = 2;
+  reg.in = 0x50;
 
-  state.ime = false;
-  state.ime_delay = false;
-  state.int_ack = 0x00;
+  reg.ime = false;
+  reg.ime_delay = false;
+  reg.int_ack = 0x00;
 
-  state.alu_f = 0xb0;
-  state.alu_o = 0x00;
+  reg.alu_f = 0xb0;
+  reg.alu_o = 0x00;
 
-  state.pc = 0x0100;
-  state.sp = 0xFFFE;
-  state.xy = 0xFF50;
-  state.bc = 0x0013;
-  state.de = 0x00D8;
-  state.hl = 0x014D;
-  state.af = 0x01B0;
+  reg.pc = 0x0100;
+  reg.sp = 0xFFFE;
+  reg.xy = 0xFF50;
+  reg.bc = 0x0013;
+  reg.de = 0x00D8;
+  reg.hl = 0x014D;
+  reg.af = 0x01B0;
 }
 
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::dump(Dumper& d_) const {
-  d_("bus req : %04x:%02x %s%s\n", state._bus_addr, state._bus_data, state._bus_read  ? "\003R\001" : "-", state._bus_write ? "\002W\001" : "-");
-  d_("op addr : 0x%04x\n", state.op_addr);
-  d_("opname  : '%s' @ %d->%d\n", op_strings2[state.op_next], state.op_state, state.op_state_);
-  d_("opcode  : 0x%02x\n", state.op_next);
-  d_("CB      : 0x%02x\n", state.op_cb);
-  d_("in      : 0x%02x\n", state.in);
+  d_("bus req : %04x:%02x %s%s\n", reg.bus_addr, reg.bus_data, reg.bus_read  ? "\003R\001" : "-", reg.bus_write ? "\002W\001" : "-");
+  d_("op addr : 0x%04x\n", reg.op_addr);
+  d_("opname  : '%s' @ %d->%d\n", op_strings2[reg.op_next], reg.op_state, reg.op_state_);
+  d_("opcode  : 0x%02x\n", reg.op_next);
+  d_("CB      : 0x%02x\n", reg.op_cb);
+  d_("in      : 0x%02x\n", reg.in);
   d_("\n");
-  d_("IME     : %d\n", state.ime);
-  d_("IME_    : %d\n", state.ime_delay);
-  d_("isr     : %d\n", (state.op_next == 0xF4));
-  d_("int_ack : 0x%02x\n", state.int_ack);
+  d_("IME     : %d\n", reg.ime);
+  d_("IME_    : %d\n", reg.ime_delay);
+  d_("isr     : %d\n", (reg.op_next == 0xF4));
+  d_("int_ack : 0x%02x\n", reg.int_ack);
   d_("\n");
-  d_("state.alu_f   : 0x%02x\n", state.alu_f);
-  d_("state.alu_o   : 0x%02x\n", state.alu_o);
+  d_("state.alu_f   : 0x%02x\n", reg.alu_f);
+  d_("state.alu_o   : 0x%02x\n", reg.alu_o);
   d_("\n");
-  d_("PC      : 0x%04x 0x%02x 0x%02x\n", state.pc, state.pcl, state.pch);
-  d_("SP      : 0x%04x 0x%02x 0x%02x\n", state.sp, state.sph, state.spl);
-  d_("XY      : 0x%04x 0x%02x 0x%02x\n", state.xy, state.xyh, state.xyl);
-  d_("BC      : 0x%04x 0x%02x 0x%02x\n", state.bc, state.b,   state.c);
-  d_("DE      : 0x%04x 0x%02x 0x%02x\n", state.de, state.d,   state.e);
-  d_("HL      : 0x%04x 0x%02x 0x%02x\n", state.hl, state.h,   state.l);
-  d_("AF      : 0x%04x 0x%02x 0x%02x\n", state.af, state.a,   state.f);
+  d_("PC      : 0x%04x 0x%02x 0x%02x\n", reg.pc, reg.pcl, reg.pch);
+  d_("SP      : 0x%04x 0x%02x 0x%02x\n", reg.sp, reg.sph, reg.spl);
+  d_("XY      : 0x%04x 0x%02x 0x%02x\n", reg.xy, reg.xyh, reg.xyl);
+  d_("BC      : 0x%04x 0x%02x 0x%02x\n", reg.bc, reg.b,   reg.c);
+  d_("DE      : 0x%04x 0x%02x 0x%02x\n", reg.de, reg.d,   reg.e);
+  d_("HL      : 0x%04x 0x%02x 0x%02x\n", reg.hl, reg.h,   reg.l);
+  d_("AF      : 0x%04x 0x%02x 0x%02x\n", reg.af, reg.a,   reg.f);
   d_("\n");
 }
 
@@ -114,82 +114,95 @@ void MetroBoyCPU::tock_ab(uint8_t imask, uint8_t intf_gh, uint8_t bus_data) {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_int(uint8_t imask_, uint8_t intf_) {
-  state.op_state = state.op_state_;
-  state.op_state_ = state.op_state + 1;
+  auto reg_old = this->reg;
+  auto& reg_new = this->reg;
+  reg_new.op_state  = reg_old.op_state_;
+  reg_new.op_state_ = reg_old.op_state_ + 1;
 
-  if (state.op_state == 2) {
-    if      (imask_ & intf_ & INT_VBLANK_MASK) { state.int_addr = 0x40; }
-    else if (imask_ & intf_ & INT_STAT_MASK)   { state.int_addr = 0x48; }
-    else if (imask_ & intf_ & INT_TIMER_MASK)  { state.int_addr = 0x50; }
-    else if (imask_ & intf_ & INT_SERIAL_MASK) { state.int_addr = 0x58; }
-    else if (imask_ & intf_ & INT_JOYPAD_MASK) { state.int_addr = 0x60; }
-    else                                       { state.int_addr = 0x00; }
+  if (reg_old.op_state_ == 2) {
+    if      (imask_ & intf_ & INT_VBLANK_MASK) { reg_new.int_addr = 0x40; }
+    else if (imask_ & intf_ & INT_STAT_MASK)   { reg_new.int_addr = 0x48; }
+    else if (imask_ & intf_ & INT_TIMER_MASK)  { reg_new.int_addr = 0x50; }
+    else if (imask_ & intf_ & INT_SERIAL_MASK) { reg_new.int_addr = 0x58; }
+    else if (imask_ & intf_ & INT_JOYPAD_MASK) { reg_new.int_addr = 0x60; }
+    else                                       { reg_new.int_addr = 0x00; }
 
-    if      (imask_ & intf_ & INT_VBLANK_MASK) { state.int_ack = INT_VBLANK_MASK; }
-    else if (imask_ & intf_ & INT_STAT_MASK)   { state.int_ack = INT_STAT_MASK; }
-    else if (imask_ & intf_ & INT_TIMER_MASK)  { state.int_ack = INT_TIMER_MASK; }
-    else if (imask_ & intf_ & INT_SERIAL_MASK) { state.int_ack = INT_SERIAL_MASK; }
-    else if (imask_ & intf_ & INT_JOYPAD_MASK) { state.int_ack = INT_JOYPAD_MASK; }
-    else                                       { state.int_ack = 0; }
+    if      (imask_ & intf_ & INT_VBLANK_MASK) { reg_new.int_ack = INT_VBLANK_MASK; }
+    else if (imask_ & intf_ & INT_STAT_MASK)   { reg_new.int_ack = INT_STAT_MASK; }
+    else if (imask_ & intf_ & INT_TIMER_MASK)  { reg_new.int_ack = INT_TIMER_MASK; }
+    else if (imask_ & intf_ & INT_SERIAL_MASK) { reg_new.int_ack = INT_SERIAL_MASK; }
+    else if (imask_ & intf_ & INT_JOYPAD_MASK) { reg_new.int_ack = INT_JOYPAD_MASK; }
+    else                                       { reg_new.int_ack = 0; }
   }
 
   // we don't have to reset pc from state._bus_addr...
-  if      (state.op_state == 0) { state.pc = state._bus_addr;     bus_pass(state.sp); }
-  else if (state.op_state == 1) { state.sp = state._bus_addr - 1; bus_write(state.sp, state.pch); }
-  else if (state.op_state == 2) { state.sp = state._bus_addr - 1; bus_write(state.sp, state.pcl); }
-  else if (state.op_state == 3) {                                 bus_pass(state.pc); }
-  else if (state.op_state == 4) {                                 bus_done(state.int_addr); state.op_state_ = 0; }
+  if      (reg_old.op_state_ == 0) { reg_new.pc = reg_old.bus_addr;     reg_new.cpu_bus_pass(reg_new.sp); }
+  else if (reg_old.op_state_ == 1) { reg_new.sp = reg_old.bus_addr - 1; reg_new.cpu_bus_write(reg_new.sp, reg_new.pch); }
+  else if (reg_old.op_state_ == 2) { reg_new.sp = reg_old.bus_addr - 1; reg_new.cpu_bus_write(reg_new.sp, reg_new.pcl); }
+  else if (reg_old.op_state_ == 3) {                                    reg_new.cpu_bus_pass(reg_new.pc); }
+  else if (reg_old.op_state_ == 4) {                                    reg_new.cpu_bus_done(reg_new.int_addr); reg_new.op_state_ = 0; }
 }
 
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
-  state.op_state = state.op_state_;
-  if (state.op_state == 0) {
-    state.pc = state._bus_addr + 1;
-    bus_read(state.pc);
-    state.op_state_ = !(imask_& intf_);
+  auto reg_old = reg;
+  auto reg_new = reg;
 
-    //if (!ime) state_ = 0;
+  if (reg_old.op_state_ == 0) {
+    reg_new.op_state  = reg_old.op_state_;
+    reg_new.pc        = reg_old.bus_addr + 1;
+    reg_new.bus_addr  = reg_old.pc;
+    reg_new.bus_data  = 0;
+    reg_new.bus_read  = 1;
+    reg_new.bus_write = 0;
+    reg_new.op_state_ = !(imask_& intf_);
   }
-  else if (state.op_state == 1) {
-    state.pc = state._bus_addr;
-    bus_read(state.pc);
-    state.op_state_ = 1;
+  else if (reg_old.op_state_ == 1) {
+    reg_new.op_state  = reg_old.op_state_;
+    reg_new.pc        = reg_old.bus_addr;
+    reg_new.bus_addr  = reg_old.pc;
+    reg_new.bus_data  = 0;
+    reg_new.bus_read  = 1;
+    reg_new.bus_write = 0;
+    reg_new.op_state_ = 1;
   }
+
+  reg = reg_new;
 }
 
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_cb() {
-  state.op_state = state.op_state_;
-  auto op = state.op_next;
+  reg.op_state = reg.op_state_;
+  auto op = reg.op_next;
 
-  state.op_state_ = state.op_state + 1;
+  reg.op_state_ = reg.op_state + 1;
 
-  uint16_t ad = state._bus_addr;
+  uint16_t ad = reg.bus_addr;
   uint16_t adp = ad + 1;
 
-  if (state.op_state == 1) state.op_cb = state.in;
+  if (reg.op_state == 1) reg.op_cb = reg.in;
   uint8_t mask = cb_flag_mask[CB_QUAD];
 
   bool OP_CB_BIT = PREFIX_CB && (CB_QUAD == 1);
 
-  if (state.op_state == 0) {
-    state.pc = adp; bus_read(state.pc);
+  if (reg.op_state == 0) {
+    reg.pc = adp;
+    reg.cpu_bus_read(reg.pc);
   }
   else if (OP_CB_R) {
-    if (state.op_state == 1)   { state.pc = adp; set_reg(CB_COL, alu_cb(get_reg(CB_COL), state.op_cb, state.f)); set_f(mask); bus_done(state.pc); state.op_state_ = 0; }
+    if (reg.op_state == 1)   { reg.pc = adp; set_reg(CB_COL, alu_cb(get_reg(CB_COL), reg.op_cb, reg.f)); set_f(mask); reg.cpu_bus_done(reg.pc); reg.op_state_ = 0; }
   }
   else {
     if (OP_CB_BIT) {
-      if (state.op_state == 1) { state.pc = adp;                                bus_read(state.hl); state.op_state_ = 2;}
-      if (state.op_state == 2) { alu_cb(state.in, state.op_cb, state.f); set_f(mask); bus_done(state.pc); state.op_state_ = 0;}
+      if (reg.op_state == 1) { reg.pc = adp;                                  reg.cpu_bus_read(reg.hl); reg.op_state_ = 2;}
+      if (reg.op_state == 2) { alu_cb(reg.in, reg.op_cb, reg.f); set_f(mask); reg.cpu_bus_done(reg.pc); reg.op_state_ = 0;}
     }
     else {
-      if (state.op_state == 1) { state.pc = adp;                                bus_read(state.hl); }
-      if (state.op_state == 2) { alu_cb(state.in, state.op_cb, state.f); set_f(mask); bus_write(state.hl, state.alu_o); }
-      if (state.op_state == 3) {                                                bus_done(state.pc); state.op_state_ = 0;}
+      if (reg.op_state == 1) { reg.pc = adp;                                  reg.cpu_bus_read(reg.hl); }
+      if (reg.op_state == 2) { alu_cb(reg.in, reg.op_cb, reg.f); set_f(mask); reg.cpu_bus_write(reg.hl, reg.alu_o); }
+      if (reg.op_state == 3) {                                                reg.cpu_bus_done(reg.pc); reg.op_state_ = 0;}
     }
   }
 }
@@ -197,353 +210,309 @@ void MetroBoyCPU::execute_cb() {
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::execute_op() {
-  state.op_state = state.op_state_;
-  auto op = state.op_next;
+  reg.op_state = reg.op_state_;
+  auto op = reg.op_next;
 
-  uint16_t ad = state._bus_addr;
+  uint16_t ad = reg.bus_addr;
   uint16_t adp = ad + 1;
   uint16_t adm = ad - 1;
 
   bool branch = false;
   switch (OP_ROW & 3) {
-  case 0: branch = !(state.f & F_ZERO); break;
-  case 1: branch =  (state.f & F_ZERO); break;
-  case 2: branch = !(state.f & F_CARRY); break;
-  case 3: branch =  (state.f & F_CARRY); break;
+  case 0: branch = !(reg.f & F_ZERO); break;
+  case 1: branch =  (reg.f & F_ZERO); break;
+  case 2: branch = !(reg.f & F_CARRY); break;
+  case 3: branch =  (reg.f & F_CARRY); break;
   }
 
   // IN OUT BC DE HL AF XY | PC SP AD
 
   // misc
 
-  if (state.op_state == 0 && NOP)                    /**/ { state.pc = adp; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-  if (state.op_state == 0 && STOP)                   /**/ { state.pc = adp; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-  if (state.op_state == 0 && DI)                     /**/ { state.pc = adp; /**/ state.ime = false; state.ime_delay = false;          /**/ bus_done(state.pc); state.op_state_ = 0; }
-  if (state.op_state == 0 && EI)                     /**/ { state.pc = adp; /**/ state.ime = state.ime_delay; state.ime_delay = true; /**/ bus_done(state.pc); state.op_state_ = 0; }
-  if (state.op_state == 0 && MV_R_R)                 /**/ { state.pc = adp; /**/ set_reg(OP_ROW, get_reg(OP_COL));        /**/ bus_done(state.pc); state.op_state_ = 0; }
-  if (state.op_state == 0 && LD_SP_HL)               /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.hl); state.op_state_ = 1; }
-  if (state.op_state == 1 && LD_SP_HL)               /**/ { state.sp = ad;  /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
+  if (reg.op_state == 0 && NOP)                    /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STOP)                   /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && DI)                     /**/ { reg.pc = adp; /**/ reg.ime = false; reg.ime_delay = false;                            /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && EI)                     /**/ { reg.pc = adp; /**/ reg.ime = reg.ime_delay; reg.ime_delay = true;                     /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && MV_R_R)                 /**/ { reg.pc = adp; /**/ set_reg(OP_ROW, get_reg(OP_COL));                                  /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && LD_SP_HL)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.hl);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LD_SP_HL)               /**/ { reg.sp = ad;  /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
 
   // load immediate
 
-  if (state.op_state == 0 && LD_R_D8)                /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && LD_R_D8)                /**/ { state.pc = adp; /**/ set_reg(OP_ROW, state.in);               /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && LD_BC_D16)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 0 && LD_DE_D16)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 0 && LD_HL_D16)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 0 && LD_SP_D16)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && LD_BC_D16)              /**/ { state.pc = adp; /**/ state.c   = state.in;                    /**/ bus_read(state.pc); state.op_state_ = 2; }
-  if (state.op_state == 1 && LD_DE_D16)              /**/ { state.pc = adp; /**/ state.e   = state.in;                    /**/ bus_read(state.pc); state.op_state_ = 2; }
-  if (state.op_state == 1 && LD_HL_D16)              /**/ { state.pc = adp; /**/ state.l   = state.in;                    /**/ bus_read(state.pc); state.op_state_ = 2; }
-  if (state.op_state == 1 && LD_SP_D16)              /**/ { state.pc = adp; /**/ state.spl = state.in;                    /**/ bus_read(state.pc); state.op_state_ = 2; }
-  if (state.op_state == 2 && LD_BC_D16)              /**/ { state.pc = adp; /**/ state.b   = state.in;                    /**/ bus_done(state.pc); state.op_state_ = 0; }
-  if (state.op_state == 2 && LD_DE_D16)              /**/ { state.pc = adp; /**/ state.d   = state.in;                    /**/ bus_done(state.pc); state.op_state_ = 0; }
-  if (state.op_state == 2 && LD_HL_D16)              /**/ { state.pc = adp; /**/ state.h   = state.in;                    /**/ bus_done(state.pc); state.op_state_ = 0; }
-  if (state.op_state == 2 && LD_SP_D16)              /**/ { state.pc = adp; /**/ state.sph = state.in;                    /**/ bus_done(state.pc); state.op_state_ = 0; }
+  if (reg.op_state == 0 && LD_R_D8)                /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LD_R_D8)                /**/ { reg.pc = adp; /**/ set_reg(OP_ROW, reg.in);                                           /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && LD_BC_D16)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 0 && LD_DE_D16)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 0 && LD_HL_D16)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 0 && LD_SP_D16)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LD_BC_D16)              /**/ { reg.pc = adp; /**/ reg.c   = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 1 && LD_DE_D16)              /**/ { reg.pc = adp; /**/ reg.e   = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 1 && LD_HL_D16)              /**/ { reg.pc = adp; /**/ reg.l   = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 1 && LD_SP_D16)              /**/ { reg.pc = adp; /**/ reg.spl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && LD_BC_D16)              /**/ { reg.pc = adp; /**/ reg.b   = reg.in;                                                  /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 2 && LD_DE_D16)              /**/ { reg.pc = adp; /**/ reg.d   = reg.in;                                                  /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 2 && LD_HL_D16)              /**/ { reg.pc = adp; /**/ reg.h   = reg.in;                                                  /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 2 && LD_SP_D16)              /**/ { reg.pc = adp; /**/ reg.sph = reg.in;                                                  /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
 
   // 8-bit alu
 
-  if (state.op_state == 0 && ALU_A_R)                /**/ { state.pc = adp; /**/ state.a = alu(state.a, get_reg(OP_COL), OP_ROW, state.f);   set_f(0xF0); /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && INC_R)                  /**/ { state.pc = adp; /**/ set_reg(OP_ROW, alu(get_reg(OP_ROW), 1, 1, 0)); set_f(0xE0);             /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && DEC_R)                  /**/ { state.pc = adp; /**/ set_reg(OP_ROW, alu(get_reg(OP_ROW), 1, 3, 0)); set_f(0xE0);             /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && RLC_A)                  /**/ { state.pc = adp; /**/ state.a = rlu(state.a, OP_ROW, state.f); set_f(0xF0);                    /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && RRC_A)                  /**/ { state.pc = adp; /**/ state.a = rlu(state.a, OP_ROW, state.f); set_f(0xF0);                    /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && RL_A)                   /**/ { state.pc = adp; /**/ state.a = rlu(state.a, OP_ROW, state.f); set_f(0xF0);                    /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && RR_A)                   /**/ { state.pc = adp; /**/ state.a = rlu(state.a, OP_ROW, state.f); set_f(0xF0);                    /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && DAA)                    /**/ { state.pc = adp; /**/ state.a = rlu(state.a, OP_ROW, state.f); set_f(0xB0);                    /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && CPL)                    /**/ { state.pc = adp; /**/ state.a = rlu(state.a, OP_ROW, state.f); set_f(0x60);                    /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && SCF)                    /**/ { state.pc = adp; /**/ state.a = rlu(state.a, OP_ROW, state.f); set_f(0x70);                    /**/ bus_done(state.pc); state.op_state_ = 0;}
-  if (state.op_state == 0 && CCF)                    /**/ { state.pc = adp; /**/ state.a = rlu(state.a, OP_ROW, state.f); set_f(0x70);                    /**/ bus_done(state.pc); state.op_state_ = 0;}
-
-  if (state.op_state == 0 && ALU_A_D8)               /**/ { state.pc = adp; /**/                                                                  /**/ bus_read(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && ALU_A_D8)               /**/ { state.pc = adp; /**/ state.a = alu(state.a, state.in, OP_ROW, state.f); set_f(0xF0);  /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && ALU_A_HL)               /**/ { state.pc = adp; /**/                                                                  /**/ bus_read(state.hl); state.op_state_ = 1; }
-  if (state.op_state == 1 && ALU_A_HL)               /**/ {                 /**/ state.a = alu(state.a, state.in, OP_ROW, state.f); set_f(0xF0);  /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && INC_AT_HL)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.hl);               state.op_state_ = 1; }
-  if (state.op_state == 1 && INC_AT_HL)              /**/ {                 /**/ alu(state.in, 1, 1, 0); set_f(0xE0);     /**/ bus_write(state.hl, state.alu_o); state.op_state_ = 2; }
-  if (state.op_state == 2 && INC_AT_HL)              /**/ {                 /**/                                          /**/ bus_done(state.pc);               state.op_state_ = 0; }
-
-  if (state.op_state == 0 && DEC_AT_HL)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.hl);               state.op_state_ = 1; }
-  if (state.op_state == 1 && DEC_AT_HL)              /**/ {                 /**/ alu(state.in, 1, 3, 0); set_f(0xE0);     /**/ bus_write(state.hl, state.alu_o); state.op_state_ = 2; }
-  if (state.op_state == 2 && DEC_AT_HL)              /**/ {                 /**/                                          /**/ bus_done(state.pc);               state.op_state_ = 0; }
+  if (reg.op_state == 0 && ALU_A_R)                /**/ { reg.pc = adp; /**/ reg.a = alu(reg.a, get_reg(OP_COL), OP_ROW, reg.f);   set_f(0xF0); /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && INC_R)                  /**/ { reg.pc = adp; /**/ set_reg(OP_ROW, alu(get_reg(OP_ROW), 1, 1, 0)); set_f(0xE0);       /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && DEC_R)                  /**/ { reg.pc = adp; /**/ set_reg(OP_ROW, alu(get_reg(OP_ROW), 1, 3, 0)); set_f(0xE0);       /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && RLC_A)                  /**/ { reg.pc = adp; /**/ reg.a = rlu(reg.a, OP_ROW, reg.f); set_f(0xF0);                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && RRC_A)                  /**/ { reg.pc = adp; /**/ reg.a = rlu(reg.a, OP_ROW, reg.f); set_f(0xF0);                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && RL_A)                   /**/ { reg.pc = adp; /**/ reg.a = rlu(reg.a, OP_ROW, reg.f); set_f(0xF0);                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && RR_A)                   /**/ { reg.pc = adp; /**/ reg.a = rlu(reg.a, OP_ROW, reg.f); set_f(0xF0);                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && DAA)                    /**/ { reg.pc = adp; /**/ reg.a = rlu(reg.a, OP_ROW, reg.f); set_f(0xB0);                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && CPL)                    /**/ { reg.pc = adp; /**/ reg.a = rlu(reg.a, OP_ROW, reg.f); set_f(0x60);                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && SCF)                    /**/ { reg.pc = adp; /**/ reg.a = rlu(reg.a, OP_ROW, reg.f); set_f(0x70);                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && CCF)                    /**/ { reg.pc = adp; /**/ reg.a = rlu(reg.a, OP_ROW, reg.f); set_f(0x70);                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0;}
+  if (reg.op_state == 0 && ALU_A_D8)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && ALU_A_D8)               /**/ { reg.pc = adp; /**/ reg.a = alu(reg.a, reg.in, OP_ROW, reg.f); set_f(0xF0);            /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && ALU_A_HL)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.hl);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && ALU_A_HL)               /**/ {               /**/ reg.a = alu(reg.a, reg.in, OP_ROW, reg.f); set_f(0xF0);            /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && INC_AT_HL)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.hl);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && INC_AT_HL)              /**/ {               /**/ alu(reg.in, 1, 1, 0); set_f(0xE0);                                 /**/ reg.cpu_bus_write(reg.hl, reg.alu_o); reg.op_state_ = 2; }
+  if (reg.op_state == 2 && INC_AT_HL)              /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && DEC_AT_HL)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.hl);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && DEC_AT_HL)              /**/ {               /**/ alu(reg.in, 1, 3, 0); set_f(0xE0);                                 /**/ reg.cpu_bus_write(reg.hl, reg.alu_o); reg.op_state_ = 2; }
+  if (reg.op_state == 2 && DEC_AT_HL)              /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
 
   // 16-bit alu
 
-  if (state.op_state == 0 && ADD_SP_R8)              /**/ { state.pc = adp; /**/                                                                  /**/ bus_read(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && ADD_SP_R8)              /**/ { state.pc = adp; /**/ state.spl = alu(state.in, state.spl, 0, state.f); set_f(0xF0);   /**/ bus_pass(state.pc); state.op_state_ = 2; }
-  if (state.op_state == 2 && ADD_SP_R8)              /**/ {                 /**/ state.sph = alu(sxt(state.in), state.sph, 1, state.f);           /**/ bus_pass(state.pc); state.op_state_ = 3; }
-  if (state.op_state == 3 && ADD_SP_R8)              /**/ {                 /**/                                                                  /**/ bus_done(state.pc); state.op_state_ = 0; }
+  if (reg.op_state == 0 && ADD_SP_R8)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && ADD_SP_R8)              /**/ { reg.pc = adp; /**/ reg.spl = alu(reg.in, reg.spl, 0, reg.f); set_f(0xF0);             /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && ADD_SP_R8)              /**/ {               /**/ reg.sph = alu(sxt(reg.in), reg.sph, 1, reg.f);                     /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 3; }
+  if (reg.op_state == 3 && ADD_SP_R8)              /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && LD_HL_SP_R8)            /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LD_HL_SP_R8)            /**/ { reg.pc = adp; /**/ reg.l = alu(reg.in, reg.spl, 0, reg.f); set_f(0xF0);               /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && LD_HL_SP_R8)            /**/ {               /**/ reg.h = alu(sxt(reg.in), reg.sph, 1, reg.f);                       /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
 
-  if (state.op_state == 0 && LD_HL_SP_R8)            /**/ { state.pc = adp; /**/                                                                  /**/ bus_read(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && LD_HL_SP_R8)            /**/ { state.pc = adp; /**/ state.l = alu(state.in, state.spl, 0, state.f); set_f(0xF0);     /**/ bus_pass(state.pc); state.op_state_ = 2; }
-  if (state.op_state == 2 && LD_HL_SP_R8)            /**/ {                 /**/ state.h = alu(sxt(state.in), state.sph, 1, state.f);             /**/ bus_done(state.pc); state.op_state_ = 0; }
+  if (reg.op_state == 0 && INC_BC)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.bc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && INC_BC)                 /**/ { reg.bc = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && DEC_BC)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.bc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && DEC_BC)                 /**/ { reg.bc = adm; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && INC_DE)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.de);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && INC_DE)                 /**/ { reg.de = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && DEC_DE)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.de);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && DEC_DE)                 /**/ { reg.de = adm; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && INC_HL)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.hl);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && INC_HL)                 /**/ { reg.hl = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && DEC_HL)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.hl);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && DEC_HL)                 /**/ { reg.hl = adm; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && INC_SP)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && INC_SP)                 /**/ { reg.sp = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && DEC_SP)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && DEC_SP)                 /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
 
-  if (state.op_state == 0 && INC_BC)                 /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.bc); state.op_state_ = 1; }
-  if (state.op_state == 1 && INC_BC)                 /**/ { state.bc = adp; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && DEC_BC)                 /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.bc); state.op_state_ = 1; }
-  if (state.op_state == 1 && DEC_BC)                 /**/ { state.bc = adm; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && INC_DE)                 /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.de); state.op_state_ = 1; }
-  if (state.op_state == 1 && INC_DE)                 /**/ { state.de = adp; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && DEC_DE)                 /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.de); state.op_state_ = 1; }
-  if (state.op_state == 1 && DEC_DE)                 /**/ { state.de = adm; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && INC_HL)                 /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.hl); state.op_state_ = 1; }
-  if (state.op_state == 1 && INC_HL)                 /**/ { state.hl = adp; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && DEC_HL)                 /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.hl); state.op_state_ = 1; }
-  if (state.op_state == 1 && DEC_HL)                 /**/ { state.hl = adm; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && INC_SP)                 /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.sp); state.op_state_ = 1; }
-  if (state.op_state == 1 && INC_SP)                 /**/ { state.sp = adp; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && DEC_SP)                 /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.sp); state.op_state_ = 1; }
-  if (state.op_state == 1 && DEC_SP)                 /**/ { state.sp = adm; /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && ADD_HL_BC)              /**/ { state.pc = adp; /**/ state.l = alu(state.c, state.l, 0, state.f);                     /**/ bus_pass(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && ADD_HL_BC)              /**/ {                 /**/ state.h = alu(state.b, state.h, 1, state.alu_f); set_f(0x70);    /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && ADD_HL_DE)              /**/ { state.pc = adp; /**/ state.l = alu(state.e, state.l, 0, state.f);                     /**/ bus_pass(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && ADD_HL_DE)              /**/ {                 /**/ state.h = alu(state.d, state.h, 1, state.alu_f); set_f(0x70);    /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && ADD_HL_HL)              /**/ { state.pc = adp; /**/ state.l = alu(state.l, state.l, 0, state.f);                     /**/ bus_pass(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && ADD_HL_HL)              /**/ {                 /**/ state.h = alu(state.h, state.h, 1, state.alu_f); set_f(0x70);    /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && ADD_HL_SP)              /**/ { state.pc = adp; /**/ state.l = alu(state.spl, state.l, 0, state.f);                   /**/ bus_pass(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && ADD_HL_SP)              /**/ {                 /**/ state.h = alu(state.sph, state.h, 1, state.alu_f); set_f(0x70);  /**/ bus_done(state.pc); state.op_state_ = 0; }
+  if (reg.op_state == 0 && ADD_HL_BC)              /**/ { reg.pc = adp; /**/ reg.l = alu(reg.c, reg.l, 0, reg.f);                               /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && ADD_HL_BC)              /**/ {               /**/ reg.h = alu(reg.b, reg.h, 1, reg.alu_f); set_f(0x70);              /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && ADD_HL_DE)              /**/ { reg.pc = adp; /**/ reg.l = alu(reg.e, reg.l, 0, reg.f);                               /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && ADD_HL_DE)              /**/ {               /**/ reg.h = alu(reg.d, reg.h, 1, reg.alu_f); set_f(0x70);              /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && ADD_HL_HL)              /**/ { reg.pc = adp; /**/ reg.l = alu(reg.l, reg.l, 0, reg.f);                               /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && ADD_HL_HL)              /**/ {               /**/ reg.h = alu(reg.h, reg.h, 1, reg.alu_f); set_f(0x70);              /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && ADD_HL_SP)              /**/ { reg.pc = adp; /**/ reg.l = alu(reg.spl, reg.l, 0, reg.f);                             /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && ADD_HL_SP)              /**/ {               /**/ reg.h = alu(reg.sph, reg.h, 1, reg.alu_f); set_f(0x70);            /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
 
   // load/store
 
-  if (state.op_state == 0 && STM_A16_SP)             /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);             state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_A16_SP)             /**/ { state.pc = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.pc);             state.op_state_ = 2; }
-  if (state.op_state == 2 && STM_A16_SP)             /**/ { state.pc = adp; /**/ state.xyh = state.in;                    /**/ bus_write(state.xy, state.spl); state.op_state_ = 3; }
-  if (state.op_state == 3 && STM_A16_SP)             /**/ { state.xy = adp; /**/                                          /**/ bus_write(state.xy, state.sph); state.op_state_ = 4; }
-  if (state.op_state == 4 && STM_A16_SP)             /**/ { state.xy = adp; /**/                                          /**/ bus_done(state.pc);             state.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_A16_SP)             /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_A16_SP)             /**/ { reg.pc = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && STM_A16_SP)             /**/ { reg.pc = adp; /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_write(reg.xy, reg.spl);   reg.op_state_ = 3; }
+  if (reg.op_state == 3 && STM_A16_SP)             /**/ { reg.xy = adp; /**/                                                                    /**/ reg.cpu_bus_write(reg.xy, reg.sph);   reg.op_state_ = 4; }
+  if (reg.op_state == 4 && STM_A16_SP)             /**/ { reg.xy = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_A16_A)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_A16_A)              /**/ { reg.pc = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && STM_A16_A)              /**/ { reg.pc = adp; /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_write(reg.xy, reg.a);     reg.op_state_ = 3; }
+  if (reg.op_state == 3 && STM_A16_A)              /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && LDM_A_A16)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LDM_A_A16)              /**/ { reg.pc = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && LDM_A_A16)              /**/ { reg.pc = adp; /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_read(reg.xy);             reg.op_state_ = 3; }
+  if (reg.op_state == 3 && LDM_A_A16)              /**/ {               /**/ reg.a = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+                                                                                                                                                                                           
+  // indirect load/store                                                                                                                                                                   
+                                                                                                                                                                                           
+  if (reg.op_state == 0 && LDM_A_BC)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.bc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LDM_A_BC)               /**/ {               /**/ reg.a = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && LDM_A_DE)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.de);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LDM_A_DE)               /**/ {               /**/ reg.a = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && LDM_R_HL)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.hl);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LDM_R_HL)               /**/ {               /**/ set_reg(OP_ROW, reg.in);                                           /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && LDM_A_HLP)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.hl);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LDM_A_HLP)              /**/ { reg.hl = adp; /**/ reg.a = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && LDM_A_HLM)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.hl);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LDM_A_HLM)              /**/ { reg.hl = adm; /**/ reg.a = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_BC_A)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_write(reg.bc, reg.a);     reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_BC_A)               /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_DE_A)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_write(reg.de, reg.a);     reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_DE_A)               /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_HL_R)               /**/ { reg.pc = adp; /**/ uint8_t t = get_reg(OP_COL);                                       /**/ reg.cpu_bus_write(reg.hl, t);         reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_HL_R)               /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_HL_D8)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_HL_D8)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_write(reg.hl, reg.in);    reg.op_state_ = 2; }
+  if (reg.op_state == 2 && STM_HL_D8)              /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_HLP_A)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_write(reg.hl, reg.a);     reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_HLP_A)              /**/ { reg.hl = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_HLM_A)              /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_write(reg.hl, reg.a);     reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_HLM_A)              /**/ { reg.hl = adm; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+                                                                                                                                                                                           
+  // zero-page load/store                                                                                                                                                                  
+                                                                                                                                                                                           
+  if (reg.op_state == 0 && LDM_A_C)                /**/ { reg.pc = adp; /**/ reg.xy = 0xFF00 | reg.c;                                           /**/ reg.cpu_bus_read(reg.xy);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LDM_A_C)                /**/ {               /**/ reg.a = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && LDM_A_A8)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && LDM_A_A8)               /**/ { reg.pc = adp; /**/ reg.xy = 0xFF00 | reg.in;                                          /**/ reg.cpu_bus_read(reg.xy);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && LDM_A_A8)               /**/ {               /**/ reg.a = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_C_A)                /**/ { reg.pc = adp; /**/ reg.xy = 0xFF00 | reg.c;                                           /**/ reg.cpu_bus_write(reg.xy, reg.a);     reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_C_A)                /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && STM_A8_A)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && STM_A8_A)               /**/ { reg.pc = adp; /**/ reg.xy = 0xFF00 | reg.in;                                          /**/ reg.cpu_bus_write(reg.xy, reg.a);     reg.op_state_ = 2; }
+  if (reg.op_state == 2 && STM_A8_A)               /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+                                                                                                                                                                                           
+  // push / pop                                                                                                                                                                            
+                                                                                                                                                                                           
+  if (reg.op_state == 0 && PUSH_BC)                /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 0 && PUSH_DE)                /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 0 && PUSH_HL)                /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 0 && PUSH_AF)                /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && PUSH_BC)                /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.b);     reg.op_state_ = 2; }
+  if (reg.op_state == 1 && PUSH_DE)                /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.d);     reg.op_state_ = 2; }
+  if (reg.op_state == 1 && PUSH_HL)                /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.h);     reg.op_state_ = 2; }
+  if (reg.op_state == 1 && PUSH_AF)                /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.a);     reg.op_state_ = 2; }
+  if (reg.op_state == 2 && PUSH_BC)                /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.c);     reg.op_state_ = 3; }
+  if (reg.op_state == 2 && PUSH_DE)                /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.e);     reg.op_state_ = 3; }
+  if (reg.op_state == 2 && PUSH_HL)                /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.l);     reg.op_state_ = 3; }
+  if (reg.op_state == 2 && PUSH_AF)                /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.f);     reg.op_state_ = 3; }
+  if (reg.op_state == 3 && PUSH_BC)                /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 3 && PUSH_DE)                /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 3 && PUSH_HL)                /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 3 && PUSH_AF)                /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+                                                                                                                                                                                           
+  if (reg.op_state == 0 && POP_BC)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 0 && POP_DE)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 0 && POP_HL)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 0 && POP_AF)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && POP_BC)                 /**/ { reg.sp = adp; /**/ reg.c = reg.in;                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 2; }
+  if (reg.op_state == 1 && POP_DE)                 /**/ { reg.sp = adp; /**/ reg.e = reg.in;                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 2; }
+  if (reg.op_state == 1 && POP_HL)                 /**/ { reg.sp = adp; /**/ reg.l = reg.in;                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 2; }
+  if (reg.op_state == 1 && POP_AF)                 /**/ { reg.sp = adp; /**/ reg.f = reg.in;                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && POP_BC)                 /**/ { reg.sp = adp; /**/ reg.b = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 2 && POP_DE)                 /**/ { reg.sp = adp; /**/ reg.d = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 2 && POP_HL)                 /**/ { reg.sp = adp; /**/ reg.h = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 2 && POP_AF)                 /**/ { reg.sp = adp; /**/ reg.a = reg.in;                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+                                                                                                                                                                                           
+  // conditional branches                                                                                                                                                                  
+                                                                                                                                                                                           
+  if (reg.op_state == 0 && JR_R8)                  /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && JR_R8)                  /**/ { reg.pc = adp; /**/ reg.pc += int8_t(reg.in);                                          /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && JR_R8)                  /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && JR_CC_R8  &&  branch)   /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && JR_CC_R8  &&  branch)   /**/ { reg.pc = adp; /**/ reg.pc += int8_t(reg.in);                                          /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && JR_CC_R8  &&  branch)   /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && JR_CC_R8  && !branch)   /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && JR_CC_R8  && !branch)   /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && JP_CC_A16 &&  branch)   /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && JP_CC_A16 &&  branch)   /**/ { reg.pc = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && JP_CC_A16 &&  branch)   /**/ {               /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 3; }
+  if (reg.op_state == 3 && JP_CC_A16 &&  branch)   /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.xy);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && JP_CC_A16 && !branch)   /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && JP_CC_A16 && !branch)   /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && JP_CC_A16 && !branch)   /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && JP_A16)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && JP_A16)                 /**/ { reg.pc = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && JP_A16)                 /**/ {               /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 3; }
+  if (reg.op_state == 3 && JP_A16)                 /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.xy);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && JP_HL)                  /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.hl);             reg.op_state_ = 0; }
+                                                                                                                                                                                           
+  // calls                                                                                                                                                                                 
+                                                                                                                                                                                           
+  if (reg.op_state == 0 && CALL_CC_A16 &&  branch) /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && CALL_CC_A16 &&  branch) /**/ { reg.pc = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && CALL_CC_A16 &&  branch) /**/ { reg.pc = adp; /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_pass(reg.sp);             reg.op_state_ = 3; }
+  if (reg.op_state == 3 && CALL_CC_A16 &&  branch) /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.pch);   reg.op_state_ = 4; }
+  if (reg.op_state == 4 && CALL_CC_A16 &&  branch) /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.pcl);   reg.op_state_ = 5; }
+  if (reg.op_state == 5 && CALL_CC_A16 &&  branch) /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.xy);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && CALL_CC_A16 && !branch) /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && CALL_CC_A16 && !branch) /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && CALL_CC_A16 && !branch) /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && CALL_A16)               /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && CALL_A16)               /**/ { reg.pc = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.pc);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && CALL_A16)               /**/ { reg.pc = adp; /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_pass(reg.sp);             reg.op_state_ = 3; }
+  if (reg.op_state == 3 && CALL_A16)               /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.pch);   reg.op_state_ = 4; }
+  if (reg.op_state == 4 && CALL_A16)               /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.pcl);   reg.op_state_ = 5; }
+  if (reg.op_state == 5 && CALL_A16)               /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.xy);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && RST_NN)                 /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && RST_NN)                 /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.pch);   reg.op_state_ = 2; }
+  if (reg.op_state == 2 && RST_NN)                 /**/ { reg.sp = adm; /**/                                                                    /**/ reg.cpu_bus_write(reg.sp, reg.pcl);   reg.op_state_ = 3; }
+  if (reg.op_state == 3 && RST_NN)                 /**/ {               /**/ reg.xy = reg.op_next - 0xC7;                                       /**/ reg.cpu_bus_done(reg.xy);             reg.op_state_ = 0; }
+                                                                                                                                                                                           
+  // returns                                                                                                                                                                               
+                                                                                                                                                                                           
+  if (reg.op_state == 0 && RET_CC && !branch)      /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && RET_CC && !branch)      /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.pc);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && RET_CC &&  branch)      /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && RET_CC &&  branch)      /**/ {               /**/                                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && RET_CC &&  branch)      /**/ { reg.sp = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 3; }
+  if (reg.op_state == 3 && RET_CC &&  branch)      /**/ { reg.sp = adp; /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 4; }
+  if (reg.op_state == 4 && RET_CC &&  branch)      /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.xy);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && RETI)                   /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && RETI)                   /**/ { reg.sp = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && RETI)                   /**/ { reg.sp = adp; /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 3; }
+  if (reg.op_state == 3 && RETI)                   /**/ {               /**/ reg.ime = true; reg.ime_delay = true;                              /**/ reg.cpu_bus_done(reg.xy);             reg.op_state_ = 0; }
+  if (reg.op_state == 0 && RET)                    /**/ { reg.pc = adp; /**/                                                                    /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 1; }
+  if (reg.op_state == 1 && RET)                    /**/ { reg.sp = adp; /**/ reg.xyl = reg.in;                                                  /**/ reg.cpu_bus_read(reg.sp);             reg.op_state_ = 2; }
+  if (reg.op_state == 2 && RET)                    /**/ { reg.sp = adp; /**/ reg.xyh = reg.in;                                                  /**/ reg.cpu_bus_pass(reg.pc);             reg.op_state_ = 3; }
+  if (reg.op_state == 3 && RET)                    /**/ {               /**/                                                                    /**/ reg.cpu_bus_done(reg.xy);             reg.op_state_ = 0; }
 
-  if (state.op_state == 0 && STM_A16_A)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);             state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_A16_A)              /**/ { state.pc = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.pc);             state.op_state_ = 2; }
-  if (state.op_state == 2 && STM_A16_A)              /**/ { state.pc = adp; /**/ state.xyh = state.in;                    /**/ bus_write(state.xy, state.a);   state.op_state_ = 3; }
-  if (state.op_state == 3 && STM_A16_A)              /**/ {                 /**/                                          /**/ bus_done(state.pc);             state.op_state_ = 0; }
-
-  if (state.op_state == 0 && LDM_A_A16)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);       state.op_state_ = 1; }
-  if (state.op_state == 1 && LDM_A_A16)              /**/ { state.pc = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.pc);       state.op_state_ = 2; }
-  if (state.op_state == 2 && LDM_A_A16)              /**/ { state.pc = adp; /**/ state.xyh = state.in;                    /**/ bus_read(state.xy);       state.op_state_ = 3; }
-  if (state.op_state == 3 && LDM_A_A16)              /**/ {                 /**/ state.a = state.in;                      /**/ bus_done(state.pc);       state.op_state_ = 0; }
-
-  // indirect load/store
-
-  if (state.op_state == 0 && LDM_A_BC)               /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.bc);            state.op_state_ = 1; }
-  if (state.op_state == 1 && LDM_A_BC)               /**/ {                 /**/ state.a = state.in;                      /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && LDM_A_DE)               /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.de);            state.op_state_ = 1; }
-  if (state.op_state == 1 && LDM_A_DE)               /**/ {                 /**/ state.a = state.in;                      /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && LDM_R_HL)               /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.hl);            state.op_state_ = 1; }
-  if (state.op_state == 1 && LDM_R_HL)               /**/ {                 /**/ set_reg(OP_ROW, state.in);               /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && LDM_A_HLP)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.hl);            state.op_state_ = 1; }
-  if (state.op_state == 1 && LDM_A_HLP)              /**/ { state.hl = adp; /**/ state.a = state.in;                      /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && LDM_A_HLM)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.hl);            state.op_state_ = 1; }
-  if (state.op_state == 1 && LDM_A_HLM)              /**/ { state.hl = adm; /**/ state.a = state.in;                      /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && STM_BC_A)               /**/ { state.pc = adp; /**/                                          /**/ bus_write(state.bc, state.a);  state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_BC_A)               /**/ {                 /**/                                          /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && STM_DE_A)               /**/ { state.pc = adp; /**/                                          /**/ bus_write(state.de, state.a);  state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_DE_A)               /**/ {                 /**/                                          /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && STM_HL_R)               /**/ { state.pc = adp; /**/ uint8_t t = get_reg(OP_COL);             /**/ bus_write(state.hl, t);        state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_HL_R)               /**/ {                 /**/                                          /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && STM_HL_D8)              /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);            state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_HL_D8)              /**/ { state.pc = adp; /**/                                          /**/ bus_write(state.hl, state.in); state.op_state_ = 2; }
-  if (state.op_state == 2 && STM_HL_D8)              /**/ {                 /**/                                          /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && STM_HLP_A)              /**/ { state.pc = adp; /**/                                          /**/ bus_write(state.hl, state.a);  state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_HLP_A)              /**/ { state.hl = adp; /**/                                          /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  if (state.op_state == 0 && STM_HLM_A)              /**/ { state.pc = adp; /**/                                          /**/ bus_write(state.hl, state.a);  state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_HLM_A)              /**/ { state.hl = adm; /**/                                          /**/ bus_done(state.pc);            state.op_state_ = 0; }
-
-  // zero-page load/store
-
-  if (state.op_state == 0 && LDM_A_C)                /**/ { state.pc = adp; /**/ state.xy = 0xFF00 | state.c;             /**/ bus_read(state.xy);           state.op_state_ = 1; }
-  if (state.op_state == 1 && LDM_A_C)                /**/ {                 /**/ state.a = state.in;                      /**/ bus_done(state.pc);           state.op_state_ = 0; }
-
-  if (state.op_state == 0 && LDM_A_A8)               /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);           state.op_state_ = 1; }
-  if (state.op_state == 1 && LDM_A_A8)               /**/ { state.pc = adp; /**/ state.xy = 0xFF00 | state.in;            /**/ bus_read(state.xy);           state.op_state_ = 2; }
-  if (state.op_state == 2 && LDM_A_A8)               /**/ {                 /**/ state.a = state.in;                      /**/ bus_done(state.pc);           state.op_state_ = 0; }
-
-  if (state.op_state == 0 && STM_C_A)                /**/ { state.pc = adp; /**/ state.xy = 0xFF00 | state.c;             /**/ bus_write(state.xy, state.a); state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_C_A)                /**/ {                 /**/                                          /**/ bus_done(state.pc);           state.op_state_ = 0; }
-
-  if (state.op_state == 0 && STM_A8_A)               /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);           state.op_state_ = 1; }
-  if (state.op_state == 1 && STM_A8_A)               /**/ { state.pc = adp; /**/ state.xy = 0xFF00 | state.in;            /**/ bus_write(state.xy, state.a); state.op_state_ = 2; }
-  if (state.op_state == 2 && STM_A8_A)               /**/ {                 /**/                                          /**/ bus_done(state.pc);           state.op_state_ = 0; }
-
-  // push / pop
-
-  if (state.op_state == 0 && PUSH_BC)                /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.sp);           state.op_state_ = 1; }
-  if (state.op_state == 0 && PUSH_DE)                /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.sp);           state.op_state_ = 1; }
-  if (state.op_state == 0 && PUSH_HL)                /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.sp);           state.op_state_ = 1; }
-  if (state.op_state == 0 && PUSH_AF)                /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.sp);           state.op_state_ = 1; }
-  if (state.op_state == 1 && PUSH_BC)                /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.b); state.op_state_ = 2; }
-  if (state.op_state == 1 && PUSH_DE)                /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.d); state.op_state_ = 2; }
-  if (state.op_state == 1 && PUSH_HL)                /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.h); state.op_state_ = 2; }
-  if (state.op_state == 1 && PUSH_AF)                /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.a); state.op_state_ = 2; }
-  if (state.op_state == 2 && PUSH_BC)                /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.c); state.op_state_ = 3; }
-  if (state.op_state == 2 && PUSH_DE)                /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.e); state.op_state_ = 3; }
-  if (state.op_state == 2 && PUSH_HL)                /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.l); state.op_state_ = 3; }
-  if (state.op_state == 2 && PUSH_AF)                /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.f); state.op_state_ = 3; }
-  if (state.op_state == 3 && PUSH_BC)                /**/ {                 /**/                                          /**/ bus_done(state.pc);           state.op_state_ = 0; }
-  if (state.op_state == 3 && PUSH_DE)                /**/ {                 /**/                                          /**/ bus_done(state.pc);           state.op_state_ = 0; }
-  if (state.op_state == 3 && PUSH_HL)                /**/ {                 /**/                                          /**/ bus_done(state.pc);           state.op_state_ = 0; }
-  if (state.op_state == 3 && PUSH_AF)                /**/ {                 /**/                                          /**/ bus_done(state.pc);           state.op_state_ = 0; }
-
-  if (state.op_state == 0 && POP_BC)                 /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.sp);     state.op_state_ = 1; }
-  if (state.op_state == 0 && POP_DE)                 /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.sp);     state.op_state_ = 1; }
-  if (state.op_state == 0 && POP_HL)                 /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.sp);     state.op_state_ = 1; }
-  if (state.op_state == 0 && POP_AF)                 /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.sp);     state.op_state_ = 1; }
-  if (state.op_state == 1 && POP_BC)                 /**/ { state.sp = adp; /**/ state.c = state.in;                      /**/ bus_read(state.sp);     state.op_state_ = 2; }
-  if (state.op_state == 1 && POP_DE)                 /**/ { state.sp = adp; /**/ state.e = state.in;                      /**/ bus_read(state.sp);     state.op_state_ = 2; }
-  if (state.op_state == 1 && POP_HL)                 /**/ { state.sp = adp; /**/ state.l = state.in;                      /**/ bus_read(state.sp);     state.op_state_ = 2; }
-  if (state.op_state == 1 && POP_AF)                 /**/ { state.sp = adp; /**/ state.f = state.in;                      /**/ bus_read(state.sp);     state.op_state_ = 2; }
-  if (state.op_state == 2 && POP_BC)                 /**/ { state.sp = adp; /**/ state.b = state.in;                      /**/ bus_done(state.pc);     state.op_state_ = 0; }
-  if (state.op_state == 2 && POP_DE)                 /**/ { state.sp = adp; /**/ state.d = state.in;                      /**/ bus_done(state.pc);     state.op_state_ = 0; }
-  if (state.op_state == 2 && POP_HL)                 /**/ { state.sp = adp; /**/ state.h = state.in;                      /**/ bus_done(state.pc);     state.op_state_ = 0; }
-  if (state.op_state == 2 && POP_AF)                 /**/ { state.sp = adp; /**/ state.a = state.in;                      /**/ bus_done(state.pc);     state.op_state_ = 0; }
-
-  // conditional branches
-
-  if (state.op_state == 0 && JR_R8)                  /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);     state.op_state_ = 1; }
-  if (state.op_state == 1 && JR_R8)                  /**/ { state.pc = adp; /**/ state.pc += int8_t(state.in);            /**/ bus_pass(state.pc);     state.op_state_ = 2; }
-  if (state.op_state == 2 && JR_R8)                  /**/ {                 /**/                                          /**/ bus_done(state.pc);     state.op_state_ = 0; }
-
-  if (state.op_state == 0 && JR_CC_R8    &&  branch) /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);     state.op_state_ = 1; }
-  if (state.op_state == 1 && JR_CC_R8    &&  branch) /**/ { state.pc = adp; /**/ state.pc += int8_t(state.in);            /**/ bus_pass(state.pc);     state.op_state_ = 2; }
-  if (state.op_state == 2 && JR_CC_R8    &&  branch) /**/ {                 /**/                                          /**/ bus_done(state.pc);     state.op_state_ = 0; }
-
-  if (state.op_state == 0 && JR_CC_R8    && !branch) /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);     state.op_state_ = 1; }
-  if (state.op_state == 1 && JR_CC_R8    && !branch) /**/ { state.pc = adp; /**/                                          /**/ bus_done(state.pc);     state.op_state_ = 0; }
-
-
-  if (state.op_state == 0 && JP_CC_A16   &&  branch) /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);     state.op_state_ = 1; }
-  if (state.op_state == 1 && JP_CC_A16   &&  branch) /**/ { state.pc = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.pc);     state.op_state_ = 2; }
-  if (state.op_state == 2 && JP_CC_A16   &&  branch) /**/ {                 /**/ state.xyh = state.in;                    /**/ bus_pass(state.pc);     state.op_state_ = 3; }
-  if (state.op_state == 3 && JP_CC_A16   &&  branch) /**/ {                 /**/                                          /**/ bus_done(state.xy);     state.op_state_ = 0; }
-
-  if (state.op_state == 0 && JP_CC_A16   && !branch) /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);     state.op_state_ = 1; }
-  if (state.op_state == 1 && JP_CC_A16   && !branch) /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);     state.op_state_ = 2; }
-  if (state.op_state == 2 && JP_CC_A16   && !branch) /**/ { state.pc = adp; /**/                                          /**/ bus_done(state.pc);     state.op_state_ = 0; }
-
-  if (state.op_state == 0 && JP_A16)                 /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);     state.op_state_ = 1; }
-  if (state.op_state == 1 && JP_A16)                 /**/ { state.pc = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.pc);     state.op_state_ = 2; }
-  if (state.op_state == 2 && JP_A16)                 /**/ {                 /**/ state.xyh = state.in;                    /**/ bus_pass(state.pc);     state.op_state_ = 3; }
-  if (state.op_state == 3 && JP_A16)                 /**/ {                 /**/                                          /**/ bus_done(state.xy);     state.op_state_ = 0; }
-
-  if (state.op_state == 0 && JP_HL)                  /**/ { state.pc = adp; /**/                                          /**/ bus_done(state.hl);     state.op_state_ = 0; }
-
-  // calls
-
-  if (state.op_state == 0 && CALL_CC_A16 &&  branch) /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);       state.op_state_ = 1; }
-  if (state.op_state == 1 && CALL_CC_A16 &&  branch) /**/ { state.pc = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.pc);       state.op_state_ = 2; }
-  if (state.op_state == 2 && CALL_CC_A16 &&  branch) /**/ { state.pc = adp; /**/ state.xyh = state.in;                    /**/ bus_pass(state.sp);       state.op_state_ = 3; }
-  if (state.op_state == 3 && CALL_CC_A16 &&  branch) /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.pch); state.op_state_ = 4; }
-  if (state.op_state == 4 && CALL_CC_A16 &&  branch) /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.pcl); state.op_state_ = 5; }
-  if (state.op_state == 5 && CALL_CC_A16 &&  branch) /**/ {                 /**/                                          /**/ bus_done(state.xy);       state.op_state_ = 0; }
-
-  if (state.op_state == 0 && CALL_CC_A16 && !branch) /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);       state.op_state_ = 1; }
-  if (state.op_state == 1 && CALL_CC_A16 && !branch) /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);       state.op_state_ = 2; }
-  if (state.op_state == 2 && CALL_CC_A16 && !branch) /**/ { state.pc = adp; /**/                                          /**/ bus_done(state.pc);       state.op_state_ = 0; }
-
-  if (state.op_state == 0 && CALL_A16)               /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.pc);       state.op_state_ = 1; }
-  if (state.op_state == 1 && CALL_A16)               /**/ { state.pc = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.pc);       state.op_state_ = 2; }
-  if (state.op_state == 2 && CALL_A16)               /**/ { state.pc = adp; /**/ state.xyh = state.in;                    /**/ bus_pass(state.sp);       state.op_state_ = 3; }
-  if (state.op_state == 3 && CALL_A16)               /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.pch); state.op_state_ = 4; }
-  if (state.op_state == 4 && CALL_A16)               /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.pcl); state.op_state_ = 5; }
-  if (state.op_state == 5 && CALL_A16)               /**/ {                 /**/                                          /**/ bus_done(state.xy);       state.op_state_ = 0; }
-
-  if (state.op_state == 0 && RST_NN)                 /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.sp);       state.op_state_ = 1; }
-  if (state.op_state == 1 && RST_NN)                 /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.pch); state.op_state_ = 2; }
-  if (state.op_state == 2 && RST_NN)                 /**/ { state.sp = adm; /**/                                          /**/ bus_write(state.sp, state.pcl); state.op_state_ = 3; }
-  if (state.op_state == 3 && RST_NN)                 /**/ {                 /**/ state.xy = state.op_next - 0xC7;         /**/ bus_done(state.xy);       state.op_state_ = 0; }
-
-  // returns
-
-  if (state.op_state == 0 && RET_CC      && !branch) /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && RET_CC      && !branch) /**/ {                 /**/                                          /**/ bus_done(state.pc); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && RET_CC      &&  branch) /**/ { state.pc = adp; /**/                                          /**/ bus_pass(state.pc); state.op_state_ = 1; }
-  if (state.op_state == 1 && RET_CC      &&  branch) /**/ {                 /**/                                          /**/ bus_read(state.sp); state.op_state_ = 2; }
-  if (state.op_state == 2 && RET_CC      &&  branch) /**/ { state.sp = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.sp); state.op_state_ = 3; }
-  if (state.op_state == 3 && RET_CC      &&  branch) /**/ { state.sp = adp; /**/ state.xyh = state.in;                    /**/ bus_pass(state.pc); state.op_state_ = 4; }
-  if (state.op_state == 4 && RET_CC      &&  branch) /**/ {                 /**/                                          /**/ bus_done(state.xy); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && RETI)                   /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.sp); state.op_state_ = 1; }
-  if (state.op_state == 1 && RETI)                   /**/ { state.sp = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.sp); state.op_state_ = 2; }
-  if (state.op_state == 2 && RETI)                   /**/ { state.sp = adp; /**/ state.xyh = state.in;                    /**/ bus_pass(state.pc); state.op_state_ = 3; }
-  if (state.op_state == 3 && RETI)                   /**/ {                 /**/ state.ime = true; state.ime_delay = true;/**/ bus_done(state.xy); state.op_state_ = 0; }
-
-  if (state.op_state == 0 && RET)                    /**/ { state.pc = adp; /**/                                          /**/ bus_read(state.sp); state.op_state_ = 1; }
-  if (state.op_state == 1 && RET)                    /**/ { state.sp = adp; /**/ state.xyl = state.in;                    /**/ bus_read(state.sp); state.op_state_ = 2; }
-  if (state.op_state == 2 && RET)                    /**/ { state.sp = adp; /**/ state.xyh = state.in;                    /**/ bus_pass(state.pc); state.op_state_ = 3; }
-  if (state.op_state == 3 && RET)                    /**/ {                 /**/                                          /**/ bus_done(state.xy); state.op_state_ = 0; }
-
-  state.f &= 0xF0;
+  reg.f &= 0xF0;
 }
 
 //-----------------------------------------------------------------------------
 
 uint8_t MetroBoyCPU::get_reg(int mux) {
   switch(mux) {
-  case 0: return state.b;
-  case 1: return state.c;
-  case 2: return state.d;
-  case 3: return state.e;
-  case 4: return state.h;
-  case 5: return state.l;
+  case 0: return reg.b;
+  case 1: return reg.c;
+  case 2: return reg.d;
+  case 3: return reg.e;
+  case 4: return reg.h;
+  case 5: return reg.l;
   case 6: return 0;
-  case 7: return state.a;
+  case 7: return reg.a;
   }
   return 0;
 }
 
 void MetroBoyCPU::set_reg(int mux, uint8_t data) {
   switch(mux) {
-  case 0: state.b = data; break;
-  case 1: state.c = data; break;
-  case 2: state.d = data; break;
-  case 3: state.e = data; break;
-  case 4: state.h = data; break;
-  case 5: state.l = data; break;
+  case 0: reg.b = data; break;
+  case 1: reg.c = data; break;
+  case 2: reg.d = data; break;
+  case 3: reg.e = data; break;
+  case 4: reg.h = data; break;
+  case 5: reg.l = data; break;
   case 6: break;
-  case 7: state.a = data; break;
+  case 7: reg.a = data; break;
   }
 }
 
 //-----------------------------------------------------------------------------
 
 void MetroBoyCPU::set_f(uint8_t mask) {
-  auto op = state.op_next;
+  auto op = reg.op_next;
 
-  state.f = (state.f & ~mask) | (state.alu_f & mask);
-  if (ADD_SP_R8)   { state.f &= ~(F_ZERO | F_NEGATIVE); }
-  if (LD_HL_SP_R8) { state.f &= ~(F_ZERO | F_NEGATIVE); }
+  reg.f = (reg.f & ~mask) | (reg.alu_f & mask);
+  if (ADD_SP_R8)   { reg.f &= ~(F_ZERO | F_NEGATIVE); }
+  if (LD_HL_SP_R8) { reg.f &= ~(F_ZERO | F_NEGATIVE); }
 }
 
 //-----------------------------------------------------------------------------
 
 uint8_t MetroBoyCPU::alu(uint8_t x, uint8_t y, int op, uint8_t flags) {
-  state.alu_f = flags;
+  reg.alu_f = flags;
 
   uint16_t d1 = 0, d2 = 0;
-  const bool c = state.alu_f & F_CARRY;
+  const bool c = reg.alu_f & F_CARRY;
 
   switch(op) {
   case 0: d1 = (x & 0xF) + (y & 0xF);     d2 = x + y;     break;
@@ -556,68 +525,68 @@ uint8_t MetroBoyCPU::alu(uint8_t x, uint8_t y, int op, uint8_t flags) {
   case 7: d1 = (x & 0xF) - (y & 0xF);     d2 = x - y;     break;
   }
 
-  state.alu_o = (uint8_t)d2;
-  state.alu_f = (op == 2 || op == 3 || op == 7) ? F_NEGATIVE : 0;
+  reg.alu_o = (uint8_t)d2;
+  reg.alu_f = (op == 2 || op == 3 || op == 7) ? F_NEGATIVE : 0;
 
-  if (d1 & 0x010) state.alu_f |= F_HALF_CARRY;
-  if (d2 & 0x100) state.alu_f |= F_CARRY;
-  if (state.alu_o == 0x000) state.alu_f |= F_ZERO;
-  if (op == 7)  state.alu_o = x;
+  if (d1 & 0x010) reg.alu_f |= F_HALF_CARRY;
+  if (d2 & 0x100) reg.alu_f |= F_CARRY;
+  if (reg.alu_o == 0x000) reg.alu_f |= F_ZERO;
+  if (op == 7)  reg.alu_o = x;
 
-  return state.alu_o;
+  return reg.alu_o;
 }
 
 //-----------------------------------------------------------------------------
 
 uint8_t MetroBoyCPU::rlu(uint8_t x, int op, uint8_t flags) {
-  state.alu_f = flags;
-  const uint8_t f = state.alu_f;
+  reg.alu_f = flags;
+  const uint8_t f = reg.alu_f;
 
   uint8_t alu_o = 0;
 
   switch (op) {
   case 0:
-    state.alu_o = (x << 1) | (x >> 7);
-    state.alu_f = (x >> 7) ? F_CARRY : 0;
-    state.alu_f &= ~F_ZERO;
+    reg.alu_o = (x << 1) | (x >> 7);
+    reg.alu_f = (x >> 7) ? F_CARRY : 0;
+    reg.alu_f &= ~F_ZERO;
     break;
   case 1:
-    state.alu_o = (x >> 1) | (x << 7);
-    state.alu_f = (x & 1) ? F_CARRY : 0;
-    state.alu_f &= ~F_ZERO;
+    reg.alu_o = (x >> 1) | (x << 7);
+    reg.alu_f = (x & 1) ? F_CARRY : 0;
+    reg.alu_f &= ~F_ZERO;
     break;
   case 2:
-    state.alu_o = (x << 1) | (f & F_CARRY ? 1 : 0);
-    state.alu_f = (x >> 7) ? F_CARRY : 0;
-    state.alu_f &= ~F_ZERO;
+    reg.alu_o = (x << 1) | (f & F_CARRY ? 1 : 0);
+    reg.alu_f = (x >> 7) ? F_CARRY : 0;
+    reg.alu_f &= ~F_ZERO;
     break;
   case 3:
-    state.alu_o = (x >> 1) | ((f & F_CARRY ? 1 : 0) << 7);
-    state.alu_f = (x & 1) ? F_CARRY : 0;
-    state.alu_f &= ~F_ZERO;
+    reg.alu_o = (x >> 1) | ((f & F_CARRY ? 1 : 0) << 7);
+    reg.alu_f = (x & 1) ? F_CARRY : 0;
+    reg.alu_f &= ~F_ZERO;
     break;
   case 4:
-    state.alu_o = daa(x, f);
-    if (!state.alu_o) state.alu_f |= F_ZERO;
+    reg.alu_o = daa(x, f);
+    if (!reg.alu_o) reg.alu_f |= F_ZERO;
     break;
   case 5:
-    state.alu_o = ~x;
-    state.alu_f = f | 0x60;
-    if (!state.alu_o) state.alu_f |= F_ZERO;
+    reg.alu_o = ~x;
+    reg.alu_f = f | 0x60;
+    if (!reg.alu_o) reg.alu_f |= F_ZERO;
     break;
   case 6:
-    state.alu_o = x;
-    state.alu_f = (f & 0x80) | 0x10;
-    if (!state.alu_o) state.alu_f |= F_ZERO;
+    reg.alu_o = x;
+    reg.alu_f = (f & 0x80) | 0x10;
+    if (!reg.alu_o) reg.alu_f |= F_ZERO;
     break;
   case 7:
-    state.alu_o = x;
-    state.alu_f = (f & 0x90) ^ 0x10;
-    if (!state.alu_o) state.alu_f |= F_ZERO;
+    reg.alu_o = x;
+    reg.alu_f = (f & 0x90) ^ 0x10;
+    if (!reg.alu_o) reg.alu_f |= F_ZERO;
     break;
   }
 
-  return state.alu_o;
+  return reg.alu_o;
 }
 
 //-----------------------------------------------------------------------------
@@ -648,80 +617,80 @@ uint8_t MetroBoyCPU::daa(uint8_t x, uint8_t f) {
 
   // output
   uint8_t alu_o = uint8_t((hi << 4) | (lo & 0xF));
-  state.alu_f = 0;
-  if (c) state.alu_f |= F_CARRY;
-  if ((hi >> 4) && !n) state.alu_f |= F_CARRY;
-  if (!state.alu_o) state.alu_f |= F_ZERO;
-  return state.alu_o;
+  reg.alu_f = 0;
+  if (c) reg.alu_f |= F_CARRY;
+  if ((hi >> 4) && !n) reg.alu_f |= F_CARRY;
+  if (!reg.alu_o) reg.alu_f |= F_ZERO;
+  return reg.alu_o;
 }
 
 //-----------------------------------------------------------------------------
 
 uint8_t MetroBoyCPU::alu_cb(uint8_t x, int op, uint8_t flags) {
-  state.alu_f = flags;
+  reg.alu_f = flags;
   const uint8_t quad = ((op >> 6) & 3);
   const uint8_t row = ((op >> 3) & 7);
   const bool bit_mux = (x >> row) & 1;
 
-  state.alu_o = 0;
+  reg.alu_o = 0;
 
   switch (quad) {
   case 0:
     switch (row) {
     case 0:
-      state.alu_o = (x << 1) | (x >> 7);
-      state.alu_f = (x >> 7) ? F_CARRY : 0;
+      reg.alu_o = (x << 1) | (x >> 7);
+      reg.alu_f = (x >> 7) ? F_CARRY : 0;
       break;
     case 1:
-      state.alu_o = (x >> 1) | (x << 7);
-      state.alu_f = (x & 1) ? F_CARRY : 0;
+      reg.alu_o = (x >> 1) | (x << 7);
+      reg.alu_f = (x & 1) ? F_CARRY : 0;
       break;
     case 2:
-      state.alu_o = (x << 1) | (state.f & F_CARRY ? 1 : 0);
-      state.alu_f = (x >> 7) ? F_CARRY : 0;
+      reg.alu_o = (x << 1) | (reg.f & F_CARRY ? 1 : 0);
+      reg.alu_f = (x >> 7) ? F_CARRY : 0;
       break;
     case 3:
-      state.alu_o = (x >> 1) | ((state.f & F_CARRY ? 1 : 0) << 7);
-      state.alu_f = (x & 1) ? F_CARRY : 0;
+      reg.alu_o = (x >> 1) | ((reg.f & F_CARRY ? 1 : 0) << 7);
+      reg.alu_f = (x & 1) ? F_CARRY : 0;
       break;
     case 4:
-      state.alu_o = (x << 1) & 0xFF;
-      state.alu_f = 0;
-      if (x >> 7)     state.alu_f |= F_CARRY;
+      reg.alu_o = (x << 1) & 0xFF;
+      reg.alu_f = 0;
+      if (x >> 7)     reg.alu_f |= F_CARRY;
       break;
     case 5:
-      state.alu_o = ((x >> 1) | (x & 0x80)) & 0xFF;
-      state.alu_f = 0;
-      if (x & 1)      state.alu_f |= F_CARRY;
+      reg.alu_o = ((x >> 1) | (x & 0x80)) & 0xFF;
+      reg.alu_f = 0;
+      if (x & 1)      reg.alu_f |= F_CARRY;
       break;
     case 6:
-      state.alu_o = ((x << 4) | (x >> 4)) & 0xFF;
-      state.alu_f = 0;
+      reg.alu_o = ((x << 4) | (x >> 4)) & 0xFF;
+      reg.alu_f = 0;
       break;
     case 7:
-      state.alu_o = (x >> 1) & 0xFF;
-      state.alu_f = 0;
-      if (x & 1)      state.alu_f |= F_CARRY;
+      reg.alu_o = (x >> 1) & 0xFF;
+      reg.alu_f = 0;
+      if (x & 1)      reg.alu_f |= F_CARRY;
       break;
     }
-    if (state.alu_o == 0) state.alu_f |= F_ZERO;
+    if (reg.alu_o == 0) reg.alu_f |= F_ZERO;
     break;
   case 1:
-    state.alu_o = x;
-    state.alu_f = (state.f & 0x10) | 0x20;
-    if (!bit_mux) state.alu_f |= F_ZERO;
+    reg.alu_o = x;
+    reg.alu_f = (reg.f & 0x10) | 0x20;
+    if (!bit_mux) reg.alu_f |= F_ZERO;
     break;
   case 2:
-    state.alu_o = x & (~(1 << row));
-    state.alu_f = state.f;
+    reg.alu_o = x & (~(1 << row));
+    reg.alu_f = reg.f;
     break;
   case 3:
-    state.alu_o = x | (1 << row);
-    state.alu_f = state.f;
+    reg.alu_o = x | (1 << row);
+    reg.alu_f = reg.f;
     break;
   }
 
-  return state.alu_o;
+  return reg.alu_o;
 }
 
 //-----------------------------------------------------------------------------

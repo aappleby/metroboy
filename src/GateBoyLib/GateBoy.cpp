@@ -310,22 +310,22 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
       //cpu.core.latch_op(cpu.cpu_data_latch);
 
-      if (cpu.core.state.op_state_ == 0) {
-        cpu.core.state.op_addr = cpu.core.state._bus_addr;
-        cpu.core.state.op_next = cpu.cpu_data_latch;
+      if (cpu.core.reg.op_state_ == 0) {
+        cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
+        cpu.core.reg.op_next = cpu.cpu_data_latch;
       }
 
       //cpu.core.check_int(cpu.imask_latch, cpu.intf_latch);
-      if (cpu.core.state.op_state_ == 0) {
-        if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.state.ime) {
-          cpu.core.state.op_next = 0xF4; // fake opcode
-          cpu.core.state.ime = false;
-          cpu.core.state.ime_delay = false;
+      if (cpu.core.reg.op_state_ == 0) {
+        if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.reg.ime) {
+          cpu.core.reg.op_next = 0xF4; // fake opcode
+          cpu.core.reg.ime = false;
+          cpu.core.reg.ime_delay = false;
         }
       }
 
-      cpu.core.state.int_ack = 0;
-      cpu.core.state.ime = cpu.core.state.ime_delay; // must be after int check, before op execution
+      cpu.core.reg.int_ack = 0;
+      cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
 
       cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
 
@@ -375,7 +375,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
 
     //cpu.core.update_halt(cpu.imask_latch, cpu.intf_halt_latch);
-    if (cpu.core.state.op_next == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state.op_state_ = 0;
+    if (cpu.core.reg.op_next == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.reg.op_state_ = 0;
 
     cpu.intf_halt_latch = 0;
     // +ha -ab -bc -cd -de -ef -fg -gh
@@ -384,7 +384,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
     if (sys.cpu_en) {
       //cpu.core.latch_bus_data(cpu.cpu_data_latch);
-      if (cpu.core.state._bus_read) cpu.core.state.in = cpu.cpu_data_latch;
+      if (cpu.core.reg.bus_read) cpu.core.reg.in = cpu.cpu_data_latch;
 
     }
   }

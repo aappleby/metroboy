@@ -69,4 +69,5 @@ private:
   int ram_tex;
 
   Assembler assembler;
+  blob disasm_buf;
 };

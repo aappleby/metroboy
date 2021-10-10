@@ -31,7 +31,7 @@ void MetroBoyCPU::reset_to_cart() {
   op_addr = 0x00FE;
   op_next = 0xe0;
   op_cb = 0x11;
-  op_state = 2;
+  op_state = 1;
   op_state_ = 2;
   in = 0x50;
 

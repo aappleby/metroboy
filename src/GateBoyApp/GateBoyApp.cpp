@@ -61,7 +61,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
     gb_thread = new GateBoyThread(new LogicBoy());
   }
   else {
-    gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+    //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+    gb_thread = new GateBoyThread(new GateBoy());
   }
 
   gb_thread->start();
@@ -543,6 +544,12 @@ Step controls:
   d("\002========== Disassembly ==========\001\n");
   {
     int pc = gb->get_cpu().core.get_op_addr();
+
+    disasm_buf.resize(64);
+    gb->get_flat_blob(gb_thread->get_cart(), pc, 64, disasm_buf);
+    assembler.disassemble(disasm_buf.data(), 64, pc, pc, 16, d, /*collapse_nops*/ false);
+
+#if 0
     const uint8_t* code = nullptr;
     int code_size = 0;
     int code_base = 0;
@@ -565,6 +572,7 @@ Step controls:
     }
   
     assembler.disassemble(code, code_size, code_base, pc, 16, d, /*collapse_nops*/ false);
+#endif
   }
   d("\n");
 

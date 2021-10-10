@@ -75,6 +75,84 @@ bool cart_has_ram(const blob& cart_blob) {
 }
 
 
+uint8_t GateBoy::read_flat_addr(const blob& cart_blob, int addr) const {
+  if (!bit(gb_state.cpu_signals.TEPU_BOOT_BITn.state) && addr >= 0x0000 && addr < 0x0100) {
+    return DMG_ROM_blob[addr];
+  }
+  else if (addr >= 0x0000 && addr < 0x4000) {
+    return cart_blob[addr & 0x7FFF];
+
+    // FIXME why were we mucking with bank 0?
+    /*
+    if (cart_has_mbc1(cart_blob)) {
+      bool mbc1_mode   = bit(gb_state.ext_mbc.MBC1_MODE.out_old());
+      bool mbc1_ram_en = bit(gb_state.ext_mbc.MBC1_RAM_EN.out_old());
+      uint32_t mbc1_rom0_bank = mbc1_mode ? bit_pack(&gb_state.ext_mbc.MBC1_BANK5, 2) : 0;
+      uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
+      CHECK_P(mbc1_rom0_addr < cart_blob.size());
+      return &cart_blob[mbc1_rom0_addr];
+    }
+    else {
+      return &cart_blob[addr & 0x7FFF];
+    }
+    */
+  }
+  else if (addr >= 0x4000 && addr < 0x8000) {
+    if (cart_has_mbc1(cart_blob)) {
+      uint32_t mbc1_rom1_bank = bit_pack(&gb_state.ext_mbc.MBC1_BANK0, 7);
+      if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
+      uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
+      CHECK_P(mbc1_rom1_addr < cart_blob.size());
+      return cart_blob[mbc1_rom1_addr];
+    }
+    else {
+      return cart_blob[addr & 0x7FFF];
+    }
+  }
+  else if (addr >= 0x8000 && addr < 0xA000) {
+    return mem.vid_ram[addr - 0x8000];
+  }
+  else if (addr >= 0xA000 && addr < 0xC000) {
+    if (cart_has_mbc1(cart_blob)) {
+      bool mbc1_mode   = bit(gb_state.ext_mbc.MBC1_MODE.out_old());
+      bool mbc1_ram_en = bit(gb_state.ext_mbc.MBC1_RAM_EN.out_old());
+      uint32_t mbc1_ram_bank = mbc1_mode ? bit_pack(&gb_state.ext_mbc.MBC1_BANK5, 2) : 0;
+      if (mbc1_mode == 0) mbc1_ram_bank = 0;
+      uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
+      CHECK_P(mbc1_ram_addr < 32768);
+      return mem.cart_ram[mbc1_ram_addr];
+    }
+    else {
+      return mem.cart_ram[addr & 0x1FFF];
+    }
+  }
+  else if (addr >= 0xC000 && addr < 0xE000) {
+    return mem.int_ram[addr & 0x1FFF];
+  }
+  else if (addr >= 0xE000 && addr < 0xFE00) {
+    return mem.int_ram[addr & 0x1FFF];
+  }
+  else if (addr >= 0xFE00 && addr < 0xFF00) {
+    return mem.oam_ram[addr & 0x00FF];
+  }
+  else if (addr >= 0xFF80 && addr < 0xFFFF) {
+    return mem.zero_ram[addr & 0x007F];
+  }
+  else {
+    printf("read_flat_addr : bad addr 0x%08x\n", addr);
+    //debugbreak();
+    return 0;
+  }
+}
+
+void GateBoy::get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const {
+  out.resize(size);
+  for (int i = 0; i < size; i++) {
+    out[i] = read_flat_addr(cart_blob, addr + i);
+  }
+}
+
+
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_ext_gates(const blob& cart_blob)

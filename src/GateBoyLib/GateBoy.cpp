@@ -212,6 +212,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   probes.begin_pass((sys.gb_phase_total + 1) & 7);
   sys.gb_phase_total++;
 
+#if 0
   if (config_idempotence) {
     debugbreak()
 #if 0
@@ -230,7 +231,9 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
     }
 #endif
   }
-  else {
+  else
+#endif
+  {
     tock_gates(cart_blob);
 
     gb_state.commit();

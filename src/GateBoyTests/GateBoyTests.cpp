@@ -534,11 +534,11 @@ TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* proto, uint8_t m
 //-----------------------------------------------------------------------------
 // reset_cart() should match dumped reset state.
 
-TestResults GateBoyTests::test_reset_to_cart(const IGateBoy* proto, uint8_t mask) {
+TestResults GateBoyTests::test_reset_to_cart(const IGateBoy* /*proto*/, uint8_t mask) {
   TEST_INIT();
 
-  unique_ptr<IGateBoy> gb1(new GateBoy());
-  unique_ptr<IGateBoy> gb2(proto->clone());
+  GateBoy* gb1 =  new GateBoy();
+  GateBoy* gb2 =  new GateBoy();
 
   LOG_B("load gateboy_reset_to_cart.raw.dump\n");
   BlobStream bs;

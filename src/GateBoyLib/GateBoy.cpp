@@ -1008,7 +1008,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   tock_interrupts_gates(reg_old);
 
+  //----------------------------------------
 
+  // ab- bc- cd- de- ef- fg+ gh+ ha- 
   if (DELTA_FG_new) {
     cpu.cpu_data_latch = 0xFF;
   }

@@ -305,7 +305,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // -ha +ab -bc
   if (DELTA_AB_new) {
     if (sys.cpu_en) {
-
       cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
       cpu.bus_req_new = cpu.core.get_bus_req();
     }
@@ -332,25 +331,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   if (DELTA_EF_new) {
   }
 
-  // ========== CPU ==========
-  if (DELTA_FG_new) {
-  }
-
-  // ========== CPU ==========
-
   if (DELTA_GH_new) {
-
-    // -ha -ab -bc -cd -de -ef +fg +gh
-    cpu.cpu_data_latch = 0xFF;
-    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
     // +ha -ab -bc -cd -de -ef -fg +gh
     cpu.intf_latch = (uint8_t)bit_pack(gb_state.reg_if);
   }
 
-  // ========== CPU ==========
 
   if (DELTA_HA_new) {
-    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
     cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
 
     if (cpu.core.reg.op_next == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.reg.op_state = 0;
@@ -1020,6 +1007,20 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // And finally, interrupts.
 
   tock_interrupts_gates(reg_old);
+
+  if (DELTA_FG_new) {
+    cpu.cpu_data_latch &= (uint8_t)bit_pack(reg_new.cpu_dbus);
+  }
+
+  if (DELTA_GH_new) {
+    // -ha -ab -bc -cd -de -ef +fg +gh
+    cpu.cpu_data_latch = 0xFF;
+    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
+  }
+
+  if (DELTA_HA_new) {
+    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
+  }
 }
 
 //-----------------------------------------------------------------------------

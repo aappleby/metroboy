@@ -171,38 +171,36 @@ void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
 #define CB_COL        ((reg.op_cb >> 0) & 7)
 
 void MetroBoyCPU::execute_cb() {
-  auto op_state = reg.op_state;
-  auto op = reg.op_next;
-
-  reg.op_state = op_state + 1;
+  const auto reg_old = reg;
 
   uint16_t ad = reg.bus_addr;
   uint16_t adp = ad + 1;
 
-  uint8_t mask = cb_flag_mask[((reg.op_cb >> 6) & 3)];
-
-  if (op_state == 0) {
+  if (reg_old.op_state == 0) {
     reg.pc = adp;
     reg.cpu_bus_read(reg.pc);
+    reg.op_state = 1;
   }
   else {
-    if (op_state == 1) reg.op_cb = reg.in;
+    if (reg_old.op_state == 1) reg.op_cb = reg.in;
 
     int cb_col = (reg.op_cb >> 0) & 7;
     int cb_quad = (reg.op_cb >> 6) & 3;
+    uint8_t mask = cb_flag_mask[cb_quad];
+
 
     if (cb_col != 6) {
-      if (op_state == 1)   { reg.pc = adp; set_reg(cb_col, alu_cb(get_reg(cb_col), reg.op_cb, reg.f)); set_f(mask); reg.cpu_bus_done(reg.pc); reg.op_state = 0; }
+      if (reg_old.op_state == 1)   { reg.pc = adp; set_reg(cb_col, alu_cb(get_reg(cb_col), reg.op_cb, reg.f)); set_f(mask); reg.cpu_bus_done(reg.pc); reg.op_state = 0; }
     }
     else {
       if (cb_quad == 1) {
-        if (op_state == 1) { reg.pc = adp;                                  reg.cpu_bus_read(reg.hl); reg.op_state = 2;}
-        if (op_state == 2) { alu_cb(reg.in, reg.op_cb, reg.f); set_f(mask); reg.cpu_bus_done(reg.pc); reg.op_state = 0;}
+        if (reg_old.op_state == 1) { reg.pc = adp;                                  reg.cpu_bus_read(reg.hl); reg.op_state = 2;}
+        if (reg_old.op_state == 2) { alu_cb(reg.in, reg.op_cb, reg.f); set_f(mask); reg.cpu_bus_done(reg.pc); reg.op_state = 0;}
       }
       else {
-        if (op_state == 1) { reg.pc = adp;                                  reg.cpu_bus_read(reg.hl); }
-        if (op_state == 2) { alu_cb(reg.in, reg.op_cb, reg.f); set_f(mask); reg.cpu_bus_write(reg.hl, reg.alu_o); }
-        if (op_state == 3) {                                                reg.cpu_bus_done(reg.pc); reg.op_state = 0;}
+        if (reg_old.op_state == 1) { reg.pc = adp;                                  reg.cpu_bus_read(reg.hl);             reg.op_state = 2;}
+        if (reg_old.op_state == 2) { alu_cb(reg.in, reg.op_cb, reg.f); set_f(mask); reg.cpu_bus_write(reg.hl, reg.alu_o); reg.op_state = 3;}
+        if (reg_old.op_state == 3) {                                                reg.cpu_bus_done(reg.pc);             reg.op_state = 0;}
       }
     }
   }

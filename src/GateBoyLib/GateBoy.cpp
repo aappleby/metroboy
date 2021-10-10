@@ -306,11 +306,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   if (DELTA_AB_new) {
     if (sys.cpu_en) {
 
-      cpu.core.reg.int_ack = 0;
-      cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
-
       cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
-
       cpu.bus_req_new = cpu.core.get_bus_req();
     }
   }
@@ -346,6 +342,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
     // -ha -ab -bc -cd -de -ef +fg +gh
     cpu.cpu_data_latch = 0xFF;
+    cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
     // +ha -ab -bc -cd -de -ef -fg +gh
     cpu.intf_latch = (uint8_t)bit_pack(gb_state.reg_if);
   }
@@ -356,7 +353,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
     cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
 
-    //cpu.core.update_halt(cpu.imask_latch, cpu.intf_halt_latch);
     if (cpu.core.reg.op_next == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.reg.op_state = 0;
 
     cpu.intf_halt_latch = 0;
@@ -380,8 +376,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
           cpu.core.reg.ime_delay = false;
         }
       }
+      cpu.core.reg.int_ack = 0;
+      cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
     }
   }
+
+  auto cpu_ack = cpu.core.get_int_ack();
 
   const GateBoyState  reg_old = gb_state;
   GateBoyState& reg_new = gb_state;
@@ -468,7 +468,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_PIN_76*/ pins.sys.PIN_76_T2.pin_in(EXT_sys_t2);
     /*_PIN_77*/ pins.sys.PIN_77_T1.pin_in(EXT_sys_t1);
 
-    auto cpu_ack = cpu.core.get_int_ack();
     wire EXT_ack_vblank = get_bit(cpu_ack, BIT_VBLANK);
     wire EXT_ack_stat = get_bit(cpu_ack, BIT_STAT);
     wire EXT_ack_timer = get_bit(cpu_ack, BIT_TIMER);

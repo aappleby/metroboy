@@ -311,14 +311,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   }
 
   // ========== CPU ==========
-  if (DELTA_BC_new) {
-  }
-
-  // ========== CPU ==========
-  if (DELTA_CD_new) {
-  }
-
-  // ========== CPU ==========
   if (DELTA_DE_new) {
     // -bc +cd +de -ef -fg -gh -ha -ab
     if (bit(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
@@ -327,20 +319,20 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     if (bit(gb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
   }
 
-  // ========== CPU ==========
-  if (DELTA_EF_new) {
-  }
-
   if (DELTA_GH_new) {
     // +ha -ab -bc -cd -de -ef -fg +gh
     cpu.intf_latch = (uint8_t)bit_pack(gb_state.reg_if);
   }
 
+  if (DELTA_GH_new) {
+    cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
+  }
+
+  if (DELTA_GH_new) {
+    if (cpu.core.reg.op_next == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.reg.op_state = 0;
+  }
 
   if (DELTA_HA_new) {
-    cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
-
-    if (cpu.core.reg.op_next == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.reg.op_state = 0;
 
     cpu.intf_halt_latch = 0;
     // +ha -ab -bc -cd -de -ef -fg -gh

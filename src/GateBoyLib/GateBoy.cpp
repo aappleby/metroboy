@@ -302,57 +302,6 @@ void GateBoy::update_framebuffer() {
 
 void GateBoy::tock_gates(const blob& cart_blob) {
 
-  /*
-  if (first_tick) {
-    if (sys.cpu_en) {
-      cpu.core.reg.op_addr = 0x0000;
-      cpu.core.reg.op_next = 0x31;
-      cpu.core.reg.op_state = 1;
-      cpu.core.reg.bus_addr = 1;
-      cpu.core.reg.bus_data = 0;
-      cpu.core.reg.bus_read = 1;
-      cpu.core.reg.bus_write = 0;
-      cpu.core.reg.pc = 1;
-
-    }
-    first_tick = false;
-  }
-  else
-  */
-  {
-    // -ha +ab -bc
-    if (DELTA_AB_new) {
-      if (sys.cpu_en) {
-        if (cpu.core.reg.op_state == 0) {
-          cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
-          cpu.core.reg.op_next = cpu.cpu_data_latch;
-        }
-
-        if (cpu.core.reg.op_state == 0) {
-          if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.reg.ime) {
-            cpu.core.reg.op_next = 0xF4; // fake opcode
-            cpu.core.reg.ime = false;
-            cpu.core.reg.ime_delay = false;
-          }
-        }
-        cpu.core.reg.int_ack = 0;
-        cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
-
-        cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
-        cpu.bus_req_new = cpu.core.get_bus_req();
-      }
-    }
-  }
-
-  // ========== CPU ==========
-  if (DELTA_DE_new) {
-    // -bc +cd +de -ef -fg -gh -ha -ab
-    if (bit(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
-    if (bit(gb_state.reg_if.LALU_FF0F_D1p.state)) cpu.intf_halt_latch |= INT_STAT_MASK;
-    if (bit(gb_state.reg_if.UBUL_FF0F_D3p.state)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
-    if (bit(gb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
-  }
-
   if (DELTA_GH_new) {
     // +ha -ab -bc -cd -de -ef -fg +gh
     cpu.intf_latch = (uint8_t)bit_pack(gb_state.reg_if);
@@ -1028,6 +977,40 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   }
 
   cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
+
+  // -ha +ab -bc
+  if (DELTA_HA_new) {
+    if (sys.cpu_en) {
+      if (cpu.core.reg.op_state == 0) {
+        cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
+        cpu.core.reg.op_next = cpu.cpu_data_latch;
+      }
+
+      if (cpu.core.reg.op_state == 0) {
+        if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.reg.ime) {
+          cpu.core.reg.op_next = 0xF4; // fake opcode
+          cpu.core.reg.ime = false;
+          cpu.core.reg.ime_delay = false;
+        }
+      }
+      cpu.core.reg.int_ack = 0;
+      cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
+
+      cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
+      cpu.bus_req_new = cpu.core.get_bus_req();
+    }
+  }
+
+  // ========== CPU ==========
+  if (DELTA_CD_new) {
+    // -bc +cd +de -ef -fg -gh -ha -ab
+    if (bit(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
+    if (bit(gb_state.reg_if.LALU_FF0F_D1p.state)) cpu.intf_halt_latch |= INT_STAT_MASK;
+    if (bit(gb_state.reg_if.UBUL_FF0F_D3p.state)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
+    if (bit(gb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
+  }
+
+
 }
 
 //-----------------------------------------------------------------------------

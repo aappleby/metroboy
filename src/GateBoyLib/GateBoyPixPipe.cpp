@@ -639,35 +639,35 @@ void WinControl::reset_to_poweron() {
 }
 
 void WinControl::reset_to_bootrom() {
-  NUKO_WX_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-  ROGE_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-  PYNU_WIN_MODE_Ap_odd.state     = BIT_OLD | BIT_DRIVEN;
-  PUKU_WIN_HITn_odd.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  RYDY_WIN_HITp_odd.state        = BIT_OLD | BIT_DRIVEN;
-  SOVY_WIN_HITp_evn.state        = BIT_OLD | BIT_DRIVEN;
-  NOPA_WIN_MODE_Bp_evn.state     = BIT_OLD | BIT_DRIVEN;
-  PYCO_WIN_MATCHp_evn.state      = BIT_OLD | BIT_DRIVEN;
-  NUNU_WIN_MATCHp_odd.state      = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  REJO_WY_MATCH_LATCHp_odd.state = BIT_OLD | BIT_DRIVEN;
-  SARY_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-  RYFA_WIN_FETCHn_A_evn.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  RENE_WIN_FETCHn_B_evn.state    = BIT_OLD | BIT_DRIVEN;
+  NUKO_WX_MATCHp_odd.state       = 0b00011000;
+  ROGE_WY_MATCHp_odd.state       = 0b00011000;
+  PYNU_WIN_MODE_Ap_odd.state     = 0b00011000;
+  PUKU_WIN_HITn_odd.state        = 0b00011001;
+  RYDY_WIN_HITp_odd.state        = 0b00011000;
+  SOVY_WIN_HITp_evn.state        = 0b00011010;
+  NOPA_WIN_MODE_Bp_evn.state     = 0b00011010;
+  PYCO_WIN_MATCHp_evn.state      = 0b00011000;
+  NUNU_WIN_MATCHp_odd.state      = 0b00011000;
+  REJO_WY_MATCH_LATCHp_odd.state = 0b00011000;
+  SARY_WY_MATCHp_odd.state       = 0b00011000;
+  RYFA_WIN_FETCHn_A_evn.state    = 0b00011010;
+  RENE_WIN_FETCHn_B_evn.state    = 0b00011010;
 }
 
 void WinControl::reset_to_cart() {
-  NUKO_WX_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-  ROGE_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-  PYNU_WIN_MODE_Ap_odd.state     = BIT_OLD | BIT_DRIVEN;
-  PUKU_WIN_HITn_odd.state        = BIT_OLD | BIT_DRIVEN | 1;
-  RYDY_WIN_HITp_odd.state        = BIT_OLD | BIT_DRIVEN;
-  SOVY_WIN_HITp_evn.state        = BIT_OLD | BIT_DRIVEN;
-  NOPA_WIN_MODE_Bp_evn.state     = BIT_OLD | BIT_DRIVEN;
-  PYCO_WIN_MATCHp_evn.state      = BIT_OLD | BIT_DRIVEN;
-  NUNU_WIN_MATCHp_odd.state      = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  REJO_WY_MATCH_LATCHp_odd.state = BIT_OLD | BIT_DRIVEN;
-  SARY_WY_MATCHp_odd.state       = BIT_OLD | BIT_DRIVEN;
-  RYFA_WIN_FETCHn_A_evn.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  RENE_WIN_FETCHn_B_evn.state    = BIT_OLD | BIT_DRIVEN;
+  NUKO_WX_MATCHp_odd.state       = 0b00011000;
+  ROGE_WY_MATCHp_odd.state       = 0b00011000;
+  PYNU_WIN_MODE_Ap_odd.state     = 0b00011000;
+  PUKU_WIN_HITn_odd.state        = 0b00011001;
+  RYDY_WIN_HITp_odd.state        = 0b00011000;
+  SOVY_WIN_HITp_evn.state        = 0b00011010;
+  NOPA_WIN_MODE_Bp_evn.state     = 0b00011010;
+  PYCO_WIN_MATCHp_evn.state      = 0b00011000;
+  NUNU_WIN_MATCHp_odd.state      = 0b00011000;
+  REJO_WY_MATCH_LATCHp_odd.state = 0b00011000;
+  SARY_WY_MATCHp_odd.state       = 0b00011000;
+  RYFA_WIN_FETCHn_A_evn.state    = 0b00011010;
+  RENE_WIN_FETCHn_B_evn.state    = 0b00011010;
 }
 
 //-----------------------------------------------------------------------------
@@ -679,21 +679,21 @@ void FineCount::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_
 //-----------------------------------------------------------------------------
 
 void FineScroll::reset_to_poweron() {
-  PUXA_SCX_FINE_MATCH_evn.state = BIT_OLD | BIT_DRIVEN;
-  NYZE_SCX_FINE_MATCH_odd.state = BIT_OLD | BIT_DRIVEN;
+  PUXA_SCX_FINE_MATCH_evn.state    = BIT_OLD | BIT_DRIVEN;
+  NYZE_SCX_FINE_MATCH_odd.state    = BIT_OLD | BIT_DRIVEN;
   ROXY_FINE_SCROLL_DONEn_evn.state = BIT_OLD | BIT_DRIVEN;
 }
 
 void FineScroll::reset_to_bootrom() {
-  PUXA_SCX_FINE_MATCH_evn.state = BIT_OLD | BIT_DRIVEN;
-  NYZE_SCX_FINE_MATCH_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  ROXY_FINE_SCROLL_DONEn_evn.state = BIT_OLD | BIT_DRIVEN | 1;
+  PUXA_SCX_FINE_MATCH_evn.state    = 0b00011000;
+  NYZE_SCX_FINE_MATCH_odd.state    = 0b00011000;
+  ROXY_FINE_SCROLL_DONEn_evn.state = 0b00011001;
 }
 
 void FineScroll::reset_to_cart() {
-  PUXA_SCX_FINE_MATCH_evn.state = BIT_OLD | BIT_DRIVEN;
-  NYZE_SCX_FINE_MATCH_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  ROXY_FINE_SCROLL_DONEn_evn.state = BIT_OLD | BIT_DRIVEN | 1;
+  PUXA_SCX_FINE_MATCH_evn.state    = 0b00011000;
+  NYZE_SCX_FINE_MATCH_odd.state    = 0b00011000;
+  ROXY_FINE_SCROLL_DONEn_evn.state = 0b00011001;
 }
 
 //-----------------------------------------------------------------------------

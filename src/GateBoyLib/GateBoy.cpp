@@ -78,7 +78,7 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   //----------------------------------------
   // Delay to sync up with expected div value
 
-  run_phases(cart_blob, 16);
+  run_phases(cart_blob, 15);
 
   //----------------------------------------
   // Fetch the first instruction in the bootrom
@@ -151,7 +151,7 @@ GBResult GateBoy::poke(int addr, uint8_t data_in) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
-  CHECK_P((sys.gb_phase_total & 7) == 0);
+  CHECK_P((sys.gb_phase_total & 7) == 7);
 
   cpu.bus_req_new.addr = addr;
   cpu.bus_req_new.data = data;
@@ -164,7 +164,7 @@ GBResult GateBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_read(const blob& cart_blob, int addr) {
-  CHECK_P((sys.gb_phase_total & 7) == 0);
+  CHECK_P((sys.gb_phase_total & 7) == 7);
 
   Req old_req = cpu.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
@@ -182,7 +182,7 @@ GBResult GateBoy::dbg_read(const blob& cart_blob, int addr) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
-  CHECK_P((sys.gb_phase_total & 7) == 0);
+  CHECK_P((sys.gb_phase_total & 7) == 7);
 
   Req old_req = cpu.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
@@ -302,11 +302,45 @@ void GateBoy::update_framebuffer() {
 
 void GateBoy::tock_gates(const blob& cart_blob) {
 
-  // -ha +ab -bc
-  if (DELTA_AB_new) {
+  /*
+  if (first_tick) {
     if (sys.cpu_en) {
-      cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
-      cpu.bus_req_new = cpu.core.get_bus_req();
+      cpu.core.reg.op_addr = 0x0000;
+      cpu.core.reg.op_next = 0x31;
+      cpu.core.reg.op_state = 1;
+      cpu.core.reg.bus_addr = 1;
+      cpu.core.reg.bus_data = 0;
+      cpu.core.reg.bus_read = 1;
+      cpu.core.reg.bus_write = 0;
+      cpu.core.reg.pc = 1;
+
+    }
+    first_tick = false;
+  }
+  else
+  */
+  {
+    // -ha +ab -bc
+    if (DELTA_AB_new) {
+      if (sys.cpu_en) {
+        if (cpu.core.reg.op_state == 0) {
+          cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
+          cpu.core.reg.op_next = cpu.cpu_data_latch;
+        }
+
+        if (cpu.core.reg.op_state == 0) {
+          if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.reg.ime) {
+            cpu.core.reg.op_next = 0xF4; // fake opcode
+            cpu.core.reg.ime = false;
+            cpu.core.reg.ime_delay = false;
+          }
+        }
+        cpu.core.reg.int_ack = 0;
+        cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
+
+        cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
+        cpu.bus_req_new = cpu.core.get_bus_req();
+      }
     }
   }
 
@@ -343,20 +377,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
       //cpu.core.latch_bus_data(cpu.cpu_data_latch);
       if (cpu.core.reg.bus_read) cpu.core.reg.in = cpu.cpu_data_latch;
 
-      if (cpu.core.reg.op_state == 0) {
-        cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
-        cpu.core.reg.op_next = cpu.cpu_data_latch;
-      }
-
-      if (cpu.core.reg.op_state == 0) {
-        if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.reg.ime) {
-          cpu.core.reg.op_next = 0xF4; // fake opcode
-          cpu.core.reg.ime = false;
-          cpu.core.reg.ime_delay = false;
-        }
-      }
-      cpu.core.reg.int_ack = 0;
-      cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
     }
   }
 

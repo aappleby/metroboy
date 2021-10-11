@@ -51,7 +51,7 @@ struct GateBoyCpu {
     imask_latch = 0;
     intf_latch = 1;
     intf_latch_delay = 0;
-    intf_halt_latch = 0;
+    intf_halt_latch = 1;
   }
 
   MetroBoyCPU core;
@@ -131,7 +131,7 @@ struct GateBoySys {
     cpu_en = true;
     fastboot = true;
     buttons = 0;
-    gb_phase_total = 80;
+    gb_phase_total = 79;
   }
 
   void reset_to_cart() {
@@ -144,7 +144,7 @@ struct GateBoySys {
     cpu_en = true;
     fastboot = true;
     buttons = 0;
-    gb_phase_total = 46880720;
+    gb_phase_total = 46880719;
   }
 
   // External signals
@@ -334,6 +334,8 @@ struct GateBoy  : public IGateBoy {
   GateBoySys   sys;
   GateBoyPins  pins;
   Probes       probes;
+
+  bool first_tick = true;
 };
 
 //-----------------------------------------------------------------------------

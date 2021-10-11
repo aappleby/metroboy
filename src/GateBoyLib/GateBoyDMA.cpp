@@ -128,10 +128,10 @@ void DmaControl::reset_to_bootrom() {
 }
 
 void DmaControl::reset_to_cart() {
-  LYXE_DMA_LATCHp.state  = 0b00011000;
-  MYTE_DMA_DONE_odd.state    = 0b00011000;
-  LUVY_DMA_TRIG_d0_odd.state = 0b00011010;
-  LENE_DMA_TRIG_d4_odd.state = 0b00011000;
+  LYXE_DMA_LATCHp.state      = 0b00011000;
+  MYTE_DMA_DONE_odd.state    = 0b00011010;
+  LUVY_DMA_TRIG_d0_odd.state = 0b00011000;
+  LENE_DMA_TRIG_d4_odd.state = 0b00011010;
   LARA_DMA_LATCHn_odd.state  = 0b00011001;
   LOKY_DMA_LATCHp_odd.state  = 0b00011000;
 }

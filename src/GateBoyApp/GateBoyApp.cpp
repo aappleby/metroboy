@@ -110,7 +110,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 1
+#if 0
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140

@@ -685,14 +685,14 @@ void VramABusLo::reset_to_bootrom() {
 }
 
 void VramABusLo::reset_to_cart() {
-  BUS_VRAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_VRAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_VRAM_A02n.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_VRAM_A03n.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_VRAM_A04n.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_VRAM_A05n.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_VRAM_A06n.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_VRAM_A07n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A00n.state = 0b00011001;
+  BUS_VRAM_A01n.state = 0b00011001;
+  BUS_VRAM_A02n.state = 0b00011001;
+  BUS_VRAM_A03n.state = 0b00011001;
+  BUS_VRAM_A04n.state = 0b00011000;
+  BUS_VRAM_A05n.state = 0b00011001;
+  BUS_VRAM_A06n.state = 0b00011000;
+  BUS_VRAM_A07n.state = 0b00011001;
 }
 
 //-----------------------------------------------------------------------------
@@ -710,11 +710,11 @@ void VramABusHi::reset_to_bootrom() {
 }
 
 void VramABusHi::reset_to_cart() {
-  BUS_VRAM_A08n.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_VRAM_A09n.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_VRAM_A10n.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_VRAM_A11n.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_VRAM_A12n.state = BIT_OLD | BIT_DRIVEN | 1;
+  BUS_VRAM_A08n.state = 0b00011000;
+  BUS_VRAM_A09n.state = 0b00011000;
+  BUS_VRAM_A10n.state = 0b00011000;
+  BUS_VRAM_A11n.state = 0b00011000;
+  BUS_VRAM_A12n.state = 0b00011000;
 }
 
 //-----------------------------------------------------------------------------

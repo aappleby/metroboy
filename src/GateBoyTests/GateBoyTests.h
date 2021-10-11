@@ -64,6 +64,8 @@ struct GateBoyTests {
   TestResults test_mooneye_ppu(const IGateBoy* proto);
   TestResults run_mooneye_test(const IGateBoy* proto, const char* path, const char* filename);
 
+  TestResults diff_gb(IGateBoy* gb1, IGateBoy* gb2, uint8_t mask);
+
   //std::unique_ptr<IGateBoy> create_debug_gb(const blob& cart_blob, bool cpu_en);
 
   //bool verbose = false;

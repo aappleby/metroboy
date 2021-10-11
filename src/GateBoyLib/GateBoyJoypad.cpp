@@ -180,15 +180,22 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void JoyInt::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x0F); }
-void JoyInt::reset_to_bootrom() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x07);
+void JoyInt::reset_to_poweron() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x0F);
 }
+
+void JoyInt::reset_to_bootrom() {
+  BATU_JP_GLITCH0.state = 0b00011001;
+  ACEF_JP_GLITCH1.state = 0b00011001;
+  AGEM_JP_GLITCH2.state = 0b00011000;
+  APUG_JP_GLITCH3.state = 0b00011000;
+}
+
 void JoyInt::reset_to_cart()    {
-  BATU_JP_GLITCH0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
-  ACEF_JP_GLITCH1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
-  AGEM_JP_GLITCH2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
-  APUG_JP_GLITCH3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
+  BATU_JP_GLITCH0.state = 0b00011001;
+  ACEF_JP_GLITCH1.state = 0b00011001;
+  AGEM_JP_GLITCH2.state = 0b00011001;
+  APUG_JP_GLITCH3.state = 0b00011001;
 }
 
 //-----------------------------------------------------------------------------

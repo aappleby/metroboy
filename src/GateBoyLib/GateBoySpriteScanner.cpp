@@ -13,19 +13,19 @@ void SpriteScanner::reset_to_bootrom() {
   AVAP_SCAN_DONE_tp_odd.state = 0b00011000;
   BESU_SCAN_DONEn_odd.state   = 0b00011000;
   CENO_SCAN_DONEn_odd.state   = 0b00011000;
-  DEZY_INC_COUNTn_odd.state   = 0b00011010;
+  DEZY_INC_COUNTn_odd.state   = 0b00011000;
   BYBA_SCAN_DONEp_odd.state   = 0b00011000;
-  DOBA_SCAN_DONEp_evn.state   = 0b00011000;
+  DOBA_SCAN_DONEp_evn.state   = 0b00011010;
 }
 
 void SpriteScanner::reset_to_cart()    {
   FETO_SCAN_DONEp.state       = 0b00011001;
   AVAP_SCAN_DONE_tp_odd.state = 0b00011000;
   BESU_SCAN_DONEn_odd.state   = 0b00011000;
-  CENO_SCAN_DONEn_odd.state   = 0b00011010;
-  DEZY_INC_COUNTn_odd.state   = 0b00011011;
-  BYBA_SCAN_DONEp_odd.state   = 0b00011011;
-  DOBA_SCAN_DONEp_evn.state   = 0b00011001;
+  CENO_SCAN_DONEn_odd.state   = 0b00011000;
+  DEZY_INC_COUNTn_odd.state   = 0b00011001;
+  BYBA_SCAN_DONEp_odd.state   = 0b00011001;
+  DOBA_SCAN_DONEp_evn.state   = 0b00011011;
 }
 
 //-----------------------------------------------------------------------------
@@ -68,12 +68,12 @@ void SpriteIndex::reset_to_bootrom() {
 }
 
 void SpriteIndex::reset_to_cart() {
-  XADU_SPRITE_IDX0p_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  XEDY_SPRITE_IDX1p_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  ZUZE_SPRITE_IDX2p_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
-  XOBE_SPRITE_IDX3p_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  YDUF_SPRITE_IDX4p_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1;
-  XECU_SPRITE_IDX5p_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  XADU_SPRITE_IDX0p_odd.state = 0b00011000;
+  XEDY_SPRITE_IDX1p_odd.state = 0b00011000;
+  ZUZE_SPRITE_IDX2p_odd.state = 0b00011001;
+  XOBE_SPRITE_IDX3p_odd.state = 0b00011000;
+  YDUF_SPRITE_IDX4p_odd.state = 0b00011001;
+  XECU_SPRITE_IDX5p_odd.state = 0b00011000;
 }
 
 //-----------------------------------------------------------------------------

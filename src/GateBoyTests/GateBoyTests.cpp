@@ -44,44 +44,11 @@ int main(int argc, char** argv) {
     GateBoyTests t;
 
     const auto proto = new GateBoy();
-    auto phases = MCYCLES_PER_FRAME * 8 * 3;
 
-    results += t.test_bootrom(proto);
-    results += t.test_clk(proto);
-    results += t.test_regs(proto);
-    results += t.test_dma(proto);
-    
-    results += t.test_mem(proto);
-    results += t.test_init(proto);
+    //results += t.test_fastboot(proto, 0xFF);
+    results += t.test_reset_to_bootrom(proto, 0xFF);
+    //results += t.test_reset_to_cart(proto, 0xFF);
 
-    // Ext bus test only passes if flags are on and we're using the driven/pulled falgs
-    //if ((proto->get_flags().unwrap() & (BIT_DRIVEN | BIT_PULLED)) == (BIT_DRIVEN | BIT_PULLED)) {
-    //  results += t.test_ext_bus(proto);
-    //}
-
-    results += t.test_ppu(proto);
-    results += t.test_timer(proto);
-
-    results += t.test_micro_poweron(proto);
-    results += t.test_micro_lcden(proto);
-    results += t.test_micro_timer(proto);
-
-    if (run_slow_tests) {
-      results += t.test_micro_int_vblank(proto);
-    }
- 
-    results += t.test_micro_int_stat(proto);
-    results += t.test_micro_int_timer(proto);
-    results += t.test_micro_int_serial(proto);
-    results += t.test_micro_int_joypad(proto);
-    results += t.test_micro_lock_oam(proto);
-    results += t.test_micro_lock_vram(proto);
-    results += t.test_micro_window(proto);
-    results += t.test_micro_ppu(proto);
-    results += t.test_micro_dma(proto);
-    results += t.test_micro_mbc1(proto);
-
-    //results += t.test_regression_cart("LinksAwakening.gb", proto.get(), phases, false);
     LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
     LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
     LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
@@ -465,6 +432,25 @@ TestResults GateBoyTests::test_regs(const IGateBoy* proto) {
   TEST_DONE();
 }
 
+//-----------------------------------------------------------------------------
+
+TestResults GateBoyTests::diff_gb(IGateBoy* gb1, IGateBoy* gb2, uint8_t mask) {
+  TEST_INIT();
+  bool pass = true;
+  LOG_G("State:\n")
+  pass &= bit_cmp(gb1->get_state(), gb2->get_state(), mask, GateBoyState::fields);
+  LOG_G("CPU:\n")
+  pass &= bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask);
+  LOG_G("Mem:\n")
+  pass &= bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask);
+  LOG_G("Sys:\n")
+  pass &= bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask);
+  LOG_G("Pins:\n")
+  pass &= bit_cmp(gb1->get_pins(),  gb2->get_pins(),  mask);
+  EXPECT_EQ(true, pass);
+
+  TEST_DONE();
+}
 
 //-----------------------------------------------------------------------------
 // Power-on reset state should be stable
@@ -485,19 +471,16 @@ TestResults GateBoyTests::test_fastboot(const IGateBoy* proto, uint8_t mask) {
   gb2->run_poweron_reset(dummy_cart, false);
   LOG_G("run_poweron_reset with fastboot = false done\n");
 
+  EXPECT_EQ(7, gb1->get_sys().gb_phase_total & 7);
+  EXPECT_EQ(7, gb2->get_sys().gb_phase_total & 7);
+
   // Clear the fastboot bit on the first gameboy, since that obviously won't match
   const_cast<GateBoySys&>(gb1->get_sys()).fastboot = 0;
   const_cast<GateBoySys&>(gb2->get_sys()).fastboot = 0;
   const_cast<GateBoySys&>(gb1->get_sys()).gb_phase_total = 0;
   const_cast<GateBoySys&>(gb2->get_sys()).gb_phase_total = 0;
 
-  EXPECT_EQ(true, bit_cmp(gb1->get_state(), gb2->get_state(), mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_pins(),  gb2->get_pins(),  mask));
-
-  gb1->get_state().diff(gb2->get_state(), mask);
+  results += diff_gb(gb1.get(), gb2.get(), mask);
 
   TEST_DONE();
 }
@@ -508,8 +491,11 @@ TestResults GateBoyTests::test_fastboot(const IGateBoy* proto, uint8_t mask) {
 TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* proto, uint8_t mask) {
   TEST_INIT();
 
-  unique_ptr<IGateBoy> gb1(new GateBoy());
-  unique_ptr<IGateBoy> gb2(proto->clone());
+  //unique_ptr<IGateBoy> gb1(new GateBoy());
+  //unique_ptr<IGateBoy> gb2(proto->clone());
+
+  IGateBoy* gb1 = new GateBoy();
+  IGateBoy* gb2 = proto->clone();
 
   LOG_B("run_poweron_reset()\n");
   gb1->reset_to_poweron(dummy_cart);
@@ -520,13 +506,7 @@ TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* proto, uint8_t m
   gb2->reset_to_bootrom(dummy_cart);
   LOG_G("reset_to_bootrom() done\n");
 
-  EXPECT_EQ(true, bit_cmp(gb1->get_state(), gb2->get_state(), mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_pins(),  gb2->get_pins(),  mask));
-
-  gb1->get_state().diff(gb2->get_state(), mask);
+  results += diff_gb(gb1, gb2, mask);
 
   TEST_DONE();
 }
@@ -557,13 +537,7 @@ TestResults GateBoyTests::test_reset_to_cart(const IGateBoy* /*proto*/, uint8_t 
   gb2->reset_to_cart(dummy_cart);
   LOG_G("reset_to_cart() done\n");
 
-  EXPECT_EQ(true, bit_cmp(gb1->get_state(), gb2->get_state(), mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_cpu(),   gb2->get_cpu(),   mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_mem(),   gb2->get_mem(),   mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_sys(),   gb2->get_sys(),   mask));
-  EXPECT_EQ(true, bit_cmp(gb1->get_pins(),  gb2->get_pins(),  mask));
-
-  gb1->get_state().diff(gb2->get_state(), mask);
+  results += diff_gb(gb1, gb2, mask);
 
   TEST_DONE();
 }

@@ -69,19 +69,19 @@ void PinsVramABus::reset_to_bootrom() {
 }
 
 void PinsVramABus::reset_to_cart() {
-  PIN_34_VRAM_A00.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_35_VRAM_A01.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_36_VRAM_A02.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_37_VRAM_A03.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_38_VRAM_A04.state = BIT_OLD | BIT_DRIVEN | 0;
-  PIN_39_VRAM_A05.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_40_VRAM_A06.state = BIT_OLD | BIT_DRIVEN | 0;
-  PIN_41_VRAM_A07.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_48_VRAM_A08.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_47_VRAM_A09.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_44_VRAM_A10.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_46_VRAM_A11.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_42_VRAM_A12.state = BIT_OLD | BIT_DRIVEN | 1;
+  PIN_34_VRAM_A00.state = 0b00011001;
+  PIN_35_VRAM_A01.state = 0b00011001;
+  PIN_36_VRAM_A02.state = 0b00011001;
+  PIN_37_VRAM_A03.state = 0b00011001;
+  PIN_38_VRAM_A04.state = 0b00011000;
+  PIN_39_VRAM_A05.state = 0b00011001;
+  PIN_40_VRAM_A06.state = 0b00011000;
+  PIN_41_VRAM_A07.state = 0b00011001;
+  PIN_48_VRAM_A08.state = 0b00011000;
+  PIN_47_VRAM_A09.state = 0b00011000;
+  PIN_44_VRAM_A10.state = 0b00011000;
+  PIN_46_VRAM_A11.state = 0b00011000;
+  PIN_42_VRAM_A12.state = 0b00011000;
 }
 
 //-----------------------------------------------------------------------------
@@ -105,25 +105,23 @@ void PinsSys::reset_to_poweron() {
 }
 
 void PinsSys::reset_to_bootrom() {
-  PIN_71_RST.state = BIT_OLD | BIT_DRIVEN;
-  PIN_77_T1. state = BIT_OLD | BIT_DRIVEN;
-  PIN_76_T2. state = BIT_OLD | BIT_DRIVEN;
-
-  PIN_73_CLK_DRIVE.state   = 0b00011001;
-  PIN_74_CLK.CLK.state     = 0b00011001;
+  PIN_71_RST.state         = 0b00011000;
+  PIN_73_CLK_DRIVE.state   = 0b00011000;
+  PIN_74_CLK.CLK.state     = 0b00011000;
   PIN_74_CLK.CLKGOOD.state = 0b00011001;
   PIN_75_CLK_OUT.state     = 0b00011000;
+  PIN_76_T2.state          = 0b00011000;
+  PIN_77_T1.state          = 0b00011000;
 }
 
 void PinsSys::reset_to_cart() {
-  PIN_71_RST.state = 0b00011000;
-  PIN_77_T1. state = 0b00011000;
-  PIN_76_T2. state = 0b00011000;
-
-  PIN_73_CLK_DRIVE.state = 0b00011001;
-  PIN_74_CLK.CLK.state = 0b00011001;
+  PIN_71_RST.state         = 0b00011000;
+  PIN_73_CLK_DRIVE.state   = 0b00011000;
+  PIN_74_CLK.CLK.state     = 0b00011000;
   PIN_74_CLK.CLKGOOD.state = 0b00011001;
-  PIN_75_CLK_OUT.state = 0b00011000;
+  PIN_75_CLK_OUT.state     = 0b00011001;
+  PIN_77_T1.state          = 0b00011000;
+  PIN_76_T2.state          = 0b00011000;
 }
 
 /*_p01.UCOB*/ wire PinsSys::UCOB_CLKBADp() const { return not1(PIN_74_CLK.clkgood()); }

@@ -249,21 +249,21 @@ void InterruptControl::reset_to_poweron() {
 }
 
 void InterruptControl::reset_to_bootrom() {
-  AWOB_WAKE_CPU.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  SIG_CPU_WAKE.state         = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  NYDU_TIMA7p_DELAY.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  MOBA_TIMER_OVERFLOWp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  RUPO_LYC_MATCHn.state      = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  ROPO_LY_MATCH_SYNCp.state  = BIT_OLD | BIT_DRIVEN;
+  AWOB_WAKE_CPU.state        = 0b00011001;
+  SIG_CPU_WAKE.state         = 0b00011001;
+  NYDU_TIMA7p_DELAY.state    = 0b00011000;
+  MOBA_TIMER_OVERFLOWp.state = 0b00011000;
+  RUPO_LYC_MATCHn.state      = 0b00011001;
+  ROPO_LY_MATCH_SYNCp.state  = 0b00011000;
 }
 
 void InterruptControl::reset_to_cart() {
-  AWOB_WAKE_CPU.state        = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  SIG_CPU_WAKE.state         = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  NYDU_TIMA7p_DELAY.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  MOBA_TIMER_OVERFLOWp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  RUPO_LYC_MATCHn.state      = BIT_OLD | BIT_DRIVEN;
-  ROPO_LY_MATCH_SYNCp.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  AWOB_WAKE_CPU.state        = 0b00011001;
+  SIG_CPU_WAKE.state         = 0b00011001;
+  NYDU_TIMA7p_DELAY.state    = 0b00011000;
+  MOBA_TIMER_OVERFLOWp.state = 0b00011000;
+  RUPO_LYC_MATCHn.state      = 0b00011000;
+  ROPO_LY_MATCH_SYNCp.state  = 0b00011001;
 }
 
 //-----------------------------------------------------------------------------

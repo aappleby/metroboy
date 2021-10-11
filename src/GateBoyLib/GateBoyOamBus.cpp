@@ -425,23 +425,23 @@ void OamControl::reset_to_poweron() {
 }
 
 void OamControl::reset_to_bootrom() {
-  MAKA_LATCH_EXTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0;
-  WUJE_CPU_OAM_WRn.state = BIT_OLD | BIT_DRIVEN | 1;
-  SIG_OAM_CLKn.state     = BIT_OLD | BIT_DRIVEN | 1;
-  SIG_OAM_WRn_A.state    = BIT_OLD | BIT_DRIVEN | 1;
-  SIG_OAM_WRn_B.state    = BIT_OLD | BIT_DRIVEN | 1;
-  SIG_OAM_OEn.state      = BIT_OLD | BIT_DRIVEN | 1;
-  old_oam_clk.state      = BIT_OLD | BIT_DRIVEN | 0;
+  MAKA_LATCH_EXTp.state  = 0b00011000;
+  WUJE_CPU_OAM_WRn.state = 0b00011001;
+  SIG_OAM_CLKn.state     = 0b00011001;
+  SIG_OAM_WRn_A.state    = 0b00011001;
+  SIG_OAM_WRn_B.state    = 0b00011001;
+  SIG_OAM_OEn.state      = 0b00011001;
+  old_oam_clk.state      = 0b00011000;
 }
 
 void OamControl::reset_to_cart() {
-  MAKA_LATCH_EXTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0;
-  WUJE_CPU_OAM_WRn.state = BIT_OLD | BIT_DRIVEN | 1;
-  SIG_OAM_CLKn.state     = BIT_OLD | BIT_DRIVEN | 1;
-  SIG_OAM_WRn_A.state    = BIT_OLD | BIT_DRIVEN | 1;
-  SIG_OAM_WRn_B.state    = BIT_OLD | BIT_DRIVEN | 1;
-  SIG_OAM_OEn.state      = BIT_OLD | BIT_DRIVEN | 1;
-  old_oam_clk.state      = BIT_OLD | BIT_DRIVEN | 0;
+  MAKA_LATCH_EXTp.state  = 0b00011000;
+  WUJE_CPU_OAM_WRn.state = 0b00011001;
+  SIG_OAM_CLKn.state     = 0b00011001;
+  SIG_OAM_WRn_A.state    = 0b00011001;
+  SIG_OAM_WRn_B.state    = 0b00011001;
+  SIG_OAM_OEn.state      = 0b00011001;
+  old_oam_clk.state      = 0b00011000;
 }
 
 //-----------------------------------------------------------------------------
@@ -472,11 +472,25 @@ void OamDBusA::reset_to_poweron() {
 }
 
 void OamDBusA::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  BUS_OAM_DA00n.state = 0b00011000;
+  BUS_OAM_DA01n.state = 0b00011001;
+  BUS_OAM_DA02n.state = 0b00011001;
+  BUS_OAM_DA03n.state = 0b00011001;
+  BUS_OAM_DA04n.state = 0b00011000;
+  BUS_OAM_DA05n.state = 0b00011000;
+  BUS_OAM_DA06n.state = 0b00011001;
+  BUS_OAM_DA07n.state = 0b00011001;
 }
 
 void OamDBusA::reset_to_cart() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  BUS_OAM_DA00n.state = 0b00011000;
+  BUS_OAM_DA01n.state = 0b00011001;
+  BUS_OAM_DA02n.state = 0b00011001;
+  BUS_OAM_DA03n.state = 0b00011001;
+  BUS_OAM_DA04n.state = 0b00011001;
+  BUS_OAM_DA05n.state = 0b00011001;
+  BUS_OAM_DA06n.state = 0b00011001;
+  BUS_OAM_DA07n.state = 0b00011001;
 }
 
 //-----------------------------------------------------------------------------
@@ -486,11 +500,25 @@ void OamDBusB::reset_to_poweron() {
 }
 
 void OamDBusB::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  BUS_OAM_DB00n.state = 0b00011000;
+  BUS_OAM_DB01n.state = 0b00011001;
+  BUS_OAM_DB02n.state = 0b00011001;
+  BUS_OAM_DB03n.state = 0b00011001;
+  BUS_OAM_DB04n.state = 0b00011000;
+  BUS_OAM_DB05n.state = 0b00011000;
+  BUS_OAM_DB06n.state = 0b00011001;
+  BUS_OAM_DB07n.state = 0b00011001;
 }
 
 void OamDBusB::reset_to_cart() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
+  BUS_OAM_DB00n.state = 0b00011000;
+  BUS_OAM_DB01n.state = 0b00011001;
+  BUS_OAM_DB02n.state = 0b00011001;
+  BUS_OAM_DB03n.state = 0b00011001;
+  BUS_OAM_DB04n.state = 0b00011001;
+  BUS_OAM_DB05n.state = 0b00011001;
+  BUS_OAM_DB06n.state = 0b00011001;
+  BUS_OAM_DB07n.state = 0b00011001;
 }
 
 //-----------------------------------------------------------------------------

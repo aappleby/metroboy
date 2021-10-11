@@ -182,7 +182,7 @@ void GateBoyState::reset_to_bootrom() {
   reg_ie.reset_to_bootrom();
   sys_rst.reset_to_bootrom();
   sys_clk.reset_to_bootrom();
-  VOGA_HBLANKp_evn.state = BIT_OLD | BIT_DRIVEN;
+  VOGA_HBLANKp_evn.state = 0b00011010;
   XYMU_RENDERING_LATCHn.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
   MATU_DMA_RUNNINGp_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   ACYL_SCANNINGp_odd.state = BIT_OLD | BIT_DRIVEN;
@@ -331,10 +331,10 @@ void GateBoyState::reset_to_cart() {
   sys_rst.reset_to_cart();
   sys_clk.reset_to_cart();
   
-  VOGA_HBLANKp_evn.state = 0b00011001;
-  XYMU_RENDERING_LATCHn.state = 0x19;
-  MATU_DMA_RUNNINGp_odd.state = 0x1A;
-  ACYL_SCANNINGp_odd.state = 0x18;
+  VOGA_HBLANKp_evn.state = 0b00011011;
+  XYMU_RENDERING_LATCHn.state = 0b00011001;
+  MATU_DMA_RUNNINGp_odd.state = 0b00011000;
+  ACYL_SCANNINGp_odd.state = 0b00011000;
   WODU_HBLANK_GATEp_odd.state = 0b00011001;
   ATEJ_LINE_RST_TRIGp_odd.state = 0b00011000;
   FEPO_STORE_MATCHp_odd.state = 0x18;

@@ -132,8 +132,12 @@ bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF, FieldInfo* field_info 
     auto ba = pa[i] & mask;
     auto bb = pb[i] & mask;
     if (ba != bb) {
-      LOG_R("bit_cmp mismatch at offset %d - 0x%02x 0x%02x, mask 0x%02x\n",  (int)i, ba, bb, mask);
-      if (field_info) print_field_at((int)i, field_info);
+      LOG_R("bit_cmp mismatch at offset %3d - 0x%02x 0x%02x, mask 0x%02x",  (int)i, ba, bb, mask);
+      if (field_info) {
+        LOG_R(" : ");
+        print_field_at((int)i, field_info);
+      }
+      LOG_R("\n");
       result = false;
     }
   }

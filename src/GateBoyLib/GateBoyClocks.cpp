@@ -8,16 +8,15 @@ void GateBoyClock::reset_to_poweron() {
 }
 
 void GateBoyClock::reset_to_bootrom() {
-  ANOS_DEGLITCH.state = 0b00011000;
-  AVET_DEGLITCH.state = 0b00011001;
-  AFUR_xxxxEFGH.state = 0b00011010;
-  ALEF_AxxxxFGH.state = 0b00011001;
-  APUK_ABxxxxGH.state = 0b00011011;
-  ADYK_ABCxxxxH.state = 0b00011001;
-
-  WUVU_ABxxEFxx.state = 0b00011010;
+  ANOS_DEGLITCH.state = 0b00011001;
+  AVET_DEGLITCH.state = 0b00011000;
+  AFUR_xxxxEFGH.state = 0b00011001;
+  ALEF_AxxxxFGH.state = 0b00011011;
+  APUK_ABxxxxGH.state = 0b00011001;
+  ADYK_ABCxxxxH.state = 0b00011011;
+  WUVU_ABxxEFxx.state = 0b00011000;
   VENA_xxCDEFxx.state = 0b00011010;
-  WOSU_AxxDExxH.state = 0b00011000;
+  WOSU_AxxDExxH.state = 0b00011010;
 
   SIG_CPU_CLKREQ.state        = 0b00011000;
   SIG_CPU_BOWA_Axxxxxxx.state = 0b00011001;
@@ -26,32 +25,30 @@ void GateBoyClock::reset_to_bootrom() {
   SIG_CPU_BUDE_xxxxEFGH.state = 0b00011000;
   SIG_CPU_BOLO_ABCDEFxx.state = 0b00011001;
   SIG_CPU_BUKE_AxxxxxGH.state = 0b00011000;
-  SIG_CPU_BOMA_xBCDEFGH.state = 0b00011000;
-  SIG_CPU_BOGA_Axxxxxxx.state = 0b00011001;
+  SIG_CPU_BOMA_xBCDEFGH.state = 0b00011001;
+  SIG_CPU_BOGA_Axxxxxxx.state = 0b00011000;
 }
 
 void GateBoyClock::reset_to_cart() {
-  ANOS_DEGLITCH.state = 0b00011000;
-  AVET_DEGLITCH.state = 0b00011001;
+  ANOS_DEGLITCH.state = 0b00011001;
+  AVET_DEGLITCH.state = 0b00011000;
+  AFUR_xxxxEFGH.state = 0b00011001;
+  ALEF_AxxxxFGH.state = 0b00011011;
+  APUK_ABxxxxGH.state = 0b00011001;
+  ADYK_ABCxxxxH.state = 0b00011011;
+  WUVU_ABxxEFxx.state = 0b00011000;
+  VENA_xxCDEFxx.state = 0b00011010;
+  WOSU_AxxDExxH.state = 0b00011011;
 
-  AFUR_xxxxEFGH.state = 0b00011010;
-  ALEF_AxxxxFGH.state = 0b00011001;
-  APUK_ABxxxxGH.state = 0b00011011;
-  ADYK_ABCxxxxH.state = 0b00011001;
-
-  WUVU_ABxxEFxx.state = 0b00011011;
-  VENA_xxCDEFxx.state = 0b00011000;
-  WOSU_AxxDExxH.state = 0b00011001;
-
-  SIG_CPU_CLKREQ.state = 0b00011001;
-  SIG_CPU_BOWA_Axxxxxxx.state = 0b00011001;
-  SIG_CPU_BEDO_xBCDEFGH.state = 0b00011000;
-  SIG_CPU_BEKO_ABCDxxxx.state = 0b00011001;
-  SIG_CPU_BUDE_xxxxEFGH.state = 0b00011000;
-  SIG_CPU_BOLO_ABCDEFxx.state = 0b00011001;
+  SIG_CPU_CLKREQ.state        = 0b00011001;
+  SIG_CPU_BOWA_Axxxxxxx.state = 0b00011000;
+  SIG_CPU_BEDO_xBCDEFGH.state = 0b00011001;
+  SIG_CPU_BEKO_ABCDxxxx.state = 0b00011000;
+  SIG_CPU_BUDE_xxxxEFGH.state = 0b00011001;
+  SIG_CPU_BOLO_ABCDEFxx.state = 0b00011000;
   SIG_CPU_BUKE_AxxxxxGH.state = 0b00011001;
-  SIG_CPU_BOMA_xBCDEFGH.state = 0b00011000;
-  SIG_CPU_BOGA_Axxxxxxx.state = 0b00011001;
+  SIG_CPU_BOMA_xBCDEFGH.state = 0b00011001;
+  SIG_CPU_BOGA_Axxxxxxx.state = 0b00011000;
 }
 
 /*_p01.ABOL*/ wire GateBoyClock::ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ.out_new()); }

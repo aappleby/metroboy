@@ -38,21 +38,21 @@ void GateBoyReset::reset_to_poweron() {
 }
 
 void GateBoyReset::reset_to_bootrom() {
-  TUBO_WAITINGp.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  ASOL_POR_DONEn.state = BIT_OLD | BIT_DRIVEN;
-  AFER_SYS_RSTp.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  SOTO_DBG_VRAMp.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  TUBO_WAITINGp.state  = 0b00011001;
+  ASOL_POR_DONEn.state = 0b00011000;
+  AFER_SYS_RSTp.state  = 0b00011000;
+  SOTO_DBG_VRAMp.state = 0b00011010;
 
-  SIG_CPU_EXT_CLKGOOD.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  SIG_CPU_EXT_RESETp.state  = BIT_OLD | BIT_DRIVEN;
-  SIG_CPU_STARTp.state      = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  SIG_CPU_INT_RESETp.state  = BIT_OLD | BIT_DRIVEN;
+  SIG_CPU_EXT_CLKGOOD.state = 0b00011001;
+  SIG_CPU_EXT_RESETp.state  = 0b00011000;
+  SIG_CPU_STARTp.state      = 0b00011001;
+  SIG_CPU_INT_RESETp.state  = 0b00011000;
 }
 
 void GateBoyReset::reset_to_cart() {
   TUBO_WAITINGp.state  = 0b00011000;
   ASOL_POR_DONEn.state = 0b00011000;
-  AFER_SYS_RSTp.state  = 0b00011010;
+  AFER_SYS_RSTp.state  = 0b00011000;
   SOTO_DBG_VRAMp.state = 0b00011010;
 
   SIG_CPU_EXT_CLKGOOD.state = 0b00011001;

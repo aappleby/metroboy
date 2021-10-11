@@ -63,30 +63,37 @@ void GateBoyCpuSignals::reset_to_poweron() {
 }
 
 void GateBoyCpuSignals::reset_to_bootrom() {
-  ABUZ_EXT_RAM_CS_CLK.state = BIT_OLD | BIT_DRIVEN;
-
-  SIG_IN_CPU_RDp.state = BIT_OLD | BIT_DRIVEN;
-  SIG_IN_CPU_WRp.state = BIT_OLD | BIT_DRIVEN;
-  SIG_IN_CPU_EXT_BUSp.state = BIT_OLD | BIT_DRIVEN;
-  SIG_IN_CPU_DBUS_FREE.state = BIT_OLD | BIT_DRIVEN;
-
-  SIG_CPU_UNOR_DBG.state = BIT_OLD | BIT_DRIVEN;
-  SIG_CPU_ADDR_HIp.state = BIT_OLD | BIT_DRIVEN;
-  SIG_CPU_UMUT_DBG.state = BIT_OLD | BIT_DRIVEN;
-  SIG_CPU_BOOTp.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  SIG_BOOT_CSp.state = BIT_OLD | BIT_DRIVEN;
-
-  TEPU_BOOT_BITn.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-
-  TEDO_CPU_RDp.state = BIT_OLD | BIT_DRIVEN;
-  APOV_CPU_WRp.state = BIT_OLD | BIT_DRIVEN;
-  TAPU_CPU_WRp.state = BIT_OLD | BIT_DRIVEN;
+  ABUZ_EXT_RAM_CS_CLK.state  = 0b00011000;
+  SIG_IN_CPU_RDp.state       = 0b00011001;
+  SIG_IN_CPU_WRp.state       = 0b00011000;
+  SIG_IN_CPU_EXT_BUSp.state  = 0b00011000;
+  SIG_IN_CPU_DBUS_FREE.state = 0b00011001;
+  SIG_CPU_UNOR_DBG.state     = 0b00011000;
+  SIG_CPU_ADDR_HIp.state     = 0b00011000;
+  SIG_CPU_UMUT_DBG.state     = 0b00011000;
+  SIG_CPU_BOOTp.state        = 0b00011001;
+  SIG_BOOT_CSp.state         = 0b00011001;
+  TEPU_BOOT_BITn.state       = 0b00011010;
+  TEDO_CPU_RDp.state         = 0b00011001;
+  APOV_CPU_WRp.state         = 0b00011000;
+  TAPU_CPU_WRp.state         = 0b00011000;
 }
 
 void GateBoyCpuSignals::reset_to_cart() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-  TEPU_BOOT_BITn.state = 0b00011011;
-  SIG_CPU_BOOTp.state = 0b00011000;
+  ABUZ_EXT_RAM_CS_CLK.state  = 0b00011000;
+  SIG_IN_CPU_RDp.state       = 0b00011000;
+  SIG_IN_CPU_WRp.state       = 0b00011001;
+  SIG_IN_CPU_EXT_BUSp.state  = 0b00011000;
+  SIG_IN_CPU_DBUS_FREE.state = 0b00011000;
+  SIG_CPU_UNOR_DBG.state     = 0b00011000;
+  SIG_CPU_ADDR_HIp.state     = 0b00011001;
+  SIG_CPU_UMUT_DBG.state     = 0b00011000;
+  SIG_CPU_BOOTp.state        = 0b00011000;
+  SIG_BOOT_CSp.state         = 0b00011000;
+  TEPU_BOOT_BITn.state       = 0b00011011;
+  TEDO_CPU_RDp.state         = 0b00011000;
+  APOV_CPU_WRp.state         = 0b00011000;
+  TAPU_CPU_WRp.state         = 0b00011000;
 }
 
 /*_p07.AJAS*/ wire GateBoyCpuSignals::AJAS_CPU_RDn      () const { return not1(TEDO_CPU_RDp.out_new()); }
@@ -144,22 +151,22 @@ void GateBoyCpuABus::reset_to_bootrom() {
 }
 
 void GateBoyCpuABus::reset_to_cart() {
-  BUS_CPU_A00p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A01p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A02p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A03p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A04p.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_CPU_A05p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A06p.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_CPU_A07p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A08p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A09p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A10p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A11p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A12p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A13p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A14p.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_CPU_A15p.state = BIT_OLD | BIT_DRIVEN | 0;
+  BUS_CPU_A00p.state = 0b00011000;
+  BUS_CPU_A01p.state = 0b00011000;
+  BUS_CPU_A02p.state = 0b00011000;
+  BUS_CPU_A03p.state = 0b00011000;
+  BUS_CPU_A04p.state = 0b00011001;
+  BUS_CPU_A05p.state = 0b00011000;
+  BUS_CPU_A06p.state = 0b00011001;
+  BUS_CPU_A07p.state = 0b00011000;
+  BUS_CPU_A08p.state = 0b00011001;
+  BUS_CPU_A09p.state = 0b00011001;
+  BUS_CPU_A10p.state = 0b00011001;
+  BUS_CPU_A11p.state = 0b00011001;
+  BUS_CPU_A12p.state = 0b00011001;
+  BUS_CPU_A13p.state = 0b00011001;
+  BUS_CPU_A14p.state = 0b00011001;
+  BUS_CPU_A15p.state = 0b00011001;
 }
 
 void GateBoyCpuABus::set_addr(uint16_t bus_addr_new)
@@ -287,25 +294,25 @@ void GateBoyCpuDBus::reset_to_poweron() {
 }
 
 void GateBoyCpuDBus::reset_to_bootrom() {
-  BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_CPU_D00p.state = 0b00011001;
+  BUS_CPU_D01p.state = 0b00011000;
+  BUS_CPU_D02p.state = 0b00011000;
+  BUS_CPU_D03p.state = 0b00011000;
+  BUS_CPU_D04p.state = 0b00011001;
+  BUS_CPU_D05p.state = 0b00011001;
+  BUS_CPU_D06p.state = 0b00011000;
+  BUS_CPU_D07p.state = 0b00011000;
 }
 
 void GateBoyCpuDBus::reset_to_cart() {
-  BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
+  BUS_CPU_D00p.state = 0b00011001;
+  BUS_CPU_D01p.state = 0b00011000;
+  BUS_CPU_D02p.state = 0b00011000;
+  BUS_CPU_D03p.state = 0b00011000;
+  BUS_CPU_D04p.state = 0b00011000;
+  BUS_CPU_D05p.state = 0b00011000;
+  BUS_CPU_D06p.state = 0b00011000;
+  BUS_CPU_D07p.state = 0b00011000;
 }
 
 void GateBoyCpuDBus::set_data(bool OEp, uint8_t data) {

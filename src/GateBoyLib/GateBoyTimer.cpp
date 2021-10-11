@@ -182,27 +182,27 @@ void RegDIV::reset_to_poweron() {
 }
 
 void RegDIV::reset_to_bootrom() {
-  UKUP_DIV00p.state = 0x1b;
-  UFOR_DIV01p.state = 0x19;
-  UNER_DIV02p.state = 0x18;
-  TERO_DIV03p.state = 0x1a;
-  UNYK_DIV04p.state = 0x1a;
-  TAMA_DIV05p.state = 0x1a;
-  UGOT_DIV06p.state = 0x1a;
-  TULU_DIV07p.state = 0x1a;
-  TUGO_DIV08p.state = 0x1a;
-  TOFE_DIV09p.state = 0x1a;
-  TERU_DIV10p.state = 0x1a;
-  SOLA_DIV11p.state = 0x1a;
-  SUBU_DIV12p.state = 0x1a;
-  TEKA_DIV13p.state = 0x1a;
-  UKET_DIV14p.state = 0x1a;
-  UPOF_DIV15p.state = 0x1b;
+  UKUP_DIV00p.state = 0b00011000;
+  UFOR_DIV01p.state = 0b00011011;
+  UNER_DIV02p.state = 0b00011000;
+  TERO_DIV03p.state = 0b00011010;
+  UNYK_DIV04p.state = 0b00011010;
+  TAMA_DIV05p.state = 0b00011010;
+  UGOT_DIV06p.state = 0b00011010;
+  TULU_DIV07p.state = 0b00011010;
+  TUGO_DIV08p.state = 0b00011010;
+  TOFE_DIV09p.state = 0b00011010;
+  TERU_DIV10p.state = 0b00011010;
+  SOLA_DIV11p.state = 0b00011010;
+  SUBU_DIV12p.state = 0b00011010;
+  TEKA_DIV13p.state = 0b00011010;
+  UKET_DIV14p.state = 0b00011010;
+  UPOF_DIV15p.state = 0b00011011;
 }
 
 void RegDIV::reset_to_cart() {
-  UKUP_DIV00p.state = 0b00011011;
-  UFOR_DIV01p.state = 0b00011001;
+  UKUP_DIV00p.state = 0b00011000;
+  UFOR_DIV01p.state = 0b00011011;
   UNER_DIV02p.state = 0b00011000;
   TERO_DIV03p.state = 0b00011010;
   UNYK_DIV04p.state = 0b00011011;

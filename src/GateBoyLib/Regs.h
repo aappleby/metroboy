@@ -431,6 +431,20 @@ struct DFF22 : public BitBase {
     check_old();
     dff22_any(CLKp, SETn, RSTn, Dp);
   }
+
+  void dff22_sync(wire CLKp, wire Dp) {
+    check_old();
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
+    state = uint8_t(bit(d1) | clk_new | BIT_OLD | BIT_DRIVEN);
+  }
+
+  void dff22_async(wire SETn, wire RSTn) {
+    check_old();
+    wire clk_new = state & BIT_CLOCK;
+    state = uint8_t(bit((state | (~SETn)) & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
+  }
 };
 
 //-----------------------------------------------------------------------------

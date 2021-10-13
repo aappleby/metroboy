@@ -242,6 +242,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
     /*_p33.TUPE*/ wire TUPE_SPR_PIX_RST6 = nand2(SOKA_SPRITE_MASK6p, SULU_SPR_PIX_DA6n);
     /*_p33.XYVE*/ wire XYVE_SPR_PIX_RST7 = nand2(XOVU_SPRITE_MASK7p, WAMY_SPR_PIX_DA7n);
 
+#if 0
     /*_p33.WUFY*/ gb_state.spr_pipe_a.WUFY_SPR_PIPE_A7.dff22(SACU_CLKPIPE_new, VUNE_SPR_PIX_SET7, XYVE_SPR_PIX_RST7, gb_state.spr_pipe_a.VAFO_SPR_PIPE_A6.qp_old());
     /*_p33.VAFO*/ gb_state.spr_pipe_a.VAFO_SPR_PIPE_A6.dff22(SACU_CLKPIPE_new, TUXA_SPR_PIX_SET6, TUPE_SPR_PIX_RST6, gb_state.spr_pipe_a.WORA_SPR_PIPE_A5.qp_old());
     /*_p33.WORA*/ gb_state.spr_pipe_a.WORA_SPR_PIPE_A5.dff22(SACU_CLKPIPE_new, VABY_SPR_PIX_SET5, XEXU_SPR_PIX_RST5, gb_state.spr_pipe_a.WYHO_SPR_PIPE_A4.qp_old());
@@ -250,6 +251,25 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
     /*_p33.LEFE*/ gb_state.spr_pipe_a.LEFE_SPR_PIPE_A2.dff22(SACU_CLKPIPE_new, LELA_SPR_PIX_SET2, LYDE_SPR_PIX_RST2, gb_state.spr_pipe_a.MASO_SPR_PIPE_A1.qp_old());
     /*_p33.MASO*/ gb_state.spr_pipe_a.MASO_SPR_PIPE_A1.dff22(SACU_CLKPIPE_new, MYTO_SPR_PIX_SET1, MADA_SPR_PIX_RST1, gb_state.spr_pipe_a.NURO_SPR_PIPE_A0.qp_old());
     /*_p33.NURO*/ gb_state.spr_pipe_a.NURO_SPR_PIPE_A0.dff22(SACU_CLKPIPE_new, PABE_SPR_PIX_SET0, PYZU_SPR_PIX_RST0, gb_state.SIG_GND.out_new());
+#endif
+
+    /*_p33.WUFY*/ gb_state.spr_pipe_a.WUFY_SPR_PIPE_A7.dff22_sync(SACU_CLKPIPE_new, gb_state.spr_pipe_a.VAFO_SPR_PIPE_A6.qp_old());
+    /*_p33.VAFO*/ gb_state.spr_pipe_a.VAFO_SPR_PIPE_A6.dff22_sync(SACU_CLKPIPE_new, gb_state.spr_pipe_a.WORA_SPR_PIPE_A5.qp_old());
+    /*_p33.WORA*/ gb_state.spr_pipe_a.WORA_SPR_PIPE_A5.dff22_sync(SACU_CLKPIPE_new, gb_state.spr_pipe_a.WYHO_SPR_PIPE_A4.qp_old());
+    /*_p33.WYHO*/ gb_state.spr_pipe_a.WYHO_SPR_PIPE_A4.dff22_sync(SACU_CLKPIPE_new, gb_state.spr_pipe_a.LESU_SPR_PIPE_A3.qp_old());
+    /*_p33.LESU*/ gb_state.spr_pipe_a.LESU_SPR_PIPE_A3.dff22_sync(SACU_CLKPIPE_new, gb_state.spr_pipe_a.LEFE_SPR_PIPE_A2.qp_old());
+    /*_p33.LEFE*/ gb_state.spr_pipe_a.LEFE_SPR_PIPE_A2.dff22_sync(SACU_CLKPIPE_new, gb_state.spr_pipe_a.MASO_SPR_PIPE_A1.qp_old());
+    /*_p33.MASO*/ gb_state.spr_pipe_a.MASO_SPR_PIPE_A1.dff22_sync(SACU_CLKPIPE_new, gb_state.spr_pipe_a.NURO_SPR_PIPE_A0.qp_old());
+    /*_p33.NURO*/ gb_state.spr_pipe_a.NURO_SPR_PIPE_A0.dff22_sync(SACU_CLKPIPE_new, gb_state.SIG_GND.out_new());
+
+    /*_p33.WUFY*/ gb_state.spr_pipe_a.WUFY_SPR_PIPE_A7.dff22_async(VUNE_SPR_PIX_SET7, XYVE_SPR_PIX_RST7);
+    /*_p33.VAFO*/ gb_state.spr_pipe_a.VAFO_SPR_PIPE_A6.dff22_async(TUXA_SPR_PIX_SET6, TUPE_SPR_PIX_RST6);
+    /*_p33.WORA*/ gb_state.spr_pipe_a.WORA_SPR_PIPE_A5.dff22_async(VABY_SPR_PIX_SET5, XEXU_SPR_PIX_RST5);
+    /*_p33.WYHO*/ gb_state.spr_pipe_a.WYHO_SPR_PIPE_A4.dff22_async(VEXU_SPR_PIX_SET4, XATO_SPR_PIX_RST4);
+    /*_p33.LESU*/ gb_state.spr_pipe_a.LESU_SPR_PIPE_A3.dff22_async(MAME_SPR_PIX_SET3, LUFY_SPR_PIX_RST3);
+    /*_p33.LEFE*/ gb_state.spr_pipe_a.LEFE_SPR_PIPE_A2.dff22_async(LELA_SPR_PIX_SET2, LYDE_SPR_PIX_RST2);
+    /*_p33.MASO*/ gb_state.spr_pipe_a.MASO_SPR_PIPE_A1.dff22_async(MYTO_SPR_PIX_SET1, MADA_SPR_PIX_RST1);
+    /*_p33.NURO*/ gb_state.spr_pipe_a.NURO_SPR_PIPE_A0.dff22_async(PABE_SPR_PIX_SET0, PYZU_SPR_PIX_RST0);
   }
 
   //----------------------------------------

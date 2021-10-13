@@ -309,76 +309,57 @@ void GateBoy::update_framebuffer() {
 
 void GateBoy::tock_gates(const blob& cart_blob) {
 
-  auto cpu_ack = cpu.core.get_int_ack();
-
   const GateBoyState  reg_old = gb_state;
   GateBoyState& reg_new = gb_state;
 
-  //----------
-
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_old = not1(reg_old.win_ctrl.RYDY_WIN_HITp_odd.out_old());
-  /*#p24.TOMU*/ wire TOMU_WIN_HITp_odd_old = not1(SYLO_WIN_HITn_odd_old);
-
-  //----------
-
-  wire EXT_vcc = 1;
-  wire EXT_gnd = 0;
-
-  /*_SIG_VCC*/ gb_state.SIG_VCC.sig_in(EXT_vcc);
-  /*_SIG_GND*/ gb_state.SIG_GND.sig_in(EXT_gnd);
-
   //----------------------------------------
 
-  memset(&gb_state.cpu_abus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_abus));
-  memset(&gb_state.cpu_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_dbus));
+  bool EXT_cpu_latch_ext;
 
-  //----------------------------------------
+  memset(&reg_new.cpu_abus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
+  memset(&reg_new.cpu_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
 
-  {
-    bool EXT_cpu_latch_ext;
-
-    if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
-      // Data has to be driven on EFGH or we fail the wave tests
-      gb_state.cpu_dbus.set_data(cpu.bus_req_new.write, cpu.bus_req_new.data_lo);
-      EXT_cpu_latch_ext = cpu.bus_req_new.read;
-    }
-    else {
-      gb_state.cpu_dbus.set_data(false, 0);
-      EXT_cpu_latch_ext = 0;
-    }
-    /*_SIG_IN_CPU_LATCH_EXT*/ gb_state.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
-
-    bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
-    bool in_bootrom = bit(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
-    bool addr_boot = (cpu.bus_req_new.addr <= 0x00FF) && in_bootrom;
-    bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
-    bool addr_high = (cpu.bus_req_new.addr >= 0xFE00);
-
-    bool EXT_cpu_rd;
-    bool EXT_cpu_wr;
-
-    if (DELTA_HA_new) {
-      EXT_cpu_rd = 0;
-      EXT_cpu_wr = 0;
-      gb_state.cpu_abus.set_addr(cpu.bus_req_new.addr & 0x00FF);
-
-      if (addr_high) EXT_addr_new = false;
-      if (addr_boot) EXT_addr_new = false;
-      if (addr_vram) EXT_addr_new = false;
-    }
-    else {
-      EXT_cpu_rd = cpu.bus_req_new.read;
-      EXT_cpu_wr = cpu.bus_req_new.write;
-      gb_state.cpu_abus.set_addr(cpu.bus_req_new.addr);
-
-      if (addr_high) EXT_addr_new = false;
-      if (addr_boot) EXT_addr_new = false;
-    }
-
-    /*_SIG_IN_CPU_RDp*/ gb_state.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
-    /*_SIG_IN_CPU_WRp*/ gb_state.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
-    /*_SIG_IN_CPU_EXT_BUSp*/ gb_state.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
+  if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
+    // Data has to be driven on EFGH or we fail the wave tests
+    reg_new.cpu_dbus.set_data(cpu.bus_req_new.write, cpu.bus_req_new.data_lo);
+    EXT_cpu_latch_ext = cpu.bus_req_new.read;
   }
+  else {
+    reg_new.cpu_dbus.set_data(false, 0);
+    EXT_cpu_latch_ext = 0;
+  }
+  /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
+
+  bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
+  bool in_bootrom = bit(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
+  bool addr_boot = (cpu.bus_req_new.addr <= 0x00FF) && in_bootrom;
+  bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
+  bool addr_high = (cpu.bus_req_new.addr >= 0xFE00);
+
+  bool EXT_cpu_rd;
+  bool EXT_cpu_wr;
+
+  if (DELTA_HA_new) {
+    EXT_cpu_rd = 0;
+    EXT_cpu_wr = 0;
+    reg_new.cpu_abus.set_addr(cpu.bus_req_new.addr & 0x00FF);
+
+    if (addr_high) EXT_addr_new = false;
+    if (addr_boot) EXT_addr_new = false;
+    if (addr_vram) EXT_addr_new = false;
+  }
+  else {
+    EXT_cpu_rd = cpu.bus_req_new.read;
+    EXT_cpu_wr = cpu.bus_req_new.write;
+    reg_new.cpu_abus.set_addr(cpu.bus_req_new.addr);
+
+    if (addr_high) EXT_addr_new = false;
+    if (addr_boot) EXT_addr_new = false;
+  }
+
+  /*_SIG_IN_CPU_RDp*/ reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
+  /*_SIG_IN_CPU_WRp*/ reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+  /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
 
   //----------------------------------------
 
@@ -396,24 +377,36 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_PIN_76*/ pins.sys.PIN_76_T2.pin_in(EXT_sys_t2);
     /*_PIN_77*/ pins.sys.PIN_77_T1.pin_in(EXT_sys_t1);
 
+    auto cpu_ack = cpu.core.get_int_ack();
     wire EXT_ack_vblank = get_bit(cpu_ack, BIT_VBLANK);
     wire EXT_ack_stat = get_bit(cpu_ack, BIT_STAT);
     wire EXT_ack_timer = get_bit(cpu_ack, BIT_TIMER);
     wire EXT_ack_serial = get_bit(cpu_ack, BIT_SERIAL);
     wire EXT_ack_joypad = get_bit(cpu_ack, BIT_JOYPAD);
 
-    /*_SIG_CPU_ACK_VBLANK*/ gb_state.cpu_ack.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
-    /*_SIG_CPU_ACK_STAT  */ gb_state.cpu_ack.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
-    /*_SIG_CPU_ACK_TIMER */ gb_state.cpu_ack.SIG_CPU_ACK_TIMER.sig_in(EXT_ack_timer);
-    /*_SIG_CPU_ACK_SERIAL*/ gb_state.cpu_ack.SIG_CPU_ACK_SERIAL.sig_in(EXT_ack_serial);
-    /*_SIG_CPU_ACK_JOYPAD*/ gb_state.cpu_ack.SIG_CPU_ACK_JOYPAD.sig_in(EXT_ack_joypad);
+    /*_SIG_CPU_ACK_VBLANK*/ reg_new.cpu_ack.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
+    /*_SIG_CPU_ACK_STAT  */ reg_new.cpu_ack.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
+    /*_SIG_CPU_ACK_TIMER */ reg_new.cpu_ack.SIG_CPU_ACK_TIMER.sig_in(EXT_ack_timer);
+    /*_SIG_CPU_ACK_SERIAL*/ reg_new.cpu_ack.SIG_CPU_ACK_SERIAL.sig_in(EXT_ack_serial);
+    /*_SIG_CPU_ACK_JOYPAD*/ reg_new.cpu_ack.SIG_CPU_ACK_JOYPAD.sig_in(EXT_ack_joypad);
 
-    /*_SIG_CPU_CLKREQ*/ gb_state.sys_clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
+    /*_SIG_CPU_CLKREQ*/ reg_new.sys_clk.SIG_CPU_CLKREQ.sig_in(EXT_sys_clkreq);
 
-    /*_SIG_CPU_ADDR_HIp*/ gb_state.cpu_signals.SIG_CPU_ADDR_HIp.sig_out(gb_state.cpu_abus.SYRO_FE00_FFFF());
-    /*_SIG_CPU_UNOR_DBG*/ gb_state.cpu_signals.SIG_CPU_UNOR_DBG.sig_out(pins.sys.UNOR_MODE_DBG2p());
-    /*_SIG_CPU_UMUT_DBG*/ gb_state.cpu_signals.SIG_CPU_UMUT_DBG.sig_out(pins.sys.UMUT_MODE_DBG1p());
+    /*_SIG_CPU_ADDR_HIp*/ reg_new.cpu_signals.SIG_CPU_ADDR_HIp.sig_out(reg_new.cpu_abus.SYRO_FE00_FFFF());
+    /*_SIG_CPU_UNOR_DBG*/ reg_new.cpu_signals.SIG_CPU_UNOR_DBG.sig_out(pins.sys.UNOR_MODE_DBG2p());
+    /*_SIG_CPU_UMUT_DBG*/ reg_new.cpu_signals.SIG_CPU_UMUT_DBG.sig_out(pins.sys.UMUT_MODE_DBG1p());
   }
+
+  //----------------------------------------
+
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_old = not1(reg_old.win_ctrl.RYDY_WIN_HITp_odd.out_old());
+  /*#p24.TOMU*/ wire TOMU_WIN_HITp_odd_old = not1(SYLO_WIN_HITn_odd_old);
+
+  wire EXT_vcc = 1;
+  wire EXT_gnd = 0;
+
+  /*_SIG_VCC*/ reg_new.SIG_VCC.sig_in(EXT_vcc);
+  /*_SIG_GND*/ reg_new.SIG_GND.sig_in(EXT_gnd);
 
   //----------------------------------------
   // Sys clock signals

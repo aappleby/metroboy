@@ -51,64 +51,82 @@ void GateBoyClock::reset_to_cart() {
   SIG_CPU_BOGA_Axxxxxxx.state = 0b00011000;
 }
 
-/*_p01.ABOL*/ wire GateBoyClock::ABOL_CLKREQn() const { return not1(SIG_CPU_CLKREQ.out_new()); }
-/*#p01.BUTY*/ wire GateBoyClock::BUTY_CLKREQp() const { return not1(ABOL_CLKREQn()); }
+/*_p01.ABOL*/ wire GateBoyClock::ABOL_CLKREQn_new() const { return not1(SIG_CPU_CLKREQ.out_new()); }
+/*#p01.BUTY*/ wire GateBoyClock::BUTY_CLKREQp_new() const { return not1(ABOL_CLKREQn_new()); }
 
-wire GateBoyClock::AZOF_ODD() const {
-  /*_p01.ATAL*/ wire ATAL_EVN = not1(AVET_DEGLITCH.out_mid());
-  /*_p01.AZOF*/ wire AZOF_ODD = not1(ATAL_EVN);
-  return AZOF_ODD;
+wire GateBoyClock::AZOF_odd_old() const {
+  /*_p01.ATAL*/ wire ATAL_EVN_old = not1(AVET_DEGLITCH.out_old());
+  /*_p01.AZOF*/ wire AZOF_odd_old = not1(ATAL_EVN_old);
+  return AZOF_odd_old;
 }
 
-/*_p01.ZAXY*/ wire GateBoyClock::ZAXY_EVN() const { return not1(AZOF_ODD()); }
-/*#p01.ZEME*/ wire GateBoyClock::ZEME_ODD() const { return not1(ZAXY_EVN()); }
-/*_p29.XYVA*/ wire GateBoyClock::XYVA_EVN() const { return not1(ZEME_ODD()); }
-/*_p29.XOTA*/ wire GateBoyClock::XOTA_ODD() const { return not1(XYVA_EVN()); }
-/*_p29.XYFY*/ wire GateBoyClock::XYFY_EVN() const { return not1(XOTA_ODD()); }
-/*#p01.ALET*/ wire GateBoyClock::ALET_evn() const { return not1(ZEME_ODD()); }
-/*_p01.LAPE*/ wire GateBoyClock::LAPE_odd() const { return not1(ALET_evn()); }
-/*#p27.MEHE*/ wire GateBoyClock::MEHE_odd() const { return not1(ALET_evn()); }
-/*#p27.MYVO*/ wire GateBoyClock::MYVO_odd() const { return not1(ALET_evn()); }
-/*_p27.MOXE*/ wire GateBoyClock::MOXE_ODD() const { return not1(ALET_evn()); }
-/*_p27.TAVA*/ wire GateBoyClock::TAVA_evn() const { return not1(LAPE_odd()); }
+wire GateBoyClock::AZOF_odd_new() const {
+  /*_p01.ATAL*/ wire ATAL_EVN_new = not1(AVET_DEGLITCH.out_new());
+  /*_p01.AZOF*/ wire AZOF_odd_new = not1(ATAL_EVN_new);
+  return AZOF_odd_new;
+}
 
-/*#p01.ATYP*/ wire GateBoyClock::ATYP_ABCDxxxx() const { return not1(AFUR_xxxxEFGH.qp_new()); }
-/*#p01.AFEP*/ wire GateBoyClock::AFEP_AxxxxFGH() const { return not1(ALEF_AxxxxFGH.qn_new()); }
-/*#p01.AROV*/ wire GateBoyClock::AROV_xxCDEFxx() const { return not1(APUK_ABxxxxGH.qp_new()); }
-/*#p01.ADAR*/ wire GateBoyClock::ADAR_ABCxxxxH() const { return not1(ADYK_ABCxxxxH.qn_new()); }
+/*_p01.ZAXY*/ wire GateBoyClock::ZAXY_evn_old() const { return not1(AZOF_odd_old()); }
+/*#p01.ZEME*/ wire GateBoyClock::ZEME_odd_old() const { return not1(ZAXY_evn_old()); }
+/*_p29.XYVA*/ wire GateBoyClock::XYVA_evn_old() const { return not1(ZEME_odd_old()); }
+/*_p29.XOTA*/ wire GateBoyClock::XOTA_odd_old() const { return not1(XYVA_evn_old()); }
+/*_p29.XYFY*/ wire GateBoyClock::XYFY_evn_old() const { return not1(XOTA_odd_old()); }
+/*#p01.ALET*/ wire GateBoyClock::ALET_evn_old() const { return not1(ZEME_odd_old()); }
+/*_p01.LAPE*/ wire GateBoyClock::LAPE_odd_old() const { return not1(ALET_evn_old()); }
+/*#p27.MEHE*/ wire GateBoyClock::MEHE_odd_old() const { return not1(ALET_evn_old()); }
+/*#p27.MYVO*/ wire GateBoyClock::MYVO_odd_old() const { return not1(ALET_evn_old()); }
+/*_p27.MOXE*/ wire GateBoyClock::MOXE_odd_old() const { return not1(ALET_evn_old()); }
+/*_p27.TAVA*/ wire GateBoyClock::TAVA_evn_old() const { return not1(LAPE_odd_old()); }
 
-/*#p01.BEKO*/ wire GateBoyClock::BEKO_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); } // BEKO+BAVY parallel
-/*#p01.BAPY*/ wire GateBoyClock::BAPY_xxxxxxGH() const { return nor3(ABOL_CLKREQn(), AROV_xxCDEFxx(), ATYP_ABCDxxxx()); }
-/*#p01.BERU*/ wire GateBoyClock::BERU_ABCDEFxx() const { return not1(BAPY_xxxxxxGH()); }
-/*#p01.BUFA*/ wire GateBoyClock::BUFA_xxxxxxGH() const { return not1(BERU_ABCDEFxx()); }
-/*#p01.BOLO*/ wire GateBoyClock::BOLO_ABCDEFxx() const { return not1(BUFA_xxxxxxGH()); }
-/*#p01.BEJA*/ wire GateBoyClock::BEJA_xxxxEFGH() const { return nand4(BOLO_ABCDEFxx(), BOLO_ABCDEFxx(), BEKO_ABCDxxxx(), BEKO_ABCDxxxx()); }
-/*#p01.BANE*/ wire GateBoyClock::BANE_ABCDxxxx() const { return not1(BEJA_xxxxEFGH()); }
-/*#p01.BELO*/ wire GateBoyClock::BELO_xxxxEFGH() const { return not1(BANE_ABCDxxxx()); }
-/*#p01.BAZE*/ wire GateBoyClock::BAZE_ABCDxxxx() const { return not1(BELO_xxxxEFGH()); }
-/*#p01.BUTO*/ wire GateBoyClock::BUTO_xBCDEFGH() const { return nand3(AFEP_AxxxxFGH(), ATYP_ABCDxxxx(), BAZE_ABCDxxxx()); }
-/*#p01.BELE*/ wire GateBoyClock::BELE_Axxxxxxx() const { return not1(BUTO_xBCDEFGH()); }
-/*#p01.BUGO*/ wire GateBoyClock::BUGO_xBCDExxx() const { return not1(AFEP_AxxxxFGH()); }
-/*#p01.BATE*/ wire GateBoyClock::BATE_AxxxxxGH() const { return nor3(BUGO_xBCDExxx(), AROV_xxCDEFxx(), ABOL_CLKREQn()); }
-/*#p01.BASU*/ wire GateBoyClock::BASU_xBCDEFxx() const { return not1(BATE_AxxxxxGH()); }
-/*#p01.BUKE*/ wire GateBoyClock::BUKE_AxxxxxGH() const { return not1(BASU_xBCDEFxx()); }
-/*#p01.BELU*/ wire GateBoyClock::BELU_xxxxEFGH() const { return nor2(ATYP_ABCDxxxx(), ABOL_CLKREQn()); }
-/*#p01.BYRY*/ wire GateBoyClock::BYRY_ABCDxxxx() const { return not1(BELU_xxxxEFGH()); }
-/*#p01.BUDE*/ wire GateBoyClock::BUDE_xxxxEFGH() const { return not1(BYRY_ABCDxxxx()); }
-/*_p01.UVYT*/ wire GateBoyClock::UVYT_ABCDxxxx() const { return not1(BUDE_xxxxEFGH()); }
-/*_p04.MOPA*/ wire GateBoyClock::MOPA_xxxxEFGH() const { return not1(UVYT_ABCDxxxx()); }
-/*_p28.XYNY*/ wire GateBoyClock::XYNY_ABCDxxxx() const { return not1(MOPA_xxxxEFGH()); }
+/*_p01.ZAXY*/ wire GateBoyClock::ZAXY_evn_new() const { return not1(AZOF_odd_new()); }
+/*#p01.ZEME*/ wire GateBoyClock::ZEME_odd_new() const { return not1(ZAXY_evn_new()); }
+/*_p29.XYVA*/ wire GateBoyClock::XYVA_evn_new() const { return not1(ZEME_odd_new()); }
+/*_p29.XOTA*/ wire GateBoyClock::XOTA_odd_new() const { return not1(XYVA_evn_new()); }
+/*_p29.XYFY*/ wire GateBoyClock::XYFY_evn_new() const { return not1(XOTA_odd_new()); }
+/*#p01.ALET*/ wire GateBoyClock::ALET_evn_new() const { return not1(ZEME_odd_new()); }
+/*_p01.LAPE*/ wire GateBoyClock::LAPE_odd_new() const { return not1(ALET_evn_new()); }
+/*#p27.MEHE*/ wire GateBoyClock::MEHE_odd_new() const { return not1(ALET_evn_new()); }
+/*#p27.MYVO*/ wire GateBoyClock::MYVO_odd_new() const { return not1(ALET_evn_new()); }
+/*_p27.MOXE*/ wire GateBoyClock::MOXE_odd_new() const { return not1(ALET_evn_new()); }
+/*_p27.TAVA*/ wire GateBoyClock::TAVA_evn_new() const { return not1(LAPE_odd_new()); }
 
-/*#p21.TALU*/ wire GateBoyClock::TALU_xxCDEFxx() const { return not1(VENA_xxCDEFxx.qn_new()); }
-/*#p29.XUPY*/ wire GateBoyClock::XUPY_ABxxEFxx() const { return not1(WUVU_ABxxEFxx.qn_new()); }
-/*#p29.XOCE*/ wire GateBoyClock::XOCE_xBCxxFGx() const { return not1(WOSU_AxxDExxH.qp_new()); }
-/*#p29.WOJO*/ wire GateBoyClock::WOJO_AxxxExxx() const { return nor2(WOSU_AxxDExxH.qn_new(), WUVU_ABxxEFxx.qn_new()); }
-/*#p21.SONO*/ wire GateBoyClock::SONO_ABxxxxGH() const { return not1(TALU_xxCDEFxx()); }
-/*_p29.XYSO*/ wire GateBoyClock::XYSO_xBCDxFGH() const { return not1(WOJO_AxxxExxx()); }
-/*#p30.CYKE*/ wire GateBoyClock::CYKE_ABxxEFxx() const { return not1(XUPY_ABxxEFxx()); }
-/*#p30.WUDA*/ wire GateBoyClock::WUDA_xxCDxxGH() const { return not1(CYKE_ABxxEFxx()); }
-/*#p28.AWOH*/ wire GateBoyClock::AWOH_xxCDxxGH() const { return not1(XUPY_ABxxEFxx()); }
-/*#p01.AJAX*/ wire GateBoyClock::AJAX_xxxxEFGH() const { return not1(ATYP_ABCDxxxx()); }
+/*#p01.ATYP*/ wire GateBoyClock::ATYP_ABCDxxxx_new() const { return not1(AFUR_xxxxEFGH.qp_new()); }
+/*#p01.AFEP*/ wire GateBoyClock::AFEP_AxxxxFGH_new() const { return not1(ALEF_AxxxxFGH.qn_new()); }
+/*#p01.AROV*/ wire GateBoyClock::AROV_xxCDEFxx_new() const { return not1(APUK_ABxxxxGH.qp_new()); }
+/*#p01.ADAR*/ wire GateBoyClock::ADAR_ABCxxxxH_new() const { return not1(ADYK_ABCxxxxH.qn_new()); }
+
+/*#p01.BEKO*/ wire GateBoyClock::BEKO_ABCDxxxx_new() const { return not1(BUDE_xxxxEFGH_new()); } // BEKO+BAVY parallel
+/*#p01.BAPY*/ wire GateBoyClock::BAPY_xxxxxxGH_new() const { return nor3(ABOL_CLKREQn_new(), AROV_xxCDEFxx_new(), ATYP_ABCDxxxx_new()); }
+/*#p01.BERU*/ wire GateBoyClock::BERU_ABCDEFxx_new() const { return not1(BAPY_xxxxxxGH_new()); }
+/*#p01.BUFA*/ wire GateBoyClock::BUFA_xxxxxxGH_new() const { return not1(BERU_ABCDEFxx_new()); }
+/*#p01.BOLO*/ wire GateBoyClock::BOLO_ABCDEFxx_new() const { return not1(BUFA_xxxxxxGH_new()); }
+/*#p01.BEJA*/ wire GateBoyClock::BEJA_xxxxEFGH_new() const { return nand4(BOLO_ABCDEFxx_new(), BOLO_ABCDEFxx_new(), BEKO_ABCDxxxx_new(), BEKO_ABCDxxxx_new()); }
+/*#p01.BANE*/ wire GateBoyClock::BANE_ABCDxxxx_new() const { return not1(BEJA_xxxxEFGH_new()); }
+/*#p01.BELO*/ wire GateBoyClock::BELO_xxxxEFGH_new() const { return not1(BANE_ABCDxxxx_new()); }
+/*#p01.BAZE*/ wire GateBoyClock::BAZE_ABCDxxxx_new() const { return not1(BELO_xxxxEFGH_new()); }
+/*#p01.BUTO*/ wire GateBoyClock::BUTO_xBCDEFGH_new() const { return nand3(AFEP_AxxxxFGH_new(), ATYP_ABCDxxxx_new(), BAZE_ABCDxxxx_new()); }
+/*#p01.BELE*/ wire GateBoyClock::BELE_Axxxxxxx_new() const { return not1(BUTO_xBCDEFGH_new()); }
+/*#p01.BUGO*/ wire GateBoyClock::BUGO_xBCDExxx_new() const { return not1(AFEP_AxxxxFGH_new()); }
+/*#p01.BATE*/ wire GateBoyClock::BATE_AxxxxxGH_new() const { return nor3(BUGO_xBCDExxx_new(), AROV_xxCDEFxx_new(), ABOL_CLKREQn_new()); }
+/*#p01.BASU*/ wire GateBoyClock::BASU_xBCDEFxx_new() const { return not1(BATE_AxxxxxGH_new()); }
+/*#p01.BUKE*/ wire GateBoyClock::BUKE_AxxxxxGH_new() const { return not1(BASU_xBCDEFxx_new()); }
+/*#p01.BELU*/ wire GateBoyClock::BELU_xxxxEFGH_new() const { return nor2(ATYP_ABCDxxxx_new(), ABOL_CLKREQn_new()); }
+/*#p01.BYRY*/ wire GateBoyClock::BYRY_ABCDxxxx_new() const { return not1(BELU_xxxxEFGH_new()); }
+/*#p01.BUDE*/ wire GateBoyClock::BUDE_xxxxEFGH_new() const { return not1(BYRY_ABCDxxxx_new()); }
+/*_p01.UVYT*/ wire GateBoyClock::UVYT_ABCDxxxx_new() const { return not1(BUDE_xxxxEFGH_new()); }
+/*_p04.MOPA*/ wire GateBoyClock::MOPA_xxxxEFGH_new() const { return not1(UVYT_ABCDxxxx_new()); }
+/*_p28.XYNY*/ wire GateBoyClock::XYNY_ABCDxxxx_new() const { return not1(MOPA_xxxxEFGH_new()); }
+
+/*#p21.TALU*/ wire GateBoyClock::TALU_xxCDEFxx_new() const { return not1(VENA_xxCDEFxx.qn_new()); }
+/*#p29.XUPY*/ wire GateBoyClock::XUPY_ABxxEFxx_new() const { return not1(WUVU_ABxxEFxx.qn_new()); }
+/*#p29.XOCE*/ wire GateBoyClock::XOCE_xBCxxFGx_new() const { return not1(WOSU_AxxDExxH.qp_new()); }
+/*#p29.WOJO*/ wire GateBoyClock::WOJO_AxxxExxx_new() const { return nor2(WOSU_AxxDExxH.qn_new(), WUVU_ABxxEFxx.qn_new()); }
+/*#p21.SONO*/ wire GateBoyClock::SONO_ABxxxxGH_new() const { return not1(TALU_xxCDEFxx_new()); }
+/*_p29.XYSO*/ wire GateBoyClock::XYSO_xBCDxFGH_new() const { return not1(WOJO_AxxxExxx_new()); }
+/*#p30.CYKE*/ wire GateBoyClock::CYKE_ABxxEFxx_new() const { return not1(XUPY_ABxxEFxx_new()); }
+/*#p30.WUDA*/ wire GateBoyClock::WUDA_xxCDxxGH_new() const { return not1(CYKE_ABxxEFxx_new()); }
+/*#p28.AWOH*/ wire GateBoyClock::AWOH_xxCDxxGH_new() const { return not1(XUPY_ABxxEFxx_new()); }
+/*#p01.AJAX*/ wire GateBoyClock::AJAX_xxxxEFGH_new() const { return not1(ATYP_ABCDxxxx_new()); }
 
 //-----------------------------------------------------------------------------
 
@@ -134,14 +152,14 @@ void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {
   /*_p01.APUK*/ gb_state.sys_clk.APUK_ABxxxxGH.dff9(ATAN_AxCxExGx, pins.sys.UPOJ_MODE_PRODn(), ALEF_AxxxxFGH_old.qn_old());
   /*_p01.ADYK*/ gb_state.sys_clk.ADYK_ABCxxxxH.dff9(ATAL_xBxDxFxH, pins.sys.UPOJ_MODE_PRODn(), APUK_ABxxxxGH_old.qn_old());
 
-  /*_PIN_75*/ pins.sys.PIN_75_CLK_OUT.pin_out(gb_state.sys_clk.BUDE_xxxxEFGH(), gb_state.sys_clk.BUDE_xxxxEFGH());
+  /*_PIN_75*/ pins.sys.PIN_75_CLK_OUT.pin_out(gb_state.sys_clk.BUDE_xxxxEFGH_new(), gb_state.sys_clk.BUDE_xxxxEFGH_new());
 
   /*_SIG_CPU_BOWA_Axxxxxxx*/ gb_state.sys_clk.SIG_CPU_BOWA_Axxxxxxx.sig_out(BOWA_xBCDEFGH());
   /*_SIG_CPU_BEDO_xBCDEFGH*/ gb_state.sys_clk.SIG_CPU_BEDO_xBCDEFGH.sig_out(BEDO_Axxxxxxx());
-  /*_SIG_CPU_BEKO_ABCDxxxx*/ gb_state.sys_clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(gb_state.sys_clk.BEKO_ABCDxxxx());
-  /*_SIG_CPU_BUDE_xxxxEFGH*/ gb_state.sys_clk.SIG_CPU_BUDE_xxxxEFGH.sig_out(gb_state.sys_clk.BUDE_xxxxEFGH());
-  /*_SIG_CPU_BOLO_ABCDEFxx*/ gb_state.sys_clk.SIG_CPU_BOLO_ABCDEFxx.sig_out(gb_state.sys_clk.BOLO_ABCDEFxx());
-  /*_SIG_CPU_BUKE_AxxxxxGH*/ gb_state.sys_clk.SIG_CPU_BUKE_AxxxxxGH.sig_out(gb_state.sys_clk.BUKE_AxxxxxGH());
+  /*_SIG_CPU_BEKO_ABCDxxxx*/ gb_state.sys_clk.SIG_CPU_BEKO_ABCDxxxx.sig_out(gb_state.sys_clk.BEKO_ABCDxxxx_new());
+  /*_SIG_CPU_BUDE_xxxxEFGH*/ gb_state.sys_clk.SIG_CPU_BUDE_xxxxEFGH.sig_out(gb_state.sys_clk.BUDE_xxxxEFGH_new());
+  /*_SIG_CPU_BOLO_ABCDEFxx*/ gb_state.sys_clk.SIG_CPU_BOLO_ABCDEFxx.sig_out(gb_state.sys_clk.BOLO_ABCDEFxx_new());
+  /*_SIG_CPU_BUKE_AxxxxxGH*/ gb_state.sys_clk.SIG_CPU_BUKE_AxxxxxGH.sig_out(gb_state.sys_clk.BUKE_AxxxxxGH_new());
   /*_SIG_CPU_BOMA_xBCDEFGH*/ gb_state.sys_clk.SIG_CPU_BOMA_xBCDEFGH.sig_out(BOMA_xBCDEFGH());
   /*_SIG_CPU_BOGA_Axxxxxxx*/ gb_state.sys_clk.SIG_CPU_BOGA_Axxxxxxx.sig_out(BOGA_Axxxxxxx());
 }
@@ -149,8 +167,8 @@ void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_vid_clocks_gates(const GateBoyState& reg_old) {
-  /*_p29.WOSU*/ gb_state.sys_clk.WOSU_AxxDExxH.dff17(gb_state.sys_clk.XYFY_EVN(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
-  /*_p29.WUVU*/ gb_state.sys_clk.WUVU_ABxxEFxx.dff17(gb_state.sys_clk.XOTA_ODD(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
+  /*_p29.WOSU*/ gb_state.sys_clk.WOSU_AxxDExxH.dff17(gb_state.sys_clk.XYFY_evn(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
+  /*_p29.WUVU*/ gb_state.sys_clk.WUVU_ABxxEFxx.dff17(gb_state.sys_clk.XOTA_odd(),            XAPO_VID_RSTn(), gb_state.sys_clk.WUVU_ABxxEFxx.qn_old());
   /*_p21.VENA*/ gb_state.sys_clk.VENA_xxCDEFxx.dff17(gb_state.sys_clk.WUVU_ABxxEFxx.qn_new(), XAPO_VID_RSTn(), gb_state.sys_clk.VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
 }
 

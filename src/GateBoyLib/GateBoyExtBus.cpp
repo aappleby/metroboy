@@ -155,9 +155,9 @@ void GateBoy::get_flat_blob(const blob& cart_blob, int addr, int size, blob& out
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_ext_gates(const blob& cart_blob)
+void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
 {
-  /*_p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor2(TEXO_ADDR_VRAMn(), pins.sys.UMUT_MODE_DBG1p());
+  /*_p08.MOCA*/ wire MOCA_DBG_EXT_RD = nor2(reg_old.TEXO_ADDR_VRAMn(), pins.sys.UMUT_MODE_DBG1p());
 
   /*#p04.LEBU*/ wire LEBU_DMA_A15n  = not1(gb_state.reg_dma.MARU_DMA_A15n.qn_new());
   /*#p04.MUDA*/ wire MUDA_DMA_VRAMp = nor3(gb_state.reg_dma.PULA_DMA_A13n.qn_new(), gb_state.reg_dma.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n);
@@ -166,7 +166,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   /*_p04.LUMA*/ wire LUMA_DMA_CARTp = not1(MORY_DMA_CARTn);
 
   {
-    /*_p08.LAGU*/ wire LAGU = and_or3(gb_state.cpu_signals.SIG_IN_CPU_RDp.out_new(), LEVO_ADDR_VRAMn(), gb_state.cpu_signals.SIG_IN_CPU_WRp.out_new());
+    /*_p08.LAGU*/ wire LAGU = and_or3(gb_state.cpu_signals.SIG_IN_CPU_RDp.out_new(), reg_old.LEVO_ADDR_VRAMn(), gb_state.cpu_signals.SIG_IN_CPU_WRp.out_new());
     /*_p08.LYWE*/ wire LYWE = not1(LAGU);
     /*_p08.MOTY*/ wire MOTY_CPU_EXT_RD = or2(MOCA_DBG_EXT_RD, LYWE);
     /*_p08.TYMU*/ wire TYMU_EXT_RDn = nor2(LUMA_DMA_CARTp, MOTY_CPU_EXT_RD);
@@ -189,7 +189,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
     /*_PIN_80*/ pins.ctrl.PIN_80_CSn.pin_out(TYHO_CS_A, TYHO_CS_A);
   }
 
-  /*_p08.LOXO*/ wire LOXO_HOLDn = and_or3(pins.sys.MULE_MODE_DBG1n(), TEXO_ADDR_VRAMn(), pins.sys.UMUT_MODE_DBG1p());
+  /*_p08.LOXO*/ wire LOXO_HOLDn = and_or3(pins.sys.MULE_MODE_DBG1n(), reg_old.TEXO_ADDR_VRAMn(), pins.sys.UMUT_MODE_DBG1p());
   /*_p08.LASY*/ wire LASY_HOLDp = not1(LOXO_HOLDn);
   /*_p08.MATE*/ wire MATE_HOLDn = not1(LASY_HOLDp);
   /*_p08.ALOR*/ gb_state.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.tp_latchn(MATE_HOLDn, gb_state.cpu_abus.BUS_CPU_A00p.out_new());
@@ -286,7 +286,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
   // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_out
   // will actually end up in oam?
 
-  /*_p08.LAGU*/ wire LAGU = and_or3(gb_state.cpu_signals.SIG_IN_CPU_RDp.out_new(), LEVO_ADDR_VRAMn(), gb_state.cpu_signals.SIG_IN_CPU_WRp.out_new());
+  /*_p08.LAGU*/ wire LAGU = and_or3(gb_state.cpu_signals.SIG_IN_CPU_RDp.out_new(), reg_old.LEVO_ADDR_VRAMn(), gb_state.cpu_signals.SIG_IN_CPU_WRp.out_new());
   /*_p08.LYWE*/ wire LYWE = not1(LAGU);
   /*_p08.MOTY*/ wire MOTY_CPU_EXT_RD = or2(MOCA_DBG_EXT_RD, LYWE);
   /*_p08.RORU*/ wire RORU_CBD_TO_EPDn = mux2p(pins.sys.UNOR_MODE_DBG2p(), gb_state.cpu_signals.REDU_CPU_RDn(), MOTY_CPU_EXT_RD);
@@ -466,7 +466,7 @@ void GateBoy::tock_ext_gates(const blob& cart_blob)
 
   //----------------------------------------
 
-  /*_p08.LAVO*/ wire LAVO_HOLDn = nand3(gb_state.cpu_signals.SIG_IN_CPU_RDp.out_new(), TEXO_ADDR_VRAMn(), gb_state.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new());
+  /*_p08.LAVO*/ wire LAVO_HOLDn = nand3(gb_state.cpu_signals.SIG_IN_CPU_RDp.out_new(), reg_old.TEXO_ADDR_VRAMn(), gb_state.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new());
 
   /*#p08.SOMA*/ gb_state.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(LAVO_HOLDn, pins.dbus.PIN_17_D00.qp_int_new());
   /*_p08.RONY*/ gb_state.ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(LAVO_HOLDn, pins.dbus.PIN_18_D01.qp_int_new());

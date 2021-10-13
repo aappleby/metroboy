@@ -13,8 +13,8 @@ void GateBoy::tock_latches() {
   /*#p29.ALES*/ wire ALES_y144n_old = not1(XYVO_y144p_old);
   /*#p21.SELA*/ wire SELA_x113p_old = not1(PURE_x113n_old);
   /*#p29.ABOV*/ wire ABOV_x113p_old = and2(SELA_x113p_old, ALES_y144n_old);
-  /*#p29.CATU*/ gb_state.lcd.CATU_LINE_ENDp_odd.dff17(gb_state.sys_clk.XUPY_ABxxEFxx(), ABEZ_VID_RSTn(), ABOV_x113p_old);
-  /*#p28.ANEL*/ gb_state.lcd.ANEL_LINE_ENDp_odd.dff17(gb_state.sys_clk.AWOH_xxCDxxGH(), ABEZ_VID_RSTn(), gb_state.lcd.CATU_LINE_ENDp_odd.qp_old());
+  /*#p29.CATU*/ gb_state.lcd.CATU_LINE_ENDp_odd.dff17(gb_state.sys_clk.XUPY_ABxxEFxx_new(), ABEZ_VID_RSTn(), ABOV_x113p_old);
+  /*#p28.ANEL*/ gb_state.lcd.ANEL_LINE_ENDp_odd.dff17(gb_state.sys_clk.AWOH_xxCDxxGH_new(), ABEZ_VID_RSTn(), gb_state.lcd.CATU_LINE_ENDp_odd.qp_old());
 
   /*_p28.ABAF*/ wire ABAF_x113n_odd = not1(gb_state.lcd.CATU_LINE_ENDp_odd.qp_new());
   /*_p28.BYHA*/ wire BYHA_LINE_RST_TRIGn_odd = or_and3(gb_state.lcd.ANEL_LINE_ENDp_odd.qp_new(), ABAF_x113n_odd, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911

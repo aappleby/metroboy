@@ -47,6 +47,26 @@ struct GateBoyState {
 
   static FieldInfo fields[];
 
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn   () const;
+  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp   () const;
+  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp   () const;
+  /*_p08.LEVO*/ wire LEVO_ADDR_VRAMn   () const;
+  /*_p25.TUJA*/ wire TUJA_CPU_VRAM_WRp () const;
+
+  /*_p01.XODO*/ wire XODO_VID_RSTp() const;
+  /*_p01.XAPO*/ wire XAPO_VID_RSTn() const;
+  /*_p01.LYHA*/ wire LYHA_VID_RSTp() const;
+  /*_p01.LYFE*/ wire LYFE_VID_RSTn() const;
+  /*_p01.TOFU*/ wire TOFU_VID_RSTp() const;
+  /*_p01.ROSY*/ wire ROSY_VID_RSTp() const;
+  /*#p01.ATAR*/ wire ATAR_VID_RSTp() const;
+  /*#p01.ABEZ*/ wire ABEZ_VID_RSTn() const;
+  /*_p01.PYRY*/ wire PYRY_VID_RSTp() const;
+  /*_p01.AMYG*/ wire AMYG_VID_RSTp() const;
+
+  /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp() const;
+  /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn() const;
+
   //----------------------------------------
 
   /*_SIG_VCC*/ SigIn SIG_VCC;

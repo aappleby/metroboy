@@ -268,7 +268,7 @@ struct GateBoy  : public IGateBoy {
   void tock_div_gates(const GateBoyState& reg_old);
   void tock_timer_gates(const GateBoyState& reg_old);
   void tock_reset_gates(const GateBoyState& reg_old, DFF17 UPOF_DIV15p);
-  void tock_ext_gates(const blob& cart_blob);
+  void tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob);
   void tock_oam_bus_gates(const GateBoyState& reg_old);
   void tock_serial_gates(const GateBoyState& reg_old);
   void tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FETCH_TRIGp);
@@ -300,25 +300,6 @@ struct GateBoy  : public IGateBoy {
   wire BEDO_Axxxxxxx() const;
   wire BOWA_xBCDEFGH() const;
   wire BOMA_xBCDEFGH() const;
-
-  wire XODO_VID_RSTp() const;
-  wire XAPO_VID_RSTn() const;
-  wire LYHA_VID_RSTp() const;
-  wire LYFE_VID_RSTn() const;
-  wire TOFU_VID_RSTp() const;
-  wire ROSY_VID_RSTp() const;
-  wire ATAR_VID_RSTp() const;
-  wire ABEZ_VID_RSTn() const;
-  wire PYRY_VID_RSTp() const;
-  wire AMYG_VID_RSTp() const;
-  wire TEXO_ADDR_VRAMn   () const;
-  wire TEFA_ADDR_VRAMp   () const;
-  wire SOSE_ADDR_VRAMp   () const;
-  wire LEVO_ADDR_VRAMn   () const;
-  wire TUJA_CPU_VRAM_WRp () const;
-
-  wire TOLE_CPU_VRAM_RDp() const;
-  wire SALE_CPU_VRAM_WRn() const;
 
   //-----------------------------------------------------------------------------
 

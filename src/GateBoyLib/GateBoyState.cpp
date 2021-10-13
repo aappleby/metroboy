@@ -2,6 +2,55 @@
 
 #include "GateBoyLib/Utils.h"
 #include "CoreLib/Constants.h"
+#include "GateBoyLib/Gates.h"
+
+//-----------------------------------------------------------------------------
+
+/*#p08.TEXO*/ wire GateBoyState::TEXO_ADDR_VRAMn   () const { return and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), cpu_abus.TEVY_ADDR_VRAMn()); }
+/*#p25.TEFA*/ wire GateBoyState::TEFA_ADDR_VRAMp   () const { return nor2(cpu_abus.SYRO_FE00_FFFF(), TEXO_ADDR_VRAMn()); }
+/*#p25.SOSE*/ wire GateBoyState::SOSE_ADDR_VRAMp   () const { return and2(TEFA_ADDR_VRAMp(), cpu_abus.BUS_CPU_A15p.out_any()); }
+/*_p08.LEVO*/ wire GateBoyState::LEVO_ADDR_VRAMn   () const { return not1(TEXO_ADDR_VRAMn()); }
+/*_p25.TUJA*/ wire GateBoyState::TUJA_CPU_VRAM_WRp () const { return and2(SOSE_ADDR_VRAMp(), cpu_signals.APOV_CPU_WRp.out_any()); }
+
+/*_p01.XODO*/ wire GateBoyState::XODO_VID_RSTp() const { return nand2(sys_rst.XEBE_SYS_RSTn(), reg_lcdc.XONA_LCDC_LCDENn.qn_any()); }
+/*_p01.XAPO*/ wire GateBoyState::XAPO_VID_RSTn() const { return not1(XODO_VID_RSTp()); }
+/*_p01.LYHA*/ wire GateBoyState::LYHA_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*_p01.LYFE*/ wire GateBoyState::LYFE_VID_RSTn() const { return not1(LYHA_VID_RSTp()); }
+/*_p01.TOFU*/ wire GateBoyState::TOFU_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*_p01.ROSY*/ wire GateBoyState::ROSY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*#p01.ATAR*/ wire GateBoyState::ATAR_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*#p01.ABEZ*/ wire GateBoyState::ABEZ_VID_RSTn() const { return not1(ATAR_VID_RSTp()); }
+/*_p01.PYRY*/ wire GateBoyState::PYRY_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+/*_p01.AMYG*/ wire GateBoyState::AMYG_VID_RSTp() const { return not1(XAPO_VID_RSTn()); }
+
+wire GateBoyState::TOLE_CPU_VRAM_RDp() const
+{
+  // Ignoring debug for now
+  ///*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
+  ///*#p25.TAVY*/ wire TAVY_MOEp         = not1(vram_bus.PIN_45_VRAM_OEn.qn_new());
+  ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
+  ///*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = mux2p(TEFY_VRAM_MCSp, TUTO_DBG_VRAMp, TUCA_CPU_VRAM_RDp);
+
+  /*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp = nand2(SOSE_ADDR_VRAMp(), cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new());
+  /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = not1(TUCA_CPU_VRAM_RDp);
+
+  return TOLE_CPU_VRAM_RDp;
+}
+
+wire GateBoyState::SALE_CPU_VRAM_WRn() const
+{
+  // Ignoring debug for now
+  ///*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_ADDR_VRAMp(), SIG_IN_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
+  ///*#p25.TAVY*/ wire TAVY_MOEp         = not1(vram_bus.PIN_45_VRAM_OEn.qn_new());
+  ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
+  ///*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = mux2p(TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
+
+  /*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = and2(SOSE_ADDR_VRAMp(), cpu_signals.SIG_IN_CPU_WRp.out_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
+  /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = not1(TEGU_CPU_VRAM_WRn);
+
+  return SALE_CPU_VRAM_WRn;
+}
+
 
 //-----------------------------------------------------------------------------
 

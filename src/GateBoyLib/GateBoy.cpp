@@ -577,8 +577,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p29.WUTY*/ gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd <<= not1(VUSA_SPRITE_DONEn);
   }
 
-  /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp_evn = and2(gb_state.sfetch_control.SOBU_SFETCH_REQp_evn.qp_new(), gb_state.sfetch_control.SUDA_SFETCH_REQp_odd.qn_new());
-  /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn = nor3(RYCE_SFETCH_TRIGp_evn, ROSY_VID_RSTp(), gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new());
+  /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp_evn_new = and2(gb_state.sfetch_control.SOBU_SFETCH_REQp_evn.qp_new(), gb_state.sfetch_control.SUDA_SFETCH_REQp_odd.qn_new());
+  /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn = nor3(RYCE_SFETCH_TRIGp_evn_new, ROSY_VID_RSTp(), gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new());
 
   //----------------------------------------
   // Window state has some interaction with the tile fetcher here.
@@ -669,16 +669,16 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p24.ROXO*/ wire ROXO_CLKPIPE_evn_new = not1(SEGU_CLKPIPE_odd_new);
 
 
-  /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn = not1(gb_state.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new());
-  /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(
+  /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn_new = not1(gb_state.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new());
+  /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn_xxx_new = nand4(
     gb_state.XYMU_RENDERING_LATCHn.qn_new(),
-    ROMO_PRELOAD_DONEn_evn,
+    ROMO_PRELOAD_DONEn_evn_new,
     gb_state.tfetch_control.NYKA_FETCH_DONEp_evn.qp_new(),
     gb_state.tfetch_control.PORY_FETCH_DONEp_odd.qp_new());
-  /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
+  /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp_xxx_new = not1(SUVU_PRELOAD_DONE_TRIGn_xxx_new);
 
-  /*_p27.VEKU*/ wire VEKU_SFETCH_ENDn = nor2(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), TAVE_PRELOAD_DONE_TRIGp); // def nor
-  /*_p27.TAKA*/ gb_state.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.nand_latch(SECA_SFETCH_STARTn_evn, VEKU_SFETCH_ENDn);
+  /*_p27.VEKU*/ wire VEKU_SFETCH_ENDn_xxx_new = nor2(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), TAVE_PRELOAD_DONE_TRIGp_xxx_new); // def nor
+  /*_p27.TAKA*/ gb_state.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.nand_latch(SECA_SFETCH_STARTn_evn, VEKU_SFETCH_ENDn_xxx_new);
 
   //----------------------------------------
   // OAM temp register B stores sprite X coordinate during scan, so we need a copy of it for later.
@@ -864,13 +864,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p27.LYZU*/ gb_state.tfetch_control.LYZU_BFETCH_S0p_D1.dff17(gb_state.sys_clk.ALET_evn(), gb_state.XYMU_RENDERING_LATCHn.qn_new(), reg_old.tfetch_counter.LAXU_BFETCH_S0p_odd.qp_old());
 
   /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_evn = nor2(gb_state.win_ctrl.RYFA_WIN_FETCHn_A_evn.qn_new(), gb_state.win_ctrl.RENE_WIN_FETCHn_B_evn.qp_new());
-  /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne = nand2(SYLO_WIN_HITn_odd_new, gb_state.win_ctrl.SOVY_WIN_HITp_evn.qp_new());
-  /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne = not1(TUXY_WIN_FIRST_TILEne);
-  /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp = or3(SEKO_WIN_FETCH_TRIGp_evn, SUZU_WIN_FIRST_TILEne, TAVE_PRELOAD_DONE_TRIGp); // Schematic wrong, this is OR
+  /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_xxx = nand2(SYLO_WIN_HITn_odd_new, gb_state.win_ctrl.SOVY_WIN_HITp_evn.qp_new());
+  /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne_xxx = not1(TUXY_WIN_FIRST_TILEne_xxx);
+  /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp_xxx = or3(SEKO_WIN_FETCH_TRIGp_evn, SUZU_WIN_FIRST_TILEne_xxx, TAVE_PRELOAD_DONE_TRIGp_xxx_new); // Schematic wrong, this is OR
   /*#p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp = and2(gb_state.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), gb_state.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
   /*_p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not1(NUNY_WIN_MODE_TRIGp);
   /*_p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not1(NYFO_WIN_MODE_TRIGn);
-  /*_p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp);
+  /*_p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(gb_state.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp_xxx);
 
   for (int feedback = 0; feedback < 2; feedback++) {
     /*_p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(gb_state.tfetch_counter.LAXU_BFETCH_S0p_odd.qp_any(), gb_state.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_any(), NYXU_BFETCH_RSTn);
@@ -893,7 +893,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Fine match counter
 
-  /*#p27.PASO*/ wire PASO_FINE_RST = nor2(PAHA_RENDERINGn, TEVO_WIN_FETCH_TRIGp);
+  /*#p27.PASO*/ wire PASO_FINE_RST = nor2(PAHA_RENDERINGn, TEVO_WIN_FETCH_TRIGp_xxx);
 
   /*#p27.ROZE*/ uint8_t ROZE_FINE_COUNT_7n_odd = nand3(reg_new.fine_count_odd.RUBU_FINE_CNT2_odd.qp_any(), reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.qp_any(), reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.qp_any());
   /*#p27.PECU*/ uint8_t PECU_FINE_CLK_odd = nand2(ROXO_CLKPIPE_evn_new, ROZE_FINE_COUNT_7n_odd);
@@ -933,7 +933,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // Memory buses
 
   tock_ext_gates(cart_blob);
-  tock_vram_bus_gates(reg_old, TEVO_WIN_FETCH_TRIGp);
+  tock_vram_bus_gates(reg_old, TEVO_WIN_FETCH_TRIGp_xxx);
   tock_oam_bus_gates(reg_old);
   tock_zram_gates(reg_old);
 

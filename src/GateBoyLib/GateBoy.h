@@ -32,13 +32,11 @@ struct GateBoyCpu {
     core.reset_to_bootrom();
     bus_req_new.addr = 0x0000;
     bus_req_new.data = 0;
-    bus_req_new.read = 0;
+    bus_req_new.read = 1;
     bus_req_new.write = 0;
     cpu_data_latch = 49;
-    imask_latch = 0;
     intf_latch = 0;
-    intf_latch_delay = 0;
-    intf_halt_latch = 0;
+    halt_latch = 0;
   }
 
   void reset_to_cart() {
@@ -48,19 +46,15 @@ struct GateBoyCpu {
     bus_req_new.read = 0;
     bus_req_new.write = 1;
     cpu_data_latch = 1;
-    imask_latch = 0;
     intf_latch = 1;
-    intf_latch_delay = 0;
-    intf_halt_latch = 1;
+    halt_latch = 1;
   }
 
   MetroBoyCPU core;
   Req      bus_req_new = {0};
   uint8_t  cpu_data_latch = 0;
-  uint8_t  imask_latch = 0;
   uint8_t  intf_latch = 0;
-  uint8_t  intf_latch_delay = 0;
-  uint8_t  intf_halt_latch = 0;
+  uint8_t  halt_latch = 0;
 };
 #pragma pack(pop)
 

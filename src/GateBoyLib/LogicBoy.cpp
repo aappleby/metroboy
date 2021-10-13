@@ -192,7 +192,7 @@ void LogicBoy::tock_cpu() {
   auto phase_new = (sys.gb_phase_total - 0) & 7;
 
   cpu.cpu_data_latch &= lb_state.cpu_dbus;
-  cpu.imask_latch = lb_state.reg_ie;
+  //cpu.imask_latch = lb_state.reg_ie;
 
   if (PHASE_A_NEW) {
     debugbreak();
@@ -204,7 +204,7 @@ void LogicBoy::tock_cpu() {
   // +ha -ab -bc -cd -de -ef -fg -gh
   if (PHASE_A_NEW) {
     // this one latches funny, some hardware bug
-    if (get_bit(lb_state.reg_if, 2)) cpu.intf_halt_latch |= INT_TIMER_MASK;
+    if (get_bit(lb_state.reg_if, 2)) cpu.halt_latch |= INT_TIMER_MASK;
   }
 
   // -ha +ab -bc
@@ -256,10 +256,10 @@ void LogicBoy::tock_cpu() {
 
   // -bc +cd +de -ef -fg -gh -ha -ab
   if (PHASE_E_NEW) {
-    if (get_bit(lb_state.reg_if, 0)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
-    if (get_bit(lb_state.reg_if, 1)) cpu.intf_halt_latch |= INT_STAT_MASK;
-    if (get_bit(lb_state.reg_if, 3)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
-    if (get_bit(lb_state.reg_if, 4)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
+    if (get_bit(lb_state.reg_if, 0)) cpu.halt_latch |= INT_VBLANK_MASK;
+    if (get_bit(lb_state.reg_if, 1)) cpu.halt_latch |= INT_STAT_MASK;
+    if (get_bit(lb_state.reg_if, 3)) cpu.halt_latch |= INT_SERIAL_MASK;
+    if (get_bit(lb_state.reg_if, 4)) cpu.halt_latch |= INT_JOYPAD_MASK;
   }
 
   // -ha -ab -bc -cd -de -ef +fg +gh

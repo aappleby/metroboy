@@ -83,7 +83,14 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   //----------------------------------------
   // Fetch the first instruction in the bootrom
 
-  dbg_read(cart_blob, 0x0000);
+  //dbg_read(cart_blob, 0x0000);
+  {
+    dbg_req(0x0000, 0, 0);
+    run_phases(cart_blob, 8);
+  }
+  //dbg_req(0x0000, 0, 0);
+  //run_phases(cart_blob, 8);
+
 
   //----------------------------------------
   // We're ready to go, release the CPU so it can start running the bootrom.
@@ -944,23 +951,61 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   //----------------------------------------
 
-  // ab- bc- cd- de- ef- fg+ gh+ ha- 
-  if (DELTA_FG_new) {
-    cpu.cpu_data_latch = 0xFF;
-  }
+  // SigOut SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
+  // SigOut SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
+  // 
+  // SigOut SIG_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
+  // SigOut SIG_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
+  // 
+  // SigOut SIG_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
+  // SigOut SIG_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
+  // 
+  // SigOut SIG_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
+  // SigOut SIG_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
+
+  // There doesn't seem to be a good config for halt_latch that works with the latch always latching...
 
   cpu.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
 
-  // -ha +ab -bc
-  if (DELTA_HA_new) {
+  if (DELTA_AB_new) {
+  }
+
+  if (DELTA_BC_new) {
+    // -AB +BC +CD -DE
+    if (bit(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.halt_latch |= INT_VBLANK_MASK;
+    if (bit(gb_state.reg_if.LALU_FF0F_D1p.state)) cpu.halt_latch |= INT_STAT_MASK;
+    if (bit(gb_state.reg_if.UBUL_FF0F_D3p.state)) cpu.halt_latch |= INT_SERIAL_MASK;
+    if (bit(gb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.halt_latch |= INT_JOYPAD_MASK;
+    if (cpu.core.reg.op_next == 0x76 && (bit_pack(gb_state.reg_ie) & cpu.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
+    cpu.halt_latch = 0; // +BC +CD +DE +EF +FG
+  }
+
+  if (DELTA_CD_new) {
+  }
+
+  if (DELTA_DE_new) {
+    // -CD +DE +EF +FG
     if (sys.cpu_en) {
       if (cpu.core.reg.op_state == 0) {
         cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
-        cpu.core.reg.op_next = cpu.cpu_data_latch;
+        cpu.core.reg.op_next = (uint8_t)bit_pack(gb_state.cpu_dbus);
       }
+    }
+  }
 
+  if (DELTA_EF_new) {
+    cpu.cpu_data_latch = 0xFF; // -DE +EF
+  }
+
+  if (DELTA_FG_new) {
+
+    cpu.intf_latch = (uint8_t)bit_pack(gb_state.reg_if); // -EF +FG +GH -HA
+    if (bit(gb_state.reg_if.NYBO_FF0F_D2p.state)) cpu.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug    
+
+
+    if (sys.cpu_en) {
       if (cpu.core.reg.op_state == 0) {
-        if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.reg.ime) {
+        if ((bit_pack(gb_state.reg_ie) & cpu.intf_latch) && cpu.core.reg.ime) {
           cpu.core.reg.op_next = 0xF4; // fake opcode
           cpu.core.reg.ime = false;
           cpu.core.reg.ime_delay = false;
@@ -968,45 +1013,19 @@ void GateBoy::tock_gates(const blob& cart_blob) {
       }
       cpu.core.reg.int_ack = 0;
       cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
-
-      cpu.core.execute(cpu.imask_latch, cpu.intf_latch);
-      cpu.bus_req_new = cpu.core.get_bus_req();
     }
   }
 
-  // ========== CPU ==========
-  if (DELTA_CD_new) {
-    // -bc +cd +de -ef -fg -gh -ha -ab
-    if (bit(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.intf_halt_latch |= INT_VBLANK_MASK;
-    if (bit(gb_state.reg_if.LALU_FF0F_D1p.state)) cpu.intf_halt_latch |= INT_STAT_MASK;
-    if (bit(gb_state.reg_if.UBUL_FF0F_D3p.state)) cpu.intf_halt_latch |= INT_SERIAL_MASK;
-    if (bit(gb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.intf_halt_latch |= INT_JOYPAD_MASK;
-  }
-
-  if (DELTA_FG_new) {
-    // +ha -ab -bc -cd -de -ef -fg +gh
-    cpu.intf_latch = (uint8_t)bit_pack(gb_state.reg_if);
-  }
-
-  if (DELTA_FG_new) {
-    cpu.imask_latch = (uint8_t)bit_pack(gb_state.reg_ie);
-  }
-
-  if (DELTA_FG_new) {
-    if (cpu.core.reg.op_next == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.reg.op_state = 0;
-  }
-
   if (DELTA_GH_new) {
+  }
 
-    cpu.intf_halt_latch = 0;
-    // +ha -ab -bc -cd -de -ef -fg -gh
-    // this one latches funny, some hardware bug
-    if (bit(gb_state.reg_if.NYBO_FF0F_D2p.state)) cpu.intf_halt_latch |= INT_TIMER_MASK;
+  if (DELTA_HA_new) {
+    if (cpu.core.reg.bus_read) cpu.core.reg.data_in = cpu.cpu_data_latch; // -FG +GH +HA -AB
+
 
     if (sys.cpu_en) {
-      //cpu.core.latch_bus_data(cpu.cpu_data_latch);
-      if (cpu.core.reg.bus_read) cpu.core.reg.in = cpu.cpu_data_latch;
-
+      cpu.core.execute((uint8_t)bit_pack(gb_state.reg_ie), cpu.intf_latch);
+      cpu.bus_req_new = cpu.core.get_bus_req();
     }
   }
 }

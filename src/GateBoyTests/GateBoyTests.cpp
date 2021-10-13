@@ -45,8 +45,8 @@ int main(int argc, char** argv) {
 
     const auto proto = new GateBoy();
 
-    //results += t.test_fastboot(proto, 0xFF);
-    results += t.test_reset_to_bootrom(proto, 0xFF);
+    results += t.test_fastboot(proto, 0xFF);
+    //results += t.test_reset_to_bootrom(proto, 0xFF);
     //results += t.test_reset_to_cart(proto, 0xFF);
 
     LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);

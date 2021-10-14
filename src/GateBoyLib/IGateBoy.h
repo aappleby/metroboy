@@ -20,9 +20,7 @@ public:
   virtual GBResult load_raw_dump(BlobStream& dump_in) = 0;
   virtual GBResult save_raw_dump(BlobStream& dump_out) const = 0;
 
-  virtual GBResult reset_to_poweron(const blob& cart_blob) = 0;
-  virtual GBResult run_poweron_reset(const blob& cart_blob, bool fastboot) = 0;
-  virtual GBResult reset_to_bootrom(const blob& cart_blob) = 0;
+  virtual GBResult reset_to_bootrom(const blob& cart_blob, bool slow) = 0;
   virtual GBResult reset_to_cart   (const blob& cart_blob) = 0;
 
   virtual GBResult peek(int addr) const = 0;
@@ -36,6 +34,7 @@ public:
 
   virtual GBResult run_phases(const blob& cart_blob, int phase_count) = 0;
   virtual GBResult next_phase(const blob& cart_blob) = 0;
+  virtual GBResult run_to(const blob& cart_blob, int phase) = 0;
 
   virtual GBResult set_buttons(uint8_t buttons) = 0;
   virtual GBResult set_cpu_en(bool enabled) { return GBResult::ok(); };

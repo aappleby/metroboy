@@ -25,8 +25,10 @@ using std::min;
 
 //-----------------------------------------------------------------------------
 
-GBResult LogicBoy::reset_to_bootrom(const blob& cart_blob)
+GBResult LogicBoy::reset_to_bootrom(const blob& cart_blob, bool slow)
 {
+  (void)slow;
+
   lb_state.reset_to_bootrom();
   cpu.reset_to_bootrom();
   mem.reset_to_bootrom();
@@ -140,6 +142,13 @@ GBResult LogicBoy::next_phase(const blob& cart_blob) {
   sys.gb_phase_total++;
   tock_cpu();
   tock_logic(cart_blob);
+  return GBResult::ok();
+}
+
+GBResult LogicBoy::run_to(const blob& cart_blob, int phase) {
+  while(get_sys().gb_phase_total < phase) {
+    next_phase(cart_blob);
+  }
   return GBResult::ok();
 }
 

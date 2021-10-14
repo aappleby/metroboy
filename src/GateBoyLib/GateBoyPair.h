@@ -17,9 +17,7 @@ struct GateBoyPair : public IGateBoy {
   GBResult get_flags() const override;
   GBResult load_raw_dump(BlobStream& dump_in) override;
   GBResult save_raw_dump(BlobStream& dump_out) const override;
-  GBResult reset_to_poweron(const blob& cart_blob) override;
-  GBResult run_poweron_reset(const blob& cart_blob, bool fastboot) override;
-  GBResult reset_to_bootrom(const blob& cart_blob) override;
+  GBResult reset_to_bootrom(const blob& cart_blob, bool slow) override;
   GBResult reset_to_cart   (const blob& cart_blob) override;
   GBResult peek(int addr) const override;
   GBResult poke(int addr, uint8_t data_in) override;
@@ -27,8 +25,11 @@ struct GateBoyPair : public IGateBoy {
   GBResult dbg_read(const blob& cart_blob, int addr) override;
   GBResult dbg_write (const blob& cart_blob, int addr, uint8_t data_in) override;
   GBResult dbg_flip();
+
   GBResult run_phases(const blob& cart_blob, int phase_count) override;
   GBResult next_phase(const blob& cart_blob) override;
+  GBResult run_to(const blob& cart_blob, int phase) override;
+
   GBResult set_buttons(uint8_t buttons) override;
   GBResult set_cpu_en(bool enabled) override;
 

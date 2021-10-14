@@ -57,9 +57,7 @@ struct LogicBoy : public IGateBoy {
     return write_ok ? GBResult::ok() : Error::CORRUPT;;
   }
 
-  GBResult reset_to_poweron(const blob& cart_blob) override { return Error::CORRUPT; }
-  GBResult run_poweron_reset(const blob& cart_blob, bool fastboot) override { return Error::CORRUPT; }
-  GBResult reset_to_bootrom(const blob& cart_blob) override;
+  GBResult reset_to_bootrom(const blob& cart_blob, bool slow) override;
   GBResult reset_to_cart   (const blob& cart_blob) override;
 
   GBResult peek(int addr) const override;
@@ -71,6 +69,7 @@ struct LogicBoy : public IGateBoy {
 
   GBResult run_phases(const blob& cart_blob, int phase_count) override;
   GBResult next_phase(const blob& cart_blob) override;
+  GBResult run_to(const blob& cart_blob, int phase) override;
 
   GBResult set_buttons(uint8_t buttons) override { sys.buttons = buttons; return GBResult::ok(); }
 

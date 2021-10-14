@@ -12,8 +12,50 @@ constexpr uint8_t F_ZERO = 0x80;
 
 //-----------------------------------------------------------------------------
 
+FieldInfo MetroBoyCPU::fields[] = {
+  DECLARE_FIELD(MetroBoyCPU, reg.bus_addr),
+  DECLARE_FIELD(MetroBoyCPU, reg.bus_data),
+  DECLARE_FIELD(MetroBoyCPU, reg.bus_read),
+  DECLARE_FIELD(MetroBoyCPU, reg.bus_write),
+
+  DECLARE_FIELD(MetroBoyCPU, reg.op_addr),
+  DECLARE_FIELD(MetroBoyCPU, reg.op_prev),
+  DECLARE_FIELD(MetroBoyCPU, reg.op_next),
+  DECLARE_FIELD(MetroBoyCPU, reg.op_cb),
+  DECLARE_FIELD(MetroBoyCPU, reg.op_state),
+  DECLARE_FIELD(MetroBoyCPU, reg.data_in),
+
+  DECLARE_FIELD(MetroBoyCPU, reg.ime),
+  DECLARE_FIELD(MetroBoyCPU, reg.ime_delay),
+  DECLARE_FIELD(MetroBoyCPU, reg.int_addr),
+  DECLARE_FIELD(MetroBoyCPU, reg.int_ack),
+
+  DECLARE_FIELD(MetroBoyCPU, reg.alu_f),
+  DECLARE_FIELD(MetroBoyCPU, reg.alu_o),
+
+  DECLARE_FIELD(MetroBoyCPU, reg.pcl),
+  DECLARE_FIELD(MetroBoyCPU, reg.pch),
+  DECLARE_FIELD(MetroBoyCPU, reg.spl),
+  DECLARE_FIELD(MetroBoyCPU, reg.sph),
+  DECLARE_FIELD(MetroBoyCPU, reg.xyl),
+  DECLARE_FIELD(MetroBoyCPU, reg.xyh),
+
+  DECLARE_FIELD(MetroBoyCPU, reg.c),
+  DECLARE_FIELD(MetroBoyCPU, reg.b),
+  DECLARE_FIELD(MetroBoyCPU, reg.e),
+  DECLARE_FIELD(MetroBoyCPU, reg.d),
+  DECLARE_FIELD(MetroBoyCPU, reg.l),
+  DECLARE_FIELD(MetroBoyCPU, reg.h), 
+  DECLARE_FIELD(MetroBoyCPU, reg.f),
+  DECLARE_FIELD(MetroBoyCPU, reg.a),
+  END_FIELDS()
+};
+
+//-----------------------------------------------------------------------------
+
 void MetroBoyCPU::reset_to_bootrom() {
   memset(this, 0, sizeof(*this));
+  reg.op_next = DMG_ROM_bin[0];
 }
 
 //-----------------------------------------------------------------------------

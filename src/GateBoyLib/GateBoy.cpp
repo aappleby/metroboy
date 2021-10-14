@@ -27,6 +27,58 @@
 #define CHECK_ODD(A)  CHECK_P(DELTA_ODD_new  || ((reg_old.A.state & 1) == (reg_new.A.state & 1)))
 #define CHECK_EVEN(A) CHECK_P(DELTA_EVEN_new || ((reg_old.A.state & 1) == (reg_new.A.state & 1)))
 
+
+//-----------------------------------------------------------------------------
+
+FieldInfo GateBoyCpu::fields[] = {
+  DECLARE_FIELD(GateBoyCpu, core.reg.bus_addr),
+  DECLARE_FIELD(GateBoyCpu, core.reg.bus_data),
+  DECLARE_FIELD(GateBoyCpu, core.reg.bus_read),
+  DECLARE_FIELD(GateBoyCpu, core.reg.bus_write),
+
+  DECLARE_FIELD(GateBoyCpu, core.reg.op_addr),
+  DECLARE_FIELD(GateBoyCpu, core.reg.op_prev),
+  DECLARE_FIELD(GateBoyCpu, core.reg.op_next),
+  DECLARE_FIELD(GateBoyCpu, core.reg.op_cb),
+  DECLARE_FIELD(GateBoyCpu, core.reg.op_state),
+  DECLARE_FIELD(GateBoyCpu, core.reg.data_in),
+
+  DECLARE_FIELD(GateBoyCpu, core.reg.ime),
+  DECLARE_FIELD(GateBoyCpu, core.reg.ime_delay),
+  DECLARE_FIELD(GateBoyCpu, core.reg.int_addr),
+  DECLARE_FIELD(GateBoyCpu, core.reg.int_ack),
+
+  DECLARE_FIELD(GateBoyCpu, core.reg.alu_f),
+  DECLARE_FIELD(GateBoyCpu, core.reg.alu_o),
+
+  DECLARE_FIELD(GateBoyCpu, core.reg.pcl),
+  DECLARE_FIELD(GateBoyCpu, core.reg.pch),
+  DECLARE_FIELD(GateBoyCpu, core.reg.spl),
+  DECLARE_FIELD(GateBoyCpu, core.reg.sph),
+  DECLARE_FIELD(GateBoyCpu, core.reg.xyl),
+  DECLARE_FIELD(GateBoyCpu, core.reg.xyh),
+
+  DECLARE_FIELD(GateBoyCpu, core.reg.c),
+  DECLARE_FIELD(GateBoyCpu, core.reg.b),
+  DECLARE_FIELD(GateBoyCpu, core.reg.e),
+  DECLARE_FIELD(GateBoyCpu, core.reg.d),
+  DECLARE_FIELD(GateBoyCpu, core.reg.l),
+  DECLARE_FIELD(GateBoyCpu, core.reg.h), 
+  DECLARE_FIELD(GateBoyCpu, core.reg.f),
+  DECLARE_FIELD(GateBoyCpu, core.reg.a),
+
+  DECLARE_FIELD(GateBoyCpu, bus_req_new.addr),
+  DECLARE_FIELD(GateBoyCpu, bus_req_new.data),
+  DECLARE_FIELD(GateBoyCpu, bus_req_new.read),
+  DECLARE_FIELD(GateBoyCpu, bus_req_new.write),
+
+  DECLARE_FIELD(GateBoyCpu, cpu_data_latch),
+  DECLARE_FIELD(GateBoyCpu, intf_latch),
+  DECLARE_FIELD(GateBoyCpu, halt_latch),
+
+  END_FIELDS()
+};
+
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::reset_to_poweron(const blob& cart_blob) {
@@ -108,20 +160,26 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 
 //-----------------------------------------------------------------------------
 
-GBResult GateBoy::reset_to_bootrom(const blob& cart_blob) {
-  gb_state.reset_to_bootrom();
-  cpu.reset_to_bootrom();
-  mem.reset_to_bootrom();
-  sys.reset_to_bootrom();
-  pins.reset_to_bootrom();
-  probes.reset_to_bootrom();
+GBResult GateBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
+  if (slow) {
+    reset_to_poweron(cart_blob);
+    run_poweron_reset(cart_blob, true);
+  }
+  else {
+    gb_state.reset_to_bootrom();
+    cpu.reset_to_bootrom();
+    mem.reset_to_bootrom();
+    sys.reset_to_bootrom();
+    pins.reset_to_bootrom();
+    probes.reset_to_bootrom();
+  }
   return GBResult::ok();
 }
 
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::reset_to_cart(const blob& cart_blob) {
-  reset_to_bootrom(cart_blob);
+  reset_to_bootrom(cart_blob, false);
   gb_state.reset_to_cart();
   cpu.reset_to_cart();
   mem.reset_to_cart();
@@ -252,7 +310,14 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   return GBResult::ok();
 }
 
-//#pragma warning(disable:4127) // conditional expression is constant
+//-----------------------------------------------------------------------------
+
+GBResult GateBoy::run_to(const blob& cart_blob, int phase) {
+  while(get_sys().gb_phase_total < phase) {
+    next_phase(cart_blob);
+  }
+  return GBResult::ok();
+}
 
 //-----------------------------------------------------------------------------
 
@@ -926,11 +991,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   if (DELTA_DE_new) {
     // -CD +DE +EF +FG
-    if (sys.cpu_en) {
-      if (cpu.core.reg.op_state == 0) {
-        cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
-        cpu.core.reg.op_next = (uint8_t)bit_pack(gb_state.cpu_dbus);
-      }
+    if (cpu.core.reg.op_state == 0) {
+      cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
+      cpu.core.reg.op_next = (uint8_t)bit_pack(gb_state.cpu_dbus);
     }
   }
 

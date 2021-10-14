@@ -42,10 +42,10 @@ struct TestResults {
 #define TEST_FAIL()    do { results.expect_fail++; return results.finish(__FUNCTION__); } while(0);
 
 #define EXPECT(A, ...)       if ((A))        { results.expect_pass++; } else { LOG_Y("EXPECT fail @ %s : %d ",                                          __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.expect_fail++; } 
-#define EXPECT_EQ(A, B, ...) if ((A) == (B)) { results.expect_pass++; } else { LOG_Y("EXPECT_EQ fail: %02x != %02x @ %s : %d ", uint8_t(A), uint8_t(B), __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.expect_fail++; } 
-#define EXPECT_NE(A, B, ...) if ((A) != (B)) { results.expect_pass++; } else { LOG_Y("EXPECT_NE fail: %02x == %02x @ %s : %d ", uint8_t(A), uint8_t(B), __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.expect_fail++; } 
+#define EXPECT_EQ(A, B, ...) if ((A) == (B)) { results.expect_pass++; } else { LOG_Y("EXPECT_EQ fail: %02x != %02x @ %s : %d ", A, B, __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.expect_fail++; } 
+#define EXPECT_NE(A, B, ...) if ((A) != (B)) { results.expect_pass++; } else { LOG_Y("EXPECT_NE fail: %02x == %02x @ %s : %d ", A, B, __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.expect_fail++; } 
 
-#define ASSERT_EQ(A, B, ...) if ((A) == (B)) { results.expect_pass++; } else { LOG_R("ASSERT_EQ fail: %02x != %02x @ %s : %d ", uint8_t(A), uint8_t(B), __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); TEST_FAIL(); }
-#define ASSERT_NE(A, B, ...) if ((A) != (B)) { results.expect_pass++; } else { LOG_R("ASSERT_NE fail: %02x == %02x @ %s : %d ", uint8_t(A), uint8_t(B), __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); TEST_FAIL(); }
+#define ASSERT_EQ(A, B, ...) if ((A) == (B)) { results.expect_pass++; } else { LOG_R("ASSERT_EQ fail: %02x != %02x @ %s : %d ", A, B, __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); TEST_FAIL(); }
+#define ASSERT_NE(A, B, ...) if ((A) != (B)) { results.expect_pass++; } else { LOG_R("ASSERT_NE fail: %02x == %02x @ %s : %d ", A, B, __FILE__, __LINE__); LOG_R(__VA_ARGS__); LOG("\n"); TEST_FAIL(); }
 
 //-----------------------------------------------------------------------------

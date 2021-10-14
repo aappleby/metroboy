@@ -43,21 +43,9 @@ GBResult GateBoyPair::save_raw_dump(BlobStream& dump_out) const {
   return check_results(r1, r2);
 }
 
-GBResult GateBoyPair::reset_to_poweron(const blob& cart_blob) {
-  GBResult r1 = gb->reset_to_poweron(cart_blob);
-  GBResult r2 = lb->reset_to_poweron(cart_blob);
-  return check_results(r1, r2);
-}
-
-GBResult GateBoyPair::run_poweron_reset(const blob& cart_blob, bool fastboot) {
-  GBResult r1 = gb->run_poweron_reset(cart_blob, fastboot);
-  GBResult r2 = lb->run_poweron_reset(cart_blob, fastboot);
-  return check_results(r1, r2);
-}
-
-GBResult GateBoyPair::reset_to_bootrom(const blob& cart_blob) {
-  GBResult r1 = gb->reset_to_bootrom(cart_blob);
-  GBResult r2 = lb->reset_to_bootrom(cart_blob);
+GBResult GateBoyPair::reset_to_bootrom(const blob& cart_blob, bool slow) {
+  GBResult r1 = gb->reset_to_bootrom(cart_blob, slow);
+  GBResult r2 = lb->reset_to_bootrom(cart_blob, slow);
   return check_results(r1, r2);
 }
 
@@ -112,6 +100,13 @@ GBResult GateBoyPair::next_phase(const blob& cart_blob) {
   GBResult r1 = gb->next_phase(cart_blob);
   GBResult r2 = lb->next_phase(cart_blob);
   return check_results(r1, r2);
+}
+
+GBResult GateBoyPair::run_to(const blob& cart_blob, int phase) {
+  while(get_sys().gb_phase_total < phase) {
+    next_phase(cart_blob);
+  }
+  return GBResult::ok();
 }
 
 GBResult GateBoyPair::set_buttons(uint8_t buttons) {

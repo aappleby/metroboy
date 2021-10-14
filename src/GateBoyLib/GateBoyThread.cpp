@@ -25,7 +25,7 @@ void GateBoyThread::start() {
   pause();
 
   cart_blob = Assembler::create_dummy_cart();
-  gb->reset_to_bootrom(cart_blob);
+  gb->reset_to_bootrom(cart_blob, false);
 }
 
 //----------------------------------------
@@ -64,11 +64,11 @@ void GateBoyThread::reset_gb() {
 //----------------------------------------
 
 
-void GateBoyThread::reset_to_bootrom() {
+void GateBoyThread::reset_to_bootrom(bool slow) {
   CHECK_P(sim_paused());
   clear_steps();
   reset_gb();
-  gb->reset_to_bootrom(cart_blob);
+  gb->reset_to_bootrom(cart_blob, slow);
 }
 
 void GateBoyThread::reset_to_cart() {

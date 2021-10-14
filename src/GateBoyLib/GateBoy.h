@@ -24,6 +24,9 @@ struct GateBoy;
 
 #pragma pack(push, 1)
 struct GateBoyCpu {
+
+  static FieldInfo fields[];
+
   void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
   }
@@ -47,7 +50,7 @@ struct GateBoyCpu {
     bus_req_new.write = 1;
     cpu_data_latch = 1;
     intf_latch = 1;
-    halt_latch = 1;
+    halt_latch = 0;
   }
 
   MetroBoyCPU core;
@@ -208,9 +211,7 @@ struct GateBoy  : public IGateBoy {
     return write_ok ? GBResult::ok() : Error::CORRUPT;;
   }
 
-  GBResult reset_to_poweron(const blob& cart_blob) override;
-  GBResult run_poweron_reset(const blob& cart_blob, bool fastboot) override;
-  GBResult reset_to_bootrom(const blob& cart_blob) override;
+  GBResult reset_to_bootrom(const blob& cart_blob, bool slow) override;
   GBResult reset_to_cart(const blob& cart_blob) override;
 
   GBResult peek(int addr) const override;
@@ -222,6 +223,7 @@ struct GateBoy  : public IGateBoy {
 
   GBResult run_phases(const blob& cart_blob, int phase_count) override;
   GBResult next_phase(const blob& cart_blob) override;
+  GBResult run_to(const blob& cart_blob, int phase) override;
 
   GBResult set_buttons(uint8_t buttons) override { sys.buttons = buttons; return GBResult::ok(); }
  
@@ -242,6 +244,9 @@ struct GateBoy  : public IGateBoy {
   uint8_t read_flat_addr(const blob& cart_blob, int addr) const;
 
   //----------------------------------------
+
+  GBResult reset_to_poweron(const blob& cart_blob);
+  GBResult run_poweron_reset(const blob& cart_blob, bool fastboot);
 
   void set_boot_bit(const blob& cart_blob) {
     dbg_write(cart_blob, 0xFF50, 0xFF);

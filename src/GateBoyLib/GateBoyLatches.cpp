@@ -4,29 +4,29 @@
 // This code is not for running, it's for trying to figure out what might trigger glitches in GateBoy's latches.
 
 
-void GateBoy::tock_latches() {
+void GateBoy::tock_latches(const GateBoyState& reg_old) {
 {
-   // TAKA
+  auto& reg_new = gb_state;
 
-  /*#p21.XYVO*/ wire XYVO_y144p_old = and2(gb_state.reg_ly.LOVU_LY4p_odd.qp_old(), gb_state.reg_ly.LAFO_LY7p_odd.qp_old()); // 128 + 16 = 144
-  /*#p21.PURE*/ wire PURE_x113n_old = not1(gb_state.lcd.RUTU_LINE_ENDp_odd.qp_old());
+  /*#p21.XYVO*/ wire XYVO_y144p_old = and2(reg_old.reg_ly.LOVU_LY4p_odd.qp_old(), reg_old.reg_ly.LAFO_LY7p_odd.qp_old()); // 128 + 16 = 144
+  /*#p21.PURE*/ wire PURE_x113n_old = not1(reg_old.lcd.RUTU_LINE_ENDp_odd.qp_old());
   /*#p29.ALES*/ wire ALES_y144n_old = not1(XYVO_y144p_old);
   /*#p21.SELA*/ wire SELA_x113p_old = not1(PURE_x113n_old);
   /*#p29.ABOV*/ wire ABOV_x113p_old = and2(SELA_x113p_old, ALES_y144n_old);
-  /*#p29.CATU*/ gb_state.lcd.CATU_LINE_ENDp_odd.dff17(gb_state.sys_clk.XUPY_ABxxEFxx_new(), ABEZ_VID_RSTn(), ABOV_x113p_old);
-  /*#p28.ANEL*/ gb_state.lcd.ANEL_LINE_ENDp_odd.dff17(gb_state.sys_clk.AWOH_xxCDxxGH_new(), ABEZ_VID_RSTn(), gb_state.lcd.CATU_LINE_ENDp_odd.qp_old());
+  /*#p29.CATU*/ reg_new.lcd.CATU_LINE_ENDp_odd.dff17(reg_new.sys_clk.XUPY_ABxxEFxx_new(), reg_new.ABEZ_VID_RSTn(), ABOV_x113p_old);
+  /*#p28.ANEL*/ reg_new.lcd.ANEL_LINE_ENDp_odd.dff17(reg_new.sys_clk.AWOH_xxCDxxGH_new(), reg_new.ABEZ_VID_RSTn(), reg_old.lcd.CATU_LINE_ENDp_odd.qp_old());
 
-  /*_p28.ABAF*/ wire ABAF_x113n_odd = not1(gb_state.lcd.CATU_LINE_ENDp_odd.qp_new());
-  /*_p28.BYHA*/ wire BYHA_LINE_RST_TRIGn_odd = or_and3(gb_state.lcd.ANEL_LINE_ENDp_odd.qp_new(), ABAF_x113n_odd, ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
+  /*_p28.ABAF*/ wire ABAF_x113n_odd_new = not1(reg_new.lcd.CATU_LINE_ENDp_odd.qp_new());
+  /*_p28.BYHA*/ wire BYHA_LINE_RST_TRIGn_odd_new = or_and3(reg_new.lcd.ANEL_LINE_ENDp_odd.qp_new(), ABAF_x113n_odd_new, reg_new.ABEZ_VID_RSTn()); // so if this is or_and, BYHA should go low on 910 and 911
 
-  /*_p28.ATEJ*/ gb_state.ATEJ_LINE_RST_TRIGp_odd <<= not1(BYHA_LINE_RST_TRIGn_odd);
-  /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn = not1(gb_state.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new());
-  /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn = nand4(gb_state.XYMU_RENDERING_LATCHn.qn_new(), ROMO_PRELOAD_DONEn_evn, gb_state.tfetch_control.NYKA_FETCH_DONEp_evn.qp_new(), gb_state.tfetch_control.PORY_FETCH_DONEp_odd.qp_new());
-  /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp = not1(SUVU_PRELOAD_DONE_TRIGn);
-  /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp = and2(gb_state.sfetch_control.SOBU_SFETCH_REQp_evn.qp_new(), gb_state.sfetch_control.SUDA_SFETCH_REQp_odd.qn_new());
-  /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn = nor3(RYCE_SFETCH_TRIGp, ROSY_VID_RSTp(), gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new());
-  /*_p27.VEKU*/ wire VEKU_SFETCH_ENDn = nor2(gb_state.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), TAVE_PRELOAD_DONE_TRIGp);
-  /*_p27.TAKA*/ gb_state.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.nand_latch(SECA_SFETCH_STARTn_evn, VEKU_SFETCH_ENDn);
+  /*_p28.ATEJ*/ reg_new.ATEJ_LINE_RST_TRIGp_odd <<= not1(BYHA_LINE_RST_TRIGn_odd_new);
+  /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn_new = not1(reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new());
+  /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn_new = nand4(reg_new.XYMU_RENDERING_LATCHn.qn_new(), ROMO_PRELOAD_DONEn_evn_new, reg_new.tfetch_control.NYKA_FETCH_DONEp_evn.qp_new(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new());
+  /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp_new = not1(SUVU_PRELOAD_DONE_TRIGn_new);
+  /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp_new = and2(reg_new.sfetch_control.SOBU_SFETCH_REQp_evn.qp_new(), reg_new.sfetch_control.SUDA_SFETCH_REQp_odd.qn_new());
+  /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn = nor3(RYCE_SFETCH_TRIGp_new, reg_new.ROSY_VID_RSTp(), reg_new.ATEJ_LINE_RST_TRIGp_odd.out_new());
+  /*_p27.VEKU*/ wire VEKU_SFETCH_ENDn_new = nor2(reg_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), TAVE_PRELOAD_DONE_TRIGp_new);
+  /*_p27.TAKA*/ reg_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.nand_latch(SECA_SFETCH_STARTn_evn, VEKU_SFETCH_ENDn_new);
 }
 
 }

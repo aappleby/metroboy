@@ -6,6 +6,8 @@
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FETCH_TRIGp) {
+  auto& reg_new = gb_state;
+
   memset(&gb_state.vram_abus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.vram_abus));
   memset(&gb_state.vram_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.vram_dbus));
 
@@ -221,7 +223,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
 
   /*_p27.VETU*/ wire VETU_WIN_MAPp = and2(TEVO_WIN_FETCH_TRIGp, PORE_WIN_MODEp);
   /*_p27.XAHY*/ wire XAHY_LINE_RSTn = not1(gb_state.ATEJ_LINE_RST_TRIGp_odd.out_new());
-  /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(gb_state.reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn, XAPO_VID_RSTn());
+  /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(gb_state.reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn, reg_new.XAPO_VID_RSTn());
   /*_p27.XACO*/ wire XACO_WIN_RSTn = not1(XOFO_WIN_RSTp);
   /*_p27.WYKA*/ gb_state.win_x.map.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp,                       XACO_WIN_RSTn,    gb_state.win_x.map.WYKA_WIN_MAP_X0.qn_old());
   /*_p27.WODY*/ gb_state.win_x.map.WODY_WIN_MAP_X1.dff17(gb_state.win_x.map.WYKA_WIN_MAP_X0.qn_new(), XACO_WIN_RSTn, gb_state.win_x.map.WODY_WIN_MAP_X1.qn_old());
@@ -232,7 +234,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   // Every time we leave win mode we increment win_y
   /*_p27.WAZY*/ wire WAZY_WIN_MODEn = not1(PORE_WIN_MODEp);
   /*#p21.PARU*/ wire PARU_VBLANKp = not1(gb_state.lcd.POPU_VBLANKp_odd.qn_new());
-  /*_p27.REPU*/ wire REPU_VBLANKp   = or2(PARU_VBLANKp, PYRY_VID_RSTp());
+  /*_p27.REPU*/ wire REPU_VBLANKp   = or2(PARU_VBLANKp, reg_new.PYRY_VID_RSTp());
   /*_p27.SYNY*/ wire SYNY_VBLANKn   = not1(REPU_VBLANKp);
   /*_p27.VYNO*/ gb_state.win_y.tile.VYNO_WIN_TILE_Y0.dff17(WAZY_WIN_MODEn,                           SYNY_VBLANKn, gb_state.win_y.tile.VYNO_WIN_TILE_Y0.qn_old());
   /*_p27.VUJO*/ gb_state.win_y.tile.VUJO_WIN_TILE_Y1.dff17(gb_state.win_y.tile.VYNO_WIN_TILE_Y0.qn_new(), SYNY_VBLANKn, gb_state.win_y.tile.VUJO_WIN_TILE_Y1.qn_old());
@@ -417,9 +419,9 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   // CPU bus to Vram data bus
 
   {
-    /*#p25.RUVY*/ wire RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
+    /*#p25.RUVY*/ wire RUVY_CPU_VRAM_WRp = not1(reg_new.SALE_CPU_VRAM_WRn());
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
-    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
+    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(reg_new.TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
 
     /*#p25.SAZO*/ wire SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, RUVY_CPU_VRAM_WRp);
     /*#p25.RYJE*/ wire RYJE_CBD_TO_VPDn = not1(SAZO_CBD_TO_VPDp);
@@ -453,7 +455,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   {
     /*_p25.TUTO*/ wire TUTO_VRAM_DBGp = and2(pins.sys.UNOR_MODE_DBG2p(), gb_state.sys_rst.SOTO_DBG_VRAMp.qn_new());
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
-    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
+    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(reg_new.TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
     /*#p25.RACO*/ wire RACO_DBG_VRAMn = not1(TUTO_VRAM_DBGp);
     /*#p25.SUTU*/ wire SUTU_MCSn = nor4(LENA_BFETCHINGp, LUFA_DMA_VRAMp, gb_state.sfetch_control.TEXY_SFETCHINGp_evn.out_new(), SERE_CPU_VRAM_RDp);
     /*_p25.TODE*/ wire TODE_MCSn_A = and2(SUTU_MCSn, RACO_DBG_VRAMn);
@@ -466,7 +468,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
 
   {
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
-    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
+    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(reg_new.TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
 
     ///*_p25.SUDO*/ wire SUDO_MWRp = not1(/*vram_pins.PIN_VRAM_WRn.qn_new()*/ 1); // Ignoring debug stuff for now
     /*_p25.SUDO*/ wire SUDO_MWRp = not1(gb_state.SIG_VCC.out_new()); // Ignoring debug stuff for now
@@ -483,7 +485,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
 
     /*_PIN_49*/ pins.vram_ctrl.PIN_49_VRAM_WRn.pin_out(SYSY_MWRp_A, RAGU_MWRp_D);
 
-    /*_p25.RYLU*/ wire RYLU_CPU_VRAM_RDn = nand2(SALE_CPU_VRAM_WRn(), XANE_VRAM_LOCKn);
+    /*_p25.RYLU*/ wire RYLU_CPU_VRAM_RDn = nand2(reg_new.SALE_CPU_VRAM_WRn(), XANE_VRAM_LOCKn);
     /*_p29.TYTU*/ wire TYTU_SFETCH_S0n = not1(gb_state.sfetch_counter_evn.TOXE_SFETCH_S0p_evn.qp_new());
     /*_p29.TACU*/ wire TACU_SPR_SEQ_5_TRIG = nand2(gb_state.sfetch_control.TYFO_SFETCH_S0p_D1_odd.qp_new(), TYTU_SFETCH_S0n);
     /*_p25.SOHO*/ wire SOHO_SPR_VRAM_RDp = and2(TACU_SPR_SEQ_5_TRIG, gb_state.sfetch_control.TEXY_SFETCHINGp_evn.out_new());
@@ -507,9 +509,9 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   // Vram data pin driver
 
   {
-    /*#p25.RUVY*/ wire RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
+    /*#p25.RUVY*/ wire RUVY_CPU_VRAM_WRp = not1(reg_new.SALE_CPU_VRAM_WRn());
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
-    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
+    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(reg_new.TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
 
     /*#p25.SAZO*/ wire SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, RUVY_CPU_VRAM_WRp);
     /*#p25.RYJE*/ wire RYJE_CBD_TO_VPDn = not1(SAZO_CBD_TO_VPDp);
@@ -588,9 +590,9 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   // Vram pins to vram bus
 
   {
-    /*#p25.RUVY*/ wire RUVY_CPU_VRAM_WRp = not1(SALE_CPU_VRAM_WRn());
+    /*#p25.RUVY*/ wire RUVY_CPU_VRAM_WRp = not1(reg_new.SALE_CPU_VRAM_WRn());
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
-    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
+    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(reg_new.TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
     /*#p25.SAZO*/ wire SAZO_CBD_TO_VPDp = and2(SERE_CPU_VRAM_RDp, RUVY_CPU_VRAM_WRp);
     /*#p25.RYJE*/ wire RYJE_CBD_TO_VPDn = not1(SAZO_CBD_TO_VPDp);
     /*#p25.REVO*/ wire REVO_CBD_TO_VPDp = not1(RYJE_CBD_TO_VPDn);
@@ -630,7 +632,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
     /*_p25.SAME*/ wire SAME_VBUS_D7n = not1(gb_state.vram_dbus.BUS_VRAM_D07p.out_new());
 
     /*#p25.ROPY*/ wire ROPY_RENDERINGn = not1(gb_state.XYMU_RENDERING_LATCHn.qn_new());
-    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
+    /*#p25.SERE*/ wire SERE_CPU_VRAM_RDp = and2(reg_new.TOLE_CPU_VRAM_RDp(), ROPY_RENDERINGn);
     /*_p25.TYVY*/ wire TYVY_VBD_TO_CBDn = nand2(SERE_CPU_VRAM_RDp, gb_state.cpu_signals.LEKO_CPU_RDp());
     /*_p25.SEBY*/ wire SEBY_VBD_TO_CBDp = not1(TYVY_VBD_TO_CBDn);
 

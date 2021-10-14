@@ -116,10 +116,7 @@ struct Gate : public BitBase {
 //-----------------------------------------------------------------------------
 
 struct SigIn : public BitBase {
-<<<<<<< HEAD
   wire out_any() const { return state; }
-=======
->>>>>>> split_dff22
   wire out_old() const { check_old(); return state; }
   wire out_new() const { check_new(); return state; }
 

@@ -101,20 +101,26 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 
 //-----------------------------------------------------------------------------
 
-GBResult GateBoy::reset_to_bootrom(const blob& cart_blob) {
-  gb_state.reset_to_bootrom();
-  cpu.reset_to_bootrom();
-  mem.reset_to_bootrom();
-  sys.reset_to_bootrom();
-  pins.reset_to_bootrom();
-  probes.reset_to_bootrom();
+GBResult GateBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
+  if (slow) {
+    reset_to_poweron(cart_blob);
+    run_poweron_reset(cart_blob, true);
+  }
+  else {
+    gb_state.reset_to_bootrom();
+    cpu.reset_to_bootrom();
+    mem.reset_to_bootrom();
+    sys.reset_to_bootrom();
+    pins.reset_to_bootrom();
+    probes.reset_to_bootrom();
+  }
   return GBResult::ok();
 }
 
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::reset_to_cart(const blob& cart_blob) {
-  reset_to_bootrom(cart_blob);
+  reset_to_bootrom(cart_blob, false);
   gb_state.reset_to_cart();
   cpu.reset_to_cart();
   mem.reset_to_cart();
@@ -245,7 +251,14 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   return GBResult::ok();
 }
 
-//#pragma warning(disable:4127) // conditional expression is constant
+//-----------------------------------------------------------------------------
+
+GBResult GateBoy::run_to(const blob& cart_blob, int phase) {
+  while(get_sys().gb_phase_total < phase) {
+    next_phase(cart_blob);
+  }
+  return GBResult::ok();
+}
 
 //-----------------------------------------------------------------------------
 

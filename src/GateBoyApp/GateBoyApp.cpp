@@ -66,7 +66,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   }
 
   gb_thread->start();
-  gb_thread->reset_to_bootrom();
+  gb_thread->reset_to_bootrom(false);
 
   //gb_thread->run_to(459148 - 1);
 
@@ -110,7 +110,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 1
+#if 0
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140

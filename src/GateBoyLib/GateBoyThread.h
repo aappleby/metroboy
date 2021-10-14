@@ -72,7 +72,7 @@ struct GateBoyThread {
   void pause();
   void resume();
 
-  void reset_to_bootrom();
+  void reset_to_bootrom(bool slow);
   void reset_to_cart();
 
   void add_steps(int64_t steps);

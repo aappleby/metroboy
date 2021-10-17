@@ -317,23 +317,23 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   // Background pipe A
   {
     /*_p32.LOZE*/ wire LOZE_PIPE_A_LOADp = not1(NYXU_BFETCH_RSTn_new);
-    /*_p32.LAKY*/ wire LAKY_BG_PIX_SET0 = nand2(LOZE_PIPE_A_LOADp, gb_state.tile_temp_a.LEGU_TILE_DA0n.qn_new());
-    /*_p32.NYXO*/ wire NYXO_BG_PIX_SET1 = nand2(LOZE_PIPE_A_LOADp, gb_state.tile_temp_a.NUDU_TILE_DA1n.qn_new());
-    /*_p32.LOTO*/ wire LOTO_BG_PIX_SET2 = nand2(LOZE_PIPE_A_LOADp, gb_state.tile_temp_a.MUKU_TILE_DA2n.qn_new());
-    /*_p32.LYDU*/ wire LYDU_BG_PIX_SET3 = nand2(LOZE_PIPE_A_LOADp, gb_state.tile_temp_a.LUZO_TILE_DA3n.qn_new());
-    /*_p32.MYVY*/ wire MYVY_BG_PIX_SET4 = nand2(LOZE_PIPE_A_LOADp, gb_state.tile_temp_a.MEGU_TILE_DA4n.qn_new());
-    /*_p32.LODO*/ wire LODO_BG_PIX_SET5 = nand2(LOZE_PIPE_A_LOADp, gb_state.tile_temp_a.MYJY_TILE_DA5n.qn_new());
-    /*_p32.NUTE*/ wire NUTE_BG_PIX_SET6 = nand2(LOZE_PIPE_A_LOADp, gb_state.tile_temp_a.NASA_TILE_DA6n.qn_new());
-    /*_p32.NAJA*/ wire NAJA_BG_PIX_SET7 = nand2(LOZE_PIPE_A_LOADp, gb_state.tile_temp_a.NEFO_TILE_DA7n.qn_new());
+    /*_p32.LAKY*/ wire LAKY_BG_PIX_SET0 = nand2(LOZE_PIPE_A_LOADp, reg_new.tile_temp_a.LEGU_TILE_DA0n.qn_new());
+    /*_p32.NYXO*/ wire NYXO_BG_PIX_SET1 = nand2(LOZE_PIPE_A_LOADp, reg_new.tile_temp_a.NUDU_TILE_DA1n.qn_new());
+    /*_p32.LOTO*/ wire LOTO_BG_PIX_SET2 = nand2(LOZE_PIPE_A_LOADp, reg_new.tile_temp_a.MUKU_TILE_DA2n.qn_new());
+    /*_p32.LYDU*/ wire LYDU_BG_PIX_SET3 = nand2(LOZE_PIPE_A_LOADp, reg_new.tile_temp_a.LUZO_TILE_DA3n.qn_new());
+    /*_p32.MYVY*/ wire MYVY_BG_PIX_SET4 = nand2(LOZE_PIPE_A_LOADp, reg_new.tile_temp_a.MEGU_TILE_DA4n.qn_new());
+    /*_p32.LODO*/ wire LODO_BG_PIX_SET5 = nand2(LOZE_PIPE_A_LOADp, reg_new.tile_temp_a.MYJY_TILE_DA5n.qn_new());
+    /*_p32.NUTE*/ wire NUTE_BG_PIX_SET6 = nand2(LOZE_PIPE_A_LOADp, reg_new.tile_temp_a.NASA_TILE_DA6n.qn_new());
+    /*_p32.NAJA*/ wire NAJA_BG_PIX_SET7 = nand2(LOZE_PIPE_A_LOADp, reg_new.tile_temp_a.NEFO_TILE_DA7n.qn_new());
 
-    /*_p32.LUHE*/ wire LUHE_BG_PIX_DA0n = not1(gb_state.tile_temp_a.LEGU_TILE_DA0n.qn_new());
-    /*_p32.NOLY*/ wire NOLY_BG_PIX_DA1n = not1(gb_state.tile_temp_a.NUDU_TILE_DA1n.qn_new());
-    /*_p32.LEKE*/ wire LEKE_BG_PIX_DA2n = not1(gb_state.tile_temp_a.MUKU_TILE_DA2n.qn_new());
-    /*_p32.LOMY*/ wire LOMY_BG_PIX_DA3n = not1(gb_state.tile_temp_a.LUZO_TILE_DA3n.qn_new());
-    /*_p32.LALA*/ wire LALA_BG_PIX_DA4n = not1(gb_state.tile_temp_a.MEGU_TILE_DA4n.qn_new());
-    /*_p32.LOXA*/ wire LOXA_BG_PIX_DA5n = not1(gb_state.tile_temp_a.MYJY_TILE_DA5n.qn_new());
-    /*_p32.NEZE*/ wire NEZE_BG_PIX_DA6n = not1(gb_state.tile_temp_a.NASA_TILE_DA6n.qn_new());
-    /*_p32.NOBO*/ wire NOBO_BG_PIX_DA7n = not1(gb_state.tile_temp_a.NEFO_TILE_DA7n.qn_new());
+    /*_p32.LUHE*/ wire LUHE_BG_PIX_DA0n = not1(reg_new.tile_temp_a.LEGU_TILE_DA0n.qn_new());
+    /*_p32.NOLY*/ wire NOLY_BG_PIX_DA1n = not1(reg_new.tile_temp_a.NUDU_TILE_DA1n.qn_new());
+    /*_p32.LEKE*/ wire LEKE_BG_PIX_DA2n = not1(reg_new.tile_temp_a.MUKU_TILE_DA2n.qn_new());
+    /*_p32.LOMY*/ wire LOMY_BG_PIX_DA3n = not1(reg_new.tile_temp_a.LUZO_TILE_DA3n.qn_new());
+    /*_p32.LALA*/ wire LALA_BG_PIX_DA4n = not1(reg_new.tile_temp_a.MEGU_TILE_DA4n.qn_new());
+    /*_p32.LOXA*/ wire LOXA_BG_PIX_DA5n = not1(reg_new.tile_temp_a.MYJY_TILE_DA5n.qn_new());
+    /*_p32.NEZE*/ wire NEZE_BG_PIX_DA6n = not1(reg_new.tile_temp_a.NASA_TILE_DA6n.qn_new());
+    /*_p32.NOBO*/ wire NOBO_BG_PIX_DA7n = not1(reg_new.tile_temp_a.NEFO_TILE_DA7n.qn_new());
 
     /*_p32.LOTY*/ wire LOTY_BG_PIX_RST0 = nand2(LOZE_PIPE_A_LOADp, LUHE_BG_PIX_DA0n);
     /*_p32.NEXA*/ wire NEXA_BG_PIX_RST1 = nand2(LOZE_PIPE_A_LOADp, NOLY_BG_PIX_DA1n);
@@ -358,23 +358,23 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   // Background pipe B
   {
     /*_p32.LUXA*/ wire LUXA_PIPE_B_LOADp = not1(NYXU_BFETCH_RSTn_new);
-    /*_p32.TUXE*/ wire TUXE_BG_PIX_SET0 = nand2(LUXA_PIPE_B_LOADp, gb_state.tile_temp_b.RAWU_TILE_DB0p.qp_new());
-    /*_p32.SOLY*/ wire SOLY_BG_PIX_SET1 = nand2(LUXA_PIPE_B_LOADp, gb_state.tile_temp_b.POZO_TILE_DB1p.qp_new());
-    /*_p32.RUCE*/ wire RUCE_BG_PIX_SET2 = nand2(LUXA_PIPE_B_LOADp, gb_state.tile_temp_b.PYZO_TILE_DB2p.qp_new());
-    /*_p32.RYJA*/ wire RYJA_BG_PIX_SET3 = nand2(LUXA_PIPE_B_LOADp, gb_state.tile_temp_b.POXA_TILE_DB3p.qp_new());
-    /*_p32.RUTO*/ wire RUTO_BG_PIX_SET4 = nand2(LUXA_PIPE_B_LOADp, gb_state.tile_temp_b.PULO_TILE_DB4p.qp_new());
-    /*_p32.RAJA*/ wire RAJA_BG_PIX_SET5 = nand2(LUXA_PIPE_B_LOADp, gb_state.tile_temp_b.POJU_TILE_DB5p.qp_new());
-    /*_p32.RAJO*/ wire RAJO_BG_PIX_SET6 = nand2(LUXA_PIPE_B_LOADp, gb_state.tile_temp_b.POWY_TILE_DB6p.qp_new());
-    /*_p32.RAGA*/ wire RAGA_BG_PIX_SET7 = nand2(LUXA_PIPE_B_LOADp, gb_state.tile_temp_b.PYJU_TILE_DB7p.qp_new());
+    /*_p32.TUXE*/ wire TUXE_BG_PIX_SET0 = nand2(LUXA_PIPE_B_LOADp, reg_new.tile_temp_b.RAWU_TILE_DB0p.qp_new());
+    /*_p32.SOLY*/ wire SOLY_BG_PIX_SET1 = nand2(LUXA_PIPE_B_LOADp, reg_new.tile_temp_b.POZO_TILE_DB1p.qp_new());
+    /*_p32.RUCE*/ wire RUCE_BG_PIX_SET2 = nand2(LUXA_PIPE_B_LOADp, reg_new.tile_temp_b.PYZO_TILE_DB2p.qp_new());
+    /*_p32.RYJA*/ wire RYJA_BG_PIX_SET3 = nand2(LUXA_PIPE_B_LOADp, reg_new.tile_temp_b.POXA_TILE_DB3p.qp_new());
+    /*_p32.RUTO*/ wire RUTO_BG_PIX_SET4 = nand2(LUXA_PIPE_B_LOADp, reg_new.tile_temp_b.PULO_TILE_DB4p.qp_new());
+    /*_p32.RAJA*/ wire RAJA_BG_PIX_SET5 = nand2(LUXA_PIPE_B_LOADp, reg_new.tile_temp_b.POJU_TILE_DB5p.qp_new());
+    /*_p32.RAJO*/ wire RAJO_BG_PIX_SET6 = nand2(LUXA_PIPE_B_LOADp, reg_new.tile_temp_b.POWY_TILE_DB6p.qp_new());
+    /*_p32.RAGA*/ wire RAGA_BG_PIX_SET7 = nand2(LUXA_PIPE_B_LOADp, reg_new.tile_temp_b.PYJU_TILE_DB7p.qp_new());
 
-    /*_p32.TOSA*/ wire TOSA_BG_PIX_DB0n = not1(gb_state.tile_temp_b.RAWU_TILE_DB0p.qp_new());
-    /*_p32.RUCO*/ wire RUCO_BG_PIX_DB1n = not1(gb_state.tile_temp_b.POZO_TILE_DB1p.qp_new());
-    /*_p32.TYCE*/ wire TYCE_BG_PIX_DB2n = not1(gb_state.tile_temp_b.PYZO_TILE_DB2p.qp_new());
-    /*_p32.REVY*/ wire REVY_BG_PIX_DB3n = not1(gb_state.tile_temp_b.POXA_TILE_DB3p.qp_new());
-    /*_p32.RYGA*/ wire RYGA_BG_PIX_DB4n = not1(gb_state.tile_temp_b.PULO_TILE_DB4p.qp_new());
-    /*_p32.RYLE*/ wire RYLE_BG_PIX_DB5n = not1(gb_state.tile_temp_b.POJU_TILE_DB5p.qp_new());
-    /*_p32.RAPU*/ wire RAPU_BG_PIX_DB6n = not1(gb_state.tile_temp_b.POWY_TILE_DB6p.qp_new());
-    /*_p32.SOJA*/ wire SOJA_BG_PIX_DB7n = not1(gb_state.tile_temp_b.PYJU_TILE_DB7p.qp_new());
+    /*_p32.TOSA*/ wire TOSA_BG_PIX_DB0n = not1(reg_new.tile_temp_b.RAWU_TILE_DB0p.qp_new());
+    /*_p32.RUCO*/ wire RUCO_BG_PIX_DB1n = not1(reg_new.tile_temp_b.POZO_TILE_DB1p.qp_new());
+    /*_p32.TYCE*/ wire TYCE_BG_PIX_DB2n = not1(reg_new.tile_temp_b.PYZO_TILE_DB2p.qp_new());
+    /*_p32.REVY*/ wire REVY_BG_PIX_DB3n = not1(reg_new.tile_temp_b.POXA_TILE_DB3p.qp_new());
+    /*_p32.RYGA*/ wire RYGA_BG_PIX_DB4n = not1(reg_new.tile_temp_b.PULO_TILE_DB4p.qp_new());
+    /*_p32.RYLE*/ wire RYLE_BG_PIX_DB5n = not1(reg_new.tile_temp_b.POJU_TILE_DB5p.qp_new());
+    /*_p32.RAPU*/ wire RAPU_BG_PIX_DB6n = not1(reg_new.tile_temp_b.POWY_TILE_DB6p.qp_new());
+    /*_p32.SOJA*/ wire SOJA_BG_PIX_DB7n = not1(reg_new.tile_temp_b.PYJU_TILE_DB7p.qp_new());
 
     /*_p32.SEJA*/ wire SEJA_BG_PIX_RST0 = nand2(LUXA_PIPE_B_LOADp, TOSA_BG_PIX_DB0n);
     /*_p32.SENO*/ wire SENO_BG_PIX_RST1 = nand2(LUXA_PIPE_B_LOADp, RUCO_BG_PIX_DB1n);

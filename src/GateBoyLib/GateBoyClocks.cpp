@@ -128,6 +128,16 @@ wire GateBoyClock::AZOF_odd_new() const {
 /*#p28.AWOH*/ wire GateBoyClock::AWOH_xxCDxxGH_new() const { return not1(XUPY_ABxxEFxx_new()); }
 /*#p01.AJAX*/ wire GateBoyClock::AJAX_xxxxEFGH_new() const { return not1(ATYP_ABCDxxxx_new()); }
 
+/*#p01.BYJU*/ wire GateBoy::BYJU_Axxxxxxx() const { return or2(gb_state.sys_clk.BELE_Axxxxxxx_new(), pins.sys.ATEZ_CLKBADp()); }
+/*#p01.BALY*/ wire GateBoy::BALY_xBCDEFGH() const { return not1(BYJU_Axxxxxxx()); }
+/*_p01.BOGA*/ wire GateBoy::BOGA_Axxxxxxx() const { return not1(BALY_xBCDEFGH()); }
+
+/*#p01.BUVU*/ wire GateBoy::BUVU_Axxxxxxx() const { return and2(BALY_xBCDEFGH(), gb_state.sys_clk.BUTY_CLKREQp_new()); }
+/*#p01.BYXO*/ wire GateBoy::BYXO_xBCDEFGH() const { return not1(BUVU_Axxxxxxx()); }
+/*#p01.BEDO*/ wire GateBoy::BEDO_Axxxxxxx() const { return not1(BYXO_xBCDEFGH()); }
+/*#p01.BOWA*/ wire GateBoy::BOWA_xBCDEFGH() const { return not1(BEDO_Axxxxxxx()); }
+/*#p01.BOMA*/ wire GateBoy::BOMA_xBCDEFGH() const { return not1(BOGA_Axxxxxxx()); }
+
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {

@@ -286,11 +286,11 @@ struct GateBoy  : public IGateBoy {
   void tock_latches(const GateBoyState& reg_old);
 
   void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
-  void store_sprite_gates(SpriteStoreFlags& sprite_store_flags_old, SpriteStoreFlags& sprite_store_flags_new, SpriteResetFlags& sprite_reset_flags, wire BYVA_LINE_RSTn, OamTempB& oam_temp_b_old);
+  void store_sprite_gates(const GateBoyState& reg_old, SpriteStoreFlags& sprite_store_flags_old, SpriteStoreFlags& sprite_store_flags_new, SpriteResetFlags& sprite_reset_flags, wire BYVA_LINE_RSTn, OamTempB& oam_temp_b_old);
   void get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags& sprite_get_flag);
   void sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag);
   void sprite_scan_to_bus_gates(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
-  void set_lcd_pins_gates(wire SACU_CLKPIPE_evn);
+  void set_lcd_pins_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_evn);
   SpriteDeltaY sub_sprite_y_gates();
   static void oam_latch_to_temp_a_gates(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a);
   static void oam_latch_to_temp_b_gates(wire COTA_OAM_CLKn, const OamLatchB& old_oam_latch_b, OamTempB& oam_temp_b);

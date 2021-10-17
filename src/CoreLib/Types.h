@@ -416,3 +416,21 @@ struct BlobStream {
 };
 
 //-----------------------------------------------------------------------------
+
+struct IntWrapper {
+
+  IntWrapper() {}
+  IntWrapper(const IntWrapper & b) : a(b.a) {}
+  explicit IntWrapper(const int b) : a(b) {}
+
+  //operator int & ()             { return a; }
+  //operator const int & () const { return a; }
+  int unwrap() const { return a; }
+
+  IntWrapper& operator =  (const IntWrapper & rhs)       { a = rhs.a; return *this;}
+  IntWrapper& operator =  (const int & rhs)              { a = rhs; return *this;}
+  bool        operator == (const IntWrapper & rhs) const { return a == rhs.a; }
+  bool        operator <  (const IntWrapper & rhs) const { return a < rhs.a; }
+
+  int a = 0;
+};

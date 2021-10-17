@@ -9,16 +9,26 @@
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
+  auto& reg_new = gb_state;
+
   // has to be new_bus or sim isn't stable.
 
-  /*_p10.BYKO*/ wire BYKO_A05n = not1(gb_state.cpu_abus.BUS_CPU_A05p.out_any());
-  /*_p10.AKUG*/ wire AKUG_A06n = not1(gb_state.cpu_abus.BUS_CPU_A06p.out_any());
-  /*_p10.AMUS*/ wire AMUS_XX_0xx00000 = nor6(gb_state.cpu_abus.BUS_CPU_A00p.out_any(), gb_state.cpu_abus.BUS_CPU_A01p.out_any(), gb_state.cpu_abus.BUS_CPU_A02p.out_any(), gb_state.cpu_abus.BUS_CPU_A03p.out_any(), gb_state.cpu_abus.BUS_CPU_A04p.out_any(), gb_state.cpu_abus.BUS_CPU_A07p.out_any());
-  /*_p10.ANAP*/ wire ANAP_FF_0xx00000 = and2(gb_state.cpu_abus.SYKE_ADDR_HIp(), AMUS_XX_0xx00000);
+  /*_p10.BYKO*/ wire BYKO_A05n_new = not1(reg_new.cpu_abus.BUS_CPU_A05p.out_new());
+  /*_p10.AKUG*/ wire AKUG_A06n_new = not1(reg_new.cpu_abus.BUS_CPU_A06p.out_new());
+  
+  /*_p10.AMUS*/ wire AMUS_XX_0xx00000_new = nor6(
+    reg_new.cpu_abus.BUS_CPU_A00p.out_new(),
+    reg_new.cpu_abus.BUS_CPU_A01p.out_new(),
+    reg_new.cpu_abus.BUS_CPU_A02p.out_new(),
+    reg_new.cpu_abus.BUS_CPU_A03p.out_new(),
+    reg_new.cpu_abus.BUS_CPU_A04p.out_new(),
+    reg_new.cpu_abus.BUS_CPU_A07p.out_new());
+  
+  /*_p10.ANAP*/ wire ANAP_FF_0xx00000_new = and2(reg_new.cpu_abus.SYKE_ADDR_HIp(), AMUS_XX_0xx00000_new);
 
-  /*_p10.ACAT*/ wire ACAT_FF00_RDp = and4(gb_state.cpu_signals.TEDO_CPU_RDp.out_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
-  /*_p05.BYZO*/ wire BYZO_FF00_RDn = not1(ACAT_FF00_RDp);
-  /*_p10.ATOZ*/ wire ATOZ_FF00_WRn = nand4(gb_state.cpu_signals.TAPU_CPU_WRp.out_new(), ANAP_FF_0xx00000, AKUG_A06n, BYKO_A05n);
+  /*_p10.ACAT*/ wire ACAT_FF00_RDp_new = and4(reg_new.cpu_signals.TEDO_CPU_RDp.out_new(), ANAP_FF_0xx00000_new, AKUG_A06n_new, BYKO_A05n_new);
+  /*_p05.BYZO*/ wire BYZO_FF00_RDn_new = not1(ACAT_FF00_RDp_new);
+  /*_p10.ATOZ*/ wire ATOZ_FF00_WRn_new = nand4(reg_new.cpu_signals.TAPU_CPU_WRp.out_new(), ANAP_FF_0xx00000_new, AKUG_A06n_new, BYKO_A05n_new);
 
   ///*_p05.JUTE*/ JUTE_DBG_D0    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[0].qp_old());
   ///*_p05.KECY*/ KECY_DBG_D1    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[1].qp_old());
@@ -27,14 +37,14 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
 
   // this _has_ to reset to 1
 
-  /*#p05.KELY*/ gb_state.reg_joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn, gb_state.sys_rst.ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*#p05.COFY*/ gb_state.reg_joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn, gb_state.sys_rst.ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*#p05.KELY*/ reg_new.reg_joy.KELY_JOYP_UDLRp.dff17(ATOZ_FF00_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*#p05.COFY*/ reg_new.reg_joy.COFY_JOYP_ABCSp.dff17(ATOZ_FF00_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
 
   ///*_p05.KUKO*/ KUKO_DBG_D6    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[6].qp_old());
   ///*_p05.KERU*/ KERU_DBG_D7    .dff17(ATOZ_FF00_WRn, ALUR_SYS_RSTn(), cpu_signals.BUS_CPU_D[7].qp_old());
 
-  /*_p07.BURO*/ wire BURO_FF60_D0p = not1(gb_state.SIG_GND.out_new()); // FIXME hacking out debug stuff
-  /*_p05.KURA*/ wire KURA_FF60_D0n = not1(BURO_FF60_D0p);
+  /*_p07.BURO*/ wire BURO_FF60_D0p_new = not1(reg_new.SIG_GND.out_new()); // FIXME hacking out debug stuff
+  /*_p05.KURA*/ wire KURA_FF60_D0n_new = not1(BURO_FF60_D0p_new);
 
   /*
   Pin 01 GND
@@ -77,11 +87,11 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
 
   // at boot p14 and p15 are low externally, so p14.a = p14.d = p15.a = p15.d = 1
 
-  /*_p05.KARU*/ wire KARU = or2(gb_state.reg_joy.KELY_JOYP_UDLRp.qn_new(), KURA_FF60_D0n);
-  /*_p05.CELA*/ wire CELA = or2(gb_state.reg_joy.COFY_JOYP_ABCSp.qn_new(), KURA_FF60_D0n);
+  /*_p05.KARU*/ wire KARU_new = or2(reg_new.reg_joy.KELY_JOYP_UDLRp.qn_new(), KURA_FF60_D0n_new);
+  /*_p05.CELA*/ wire CELA_new = or2(reg_new.reg_joy.COFY_JOYP_ABCSp.qn_new(), KURA_FF60_D0n_new);
 
-  /*#PIN_63*/ pins.joy.PIN_63_JOY_P14.pin_out(KARU, gb_state.reg_joy.KELY_JOYP_UDLRp.qn_new());
-  /*#PIN_62*/ pins.joy.PIN_62_JOY_P15.pin_out(CELA, gb_state.reg_joy.COFY_JOYP_ABCSp.qn_new());
+  /*#PIN_63*/ pins.joy.PIN_63_JOY_P14.pin_out(KARU_new, reg_new.reg_joy.KELY_JOYP_UDLRp.qn_new());
+  /*#PIN_62*/ pins.joy.PIN_62_JOY_P15.pin_out(CELA_new, reg_new.reg_joy.COFY_JOYP_ABCSp.qn_new());
 
   bool EXT_button0, EXT_button1, EXT_button2, EXT_button3;
 
@@ -126,14 +136,14 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
   PIN_64_JOY_P13.pin_out_hilo2(KORY, KALE);
 #endif
 
-  /*#p02.KERY*/ wire KERY_ANY_BUTTONp = nor4(
+  /*#p02.KERY*/ wire KERY_ANY_BUTTONp_new = nor4(
     pins.joy.PIN_64_JOY_P13.qp_int_new(),
     pins.joy.PIN_65_JOY_P12.qp_int_new(),
     pins.joy.PIN_66_JOY_P11.qp_int_new(),
     pins.joy.PIN_67_JOY_P10.qp_int_new());
 
-  /*_p02.AWOB*/ gb_state.int_ctrl.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), KERY_ANY_BUTTONp);
-  /*_SIG_CPU_WAKE*/ gb_state.int_ctrl.SIG_CPU_WAKE.sig_out(gb_state.int_ctrl.AWOB_WAKE_CPU.qp_new());
+  /*_p02.AWOB*/ reg_new.int_ctrl.AWOB_WAKE_CPU.tp_latchn(BOGA_Axxxxxxx(), KERY_ANY_BUTTONp_new);
+  /*_SIG_CPU_WAKE*/ reg_new.int_ctrl.SIG_CPU_WAKE.sig_out(reg_new.int_ctrl.AWOB_WAKE_CPU.qp_new());
 
   // DFF17_01 SC
   // DFF17_02 << CLKp
@@ -153,29 +163,29 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
   // DFF17_16 >> QN   _MUST_ be QN - see TERO
   // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
-  /*#p02.APUG*/ gb_state.joy_int.APUG_JP_GLITCH3.dff17(BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.joy_int.AGEM_JP_GLITCH2.qp_old());
-  /*_p02.AGEM*/ gb_state.joy_int.AGEM_JP_GLITCH2.dff17(BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.joy_int.ACEF_JP_GLITCH1.qp_old());
-  /*_p02.ACEF*/ gb_state.joy_int.ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), gb_state.joy_int.BATU_JP_GLITCH0.qp_old());
-  /*_p02.BATU*/ gb_state.joy_int.BATU_JP_GLITCH0.dff17(BOGA_Axxxxxxx(), gb_state.sys_rst.ALUR_SYS_RSTn(), KERY_ANY_BUTTONp);
+  /*#p02.APUG*/ reg_new.joy_int.APUG_JP_GLITCH3.dff17(BOGA_Axxxxxxx(), reg_new.sys_rst.ALUR_SYS_RSTn(), reg_new.joy_int.AGEM_JP_GLITCH2.qp_old());
+  /*_p02.AGEM*/ reg_new.joy_int.AGEM_JP_GLITCH2.dff17(BOGA_Axxxxxxx(), reg_new.sys_rst.ALUR_SYS_RSTn(), reg_new.joy_int.ACEF_JP_GLITCH1.qp_old());
+  /*_p02.ACEF*/ reg_new.joy_int.ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx(), reg_new.sys_rst.ALUR_SYS_RSTn(), reg_new.joy_int.BATU_JP_GLITCH0.qp_old());
+  /*_p02.BATU*/ reg_new.joy_int.BATU_JP_GLITCH0.dff17(BOGA_Axxxxxxx(), reg_new.sys_rst.ALUR_SYS_RSTn(), KERY_ANY_BUTTONp_new);
 
-  /*#p05.KEVU*/ gb_state.joy_latch.KEVU_JOYP_L0n.tp_latchn(BYZO_FF00_RDn, pins.joy.PIN_67_JOY_P10.qp_int_new()); // A / Right
-  /*#p05.KAPA*/ gb_state.joy_latch.KAPA_JOYP_L1n.tp_latchn(BYZO_FF00_RDn, pins.joy.PIN_66_JOY_P11.qp_int_new()); // B / Left
-  /*#p05.KEJA*/ gb_state.joy_latch.KEJA_JOYP_L2n.tp_latchn(BYZO_FF00_RDn, pins.joy.PIN_65_JOY_P12.qp_int_new()); // C / Up
-  /*#p05.KOLO*/ gb_state.joy_latch.KOLO_JOYP_L3n.tp_latchn(BYZO_FF00_RDn, pins.joy.PIN_64_JOY_P13.qp_int_new()); // S / Down
+  /*#p05.KEVU*/ reg_new.joy_latch.KEVU_JOYP_L0n.tp_latchn(BYZO_FF00_RDn_new, pins.joy.PIN_67_JOY_P10.qp_int_new()); // A / Right
+  /*#p05.KAPA*/ reg_new.joy_latch.KAPA_JOYP_L1n.tp_latchn(BYZO_FF00_RDn_new, pins.joy.PIN_66_JOY_P11.qp_int_new()); // B / Left
+  /*#p05.KEJA*/ reg_new.joy_latch.KEJA_JOYP_L2n.tp_latchn(BYZO_FF00_RDn_new, pins.joy.PIN_65_JOY_P12.qp_int_new()); // C / Up
+  /*#p05.KOLO*/ reg_new.joy_latch.KOLO_JOYP_L3n.tp_latchn(BYZO_FF00_RDn_new, pins.joy.PIN_64_JOY_P13.qp_int_new()); // S / Down
 
-  /*#p05.KEMA*/ triwire KEMA_JOY0_TO_CD0 = tri6_nn(BYZO_FF00_RDn, gb_state.joy_latch.KEVU_JOYP_L0n.qp_new());
-  /*#p05.KURO*/ triwire KURO_JOY1_TO_CD1 = tri6_nn(BYZO_FF00_RDn, gb_state.joy_latch.KAPA_JOYP_L1n.qp_new());
-  /*#p05.KUVE*/ triwire KUVE_JOY2_TO_CD2 = tri6_nn(BYZO_FF00_RDn, gb_state.joy_latch.KEJA_JOYP_L2n.qp_new());
-  /*#p05.JEKU*/ triwire JEKU_JOY3_TO_CD3 = tri6_nn(BYZO_FF00_RDn, gb_state.joy_latch.KOLO_JOYP_L3n.qp_new());
-  /*#p05.KOCE*/ triwire KOCE_JOY4_TO_CD4 = tri6_nn(BYZO_FF00_RDn, gb_state.reg_joy.KELY_JOYP_UDLRp.qn_new());
-  /*#p05.CUDY*/ triwire CUDY_JOY5_TO_CD5 = tri6_nn(BYZO_FF00_RDn, gb_state.reg_joy.COFY_JOYP_ABCSp.qn_new());
+  /*#p05.KEMA*/ triwire KEMA_JOY0_TO_CD0_new = tri6_nn(BYZO_FF00_RDn_new, reg_new.joy_latch.KEVU_JOYP_L0n.qp_new());
+  /*#p05.KURO*/ triwire KURO_JOY1_TO_CD1_new = tri6_nn(BYZO_FF00_RDn_new, reg_new.joy_latch.KAPA_JOYP_L1n.qp_new());
+  /*#p05.KUVE*/ triwire KUVE_JOY2_TO_CD2_new = tri6_nn(BYZO_FF00_RDn_new, reg_new.joy_latch.KEJA_JOYP_L2n.qp_new());
+  /*#p05.JEKU*/ triwire JEKU_JOY3_TO_CD3_new = tri6_nn(BYZO_FF00_RDn_new, reg_new.joy_latch.KOLO_JOYP_L3n.qp_new());
+  /*#p05.KOCE*/ triwire KOCE_JOY4_TO_CD4_new = tri6_nn(BYZO_FF00_RDn_new, reg_new.reg_joy.KELY_JOYP_UDLRp.qn_new());
+  /*#p05.CUDY*/ triwire CUDY_JOY5_TO_CD5_new = tri6_nn(BYZO_FF00_RDn_new, reg_new.reg_joy.COFY_JOYP_ABCSp.qn_new());
 
-  /*_BUS_CPU_D00p*/ gb_state.cpu_dbus.BUS_CPU_D00p.tri_bus(KEMA_JOY0_TO_CD0);
-  /*_BUS_CPU_D01p*/ gb_state.cpu_dbus.BUS_CPU_D01p.tri_bus(KURO_JOY1_TO_CD1);
-  /*_BUS_CPU_D02p*/ gb_state.cpu_dbus.BUS_CPU_D02p.tri_bus(KUVE_JOY2_TO_CD2);
-  /*_BUS_CPU_D03p*/ gb_state.cpu_dbus.BUS_CPU_D03p.tri_bus(JEKU_JOY3_TO_CD3);
-  /*_BUS_CPU_D04p*/ gb_state.cpu_dbus.BUS_CPU_D04p.tri_bus(KOCE_JOY4_TO_CD4);
-  /*_BUS_CPU_D05p*/ gb_state.cpu_dbus.BUS_CPU_D05p.tri_bus(CUDY_JOY5_TO_CD5);
+  /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(KEMA_JOY0_TO_CD0_new);
+  /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(KURO_JOY1_TO_CD1_new);
+  /*_BUS_CPU_D02p*/ reg_new.cpu_dbus.BUS_CPU_D02p.tri_bus(KUVE_JOY2_TO_CD2_new);
+  /*_BUS_CPU_D03p*/ reg_new.cpu_dbus.BUS_CPU_D03p.tri_bus(JEKU_JOY3_TO_CD3_new);
+  /*_BUS_CPU_D04p*/ reg_new.cpu_dbus.BUS_CPU_D04p.tri_bus(KOCE_JOY4_TO_CD4_new);
+  /*_BUS_CPU_D05p*/ reg_new.cpu_dbus.BUS_CPU_D05p.tri_bus(CUDY_JOY5_TO_CD5_new);
 }
 
 //-----------------------------------------------------------------------------

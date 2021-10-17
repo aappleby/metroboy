@@ -54,14 +54,14 @@ int main(int argc, char** argv) {
 #if 1
   {
     TestResults results;
-    GateBoyTests t;
+    GateBoyTests a;
 
     LOG_B("========== GateBoy tests ==========\n");
     const auto proto = make_unique<GateBoy>();
-    results += t.test_fastboot        (proto.get(), 0xFF);
-    results += t.test_reset_to_bootrom(proto.get(), 0xFF);
-    results += t.test_reset_to_cart   (proto.get(), 0xFF);
-    results += t.test_generic         (proto.get());
+    results += a.test_fastboot        (proto.get(), 0xFF);
+    results += a.test_reset_to_bootrom(proto.get(), 0xFF);
+    results += a.test_reset_to_cart   (proto.get(), 0xFF);
+    results += a.test_generic         (proto.get());
     LOG_B("\n");
 
     LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);

@@ -6,24 +6,25 @@
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_reset_gates(const GateBoyState& reg_old, DFF17 UPOF_DIV15p) {
+  auto& reg_new = gb_state;
 
-  /*_p01.AFER*/ gb_state.sys_rst.AFER_SYS_RSTp.dff13(BOGA_Axxxxxxx(), pins.sys.UPOJ_MODE_PRODn(), gb_state.sys_rst.ASOL_POR_DONEn.qp_old());
+  /*_p01.AFER*/ reg_new.sys_rst.AFER_SYS_RSTp.dff13(BOGA_Axxxxxxx(), pins.sys.UPOJ_MODE_PRODn(), reg_old.sys_rst.ASOL_POR_DONEn.qp_old());
 
   /*_p01.UPYF*/ wire UPYF = or2(pins.sys.PIN_71_RST.qp_int_new(), pins.sys.UCOB_CLKBADp());
-  /*_p01.TUBO*/ gb_state.sys_rst.TUBO_WAITINGp.nor_latch(UPYF, gb_state.sys_clk.SIG_CPU_CLKREQ.out_new());
-  /*_p01.UNUT*/ wire UNUT_POR_TRIGn = and2(gb_state.sys_rst.TUBO_WAITINGp.qp_new(), UPOF_DIV15p.qp_new());
+  /*_p01.TUBO*/ reg_new.sys_rst.TUBO_WAITINGp.nor_latch(UPYF, reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
+  /*_p01.UNUT*/ wire UNUT_POR_TRIGn = and2(reg_new.sys_rst.TUBO_WAITINGp.qp_new(), UPOF_DIV15p.qp_new());
   /*_p01.TABA*/ wire TABA_POR_TRIGn = or3(pins.sys.UNOR_MODE_DBG2p(), pins.sys.UMUT_MODE_DBG1p(), UNUT_POR_TRIGn);
   /*#p01.ALYP*/ wire ALYP_RSTn = not1(TABA_POR_TRIGn);
   /*#p01.AFAR*/ wire AFAR_RSTp  = nor2(pins.sys.PIN_71_RST.qp_int_new(), ALYP_RSTn);
-  /*_p01.ASOL*/ gb_state.sys_rst.ASOL_POR_DONEn.nor_latch(pins.sys.PIN_71_RST.qp_int_new(), AFAR_RSTp); // Schematic wrong, this is a latch.
+  /*_p01.ASOL*/ reg_new.sys_rst.ASOL_POR_DONEn.nor_latch(pins.sys.PIN_71_RST.qp_int_new(), AFAR_RSTp); // Schematic wrong, this is a latch.
 
-  /*_SIG_CPU_EXT_CLKGOOD*/ gb_state.sys_rst.SIG_CPU_EXT_CLKGOOD.sig_out(pins.sys.PIN_74_CLK.clkgood());
-  /*_SIG_CPU_EXT_RESETp */ gb_state.sys_rst.SIG_CPU_EXT_RESETp.sig_out(pins.sys.PIN_71_RST.qp_int_new());
-  /*_SIG_CPU_STARTp     */ gb_state.sys_rst.SIG_CPU_STARTp.sig_out(TABA_POR_TRIGn);
-  /*_SIG_CPU_INT_RESETp */ gb_state.sys_rst.SIG_CPU_INT_RESETp.sig_out(gb_state.sys_rst.AFER_SYS_RSTp.qp_new());
+  /*_SIG_CPU_EXT_CLKGOOD*/ reg_new.sys_rst.SIG_CPU_EXT_CLKGOOD.sig_out(pins.sys.PIN_74_CLK.clkgood());
+  /*_SIG_CPU_EXT_RESETp */ reg_new.sys_rst.SIG_CPU_EXT_RESETp.sig_out(pins.sys.PIN_71_RST.qp_int_new());
+  /*_SIG_CPU_STARTp     */ reg_new.sys_rst.SIG_CPU_STARTp.sig_out(TABA_POR_TRIGn);
+  /*_SIG_CPU_INT_RESETp */ reg_new.sys_rst.SIG_CPU_INT_RESETp.sig_out(reg_new.sys_rst.AFER_SYS_RSTp.qp_new());
 
   /*#p25.SYCY*/ wire SYCY_MODE_DBG2n = not1(pins.sys.UNOR_MODE_DBG2p());
-  /*#p25.SOTO*/ gb_state.sys_rst.SOTO_DBG_VRAMp.dff17(SYCY_MODE_DBG2n, gb_state.sys_rst.CUNU_SYS_RSTn(), gb_state.sys_rst.SOTO_DBG_VRAMp.qn_old());
+  /*#p25.SOTO*/ reg_new.sys_rst.SOTO_DBG_VRAMp.dff17(SYCY_MODE_DBG2n, reg_new.sys_rst.CUNU_SYS_RSTn(), reg_new.sys_rst.SOTO_DBG_VRAMp.qn_old());
 
   // APET
   // APER

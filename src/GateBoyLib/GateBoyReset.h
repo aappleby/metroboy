@@ -8,16 +8,27 @@ struct GateBoyReset {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*#p01.AVOR*/ wire AVOR_SYS_RSTp() const;
-  /*#p01.ALUR*/ wire ALUR_SYS_RSTn() const;
-  /*#p01.DULA*/ wire DULA_SYS_RSTp() const;
-  /*#p01.CUNU*/ wire CUNU_SYS_RSTn() const;
-  /*#p01.XORE*/ wire XORE_SYS_RSTp() const;
-  /*_p01.XEBE*/ wire XEBE_SYS_RSTn() const;
-  /*#p01.WALU*/ wire WALU_SYS_RSTn() const;
-  /*_p01.WESY*/ wire WESY_SYS_RSTn() const;
-  /*_p01.XARE*/ wire XARE_SYS_RSTn() const;
-  /*_p03.MULO*/ wire MULO_SYS_RSTn() const;
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp_old() const;
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn_old() const;
+  /*#p01.DULA*/ wire DULA_SYS_RSTp_old() const;
+  /*#p01.CUNU*/ wire CUNU_SYS_RSTn_old() const;
+  /*#p01.XORE*/ wire XORE_SYS_RSTp_old() const;
+  /*_p01.XEBE*/ wire XEBE_SYS_RSTn_old() const;
+  /*#p01.WALU*/ wire WALU_SYS_RSTn_old() const;
+  /*_p01.WESY*/ wire WESY_SYS_RSTn_old() const;
+  /*_p01.XARE*/ wire XARE_SYS_RSTn_old() const;
+  /*_p03.MULO*/ wire MULO_SYS_RSTn_old() const;
+
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp_new() const;
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn_new() const;
+  /*#p01.DULA*/ wire DULA_SYS_RSTp_new() const;
+  /*#p01.CUNU*/ wire CUNU_SYS_RSTn_new() const;
+  /*#p01.XORE*/ wire XORE_SYS_RSTp_new() const;
+  /*_p01.XEBE*/ wire XEBE_SYS_RSTn_new() const;
+  /*#p01.WALU*/ wire WALU_SYS_RSTn_new() const;
+  /*_p01.WESY*/ wire WESY_SYS_RSTn_new() const;
+  /*_p01.XARE*/ wire XARE_SYS_RSTn_new() const;
+  /*_p03.MULO*/ wire MULO_SYS_RSTn_new() const;
 
   //----------------------------------------
 

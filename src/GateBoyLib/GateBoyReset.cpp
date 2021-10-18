@@ -8,23 +8,23 @@
 void GateBoy::tock_reset_gates(const GateBoyState& reg_old, DFF17 UPOF_DIV15p) {
   auto& reg_new = gb_state;
 
-  /*_p01.AFER*/ reg_new.sys_rst.AFER_SYS_RSTp.dff13(BOGA_Axxxxxxx(), pins.sys.UPOJ_MODE_PRODn(), reg_old.sys_rst.ASOL_POR_DONEn.qp_old());
+  /*_p01.AFER*/ reg_new.sys_rst.AFER_SYS_RSTp.dff13(BOGA_Axxxxxxx_new(), pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_rst.ASOL_POR_DONEn.qp_old());
 
-  /*_p01.UPYF*/ wire UPYF = or2(pins.sys.PIN_71_RST.qp_int_new(), pins.sys.UCOB_CLKBADp());
-  /*_p01.TUBO*/ reg_new.sys_rst.TUBO_WAITINGp.nor_latch(UPYF, reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
-  /*_p01.UNUT*/ wire UNUT_POR_TRIGn = and2(reg_new.sys_rst.TUBO_WAITINGp.qp_new(), UPOF_DIV15p.qp_new());
-  /*_p01.TABA*/ wire TABA_POR_TRIGn = or3(pins.sys.UNOR_MODE_DBG2p(), pins.sys.UMUT_MODE_DBG1p(), UNUT_POR_TRIGn);
-  /*#p01.ALYP*/ wire ALYP_RSTn = not1(TABA_POR_TRIGn);
-  /*#p01.AFAR*/ wire AFAR_RSTp  = nor2(pins.sys.PIN_71_RST.qp_int_new(), ALYP_RSTn);
-  /*_p01.ASOL*/ reg_new.sys_rst.ASOL_POR_DONEn.nor_latch(pins.sys.PIN_71_RST.qp_int_new(), AFAR_RSTp); // Schematic wrong, this is a latch.
+  /*_p01.UPYF*/ wire UPYF_new = or2(pins.sys.PIN_71_RST.qp_int_new(), pins.sys.UCOB_CLKBADp_new());
+  /*_p01.TUBO*/ reg_new.sys_rst.TUBO_WAITINGp.nor_latch(UPYF_new, reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
+  /*_p01.UNUT*/ wire UNUT_POR_TRIGn_new = and2(reg_new.sys_rst.TUBO_WAITINGp.qp_new(), UPOF_DIV15p.qp_new());
+  /*_p01.TABA*/ wire TABA_POR_TRIGn_new = or3(pins.sys.UNOR_MODE_DBG2p_new(), pins.sys.UMUT_MODE_DBG1p_new(), UNUT_POR_TRIGn_new);
+  /*#p01.ALYP*/ wire ALYP_RSTn_new = not1(TABA_POR_TRIGn_new);
+  /*#p01.AFAR*/ wire AFAR_RSTp_new  = nor2(pins.sys.PIN_71_RST.qp_int_new(), ALYP_RSTn_new);
+  /*_p01.ASOL*/ reg_new.sys_rst.ASOL_POR_DONEn.nor_latch(pins.sys.PIN_71_RST.qp_int_new(), AFAR_RSTp_new); // Schematic wrong, this is a latch.
 
-  /*_SIG_CPU_EXT_CLKGOOD*/ reg_new.sys_rst.SIG_CPU_EXT_CLKGOOD.sig_out(pins.sys.PIN_74_CLK.clkgood());
+  /*_SIG_CPU_EXT_CLKGOOD*/ reg_new.sys_rst.SIG_CPU_EXT_CLKGOOD.sig_out(pins.sys.PIN_74_CLK.clkgood_new());
   /*_SIG_CPU_EXT_RESETp */ reg_new.sys_rst.SIG_CPU_EXT_RESETp.sig_out(pins.sys.PIN_71_RST.qp_int_new());
-  /*_SIG_CPU_STARTp     */ reg_new.sys_rst.SIG_CPU_STARTp.sig_out(TABA_POR_TRIGn);
+  /*_SIG_CPU_STARTp     */ reg_new.sys_rst.SIG_CPU_STARTp.sig_out(TABA_POR_TRIGn_new);
   /*_SIG_CPU_INT_RESETp */ reg_new.sys_rst.SIG_CPU_INT_RESETp.sig_out(reg_new.sys_rst.AFER_SYS_RSTp.qp_new());
 
-  /*#p25.SYCY*/ wire SYCY_MODE_DBG2n = not1(pins.sys.UNOR_MODE_DBG2p());
-  /*#p25.SOTO*/ reg_new.sys_rst.SOTO_DBG_VRAMp.dff17(SYCY_MODE_DBG2n, reg_new.sys_rst.CUNU_SYS_RSTn(), reg_new.sys_rst.SOTO_DBG_VRAMp.qn_old());
+  /*#p25.SYCY*/ wire SYCY_MODE_DBG2n_new = not1(pins.sys.UNOR_MODE_DBG2p_new());
+  /*#p25.SOTO*/ reg_new.sys_rst.SOTO_DBG_VRAMp.dff17(SYCY_MODE_DBG2n_new, reg_new.sys_rst.CUNU_SYS_RSTn_new(), reg_old.sys_rst.SOTO_DBG_VRAMp.qn_old());
 
   // APET
   // APER
@@ -62,17 +62,28 @@ void GateBoyReset::reset_to_cart() {
   SIG_CPU_INT_RESETp.state  = 0b00011000;
 }
 
-///*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p(), SOTO_DBG_VRAMp.qn_new()); }
+///*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p_new(), SOTO_DBG_VRAMp.qn_new()); }
 
-/*#p01.AVOR*/ wire GateBoyReset::AVOR_SYS_RSTp() const { return or2(AFER_SYS_RSTp.qp_new(), ASOL_POR_DONEn.qp_new()); }
-/*#p01.ALUR*/ wire GateBoyReset::ALUR_SYS_RSTn() const { return not1(AVOR_SYS_RSTp()); }
-/*#p01.DULA*/ wire GateBoyReset::DULA_SYS_RSTp() const { return not1(ALUR_SYS_RSTn()); }
-/*#p01.CUNU*/ wire GateBoyReset::CUNU_SYS_RSTn() const { return not1(DULA_SYS_RSTp()); }
-/*#p01.XORE*/ wire GateBoyReset::XORE_SYS_RSTp() const { return not1(CUNU_SYS_RSTn()); }
-/*_p01.XEBE*/ wire GateBoyReset::XEBE_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
-/*#p01.WALU*/ wire GateBoyReset::WALU_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
-/*_p01.WESY*/ wire GateBoyReset::WESY_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
-/*_p01.XARE*/ wire GateBoyReset::XARE_SYS_RSTn() const { return not1(XORE_SYS_RSTp()); }
-/*_p03.MULO*/ wire GateBoyReset::MULO_SYS_RSTn() const { return not1(ALUR_SYS_RSTn()); }
+/*#p01.AVOR*/ wire GateBoyReset::AVOR_SYS_RSTp_old() const { return or2(AFER_SYS_RSTp.qp_old(), ASOL_POR_DONEn.qp_old()); }
+/*#p01.ALUR*/ wire GateBoyReset::ALUR_SYS_RSTn_old() const { return not1(AVOR_SYS_RSTp_old()); }
+/*#p01.DULA*/ wire GateBoyReset::DULA_SYS_RSTp_old() const { return not1(ALUR_SYS_RSTn_old()); }
+/*#p01.CUNU*/ wire GateBoyReset::CUNU_SYS_RSTn_old() const { return not1(DULA_SYS_RSTp_old()); }
+/*#p01.XORE*/ wire GateBoyReset::XORE_SYS_RSTp_old() const { return not1(CUNU_SYS_RSTn_old()); }
+/*_p01.XEBE*/ wire GateBoyReset::XEBE_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
+/*#p01.WALU*/ wire GateBoyReset::WALU_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
+/*_p01.WESY*/ wire GateBoyReset::WESY_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
+/*_p01.XARE*/ wire GateBoyReset::XARE_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
+/*_p03.MULO*/ wire GateBoyReset::MULO_SYS_RSTn_old() const { return not1(ALUR_SYS_RSTn_old()); }
+
+/*#p01.AVOR*/ wire GateBoyReset::AVOR_SYS_RSTp_new() const { return or2(AFER_SYS_RSTp.qp_new(), ASOL_POR_DONEn.qp_new()); }
+/*#p01.ALUR*/ wire GateBoyReset::ALUR_SYS_RSTn_new() const { return not1(AVOR_SYS_RSTp_new()); }
+/*#p01.DULA*/ wire GateBoyReset::DULA_SYS_RSTp_new() const { return not1(ALUR_SYS_RSTn_new()); }
+/*#p01.CUNU*/ wire GateBoyReset::CUNU_SYS_RSTn_new() const { return not1(DULA_SYS_RSTp_new()); }
+/*#p01.XORE*/ wire GateBoyReset::XORE_SYS_RSTp_new() const { return not1(CUNU_SYS_RSTn_new()); }
+/*_p01.XEBE*/ wire GateBoyReset::XEBE_SYS_RSTn_new() const { return not1(XORE_SYS_RSTp_new()); }
+/*#p01.WALU*/ wire GateBoyReset::WALU_SYS_RSTn_new() const { return not1(XORE_SYS_RSTp_new()); }
+/*_p01.WESY*/ wire GateBoyReset::WESY_SYS_RSTn_new() const { return not1(XORE_SYS_RSTp_new()); }
+/*_p01.XARE*/ wire GateBoyReset::XARE_SYS_RSTn_new() const { return not1(XORE_SYS_RSTp_new()); }
+/*_p03.MULO*/ wire GateBoyReset::MULO_SYS_RSTn_new() const { return not1(ALUR_SYS_RSTn_new()); }
 
 //-----------------------------------------------------------------------------

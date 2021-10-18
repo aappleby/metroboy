@@ -27,15 +27,15 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   reg_new.reg_ie.IE_D3.dff_r(FFFF_WRn_ext_new, ~pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
   reg_new.reg_ie.IE_D4.dff_r(FFFF_WRn_ext_new, ~pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
 
-  /*_p21.SEPA*/ wire SEPA_FF41_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp(), reg_new.cpu_abus.VARY_FF41p());
+  /*_p21.SEPA*/ wire SEPA_FF41_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VARY_FF41p_new());
   /*_p21.RYVE*/ wire RYVE_FF41_WRn_new = not1(SEPA_FF41_WRp_new);
 
-  /*_p21.ROXE*/ reg_new.reg_stat.ROXE_STAT_HBI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p21.RUFO*/ reg_new.reg_stat.RUFO_STAT_VBI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p21.REFE*/ reg_new.reg_stat.REFE_STAT_OAI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p21.RUGU*/ reg_new.reg_stat.RUGU_STAT_LYI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p21.ROXE*/ reg_new.reg_stat.ROXE_STAT_HBI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p21.RUFO*/ reg_new.reg_stat.RUFO_STAT_VBI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p21.REFE*/ reg_new.reg_stat.REFE_STAT_OAI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p21.RUGU*/ reg_new.reg_stat.RUGU_STAT_LYI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
 
-  /*_p21.TOBE*/ wire TOBE_FF41_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp(), reg_new.cpu_abus.VARY_FF41p());
+  /*_p21.TOBE*/ wire TOBE_FF41_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.VARY_FF41p_new());
   /*_p21.VAVE*/ wire VAVE_FF41_RDn_new = not1(TOBE_FF41_RDp_new);
 
   /*#p21.PARU*/ wire PARU_VBLANKp_new     = not1(reg_new.lcd.POPU_VBLANKp_odd.qn_new());
@@ -75,8 +75,12 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
 
   /*#p02.ASOK*/ wire ASOK_INT_JOYp_new = nand2(reg_new.joy_int.APUG_JP_GLITCH3.qp_new(), reg_new.joy_int.BATU_JP_GLITCH0.qp_new());
 
-  /*#p01.ALUR*/ wire ALUR_SYS_RSTn_new = not1(reg_new.sys_rst.AVOR_SYS_RSTp());
-  /*_p07.REFA*/ wire REFA_FF0F_WRn_new = nand4(reg_new.cpu_signals.TAPU_CPU_WRp.out_new(), reg_new.cpu_abus.SYKE_ADDR_HIp(), reg_new.cpu_abus.SEMY_XX_0000xxxxp(), reg_new.cpu_abus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn_new = not1(reg_new.sys_rst.AVOR_SYS_RSTp_new());
+  /*_p07.REFA*/ wire REFA_FF0F_WRn_new = nand4(
+    reg_new.cpu_signals.TAPU_CPU_WRp.out_new(),
+    reg_new.cpu_abus.SYKE_ADDR_HIp_new(),
+    reg_new.cpu_abus.SEMY_XX_0000xxxxp_new(),
+    reg_new.cpu_abus.SAPA_XX_xxxx1111p_new()); // schematic wrong, is NAND
 
   /*_p02.LETY*/ wire LETY_INT_VBL_ACKn_new  = not1(reg_new.cpu_ack.SIG_CPU_ACK_VBLANK.out_new());
   /*_p02.LEJA*/ wire LEJA_INT_STAT_ACKn_new = not1(reg_new.cpu_ack.SIG_CPU_ACK_STAT.out_new());
@@ -133,9 +137,9 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
 
   /*_p07.ROLO*/ wire ROLO_FF0F_RDn = nand4(
     reg_new.cpu_signals.TEDO_CPU_RDp.out_new(),
-    reg_new.cpu_abus.SYKE_ADDR_HIp(),
-    reg_new.cpu_abus.SEMY_XX_0000xxxxp(),
-    reg_new.cpu_abus.SAPA_XX_xxxx1111p()); // schematic wrong, is NAND
+    reg_new.cpu_abus.SYKE_ADDR_HIp_new(),
+    reg_new.cpu_abus.SEMY_XX_0000xxxxp_new(),
+    reg_new.cpu_abus.SAPA_XX_xxxx1111p_new()); // schematic wrong, is NAND
   /*_p02.POLA*/ wire POLA_FF0F_RDp = not1(ROLO_FF0F_RDn);
 
   // FIXME why is this latch different from the others? MATY is one of those big yellow latchy things.

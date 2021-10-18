@@ -152,18 +152,31 @@ struct PinsSys {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  wire UCOB_CLKBADp() const;
-  wire ATEZ_CLKBADp() const;
+  wire UCOB_CLKBADp_old() const;
+  wire ATEZ_CLKBADp_old() const;
 
-  wire UBETp() const;
-  wire UVARp() const;
+  wire UBETp_old() const;
+  wire UVARp_old() const;
 
-  wire UMUT_MODE_DBG1p() const;
-  wire MULE_MODE_DBG1n() const;
-  wire UNOR_MODE_DBG2p() const;
-  wire RYCA_MODE_DBG2n() const;
-  wire TOVA_MODE_DBG2n() const;
-  wire UPOJ_MODE_PRODn() const;
+  wire UMUT_MODE_DBG1p_old() const;
+  wire MULE_MODE_DBG1n_old() const;
+  wire UNOR_MODE_DBG2p_old() const;
+  wire RYCA_MODE_DBG2n_old() const;
+  wire TOVA_MODE_DBG2n_old() const;
+  wire UPOJ_MODE_PRODn_old() const;
+
+  wire UCOB_CLKBADp_new() const;
+  wire ATEZ_CLKBADp_new() const;
+
+  wire UBETp_new() const;
+  wire UVARp_new() const;
+
+  wire UMUT_MODE_DBG1p_new() const;
+  wire MULE_MODE_DBG1n_new() const;
+  wire UNOR_MODE_DBG2p_new() const;
+  wire RYCA_MODE_DBG2n_new() const;
+  wire TOVA_MODE_DBG2n_new() const;
+  wire UPOJ_MODE_PRODn_new() const;
 
   /*_PIN_71*/ PinIn    PIN_71_RST;
   /*_PIN_73*/ PinOut   PIN_73_CLK_DRIVE;

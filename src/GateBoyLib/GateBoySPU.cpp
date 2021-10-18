@@ -72,7 +72,7 @@ void GateBoy::tock_spu_gates(const GateBoyState& reg_old) {
   /*#p09.BOPY*/ wire BOPY_NR52_WRn = nand2(BOGY_CPU_WRp, DOXY_ADDR_FF26);
   /*#p09.FOKU*/ wire FOKU_NR52_WRn = not1(ETUC_NR52_WRp);
 
-  /*#p09.EFOP*/ wire EFOP_DBG_APUp  = and2(reg_old.cpu_dbus.BUS_CPU_D04p.out_old(), UNOR_MODE_DBG2p());
+  /*#p09.EFOP*/ wire EFOP_DBG_APUp  = and2(reg_old.cpu_dbus.BUS_CPU_D04p.out_old(), UNOR_MODE_DBG2p_new());
 
   /*#p09.HADA*/ reg_NR52.HADA_ALL_SOUND_ONp.dff17(HAWU_NR52_WRn, GUFO_SYS_RESETn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 

@@ -8,19 +8,33 @@ struct GateBoyCpuSignals {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  wire AJAS_CPU_RDn      () const;
-  wire DYKY_CPU_WRn      () const;
+  wire AJAS_CPU_RDn_old      () const;
+  wire DYKY_CPU_WRn_old      () const;
 
-  wire ASOT_CPU_RDp      () const;
-  wire CUPA_CPU_WRp      () const;
-  wire MYNU_CPU_RDn      () const;
-  wire LEKO_CPU_RDp      () const;
-  wire REDU_CPU_RDn      () const;
-  wire MEXO_CPU_WRn      () const;
+  wire ASOT_CPU_RDp_old      () const;
+  wire CUPA_CPU_WRp_old      () const;
+  wire MYNU_CPU_RDn_old      () const;
+  wire LEKO_CPU_RDp_old      () const;
+  wire REDU_CPU_RDn_old      () const;
+  wire MEXO_CPU_WRn_old      () const;
 
-  wire DECY_LATCH_EXTn   () const;
-  wire CATY_LATCH_EXTp   () const;
-  wire BOFE_LATCH_EXTn   () const;
+  wire DECY_LATCH_EXTn_old   () const;
+  wire CATY_LATCH_EXTp_old   () const;
+  wire BOFE_LATCH_EXTn_old   () const;
+
+  wire AJAS_CPU_RDn_new      () const;
+  wire DYKY_CPU_WRn_new      () const;
+
+  wire ASOT_CPU_RDp_new      () const;
+  wire CUPA_CPU_WRp_new      () const;
+  wire MYNU_CPU_RDn_new      () const;
+  wire LEKO_CPU_RDp_new      () const;
+  wire REDU_CPU_RDn_new      () const;
+  wire MEXO_CPU_WRn_new      () const;
+
+  wire DECY_LATCH_EXTn_new   () const;
+  wire CATY_LATCH_EXTp_new   () const;
+  wire BOFE_LATCH_EXTn_new   () const;
 
   //----------------------------------------
 
@@ -54,78 +68,111 @@ struct GateBoyCpuABus {
   void reset_to_cart();
   void set_addr(uint16_t bus_addr_new);
 
-  wire TUNA_0000_FDFF    () const;
-  wire RYCU_FE00_FFFF    () const;
-  wire SYRO_FE00_FFFF    () const;
+  //----------
 
-  wire TOVY_A00n         () const;
-  wire TOLA_A01n         () const;
-  wire XOLA_A00n         () const;
-  wire XENO_A01n         () const;
-  wire XUSY_A02n         () const;
-  wire XERA_A03n         () const;
-  wire TONA_A08n         () const;
-  wire SORE_A15n         () const;
-  wire SEFY_A02n         () const;
-  wire SOGY_A14n         () const;
+  wire TOVY_A00n_old         () const;
+  wire TOLA_A01n_old         () const;
+  wire XOLA_A00n_old         () const;
+  wire XENO_A01n_old         () const;
+  wire XUSY_A02n_old         () const;
+  wire XERA_A03n_old         () const;
+  wire TONA_A08n_old         () const;
+  wire SORE_A15n_old         () const;
+  wire SEFY_A02n_old         () const;
+  wire SOGY_A14n_old         () const;
 
-  wire WADO_A00p         () const;
-  wire WESA_A01p         () const;
-  wire WALO_A02p         () const;
-  wire WEPO_A03p         () const;
+  wire WADO_A00p_old         () const;
+  wire WESA_A01p_old         () const;
+  wire WALO_A02p_old         () const;
+  wire WEPO_A03p_old         () const;
 
-  wire TYRO_XX_0x0x0000p () const;
-  wire TUFA_XX_x1x1xxxxp () const;
+  wire WUTU_ADDR_PPUn_old    () const;
+  wire WERO_ADDR_PPUp_old    () const;
 
-  wire SYKE_ADDR_HIp     () const;
-  wire SOHA_ADDR_HIn     () const;
+  wire TUNA_0000_FDFF_old    () const;
+  wire SYKE_ADDR_HIp_old     () const;
 
-  wire XALY_0x00xxxx     () const;
-  wire SARE_XX00_XX07p   () const;
-  wire RYFO_FF04_FF07p   () const;
+  wire XALY_0x00xxxx_old     () const;
+  wire SARE_XX00_XX07p_old   () const;
+  wire RYFO_FF04_FF07p_old   () const;
 
-  wire SAPA_XX_xxxx1111p () const;
-  wire SEMY_XX_0000xxxxp () const;
-  wire SANO_FF00_FF03p   () const;
-  wire TUMA_A000_BFFFp   () const;
-  wire TYNU_A000_FFFFp   () const;
-  wire ADAH_FE00_FEFFn   () const;
+  wire WATE_FF46n_old        () const;
+  wire XEDA_FF46p_old        () const;
 
-  wire TULO_ADDR_BOOTROMp() const;
+  //----------
 
-  wire ROPE_ADDR_OAMn    () const;
-  wire SARO_ADDR_OAMp    () const;
+  wire TUNA_0000_FDFF_new    () const;
+  wire RYCU_FE00_FFFF_new    () const;
+  wire SYRO_FE00_FFFF_new    () const;
 
-  wire WORU_FF40n        () const;
-  wire WOFA_FF41n        () const;
-  wire WEBU_FF42n        () const;
-  wire WAVU_FF43n        () const;
-  wire WYLE_FF44n        () const;
-  wire WETY_FF45n        () const;
-  wire WATE_FF46n        () const;
-  wire WYBO_FF47n        () const;
-  wire WETA_FF48n        () const;
-  wire VAMA_FF49n        () const;
-  wire WYVO_FF4An        () const;
-  wire WAGE_FF4Bn        () const;
+  wire TOVY_A00n_new         () const;
+  wire TOLA_A01n_new         () const;
+  wire XOLA_A00n_new         () const;
+  wire XENO_A01n_new         () const;
+  wire XUSY_A02n_new         () const;
+  wire XERA_A03n_new         () const;
+  wire TONA_A08n_new         () const;
+  wire SORE_A15n_new         () const;
+  wire SEFY_A02n_new         () const;
+  wire SOGY_A14n_new         () const;
 
-  wire VOCA_FF40p        () const;
-  wire VARY_FF41p        () const;
-  wire XARO_FF42p        () const;
-  wire XAVY_FF43p        () const;
-  wire XOGY_FF44p        () const;
-  wire XAYU_FF45p        () const;
-  wire XEDA_FF46p        () const;
-  wire WERA_FF47p        () const;
-  wire XAYO_FF48p        () const;
-  wire TEGO_FF49p        () const;
-  wire VYGA_FF4Ap        () const;
-  wire VUMY_FF4Bp        () const;
+  wire WADO_A00p_new         () const;
+  wire WESA_A01p_new         () const;
+  wire WALO_A02p_new         () const;
+  wire WEPO_A03p_new         () const;
 
-  wire WUTU_ADDR_PPUn    () const;
-  wire WERO_ADDR_PPUp    () const;
+  wire TYRO_XX_0x0x0000p_new () const;
+  wire TUFA_XX_x1x1xxxxp_new () const;
 
-  wire TEVY_ADDR_VRAMn   () const;
+  wire SYKE_ADDR_HIp_new     () const;
+  wire SOHA_ADDR_HIn_new     () const;
+
+  wire XALY_0x00xxxx_new     () const;
+  wire SARE_XX00_XX07p_new   () const;
+  wire RYFO_FF04_FF07p_new   () const;
+
+  wire SAPA_XX_xxxx1111p_new () const;
+  wire SEMY_XX_0000xxxxp_new () const;
+  wire SANO_FF00_FF03p_new   () const;
+  wire TUMA_A000_BFFFp_new   () const;
+  wire TYNU_A000_FFFFp_new   () const;
+  wire ADAH_FE00_FEFFn_new   () const;
+
+  wire TULO_ADDR_BOOTROMp_new() const;
+
+  wire ROPE_ADDR_OAMn_new    () const;
+  wire SARO_ADDR_OAMp_new    () const;
+
+  wire WORU_FF40n_new        () const;
+  wire WOFA_FF41n_new        () const;
+  wire WEBU_FF42n_new        () const;
+  wire WAVU_FF43n_new        () const;
+  wire WYLE_FF44n_new        () const;
+  wire WETY_FF45n_new        () const;
+  wire WATE_FF46n_new        () const;
+  wire WYBO_FF47n_new        () const;
+  wire WETA_FF48n_new        () const;
+  wire VAMA_FF49n_new        () const;
+  wire WYVO_FF4An_new        () const;
+  wire WAGE_FF4Bn_new        () const;
+
+  wire VOCA_FF40p_new        () const;
+  wire VARY_FF41p_new        () const;
+  wire XARO_FF42p_new        () const;
+  wire XAVY_FF43p_new        () const;
+  wire XOGY_FF44p_new        () const;
+  wire XAYU_FF45p_new        () const;
+  wire XEDA_FF46p_new        () const;
+  wire WERA_FF47p_new        () const;
+  wire XAYO_FF48p_new        () const;
+  wire TEGO_FF49p_new        () const;
+  wire VYGA_FF4Ap_new        () const;
+  wire VUMY_FF4Bp_new        () const;
+
+  wire WUTU_ADDR_PPUn_new    () const;
+  wire WERO_ADDR_PPUp_new    () const;
+
+  wire TEVY_ADDR_VRAMn_new   () const;
 
   /*_BUS_CPU_A00p*/ Bus BUS_CPU_A00p;
   /*_BUS_CPU_A01p*/ Bus BUS_CPU_A01p;

@@ -38,10 +38,14 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-#if 0
+#if 1
   {
     TestResults results;
     GateBoyTests t;
+
+    GateBoy gb;
+    gb.reset_to_bootrom(t.dummy_cart, false);
+    gb.next_phase(t.dummy_cart);
 
     LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
     LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
@@ -51,7 +55,7 @@ int main(int argc, char** argv) {
 #endif
 
 
-#if 1
+#if 0
   {
     TestResults results;
     GateBoyTests a;

@@ -605,8 +605,11 @@ struct PinOut : public PinBase {
 //-----------------------------------------------------------------------------
 
 struct PinClock {
-  wire clkgood() const { return CLKGOOD.qp_int_new(); }
-  wire clk() const { return CLK.qp_int_new(); }
+  wire clkgood_old() const { return CLKGOOD.qp_int_old(); }
+  wire clk_old()     const { return CLK.qp_int_old(); }
+
+  wire clkgood_new() const { return CLKGOOD.qp_int_new(); }
+  wire clk_new()     const { return CLK.qp_int_new(); }
 
   void pin_clk(wire clk, wire clkgood) {
     CLK.pin_in(clk);

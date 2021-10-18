@@ -297,14 +297,14 @@ struct GateBoy  : public IGateBoy {
 
   //----------------------------------------
 
-  wire BYJU_Axxxxxxx() const;
-  wire BALY_xBCDEFGH() const;
-  wire BOGA_Axxxxxxx() const;
-  wire BUVU_Axxxxxxx() const;
-  wire BYXO_xBCDEFGH() const;
-  wire BEDO_Axxxxxxx() const;
-  wire BOWA_xBCDEFGH() const;
-  wire BOMA_xBCDEFGH() const;
+  wire BYJU_Axxxxxxx_new() const;
+  wire BALY_xBCDEFGH_new() const;
+  wire BOGA_Axxxxxxx_new() const;
+  wire BUVU_Axxxxxxx_new() const;
+  wire BYXO_xBCDEFGH_new() const;
+  wire BEDO_Axxxxxxx_new() const;
+  wire BOWA_xBCDEFGH_new() const;
+  wire BOMA_xBCDEFGH_new() const;
 
   //-----------------------------------------------------------------------------
 

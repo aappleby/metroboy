@@ -17,8 +17,9 @@ main:
   // IF is _not_ set, so we _do_ halt.
 
   ld a, 0
-  halt
-  inc a
+  halt          // halt takes two cycles
+                // but it's only one byte so we read the next op here
+  inc a         // inc takes one cycle
 
   test_finish_a 1
 

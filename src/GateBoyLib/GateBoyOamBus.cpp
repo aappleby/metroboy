@@ -433,7 +433,7 @@ void OamControl::reset_to_bootrom() {
   SIG_OAM_WRn_A.state    = 0b00011001;
   SIG_OAM_WRn_B.state    = 0b00011001;
   SIG_OAM_OEn.state      = 0b00011001;
-  old_oam_clk.state      = 0b00011000;
+  old_oam_clk.state      = 0b00011001;
 }
 
 void OamControl::reset_to_cart() {

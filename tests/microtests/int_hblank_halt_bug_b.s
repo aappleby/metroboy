@@ -21,14 +21,7 @@ main:
                 // but it's only one byte so we read the next op here
   inc a         // inc takes one cycle
 
-  cycle_count
-  test_display_a // 0b00011101 // 29
-
-  //ld a, 0
-  //halt
-  //inc a
-
-  //test_finish_a 2
+  test_finish_a 2
 
 .org STAT_INT_VECTOR
   test_fail

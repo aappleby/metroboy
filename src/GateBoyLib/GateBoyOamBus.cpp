@@ -313,7 +313,7 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   uint8_t oam_data_a = (uint8_t)bit_pack_inv(reg_new.oam_dbus_a);
   uint8_t oam_data_b = (uint8_t)bit_pack_inv(reg_new.oam_dbus_b);
 
-  if (bit(~reg_new.oam_ctrl.old_oam_clk.out_old()) && bit(~reg_new.oam_ctrl.SIG_OAM_CLKn.out_new())) {
+  if (bit(reg_old.oam_ctrl.old_oam_clk.out_old()) && !bit(reg_new.oam_ctrl.SIG_OAM_CLKn.out_new())) {
     //printf("oam writing 0x%02x 0x%02x 0x%02x\n", oam_addr, oam_data_a, oam_data_b);
 
     if (bit(~reg_new.oam_ctrl.SIG_OAM_WRn_A.out_new())) mem.oam_ram[(oam_addr << 1) + 0] = oam_data_a;
@@ -323,7 +323,7 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   oam_data_a = mem.oam_ram[(oam_addr << 1) + 0];
   oam_data_b = mem.oam_ram[(oam_addr << 1) + 1];
 
-  reg_new.oam_ctrl.old_oam_clk <<= bit(~reg_new.oam_ctrl.SIG_OAM_CLKn.out_new());
+  reg_new.oam_ctrl.old_oam_clk <<= reg_new.oam_ctrl.SIG_OAM_CLKn.out_new();
 
   triwire oam_data_a0 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 0));
   triwire oam_data_a1 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 1));

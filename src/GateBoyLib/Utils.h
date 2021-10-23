@@ -147,13 +147,17 @@ bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF, FieldInfo* field_info 
 //-----------------------------------------------------------------------------
 
 template<typename T>
+void bit_mask(T& a, uint8_t mask) {
+  auto dst = (uint8_t*)&a;
+  for (auto i = 0; i < sizeof(T); i++) dst[i] &= mask;
+}
+
+//-----------------------------------------------------------------------------
+
+template<typename T>
 T bit_purge(const T& a) {
-  T b;
-  auto src = (const uint8_t*)&a;
-  auto dst = (uint8_t*)&b;
-  for (auto i = 0; i < sizeof(T); i++) {
-    dst[i] = src[i] & 1;
-  }
+  T b = a;
+  bit_mask(b, 0x01);
   return b;
 }
 

@@ -370,22 +370,139 @@ void GateBoy::update_framebuffer() {
 #endif
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_gates(const blob& cart_blob) {
-
   const GateBoyState  reg_old = gb_state;
   GateBoyState& reg_new = gb_state;
 
+  // Clear BIT_OLD from reg_new so we can't accidentally read old fields from it.
+  bit_mask(reg_new, uint8_t(~BIT_OLD));
+  bit_mask(pins, uint8_t(~BIT_OLD));
+
+  bool EXT_cpu_latch_ext;
+
   memset(&reg_new.cpu_abus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
-  if (DELTA_GH_new) {
-    reg_new.cpu_abus.set_addr(cpu.bus_req_new.addr & 0x00FF);
+  memset(&reg_new.cpu_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
+
+  if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
+    // Data has to be driven on EFGH or we fail the wave tests
+    reg_new.cpu_dbus.set_data(cpu.bus_req_new.write, cpu.bus_req_new.data_lo);
+    EXT_cpu_latch_ext = cpu.bus_req_new.read;
   }
   else {
+    reg_new.cpu_dbus.set_data(false, 0);
+    EXT_cpu_latch_ext = 0;
+  }
+  /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
+
+  bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
+  bool in_bootrom = bit(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
+  bool addr_boot = (cpu.bus_req_new.addr <= 0x00FF) && in_bootrom;
+  bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
+  bool addr_high = (cpu.bus_req_new.addr >= 0xFE00);
+
+  bool EXT_cpu_rd;
+  bool EXT_cpu_wr;
+
+  if (DELTA_HA_new) {
+    EXT_cpu_rd = 0;
+    EXT_cpu_wr = 0;
+    reg_new.cpu_abus.set_addr(cpu.bus_req_new.addr & 0x00FF);
+
+    if (addr_high) EXT_addr_new = false;
+    if (addr_boot) EXT_addr_new = false;
+    if (addr_vram) EXT_addr_new = false;
+  }
+  else {
+    EXT_cpu_rd = cpu.bus_req_new.read;
+    EXT_cpu_wr = cpu.bus_req_new.write;
     reg_new.cpu_abus.set_addr(cpu.bus_req_new.addr);
+
+    if (addr_high) EXT_addr_new = false;
+    if (addr_boot) EXT_addr_new = false;
   }
 
-  memset(&reg_new.cpu_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
+  /*_SIG_IN_CPU_RDp*/ reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
+  /*_SIG_IN_CPU_WRp*/ reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+  /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
+
+  /*_p07.UJYV*/ wire UJYV_CPU_RDn = not1(reg_new.cpu_signals.SIG_IN_CPU_RDp.out_new());
+  /*_p07.TEDO*/ reg_new.cpu_signals.TEDO_CPU_RDp <<= not1(UJYV_CPU_RDn);
 
   //----------------------------------------
 
@@ -442,6 +559,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(reg_new.sys_clk.ADAR_ABCxxxxH_new(), reg_new.sys_clk.ATYP_ABCDxxxx_new());
   /*_p01.AREV*/ wire AREV_CPU_WRn = nand2(reg_old.cpu_signals.SIG_IN_CPU_WRp.out_old(), AFAS_xxxxEFGx);
   /*_p01.APOV*/ reg_new.cpu_signals.APOV_CPU_WRp <<= not1(AREV_CPU_WRn);
+  /*_p07.UBAL*/ wire UBAL_CPU_WRn = not1(reg_new.cpu_signals.APOV_CPU_WRp.out_new());
+  /*_p07.TAPU*/ reg_new.cpu_signals.TAPU_CPU_WRp <<= not1(UBAL_CPU_WRn); // xxxxEFGx
 
   /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(reg_new.sys_clk.AROV_xxCDEFxx_new(), reg_new.sys_clk.AJAX_xxxxEFGH_new(), reg_old.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_old());
   /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(pins.sys.UNOR_MODE_DBG2p_new(), AGUT_xxCDEFGH);
@@ -705,8 +824,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p25.XUJY*/ wire XUJY_OAM_CLKENp = not1(VAPE_OAM_CLKENn);
     /*_p25.BYCU*/ wire BYCU_OAM_CLKp = nand3(AVER_AxxxExxx, XUJY_OAM_CLKENp, CUFE_OAM_CLKp);
     /*_p25.COTA*/ wire COTA_OAM_CLKn = not1(BYCU_OAM_CLKp);
-    oam_latch_to_temp_a_gates(COTA_OAM_CLKn, reg_new.oam_latch_a, reg_new.oam_temp_a);
-    oam_latch_to_temp_b_gates(COTA_OAM_CLKn, reg_new.oam_latch_b, reg_new.oam_temp_b);
+    oam_latch_to_temp_a_gates(COTA_OAM_CLKn, reg_old.oam_latch_a, reg_new.oam_temp_a);
+    oam_latch_to_temp_b_gates(COTA_OAM_CLKn, reg_old.oam_latch_b, reg_new.oam_temp_b);
   }
 
   //----------------------------------------
@@ -1027,57 +1146,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
       cpu.bus_req_new = cpu.core.get_bus_req();
     }
   }
-
-  //----------------------------------------
-
-  bool EXT_cpu_latch_ext;
-
-
-  if (DELTA_CD_new || DELTA_DE_new || DELTA_EF_new || DELTA_FG_new) {
-    // Data has to be driven on EFGH or we fail the wave tests
-    reg_new.cpu_dbus.set_data(cpu.bus_req_new.write, cpu.bus_req_new.data_lo);
-    EXT_cpu_latch_ext = cpu.bus_req_new.read;
-  }
-  else {
-    reg_new.cpu_dbus.set_data(false, 0);
-    EXT_cpu_latch_ext = 0;
-  }
-  /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
-
-  bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
-  bool in_bootrom = bit(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
-  bool addr_boot = (cpu.bus_req_new.addr <= 0x00FF) && in_bootrom;
-  bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
-  bool addr_high = (cpu.bus_req_new.addr >= 0xFE00);
-
-  bool EXT_cpu_rd;
-  bool EXT_cpu_wr;
-
-  if (DELTA_GH_new) {
-    EXT_cpu_rd = 0;
-    EXT_cpu_wr = 0;
-
-    if (addr_high) EXT_addr_new = false;
-    if (addr_boot) EXT_addr_new = false;
-    if (addr_vram) EXT_addr_new = false;
-  }
-  else {
-    EXT_cpu_rd = cpu.bus_req_new.read;
-    EXT_cpu_wr = cpu.bus_req_new.write;
-
-    if (addr_high) EXT_addr_new = false;
-    if (addr_boot) EXT_addr_new = false;
-  }
-
-  /*_SIG_IN_CPU_RDp*/ reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
-  /*_SIG_IN_CPU_WRp*/ reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
-  /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
-
-  /*_p07.UJYV*/ wire UJYV_CPU_RDn = not1(reg_new.cpu_signals.SIG_IN_CPU_RDp.out_old());
-  /*_p07.TEDO*/ reg_new.cpu_signals.TEDO_CPU_RDp <<= not1(UJYV_CPU_RDn);
-
-  /*_p07.UBAL*/ wire UBAL_CPU_WRn = not1(reg_new.cpu_signals.APOV_CPU_WRp.out_new());
-  /*_p07.TAPU*/ reg_new.cpu_signals.TAPU_CPU_WRp <<= not1(UBAL_CPU_WRn); // xxxxEFGx
 }
 
 
@@ -1088,55 +1156,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
 
 
-// this is the cpu code that we used to have at the top of tock_gates();
-#if 0
-  bool EXT_cpu_latch_ext;
-
-  memset(&reg_new.cpu_abus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
-  memset(&reg_new.cpu_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
-
-  if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
-    // Data has to be driven on EFGH or we fail the wave tests
-    reg_new.cpu_dbus.set_data(cpu.bus_req_new.write, cpu.bus_req_new.data_lo);
-    EXT_cpu_latch_ext = cpu.bus_req_new.read;
-  }
-  else {
-    reg_new.cpu_dbus.set_data(false, 0);
-    EXT_cpu_latch_ext = 0;
-  }
-  /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
-
-  bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
-  bool in_bootrom = bit(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
-  bool addr_boot = (cpu.bus_req_new.addr <= 0x00FF) && in_bootrom;
-  bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
-  bool addr_high = (cpu.bus_req_new.addr >= 0xFE00);
-
-  bool EXT_cpu_rd;
-  bool EXT_cpu_wr;
-
-  if (DELTA_HA_new) {
-    EXT_cpu_rd = 0;
-    EXT_cpu_wr = 0;
-    reg_new.cpu_abus.set_addr(cpu.bus_req_new.addr & 0x00FF);
-
-    if (addr_high) EXT_addr_new = false;
-    if (addr_boot) EXT_addr_new = false;
-    if (addr_vram) EXT_addr_new = false;
-  }
-  else {
-    EXT_cpu_rd = cpu.bus_req_new.read;
-    EXT_cpu_wr = cpu.bus_req_new.write;
-    reg_new.cpu_abus.set_addr(cpu.bus_req_new.addr);
-
-    if (addr_high) EXT_addr_new = false;
-    if (addr_boot) EXT_addr_new = false;
-  }
-
-  /*_SIG_IN_CPU_RDp*/ reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
-  /*_SIG_IN_CPU_WRp*/ reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
-  /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
-#endif
 
 
 

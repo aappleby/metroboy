@@ -14,22 +14,22 @@ void GateBoy::tock_div_gates(const GateBoyState& reg_old) {
   /*_p01.TAPE*/ wire TAPE_FF04_WRp_new = and4(reg_new.cpu_signals.TAPU_CPU_WRp.out_new(), reg_new.cpu_abus.RYFO_FF04_FF07p_new(), reg_new.cpu_abus.TOLA_A01n_new(), reg_new.cpu_abus.TOVY_A00n_new());
   /*_p01.UFOL*/ wire UFOL_DIV_RSTn_new = nor3(pins.sys.UCOB_CLKBADp_new(), pins.sys.PIN_71_RST.qp_int_new(), TAPE_FF04_WRp_new);
 
-  /*_p01.UKUP*/ reg_new.reg_div.UKUP_DIV00p.dff17(BOGA_Axxxxxxx_new(),                  UFOL_DIV_RSTn_new, reg_new.reg_div.UKUP_DIV00p.qn_old());
-  /*_p01.UFOR*/ reg_new.reg_div.UFOR_DIV01p.dff17(reg_new.reg_div.UKUP_DIV00p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.UFOR_DIV01p.qn_old());
-  /*_p01.UNER*/ reg_new.reg_div.UNER_DIV02p.dff17(reg_new.reg_div.UFOR_DIV01p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.UNER_DIV02p.qn_old());
-  /*#p01.TERO*/ reg_new.reg_div.TERO_DIV03p.dff17(reg_new.reg_div.UNER_DIV02p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.TERO_DIV03p.qn_old());
-  /*_p01.UNYK*/ reg_new.reg_div.UNYK_DIV04p.dff17(reg_new.reg_div.TERO_DIV03p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.UNYK_DIV04p.qn_old());
-  /*_p01.TAMA*/ reg_new.reg_div.TAMA_DIV05p.dff17(reg_new.reg_div.UNYK_DIV04p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.TAMA_DIV05p.qn_old());
-  /*_p01.UGOT*/ reg_new.reg_div.UGOT_DIV06p.dff17(reg_new.reg_div.TAMA_DIV05p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.UGOT_DIV06p.qn_old());
-  /*_p01.TULU*/ reg_new.reg_div.TULU_DIV07p.dff17(reg_new.reg_div.UGOT_DIV06p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.TULU_DIV07p.qn_old());
-  /*_p01.TUGO*/ reg_new.reg_div.TUGO_DIV08p.dff17(reg_new.reg_div.TULU_DIV07p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.TUGO_DIV08p.qn_old());
-  /*_p01.TOFE*/ reg_new.reg_div.TOFE_DIV09p.dff17(reg_new.reg_div.TUGO_DIV08p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.TOFE_DIV09p.qn_old());
-  /*_p01.TERU*/ reg_new.reg_div.TERU_DIV10p.dff17(reg_new.reg_div.TOFE_DIV09p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.TERU_DIV10p.qn_old());
-  /*_p01.SOLA*/ reg_new.reg_div.SOLA_DIV11p.dff17(reg_new.reg_div.TERU_DIV10p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.SOLA_DIV11p.qn_old());
-  /*_p01.SUBU*/ reg_new.reg_div.SUBU_DIV12p.dff17(reg_new.reg_div.SOLA_DIV11p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.SUBU_DIV12p.qn_old());
-  /*_p01.TEKA*/ reg_new.reg_div.TEKA_DIV13p.dff17(reg_new.reg_div.SUBU_DIV12p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.TEKA_DIV13p.qn_old());
-  /*_p01.UKET*/ reg_new.reg_div.UKET_DIV14p.dff17(reg_new.reg_div.TEKA_DIV13p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.UKET_DIV14p.qn_old());
-  /*_p01.UPOF*/ reg_new.reg_div.UPOF_DIV15p.dff17(reg_new.reg_div.UKET_DIV14p.qn_any(), UFOL_DIV_RSTn_new, reg_new.reg_div.UPOF_DIV15p.qn_old());
+  /*_p01.UKUP*/ reg_new.reg_div.UKUP_DIV00p.dff17(BOGA_Axxxxxxx_new(),                  UFOL_DIV_RSTn_new, reg_old.reg_div.UKUP_DIV00p.qn_old());
+  /*_p01.UFOR*/ reg_new.reg_div.UFOR_DIV01p.dff17(reg_new.reg_div.UKUP_DIV00p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.UFOR_DIV01p.qn_old());
+  /*_p01.UNER*/ reg_new.reg_div.UNER_DIV02p.dff17(reg_new.reg_div.UFOR_DIV01p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.UNER_DIV02p.qn_old());
+  /*#p01.TERO*/ reg_new.reg_div.TERO_DIV03p.dff17(reg_new.reg_div.UNER_DIV02p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.TERO_DIV03p.qn_old());
+  /*_p01.UNYK*/ reg_new.reg_div.UNYK_DIV04p.dff17(reg_new.reg_div.TERO_DIV03p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.UNYK_DIV04p.qn_old());
+  /*_p01.TAMA*/ reg_new.reg_div.TAMA_DIV05p.dff17(reg_new.reg_div.UNYK_DIV04p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.TAMA_DIV05p.qn_old());
+  /*_p01.UGOT*/ reg_new.reg_div.UGOT_DIV06p.dff17(reg_new.reg_div.TAMA_DIV05p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.UGOT_DIV06p.qn_old());
+  /*_p01.TULU*/ reg_new.reg_div.TULU_DIV07p.dff17(reg_new.reg_div.UGOT_DIV06p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.TULU_DIV07p.qn_old());
+  /*_p01.TUGO*/ reg_new.reg_div.TUGO_DIV08p.dff17(reg_new.reg_div.TULU_DIV07p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.TUGO_DIV08p.qn_old());
+  /*_p01.TOFE*/ reg_new.reg_div.TOFE_DIV09p.dff17(reg_new.reg_div.TUGO_DIV08p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.TOFE_DIV09p.qn_old());
+  /*_p01.TERU*/ reg_new.reg_div.TERU_DIV10p.dff17(reg_new.reg_div.TOFE_DIV09p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.TERU_DIV10p.qn_old());
+  /*_p01.SOLA*/ reg_new.reg_div.SOLA_DIV11p.dff17(reg_new.reg_div.TERU_DIV10p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.SOLA_DIV11p.qn_old());
+  /*_p01.SUBU*/ reg_new.reg_div.SUBU_DIV12p.dff17(reg_new.reg_div.SOLA_DIV11p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.SUBU_DIV12p.qn_old());
+  /*_p01.TEKA*/ reg_new.reg_div.TEKA_DIV13p.dff17(reg_new.reg_div.SUBU_DIV12p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.TEKA_DIV13p.qn_old());
+  /*_p01.UKET*/ reg_new.reg_div.UKET_DIV14p.dff17(reg_new.reg_div.TEKA_DIV13p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.UKET_DIV14p.qn_old());
+  /*_p01.UPOF*/ reg_new.reg_div.UPOF_DIV15p.dff17(reg_new.reg_div.UKET_DIV14p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.UPOF_DIV15p.qn_old());
 
   /*_p01.UMEK*/ wire UMEK_DIV06n_new = not1(reg_new.reg_div.UGOT_DIV06p.qp_new());
   /*_p01.UREK*/ wire UREK_DIV07n_new = not1(reg_new.reg_div.TULU_DIV07p.qp_new());

@@ -163,10 +163,10 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
   // DFF17_16 >> QN   _MUST_ be QN - see TERO
   // DFF17_17 >> Q    _MUST_ be Q  - see TERO
 
-  /*#p02.APUG*/ reg_new.joy_int.APUG_JP_GLITCH3.dff17(BOGA_Axxxxxxx_new(), reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_new.joy_int.AGEM_JP_GLITCH2.qp_old());
-  /*_p02.AGEM*/ reg_new.joy_int.AGEM_JP_GLITCH2.dff17(BOGA_Axxxxxxx_new(), reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_new.joy_int.ACEF_JP_GLITCH1.qp_old());
-  /*_p02.ACEF*/ reg_new.joy_int.ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx_new(), reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_new.joy_int.BATU_JP_GLITCH0.qp_old());
   /*_p02.BATU*/ reg_new.joy_int.BATU_JP_GLITCH0.dff17(BOGA_Axxxxxxx_new(), reg_new.sys_rst.ALUR_SYS_RSTn_new(), KERY_ANY_BUTTONp_new);
+  /*_p02.ACEF*/ reg_new.joy_int.ACEF_JP_GLITCH1.dff17(BOGA_Axxxxxxx_new(), reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.joy_int.BATU_JP_GLITCH0.qp_old());
+  /*_p02.AGEM*/ reg_new.joy_int.AGEM_JP_GLITCH2.dff17(BOGA_Axxxxxxx_new(), reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.joy_int.ACEF_JP_GLITCH1.qp_old());
+  /*#p02.APUG*/ reg_new.joy_int.APUG_JP_GLITCH3.dff17(BOGA_Axxxxxxx_new(), reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.joy_int.AGEM_JP_GLITCH2.qp_old());
 
   /*#p05.KEVU*/ reg_new.joy_latch.KEVU_JOYP_L0n.tp_latchn(BYZO_FF00_RDn_new, pins.joy.PIN_67_JOY_P10.qp_int_new()); // A / Right
   /*#p05.KAPA*/ reg_new.joy_latch.KAPA_JOYP_L1n.tp_latchn(BYZO_FF00_RDn_new, pins.joy.PIN_66_JOY_P11.qp_int_new()); // B / Left

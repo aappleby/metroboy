@@ -84,6 +84,12 @@ struct BitBase {
     }
   }
 
+  void check_invalid() const {
+    if (config_check_flags) {
+      CHECK_N(state & (BIT_OLD | BIT_NEW));
+    }
+  }
+
   uint8_t state;
 
   // need default = for bit_purge
@@ -108,7 +114,7 @@ struct Gate : public BitBase {
   }
 
   void operator<<= (wire D) {
-    //check_old(); // avet/anos
+    //check_unset(); // we use this in feeback loops, need better check...
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
   }
 };
@@ -121,7 +127,7 @@ struct SigIn : public BitBase {
   wire out_new() const { check_new(); return state; }
 
   void sig_in(wire D) {
-    check_old();
+    check_invalid();
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
   }
 };
@@ -133,7 +139,7 @@ struct SigOut : public BitBase {
   wire out_new() const { check_new(); return state; }
 
   void sig_out(wire D) {
-    check_old();
+    check_invalid();
     state = uint8_t(BIT_NEW | BIT_DRIVEN | bit(D));
   }
 };
@@ -143,7 +149,7 @@ struct SigOut : public BitBase {
 
 struct DFF : public BitBase {
   void dff_r(wire CLKp, wire RSTn, wire Dp) {
-    check_old();
+    check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
@@ -169,7 +175,7 @@ struct DFF : public BitBase {
 
 struct DFF8n : public BitBase {
   void dff8n(wire CLKn, wire Dn) {
-    check_old();
+    check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (~CLKn << 1) & BIT_CLOCK;
@@ -195,7 +201,7 @@ struct DFF8n : public BitBase {
 
 struct DFF8p : public BitBase {
   void dff8p(wire CLKp, wire Dn) {
-    check_old();
+    check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
@@ -223,7 +229,7 @@ struct DFF8p : public BitBase {
 
 struct DFF9 : public BitBase {
   void dff9(wire CLKp, wire SETn, wire Dn) {
-    check_old();
+    check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
@@ -252,7 +258,7 @@ struct DFF9 : public BitBase {
 
 struct DFF11 : public BitBase {
   void dff11(wire CLKp, wire RSTn, wire Dp) {
-    check_old();
+    check_invalid();
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
@@ -280,7 +286,7 @@ struct DFF11 : public BitBase {
 
 struct DFF13 : public BitBase {
   void dff13(wire CLKp, wire RSTn, wire Dp) {
-    check_old();
+    check_invalid();
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
@@ -311,7 +317,7 @@ struct DFF13 : public BitBase {
 
 struct DFF17 : public BitBase {
   void dff(wire CLKp, wire Dp) {
-    check_old();
+    check_invalid();
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
@@ -322,13 +328,8 @@ struct DFF17 : public BitBase {
 
 
   void dff17(wire CLKp, wire RSTn, wire Dp) {
-    check_old();
-    wire clk_old = state & BIT_CLOCK;
-    wire clk_new = (CLKp << 1) & BIT_CLOCK;
-
-    wire d1 = (~clk_old & clk_new) ? Dp : state;
-
-    state = uint8_t(bit(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
+    check_invalid();
+    dff17_any(CLKp, RSTn, Dp);
   }
 
   void dff17_any(wire CLKp, wire RSTn, wire Dp) {
@@ -387,7 +388,7 @@ struct DFF20 : public BitBase {
   }
 
   void dff20(wire CLKn, wire LOADp, wire newD) {
-    check_old();
+    check_invalid();
     dff20_any(CLKn, LOADp, newD);
   }
 };
@@ -431,20 +432,20 @@ struct DFF22 : public BitBase {
   }
 
   void dff22(wire CLKp, wire SETn, wire RSTn, wire Dp) {
-    check_old();
+    check_invalid();
     dff22_any(CLKp, SETn, RSTn, Dp);
   }
 
   void dff22_sync(wire CLKp, wire Dp) {
-    check_old();
+    check_invalid();
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
     wire d1 = (~clk_old & clk_new) ? Dp : state;
-    state = uint8_t(bit(d1) | clk_new | BIT_OLD | BIT_DRIVEN);
+    state = uint8_t(bit(d1) | clk_new | BIT_DRIVEN);
   }
 
   void dff22_async(wire SETn, wire RSTn) {
-    check_old();
+    check_invalid();
     wire clk_new = state & BIT_CLOCK;
     state = uint8_t(bit((state | (~SETn)) & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
@@ -527,7 +528,7 @@ struct PinBase : public BitBase {
 struct PinIO : public PinBase {
   PinIO() : PinBase(0) {}
   void pin_io(wire int_PUn, wire int_HI, wire int_LO, wire ext_OEp, wire ext_Dp) {
-    check_old();
+    check_invalid();
     pin_io_any(int_PUn, int_HI, int_LO, ext_OEp, ext_Dp);
   }
 
@@ -572,7 +573,7 @@ struct PinIn : public PinBase {
   PinIn(uint8_t _state) : PinBase(_state) {}
 
   void pin_in(wire ext_Dp) {
-    check_old();
+    check_invalid();
     state = ((~ext_Dp) & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
   }
 };
@@ -582,7 +583,7 @@ struct PinIn : public PinBase {
 struct PinOut : public PinBase {
   PinOut() : PinBase(0) {}
   void pin_out(wire int_HI, wire int_LO) {
-    check_old();
+    check_invalid();
 
     if (!bit(int_HI) && !bit(int_LO)) {
       // internal bit 0, external bit 1
@@ -636,7 +637,7 @@ struct NorLatch : public BitBase {
   }
 
   void nor_latch(wire SETp, wire RSTp) {
-    check_old();
+    check_invalid();
     state |= SETp;
     state &= ~RSTp;
 
@@ -656,7 +657,7 @@ struct NorLatch : public BitBase {
 
 struct NandLatch : public BitBase {
   void nand_latch(wire SETn, wire RSTn) {
-    check_old();
+    check_invalid();
     state |= ~SETn;
     state &= RSTn;
 
@@ -685,7 +686,7 @@ struct NandLatch : public BitBase {
 
 struct TpLatch : public BitBase {
   void tp_latchn(wire HOLDn, wire Dp) {
-    check_old();
+    check_invalid();
     wire SETp = HOLDn & Dp;
     wire RSTp = HOLDn & ~Dp;
 
@@ -696,7 +697,7 @@ struct TpLatch : public BitBase {
   }
 
   void tp_latchp(wire HOLDp, wire Dp) {
-    check_old();
+    check_invalid();
     wire SETp = (~HOLDp) & Dp;
     wire RSTp = (~HOLDp) & ~Dp;
 

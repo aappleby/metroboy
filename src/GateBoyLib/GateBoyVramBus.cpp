@@ -474,7 +474,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
     /*_p25.SUDO*/ wire SUDO_MWRp_new = not1(reg_new.SIG_VCC.out_new()); // Ignoring debug stuff for now
 
     /*_p25.TUTO*/ wire TUTO_VRAM_DBGp_new = and2(pins.sys.UNOR_MODE_DBG2p_new(), reg_new.sys_rst.SOTO_DBG_VRAMp.qn_new());
-    /*#p25.TYJY*/ wire TYJY_VRAM_WRp_new  = mux2p(TUTO_VRAM_DBGp_new, SUDO_MWRp_new, reg_old.TUJA_CPU_VRAM_WRp_new());
+    /*#p25.TYJY*/ wire TYJY_VRAM_WRp_new  = mux2p(TUTO_VRAM_DBGp_new, SUDO_MWRp_new, reg_new.TUJA_CPU_VRAM_WRp_new());
     /*#p25.SOHY*/ wire SOHY_MWRn_new      = nand2(TYJY_VRAM_WRp_new, SERE_CPU_VRAM_RDp_new);
     /*#p25.RACO*/ wire RACO_DBG_VRAMn_new = not1(TUTO_VRAM_DBGp_new);
 

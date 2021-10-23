@@ -333,8 +333,8 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   if (bit(~pins.ctrl.PIN_79_RDn.qp_ext_new())) {
 
     if (cart_has_mbc1(cart_blob)) {
-      bool mbc1_mode   = bit(reg_new.ext_mbc.MBC1_MODE.out_old());
-      bool mbc1_ram_en = bit(reg_new.ext_mbc.MBC1_RAM_EN.out_old());
+      bool mbc1_mode   = bit(reg_old.ext_mbc.MBC1_MODE.out_old());
+      bool mbc1_ram_en = bit(reg_old.ext_mbc.MBC1_RAM_EN.out_old());
 
       if (region == 0 || region == 1) {
         uint32_t mbc1_rom0_bank = mbc1_mode ? bit_pack(&reg_new.ext_mbc.MBC1_BANK5, 2) : 0;

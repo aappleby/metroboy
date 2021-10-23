@@ -172,6 +172,8 @@ GBResult GateBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
     sys.reset_to_bootrom();
     pins.reset_to_bootrom();
     probes.reset_to_bootrom();
+
+    gb_state.oam_ctrl.old_oam_clk.state = 0x19;
   }
   return GBResult::ok();
 }

@@ -10,3 +10,6 @@
 [submodule "SDL"]
 	path = src/SDL
 	url = https://github.com/libsdl-org/SDL
+[submodule "src/tree-sitter"]
+	path = src/tree-sitter
+	url = https://github.com/tree-sitter/tree-sitter

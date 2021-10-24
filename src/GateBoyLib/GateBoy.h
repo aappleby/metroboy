@@ -292,8 +292,8 @@ struct GateBoy  : public IGateBoy {
   void sprite_scan_to_bus_gates(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);
   void set_lcd_pins_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_evn);
   SpriteDeltaY sub_sprite_y_gates();
-  static void oam_latch_to_temp_a_gates(wire COTA_OAM_CLKn, const OamLatchA& old_oam_latch_a, OamTempA& oam_temp_a);
-  static void oam_latch_to_temp_b_gates(wire COTA_OAM_CLKn, const OamLatchB& old_oam_latch_b, OamTempB& oam_temp_b);
+  void oam_latch_to_temp_a_gates(const GateBoyState& reg_old, wire COTA_OAM_CLKn);
+  void oam_latch_to_temp_b_gates(const GateBoyState& reg_old, wire COTA_OAM_CLKn);
 
   //----------------------------------------
 

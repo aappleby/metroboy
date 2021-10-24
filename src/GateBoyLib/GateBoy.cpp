@@ -562,7 +562,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p07.UBAL*/ wire UBAL_CPU_WRn = not1(reg_new.cpu_signals.APOV_CPU_WRp.out_new());
   /*_p07.TAPU*/ reg_new.cpu_signals.TAPU_CPU_WRp <<= not1(UBAL_CPU_WRn); // xxxxEFGx
 
-  /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(reg_new.sys_clk.AROV_xxCDEFxx_new(), reg_new.sys_clk.AJAX_xxxxEFGH_new(), reg_old.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_old());
+  /*#p01.AGUT*/ wire AGUT_xxCDEFGH = or_and3(reg_new.sys_clk.AROV_xxCDEFxx_new(), reg_new.sys_clk.AJAX_xxxxEFGH_new(), reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_new());
   /*#p01.AWOD*/ wire AWOD_ABxxxxxx = nor2(pins.sys.UNOR_MODE_DBG2p_new(), AGUT_xxCDEFGH);
   /*#p01.ABUZ*/ reg_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK <<= not1(AWOD_ABxxxxxx);
 
@@ -773,15 +773,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   /*_p27.SOVY*/ reg_new.win_ctrl.SOVY_WIN_HITp_evn.dff17(reg_new.sys_clk.ALET_evn_new(), reg_new.XAPO_VID_RSTn_new(), reg_old.win_ctrl.RYDY_WIN_HITp_odd.out_old());
 
-  wire pause_pipe_new1 = reg_new.win_ctrl.RYDY_WIN_HITp_odd.state || !reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state || reg_old.FEPO_STORE_MATCHp_odd.state || (!reg_old.FEPO_STORE_MATCHp_odd.state && (bit_pack(reg_old.pix_count) == 167));
-
-  wire pause_pipe_new2 = reg_new.win_ctrl.RYDY_WIN_HITp_odd.out_new() || !reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new() || reg_old.FEPO_STORE_MATCHp_odd.out_old() || reg_old.WODU_HBLANK_GATEp_odd.out_old();
-
-  if (bit(pause_pipe_new1) != bit(pause_pipe_new2)) {
-    debugbreak();
-  }
-
-
   /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_new = not1(reg_new.win_ctrl.RYDY_WIN_HITp_odd.out_new());
   /*#p24.TOMU*/ wire TOMU_WIN_HITp_odd_new = not1(SYLO_WIN_HITn_odd_new);
   /*#p24.SOCY*/ wire SOCY_WIN_HITn_odd_new = not1(TOMU_WIN_HITp_odd_new);
@@ -824,8 +815,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p25.XUJY*/ wire XUJY_OAM_CLKENp = not1(VAPE_OAM_CLKENn);
     /*_p25.BYCU*/ wire BYCU_OAM_CLKp = nand3(AVER_AxxxExxx, XUJY_OAM_CLKENp, CUFE_OAM_CLKp);
     /*_p25.COTA*/ wire COTA_OAM_CLKn = not1(BYCU_OAM_CLKp);
-    oam_latch_to_temp_a_gates(COTA_OAM_CLKn, reg_old.oam_latch_a, reg_new.oam_temp_a);
-    oam_latch_to_temp_b_gates(COTA_OAM_CLKn, reg_old.oam_latch_b, reg_new.oam_temp_b);
+    oam_latch_to_temp_a_gates(reg_old, COTA_OAM_CLKn);
+    oam_latch_to_temp_b_gates(reg_old, COTA_OAM_CLKn);
   }
 
   //----------------------------------------
@@ -892,7 +883,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p27.SUHA*/ wire SUHA_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.DATY_SCX0n.qn_old(), reg_old.fine_count_odd.RYKU_FINE_CNT0_odd.qp_old());
     /*_p27.SYBY*/ wire SYBY_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.DUZU_SCX1n.qn_old(), reg_old.fine_count_odd.ROGA_FINE_CNT1_odd.qp_old());
     /*_p27.SOZU*/ wire SOZU_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.CYXU_SCX2n.qn_old(), reg_old.fine_count_odd.RUBU_FINE_CNT2_odd.qp_old());
-    /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn_old_odd = nand4(reg_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.qp_any(), SUHA_SCX_FINE_MATCHp_old_odd, SYBY_SCX_FINE_MATCHp_old_odd, SOZU_SCX_FINE_MATCHp_old_odd);
+    /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn_old_odd = nand4(reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.qp_old(), SUHA_SCX_FINE_MATCHp_old_odd, SYBY_SCX_FINE_MATCHp_old_odd, SOZU_SCX_FINE_MATCHp_old_odd);
     /*#p27.POHU*/ wire POHU_SCX_FINE_MATCHp_old_odd = not1(RONE_SCX_FINE_MATCHn_old_odd);
 
     /*_p29.CEHA*/ wire CEHA_SCANNINGp_odd  = not1(reg_new.sprite_scanner.CENO_SCAN_DONEn_odd.qn_new());

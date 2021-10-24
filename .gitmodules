@@ -13,3 +13,6 @@
 [submodule "src/tree-sitter"]
 	path = src/tree-sitter
 	url = https://github.com/tree-sitter/tree-sitter
+[submodule "src/tree-sitter-cpp"]
+	path = src/tree-sitter-cpp
+	url = https://github.com/tree-sitter/tree-sitter-cpp

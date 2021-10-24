@@ -118,7 +118,14 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   blob cart;
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
-  load_blob("LinksAwakening.gb", cart);
+
+  //load_blob("LinksAwakening.gb", cart);     // broken
+  //load_blob("tetris.gb", cart);             // broken
+  //load_blob("SML.gb", cart); // reboot loop
+  //load_blob("pman.gb", cart); // title screen funkd up
+
+
+
   //load_blob("tests/instr_timing.gb", cart);
   //load_blob("tests/cpu_instrs/individual/10-bit ops.gb", cart);
   //load_blob("tests/microtests/DMG/timer_tma_write_a.gb", cart);

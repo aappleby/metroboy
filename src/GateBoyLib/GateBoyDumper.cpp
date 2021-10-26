@@ -5,8 +5,8 @@
 #include "GateBoyLib/Utils.h"
 
 char cp_int(uint8_t state) {
-  if (state & BIT_DRIVEN) return bit(state) ? '1' : '0';
-  if (state & BIT_PULLED) return bit(state) ? '^' : 'v';
+  if (state & BIT_DRIVEN) return bit0(state) ? '1' : '0';
+  if (state & BIT_PULLED) return bit0(state) ? '^' : 'v';
   return 'X';
 }
 

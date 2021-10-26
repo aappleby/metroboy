@@ -57,13 +57,9 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   overlay_tex = create_texture_u32(160, 144, nullptr, false);
   keyboard_state = SDL_GetKeyboardState(nullptr);
 
-  if (config_fastmode) {
-    gb_thread = new GateBoyThread(new LogicBoy());
-  }
-  else {
-    //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
-    gb_thread = new GateBoyThread(new GateBoy());
-  }
+  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  //gb_thread = new GateBoyThread(new LogicBoy());
+  gb_thread = new GateBoyThread(new GateBoy());
 
   gb_thread->start();
   gb_thread->reset_to_bootrom(true);
@@ -119,7 +115,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
 
-  //load_blob("LinksAwakening.gb", cart);     // broken
+  load_blob("LinksAwakening.gb", cart);     // broken
   //load_blob("tetris.gb", cart);             // broken
   //load_blob("SML.gb", cart); // reboot loop
   //load_blob("pman.gb", cart); // title screen funkd up
@@ -132,6 +128,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   gb_thread->load_cart_blob(cart);
   gb_thread->reset_to_cart();
+
+  //gb_thread->run_to(49583368);
 
   //gb_thread->run_to(80203541 - 1);
   //gb_thread->add_steps(int(80203541 - gb_thread->gb->get_sys().gb_phase_total - 1));
@@ -269,7 +267,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
 
     case SDLK_RIGHT:  {
       if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
-        gb_thread->add_steps(114 * 8 * 8);
+        gb_thread->add_steps(114 * 154 * 8);
       }
       else if (keyboard_state[SDL_SCANCODE_LALT]) {
         gb_thread->add_steps(114 * 8);
@@ -376,6 +374,19 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   //----------------------------------------
   // Column 1
 
+  d("\002===== HASHES =====\001\n");
+  {
+    d("phase    %lld\n",      gb->get_sys().gb_phase_total);
+    d("cpu      0x%016llx\n", gb->get_cpu().core.get_hash());
+    d("vid_ram  0x%016llx\n", hash_blob(gb->get_mem().vid_ram,     sizeof(gb->get_mem().vid_ram)));
+    d("cart_ram 0x%016llx\n", hash_blob(gb->get_mem().cart_ram,    sizeof(gb->get_mem().cart_ram)));
+    d("int_ram  0x%016llx\n", hash_blob(gb->get_mem().int_ram,     sizeof(gb->get_mem().int_ram)));
+    d("oam_ram  0x%016llx\n", hash_blob(gb->get_mem().oam_ram,     sizeof(gb->get_mem().oam_ram)));
+    d("zero_ram 0x%016llx\n", hash_blob(gb->get_mem().zero_ram,    sizeof(gb->get_mem().zero_ram)));
+    d("framebuf 0x%016llx\n", hash_blob(gb->get_mem().framebuffer, sizeof(gb->get_mem().framebuffer)));
+  }
+  d("\n");
+
   d("\002===== Thread =====\001\n");
   gb_thread->dump(d);
 
@@ -399,6 +410,17 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   d("\002===== CPU =====\001\n");
   cpu.core.dump(d);
+  d("\n");
+
+  d("\002===== STACK =====\001\n");
+  {
+    int sp = gb->get_cpu().core.get_sp();
+    gb->get_flat_blob(gb_thread->get_cart(), sp, 8, temp_buf);
+    uint16_t* t = (uint16_t*)temp_buf.data();
+    for (auto i = 0; i < temp_buf.size(); i += 2) {
+      d("0x%04x: 0x%04x\n", sp + i, t[i / 2]);
+    }
+  }
   d("\n");
 
   d("\002===== Pins =====\001\n");
@@ -556,9 +578,9 @@ Step controls:
   {
     int pc = gb->get_cpu().core.get_op_addr();
 
-    disasm_buf.resize(64);
-    gb->get_flat_blob(gb_thread->get_cart(), pc, 64, disasm_buf);
-    assembler.disassemble(disasm_buf.data(), 64, pc, pc, 16, d, /*collapse_nops*/ false);
+    temp_buf.resize(64);
+    gb->get_flat_blob(gb_thread->get_cart(), pc, 64, temp_buf);
+    assembler.disassemble(temp_buf.data(), 64, pc, pc, 16, d, /*collapse_nops*/ false);
 
 #if 0
     const uint8_t* code = nullptr;
@@ -701,10 +723,10 @@ Step controls:
   int row3 = 640;
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 0 ==========\001", col7, row1);
-  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, mem.vid_ram, 0, (int)!bit(state.reg_lcdc.WEXU_LCDC_BGTILEn.state));
+  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, mem.vid_ram, 0, (int)!bit0(state.reg_lcdc.WEXU_LCDC_BGTILEn.state));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 1 ==========\001", col7, row2);
-  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, mem.vid_ram, 1, (int)!bit(state.reg_lcdc.WEXU_LCDC_BGTILEn.state));
+  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, mem.vid_ram, 1, (int)!bit0(state.reg_lcdc.WEXU_LCDC_BGTILEn.state));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Tiles ==========\001", col7, row3);
   gb_blitter.blit_tiles (view, screen_size, col7, row3 + 16, 1, mem.vid_ram);

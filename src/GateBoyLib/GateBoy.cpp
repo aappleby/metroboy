@@ -113,17 +113,17 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   sys.clk_good = 1;
   run_phases(cart_blob, 2);
 
-  CHECK_N(bit(gb_state.sys_clk.AFUR_xxxxEFGH.qp_old()));
-  CHECK_P(bit(gb_state.sys_clk.ALEF_AxxxxFGH.qp_old()));
-  CHECK_P(bit(gb_state.sys_clk.APUK_ABxxxxGH.qp_old()));
-  CHECK_P(bit(gb_state.sys_clk.ADYK_ABCxxxxH.qp_old()));
+  CHECK_N(bit0(gb_state.sys_clk.AFUR_xxxxEFGH.qp_old()));
+  CHECK_P(bit0(gb_state.sys_clk.ALEF_AxxxxFGH.qp_old()));
+  CHECK_P(bit0(gb_state.sys_clk.APUK_ABxxxxGH.qp_old()));
+  CHECK_P(bit0(gb_state.sys_clk.ADYK_ABCxxxxH.qp_old()));
 
   sys.gb_phase_total = 0;
   
   //----------------------------------------
   // Wait for SIG_CPU_START
 
-  while(bit(~gb_state.sys_rst.SIG_CPU_STARTp.out_old())) {
+  while(bit0(~gb_state.sys_rst.SIG_CPU_STARTp.out_old())) {
     run_phases(cart_blob, 8);
   }
 
@@ -328,8 +328,8 @@ void GateBoy::update_framebuffer() {
   int DATA1 = pins.lcd.PIN_50_LCD_DATA1.qp_ext_old();
 
   if (lcd_y >= 0 && lcd_y < 144 && lcd_x >= 0 && lcd_x < 160) {
-    wire p0 = bit(DATA0);
-    wire p1 = bit(DATA1);
+    wire p0 = bit0(DATA0);
+    wire p1 = bit0(DATA1);
     auto new_pix = p0 + p1 * 2;
 
     mem.framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
@@ -471,7 +471,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
 
   bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
-  bool in_bootrom = bit(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
+  bool in_bootrom = bit0(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
   bool addr_boot = (cpu.bus_req_new.addr <= 0x00FF) && in_bootrom;
   bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
   bool addr_high = (cpu.bus_req_new.addr >= 0xFE00);
@@ -507,13 +507,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
 
   {
-    wire EXT_sys_clkreq = bit(sys.clk_req);
-    wire EXT_sys_rst = bit(~sys.rst);
-    wire EXT_sys_t2 = bit(~sys.t2);
-    wire EXT_sys_t1 = bit(~sys.t1);
+    wire EXT_sys_clkreq = bit0(sys.clk_req);
+    wire EXT_sys_rst = bit0(~sys.rst);
+    wire EXT_sys_t2 = bit0(~sys.t2);
+    wire EXT_sys_t1 = bit0(~sys.t1);
 
     wire EXT_clkin = (sys.gb_phase_total & 1) && sys.clk_en;
-    wire EXT_clkgood = bit(~sys.clk_good);
+    wire EXT_clkgood = bit0(~sys.clk_good);
 
     /*_PIN_74*/ pins.sys.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);
     /*_PIN_71*/ pins.sys.PIN_71_RST.pin_in(EXT_sys_rst);
@@ -521,11 +521,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_PIN_77*/ pins.sys.PIN_77_T1.pin_in(EXT_sys_t1);
 
     auto cpu_ack = cpu.core.get_int_ack();
-    wire EXT_ack_vblank = get_bit(cpu_ack, BIT_VBLANK);
-    wire EXT_ack_stat = get_bit(cpu_ack, BIT_STAT);
-    wire EXT_ack_timer = get_bit(cpu_ack, BIT_TIMER);
-    wire EXT_ack_serial = get_bit(cpu_ack, BIT_SERIAL);
-    wire EXT_ack_joypad = get_bit(cpu_ack, BIT_JOYPAD);
+    wire EXT_ack_vblank = bit(cpu_ack, BIT_VBLANK);
+    wire EXT_ack_stat = bit(cpu_ack, BIT_STAT);
+    wire EXT_ack_timer = bit(cpu_ack, BIT_TIMER);
+    wire EXT_ack_serial = bit(cpu_ack, BIT_SERIAL);
+    wire EXT_ack_joypad = bit(cpu_ack, BIT_JOYPAD);
 
     /*_SIG_CPU_ACK_VBLANK*/ reg_new.cpu_ack.SIG_CPU_ACK_VBLANK.sig_in(EXT_ack_vblank);
     /*_SIG_CPU_ACK_STAT  */ reg_new.cpu_ack.SIG_CPU_ACK_STAT.sig_in(EXT_ack_stat);
@@ -567,7 +567,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p01.ABUZ*/ reg_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK <<= not1(AWOD_ABxxxxxx);
 
   tock_div_gates(reg_old);
-  tock_reset_gates(reg_old, bit(sys.fastboot) ? reg_new.reg_div.TERO_DIV03p : reg_new.reg_div.UPOF_DIV15p);
+  tock_reset_gates(reg_old, bit0(sys.fastboot) ? reg_new.reg_div.TERO_DIV03p : reg_new.reg_div.UPOF_DIV15p);
   tock_lcdc_gates(reg_old); // LCDC has to be near the top as it controls the video reset signal
   tock_vid_clocks_gates(reg_old);
   tock_lyc_gates(reg_old);
@@ -1083,10 +1083,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   if (DELTA_BC_new) {
     // -AB +BC +CD -DE
-    if (bit(reg_new.reg_if.LOPE_FF0F_D0p.state)) cpu.halt_latch |= INT_VBLANK_MASK;
-    if (bit(reg_new.reg_if.LALU_FF0F_D1p.state)) cpu.halt_latch |= INT_STAT_MASK;
-    if (bit(reg_new.reg_if.UBUL_FF0F_D3p.state)) cpu.halt_latch |= INT_SERIAL_MASK;
-    if (bit(reg_new.reg_if.ULAK_FF0F_D4p.state)) cpu.halt_latch |= INT_JOYPAD_MASK;
+    if (bit0(reg_new.reg_if.LOPE_FF0F_D0p.state)) cpu.halt_latch |= INT_VBLANK_MASK;
+    if (bit0(reg_new.reg_if.LALU_FF0F_D1p.state)) cpu.halt_latch |= INT_STAT_MASK;
+    if (bit0(reg_new.reg_if.UBUL_FF0F_D3p.state)) cpu.halt_latch |= INT_SERIAL_MASK;
+    if (bit0(reg_new.reg_if.ULAK_FF0F_D4p.state)) cpu.halt_latch |= INT_JOYPAD_MASK;
     if (cpu.core.reg.op_next == 0x76 && (bit_pack(reg_new.reg_ie) & cpu.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
     cpu.halt_latch = 0; // +BC +CD +DE +EF +FG
   }
@@ -1109,7 +1109,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   if (DELTA_FG_new) {
 
     cpu.intf_latch = (uint8_t)bit_pack(reg_new.reg_if); // -EF +FG +GH -HA
-    if (bit(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug    
+    if (bit0(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug    
 
 
     if (sys.cpu_en) {

@@ -76,7 +76,7 @@ bool cart_has_ram(const blob& cart_blob) {
 
 
 uint8_t GateBoy::read_flat_addr(const blob& cart_blob, int addr) const {
-  if (!bit(gb_state.cpu_signals.TEPU_BOOT_BITn.state) && addr >= 0x0000 && addr < 0x0100) {
+  if (!bit0(gb_state.cpu_signals.TEPU_BOOT_BITn.state) && addr >= 0x0000 && addr < 0x0100) {
     return DMG_ROM_blob[addr];
   }
   else if (addr >= 0x0000 && addr < 0x4000) {
@@ -114,8 +114,8 @@ uint8_t GateBoy::read_flat_addr(const blob& cart_blob, int addr) const {
   }
   else if (addr >= 0xA000 && addr < 0xC000) {
     if (cart_has_mbc1(cart_blob)) {
-      bool mbc1_mode   = bit(gb_state.ext_mbc.MBC1_MODE.out_old());
-      bool mbc1_ram_en = bit(gb_state.ext_mbc.MBC1_RAM_EN.out_old());
+      bool mbc1_mode   = bit0(gb_state.ext_mbc.MBC1_MODE.out_old());
+      bool mbc1_ram_en = bit0(gb_state.ext_mbc.MBC1_RAM_EN.out_old());
       uint32_t mbc1_ram_bank = mbc1_mode ? bit_pack(&gb_state.ext_mbc.MBC1_BANK5, 2) : 0;
       if (mbc1_mode == 0) mbc1_ram_bank = 0;
       uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
@@ -139,13 +139,17 @@ uint8_t GateBoy::read_flat_addr(const blob& cart_blob, int addr) const {
     return mem.zero_ram[addr & 0x007F];
   }
   else {
-    printf("read_flat_addr : bad addr 0x%08x\n", addr);
+    printf("read_flat_addr : bad addr 0x%08x @ phase %lld\n", addr, sys.gb_phase_total);
     //debugbreak();
     return 0;
   }
 }
 
 void GateBoy::get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const {
+  if (addr + size >= 0xFFFF) {
+    size = 0xFFFF - addr;
+  }
+
   out.resize(size);
   for (int i = 0; i < size; i++) {
     out[i] = read_flat_addr(cart_blob, addr + i);
@@ -330,11 +334,11 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   bool EXT_rd_en = false;
   uint8_t data_in = 0xFF;
 
-  if (bit(~pins.ctrl.PIN_79_RDn.qp_ext_new())) {
+  if (bit0(~pins.ctrl.PIN_79_RDn.qp_ext_new())) {
 
     if (cart_has_mbc1(cart_blob)) {
-      bool mbc1_mode   = bit(reg_old.ext_mbc.MBC1_MODE.out_old());
-      bool mbc1_ram_en = bit(reg_old.ext_mbc.MBC1_RAM_EN.out_old());
+      bool mbc1_mode   = bit0(reg_old.ext_mbc.MBC1_MODE.out_old());
+      bool mbc1_ram_en = bit0(reg_old.ext_mbc.MBC1_RAM_EN.out_old());
 
       if (region == 0 || region == 1) {
         uint32_t mbc1_rom0_bank = mbc1_mode ? bit_pack(&reg_new.ext_mbc.MBC1_BANK5, 2) : 0;
@@ -380,14 +384,14 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
     }
   }
 
-  wire EXT_data_in0_new = get_bit(data_in, 0);
-  wire EXT_data_in1_new = get_bit(data_in, 1);
-  wire EXT_data_in2_new = get_bit(data_in, 2);
-  wire EXT_data_in3_new = get_bit(data_in, 3);
-  wire EXT_data_in4_new = get_bit(data_in, 4);
-  wire EXT_data_in5_new = get_bit(data_in, 5);
-  wire EXT_data_in6_new = get_bit(data_in, 6);
-  wire EXT_data_in7_new = get_bit(data_in, 7);
+  wire EXT_data_in0_new = bit(data_in, 0);
+  wire EXT_data_in1_new = bit(data_in, 1);
+  wire EXT_data_in2_new = bit(data_in, 2);
+  wire EXT_data_in3_new = bit(data_in, 3);
+  wire EXT_data_in4_new = bit(data_in, 4);
+  wire EXT_data_in5_new = bit(data_in, 5);
+  wire EXT_data_in6_new = bit(data_in, 6);
+  wire EXT_data_in7_new = bit(data_in, 7);
 
 
   /*_PIN_17*/ pins.dbus.PIN_17_D00.pin_io(LULA_CBD_TO_EPDp_new, RUXA_new, RUNE_new, EXT_rd_en, EXT_data_in0_new);
@@ -412,33 +416,33 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   reg_new.ext_mbc.MBC1_BANK6.hold();
 
   uint8_t data_out = 0;
-  data_out |= bit(pins.dbus.PIN_17_D00.qp_ext_new()) << 0;
-  data_out |= bit(pins.dbus.PIN_18_D01.qp_ext_new()) << 1;
-  data_out |= bit(pins.dbus.PIN_19_D02.qp_ext_new()) << 2;
-  data_out |= bit(pins.dbus.PIN_20_D03.qp_ext_new()) << 3;
-  data_out |= bit(pins.dbus.PIN_21_D04.qp_ext_new()) << 4;
-  data_out |= bit(pins.dbus.PIN_22_D05.qp_ext_new()) << 5;
-  data_out |= bit(pins.dbus.PIN_23_D06.qp_ext_new()) << 6;
-  data_out |= bit(pins.dbus.PIN_24_D07.qp_ext_new()) << 7;
+  data_out |= bit0(pins.dbus.PIN_17_D00.qp_ext_new()) << 0;
+  data_out |= bit0(pins.dbus.PIN_18_D01.qp_ext_new()) << 1;
+  data_out |= bit0(pins.dbus.PIN_19_D02.qp_ext_new()) << 2;
+  data_out |= bit0(pins.dbus.PIN_20_D03.qp_ext_new()) << 3;
+  data_out |= bit0(pins.dbus.PIN_21_D04.qp_ext_new()) << 4;
+  data_out |= bit0(pins.dbus.PIN_22_D05.qp_ext_new()) << 5;
+  data_out |= bit0(pins.dbus.PIN_23_D06.qp_ext_new()) << 6;
+  data_out |= bit0(pins.dbus.PIN_24_D07.qp_ext_new()) << 7;
 
-  if (!bit(pins.ctrl.PIN_78_WRn.qp_ext_new())) {
+  if (!bit0(pins.ctrl.PIN_78_WRn.qp_ext_new())) {
     if (cart_has_mbc1(cart_blob)) {
-      bool mbc1_mode   = bit(reg_new.ext_mbc.MBC1_MODE.out_new());
-      bool mbc1_ram_en = bit(reg_new.ext_mbc.MBC1_RAM_EN.out_new());
+      bool mbc1_mode   = bit0(reg_new.ext_mbc.MBC1_MODE.out_new());
+      bool mbc1_ram_en = bit0(reg_new.ext_mbc.MBC1_RAM_EN.out_new());
 
       if (region == 0 && 1) {
-        reg_new.ext_mbc.MBC1_RAM_EN <<= bit((data_out & 0x0F) == 0x0A);
+        reg_new.ext_mbc.MBC1_RAM_EN <<= bit0((data_out & 0x0F) == 0x0A);
       }
       else if (region == 1 && 1) {
-        reg_new.ext_mbc.MBC1_BANK0 <<= get_bit(data_out, 0);
-        reg_new.ext_mbc.MBC1_BANK1 <<= get_bit(data_out, 1);
-        reg_new.ext_mbc.MBC1_BANK2 <<= get_bit(data_out, 2);
-        reg_new.ext_mbc.MBC1_BANK3 <<= get_bit(data_out, 3);
-        reg_new.ext_mbc.MBC1_BANK4 <<= get_bit(data_out, 4);
+        reg_new.ext_mbc.MBC1_BANK0 <<= bit(data_out, 0);
+        reg_new.ext_mbc.MBC1_BANK1 <<= bit(data_out, 1);
+        reg_new.ext_mbc.MBC1_BANK2 <<= bit(data_out, 2);
+        reg_new.ext_mbc.MBC1_BANK3 <<= bit(data_out, 3);
+        reg_new.ext_mbc.MBC1_BANK4 <<= bit(data_out, 4);
       }
       else if (region == 2 && 1) {
-        reg_new.ext_mbc.MBC1_BANK5 <<= get_bit(data_out, 0);
-        reg_new.ext_mbc.MBC1_BANK6 <<= get_bit(data_out, 1);
+        reg_new.ext_mbc.MBC1_BANK5 <<= bit(data_out, 0);
+        reg_new.ext_mbc.MBC1_BANK6 <<= bit(data_out, 1);
       }
       else if (region == 3 && 1) {
         reg_new.ext_mbc.MBC1_MODE <<= (data_out & 1);

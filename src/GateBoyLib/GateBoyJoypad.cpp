@@ -95,17 +95,17 @@ void GateBoy::tock_joypad_gates(const GateBoyState& reg_old) {
 
   bool EXT_button0_new, EXT_button1_new, EXT_button2_new, EXT_button3_new;
 
-  if (!bit(pins.joy.PIN_63_JOY_P14.qp_ext_new())) {
-    EXT_button0_new = !get_bit(sys.buttons, 0); // RIGHT
-    EXT_button1_new = !get_bit(sys.buttons, 1); // LEFT
-    EXT_button2_new = !get_bit(sys.buttons, 2); // UP
-    EXT_button3_new = !get_bit(sys.buttons, 3); // DOWN
+  if (!bit0(pins.joy.PIN_63_JOY_P14.qp_ext_new())) {
+    EXT_button0_new = !bit(sys.buttons, 0); // RIGHT
+    EXT_button1_new = !bit(sys.buttons, 1); // LEFT
+    EXT_button2_new = !bit(sys.buttons, 2); // UP
+    EXT_button3_new = !bit(sys.buttons, 3); // DOWN
   }
-  else if (!bit(pins.joy.PIN_62_JOY_P15.qp_ext_new())) {
-    EXT_button0_new = !get_bit(sys.buttons, 4); // A
-    EXT_button1_new = !get_bit(sys.buttons, 5); // B
-    EXT_button2_new = !get_bit(sys.buttons, 6); // SELECT
-    EXT_button3_new = !get_bit(sys.buttons, 7); // START
+  else if (!bit0(pins.joy.PIN_62_JOY_P15.qp_ext_new())) {
+    EXT_button0_new = !bit(sys.buttons, 4); // A
+    EXT_button1_new = !bit(sys.buttons, 5); // B
+    EXT_button2_new = !bit(sys.buttons, 6); // SELECT
+    EXT_button3_new = !bit(sys.buttons, 7); // START
   }
   else {
     EXT_button0_new = 1;

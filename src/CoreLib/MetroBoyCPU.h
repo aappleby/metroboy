@@ -128,6 +128,7 @@ public:
   uint8_t  get_op()      const { return reg.op_next; }
   uint16_t get_op_addr() const { return reg.op_addr; }
   uint8_t  get_a()       const { return reg.a; }
+  uint16_t get_sp()      const { return reg.sp; }
 
   Req get_bus_req() const {
     Req r;
@@ -136,6 +137,23 @@ public:
     r.read  = reg.bus_read;
     r.write = reg.bus_write;
     return r;
+  }
+
+  uint64_t get_hash() const {
+    uint64_t hash = HASH_INIT;
+    hash = mix(hash ^ reg.pc);
+    hash = mix(hash ^ reg.sp);
+    hash = mix(hash ^ reg.xy);
+    hash = mix(hash ^ reg.bc);
+    hash = mix(hash ^ reg.de);
+    hash = mix(hash ^ reg.hl);
+    hash = mix(hash ^ reg.af);
+    hash = mix(hash ^ (uint8_t)reg.ime);
+    hash = mix(hash ^ reg.bus_addr);
+    hash = mix(hash ^ reg.bus_data);
+    hash = mix(hash ^ (uint8_t)reg.bus_read);
+    hash = mix(hash ^ (uint8_t)reg.bus_write);
+    return hash;
   }
 
   /*

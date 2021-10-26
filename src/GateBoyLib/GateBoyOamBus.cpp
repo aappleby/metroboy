@@ -320,11 +320,11 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   uint8_t oam_data_a = (uint8_t)bit_pack_inv(reg_new.oam_dbus_a);
   uint8_t oam_data_b = (uint8_t)bit_pack_inv(reg_new.oam_dbus_b);
 
-  if (bit(reg_old.oam_ctrl.old_oam_clk.out_old()) && !bit(reg_new.oam_ctrl.SIG_OAM_CLKn.out_new())) {
+  if (bit0(reg_old.oam_ctrl.old_oam_clk.out_old()) && !bit0(reg_new.oam_ctrl.SIG_OAM_CLKn.out_new())) {
     //printf("oam writing 0x%02x 0x%02x 0x%02x\n", oam_addr, oam_data_a, oam_data_b);
 
-    if (bit(~reg_new.oam_ctrl.SIG_OAM_WRn_A.out_new())) mem.oam_ram[(oam_addr << 1) + 0] = oam_data_a;
-    if (bit(~reg_new.oam_ctrl.SIG_OAM_WRn_B.out_new())) mem.oam_ram[(oam_addr << 1) + 1] = oam_data_b;
+    if (bit0(~reg_new.oam_ctrl.SIG_OAM_WRn_A.out_new())) mem.oam_ram[(oam_addr << 1) + 0] = oam_data_a;
+    if (bit0(~reg_new.oam_ctrl.SIG_OAM_WRn_B.out_new())) mem.oam_ram[(oam_addr << 1) + 1] = oam_data_b;
   }
 
   oam_data_a = mem.oam_ram[(oam_addr << 1) + 0];
@@ -332,23 +332,23 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
 
   reg_new.oam_ctrl.old_oam_clk <<= reg_new.oam_ctrl.SIG_OAM_CLKn.out_new();
 
-  triwire oam_data_a0 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 0));
-  triwire oam_data_a1 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 1));
-  triwire oam_data_a2 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 2));
-  triwire oam_data_a3 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 3));
-  triwire oam_data_a4 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 4));
-  triwire oam_data_a5 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 5));
-  triwire oam_data_a6 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 6));
-  triwire oam_data_a7 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_a, 7));
+  triwire oam_data_a0 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_a, 0));
+  triwire oam_data_a1 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_a, 1));
+  triwire oam_data_a2 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_a, 2));
+  triwire oam_data_a3 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_a, 3));
+  triwire oam_data_a4 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_a, 4));
+  triwire oam_data_a5 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_a, 5));
+  triwire oam_data_a6 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_a, 6));
+  triwire oam_data_a7 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_a, 7));
 
-  triwire oam_data_b0 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_b, 0));
-  triwire oam_data_b1 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_b, 1));
-  triwire oam_data_b2 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_b, 2));
-  triwire oam_data_b3 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_b, 3));
-  triwire oam_data_b4 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_b, 4));
-  triwire oam_data_b5 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_b, 5));
-  triwire oam_data_b6 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_b, 6));
-  triwire oam_data_b7 = tri6_nn(ZODO_OAM_OEn_new, get_bit(oam_data_b, 7));
+  triwire oam_data_b0 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_b, 0));
+  triwire oam_data_b1 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_b, 1));
+  triwire oam_data_b2 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_b, 2));
+  triwire oam_data_b3 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_b, 3));
+  triwire oam_data_b4 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_b, 4));
+  triwire oam_data_b5 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_b, 5));
+  triwire oam_data_b6 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_b, 6));
+  triwire oam_data_b7 = tri6_nn(ZODO_OAM_OEn_new, bit(oam_data_b, 7));
 
   reg_new.oam_dbus_a.BUS_OAM_DA00n.tri_bus(oam_data_a0);
   reg_new.oam_dbus_a.BUS_OAM_DA01n.tri_bus(oam_data_a1);
@@ -450,7 +450,7 @@ void OamControl::reset_to_cart() {
   SIG_OAM_WRn_A.state    = 0b00011001;
   SIG_OAM_WRn_B.state    = 0b00011001;
   SIG_OAM_OEn.state      = 0b00011001;
-  old_oam_clk.state      = 0b00011000;
+  old_oam_clk.state      = 0b00011001;
 }
 
 //-----------------------------------------------------------------------------

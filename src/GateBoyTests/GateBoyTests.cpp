@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-#if 1
+#if 0
   {
     TestResults results;
     GateBoyTests t;
@@ -80,6 +80,34 @@ int main(int argc, char** argv) {
       LOG_R("##               FAIL                 ##\n");
       LOG_R("########################################\n");
       LOG_R("\n");
+    }
+  }
+#endif
+
+#if 0
+  {
+    LOG_B("========== LogicBoy non-regression tests ==========\n");
+    TestResults results;
+    GateBoyTests t;
+
+    const auto proto = make_unique<LogicBoy>();
+    results += t.test_reset_to_bootrom(proto.get(), 0x01); // OK
+    results += t.test_reset_to_cart   (proto.get(), 0x01); // OK
+    results += t.test_generic         (proto.get());
+
+    LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
+    LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
+    LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
+    LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+    LOG_B("\n");
+
+    if (results.test_fail > 20) {
+      LOG_R("\n");
+      LOG_R("########################################\n");
+      LOG_R("##               FAIL                 ##\n");
+      LOG_R("########################################\n");
+      LOG_R("\n");
+      return -1;
     }
   }
 #endif
@@ -1243,7 +1271,7 @@ TestResults GateBoyTests::test_first_op(const IGateBoy* proto) {
 
 //-----------------------------------------------------------------------------
 
-#define EXPECT_CLK(A, B) EXPECT_EQ(bit(A), get_bit(B, 7 - phase), "Clock phase mismatch, %s at phase %d", #A, phase);
+#define EXPECT_CLK(A, B) EXPECT_EQ(bit0(A), bit(B, 7 - phase), "Clock phase mismatch, %s at phase %d", #A, phase);
 
 TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
   TEST_INIT();
@@ -1291,8 +1319,8 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
 #pragma warning(disable : 4189) // unref var
 
 char cp_ext(uint8_t state) {
-  if ((state & (BIT_DRIVEN | BIT_PULLED)) == BIT_DRIVEN) return bit(state) ? '0' : '1';
-  if ((state & (BIT_DRIVEN | BIT_PULLED)) == BIT_PULLED) return bit(state) ? 'v' : '^';
+  if ((state & (BIT_DRIVEN | BIT_PULLED)) == BIT_DRIVEN) return bit0(state) ? '0' : '1';
+  if ((state & (BIT_DRIVEN | BIT_PULLED)) == BIT_PULLED) return bit0(state) ? 'v' : '^';
   return 'X';
 }
 

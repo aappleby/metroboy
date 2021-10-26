@@ -49,12 +49,12 @@ inline wire not_or_and3(wire a, wire b, wire c) { return ~or_and3(a, b, c); }
 
 // Six-rung mux cells are _non_inverting_. m = 1 selects input A
 inline wire mux2p(wire m, wire a, wire b) {
-  return bit(m) ? a : b;
+  return bit0(m) ? a : b;
 }
 
 // Five-rung mux cells are _inverting_. m = 1 selects input A
 inline wire mux2n(wire m, wire a, wire b) {
-  return ~(bit(m) ? a : b);
+  return ~(bit0(m) ? a : b);
 }
 
 inline wire amux2(wire a0, wire b0, wire a1, wire b1) {

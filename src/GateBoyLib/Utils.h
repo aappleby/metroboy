@@ -4,11 +4,11 @@
 //-----------------------------------------------------------------------------
 
 inline bool posedge(wire a, wire b) {
-  return !bit(a) && bit(b);
+  return !bit0(a) && bit0(b);
 }
 
 inline bool negedge(wire a, wire b) {
-  return bit(a) && !bit(b);
+  return bit0(a) && !bit0(b);
 }
 
 //-----------------------------------------------------------------------------
@@ -23,15 +23,15 @@ uint64_t hash_low_bit(const void* key, const int len, uint64_t seed);
 //-----------------------------------------------------------------------------
 
 inline uint8_t pack(wire a, wire b) {
-  return (bit(a) << 0) | (bit(b) << 1);
+  return (bit0(a) << 0) | (bit0(b) << 1);
 }
 
 inline uint8_t pack(wire a, wire b, wire c, wire d) {
-  return (bit(a) << 0) | (bit(b) << 1) | (bit(c) << 2) | (bit(d) << 3);
+  return (bit0(a) << 0) | (bit0(b) << 1) | (bit0(c) << 2) | (bit0(d) << 3);
 }
 
 inline uint8_t pack(wire a, wire b, wire c, wire d, wire e, wire f, wire g, wire h) {
-  return (bit(a) << 0) | (bit(b) << 1) | (bit(c) << 2) | (bit(d) << 3) | (bit(e) << 4) | (bit(f) << 5) | (bit(g) << 6) | (bit(h) << 7);
+  return (bit0(a) << 0) | (bit0(b) << 1) | (bit0(c) << 2) | (bit0(d) << 3) | (bit0(e) << 4) | (bit0(f) << 5) | (bit0(g) << 6) | (bit0(h) << 7);
 }
 
 //-----------------------------------------------------------------------------
@@ -40,7 +40,7 @@ template<typename SRC>
 inline uint32_t bit_pack(const SRC* psrc, int c) {
   uint8_t* src = (uint8_t*)psrc;
   uint32_t result = 0;
-  for (int i = 0; i < c; i++) result |= (bit(src[i]) << i);
+  for (int i = 0; i < c; i++) result |= (bit0(src[i]) << i);
   return result;
 }
 
@@ -55,7 +55,7 @@ template<typename SRC>
 inline uint32_t bit_pack_inv(const SRC* psrc, int c) {
   uint8_t* src = (uint8_t*)psrc;
   uint32_t result = 0;
-  for (int i = 0; i < c; i++) result |= (!bit(src[i]) << i);
+  for (int i = 0; i < c; i++) result |= (!bit0(src[i]) << i);
   return result;
 }
 
@@ -71,7 +71,7 @@ inline void bit_unpack(DST* pdst, int c, const uint32_t src) {
   uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {
     dst[i] &= ~1;
-    dst[i] |= get_bit(src, i);
+    dst[i] |= bit(src, i);
   }
 }
 
@@ -86,7 +86,7 @@ template<class DST>
 inline void bit_init(DST* pdst, int c, const uint8_t flags, const uint32_t src) {
   uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {
-    dst[i] = flags | get_bit(src, i);
+    dst[i] = flags | bit(src, i);
   }
 }
 
@@ -102,7 +102,7 @@ inline void bit_unpack_inv(DST* pdst, int c, const uint32_t src) {
   uint8_t* dst = (uint8_t*)pdst;
   for (int i = 0; i < c; i++) {
     dst[i] &= ~1;
-    dst[i] |= !get_bit(src, i);
+    dst[i] |= !bit(src, i);
   }
 }
 

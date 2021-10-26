@@ -39,15 +39,15 @@ uint64_t mix(uint64_t h) {
   return swap(h * 0xff51afd7ed558ccd);
 }
 
-uint64_t hash_blob(uint64_t h, void* blob, size_t len) {
-  uint8_t* base = (uint8_t*)blob;
+uint64_t hash_blob(uint64_t h, const void* blob, size_t len) {
+  const uint8_t* base = (uint8_t*)blob;
   for (auto i = 0; i < len; i++) {
     h = mix(h ^ base[i]);
   }
   return h;
 }
 
-uint64_t hash_blob(void* blob, size_t len) {
+uint64_t hash_blob(const void* blob, size_t len) {
   return hash_blob(HASH_INIT, blob, len);
 }
 

@@ -93,7 +93,7 @@ void MetroBoyCPU::reset_to_cart() {
 void MetroBoyCPU::dump(Dumper& d_) const {
   d_("bus req : %04x:%02x %s%s\n", reg.bus_addr, reg.bus_data, reg.bus_read  ? "\003R\001" : "-", reg.bus_write ? "\002W\001" : "-");
   d_("op addr : 0x%04x\n", reg.op_addr);
-  d_("opname  : '%s' @ ->%d\n", op_strings2[reg.op_next], reg.op_state);
+  d_("opname  : '%s' @ %d\n", op_strings2[reg.op_next], reg.op_state);
   d_("opcode  : 0x%02x\n", reg.op_next);
   d_("CB      : 0x%02x\n", reg.op_cb);
   d_("in      : 0x%02x\n", reg.data_in);
@@ -113,7 +113,6 @@ void MetroBoyCPU::dump(Dumper& d_) const {
   d_("DE      : 0x%04x 0x%02x 0x%02x\n", reg.de, reg.d,   reg.e);
   d_("HL      : 0x%04x 0x%02x 0x%02x\n", reg.hl, reg.h,   reg.l);
   d_("AF      : 0x%04x 0x%02x 0x%02x\n", reg.af, reg.a,   reg.f);
-  d_("\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -154,15 +153,15 @@ void MetroBoyCPU::execute_halt(uint8_t imask_, uint8_t intf_) {
 
   if (reg_old.op_state == 0) {
     reg_new.pc        = reg_old.bus_addr + 1;
-    reg_new.bus_addr  = reg_old.pc;
+    reg_new.bus_addr  = reg_old.bus_addr + 1;
     reg_new.bus_data  = 0;
     reg_new.bus_read  = 1;
     reg_new.bus_write = 0;
-    reg_new.op_state = !(imask_& intf_);
+    reg_new.op_state = !(imask_ & intf_);
   }
   else if (reg_old.op_state == 1) {
     reg_new.pc        = reg_old.bus_addr;
-    reg_new.bus_addr  = reg_old.pc;
+    reg_new.bus_addr  = reg_old.bus_addr;
     reg_new.bus_data  = 0;
     reg_new.bus_read  = 1;
     reg_new.bus_write = 0;

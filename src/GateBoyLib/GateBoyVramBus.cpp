@@ -502,7 +502,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   }
 
   uint8_t data_new = 0xFF;
-  if (bit(~pins.vram_ctrl.PIN_45_VRAM_OEn.qp_ext_new())) {
+  if (bit0(~pins.vram_ctrl.PIN_45_VRAM_OEn.qp_ext_new())) {
     data_new = mem.vid_ram[vram_addr_new];
   }
 
@@ -562,14 +562,14 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
     /*#p25.RENA*/ wire RENA_CBD_TO_VPDn_new = not1(RELA_CBD_TO_VPDp_new);
     /*#p25.ROFA*/ wire ROFA_CBD_TO_VPDp_new = not1(RENA_CBD_TO_VPDn_new);
 
-    wire EXT_vram_d0_new = get_bit(data_new, 0);
-    wire EXT_vram_d1_new = get_bit(data_new, 1);
-    wire EXT_vram_d2_new = get_bit(data_new, 2);
-    wire EXT_vram_d3_new = get_bit(data_new, 3);
-    wire EXT_vram_d4_new = get_bit(data_new, 4);
-    wire EXT_vram_d5_new = get_bit(data_new, 5);
-    wire EXT_vram_d6_new = get_bit(data_new, 6);
-    wire EXT_vram_d7_new = get_bit(data_new, 7);
+    wire EXT_vram_d0_new = bit(data_new, 0);
+    wire EXT_vram_d1_new = bit(data_new, 1);
+    wire EXT_vram_d2_new = bit(data_new, 2);
+    wire EXT_vram_d3_new = bit(data_new, 3);
+    wire EXT_vram_d4_new = bit(data_new, 4);
+    wire EXT_vram_d5_new = bit(data_new, 5);
+    wire EXT_vram_d6_new = bit(data_new, 6);
+    wire EXT_vram_d7_new = bit(data_new, 7);
 
     /*_PIN_33*/ pins.vram_dbus.PIN_33_VRAM_D00.pin_io(ROFA_CBD_TO_VPDp_new, REGE_D0n_new, RURA_D0n_new, pins.vram_ctrl.PIN_45_VRAM_OEn.qn_ext_new(), EXT_vram_d0_new);
     /*_PIN_31*/ pins.vram_dbus.PIN_31_VRAM_D01.pin_io(ROFA_CBD_TO_VPDp_new, RYKY_D1n_new, RULY_D1n_new, pins.vram_ctrl.PIN_45_VRAM_OEn.qn_ext_new(), EXT_vram_d1_new);
@@ -583,7 +583,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
 
   //--------------------------------------------
 
-  if (bit(~pins.vram_ctrl.PIN_49_VRAM_WRn.qp_ext_new())) {
+  if (bit0(~pins.vram_ctrl.PIN_49_VRAM_WRn.qp_ext_new())) {
     mem.vid_ram[vram_addr_new] = (uint8_t)bit_pack_inv(pins.vram_dbus);
   }
 

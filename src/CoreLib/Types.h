@@ -23,8 +23,8 @@ typedef const uint8_t wire;
 //typedef uint8_t wire;
 struct triwire { wire state; };
 
-inline wire bit(uint32_t w) { return wire(w & 1); }
-inline wire get_bit(uint32_t w, int i) { return wire((w >> i) & 1); }
+inline wire bit0(uint32_t w) { return wire(w & 1); }
+inline wire bit(uint32_t w, int i) { return wire((w >> i) & 1); }
 
 template<typename T>
 inline void set_bit(T& t, int c, bool x) {
@@ -66,11 +66,12 @@ constexpr wire gen_clk(int64_t phase, uint8_t mask) {
   return !!(bit_reverse(mask) & (1 << phase));
 }
 
-constexpr uint64_t HASH_INIT = 0x12345678;
+//constexpr uint64_t HASH_INIT = 0x12345678;
+constexpr uint64_t HASH_INIT = 0;
 uint32_t mix(uint32_t h);
 uint64_t mix(uint64_t h);
-uint64_t hash_blob(void* blob, size_t len);
-uint64_t hash_blob(uint64_t h, void* blob, size_t len);
+uint64_t hash_blob(const void* blob, size_t len);
+uint64_t hash_blob(uint64_t h, const void* blob, size_t len);
 
 double timestamp();
 

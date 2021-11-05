@@ -8,6 +8,8 @@
 #include <map>
 #include <iostream>
 
+#include "Plait/PTree.h"
+
 enum class DieCellType {
   UNKNOWN = 0,
   PIN_IN,
@@ -144,7 +146,10 @@ struct DieDB {
   void sanity_check();
 
   bool parse_dir(const std::string& path);
-  bool parse_file(const std::string& path);
+  bool parse_header(const std::string& path);
+  bool parse_source(const std::string& path);
+
+  bool parse_struct(PNode node, const char* source);
 
   bool  has_cell(const std::string& tag) {
     return cell_map.find(tag) != cell_map.end();
@@ -168,6 +173,7 @@ struct DieDB {
   std::map<std::string, DieCell*> cell_map;
   std::vector<DieTrace> traces;
 
+  int total_tags = 0;
   int total_files = 0;
   int total_lines = 0;
 };

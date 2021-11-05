@@ -88,7 +88,8 @@ int main(int argc, char** argv) {
   LOG_B("Total edges %d\n", (int)app->die_db.traces.size());
   LOG_B("Done\n");
 
-  
+
+#if 0
   LOG_B("Loading gameboy.plait.json\n");
   nlohmann::json jroot;
   std::ifstream("gameboy.plait.json") >> jroot;
@@ -107,6 +108,7 @@ int main(int argc, char** argv) {
   AppHost* app_host = new AppHost(app);
   ret = app_host->app_main(argc, argv);
   delete app;
+#endif
 
   return ret;
 }

@@ -1,6 +1,7 @@
 #include "Plait/CellDB.h"
 #include "CoreLib/Debug.h"
 #include "CoreLib/Log.h"
+#include "Plait/PTree.h"
 
 #include <map>
 #include <set>
@@ -30,6 +31,10 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DieCellType, {
   {DieCellType::ADDER,   "ADDER"},
   {DieCellType::LOGIC,   "LOGIC"},
   });
+
+std::map<const char*, DieCellType> decl_to_cell_type = {
+  {"PinIn", DieCellType::PIN_IN},
+};
 
 struct GateInfo gate_db[] = {
   {"sig_in",      DieCellType::SIG_IN,  {"in"},  {"out"} },
@@ -428,21 +433,21 @@ bool DieDB::parse_dir(const std::string& path) {
     if (entry.is_regular_file()) {
       auto filename = entry.path().string();
       if (filename.ends_with(".h")) {
-        printf(".");
-        parse_file(filename);
+        parse_header(filename);
       }
     }
   }
 
+  /*
   for (const auto& entry : filesystem::directory_iterator(path)) {
     if (entry.is_regular_file()) {
       auto filename = entry.path().string();
       if (filename.ends_with(".cpp")) {
-        printf(".");
-        parse_file(filename);
+        parse_source(filename);
       }
     }
   }
+  */
   auto parse_end = timestamp();
 
   printf("\n");
@@ -451,6 +456,7 @@ bool DieDB::parse_dir(const std::string& path) {
   //----------------------------------------
   // Postprocess the cells.
 
+#if 0
   auto process_begin = timestamp();
   for (auto& [tag, cell] : cell_map) {
     auto& info = gate_info(cell->gate);
@@ -511,15 +517,341 @@ bool DieDB::parse_dir(const std::string& path) {
   sanity_check();
   auto process_end = timestamp();
   LOG_B("Processing took %f msec\n", (process_end - process_begin) * 1000.0);
+  //LOG_B("Parsed %d tags\n",  unique_tags.size());
   LOG_B("Parsed %d files\n", total_files);
   LOG_B("Parsed %d lines\n", total_lines);
+
+  //for (auto& t : unique_tags) printf("%s\n", t.c_str());
+#endif
 
   return true;
 }
 
 //-----------------------------------------------------------------------------
 
-bool DieDB::parse_file(const std::string& source_path) {
+bool DieDB::parse_struct(PNode node, const char* src) {
+  //printf("parse_struct()\n");
+  node.dump(src);
+
+  for (auto i = 0; i < node.child_count(); i++) {
+    auto child = node.child(i);
+    if (!child.is_named()) continue;
+
+    switch(child.symbol()) {
+    case sym_struct_specifier:
+      break;
+    case alias_sym_type_identifier:
+      break;
+    case sym_field_declaration_list:
+      break;
+    case sym_base_class_clause:
+      break;
+    default:
+      child.print(src);
+      break;
+    }
+  }
+
+  //printf("\n");
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+
+bool DieDB::parse_header(const std::string& header_path) {
+  PTree tree(header_path.c_str());
+  auto src = tree.source();
+  auto root = tree.root();
+
+  std::deque<PNode> queue;
+  queue.push_front(tree.root());
+  ConsoleDumper dumper;
+
+  while(!queue.empty()) {
+    PNode node = queue.front();
+    queue.pop_front();
+    node.enqueue_children(queue);
+    if (!node.is_comment()) continue;
+
+    if (node.body(src) == "/// plait_noparse") {
+      //printf("noparse : %s @ %d\n", header_path.c_str(), node.line());
+      return false;
+    }
+
+    PNode next = node.next();
+    if (next.is_null()) continue;
+
+    smatch match;
+    bool matched = false;
+    std::string flag;
+    std::string page;
+    std::string tag;
+    std::string name;
+    std::string gate;
+    std::string args;
+    std::string docs;
+
+    std::string s = node.body(src);
+    static regex pin_tag(R"(\/\*(.)()(PIN_\d{2})\*\/)");
+    static regex sig_tag(R"(\/\*(.)()(SIG_\w+)\*\/)");
+    static regex bus_tag(R"(\/\*(.)()(BUS_\w+)\*\/)");
+    static regex cell_tag(R"(\/\*(.)(p[0-9]{2})\.([A-Z]{4})\*\/)");
+
+    if (regex_match(s, match, pin_tag)) {
+      flag = match[1].str();
+      page = match[2].str();
+      tag = match[3].str();
+      matched = true;
+
+
+      //printf("body : %s\n", s.c_str());
+      auto cell = get_or_create_cell(tag);
+      //cell->set_type(
+      cell->set_flag(flag);
+      cell->set_page(page);
+
+      cell->dump(dumper);
+      printf("\n");
+
+      //next.dump(src);
+
+      auto cell_type = next.get_field(field_type);
+      cell_type.dump(src);
+
+
+    }
+    else if (regex_match(s, match, sig_tag)) {
+      flag = match[1].str();
+      page = match[2].str();
+      tag = match[3].str();
+      matched = true;
+
+      printf("body : %s\n", s.c_str());
+    }
+    else if (regex_match(s, match, bus_tag)) {
+      //matched = true;
+    }
+    else if (regex_match(s, match, cell_tag)) {
+      //matched = true;
+    }
+    else {
+      //matched = false;
+    }
+
+    if (matched) {
+      //auto cell = get_or_create_cell(tag);
+      //CHECK_P(cell != nullptr);
+      //cell->set_flag(flag);
+      //cell->set_page(page);
+
+      //printf("flag : %s\n", flag.c_str());
+      //printf("page : %s\n", page.c_str());
+      //printf("tag  : %s\n", tag.c_str());
+      //printf("name : %s\n", name.c_str());
+      //printf("gate : %s\n", gate.c_str());
+      //printf("args : %s\n", args.c_str());
+      //printf("docs : %s\n", docs.c_str());
+    }
+  }
+
+  /*
+  for (auto i = 0; i < root.child_count(); i++) {
+    auto child = root.child(i);
+    if (!child.is_named()) continue;
+
+    switch(child.symbol()) {
+    case sym_comment:
+      break;
+    case sym_preproc_if:
+      break;
+    case sym_preproc_include:
+      break;
+    case sym_preproc_call:
+      break;
+    case sym_function_definition:
+      break;
+    case sym_struct_specifier:
+      //parse_struct(child, src);
+      break;
+    case sym_class_specifier:
+      break;
+    case sym_declaration:
+      break;
+    case sym_static_assert_declaration:
+      break;
+    case sym_template_declaration:
+      break;
+    default:
+      child.print(src);
+      CHECK_P(false);
+      break;
+    }
+  }
+  */
+  return true;
+}
+
+//-----------------------------------------------------------------------------
+// The qualified_identifier node has a bug... "name" field pointing to "::"
+
+bool DieDB::parse_source(const std::string& source_path) {
+  PTree tree(source_path.c_str());
+  auto src = tree.source();
+
+  std::deque<PNode> queue;
+  queue.push_front(tree.root());
+
+  std::vector<PNode> tags;
+
+  while(!queue.empty()) {
+    PNode node = queue.front();
+    queue.pop_front();
+    node.enqueue_children(queue);
+
+    std::string s = node.body(src);
+    smatch match;
+    static regex rx("/// plait_noparse");
+    if (regex_search(s, match, rx)) {
+      printf("%s : %s @ %d\n", s.c_str(), source_path.c_str(), node.line());
+      return false;
+    }
+
+    PNode next = node.next();
+    if (next.is_null()) continue;
+    if (next.symbol() == sym_expression_statement) next = next.child(0);
+
+    if (!node.is_comment()) continue;
+
+    static regex pin_tag(R"(\/\*(.)()(PIN_\d{2})\*\/)");
+    static regex sig_tag(R"(\/\*(.)()(SIG_\w+)\*\/)");
+    static regex bus_tag(R"(\/\*(.)()(BUS_\w+)\*\/)");
+    static regex cell_tag(R"(\/\*(.)(p[0-9]{2})\.([A-Z]{4})\*\/)");
+
+    bool matched = false;
+    std::string flag;
+    std::string page;
+    std::string tag;
+    std::string name;
+    std::string gate;
+    std::string args;
+    std::string docs;
+
+    if (regex_match(s, match, pin_tag)) {
+      matched = true;
+      flag = match[1].str();
+      page = match[2].str();
+      tag = match[3].str();
+
+      //name = trim_name(match[1].str());
+      //gate = trim_name(match[2].str());
+      //args = trim_name(match[3].str());
+      //docs = match.suffix().str();
+
+
+      if (next.is_field_decl()) {
+        /*
+        0236: field_declaration 'PinIO PIN_29_VRAM_D03;'
+        0394: |  type: type_identifier 'PinIO'
+        0391: |  declarator: field_identifier 'PIN_29_VRAM_D03'
+        0039: |  lit ';'
+        */
+      }
+      else if (next.is_call()) {
+        /*
+        0267: call_expression 'pins.ctrl.PIN_79_RDn.pin_out(UGAC_RD_A_new, URUN_RD_D_new)'
+        0269: |  function: field_expression 'pins.ctrl.PIN_79_RDn.pin_out'
+        0268: |  arguments: argument_list '(UGAC_RD_A_new, URUN_RD_D_new)'
+        */
+      }
+      else {
+        CHECK_P(false);
+        node.dump(src);
+        next.dump(src);
+        printf("\n");
+      }
+    }
+
+    else if (regex_match(s, match, sig_tag)) {
+      matched = true;
+      flag = match[1].str();
+      page = match[2].str();
+      tag = match[3].str();
+
+      if (next.is_field_decl()) {
+      }
+      else if (next.is_call()) {
+      }
+      else {
+        CHECK_P(false);
+        node.dump(src);
+        next.dump(src);
+        printf("\n");
+      }
+    }
+
+    else if (regex_match(s, match, bus_tag)) {
+      matched = true;
+      flag = match[1].str();
+      page = match[2].str();
+      tag = match[3].str();
+
+      if (next.is_field_decl()) {
+      }
+      else if (next.is_call()) {
+      }
+      else {
+        CHECK_P(false);
+        node.dump(src);
+        next.dump(src);
+        printf("\n");
+      }
+    }
+
+
+    // tagged nodes
+
+    else if (regex_match(s, match, cell_tag)) {
+      matched = true;
+      flag = match[1].str();
+      page = match[2].str();
+      tag = match[3].str();
+
+      if (next.is_field_decl()) {
+      }
+      else if (next.is_call()) {
+      }
+      else if (next.is_decl()) {
+      }
+      else if (next.is_function()) {
+      }
+      else if (next.is_assignment()) {
+      }
+      else {
+        //printf("%s\n", source_path.c_str());
+        //node.dump(src);
+        //next.dump(src);
+        //printf("\n");
+      }
+    }
+
+
+    if (matched) {
+      auto cell = get_or_create_cell(tag);
+      CHECK_P(cell != nullptr);
+      cell->set_flag(flag);
+      cell->set_page(page);
+    }
+
+
+
+    else {
+      // not a tag comment
+    }
+  }
+
+  //printf("%5d %5d %s\n", tree.count_nodes(), tree.count_comments(), source_path.c_str());
+
+#if 0
   std::ifstream lines(source_path);
 
   for (string line; getline(lines, line); ) {
@@ -597,6 +929,7 @@ bool DieDB::parse_file(const std::string& source_path) {
 
     cell->set_doc(docs);
   }
+#endif
 
   total_files++;
   return true;

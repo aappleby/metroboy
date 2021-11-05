@@ -5,6 +5,8 @@
 #include <stdarg.h>
 #include <string>
 
+//-----------------------------------------------------------------------------
+
 struct StringDumper : public Dumper {
   std::string s;
 
@@ -27,6 +29,7 @@ struct StringDumper : public Dumper {
   void clear() { s.clear(); }
 };
 
+//-----------------------------------------------------------------------------
 
 struct ConsoleDumper : public Dumper {
   void operator()(const char* format, ...) override {
@@ -37,3 +40,4 @@ struct ConsoleDumper : public Dumper {
   }
 };
 
+//-----------------------------------------------------------------------------

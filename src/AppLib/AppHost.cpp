@@ -70,16 +70,25 @@ int AppHost::app_main(int, char**) {
   SDL_DisplayMode display_mode;
   SDL_GetCurrentDisplayMode(0, &display_mode);
 
-  //int initial_screen_w = display_mode.w - 64;
-  //int initial_screen_h = display_mode.h - 128;
+  int initial_screen_w, initial_screen_h;
 
-  int initial_screen_w = 1920;
-  int initial_screen_h = 1080;
+  if (display_mode.w <= 1920 && display_mode.h <= 1080) {
+    initial_screen_w = display_mode.w;
+    initial_screen_h = display_mode.h;
+    window = SDL_CreateWindow(app->app_get_title(),
+                              0, 0,
+                              display_mode.w, display_mode.h,
+                              SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
+  }
+  else {
+    initial_screen_w = 1920;
+    initial_screen_h = 1080;
+    window = SDL_CreateWindow(app->app_get_title(),
+                              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                              1920, 1080,
+                              SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
+  }
 
-  window = SDL_CreateWindow(app->app_get_title(),
-                            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                            initial_screen_w, initial_screen_h,
-                            SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 
   const uint8_t* keyboard_state = SDL_GetKeyboardState(nullptr);
 

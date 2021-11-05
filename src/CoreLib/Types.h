@@ -4,6 +4,7 @@
 #include "Config.h"
 #include <vector> // for blob
 #include <stdint.h>
+#include <span>
 
 #ifdef __GNUC__
 #include <csignal>
@@ -16,6 +17,8 @@ typedef int64_t LARGE_INTEGER;
 #define debugbreak() __debugbreak();
 
 #endif
+
+typedef std::span<const char> cspan;
 
 typedef int16_t sample_t;
 
@@ -191,7 +194,7 @@ struct Sprite {
 struct Dumper {
   virtual void operator()(const char* format, ...) = 0;
 
-  virtual void add_char(char c) { (void)c; }
+  virtual void add_char(char c) { operator()("%c", c); }
   virtual void newline() { add_char('\n'); }
   virtual void indent() {}
   virtual void dedent() {}

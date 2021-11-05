@@ -96,7 +96,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\aappl\Desktop\MetroBoy\src\tree-sitter\lib\include;C:\Users\aappl\Desktop\MetroBoy\src\tree-sitter\lib\src;$(SolutionDir)/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,7 +120,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\aappl\Desktop\MetroBoy\src\tree-sitter\lib\include;C:\Users\aappl\Desktop\MetroBoy\src\tree-sitter\lib\src;$(SolutionDir)/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,7 +145,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\aappl\Desktop\MetroBoy\src\tree-sitter\lib\include;C:\Users\aappl\Desktop\MetroBoy\src\tree-sitter\lib\src;$(SolutionDir)/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -170,7 +170,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\aappl\Desktop\MetroBoy\src\tree-sitter\lib\include;C:\Users\aappl\Desktop\MetroBoy\src\tree-sitter\lib\src;$(SolutionDir)/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -183,15 +183,25 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\tree-sitter-cpp\src\parser.c" />
+    <ClCompile Include="..\tree-sitter-cpp\src\scanner.cc" />
+    <ClCompile Include="..\tree-sitter\lib\src\lib.c" />
     <ClCompile Include="CellDB.cpp" />
     <ClCompile Include="Plait.cpp" />
     <ClCompile Include="PlaitApp.cpp" />
+    <ClCompile Include="PTree.cpp" />
+    <ClCompile Include="TreeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\GateBoyLib\GateBoyReset.h" />
+    <ClInclude Include="..\tree-sitter-cpp\src\tree_sitter\parser.h" />
+    <ClInclude Include="..\tree-sitter-cpp\src\tree_sitter\runtime.h" />
+    <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
     <ClInclude Include="CellDB.h" />
     <ClInclude Include="Plait.h" />
     <ClInclude Include="PlaitApp.h" />
+    <ClInclude Include="PTree.h" />
+    <ClInclude Include="TreeSymbols.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AppLib\AppLib.vcxproj">

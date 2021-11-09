@@ -32,77 +32,83 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DieCellType, {
   {DieCellType::LOGIC,   "LOGIC"},
   });
 
-std::map<const char*, DieCellType> decl_to_cell_type = {
-  {"PinIn", DieCellType::PIN_IN},
-};
-
 struct GateInfo gate_db[] = {
-  {"sig_in",      DieCellType::SIG_IN,  {"in"},  {"out"} },
-  {"sig_out",     DieCellType::SIG_OUT, {"in"},  {"out"} },
-  {"tri_bus",     DieCellType::BUS,     {"tri"}, {"out"} },
+  {"PinIn",     "pin_in",      DieCellType::PIN_IN,  {"Dp"},                           {"qp_int"} },
+  {"PinOut",    "pin_out",     DieCellType::PIN_OUT, {"HI", "LO"},                     {"qp_ext", "qn_ext"} },
+  {"PinIO",     "pin_io",      DieCellType::PIN_IO,  {"PUn", "HI", "LO", "OEp", "Dp"}, {"qp_int"} },
+  {"PinClock",  "pin_clk",     DieCellType::PIN_CLK, {"CLK", "CLKGOOD"},               {"clk", "clkgood"} },
 
-  {"pin_in",      DieCellType::PIN_IN,  {"Dp"},                           {"qp_int"} },
-  {"pin_out",     DieCellType::PIN_OUT, {"hi", "lo"},                     {"qp_ext", "qn_ext"} },
-  {"pin_io",      DieCellType::PIN_IO,  {"PUn", "HI", "LO", "OEp", "Dp"}, {"qp_int"} },
-  {"pin_clk",     DieCellType::PIN_CLK, {"clk", "clkgood"},               {"clk", "clkgood"} },
+  {"SigIn",     "sig_in",      DieCellType::SIG_IN,  {"in"},  {"out"} },
+  {"SigOut",    "sig_out",     DieCellType::SIG_OUT, {"in"},  {"out"} },
 
-  {"dff8n",       DieCellType::DFF,     {"CLKn", "Dn"},                 {"qp", "qn"} },
-  {"dff8p",       DieCellType::DFF,     {"CLKp", "Dn"},                 {"qp", "qn"} },
-  {"dff9",        DieCellType::DFF,     {"CLKp", "SETn", "Dn"},         {"qp", "qn"} },
-  {"dff11",       DieCellType::DFF,     {"CLKp", "RSTn", "Dp"},         {"qp", "qn"} },
-  {"dff13",       DieCellType::DFF,     {"CLKp", "RSTn", "Dp"},         {"qp", "qn"} },
-  {"dff17",       DieCellType::DFF,     {"CLKp", "RSTn", "Dp"},         {"qp", "qn"} },
-  {"dff20",       DieCellType::DFF,     {"CLKn", "LOADp", "Dp"},        {"qp", "qn"} },
-  {"dff22",       DieCellType::DFF,     {"CLKp", "SETn", "RSTn", "Dp"}, {"qp", "qn"} },
+  {"Bus",       "tri_bus",     DieCellType::BUS,     {"tri"}, {"out"} },
 
-  {"nand_latch",  DieCellType::LATCH,   {"SETn", "RSTn"},               {"qp", "qn"} },
-  {"nor_latch",   DieCellType::LATCH,   {"SETp", "RSTp"},               {"qp", "qn"} },
-  {"tp_latchn",   DieCellType::LATCH,   {"HOLDn", "Dp"},                {"qp", "qn"} },
-  {"tp_latchp",   DieCellType::LATCH,   {"HOLDp", "Dp"},                {"qp", "qn"} },
+  {"DFF8n",     "dff8n",       DieCellType::DFF,     {"CLKn", "Dn"},                 {"qp", "qn"} },
+  {"DFF8p",     "dff8p",       DieCellType::DFF,     {"CLKp", "Dn"},                 {"qp", "qn"} },
+  {"DFF9",      "dff9",        DieCellType::DFF,     {"CLKp", "SETn", "Dn"},         {"qp", "qn"} },
+  {"DFF11",     "dff11",       DieCellType::DFF,     {"CLKp", "RSTn", "Dp"},         {"qp", "qn"} },
+  {"DFF13",     "dff13",       DieCellType::DFF,     {"CLKp", "RSTn", "Dp"},         {"qp", "qn"} },
+  {"DFF17",     "dff17",       DieCellType::DFF,     {"CLKp", "RSTn", "Dp"},         {"qp", "qn"} },
+  {"DFF20",     "dff20",       DieCellType::DFF,     {"CLKn", "LOADp", "Dp"},        {"qp", "qn"} },
+  {"DFF22",     "dff22",       DieCellType::DFF,     {"CLKp", "SETn", "RSTn", "Dp"}, {"qp", "qn"} },
 
-  {"tri10_np",    DieCellType::TRIBUF,  {"OEn", "Dp"},                  {"out"} },
-  {"tri6_pn",     DieCellType::TRIBUF,  {"OEp", "Dn"},                  {"out"} },
-  {"tri6_nn",     DieCellType::TRIBUF,  {"OEn", "Dn"},                  {"out"} },
+  {"NandLatch", "nand_latch",  DieCellType::LATCH,   {"SETn", "RSTn"},               {"qp", "qn"} },
+  {"NorLatch",  "nor_latch",   DieCellType::LATCH,   {"SETp", "RSTp"},               {"qp", "qn"} },
+  {"TpLatch",   "tp_latchn",   DieCellType::LATCH,   {"HOLDn", "Dp"},                {"qp", "qn"} },
+  {"TpLatch",   "tp_latchp",   DieCellType::LATCH,   {"HOLDp", "Dp"},                {"qp", "qn"} },
 
-  {"add3",        DieCellType::ADDER,   {"a", "b", "carry"},            {"sum", "carry"} },
+  {"Adder",     "add3",        DieCellType::ADDER,   {"a", "b", "carry"},            {"sum", "carry"} },
 
-  {"not1",        DieCellType::LOGIC,   {"a"},                {"out"} },
-  {"and2",        DieCellType::LOGIC,   {"a", "b"},           {"out"} },
-  {"and3",        DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
-  {"and4",        DieCellType::LOGIC,   {"a", "b", "c", "d"}, {"out"} },
-  {"or2",         DieCellType::LOGIC,   {"a", "b"},           {"out"} },
-  {"or3",         DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
-  {"or4",         DieCellType::LOGIC,   {"a", "b", "c", "d"}, {"out"} },
-  {"xor2",        DieCellType::LOGIC,   {"a", "b"},           {"out"} },
-  {"xnor2",       DieCellType::LOGIC,   {"a", "b"},           {"out"} },
-  {"and_or3",     DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
-  {"or_and3",     DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
-  {"not_or_and3", DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
+  {"Gate",      "tri10_np",    DieCellType::LOGIC,   {"OEn", "Dp"},                  {"out"} },
+  {"Gate",      "tri6_pn",     DieCellType::LOGIC,   {"OEp", "Dn"},                  {"out"} },
+  {"Gate",      "tri6_nn",     DieCellType::LOGIC,   {"OEn", "Dn"},                  {"out"} },
 
-  {"nand2",       DieCellType::LOGIC,   {"a", "b"}, {"out"} },
-  {"nand3",       DieCellType::LOGIC,   {"a", "b", "c"}, {"out"} },
-  {"nand4",       DieCellType::LOGIC,   {"a", "b", "c", "d"}, {"out"} },
-  {"nand5",       DieCellType::LOGIC,   {"a", "b", "c", "d", "e"}, {"out"} },
-  {"nand6",       DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f"}, {"out"} },
-  {"nand7",       DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f", "g"}, {"out"} },
-  {"nand8",       DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f", "g", "h"}, {"out"} },
+  {"Gate",      "not1",        DieCellType::LOGIC,   {"a"},                {"out"} },
+  {"Gate",      "and2",        DieCellType::LOGIC,   {"a", "b"},           {"out"} },
+  {"Gate",      "and3",        DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
+  {"Gate",      "and4",        DieCellType::LOGIC,   {"a", "b", "c", "d"}, {"out"} },
+  {"Gate",      "or2",         DieCellType::LOGIC,   {"a", "b"},           {"out"} },
+  {"Gate",      "or3",         DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
+  {"Gate",      "or4",         DieCellType::LOGIC,   {"a", "b", "c", "d"}, {"out"} },
+  {"Gate",      "xor2",        DieCellType::LOGIC,   {"a", "b"},           {"out"} },
+  {"Gate",      "xnor2",       DieCellType::LOGIC,   {"a", "b"},           {"out"} },
+  {"Gate",      "and_or3",     DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
+  {"Gate",      "or_and3",     DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
+  {"Gate",      "not_or_and3", DieCellType::LOGIC,   {"a", "b", "c"},      {"out"} },
 
-  {"nor2",        DieCellType::LOGIC,   {"a", "b"}, {"out"} },
-  {"nor3",        DieCellType::LOGIC,   {"a", "b", "c"}, {"out"} },
-  {"nor4",        DieCellType::LOGIC,   {"a", "b", "c", "d"}, {"out"} },
-  {"nor5",        DieCellType::LOGIC,   {"a", "b", "c", "d", "e"}, {"out"} },
-  {"nor6",        DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f"}, {"out"} },
-  {"nor7",        DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f", "g"}, {"out"} },
-  {"nor8",        DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f", "g", "h"}, {"out"} },
+  {"Gate",      "nand2",       DieCellType::LOGIC,   {"a", "b"}, {"out"} },
+  {"Gate",      "nand3",       DieCellType::LOGIC,   {"a", "b", "c"}, {"out"} },
+  {"Gate",      "nand4",       DieCellType::LOGIC,   {"a", "b", "c", "d"}, {"out"} },
+  {"Gate",      "nand5",       DieCellType::LOGIC,   {"a", "b", "c", "d", "e"}, {"out"} },
+  {"Gate",      "nand6",       DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f"}, {"out"} },
+  {"Gate",      "nand7",       DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f", "g"}, {"out"} },
+  {"Gate",      "nand8",       DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f", "g", "h"}, {"out"} },
 
-  {"mux2n",       DieCellType::LOGIC,   {"mux", "a1", "a0"}, {"out"} },
-  {"mux2p",       DieCellType::LOGIC,   {"mux", "a1", "a0"}, {"out"} },
-  {"amux2",       DieCellType::LOGIC,   {"a0", "b0", "a1", "b1"}, {"out"} },
-  {"amux4",       DieCellType::LOGIC,   {"a0", "b0", "a1", "b1", "a2", "b2", "a3", "b3"}, {"out"} },
-  {"amux6",       DieCellType::LOGIC,   {"a0", "b0", "a1", "b1", "a2", "b2", "a3", "b3", "a4", "b4", "a5", "b5"}, {"out"} },
+  {"Gate",      "nor2",        DieCellType::LOGIC,   {"a", "b"}, {"out"} },
+  {"Gate",      "nor3",        DieCellType::LOGIC,   {"a", "b", "c"}, {"out"} },
+  {"Gate",      "nor4",        DieCellType::LOGIC,   {"a", "b", "c", "d"}, {"out"} },
+  {"Gate",      "nor5",        DieCellType::LOGIC,   {"a", "b", "c", "d", "e"}, {"out"} },
+  {"Gate",      "nor6",        DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f"}, {"out"} },
+  {"Gate",      "nor7",        DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f", "g"}, {"out"} },
+  {"Gate",      "nor8",        DieCellType::LOGIC,   {"a", "b", "c", "d", "e", "f", "g", "h"}, {"out"} },
+
+  {"Gate",      "mux2n",       DieCellType::LOGIC,   {"mux", "a1", "a0"}, {"out"} },
+  {"Gate",      "mux2p",       DieCellType::LOGIC,   {"mux", "a1", "a0"}, {"out"} },
+  {"Gate",      "amux2",       DieCellType::LOGIC,   {"a0", "b0", "a1", "b1"}, {"out"} },
+  {"Gate",      "amux4",       DieCellType::LOGIC,   {"a0", "b0", "a1", "b1", "a2", "b2", "a3", "b3"}, {"out"} },
+  {"Gate",      "amux6",       DieCellType::LOGIC,   {"a0", "b0", "a1", "b1", "a2", "b2", "a3", "b3", "a4", "b4", "a5", "b5"}, {"out"} },
 };
 
-const GateInfo& gate_info(const std::string& gate) {
+const GateInfo& decl_to_info(const std::string& decl) {
+  for (const auto& g : gate_db) {
+    if (g.decl == decl) return g;
+  }
+  CHECK_P(false);
+  static GateInfo dummy;
+  return dummy;
+}
+
+const GateInfo& gate_to_info(const std::string& gate) {
   for (const auto& g : gate_db) {
     if (g.gate == gate) return g;
   }
@@ -429,29 +435,45 @@ bool DieDB::parse_dir(const std::string& path) {
 
   auto parse_begin = timestamp();
 
-  for (const auto& entry : filesystem::directory_iterator(path)) {
-    if (entry.is_regular_file()) {
-      auto filename = entry.path().string();
-      if (filename.ends_with(".h")) {
-        parse_header(filename);
+  {
+    LOG_Y("parsing headers for %s\n", path.c_str());
+    LOG_INDENT_SCOPE();
+
+    for (const auto& entry : filesystem::directory_iterator(path)) {
+      if (entry.is_regular_file()) {
+        auto filename = entry.path().string();
+        if (filename.starts_with("src\\GateBoyLib\\GateBoy") && filename.ends_with(".h")) {
+          parse_header(filename);
+        }
       }
     }
   }
 
-  /*
-  for (const auto& entry : filesystem::directory_iterator(path)) {
-    if (entry.is_regular_file()) {
-      auto filename = entry.path().string();
-      if (filename.ends_with(".cpp")) {
-        parse_source(filename);
+  {
+    LOG_Y("parsing source for %s\n", path.c_str());
+    LOG_INDENT_SCOPE();
+
+    for (const auto& entry : filesystem::directory_iterator(path)) {
+      if (entry.is_regular_file()) {
+        auto filename = entry.path().string();
+        if (filename.starts_with("src\\GateBoyLib\\GateBoy") && filename.ends_with(".cpp")) {
+          parse_source(filename);
+        }
       }
+    }
+  }
+  auto parse_end = timestamp();
+
+  LOG_B("Parsing took %f msec\n", (parse_end - parse_begin) * 1000.0);
+
+  /*
+  ConsoleDumper dumper;
+  for (auto& [tag, cell] : cell_map) {
+    if (cell->cell_type == DieCellType::BUS) {
+      cell->dump(dumper);
     }
   }
   */
-  auto parse_end = timestamp();
-
-  printf("\n");
-  LOG_B("Parsing took %f msec\n", (parse_end - parse_begin) * 1000.0);
 
   //----------------------------------------
   // Postprocess the cells.
@@ -529,6 +551,7 @@ bool DieDB::parse_dir(const std::string& path) {
 
 //-----------------------------------------------------------------------------
 
+#if 0
 bool DieDB::parse_struct(PNode node, const char* src) {
   //printf("parse_struct()\n");
   node.dump(src);
@@ -555,10 +578,84 @@ bool DieDB::parse_struct(PNode node, const char* src) {
   //printf("\n");
   return true;
 }
+/*
+for (auto i = 0; i < root.child_count(); i++) {
+  auto child = root.child(i);
+  if (!child.is_named()) continue;
+
+  switch(child.symbol()) {
+  case sym_comment:
+	break;
+  case sym_preproc_if:
+	break;
+  case sym_preproc_include:
+	break;
+  case sym_preproc_call:
+	break;
+  case sym_function_definition:
+	break;
+  case sym_struct_specifier:
+	break;
+  case sym_class_specifier:
+	break;
+  case sym_declaration:
+	break;
+  case sym_static_assert_declaration:
+	break;
+  case sym_template_declaration:
+	break;
+  default:
+	child.print(src);
+	CHECK_P(false);
+	break;
+  }
+}
+*/
+
+#endif
 
 //-----------------------------------------------------------------------------
 
+std::string argument_to_identifier(PNode node, const char* src) {
+	if (node.symbol() == sym_identifier) {
+		return node.body(src);
+	}
+	else if (node.symbol() == sym_call_expression) {
+		return argument_to_identifier(node.get_field(field_function), src);
+	}
+	else if (node.symbol() == sym_field_expression) {
+		auto prefix = node.get_field(field_argument).get_field(field_field).body(src);
+		auto suffix = node.get_field(field_field).body(src);
+		return prefix + "." + suffix;
+	}
+	else {
+		CHECK_P(false);
+		return "";
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+std::vector<std::string> arglist_to_args(PNode node, const char* src) {
+	CHECK_P(node.symbol() == sym_argument_list);
+	std::vector<std::string> arg_names;
+	for (int i = 0; i < node.named_child_count(); i++) {
+		arg_names.push_back(argument_to_identifier(node.named_child(i), src));
+	}
+	return arg_names;
+}
+
+//-----------------------------------------------------------------------------
+
+static regex pin_tag(R"(\/\*(.)()(PIN_\d{2}) *\*\/)");
+static regex sig_tag(R"(\/\*(.)()(SIG_\w+) *\*\/)");
+static regex bus_tag(R"(\/\*(.)()(BUS_\w+) *\*\/)");
+static regex cell_tag(R"(\/\*(.)(p[0-9]{2})\.([A-Z]{4}) *\*\/)");
+
 bool DieDB::parse_header(const std::string& header_path) {
+  LOG_G("%s\n", header_path.c_str());
+  LOG_INDENT_SCOPE();
+
   PTree tree(header_path.c_str());
   auto src = tree.source();
   auto root = tree.root();
@@ -566,15 +663,15 @@ bool DieDB::parse_header(const std::string& header_path) {
   std::deque<PNode> queue;
   queue.push_front(tree.root());
   ConsoleDumper dumper;
+  int tag_count = 0;
 
   while(!queue.empty()) {
     PNode node = queue.front();
     queue.pop_front();
     node.enqueue_children(queue);
     if (!node.is_comment()) continue;
-
     if (node.body(src) == "/// plait_noparse") {
-      //printf("noparse : %s @ %d\n", header_path.c_str(), node.line());
+      LOG_R("Skipping\n");
       return false;
     }
 
@@ -592,102 +689,81 @@ bool DieDB::parse_header(const std::string& header_path) {
     std::string docs;
 
     std::string s = node.body(src);
-    static regex pin_tag(R"(\/\*(.)()(PIN_\d{2})\*\/)");
-    static regex sig_tag(R"(\/\*(.)()(SIG_\w+)\*\/)");
-    static regex bus_tag(R"(\/\*(.)()(BUS_\w+)\*\/)");
-    static regex cell_tag(R"(\/\*(.)(p[0-9]{2})\.([A-Z]{4})\*\/)");
 
     if (regex_match(s, match, pin_tag)) {
+      tag_count++;
       flag = match[1].str();
       page = match[2].str();
       tag = match[3].str();
       matched = true;
 
-
-      //printf("body : %s\n", s.c_str());
       auto cell = get_or_create_cell(tag);
-      //cell->set_type(
       cell->set_flag(flag);
       cell->set_page(page);
+      cell->set_name(tag);
 
-      cell->dump(dumper);
-      printf("\n");
-
-      //next.dump(src);
-
-      auto cell_type = next.get_field(field_type);
-      cell_type.dump(src);
-
-
+      auto decl = next.get_field(field_type).body(src);
+      cell->set_type(decl_to_info(decl).cell_type);
     }
     else if (regex_match(s, match, sig_tag)) {
+      tag_count++;
       flag = match[1].str();
       page = match[2].str();
       tag = match[3].str();
       matched = true;
 
-      printf("body : %s\n", s.c_str());
+      auto cell = get_or_create_cell(tag);
+      cell->set_flag(flag);
+      cell->set_page(page);
+      cell->set_name(tag);
+
+      auto decl = next.get_field(field_type).body(src);
+      cell->set_type(decl_to_info(decl).cell_type);
     }
     else if (regex_match(s, match, bus_tag)) {
-      //matched = true;
+      tag_count++;
+      flag = match[1].str();
+      page = match[2].str();
+      tag = match[3].str();
+      matched = true;
+
+      auto cell = get_or_create_cell(tag);
+      cell->set_flag(flag);
+      cell->set_page(page);
+      cell->set_name(tag);
+
+      auto decl = next.get_field(field_type).body(src);
+      cell->set_type(decl_to_info(decl).cell_type);
     }
     else if (regex_match(s, match, cell_tag)) {
-      //matched = true;
-    }
-    else {
-      //matched = false;
-    }
+      tag_count++;
+      flag = match[1].str();
+      page = match[2].str();
+      tag = match[3].str();
+      matched = true;
 
-    if (matched) {
-      //auto cell = get_or_create_cell(tag);
-      //CHECK_P(cell != nullptr);
-      //cell->set_flag(flag);
-      //cell->set_page(page);
+      auto cell = get_or_create_cell(tag);
+      cell->set_flag(flag);
+      cell->set_page(page);
+      cell->set_name(tag);
 
-      //printf("flag : %s\n", flag.c_str());
-      //printf("page : %s\n", page.c_str());
-      //printf("tag  : %s\n", tag.c_str());
-      //printf("name : %s\n", name.c_str());
-      //printf("gate : %s\n", gate.c_str());
-      //printf("args : %s\n", args.c_str());
-      //printf("docs : %s\n", docs.c_str());
-    }
-  }
+      auto decl = next.get_field(field_type).body(src);
 
-  /*
-  for (auto i = 0; i < root.child_count(); i++) {
-    auto child = root.child(i);
-    if (!child.is_named()) continue;
-
-    switch(child.symbol()) {
-    case sym_comment:
-      break;
-    case sym_preproc_if:
-      break;
-    case sym_preproc_include:
-      break;
-    case sym_preproc_call:
-      break;
-    case sym_function_definition:
-      break;
-    case sym_struct_specifier:
-      //parse_struct(child, src);
-      break;
-    case sym_class_specifier:
-      break;
-    case sym_declaration:
-      break;
-    case sym_static_assert_declaration:
-      break;
-    case sym_template_declaration:
-      break;
-    default:
-      child.print(src);
-      CHECK_P(false);
-      break;
+      if (next.get_field(field_declarator).symbol() == sym_function_declarator) {
+        CHECK_P(decl == "wire");
+        cell->set_type(DieCellType::LOGIC);
+      }
+      else if (next.get_field(field_declarator).symbol() == alias_sym_field_identifier) {
+        cell->set_type(decl_to_info(decl).cell_type);
+      }
+      else {
+        CHECK_P(false);
+      }
     }
   }
-  */
+
+  LOG_B("%d tags found\n", tag_count);
+
   return true;
 }
 
@@ -695,39 +771,42 @@ bool DieDB::parse_header(const std::string& header_path) {
 // The qualified_identifier node has a bug... "name" field pointing to "::"
 
 bool DieDB::parse_source(const std::string& source_path) {
+  LOG_G("%s\n", source_path.c_str());
+  LOG_INDENT_SCOPE();
+
   PTree tree(source_path.c_str());
   auto src = tree.source();
 
   std::deque<PNode> queue;
   queue.push_front(tree.root());
-
-  std::vector<PNode> tags;
+  ConsoleDumper dumper;
+  int tag_count = 0;
 
   while(!queue.empty()) {
-    PNode node = queue.front();
+    PNode tag_node = queue.front();
     queue.pop_front();
-    node.enqueue_children(queue);
 
-    std::string s = node.body(src);
-    smatch match;
-    static regex rx("/// plait_noparse");
-    if (regex_search(s, match, rx)) {
-      printf("%s : %s @ %d\n", s.c_str(), source_path.c_str(), node.line());
+    if (tag_node.symbol() == sym_preproc_if) {
+      if (tag_node.get_field(field_condition).body(src) == "0") {
+        continue;
+      }
+      //tag_node.dump(src);
+    }
+    tag_node.enqueue_children(queue);
+
+    if (!tag_node.is_comment()) continue;
+    if (tag_node.body(src) == "/// plait_noparse") {
+      LOG_R("Skipping\n");
       return false;
     }
+    
+    PNode node = tag_node.next();
+    auto node_body = node.body(src);
+    if (node.is_null()) continue;
 
-    PNode next = node.next();
-    if (next.is_null()) continue;
-    if (next.symbol() == sym_expression_statement) next = next.child(0);
+    if (node.symbol() == sym_expression_statement) node = node.child(0);
 
-    if (!node.is_comment()) continue;
-
-    static regex pin_tag(R"(\/\*(.)()(PIN_\d{2})\*\/)");
-    static regex sig_tag(R"(\/\*(.)()(SIG_\w+)\*\/)");
-    static regex bus_tag(R"(\/\*(.)()(BUS_\w+)\*\/)");
-    static regex cell_tag(R"(\/\*(.)(p[0-9]{2})\.([A-Z]{4})\*\/)");
-
-    bool matched = false;
+    smatch match;
     std::string flag;
     std::string page;
     std::string tag;
@@ -736,118 +815,104 @@ bool DieDB::parse_source(const std::string& source_path) {
     std::string args;
     std::string docs;
 
+    std::string s = tag_node.body(src);
+
     if (regex_match(s, match, pin_tag)) {
-      matched = true;
-      flag = match[1].str();
-      page = match[2].str();
-      tag = match[3].str();
+      CHECK_P(node.symbol() == sym_call_expression);
+      tag_count++;
+      auto cell = get_cell(match[3].str());
+      cell->set_flag(match[1].str());
+      cell->set_page(match[2].str());
 
-      //name = trim_name(match[1].str());
-      //gate = trim_name(match[2].str());
-      //args = trim_name(match[3].str());
-      //docs = match.suffix().str();
-
-
-      if (next.is_field_decl()) {
-        /*
-        0236: field_declaration 'PinIO PIN_29_VRAM_D03;'
-        0394: |  type: type_identifier 'PinIO'
-        0391: |  declarator: field_identifier 'PIN_29_VRAM_D03'
-        0039: |  lit ';'
-        */
-      }
-      else if (next.is_call()) {
-        /*
-        0267: call_expression 'pins.ctrl.PIN_79_RDn.pin_out(UGAC_RD_A_new, URUN_RD_D_new)'
-        0269: |  function: field_expression 'pins.ctrl.PIN_79_RDn.pin_out'
-        0268: |  arguments: argument_list '(UGAC_RD_A_new, URUN_RD_D_new)'
-        */
-      }
-      else {
-        CHECK_P(false);
-        node.dump(src);
-        next.dump(src);
-        printf("\n");
-      }
+      cell->set_gate(node.get_field(field_function).get_field(field_field).body(src));
+      cell->set_args(arglist_to_args(node.get_field(field_arguments), src));
     }
-
     else if (regex_match(s, match, sig_tag)) {
-      matched = true;
-      flag = match[1].str();
-      page = match[2].str();
-      tag = match[3].str();
+      CHECK_P(node.symbol() == sym_call_expression);
+      tag_count++;
+      auto cell = get_cell(match[3].str());
+      cell->set_flag(match[1].str());
+      cell->set_page(match[2].str());
 
-      if (next.is_field_decl()) {
-      }
-      else if (next.is_call()) {
-      }
-      else {
-        CHECK_P(false);
-        node.dump(src);
-        next.dump(src);
-        printf("\n");
-      }
+      cell->set_gate(node.get_field(field_function).get_field(field_field).body(src));
+      cell->set_args(arglist_to_args(node.get_field(field_arguments), src));
     }
-
     else if (regex_match(s, match, bus_tag)) {
-      matched = true;
-      flag = match[1].str();
-      page = match[2].str();
-      tag = match[3].str();
+      CHECK_P(node.symbol() == sym_call_expression);
+      tag_count++;
+      auto cell = get_cell(match[3].str());
+      cell->set_flag(match[1].str());
+      cell->set_page(match[2].str());
 
-      if (next.is_field_decl()) {
-      }
-      else if (next.is_call()) {
-      }
-      else {
-        CHECK_P(false);
-        node.dump(src);
-        next.dump(src);
-        printf("\n");
-      }
+      cell->set_gate(node.get_field(field_function).get_field(field_field).body(src));
+      cell->set_args(arglist_to_args(node.get_field(field_arguments), src));
     }
-
-
-    // tagged nodes
-
     else if (regex_match(s, match, cell_tag)) {
-      matched = true;
-      flag = match[1].str();
-      page = match[2].str();
-      tag = match[3].str();
+      tag_count++;
+      auto cell = get_or_create_cell(match[3].str());
+      cell->set_flag(match[1].str());
+      cell->set_page(match[2].str());
 
-      if (next.is_field_decl()) {
-      }
-      else if (next.is_call()) {
-      }
-      else if (next.is_decl()) {
-      }
-      else if (next.is_function()) {
-      }
-      else if (next.is_assignment()) {
-      }
-      else {
-        //printf("%s\n", source_path.c_str());
+      if (node.symbol() == sym_declaration) {
+        if (node.get_field(field_type).body(src) == "wire") {
+          node.dump(src);
+          name = node.get_field(field_declarator).get_field(field_declarator).body(src);
+          gate = node.get_field(field_declarator).get_field(field_value).get_field(field_function).body(src);
+
+          cell->set_name(name);
+          cell->set_gate(gate);
+          //printf("name : %s\n", name.c_str());
+          //printf("gate : %s\n", gate.c_str());
+
+        }
+        else if (node.get_field(field_type).body(src) == "triwire") {
+        }
+        else if (node.get_field(field_type).body(src) == "Adder") {
+        }
+        else if (node.get_field(field_type).body(src) == "uint8_t") {
+          // ROZE/PECU loop
+        }
+        else {
+          node.dump(src);
+        }
+
+
+        /*
+        0187 : declaration 'wire RYCE_SFETCH_TRIGp_evn_new = and2(re'
+        0394 : | type : type_identifier 'wire'
+        0224 : | declarator : init_declarator 'RYCE_SFETCH_TRIGp_evn_new = and2(reg_new'
+        0001 : |  |  declarator : identifier 'RYCE_SFETCH_TRIGp_evn_new'
+        0063 : |  |  lit '='
+        0267 : |  |  value : call_expression 'and2(reg_new.sfetch_control.SOBU_SFETCH_'
+        0001 : |  |  |  function : identifier 'and2'
+        0268 : |  |  |  arguments : argument_list '(reg_new.sfetch_control.SOBU_SFETCH_REQp'
+        0005 : |  |  |  |  lit '('
+        0267 : |  |  |  |  call_expression 'reg_new.sfetch_control.SOBU_SFETCH_REQp_'
+        0007 : |  |  |  |  lit ','
+        0267 : |  |  |  |  call_expression 'reg_new.sfetch_control.SUDA_SFETCH_REQp_'
+        0008 : |  |  |  |  lit ')'
+        0039 : | lit ';'
+        */
+
         //node.dump(src);
-        //next.dump(src);
         //printf("\n");
       }
-    }
+      else if (node.symbol() == sym_assignment_expression) {
+      }
+      else if (node.symbol() == sym_function_definition) {
+      }
+      else if (node.symbol() == sym_call_expression) {
+      }
+      else {
+        printf("%s\n", node.type());
+      }
 
 
-    if (matched) {
-      auto cell = get_or_create_cell(tag);
-      CHECK_P(cell != nullptr);
-      cell->set_flag(flag);
-      cell->set_page(page);
-    }
-
-
-
-    else {
-      // not a tag comment
+      tag_count++;
     }
   }
+
+  LOG_B("%d tags found\n", tag_count);
 
   //printf("%5d %5d %s\n", tree.count_nodes(), tree.count_comments(), source_path.c_str());
 

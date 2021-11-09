@@ -36,6 +36,7 @@ struct CellPort {
 };
 
 struct GateInfo {
+  std::string decl;
   std::string gate;
   DieCellType cell_type;
   std::vector<std::string> input_ports;
@@ -51,6 +52,7 @@ struct DieCell {
   void dump(Dumper& d) const;
 
   void set_type(DieCellType _cell_type) {
+    CHECK_N(_cell_type == DieCellType::UNKNOWN);
     if (cell_type == DieCellType::UNKNOWN) cell_type = _cell_type;
     CHECK_P(cell_type == _cell_type);
   }
@@ -59,9 +61,26 @@ struct DieCell {
   void set_page(const std::string& _page) { if (page.empty()) page = _page; CHECK_P(page == _page); }
   void set_tag (const std::string& _tag)  { if (tag.empty())  tag  = _tag;  CHECK_P(tag  == _tag);  }
   void set_gate(const std::string& _gate) { if (gate.empty()) gate = _gate; CHECK_P(gate == _gate); }
-  void set_args(const std::string& _args) { if (args.empty()) args = _args; CHECK_P(args == _args); }
+  //void set_args(const std::string& _args) { if (args.empty()) args = _args; CHECK_P(args == _args); }
   void set_name(const std::string& _name) { if (name.empty()) name = _name; CHECK_P(name == _name); }
   void set_doc (const std::string& _doc)  { if (doc.empty())  doc  = _doc;  CHECK_P(doc  == _doc);  }
+
+  void set_args(const std::vector<std::string>& _args) {
+    if (cell_type == DieCellType::BUS) {
+      input_ports.insert(input_ports.end(), _args.begin(), _args.end());
+      return;
+    }
+
+    if (input_ports.empty()) {
+      input_ports = _args;
+    }
+    else {
+      CHECK_P(input_ports.size() == _args.size());
+      for (int i = 0; i < input_ports.size(); i++) {
+        CHECK_P(input_ports[i] == _args[i]);
+      }
+    }
+  }
 
   DieCellType cell_type = DieCellType::UNKNOWN; // The general type of cell - logic, dff, etc.
   std::string flag; // Flag characters to denote that the cell has been manually checked
@@ -70,7 +89,7 @@ struct DieCell {
   std::string gate; // The specific type of cell
   std::string name; // The descriptive name of this cell. Should include the tag.
   std::string doc;  // Any comment string appended after the cell's declaration.
-  std::string args; // The inputs to the cell
+  //std::string args; // The inputs to the cell
 
   std::vector<std::string> input_ports;
   std::vector<std::string> output_ports;

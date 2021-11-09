@@ -1,3 +1,5 @@
+/// plait_noparse
+
 #include "GateBoyLib/LogicBoy.h"
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/Utils.h"

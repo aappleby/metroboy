@@ -55,4 +55,15 @@ inline void log_printf(const char* format = "", ...) {
 #define LOG_INDENT() log_putchar('\t')
 #define LOG_DEDENT() log_putchar('\v')
 
+struct LogIndenter {
+  LogIndenter() {
+    LOG_INDENT();
+  }
+  ~LogIndenter() {
+    LOG_DEDENT();
+  }
+};
+
+#define LOG_INDENT_SCOPE() LogIndenter indenter##__LINE__;
+
 //-----------------------------------------------------------------------------

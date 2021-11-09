@@ -1,3 +1,4 @@
+/// plait_noparse
 #pragma once
 
 #include "GateBoyLib/GateBoyTimer.h"

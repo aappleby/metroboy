@@ -57,12 +57,16 @@ struct PNode : public TSNode {
   bool         is_field_id()     const { return ts_node_symbol(*this) == alias_sym_field_identifier; }
   bool         is_field_expr()   const { return ts_node_symbol(*this) == sym_field_expression; }
 
-  uint32_t     line()            const { return ts_node_start_point(*this).row; }
+  int          line()            const { return ts_node_start_point(*this).row; }
 
   PNode        parent()          const { return ts_node_parent(*this); }
   int          child_count()     const { return (int)ts_node_child_count(*this); }
-  PNode        child(uint32_t i) const { return ts_node_child(*this, i); }
-  const char*  field(uint32_t i) const { return ts_node_field_name_for_child(*this, i); }
+  PNode        child(int i)      const { return ts_node_child(*this, i); }
+  const char*  field(int i)      const { return ts_node_field_name_for_child(*this, i); }
+
+  int          named_child_count() const { return (int)ts_node_named_child_count(*this); }
+  PNode        named_child(int i) const  { return ts_node_named_child(*this, i); }
+
 
   PNode        prev()            const { return ts_node_prev_sibling(*this); }
   PNode        next()            const { return ts_node_next_sibling(*this); }
@@ -105,13 +109,21 @@ struct PNode : public TSNode {
   //----------
 
   void print_source(const char* source, int max_len) {
-    const char* a = &source[ts_node_start_byte(*this)];
-    const char* b = &source[ts_node_end_byte(*this)];
+    max_len = 999999999;
+    const char* old_a = &source[ts_node_start_byte(*this)];
+    const char* old_b = &source[ts_node_end_byte(*this)];
+    const char* a = old_a;
+    const char* b = old_b;
 
     while(isspace(a[0])  || a[0] == '\r')  a++;
     while(isspace(b[-1]) || b[-1] == '\r') b--;
     auto len = (b - a) > max_len ? max_len : b - a;
-    fwrite(a, len, 1, stdout);
+    if (len > 0) {
+      fwrite(a, len, 1, stdout);
+    }
+    else {
+      fwrite("???", 3, 1, stdout);
+    }
   }
 
   void print(const char* source, const char* field_name = nullptr) {

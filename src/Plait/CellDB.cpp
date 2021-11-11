@@ -469,9 +469,7 @@ bool DieDB::parse_dir(const std::string& path) {
   /*
   ConsoleDumper dumper;
   for (auto& [tag, cell] : cell_map) {
-    if (cell->cell_type == DieCellType::BUS) {
-      cell->dump(dumper);
-    }
+    cell->dump(dumper);
   }
   */
 
@@ -616,17 +614,56 @@ for (auto i = 0; i < root.child_count(); i++) {
 
 //-----------------------------------------------------------------------------
 
+std::string& trim_oldnew(std::string& name) {
+  if (name.ends_with("_old")) name.resize(name.size() - 4);
+  if (name.ends_with("_new")) name.resize(name.size() - 4);
+  if (name.ends_with("_any")) name.resize(name.size() - 4);
+  return name;
+}
+
+//-----------------------------------------------------------------------------
+
+std::string lhs_to_identifier(PNode node, const char* src) {
+  if (node.symbol() == sym_identifier) {
+    auto name = node.body(src);
+    trim_oldnew(name);
+    return name;
+  }
+  else if (node.symbol() == sym_field_expression) {
+    auto name = node.get_field(field_field).body(src);
+    trim_oldnew(name);
+    return name;
+  }
+  else {
+    CHECK_P(false);
+    return "";
+  }
+}
+
+//-----------------------------------------------------------------------------
+
 std::string argument_to_identifier(PNode node, const char* src) {
 	if (node.symbol() == sym_identifier) {
-		return node.body(src);
+		auto name = node.body(src);
+    trim_oldnew(name);
+    return name;
 	}
 	else if (node.symbol() == sym_call_expression) {
 		return argument_to_identifier(node.get_field(field_function), src);
 	}
 	else if (node.symbol() == sym_field_expression) {
-		auto prefix = node.get_field(field_argument).get_field(field_field).body(src);
+    auto prefix = node.get_field(field_argument);
+    if (prefix.symbol() != sym_identifier) {
+      prefix = prefix.get_field(field_field);
+    }
+    
 		auto suffix = node.get_field(field_field).body(src);
-		return prefix + "." + suffix;
+
+    //if (suffix.ends_with("_old")) suffix.resize(suffix.size() - 4);
+    //if (suffix.ends_with("_new")) suffix.resize(suffix.size() - 4);
+    trim_oldnew(suffix);
+
+		return prefix.body(src) + "." + suffix;
 	}
 	else {
 		CHECK_P(false);
@@ -700,7 +737,6 @@ bool DieDB::parse_header(const std::string& header_path) {
       auto cell = get_or_create_cell(tag);
       cell->set_flag(flag);
       cell->set_page(page);
-      cell->set_name(tag);
 
       auto decl = next.get_field(field_type).body(src);
       cell->set_type(decl_to_info(decl).cell_type);
@@ -715,7 +751,6 @@ bool DieDB::parse_header(const std::string& header_path) {
       auto cell = get_or_create_cell(tag);
       cell->set_flag(flag);
       cell->set_page(page);
-      cell->set_name(tag);
 
       auto decl = next.get_field(field_type).body(src);
       cell->set_type(decl_to_info(decl).cell_type);
@@ -730,7 +765,6 @@ bool DieDB::parse_header(const std::string& header_path) {
       auto cell = get_or_create_cell(tag);
       cell->set_flag(flag);
       cell->set_page(page);
-      cell->set_name(tag);
 
       auto decl = next.get_field(field_type).body(src);
       cell->set_type(decl_to_info(decl).cell_type);
@@ -745,7 +779,6 @@ bool DieDB::parse_header(const std::string& header_path) {
       auto cell = get_or_create_cell(tag);
       cell->set_flag(flag);
       cell->set_page(page);
-      cell->set_name(tag);
 
       auto decl = next.get_field(field_type).body(src);
 
@@ -801,8 +834,9 @@ bool DieDB::parse_source(const std::string& source_path) {
     }
     
     PNode node = tag_node.next();
-    auto node_body = node.body(src);
     if (node.is_null()) continue;
+
+    auto node_body = node.body(src);
 
     if (node.symbol() == sym_expression_statement) node = node.child(0);
 
@@ -854,54 +888,38 @@ bool DieDB::parse_source(const std::string& source_path) {
       cell->set_page(match[2].str());
 
       if (node.symbol() == sym_declaration) {
-        if (node.get_field(field_type).body(src) == "wire") {
-          node.dump(src);
-          name = node.get_field(field_declarator).get_field(field_declarator).body(src);
-          gate = node.get_field(field_declarator).get_field(field_value).get_field(field_function).body(src);
+        auto type = node.get_field(field_type).body(src);
 
-          cell->set_name(name);
-          cell->set_gate(gate);
-          //printf("name : %s\n", name.c_str());
-          //printf("gate : %s\n", gate.c_str());
+        if (type == "wire" || type == "triwire" || type == "Adder" || type == "uint8_t") {
+          auto assignment = node.get_field(field_declarator);
+          auto lhs = assignment.get_field(field_declarator);
+          auto rhs = assignment.get_field(field_value);
 
-        }
-        else if (node.get_field(field_type).body(src) == "triwire") {
-        }
-        else if (node.get_field(field_type).body(src) == "Adder") {
-        }
-        else if (node.get_field(field_type).body(src) == "uint8_t") {
-          // ROZE/PECU loop
+          cell->set_name(lhs.body(src));
+          cell->set_gate(rhs.get_field(field_function).body(src));
+          cell->set_args(arglist_to_args(rhs.get_field(field_arguments), src));
         }
         else {
           node.dump(src);
         }
-
-
-        /*
-        0187 : declaration 'wire RYCE_SFETCH_TRIGp_evn_new = and2(re'
-        0394 : | type : type_identifier 'wire'
-        0224 : | declarator : init_declarator 'RYCE_SFETCH_TRIGp_evn_new = and2(reg_new'
-        0001 : |  |  declarator : identifier 'RYCE_SFETCH_TRIGp_evn_new'
-        0063 : |  |  lit '='
-        0267 : |  |  value : call_expression 'and2(reg_new.sfetch_control.SOBU_SFETCH_'
-        0001 : |  |  |  function : identifier 'and2'
-        0268 : |  |  |  arguments : argument_list '(reg_new.sfetch_control.SOBU_SFETCH_REQp'
-        0005 : |  |  |  |  lit '('
-        0267 : |  |  |  |  call_expression 'reg_new.sfetch_control.SOBU_SFETCH_REQp_'
-        0007 : |  |  |  |  lit ','
-        0267 : |  |  |  |  call_expression 'reg_new.sfetch_control.SUDA_SFETCH_REQp_'
-        0008 : |  |  |  |  lit ')'
-        0039 : | lit ';'
-        */
-
-        //node.dump(src);
-        //printf("\n");
       }
       else if (node.symbol() == sym_assignment_expression) {
+        auto lhs = node.get_field(field_left);
+        auto rhs = node.get_field(field_right);
+
+        CHECK_P(rhs.symbol() == sym_call_expression);
+
+        cell->set_name(lhs_to_identifier(lhs, src));
+        cell->set_gate(rhs.get_field(field_function).body(src));
+        cell->set_args(arglist_to_args(rhs.get_field(field_arguments), src));
+        //cell->dump(dumper);
       }
       else if (node.symbol() == sym_function_definition) {
+        node.dump(src);
       }
       else if (node.symbol() == sym_call_expression) {
+      }
+      else if (node.symbol() == sym_return_statement) {
       }
       else {
         printf("%s\n", node.type());

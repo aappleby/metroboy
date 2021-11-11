@@ -64,26 +64,26 @@ void GateBoyReset::reset_to_cart() {
 
 ///*_p25.TUTO*/ wire TUTO_VRAM_DBGp()  const { return and2(UNOR_MODE_DBG2p_new(), SOTO_DBG_VRAMp.qn_new()); }
 
-/*#p01.AVOR*/ wire GateBoyReset::AVOR_SYS_RSTp_old() const { return or2(AFER_SYS_RSTp.qp_old(), ASOL_POR_DONEn.qp_old()); }
-/*#p01.ALUR*/ wire GateBoyReset::ALUR_SYS_RSTn_old() const { return not1(AVOR_SYS_RSTp_old()); }
-/*#p01.DULA*/ wire GateBoyReset::DULA_SYS_RSTp_old() const { return not1(ALUR_SYS_RSTn_old()); }
-/*#p01.CUNU*/ wire GateBoyReset::CUNU_SYS_RSTn_old() const { return not1(DULA_SYS_RSTp_old()); }
-/*#p01.XORE*/ wire GateBoyReset::XORE_SYS_RSTp_old() const { return not1(CUNU_SYS_RSTn_old()); }
-/*_p01.XEBE*/ wire GateBoyReset::XEBE_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
-/*#p01.WALU*/ wire GateBoyReset::WALU_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
-/*_p01.WESY*/ wire GateBoyReset::WESY_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
-/*_p01.XARE*/ wire GateBoyReset::XARE_SYS_RSTn_old() const { return not1(XORE_SYS_RSTp_old()); }
-/*_p03.MULO*/ wire GateBoyReset::MULO_SYS_RSTn_old() const { return not1(ALUR_SYS_RSTn_old()); }
+wire GateBoyReset::AVOR_SYS_RSTp_old() const { /*#p01.AVOR*/ return or2(AFER_SYS_RSTp.qp_old(), ASOL_POR_DONEn.qp_old()); }
+wire GateBoyReset::ALUR_SYS_RSTn_old() const { /*#p01.ALUR*/ return not1(AVOR_SYS_RSTp_old()); }
+wire GateBoyReset::DULA_SYS_RSTp_old() const { /*#p01.DULA*/ return not1(ALUR_SYS_RSTn_old()); }
+wire GateBoyReset::CUNU_SYS_RSTn_old() const { /*#p01.CUNU*/ return not1(DULA_SYS_RSTp_old()); }
+wire GateBoyReset::XORE_SYS_RSTp_old() const { /*#p01.XORE*/ return not1(CUNU_SYS_RSTn_old()); }
+wire GateBoyReset::XEBE_SYS_RSTn_old() const { /*_p01.XEBE*/ return not1(XORE_SYS_RSTp_old()); }
+wire GateBoyReset::WALU_SYS_RSTn_old() const { /*#p01.WALU*/ return not1(XORE_SYS_RSTp_old()); }
+wire GateBoyReset::WESY_SYS_RSTn_old() const { /*_p01.WESY*/ return not1(XORE_SYS_RSTp_old()); }
+wire GateBoyReset::XARE_SYS_RSTn_old() const { /*_p01.XARE*/ return not1(XORE_SYS_RSTp_old()); }
+wire GateBoyReset::MULO_SYS_RSTn_old() const { /*_p03.MULO*/ return not1(ALUR_SYS_RSTn_old()); }
 
-/*#p01.AVOR*/ wire GateBoyReset::AVOR_SYS_RSTp_new() const { return or2(AFER_SYS_RSTp.qp_new(), ASOL_POR_DONEn.qp_new()); }
-/*#p01.ALUR*/ wire GateBoyReset::ALUR_SYS_RSTn_new() const { return not1(AVOR_SYS_RSTp_new()); }
-/*#p01.DULA*/ wire GateBoyReset::DULA_SYS_RSTp_new() const { return not1(ALUR_SYS_RSTn_new()); }
-/*#p01.CUNU*/ wire GateBoyReset::CUNU_SYS_RSTn_new() const { return not1(DULA_SYS_RSTp_new()); }
-/*#p01.XORE*/ wire GateBoyReset::XORE_SYS_RSTp_new() const { return not1(CUNU_SYS_RSTn_new()); }
-/*_p01.XEBE*/ wire GateBoyReset::XEBE_SYS_RSTn_new() const { return not1(XORE_SYS_RSTp_new()); }
-/*#p01.WALU*/ wire GateBoyReset::WALU_SYS_RSTn_new() const { return not1(XORE_SYS_RSTp_new()); }
-/*_p01.WESY*/ wire GateBoyReset::WESY_SYS_RSTn_new() const { return not1(XORE_SYS_RSTp_new()); }
-/*_p01.XARE*/ wire GateBoyReset::XARE_SYS_RSTn_new() const { return not1(XORE_SYS_RSTp_new()); }
-/*_p03.MULO*/ wire GateBoyReset::MULO_SYS_RSTn_new() const { return not1(ALUR_SYS_RSTn_new()); }
+wire GateBoyReset::AVOR_SYS_RSTp_new() const { /*#p01.AVOR*/ return or2(AFER_SYS_RSTp.qp_new(), ASOL_POR_DONEn.qp_new()); }
+wire GateBoyReset::ALUR_SYS_RSTn_new() const { /*#p01.ALUR*/ return not1(AVOR_SYS_RSTp_new()); }
+wire GateBoyReset::DULA_SYS_RSTp_new() const { /*#p01.DULA*/ return not1(ALUR_SYS_RSTn_new()); }
+wire GateBoyReset::CUNU_SYS_RSTn_new() const { /*#p01.CUNU*/ return not1(DULA_SYS_RSTp_new()); }
+wire GateBoyReset::XORE_SYS_RSTp_new() const { /*#p01.XORE*/ return not1(CUNU_SYS_RSTn_new()); }
+wire GateBoyReset::XEBE_SYS_RSTn_new() const { /*_p01.XEBE*/ return not1(XORE_SYS_RSTp_new()); }
+wire GateBoyReset::WALU_SYS_RSTn_new() const { /*#p01.WALU*/ return not1(XORE_SYS_RSTp_new()); }
+wire GateBoyReset::WESY_SYS_RSTn_new() const { /*_p01.WESY*/ return not1(XORE_SYS_RSTp_new()); }
+wire GateBoyReset::XARE_SYS_RSTn_new() const { /*_p01.XARE*/ return not1(XORE_SYS_RSTp_new()); }
+wire GateBoyReset::MULO_SYS_RSTn_new() const { /*_p03.MULO*/ return not1(ALUR_SYS_RSTn_new()); }
 
 //-----------------------------------------------------------------------------

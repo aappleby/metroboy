@@ -244,19 +244,19 @@ void GateBoy::set_lcd_pins_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_
   /*_PIN_50*/ pins.lcd.PIN_50_LCD_DATA1.pin_out(reg_new.lcd.RAVO_LD1n.out_new(), reg_new.lcd.RAVO_LD1n.out_new());
 
   /*_p01.UMEK*/ wire UMEK_DIV06n = not1(reg_new.reg_div.UGOT_DIV06p.qp_new());
-  /*#p21.PURE*/ wire PURE_x113n = not1(reg_new.lcd.RUTU_LINE_ENDp_odd.qp_new());
-  /*#p24.KASA*/ wire KASA_LINE_ENDp = not1(PURE_x113n);
+  /*#p21.PURE*/ wire PURE_LINE_ENDn_new = not1(reg_new.lcd.RUTU_LINE_ENDp_odd.qp_new());
+  /*#p24.KASA*/ wire KASA_LINE_ENDp = not1(PURE_LINE_ENDn_new);
   /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(UMEK_DIV06n);
   /*#p24.KAHE*/ wire KAHE_LINE_ENDp = amux2(reg_new.reg_lcdc.XONA_LCDC_LCDENn.qn_new(), KASA_LINE_ENDp, KEDY_LCDC_ENn, UMOB_DIV_06p);
   /*#p24.KYMO*/ wire KYMO_LINE_ENDn = not1(KAHE_LINE_ENDp);
   /*_PIN_55*/ pins.lcd.PIN_55_LCD_LATCH.pin_out(KYMO_LINE_ENDn, KYMO_LINE_ENDn);
 
   /*#p21.XAJO*/ wire XAJO_X_009p_odd = and2(reg_new.pix_count.XEHO_PX0p_odd.qp_new(), reg_new.pix_count.XYDO_PX3p_odd.qp_new());
-  /*#p21.WEGO*/ wire WEGO_HBLANKp = or2(reg_new.TOFU_VID_RSTp_new(), reg_new.VOGA_HBLANKp_evn.qp_new());
-  /*#p21.WUSA*/ reg_new.lcd.WUSA_LCD_CLOCK_GATE.nor_latch(XAJO_X_009p_odd, WEGO_HBLANKp);
+  /*#p21.WEGO*/ wire WEGO_HBLANKp_evn_new = or2(reg_new.TOFU_VID_RSTp_new(), reg_new.VOGA_HBLANKp_evn.qp_new());
+  /*#p21.WUSA*/ reg_new.lcd.WUSA_LCD_CLOCK_GATE.nor_latch(XAJO_X_009p_odd, WEGO_HBLANKp_evn_new);
   /*#p21.TOBA*/ wire TOBA_LCD_CLOCK = and2(reg_new.lcd.WUSA_LCD_CLOCK_GATE.qp_new(), SACU_CLKPIPE_evn);
-  /*#p27.POVA*/ wire POVA_FINE_MATCH_TRIGp = and2(reg_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.qp_new(), reg_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.qn_new());
-  /*#p21.SEMU*/ wire SEMU_LCD_CLOCK = or2(TOBA_LCD_CLOCK, POVA_FINE_MATCH_TRIGp);
+  /*#p27.POVA*/ wire POVA_FINE_MATCH_TRIGp_evn = and2(reg_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.qp_new(), reg_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.qn_new());
+  /*#p21.SEMU*/ wire SEMU_LCD_CLOCK = or2(TOBA_LCD_CLOCK, POVA_FINE_MATCH_TRIGp_evn);
   /*#p21.RYPO*/ wire RYPO_LCD_CLOCK = not1(SEMU_LCD_CLOCK);
   /*_PIN_53*/ pins.lcd.PIN_53_LCD_CLOCK.pin_out(RYPO_LCD_CLOCK, RYPO_LCD_CLOCK);
 

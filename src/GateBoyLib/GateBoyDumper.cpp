@@ -365,8 +365,8 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_slice2n("FF40 LCDC  : ", &s.reg_lcdc.VYXE_LCDC_BGENn, 8);
   
   {
-    wire PARU_VBLANKp = not1(s.lcd.POPU_VBLANKp_odd.qn_old());
-    wire SADU_STAT_MODE0n = nor2(s.XYMU_RENDERING_LATCHn.qn_old(), PARU_VBLANKp);
+    wire PARU_VBLANKp_odd = not1(s.lcd.POPU_VBLANKp_odd.qn_old());
+    wire SADU_STAT_MODE0n = nor2(s.XYMU_RENDERING_LATCHn.qn_old(), PARU_VBLANKp_odd);
     wire XATY_STAT_MODE1n = nor2(s.ACYL_SCANNINGp_odd.out_old(), s.XYMU_RENDERING_LATCHn.qn_old());
     wire STAT[8] = {
       SADU_STAT_MODE0n,

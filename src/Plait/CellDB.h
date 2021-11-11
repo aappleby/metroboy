@@ -62,7 +62,18 @@ struct DieCell {
   void set_tag (const std::string& _tag)  { if (tag.empty())  tag  = _tag;  CHECK_P(tag  == _tag);  }
   void set_gate(const std::string& _gate) { if (gate.empty()) gate = _gate; CHECK_P(gate == _gate); }
   //void set_args(const std::string& _args) { if (args.empty()) args = _args; CHECK_P(args == _args); }
-  void set_name(const std::string& _name) { if (name.empty()) name = _name; CHECK_P(name == _name); }
+  void set_name(const std::string& _name) {
+    if (name.empty() && _name == "ALUR") {
+      int x = 1;
+      x++;
+    }
+
+    auto n = _name;
+    if (n.ends_with("_old")) n.resize(n.size() - 4);
+    if (n.ends_with("_new")) n.resize(n.size() - 4);
+    if (name.empty()) name = n;
+    CHECK_P(name == n);
+  }
   void set_doc (const std::string& _doc)  { if (doc.empty())  doc  = _doc;  CHECK_P(doc  == _doc);  }
 
   void set_args(const std::vector<std::string>& _args) {

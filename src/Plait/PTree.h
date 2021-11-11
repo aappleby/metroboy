@@ -91,18 +91,12 @@ struct PNode : public TSNode {
 
     while(isspace(a[0])  || a[0] == '\r')  a++;
     while(isspace(b[-1]) || b[-1] == '\r') b--;
-    //return std::string(a, b);
     return cspan(a, b);
   }
 
   std::string body(const char* src) const {
+    CHECK_N(is_null());
     auto s = span(src);
-    //const char* a = &src[ts_node_start_byte(*this)];
-    //const char* b = &src[ts_node_end_byte(*this)];
-    //
-    //while(isspace(a[0])  || a[0] == '\r')  a++;
-    //while(isspace(b[-1]) || b[-1] == '\r') b--;
-    //return std::string(a, b);
     return std::string(s.begin(), s.end());
   }
 

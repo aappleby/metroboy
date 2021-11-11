@@ -682,8 +682,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p29.VONU*/ reg_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.dff17(reg_new.sys_clk.TAVA_evn_new(), reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_old.sfetch_control.TOBU_SFETCH_S1p_D2_evn.qp_old());
     /*#p29.SEBA*/ reg_new.sfetch_control.SEBA_SFETCH_S1p_D5_odd.dff17(reg_new.sys_clk.LAPE_odd_new(), reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_old.sfetch_control.VONU_SFETCH_S1p_D4_evn.qp_old());
 
-    /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp_new = and2(reg_new.sfetch_control.SOBU_SFETCH_REQp_evn.qp_new(), reg_new.sfetch_control.SUDA_SFETCH_REQp_odd.qn_new());
-    /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn_new = nor3(RYCE_SFETCH_TRIGp_new, reg_new.ROSY_VID_RSTp_new(), reg_new.ATEJ_LINE_RST_TRIGp_odd.out_new());
+    /*_p27.RYCE*/ wire RYCE_SFETCH_TRIGp_evn_new = and2(reg_new.sfetch_control.SOBU_SFETCH_REQp_evn.qp_new(), reg_new.sfetch_control.SUDA_SFETCH_REQp_odd.qn_new());
+    /*#p27.SECA*/ wire SECA_SFETCH_STARTn_evn_new = nor3(RYCE_SFETCH_TRIGp_evn_new, reg_new.ROSY_VID_RSTp_new(), reg_new.ATEJ_LINE_RST_TRIGp_odd.out_new());
 
     // Feedback loop
     for (int feedback = 0; feedback < 2; feedback++) {
@@ -739,8 +739,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(reg_new.reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn_odd_new, reg_new.XAPO_VID_RSTn_new());
   /*_p27.PYNU*/ reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.nor_latch(reg_new.win_ctrl.NUNU_WIN_MATCHp_odd.qp_new(), XOFO_WIN_RSTp);
 
-  /*#p27.NUNY*/ wire  = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
-  /*_p27.NYFO*/ wire NYFO_WIN_MODE_tn_odd = not1();
+  /*#p27.NUNY*/ uint8_t NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
+  /*_p27.NYFO*/ wire NYFO_WIN_MODE_tn_odd = not1(NUNY_WIN_MODE_TRIGp_odd);
   /*_p27.MOSU*/ wire MOSU_WIN_MODE_tp_odd = not1(NYFO_WIN_MODE_tn_odd);
   /*_p24.NAFY*/ wire NAFY_WIN_MODE_tn_odd = nor2(MOSU_WIN_MODE_tp_odd, LOBY_RENDERINGn);
 
@@ -748,7 +748,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p24.PORY*/ reg_new.tfetch_control.PORY_FETCH_DONEp_odd.dff17(reg_new.sys_clk.MYVO_odd_new(), NAFY_WIN_MODE_tn_odd,                    reg_old.tfetch_control.NYKA_FETCH_DONEp_evn.qp_old());
   /*_p24.NYKA*/ reg_new.tfetch_control.NYKA_FETCH_DONEp_evn.dff17(reg_new.sys_clk.ALET_evn_new(), NAFY_WIN_MODE_tn_odd,                    reg_old.tfetch_control.LYRY_BFETCH_DONEp_odd.out_old());
 
-  /*#p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
+  /*#p27.NUNY*/ NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
   /*_p27.RYDY*/ reg_new.win_ctrl.RYDY_WIN_HITp_odd <<= nor3(reg_new.win_ctrl.PUKU_WIN_HITn_odd.out_mid(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new(), reg_new.PYRY_VID_RSTp_new());
   /*_p27.PUKU*/ reg_new.win_ctrl.PUKU_WIN_HITn_odd <<= nor2(reg_new.win_ctrl.RYDY_WIN_HITp_odd.out_mid(), NUNY_WIN_MODE_TRIGp_odd);
   /*_p27.RYDY*/ reg_new.win_ctrl.RYDY_WIN_HITp_odd <<= nor3(reg_new.win_ctrl.PUKU_WIN_HITn_odd.out_mid(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new(), reg_new.PYRY_VID_RSTp_new());
@@ -984,10 +984,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_xxx = nand2(SYLO_WIN_HITn_odd_new, reg_new.win_ctrl.SOVY_WIN_HITp_evn.qp_new());
   /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne_xxx = not1(TUXY_WIN_FIRST_TILEne_xxx);
   /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp_xxx = or3(SEKO_WIN_FETCH_TRIGp_evn, SUZU_WIN_FIRST_TILEne_xxx, TAVE_PRELOAD_DONE_TRIGp_xxx_new); // Schematic wrong, this is OR
-  /*#p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
-  /*_p27.NYFO*/ wire NYFO_WIN_MODE_TRIGn = not1(NUNY_WIN_MODE_TRIGp);
-  /*_p27.MOSU*/ wire MOSU_WIN_MODE_TRIGp = not1(NYFO_WIN_MODE_TRIGn);
-  /*_p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(reg_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), MOSU_WIN_MODE_TRIGp, TEVO_WIN_FETCH_TRIGp_xxx);
+  ///*#p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
+  ///*_p27.NYFO*/ wire NYFO_WIN_MODE_tn_odd = not1(NUNY_WIN_MODE_TRIGp);
+  ///*_p27.MOSU*/ wire MOSU_WIN_MODE_tp_odd = not1(NYFO_WIN_MODE_tn_odd);
+  /*_p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(reg_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), MOSU_WIN_MODE_tp_odd, TEVO_WIN_FETCH_TRIGp_xxx);
 
   for (int feedback = 0; feedback < 2; feedback++) {
     /*_p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(reg_new.tfetch_counter.LAXU_BFETCH_S0p_odd.qp_any(), reg_new.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_any(), NYXU_BFETCH_RSTn);

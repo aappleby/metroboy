@@ -124,31 +124,31 @@ void PinsSys::reset_to_cart() {
   PIN_76_T2.state          = 0b00011000;
 }
 
-/*_p01.UCOB*/ wire PinsSys::UCOB_CLKBADp_old()    const { return not1(PIN_74_CLK.clkgood_old()); }
-/*_p01.ATEZ*/ wire PinsSys::ATEZ_CLKBADp_old()    const { return not1(PIN_74_CLK.clkgood_old()); }
+wire PinsSys::UCOB_CLKBADp_old()    const { /*_p01.UCOB*/ return not1(PIN_74_CLK.clkgood_old()); }
+wire PinsSys::ATEZ_CLKBADp_old()    const { /*_p01.ATEZ*/ return not1(PIN_74_CLK.clkgood_old()); }
 
-/*_p07.UBET*/ wire PinsSys::UBETp_old()           const { return not1(PIN_77_T1.qp_int_old()); }
-/*_p07.UVAR*/ wire PinsSys::UVARp_old()           const { return not1(PIN_76_T2.qp_int_old()); }
+wire PinsSys::UBETp_old()           const { /*_p07.UBET*/ return not1(PIN_77_T1.qp_int_old()); }
+wire PinsSys::UVARp_old()           const { /*_p07.UVAR*/ return not1(PIN_76_T2.qp_int_old()); }
 
-/*_p07.UMUT*/ wire PinsSys::UMUT_MODE_DBG1p_old() const { return and2(PIN_77_T1.qp_int_old(), UVARp_old()); }
-/*_p08.MULE*/ wire PinsSys::MULE_MODE_DBG1n_old() const { return not1(UMUT_MODE_DBG1p_old()); }
-/*_p07.UNOR*/ wire PinsSys::UNOR_MODE_DBG2p_old() const { return and2(PIN_76_T2.qp_int_old(), UBETp_old()); }
-/*_p08.RYCA*/ wire PinsSys::RYCA_MODE_DBG2n_old() const { return not1(UNOR_MODE_DBG2p_old()); }
-/*_p08.TOVA*/ wire PinsSys::TOVA_MODE_DBG2n_old() const { return not1(UNOR_MODE_DBG2p_old()); }
-/*_p07.UPOJ*/ wire PinsSys::UPOJ_MODE_PRODn_old() const { return nand3(UBETp_old(), UVARp_old(), PIN_71_RST.qp_int_old()); }
+wire PinsSys::UMUT_MODE_DBG1p_old() const { /*_p07.UMUT*/ return and2(PIN_77_T1.qp_int_old(), UVARp_old()); }
+wire PinsSys::MULE_MODE_DBG1n_old() const { /*_p08.MULE*/ return not1(UMUT_MODE_DBG1p_old()); }
+wire PinsSys::UNOR_MODE_DBG2p_old() const { /*_p07.UNOR*/ return and2(PIN_76_T2.qp_int_old(), UBETp_old()); }
+wire PinsSys::RYCA_MODE_DBG2n_old() const { /*_p08.RYCA*/ return not1(UNOR_MODE_DBG2p_old()); }
+wire PinsSys::TOVA_MODE_DBG2n_old() const { /*_p08.TOVA*/ return not1(UNOR_MODE_DBG2p_old()); }
+wire PinsSys::UPOJ_MODE_PRODn_old() const { /*_p07.UPOJ*/ return nand3(UBETp_old(), UVARp_old(), PIN_71_RST.qp_int_old()); }
 
-/*_p01.UCOB*/ wire PinsSys::UCOB_CLKBADp_new()    const { return not1(PIN_74_CLK.clkgood_new()); }
-/*_p01.ATEZ*/ wire PinsSys::ATEZ_CLKBADp_new()    const { return not1(PIN_74_CLK.clkgood_new()); }
+wire PinsSys::UCOB_CLKBADp_new()    const { /*_p01.UCOB*/ return not1(PIN_74_CLK.clkgood_new()); }
+wire PinsSys::ATEZ_CLKBADp_new()    const { /*_p01.ATEZ*/ return not1(PIN_74_CLK.clkgood_new()); }
 
-/*_p07.UBET*/ wire PinsSys::UBETp_new()           const { return not1(PIN_77_T1.qp_int_new()); }
-/*_p07.UVAR*/ wire PinsSys::UVARp_new()           const { return not1(PIN_76_T2.qp_int_new()); }
+wire PinsSys::UBETp_new()           const { /*_p07.UBET*/ return not1(PIN_77_T1.qp_int_new()); }
+wire PinsSys::UVARp_new()           const { /*_p07.UVAR*/ return not1(PIN_76_T2.qp_int_new()); }
 
-/*_p07.UMUT*/ wire PinsSys::UMUT_MODE_DBG1p_new() const { return and2(PIN_77_T1.qp_int_new(), UVARp_new()); }
-/*_p08.MULE*/ wire PinsSys::MULE_MODE_DBG1n_new() const { return not1(UMUT_MODE_DBG1p_new()); }
-/*_p07.UNOR*/ wire PinsSys::UNOR_MODE_DBG2p_new() const { return and2(PIN_76_T2.qp_int_new(), UBETp_new()); }
-/*_p08.RYCA*/ wire PinsSys::RYCA_MODE_DBG2n_new() const { return not1(UNOR_MODE_DBG2p_new()); }
-/*_p08.TOVA*/ wire PinsSys::TOVA_MODE_DBG2n_new() const { return not1(UNOR_MODE_DBG2p_new()); }
-/*_p07.UPOJ*/ wire PinsSys::UPOJ_MODE_PRODn_new() const { return nand3(UBETp_new(), UVARp_new(), PIN_71_RST.qp_int_new()); }
+wire PinsSys::UMUT_MODE_DBG1p_new() const { /*_p07.UMUT*/ return and2(PIN_77_T1.qp_int_new(), UVARp_new()); }
+wire PinsSys::MULE_MODE_DBG1n_new() const { /*_p08.MULE*/ return not1(UMUT_MODE_DBG1p_new()); }
+wire PinsSys::UNOR_MODE_DBG2p_new() const { /*_p07.UNOR*/ return and2(PIN_76_T2.qp_int_new(), UBETp_new()); }
+wire PinsSys::RYCA_MODE_DBG2n_new() const { /*_p08.RYCA*/ return not1(UNOR_MODE_DBG2p_new()); }
+wire PinsSys::TOVA_MODE_DBG2n_new() const { /*_p08.TOVA*/ return not1(UNOR_MODE_DBG2p_new()); }
+wire PinsSys::UPOJ_MODE_PRODn_new() const { /*_p07.UPOJ*/ return nand3(UBETp_new(), UVARp_new(), PIN_71_RST.qp_int_new()); }
 
 
 //-----------------------------------------------------------------------------

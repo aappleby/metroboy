@@ -914,14 +914,12 @@ bool DieDB::parse_source(const std::string& source_path) {
         cell->set_args(arglist_to_args(rhs.get_field(field_arguments), src));
         //cell->dump(dumper);
       }
-      else if (node.symbol() == sym_function_definition) {
-        node.dump(src);
-      }
       else if (node.symbol() == sym_call_expression) {
       }
       else if (node.symbol() == sym_return_statement) {
       }
       else {
+        CHECK_P(false);
         printf("%s\n", node.type());
       }
 

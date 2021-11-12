@@ -98,35 +98,35 @@ void GateBoyCpuSignals::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-wire GateBoyCpuSignals::AJAS_CPU_RDn_old      () const { /*_p07.AJAS*/ return not1(TEDO_CPU_RDp.out_old()); }
-wire GateBoyCpuSignals::DYKY_CPU_WRn_old      () const { /*_p07.DYKY*/ return not1(TAPU_CPU_WRp.out_old()); }
+/*_p07.AJAS*/ wire GateBoyCpuSignals::AJAS_CPU_RDn_old() const { return not1(TEDO_CPU_RDp.out_old()); }
+/*_p07.DYKY*/ wire GateBoyCpuSignals::DYKY_CPU_WRn_old() const { return not1(TAPU_CPU_WRp.out_old()); }
 
-wire GateBoyCpuSignals::ASOT_CPU_RDp_old      () const { /*_p07.ASOT*/ return not1(AJAS_CPU_RDn_old()); }
-wire GateBoyCpuSignals::CUPA_CPU_WRp_old      () const { /*_p07.CUPA*/ return not1(DYKY_CPU_WRn_old()); }
-wire GateBoyCpuSignals::MYNU_CPU_RDn_old      () const { /*_p28.MYNU*/ return nand2(ASOT_CPU_RDp_old(), CATY_LATCH_EXTp_old()); }
-wire GateBoyCpuSignals::LEKO_CPU_RDp_old      () const { /*_p28.LEKO*/ return not1(MYNU_CPU_RDn_old()); }
-wire GateBoyCpuSignals::REDU_CPU_RDn_old      () const { /*_p08.REDU*/ return not1(TEDO_CPU_RDp.out_old()); }
-wire GateBoyCpuSignals::MEXO_CPU_WRn_old      () const { /*_p08.MEXO*/ return not1(APOV_CPU_WRp.out_old()); }
+/*_p07.ASOT*/ wire GateBoyCpuSignals::ASOT_CPU_RDp_old() const { return not1(AJAS_CPU_RDn_old()); }
+/*_p07.CUPA*/ wire GateBoyCpuSignals::CUPA_CPU_WRp_old() const { return not1(DYKY_CPU_WRn_old()); }
+/*_p28.MYNU*/ wire GateBoyCpuSignals::MYNU_CPU_RDn_old() const { return nand2(ASOT_CPU_RDp_old(), CATY_LATCH_EXTp_old()); }
+/*_p28.LEKO*/ wire GateBoyCpuSignals::LEKO_CPU_RDp_old() const { return not1(MYNU_CPU_RDn_old()); }
+/*_p08.REDU*/ wire GateBoyCpuSignals::REDU_CPU_RDn_old() const { return not1(TEDO_CPU_RDp.out_old()); }
+/*_p08.MEXO*/ wire GateBoyCpuSignals::MEXO_CPU_WRn_old() const { return not1(APOV_CPU_WRp.out_old()); }
 
-wire GateBoyCpuSignals::DECY_LATCH_EXTn_old   () const { /*_p04.DECY*/ return not1(SIG_IN_CPU_DBUS_FREE.out_old()); }
-wire GateBoyCpuSignals::CATY_LATCH_EXTp_old   () const { /*_p04.CATY*/ return not1(DECY_LATCH_EXTn_old()); }
-wire GateBoyCpuSignals::BOFE_LATCH_EXTn_old   () const { /*#p28.BOFE*/ return not1(CATY_LATCH_EXTp_old()); }
+/*_p04.DECY*/ wire GateBoyCpuSignals::DECY_LATCH_EXTn_old() const { return not1(SIG_IN_CPU_DBUS_FREE.out_old()); }
+/*_p04.CATY*/ wire GateBoyCpuSignals::CATY_LATCH_EXTp_old() const { return not1(DECY_LATCH_EXTn_old()); }
+/*#p28.BOFE*/ wire GateBoyCpuSignals::BOFE_LATCH_EXTn_old() const { return not1(CATY_LATCH_EXTp_old()); }
 
 //-----------------------------------------------------------------------------
 
-wire GateBoyCpuSignals::AJAS_CPU_RDn_new      () const { /*_p07.AJAS*/ return not1(TEDO_CPU_RDp.out_new()); }
-wire GateBoyCpuSignals::DYKY_CPU_WRn_new      () const { /*_p07.DYKY*/ return not1(TAPU_CPU_WRp.out_new()); }
+/*_p07.AJAS*/ wire GateBoyCpuSignals::AJAS_CPU_RDn_new() const { return not1(TEDO_CPU_RDp.out_new()); }
+/*_p07.DYKY*/ wire GateBoyCpuSignals::DYKY_CPU_WRn_new() const { return not1(TAPU_CPU_WRp.out_new()); }
 
-wire GateBoyCpuSignals::ASOT_CPU_RDp_new      () const { /*_p07.ASOT*/ return not1(AJAS_CPU_RDn_new()); }
-wire GateBoyCpuSignals::CUPA_CPU_WRp_new      () const { /*_p07.CUPA*/ return not1(DYKY_CPU_WRn_new()); }
-wire GateBoyCpuSignals::MYNU_CPU_RDn_new      () const { /*_p28.MYNU*/ return nand2(ASOT_CPU_RDp_new(), CATY_LATCH_EXTp_new()); }
-wire GateBoyCpuSignals::LEKO_CPU_RDp_new      () const { /*_p28.LEKO*/ return not1(MYNU_CPU_RDn_new()); }
-wire GateBoyCpuSignals::REDU_CPU_RDn_new      () const { /*_p08.REDU*/ return not1(TEDO_CPU_RDp.out_new()); }
-wire GateBoyCpuSignals::MEXO_CPU_WRn_new      () const { /*_p08.MEXO*/ return not1(APOV_CPU_WRp.out_new()); }
+/*_p07.ASOT*/ wire GateBoyCpuSignals::ASOT_CPU_RDp_new() const { return not1(AJAS_CPU_RDn_new()); }
+/*_p07.CUPA*/ wire GateBoyCpuSignals::CUPA_CPU_WRp_new() const { return not1(DYKY_CPU_WRn_new()); }
+/*_p28.MYNU*/ wire GateBoyCpuSignals::MYNU_CPU_RDn_new() const { return nand2(ASOT_CPU_RDp_new(), CATY_LATCH_EXTp_new()); }
+/*_p28.LEKO*/ wire GateBoyCpuSignals::LEKO_CPU_RDp_new() const { return not1(MYNU_CPU_RDn_new()); }
+/*_p08.REDU*/ wire GateBoyCpuSignals::REDU_CPU_RDn_new() const { return not1(TEDO_CPU_RDp.out_new()); }
+/*_p08.MEXO*/ wire GateBoyCpuSignals::MEXO_CPU_WRn_new() const { return not1(APOV_CPU_WRp.out_new()); }
 
-wire GateBoyCpuSignals::DECY_LATCH_EXTn_new   () const { /*_p04.DECY*/ return not1(SIG_IN_CPU_DBUS_FREE.out_new()); }
-wire GateBoyCpuSignals::CATY_LATCH_EXTp_new   () const { /*_p04.CATY*/ return not1(DECY_LATCH_EXTn_new()); }
-wire GateBoyCpuSignals::BOFE_LATCH_EXTn_new   () const { /*#p28.BOFE*/ return not1(CATY_LATCH_EXTp_new()); }
+/*_p04.DECY*/ wire GateBoyCpuSignals::DECY_LATCH_EXTn_new() const { return not1(SIG_IN_CPU_DBUS_FREE.out_new()); }
+/*_p04.CATY*/ wire GateBoyCpuSignals::CATY_LATCH_EXTp_new() const { return not1(DECY_LATCH_EXTn_new()); }
+/*#p28.BOFE*/ wire GateBoyCpuSignals::BOFE_LATCH_EXTn_new() const { return not1(CATY_LATCH_EXTp_new()); }
 
 //-----------------------------------------------------------------------------
 
@@ -226,109 +226,109 @@ void GateBoyCpuABus::set_addr(uint16_t bus_addr_new)
 
 //----------
 
-wire GateBoyCpuABus::TOVY_A00n_old      () const { /*_p03.TOVY*/ return not1(BUS_CPU_A00p.out_old()); }
-wire GateBoyCpuABus::TOLA_A01n_old      () const { /*_p08.TOLA*/ return not1(BUS_CPU_A01p.out_old()); }
-wire GateBoyCpuABus::XOLA_A00n_old      () const { /*_p22.XOLA*/ return not1(BUS_CPU_A00p.out_old()); }
-wire GateBoyCpuABus::XENO_A01n_old      () const { /*_p22.XENO*/ return not1(BUS_CPU_A01p.out_old()); }
-wire GateBoyCpuABus::XUSY_A02n_old      () const { /*_p22.XUSY*/ return not1(BUS_CPU_A02p.out_old()); }
-wire GateBoyCpuABus::XERA_A03n_old      () const { /*_p22.XERA*/ return not1(BUS_CPU_A03p.out_old()); }
-wire GateBoyCpuABus::TONA_A08n_old      () const { /*_p07.TONA*/ return not1(BUS_CPU_A08p.out_old()); }
-wire GateBoyCpuABus::SORE_A15n_old      () const { /*#p08.SORE*/ return not1(BUS_CPU_A15p.out_old()); }
-wire GateBoyCpuABus::SEFY_A02n_old      () const { /*_p06.SEFY*/ return not1(BUS_CPU_A02p.out_old()); }
-wire GateBoyCpuABus::SOGY_A14n_old      () const { /*_p08.SOGY*/ return not1(BUS_CPU_A14p.out_old()); }
+/*_p03.TOVY*/ wire GateBoyCpuABus::TOVY_A00n_old() const { return not1(BUS_CPU_A00p.out_old()); }
+/*_p08.TOLA*/ wire GateBoyCpuABus::TOLA_A01n_old() const { return not1(BUS_CPU_A01p.out_old()); }
+/*_p22.XOLA*/ wire GateBoyCpuABus::XOLA_A00n_old() const { return not1(BUS_CPU_A00p.out_old()); }
+/*_p22.XENO*/ wire GateBoyCpuABus::XENO_A01n_old() const { return not1(BUS_CPU_A01p.out_old()); }
+/*_p22.XUSY*/ wire GateBoyCpuABus::XUSY_A02n_old() const { return not1(BUS_CPU_A02p.out_old()); }
+/*_p22.XERA*/ wire GateBoyCpuABus::XERA_A03n_old() const { return not1(BUS_CPU_A03p.out_old()); }
+/*_p07.TONA*/ wire GateBoyCpuABus::TONA_A08n_old() const { return not1(BUS_CPU_A08p.out_old()); }
+/*#p08.SORE*/ wire GateBoyCpuABus::SORE_A15n_old() const { return not1(BUS_CPU_A15p.out_old()); }
+/*_p06.SEFY*/ wire GateBoyCpuABus::SEFY_A02n_old() const { return not1(BUS_CPU_A02p.out_old()); }
+/*_p08.SOGY*/ wire GateBoyCpuABus::SOGY_A14n_old() const { return not1(BUS_CPU_A14p.out_old()); }
 
-wire GateBoyCpuABus::WADO_A00p_old      () const { /*_p22.WADO*/ return not1(XOLA_A00n_old()); }
-wire GateBoyCpuABus::WESA_A01p_old      () const { /*_p22.WESA*/ return not1(XENO_A01n_old()); }
-wire GateBoyCpuABus::WALO_A02p_old      () const { /*_p22.WALO*/ return not1(XUSY_A02n_old()); }
-wire GateBoyCpuABus::WEPO_A03p_old      () const { /*_p22.WEPO*/ return not1(XERA_A03n_old()); }
+/*_p22.WADO*/ wire GateBoyCpuABus::WADO_A00p_old() const { return not1(XOLA_A00n_old()); }
+/*_p22.WESA*/ wire GateBoyCpuABus::WESA_A01p_old() const { return not1(XENO_A01n_old()); }
+/*_p22.WALO*/ wire GateBoyCpuABus::WALO_A02p_old() const { return not1(XUSY_A02n_old()); }
+/*_p22.WEPO*/ wire GateBoyCpuABus::WEPO_A03p_old() const { return not1(XERA_A03n_old()); }
 
-wire GateBoyCpuABus::WUTU_ADDR_PPUn_old () const { /*_p22.WUTU*/ return nand3(SYKE_ADDR_HIp_old(), BUS_CPU_A06p.out_old(), XALY_0x00xxxx_old()); }
-wire GateBoyCpuABus::WERO_ADDR_PPUp_old () const { /*_p22.WERO*/ return not1(WUTU_ADDR_PPUn_old()); }
+/*_p22.WUTU*/ wire GateBoyCpuABus::WUTU_ADDR_PPUn_old() const { return nand3(SYKE_ADDR_HIp_old(), BUS_CPU_A06p.out_old(), XALY_0x00xxxx_old()); }
+/*_p22.WERO*/ wire GateBoyCpuABus::WERO_ADDR_PPUp_old() const { return not1(WUTU_ADDR_PPUn_old()); }
 
-wire GateBoyCpuABus::TUNA_0000_FDFF_old () const { /*_p07.TUNA*/ return nand7(BUS_CPU_A15p.out_old(), BUS_CPU_A14p.out_old(), BUS_CPU_A13p.out_old(), BUS_CPU_A12p.out_old(), BUS_CPU_A11p.out_old(), BUS_CPU_A10p.out_old(), BUS_CPU_A09p.out_old()); }
-wire GateBoyCpuABus::SYKE_ADDR_HIp_old  () const { /*#p07.SYKE*/ return nor2(TUNA_0000_FDFF_old(), TONA_A08n_old()); }
+/*_p07.TUNA*/ wire GateBoyCpuABus::TUNA_0000_FDFF_old() const { return nand7(BUS_CPU_A15p.out_old(), BUS_CPU_A14p.out_old(), BUS_CPU_A13p.out_old(), BUS_CPU_A12p.out_old(), BUS_CPU_A11p.out_old(), BUS_CPU_A10p.out_old(), BUS_CPU_A09p.out_old()); }
+/*#p07.SYKE*/ wire GateBoyCpuABus::SYKE_ADDR_HIp_old () const { return nor2(TUNA_0000_FDFF_old(), TONA_A08n_old()); }
 
-wire GateBoyCpuABus::XALY_0x00xxxx_old  () const { /*_p22.XALY*/ return nor3(BUS_CPU_A07p.out_old(), BUS_CPU_A05p.out_old(), BUS_CPU_A04p.out_old()); }
-wire GateBoyCpuABus::SARE_XX00_XX07p_old() const { /*_p06.SARE*/ return nor5(BUS_CPU_A07p.out_old(), BUS_CPU_A06p.out_old(), BUS_CPU_A05p.out_old(), BUS_CPU_A04p.out_old(), BUS_CPU_A03p.out_old()); }
-wire GateBoyCpuABus::RYFO_FF04_FF07p_old() const { /*_p03.RYFO*/ return and3(SYKE_ADDR_HIp_old(), BUS_CPU_A02p.out_old(), SARE_XX00_XX07p_old()); }
+/*_p22.XALY*/ wire GateBoyCpuABus::XALY_0x00xxxx_old  () const { return nor3(BUS_CPU_A07p.out_old(), BUS_CPU_A05p.out_old(), BUS_CPU_A04p.out_old()); }
+/*_p06.SARE*/ wire GateBoyCpuABus::SARE_XX00_XX07p_old() const { return nor5(BUS_CPU_A07p.out_old(), BUS_CPU_A06p.out_old(), BUS_CPU_A05p.out_old(), BUS_CPU_A04p.out_old(), BUS_CPU_A03p.out_old()); }
+/*_p03.RYFO*/ wire GateBoyCpuABus::RYFO_FF04_FF07p_old() const { return and3(SYKE_ADDR_HIp_old(), BUS_CPU_A02p.out_old(), SARE_XX00_XX07p_old()); }
 
-wire GateBoyCpuABus::WATE_FF46n_old     () const { /*#p22.WATE*/ return nand5(WERO_ADDR_PPUp_old(), XOLA_A00n_old(), WESA_A01p_old(), WALO_A02p_old(), XERA_A03n_old()); }
-wire GateBoyCpuABus::XEDA_FF46p_old     () const { /*#p22.XEDA*/ return not1(WATE_FF46n_old()); }
+/*#p22.WATE*/ wire GateBoyCpuABus::WATE_FF46n_old() const { return nand5(WERO_ADDR_PPUp_old(), XOLA_A00n_old(), WESA_A01p_old(), WALO_A02p_old(), XERA_A03n_old()); }
+/*#p22.XEDA*/ wire GateBoyCpuABus::XEDA_FF46p_old() const { return not1(WATE_FF46n_old()); }
 
 //----------
 
-wire GateBoyCpuABus::TUNA_0000_FDFF_new () const { /*_p07.TUNA*/ return nand7(BUS_CPU_A15p.out_new(), BUS_CPU_A14p.out_new(), BUS_CPU_A13p.out_new(), BUS_CPU_A12p.out_new(), BUS_CPU_A11p.out_new(), BUS_CPU_A10p.out_new(), BUS_CPU_A09p.out_new()); }
-wire GateBoyCpuABus::RYCU_FE00_FFFF_new () const { /*_p07.RYCU*/ return not1(TUNA_0000_FDFF_new()); }
-wire GateBoyCpuABus::SYRO_FE00_FFFF_new () const { /*_p25.SYRO*/ return not1(TUNA_0000_FDFF_new()); }
+/*_p07.TUNA*/ wire GateBoyCpuABus::TUNA_0000_FDFF_new() const { return nand7(BUS_CPU_A15p.out_new(), BUS_CPU_A14p.out_new(), BUS_CPU_A13p.out_new(), BUS_CPU_A12p.out_new(), BUS_CPU_A11p.out_new(), BUS_CPU_A10p.out_new(), BUS_CPU_A09p.out_new()); }
+/*_p07.RYCU*/ wire GateBoyCpuABus::RYCU_FE00_FFFF_new() const { return not1(TUNA_0000_FDFF_new()); }
+/*_p25.SYRO*/ wire GateBoyCpuABus::SYRO_FE00_FFFF_new() const { return not1(TUNA_0000_FDFF_new()); }
 
-wire GateBoyCpuABus::TOVY_A00n_new      () const { /*_p03.TOVY*/ return not1(BUS_CPU_A00p.out_new()); }
-wire GateBoyCpuABus::TOLA_A01n_new      () const { /*_p08.TOLA*/ return not1(BUS_CPU_A01p.out_new()); }
-wire GateBoyCpuABus::XOLA_A00n_new      () const { /*_p22.XOLA*/ return not1(BUS_CPU_A00p.out_new()); }
-wire GateBoyCpuABus::XENO_A01n_new      () const { /*_p22.XENO*/ return not1(BUS_CPU_A01p.out_new()); }
-wire GateBoyCpuABus::XUSY_A02n_new      () const { /*_p22.XUSY*/ return not1(BUS_CPU_A02p.out_new()); }
-wire GateBoyCpuABus::XERA_A03n_new      () const { /*_p22.XERA*/ return not1(BUS_CPU_A03p.out_new()); }
-wire GateBoyCpuABus::TONA_A08n_new      () const { /*_p07.TONA*/ return not1(BUS_CPU_A08p.out_new()); }
-wire GateBoyCpuABus::SORE_A15n_new      () const { /*#p08.SORE*/ return not1(BUS_CPU_A15p.out_new()); }
-wire GateBoyCpuABus::SEFY_A02n_new      () const { /*_p06.SEFY*/ return not1(BUS_CPU_A02p.out_new()); }
-wire GateBoyCpuABus::SOGY_A14n_new      () const { /*_p08.SOGY*/ return not1(BUS_CPU_A14p.out_new()); }
+/*_p03.TOVY*/ wire GateBoyCpuABus::TOVY_A00n_new() const { return not1(BUS_CPU_A00p.out_new()); }
+/*_p08.TOLA*/ wire GateBoyCpuABus::TOLA_A01n_new() const { return not1(BUS_CPU_A01p.out_new()); }
+/*_p22.XOLA*/ wire GateBoyCpuABus::XOLA_A00n_new() const { return not1(BUS_CPU_A00p.out_new()); }
+/*_p22.XENO*/ wire GateBoyCpuABus::XENO_A01n_new() const { return not1(BUS_CPU_A01p.out_new()); }
+/*_p22.XUSY*/ wire GateBoyCpuABus::XUSY_A02n_new() const { return not1(BUS_CPU_A02p.out_new()); }
+/*_p22.XERA*/ wire GateBoyCpuABus::XERA_A03n_new() const { return not1(BUS_CPU_A03p.out_new()); }
+/*_p07.TONA*/ wire GateBoyCpuABus::TONA_A08n_new() const { return not1(BUS_CPU_A08p.out_new()); }
+/*#p08.SORE*/ wire GateBoyCpuABus::SORE_A15n_new() const { return not1(BUS_CPU_A15p.out_new()); }
+/*_p06.SEFY*/ wire GateBoyCpuABus::SEFY_A02n_new() const { return not1(BUS_CPU_A02p.out_new()); }
+/*_p08.SOGY*/ wire GateBoyCpuABus::SOGY_A14n_new() const { return not1(BUS_CPU_A14p.out_new()); }
 
-wire GateBoyCpuABus::WADO_A00p_new      () const { /*_p22.WADO*/ return not1(XOLA_A00n_new()); }
-wire GateBoyCpuABus::WESA_A01p_new      () const { /*_p22.WESA*/ return not1(XENO_A01n_new()); }
-wire GateBoyCpuABus::WALO_A02p_new      () const { /*_p22.WALO*/ return not1(XUSY_A02n_new()); }
-wire GateBoyCpuABus::WEPO_A03p_new      () const { /*_p22.WEPO*/ return not1(XERA_A03n_new()); }
+/*_p22.WADO*/ wire GateBoyCpuABus::WADO_A00p_new() const { return not1(XOLA_A00n_new()); }
+/*_p22.WESA*/ wire GateBoyCpuABus::WESA_A01p_new() const { return not1(XENO_A01n_new()); }
+/*_p22.WALO*/ wire GateBoyCpuABus::WALO_A02p_new() const { return not1(XUSY_A02n_new()); }
+/*_p22.WEPO*/ wire GateBoyCpuABus::WEPO_A03p_new() const { return not1(XERA_A03n_new()); }
 
-wire GateBoyCpuABus::TYRO_XX_0x0x0000p_new () const { /*_p07.TYRO*/ return nor6(BUS_CPU_A07p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A03p.out_new(), BUS_CPU_A02p.out_new(), BUS_CPU_A01p.out_new(), BUS_CPU_A00p.out_new()); }
-wire GateBoyCpuABus::TUFA_XX_x1x1xxxxp_new () const { /*_p07.TUFA*/ return and2(BUS_CPU_A04p.out_new(), BUS_CPU_A06p.out_new()); }
+/*_p07.TYRO*/ wire GateBoyCpuABus::TYRO_XX_0x0x0000p_new() const { return nor6(BUS_CPU_A07p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A03p.out_new(), BUS_CPU_A02p.out_new(), BUS_CPU_A01p.out_new(), BUS_CPU_A00p.out_new()); }
+/*_p07.TUFA*/ wire GateBoyCpuABus::TUFA_XX_x1x1xxxxp_new() const { return and2(BUS_CPU_A04p.out_new(), BUS_CPU_A06p.out_new()); }
 
-wire GateBoyCpuABus::SYKE_ADDR_HIp_new     () const { /*#p07.SYKE*/ return nor2(TUNA_0000_FDFF_new(), TONA_A08n_new()); }
-wire GateBoyCpuABus::SOHA_ADDR_HIn_new     () const { /*#p07.SOHA*/ return not1(SYKE_ADDR_HIp_new()); }
+/*#p07.SYKE*/ wire GateBoyCpuABus::SYKE_ADDR_HIp_new() const { return nor2(TUNA_0000_FDFF_new(), TONA_A08n_new()); }
+/*#p07.SOHA*/ wire GateBoyCpuABus::SOHA_ADDR_HIn_new() const { return not1(SYKE_ADDR_HIp_new()); }
 
-wire GateBoyCpuABus::XALY_0x00xxxx_new     () const { /*_p22.XALY*/ return nor3(BUS_CPU_A07p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A04p.out_new()); }
-wire GateBoyCpuABus::SARE_XX00_XX07p_new   () const { /*_p06.SARE*/ return nor5(BUS_CPU_A07p.out_new(), BUS_CPU_A06p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A04p.out_new(), BUS_CPU_A03p.out_new()); }
-wire GateBoyCpuABus::RYFO_FF04_FF07p_new   () const { /*_p03.RYFO*/ return and3(SYKE_ADDR_HIp_new(), BUS_CPU_A02p.out_new(), SARE_XX00_XX07p_new()); }
+/*_p22.XALY*/ wire GateBoyCpuABus::XALY_0x00xxxx_new  () const { return nor3(BUS_CPU_A07p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A04p.out_new()); }
+/*_p06.SARE*/ wire GateBoyCpuABus::SARE_XX00_XX07p_new() const { return nor5(BUS_CPU_A07p.out_new(), BUS_CPU_A06p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A04p.out_new(), BUS_CPU_A03p.out_new()); }
+/*_p03.RYFO*/ wire GateBoyCpuABus::RYFO_FF04_FF07p_new() const { return and3(SYKE_ADDR_HIp_new(), BUS_CPU_A02p.out_new(), SARE_XX00_XX07p_new()); }
 
-wire GateBoyCpuABus::SAPA_XX_xxxx1111p_new () const { /*_p07.SAPA*/ return and4(BUS_CPU_A00p.out_new(), BUS_CPU_A01p.out_new(), BUS_CPU_A02p.out_new(), BUS_CPU_A03p.out_new()); }
-wire GateBoyCpuABus::SEMY_XX_0000xxxxp_new () const { /*_p07.SEMY*/ return nor4(BUS_CPU_A07p.out_new(), BUS_CPU_A06p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A04p.out_new()); }
-wire GateBoyCpuABus::SANO_FF00_FF03p_new   () const { /*_p06.SANO*/ return and3(SARE_XX00_XX07p_new(), SEFY_A02n_new(), SYKE_ADDR_HIp_new()); }
-wire GateBoyCpuABus::TUMA_A000_BFFFp_new   () const { /*_p08.TUMA*/ return and3(BUS_CPU_A13p.out_new(), SOGY_A14n_new(), BUS_CPU_A15p.out_new()); }
-wire GateBoyCpuABus::TYNU_A000_FFFFp_new   () const { /*_p08.TYNU*/ return and_or3(BUS_CPU_A15p.out_new(), BUS_CPU_A14p.out_new(), TUMA_A000_BFFFp_new()); }
-wire GateBoyCpuABus::ADAH_FE00_FEFFn_new   () const { /*_p28.ADAH*/ return not1(SARO_ADDR_OAMp_new()); }
+/*_p07.SAPA*/ wire GateBoyCpuABus::SAPA_XX_xxxx1111p_new () const { return and4(BUS_CPU_A00p.out_new(), BUS_CPU_A01p.out_new(), BUS_CPU_A02p.out_new(), BUS_CPU_A03p.out_new()); }
+/*_p07.SEMY*/ wire GateBoyCpuABus::SEMY_XX_0000xxxxp_new () const { return nor4(BUS_CPU_A07p.out_new(), BUS_CPU_A06p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A04p.out_new()); }
+/*_p06.SANO*/ wire GateBoyCpuABus::SANO_FF00_FF03p_new   () const { return and3(SARE_XX00_XX07p_new(), SEFY_A02n_new(), SYKE_ADDR_HIp_new()); }
+/*_p08.TUMA*/ wire GateBoyCpuABus::TUMA_A000_BFFFp_new   () const { return and3(BUS_CPU_A13p.out_new(), SOGY_A14n_new(), BUS_CPU_A15p.out_new()); }
+/*_p08.TYNU*/ wire GateBoyCpuABus::TYNU_A000_FFFFp_new   () const { return and_or3(BUS_CPU_A15p.out_new(), BUS_CPU_A14p.out_new(), TUMA_A000_BFFFp_new()); }
+/*_p28.ADAH*/ wire GateBoyCpuABus::ADAH_FE00_FEFFn_new   () const { return not1(SARO_ADDR_OAMp_new()); }
 
-wire GateBoyCpuABus::TULO_ADDR_BOOTROMp_new() const { /*_p07.TULO*/ return nor8(BUS_CPU_A15p.out_new(), BUS_CPU_A14p.out_new(), BUS_CPU_A13p.out_new(), BUS_CPU_A12p.out_new(), BUS_CPU_A11p.out_new(), BUS_CPU_A10p.out_new(), BUS_CPU_A09p.out_new(), BUS_CPU_A08p.out_new()); }
+/*_p07.TULO*/ wire GateBoyCpuABus::TULO_ADDR_BOOTROMp_new() const { return nor8(BUS_CPU_A15p.out_new(), BUS_CPU_A14p.out_new(), BUS_CPU_A13p.out_new(), BUS_CPU_A12p.out_new(), BUS_CPU_A11p.out_new(), BUS_CPU_A10p.out_new(), BUS_CPU_A09p.out_new(), BUS_CPU_A08p.out_new()); }
 
-wire GateBoyCpuABus::ROPE_ADDR_OAMn_new    () const { /*#p07.ROPE*/ return nand2(SOHA_ADDR_HIn_new(), RYCU_FE00_FFFF_new()); } // looks like nand?
-wire GateBoyCpuABus::SARO_ADDR_OAMp_new    () const { /*#p07.SARO*/ return not1(ROPE_ADDR_OAMn_new()); }
+/*#p07.ROPE*/ wire GateBoyCpuABus::ROPE_ADDR_OAMn_new() const { return nand2(SOHA_ADDR_HIn_new(), RYCU_FE00_FFFF_new()); } // looks like nand?
+/*#p07.SARO*/ wire GateBoyCpuABus::SARO_ADDR_OAMp_new() const { return not1(ROPE_ADDR_OAMn_new()); }
 
-wire GateBoyCpuABus::WORU_FF40n_new        () const { /*_p22.WORU*/ return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), XENO_A01n_new(), XUSY_A02n_new(), XERA_A03n_new()); }
-wire GateBoyCpuABus::WOFA_FF41n_new        () const { /*_p22.WOFA*/ return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), XENO_A01n_new(), XUSY_A02n_new(), XERA_A03n_new()); }
-wire GateBoyCpuABus::WEBU_FF42n_new        () const { /*_p22.WEBU*/ return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), WESA_A01p_new(), XUSY_A02n_new(), XERA_A03n_new()); }
-wire GateBoyCpuABus::WAVU_FF43n_new        () const { /*_p22.WAVU*/ return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), WESA_A01p_new(), XUSY_A02n_new(), XERA_A03n_new()); }
-wire GateBoyCpuABus::WYLE_FF44n_new        () const { /*_p22.WYLE*/ return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), XENO_A01n_new(), WALO_A02p_new(), XERA_A03n_new()); }
-wire GateBoyCpuABus::WETY_FF45n_new        () const { /*_p22.WETY*/ return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), XENO_A01n_new(), WALO_A02p_new(), XERA_A03n_new()); }
-wire GateBoyCpuABus::WATE_FF46n_new        () const { /*#p22.WATE*/ return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), WESA_A01p_new(), WALO_A02p_new(), XERA_A03n_new()); }
-wire GateBoyCpuABus::WYBO_FF47n_new        () const { /*_p22.WYBO*/ return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), WESA_A01p_new(), WALO_A02p_new(), XERA_A03n_new()); }
-wire GateBoyCpuABus::WETA_FF48n_new        () const { /*_p22.WETA*/ return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), XENO_A01n_new(), XUSY_A02n_new(), WEPO_A03p_new()); }
-wire GateBoyCpuABus::VAMA_FF49n_new        () const { /*_p22.VAMA*/ return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), XENO_A01n_new(), XUSY_A02n_new(), WEPO_A03p_new()); }
-wire GateBoyCpuABus::WYVO_FF4An_new        () const { /*_p22.WYVO*/ return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), WESA_A01p_new(), XUSY_A02n_new(), WEPO_A03p_new()); }
-wire GateBoyCpuABus::WAGE_FF4Bn_new        () const { /*_p22.WAGE*/ return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), WESA_A01p_new(), XUSY_A02n_new(), WEPO_A03p_new()); }
+/*_p22.WORU*/ wire GateBoyCpuABus::WORU_FF40n_new() const { return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), XENO_A01n_new(), XUSY_A02n_new(), XERA_A03n_new()); }
+/*_p22.WOFA*/ wire GateBoyCpuABus::WOFA_FF41n_new() const { return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), XENO_A01n_new(), XUSY_A02n_new(), XERA_A03n_new()); }
+/*_p22.WEBU*/ wire GateBoyCpuABus::WEBU_FF42n_new() const { return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), WESA_A01p_new(), XUSY_A02n_new(), XERA_A03n_new()); }
+/*_p22.WAVU*/ wire GateBoyCpuABus::WAVU_FF43n_new() const { return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), WESA_A01p_new(), XUSY_A02n_new(), XERA_A03n_new()); }
+/*_p22.WYLE*/ wire GateBoyCpuABus::WYLE_FF44n_new() const { return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), XENO_A01n_new(), WALO_A02p_new(), XERA_A03n_new()); }
+/*_p22.WETY*/ wire GateBoyCpuABus::WETY_FF45n_new() const { return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), XENO_A01n_new(), WALO_A02p_new(), XERA_A03n_new()); }
+/*#p22.WATE*/ wire GateBoyCpuABus::WATE_FF46n_new() const { return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), WESA_A01p_new(), WALO_A02p_new(), XERA_A03n_new()); }
+/*_p22.WYBO*/ wire GateBoyCpuABus::WYBO_FF47n_new() const { return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), WESA_A01p_new(), WALO_A02p_new(), XERA_A03n_new()); }
+/*_p22.WETA*/ wire GateBoyCpuABus::WETA_FF48n_new() const { return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), XENO_A01n_new(), XUSY_A02n_new(), WEPO_A03p_new()); }
+/*_p22.VAMA*/ wire GateBoyCpuABus::VAMA_FF49n_new() const { return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), XENO_A01n_new(), XUSY_A02n_new(), WEPO_A03p_new()); }
+/*_p22.WYVO*/ wire GateBoyCpuABus::WYVO_FF4An_new() const { return nand5(WERO_ADDR_PPUp_new(), XOLA_A00n_new(), WESA_A01p_new(), XUSY_A02n_new(), WEPO_A03p_new()); }
+/*_p22.WAGE*/ wire GateBoyCpuABus::WAGE_FF4Bn_new() const { return nand5(WERO_ADDR_PPUp_new(), WADO_A00p_new(), WESA_A01p_new(), XUSY_A02n_new(), WEPO_A03p_new()); }
 
-wire GateBoyCpuABus::VOCA_FF40p_new        () const { /*_p22.VOCA*/ return not1(WORU_FF40n_new()); }
-wire GateBoyCpuABus::VARY_FF41p_new        () const { /*_p22.VARY*/ return not1(WOFA_FF41n_new()); }
-wire GateBoyCpuABus::XARO_FF42p_new        () const { /*_p22.XARO*/ return not1(WEBU_FF42n_new()); }
-wire GateBoyCpuABus::XAVY_FF43p_new        () const { /*_p22.XAVY*/ return not1(WAVU_FF43n_new()); }
-wire GateBoyCpuABus::XOGY_FF44p_new        () const { /*_p22.XOGY*/ return not1(WYLE_FF44n_new()); }
-wire GateBoyCpuABus::XAYU_FF45p_new        () const { /*_p22.XAYU*/ return not1(WETY_FF45n_new()); }
-wire GateBoyCpuABus::XEDA_FF46p_new        () const { /*#p22.XEDA*/ return not1(WATE_FF46n_new()); }
-wire GateBoyCpuABus::WERA_FF47p_new        () const { /*_p22.WERA*/ return not1(WYBO_FF47n_new()); }
-wire GateBoyCpuABus::XAYO_FF48p_new        () const { /*_p22.XAYO*/ return not1(WETA_FF48n_new()); }
-wire GateBoyCpuABus::TEGO_FF49p_new        () const { /*_p22.TEGO*/ return not1(VAMA_FF49n_new()); }
-wire GateBoyCpuABus::VYGA_FF4Ap_new        () const { /*_p22.VYGA*/ return not1(WYVO_FF4An_new()); }
-wire GateBoyCpuABus::VUMY_FF4Bp_new        () const { /*_p22.VUMY*/ return not1(WAGE_FF4Bn_new()); }
+/*_p22.VOCA*/ wire GateBoyCpuABus::VOCA_FF40p_new() const { return not1(WORU_FF40n_new()); }
+/*_p22.VARY*/ wire GateBoyCpuABus::VARY_FF41p_new() const { return not1(WOFA_FF41n_new()); }
+/*_p22.XARO*/ wire GateBoyCpuABus::XARO_FF42p_new() const { return not1(WEBU_FF42n_new()); }
+/*_p22.XAVY*/ wire GateBoyCpuABus::XAVY_FF43p_new() const { return not1(WAVU_FF43n_new()); }
+/*_p22.XOGY*/ wire GateBoyCpuABus::XOGY_FF44p_new() const { return not1(WYLE_FF44n_new()); }
+/*_p22.XAYU*/ wire GateBoyCpuABus::XAYU_FF45p_new() const { return not1(WETY_FF45n_new()); }
+/*#p22.XEDA*/ wire GateBoyCpuABus::XEDA_FF46p_new() const { return not1(WATE_FF46n_new()); }
+/*_p22.WERA*/ wire GateBoyCpuABus::WERA_FF47p_new() const { return not1(WYBO_FF47n_new()); }
+/*_p22.XAYO*/ wire GateBoyCpuABus::XAYO_FF48p_new() const { return not1(WETA_FF48n_new()); }
+/*_p22.TEGO*/ wire GateBoyCpuABus::TEGO_FF49p_new() const { return not1(VAMA_FF49n_new()); }
+/*_p22.VYGA*/ wire GateBoyCpuABus::VYGA_FF4Ap_new() const { return not1(WYVO_FF4An_new()); }
+/*_p22.VUMY*/ wire GateBoyCpuABus::VUMY_FF4Bp_new() const { return not1(WAGE_FF4Bn_new()); }
 
-wire GateBoyCpuABus::WUTU_ADDR_PPUn_new    () const { /*_p22.WUTU*/ return nand3(SYKE_ADDR_HIp_new(), BUS_CPU_A06p.out_new(), XALY_0x00xxxx_new()); }
-wire GateBoyCpuABus::WERO_ADDR_PPUp_new    () const { /*_p22.WERO*/ return not1(WUTU_ADDR_PPUn_new()); }
+/*_p22.WUTU*/ wire GateBoyCpuABus::WUTU_ADDR_PPUn_new() const { return nand3(SYKE_ADDR_HIp_new(), BUS_CPU_A06p.out_new(), XALY_0x00xxxx_new()); }
+/*_p22.WERO*/ wire GateBoyCpuABus::WERO_ADDR_PPUp_new() const { return not1(WUTU_ADDR_PPUn_new()); }
 
-wire GateBoyCpuABus::TEVY_ADDR_VRAMn_new   () const { /*#p08.TEVY*/ return or3(BUS_CPU_A13p.out_new(), BUS_CPU_A14p.out_new(), SORE_A15n_new()); }
+/*#p08.TEVY*/ wire GateBoyCpuABus::TEVY_ADDR_VRAMn_new() const { return or3(BUS_CPU_A13p.out_new(), BUS_CPU_A14p.out_new(), SORE_A15n_new()); }
 
 
 //-----------------------------------------------------------------------------

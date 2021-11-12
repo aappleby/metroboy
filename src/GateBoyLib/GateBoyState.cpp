@@ -6,22 +6,22 @@
 
 //-----------------------------------------------------------------------------
 
-wire GateBoyState::TEXO_ADDR_VRAMn_new   () const { /*#p08.TEXO*/ return and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), cpu_abus.TEVY_ADDR_VRAMn_new()); }
-wire GateBoyState::TEFA_ADDR_VRAMp_new   () const { /*#p25.TEFA*/ return nor2(cpu_abus.SYRO_FE00_FFFF_new(), TEXO_ADDR_VRAMn_new()); }
-wire GateBoyState::SOSE_ADDR_VRAMp_new   () const { /*#p25.SOSE*/ return and2(TEFA_ADDR_VRAMp_new(), cpu_abus.BUS_CPU_A15p.out_any()); }
-wire GateBoyState::LEVO_ADDR_VRAMn_new   () const { /*_p08.LEVO*/ return not1(TEXO_ADDR_VRAMn_new()); }
-wire GateBoyState::TUJA_CPU_VRAM_WRp_new () const { /*_p25.TUJA*/ return and2(SOSE_ADDR_VRAMp_new(), cpu_signals.APOV_CPU_WRp.out_any()); }
+/*#p08.TEXO*/ wire GateBoyState::TEXO_ADDR_VRAMn_new() const { return and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), cpu_abus.TEVY_ADDR_VRAMn_new()); }
+/*#p25.TEFA*/ wire GateBoyState::TEFA_ADDR_VRAMp_new() const { return nor2(cpu_abus.SYRO_FE00_FFFF_new(), TEXO_ADDR_VRAMn_new()); }
+/*#p25.SOSE*/ wire GateBoyState::SOSE_ADDR_VRAMp_new() const { return and2(TEFA_ADDR_VRAMp_new(), cpu_abus.BUS_CPU_A15p.out_any()); }
+/*_p08.LEVO*/ wire GateBoyState::LEVO_ADDR_VRAMn_new() const { return not1(TEXO_ADDR_VRAMn_new()); }
+/*_p25.TUJA*/ wire GateBoyState::TUJA_CPU_VRAM_WRp_new () const { return and2(SOSE_ADDR_VRAMp_new(), cpu_signals.APOV_CPU_WRp.out_any()); }
 
-wire GateBoyState::XODO_VID_RSTp_new() const { /*_p01.XODO*/ return nand2(sys_rst.XEBE_SYS_RSTn_new(), reg_lcdc.XONA_LCDC_LCDENn.qn_new()); }
-wire GateBoyState::XAPO_VID_RSTn_new() const { /*_p01.XAPO*/ return not1(XODO_VID_RSTp_new()); }
-wire GateBoyState::LYHA_VID_RSTp_new() const { /*_p01.LYHA*/ return not1(XAPO_VID_RSTn_new()); }
-wire GateBoyState::LYFE_VID_RSTn_new() const { /*_p01.LYFE*/ return not1(LYHA_VID_RSTp_new()); }
-wire GateBoyState::TOFU_VID_RSTp_new() const { /*_p01.TOFU*/ return not1(XAPO_VID_RSTn_new()); }
-wire GateBoyState::ROSY_VID_RSTp_new() const { /*_p01.ROSY*/ return not1(XAPO_VID_RSTn_new()); }
-wire GateBoyState::ATAR_VID_RSTp_new() const { /*#p01.ATAR*/ return not1(XAPO_VID_RSTn_new()); }
-wire GateBoyState::ABEZ_VID_RSTn_new() const { /*#p01.ABEZ*/ return not1(ATAR_VID_RSTp_new()); }
-wire GateBoyState::PYRY_VID_RSTp_new() const { /*_p01.PYRY*/ return not1(XAPO_VID_RSTn_new()); }
-wire GateBoyState::AMYG_VID_RSTp_new() const { /*_p01.AMYG*/ return not1(XAPO_VID_RSTn_new()); }
+/*_p01.XODO*/ wire GateBoyState::XODO_VID_RSTp_new() const { return nand2(sys_rst.XEBE_SYS_RSTn_new(), reg_lcdc.XONA_LCDC_LCDENn.qn_new()); }
+/*_p01.XAPO*/ wire GateBoyState::XAPO_VID_RSTn_new() const { return not1(XODO_VID_RSTp_new()); }
+/*_p01.LYHA*/ wire GateBoyState::LYHA_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
+/*_p01.LYFE*/ wire GateBoyState::LYFE_VID_RSTn_new() const { return not1(LYHA_VID_RSTp_new()); }
+/*_p01.TOFU*/ wire GateBoyState::TOFU_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
+/*_p01.ROSY*/ wire GateBoyState::ROSY_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
+/*#p01.ATAR*/ wire GateBoyState::ATAR_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
+/*#p01.ABEZ*/ wire GateBoyState::ABEZ_VID_RSTn_new() const { return not1(ATAR_VID_RSTp_new()); }
+/*_p01.PYRY*/ wire GateBoyState::PYRY_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
+/*_p01.AMYG*/ wire GateBoyState::AMYG_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
 
 wire GateBoyState::TOLE_CPU_VRAM_RDp_new() const
 {

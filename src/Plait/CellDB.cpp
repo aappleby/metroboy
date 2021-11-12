@@ -917,6 +917,9 @@ bool DieDB::parse_source(const std::string& source_path) {
       else if (node.symbol() == sym_call_expression) {
       }
       else if (node.symbol() == sym_return_statement) {
+        node.dump(src);
+      }
+      else if (node.symbol() == sym_function_definition) {
       }
       else {
         CHECK_P(false);

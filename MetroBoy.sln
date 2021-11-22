@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29306.81
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreLib", "src\CoreLib\CoreLib.vcxproj", "{6E04C36F-3672-4257-B250-DA34DA7F6A42}"
 EndProject
@@ -53,6 +53,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Metron", "src\Metron\Metron.vcxproj", "{66066533-DE54-4241-8C3F-15FC0D993537}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,6 +147,18 @@ Global
 		{102DDF49-D6E2-4B48-8FBB-739003ACE370}.Release|x64.ActiveCfg = Release|x64
 		{102DDF49-D6E2-4B48-8FBB-739003ACE370}.Release|x64.Build.0 = Release|x64
 		{102DDF49-D6E2-4B48-8FBB-739003ACE370}.Release|x86.ActiveCfg = Release|x64
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Debug|x64.ActiveCfg = Debug|x64
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Debug|x64.Build.0 = Debug|x64
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Debug|x86.ActiveCfg = Debug|Win32
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Debug|x86.Build.0 = Debug|Win32
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Fast|x64.ActiveCfg = Debug|x64
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Fast|x64.Build.0 = Debug|x64
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Fast|x86.ActiveCfg = Debug|Win32
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Fast|x86.Build.0 = Debug|Win32
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Release|x64.ActiveCfg = Release|x64
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Release|x64.Build.0 = Release|x64
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Release|x86.ActiveCfg = Release|Win32
+		{66066533-DE54-4241-8C3F-15FC0D993537}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +173,7 @@ Global
 		{887D1DCF-E7BA-4497-9755-101E6C5BBBD1} = {8BFC4262-B3BA-4CB6-8199-FE4EF2E72406}
 		{B508ED94-47CC-425C-B2F0-D9278A262207} = {3E153BAB-251F-4662-8D41-70F562B05B3F}
 		{102DDF49-D6E2-4B48-8FBB-739003ACE370} = {9DD717FC-9FDF-4BCA-A77F-CA1A9E67B745}
+		{66066533-DE54-4241-8C3F-15FC0D993537} = {9DD717FC-9FDF-4BCA-A77F-CA1A9E67B745}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98604A08-7834-4268-B908-11FE80403D7A}

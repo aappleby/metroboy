@@ -46,18 +46,23 @@ struct PNode : public TSNode {
   bool         is_missing()      const { return ts_node_is_missing(*this); }
   bool         is_extra()        const { return ts_node_is_extra(*this); }
 
-  bool         is_comment()      const { return ts_node_symbol(*this) == sym_comment; }
-  bool         is_decl()         const { return ts_node_symbol(*this) == sym_declaration; }
-  bool         is_field_decl()   const { return ts_node_symbol(*this) == sym_field_declaration; }
-  bool         is_func_decl()    const { return ts_node_symbol(*this) == sym_function_declarator; }
-  bool         is_expression()   const { return ts_node_symbol(*this) == sym_expression_statement; }
-  bool         is_call()         const { return ts_node_symbol(*this) == sym_call_expression; }
-  bool         is_function()     const { return ts_node_symbol(*this) == sym_function_definition; }
-  bool         is_assignment()   const { return ts_node_symbol(*this) == sym_assignment_expression; }
-  bool         is_field_id()     const { return ts_node_symbol(*this) == alias_sym_field_identifier; }
-  bool         is_field_expr()   const { return ts_node_symbol(*this) == sym_field_expression; }
+  bool is_identifier() const { return symbol() == sym_identifier; }
+  bool is_comment()    const { return symbol() == sym_comment; }
+  bool is_decl()       const { return symbol() == sym_declaration; }
+  bool is_field_decl() const { return symbol() == sym_field_declaration; }
+  bool is_func_decl()  const { return symbol() == sym_function_declarator; }
+  bool is_expression() const { return symbol() == sym_expression_statement; }
+  bool is_call()       const { return symbol() == sym_call_expression; }
+  bool is_function()   const { return symbol() == sym_function_definition; }
+  bool is_assignment() const { return symbol() == sym_assignment_expression; }
+  bool is_field_id()   const { return symbol() == alias_sym_field_identifier; }
+  bool is_field_expr() const { return symbol() == sym_field_expression; }
+  bool is_call_expr()  const { return symbol() == sym_call_expression; }
+  bool is_arglist()    const { return symbol() == sym_argument_list; }
 
   int          line()            const { return ts_node_start_point(*this).row; }
+
+  PNode        arglist()         const { auto r = get_field(field_arguments); CHECK_P(r.is_arglist()); return r; }
 
   PNode        parent()          const { return ts_node_parent(*this); }
   int          child_count()     const { return (int)ts_node_child_count(*this); }

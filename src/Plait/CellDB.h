@@ -63,20 +63,24 @@ struct DieCell {
   void set_gate(const std::string& _gate) { if (gate.empty()) gate = _gate; CHECK_P(gate == _gate); }
   //void set_args(const std::string& _args) { if (args.empty()) args = _args; CHECK_P(args == _args); }
   void set_name(const std::string& _name) {
-    if (name.empty() && _name == "ALUR") {
+    if (_name.starts_with("ALUR")) {
       int x = 1;
       x++;
     }
 
-    auto n = _name;
-    if (n.ends_with("_old")) n.resize(n.size() - 4);
-    if (n.ends_with("_new")) n.resize(n.size() - 4);
+    auto n = trim_name(_name);
     if (name.empty()) name = n;
     CHECK_P(name == n);
   }
-  void set_doc (const std::string& _doc)  { if (doc.empty())  doc  = _doc;  CHECK_P(doc  == _doc);  }
+  //void set_doc (const std::string& _doc)  { if (doc.empty())  doc  = _doc;  CHECK_P(doc  == _doc);  }
 
   void set_args(const std::vector<std::string>& _args) {
+
+    if (_args[0] == "sys_rst.AVOR_SYS_RSTp") {
+      int x = 1;
+      x++;
+    }
+
     if (cell_type == DieCellType::BUS) {
       input_ports.insert(input_ports.end(), _args.begin(), _args.end());
       return;
@@ -99,7 +103,7 @@ struct DieCell {
   std::string tag;  // The four-character tag used by Furrtek's schematic, or SIG/BUS/PIN/etc
   std::string gate; // The specific type of cell
   std::string name; // The descriptive name of this cell. Should include the tag.
-  std::string doc;  // Any comment string appended after the cell's declaration.
+  //std::string doc;  // Any comment string appended after the cell's declaration.
   //std::string args; // The inputs to the cell
 
   std::vector<std::string> input_ports;

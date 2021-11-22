@@ -12,7 +12,7 @@
 
 // AB CD EF GH
 #define DELTA_EVEN_new  ((sys.gb_phase_total & 1) == 1)
-// HA BC DE FG 
+// HA BC DE FG
 #define DELTA_ODD_new  ((sys.gb_phase_total & 1) == 0)
 
 #define DELTA_AB_new   ((sys.gb_phase_total & 7) == 1)
@@ -63,7 +63,7 @@ FieldInfo GateBoyCpu::fields[] = {
   DECLARE_FIELD(GateBoyCpu, core.reg.e),
   DECLARE_FIELD(GateBoyCpu, core.reg.d),
   DECLARE_FIELD(GateBoyCpu, core.reg.l),
-  DECLARE_FIELD(GateBoyCpu, core.reg.h), 
+  DECLARE_FIELD(GateBoyCpu, core.reg.h),
   DECLARE_FIELD(GateBoyCpu, core.reg.f),
   DECLARE_FIELD(GateBoyCpu, core.reg.a),
 
@@ -119,7 +119,7 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   CHECK_P(bit0(gb_state.sys_clk.ADYK_ABCxxxxH.qp_old()));
 
   sys.gb_phase_total = 0;
-  
+
   //----------------------------------------
   // Wait for SIG_CPU_START
 
@@ -712,7 +712,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
 
 
-  
+
 
 
 
@@ -924,7 +924,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p21.TUKY*/ reg_new.pix_count.TUKY_PX5p_odd.dff17_any(TOCA_new, TADY_LINE_RSTn_odd_new, SAKE_old);
     /*_p21.TAKO*/ reg_new.pix_count.TAKO_PX6p_odd.dff17_any(TOCA_new, TADY_LINE_RSTn_odd_new, TYGE_old);
     /*_p21.SYBE*/ reg_new.pix_count.SYBE_PX7p_odd.dff17_any(TOCA_new, TADY_LINE_RSTn_odd_new, ROKU_old);
-   
+
     get_sprite_match_flags_gates(AROR_MATCH_ENp_odd, reg_new.sprite_match_flags_odd); // this changes FEPO
   }
 
@@ -1015,14 +1015,14 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   /*#p27.ROZE*/ uint8_t ROZE_FINE_COUNT_7n_odd = nand3(reg_new.fine_count_odd.RUBU_FINE_CNT2_odd.qp_any(), reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.qp_any(), reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.qp_any());
   /*#p27.PECU*/ uint8_t PECU_FINE_CLK_odd = nand2(ROXO_CLKPIPE_evn_new, ROZE_FINE_COUNT_7n_odd);
-  
+
   /*#p27.RYKU*/ reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.dff17_any(PECU_FINE_CLK_odd,                               PASO_FINE_RST, reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.qn_any());
   /*#p27.ROGA*/ reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.dff17_any(reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.qn_any(), PASO_FINE_RST, reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.qn_any());
   /*#p27.RUBU*/ reg_new.fine_count_odd.RUBU_FINE_CNT2_odd.dff17_any(reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.qn_any(), PASO_FINE_RST, reg_new.fine_count_odd.RUBU_FINE_CNT2_odd.qn_any());
 
   ROZE_FINE_COUNT_7n_odd = nand3(reg_new.fine_count_odd.RUBU_FINE_CNT2_odd.qp_any(), reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.qp_any(), reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.qp_any());
   PECU_FINE_CLK_odd = nand2(ROXO_CLKPIPE_evn_new, ROZE_FINE_COUNT_7n_odd);
-  
+
   /*#p27.RYKU*/ reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.dff17_any(PECU_FINE_CLK_odd,                               PASO_FINE_RST, reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.qn_any());
   /*#p27.ROGA*/ reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.dff17_any(reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.qn_any(), PASO_FINE_RST, reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.qn_any());
   /*#p27.RUBU*/ reg_new.fine_count_odd.RUBU_FINE_CNT2_odd.dff17_any(reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.qn_any(), PASO_FINE_RST, reg_new.fine_count_odd.RUBU_FINE_CNT2_odd.qn_any());
@@ -1064,13 +1064,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   // SigOut SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
   // SigOut SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
-  // 
+  //
   // SigOut SIG_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
   // SigOut SIG_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
-  // 
+  //
   // SigOut SIG_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
   // SigOut SIG_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
-  // 
+  //
   // SigOut SIG_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
   // SigOut SIG_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
 
@@ -1109,7 +1109,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   if (DELTA_FG_new) {
 
     cpu.intf_latch = (uint8_t)bit_pack(reg_new.reg_if); // -EF +FG +GH -HA
-    if (bit0(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug    
+    if (bit0(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
 
 
     if (sys.cpu_en) {
@@ -1138,61 +1138,3 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

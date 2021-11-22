@@ -135,9 +135,15 @@ std::vector<std::string> split_args(const std::string& text) {
   return split(text, rx_split_args);
 }
 
+//-----------------------------------------------------------------------------
+
+
 std::string trim_name(std::string raw_name) {
   CHECK_P(!raw_name.empty());
-  static regex rx_trim(R"((_any|_new|_old|_mid|_odd|_evn|\(\)))");
+  //if (raw_name.ends_with("()")) {
+  //  raw_name.resize(raw_name.size() - 2);
+  //}
+  static regex rx_trim(R"((_sync|_async|_any|_new|_old|_mid|_odd|_evn|\(\)))");
   auto name = std::regex_replace(raw_name, rx_trim, "");
   return name;
 }
@@ -151,7 +157,7 @@ void from_json(const nlohmann::json& j, DieCell*& c) {
   c->tag          = j.value("tag",          "<no_tag>");
   c->gate         = j.value("gate",         "<no_gate>");
   c->name         = j.value("long_name",    "<no_name>");
-  c->doc          = j.value("doc",          "<no_doc>");
+  //c->doc          = j.value("doc",          "<no_doc>");
   c->input_ports  = j.value("input_ports",  std::vector<std::string>());
   c->output_ports = j.value("output_ports", std::vector<std::string>());
   c->fanout       = j.value("fanout",       0);
@@ -163,7 +169,7 @@ void to_json(nlohmann::json& j, const DieCell* c) {
   j["tag"]          = c->tag;
   j["gate"]         = c->gate;
   j["long_name"]    = c->name;
-  j["doc"]          = c->doc;
+  //j["doc"]          = c->doc;
   j["input_ports"]  = c->input_ports;
   j["output_ports"] = c->output_ports;
   j["fanout"]       = c->fanout;
@@ -466,12 +472,19 @@ bool DieDB::parse_dir(const std::string& path) {
 
   LOG_B("Parsing took %f msec\n", (parse_end - parse_begin) * 1000.0);
 
-  /*
   ConsoleDumper dumper;
-  for (auto& [tag, cell] : cell_map) {
-    cell->dump(dumper);
+  for (auto& [tag, cell] : cell_map) {  
+    CHECK_N(cell->flag.empty());
+    CHECK_N(cell->tag.empty());
+    CHECK_N(cell->name.empty());
+    CHECK_N(cell->gate.empty());
+
+    //if (cell->gate.empty()) cell->dump(dumper); // DFFs missing gates
+
+    for (auto& input : cell->input_ports) {
+      printf("%s\n", input.c_str());
+    }
   }
-  */
 
   //----------------------------------------
   // Postprocess the cells.
@@ -549,90 +562,14 @@ bool DieDB::parse_dir(const std::string& path) {
 
 //-----------------------------------------------------------------------------
 
-#if 0
-bool DieDB::parse_struct(PNode node, const char* src) {
-  //printf("parse_struct()\n");
-  node.dump(src);
-
-  for (auto i = 0; i < node.child_count(); i++) {
-    auto child = node.child(i);
-    if (!child.is_named()) continue;
-
-    switch(child.symbol()) {
-    case sym_struct_specifier:
-      break;
-    case alias_sym_type_identifier:
-      break;
-    case sym_field_declaration_list:
-      break;
-    case sym_base_class_clause:
-      break;
-    default:
-      child.print(src);
-      break;
-    }
-  }
-
-  //printf("\n");
-  return true;
-}
-/*
-for (auto i = 0; i < root.child_count(); i++) {
-  auto child = root.child(i);
-  if (!child.is_named()) continue;
-
-  switch(child.symbol()) {
-  case sym_comment:
-	break;
-  case sym_preproc_if:
-	break;
-  case sym_preproc_include:
-	break;
-  case sym_preproc_call:
-	break;
-  case sym_function_definition:
-	break;
-  case sym_struct_specifier:
-	break;
-  case sym_class_specifier:
-	break;
-  case sym_declaration:
-	break;
-  case sym_static_assert_declaration:
-	break;
-  case sym_template_declaration:
-	break;
-  default:
-	child.print(src);
-	CHECK_P(false);
-	break;
-  }
-}
-*/
-
-#endif
-
-//-----------------------------------------------------------------------------
-
-std::string& trim_oldnew(std::string& name) {
-  if (name.ends_with("_old")) name.resize(name.size() - 4);
-  if (name.ends_with("_new")) name.resize(name.size() - 4);
-  if (name.ends_with("_any")) name.resize(name.size() - 4);
-  return name;
-}
-
-//-----------------------------------------------------------------------------
-
 std::string lhs_to_identifier(PNode node, const char* src) {
   if (node.symbol() == sym_identifier) {
     auto name = node.body(src);
-    trim_oldnew(name);
-    return name;
+    return trim_name(name);
   }
   else if (node.symbol() == sym_field_expression) {
     auto name = node.get_field(field_field).body(src);
-    trim_oldnew(name);
-    return name;
+    return trim_name(name);
   }
   else {
     CHECK_P(false);
@@ -645,8 +582,8 @@ std::string lhs_to_identifier(PNode node, const char* src) {
 std::string argument_to_identifier(PNode node, const char* src) {
 	if (node.symbol() == sym_identifier) {
 		auto name = node.body(src);
-    trim_oldnew(name);
-    return name;
+    //trim_oldnew(name);
+    return trim_name(name);
 	}
 	else if (node.symbol() == sym_call_expression) {
 		return argument_to_identifier(node.get_field(field_function), src);
@@ -658,12 +595,7 @@ std::string argument_to_identifier(PNode node, const char* src) {
     }
     
 		auto suffix = node.get_field(field_field).body(src);
-
-    //if (suffix.ends_with("_old")) suffix.resize(suffix.size() - 4);
-    //if (suffix.ends_with("_new")) suffix.resize(suffix.size() - 4);
-    trim_oldnew(suffix);
-
-		return prefix.body(src) + "." + suffix;
+    return trim_name(suffix);
 	}
 	else {
 		CHECK_P(false);
@@ -717,21 +649,21 @@ bool DieDB::parse_header(const std::string& header_path) {
 
     smatch match;
     bool matched = false;
-    std::string flag;
-    std::string page;
-    std::string tag;
-    std::string name;
-    std::string gate;
-    std::string args;
-    std::string docs;
+    //std::string flag;
+    //std::string page;
+    //std::string tag;
+    //std::string name;
+    //std::string gate;
+    //std::string args;
+    //std::string docs;
 
     std::string s = node.body(src);
 
     if (regex_match(s, match, pin_tag)) {
       tag_count++;
-      flag = match[1].str();
-      page = match[2].str();
-      tag = match[3].str();
+      auto flag = match[1].str();
+      auto page = match[2].str();
+      auto tag = match[3].str();
       matched = true;
 
       auto cell = get_or_create_cell(tag);
@@ -740,15 +672,20 @@ bool DieDB::parse_header(const std::string& header_path) {
 
       auto decl = next.get_field(field_type).body(src);
       cell->set_type(decl_to_info(decl).cell_type);
+
+      auto name = next.get_field(field_declarator).body(src);
+      cell->set_name(name);
+
     }
     else if (regex_match(s, match, sig_tag)) {
       tag_count++;
-      flag = match[1].str();
-      page = match[2].str();
-      tag = match[3].str();
+      auto flag = match[1].str();
+      auto page = match[2].str();
+      auto tag = match[3].str();
       matched = true;
 
       auto cell = get_or_create_cell(tag);
+      cell->set_name(tag);
       cell->set_flag(flag);
       cell->set_page(page);
 
@@ -757,9 +694,9 @@ bool DieDB::parse_header(const std::string& header_path) {
     }
     else if (regex_match(s, match, bus_tag)) {
       tag_count++;
-      flag = match[1].str();
-      page = match[2].str();
-      tag = match[3].str();
+      auto flag = match[1].str();
+      auto page = match[2].str();
+      auto tag = match[3].str();
       matched = true;
 
       auto cell = get_or_create_cell(tag);
@@ -768,30 +705,47 @@ bool DieDB::parse_header(const std::string& header_path) {
 
       auto decl = next.get_field(field_type).body(src);
       cell->set_type(decl_to_info(decl).cell_type);
+
+      auto name = next.get_field(field_declarator).body(src);
+      cell->set_name(name);
     }
     else if (regex_match(s, match, cell_tag)) {
       tag_count++;
-      flag = match[1].str();
-      page = match[2].str();
-      tag = match[3].str();
+      auto flag = match[1].str();
+      auto page = match[2].str();
+      auto tag = match[3].str();
       matched = true;
 
       auto cell = get_or_create_cell(tag);
       cell->set_flag(flag);
       cell->set_page(page);
 
-      auto decl = next.get_field(field_type).body(src);
+      auto decl_type = next.get_field(field_type).body(src);
 
       if (next.get_field(field_declarator).symbol() == sym_function_declarator) {
-        CHECK_P(decl == "wire");
+        CHECK_P(decl_type == "wire");
         cell->set_type(DieCellType::LOGIC);
       }
       else if (next.get_field(field_declarator).symbol() == alias_sym_field_identifier) {
-        cell->set_type(decl_to_info(decl).cell_type);
+        cell->set_type(decl_to_info(decl_type).cell_type);
       }
       else {
         CHECK_P(false);
       }
+
+      auto decl_name = next.get_field(field_declarator);
+
+      if (decl_name.is_field_id()) {
+        cell->set_name(decl_name.body(src));
+      }
+      else if (decl_name.is_func_decl()) {
+        decl_name = decl_name.get_field(field_declarator);
+        cell->set_name(decl_name.body(src));
+      }
+      else {
+        CHECK_P(false);
+      }
+
     }
   }
 
@@ -841,13 +795,6 @@ bool DieDB::parse_source(const std::string& source_path) {
     if (node.symbol() == sym_expression_statement) node = node.child(0);
 
     smatch match;
-    std::string flag;
-    std::string page;
-    std::string tag;
-    std::string name;
-    std::string gate;
-    std::string args;
-    std::string docs;
 
     std::string s = tag_node.body(src);
 
@@ -912,14 +859,40 @@ bool DieDB::parse_source(const std::string& source_path) {
         cell->set_name(lhs_to_identifier(lhs, src));
         cell->set_gate(rhs.get_field(field_function).body(src));
         cell->set_args(arglist_to_args(rhs.get_field(field_arguments), src));
+      }
+      else if (node.is_call_expr()) {
+        //node.dump(src);
+        //printf("%s\n", s.c_str());
+        CHECK_P(!cell->name.empty());
         //cell->dump(dumper);
-      }
-      else if (node.symbol() == sym_call_expression) {
-      }
-      else if (node.symbol() == sym_return_statement) {
-        node.dump(src);
+
+        auto func = node.get_field(field_function);
+        CHECK_P(func.is_field_expr());
+        auto obj = func.get_field(field_argument);
+        auto gate = func.get_field(field_field);
+        CHECK_P(gate.is_field_id());
+        cell->set_gate(trim_name(gate.body(src)));
+
+
+        //cell->set_gate(rhs.get_field(field_function).body(src));
+        // 
+        //func.dump(src);
+        auto func_args = node.arglist();
       }
       else if (node.symbol() == sym_function_definition) {
+        auto func_decl = node.get_field(field_declarator);
+        auto func_name = func_decl.get_field(field_declarator).named_child(1);
+        CHECK_P(func_name.symbol() == sym_identifier);
+
+        auto func_return = node.get_field(field_body).named_child(0);
+        CHECK_P(func_return.symbol() == sym_return_statement);
+
+        auto ret_statement = func_return.named_child(0);
+        CHECK_P(ret_statement.symbol() == sym_call_expression);
+
+        cell->set_name(func_name.body(src));
+        cell->set_gate(ret_statement.get_field(field_function).body(src));
+        cell->set_args(arglist_to_args(ret_statement.get_field(field_arguments), src));
       }
       else {
         CHECK_P(false);
@@ -933,88 +906,8 @@ bool DieDB::parse_source(const std::string& source_path) {
 
   LOG_B("%d tags found\n", tag_count);
 
-  //printf("%5d %5d %s\n", tree.count_nodes(), tree.count_comments(), source_path.c_str());
-
-#if 0
-  std::ifstream lines(source_path);
-
-  for (string line; getline(lines, line); ) {
-    // Skip files that are tagged as 'noparse'
-    static regex rx_noparse("plait_noparse");
-    if (regex_search(line, rx_noparse)) {
-      //printf("Not parsing %s due to 'plait_noparse'\n", source_path.c_str());
-      break;
-    }
-
-    // Scrub whitespace from the line.
-    line = clean_line(line.c_str());
-    total_lines++;
-
-    // Split the line into the /*_pXX.XXXX*/ tag part and the remainder.
-    // If there is no tag, skip the line.
-    smatch match;
-    static regex rx_extract_tag(R"(^\/\*(.*?)\*\/)");
-    if (!regex_search(line, match, rx_extract_tag)) continue;
-    string whole_tag = match[1].str();
-    line = match.suffix();
-
-    static regex pin_tag(R"((.)()(PIN_\d{2}))");
-    static regex sig_tag(R"((.)()(SIG_\w+))");
-    static regex bus_tag(R"((.)()(BUS_\w+))");
-    static regex cell_tag(R"((.)(p[0-9]{2})\.([A-Z]{4}))");
-
-    bool found_match = false;
-    if (!found_match) found_match = regex_search(whole_tag, match, pin_tag);
-    if (!found_match) found_match = regex_search(whole_tag, match, sig_tag);
-    if (!found_match) found_match = regex_search(whole_tag, match, bus_tag);
-    if (!found_match) found_match = regex_search(whole_tag, match, cell_tag);
-    CHECK_P(found_match);
-
-    auto flag = match[1].str();
-    auto page = match[2].str();
-    auto tag = match[3].str();
-
-    auto cell = get_or_create_cell(tag);
-    CHECK_P(cell != nullptr);
-    cell->set_flag(flag);
-    cell->set_page(page);
-
-    static regex rx_decl(R"(\w+ (\w+);)");
-    static regex rx_assign(R"((\w+)=(\w+)\((.*)\);)");
-    static regex rx_method(R"((\w+)\(\)const\{return (\w+)\((.*)\);\})");
-    static regex rx_method_call(R"((\w+)\.(\w+)\((.*)\);)");
-
-    if (regex_search(line, match, rx_decl)) {
-      cell->set_name(trim_name(match[1].str()));
-      continue;
-    }
-
-    found_match = false;
-    if (!found_match) found_match = regex_search(line, match, rx_assign);
-    if (!found_match) found_match = regex_search(line, match, rx_method);
-    if (!found_match) found_match = regex_search(line, match, rx_method_call);
-    CHECK_P(found_match);
-
-    auto name = trim_name(match[1].str());
-    auto gate = trim_name(match[2].str());
-    auto args = trim_name(match[3].str());
-    auto docs = match.suffix().str();
-
-    cell->set_name(name);
-    cell->set_gate(gate);
-
-    if (cell->gate == "tri_bus") {
-      // Bus cells concatenate their args.
-      cell->args = cell->args + ", " + args;
-    }
-    else {
-      cell->set_args(args);
-    }
-
-    cell->set_doc(docs);
-  }
-#endif
-
   total_files++;
   return true;
 }
+
+//-----------------------------------------------------------------------------

@@ -59,6 +59,8 @@ struct PNode : public TSNode {
   bool is_field_expr() const { return symbol() == sym_field_expression; }
   bool is_call_expr()  const { return symbol() == sym_call_expression; }
   bool is_arglist()    const { return symbol() == sym_argument_list; }
+  bool is_return()     const { return symbol() == sym_return_statement; }
+  bool is_preproc_if() const { return symbol() == sym_preproc_if; }
 
   int          line()            const { return ts_node_start_point(*this).row; }
 
@@ -81,8 +83,8 @@ struct PNode : public TSNode {
 
   PNode get_field(TSFieldId field_id) const { return ts_node_child_by_field_id(*this, field_id); }
 
-  PNode get_type()       const { return get_field(field_type); }
-  PNode get_declarator() const { return get_field(field_declarator); }
+  PNode get_type_field()       const { return get_field(field_type); }
+  PNode get_declarator_field() const { return get_field(field_declarator); }
 
   void enqueue_children(std::deque<PNode>& queue) {
     for (auto i = 0; i < child_count(); i++) {

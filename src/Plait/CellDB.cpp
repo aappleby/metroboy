@@ -563,11 +563,11 @@ bool DieDB::parse_dir(const std::string& path) {
 //-----------------------------------------------------------------------------
 
 std::string lhs_to_identifier(PNode node, const char* src) {
-  if (node.symbol() == sym_identifier) {
+  if (node.is_identifier()) {
     auto name = node.body(src);
     return trim_name(name);
   }
-  else if (node.symbol() == sym_field_expression) {
+  else if (node.is_field_expr()) {
     auto name = node.get_field(field_field).body(src);
     return trim_name(name);
   }
@@ -580,17 +580,17 @@ std::string lhs_to_identifier(PNode node, const char* src) {
 //-----------------------------------------------------------------------------
 
 std::string argument_to_identifier(PNode node, const char* src) {
-	if (node.symbol() == sym_identifier) {
-		auto name = node.body(src);
+  if (node.is_identifier()) {
+    auto name = node.body(src);
     //trim_oldnew(name);
     return trim_name(name);
 	}
-	else if (node.symbol() == sym_call_expression) {
+	else if (node.is_call_expr()) {
 		return argument_to_identifier(node.get_field(field_function), src);
 	}
-	else if (node.symbol() == sym_field_expression) {
+	else if (node.is_field_expr()) {
     auto prefix = node.get_field(field_argument);
-    if (prefix.symbol() != sym_identifier) {
+    if (!prefix.is_identifier()) {
       prefix = prefix.get_field(field_field);
     }
     
@@ -606,7 +606,7 @@ std::string argument_to_identifier(PNode node, const char* src) {
 //-----------------------------------------------------------------------------
 
 std::vector<std::string> arglist_to_args(PNode node, const char* src) {
-	CHECK_P(node.symbol() == sym_argument_list);
+	CHECK_P(node.is_arglist());
 	std::vector<std::string> arg_names;
 	for (int i = 0; i < node.named_child_count(); i++) {
 		arg_names.push_back(argument_to_identifier(node.named_child(i), src));
@@ -722,11 +722,11 @@ bool DieDB::parse_header(const std::string& header_path) {
 
       auto decl_type = next.get_field(field_type).body(src);
 
-      if (next.get_field(field_declarator).symbol() == sym_function_declarator) {
+      if (next.get_field(field_declarator).is_func_decl()) {
         CHECK_P(decl_type == "wire");
         cell->set_type(DieCellType::LOGIC);
       }
-      else if (next.get_field(field_declarator).symbol() == alias_sym_field_identifier) {
+      else if (next.get_field(field_declarator).is_field_id()) {
         cell->set_type(decl_to_info(decl_type).cell_type);
       }
       else {
@@ -773,7 +773,7 @@ bool DieDB::parse_source(const std::string& source_path) {
     PNode tag_node = queue.front();
     queue.pop_front();
 
-    if (tag_node.symbol() == sym_preproc_if) {
+    if (tag_node.is_preproc_if()) {
       if (tag_node.get_field(field_condition).body(src) == "0") {
         continue;
       }
@@ -792,14 +792,14 @@ bool DieDB::parse_source(const std::string& source_path) {
 
     auto node_body = node.body(src);
 
-    if (node.symbol() == sym_expression_statement) node = node.child(0);
+    if (node.is_expression()) node = node.child(0);
 
     smatch match;
 
     std::string s = tag_node.body(src);
 
     if (regex_match(s, match, pin_tag)) {
-      CHECK_P(node.symbol() == sym_call_expression);
+      CHECK_P(node.is_call_expr());
       tag_count++;
       auto cell = get_cell(match[3].str());
       cell->set_flag(match[1].str());
@@ -809,7 +809,7 @@ bool DieDB::parse_source(const std::string& source_path) {
       cell->set_args(arglist_to_args(node.get_field(field_arguments), src));
     }
     else if (regex_match(s, match, sig_tag)) {
-      CHECK_P(node.symbol() == sym_call_expression);
+      CHECK_P(node.is_call_expr());
       tag_count++;
       auto cell = get_cell(match[3].str());
       cell->set_flag(match[1].str());
@@ -819,7 +819,7 @@ bool DieDB::parse_source(const std::string& source_path) {
       cell->set_args(arglist_to_args(node.get_field(field_arguments), src));
     }
     else if (regex_match(s, match, bus_tag)) {
-      CHECK_P(node.symbol() == sym_call_expression);
+      CHECK_P(node.is_call_expr());
       tag_count++;
       auto cell = get_cell(match[3].str());
       cell->set_flag(match[1].str());
@@ -834,7 +834,7 @@ bool DieDB::parse_source(const std::string& source_path) {
       cell->set_flag(match[1].str());
       cell->set_page(match[2].str());
 
-      if (node.symbol() == sym_declaration) {
+      if (node.is_decl()) {
         auto type = node.get_field(field_type).body(src);
 
         if (type == "wire" || type == "triwire" || type == "Adder" || type == "uint8_t") {
@@ -850,7 +850,7 @@ bool DieDB::parse_source(const std::string& source_path) {
           node.dump(src);
         }
       }
-      else if (node.symbol() == sym_assignment_expression) {
+      else if (node.is_assignment()) {
         auto lhs = node.get_field(field_left);
         auto rhs = node.get_field(field_right);
 
@@ -879,16 +879,16 @@ bool DieDB::parse_source(const std::string& source_path) {
         //func.dump(src);
         auto func_args = node.arglist();
       }
-      else if (node.symbol() == sym_function_definition) {
+      else if (node.is_function()) {
         auto func_decl = node.get_field(field_declarator);
         auto func_name = func_decl.get_field(field_declarator).named_child(1);
-        CHECK_P(func_name.symbol() == sym_identifier);
+        CHECK_P(func_name.is_identifier());
 
         auto func_return = node.get_field(field_body).named_child(0);
-        CHECK_P(func_return.symbol() == sym_return_statement);
+        CHECK_P(func_return.is_return());
 
         auto ret_statement = func_return.named_child(0);
-        CHECK_P(ret_statement.symbol() == sym_call_expression);
+        CHECK_P(ret_statement.is_call_expr());
 
         cell->set_name(func_name.body(src));
         cell->set_gate(ret_statement.get_field(field_function).body(src));

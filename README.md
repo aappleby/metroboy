@@ -6,6 +6,8 @@
 
 GateBoy is a **gate-level simulation** of the original Game Boy hardware that was [**reverse-engineered from die shots of the original DMG-01 chip**](https://siliconpr0n.org/map/nintendo/dmg-cpu-b/mz_mit20x/#x=9744&y=8000&z=3). It includes all the standard cells on the chip, minus the audio (too slow). It does not currently simulate the CPU at the gate level - it's made of custom logic and is a bit too blurry for me to decipher. GateBoy's CPU is instead my current best guess at how it might be implemented given the constraints implied by the rest of the chip.
 
+Precompiled builds with test ROMS and Plait data are here - https://github.com/aappleby/MetroBoy/releases/tag/GateBoy_v0.1.1
+
 GateBoy runs at around 6 to 8 frames per second in "fast mode" on a modern 4-ish ghz processor. That's quite horrible compared to an emulator, but pretty impressive for something that's simulating a few billion gates per second on a single core.
 
 I owe a **huge** amount of thanks to [Furrtek](https://github.com/furrtek) for his original [die traces](https://github.com/furrtek/DMG-CPU-Inside/blob/master/preview.png) and [schematics](https://github.com/furrtek/DMG-CPU-Inside) that served as a [Rosetta Stone](https://en.wikipedia.org/wiki/Rosetta_Stone) for getting the whole translation started. I've noted in the codebase where I found errors in the schematics - some have been reported back to Furrtek but there are still a lot of discrepancies.
@@ -15,10 +17,10 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
 ## GateBoy FAQ
 
 - How is this simulation connected to the Furrtek schematics?
-  - Furrtek assigned every gate on the die and in the schematic a 4-character code like "ASUR" or "BALY". Each of those gates has a corresponding line in the GateBoy source code. Lines in the source are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct.
+  - Furrtek assigned every gate on the die and in the schematic a 4-character code like "ASUR" or "BALY". Each of those gates has a corresponding line in the GateBoy source code. Lines in the source are tagged like this - `/*#p08.ASUR*/` - this means that gate ASUR (which happens to be a 2-mux) is on page 8 of the schematics, and the '#' indicates that I've manually traced the gate to verify that the schematic is correct. The tool Plait (described below) parses the GateBoy source code to verify that all tagged lines are internally consistent.
   - Here's a chunk of the unmodified die shot with ASUR in the middle - <img src="images/ASUR_context1.png" alt="drawing" width="100%"/>
   - Here's the same chunk with Furrtek's annotations - <img src="images/ASUR_context2.png" alt="drawing" width="100%"/>
-  - And here's a closeup - <img src="images/ASUR_traced.png" alt="drawing" width="100%"/>
+  - And here's a closeup showing the three inputs coming into the top "rungs" of the cell, and the output at the bottom - <img src="images/ASUR_traced.png" alt="drawing" width="100%"/>
   - which corresponds to this ASUR in Furrtek's schematic - <img src="images/ASUR_schematic.png" alt="drawing" width="100%"/>
   - which in turn gets translated to this ASUR in GateBoy's code - <img src="images/ASUR_code.png" alt="drawing" width="100%"/>
   - Repeat that a few thousand times, spend a year-ish debugging, and you get GateBoy. To give you a sense of scale, here's the whole die with a red dot covering ASUR - there are currently 2674 active cells in GateBoy, and another thousand-ish in the audio hardware that aren't being simulated - <img src="images/ASUR_die.png" alt="drawing" width="100%"/>
@@ -29,8 +31,8 @@ Big thanks are also owed to [Gekkio](https://github.com/gekkio) for his [Mooneye
   - There are probably a few plain old code bugs remaining as well. Right now one of the early screens in Zelda is doing something funny with the grass tiles...
 
 - Is GateBoy a perfect simulation of a Game Boy?
-  - Actually no, for complicated reasons. The Game Boy chip has a handful of logic gates that operate [independently of the master clock](https://en.wikipedia.org/wiki/Asynchronous_circuit) and whose exact behavior depends on things like [gate delay](https://en.wikipedia.org/wiki/Propagation_delay). These gates create [glitches](https://en.wikipedia.org/wiki/Glitch) that depend heavily on the physical placement of the gates, the silicon process used to make them, and other weird things like temperature and voltage.
-  - For example, there's a glitch in the external address bus logic that causes internal bus addresses like `0xFF20` to appear on the external bus even though the logic should prevent that. Due to input delays, not all of the inputs to gate `LOXO` (page 8 in the schematic) arrive at the same time. This causes `LOXO` to produce a glitch pulse that in turn causes latch `ALOR` to make a copy of one bit of the internal bus address. `ALOR` then drives that bit onto the external bus (through a few more gates) where it can be seen with an oscilloscope or logic analyzer.
+  - Actually no, for complicated reasons. The Game Boy chip has a handful of logic gates that operate [independently of the master clock](https://en.wikipedia.org/wiki/Asynchronous_circuit) and whose exact behavior depends on things like [gate delay](https://en.wikipedia.org/wiki/Propagation_delay), the physical distance from the gate to its inputs/outputs, the silicon process used to make them, and (in very strange circumstances) the temperature of the silicon and the voltage applied to the chip. These asynchronous gates can create [glitches](https://en.wikipedia.org/wiki/Glitch) that do strange things which can't be predicted just by looking at a schematic of the chip.
+  - For example, there's a glitch in the external address bus logic that causes internal bus addresses like `0xFF20` to appear on the external bus even though the logic should prevent that. Due to gate delays, not all of the inputs to gate `LOXO` (a combined AND-OR gate on page 8 in Furrtek's schematics) arrive at the same time. The differences in arrival time cause `LOXO` to produce a glitch pulse that in turn causes latch `ALOR` to make a copy of one bit of the internal bus address. `ALOR` then drives that bit onto the external bus (through a few more gates) where it can be seen with an oscilloscope or logic analyzer.
 
 - Wait, if glitches don't show up in the schematics then how did you figure that one out?
   - In this case we can deduce what's going on because we can see the side-effect of the glitch on the external bus and there's not that many possible ways that address signal could've gotten there.
@@ -65,7 +67,7 @@ All the code is cross-platform and has been tested under Windows 10, Windows 11,
 
 # What happened to MetroBoy?
 
-MetroBoy is/was a higher level Game Boy emulator. I got it to the point where it passed virtually all the available tests, and then hacked it up in various ways to help get GateBoy working. MetroBoy is currently broken, don't use it. It will be coming back eventually.
+MetroBoy is/was a higher level Game Boy emulator that I wrote from scratch before Furrtek released his schematics. I got it to the point where it passed virtually all the available tests, and then hacked it up in various ways to help get GateBoy working. MetroBoy is currently broken, don't use it. It will be coming back eventually.
 
 # What's Plait?
 

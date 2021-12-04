@@ -4,6 +4,8 @@ Update Dec 2021 - I've merged the "LogicBoy" branch into master. LogicBoy is a t
 
 A rewritten version of the "Metron" C++ to Verilog translator is now in this repo, currently unfinished. It's built on top of TreeSitter instead of LLVM, which is far easier to use though it seems to have a few bugs. Once it is able to translate LogicBoy into working Verilog, I'll publish a bit more about it.
 
+Plait is also getting rewritten to use TreeSitter, it's currently broken.
+
 Eventually I'll probably write a "Nortem" tool to translate Verilog back to C++, if I can figure out how TreeSitter grammars work sufficiently.
 
 ## GateBoy

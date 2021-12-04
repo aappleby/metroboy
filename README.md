@@ -1,4 +1,4 @@
-# This repo is the home of MetroBoy, GateBoy, and Plait.
+# This repo is the home of MetroBoy, GateBoy, LogicBoy, Metron, and Plait.... (yes, rather too many projects for one repo but they're very tightly interconnected)
 
 Update Dec 2021 - I've merged the "LogicBoy" branch into master. LogicBoy is a translation of GateBoy into more standard C++ idioms, while maintaining bit-identical behavior with the reference GateBoy model. It currently runs at 60+ fps instead of 6 fps in "fast" mode, with a few more optimization passes still left to go.
 

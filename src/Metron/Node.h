@@ -34,7 +34,7 @@ struct Node {
   }
 
   Node next() const {
-    TSNode s = ts_node_prev_sibling(tsnode);
+    TSNode s = ts_node_next_sibling(tsnode);
     return {
       s,
       depth,

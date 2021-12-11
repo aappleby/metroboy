@@ -9,115 +9,156 @@ public:
 
   //----------
 
-  uint8_t nr10 = 0;
-  uint8_t nr11 = 0;
-  uint8_t nr12 = 0;
-  uint8_t nr13 = 0;
+  uint8_t nr10;
+  uint8_t nr11;
+  uint8_t nr12;
+  uint8_t nr13;
+  uint8_t nr14;
 
-  uint8_t nr14 = 0;
-  uint8_t nr20 = 0;
-  uint8_t nr21 = 0;
-  uint8_t nr22 = 0;
+  uint8_t nr20;
+  uint8_t nr21;
+  uint8_t nr22;
+  uint8_t nr23;
+  uint8_t nr24;
 
-  uint8_t nr23 = 0;
-  uint8_t nr24 = 0;
-  uint8_t nr30 = 0;
-  uint8_t nr31 = 0;
+  uint8_t nr30;
+  uint8_t nr31;
+  uint8_t nr32;
+  uint8_t nr33;
+  uint8_t nr34;
 
-  uint8_t nr32 = 0;
-  uint8_t nr33 = 0;
-  uint8_t nr34 = 0;
-  uint8_t nr40 = 0;
+  uint8_t nr40;
+  uint8_t nr41;
+  uint8_t nr42;
+  uint8_t nr43;
+  uint8_t nr44;
 
-  uint8_t nr41 = 0;
-  uint8_t nr42 = 0;
-  uint8_t nr43 = 0;
-  uint8_t nr44 = 0;
+  uint8_t nr50;
+  uint8_t nr51;
+  uint8_t nr52;
 
-  uint8_t nr50 = 0;
-  uint8_t nr51 = 0;
-  uint8_t nr52 = 0;
-  uint8_t pad2 = 0;
+  uint8_t  s3_wave[16]; // FF30
+  uint16_t s4_lfsr;
 
-  uint8_t  s3_wave[16] = { 0 }; // FF30
-  uint16_t s4_lfsr = 0;
+  uint16_t spu_clock;
 
-  uint16_t spu_clock = 0;
+  bool s1_enable;
+  bool s2_enable;
+  bool s3_enable;
+  bool s4_enable;
 
-  bool s1_enable = 0;
-  bool s2_enable = 0;
-  bool s3_enable = 0;
-  bool s4_enable = 0;
+  uint8_t s1_sweep_clock;
+  uint16_t s1_sweep_freq;
 
-  uint8_t s1_sweep_clock = 0;
-  uint8_t pad1 = 0;
-  uint16_t s1_sweep_freq = 0;
+  uint8_t s1_duration;
+  uint8_t s2_duration;
+  uint16_t s3_duration;
 
-  uint8_t s1_duration = 0;
-  uint8_t s2_duration = 0;
-  uint16_t s3_duration = 0;
+  uint8_t s4_duration;
+  uint8_t s1_env_clock;
+  uint8_t s2_env_clock;
+  uint8_t s4_env_clock;
 
-  uint8_t s4_duration = 0;
-  uint8_t s1_env_clock = 0;
-  uint8_t s2_env_clock = 0;
-  uint8_t s4_env_clock = 0;
+  uint8_t s1_env_volume;
+  uint8_t s2_env_volume;
+  uint8_t s4_env_volume;
 
-  uint8_t s1_env_volume = 0;
-  uint8_t s2_env_volume = 0;
-  uint8_t s4_env_volume = 0;
-  uint8_t pad3 = 0;
+  uint16_t s1_phase_clock;
+  uint16_t s2_phase_clock;
+  uint16_t s3_phase_clock;
+  uint16_t s4_phase_clock;
 
-  uint16_t s1_phase_clock = 0;
-  uint16_t s2_phase_clock = 0;
-  uint16_t s3_phase_clock = 0;
-  uint16_t s4_phase_clock = 0;
+  uint8_t s1_phase;
+  uint8_t s2_phase;
+  uint8_t s3_phase;
+  uint8_t s1_out;
 
-  uint8_t s1_phase = 0;
-  uint8_t s2_phase = 0;
-  uint8_t s3_phase = 0;
-  uint8_t s1_out = 0;
+  uint8_t s2_out;
+  uint8_t s3_out;
+  uint8_t s4_out;
 
-  uint8_t s2_out = 0;
-  uint8_t s3_out = 0;
-  uint8_t s4_out = 0;
-  uint8_t pad4 = 0;
-
-  uint16_t out_r = 0;
-  uint16_t out_l = 0;
+  uint16_t out_r;
+  uint16_t out_l;
 };
 
 
 //-----------------------------------------------------------------------------
 
 void MetroBoySPU::reset() {
-  //*this = { 0 };
+  //*this = { 0 }; // triggers a bug in tree-sitter
 
   nr10 = 0x80;
   nr11 = 0xBF;
   nr12 = 0xF3;
   nr13 = 0xFF;
   nr14 = 0xBF;
+
   nr21 = 0x3F;
   nr22 = 0x00;
   nr23 = 0xFF;
   nr24 = 0xBF;
+
   nr30 = 0x7F;
   nr31 = 0xFF;
   nr32 = 0x9F;
   nr33 = 0xFF;
   nr34 = 0xBF;
+
   nr40 = 0x80;
   nr41 = 0xFF;
   nr42 = 0x00;
   nr43 = 0x00;
   nr44 = 0xBF;
+
   nr50 = 0x77;
   nr51 = 0xF3;
   nr52 = 0xF1;
 
+  for (int i = 0, j = 0; i < 16; i++) {
+    s3_wave[i] = 0;
+  }
+
   s4_lfsr = 0x7FFF;
 
-  s1_enable = true;
+  spu_clock = 0;
+
+  s1_enable = 0;
+  s2_enable = 0;
+  s3_enable = 0;
+  s4_enable = 0;
+
+  s1_sweep_clock = 0;
+  s1_sweep_freq = 0;
+
+  s1_duration = 0;
+  s2_duration = 0;
+  s3_duration = 0;
+
+  s4_duration = 0;
+  s1_env_clock = 0;
+  s2_env_clock = 0;
+  s4_env_clock = 0;
+
+  s1_env_volume = 0;
+  s2_env_volume = 0;
+  s4_env_volume = 0;
+
+  s1_phase_clock = 0;
+  s2_phase_clock = 0;
+  s3_phase_clock = 0;
+  s4_phase_clock = 0;
+
+  s1_phase = 0;
+  s2_phase = 0;
+  s3_phase = 0;
+  s1_out = 0;
+
+  s2_out = 0;
+  s3_out = 0;
+  s4_out = 0;
+
+  out_r = 0;
+  out_l = 0;
 }
 
 //-----------------------------------------------------------------------------

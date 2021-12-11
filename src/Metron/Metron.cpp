@@ -10,6 +10,7 @@
 #include <functional>
 #include "Node.h"
 #include "Utils.h"
+#include <stdarg.h>
 
 extern "C" {
   extern const TSLanguage* tree_sitter_cpp();
@@ -17,45 +18,6 @@ extern "C" {
 
 struct CodeEmitter;
 typedef std::function<void(CodeEmitter* self, Node n)> Visitor1;
-
-//------------------------------------------------------------------------------
-/*
-argument_list
-array_declarator
-assignment_expression
-auto
-binary_expression
-call_expression
-cast_expression
-compound_statement
-condition_clause
-conditional_expression
-declaration
-expression_statement
-field_expression
-for_statement
-function_declarator
-if_statement
-init_declarator
-initializer_list
-parameter_declaration
-parameter_list
-parenthesized_expression
-pointer_expression
-preproc_def
-preproc_function_def
-preproc_if
-preproc_include
-preproc_params
-qualified_identifier
-sizeof_expression
-subscript_expression
-translation_unit
-type_descriptor
-unary_expression
-update_expression
-while_statement 
-*/
 
 //------------------------------------------------------------------------------
 
@@ -95,9 +57,46 @@ TSNodeIt end(TSNode& parent) {
   return { parent, (int)ts_node_child_count(parent) };
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //------------------------------------------------------------------------------
 
 struct CodeEmitter {
+
+  blob src_blob;
+  const TSLanguage* lang = nullptr;
+  TSParser* parser = nullptr;
+  TSTree* tree = nullptr;
+  const char* source = nullptr;
+  TSNode root;
+  const char* cursor = nullptr;
+  FILE* out = stdout;
+
 
   const char* field_name(int field_id) {
     return field_id == -1 ? nullptr : ts_language_field_name_for_id(lang, field_id);
@@ -110,6 +109,7 @@ struct CodeEmitter {
     src_blob.push_back(0);
 
     source = (const char*)src_blob.data();
+    cursor = source;
     parser = ts_parser_new();
     lang = tree_sitter_cpp();
 
@@ -130,6 +130,40 @@ struct CodeEmitter {
     parser = nullptr;
     tree = nullptr;
     source = nullptr;
+  }
+
+  //----------------------------------------
+
+  void emit_span(const char* a, const char* b) {
+    fwrite(a, 1, b - a, out);
+  }
+
+  void emit(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    vfprintf(out, fmt, args);
+    va_end(args);
+  }
+
+  void emit_escaped(char s) {
+    if      (s == '\n') emit("\\n");
+    else if (s == '\r') emit("\\r");
+    else if (s == '\t') emit("\\t");
+    else if (s == '"')  emit("\\\"");
+    else if (s == '\\') emit("\\\\");
+    else                emit("%c", s);
+  }
+
+  void emit_escaped(const char* source, uint32_t a, uint32_t b) {
+    emit("\"");
+    for (; a < b; a++) {
+      emit_escaped(source[a]);
+    }
+    emit("\"");
+  }
+
+  void emit_escaped(const std::string& s) {
+    for (auto c : s) emit_escaped(c);
   }
 
   //----------------------------------------
@@ -170,33 +204,33 @@ struct CodeEmitter {
 
   void dump_node(Node n) {
     indent(n.depth);
-    printf("[%d] ", n.index);
+    emit("[%d] ", n.index);
 
-    if (n.field_id != -1) {
-      printf("%s.", field_name(n.field_id));
-    }
+    if (n.field_id != -1) emit("f%d ", n.field_id);
+    if (n.symbol() != -1) emit("s%d ", n.symbol());
+    if (n.field_id != -1) emit("%s.", field_name(n.field_id));
 
     if (n.is_branch()) {
-      printf("%s: ", n.type());
+      emit("%s: ", n.type());
     }
     else if (n.is_leaf()) {
-      printf("%s: ", n.type());
-      print_escaped(source, n.span_a, n.span_b);
+      emit("%s: ", n.type());
+      emit_escaped(source, n.span_a, n.span_b);
     }
     else if (n.is_null()) {
-      printf("text: ");
-      print_escaped(source, n.span_a, n.span_b);
+      emit("text: ");
+      emit_escaped(source, n.span_a, n.span_b);
     }
     else {
       // Unnamed nodes usually have their node body as their "type",
       // and their symbol is something like "aux_sym_preproc_include_token1"
-      printf("lit: ");
-      //printf("%d: ", n.symbol());
-      //printf("%s: ", n.type());
-      print_escaped(source, n.span_a, n.span_b);
+      emit("lit: ");
+      //emit("%d: ", n.symbol());
+      //emit("%s: ", n.type());
+      emit_escaped(source, n.span_a, n.span_b);
     }
 
-    printf("\n");
+    emit("\n");
   }
 
   //----------------------------------------
@@ -216,255 +250,227 @@ struct CodeEmitter {
     }
   }
 
-  blob src_blob;
-  const TSLanguage* lang = nullptr;
-  TSParser* parser = nullptr;
-  TSTree* tree = nullptr;
-  const char* source = nullptr;
-  TSNode root;
-
   //------------------------------------------------------------------------------
 
-  void advance_to(uint32_t& cursor, uint32_t end, const char* source) {
-    if (cursor < end) {
-      fwrite(&source[cursor], 1, end - cursor, stdout);
-      cursor = end;
-    }
-  }
+  typedef std::function<void(CodeEmitter*, TSNode)> ChunkVisitor;
 
-  //------------------------------------------------------------------------------
-
-  typedef std::function<void(CodeEmitter*, TSNode, const char* source)> ChunkVisitor;
-
-  void visit_chunks(TSNode n, const char* source, ChunkVisitor cv) {
-
-    auto cursor = ts_node_start_byte(n);
-
+  void visit_chunks(TSNode n, ChunkVisitor cv) {
     for (const auto& c : n) {
-      advance_to(cursor, ts_node_start_byte(c), source);
-      cv(this, c, source);
-      cursor = ts_node_end_byte(c);
+      cv(this, c);
     }
-
-    advance_to(cursor, ts_node_end_byte(n), source);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_raw_text(const char* a, const char* b) {
-    fwrite(a, 1, b - a, stdout);
+  const char* start(TSNode n) {
+    return &source[ts_node_start_byte(n)];
   }
 
-  void emit_body(TSNode n, const char* source) {
-    emit_raw_text(&source[ts_node_start_byte(n)], &source[ts_node_end_byte(n)]);
+  const char* end(TSNode n) {
+    return &source[ts_node_end_byte(n)];
   }
 
-  void emit_gap(TSNode a, TSNode b, const char* source) {
-    emit_raw_text(&source[ts_node_end_byte(a)], &source[ts_node_start_byte(b)]);
+  void emit_body(TSNode n) {
+    emit_span(cursor, end(n));
+    cursor = end(n);
   }
 
-  void emit_leaf(TSNode n, const char* source) {
+  void emit_leaf(TSNode n) {
     assert(!ts_node_is_null(n) && !ts_node_child_count(n));
-    emit_body(n, source);
+    emit_body(n);
   }
 
-  void emit_error(TSNode n, const char* source) {
+  //------------------------------------------------------------------------------
+
+  void emit_error(TSNode n) {
     if (ts_node_is_named(n)) {
-      printf("XXX %s ", ts_node_type(n));
-      printf("XXX");
-      emit_body(n, source);
-      printf("XXX");
+      emit("XXX %s ", ts_node_type(n));
+      emit("XXX");
+      emit_body(n);
+      emit("XXX");
     }
     else {
-      printf("XXXXXXX");
-      emit_body(n, source);
-      printf("XXXXXXX");
+      emit("XXXXXXX");
+      emit_body(n);
+      emit("XXXXXXX");
     }
-    printf("\n");
-    printf("\n");
+    emit("\n");
+    emit("\n");
     dump({ n, 0, 0, ts_node_start_byte(n), ts_node_end_byte(n), -1 });
-    printf("\n");
+    emit("\n");
+
+    cursor = end(n);
   }
 
-  void emit_placeholder(TSNode n, const char* source) {
+  //------------------------------------------------------------------------------
+
+  void emit_placeholder(TSNode n) {
     if (ts_node_is_named(n)) {
-      printf("%s ", ts_node_type(n));
-      printf("<<<");
-      emit_body(n, source);
-      printf(">>>");
+      emit("%s ", ts_node_type(n));
+      emit("<<<");
+      emit_body(n);
+      emit(">>>");
     }
     else {
-      printf("<<<");
-      emit_body(n, source);
-      printf(">>>");
+      emit("<<<");
+      emit_body(n);
+      emit(">>>");
     }
 
-    printf("\n");
-    printf("\n");
+    emit("\n");
+    emit("\n");
     dump({ n, 0, 0, ts_node_start_byte(n), ts_node_end_byte(n), -1 });
-    printf("\n");
+    emit("\n");
+
+    cursor = end(n);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_access_specifier(TSNode n, const char* source) {
-    printf("// %s", body(n, source).c_str());
+  void emit_access_specifier(TSNode n) {
+    emit("// ");
+    emit_body(n);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_comment(TSNode n, const char* source) {
-    printf("%s", body(n, source).c_str());
+  void emit_comment(TSNode n) {
+    emit_body(n);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_include(TSNode n, const char* source) {
+  void emit_include(TSNode n) {
     assert(ts_node_symbol(n) == sym_preproc_include);
-    auto path = body(ts_node_child_by_field_id(n, field_path), source);
+    auto path = std::string(start(n), end(n));
     static regex rx_trim(R"(\.h)");
     path = std::regex_replace(path, rx_trim, ".sv");
-    printf("`include %s\n", path.c_str());
+    emit("`include %s\n", path.c_str());
+    cursor = end(n);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_lvalue(TSNode n, const char* source) {
+  void emit_lvalue(TSNode n) {
     if (ts_node_symbol(n) == sym_identifier) {
-      emit_leaf(n, source);
+      emit_leaf(n);
     }
     else {
-      emit_error(n, source);
+      emit_error(n);
     }
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_rvalue(TSNode n, const char* source) {
-    emit_expression(n, source);
+  void emit_rvalue(TSNode n) {
+    emit_dispatch(n);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_binary_expression(TSNode n, const char* source) {
+  void emit_binary_expression(TSNode n) {
     auto exp_lv = ts_node_child(n, 0);
     auto exp_op = ts_node_child(n, 1);
     auto exp_rv = ts_node_child(n, 2);
 
-    emit_lvalue(exp_lv, source);
-    emit_gap(exp_lv, exp_op, source);
-    emit_leaf(exp_op, source);
-    emit_gap(exp_op, exp_rv, source);
-    emit_rvalue(exp_rv, source);
+    emit_lvalue(exp_lv);
+    emit_leaf(exp_op);
+    emit_rvalue(exp_rv);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_call_expression(TSNode n, const char* source) {
+  void emit_call_expression(TSNode n) {
 
     auto call_func = ts_node_child(n, 0);
     auto call_args = ts_node_child(n, 1);
 
-    emit_leaf(call_func, source);
+    emit_leaf(call_func);
 
-    visit_chunks(call_args, source, [&](CodeEmitter* ce, TSNode n, const char* source) {
-      if (ts_node_is_named(n)) {
-        emit_expression(n, source);
-      }
-      else {
-        emit_leaf(n, source);
-      }
-      });
-
+    visit_chunks(call_args, &CodeEmitter::emit_dispatch);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_number_literal(TSNode n, const char* source) {
-    emit_leaf(n, source);
+  void emit_number_literal(TSNode n) {
+    emit_leaf(n);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_return_statement(TSNode n, const char* source) {
+  void emit_return_statement(TSNode n) {
     auto ret_keyword = ts_node_child(n, 0);
     auto ret_expr = ts_node_child(n, 1);
     auto ret_tail = ts_node_child(n, 2);
 
-    emit_leaf(ret_keyword, source);
-    emit_gap(ret_keyword, ret_expr, source);
-    emit_expression(ret_expr, source);
-    emit_leaf(ret_tail, source);
+    emit_leaf(ret_keyword);
+    emit_dispatch(ret_expr);
+    emit_leaf(ret_tail);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_expression_statement(TSNode n, const char* source) {
+  void emit_expression_statement(TSNode n) {
     auto statement_body = ts_node_child(n, 0);
     auto statement_tail = ts_node_child(n, 1);
 
-    emit_expression(statement_body, source);
-    emit_leaf(statement_tail, source);
+    emit_dispatch(statement_body);
+    emit_leaf(statement_tail);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_function_arg(TSNode n, const char* source) {
+  void emit_function_arg(TSNode n) {
     auto param_type = ts_node_child_by_field_id(n, field_type);
     auto param_decl = ts_node_child_by_field_id(n, field_declarator);
 
-    emit_leaf(param_type, source);
-    emit_gap(param_type, param_decl, source);
-    emit_leaf(param_decl, source);
+    emit_leaf(param_type);
+    emit_leaf(param_decl);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_function_definition(TSNode n, const char* source) {
+  void emit_function_definition(TSNode n) {
 
     auto func_type = ts_node_child_by_field_id(n, field_type);
     auto func_decl = ts_node_child_by_field_id(n, field_declarator);
     auto func_body = ts_node_child_by_field_id(n, field_body);
 
-    printf("task %s", body(ts_node_child_by_field_id(func_decl, field_declarator), source).c_str());
+    auto task_name = ts_node_child_by_field_id(func_decl, field_declarator);
+    emit("task ");
+    emit_body(task_name);
 
     auto func_args = ts_node_child_by_field_id(func_decl, field_parameters);
-    visit_chunks(func_args, source, [&](CodeEmitter* ce, TSNode n, const char* source) {
+    visit_chunks(func_args, [&](CodeEmitter* ce, TSNode n) {
 
       if (ts_node_symbol(n) == sym_parameter_declaration) {
-        emit_function_arg(n, source);
+        emit_function_arg(n);
       }
       else {
-        emit_leaf(n, source);
+        emit_leaf(n);
       }
       });
 
-    printf(";");
-
-    auto cursor = ts_node_start_byte(func_body);
+    emit(";");
 
     for (uint32_t i = 0; i < ts_node_child_count(func_body); i++) {
       auto c = ts_node_child(func_body, i);
-      advance_to(cursor, ts_node_start_byte(c), source);
       if (i == 0) {
         // opening bracket
       }
       else if (i == ts_node_child_count(func_body) - 1) {
         // closing bracket
-        printf("endtask");
+        emit("endtask");
       }
       else {
-        emit_statement(c, source);
+        emit_dispatch(c);
       }
-      cursor = ts_node_end_byte(c);
     }
-
-    advance_to(cursor, ts_node_end_byte(func_body), source);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_field_declaration(TSNode n, const char* source) {
+  void emit_field_declaration(TSNode n) {
     if (ts_node_child_count(n) == 5) {
       auto ftype = ts_node_child_by_field_id(n, field_type);
       auto fdecl = ts_node_child_by_field_id(n, field_declarator);
@@ -472,157 +478,161 @@ struct CodeEmitter {
       auto val = ts_node_child(n, 3);
       auto ftail = ts_node_child(n, 4);
 
-      emit_body(ftype, source);
-      emit_gap(ftype, fdecl, source);
-      emit_body(fdecl, source);
-      emit_gap(fdecl, op, source);
-      emit_body(op, source);
-      emit_gap(op, val, source);
-      emit_expression(val, source);
-      emit_body(ftail, source);
+      emit_body(ftype);
+      emit_body(fdecl);
+      emit_body(op);
+      emit_dispatch(val);
+      emit_body(ftail);
     }
     else {
       auto ftype = ts_node_child_by_field_id(n, field_type);
       auto fdecl = ts_node_child_by_field_id(n, field_declarator);
       auto ftail = ts_node_child(n, 2);
 
-      emit_body(ftype, source);
-      emit_gap(ftype, fdecl, source);
-      emit_body(fdecl, source);
-      emit_body(ftail, source);
+      emit_body(ftype);
+      emit_body(fdecl);
+      emit_body(ftail);
     }
 
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_declaration(TSNode n, const char* source) {
-    emit_placeholder(n, source);
+  void emit_declaration(TSNode n) {
+    emit_placeholder(n);
   }
 
   //------------------------------------------------------------------------------
+  // class_specifier : class_head '{' [ member_specification ] '}'
 
-  void emit_class_specifier(TSNode n, const char* source) {
+  void emit_class_specifier(TSNode n) {
     auto node_class = ts_node_child(n, 0);
     auto node_name = ts_node_child(n, 1);
     auto node_body = ts_node_child(n, 2);
 
-    printf("module %s();", body(node_name, source).c_str());
+    emit("module ");
+    emit_body(node_name);
+    emit("(); ");
 
     auto cursor = ts_node_start_byte(node_body);
 
     for (uint32_t i = 0; i < ts_node_child_count(node_body); i++) {
       auto c = ts_node_child(node_body, i);
-      advance_to(cursor, ts_node_start_byte(c), source);
 
       if (i == 0) {
         // opening bracket
       }
       else if (i == ts_node_child_count(node_body) - 1) {
         // closing bracket
-        printf("endmodule");
+        emit("endmodule");
       }
       else if (ts_node_symbol(c) == sym_access_specifier) {
-        emit_access_specifier(c, source);
+        emit_access_specifier(c);
       }
       else if (ts_node_symbol(c) == sym_comment) {
-        emit_comment(c, source);
+        emit_comment(c);
       }
       else if (ts_node_symbol(c) == sym_field_declaration) {
-        emit_field_declaration(c, source);
+        emit_field_declaration(c);
       }
       else if (ts_node_symbol(c) == sym_function_definition) {
-        emit_function_definition(c, source);
+        emit_function_definition(c);
       }
       else {
-        emit_placeholder(c, source);
+        emit_placeholder(c);
       }
 
       cursor = ts_node_end_byte(c);
     }
-
-    advance_to(cursor, ts_node_end_byte(n), source);
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_statement(TSNode n, const char* source) {
+  void emit_for_statement(TSNode n) {
+    // for (initializer, condition, update) body
+
+    auto node_init = ts_node_child_by_field_id(n, field_initializer);
+    auto node_cond = ts_node_child_by_field_id(n, field_condition);
+    auto node_update = ts_node_child_by_field_id(n, field_update);
+    auto node_body = ts_node_child(n, ts_node_child_count(n) - 1);
+
+    emit_body(node_init);
+    emit_body(node_cond);
+    emit_body(node_update);
+    emit_body(node_body);
+  }
+
+  //------------------------------------------------------------------------------
+
+  void emit_dispatch(TSNode n) {
     if (ts_node_has_error(n)) {
-      emit_error(n, source);
+      emit_error(n);
     }
     else if (!ts_node_is_named(n)) {
-      emit_leaf(n, source);
+      emit_leaf(n);
     }
     else if (ts_node_symbol(n) == sym_class_specifier) {
-      emit_class_specifier(n, source);
+      emit_class_specifier(n);
     }
     else if (ts_node_symbol(n) == sym_comment) {
-      emit_comment(n, source);
+      emit_comment(n);
     }
     else if (ts_node_symbol(n) == sym_expression_statement) {
-      emit_expression_statement(n, source);
+      emit_expression_statement(n);
     }
     else if (ts_node_symbol(n) == sym_function_definition) {
-      emit_function_definition(n, source);
+      emit_function_definition(n);
     }
     else if (ts_node_symbol(n) == sym_preproc_if) {
-      // FIXME check condition?
+      // FIXME check preprocessor condition?
     }
     else if (ts_node_symbol(n) == sym_preproc_include) {
-      emit_include(n, source);
+      emit_include(n);
     }
     else if (ts_node_symbol(n) == sym_return_statement) {
-      emit_return_statement(n, source);
+      emit_return_statement(n);
     }
     else if (ts_node_symbol(n) == sym_declaration) {
-      emit_declaration(n, source);
+      emit_declaration(n);
     }
-    else {
-      emit_error(n, source);
-    }
-  }
-
-  //------------------------------------------------------------------------------
-
-  void emit_expression(TSNode n, const char* source) {
-    if (!ts_node_is_named(n)) {
-      emit_leaf(n, source);
+    else if (ts_node_symbol(n) == sym_for_statement) {
+      emit_for_statement(n);
     }
     else if (ts_node_symbol(n) == sym_number_literal) {
-      emit_number_literal(n, source);
+      emit_number_literal(n);
     }
     else if (ts_node_symbol(n) == sym_identifier) {
-      emit_leaf(n, source);
+      emit_leaf(n);
     }
     else if (ts_node_symbol(n) == sym_call_expression) {
-      emit_call_expression(n, source);
+      emit_call_expression(n);
     }
     else if (ts_node_symbol(n) == sym_binary_expression) {
-      emit_binary_expression(n, source);
+      emit_binary_expression(n);
     }
     else if (ts_node_symbol(n) == sym_assignment_expression) {
-      emit_binary_expression(n, source);
+      emit_binary_expression(n);
     }
     else if (ts_node_symbol(n) == sym_parenthesized_expression) {
-      visit_chunks(n, source, &CodeEmitter::emit_expression);
+      visit_chunks(n, &CodeEmitter::emit_dispatch);
     }
     else if (ts_node_symbol(n) == sym_true) {
-      emit_leaf(n, source);
+      emit_leaf(n);
     }
     else {
-      emit_placeholder(n, source);
+      emit_error(n);
     }
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_translation_unit(TSNode n, const char* source) {
-    printf("// ========= start =========\n\n");
+  void emit_translation_unit(TSNode n) {
+    emit("// ========= start =========\n\n");
 
-    visit_chunks(n, source, &CodeEmitter::emit_statement);
+    visit_chunks(n, &CodeEmitter::emit_dispatch);
 
-    printf("\n");
-    printf("// =========  end  =========\n");
+    emit("\n");
+    emit("// =========  end  =========\n");
   }
 };
 //------------------------------------------------------------------------------
@@ -634,9 +644,9 @@ int main(int argc, char** argv) {
   CodeEmitter e(filename);
 
   //e.emit({ e.root, 0, 0, ts_node_start_byte(e.root), ts_node_end_byte(e.root), -1 });
-  //printf("\n\n\n");
+  //emit("\n\n\n");
 
-  e.emit_translation_unit(e.root, e.source);
+  e.emit_translation_unit(e.root);
 
   return 0;
 }

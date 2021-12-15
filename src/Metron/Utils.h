@@ -54,7 +54,7 @@ inline std::string body(TSNode node, const char* src) {
 
 //------------------------------------------------------------------------------
 
-inline void emit_escaped(char s) {
+inline void print_escaped(char s) {
   if (s == '\n') printf("\\n");
   else if (s == '\r') printf("\\r");
   else if (s == '\t') printf("\\t");
@@ -66,18 +66,18 @@ inline void emit_escaped(char s) {
 inline void print_escaped(const char* source, uint32_t a, uint32_t b) {
   printf("\"");
   for (; a < b; a++) {
-    emit_escaped(source[a]);
+    print_escaped(source[a]);
   }
   printf("\"");
 }
 
 inline void print_escaped(const std::string& s) {
-  for (auto c : s) emit_escaped(c);
+  for (auto c : s) print_escaped(c);
 }
 
 
-inline void indent(int depth) {
-  for (int i = 0; i < depth; i++) printf("|   ");
-}
+//inline void indent(int depth) {
+//  for (int i = 0; i < depth; i++) printf("|   ");
+//}
 
 //------------------------------------------------------------------------------

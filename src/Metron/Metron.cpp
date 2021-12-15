@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
-#include <tree_sitter/api.h>
+#include "tree_sitter/api.h"
 #include <vector>
 #include <deque>
 #include <regex>
-#include <span>
+//#include <span>
 #include "../Plait/TreeSymbols.h"
 #include <functional>
 #include "Node.h"
@@ -95,7 +95,7 @@ struct CodeEmitter {
   const char* source = nullptr;
   TSNode root;
   const char* cursor = nullptr;
-  FILE* out = stdout;
+  FILE* out = nullptr;
 
 
   const char* field_name(int field_id) {
@@ -104,8 +104,10 @@ struct CodeEmitter {
 
   //----------------------------------------
 
-  CodeEmitter(const char* filename) {
-    src_blob = load_blob(filename);
+  CodeEmitter(const char* input_filename, const char* output_filename) {
+    out = fopen(output_filename, "wb");
+
+    src_blob = load_blob(input_filename);
     src_blob.push_back(0);
 
     source = (const char*)src_blob.data();
@@ -122,6 +124,9 @@ struct CodeEmitter {
   //----------------------------------------
 
   ~CodeEmitter() {
+    fclose(out);
+    out = nullptr;
+
     ts_tree_delete(tree);
     ts_parser_delete(parser);
 
@@ -135,13 +140,15 @@ struct CodeEmitter {
   //----------------------------------------
 
   void emit_span(const char* a, const char* b) {
-    fwrite(a, 1, b - a, out);
+    if (out) fwrite(a, 1, b - a, out);
+    fwrite(a, 1, b - a, stdout);
   }
 
   void emit(const char* fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    vfprintf(out, fmt, args);
+    if (out) vfprintf(out, fmt, args);
+    vfprintf(stdout, fmt, args);
     va_end(args);
   }
 
@@ -166,9 +173,21 @@ struct CodeEmitter {
     for (auto c : s) emit_escaped(c);
   }
 
+  void skip_over(TSNode n) {
+    emit_span(cursor, start(n));
+    cursor = end(n);
+  }
+
+  void advance_to(TSNode n) {
+    emit_span(cursor, start(n));
+    cursor = start(n);
+  }
+
   //----------------------------------------
 
   void visit_chunks(Node n, Visitor1 visitor) {
+    if (ts_node_is_null(n.tsnode)) return;
+
     auto child_count = ts_node_child_count(n.tsnode);
     if (child_count == 0) return;
 
@@ -202,52 +221,40 @@ struct CodeEmitter {
 
   //----------------------------------------
 
-  void dump_node(Node n) {
-    indent(n.depth);
-    emit("[%d] ", n.index);
+  void print_node(Node n) {
+    for (int i = 0; i < n.depth; i++) printf("|   ");
+    printf("[%d] ", n.index);
 
-    if (n.field_id != -1) emit("f%d ", n.field_id);
-    if (n.symbol() != -1) emit("s%d ", n.symbol());
-    if (n.field_id != -1) emit("%s.", field_name(n.field_id));
+    if (n.field_id != -1) printf("f%d ", n.field_id);
+    if (n.symbol() != -1) printf("s%d ", n.symbol());
+    if (n.field_id != -1) printf("%s.", field_name(n.field_id));
 
     if (n.is_branch()) {
-      emit("%s: ", n.type());
+      printf("%s: ", n.type());
     }
     else if (n.is_leaf()) {
-      emit("%s: ", n.type());
-      emit_escaped(source, n.span_a, n.span_b);
+      printf("%s: ", n.type());
+      print_escaped(source, n.span_a, n.span_b);
     }
     else if (n.is_null()) {
-      emit("text: ");
-      emit_escaped(source, n.span_a, n.span_b);
+      printf("text: ");
+      print_escaped(source, n.span_a, n.span_b);
     }
     else {
       // Unnamed nodes usually have their node body as their "type",
       // and their symbol is something like "aux_sym_preproc_include_token1"
-      emit("lit: ");
+      printf("lit: ");
       //emit("%d: ", n.symbol());
       //emit("%s: ", n.type());
-      emit_escaped(source, n.span_a, n.span_b);
+      print_escaped(source, n.span_a, n.span_b);
     }
 
-    emit("\n");
+    printf("\n");
+    visit_chunks(n, &CodeEmitter::print_node);
   }
 
-  //----------------------------------------
-
-  void dump(Node n) {
-    if (n.is_null()) {
-      dump_node(n);
-    }
-    else switch (n.symbol()) {
-    case sym_comment:
-      dump_node(n);
-      break;
-    default:
-      dump_node(n);
-      visit_chunks(n, &CodeEmitter::dump);
-      break;
-    }
+  void print_tsnode(TSNode n) {
+    print_node({ n, 0, 0, ts_node_start_byte(n), ts_node_end_byte(n), -1 });
   }
 
   //------------------------------------------------------------------------------
@@ -256,6 +263,8 @@ struct CodeEmitter {
 
   void visit_chunks(TSNode n, ChunkVisitor cv) {
     for (const auto& c : n) {
+      emit_span(cursor, start(c));
+      cursor = start(c);
       cv(this, c);
     }
   }
@@ -296,7 +305,7 @@ struct CodeEmitter {
     }
     emit("\n");
     emit("\n");
-    dump({ n, 0, 0, ts_node_start_byte(n), ts_node_end_byte(n), -1 });
+    print_tsnode(n);
     emit("\n");
 
     cursor = end(n);
@@ -319,7 +328,7 @@ struct CodeEmitter {
 
     emit("\n");
     emit("\n");
-    dump({ n, 0, 0, ts_node_start_byte(n), ts_node_end_byte(n), -1 });
+    print_tsnode(n);
     emit("\n");
 
     cursor = end(n);
@@ -328,6 +337,7 @@ struct CodeEmitter {
   //------------------------------------------------------------------------------
 
   void emit_access_specifier(TSNode n) {
+    advance_to(n);
     emit("// ");
     emit_body(n);
   }
@@ -342,11 +352,14 @@ struct CodeEmitter {
 
   void emit_include(TSNode n) {
     assert(ts_node_symbol(n) == sym_preproc_include);
-    auto path = std::string(start(n), end(n));
+
+    auto node_path = ts_node_child_by_field_id(n, field_path);
+
+    auto path = std::string(start(node_path), end(node_path));
     static regex rx_trim(R"(\.h)");
     path = std::regex_replace(path, rx_trim, ".sv");
     emit("`include %s\n", path.c_str());
-    cursor = end(n);
+    cursor = end(node_path);
   }
 
   //------------------------------------------------------------------------------
@@ -435,9 +448,21 @@ struct CodeEmitter {
     auto func_type = ts_node_child_by_field_id(n, field_type);
     auto func_decl = ts_node_child_by_field_id(n, field_declarator);
     auto func_body = ts_node_child_by_field_id(n, field_body);
-
     auto task_name = ts_node_child_by_field_id(func_decl, field_declarator);
-    emit("task ");
+
+    advance_to(func_type);
+
+    bool is_task = body(func_type, source) == "void";
+
+    if (is_task) {
+      skip_over(func_type);
+      emit("task");
+    }
+    else {
+      emit("function ");
+      emit_body(func_type);
+    }
+
     emit_body(task_name);
 
     auto func_args = ts_node_child_by_field_id(func_decl, field_parameters);
@@ -452,15 +477,24 @@ struct CodeEmitter {
       });
 
     emit(";");
+    //emit_dispatch(func_body);
 
-    for (uint32_t i = 0; i < ts_node_child_count(func_body); i++) {
+    for (int i = 0; i < (int)ts_node_child_count(func_body); i++) {
       auto c = ts_node_child(func_body, i);
-      if (i == 0) {
-        // opening bracket
+      auto s = ts_node_symbol(c);
+
+      if (s == anon_sym_LBRACE) {
+        skip_over(c);
+        //emit("begin");
       }
-      else if (i == ts_node_child_count(func_body) - 1) {
-        // closing bracket
-        emit("endtask");
+      else if (s == anon_sym_RBRACE) {
+        skip_over(c);
+        if (is_task) {
+          emit("endtask");
+        }
+        else {
+          emit("endfunction");
+        }
       }
       else {
         emit_dispatch(c);
@@ -471,35 +505,75 @@ struct CodeEmitter {
   //------------------------------------------------------------------------------
 
   void emit_field_declaration(TSNode n) {
-    if (ts_node_child_count(n) == 5) {
-      auto ftype = ts_node_child_by_field_id(n, field_type);
-      auto fdecl = ts_node_child_by_field_id(n, field_declarator);
-      auto op = ts_node_child(n, 2);
-      auto val = ts_node_child(n, 3);
-      auto ftail = ts_node_child(n, 4);
+    /*
+|   |   |   [2] s236 field_declaration:
+|   |   |   |   [0] f32 s78 type.primitive_type: "void"
+|   |   |   |   [1] text: " "
+|   |   |   |   [1] f9 s216 declarator.function_declarator:
+|   |   |   |   |   [0] f9 s392 declarator.field_identifier: "reset"
+|   |   |   |   |   [1] f24 s239 parameters.parameter_list:
+|   |   |   |   |   |   [0] s5 lit: "("
+|   |   |   |   |   |   [1] s8 lit: ")"
+|   |   |   |   [2] s39 lit: ";"
+    */
 
-      emit_body(ftype);
-      emit_body(fdecl);
-      emit_body(op);
-      emit_dispatch(val);
-      emit_body(ftail);
+    /*
+|   |   |   [5] s236 field_declaration:
+|   |   |   |   [0] f32 s78 type.primitive_type: "uint8_t"
+|   |   |   |   [1] text: " "
+|   |   |   |   [1] f9 s392 declarator.field_identifier: "nr10"
+|   |   |   |   [2] s39 lit: ";"
+    */
+
+    auto ftype = ts_node_child_by_field_id(n, field_type);
+    auto fdecl = ts_node_child_by_field_id(n, field_declarator);
+
+    if (ts_node_symbol(fdecl) == sym_function_declarator) {
+      advance_to(n);
+      emit("// ");
+      emit_body(n);
     }
     else {
-      auto ftype = ts_node_child_by_field_id(n, field_type);
-      auto fdecl = ts_node_child_by_field_id(n, field_declarator);
-      auto ftail = ts_node_child(n, 2);
+      if (ts_node_child_count(n) == 5) {
+        auto op = ts_node_child(n, 2);
+        auto val = ts_node_child(n, 3);
+        auto ftail = ts_node_child(n, 4);
 
-      emit_body(ftype);
-      emit_body(fdecl);
-      emit_body(ftail);
+        emit_body(ftype);
+        emit_body(fdecl);
+        emit_body(op);
+        emit_dispatch(val);
+        emit_body(ftail);
+      }
+      else {
+        auto ftail = ts_node_child(n, 2);
+
+        emit_body(ftype);
+        emit_body(fdecl);
+        emit_body(ftail);
+      }
     }
-
   }
 
   //------------------------------------------------------------------------------
 
   void emit_declaration(TSNode n) {
     emit_placeholder(n);
+  }
+
+  //------------------------------------------------------------------------------
+
+  void emit_named_children(TSNode n) {
+    for (uint32_t i = 0; i < ts_node_child_count(n); i++) {
+      auto c = ts_node_child(n, i);
+
+      if (!ts_node_is_named(c)) {
+        skip_over(c);
+      }
+      else {
+        emit_dispatch(c);
+      }
+    }
   }
 
   //------------------------------------------------------------------------------
@@ -510,40 +584,98 @@ struct CodeEmitter {
     auto node_name = ts_node_child(n, 1);
     auto node_body = ts_node_child(n, 2);
 
-    emit("module ");
+    skip_over(node_class);
+    emit("module");
+
     emit_body(node_name);
-    emit("(); ");
+    emit("(input logic clk, input logic rst); ");
 
-    auto cursor = ts_node_start_byte(node_body);
+    emit_named_children(node_body);
 
-    for (uint32_t i = 0; i < ts_node_child_count(node_body); i++) {
-      auto c = ts_node_child(node_body, i);
+    int cc = ts_node_named_child_count(node_body);
+    int indentation = ts_node_start_point(ts_node_named_child(node_body, cc-1)).column;
 
-      if (i == 0) {
-        // opening bracket
-      }
-      else if (i == ts_node_child_count(node_body) - 1) {
-        // closing bracket
-        emit("endmodule");
-      }
-      else if (ts_node_symbol(c) == sym_access_specifier) {
-        emit_access_specifier(c);
-      }
-      else if (ts_node_symbol(c) == sym_comment) {
-        emit_comment(c);
-      }
-      else if (ts_node_symbol(c) == sym_field_declaration) {
-        emit_field_declaration(c);
-      }
-      else if (ts_node_symbol(c) == sym_function_definition) {
-        emit_function_definition(c);
-      }
-      else {
-        emit_placeholder(c);
-      }
+    //for (int i = 0; i < indentation; i++) emit("#");
+    //emit("\n");
+    //for (int i = 0; i < indentation; i++) emit("#");
+    //emit("always_comb begin\n");
+    //for (int i = 0; i < indentation; i++) emit("#");
+    //emit("end\n");
 
-      cursor = ts_node_end_byte(c);
-    }
+    emit("endmodule");
+  }
+
+  //------------------------------------------------------------------------------
+
+  int get_indent(TSNode n) {
+    return ts_node_start_point(n).column;
+  }
+
+  //------------------------------------------------------------------------------
+
+  /*
+  [0] s245 if_statement:
+|   [0] s84 lit: "if"
+|   [1] text: " "
+|   [1] f7 s331 condition.condition_clause:
+|   |   [0] s5 lit: "("
+|   |   [1] f34 s261 value.binary_expression:
+|   |   |   [0] f19 s1 left.identifier: "count"
+|   |   |   [1] text: " "
+|   |   |   [1] f23 s31 operator.lit: "=="
+|   |   |   [2] text: " "
+|   |   |   [2] f29 s112 right.number_literal: "99"
+|   |   [2] s8 lit: ")"
+|   [2] text: " "
+|   [2] f8 s225 consequence.compound_statement:
+|   |   [0] s59 lit: "{"
+|   |   [1] text: "\r\n      "
+|   |   [1] s244 expression_statement:
+|   |   |   [0] s258 assignment_expression:
+|   |   |   |   [0] f19 s1 left.identifier: "count"
+|   |   |   |   [1] text: " "
+|   |   |   |   [1] f23 s63 operator.lit: "="
+|   |   |   |   [2] text: " "
+|   |   |   |   [2] f29 s112 right.number_literal: "0"
+|   |   |   [1] s39 lit: ";"
+|   |   [2] text: "\r\n    "
+|   |   [2] s60 lit: "}"
+|   [3] text: "\r\n    "
+|   [3] s85 lit: "else"
+|   [4] text: " "
+|   [4] f1 s225 alternative.compound_statement:
+|   |   [0] s59 lit: "{"
+|   |   [1] text: "\r\n      "
+|   |   [1] s244 expression_statement:
+|   |   |   [0] s258 assignment_expression:
+|   |   |   |   [0] f19 s1 left.identifier: "count"
+|   |   |   |   [1] text: " "
+|   |   |   |   [1] f23 s63 operator.lit: "="
+|   |   |   |   [2] text: " "
+|   |   |   |   [2] f29 s261 right.binary_expression:
+|   |   |   |   |   [0] f19 s1 left.identifier: "count"
+|   |   |   |   |   [1] text: " "
+|   |   |   |   |   [1] f23 s22 operator.lit: "+"
+|   |   |   |   |   [2] text: " "
+|   |   |   |   |   [2] f29 s112 right.number_literal: "1"
+|   |   |   [1] s39 lit: ";"
+|   |   [2] text: "\r\n    "
+|   |   [2] s60 lit: "}"
+*/
+
+  void emit_if_statement(TSNode n) {
+
+    auto node_cond = ts_node_child_by_field_id(n, field_condition);
+    auto node_then = ts_node_child_by_field_id(n, field_consequence);
+    auto node_else = ts_node_child_by_field_id(n, field_alternative);
+
+
+    //auto indent = get_indent(ts_node_child(n, 0));
+
+    advance_to(node_cond);
+    emit_dispatch(node_cond);
+    emit_dispatch(node_then);
+    emit_dispatch(node_else);
   }
 
   //------------------------------------------------------------------------------
@@ -564,12 +696,44 @@ struct CodeEmitter {
 
   //------------------------------------------------------------------------------
 
+  void emit_compound_statement(TSNode n) {
+    for (int i = 0; i < (int)ts_node_child_count(n); i++) {
+      auto c = ts_node_child(n, i);
+      auto s = ts_node_symbol(c);
+
+      if (s == anon_sym_LBRACE) {
+        skip_over(c);
+        emit("begin");
+      }
+      else if (s == anon_sym_RBRACE) {
+        skip_over(c);
+        emit("end");
+      }
+      else {
+        emit_dispatch(c);
+      }
+    }
+  }
+
+  //------------------------------------------------------------------------------
+
   void emit_dispatch(TSNode n) {
+    auto s = ts_node_symbol(n);
+
     if (ts_node_has_error(n)) {
-      emit_error(n);
+      //emit_error(n);
     }
     else if (!ts_node_is_named(n)) {
       emit_leaf(n);
+    }
+    else if (s == sym_field_declaration) {
+      emit_field_declaration(n);
+    }
+    else if (s == sym_access_specifier) {
+      emit_access_specifier(n);
+    }
+    else if (s == sym_if_statement) {
+      emit_if_statement(n);
     }
     else if (ts_node_symbol(n) == sym_class_specifier) {
       emit_class_specifier(n);
@@ -619,6 +783,9 @@ struct CodeEmitter {
     else if (ts_node_symbol(n) == sym_true) {
       emit_leaf(n);
     }
+    else if (s == sym_compound_statement) {
+      emit_compound_statement(n);
+    }
     else {
       emit_error(n);
     }
@@ -627,26 +794,27 @@ struct CodeEmitter {
   //------------------------------------------------------------------------------
 
   void emit_translation_unit(TSNode n) {
-    emit("// ========= start =========\n\n");
-
+    printf("// ========= start =========\n\n");
     visit_chunks(n, &CodeEmitter::emit_dispatch);
-
-    emit("\n");
-    emit("// =========  end  =========\n");
+    printf("// =========  end  =========\n");
   }
 };
 //------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
   //const char* filename = "src/GateBoyLib/GateBoy.h";
-  const char* filename = "src/Metron/parse_test.cpp";
+  const char* input_filename = "src/Metron/parse_test.cpp";
+  const char* output_filename = "src/Metron/parse_test.v";
 
-  CodeEmitter e(filename);
+  CodeEmitter e(input_filename, output_filename);
 
-  //e.emit({ e.root, 0, 0, ts_node_start_byte(e.root), ts_node_end_byte(e.root), -1 });
-  //emit("\n\n\n");
+  e.print_node({ e.root, 0, 0, ts_node_start_byte(e.root), ts_node_end_byte(e.root), -1 });
+
+  printf("\n\n");
 
   e.emit_translation_unit(e.root);
+
+  //system("yosys");
 
   return 0;
 }

@@ -31,6 +31,14 @@ struct Node {
         return child(i);
       }
     }
+    return {
+      {},
+      0,
+      0,
+      0,
+      0,
+      -1
+    };
   }
 
   Node next() const {

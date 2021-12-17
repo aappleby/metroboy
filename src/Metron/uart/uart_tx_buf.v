@@ -2,16 +2,9 @@
 
 //==============================================================================
 
-module rs232_tx(clk, resetn, tx_data_, tx_en_, out_tx, out_tx_busy);
+module uart_tx_buf(input clk, input resetn, input [7:0] tx_data_, input tx_en_, output wire out_tx, output wire out_tx_busy);
   parameter clocks_per_bit = 4;
   localparam cycle_reg_size = $clog2(clocks_per_bit);
-
-  input clk;
-  input resetn;
-  input [7:0] tx_data_;
-  input tx_en_;
-  output reg out_tx;
-  output reg out_tx_busy;
 
   reg[7:0] buffer[0:255];
   reg[7:0] cursorA, cursorA_;

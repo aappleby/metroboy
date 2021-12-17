@@ -163,6 +163,15 @@
     <None Include="metron_top.v" />
     <None Include="parse_test.tree" />
     <None Include="parse_test.v" />
+    <None Include="uart\blockram.v" />
+    <None Include="uart\message" />
+    <None Include="uart\uart_bench.v" />
+    <None Include="uart\uart_debug.v" />
+    <None Include="uart\uart_hello.v" />
+    <None Include="uart\uart_rx.v" />
+    <None Include="uart\uart_test.v" />
+    <None Include="uart\uart_tx.v" />
+    <None Include="uart\uart_tx_buf.v" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,7 +3,7 @@
 //==============================================================================
 // synthesizable "Hello World!" transmitter
 
-module rs232_hello(
+module uart_hello(
   input clk,
   input resetn,
   input tx_busy,

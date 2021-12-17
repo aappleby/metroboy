@@ -1,17 +1,10 @@
-3
 `timescale 1 ns / 1 ps
 
 //==============================================================================
 
-module rs232_rx(clk, resetn, in_serial, out_result, out_result_valid);
+module uart_rx(input clk, input resetn, input in_serial, output wire [7:0] out_result, output wire out_result_valid);
   parameter clocks_per_bit = 4;
   localparam cycle_reg_size = $clog2(clocks_per_bit);
-
-  input clk;
-  input resetn;
-  input in_serial;
-  output reg [7:0] out_result;
-  output reg out_result_valid;
 
   reg [3:0] window, window_;
   reg [cycle_reg_size - 1:0] cycle_count, cycle_count_;

@@ -23,17 +23,14 @@ module uart_top (
 
   logic[7:0] leds;
 
-  wire uart_tx;
-  wire uart_rx;
+  wire loopback;
   wire rx_valid;
   wire tx_en;
   wire tx_busy;
   wire message_sent;
 
-  assign uart_rx = uart_tx;
-
-  uart_rx #(clocks_per_bit) serial_in (CLK, resetn, uart_rx, rx_data, rx_valid);
-  uart_tx #(clocks_per_bit) serial_out(CLK, resetn, tx_data, tx_en, uart_tx, tx_busy);
+  uart_tx #(clocks_per_bit) serial_tx(CLK, resetn, tx_data, tx_en, loopback, tx_busy);
+  uart_rx #(clocks_per_bit) serial_rx(CLK, resetn, loopback, rx_data, rx_valid);
 
   uart_hello hello(CLK, resetn, tx_busy, tx_data, tx_en, message_sent);
 

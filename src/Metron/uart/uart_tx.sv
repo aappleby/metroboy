@@ -19,7 +19,6 @@ module uart_tx
 
   always_comb begin
     out_tx = latch[0];
-    out_tx_busy = |bit_count;
   end
 
   task reset();
@@ -41,6 +40,10 @@ module uart_tx
       latch <= { tx_data, 1'b0 };
       bit_count <= 9;
       cycle_count <= clocks_per_bit - 1;
+      out_tx_busy <= 1;
+    end
+    else begin
+      out_tx_busy <= 0;
     end
   endtask
 

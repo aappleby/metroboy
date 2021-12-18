@@ -30,6 +30,8 @@ module uart_bench;
     $write("timer %d\n", timer);
     wait(dut.message_sent);
     $write("timer %d\n", timer);
+
+    #10000;
     $finish;
   end
 

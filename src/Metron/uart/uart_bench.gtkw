@@ -1,0 +1,38 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Wed Dec 22 21:25:13 2021
+[*]
+[dumpfile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/Metron/uart/uart_bench.vcd"
+[dumpfile_mtime] "Wed Dec 22 21:24:25 2021"
+[dumpfile_size] 43073
+[savefile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/Metron/uart/uart_bench.gtkw"
+[timestart] 0
+[size] 2650 1104
+[pos] -1 -1
+*-17.481117 1904500 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] uart_bench.
+[sst_width] 214
+[signals_width] 252
+[sst_expanded] 1
+[sst_vpaned_height] 329
+@28
+uart_bench.dut.rst_n
+uart_bench.dut.ser_clk_1x
+uart_bench.dut.ser_clk_4x
+@200
+-
+@28
+uart_bench.dut.message_cursor[2:0]
+uart_bench.dut.ser_tx_data[7:0]
+uart_bench.dut.ser_idle
+uart_bench.dut.message_cursor[2:0]
+uart_bench.dut.ser_cts
+uart_bench.dut.ser_tx_en
+@22
+uart_bench.dut.ser_buf[8:0]
+@28
+uart_bench.dut.SER_TX
+@22
+uart_bench.dut.ser_count[4:0]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -1,90 +1,100 @@
+`ifndef UART_HELLO_SV
+`define UART_HELLO_SV
+`default_nettype none
 `timescale 1 ns / 1 ps
 
 //==============================================================================
-// synthesizable "Hello World!" transmitter
 
-module uart_hello(
-  input clk,
-  input resetn,
-  input tx_busy,
-  output [7:0] out_tx_data,
-  output out_tx_en,
-  output out_message_sent
+`default_nettype none
+`timescale 1 ns / 1 ps
+
+module uart_hello
+(
+  input logic clk,
+  input logic rst_n,
+  input logic in_tx_busy,
+  output logic [7:0] out_tx_data,
+  output logic out_tx_en,
+  output logic out_message_sent
 );
 
-  //----------
+  localparam message_len = 8;
 
-  reg [7:0] message[0:13];
-  initial $readmemh("message", message);
+  logic[7:0] message[0:7];
 
-  reg [2:0] state, state_;
-  reg [3:0] sent_count, sent_count_;
-  reg [7:0] next_char;
-  reg [7:0] tx_data, tx_data_;
-  reg tx_en, tx_en_;
-  reg message_sent, message_sent_;
+  initial begin
+    /*
+    message[0] = 8'h48;
+    message[1] = 8'h65;
+    message[2] = 8'h6c;
+    message[3] = 8'h6c;
+    message[4] = 8'h6f;
+    message[5] = 8'h21;
+    message[6] = 8'h21;
+    message[7] = 8'h21;
+    */
 
-  assign out_tx_data = tx_data;
-  assign out_tx_en = tx_en;
-  assign out_message_sent = message_sent;
-
-  //------------------------------------------
-
-  always @* begin
-    state_ = state;
-    sent_count_ = sent_count;
-    message_sent_ = message_sent;
-
-    tx_data_ = tx_data;
-    tx_en_ = tx_en;
-
-    case(state)
-    0: begin
-      // waiting for not busy
-      if (!tx_busy) begin
-        state_ = (sent_count == 14) ? 2 : 1;
-      end
-
-    end
-
-    1: begin
-      // waiting for busy
-      tx_data_ = next_char;
-      tx_en_ = 1;
-      if (tx_busy) begin
-        sent_count_ = sent_count + 1;
-        tx_en_ = 0;
-        state_ = 0;
-      end
-    end
-
-    2: message_sent_ = 1;
-    endcase
+    message[0] = 8'b00000001;
+    message[1] = 8'b00000010;
+    message[2] = 8'b00000011;
+    message[3] = 8'b00000100;
+    message[4] = 8'b00000101;
+    message[5] = 8'b00000110;
+    message[6] = 8'b00000111;
+    message[7] = 8'b00001000;
   end
 
-  //------------------------------------------
+  logic [3:0] cursor;
+  logic in_tx_busy_old;
+
+  logic busy;
+  logic done;
+
+  always_comb begin
+    out_tx_data = busy ? message[cursor] : 0;
+    out_tx_en = busy;
+    out_message_sent = done;
+  end
 
   always @(posedge clk) begin
-    if (!resetn) begin
-      state <= 0;
-      sent_count <= 0;
-      next_char <= message[0];
-      tx_data <= 0;
-      tx_en <= 0;
-      message_sent <= 0;
+    if (!rst_n) begin
+      busy <= 0;
+      done <= 0;
+      cursor <= 0;
+      in_tx_busy_old <= 0;
     end else begin
-      state <= state_;
-      sent_count <= sent_count_;
-      next_char <= message[sent_count];
-      tx_data <= tx_data_;
-      tx_en <= tx_en_;
-      message_sent <= message_sent_;
-      /*
-      if (state_ == 0) begin
-        repeat ($urandom % 9) @(posedge clk);
+      in_tx_busy_old <= in_tx_busy;
+
+      if (!done && !busy) begin
+        // Start state
+        if (!in_tx_busy) begin
+          busy <= 1;
+          done <= 0;
+          cursor <= 0;
+        end
+      end else if (!done && busy) begin
+        // Working state
+        if (in_tx_busy_old && !in_tx_busy) begin
+          if (cursor == message_len - 1) begin
+            busy <= 0;
+            done <= 1;
+            cursor <= 0;
+          end else begin
+            busy <= 1;
+            done <= 0;
+            cursor <= cursor + 1;
+          end
+        end
+      end else if (done && !busy) begin
+        // End state
+      end else if (done && busy) begin
+        // Invalid state
       end
-      */
     end
   end
 
 endmodule
+
+//==============================================================================
+
+`endif

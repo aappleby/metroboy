@@ -1,3 +1,6 @@
+`ifndef UART_TX_BUF_SV
+`define UART_TX_BUF_SV
+`default_nettype none
 `timescale 1 ns / 1 ps
 
 //==============================================================================
@@ -93,3 +96,5 @@ module uart_tx_buf(input clk, input resetn, input [7:0] tx_data_, input tx_en_, 
 endmodule
 
 //==============================================================================
+
+`endif

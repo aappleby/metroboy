@@ -1,12 +1,8 @@
 `ifndef UART_HELLO_SV
 `define UART_HELLO_SV
 `default_nettype none
-`timescale 1 ns / 1 ps
 
 //==============================================================================
-
-`default_nettype none
-`timescale 1 ns / 1 ps
 
 module uart_hello
 (
@@ -23,7 +19,6 @@ module uart_hello
   logic[7:0] message[0:7];
 
   initial begin
-    /*
     message[0] = 8'h48;
     message[1] = 8'h65;
     message[2] = 8'h6c;
@@ -31,17 +26,7 @@ module uart_hello
     message[4] = 8'h6f;
     message[5] = 8'h21;
     message[6] = 8'h21;
-    message[7] = 8'h21;
-    */
-
-    message[0] = 8'b00000001;
-    message[1] = 8'b00000010;
-    message[2] = 8'b00000011;
-    message[3] = 8'b00000100;
-    message[4] = 8'b00000101;
-    message[5] = 8'b00000110;
-    message[6] = 8'b00000111;
-    message[7] = 8'b00001000;
+    message[7] = 8'h0A;
   end
 
   logic [3:0] cursor;

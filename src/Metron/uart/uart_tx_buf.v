@@ -1,7 +1,6 @@
 `ifndef UART_TX_BUF_SV
 `define UART_TX_BUF_SV
 `default_nettype none
-`timescale 1 ns / 1 ps
 
 //==============================================================================
 

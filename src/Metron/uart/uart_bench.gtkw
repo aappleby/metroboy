@@ -1,38 +1,52 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Wed Dec 22 21:25:13 2021
+[*] Thu Dec 23 06:16:12 2021
 [*]
 [dumpfile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/Metron/uart/uart_bench.vcd"
-[dumpfile_mtime] "Wed Dec 22 21:24:25 2021"
-[dumpfile_size] 43073
+[dumpfile_mtime] "Thu Dec 23 06:08:08 2021"
+[dumpfile_size] 36028
 [savefile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/Metron/uart/uart_bench.gtkw"
 [timestart] 0
-[size] 2650 1104
-[pos] -1 -1
-*-17.481117 1904500 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 2061 1385
+[pos] -943 -320
+*-14.644325 77900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] uart_bench.
 [sst_width] 214
-[signals_width] 252
+[signals_width] 233
 [sst_expanded] 1
-[sst_vpaned_height] 329
+[sst_vpaned_height] 428
 @28
-uart_bench.dut.rst_n
+uart_bench.clk
+uart_bench.rst_n
+@200
+-
+@29
 uart_bench.dut.ser_clk_1x
-uart_bench.dut.ser_clk_4x
+@22
+uart_bench.dut.message_cursor[3:0]
+uart_bench.dut.ser_tx_data[7:0]
+@28
+uart_bench.dut.ser_tx_en
 @200
 -
 @28
-uart_bench.dut.message_cursor[2:0]
-uart_bench.dut.ser_tx_data[7:0]
-uart_bench.dut.ser_idle
-uart_bench.dut.message_cursor[2:0]
+uart_bench.dut.ser_clk_1x
 uart_bench.dut.ser_cts
-uart_bench.dut.ser_tx_en
-@22
-uart_bench.dut.ser_buf[8:0]
-@28
-uart_bench.dut.SER_TX
+uart_bench.dut.ser_idle
 @22
 uart_bench.dut.ser_count[4:0]
+uart_bench.dut.ser_buf[7:0]
+@28
+uart_bench.dut.SER_TX
+@200
+-
+@28
+uart_bench.dut.ser_clk_4x
+uart_bench.dut.rx_cycle_count[1:0]
+@22
+uart_bench.dut.rx_bit_count[3:0]
+uart_bench.dut.out_data[7:0]
+@28
+uart_bench.dut.out_valid
 [pattern_trace] 1
 [pattern_trace] 0

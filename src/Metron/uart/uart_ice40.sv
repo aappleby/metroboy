@@ -1,7 +1,6 @@
 `ifndef UART_BENCH_SV
 `define UART_BENCH_SV
 `default_nettype none
-`timescale 1 ns / 1 ps
 
 `include "uart_top.sv"
 
@@ -68,7 +67,7 @@ module uart_ice40(
 
   localparam pll_clk_rate    = 24000000;
   localparam ser_clk_rate_4x = 300 * 4;
-  localparam ser_clk_rate_1x =     300;
+  localparam ser_clk_rate_1x = 300;
 
   logic       ser_clk_4x;
   logic[31:0] ser_clk_4x_div;

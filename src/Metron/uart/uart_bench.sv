@@ -1,7 +1,7 @@
 `ifndef UART_BENCH_SV
 `define UART_BENCH_SV
 `default_nettype none
-`timescale 1 ns / 1 ps
+`timescale 1 ns / 1 ns
 
 `include "uart_top.sv"
 
@@ -14,11 +14,11 @@
 module uart_bench;
 
   // 12 mhz clock
-  logic clk = 0;
-  always #1 clk = ~clk;
+  logic clk;
+  always #125 clk = ~clk;
 
   logic[2:0] clk_div;
-  logic[3:0] rst_counter = 15;
+  logic[3:0] rst_counter;
   always @(posedge clk) begin
     clk_div <= clk_div + 1;
     if (rst_counter) rst_counter <= rst_counter - 1;
@@ -40,27 +40,21 @@ module uart_bench;
   //uart_top #(clock_rate, clocks_per_bit) dut(clk, rst_n, leds);
 
   initial begin
-    clk_div = 0;
-    //counter = 0;
     $dumpfile("uart_bench.vcd");
     $dumpvars(0, uart_bench);
 
-    //wait(counter == 6);
-    #2000;
+    clk = 0;
+    clk_div = 0;
+    rst_counter = 15;
 
+    #200000;
+    $write("\n");
     $finish;
   end
 
-  /*
-  logic[31:0] counter;
   always @(posedge clk) begin
-    if (dut.rx_valid) begin
-      //counter <= counter + 1;
-      $write("%d %c\n", counter, dut.rx_data);
-      $fflush();
-    end
+    if (dut.out_valid) $write("%c", dut.out_data);
   end
-  */
 
 endmodule
 

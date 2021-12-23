@@ -1,7 +1,6 @@
 `ifndef UART_TOP_SV
 `define UART_TOP_SV
 `default_nettype none
-`timescale 1 ns / 1 ps
 
 `include "uart_rx.sv"
 `include "uart_tx.sv"
@@ -44,40 +43,47 @@ module uart_top
   assign LEDS = tx_data;
   */
 
+  localparam clocks_per_bit = 4;
+
   //----------------------------------------
 
   logic ser_cts;
   logic ser_idle;
   logic[4:0] ser_count;
-  logic[8:0] ser_buf;
+  logic[7:0] ser_buf;
+
   logic[7:0] ser_tx_data;
   logic ser_tx_en;
 
-  always_ff @(posedge ser_clk_1x, negedge rst_n) begin
+  always @(posedge ser_clk_1x, negedge rst_n) begin
     if (!rst_n) begin
-      ser_count = 0;
-      ser_buf   = 10'b111111111;
-    end else begin
-      if (ser_cts && ser_tx_en) begin
-        ser_count = 17;
-        ser_buf   = ser_tx_data << 1;
-    end else if (ser_count) begin
-        ser_count = ser_count - 1;
-        ser_buf   = 9'h100 | (ser_buf >> 1);
-      end
+      ser_cts   <= 1;
+      ser_idle  <= 1;
+      ser_count <= 0;
+      ser_buf   <= 8'hFF;
+      SER_TX    <= 1;
     end
-  end
-
-  always_comb begin
-    ser_cts   = (ser_count <= 9);
-    ser_idle  = (ser_count == 0);
+    else if (ser_cts && ser_tx_en) begin
+      ser_cts   <= 0;
+      ser_idle  <= 0;
+      ser_count <= 16;
+      ser_buf   <= ser_tx_data;
+      SER_TX    <= 0;
+    end
+    else if (ser_count) begin
+      if (ser_count == 9) ser_cts <= 1;
+      if (ser_count == 1) ser_idle <= 1;
+      ser_count <= ser_count - 1;
+      ser_buf   <= 8'h80 | (ser_buf >> 1);
+      SER_TX    <= ser_buf[0];
+    end
   end
 
   //----------------------------------------
 
   localparam message_len = 8;
   logic[7:0] message[0:7];
-  logic[2:0] message_cursor;
+  logic[3:0] message_cursor = 0;
 
   initial begin
     message[0] = 8'h48;
@@ -87,35 +93,39 @@ module uart_top
     message[4] = 8'h6f;
     message[5] = 8'h21;
     message[6] = 8'h21;
-    message[7] = 8'h20;
+    message[7] = 8'h0A;
   end
 
-  always @(posedge ser_clk_1x, negedge rst_n) begin
+  // FIXME this doesn't work at 4x
+  always_ff @(posedge ser_clk_1x, negedge rst_n) begin
     if (!rst_n) begin
-      ser_tx_en = 0;
-      message_cursor = 0;
+      ser_tx_en <= 0;
+      message_cursor <= message_len;
     end else begin
+
       if (ser_idle) begin
-        ser_tx_en = 1;
-        message_cursor = 0;
+        ser_tx_en <= 1;
+        message_cursor <= 0;
       end else begin
         if (ser_cts && !ser_tx_en) begin
           if (message_cursor < message_len - 1) begin
-            message_cursor = message_cursor + 1;
-            ser_tx_en = 1;
+            ser_tx_en <= 1;
+            message_cursor <= message_cursor + 1;
+          end else begin
+            ser_tx_en <= 0;
+            if (message_cursor < message_len) message_cursor <= message_cursor + 1;
           end
         end else if (ser_tx_en && !ser_cts) begin
-          ser_tx_en = 0;
+          ser_tx_en <= 0;
         end
       end
     end
   end
 
   always_comb begin
-    ser_tx_data = ser_tx_en ? message[message_cursor] : 0;
+    if (message_cursor < message_len) ser_tx_data = message[message_cursor];
+    else ser_tx_data = 0;
   end
-
-  assign SER_TX = ser_buf[0];
 
   //----------------------------------------
 
@@ -126,27 +136,27 @@ module uart_top
 
   always @(posedge ser_clk_4x, negedge rst_n) begin
     if (!rst_n) begin
-      rx_cycle_count <= 0;
-      rx_bit_count <= 0;
-      out_data <= 0;
+      rx_cycle_count <= clocks_per_bit - 1;
+      rx_bit_count <= 9;
+      out_data <= 8'hFF;
       out_valid <= 0;
     end
     else begin
-      if (rx_cycle_count != 0) begin
-        rx_cycle_count <= rx_cycle_count - 1;
-        out_valid <= 0;
+      out_valid <= 0;
+
+      if (rx_cycle_count != clocks_per_bit - 1) begin
+        rx_cycle_count <= rx_cycle_count + 1;
       end
-      else if (rx_bit_count != 0) begin
+      else if (rx_bit_count != 9) begin
         out_data <= {SER_TX, out_data[7:1]};
-        rx_cycle_count <= 3;
-        rx_bit_count <= rx_bit_count - 1;
-        out_valid <= (rx_bit_count == 2);
+        if (rx_bit_count == 7) out_valid <= 1;
+        rx_cycle_count <= 0;
+        rx_bit_count <= rx_bit_count + 1;
       end
       else if (SER_TX == 0) begin
-        rx_cycle_count <= 3;
-        rx_bit_count <= 9;
-        out_data <= 8'bxxxxxxxx;
-        out_valid <= 0;
+        out_data <= {SER_TX, out_data[7:1]};
+        rx_cycle_count <= 0;
+        rx_bit_count <= 0;
       end
     end
   end

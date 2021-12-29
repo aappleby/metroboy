@@ -68,22 +68,22 @@ module uart_top
     else begin
       if (tx_cts && tx_req) begin
         tx_cycle <= clocks_per_bit - 1;
-        tx_bit  <= 16;
-        tx_buf   <= { tx_data, 1'b0 };
+        tx_bit <= 16;
+        tx_buf <= tx_data << 1;
       end else begin
-        if (tx_bit > 0 && tx_cycle == 0) begin
+        if (tx_bit && !tx_cycle) begin
           tx_bit <= tx_bit - 1;
           tx_cycle <= clocks_per_bit - 1;
-          tx_buf <= { 1'b1, tx_buf[8:1] };
+          tx_buf <= (tx_buf >> 1) | 9'h100;
         end else begin
-          if (tx_cycle > 0) tx_cycle <= tx_cycle - 1;
+          if (tx_cycle) tx_cycle <= tx_cycle - 1;
         end
       end
     end
   end
 
   always_comb begin
-    SER_TX = tx_buf[0];
+    SER_TX  = tx_buf[0];
     tx_cts  = (tx_bit <= 7) && (tx_cycle <= 1);
     tx_idle = (tx_bit == 0) && (tx_cycle <= 1);
   end
@@ -150,17 +150,17 @@ module uart_top
       rx_bit <= 0;
       out_data <= 0;
     end else begin
-      if (rx_bit == 0 && rx_cycle == 0) begin
-        if (!SER_TX) begin
-          rx_bit <= 9;
-          rx_cycle <= clocks_per_bit - 1;
-        end
-      end else begin
-        rx_cycle <= rx_cycle ? rx_cycle - 1 : clocks_per_bit - 1;
-        if (!rx_cycle) begin
-          rx_bit <= rx_bit - 1;
-          out_data <= {SER_TX, out_data[7:1]};
-        end
+      if (rx_cycle) begin
+        rx_cycle <= rx_cycle - 1;
+      end
+      else if (rx_bit) begin
+        rx_cycle <= clocks_per_bit - 1;
+        rx_bit <= rx_bit - 1;
+        out_data <= {SER_TX, out_data[7:1]};
+      end
+      else if (!SER_TX) begin
+        rx_bit <= 9;
+        rx_cycle <= clocks_per_bit - 1;
       end
     end
   end

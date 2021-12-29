@@ -1,50 +1,61 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Thu Dec 23 06:16:12 2021
+[*] Wed Dec 29 06:16:23 2021
 [*]
 [dumpfile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/Metron/uart/uart_bench.vcd"
-[dumpfile_mtime] "Thu Dec 23 06:08:08 2021"
-[dumpfile_size] 36028
+[dumpfile_mtime] "Wed Dec 29 06:16:03 2021"
+[dumpfile_size] 116285
 [savefile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/Metron/uart/uart_bench.gtkw"
 [timestart] 0
-[size] 2061 1385
-[pos] -943 -320
-*-14.644325 77900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 2654 1132
+[pos] -1 -1
+*-11.644325 1470 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] uart_bench.
 [sst_width] 214
-[signals_width] 233
+[signals_width] 262
 [sst_expanded] 1
-[sst_vpaned_height] 428
+[sst_vpaned_height] 184
 @28
-uart_bench.clk
+uart_bench.dut.ser_clk
 uart_bench.rst_n
 @200
 -
-@29
-uart_bench.dut.ser_clk_1x
 @22
 uart_bench.dut.message_cursor[3:0]
-uart_bench.dut.ser_tx_data[7:0]
+@820
+uart_bench.dut.tx_data[7:0]
 @28
-uart_bench.dut.ser_tx_en
+uart_bench.dut.tx_req
 @200
 -
+@25
+uart_bench.dut.tx_bit[4:0]
+@24
+uart_bench.dut.tx_cycle[1:0]
 @28
-uart_bench.dut.ser_clk_1x
-uart_bench.dut.ser_cts
-uart_bench.dut.ser_idle
-@22
-uart_bench.dut.ser_count[4:0]
-uart_bench.dut.ser_buf[7:0]
+uart_bench.dut.tx_cts
+uart_bench.dut.tx_idle
+@c00820
+#{uart_bench.dut.tx_buf[8:1]} (0)uart_bench.dut.tx_buf[8:0] (1)uart_bench.dut.tx_buf[8:0] (2)uart_bench.dut.tx_buf[8:0] (3)uart_bench.dut.tx_buf[8:0] (4)uart_bench.dut.tx_buf[8:0] (5)uart_bench.dut.tx_buf[8:0] (6)uart_bench.dut.tx_buf[8:0] (7)uart_bench.dut.tx_buf[8:0]
+@28
+(0)uart_bench.dut.tx_buf[8:0]
+(1)uart_bench.dut.tx_buf[8:0]
+(2)uart_bench.dut.tx_buf[8:0]
+(3)uart_bench.dut.tx_buf[8:0]
+(4)uart_bench.dut.tx_buf[8:0]
+(5)uart_bench.dut.tx_buf[8:0]
+(6)uart_bench.dut.tx_buf[8:0]
+(7)uart_bench.dut.tx_buf[8:0]
+@1401200
+-group_end
 @28
 uart_bench.dut.SER_TX
 @200
 -
-@28
-uart_bench.dut.ser_clk_4x
-uart_bench.dut.rx_cycle_count[1:0]
 @22
-uart_bench.dut.rx_bit_count[3:0]
+uart_bench.dut.rx_bit[3:0]
+@24
+uart_bench.dut.rx_cycle[1:0]
 uart_bench.dut.out_data[7:0]
 @28
 uart_bench.dut.out_valid

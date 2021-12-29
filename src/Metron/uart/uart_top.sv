@@ -9,20 +9,25 @@
 //==============================================================================
 
 module uart_top
+#(parameter clocks_per_bit = 4)
 (
-  input logic ser_clk_4x,
-  input logic ser_clk_1x,
+  input logic ser_clk,
   input logic rst_n,
   output logic SER_TX,
   output logic [7:0] LEDS
 );
 
+
+  localparam timer_bits = $clog2(clocks_per_bit);
+
+  typedef logic[timer_bits-1:0] timer;
+
   /*
-  wire tx_en = 1;
+  wire tx_req = 1;
   wire [7:0] tx_data = 35;
   wire tx_busy;
 
-  uart_tx #(1) serial_tx(clk, rst_n, tx_data, tx_en, out_tx, tx_busy);
+  uart_tx #(1) serial_tx(clk, rst_n, tx_data, tx_req, out_tx, tx_busy);
   */
 
   /*
@@ -31,59 +36,64 @@ module uart_top
   wire rx_valid;
 
   wire loopback;
-  wire tx_en;
+  wire tx_req;
   wire tx_busy;
   wire message_sent;
 
-  uart_tx #(clocks_per_bit) serial_tx(CLK, RST_N, tx_data, tx_en, loopback, tx_busy);
+  uart_tx #(clocks_per_bit) serial_tx(CLK, RST_N, tx_data, tx_req, loopback, tx_busy);
   uart_rx #(clocks_per_bit) serial_rx(CLK, RST_N, loopback, rx_data, rx_valid);
 
-  uart_hello hello(CLK, RST_N, tx_busy, tx_data, tx_en, message_sent);
+  uart_hello hello(CLK, RST_N, tx_busy, tx_data, tx_req, message_sent);
 
   assign LEDS = tx_data;
   */
 
-  localparam clocks_per_bit = 4;
-
   //----------------------------------------
 
-  logic ser_cts;
-  logic ser_idle;
-  logic[4:0] ser_count;
-  logic[7:0] ser_buf;
+  logic[7:0]  tx_data;
+  logic       tx_req;
 
-  logic[7:0] ser_tx_data;
-  logic ser_tx_en;
+  logic       tx_cts;
+  logic       tx_idle;
+  timer       tx_cycle;
+  logic[4:0]  tx_bit;
+  logic[8:0]  tx_buf;
 
-  always @(posedge ser_clk_1x, negedge rst_n) begin
+  always @(posedge ser_clk, negedge rst_n) begin
     if (!rst_n) begin
-      ser_cts   <= 1;
-      ser_idle  <= 1;
-      ser_count <= 0;
-      ser_buf   <= 8'hFF;
-      SER_TX    <= 1;
+      tx_cycle <= 0;
+      tx_bit  <= 0;
+      tx_buf   <= '1;
     end
-    else if (ser_cts && ser_tx_en) begin
-      ser_cts   <= 0;
-      ser_idle  <= 0;
-      ser_count <= 16;
-      ser_buf   <= ser_tx_data;
-      SER_TX    <= 0;
+    else begin
+      if (tx_cts && tx_req) begin
+        tx_cycle <= clocks_per_bit - 1;
+        tx_bit  <= 16;
+        tx_buf   <= { tx_data, 1'b0 };
+      end else begin
+        if (tx_bit > 0 && tx_cycle == 0) begin
+          tx_bit <= tx_bit - 1;
+          tx_cycle <= clocks_per_bit - 1;
+          tx_buf <= { 1'b1, tx_buf[8:1] };
+        end else begin
+          if (tx_cycle > 0) tx_cycle <= tx_cycle - 1;
+        end
+      end
     end
-    else if (ser_count) begin
-      if (ser_count == 9) ser_cts <= 1;
-      if (ser_count == 1) ser_idle <= 1;
-      ser_count <= ser_count - 1;
-      ser_buf   <= 8'h80 | (ser_buf >> 1);
-      SER_TX    <= ser_buf[0];
-    end
+  end
+
+  always_comb begin
+    SER_TX = tx_buf[0];
+    tx_cts  = (tx_bit <= 7) && (tx_cycle <= 1);
+    tx_idle = (tx_bit == 0) && (tx_cycle <= 1);
   end
 
   //----------------------------------------
 
   localparam message_len = 8;
   logic[7:0] message[0:7];
-  logic[3:0] message_cursor = 0;
+  logic[3:0] message_cursor;
+  logic      message_done;
 
   initial begin
     message[0] = 8'h48;
@@ -96,72 +106,69 @@ module uart_top
     message[7] = 8'h0A;
   end
 
-  // FIXME this doesn't work at 4x
-  always_ff @(posedge ser_clk_1x, negedge rst_n) begin
+  always_ff @(posedge ser_clk, negedge rst_n) begin
     if (!rst_n) begin
-      ser_tx_en <= 0;
+      tx_req <= 0;
       message_cursor <= message_len;
+      message_done <= 0;
+      tx_data <= 8'hFF;
     end else begin
-
-      if (ser_idle) begin
-        ser_tx_en <= 1;
+      if (tx_idle && !message_done) begin
         message_cursor <= 0;
+        tx_req <= 1;
+        tx_data <= message[0];
       end else begin
-        if (ser_cts && !ser_tx_en) begin
-          if (message_cursor < message_len - 1) begin
-            ser_tx_en <= 1;
-            message_cursor <= message_cursor + 1;
+        if (tx_cts && !tx_req && message_cursor < message_len) begin
+          message_cursor <= message_cursor + 1;
+          if (message_cursor + 1 < message_len) begin
+            tx_data <= message[message_cursor + 1];
+            tx_req <= 1;
           end else begin
-            ser_tx_en <= 0;
-            if (message_cursor < message_len) message_cursor <= message_cursor + 1;
+            //message_done <= 1;
+            tx_data <= 8'hFF;
+            tx_req <= 0;
           end
-        end else if (ser_tx_en && !ser_cts) begin
-          ser_tx_en <= 0;
+        end
+
+        if (tx_req && !tx_cts) begin
+          tx_req <= 0;
+        end
+      end
+    end
+  end
+
+  //----------------------------------------
+
+  timer        rx_cycle;
+  logic [3:0]  rx_bit;
+  logic [7:0]  out_data;
+  logic        out_valid;
+
+  always_ff @(posedge ser_clk, negedge rst_n) begin
+    if (!rst_n) begin
+      rx_cycle <= 0;
+      rx_bit <= 0;
+      out_data <= 0;
+    end else begin
+      if (rx_bit == 0 && rx_cycle == 0) begin
+        if (!SER_TX) begin
+          rx_bit <= 9;
+          rx_cycle <= clocks_per_bit - 1;
+        end
+      end else begin
+        rx_cycle <= rx_cycle ? rx_cycle - 1 : clocks_per_bit - 1;
+        if (!rx_cycle) begin
+          rx_bit <= rx_bit - 1;
+          out_data <= {SER_TX, out_data[7:1]};
         end
       end
     end
   end
 
   always_comb begin
-    if (message_cursor < message_len) ser_tx_data = message[message_cursor];
-    else ser_tx_data = 0;
+    out_valid = rx_bit == 1;
+    LEDS = out_valid ? out_data : 0;
   end
-
-  //----------------------------------------
-
-  logic [1:0] rx_cycle_count;
-  logic [3:0] rx_bit_count;
-  logic[7:0] out_data;
-  logic out_valid;
-
-  always @(posedge ser_clk_4x, negedge rst_n) begin
-    if (!rst_n) begin
-      rx_cycle_count <= clocks_per_bit - 1;
-      rx_bit_count <= 9;
-      out_data <= 8'hFF;
-      out_valid <= 0;
-    end
-    else begin
-      out_valid <= 0;
-
-      if (rx_cycle_count != clocks_per_bit - 1) begin
-        rx_cycle_count <= rx_cycle_count + 1;
-      end
-      else if (rx_bit_count != 9) begin
-        out_data <= {SER_TX, out_data[7:1]};
-        if (rx_bit_count == 7) out_valid <= 1;
-        rx_cycle_count <= 0;
-        rx_bit_count <= rx_bit_count + 1;
-      end
-      else if (SER_TX == 0) begin
-        out_data <= {SER_TX, out_data[7:1]};
-        rx_cycle_count <= 0;
-        rx_bit_count <= 0;
-      end
-    end
-  end
-
-  assign LEDS   = out_valid ? out_data : 0;
 
 endmodule
 

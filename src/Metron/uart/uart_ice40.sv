@@ -65,33 +65,9 @@ module uart_ice40(
   logic rst_n;
   pll pll(CLK, pll_clk, rst_n);
 
-  localparam pll_clk_rate    = 24000000;
-  localparam ser_clk_rate_4x = 300 * 4;
-  localparam ser_clk_rate_1x = 300;
-
-  logic       ser_clk_4x;
-  logic[31:0] ser_clk_4x_div;
-
-  always_ff @(posedge pll_clk) begin
-    if (ser_clk_4x_div > pll_clk_rate - (ser_clk_rate_4x*2)) begin
-      ser_clk_4x_div <= ser_clk_4x_div + (ser_clk_rate_4x*2) - pll_clk_rate;
-      ser_clk_4x <= !ser_clk_4x;
-    end else begin
-      ser_clk_4x_div <= ser_clk_4x_div + (ser_clk_rate_4x*2);
-    end
-  end
-
-  logic       ser_clk_1x;
-  logic[31:0] ser_clk_1x_div;
-
-  always_ff @(posedge pll_clk) begin
-    if (ser_clk_1x_div > pll_clk_rate - (ser_clk_rate_1x*2)) begin
-      ser_clk_1x_div <= ser_clk_1x_div + (ser_clk_rate_1x*2) - pll_clk_rate;
-      ser_clk_1x <= !ser_clk_1x;
-    end else begin
-      ser_clk_1x_div <= ser_clk_1x_div + (ser_clk_rate_1x*2);
-    end
-  end
+  localparam pll_clk_rate = 24000000;
+  localparam ser_clk_rate = 300;
+  localparam clocks_per_bit = pll_clk_rate / ser_clk_rate;
 
   /*
   uart_top #(ser_clk_rate_4x, clocks_per_bit) dut(ser_clk_4x, rst_n, SER_TX, LEDS);
@@ -99,7 +75,7 @@ module uart_ice40(
 
   //============================================================================
 
-  uart_top dut(ser_clk_4x, ser_clk_1x, rst_n, SER_TX, LEDS);
+  uart_top #(.clocks_per_bit(clocks_per_bit)) dut(pll_clk, rst_n, SER_TX, LEDS);
   assign LOGIC0 = SER_TX;
 
 endmodule

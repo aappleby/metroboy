@@ -43,7 +43,7 @@ module uart_bench;
     clk = 0;
     rst_counter = 15;
 
-    #500000;
+    #1000000;
     $write("\n");
     $finish;
   end

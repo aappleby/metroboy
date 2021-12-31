@@ -32,4 +32,12 @@ set_io -nowarn SER_RTSn B13
 set_io -nowarn SER_TX   B12
 set_io -nowarn SER_RX   B10
 
-set_io -nowarn LOGIC0 P16
+set_io -nowarn LOGIC7 C16
+set_io -nowarn LOGIC6 D16
+set_io -nowarn LOGIC5 E16
+set_io -nowarn LOGIC4 F16
+set_io -nowarn LOGIC3 G16
+set_io -nowarn LOGIC2 H16
+set_io -nowarn LOGIC1 J15
+set_io -nowarn LOGIC0 G14
+

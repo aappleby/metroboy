@@ -1,5 +1,5 @@
 rule compile
-  command = g++ -DFAST_MODE -O3 -Wno-format -Isrc -std=gnu++2a -c $in -o $out
+  command = g++ -DFAST_MODE -O3 -Wno-format -Isrc -std=gnu++2a -I/usr/local/share/verilator/include -c $in -o $out
 
 rule lib
   command = ar rcs $out $in
@@ -7,8 +7,18 @@ rule lib
 rule link
   command = g++ -O3 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
 
+rule verilate
+  command = verilator --Mdir obj --cc --build $in
+
 ################################################################################
 # GateBoyApp
 
-build obj/uart_test.o : compile uart_test.cpp | uart_bench.cpp uart_top.cpp uart_hello.cpp uart_rx.cpp uart_tx.cpp
-build bin/uart_bench : link obj/uart_test.o
+build obj/verilated.o : compile /usr/local/share/verilator/include/verilated.cpp
+build obj/Vuart_top__ALL.a : verilate uart_top.sv
+
+build obj/uart_test_vl.o : compile uart_test_vl.cpp | obj/Vuart_top__ALL.a
+build obj/uart_test_mt.o : compile uart_test_mt.cpp | uart_top.cpp uart_hello.cpp uart_rx.cpp uart_tx.cpp
+
+build bin/uart_test_vl : link obj/uart_test_vl.o obj/verilated.o obj/Vuart_top__ALL.a
+build bin/uart_test_mt : link obj/uart_test_mt.o
+

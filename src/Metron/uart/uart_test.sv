@@ -23,20 +23,23 @@ module uart_bench;
   wire rst_n = rst_counter == 0;
 
   wire ser_tx;
-  logic[7:0] leds;
+  logic[7:0] out_data;
+  logic out_valid;
 
   uart_top #(.clocks_per_bit(3)) dut
   (
     clk,
     rst_n,
     ser_tx,
-    leds
+    out_data,
+    out_valid
   );
 
   initial begin
     $dumpfile("uart_bench.vcd");
     $dumpvars(0, uart_bench);
 
+    $write("Icarus simulation:\n");
     clk = 0;
     rst_counter = 15;
   end
@@ -44,20 +47,18 @@ module uart_bench;
   int reps = 0;
 
   always begin
-    wait (!dut.out_valid);
-    wait (dut.out_valid);
+    wait (!out_valid);
+    wait (out_valid);
 
-    if (dut.out_data == 8'h0A) begin
+    if (out_data == 8'h0A) begin
       $write("%8d \\n\n", timestamp);
     end else begin
-      $write("%8d %c\n", timestamp, dut.out_data);
+      $write("%8d %c\n", timestamp, out_data);
     end
 
-
-    if (dut.out_data == 8'h0A) begin
+    if (out_data == 8'h0A) begin
       reps++;
       if (reps == 2) begin
-        $write("\n");
         $finish();
       end
     end

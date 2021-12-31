@@ -23,7 +23,7 @@ module uart_ice40(
   output logic [7:0] LEDS,
 
   // Top pin row connection to logic analyser
-  output logic LOGIC0
+  output logic LOGIC7
 );
 
   logic pll_clk;
@@ -59,8 +59,17 @@ module uart_ice40(
   localparam ser_clk_rate =      300;
   localparam clocks_per_bit = pll_clk_rate / ser_clk_rate;
 
-  uart_top #(.clocks_per_bit(clocks_per_bit)) dut(pll_clk, rst_n, SER_TX, LEDS);
-  assign LOGIC0 = SER_TX;
+  logic ser_tx;
+  logic[7:0] out_data;
+  logic out_valid;
+
+  uart_top #(.clocks_per_bit(clocks_per_bit)) dut(pll_clk, rst_n, ser_tx, out_data, out_valid);
+
+  always_comb begin
+    SER_TX = ser_tx;
+    LOGIC7 = ser_tx;
+    LEDS = out_valid ? out_data : '0;
+  end
 
 endmodule
 

@@ -7,7 +7,7 @@
 module uart_tx
 #(parameter clocks_per_bit = 4)
 (
-  input logic ser_clk,
+  input logic clk,
   input logic rst_n,
 
   input logic[7:0] tx_data,
@@ -26,11 +26,11 @@ module uart_tx
 
   logic[timer_bits-1:0] tx_cycle_;
   logic[$clog2(10 + extra_stop_bits)-1:0]  tx_bit_;
-  logic[8:0]  tx_buf_;
+  logic[8:0] tx_buf_;
 
   //----------------------------------------------------------------------------
 
-  always @(posedge ser_clk, negedge rst_n) begin
+  always @(posedge clk, negedge rst_n) begin
     logic[timer_bits-1:0] _tx_cycle;
     logic[$clog2(10 + extra_stop_bits)-1:0] _tx_bit;
     logic[8:0] _tx_buf;

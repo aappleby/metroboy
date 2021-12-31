@@ -5,10 +5,6 @@
 
 `include "uart_top.sv"
 
-// 1250 clocks per bit gives 9600 bps
-//localparam clock_rate = 12000000;
-//localparam clocks_per_bit = 4;
-
 //==============================================================================
 
 module uart_bench;
@@ -17,8 +13,11 @@ module uart_bench;
   logic clk;
   always #100 clk = ~clk;
 
+  logic[63:0] timestamp = 0;
+
   logic[3:0] rst_counter;
   always @(posedge clk) begin
+    timestamp <= timestamp + 1;
     if (rst_counter) rst_counter <= rst_counter - 1;
   end
   wire rst_n = rst_counter == 0;
@@ -34,24 +33,34 @@ module uart_bench;
     leds
   );
 
-  //uart_top #(clock_rate, clocks_per_bit) dut(clk, rst_n, leds);
-
   initial begin
     $dumpfile("uart_bench.vcd");
     $dumpvars(0, uart_bench);
 
     clk = 0;
     rst_counter = 15;
-
-    #1000000;
-    $write("\n");
-    $finish;
   end
+
+  int reps = 0;
 
   always begin
     wait (!dut.out_valid);
     wait (dut.out_valid);
-    $write("%c", dut.out_data);
+
+    if (dut.out_data == 8'h0A) begin
+      $write("%8d \\n\n", timestamp);
+    end else begin
+      $write("%8d %c\n", timestamp, dut.out_data);
+    end
+
+
+    if (dut.out_data == 8'h0A) begin
+      reps++;
+      if (reps == 2) begin
+        $write("\n");
+        $finish();
+      end
+    end
   end
 
 endmodule

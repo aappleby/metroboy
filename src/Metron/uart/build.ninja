@@ -1,0 +1,14 @@
+rule compile
+  command = g++ -DFAST_MODE -O3 -Wno-format -Isrc -std=gnu++2a -c $in -o $out
+
+rule lib
+  command = ar rcs $out $in
+
+rule link
+  command = g++ -O3 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
+
+################################################################################
+# GateBoyApp
+
+build obj/uart_test.o : compile uart_test.cpp | uart_bench.cpp uart_top.cpp uart_hello.cpp uart_rx.cpp uart_tx.cpp
+build bin/uart_bench : link obj/uart_test.o

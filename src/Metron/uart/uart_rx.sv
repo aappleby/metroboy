@@ -7,7 +7,7 @@
 module uart_rx
 #(parameter clocks_per_bit = 4)
 (
-  input logic ser_clk,
+  input logic clk,
   input logic rst_n,
   input logic SER_TX,
   output logic[7:0] out_data,
@@ -18,7 +18,7 @@ module uart_rx
   logic[timer_bits-1:0] rx_cycle;
   logic [3:0]  rx_bit;
 
-  always_ff @(posedge ser_clk, negedge rst_n) begin
+  always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       rx_cycle <= 0;
       rx_bit <= 0;

@@ -6,7 +6,7 @@
 
 module uart_hello
 (
-  input logic ser_clk,
+  input logic clk,
   input logic rst_n,
 
   input logic tx_cts,
@@ -25,7 +25,7 @@ module uart_hello
     $readmemh("message", message, 0, message_len - 1);
   end
 
-  always_ff @(posedge ser_clk, negedge rst_n) begin
+  always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       message_cursor <= message_len;
       message_done <= 0;

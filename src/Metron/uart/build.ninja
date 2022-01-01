@@ -1,24 +1,48 @@
 rule compile
-  command = g++ -DFAST_MODE -O3 -Wno-format -Isrc -std=gnu++2a -I/usr/local/share/verilator/include -c $in -o $out
-
-rule lib
-  command = ar rcs $out $in
+  command = g++ -std=gnu++2a -I/usr/local/share/verilator/include -MMD -MF $out.d -c $in -o $out
+  deps = gcc
+  depfile = $out.d
 
 rule link
   command = g++ -O3 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
 
-rule verilate
+rule verilator
   command = verilator --Mdir obj --cc --build $in
 
+rule iverilog
+  command = iverilog -g2012 $in -o $out
+
+rule yosys
+  command = yosys -p 'read_verilog -sv $in; dump; synth_ice40 -json $out;'
+
+rule nextpnr-ice40
+  command = nextpnr-ice40 -q --hx8k --package ct256 --json $in --asc $out --pcf ice40-hx8k-b-evn.pcf
+
+rule icepack
+  command = icepack $in $out
+
+rule upload
+  command = iceprog -S $in && touch $out
+
+rule hexdump
+  command = od -An -t x1 $in > $out
+
 ################################################################################
-# GateBoyApp
 
-build obj/verilated.o : compile /usr/local/share/verilator/include/verilated.cpp
-build obj/Vuart_top__ALL.a : verilate uart_top.sv
+build obj/verilated.o      : compile /usr/local/share/verilator/include/verilated.cpp
+build obj/Vuart_top__ALL.a : verilator uart_top.sv | uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message2.hex
 
-build obj/uart_test_vl.o : compile uart_test_vl.cpp | obj/Vuart_top__ALL.a
-build obj/uart_test_mt.o : compile uart_test_mt.cpp | uart_top.cpp uart_hello.cpp uart_rx.cpp uart_tx.cpp
+build obj/uart_test_vl.o   : compile uart_test_vl.cpp | uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message2.hex obj/Vuart_top__ALL.a
+build obj/uart_test_mt.o   : compile uart_test_mt.cpp | uart_top.cpp uart_hello.cpp uart_rx.cpp uart_tx.cpp
 
-build bin/uart_test_vl : link obj/uart_test_vl.o obj/verilated.o obj/Vuart_top__ALL.a
-build bin/uart_test_mt : link obj/uart_test_mt.o
+build obj/uart_ice40.json  : yosys uart_ice40.sv | uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message2.hex
+build obj/uart_ice40.asc   : nextpnr-ice40 obj/uart_ice40.json
+build obj/message2.hex     : hexdump message2.txt
+
+build bin/uart_test_vl     : link obj/uart_test_vl.o obj/verilated.o obj/Vuart_top__ALL.a
+build bin/uart_test_mt     : link obj/uart_test_mt.o
+build bin/uart_test_iv     : iverilog uart_test.sv | uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message2.hex
+build bin/uart_ice40.bin   : icepack obj/uart_ice40.asc
+build bin/upload_done      : upload bin/uart_ice40.bin
+
 

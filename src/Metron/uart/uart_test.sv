@@ -1,5 +1,5 @@
-`ifndef UART_BENCH_SV
-`define UART_BENCH_SV
+`ifndef UART_TEST_SV
+`define UART_TEST_SV
 `default_nettype none
 `timescale 1 ns / 1 ns
 
@@ -7,7 +7,7 @@
 
 //==============================================================================
 
-module uart_bench;
+module uart_test;
 
   // 12 mhz clock
   logic clk;
@@ -36,12 +36,17 @@ module uart_bench;
   );
 
   initial begin
-    $dumpfile("uart_bench.vcd");
-    $dumpvars(0, uart_bench);
+    $dumpfile("uart_test.vcd");
+    $dumpvars(0, uart_test);
 
     $write("Icarus simulation:\n");
     clk = 0;
     rst_counter = 15;
+
+    //#220000
+
+    //$write("stuck!\n");
+    //$finish();
   end
 
   int reps = 0;
@@ -50,11 +55,14 @@ module uart_bench;
     wait (!out_valid);
     wait (out_valid);
 
+    /*
     if (out_data == 8'h0A) begin
       $write("%8d \\n\n", timestamp);
     end else begin
       $write("%8d %c\n", timestamp, out_data);
     end
+    */
+    $write("%c", out_data);
 
     if (out_data == 8'h0A) begin
       reps++;

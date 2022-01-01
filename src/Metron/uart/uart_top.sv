@@ -6,7 +6,6 @@
 `include "uart_tx.sv"
 `include "uart_hello.sv"
 
-
 //==============================================================================
 
 module uart_top

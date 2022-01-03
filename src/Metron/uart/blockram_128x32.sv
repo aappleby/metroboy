@@ -5,6 +5,7 @@ module blockram_128x32
 #(parameter INIT_FILE = "")
 (
   input logic clk,
+  input logic rst_n,
 
   input logic        read_en,
   input logic[6:0]   raddr,

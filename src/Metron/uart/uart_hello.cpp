@@ -12,9 +12,9 @@ struct uart_hello : public Module {
   blockram_512x8 message;
 
   enum { WAIT_IDLE, WAIT_ACK, WAIT_CTS } state;
-  int  message_cursor;
-  bool message_done;
-  bool tx_req;
+  int  cursor;
+  bool done;
+  bool req;
 
   //----------------------------------------
 
@@ -25,69 +25,57 @@ struct uart_hello : public Module {
   //----------------------------------------
 
   void reset() {
-    message_cursor = message2_len;
-    message_done = 0;
-    tx_req = 0;
+    cursor = message2_len;
+    done = 0;
+    req = 0;
     state = WAIT_IDLE;
   }
 
   //----------------------------------------
 
-  void tick(uint8_t& out_tx_data, bool& out_tx_req) {
-    message.tick(out_tx_data);
-    out_tx_req  = tx_req;
+  void tick(uint8_t& o_data, bool& o_req, bool& o_done) {
+    message.tick(o_data);
+    o_req  = req;
+    o_done = done;
   }
 
   //----------------------------------------
 
-  void tock(bool tx_cts, bool tx_idle) {
-    message.tock(message_cursor, 0, 0, 0);
+  void tock(bool i_cts, bool i_idle) {
+    message.tock(cursor);
     switch(state) {
-      case WAIT_IDLE: if (tx_idle) on_tx_idle(); break;
-      case WAIT_ACK:  if (!tx_cts) on_tx_ack(); break;
-      case WAIT_CTS:  if (tx_cts)  on_tx_cts(); break;
+      case WAIT_IDLE: if (i_idle) on_tx_idle(); break;
+      case WAIT_ACK:  if (!i_cts) on_tx_ack(); break;
+      case WAIT_CTS:  if (i_cts)  on_tx_cts(); break;
     }
   }
 
   void on_tx_idle() {
     state = WAIT_ACK;
-    message_cursor = 0;
-    message_done = 0;
-    tx_req = 1;
+    cursor = 0;
+    done = 0;
+    req = 1;
   }
 
   void on_tx_ack() {
-    if (message_cursor == message2_len - 1) {
+    if (cursor == message2_len - 1) {
       state = WAIT_IDLE;
-      message_cursor = 0;
-      message_done = 1;
-      tx_req = 0;
+      cursor = 0;
+      done = 1;
+      req = 0;
     } else {
       state = WAIT_CTS;
-      message_cursor = message_cursor + 1;
-      message_done = 0;
-      tx_req = 0;
+      cursor = cursor + 1;
+      done = 0;
+      req = 0;
     }
   }
 
   void on_tx_cts() {
     state = WAIT_ACK;
-    message_cursor = message_cursor;
-    message_done = 0;
-    tx_req = 1;
-  }
-
-  //----------------------------------------
-
-  void dump_title() {
-    printf("hello: [cursor done data req] ");
-  }
-
-  void dump() {
-    uint8_t tx_data;
-    bool tx_req;
-    tick(tx_data, tx_req);
-    printf("       [%6d %4d   %02x %3d] ", message_cursor, message_done, tx_data, tx_req);
+    cursor = cursor;
+    done = 0;
+    req = 1;
   }
 };
 

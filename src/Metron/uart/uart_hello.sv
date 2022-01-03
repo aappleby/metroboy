@@ -24,12 +24,10 @@ module uart_hello
   enum { WAIT, SEND, DONE } state;
   logic[cursor_bits-1:0] cursor;
 
-  logic      mem_i_clk;
-  logic[8:0] mem_i_cursor;
+  logic[8:0] mem_i_addr;
   logic[7:0] mem_o_data;
-
   blockram_512x8 #(.INIT_FILE("obj/message2.hex"))
-  mem(mem_i_clk, mem_i_cursor, mem_o_data);
+  mem(clk, rst_n, mem_i_addr, mem_o_data);
 
   //----------------------------------------
 
@@ -42,8 +40,7 @@ module uart_hello
   // this can't be factored out into tick() or icarus sim fails
 
   always_comb begin
-    mem_i_clk    = clk;
-    mem_i_cursor = cursor;
+    mem_i_addr = cursor;
 
     o_data = mem_o_data;
     o_req  = state == SEND;
@@ -52,10 +49,10 @@ module uart_hello
 
   //----------------------------------------
 
-  task automatic tock();
-    if (state == WAIT && i_idle) begin
+  task automatic tock(logic cts, logic idle);
+    if (state == WAIT && idle) begin
       state <= SEND;
-    end else if (state == SEND && i_cts) begin
+    end else if (state == SEND && cts) begin
       cursor <= cursor + 1;
       if (cursor == (cursor_bits)'(message_len - 1)) state <= DONE;
     end else if (state == DONE) begin
@@ -64,7 +61,12 @@ module uart_hello
     end
   endtask
 
-  always_ff @(posedge clk, negedge rst_n) if (!rst_n) reset(); else tock();
+  //----------------------------------------
+
+  always_ff @(posedge clk, negedge rst_n) begin
+    if (!rst_n) reset();
+    else        tock(i_cts, i_idle);
+  end
 
 endmodule
 

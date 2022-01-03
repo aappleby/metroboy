@@ -6,13 +6,8 @@ module blockram_512x8
 (
   input logic clk,
 
-  input logic       read_en,
   input logic[8:0]  raddr,
-  output logic[7:0] rdata,
-
-  input logic       write_en,
-  input logic[8:0]  waddr,
-  input logic[7:0]  wdata
+  output logic[7:0] rdata
 );
   localparam size = 512;
 
@@ -20,8 +15,7 @@ module blockram_512x8
   reg [7:0] memory[size];
 
   always @(posedge clk) begin
-    if (write_en) memory[waddr] <= wdata;
-    if (read_en)  rdata <= memory[raddr];
+    rdata <= memory[raddr];
   end
 
   initial begin
@@ -31,6 +25,7 @@ module blockram_512x8
     end else begin
       for (i = 0; i < size; i = i + 1) memory[i] = 0;
     end
+    rdata = memory[0];
   end
 
 endmodule

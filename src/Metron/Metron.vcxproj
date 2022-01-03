@@ -163,15 +163,22 @@
     <None Include="metron_top.v" />
     <None Include="parse_test.tree" />
     <None Include="parse_test.v" />
-    <None Include="uart\blockram.v" />
-    <None Include="uart\message" />
-    <None Include="uart\uart_bench.v" />
-    <None Include="uart\uart_debug.v" />
-    <None Include="uart\uart_hello.v" />
-    <None Include="uart\uart_rx.v" />
-    <None Include="uart\uart_test.v" />
-    <None Include="uart\uart_tx.v" />
+    <None Include="uart\blockram_128x32.sv" />
+    <None Include="uart\blockram_512x8.sv" />
+    <None Include="uart\build.ninja" />
+    <None Include="uart\ice40-hx8k-b-evn.pcf" />
+    <None Include="uart\SB_PLL40_CORE.v" />
+    <None Include="uart\SB_RAM40_4K.v" />
+    <None Include="uart\uart_hello.sv" />
+    <None Include="uart\uart_ice40.sv" />
+    <None Include="uart\uart_rx.sv" />
+    <None Include="uart\uart_test.sv" />
+    <None Include="uart\uart_top.sv" />
+    <None Include="uart\uart_tx.sv" />
     <None Include="uart\uart_tx_buf.v" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="uart\message2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

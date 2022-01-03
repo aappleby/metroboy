@@ -56,7 +56,7 @@ module uart_ice40(
 
 
   localparam pll_clk_rate = 24000000;
-  localparam ser_clk_rate =      300;
+  localparam ser_clk_rate =     1200;
   localparam clocks_per_bit = pll_clk_rate / ser_clk_rate;
 
   logic ser_tx;

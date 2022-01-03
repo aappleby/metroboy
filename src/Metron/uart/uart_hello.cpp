@@ -1,61 +1,80 @@
 #include "metron.h"
 
+#include "message2.blob.h"
+#include "blockram_512x8.cpp"
+
 //==============================================================================
 
 struct uart_hello : public Module {
 
-  static const int message_len = 14;
-  uint8_t message[message_len];
+  //----------------------------------------
 
-  bool    tx_req;
-  uint8_t message_cursor;
-  bool    message_done;
+  blockram_512x8 message;
+
+  enum { WAIT_IDLE, WAIT_ACK, WAIT_CTS } state;
+  int  message_cursor;
+  bool message_done;
+  bool tx_req;
 
   //----------------------------------------
 
   void initial() {
-    uint8_t _message[] = {0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x21, 0x0A};
-    for (int i = 0; i < message_len; i++) message[i] = _message[i];
+    message.initial(message2, sizeof(message2));
   }
 
   //----------------------------------------
 
   void reset() {
-    tx_req = 0;
-    message_cursor = message_len;
+    message_cursor = message2_len;
     message_done = 0;
+    tx_req = 0;
+    state = WAIT_IDLE;
   }
 
   //----------------------------------------
 
-  void tick(uint8_t& tx_data_, bool& tx_req_) {
-    tx_data_ = message_cursor < message_len ? message[message_cursor] : 0xFF;
-    tx_req_ = tx_req;
+  void tick(uint8_t& out_tx_data, bool& out_tx_req) {
+    message.tick(out_tx_data);
+    out_tx_req  = tx_req;
   }
 
   //----------------------------------------
 
   void tock(bool tx_cts, bool tx_idle) {
-    auto tx_req_ = tx_req;
-    auto message_cursor_ = message_cursor;
-    auto message_done_ = message_done;
-
-    auto _message_cursor = message_cursor;
-    auto _message_done = message_done;
-    auto _tx_req = tx_req;
-
-    if (tx_idle && !message_done_) {
-      _message_cursor = 0;
-      _tx_req = 1;
-    } else if (tx_cts && !tx_req_ && message_cursor_ < message_len) {
-      _message_cursor = message_cursor_ + 1;
-      _tx_req = message_cursor_ < message_len - 1;
+    message.tock(message_cursor, 0, 0, 0);
+    switch(state) {
+      case WAIT_IDLE: if (tx_idle) on_tx_idle(); break;
+      case WAIT_ACK:  if (!tx_cts) on_tx_ack(); break;
+      case WAIT_CTS:  if (tx_cts)  on_tx_cts(); break;
     }
-    if (tx_req_ && !tx_cts) _tx_req = 0;
+  }
 
-    message_cursor = _message_cursor;
-    message_done = _message_done;
-    tx_req = _tx_req;
+  void on_tx_idle() {
+    state = WAIT_ACK;
+    message_cursor = 0;
+    message_done = 0;
+    tx_req = 1;
+  }
+
+  void on_tx_ack() {
+    if (message_cursor == message2_len - 1) {
+      state = WAIT_IDLE;
+      message_cursor = 0;
+      message_done = 1;
+      tx_req = 0;
+    } else {
+      state = WAIT_CTS;
+      message_cursor = message_cursor + 1;
+      message_done = 0;
+      tx_req = 0;
+    }
+  }
+
+  void on_tx_cts() {
+    state = WAIT_ACK;
+    message_cursor = message_cursor;
+    message_done = 0;
+    tx_req = 1;
   }
 
   //----------------------------------------
@@ -68,7 +87,6 @@ struct uart_hello : public Module {
     uint8_t tx_data;
     bool tx_req;
     tick(tx_data, tx_req);
-
     printf("       [%6d %4d   %02x %3d] ", message_cursor, message_done, tx_data, tx_req);
   }
 };

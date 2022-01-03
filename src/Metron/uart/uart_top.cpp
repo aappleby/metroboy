@@ -47,7 +47,7 @@ struct uart_top : public Module {
     LEDS = out_valid ? out_data : 0;
   }
 
-  void tock(bool SER_TX, uint8_t LEDS) {
+  void tock(bool SER_TX) {
     hello.tock(tx_cts, tx_idle);
     tx.tock(tx_data, tx_req);
     rx.tock(SER_TX);

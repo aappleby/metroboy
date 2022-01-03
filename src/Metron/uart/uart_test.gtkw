@@ -1,57 +1,65 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sat Jan  1 03:26:25 2022
+[*] Mon Jan  3 02:56:18 2022
 [*]
 [dumpfile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/Metron/uart/uart_test.vcd"
-[dumpfile_mtime] "Sat Jan  1 03:23:37 2022"
-[dumpfile_size] 33757
+[dumpfile_mtime] "Mon Jan  3 02:55:58 2022"
+[dumpfile_size] 1186462
 [savefile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/Metron/uart/uart_test.gtkw"
-[timestart] 0
-[size] 2558 1578
+[timestart] 3007000
+[size] 2282 1274
 [pos] -1 -1
-*-11.153852 3100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-13.153852 3077760 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] uart_test.
 [treeopen] uart_test.dut.
+[treeopen] uart_test.dut.hello.
 [sst_width] 214
 [signals_width] 385
 [sst_expanded] 1
-[sst_vpaned_height] 496
+[sst_vpaned_height] 816
 @28
 uart_test.dut.clk
 uart_test.dut.rst_n
 @200
 -
+@420
+uart_test.dut.hello.state
 @22
-uart_test.dut.hello.message_cursor[3:0]
+uart_test.dut.hello.message_cursor[8:0]
 @28
 uart_test.dut.hello.message_done
 @22
-uart_test.dut.hello.tx_data[7:0]
+uart_test.dut.hello.out_tx_data[7:0]
 @28
-uart_test.dut.tx.tx_req
-@420
-uart_test.dut.hello.state
+[color] 2
+uart_test.dut.hello.out_tx_req
 @200
 -
-@22
-uart_test.dut.tx.tx_bit_[4:0]
+-
 @28
-uart_test.dut.tx.tx_cycle_[1:0]
+[color] 2
+uart_test.tx.tx_idle
+[color] 2
+uart_test.tx.tx_cts
+uart_test.tx.tx_cycle[1:0]
 @22
-uart_test.dut.tx.tx_buf_[8:0]
+uart_test.tx.tx_bit[4:0]
+uart_test.tx.tx_buf[8:0]
 @28
-uart_test.dut.rx.SER_TX
-uart_test.dut.tx.tx_cts
-uart_test.dut.tx.tx_idle
+[color] 2
+uart_test.tx.SER_TX
 @200
 -
-@22
-uart_test.dut.rx.rx_bit[3:0]
 @28
-uart_test.dut.rx.rx_cycle[1:0]
+uart_test.rx.SER_TX
 @22
-uart_test.dut.rx.out_data[7:0]
+uart_test.rx.rx_bit[3:0]
 @28
-uart_test.dut.rx.out_valid
+uart_test.rx.rx_cycle[1:0]
+@22
+uart_test.rx.out_data[7:0]
+@29
+[color] 2
+uart_test.rx.out_valid
 [pattern_trace] 1
 [pattern_trace] 0

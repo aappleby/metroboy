@@ -56,7 +56,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Metron", "src\Metron\Metron.vcxproj", "{66066533-DE54-4241-8C3F-15FC0D993537}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uart_test_mt", "src\uart_test_mt\uart_test_mt.vcxproj", "{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uart_test_mt", "src\uart_test\uart_test_mt.vcxproj", "{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -43,6 +43,7 @@ struct uart_hello : public Module {
 
   void tock(bool i_cts, bool i_idle) {
     message.tock(cursor);
+
     switch(state) {
       case WAIT_IDLE: if (i_idle) on_tx_idle(); break;
       case WAIT_ACK:  if (!i_cts) on_tx_ack(); break;

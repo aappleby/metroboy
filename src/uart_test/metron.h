@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#pragma warning(disable:4996)
+
 constexpr int clog2(uint32_t x) {
   for (int i = 31; i >= 0; i--) if (x & (1 << i)) return i + 1;
   return 0;

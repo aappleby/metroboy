@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,9 +21,10 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{66066533-de54-4241-8c3f-15fc0d993537}</ProjectGuid>
-    <RootNamespace>Metron</RootNamespace>
+    <ProjectGuid>{876db2bf-a5da-4e00-8ae0-ec9dc8ad5bc5}</ProjectGuid>
+    <RootNamespace>uarttestmt</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>uart_test</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -116,8 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,8 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,26 +142,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\tree-sitter-cpp\src\parser.c" />
-    <ClCompile Include="..\tree-sitter-cpp\src\scanner.cc" />
-    <ClCompile Include="..\tree-sitter\lib\src\lib.c" />
-    <ClCompile Include="Metron.cpp" />
-    <ClCompile Include="parse_test.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    <ClCompile Include="blockram_512x8.h" />
+    <ClCompile Include="make_blob_h.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="uart_hello.h" />
+    <ClCompile Include="uart_rx.h" />
+    <ClCompile Include="uart_test_mt.cpp" />
+    <ClCompile Include="uart_top.h" />
+    <ClCompile Include="uart_tx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
-    <ClInclude Include="metron_top.h" />
-    <ClInclude Include="Node.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="message.blob.h" />
+    <ClInclude Include="metron.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="apio.ini" />
-    <None Include="metron_top.v" />
-    <None Include="parse_test.tree" />
-    <None Include="parse_test.v" />
+    <None Include="blockram_128x32.sv" />
+    <None Include="blockram_512x8.sv" />
+    <None Include="build.ninja" />
+    <None Include="SB_PLL40_CORE.v" />
+    <None Include="SB_RAM40_4K.v" />
+    <None Include="uart_hello.sv" />
+    <None Include="uart_ice40.sv" />
+    <None Include="uart_rx.sv" />
+    <None Include="uart_test.sv" />
+    <None Include="uart_top.sv" />
+    <None Include="uart_tx.sv" />
+    <None Include="uart_tx_buf.v" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="message.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

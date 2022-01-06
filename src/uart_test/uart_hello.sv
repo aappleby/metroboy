@@ -39,9 +39,13 @@ module uart_hello
   //----------------------------------------
   // this can't be factored out into tick() or icarus sim fails
 
+  // glue
   always_comb begin
     mem_i_addr = cursor;
+  end
 
+  // tick
+  always_comb begin
     o_data = mem_o_data;
     o_req  = state == SEND;
     o_done = state == DONE;

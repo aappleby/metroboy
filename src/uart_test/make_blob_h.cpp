@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#pragma warning(disable:4996)
+
 int main(int argc, char** argv) {
   const char* src_filename = argv[1];
 
@@ -39,15 +41,18 @@ int main(int argc, char** argv) {
   for (int i = 0; i < 512; i++) if (buf_name[i] == '.') buf_name[i] = 0;
 
   int byte_count = 0;
-  printf("uint8_t %s[] = {\n", buf_name);
+  int checksum = 0;
+  printf("static const uint8_t %s[] = {\n", buf_name);
   for(auto c = getc(f); c != EOF; c = getc(f)) {
     if (byte_count % 16 == 0) printf("  ");
     printf("0x%02x, ", c);
     if (byte_count % 16 == 15) printf("\n");
     byte_count++;
+    checksum += c;
   }
   printf("};\n");
-  printf("const int %s_len = sizeof(%s);\n", buf_name, buf_name);
+  printf("static const int %s_len = sizeof(%s);\n", buf_name, buf_name);
+  printf("// checksum %d 0x%08x\n", checksum, checksum);
 
   fclose(f);
 }

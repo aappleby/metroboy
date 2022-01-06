@@ -55,4 +55,4 @@ build obj/make_blob_h.o : compile make_blob_h.cpp
 build bin/make_blob_h   : link obj/make_blob_h.o
 
 
-build message2.blob.h : make_blob_h message2.txt | bin/make_blob_h
+build message.blob.h : make_blob_h message.txt | bin/make_blob_h

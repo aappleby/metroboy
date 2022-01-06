@@ -26,7 +26,7 @@ module uart_hello
 
   logic[8:0] mem_i_addr;
   logic[7:0] mem_o_data;
-  blockram_512x8 #(.INIT_FILE("obj/message2.hex"))
+  blockram_512x8 #(.INIT_FILE("obj/message.hex"))
   mem(clk, rst_n, mem_i_addr, mem_o_data);
 
   //----------------------------------------

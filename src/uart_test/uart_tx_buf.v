@@ -5,8 +5,8 @@
 //==============================================================================
 
 module uart_tx_buf(input clk, input resetn, input [7:0] tx_data_, input tx_en_, output wire out_tx, output wire out_tx_busy);
-  parameter clocks_per_bit = 4;
-  localparam cycle_reg_size = $clog2(clocks_per_bit);
+  parameter cycles_per_bit = 4;
+  localparam cycle_reg_size = $clog2(cycles_per_bit);
 
   reg[7:0] buffer[0:255];
   reg[7:0] cursorA, cursorA_;
@@ -30,7 +30,7 @@ module uart_tx_buf(input clk, input resetn, input [7:0] tx_data_, input tx_en_, 
     data_latched_ = data_latched;
     transmit_done_ = transmit_done;
 
-    bit_end = (cycle_count == clocks_per_bit - 1);
+    bit_end = (cycle_count == cycles_per_bit - 1);
     cycle_count_ = bit_end ? 0 : cycle_count + 1;
     bit_count_ = bit_count + {3'b000, bit_end};
 

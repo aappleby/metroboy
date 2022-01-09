@@ -1,17 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sun Jan  9 02:01:02 2022
+[*] Sun Jan  9 06:10:44 2022
 [*]
 [dumpfile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/uart_test/test.vcd"
-[dumpfile_mtime] "Sun Jan  9 01:54:53 2022"
-[dumpfile_size] 17804
+[dumpfile_mtime] "Sun Jan  9 06:05:10 2022"
+[dumpfile_size] 21396
 [savefile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/uart_test/test.gtkw"
 [timestart] 0
 [size] 2192 1405
 [pos] -1 -1
-*-7.944974 633 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-8.258392 2232 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
 [sst_width] 214
-[signals_width] 302
+[signals_width] 393
 [sst_expanded] 1
 [sst_vpaned_height] 424
 @28
@@ -19,14 +20,14 @@ top.clk
 top.rst_n
 @200
 -
-@29
+@24
 top.hello.state[1:0]
-@22
 top.hello.cursor[8:0]
+@22
 top.hello.o_data[7:0]
 @28
-top.hello.o_done
 top.hello.o_req
+top.hello.o_done
 @200
 -
 @22
@@ -34,8 +35,9 @@ top.ram.i_addr[8:0]
 top.ram.o_data[7:0]
 @200
 -
-@22
+@24
 top.tx.cycle[4:0]
+@22
 top.tx.bit[4:0]
 top.tx.buf[8:0]
 @28
@@ -47,7 +49,7 @@ top.tx.o_serial
 @28
 top.rx.cycle[1:0]
 @22
-top.rx.bit[3:0]
+top.rx.cursor[3:0]
 top.rx.o_data[7:0]
 @28
 top.rx.o_valid

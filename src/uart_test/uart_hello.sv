@@ -15,19 +15,26 @@ module uart_hello
   output logic       o_req,
   output logic       o_done
 );
-  /*verilator public_module*/
+
   //----------------------------------------
 
   localparam message_len = 7;
   localparam cursor_bits = $clog2(message_len);
 
-  enum { WAIT, SEND, DONE } state;
+  typedef enum { WAIT, SEND, DONE } e_state;
+  e_state state;
   logic[cursor_bits-1:0] cursor;
+
+  //----------------------------------------
 
   logic[8:0] mem_i_addr;
   logic[7:0] mem_o_data;
-  blockram_512x8 #(.INIT_FILE("obj/message.hex"))
-  mem(clk, rst_n, mem_i_addr, mem_o_data);
+  blockram_512x8 mem(clk, rst_n, mem_i_addr, mem_o_data);
+
+  //----------------------------------------
+
+  initial begin
+  end
 
   //----------------------------------------
 
@@ -39,26 +46,21 @@ module uart_hello
   //----------------------------------------
   // this can't be factored out into tick() or icarus sim fails
 
-  // glue
-  always_comb begin
-    mem_i_addr = 9'(cursor);
-  end
-
-  // tick
-  always_comb begin
+  always_comb begin : tick
     o_data = mem_o_data;
     o_req  = state == SEND;
     o_done = state == DONE;
+    mem_i_addr = 9'(cursor);
   end
 
   //----------------------------------------
 
-  task automatic tock(logic cts, logic idle);
-    if (state == WAIT && idle) begin
+  task automatic tock();
+    if (state == WAIT && i_idle) begin
       state <= SEND;
-    end else if (state == SEND && cts) begin
-      cursor <= cursor + 1;
+    end else if (state == SEND && i_cts) begin
       if (cursor == (cursor_bits)'(message_len - 1)) state <= DONE;
+      cursor <= cursor + 1;
     end else if (state == DONE) begin
       state <= WAIT;
       cursor <= 0;
@@ -69,7 +71,7 @@ module uart_hello
 
   always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) reset();
-    else        tock(i_cts, i_idle);
+    else        tock();
   end
 
 endmodule

@@ -5,7 +5,7 @@
 //==============================================================================
 
 module uart_tx
-#(parameter clocks_per_bit = 4)
+#(parameter cycles_per_bit = 4)
 (
   input logic clk,
   input logic rst_n,
@@ -13,9 +13,9 @@ module uart_tx
   input logic[7:0] tx_data,
   input logic tx_req,
 
-  output logic SER_TX,
-  output logic tx_cts,
-  output logic tx_idle
+  output logic o_serial,
+  output logic o_cts,
+  output logic o_idle
 );
   /*verilator public_module*/
 
@@ -23,8 +23,8 @@ module uart_tx
   // that recevier can resync between messages
   localparam extra_stop_bits = 7;
 
-  localparam timer_bits = $clog2(clocks_per_bit);
-  localparam timer_max  = timer_bits'(clocks_per_bit) - 1'b1;
+  localparam timer_bits = $clog2(cycles_per_bit);
+  localparam timer_max  = timer_bits'(cycles_per_bit) - 1'b1;
 
   localparam bitcount_bits = $clog2(10 + extra_stop_bits);
   localparam bitcount_max = 10 + extra_stop_bits - 1;
@@ -43,14 +43,9 @@ module uart_tx
 
   // having combi logic in tick doesn't work in icarus
   always_comb begin
-    SER_TX  = tx_buf[0];
-    tx_cts  = ((tx_bit == extra_stop_bits) && (tx_cycle == 0)) || (tx_bit < extra_stop_bits);
-    tx_idle = (tx_bit == 0) && (tx_cycle == 0);
-
-    if (!rst_n) begin
-      tx_cts = 0;
-      tx_idle = 0;
-    end
+    o_serial = tx_buf[0];
+    o_cts    = ((tx_bit == extra_stop_bits) && (tx_cycle == 0)) || (tx_bit < extra_stop_bits);
+    o_idle   = (tx_bit == 0) && (tx_cycle == 0);
   end
   
   task automatic tock();

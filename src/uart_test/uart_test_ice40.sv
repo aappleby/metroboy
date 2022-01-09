@@ -55,15 +55,15 @@ module uart_ice40(
                   );
 
 
-  localparam pll_clk_rate = 24000000;
-  localparam ser_clk_rate =     1200;
-  localparam clocks_per_bit = pll_clk_rate / ser_clk_rate;
+  localparam pll_clk_rate   = 24000000;
+  localparam ser_clk_rate   =     1200;
+  localparam cycles_per_bit = pll_clk_rate / ser_clk_rate;
 
   logic ser_tx;
   logic[7:0] out_data;
   logic out_valid;
 
-  uart_top #(.clocks_per_bit(clocks_per_bit)) dut(pll_clk, rst_n, ser_tx, out_data, out_valid);
+  uart_top #(.cycles_per_bit(cycles_per_bit)) dut(pll_clk, rst_n, ser_tx, out_data, out_valid);
 
   always_comb begin
     SER_TX = ser_tx;

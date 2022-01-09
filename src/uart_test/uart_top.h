@@ -8,7 +8,7 @@
 
 //==============================================================================
 
-template<int clocks_per_bit = 3>
+template<int cycles_per_bit = 3>
 struct uart_top : public Module {
 
   //----------------------------------------
@@ -21,8 +21,8 @@ struct uart_top : public Module {
   //----------------------------------------
 
   uart_hello hello;
-  uart_tx<clocks_per_bit> tx;
-  uart_rx<clocks_per_bit> rx;
+  uart_tx<cycles_per_bit> tx;
+  uart_rx<cycles_per_bit> rx;
 
   void initial() {
     hello.initial();
@@ -84,21 +84,11 @@ struct uart_top : public Module {
     fprintf(d.file, "$var wire 32 top_o_sum   o_sum $end\n");
   }
 
-  void dump_width(VcdDump& d) {
-    d.set_width("top_o_data",  8);
-    d.set_width("top_o_valid", 1);
-    d.set_width("top_o_done",  1);
-    d.set_width("top_o_sum",   32);
-    hello.dump_width(d);
-    tx.dump_width(d);
-    rx.dump_width(d);
-  }
-
   void dump_value(VcdDump& d) {
-    d.set_value("top_o_data",  o_data);
-    d.set_value("top_o_valid", o_valid);
-    d.set_value("top_o_done",  o_done);
-    d.set_value("top_o_sum",   o_sum);
+    d.set_value("top_o_data",  o_data, 8);
+    d.set_value("top_o_valid", o_valid, 1);
+    d.set_value("top_o_done",  o_done, 1);
+    d.set_value("top_o_sum",   o_sum, 32);
     hello.dump_value(d);
     tx.dump_value(d);
     rx.dump_value(d);

@@ -49,14 +49,9 @@ struct blockram_512x8 {
     fprintf(d.file, "$upscope $end\n");
   }
 
-  void dump_width(VcdDump& d) {
-    d.set_width("ram_i_addr", 9);
-    d.set_width("ram_o_data", 8);
-  }
-
   void dump_value(VcdDump& d) {
-    d.set_value("ram_i_addr", i_addr);
-    d.set_value("ram_o_data", o_data);
+    d.set_value("ram_i_addr", i_addr, 9);
+    d.set_value("ram_o_data", o_data, 8);
   }
 };
 

@@ -3,56 +3,95 @@
 //==============================================================================
 
 module uart_rx
-#(parameter clocks_per_bit = 4)
+#(parameter cycles_per_bit = 4)
 (
   input logic clk,
   input logic rst_n,
 
-  input  logic       i_sio,
+  input  logic       i_serial,
 
   output logic[7:0]  o_data,
   output logic       o_valid,
   output logic[31:0] o_sum
 );
-  /*verilator public_module*/
-  localparam timer_bits = $clog2(clocks_per_bit);
-  logic[timer_bits-1:0] rx_cycle;
-  logic[3:0]  rx_bit;
-  logic[31:0] rx_sum;
-  logic[7:0]  rx_data;
+  //----------------------------------------
 
-  task automatic reset();
-    rx_cycle <= 0;
-    rx_bit <= 0;
-    rx_data <= 0;
-    rx_sum <= 0;
-  endtask
+  localparam cycle_bits = $clog2(cycles_per_bit);
+  logic[cycle_bits-1:0] cycle;
+  logic[3:0]  cursor;
+  logic[7:0]  data;
+  logic[31:0] sum;
 
-  always_comb begin
-    o_data  = rx_data;
-    o_valid = rx_bit == 1;
-    o_sum   = rx_sum;
+  //----------------------------------------
+
+  initial begin
   end
 
-  task automatic tock(logic i_sio);
-    if (rx_cycle != 0) begin
-      rx_cycle <= rx_cycle - 1;
+  //----------------------------------------
+
+  task automatic reset();
+    cycle <= 0;
+    cursor <= 0;
+    data <= 0;
+    sum <= 0;
+  endtask
+
+  //----------------------------------------
+
+  always_comb begin
+    o_data  = data;
+    o_valid = cursor == 1;
+    o_sum   = sum;
+  end
+
+  //----------------------------------------
+
+  task automatic tock(logic i_serial);
+    if (cycle != 0) begin
+      cycle <= cycle - 1;
     end
-    else if (rx_bit != 0) begin
-      rx_cycle <= timer_bits'(clocks_per_bit - 1);
-      rx_bit <= rx_bit - 1;
-      rx_data <= {i_sio, rx_data[7:1]};
-      if (rx_bit == 2) rx_sum <= rx_sum + {24'b0, i_sio, rx_data[7:1]};
+    else if (cursor != 0) begin
+      cycle <= cycle_bits'(cycles_per_bit - 1);
+      cursor <= cursor - 1;
+      data <= {i_serial, data[7:1]};
+      if (cursor == 2) sum <= sum + {24'b0, i_serial, data[7:1]};
     end
-    else if (i_sio == 0) begin
-      rx_cycle <= timer_bits'(clocks_per_bit - 1);
-      rx_bit <= 9;
+    else if (i_serial == 0) begin
+      cycle <= cycle_bits'(cycles_per_bit - 1);
+      cursor <= 9;
     end
   endtask
+
+  //----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) reset();
-    else        tock(i_sio);
+    else        tock(i_serial);
   end
 
 endmodule

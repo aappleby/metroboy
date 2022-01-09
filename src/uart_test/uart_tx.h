@@ -2,7 +2,7 @@
 
 //==============================================================================
 
-template<int clocks_per_bit = 4>
+template<int cycles_per_bit = 4>
 struct uart_tx : public Module {
 
   //----------------------------------------
@@ -16,7 +16,7 @@ struct uart_tx : public Module {
 
   //----------------------------------------
 
-  static constexpr int timer_bits = clog2(clocks_per_bit);
+  static constexpr int timer_bits = clog2(cycles_per_bit);
 
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages
@@ -42,9 +42,9 @@ struct uart_tx : public Module {
   //----------------------------------------
 
   void tick() {
-    o_serial  = tx_buf & 1;
-    o_cts     = ((tx_bit <= extra_stop_bits) && (tx_cycle == 0)) || (tx_bit < extra_stop_bits);
-    o_idle    = (tx_bit == 0) && (tx_cycle <= 1);
+    o_serial = tx_buf & 1;
+    o_cts    = ((tx_bit <= extra_stop_bits) && (tx_cycle == 0)) || (tx_bit < extra_stop_bits);
+    o_idle   = (tx_bit == 0) && (tx_cycle == 0);
   }
 
   //----------------------------------------
@@ -52,7 +52,7 @@ struct uart_tx : public Module {
   void tock() {
     if (tx_bit <= extra_stop_bits && tx_cycle == 0 && i_req) {
       // Transmit start
-      tx_cycle = clocks_per_bit - 1;
+      tx_cycle = cycles_per_bit - 1;
       tx_bit   = 10 + extra_stop_bits - 1;
       tx_buf   = (i_data << 1) | 0;
     } else if (tx_cycle != 0) {
@@ -62,7 +62,7 @@ struct uart_tx : public Module {
       tx_buf   = tx_buf;
     } else if (tx_bit != 0) {
       // Bit delay done, switch to next bit.
-      tx_cycle = clocks_per_bit - 1;
+      tx_cycle = cycles_per_bit - 1;
       tx_bit   = tx_bit - 1;
       tx_buf   = (tx_buf >> 1) | 0x100;
     }
@@ -108,24 +108,14 @@ struct uart_tx : public Module {
     fprintf(d.file, "$upscope $end\n");
   }
 
-  void dump_width(VcdDump& d) {
-    d.set_width("tx_cycle", clog2(10 + extra_stop_bits));
-    d.set_width("tx_bit",   5);
-    d.set_width("tx_buf",   9);
-
-    d.set_width("tx_o_serial", 1);
-    d.set_width("tx_o_cts",    1);
-    d.set_width("tx_o_idle",   1);
-  }
-
   void dump_value(VcdDump& d) {
-    d.set_value("tx_cycle", tx_cycle);
-    d.set_value("tx_bit", tx_bit);
-    d.set_value("tx_buf", tx_buf);
+    d.set_value("tx_cycle", tx_cycle, 5);
+    d.set_value("tx_bit",   tx_bit, 5);
+    d.set_value("tx_buf",   tx_buf, 9);
 
-    d.set_value("tx_o_serial", o_serial);
-    d.set_value("tx_o_cts",    o_cts);
-    d.set_value("tx_o_idle",   o_idle);
+    d.set_value("tx_o_serial", o_serial, 1);
+    d.set_value("tx_o_cts",    o_cts, 1);
+    d.set_value("tx_o_idle",   o_idle, 1);
   }
 };
 

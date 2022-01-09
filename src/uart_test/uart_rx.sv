@@ -19,7 +19,7 @@ module uart_rx
   localparam cycle_bits = $clog2(cycles_per_bit);
   logic[cycle_bits-1:0] cycle;
   logic[3:0]  cursor;
-  logic[7:0]  data;
+  logic[7:0]  buffer;
   logic[31:0] sum;
 
   //----------------------------------------
@@ -30,16 +30,16 @@ module uart_rx
   //----------------------------------------
 
   task automatic reset();
-    cycle <= 0;
+    cycle  <= 0;
     cursor <= 0;
-    data <= 0;
-    sum <= 0;
+    buffer <= 0;
+    sum    <= 0;
   endtask
 
   //----------------------------------------
 
   always_comb begin
-    o_data  = data;
+    o_data  = buffer;
     o_valid = cursor == 1;
     o_sum   = sum;
   end
@@ -48,16 +48,16 @@ module uart_rx
 
   task automatic tock(logic i_serial);
     if (cycle != 0) begin
-      cycle <= cycle - 1;
+      cycle  <= cycle - 1;
     end
     else if (cursor != 0) begin
-      cycle <= cycle_bits'(cycles_per_bit - 1);
+      cycle  <= cycle_bits'(cycles_per_bit - 1);
       cursor <= cursor - 1;
-      data <= {i_serial, data[7:1]};
-      if (cursor == 2) sum <= sum + {24'b0, i_serial, data[7:1]};
+      buffer <= {i_serial, buffer[7:1]};
+      if (cursor == 2) sum <= sum + {24'b0, i_serial, buffer[7:1]};
     end
     else if (i_serial == 0) begin
-      cycle <= cycle_bits'(cycles_per_bit - 1);
+      cycle  <= cycle_bits'(cycles_per_bit - 1);
       cursor <= 9;
     end
   endtask

@@ -10,8 +10,8 @@ module uart_tx
   input logic clk,
   input logic rst_n,
 
-  input logic[7:0] tx_data,
-  input logic tx_req,
+  input logic[7:0] i_data,
+  input logic i_req,
 
   output logic o_serial,
   output logic o_cts,
@@ -29,41 +29,41 @@ module uart_tx
   localparam bitcount_bits = $clog2(10 + extra_stop_bits);
   localparam bitcount_max = 10 + extra_stop_bits - 1;
 
-  logic[timer_bits-1:0]    tx_cycle;
-  logic[bitcount_bits-1:0] tx_bit;
-  logic[8:0] tx_buf;
+  logic[timer_bits-1:0]    cycle;
+  logic[bitcount_bits-1:0] cursor;
+  logic[8:0] buffer;
 
   //----------------------------------------------------------------------------
 
   task automatic reset();
-    tx_cycle <= '0;
-    tx_bit   <= '0;
-    tx_buf   <= '1;
+    cycle  <= '0;
+    cursor <= '0;
+    buffer <= '1;
   endtask
 
   // having combi logic in tick doesn't work in icarus
   always_comb begin
-    o_serial = tx_buf[0];
-    o_cts    = ((tx_bit == extra_stop_bits) && (tx_cycle == 0)) || (tx_bit < extra_stop_bits);
-    o_idle   = (tx_bit == 0) && (tx_cycle == 0);
+    o_serial = buffer[0];
+    o_cts    = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
+    o_idle   = (cursor == 0) && (cycle == 0);
   end
   
   task automatic tock();
-    if (tx_bit <= extra_stop_bits && tx_cycle == 0 && tx_req) begin
+    if (cursor <= extra_stop_bits && cycle == 0 && i_req) begin
       // Transmit start
-      tx_cycle <= timer_max;
-      tx_bit   <= bitcount_max;
-      tx_buf   <= { tx_data, 1'b0 };
-    end else if (tx_cycle != 0) begin
+      cycle  <= timer_max;
+      cursor <= bitcount_max;
+      buffer <= { i_data, 1'b0 };
+    end else if (cycle != 0) begin
       // Bit delay
-      tx_cycle <= tx_cycle - 1;
-      tx_bit   <= tx_bit;
-      tx_buf   <= tx_buf;
-    end else if (tx_bit != 0) begin
+      cycle  <= cycle - 1;
+      cursor <= cursor;
+      buffer <= buffer;
+    end else if (cursor != 0) begin
       // Bit delay done, switch to next bit.
-      tx_cycle <= timer_max;
-      tx_bit   <= tx_bit - 1;
-      tx_buf   <= (tx_buf >> 1) | 9'h100;
+      cycle  <= timer_max;
+      cursor <= cursor - 1;
+      buffer <= (buffer >> 1) | 9'h100;
     end
 
     // having combi logic as blocking assignment here doesn't work in verilator

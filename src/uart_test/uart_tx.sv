@@ -41,6 +41,18 @@ module uart_tx
     tx_buf   <= '1;
   endtask
 
+  // having combi logic in tick doesn't work in icarus
+  always_comb begin
+    SER_TX  = tx_buf[0];
+    tx_cts  = ((tx_bit == extra_stop_bits) && (tx_cycle == 0)) || (tx_bit < extra_stop_bits);
+    tx_idle = (tx_bit == 0) && (tx_cycle == 0);
+
+    if (!rst_n) begin
+      tx_cts = 0;
+      tx_idle = 0;
+    end
+  end
+  
   task automatic tock();
     if (tx_bit <= extra_stop_bits && tx_cycle == 0 && tx_req) begin
       // Transmit start
@@ -63,18 +75,6 @@ module uart_tx
 
   endtask
 
-  // having combi logic in tick doesn't work in icarus
-  always_comb begin
-    SER_TX  = tx_buf[0];
-    tx_cts  = ((tx_bit == extra_stop_bits) && (tx_cycle == 0)) || (tx_bit < extra_stop_bits);
-    tx_idle = (tx_bit == 0) && (tx_cycle == 0);
-
-    if (!rst_n) begin
-      tx_cts = 0;
-      tx_idle = 0;
-    end
-  end
-  
   always @(posedge clk, negedge rst_n) if (!rst_n) reset(); else tock();
 
 endmodule

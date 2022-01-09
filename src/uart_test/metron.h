@@ -8,6 +8,8 @@
 
 #pragma warning(disable:4996)
 
+#include "vcd_dump.h"
+
 constexpr int clog2(uint32_t x) {
   for (int i = 31; i >= 0; i--) if (x & (1 << i)) return i + 1;
   return 0;
@@ -72,3 +74,4 @@ inline void parse_hex(const char* src_filename, uint8_t* dst_data, int dst_size)
   fclose(f);
   free(src_data);
 }
+

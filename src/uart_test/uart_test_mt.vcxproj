@@ -152,10 +152,12 @@
     <ClCompile Include="uart_test_mt.cpp" />
     <ClCompile Include="uart_top.h" />
     <ClCompile Include="uart_tx.h" />
+    <ClCompile Include="vcd_dump.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="message.blob.h" />
     <ClInclude Include="metron.h" />
+    <ClInclude Include="vcd_dump.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="blockram_128x32.sv" />

@@ -1,0 +1,57 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Sun Jan  9 02:01:02 2022
+[*]
+[dumpfile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/uart_test/test.vcd"
+[dumpfile_mtime] "Sun Jan  9 01:54:53 2022"
+[dumpfile_size] 17804
+[savefile] "/mnt/c/Users/aappl/Desktop/MetroBoy/src/uart_test/test.gtkw"
+[timestart] 0
+[size] 2192 1405
+[pos] -1 -1
+*-7.944974 633 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 214
+[signals_width] 302
+[sst_expanded] 1
+[sst_vpaned_height] 424
+@28
+top.clk
+top.rst_n
+@200
+-
+@29
+top.hello.state[1:0]
+@22
+top.hello.cursor[8:0]
+top.hello.o_data[7:0]
+@28
+top.hello.o_done
+top.hello.o_req
+@200
+-
+@22
+top.ram.i_addr[8:0]
+top.ram.o_data[7:0]
+@200
+-
+@22
+top.tx.cycle[4:0]
+top.tx.bit[4:0]
+top.tx.buf[8:0]
+@28
+top.tx.o_cts
+top.tx.o_idle
+top.tx.o_serial
+@200
+-
+@28
+top.rx.cycle[1:0]
+@22
+top.rx.bit[3:0]
+top.rx.o_data[7:0]
+@28
+top.rx.o_valid
+@22
+top.rx.o_sum[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

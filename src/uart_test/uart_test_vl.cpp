@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
   dut.eval();
 
   int reps = 0;
-  for (int cycle = 16; cycle < 20000; cycle++) {
+  for (int cycle = 16; cycle < 40000; cycle++) {
     auto old_valid = dut.top_o_valid;
 
     dut.clk = 0;

@@ -26,12 +26,15 @@ module blockram_128x32
   end
 
   initial begin
+    $readmemh("obj/message.hex", memory);
+    /*
     integer i;
     if (INIT_FILE != 0) begin
       $readmemh(INIT_FILE, memory);
     end else begin
       for (i = 0; i < size; i = i + 1) memory[i] = 0;
     end
+    */
   end
 
 endmodule

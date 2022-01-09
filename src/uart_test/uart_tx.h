@@ -28,6 +28,11 @@ struct uart_tx : public Module {
 
   //----------------------------------------
 
+  void initial() {
+  }
+
+  //----------------------------------------
+
   void reset() {
     tx_cycle = 0;
     tx_bit   = 0;
@@ -38,14 +43,14 @@ struct uart_tx : public Module {
 
   void tick() {
     o_serial  = tx_buf & 1;
-    o_cts     = ((tx_bit <= extra_stop_bits) && (tx_cycle <= 1)) || (tx_bit < extra_stop_bits);
+    o_cts     = ((tx_bit <= extra_stop_bits) && (tx_cycle == 0)) || (tx_bit < extra_stop_bits);
     o_idle    = (tx_bit == 0) && (tx_cycle <= 1);
   }
 
   //----------------------------------------
 
   void tock() {
-    if (tx_bit <= extra_stop_bits && tx_cycle <= 1 && i_req) {
+    if (tx_bit <= extra_stop_bits && tx_cycle == 0 && i_req) {
       // Transmit start
       tx_cycle = clocks_per_bit - 1;
       tx_bit   = 10 + extra_stop_bits - 1;
@@ -61,6 +66,66 @@ struct uart_tx : public Module {
       tx_bit   = tx_bit - 1;
       tx_buf   = (tx_buf >> 1) | 0x100;
     }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  void dump_header() {
+    printf("[tx cyc bit buf serial cts idle] ");
+  }
+
+  void dump() {
+    printf("[   %-3d %-3d %03x %-6d %-3d %-4d] ", tx_cycle, tx_bit, tx_buf, o_serial, o_cts, o_idle);
+  }
+
+  void dump_vcd_header(VcdDump& d) {
+    fprintf(d.file, "$scope module tx $end\n");
+    fprintf(d.file, "$var wire 5  tx_cycle    cycle $end\n");
+    fprintf(d.file, "$var wire 5  tx_bit      bit $end\n");
+    fprintf(d.file, "$var wire 9  tx_buf      buf $end\n");
+    fprintf(d.file, "$var wire 1  tx_o_cts    o_cts $end\n");
+    fprintf(d.file, "$var wire 1  tx_o_idle   o_idle $end\n");
+    fprintf(d.file, "$var wire 1  tx_o_serial o_serial $end\n");
+    fprintf(d.file, "$upscope $end\n");
+  }
+
+  void dump_width(VcdDump& d) {
+    d.set_width("tx_cycle", clog2(10 + extra_stop_bits));
+    d.set_width("tx_bit",   5);
+    d.set_width("tx_buf",   9);
+
+    d.set_width("tx_o_serial", 1);
+    d.set_width("tx_o_cts",    1);
+    d.set_width("tx_o_idle",   1);
+  }
+
+  void dump_value(VcdDump& d) {
+    d.set_value("tx_cycle", tx_cycle);
+    d.set_value("tx_bit", tx_bit);
+    d.set_value("tx_buf", tx_buf);
+
+    d.set_value("tx_o_serial", o_serial);
+    d.set_value("tx_o_cts",    o_cts);
+    d.set_value("tx_o_idle",   o_idle);
   }
 };
 

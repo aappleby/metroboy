@@ -18,7 +18,7 @@ module uart_hello
   /*verilator public_module*/
   //----------------------------------------
 
-  localparam message_len = 512;
+  localparam message_len = 7;
   localparam cursor_bits = $clog2(message_len);
 
   enum { WAIT, SEND, DONE } state;
@@ -26,7 +26,7 @@ module uart_hello
 
   logic[8:0] mem_i_addr;
   logic[7:0] mem_o_data;
-  blockram_512x8 #(.INIT_FILE("obj/message2.hex"))
+  blockram_512x8 #(.INIT_FILE("obj/message.hex"))
   mem(clk, rst_n, mem_i_addr, mem_o_data);
 
   //----------------------------------------
@@ -41,7 +41,7 @@ module uart_hello
 
   // glue
   always_comb begin
-    mem_i_addr = cursor;
+    mem_i_addr = 9'(cursor);
   end
 
   // tick

@@ -15,11 +15,6 @@ struct blockram_512x8 {
 
   //----------------------------------------
 
-  void initial(const uint8_t* src, int size) {
-    assert(size == 512);
-    memcpy(memory, src, size);
-  }
-
   void reset() {
     addr = 0;
   }

@@ -14,6 +14,8 @@ module uart_rx
   output logic       o_valid,
   output logic[31:0] o_sum
 );
+  /*verilator public_module*/
+
   //----------------------------------------
 
   localparam cycle_bits = $clog2(cycles_per_bit);
@@ -21,11 +23,6 @@ module uart_rx
   logic[3:0]  cursor;
   logic[7:0]  buffer;
   logic[31:0] sum;
-
-  //----------------------------------------
-
-  initial begin
-  end
 
   //----------------------------------------
 
@@ -38,7 +35,7 @@ module uart_rx
 
   //----------------------------------------
 
-  always_comb begin
+  always_comb begin : tick
     o_data  = buffer;
     o_valid = cursor == 1;
     o_sum   = sum;

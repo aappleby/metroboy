@@ -9,7 +9,7 @@
 //==============================================================================
 
 template<int cycles_per_bit = 3>
-struct uart_top : public Module {
+struct uart_top {
 
   //----------------------------------------
 
@@ -23,12 +23,6 @@ struct uart_top : public Module {
   uart_hello hello;
   uart_tx<cycles_per_bit> tx;
   uart_rx<cycles_per_bit> rx;
-
-  void initial() {
-    hello.initial();
-    tx.initial();
-    rx.initial();
-  }
 
   void reset() {
     hello.reset();
@@ -76,8 +70,6 @@ struct uart_top : public Module {
   }
 
   void dump_vcd_header(VcdDump& d) {
-    fprintf(d.file, "$var wire 1  clk         clk $end\n");
-    fprintf(d.file, "$var wire 1  rst_n       rst_n $end\n");
     fprintf(d.file, "$var wire 8  top_o_data  o_data $end\n");
     fprintf(d.file, "$var wire 1  top_o_valid o_valid $end\n");
     fprintf(d.file, "$var wire 1  top_o_done  o_done $end\n");

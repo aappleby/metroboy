@@ -3,7 +3,7 @@
 //==============================================================================
 
 template<int cycles_per_bit = 4>
-struct uart_tx : public Module {
+struct uart_tx {
 
   //----------------------------------------
 
@@ -15,34 +15,33 @@ struct uart_tx : public Module {
   bool    o_idle;
 
   //----------------------------------------
-
-  static constexpr int timer_bits = clog2(cycles_per_bit);
-
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages
-  static constexpr int extra_stop_bits = 7;
+
+  static const int extra_stop_bits = 7;
+
+  static const int cycle_bits = clog2(cycles_per_bit);
+  static const int cycle_max  = cycles_per_bit - 1;
+
+  static const int cursor_bits = clog2(10 + extra_stop_bits);
+  static const int cursor_max  = 10 + extra_stop_bits - 1;
 
   int cycle;
   int cursor;
-  uint16_t buf;
-
-  //----------------------------------------
-
-  void initial() {
-  }
+  uint16_t buffer;
 
   //----------------------------------------
 
   void reset() {
-    cycle = 0;
-    cursor   = 0;
-    buf   = 0x1FF;
+    cycle  = 0;
+    cursor = 0;
+    buffer = 0x1FF;
   }
 
   //----------------------------------------
 
   void tick() {
-    o_serial = buf & 1;
+    o_serial = buffer & 1;
     o_cts    = ((cursor <= extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
     o_idle   = (cursor == 0) && (cycle == 0);
   }
@@ -52,22 +51,23 @@ struct uart_tx : public Module {
   void tock() {
     if (cursor <= extra_stop_bits && cycle == 0 && i_req) {
       // Transmit start
-      cycle = cycles_per_bit - 1;
-      cursor   = 10 + extra_stop_bits - 1;
-      buf   = (i_data << 1) | 0;
+      cycle  = cycles_per_bit - 1;
+      cursor = 10 + extra_stop_bits - 1;
+      buffer = (i_data << 1) | 0;
     } else if (cycle != 0) {
       // Bit delay
-      cycle = cycle - 1;
-      cursor   = cursor;
-      buf   = buf;
+      cycle  = cycle - 1;
+      cursor = cursor;
+      buffer = buffer;
     } else if (cursor != 0) {
       // Bit delay done, switch to next bit.
-      cycle = cycles_per_bit - 1;
-      cursor   = cursor - 1;
-      buf   = (buf >> 1) | 0x100;
+      cycle  = cycles_per_bit - 1;
+      cursor = cursor - 1;
+      buffer = (buffer >> 1) | 0x100;
     }
   }
 
+  //----------------------------------------
 
 
 
@@ -94,7 +94,7 @@ struct uart_tx : public Module {
   }
 
   void dump() {
-    printf("[   %-3d %-3d %03x %-6d %-3d %-4d] ", cycle, cursor, buf, o_serial, o_cts, o_idle);
+    printf("[   %-3d %-3d %03x %-6d %-3d %-4d] ", cycle, cursor, buffer, o_serial, o_cts, o_idle);
   }
 
   void dump_vcd_header(VcdDump& d) {
@@ -111,7 +111,7 @@ struct uart_tx : public Module {
   void dump_value(VcdDump& d) {
     d.set_value("tx_cycle",    cycle, 5);
     d.set_value("tx_cursor",   cursor, 5);
-    d.set_value("tx_buf",      buf, 9);
+    d.set_value("tx_buf",      buffer, 9);
 
     d.set_value("tx_o_serial", o_serial, 1);
     d.set_value("tx_o_cts",    o_cts, 1);

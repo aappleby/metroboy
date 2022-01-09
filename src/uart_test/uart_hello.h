@@ -5,9 +5,7 @@
 
 //==============================================================================
 
-#include "message.blob.h"
-
-struct uart_hello : public Module {
+struct uart_hello {
 
   //----------------------------------------
 
@@ -20,7 +18,7 @@ struct uart_hello : public Module {
 
   //----------------------------------------
 
-  static const int message_len = 7;
+  static const int message_len = 512;
   static const int cursor_bits = clog2(message_len);
 
   typedef enum { WAIT, SEND, DONE } e_state;
@@ -32,13 +30,6 @@ struct uart_hello : public Module {
   //logic[8:0] mem_i_addr;
   //logic[7:0] mem_o_data;
   blockram_512x8 mem;
-
-  //----------------------------------------
-
-  void initial() {
-#include "message.blob.h"
-    mem.initial(message, message_len);
-  }
 
   //----------------------------------------
 

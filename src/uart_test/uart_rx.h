@@ -4,7 +4,7 @@
 //==============================================================================
 
 template<int cycles_per_bit = 4>
-struct uart_rx : public Module {
+struct uart_rx {
 
   //----------------------------------------
 
@@ -25,11 +25,6 @@ struct uart_rx : public Module {
   int cursor;
   uint8_t data;
   uint32_t sum;
-
-  //----------------------------------------
-
-  void initial() {
-  }
 
   //----------------------------------------
 

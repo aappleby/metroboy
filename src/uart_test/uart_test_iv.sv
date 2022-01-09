@@ -9,6 +9,8 @@
 
 module uart_test;
 
+  /*verilator public_module*/
+
   // 12 mhz clock
   logic clk;
   logic rst_n;
@@ -37,19 +39,18 @@ module uart_test;
     out_sum
   );
 
-  initial begin
-    $readmemh("obj/message.hex", top.hello.mem.memory);
-    $dumpfile("uart_test.vcd");
-    $dumpvars(0, uart_test);
-  end
-
   always begin
     wait (!out_valid);
     wait (out_valid);
     $write("%c", out_data);
   end
 
-  always begin
+  initial begin
+    $readmemh("obj/message.hex", top.hello.mem.memory, 0, 511);
+
+    $dumpfile("uart_test.vcd");
+    $dumpvars(0, uart_test);
+
     $write("\n");
     $write("Icarus simulation:\n");
     $write("================================================================================\n");
@@ -64,7 +65,7 @@ module uart_test;
     $write("\n");
     $write("================================================================================\n");
     $write("cycle = %-8d\n", timestamp);
-    $write("checksum = %08x %s\n", out_sum, out_sum == 32'h0000b989 ? "ok" : "fail" );
+    $write("checksum = %08x %s\n", out_sum, out_sum == 32'h0000b764 ? "pass" : "fail" );
     $write("\n");
     $finish();
   end

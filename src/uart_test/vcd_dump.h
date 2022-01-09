@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <assert.h>
 
@@ -8,8 +9,8 @@
 class VcdDump {
 public:
 
-  typedef std::map<std::string, std::string> tag_to_string;
-  typedef std::map<std::string, uint64_t> tag_to_value;
+  typedef std::unordered_map<std::string, std::string> tag_to_string;
+  typedef std::unordered_map<std::string, uint64_t> tag_to_value;
 
   VcdDump(const char* filename) {
     file = fopen(filename, "wb");

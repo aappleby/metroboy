@@ -15,10 +15,11 @@ module uart_hello
   output logic       o_req,
   output logic       o_done
 );
+  /*verilator public_module*/
 
   //----------------------------------------
 
-  localparam message_len = 7;
+  localparam message_len = 512;
   localparam cursor_bits = $clog2(message_len);
 
   typedef enum { WAIT, SEND, DONE } e_state;
@@ -30,11 +31,6 @@ module uart_hello
   logic[8:0] mem_i_addr;
   logic[7:0] mem_o_data;
   blockram_512x8 mem(clk, rst_n, mem_i_addr, mem_o_data);
-
-  //----------------------------------------
-
-  initial begin
-  end
 
   //----------------------------------------
 

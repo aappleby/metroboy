@@ -9,6 +9,8 @@ module blockram_512x8
   input logic[8:0]  i_addr,
   output logic[7:0] o_data
 );
+  /*verilator public_module*/
+
   localparam size = 512;
   reg [7:0] memory[size];
   logic[8:0] addr;
@@ -31,6 +33,10 @@ module blockram_512x8
   endtask
 
   //----------------------------------------
+
+  initial begin
+    $readmemh("obj/message.hex", memory, 0, 511);
+  end
 
   always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) reset();

@@ -15,11 +15,6 @@ constexpr int clog2(uint32_t x) {
   return 0;
 }
 
-struct Module {
-  void initial() {}
-  void reset() {}
-};
-
 inline void parse_hex(const char* src_filename, uint8_t* dst_data, int dst_size) {
 
   FILE* f = fopen(src_filename, "rb");

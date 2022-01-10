@@ -13,10 +13,11 @@ module uart_test;
 
   // 12 mhz clock
   logic clk;
+  logic clken;
   logic rst_n;
   logic[63:0] timestamp = 0;
 
-  always #5 clk = ~clk & rst_n;
+  always #5 clk = ~clk & clken;
 
   always @(posedge clk) begin
     timestamp <= timestamp + 1;
@@ -48,19 +49,26 @@ module uart_test;
   initial begin
     $readmemh("obj/message.hex", top.hello.mem.memory, 0, 511);
 
-    $dumpfile("uart_test.vcd");
+    $dumpfile("uart_test_iv.vcd");
     $dumpvars(0, uart_test);
 
     $write("\n");
     $write("Icarus simulation:\n");
     $write("================================================================================\n");
+    clken = 0;
     clk = 0;
+    rst_n = 1;
+    #5;
     rst_n = 0;
-    #40;
+    #5;
+    clken = 1;
+    clk = 1;
+    #5;
     rst_n = 1;
 
     #200;
     wait (top.tx.o_idle);
+    #5
 
     $write("\n");
     $write("================================================================================\n");

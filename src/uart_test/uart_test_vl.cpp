@@ -7,39 +7,68 @@
 #include "obj/DUT_uart_rx__C3.h"
 #include "obj/DUT_blockram_512x8.h"
 
+#include "verilated_vcd_c.h"
 #include "message.blob.h"
 
 int main(int argc, char** argv) {
+  Verilated::commandArgs(argc, argv);
   Verilated::traceEverOn(true);
+  VerilatedVcdC* tfp = new VerilatedVcdC;
+  tfp->spTrace()->set_time_resolution("1 ns");
 
   DUT dut;
   memcpy(dut.uart_top->hello->mem->memory.m_storage, message, message_len);
+  dut.trace(tfp, 99);
+  tfp->open("uart_test_vl.vcd");
 
 
   printf("\n");
   printf("Verilator simulation:\n");
   printf("================================================================================\n");
 
+  double timestamp = 0;
+  int cycle = 0;
+
+  timestamp = 0;
+  dut.clk = 0;
+  dut.rst_n = 1;
+  dut.eval();
+  tfp->dump(timestamp);
+
+  timestamp = 5;
   dut.clk = 0;
   dut.rst_n = 0;
   dut.eval();
+  tfp->dump(timestamp);
 
+  timestamp = 10;
   dut.clk = 1;
   dut.rst_n = 0;
   dut.eval();
+  tfp->dump(timestamp);
 
-  printf("%p", dut.uart_top->hello->mem->memory.m_storage);
+  timestamp = 15;
+  dut.clk = 0;
+  dut.rst_n = 1;
+  dut.eval();
+  tfp->dump(timestamp);
 
-  int reps = 0;
-  for (int cycle = 1; cycle < 40000; cycle++) {
+  timestamp = 20;
+  while (!Verilated::gotFinish()) {
+    cycle++;
     auto old_valid = dut.top_o_valid;
+
+    dut.clk = 1;
+    dut.rst_n = 1;
+    dut.eval();
+    tfp->dump(timestamp);
+    timestamp += 5;
 
     dut.clk = 0;
     dut.rst_n = 1;
     dut.eval();
-    dut.clk = 1;
-    dut.rst_n = 1;
-    dut.eval();
+    tfp->dump(timestamp);
+    timestamp += 5;
 
     auto new_valid = dut.top_o_valid;
 
@@ -56,10 +85,12 @@ int main(int argc, char** argv) {
       printf("cycle %d\n", cycle);
       printf("checksum %x %s\n", dut.top_o_sum, pass ? "pass" : "fail");
       printf("\n");
+      tfp->close();
       return pass ? 0 : -1;
     }
   }
 
   printf("stuck!\n");
+  tfp->close();
   return -1;
 }

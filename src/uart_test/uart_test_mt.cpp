@@ -47,30 +47,48 @@ int main(int argc, char** argv) {
 
   dump.set_time(0);
   dump.set_value("clk",   0, 1);
+  dump.set_value("rst_n", 1, 1);
+  dump.set_value("timestamp", 0, 32);
+  top.dump_value(dump);
+
+  dump.set_time(5);
+  dump.set_value("clk", 0, 1);
   dump.set_value("rst_n", 0, 1);
+  dump.set_value("timestamp", 0, 32);
+  top.dump_value(dump);
+
+  dump.set_time(10);
+  dump.set_value("clk", 1, 1);
+  dump.set_value("rst_n", 0, 1);
+  dump.set_value("timestamp", 0, 32);
+  top.dump_value(dump);
+
+  dump.set_time(15);
+  dump.set_value("clk", 0, 1);
+  dump.set_value("rst_n", 1, 1);
   dump.set_value("timestamp", 0, 32);
   top.dump_value(dump);
 
   bool old_valid = false;
   int cycle = 1;
+
+  dump.set_time(20);
   for (; cycle < 500000; cycle++) {
     top.tock();
     top.tick();
 
-    dump.set_time((cycle + 3) * 10);
     dump.set_value("clk",   1, 1);
     dump.set_value("rst_n", 1, 1);
     dump.set_value("timestamp", cycle, 32);
     top.dump_value(dump);
+    dump.advance(5);
 
-    if (cycle > 100 && top.tx.o_idle) break;
-
-    dump.set_time((cycle + 3) * 10 + 5);
     dump.set_value("clk", 0, 1);
+    if (cycle > 100 && top.tx.o_idle) break;
+    dump.advance(5);
 
     if (!old_valid && top.o_valid) {
-      //printf("%c", top.o_data);
-      putc(top.o_data, stdout);
+      printf("%c", top.o_data);
     }
     old_valid = top.o_valid;
   }

@@ -7,7 +7,7 @@ rule link
   command = g++ -O3 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
 
 rule verilator
-  command = verilator --exe --prefix DUT -O0 --public-flat-rw --Mdir obj --cc --build $in uart_test_mt.cpp
+  command = rm -f obj/DUT && verilator --trace --exe --prefix DUT -O0 --public-flat-rw --Mdir obj --cc --build $in uart_test_vl.cpp
 
 rule iverilog
   command = iverilog -g2012 $in -o $out
@@ -32,17 +32,18 @@ rule make_blob_h
 
 ################################################################################
 
-build obj/verilated.o      : compile /usr/local/share/verilator/include/verilated.cpp
-build obj/DUT__ALL.a       : verilator uart_top.sv | uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message.hex
+#build obj/verilated.o      : compile /usr/local/share/verilator/include/verilated.cpp
+#build obj/DUT__ALL.a       : verilator uart_top.sv | uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message.hex
+build obj/DUT       : verilator uart_top.sv | uart_test_vl.cpp uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message.hex
 
-build obj/uart_test_vl.o   : compile uart_test_vl.cpp | obj/DUT__ALL.a
+#build obj/uart_test_vl.o   : compile uart_test_vl.cpp | obj/DUT__ALL.a
 build obj/uart_test_mt.o   : compile uart_test_mt.cpp | uart_top.h uart_hello.h uart_rx.h uart_tx.h message.blob.h
 
 build obj/uart_test_ice40.json  : yosys uart_test_ice40.sv | uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message.hex
 build obj/uart_test_ice40.asc   : nextpnr-ice40 obj/uart_test_ice40.json
 build obj/message.hex     : hexdump message.txt
 
-build bin/uart_test_vl     : link obj/uart_test_vl.o obj/verilated.o obj/DUT__ALL.a
+#build bin/uart_test_vl     : link obj/uart_test_vl.o obj/verilated.o obj/DUT__ALL.a
 build bin/uart_test_mt     : link obj/uart_test_mt.o
 build bin/uart_test_iv     : iverilog uart_test_iv.sv | uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message.hex
 build bin/uart_test_ice40.bin   : icepack obj/uart_test_ice40.asc

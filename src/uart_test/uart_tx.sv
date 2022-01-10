@@ -38,7 +38,7 @@ module uart_tx
   task automatic reset();
     cycle  <= '0;
     cursor <= '0;
-    buffer <= '1;
+    buffer <= 9'h1FF;
   endtask
 
   //----------------------------------------
@@ -76,35 +76,13 @@ module uart_tx
 
   //----------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  always @(posedge clk, negedge rst_n) if (!rst_n) reset(); else tock();
+  always @(posedge clk, negedge rst_n) begin
+    if (!rst_n) begin
+      reset();
+    end else begin
+      tock();
+    end
+  end
 
 endmodule
 

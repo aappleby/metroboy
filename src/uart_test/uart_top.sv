@@ -1,6 +1,7 @@
 `ifndef UART_TOP_SV
 `define UART_TOP_SV
 `default_nettype none
+`timescale 1 ns / 1 ns
 
 `include "uart_rx.sv"
 `include "uart_tx.sv"

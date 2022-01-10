@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <string>
 #include <assert.h>
+#include <inttypes.h>
 
 #pragma warning(disable:4996)
 
@@ -24,7 +25,12 @@ public:
 
   void set_time(uint64_t _time) {
     time = _time;
-    fprintf(file, "#%I64d\n", time);
+    fprintf(file, "#%" PRIu64 "\n", time);
+  };
+
+  void advance(uint64_t delta) {
+    time += delta;
+    fprintf(file, "#%" PRIu64 "\n", time);
   };
 
   void set_value(const char* key, uint64_t value, int width) {
@@ -32,7 +38,7 @@ public:
     if ((it == field_state.end()) || (value != (*it).second)) {
       if (width == 1) {
         assert((value & ~1) == 0);
-        fprintf(file, "%I64d%s\n", value & 1, key);
+        fprintf(file, "%" PRIu64 "%s\n", value & 1, key);
       }
       else {
         fprintf(file, "b");

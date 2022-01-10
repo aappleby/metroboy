@@ -18,7 +18,8 @@ struct uart_hello {
 
   //----------------------------------------
 
-  static const int message_len = 512;
+  static const int message_len = 7;
+  //static const int message_len = 512;
   static const int cursor_bits = clog2(message_len);
 
   typedef enum { WAIT, SEND, DONE } e_state;

@@ -19,8 +19,8 @@ module uart_hello
 
   //----------------------------------------
 
-  localparam message_len = 7;
-  //localparam message_len = 512;
+  //localparam message_len = 7;
+  localparam message_len = 512;
   localparam cursor_bits = $clog2(message_len);
 
   typedef enum logic[2:0] { WAIT, SEND, DONE } e_state;

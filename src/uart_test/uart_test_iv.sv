@@ -72,9 +72,7 @@ module uart_test;
 
     $write("\n");
     $write("================================================================================\n");
-    $write("cycle = %-8d\n", timestamp);
-    $write("checksum = %08x %s\n", out_sum, out_sum == 32'h0000b764 ? "pass" : "fail" );
-    $write("\n");
+    if (out_sum == 32'h0000b764) $write("All tests pass.\n");
     $finish();
   end
 

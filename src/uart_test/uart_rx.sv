@@ -1,4 +1,5 @@
 `default_nettype none
+/* verilator lint_off WIDTH */
 
 //==============================================================================
 
@@ -18,9 +19,13 @@ module uart_rx
 
   //----------------------------------------
 
-  localparam cycle_bits = $clog2(cycles_per_bit);
-  logic[cycle_bits-1:0] cycle;
-  logic[3:0]  cursor;
+  localparam cycle_bits  = $clog2(cycles_per_bit);
+  localparam cycle_max   = cycles_per_bit - 1;
+  localparam cursor_max  = 9;
+  localparam cursor_bits = $clog2(cursor_max);
+
+  logic[cycle_bits-1:0]   cycle;
+  logic[cursor_bits-1:0]  cursor;
   logic[7:0]  buffer;
   logic[31:0] sum;
 
@@ -48,14 +53,16 @@ module uart_rx
       cycle  <= cycle - 1;
     end
     else if (cursor != 0) begin
-      cycle  <= cycle_bits'(cycles_per_bit - 1);
+      logic [7:0] temp;
+      temp = {i_serial, buffer[7:1]};
+      cycle  <= cycle_max;
       cursor <= cursor - 1;
-      buffer <= {i_serial, buffer[7:1]};
-      if (cursor == 2) sum <= sum + {24'b0, i_serial, buffer[7:1]};
+      buffer <= temp;
+      if ((cursor - 1) == 1) sum <= sum + temp;
     end
     else if (i_serial == 0) begin
-      cycle  <= cycle_bits'(cycles_per_bit - 1);
-      cursor <= 9;
+      cycle  <= cycle_max;
+      cursor <= cursor_max;
     end
   endtask
 

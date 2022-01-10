@@ -51,8 +51,8 @@ public:
     field_state[key] = value;
   }
 
-  FILE* file;
-  uint64_t time;
+  FILE* file = nullptr;
+  uint64_t time = 0;
   tag_to_string field_path;
   tag_to_value field_state;
 };

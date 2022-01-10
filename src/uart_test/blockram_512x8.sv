@@ -12,24 +12,21 @@ module blockram_512x8
   /*verilator public_module*/
 
   localparam size = 512;
+  
   reg [7:0] memory[size];
-  logic[8:0] addr;
+  logic[7:0] data;
 
   //----------------------------------------
 
-  initial begin
-  end
-
   task automatic reset();
-    addr <= '0;
   endtask
 
-  always_comb begin
-    o_data = memory[addr];
+  always_comb begin : tick
+    o_data = data;
   end
 
   task automatic tock();
-    addr <= i_addr;
+    data <= memory[i_addr];
   endtask
 
   //----------------------------------------

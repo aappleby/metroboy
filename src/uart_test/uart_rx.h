@@ -17,13 +17,13 @@ struct uart_rx {
   //----------------------------------------
   
   static const int cycle_bits  = clog2(cycles_per_bit);
-
+  static const int cycle_max   = cycles_per_bit - 1;
   static const int cursor_max  = 9;
   static const int cursor_bits = clog2(cursor_max);
 
   int cycle;
   int cursor;
-  uint8_t data;
+  uint8_t buffer;
   uint32_t sum;
 
   //----------------------------------------
@@ -31,14 +31,14 @@ struct uart_rx {
   void reset() {
     cycle = 0;
     cursor = 0;
-    data = 0;
+    buffer = 0;
     sum = 0;
   }
 
   //----------------------------------------
 
   void tick() {
-    o_data  = data;
+    o_data  = buffer;
     o_valid = cursor == 1;
     o_sum   = sum;
   }
@@ -50,14 +50,16 @@ struct uart_rx {
       cycle = cycle - 1;
     }
     else if (cursor != 0) {
-      cycle = (cycles_per_bit - 1);
+      uint8_t temp;
+      temp = (i_serial << 7) | (buffer >> 1);
+      cycle  = cycle_max;
       cursor = cursor - 1;
-      data = (i_serial << 7) | (data >> 1);
-      if (cursor == 1) sum += data;
+      buffer = temp;
+      if (cursor == 1) sum += temp;
     }
     else if (i_serial == 0) {
-      cycle = (cycles_per_bit - 1);
-      cursor = 9;
+      cycle = cycle_max;
+      cursor = cursor_max;
     }
   }
 
@@ -115,7 +117,7 @@ struct uart_rx {
   void dump_value(VcdDump& d) {
     d.set_value("rx_cycle",   cycle,   cycle_bits);
     d.set_value("rx_cursor",  cursor,  cursor_bits);
-    d.set_value("rx_data",    data,    8);
+    d.set_value("rx_data",    buffer,    8);
     d.set_value("rx_sum",     sum,     32);
     d.set_value("rx_o_data",  o_data,  8);
     d.set_value("rx_o_valid", o_valid, 1);

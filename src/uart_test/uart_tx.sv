@@ -1,4 +1,6 @@
+/* verilator lint_off WIDTH */
 `default_nettype none
+`timescale 1 ns / 1 ns
 
 //==============================================================================
 
@@ -35,16 +37,7 @@ module uart_tx
 
   //----------------------------------------
 
-  task automatic reset();
-    cycle  <= '0;
-    cursor <= '0;
-    buffer <= 9'h1FF;
-  endtask
-
-  //----------------------------------------
-
-  // having combi logic in tick doesn't work in icarus
-  always_comb begin
+  always_comb begin : tick
     o_serial = buffer[0];
     o_cts    = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
     o_idle   = (cursor == 0) && (cycle == 0);
@@ -52,37 +45,33 @@ module uart_tx
 
   //----------------------------------------
   
-  task automatic tock();
-    if (cursor <= extra_stop_bits && cycle == 0 && i_req) begin
-      // Transmit start
-      cycle  <= cycle_max;
-      cursor <= cursor_max;
-      buffer <= { i_data, 1'b0 };
-    end else if (cycle != 0) begin
-      // Bit delay
-      cycle  <= cycle - 1;
-      cursor <= cursor;
-      buffer <= buffer;
-    end else if (cursor != 0) begin
-      // Bit delay done, switch to next bit.
-      cycle  <= cycle_max;
-      cursor <= cursor - 1;
-      buffer <= (buffer >> 1) | 9'h100;
+  always_ff @(posedge clk, negedge rst_n) begin : tock
+    if (!rst_n) begin
+      cycle  = '0;
+      cursor = '0;
+      buffer = 9'h1FF;
+    end else begin
+      if (cursor <= extra_stop_bits && cycle == 0 && i_req) begin
+        // Transmit start
+        cycle  = cycle_max;
+        cursor = cursor_max;
+        buffer = { i_data, 1'b0 };
+      end else if (cycle != 0) begin
+        // Bit delay
+        cycle  = cycle - 1;
+        cursor = cursor;
+        buffer = buffer;
+      end else if (cursor != 0) begin
+        // Bit delay done, switch to next bit.
+        cycle  = cycle_max;
+        cursor = cursor - 1;
+        buffer = (buffer >> 1) | 9'h100;
+      end
     end
 
-    // having combi logic as blocking assignment here doesn't work in verilator
-
-  endtask
+  end
 
   //----------------------------------------
-
-  always @(posedge clk, negedge rst_n) begin
-    if (!rst_n) begin
-      reset();
-    end else begin
-      tock();
-    end
-  end
 
 endmodule
 

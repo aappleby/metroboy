@@ -1,5 +1,6 @@
-`default_nettype none
 /* verilator lint_off WIDTH */
+`default_nettype none
+`timescale 1 ns / 1 ns
 
 //==============================================================================
 
@@ -15,28 +16,18 @@ module uart_rx
   output logic       o_valid,
   output logic[31:0] o_sum
 );
-  /*verilator public_module*/
-
   //----------------------------------------
+  /*verilator public_module*/
 
   localparam cycle_bits  = $clog2(cycles_per_bit);
   localparam cycle_max   = cycles_per_bit - 1;
   localparam cursor_max  = 9;
   localparam cursor_bits = $clog2(cursor_max);
 
-  logic[cycle_bits-1:0]   cycle;
-  logic[cursor_bits-1:0]  cursor;
-  logic[7:0]  buffer;
+  logic[cycle_bits-1:0] cycle;
+  logic[cursor_bits-1:0] cursor;
+  logic[7:0] buffer;
   logic[31:0] sum;
-
-  //----------------------------------------
-
-  task automatic reset();
-    cycle  <= 0;
-    cursor <= 0;
-    buffer <= 0;
-    sum    <= 0;
-  endtask
 
   //----------------------------------------
 
@@ -48,55 +39,34 @@ module uart_rx
 
   //----------------------------------------
 
-  task automatic tock(logic i_serial);
-    if (cycle != 0) begin
-      cycle  <= cycle - 1;
+  always_ff @(posedge clk, negedge rst_n) begin : tock
+    if (!rst_n) begin
+      cycle  <= 0;
+      cursor <= 0;
+      buffer <= 0;
+      sum    <= 0;
+    end else begin
+      if (cycle != 0) begin
+        cycle <= cycle - 1;
+      end
+      else if (cursor != 0) begin
+        logic [7:0] temp;
+  
+        temp = (i_serial << 7) | (buffer >> 1);
+        if ((cursor - 1) == 1) sum <= sum + temp;
+  
+        cycle  <= cycle_max;
+        cursor <= cursor - 1;
+        buffer <= temp;
+      end
+      else if (i_serial == 0) begin
+        cycle <= cycle_max;
+        cursor <= cursor_max;
+      end
     end
-    else if (cursor != 0) begin
-      logic [7:0] temp;
-      temp = {i_serial, buffer[7:1]};
-      cycle  <= cycle_max;
-      cursor <= cursor - 1;
-      buffer <= temp;
-      if ((cursor - 1) == 1) sum <= sum + temp;
-    end
-    else if (i_serial == 0) begin
-      cycle  <= cycle_max;
-      cursor <= cursor_max;
-    end
-  endtask
+  end
 
   //----------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  always_ff @(posedge clk, negedge rst_n) begin
-    if (!rst_n) reset();
-    else        tock(i_serial);
-  end
 
 endmodule
 

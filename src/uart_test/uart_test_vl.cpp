@@ -5,7 +5,6 @@
 #include "obj/DUT_uart_hello.h"
 #include "obj/DUT_uart_tx__C3.h"
 #include "obj/DUT_uart_rx__C3.h"
-#include "obj/DUT_blockram_512x8.h"
 
 #include "verilated_vcd_c.h"
 #include "message.blob.h"
@@ -17,7 +16,7 @@ int main(int argc, char** argv) {
   tfp->spTrace()->set_time_resolution("1 ns");
 
   DUT dut;
-  memcpy(dut.uart_top->hello->mem->memory.m_storage, message, message_len);
+  memcpy(dut.uart_top->hello->memory.m_storage, message, message_len);
   dut.trace(tfp, 99);
   tfp->open("uart_test_vl.vcd");
 
@@ -52,22 +51,22 @@ int main(int argc, char** argv) {
   tfp->dump(timestamp);
 
 
-  while (!Verilated::gotFinish()) {
+  while (timestamp <= 153575) {
     timestamp += 5;
 
-    auto old_valid = dut.top_o_valid;
+    auto old_valid = dut.o_valid;
     dut.clk = !dut.clk;
     dut.eval();
     tfp->dump(timestamp);
-    auto new_valid = dut.top_o_valid;
+    auto new_valid = dut.o_valid;
 
-    if (!old_valid && new_valid) printf("%c", dut.top_o_data);
+    if (!old_valid && new_valid) printf("%c", dut.o_data);
     if (timestamp > 25 && dut.uart_top->tx->o_idle) break;
   }
 
   printf("\n");
   printf("================================================================================\n");
-  if (dut.top_o_sum == 0x0000b764) printf("All tests pass.\n");
+  if (dut.o_sum == 0x0000b764) printf("All tests pass.\n");
   tfp->close();
 
   return 0;

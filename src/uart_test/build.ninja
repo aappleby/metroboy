@@ -1,5 +1,5 @@
 rule compile
-  command = g++ -std=gnu++2a -I/usr/local/share/verilator/include -I/usr/local/share/verilator/include/vltstd -MMD -MF $out.d -c $in -o $out
+  command = g++ -O3 -std=gnu++2a -I/usr/local/share/verilator/include -I/usr/local/share/verilator/include/vltstd -MMD -MF $out.d -c $in -o $out
   deps = gcc
   depfile = $out.d
 
@@ -35,8 +35,8 @@ rule touch
 
 ################################################################################
 
-build bin/all_sv : touch uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv blockram_512x8.sv obj/message.hex
-build bin/all_h  : touch uart_top.h  uart_hello.h  uart_rx.h  uart_tx.h  blockram_512x8.h  message.blob.h
+build bin/all_sv : touch uart_top.sv uart_hello.sv uart_rx.sv uart_tx.sv obj/message.hex
+build bin/all_h  : touch uart_top.h  uart_hello.h  uart_rx.h  uart_tx.h  message.blob.h
 
 build obj/make_blob_h.o  : compile make_blob_h.cpp
 build bin/make_blob_h    : link obj/make_blob_h.o

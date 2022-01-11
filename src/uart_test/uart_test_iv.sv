@@ -47,8 +47,6 @@ module uart_test;
   end
 
   initial begin
-    $readmemh("obj/message.hex", top.hello.mem.memory, 0, 511);
-
     $dumpfile("uart_test_iv.vcd");
     $dumpvars(0, uart_test);
 

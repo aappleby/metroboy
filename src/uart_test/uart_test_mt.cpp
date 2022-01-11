@@ -28,7 +28,7 @@ struct uart_test {
 
     memset(&top, 0, sizeof(top));
 
-    memcpy(top.hello.mem.memory, message, message_len);
+    memcpy(top.hello.memory, message, message_len);
 
     {
       fprintf(dump.file, "$timescale 1ns $end\n");
@@ -39,7 +39,6 @@ struct uart_test {
 
       top.dump_vcd_header(dump);
       top.hello.dump_vcd_header(dump);
-      top.hello.mem.dump_vcd_header(dump);
       top.tx.dump_vcd_header(dump);
       top.rx.dump_vcd_header(dump);
 
@@ -56,8 +55,8 @@ struct uart_test {
 
     dump_vars(0, 1, dump);
 
-    top.reset();
-    top.tick();
+    top.tock(0);
+    top.tick(0);
 
     dump_vars(0, 0, dump);
     dump_vars(1, 0, dump);
@@ -65,8 +64,8 @@ struct uart_test {
 
     bool old_valid = false;
     for (; cycle < 500000; cycle++) {
-      top.tock();
-      top.tick();
+      top.tock(1);
+      top.tick(1);
       if (!old_valid && top.o_valid) printf("%c", top.o_data);
       old_valid = top.o_valid;
 

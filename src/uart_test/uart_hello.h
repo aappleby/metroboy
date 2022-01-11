@@ -1,22 +1,22 @@
 #pragma once
 #include "metron.h"
-#include "blockram_512x8.h"
 #include "vcd_dump.h"
 
 //==============================================================================
 
 struct uart_hello {
+  //input logic clk,
+  //input logic rst_n,
 
-  //----------------------------------------
-
-  bool    i_cts;
-  bool    i_idle;
+  bool i_cts;
+  bool i_idle;
   
   uint8_t o_data;
   bool    o_req;
   bool    o_done;
 
   //----------------------------------------
+  /*verilator public_module*/
 
   //static const int message_len = 7;
   static const int message_len = 512;
@@ -28,70 +28,50 @@ struct uart_hello {
 
   //----------------------------------------
 
-  //logic[8:0] mem_i_addr;
-  //logic[7:0] mem_o_data;
-  blockram_512x8 mem;
+  uint8_t memory[512];
+  uint8_t data;
+
+
+
+
 
   //----------------------------------------
 
-  void reset() {
-    mem.reset();
-    state = WAIT;
-    cursor = 0;
-  }
-
-  //----------------------------------------
-
-  void tick() {
-    mem.tick();
-
-    o_data = mem.o_data;
+  void tick(bool rst_n) {
+    o_data = data;
     o_req  = state == SEND;
     o_done = state == DONE;
-    mem.i_addr = cursor;
   }
 
   //----------------------------------------
 
-  void tock() {
-    mem.tock();
-
-    if (state == WAIT && i_idle) {
-      state = SEND;
-    } else if (state == SEND && i_cts) {
-      if (cursor == (message_len - 1)) state = DONE;
-      cursor = cursor + 1;
-    } else if (state == DONE) {
+  void tock(bool rst_n) {
+    if (!rst_n) {
       state = WAIT;
-    cursor = 0;
+      cursor = 0;
+    } else {
+      data = memory[cursor];
+      if (state == WAIT && i_idle) {
+        state = SEND;
+      } else if (state == SEND && i_cts) {
+        if (cursor == (message_len - 1)) state = DONE;
+        cursor = cursor + 1;
+      } else if (state == DONE) {
+        state = WAIT;
+        cursor = 0;
+      }
     }
   }
 
   //----------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   void dump_header() {
     printf("[hlo state cursor data req done] ");
-    mem.dump_header();
   }
 
   void dump() {
-    printf("[    %-5d %-6d %-04x %-3d %-4d] ", state, cursor, o_data, o_req, o_done);
-    mem.dump();
+    printf("[    %-5d %-6d %04x %-3d %-4d] ", state, cursor, o_data, o_req, o_done);
   }
 
   void dump_vcd_header(VcdDump& d) {
@@ -110,8 +90,8 @@ struct uart_hello {
     d.set_value("hello_o_data", o_data, 8);
     d.set_value("hello_o_req",  o_req,  1);
     d.set_value("hello_o_done", o_done, 1);
-    mem.dump_value(d);
   }
+
 };
 
 //==============================================================================

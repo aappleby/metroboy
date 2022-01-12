@@ -6,6 +6,11 @@
 template<int cycles_per_bit = 4>
 struct uart_rx {
 
+
+
+
+  //----------------------------------------
+
   bool     i_serial;
 
   uint8_t  o_data;
@@ -37,16 +42,14 @@ struct uart_rx {
 
   void tock(bool rst_n) {
     if (!rst_n) {
-      cycle = 0;
+      cycle  = 0;
       cursor = 0;
       buffer = 0;
-      sum = 0;
-    }
-    else {
+      sum    = 0;
+    } else {
       if (cycle != 0) {
         cycle = cycle - 1;
-      }
-      else if (cursor != 0) {
+      } else if (cursor != 0) {
         uint8_t temp;
 
         temp = (i_serial << 7) | (buffer >> 1);
@@ -57,59 +60,13 @@ struct uart_rx {
         buffer = temp;
       }
       else if (i_serial == 0) {
-        cycle = cycle_max;
+        cycle  = cycle_max;
         cursor = cursor_max;
       }
     }
   }
 
   //----------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   void dump_header() {

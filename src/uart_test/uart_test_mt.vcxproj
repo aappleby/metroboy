@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -142,7 +142,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="blockram_512x8.h" />
     <ClCompile Include="make_blob_h.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -160,11 +159,8 @@
     <ClInclude Include="vcd_dump.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="blockram_128x32.sv" />
-    <None Include="blockram_512x8.sv" />
     <None Include="build.ninja" />
     <None Include="SB_PLL40_CORE.v" />
-    <None Include="SB_RAM40_4K.v" />
     <None Include="uart_hello.sv" />
     <None Include="uart_ice40.sv" />
     <None Include="uart_rx.sv" />

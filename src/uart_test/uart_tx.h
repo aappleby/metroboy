@@ -1,9 +1,13 @@
 #include "metron.h"
 
+
 //==============================================================================
 
 template<int cycles_per_bit = 4>
 struct uart_tx {
+
+
+
 
   //----------------------------------------
 
@@ -13,6 +17,8 @@ struct uart_tx {
   bool    o_serial;
   bool    o_cts;
   bool    o_idle;
+
+  /*verilator public_module*/
 
   //----------------------------------------
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
@@ -34,7 +40,7 @@ struct uart_tx {
 
   void tick(bool rst_n) {
     o_serial = buffer & 1;
-    o_cts    = ((cursor <= extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
+    o_cts    = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
     o_idle   = (cursor == 0) && (cycle == 0);
   }
 
@@ -48,19 +54,17 @@ struct uart_tx {
     } else {
       if (cursor <= extra_stop_bits && cycle == 0 && i_req) {
         // Transmit start
-        cycle  = cycles_per_bit - 1;
-        cursor = 10 + extra_stop_bits - 1;
-        buffer = (i_data << 1) | 0;
-      }
-      else if (cycle != 0) {
+        cycle  = cycle_max;
+        cursor = cursor_max;
+        buffer = i_data << 1;
+      } else if (cycle != 0) {
         // Bit delay
         cycle  = cycle - 1;
         cursor = cursor;
         buffer = buffer;
-      }
-      else if (cursor != 0) {
+      } else if (cursor != 0) {
         // Bit delay done, switch to next bit.
-        cycle  = cycles_per_bit - 1;
+        cycle  = cycle_max;
         cursor = cursor - 1;
         buffer = (buffer >> 1) | 0x100;
       }
@@ -68,25 +72,6 @@ struct uart_tx {
   }
 
   //----------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   void dump_header() {

@@ -53,7 +53,7 @@ module uart_rx
         logic [7:0] temp;
   
         temp = (i_serial << 7) | (buffer >> 1);
-        if (cursor - 1 == 1) sum = sum + temp;
+        if (cursor - 1 == 1) sum <= sum + temp;
   
         cycle  <= cycle_max;
         cursor <= cursor - 1;

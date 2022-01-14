@@ -24,6 +24,7 @@ module uart_tx
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages
 
+  //localparam cycles_per_bit = 3;
   localparam extra_stop_bits = 7;
 
   localparam cycle_bits = $clog2(cycles_per_bit);
@@ -32,7 +33,7 @@ module uart_tx
   localparam cursor_bits = $clog2(10 + extra_stop_bits);
   localparam cursor_max = 10 + extra_stop_bits - 1;
 
-  logic[cycle_bits-1:0]    cycle;
+  logic[cycle_bits-1:0]  cycle;
   logic[cursor_bits-1:0] cursor;
   logic[8:0] buffer;
 

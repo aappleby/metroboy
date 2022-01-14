@@ -8,8 +8,6 @@
 
 #pragma warning(disable:4996)
 
-#include "vcd_dump.h"
-
 constexpr int clog2(uint32_t x) {
   for (int i = 31; i >= 0; i--) if (x & (1 << i)) return i + 1;
   return 0;
@@ -70,3 +68,53 @@ inline void parse_hex(const char* src_filename, uint8_t* dst_data, int dst_size)
   free(src_data);
 }
 
+template<int N = 1>
+struct logic {
+  typedef uint32_t base_type;
+  static constexpr int width = N;
+  static constexpr base_type mask = (1 << width) - 1;
+
+  logic() : x(0) {}
+  logic(base_type x) : x(x & mask) {}
+  operator base_type() const { return x; }
+  base_type x;
+};
+
+typedef logic<1> bit;
+
+// the specializations just save ram, but not sure if it's worth it...
+
+/*
+template<>
+struct bits<1> {
+  static constexpr int width = 1;
+  typedef uint8_t base_type;
+  static constexpr base_type mask = (1 << width) - 1;
+  bits() : x(0) {}
+  bits(base_type x) : x(x& mask) {}
+  operator base_type() const { return x; }
+  base_type x;
+};
+
+template<>
+struct bits<8> {
+  static constexpr int width = 8;
+  typedef uint16_t base_type;
+  static constexpr base_type mask = (1 << width) - 1;
+  bits() : x(0) {}
+  bits(base_type x) : x(x& mask) {}
+  operator base_type() const { return x; }
+  base_type x;
+};
+
+template<>
+struct bits<9> {
+  static constexpr int width = 9;
+  typedef uint16_t base_type;
+  static constexpr base_type mask = (1 << width) - 1;
+  bits() : x(0) {}
+  bits(base_type x) : x(x& mask) {}
+  operator base_type() const { return x; }
+  base_type x;
+};
+*/

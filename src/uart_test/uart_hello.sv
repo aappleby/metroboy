@@ -1,6 +1,5 @@
 /* verilator lint_off WIDTH */
 `default_nettype none
-`timescale 1 ns / 1 ns
 
 //==============================================================================
 

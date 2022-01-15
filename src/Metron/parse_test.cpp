@@ -1,8 +1,8 @@
 #include "metron_top.h"
 
-
 //==============================================================================
 
+template<int cycles_per_bit, int blep = 2>
 class uart_tx {
 public:
 
@@ -22,7 +22,6 @@ public:
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages
 
-  static const int cycles_per_bit = 3;
   static const int extra_stop_bits = 7;
 
   static const int cycle_bits = clog2(cycles_per_bit);
@@ -56,14 +55,12 @@ public:
         cycle = cycle_max;
         cursor = cursor_max;
         buffer = i_data << 1;
-      }
-      else if (cycle != 0) {
+      } else if (cycle != 0) {
         // Bit delay
         cycle = cycle - 1;
         cursor = cursor;
         buffer = buffer;
-      }
-      else if (cursor != 0) {
+      } else if (cursor != 0) {
         // Bit delay done, switch to next bit.
         cycle = cycle_max;
         cursor = cursor - 1;

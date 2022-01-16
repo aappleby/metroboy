@@ -146,6 +146,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="metron.cpp" />
     <ClCompile Include="uart_hello.h" />
     <ClCompile Include="uart_rx.h" />
     <ClCompile Include="uart_test_mt.cpp" />

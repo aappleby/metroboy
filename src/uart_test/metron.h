@@ -162,3 +162,6 @@ DECLARE_LOGIC(uint64_t, 64);
 typedef logic<1> bit;
 
 //----------------------------------------
+// 'end' is INCLUSIVE
+
+void readmemh(const char* path, logic<8>* mem, int begin, int end);

@@ -137,6 +137,7 @@ struct CodeEmitter {
   TSNode module_class = { 0 };
   TSNode module_param_list = { 0 };
 
+  bool in_init = false;
   bool in_comb = false;
   bool in_seq = false;
 
@@ -751,6 +752,10 @@ struct CodeEmitter {
       emit_replacement(call_func, "$clog2");
       emit_dispatch(call_args);
     }
+    else if (match(call_func, "readmemh")) {
+      emit_replacement(call_func, "$readmemh");
+      emit_dispatch(call_args);
+    }
     else {
       comment_out(n);
     }
@@ -772,6 +777,7 @@ struct CodeEmitter {
     bool is_task = match(func_type, "void");
     bool is_tick = is_task && match(task_name, "tick");
     bool is_tock = is_task && match(task_name, "tock");
+    bool is_init = is_task && match(task_name, "initial");
 
     if (is_tick) {
       emit("always_comb");
@@ -783,7 +789,6 @@ struct CodeEmitter {
 
       return;
     }
-
     else if (is_tock) {
       skip_over(func_type);
 
@@ -799,11 +804,19 @@ struct CodeEmitter {
 
       return;
     }
-    else {
-      emit_replacement(n, "{function_definition}");
+    else if (is_init) {
+      emit("initial");
+      cursor = end(func_decl);
+
+      in_init = true;
+      emit_dispatch(func_body);
+      in_init = false;
+
+      return;
     }
 
-    /*
+
+
     if (is_task) {
       skip_over(func_type);
       emit("task");
@@ -827,13 +840,13 @@ struct CodeEmitter {
         skip_over(c);
       }
       else if (s == anon_sym_RBRACE) {
+        advance_to(c);
         emit_replacement(c, is_task ? "endtask" : "endfunction");
       }
       else {
         emit_dispatch(c);
       }
     }
-    */
   }
 
 
@@ -1073,7 +1086,14 @@ struct CodeEmitter {
   void emit_translation_unit(TSNode n) {
     emit("/* verilator lint_off WIDTH */\n");
     emit("`default_nettype none\n");
-    dispatch_children(n);
+    
+    //dispatch_children(n);
+
+    // Discard any trailing semicolons in the translation unit.
+    visit_children(n, [&](TSNode child) {
+      auto sc = ts_node_symbol(child);
+      sc == anon_sym_SEMI ? skip_over(child) : emit_dispatch(child);
+    });
   }
 
   //------------------------------------------------------------------------------
@@ -1130,6 +1150,8 @@ struct CodeEmitter {
     case sym_binary_expression:
     case sym_field_expression: // This needs to be flattened to module_o_blah instad of module.o_blah
     case sym_argument_list:
+    case sym_array_declarator:
+    case sym_parameter_list:
       dispatch_children(n);
       return;
 
@@ -1147,6 +1169,10 @@ struct CodeEmitter {
     case sym_false:
     case sym_comment:
       emit_leaf(n);
+      return;
+
+    case sym_string_literal:
+      emit_body(n);
       return;
 
     case sym_number_literal: {
@@ -1231,8 +1257,8 @@ struct CodeEmitter {
 int main(int argc, char** argv) {
   std::vector<std::string> inputs = {
     //"src/uart_test/uart_top.h",
-    //"src/uart_test/uart_hello.h",
-    "src/uart_test/uart_tx.h",
+    "src/uart_test/uart_hello.h",
+    //"src/uart_test/uart_tx.h",
     //"src/uart_test/uart_rx.h",
   };
 
@@ -1279,7 +1305,10 @@ int main(int argc, char** argv) {
 
     e.emit("\n");
     e.emit_dispatch(e.root);
+
+    //e.dump_tree(e.root);
   }
+
 
   return 0;
 }

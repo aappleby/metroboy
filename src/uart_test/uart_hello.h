@@ -1,6 +1,8 @@
 #pragma once
 #include "metron.h"
 
+//==============================================================================
+
 struct uart_hello {
   logic<1> i_cts;
   logic<1> i_idle;
@@ -10,22 +12,28 @@ struct uart_hello {
   logic<1> o_done;
 
   //----------------------------------------
+  /*verilator public_module*/
 
-  //static const int message_len = 7;
   static const int message_len = 512;
   static const int cursor_bits = clog2(message_len);
 
   typedef enum { WAIT, SEND, DONE } e_state;
-  logic<2>           state;
+  logic<2> state;
   logic<cursor_bits> cursor;
-  logic<8>           memory[512];
-  logic<8>           data;
+  logic<8> memory[512];
+  logic<8> data;
+
+  //----------------------------------------
+
+  void init() {
+    readmemh("obj/message.hex", memory, 0, 511);
+  }
 
   //----------------------------------------
 
   void tick(bool rst_n) {
     o_data = data;
-    o_req  = state == SEND;
+    o_req = state == SEND;
     o_done = state == DONE;
   }
 

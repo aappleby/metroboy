@@ -1,6 +1,8 @@
 #pragma once
 #include "metron.h"
 
+//==============================================================================
+
 template<int cycles_per_bit = 4>
 struct uart_tx {
 
@@ -10,6 +12,8 @@ struct uart_tx {
   logic<1> o_serial;
   logic<1> o_cts;
   logic<1> o_idle;
+
+  /*verilator public_module*/
 
   //----------------------------------------
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee

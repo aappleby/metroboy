@@ -1145,10 +1145,21 @@ struct CodeEmitter {
     case sym_identifier:
     case sym_true:
     case sym_false:
-    case sym_number_literal:
     case sym_comment:
       emit_leaf(n);
       return;
+
+    case sym_number_literal: {
+      std::string text(start(n), end(n));
+      if (text.starts_with("0x")) {
+        emit("'h%s", text.c_str() + 2);
+        skip_over(n);
+      }
+      else {
+        emit_leaf(n);
+      }
+      return;
+    }
 
     case sym_preproc_call:
     case sym_preproc_if:
@@ -1221,8 +1232,8 @@ int main(int argc, char** argv) {
   std::vector<std::string> inputs = {
     //"src/uart_test/uart_top.h",
     //"src/uart_test/uart_hello.h",
-    //"src/uart_test/uart_tx.h",
-    "src/uart_test/uart_rx.h",
+    "src/uart_test/uart_tx.h",
+    //"src/uart_test/uart_rx.h",
   };
 
 

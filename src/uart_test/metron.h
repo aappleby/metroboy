@@ -8,10 +8,20 @@
 
 #pragma warning(disable:4996)
 
-constexpr int clog2(uint32_t x) {
-  for (int i = 31; i >= 0; i--) if (x & (1 << i)) return i + 1;
-  return 0;
+constexpr int clog2(uint64_t x) {
+  if (x == 0) return 0;
+  x--;
+  for (int i = 63; i >= 0; i--) if (x & (uint64_t(1) << i)) return i + 1;
+  return 1;
 }
+
+static_assert(clog2(0) == 0);
+static_assert(clog2(1) == 1);
+static_assert(clog2(2) == 1);
+static_assert(clog2(3) == 2);
+static_assert(clog2(255) == 8);
+static_assert(clog2(256) == 8);
+static_assert(clog2(257) == 9);
 
 inline void parse_hex(const char* src_filename, uint8_t* dst_data, int dst_size) {
 
@@ -75,7 +85,7 @@ template<int N> struct logic {};
 #define DECLARE_LOGIC(T, N) \
 template<> \
 struct logic<N> { \
-  static const int width = N; \
+static const int width = N; \
   void operator = (const T& y) { x = y; } \
   operator T() const { return x; } \
   T x : N; \
@@ -152,40 +162,3 @@ DECLARE_LOGIC(uint64_t, 64);
 typedef logic<1> bit;
 
 //----------------------------------------
-
-// the specializations just save ram, but not sure if it's worth it...
-
-/*
-template<>
-struct bits<1> {
-  static constexpr int width = 1;
-  typedef uint8_t base_type;
-  static constexpr base_type mask = (1 << width) - 1;
-  bits() : x(0) {}
-  bits(base_type x) : x(x& mask) {}
-  operator base_type() const { return x; }
-  base_type x;
-};
-
-template<>
-struct bits<8> {
-  static constexpr int width = 8;
-  typedef uint16_t base_type;
-  static constexpr base_type mask = (1 << width) - 1;
-  bits() : x(0) {}
-  bits(base_type x) : x(x& mask) {}
-  operator base_type() const { return x; }
-  base_type x;
-};
-
-template<>
-struct bits<9> {
-  static constexpr int width = 9;
-  typedef uint16_t base_type;
-  static constexpr base_type mask = (1 << width) - 1;
-  bits() : x(0) {}
-  bits(base_type x) : x(x& mask) {}
-  operator base_type() const { return x; }
-  base_type x;
-};
-*/

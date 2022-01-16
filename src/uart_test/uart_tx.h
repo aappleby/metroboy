@@ -1,12 +1,8 @@
 #pragma once
 #include "metron.h"
 
-//==============================================================================
-
 template<int cycles_per_bit = 4>
 struct uart_tx {
-
-  //----------------------------------------
 
   logic<8> i_data;
   logic<1> i_req;
@@ -15,19 +11,17 @@ struct uart_tx {
   logic<1> o_cts;
   logic<1> o_idle;
 
-  /*verilator public_module*/
-
   //----------------------------------------
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages
 
-  static const uint32_t extra_stop_bits = 7;
+  static const int extra_stop_bits = 7;
 
-  static const uint32_t cycle_bits = clog2(cycles_per_bit);
-  static const uint32_t cycle_max  = cycles_per_bit - 1;
+  static const int cycle_bits = clog2(cycles_per_bit);
+  static const int cycle_max  = cycles_per_bit - 1;
 
-  static const uint32_t cursor_bits = clog2(10 + extra_stop_bits);
-  static const uint32_t cursor_max  = 10 + extra_stop_bits - 1;
+  static const int cursor_bits = clog2(10 + extra_stop_bits);
+  static const int cursor_max  = 10 + extra_stop_bits - 1;
 
   logic<cycle_bits> cycle;
   logic<cursor_bits> cursor;
@@ -68,5 +62,3 @@ struct uart_tx {
     }
   }
 };
-
-//==============================================================================

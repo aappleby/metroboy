@@ -13,6 +13,7 @@
 
 //==============================================================================
 
+
 module uart_rx
 #(parameter int cycles_per_bit = 4)
 (clk, rst_n, i_serial, o_data, o_valid, o_sum);
@@ -20,16 +21,16 @@ module uart_rx
   input  logic rst_n;
 
   input  logic i_serial;
-  output logic[7:0]  o_data;
-  output logic       o_valid;
+  output logic[7:0] o_data;
+  output logic o_valid;
   output logic[31:0] o_sum;
 
   //----------------------------------------
   /*verilator public_module*/
 
-  localparam /*const*/ int cycle_bits  = $clog2(cycles_per_bit);
-  localparam /*const*/ int cycle_max   = cycles_per_bit - 1;
-  localparam /*const*/ int cursor_max  = 9;
+  localparam /*const*/ int cycle_bits = $clog2(cycles_per_bit);
+  localparam /*const*/ int cycle_max = cycles_per_bit - 1;
+  localparam /*const*/ int cursor_max = 9;
   localparam /*const*/ int cursor_bits = $clog2(cursor_max);
 
   logic[cycle_bits-1:0] cycle;
@@ -40,34 +41,34 @@ module uart_rx
   //----------------------------------------
 
   always_comb begin
-    o_data  = buffer;
+    o_data = buffer;
     o_valid = cursor == 1;
-    o_sum   = sum;
+    o_sum = sum;
   end
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin : tock
+  always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
-      cycle  <= 0;
+      cycle <= 0;
       cursor <= 0;
       buffer <= 0;
-      sum    <= 0;
+      sum <= 0;
     end else begin
       if (cycle != 0) begin
         cycle <= cycle - 1;
-      end  else if (cursor != 0) begin
-        logic [7:0] temp;
-  
+      end else if (cursor != 0) begin
+        logic[7:0] temp;
+
         temp = (i_serial << 7) | (buffer >> 1);
         if (cursor - 1 == 1) sum <= sum + temp;
-  
-        cycle  <= cycle_max;
+
+        cycle <= cycle_max;
         cursor <= cursor - 1;
         buffer <= temp;
       end
       else if (i_serial == 0) begin
-        cycle  <= cycle_max;
+        cycle <= cycle_max;
         cursor <= cursor_max;
       end
     end

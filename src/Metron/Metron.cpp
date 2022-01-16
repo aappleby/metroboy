@@ -133,8 +133,9 @@ struct CodeEmitter {
   std::vector<TSNode> fields;
   std::vector<TSNode> submodules;
 
-  TSNode module_template;
-  TSNode module_class;
+  TSNode module_template = { 0 };
+  TSNode module_class = { 0 };
+  TSNode module_param_list = { 0 };
 
   bool in_comb = false;
   bool in_seq = false;
@@ -709,20 +710,30 @@ struct CodeEmitter {
   //------------------------------------------------------------------------------
   // FIXME - change '=' to '<=' if lhs is a field
 
+  bool has_field(std::string& name) {
+    for (auto f : fields) {
+      if (field_to_name(f) == name) return true;
+    }
+    return false;
+  }
+
   void emit_assignment_expression(TSNode n) {
-    auto exp_lv = ts_node_child(n, 0);
-    auto exp_op = ts_node_child(n, 1);
-    auto exp_rv = ts_node_child(n, 2);
+    auto exp_lv = ts_node_child_by_field_id(n, field_left);
+    auto exp_op = ts_node_child_by_field_id(n, field_operator);
+    auto exp_rv = ts_node_child_by_field_id(n, field_right);
 
     emit_dispatch(exp_lv);
 
     // need to check if lhs is a field reference
-    /*
     if (in_seq) {
-      advance_to(exp_op);
-      emit("<");
+      if (ts_node_symbol(exp_lv) == sym_identifier) {
+        std::string id(start(exp_lv), end(exp_lv));
+        if (has_field(id)) {
+          advance_to(exp_op);
+          emit("<", id.c_str());
+        }
+      }
     }
-    */
 
     emit_leaf(exp_op);
     emit_dispatch(exp_rv);
@@ -899,36 +910,50 @@ struct CodeEmitter {
     auto node_body = ts_node_child(n, 2);
 
     emit_replacement(node_class, "module");
-    emit_body(node_name);
+    emit_leaf(node_name);
     emit("\n");
-    emit("(clk, rst_n");
 
+    // Patch the template parameter list in after the module declaration
+    if (!ts_node_is_null(module_param_list)) {
+      auto old_cursor = cursor;
+      cursor = start(module_param_list);
+      emit_module_parameters(module_param_list);
+      emit("\n");
+      cursor = old_cursor;
+    }
+
+    // Emit an old-style port list
+    emit("(clk, rst_n");
     for (auto i : inputs) {
       emit(", %s", field_to_name(i).c_str());
     }
-      
     for (auto o : outputs) {
       emit(", %s", field_to_name(o).c_str());
     }
-
     emit(");\n");
 
+    // And the declaration of the ports will be in the module body along with
+    // the rest of the module.
     emit("  input  logic clk;\n");
     emit("  input  logic rst_n;\n");
 
-    // FIXME add input/output placeholders here
+    // Emit the module body, with a few modifications.
 
+    cursor = start(ts_node_child(node_body, 0));
     visit_children(node_body, [&](TSNode child) {
       auto sc = ts_node_symbol(child);
       if (sc == anon_sym_LBRACE) {
-        skip_over(child);
-      }
-      else if (sc == anon_sym_SEMI) {
+        // Discard the opening brace
         skip_over(child);
       }
       else if (sc == anon_sym_RBRACE) {
+        // Replace the closing brace with "endmodule"
         advance_to(child);
         emit_replacement(child, "endmodule");
+      }
+      else if (sc == anon_sym_SEMI) {
+        // Discard the seimcolon at the end of class{};"
+        skip_over(child);
       }
       else {
         emit_dispatch(child);
@@ -1035,7 +1060,7 @@ struct CodeEmitter {
     visit_children(n, [&](TSNode child) {
       auto sc = ts_node_symbol(child);
       if (sc == anon_sym_LBRACE || sc == anon_sym_RBRACE) {
-        emit_body(child);
+        emit_leaf(child);
       }
       else {
         emit_dispatch(child);
@@ -1169,7 +1194,9 @@ struct CodeEmitter {
       emit_assignment_expression(n);
     }
     else if (s == sym_template_parameter_list) {
-      emit_module_parameters(n);
+      //emit_module_parameters(n);
+      module_param_list = n;
+      skip_over(n);
     }
     else if (s == sym_enumerator_list) {
       emit_enumerator_list(n);

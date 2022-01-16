@@ -66,7 +66,7 @@ struct uart_test {
     for (; cycle < 500000; cycle++) {
       top.tock(1);
       top.tick(1);
-      if (!old_valid && top.o_valid) printf("%c", top.o_data);
+      if (!old_valid && top.o_valid) printf("%c", (uint8_t)top.o_data);
       old_valid = top.o_valid;
 
       dump_vars(1, 1, dump);

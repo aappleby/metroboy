@@ -6,17 +6,14 @@
 template<int cycles_per_bit = 4>
 struct uart_tx {
 
-
-
-
   //----------------------------------------
 
   logic<8> i_data;
-  bit i_req;
+  logic<1> i_req;
 
-  bit o_serial;
-  bit o_cts;
-  bit o_idle;
+  logic<1> o_serial;
+  logic<1> o_cts;
+  logic<1> o_idle;
 
   /*verilator public_module*/
 

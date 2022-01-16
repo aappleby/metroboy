@@ -64,33 +64,6 @@ module uart_hello (
 
   //----------------------------------------
 
-/*
-  void dump_header() {
-    printf("[hlo state cursor data req done] ");
-  }
-
-  void dump() {
-    printf("[    %-5d %-6d %04x %-3d %-4d] ", state, cursor, o_data, o_req, o_done);
-  }
-
-  void dump_vcd_header(VcdDump& d) {
-    fprintf(d.file, "$scope module hello $end\n");
-    fprintf(d.file, "$var wire 2 hello_state  state  $end\n");
-    fprintf(d.file, "$var wire 9 hello_cursor cursor $end\n");
-    fprintf(d.file, "$var wire 8 hello_o_data o_data $end\n");
-    fprintf(d.file, "$var wire 1 hello_o_req  o_req  $end\n");
-    fprintf(d.file, "$var wire 1 hello_o_done o_done $end\n");
-    fprintf(d.file, "$upscope $end\n");
-  }
-
-  void dump_value(VcdDump& d) {
-    d.set_value("hello_state",  state,  2);
-    d.set_value("hello_cursor", cursor, 9);
-    d.set_value("hello_o_data", o_data, 8);
-    d.set_value("hello_o_req",  o_req,  1);
-    d.set_value("hello_o_done", o_done, 1);
-  }
-*/
 endmodule
 
 //==============================================================================

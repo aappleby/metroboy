@@ -68,38 +68,6 @@ module uart_rx
 
   //----------------------------------------
 
-  /*
-  void dump_header() {
-    printf("[rx cyc cursor o_data o_valid o_sum] ");
-  }
-
-  void dump() {
-    printf("[   %-3d %-3d %-6x %-7d %05x] ", cycle, cursor, o_data, o_valid, o_sum);
-  }
-
-  void dump_vcd_header(VcdDump& d) {
-    fprintf(d.file, "$scope module rx $end\n");
-    fprintf(d.file, "$var wire %d  rx_cycle   cycle   $end\n",  cycle_bits);
-    fprintf(d.file, "$var wire %d  rx_cursor  cursor  $end\n", cursor_bits);
-    fprintf(d.file, "$var wire 8   rx_data    data    $end\n");
-    fprintf(d.file, "$var wire 32  rx_sum     sum     $end\n");
-    fprintf(d.file, "$var wire 8   rx_o_data  o_data  $end\n");
-    fprintf(d.file, "$var wire 1   rx_o_valid o_valid $end\n");
-    fprintf(d.file, "$var wire 32  rx_o_sum   o_sum   $end\n");
-    fprintf(d.file, "$upscope $end\n");
-  }
-
-  void dump_value(VcdDump& d) {
-    d.set_value("rx_cycle",   cycle,   cycle_bits);
-    d.set_value("rx_cursor",  cursor,  cursor_bits);
-    d.set_value("rx_data",    buffer,    8);
-    d.set_value("rx_sum",     sum,     32);
-    d.set_value("rx_o_data",  o_data,  8);
-    d.set_value("rx_o_valid", o_valid, 1);
-    d.set_value("rx_o_sum",   o_sum,   32);
-  }
-  */
-
 endmodule
 
 //==============================================================================

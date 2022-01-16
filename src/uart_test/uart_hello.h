@@ -7,12 +7,12 @@ struct uart_hello {
   //input logic clk,
   //input logic rst_n,
 
-  bool i_cts;
-  bool i_idle;
+  logic<1> i_cts;
+  logic<1> i_idle;
   
-  uint8_t o_data;
-  bool    o_req;
-  bool    o_done;
+  logic<8> o_data;
+  logic<1> o_req;
+  logic<1> o_done;
 
   //----------------------------------------
   /*verilator public_module*/
@@ -22,13 +22,13 @@ struct uart_hello {
   static const int cursor_bits = clog2(message_len);
 
   typedef enum { WAIT, SEND, DONE } e_state;
-  e_state state;
-  int     cursor;
+  logic<2>           state;
+  logic<cursor_bits> cursor;
 
   //----------------------------------------
 
-  uint8_t memory[512];
-  uint8_t data;
+  logic<8> memory[512];
+  logic<8> data;
 
 
 

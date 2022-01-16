@@ -11,11 +11,10 @@ struct uart_rx {
 
   //----------------------------------------
 
-  bool     i_serial;
-
-  uint8_t  o_data;
-  bool     o_valid;
-  uint32_t o_sum;
+  logic<1>  i_serial;
+  logic<8>  o_data;
+  logic<1>  o_valid;
+  logic<32> o_sum;
 
   //----------------------------------------
   /*verilator public_module*/
@@ -25,10 +24,10 @@ struct uart_rx {
   static const int cursor_max  = 9;
   static const int cursor_bits = clog2(cursor_max);
 
-  int cycle;
-  int cursor;
-  uint8_t buffer;
-  uint32_t sum;
+  logic<cycle_bits> cycle;
+  logic<cursor_bits> cursor;
+  logic<8> buffer;
+  logic<32> sum;
 
   //----------------------------------------
 

@@ -12,11 +12,12 @@ struct uart_top {
   //input logic clk,
   //input logic rst_n,
 
-  bool     o_serial;
-  uint8_t  o_data;
-  bool     o_valid;
-  bool     o_done;
-  uint32_t o_sum;
+  logic<1>  o_serial;
+  logic<8>  o_data;
+  logic<1>  o_valid;
+  logic<1>  o_done;
+  logic<32> o_sum;
+
 
   //----------------------------------------
 

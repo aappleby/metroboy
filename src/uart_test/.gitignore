@@ -5,3 +5,4 @@ a.out
 *.json
 *.blif
 *.vcd
+*.h.sv

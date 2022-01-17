@@ -47,7 +47,7 @@ module uart_hello
 
   always_comb begin
     o_data = data;
-    o_req  = state == SEND;
+    o_req = state == SEND;
     o_done = state == DONE;
   end
 

@@ -22,10 +22,10 @@ struct uart_tx {
   static const int extra_stop_bits = 7;
 
   static const int cycle_bits = clog2(cycles_per_bit);
-  static const int cycle_max  = cycles_per_bit - 1;
+  static const int cycle_max = cycles_per_bit - 1;
 
   static const int cursor_bits = clog2(10 + extra_stop_bits);
-  static const int cursor_max  = 10 + extra_stop_bits - 1;
+  static const int cursor_max = 10 + extra_stop_bits - 1;
 
   logic<cycle_bits> cycle;
   logic<cursor_bits> cursor;

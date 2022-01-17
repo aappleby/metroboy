@@ -20,8 +20,8 @@
 module uart_top
 #(parameter int cycles_per_bit = 3)
 (clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum);
-  input  logic clk;
-  input  logic rst_n;
+  input logic clk;
+  input logic rst_n;
 
   output logic  o_serial;
   output logic[7:0]  o_data;
@@ -51,12 +51,6 @@ module uart_top
   logic rx_o_valid;
   logic[31:0] rx_o_sum;
   uart_rx #(cycles_per_bit) rx(clk, rst_n, rx_i_serial, rx_o_data, rx_o_valid, rx_o_sum);
-
-  //----------------------------------------
-
-  function int blah();
-    blah = 2;
-  endfunction
 
   //----------------------------------------
 

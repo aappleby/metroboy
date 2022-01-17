@@ -37,12 +37,12 @@ module uart_tx
   localparam /*const*/ int extra_stop_bits = 7;
 
   localparam /*const*/ int cycle_bits = $clog2(cycles_per_bit);
-  localparam /*const*/ int cycle_max  = cycles_per_bit - 1;
+  localparam /*const*/ int cycle_max = cycles_per_bit - 1;
 
   localparam /*const*/ int cursor_bits = $clog2(10 + extra_stop_bits);
   localparam /*const*/ int cursor_max = 10 + extra_stop_bits - 1;
 
-  logic[cycle_bits-1:0]  cycle;
+  logic[cycle_bits-1:0] cycle;
   logic[cursor_bits-1:0] cursor;
   logic[8:0] buffer;
 
@@ -55,7 +55,7 @@ module uart_tx
   end
 
   //----------------------------------------
-  
+
   always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       cycle  <= 0;

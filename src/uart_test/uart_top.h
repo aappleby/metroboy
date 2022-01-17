@@ -18,7 +18,9 @@ struct uart_top {
   /*verilator public_module*/
 
   uart_hello hello;
+
   uart_tx<cycles_per_bit> tx;
+
   uart_rx<cycles_per_bit> rx;
 
   //----------------------------------------

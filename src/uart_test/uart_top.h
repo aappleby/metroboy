@@ -4,6 +4,8 @@
 #include "uart_tx.h"
 #include "uart_hello.h"
 
+//==============================================================================
+
 template<int cycles_per_bit = 3>
 struct uart_top {
   logic<1>  o_serial;
@@ -13,6 +15,7 @@ struct uart_top {
   logic<32> o_sum;
 
   //----------------------------------------
+  /*verilator public_module*/
 
   uart_hello hello;
   uart_tx<cycles_per_bit> tx;

@@ -54,6 +54,12 @@ module uart_top
 
   //----------------------------------------
 
+  function int blah();
+    blah = 2;
+  endfunction
+
+  //----------------------------------------
+
   always_comb begin
     /* hello.tick(rst_n) */;
     /* tx.tick(rst_n) */;

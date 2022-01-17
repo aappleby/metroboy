@@ -56,14 +56,42 @@ TSNodeIt end(TSNode& parent) {
   return { parent, (int)ts_node_child_count(parent) };
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //------------------------------------------------------------------------------
 
-struct SourceFile {
+struct Module {
 
-  ~SourceFile() {
-    fclose(out);
-    out = nullptr;
+  Module() {
+  }
 
+  ~Module() {
     ts_tree_delete(tree);
     ts_parser_delete(parser);
 
@@ -74,6 +102,29 @@ struct SourceFile {
     source = nullptr;
   }
 
+  void load(const std::string& input_filename, const std::string& output_filename) {
+    this->input_filename = input_filename;
+    this->output_filename = output_filename;
+
+    parser = ts_parser_new();
+    lang = tree_sitter_cpp();
+    ts_parser_set_language(parser, lang);
+
+    src_blob = load_blob(input_filename.c_str());
+    src_blob.push_back(0);
+
+    source = (const char*)src_blob.data();
+    tree = ts_parser_parse_string(parser, NULL, source, (uint32_t)src_blob.size());
+    root = ts_tree_root_node(tree);
+
+    find_module();
+    collect_moduleparams();
+    collect_fields();
+  }
+
+  std::string input_filename;
+  std::string output_filename;
+
   const TSLanguage* lang = nullptr;
   TSParser* parser = nullptr;
 
@@ -81,8 +132,6 @@ struct SourceFile {
   TSTree* tree = nullptr;
   const char* source = nullptr;
   TSNode root;
-  const char* cursor = nullptr;
-  FILE* out = nullptr;
 
   std::vector<TSNode> moduleparams;
   std::vector<TSNode> inputs;
@@ -440,174 +489,42 @@ struct SourceFile {
 struct CodeEmitter {
   typedef CodeEmitter self;
 
-  std::vector<SourceFile*> source_files;
-  SourceFile* mod;
+  std::vector<Module*> modules;
+  Module* mod = nullptr;
+  const char* cursor = nullptr;
+  FILE* out = nullptr;
 
   //----------------------------------------
 
   CodeEmitter() {
-    for (auto s : source_files) delete s;
-    source_files.clear();
+    reset();
   }
 
+  ~CodeEmitter() {
+    fclose(out);
+    reset();
+  }
 
-  void load(const char* input_filename, const char* output_filename) {
-    source_files.push_back(new SourceFile());
-    mod = source_files.back();
+  void reset() {
+    for (auto module : modules) delete module;
+    modules.clear();
+    mod = nullptr;
+    cursor = nullptr;
+    out = nullptr;
+  }
 
-    mod->parser = ts_parser_new();
-    mod->lang = tree_sitter_cpp();
-    ts_parser_set_language(mod->parser, mod->lang);
+  void load(const std::string& input_filename, const std::string& output_filename) {
+    modules.push_back(new Module());
+    mod = modules.back();
+    mod->load(input_filename, output_filename);
+  }
 
-    mod->out = fopen(output_filename, "wb");
-
-    mod->src_blob = load_blob(input_filename);
-    mod->src_blob.push_back(0);
-
-    mod->source = (const char*)mod->src_blob.data();
-    mod->cursor = mod->source;
-    mod->tree = ts_parser_parse_string(mod->parser, NULL, mod->source, (uint32_t)mod->src_blob.size());
-    mod->root = ts_tree_root_node(mod->tree);
-
-    mod->find_module();
-    mod->collect_moduleparams();
-    mod->collect_fields();
+  void select(Module* module) {
+    out = fopen(mod->output_filename.c_str(), "wb");
+    cursor = mod->source;
   }
 
   //----------------------------------------
-
-  ~CodeEmitter() {
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //------------------------------------------------------------------------------
-  //------------------------------------------------------------------------------
-  //------------------------------------------------------------------------------
-  //------------------------------------------------------------------------------
-  // Text handling
-
-  bool match(TSNode n, const char* s) {
-    const char* a = mod->start(n);
-    const char* b = mod->end(n);
-
-    while (a != b) {
-      if (*a++ != *s++)  return false;
-    }
-    return true;
-  }
-
-  void emit_span(const char* a, const char* b) {
-    if (mod->out) fwrite(a, 1, b - a, mod->out);
-    fwrite(a, 1, b - a, stdout);
-  }
-
-  void emit(TSNode n) {
-    emit_span(mod->start(n), mod->end(n));
-  }
-
-  void emit(const char* fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    if (mod->out) vfprintf(mod->out, fmt, args);
-    vfprintf(stdout, fmt, args);
-    va_end(args);
-  }
-
-  void emit_escaped(char s) {
-    if      (s == '\n') emit("\\n");
-    else if (s == '\r') emit("\\r");
-    else if (s == '\t') emit("\\t");
-    else if (s == '"')  emit("\\\"");
-    else if (s == '\\') emit("\\\\");
-    else                emit("%c", s);
-  }
-
-  void emit_escaped(const char* source, uint32_t a, uint32_t b) {
-    emit("\"");
-    for (; a < b; a++) {
-      emit_escaped(source[a]);
-    }
-    emit("\"");
-  }
-
-  void emit_escaped(const std::string& s) {
-    for (auto c : s) emit_escaped(c);
-  }
-
-  void print_escaped(TSNode n) {
-    ::print_escaped(mod->source, ts_node_start_byte(n), ts_node_end_byte(n));
-  }
-
-  void skip_over(TSNode n) {
-    if (mod->cursor < mod->start(n)) {
-      emit_span(mod->cursor, mod->start(n));
-    }
-    mod->cursor = mod->end(n);
-  }
-
-  void advance_to(TSNode n) {
-    assert(mod->cursor <= mod->start(n));
-    emit_span(mod->cursor, mod->start(n));
-    mod->cursor = mod->start(n);
-  }
-
-  void advance_past(TSNode n) {
-    assert(mod->cursor >= mod->start(n));
-    assert(mod->cursor <= mod->end(n));
-    emit_span(mod->cursor, mod->end(n));
-    mod->cursor = mod->end(n);
-  }
-
-  void comment_out(TSNode n) {
-    advance_to(n);
-    emit("/* ");
-    emit_body(n);
-    emit(" */");
-  }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -650,11 +567,59 @@ struct CodeEmitter {
   //------------------------------------------------------------------------------
   // Generic emit() methods
 
+  void emit_span(const char* a, const char* b) {
+    if (out) fwrite(a, 1, b - a, out);
+    fwrite(a, 1, b - a, stdout);
+  }
+
+  void emit(TSNode n) {
+    emit_span(mod->start(n), mod->end(n));
+  }
+
+  void emit(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    if (out) vfprintf(out, fmt, args);
+    vfprintf(stdout, fmt, args);
+    va_end(args);
+  }
+
+  void print_escaped(TSNode n) {
+    ::print_escaped(mod->source, ts_node_start_byte(n), ts_node_end_byte(n));
+  }
+
+  void skip_over(TSNode n) {
+    if (cursor < mod->start(n)) {
+      emit_span(cursor, mod->start(n));
+    }
+    cursor = mod->end(n);
+  }
+
+  void advance_to(TSNode n) {
+    assert(cursor <= mod->start(n));
+    emit_span(cursor, mod->start(n));
+    cursor = mod->start(n);
+  }
+
+  void advance_past(TSNode n) {
+    assert(cursor >= mod->start(n));
+    assert(cursor <= mod->end(n));
+    emit_span(cursor, mod->end(n));
+    cursor = mod->end(n);
+  }
+
+  void comment_out(TSNode n) {
+    advance_to(n);
+    emit("/* ");
+    emit_body(n);
+    emit(" */");
+  }
+
   void emit_body(TSNode n) {
-    assert(mod->cursor <= mod->start(n));
-    emit_span(mod->cursor, mod->start(n));
+    assert(cursor <= mod->start(n));
+    emit_span(cursor, mod->start(n));
     emit(n);
-    mod->cursor = mod->end(n);
+    cursor = mod->end(n);
   }
 
   void emit_leaf(TSNode n) {
@@ -676,71 +641,34 @@ struct CodeEmitter {
   }
 
   void emit_replacement(TSNode n, const char* fmt, ...) {
-    assert(mod->cursor == mod->start(n));
+    assert(cursor == mod->start(n));
 
     advance_to(n);
 
     va_list args;
     va_start(args, fmt);
-    if (mod->out) vfprintf(mod->out, fmt, args);
+    if (out) vfprintf(out, fmt, args);
     vfprintf(stdout, fmt, args);
     va_end(args);
 
     skip_over(n);
 
-    assert(mod->cursor == mod->end(n));
+    assert(cursor == mod->end(n));
   }
 
   //------------------------------------------------------------------------------
 
   void emit_error(TSNode n) {
-    assert(mod->cursor == mod->start(n));
-
-    if (ts_node_is_named(n)) {
-      emit("XXX %s ", ts_node_type(n));
-      emit("XXX");
-      emit_body(n);
-      emit("XXX");
-    }
-    else {
-      emit("XXXXXXX");
-      emit_body(n);
-      emit("XXXXXXX");
-    }
-    emit("\n");
-    emit("\n");
+    assert(cursor == mod->start(n));
+    printf("\n");
+    printf("########################################\n");
     mod->dump_tree(n);
-    emit("\n");
-
-    mod->cursor = mod->end(n);
-
+    printf("########################################\n");
     __debugbreak();
   }
 
   //------------------------------------------------------------------------------
 
-  void emit_placeholder(TSNode n) {
-    if (ts_node_is_named(n)) {
-      emit("%s ", ts_node_type(n));
-      emit("<<<");
-      emit_body(n);
-      emit(">>>");
-    }
-    else {
-      emit("<<<");
-      emit_body(n);
-      emit(">>>");
-    }
-
-    emit("\n");
-    emit("\n");
-    mod->dump_tree(n);
-    emit("\n");
-
-    mod->cursor = mod->end(n);
-
-    __debugbreak();
-  }
 
 
 
@@ -784,7 +712,7 @@ struct CodeEmitter {
     static regex rx_trim(R"(\.h)");
     path = std::regex_replace(path, rx_trim, ".sv");
     emit("`include %s", path.c_str());
-    mod->cursor = mod->end(node_path);
+    cursor = mod->end(node_path);
   }
 
   //------------------------------------------------------------------------------
@@ -820,11 +748,11 @@ struct CodeEmitter {
     auto call_func = ts_node_child_by_field_id(n, field_function);
     auto call_args = ts_node_child_by_field_id(n, field_arguments);
 
-    if (match(call_func, "clog2")) {
+    if (mod->match(call_func, "clog2")) {
       emit_replacement(call_func, "$clog2");
       emit_dispatch(call_args);
     }
-    else if (match(call_func, "readmemh")) {
+    else if (mod->match(call_func, "readmemh")) {
       emit_replacement(call_func, "$readmemh");
       emit_dispatch(call_args);
     }
@@ -832,72 +760,83 @@ struct CodeEmitter {
       comment_out(n);
     }
 
-    mod->cursor = mod->end(n);
+    cursor = mod->end(n);
   }
 
   //------------------------------------------------------------------------------
+  // Change "init/tick/tock" to "initial begin / always_comb / always_ff", change
+  // void methods to tasks, and change const methods to functions.
+
+  TSNode current_function_name = { 0 };
 
   void emit_function_definition(TSNode n) {
 
     auto func_type = ts_node_child_by_field_id(n, field_type);
     auto func_decl = ts_node_child_by_field_id(n, field_declarator);
     auto func_body = ts_node_child_by_field_id(n, field_body);
-    auto task_name = ts_node_child_by_field_id(func_decl, field_declarator);
+    auto func_name = ts_node_child_by_field_id(func_decl, field_declarator);
+
+    current_function_name = func_name;
 
     advance_to(func_type);
 
-    bool is_task = match(func_type, "void");
-    bool is_tick = is_task && match(task_name, "tick");
-    bool is_tock = is_task && match(task_name, "tock");
-    bool is_init = is_task && match(task_name, "initial");
+    bool is_task = mod->match(func_type, "void");
+
+    // FIXME check if method is const
+
+    //----------
+    // Special task/function
+
+    bool is_tick = is_task && mod->match(func_name, "tick");
+    bool is_tock = is_task && mod->match(func_name, "tock");
+    bool is_init = is_task && mod->match(func_name, "initial");
 
     if (is_tick) {
       emit("always_comb");
-      mod->cursor = mod->end(func_decl);
+      cursor = mod->end(func_decl);
 
       mod->in_comb = true;
       emit_dispatch(func_body);
       mod->in_comb = false;
 
+      current_function_name = { 0 };
       return;
     }
     else if (is_tock) {
-      skip_over(func_type);
-
-      // don't want the space after the type
-      //advance_to(func_decl);
-      mod->cursor = mod->start(func_decl);
-      
+      cursor = mod->start(func_decl);
       emit_replacement(func_decl, "always_ff @(posedge clk, negedge rst_n)");
 
       mod->in_seq = true;
       emit_dispatch(func_body);
       mod->in_seq = false;
 
+      current_function_name = { 0 };
       return;
     }
     else if (is_init) {
       emit("initial");
-      mod->cursor = mod->end(func_decl);
+      cursor = mod->end(func_decl);
 
       mod->in_init = true;
       emit_dispatch(func_body);
       mod->in_init = false;
 
+      current_function_name = { 0 };
       return;
     }
 
-
+    //----------
+    // Generic task/function
 
     if (is_task) {
       skip_over(func_type);
       emit("task");
-      emit_body(task_name);
+      emit_body(func_name);
     }
     else {
       emit("function ");
       emit_body(func_type);
-      emit_body(task_name);
+      emit_body(func_name);
     }
 
     auto func_args = ts_node_child_by_field_id(func_decl, field_parameters);
@@ -919,32 +858,9 @@ struct CodeEmitter {
         emit_dispatch(c);
       }
     }
+
+    current_function_name = { 0 };
   }
-
-
-  //------------------------------------------------------------------------------
-  // The "type" and "declarator" field tags don't seem to be on the right nodes.
-
-  /*
-  void emit_localparam(TSNode n) {
-    emit("localparam");
-
-    for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-      auto c = ts_node_child(n, i);
-      switch (ts_node_symbol(c)) {
-      case sym_storage_class_specifier:
-      case sym_type_qualifier:
-        skip_over(c);
-        continue;
-      default:
-        emit_dispatch(c);
-        continue;
-      }
-    }
-
-    skip_over(n);
-  }
-  */
 
   //------------------------------------------------------------------------------
   // Change static const to localparam.
@@ -963,14 +879,14 @@ struct CodeEmitter {
     mod->visit_children(field_decl, [&](TSNode child) {
       switch (ts_node_symbol(child)) {
       case sym_storage_class_specifier:
-        if (match(child, "static")) {
+        if (mod->match(child, "static")) {
           advance_to(child);
           emit_replacement(child, "localparam");
         }
         break;
 
       case sym_type_qualifier:
-        if (match(child, "const")) {
+        if (mod->match(child, "const")) {
           advance_to(child);
           emit_replacement(child, "/*const*/");
         }
@@ -1000,11 +916,11 @@ struct CodeEmitter {
 
     // Patch the template parameter list in after the module declaration
     if (!ts_node_is_null(mod->module_param_list)) {
-      auto old_cursor = mod->cursor;
-      mod->cursor = mod->start(mod->module_param_list);
+      auto old_cursor = cursor;
+      cursor = mod->start(mod->module_param_list);
       emit_module_parameters(mod->module_param_list);
       emit("\n");
-      mod->cursor = old_cursor;
+      cursor = old_cursor;
     }
 
     // Emit an old-style port list
@@ -1023,8 +939,7 @@ struct CodeEmitter {
     emit("  input  logic rst_n;\n");
 
     // Emit the module body, with a few modifications.
-
-    mod->cursor = mod->start(ts_node_child(node_body, 0));
+    cursor = mod->start(ts_node_child(node_body, 0));
     mod->visit_children(node_body, [&](TSNode child) {
       auto sc = ts_node_symbol(child);
       if (sc == anon_sym_LBRACE) {
@@ -1076,7 +991,7 @@ struct CodeEmitter {
     std::string name(mod->start(type_name), mod->end(type_name));
     bool is_submod = false;
 
-    if (match(type_name, "logic")) {
+    if (mod->match(type_name, "logic")) {
       auto template_arg = ts_node_named_child(type_args, 0);
 
       if (ts_node_symbol(template_arg) == sym_type_descriptor) {
@@ -1086,9 +1001,9 @@ struct CodeEmitter {
         skip_over(n);
       }
       else if (ts_node_symbol(template_arg) == sym_number_literal) {
-        if (match(template_arg, "1")) {
+        if (mod->match(template_arg, "1")) {
           emit_replacement(type_name, "logic");
-          mod->cursor = mod->end(n);
+          cursor = mod->end(n);
         }
         else {
           int width = atoi(mod->start(template_arg));
@@ -1106,14 +1021,6 @@ struct CodeEmitter {
       }
     }
     else if (is_submod) {
-      /*
-      printf("\n");
-      printf("########################################\n");
-      printf("SUBMOD %s\n", name.c_str());
-      dump_tree(n);
-      printf("########################################\n");
-      */
-
       emit_dispatch(type_name);
       emit_dispatch(type_args);
     }
@@ -1133,7 +1040,7 @@ struct CodeEmitter {
   }
 
   //------------------------------------------------------------------------------
-  // Change <param, param> to #(param, param)
+  // Change <int param, int param> to #(parameter int param, parameter int param)
 
   void emit_module_parameters(TSNode n) {
     mod->visit_children(n, [&](TSNode child) {
@@ -1162,6 +1069,7 @@ struct CodeEmitter {
   }
 
   //------------------------------------------------------------------------------
+  // Change <param, param> to #(param, param)
 
   void emit_template_parameters(TSNode n) {
     mod->visit_children(n, [&](TSNode child) {
@@ -1230,7 +1138,7 @@ struct CodeEmitter {
   //------------------------------------------------------------------------------
 
   void emit_dispatch(TSNode n) {
-    assert(mod->cursor <= mod->start(n));
+    assert(cursor <= mod->start(n));
     advance_to(n);
 
     if (!ts_node_is_named(n)) {
@@ -1268,7 +1176,15 @@ struct CodeEmitter {
       mod->visit_children(n, [&](TSNode c) { emit_dispatch(c); });
       return;
 
-      // This needs to be flattened to module_o_blah instad of module.o_blah
+    case sym_return_statement: {
+      if (ts_node_is_null(current_function_name)) emit_error(n);
+      auto ret_literal = ts_node_child(n, 0);
+      emit("%s =", mod->body(current_function_name).c_str());
+      emit_span(mod->end(ret_literal), mod->end(n));
+      cursor = mod->end(n);
+      return;
+    }
+
     case sym_field_expression: {
       auto blah = mod->body(n);
       for (auto& c : blah) if (c == '.') c = '_';
@@ -1276,7 +1192,7 @@ struct CodeEmitter {
       return;
     }
 
-                             // For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
+    // For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
     case sym_template_declaration:
       mod->visit_children(n, [&](TSNode child) {
         auto sc = ts_node_symbol(child);
@@ -1374,23 +1290,24 @@ struct CodeEmitter {
   }
 };
 
-
 //------------------------------------------------------------------------------
-
 
 int main(int argc, char** argv) {
   std::vector<std::string> inputs = {
     "src/uart_test/uart_top.h",
-    //"src/uart_test/uart_hello.h",
-    //"src/uart_test/uart_tx.h",
-    //"src/uart_test/uart_rx.h",
+    "src/uart_test/uart_hello.h",
+    "src/uart_test/uart_tx.h",
+    "src/uart_test/uart_rx.h",
   };
 
 
+  CodeEmitter e;
   for (auto& input : inputs) {
-
-    CodeEmitter e;
     e.load(input.c_str(), (input + ".sv").c_str());
+  }
+
+  for (auto& module : e.modules) {
+    e.select(module);
 
     e.emit("//--------------------------------------------------------------------------------\n");
     e.emit("// MODULE:       ");
@@ -1426,6 +1343,7 @@ int main(int argc, char** argv) {
 
     e.emit("\n");
     e.emit_dispatch(e.mod->root);
+    printf("\n\n\n");
 
     //e.dump_tree(e.root);
   }

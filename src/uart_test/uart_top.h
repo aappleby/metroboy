@@ -25,6 +25,14 @@ struct uart_top {
 
   //----------------------------------------
 
+  void init() {
+    hello.init();
+    tx.init();
+    rx.init();
+  }
+
+  //----------------------------------------
+
   void tick(bool rst_n) {
     hello.tick(rst_n);
     tx.tick(rst_n);

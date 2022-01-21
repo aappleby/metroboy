@@ -46,8 +46,8 @@ build message.blob.h     : make_blob_h message.txt | bin/make_blob_h
 
 build obj/uart_test_mt.o : compile uart_test_mt.cpp | bin/all_h
 
-build bin/uart_test_mt   : link obj/uart_test_mt.o
-build bin/uart_test_vl   : verilator uart_top.h.sv uart_test_vl.cpp | bin/all_sv
+build bin/uart_test_mt   : link obj/uart_test_mt.o 
+build bin/uart_test_vl   : verilator uart_top.h.sv uart_test_vl.cpp metron.cpp | bin/all_sv
 build bin/uart_test_iv   : iverilog uart_test_iv.sv | bin/all_sv
 
 build bin/uart_test_mt.pass : run_test bin/uart_test_mt

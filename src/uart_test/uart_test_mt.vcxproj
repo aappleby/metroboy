@@ -150,6 +150,10 @@
     <ClCompile Include="uart_hello.h" />
     <ClCompile Include="uart_rx.h" />
     <ClCompile Include="uart_test_mt.cpp" />
+    <ClCompile Include="uart_test_vl.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="uart_top.h" />
     <ClCompile Include="uart_tx.h" />
     <ClCompile Include="vcd_dump.cpp" />
@@ -161,12 +165,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="build.ninja" />
+    <None Include="metron.sv" />
     <None Include="SB_PLL40_CORE.v" />
+    <None Include="uart_hello.h.sv" />
     <None Include="uart_hello.sv" />
     <None Include="uart_ice40.sv" />
+    <None Include="uart_rx.h.sv" />
     <None Include="uart_rx.sv" />
     <None Include="uart_test.sv" />
+    <None Include="uart_test_ice40.sv" />
+    <None Include="uart_test_iv.sv" />
+    <None Include="uart_top.h.sv" />
     <None Include="uart_top.sv" />
+    <None Include="uart_tx.h.sv" />
     <None Include="uart_tx.sv" />
     <None Include="uart_tx_buf.v" />
   </ItemGroup>

@@ -778,16 +778,17 @@ void ModCursor::emit_dispatch(TSNode n) {
     mod->module_param_list = n;
     skip_over(n);
     return;
-  }
 
-  //----------
-  // Why do we get error nodes when parsing valid code?
+  default:
+    //----------
+    // Why do we get error nodes when parsing valid code?
 
-  if (!ts_node_has_error(n)) {
-    printf("\n\n\n########################################\n");
-    mod->dump_tree(n);
-    printf("\n########################################\n\n\n");
-    __debugbreak();
+    if (!ts_node_has_error(n)) {
+      printf("\n\n\n########################################\n");
+      mod->dump_tree(n);
+      printf("\n########################################\n\n\n");
+      __debugbreak();
+    }
   }
 }
 

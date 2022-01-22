@@ -147,6 +147,10 @@
     <ClCompile Include="..\tree-sitter-cpp\src\scanner.cc" />
     <ClCompile Include="..\tree-sitter\lib\src\lib.c" />
     <ClCompile Include="Metron.cpp" />
+    <ClCompile Include="MtCursor.cpp" />
+    <ClCompile Include="MtIterator.cpp" />
+    <ClCompile Include="MtModLibrary.cpp" />
+    <ClCompile Include="MtModule.cpp" />
     <ClCompile Include="parse_test.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -155,6 +159,10 @@
   <ItemGroup>
     <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
     <ClInclude Include="metron_top.h" />
+    <ClInclude Include="MtCursor.h" />
+    <ClInclude Include="MtIterator.h" />
+    <ClInclude Include="MtModLibrary.h" />
+    <ClInclude Include="MtModule.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>

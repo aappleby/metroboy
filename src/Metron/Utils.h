@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "tree_sitter/api.h"
+
 #pragma warning(disable:4996) // unsafe fopen()
 
 using namespace std;
@@ -38,19 +40,12 @@ inline cspan make_span(TSNode node, const char* src) {
   return cspan(a, b);
 }
 
-std::string body(TSNode n, const char* src) {
+inline std::string body(TSNode n, const char* src) {
   assert(!ts_node_is_null(n));
   const char* a = &src[ts_node_start_byte(n)];
   const char* b = &src[ts_node_end_byte(n)];
   return std::string(a, b);
 }
-
-/*
-inline std::string body(TSNode node, const char* src) {
-  auto s = make_span(node, src);
-  return std::string(s.begin(), s.end());
-}
-*/
 
 //------------------------------------------------------------------------------
 
@@ -74,10 +69,5 @@ inline void print_escaped(const char* source, uint32_t a, uint32_t b) {
 inline void print_escaped(const std::string& s) {
   for (auto c : s) print_escaped(c);
 }
-
-
-//inline void indent(int depth) {
-//  for (int i = 0; i < depth; i++) printf("|   ");
-//}
 
 //------------------------------------------------------------------------------

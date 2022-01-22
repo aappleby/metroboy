@@ -564,7 +564,7 @@ void ModCursor::emit_module_parameters(TSNode n) {
 //------------------------------------------------------------------------------
 // Change <param, param> to #(param, param)
 
-void ModCursor::emit_template_parameters(TSNode n) {
+void ModCursor::emit_template_argument_list(TSNode n) {
   mod->visit_children(n, [&](TSNode child) {
     auto s = ts_node_symbol(child);
 
@@ -629,18 +629,53 @@ void ModCursor::emit_field_declaration_list(TSNode n) {
 
 //------------------------------------------------------------------------------
 
+void ModCursor::emit_basic_replacements(TSNode n) {
+  if (mod->match(n, "static")) {
+    advance_to(n);
+    emit_replacement(n, "localparam");
+    return;
+  }
+
+  if (mod->match(n, "const")) {
+    advance_to(n);
+    emit_replacement(n, "/*const*/");
+    return;
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void ModCursor::emit_number_literal(TSNode n) {
+  std::string body = mod->body(n);
+  if (body.starts_with("0x")) {
+    emit("'h%s", body.c_str() + 2);
+    skip_over(n);
+  }
+  else {
+    emit_leaf(n);
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void ModCursor::emit_primitive_type(TSNode n) {
+  // FIXME translate types here
+  emit_body(n);
+}
+
+void ModCursor::emit_type_identifier(TSNode n) {
+  // FIXME translate types here
+  emit_body(n);
+}
+
+//------------------------------------------------------------------------------
+
 void ModCursor::emit_dispatch(TSNode n) {
   assert(cursor <= mod->start(n));
   advance_to(n);
 
   if (!ts_node_is_named(n)) {
-    if (ts_node_symbol(n) == anon_sym_template) {
-      skip_over(n);
-    }
-    else {
-      emit_anon(n);
-    }
-
+    emit_anon(n);
     return;
   }
 
@@ -669,17 +704,8 @@ void ModCursor::emit_dispatch(TSNode n) {
     return;
 
   case sym_storage_class_specifier:
-    if (mod->match(n, "static")) {
-      advance_to(n);
-      emit_replacement(n, "localparam");
-    }
-    return;
-
   case sym_type_qualifier:
-    if (mod->match(n, "const")) {
-      advance_to(n);
-      emit_replacement(n, "/*const*/");
-    }
+    emit_basic_replacements(n);
     return;
 
   case sym_return_statement: {
@@ -719,14 +745,7 @@ void ModCursor::emit_dispatch(TSNode n) {
     return;
 
   case sym_number_literal: {
-    std::string body = mod->body(n);
-    if (body.starts_with("0x")) {
-      emit("'h%s", body.c_str() + 2);
-      skip_over(n);
-    }
-    else {
-      emit_leaf(n);
-    }
+    emit_number_literal(n);
     return;
   }
 
@@ -739,59 +758,36 @@ void ModCursor::emit_dispatch(TSNode n) {
     comment_out(n);
     return;
 
-  case sym_preproc_include:    emit_include(n);            return;
-  case sym_field_declaration:  emit_field_declaration(n);  return;
-  case sym_compound_statement: emit_compound_statement(n); return;
-  case sym_template_type:      emit_template_type(n);      return;
+  case sym_preproc_include:        emit_include(n);            return;
+  case sym_field_declaration:      emit_field_declaration(n);  return;
+  case sym_compound_statement:     emit_compound_statement(n); return;
+  case sym_template_type:          emit_template_type(n);      return;
+  case sym_field_declaration_list: emit_field_declaration_list(n); return;
+  case sym_translation_unit:       emit_translation_unit(n); return;
+  case sym_primitive_type:         emit_primitive_type(n); return;
+  case alias_sym_type_identifier:  emit_type_identifier(n); return;
+  case sym_class_specifier:        emit_class_specifier(n); return;
+  case sym_struct_specifier:       emit_class_specifier(n); return;
+  case sym_function_definition:    emit_function_definition(n); return;
+  case sym_call_expression:        emit_call_expression(n); return;
+  case sym_assignment_expression:  emit_assignment_expression(n); return;
+  case sym_template_argument_list: emit_template_argument_list(n); return;
+  case sym_enumerator_list:        emit_enumerator_list(n); return;
+
+  case sym_template_parameter_list:
+    mod->module_param_list = n;
+    skip_over(n);
+    return;
   }
 
   //----------
+  // Why do we get error nodes when parsing valid code?
 
-  if (s == sym_field_declaration_list) {
-    emit_field_declaration_list(n);
-  }
-  else if (s == sym_translation_unit) {
-    emit_translation_unit(n);
-  }
-  else if (s == sym_primitive_type) {
-    // FIXME translate types here
-    emit_body(n);
-  }
-  else if (s == alias_sym_type_identifier) {
-    // FIXME translate types here
-    emit_body(n);
-  }
-  else if (s == sym_class_specifier || s == sym_struct_specifier) {
-    emit_class_specifier(n);
-  }
-  else if (s == sym_function_definition) {
-    emit_function_definition(n);
-  }
-  else if (s == sym_call_expression) {
-    emit_call_expression(n);
-  }
-  else if (s == sym_assignment_expression) {
-    emit_assignment_expression(n);
-  }
-  else if (s == sym_template_parameter_list) {
-    //emit_module_parameters(n);
-    mod->module_param_list = n;
-    skip_over(n);
-  }
-  else if (s == sym_template_argument_list) {
-    emit_template_parameters(n);
-  }
-  else if (s == sym_enumerator_list) {
-    emit_enumerator_list(n);
-  }
-  else if (ts_node_has_error(n)) {
-  }
-  else {
+  if (!ts_node_has_error(n)) {
     printf("\n\n\n########################################\n");
     mod->dump_tree(n);
     printf("\n########################################\n\n\n");
     __debugbreak();
-
   }
 }
 

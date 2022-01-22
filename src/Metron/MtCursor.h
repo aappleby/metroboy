@@ -33,6 +33,11 @@ struct ModCursor {
 
   //----------
 
+  void emit_basic_replacements(TSNode n);
+  void emit_number_literal(TSNode n);
+  void emit_primitive_type(TSNode n);
+  void emit_type_identifier(TSNode n);
+
   void emit_include(TSNode n);
   void emit_assignment_expression(TSNode n);
   void emit_call_expression(TSNode n);
@@ -43,7 +48,7 @@ struct ModCursor {
   void emit_compound_statement(TSNode n);
   void emit_template_type(TSNode n);
   void emit_module_parameters(TSNode n);
-  void emit_template_parameters(TSNode n);
+  void emit_template_argument_list(TSNode n);
   void emit_enumerator_list(TSNode n);
   void emit_translation_unit(TSNode n);
   void emit_field_declaration_list(TSNode n);

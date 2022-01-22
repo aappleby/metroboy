@@ -1,70 +1,8 @@
 #include <stdio.h>
-#include <stdint.h>
-#include <assert.h>
-#include "tree_sitter/api.h"
-#include <vector>
-#include <deque>
-#include <regex>
-//#include <span>
-#include "../Plait/TreeSymbols.h"
-#include <functional>
-#include "Node.h"
-#include "Utils.h"
-#include <stdarg.h>
 
 #include "MtModule.h"
 #include "MtModLibrary.h"
-
-//------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#include "MtCursor.h"
 
 //------------------------------------------------------------------------------
 
@@ -75,7 +13,6 @@ int main(int argc, char** argv) {
     "src/uart_test/uart_tx.h",
     "src/uart_test/uart_rx.h",
   };
-
 
   ModLibrary lib;
   for (auto& input : inputs) {
@@ -131,7 +68,6 @@ int main(int argc, char** argv) {
     //e.mod->dump_tree(e.mod->root);
     //printf("\n\n");
   }
-
 
   return 0;
 }

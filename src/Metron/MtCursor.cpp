@@ -6,7 +6,7 @@
 
 //------------------------------------------------------------------------------
 
-void ModCursor::visit_children(TSNode n, NodeVisitor cv) {
+void MtCursor::visit_children(TSNode n, NodeVisitor cv) {
   for (const auto& c : n) {
     cv(c);
   }
@@ -16,16 +16,17 @@ void ModCursor::visit_children(TSNode n, NodeVisitor cv) {
 //------------------------------------------------------------------------------
 // Generic emit() methods
 
-void ModCursor::emit_span(const char* a, const char* b) {
+void MtCursor::emit_span(const char* a, const char* b) {
   if (out) fwrite(a, 1, b - a, out);
   fwrite(a, 1, b - a, stdout);
 }
 
-void ModCursor::emit(TSNode n) {
+void MtCursor::emit(TSNode n) {
   emit_span(mod->start(n), mod->end(n));
+  cursor = mod->end(n);
 }
 
-void ModCursor::emit(const char* fmt, ...) {
+void MtCursor::emit(const char* fmt, ...) {
   va_list args;
   va_start(args, fmt);
   if (out) vfprintf(out, fmt, args);
@@ -33,50 +34,46 @@ void ModCursor::emit(const char* fmt, ...) {
   va_end(args);
 }
 
-void ModCursor::print_escaped(TSNode n) {
-  ::print_escaped(mod->source, ts_node_start_byte(n), ts_node_end_byte(n));
-}
-
-void ModCursor::skip_over(TSNode n) {
+void MtCursor::skip_over(TSNode n) {
   if (cursor < mod->start(n)) {
     emit_span(cursor, mod->start(n));
   }
   cursor = mod->end(n);
 }
 
-void ModCursor::advance_to(TSNode n) {
+void MtCursor::advance_to(TSNode n) {
   assert(cursor <= mod->start(n));
   emit_span(cursor, mod->start(n));
   cursor = mod->start(n);
 }
 
-void ModCursor::advance_past(TSNode n) {
+void MtCursor::advance_past(TSNode n) {
   assert(cursor >= mod->start(n));
   assert(cursor <= mod->end(n));
   emit_span(cursor, mod->end(n));
   cursor = mod->end(n);
 }
 
-void ModCursor::comment_out(TSNode n) {
+void MtCursor::comment_out(TSNode n) {
   advance_to(n);
   emit("/* ");
   emit_body(n);
   emit(" */");
 }
 
-void ModCursor::emit_body(TSNode n) {
+void MtCursor::emit_body(TSNode n) {
   assert(cursor <= mod->start(n));
   emit_span(cursor, mod->start(n));
   emit(n);
   cursor = mod->end(n);
 }
 
-void ModCursor::emit_leaf(TSNode n) {
+void MtCursor::emit_leaf(TSNode n) {
   assert(!ts_node_is_null(n) && !ts_node_child_count(n));
   emit_body(n);
 }
 
-void ModCursor::emit_anon(TSNode n) {
+void MtCursor::emit_anon(TSNode n) {
   assert(!ts_node_is_named(n) && !ts_node_is_null(n) && !ts_node_child_count(n));
 
   switch (ts_node_symbol(n)) {
@@ -89,7 +86,7 @@ void ModCursor::emit_anon(TSNode n) {
   }
 }
 
-void ModCursor::emit_replacement(TSNode n, const char* fmt, ...) {
+void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
   advance_to(n);
   va_list args;
   va_start(args, fmt);
@@ -101,7 +98,7 @@ void ModCursor::emit_replacement(TSNode n, const char* fmt, ...) {
 
 //------------------------------------------------------------------------------
 
-void ModCursor::emit_error(TSNode n) {
+void MtCursor::emit_error(TSNode n) {
   assert(cursor == mod->start(n));
   printf("\n");
   printf("########################################\n");
@@ -139,7 +136,7 @@ void ModCursor::emit_error(TSNode n) {
 //------------------------------------------------------------------------------
 // Replace "#include" with "`include" and ".h" with ".sv"
 
-void ModCursor::emit_preproc_include(TSNode n) {
+void MtCursor::emit_preproc_include(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
 
@@ -161,7 +158,7 @@ void ModCursor::emit_preproc_include(TSNode n) {
 //------------------------------------------------------------------------------
 // Change '=' to '<=' if lhs is a field and we're inside a sequential block.
 
-void ModCursor::emit_assignment_expression(TSNode n) {
+void MtCursor::emit_assignment_expression(TSNode n) {
   auto exp_lv = ts_node_child_by_field_id(n, field_left);
   auto exp_op = ts_node_child_by_field_id(n, field_operator);
   auto exp_rv = ts_node_child_by_field_id(n, field_right);
@@ -198,7 +195,7 @@ void ModCursor::emit_assignment_expression(TSNode n) {
 // Replace function names with macro names where needed, comment out explicit
 // init/final/tick/tock calls.
 
-void ModCursor::emit_call_expression(TSNode n) {
+void MtCursor::emit_call_expression(TSNode n) {
   auto call_func = ts_node_child_by_field_id(n, field_function);
   auto call_args = ts_node_child_by_field_id(n, field_arguments);
 
@@ -241,7 +238,7 @@ void ModCursor::emit_call_expression(TSNode n) {
 // Change "init/tick/tock" to "initial begin / always_comb / always_ff", change
 // void methods to tasks, and change const methods to functions.
 
-void ModCursor::emit_function_definition(TSNode n) {
+void MtCursor::emit_function_definition(TSNode n) {
 
   auto func_type = ts_node_child_by_field_id(n, field_type);
   auto func_decl = ts_node_child_by_field_id(n, field_declarator);
@@ -349,7 +346,7 @@ void ModCursor::emit_function_definition(TSNode n) {
 //------------------------------------------------------------------------------
 // Change static const to localparam.
 
-void ModCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
+void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
   assert(ts_node_symbol(decl) == sym_field_declaration);
 
   auto node_type = ts_node_child_by_field_id(decl, field_type);
@@ -377,7 +374,7 @@ void ModCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
 }
 
 
-void ModCursor::emit_field_declaration(TSNode decl) {
+void MtCursor::emit_field_declaration(TSNode decl) {
   assert(ts_node_symbol(decl) == sym_field_declaration);
 
   auto node_type = ts_node_child_by_field_id(decl, field_type);
@@ -399,7 +396,7 @@ void ModCursor::emit_field_declaration(TSNode decl) {
   auto submod = mod_lib->find_module(type_name);
 
   if (submod) {
-    ModCursor sub_cursor = {
+    MtCursor sub_cursor = {
       mod_lib,
       submod,
       nullptr,
@@ -451,7 +448,7 @@ void ModCursor::emit_field_declaration(TSNode decl) {
 // Change class/struct to module, add default clk/rst inputs, add input and
 // ouptut ports to module param list.
 
-void ModCursor::emit_class_specifier(TSNode n) {
+void MtCursor::emit_class_specifier(TSNode n) {
   auto node_class = ts_node_child(n, 0);
   auto node_name = ts_node_child(n, 1);
   auto node_body = ts_node_child(n, 2);
@@ -462,7 +459,7 @@ void ModCursor::emit_class_specifier(TSNode n) {
 
   // Patch the template parameter list in after the module declaration
   if (!ts_node_is_null(mod->module_param_list)) {
-    ModCursor sub_cursor = *this;
+    MtCursor sub_cursor = *this;
     sub_cursor.cursor = mod->start(mod->module_param_list);
     sub_cursor.emit_module_parameters(mod->module_param_list);
     emit("\n");
@@ -509,7 +506,7 @@ void ModCursor::emit_class_specifier(TSNode n) {
 //------------------------------------------------------------------------------
 // Change "{ blah(); }" to "begin blah(); end"
 
-void ModCursor::emit_compound_statement(TSNode n) {
+void MtCursor::emit_compound_statement(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE) {
@@ -529,7 +526,7 @@ void ModCursor::emit_compound_statement(TSNode n) {
 //------------------------------------------------------------------------------
 // Change logic<N> to logic[N-1:0]
 
-void ModCursor::emit_template_type(TSNode n) {
+void MtCursor::emit_template_type(TSNode n) {
   auto type_name = ts_node_child_by_field_id(n, field_name);
   auto type_args = ts_node_child_by_field_id(n, field_arguments);
 
@@ -574,7 +571,7 @@ void ModCursor::emit_template_type(TSNode n) {
 // Change (template)<int param, int param> to
 // #(parameter int param, parameter int param)
 
-void ModCursor::emit_module_parameters(TSNode n) {
+void MtCursor::emit_module_parameters(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto s = ts_node_symbol(child);
 
@@ -603,7 +600,7 @@ void ModCursor::emit_module_parameters(TSNode n) {
 //------------------------------------------------------------------------------
 // Change <param, param> to #(param, param)
 
-void ModCursor::emit_template_argument_list(TSNode n) {
+void MtCursor::emit_template_argument_list(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto s = ts_node_symbol(child);
 
@@ -622,7 +619,7 @@ void ModCursor::emit_template_argument_list(TSNode n) {
 //------------------------------------------------------------------------------
 // Enum lists do _not_ turn braces into begin/end.
 
-void ModCursor::emit_enumerator_list(TSNode n) {
+void MtCursor::emit_enumerator_list(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE || sc == anon_sym_RBRACE) {
@@ -637,7 +634,7 @@ void ModCursor::emit_enumerator_list(TSNode n) {
 //------------------------------------------------------------------------------
 // Discard any trailing semicolons in the translation unit.
 
-void ModCursor::emit_translation_unit(TSNode n) {
+void MtCursor::emit_translation_unit(TSNode n) {
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
 
@@ -650,7 +647,7 @@ void ModCursor::emit_translation_unit(TSNode n) {
 //------------------------------------------------------------------------------
 // Structs/classes get "begin/end" instead of {}.
 
-void ModCursor::emit_field_declaration_list(TSNode n) {
+void MtCursor::emit_field_declaration_list(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE) {
@@ -668,7 +665,7 @@ void ModCursor::emit_field_declaration_list(TSNode n) {
 
 //------------------------------------------------------------------------------
 
-void ModCursor::emit_basic_replacements(TSNode n) {
+void MtCursor::emit_basic_replacements(TSNode n) {
   if (mod->match(n, "static")) {
     advance_to(n);
     emit_replacement(n, "localparam");
@@ -685,7 +682,7 @@ void ModCursor::emit_basic_replacements(TSNode n) {
 //------------------------------------------------------------------------------
 // Replace "0x" prefixes with "'h"
 
-void ModCursor::emit_number_literal(TSNode n) {
+void MtCursor::emit_number_literal(TSNode n) {
   std::string body = mod->body(n);
   if (body.starts_with("0x")) {
     emit_replacement(n, "'h%s", body.c_str() + 2);
@@ -698,7 +695,7 @@ void ModCursor::emit_number_literal(TSNode n) {
 //------------------------------------------------------------------------------
 // Change "return x" to "(funcname) = x" to match old Verilog return style.
 
-void ModCursor::emit_return_statement(TSNode n) {
+void MtCursor::emit_return_statement(TSNode n) {
   if (ts_node_is_null(current_function_name)) emit_error(n);
   auto ret_literal = ts_node_child(n, 0);
   emit("%s =", mod->body(current_function_name).c_str());
@@ -708,12 +705,12 @@ void ModCursor::emit_return_statement(TSNode n) {
 
 //------------------------------------------------------------------------------
 
-void ModCursor::emit_primitive_type(TSNode n) {
+void MtCursor::emit_primitive_type(TSNode n) {
   // FIXME translate types here
   emit_body(n);
 }
 
-void ModCursor::emit_type_identifier(TSNode n) {
+void MtCursor::emit_type_identifier(TSNode n) {
   // FIXME translate types here
   emit_body(n);
 }
@@ -721,7 +718,7 @@ void ModCursor::emit_type_identifier(TSNode n) {
 //------------------------------------------------------------------------------
 // For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
 
-void ModCursor::emit_template_declaration(TSNode n) {
+void MtCursor::emit_template_declaration(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     sc == anon_sym_SEMI ? skip_over(child) : emit_dispatch(child);
@@ -732,7 +729,7 @@ void ModCursor::emit_template_declaration(TSNode n) {
 // Replace foo.bar.baz with foo_bar_baz, so that a field expression instead
 // refers to a glue expression.
 
-void ModCursor::emit_field_expression(TSNode n) {
+void MtCursor::emit_field_expression(TSNode n) {
   auto blah = mod->body(n);
   for (auto& c : blah) if (c == '.') c = '_';
   emit_replacement(n, blah.c_str());
@@ -740,7 +737,7 @@ void ModCursor::emit_field_expression(TSNode n) {
 
 //------------------------------------------------------------------------------
 
-void ModCursor::emit_dispatch(TSNode n) {
+void MtCursor::emit_dispatch(TSNode n) {
   assert(cursor <= mod->start(n));
   advance_to(n);
 

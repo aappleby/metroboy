@@ -5,7 +5,8 @@
 
 //------------------------------------------------------------------------------
 
-struct ModCursor {
+struct MtCursor {
+
   ModLibrary* mod_lib;
   Module* mod;
   const char* cursor = nullptr;
@@ -23,7 +24,6 @@ struct ModCursor {
   void emit_span(const char* a, const char* b);
   void emit(TSNode n);
   void emit(const char* fmt, ...);
-  void print_escaped(TSNode n);
   void skip_over(TSNode n);
   void advance_to(TSNode n);
   void advance_past(TSNode n);

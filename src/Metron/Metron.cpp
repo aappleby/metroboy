@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 
   for (auto& module : lib.modules) {
 
-    ModCursor cursor = {
+    MtCursor cursor = {
       &lib,
       module,
       module->source,

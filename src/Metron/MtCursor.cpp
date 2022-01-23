@@ -196,7 +196,7 @@ void ModCursor::emit_assignment_expression(TSNode n) {
 
 //------------------------------------------------------------------------------
 // Replace function names with macro names where needed, comment out explicit
-// tick/tock calls.
+// init/final/tick/tock calls.
 
 void ModCursor::emit_call_expression(TSNode n) {
   auto call_func = ts_node_child_by_field_id(n, field_function);
@@ -259,7 +259,7 @@ void ModCursor::emit_function_definition(TSNode n) {
   //----------
   // Special task/functions
 
-  bool is_init = is_task && mod->match(func_name, "initial");
+  bool is_init  = is_task && mod->match(func_name, "init");
   bool is_tick  = is_task && mod->match(func_name, "tick");
   bool is_tock  = is_task && mod->match(func_name, "tock");
   bool is_final = is_task && mod->match(func_name, "final");

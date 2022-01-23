@@ -36,6 +36,7 @@ void MtCursor::emit(const char* fmt, ...) {
 }
 
 void MtCursor::skip_over(TSNode n) {
+  assert(cursor == mod->start(n));
   if (cursor < mod->start(n)) {
     emit_span(cursor, mod->start(n));
   }
@@ -544,7 +545,8 @@ void MtCursor::emit_template_type(TSNode n) {
       cursor = mod->start(template_arg);
       emit(template_arg);
       emit("-1:0]");
-      skip_over(n);
+      //skip_over(n);
+      cursor = mod->end(n);
     }
     else if (ts_node_symbol(template_arg) == sym_number_literal) {
       if (mod->match(template_arg, "1")) {
@@ -554,7 +556,8 @@ void MtCursor::emit_template_type(TSNode n) {
       else {
         int width = atoi(mod->start(template_arg));
         emit_replacement(type_name, "logic[%d:0]", width - 1);
-        skip_over(n);
+        //skip_over(n);
+        cursor = mod->end(n);
       }
     }
     else {

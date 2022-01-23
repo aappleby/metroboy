@@ -43,9 +43,10 @@ void MtCursor::skip_over(TSNode n) {
 }
 
 void MtCursor::advance_to(TSNode n) {
-  assert(cursor <= mod->start(n));
-  emit_span(cursor, mod->start(n));
-  cursor = mod->start(n);
+  if (cursor < mod->start(n)) {
+    emit_span(cursor, mod->start(n));
+    cursor = mod->start(n);
+  }
 }
 
 void MtCursor::advance_past(TSNode n) {
@@ -89,7 +90,7 @@ void MtCursor::emit_anon(TSNode n) {
 }
 
 void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
-  advance_to(n);
+  assert(cursor == mod->start(n));
   va_list args;
   va_start(args, fmt);
   if (out) vfprintf(out, fmt, args);
@@ -149,6 +150,7 @@ void MtCursor::emit_preproc_include(TSNode n) {
       auto path = mod->body(child);
       static regex rx_trim(R"(\.h)");
       path = std::regex_replace(path, rx_trim, ".sv");
+      advance_to(child);
       emit_replacement(child, "%s", path.c_str());
     }
     else {

@@ -48,47 +48,24 @@ void MtCursor::emit(const char* fmt, ...) {
 
 void MtCursor::skip_over(TSNode n) {
   assert(cursor == mod->start(n));
-  if (cursor < mod->start(n)) {
-    emit_span(cursor, mod->start(n));
-  }
   cursor = mod->end(n);
 }
 
 void MtCursor::advance_to(TSNode n) {
-  if (cursor < mod->start(n)) {
-    emit_span(cursor, mod->start(n));
-    cursor = mod->start(n);
-  }
-}
-
-void MtCursor::advance_past(TSNode n) {
-  assert(cursor >= mod->start(n));
-  assert(cursor <= mod->end(n));
-  emit_span(cursor, mod->end(n));
-  cursor = mod->end(n);
-}
-
-void MtCursor::comment_out(TSNode n) {
-  advance_to(n);
-  emit("/* ");
-  emit_body(n);
-  emit(" */");
-}
-
-void MtCursor::emit_body(TSNode n) {
   assert(cursor <= mod->start(n));
   emit_span(cursor, mod->start(n));
   cursor = mod->start(n);
-  emit(n);
-  cursor = mod->end(n);
 }
 
-void MtCursor::emit_leaf(TSNode n) {
-  assert(!ts_node_is_null(n) && !ts_node_child_count(n));
-  emit_body(n);
+void MtCursor::comment_out(TSNode n) {
+  assert(cursor == mod->start(n));
+  emit("/* ");
+  emit(n);
+  emit(" */");
 }
 
 void MtCursor::emit_anon(TSNode n) {
+  assert(cursor == mod->start(n));
   assert(!ts_node_is_named(n) && !ts_node_is_null(n) && !ts_node_child_count(n));
 
   switch (ts_node_symbol(n)) {
@@ -96,7 +73,7 @@ void MtCursor::emit_anon(TSNode n) {
     comment_out(n);
     break;
   default:
-    emit_body(n);
+    emit(n);
     break;
   }
 }
@@ -110,8 +87,6 @@ void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
   va_end(args);
   cursor = mod->end(n);
 }
-
-//------------------------------------------------------------------------------
 
 void MtCursor::emit_error(TSNode n) {
   assert(cursor == mod->start(n));
@@ -197,12 +172,14 @@ void MtCursor::emit_assignment_expression(TSNode n) {
         emit("<", id.c_str());
       }
     }
-    emit_leaf(exp_op);
+    advance_to(exp_op);
+    emit(exp_op);
     emit_dispatch(exp_rv);
   }
   else {
     emit_dispatch(exp_lv);
-    emit_leaf(exp_op);
+    advance_to(exp_op);
+    emit(exp_op);
     emit_dispatch(exp_rv);
   }
 }
@@ -328,12 +305,14 @@ void MtCursor::emit_function_definition(TSNode n) {
   if (is_task) {
     skip_over(func_type);
     emit("task");
-    emit_body(func_name);
+    emit(func_name);
   }
   else {
+    advance_to(func_type);
     emit("function ");
-    emit_body(func_type);
-    emit_body(func_name);
+    emit(func_type);
+    advance_to(func_name);
+    emit(func_name);
   }
 
   auto func_args = ts_node_child_by_field_id(func_decl, field_parameters);
@@ -345,6 +324,7 @@ void MtCursor::emit_function_definition(TSNode n) {
     auto s = ts_node_symbol(c);
 
     if (s == anon_sym_LBRACE) {
+      advance_to(c);
       skip_over(c);
     }
     else if (s == anon_sym_RBRACE) {
@@ -470,7 +450,8 @@ void MtCursor::emit_class_specifier(TSNode n) {
   auto node_body = ts_node_child(n, 2);
 
   emit_replacement(node_class, "module");
-  emit_leaf(node_name);
+  advance_to(node_name);
+  emit(node_name);
   emit("\n");
 
   // Patch the template parameter list in after the module declaration
@@ -640,7 +621,8 @@ void MtCursor::emit_enumerator_list(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE || sc == anon_sym_RBRACE) {
-      emit_leaf(child);
+      advance_to(child);
+      emit(child);
     }
     else {
       emit_dispatch(child);
@@ -705,7 +687,7 @@ void MtCursor::emit_number_literal(TSNode n) {
     emit_replacement(n, "'h%s", body.c_str() + 2);
   }
   else {
-    emit_leaf(n);
+    emit(n);
   }
 }
 
@@ -713,23 +695,26 @@ void MtCursor::emit_number_literal(TSNode n) {
 // Change "return x" to "(funcname) = x" to match old Verilog return style.
 
 void MtCursor::emit_return_statement(TSNode n) {
-  if (ts_node_is_null(current_function_name)) emit_error(n);
-  auto ret_literal = ts_node_child(n, 0);
-  emit("%s =", mod->body(current_function_name).c_str());
-  emit_span(mod->end(ret_literal), mod->end(n));
-  cursor = mod->end(n);
+  visit_children(n, [&](TSNode child) {
+    if (ts_node_symbol(child) == anon_sym_return) {
+      emit_replacement(child, "%s =", mod->body(current_function_name).c_str());
+    }
+    else {
+      emit_dispatch(child);
+    }
+  });
 }
 
 //------------------------------------------------------------------------------
 
 void MtCursor::emit_primitive_type(TSNode n) {
   // FIXME translate types here
-  emit_body(n);
+  emit(n);
 }
 
 void MtCursor::emit_type_identifier(TSNode n) {
   // FIXME translate types here
-  emit_body(n);
+  emit(n);
 }
 
 //------------------------------------------------------------------------------
@@ -797,7 +782,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_false:
   case sym_comment:
   case sym_string_literal:
-    emit_body(n);
+    emit(n);
     return;
 
   case sym_if_statement:

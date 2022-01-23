@@ -43,6 +43,17 @@ struct uart_tx {
 
   //----------------------------------------
 
+  int derp() const {
+    return 2;
+  }
+
+  void herp(int x) {
+    cycle = x;
+  }
+
+
+  //----------------------------------------
+
   void tick(bool rst_n) {
     o_serial = buffer & 1;
     o_cts    = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);

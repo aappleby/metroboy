@@ -22,6 +22,7 @@ void MtCursor::emit_span(const char* a, const char* b) {
 }
 
 void MtCursor::emit(TSNode n) {
+  assert(cursor == mod->start(n));
   emit_span(mod->start(n), mod->end(n));
   cursor = mod->end(n);
 }
@@ -64,6 +65,7 @@ void MtCursor::comment_out(TSNode n) {
 void MtCursor::emit_body(TSNode n) {
   assert(cursor <= mod->start(n));
   emit_span(cursor, mod->start(n));
+  cursor = mod->start(n);
   emit(n);
   cursor = mod->end(n);
 }
@@ -537,6 +539,7 @@ void MtCursor::emit_template_type(TSNode n) {
 
     if (ts_node_symbol(template_arg) == sym_type_descriptor) {
       emit_replacement(type_name, "logic[");
+      cursor = mod->start(template_arg);
       emit(template_arg);
       emit("-1:0]");
       skip_over(n);

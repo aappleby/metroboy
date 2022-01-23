@@ -25,6 +25,7 @@ struct Module {
   blob src_blob;
   TSTree* tree = nullptr;
   const char* source = nullptr;
+  const char* source_end = nullptr;
   TSNode root;
 
   std::vector<TSNode> moduleparams;

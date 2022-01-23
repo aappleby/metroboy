@@ -31,9 +31,9 @@ void Module::load(const std::string& input_filename, const std::string& output_f
   ts_parser_set_language(parser, lang);
 
   src_blob = load_blob(input_filename.c_str());
-  src_blob.push_back(0);
 
   source = (const char*)src_blob.data();
+  source_end = source + src_blob.size();
   tree = ts_parser_parse_string(parser, NULL, source, (uint32_t)src_blob.size());
   root = ts_tree_root_node(tree);
 

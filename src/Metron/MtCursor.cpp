@@ -7,8 +7,16 @@
 //------------------------------------------------------------------------------
 
 void MtCursor::visit_children(TSNode n, NodeVisitor cv) {
+  if (cursor < mod->start(n)) {
+    emit_span(cursor, mod->start(n));
+    cursor = mod->start(n);
+  }
   for (const auto& c : n) {
     cv(c);
+  }
+  if (cursor < mod->end(n)) {
+    emit_span(cursor, mod->end(n));
+    cursor = mod->end(n);
   }
 }
 
@@ -17,6 +25,9 @@ void MtCursor::visit_children(TSNode n, NodeVisitor cv) {
 // Generic emit() methods
 
 void MtCursor::emit_span(const char* a, const char* b) {
+  assert(cursor >= mod->source);
+  assert(cursor <  mod->source_end);
+
   if (out) fwrite(a, 1, b - a, out);
   fwrite(a, 1, b - a, stdout);
 }
@@ -545,7 +556,6 @@ void MtCursor::emit_template_type(TSNode n) {
       cursor = mod->start(template_arg);
       emit(template_arg);
       emit("-1:0]");
-      //skip_over(n);
       cursor = mod->end(n);
     }
     else if (ts_node_symbol(template_arg) == sym_number_literal) {
@@ -556,7 +566,6 @@ void MtCursor::emit_template_type(TSNode n) {
       else {
         int width = atoi(mod->start(template_arg));
         emit_replacement(type_name, "logic[%d:0]", width - 1);
-        //skip_over(n);
         cursor = mod->end(n);
       }
     }
@@ -852,15 +861,10 @@ void MtCursor::emit_dispatch(TSNode n) {
     return;
 
   default:
-    //----------
-    // Why do we get error nodes when parsing valid code?
-
-    if (!ts_node_has_error(n)) {
-      printf("\n\n\n########################################\n");
-      mod->dump_tree(n);
-      printf("\n########################################\n\n\n");
-      __debugbreak();
-    }
+    printf("\n\n\n########################################\n");
+    mod->dump_tree(n);
+    printf("\n########################################\n\n\n");
+    __debugbreak();
   }
 }
 

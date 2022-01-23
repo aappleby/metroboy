@@ -53,6 +53,11 @@ module uart_tx
 
   //----------------------------------------
 
+  final begin
+  end
+
+  //----------------------------------------
+
   always_comb begin
     o_serial = buffer & 1;
     o_cts    = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);

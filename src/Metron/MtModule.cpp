@@ -111,8 +111,10 @@ void Module::dump_node(TSNode n, int index, int field, int depth) {
 //------------------------------------------------------------------------------
 
 void Module::dump_tree(TSNode n, int index, int field, int depth, int maxdepth) {
+  if (depth == 0) {
+    printf("\n\n========== tree dump begin\n");
+  }
   dump_node(n, index, field, depth);
-
 
   if (depth < maxdepth) {
     if (!ts_node_is_null(n)) {
@@ -122,6 +124,7 @@ void Module::dump_tree(TSNode n, int index, int field, int depth, int maxdepth) 
       }
     }
   }
+  if (depth == 0) printf("========== tree dump end\n\n");
 }
 
 //------------------------------------------------------------------------------

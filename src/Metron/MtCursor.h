@@ -13,7 +13,10 @@ struct ModCursor {
   bool in_init = false;
   bool in_comb = false;
   bool in_seq = false;
+  bool in_final = false;
   TSNode current_function_name = { 0 };
+
+  void visit_children(TSNode n, NodeVisitor cv);
 
   //----------
 
@@ -38,7 +41,8 @@ struct ModCursor {
   void emit_primitive_type(TSNode n);
   void emit_type_identifier(TSNode n);
 
-  void emit_include(TSNode n);
+  void emit_preproc_include(TSNode n);
+  void emit_return_statement(TSNode n);
   void emit_assignment_expression(TSNode n);
   void emit_call_expression(TSNode n);
   void emit_function_definition(TSNode n);
@@ -48,10 +52,12 @@ struct ModCursor {
   void emit_compound_statement(TSNode n);
   void emit_template_type(TSNode n);
   void emit_module_parameters(TSNode n);
+  void emit_template_declaration(TSNode n);
   void emit_template_argument_list(TSNode n);
   void emit_enumerator_list(TSNode n);
   void emit_translation_unit(TSNode n);
   void emit_field_declaration_list(TSNode n);
+  void emit_field_expression(TSNode n);
   void emit_dispatch(TSNode n);
 };
 

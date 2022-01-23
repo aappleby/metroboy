@@ -45,6 +45,11 @@ module uart_rx
 
   //----------------------------------------
 
+  final begin
+  end
+
+  //----------------------------------------
+
   always_comb begin
     o_data = buffer;
     o_valid = cursor == 1;

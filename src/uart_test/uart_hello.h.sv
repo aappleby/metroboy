@@ -45,6 +45,11 @@ module uart_hello
 
   //----------------------------------------
 
+  final begin
+  end
+
+  //----------------------------------------
+
   always_comb begin
     o_data = data;
     o_req = state == SEND;

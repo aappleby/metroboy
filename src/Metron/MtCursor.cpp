@@ -4,6 +4,14 @@
 #include <stdarg.h>
 #include <regex>
 
+//------------------------------------------------------------------------------
+
+void ModCursor::visit_children(TSNode n, NodeVisitor cv) {
+  for (const auto& c : n) {
+    cv(c);
+  }
+}
+
 
 //------------------------------------------------------------------------------
 // Generic emit() methods
@@ -82,19 +90,13 @@ void ModCursor::emit_anon(TSNode n) {
 }
 
 void ModCursor::emit_replacement(TSNode n, const char* fmt, ...) {
-  assert(cursor == mod->start(n));
-
   advance_to(n);
-
   va_list args;
   va_start(args, fmt);
   if (out) vfprintf(out, fmt, args);
   vfprintf(stdout, fmt, args);
   va_end(args);
-
-  skip_over(n);
-
-  assert(cursor == mod->end(n));
+  cursor = mod->end(n);
 }
 
 //------------------------------------------------------------------------------
@@ -135,32 +137,37 @@ void ModCursor::emit_error(TSNode n) {
 
 
 //------------------------------------------------------------------------------
-// Reformat #includes and replace .h with .sv.
+// Replace "#include" with "`include" and ".h" with ".sv"
 
-void ModCursor::emit_include(TSNode n) {
-  assert(ts_node_symbol(n) == sym_preproc_include);
+void ModCursor::emit_preproc_include(TSNode n) {
+  visit_children(n, [&](TSNode child) {
+    auto sc = ts_node_symbol(child);
 
-  auto node_path = ts_node_child_by_field_id(n, field_path);
-
-  auto path = mod->body(node_path);
-  static regex rx_trim(R"(\.h)");
-  path = std::regex_replace(path, rx_trim, ".sv");
-  emit("`include %s", path.c_str());
-  cursor = mod->end(node_path);
+    if (sc == aux_sym_preproc_include_token1) {
+      emit_replacement(child, "`include");
+    }
+    else if (sc == sym_string_literal) {
+      auto path = mod->body(child);
+      static regex rx_trim(R"(\.h)");
+      path = std::regex_replace(path, rx_trim, ".sv");
+      emit_replacement(child, "%s", path.c_str());
+    }
+    else {
+      emit_dispatch(child);
+    }
+  });
 }
 
 //------------------------------------------------------------------------------
-// FIXME - change '=' to '<=' if lhs is a field
+// Change '=' to '<=' if lhs is a field and we're inside a sequential block.
 
 void ModCursor::emit_assignment_expression(TSNode n) {
   auto exp_lv = ts_node_child_by_field_id(n, field_left);
   auto exp_op = ts_node_child_by_field_id(n, field_operator);
   auto exp_rv = ts_node_child_by_field_id(n, field_right);
 
-  emit_dispatch(exp_lv);
-
-  // need to check if lhs is a field reference
   if (in_seq) {
+    emit_dispatch(exp_lv);
     if (ts_node_symbol(exp_lv) == sym_identifier) {
       std::string id = mod->body(exp_lv);
 
@@ -177,10 +184,14 @@ void ModCursor::emit_assignment_expression(TSNode n) {
         emit("<", id.c_str());
       }
     }
+    emit_leaf(exp_op);
+    emit_dispatch(exp_rv);
   }
-
-  emit_leaf(exp_op);
-  emit_dispatch(exp_rv);
+  else {
+    emit_dispatch(exp_lv);
+    emit_leaf(exp_op);
+    emit_dispatch(exp_rv);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -191,6 +202,12 @@ void ModCursor::emit_call_expression(TSNode n) {
   auto call_func = ts_node_child_by_field_id(n, field_function);
   auto call_args = ts_node_child_by_field_id(n, field_arguments);
 
+  // If we're calling a member function, look at the name of the member
+  // function and not the whole foo.bar().
+  if (ts_node_symbol(call_func) == sym_field_expression) {
+    call_func = ts_node_child_by_field_id(call_func, field_field);
+  }
+
   if (mod->match(call_func, "clog2")) {
     emit_replacement(call_func, "$clog2");
     emit_dispatch(call_args);
@@ -199,8 +216,22 @@ void ModCursor::emit_call_expression(TSNode n) {
     emit_replacement(call_func, "$readmemh");
     emit_dispatch(call_args);
   }
+  else if (mod->match(call_func, "init")) {
+    comment_out(n);
+  }
+  else if (mod->match(call_func, "final")) {
+    comment_out(n);
+  }
+  else if (mod->match(call_func, "tick")) {
+    comment_out(n);
+  }
+  else if (mod->match(call_func, "tock")) {
+    comment_out(n);
+  }
   else {
     comment_out(n);
+    mod->dump_tree(call_func);
+    __debugbreak();
   }
 
   cursor = mod->end(n);
@@ -226,13 +257,25 @@ void ModCursor::emit_function_definition(TSNode n) {
   // FIXME check if method is const
 
   //----------
-  // Special task/function
+  // Special task/functions
 
-  bool is_tick = is_task && mod->match(func_name, "tick");
-  bool is_tock = is_task && mod->match(func_name, "tock");
   bool is_init = is_task && mod->match(func_name, "initial");
+  bool is_tick  = is_task && mod->match(func_name, "tick");
+  bool is_tock  = is_task && mod->match(func_name, "tock");
+  bool is_final = is_task && mod->match(func_name, "final");
 
-  if (is_tick) {
+  if (is_init) {
+    emit("initial");
+    cursor = mod->end(func_decl);
+
+    in_init = true;
+    emit_dispatch(func_body);
+    in_init = false;
+
+    current_function_name = { 0 };
+    return;
+  }
+  else if (is_tick) {
     emit("always_comb");
     cursor = mod->end(func_decl);
 
@@ -254,13 +297,13 @@ void ModCursor::emit_function_definition(TSNode n) {
     current_function_name = { 0 };
     return;
   }
-  else if (is_init) {
-    emit("initial");
+  else if (is_final) {
+    emit("final");
     cursor = mod->end(func_decl);
 
-    in_init = true;
+    in_final = true;
     emit_dispatch(func_body);
-    in_init = false;
+    in_final = false;
 
     current_function_name = { 0 };
     return;
@@ -397,7 +440,7 @@ void ModCursor::emit_field_declaration(TSNode decl) {
       emit("output ");
     }
 
-    mod->visit_children(decl, [&](TSNode child) {
+    visit_children(decl, [&](TSNode child) {
       emit_dispatch(child);
       });
   }
@@ -442,7 +485,7 @@ void ModCursor::emit_class_specifier(TSNode n) {
 
   // Emit the module body, with a few modifications.
   cursor = mod->start(ts_node_child(node_body, 0));
-  mod->visit_children(node_body, [&](TSNode child) {
+  visit_children(node_body, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE) {
       // Discard the opening brace
@@ -467,7 +510,7 @@ void ModCursor::emit_class_specifier(TSNode n) {
 // Change "{ blah(); }" to "begin blah(); end"
 
 void ModCursor::emit_compound_statement(TSNode n) {
-  mod->visit_children(n, [&](TSNode child) {
+  visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE) {
       advance_to(child);
@@ -491,7 +534,6 @@ void ModCursor::emit_template_type(TSNode n) {
   auto type_args = ts_node_child_by_field_id(n, field_arguments);
 
   std::string name(mod->start(type_name), mod->end(type_name));
-  bool is_submod = false;
 
   if (mod->match(type_name, "logic")) {
     auto template_arg = ts_node_named_child(type_args, 0);
@@ -522,10 +564,6 @@ void ModCursor::emit_template_type(TSNode n) {
       skip_over(n);
     }
   }
-  else if (is_submod) {
-    emit_dispatch(type_name);
-    emit_dispatch(type_args);
-  }
   else {
     emit_dispatch(type_name);
     emit_dispatch(type_args);
@@ -533,10 +571,11 @@ void ModCursor::emit_template_type(TSNode n) {
 }
 
 //------------------------------------------------------------------------------
-// Change <int param, int param> to #(parameter int param, parameter int param)
+// Change (template)<int param, int param> to
+// #(parameter int param, parameter int param)
 
 void ModCursor::emit_module_parameters(TSNode n) {
-  mod->visit_children(n, [&](TSNode child) {
+  visit_children(n, [&](TSNode child) {
     auto s = ts_node_symbol(child);
 
     if (s == anon_sym_LT) {
@@ -565,7 +604,7 @@ void ModCursor::emit_module_parameters(TSNode n) {
 // Change <param, param> to #(param, param)
 
 void ModCursor::emit_template_argument_list(TSNode n) {
-  mod->visit_children(n, [&](TSNode child) {
+  visit_children(n, [&](TSNode child) {
     auto s = ts_node_symbol(child);
 
     if (s == anon_sym_LT) {
@@ -584,7 +623,7 @@ void ModCursor::emit_template_argument_list(TSNode n) {
 // Enum lists do _not_ turn braces into begin/end.
 
 void ModCursor::emit_enumerator_list(TSNode n) {
-  mod->visit_children(n, [&](TSNode child) {
+  visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE || sc == anon_sym_RBRACE) {
       emit_leaf(child);
@@ -602,7 +641,7 @@ void ModCursor::emit_translation_unit(TSNode n) {
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
 
-  mod->visit_children(n, [&](TSNode child) {
+  visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     sc == anon_sym_SEMI ? skip_over(child) : emit_dispatch(child);
     });
@@ -612,7 +651,7 @@ void ModCursor::emit_translation_unit(TSNode n) {
 // Structs/classes get "begin/end" instead of {}.
 
 void ModCursor::emit_field_declaration_list(TSNode n) {
-  mod->visit_children(n, [&](TSNode child) {
+  visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE) {
       emit_replacement(child, "begin");
@@ -644,16 +683,27 @@ void ModCursor::emit_basic_replacements(TSNode n) {
 }
 
 //------------------------------------------------------------------------------
+// Replace "0x" prefixes with "'h"
 
 void ModCursor::emit_number_literal(TSNode n) {
   std::string body = mod->body(n);
   if (body.starts_with("0x")) {
-    emit("'h%s", body.c_str() + 2);
-    skip_over(n);
+    emit_replacement(n, "'h%s", body.c_str() + 2);
   }
   else {
     emit_leaf(n);
   }
+}
+
+//------------------------------------------------------------------------------
+// Change "return x" to "(funcname) = x" to match old Verilog return style.
+
+void ModCursor::emit_return_statement(TSNode n) {
+  if (ts_node_is_null(current_function_name)) emit_error(n);
+  auto ret_literal = ts_node_child(n, 0);
+  emit("%s =", mod->body(current_function_name).c_str());
+  emit_span(mod->end(ret_literal), mod->end(n));
+  cursor = mod->end(n);
 }
 
 //------------------------------------------------------------------------------
@@ -669,19 +719,73 @@ void ModCursor::emit_type_identifier(TSNode n) {
 }
 
 //------------------------------------------------------------------------------
+// For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
+
+void ModCursor::emit_template_declaration(TSNode n) {
+  visit_children(n, [&](TSNode child) {
+    auto sc = ts_node_symbol(child);
+    sc == anon_sym_SEMI ? skip_over(child) : emit_dispatch(child);
+    });
+}
+
+//------------------------------------------------------------------------------
+// Replace foo.bar.baz with foo_bar_baz, so that a field expression instead
+// refers to a glue expression.
+
+void ModCursor::emit_field_expression(TSNode n) {
+  auto blah = mod->body(n);
+  for (auto& c : blah) if (c == '.') c = '_';
+  emit_replacement(n, blah.c_str());
+}
+
+//------------------------------------------------------------------------------
 
 void ModCursor::emit_dispatch(TSNode n) {
   assert(cursor <= mod->start(n));
   advance_to(n);
 
-  if (!ts_node_is_named(n)) {
-    emit_anon(n);
-    return;
-  }
-
   auto s = ts_node_symbol(n);
 
   switch (s) {
+  case anon_sym_template:
+  case anon_sym_if:
+  case anon_sym_else:
+  case anon_sym_typedef:
+  case anon_sym_enum:
+  case anon_sym_LF:
+  case anon_sym_EQ:
+  case anon_sym_SEMI:
+  case anon_sym_COMMA:
+  case anon_sym_LPAREN:
+  case anon_sym_RPAREN:
+  case anon_sym_LBRACK:
+  case anon_sym_RBRACK:
+  case anon_sym_BANG:
+  case anon_sym_EQ_EQ:
+  case anon_sym_AMP:
+  case anon_sym_AMP_AMP:
+  case anon_sym_DASH:
+  case anon_sym_PLUS:
+  case anon_sym_PIPE:
+  case anon_sym_PIPE_PIPE:
+  case anon_sym_LT:
+  case anon_sym_LT_LT:
+  case anon_sym_LT_EQ:
+  case anon_sym_GT_GT:
+  case anon_sym_BANG_EQ:
+  case aux_sym_preproc_include_token1:
+    emit_anon(n);
+    return;
+
+  case alias_sym_field_identifier:
+  case sym_identifier:
+  case sym_true:
+  case sym_false:
+  case sym_comment:
+  case sym_string_literal:
+    emit_body(n);
+    return;
+
   case sym_if_statement:
   case sym_for_statement:
   case sym_parenthesized_expression:
@@ -700,65 +804,14 @@ void ModCursor::emit_dispatch(TSNode n) {
   case sym_array_declarator:
   case sym_parameter_list:
   case sym_type_descriptor:
-    mod->visit_children(n, [&](TSNode c) { emit_dispatch(c); });
+    visit_children(n, [&](TSNode c) { emit_dispatch(c); });
     return;
 
-  case sym_storage_class_specifier:
-  case sym_type_qualifier:
-    emit_basic_replacements(n);
-    return;
-
-  case sym_return_statement: {
-    if (ts_node_is_null(current_function_name)) emit_error(n);
-    auto ret_literal = ts_node_child(n, 0);
-    emit("%s =", mod->body(current_function_name).c_str());
-    emit_span(mod->end(ret_literal), mod->end(n));
-    cursor = mod->end(n);
-    return;
-  }
-
-  case sym_field_expression: {
-    auto blah = mod->body(n);
-    for (auto& c : blah) if (c == '.') c = '_';
-    emit_replacement(n, blah.c_str());
-    return;
-  }
-
-                            // For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
-  case sym_template_declaration:
-    mod->visit_children(n, [&](TSNode child) {
-      auto sc = ts_node_symbol(child);
-      sc == anon_sym_SEMI ? skip_over(child) : emit_dispatch(child);
-      });
-    return;
-
-  case alias_sym_field_identifier:
-  case sym_identifier:
-  case sym_true:
-  case sym_false:
-  case sym_comment:
-    emit_leaf(n);
-    return;
-
-  case sym_string_literal:
-    emit_body(n);
-    return;
-
-  case sym_number_literal: {
-    emit_number_literal(n);
-    return;
-  }
-
-  case sym_preproc_call:
-  case sym_preproc_if:
-    skip_over(n);
-    return;
-
-  case sym_access_specifier:
-    comment_out(n);
-    return;
-
-  case sym_preproc_include:        emit_include(n);            return;
+  case sym_number_literal:         emit_number_literal(n); return;
+  case sym_field_expression:       emit_field_expression(n); return;
+  case sym_return_statement:       emit_return_statement(n); return;
+  case sym_template_declaration:   emit_template_declaration(n); return;
+  case sym_preproc_include:        emit_preproc_include(n);            return;
   case sym_field_declaration:      emit_field_declaration(n);  return;
   case sym_compound_statement:     emit_compound_statement(n); return;
   case sym_template_type:          emit_template_type(n);      return;
@@ -773,6 +826,20 @@ void ModCursor::emit_dispatch(TSNode n) {
   case sym_assignment_expression:  emit_assignment_expression(n); return;
   case sym_template_argument_list: emit_template_argument_list(n); return;
   case sym_enumerator_list:        emit_enumerator_list(n); return;
+
+  case sym_storage_class_specifier:
+  case sym_type_qualifier:
+    emit_basic_replacements(n);
+    return;
+
+  case sym_preproc_call:
+  case sym_preproc_if:
+    skip_over(n);
+    return;
+
+  case sym_access_specifier:
+    comment_out(n);
+    return;
 
   case sym_template_parameter_list:
     mod->module_param_list = n;

@@ -62,6 +62,14 @@ module uart_top
 
   //----------------------------------------
 
+  final begin
+    /* hello.final() */;
+    /* tx.final() */;
+    /* rx.final() */;
+  end
+
+  //----------------------------------------
+
   always_comb begin
     /* hello.tick(rst_n) */;
     /* tx.tick(rst_n) */;

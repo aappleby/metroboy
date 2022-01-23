@@ -9,6 +9,9 @@
 #include "../Plait/TreeSymbols.h"
 #include "MtIterator.h"
 
+typedef std::function<void(TSNode)> NodeVisitor;
+typedef std::function<void(TSNode parent, TSNode child)> NodeVisitor2;
+
 //------------------------------------------------------------------------------
 
 struct Module {
@@ -35,9 +38,6 @@ struct Module {
   TSNode module_class = { 0 };
   TSNode module_param_list = { 0 };
   std::string module_name;
-
-  typedef std::function<void(TSNode)> NodeVisitor;
-  typedef std::function<void(TSNode parent, TSNode child)> NodeVisitor2;
 
   Module();
   ~Module();

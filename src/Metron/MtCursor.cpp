@@ -12,22 +12,6 @@ void MtCursor::visit_children(TSNode n, NodeVisitor cv) {
   }
 }
 
-void MtCursor::emit_children(TSNode n) {
-  if (cursor < mod->start(n)) {
-    emit_span(cursor, mod->start(n));
-    cursor = mod->start(n);
-  }
-  for (const auto& c : n) {
-    advance_to(c);
-    emit_dispatch(c);
-  }
-  if (cursor < mod->end(n)) {
-    emit_span(cursor, mod->end(n));
-    cursor = mod->end(n);
-  }
-}
-
-
 void MtCursor::emit_children(TSNode n, NodeVisitor3 cv) {
   if (cursor < mod->start(n)) {
     emit_span(cursor, mod->start(n));
@@ -36,17 +20,24 @@ void MtCursor::emit_children(TSNode n, NodeVisitor3 cv) {
 
   for (int i = 0; i < (int)ts_node_child_count(n); i++) {
     auto child = ts_node_child(n, i);
-    auto sym   = ts_node_symbol(child);
+    auto sym = ts_node_symbol(child);
     auto field = ts_node_field_id_for_child(n, i);
-    
+
     advance_to(child);
     cv(child, field, sym);
+    assert(cursor == mod->end(child));
   }
 
   if (cursor < mod->end(n)) {
     emit_span(cursor, mod->end(n));
     cursor = mod->end(n);
   }
+}
+
+void MtCursor::emit_children(TSNode n) {
+  emit_children(n, [&](TSNode n, int field, TSSymbol sym) {
+    emit_dispatch(n);
+  });
 }
 
 //------------------------------------------------------------------------------
@@ -175,39 +166,35 @@ void MtCursor::emit_preproc_include(TSNode n) {
 // Change '=' to '<=' if lhs is a field and we're inside a sequential block.
 
 void MtCursor::emit_assignment_expression(TSNode n) {
-  auto exp_lv = ts_node_child_by_field_id(n, field_left);
-  auto exp_op = ts_node_child_by_field_id(n, field_operator);
-  auto exp_rv = ts_node_child_by_field_id(n, field_right);
+  if (!in_seq) return emit_children(n);
 
-  if (in_seq) {
-    emit_dispatch(exp_lv);
-    advance_to(exp_op);
-    if (ts_node_symbol(exp_lv) == sym_identifier) {
-      std::string id = mod->body(exp_lv);
+  bool lvalue_is_field = false;
 
-      bool has_field = false;
-      for (auto f : mod->fields) {
-        if (mod->field_to_name(f) == id) {
-          has_field = true;
-          break;
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    switch (field) {
+
+    case field_left: {
+      if (sym == sym_identifier) {
+        std::string id = mod->body(child);
+        for (auto f : mod->fields) {
+          if (mod->field_to_name(f) == id) {
+            lvalue_is_field = true;
+            break;
+          }
         }
       }
-
-      if (has_field) {
-        emit("<", id.c_str());
-      }
+      return emit_dispatch(child);
     }
-    emit(exp_op);
-    advance_to(exp_rv);
-    emit_dispatch(exp_rv);
-  }
-  else {
-    emit_dispatch(exp_lv);
-    advance_to(exp_op);
-    emit(exp_op);
-    advance_to(exp_rv);
-    emit_dispatch(exp_rv);
-  }
+
+    case field_operator:
+      if (lvalue_is_field) emit("<");
+      return emit_dispatch(child);
+    case field_right:
+      return emit_dispatch(child);
+    default:
+      __debugbreak();
+    }
+  });
 }
 
 //------------------------------------------------------------------------------

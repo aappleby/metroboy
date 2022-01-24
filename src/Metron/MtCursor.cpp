@@ -136,7 +136,7 @@ void MtCursor::emit_preproc_include(TSNode n) {
     else if (sc == sym_string_literal) {
       auto path = mod->body(child);
       static regex rx_trim(R"(\.h)");
-      path = std::regex_replace(path, rx_trim, ".sv");
+      path = std::regex_replace(path, rx_trim, ".h.sv");
       advance_to(child);
       emit_replacement(child, "%s", path.c_str());
     }
@@ -213,6 +213,9 @@ void MtCursor::emit_call_expression(TSNode n) {
     comment_out(n);
   }
   else if (mod->match(call_func, "tick")) {
+
+    mod->dump_tree(n);
+
     comment_out(n);
   }
   else if (mod->match(call_func, "tock")) {
@@ -231,7 +234,29 @@ void MtCursor::emit_call_expression(TSNode n) {
 // Change "init/tick/tock" to "initial begin / always_comb / always_ff", change
 // void methods to tasks, and change const methods to functions.
 
+/*
+========== tree dump begin
+[0] s186 function_definition:
+|   [0] f32 s78 type.primitive_type: "int"
+|   [1] f9 s216 declarator.function_declarator:
+|   |   [0] f9 s392 declarator.field_identifier: "derp"
+|   |   [1] f24 s239 parameters.parameter_list:
+|   |   |   [0] s5 lit: "("
+|   |   |   [1] s8 lit: ")"
+|   |   [2] s227 type_qualifier:
+|   |   |   [0] s68 lit: "const"
+|---[2] f5 s225 body.compound_statement:
+|   |   [0] s59 lit: "{"
+|   |   [1] s251 return_statement:
+|   |   |   [0] s92 lit: "return"
+|   |   |   [1] s112 number_literal: "2"
+|   |   |   [2] s39 lit: ";"
+|   |   [2] s60 lit: "}"
+========== tree dump end
+*/
+
 void MtCursor::emit_function_definition(TSNode n) {
+  //mod->dump_tree(n);
 
   auto func_type = ts_node_child_by_field_id(n, field_type);
   auto func_decl = ts_node_child_by_field_id(n, field_declarator);
@@ -243,8 +268,6 @@ void MtCursor::emit_function_definition(TSNode n) {
   advance_to(func_type);
 
   bool is_task = mod->match(func_type, "void");
-
-  // FIXME check if method is const
 
   //----------
   // Special task/functions
@@ -288,6 +311,7 @@ void MtCursor::emit_function_definition(TSNode n) {
     return;
   }
   else if (is_final) {
+    /*
     emit("final");
     cursor = mod->end(func_decl);
 
@@ -296,29 +320,39 @@ void MtCursor::emit_function_definition(TSNode n) {
     in_final = false;
 
     current_function_name = { 0 };
+    */
+    comment_out(n);
     return;
   }
 
   //----------
   // Generic task/function
 
+  // FIXME check if method is const
+
   if (is_task) {
     skip_over(func_type);
     emit("task");
-    emit(func_name);
   }
   else {
     advance_to(func_type);
     emit("function ");
     emit(func_type);
-    advance_to(func_name);
-    emit(func_name);
   }
 
-  auto func_args = ts_node_child_by_field_id(func_decl, field_parameters);
-  emit_dispatch(func_args);
+  //auto func_args = ts_node_child_by_field_id(func_decl, field_parameters);
+  //emit_dispatch(func_args);
+  //emit(";");
+
+  visit_children(func_decl, [&](TSNode child) {
+    advance_to(child);
+    emit_dispatch(child);
+  });
   emit(";");
 
+
+  bool old_in_seq = in_seq;
+  if (is_task) in_seq = true;
   for (int i = 0; i < (int)ts_node_child_count(func_body); i++) {
     auto c = ts_node_child(func_body, i);
     auto s = ts_node_symbol(c);
@@ -337,6 +371,7 @@ void MtCursor::emit_function_definition(TSNode n) {
   }
 
   current_function_name = { 0 };
+  in_seq = old_in_seq;
 }
 
 //------------------------------------------------------------------------------
@@ -663,22 +698,6 @@ void MtCursor::emit_field_declaration_list(TSNode n) {
 }
 
 //------------------------------------------------------------------------------
-
-void MtCursor::emit_basic_replacements(TSNode n) {
-  if (mod->match(n, "static")) {
-    advance_to(n);
-    emit_replacement(n, "localparam");
-    return;
-  }
-
-  if (mod->match(n, "const")) {
-    advance_to(n);
-    emit_replacement(n, "/*const*/");
-    return;
-  }
-}
-
-//------------------------------------------------------------------------------
 // Replace "0x" prefixes with "'h"
 
 void MtCursor::emit_number_literal(TSNode n) {
@@ -826,10 +845,24 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_template_argument_list: emit_template_argument_list(n); return;
   case sym_enumerator_list:        emit_enumerator_list(n); return;
 
-  case sym_storage_class_specifier:
-  case sym_type_qualifier:
-    emit_basic_replacements(n);
+  case sym_storage_class_specifier: {
+    auto lit = ts_node_child(n, 0);
+    if (ts_node_symbol(lit) == anon_sym_static) {
+      advance_to(n);
+      emit_replacement(n, "localparam");
+    }
     return;
+  }
+
+  case sym_type_qualifier: {
+    auto lit = ts_node_child(n, 0);
+    if (ts_node_symbol(lit) == anon_sym_const) {
+      advance_to(n);
+      emit_replacement(n, "/*const*/");
+      return;
+    }
+    return;
+  }
 
   case sym_preproc_call:
   case sym_preproc_if:

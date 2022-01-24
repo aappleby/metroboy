@@ -3,7 +3,7 @@
 `default_nettype none
 `timescale 1 ns / 1 ns
 
-`include "uart_top.sv"
+`include "uart_top.h.sv"
 
 //==============================================================================
 

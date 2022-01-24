@@ -9,10 +9,10 @@
 
 /* verilator lint_off WIDTH */
 `default_nettype none
-`include "metron.sv"
-`include "uart_rx.sv"
-`include "uart_tx.sv"
-`include "uart_hello.sv"
+`include "metron.h.sv"
+`include "uart_rx.h.sv"
+`include "uart_tx.h.sv"
+`include "uart_hello.h.sv"
 
 //==============================================================================
 
@@ -62,11 +62,11 @@ module uart_top
 
   //----------------------------------------
 
-  final begin
-    /* hello.final() */;
-    /* tx.final() */;
-    /* rx.final() */;
-  end
+  /* void final() {
+    hello.final();
+    tx.final();
+    rx.final();
+  } */
 
   //----------------------------------------
 

@@ -9,7 +9,7 @@
 
 /* verilator lint_off WIDTH */
 `default_nettype none
-`include "metron.sv"
+`include "metron.h.sv"
 
 //==============================================================================
 
@@ -53,14 +53,18 @@ module uart_tx
 
   //----------------------------------------
 
-  final begin
-  end
+  /* void final() {
+  } */
 
   //----------------------------------------
 
-  function int derp(); 
+  function int derp() /*const*/; 
     derp = 2;
   endfunction
+
+  task herp(int x); 
+    cycle <= x;
+  endtask
 
 
   //----------------------------------------

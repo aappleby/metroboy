@@ -12,6 +12,7 @@ void MtCursor::visit_children(TSNode n, NodeVisitor cv) {
     cursor = mod->start(n);
   }
   for (const auto& c : n) {
+    advance_to(c);
     cv(c);
   }
   if (cursor < mod->end(n)) {
@@ -128,6 +129,7 @@ void MtCursor::emit_error(TSNode n) {
 
 void MtCursor::emit_preproc_include(TSNode n) {
   visit_children(n, [&](TSNode child) {
+    advance_to(child);
     auto sc = ts_node_symbol(child);
 
     if (sc == aux_sym_preproc_include_token1) {
@@ -137,7 +139,6 @@ void MtCursor::emit_preproc_include(TSNode n) {
       auto path = mod->body(child);
       static regex rx_trim(R"(\.h)");
       path = std::regex_replace(path, rx_trim, ".h.sv");
-      advance_to(child);
       emit_replacement(child, "%s", path.c_str());
     }
     else {
@@ -213,9 +214,6 @@ void MtCursor::emit_call_expression(TSNode n) {
     comment_out(n);
   }
   else if (mod->match(call_func, "tick")) {
-
-    mod->dump_tree(n);
-
     comment_out(n);
   }
   else if (mod->match(call_func, "tock")) {

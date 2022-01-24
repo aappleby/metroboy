@@ -129,7 +129,6 @@ void MtCursor::emit_error(TSNode n) {
 
 void MtCursor::emit_preproc_include(TSNode n) {
   visit_children(n, [&](TSNode child) {
-    advance_to(child);
     auto sc = ts_node_symbol(child);
 
     if (sc == aux_sym_preproc_include_token1) {
@@ -343,7 +342,6 @@ void MtCursor::emit_function_definition(TSNode n) {
   //emit(";");
 
   visit_children(func_decl, [&](TSNode child) {
-    advance_to(child);
     emit_dispatch(child);
   });
   emit(";");
@@ -351,22 +349,19 @@ void MtCursor::emit_function_definition(TSNode n) {
 
   bool old_in_seq = in_seq;
   if (is_task) in_seq = true;
-  for (int i = 0; i < (int)ts_node_child_count(func_body); i++) {
-    auto c = ts_node_child(func_body, i);
-    auto s = ts_node_symbol(c);
 
+  visit_children(func_body, [&](TSNode child) {
+    auto s = ts_node_symbol(child);
     if (s == anon_sym_LBRACE) {
-      advance_to(c);
-      skip_over(c);
+      skip_over(child);
     }
     else if (s == anon_sym_RBRACE) {
-      advance_to(c);
-      emit_replacement(c, is_task ? "endtask" : "endfunction");
+      emit_replacement(child, is_task ? "endtask" : "endfunction");
     }
     else {
-      emit_dispatch(c);
+      emit_dispatch(child);
     }
-  }
+  });
 
   current_function_name = { 0 };
   in_seq = old_in_seq;

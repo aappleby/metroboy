@@ -316,46 +316,19 @@ void MtCursor::emit_function_definition(TSNode n) {
   advance_to(func_body);
   emit_children(func_body, [&](TSNode child, int field, TSSymbol sym) {
     switch (sym) {
-
-    case anon_sym_LBRACE: {
-      if (is_init) {
-        return emit_replacement(child, "begin");
-      }
-      else if (is_tick) {
-        return emit_replacement(child, "begin");
-      }
-      else if (is_tock) {
-        return emit_replacement(child, "begin");
-      }
-      else if (is_task) {
-        return emit_replacement(child, "");
-      }
-      else {
-        return emit_replacement(child, "");
-      }
-    }
-
-    case anon_sym_RBRACE: {
-      if (is_init) {
-        return emit_replacement(child, "end");
-      }
-      else if (is_tick) {
-        return emit_replacement(child, "end");
-      }
-      else if (is_tock) {
-        return emit_replacement(child, "end");
-      }
-      else if (is_task) {
-        return emit_replacement(child, "endtask");
-      }
-      else {
-        return emit_replacement(child, "endfunction");
-      }
-    }
-
-    default: {
-      return emit_dispatch(child);
-    }
+    case anon_sym_LBRACE:
+      if      (is_init) return emit_replacement(child, "begin");
+      else if (is_tick) return emit_replacement(child, "begin");
+      else if (is_tock) return emit_replacement(child, "begin");
+      else if (is_task) return emit_replacement(child, "");
+      else              return emit_replacement(child, "");
+    case anon_sym_RBRACE:
+      if      (is_init) return emit_replacement(child, "end");
+      else if (is_tick) return emit_replacement(child, "end");
+      else if (is_tock) return emit_replacement(child, "end");
+      else if (is_task) return emit_replacement(child, "endtask");
+      else              return emit_replacement(child, "endfunction");
+    default: return emit_dispatch(child);
     }
   });
 
@@ -395,25 +368,49 @@ void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
   emit("  ");
 }
 
+/*
+========== tree dump begin
+[0] s236 field_declaration:
+|   [0] f32 s321 type.template_type:
+|   |   [0] f22 s395 name.type_identifier: "logic"
+|   |   [1] f3 s324 arguments.template_argument_list:
+|   |   |   [0] s36 lit: "<"
+|   |   |   [1] s112 number_literal: "1"
+|   |   |   [2] s33 lit: ">"
+|   [1] f9 s392 declarator.field_identifier: "i_serial"
+|   [2] s39 lit: ";"
+========== tree dump end
+
+// the "default_value" field is on the wrong child...
+
+========== tree dump begin
+[0] s236 field_declaration:
+|   [0] f32 s226 type.storage_class_specifier:
+|   |   [0] s64 lit: "static"
+|   [1] f9 s227 declarator.type_qualifier:
+|   |   [0] s68 lit: "const"
+|   [2] s78 primitive_type: "int"
+|   [3] f11 s392 default_value.field_identifier: "cursor_max"
+|   [4] s63 lit: "="
+|   [5] s112 number_literal: "9"
+|   [6] s39 lit: ";"
+========== tree dump end
+*/
 
 void MtCursor::emit_field_declaration(TSNode decl) {
-  assert(ts_node_symbol(decl) == sym_field_declaration);
-
   auto node_type = ts_node_child_by_field_id(decl, field_type);
   auto node_name = ts_node_child_by_field_id(decl, field_declarator);
 
   std::string type_name;
-  std::string inst_name = mod->field_to_name(decl);
 
-  if (ts_node_symbol(node_type) == alias_sym_type_identifier || ts_node_symbol(node_type) == sym_primitive_type) {
-    type_name = mod->body(node_type);
+  switch (ts_node_symbol(node_type)) {
+  case alias_sym_type_identifier: type_name = mod->body(node_type); break;
+  case sym_primitive_type:        type_name = mod->body(node_type); break;
+  case sym_template_type:         type_name = mod->body(ts_node_child_by_field_id(node_type, field_name)); break;
+  default:                        __debugbreak();
   }
-  else if (ts_node_symbol(node_type) == sym_template_type) {
-    type_name = mod->body(ts_node_child_by_field_id(node_type, field_name));
-  }
-  else {
-    __debugbreak();
-  }
+
+  std::string inst_name = mod->field_to_name(decl);
 
   auto submod = mod_lib->find_module(type_name);
 
@@ -435,34 +432,32 @@ void MtCursor::emit_field_declaration(TSNode decl) {
       sub_cursor.cursor = submod->start(input);
       sub_cursor.emit_glue_declaration(input, inst_name);
     }
-
-    emit_dispatch(node_type);
-    advance_to(node_name);
-    emit_dispatch(node_name);
-    emit("(clk, rst_n");
-    for (size_t i = 0; i < submod->inputs.size(); i++) {
-      emit(", %s_", inst_name.c_str());
-      emit(submod->field_to_name(submod->inputs[i]).c_str());
-    }
-    for (size_t i = 0; i < submod->outputs.size(); i++) {
-      emit(", %s_", inst_name.c_str());
-      emit(submod->field_to_name(submod->outputs[i]).c_str());
-    }
-    emit(");");
-    cursor = mod->end(decl);
-  }
-  else {
-    if (mod->field_is_input(decl)) {
-      emit("input ");
-    }
-
-    if (mod->field_is_output(decl)) {
-      emit("output ");
-    }
-
-    emit_children(decl);
   }
 
+  if (!submod) {
+    if (mod->field_is_input(decl)) emit("input ");
+    if (mod->field_is_output(decl)) emit("output ");
+    return emit_children(decl);
+  }
+
+  emit_children(decl, [&](TSNode child, int field, TSSymbol sym) {
+    if (submod && field == field_declarator) {
+      emit_dispatch(child);
+      emit("(clk, rst_n");
+      for (size_t i = 0; i < submod->inputs.size(); i++) {
+        emit(", %s_", inst_name.c_str());
+        emit(submod->field_to_name(submod->inputs[i]).c_str());
+      }
+      for (size_t i = 0; i < submod->outputs.size(); i++) {
+        emit(", %s_", inst_name.c_str());
+        emit(submod->field_to_name(submod->outputs[i]).c_str());
+      }
+      emit(")");
+    }
+    else {
+      emit_dispatch(child);
+    }
+  });
 }
 
 //------------------------------------------------------------------------------

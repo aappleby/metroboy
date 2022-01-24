@@ -30,11 +30,6 @@ struct uart_rx {
 
   //----------------------------------------
 
-  void final() {
-  }
-
-  //----------------------------------------
-
   void tick(bool rst_n) {
     o_data = buffer;
     o_valid = cursor == 1;

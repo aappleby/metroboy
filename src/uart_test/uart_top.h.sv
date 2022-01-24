@@ -54,7 +54,7 @@ module uart_top
 
   //----------------------------------------
 
-  initial begin
+  /*void*/ initial begin
     /* hello.init() */;
     /* tx.init() */;
     /* rx.init() */;
@@ -62,15 +62,7 @@ module uart_top
 
   //----------------------------------------
 
-  /* void final() {
-    hello.final();
-    tx.final();
-    rx.final();
-  } */
-
-  //----------------------------------------
-
-  always_comb begin
+  /*void*/ always_comb begin
     /* hello.tick(rst_n) */;
     /* tx.tick(rst_n) */;
     /* rx.tick(rst_n) */;
@@ -90,7 +82,7 @@ module uart_top
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin
+  /*void*/ always_ff @(posedge clk, negedge rst_n) begin
     /* hello.tock(rst_n) */;
     /* tx.tock(rst_n) */;
     /* rx.tock(rst_n) */;

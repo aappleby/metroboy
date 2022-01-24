@@ -33,14 +33,6 @@ struct uart_top {
 
   //----------------------------------------
 
-  void final() {
-    hello.final();
-    tx.final();
-    rx.final();
-  }
-
-  //----------------------------------------
-
   void tick(bool rst_n) {
     hello.tick(rst_n);
     tx.tick(rst_n);

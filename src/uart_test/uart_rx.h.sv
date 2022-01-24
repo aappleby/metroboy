@@ -40,17 +40,12 @@ module uart_rx
 
   //----------------------------------------
 
-  initial begin
+  /*void*/ initial begin
   end
 
   //----------------------------------------
 
-  /* void final() {
-  } */
-
-  //----------------------------------------
-
-  always_comb begin
+  /*void*/ always_comb begin
     o_data = buffer;
     o_valid = cursor == 1;
     o_sum = sum;
@@ -58,7 +53,7 @@ module uart_rx
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin
+  /*void*/ always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       cycle <= 0;
       cursor <= 0;

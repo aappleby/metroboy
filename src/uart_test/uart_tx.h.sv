@@ -48,28 +48,22 @@ module uart_tx
 
   //----------------------------------------
 
-  initial begin
+  /*void*/ initial begin
   end
 
   //----------------------------------------
 
-  /* void final() {
-  } */
-
-  //----------------------------------------
-
-  function int derp() /*const*/; 
+  /*int*/ function int derp() /*const*/; 
     derp = 2;
   endfunction
 
-  task herp(int x); 
+  /*void*/ task herp(int x); 
     cycle <= x;
   endtask
 
-
   //----------------------------------------
 
-  always_comb begin
+  /*void*/ always_comb begin
     o_serial = buffer & 1;
     o_cts = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
     o_idle = (cursor == 0) && (cycle == 0);
@@ -77,7 +71,7 @@ module uart_tx
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin
+  /*void*/ always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       cycle <= 0;
       cursor <= 0;

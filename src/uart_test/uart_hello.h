@@ -31,11 +31,6 @@ struct uart_hello {
 
   //----------------------------------------
 
-  void final() {
-  }
-
-  //----------------------------------------
-
   void tick(bool rst_n) {
     o_data = data;
     o_req = state == SEND;

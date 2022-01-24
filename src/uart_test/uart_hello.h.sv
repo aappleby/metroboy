@@ -39,18 +39,13 @@ module uart_hello
 
   //----------------------------------------
 
-  initial begin
+  /*void*/ initial begin
     $readmemh("obj/message.hex", memory, 0, 511);
   end
 
   //----------------------------------------
 
-  /* void final() {
-  } */
-
-  //----------------------------------------
-
-  always_comb begin
+  /*void*/ always_comb begin
     o_data = data;
     o_req = state == SEND;
     o_done = state == DONE;
@@ -58,7 +53,7 @@ module uart_hello
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin
+  /*void*/ always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       state <= WAIT;
       cursor <= 0;

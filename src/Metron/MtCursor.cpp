@@ -28,21 +28,6 @@ void MtCursor::emit_children(TSNode n) {
 }
 
 
-void MtCursor::emit_children(TSNode n, NodeVisitor cv) {
-  if (cursor < mod->start(n)) {
-    emit_span(cursor, mod->start(n));
-    cursor = mod->start(n);
-  }
-  for (const auto& c : n) {
-    advance_to(c);
-    cv(c);
-  }
-  if (cursor < mod->end(n)) {
-    emit_span(cursor, mod->end(n));
-    cursor = mod->end(n);
-  }
-}
-
 void MtCursor::emit_children(TSNode n, NodeVisitor3 cv) {
   if (cursor < mod->start(n)) {
     emit_span(cursor, mod->start(n));
@@ -657,9 +642,11 @@ void MtCursor::emit_translation_unit(TSNode n) {
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
 
-  emit_children(n, [&](TSNode child) {
-    auto sc = ts_node_symbol(child);
-    sc == anon_sym_SEMI ? skip_over(child) : emit_dispatch(child);
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    switch (sym) {
+    case anon_sym_SEMI: return skip_over(child);
+    default:            return emit_dispatch(child);
+    }
   });
 }
 
@@ -667,18 +654,14 @@ void MtCursor::emit_translation_unit(TSNode n) {
 // Structs/classes get "begin/end" instead of {}.
 
 void MtCursor::emit_field_declaration_list(TSNode n) {
-  emit_children(n, [&](TSNode child) {
-    auto sc = ts_node_symbol(child);
-    if (sc == anon_sym_LBRACE) {
-      emit_replacement(child, "begin");
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    switch (sym) {
+    case anon_sym_LBRACE: return emit_replacement(child, "begin");
+    case anon_sym_RBRACE: return emit_replacement(child, "end");
+    default:              return emit_dispatch(child);
+
     }
-    else if (sc == anon_sym_RBRACE) {
-      emit_replacement(child, "end");
-    }
-    else {
-      emit_dispatch(child);
-    }
-    });
+  });
 }
 
 //------------------------------------------------------------------------------
@@ -698,12 +681,11 @@ void MtCursor::emit_number_literal(TSNode n) {
 // Change "return x" to "(funcname) = x" to match old Verilog return style.
 
 void MtCursor::emit_return_statement(TSNode n) {
-  emit_children(n, [&](TSNode child) {
-    if (ts_node_symbol(child) == anon_sym_return) {
-      emit_replacement(child, "%s =", mod->body(current_function_name).c_str());
-    }
-    else {
-      emit_dispatch(child);
+  auto func_name = mod->body(current_function_name);
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    switch (sym) {
+    case anon_sym_return: return emit_replacement(child, "%s =", func_name.c_str());
+    default:              return emit_dispatch(child);
     }
   });
 }
@@ -724,10 +706,12 @@ void MtCursor::emit_type_identifier(TSNode n) {
 // For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
 
 void MtCursor::emit_template_declaration(TSNode n) {
-  emit_children(n, [&](TSNode child) {
-    auto sc = ts_node_symbol(child);
-    sc == anon_sym_SEMI ? skip_over(child) : emit_dispatch(child);
-    });
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    switch (sym) {
+    case anon_sym_SEMI: return skip_over(child);
+    default:            return emit_dispatch(child);
+    }
+  });
 }
 
 //------------------------------------------------------------------------------

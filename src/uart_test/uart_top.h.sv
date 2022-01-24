@@ -16,13 +16,12 @@
 
 //==============================================================================
 
-/* template */
+/*template*/
 module uart_top
 #(parameter int cycles_per_bit = 3)
-(clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum);
+(clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum); 
   input logic clk;
   input logic rst_n;
-
   output logic o_serial;
   output logic[7:0] o_data;
   output logic o_valid;
@@ -55,17 +54,17 @@ module uart_top
   //----------------------------------------
 
   /*void*/ initial begin
-    /* hello.init() */;
-    /* tx.init() */;
-    /* rx.init() */;
+    /*hello.init()*/;
+    /*tx.init()*/;
+    /*rx.init()*/;
   end
 
   //----------------------------------------
 
   /*void*/ always_comb begin
-    /* hello.tick(rst_n) */;
-    /* tx.tick(rst_n) */;
-    /* rx.tick(rst_n) */;
+    /*hello.tick(rst_n)*/;
+    /*tx.tick(rst_n)*/;
+    /*rx.tick(rst_n)*/;
 
     o_serial = tx_o_serial;
     o_data = rx_o_data;
@@ -83,9 +82,9 @@ module uart_top
   //----------------------------------------
 
   /*void*/ always_ff @(posedge clk, negedge rst_n) begin
-    /* hello.tock(rst_n) */;
-    /* tx.tock(rst_n) */;
-    /* rx.tock(rst_n) */;
+    /*hello.tock(rst_n)*/;
+    /*tx.tock(rst_n)*/;
+    /*rx.tock(rst_n)*/;
 
     if (!rst_n) begin
     end else begin

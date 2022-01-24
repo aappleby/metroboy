@@ -5,6 +5,7 @@
 #include <regex>
 
 //------------------------------------------------------------------------------
+// Traversal methods
 
 void MtCursor::visit_children(TSNode n, NodeVisitor cv) {
   for (int i = 0; i < (int)ts_node_child_count(n); i++) {
@@ -79,9 +80,9 @@ void MtCursor::advance_to(TSNode n) {
 
 void MtCursor::comment_out(TSNode n) {
   assert(cursor == mod->start(n));
-  emit("/* ");
+  emit("/*");
   emit(n);
-  emit(" */");
+  emit("*/");
 }
 
 void MtCursor::emit_anon(TSNode n) {
@@ -116,32 +117,6 @@ void MtCursor::emit_error(TSNode n) {
   printf("########################################\n");
   __debugbreak();
 }
-
-//------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //------------------------------------------------------------------------------
 // Replace "#include" with "`include" and ".h" with ".sv"
@@ -205,7 +180,9 @@ void MtCursor::emit_assignment_expression(TSNode n) {
 // init/final/tick/tock calls.
 
 void MtCursor::emit_call_expression(TSNode n) {
-  //mod->dump_tree(n);
+  assert(ts_node_child_count(n) == 2);
+  assert(ts_node_field_id_for_child(n, 0) == field_function);
+  assert(ts_node_field_id_for_child(n, 1) == field_arguments);
 
   auto call_func = ts_node_child_by_field_id(n, field_function);
   auto call_args = ts_node_child_by_field_id(n, field_arguments);
@@ -241,8 +218,6 @@ void MtCursor::emit_call_expression(TSNode n) {
     mod->dump_tree(call_func);
     __debugbreak();
   }
-
-  cursor = mod->end(n);
 }
 
 //------------------------------------------------------------------------------
@@ -255,9 +230,9 @@ void MtCursor::emit_function_definition(TSNode n) {
   assert(ts_node_field_id_for_child(n, 1) == field_declarator);
   assert(ts_node_field_id_for_child(n, 2) == field_body);
 
-  TSNode func_type = ts_node_child_by_field_id(n, field_type);
-  TSNode func_decl = ts_node_child_by_field_id(n, field_declarator);
-  TSNode func_body = ts_node_child_by_field_id(n, field_body);
+  auto func_type = ts_node_child_by_field_id(n, field_type);
+  auto func_decl = ts_node_child_by_field_id(n, field_declarator);
+  auto func_body = ts_node_child_by_field_id(n, field_body);
 
   bool is_task = false;
   bool is_init = false;
@@ -339,7 +314,8 @@ void MtCursor::emit_function_definition(TSNode n) {
 }
 
 //------------------------------------------------------------------------------
-// Change static const to localparam.
+// Emit "<type> <submod_name>_<param_name>;" glue declarations because we can't
+// directly pass arguments to submodules.
 
 void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
   assert(ts_node_symbol(decl) == sym_field_declaration);
@@ -368,39 +344,16 @@ void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
   emit("  ");
 }
 
-/*
-========== tree dump begin
-[0] s236 field_declaration:
-|   [0] f32 s321 type.template_type:
-|   |   [0] f22 s395 name.type_identifier: "logic"
-|   |   [1] f3 s324 arguments.template_argument_list:
-|   |   |   [0] s36 lit: "<"
-|   |   |   [1] s112 number_literal: "1"
-|   |   |   [2] s33 lit: ">"
-|   [1] f9 s392 declarator.field_identifier: "i_serial"
-|   [2] s39 lit: ";"
-========== tree dump end
-
-// the "default_value" field is on the wrong child...
-
-========== tree dump begin
-[0] s236 field_declaration:
-|   [0] f32 s226 type.storage_class_specifier:
-|   |   [0] s64 lit: "static"
-|   [1] f9 s227 declarator.type_qualifier:
-|   |   [0] s68 lit: "const"
-|   [2] s78 primitive_type: "int"
-|   [3] f11 s392 default_value.field_identifier: "cursor_max"
-|   [4] s63 lit: "="
-|   [5] s112 number_literal: "9"
-|   [6] s39 lit: ";"
-========== tree dump end
-*/
+//------------------------------------------------------------------------------
+// Emit field declarations. For submodules, also emit glue declarations and
+// append the glue parameter list to the field.
 
 void MtCursor::emit_field_declaration(TSNode decl) {
-  auto node_type = ts_node_child_by_field_id(decl, field_type);
-  auto node_name = ts_node_child_by_field_id(decl, field_declarator);
 
+  // Check if this field is a submodule by looking up its type name in our
+  // module list.
+
+  auto node_type = ts_node_child_by_field_id(decl, field_type);
   std::string type_name;
 
   switch (ts_node_symbol(node_type)) {
@@ -410,52 +363,41 @@ void MtCursor::emit_field_declaration(TSNode decl) {
   default:                        __debugbreak();
   }
 
-  std::string inst_name = mod->field_to_name(decl);
-
   auto submod = mod_lib->find_module(type_name);
 
-  if (submod) {
-    MtCursor sub_cursor = {
-      mod_lib,
-      submod,
-      nullptr,
-      out,
-    };
-
-    for (size_t i = 0; i < submod->inputs.size(); i++) {
-      auto input = submod->inputs[i];
-      sub_cursor.cursor = submod->start(input);
-      sub_cursor.emit_glue_declaration(input, inst_name);
-    }
-    for (size_t i = 0; i < submod->outputs.size(); i++) {
-      auto input = submod->outputs[i];
-      sub_cursor.cursor = submod->start(input);
-      sub_cursor.emit_glue_declaration(input, inst_name);
-    }
-  }
-
+  // If this isn't a submodule, just tack on "input" and "output" annotations.
   if (!submod) {
     if (mod->field_is_input(decl)) emit("input ");
     if (mod->field_is_output(decl)) emit("output ");
     return emit_children(decl);
   }
 
+  // If this is a submodule, emit glue parameters and patch the glue parameter
+  // list into the submodule declaration.
+
+  std::string inst_name = mod->field_to_name(decl);
+
+  for (auto& input : submod->inputs) {
+    MtCursor sub_cursor = { mod_lib, submod, submod->start(input), out };
+    sub_cursor.emit_glue_declaration(input, inst_name);
+  }
+
+  for (auto& output : submod->outputs) {
+    MtCursor sub_cursor = { mod_lib, submod, submod->start(output), out };
+    sub_cursor.emit_glue_declaration(output, inst_name);
+  }
+
   emit_children(decl, [&](TSNode child, int field, TSSymbol sym) {
-    if (submod && field == field_declarator) {
-      emit_dispatch(child);
+    emit_dispatch(child);
+    if (field == field_declarator) {
       emit("(clk, rst_n");
-      for (size_t i = 0; i < submod->inputs.size(); i++) {
-        emit(", %s_", inst_name.c_str());
-        emit(submod->field_to_name(submod->inputs[i]).c_str());
+      for (auto& input : submod->inputs) {
+        emit(", %s_%s", inst_name.c_str(), submod->field_to_name(input).c_str());
       }
-      for (size_t i = 0; i < submod->outputs.size(); i++) {
-        emit(", %s_", inst_name.c_str());
-        emit(submod->field_to_name(submod->outputs[i]).c_str());
+      for (auto& output : submod->outputs) {
+        emit(", %s_%s", inst_name.c_str(), submod->field_to_name(output).c_str());
       }
       emit(")");
-    }
-    else {
-      emit_dispatch(child);
     }
   });
 }
@@ -465,49 +407,54 @@ void MtCursor::emit_field_declaration(TSNode decl) {
 // ouptut ports to module param list.
 
 void MtCursor::emit_class_specifier(TSNode n) {
-  auto node_class = ts_node_child(n, 0);
-  auto node_name = ts_node_child(n, 1);
-  auto node_body = ts_node_child(n, 2);
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    if (sym == anon_sym_class || sym == anon_sym_struct) {
+      emit_replacement(child, "module");
+    }
+    else if (field == field_name) {
+      emit_dispatch(child);
 
-  emit_replacement(node_class, "module");
-  advance_to(node_name);
-  emit(node_name);
-  emit("\n");
+      // Patch the template parameter list in after the module declaration
+      if (!ts_node_is_null(mod->module_param_list)) {
+        emit("\n");
+        MtCursor sub_cursor = *this;
+        sub_cursor.cursor = mod->start(mod->module_param_list);
+        sub_cursor.emit_module_parameters(mod->module_param_list);
+      }
 
-  // Patch the template parameter list in after the module declaration
-  if (!ts_node_is_null(mod->module_param_list)) {
-    MtCursor sub_cursor = *this;
-    sub_cursor.cursor = mod->start(mod->module_param_list);
-    sub_cursor.emit_module_parameters(mod->module_param_list);
-    emit("\n");
-  }
+      // Emit an old-style port list
+      emit("\n");
+      emit("(clk, rst_n");
+      for (auto i : mod->inputs) {
+        emit(", %s", mod->field_to_name(i).c_str());
+      }
+      for (auto o : mod->outputs) {
+        emit(", %s", mod->field_to_name(o).c_str());
+      }
+      emit(");");
+    }
+    else if (field == field_body) {
+      // And the declaration of the ports will be in the module body along with
+      // the rest of the module.
+      emit("\n  input logic clk;");
+      emit("\n  input logic rst_n;");
 
-  // Emit an old-style port list
-  emit("(clk, rst_n");
-  for (auto i : mod->inputs) {
-    emit(", %s", mod->field_to_name(i).c_str());
-  }
-  for (auto o : mod->outputs) {
-    emit(", %s", mod->field_to_name(o).c_str());
-  }
-  emit(");\n");
+      // Emit the module body, with a few modifications.
+      emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
+        switch (sym) {
+          // Discard the opening brace
+        case anon_sym_LBRACE: return skip_over(child);
+          // Replace the closing brace with "endmodule"
+        case anon_sym_RBRACE: return emit_replacement(child, "endmodule");
+          // Discard the seimcolon at the end of class{};"
+        case anon_sym_SEMI:   return skip_over(child);
+        default:              return emit_dispatch(child);
+        }
+        });
 
-  // And the declaration of the ports will be in the module body along with
-  // the rest of the module.
-  emit("  input logic clk;\n");
-  emit("  input logic rst_n;\n");
-
-  // Emit the module body, with a few modifications.
-  cursor = mod->start(ts_node_child(node_body, 0));
-  emit_children(node_body, [&](TSNode child, int field, TSSymbol sym) {
-    switch (sym) {
-    // Discard the opening brace
-    case anon_sym_LBRACE: return skip_over(child);
-    // Replace the closing brace with "endmodule"
-    case anon_sym_RBRACE: return emit_replacement(child, "endmodule");
-    // Discard the seimcolon at the end of class{};"
-    case anon_sym_SEMI:   return skip_over(child);
-    default:              return emit_dispatch(child);
+    }
+    else {
+      __debugbreak();
     }
   });
 }
@@ -529,8 +476,6 @@ void MtCursor::emit_compound_statement(TSNode n) {
 // Change logic<N> to logic[N-1:0]
 
 void MtCursor::emit_template_type(TSNode n) {
-  //mod->dump_tree(n);
-
   bool is_logic = false;
 
   emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
@@ -576,7 +521,7 @@ void MtCursor::emit_module_parameters(TSNode n) {
     case anon_sym_LT: return emit_replacement(child, "#(");
     case anon_sym_GT: return emit_replacement(child, ")");
 
-    // intentnional fallthrough, we're just appending "parameter "
+    // intentional fallthrough, we're just appending "parameter "
     case sym_parameter_declaration:
     case sym_optional_parameter_declaration:
       emit("parameter ");
@@ -668,14 +613,16 @@ void MtCursor::emit_return_statement(TSNode n) {
 }
 
 //------------------------------------------------------------------------------
+// FIXME translate types here
 
 void MtCursor::emit_primitive_type(TSNode n) {
-  // FIXME translate types here
   emit(n);
 }
 
+//------------------------------------------------------------------------------
+// FIXME translate types here
+
 void MtCursor::emit_type_identifier(TSNode n) {
-  // FIXME translate types here
   emit(n);
 }
 
@@ -696,9 +643,9 @@ void MtCursor::emit_template_declaration(TSNode n) {
 // refers to a glue expression.
 
 void MtCursor::emit_field_expression(TSNode n) {
-  auto blah = mod->body(n);
-  for (auto& c : blah) if (c == '.') c = '_';
-  emit_replacement(n, blah.c_str());
+  auto field = mod->body(n);
+  for (auto& c : field) if (c == '.') c = '_';
+  emit_replacement(n, field.c_str());
 }
 
 //------------------------------------------------------------------------------
@@ -791,29 +738,23 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_enumerator_list:        emit_enumerator_list(n); return;
 
   case sym_storage_class_specifier: {
-    auto lit = ts_node_child(n, 0);
-    if (ts_node_symbol(lit) == anon_sym_static) {
+    if (mod->match(n, "static")) {
       emit_replacement(n, "localparam");
+    }
+    else {
+      comment_out(n);
     }
     return;
   }
 
-  case sym_type_qualifier: {
-    auto lit = ts_node_child(n, 0);
-    if (ts_node_symbol(lit) == anon_sym_const) {
-      emit_replacement(n, "/*const*/");
-      return;
-    }
+  case sym_access_specifier:
+  case sym_type_qualifier:
+    comment_out(n);
     return;
-  }
 
   case sym_preproc_call:
   case sym_preproc_if:
     skip_over(n);
-    return;
-
-  case sym_access_specifier:
-    comment_out(n);
     return;
 
   case sym_template_parameter_list:
@@ -828,11 +769,3 @@ void MtCursor::emit_dispatch(TSNode n) {
     __debugbreak();
   }
 }
-
-
-
-
-
-
-
-

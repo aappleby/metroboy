@@ -14,10 +14,9 @@
 //==============================================================================
 
 module uart_hello
-(clk, rst_n, i_cts, i_idle, o_data, o_req, o_done);
+(clk, rst_n, i_cts, i_idle, o_data, o_req, o_done); 
   input logic clk;
   input logic rst_n;
-
   input logic i_cts;
   input logic i_idle;
   

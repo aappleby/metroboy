@@ -13,13 +13,12 @@
 
 //==============================================================================
 
-/* template */
+/*template*/
 module uart_tx
 #(parameter int cycles_per_bit = 4)
-(clk, rst_n, i_data, i_req, o_serial, o_cts, o_idle);
+(clk, rst_n, i_data, i_req, o_serial, o_cts, o_idle); 
   input logic clk;
   input logic rst_n;
-
 
   input logic[7:0] i_data;
   input logic i_req;

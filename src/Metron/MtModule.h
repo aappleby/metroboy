@@ -45,7 +45,12 @@ struct Module {
   ~Module();
   void load(const std::string& input_filename, const std::string& output_filename);
   void dump_node(TSNode n, int index = 0, int field = -1, int depth = 0);
-  void dump_tree(TSNode n, int index = 0, int field = -1, int depth = 0, int maxdepth = 255);
+  
+  //void dump_tree(TSNode n, int index = 0, int field = -1, int depth = 0, int maxdepth = 255);
+  void dump_tree(TSNode n, int index, int field, int depth, int maxdepth);
+
+  void dump_tree(TSNode n, int maxdepth) { dump_tree(n, 0, -1, 0, maxdepth); }
+  void dump_tree(TSNode n) { dump_tree(n, 0, -1, 0, 255); }
 
   void visit_tree(TSNode n, NodeVisitor cv);
 

@@ -382,12 +382,11 @@ void MtCursor::emit_function_definition(TSNode n) {
   bool old_in_seq = in_seq;
   if (is_task) in_seq = true;
 
-  emit_children(func_body, [&](TSNode child) {
-    auto s = ts_node_symbol(child);
-    if (s == anon_sym_LBRACE) {
+  emit_children(func_body, [&](TSNode child, int field, TSSymbol sym) {
+    if (sym == anon_sym_LBRACE) {
       skip_over(child);
     }
-    else if (s == anon_sym_RBRACE) {
+    else if (sym == anon_sym_RBRACE) {
       emit_replacement(child, is_task ? "endtask" : "endfunction");
     }
     else {
@@ -538,158 +537,71 @@ void MtCursor::emit_class_specifier(TSNode n) {
 
   // Emit the module body, with a few modifications.
   cursor = mod->start(ts_node_child(node_body, 0));
-  emit_children(node_body, [&](TSNode child) {
-    auto sc = ts_node_symbol(child);
-    if (sc == anon_sym_LBRACE) {
-      // Discard the opening brace
-      skip_over(child);
+  emit_children(node_body, [&](TSNode child, int field, TSSymbol sym) {
+    switch (sym) {
+    // Discard the opening brace
+    case anon_sym_LBRACE: return skip_over(child);
+    // Replace the closing brace with "endmodule"
+    case anon_sym_RBRACE: return emit_replacement(child, "endmodule");
+    // Discard the seimcolon at the end of class{};"
+    case anon_sym_SEMI:   return skip_over(child);
+    default:              return emit_dispatch(child);
     }
-    else if (sc == anon_sym_RBRACE) {
-      // Replace the closing brace with "endmodule"
-      emit_replacement(child, "endmodule");
-    }
-    else if (sc == anon_sym_SEMI) {
-      // Discard the seimcolon at the end of class{};"
-      skip_over(child);
-    }
-    else {
-      emit_dispatch(child);
-    }
-    });
+  });
 }
 
 //------------------------------------------------------------------------------
 // Change "{ blah(); }" to "begin blah(); end"
 
 void MtCursor::emit_compound_statement(TSNode n) {
-  emit_children(n, [&](TSNode child) {
-    auto sc = ts_node_symbol(child);
-    if (sc == anon_sym_LBRACE) {
-      emit_replacement(child, "begin");
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    switch (sym) {
+    case anon_sym_LBRACE: return emit_replacement(child, "begin");
+    case anon_sym_RBRACE: return emit_replacement(child, "end");
+    default:              return emit_dispatch(child);
     }
-    else if (sc == anon_sym_RBRACE) {
-      emit_replacement(child, "end");
-    }
-    else {
-      emit_dispatch(child);
-    }
-    });
+  });
 }
 
 //------------------------------------------------------------------------------
 // Change logic<N> to logic[N-1:0]
-
-/*
-
-========== tree dump begin
-[0] s321 template_type:
-|   [0] f22 s395 name.type_identifier: "logic"
-|   [1] f3 s324 arguments.template_argument_list:
-|   |   [0] s36 lit: "<"
-|   |   [1] s264 type_descriptor:
-|   |   |   [0] f32 s395 type.type_identifier: "cursor_bits"
-|   |   [2] s33 lit: ">"
-========== tree dump end
-
-========== tree dump begin
-[0] s321 template_type:
-|   [0] f22 s395 name.type_identifier: "logic"
-|   [1] f3 s324 arguments.template_argument_list:
-|   |   [0] s36 lit: "<"
-|   |   [1] s112 number_literal: "1"
-|   |   [2] s33 lit: ">"
-========== tree dump end
-*/
 
 void MtCursor::emit_template_type(TSNode n) {
   //mod->dump_tree(n);
 
   bool is_logic = false;
 
-  emit_children(n, [&](TSNode child) {
-    auto s1 = ts_node_symbol(child);
-
-    if (s1 == alias_sym_type_identifier) {
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    if (sym == alias_sym_type_identifier) {
       if (mod->match(child, "logic")) is_logic = true;
       emit_dispatch(child);
     }
-    else if (is_logic && s1 == sym_template_argument_list) {
+    else if (is_logic && sym == sym_template_argument_list) {
       
-      emit_children(child, [&](TSNode child2) {
-        auto s = ts_node_symbol(child2);
-        if (s == anon_sym_LT || s == anon_sym_GT) {
-          skip_over(child2);
-        }
-        else if (s == sym_number_literal) {
-          int width = atoi(mod->start(child2));
+      emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
+        switch (sym) {
+        case anon_sym_LT: return skip_over(child);
+        case anon_sym_GT: return skip_over(child);
+        case sym_number_literal: {
+          int width = atoi(mod->start(child));
           if (width > 1) emit("[%d:0]", width - 1);
-          skip_over(child2);
+          return skip_over(child);
         }
-        else if (s == sym_type_descriptor) {
+        case sym_type_descriptor: {
           emit("[");
-          emit(child2);
+          emit(child);
           emit("-1:0]");
+          return;
         }
-        else {
-          __debugbreak();
+        default: __debugbreak();
         }
-
       });
+
     }
     else {
       emit_dispatch(child);
     }
   });
-
-  /*
-  bool is_logic = false;
-  auto old_cursor = cursor;
-  visit_children(n, [&](TSNode child) {
-    if (ts_node_symbol(child) == alias_sym_type_identifier) {
-      if (mod->match(child, "logic")) is_logic = true;
-    }
-  });
-  cursor = old_cursor;
-
-
-  auto type_name = ts_node_child_by_field_id(n, field_name);
-  auto type_args = ts_node_child_by_field_id(n, field_arguments);
-
-  if (is_logic) {
-    auto template_arg = ts_node_named_child(type_args, 0);
-
-    if (ts_node_symbol(template_arg) == sym_type_descriptor) {
-      emit_replacement(type_name, "logic[");
-      cursor = mod->start(template_arg);
-      emit(template_arg);
-      emit("-1:0] ");
-      cursor = mod->end(n);
-    }
-    else if (ts_node_symbol(template_arg) == sym_number_literal) {
-      if (mod->match(template_arg, "1")) {
-        emit_replacement(n, "logic");
-        //cursor = mod->end(type_args);
-      }
-      else {
-        int width = atoi(mod->start(template_arg));
-        emit_replacement(type_name, "logic[%d:0]", width - 1);
-        cursor = mod->end(n);
-      }
-    }
-    else {
-      emit_replacement(type_name, "logic[");
-      emit("(");
-      emit(template_arg);
-      emit(")");
-      emit("-1:0]");
-      skip_over(n);
-    }
-  }
-  else {
-    emit_dispatch(type_name);
-    emit_dispatch(type_args);
-  }
-  */
 }
 
 //------------------------------------------------------------------------------
@@ -697,61 +609,51 @@ void MtCursor::emit_template_type(TSNode n) {
 // #(parameter int param, parameter int param)
 
 void MtCursor::emit_module_parameters(TSNode n) {
-  emit_children(n, [&](TSNode child) {
-    auto s = ts_node_symbol(child);
-
-    if (s == anon_sym_LT) {
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    if (sym == anon_sym_LT) {
       emit_replacement(child, "#(");
     }
-    else if (s == anon_sym_GT) {
+    else if (sym == anon_sym_GT) {
       emit_replacement(child, ")");
     }
-    else if (s == sym_parameter_declaration) {
+    else if (sym == sym_parameter_declaration) {
       emit("parameter ");
       emit_dispatch(child);
     }
-    else if (s == sym_optional_parameter_declaration) {
+    else if (sym == sym_optional_parameter_declaration) {
       emit("parameter ");
       emit_dispatch(child);
     }
     else {
       emit_dispatch(child);
     }
-    });
+  });
 }
 
 //------------------------------------------------------------------------------
 // Change <param, param> to #(param, param)
 
 void MtCursor::emit_template_argument_list(TSNode n) {
-  emit_children(n, [&](TSNode child) {
-    auto s = ts_node_symbol(child);
-
-    if (s == anon_sym_LT) {
-      emit_replacement(child, " #(");
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    switch (sym) {
+    case anon_sym_LT: return emit_replacement(child, " #(");
+    case anon_sym_GT: return emit_replacement(child, ")");
+    default:          return emit_dispatch(child);
     }
-    else if (s == anon_sym_GT) {
-      emit_replacement(child, ")");
-    }
-    else {
-      emit_dispatch(child);
-    }
-    });
+  });
 }
 
 //------------------------------------------------------------------------------
 // Enum lists do _not_ turn braces into begin/end.
 
 void MtCursor::emit_enumerator_list(TSNode n) {
-  emit_children(n, [&](TSNode child) {
-    auto sc = ts_node_symbol(child);
-    if (sc == anon_sym_LBRACE || sc == anon_sym_RBRACE) {
-      emit(child);
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    switch (sym) {
+    case anon_sym_LBRACE: return emit(child);
+    case anon_sym_RBRACE: return emit(child);
+    default:              return emit_dispatch(child);
     }
-    else {
-      emit_dispatch(child);
-    }
-    });
+  });
 }
 
 //------------------------------------------------------------------------------

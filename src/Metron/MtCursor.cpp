@@ -189,8 +189,10 @@ void MtCursor::emit_assignment_expression(TSNode n) {
     case field_operator:
       if (lvalue_is_field) emit("<");
       return emit_dispatch(child);
+    
     case field_right:
       return emit_dispatch(child);
+    
     default:
       __debugbreak();
     }
@@ -243,27 +245,6 @@ void MtCursor::emit_call_expression(TSNode n) {
 //------------------------------------------------------------------------------
 // Change "init/tick/tock" to "initial begin / always_comb / always_ff", change
 // void methods to tasks, and change const methods to functions.
-
-/*
-========== tree dump begin
-[0] s186 function_definition:
-|   [0] f32 s78 type.primitive_type: "int"
-|   [1] f9 s216 declarator.function_declarator:
-|   |   [0] f9 s392 declarator.field_identifier: "derp"
-|   |   [1] f24 s239 parameters.parameter_list:
-|   |   |   [0] s5 lit: "("
-|   |   |   [1] s8 lit: ")"
-|   |   [2] s227 type_qualifier:
-|   |   |   [0] s68 lit: "const"
-|---[2] f5 s225 body.compound_statement:
-|   |   [0] s59 lit: "{"
-|   |   [1] s251 return_statement:
-|   |   |   [0] s92 lit: "return"
-|   |   |   [1] s112 number_literal: "2"
-|   |   |   [2] s39 lit: ";"
-|   |   [2] s60 lit: "}"
-========== tree dump end
-*/
 
 void MtCursor::emit_function_definition(TSNode n) {
   //mod->dump_tree(n);
@@ -339,8 +320,7 @@ void MtCursor::emit_function_definition(TSNode n) {
   // FIXME check if method is const
 
   if (is_task) {
-    skip_over(func_type);
-    emit("task");
+    emit_replacement(func_type, "task");
   }
   else {
     emit("function ");
@@ -355,14 +335,10 @@ void MtCursor::emit_function_definition(TSNode n) {
   if (is_task) in_seq = true;
 
   emit_children(func_body, [&](TSNode child, int field, TSSymbol sym) {
-    if (sym == anon_sym_LBRACE) {
-      skip_over(child);
-    }
-    else if (sym == anon_sym_RBRACE) {
-      emit_replacement(child, is_task ? "endtask" : "endfunction");
-    }
-    else {
-      emit_dispatch(child);
+    switch (sym) {
+    case anon_sym_LBRACE: return skip_over(child);
+    case anon_sym_RBRACE: return emit_replacement(child, is_task ? "endtask" : "endfunction");
+    default:              return emit_dispatch(child);
     }
   });
 

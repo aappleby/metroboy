@@ -610,22 +610,16 @@ void MtCursor::emit_template_type(TSNode n) {
 
 void MtCursor::emit_module_parameters(TSNode n) {
   emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    if (sym == anon_sym_LT) {
-      emit_replacement(child, "#(");
-    }
-    else if (sym == anon_sym_GT) {
-      emit_replacement(child, ")");
-    }
-    else if (sym == sym_parameter_declaration) {
+    switch (sym) {
+    case anon_sym_LT: return emit_replacement(child, "#(");
+    case anon_sym_GT: return emit_replacement(child, ")");
+
+    // intentnional fallthrough, we're just appending "parameter "
+    case sym_parameter_declaration:
+    case sym_optional_parameter_declaration:
       emit("parameter ");
-      emit_dispatch(child);
-    }
-    else if (sym == sym_optional_parameter_declaration) {
-      emit("parameter ");
-      emit_dispatch(child);
-    }
-    else {
-      emit_dispatch(child);
+    default:
+      return emit_dispatch(child);
     }
   });
 }

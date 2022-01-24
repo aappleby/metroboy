@@ -46,7 +46,6 @@ struct Module {
   void dump_node(TSNode n, int index = 0, int field = -1, int depth = 0);
   void dump_tree(TSNode n, int index = 0, int field = -1, int depth = 0, int maxdepth = 255);
 
-  void visit_children(TSNode n, NodeVisitor cv);
   void visit_tree(TSNode n, NodeVisitor cv);
 
   void visit_tree2(TSNode parent, NodeVisitor2 cv);

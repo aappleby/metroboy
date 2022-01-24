@@ -33,8 +33,8 @@ module uart_rx
   localparam /*const*/ int cursor_max = 9;
   localparam /*const*/ int cursor_bits = $clog2(cursor_max);
 
-  logic[cycle_bits-1:0]  cycle;
-  logic[cursor_bits-1:0]  cursor;
+  logic[cycle_bits-1:0] cycle;
+  logic[cursor_bits-1:0] cursor;
   logic[7:0] buffer;
   logic[31:0] sum;
 

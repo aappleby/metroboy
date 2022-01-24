@@ -133,12 +133,6 @@ void Module::dump_tree(TSNode n, int index, int field, int depth, int maxdepth) 
 //------------------------------------------------------------------------------
 // Node traversal
 
-void Module::visit_children(TSNode n, NodeVisitor cv) {
-  for (const auto& c : n) {
-    cv(c);
-  }
-}
-
 void Module::visit_tree(TSNode n, NodeVisitor cv) {
   cv(n);
   for (const auto& c : n) {

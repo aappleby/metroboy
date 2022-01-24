@@ -18,6 +18,7 @@ struct MtCursor {
   TSNode current_function_name = { 0 };
 
   void visit_children(TSNode n, NodeVisitor cv);
+  void emit_children(TSNode n, NodeVisitor cv);
 
   //----------
 

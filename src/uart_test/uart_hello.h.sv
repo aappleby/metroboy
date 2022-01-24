@@ -33,7 +33,7 @@ module uart_hello
 
   typedef enum { WAIT, SEND, DONE } e_state;
   logic[1:0] state;
-  logic[cursor_bits-1:0]  cursor;
+  logic[cursor_bits-1:0] cursor;
   logic[7:0] memory[512];
   logic[7:0] data;
 

@@ -42,8 +42,8 @@ module uart_tx
   localparam /*const*/ int cursor_bits = $clog2(10 + extra_stop_bits);
   localparam /*const*/ int cursor_max = 10 + extra_stop_bits - 1;
 
-  logic[cycle_bits-1:0]  cycle;
-  logic[cursor_bits-1:0]  cursor;
+  logic[cycle_bits-1:0] cycle;
+  logic[cursor_bits-1:0] cursor;
   logic[8:0] buffer;
 
   //----------------------------------------

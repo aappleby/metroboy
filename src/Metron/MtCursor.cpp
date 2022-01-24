@@ -337,13 +337,7 @@ void MtCursor::emit_function_definition(TSNode n) {
     emit(func_type);
   }
 
-  //auto func_args = ts_node_child_by_field_id(func_decl, field_parameters);
-  //emit_dispatch(func_args);
-  //emit(";");
-
-  visit_children(func_decl, [&](TSNode child) {
-    emit_dispatch(child);
-  });
+  emit_dispatch(func_decl);
   emit(";");
 
 
@@ -815,6 +809,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_array_declarator:
   case sym_parameter_list:
   case sym_type_descriptor:
+  case sym_function_declarator:
     visit_children(n, [&](TSNode c) { emit_dispatch(c); });
     return;
 

@@ -382,8 +382,8 @@ void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
   }
 
   emit_dispatch(node_type);
+  advance_to(node_name);
   emit("%s_", prefix.c_str());
-  cursor = mod->start(node_name);
   emit_dispatch(node_name);
   emit(";\n");
   emit("  ");
@@ -541,7 +541,21 @@ void MtCursor::emit_compound_statement(TSNode n) {
 //------------------------------------------------------------------------------
 // Change logic<N> to logic[N-1:0]
 
+/*
+========== tree dump begin
+[0] s321 template_type:
+|   [0] f22 s395 name.type_identifier: "logic"
+|   [1] f3 s324 arguments.template_argument_list:
+|   |   [0] s36 lit: "<"
+|   |   [1] s112 number_literal: "1"
+|   |   [2] s33 lit: ">"
+========== tree dump end
+*/
+
 void MtCursor::emit_template_type(TSNode n) {
+  //mod->dump_tree(n);
+
+
   auto type_name = ts_node_child_by_field_id(n, field_name);
   auto type_args = ts_node_child_by_field_id(n, field_arguments);
 
@@ -559,12 +573,12 @@ void MtCursor::emit_template_type(TSNode n) {
     }
     else if (ts_node_symbol(template_arg) == sym_number_literal) {
       if (mod->match(template_arg, "1")) {
-        emit_replacement(type_name, "logic ");
-        cursor = mod->end(n);
+        emit_replacement(n, "logic");
+        //cursor = mod->end(type_args);
       }
       else {
         int width = atoi(mod->start(template_arg));
-        emit_replacement(type_name, "logic[%d:0] ", width - 1);
+        emit_replacement(type_name, "logic[%d:0]", width - 1);
         cursor = mod->end(n);
       }
     }
@@ -573,7 +587,7 @@ void MtCursor::emit_template_type(TSNode n) {
       emit("(");
       emit(template_arg);
       emit(")");
-      emit("-1:0] ");
+      emit("-1:0]");
       skip_over(n);
     }
   }

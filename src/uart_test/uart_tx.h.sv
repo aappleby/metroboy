@@ -21,12 +21,12 @@ module uart_tx
   input logic rst_n;
 
 
-  input logic[7:0]  i_data;
-  input logic  i_req;
+  input logic[7:0] i_data;
+  input logic i_req;
 
-  output logic  o_serial;
-  output logic  o_cts;
-  output logic  o_idle;
+  output logic o_serial;
+  output logic o_cts;
+  output logic o_idle;
 
   /*verilator public_module*/
 
@@ -44,7 +44,7 @@ module uart_tx
 
   logic[cycle_bits-1:0]  cycle;
   logic[cursor_bits-1:0]  cursor;
-  logic[8:0]  buffer;
+  logic[8:0] buffer;
 
   //----------------------------------------
 
@@ -71,31 +71,31 @@ module uart_tx
 
   always_comb begin
     o_serial = buffer & 1;
-    o_cts    = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
-    o_idle   = (cursor == 0) && (cycle == 0);
+    o_cts = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
+    o_idle = (cursor == 0) && (cycle == 0);
   end
 
   //----------------------------------------
 
   always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
-      cycle  <= 0;
+      cycle <= 0;
       cursor <= 0;
       buffer <= 'h1FF;
     end else begin
       if (cursor <= extra_stop_bits && cycle == 0 && i_req) begin
         // Transmit start
-        cycle  <= cycle_max;
+        cycle <= cycle_max;
         cursor <= cursor_max;
         buffer <= i_data << 1;
       end else if (cycle != 0) begin
         // Bit delay
-        cycle  <= cycle - 1;
+        cycle <= cycle - 1;
         cursor <= cursor;
         buffer <= buffer;
       end else if (cursor != 0) begin
         // Bit delay done, switch to next bit.
-        cycle  <= cycle_max;
+        cycle <= cycle_max;
         cursor <= cursor - 1;
         buffer <= (buffer >> 1) | 'h100;
       end

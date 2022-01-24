@@ -18,12 +18,12 @@ module uart_hello
   input logic clk;
   input logic rst_n;
 
-  input logic  i_cts;
-  input logic  i_idle;
+  input logic i_cts;
+  input logic i_idle;
   
-  output logic[7:0]  o_data;
-  output logic  o_req;
-  output logic  o_done;
+  output logic[7:0] o_data;
+  output logic o_req;
+  output logic o_done;
 
   //----------------------------------------
   /*verilator public_module*/
@@ -32,10 +32,10 @@ module uart_hello
   localparam /*const*/ int cursor_bits = $clog2(message_len);
 
   typedef enum { WAIT, SEND, DONE } e_state;
-  logic[1:0]  state;
+  logic[1:0] state;
   logic[cursor_bits-1:0]  cursor;
-  logic[7:0]  memory[512];
-  logic[7:0]  data;
+  logic[7:0] memory[512];
+  logic[7:0] data;
 
   //----------------------------------------
 

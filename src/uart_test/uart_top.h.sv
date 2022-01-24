@@ -23,11 +23,11 @@ module uart_top
   input logic clk;
   input logic rst_n;
 
-  output logic   o_serial;
-  output logic[7:0]   o_data;
-  output logic   o_valid;
-  output logic   o_done;
-  output logic[31:0]  o_sum;
+  output logic o_serial;
+  output logic[7:0] o_data;
+  output logic o_valid;
+  output logic o_done;
+  output logic[31:0] o_sum;
 
   //----------------------------------------
   /*verilator public_module*/
@@ -76,16 +76,16 @@ module uart_top
     /* rx.tick(rst_n) */;
 
     o_serial = tx_o_serial;
-    o_data   = rx_o_data;
-    o_valid  = rx_o_valid;
-    o_done   = hello_o_done;
-    o_sum    = rx_o_sum;
+    o_data = rx_o_data;
+    o_valid = rx_o_valid;
+    o_done = hello_o_done;
+    o_sum = rx_o_sum;
 
-    hello_i_cts  = tx_o_cts;
+    hello_i_cts = tx_o_cts;
     hello_i_idle = tx_o_idle;
-    tx_i_data    = hello_o_data;
-    tx_i_req     = hello_o_req;
-    rx_i_serial  = tx_o_serial;
+    tx_i_data = hello_o_data;
+    tx_i_req = hello_o_req;
+    rx_i_serial = tx_o_serial;
   end
 
   //----------------------------------------

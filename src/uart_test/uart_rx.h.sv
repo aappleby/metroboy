@@ -20,10 +20,10 @@ module uart_rx
   input logic clk;
   input logic rst_n;
 
-  input logic  i_serial;
-  output logic[7:0]  o_data;
-  output logic  o_valid;
-  output logic[31:0]  o_sum;
+  input logic i_serial;
+  output logic[7:0] o_data;
+  output logic o_valid;
+  output logic[31:0] o_sum;
 
   //----------------------------------------
   /*verilator public_module*/
@@ -35,8 +35,8 @@ module uart_rx
 
   logic[cycle_bits-1:0]  cycle;
   logic[cursor_bits-1:0]  cursor;
-  logic[7:0]  buffer;
-  logic[31:0]  sum;
+  logic[7:0] buffer;
+  logic[31:0] sum;
 
   //----------------------------------------
 
@@ -68,7 +68,7 @@ module uart_rx
       if (cycle != 0) begin
         cycle <= cycle - 1;
       end else if (cursor != 0) begin
-        logic[7:0]  temp;
+        logic[7:0] temp;
 
         temp = (i_serial << 7) | (buffer >> 1);
         if (cursor - 1 == 1) sum <= sum + temp;

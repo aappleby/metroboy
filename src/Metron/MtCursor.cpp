@@ -12,6 +12,22 @@ void MtCursor::visit_children(TSNode n, NodeVisitor cv) {
   }
 }
 
+void MtCursor::emit_children(TSNode n) {
+  if (cursor < mod->start(n)) {
+    emit_span(cursor, mod->start(n));
+    cursor = mod->start(n);
+  }
+  for (const auto& c : n) {
+    advance_to(c);
+    emit_dispatch(c);
+  }
+  if (cursor < mod->end(n)) {
+    emit_span(cursor, mod->end(n));
+    cursor = mod->end(n);
+  }
+}
+
+
 void MtCursor::emit_children(TSNode n, NodeVisitor cv) {
   if (cursor < mod->start(n)) {
     emit_span(cursor, mod->start(n));
@@ -27,6 +43,26 @@ void MtCursor::emit_children(TSNode n, NodeVisitor cv) {
   }
 }
 
+void MtCursor::emit_children(TSNode n, NodeVisitor3 cv) {
+  if (cursor < mod->start(n)) {
+    emit_span(cursor, mod->start(n));
+    cursor = mod->start(n);
+  }
+
+  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
+    auto child = ts_node_child(n, i);
+    auto sym   = ts_node_symbol(child);
+    auto field = ts_node_field_id_for_child(n, i);
+    
+    advance_to(child);
+    cv(child, field, sym);
+  }
+
+  if (cursor < mod->end(n)) {
+    emit_span(cursor, mod->end(n));
+    cursor = mod->end(n);
+  }
+}
 
 //------------------------------------------------------------------------------
 // Generic emit() methods
@@ -134,13 +170,11 @@ void MtCursor::emit_error(TSNode n) {
 // Replace "#include" with "`include" and ".h" with ".sv"
 
 void MtCursor::emit_preproc_include(TSNode n) {
-  emit_children(n, [&](TSNode child) {
-    auto sc = ts_node_symbol(child);
-
-    if (sc == aux_sym_preproc_include_token1) {
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    if (sym == aux_sym_preproc_include_token1) {
       emit_replacement(child, "`include");
     }
-    else if (sc == sym_string_literal) {
+    else if (sym == sym_string_literal) {
       auto path = mod->body(child);
       static regex rx_trim(R"(\.h)");
       path = std::regex_replace(path, rx_trim, ".h.sv");
@@ -460,9 +494,7 @@ void MtCursor::emit_field_declaration(TSNode decl) {
       emit("output ");
     }
 
-    emit_children(decl, [&](TSNode child) {
-      emit_dispatch(child);
-      });
+    emit_children(decl);
   }
 
 }
@@ -575,53 +607,36 @@ void MtCursor::emit_template_type(TSNode n) {
   bool is_logic = false;
 
   emit_children(n, [&](TSNode child) {
-    if (ts_node_symbol(child) == alias_sym_type_identifier) {
-      if (mod->match(child, "logic")) {
-        is_logic = true;
-      }
+    auto s1 = ts_node_symbol(child);
+
+    if (s1 == alias_sym_type_identifier) {
+      if (mod->match(child, "logic")) is_logic = true;
       emit_dispatch(child);
     }
-    else if (is_logic && ts_node_symbol(child) == sym_template_argument_list) {
+    else if (is_logic && s1 == sym_template_argument_list) {
       
       emit_children(child, [&](TSNode child2) {
         auto s = ts_node_symbol(child2);
-
-        if (s == anon_sym_LT) {
-          //emit_replacement(child2, "[");
-          skip_over(child2);
-        }
-        else if (s == anon_sym_GT) {
-          //emit_replacement(child2, "]");
+        if (s == anon_sym_LT || s == anon_sym_GT) {
           skip_over(child2);
         }
         else if (s == sym_number_literal) {
           int width = atoi(mod->start(child2));
-          if (width == 1) {
-            skip_over(child2);
-          }
-          else {
-            emit("[%d:0]", width - 1);
-            skip_over(child2);
-          }
+          if (width > 1) emit("[%d:0]", width - 1);
+          skip_over(child2);
         }
-        else {
+        else if (s == sym_type_descriptor) {
           emit("[");
           emit(child2);
           emit("-1:0]");
         }
+        else {
+          __debugbreak();
+        }
 
       });
-      /*
-      auto template_arg = ts_node_named_child(child, 0);
-      if (mod->match(template_arg, "1")) {
-        skip_over(child);
-      }
-      else {
-      }
-      */
     }
     else {
-      //__debugbreak();
       emit_dispatch(child);
     }
   });
@@ -895,7 +910,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_parameter_list:
   case sym_type_descriptor:
   case sym_function_declarator:
-    emit_children(n, [&](TSNode c) { emit_dispatch(c); });
+    emit_children(n);
     return;
 
   case sym_number_literal:         emit_number_literal(n); return;

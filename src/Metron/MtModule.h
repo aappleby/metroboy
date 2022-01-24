@@ -10,6 +10,7 @@
 #include "MtIterator.h"
 
 typedef std::function<void(TSNode)> NodeVisitor;
+typedef std::function<void(TSNode, int, TSSymbol)> NodeVisitor3;
 typedef std::function<void(TSNode parent, TSNode child)> NodeVisitor2;
 
 //------------------------------------------------------------------------------

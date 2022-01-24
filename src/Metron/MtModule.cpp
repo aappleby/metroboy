@@ -1,4 +1,10 @@
 #include "MtModule.h"
+#include <assert.h>
+
+#include "MtIterator.h"
+#include "../Plait/TreeSymbols.h"
+
+#pragma warning(disable:4996) // unsafe fopen()
 
 extern "C" {
   extern const TSLanguage* tree_sitter_cpp();
@@ -6,10 +12,44 @@ extern "C" {
 
 //------------------------------------------------------------------------------
 
-Module::Module() {
+
+inline blob load_blob(const char* filename) {
+  FILE* f = fopen(filename, "rb");
+  assert(f);
+
+  blob result;
+  fseek(f, 0, SEEK_END);
+  result.resize(ftell(f));
+  fseek(f, 0, SEEK_SET);
+
+  fread(result.data(), 1, result.size(), f);
+  fclose(f);
+  return result;
 }
 
-Module::~Module() {
+void print_escaped(char s) {
+  if (s == '\n') printf("\\n");
+  else if (s == '\r') printf("\\r");
+  else if (s == '\t') printf("\\t");
+  else if (s == '"')  printf("\\\"");
+  else if (s == '\\') printf("\\\\");
+  else                printf("%c", s);
+}
+
+void print_escaped(const char* source, uint32_t a, uint32_t b) {
+  printf("\"");
+  for (; a < b; a++) {
+    print_escaped(source[a]);
+  }
+  printf("\"");
+}
+
+//------------------------------------------------------------------------------
+
+MtModule::MtModule() {
+}
+
+MtModule::~MtModule() {
 
   ts_tree_delete(tree);
   ts_parser_delete(parser);
@@ -21,7 +61,7 @@ Module::~Module() {
   source = nullptr;
 }
 
-void Module::load(const std::string& input_filename, const std::string& output_filename) {
+void MtModule::load(const std::string& input_filename, const std::string& output_filename) {
   printf("loading %s\n", input_filename.c_str());
   this->input_filename = input_filename;
   this->output_filename = output_filename;
@@ -43,12 +83,9 @@ void Module::load(const std::string& input_filename, const std::string& output_f
 }
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 // Node debugging
 
-void Module::dump_node(TSNode n, int index, int field, int depth) {
+void MtModule::dump_node(TSNode n, int index, int field, int depth) {
   if (ts_node_is_null(n)) {
     printf("### NULL ###\n");
     return;
@@ -110,7 +147,7 @@ void Module::dump_node(TSNode n, int index, int field, int depth) {
 
 //------------------------------------------------------------------------------
 
-void Module::dump_tree(TSNode n, int index, int field, int depth, int maxdepth) {
+void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth) {
   if (depth == 0) {
     printf("\n\n========== tree dump begin\n");
   }
@@ -128,19 +165,16 @@ void Module::dump_tree(TSNode n, int index, int field, int depth, int maxdepth) 
 }
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 // Node traversal
 
-void Module::visit_tree(TSNode n, NodeVisitor cv) {
+void MtModule::visit_tree(TSNode n, NodeVisitor cv) {
   cv(n);
   for (const auto& c : n) {
     visit_tree(c, cv);
   }
 }
 
-void Module::visit_tree2(TSNode parent, NodeVisitor2 cv) {
+void MtModule::visit_tree2(TSNode parent, NodeVisitor2 cv) {
   for (const auto& child : parent) {
     cv(parent, child);
     visit_tree2(child, cv);
@@ -148,24 +182,21 @@ void Module::visit_tree2(TSNode parent, NodeVisitor2 cv) {
 }
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 // Text handling
 
-const char* Module::start(TSNode n) {
+const char* MtModule::start(TSNode n) {
   return &source[ts_node_start_byte(n)];
 }
 
-const char* Module::end(TSNode n) {
+const char* MtModule::end(TSNode n) {
   return &source[ts_node_end_byte(n)];
 }
 
-std::string Module::body(TSNode n) {
+std::string MtModule::body(TSNode n) {
   return std::string(start(n), end(n));
 }
 
-bool Module::match(TSNode n, const char* s) {
+bool MtModule::match(TSNode n, const char* s) {
   const char* a = start(n);
   const char* b = end(n);
 
@@ -176,17 +207,14 @@ bool Module::match(TSNode n, const char* s) {
 }
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 // Field introspection
 
-std::string Module::class_to_name(TSNode n) {
+std::string MtModule::class_to_name(TSNode n) {
   auto name = ts_node_child_by_field_id(n, field_name);
   return body(name);
 }
 
-std::string Module::decl_to_name(TSNode decl) {
+std::string MtModule::decl_to_name(TSNode decl) {
   auto s = ts_node_symbol(decl);
 
   if (s == sym_identifier) {
@@ -204,12 +232,12 @@ std::string Module::decl_to_name(TSNode decl) {
   }
 }
 
-std::string Module::field_to_name(TSNode n) {
+std::string MtModule::field_to_name(TSNode n) {
   auto decl = ts_node_child_by_field_id(n, field_declarator);
   return decl_to_name(decl);
 }
 
-bool Module::field_is_primitive(TSNode n) {
+bool MtModule::field_is_primitive(TSNode n) {
 
   auto node_type = ts_node_child_by_field_id(n, field_type);
   auto node_decl = ts_node_child_by_field_id(n, field_declarator);
@@ -229,11 +257,11 @@ bool Module::field_is_primitive(TSNode n) {
   return false;
 }
 
-bool Module::field_is_module(TSNode n) {
+bool MtModule::field_is_module(TSNode n) {
   return !field_is_primitive(n);
 }
 
-bool Module::field_is_static(TSNode n) {
+bool MtModule::field_is_static(TSNode n) {
   for (auto c : n) {
     if (ts_node_symbol(c) == sym_storage_class_specifier) {
       if (match(c, "static")) return true;
@@ -242,7 +270,7 @@ bool Module::field_is_static(TSNode n) {
   return false;
 }
 
-bool Module::field_is_const(TSNode n) {
+bool MtModule::field_is_const(TSNode n) {
   for (auto c : n) {
     if (ts_node_symbol(c) == sym_type_qualifier) {
       if (match(c, "const")) return true;
@@ -251,18 +279,18 @@ bool Module::field_is_const(TSNode n) {
   return false;
 }
 
-bool Module::field_is_param(TSNode n) {
+bool MtModule::field_is_param(TSNode n) {
   return field_is_static(n) && field_is_const(n);
 }
 
-bool Module::field_is_input(TSNode n) {
+bool MtModule::field_is_input(TSNode n) {
   if (field_is_static(n) || field_is_const(n)) return false;
 
   auto name = ts_node_child_by_field_id(n, field_declarator);
   return body(name).starts_with("i_");
 }
 
-bool Module::field_is_output(TSNode n) {
+bool MtModule::field_is_output(TSNode n) {
   if (field_is_static(n) || field_is_const(n)) return false;
 
   auto name = ts_node_child_by_field_id(n, field_declarator);
@@ -270,13 +298,9 @@ bool Module::field_is_output(TSNode n) {
 }
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 // Scanner
 
-void Module::find_module() {
+void MtModule::find_module() {
   module_template = { 0 };
   module_class = { 0 };
 
@@ -296,7 +320,7 @@ void Module::find_module() {
 
 }
 
-void Module::collect_moduleparams() {
+void MtModule::collect_moduleparams() {
   if (ts_node_is_null(module_template)) return;
 
   if (ts_node_symbol(module_template) != sym_template_declaration) __debugbreak();
@@ -309,14 +333,16 @@ void Module::collect_moduleparams() {
 }
 
 
-void Module::collect_fields() {
+void MtModule::collect_fields() {
   visit_tree(module_class, [&](TSNode n) {
     if (ts_node_symbol(n) == sym_field_declaration) {
-      if (field_is_input(n))  inputs.push_back(n);
+      if      (field_is_input(n))  inputs.push_back(n);
       else if (field_is_output(n)) outputs.push_back(n);
       else if (field_is_param(n))  localparams.push_back(n);
       else if (field_is_module(n)) submodules.push_back(n);
       else                         fields.push_back(n);
     }
-    });
+  });
 }
+
+//------------------------------------------------------------------------------

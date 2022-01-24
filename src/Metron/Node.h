@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <assert.h>
 #include <tree_sitter/api.h>
 #include "../Plait/TreeSymbols.h"
 

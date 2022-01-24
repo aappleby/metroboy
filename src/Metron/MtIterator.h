@@ -4,14 +4,14 @@
 
 //------------------------------------------------------------------------------
 
-struct TSNodeIt {
+struct MtIterator {
 
-  TSNodeIt& operator++() {
+  MtIterator& operator++() {
     index++;
     return *this;
   }
 
-  bool operator != (const TSNodeIt& n) {
+  bool operator != (const MtIterator& n) {
     if (parent.context[0] != n.parent.context[0]) return true;
     if (parent.context[1] != n.parent.context[1]) return true;
     if (parent.context[2] != n.parent.context[2]) return true;
@@ -32,11 +32,11 @@ struct TSNodeIt {
   int index;
 };
 
-inline TSNodeIt begin(TSNode& parent) {
+inline MtIterator begin(TSNode& parent) {
   return { parent, 0 };
 }
 
-inline TSNodeIt end(TSNode& parent) {
+inline MtIterator end(TSNode& parent) {
   return { parent, (int)ts_node_child_count(parent) };
 }
 

@@ -4,17 +4,18 @@
 #include "MtModLibrary.h"
 #include "MtCursor.h"
 
+#pragma warning(disable:4996) // unsafe fopen()
+
+
 //------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-  std::vector<std::string> inputs = {
-    "src/uart_test/uart_top.h",
-    "src/uart_test/uart_hello.h",
-    "src/uart_test/uart_tx.h",
-    "src/uart_test/uart_rx.h",
-  };
+  std::vector<std::string> inputs;
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] != '-') inputs.push_back(argv[i]);
+  }
 
-  ModLibrary lib;
+  MtModLibrary lib;
   for (auto& input : inputs) {
     lib.load(input.c_str(), (input + ".sv").c_str());
   }
@@ -63,10 +64,7 @@ int main(int argc, char** argv) {
     cursor.emit("\n");
     cursor.cursor = module->source;
     cursor.emit_dispatch(module->root);
-    printf("\n\n\n");
-
-    //e.mod->dump_tree(e.mod->root);
-    //printf("\n\n");
+    printf("\n");
   }
 
   return 0;

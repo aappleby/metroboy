@@ -3,6 +3,9 @@
 #include "MtModule.h"
 #include <stdarg.h>
 #include <regex>
+#include <assert.h>
+
+#include "../Plait/TreeSymbols.h"
 
 //------------------------------------------------------------------------------
 // Traversal methods
@@ -128,7 +131,7 @@ void MtCursor::emit_preproc_include(TSNode n) {
     }
     else if (sym == sym_string_literal) {
       auto path = mod->body(child);
-      static regex rx_trim(R"(\.h)");
+      static std::regex rx_trim(R"(\.h)");
       path = std::regex_replace(path, rx_trim, ".h.sv");
       emit_replacement(child, "%s", path.c_str());
     }

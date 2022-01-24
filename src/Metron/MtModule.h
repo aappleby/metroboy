@@ -4,18 +4,16 @@
 #include <vector>
 #include <functional>
 
-#include "Utils.h"
 #include "tree_sitter/api.h"
-#include "../Plait/TreeSymbols.h"
-#include "MtIterator.h"
 
 typedef std::function<void(TSNode)> NodeVisitor;
-typedef std::function<void(TSNode, int, TSSymbol)> NodeVisitor3;
 typedef std::function<void(TSNode parent, TSNode child)> NodeVisitor2;
+typedef std::function<void(TSNode, int, TSSymbol)> NodeVisitor3;
+typedef std::vector<uint8_t> blob;
 
 //------------------------------------------------------------------------------
 
-struct Module {
+struct MtModule {
 
   std::string input_filename;
   std::string output_filename;
@@ -41,8 +39,8 @@ struct Module {
   TSNode module_param_list = { 0 };
   std::string module_name;
 
-  Module();
-  ~Module();
+  MtModule();
+  ~MtModule();
   void load(const std::string& input_filename, const std::string& output_filename);
   void dump_node(TSNode n, int index = 0, int field = -1, int depth = 0);
   

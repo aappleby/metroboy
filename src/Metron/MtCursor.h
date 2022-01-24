@@ -7,8 +7,8 @@
 
 struct MtCursor {
 
-  ModLibrary* mod_lib;
-  Module* mod;
+  MtModLibrary* mod_lib;
+  MtModule* mod;
   const char* cursor = nullptr;
   FILE* out = nullptr;
   bool in_init = false;

@@ -7,8 +7,9 @@
 //------------------------------------------------------------------------------
 
 void MtCursor::visit_children(TSNode n, NodeVisitor cv) {
-  for (const auto& c : n) {
-    cv(c);
+  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
+    auto child = ts_node_child(n, i);
+    cv(child);
   }
 }
 
@@ -175,9 +176,9 @@ void MtCursor::emit_assignment_expression(TSNode n) {
 
     case field_left: {
       if (sym == sym_identifier) {
-        std::string id = mod->body(child);
+        std::string lhs_name = mod->body(child);
         for (auto f : mod->fields) {
-          if (mod->field_to_name(f) == id) {
+          if (mod->field_to_name(f) == lhs_name) {
             lvalue_is_field = true;
             break;
           }
@@ -204,6 +205,8 @@ void MtCursor::emit_assignment_expression(TSNode n) {
 // init/final/tick/tock calls.
 
 void MtCursor::emit_call_expression(TSNode n) {
+  //mod->dump_tree(n);
+
   auto call_func = ts_node_child_by_field_id(n, field_function);
   auto call_args = ts_node_child_by_field_id(n, field_arguments);
 
@@ -246,132 +249,113 @@ void MtCursor::emit_call_expression(TSNode n) {
 // Change "init/tick/tock" to "initial begin / always_comb / always_ff", change
 // void methods to tasks, and change const methods to functions.
 
-/*
-========== tree dump begin
-[0] s186 function_definition:
-|   [0] f32 s78 type.primitive_type: "void"
-|   [1] f9 s216 declarator.function_declarator:
-|   |   [0] f9 s392 declarator.field_identifier: "tock"
-|   |   [1] f24 s239 parameters.parameter_list:
-|---[2] f5 s225 body.compound_statement:
-|   |   [0] s59 lit: "{"
-|---|---[1] s244 expression_statement:
-|---|---[2] s244 expression_statement:
-|---|---[3] s244 expression_statement:
-|   |   [4] s245 if_statement:
-|   |   [5] s60 lit: "}"
-========== tree dump end
-*/
-
 void MtCursor::emit_function_definition(TSNode n) {
+  assert(ts_node_child_count(n) == 3);
+  assert(ts_node_field_id_for_child(n, 0) == field_type);
+  assert(ts_node_field_id_for_child(n, 1) == field_declarator);
+  assert(ts_node_field_id_for_child(n, 2) == field_body);
+
+  TSNode func_type = ts_node_child_by_field_id(n, field_type);
+  TSNode func_decl = ts_node_child_by_field_id(n, field_declarator);
+  TSNode func_body = ts_node_child_by_field_id(n, field_body);
 
   bool is_task = false;
   bool is_init = false;
   bool is_tick = false;
   bool is_tock = false;
 
-  TSNode func_type = {0};
+  //----------
 
+  advance_to(func_type);
+  is_task = mod->match(func_type, "void");
+  emit("/*");
+  emit(func_type);
+  emit("*/");
+
+  //----------
+
+  advance_to(func_decl);
   in_init = false;
   in_comb = false;
   in_seq = false;
 
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    switch (field) {
+  current_function_name = ts_node_child_by_field_id(func_decl, field_declarator);
+  is_init = is_task && mod->match(current_function_name, "init");
+  is_tick = is_task && mod->match(current_function_name, "tick");
+  is_tock = is_task && mod->match(current_function_name, "tock");
 
-    case field_type: {
-      func_type = child;
-      is_task = mod->match(child, "void");
-      emit("/*");
-      emit(child);
-      emit("*/");
-      return;
+  if (is_init) {
+    emit_replacement(func_decl, "initial");
+    in_init = true;
+  }
+  else if (is_tick) {
+    emit_replacement(func_decl, "always_comb");
+    in_comb = true;
+  }
+  else if (is_tock) {
+    emit_replacement(func_decl, "always_ff @(posedge clk, negedge rst_n)");
+    in_seq = true;
+  }
+  else {
+    if (is_task) {
+      emit("task ");
+    }
+    else {
+      emit("function %s ", mod->body(func_type).c_str());
     }
 
-    case field_declarator: {
-      current_function_name = ts_node_child_by_field_id(child, field_declarator);
-      is_init = is_task && mod->match(current_function_name, "init");
-      is_tick = is_task && mod->match(current_function_name, "tick");
-      is_tock = is_task && mod->match(current_function_name, "tock");
+    emit_dispatch(func_decl);
+    emit(";");
 
+    in_seq = is_task;
+    in_comb = !is_task;
+  }
+
+  //----------
+
+  advance_to(func_body);
+  emit_children(func_body, [&](TSNode child, int field, TSSymbol sym) {
+    switch (sym) {
+
+    case anon_sym_LBRACE: {
       if (is_init) {
-        emit_replacement(child, "initial");
-        in_init = true;
+        return emit_replacement(child, "begin");
       }
       else if (is_tick) {
-        emit_replacement(child, "always_comb");
-        in_comb = true;
+        return emit_replacement(child, "begin");
       }
       else if (is_tock) {
-        emit_replacement(child, "always_ff @(posedge clk, negedge rst_n)");
-        in_seq = true;
+        return emit_replacement(child, "begin");
+      }
+      else if (is_task) {
+        return emit_replacement(child, "");
       }
       else {
-        if (is_task) {
-          emit("task ");
-        }
-        else {
-          emit("function %s ", mod->body(func_type).c_str());
-        }
-
-        emit_dispatch(child);
-        emit(";");
-
-        in_seq = is_task;
-        in_comb = !is_task;
+        return emit_replacement(child, "");
       }
-
-      return;
     }
 
-    case field_body:
-      return emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
-        switch (sym) {
+    case anon_sym_RBRACE: {
+      if (is_init) {
+        return emit_replacement(child, "end");
+      }
+      else if (is_tick) {
+        return emit_replacement(child, "end");
+      }
+      else if (is_tock) {
+        return emit_replacement(child, "end");
+      }
+      else if (is_task) {
+        return emit_replacement(child, "endtask");
+      }
+      else {
+        return emit_replacement(child, "endfunction");
+      }
+    }
 
-        case anon_sym_LBRACE: {
-          if (is_init) {
-            return emit_replacement(child, "begin");
-          }
-          else if (is_tick) {
-            return emit_replacement(child, "begin");
-          }
-          else if (is_tock) {
-            return emit_replacement(child, "begin");
-          }
-          else if (is_task) {
-            return emit_replacement(child, "");
-          }
-          else {
-            return emit_replacement(child, "");
-          }
-        }
-
-        case anon_sym_RBRACE: {
-          if (is_init) {
-            return emit_replacement(child, "end");
-          }
-          else if (is_tick) {
-            return emit_replacement(child, "end");
-          }
-          else if (is_tock) {
-            return emit_replacement(child, "end");
-          }
-          else if (is_task) {
-            return emit_replacement(child, "endtask");
-          }
-          else {
-            return emit_replacement(child, "endfunction");
-          }
-        }
-
-        default: {
-          return emit_dispatch(child);
-        }
-        }
-      });
-
-    default:
-      __debugbreak();
+    default: {
+      return emit_dispatch(child);
+    }
     }
   });
 
@@ -814,7 +798,6 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_storage_class_specifier: {
     auto lit = ts_node_child(n, 0);
     if (ts_node_symbol(lit) == anon_sym_static) {
-      advance_to(n);
       emit_replacement(n, "localparam");
     }
     return;
@@ -823,7 +806,6 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_type_qualifier: {
     auto lit = ts_node_child(n, 0);
     if (ts_node_symbol(lit) == anon_sym_const) {
-      advance_to(n);
       emit_replacement(n, "/*const*/");
       return;
     }

@@ -156,6 +156,7 @@ void MtCursor::emit_assignment_expression(TSNode n) {
 
   if (in_seq) {
     emit_dispatch(exp_lv);
+    advance_to(exp_op);
     if (ts_node_symbol(exp_lv) == sym_identifier) {
       std::string id = mod->body(exp_lv);
 
@@ -168,18 +169,18 @@ void MtCursor::emit_assignment_expression(TSNode n) {
       }
 
       if (has_field) {
-        advance_to(exp_op);
         emit("<", id.c_str());
       }
     }
-    advance_to(exp_op);
     emit(exp_op);
+    advance_to(exp_rv);
     emit_dispatch(exp_rv);
   }
   else {
     emit_dispatch(exp_lv);
     advance_to(exp_op);
     emit(exp_op);
+    advance_to(exp_rv);
     emit_dispatch(exp_rv);
   }
 }
@@ -262,8 +263,6 @@ void MtCursor::emit_function_definition(TSNode n) {
 
   current_function_name = func_name;
 
-  advance_to(func_type);
-
   bool is_task = mod->match(func_type, "void");
 
   //----------
@@ -332,7 +331,6 @@ void MtCursor::emit_function_definition(TSNode n) {
     emit("task");
   }
   else {
-    advance_to(func_type);
     emit("function ");
     emit(func_type);
   }
@@ -384,8 +382,8 @@ void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
   }
 
   emit_dispatch(node_type);
-  advance_to(node_name);
   emit("%s_", prefix.c_str());
+  cursor = mod->start(node_name);
   emit_dispatch(node_name);
   emit(";\n");
   emit("  ");
@@ -433,6 +431,7 @@ void MtCursor::emit_field_declaration(TSNode decl) {
     }
 
     emit_dispatch(node_type);
+    advance_to(node_name);
     emit_dispatch(node_name);
     emit("(clk, rst_n");
     for (size_t i = 0; i < submod->inputs.size(); i++) {
@@ -509,7 +508,6 @@ void MtCursor::emit_class_specifier(TSNode n) {
     }
     else if (sc == anon_sym_RBRACE) {
       // Replace the closing brace with "endmodule"
-      advance_to(child);
       emit_replacement(child, "endmodule");
     }
     else if (sc == anon_sym_SEMI) {
@@ -529,11 +527,9 @@ void MtCursor::emit_compound_statement(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE) {
-      advance_to(child);
       emit_replacement(child, "begin");
     }
     else if (sc == anon_sym_RBRACE) {
-      advance_to(child);
       emit_replacement(child, "end");
     }
     else {
@@ -558,17 +554,17 @@ void MtCursor::emit_template_type(TSNode n) {
       emit_replacement(type_name, "logic[");
       cursor = mod->start(template_arg);
       emit(template_arg);
-      emit("-1:0]");
+      emit("-1:0] ");
       cursor = mod->end(n);
     }
     else if (ts_node_symbol(template_arg) == sym_number_literal) {
       if (mod->match(template_arg, "1")) {
-        emit_replacement(type_name, "logic");
+        emit_replacement(type_name, "logic ");
         cursor = mod->end(n);
       }
       else {
         int width = atoi(mod->start(template_arg));
-        emit_replacement(type_name, "logic[%d:0]", width - 1);
+        emit_replacement(type_name, "logic[%d:0] ", width - 1);
         cursor = mod->end(n);
       }
     }
@@ -577,7 +573,7 @@ void MtCursor::emit_template_type(TSNode n) {
       emit("(");
       emit(template_arg);
       emit(")");
-      emit("-1:0]");
+      emit("-1:0] ");
       skip_over(n);
     }
   }
@@ -602,12 +598,10 @@ void MtCursor::emit_module_parameters(TSNode n) {
       emit_replacement(child, ")");
     }
     else if (s == sym_parameter_declaration) {
-      advance_to(child);
       emit("parameter ");
       emit_dispatch(child);
     }
     else if (s == sym_optional_parameter_declaration) {
-      advance_to(child);
       emit("parameter ");
       emit_dispatch(child);
     }
@@ -643,7 +637,6 @@ void MtCursor::emit_enumerator_list(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     if (sc == anon_sym_LBRACE || sc == anon_sym_RBRACE) {
-      advance_to(child);
       emit(child);
     }
     else {
@@ -662,7 +655,7 @@ void MtCursor::emit_translation_unit(TSNode n) {
   visit_children(n, [&](TSNode child) {
     auto sc = ts_node_symbol(child);
     sc == anon_sym_SEMI ? skip_over(child) : emit_dispatch(child);
-    });
+  });
 }
 
 //------------------------------------------------------------------------------
@@ -675,7 +668,6 @@ void MtCursor::emit_field_declaration_list(TSNode n) {
       emit_replacement(child, "begin");
     }
     else if (sc == anon_sym_RBRACE) {
-      advance_to(child);
       emit_replacement(child, "end");
     }
     else {
@@ -747,7 +739,6 @@ void MtCursor::emit_field_expression(TSNode n) {
 
 void MtCursor::emit_dispatch(TSNode n) {
   assert(cursor <= mod->start(n));
-  advance_to(n);
 
   auto s = ts_node_symbol(n);
 

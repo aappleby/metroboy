@@ -8,10 +8,10 @@
 
 template<int cycles_per_bit = 3>
 struct uart_top {
-  logic<1>  o_serial;
-  logic<8>  o_data;
-  logic<1>  o_valid;
-  logic<1>  o_done;
+  logic<1> o_serial;
+  logic<8> o_data;
+  logic<1> o_valid;
+  logic<1> o_done;
   logic<32> o_sum;
 
   //----------------------------------------
@@ -47,16 +47,16 @@ struct uart_top {
     rx.tick(rst_n);
 
     o_serial = tx.o_serial;
-    o_data   = rx.o_data;
-    o_valid  = rx.o_valid;
-    o_done   = hello.o_done;
-    o_sum    = rx.o_sum;
+    o_data = rx.o_data;
+    o_valid = rx.o_valid;
+    o_done = hello.o_done;
+    o_sum = rx.o_sum;
 
-    hello.i_cts  = tx.o_cts;
+    hello.i_cts = tx.o_cts;
     hello.i_idle = tx.o_idle;
-    tx.i_data    = hello.o_data;
-    tx.i_req     = hello.o_req;
-    rx.i_serial  = tx.o_serial;
+    tx.i_data = hello.o_data;
+    tx.i_req = hello.o_req;
+    rx.i_serial = tx.o_serial;
   }
 
   //----------------------------------------

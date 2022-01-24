@@ -23,11 +23,11 @@ module uart_top
   input logic clk;
   input logic rst_n;
 
-  output logic  o_serial;
-  output logic[7:0]  o_data;
-  output logic  o_valid;
-  output logic  o_done;
-  output logic[31:0] o_sum;
+  output logic   o_serial;
+  output logic[7:0]   o_data;
+  output logic   o_valid;
+  output logic   o_done;
+  output logic[31:0]  o_sum;
 
   //----------------------------------------
   /*verilator public_module*/

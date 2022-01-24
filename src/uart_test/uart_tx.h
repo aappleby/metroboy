@@ -56,31 +56,31 @@ struct uart_tx {
 
   void tick(bool rst_n) {
     o_serial = buffer & 1;
-    o_cts    = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
-    o_idle   = (cursor == 0) && (cycle == 0);
+    o_cts = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
+    o_idle = (cursor == 0) && (cycle == 0);
   }
 
   //----------------------------------------
 
   void tock(bool rst_n) {
     if (!rst_n) {
-      cycle  = 0;
+      cycle = 0;
       cursor = 0;
       buffer = 0x1FF;
     } else {
       if (cursor <= extra_stop_bits && cycle == 0 && i_req) {
         // Transmit start
-        cycle  = cycle_max;
+        cycle = cycle_max;
         cursor = cursor_max;
         buffer = i_data << 1;
       } else if (cycle != 0) {
         // Bit delay
-        cycle  = cycle - 1;
+        cycle = cycle - 1;
         cursor = cursor;
         buffer = buffer;
       } else if (cursor != 0) {
         // Bit delay done, switch to next bit.
-        cycle  = cycle_max;
+        cycle = cycle_max;
         cursor = cursor - 1;
         buffer = (buffer >> 1) | 0x100;
       }

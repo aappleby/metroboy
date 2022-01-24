@@ -21,12 +21,12 @@ module uart_tx
   input logic rst_n;
 
 
-  input logic[7:0] i_data;
-  input logic i_req;
+  input logic[7:0]  i_data;
+  input logic  i_req;
 
-  output logic o_serial;
-  output logic o_cts;
-  output logic o_idle;
+  output logic  o_serial;
+  output logic  o_cts;
+  output logic  o_idle;
 
   /*verilator public_module*/
 
@@ -42,9 +42,9 @@ module uart_tx
   localparam /*const*/ int cursor_bits = $clog2(10 + extra_stop_bits);
   localparam /*const*/ int cursor_max = 10 + extra_stop_bits - 1;
 
-  logic[cycle_bits-1:0] cycle;
-  logic[cursor_bits-1:0] cursor;
-  logic[8:0] buffer;
+  logic[cycle_bits-1:0]  cycle;
+  logic[cursor_bits-1:0]  cursor;
+  logic[8:0]  buffer;
 
   //----------------------------------------
 

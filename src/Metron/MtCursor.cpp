@@ -70,6 +70,16 @@ void MtCursor::emit(const char* fmt, ...) {
   va_end(args);
 }
 
+void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
+  assert(cursor == mod->start(n));
+  va_list args;
+  va_start(args, fmt);
+  if (out) vfprintf(out, fmt, args);
+  vfprintf(stdout, fmt, args);
+  va_end(args);
+  cursor = mod->end(n);
+}
+
 void MtCursor::skip_over(TSNode n) {
   assert(cursor == mod->start(n));
   cursor = mod->end(n);
@@ -86,39 +96,6 @@ void MtCursor::comment_out(TSNode n) {
   emit("/*");
   emit(n);
   emit("*/");
-}
-
-void MtCursor::emit_anon(TSNode n) {
-  assert(cursor == mod->start(n));
-  assert(!ts_node_is_named(n) && !ts_node_is_null(n) && !ts_node_child_count(n));
-
-  switch (ts_node_symbol(n)) {
-  case anon_sym_template:
-    comment_out(n);
-    break;
-  default:
-    emit(n);
-    break;
-  }
-}
-
-void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
-  assert(cursor == mod->start(n));
-  va_list args;
-  va_start(args, fmt);
-  if (out) vfprintf(out, fmt, args);
-  vfprintf(stdout, fmt, args);
-  va_end(args);
-  cursor = mod->end(n);
-}
-
-void MtCursor::emit_error(TSNode n) {
-  assert(cursor == mod->start(n));
-  printf("\n");
-  printf("########################################\n");
-  mod->dump_tree(n);
-  printf("########################################\n");
-  __debugbreak();
 }
 
 //------------------------------------------------------------------------------
@@ -324,15 +301,15 @@ void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
   assert(ts_node_symbol(decl) == sym_field_declaration);
 
   auto node_type = ts_node_child_by_field_id(decl, field_type);
+  auto type_sym  = ts_node_symbol(node_type);
   auto node_name = ts_node_child_by_field_id(decl, field_declarator);
 
   std::string type_name;
-  std::string inst_name = mod->field_to_name(decl);
 
-  if (ts_node_symbol(node_type) == alias_sym_type_identifier || ts_node_symbol(node_type) == sym_primitive_type) {
+  if (type_sym == alias_sym_type_identifier || type_sym == sym_primitive_type) {
     type_name = mod->body(node_type);
   }
-  else if (ts_node_symbol(node_type) == sym_template_type) {
+  else if (type_sym == sym_template_type) {
     type_name = mod->body(ts_node_child_by_field_id(node_type, field_name));
   }
   else {
@@ -635,8 +612,9 @@ void MtCursor::emit_type_identifier(TSNode n) {
 void MtCursor::emit_template_declaration(TSNode n) {
   emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
     switch (sym) {
-    case anon_sym_SEMI: return skip_over(child);
-    default:            return emit_dispatch(child);
+    case anon_sym_template: return comment_out(child);
+    case anon_sym_SEMI:     return skip_over(child);
+    default:                return emit_dispatch(child);
     }
   });
 }
@@ -686,7 +664,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case anon_sym_GT_GT:
   case anon_sym_BANG_EQ:
   case aux_sym_preproc_include_token1:
-    emit_anon(n);
+    emit(n);
     return;
 
   case alias_sym_field_identifier:
@@ -772,3 +750,5 @@ void MtCursor::emit_dispatch(TSNode n) {
     __debugbreak();
   }
 }
+
+//------------------------------------------------------------------------------

@@ -17,33 +17,26 @@ struct MtCursor {
   bool in_final = false;
   TSNode current_function_name = { 0 };
 
+  //----------
+
+  bool match(TSNode n, const char* str) { return mod->match(n, str); }
+
   void visit_children(TSNode n, NodeVisitor cv);
   void emit_children(TSNode n);
   void emit_children(TSNode n, NodeVisitor3 cv);
-
-  //----------
-
-  bool match(TSNode n, const char* str) {
-    return mod->match(n, str);
-  }
-
-
   void emit_span(const char* a, const char* b);
   void emit(TSNode n);
   void emit(const char* fmt, ...);
+  void emit_replacement(TSNode n, const char* fmt, ...);
   void skip_over(TSNode n);
   void advance_to(TSNode n);
   void comment_out(TSNode n);
-  void emit_anon(TSNode n);
-  void emit_replacement(TSNode n, const char* fmt, ...);
-  void emit_error(TSNode n);
 
   //----------
 
   void emit_number_literal(TSNode n);
   void emit_primitive_type(TSNode n);
   void emit_type_identifier(TSNode n);
-
   void emit_preproc_include(TSNode n);
   void emit_return_statement(TSNode n);
   void emit_assignment_expression(TSNode n);

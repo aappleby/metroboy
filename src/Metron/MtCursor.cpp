@@ -194,9 +194,8 @@ void MtCursor::emit_call_expression(TSNode n) {
     comment_out(n);
   }
   else {
-    comment_out(n);
-    mod->dump_tree(call_func);
-    __debugbreak();
+    // All other function/task calls go through normally.
+    emit_children(n);
   }
 }
 

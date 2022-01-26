@@ -10,7 +10,7 @@ rule verilator
   command = rm -f obj/DUT && verilator --trace --exe --prefix DUT -O0 --public-flat-rw --Mdir obj --cc --build $in && cp obj/DUT $out
 
 rule iverilog
-  command = iverilog -g2012 $in -o $out
+  command = iverilog -g2012 -DIVERILOG $in -o $out
 
 rule yosys
   command = yosys -p 'read_verilog -sv $in; dump; synth_ice40 -json $out;'
@@ -35,7 +35,7 @@ rule touch
 
 ################################################################################
 
-build bin/all_sv : touch uart_top.h.sv uart_hello.h.sv uart_rx.h.sv uart_tx.h.sv obj/message.hex
+build bin/all_sv : touch metron.h.sv uart_top.h.sv uart_hello.h.sv uart_rx.h.sv uart_tx.h.sv obj/message.hex
 build bin/all_h  : touch uart_top.h  uart_hello.h  uart_rx.h  uart_tx.h  message.blob.h
 
 build obj/make_blob_h.o  : compile make_blob_h.cpp

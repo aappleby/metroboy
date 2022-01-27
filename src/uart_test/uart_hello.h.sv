@@ -17,12 +17,9 @@ module uart_hello
 (clk, rst_n, i_cts, i_idle, o_data, o_req, o_done); 
   input logic clk;
   input logic rst_n;
-  input logic i_cts;
-  input logic i_idle;
+  input bool i_cts;
+  input bool i_idle;
   
-  output logic[7:0] o_data;
-  output logic o_req;
-  output logic o_done;
 
   //----------------------------------------
   /*verilator public_module*/
@@ -35,6 +32,10 @@ module uart_hello
   logic[cursor_bits-1:0] cursor;
   logic[7:0] memory[512];
   logic[7:0] data;
+
+  output logic[7:0] o_data;
+  output logic o_req;
+  output logic o_done;
 
   //----------------------------------------
 
@@ -69,4 +70,6 @@ module uart_hello
       end
     end
   end
+  
+  
 endmodule

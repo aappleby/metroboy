@@ -12,8 +12,7 @@ extern "C" {
 
 //------------------------------------------------------------------------------
 
-
-inline blob load_blob(const char* filename) {
+blob load_blob(const char* filename) {
   FILE* f = fopen(filename, "rb");
   assert(f);
 
@@ -169,8 +168,11 @@ void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth
 
 void MtModule::visit_tree(TSNode n, NodeVisitor cv) {
   cv(n);
-  for (const auto& c : n) {
-    visit_tree(c, cv);
+  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
+    auto child = ts_node_child(n, i);
+    auto sym = ts_node_symbol(child);
+    auto field = ts_node_field_id_for_child(n, i);
+    visit_tree(child, cv);
   }
 }
 
@@ -206,36 +208,79 @@ bool MtModule::match(TSNode n, const char* s) {
   return true;
 }
 
+/*
+[0] s240 parameter_declaration:
+|   [0] f32 s78 type.primitive_type: "bool"
+|   [1] f9 s1 declarator.identifier: "i_cts"
+*/
+
+std::string MtModule::node_to_name(TSNode n) {
+  auto sym = ts_node_symbol(n);
+  switch (sym) {
+  
+  case sym_field_expression:
+  case alias_sym_type_identifier:
+  case sym_identifier:
+  case alias_sym_field_identifier:
+    return body(n);
+
+  case sym_array_declarator:
+  case sym_parameter_declaration:
+  case sym_field_declaration:
+  case sym_optional_parameter_declaration:
+    return node_to_name(ts_node_child_by_field_id(n, field_declarator));
+
+  case sym_struct_specifier:
+  case sym_class_specifier:
+    return node_to_name(ts_node_child_by_field_id(n, field_name));
+
+  default:
+    dump_tree(n);
+    __debugbreak();
+    return "";
+  }
+}
+
+/*
+[0] s236 field_declaration:
+|   [0] f32 s321 type.template_type:
+|   |   [0] f22 s395 name.type_identifier: "uart_rx"
+|   |   [1] f3 s324 arguments.template_argument_list:
+|   |   |   [0] s36 lit: "<"
+|   |   |   [1] s264 type_descriptor:
+|   |   |   |   [0] f32 s395 type.type_identifier: "cycles_per_bit"
+|   |   |   [2] s33 lit: ">"
+|   [1] f9 s392 declarator.field_identifier: "rx"
+|   [2] s39 lit: ";"
+
+[0] s236 field_declaration:
+|   [0] f32 s395 type.type_identifier: "uart_hello"
+|   [1] f9 s392 declarator.field_identifier: "hello"
+|   [2] s39 lit: ";"
+
+*/
+
+std::string MtModule::node_to_type(TSNode n) {
+  auto sym = ts_node_symbol(n);
+  switch (sym) {
+  case alias_sym_type_identifier:
+    return body(n);
+
+  case sym_field_declaration:
+    return node_to_type(ts_node_child_by_field_id(n, field_type));
+
+  case sym_template_type:
+    return node_to_type(ts_node_child_by_field_id(n, field_name));
+
+  default:
+    dump_tree(n);
+    __debugbreak();
+    return "";
+  }
+}
+
 //------------------------------------------------------------------------------
 // Field introspection
-
-std::string MtModule::class_to_name(TSNode n) {
-  auto name = ts_node_child_by_field_id(n, field_name);
-  return body(name);
-}
-
-std::string MtModule::decl_to_name(TSNode decl) {
-  auto s = ts_node_symbol(decl);
-
-  if (s == sym_identifier) {
-    return body(decl);
-  }
-  if (s == alias_sym_field_identifier) {
-    return body(decl);
-  }
-  else if (s == sym_array_declarator) {
-    return decl_to_name(ts_node_child_by_field_id(decl, field_declarator));
-  }
-  else {
-    __debugbreak();
-    return "?";
-  }
-}
-
-std::string MtModule::field_to_name(TSNode n) {
-  auto decl = ts_node_child_by_field_id(n, field_declarator);
-  return decl_to_name(decl);
-}
 
 bool MtModule::field_is_primitive(TSNode n) {
 
@@ -333,7 +378,59 @@ void MtModule::collect_moduleparams() {
 }
 
 
+/*
+|---|---|---|---[24] s186 function_definition:
+|   |   |   |   |   [0] f32 s78 type.primitive_type: "void"
+|   |   |   |   |   [1] f9 s216 declarator.function_declarator:
+|   |   |   |   |   |   [0] f9 s392 declarator.field_identifier: "tock"
+|   |   |   |   |   |   [1] f24 s239 parameters.parameter_list:
+|   |   |   |   |   |   |   [0] s5 lit: "("
+|   |   |   |   |   |   |   [1] s240 parameter_declaration:
+|   |   |   |   |   |   |   |   [0] f32 s78 type.primitive_type: "bool"
+|   |   |   |   |   |   |   |   [1] f9 s1 declarator.identifier: "rst_n"
+|   |   |   |   |   |   |   [2] s7 lit: ","
+|   |   |   |   |   |   |   [3] s240 parameter_declaration:
+|   |   |   |   |   |   |   |   [0] f32 s321 type.template_type:
+|   |   |   |   |   |   |   |   |   [0] f22 s395 name.type_identifier: "logic"
+|   |   |   |   |   |   |   |   |   [1] f3 s324 arguments.template_argument_list:
+|   |   |   |   |   |   |   |   |   |   [0] s36 lit: "<"
+|   |   |   |   |   |   |   |   |   |   [1] s112 number_literal: "8"
+|   |   |   |   |   |   |   |   |   |   [2] s33 lit: ">"
+|   |   |   |   |   |   |   |   [1] f9 s1 declarator.identifier: "i_data"
+|   |   |   |   |   |   |   [4] s7 lit: ","
+|   |   |   |   |   |   |   [5] s240 parameter_declaration:
+|   |   |   |   |   |   |   |   [0] f32 s321 type.template_type:
+|   |   |   |   |   |   |   |   |   [0] f22 s395 name.type_identifier: "logic"
+|   |   |   |   |   |   |   |   |   [1] f3 s324 arguments.template_argument_list:
+|   |   |   |   |   |   |   |   |   |   [0] s36 lit: "<"
+|   |   |   |   |   |   |   |   |   |   [1] s112 number_literal: "1"
+|   |   |   |   |   |   |   |   |   |   [2] s33 lit: ">"
+|   |   |   |   |   |   |   |   [1] f9 s1 declarator.identifier: "i_req"
+|   |   |   |   |   |   |   [6] s8 lit: ")"
+*/
+
 void MtModule::collect_fields() {
+  visit_tree(module_class, [&](TSNode n) {
+    if (ts_node_symbol(n) == sym_function_definition) {
+      //dump_tree(n, 2);
+      auto func_name = ts_node_child_by_field_id(ts_node_child_by_field_id(n, field_declarator), field_declarator);
+      auto func_args = ts_node_child_by_field_id(ts_node_child_by_field_id(n, field_declarator), field_parameters);
+
+      if (match(func_name, "tock")) {
+        visit_tree(func_args, [&](TSNode func_arg) {
+          if (ts_node_symbol(func_arg) == sym_parameter_declaration) {
+            auto arg_name = ts_node_child_by_field_id(func_arg, field_declarator);
+
+            if (!match(arg_name, "rst_n")) {
+              inputs.push_back(func_arg);
+              //dump_tree(func_arg, 2);
+            }
+          }
+        });
+      }
+    }
+  });
+
   visit_tree(module_class, [&](TSNode n) {
     if (ts_node_symbol(n) == sym_field_declaration) {
       if      (field_is_input(n))  inputs.push_back(n);

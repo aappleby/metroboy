@@ -5,11 +5,6 @@
 
 template<int cycles_per_bit = 4>
 struct uart_rx {
-  logic<1> i_serial;
-  logic<8> o_data;
-  logic<1> o_valid;
-  logic<32> o_sum;
-
   //----------------------------------------
   /*verilator public_module*/
 
@@ -22,6 +17,10 @@ struct uart_rx {
   logic<cursor_bits> cursor;
   logic<8> buffer;
   logic<32> sum;
+
+  logic<8> o_data;
+  logic<1> o_valid;
+  logic<32> o_sum;
 
   //----------------------------------------
 
@@ -38,7 +37,7 @@ struct uart_rx {
 
   //----------------------------------------
 
-  void tock(bool rst_n) {
+  void tock(bool rst_n, logic<1> i_serial) {
     if (!rst_n) {
       cycle = 0;
       cursor = 0;

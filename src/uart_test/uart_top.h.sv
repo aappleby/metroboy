@@ -22,17 +22,13 @@ module uart_top
 (clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum); 
   input logic clk;
   input logic rst_n;
-  output logic o_serial;
-  output logic[7:0] o_data;
-  output logic o_valid;
-  output logic o_done;
-  output logic[31:0] o_sum;
+  
 
   //----------------------------------------
   /*verilator public_module*/
 
-  logic hello_i_cts;
-  logic hello_i_idle;
+  bool hello_i_cts;
+  bool hello_i_idle;
   logic[7:0] hello_o_data;
   logic hello_o_req;
   logic hello_o_done;
@@ -50,6 +46,12 @@ module uart_top
   logic rx_o_valid;
   logic[31:0] rx_o_sum;
   uart_rx #(cycles_per_bit) rx(clk, rst_n, rx_i_serial, rx_o_data, rx_o_valid, rx_o_sum);
+
+  output logic o_serial;
+  output logic[7:0] o_data;
+  output logic o_valid;
+  output logic o_done;
+  output logic[31:0] o_sum;
 
   //----------------------------------------
 
@@ -71,23 +73,24 @@ module uart_top
     o_valid = rx_o_valid;
     o_done = hello_o_done;
     o_sum = rx_o_sum;
-
-    hello_i_cts = tx_o_cts;
-    hello_i_idle = tx_o_idle;
-    tx_i_data = hello_o_data;
-    tx_i_req = hello_o_req;
-    rx_i_serial = tx_o_serial;
   end
 
   //----------------------------------------
 
   /*void*/ always_ff @(posedge clk, negedge rst_n) begin
-    /*hello.tock(rst_n)*/;
-    /*tx.tock(rst_n)*/;
-    /*rx.tock(rst_n)*/;
+    /*hello.tock(rst_n, tx.o_cts, tx.o_idle)*/;
+    /*tx.tock(rst_n, hello.o_data, hello.o_req)*/;
+    /*rx.tock(rst_n, tx.o_serial)*/;
 
     if (!rst_n) begin
     end else begin
     end
   end
+  
+  assign hello_i_cts = tx_o_cts;
+  assign hello_i_idle = tx_o_idle;
+  assign tx_i_data = hello_o_data;
+  assign tx_i_req = hello_o_req;
+  assign rx_i_serial = tx_o_serial;
+  
 endmodule

@@ -19,13 +19,9 @@ module uart_tx
 (clk, rst_n, i_data, i_req, o_serial, o_cts, o_idle); 
   input logic clk;
   input logic rst_n;
-
   input logic[7:0] i_data;
   input logic i_req;
-
-  output logic o_serial;
-  output logic o_cts;
-  output logic o_idle;
+  
 
   /*verilator public_module*/
 
@@ -44,6 +40,10 @@ module uart_tx
   logic[cycle_bits-1:0] cycle;
   logic[cursor_bits-1:0] cursor;
   logic[8:0] buffer;
+
+  output logic o_serial;
+  output logic o_cts;
+  output logic o_idle;
 
   //----------------------------------------
 
@@ -94,4 +94,6 @@ module uart_tx
       end
     end
   end
+  
+  
 endmodule

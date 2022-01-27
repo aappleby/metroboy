@@ -28,8 +28,10 @@ struct MtModule {
   TSNode root;
 
   std::vector<TSNode> moduleparams;
+
   std::vector<TSNode> inputs;
   std::vector<TSNode> outputs;
+
   std::vector<TSNode> localparams;
   std::vector<TSNode> fields;
   std::vector<TSNode> submodules;
@@ -42,24 +44,25 @@ struct MtModule {
   MtModule();
   ~MtModule();
   void load(const std::string& input_filename, const std::string& output_filename);
-  void dump_node(TSNode n, int index = 0, int field = -1, int depth = 0);
-  
-  //void dump_tree(TSNode n, int index = 0, int field = -1, int depth = 0, int maxdepth = 255);
-  void dump_tree(TSNode n, int index, int field, int depth, int maxdepth);
 
+  void dump_node(TSNode n, int index = 0, int field = -1, int depth = 0);
+  void dump_tree(TSNode n, int index, int field, int depth, int maxdepth);
   void dump_tree(TSNode n, int maxdepth) { dump_tree(n, 0, -1, 0, maxdepth); }
   void dump_tree(TSNode n) { dump_tree(n, 0, -1, 0, 255); }
 
   void visit_tree(TSNode n, NodeVisitor cv);
-
   void visit_tree2(TSNode parent, NodeVisitor2 cv);
+
+  // Text handling
   const char* start(TSNode n);
   const char* end(TSNode n);
   std::string body(TSNode n);
   bool match(TSNode n, const char* s);
-  std::string class_to_name(TSNode n);
-  std::string decl_to_name(TSNode decl);
-  std::string field_to_name(TSNode n);
+
+  std::string node_to_name(TSNode n);
+  std::string node_to_type(TSNode n);
+
+  // Field introspection
   bool field_is_primitive(TSNode n);
   bool field_is_module(TSNode n);
   bool field_is_static(TSNode n);
@@ -68,6 +71,7 @@ struct MtModule {
   bool field_is_input(TSNode n);
   bool field_is_output(TSNode n);
 
+  // Scanner
   void find_module();
   void collect_moduleparams();
   void collect_fields();

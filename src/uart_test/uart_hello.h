@@ -4,12 +4,6 @@
 //==============================================================================
 
 struct uart_hello {
-  logic<1> i_cts;
-  logic<1> i_idle;
-  
-  logic<8> o_data;
-  logic<1> o_req;
-  logic<1> o_done;
 
   //----------------------------------------
   /*verilator public_module*/
@@ -22,6 +16,10 @@ struct uart_hello {
   logic<cursor_bits> cursor;
   logic<8> memory[512];
   logic<8> data;
+
+  logic<8> o_data;
+  logic<1> o_req;
+  logic<1> o_done;
 
   //----------------------------------------
 
@@ -39,7 +37,7 @@ struct uart_hello {
 
   //----------------------------------------
 
-  void tock(bool rst_n) {
+  void tock(bool rst_n, bool i_cts, bool i_idle) {
     if (!rst_n) {
       state = WAIT;
       cursor = 0;

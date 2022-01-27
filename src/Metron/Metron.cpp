@@ -10,6 +10,8 @@
 //------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+
+#if 0
   std::vector<std::string> inputs;
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != '-') inputs.push_back(argv[i]);
@@ -21,44 +23,55 @@ int main(int argc, char** argv) {
   }
 
   for (auto& module : lib.modules) {
+    module->dump_tree(module->root);
+  }
+#endif
 
-    MtCursor cursor = {
-      &lib,
-      module,
-      module->source,
-      fopen(module->output_filename.c_str(), "wb"),
-    };
+#if 1
+  std::vector<std::string> inputs;
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] != '-') inputs.push_back(argv[i]);
+  }
+
+  MtModLibrary lib;
+  for (auto& input : inputs) {
+    lib.load(input.c_str(), (input + ".sv").c_str());
+  }
+
+  for (auto& module : lib.modules) {
+    auto out = fopen(module->output_filename.c_str(), "wb");
+    MtCursor cursor(&lib, module, out);
 
     cursor.emit("//--------------------------------------------------------------------------------\n");
     cursor.emit("// MODULE:       ");
-    cursor.emit("%s\n", module->class_to_name(module->module_class).c_str());
+    cursor.emit("%s\n", module->node_to_name(module->module_class).c_str());
 
     cursor.emit("// MODULEPARAMS: ");
     for (auto f : module->moduleparams) {
-      cursor.emit("%s, ", module->field_to_name(f).c_str());
+      cursor.emit("%s, ", module->node_to_name(f).c_str());
     }
     cursor.emit("\n");
 
     cursor.emit("// INPUTS:       ");
-    for (auto f : module->inputs) cursor.emit("%s, ", module->field_to_name(f).c_str());
+    for (auto f : module->inputs) cursor.emit("%s, ", module->node_to_name(f).c_str());
     cursor.emit("\n");
 
     cursor.emit("// OUTPUTS:      ");
-    for (auto f : module->outputs) cursor.emit("%s, ", module->field_to_name(f).c_str());
+    for (auto f : module->outputs) cursor.emit("%s, ", module->node_to_name(f).c_str());
     cursor.emit("\n");
 
     cursor.emit("// LOCALPARAMS:  ");
-    for (auto f : module->localparams) cursor.emit("%s, ", module->field_to_name(f).c_str());
+    for (auto f : module->localparams) cursor.emit("%s, ", module->node_to_name(f).c_str());
     cursor.emit("\n");
 
     cursor.emit("// FIELDS:       ");
     for (auto f : module->fields) {
-      cursor.emit("%s, ", module->field_to_name(f).c_str());
+      cursor.emit("%s, ", module->node_to_name(f).c_str());
     }
     cursor.emit("\n");
 
     cursor.emit("// SUBMODULES:   ");
-    for (auto f : module->submodules) cursor.emit("%s, ", module->field_to_name(f).c_str());
+    for (auto f : module->submodules) cursor.emit("%s, ", module->node_to_name(f).c_str());
     cursor.emit("\n");
 
     cursor.emit("\n");
@@ -66,6 +79,7 @@ int main(int argc, char** argv) {
     cursor.emit_dispatch(module->root);
     printf("\n");
   }
+#endif
 
   return 0;
 }

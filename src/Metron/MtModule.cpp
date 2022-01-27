@@ -378,37 +378,6 @@ void MtModule::collect_moduleparams() {
 }
 
 
-/*
-|---|---|---|---[24] s186 function_definition:
-|   |   |   |   |   [0] f32 s78 type.primitive_type: "void"
-|   |   |   |   |   [1] f9 s216 declarator.function_declarator:
-|   |   |   |   |   |   [0] f9 s392 declarator.field_identifier: "tock"
-|   |   |   |   |   |   [1] f24 s239 parameters.parameter_list:
-|   |   |   |   |   |   |   [0] s5 lit: "("
-|   |   |   |   |   |   |   [1] s240 parameter_declaration:
-|   |   |   |   |   |   |   |   [0] f32 s78 type.primitive_type: "bool"
-|   |   |   |   |   |   |   |   [1] f9 s1 declarator.identifier: "rst_n"
-|   |   |   |   |   |   |   [2] s7 lit: ","
-|   |   |   |   |   |   |   [3] s240 parameter_declaration:
-|   |   |   |   |   |   |   |   [0] f32 s321 type.template_type:
-|   |   |   |   |   |   |   |   |   [0] f22 s395 name.type_identifier: "logic"
-|   |   |   |   |   |   |   |   |   [1] f3 s324 arguments.template_argument_list:
-|   |   |   |   |   |   |   |   |   |   [0] s36 lit: "<"
-|   |   |   |   |   |   |   |   |   |   [1] s112 number_literal: "8"
-|   |   |   |   |   |   |   |   |   |   [2] s33 lit: ">"
-|   |   |   |   |   |   |   |   [1] f9 s1 declarator.identifier: "i_data"
-|   |   |   |   |   |   |   [4] s7 lit: ","
-|   |   |   |   |   |   |   [5] s240 parameter_declaration:
-|   |   |   |   |   |   |   |   [0] f32 s321 type.template_type:
-|   |   |   |   |   |   |   |   |   [0] f22 s395 name.type_identifier: "logic"
-|   |   |   |   |   |   |   |   |   [1] f3 s324 arguments.template_argument_list:
-|   |   |   |   |   |   |   |   |   |   [0] s36 lit: "<"
-|   |   |   |   |   |   |   |   |   |   [1] s112 number_literal: "1"
-|   |   |   |   |   |   |   |   |   |   [2] s33 lit: ">"
-|   |   |   |   |   |   |   |   [1] f9 s1 declarator.identifier: "i_req"
-|   |   |   |   |   |   |   [6] s8 lit: ")"
-*/
-
 void MtModule::collect_fields() {
   visit_tree(module_class, [&](TSNode n) {
     if (ts_node_symbol(n) == sym_function_definition) {
@@ -416,7 +385,7 @@ void MtModule::collect_fields() {
       auto func_name = ts_node_child_by_field_id(ts_node_child_by_field_id(n, field_declarator), field_declarator);
       auto func_args = ts_node_child_by_field_id(ts_node_child_by_field_id(n, field_declarator), field_parameters);
 
-      if (match(func_name, "tock")) {
+      if (match(func_name, "tick")) {
         visit_tree(func_args, [&](TSNode func_arg) {
           if (ts_node_symbol(func_arg) == sym_parameter_declaration) {
             auto arg_name = ts_node_child_by_field_id(func_arg, field_declarator);

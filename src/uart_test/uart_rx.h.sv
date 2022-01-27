@@ -45,14 +45,6 @@ module uart_rx
 
   //----------------------------------------
 
-  /*void*/ always_comb begin
-    o_data = buffer;
-    o_valid = cursor == 1;
-    o_sum = sum;
-  end
-
-  //----------------------------------------
-
   /*void*/ always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       cycle <= 0;
@@ -77,6 +69,14 @@ module uart_rx
         cursor <= cursor_max;
       end
     end
+  end
+
+  //----------------------------------------
+
+  /*void*/ always_comb begin
+    o_data = buffer;
+    o_valid = cursor == 1;
+    o_sum = sum;
   end
 
   //----------------------------------------

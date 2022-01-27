@@ -21,15 +21,15 @@ int main(int argc, char** arv) {
 
   printf("\n");
 
-  top.tock(0);
   top.tick(0);
+  top.tock(0);
 
   int timestamp = 0;
 
   while(1) {
     bool old_valid = top.o_valid;
-    top.tock(1);
     top.tick(1);
+    top.tock(1);
     timestamp += 10;
     if (!old_valid && top.o_valid) printf("%c", (uint8_t)top.o_data);
     old_valid = top.o_valid;

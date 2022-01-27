@@ -63,27 +63,14 @@ module uart_top
 
   //----------------------------------------
 
-  /*void*/ always_comb begin
-    /*hello.tick(rst_n)*/;
-    /*tx.tick(rst_n)*/;
-    /*rx.tick(rst_n)*/;
-
-    o_serial = tx_o_serial;
-    o_data = rx_o_data;
-    o_valid = rx_o_valid;
-    o_done = hello_o_done;
-    o_sum = rx_o_sum;
-  end
-
-  //----------------------------------------
-
   /*void*/ always_ff @(posedge clk, negedge rst_n) begin
-    /*hello.tock(rst_n, tx.o_cts, tx.o_idle)*/;
-    /*tx.tock(rst_n, hello.o_data, hello.o_req)*/;
-    /*rx.tock(rst_n, tx.o_serial)*/;
+    /*hello.tick(rst_n, tx.o_cts, tx.o_idle)*/;
+    /*tx.tick(rst_n, hello.o_data, hello.o_req)*/;
+    /*rx.tick(rst_n, tx.o_serial)*/;
 
     if (!rst_n) begin
-    end else begin
+    end
+    else begin
     end
   end
   
@@ -92,6 +79,20 @@ module uart_top
   assign tx_i_data = hello_o_data;
   assign tx_i_req = hello_o_req;
   assign rx_i_serial = tx_o_serial;
+
+  //----------------------------------------
+
+  /*void*/ always_comb begin
+    /*hello.tock(rst_n)*/;
+    /*tx.tock(rst_n)*/;
+    /*rx.tock(rst_n)*/;
+
+    o_serial = tx_o_serial;
+    o_data = rx_o_data;
+    o_valid = rx_o_valid;
+    o_done = hello_o_done;
+    o_sum = rx_o_sum;
+  end
 
   //----------------------------------------
 endmodule

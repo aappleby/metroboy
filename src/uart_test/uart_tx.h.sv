@@ -62,14 +62,6 @@ module uart_tx
 
   //----------------------------------------
 
-  /*void*/ always_comb begin
-    o_serial = buffer & 1;
-    o_cts = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
-    o_idle = (cursor == 0) && (cycle == 0);
-  end
-
-  //----------------------------------------
-
   /*void*/ always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       cycle <= 0;
@@ -93,6 +85,14 @@ module uart_tx
         buffer <= (buffer >> 1) | 'h100;
       end
     end
+  end
+
+  //----------------------------------------
+
+  /*void*/ always_comb begin
+    o_serial = buffer & 1;
+    o_cts = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
+    o_idle = (cursor == 0) && (cycle == 0);
   end
 
   //----------------------------------------

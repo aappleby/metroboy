@@ -29,15 +29,7 @@ struct uart_rx {
 
   //----------------------------------------
 
-  void tick(bool rst_n) {
-    o_data = buffer;
-    o_valid = cursor == 1;
-    o_sum = sum;
-  }
-
-  //----------------------------------------
-
-  void tock(bool rst_n, logic<1> i_serial) {
+  void tick(bool rst_n, logic<1> i_serial) {
     if (!rst_n) {
       cycle = 0;
       cursor = 0;
@@ -61,6 +53,14 @@ struct uart_rx {
         cursor = cursor_max;
       }
     }
+  }
+
+  //----------------------------------------
+
+  void tock(bool rst_n) {
+    o_data = buffer;
+    o_valid = cursor == 1;
+    o_sum = sum;
   }
 
   //----------------------------------------

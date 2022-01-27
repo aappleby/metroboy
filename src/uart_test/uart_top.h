@@ -35,27 +35,28 @@ struct uart_top {
   //----------------------------------------
 
   void tick(bool rst_n) {
-    hello.tick(rst_n);
-    tx.tick(rst_n);
-    rx.tick(rst_n);
+    hello.tick(rst_n, tx.o_cts, tx.o_idle);
+    tx.tick(rst_n, hello.o_data, hello.o_req);
+    rx.tick(rst_n, tx.o_serial);
+
+    if (!rst_n) {
+    }
+    else {
+    }
+  }
+
+  //----------------------------------------
+
+  void tock(bool rst_n) {
+    hello.tock(rst_n);
+    tx.tock(rst_n);
+    rx.tock(rst_n);
 
     o_serial = tx.o_serial;
     o_data = rx.o_data;
     o_valid = rx.o_valid;
     o_done = hello.o_done;
     o_sum = rx.o_sum;
-  }
-
-  //----------------------------------------
-
-  void tock(bool rst_n) {
-    hello.tock(rst_n, tx.o_cts, tx.o_idle);
-    tx.tock(rst_n, hello.o_data, hello.o_req);
-    rx.tock(rst_n, tx.o_serial);
-
-    if (!rst_n) {
-    } else {
-    }
   }
 
   //----------------------------------------

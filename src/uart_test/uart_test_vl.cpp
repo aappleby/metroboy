@@ -61,8 +61,8 @@ int main(int argc, char** argv) {
     tfp->dump(timestamp);
     timestamp += 5;
 
-    top.tock(rst_n);
     top.tick(rst_n);
+    top.tock(rst_n);
   };
 
   step(0);

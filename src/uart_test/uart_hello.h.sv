@@ -45,30 +45,33 @@ module uart_hello
 
   //----------------------------------------
 
-  /*void*/ always_comb begin
-    o_data = data;
-    o_req = state == SEND;
-    o_done = state == DONE;
-  end
-
-  //----------------------------------------
-
   /*void*/ always_ff @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       state <= WAIT;
       cursor <= 0;
-    end else begin
+    end
+    else begin
       data <= memory[cursor];
       if (state == WAIT && i_idle) begin
         state <= SEND;
-      end else if (state == SEND && i_cts) begin
+      end
+      else if (state == SEND && i_cts) begin
         if (cursor == (message_len - 1)) state <= DONE;
         cursor <= cursor + 1;
-      end else if (state == DONE) begin
+      end
+      else if (state == DONE) begin
         state <= WAIT;
         cursor <= 0;
       end
     end
+  end
+
+  //----------------------------------------
+
+  /*void*/ always_comb begin
+    o_data = data;
+    o_req = state == SEND;
+    o_done = state == DONE;
   end
 
   //----------------------------------------

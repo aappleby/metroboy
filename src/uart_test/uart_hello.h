@@ -29,30 +29,33 @@ struct uart_hello {
 
   //----------------------------------------
 
-  void tick(bool rst_n) {
-    o_data = data;
-    o_req = state == SEND;
-    o_done = state == DONE;
-  }
-
-  //----------------------------------------
-
-  void tock(bool rst_n, bool i_cts, bool i_idle) {
+  void tick(bool rst_n, bool i_cts, bool i_idle) {
     if (!rst_n) {
       state = WAIT;
       cursor = 0;
-    } else {
+    }
+    else {
       data = memory[cursor];
       if (state == WAIT && i_idle) {
         state = SEND;
-      } else if (state == SEND && i_cts) {
+      }
+      else if (state == SEND && i_cts) {
         if (cursor == (message_len - 1)) state = DONE;
         cursor = cursor + 1;
-      } else if (state == DONE) {
+      }
+      else if (state == DONE) {
         state = WAIT;
         cursor = 0;
       }
     }
+  }
+
+  //----------------------------------------
+
+  void tock(bool rst_n) {
+    o_data = data;
+    o_req = state == SEND;
+    o_done = state == DONE;
   }
 
   //----------------------------------------

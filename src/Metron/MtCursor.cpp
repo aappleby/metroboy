@@ -301,13 +301,8 @@ void MtCursor::emit_function_definition(TSNode func_def) {
   in_seq  = false;
 
   // For each call to {submodule}.tock() in module::tock(), emit glue assignments.
-  if (is_tock) {
+  if (is_tock && !mod->submodules.empty()) {
     emit_newline();
-    emit_newline();
-
-    //for (auto& f : mod->fields) {
-    //  mod->dump_tree(f);
-    //}
 
     std::vector<TSNode> submod_call_nodes;
 
@@ -325,8 +320,6 @@ void MtCursor::emit_function_definition(TSNode func_def) {
     });
 
     for (auto& submod_call : submod_call_nodes) {
-      //mod->dump_tree(submod_call);
-
       auto call_func = ts_node_child_by_field_id(submod_call, field_function);
       auto call_args = ts_node_child_by_field_id(submod_call, field_arguments);
       auto call_this = ts_node_child_by_field_id(call_func, field_argument);
@@ -356,85 +349,15 @@ void MtCursor::emit_function_definition(TSNode func_def) {
 
           for (int i = 0; i < call_src.size(); i++) {
             
+            emit_newline();
             emit("assign %s_%s = %s;",
               submod_name.c_str(),
               call_dst[i].c_str(),
               call_src[i].c_str());
-            emit_newline();
           }
         }
       }
     }
-
-    /*
-    for (auto& sm : mod->submodules) {
-      auto submod_type = mod->node_to_type(sm);
-      auto submod_name = mod->node_to_name(sm);
-
-      auto submod = mod_lib->find_module(submod_type);
-
-      emit("%s", mod->node_to_type(sm).c_str());
-      emit_newline();
-      emit("%s", mod->node_to_name(sm).c_str());
-      emit_newline();
-      emit("%p", submod);
-      emit_newline();
-      for (auto input : submod->inputs) {
-        emit("  %s", submod->node_to_name(input).c_str());
-        emit_newline();
-      }
-    }
-    */
-
-#if 0
-
-    //mod->dump_tree(func_def);
-
-    mod->visit_tree(func_def, [&](TSNode child) {
-      auto sym = ts_node_symbol(child);
-      if (sym == sym_call_expression) {
-
-        mod->dump_tree(child);
-
-        auto call_func = ts_node_child_by_field_id(child, field_function);
-        auto call_args = ts_node_child_by_field_id(child, field_arguments);
-
-        auto call_this = ts_node_child_by_field_id(call_func, field_argument);
-        auto func_name = ts_node_child_by_field_id(call_func, field_field);
-
-        if (mod->match(func_name, "tock")) {
-          printf("subtock\n");
-          mod->dump_tree(call_this);
-          mod->dump_tree(call_args);
-        }
-
-        //printf("%s\n", mod->body(func_name).c_str());
-
-        /*
-|   [0] f15 s269 function.field_expression:
-|   |   [0] f2 s1 argument.identifier: "hello"
-|   |   [1] f23 s110 operator.lit: "."
-|   |   [2] f14 s392 field.field_identifier: "tock"
-*/
-
-        //mod->dump_tree(func_name);
-      }
-
-    });
-
-    /*
-    emit("?????????");
-    emit_newline();
-
-    for (auto& submod : mod->submodules) {
-      emit("submod %s", submod->module_name.c_str());
-      emit_newline();
-    }
-    //hello.tock(rst_n, tx.o_cts, tx.o_idle);
-    //tx.tock(rst_n, hello.o_data, hello.o_req);
-    //rx.tock(rst_n, tx.o_serial);
-    */
-#endif
   }
 }
 

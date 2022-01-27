@@ -92,5 +92,8 @@ module uart_top
   assign tx_i_data = hello_o_data;
   assign tx_i_req = hello_o_req;
   assign rx_i_serial = tx_o_serial;
-  
+
+  //----------------------------------------
 endmodule
+
+//==============================================================================

@@ -17,18 +17,15 @@
 module uart_tx
 #(parameter int cycles_per_bit = 4)
 (clk, rst_n, i_data, i_req, o_serial, o_cts, o_idle); 
+  /*verilator public_module*/
+  
   input logic clk;
   input logic rst_n;
   input logic[7:0] i_data;
   input logic i_req;
-  
 
-  /*verilator public_module*/
-
-  //----------------------------------------
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages
-
   localparam /*const*/ int extra_stop_bits = 7;
 
   localparam /*const*/ int cycle_bits = $clog2(cycles_per_bit);
@@ -48,17 +45,10 @@ module uart_tx
   //----------------------------------------
 
   /*void*/ initial begin
+    o_serial = 0;
+    o_cts = 0;
+    o_idle = 0;
   end
-
-  //----------------------------------------
-
-  /*int*/ function int derp() /*const*/; 
-    derp = 2;
-  endfunction
-
-  /*void*/ task herp(int x); 
-    cycle <= x;
-  endtask
 
   //----------------------------------------
 
@@ -95,7 +85,6 @@ module uart_tx
     o_idle = (cursor == 0) && (cycle == 0);
   end
 
-  //----------------------------------------
 endmodule
 
 //==============================================================================

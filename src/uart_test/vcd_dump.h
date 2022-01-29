@@ -153,8 +153,8 @@ inline void dump_hello_vcd_header(VcdDump& d) {
 }
 
 inline void dump_hello_value(VcdDump& d, uart_hello& hello) {
-  d.set_value("hello_state", hello.state, 2);
-  d.set_value("hello_cursor", hello.cursor, 9);
+  //d.set_value("hello_state", hello.state, 2);
+  //d.set_value("hello_cursor", hello.cursor, 9);
   d.set_value("hello_o_data", hello.o_data, 8);
   d.set_value("hello_o_req", hello.o_req, 1);
   d.set_value("hello_o_done", hello.o_done, 1);

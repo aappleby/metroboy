@@ -6,12 +6,8 @@
 template<int cycles_per_bit = 4>
 struct uart_tx {
 
-  /*verilator public_module*/
-
-  //----------------------------------------
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages
-
   static const int extra_stop_bits = 7;
 
   static const int cycle_bits = clog2(cycles_per_bit);
@@ -31,16 +27,9 @@ struct uart_tx {
   //----------------------------------------
 
   void init() {
-  }
-
-  //----------------------------------------
-
-  int derp() const {
-    return 2;
-  }
-
-  void herp(int x) {
-    cycle = x;
+    o_serial = 0;
+    o_cts = 0;
+    o_idle = 0;
   }
 
   //----------------------------------------
@@ -78,7 +67,6 @@ struct uart_tx {
     o_idle = (cursor == 0) && (cycle == 0);
   }
 
-  //----------------------------------------
 };
 
 //==============================================================================

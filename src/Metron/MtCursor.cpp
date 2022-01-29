@@ -190,6 +190,10 @@ void MtCursor::emit_call_expression(TSNode n) {
     emit_replacement(call_func, "$readmemh");
     emit_dispatch(call_args);
   }
+  else if (mod->match(call_func, "printf")) {
+    emit_replacement(call_func, "$write");
+    emit_dispatch(call_args);
+  }
   else if (mod->match(call_func, "init")) {
     comment_out(n);
   }
@@ -454,6 +458,8 @@ void MtCursor::emit_field_declaration(TSNode decl) {
       emit(")");
     }
   });
+
+  emit_newline();
 }
 
 //------------------------------------------------------------------------------
@@ -486,6 +492,7 @@ void MtCursor::emit_class_specifier(TSNode n) {
         emit(", %s", mod->node_to_name(output).c_str());
       }
       emit(");");
+
     }
     else if (field == field_body) {
       // And the declaration of the ports will be in the module body along with
@@ -494,6 +501,10 @@ void MtCursor::emit_class_specifier(TSNode n) {
       push_indent(ts_node_named_child(child, 0));
 
       emit_newline();
+      emit("/*verilator public_module*/");
+      emit_newline();
+      emit_newline();
+
       emit("input logic clk;");
       emit_newline();
       emit("input logic rst_n;");
@@ -506,8 +517,6 @@ void MtCursor::emit_class_specifier(TSNode n) {
         sub_cursor.emit_dispatch(input);
         emit(";");
       }
-
-      emit_newline();
 
       // Emit the module body, with a few modifications.
       emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
@@ -655,11 +664,15 @@ void MtCursor::emit_translation_unit(TSNode n) {
 
 //------------------------------------------------------------------------------
 // Replace "0x" prefixes with "'h"
+// Replace "0b" prefixes with "'b"
 
 void MtCursor::emit_number_literal(TSNode n) {
   std::string body = mod->body(n);
   if (body.starts_with("0x")) {
     emit_replacement(n, "'h%s", body.c_str() + 2);
+  }
+  else if (body.starts_with("0b")) {
+    emit_replacement(n, "'b%s", body.c_str() + 2);
   }
   else {
     emit(n);
@@ -729,6 +742,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case anon_sym_else:
   case anon_sym_typedef:
   case anon_sym_enum:
+  case anon_sym_default:
   case anon_sym_LF:
   case anon_sym_EQ:
   case anon_sym_SEMI:
@@ -750,6 +764,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case anon_sym_LT_EQ:
   case anon_sym_GT_GT:
   case anon_sym_BANG_EQ:
+  case anon_sym_COLON:
   case aux_sym_preproc_include_token1:
     emit(n);
     return;
@@ -803,6 +818,35 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_assignment_expression:  emit_assignment_expression(n); return;
   case sym_template_argument_list: emit_template_argument_list(n); return;
   case sym_enumerator_list:        emit_enumerator_list(n); return;
+
+  case sym_case_statement: {
+    emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+      if (sym == anon_sym_case) comment_out(child);
+      else emit_dispatch(child);
+    });
+    return;
+  }
+
+  case sym_switch_statement: {
+    emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+      if (sym == anon_sym_switch) {
+        emit_replacement(child, "case");
+      }
+      else if (field == field_body) {
+        emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
+          switch (sym) {
+          case anon_sym_LBRACE: return skip_over(child);
+          case anon_sym_RBRACE: return emit_replacement(child, "endcase");
+          default:              return emit_dispatch(child);
+          }
+        });
+      }
+      else {
+        emit_dispatch(child);
+      }
+    });
+    return;
+  }
 
   case sym_storage_class_specifier: {
     if (mod->match(n, "static")) {

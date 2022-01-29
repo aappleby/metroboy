@@ -33,6 +33,8 @@ template<int N> struct logic {};
 template<> \
 struct logic<N> { \
 static const int width = N; \
+  logic<N>() { *(T*)this = 0; } \
+  logic<N>(const T& y) { x =  y; } \
   void operator = (const T& y) { x = y; } \
   operator T() const { return x; } \
   T x : N; \

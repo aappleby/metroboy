@@ -5,8 +5,6 @@
 
 template<int cycles_per_bit = 4>
 struct uart_rx {
-  //----------------------------------------
-  /*verilator public_module*/
 
   static const int cycle_bits = clog2(cycles_per_bit);
   static const int cycle_max = cycles_per_bit - 1;
@@ -25,6 +23,9 @@ struct uart_rx {
   //----------------------------------------
 
   void init() {
+    o_data = 0;
+    o_valid = 0;
+    o_sum = 0;
   }
 
   //----------------------------------------
@@ -63,7 +64,6 @@ struct uart_rx {
     o_sum = sum;
   }
 
-  //----------------------------------------
 };
 
 //==============================================================================

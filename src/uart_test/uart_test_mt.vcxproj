@@ -168,17 +168,13 @@
     <None Include="metron.h.sv" />
     <None Include="SB_PLL40_CORE.v" />
     <None Include="uart_hello.h.sv" />
-    <None Include="uart_hello.sv" />
     <None Include="uart_ice40.sv" />
     <None Include="uart_rx.h.sv" />
-    <None Include="uart_rx.sv" />
     <None Include="uart_test.sv" />
     <None Include="uart_test_ice40.sv" />
     <None Include="uart_test_iv.sv" />
     <None Include="uart_top.h.sv" />
-    <None Include="uart_top.sv" />
     <None Include="uart_tx.h.sv" />
-    <None Include="uart_tx.sv" />
     <None Include="uart_tx_buf.v" />
   </ItemGroup>
   <ItemGroup>

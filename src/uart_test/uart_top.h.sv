@@ -2,7 +2,7 @@
 // MODULE:       uart_top
 // MODULEPARAMS: cycles_per_bit, 
 // INPUTS:       
-// OUTPUTS:      o_serial, o_data, o_valid, o_done, o_sum, 
+// OUTPUTS:      o_serial, o_data, o_valid, o_done, o_sum, o_onehot, 
 // LOCALPARAMS:  
 // FIELDS:       
 // SUBMODULES:   hello, tx, rx, 
@@ -14,18 +14,33 @@
 `include "uart_tx.h.sv"
 `include "uart_hello.h.sv"
 
+/*
+dontcare
+
+case (select)
+0: out[0] = 1;
+1: out[1] = 1;
+2: out[2] = 1;
+3: out[3] = 1;
+4: out[4] = 1;
+5: out[5] = 1;
+6: out[6] = 1;
+7: out[7] = 1;
+endcase
+
+name init/tick/tock blocks
+*/
+
 //==============================================================================
 
 /*template*/
 module uart_top
 #(parameter int cycles_per_bit = 3)
-(clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum); 
+(clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum, o_onehot); 
+  /*verilator public_module*/
+  
   input logic clk;
   input logic rst_n;
-  
-
-  //----------------------------------------
-  /*verilator public_module*/
 
   bool hello_i_cts;
   bool hello_i_idle;
@@ -33,32 +48,43 @@ module uart_top
   logic hello_o_req;
   logic hello_o_done;
   uart_hello hello(clk, rst_n, hello_i_cts, hello_i_idle, hello_o_data, hello_o_req, hello_o_done);
-
+  
   logic[7:0] tx_i_data;
   logic tx_i_req;
   logic tx_o_serial;
   logic tx_o_cts;
   logic tx_o_idle;
   uart_tx #(cycles_per_bit) tx(clk, rst_n, tx_i_data, tx_i_req, tx_o_serial, tx_o_cts, tx_o_idle);
-
+  
   logic rx_i_serial;
   logic[7:0] rx_o_data;
   logic rx_o_valid;
   logic[31:0] rx_o_sum;
   uart_rx #(cycles_per_bit) rx(clk, rst_n, rx_i_serial, rx_o_data, rx_o_valid, rx_o_sum);
+  
 
   output logic o_serial;
   output logic[7:0] o_data;
   output logic o_valid;
   output logic o_done;
   output logic[31:0] o_sum;
+  output logic[7:0] o_onehot;
 
   //----------------------------------------
 
   /*void*/ initial begin
+    $write("uart_top.init()\n");
+
     /*hello.init()*/;
     /*tx.init()*/;
     /*rx.init()*/;
+
+    o_serial = 0;
+    o_data = 0;
+    o_valid = 0;
+    o_done = 0;
+    o_sum = 0;
+    o_onehot = 0;
   end
 
   //----------------------------------------
@@ -90,11 +116,22 @@ module uart_top
     o_serial = tx_o_serial;
     o_data = rx_o_data;
     o_valid = rx_o_valid;
-    o_done = hello_o_done;
+    o_done = hello_o_done && tx_o_idle;
     o_sum = rx_o_sum;
+
+    case (o_data & 'b111) 
+    /*case*/ 0 : o_onehot = 'b00000001;
+    /*case*/ 1 : o_onehot = 'b00000010;
+    /*case*/ 2 : o_onehot = 'b00000100;
+    /*case*/ 3 : o_onehot = 'b00001000;
+    /*case*/ 4 : o_onehot = 'b00010000;
+    /*case*/ 5 : o_onehot = 'b00100000;
+    /*case*/ 6 : o_onehot = 'b01000000;
+    /*case*/ 7 : o_onehot = 'b10000000;
+    default: o_onehot = 'b00000000;
+    endcase
   end
 
-  //----------------------------------------
 endmodule
 
 //==============================================================================

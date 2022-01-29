@@ -28,6 +28,7 @@ module uart_test;
   logic out_valid;
   logic out_done;
   logic[31:0] out_sum;
+  logic[7:0] out_onehot;
 
   uart_top #(.cycles_per_bit(3)) top
   (
@@ -37,7 +38,8 @@ module uart_test;
     out_data,
     out_valid,
     out_done,
-    out_sum
+    out_sum,
+    out_onehot
   );
 
   always begin
@@ -47,12 +49,12 @@ module uart_test;
   end
 
   initial begin
+    $write("Icarus simulation:\n");
+    $write("================================================================================\n");
+
     $dumpfile("uart_test_iv.vcd");
     $dumpvars(0, uart_test);
 
-    $write("\n");
-    $write("Icarus simulation:\n");
-    $write("================================================================================\n");
     clken = 0;
     clk = 0;
     rst_n = 1;

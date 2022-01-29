@@ -17,12 +17,11 @@
 module uart_rx
 #(parameter int cycles_per_bit = 4)
 (clk, rst_n, i_serial, o_data, o_valid, o_sum); 
+  /*verilator public_module*/
+  
   input logic clk;
   input logic rst_n;
   input logic i_serial;
-  
-  //----------------------------------------
-  /*verilator public_module*/
 
   localparam /*const*/ int cycle_bits = $clog2(cycles_per_bit);
   localparam /*const*/ int cycle_max = cycles_per_bit - 1;
@@ -41,6 +40,9 @@ module uart_rx
   //----------------------------------------
 
   /*void*/ initial begin
+    o_data = 0;
+    o_valid = 0;
+    o_sum = 0;
   end
 
   //----------------------------------------
@@ -79,7 +81,6 @@ module uart_rx
     o_sum = sum;
   end
 
-  //----------------------------------------
 endmodule
 
 //==============================================================================

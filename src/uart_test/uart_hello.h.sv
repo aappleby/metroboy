@@ -15,14 +15,12 @@
 
 module uart_hello
 (clk, rst_n, i_cts, i_idle, o_data, o_req, o_done); 
+  /*verilator public_module*/
+  
   input logic clk;
   input logic rst_n;
   input bool i_cts;
   input bool i_idle;
-  
-
-  //----------------------------------------
-  /*verilator public_module*/
 
   localparam /*const*/ int message_len = 512;
   localparam /*const*/ int cursor_bits = $clog2(message_len);
@@ -41,6 +39,9 @@ module uart_hello
 
   /*void*/ initial begin
     $readmemh("obj/message.hex", memory, 0, 511);
+    o_data = 0;
+    o_req = 0;
+    o_done = 0;
   end
 
   //----------------------------------------
@@ -60,7 +61,7 @@ module uart_hello
         cursor <= cursor + 1;
       end
       else if (state == DONE) begin
-        state <= WAIT;
+        //state = WAIT;
         cursor <= 0;
       end
     end
@@ -74,7 +75,6 @@ module uart_hello
     o_done = state == DONE;
   end
 
-  //----------------------------------------
 endmodule
 
 //==============================================================================

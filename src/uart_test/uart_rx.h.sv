@@ -23,10 +23,10 @@ module uart_rx
   input logic rst_n;
   input logic i_serial;
 
-  localparam /*const*/ int cycle_bits = $clog2(cycles_per_bit);
-  localparam /*const*/ int cycle_max = cycles_per_bit - 1;
-  localparam /*const*/ int cursor_max = 9;
-  localparam /*const*/ int cursor_bits = $clog2(cursor_max);
+  localparam int cycle_bits = $clog2(cycles_per_bit);
+  localparam int cycle_max = cycles_per_bit - 1;
+  localparam int cursor_max = 9;
+  localparam int cursor_bits = $clog2(cursor_max);
 
   logic[cycle_bits-1:0] cycle;
   logic[cursor_bits-1:0] cursor;
@@ -39,7 +39,7 @@ module uart_rx
 
   //----------------------------------------
 
-  /*void*/ initial begin : INIT
+  initial begin : INIT
     o_data = 0;
     o_valid = 0;
     o_sum = 0;
@@ -47,7 +47,7 @@ module uart_rx
 
   //----------------------------------------
 
-  /*void*/ always_ff @(posedge clk, negedge rst_n) begin : TICK
+  always_ff @(posedge clk, negedge rst_n) begin : TICK
     if (!rst_n) begin
       cycle <= 0;
       cursor <= 0;
@@ -58,7 +58,6 @@ module uart_rx
         cycle <= cycle - 1;
       end else if (cursor != 0) begin
         logic[7:0] temp;
-
         temp = (i_serial << 7) | (buffer >> 1);
         if (cursor - 1 == 1) sum <= sum + temp;
 
@@ -75,7 +74,7 @@ module uart_rx
 
   //----------------------------------------
 
-  /*void*/ always_comb begin : TOCK
+  always_comb begin : TOCK
     o_data = buffer;
     o_valid = cursor == 1;
     o_sum = sum;

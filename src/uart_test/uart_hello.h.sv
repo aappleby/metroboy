@@ -22,8 +22,8 @@ module uart_hello
   input bool i_cts;
   input bool i_idle;
 
-  localparam /*const*/ int message_len = 512;
-  localparam /*const*/ int cursor_bits = $clog2(message_len);
+  localparam int message_len = 512;
+  localparam int cursor_bits = $clog2(message_len);
 
   typedef enum { WAIT, SEND, DONE } e_state;
   logic[1:0] state;
@@ -37,7 +37,7 @@ module uart_hello
 
   //----------------------------------------
 
-  /*void*/ initial begin : INIT
+  initial begin : INIT
     $readmemh("obj/message.hex", memory, 0, 511);
     o_data = 0;
     o_req = 0;
@@ -46,7 +46,7 @@ module uart_hello
 
   //----------------------------------------
 
-  /*void*/ always_ff @(posedge clk, negedge rst_n) begin : TICK
+  always_ff @(posedge clk, negedge rst_n) begin : TICK
     if (!rst_n) begin
       state <= WAIT;
       cursor <= 0;
@@ -69,7 +69,7 @@ module uart_hello
 
   //----------------------------------------
 
-  /*void*/ always_comb begin : TOCK
+  always_comb begin : TOCK
     o_data = data;
     o_req = state == SEND;
     o_done = state == DONE;

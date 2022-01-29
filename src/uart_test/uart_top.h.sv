@@ -14,12 +14,6 @@
 `include "uart_tx.h.sv"
 `include "uart_hello.h.sv"
 
-/*
-dontcare
-
-name init/tick/tock blocks
-*/
-
 //==============================================================================
 
 /*template*/
@@ -61,7 +55,7 @@ module uart_top
 
   //----------------------------------------
 
-  /*void*/ initial begin : INIT
+  initial begin : INIT
     $write("uart_top.init()\n");
 
     /*hello.init()*/;
@@ -78,7 +72,7 @@ module uart_top
 
   //----------------------------------------
 
-  /*void*/ always_ff @(posedge clk, negedge rst_n) begin : TICK
+  always_ff @(posedge clk, negedge rst_n) begin : TICK
     /*hello.tick(rst_n, tx.o_cts, tx.o_idle)*/;
     /*tx.tick(rst_n, hello.o_data, hello.o_req)*/;
     /*rx.tick(rst_n, tx.o_serial)*/;
@@ -97,28 +91,34 @@ module uart_top
 
   //----------------------------------------
 
-  /*void*/ always_comb begin : TOCK
+  always_comb begin : TOCK
     /*hello.tock(rst_n)*/;
     /*tx.tock(rst_n)*/;
     /*rx.tock(rst_n)*/;
 
-    o_serial = tx_o_serial;
-    o_data = rx_o_data;
-    o_valid = rx_o_valid;
-    o_done = hello_o_done && tx_o_idle;
-    o_sum = rx_o_sum;
+    begin
+      logic blah;
+      o_serial = tx_o_serial;
+      o_data = rx_o_data;
+      o_valid = rx_o_valid;
 
-    case (o_data & 'b111) 
-    /*case*/ 0 : o_onehot = 'b00000001;
-    /*case*/ 1 : o_onehot = 'b00000010;
-    /*case*/ 2 : o_onehot = 'b00000100;
-    /*case*/ 3 : o_onehot = 'b00001000;
-    /*case*/ 4 : o_onehot = 'b00010000;
-    /*case*/ 5 : o_onehot = 'b00100000;
-    /*case*/ 6 : o_onehot = 'b01000000;
-    /*case*/ 7 : o_onehot = 'b10000000;
-    default: o_onehot = 'b00000000;
-    endcase
+      blah = hello_o_done && tx_o_idle;
+
+      o_done = blah;
+      o_sum = rx_o_sum;
+
+      case (o_data & 'b111) 
+      0:  o_onehot = 'b00000001;
+      1:  o_onehot = 'b00000010;
+      2:  o_onehot = 'b00000100;
+      3:  o_onehot = 'b00001000;
+      4:  o_onehot = 'b00010000;
+      5:  o_onehot = 'b00100000;
+      6:  o_onehot = 'b01000000;
+      7:  o_onehot = 'b10000000;
+      default: o_onehot = 'b00000000;
+      endcase
+    end
   end
 
 endmodule

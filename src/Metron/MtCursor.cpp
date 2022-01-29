@@ -10,10 +10,13 @@
 //------------------------------------------------------------------------------
 // Traversal methods
 
-void MtCursor::visit_children(TSNode n, NodeVisitor cv) {
+void MtCursor::visit_children(TSNode n, NodeVisitor3 cv) {
   for (int i = 0; i < (int)ts_node_child_count(n); i++) {
     auto child = ts_node_child(n, i);
-    cv(child);
+    auto sym = ts_node_symbol(child);
+    auto field = ts_node_field_id_for_child(n, i);
+
+    cv(child, field, sym);
   }
 }
 
@@ -30,7 +33,7 @@ void MtCursor::emit_children(TSNode n, NodeVisitor3 cv) {
 
     advance_to(child);
     cv(child, field, sym);
-    assert(cursor == mod->end(child));
+    //assert(cursor == mod->end(child));
   }
 
   if (cursor < mod->end(n)) {
@@ -61,6 +64,16 @@ void MtCursor::emit_span(const char* a, const char* b) {
   assert(cursor >= mod->source);
   assert(cursor <  mod->source_end);
 
+  /*
+  while (a != b) {
+    auto c = *a;
+    if (c == ' ') c = '#';
+    if (out) fwrite(&c, 1, 1, out);
+    fwrite(&c, 1, 1, stdout);
+    a++;
+  }
+  */
+  
   if (out) fwrite(a, 1, b - a, out);
   fwrite(a, 1, b - a, stdout);
 }
@@ -92,6 +105,12 @@ void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
 void MtCursor::skip_over(TSNode n) {
   assert(cursor == mod->start(n));
   cursor = mod->end(n);
+}
+
+void MtCursor::skip_whitespace() {
+  while(*cursor && isspace(*cursor)) {
+    cursor++;
+  }
 }
 
 void MtCursor::advance_to(TSNode n) {
@@ -213,6 +232,78 @@ void MtCursor::emit_call_expression(TSNode n) {
 }
 
 //------------------------------------------------------------------------------
+// Replace "logic blah = x;" with "logic blah;"
+
+void MtCursor::emit_init_declarator_as_decl(TSNode n) {
+  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    switch (field) {
+
+    case field_type:
+      return emit_dispatch(child);
+
+    case field_declarator:
+      return emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
+        switch (field) {
+        case field_declarator:
+          emit(child);
+          skip_whitespace();
+          return;
+        default:
+          skip_over(child);
+          skip_whitespace();
+          return;
+        }
+        });
+
+    default:
+      return emit_dispatch(child);
+    }
+  });
+}
+
+
+//------------------------------------------------------------------------------
+// Replace "logic blah = x;" with "blah = x;"
+
+void MtCursor::emit_init_declarator_as_assign(TSNode n) {
+
+  auto node_decl = ts_node_child_by_field_id(n, field_declarator);
+  auto decl_type = ts_node_symbol(node_decl);
+
+  if (decl_type == sym_init_declarator) {
+    emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+      switch (field) {
+      case field_type:
+        skip_over(child);
+        skip_whitespace();
+        return;
+      default:
+        return emit_dispatch(child);
+      }
+      });
+  }
+  else {
+    skip_over(n);
+    skip_whitespace();
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void MtCursor::emit_hoisted_decls(TSNode n) {
+  // Hoist local variable definitions to the top of the scope.
+  MtCursor old_cursor = *this;
+  visit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+    if (sym == sym_declaration) {
+      cursor = mod->start(child);
+      emit_newline();
+      emit_init_declarator_as_decl(child);
+    }
+    });
+  *this = old_cursor;
+}
+
+//------------------------------------------------------------------------------
 // Change "init/tick/tock" to "initial begin / always_comb / always_ff", change
 // void methods to tasks, and change const methods to functions.
 
@@ -235,9 +326,12 @@ void MtCursor::emit_function_definition(TSNode func_def) {
 
   advance_to(func_type);
   is_task = mod->match(func_type, "void");
-  emit("/*");
-  emit(func_type);
-  emit("*/");
+
+  //emit("/*");
+  //emit(func_type);
+  //emit("*/");
+  skip_over(func_type);
+  skip_whitespace();
 
   //----------
 
@@ -281,14 +375,28 @@ void MtCursor::emit_function_definition(TSNode func_def) {
   //----------
 
   advance_to(func_body);
+
+  push_indent(ts_node_named_child(func_body, 0));
+
+
   emit_children(func_body, [&](TSNode child, int field, TSSymbol sym) {
     switch (sym) {
-    case anon_sym_LBRACE:
-      if      (is_init) return emit_replacement(child, "begin : INIT");
-      else if (is_tick) return emit_replacement(child, "begin : TICK");
-      else if (is_tock) return emit_replacement(child, "begin : TOCK");
-      else if (is_task) return emit_replacement(child, "");
-      else              return emit_replacement(child, "");
+    case anon_sym_LBRACE: {
+      if      (is_init) emit_replacement(child, "begin : INIT");
+      else if (is_tick) emit_replacement(child, "begin : TICK");
+      else if (is_tock) emit_replacement(child, "begin : TOCK");
+      else if (is_task) emit_replacement(child, "");
+      else              emit_replacement(child, "");
+
+      emit_hoisted_decls(func_body);
+      return;
+    }
+
+    case sym_declaration: {
+      return emit_init_declarator_as_assign(child);
+      return;
+    }
+
     case anon_sym_RBRACE:
       if      (is_init) return emit_replacement(child, "end");
       else if (is_tick) return emit_replacement(child, "end");
@@ -298,6 +406,8 @@ void MtCursor::emit_function_definition(TSNode func_def) {
     default: return emit_dispatch(child);
     }
   });
+
+  pop_indent();
 
   current_function_name = { 0 };
   in_init = false;
@@ -338,7 +448,7 @@ void MtCursor::emit_function_definition(TSNode func_def) {
           std::vector<std::string> call_src;
           std::vector<std::string> call_dst;
 
-          visit_children(call_args, [&](TSNode arg) {
+          visit_children(call_args, [&](TSNode arg, int field, TSSymbol sym) {
             if (!ts_node_is_named(arg)) return;
             auto src = mod->node_to_name(arg);
             for (auto& c : src) if (c == '.') c = '_';
@@ -545,12 +655,22 @@ void MtCursor::emit_class_specifier(TSNode n) {
 //------------------------------------------------------------------------------
 // Change "{ blah(); }" to "begin blah(); end"
 
-void MtCursor::emit_compound_statement(TSNode n) {
-  push_indent(ts_node_named_child(n, 0));
+void MtCursor::emit_compound_statement(TSNode body) {
+  push_indent(ts_node_named_child(body, 0));
 
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
+  emit_children(body, [&](TSNode child, int field, TSSymbol sym) {
     switch (sym) {
-    case anon_sym_LBRACE: return emit_replacement(child, "begin");
+    case anon_sym_LBRACE: {
+      emit_replacement(child, "begin");
+      emit_hoisted_decls(body);
+      return;
+    }
+
+    case sym_declaration: {
+      return emit_init_declarator_as_assign(child);
+      return;
+    }
+
     case anon_sym_RBRACE: return emit_replacement(child, "end");
     default: {
       emit_dispatch(child);
@@ -712,7 +832,11 @@ void MtCursor::emit_type_identifier(TSNode n) {
 void MtCursor::emit_template_declaration(TSNode n) {
   emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
     switch (sym) {
-    case anon_sym_template: return comment_out(child);
+    case anon_sym_template: {
+      return comment_out(child);
+      //skip_over(child);
+      //skip_whitespace();
+    }
     case anon_sym_SEMI:     return skip_over(child);
     default:                return emit_dispatch(child);
     }
@@ -797,6 +921,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_parameter_list:
   case sym_type_descriptor:
   case sym_function_declarator:
+  case sym_init_declarator:
     emit_children(n);
     return;
 
@@ -821,7 +946,10 @@ void MtCursor::emit_dispatch(TSNode n) {
 
   case sym_case_statement: {
     emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-      if (sym == anon_sym_case) comment_out(child);
+      if (sym == anon_sym_case) {
+        skip_over(child);
+        skip_whitespace();
+      }
       else emit_dispatch(child);
     });
     return;
@@ -860,7 +988,9 @@ void MtCursor::emit_dispatch(TSNode n) {
 
   case sym_access_specifier:
   case sym_type_qualifier:
-    comment_out(n);
+    //comment_out(n);
+    skip_over(n);
+    skip_whitespace();
     return;
 
   case sym_preproc_call:

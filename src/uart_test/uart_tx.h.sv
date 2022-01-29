@@ -26,13 +26,13 @@ module uart_tx
 
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages
-  localparam /*const*/ int extra_stop_bits = 7;
+  localparam int extra_stop_bits = 7;
 
-  localparam /*const*/ int cycle_bits = $clog2(cycles_per_bit);
-  localparam /*const*/ int cycle_max = cycles_per_bit - 1;
+  localparam int cycle_bits = $clog2(cycles_per_bit);
+  localparam int cycle_max = cycles_per_bit - 1;
 
-  localparam /*const*/ int cursor_bits = $clog2(10 + extra_stop_bits);
-  localparam /*const*/ int cursor_max = 10 + extra_stop_bits - 1;
+  localparam int cursor_bits = $clog2(10 + extra_stop_bits);
+  localparam int cursor_max = 10 + extra_stop_bits - 1;
 
   logic[cycle_bits-1:0] cycle;
   logic[cursor_bits-1:0] cursor;
@@ -44,7 +44,7 @@ module uart_tx
 
   //----------------------------------------
 
-  /*void*/ initial begin : INIT
+  initial begin : INIT
     o_serial = 0;
     o_cts = 0;
     o_idle = 0;
@@ -52,7 +52,7 @@ module uart_tx
 
   //----------------------------------------
 
-  /*void*/ always_ff @(posedge clk, negedge rst_n) begin : TICK
+  always_ff @(posedge clk, negedge rst_n) begin : TICK
     if (!rst_n) begin
       cycle <= 0;
       cursor <= 0;
@@ -79,7 +79,7 @@ module uart_tx
 
   //----------------------------------------
 
-  /*void*/ always_comb begin : TOCK
+  always_comb begin : TOCK
     o_serial = buffer & 1;
     o_cts = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
     o_idle = (cursor == 0) && (cycle == 0);

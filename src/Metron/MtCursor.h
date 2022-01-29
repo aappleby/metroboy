@@ -27,10 +27,15 @@ struct MtCursor {
   TSNode current_function_name = { 0 };
 
   void push_indent(TSNode n) {
-    auto e = mod->start(n);
-    auto b = e;
-    while (*b != '\n') b--;
-    indent_stack.push_back(std::string(b + 1, e));
+    if (ts_node_is_null(n)) {
+      indent_stack.push_back(indent_stack.back());
+    }
+    else {
+      auto e = mod->start(n);
+      auto b = e;
+      while (*b != '\n') b--;
+      indent_stack.push_back(std::string(b + 1, e));
+    }
   }
 
   void pop_indent() {
@@ -47,7 +52,7 @@ struct MtCursor {
 
   bool match(TSNode n, const char* str) { return mod->match(n, str); }
 
-  void visit_children(TSNode n, NodeVisitor cv);
+  void visit_children(TSNode n, NodeVisitor3 cv);
   void emit_children(TSNode n);
   void emit_children(TSNode n, NodeVisitor3 cv);
   void emit_span(const char* a, const char* b);
@@ -55,6 +60,7 @@ struct MtCursor {
   void emit(const char* fmt, ...);
   void emit_replacement(TSNode n, const char* fmt, ...);
   void skip_over(TSNode n);
+  void skip_whitespace();
   void advance_to(TSNode n);
   void comment_out(TSNode n);
 
@@ -80,6 +86,12 @@ struct MtCursor {
   void emit_translation_unit(TSNode n);
   void emit_field_expression(TSNode n);
   void emit_dispatch(TSNode n);
+
+  void emit_hoisted_decls(TSNode n);
+
+
+  void emit_init_declarator_as_decl(TSNode n);
+  void emit_init_declarator_as_assign(TSNode n);
 };
 
 //------------------------------------------------------------------------------

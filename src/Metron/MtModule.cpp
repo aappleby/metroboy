@@ -187,11 +187,23 @@ void MtModule::visit_tree2(TSNode parent, NodeVisitor2 cv) {
 // Text handling
 
 const char* MtModule::start(TSNode n) {
-  return &source[ts_node_start_byte(n)];
+  assert(!ts_node_is_null(n));
+
+  auto a = &source[ts_node_start_byte(n)];
+  auto b = &source[ts_node_end_byte(n)];
+
+  //while (a < source_end && isspace(*a)) a++;
+
+  return a;
 }
 
 const char* MtModule::end(TSNode n) {
-  return &source[ts_node_end_byte(n)];
+  assert(!ts_node_is_null(n));
+
+  auto a = &source[ts_node_start_byte(n)];
+  auto b = &source[ts_node_end_byte(n)];
+
+  return b;
 }
 
 std::string MtModule::body(TSNode n) {

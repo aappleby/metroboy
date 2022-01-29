@@ -17,17 +17,6 @@
 /*
 dontcare
 
-case (select)
-0: out[0] = 1;
-1: out[1] = 1;
-2: out[2] = 1;
-3: out[3] = 1;
-4: out[4] = 1;
-5: out[5] = 1;
-6: out[6] = 1;
-7: out[7] = 1;
-endcase
-
 name init/tick/tock blocks
 */
 
@@ -72,7 +61,7 @@ module uart_top
 
   //----------------------------------------
 
-  /*void*/ initial begin
+  /*void*/ initial begin : INIT
     $write("uart_top.init()\n");
 
     /*hello.init()*/;
@@ -89,7 +78,7 @@ module uart_top
 
   //----------------------------------------
 
-  /*void*/ always_ff @(posedge clk, negedge rst_n) begin
+  /*void*/ always_ff @(posedge clk, negedge rst_n) begin : TICK
     /*hello.tick(rst_n, tx.o_cts, tx.o_idle)*/;
     /*tx.tick(rst_n, hello.o_data, hello.o_req)*/;
     /*rx.tick(rst_n, tx.o_serial)*/;
@@ -108,7 +97,7 @@ module uart_top
 
   //----------------------------------------
 
-  /*void*/ always_comb begin
+  /*void*/ always_comb begin : TOCK
     /*hello.tock(rst_n)*/;
     /*tx.tock(rst_n)*/;
     /*rx.tock(rst_n)*/;

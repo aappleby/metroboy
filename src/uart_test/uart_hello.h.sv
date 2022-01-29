@@ -37,7 +37,7 @@ module uart_hello
 
   //----------------------------------------
 
-  /*void*/ initial begin
+  /*void*/ initial begin : INIT
     $readmemh("obj/message.hex", memory, 0, 511);
     o_data = 0;
     o_req = 0;
@@ -46,7 +46,7 @@ module uart_hello
 
   //----------------------------------------
 
-  /*void*/ always_ff @(posedge clk, negedge rst_n) begin
+  /*void*/ always_ff @(posedge clk, negedge rst_n) begin : TICK
     if (!rst_n) begin
       state <= WAIT;
       cursor <= 0;
@@ -69,7 +69,7 @@ module uart_hello
 
   //----------------------------------------
 
-  /*void*/ always_comb begin
+  /*void*/ always_comb begin : TOCK
     o_data = data;
     o_req = state == SEND;
     o_done = state == DONE;

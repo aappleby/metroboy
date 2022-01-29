@@ -39,7 +39,7 @@ module uart_rx
 
   //----------------------------------------
 
-  /*void*/ initial begin
+  /*void*/ initial begin : INIT
     o_data = 0;
     o_valid = 0;
     o_sum = 0;
@@ -47,7 +47,7 @@ module uart_rx
 
   //----------------------------------------
 
-  /*void*/ always_ff @(posedge clk, negedge rst_n) begin
+  /*void*/ always_ff @(posedge clk, negedge rst_n) begin : TICK
     if (!rst_n) begin
       cycle <= 0;
       cursor <= 0;
@@ -75,7 +75,7 @@ module uart_rx
 
   //----------------------------------------
 
-  /*void*/ always_comb begin
+  /*void*/ always_comb begin : TOCK
     o_data = buffer;
     o_valid = cursor == 1;
     o_sum = sum;

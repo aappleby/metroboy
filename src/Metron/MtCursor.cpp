@@ -248,20 +248,20 @@ void MtCursor::emit_function_definition(TSNode func_def) {
 
   current_function_name = ts_node_child_by_field_id(func_decl, field_declarator);
   is_init = is_task && mod->match(current_function_name, "init");
-  is_tock = is_task && mod->match(current_function_name, "tock");
   is_tick = is_task && mod->match(current_function_name, "tick");
+  is_tock = is_task && mod->match(current_function_name, "tock");
 
   if (is_init) {
     emit_replacement(func_decl, "initial");
     in_init = true;
   }
-  else if (is_tock) {
-    emit_replacement(func_decl, "always_comb");
-    in_comb = true;
-  }
   else if (is_tick) {
     emit_replacement(func_decl, "always_ff @(posedge clk, negedge rst_n)");
     in_seq = true;
+  }
+  else if (is_tock) {
+    emit_replacement(func_decl, "always_comb");
+    in_comb = true;
   }
   else {
     if (is_task) {
@@ -284,15 +284,15 @@ void MtCursor::emit_function_definition(TSNode func_def) {
   emit_children(func_body, [&](TSNode child, int field, TSSymbol sym) {
     switch (sym) {
     case anon_sym_LBRACE:
-      if      (is_init) return emit_replacement(child, "begin");
-      else if (is_tock) return emit_replacement(child, "begin");
-      else if (is_tick) return emit_replacement(child, "begin");
+      if      (is_init) return emit_replacement(child, "begin : INIT");
+      else if (is_tick) return emit_replacement(child, "begin : TICK");
+      else if (is_tock) return emit_replacement(child, "begin : TOCK");
       else if (is_task) return emit_replacement(child, "");
       else              return emit_replacement(child, "");
     case anon_sym_RBRACE:
       if      (is_init) return emit_replacement(child, "end");
-      else if (is_tock) return emit_replacement(child, "end");
       else if (is_tick) return emit_replacement(child, "end");
+      else if (is_tock) return emit_replacement(child, "end");
       else if (is_task) return emit_replacement(child, "endtask");
       else              return emit_replacement(child, "endfunction");
     default: return emit_dispatch(child);
@@ -304,7 +304,7 @@ void MtCursor::emit_function_definition(TSNode func_def) {
   in_comb = false;
   in_seq  = false;
 
-  // For each call to {submodule}.tock() in module::tock(), emit glue assignments.
+  // For each call to {submodule}.tick() in module::tick(), emit glue assignments.
   if (is_tick && !mod->submodules.empty()) {
     emit_newline();
 
@@ -521,11 +521,11 @@ void MtCursor::emit_class_specifier(TSNode n) {
       // Emit the module body, with a few modifications.
       emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
         switch (sym) {
-          // Discard the opening brace
+        // Discard the opening brace
         case anon_sym_LBRACE: return skip_over(child);
-          // Replace the closing brace with "endmodule"
+        // Replace the closing brace with "endmodule"
         case anon_sym_RBRACE: return emit_replacement(child, "endmodule");
-          // Discard the seimcolon at the end of class{};"
+        // Discard the seimcolon at the end of class{};"
         case anon_sym_SEMI:   return skip_over(child);
         default: {
           emit_dispatch(child);

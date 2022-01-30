@@ -824,7 +824,6 @@ void MtCursor::emit_template_declaration(TSNode n) {
   emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
     switch (sym) {
     case anon_sym_template: {
-      //return comment_out(child);
       skip_over(child);
       skip_whitespace();
       return;
@@ -980,7 +979,6 @@ void MtCursor::emit_dispatch(TSNode n) {
 
   case sym_access_specifier:
   case sym_type_qualifier:
-    //comment_out(n);
     skip_over(n);
     skip_whitespace();
     return;

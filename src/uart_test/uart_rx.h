@@ -40,9 +40,7 @@ struct uart_rx {
       if (cycle != 0) {
         cycle = cycle - 1;
       } else if (cursor != 0) {
-        logic<8> temp;
-
-        temp = (i_serial << 7) | (buffer >> 1);
+        logic<8> temp = (i_serial << 7) | (buffer >> 1);
         if (cursor - 1 == 1) sum = sum + temp;
 
         cycle = cycle_max;

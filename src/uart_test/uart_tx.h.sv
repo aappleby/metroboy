@@ -6,6 +6,8 @@
 // LOCALPARAMS:  extra_stop_bits, cycle_bits, cycle_max, cursor_bits, cursor_max, 
 // FIELDS:       cycle, cursor, buffer, 
 // SUBMODULES:   
+// TASKS:        
+// FUNCTIONS:    
 
 /* verilator lint_off WIDTH */
 `default_nettype none

@@ -4,6 +4,8 @@
 #include "MtIterator.h"
 #include "../Plait/TreeSymbols.h"
 
+#include <assert.h>
+
 #pragma warning(disable:4996) // unsafe fopen()
 
 extern "C" {
@@ -82,6 +84,44 @@ void MtModule::load(const std::string& input_filename, const std::string& output
 }
 
 //------------------------------------------------------------------------------
+
+TSNode MtModule::get_field_by_id(TSNode id) {
+  assert(ts_node_symbol(id) == sym_identifier);
+  auto name_a = node_to_name(id);
+
+  for (auto& field : fields) {
+    auto name_b = node_to_name(field);
+    if (name_a == name_b) return field;
+  }
+
+  return { 0 };
+}
+
+TSNode MtModule::get_task_by_id(TSNode id) {
+  assert(ts_node_symbol(id) == sym_identifier);
+  auto name_a = node_to_name(id);
+
+  for (auto& task : tasks) {
+    auto name_b = node_to_name(task);
+    if (name_a == name_b) return task;
+  }
+
+  return { 0 };
+}
+
+TSNode MtModule::get_function_by_id(TSNode id) {
+  assert(ts_node_symbol(id) == sym_identifier);
+  auto name_a = node_to_name(id);
+
+  for (auto& func : functions) {
+    auto name_b = node_to_name(func);
+    if (name_a == name_b) return func;
+  }
+
+  return { 0 };
+}
+
+//------------------------------------------------------------------------------
 // Node debugging
 
 void MtModule::dump_node(TSNode n, int index, int field, int depth) {
@@ -148,7 +188,7 @@ void MtModule::dump_node(TSNode n, int index, int field, int depth) {
 
 void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth) {
   if (depth == 0) {
-    printf("\n\n========== tree dump begin\n");
+    printf("\n========== tree dump begin\n");
   }
   dump_node(n, index, field, depth);
 
@@ -160,7 +200,7 @@ void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth
       }
     }
   }
-  if (depth == 0) printf("========== tree dump end\n\n");
+  if (depth == 0) printf("========== tree dump end\n");
 }
 
 //------------------------------------------------------------------------------
@@ -222,6 +262,8 @@ std::string MtModule::body(TSNode n) {
 }
 
 bool MtModule::match(TSNode n, const char* s) {
+  assert(!ts_node_is_null(n));
+
   const char* a = start(n);
   const char* b = end(n);
 
@@ -245,6 +287,8 @@ std::string MtModule::node_to_name(TSNode n) {
   case sym_parameter_declaration:
   case sym_field_declaration:
   case sym_optional_parameter_declaration:
+  case sym_function_definition:
+  case sym_function_declarator:
     return node_to_name(ts_node_child_by_field_id(n, field_declarator));
 
   case sym_struct_specifier:
@@ -405,6 +449,51 @@ void MtModule::collect_fields() {
       else if (field_is_param(n))  localparams.push_back(n);
       else if (field_is_module(n)) submodules.push_back(n);
       else                         fields.push_back(n);
+    }
+    if (ts_node_symbol(n) == sym_function_definition) {
+      auto func_def = n;
+
+      assert(ts_node_child_count(func_def) == 3);
+      assert(ts_node_field_id_for_child(func_def, 0) == field_type);
+      assert(ts_node_field_id_for_child(func_def, 1) == field_declarator);
+      assert(ts_node_field_id_for_child(func_def, 2) == field_body);
+
+      auto func_type = ts_node_child_by_field_id(func_def, field_type);
+      auto func_decl = ts_node_child_by_field_id(func_def, field_declarator);
+
+      bool is_task = false;
+      bool is_init = false;
+      bool is_tock = false;
+      bool is_tick = false;
+
+      //----------
+
+      is_task = match(func_type, "void");
+
+      //----------
+
+      auto current_function_name = ts_node_child_by_field_id(func_decl, field_declarator);
+      is_init = is_task && match(current_function_name, "init");
+      is_tick = is_task && match(current_function_name, "tick");
+      is_tock = is_task && match(current_function_name, "tock");
+
+      if (is_init) {
+        node_init = func_def;
+      }
+      else if (is_tick) {
+        node_tick = func_def;
+      }
+      else if (is_tock) {
+        node_tock = func_def;
+      }
+      else {
+        if (is_task) {
+          tasks.push_back(func_def);
+        }
+        else {
+          functions.push_back(func_def);
+        }
+      }
     }
   });
 }

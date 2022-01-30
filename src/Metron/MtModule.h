@@ -36,6 +36,13 @@ struct MtModule {
   std::vector<TSNode> fields;
   std::vector<TSNode> submodules;
 
+  TSNode node_init;
+  TSNode node_tick;
+  TSNode node_tock;
+
+  std::vector<TSNode> tasks;
+  std::vector<TSNode> functions;
+
   TSNode module_template = { 0 };
   TSNode module_class = { 0 };
   TSNode module_param_list = { 0 };
@@ -70,6 +77,10 @@ struct MtModule {
   bool field_is_param(TSNode n);
   bool field_is_input(TSNode n);
   bool field_is_output(TSNode n);
+
+  TSNode get_field_by_id(TSNode id);
+  TSNode get_task_by_id(TSNode id);
+  TSNode get_function_by_id(TSNode id);
 
   // Scanner
   void find_module();

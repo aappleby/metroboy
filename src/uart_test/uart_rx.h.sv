@@ -6,6 +6,8 @@
 // LOCALPARAMS:  cycle_bits, cycle_max, cursor_max, cursor_bits, 
 // FIELDS:       cycle, cursor, buffer, sum, 
 // SUBMODULES:   
+// TASKS:        
+// FUNCTIONS:    
 
 /* verilator lint_off WIDTH */
 `default_nettype none
@@ -59,7 +61,6 @@ module uart_rx
         logic[7:0] temp;
         temp = (i_serial << 7) | (buffer >> 1);
         if (cursor - 1 == 1) sum <= sum + temp;
-
         cycle <= cycle_max;
         cursor <= cursor - 1;
         buffer <= temp;
@@ -68,6 +69,7 @@ module uart_rx
         cycle <= cycle_max;
         cursor <= cursor_max;
       end
+
     end
   end
 

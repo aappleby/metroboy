@@ -3,6 +3,13 @@
 #include <assert.h>
 #include "MtModLibrary.h"
 #include "MtModule.h"
+#include <set>
+
+//------------------------------------------------------------------------------
+
+inline bool operator < (const TSNode& a, const TSNode& b) {
+  return memcmp(&a, &b, sizeof(TSNode)) < 0;
+}
 
 //------------------------------------------------------------------------------
 
@@ -46,7 +53,15 @@ struct MtCursor {
     emit("\n%s", indent_stack.back().c_str());
   }
 
+  void check_dirty_tick(TSNode n);
+  void check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_fields, int depth);
+
+  void check_dirty_tock(TSNode n);
+  void check_dirty_tock_dispatch(TSNode n, std::set<TSNode>& dirty_fields);
+
   MtModule* field_identifier_to_submod(TSNode id);
+
+  void dump_node_line(TSNode n);
 
   //----------
 

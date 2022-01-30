@@ -6,6 +6,8 @@
 // LOCALPARAMS:  message_len, cursor_bits, 
 // FIELDS:       state, cursor, memory, data, 
 // SUBMODULES:   
+// TASKS:        
+// FUNCTIONS:    
 
 /* verilator lint_off WIDTH */
 `default_nettype none

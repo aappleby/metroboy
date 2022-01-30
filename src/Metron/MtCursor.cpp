@@ -5,6 +5,7 @@
 #include <regex>
 #include <assert.h>
 
+#include "MtIterator.h"
 #include "../Plait/TreeSymbols.h"
 
 //------------------------------------------------------------------------------
@@ -36,16 +37,12 @@ void MtCursor::emit_children(TSNode n, NodeVisitor3 cv) {
     //assert(cursor == mod->end(child));
   }
 
+  /*
   if (cursor < mod->end(n)) {
     emit_span(cursor, mod->end(n));
     cursor = mod->end(n);
   }
-}
-
-void MtCursor::emit_children(TSNode n) {
-  emit_children(n, [&](TSNode n, int field, TSSymbol sym) {
-    emit_dispatch(n);
-  });
+  */
 }
 
 MtModule* MtCursor::field_identifier_to_submod(TSNode id) {
@@ -56,9 +53,200 @@ MtModule* MtCursor::field_identifier_to_submod(TSNode id) {
   return nullptr;
 }
 
+//------------------------------------------------------------------------------
+
+void MtCursor::check_dirty_tick(TSNode func_def) {
+  /*
+  assert(ts_node_symbol(func_def) == sym_function_definition);
+
+  assert(ts_node_child_count(func_def) == 3);
+  assert(ts_node_field_id_for_child(func_def, 0) == field_type);
+  assert(ts_node_field_id_for_child(func_def, 1) == field_declarator);
+  assert(ts_node_field_id_for_child(func_def, 2) == field_body);
+
+  auto func_type = ts_node_child_by_field_id(func_def, field_type);
+  auto func_decl = ts_node_child_by_field_id(func_def, field_declarator);
+  auto func_body = ts_node_child_by_field_id(func_def, field_body);
+  */
+
+  std::set<TSNode> dirty_fields;
+  check_dirty_tick_dispatch(func_def, dirty_fields, 0);
+}
+
+//------------------------------------------------------------------------------
+
+void MtCursor::dump_node_line(TSNode n) {
+  auto start = &mod->source[ts_node_start_byte(n)];
+
+  auto a = start;
+  auto b = start;
+  while (a > mod->source     && *a != '\n' && *a != '\r') a--;
+  while (b < mod->source_end && *b != '\n' && *b != '\r') b++;
+
+  if (*a == '\n' || *a == '\r') a++;
+
+  while (a != b) {
+    fputc(*a++, stdout);
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_fields, int depth) {
+  if (ts_node_is_null(n)) return;
+  if (!ts_node_is_named(n)) return;
+
+  switch (ts_node_symbol(n)) {
+
+  case sym_number_literal:
+  case sym_template_type:
+  case sym_primitive_type:
+  case sym_function_declarator:
+    return;
+
+  case sym_comment:
+  case sym_subscript_expression:
+  case sym_parenthesized_expression:
+  case sym_init_declarator:
+  case sym_declaration:
+  case sym_binary_expression:
+  case sym_unary_expression:
+  case sym_condition_clause:
+  case sym_compound_statement:
+  case sym_expression_statement:
+  case sym_argument_list:
+  case sym_function_definition:
+  case sym_return_statement:
+    for (const auto& child : n) check_dirty_tick_dispatch(child, dirty_fields, depth + 1);
+    return;
+
+  case sym_assignment_expression: {
+    auto lhs = ts_node_child_by_field_id(n, field_left);
+    auto rhs = ts_node_child_by_field_id(n, field_right);
+
+    check_dirty_tick_dispatch(rhs, dirty_fields, depth + 1);
+
+    auto field = mod->get_field_by_id(lhs);
+    if (!ts_node_is_null(field)) {
+      if (dirty_fields.contains(field)) {
+        for (int i = 0; i < depth; i++) printf("  ");
+        emit_newline();
+
+        emit("#####");
+        emit_newline();
+
+        printf("wrote dirty field - %s", mod->node_to_name(field).c_str());
+        emit_newline();
+ 
+        emit("\"\"\"");
+        dump_node_line(n);
+        emit("\"\"\"");
+        emit_newline();
+
+        emit("#####");
+        emit_newline();
+      }
+      else {
+        dirty_fields.insert(field);
+      }
+    }
+    return;
+  }
+
+  case sym_identifier: {
+    auto field = mod->get_field_by_id(n);
+    if (!ts_node_is_null(field)) {
+      if (dirty_fields.contains(field)) {
+        emit_newline();
+
+        emit("#####");
+        emit_newline();
+
+        emit("read dirty field %s!", mod->node_to_name(field).c_str());
+        emit_newline();
+
+        emit("\"\"\"");
+        dump_node_line(n);
+        emit("\"\"\"");
+        emit_newline();
+
+        emit("#####");
+        emit_newline();
+      }
+    }
+    return;
+  }
+
+  case sym_if_statement: {
+    check_dirty_tick_dispatch(ts_node_child_by_field_id(n, field_condition), dirty_fields, depth + 1);
+
+    std::set<TSNode> if_set = dirty_fields;
+    std::set<TSNode> else_set = dirty_fields;
+
+    check_dirty_tick_dispatch(ts_node_child_by_field_id(n, field_consequence), if_set, depth + 1);
+    check_dirty_tick_dispatch(ts_node_child_by_field_id(n, field_alternative), else_set, depth + 1);
+
+    dirty_fields.merge(if_set);
+    dirty_fields.merge(else_set);
+    return;
+  }
+
+  /*
+  case sym_function_definition: {
+    auto func_def = n;
+
+    assert(ts_node_symbol(func_def) == sym_function_definition);
+
+    assert(ts_node_child_count(func_def) == 3);
+    assert(ts_node_field_id_for_child(func_def, 0) == field_type);
+    assert(ts_node_field_id_for_child(func_def, 1) == field_declarator);
+    assert(ts_node_field_id_for_child(func_def, 2) == field_body);
+
+    auto func_type = ts_node_child_by_field_id(func_def, field_type);
+    auto func_decl = ts_node_child_by_field_id(func_def, field_declarator);
+    auto func_body = ts_node_child_by_field_id(func_def, field_body);
+
+    check_dirty_tick_dispatch(func_body, dirty_fields, depth + 1);
+
+    return;
+  }
+  */
+
+  case sym_call_expression: {
+    auto node_func = ts_node_child_by_field_id(n, field_function);
+    auto node_args = ts_node_child_by_field_id(n, field_arguments);
+
+    if (ts_node_symbol(node_func) == sym_identifier) {
+      // local function call, traverse args and then function body
+      check_dirty_tick_dispatch(node_args, dirty_fields, depth + 1);
+
+      auto task = mod->get_task_by_id(node_func);
+      if (!ts_node_is_null(task)) check_dirty_tick_dispatch(task, dirty_fields, depth + 1);
+
+      auto func = mod->get_function_by_id(node_func);
+      if (!ts_node_is_null(func)) check_dirty_tick_dispatch(func, dirty_fields, depth + 1);
+    }
+
+    return;
+  }
+
+  default:
+    printf("\n");
+    printf("#####\n");
+    printf("unknown node\n");
+    mod->dump_tree(n, 3);
+    __debugbreak();
+  }
+}
 
 //------------------------------------------------------------------------------
 // Generic emit() methods
+
+void MtCursor::emit_children(TSNode n) {
+  emit_children(n, [&](TSNode n, int field, TSSymbol sym) {
+    emit_dispatch(n);
+    });
+}
 
 void MtCursor::emit_span(const char* a, const char* b) {
   assert(cursor >= mod->source);
@@ -297,6 +485,7 @@ void MtCursor::emit_hoisted_decls(TSNode n) {
 // void methods to tasks, and change const methods to functions.
 
 void MtCursor::emit_function_definition(TSNode func_def) {
+
   assert(ts_node_child_count(func_def) == 3);
   assert(ts_node_field_id_for_child(func_def, 0) == field_type);
   assert(ts_node_field_id_for_child(func_def, 1) == field_declarator);
@@ -305,6 +494,8 @@ void MtCursor::emit_function_definition(TSNode func_def) {
   auto func_type = ts_node_child_by_field_id(func_def, field_type);
   auto func_decl = ts_node_child_by_field_id(func_def, field_declarator);
   auto func_body = ts_node_child_by_field_id(func_def, field_body);
+
+  //mod->dump_tree(func_def);
 
   bool is_task = false;
   bool is_init = false;
@@ -347,6 +538,8 @@ void MtCursor::emit_function_definition(TSNode func_def) {
     in_comb = true;
   }
   else {
+    //mod->dump_tree(func_def);
+
     if (is_task) {
       emit("task ");
     }
@@ -355,6 +548,7 @@ void MtCursor::emit_function_definition(TSNode func_def) {
     }
 
     emit_dispatch(func_decl);
+    skip_whitespace();
     emit(";");
 
     in_seq = is_task;
@@ -363,10 +557,15 @@ void MtCursor::emit_function_definition(TSNode func_def) {
 
   //----------
 
+  if (is_tick) {
+    check_dirty_tick(func_def);
+  }
+
+  //----------
+
   advance_to(func_body);
 
   push_indent(ts_node_named_child(func_body, 0));
-
 
   emit_children(func_body, [&](TSNode child, int field, TSSymbol sym) {
     switch (sym) {
@@ -398,6 +597,8 @@ void MtCursor::emit_function_definition(TSNode func_def) {
 
   pop_indent();
 
+  //----------
+
   current_function_name = { 0 };
   in_init = false;
   in_comb = false;
@@ -413,11 +614,17 @@ void MtCursor::emit_function_definition(TSNode func_def) {
       auto sym = ts_node_symbol(child);
       if (sym == sym_call_expression) {
         auto call_func = ts_node_child_by_field_id(child, field_function);
-        auto call_args = ts_node_child_by_field_id(child, field_arguments);
-        auto call_this = ts_node_child_by_field_id(call_func, field_argument);
-        auto func_name = ts_node_child_by_field_id(call_func, field_field);
-        if (mod->match(func_name, "tick")) {
-          submod_call_nodes.push_back(child);
+
+        if (ts_node_symbol(call_func) == sym_identifier) {
+          // not a submod call
+        }
+        else {
+          auto call_args = ts_node_child_by_field_id(child, field_arguments);
+          auto call_this = ts_node_child_by_field_id(call_func, field_argument);
+          auto func_name = ts_node_child_by_field_id(call_func, field_field);
+          if (mod->match(func_name, "tick")) {
+            submod_call_nodes.push_back(child);
+          }
         }
       }
     });
@@ -893,6 +1100,11 @@ void MtCursor::emit_dispatch(TSNode n) {
     emit(n);
     return;
 
+  case sym_parameter_list:
+    emit_children(n);
+    skip_whitespace();
+    return;
+
   case sym_if_statement:
   case sym_for_statement:
   case sym_parenthesized_expression:
@@ -909,7 +1121,6 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_binary_expression:
   case sym_argument_list:
   case sym_array_declarator:
-  case sym_parameter_list:
   case sym_type_descriptor:
   case sym_function_declarator:
   case sym_init_declarator:
@@ -979,6 +1190,7 @@ void MtCursor::emit_dispatch(TSNode n) {
 
   case sym_access_specifier:
   case sym_type_qualifier:
+    skip_whitespace();
     skip_over(n);
     skip_whitespace();
     return;

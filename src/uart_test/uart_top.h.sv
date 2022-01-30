@@ -6,6 +6,8 @@
 // LOCALPARAMS:  
 // FIELDS:       
 // SUBMODULES:   hello, tx, rx, 
+// TASKS:        
+// FUNCTIONS:    
 
 /* verilator lint_off WIDTH */
 `default_nettype none
@@ -13,6 +15,11 @@
 `include "uart_rx.h.sv"
 `include "uart_tx.h.sv"
 `include "uart_hello.h.sv"
+
+/*
+check dirty needs to recurse into task/function definitions
+check dirty needs to handle switch statements
+*/
 
 //==============================================================================
 
@@ -67,6 +74,8 @@ module uart_top
     o_done = 0;
     o_sum = 0;
     o_onehot = 0;
+
+    temp = 0;
   end
 
   //----------------------------------------
@@ -95,7 +104,10 @@ module uart_top
     /*tx.tock(rst_n)*/;
     /*rx.tock(rst_n)*/;
 
-    begin
+    if (!rst_n) begin
+      temp = 0;
+
+    end else begin
       logic blah;
       o_serial = tx_o_serial;
       o_data = rx_o_data;

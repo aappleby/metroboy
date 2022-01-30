@@ -11,10 +11,12 @@
 
 int main(int argc, char** argv) {
 
-#if 0
   std::vector<std::string> inputs;
   for (int i = 1; i < argc; i++) {
-    if (argv[i][0] != '-') inputs.push_back(argv[i]);
+    if (argv[i][0] == '-') {
+    } else {
+      inputs.push_back(argv[i]);
+    }
   }
 
   MtModLibrary lib;
@@ -22,23 +24,10 @@ int main(int argc, char** argv) {
     lib.load(input.c_str(), (input + ".sv").c_str());
   }
 
-  for (auto& module : lib.modules) {
-    module->dump_tree(module->root);
-  }
-#endif
+  //for (auto& module : lib.modules) {
+  {
+    auto& module = lib.modules[0];
 
-#if 1
-  std::vector<std::string> inputs;
-  for (int i = 1; i < argc; i++) {
-    if (argv[i][0] != '-') inputs.push_back(argv[i]);
-  }
-
-  MtModLibrary lib;
-  for (auto& input : inputs) {
-    lib.load(input.c_str(), (input + ".sv").c_str());
-  }
-
-  for (auto& module : lib.modules) {
     auto out = fopen(module->output_filename.c_str(), "wb");
     MtCursor cursor(&lib, module, out);
 
@@ -74,12 +63,20 @@ int main(int argc, char** argv) {
     for (auto f : module->submodules) cursor.emit("%s, ", module->node_to_name(f).c_str());
     cursor.emit("\n");
 
+    cursor.emit("// TASKS:        ");
+    for (auto f : module->tasks) cursor.emit("%s, ", module->node_to_name(f).c_str());
+    cursor.emit("\n");
+
+    cursor.emit("// FUNCTIONS:    ");
+    for (auto f : module->functions) cursor.emit("%s, ", module->node_to_name(f).c_str());
+    cursor.emit("\n");
+
+
     cursor.emit("\n");
     cursor.cursor = module->source;
     cursor.emit_dispatch(module->root);
     printf("\n");
   }
-#endif
 
   return 0;
 }

@@ -4,6 +4,11 @@
 #include "uart_tx.h"
 #include "uart_hello.h"
 
+/*
+check dirty needs to recurse into task/function definitions
+check dirty needs to handle switch statements
+*/
+
 //==============================================================================
 
 template<int cycles_per_bit = 3>
@@ -35,6 +40,8 @@ struct uart_top {
     o_done = 0;
     o_sum = 0;
     o_onehot = 0;
+
+    temp = 0;
   }
 
   //----------------------------------------
@@ -57,7 +64,10 @@ struct uart_top {
     tx.tock(rst_n);
     rx.tock(rst_n);
 
-    {
+    if (!rst_n) {
+      temp = 0;
+
+    } else {
       o_serial = tx.o_serial;
       o_data = rx.o_data;
       o_valid = rx.o_valid;

@@ -62,18 +62,7 @@ MtModule* MtCursor::field_identifier_to_submod(TSNode id) {
 
 void MtCursor::emit_span(const char* a, const char* b) {
   assert(cursor >= mod->source);
-  assert(cursor <  mod->source_end);
-
-  /*
-  while (a != b) {
-    auto c = *a;
-    if (c == ' ') c = '#';
-    if (out) fwrite(&c, 1, 1, out);
-    fwrite(&c, 1, 1, stdout);
-    a++;
-  }
-  */
-  
+  assert(cursor <= mod->source_end);
   if (out) fwrite(a, 1, b - a, out);
   fwrite(a, 1, b - a, stdout);
 }
@@ -780,6 +769,8 @@ void MtCursor::emit_translation_unit(TSNode n) {
     default:            return emit_dispatch(child);
     }
   });
+
+  emit_span(cursor, mod->source_end);
 }
 
 //------------------------------------------------------------------------------
@@ -833,9 +824,10 @@ void MtCursor::emit_template_declaration(TSNode n) {
   emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
     switch (sym) {
     case anon_sym_template: {
-      return comment_out(child);
-      //skip_over(child);
-      //skip_whitespace();
+      //return comment_out(child);
+      skip_over(child);
+      skip_whitespace();
+      return;
     }
     case anon_sym_SEMI:     return skip_over(child);
     default:                return emit_dispatch(child);
@@ -996,11 +988,13 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_preproc_call:
   case sym_preproc_if:
     skip_over(n);
+    skip_whitespace();
     return;
 
   case sym_template_parameter_list:
     mod->module_param_list = n;
     skip_over(n);
+    skip_whitespace();
     return;
 
   default:

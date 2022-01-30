@@ -13,7 +13,6 @@
 
 //==============================================================================
 
-/*template*/
 module uart_tx
 #(parameter int cycles_per_bit = 4)
 (clk, rst_n, i_data, i_req, o_serial, o_cts, o_idle); 

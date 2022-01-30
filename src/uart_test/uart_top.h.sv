@@ -16,7 +16,6 @@
 
 //==============================================================================
 
-/*template*/
 module uart_top
 #(parameter int cycles_per_bit = 3)
 (clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum, o_onehot); 

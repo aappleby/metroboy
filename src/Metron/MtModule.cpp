@@ -184,7 +184,7 @@ void MtModule::visit_tree2(TSNode parent, NodeVisitor2 cv) {
 }
 
 //------------------------------------------------------------------------------
-// Text handling
+// Strip leading/trailing whitespace off non-SYM_LF nodes.
 
 const char* MtModule::start(TSNode n) {
   assert(!ts_node_is_null(n));
@@ -192,8 +192,11 @@ const char* MtModule::start(TSNode n) {
   auto a = &source[ts_node_start_byte(n)];
   auto b = &source[ts_node_end_byte(n)];
 
-  //while (a < source_end && isspace(*a)) a++;
+  if (ts_node_symbol(n) == anon_sym_LF) return a;
 
+  while (a < b && isspace(a[0])) {
+    a++;
+  }
   return a;
 }
 
@@ -203,8 +206,16 @@ const char* MtModule::end(TSNode n) {
   auto a = &source[ts_node_start_byte(n)];
   auto b = &source[ts_node_end_byte(n)];
 
+  if (ts_node_symbol(n) == anon_sym_LF) return b;
+
+  while (b > a && isspace(b[-1])) {
+    b--;
+  }
+
   return b;
 }
+
+//------------------------------------------------------------------------------
 
 std::string MtModule::body(TSNode n) {
   return std::string(start(n), end(n));
@@ -219,12 +230,6 @@ bool MtModule::match(TSNode n, const char* s) {
   }
   return true;
 }
-
-/*
-[0] s240 parameter_declaration:
-|   [0] f32 s78 type.primitive_type: "bool"
-|   [1] f9 s1 declarator.identifier: "i_cts"
-*/
 
 std::string MtModule::node_to_name(TSNode n) {
   auto sym = ts_node_symbol(n);
@@ -252,25 +257,6 @@ std::string MtModule::node_to_name(TSNode n) {
     return "";
   }
 }
-
-/*
-[0] s236 field_declaration:
-|   [0] f32 s321 type.template_type:
-|   |   [0] f22 s395 name.type_identifier: "uart_rx"
-|   |   [1] f3 s324 arguments.template_argument_list:
-|   |   |   [0] s36 lit: "<"
-|   |   |   [1] s264 type_descriptor:
-|   |   |   |   [0] f32 s395 type.type_identifier: "cycles_per_bit"
-|   |   |   [2] s33 lit: ">"
-|   [1] f9 s392 declarator.field_identifier: "rx"
-|   [2] s39 lit: ";"
-
-[0] s236 field_declaration:
-|   [0] f32 s395 type.type_identifier: "uart_hello"
-|   [1] f9 s392 declarator.field_identifier: "hello"
-|   [2] s39 lit: ";"
-
-*/
 
 std::string MtModule::node_to_type(TSNode n) {
   auto sym = ts_node_symbol(n);

@@ -13,7 +13,6 @@
 
 //==============================================================================
 
-/*template*/
 module uart_rx
 #(parameter int cycles_per_bit = 4)
 (clk, rst_n, i_serial, o_data, o_valid, o_sum); 

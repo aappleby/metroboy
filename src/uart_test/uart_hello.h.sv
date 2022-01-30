@@ -8,7 +8,6 @@
 // SUBMODULES:   
 // TASKS:        
 // FUNCTIONS:    
-
 /* verilator lint_off WIDTH */
 `default_nettype none
 `include "metron.h.sv"

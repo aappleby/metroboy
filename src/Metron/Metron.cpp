@@ -24,15 +24,14 @@ int main(int argc, char** argv) {
     lib.load(input.c_str(), (input + ".sv").c_str());
   }
 
-  for (auto& module : lib.modules)
+  for (auto module : lib.modules)
   {
-    //auto& module = lib.modules[0];
-
     auto out = fopen(module->output_filename.c_str(), "wb");
     MtCursor cursor(&lib, module, out);
 
     cursor.emit("//--------------------------------------------------------------------------------\n");
-    cursor.emit("// MODULE:       ");
+    cursor.emit("// MODULE:       ", module);
+
     cursor.emit("%s\n", module->node_to_name(module->module_class).c_str());
 
     cursor.emit("// MODULEPARAMS: ");
@@ -71,8 +70,6 @@ int main(int argc, char** argv) {
     for (auto f : module->functions) cursor.emit("%s, ", module->node_to_name(f).c_str());
     cursor.emit("\n");
 
-
-    cursor.emit("\n");
     cursor.cursor = module->source;
     cursor.emit_dispatch(module->root);
     printf("\n");

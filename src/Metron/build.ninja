@@ -1,16 +1,26 @@
 rule compile
-  command = g++ -O3 -std=gnu++2a -I../tree-sitter/lib/src -I../tree-sitter/lib/include -MMD -MF $out.d -c $in -o $out
+  command = g++ -g -O0 -std=gnu++2a -I../tree-sitter/lib/src -I../tree-sitter/lib/include -MMD -MF $out.d -c $in -o $out
+  deps = gcc
+  depfile = $out.d
+
+rule compile_c
+  command = gcc -g -O0 -I../tree-sitter/lib/src -I../tree-sitter/lib/include -MMD -MF $out.d -c $in -o $out
   deps = gcc
   depfile = $out.d
 
 rule link
-  command = g++ -O3 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
+  command = g++ -g -O0 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
 
 ################################################################################
 
-build obj/Metron.obj       : compile Metron.cpp
-build obj/MtCursor.obj     : compile MtCursor.cpp
-build obj/MtIterator.obj   : compile MtIterator.cpp
-build obj/MtModule.obj     : compile MtModule.cpp
-build obj/MtModLibrary.obj : compile MtModLibrary.cpp
+build obj/lib.o     : compile_c ../tree-sitter/lib/src/lib.c
+build obj/parser.o  : compile_c ../tree-sitter-cpp/src/parser.c
+build obj/scanner.o : compile_c ../tree-sitter-cpp/src/scanner.cc
 
+build obj/Metron.o       : compile Metron.cpp
+build obj/MtCursor.o     : compile MtCursor.cpp
+build obj/MtIterator.o   : compile MtIterator.cpp
+build obj/MtModule.o     : compile MtModule.cpp
+build obj/MtModLibrary.o : compile MtModLibrary.cpp
+
+build bin/metron           : link obj/Metron.o obj/MtCursor.o obj/MtIterator.o obj/MtModule.o obj/MtModLibrary.o obj/lib.o obj/parser.o obj/scanner.o

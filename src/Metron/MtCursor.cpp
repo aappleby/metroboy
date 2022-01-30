@@ -5,6 +5,7 @@
 #include <regex>
 #include <assert.h>
 
+#include "Platform.h"
 #include "MtIterator.h"
 #include "../Plait/TreeSymbols.h"
 
@@ -235,7 +236,7 @@ void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_field
     printf("#####\n");
     printf("unknown node\n");
     mod->dump_tree(n, 3);
-    __debugbreak();
+    debugbreak();
   }
 }
 
@@ -355,7 +356,7 @@ void MtCursor::emit_assignment_expression(TSNode n) {
       return emit_dispatch(child);
     
     default:
-      __debugbreak();
+      debugbreak();
     }
   });
 }
@@ -693,7 +694,7 @@ void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
     type_name = mod->body(ts_node_child_by_field_id(node_type, field_name));
   }
   else {
-    __debugbreak();
+    debugbreak();
   }
 
   emit_dispatch(node_type);
@@ -720,7 +721,7 @@ void MtCursor::emit_field_declaration(TSNode decl) {
   case alias_sym_type_identifier: type_name = mod->body(node_type); break;
   case sym_primitive_type:        type_name = mod->body(node_type); break;
   case sym_template_type:         type_name = mod->body(ts_node_child_by_field_id(node_type, field_name)); break;
-  default:                        __debugbreak();
+  default:                        debugbreak();
   }
 
   auto submod = mod_lib->find_module(type_name);
@@ -843,7 +844,7 @@ void MtCursor::emit_class_specifier(TSNode n) {
       pop_indent();
     }
     else {
-      __debugbreak();
+      debugbreak();
     }
   });
 }
@@ -906,7 +907,7 @@ void MtCursor::emit_template_type(TSNode n) {
           emit("-1:0]");
           return;
         }
-        default: __debugbreak();
+        default: debugbreak();
         }
       });
 
@@ -1211,7 +1212,7 @@ void MtCursor::emit_dispatch(TSNode n) {
     printf("\n\n\n########################################\n");
     mod->dump_tree(n);
     printf("\n########################################\n\n\n");
-    __debugbreak();
+    debugbreak();
   }
 }
 

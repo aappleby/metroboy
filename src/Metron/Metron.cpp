@@ -24,9 +24,9 @@ int main(int argc, char** argv) {
     lib.load(input.c_str(), (input + ".sv").c_str());
   }
 
-  //for (auto& module : lib.modules) {
+  for (auto& module : lib.modules)
   {
-    auto& module = lib.modules[0];
+    //auto& module = lib.modules[0];
 
     auto out = fopen(module->output_filename.c_str(), "wb");
     MtCursor cursor(&lib, module, out);

@@ -159,9 +159,11 @@
     <ClInclude Include="MtModLibrary.h" />
     <ClInclude Include="MtModule.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Platform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="apio.ini" />
+    <None Include="build.ninja" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

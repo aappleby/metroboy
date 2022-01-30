@@ -40,8 +40,6 @@ struct uart_top {
     o_done = 0;
     o_sum = 0;
     o_onehot = 0;
-
-    temp = 0;
   }
 
   //----------------------------------------
@@ -64,32 +62,27 @@ struct uart_top {
     tx.tock(rst_n);
     rx.tock(rst_n);
 
-    if (!rst_n) {
-      temp = 0;
+    o_serial = tx.o_serial;
+    o_data = rx.o_data;
+    o_valid = rx.o_valid;
 
-    } else {
-      o_serial = tx.o_serial;
-      o_data = rx.o_data;
-      o_valid = rx.o_valid;
+    logic<1> blah;
 
-      logic<1> blah;
+    blah = hello.o_done && tx.o_idle;
 
-      blah = hello.o_done && tx.o_idle;
+    o_done = blah;
+    o_sum = rx.o_sum;
 
-      o_done = blah;
-      o_sum = rx.o_sum;
-
-      switch (o_data & 0b111) {
-      case 0:  o_onehot = 0b00000001;
-      case 1:  o_onehot = 0b00000010;
-      case 2:  o_onehot = 0b00000100;
-      case 3:  o_onehot = 0b00001000;
-      case 4:  o_onehot = 0b00010000;
-      case 5:  o_onehot = 0b00100000;
-      case 6:  o_onehot = 0b01000000;
-      case 7:  o_onehot = 0b10000000;
-      default: o_onehot = 0b00000000;
-      }
+    switch (o_data & 0b111) {
+    case 0:  o_onehot = 0b00000001;
+    case 1:  o_onehot = 0b00000010;
+    case 2:  o_onehot = 0b00000100;
+    case 3:  o_onehot = 0b00001000;
+    case 4:  o_onehot = 0b00010000;
+    case 5:  o_onehot = 0b00100000;
+    case 6:  o_onehot = 0b01000000;
+    case 7:  o_onehot = 0b10000000;
+    default: o_onehot = 0b00000000;
     }
   }
 

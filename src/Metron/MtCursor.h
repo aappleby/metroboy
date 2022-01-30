@@ -4,6 +4,7 @@
 #include "MtModLibrary.h"
 #include "MtModule.h"
 #include <set>
+#include <string.h>
 
 //------------------------------------------------------------------------------
 

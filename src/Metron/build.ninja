@@ -1,0 +1,16 @@
+rule compile
+  command = g++ -O3 -std=gnu++2a -I../tree-sitter/lib/src -I../tree-sitter/lib/include -MMD -MF $out.d -c $in -o $out
+  deps = gcc
+  depfile = $out.d
+
+rule link
+  command = g++ -O3 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
+
+################################################################################
+
+build obj/Metron.obj       : compile Metron.cpp
+build obj/MtCursor.obj     : compile MtCursor.cpp
+build obj/MtIterator.obj   : compile MtIterator.cpp
+build obj/MtModule.obj     : compile MtModule.cpp
+build obj/MtModLibrary.obj : compile MtModLibrary.cpp
+

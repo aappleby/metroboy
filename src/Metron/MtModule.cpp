@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include "MtIterator.h"
+#include "Platform.h"
 #include "../Plait/TreeSymbols.h"
 
 #include <assert.h>
@@ -23,7 +24,7 @@ blob load_blob(const char* filename) {
   result.resize(ftell(f));
   fseek(f, 0, SEEK_SET);
 
-  fread(result.data(), 1, result.size(), f);
+  auto res = fread(result.data(), 1, result.size(), f);
   fclose(f);
   return result;
 }
@@ -169,7 +170,7 @@ void MtModule::dump_node(TSNode n, int index, int field, int depth) {
     ::print_escaped(source, ts_node_start_byte(n), ts_node_end_byte(n));
   }
   else if (ts_node_is_null(n)) {
-    __debugbreak();
+    debugbreak();
     printf("text: ");
     ::print_escaped(source, ts_node_start_byte(n), ts_node_end_byte(n));
   }
@@ -297,7 +298,7 @@ std::string MtModule::node_to_name(TSNode n) {
 
   default:
     dump_tree(n);
-    __debugbreak();
+    debugbreak();
     return "";
   }
 }
@@ -316,7 +317,7 @@ std::string MtModule::node_to_type(TSNode n) {
 
   default:
     dump_tree(n);
-    __debugbreak();
+    debugbreak();
     return "";
   }
 }
@@ -410,7 +411,7 @@ void MtModule::find_module() {
 void MtModule::collect_moduleparams() {
   if (ts_node_is_null(module_template)) return;
 
-  if (ts_node_symbol(module_template) != sym_template_declaration) __debugbreak();
+  if (ts_node_symbol(module_template) != sym_template_declaration) debugbreak();
 
   auto params = ts_node_child_by_field_id(module_template, field_parameters);
   for (const auto& child : params) {

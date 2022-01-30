@@ -74,8 +74,6 @@ module uart_top
     o_done = 0;
     o_sum = 0;
     o_onehot = 0;
-
-    temp = 0;
   end
 
   //----------------------------------------
@@ -100,36 +98,31 @@ module uart_top
   //----------------------------------------
 
   always_comb begin : TOCK
+    logic blah;
     /*hello.tock(rst_n)*/;
     /*tx.tock(rst_n)*/;
     /*rx.tock(rst_n)*/;
 
-    if (!rst_n) begin
-      temp = 0;
+    o_serial = tx_o_serial;
+    o_data = rx_o_data;
+    o_valid = rx_o_valid;
 
-    end else begin
-      logic blah;
-      o_serial = tx_o_serial;
-      o_data = rx_o_data;
-      o_valid = rx_o_valid;
+    blah = hello_o_done && tx_o_idle;
 
-      blah = hello_o_done && tx_o_idle;
+    o_done = blah;
+    o_sum = rx_o_sum;
 
-      o_done = blah;
-      o_sum = rx_o_sum;
-
-      case (o_data & 'b111) 
-      0:  o_onehot = 'b00000001;
-      1:  o_onehot = 'b00000010;
-      2:  o_onehot = 'b00000100;
-      3:  o_onehot = 'b00001000;
-      4:  o_onehot = 'b00010000;
-      5:  o_onehot = 'b00100000;
-      6:  o_onehot = 'b01000000;
-      7:  o_onehot = 'b10000000;
-      default: o_onehot = 'b00000000;
-      endcase
-    end
+    case (o_data & 'b111) 
+    0:  o_onehot = 'b00000001;
+    1:  o_onehot = 'b00000010;
+    2:  o_onehot = 'b00000100;
+    3:  o_onehot = 'b00001000;
+    4:  o_onehot = 'b00010000;
+    5:  o_onehot = 'b00100000;
+    6:  o_onehot = 'b01000000;
+    7:  o_onehot = 'b10000000;
+    default: o_onehot = 'b00000000;
+    endcase
   end
 
 endmodule

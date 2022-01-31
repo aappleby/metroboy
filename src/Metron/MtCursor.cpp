@@ -661,10 +661,7 @@ void MtCursor::emit_field_declaration(TSNode decl) {
   if (!submod) {
     if (mod->field_is_input(decl)) emit("input ");
     if (mod->field_is_output(decl)) emit("output ");
-    for (auto c : decl) {
-      //advance_to(c);
-      emit_dispatch(c);
-    }
+    for (auto c : decl) emit_dispatch(c);
     return;
   }
 
@@ -688,7 +685,6 @@ void MtCursor::emit_field_declaration(TSNode decl) {
   }
 
   for (auto c : decl) {
-    advance_to(c);
     emit_dispatch(c);
     if (c.field == field_declarator) {
       emit("(clk, rst_n");
@@ -711,7 +707,6 @@ void MtCursor::emit_field_declaration(TSNode decl) {
 
 void MtCursor::emit_class_specifier(TSNode n) {
   for (auto c : n) {
-    advance_to(c);
     if (c.sym == anon_sym_class || c.sym == anon_sym_struct) {
       emit_replacement(c, "module");
     }

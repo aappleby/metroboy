@@ -16,13 +16,13 @@
 
 module uart_tx
 #(parameter int cycles_per_bit = 4)
-(clk, rst_n, i_data, i_req, o_serial, o_cts, o_idle); 
+(clk, rst_n, i_data, i_req, o_serial, o_cts, o_idle);
   /*verilator public_module*/
   
   input logic clk;
   input logic rst_n;
   input logic[7:0] i_data;
-  input logic i_req;
+  input logic i_req; 
 
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages

@@ -23,11 +23,11 @@ check dirty needs to handle switch statements
 
 module uart_top
 #(parameter int cycles_per_bit = 3)
-(clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum, o_onehot); 
+(clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum, o_onehot);
   /*verilator public_module*/
   
   input logic clk;
-  input logic rst_n;
+  input logic rst_n; 
 
   bool hello_i_cts;
   bool hello_i_idle;

@@ -15,13 +15,13 @@
 //==============================================================================
 
 module uart_hello
-(clk, rst_n, i_cts, i_idle, o_data, o_req, o_done); 
+(clk, rst_n, i_cts, i_idle, o_data, o_req, o_done);
   /*verilator public_module*/
   
   input logic clk;
   input logic rst_n;
   input bool i_cts;
-  input bool i_idle;
+  input bool i_idle; 
 
   localparam int message_len = 512;
   localparam int cursor_bits = $clog2(message_len);

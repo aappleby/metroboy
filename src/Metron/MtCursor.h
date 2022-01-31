@@ -97,7 +97,7 @@ struct MtCursor {
   void emit_template_argument_list(TSNode n);
   void emit_enumerator_list(TSNode n);
   void emit_translation_unit(TSNode n);
-  void emit_field_expression(TSNode n);
+  void emit_flat_field_expression(TSNode n);
   void emit_dispatch(TSNode n);
 
   void emit_hoisted_decls(TSNode n);

@@ -226,18 +226,16 @@ void MtCursor::comment_out(TSNode n) {
 
 void MtCursor::emit_preproc_include(TSNode n) {
   for (auto c : n) {
-
-    if (c.sym == aux_sym_preproc_include_token1) {
-      emit_replacement(c, "`include");
-    }
-    else if (c.sym == sym_string_literal) {
+    switch (c.sym) {
+    case aux_sym_preproc_include_token1: emit_replacement(c, "`include"); break;
+    case sym_string_literal: {
       auto path = mod->body(c);
       path.pop_back();
       path.append(".sv\"");
       emit_replacement(c, "%s", path.c_str());
+      break;
     }
-    else {
-      emit_dispatch(c);
+    default: emit_dispatch(c); break;
     }
   }
 }
@@ -837,8 +835,6 @@ void MtCursor::emit_template_type(TSNode n) {
   auto node_name = ts_node_child_by_field_id(n, field_name);
   auto node_args = ts_node_child_by_field_id(n, field_arguments);
 
-  auto name_sym = ts_node_symbol(node_name);
-
   bool is_logic = mod->match(node_name, "logic");
 
   if (!is_logic) {
@@ -882,6 +878,7 @@ void MtCursor::emit_module_parameters(TSNode n) {
     // intentional fallthrough, we're just appending "parameter "
     case sym_parameter_declaration:
     case sym_optional_parameter_declaration:
+      advance_to(c);
       emit("parameter ");
     default:
       emit_dispatch(c);
@@ -920,17 +917,14 @@ void MtCursor::emit_enumerator_list(TSNode n) {
 // Discard any trailing semicolons in the translation unit.
 
 void MtCursor::emit_translation_unit(TSNode n) {
+
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
 
   for (auto c : n) {
     switch (c.sym) {
-    case anon_sym_SEMI:
-      skip_over(c);
-      break;
-    default:
-      emit_dispatch(c);
-      break;
+    case anon_sym_SEMI: skip_over(c); break;
+    default:            emit_dispatch(c); break;
     }
   }
 
@@ -1010,7 +1004,7 @@ void MtCursor::emit_template_declaration(TSNode n) {
 // Replace foo.bar.baz with foo_bar_baz, so that a field expression instead
 // refers to a glue expression.
 
-void MtCursor::emit_field_expression(TSNode n) {
+void MtCursor::emit_flat_field_expression(TSNode n) {
   auto field = mod->body(n);
   for (auto& c : field) if (c == '.') c = '_';
   emit_replacement(n, field.c_str());
@@ -1093,7 +1087,7 @@ void MtCursor::emit_dispatch(TSNode n) {
     break;
 
   case sym_number_literal:         emit_number_literal(n); break;
-  case sym_field_expression:       emit_field_expression(n); break;
+  case sym_field_expression:       emit_flat_field_expression(n); break;
   case sym_return_statement:       emit_return_statement(n); break;
   case sym_template_declaration:   emit_template_declaration(n); break;
   case sym_preproc_include:        emit_preproc_include(n);      break;

@@ -244,46 +244,29 @@ void MtCursor::emit_preproc_include(TSNode n) {
 // Change '=' to '<=' if lhs is a field and we're inside a sequential block.
 
 void MtCursor::emit_assignment_expression(TSNode n) {
-  if (!in_seq) {
-    for (auto c : n) emit_dispatch(c);
-    return;
-  }
-
   bool lvalue_is_field = false;
 
-  for (auto c : n) {
-    switch (c.field) {
+  auto node_lhs = ts_node_child_by_field_id(n, field_left);
+  auto node_op  = ts_node_child_by_field_id(n, field_operator);
+  auto node_rhs = ts_node_child_by_field_id(n, field_right);
 
-    case field_left: {
-      if (c.sym == sym_identifier) {
-        std::string lhs_name = mod->body(c);
-        for (const auto& f : mod->fields) {
-          if (mod->node_to_name(f) == lhs_name) {
-            lvalue_is_field = true;
-            break;
-          }
-        }
+  if (ts_node_symbol(node_lhs) == sym_identifier) {
+    std::string lhs_name = mod->body(node_lhs);
+    for (const auto& f : mod->fields) {
+      if (mod->node_to_name(f) == lhs_name) {
+        lvalue_is_field = true;
+        break;
       }
-      emit_dispatch(c);
-      break;
-    }
-
-    case field_operator:
-      if (lvalue_is_field) {
-        advance_to(c);
-        emit("<");
-      }
-      emit_dispatch(c);
-      break;
-    
-    case field_right:
-      emit_dispatch(c);
-      break;
-    
-    default:
-      debugbreak();
     }
   }
+
+  emit_dispatch(node_lhs);
+
+  advance_to(node_op);
+  if (in_seq && lvalue_is_field) emit("<");
+  emit_dispatch(node_op);
+
+  emit_dispatch(node_rhs);
 }
 
 //------------------------------------------------------------------------------

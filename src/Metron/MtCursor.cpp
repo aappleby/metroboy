@@ -759,15 +759,28 @@ void MtCursor::emit_class_specifier(TSNode n) {
 
       // Emit the module body, with a few modifications.
       for (auto gc : c) {
-        advance_to(gc);
         switch (gc.sym) {
         // Discard the opening brace
-        case anon_sym_LBRACE: skip_over(gc); break;
+        case anon_sym_LBRACE: {
+          advance_to(gc);
+          skip_over(gc);
+          break;
+        }
         // Replace the closing brace with "endmodule"
-        case anon_sym_RBRACE: emit_replacement(gc, "endmodule"); break;
+        case anon_sym_RBRACE: {
+          advance_to(gc);
+          emit_replacement(gc, "endmodule");
+          break;
+        }
         // Discard the seimcolon at the end of class{};"
-        case anon_sym_SEMI:   skip_over(gc); break;
+        case anon_sym_SEMI: {
+          advance_to(gc);
+          skip_over(gc);
+          break;
+        }
+
         default: {
+          advance_to(gc);
           emit_dispatch(gc);
           break;
         }
@@ -789,7 +802,6 @@ void MtCursor::emit_compound_statement(TSNode body) {
   push_indent(ts_node_named_child(body, 0));
 
   for (auto c : body) {
-    advance_to(c);
     switch (c.sym) {
     case anon_sym_LBRACE: {
       emit_replacement(c, "begin");

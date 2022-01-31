@@ -199,7 +199,7 @@ void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
 }
 
 void MtCursor::skip_over(TSNode n) {
-  assert(cursor == mod->start(n));
+  advance_to(n);
   cursor = mod->end(n);
 }
 
@@ -333,10 +333,7 @@ void MtCursor::emit_call_expression(TSNode n) {
   }
   else {
     // All other function/task calls go through normally.
-    for (auto c : n) {
-      advance_to(c);
-      emit_dispatch(c);
-    }
+    for (auto c : n) emit_dispatch(c);
   }
 }
 
@@ -345,7 +342,6 @@ void MtCursor::emit_call_expression(TSNode n) {
 
 void MtCursor::emit_init_declarator_as_decl(TSNode n) {
   for (auto c : n) {
-    advance_to(c);
     switch (c.field) {
 
     case field_type:
@@ -384,7 +380,6 @@ void MtCursor::emit_init_declarator_as_assign(TSNode n) {
 
   if (decl_type == sym_init_declarator) {
     for (auto c : n) {
-      advance_to(c);
       switch (c.field) {
       case field_type:
         skip_over(c);
@@ -501,7 +496,6 @@ void MtCursor::emit_function_definition(TSNode func_def) {
   push_indent(ts_node_named_child(func_body, 0));
 
   for (auto c : func_body) {
-    advance_to(c);
     switch (c.sym) {
     case anon_sym_LBRACE: {
       if      (is_init) emit_replacement(c, "begin : INIT");

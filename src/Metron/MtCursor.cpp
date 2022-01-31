@@ -255,7 +255,6 @@ void MtCursor::emit_assignment_expression(TSNode n) {
   bool lvalue_is_field = false;
 
   for (auto c : n) {
-    advance_to(c);
     switch (c.field) {
 
     case field_left: {
@@ -273,7 +272,10 @@ void MtCursor::emit_assignment_expression(TSNode n) {
     }
 
     case field_operator:
-      if (lvalue_is_field) emit("<");
+      if (lvalue_is_field) {
+        advance_to(c);
+        emit("<");
+      }
       emit_dispatch(c);
       break;
     

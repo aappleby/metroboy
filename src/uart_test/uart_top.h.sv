@@ -4,7 +4,7 @@
 // INPUTS:       
 // OUTPUTS:      o_serial, o_data, o_valid, o_done, o_sum, o_onehot, 
 // LOCALPARAMS:  
-// FIELDS:       
+// FIELDS:       temp, 
 // SUBMODULES:   hello, tx, rx, 
 // TASKS:        
 // FUNCTIONS:    
@@ -16,7 +16,6 @@
 `include "uart_hello.h.sv"
 
 /*
-check dirty needs to recurse into task/function definitions
 check dirty needs to handle switch statements
 */
 
@@ -58,6 +57,8 @@ module uart_top
   output logic[31:0] o_sum;
   output logic[7:0] o_onehot;
 
+  logic[7:0] temp;
+
   //----------------------------------------
 
   initial begin : INIT
@@ -73,6 +74,8 @@ module uart_top
     o_done = 0;
     o_sum = 0;
     o_onehot = 0;
+
+    temp = 0;
   end
 
   //----------------------------------------
@@ -85,6 +88,9 @@ module uart_top
     if (!rst_n) begin
     end
     else begin
+      temp <= 1;
+      //logic<8> blah = temp;
+      //temp = 2;
     end
   end
   

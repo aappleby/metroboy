@@ -218,7 +218,8 @@ void MtModule::visit_tree(TSNode n, NodeVisitor cv) {
 }
 
 void MtModule::visit_tree2(TSNode parent, NodeVisitor2 cv) {
-  for (const auto& child : parent) {
+  for (int i = 0; i < (int)ts_node_child_count(parent); i++) {
+    auto child = ts_node_child(parent, i);
     cv(parent, child);
     visit_tree2(child, cv);
   }
@@ -350,7 +351,8 @@ bool MtModule::field_is_module(TSNode n) {
 }
 
 bool MtModule::field_is_static(TSNode n) {
-  for (auto c : n) {
+  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
+    auto c = ts_node_child(n, i);
     if (ts_node_symbol(c) == sym_storage_class_specifier) {
       if (match(c, "static")) return true;
     }
@@ -359,7 +361,8 @@ bool MtModule::field_is_static(TSNode n) {
 }
 
 bool MtModule::field_is_const(TSNode n) {
-  for (auto c : n) {
+  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
+    auto c = ts_node_child(n, i);
     if (ts_node_symbol(c) == sym_type_qualifier) {
       if (match(c, "const")) return true;
     }
@@ -414,7 +417,8 @@ void MtModule::collect_moduleparams() {
   if (ts_node_symbol(module_template) != sym_template_declaration) debugbreak();
 
   auto params = ts_node_child_by_field_id(module_template, field_parameters);
-  for (const auto& child : params) {
+  for (int i = 0; i < (int)ts_node_child_count(params); i++) {
+    auto child = ts_node_child(params, i);
     auto sc = ts_node_symbol(child);
     if (sc == sym_parameter_declaration || sc == sym_optional_parameter_declaration) moduleparams.push_back(child);
   }

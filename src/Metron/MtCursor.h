@@ -60,16 +60,15 @@ struct MtCursor {
   void check_dirty_tock(TSNode n);
   void check_dirty_tock_dispatch(TSNode n, std::set<TSNode>& dirty_fields);
 
-  MtModule* field_identifier_to_submod(TSNode id);
-
   void dump_node_line(TSNode n);
+
+  void print_error(TSNode n, const char* fmt, ...);
 
   //----------
 
   bool match(TSNode n, const char* str) { return mod->match(n, str); }
 
   void visit_children(TSNode n, NodeVisitor3 cv);
-  void emit_children(TSNode n);
   void emit_children(TSNode n, NodeVisitor3 cv);
   void emit_span(const char* a, const char* b);
   void emit(TSNode n);

@@ -3,7 +3,7 @@
 #include "tree_sitter/api.h"
 
 //------------------------------------------------------------------------------
-
+#if 0
 struct MtIterator {
 
   MtIterator& operator++() {
@@ -39,5 +39,6 @@ inline MtIterator begin(TSNode& parent) {
 inline MtIterator end(TSNode& parent) {
   return { parent, (int)ts_node_child_count(parent) };
 }
+#endif
 
 //------------------------------------------------------------------------------

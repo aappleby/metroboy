@@ -5,7 +5,6 @@
 #include "uart_hello.h"
 
 /*
-check dirty needs to recurse into task/function definitions
 check dirty needs to handle switch statements
 */
 
@@ -25,6 +24,8 @@ struct uart_top {
   logic<32> o_sum;
   logic<8> o_onehot;
 
+  logic<8> temp;
+
   //----------------------------------------
 
   void init() {
@@ -40,6 +41,8 @@ struct uart_top {
     o_done = 0;
     o_sum = 0;
     o_onehot = 0;
+
+    temp = 0;
   }
 
   //----------------------------------------
@@ -52,6 +55,9 @@ struct uart_top {
     if (!rst_n) {
     }
     else {
+      temp = 1;
+      //logic<8> blah = temp;
+      //temp = 2;
     }
   }
 

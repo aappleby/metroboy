@@ -229,9 +229,7 @@ const char* MtModule::start(TSNode n) {
 
   if (ts_node_symbol(n) == anon_sym_LF) return a;
 
-  while (a < b && isspace(a[0])) {
-    a++;
-  }
+  while (a < b && isspace(a[0])) a++;
   return a;
 }
 
@@ -243,10 +241,7 @@ const char* MtModule::end(TSNode n) {
 
   if (ts_node_symbol(n) == anon_sym_LF) return b;
 
-  while (b > a && isspace(b[-1])) {
-    b--;
-  }
-
+  while (b > a && isspace(b[-1])) b--;
   return b;
 }
 

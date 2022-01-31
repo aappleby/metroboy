@@ -1064,10 +1064,9 @@ void MtCursor::emit_dispatch(TSNode n) {
     return;
 
   case sym_parameter_list:
-    for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-      auto child = ts_node_child(n, i);
-      advance_to(child);
-      emit_dispatch(child);
+    for (auto c : n) {
+      advance_to(c);
+      emit_dispatch(c);
     }
     skip_whitespace();
     return;
@@ -1091,10 +1090,9 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_type_descriptor:
   case sym_function_declarator:
   case sym_init_declarator:
-    for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-      auto child = ts_node_child(n, i);
-      advance_to(child);
-      emit_dispatch(child);
+    for (auto c : n) {
+      advance_to(c);
+      emit_dispatch(c);
     }
     return;
 
@@ -1118,34 +1116,34 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_enumerator_list:        emit_enumerator_list(n); return;
 
   case sym_case_statement: {
-    emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-      if (sym == anon_sym_case) {
-        skip_over(child);
+    for (auto c : n) {
+      if (c.sym == anon_sym_case) {
+        skip_over(c);
         skip_whitespace();
       }
-      else emit_dispatch(child);
-    });
+      else emit_dispatch(c);
+    }
     return;
   }
 
   case sym_switch_statement: {
-    emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-      if (sym == anon_sym_switch) {
-        emit_replacement(child, "case");
+    for (auto c : n) {
+      if (c.sym == anon_sym_switch) {
+        emit_replacement(c, "case");
       }
-      else if (field == field_body) {
-        emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
-          switch (sym) {
-          case anon_sym_LBRACE: return skip_over(child);
-          case anon_sym_RBRACE: return emit_replacement(child, "endcase");
-          default:              return emit_dispatch(child);
-          }
-        });
+      else if (c.field == field_body) {
+        for (auto gc : c.node) {
+          advance_to(gc);
+          if (gc.sym == anon_sym_LBRACE) skip_over(gc);
+          else if (gc.sym == anon_sym_RBRACE) emit_replacement(gc, "endcase");
+          else emit_dispatch(gc);
+        }
+
       }
       else {
-        emit_dispatch(child);
+        emit_dispatch(c);
       }
-    });
+    }
     return;
   }
 

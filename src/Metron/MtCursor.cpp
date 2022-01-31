@@ -216,7 +216,7 @@ void MtCursor::advance_to(TSNode n) {
 }
 
 void MtCursor::comment_out(TSNode n) {
-  assert(cursor == mod->start(n));
+  advance_to(n);
   emit("/*");
   emit(n);
   emit("*/");
@@ -653,12 +653,17 @@ void MtCursor::emit_field_declaration(TSNode decl) {
 
   auto submod = mod_lib->find_module(type_name);
 
-  advance_to(decl);
 
   // If this isn't a submodule, just tack on "input" and "output" annotations.
   if (!submod) {
-    if (mod->field_is_input(decl)) emit("input ");
-    if (mod->field_is_output(decl)) emit("output ");
+    if (mod->field_is_input(decl)) {
+      advance_to(decl);
+      emit("input ");
+    }
+    if (mod->field_is_output(decl)) {
+      advance_to(decl);
+      emit("output ");
+    }
     for (auto c : decl) emit_dispatch(c);
     return;
   }
@@ -666,6 +671,7 @@ void MtCursor::emit_field_declaration(TSNode decl) {
   // If this is a submodule, emit glue parameters and patch the glue parameter
   // list into the submodule declaration.
 
+  advance_to(decl);
   std::string inst_name = mod->node_to_name(decl);
 
   for (auto& input : submod->inputs) {
@@ -888,7 +894,6 @@ void MtCursor::emit_module_parameters(TSNode n) {
 
 void MtCursor::emit_template_argument_list(TSNode n) {
   for (auto c : n) {
-    advance_to(c);
     switch (c.sym) {
     case anon_sym_LT: emit_replacement(c, " #("); break;
     case anon_sym_GT: emit_replacement(c, ")"); break;
@@ -902,7 +907,6 @@ void MtCursor::emit_template_argument_list(TSNode n) {
 
 void MtCursor::emit_enumerator_list(TSNode n) {
   for (auto c : n) {
-    advance_to(c);
     switch (c.sym) {
     case anon_sym_LBRACE: emit(c); break;
     case anon_sym_RBRACE: emit(c); break;
@@ -919,7 +923,6 @@ void MtCursor::emit_translation_unit(TSNode n) {
   emit("`default_nettype none\n");
 
   for (auto c : n) {
-    advance_to(c);
     switch (c.sym) {
     case anon_sym_SEMI:
       skip_over(c);
@@ -956,7 +959,6 @@ void MtCursor::emit_number_literal(TSNode n) {
 void MtCursor::emit_return_statement(TSNode n) {
   auto func_name = mod->body(current_function_name);
   for (auto c : n) {
-    advance_to(c);
     switch (c.sym) {
     case anon_sym_return:
       emit_replacement(c, "%s =", func_name.c_str());
@@ -1063,10 +1065,7 @@ void MtCursor::emit_dispatch(TSNode n) {
     break;
 
   case sym_parameter_list:
-    for (auto c : n) {
-      advance_to(c);
-      emit_dispatch(c);
-    }
+    for (auto c : n) emit_dispatch(c);
     skip_whitespace();
     break;
 
@@ -1089,10 +1088,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_type_descriptor:
   case sym_function_declarator:
   case sym_init_declarator:
-    for (auto c : n) {
-      advance_to(c);
-      emit_dispatch(c);
-    }
+    for (auto c : n) emit_dispatch(c);
     break;
 
   case sym_number_literal:         emit_number_literal(n); break;
@@ -1132,7 +1128,6 @@ void MtCursor::emit_dispatch(TSNode n) {
       }
       else if (c.field == field_body) {
         for (auto gc : c) {
-          advance_to(gc);
           if (gc.sym == anon_sym_LBRACE) skip_over(gc);
           else if (gc.sym == anon_sym_RBRACE) emit_replacement(gc, "endcase");
           else emit_dispatch(gc);

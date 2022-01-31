@@ -351,10 +351,9 @@ void MtCursor::emit_call_expression(TSNode n) {
   }
   else {
     // All other function/task calls go through normally.
-    for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-      auto child = ts_node_child(n, i);
-      advance_to(child);
-      emit_dispatch(child);
+    for (auto c : n) {
+      advance_to(c);
+      emit_dispatch(c);
     }
   }
 }
@@ -363,30 +362,34 @@ void MtCursor::emit_call_expression(TSNode n) {
 // Replace "logic blah = x;" with "logic blah;"
 
 void MtCursor::emit_init_declarator_as_decl(TSNode n) {
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    switch (field) {
+  for (auto c : n) {
+    advance_to(c);
+    switch (c.field) {
 
     case field_type:
-      return emit_dispatch(child);
+      emit_dispatch(c);
+      break;
 
     case field_declarator:
-      return emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
-        switch (field) {
+      for (auto gc : c) {
+        switch (gc.field) {
         case field_declarator:
-          emit(child);
+          emit(gc);
           skip_whitespace();
-          return;
+          break;
         default:
-          skip_over(child);
+          skip_over(gc);
           skip_whitespace();
-          return;
+          break;
         }
-        });
+      }
+      break;
 
     default:
-      return emit_dispatch(child);
+      emit_dispatch(c);
+      break;
     }
-  });
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -398,16 +401,18 @@ void MtCursor::emit_init_declarator_as_assign(TSNode n) {
   auto decl_type = ts_node_symbol(node_decl);
 
   if (decl_type == sym_init_declarator) {
-    emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-      switch (field) {
+    for (auto c : n) {
+      advance_to(c);
+      switch (c.field) {
       case field_type:
-        skip_over(child);
+        skip_over(c);
         skip_whitespace();
-        return;
+        break;
       default:
-        return emit_dispatch(child);
+        emit_dispatch(c);
+        break;
       }
-      });
+    }
   }
   else {
     skip_over(n);
@@ -420,13 +425,13 @@ void MtCursor::emit_init_declarator_as_assign(TSNode n) {
 
 void MtCursor::emit_hoisted_decls(TSNode n) {
   MtCursor old_cursor = *this;
-  visit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    if (sym == sym_declaration) {
-      cursor = mod->start(child);
+  for (auto c : n) {
+    if (c.sym == sym_declaration) {
+      cursor = mod->start(c);
       emit_newline();
-      emit_init_declarator_as_decl(child);
+      emit_init_declarator_as_decl(c);
     }
-    });
+  }
   *this = old_cursor;
 }
 
@@ -513,33 +518,38 @@ void MtCursor::emit_function_definition(TSNode func_def) {
 
   push_indent(ts_node_named_child(func_body, 0));
 
-  emit_children(func_body, [&](TSNode child, int field, TSSymbol sym) {
-    switch (sym) {
+  for (auto c : func_body) {
+    advance_to(c);
+    switch (c.sym) {
     case anon_sym_LBRACE: {
-      if      (is_init) emit_replacement(child, "begin : INIT");
-      else if (is_tick) emit_replacement(child, "begin : TICK");
-      else if (is_tock) emit_replacement(child, "begin : TOCK");
-      else if (is_task) emit_replacement(child, "");
-      else              emit_replacement(child, "");
+      if      (is_init) emit_replacement(c, "begin : INIT");
+      else if (is_tick) emit_replacement(c, "begin : TICK");
+      else if (is_tock) emit_replacement(c, "begin : TOCK");
+      else if (is_task) emit_replacement(c, "");
+      else              emit_replacement(c, "");
 
       emit_hoisted_decls(func_body);
-      return;
+      break;
     }
 
     case sym_declaration: {
-      return emit_init_declarator_as_assign(child);
-      return;
+      emit_init_declarator_as_assign(c);
+      break;
     }
 
     case anon_sym_RBRACE:
-      if      (is_init) return emit_replacement(child, "end");
-      else if (is_tick) return emit_replacement(child, "end");
-      else if (is_tock) return emit_replacement(child, "end");
-      else if (is_task) return emit_replacement(child, "endtask");
-      else              return emit_replacement(child, "endfunction");
-    default: return emit_dispatch(child);
+      if      (is_init) emit_replacement(c, "end");
+      else if (is_tick) emit_replacement(c, "end");
+      else if (is_tock) emit_replacement(c, "end");
+      else if (is_task) emit_replacement(c, "endtask");
+      else              emit_replacement(c, "endfunction");
+      break;
+
+    default:
+      emit_dispatch(c);
+      break;
     }
-  });
+  }
 
   pop_indent();
 
@@ -590,12 +600,12 @@ void MtCursor::emit_function_definition(TSNode func_def) {
           std::vector<std::string> call_src;
           std::vector<std::string> call_dst;
 
-          visit_children(call_args, [&](TSNode arg, int field, TSSymbol sym) {
-            if (!ts_node_is_named(arg)) return;
+          for (auto arg : call_args) {
+            if (!ts_node_is_named(arg)) continue;
             auto src = mod->node_to_name(arg);
             for (auto& c : src) if (c == '.') c = '_';
             if (src != "rst_n") call_src.push_back(src);
-          });
+          }
 
           for (auto& input : submod->inputs) {
             call_dst.push_back(submod->node_to_name(input));
@@ -675,10 +685,9 @@ void MtCursor::emit_field_declaration(TSNode decl) {
   if (!submod) {
     if (mod->field_is_input(decl)) emit("input ");
     if (mod->field_is_output(decl)) emit("output ");
-    for (int i = 0; i < (int)ts_node_child_count(decl); i++) {
-      auto child = ts_node_child(decl, i);
-      advance_to(child);
-      emit_dispatch(child);
+    for (auto c : decl) {
+      advance_to(c);
+      emit_dispatch(c);
     }
     return;
   }
@@ -702,9 +711,10 @@ void MtCursor::emit_field_declaration(TSNode decl) {
     sub_cursor.emit_glue_declaration(output, inst_name);
   }
 
-  emit_children(decl, [&](TSNode child, int field, TSSymbol sym) {
-    emit_dispatch(child);
-    if (field == field_declarator) {
+  for (auto c : decl) {
+    advance_to(c);
+    emit_dispatch(c);
+    if (c.field == field_declarator) {
       emit("(clk, rst_n");
       for (auto& input : submod->inputs) {
         emit(", %s_%s", inst_name.c_str(), submod->node_to_name(input).c_str());
@@ -714,7 +724,7 @@ void MtCursor::emit_field_declaration(TSNode decl) {
       }
       emit(")");
     }
-  });
+  }
 
   emit_newline();
 }

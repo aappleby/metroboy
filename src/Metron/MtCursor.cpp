@@ -745,9 +745,10 @@ void MtCursor::emit_class_specifier(TSNode n) {
       emit_newline();
       emit("/*verilator public_module*/");
       emit_newline();
-      emit_newline();
 
+      emit_newline();
       emit("input logic clk;");
+
       emit_newline();
       emit("input logic rst_n;");
 
@@ -765,7 +766,7 @@ void MtCursor::emit_class_specifier(TSNode n) {
         switch (gc.sym) {
         // Discard the opening brace
         case anon_sym_LBRACE: {
-          skip_over(gc);
+          emit_replacement(gc, "");
           break;
         }
         // Replace the closing brace with "endmodule"
@@ -775,7 +776,7 @@ void MtCursor::emit_class_specifier(TSNode n) {
         }
         // Discard the seimcolon at the end of class{};"
         case anon_sym_SEMI: {
-          skip_over(gc);
+          emit_replacement(gc, "");
           break;
         }
 
@@ -831,38 +832,39 @@ void MtCursor::emit_compound_statement(TSNode body) {
 // Change logic<N> to logic[N-1:0]
 
 void MtCursor::emit_template_type(TSNode n) {
-  bool is_logic = false;
+  //mod->dump_tree(n);
 
-  for (auto c : n) {
-    if (c.sym == alias_sym_type_identifier) {
-      if (mod->match(c, "logic")) is_logic = true;
-      emit_dispatch(c);
-    }
-    else if (is_logic && c.sym == sym_template_argument_list) {
-      
-      for (auto gc : c) {
-        switch (gc.sym) {
-        case anon_sym_LT: skip_over(gc); break;
-        case anon_sym_GT: skip_over(gc); break;
-        case sym_number_literal: {
-          int width = atoi(mod->start(gc));
-          if (width > 1) emit("[%d:0]", width - 1);
-          skip_over(gc);
-          break;
-        }
-        case sym_type_descriptor: {
-          emit("[");
-          emit(gc);
-          emit("-1:0]");
-          break;
-        }
-        default: debugbreak();
-        }
-      }
+  auto node_name = ts_node_child_by_field_id(n, field_name);
+  auto node_args = ts_node_child_by_field_id(n, field_arguments);
 
+  auto name_sym = ts_node_symbol(node_name);
+
+  bool is_logic = mod->match(node_name, "logic");
+
+  if (!is_logic) {
+    emit_dispatch(node_name);
+    emit_dispatch(node_args);
+    return;
+  }
+
+  emit_dispatch(node_name);
+  for (auto c : node_args) {
+    switch (c.sym) {
+    case anon_sym_LT: skip_over(c); break;
+    case anon_sym_GT: skip_over(c); break;
+    case sym_number_literal: {
+      int width = atoi(mod->start(c));
+      if (width > 1) emit("[%d:0]", width - 1);
+      skip_over(c);
+      break;
     }
-    else {
-      emit_dispatch(c);
+    case sym_type_descriptor: {
+      emit("[");
+      emit(c);
+      emit("-1:0]");
+      break;
+    }
+    default: debugbreak();
     }
   }
 }

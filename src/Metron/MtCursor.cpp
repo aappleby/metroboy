@@ -244,29 +244,28 @@ void MtCursor::emit_preproc_include(TSNode n) {
 // Change '=' to '<=' if lhs is a field and we're inside a sequential block.
 
 void MtCursor::emit_assignment_expression(TSNode n) {
-  bool lvalue_is_field = false;
+  auto lhs = ts_node_child_by_field_id(n, field_left);
+  auto op  = ts_node_child_by_field_id(n, field_operator);
+  auto rhs = ts_node_child_by_field_id(n, field_right);
 
-  auto node_lhs = ts_node_child_by_field_id(n, field_left);
-  auto node_op  = ts_node_child_by_field_id(n, field_operator);
-  auto node_rhs = ts_node_child_by_field_id(n, field_right);
-
-  if (ts_node_symbol(node_lhs) == sym_identifier) {
-    std::string lhs_name = mod->body(node_lhs);
+  bool lhs_is_field = false;
+  if (ts_node_symbol(lhs) == sym_identifier) {
+    std::string lhs_name = mod->body(lhs);
     for (const auto& f : mod->fields) {
       if (mod->node_to_name(f) == lhs_name) {
-        lvalue_is_field = true;
+        lhs_is_field = true;
         break;
       }
     }
   }
 
-  emit_dispatch(node_lhs);
+  emit_dispatch(lhs);
 
-  advance_to(node_op);
-  if (in_seq && lvalue_is_field) emit("<");
-  emit_dispatch(node_op);
+  advance_to(op);
+  if (in_seq && lhs_is_field) emit("<");
+  emit_dispatch(op);
 
-  emit_dispatch(node_rhs);
+  emit_dispatch(rhs);
 }
 
 //------------------------------------------------------------------------------
@@ -274,10 +273,6 @@ void MtCursor::emit_assignment_expression(TSNode n) {
 // init/final/tick/tock calls.
 
 void MtCursor::emit_call_expression(TSNode n) {
-  assert(ts_node_child_count(n) == 2);
-  assert(ts_node_field_id_for_child(n, 0) == field_function);
-  assert(ts_node_field_id_for_child(n, 1) == field_arguments);
-
   auto call_func = ts_node_child_by_field_id(n, field_function);
   auto call_args = ts_node_child_by_field_id(n, field_arguments);
 
@@ -321,6 +316,7 @@ void MtCursor::emit_call_expression(TSNode n) {
 // Replace "logic blah = x;" with "logic blah;"
 
 void MtCursor::emit_init_declarator_as_decl(TSNode n) {
+
   for (auto c : n) {
     switch (c.field) {
 

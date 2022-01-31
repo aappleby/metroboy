@@ -68,8 +68,6 @@ struct MtCursor {
 
   bool match(TSNode n, const char* str) { return mod->match(n, str); }
 
-  void visit_children(TSNode n, NodeVisitor3 cv);
-  void emit_children(TSNode n, NodeVisitor3 cv);
   void emit_span(const char* a, const char* b);
   void emit(TSNode n);
   void emit(const char* fmt, ...);

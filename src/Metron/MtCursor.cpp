@@ -10,22 +10,6 @@
 #include "../Plait/TreeSymbols.h"
 
 //------------------------------------------------------------------------------
-// Traversal methods
-
-void MtCursor::visit_children(TSNode n, NodeVisitor3 cv) {
-  for (auto c : n) {
-    cv(c.node, c.field, c.sym);
-  }
-}
-
-void MtCursor::emit_children(TSNode n, NodeVisitor3 cv) {
-  for (auto c : n) {
-    advance_to(c);
-    cv(c.node, c.field, c.sym);
-  }
-}
-
-//------------------------------------------------------------------------------
 
 void MtCursor::check_dirty_tick(TSNode func_def) {
   std::set<TSNode> dirty_fields;
@@ -177,7 +161,7 @@ void MtCursor::emit_span(const char* a, const char* b) {
 }
 
 void MtCursor::emit(TSNode n) {
-  assert(cursor == mod->start(n));
+  advance_to(n);
   emit_span(mod->start(n), mod->end(n));
   cursor = mod->end(n);
 }
@@ -198,7 +182,7 @@ void MtCursor::emit(const char* fmt, ...) {
 }
 
 void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
-  assert(cursor == mod->start(n));
+  advance_to(n);
   {
     va_list args;
     va_start(args, fmt);
@@ -243,7 +227,6 @@ void MtCursor::comment_out(TSNode n) {
 
 void MtCursor::emit_preproc_include(TSNode n) {
   for (auto c : n) {
-    advance_to(c);
 
     if (c.sym == aux_sym_preproc_include_token1) {
       emit_replacement(c, "`include");
@@ -734,12 +717,13 @@ void MtCursor::emit_field_declaration(TSNode decl) {
 // ouptut ports to module param list.
 
 void MtCursor::emit_class_specifier(TSNode n) {
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    if (sym == anon_sym_class || sym == anon_sym_struct) {
-      emit_replacement(child, "module");
+  for (auto c : n) {
+    advance_to(c);
+    if (c.sym == anon_sym_class || c.sym == anon_sym_struct) {
+      emit_replacement(c, "module");
     }
-    else if (field == field_name) {
-      emit_dispatch(child);
+    else if (c.field == field_name) {
+      emit_dispatch(c);
 
       // Patch the template parameter list in after the module declaration
       if (!ts_node_is_null(mod->module_param_list)) {
@@ -761,11 +745,11 @@ void MtCursor::emit_class_specifier(TSNode n) {
       emit(");");
 
     }
-    else if (field == field_body) {
+    else if (c.field == field_body) {
       // And the declaration of the ports will be in the module body along with
       // the rest of the module.
 
-      push_indent(ts_node_named_child(child, 0));
+      push_indent(ts_node_named_child(c, 0));
 
       emit_newline();
       emit("/*verilator public_module*/");
@@ -786,27 +770,28 @@ void MtCursor::emit_class_specifier(TSNode n) {
       }
 
       // Emit the module body, with a few modifications.
-      emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
-        switch (sym) {
+      for (auto gc : c) {
+        advance_to(gc);
+        switch (gc.sym) {
         // Discard the opening brace
-        case anon_sym_LBRACE: return skip_over(child);
+        case anon_sym_LBRACE: skip_over(gc); break;
         // Replace the closing brace with "endmodule"
-        case anon_sym_RBRACE: return emit_replacement(child, "endmodule");
+        case anon_sym_RBRACE: emit_replacement(gc, "endmodule"); break;
         // Discard the seimcolon at the end of class{};"
-        case anon_sym_SEMI:   return skip_over(child);
+        case anon_sym_SEMI:   skip_over(gc); break;
         default: {
-          emit_dispatch(child);
-          return;
+          emit_dispatch(gc);
+          break;
         }
         }
-        });
+      }
 
       pop_indent();
     }
     else {
       debugbreak();
     }
-  });
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -815,26 +800,30 @@ void MtCursor::emit_class_specifier(TSNode n) {
 void MtCursor::emit_compound_statement(TSNode body) {
   push_indent(ts_node_named_child(body, 0));
 
-  emit_children(body, [&](TSNode child, int field, TSSymbol sym) {
-    switch (sym) {
+  for (auto c : body) {
+    advance_to(c);
+    switch (c.sym) {
     case anon_sym_LBRACE: {
-      emit_replacement(child, "begin");
+      emit_replacement(c, "begin");
       emit_hoisted_decls(body);
-      return;
+      break;
     }
 
     case sym_declaration: {
-      return emit_init_declarator_as_assign(child);
-      return;
+      emit_init_declarator_as_assign(c);
+      break;
     }
 
-    case anon_sym_RBRACE: return emit_replacement(child, "end");
+    case anon_sym_RBRACE:
+      emit_replacement(c, "end");
+      break;
+
     default: {
-      emit_dispatch(child);
-      return;
+      emit_dispatch(c);
+      break;
     }
     }
-  });
+  }
 
   pop_indent();
 }
@@ -1003,17 +992,21 @@ void MtCursor::emit_type_identifier(TSNode n) {
 // For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
 
 void MtCursor::emit_template_declaration(TSNode n) {
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    switch (sym) {
+  for (auto c : n) {
+    switch (c.sym) {
     case anon_sym_template: {
-      skip_over(child);
+      skip_over(c);
       skip_whitespace();
-      return;
+      break;
     }
-    case anon_sym_SEMI:     return skip_over(child);
-    default:                return emit_dispatch(child);
+    case anon_sym_SEMI:
+      skip_over(c);
+      break;
+    default:
+      emit_dispatch(c);
+      break;
     }
-  });
+  }
 }
 
 //------------------------------------------------------------------------------

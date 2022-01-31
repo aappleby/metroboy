@@ -434,15 +434,12 @@ void MtCursor::emit_function_definition(TSNode func_def) {
 
   //----------
 
-  advance_to(func_type);
   is_task = mod->match(func_type, "void");
-
   skip_over(func_type);
   skip_whitespace();
 
   //----------
 
-  advance_to(func_decl);
   in_init = false;
   in_comb = false;
   in_seq = false;
@@ -465,6 +462,7 @@ void MtCursor::emit_function_definition(TSNode func_def) {
     in_comb = true;
   }
   else {
+    advance_to(func_decl);
     if (is_task) {
       emit("task ");
     }
@@ -657,6 +655,8 @@ void MtCursor::emit_field_declaration(TSNode decl) {
 
   auto submod = mod_lib->find_module(type_name);
 
+  advance_to(decl);
+
   // If this isn't a submodule, just tack on "input" and "output" annotations.
   if (!submod) {
     if (mod->field_is_input(decl)) emit("input ");
@@ -777,7 +777,6 @@ void MtCursor::emit_class_specifier(TSNode n) {
         }
 
         default: {
-          advance_to(gc);
           emit_dispatch(gc);
           break;
         }

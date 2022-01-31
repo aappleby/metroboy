@@ -847,37 +847,38 @@ void MtCursor::emit_compound_statement(TSNode body) {
 void MtCursor::emit_template_type(TSNode n) {
   bool is_logic = false;
 
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    if (sym == alias_sym_type_identifier) {
-      if (mod->match(child, "logic")) is_logic = true;
-      emit_dispatch(child);
+  for (auto c : n) {
+    if (c.sym == alias_sym_type_identifier) {
+      if (mod->match(c, "logic")) is_logic = true;
+      emit_dispatch(c);
     }
-    else if (is_logic && sym == sym_template_argument_list) {
+    else if (is_logic && c.sym == sym_template_argument_list) {
       
-      emit_children(child, [&](TSNode child, int field, TSSymbol sym) {
-        switch (sym) {
-        case anon_sym_LT: return skip_over(child);
-        case anon_sym_GT: return skip_over(child);
+      for (auto gc : c.node) {
+        switch (gc.sym) {
+        case anon_sym_LT: skip_over(gc); break;
+        case anon_sym_GT: skip_over(gc); break;
         case sym_number_literal: {
-          int width = atoi(mod->start(child));
+          int width = atoi(mod->start(gc));
           if (width > 1) emit("[%d:0]", width - 1);
-          return skip_over(child);
+          skip_over(gc);
+          break;
         }
         case sym_type_descriptor: {
           emit("[");
-          emit(child);
+          emit(gc);
           emit("-1:0]");
-          return;
+          break;
         }
         default: debugbreak();
         }
-      });
+      }
 
     }
     else {
-      emit_dispatch(child);
+      emit_dispatch(c);
     }
-  });
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -885,45 +886,48 @@ void MtCursor::emit_template_type(TSNode n) {
 // #(parameter int param, parameter int param)
 
 void MtCursor::emit_module_parameters(TSNode n) {
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    switch (sym) {
-    case anon_sym_LT: return emit_replacement(child, "#(");
-    case anon_sym_GT: return emit_replacement(child, ")");
+  for (auto c : n) {
+    switch (c.sym) {
+    case anon_sym_LT: emit_replacement(c, "#("); break;
+    case anon_sym_GT: emit_replacement(c, ")"); break;
 
     // intentional fallthrough, we're just appending "parameter "
     case sym_parameter_declaration:
     case sym_optional_parameter_declaration:
       emit("parameter ");
     default:
-      return emit_dispatch(child);
+      emit_dispatch(c);
+      break;
     }
-  });
+  }
 }
 
 //------------------------------------------------------------------------------
 // Change <param, param> to #(param, param)
 
 void MtCursor::emit_template_argument_list(TSNode n) {
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    switch (sym) {
-    case anon_sym_LT: return emit_replacement(child, " #(");
-    case anon_sym_GT: return emit_replacement(child, ")");
-    default:          return emit_dispatch(child);
+  for (auto c : n) {
+    advance_to(c);
+    switch (c.sym) {
+    case anon_sym_LT: emit_replacement(c, " #("); break;
+    case anon_sym_GT: emit_replacement(c, ")"); break;
+    default:          emit_dispatch(c); break;
     }
-  });
+  }
 }
 
 //------------------------------------------------------------------------------
 // Enum lists do _not_ turn braces into begin/end.
 
 void MtCursor::emit_enumerator_list(TSNode n) {
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    switch (sym) {
-    case anon_sym_LBRACE: return emit(child);
-    case anon_sym_RBRACE: return emit(child);
-    default:              return emit_dispatch(child);
+  for (auto c : n) {
+    advance_to(c);
+    switch (c.sym) {
+    case anon_sym_LBRACE: emit(c); break;
+    case anon_sym_RBRACE: emit(c); break;
+    default:              emit_dispatch(c); break;
     }
-  });
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -933,12 +937,17 @@ void MtCursor::emit_translation_unit(TSNode n) {
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
 
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    switch (sym) {
-    case anon_sym_SEMI: return skip_over(child);
-    default:            return emit_dispatch(child);
+  for (auto c : n) {
+    advance_to(c);
+    switch (c.sym) {
+    case anon_sym_SEMI:
+      skip_over(c);
+      break;
+    default:
+      emit_dispatch(c);
+      break;
     }
-  });
+  }
 
   emit_span(cursor, mod->source_end);
 }
@@ -965,12 +974,17 @@ void MtCursor::emit_number_literal(TSNode n) {
 
 void MtCursor::emit_return_statement(TSNode n) {
   auto func_name = mod->body(current_function_name);
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    switch (sym) {
-    case anon_sym_return: return emit_replacement(child, "%s =", func_name.c_str());
-    default:              return emit_dispatch(child);
+  for (auto c : n) {
+    advance_to(c);
+    switch (c.sym) {
+    case anon_sym_return:
+      emit_replacement(c, "%s =", func_name.c_str());
+      break;
+    default:
+      emit_dispatch(c);
+      break;
     }
-  });
+  }
 }
 
 //------------------------------------------------------------------------------

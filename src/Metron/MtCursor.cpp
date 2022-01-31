@@ -662,7 +662,7 @@ void MtCursor::emit_field_declaration(TSNode decl) {
     if (mod->field_is_input(decl)) emit("input ");
     if (mod->field_is_output(decl)) emit("output ");
     for (auto c : decl) {
-      advance_to(c);
+      //advance_to(c);
       emit_dispatch(c);
     }
     return;
@@ -1157,7 +1157,6 @@ void MtCursor::emit_dispatch(TSNode n) {
 
   case sym_access_specifier:
   case sym_type_qualifier:
-    skip_whitespace();
     skip_over(n);
     skip_whitespace();
     break;

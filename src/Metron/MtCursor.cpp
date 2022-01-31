@@ -248,10 +248,7 @@ void MtCursor::emit_preproc_include(TSNode n) {
 
 void MtCursor::emit_assignment_expression(TSNode n) {
   if (!in_seq) {
-    for (auto c : n) {
-      advance_to(c);
-      emit_dispatch(c);
-    }
+    for (auto c : n) emit_dispatch(c);
     return;
   }
 

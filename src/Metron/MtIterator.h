@@ -49,22 +49,20 @@ struct MtIterator {
   int child_index;
 };
 
-inline MtIterator begin(TSNode& parent) {
+inline MtIterator begin(TSNode parent) {
   return { parent, 0 };
 }
 
-inline MtIterator end(TSNode& parent) {
+inline MtIterator end(TSNode parent) {
   return { parent, (int)ts_node_child_count(parent) };
 }
 
-inline MtIterator begin(MtIterator& it) {
-  auto child = ts_node_child(it.node, it.child_index);
-  return { child, 0 };
+inline MtIterator begin(MtHandle parent) {
+  return { parent, 0 };
 }
 
-inline MtIterator end(MtIterator& it) {
-  auto child = ts_node_child(it.node, it.child_index);
-  return { child, (int)ts_node_child_count(child) };
+inline MtIterator end(MtHandle parent) {
+  return { parent, (int)ts_node_child_count(parent) };
 }
 
 //------------------------------------------------------------------------------

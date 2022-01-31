@@ -13,23 +13,15 @@
 // Traversal methods
 
 void MtCursor::visit_children(TSNode n, NodeVisitor3 cv) {
-  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-    auto child = ts_node_child(n, i);
-    auto sym = ts_node_symbol(child);
-    auto field = ts_node_field_id_for_child(n, i);
-
-    cv(child, field, sym);
+  for (auto c : n) {
+    cv(c.node, c.field, c.sym);
   }
 }
 
 void MtCursor::emit_children(TSNode n, NodeVisitor3 cv) {
-  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-    auto child = ts_node_child(n, i);
-    auto sym = ts_node_symbol(child);
-    auto field = ts_node_field_id_for_child(n, i);
-
-    advance_to(child);
-    cv(child, field, sym);
+  for (auto c : n) {
+    advance_to(c);
+    cv(c.node, c.field, c.sym);
   }
 }
 
@@ -89,7 +81,7 @@ void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_field
   case sym_template_type:
   case sym_primitive_type:
   case sym_function_declarator:
-    return;
+    break;
 
   case sym_comment:
   case sym_subscript_expression:
@@ -104,11 +96,8 @@ void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_field
   case sym_argument_list:
   case sym_function_definition:
   case sym_return_statement:
-    for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-      auto child = ts_node_child(n, i);
-      check_dirty_tick_dispatch(child, dirty_fields, depth + 1);
-    }
-    return;
+    for (auto c : n) check_dirty_tick_dispatch(c, dirty_fields, depth + 1);
+    break;
 
   case sym_assignment_expression: {
     auto lhs = ts_node_child_by_field_id(n, field_left);
@@ -123,7 +112,7 @@ void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_field
       }
       dirty_fields.insert(field);
     }
-    return;
+    break;
   }
 
   case sym_identifier: {
@@ -133,7 +122,7 @@ void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_field
         print_error(n, "read dirty field - %s\n", mod->node_to_name(field).c_str());
       }
     }
-    return;
+    break;
   }
 
   case sym_if_statement: {
@@ -147,7 +136,7 @@ void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_field
 
     dirty_fields.merge(if_set);
     dirty_fields.merge(else_set);
-    return;
+    break;
   }
 
   case sym_call_expression: {
@@ -165,7 +154,7 @@ void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_field
       if (!ts_node_is_null(func)) check_dirty_tick_dispatch(func, dirty_fields, depth + 1);
     }
 
-    return;
+    break;
   }
 
   default:
@@ -253,24 +242,20 @@ void MtCursor::comment_out(TSNode n) {
 // Replace "#include" with "`include" and ".h" with ".sv"
 
 void MtCursor::emit_preproc_include(TSNode n) {
-  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-    auto child = ts_node_child(n, i);
-    auto sym = ts_node_symbol(child);
-    auto field = ts_node_field_id_for_child(n, i);
+  for (auto c : n) {
+    advance_to(c);
 
-    advance_to(child);
-
-    if (sym == aux_sym_preproc_include_token1) {
-      emit_replacement(child, "`include");
+    if (c.sym == aux_sym_preproc_include_token1) {
+      emit_replacement(c, "`include");
     }
-    else if (sym == sym_string_literal) {
-      auto path = mod->body(child);
+    else if (c.sym == sym_string_literal) {
+      auto path = mod->body(c);
       path.pop_back();
       path.append(".sv\"");
-      emit_replacement(child, "%s", path.c_str());
+      emit_replacement(c, "%s", path.c_str());
     }
     else {
-      emit_dispatch(child);
+      emit_dispatch(c);
     }
   }
 }
@@ -280,22 +265,22 @@ void MtCursor::emit_preproc_include(TSNode n) {
 
 void MtCursor::emit_assignment_expression(TSNode n) {
   if (!in_seq) {
-    for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-      auto child = ts_node_child(n, i);
-      advance_to(child);
-      emit_dispatch(child);
+    for (auto c : n) {
+      advance_to(c);
+      emit_dispatch(c);
     }
     return;
   }
 
   bool lvalue_is_field = false;
 
-  emit_children(n, [&](TSNode child, int field, TSSymbol sym) {
-    switch (field) {
+  for (auto c : n) {
+    advance_to(c);
+    switch (c.field) {
 
     case field_left: {
-      if (sym == sym_identifier) {
-        std::string lhs_name = mod->body(child);
+      if (c.sym == sym_identifier) {
+        std::string lhs_name = mod->body(c);
         for (const auto& f : mod->fields) {
           if (mod->node_to_name(f) == lhs_name) {
             lvalue_is_field = true;
@@ -303,20 +288,23 @@ void MtCursor::emit_assignment_expression(TSNode n) {
           }
         }
       }
-      return emit_dispatch(child);
+      emit_dispatch(c);
+      break;
     }
 
     case field_operator:
       if (lvalue_is_field) emit("<");
-      return emit_dispatch(child);
+      emit_dispatch(c);
+      break;
     
     case field_right:
-      return emit_dispatch(child);
+      emit_dispatch(c);
+      break;
     
     default:
       debugbreak();
     }
-  });
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -854,7 +842,7 @@ void MtCursor::emit_template_type(TSNode n) {
     }
     else if (is_logic && c.sym == sym_template_argument_list) {
       
-      for (auto gc : c.node) {
+      for (auto gc : c) {
         switch (gc.sym) {
         case anon_sym_LT: skip_over(gc); break;
         case anon_sym_GT: skip_over(gc); break;
@@ -1066,7 +1054,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case anon_sym_COLON:
   case aux_sym_preproc_include_token1:
     emit(n);
-    return;
+    break;
 
   case alias_sym_field_identifier:
   case sym_identifier:
@@ -1075,7 +1063,7 @@ void MtCursor::emit_dispatch(TSNode n) {
   case sym_comment:
   case sym_string_literal:
     emit(n);
-    return;
+    break;
 
   case sym_parameter_list:
     for (auto c : n) {
@@ -1083,7 +1071,7 @@ void MtCursor::emit_dispatch(TSNode n) {
       emit_dispatch(c);
     }
     skip_whitespace();
-    return;
+    break;
 
   case sym_if_statement:
   case sym_for_statement:
@@ -1108,26 +1096,26 @@ void MtCursor::emit_dispatch(TSNode n) {
       advance_to(c);
       emit_dispatch(c);
     }
-    return;
+    break;
 
-  case sym_number_literal:         emit_number_literal(n); return;
-  case sym_field_expression:       emit_field_expression(n); return;
-  case sym_return_statement:       emit_return_statement(n); return;
-  case sym_template_declaration:   emit_template_declaration(n); return;
-  case sym_preproc_include:        emit_preproc_include(n);            return;
-  case sym_field_declaration:      emit_field_declaration(n);  return;
-  case sym_compound_statement:     emit_compound_statement(n); return;
-  case sym_template_type:          emit_template_type(n);      return;
-  case sym_translation_unit:       emit_translation_unit(n); return;
-  case sym_primitive_type:         emit_primitive_type(n); return;
-  case alias_sym_type_identifier:  emit_type_identifier(n); return;
-  case sym_class_specifier:        emit_class_specifier(n); return;
-  case sym_struct_specifier:       emit_class_specifier(n); return;
-  case sym_function_definition:    emit_function_definition(n); return;
-  case sym_call_expression:        emit_call_expression(n); return;
-  case sym_assignment_expression:  emit_assignment_expression(n); return;
-  case sym_template_argument_list: emit_template_argument_list(n); return;
-  case sym_enumerator_list:        emit_enumerator_list(n); return;
+  case sym_number_literal:         emit_number_literal(n); break;
+  case sym_field_expression:       emit_field_expression(n); break;
+  case sym_return_statement:       emit_return_statement(n); break;
+  case sym_template_declaration:   emit_template_declaration(n); break;
+  case sym_preproc_include:        emit_preproc_include(n);      break;
+  case sym_field_declaration:      emit_field_declaration(n);  break;
+  case sym_compound_statement:     emit_compound_statement(n); break;
+  case sym_template_type:          emit_template_type(n);      break;
+  case sym_translation_unit:       emit_translation_unit(n); break;
+  case sym_primitive_type:         emit_primitive_type(n); break;
+  case alias_sym_type_identifier:  emit_type_identifier(n); break;
+  case sym_class_specifier:        emit_class_specifier(n); break;
+  case sym_struct_specifier:       emit_class_specifier(n); break;
+  case sym_function_definition:    emit_function_definition(n); break;
+  case sym_call_expression:        emit_call_expression(n); break;
+  case sym_assignment_expression:  emit_assignment_expression(n); break;
+  case sym_template_argument_list: emit_template_argument_list(n); break;
+  case sym_enumerator_list:        emit_enumerator_list(n); break;
 
   case sym_case_statement: {
     for (auto c : n) {
@@ -1137,7 +1125,7 @@ void MtCursor::emit_dispatch(TSNode n) {
       }
       else emit_dispatch(c);
     }
-    return;
+    break;
   }
 
   case sym_switch_statement: {
@@ -1146,7 +1134,7 @@ void MtCursor::emit_dispatch(TSNode n) {
         emit_replacement(c, "case");
       }
       else if (c.field == field_body) {
-        for (auto gc : c.node) {
+        for (auto gc : c) {
           advance_to(gc);
           if (gc.sym == anon_sym_LBRACE) skip_over(gc);
           else if (gc.sym == anon_sym_RBRACE) emit_replacement(gc, "endcase");
@@ -1158,7 +1146,7 @@ void MtCursor::emit_dispatch(TSNode n) {
         emit_dispatch(c);
       }
     }
-    return;
+    break;
   }
 
   case sym_storage_class_specifier: {
@@ -1168,7 +1156,7 @@ void MtCursor::emit_dispatch(TSNode n) {
     else {
       comment_out(n);
     }
-    return;
+    break;
   }
 
   case sym_access_specifier:
@@ -1176,19 +1164,19 @@ void MtCursor::emit_dispatch(TSNode n) {
     skip_whitespace();
     skip_over(n);
     skip_whitespace();
-    return;
+    break;
 
   case sym_preproc_call:
   case sym_preproc_if:
     skip_over(n);
     skip_whitespace();
-    return;
+    break;
 
   case sym_template_parameter_list:
     mod->module_param_list = n;
     skip_over(n);
     skip_whitespace();
-    return;
+    break;
 
   default:
     printf("\n\n\n########################################\n");

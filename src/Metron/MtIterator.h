@@ -3,7 +3,18 @@
 #include "tree_sitter/api.h"
 
 //------------------------------------------------------------------------------
-#if 0
+
+struct MtHandle {
+  TSNode node;
+  TSSymbol sym;
+  int field;
+  int index;
+
+  operator TSNode() const { return node; }
+};
+
+//------------------------------------------------------------------------------
+
 struct MtIterator {
 
   MtIterator& operator++() {
@@ -24,8 +35,14 @@ struct MtIterator {
     return false;
   }
 
-  TSNode operator*() const {
-    return ts_node_child(parent, index);
+  MtHandle operator*() const {
+    auto child = ts_node_child(parent, index);
+    return {
+      child,
+      ts_node_symbol(child),
+      ts_node_field_id_for_child(parent, index),
+      index
+    };
   }
 
   TSNode parent;
@@ -39,6 +56,5 @@ inline MtIterator begin(TSNode& parent) {
 inline MtIterator end(TSNode& parent) {
   return { parent, (int)ts_node_child_count(parent) };
 }
-#endif
 
 //------------------------------------------------------------------------------

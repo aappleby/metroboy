@@ -195,9 +195,8 @@ void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth
 
   if (depth < maxdepth) {
     if (!ts_node_is_null(n)) {
-      for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-        auto c = ts_node_child(n, i);
-        dump_tree(c, i, ts_node_field_id_for_child(n, i), depth + 1, maxdepth);
+      for (auto c : n) {
+        dump_tree(c, c.index, c.field, depth + 1, maxdepth);
       }
     }
   }
@@ -209,19 +208,13 @@ void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth
 
 void MtModule::visit_tree(TSNode n, NodeVisitor cv) {
   cv(n);
-  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-    auto child = ts_node_child(n, i);
-    auto sym = ts_node_symbol(child);
-    auto field = ts_node_field_id_for_child(n, i);
-    visit_tree(child, cv);
-  }
+  for (auto c : n) visit_tree(c, cv);
 }
 
-void MtModule::visit_tree2(TSNode parent, NodeVisitor2 cv) {
-  for (int i = 0; i < (int)ts_node_child_count(parent); i++) {
-    auto child = ts_node_child(parent, i);
-    cv(parent, child);
-    visit_tree2(child, cv);
+void MtModule::visit_tree2(TSNode n, NodeVisitor2 cv) {
+  for (auto c : n) {
+    cv(n, c);
+    visit_tree2(c, cv);
   }
 }
 
@@ -351,9 +344,8 @@ bool MtModule::field_is_module(TSNode n) {
 }
 
 bool MtModule::field_is_static(TSNode n) {
-  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-    auto c = ts_node_child(n, i);
-    if (ts_node_symbol(c) == sym_storage_class_specifier) {
+  for (auto c : n) {
+    if (c.sym == sym_storage_class_specifier) {
       if (match(c, "static")) return true;
     }
   }
@@ -361,9 +353,8 @@ bool MtModule::field_is_static(TSNode n) {
 }
 
 bool MtModule::field_is_const(TSNode n) {
-  for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-    auto c = ts_node_child(n, i);
-    if (ts_node_symbol(c) == sym_type_qualifier) {
+  for (auto c : n) {
+    if (c.sym == sym_type_qualifier) {
       if (match(c, "const")) return true;
     }
   }
@@ -417,10 +408,12 @@ void MtModule::collect_moduleparams() {
   if (ts_node_symbol(module_template) != sym_template_declaration) debugbreak();
 
   auto params = ts_node_child_by_field_id(module_template, field_parameters);
-  for (int i = 0; i < (int)ts_node_child_count(params); i++) {
-    auto child = ts_node_child(params, i);
-    auto sc = ts_node_symbol(child);
-    if (sc == sym_parameter_declaration || sc == sym_optional_parameter_declaration) moduleparams.push_back(child);
+
+  for (auto child : params) {
+    if (child.sym == sym_parameter_declaration ||
+        child.sym == sym_optional_parameter_declaration) {
+      moduleparams.push_back(child);
+    }
   }
 }
 

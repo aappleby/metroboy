@@ -762,19 +762,16 @@ void MtCursor::emit_class_specifier(TSNode n) {
         switch (gc.sym) {
         // Discard the opening brace
         case anon_sym_LBRACE: {
-          advance_to(gc);
           skip_over(gc);
           break;
         }
         // Replace the closing brace with "endmodule"
         case anon_sym_RBRACE: {
-          advance_to(gc);
           emit_replacement(gc, "endmodule");
           break;
         }
         // Discard the seimcolon at the end of class{};"
         case anon_sym_SEMI: {
-          advance_to(gc);
           skip_over(gc);
           break;
         }

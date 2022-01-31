@@ -161,8 +161,7 @@ void MtCursor::emit_span(const char* a, const char* b) {
 }
 
 void MtCursor::emit(TSNode n) {
-  advance_to(n);
-  emit_span(mod->start(n), mod->end(n));
+  emit_span(cursor, mod->end(n));
   cursor = mod->end(n);
 }
 

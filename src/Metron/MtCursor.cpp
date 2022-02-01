@@ -11,13 +11,6 @@
 
 //------------------------------------------------------------------------------
 
-void MtCursor::check_dirty_tick(TSNode func_def) {
-  std::set<TSNode> dirty_fields;
-  check_dirty_tick_dispatch(func_def, dirty_fields, 0);
-}
-
-//------------------------------------------------------------------------------
-
 void MtCursor::dump_node_line(TSNode n) {
   auto start = &mod->source[ts_node_start_byte(n)];
 
@@ -54,6 +47,13 @@ void MtCursor::print_error(TSNode n, const char* fmt, ...) {
 }
 
 //------------------------------------------------------------------------------
+
+void MtCursor::check_dirty_tick(TSNode func_def) {
+  std::set<TSNode> dirty_fields;
+  check_dirty_tick_dispatch(func_def, dirty_fields, 0);
+}
+
+//----------
 
 void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_fields, int depth) {
   if (ts_node_is_null(n)) return;
@@ -148,6 +148,16 @@ void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_field
     mod->dump_tree(n, 3);
     debugbreak();
   }
+}
+
+//------------------------------------------------------------------------------
+
+void MtCursor::check_dirty_tock(TSNode func_def) {
+  std::set<TSNode> dirty_fields;
+  check_dirty_tick_dispatch(func_def, dirty_fields, 0);
+}
+
+void MtCursor::check_dirty_tock_dispatch(TSNode n, std::set<TSNode>& dirty_fields) {
 }
 
 //------------------------------------------------------------------------------

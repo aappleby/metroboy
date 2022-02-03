@@ -383,20 +383,18 @@ void MtModule::collect_moduleparams() {
 
 
 void MtModule::collect_fields() {
-  visit_tree(module_class, [&](TSNode n) {
-    if (ts_node_symbol(n) == sym_function_definition) {
-      //dump_tree(n, 2);
-      auto func_name = ts_node_child_by_field_id(ts_node_child_by_field_id(n, field_declarator), field_declarator);
-      auto func_args = ts_node_child_by_field_id(ts_node_child_by_field_id(n, field_declarator), field_parameters);
+  visit_tree(module_class, [&](MtHandle n) {
+    if (n.sym == sym_function_definition) {
+      auto func_name = n.get_field(field_declarator).get_field(field_declarator);
+      auto func_args = n.get_field(field_declarator).get_field(field_parameters);
 
       if (match(func_name, "tick")) {
-        visit_tree(func_args, [&](TSNode func_arg) {
-          if (ts_node_symbol(func_arg) == sym_parameter_declaration) {
-            auto arg_name = ts_node_child_by_field_id(func_arg, field_declarator);
+        visit_tree(func_args, [&](MtHandle func_arg) {
+          if (func_arg.sym == sym_parameter_declaration) {
+            auto arg_name = func_arg.get_field(field_declarator);
 
             if (!match(arg_name, "rst_n")) {
               inputs.push_back(func_arg);
-              //dump_tree(func_arg, 2);
             }
           }
         });
@@ -404,24 +402,20 @@ void MtModule::collect_fields() {
     }
   });
 
-  visit_tree(module_class, [&](TSNode n) {
-    if (ts_node_symbol(n) == sym_field_declaration) {
+  visit_tree(module_class, [&](MtHandle n) {
+    if (n.sym == sym_field_declaration) {
       if      (field_is_input(n))  inputs.push_back(n);
       else if (field_is_output(n)) outputs.push_back(n);
       else if (field_is_param(n))  localparams.push_back(n);
       else if (field_is_module(n)) submodules.push_back(n);
       else                         fields.push_back(n);
     }
-    if (ts_node_symbol(n) == sym_function_definition) {
+
+    if (n.sym == sym_function_definition) {
       auto func_def = n;
 
-      assert(ts_node_child_count(func_def) == 3);
-      assert(ts_node_field_id_for_child(func_def, 0) == field_type);
-      assert(ts_node_field_id_for_child(func_def, 1) == field_declarator);
-      assert(ts_node_field_id_for_child(func_def, 2) == field_body);
-
-      auto func_type = ts_node_child_by_field_id(func_def, field_type);
-      auto func_decl = ts_node_child_by_field_id(func_def, field_declarator);
+      auto func_type = func_def.get_field(field_type);
+      auto func_decl = func_def.get_field(field_declarator);
 
       bool is_task = false;
       bool is_init = false;
@@ -434,7 +428,7 @@ void MtModule::collect_fields() {
 
       //----------
 
-      auto current_function_name = ts_node_child_by_field_id(func_decl, field_declarator);
+      auto current_function_name = func_decl.get_field(field_declarator);
       is_init = is_task && match(current_function_name, "init");
       is_tick = is_task && match(current_function_name, "tick");
       is_tock = is_task && match(current_function_name, "tock");

@@ -66,11 +66,16 @@ struct MtHandle {
 
   MtHandle named_child(int i) const {
     auto n = ts_node_named_child(node, i);
-    auto s = ts_node_symbol(n);
-    TSTreeCursor cursor = ts_tree_cursor_new(n);
-    auto f = ts_tree_cursor_current_field_id(&cursor);
-    ts_tree_cursor_delete(&cursor);
-    return { n, s, f };
+    if (ts_node_is_null(n)) {
+      return null;
+    }
+    else {
+      auto s = ts_node_symbol(n);
+      TSTreeCursor cursor = ts_tree_cursor_new(n);
+      auto f = ts_tree_cursor_current_field_id(&cursor);
+      ts_tree_cursor_delete(&cursor);
+      return { n, s, f };
+    }
   }
 
   const char* type() const { return ts_node_type(node); }

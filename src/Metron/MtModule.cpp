@@ -367,11 +367,11 @@ void MtModule::find_module() {
 }
 
 void MtModule::collect_moduleparams() {
-  if (ts_node_is_null(module_template)) return;
+  if (!module_template) return;
 
-  if (ts_node_symbol(module_template) != sym_template_declaration) debugbreak();
+  if (module_template.sym != sym_template_declaration) debugbreak();
 
-  auto params = ts_node_child_by_field_id(module_template, field_parameters);
+  auto params = module_template.get_field(field_parameters);
 
   for (auto child : params) {
     if (child.sym == sym_parameter_declaration ||

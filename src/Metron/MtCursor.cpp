@@ -496,19 +496,19 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   if (is_tick && !mod->submodules.empty()) {
     emit_newline();
 
-    std::vector<TSNode> submod_call_nodes;
+    std::vector<MtHandle> submod_call_nodes;
 
     mod->visit_tree(func_def, [&](MtHandle child) {
       if (child.sym == sym_call_expression) {
-        auto call_func = ts_node_child_by_field_id(child, field_function);
+        auto call_func = child.get_field(field_function);
 
         if (ts_node_symbol(call_func) == sym_identifier) {
           // not a submod call
         }
         else {
-          auto call_args = ts_node_child_by_field_id(child, field_arguments);
-          auto call_this = ts_node_child_by_field_id(call_func, field_argument);
-          auto func_name = ts_node_child_by_field_id(call_func, field_field);
+          auto call_args = child.get_field(field_arguments);
+          auto call_this = call_func.get_field(field_argument);
+          auto func_name = call_func.get_field(field_field);
           if (mod->match(func_name, "tick")) {
             submod_call_nodes.push_back(child);
           }
@@ -517,10 +517,10 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
     });
 
     for (auto& submod_call : submod_call_nodes) {
-      auto call_func = ts_node_child_by_field_id(submod_call, field_function);
-      auto call_args = ts_node_child_by_field_id(submod_call, field_arguments);
-      auto call_this = ts_node_child_by_field_id(call_func, field_argument);
-      auto func_name = ts_node_child_by_field_id(call_func, field_field);
+      auto call_func = submod_call.get_field(field_function);
+      auto call_args = submod_call.get_field(field_arguments);
+      auto call_this = call_func.get_field(field_argument);
+      auto func_name = call_func.get_field(field_field);
 
       for (auto& sm : mod->submodules) {
         auto submod_type = mod->node_to_type(sm);
@@ -532,7 +532,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
           std::vector<std::string> call_dst;
 
           for (auto arg : call_args) {
-            if (!ts_node_is_named(arg)) continue;
+            if (!arg.is_named()) continue;
             auto src = mod->node_to_name(arg);
             for (auto& c : src) if (c == '.') c = '_';
             if (src != "rst_n") call_src.push_back(src);
@@ -564,20 +564,19 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
 
 void MtCursor::emit_glue_declaration(MtHandle decl, const std::string& prefix) {
 
-  assert((ts_node_symbol(decl) == sym_field_declaration) ||
-         (ts_node_symbol(decl) == sym_parameter_declaration));
+  assert(decl.sym == sym_field_declaration ||
+         decl.sym == sym_parameter_declaration);
 
-  auto node_type = ts_node_child_by_field_id(decl, field_type);
-  auto type_sym  = ts_node_symbol(node_type);
-  auto node_name = ts_node_child_by_field_id(decl, field_declarator);
+  auto node_type = decl.get_field(field_type);
+  auto node_name = decl.get_field(field_declarator);
 
   std::string type_name;
 
-  if (type_sym == alias_sym_type_identifier || type_sym == sym_primitive_type) {
+  if (node_type.sym == alias_sym_type_identifier || node_type.sym == sym_primitive_type) {
     type_name = mod->body(node_type);
   }
-  else if (type_sym == sym_template_type) {
-    type_name = mod->body(ts_node_child_by_field_id(node_type, field_name));
+  else if (node_type.sym == sym_template_type) {
+    type_name = mod->body(node_type.get_field(field_name));
   }
   else {
     debugbreak();
@@ -600,13 +599,13 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
   // Check if this field is a submodule by looking up its type name in our
   // module list.
 
-  auto node_type = ts_node_child_by_field_id(decl, field_type);
+  auto node_type = decl.get_field(field_type);
   std::string type_name;
 
-  switch (ts_node_symbol(node_type)) {
+  switch (node_type.sym) {
   case alias_sym_type_identifier: type_name = mod->body(node_type); break;
   case sym_primitive_type:        type_name = mod->body(node_type); break;
-  case sym_template_type:         type_name = mod->body(ts_node_child_by_field_id(node_type, field_name)); break;
+  case sym_template_type:         type_name = mod->body(node_type.get_field(field_name)); break;
   default:                        debugbreak();
   }
 
@@ -677,7 +676,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       emit_dispatch(c);
 
       // Patch the template parameter list in after the module declaration
-      if (!ts_node_is_null(mod->module_param_list)) {
+      if (mod->module_param_list) {
         emit_newline();
         MtCursor sub_cursor = *this;
         sub_cursor.cursor = mod->start(mod->module_param_list);
@@ -700,7 +699,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       // And the declaration of the ports will be in the module body along with
       // the rest of the module.
 
-      push_indent(ts_node_named_child(c, 0));
+      push_indent(c.named_child(0));
 
       emit_newline();
       emit("/*verilator public_module*/");
@@ -759,7 +758,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
 // Change "{ blah(); }" to "begin blah(); end"
 
 void MtCursor::emit_compound_statement(MtHandle body) {
-  push_indent(ts_node_named_child(body, 0));
+  push_indent(body.named_child(0));
 
   for (auto c : body) {
     switch (c.sym) {
@@ -794,8 +793,8 @@ void MtCursor::emit_compound_statement(MtHandle body) {
 void MtCursor::emit_template_type(MtHandle n) {
   //mod->dump_tree(n);
 
-  auto node_name = ts_node_child_by_field_id(n, field_name);
-  auto node_args = ts_node_child_by_field_id(n, field_arguments);
+  auto node_name = n.get_field(field_name);
+  auto node_args = n.get_field(field_arguments);
 
   bool is_logic = mod->match(node_name, "logic");
 
@@ -977,9 +976,7 @@ void MtCursor::emit_flat_field_expression(MtHandle n) {
 void MtCursor::emit_dispatch(MtHandle n) {
   assert(cursor <= mod->start(n));
 
-  auto s = ts_node_symbol(n);
-
-  switch (s) {
+  switch (n.sym) {
   case anon_sym_template:
   case anon_sym_if:
   case anon_sym_else:

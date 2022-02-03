@@ -73,6 +73,10 @@ struct MtHandle {
     return { n, s, f };
   }
 
+  const char* type() const { return ts_node_type(node); }
+  uint32_t start_byte() const { return ts_node_start_byte(node); }
+  uint32_t end_byte()   const { return ts_node_start_byte(node); }
+
   bool is_null()       const { return ts_node_is_null(node); }
   bool is_named()      const { return !is_null() && ts_node_is_named(node); }
   bool is_missing()    const { return !is_null() && ts_node_is_missing(node); }

@@ -195,8 +195,9 @@ void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth
 
   if (depth < maxdepth) {
     if (!ts_node_is_null(n)) {
+      int index = 0;
       for (auto c : n) {
-        dump_tree(c, c.index, c.field, depth + 1, maxdepth);
+        dump_tree(c, index++, c.field, depth + 1, maxdepth);
       }
     }
   }

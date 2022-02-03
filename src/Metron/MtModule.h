@@ -78,9 +78,13 @@ struct MtModule {
   bool field_is_input(MtHandle n);
   bool field_is_output(MtHandle n);
 
-  MtHandle get_field_by_id(MtHandle id);
-  MtHandle get_task_by_id(MtHandle id);
-  MtHandle get_function_by_id(MtHandle id);
+  MtHandle get_by_id(std::vector<MtHandle>& handles, MtHandle id);
+
+  MtHandle get_field_by_id(MtHandle id)    { return get_by_id(fields, id); }
+  MtHandle get_task_by_id(MtHandle id)     { return get_by_id(tasks, id); }
+  MtHandle get_function_by_id(MtHandle id) { return get_by_id(functions, id);}
+  MtHandle get_input_by_id(MtHandle id)    { return get_by_id(inputs, id); }
+  MtHandle get_output_by_id(MtHandle id)   { return get_by_id(outputs, id); }
 
   // Scanner
   void find_module();

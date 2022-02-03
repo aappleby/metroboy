@@ -86,37 +86,13 @@ void MtModule::load(const std::string& input_filename, const std::string& output
 
 //------------------------------------------------------------------------------
 
-MtHandle MtModule::get_field_by_id(MtHandle id) {
-  assert(id.is_identifier());
+MtHandle MtModule::get_by_id(std::vector<MtHandle>& handles, MtHandle id) {
+  assert(ts_node_symbol(id) == sym_identifier);
   auto name_a = node_to_name(id);
 
-  for (auto& field : fields) {
-    auto name_b = node_to_name(field);
-    if (name_a == name_b) return field;
-  }
-
-  return MtHandle::null;
-}
-
-MtHandle MtModule::get_task_by_id(MtHandle id) {
-  assert(id.is_identifier());
-  auto name_a = node_to_name(id);
-
-  for (auto& task : tasks) {
-    auto name_b = node_to_name(task);
-    if (name_a == name_b) return task;
-  }
-
-  return MtHandle::null;
-}
-
-MtHandle MtModule::get_function_by_id(MtHandle id) {
-  assert(id.is_identifier());
-  auto name_a = node_to_name(id);
-
-  for (auto& func : functions) {
-    auto name_b = node_to_name(func);
-    if (name_a == name_b) return func;
+  for (auto& c : handles) {
+    auto name_b = node_to_name(c);
+    if (name_a == name_b) return c;
   }
 
   return MtHandle::null;
@@ -126,21 +102,23 @@ MtHandle MtModule::get_function_by_id(MtHandle id) {
 // Node debugging
 
 void MtModule::dump_node(MtHandle n, int index, int field, int depth) {
-  if (!n) {
+  if (ts_node_is_null(n)) {
     printf("### NULL ###\n");
     return;
   }
 
+  auto s = ts_node_symbol(n);
+
   uint32_t color = 0x00000000;
-  if (n.sym == sym_template_declaration) color = 0xAADDFF;
-  if (n.sym == sym_struct_specifier)     color = 0xFFAAFF;
-  if (n.sym == sym_class_specifier)      color = 0xFFAAFF;
-  if (n.sym == sym_expression_statement) color = 0xAAFFFF;
-  if (n.sym == sym_expression_statement) color = 0xAAFFFF;
-  if (n.sym == sym_compound_statement)   color = 0xFFFFFF;
-  if (n.sym == sym_function_definition)  color = 0xAAAAFF;
-  if (n.sym == sym_field_declaration)    color = 0xFFAAAA;
-  if (n.sym == sym_comment)              color = 0xAAFFAA;
+  if (s == sym_template_declaration) color = 0xAADDFF;
+  if (s == sym_struct_specifier)     color = 0xFFAAFF;
+  if (s == sym_class_specifier)      color = 0xFFAAFF;
+  if (s == sym_expression_statement) color = 0xAAFFFF;
+  if (s == sym_expression_statement) color = 0xAAFFFF;
+  if (s == sym_compound_statement)   color = 0xFFFFFF;
+  if (s == sym_function_definition)  color = 0xAAAAFF;
+  if (s == sym_field_declaration)    color = 0xFFAAAA;
+  if (s == sym_comment)              color = 0xAAFFAA;
 
   if (color) {
     printf("\u001b[38;2;%d;%d;%dm", (color >> 0) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF);
@@ -153,20 +131,21 @@ void MtModule::dump_node(MtHandle n, int index, int field, int depth) {
   printf("[%d] ", index);
 
   if (field != -1) printf("f%d ", field);
-  if (n.sym != -1) printf("s%d ", n.sym);
+  if (s != -1) printf("s%d ", s);
 
   if (field != -1) {
     printf("%s.", ts_language_field_name_for_id(lang, field));
   }
 
-  if (n && n.is_named() && n.child_count()) {
-    printf("%s: ", n.type());
+  if (!ts_node_is_null(n) && ts_node_is_named(n) && ts_node_child_count(n)) {
+
+    printf("%s: ", ts_node_type(n));
   }
-  else if (n && n.is_named() && !n.child_count()) {
-    printf("%s: ", n.type());
+  else if (!ts_node_is_null(n) && ts_node_is_named(n) && !ts_node_child_count(n)) {
+    printf("%s: ", ts_node_type(n));
     ::print_escaped(source, ts_node_start_byte(n), ts_node_end_byte(n));
   }
-  else if (!n) {
+  else if (ts_node_is_null(n)) {
     debugbreak();
     printf("text: ");
     ::print_escaped(source, ts_node_start_byte(n), ts_node_end_byte(n));

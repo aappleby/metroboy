@@ -75,10 +75,7 @@ void MtCursor::check_dirty_tick_dispatch(MtHandle n, std::set<TSNode>& dirty_fie
 
 void MtCursor::check_dirty_read(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
   auto field = mod->get_field_by_id(n);
-  if (!field) {
-    print_error(n, "null field!\n");
-  }
-  else if (dirty_fields.contains(field)) {
+  if (field && dirty_fields.contains(field)) {
     print_error(n, "read dirty field - %s\n", mod->node_to_name(field).c_str());
   }
 }
@@ -499,19 +496,19 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   if (is_tick && !mod->submodules.empty()) {
     emit_newline();
 
-    std::vector<MtHandle> submod_call_nodes;
+    std::vector<TSNode> submod_call_nodes;
 
     mod->visit_tree(func_def, [&](MtHandle child) {
       if (child.sym == sym_call_expression) {
-        auto call_func = child.get_field(field_function);
+        auto call_func = ts_node_child_by_field_id(child, field_function);
 
         if (ts_node_symbol(call_func) == sym_identifier) {
           // not a submod call
         }
         else {
-          auto call_args = child.get_field(field_arguments);
-          auto call_this = call_func.get_field(field_argument);
-          auto func_name = call_func.get_field(field_field);
+          auto call_args = ts_node_child_by_field_id(child, field_arguments);
+          auto call_this = ts_node_child_by_field_id(call_func, field_argument);
+          auto func_name = ts_node_child_by_field_id(call_func, field_field);
           if (mod->match(func_name, "tick")) {
             submod_call_nodes.push_back(child);
           }
@@ -520,10 +517,10 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
     });
 
     for (auto& submod_call : submod_call_nodes) {
-      auto call_func = submod_call.get_field(field_function);
-      auto call_args = submod_call.get_field(field_arguments);
-      auto call_this = call_func.get_field(field_argument);
-      auto func_name = call_func.get_field(field_field);
+      auto call_func = ts_node_child_by_field_id(submod_call, field_function);
+      auto call_args = ts_node_child_by_field_id(submod_call, field_arguments);
+      auto call_this = ts_node_child_by_field_id(call_func, field_argument);
+      auto func_name = ts_node_child_by_field_id(call_func, field_field);
 
       for (auto& sm : mod->submodules) {
         auto submod_type = mod->node_to_type(sm);
@@ -535,7 +532,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
           std::vector<std::string> call_dst;
 
           for (auto arg : call_args) {
-            if (!arg.is_named()) continue;
+            if (!ts_node_is_named(arg)) continue;
             auto src = mod->node_to_name(arg);
             for (auto& c : src) if (c == '.') c = '_';
             if (src != "rst_n") call_src.push_back(src);

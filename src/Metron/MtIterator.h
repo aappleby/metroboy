@@ -2,6 +2,31 @@
 
 #include "tree_sitter/api.h"
 #include "../Plait/TreeSymbols.h"
+#include <compare>
+#include <algorithm>
+
+//------------------------------------------------------------------------------
+
+inline std::strong_ordering operator<=>(const TSNode& a, const TSNode& b) {
+  constexpr auto eq = std::strong_ordering::equal;
+  if (auto x = (a.context[0] <=> b.context[0]); x != eq) return x;
+  if (auto x = (a.context[1] <=> b.context[1]); x != eq) return x;
+  if (auto x = (a.context[2] <=> b.context[2]); x != eq) return x;
+  if (auto x = (a.context[3] <=> b.context[3]); x != eq) return x;
+  if (auto x = (a.id         <=> b.id);         x != eq) return x;
+  if (auto x = (a.tree       <=> b.tree);       x != eq) return x;
+  return eq;
+}
+
+inline std::strong_ordering operator<=>(const TSTreeCursor& a, const TSTreeCursor& b) {
+  constexpr auto eq = std::strong_ordering::equal;
+  if (auto x = a.context[0] <=> b.context[0]; x != eq) return x;
+  if (auto x = a.context[1] <=> b.context[1]; x != eq) return x;
+  if (auto x = a.tree       <=> b.tree;       x != eq) return x;
+  if (auto x = a.id         <=> b.id;         x != eq) return x;
+  return eq;
+}
+
 
 //------------------------------------------------------------------------------
 
@@ -43,7 +68,7 @@ struct MtHandle {
   //----------
 
   operator bool() const { return !ts_node_is_null(node); }
-  operator TSNode() const { return node; }
+  std::strong_ordering operator<=>(const MtHandle& b) const { return node <=> b.node; }
 
   const char* type() const { return ts_node_type(node); }
   uint32_t start_byte() const { return ts_node_start_byte(node); }
@@ -152,13 +177,8 @@ struct MtIterator {
     return *this;
   }
 
-  bool operator != (const MtIterator& n) {
-    if (cursor.tree != n.cursor.tree) return true;
-    if (cursor.id != n.cursor.id) return true;
-    if (cursor.context[0] != n.cursor.context[0]) return true;
-    if (cursor.context[1] != n.cursor.context[1]) return true;
-    return false;
-  }
+  std::strong_ordering operator<=>(const MtIterator& b) const { return cursor <=> b.cursor; }
+  bool operator != (const MtIterator& b) const { return (*this <=> b) != std::strong_ordering::equal; }
 
   MtHandle operator*() const {
     auto child = ts_tree_cursor_current_node(&cursor);
@@ -184,7 +204,7 @@ inline MtIterator end(TSNode parent) {
 }
 
 inline MtIterator begin(MtHandle parent) {
-  return MtIterator(parent);
+  return MtIterator(parent.node);
 }
 
 inline MtIterator end(MtHandle parent) {

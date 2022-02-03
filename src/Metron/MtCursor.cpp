@@ -12,7 +12,7 @@
 //------------------------------------------------------------------------------
 
 void MtCursor::dump_node_line(MtHandle n) {
-  auto start = &mod->source[ts_node_start_byte(n)];
+  auto start = &mod->source[n.start_byte()];
 
   auto a = start;
   auto b = start;
@@ -37,7 +37,7 @@ void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
   vprintf(fmt, args);
   va_end(args);
 
-  emit("@%04d: ", ts_node_start_point(n).row + 1);
+  emit("@%04d: ", ts_node_start_point(n.node).row + 1);
   dump_node_line(n);
   printf("\n");
 
@@ -49,14 +49,16 @@ void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
 //------------------------------------------------------------------------------
 
 void MtCursor::check_dirty_tick(MtHandle func_def) {
-  std::set<TSNode> dirty_fields;
+  std::set<MtHandle> dirty_fields;
   check_dirty_tick_dispatch(func_def, dirty_fields, 0);
 }
 
 //----------------------------------------
 
-void MtCursor::check_dirty_tick_dispatch(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
+void MtCursor::check_dirty_tick_dispatch(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
   if (!n || !n.is_named()) return;
+
+  //mod->dump_tree(n);
 
   switch (n.sym) {
 
@@ -73,7 +75,7 @@ void MtCursor::check_dirty_tick_dispatch(MtHandle n, std::set<TSNode>& dirty_fie
 
 //----------------------------------------
 
-void MtCursor::check_dirty_read(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
+void MtCursor::check_dirty_read(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
   auto field = mod->get_field_by_id(n);
   if (field && dirty_fields.contains(field)) {
     print_error(n, "read dirty field - %s\n", mod->node_to_name(field).c_str());
@@ -82,7 +84,7 @@ void MtCursor::check_dirty_read(MtHandle n, std::set<TSNode>& dirty_fields, int 
 
 //----------------------------------------
 
-void MtCursor::check_dirty_write(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
+void MtCursor::check_dirty_write(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
   auto lhs = n.get_field(field_left);
   auto rhs = n.get_field(field_right);
 
@@ -91,6 +93,7 @@ void MtCursor::check_dirty_write(MtHandle n, std::set<TSNode>& dirty_fields, int
   auto field = mod->get_field_by_id(lhs);
   if (field) {
     if (dirty_fields.contains(field)) {
+      mod->dump_tree(n);
       print_error(n, "wrote dirty field - %s\n", mod->node_to_name(field).c_str());
     }
     dirty_fields.insert(field);
@@ -99,11 +102,11 @@ void MtCursor::check_dirty_write(MtHandle n, std::set<TSNode>& dirty_fields, int
 
 //----------------------------------------
 
-void MtCursor::check_dirty_if(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
+void MtCursor::check_dirty_if(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
   check_dirty_tick_dispatch(n.get_field(field_condition), dirty_fields, depth + 1);
 
-  std::set<TSNode> if_set = dirty_fields;
-  std::set<TSNode> else_set = dirty_fields;
+  std::set<MtHandle> if_set = dirty_fields;
+  std::set<MtHandle> else_set = dirty_fields;
 
   check_dirty_tick_dispatch(n.get_field(field_consequence), if_set, depth + 1);
   check_dirty_tick_dispatch(n.get_field(field_alternative), else_set, depth + 1);
@@ -114,7 +117,7 @@ void MtCursor::check_dirty_if(MtHandle n, std::set<TSNode>& dirty_fields, int de
 
 //----------------------------------------
 
-void MtCursor::check_dirty_call(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
+void MtCursor::check_dirty_call(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
   auto node_func = n.get_field(field_function);
   auto node_args = n.get_field(field_arguments);
 
@@ -133,11 +136,11 @@ void MtCursor::check_dirty_call(MtHandle n, std::set<TSNode>& dirty_fields, int 
 //------------------------------------------------------------------------------
 
 void MtCursor::check_dirty_tock(MtHandle func_def) {
-  std::set<TSNode> dirty_fields;
+  std::set<MtHandle> dirty_fields;
   check_dirty_tick_dispatch(func_def, dirty_fields, 0);
 }
 
-void MtCursor::check_dirty_tock_dispatch(MtHandle n, std::set<TSNode>& dirty_fields) {
+void MtCursor::check_dirty_tock_dispatch(MtHandle n, std::set<MtHandle>& dirty_fields) {
 }
 
 //------------------------------------------------------------------------------
@@ -488,7 +491,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   //----------
   // For each call to {submodule}.tick() in module::tick(), emit glue assignments.
 
-  current_function_name = { 0 };
+  current_function_name = MtHandle::null;
   in_init = false;
   in_comb = false;
   in_seq  = false;
@@ -502,7 +505,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
       if (child.sym == sym_call_expression) {
         auto call_func = child.get_field(field_function);
 
-        if (ts_node_symbol(call_func) == sym_identifier) {
+        if (call_func.sym == sym_identifier) {
           // not a submod call
         }
         else {
@@ -721,29 +724,14 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       }
 
       // Emit the module body, with a few modifications.
-      for (auto gc : c) {
-        switch (gc.sym) {
-        // Discard the opening brace
-        case anon_sym_LBRACE: {
-          emit_replacement(gc, "");
-          break;
-        }
-        // Replace the closing brace with "endmodule"
-        case anon_sym_RBRACE: {
-          emit_replacement(gc, "endmodule");
-          break;
-        }
-        // Discard the seimcolon at the end of class{};"
-        case anon_sym_SEMI: {
-          emit_replacement(gc, "");
-          break;
-        }
-
-        default: {
-          emit_dispatch(gc);
-          break;
-        }
-        }
+      // Discard the opening brace
+      // Replace the closing brace with "endmodule"
+      // Discard the seimcolon at the end of class{};"
+      for (auto gc : c) switch (gc.sym) {
+      case anon_sym_LBRACE: emit_replacement(gc, ""); break;
+      case anon_sym_RBRACE: emit_replacement(gc, "endmodule"); break;
+      case anon_sym_SEMI: emit_replacement(gc, ""); break;
+      default: emit_dispatch(gc); break;
       }
 
       pop_indent();
@@ -758,33 +746,19 @@ void MtCursor::emit_class_specifier(MtHandle n) {
 // Change "{ blah(); }" to "begin blah(); end"
 
 void MtCursor::emit_compound_statement(MtHandle body) {
-  push_indent(body.named_child(0));
+  if (body.named_child_count()) push_indent(body.named_child(0));
 
-  for (auto c : body) {
-    switch (c.sym) {
-    case anon_sym_LBRACE: {
-      emit_replacement(c, "begin");
-      emit_hoisted_decls(body);
-      break;
-    }
-
-    case sym_declaration: {
-      emit_init_declarator_as_assign(c);
-      break;
-    }
-
-    case anon_sym_RBRACE:
-      emit_replacement(c, "end");
-      break;
-
-    default: {
-      emit_dispatch(c);
-      break;
-    }
-    }
+  for (auto c : body) switch (c.sym) {
+  case anon_sym_LBRACE:
+    emit_replacement(c, "begin");
+    emit_hoisted_decls(body);
+    break;
+  case sym_declaration: emit_init_declarator_as_assign(c); break;
+  case anon_sym_RBRACE: emit_replacement(c, "end"); break;
+  default: emit_dispatch(c); break;
   }
 
-  pop_indent();
+  if (body.named_child_count()) pop_indent();
 }
 
 //------------------------------------------------------------------------------

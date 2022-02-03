@@ -207,12 +207,12 @@ void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth
 //------------------------------------------------------------------------------
 // Node traversal
 
-void MtModule::visit_tree(TSNode n, NodeVisitor cv) {
+void MtModule::visit_tree(MtHandle n, NodeVisitor cv) {
   cv(n);
   for (auto c : n) visit_tree(c, cv);
 }
 
-void MtModule::visit_tree2(TSNode n, NodeVisitor2 cv) {
+void MtModule::visit_tree2(MtHandle n, NodeVisitor2 cv) {
   for (auto c : n) {
     cv(n, c);
     visit_tree2(c, cv);

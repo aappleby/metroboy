@@ -7,9 +7,8 @@
 #include "tree_sitter/api.h"
 #include "MtIterator.h"
 
-typedef std::function<void(TSNode)> NodeVisitor;
-typedef std::function<void(TSNode parent, TSNode child)> NodeVisitor2;
-typedef std::function<void(TSNode, int, TSSymbol)> NodeVisitor3;
+typedef std::function<void(MtHandle)> NodeVisitor;
+typedef std::function<void(MtHandle parent, MtHandle child)> NodeVisitor2;
 typedef std::vector<uint8_t> blob;
 
 //------------------------------------------------------------------------------
@@ -58,8 +57,8 @@ struct MtModule {
   void dump_tree(TSNode n, int maxdepth) { dump_tree(n, 0, -1, 0, maxdepth); }
   void dump_tree(TSNode n) { dump_tree(n, 0, -1, 0, 255); }
 
-  void visit_tree(TSNode n, NodeVisitor cv);
-  void visit_tree2(TSNode parent, NodeVisitor2 cv);
+  void visit_tree(MtHandle n, NodeVisitor cv);
+  void visit_tree2(MtHandle parent, NodeVisitor2 cv);
 
   // Text handling
   const char* start(TSNode n);

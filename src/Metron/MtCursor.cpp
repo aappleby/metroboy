@@ -501,9 +501,8 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
 
     std::vector<TSNode> submod_call_nodes;
 
-    mod->visit_tree(func_def, [&](TSNode child) {
-      auto sym = ts_node_symbol(child);
-      if (sym == sym_call_expression) {
+    mod->visit_tree(func_def, [&](MtHandle child) {
+      if (child.sym == sym_call_expression) {
         auto call_func = ts_node_child_by_field_id(child, field_function);
 
         if (ts_node_symbol(call_func) == sym_identifier) {

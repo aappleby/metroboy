@@ -41,6 +41,8 @@ void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
   dump_node_line(n);
   printf("\n");
 
+  mod->dump_tree(n);
+
   emit("halting...\n");
   emit("########################################\n");
   debugbreak();
@@ -50,97 +52,138 @@ void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
 
 void MtCursor::check_dirty_tick(MtHandle func_def) {
   std::set<MtHandle> dirty_fields;
-  check_dirty_tick_dispatch(func_def, dirty_fields, 0);
+  check_dirty_dispatch(func_def, true, dirty_fields, 0);
+}
+
+void MtCursor::check_dirty_tock(MtHandle func_def) {
+  std::set<MtHandle> dirty_fields;
+  check_dirty_dispatch(func_def, false, dirty_fields, 0);
 }
 
 //----------------------------------------
 
-void MtCursor::check_dirty_tick_dispatch(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
+void MtCursor::check_dirty_dispatch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
   if (!n || !n.is_named()) return;
-
-  //mod->dump_tree(n);
 
   switch (n.sym) {
 
-  case sym_assignment_expression: check_dirty_write(n, dirty_fields, depth); break;
-  case sym_identifier:            check_dirty_read(n, dirty_fields, depth); break;
-  case sym_if_statement:          check_dirty_if(n, dirty_fields, depth); break;
-  case sym_call_expression:       check_dirty_call(n, dirty_fields, depth); break;
+  case sym_assignment_expression: check_dirty_write(n, is_seq, dirty_fields, depth); break;
+  case sym_identifier:            check_dirty_read(n, is_seq, dirty_fields, depth); break;
+  case sym_if_statement:          check_dirty_if(n, is_seq, dirty_fields, depth); break;
+  case sym_call_expression:       check_dirty_call(n, is_seq, dirty_fields, depth); break;
+  case sym_switch_statement:      check_dirty_switch(n, is_seq, dirty_fields, depth); break;
 
   default:
-    for (auto c : n) check_dirty_tick_dispatch(c, dirty_fields, depth + 1);
+    for (auto c : n) check_dirty_dispatch(c, is_seq, dirty_fields, depth + 1);
     break;
   }
 }
 
 //----------------------------------------
 
-void MtCursor::check_dirty_read(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
-  auto field = mod->get_field_by_id(n);
-  if (field && dirty_fields.contains(field)) {
-    print_error(n, "read dirty field - %s\n", mod->node_to_name(field).c_str());
+void MtCursor::check_dirty_read(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+  if (is_seq) {
+    auto field = mod->get_field_by_id(n);
+    if (field && dirty_fields.contains(field)) {
+      print_error(n, "seq read dirty field - %s\n", mod->node_to_name(field).c_str());
+    }
+  }
+  else {
+    auto output = mod->get_output_by_id(n);
+    if (output && !dirty_fields.contains(output)) {
+      print_error(n, "comb read clean output - %s\n", mod->node_to_name(output).c_str());
+    }
   }
 }
 
 //----------------------------------------
 
-void MtCursor::check_dirty_write(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
+void MtCursor::check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
   auto lhs = n.get_field(field_left);
   auto rhs = n.get_field(field_right);
 
-  check_dirty_tick_dispatch(rhs, dirty_fields, depth + 1);
+  check_dirty_dispatch(rhs, is_seq, dirty_fields, depth + 1);
 
-  auto field = mod->get_field_by_id(lhs);
-  if (field) {
-    if (dirty_fields.contains(field)) {
-      mod->dump_tree(n);
-      print_error(n, "wrote dirty field - %s\n", mod->node_to_name(field).c_str());
+  if (is_seq) {
+    auto field = mod->get_field_by_id(lhs);
+    if (field) {
+      if (dirty_fields.contains(field)) {
+        print_error(n, "seq wrote dirty field - %s\n", mod->node_to_name(field).c_str());
+      }
+      dirty_fields.insert(field);
     }
-    dirty_fields.insert(field);
+  }
+
+  if (!is_seq) {
+    auto field = mod->get_field_by_id(lhs);
+    if (field) {
+      print_error(n, "comb wrote field - %s\n", mod->node_to_name(field).c_str());
+    }
+  }
+
+  if (!is_seq) {
+    auto output = mod->get_output_by_id(lhs);
+    if (output) {
+      if (dirty_fields.contains(output)) {
+        print_error(n, "comb wrote dirty output - %s\n", mod->node_to_name(output).c_str());
+      }
+      dirty_fields.insert(output);
+    }
   }
 }
 
 //----------------------------------------
 
-void MtCursor::check_dirty_if(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
-  check_dirty_tick_dispatch(n.get_field(field_condition), dirty_fields, depth + 1);
+void MtCursor::check_dirty_if(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+  check_dirty_dispatch(n.get_field(field_condition), is_seq, dirty_fields, depth + 1);
 
-  std::set<MtHandle> if_set = dirty_fields;
-  std::set<MtHandle> else_set = dirty_fields;
+  auto old_dirty_fields = dirty_fields;
 
-  check_dirty_tick_dispatch(n.get_field(field_consequence), if_set, depth + 1);
-  check_dirty_tick_dispatch(n.get_field(field_alternative), else_set, depth + 1);
-
+  std::set<MtHandle> if_set = old_dirty_fields;
+  check_dirty_dispatch(n.get_field(field_consequence), is_seq, if_set, depth + 1);
   dirty_fields.merge(if_set);
+
+  std::set<MtHandle> else_set = old_dirty_fields;
+  check_dirty_dispatch(n.get_field(field_alternative), is_seq, else_set, depth + 1);
   dirty_fields.merge(else_set);
 }
 
 //----------------------------------------
 
-void MtCursor::check_dirty_call(MtHandle n, std::set<MtHandle>& dirty_fields, int depth) {
+void MtCursor::check_dirty_call(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
   auto node_func = n.get_field(field_function);
   auto node_args = n.get_field(field_arguments);
 
   if (node_func.is_identifier()) {
     // local function call, traverse args and then function body
-    check_dirty_tick_dispatch(node_args, dirty_fields, depth + 1);
+    check_dirty_dispatch(node_args, is_seq, dirty_fields, depth + 1);
 
     auto task = mod->get_task_by_id(node_func);
-    if (task) check_dirty_tick_dispatch(task, dirty_fields, depth + 1);
+    if (task) check_dirty_dispatch(task, is_seq, dirty_fields, depth + 1);
 
     auto func = mod->get_function_by_id(node_func);
-    if (func) check_dirty_tick_dispatch(func, dirty_fields, depth + 1);
+    if (func) check_dirty_dispatch(func, is_seq, dirty_fields, depth + 1);
   }
 }
 
-//------------------------------------------------------------------------------
+//----------------------------------------
 
-void MtCursor::check_dirty_tock(MtHandle func_def) {
-  std::set<MtHandle> dirty_fields;
-  check_dirty_tick_dispatch(func_def, dirty_fields, 0);
-}
+void MtCursor::check_dirty_switch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
 
-void MtCursor::check_dirty_tock_dispatch(MtHandle n, std::set<MtHandle>& dirty_fields) {
+  auto cond = n.get_field(field_condition);
+  auto body = n.get_field(field_body);
+
+  check_dirty_dispatch(cond, is_seq, dirty_fields, depth + 1);
+
+  auto old_dirty_fields = dirty_fields;
+
+  for (auto c : body) {
+    if (c.sym == sym_case_statement) {
+      auto temp = old_dirty_fields;
+      check_dirty_dispatch(c, is_seq, temp, depth + 1);
+      dirty_fields.merge(temp);
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -442,11 +485,10 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   }
 
   //----------
-  // Verify that tick() obeys the read-before-write rule.
+  // Verify that tick()/tock() obey read/write ordering rules.
 
-  if (is_tick) {
-    check_dirty_tick(func_def);
-  }
+  if (is_tick) check_dirty_tick(func_def);
+  if (is_tock) check_dirty_tock(func_def);
 
   //----------
   // Emit the module body with the correct type of "begin/end" pair,
@@ -1079,6 +1121,10 @@ void MtCursor::emit_dispatch(MtHandle n) {
     }
     break;
   }
+
+  case sym_break_statement:
+    comment_out(n);
+    break;
 
   case sym_access_specifier:
   case sym_type_qualifier:

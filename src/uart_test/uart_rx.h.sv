@@ -4,7 +4,7 @@
 // INPUTS:       i_serial, 
 // OUTPUTS:      o_data, o_valid, o_sum, 
 // LOCALPARAMS:  cycle_bits, cycle_max, cursor_max, cursor_bits, 
-// FIELDS:       cycle, cursor, buffer, sum, 
+// FIELDS:       cycle, cursor, buffer, sum, temp, 
 // SUBMODULES:   
 // TASKS:        
 // FUNCTIONS:    
@@ -32,6 +32,7 @@ module uart_rx
   logic[cursor_bits-1:0] cursor;
   logic[7:0] buffer;
   logic[31:0] sum;
+  logic[7:0] temp;
 
   output logic[7:0] o_data;
   output logic o_valid;
@@ -53,6 +54,7 @@ module uart_rx
       cursor <= 0;
       buffer <= 0;
       sum <= 0;
+      temp <= 0;
     end else begin
       if (cycle != 0) begin
         cycle <= cycle - 1;

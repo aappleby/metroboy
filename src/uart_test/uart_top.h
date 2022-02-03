@@ -4,10 +4,6 @@
 #include "uart_tx.h"
 #include "uart_hello.h"
 
-/*
-check dirty needs to handle switch statements
-*/
-
 //==============================================================================
 
 template<int cycles_per_bit = 3>
@@ -55,9 +51,17 @@ struct uart_top {
     if (!rst_n) {
     }
     else {
-      temp = 1;
-      //logic<8> blah = temp;
-      //temp = 2;
+      switch (o_data & 0b111) {
+      case 0:  temp = 0b00000001; break;
+      case 1:  temp = 0b00000010; break;
+      case 2:  temp = 0b00000100; break;
+      case 3:  temp = 0b00001000; break;
+      case 4:  temp = 0b00010000; break;
+      case 5:  temp = 0b00100000; break;
+      case 6:  temp = 0b01000000; break;
+      case 7:  temp = 0b10000000; break;
+      default: temp = 0b00000000; break;
+      }
     }
   }
 
@@ -80,15 +84,15 @@ struct uart_top {
     o_sum = rx.o_sum;
 
     switch (o_data & 0b111) {
-    case 0:  o_onehot = 0b00000001;
-    case 1:  o_onehot = 0b00000010;
-    case 2:  o_onehot = 0b00000100;
-    case 3:  o_onehot = 0b00001000;
-    case 4:  o_onehot = 0b00010000;
-    case 5:  o_onehot = 0b00100000;
-    case 6:  o_onehot = 0b01000000;
-    case 7:  o_onehot = 0b10000000;
-    default: o_onehot = 0b00000000;
+    case 0:  o_onehot = 0b00000001; break;
+    case 1:  o_onehot = 0b00000010; break;
+    case 2:  o_onehot = 0b00000100; break;
+    case 3:  o_onehot = 0b00001000; break;
+    case 4:  o_onehot = 0b00010000; break;
+    case 5:  o_onehot = 0b00100000; break;
+    case 6:  o_onehot = 0b01000000; break;
+    case 7:  o_onehot = 0b10000000; break;
+    default: o_onehot = 0b00000000; break;
     }
   }
 

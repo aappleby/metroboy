@@ -15,6 +15,7 @@ struct uart_rx {
   logic<cursor_bits> cursor;
   logic<8> buffer;
   logic<32> sum;
+  logic<8> temp;
 
   logic<8> o_data;
   logic<1> o_valid;
@@ -36,6 +37,7 @@ struct uart_rx {
       cursor = 0;
       buffer = 0;
       sum = 0;
+      temp = 0;
     } else {
       if (cycle != 0) {
         cycle = cycle - 1;

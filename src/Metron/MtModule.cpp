@@ -128,10 +128,10 @@ void MtModule::dump_node(MtHandle n, int index, int field, int depth) {
 
   printf("[%d] ", index);
 
-  if (field != -1) printf("f%d ", field);
-  if (n.sym != -1) printf("s%d ", n.sym);
+  if (field) printf("f%d ", field);
+  if (n.sym) printf("s%d ", n.sym);
 
-  if (field != -1) {
+  if (field) {
     printf("%s.", ts_language_field_name_for_id(lang, field));
   }
 

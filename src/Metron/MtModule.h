@@ -52,10 +52,10 @@ struct MtModule {
   ~MtModule();
   void load(const std::string& input_filename, const std::string& output_filename);
 
-  void dump_node(MtHandle n, int index = 0, int field = -1, int depth = 0);
+  void dump_node(MtHandle n, int index = 0, int field = 0, int depth = 0);
   void dump_tree(MtHandle n, int index, int field, int depth, int maxdepth);
-  void dump_tree(MtHandle n, int maxdepth) { dump_tree(n, 0, -1, 0, maxdepth); }
-  void dump_tree(MtHandle n) { dump_tree(n, 0, -1, 0, 255); }
+  void dump_tree(MtHandle n, int maxdepth) { dump_tree(n, 0, n.field, 0, maxdepth); }
+  void dump_tree(MtHandle n) { dump_tree(n, 0, n.field, 0, 255); }
 
   void visit_tree(MtHandle n, NodeVisitor cv);
   void visit_tree2(MtHandle parent, NodeVisitor2 cv);

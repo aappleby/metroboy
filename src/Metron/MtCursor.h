@@ -36,16 +36,16 @@ struct MtCursor {
   MtHandle current_function_name;
 
   void push_indent(MtHandle n) {
-    if (!n) return;
-    auto e = mod->start(n);
-    auto b = e;
-    while (*b != '\n') b--;
-    indent_stack.push_back(std::string(b + 1, e));
+    if (n) {
+      auto e = mod->start(n);
+      auto b = e;
+      while (*b != '\n') b--;
+      indent_stack.push_back(std::string(b + 1, e));
+    }
   }
 
   void pop_indent(MtHandle n) {
-    if (!n) return;
-    indent_stack.pop_back();
+    if (n) indent_stack.pop_back();
   }
 
   void emit_newline() {
@@ -53,12 +53,13 @@ struct MtCursor {
   }
 
   void check_dirty_tick(MtHandle n);
-  void check_dirty_tick_dispatch(MtHandle n, std::set<MtHandle>& dirty_fields, int depth);
-
-  void check_dirty_read(MtHandle n, std::set<MtHandle>& dirty_fields, int depth);
-  void check_dirty_write(MtHandle n, std::set<MtHandle>& dirty_fields, int depth);
-  void check_dirty_if(MtHandle n, std::set<MtHandle>& dirty_fields, int depth);
-  void check_dirty_call(MtHandle n, std::set<MtHandle>& dirty_fields, int depth);
+  
+  void check_dirty_dispatch (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_read     (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_write    (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_if       (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_call     (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_switch   (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
   // FIXME add case
 
   void check_dirty_tock(MtHandle n);

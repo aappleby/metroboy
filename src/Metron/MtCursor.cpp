@@ -452,7 +452,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   // Emit the module body with the correct type of "begin/end" pair,
   // hoisting locals to the top of the body scope.
 
-  push_indent(ts_node_named_child(func_body, 0));
+  push_indent(func_body.named_child(0));
 
   for (auto c : func_body) {
     switch (c.sym) {

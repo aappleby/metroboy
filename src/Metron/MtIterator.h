@@ -56,6 +56,17 @@ struct MtHandle {
     return { n, s, f };
   }
 
+  int named_child_count() const { return (int)ts_node_named_child_count(node); }
+
+  MtHandle named_child(int i) const {
+    auto n = ts_node_named_child(node, i);
+    auto s = ts_node_symbol(n);
+    TSTreeCursor cursor = ts_tree_cursor_new(n);
+    auto f = ts_tree_cursor_current_field_id(&cursor);
+    ts_tree_cursor_delete(&cursor);
+    return { n, s, f };
+  }
+
   bool is_null()       const { return ts_node_is_null(node); }
   bool is_named()      const { return !is_null() && ts_node_is_named(node); }
   bool is_missing()    const { return !is_null() && ts_node_is_missing(node); }

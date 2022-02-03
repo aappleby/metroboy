@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tree_sitter/api.h"
+#include "../Plait/TreeSymbols.h"
 
 //------------------------------------------------------------------------------
 
@@ -45,6 +46,37 @@ struct MtHandle {
   }
 
   operator TSNode() const { return node; }
+
+  int child_count() const { return (int)ts_node_child_count(node); }
+
+  MtHandle child(int i) const {
+    auto n = ts_node_child(node, i);
+    auto s = ts_node_symbol(n);
+    auto f = ts_node_field_id_for_child(node, i);
+    return { n, s, f };
+  }
+
+  bool is_null()       const { return ts_node_is_null(node); }
+  bool is_named()      const { return !is_null() && ts_node_is_named(node); }
+  bool is_missing()    const { return !is_null() && ts_node_is_missing(node); }
+  bool is_extra()      const { return !is_null() && ts_node_is_extra(node); }
+  bool is_leaf()       const { return !is_null() && is_named() && !child_count(); }
+  bool is_branch()     const { return !is_null() && is_named() && child_count(); }
+
+  bool is_identifier() const { return !is_null() && sym == sym_identifier; }
+  bool is_comment()    const { return !is_null() && sym == sym_comment; }
+  bool is_decl()       const { return !is_null() && sym == sym_declaration; }
+  bool is_field_decl() const { return !is_null() && sym == sym_field_declaration; }
+  bool is_func_decl()  const { return !is_null() && sym == sym_function_declarator; }
+  bool is_expression() const { return !is_null() && sym == sym_expression_statement; }
+  bool is_call()       const { return !is_null() && sym == sym_call_expression; }
+  bool is_function()   const { return !is_null() && sym == sym_function_definition; }
+  bool is_assignment() const { return !is_null() && sym == sym_assignment_expression; }
+  bool is_field_id()   const { return !is_null() && sym == alias_sym_field_identifier; }
+  bool is_field_expr() const { return !is_null() && sym == sym_field_expression; }
+  bool is_call_expr()  const { return !is_null() && sym == sym_call_expression; }
+  bool is_arglist()    const { return !is_null() && sym == sym_argument_list; }
+
 
   static const MtHandle null;
 };

@@ -56,10 +56,10 @@ void MtCursor::check_dirty_tick(MtHandle func_def) {
 //----------------------------------------
 
 void MtCursor::check_dirty_tick_dispatch(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
-  if (ts_node_is_null(n)) return;
+  if (!n) return;
   if (!ts_node_is_named(n)) return;
 
-  switch (ts_node_symbol(n)) {
+  switch (n.sym) {
 
   case sym_assignment_expression: check_dirty_write(n, dirty_fields, depth); break;
   case sym_identifier:            check_dirty_read(n, dirty_fields, depth); break;

@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "MtModLibrary.h"
 #include "MtModule.h"
+#include "MtIterator.h"
 #include <set>
 #include <string.h>
 
@@ -34,7 +35,7 @@ struct MtCursor {
   bool in_final = false;
   TSNode current_function_name = { 0 };
 
-  void push_indent(TSNode n) {
+  void push_indent(MtHandle n) {
     if (ts_node_is_null(n)) {
       indent_stack.push_back(indent_stack.back());
     }
@@ -54,57 +55,63 @@ struct MtCursor {
     emit("\n%s", indent_stack.back().c_str());
   }
 
-  void check_dirty_tick(TSNode n);
-  void check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_fields, int depth);
+  void check_dirty_tick(MtHandle n);
+  void check_dirty_tick_dispatch(MtHandle n, std::set<TSNode>& dirty_fields, int depth);
 
-  void check_dirty_tock(TSNode n);
-  void check_dirty_tock_dispatch(TSNode n, std::set<TSNode>& dirty_fields);
+  void check_dirty_read(MtHandle n, std::set<TSNode>& dirty_fields, int depth);
+  void check_dirty_write(MtHandle n, std::set<TSNode>& dirty_fields, int depth);
+  void check_dirty_if(MtHandle n, std::set<TSNode>& dirty_fields, int depth);
+  void check_dirty_call(MtHandle n, std::set<TSNode>& dirty_fields, int depth);
+  // FIXME add case
 
-  void dump_node_line(TSNode n);
+  void check_dirty_tock(MtHandle n);
+  void check_dirty_tock_dispatch(MtHandle n, std::set<TSNode>& dirty_fields);
 
-  void print_error(TSNode n, const char* fmt, ...);
+  void dump_node_line(MtHandle n);
+
+  void print_error(MtHandle n, const char* fmt, ...);
 
   //----------
 
-  bool match(TSNode n, const char* str) { return mod->match(n, str); }
+  bool match(MtHandle n, const char* str) { return mod->match(n, str); }
 
   void emit_span(const char* a, const char* b);
-  void emit(TSNode n);
+  void emit(MtHandle n);
   void emit(const char* fmt, ...);
-  void emit_replacement(TSNode n, const char* fmt, ...);
-  void skip_over(TSNode n);
+  void emit_replacement(MtHandle n, const char* fmt, ...);
+  void skip_over(MtHandle n);
   void skip_whitespace();
-  void advance_to(TSNode n);
-  void comment_out(TSNode n);
+  void advance_to(MtHandle n);
+  void comment_out(MtHandle n);
 
   //----------
 
-  void emit_number_literal(TSNode n);
-  void emit_primitive_type(TSNode n);
-  void emit_type_identifier(TSNode n);
-  void emit_preproc_include(TSNode n);
-  void emit_return_statement(TSNode n);
-  void emit_assignment_expression(TSNode n);
-  void emit_call_expression(TSNode n);
-  void emit_function_definition(TSNode n);
-  void emit_glue_declaration(TSNode decl, const std::string& prefix);
-  void emit_field_declaration(TSNode decl);
-  void emit_class_specifier(TSNode n);
-  void emit_compound_statement(TSNode n);
-  void emit_template_type(TSNode n);
-  void emit_module_parameters(TSNode n);
-  void emit_template_declaration(TSNode n);
-  void emit_template_argument_list(TSNode n);
-  void emit_enumerator_list(TSNode n);
-  void emit_translation_unit(TSNode n);
-  void emit_flat_field_expression(TSNode n);
-  void emit_dispatch(TSNode n);
+  void emit_number_literal(MtHandle n);
+  void emit_primitive_type(MtHandle n);
+  void emit_type_identifier(MtHandle n);
+  void emit_preproc_include(MtHandle n);
+  void emit_return_statement(MtHandle n);
+  void emit_assignment_expression(MtHandle n);
+  void emit_call_expression(MtHandle n);
+  void emit_function_definition(MtHandle n);
+  void emit_glue_declaration(MtHandle decl, const std::string& prefix);
+  void emit_field_declaration(MtHandle decl);
+  void emit_class_specifier(MtHandle n);
+  void emit_compound_statement(MtHandle n);
+  void emit_template_type(MtHandle n);
+  void emit_module_parameters(MtHandle n);
+  void emit_template_declaration(MtHandle n);
+  void emit_template_argument_list(MtHandle n);
+  void emit_enumerator_list(MtHandle n);
+  void emit_translation_unit(MtHandle n);
+  void emit_flat_field_expression(MtHandle n);
+  void emit_dispatch(MtHandle n);
 
-  void emit_hoisted_decls(TSNode n);
+  void emit_hoisted_decls(MtHandle n);
 
 
-  void emit_init_declarator_as_decl(TSNode n);
-  void emit_init_declarator_as_assign(TSNode n);
+  void emit_init_declarator_as_decl(MtHandle n);
+  void emit_init_declarator_as_assign(MtHandle n);
 };
 
 //------------------------------------------------------------------------------

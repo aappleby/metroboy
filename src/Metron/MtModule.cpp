@@ -86,7 +86,7 @@ void MtModule::load(const std::string& input_filename, const std::string& output
 
 //------------------------------------------------------------------------------
 
-TSNode MtModule::get_field_by_id(TSNode id) {
+MtHandle MtModule::get_field_by_id(TSNode id) {
   assert(ts_node_symbol(id) == sym_identifier);
   auto name_a = node_to_name(id);
 
@@ -95,10 +95,10 @@ TSNode MtModule::get_field_by_id(TSNode id) {
     if (name_a == name_b) return field;
   }
 
-  return { 0 };
+  return MtHandle::null;
 }
 
-TSNode MtModule::get_task_by_id(TSNode id) {
+MtHandle MtModule::get_task_by_id(TSNode id) {
   assert(ts_node_symbol(id) == sym_identifier);
   auto name_a = node_to_name(id);
 
@@ -107,10 +107,10 @@ TSNode MtModule::get_task_by_id(TSNode id) {
     if (name_a == name_b) return task;
   }
 
-  return { 0 };
+  return MtHandle::null;
 }
 
-TSNode MtModule::get_function_by_id(TSNode id) {
+MtHandle MtModule::get_function_by_id(TSNode id) {
   assert(ts_node_symbol(id) == sym_identifier);
   auto name_a = node_to_name(id);
 
@@ -119,7 +119,7 @@ TSNode MtModule::get_function_by_id(TSNode id) {
     if (name_a == name_b) return func;
   }
 
-  return { 0 };
+  return MtHandle::null;
 }
 
 //------------------------------------------------------------------------------

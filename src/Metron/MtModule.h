@@ -5,6 +5,7 @@
 #include <functional>
 
 #include "tree_sitter/api.h"
+#include "MtIterator.h"
 
 typedef std::function<void(TSNode)> NodeVisitor;
 typedef std::function<void(TSNode parent, TSNode child)> NodeVisitor2;
@@ -78,9 +79,9 @@ struct MtModule {
   bool field_is_input(TSNode n);
   bool field_is_output(TSNode n);
 
-  TSNode get_field_by_id(TSNode id);
-  TSNode get_task_by_id(TSNode id);
-  TSNode get_function_by_id(TSNode id);
+  MtHandle get_field_by_id(TSNode id);
+  MtHandle get_task_by_id(TSNode id);
+  MtHandle get_function_by_id(TSNode id);
 
   // Scanner
   void find_module();

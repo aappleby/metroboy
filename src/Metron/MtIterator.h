@@ -2,18 +2,6 @@
 
 #include "tree_sitter/api.h"
 
-#if 0
-TSTreeCursor ts_tree_cursor_new(TSNode);
-void ts_tree_cursor_delete(TSTreeCursor*);
-void ts_tree_cursor_reset(TSTreeCursor*, TSNode);
-TSNode ts_tree_cursor_current_node(const TSTreeCursor*);
-const char* ts_tree_cursor_current_field_name(const TSTreeCursor*);
-TSFieldId ts_tree_cursor_current_field_id(const TSTreeCursor*);
-bool ts_tree_cursor_goto_parent(TSTreeCursor*);
-bool ts_tree_cursor_goto_next_sibling(TSTreeCursor*);
-bool ts_tree_cursor_goto_first_child(TSTreeCursor*);
-#endif
-
 //------------------------------------------------------------------------------
 
 struct MtHandle {
@@ -21,7 +9,44 @@ struct MtHandle {
   TSSymbol sym;
   int field;
 
+  MtHandle(TSNode n, int sym, int field) {
+    this->node = n;
+    this->sym = sym;
+    this->field = field;
+  }
+
+  MtHandle(TSNode n) {
+    if (ts_node_is_null(n)) {
+      this->node = { 0 };
+      this->sym = -1;
+      this->field = -1;
+    }
+    else {
+      TSTreeCursor cursor = ts_tree_cursor_new(n);
+      this->node = n;
+      this->sym = ts_node_symbol(n);
+      this->field = ts_tree_cursor_current_field_id(&cursor);
+      ts_tree_cursor_delete(&cursor);
+    }
+  }
+
+  MtHandle get_field(int field_id) {
+    auto child = ts_node_child_by_field_id(node, field_id);
+    if (ts_node_is_null(child)) {
+      return MtHandle::null;
+    }
+    else {
+      return MtHandle(child, ts_node_symbol(child), field_id);
+    }
+  }
+
+  operator bool() const {
+    return ts_node_is_null(node);
+  }
+
   operator TSNode() const { return node; }
+
+  static const MtHandle null;
 };
 
 //------------------------------------------------------------------------------

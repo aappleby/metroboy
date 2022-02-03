@@ -11,7 +11,7 @@
 
 //------------------------------------------------------------------------------
 
-void MtCursor::dump_node_line(TSNode n) {
+void MtCursor::dump_node_line(MtHandle n) {
   auto start = &mod->source[ts_node_start_byte(n)];
 
   auto a = start;
@@ -28,7 +28,7 @@ void MtCursor::dump_node_line(TSNode n) {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::print_error(TSNode n, const char* fmt, ...) {
+void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
 
   emit("\n########################################\n");
 
@@ -48,116 +48,99 @@ void MtCursor::print_error(TSNode n, const char* fmt, ...) {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::check_dirty_tick(TSNode func_def) {
+void MtCursor::check_dirty_tick(MtHandle func_def) {
   std::set<TSNode> dirty_fields;
   check_dirty_tick_dispatch(func_def, dirty_fields, 0);
 }
 
-//----------
+//----------------------------------------
 
-void MtCursor::check_dirty_tick_dispatch(TSNode n, std::set<TSNode>& dirty_fields, int depth) {
+void MtCursor::check_dirty_tick_dispatch(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
   if (ts_node_is_null(n)) return;
   if (!ts_node_is_named(n)) return;
 
   switch (ts_node_symbol(n)) {
 
-  case sym_number_literal:
-  case sym_template_type:
-  case sym_primitive_type:
-  case sym_function_declarator:
-    break;
-
-  case sym_comment:
-  case sym_subscript_expression:
-  case sym_parenthesized_expression:
-  case sym_init_declarator:
-  case sym_declaration:
-  case sym_binary_expression:
-  case sym_unary_expression:
-  case sym_condition_clause:
-  case sym_compound_statement:
-  case sym_expression_statement:
-  case sym_argument_list:
-  case sym_function_definition:
-  case sym_return_statement:
-    for (auto c : n) check_dirty_tick_dispatch(c, dirty_fields, depth + 1);
-    break;
-
-  case sym_assignment_expression: {
-    auto lhs = ts_node_child_by_field_id(n, field_left);
-    auto rhs = ts_node_child_by_field_id(n, field_right);
-
-    check_dirty_tick_dispatch(rhs, dirty_fields, depth + 1);
-
-    auto field = mod->get_field_by_id(lhs);
-    if (!ts_node_is_null(field)) {
-      if (dirty_fields.contains(field)) {
-        print_error(n, "wrote dirty field - %s\n", mod->node_to_name(field).c_str());
-      }
-      dirty_fields.insert(field);
-    }
-    break;
-  }
-
-  case sym_identifier: {
-    auto field = mod->get_field_by_id(n);
-    if (!ts_node_is_null(field)) {
-      if (dirty_fields.contains(field)) {
-        print_error(n, "read dirty field - %s\n", mod->node_to_name(field).c_str());
-      }
-    }
-    break;
-  }
-
-  case sym_if_statement: {
-    check_dirty_tick_dispatch(ts_node_child_by_field_id(n, field_condition), dirty_fields, depth + 1);
-
-    std::set<TSNode> if_set = dirty_fields;
-    std::set<TSNode> else_set = dirty_fields;
-
-    check_dirty_tick_dispatch(ts_node_child_by_field_id(n, field_consequence), if_set, depth + 1);
-    check_dirty_tick_dispatch(ts_node_child_by_field_id(n, field_alternative), else_set, depth + 1);
-
-    dirty_fields.merge(if_set);
-    dirty_fields.merge(else_set);
-    break;
-  }
-
-  case sym_call_expression: {
-    auto node_func = ts_node_child_by_field_id(n, field_function);
-    auto node_args = ts_node_child_by_field_id(n, field_arguments);
-
-    if (ts_node_symbol(node_func) == sym_identifier) {
-      // local function call, traverse args and then function body
-      check_dirty_tick_dispatch(node_args, dirty_fields, depth + 1);
-
-      auto task = mod->get_task_by_id(node_func);
-      if (!ts_node_is_null(task)) check_dirty_tick_dispatch(task, dirty_fields, depth + 1);
-
-      auto func = mod->get_function_by_id(node_func);
-      if (!ts_node_is_null(func)) check_dirty_tick_dispatch(func, dirty_fields, depth + 1);
-    }
-
-    break;
-  }
+  case sym_assignment_expression: check_dirty_write(n, dirty_fields, depth); break;
+  case sym_identifier:            check_dirty_read(n, dirty_fields, depth); break;
+  case sym_if_statement:          check_dirty_if(n, dirty_fields, depth); break;
+  case sym_call_expression:       check_dirty_call(n, dirty_fields, depth); break;
 
   default:
-    printf("\n");
-    printf("#####\n");
-    printf("unknown node\n");
-    mod->dump_tree(n, 3);
-    debugbreak();
+    for (auto c : n) check_dirty_tick_dispatch(c, dirty_fields, depth + 1);
+    break;
+  }
+}
+
+//----------------------------------------
+
+void MtCursor::check_dirty_read(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
+  auto field = mod->get_field_by_id(n);
+  if (!ts_node_is_null(field)) {
+    if (dirty_fields.contains(field)) {
+      print_error(n, "read dirty field - %s\n", mod->node_to_name(field).c_str());
+    }
+  }
+}
+
+//----------------------------------------
+
+void MtCursor::check_dirty_write(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
+  auto lhs = n.get_field(field_left);
+  auto rhs = n.get_field(field_right);
+
+  check_dirty_tick_dispatch(rhs, dirty_fields, depth + 1);
+
+  auto field = mod->get_field_by_id(lhs);
+  if (!ts_node_is_null(field)) {
+    if (dirty_fields.contains(field)) {
+      print_error(n, "wrote dirty field - %s\n", mod->node_to_name(field).c_str());
+    }
+    dirty_fields.insert(field);
+  }
+}
+
+//----------------------------------------
+
+void MtCursor::check_dirty_if(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
+  check_dirty_tick_dispatch(n.get_field(field_condition), dirty_fields, depth + 1);
+
+  std::set<TSNode> if_set = dirty_fields;
+  std::set<TSNode> else_set = dirty_fields;
+
+  check_dirty_tick_dispatch(n.get_field(field_consequence), if_set, depth + 1);
+  check_dirty_tick_dispatch(n.get_field(field_alternative), else_set, depth + 1);
+
+  dirty_fields.merge(if_set);
+  dirty_fields.merge(else_set);
+}
+
+//----------------------------------------
+
+void MtCursor::check_dirty_call(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
+  auto node_func = n.get_field(field_function);
+  auto node_args = n.get_field(field_arguments);
+
+  if (ts_node_symbol(node_func) == sym_identifier) {
+    // local function call, traverse args and then function body
+    check_dirty_tick_dispatch(node_args, dirty_fields, depth + 1);
+
+    auto task = mod->get_task_by_id(node_func);
+    if (!ts_node_is_null(task)) check_dirty_tick_dispatch(task, dirty_fields, depth + 1);
+
+    auto func = mod->get_function_by_id(node_func);
+    if (!ts_node_is_null(func)) check_dirty_tick_dispatch(func, dirty_fields, depth + 1);
   }
 }
 
 //------------------------------------------------------------------------------
 
-void MtCursor::check_dirty_tock(TSNode func_def) {
+void MtCursor::check_dirty_tock(MtHandle func_def) {
   std::set<TSNode> dirty_fields;
   check_dirty_tick_dispatch(func_def, dirty_fields, 0);
 }
 
-void MtCursor::check_dirty_tock_dispatch(TSNode n, std::set<TSNode>& dirty_fields) {
+void MtCursor::check_dirty_tock_dispatch(MtHandle n, std::set<TSNode>& dirty_fields) {
 }
 
 //------------------------------------------------------------------------------
@@ -170,7 +153,7 @@ void MtCursor::emit_span(const char* a, const char* b) {
   fwrite(a, 1, b - a, stdout);
 }
 
-void MtCursor::emit(TSNode n) {
+void MtCursor::emit(MtHandle n) {
   emit_span(cursor, mod->end(n));
   cursor = mod->end(n);
 }
@@ -190,7 +173,7 @@ void MtCursor::emit(const char* fmt, ...) {
   }
 }
 
-void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
+void MtCursor::emit_replacement(MtHandle n, const char* fmt, ...) {
   advance_to(n);
   {
     va_list args;
@@ -207,7 +190,7 @@ void MtCursor::emit_replacement(TSNode n, const char* fmt, ...) {
   cursor = mod->end(n);
 }
 
-void MtCursor::skip_over(TSNode n) {
+void MtCursor::skip_over(MtHandle n) {
   advance_to(n);
   cursor = mod->end(n);
 }
@@ -218,13 +201,13 @@ void MtCursor::skip_whitespace() {
   }
 }
 
-void MtCursor::advance_to(TSNode n) {
+void MtCursor::advance_to(MtHandle n) {
   assert(cursor <= mod->start(n));
   emit_span(cursor, mod->start(n));
   cursor = mod->start(n);
 }
 
-void MtCursor::comment_out(TSNode n) {
+void MtCursor::comment_out(MtHandle n) {
   advance_to(n);
   emit("/*");
   emit(n);
@@ -234,7 +217,7 @@ void MtCursor::comment_out(TSNode n) {
 //------------------------------------------------------------------------------
 // Replace "#include" with "`include" and ".h" with ".sv"
 
-void MtCursor::emit_preproc_include(TSNode n) {
+void MtCursor::emit_preproc_include(MtHandle n) {
   for (auto c : n) {
     switch (c.sym) {
     case aux_sym_preproc_include_token1: emit_replacement(c, "`include"); break;
@@ -253,13 +236,13 @@ void MtCursor::emit_preproc_include(TSNode n) {
 //------------------------------------------------------------------------------
 // Change '=' to '<=' if lhs is a field and we're inside a sequential block.
 
-void MtCursor::emit_assignment_expression(TSNode n) {
-  auto lhs = ts_node_child_by_field_id(n, field_left);
-  auto op  = ts_node_child_by_field_id(n, field_operator);
-  auto rhs = ts_node_child_by_field_id(n, field_right);
+void MtCursor::emit_assignment_expression(MtHandle n) {
+  auto lhs = n.get_field(field_left);
+  auto op  = n.get_field(field_operator);
+  auto rhs = n.get_field(field_right);
 
   bool lhs_is_field = false;
-  if (ts_node_symbol(lhs) == sym_identifier) {
+  if (lhs.sym == sym_identifier) {
     std::string lhs_name = mod->body(lhs);
     for (const auto& f : mod->fields) {
       if (mod->node_to_name(f) == lhs_name) {
@@ -282,14 +265,14 @@ void MtCursor::emit_assignment_expression(TSNode n) {
 // Replace function names with macro names where needed, comment out explicit
 // init/final/tick/tock calls.
 
-void MtCursor::emit_call_expression(TSNode n) {
-  auto call_func = ts_node_child_by_field_id(n, field_function);
-  auto call_args = ts_node_child_by_field_id(n, field_arguments);
+void MtCursor::emit_call_expression(MtHandle n) {
+  auto call_func = n.get_field(field_function);
+  auto call_args = n.get_field(field_arguments);
 
   // If we're calling a member function, look at the name of the member
   // function and not the whole foo.bar().
-  if (ts_node_symbol(call_func) == sym_field_expression) {
-    call_func = ts_node_child_by_field_id(call_func, field_field);
+  if (call_func.sym == sym_field_expression) {
+    call_func = call_func.get_field(field_field);
   }
 
   if (mod->match(call_func, "clog2")) {
@@ -325,7 +308,7 @@ void MtCursor::emit_call_expression(TSNode n) {
 //------------------------------------------------------------------------------
 // Replace "logic blah = x;" with "logic blah;"
 
-void MtCursor::emit_init_declarator_as_decl(TSNode n) {
+void MtCursor::emit_init_declarator_as_decl(MtHandle n) {
 
   for (auto c : n) {
     switch (c.field) {
@@ -359,7 +342,7 @@ void MtCursor::emit_init_declarator_as_decl(TSNode n) {
 //------------------------------------------------------------------------------
 // Replace "logic blah = x;" with "blah = x;"
 
-void MtCursor::emit_init_declarator_as_assign(TSNode n) {
+void MtCursor::emit_init_declarator_as_assign(MtHandle n) {
 
   auto node_decl = ts_node_child_by_field_id(n, field_declarator);
   auto decl_type = ts_node_symbol(node_decl);
@@ -386,7 +369,7 @@ void MtCursor::emit_init_declarator_as_assign(TSNode n) {
 //------------------------------------------------------------------------------
 // Emit local variable declarations at the top of the block scope.
 
-void MtCursor::emit_hoisted_decls(TSNode n) {
+void MtCursor::emit_hoisted_decls(MtHandle n) {
   MtCursor old_cursor = *this;
   for (auto c : n) {
     if (c.sym == sym_declaration) {
@@ -402,7 +385,7 @@ void MtCursor::emit_hoisted_decls(TSNode n) {
 // Change "init/tick/tock" to "initial begin / always_comb / always_ff", change
 // void methods to tasks, and change const methods to functions.
 
-void MtCursor::emit_function_definition(TSNode func_def) {
+void MtCursor::emit_function_definition(MtHandle func_def) {
 
   assert(ts_node_child_count(func_def) == 3);
   assert(ts_node_field_id_for_child(func_def, 0) == field_type);
@@ -589,7 +572,7 @@ void MtCursor::emit_function_definition(TSNode func_def) {
 // Emit "<type> <submod_name>_<param_name>;" glue declarations because we can't
 // directly pass arguments to submodules.
 
-void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
+void MtCursor::emit_glue_declaration(MtHandle decl, const std::string& prefix) {
 
   assert((ts_node_symbol(decl) == sym_field_declaration) ||
          (ts_node_symbol(decl) == sym_parameter_declaration));
@@ -622,7 +605,7 @@ void MtCursor::emit_glue_declaration(TSNode decl, const std::string& prefix) {
 // Emit field declarations. For submodules, also emit glue declarations and
 // append the glue parameter list to the field.
 
-void MtCursor::emit_field_declaration(TSNode decl) {
+void MtCursor::emit_field_declaration(MtHandle decl) {
 
   // Check if this field is a submodule by looking up its type name in our
   // module list.
@@ -695,7 +678,7 @@ void MtCursor::emit_field_declaration(TSNode decl) {
 // Change class/struct to module, add default clk/rst inputs, add input and
 // ouptut ports to module param list.
 
-void MtCursor::emit_class_specifier(TSNode n) {
+void MtCursor::emit_class_specifier(MtHandle n) {
   for (auto c : n) {
     if (c.sym == anon_sym_class || c.sym == anon_sym_struct) {
       emit_replacement(c, "module");
@@ -785,7 +768,7 @@ void MtCursor::emit_class_specifier(TSNode n) {
 //------------------------------------------------------------------------------
 // Change "{ blah(); }" to "begin blah(); end"
 
-void MtCursor::emit_compound_statement(TSNode body) {
+void MtCursor::emit_compound_statement(MtHandle body) {
   push_indent(ts_node_named_child(body, 0));
 
   for (auto c : body) {
@@ -818,7 +801,7 @@ void MtCursor::emit_compound_statement(TSNode body) {
 //------------------------------------------------------------------------------
 // Change logic<N> to logic[N-1:0]
 
-void MtCursor::emit_template_type(TSNode n) {
+void MtCursor::emit_template_type(MtHandle n) {
   //mod->dump_tree(n);
 
   auto node_name = ts_node_child_by_field_id(n, field_name);
@@ -858,7 +841,7 @@ void MtCursor::emit_template_type(TSNode n) {
 // Change (template)<int param, int param> to
 // #(parameter int param, parameter int param)
 
-void MtCursor::emit_module_parameters(TSNode n) {
+void MtCursor::emit_module_parameters(MtHandle n) {
   for (auto c : n) {
     switch (c.sym) {
     case anon_sym_LT: emit_replacement(c, "#("); break;
@@ -879,7 +862,7 @@ void MtCursor::emit_module_parameters(TSNode n) {
 //------------------------------------------------------------------------------
 // Change <param, param> to #(param, param)
 
-void MtCursor::emit_template_argument_list(TSNode n) {
+void MtCursor::emit_template_argument_list(MtHandle n) {
   for (auto c : n) {
     switch (c.sym) {
     case anon_sym_LT: emit_replacement(c, " #("); break;
@@ -892,7 +875,7 @@ void MtCursor::emit_template_argument_list(TSNode n) {
 //------------------------------------------------------------------------------
 // Enum lists do _not_ turn braces into begin/end.
 
-void MtCursor::emit_enumerator_list(TSNode n) {
+void MtCursor::emit_enumerator_list(MtHandle n) {
   for (auto c : n) {
     switch (c.sym) {
     case anon_sym_LBRACE: emit(c); break;
@@ -905,7 +888,7 @@ void MtCursor::emit_enumerator_list(TSNode n) {
 //------------------------------------------------------------------------------
 // Discard any trailing semicolons in the translation unit.
 
-void MtCursor::emit_translation_unit(TSNode n) {
+void MtCursor::emit_translation_unit(MtHandle n) {
 
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
@@ -924,7 +907,7 @@ void MtCursor::emit_translation_unit(TSNode n) {
 // Replace "0x" prefixes with "'h"
 // Replace "0b" prefixes with "'b"
 
-void MtCursor::emit_number_literal(TSNode n) {
+void MtCursor::emit_number_literal(MtHandle n) {
   std::string body = mod->body(n);
   if (body.starts_with("0x")) {
     emit_replacement(n, "'h%s", body.c_str() + 2);
@@ -940,7 +923,7 @@ void MtCursor::emit_number_literal(TSNode n) {
 //------------------------------------------------------------------------------
 // Change "return x" to "(funcname) = x" to match old Verilog return style.
 
-void MtCursor::emit_return_statement(TSNode n) {
+void MtCursor::emit_return_statement(MtHandle n) {
   auto func_name = mod->body(current_function_name);
   for (auto c : n) {
     switch (c.sym) {
@@ -957,21 +940,21 @@ void MtCursor::emit_return_statement(TSNode n) {
 //------------------------------------------------------------------------------
 // FIXME translate types here
 
-void MtCursor::emit_primitive_type(TSNode n) {
+void MtCursor::emit_primitive_type(MtHandle n) {
   emit(n);
 }
 
 //------------------------------------------------------------------------------
 // FIXME translate types here
 
-void MtCursor::emit_type_identifier(TSNode n) {
+void MtCursor::emit_type_identifier(MtHandle n) {
   emit(n);
 }
 
 //------------------------------------------------------------------------------
 // For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
 
-void MtCursor::emit_template_declaration(TSNode n) {
+void MtCursor::emit_template_declaration(MtHandle n) {
   for (auto c : n) {
     switch (c.sym) {
     case anon_sym_template: {
@@ -993,7 +976,7 @@ void MtCursor::emit_template_declaration(TSNode n) {
 // Replace foo.bar.baz with foo_bar_baz, so that a field expression instead
 // refers to a glue expression.
 
-void MtCursor::emit_flat_field_expression(TSNode n) {
+void MtCursor::emit_flat_field_expression(MtHandle n) {
   auto field = mod->body(n);
   for (auto& c : field) if (c == '.') c = '_';
   emit_replacement(n, field.c_str());
@@ -1001,7 +984,7 @@ void MtCursor::emit_flat_field_expression(TSNode n) {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::emit_dispatch(TSNode n) {
+void MtCursor::emit_dispatch(MtHandle n) {
   assert(cursor <= mod->start(n));
 
   auto s = ts_node_symbol(n);

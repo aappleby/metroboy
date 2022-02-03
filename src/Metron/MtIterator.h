@@ -70,6 +70,7 @@ struct MtHandle {
   bool is_func_decl()  const { return !is_null() && sym == sym_function_declarator; }
   bool is_expression() const { return !is_null() && sym == sym_expression_statement; }
   bool is_call()       const { return !is_null() && sym == sym_call_expression; }
+  bool is_init_decl()  const { return !is_null() && sym == sym_init_declarator; }
   bool is_function()   const { return !is_null() && sym == sym_function_definition; }
   bool is_assignment() const { return !is_null() && sym == sym_assignment_expression; }
   bool is_field_id()   const { return !is_null() && sym == alias_sym_field_identifier; }

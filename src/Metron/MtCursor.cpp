@@ -56,8 +56,7 @@ void MtCursor::check_dirty_tick(MtHandle func_def) {
 //----------------------------------------
 
 void MtCursor::check_dirty_tick_dispatch(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
-  if (!n) return;
-  if (!ts_node_is_named(n)) return;
+  if (!n || !n.is_named()) return;
 
   switch (n.sym) {
 
@@ -76,10 +75,11 @@ void MtCursor::check_dirty_tick_dispatch(MtHandle n, std::set<TSNode>& dirty_fie
 
 void MtCursor::check_dirty_read(MtHandle n, std::set<TSNode>& dirty_fields, int depth) {
   auto field = mod->get_field_by_id(n);
-  if (!ts_node_is_null(field)) {
-    if (dirty_fields.contains(field)) {
-      print_error(n, "read dirty field - %s\n", mod->node_to_name(field).c_str());
-    }
+  if (!field) {
+    print_error(n, "null field!\n");
+  }
+  else if (dirty_fields.contains(field)) {
+    print_error(n, "read dirty field - %s\n", mod->node_to_name(field).c_str());
   }
 }
 
@@ -92,7 +92,7 @@ void MtCursor::check_dirty_write(MtHandle n, std::set<TSNode>& dirty_fields, int
   check_dirty_tick_dispatch(rhs, dirty_fields, depth + 1);
 
   auto field = mod->get_field_by_id(lhs);
-  if (!ts_node_is_null(field)) {
+  if (field) {
     if (dirty_fields.contains(field)) {
       print_error(n, "wrote dirty field - %s\n", mod->node_to_name(field).c_str());
     }
@@ -121,15 +121,15 @@ void MtCursor::check_dirty_call(MtHandle n, std::set<TSNode>& dirty_fields, int 
   auto node_func = n.get_field(field_function);
   auto node_args = n.get_field(field_arguments);
 
-  if (ts_node_symbol(node_func) == sym_identifier) {
+  if (node_func.is_identifier()) {
     // local function call, traverse args and then function body
     check_dirty_tick_dispatch(node_args, dirty_fields, depth + 1);
 
     auto task = mod->get_task_by_id(node_func);
-    if (!ts_node_is_null(task)) check_dirty_tick_dispatch(task, dirty_fields, depth + 1);
+    if (task) check_dirty_tick_dispatch(task, dirty_fields, depth + 1);
 
     auto func = mod->get_function_by_id(node_func);
-    if (!ts_node_is_null(func)) check_dirty_tick_dispatch(func, dirty_fields, depth + 1);
+    if (func) check_dirty_tick_dispatch(func, dirty_fields, depth + 1);
   }
 }
 
@@ -344,10 +344,9 @@ void MtCursor::emit_init_declarator_as_decl(MtHandle n) {
 
 void MtCursor::emit_init_declarator_as_assign(MtHandle n) {
 
-  auto node_decl = ts_node_child_by_field_id(n, field_declarator);
-  auto decl_type = ts_node_symbol(node_decl);
+  auto node_decl = n.get_field(field_declarator);
 
-  if (decl_type == sym_init_declarator) {
+  if (node_decl.is_init_decl()) {
     for (auto c : n) {
       switch (c.field) {
       case field_type:
@@ -387,14 +386,9 @@ void MtCursor::emit_hoisted_decls(MtHandle n) {
 
 void MtCursor::emit_function_definition(MtHandle func_def) {
 
-  assert(ts_node_child_count(func_def) == 3);
-  assert(ts_node_field_id_for_child(func_def, 0) == field_type);
-  assert(ts_node_field_id_for_child(func_def, 1) == field_declarator);
-  assert(ts_node_field_id_for_child(func_def, 2) == field_body);
-
-  auto func_type = ts_node_child_by_field_id(func_def, field_type);
-  auto func_decl = ts_node_child_by_field_id(func_def, field_declarator);
-  auto func_body = ts_node_child_by_field_id(func_def, field_body);
+  auto func_type = func_def.get_field(field_type);
+  auto func_decl = func_def.get_field(field_declarator);
+  auto func_body = func_def.get_field(field_body);
 
   bool is_task = false;
   bool is_init = false;
@@ -413,7 +407,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   in_comb = false;
   in_seq = false;
 
-  current_function_name = ts_node_child_by_field_id(func_decl, field_declarator);
+  current_function_name = func_decl.get_field(field_declarator);
   is_init = is_task && mod->match(current_function_name, "init");
   is_tick = is_task && mod->match(current_function_name, "tick");
   is_tock = is_task && mod->match(current_function_name, "tock");

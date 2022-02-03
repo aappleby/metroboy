@@ -9,6 +9,9 @@ struct MtHandle {
   TSNode node;
   TSSymbol sym;
   int field;
+  static const MtHandle null;
+
+  //----------
 
   MtHandle() {
     this->node = { 0 };
@@ -37,50 +40,16 @@ struct MtHandle {
     }
   }
 
-  MtHandle get_field(int field_id) {
-    auto child = ts_node_child_by_field_id(node, field_id);
-    if (ts_node_is_null(child)) {
-      return MtHandle::null;
-    }
-    else {
-      return MtHandle(child, ts_node_symbol(child), field_id);
-    }
-  }
+  //----------
 
-  operator bool() const {
-    return !ts_node_is_null(node);
-  }
-
+  operator bool() const { return !ts_node_is_null(node); }
   operator TSNode() const { return node; }
-
-  int child_count() const { return (int)ts_node_child_count(node); }
-
-  MtHandle child(int i) const {
-    auto n = ts_node_child(node, i);
-    auto s = ts_node_symbol(n);
-    auto f = ts_node_field_id_for_child(node, i);
-    return { n, s, f };
-  }
-
-  int named_child_count() const { return (int)ts_node_named_child_count(node); }
-
-  MtHandle named_child(int i) const {
-    auto n = ts_node_named_child(node, i);
-    if (ts_node_is_null(n)) {
-      return null;
-    }
-    else {
-      auto s = ts_node_symbol(n);
-      TSTreeCursor cursor = ts_tree_cursor_new(n);
-      auto f = ts_tree_cursor_current_field_id(&cursor);
-      ts_tree_cursor_delete(&cursor);
-      return { n, s, f };
-    }
-  }
 
   const char* type() const { return ts_node_type(node); }
   uint32_t start_byte() const { return ts_node_start_byte(node); }
   uint32_t end_byte()   const { return ts_node_end_byte(node); }
+
+  //----------
 
   bool is_null()       const { return ts_node_is_null(node); }
   bool is_named()      const { return !is_null() && ts_node_is_named(node); }
@@ -104,8 +73,51 @@ struct MtHandle {
   bool is_call_expr()  const { return !is_null() && sym == sym_call_expression; }
   bool is_arglist()    const { return !is_null() && sym == sym_argument_list; }
 
+  //----------
 
-  static const MtHandle null;
+  MtHandle get_field(int field_id) {
+    auto child = ts_node_child_by_field_id(node, field_id);
+    if (ts_node_is_null(child)) {
+      return MtHandle::null;
+    }
+    else {
+      return MtHandle(child, ts_node_symbol(child), field_id);
+    }
+  }
+
+  //----------
+
+  int child_count() const { return (int)ts_node_child_count(node); }
+
+  MtHandle child(int i) const {
+    auto n = ts_node_child(node, i);
+    if (ts_node_is_null(n)) {
+      return null;
+    }
+    else {
+      auto s = ts_node_symbol(n);
+      auto f = ts_node_field_id_for_child(node, i);
+      return { n, s, f };
+    }
+  }
+
+  //----------
+
+  int named_child_count() const { return (int)ts_node_named_child_count(node); }
+
+  MtHandle named_child(int i) const {
+    auto n = ts_node_named_child(node, i);
+    if (ts_node_is_null(n)) {
+      return null;
+    }
+    else {
+      auto s = ts_node_symbol(n);
+      TSTreeCursor cursor = ts_tree_cursor_new(n);
+      auto f = ts_tree_cursor_current_field_id(&cursor);
+      ts_tree_cursor_delete(&cursor);
+      return { n, s, f };
+    }
+  }
 };
 
 //------------------------------------------------------------------------------

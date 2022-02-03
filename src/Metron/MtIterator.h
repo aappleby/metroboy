@@ -10,6 +10,12 @@ struct MtHandle {
   TSSymbol sym;
   int field;
 
+  MtHandle() {
+    this->node = { 0 };
+    this->sym = 0;
+    this->field = 0;
+  }
+
   MtHandle(TSNode n, int sym, int field) {
     this->node = n;
     this->sym = sym;
@@ -19,8 +25,8 @@ struct MtHandle {
   MtHandle(TSNode n) {
     if (ts_node_is_null(n)) {
       this->node = { 0 };
-      this->sym = -1;
-      this->field = -1;
+      this->sym = 0;
+      this->field = 0;
     }
     else {
       TSTreeCursor cursor = ts_tree_cursor_new(n);

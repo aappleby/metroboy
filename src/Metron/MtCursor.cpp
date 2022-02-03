@@ -486,7 +486,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
     }
   }
 
-  pop_indent();
+  pop_indent(func_body.named_child(0));
 
   //----------
   // For each call to {submodule}.tick() in module::tick(), emit glue assignments.
@@ -727,14 +727,15 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       // Discard the opening brace
       // Replace the closing brace with "endmodule"
       // Discard the seimcolon at the end of class{};"
+
       for (auto gc : c) switch (gc.sym) {
       case anon_sym_LBRACE: emit_replacement(gc, ""); break;
       case anon_sym_RBRACE: emit_replacement(gc, "endmodule"); break;
-      case anon_sym_SEMI: emit_replacement(gc, ""); break;
-      default: emit_dispatch(gc); break;
+      case anon_sym_SEMI:   emit_replacement(gc, ""); break;
+      default:              emit_dispatch(gc); break;
       }
 
-      pop_indent();
+      pop_indent(c.named_child(0));
     }
     else {
       debugbreak();
@@ -746,7 +747,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
 // Change "{ blah(); }" to "begin blah(); end"
 
 void MtCursor::emit_compound_statement(MtHandle body) {
-  if (body.named_child_count()) push_indent(body.named_child(0));
+  push_indent(body.named_child(0));
 
   for (auto c : body) switch (c.sym) {
   case anon_sym_LBRACE:
@@ -758,7 +759,7 @@ void MtCursor::emit_compound_statement(MtHandle body) {
   default: emit_dispatch(c); break;
   }
 
-  if (body.named_child_count()) pop_indent();
+  pop_indent(body.named_child(0));
 }
 
 //------------------------------------------------------------------------------

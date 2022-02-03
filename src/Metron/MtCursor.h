@@ -36,14 +36,15 @@ struct MtCursor {
   MtHandle current_function_name;
 
   void push_indent(MtHandle n) {
-    assert(n);
+    if (!n) return;
     auto e = mod->start(n);
     auto b = e;
     while (*b != '\n') b--;
     indent_stack.push_back(std::string(b + 1, e));
   }
 
-  void pop_indent() {
+  void pop_indent(MtHandle n) {
+    if (!n) return;
     indent_stack.pop_back();
   }
 

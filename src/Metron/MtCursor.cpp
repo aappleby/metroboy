@@ -29,7 +29,6 @@ void MtCursor::dump_node_line(MtHandle n) {
 //------------------------------------------------------------------------------
 
 void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
-
   emit("\n########################################\n");
 
   va_list args;
@@ -366,32 +365,14 @@ void MtCursor::emit_call_expression(MtHandle n) {
 
 void MtCursor::emit_init_declarator_as_decl(MtHandle n) {
 
-  for (auto c : n) {
-    switch (c.field) {
-
-    case field_type:
-      emit_dispatch(c);
-      break;
-
-    case field_declarator:
-      for (auto gc : c) {
-        switch (gc.field) {
-        case field_declarator:
-          emit(gc);
-          skip_whitespace();
-          break;
-        default:
-          skip_over(gc);
-          skip_whitespace();
-          break;
-        }
-      }
-      break;
-
-    default:
-      emit_dispatch(c);
-      break;
+  for (auto c : n) switch (c.field) {
+  case field_declarator:
+    for (auto gc : c) switch (gc.field) {
+    case field_declarator: emit(gc); skip_whitespace(); break;
+    default: skip_over(gc); skip_whitespace(); break;
     }
+    break;
+  default: emit_dispatch(c); break;
   }
 }
 
@@ -403,16 +384,9 @@ void MtCursor::emit_init_declarator_as_assign(MtHandle n) {
   auto node_decl = n.get_field(field_declarator);
 
   if (node_decl.is_init_decl()) {
-    for (auto c : n) {
-      switch (c.field) {
-      case field_type:
-        skip_over(c);
-        skip_whitespace();
-        break;
-      default:
-        emit_dispatch(c);
-        break;
-      }
+    for (auto c : n) switch (c.field) {
+    case field_type: skip_over(c); skip_whitespace(); break;
+    default: emit_dispatch(c); break;
     }
   }
   else {
@@ -509,36 +483,27 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
 
   push_indent(func_body.named_child(0));
 
-  for (auto c : func_body) {
-    switch (c.sym) {
-    case anon_sym_LBRACE: {
-      if      (is_init) emit_replacement(c, "begin : INIT");
-      else if (is_tick) emit_replacement(c, "begin : TICK");
-      else if (is_tock) emit_replacement(c, "begin : TOCK");
-      else if (is_task) emit_replacement(c, "");
-      else              emit_replacement(c, "");
+  for (auto c : func_body) switch (c.sym) {
+  case anon_sym_LBRACE:
+    if      (is_init) emit_replacement(c, "begin : INIT");
+    else if (is_tick) emit_replacement(c, "begin : TICK");
+    else if (is_tock) emit_replacement(c, "begin : TOCK");
+    else if (is_task) emit_replacement(c, "");
+    else              emit_replacement(c, "");
+    emit_hoisted_decls(func_body);
+    break;
 
-      emit_hoisted_decls(func_body);
-      break;
-    }
+  case anon_sym_RBRACE:
+    if      (is_init) emit_replacement(c, "end");
+    else if (is_tick) emit_replacement(c, "end");
+    else if (is_tock) emit_replacement(c, "end");
+    else if (is_task) emit_replacement(c, "endtask");
+    else              emit_replacement(c, "endfunction");
+    break;
 
-    case sym_declaration: {
-      emit_init_declarator_as_assign(c);
-      break;
-    }
+  case sym_declaration: emit_init_declarator_as_assign(c); break;
 
-    case anon_sym_RBRACE:
-      if      (is_init) emit_replacement(c, "end");
-      else if (is_tick) emit_replacement(c, "end");
-      else if (is_tock) emit_replacement(c, "end");
-      else if (is_task) emit_replacement(c, "endtask");
-      else              emit_replacement(c, "endfunction");
-      break;
-
-    default:
-      emit_dispatch(c);
-      break;
-    }
+  default: emit_dispatch(c); break;
   }
 
   pop_indent(func_body.named_child(0));
@@ -821,8 +786,6 @@ void MtCursor::emit_compound_statement(MtHandle body) {
 // Change logic<N> to logic[N-1:0]
 
 void MtCursor::emit_template_type(MtHandle n) {
-  //mod->dump_tree(n);
-
   auto node_name = n.get_field(field_name);
   auto node_args = n.get_field(field_arguments);
 
@@ -835,24 +798,22 @@ void MtCursor::emit_template_type(MtHandle n) {
   }
 
   emit_dispatch(node_name);
-  for (auto c : node_args) {
-    switch (c.sym) {
-    case anon_sym_LT: skip_over(c); break;
-    case anon_sym_GT: skip_over(c); break;
-    case sym_number_literal: {
-      int width = atoi(mod->start(c));
-      if (width > 1) emit("[%d:0]", width - 1);
-      skip_over(c);
-      break;
-    }
-    case sym_type_descriptor: {
-      emit("[");
-      emit(c);
-      emit("-1:0]");
-      break;
-    }
-    default: debugbreak();
-    }
+  for (auto c : node_args) switch (c.sym) {
+  case anon_sym_LT: skip_over(c); break;
+  case anon_sym_GT: skip_over(c); break;
+  case sym_number_literal: {
+    int width = atoi(mod->start(c));
+    if (width > 1) emit("[%d:0]", width - 1);
+    skip_over(c);
+    break;
+  }
+  case sym_type_descriptor: {
+    emit("[");
+    emit(c);
+    emit("-1:0]");
+    break;
+  }
+  default: debugbreak();
   }
 }
 
@@ -861,20 +822,18 @@ void MtCursor::emit_template_type(MtHandle n) {
 // #(parameter int param, parameter int param)
 
 void MtCursor::emit_module_parameters(MtHandle n) {
-  for (auto c : n) {
-    switch (c.sym) {
-    case anon_sym_LT: emit_replacement(c, "#("); break;
-    case anon_sym_GT: emit_replacement(c, ")"); break;
+  for (auto c : n) switch (c.sym) {
+  case anon_sym_LT: emit_replacement(c, "#("); break;
+  case anon_sym_GT: emit_replacement(c, ")"); break;
 
-    // intentional fallthrough, we're just appending "parameter "
-    case sym_parameter_declaration:
-    case sym_optional_parameter_declaration:
-      advance_to(c);
-      emit("parameter ");
-    default:
-      emit_dispatch(c);
-      break;
-    }
+  // intentional fallthrough, we're just appending "parameter "
+  case sym_parameter_declaration:
+  case sym_optional_parameter_declaration:
+    advance_to(c);
+    emit("parameter ");
+  default:
+    emit_dispatch(c);
+    break;
   }
 }
 
@@ -882,12 +841,10 @@ void MtCursor::emit_module_parameters(MtHandle n) {
 // Change <param, param> to #(param, param)
 
 void MtCursor::emit_template_argument_list(MtHandle n) {
-  for (auto c : n) {
-    switch (c.sym) {
-    case anon_sym_LT: emit_replacement(c, " #("); break;
-    case anon_sym_GT: emit_replacement(c, ")"); break;
-    default:          emit_dispatch(c); break;
-    }
+  for (auto c : n) switch (c.sym) {
+  case anon_sym_LT: emit_replacement(c, " #("); break;
+  case anon_sym_GT: emit_replacement(c, ")"); break;
+  default:          emit_dispatch(c); break;
   }
 }
 
@@ -895,12 +852,10 @@ void MtCursor::emit_template_argument_list(MtHandle n) {
 // Enum lists do _not_ turn braces into begin/end.
 
 void MtCursor::emit_enumerator_list(MtHandle n) {
-  for (auto c : n) {
-    switch (c.sym) {
-    case anon_sym_LBRACE: emit(c); break;
-    case anon_sym_RBRACE: emit(c); break;
-    default:              emit_dispatch(c); break;
-    }
+  for (auto c : n) switch (c.sym) {
+  case anon_sym_LBRACE: emit(c); break;
+  case anon_sym_RBRACE: emit(c); break;
+  default:              emit_dispatch(c); break;
   }
 }
 
@@ -912,11 +867,9 @@ void MtCursor::emit_translation_unit(MtHandle n) {
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
 
-  for (auto c : n) {
-    switch (c.sym) {
-    case anon_sym_SEMI: skip_over(c); break;
-    default:            emit_dispatch(c); break;
-    }
+  for (auto c : n) switch (c.sym) {
+  case anon_sym_SEMI: skip_over(c); break;
+  default:            emit_dispatch(c); break;
   }
 
   emit_span(cursor, mod->source_end);
@@ -944,15 +897,9 @@ void MtCursor::emit_number_literal(MtHandle n) {
 
 void MtCursor::emit_return_statement(MtHandle n) {
   auto func_name = mod->body(current_function_name);
-  for (auto c : n) {
-    switch (c.sym) {
-    case anon_sym_return:
-      emit_replacement(c, "%s =", func_name.c_str());
-      break;
-    default:
-      emit_dispatch(c);
-      break;
-    }
+  for (auto c : n) switch (c.sym) {
+  case anon_sym_return: emit_replacement(c, "%s =", func_name.c_str()); break;
+  default: emit_dispatch(c); break;
   }
 }
 
@@ -974,20 +921,10 @@ void MtCursor::emit_type_identifier(MtHandle n) {
 // For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
 
 void MtCursor::emit_template_declaration(MtHandle n) {
-  for (auto c : n) {
-    switch (c.sym) {
-    case anon_sym_template: {
-      skip_over(c);
-      skip_whitespace();
-      break;
-    }
-    case anon_sym_SEMI:
-      skip_over(c);
-      break;
-    default:
-      emit_dispatch(c);
-      break;
-    }
+  for (auto c : n) switch (c.sym) {
+  case anon_sym_template: skip_over(c); skip_whitespace(); break;
+  case anon_sym_SEMI: skip_over(c); break;
+  default: emit_dispatch(c); break;
   }
 }
 
@@ -1158,10 +1095,8 @@ void MtCursor::emit_dispatch(MtHandle n) {
     break;
 
   default:
-    printf("\n\n\n########################################\n");
-    mod->dump_tree(n);
-    printf("\n########################################\n\n\n");
-    debugbreak();
+    print_error(n, "Unknown node type");
+    break;
   }
 }
 

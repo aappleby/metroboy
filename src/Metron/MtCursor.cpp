@@ -62,33 +62,18 @@ void MtCursor::check_dirty_tock(MtHandle func_def) {
 
 //----------------------------------------
 
-void MtCursor::check_dirty_dispatch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
-  if (!n || !n.is_named()) return;
-
-  switch (n.sym) {
-
-  case sym_assignment_expression: check_dirty_write(n, is_seq, dirty_fields, depth); break;
-  case sym_identifier:            check_dirty_read(n, is_seq, dirty_fields, depth); break;
-  case sym_if_statement:          check_dirty_if(n, is_seq, dirty_fields, depth); break;
-  case sym_call_expression:       check_dirty_call(n, is_seq, dirty_fields, depth); break;
-  case sym_switch_statement:      check_dirty_switch(n, is_seq, dirty_fields, depth); break;
-
-  default:
-    for (auto c : n) check_dirty_dispatch(c, is_seq, dirty_fields, depth + 1);
-    break;
-  }
-}
-
-//----------------------------------------
-
 void MtCursor::check_dirty_read(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+
+  // Reading from a dirty field in a seq block is forbidden.
   if (is_seq) {
     auto field = mod->get_field_by_id(n);
     if (field && dirty_fields.contains(field)) {
       print_error(n, "seq read dirty field - %s\n", mod->node_to_name(field).c_str());
     }
   }
-  else {
+
+  // Reading from a clean output in a comb block is forbidden.
+  if (!is_seq) {
     auto output = mod->get_output_by_id(n);
     if (output && !dirty_fields.contains(output)) {
       print_error(n, "comb read clean output - %s\n", mod->node_to_name(output).c_str());
@@ -99,13 +84,9 @@ void MtCursor::check_dirty_read(MtHandle n, bool is_seq, std::set<MtHandle>& dir
 //----------------------------------------
 
 void MtCursor::check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
-  auto lhs = n.get_field(field_left);
-  auto rhs = n.get_field(field_right);
-
-  check_dirty_dispatch(rhs, is_seq, dirty_fields, depth + 1);
-
+  // Writing to an already-dirty field in a seq block is forbidden.
   if (is_seq) {
-    auto field = mod->get_field_by_id(lhs);
+    auto field = mod->get_field_by_id(n);
     if (field) {
       if (dirty_fields.contains(field)) {
         print_error(n, "seq wrote dirty field - %s\n", mod->node_to_name(field).c_str());
@@ -114,15 +95,17 @@ void MtCursor::check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& di
     }
   }
 
+  // Writing to any field in a comb block is forbidden.
   if (!is_seq) {
-    auto field = mod->get_field_by_id(lhs);
+    auto field = mod->get_field_by_id(n);
     if (field) {
       print_error(n, "comb wrote field - %s\n", mod->node_to_name(field).c_str());
     }
   }
 
+  // Writing to an already-dirty field in a comb block is forbidden.
   if (!is_seq) {
-    auto output = mod->get_output_by_id(lhs);
+    auto output = mod->get_output_by_id(n);
     if (output) {
       if (dirty_fields.contains(output)) {
         print_error(n, "comb wrote dirty output - %s\n", mod->node_to_name(output).c_str());
@@ -130,6 +113,36 @@ void MtCursor::check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& di
       dirty_fields.insert(output);
     }
   }
+}
+
+//------------------------------------------------------------------------------
+
+void MtCursor::check_dirty_dispatch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+  if (!n || !n.is_named()) return;
+
+  switch (n.sym) {
+
+  case sym_identifier:            check_dirty_read(n, is_seq, dirty_fields, depth); break;
+
+  case sym_assignment_expression: check_dirty_assign(n, is_seq, dirty_fields, depth); break;
+  case sym_if_statement:          check_dirty_if(n, is_seq, dirty_fields, depth); break;
+  case sym_call_expression:       check_dirty_call(n, is_seq, dirty_fields, depth); break;
+  case sym_switch_statement:      check_dirty_switch(n, is_seq, dirty_fields, depth); break;
+
+  default:
+    for (auto c : n) check_dirty_dispatch(c, is_seq, dirty_fields, depth + 1);
+    break;
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void MtCursor::check_dirty_assign(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+  auto lhs = n.get_field(field_left);
+  auto rhs = n.get_field(field_right);
+
+  check_dirty_dispatch(rhs, is_seq, dirty_fields, depth + 1);
+  check_dirty_write(lhs, is_seq, dirty_fields, depth + 1);
 }
 
 //----------------------------------------

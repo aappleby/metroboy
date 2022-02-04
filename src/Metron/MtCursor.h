@@ -53,17 +53,14 @@ struct MtCursor {
   }
 
   void check_dirty_tick(MtHandle n);
-  
-  void check_dirty_dispatch (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_tock(MtHandle n);
   void check_dirty_read     (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
   void check_dirty_write    (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_dispatch (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_assign   (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
   void check_dirty_if       (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
   void check_dirty_call     (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
   void check_dirty_switch   (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
-  // FIXME add case
-
-  void check_dirty_tock(MtHandle n);
-  void check_dirty_tock_dispatch(MtHandle n, std::set<MtHandle>& dirty_fields);
 
   void dump_node_line(MtHandle n);
 

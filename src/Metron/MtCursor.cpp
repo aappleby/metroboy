@@ -616,7 +616,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
 }
 
 //------------------------------------------------------------------------------
-// Change "{ blah(); }" to "begin blah(); end"
+// Change "{ blah(); foo(); int x = 1; }" to "begin blah(); end"
 
 void MtCursor::emit_compound_statement(MtHandle body) {
   push_indent(body.first_named_child());

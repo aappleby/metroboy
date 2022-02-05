@@ -310,52 +310,8 @@ void MtModule::visit_tree2(MtHandle n, NodeVisitor2 cv) {
 }
 
 //------------------------------------------------------------------------------
-// Strip leading/trailing whitespace off non-SYM_LF nodes.
-
-const char* MtModule::start(MtHandle n) {
-  assert(n);
-
-  auto a = &source[n.start_byte()];
-  auto b = &source[n.end_byte()];
-
-  if (n.sym == anon_sym_LF) return a;
-
-  while (a < b && isspace(a[0])) a++;
-  return a;
-}
-
-const char* MtModule::end(MtHandle n) {
-  assert(n);
-
-  auto a = &source[n.start_byte()];
-  auto b = &source[n.end_byte()];
-
-  if (n.sym == anon_sym_LF) return b;
-
-  while (b > a && isspace(b[-1])) b--;
-  return b;
-}
-
-//------------------------------------------------------------------------------
-
-std::string MtModule::body(MtHandle n) {
-  return std::string(start(n), end(n));
-}
-
-bool MtModule::match(MtHandle n, const char* s) {
-  assert(n);
-
-  const char* a = start(n);
-  const char* b = end(n);
-
-  while (a != b) {
-    if (*a++ != *s++)  return false;
-  }
-  return true;
-}
 
 std::string MtModule::node_to_name(MtHandle n) {
-  //dump_tree(n);
 
   switch (n.sym) {
   
@@ -363,51 +319,9 @@ std::string MtModule::node_to_name(MtHandle n) {
   case alias_sym_type_identifier:
   case sym_identifier:
   case alias_sym_field_identifier:
-    return body(n);
-
-  // Static const fields are bugged in TreeSitterCPP - "field_declarator" is
-  // on the wrong node. Just pull out the first field_identifier child instead.
-
-  /*
-  ========== tree dump begin
-  [5] s236 field_declaration:
-  |   [0] f32 s321 type.template_type:
-  |   |   [0] f22 s395 name.type_identifier: "logic"
-  |   |   [1] f3 s324 arguments.template_argument_list:
-  |   |   |   [0] s36 lit: "<"
-  |   |   |   [1] s112 number_literal: "8"
-  |   |   |   [2] s33 lit: ">"
-  |   [1] f9 s392 declarator.field_identifier: "o_data"
-  |   [2] s39 lit: ";"
-  ========== tree dump end
-
-  ========== tree dump begin
-  [0] s236 field_declaration:
-  |   [0] f32 s226 type.storage_class_specifier:
-  |   |   [0] s64 lit: "static"
-  |   [1] f9 s227 declarator.type_qualifier:
-  |   |   [0] s68 lit: "const"
-  |   [2] s78 primitive_type: "int"
-  |   [3] f11 s392 default_value.field_identifier: "message_len"
-  |   [4] s63 lit: "="
-  |   [5] s112 number_literal: "512"
-  |   [6] s39 lit: ";"
-  ========== tree dump end
-  */
+    return n.body();
 
   case sym_field_declaration:
-    for (auto c : n) {
-      if (c.sym == alias_sym_field_identifier) {
-        return node_to_name(c);
-      }
-      if (c.sym == sym_array_declarator) {
-        return node_to_name(c);
-      }
-    }
-    dump_tree(n);
-    debugbreak();
-    return "";
-
   case sym_array_declarator:
   case sym_parameter_declaration:
   case sym_optional_parameter_declaration:
@@ -429,7 +343,7 @@ std::string MtModule::node_to_name(MtHandle n) {
 std::string MtModule::node_to_type(MtHandle n) {
   switch (n.sym) {
   case alias_sym_type_identifier:
-    return body(n);
+    return n.body();
 
   case sym_field_declaration:
     return node_to_type(n.get_field(field_type));
@@ -458,11 +372,11 @@ bool MtModule::field_is_primitive(MtHandle n) {
   // Logic arrays are primitive types.
   if (node_type.sym == sym_template_type) {
     auto templ_name = node_type.get_field(field_name);
-    if (match(templ_name, "logic")) return true;
+    if (templ_name.match("logic")) return true;
   }
 
   // Bits are primitive types.
-  if (match(node_type, "bit")) return true;
+  if (node_type.match("bit")) return true;
 
   return false;
 }
@@ -474,7 +388,7 @@ bool MtModule::field_is_module(MtHandle n) {
 bool MtModule::field_is_static(MtHandle n) {
   for (auto c : n) {
     if (c.sym == sym_storage_class_specifier) {
-      if (match(c, "static")) return true;
+      if (c.match("static")) return true;
     }
   }
   return false;
@@ -483,7 +397,7 @@ bool MtModule::field_is_static(MtHandle n) {
 bool MtModule::field_is_const(MtHandle n) {
   for (auto c : n) {
     if (c.sym == sym_type_qualifier) {
-      if (match(c, "const")) return true;
+      if (c.match("const")) return true;
     }
   }
   return false;
@@ -497,14 +411,14 @@ bool MtModule::field_is_input(MtHandle n) {
   if (field_is_static(n) || field_is_const(n)) return false;
 
   auto name = n.get_field(field_declarator);
-  return body(name).starts_with("i_");
+  return name.body().starts_with("i_");
 }
 
 bool MtModule::field_is_output(MtHandle n) {
   if (field_is_static(n) || field_is_const(n)) return false;
 
   auto name = n.get_field(field_declarator);
-  return body(name).starts_with("o_");
+  return name.body().starts_with("o_");
 }
 
 //------------------------------------------------------------------------------
@@ -520,7 +434,7 @@ void MtModule::find_module() {
       module_class = child;
 
       auto name_node = module_class.get_field(field_name);
-      module_name = body(name_node);
+      module_name = name_node.body();
     }
     });
 
@@ -548,12 +462,12 @@ void MtModule::collect_fields() {
       auto func_name = n.get_field(field_declarator).get_field(field_declarator);
       auto func_args = n.get_field(field_declarator).get_field(field_parameters);
 
-      if (match(func_name, "tick")) {
+      if (func_name.match("tick")) {
         visit_tree(func_args, [&](MtHandle func_arg) {
           if (func_arg.sym == sym_parameter_declaration) {
             auto arg_name = func_arg.get_field(field_declarator);
 
-            if (!match(arg_name, "rst_n")) {
+            if (!arg_name.match("rst_n")) {
               inputs.push_back(func_arg);
             }
           }
@@ -586,14 +500,14 @@ void MtModule::collect_fields() {
 
       //----------
 
-      is_task = match(func_type, "void");
+      is_task = func_type.match("void");
 
       //----------
 
       auto current_function_name = func_decl.get_field(field_declarator);
-      is_init = is_task && match(current_function_name, "init");
-      is_tick = is_task && match(current_function_name, "tick");
-      is_tock = is_task && match(current_function_name, "tock");
+      is_init = is_task && current_function_name.match("init");
+      is_tick = is_task && current_function_name.match("tick");
+      is_tock = is_task && current_function_name.match("tock");
 
       if (is_init) {
         node_init = func_def;

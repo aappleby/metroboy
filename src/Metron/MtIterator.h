@@ -5,6 +5,7 @@
 #include <compare>
 #include <algorithm>
 #include <assert.h>
+#include <string>
 
 //------------------------------------------------------------------------------
 
@@ -100,7 +101,6 @@ struct MtHandle {
   bool is_call_expr()  const { return !is_null() && sym == sym_call_expression; }
   bool is_arglist()    const { return !is_null() && sym == sym_argument_list; }
 
-#if 1
   //----------
 
   MtHandle get_field(int field_id);
@@ -121,8 +121,6 @@ struct MtHandle {
 
   //----------
 
-  int named_child_count() const { return (int)ts_node_named_child_count(node); }
-
   MtHandle first_named_child() const {
     for (int i = 0; i < child_count(); i++) {
       auto c = child(i);
@@ -131,7 +129,50 @@ struct MtHandle {
     return MtHandle::null;
   }
 
-#endif
+  std::string body() {
+    assert(!is_null());
+
+    auto a = &source[start_byte()];
+    auto b = &source[end_byte()];
+
+    if (sym == anon_sym_LF) return a;
+
+    while (a < b && isspace(a[0])) a++;
+    while (b > a && isspace(b[-1])) b--;
+
+    return std::string(a, b);
+  }
+
+  const char* start() {
+    auto a = &source[start_byte()];
+    auto b = &source[end_byte()];
+
+    if (sym == anon_sym_LF) return a;
+
+    while (a < b && isspace(a[0])) a++;
+    return a;
+  }
+
+  const char* end() {
+    auto a = &source[start_byte()];
+    auto b = &source[end_byte()];
+
+    if (sym == anon_sym_LF) return b;
+
+    while (b > a && isspace(b[-1])) b--;
+    return b;
+  }
+
+  bool match(const char* s) {
+    const char* a = start();
+    const char* b = end();
+
+    while (a != b) {
+      if (*a++ != *s++)  return false;
+    }
+    return true;
+  }
+
 };
 
 //------------------------------------------------------------------------------
@@ -194,77 +235,5 @@ inline MtIterator begin(MtHandle parent) {
 inline MtIterator end(MtHandle parent) {
   return MtIterator(MtHandle::null);
 }
-
-
-
-
-
-
-
-#if 0
-struct MtIterator {
-
-  MtIterator(MtHandle parent) {
-    this->parent = parent;
-    if (!parent || !parent.child_count()) {
-      cursor = MtHandle::null;
-    }
-    else {
-      auto child_node   = ts_node_child(parent.node, 0);
-      auto child_sym    = ts_node_symbol(child_node);
-      auto child_field  = ts_node_field_id_for_child(parent.node, 0);
-      auto child_source = parent.source;
-
-      if (child_field < 0) child_field = 0;
-
-      cursor = MtHandle(child_node, child_sym, child_field, child_source);
-    }
-  }
-
-  MtIterator& operator++() {
-    auto next_sibling = ts_node_next_sibling(cursor.node);
-
-    if (ts_node_is_null(next_sibling)) {
-      cursor = MtHandle::null;
-    }
-    else {
-      auto next_sym = ts_node_symbol(next_sibling);
-      TSTreeCursor temp = ts_tree_cursor_new(next_sibling);
-      auto next_field = ts_tree_cursor_current_field_id(&temp);
-      ts_tree_cursor_delete(&temp);
-
-      cursor = MtHandle(next_sibling, next_sym, next_field, cursor.source);
-    }
-
-    return *this;
-  }
-
-  std::strong_ordering operator<=>(const MtIterator& b) const { return cursor <=> b.cursor; }
-  bool operator != (const MtIterator& b) const { return (*this <=> b) != std::strong_ordering::equal; }
-
-  MtHandle operator*() const {
-    return cursor;
-  }
-
-  MtHandle parent;
-};
-
-inline MtIterator begin(MtHandle parent) {
-  return MtIterator(parent);
-}
-
-inline MtIterator end(MtHandle parent) {
-  return MtIterator(MtHandle::null);
-}
-
-inline MtHandle begin(MtHandle parent) {
-  return parent.child(0);
-}
-
-inline MtHandle end(MtHandle parent) {
-  return MtHandle::null;
-}
-#endif
-
 
 //------------------------------------------------------------------------------

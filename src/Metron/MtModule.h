@@ -66,12 +66,6 @@ struct MtModule {
   void visit_tree(MtHandle n, NodeVisitor cv);
   void visit_tree2(MtHandle parent, NodeVisitor2 cv);
 
-  // Text handling
-  const char* start(MtHandle n);
-  const char* end(MtHandle n);
-  std::string body(MtHandle n);
-  bool match(MtHandle n, const char* s);
-
   std::string node_to_name(MtHandle n);
   std::string node_to_type(MtHandle n);
 

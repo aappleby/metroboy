@@ -37,7 +37,7 @@ struct MtCursor {
 
   void push_indent(MtHandle n) {
     if (n) {
-      auto e = mod->start(n);
+      auto e = n.start();
       auto b = e;
       while (*b != '\n') b--;
       indent_stack.push_back(std::string(b + 1, e));
@@ -54,7 +54,6 @@ struct MtCursor {
 
   void dump_node_line(MtHandle n);
   void print_error(MtHandle n, const char* fmt, ...);
-  bool match(MtHandle n, const char* str) { return mod->match(n, str); }
 
   // Generic emit()s.
 

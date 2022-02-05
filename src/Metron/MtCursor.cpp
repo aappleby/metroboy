@@ -58,8 +58,8 @@ void MtCursor::emit_span(const char* a, const char* b) {
 }
 
 void MtCursor::emit(MtHandle n) {
-  emit_span(cursor, mod->end(n));
-  cursor = mod->end(n);
+  emit_span(cursor, n.end());
+  cursor = n.end();
 }
 
 void MtCursor::emit(const char* fmt, ...) {
@@ -91,12 +91,12 @@ void MtCursor::emit_replacement(MtHandle n, const char* fmt, ...) {
     vfprintf(stdout, fmt, args);
     va_end(args);
   }
-  cursor = mod->end(n);
+  cursor = n.end();
 }
 
 void MtCursor::skip_over(MtHandle n) {
   advance_to(n);
-  cursor = mod->end(n);
+  cursor = n.end();
 }
 
 void MtCursor::skip_whitespace() {
@@ -106,9 +106,9 @@ void MtCursor::skip_whitespace() {
 }
 
 void MtCursor::advance_to(MtHandle n) {
-  assert(cursor <= mod->start(n));
-  emit_span(cursor, mod->start(n));
-  cursor = mod->start(n);
+  assert(cursor <= n.start());
+  emit_span(cursor, n.start());
+  cursor = n.start();
 }
 
 void MtCursor::comment_out(MtHandle n) {
@@ -126,7 +126,7 @@ void MtCursor::emit_preproc_include(MtHandle n) {
     switch (c.sym) {
     case aux_sym_preproc_include_token1: emit_replacement(c, "`include"); break;
     case sym_string_literal: {
-      auto path = mod->body(c);
+      auto path = c.body();
       path.pop_back();
       path.append(".sv\"");
       emit_replacement(c, "%s", path.c_str());
@@ -147,7 +147,7 @@ void MtCursor::emit_assignment_expression(MtHandle n) {
 
   bool lhs_is_field = false;
   if (lhs.sym == sym_identifier) {
-    std::string lhs_name = mod->body(lhs);
+    std::string lhs_name = lhs.body();
     for (const auto& f : mod->fields) {
       if (mod->node_to_name(f) == lhs_name) {
         lhs_is_field = true;
@@ -179,28 +179,28 @@ void MtCursor::emit_call_expression(MtHandle n) {
     call_func = call_func.get_field(field_field);
   }
 
-  if (mod->match(call_func, "clog2")) {
+  if (call_func.match("clog2")) {
     emit_replacement(call_func, "$clog2");
     emit_dispatch(call_args);
   }
-  else if (mod->match(call_func, "readmemh")) {
+  else if (call_func.match("readmemh")) {
     emit_replacement(call_func, "$readmemh");
     emit_dispatch(call_args);
   }
-  else if (mod->match(call_func, "printf")) {
+  else if (call_func.match("printf")) {
     emit_replacement(call_func, "$write");
     emit_dispatch(call_args);
   }
-  else if (mod->match(call_func, "init")) {
+  else if (call_func.match("init")) {
     comment_out(n);
   }
-  else if (mod->match(call_func, "final")) {
+  else if (call_func.match("final")) {
     comment_out(n);
   }
-  else if (mod->match(call_func, "tick")) {
+  else if (call_func.match("tick")) {
     comment_out(n);
   }
-  else if (mod->match(call_func, "tock")) {
+  else if (call_func.match("tock")) {
     comment_out(n);
   }
   else {
@@ -251,7 +251,7 @@ void MtCursor::emit_hoisted_decls(MtHandle n) {
   MtCursor old_cursor = *this;
   for (auto c : n) {
     if (c.sym == sym_declaration) {
-      cursor = mod->start(c);
+      cursor = c.start();
       emit_newline();
       emit_init_declarator_as_decl(c);
     }
@@ -276,7 +276,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
 
   //----------
 
-  is_task = mod->match(func_type, "void");
+  is_task = func_type.match("void");
   skip_over(func_type);
   skip_whitespace();
 
@@ -287,9 +287,9 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   in_seq = false;
 
   current_function_name = func_decl.get_field(field_declarator);
-  is_init = is_task && mod->match(current_function_name, "init");
-  is_tick = is_task && mod->match(current_function_name, "tick");
-  is_tock = is_task && mod->match(current_function_name, "tock");
+  is_init = is_task && current_function_name.match("init");
+  is_tick = is_task && current_function_name.match("tick");
+  is_tock = is_task && current_function_name.match("tock");
 
   if (is_init) {
     emit_replacement(func_decl, "initial");
@@ -309,7 +309,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
       emit("task ");
     }
     else {
-      emit("function %s ", mod->body(func_type).c_str());
+      emit("function %s ", func_type.body().c_str());
     }
 
     emit_dispatch(func_decl);
@@ -375,7 +375,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
           auto call_args = child.get_field(field_arguments);
           auto call_this = call_func.get_field(field_argument);
           auto func_name = call_func.get_field(field_field);
-          if (mod->match(func_name, "tick")) {
+          if (func_name.match("tick")) {
             submod_call_nodes.push_back(child);
           }
         }
@@ -439,10 +439,10 @@ void MtCursor::emit_glue_declaration(MtHandle decl, const std::string& prefix) {
   std::string type_name;
 
   if (node_type.sym == alias_sym_type_identifier || node_type.sym == sym_primitive_type) {
-    type_name = mod->body(node_type);
+    type_name = node_type.body();
   }
   else if (node_type.sym == sym_template_type) {
-    type_name = mod->body(node_type.get_field(field_name));
+    type_name = node_type.get_field(field_name).body();
   }
   else {
     debugbreak();
@@ -469,9 +469,9 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
   std::string type_name;
 
   switch (node_type.sym) {
-  case alias_sym_type_identifier: type_name = mod->body(node_type); break;
-  case sym_primitive_type:        type_name = mod->body(node_type); break;
-  case sym_template_type:         type_name = mod->body(node_type.get_field(field_name)); break;
+  case alias_sym_type_identifier: type_name = node_type.body(); break;
+  case sym_primitive_type:        type_name = node_type.body(); break;
+  case sym_template_type:         type_name = node_type.get_field(field_name).body(); break;
   default:                        debugbreak();
   }
 
@@ -500,14 +500,14 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
 
   for (auto& input : submod->inputs) {
     MtCursor sub_cursor(mod_lib, submod, out);
-    sub_cursor.cursor = submod->start(input);
+    sub_cursor.cursor = input.start();
     sub_cursor.indent_stack = indent_stack;
     sub_cursor.emit_glue_declaration(input, inst_name);
   }
 
   for (auto& output : submod->outputs) {
     MtCursor sub_cursor(mod_lib, submod, out);
-    sub_cursor.cursor = submod->start(output);
+    sub_cursor.cursor = output.start();
     sub_cursor.indent_stack = indent_stack;
     sub_cursor.emit_glue_declaration(output, inst_name);
   }
@@ -553,7 +553,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       if (mod->module_param_list) {
         emit_newline();
         MtCursor sub_cursor = *this;
-        sub_cursor.cursor = mod->start(mod->module_param_list);
+        sub_cursor.cursor = mod->module_param_list.start();
         sub_cursor.emit_module_parameters(mod->module_param_list);
       }
 
@@ -587,7 +587,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
 
       for (auto input : mod->inputs) {
         MtCursor sub_cursor = *this;
-        sub_cursor.cursor = mod->start(input);
+        sub_cursor.cursor = input.start();
         emit_newline();
         emit("input ");
         sub_cursor.emit_dispatch(input);
@@ -641,7 +641,7 @@ void MtCursor::emit_template_type(MtHandle n) {
   auto node_name = n.get_field(field_name);
   auto node_args = n.get_field(field_arguments);
 
-  bool is_logic = mod->match(node_name, "logic");
+  bool is_logic = node_name.match("logic");
 
   if (!is_logic) {
     emit_dispatch(node_name);
@@ -654,7 +654,7 @@ void MtCursor::emit_template_type(MtHandle n) {
   case anon_sym_LT: skip_over(c); break;
   case anon_sym_GT: skip_over(c); break;
   case sym_number_literal: {
-    int width = atoi(mod->start(c));
+    int width = atoi(c.start());
     if (width > 1) emit("[%d:0]", width - 1);
     skip_over(c);
     break;
@@ -732,7 +732,7 @@ void MtCursor::emit_translation_unit(MtHandle n) {
 // Replace "0b" prefixes with "'b"
 
 void MtCursor::emit_number_literal(MtHandle n) {
-  std::string body = mod->body(n);
+  std::string body = n.body();
   if (body.starts_with("0x")) {
     emit_replacement(n, "'h%s", body.c_str() + 2);
   }
@@ -748,7 +748,7 @@ void MtCursor::emit_number_literal(MtHandle n) {
 // Change "return x" to "(funcname) = x" to match old Verilog return style.
 
 void MtCursor::emit_return_statement(MtHandle n) {
-  auto func_name = mod->body(current_function_name);
+  auto func_name = current_function_name.body();
   for (auto c : n) switch (c.sym) {
   case anon_sym_return: emit_replacement(c, "%s =", func_name.c_str()); break;
   default: emit_dispatch(c); break;
@@ -785,7 +785,7 @@ void MtCursor::emit_template_declaration(MtHandle n) {
 // refers to a glue expression.
 
 void MtCursor::emit_flat_field_expression(MtHandle n) {
-  auto field = mod->body(n);
+  auto field = n.body();
   for (auto& c : field) if (c == '.') c = '_';
   emit_replacement(n, field.c_str());
 }
@@ -793,7 +793,7 @@ void MtCursor::emit_flat_field_expression(MtHandle n) {
 //------------------------------------------------------------------------------
 
 void MtCursor::emit_dispatch(MtHandle n) {
-  assert(cursor <= mod->start(n));
+  assert(cursor <= n.start());
 
   switch (n.sym) {
   case anon_sym_template:
@@ -915,7 +915,7 @@ void MtCursor::emit_dispatch(MtHandle n) {
   }
 
   case sym_storage_class_specifier: {
-    if (mod->match(n, "static")) {
+    if (n.match("static")) {
       emit_replacement(n, "localparam");
     }
     else {

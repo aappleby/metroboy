@@ -359,69 +359,6 @@ std::string MtModule::node_to_type(MtHandle n) {
 }
 
 //------------------------------------------------------------------------------
-// Field introspection
-
-bool MtModule::field_is_primitive(MtHandle n) {
-
-  auto node_type = n.get_field(field_type);
-  auto node_decl = n.get_field(field_declarator);
-
-  // Primitive types are primitive types.
-  if (node_type.sym == sym_primitive_type) return true;
-
-  // Logic arrays are primitive types.
-  if (node_type.sym == sym_template_type) {
-    auto templ_name = node_type.get_field(field_name);
-    if (templ_name.match("logic")) return true;
-  }
-
-  // Bits are primitive types.
-  if (node_type.match("bit")) return true;
-
-  return false;
-}
-
-bool MtModule::field_is_module(MtHandle n) {
-  return !field_is_primitive(n);
-}
-
-bool MtModule::field_is_static(MtHandle n) {
-  for (auto c : n) {
-    if (c.sym == sym_storage_class_specifier) {
-      if (c.match("static")) return true;
-    }
-  }
-  return false;
-}
-
-bool MtModule::field_is_const(MtHandle n) {
-  for (auto c : n) {
-    if (c.sym == sym_type_qualifier) {
-      if (c.match("const")) return true;
-    }
-  }
-  return false;
-}
-
-bool MtModule::field_is_param(MtHandle n) {
-  return field_is_static(n) && field_is_const(n);
-}
-
-bool MtModule::field_is_input(MtHandle n) {
-  if (field_is_static(n) || field_is_const(n)) return false;
-
-  auto name = n.get_field(field_declarator);
-  return name.body().starts_with("i_");
-}
-
-bool MtModule::field_is_output(MtHandle n) {
-  if (field_is_static(n) || field_is_const(n)) return false;
-
-  auto name = n.get_field(field_declarator);
-  return name.body().starts_with("o_");
-}
-
-//------------------------------------------------------------------------------
 // Scanner
 
 void MtModule::find_module() {
@@ -478,12 +415,12 @@ void MtModule::collect_fields() {
 
   visit_tree(module_class, [&](MtHandle n) {
     if (n.sym == sym_field_declaration) {
-      if      (field_is_input(n))  inputs.push_back(n);
-      else if (field_is_output(n)) outputs.push_back(n);
-      else if (field_is_param(n)) {
+      if      (n.field_is_input())  inputs.push_back(n);
+      else if (n.field_is_output()) outputs.push_back(n);
+      else if (n.field_is_param()) {
         localparams.push_back(n);
       }
-      else if (field_is_module(n)) submodules.push_back(n);
+      else if (n.field_is_module()) submodules.push_back(n);
       else                         fields.push_back(n);
     }
 

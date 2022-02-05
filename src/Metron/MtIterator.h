@@ -173,6 +173,14 @@ struct MtHandle {
     return true;
   }
 
+  // Field introspection
+  bool field_is_primitive();
+  bool field_is_module();
+  bool field_is_static();
+  bool field_is_const();
+  bool field_is_param();
+  bool field_is_input();
+  bool field_is_output();
 };
 
 //------------------------------------------------------------------------------

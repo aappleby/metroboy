@@ -69,15 +69,6 @@ struct MtModule {
   std::string node_to_name(MtHandle n);
   std::string node_to_type(MtHandle n);
 
-  // Field introspection
-  bool field_is_primitive(MtHandle n);
-  bool field_is_module(MtHandle n);
-  bool field_is_static(MtHandle n);
-  bool field_is_const(MtHandle n);
-  bool field_is_param(MtHandle n);
-  bool field_is_input(MtHandle n);
-  bool field_is_output(MtHandle n);
-
   MtHandle get_by_id(std::vector<MtHandle>& handles, MtHandle id);
 
   MtHandle get_field_by_id(MtHandle id)    { return get_by_id(fields, id); }

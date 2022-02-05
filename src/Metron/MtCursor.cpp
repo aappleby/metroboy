@@ -480,11 +480,11 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
 
   // If this isn't a submodule, just tack on "input" and "output" annotations.
   if (!submod) {
-    if (mod->field_is_input(decl)) {
+    if (decl.field_is_input()) {
       advance_to(decl);
       emit("input ");
     }
-    if (mod->field_is_output(decl)) {
+    if (decl.field_is_output()) {
       advance_to(decl);
       emit("output ");
     }

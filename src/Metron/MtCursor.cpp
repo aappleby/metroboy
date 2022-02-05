@@ -841,15 +841,9 @@ void MtCursor::emit_dispatch(MtNode n) {
 
   switch (n.sym) {
 
-  case sym_storage_class_specifier: {
-    if (n.match("static")) {
-      emit_replacement(n, "localparam");
-    }
-    else {
-      comment_out(n);
-    }
+  case sym_storage_class_specifier:
+    n.match("static") ? emit_replacement(n, "localparam") : comment_out(n);
     break;
-  }
 
   case sym_break_statement:
   case sym_access_specifier:
@@ -859,44 +853,6 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_template_parameter_list:
     skip_over(n);
     skip_space();
-    break;
-
-  case anon_sym_template:
-  case anon_sym_if:
-  case anon_sym_else:
-  case anon_sym_typedef:
-  case anon_sym_enum:
-  case anon_sym_default:
-  case anon_sym_LF:
-  case anon_sym_EQ:
-  case anon_sym_SEMI:
-  case anon_sym_COMMA:
-  case anon_sym_LPAREN:
-  case anon_sym_RPAREN:
-  case anon_sym_LBRACK:
-  case anon_sym_RBRACK:
-  case anon_sym_BANG:
-  case anon_sym_EQ_EQ:
-  case anon_sym_AMP:
-  case anon_sym_AMP_AMP:
-  case anon_sym_DASH:
-  case anon_sym_PLUS:
-  case anon_sym_PIPE:
-  case anon_sym_PIPE_PIPE:
-  case anon_sym_LT:
-  case anon_sym_LT_LT:
-  case anon_sym_LT_EQ:
-  case anon_sym_GT_GT:
-  case anon_sym_BANG_EQ:
-  case anon_sym_COLON:
-  case aux_sym_preproc_include_token1:
-  case alias_sym_field_identifier:
-  case sym_identifier:
-  case sym_true:
-  case sym_false:
-  case sym_comment:
-  case sym_string_literal:
-    emit(n);
     break;
 
   case sym_parameter_list:
@@ -944,7 +900,7 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_switch_statement:       emit_switch(n); break;
 
   default:
-    print_error(n, "Unknown node type");
+    emit(n);
     break;
   }
 }

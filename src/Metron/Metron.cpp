@@ -1,5 +1,4 @@
-#include <stdio.h>
-
+#include "Platform.h"
 #include "MtModule.h"
 #include "MtModLibrary.h"
 #include "MtCursor.h"
@@ -25,12 +24,7 @@ int main(int argc, char** argv) {
 
   for (auto module : lib.modules)
   {
-    //auto module = lib.modules[1];
-
-    //module->dump_tree(module->root);
-
-    auto out = fopen(module->output_filename.c_str(), "wb");
-    MtCursor cursor(&lib, module, out);
+    MtCursor cursor(module, module->out_file);
 
     cursor.emit("//--------------------------------------------------------------------------------\n");
     cursor.emit("// MODULE:       ", module);

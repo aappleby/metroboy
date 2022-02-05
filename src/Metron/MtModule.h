@@ -1,13 +1,7 @@
 #pragma once
-
-#include <string>
-#include <vector>
-#include <functional>
-#include <set>
-
-#include "tree_sitter/api.h"
 #include "MtIterator.h"
 
+struct MtModLibrary;
 typedef std::vector<uint8_t> blob;
 
 //------------------------------------------------------------------------------
@@ -25,6 +19,7 @@ struct MtModule {
   const char* source = nullptr;
   const char* source_end = nullptr;
   MtHandle root;
+  FILE* out_file;
 
   std::vector<MtHandle> moduleparams;
 
@@ -46,6 +41,8 @@ struct MtModule {
   MtHandle module_class;
   MtHandle module_param_list;
   std::string module_name;
+
+  MtModLibrary* lib;
 
   MtModule();
   ~MtModule();

@@ -152,6 +152,7 @@
     <ClCompile Include="MtIterator.cpp" />
     <ClCompile Include="MtModLibrary.cpp" />
     <ClCompile Include="MtModule.cpp" />
+    <ClCompile Include="MtNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
@@ -159,11 +160,10 @@
     <ClInclude Include="MtIterator.h" />
     <ClInclude Include="MtModLibrary.h" />
     <ClInclude Include="MtModule.h" />
-    <ClInclude Include="Node.h" />
+    <ClInclude Include="MtNode.h" />
     <ClInclude Include="Platform.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="apio.ini" />
     <None Include="build.ninja" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

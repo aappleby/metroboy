@@ -1,12 +1,7 @@
 #include "MtModule.h"
-#include <assert.h>
+#include "Platform.h"
 
 #include "MtIterator.h"
-#include "Platform.h"
-#include "../Plait/TreeSymbols.h"
-
-#include <assert.h>
-#include <stdarg.h>
 
 #pragma warning(disable:4996) // unsafe fopen()
 
@@ -74,6 +69,8 @@ void MtModule::load(const std::string& input_filename, const std::string& output
   ts_parser_set_language(parser, lang);
 
   src_blob = load_blob(input_filename.c_str());
+
+  out_file = fopen(output_filename.c_str(), "wb");
 
   source = (const char*)src_blob.data();
   source_end = source + src_blob.size();
@@ -164,9 +161,7 @@ void MtModule::collect_moduleparams() {
 
   if (module_template.sym != sym_template_declaration) debugbreak();
 
-  auto params = module_template.get_field(field_parameters);
-
-  for (auto child : params) {
+  for (auto child : module_template.get_field(field_parameters)) {
     if (child.sym == sym_parameter_declaration ||
         child.sym == sym_optional_parameter_declaration) {
       moduleparams.push_back(child);
@@ -199,52 +194,26 @@ void MtModule::collect_fields() {
     if (n.sym == sym_field_declaration) {
       if      (n.field_is_input())  inputs.push_back(n);
       else if (n.field_is_output()) outputs.push_back(n);
-      else if (n.field_is_param()) {
-        localparams.push_back(n);
-      }
+      else if (n.field_is_param())  localparams.push_back(n);
       else if (n.field_is_module()) submodules.push_back(n);
-      else                         fields.push_back(n);
+      else                          fields.push_back(n);
     }
 
     if (n.sym == sym_function_definition) {
-      auto func_def = n;
+      auto func_type = n.get_field(field_type);
+      auto func_decl = n.get_field(field_declarator);
+      auto func_name = func_decl.get_field(field_declarator).node_to_name();
 
-      auto func_type = func_def.get_field(field_type);
-      auto func_decl = func_def.get_field(field_declarator);
+      bool is_task = func_type.match("void");
+      bool is_init = is_task && func_name == "init";
+      bool is_tick = is_task && func_name == "tick";
+      bool is_tock = is_task && func_name == "tock";
 
-      bool is_task = false;
-      bool is_init = false;
-      bool is_tock = false;
-      bool is_tick = false;
-
-      //----------
-
-      is_task = func_type.match("void");
-
-      //----------
-
-      auto current_function_name = func_decl.get_field(field_declarator);
-      is_init = is_task && current_function_name.match("init");
-      is_tick = is_task && current_function_name.match("tick");
-      is_tock = is_task && current_function_name.match("tock");
-
-      if (is_init) {
-        node_init = func_def;
-      }
-      else if (is_tick) {
-        node_tick = func_def;
-      }
-      else if (is_tock) {
-        node_tock = func_def;
-      }
-      else {
-        if (is_task) {
-          tasks.push_back(func_def);
-        }
-        else {
-          functions.push_back(func_def);
-        }
-      }
+      if      (is_init) node_init = n;
+      else if (is_tick) node_tick = n;
+      else if (is_tock) node_tock = n;
+      else if (is_task) tasks.push_back(n);
+      else              functions.push_back(n);
     }
   });
 }

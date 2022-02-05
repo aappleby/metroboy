@@ -1,56 +1,42 @@
 #pragma once
 
-#include <assert.h>
-#include "MtModLibrary.h"
-#include "MtModule.h"
-#include "MtIterator.h"
-#include <set>
-#include <string.h>
+//#include <assert.h>
+//#include "MtModLibrary.h"
+//#include "MtModule.h"
+//#include "MtIterator.h"
+//#include <set>
+//#include <string.h>
 
-//------------------------------------------------------------------------------
+struct MtModLibrary;
+struct MtModule;
+struct MtHandle;
 
-inline bool operator < (const TSNode& a, const TSNode& b) {
-  return memcmp(&a, &b, sizeof(TSNode)) < 0;
-}
+#include <stdio.h>
+#include <vector>
+#include <string>
 
 //------------------------------------------------------------------------------
 
 struct MtCursor {
 
-  MtCursor(MtModLibrary* mod_lib, MtModule* mod, FILE* out)
-    : mod_lib(mod_lib), mod(mod), out(out) {
-    indent_stack.push_back("");
-    cursor = mod->source;
-  }
+  MtCursor(MtModule* mod, FILE* out);
 
-  MtModLibrary* mod_lib;
   MtModule* mod;
-  FILE* out = nullptr;
   const char* cursor = nullptr;
   std::vector<std::string> indent_stack;
+  FILE* out;
 
   bool in_init = false;
   bool in_comb = false;
   bool in_seq = false;
   bool in_final = false;
-  MtHandle current_function_name;
 
-  void push_indent(MtHandle n) {
-    if (n) {
-      auto e = n.start();
-      auto b = e;
-      while (*b != '\n') b--;
-      indent_stack.push_back(std::string(b + 1, e));
-    }
-  }
+  //MtHandle current_function_name;
+  std::string current_function_name;
 
-  void pop_indent(MtHandle n) {
-    if (n) indent_stack.pop_back();
-  }
-
-  void emit_newline() {
-    emit("\n%s", indent_stack.back().c_str());
-  }
+  void push_indent(MtHandle n);
+  void pop_indent(MtHandle n);
+  void emit_newline();
 
   void dump_node_line(MtHandle n);
   void print_error(MtHandle n, const char* fmt, ...);

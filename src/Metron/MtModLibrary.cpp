@@ -1,6 +1,5 @@
 #include "MtModLibrary.h"
 
-#include <vector>
 #include "MtModule.h"
 
 //------------------------------------------------------------------------------
@@ -13,8 +12,8 @@ void MtModLibrary::reset() {
 void MtModLibrary::load(const std::string& input_filename, const std::string& output_filename) {
   auto mod = new MtModule();
   mod->load(input_filename, output_filename);
+  mod->lib = this;
   modules.push_back(mod);
-  //printf("modules.size() %d\n", modules.size());
 }
 
 MtModule* MtModLibrary::find_module(const std::string& module_name) {

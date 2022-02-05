@@ -1,13 +1,35 @@
 #include "MtCursor.h"
-#include "MtModLibrary.h"
-#include "MtModule.h"
-#include <stdarg.h>
-#include <regex>
-#include <assert.h>
 
 #include "Platform.h"
+#include "MtModLibrary.h"
+#include "MtModule.h"
 #include "MtIterator.h"
-#include "../Plait/TreeSymbols.h"
+
+//------------------------------------------------------------------------------
+
+MtCursor::MtCursor(MtModule* mod, FILE* out) : mod(mod), out(out) {
+  indent_stack.push_back("");
+  cursor = mod->source;
+}
+
+//------------------------------------------------------------------------------
+
+void MtCursor::push_indent(MtHandle n) {
+  if (n) {
+    auto e = n.start();
+    auto b = e;
+    while (*b != '\n') b--;
+    indent_stack.push_back(std::string(b + 1, e));
+  }
+}
+
+void MtCursor::pop_indent(MtHandle n) {
+  if (n) indent_stack.pop_back();
+}
+
+void MtCursor::emit_newline() {
+  emit("\n%s", indent_stack.back().c_str());
+}
 
 //------------------------------------------------------------------------------
 
@@ -286,10 +308,10 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   in_comb = false;
   in_seq = false;
 
-  current_function_name = func_decl.get_field(field_declarator);
-  is_init = is_task && current_function_name.match("init");
-  is_tick = is_task && current_function_name.match("tick");
-  is_tock = is_task && current_function_name.match("tock");
+  current_function_name = func_decl.get_field(field_declarator).node_to_name();
+  is_init = is_task && current_function_name == "init";
+  is_tick = is_task && current_function_name == "tick";
+  is_tock = is_task && current_function_name == "tock";
 
   if (is_init) {
     emit_replacement(func_decl, "initial");
@@ -354,7 +376,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   //----------
   // For each call to {submodule}.tick() in module::tick(), emit glue assignments.
 
-  current_function_name = MtHandle::null;
+  current_function_name = "";
   in_init = false;
   in_comb = false;
   in_seq  = false;
@@ -392,7 +414,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
         auto submod_type = sm.node_to_type();
         auto submod_name = sm.node_to_name();
         if (submod_name == call_this.node_to_name()) {
-          auto submod = mod_lib->find_module(submod_type);
+          auto submod = mod->lib->find_module(submod_type);
 
           std::vector<std::string> call_src;
           std::vector<std::string> call_dst;
@@ -475,7 +497,7 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
   default:                        debugbreak();
   }
 
-  auto submod = mod_lib->find_module(type_name);
+  auto submod = mod->lib->find_module(type_name);
 
 
   // If this isn't a submodule, just tack on "input" and "output" annotations.
@@ -499,14 +521,14 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
   std::string inst_name = decl.node_to_name();
 
   for (auto& input : submod->inputs) {
-    MtCursor sub_cursor(mod_lib, submod, out);
+    MtCursor sub_cursor(submod, out);
     sub_cursor.cursor = input.start();
     sub_cursor.indent_stack = indent_stack;
     sub_cursor.emit_glue_declaration(input, inst_name);
   }
 
   for (auto& output : submod->outputs) {
-    MtCursor sub_cursor(mod_lib, submod, out);
+    MtCursor sub_cursor(submod, out);
     sub_cursor.cursor = output.start();
     sub_cursor.indent_stack = indent_stack;
     sub_cursor.emit_glue_declaration(output, inst_name);
@@ -748,7 +770,7 @@ void MtCursor::emit_number_literal(MtHandle n) {
 // Change "return x" to "(funcname) = x" to match old Verilog return style.
 
 void MtCursor::emit_return_statement(MtHandle n) {
-  auto func_name = current_function_name.body();
+  auto func_name = current_function_name;
   for (auto c : n) switch (c.sym) {
   case anon_sym_return: emit_replacement(c, "%s =", func_name.c_str()); break;
   default: emit_dispatch(c); break;

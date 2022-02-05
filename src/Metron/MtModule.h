@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <set>
 
 #include "tree_sitter/api.h"
 #include "MtIterator.h"
@@ -52,10 +53,15 @@ struct MtModule {
   ~MtModule();
   void load(const std::string& input_filename, const std::string& output_filename);
 
-  void dump_node(MtHandle n, int index = 0, int field = 0, int depth = 0);
-  void dump_tree(MtHandle n, int index, int field, int depth, int maxdepth);
-  void dump_tree(MtHandle n, int maxdepth) { dump_tree(n, 0, n.field, 0, maxdepth); }
-  void dump_tree(MtHandle n) { dump_tree(n, 0, n.field, 0, 255); }
+  void print_error(MtHandle n, const char* fmt, ...);
+
+  //void dump_node(TSNode n, int index, int field, int depth);
+  //void dump_tree(TSNode n, int index, int field, int depth, int maxdepth);
+
+  void dump_node(MtHandle n, int index, int depth = 0);
+  void dump_tree(MtHandle n, int index, int depth, int maxdepth);
+  void dump_tree(MtHandle n, int maxdepth) { dump_tree(n, 0, 0, maxdepth); }
+  void dump_tree(MtHandle n) { dump_tree(n, 0, 0, 255); }
 
   void visit_tree(MtHandle n, NodeVisitor cv);
   void visit_tree2(MtHandle parent, NodeVisitor2 cv);
@@ -90,6 +96,16 @@ struct MtModule {
   void find_module();
   void collect_moduleparams();
   void collect_fields();
+
+  void check_dirty_tick(MtHandle n);
+  void check_dirty_tock(MtHandle n);
+  void check_dirty_read(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_dispatch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_assign(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_if(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_call(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
+  void check_dirty_switch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
 };
 
 //------------------------------------------------------------------------------

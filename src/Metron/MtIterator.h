@@ -4,6 +4,7 @@
 #include "../Plait/TreeSymbols.h"
 #include <compare>
 #include <algorithm>
+#include <assert.h>
 
 //------------------------------------------------------------------------------
 
@@ -27,13 +28,14 @@ inline std::strong_ordering operator<=>(const TSTreeCursor& a, const TSTreeCurso
   return eq;
 }
 
-
 //------------------------------------------------------------------------------
 
 struct MtHandle {
   TSNode node;
   TSSymbol sym;
   int field;
+  const char* source;
+
   static const MtHandle null;
 
   //----------
@@ -42,27 +44,25 @@ struct MtHandle {
     this->node = { 0 };
     this->sym = 0;
     this->field = 0;
+    this->source = nullptr;
   }
 
-  MtHandle(TSNode n, int sym, int field) {
-    this->node = n;
+  MtHandle(TSNode node, int sym, int field, const char* source) {
+    this->node = node;
     this->sym = sym;
     this->field = field;
+    this->source = source;
   }
 
-  MtHandle(TSNode n) {
-    if (ts_node_is_null(n)) {
-      this->node = { 0 };
-      this->sym = 0;
-      this->field = 0;
-    }
-    else {
-      TSTreeCursor cursor = ts_tree_cursor_new(n);
-      this->node = n;
-      this->sym = ts_node_symbol(n);
-      this->field = ts_tree_cursor_current_field_id(&cursor);
-      ts_tree_cursor_delete(&cursor);
-    }
+  static MtHandle from_tree(TSTree* tree, const char* source) {
+    auto root = ts_tree_root_node(tree);
+
+    return MtHandle(
+      root,
+      ts_node_symbol(root),
+      0,
+      source
+    );
   }
 
   //----------
@@ -75,6 +75,8 @@ struct MtHandle {
   uint32_t end_byte()   const { return ts_node_end_byte(node); }
 
   //----------
+
+  int child_count() const { return (int)ts_node_child_count(node); }
 
   bool is_null()       const { return ts_node_is_null(node); }
   bool is_named()      const { return !is_null() && ts_node_is_named(node); }
@@ -98,31 +100,22 @@ struct MtHandle {
   bool is_call_expr()  const { return !is_null() && sym == sym_call_expression; }
   bool is_arglist()    const { return !is_null() && sym == sym_argument_list; }
 
+#if 1
   //----------
 
-  MtHandle get_field(int field_id) {
-    auto child = ts_node_child_by_field_id(node, field_id);
+  MtHandle get_field(int field_id);
+
+  //----------
+
+  MtHandle child(int i) const {
+    auto child = ts_node_child(node, i);
     if (ts_node_is_null(child)) {
       return MtHandle::null;
     }
     else {
-      return MtHandle(child, ts_node_symbol(child), field_id);
-    }
-  }
-
-  //----------
-
-  int child_count() const { return (int)ts_node_child_count(node); }
-
-  MtHandle child(int i) const {
-    auto n = ts_node_child(node, i);
-    if (ts_node_is_null(n)) {
-      return null;
-    }
-    else {
-      auto s = ts_node_symbol(n);
-      auto f = ts_node_field_id_for_child(node, i);
-      return { n, s, f };
+      auto sym = ts_node_symbol(child);
+      auto field = ts_node_field_id_for_child(node, i);
+      return { child, sym, field, source };
     }
   }
 
@@ -130,37 +123,34 @@ struct MtHandle {
 
   int named_child_count() const { return (int)ts_node_named_child_count(node); }
 
-  MtHandle named_child(int i) const {
-    auto n = ts_node_named_child(node, i);
-    if (ts_node_is_null(n)) {
-      return null;
+  MtHandle first_named_child() const {
+    for (int i = 0; i < child_count(); i++) {
+      auto c = child(i);
+      if (c.is_named()) return c;
     }
-    else {
-      auto s = ts_node_symbol(n);
-      TSTreeCursor cursor = ts_tree_cursor_new(n);
-      auto f = ts_tree_cursor_current_field_id(&cursor);
-      ts_tree_cursor_delete(&cursor);
-      return { n, s, f };
-    }
+    return MtHandle::null;
   }
+
+#endif
 };
 
 //------------------------------------------------------------------------------
 
 struct MtIterator {
 
-  MtIterator(TSNode parent) {
-    if (ts_node_is_null(parent)) {
+  MtIterator(MtHandle parent) {
+    if (ts_node_is_null(parent.node)) {
       cursor = { 0 };
     }
     else {
-      cursor = ts_tree_cursor_new(parent);
+      cursor = ts_tree_cursor_new(parent.node);
 
       if (!ts_tree_cursor_goto_first_child(&cursor)) {
         ts_tree_cursor_delete(&cursor);
         cursor = { 0 };
       }
     }
+    source = parent.source;
   }
 
   ~MtIterator() {
@@ -188,27 +178,93 @@ struct MtIterator {
     return {
       child,
       sym,
-      field
+      field,
+      source
     };
   }
 
   TSTreeCursor cursor;
+  const char* source;
 };
 
-inline MtIterator begin(TSNode parent) {
+inline MtIterator begin(MtHandle parent) {
   return MtIterator(parent);
 }
 
-inline MtIterator end(TSNode parent) {
-  return MtIterator({ 0 });
+inline MtIterator end(MtHandle parent) {
+  return MtIterator(MtHandle::null);
 }
 
+
+
+
+
+
+
+#if 0
+struct MtIterator {
+
+  MtIterator(MtHandle parent) {
+    this->parent = parent;
+    if (!parent || !parent.child_count()) {
+      cursor = MtHandle::null;
+    }
+    else {
+      auto child_node   = ts_node_child(parent.node, 0);
+      auto child_sym    = ts_node_symbol(child_node);
+      auto child_field  = ts_node_field_id_for_child(parent.node, 0);
+      auto child_source = parent.source;
+
+      if (child_field < 0) child_field = 0;
+
+      cursor = MtHandle(child_node, child_sym, child_field, child_source);
+    }
+  }
+
+  MtIterator& operator++() {
+    auto next_sibling = ts_node_next_sibling(cursor.node);
+
+    if (ts_node_is_null(next_sibling)) {
+      cursor = MtHandle::null;
+    }
+    else {
+      auto next_sym = ts_node_symbol(next_sibling);
+      TSTreeCursor temp = ts_tree_cursor_new(next_sibling);
+      auto next_field = ts_tree_cursor_current_field_id(&temp);
+      ts_tree_cursor_delete(&temp);
+
+      cursor = MtHandle(next_sibling, next_sym, next_field, cursor.source);
+    }
+
+    return *this;
+  }
+
+  std::strong_ordering operator<=>(const MtIterator& b) const { return cursor <=> b.cursor; }
+  bool operator != (const MtIterator& b) const { return (*this <=> b) != std::strong_ordering::equal; }
+
+  MtHandle operator*() const {
+    return cursor;
+  }
+
+  MtHandle parent;
+};
+
 inline MtIterator begin(MtHandle parent) {
-  return MtIterator(parent.node);
+  return MtIterator(parent);
 }
 
 inline MtIterator end(MtHandle parent) {
-  return MtIterator({ 0 });
+  return MtIterator(MtHandle::null);
 }
+
+inline MtHandle begin(MtHandle parent) {
+  return parent.child(0);
+}
+
+inline MtHandle end(MtHandle parent) {
+  return MtHandle::null;
+}
+#endif
+
 
 //------------------------------------------------------------------------------

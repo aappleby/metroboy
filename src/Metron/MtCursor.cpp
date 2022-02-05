@@ -48,157 +48,6 @@ void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
 }
 
 //------------------------------------------------------------------------------
-
-void MtCursor::check_dirty_tick(MtHandle func_def) {
-  std::set<MtHandle> dirty_fields;
-  check_dirty_dispatch(func_def, true, dirty_fields, 0);
-}
-
-void MtCursor::check_dirty_tock(MtHandle func_def) {
-  std::set<MtHandle> dirty_fields;
-  check_dirty_dispatch(func_def, false, dirty_fields, 0);
-}
-
-//----------------------------------------
-
-void MtCursor::check_dirty_read(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
-
-  // Reading from a dirty field in a seq block is forbidden.
-  if (is_seq) {
-    auto field = mod->get_field_by_id(n);
-    if (field && dirty_fields.contains(field)) {
-      print_error(n, "seq read dirty field - %s\n", mod->node_to_name(field).c_str());
-    }
-  }
-
-  // Reading from a clean output in a comb block is forbidden.
-  if (!is_seq) {
-    auto output = mod->get_output_by_id(n);
-    if (output && !dirty_fields.contains(output)) {
-      print_error(n, "comb read clean output - %s\n", mod->node_to_name(output).c_str());
-    }
-  }
-}
-
-//----------------------------------------
-
-void MtCursor::check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
-  // Writing to an already-dirty field in a seq block is forbidden.
-  if (is_seq) {
-    auto field = mod->get_field_by_id(n);
-    if (field) {
-      if (dirty_fields.contains(field)) {
-        print_error(n, "seq wrote dirty field - %s\n", mod->node_to_name(field).c_str());
-      }
-      dirty_fields.insert(field);
-    }
-  }
-
-  // Writing to any field in a comb block is forbidden.
-  if (!is_seq) {
-    auto field = mod->get_field_by_id(n);
-    if (field) {
-      print_error(n, "comb wrote field - %s\n", mod->node_to_name(field).c_str());
-    }
-  }
-
-  // Writing to an already-dirty field in a comb block is forbidden.
-  if (!is_seq) {
-    auto output = mod->get_output_by_id(n);
-    if (output) {
-      if (dirty_fields.contains(output)) {
-        print_error(n, "comb wrote dirty output - %s\n", mod->node_to_name(output).c_str());
-      }
-      dirty_fields.insert(output);
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
-
-void MtCursor::check_dirty_dispatch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
-  if (!n || !n.is_named()) return;
-
-  switch (n.sym) {
-
-  case sym_identifier:            check_dirty_read(n, is_seq, dirty_fields, depth); break;
-
-  case sym_assignment_expression: check_dirty_assign(n, is_seq, dirty_fields, depth); break;
-  case sym_if_statement:          check_dirty_if(n, is_seq, dirty_fields, depth); break;
-  case sym_call_expression:       check_dirty_call(n, is_seq, dirty_fields, depth); break;
-  case sym_switch_statement:      check_dirty_switch(n, is_seq, dirty_fields, depth); break;
-
-  default:
-    for (auto c : n) check_dirty_dispatch(c, is_seq, dirty_fields, depth + 1);
-    break;
-  }
-}
-
-//------------------------------------------------------------------------------
-
-void MtCursor::check_dirty_assign(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
-  auto lhs = n.get_field(field_left);
-  auto rhs = n.get_field(field_right);
-
-  check_dirty_dispatch(rhs, is_seq, dirty_fields, depth + 1);
-  check_dirty_write(lhs, is_seq, dirty_fields, depth + 1);
-}
-
-//----------------------------------------
-
-void MtCursor::check_dirty_if(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
-  check_dirty_dispatch(n.get_field(field_condition), is_seq, dirty_fields, depth + 1);
-
-  auto old_dirty_fields = dirty_fields;
-
-  std::set<MtHandle> if_set = old_dirty_fields;
-  check_dirty_dispatch(n.get_field(field_consequence), is_seq, if_set, depth + 1);
-  dirty_fields.merge(if_set);
-
-  std::set<MtHandle> else_set = old_dirty_fields;
-  check_dirty_dispatch(n.get_field(field_alternative), is_seq, else_set, depth + 1);
-  dirty_fields.merge(else_set);
-}
-
-//----------------------------------------
-
-void MtCursor::check_dirty_call(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
-  auto node_func = n.get_field(field_function);
-  auto node_args = n.get_field(field_arguments);
-
-  if (node_func.is_identifier()) {
-    // local function call, traverse args and then function body
-    check_dirty_dispatch(node_args, is_seq, dirty_fields, depth + 1);
-
-    auto task = mod->get_task_by_id(node_func);
-    if (task) check_dirty_dispatch(task, is_seq, dirty_fields, depth + 1);
-
-    auto func = mod->get_function_by_id(node_func);
-    if (func) check_dirty_dispatch(func, is_seq, dirty_fields, depth + 1);
-  }
-}
-
-//----------------------------------------
-
-void MtCursor::check_dirty_switch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
-
-  auto cond = n.get_field(field_condition);
-  auto body = n.get_field(field_body);
-
-  check_dirty_dispatch(cond, is_seq, dirty_fields, depth + 1);
-
-  auto old_dirty_fields = dirty_fields;
-
-  for (auto c : body) {
-    if (c.sym == sym_case_statement) {
-      auto temp = old_dirty_fields;
-      check_dirty_dispatch(c, is_seq, temp, depth + 1);
-      dirty_fields.merge(temp);
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
 // Generic emit() methods
 
 void MtCursor::emit_span(const char* a, const char* b) {
@@ -472,16 +321,10 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   }
 
   //----------
-  // Verify that tick()/tock() obey read/write ordering rules.
-
-  if (is_tick) check_dirty_tick(func_def);
-  if (is_tock) check_dirty_tock(func_def);
-
-  //----------
   // Emit the module body with the correct type of "begin/end" pair,
   // hoisting locals to the top of the body scope.
 
-  push_indent(func_body.named_child(0));
+  push_indent(func_body.first_named_child());
 
   for (auto c : func_body) switch (c.sym) {
   case anon_sym_LBRACE:
@@ -506,7 +349,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   default: emit_dispatch(c); break;
   }
 
-  pop_indent(func_body.named_child(0));
+  pop_indent(func_body.first_named_child());
 
   //----------
   // For each call to {submodule}.tick() in module::tick(), emit glue assignments.
@@ -691,6 +534,14 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
 // ouptut ports to module param list.
 
 void MtCursor::emit_class_specifier(MtHandle n) {
+  /*
+  mod->dump_tree(n, 1);
+
+  for (int i = 0; i < (int)ts_node_child_count(n.node); i++) {
+    printf("f %d\n", ts_node_field_id_for_child(n.node, i));
+  }
+  */
+
   for (auto c : n) {
     if (c.sym == anon_sym_class || c.sym == anon_sym_struct) {
       emit_replacement(c, "module");
@@ -722,7 +573,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       // And the declaration of the ports will be in the module body along with
       // the rest of the module.
 
-      push_indent(c.named_child(0));
+      push_indent(c.first_named_child());
 
       emit_newline();
       emit("/*verilator public_module*/");
@@ -755,9 +606,10 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       default:              emit_dispatch(gc); break;
       }
 
-      pop_indent(c.named_child(0));
+      pop_indent(c.first_named_child());
     }
     else {
+      mod->dump_tree(c, 1);
       debugbreak();
     }
   }
@@ -767,7 +619,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
 // Change "{ blah(); }" to "begin blah(); end"
 
 void MtCursor::emit_compound_statement(MtHandle body) {
-  push_indent(body.named_child(0));
+  push_indent(body.first_named_child());
 
   for (auto c : body) switch (c.sym) {
   case anon_sym_LBRACE:
@@ -779,7 +631,7 @@ void MtCursor::emit_compound_statement(MtHandle body) {
   default: emit_dispatch(c); break;
   }
 
-  pop_indent(body.named_child(0));
+  pop_indent(body.first_named_child());
 }
 
 //------------------------------------------------------------------------------

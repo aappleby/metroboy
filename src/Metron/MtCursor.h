@@ -52,23 +52,11 @@ struct MtCursor {
     emit("\n%s", indent_stack.back().c_str());
   }
 
-  void check_dirty_tick(MtHandle n);
-  void check_dirty_tock(MtHandle n);
-  void check_dirty_read     (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
-  void check_dirty_write    (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
-  void check_dirty_dispatch (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
-  void check_dirty_assign   (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
-  void check_dirty_if       (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
-  void check_dirty_call     (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
-  void check_dirty_switch   (MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth);
-
   void dump_node_line(MtHandle n);
-
   void print_error(MtHandle n, const char* fmt, ...);
-
-  //----------
-
   bool match(MtHandle n, const char* str) { return mod->match(n, str); }
+
+  // Generic emit()s.
 
   void emit_span(const char* a, const char* b);
   void emit(MtHandle n);
@@ -79,7 +67,7 @@ struct MtCursor {
   void advance_to(MtHandle n);
   void comment_out(MtHandle n);
 
-  //----------
+  // Per-symbol emit()s.
 
   void emit_number_literal(MtHandle n);
   void emit_primitive_type(MtHandle n);
@@ -102,9 +90,9 @@ struct MtCursor {
   void emit_flat_field_expression(MtHandle n);
   void emit_dispatch(MtHandle n);
 
+  // Special-purpose emit()s
+
   void emit_hoisted_decls(MtHandle n);
-
-
   void emit_init_declarator_as_decl(MtHandle n);
   void emit_init_declarator_as_assign(MtHandle n);
 };

@@ -6,6 +6,7 @@
 #include "../Plait/TreeSymbols.h"
 
 #include <assert.h>
+#include <stdarg.h>
 
 #pragma warning(disable:4996) // unsafe fopen()
 
@@ -77,11 +78,52 @@ void MtModule::load(const std::string& input_filename, const std::string& output
   source = (const char*)src_blob.data();
   source_end = source + src_blob.size();
   tree = ts_parser_parse_string(parser, NULL, source, (uint32_t)src_blob.size());
-  root = ts_tree_root_node(tree);
+  root = MtHandle::from_tree(tree, source);
 
   find_module();
   collect_moduleparams();
   collect_fields();
+
+  // Verify that tick()/tock() obey read/write ordering rules.
+
+  check_dirty_tick(node_tick);
+  check_dirty_tock(node_tock);
+}
+
+//------------------------------------------------------------------------------
+
+void MtModule::print_error(MtHandle n, const char* fmt, ...) {
+  printf("\n########################################\n");
+
+  va_list args;
+  va_start(args, fmt);
+  vprintf(fmt, args);
+  va_end(args);
+
+  printf("@%04d: ", ts_node_start_point(n.node).row + 1);
+  
+  {
+    auto start = &source[n.start_byte()];
+
+    auto a = start;
+    auto b = start;
+    while (a > source     && *a != '\n' && *a != '\r') a--;
+    while (b < source_end && *b != '\n' && *b != '\r') b++;
+
+    if (*a == '\n' || *a == '\r') a++;
+
+    while (a != b) {
+      putc(*a++, stdout);
+    }
+  }
+
+  printf("\n");
+
+  dump_tree(n);
+
+  printf("halting...\n");
+  printf("########################################\n");
+  debugbreak();
 }
 
 //------------------------------------------------------------------------------
@@ -101,7 +143,85 @@ MtHandle MtModule::get_by_id(std::vector<MtHandle>& handles, MtHandle id) {
 //------------------------------------------------------------------------------
 // Node debugging
 
-void MtModule::dump_node(MtHandle n, int index, int field, int depth) {
+#if 0
+void MtModule::dump_node(TSNode n, int index, int field, int depth) {
+  if (ts_node_is_null(n)) {
+    printf("### NULL ###\n");
+    return;
+  }
+
+  auto sym = ts_node_symbol(n);
+
+  uint32_t color = 0x00000000;
+  if (sym == sym_template_declaration) color = 0xAADDFF;
+  if (sym == sym_struct_specifier)     color = 0xFFAAFF;
+  if (sym == sym_class_specifier)      color = 0xFFAAFF;
+  if (sym == sym_expression_statement) color = 0xAAFFFF;
+  if (sym == sym_expression_statement) color = 0xAAFFFF;
+  if (sym == sym_compound_statement)   color = 0xFFFFFF;
+  if (sym == sym_function_definition)  color = 0xAAAAFF;
+  if (sym == sym_field_declaration)    color = 0xFFAAAA;
+  if (sym == sym_comment)              color = 0xAAFFAA;
+
+  if (color) {
+    printf("\u001b[38;2;%d;%d;%dm", (color >> 0) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF);
+    for (int i = 0; i < depth; i++) printf("|---");
+  }
+  else {
+    for (int i = 0; i < depth; i++) printf("|   ");
+  }
+
+  printf("[%d] ", index);
+
+  if (field > 0) printf("f%d ", field);
+  if (sym) printf("s%d ", sym);
+
+  if (field > 0) {
+    printf("%s.", ts_language_field_name_for_id(lang, field));
+  }
+
+  if (ts_node_is_named(n) && ts_node_child_count(n)) {
+    printf("%s: ", ts_node_type(n));
+  }
+  else if (ts_node_is_named(n) && !ts_node_child_count(n)) {
+    printf("%s: ", ts_node_type(n));
+    ::print_escaped(source, ts_node_start_byte(n), ts_node_end_byte(n));
+  }
+  else {
+    // Unnamed nodes usually have their node body as their "type",
+    // and their symbol is something like "aux_sym_preproc_include_token1"
+    printf("lit: ");
+    ::print_escaped(source, ts_node_start_byte(n), ts_node_end_byte(n));
+  }
+
+  printf("\n");
+  printf("\u001b[0m");
+}
+
+void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth) {
+  if (depth == 0) {
+    printf("\n========== tree dump begin\n");
+  }
+  dump_node(n, index, field, depth);
+
+  if (!ts_node_is_null(n) && depth < maxdepth) {
+    for (int i = 0; i < (int)ts_node_child_count(n); i++) {
+      dump_tree(
+        ts_node_child(n, i),
+        i,
+        ts_node_field_id_for_child(n, i),
+        depth + 1,
+        maxdepth
+      );
+    }
+  }
+  if (depth == 0) printf("========== tree dump end\n");
+}
+#endif
+
+//------------------------------------------------------------------------------
+
+void MtModule::dump_node(MtHandle n, int index, int depth) {
   if (!n) {
     printf("### NULL ###\n");
     return;
@@ -128,15 +248,14 @@ void MtModule::dump_node(MtHandle n, int index, int field, int depth) {
 
   printf("[%d] ", index);
 
-  if (field) printf("f%d ", field);
+  if (n.field > 0) printf("f%d ", n.field);
   if (n.sym) printf("s%d ", n.sym);
 
-  if (field) {
-    printf("%s.", ts_language_field_name_for_id(lang, field));
+  if (n.field > 0) {
+    printf("%s.", ts_language_field_name_for_id(lang, n.field));
   }
 
   if (n && n.is_named() && n.child_count()) {
-
     printf("%s: ", n.type());
   }
   else if (n && n.is_named() && !n.child_count()) {
@@ -161,18 +280,15 @@ void MtModule::dump_node(MtHandle n, int index, int field, int depth) {
 
 //------------------------------------------------------------------------------
 
-void MtModule::dump_tree(MtHandle n, int index, int field, int depth, int maxdepth) {
+void MtModule::dump_tree(MtHandle n, int index, int depth, int maxdepth) {
   if (depth == 0) {
     printf("\n========== tree dump begin\n");
   }
-  dump_node(n, index, field, depth);
+  dump_node(n, index, depth);
 
-  if (depth < maxdepth) {
-    if (n) {
-      int index = 0;
-      for (auto c : n) {
-        dump_tree(c, index++, c.field, depth + 1, maxdepth);
-      }
+  if (n && depth < maxdepth) {
+    for (int i = 0; i < n.child_count(); i++) {
+      dump_tree(n.child(i), i, depth + 1, maxdepth);
     }
   }
   if (depth == 0) printf("========== tree dump end\n");
@@ -239,6 +355,8 @@ bool MtModule::match(MtHandle n, const char* s) {
 }
 
 std::string MtModule::node_to_name(MtHandle n) {
+  //dump_tree(n);
+
   switch (n.sym) {
   
   case sym_field_expression:
@@ -247,9 +365,51 @@ std::string MtModule::node_to_name(MtHandle n) {
   case alias_sym_field_identifier:
     return body(n);
 
+  // Static const fields are bugged in TreeSitterCPP - "field_declarator" is
+  // on the wrong node. Just pull out the first field_identifier child instead.
+
+  /*
+  ========== tree dump begin
+  [5] s236 field_declaration:
+  |   [0] f32 s321 type.template_type:
+  |   |   [0] f22 s395 name.type_identifier: "logic"
+  |   |   [1] f3 s324 arguments.template_argument_list:
+  |   |   |   [0] s36 lit: "<"
+  |   |   |   [1] s112 number_literal: "8"
+  |   |   |   [2] s33 lit: ">"
+  |   [1] f9 s392 declarator.field_identifier: "o_data"
+  |   [2] s39 lit: ";"
+  ========== tree dump end
+
+  ========== tree dump begin
+  [0] s236 field_declaration:
+  |   [0] f32 s226 type.storage_class_specifier:
+  |   |   [0] s64 lit: "static"
+  |   [1] f9 s227 declarator.type_qualifier:
+  |   |   [0] s68 lit: "const"
+  |   [2] s78 primitive_type: "int"
+  |   [3] f11 s392 default_value.field_identifier: "message_len"
+  |   [4] s63 lit: "="
+  |   [5] s112 number_literal: "512"
+  |   [6] s39 lit: ";"
+  ========== tree dump end
+  */
+
+  case sym_field_declaration:
+    for (auto c : n) {
+      if (c.sym == alias_sym_field_identifier) {
+        return node_to_name(c);
+      }
+      if (c.sym == sym_array_declarator) {
+        return node_to_name(c);
+      }
+    }
+    dump_tree(n);
+    debugbreak();
+    return "";
+
   case sym_array_declarator:
   case sym_parameter_declaration:
-  case sym_field_declaration:
   case sym_optional_parameter_declaration:
   case sym_function_definition:
   case sym_function_declarator:
@@ -406,7 +566,9 @@ void MtModule::collect_fields() {
     if (n.sym == sym_field_declaration) {
       if      (field_is_input(n))  inputs.push_back(n);
       else if (field_is_output(n)) outputs.push_back(n);
-      else if (field_is_param(n))  localparams.push_back(n);
+      else if (field_is_param(n)) {
+        localparams.push_back(n);
+      }
       else if (field_is_module(n)) submodules.push_back(n);
       else                         fields.push_back(n);
     }
@@ -452,6 +614,155 @@ void MtModule::collect_fields() {
       }
     }
   });
+}
+
+//------------------------------------------------------------------------------
+
+void MtModule::check_dirty_tick(MtHandle func_def) {
+  std::set<MtHandle> dirty_fields;
+  check_dirty_dispatch(func_def, true, dirty_fields, 0);
+}
+
+void MtModule::check_dirty_tock(MtHandle func_def) {
+  std::set<MtHandle> dirty_fields;
+  check_dirty_dispatch(func_def, false, dirty_fields, 0);
+}
+
+//----------------------------------------
+
+void MtModule::check_dirty_read(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+
+  // Reading from a dirty field in a seq block is forbidden.
+  if (is_seq) {
+    auto field = get_field_by_id(n);
+    if (field && dirty_fields.contains(field)) {
+      print_error(n, "seq read dirty field - %s\n", node_to_name(field).c_str());
+    }
+  }
+
+  // Reading from a clean output in a comb block is forbidden.
+  if (!is_seq) {
+    auto output = get_output_by_id(n);
+    if (output && !dirty_fields.contains(output)) {
+      print_error(n, "comb read clean output - %s\n", node_to_name(output).c_str());
+    }
+  }
+}
+
+//----------------------------------------
+
+void MtModule::check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+  // Writing to an already-dirty field in a seq block is forbidden.
+  if (is_seq) {
+    auto field = get_field_by_id(n);
+    if (field) {
+      if (dirty_fields.contains(field)) {
+        print_error(n, "seq wrote dirty field - %s\n", node_to_name(field).c_str());
+      }
+      dirty_fields.insert(field);
+    }
+  }
+
+  // Writing to any field in a comb block is forbidden.
+  if (!is_seq) {
+    auto field = get_field_by_id(n);
+    if (field) {
+      print_error(n, "comb wrote field - %s\n", node_to_name(field).c_str());
+    }
+  }
+
+  // Writing to an already-dirty field in a comb block is forbidden.
+  if (!is_seq) {
+    auto output = get_output_by_id(n);
+    if (output) {
+      if (dirty_fields.contains(output)) {
+        print_error(n, "comb wrote dirty output - %s\n", node_to_name(output).c_str());
+      }
+      dirty_fields.insert(output);
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void MtModule::check_dirty_dispatch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+  if (!n || !n.is_named()) return;
+
+  switch (n.sym) {
+  case sym_identifier:            check_dirty_read(n, is_seq, dirty_fields, depth); break;
+  case sym_assignment_expression: check_dirty_assign(n, is_seq, dirty_fields, depth); break;
+  case sym_if_statement:          check_dirty_if(n, is_seq, dirty_fields, depth); break;
+  case sym_call_expression:       check_dirty_call(n, is_seq, dirty_fields, depth); break;
+  case sym_switch_statement:      check_dirty_switch(n, is_seq, dirty_fields, depth); break;
+  default:                        for (auto c : n) check_dirty_dispatch(c, is_seq, dirty_fields, depth + 1); break;
+  }
+}
+
+//------------------------------------------------------------------------------
+// Check for reads on the RHS of an assignment, then check the write on the left.
+
+void MtModule::check_dirty_assign(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+  auto lhs = n.get_field(field_left);
+  auto rhs = n.get_field(field_right);
+
+  check_dirty_dispatch(rhs, is_seq, dirty_fields, depth + 1);
+  check_dirty_write(lhs, is_seq, dirty_fields, depth + 1);
+}
+
+//----------------------------------------
+// Check the "if" branch and the "else" branch independently and then merge the results.
+
+void MtModule::check_dirty_if(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+  check_dirty_dispatch(n.get_field(field_condition), is_seq, dirty_fields, depth + 1);
+
+  std::set<MtHandle> if_set = dirty_fields;
+  std::set<MtHandle> else_set = dirty_fields;
+
+  check_dirty_dispatch(n.get_field(field_consequence), is_seq, if_set, depth + 1);
+  check_dirty_dispatch(n.get_field(field_alternative), is_seq, else_set, depth + 1);
+
+  dirty_fields.merge(if_set);
+  dirty_fields.merge(else_set);
+}
+
+//----------------------------------------
+// Follow member function calls.
+
+void MtModule::check_dirty_call(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+  auto node_func = n.get_field(field_function);
+  auto node_args = n.get_field(field_arguments);
+
+  if (node_func.is_identifier()) {
+    // local function call, traverse args and then function body
+    check_dirty_dispatch(node_args, is_seq, dirty_fields, depth + 1);
+
+    auto task = get_task_by_id(node_func);
+    if (task) check_dirty_dispatch(task, is_seq, dirty_fields, depth + 1);
+
+    auto func = get_function_by_id(node_func);
+    if (func) check_dirty_dispatch(func, is_seq, dirty_fields, depth + 1);
+  }
+}
+
+//----------------------------------------
+// Check the condition of a switch statement, then check each case independently.
+
+void MtModule::check_dirty_switch(MtHandle n, bool is_seq, std::set<MtHandle>& dirty_fields, int depth) {
+
+  auto cond = n.get_field(field_condition);
+  auto body = n.get_field(field_body);
+
+  check_dirty_dispatch(cond, is_seq, dirty_fields, depth + 1);
+
+  auto old_dirty_fields = dirty_fields;
+
+  for (auto c : body) {
+    if (c.sym == sym_case_statement) {
+      auto temp = old_dirty_fields;
+      check_dirty_dispatch(c, is_seq, temp, depth + 1);
+      dirty_fields.merge(temp);
+    }
+  }
 }
 
 //------------------------------------------------------------------------------

@@ -181,6 +181,56 @@ struct MtHandle {
   bool field_is_param();
   bool field_is_input();
   bool field_is_output();
+
+
+  std::string node_to_name() {
+
+    switch (sym) {
+
+    case sym_field_expression:
+    case alias_sym_type_identifier:
+    case sym_identifier:
+    case alias_sym_field_identifier:
+      return body();
+
+    case sym_field_declaration:
+    case sym_array_declarator:
+    case sym_parameter_declaration:
+    case sym_optional_parameter_declaration:
+    case sym_function_definition:
+    case sym_function_declarator:
+      return get_field(field_declarator).node_to_name();
+
+    case sym_struct_specifier:
+    case sym_class_specifier:
+      return get_field(field_name).node_to_name();
+
+    default:
+      //dump_tree(n);
+      //debugbreak();
+      return "";
+    }
+  }
+
+  std::string node_to_type() {
+    switch (sym) {
+    case alias_sym_type_identifier:
+      return body();
+
+    case sym_field_declaration:
+      return get_field(field_type).node_to_type();
+
+    case sym_template_type:
+      return get_field(field_name).node_to_type();
+
+    default:
+      //dump_tree(n);
+      //debugbreak();
+      return "";
+    }
+  }
+
+
 };
 
 //------------------------------------------------------------------------------

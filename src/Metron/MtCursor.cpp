@@ -40,7 +40,7 @@ void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
   dump_node_line(n);
   printf("\n");
 
-  mod->dump_tree(n);
+  mod->dump_tree(n, 0, 0, 255);
 
   emit("halting...\n");
   emit("########################################\n");
@@ -148,8 +148,8 @@ void MtCursor::emit_assignment_expression(MtHandle n) {
   bool lhs_is_field = false;
   if (lhs.sym == sym_identifier) {
     std::string lhs_name = lhs.body();
-    for (const auto& f : mod->fields) {
-      if (mod->node_to_name(f) == lhs_name) {
+    for (auto& f : mod->fields) {
+      if (f.node_to_name() == lhs_name) {
         lhs_is_field = true;
         break;
       }
@@ -389,9 +389,9 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
       auto func_name = call_func.get_field(field_field);
 
       for (auto& sm : mod->submodules) {
-        auto submod_type = mod->node_to_type(sm);
-        auto submod_name = mod->node_to_name(sm);
-        if (submod_name == mod->node_to_name(call_this)) {
+        auto submod_type = sm.node_to_type();
+        auto submod_name = sm.node_to_name();
+        if (submod_name == call_this.node_to_name()) {
           auto submod = mod_lib->find_module(submod_type);
 
           std::vector<std::string> call_src;
@@ -399,13 +399,13 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
 
           for (auto arg : call_args) {
             if (!arg.is_named()) continue;
-            auto src = mod->node_to_name(arg);
+            auto src = arg.node_to_name();
             for (auto& c : src) if (c == '.') c = '_';
             if (src != "rst_n") call_src.push_back(src);
           }
 
           for (auto& input : submod->inputs) {
-            call_dst.push_back(submod->node_to_name(input));
+            call_dst.push_back(input.node_to_name());
           }
 
           assert(call_src.size() == call_dst.size());
@@ -496,7 +496,7 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
   // list into the submodule declaration.
 
   advance_to(decl);
-  std::string inst_name = mod->node_to_name(decl);
+  std::string inst_name = decl.node_to_name();
 
   for (auto& input : submod->inputs) {
     MtCursor sub_cursor(mod_lib, submod, out);
@@ -517,10 +517,10 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
     if (c.field == field_declarator) {
       emit("(clk, rst_n");
       for (auto& input : submod->inputs) {
-        emit(", %s_%s", inst_name.c_str(), submod->node_to_name(input).c_str());
+        emit(", %s_%s", inst_name.c_str(), input.node_to_name().c_str());
       }
       for (auto& output : submod->outputs) {
-        emit(", %s_%s", inst_name.c_str(), submod->node_to_name(output).c_str());
+        emit(", %s_%s", inst_name.c_str(), output.node_to_name().c_str());
       }
       emit(")");
     }
@@ -561,10 +561,10 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       emit_newline();
       emit("(clk, rst_n");
       for (auto input : mod->inputs) {
-        emit(", %s", mod->node_to_name(input).c_str());
+        emit(", %s", input.node_to_name().c_str());
       }
       for (auto output : mod->outputs) {
-        emit(", %s", mod->node_to_name(output).c_str());
+        emit(", %s", output.node_to_name().c_str());
       }
       emit(");");
 
@@ -609,7 +609,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       pop_indent(c.first_named_child());
     }
     else {
-      mod->dump_tree(c, 1);
+      mod->dump_tree(c, 0, 0, 1);
       debugbreak();
     }
   }

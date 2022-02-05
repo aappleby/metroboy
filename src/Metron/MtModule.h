@@ -55,19 +55,12 @@ struct MtModule {
 
   void print_error(MtHandle n, const char* fmt, ...);
 
-  //void dump_node(TSNode n, int index, int field, int depth);
-  //void dump_tree(TSNode n, int index, int field, int depth, int maxdepth);
-
-  void dump_node(MtHandle n, int index, int depth = 0);
+  void dump_node(MtHandle n, int index, int depth);
   void dump_tree(MtHandle n, int index, int depth, int maxdepth);
-  void dump_tree(MtHandle n, int maxdepth) { dump_tree(n, 0, 0, maxdepth); }
   void dump_tree(MtHandle n) { dump_tree(n, 0, 0, 255); }
 
   void visit_tree(MtHandle n, NodeVisitor cv);
   void visit_tree2(MtHandle parent, NodeVisitor2 cv);
-
-  std::string node_to_name(MtHandle n);
-  std::string node_to_type(MtHandle n);
 
   MtHandle get_by_id(std::vector<MtHandle>& handles, MtHandle id);
 

@@ -130,10 +130,10 @@ void MtModule::print_error(MtHandle n, const char* fmt, ...) {
 
 MtHandle MtModule::get_by_id(std::vector<MtHandle>& handles, MtHandle id) {
   assert(id.sym == sym_identifier);
-  auto name_a = node_to_name(id);
+  auto name_a = id.node_to_name();
 
   for (auto& c : handles) {
-    auto name_b = node_to_name(c);
+    auto name_b = c.node_to_name();
     if (name_a == name_b) return c;
   }
 
@@ -310,55 +310,6 @@ void MtModule::visit_tree2(MtHandle n, NodeVisitor2 cv) {
 }
 
 //------------------------------------------------------------------------------
-
-std::string MtModule::node_to_name(MtHandle n) {
-
-  switch (n.sym) {
-  
-  case sym_field_expression:
-  case alias_sym_type_identifier:
-  case sym_identifier:
-  case alias_sym_field_identifier:
-    return n.body();
-
-  case sym_field_declaration:
-  case sym_array_declarator:
-  case sym_parameter_declaration:
-  case sym_optional_parameter_declaration:
-  case sym_function_definition:
-  case sym_function_declarator:
-    return node_to_name(n.get_field(field_declarator));
-
-  case sym_struct_specifier:
-  case sym_class_specifier:
-    return node_to_name(n.get_field(field_name));
-
-  default:
-    dump_tree(n);
-    debugbreak();
-    return "";
-  }
-}
-
-std::string MtModule::node_to_type(MtHandle n) {
-  switch (n.sym) {
-  case alias_sym_type_identifier:
-    return n.body();
-
-  case sym_field_declaration:
-    return node_to_type(n.get_field(field_type));
-
-  case sym_template_type:
-    return node_to_type(n.get_field(field_name));
-
-  default:
-    dump_tree(n);
-    debugbreak();
-    return "";
-  }
-}
-
-//------------------------------------------------------------------------------
 // Scanner
 
 void MtModule::find_module() {
@@ -487,7 +438,7 @@ void MtModule::check_dirty_read(MtHandle n, bool is_seq, std::set<MtHandle>& dir
   if (is_seq) {
     auto field = get_field_by_id(n);
     if (field && dirty_fields.contains(field)) {
-      print_error(n, "seq read dirty field - %s\n", node_to_name(field).c_str());
+      print_error(n, "seq read dirty field - %s\n", field.node_to_name().c_str());
     }
   }
 
@@ -495,7 +446,7 @@ void MtModule::check_dirty_read(MtHandle n, bool is_seq, std::set<MtHandle>& dir
   if (!is_seq) {
     auto output = get_output_by_id(n);
     if (output && !dirty_fields.contains(output)) {
-      print_error(n, "comb read clean output - %s\n", node_to_name(output).c_str());
+      print_error(n, "comb read clean output - %s\n", output.node_to_name().c_str());
     }
   }
 }
@@ -508,7 +459,7 @@ void MtModule::check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& di
     auto field = get_field_by_id(n);
     if (field) {
       if (dirty_fields.contains(field)) {
-        print_error(n, "seq wrote dirty field - %s\n", node_to_name(field).c_str());
+        print_error(n, "seq wrote dirty field - %s\n", field.node_to_name().c_str());
       }
       dirty_fields.insert(field);
     }
@@ -518,7 +469,7 @@ void MtModule::check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& di
   if (!is_seq) {
     auto field = get_field_by_id(n);
     if (field) {
-      print_error(n, "comb wrote field - %s\n", node_to_name(field).c_str());
+      print_error(n, "comb wrote field - %s\n", field.node_to_name().c_str());
     }
   }
 
@@ -527,7 +478,7 @@ void MtModule::check_dirty_write(MtHandle n, bool is_seq, std::set<MtHandle>& di
     auto output = get_output_by_id(n);
     if (output) {
       if (dirty_fields.contains(output)) {
-        print_error(n, "comb wrote dirty output - %s\n", node_to_name(output).c_str());
+        print_error(n, "comb wrote dirty output - %s\n", output.node_to_name().c_str());
       }
       dirty_fields.insert(output);
     }

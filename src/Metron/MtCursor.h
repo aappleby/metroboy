@@ -25,7 +25,7 @@ struct MtCursor {
   void emit(const char* fmt, ...);
   void emit_replacement(MtNode n, const char* fmt, ...);
   void skip_over(MtNode n);
-  void skip_whitespace();
+  void skip_space();
   void advance_to(MtNode n);
   void comment_out(MtNode n);
 

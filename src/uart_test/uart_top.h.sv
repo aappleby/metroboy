@@ -87,15 +87,15 @@ module uart_top
     end
     else begin
       case (o_data & 'b111) 
-      0:  temp <= 'b00000001; /*break;*/
-      1:  temp <= 'b00000010; /*break;*/
-      2:  temp <= 'b00000100; /*break;*/
-      3:  temp <= 'b00001000; /*break;*/
-      4:  temp <= 'b00010000; /*break;*/
-      5:  temp <= 'b00100000; /*break;*/
-      6:  temp <= 'b01000000; /*break;*/
-      7:  temp <= 'b10000000; /*break;*/
-      default: temp <= 'b00000000; /*break;*/
+      0:  temp <= 'b00000001; 
+      1:  temp <= 'b00000010; 
+      2:  temp <= 'b00000100; 
+      3:  temp <= 'b00001000; 
+      4:  temp <= 'b00010000; 
+      5:  temp <= 'b00100000; 
+      6:  temp <= 'b01000000; 
+      7:  temp <= 'b10000000; 
+      default: temp <= 'b00000000; 
       endcase
     end
   end
@@ -126,15 +126,15 @@ module uart_top
     o_sum = rx_o_sum;
 
     case (o_data & 'b111) 
-    0:  o_onehot = 'b00000001; /*break;*/
-    1:  o_onehot = 'b00000010; /*break;*/
-    2:  o_onehot = 'b00000100; /*break;*/
-    3:  o_onehot = 'b00001000; /*break;*/
-    4:  o_onehot = 'b00010000; /*break;*/
-    5:  o_onehot = 'b00100000; /*break;*/
-    6:  o_onehot = 'b01000000; /*break;*/
-    7:  o_onehot = 'b10000000; /*break;*/
-    default: o_onehot = 'b00000000; /*break;*/
+    0:  o_onehot = 'b00000001; 
+    1:  o_onehot = 'b00000010; 
+    2:  o_onehot = 'b00000100; 
+    3:  o_onehot = 'b00001000; 
+    4:  o_onehot = 'b00010000; 
+    5:  o_onehot = 'b00100000; 
+    6:  o_onehot = 'b01000000; 
+    7:  o_onehot = 'b10000000; 
+    default: o_onehot = 'b00000000; 
     endcase
   end
 

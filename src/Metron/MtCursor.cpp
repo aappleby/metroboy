@@ -121,8 +121,7 @@ void MtCursor::skip_over(MtNode n) {
   cursor = n.end();
 }
 
-void MtCursor::skip_whitespace() {
-  //while(*cursor && isspace(*cursor)) {
+void MtCursor::skip_space() {
   while(*cursor && (*cursor == ' ')) {
     cursor++;
   }
@@ -240,8 +239,8 @@ void MtCursor::emit_init_declarator_as_decl(MtNode n) {
   for (auto c : n) switch (c.field) {
   case field_declarator:
     for (auto gc : c) switch (gc.field) {
-    case field_declarator: emit(gc); skip_whitespace(); break;
-    default: skip_over(gc); skip_whitespace(); break;
+    case field_declarator: emit(gc); skip_space(); break;
+    default: skip_over(gc); skip_space(); break;
     }
     break;
   default: emit_dispatch(c); break;
@@ -257,13 +256,13 @@ void MtCursor::emit_init_declarator_as_assign(MtNode n) {
 
   if (node_decl.is_init_decl()) {
     for (auto c : n) switch (c.field) {
-    case field_type: skip_over(c); skip_whitespace(); break;
+    case field_type: skip_over(c); skip_space(); break;
     default: emit_dispatch(c); break;
     }
   }
   else {
     skip_over(n);
-    skip_whitespace();
+    skip_space();
   }
 }
 
@@ -301,7 +300,7 @@ void MtCursor::emit_function_definition(MtNode func_def) {
 
   is_task = func_type.match("void");
   skip_over(func_type);
-  skip_whitespace();
+  skip_space();
 
   //----------
 
@@ -336,7 +335,7 @@ void MtCursor::emit_function_definition(MtNode func_def) {
     }
 
     emit_dispatch(func_decl);
-    skip_whitespace();
+    skip_space();
     emit(";");
 
     in_seq = is_task;
@@ -790,7 +789,7 @@ void MtCursor::emit_type_identifier(MtNode n) {
 
 void MtCursor::emit_template_declaration(MtNode n) {
   for (auto c : n) switch (c.sym) {
-  case anon_sym_template: skip_over(c); skip_whitespace(); break;
+  case anon_sym_template: skip_over(c); skip_space(); break;
   case anon_sym_SEMI: skip_over(c); break;
   default: emit_dispatch(c); break;
   }
@@ -810,7 +809,7 @@ void MtCursor::emit_case(MtNode n) {
   for (auto c : n) {
     if (c.sym == anon_sym_case) {
       skip_over(c);
-      skip_whitespace();
+      skip_space();
     }
     else emit_dispatch(c);
   }
@@ -853,16 +852,13 @@ void MtCursor::emit_dispatch(MtNode n) {
   }
 
   case sym_break_statement:
-    comment_out(n);
-    break;
-
   case sym_access_specifier:
   case sym_type_qualifier:
   case sym_preproc_call:
   case sym_preproc_if:
   case sym_template_parameter_list:
     skip_over(n);
-    skip_whitespace();
+    skip_space();
     break;
 
   case anon_sym_template:

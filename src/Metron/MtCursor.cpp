@@ -40,7 +40,7 @@ void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
   dump_node_line(n);
   printf("\n");
 
-  mod->dump_tree(n, 0, 0, 255);
+  n.dump_tree(0, 0, 255);
 
   emit("halting...\n");
   emit("########################################\n");
@@ -364,7 +364,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
 
     std::vector<MtHandle> submod_call_nodes;
 
-    mod->visit_tree(func_def, [&](MtHandle child) {
+    func_def.visit_tree([&](MtHandle child) {
       if (child.sym == sym_call_expression) {
         auto call_func = child.get_field(field_function);
 
@@ -609,7 +609,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       pop_indent(c.first_named_child());
     }
     else {
-      mod->dump_tree(c, 0, 0, 1);
+      c.dump_tree(0, 0, 1);
       debugbreak();
     }
   }

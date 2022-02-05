@@ -119,7 +119,7 @@ void MtModule::print_error(MtHandle n, const char* fmt, ...) {
 
   printf("\n");
 
-  dump_tree(n);
+  n.dump_tree();
 
   printf("halting...\n");
   printf("########################################\n");
@@ -141,182 +141,13 @@ MtHandle MtModule::get_by_id(std::vector<MtHandle>& handles, MtHandle id) {
 }
 
 //------------------------------------------------------------------------------
-// Node debugging
-
-#if 0
-void MtModule::dump_node(TSNode n, int index, int field, int depth) {
-  if (ts_node_is_null(n)) {
-    printf("### NULL ###\n");
-    return;
-  }
-
-  auto sym = ts_node_symbol(n);
-
-  uint32_t color = 0x00000000;
-  if (sym == sym_template_declaration) color = 0xAADDFF;
-  if (sym == sym_struct_specifier)     color = 0xFFAAFF;
-  if (sym == sym_class_specifier)      color = 0xFFAAFF;
-  if (sym == sym_expression_statement) color = 0xAAFFFF;
-  if (sym == sym_expression_statement) color = 0xAAFFFF;
-  if (sym == sym_compound_statement)   color = 0xFFFFFF;
-  if (sym == sym_function_definition)  color = 0xAAAAFF;
-  if (sym == sym_field_declaration)    color = 0xFFAAAA;
-  if (sym == sym_comment)              color = 0xAAFFAA;
-
-  if (color) {
-    printf("\u001b[38;2;%d;%d;%dm", (color >> 0) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF);
-    for (int i = 0; i < depth; i++) printf("|---");
-  }
-  else {
-    for (int i = 0; i < depth; i++) printf("|   ");
-  }
-
-  printf("[%d] ", index);
-
-  if (field > 0) printf("f%d ", field);
-  if (sym) printf("s%d ", sym);
-
-  if (field > 0) {
-    printf("%s.", ts_language_field_name_for_id(lang, field));
-  }
-
-  if (ts_node_is_named(n) && ts_node_child_count(n)) {
-    printf("%s: ", ts_node_type(n));
-  }
-  else if (ts_node_is_named(n) && !ts_node_child_count(n)) {
-    printf("%s: ", ts_node_type(n));
-    ::print_escaped(source, ts_node_start_byte(n), ts_node_end_byte(n));
-  }
-  else {
-    // Unnamed nodes usually have their node body as their "type",
-    // and their symbol is something like "aux_sym_preproc_include_token1"
-    printf("lit: ");
-    ::print_escaped(source, ts_node_start_byte(n), ts_node_end_byte(n));
-  }
-
-  printf("\n");
-  printf("\u001b[0m");
-}
-
-void MtModule::dump_tree(TSNode n, int index, int field, int depth, int maxdepth) {
-  if (depth == 0) {
-    printf("\n========== tree dump begin\n");
-  }
-  dump_node(n, index, field, depth);
-
-  if (!ts_node_is_null(n) && depth < maxdepth) {
-    for (int i = 0; i < (int)ts_node_child_count(n); i++) {
-      dump_tree(
-        ts_node_child(n, i),
-        i,
-        ts_node_field_id_for_child(n, i),
-        depth + 1,
-        maxdepth
-      );
-    }
-  }
-  if (depth == 0) printf("========== tree dump end\n");
-}
-#endif
-
-//------------------------------------------------------------------------------
-
-void MtModule::dump_node(MtHandle n, int index, int depth) {
-  if (!n) {
-    printf("### NULL ###\n");
-    return;
-  }
-
-  uint32_t color = 0x00000000;
-  if (n.sym == sym_template_declaration) color = 0xAADDFF;
-  if (n.sym == sym_struct_specifier)     color = 0xFFAAFF;
-  if (n.sym == sym_class_specifier)      color = 0xFFAAFF;
-  if (n.sym == sym_expression_statement) color = 0xAAFFFF;
-  if (n.sym == sym_expression_statement) color = 0xAAFFFF;
-  if (n.sym == sym_compound_statement)   color = 0xFFFFFF;
-  if (n.sym == sym_function_definition)  color = 0xAAAAFF;
-  if (n.sym == sym_field_declaration)    color = 0xFFAAAA;
-  if (n.sym == sym_comment)              color = 0xAAFFAA;
-
-  if (color) {
-    printf("\u001b[38;2;%d;%d;%dm", (color >> 0) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF);
-    for (int i = 0; i < depth; i++) printf("|---");
-  }
-  else {
-    for (int i = 0; i < depth; i++) printf("|   ");
-  }
-
-  printf("[%d] ", index);
-
-  if (n.field > 0) printf("f%d ", n.field);
-  if (n.sym) printf("s%d ", n.sym);
-
-  if (n.field > 0) {
-    printf("%s.", ts_language_field_name_for_id(lang, n.field));
-  }
-
-  if (n && n.is_named() && n.child_count()) {
-    printf("%s: ", n.type());
-  }
-  else if (n && n.is_named() && !n.child_count()) {
-    printf("%s: ", n.type());
-    ::print_escaped(source, n.start_byte(), n.end_byte());
-  }
-  else if (!n) {
-    debugbreak();
-    printf("text: ");
-    ::print_escaped(source, n.start_byte(), n.end_byte());
-  }
-  else {
-    // Unnamed nodes usually have their node body as their "type",
-    // and their symbol is something like "aux_sym_preproc_include_token1"
-    printf("lit: ");
-    ::print_escaped(source, n.start_byte(), n.end_byte());
-  }
-
-  printf("\n");
-  printf("\u001b[0m");
-}
-
-//------------------------------------------------------------------------------
-
-void MtModule::dump_tree(MtHandle n, int index, int depth, int maxdepth) {
-  if (depth == 0) {
-    printf("\n========== tree dump begin\n");
-  }
-  dump_node(n, index, depth);
-
-  if (n && depth < maxdepth) {
-    for (int i = 0; i < n.child_count(); i++) {
-      dump_tree(n.child(i), i, depth + 1, maxdepth);
-    }
-  }
-  if (depth == 0) printf("========== tree dump end\n");
-}
-
-//------------------------------------------------------------------------------
-// Node traversal
-
-void MtModule::visit_tree(MtHandle n, NodeVisitor cv) {
-  cv(n);
-  for (auto c : n) visit_tree(c, cv);
-}
-
-void MtModule::visit_tree2(MtHandle n, NodeVisitor2 cv) {
-  for (auto c : n) {
-    cv(n, c);
-    visit_tree2(c, cv);
-  }
-}
-
-//------------------------------------------------------------------------------
 // Scanner
 
 void MtModule::find_module() {
   module_template = MtHandle();
   module_class = MtHandle();
 
-  visit_tree2(root, [&](MtHandle parent, MtHandle child) {
+  root.visit_tree2([&](MtHandle parent, MtHandle child) {
     if (child.sym == sym_struct_specifier || child.sym == sym_class_specifier) {
       if (parent.sym == sym_template_declaration) module_template = parent;
       module_class = child;
@@ -345,13 +176,13 @@ void MtModule::collect_moduleparams() {
 
 
 void MtModule::collect_fields() {
-  visit_tree(module_class, [&](MtHandle n) {
+  module_class.visit_tree([&](MtHandle n) {
     if (n.sym == sym_function_definition) {
       auto func_name = n.get_field(field_declarator).get_field(field_declarator);
       auto func_args = n.get_field(field_declarator).get_field(field_parameters);
 
       if (func_name.match("tick")) {
-        visit_tree(func_args, [&](MtHandle func_arg) {
+        func_args.visit_tree([&](MtHandle func_arg) {
           if (func_arg.sym == sym_parameter_declaration) {
             auto arg_name = func_arg.get_field(field_declarator);
 
@@ -364,7 +195,7 @@ void MtModule::collect_fields() {
     }
   });
 
-  visit_tree(module_class, [&](MtHandle n) {
+  module_class.visit_tree([&](MtHandle n) {
     if (n.sym == sym_field_declaration) {
       if      (n.field_is_input())  inputs.push_back(n);
       else if (n.field_is_output()) outputs.push_back(n);

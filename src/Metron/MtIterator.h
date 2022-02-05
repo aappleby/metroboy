@@ -6,6 +6,12 @@
 #include <algorithm>
 #include <assert.h>
 #include <string>
+#include <functional>
+
+struct MtHandle;
+
+typedef std::function<void(MtHandle)> NodeVisitor;
+typedef std::function<void(MtHandle parent, MtHandle child)> NodeVisitor2;
 
 //------------------------------------------------------------------------------
 
@@ -67,6 +73,10 @@ struct MtHandle {
   }
 
   //----------
+
+  void dump_node(int index, int depth);
+  void dump_tree(int index, int depth, int maxdepth);
+  void dump_tree() { dump_tree(0, 0, 255); }
 
   operator bool() const { return !ts_node_is_null(node); }
   std::strong_ordering operator<=>(const MtHandle& b) const { return node <=> b.node; }
@@ -231,6 +241,8 @@ struct MtHandle {
   }
 
 
+  void visit_tree(NodeVisitor cv);
+  void visit_tree2(NodeVisitor2 cv);
 };
 
 //------------------------------------------------------------------------------

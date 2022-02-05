@@ -1,5 +1,8 @@
 #include "MtIterator.h"
 
+
+void print_escaped(const char* source, uint32_t a, uint32_t b);
+
 const MtHandle MtHandle::null;
 
 MtHandle MtHandle::get_field(int field_id) {
@@ -73,5 +76,90 @@ bool MtHandle::field_is_output() {
 
   auto name = get_field(field_declarator);
   return name.body().starts_with("o_");
+}
+
+
+
+void MtHandle::visit_tree(NodeVisitor cv) {
+  cv(*this);
+  for (auto c : *this) c.visit_tree(cv);
+}
+
+void MtHandle::visit_tree2(NodeVisitor2 cv) {
+  for (auto c : *this) {
+    cv(*this, c);
+    c.visit_tree2(cv);
+  }
+}
+
+//------------------------------------------------------------------------------
+// Node debugging
+
+void MtHandle::dump_node(int index, int depth) {
+  if (is_null()) {
+    printf("### NULL ###\n");
+    return;
+  }
+
+  uint32_t color = 0x00000000;
+  if (sym == sym_template_declaration) color = 0xAADDFF;
+  if (sym == sym_struct_specifier)     color = 0xFFAAFF;
+  if (sym == sym_class_specifier)      color = 0xFFAAFF;
+  if (sym == sym_expression_statement) color = 0xAAFFFF;
+  if (sym == sym_expression_statement) color = 0xAAFFFF;
+  if (sym == sym_compound_statement)   color = 0xFFFFFF;
+  if (sym == sym_function_definition)  color = 0xAAAAFF;
+  if (sym == sym_field_declaration)    color = 0xFFAAAA;
+  if (sym == sym_comment)              color = 0xAAFFAA;
+
+  if (color) {
+    printf("\u001b[38;2;%d;%d;%dm", (color >> 0) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF);
+    for (int i = 0; i < depth; i++) printf("|---");
+  }
+  else {
+    for (int i = 0; i < depth; i++) printf("|   ");
+  }
+
+  printf("[%d] ", index);
+
+  if (field > 0) printf("f%d ", field);
+  if (sym) printf("s%d ", sym);
+
+  //if (field > 0) {
+  //  printf("%s.", ts_language_field_name_for_id(lang, field));
+  //}
+
+  if (is_named() && child_count()) {
+    printf("%s: ", type());
+  }
+  else if (is_named() && !child_count()) {
+    printf("%s: ", type());
+    ::print_escaped(source, start_byte(), end_byte());
+  }
+  else {
+    // Unnamed nodes usually have their node body as their "type",
+    // and their symbol is something like "aux_sym_preproc_include_token1"
+    printf("lit: ");
+    ::print_escaped(source, start_byte(), end_byte());
+  }
+
+  printf("\n");
+  printf("\u001b[0m");
+}
+
+//------------------------------------------------------------------------------
+
+void MtHandle::dump_tree(int index, int depth, int maxdepth) {
+  if (depth == 0) {
+    printf("\n========== tree dump begin\n");
+  }
+  dump_node(index, depth);
+
+  if (!is_null() && depth < maxdepth) {
+    for (int i = 0; i < child_count(); i++) {
+      child(i).dump_tree(i, depth + 1, maxdepth);
+    }
+  }
+  if (depth == 0) printf("========== tree dump end\n");
 }
 

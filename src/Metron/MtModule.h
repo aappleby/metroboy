@@ -8,8 +8,6 @@
 #include "tree_sitter/api.h"
 #include "MtIterator.h"
 
-typedef std::function<void(MtHandle)> NodeVisitor;
-typedef std::function<void(MtHandle parent, MtHandle child)> NodeVisitor2;
 typedef std::vector<uint8_t> blob;
 
 //------------------------------------------------------------------------------
@@ -54,13 +52,6 @@ struct MtModule {
   void load(const std::string& input_filename, const std::string& output_filename);
 
   void print_error(MtHandle n, const char* fmt, ...);
-
-  void dump_node(MtHandle n, int index, int depth);
-  void dump_tree(MtHandle n, int index, int depth, int maxdepth);
-  void dump_tree(MtHandle n) { dump_tree(n, 0, 0, 255); }
-
-  void visit_tree(MtHandle n, NodeVisitor cv);
-  void visit_tree2(MtHandle parent, NodeVisitor2 cv);
 
   MtHandle get_by_id(std::vector<MtHandle>& handles, MtHandle id);
 

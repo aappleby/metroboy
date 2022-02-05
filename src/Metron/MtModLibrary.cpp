@@ -18,7 +18,7 @@ void MtModLibrary::load(const std::string& input_filename, const std::string& ou
 
 MtModule* MtModLibrary::find_module(const std::string& module_name) {
   for (auto mod : modules) {
-    if (mod->module_name == module_name) return mod;
+    if (mod->mod_name == module_name) return mod;
   }
   return nullptr;
 }

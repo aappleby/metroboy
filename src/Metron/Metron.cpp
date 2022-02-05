@@ -3,36 +3,31 @@
 #include "MtModLibrary.h"
 #include "MtCursor.h"
 
-#pragma warning(disable:4996) // unsafe fopen()
-
 //------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
 
-  std::vector<std::string> inputs;
+  MtModLibrary lib;
+
   for (int i = 1; i < argc; i++) {
-    if (argv[i][0] == '-') {
+    std::string arg = argv[i];
+    if (arg[0] == '-') {
     } else {
-      inputs.push_back(argv[i]);
+      lib.load(arg, arg + ".sv");
     }
   }
 
-  MtModLibrary lib;
-  for (auto& input : inputs) {
-    lib.load(input.c_str(), (input + ".sv").c_str());
-  }
+  for (auto module : lib.modules) {
 
-  for (auto module : lib.modules)
-  {
     MtCursor cursor(module, module->out_file);
 
     cursor.emit("//--------------------------------------------------------------------------------\n");
     cursor.emit("// MODULE:       ", module);
 
-    cursor.emit("%s\n", module->module_class.node_to_name().c_str());
+    cursor.emit("%s\n", module->mod_class.node_to_name().c_str());
 
     cursor.emit("// MODULEPARAMS: ");
-    for (auto f : module->moduleparams) {
+    for (auto f : module->modparams) {
       cursor.emit("%s, ", f.node_to_name().c_str());
     }
     cursor.emit("\n");
@@ -68,7 +63,7 @@ int main(int argc, char** argv) {
     cursor.emit("\n");
 
     cursor.cursor = module->source;
-    cursor.emit_dispatch(module->root);
+    cursor.emit_dispatch(module->mod_root);
     printf("\n");
   }
 

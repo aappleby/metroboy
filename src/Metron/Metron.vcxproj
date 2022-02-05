@@ -149,7 +149,6 @@
     <ClCompile Include="..\tree-sitter\lib\src\lib.c" />
     <ClCompile Include="Metron.cpp" />
     <ClCompile Include="MtCursor.cpp" />
-    <ClCompile Include="MtIterator.cpp" />
     <ClCompile Include="MtModLibrary.cpp" />
     <ClCompile Include="MtModule.cpp" />
     <ClCompile Include="MtNode.cpp" />
@@ -157,7 +156,6 @@
   <ItemGroup>
     <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
     <ClInclude Include="MtCursor.h" />
-    <ClInclude Include="MtIterator.h" />
     <ClInclude Include="MtModLibrary.h" />
     <ClInclude Include="MtModule.h" />
     <ClInclude Include="MtNode.h" />

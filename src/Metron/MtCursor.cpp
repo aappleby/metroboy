@@ -3,7 +3,7 @@
 #include "Platform.h"
 #include "MtModLibrary.h"
 #include "MtModule.h"
-#include "MtIterator.h"
+#include "MtNode.h"
 
 //------------------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ MtCursor::MtCursor(MtModule* mod, FILE* out) : mod(mod), out(out) {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::push_indent(MtHandle n) {
+void MtCursor::push_indent(MtNode n) {
   if (n) {
     auto e = n.start();
     auto b = e;
@@ -23,7 +23,7 @@ void MtCursor::push_indent(MtHandle n) {
   }
 }
 
-void MtCursor::pop_indent(MtHandle n) {
+void MtCursor::pop_indent(MtNode n) {
   if (n) indent_stack.pop_back();
 }
 
@@ -33,7 +33,7 @@ void MtCursor::emit_newline() {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::dump_node_line(MtHandle n) {
+void MtCursor::dump_node_line(MtNode n) {
   auto start = &mod->source[n.start_byte()];
 
   auto a = start;
@@ -50,7 +50,7 @@ void MtCursor::dump_node_line(MtHandle n) {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::print_error(MtHandle n, const char* fmt, ...) {
+void MtCursor::print_error(MtNode n, const char* fmt, ...) {
   emit("\n########################################\n");
 
   va_list args;
@@ -79,7 +79,7 @@ void MtCursor::emit_span(const char* a, const char* b) {
   fwrite(a, 1, b - a, stdout);
 }
 
-void MtCursor::emit(MtHandle n) {
+void MtCursor::emit(MtNode n) {
   emit_span(cursor, n.end());
   cursor = n.end();
 }
@@ -99,7 +99,7 @@ void MtCursor::emit(const char* fmt, ...) {
   }
 }
 
-void MtCursor::emit_replacement(MtHandle n, const char* fmt, ...) {
+void MtCursor::emit_replacement(MtNode n, const char* fmt, ...) {
   advance_to(n);
   {
     va_list args;
@@ -116,7 +116,7 @@ void MtCursor::emit_replacement(MtHandle n, const char* fmt, ...) {
   cursor = n.end();
 }
 
-void MtCursor::skip_over(MtHandle n) {
+void MtCursor::skip_over(MtNode n) {
   advance_to(n);
   cursor = n.end();
 }
@@ -127,13 +127,13 @@ void MtCursor::skip_whitespace() {
   }
 }
 
-void MtCursor::advance_to(MtHandle n) {
+void MtCursor::advance_to(MtNode n) {
   assert(cursor <= n.start());
   emit_span(cursor, n.start());
   cursor = n.start();
 }
 
-void MtCursor::comment_out(MtHandle n) {
+void MtCursor::comment_out(MtNode n) {
   advance_to(n);
   emit("/*");
   emit(n);
@@ -143,7 +143,7 @@ void MtCursor::comment_out(MtHandle n) {
 //------------------------------------------------------------------------------
 // Replace "#include" with "`include" and ".h" with ".sv"
 
-void MtCursor::emit_preproc_include(MtHandle n) {
+void MtCursor::emit_preproc_include(MtNode n) {
   for (auto c : n) {
     switch (c.sym) {
     case aux_sym_preproc_include_token1: emit_replacement(c, "`include"); break;
@@ -162,7 +162,7 @@ void MtCursor::emit_preproc_include(MtHandle n) {
 //------------------------------------------------------------------------------
 // Change '=' to '<=' if lhs is a field and we're inside a sequential block.
 
-void MtCursor::emit_assignment_expression(MtHandle n) {
+void MtCursor::emit_assignment_expression(MtNode n) {
   auto lhs = n.get_field(field_left);
   auto op  = n.get_field(field_operator);
   auto rhs = n.get_field(field_right);
@@ -191,7 +191,7 @@ void MtCursor::emit_assignment_expression(MtHandle n) {
 // Replace function names with macro names where needed, comment out explicit
 // init/final/tick/tock calls.
 
-void MtCursor::emit_call_expression(MtHandle n) {
+void MtCursor::emit_call_expression(MtNode n) {
   auto call_func = n.get_field(field_function);
   auto call_args = n.get_field(field_arguments);
 
@@ -234,7 +234,7 @@ void MtCursor::emit_call_expression(MtHandle n) {
 //------------------------------------------------------------------------------
 // Replace "logic blah = x;" with "logic blah;"
 
-void MtCursor::emit_init_declarator_as_decl(MtHandle n) {
+void MtCursor::emit_init_declarator_as_decl(MtNode n) {
 
   for (auto c : n) switch (c.field) {
   case field_declarator:
@@ -250,7 +250,7 @@ void MtCursor::emit_init_declarator_as_decl(MtHandle n) {
 //------------------------------------------------------------------------------
 // Replace "logic blah = x;" with "blah = x;"
 
-void MtCursor::emit_init_declarator_as_assign(MtHandle n) {
+void MtCursor::emit_init_declarator_as_assign(MtNode n) {
 
   auto node_decl = n.get_field(field_declarator);
 
@@ -269,7 +269,7 @@ void MtCursor::emit_init_declarator_as_assign(MtHandle n) {
 //------------------------------------------------------------------------------
 // Emit local variable declarations at the top of the block scope.
 
-void MtCursor::emit_hoisted_decls(MtHandle n) {
+void MtCursor::emit_hoisted_decls(MtNode n) {
   MtCursor old_cursor = *this;
   for (auto c : n) {
     if (c.sym == sym_declaration) {
@@ -285,7 +285,7 @@ void MtCursor::emit_hoisted_decls(MtHandle n) {
 // Change "init/tick/tock" to "initial begin / always_comb / always_ff", change
 // void methods to tasks, and change const methods to functions.
 
-void MtCursor::emit_function_definition(MtHandle func_def) {
+void MtCursor::emit_function_definition(MtNode func_def) {
 
   auto func_type = func_def.get_field(field_type);
   auto func_decl = func_def.get_field(field_declarator);
@@ -384,9 +384,9 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
   if (is_tick && !mod->submodules.empty()) {
     emit_newline();
 
-    std::vector<MtHandle> submod_call_nodes;
+    std::vector<MtNode> submod_call_nodes;
 
-    func_def.visit_tree([&](MtHandle child) {
+    func_def.visit_tree([&](MtNode child) {
       if (child.sym == sym_call_expression) {
         auto call_func = child.get_field(field_function);
 
@@ -450,7 +450,7 @@ void MtCursor::emit_function_definition(MtHandle func_def) {
 // Emit "<type> <submod_name>_<param_name>;" glue declarations because we can't
 // directly pass arguments to submodules.
 
-void MtCursor::emit_glue_declaration(MtHandle decl, const std::string& prefix) {
+void MtCursor::emit_glue_declaration(MtNode decl, const std::string& prefix) {
 
   assert(decl.sym == sym_field_declaration ||
          decl.sym == sym_parameter_declaration);
@@ -482,7 +482,7 @@ void MtCursor::emit_glue_declaration(MtHandle decl, const std::string& prefix) {
 // Emit field declarations. For submodules, also emit glue declarations and
 // append the glue parameter list to the field.
 
-void MtCursor::emit_field_declaration(MtHandle decl) {
+void MtCursor::emit_field_declaration(MtNode decl) {
 
   // Check if this field is a submodule by looking up its type name in our
   // module list.
@@ -555,14 +555,7 @@ void MtCursor::emit_field_declaration(MtHandle decl) {
 // Change class/struct to module, add default clk/rst inputs, add input and
 // ouptut ports to module param list.
 
-void MtCursor::emit_class_specifier(MtHandle n) {
-  /*
-  mod->dump_tree(n, 1);
-
-  for (int i = 0; i < (int)ts_node_child_count(n.node); i++) {
-    printf("f %d\n", ts_node_field_id_for_child(n.node, i));
-  }
-  */
+void MtCursor::emit_class_specifier(MtNode n) {
 
   for (auto c : n) {
     if (c.sym == anon_sym_class || c.sym == anon_sym_struct) {
@@ -572,11 +565,11 @@ void MtCursor::emit_class_specifier(MtHandle n) {
       emit_dispatch(c);
 
       // Patch the template parameter list in after the module declaration
-      if (mod->module_param_list) {
+      if (mod->mod_param_list) {
         emit_newline();
         MtCursor sub_cursor = *this;
-        sub_cursor.cursor = mod->module_param_list.start();
-        sub_cursor.emit_module_parameters(mod->module_param_list);
+        sub_cursor.cursor = mod->mod_param_list.start();
+        sub_cursor.emit_module_parameters(mod->mod_param_list);
       }
 
       // Emit an old-style port list
@@ -640,7 +633,7 @@ void MtCursor::emit_class_specifier(MtHandle n) {
 //------------------------------------------------------------------------------
 // Change "{ blah(); foo(); int x = 1; }" to "begin blah(); end"
 
-void MtCursor::emit_compound_statement(MtHandle body) {
+void MtCursor::emit_compound_statement(MtNode body) {
   push_indent(body.first_named_child());
 
   for (auto c : body) switch (c.sym) {
@@ -659,7 +652,7 @@ void MtCursor::emit_compound_statement(MtHandle body) {
 //------------------------------------------------------------------------------
 // Change logic<N> to logic[N-1:0]
 
-void MtCursor::emit_template_type(MtHandle n) {
+void MtCursor::emit_template_type(MtNode n) {
   auto node_name = n.get_field(field_name);
   auto node_args = n.get_field(field_arguments);
 
@@ -695,7 +688,7 @@ void MtCursor::emit_template_type(MtHandle n) {
 // Change (template)<int param, int param> to
 // #(parameter int param, parameter int param)
 
-void MtCursor::emit_module_parameters(MtHandle n) {
+void MtCursor::emit_module_parameters(MtNode n) {
   for (auto c : n) switch (c.sym) {
   case anon_sym_LT: emit_replacement(c, "#("); break;
   case anon_sym_GT: emit_replacement(c, ")"); break;
@@ -714,7 +707,7 @@ void MtCursor::emit_module_parameters(MtHandle n) {
 //------------------------------------------------------------------------------
 // Change <param, param> to #(param, param)
 
-void MtCursor::emit_template_argument_list(MtHandle n) {
+void MtCursor::emit_template_argument_list(MtNode n) {
   for (auto c : n) switch (c.sym) {
   case anon_sym_LT: emit_replacement(c, " #("); break;
   case anon_sym_GT: emit_replacement(c, ")"); break;
@@ -725,7 +718,7 @@ void MtCursor::emit_template_argument_list(MtHandle n) {
 //------------------------------------------------------------------------------
 // Enum lists do _not_ turn braces into begin/end.
 
-void MtCursor::emit_enumerator_list(MtHandle n) {
+void MtCursor::emit_enumerator_list(MtNode n) {
   for (auto c : n) switch (c.sym) {
   case anon_sym_LBRACE: emit(c); break;
   case anon_sym_RBRACE: emit(c); break;
@@ -736,7 +729,7 @@ void MtCursor::emit_enumerator_list(MtHandle n) {
 //------------------------------------------------------------------------------
 // Discard any trailing semicolons in the translation unit.
 
-void MtCursor::emit_translation_unit(MtHandle n) {
+void MtCursor::emit_translation_unit(MtNode n) {
 
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
@@ -753,7 +746,7 @@ void MtCursor::emit_translation_unit(MtHandle n) {
 // Replace "0x" prefixes with "'h"
 // Replace "0b" prefixes with "'b"
 
-void MtCursor::emit_number_literal(MtHandle n) {
+void MtCursor::emit_number_literal(MtNode n) {
   std::string body = n.body();
   if (body.starts_with("0x")) {
     emit_replacement(n, "'h%s", body.c_str() + 2);
@@ -769,7 +762,7 @@ void MtCursor::emit_number_literal(MtHandle n) {
 //------------------------------------------------------------------------------
 // Change "return x" to "(funcname) = x" to match old Verilog return style.
 
-void MtCursor::emit_return_statement(MtHandle n) {
+void MtCursor::emit_return_statement(MtNode n) {
   auto func_name = current_function_name;
   for (auto c : n) switch (c.sym) {
   case anon_sym_return: emit_replacement(c, "%s =", func_name.c_str()); break;
@@ -780,21 +773,21 @@ void MtCursor::emit_return_statement(MtHandle n) {
 //------------------------------------------------------------------------------
 // FIXME translate types here
 
-void MtCursor::emit_primitive_type(MtHandle n) {
+void MtCursor::emit_primitive_type(MtNode n) {
   emit(n);
 }
 
 //------------------------------------------------------------------------------
 // FIXME translate types here
 
-void MtCursor::emit_type_identifier(MtHandle n) {
+void MtCursor::emit_type_identifier(MtNode n) {
   emit(n);
 }
 
 //------------------------------------------------------------------------------
 // For some reason the class's trailing semicolon ends up with the template decl, so we prune it here.
 
-void MtCursor::emit_template_declaration(MtHandle n) {
+void MtCursor::emit_template_declaration(MtNode n) {
   for (auto c : n) switch (c.sym) {
   case anon_sym_template: skip_over(c); skip_whitespace(); break;
   case anon_sym_SEMI: skip_over(c); break;
@@ -806,7 +799,7 @@ void MtCursor::emit_template_declaration(MtHandle n) {
 // Replace foo.bar.baz with foo_bar_baz, so that a field expression instead
 // refers to a glue expression.
 
-void MtCursor::emit_flat_field_expression(MtHandle n) {
+void MtCursor::emit_flat_field_expression(MtNode n) {
   auto field = n.body();
   for (auto& c : field) if (c == '.') c = '_';
   emit_replacement(n, field.c_str());
@@ -814,7 +807,7 @@ void MtCursor::emit_flat_field_expression(MtHandle n) {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::emit_dispatch(MtHandle n) {
+void MtCursor::emit_dispatch(MtNode n) {
   assert(cursor <= n.start());
 
   switch (n.sym) {
@@ -963,7 +956,6 @@ void MtCursor::emit_dispatch(MtHandle n) {
     break;
 
   case sym_template_parameter_list:
-    mod->module_param_list = n;
     skip_over(n);
     skip_whitespace();
     break;

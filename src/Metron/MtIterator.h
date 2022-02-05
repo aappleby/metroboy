@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Platform.h"
 #include "tree_sitter/api.h"
 #include "../Plait/TreeSymbols.h"
 #include <compare>
@@ -9,6 +10,7 @@
 #include <functional>
 
 struct MtHandle;
+struct MtModule;
 
 typedef std::function<void(MtHandle)> NodeVisitor;
 typedef std::function<void(MtHandle parent, MtHandle child)> NodeVisitor2;
@@ -41,7 +43,7 @@ struct MtHandle {
   TSNode node;
   TSSymbol sym;
   int field;
-  const char* source;
+  MtModule* mod;
 
   static const MtHandle null;
 
@@ -51,26 +53,17 @@ struct MtHandle {
     this->node = { 0 };
     this->sym = 0;
     this->field = 0;
-    this->source = nullptr;
+    this->mod = nullptr;
   }
 
-  MtHandle(TSNode node, int sym, int field, const char* source) {
+  MtHandle(TSNode node, int sym, int field, MtModule* mod) {
     this->node = node;
     this->sym = sym;
     this->field = field;
-    this->source = source;
+    this->mod = mod;
   }
 
-  static MtHandle from_tree(TSTree* tree, const char* source) {
-    auto root = ts_tree_root_node(tree);
-
-    return MtHandle(
-      root,
-      ts_node_symbol(root),
-      0,
-      source
-    );
-  }
+  static MtHandle from_mod(MtModule* mod);
 
   //----------
 
@@ -117,71 +110,12 @@ struct MtHandle {
 
   //----------
 
-  MtHandle child(int i) const {
-    auto child = ts_node_child(node, i);
-    if (ts_node_is_null(child)) {
-      return MtHandle::null;
-    }
-    else {
-      auto sym = ts_node_symbol(child);
-      auto field = ts_node_field_id_for_child(node, i);
-      return { child, sym, field, source };
-    }
-  }
-
-  //----------
-
-  MtHandle first_named_child() const {
-    for (int i = 0; i < child_count(); i++) {
-      auto c = child(i);
-      if (c.is_named()) return c;
-    }
-    return MtHandle::null;
-  }
-
-  std::string body() {
-    assert(!is_null());
-
-    auto a = &source[start_byte()];
-    auto b = &source[end_byte()];
-
-    if (sym == anon_sym_LF) return a;
-
-    while (a < b && isspace(a[0])) a++;
-    while (b > a && isspace(b[-1])) b--;
-
-    return std::string(a, b);
-  }
-
-  const char* start() {
-    auto a = &source[start_byte()];
-    auto b = &source[end_byte()];
-
-    if (sym == anon_sym_LF) return a;
-
-    while (a < b && isspace(a[0])) a++;
-    return a;
-  }
-
-  const char* end() {
-    auto a = &source[start_byte()];
-    auto b = &source[end_byte()];
-
-    if (sym == anon_sym_LF) return b;
-
-    while (b > a && isspace(b[-1])) b--;
-    return b;
-  }
-
-  bool match(const char* s) {
-    const char* a = start();
-    const char* b = end();
-
-    while (a != b) {
-      if (*a++ != *s++)  return false;
-    }
-    return true;
-  }
+  MtHandle child(int i) const;
+  MtHandle first_named_child() const;
+  std::string body();
+  const char* start();
+  const char* end();
+  bool match(const char* s);
 
   // Field introspection
   bool field_is_primitive();
@@ -216,8 +150,8 @@ struct MtHandle {
       return get_field(field_name).node_to_name();
 
     default:
-      //dump_tree(n);
-      //debugbreak();
+      dump_tree();
+      debugbreak();
       return "";
     }
   }
@@ -234,8 +168,8 @@ struct MtHandle {
       return get_field(field_name).node_to_type();
 
     default:
-      //dump_tree(n);
-      //debugbreak();
+      dump_tree();
+      debugbreak();
       return "";
     }
   }
@@ -261,7 +195,7 @@ struct MtIterator {
         cursor = { 0 };
       }
     }
-    source = parent.source;
+    this->mod = parent.mod;
   }
 
   ~MtIterator() {
@@ -290,12 +224,12 @@ struct MtIterator {
       child,
       sym,
       field,
-      source
+      mod
     };
   }
 
   TSTreeCursor cursor;
-  const char* source;
+  MtModule* mod;
 };
 
 inline MtIterator begin(MtHandle parent) {

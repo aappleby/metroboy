@@ -78,7 +78,7 @@ void MtModule::load(const std::string& input_filename, const std::string& output
   source = (const char*)src_blob.data();
   source_end = source + src_blob.size();
   tree = ts_parser_parse_string(parser, NULL, source, (uint32_t)src_blob.size());
-  root = MtHandle::from_tree(tree, source);
+  root = MtHandle::from_mod(this);
 
   find_module();
   collect_moduleparams();

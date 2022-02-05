@@ -1,9 +1,25 @@
 #include "MtIterator.h"
 
+#include "MtModule.h"
+
 
 void print_escaped(const char* source, uint32_t a, uint32_t b);
 
 const MtHandle MtHandle::null;
+
+//------------------------------------------------------------------------------
+
+MtHandle MtHandle::from_mod(MtModule* mod) {
+  auto root = ts_tree_root_node(mod->tree);
+
+  return MtHandle(
+    root,
+    ts_node_symbol(root),
+    0,
+    mod
+  );
+}
+
 
 MtHandle MtHandle::get_field(int field_id) {
 
@@ -14,6 +30,73 @@ MtHandle MtHandle::get_field(int field_id) {
   return MtHandle::null;
 }
 
+//------------------------------------------------------------------------------
+
+MtHandle MtHandle::child(int i) const {
+  auto child = ts_node_child(node, i);
+  if (ts_node_is_null(child)) {
+    return MtHandle::null;
+  }
+  else {
+    auto sym = ts_node_symbol(child);
+    auto field = ts_node_field_id_for_child(node, i);
+    return { child, sym, field, mod };
+  }
+}
+
+//----------
+
+MtHandle MtHandle::first_named_child() const {
+  for (int i = 0; i < child_count(); i++) {
+    auto c = child(i);
+    if (c.is_named()) return c;
+  }
+  return MtHandle::null;
+}
+
+std::string MtHandle::body() {
+  assert(!is_null());
+
+  auto a = &mod->source[start_byte()];
+  auto b = &mod->source[end_byte()];
+
+  if (sym == anon_sym_LF) return a;
+
+  while (a < b && isspace(a[0])) a++;
+  while (b > a && isspace(b[-1])) b--;
+
+  return std::string(a, b);
+}
+
+const char* MtHandle::start() {
+  auto a = &mod->source[start_byte()];
+  auto b = &mod->source[end_byte()];
+
+  if (sym == anon_sym_LF) return a;
+
+  while (a < b && isspace(a[0])) a++;
+  return a;
+}
+
+const char* MtHandle::end() {
+  auto a = &mod->source[start_byte()];
+  auto b = &mod->source[end_byte()];
+
+  if (sym == anon_sym_LF) return b;
+
+  while (b > a && isspace(b[-1])) b--;
+  return b;
+}
+
+bool MtHandle::match(const char* s) {
+  const char* a = start();
+  const char* b = end();
+
+  while (a != b) {
+    if (*a++ != *s++)  return false;
+  }
+  return true;
+}
 
 //------------------------------------------------------------------------------
 // Field introspection
@@ -134,13 +217,13 @@ void MtHandle::dump_node(int index, int depth) {
   }
   else if (is_named() && !child_count()) {
     printf("%s: ", type());
-    ::print_escaped(source, start_byte(), end_byte());
+    ::print_escaped(mod->source, start_byte(), end_byte());
   }
   else {
     // Unnamed nodes usually have their node body as their "type",
     // and their symbol is something like "aux_sym_preproc_include_token1"
     printf("lit: ");
-    ::print_escaped(source, start_byte(), end_byte());
+    ::print_escaped(mod->source, start_byte(), end_byte());
   }
 
   printf("\n");
@@ -163,3 +246,4 @@ void MtHandle::dump_tree(int index, int depth, int maxdepth) {
   if (depth == 0) printf("========== tree dump end\n");
 }
 
+//------------------------------------------------------------------------------

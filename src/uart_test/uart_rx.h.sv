@@ -10,9 +10,11 @@
 // FUNCTIONS:    
 /* verilator lint_off WIDTH */
 `default_nettype none
+
 `include "metron.h.sv"
 
 //==============================================================================
+
 
 module uart_rx
 #(parameter int cycles_per_bit = 4)

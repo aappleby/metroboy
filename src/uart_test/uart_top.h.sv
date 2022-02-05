@@ -10,12 +10,14 @@
 // FUNCTIONS:    
 /* verilator lint_off WIDTH */
 `default_nettype none
+
 `include "metron.h.sv"
 `include "uart_rx.h.sv"
 `include "uart_tx.h.sv"
 `include "uart_hello.h.sv"
 
 //==============================================================================
+
 
 module uart_top
 #(parameter int cycles_per_bit = 3)
@@ -115,6 +117,8 @@ module uart_top
     o_serial = tx_o_serial;
     o_data = rx_o_data;
     o_valid = rx_o_valid;
+
+    
 
     blah = hello_o_done && tx_o_idle;
 

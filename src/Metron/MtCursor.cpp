@@ -122,7 +122,8 @@ void MtCursor::skip_over(MtNode n) {
 }
 
 void MtCursor::skip_whitespace() {
-  while(*cursor && isspace(*cursor)) {
+  //while(*cursor && isspace(*cursor)) {
+  while(*cursor && (*cursor == ' ')) {
     cursor++;
   }
 }
@@ -631,7 +632,7 @@ void MtCursor::emit_class_specifier(MtNode n) {
 }
 
 //------------------------------------------------------------------------------
-// Change "{ blah(); foo(); int x = 1; }" to "begin blah(); end"
+// Change "{ blah(); foo(); int x = 1; }" to "begin blah(); ... end"
 
 void MtCursor::emit_compound_statement(MtNode body) {
   push_indent(body.first_named_child());
@@ -805,12 +806,65 @@ void MtCursor::emit_flat_field_expression(MtNode n) {
   emit_replacement(n, field.c_str());
 }
 
+void MtCursor::emit_case(MtNode n) {
+  for (auto c : n) {
+    if (c.sym == anon_sym_case) {
+      skip_over(c);
+      skip_whitespace();
+    }
+    else emit_dispatch(c);
+  }
+}
+
+void MtCursor::emit_switch(MtNode n) {
+  for (auto c : n) {
+    if (c.sym == anon_sym_switch) {
+      emit_replacement(c, "case");
+    }
+    else if (c.field == field_body) {
+      for (auto gc : c) {
+        if (gc.sym == anon_sym_LBRACE) skip_over(gc);
+        else if (gc.sym == anon_sym_RBRACE) emit_replacement(gc, "endcase");
+        else emit_dispatch(gc);
+      }
+
+    }
+    else {
+      emit_dispatch(c);
+    }
+  }
+}
+
 //------------------------------------------------------------------------------
 
 void MtCursor::emit_dispatch(MtNode n) {
   assert(cursor <= n.start());
 
   switch (n.sym) {
+
+  case sym_storage_class_specifier: {
+    if (n.match("static")) {
+      emit_replacement(n, "localparam");
+    }
+    else {
+      comment_out(n);
+    }
+    break;
+  }
+
+  case sym_break_statement:
+    comment_out(n);
+    break;
+
+  case sym_access_specifier:
+  case sym_type_qualifier:
+  case sym_preproc_call:
+  case sym_preproc_if:
+  case sym_template_parameter_list:
+    skip_over(n);
+    skip_whitespace();
+    break;
+
   case anon_sym_template:
   case anon_sym_if:
   case anon_sym_else:
@@ -840,9 +894,6 @@ void MtCursor::emit_dispatch(MtNode n) {
   case anon_sym_BANG_EQ:
   case anon_sym_COLON:
   case aux_sym_preproc_include_token1:
-    emit(n);
-    break;
-
   case alias_sym_field_identifier:
   case sym_identifier:
   case sym_true:
@@ -853,10 +904,6 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
 
   case sym_parameter_list:
-    for (auto c : n) emit_dispatch(c);
-    skip_whitespace();
-    break;
-
   case sym_if_statement:
   case sym_for_statement:
   case sym_parenthesized_expression:
@@ -897,68 +944,8 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_assignment_expression:  emit_assignment_expression(n); break;
   case sym_template_argument_list: emit_template_argument_list(n); break;
   case sym_enumerator_list:        emit_enumerator_list(n); break;
-
-  case sym_case_statement: {
-    for (auto c : n) {
-      if (c.sym == anon_sym_case) {
-        skip_over(c);
-        skip_whitespace();
-      }
-      else emit_dispatch(c);
-    }
-    break;
-  }
-
-  case sym_switch_statement: {
-    for (auto c : n) {
-      if (c.sym == anon_sym_switch) {
-        emit_replacement(c, "case");
-      }
-      else if (c.field == field_body) {
-        for (auto gc : c) {
-          if (gc.sym == anon_sym_LBRACE) skip_over(gc);
-          else if (gc.sym == anon_sym_RBRACE) emit_replacement(gc, "endcase");
-          else emit_dispatch(gc);
-        }
-
-      }
-      else {
-        emit_dispatch(c);
-      }
-    }
-    break;
-  }
-
-  case sym_storage_class_specifier: {
-    if (n.match("static")) {
-      emit_replacement(n, "localparam");
-    }
-    else {
-      comment_out(n);
-    }
-    break;
-  }
-
-  case sym_break_statement:
-    comment_out(n);
-    break;
-
-  case sym_access_specifier:
-  case sym_type_qualifier:
-    skip_over(n);
-    skip_whitespace();
-    break;
-
-  case sym_preproc_call:
-  case sym_preproc_if:
-    skip_over(n);
-    skip_whitespace();
-    break;
-
-  case sym_template_parameter_list:
-    skip_over(n);
-    skip_whitespace();
-    break;
+  case sym_case_statement:         emit_case(n); break;
+  case sym_switch_statement:       emit_switch(n); break;
 
   default:
     print_error(n, "Unknown node type");

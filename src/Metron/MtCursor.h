@@ -51,6 +51,8 @@ struct MtCursor {
   void emit_translation_unit(MtNode n);
   void emit_flat_field_expression(MtNode n);
   void emit_dispatch(MtNode n);
+  void emit_case(MtNode n);
+  void emit_switch(MtNode n);
 
   // Special-purpose emit()s
 

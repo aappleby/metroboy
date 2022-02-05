@@ -6,7 +6,6 @@
 
 #pragma warning(disable:4996) // unsafe fopen()
 
-
 //------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
@@ -30,7 +29,6 @@ int main(int argc, char** argv) {
 
     //module->dump_tree(module->root);
 
-#if 1
     auto out = fopen(module->output_filename.c_str(), "wb");
     MtCursor cursor(&lib, module, out);
 
@@ -78,7 +76,6 @@ int main(int argc, char** argv) {
     cursor.cursor = module->source;
     cursor.emit_dispatch(module->root);
     printf("\n");
-#endif
   }
 
   return 0;

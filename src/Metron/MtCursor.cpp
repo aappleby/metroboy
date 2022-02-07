@@ -618,7 +618,7 @@ void MtCursor::emit_field_declaration(MtNode decl) {
   case sym_template_type:         type_name = node_type.get_field(field_name).body(); break;
   
   case sym_enum_specifier: {
-    decl.dump_tree();
+    //decl.dump_tree();
 
     auto name = node_type.get_field(field_name);
     if (name.is_null()) {
@@ -651,7 +651,7 @@ void MtCursor::emit_field_declaration(MtNode decl) {
     }
 
     if (node_type.sym == sym_enum_specifier) {
-      decl.dump_tree();
+      //decl.dump_tree();
 
       advance_to(decl);
       auto node_value = decl.get_field(field_default_value);
@@ -1043,6 +1043,9 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
 
   case sym_break_statement:
+    comment_out(n);
+    break;
+
   case sym_access_specifier:
   case sym_type_qualifier:
   case sym_preproc_call:

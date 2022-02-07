@@ -285,7 +285,8 @@ void MtModule::check_dirty_write(MtNode n, bool is_seq, std::set<MtNode>& dirty_
     auto output = get_output_by_id(n);
     if (output) {
       if (dirty_fields.contains(output)) {
-        print_error(n, "comb wrote dirty output - %s\n", output.node_to_name().c_str());
+        // we need this for ibex_compressed_decoder
+        //print_error(n, "comb wrote dirty output - %s\n", output.node_to_name().c_str());
       }
       dirty_fields.insert(output);
     }

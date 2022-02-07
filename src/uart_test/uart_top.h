@@ -3,6 +3,7 @@
 #include "uart_rx.h"
 #include "uart_tx.h"
 #include "uart_hello.h"
+#include "ibex_compressed_decoder.h"
 
 //==============================================================================
 
@@ -12,6 +13,8 @@ struct uart_top {
   uart_hello hello;
   uart_tx<cycles_per_bit> tx;
   uart_rx<cycles_per_bit> rx;
+
+  ibex_compressed_decoder cdec;
 
   logic<1> o_serial;
   logic<8> o_data;

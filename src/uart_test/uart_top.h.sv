@@ -5,7 +5,7 @@
 // OUTPUTS:      o_serial, o_data, o_valid, o_done, o_sum, o_onehot, 
 // LOCALPARAMS:  
 // FIELDS:       temp, opcode_e, 
-// SUBMODULES:   hello, tx, rx, 
+// SUBMODULES:   hello, tx, rx, cdec, 
 // TASKS:        
 // FUNCTIONS:    
 /* verilator lint_off WIDTH */
@@ -15,6 +15,7 @@
 `include "uart_rx.h.sv"
 `include "uart_tx.h.sv"
 `include "uart_hello.h.sv"
+`include "ibex_compressed_decoder.h.sv"
 
 //==============================================================================
 
@@ -46,6 +47,14 @@ module uart_top
   logic rx_o_valid;
   logic[31:0] rx_o_sum;
   uart_rx #(cycles_per_bit) rx(clk, rst_n, rx_i_serial, rx_o_data, rx_o_valid, rx_o_sum);
+  
+
+  logic cdec_i_valid;
+  logic[31:0] cdec_i_instr;
+  logic  cdec_o_is_compressed;
+  logic  cdec_o_illegal_instr;
+  logic[31:0] cdec_o_instr;
+  ibex_compressed_decoder cdec(clk, rst_n, cdec_i_valid, cdec_i_instr, cdec_o_is_compressed, cdec_o_illegal_instr, cdec_o_instr);
   
 
   output logic o_serial;
@@ -143,15 +152,15 @@ module uart_top
 
 
       case (o_data & 'b111) 
-      'd0:  temp <= 'b00000001; 
-      'd1:  temp <= 'b00000010; 
-      'd2:  temp <= 'b00000100; 
-      'd3:  temp <= 'b00001000; 
-      'd4:  temp <= 'b00010000; 
-      'd5:  temp <= 'b00100000; 
-      'd6:  temp <= 'b01000000; 
-      'd7:  temp <= 'b10000000; 
-      default: temp <= 'b00000000; 
+      'd0:  temp <= 'b00000001; /*break;*/
+      'd1:  temp <= 'b00000010; /*break;*/
+      'd2:  temp <= 'b00000100; /*break;*/
+      'd3:  temp <= 'b00001000; /*break;*/
+      'd4:  temp <= 'b00010000; /*break;*/
+      'd5:  temp <= 'b00100000; /*break;*/
+      'd6:  temp <= 'b01000000; /*break;*/
+      'd7:  temp <= 'b10000000; /*break;*/
+      default: temp <= 'b00000000; /*break;*/
       endcase
     end
   end
@@ -182,15 +191,15 @@ module uart_top
     o_sum = rx_o_sum;
 
     case (o_data & 'b111) 
-    'd0:  o_onehot = 'b00000001; 
-    'd1:  o_onehot = 'b00000010; 
-    'd2:  o_onehot = 'b00000100; 
-    'd3:  o_onehot = 'b00001000; 
-    'd4:  o_onehot = 'b00010000; 
-    'd5:  o_onehot = 'b00100000; 
-    'd6:  o_onehot = 'b01000000; 
-    'd7:  o_onehot = 'b10000000; 
-    default: o_onehot = 'b00000000; 
+    'd0:  o_onehot = 'b00000001; /*break;*/
+    'd1:  o_onehot = 'b00000010; /*break;*/
+    'd2:  o_onehot = 'b00000100; /*break;*/
+    'd3:  o_onehot = 'b00001000; /*break;*/
+    'd4:  o_onehot = 'b00010000; /*break;*/
+    'd5:  o_onehot = 'b00100000; /*break;*/
+    'd6:  o_onehot = 'b01000000; /*break;*/
+    'd7:  o_onehot = 'b10000000; /*break;*/
+    default: o_onehot = 'b00000000; /*break;*/
     endcase
   end
 

@@ -72,7 +72,6 @@ struct MtCursor {
   bool in_comb = false;
   bool in_seq = false;
   bool in_final = false;
-
 };
 
 //------------------------------------------------------------------------------

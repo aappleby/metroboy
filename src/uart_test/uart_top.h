@@ -108,15 +108,15 @@ struct uart_top {
 
 
       switch (o_data & 0b111) {
-      case 0:  temp = 0b00000001; break;
-      case 1:  temp = 0b00000010; break;
-      case 2:  temp = 0b00000100; break;
-      case 3:  temp = 0b00001000; break;
-      case 4:  temp = 0b00010000; break;
-      case 5:  temp = 0b00100000; break;
-      case 6:  temp = 0b01000000; break;
-      case 7:  temp = 0b10000000; break;
-      default: temp = 0b00000000; break;
+      case 0:  { temp = 0b00000001; break; }
+      case 1:  { temp = 0b00000010; break; }
+      case 2:  { temp = 0b00000100; break; }
+      case 3:  { temp = 0b00001000; break; }
+      case 4:  { temp = 0b00010000; break; }
+      case 5:  { temp = 0b00100000; break; }
+      case 6:  { temp = 0b01000000; break; }
+      case 7:  { temp = 0b10000000; break; }
+      default: { temp = 0b00000000; break; }
       }
     }
   }
@@ -140,15 +140,15 @@ struct uart_top {
     o_sum = rx.o_sum;
 
     switch (o_data & 0b111) {
-    case 0:  o_onehot = 0b00000001; break;
-    case 1:  o_onehot = 0b00000010; break;
-    case 2:  o_onehot = 0b00000100; break;
-    case 3:  o_onehot = 0b00001000; break;
-    case 4:  o_onehot = 0b00010000; break;
-    case 5:  o_onehot = 0b00100000; break;
-    case 6:  o_onehot = 0b01000000; break;
-    case 7:  o_onehot = 0b10000000; break;
-    default: o_onehot = 0b00000000; break;
+    case 0:  { o_onehot = 0b00000001; break; }
+    case 1:  { o_onehot = 0b00000010; break; }
+    case 2:  { o_onehot = 0b00000100; break; }
+    case 3:  { o_onehot = 0b00001000; break; }
+    case 4:  { o_onehot = 0b00010000; break; }
+    case 5:  { o_onehot = 0b00100000; break; }
+    case 6:  { o_onehot = 0b01000000; break; }
+    case 7:  { o_onehot = 0b10000000; break; }
+    default: { o_onehot = 0b00000000; break; }
     }
   }
 

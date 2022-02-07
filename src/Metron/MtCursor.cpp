@@ -333,11 +333,11 @@ void MtCursor::emit_call_expression(MtNode n) {
 
     if (arg_count == 1) {
       skip_over(call_func);
-      emit("{ %d ", dup_count);
+      emit("{%d ", dup_count);
       emit("{");
       cursor = arg0.start();
       emit_dispatch(arg0);
-      emit("} }");
+      emit("}}");
       cursor = n.end();
     }
     else {
@@ -972,6 +972,53 @@ void MtCursor::emit_flat_field_expression(MtNode n) {
 }
 
 void MtCursor::emit_case(MtNode n) {
+  /*
+  [3] s247 case_statement:
+  |   [0] s87 lit: "case"
+  |   [1] f34 s112 value.number_literal: "0b110"
+  |   [2] s83 lit: ":"
+  |   [3] s225 compound_statement:
+  |   |   [0] s59 lit: "{"
+  |   |   [1] s252 break_statement:
+  |   |   |   [0] s93 lit: "break"
+  |   |   |   [1] s39 lit: ";"
+  |   |   [2] s60 lit: "}"
+  */
+
+  /*
+  [4] s247 case_statement:
+  |   |   |   [0] s87 lit: "case"
+  |   |   |   [1] f34 s112 value.number_literal: "0b001"
+  |   |   |   [2] s83 lit: ":"
+  */
+
+  /*
+  [9] s247 case_statement:
+  |   [0] s88 lit: "default"
+  |   [1] s83 lit: ":"
+  |---[2] s225 compound_statement:
+  |   |   [0] s59 lit: "{"
+  |---|---[1] s244 expression_statement:
+  |   |   |   [0] s258 assignment_expression:
+  |   |   |   |   [0] f19 s1 left.identifier: "illegal_instr_o"
+  |   |   |   |   [1] f23 s63 operator.lit: "="
+  |   |   |   |   [2] f29 s112 right.number_literal: "0b1"
+  |   |   |   [1] s39 lit: ";"
+  |   |   [2] s60 lit: "}"
+  */
+
+  auto tag = n.child(0);
+
+  if (tag.sym != anon_sym_default && n.child_count() == 3) {
+    skip_over(n.child(0));
+    skip_space();
+    cursor = n.child(1).start();
+    emit_dispatch(n.child(1));
+    emit(",");
+    cursor = n.end();
+    return;
+  }
+
   for (auto c : n) {
     if (c.sym == anon_sym_case) {
       skip_over(c);
@@ -982,6 +1029,8 @@ void MtCursor::emit_case(MtNode n) {
 }
 
 void MtCursor::emit_switch(MtNode n) {
+  //n.dump_tree();
+
   for (auto c : n) {
     if (c.sym == anon_sym_switch) {
       emit_replacement(c, "case");
@@ -1043,6 +1092,7 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
 
   case sym_break_statement:
+    //emit_replacement(n, "/*break;*/");
     comment_out(n);
     break;
 

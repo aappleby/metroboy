@@ -132,7 +132,7 @@ module uart_top
       */
 
       instr_o = {
-        { 6 {instr_i[12]} },
+        {6 {instr_i[12]}},
         instr_i[12],
         instr_i[6:2],
         instr_i[11:7],
@@ -152,15 +152,15 @@ module uart_top
 
 
       case (o_data & 'b111) 
-      'd0:  temp <= 'b00000001; /*break;*/
-      'd1:  temp <= 'b00000010; /*break;*/
-      'd2:  temp <= 'b00000100; /*break;*/
-      'd3:  temp <= 'b00001000; /*break;*/
-      'd4:  temp <= 'b00010000; /*break;*/
-      'd5:  temp <= 'b00100000; /*break;*/
-      'd6:  temp <= 'b01000000; /*break;*/
-      'd7:  temp <= 'b10000000; /*break;*/
-      default: temp <= 'b00000000; /*break;*/
+      'd0:  begin temp <= 'b00000001; /*break;*/ end
+      'd1:  begin temp <= 'b00000010; /*break;*/ end
+      'd2:  begin temp <= 'b00000100; /*break;*/ end
+      'd3:  begin temp <= 'b00001000; /*break;*/ end
+      'd4:  begin temp <= 'b00010000; /*break;*/ end
+      'd5:  begin temp <= 'b00100000; /*break;*/ end
+      'd6:  begin temp <= 'b01000000; /*break;*/ end
+      'd7:  begin temp <= 'b10000000; /*break;*/ end
+      default: begin temp <= 'b00000000; /*break;*/ end
       endcase
     end
   end
@@ -191,15 +191,15 @@ module uart_top
     o_sum = rx_o_sum;
 
     case (o_data & 'b111) 
-    'd0:  o_onehot = 'b00000001; /*break;*/
-    'd1:  o_onehot = 'b00000010; /*break;*/
-    'd2:  o_onehot = 'b00000100; /*break;*/
-    'd3:  o_onehot = 'b00001000; /*break;*/
-    'd4:  o_onehot = 'b00010000; /*break;*/
-    'd5:  o_onehot = 'b00100000; /*break;*/
-    'd6:  o_onehot = 'b01000000; /*break;*/
-    'd7:  o_onehot = 'b10000000; /*break;*/
-    default: o_onehot = 'b00000000; /*break;*/
+    'd0:  begin o_onehot = 'b00000001; /*break;*/ end
+    'd1:  begin o_onehot = 'b00000010; /*break;*/ end
+    'd2:  begin o_onehot = 'b00000100; /*break;*/ end
+    'd3:  begin o_onehot = 'b00001000; /*break;*/ end
+    'd4:  begin o_onehot = 'b00010000; /*break;*/ end
+    'd5:  begin o_onehot = 'b00100000; /*break;*/ end
+    'd6:  begin o_onehot = 'b01000000; /*break;*/ end
+    'd7:  begin o_onehot = 'b10000000; /*break;*/ end
+    default: begin o_onehot = 'b00000000; /*break;*/ end
     endcase
   end
 

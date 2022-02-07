@@ -118,9 +118,19 @@ struct logic {
   }
 
   template<int M>
+  bool operator == (logic<M> b) const {
+    static_assert(N == M);
+    return x == b.x;
+  }
+
+  template<int M>
   logic<M> truncate() const {
     static_assert(M < N);
     return (typename logic<M>::basetype)(x);
+  }
+
+  logic operator~() const {
+    return x ^ mask;
   }
 
   operator basetype() const { return x; }

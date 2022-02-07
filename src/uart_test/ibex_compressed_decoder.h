@@ -1,7 +1,18 @@
+// Copyright lowRISC contributors.
+// Copyright 2018 ETH Zurich and University of Bologna, see also CREDITS.md.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+/**
+ * Compressed instruction decoder
+ *
+ * Decodes RISC-V compressed instructions into their RV32 equivalent.
+ * This module is fully combinatorial, clock and reset are used for
+ * assertions only.
+ */
+
 #pragma once
 #include "metron.h"
-
-//==============================================================================
 
 struct ibex_compressed_decoder {
 
@@ -308,9 +319,7 @@ struct ibex_compressed_decoder {
     }
 
     is_compressed_o = b2(instr_i) != 0b11;
-
   }
-
 };
 
 //==============================================================================

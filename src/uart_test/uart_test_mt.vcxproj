@@ -162,6 +162,7 @@
     <ClInclude Include="ibex_compressed_decoder.h" />
     <ClInclude Include="message.blob.h" />
     <ClInclude Include="metron.h" />
+    <ClInclude Include="prim_arbiter_fixed.h" />
     <ClInclude Include="vcd_dump.h" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +170,8 @@
     <None Include="ibex_compressed_decoder.h.sv" />
     <None Include="ibex_compressed_decoder.sv" />
     <None Include="metron.h.sv" />
+    <None Include="prim_arbiter_fixed.h.sv" />
+    <None Include="prim_arbiter_fixed.sv" />
     <None Include="SB_PLL40_CORE.v" />
     <None Include="uart_hello.h.sv" />
     <None Include="uart_ice40.sv" />

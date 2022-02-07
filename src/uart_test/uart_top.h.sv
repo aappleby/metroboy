@@ -5,7 +5,7 @@
 // OUTPUTS:      o_serial, o_data, o_valid, o_done, o_sum, o_onehot, 
 // LOCALPARAMS:  
 // FIELDS:       temp, opcode_e, 
-// SUBMODULES:   hello, tx, rx, cdec, 
+// SUBMODULES:   hello, tx, rx, cdec, prim_arbiter, 
 // TASKS:        
 // FUNCTIONS:    
 /* verilator lint_off WIDTH */
@@ -16,6 +16,7 @@
 `include "uart_tx.h.sv"
 `include "uart_hello.h.sv"
 `include "ibex_compressed_decoder.h.sv"
+`include "prim_arbiter_fixed.h.sv"
 
 //==============================================================================
 
@@ -55,6 +56,9 @@ module uart_top
   logic  cdec_illegal_instr_o;
   logic[31:0] cdec_instr_o;
   ibex_compressed_decoder cdec(clk, rst_n, cdec_valid_i, cdec_instr_i, cdec_is_compressed_o, cdec_illegal_instr_o, cdec_instr_o);
+  
+
+  prim_arbiter_fixed #() prim_arbiter(clk, rst_n);
   
 
   output logic o_serial;

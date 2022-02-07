@@ -1,19 +1,20 @@
-//--------------------------------------------------------------------------------
-// MODULE:       ibex_compressed_decoder
-// MODULEPARAMS: 
-// INPUTS:       valid_i, instr_i, 
-// OUTPUTS:      is_compressed_o, illegal_instr_o, instr_o, 
-// LOCALPARAMS:  
-// FIELDS:       opcode_e, unused_valid, 
-// SUBMODULES:   
-// TASKS:        
-// FUNCTIONS:    
 /* verilator lint_off WIDTH */
 `default_nettype none
+// Copyright lowRISC contributors.
+// Copyright 2018 ETH Zurich and University of Bologna, see also CREDITS.md.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+/**
+ * Compressed instruction decoder
+ *
+ * Decodes RISC-V compressed instructions into their RV32 equivalent.
+ * This module is fully combinatorial, clock and reset are used for
+ * assertions only.
+ */
+
 
 `include "metron.h.sv"
-
-//==============================================================================
 
 module ibex_compressed_decoder
 (clk, rst_n, valid_i, instr_i, is_compressed_o, illegal_instr_o, instr_o);
@@ -327,9 +328,7 @@ module ibex_compressed_decoder
     endcase
 
     is_compressed_o = instr_i[1:0] != 'b11;
-
   end
-
 endmodule
 
 //==============================================================================

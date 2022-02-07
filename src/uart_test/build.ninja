@@ -35,7 +35,7 @@ rule touch
 
 ################################################################################
 
-build bin/all_sv : touch metron.h.sv uart_top.h.sv uart_hello.h.sv uart_rx.h.sv uart_tx.h.sv ibex_compressed_decoder.h.sv obj/message.hex
+build bin/all_sv : touch metron.h.sv uart_top.h.sv uart_hello.h.sv uart_rx.h.sv uart_tx.h.sv ibex_compressed_decoder.h.sv prim_arbiter_fixed.h.sv obj/message.hex
 build bin/all_h  : touch uart_top.h  uart_hello.h  uart_rx.h  uart_tx.h  message.blob.h
 
 build obj/make_blob_h.o  : compile make_blob_h.cpp

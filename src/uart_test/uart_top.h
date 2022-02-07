@@ -4,6 +4,7 @@
 #include "uart_tx.h"
 #include "uart_hello.h"
 #include "ibex_compressed_decoder.h"
+#include "prim_arbiter_fixed.h"
 
 //==============================================================================
 
@@ -15,6 +16,8 @@ struct uart_top {
   uart_rx<cycles_per_bit> rx;
 
   ibex_compressed_decoder cdec;
+
+  prim_arbiter_fixed<> prim_arbiter;
 
   logic<1> o_serial;
   logic<8> o_data;

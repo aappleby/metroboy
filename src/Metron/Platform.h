@@ -15,6 +15,7 @@
 #include <functional>
 #include <regex>
 #include <set>
+#include <map>
 #include <string>
 #include <vector>
 

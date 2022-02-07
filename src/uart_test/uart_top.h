@@ -17,7 +17,7 @@ struct uart_top {
 
   ibex_compressed_decoder cdec;
 
-  prim_arbiter_fixed<> prim_arbiter;
+  prim_arbiter_fixed<8, 32, 1, 3> prim_arbiter;
 
   logic<1> o_serial;
   logic<8> o_data;

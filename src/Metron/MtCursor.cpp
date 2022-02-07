@@ -288,6 +288,10 @@ void MtCursor::emit_call_expression(MtNode n) {
     emit_replacement(call_func, "$clog2");
     emit_dispatch(call_args);
   }
+  else if (func_name == "pow2") {
+    emit_replacement(call_func, "2**");
+    emit_dispatch(call_args);
+  }
   else if (func_name == "readmemh") {
     emit_replacement(call_func, "$readmemh");
     emit_dispatch(call_args);
@@ -666,10 +670,61 @@ void MtCursor::emit_function_definition(MtNode func_def) {
 }
 
 //------------------------------------------------------------------------------
-// Emit "<type> <submod_name>_<param_name>;" glue declarations because we can't
+// Emit "localparam <submod_name>_<param_name>;" glue declarations because we need
+// to refer to our submodule parameters in the glue declarations below.
+
+void MtCursor::emit_template_glue_declaration(MtNode decl, const std::string& prefix) {
+
+  /*
+  assert(decl.sym == sym_field_declaration ||
+    decl.sym == sym_parameter_declaration);
+
+  auto node_type = decl.get_field(field_type);
+  auto node_name = decl.get_field(field_declarator);
+
+  std::string type_name;
+
+  if (node_type.sym == alias_sym_type_identifier || node_type.sym == sym_primitive_type) {
+    type_name = node_type.body();
+  }
+  else if (node_type.sym == sym_template_type) {
+    type_name = node_type.get_field(field_name).body();
+  }
+  else {
+    debugbreak();
+  }
+
+  emit_dispatch(node_type);
+  advance_to(node_name);
+  emit("%s_", prefix.c_str());
+  emit_dispatch(node_name);
+  emit(";");
+  emit_newline();
+  */
+}
+
+//------------------------------------------------------------------------------
+// Emit "<type> <submod_name>_<output_name>;" glue declarations because we can't
 // directly pass arguments to submodules.
 
+/*
+========== tree dump begin
+[0] s236 field_declaration:
+|   [0] f32 s321 type.template_type:
+|   |   [0] f22 s395 name.type_identifier: "logic"
+|   |   [1] f3 s324 arguments.template_argument_list:
+|   |   |   [0] s36 lit: "<"
+|   |   |   [1] s264 type_descriptor:
+|   |   |   |   [0] f32 s395 type.type_identifier: "N"
+|   |   |   [2] s33 lit: ">"
+|   [1] f9 s392 declarator.field_identifier: "gnt_o"
+|   [2] s39 lit: ";"
+========== tree dump end
+
+*/
+
 void MtCursor::emit_glue_declaration(MtNode decl, const std::string& prefix) {
+  decl.dump_tree();
 
   assert(decl.sym == sym_field_declaration ||
          decl.sym == sym_parameter_declaration);
@@ -702,6 +757,7 @@ void MtCursor::emit_glue_declaration(MtNode decl, const std::string& prefix) {
 // append the glue parameter list to the field.
 
 void MtCursor::emit_field_declaration(MtNode decl) {
+  //decl.dump_tree();
 
   // Check if this field is a submodule by looking up its type name in our
   // module list.
@@ -779,10 +835,20 @@ void MtCursor::emit_field_declaration(MtNode decl) {
   advance_to(decl);
   std::string inst_name = decl.node_to_name();
 
+  if (submod->modparams.size()) {
+    auto templ_args = decl.get_field(field_type).get_field(field_arguments);
+
+    for (int i = 0; i < templ_args.named_child_count(); i++) {
+      auto param_name = submod->modparams[i].node_to_name();
+      id_replacements[param_name] = templ_args.named_child(i).body();
+    }
+  }
+
   for (auto& input : submod->inputs) {
     MtCursor sub_cursor(submod, out);
     sub_cursor.cursor = input.start();
     sub_cursor.indent_stack = indent_stack;
+    sub_cursor.id_replacements = id_replacements;
     sub_cursor.emit_glue_declaration(input, inst_name);
   }
 
@@ -790,8 +856,11 @@ void MtCursor::emit_field_declaration(MtNode decl) {
     MtCursor sub_cursor(submod, out);
     sub_cursor.cursor = output.start();
     sub_cursor.indent_stack = indent_stack;
+    sub_cursor.id_replacements = id_replacements;
     sub_cursor.emit_glue_declaration(output, inst_name);
   }
+
+  id_replacements.clear();
 
   for (auto c : decl) {
     emit_dispatch(c);
@@ -933,13 +1002,12 @@ void MtCursor::emit_template_type(MtNode n) {
     skip_over(c);
     break;
   }
-  case sym_type_descriptor: {
+  default: {
     emit("[");
-    emit(c);
+    emit_dispatch(c);
     emit("-1:0]");
     break;
   }
-  default: debugbreak();
   }
 }
 
@@ -967,6 +1035,7 @@ void MtCursor::emit_module_parameters(MtNode n) {
 // Change <param, param> to #(param, param)
 
 void MtCursor::emit_template_argument_list(MtNode n) {
+  n.dump_tree();
   for (auto c : n) switch (c.sym) {
   case anon_sym_LT: emit_replacement(c, " #("); break;
   case anon_sym_GT: emit_replacement(c, ")"); break;
@@ -1044,7 +1113,14 @@ void MtCursor::emit_primitive_type(MtNode n) {
 // FIXME translate types here
 
 void MtCursor::emit_type_identifier(MtNode n) {
-  emit(n);
+  auto name = n.node_to_name();
+  auto it = id_replacements.find(name);
+  if (it != id_replacements.end()) {
+    emit_replacement(n, it->second.c_str());
+  }
+  else {
+    emit(n);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -1069,41 +1145,6 @@ void MtCursor::emit_flat_field_expression(MtNode n) {
 }
 
 void MtCursor::emit_case(MtNode n) {
-  /*
-  [3] s247 case_statement:
-  |   [0] s87 lit: "case"
-  |   [1] f34 s112 value.number_literal: "0b110"
-  |   [2] s83 lit: ":"
-  |   [3] s225 compound_statement:
-  |   |   [0] s59 lit: "{"
-  |   |   [1] s252 break_statement:
-  |   |   |   [0] s93 lit: "break"
-  |   |   |   [1] s39 lit: ";"
-  |   |   [2] s60 lit: "}"
-  */
-
-  /*
-  [4] s247 case_statement:
-  |   |   |   [0] s87 lit: "case"
-  |   |   |   [1] f34 s112 value.number_literal: "0b001"
-  |   |   |   [2] s83 lit: ":"
-  */
-
-  /*
-  [9] s247 case_statement:
-  |   [0] s88 lit: "default"
-  |   [1] s83 lit: ":"
-  |---[2] s225 compound_statement:
-  |   |   [0] s59 lit: "{"
-  |---|---[1] s244 expression_statement:
-  |   |   |   [0] s258 assignment_expression:
-  |   |   |   |   [0] f19 s1 left.identifier: "illegal_instr_o"
-  |   |   |   |   [1] f23 s63 operator.lit: "="
-  |   |   |   |   [2] f29 s112 right.number_literal: "0b1"
-  |   |   |   [1] s39 lit: ";"
-  |   |   [2] s60 lit: "}"
-  */
-
   auto tag = n.child(0);
 
   if (tag.sym != anon_sym_default && n.child_count() == 3) {
@@ -1191,6 +1232,10 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_break_statement:
     //emit_replacement(n, "/*break;*/");
     comment_out(n);
+    break;
+
+  case sym_identifier:
+    emit(n);
     break;
 
   case sym_access_specifier:

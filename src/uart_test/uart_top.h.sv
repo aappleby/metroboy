@@ -58,7 +58,11 @@ module uart_top
   ibex_compressed_decoder cdec(clk, rst_n, cdec_valid_i, cdec_instr_i, cdec_is_compressed_o, cdec_illegal_instr_o, cdec_instr_o);
   
 
-  prim_arbiter_fixed #() prim_arbiter(clk, rst_n);
+  logic[8-1:0]    prim_arbiter_gnt_o;
+  logic[3-1:0] prim_arbiter_idx_o;
+  logic    prim_arbiter_valid_o;
+  logic[32-1:0]   prim_arbiter_data_o;
+  prim_arbiter_fixed #('d8, 'd32, 'd1, 'd3) prim_arbiter(clk, rst_n, prim_arbiter_gnt_o, prim_arbiter_idx_o, prim_arbiter_valid_o, prim_arbiter_data_o);
   
 
   output logic o_serial;

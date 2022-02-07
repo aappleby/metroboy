@@ -39,6 +39,7 @@ struct MtCursor {
   void emit_assignment_expression(MtNode n);
   void emit_call_expression(MtNode n);
   void emit_function_definition(MtNode n);
+  void emit_template_glue_declaration(MtNode decl, const std::string& prefix);
   void emit_glue_declaration(MtNode decl, const std::string& prefix);
   void emit_field_declaration(MtNode decl);
   void emit_class_specifier(MtNode n);
@@ -68,6 +69,8 @@ struct MtCursor {
   std::string current_function_name;
   std::vector<std::string> indent_stack;
   FILE* out;
+
+  std::map<std::string, std::string> id_replacements;
 
   bool in_init = false;
   bool in_comb = false;

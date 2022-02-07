@@ -15,6 +15,10 @@ constexpr int clog2(uint64_t x) {
   return 1;
 }
 
+constexpr uint64_t pow2(int x) {
+  return (1ull << x);
+}
+
 static_assert(clog2(0) == 0);
 static_assert(clog2(1) == 1);
 static_assert(clog2(2) == 1);

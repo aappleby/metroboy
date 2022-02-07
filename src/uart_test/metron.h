@@ -180,10 +180,46 @@ inline logic<N> bx(logic<M> a, int b, int e) {
   return (typename logic<N>::basetype)((a.x >> e) & ((1 << w) - 1));
 }
 
-/*
-template<int M>
-inline logic<5> bx5(logic<M> a, int b, int e) { return bx<5>(a, b, e); }
-*/
+#define BIT_EXTRACT(A) \
+template<int M> inline logic<A> b##A(logic<M> a)               { return bx<A>(a); } \
+template<int M> inline logic<A> b##A(logic<M> a, int e)        { return bx<A>(a, e); } \
+template<int M> inline logic<A> b##A(logic<M> a, int b, int e) { return bx<A>(a, b, e); } \
+inline logic<A> b##A(uint64_t a)               { return bx<A>(a); } \
+inline logic<A> b##A(uint64_t a, int e)        { return bx<A>(a, e); } \
+inline logic<A> b##A(uint64_t a, int b, int e) { return bx<A>(a, b, e); } \
+
+BIT_EXTRACT(1);
+BIT_EXTRACT(2);
+BIT_EXTRACT(3);
+BIT_EXTRACT(4);
+BIT_EXTRACT(5);
+BIT_EXTRACT(6);
+BIT_EXTRACT(7);
+BIT_EXTRACT(8);
+BIT_EXTRACT(9);
+BIT_EXTRACT(10);
+BIT_EXTRACT(11);
+BIT_EXTRACT(12);
+BIT_EXTRACT(13);
+BIT_EXTRACT(14);
+BIT_EXTRACT(15);
+BIT_EXTRACT(16);
+BIT_EXTRACT(17);
+BIT_EXTRACT(18);
+BIT_EXTRACT(19);
+BIT_EXTRACT(20);
+BIT_EXTRACT(21);
+BIT_EXTRACT(22);
+BIT_EXTRACT(23);
+BIT_EXTRACT(24);
+BIT_EXTRACT(25);
+BIT_EXTRACT(26);
+BIT_EXTRACT(27);
+BIT_EXTRACT(28);
+BIT_EXTRACT(29);
+BIT_EXTRACT(30);
+BIT_EXTRACT(31);
+BIT_EXTRACT(32);
 
 //----------------------------------------
 // Concatenate any number of logic<>s into one logic<>.

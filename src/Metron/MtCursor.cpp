@@ -188,6 +188,69 @@ void MtCursor::emit_assignment_expression(MtNode n) {
 }
 
 //------------------------------------------------------------------------------
+
+void MtCursor::emit_bit_extract(MtNode n, int bx_width) {
+  advance_to(n);
+
+  auto call_args = n.get_field(field_arguments);
+
+  int arg_count = call_args.named_child_count();
+
+  auto arg0 = call_args.named_child(0);
+  auto arg1 = call_args.named_child(1);
+  auto arg2 = call_args.named_child(2);
+
+  if (arg_count == 1) {
+    if (arg0.sym == sym_identifier) {
+      // Truncate
+      emit_replacement(n, "%s[%d:0]", arg0.body().c_str(), bx_width - 1);
+    }
+    else if (arg0.sym == sym_number_literal) {
+      // Truncate literal
+
+      emit("%d", bx_width);
+
+      //emit_replacement(n);
+      cursor = arg0.start();
+      emit_number_literal(arg0);
+      cursor = n.end();
+
+      //emit_replacement(n, "lskjdf");
+    }
+    else {
+      debugbreak();
+    }
+  }
+  else if (arg_count == 2) {
+    if (arg0.sym != sym_identifier) debugbreak();
+    if (arg1.sym != sym_number_literal) debugbreak();
+    int offset = atoi(arg1.start());
+
+    // Slice at offset
+    if (bx_width == 1) {
+      emit_replacement(n, "%s[%d]", arg0.body().c_str(), offset);
+    }
+    else {
+      emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), bx_width - 1 + offset, offset);
+    }
+  }
+  else if (arg_count == 3) {
+    if (arg0.sym != sym_identifier) debugbreak();
+    if (arg1.sym != sym_number_literal) debugbreak();
+
+    int b = atoi(arg1.start());
+    int e = atoi(arg2.start());
+
+    // Slice at offset
+    emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), b, e);
+  }
+  else {
+    debugbreak();
+  }
+}
+
+
+//------------------------------------------------------------------------------
 // Replace function names with macro names where needed, comment out explicit
 // init/final/tick/tock calls.
 
@@ -246,6 +309,8 @@ void MtCursor::emit_call_expression(MtNode n) {
     comment_out(n);
   }
   else if (func_name == "bx") {
+    advance_to(n);
+
     // Bit extract.
 
     assert(call_func.sym == sym_template_function);
@@ -309,6 +374,38 @@ void MtCursor::emit_call_expression(MtNode n) {
       debugbreak();
     }
   }
+  else if (func_name == "b1")  emit_bit_extract(n, 1);
+  else if (func_name == "b2")  emit_bit_extract(n, 2);
+  else if (func_name == "b3")  emit_bit_extract(n, 3);
+  else if (func_name == "b4")  emit_bit_extract(n, 4);
+  else if (func_name == "b5")  emit_bit_extract(n, 5);
+  else if (func_name == "b6")  emit_bit_extract(n, 6);
+  else if (func_name == "b7")  emit_bit_extract(n, 7);
+  else if (func_name == "b8")  emit_bit_extract(n, 8);
+  else if (func_name == "b9")  emit_bit_extract(n, 9);
+  else if (func_name == "b10") emit_bit_extract(n, 10);
+  else if (func_name == "b11") emit_bit_extract(n, 11);
+  else if (func_name == "b12") emit_bit_extract(n, 12);
+  else if (func_name == "b13") emit_bit_extract(n, 13);
+  else if (func_name == "b14") emit_bit_extract(n, 14);
+  else if (func_name == "b15") emit_bit_extract(n, 15);
+  else if (func_name == "b16") emit_bit_extract(n, 16);
+  else if (func_name == "b17") emit_bit_extract(n, 17);
+  else if (func_name == "b18") emit_bit_extract(n, 18);
+  else if (func_name == "b19") emit_bit_extract(n, 19);
+  else if (func_name == "b20") emit_bit_extract(n, 20);
+  else if (func_name == "b21") emit_bit_extract(n, 21);
+  else if (func_name == "b22") emit_bit_extract(n, 22);
+  else if (func_name == "b23") emit_bit_extract(n, 23);
+  else if (func_name == "b24") emit_bit_extract(n, 24);
+  else if (func_name == "b25") emit_bit_extract(n, 25);
+  else if (func_name == "b26") emit_bit_extract(n, 26);
+  else if (func_name == "b27") emit_bit_extract(n, 27);
+  else if (func_name == "b28") emit_bit_extract(n, 28);
+  else if (func_name == "b29") emit_bit_extract(n, 29);
+  else if (func_name == "b30") emit_bit_extract(n, 30);
+  else if (func_name == "b31") emit_bit_extract(n, 31);
+  else if (func_name == "b32") emit_bit_extract(n, 32);
   else if (func_name == "cat") {
     // Remove "cat" and replace parens with brackets
 

@@ -212,12 +212,14 @@ void MtCursor::emit_call_expression(MtNode n) {
   // If we're calling a member function, look at the name of the member
   // function and not the whole foo.bar().
 
+  std::string func_name;
 
   if (call_func.sym == sym_field_expression) {
-    call_func = call_func.get_field(field_field);
+    func_name = call_func.get_field(field_field).node_to_name();
   }
-
-  std::string func_name = call_func.node_to_name();
+  else {
+    func_name = call_func.node_to_name();
+  }
 
   if (func_name == "clog2") {
     emit_replacement(call_func, "$clog2");
@@ -242,6 +244,80 @@ void MtCursor::emit_call_expression(MtNode n) {
   }
   else if (func_name == "tock") {
     comment_out(n);
+  }
+  else if (func_name == "bx") {
+    // Bit extract.
+
+    assert(call_func.sym == sym_template_function);
+    auto template_args = call_func.get_field(field_arguments);
+    auto template_arg = template_args.named_child(0);
+
+    int bx_width = atoi(template_arg.start());
+
+    int arg_count = call_args.named_child_count();
+
+    auto arg0 = call_args.named_child(0);
+    auto arg1 = call_args.named_child(1);
+    auto arg2 = call_args.named_child(2);
+
+    if (arg_count == 1) {
+      if (arg0.sym == sym_identifier) {
+        // Truncate
+        emit_replacement(n, "%s[%d:0]", arg0.body().c_str(), bx_width - 1);
+      }
+      else if (arg0.sym == sym_number_literal) {
+        // Truncate literal
+
+        advance_to(n);
+        emit("%d", bx_width);
+
+        //emit_replacement(n);
+        cursor = arg0.start();
+        emit_number_literal(arg0);
+        cursor = n.end();
+
+        //emit_replacement(n, "lskjdf");
+      }
+      else {
+        debugbreak();
+      }
+    }
+    else if (arg_count == 2) {
+      if (arg0.sym != sym_identifier) debugbreak();
+      if (arg1.sym != sym_number_literal) debugbreak();
+      int offset = atoi(arg1.start());
+
+      // Slice at offset
+      if (bx_width == 1) {
+        emit_replacement(n, "%s[%d]", arg0.body().c_str(), offset);
+      }
+      else {
+        emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), bx_width - 1 + offset, offset);
+      }
+    }
+    else if (arg_count == 3) {
+      if (arg0.sym != sym_identifier) debugbreak();
+      if (arg1.sym != sym_number_literal) debugbreak();
+
+      int b = atoi(arg1.start());
+      int e = atoi(arg2.start());
+
+      // Slice at offset
+      emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), b, e);
+    }
+    else {
+      debugbreak();
+    }
+  }
+  else if (func_name == "cat") {
+    // Remove "cat" and replace parens with brackets
+
+    skip_over(call_func);
+    for (const auto& arg : call_args) switch (arg.sym) {
+    case anon_sym_LPAREN: emit_replacement(arg, "{"); break;
+    case anon_sym_RPAREN: emit_replacement(arg, "}"); break;
+    default: emit_dispatch(arg); break;
+    }
   }
   else {
     // All other function/task calls go through normally.
@@ -406,7 +482,7 @@ void MtCursor::emit_function_definition(MtNode func_def) {
 
     func_def.visit_tree([&](MtNode child) {
       if (child.sym == sym_call_expression) {
-        child.dump_tree();
+        //child.dump_tree();
 
         auto call_func = child.get_field(field_function);
 

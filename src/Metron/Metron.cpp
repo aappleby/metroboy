@@ -17,7 +17,9 @@ int main(int argc, char** argv) {
     }
   }
 
-  for (auto module : lib.modules) {
+  for (auto& module : lib.modules)
+  {
+    //auto& module = lib.modules[0];
 
     MtCursor cursor(module, module->out_file);
 

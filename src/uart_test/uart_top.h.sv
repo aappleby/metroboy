@@ -3,7 +3,7 @@
 // MODULEPARAMS: cycles_per_bit, 
 // INPUTS:       
 // OUTPUTS:      o_serial, o_data, o_valid, o_done, o_sum, o_onehot, 
-// LOCALPARAMS:  
+// LOCALPARAMS:  OPCODE_OP_IMM, 
 // FIELDS:       temp, 
 // SUBMODULES:   hello, tx, rx, 
 // TASKS:        
@@ -57,6 +57,8 @@ module uart_top
 
   logic[7:0] temp;
 
+  localparam int OPCODE_OP_IMM = 'h13;
+
   //----------------------------------------
 
   initial begin : INIT
@@ -86,8 +88,24 @@ module uart_top
     if (!rst_n) begin
     end
     else begin
-      //logic<12> blah = 1234;
-      //logic<11> blerk = bx<11>(blah);
+      logic[31:0] instr_i;
+      logic[31:0] instr_o;
+      instr_i = 'h12345678;
+      
+
+      instr_o = {
+        2'b00,
+        instr_i[10:7],
+        instr_i[12:11],
+        instr_i[5],
+        instr_i[6],
+        2'b00,
+        5'h02,
+        3'b000,
+        2'b01,
+        instr_i[4:2],
+        OPCODE_OP_IMM[6:0]
+      };
 
       case (o_data & 'b111) 
       0:  temp <= 'b00000001; 

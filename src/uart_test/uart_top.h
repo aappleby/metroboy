@@ -22,6 +22,8 @@ struct uart_top {
 
   logic<8> temp;
 
+  static const int OPCODE_OP_IMM = 0x13;
+
   //----------------------------------------
 
   void init() {
@@ -51,8 +53,22 @@ struct uart_top {
     if (!rst_n) {
     }
     else {
-      //logic<12> blah = 1234;
-      //logic<11> blerk = bx<11>(blah);
+      logic<32> instr_i = 0x12345678;
+      logic<32> instr_o;
+
+      instr_o = cat(
+        bx<2>(0b00),
+        bx<4>(instr_i, 10, 7),
+        bx<2>(instr_i, 12, 11),
+        bx<1>(instr_i, 5),
+        bx<1>(instr_i, 6),
+        bx<2>(0b00),
+        bx<5>(0x02),
+        bx<3>(0b000),
+        bx<2>(0b01),
+        bx<3>(instr_i, 4, 2),
+        bx<7>(OPCODE_OP_IMM)
+      );
 
       switch (o_data & 0b111) {
       case 0:  temp = 0b00000001; break;

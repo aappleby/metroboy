@@ -3,8 +3,8 @@
 // MODULEPARAMS: cycles_per_bit, 
 // INPUTS:       
 // OUTPUTS:      o_serial, o_data, o_valid, o_done, o_sum, o_onehot, 
-// LOCALPARAMS:  OPCODE_OP_IMM, 
-// FIELDS:       temp, 
+// LOCALPARAMS:  
+// FIELDS:       temp, opcode_e, 
 // SUBMODULES:   hello, tx, rx, 
 // TASKS:        
 // FUNCTIONS:    
@@ -20,7 +20,7 @@
 
 
 module uart_top
-#(parameter int cycles_per_bit = 3)
+#(parameter int cycles_per_bit = 'd3)
 (clk, rst_n, o_serial, o_data, o_valid, o_done, o_sum, o_onehot);
   /*verilator public_module*/
   
@@ -57,7 +57,19 @@ module uart_top
 
   logic[7:0] temp;
 
-  localparam int OPCODE_OP_IMM = 'h13;
+  typedef enum {
+    OPCODE_LOAD = 'h03,
+    OPCODE_MISC_MEM = 'h0f,
+    OPCODE_OP_IMM = 'h13,
+    OPCODE_AUIPC = 'h17,
+    OPCODE_STORE = 'h23,
+    OPCODE_OP = 'h33,
+    OPCODE_LUI = 'h37,
+    OPCODE_BRANCH = 'h63,
+    OPCODE_JALR = 'h67,
+    OPCODE_JAL = 'h6f,
+    OPCODE_SYSTEM = 'h73
+  } opcode_e;
 
   //----------------------------------------
 
@@ -68,14 +80,14 @@ module uart_top
     /*tx.init()*/;
     /*rx.init()*/;
 
-    o_serial = 0;
-    o_data = 0;
-    o_valid = 0;
-    o_done = 0;
-    o_sum = 0;
-    o_onehot = 0;
+    o_serial = 'd0;
+    o_data = 'd0;
+    o_valid = 'd0;
+    o_done = 'd0;
+    o_sum = 'd0;
+    o_onehot = 'd0;
 
-    temp = 0;
+    temp = 'd0;
   end
 
   //----------------------------------------
@@ -90,32 +102,55 @@ module uart_top
     else begin
       logic[31:0] instr_i;
       logic[31:0] instr_o;
+      logic[31:0] blep;
       instr_i = 'h12345678;
       
 
+      /*
+      instr_o = cat(
+        bx<2>(0b00),
+        bx<4>(instr_i, 10, 7),
+        bx<2>(instr_i, 12, 11),
+        bx<1>(instr_i, 5),
+        bx<1>(instr_i, 6),
+        bx<2>(0b00),
+        bx<5>(0x02),
+        bx<3>(0b000),
+        bx<2>(0b01),
+        bx<3>(instr_i, 4, 2),
+        bx<7>(OPCODE_OP_IMM)
+      );
+      */
+
       instr_o = {
-        2'b00,
-        instr_i[10:7],
-        instr_i[12:11],
-        instr_i[5],
-        instr_i[6],
-        2'b00,
-        5'h02,
-        3'b000,
-        2'b01,
-        instr_i[4:2],
+        { 6 {instr_i[12]} },
+        instr_i[12],
+        instr_i[6:2],
+        instr_i[11:7],
+        3'd0,
+        instr_i[11:7],
         OPCODE_OP_IMM[6:0]
       };
 
+      
+
+      if (instr_i[6:2] != 5'd0) begin
+        blep = 'd1;
+      end
+      else begin
+        blep = 'd0;
+      end
+
+
       case (o_data & 'b111) 
-      0:  temp <= 'b00000001; 
-      1:  temp <= 'b00000010; 
-      2:  temp <= 'b00000100; 
-      3:  temp <= 'b00001000; 
-      4:  temp <= 'b00010000; 
-      5:  temp <= 'b00100000; 
-      6:  temp <= 'b01000000; 
-      7:  temp <= 'b10000000; 
+      'd0:  temp <= 'b00000001; 
+      'd1:  temp <= 'b00000010; 
+      'd2:  temp <= 'b00000100; 
+      'd3:  temp <= 'b00001000; 
+      'd4:  temp <= 'b00010000; 
+      'd5:  temp <= 'b00100000; 
+      'd6:  temp <= 'b01000000; 
+      'd7:  temp <= 'b10000000; 
       default: temp <= 'b00000000; 
       endcase
     end
@@ -147,14 +182,14 @@ module uart_top
     o_sum = rx_o_sum;
 
     case (o_data & 'b111) 
-    0:  o_onehot = 'b00000001; 
-    1:  o_onehot = 'b00000010; 
-    2:  o_onehot = 'b00000100; 
-    3:  o_onehot = 'b00001000; 
-    4:  o_onehot = 'b00010000; 
-    5:  o_onehot = 'b00100000; 
-    6:  o_onehot = 'b01000000; 
-    7:  o_onehot = 'b10000000; 
+    'd0:  o_onehot = 'b00000001; 
+    'd1:  o_onehot = 'b00000010; 
+    'd2:  o_onehot = 'b00000100; 
+    'd3:  o_onehot = 'b00001000; 
+    'd4:  o_onehot = 'b00010000; 
+    'd5:  o_onehot = 'b00100000; 
+    'd6:  o_onehot = 'b01000000; 
+    'd7:  o_onehot = 'b10000000; 
     default: o_onehot = 'b00000000; 
     endcase
   end

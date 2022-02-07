@@ -126,10 +126,13 @@ void MtModule::print_error(MtNode n, const char* fmt, ...) {
 //------------------------------------------------------------------------------
 
 MtNode MtModule::get_by_id(std::vector<MtNode>& handles, MtNode id) {
+  //id.dump_tree();
+
   assert(id.sym == sym_identifier);
   auto name_a = id.node_to_name();
 
   for (auto& c : handles) {
+    //c.dump_tree();
     auto name_b = c.node_to_name();
     if (name_a == name_b) return c;
   }

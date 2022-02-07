@@ -17,7 +17,7 @@
 
 
 module uart_rx
-#(parameter int cycles_per_bit = 4)
+#(parameter int cycles_per_bit = 'd4)
 (clk, rst_n, i_serial, o_data, o_valid, o_sum);
   /*verilator public_module*/
   
@@ -26,8 +26,8 @@ module uart_rx
   input logic i_serial; 
 
   localparam int cycle_bits = $clog2(cycles_per_bit);
-  localparam int cycle_max = cycles_per_bit - 1;
-  localparam int cursor_max = 9;
+  localparam int cycle_max = cycles_per_bit - 'd1;
+  localparam int cursor_max = 'd9;
   localparam int cursor_bits = $clog2(cursor_max);
 
   logic[cycle_bits-1:0] cycle;
@@ -43,32 +43,32 @@ module uart_rx
   //----------------------------------------
 
   initial begin : INIT
-    o_data = 0;
-    o_valid = 0;
-    o_sum = 0;
+    o_data = 'd0;
+    o_valid = 'd0;
+    o_sum = 'd0;
   end
 
   //----------------------------------------
 
   always_ff @(posedge clk, negedge rst_n) begin : TICK
     if (!rst_n) begin
-      cycle <= 0;
-      cursor <= 0;
-      buffer <= 0;
-      sum <= 0;
-      temp <= 0;
+      cycle <= 'd0;
+      cursor <= 'd0;
+      buffer <= 'd0;
+      sum <= 'd0;
+      temp <= 'd0;
     end else begin
-      if (cycle != 0) begin
-        cycle <= cycle - 1;
-      end else if (cursor != 0) begin
+      if (cycle != 'd0) begin
+        cycle <= cycle - 'd1;
+      end else if (cursor != 'd0) begin
         logic[7:0] temp;
-        temp = (i_serial << 7) | (buffer >> 1);
-        if (cursor - 1 == 1) sum <= sum + temp;
+        temp = (i_serial << 'd7) | (buffer >> 'd1);
+        if (cursor - 'd1 == 'd1) sum <= sum + temp;
         cycle <= cycle_max;
-        cursor <= cursor - 1;
+        cursor <= cursor - 'd1;
         buffer <= temp;
       end
-      else if (i_serial == 0) begin
+      else if (i_serial == 'd0) begin
         cycle <= cycle_max;
         cursor <= cursor_max;
       end
@@ -80,7 +80,7 @@ module uart_rx
 
   always_comb begin : TOCK
     o_data = buffer;
-    o_valid = cursor == 1;
+    o_valid = cursor == 'd1;
     o_sum = sum;
   end
 

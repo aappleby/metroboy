@@ -170,6 +170,11 @@ inline logic<N> bx(logic<M> a, int b, int e) {
   return (typename logic<N>::basetype)((a.x >> e) & ((1 << w) - 1));
 }
 
+/*
+template<int M>
+inline logic<5> bx5(logic<M> a, int b, int e) { return bx<5>(a, b, e); }
+*/
+
 //----------------------------------------
 // Concatenate any number of logic<>s into one logic<>.
 
@@ -182,6 +187,29 @@ template<int N, typename... Args>
 inline auto cat(logic<N> a, Args... args) -> logic<N + decltype(cat(args...))::width> {
   return cat(a, cat(args...));
 }
+
+//----------------------------------------
+// Duplicate a logic<>
+//
+// logic<3> boop = 0b101;
+// logic<9> moop = dup<3>(boop);
+
+template<int D>
+struct duper {
+  template<int N>
+  static logic<N* D> dup(logic<N> a) {
+    return cat(a, duper<D-1>::dup(a));
+  }
+};
+
+template<>
+struct duper<1> {
+  template<int N>
+  static logic<N> dup(logic<N> a) { return a; }
+};
+
+template<int D, int N>
+logic<D*N> dup(logic<N> a) { return duper<D>::dup(a); }
 
 //----------------------------------------
 // Dynamically sized chunk of bits, where N <= 64.

@@ -22,7 +22,19 @@ struct uart_top {
 
   logic<8> temp;
 
-  static const int OPCODE_OP_IMM = 0x13;
+  enum opcode_e {
+    OPCODE_LOAD = 0x03,
+    OPCODE_MISC_MEM = 0x0f,
+    OPCODE_OP_IMM = 0x13,
+    OPCODE_AUIPC = 0x17,
+    OPCODE_STORE = 0x23,
+    OPCODE_OP = 0x33,
+    OPCODE_LUI = 0x37,
+    OPCODE_BRANCH = 0x63,
+    OPCODE_JALR = 0x67,
+    OPCODE_JAL = 0x6f,
+    OPCODE_SYSTEM = 0x73
+  };
 
   //----------------------------------------
 
@@ -56,6 +68,7 @@ struct uart_top {
       logic<32> instr_i = 0x12345678;
       logic<32> instr_o;
 
+      /*
       instr_o = cat(
         bx<2>(0b00),
         bx<4>(instr_i, 10, 7),
@@ -69,6 +82,27 @@ struct uart_top {
         bx<3>(instr_i, 4, 2),
         bx<7>(OPCODE_OP_IMM)
       );
+      */
+
+      instr_o = cat(
+        dup<6>(bx<1>(instr_i, 12)),
+        bx<1>(instr_i, 12),
+        bx<5>(instr_i, 6, 2),
+        bx<5>(instr_i, 11, 7),
+        bx<3>(0),
+        bx<5>(instr_i, 11, 7),
+        bx<7>(OPCODE_OP_IMM)
+      );
+
+      logic<32> blep;
+
+      if (bx<5>(instr_i, 6, 2) != bx<5>(0)) {
+        blep = 1;
+      }
+      else {
+        blep = 0;
+      }
+
 
       switch (o_data & 0b111) {
       case 0:  temp = 0b00000001; break;

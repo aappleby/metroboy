@@ -319,6 +319,32 @@ void MtCursor::emit_call_expression(MtNode n) {
     default: emit_dispatch(arg); break;
     }
   }
+  else if (func_name == "dup") {
+    // 15 {instr_i[12]}}
+
+    assert(call_func.sym == sym_template_function);
+    auto template_args = call_func.get_field(field_arguments);
+    auto template_arg = template_args.named_child(0);
+
+    int dup_count = atoi(template_arg.start());
+    int arg_count = call_args.named_child_count();
+
+    auto arg0 = call_args.named_child(0);
+
+    if (arg_count == 1) {
+      skip_over(call_func);
+      emit("{ %d ", dup_count);
+      emit("{");
+      cursor = arg0.start();
+      emit_dispatch(arg0);
+      emit("} }");
+      cursor = n.end();
+    }
+    else {
+      debugbreak();
+    }
+
+  }
   else {
     // All other function/task calls go through normally.
     for (auto c : n) emit_dispatch(c);
@@ -482,8 +508,6 @@ void MtCursor::emit_function_definition(MtNode func_def) {
 
     func_def.visit_tree([&](MtNode child) {
       if (child.sym == sym_call_expression) {
-        //child.dump_tree();
-
         auto call_func = child.get_field(field_function);
 
         if (call_func.sym == sym_field_expression) {
@@ -592,7 +616,24 @@ void MtCursor::emit_field_declaration(MtNode decl) {
   case alias_sym_type_identifier: type_name = node_type.body(); break;
   case sym_primitive_type:        type_name = node_type.body(); break;
   case sym_template_type:         type_name = node_type.get_field(field_name).body(); break;
-  default:                        debugbreak();
+  
+  case sym_enum_specifier: {
+    decl.dump_tree();
+
+    auto name = node_type.get_field(field_name);
+    if (name.is_null()) {
+      type_name = "<anonymous enum>";
+    }
+    else {
+      type_name = node_type.get_field(field_name).body(); break;
+    }
+    break;
+  }
+  
+  default: {
+    decl.dump_tree();
+    debugbreak();
+  }
   }
 
   auto submod = mod->lib->find_module(type_name);
@@ -608,7 +649,30 @@ void MtCursor::emit_field_declaration(MtNode decl) {
       advance_to(decl);
       emit("output ");
     }
-    for (auto c : decl) emit_dispatch(c);
+
+    if (node_type.sym == sym_enum_specifier) {
+      decl.dump_tree();
+
+      advance_to(decl);
+      auto node_value = decl.get_field(field_default_value);
+      emit("typedef enum ");
+      cursor = node_value.start();
+      emit_dispatch(node_value);
+
+      auto name = node_type.get_field(field_name);
+      cursor = name.start();
+      emit(" ");
+      emit_dispatch(name);
+      cursor = decl.end();
+      emit(";");
+      return;
+    }
+    else {
+      for (auto c : decl) {
+        emit_dispatch(c);
+      }
+    }
+
     return;
   }
 
@@ -820,7 +884,10 @@ void MtCursor::emit_enumerator_list(MtNode n) {
   for (auto c : n) switch (c.sym) {
   case anon_sym_LBRACE: emit(c); break;
   case anon_sym_RBRACE: emit(c); break;
-  default:              emit_dispatch(c); break;
+  default: {
+    emit_dispatch(c);
+    break;
+  }
   }
 }
 
@@ -828,8 +895,6 @@ void MtCursor::emit_enumerator_list(MtNode n) {
 // Discard any trailing semicolons in the translation unit.
 
 void MtCursor::emit_translation_unit(MtNode n) {
-  //n.dump_tree();
-
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
 
@@ -854,6 +919,8 @@ void MtCursor::emit_number_literal(MtNode n) {
     emit_replacement(n, "'b%s", body.c_str() + 2);
   }
   else {
+    advance_to(n);
+    emit("'d");
     emit(n);
   }
 }
@@ -935,6 +1002,37 @@ void MtCursor::emit_switch(MtNode n) {
 
 //------------------------------------------------------------------------------
 
+/*
+========== tree dump begin
+[0] s236 field_declaration:
+|   [0] f32 s230 type.enum_specifier:
+|   |   [0] s79 lit: "enum"
+|   |   [1] f22 s395 name.type_identifier: "opcode_e"
+|   [1] f11 s272 default_value.initializer_list:
+|   |   [0] s59 lit: "{"
+|   |   [1] s258 assignment_expression:
+|   |   |   [0] f19 s1 left.identifier: "OPCODE_LOAD"
+|   |   |   [1] f23 s63 operator.lit: "="
+|   |   |   [2] f29 s112 right.number_literal: "0x03"
+|   |   [2] s7 lit: ","
+|   |   [3] s60 lit: "}"
+|   [2] s39 lit: ";"
+========== tree dump end
+
+========== tree dump begin
+[0] s236 field_declaration:
+|   [0] f32 s230 type.enum_specifier:
+|   |   [0] s79 lit: "enum"
+|   |   [1] f5 s231 body.enumerator_list:
+|   |   |   [0] s59 lit: "{"
+|   |   |   [1] s238 enumerator:
+|   |   |   |   [0] f22 s1 name.identifier: "OPCODE_LOAD"
+|   |   |   [2] s7 lit: ","
+|   |   |   [3] s60 lit: "}"
+|   [1] s39 lit: ";"
+========== tree dump end
+*/
+
 void MtCursor::emit_dispatch(MtNode n) {
   assert(cursor <= n.start());
 
@@ -954,6 +1052,10 @@ void MtCursor::emit_dispatch(MtNode n) {
     skip_space();
     break;
 
+  case sym_enum_specifier:
+    for (auto c : n) emit_dispatch(c);
+    break;
+
   case sym_parameter_list:
   case sym_if_statement:
   case sym_for_statement:
@@ -963,7 +1065,6 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_condition_clause:
   case sym_unary_expression:
   case sym_subscript_expression:
-  case sym_enum_specifier:
   case sym_enumerator:
   case sym_type_definition:
   case sym_expression_statement:
@@ -974,6 +1075,7 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_type_descriptor:
   case sym_function_declarator:
   case sym_init_declarator:
+  case sym_initializer_list:
     for (auto c : n) emit_dispatch(c);
     break;
 

@@ -53,7 +53,9 @@ int main(int argc, char** argv) {
     cursor.emit("\n");
 
     cursor.emit("// SUBMODULES:   ");
-    for (auto f : module->submodules) cursor.emit("%s, ", f.node_to_name().c_str());
+    for (auto f : module->submodules) {
+      cursor.emit("%s, ", f.node_to_name().c_str());
+    }
     cursor.emit("\n");
 
     cursor.emit("// TASKS:        ");

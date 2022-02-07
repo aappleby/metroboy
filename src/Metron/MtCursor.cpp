@@ -191,38 +191,56 @@ void MtCursor::emit_assignment_expression(MtNode n) {
 // Replace function names with macro names where needed, comment out explicit
 // init/final/tick/tock calls.
 
+/*
+[2] f34 s267 value.call_expression:
+|   [0] f15 s323 function.template_function:
+|   |   [0] f22 s1 name.identifier: "bx"
+|   |   [1] f3 s324 arguments.template_argument_list:
+|   |   |   [0] s36 lit: "<"
+|   |   |   [1] s112 number_literal: "11"
+|   |   |   [2] s33 lit: ">"
+|   [1] f3 s268 arguments.argument_list:
+|   |   [0] s5 lit: "("
+|   |   [1] s1 identifier: "blah"
+|   |   [2] s8 lit: ")"
+*/
+
 void MtCursor::emit_call_expression(MtNode n) {
   auto call_func = n.get_field(field_function);
   auto call_args = n.get_field(field_arguments);
 
   // If we're calling a member function, look at the name of the member
   // function and not the whole foo.bar().
+
+
   if (call_func.sym == sym_field_expression) {
     call_func = call_func.get_field(field_field);
   }
 
-  if (call_func.match("clog2")) {
+  std::string func_name = call_func.node_to_name();
+
+  if (func_name == "clog2") {
     emit_replacement(call_func, "$clog2");
     emit_dispatch(call_args);
   }
-  else if (call_func.match("readmemh")) {
+  else if (func_name == "readmemh") {
     emit_replacement(call_func, "$readmemh");
     emit_dispatch(call_args);
   }
-  else if (call_func.match("printf")) {
+  else if (func_name == "printf") {
     emit_replacement(call_func, "$write");
     emit_dispatch(call_args);
   }
-  else if (call_func.match("init")) {
+  else if (func_name == "init") {
     comment_out(n);
   }
-  else if (call_func.match("final")) {
+  else if (func_name == "final") {
     comment_out(n);
   }
-  else if (call_func.match("tick")) {
+  else if (func_name == "tick") {
     comment_out(n);
   }
-  else if (call_func.match("tock")) {
+  else if (func_name == "tock") {
     comment_out(n);
   }
   else {
@@ -388,15 +406,19 @@ void MtCursor::emit_function_definition(MtNode func_def) {
 
     func_def.visit_tree([&](MtNode child) {
       if (child.sym == sym_call_expression) {
+        child.dump_tree();
+
         auto call_func = child.get_field(field_function);
 
-        if (call_func.sym == sym_identifier) {
-          // not a submod call
-        }
-        else {
+        if (call_func.sym == sym_field_expression) {
           auto call_args = child.get_field(field_arguments);
           auto call_this = call_func.get_field(field_argument);
           auto func_name = call_func.get_field(field_field);
+
+          if (func_name.is_null()) {
+            printf("FUNC NAME NULL\n");
+          }
+
           if (func_name.match("tick")) {
             submod_call_nodes.push_back(child);
           }
@@ -730,6 +752,7 @@ void MtCursor::emit_enumerator_list(MtNode n) {
 // Discard any trailing semicolons in the translation unit.
 
 void MtCursor::emit_translation_unit(MtNode n) {
+  //n.dump_tree();
 
   emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");

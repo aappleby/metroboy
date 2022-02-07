@@ -86,6 +86,9 @@ module uart_top
     if (!rst_n) begin
     end
     else begin
+      //logic<12> blah = 1234;
+      //logic<11> blerk = bx<11>(blah);
+
       case (o_data & 'b111) 
       0:  temp <= 'b00000001; 
       1:  temp <= 'b00000010; 

@@ -51,6 +51,9 @@ struct uart_top {
     if (!rst_n) {
     }
     else {
+      //logic<12> blah = 1234;
+      //logic<11> blerk = bx<11>(blah);
+
       switch (o_data & 0b111) {
       case 0:  temp = 0b00000001; break;
       case 1:  temp = 0b00000010; break;

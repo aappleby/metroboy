@@ -159,6 +159,7 @@
     <ClCompile Include="vcd_dump.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ibex_compressed_decoder.h" />
     <ClInclude Include="message.blob.h" />
     <ClInclude Include="metron.h" />
     <ClInclude Include="vcd_dump.h" />

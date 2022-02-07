@@ -49,12 +49,12 @@ module uart_top
   uart_rx #(cycles_per_bit) rx(clk, rst_n, rx_i_serial, rx_o_data, rx_o_valid, rx_o_sum);
   
 
-  logic cdec_i_valid;
-  logic[31:0] cdec_i_instr;
-  logic  cdec_o_is_compressed;
-  logic  cdec_o_illegal_instr;
-  logic[31:0] cdec_o_instr;
-  ibex_compressed_decoder cdec(clk, rst_n, cdec_i_valid, cdec_i_instr, cdec_o_is_compressed, cdec_o_illegal_instr, cdec_o_instr);
+  logic cdec_valid_i;
+  logic[31:0] cdec_instr_i;
+  logic  cdec_is_compressed_o;
+  logic  cdec_illegal_instr_o;
+  logic[31:0] cdec_instr_o;
+  ibex_compressed_decoder cdec(clk, rst_n, cdec_valid_i, cdec_instr_i, cdec_is_compressed_o, cdec_illegal_instr_o, cdec_instr_o);
   
 
   output logic o_serial;

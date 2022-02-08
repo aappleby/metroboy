@@ -163,6 +163,8 @@ void MtCursor::emit_preproc_include(MtNode n) {
 // Change '=' to '<=' if lhs is a field and we're inside a sequential block.
 
 void MtCursor::emit_assignment_expression(MtNode n) {
+  //n.dump_tree();
+
   auto lhs = n.get_field(field_left);
   auto op  = n.get_field(field_operator);
   auto rhs = n.get_field(field_right);
@@ -733,16 +735,100 @@ void MtCursor::emit_glue_declaration(MtNode decl, const std::string& prefix) {
 }
 
 //------------------------------------------------------------------------------
+// TreeSitterCPP seems to choke on "enum class foo : typename logic<3>::basetype {};"
+// So, we're going to dig the info we need out of it but it may be flaky.
+
+/*
+========== tree dump begin
+[0] s236 field_declaration:
+|   [0] f32 s230 type.enum_specifier:
+|   |   [0] s79 lit: "enum"
+|   |   [1] s80 lit: "class"
+|   |   [2] f22 s395 name.type_identifier: "state"
+|   [1] s237 bitfield_clause:
+|   |   [0] s83 lit: ":"
+|   |   [1] s270 compound_literal_expression:
+|   |   |   [0] f32 s354 type.qualified_identifier:
+|   |   |   |   [0] f30 s321 scope.template_type:
+|   |   |   |   |   [0] f22 s395 name.type_identifier: "typename"
+|   |   |   |   |   [1] f3 s65535 arguments.ERROR:
+|   |   |   |   |   |   [0] s1 identifier: "logic"
+|   |   |   |   |   [2] s324 template_argument_list:
+|   |   |   |   |   |   [0] s36 lit: "<"
+|   |   |   |   |   |   [1] s112 number_literal: "2"
+|   |   |   |   |   |   [2] s33 lit: ">"
+|   |   |   |   [1] f22 s43 name.lit: "::"
+|   |   |   |   [2] s395 type_identifier: "basetype"
+|   |   |   [1] f34 s272 value.initializer_list:
+|   |   |   |   [0] s59 lit: "{"
+|   |   |   |   [1] s1 identifier: "WAIT"
+|   |   |   |   [2] s7 lit: ","
+|   |   |   |   [3] s1 identifier: "SEND"
+|   |   |   |   [4] s7 lit: ","
+|   |   |   |   [5] s1 identifier: "DONE"
+|   |   |   |   [6] s60 lit: "}"
+|   [2] s39 lit: ";"
+========== tree dump end
+*/
+
+void MtCursor::emit_enum_class(MtNode n) {
+  auto enum_name = n.get_field(field_type).get_field(field_name);
+  assert(enum_name.sym == alias_sym_type_identifier);
+
+  auto bitfield_clause = n.child(1);
+  assert(bitfield_clause.sym == sym_bitfield_clause);
+
+  auto base_type = bitfield_clause.child(1).get_field(field_type);
+
+  auto bit_width = base_type.child(0).child(2).child(1);
+
+  assert(bit_width.sym == sym_number_literal);
+
+  auto value_list = bitfield_clause.child(1).child(1);
+  assert(value_list.sym == sym_initializer_list);
+
+  advance_to(n);
+  emit("typedef enum logic[%d:0] ", atoi(bit_width.start()));
+
+  cursor = value_list.start();
+  emit_dispatch(value_list);
+  emit(" %s;", enum_name.body().c_str());
+  cursor = n.end();
+
+}
+
+//------------------------------------------------------------------------------
 // Emit field declarations. For submodules, also emit glue declarations and
 // append the glue parameter list to the field.
 
 void MtCursor::emit_field_declaration(MtNode decl) {
+
   //decl.dump_tree();
 
   // Check if this field is a submodule by looking up its type name in our
   // module list.
 
   auto node_type = decl.get_field(field_type);
+
+  {
+    /*
+    [0] s236 field_declaration:
+    |   [0] f32 s230 type.enum_specifier:
+    |   |   [0] s79 lit: "enum"
+    |   |   [1] s80 lit: "class"
+    |   |   [2] f22 s395 name.type_identifier: "state"
+    */
+
+    if (node_type.child_count() == 3 &&
+        node_type.child(0).body() == "enum" &&
+        node_type.child(1).body() == "class" && 
+        node_type.child(2).sym == alias_sym_type_identifier) {
+      emit_enum_class(decl);
+      return;
+    }
+  }
+
+
   std::string type_name;
 
   switch (node_type.sym) {
@@ -1245,6 +1331,17 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_enum_specifier:
     for (auto c : n) emit_dispatch(c);
     break;
+
+  // Chop "blah::blah::blah::identifier" down to "identifier". We'll deal with it later.
+  // TreeSitter bug: The field tags seem broken here.
+  case sym_qualified_identifier: {
+    auto last_child = n.child(n.child_count() - 1);
+    advance_to(n);
+    cursor = last_child.start();
+    emit_dispatch(last_child);
+    cursor = n.end();
+    break;
+  }
 
   case sym_parameter_list:
   case sym_if_statement:

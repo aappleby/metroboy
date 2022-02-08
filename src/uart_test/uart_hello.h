@@ -13,7 +13,7 @@ struct uart_hello {
     WAIT, SEND, DONE
   };
 
-  state state;
+  state s;
   logic<cursor_bits> cursor;
   logic<8> memory[512];
   logic<8> data;
@@ -35,19 +35,19 @@ struct uart_hello {
 
   void tick(bool rst_n, bool i_cts, bool i_idle) {
     if (!rst_n) {
-      state = state::WAIT;
+      s = state::WAIT;
       cursor = bx<cursor_bits>(0);
     }
     else {
       data = memory[cursor];
-      if (state == state::WAIT && i_idle) {
-        state = state::SEND;
+      if (s == state::WAIT && i_idle) {
+        s = state::SEND;
       }
-      else if (state == state::SEND && i_cts) {
-        if (cursor == (message_len - 1)) state = state::DONE;
+      else if (s == state::SEND && i_cts) {
+        if (cursor == (message_len - 1)) s = state::DONE;
         cursor = bx<cursor_bits>(cursor + 1);
       }
-      else if (state == state::DONE) {
+      else if (s == state::DONE) {
         //state = WAIT;
         cursor = bx<cursor_bits>(0);
       }
@@ -58,8 +58,8 @@ struct uart_hello {
 
   void tock(bool rst_n) {
     o_data = data;
-    o_req = state == state::SEND;
-    o_done = state == state::DONE;
+    o_req = s == state::SEND;
+    o_done = s == state::DONE;
   }
 
 };

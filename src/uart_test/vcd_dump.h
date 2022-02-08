@@ -139,7 +139,7 @@ inline void dump_hello_header() {
 
 template<int clocks_per_bit>
 inline void dump_hello(uart_hello& hello) {
-  printf("[    %-5d %-6d %04x %-3d %-4d] ", hello.state, hello.cursor, hello.o_data, hello.o_req, hello.o_done);
+  printf("[    %-5d %-6d %04x %-3d %-4d] ", hello.s, hello.cursor, hello.o_data, hello.o_req, hello.o_done);
 }
 
 inline void dump_hello_vcd_header(VcdDump& d) {

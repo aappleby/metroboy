@@ -5,13 +5,14 @@
 // OUTPUTS:      o_data, o_req, o_done, 
 // LOCALPARAMS:  message_len, cursor_bits, 
 // FIELDS:       state, cursor, memory, data, 
-// SUBMODULES:   
+// SUBMODULES:   s, 
 // TASKS:        
 // FUNCTIONS:    
 /* verilator lint_off WIDTH */
 `default_nettype none
 
 `include "metron.h.sv"
+
 
 //==============================================================================
 
@@ -27,9 +28,11 @@ module uart_hello
   localparam int message_len = 'd512;
   localparam int cursor_bits = $clog2(message_len);
 
-  typedef enum logic[1:0] { WAIT, SEND, DONE } e_state;
+  typedef enum logic[2:0] {
+    WAIT, SEND, DONE
+  } state;
 
-  e_state state;
+  state s;
   logic[cursor_bits-1:0] cursor;
   logic[7:0] memory['d512];
   logic[7:0] data;
@@ -51,31 +54,32 @@ module uart_hello
 
   always_ff @(posedge clk, negedge rst_n) begin : TICK
     if (!rst_n) begin
-      state <= 2'(WAIT);
+      s = WAIT;
       cursor <= cursor_bits'('d0);
     end
     else begin
       data <= memory[cursor];
-      if (state == WAIT && i_idle) begin
-        state <= 2'(SEND);
+      if (s == WAIT && i_idle) begin
+        s = SEND;
       end
-      else if (state == SEND && i_cts) begin
-        if (cursor == (message_len - 'd1)) state <= 2'(DONE);
+      else if (s == SEND && i_cts) begin
+        if (cursor == (message_len - 'd1)) s = DONE;
         cursor <= cursor_bits'(cursor + 'd1);
       end
-      else if (state == DONE) begin
+      else if (s == DONE) begin
         //state = WAIT;
         cursor <= cursor_bits'('d0);
       end
     end
   end
+  
 
   //----------------------------------------
 
   always_comb begin : TOCK
     o_data = data;
-    o_req = state == SEND;
-    o_done = state == DONE;
+    o_req = s == SEND;
+    o_done = s == DONE;
   end
 
 endmodule

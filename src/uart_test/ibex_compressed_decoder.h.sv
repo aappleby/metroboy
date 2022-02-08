@@ -1,3 +1,13 @@
+//--------------------------------------------------------------------------------
+// MODULE:       ibex_compressed_decoder
+// MODULEPARAMS: 
+// INPUTS:       valid_i, instr_i, 
+// OUTPUTS:      is_compressed_o, illegal_instr_o, instr_o, 
+// LOCALPARAMS:  
+// FIELDS:       opcode_e, unused_valid, 
+// SUBMODULES:   
+// TASKS:        
+// FUNCTIONS:    
 /* verilator lint_off WIDTH */
 `default_nettype none
 // Copyright lowRISC contributors.

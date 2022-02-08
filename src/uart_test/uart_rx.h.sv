@@ -43,34 +43,34 @@ module uart_rx
   //----------------------------------------
 
   initial begin : INIT
-    o_data = 'd0;
-    o_valid = 'd0;
-    o_sum = 'd0;
+    o_data = 8'd0;
+    o_valid = 1'd0;
+    o_sum = 32'd0;
   end
 
   //----------------------------------------
 
   always_ff @(posedge clk, negedge rst_n) begin : TICK
     if (!rst_n) begin
-      cycle <= 'd0;
-      cursor <= 'd0;
-      buffer <= 'd0;
-      sum <= 'd0;
-      temp <= 'd0;
+      cycle <= cycle_bits'('d0);
+      cursor <= cursor_bits'('d0);
+      buffer <= 8'd0;
+      sum <= 32'd0;
+      temp <= 8'd0;
     end else begin
       if (cycle != 'd0) begin
-        cycle <= cycle - 'd1;
+        cycle <= cycle_bits'(cycle - 'd1);
       end else if (cursor != 'd0) begin
         logic[7:0] temp;
-        temp = (i_serial << 'd7) | (buffer >> 'd1);
-        if (cursor - 'd1 == 'd1) sum <= sum + temp;
-        cycle <= cycle_max;
-        cursor <= cursor - 'd1;
-        buffer <= temp;
+        temp = 8'((i_serial << 'd7) | (buffer >> 'd1));
+        if (cursor - 'd1 == 'd1) sum <= 32'(sum + temp);
+        cycle <= cycle_bits'(cycle_max);
+        cursor <= cursor_bits'(cursor - 'd1);
+        buffer <= 8'(temp);
       end
       else if (i_serial == 'd0) begin
-        cycle <= cycle_max;
-        cursor <= cursor_max;
+        cycle <= cycle_bits'(cycle_max);
+        cursor <= cursor_bits'(cursor_max);
       end
 
     end

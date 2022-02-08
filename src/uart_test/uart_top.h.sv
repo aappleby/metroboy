@@ -100,14 +100,14 @@ module uart_top
     /*tx.init()*/;
     /*rx.init()*/;
 
-    o_serial = 'd0;
-    o_data = 'd0;
-    o_valid = 'd0;
-    o_done = 'd0;
-    o_sum = 'd0;
-    o_onehot = 'd0;
+    o_serial = 1'd0;
+    o_data = 8'd0;
+    o_valid = 1'd0;
+    o_done = 1'd0;
+    o_sum = 32'd0;
+    o_onehot = 8'd0;
 
-    temp = 'd0;
+    temp = 8'd0;
   end
 
   //----------------------------------------
@@ -123,7 +123,7 @@ module uart_top
       logic[31:0] instr_i;
       logic[31:0] instr_o;
       logic[31:0] blep;
-      instr_i = 'h12345678;
+      instr_i = 32'h12345678;
       
 
       instr_o = {
@@ -139,23 +139,23 @@ module uart_top
       
 
       if (instr_i[6:2] != 5'd0) begin
-        blep = 'd1;
+        blep = 32'd1;
       end
       else begin
-        blep = 'd0;
+        blep = 32'd0;
       end
 
 
       case (o_data & 'b111) 
-      'd0:  begin temp <= 'b00000001; /*break;*/ end
-      'd1:  begin temp <= 'b00000010; /*break;*/ end
-      'd2:  begin temp <= 'b00000100; /*break;*/ end
-      'd3:  begin temp <= 'b00001000; /*break;*/ end
-      'd4:  begin temp <= 'b00010000; /*break;*/ end
-      'd5:  begin temp <= 'b00100000; /*break;*/ end
-      'd6:  begin temp <= 'b01000000; /*break;*/ end
-      'd7:  begin temp <= 'b10000000; /*break;*/ end
-      default: begin temp <= 'b00000000; /*break;*/ end
+      'd0:  begin temp <= 8'b00000001; /*break;*/ end
+      'd1:  begin temp <= 8'b00000010; /*break;*/ end
+      'd2:  begin temp <= 8'b00000100; /*break;*/ end
+      'd3:  begin temp <= 8'b00001000; /*break;*/ end
+      'd4:  begin temp <= 8'b00010000; /*break;*/ end
+      'd5:  begin temp <= 8'b00100000; /*break;*/ end
+      'd6:  begin temp <= 8'b01000000; /*break;*/ end
+      'd7:  begin temp <= 8'b10000000; /*break;*/ end
+      default: begin temp <= 8'b00000000; /*break;*/ end
       endcase
     end
   end
@@ -186,15 +186,15 @@ module uart_top
     o_sum = rx_o_sum;
 
     case (o_data & 'b111) 
-    'd0:  begin o_onehot = 'b00000001; /*break;*/ end
-    'd1:  begin o_onehot = 'b00000010; /*break;*/ end
-    'd2:  begin o_onehot = 'b00000100; /*break;*/ end
-    'd3:  begin o_onehot = 'b00001000; /*break;*/ end
-    'd4:  begin o_onehot = 'b00010000; /*break;*/ end
-    'd5:  begin o_onehot = 'b00100000; /*break;*/ end
-    'd6:  begin o_onehot = 'b01000000; /*break;*/ end
-    'd7:  begin o_onehot = 'b10000000; /*break;*/ end
-    default: begin o_onehot = 'b00000000; /*break;*/ end
+    'd0:  begin o_onehot = 8'b00000001; /*break;*/ end
+    'd1:  begin o_onehot = 8'b00000010; /*break;*/ end
+    'd2:  begin o_onehot = 8'b00000100; /*break;*/ end
+    'd3:  begin o_onehot = 8'b00001000; /*break;*/ end
+    'd4:  begin o_onehot = 8'b00010000; /*break;*/ end
+    'd5:  begin o_onehot = 8'b00100000; /*break;*/ end
+    'd6:  begin o_onehot = 8'b01000000; /*break;*/ end
+    'd7:  begin o_onehot = 8'b10000000; /*break;*/ end
+    default: begin o_onehot = 8'b00000000; /*break;*/ end
     endcase
   end
 

@@ -47,34 +47,34 @@ module uart_tx
   //----------------------------------------
 
   initial begin : INIT
-    o_serial = 'd0;
-    o_cts = 'd0;
-    o_idle = 'd0;
+    o_serial = 1'd0;
+    o_cts = 1'd0;
+    o_idle = 1'd0;
   end
 
   //----------------------------------------
 
   always_ff @(posedge clk, negedge rst_n) begin : TICK
     if (!rst_n) begin
-      cycle <= 'd0;
-      cursor <= 'd0;
-      buffer <= 'h1FF;
+      cycle <= cycle_bits'('d0);
+      cursor <= cursor_bits'('d0);
+      buffer <= 9'h1FF;
     end else begin
       if (cursor <= extra_stop_bits && cycle == 'd0 && i_req) begin
         // Transmit start
-        cycle <= cycle_max;
-        cursor <= cursor_max;
-        buffer <= i_data << 'd1;
+        cycle <= cycle_bits'(cycle_max);
+        cursor <= cursor_bits'(cursor_max);
+        buffer <= 9'(i_data << 'd1);
       end else if (cycle != 'd0) begin
         // Bit delay
-        cycle <= cycle - 'd1;
-        cursor <= cursor;
-        buffer <= buffer;
+        cycle <= cycle_bits'(cycle - 'd1);
+        cursor <= cursor_bits'(cursor);
+        buffer <= 9'(buffer);
       end else if (cursor != 'd0) begin
         // Bit delay done, switch to next bit.
-        cycle <= cycle_max;
-        cursor <= cursor - 'd1;
-        buffer <= (buffer >> 'd1) | 'h100;
+        cycle <= cycle_bits'(cycle_max);
+        cursor <= cursor_bits'(cursor - 'd1);
+        buffer <= 9'((buffer >> 'd1) | 'h100);
       end
     end
   end
@@ -82,9 +82,9 @@ module uart_tx
   //----------------------------------------
 
   always_comb begin : TOCK
-    o_serial = buffer & 'd1;
-    o_cts = ((cursor == extra_stop_bits) && (cycle == 'd0)) || (cursor < extra_stop_bits);
-    o_idle = (cursor == 'd0) && (cycle == 'd0);
+    o_serial = 1'(buffer & 'd1);
+    o_cts = 1'(((cursor == extra_stop_bits) && (cycle == 'd0)) || (cursor < extra_stop_bits));
+    o_idle = 1'((cursor == 'd0) && (cycle == 'd0));
   end
 
 endmodule

@@ -51,14 +51,14 @@ struct uart_top {
     tx.init();
     rx.init();
 
-    o_serial = 0;
-    o_data = 0;
-    o_valid = 0;
-    o_done = 0;
-    o_sum = 0;
-    o_onehot = 0;
+    o_serial = b1(0);
+    o_data = b8(0);
+    o_valid = b1(0);
+    o_done = b1(0);
+    o_sum = b32(0);
+    o_onehot = b8(0);
 
-    temp = 0;
+    temp = b8(0);
   }
 
   //----------------------------------------
@@ -71,7 +71,7 @@ struct uart_top {
     if (!rst_n) {
     }
     else {
-      logic<32> instr_i = 0x12345678;
+      logic<32> instr_i = b32(0x12345678);
       logic<32> instr_o;
 
       instr_o = cat(
@@ -87,23 +87,23 @@ struct uart_top {
       logic<32> blep;
 
       if (b5(instr_i, 2) != b5(0)) {
-        blep = 1;
+        blep = b32(1);
       }
       else {
-        blep = 0;
+        blep = b32(0);
       }
 
 
       switch (o_data & 0b111) {
-      case 0:  { temp = 0b00000001; break; }
-      case 1:  { temp = 0b00000010; break; }
-      case 2:  { temp = 0b00000100; break; }
-      case 3:  { temp = 0b00001000; break; }
-      case 4:  { temp = 0b00010000; break; }
-      case 5:  { temp = 0b00100000; break; }
-      case 6:  { temp = 0b01000000; break; }
-      case 7:  { temp = 0b10000000; break; }
-      default: { temp = 0b00000000; break; }
+      case 0:  { temp = b8(0b00000001); break; }
+      case 1:  { temp = b8(0b00000010); break; }
+      case 2:  { temp = b8(0b00000100); break; }
+      case 3:  { temp = b8(0b00001000); break; }
+      case 4:  { temp = b8(0b00010000); break; }
+      case 5:  { temp = b8(0b00100000); break; }
+      case 6:  { temp = b8(0b01000000); break; }
+      case 7:  { temp = b8(0b10000000); break; }
+      default: { temp = b8(0b00000000); break; }
       }
     }
   }
@@ -127,15 +127,15 @@ struct uart_top {
     o_sum = rx.o_sum;
 
     switch (o_data & 0b111) {
-    case 0:  { o_onehot = 0b00000001; break; }
-    case 1:  { o_onehot = 0b00000010; break; }
-    case 2:  { o_onehot = 0b00000100; break; }
-    case 3:  { o_onehot = 0b00001000; break; }
-    case 4:  { o_onehot = 0b00010000; break; }
-    case 5:  { o_onehot = 0b00100000; break; }
-    case 6:  { o_onehot = 0b01000000; break; }
-    case 7:  { o_onehot = 0b10000000; break; }
-    default: { o_onehot = 0b00000000; break; }
+    case 0:  { o_onehot = b8(0b00000001); break; }
+    case 1:  { o_onehot = b8(0b00000010); break; }
+    case 2:  { o_onehot = b8(0b00000100); break; }
+    case 3:  { o_onehot = b8(0b00001000); break; }
+    case 4:  { o_onehot = b8(0b00010000); break; }
+    case 5:  { o_onehot = b8(0b00100000); break; }
+    case 6:  { o_onehot = b8(0b01000000); break; }
+    case 7:  { o_onehot = b8(0b10000000); break; }
+    default: { o_onehot = b8(0b00000000); break; }
     }
   }
 

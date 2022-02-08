@@ -189,7 +189,7 @@ void MtCursor::emit_assignment_expression(MtNode n) {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::emit_bit_extract(MtNode n, int bx_width) {
+void MtCursor::emit_static_bit_extract(MtNode n, int bx_width) {
   advance_to(n);
 
   auto call_args = n.get_field(field_arguments);
@@ -198,31 +198,30 @@ void MtCursor::emit_bit_extract(MtNode n, int bx_width) {
 
   auto arg0 = call_args.named_child(0);
   auto arg1 = call_args.named_child(1);
-  auto arg2 = call_args.named_child(2);
 
   if (arg_count == 1) {
-    if (arg0.sym == sym_identifier) {
-      // Truncating cast
-      //emit_replacement(n, "%s[%d:0]", arg0.body().c_str(), bx_width - 1);
-      emit_replacement(n, "%d'(%s)", bx_width, arg0.body().c_str());
-    }
-    else if (arg0.sym == sym_number_literal) {
-      // Truncate literal
+  
+    if (arg0.sym == sym_number_literal) {
+      // Explicitly sized literal - 8'd10
 
       emit("%d", bx_width);
-
-      //emit_replacement(n);
       cursor = arg0.start();
       emit_number_literal(arg0);
       cursor = n.end();
-
-      //emit_replacement(n, "lskjdf");
     }
     else {
-      debugbreak();
+      // Size-casting expression - 8'b(foo << 2)
+
+      emit("%d'(", bx_width);
+      cursor = arg0.start();
+      emit_dispatch(arg0);
+      emit(")");
+      cursor = n.end();
     }
   }
   else if (arg_count == 2) {
+    // Slicing logic array - foo[7:2]
+
     if (arg0.sym != sym_identifier) debugbreak();
     if (arg1.sym != sym_number_literal) debugbreak();
     int offset = atoi(arg1.start());
@@ -235,15 +234,55 @@ void MtCursor::emit_bit_extract(MtNode n, int bx_width) {
       emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), bx_width - 1 + offset, offset);
     }
   }
-  else if (arg_count == 3) {
+  else {
+    debugbreak();
+  }
+}
+
+
+//------------------------------------------------------------------------------
+
+void MtCursor::emit_dynamic_bit_extract(MtNode n, MtNode bx_node) {
+  //n.dump_tree();
+
+  advance_to(n);
+
+
+  auto call_args = n.get_field(field_arguments);
+
+  int arg_count = call_args.named_child_count();
+
+  auto arg0 = call_args.named_child(0);
+  auto arg1 = call_args.named_child(1);
+
+  if (arg_count == 1) {
+    // Size-casting expression - cursor_bits'(expression)
+    cursor = bx_node.start();
+    emit_dispatch(bx_node);
+    emit("'(");
+    cursor = arg0.start();
+    emit_dispatch(arg0);
+    emit(")");
+    cursor = n.end();
+  }
+  else if (arg_count == 2) {
+    // Not sure if this is right
+    debugbreak();
+    /*
     if (arg0.sym != sym_identifier) debugbreak();
     if (arg1.sym != sym_number_literal) debugbreak();
 
-    int b = atoi(arg1.start());
-    int e = atoi(arg2.start());
+    int offset = atoi(arg1.start());
 
     // Slice at offset
-    emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), b, e);
+    int bx_width = atoi(bx_node.start());
+    if (bx_width == 1) {
+      emit_replacement(n, "%s[%d]", arg0.body().c_str(), offset);
+    }
+    else {
+      emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), bx_width - 1 + offset, offset);
+    }
+    */
   }
   else {
     debugbreak();
@@ -316,40 +355,41 @@ void MtCursor::emit_call_expression(MtNode n) {
   else if (func_name == "bx") {
     // Bit extract.
     auto template_arg = call_func.get_field(field_arguments).named_child(0);
-    emit_bit_extract(n, atoi(template_arg.start()));
+    //emit_static_bit_extract(n, atoi(template_arg.start()));
+    emit_dynamic_bit_extract(n, template_arg);
   }
-  else if (func_name == "b1")  emit_bit_extract(n, 1);
-  else if (func_name == "b2")  emit_bit_extract(n, 2);
-  else if (func_name == "b3")  emit_bit_extract(n, 3);
-  else if (func_name == "b4")  emit_bit_extract(n, 4);
-  else if (func_name == "b5")  emit_bit_extract(n, 5);
-  else if (func_name == "b6")  emit_bit_extract(n, 6);
-  else if (func_name == "b7")  emit_bit_extract(n, 7);
-  else if (func_name == "b8")  emit_bit_extract(n, 8);
-  else if (func_name == "b9")  emit_bit_extract(n, 9);
-  else if (func_name == "b10") emit_bit_extract(n, 10);
-  else if (func_name == "b11") emit_bit_extract(n, 11);
-  else if (func_name == "b12") emit_bit_extract(n, 12);
-  else if (func_name == "b13") emit_bit_extract(n, 13);
-  else if (func_name == "b14") emit_bit_extract(n, 14);
-  else if (func_name == "b15") emit_bit_extract(n, 15);
-  else if (func_name == "b16") emit_bit_extract(n, 16);
-  else if (func_name == "b17") emit_bit_extract(n, 17);
-  else if (func_name == "b18") emit_bit_extract(n, 18);
-  else if (func_name == "b19") emit_bit_extract(n, 19);
-  else if (func_name == "b20") emit_bit_extract(n, 20);
-  else if (func_name == "b21") emit_bit_extract(n, 21);
-  else if (func_name == "b22") emit_bit_extract(n, 22);
-  else if (func_name == "b23") emit_bit_extract(n, 23);
-  else if (func_name == "b24") emit_bit_extract(n, 24);
-  else if (func_name == "b25") emit_bit_extract(n, 25);
-  else if (func_name == "b26") emit_bit_extract(n, 26);
-  else if (func_name == "b27") emit_bit_extract(n, 27);
-  else if (func_name == "b28") emit_bit_extract(n, 28);
-  else if (func_name == "b29") emit_bit_extract(n, 29);
-  else if (func_name == "b30") emit_bit_extract(n, 30);
-  else if (func_name == "b31") emit_bit_extract(n, 31);
-  else if (func_name == "b32") emit_bit_extract(n, 32);
+  else if (func_name == "b1")  emit_static_bit_extract(n, 1);
+  else if (func_name == "b2")  emit_static_bit_extract(n, 2);
+  else if (func_name == "b3")  emit_static_bit_extract(n, 3);
+  else if (func_name == "b4")  emit_static_bit_extract(n, 4);
+  else if (func_name == "b5")  emit_static_bit_extract(n, 5);
+  else if (func_name == "b6")  emit_static_bit_extract(n, 6);
+  else if (func_name == "b7")  emit_static_bit_extract(n, 7);
+  else if (func_name == "b8")  emit_static_bit_extract(n, 8);
+  else if (func_name == "b9")  emit_static_bit_extract(n, 9);
+  else if (func_name == "b10") emit_static_bit_extract(n, 10);
+  else if (func_name == "b11") emit_static_bit_extract(n, 11);
+  else if (func_name == "b12") emit_static_bit_extract(n, 12);
+  else if (func_name == "b13") emit_static_bit_extract(n, 13);
+  else if (func_name == "b14") emit_static_bit_extract(n, 14);
+  else if (func_name == "b15") emit_static_bit_extract(n, 15);
+  else if (func_name == "b16") emit_static_bit_extract(n, 16);
+  else if (func_name == "b17") emit_static_bit_extract(n, 17);
+  else if (func_name == "b18") emit_static_bit_extract(n, 18);
+  else if (func_name == "b19") emit_static_bit_extract(n, 19);
+  else if (func_name == "b20") emit_static_bit_extract(n, 20);
+  else if (func_name == "b21") emit_static_bit_extract(n, 21);
+  else if (func_name == "b22") emit_static_bit_extract(n, 22);
+  else if (func_name == "b23") emit_static_bit_extract(n, 23);
+  else if (func_name == "b24") emit_static_bit_extract(n, 24);
+  else if (func_name == "b25") emit_static_bit_extract(n, 25);
+  else if (func_name == "b26") emit_static_bit_extract(n, 26);
+  else if (func_name == "b27") emit_static_bit_extract(n, 27);
+  else if (func_name == "b28") emit_static_bit_extract(n, 28);
+  else if (func_name == "b29") emit_static_bit_extract(n, 29);
+  else if (func_name == "b30") emit_static_bit_extract(n, 30);
+  else if (func_name == "b31") emit_static_bit_extract(n, 31);
+  else if (func_name == "b32") emit_static_bit_extract(n, 32);
   else if (func_name == "cat") {
     // Remove "cat" and replace parens with brackets
 

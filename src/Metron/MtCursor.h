@@ -55,7 +55,8 @@ struct MtCursor {
   void emit_dispatch(MtNode n);
   void emit_case(MtNode n);
   void emit_switch(MtNode n);
-  void emit_bit_extract(MtNode n, int bx_width);
+  void emit_static_bit_extract(MtNode n, int bx_width);
+  void emit_dynamic_bit_extract(MtNode n, MtNode bx_node);
 
   // Special-purpose emit()s
 

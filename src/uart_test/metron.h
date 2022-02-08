@@ -110,16 +110,23 @@ template<int N>
 struct logic {
   typedef typename bitsize_to_basetype<N>::basetype basetype;
   static const int width = N;
-  static const uint64_t mask = 0xFFFFFFFFFFFFFFFFull >> (64 - N);
+  static const basetype mask = basetype(0xFFFFFFFFFFFFFFFFull >> (64 - N));
   
   logic() { x = 0; }
-  logic(const basetype& y) { x = y; }
 
+  logic(bool y) { x = y; }
+
+  logic(const logic<N>& b) {
+    x = b.x;
+  }
+
+  /*
   template<int M>
   logic(logic<M> b) {
     static_assert(M <= N);
     x = b.x;
   }
+  */
 
   template<int M>
   bool operator == (logic<M> b) const {
@@ -134,11 +141,19 @@ struct logic {
   }
 
   logic operator~() const {
-    return x ^ mask;
+    return coerce(x ^ mask);
+  }
+
+  static logic coerce(basetype _x) {
+    logic r;
+    r.x = _x;
+    return r;
   }
 
   operator basetype() const { return x; }
 
+private:
+  logic(const basetype& y) { x = y; }
   basetype x : N;
 };
 
@@ -148,47 +163,34 @@ typedef logic<1> bit;
 // BitExtract helper methods
 
 template<int N>
-inline logic<N> bx(uint64_t a) {
-  return (typename logic<N>::basetype)(a);
+inline logic<N> bx(typename logic<N>::basetype a) {
+  return logic<N>::coerce(a);
 }
 
 template<int N>
-inline logic<N> bx(uint64_t a, int e) {
+inline logic<N> bx(typename logic<N>::basetype a, int e) {
   int w = N;
-  return (typename logic<N>::basetype)((a >> e) & ((1 << w) - 1));
-}
-
-template<int N>
-inline logic<N> bx(uint64_t a, int b, int e) {
-  int w = (b - e + 1);
-  return (typename logic<N>::basetype)((a >> e) & ((1 << w) - 1));
+  return logic<N>::coerce((a >> e) & ((1 << w) - 1));
 }
 
 template<int N, int M>
 inline logic<N> bx(logic<M> a) {
   static_assert(N <= M);
-  return (typename logic<N>::basetype)(a);
+  return logic<N>::coerce(a);
 }
 
 template<int N, int M>
 inline logic<N> bx(logic<M> a, int e) {
   static_assert(N <= M);
   int w = N;
-  return (typename logic<N>::basetype)((a.x >> e) & ((1 << w) - 1));
-}
-
-template<int N, int M>
-inline logic<N> bx(logic<M> a, int b, int e) {
-  static_assert(N <= M);
-  int w = (b - e + 1);
-  return (typename logic<N>::basetype)((a.x >> e) & ((1 << w) - 1));
+  return logic<N>::coerce((a >> e) & ((1 << w) - 1));
 }
 
 #define BIT_EXTRACT(A) \
 template<int M> inline logic<A> b##A(logic<M> a)               { return bx<A>(a); } \
 template<int M> inline logic<A> b##A(logic<M> a, int e)        { return bx<A>(a, e); } \
-inline logic<A> b##A(uint64_t a)               { return bx<A>(a); } \
-inline logic<A> b##A(uint64_t a, int e)        { return bx<A>(a, e); } \
+inline logic<A> b##A(typename logic<A>::basetype a)               { return bx<A>(a); } \
+inline logic<A> b##A(typename logic<A>::basetype a, int e)        { return bx<A>(a, e); } \
 
 BIT_EXTRACT(1);
 BIT_EXTRACT(2);
@@ -228,7 +230,7 @@ BIT_EXTRACT(32);
 
 template<int NA, int NB>
 inline logic<NA + NB> cat(logic<NA> a, logic<NB> b) {
-  return (a.x << NB) | b.x;
+  return logic<NA + NB>::coerce((a << NB) | b);
 }
 
 template<int N, typename... Args>

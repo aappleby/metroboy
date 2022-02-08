@@ -67,7 +67,7 @@ struct ibex_compressed_decoder {
             // c.addi4spn -> addi rd', x2, imm
             instr_o = cat(b2(0), b4(instr_i, 7), b2(instr_i, 11), b1(instr_i, 5),
                        b1(instr_i, 6), b2(0b00), b5(0x02), b3(0b000), b2(0b01), b3(instr_i, 2), b7(OPCODE_OP_IMM));
-            if (b8(instr_i, 5) == b8(0))  illegal_instr_o = 0b1;
+            if (b8(instr_i, 5) == b8(0))  illegal_instr_o = b1(0b1);
             break;
           }
           case 0b010: {
@@ -89,11 +89,11 @@ struct ibex_compressed_decoder {
           case 0b100:
           case 0b101:
           case 0b111: {
-            illegal_instr_o = 0b1;
+            illegal_instr_o = b1(0b1);
           }
 
           default: {
-            illegal_instr_o = 0b1;
+            illegal_instr_o = b1(0b1);
           }
         }
         break;
@@ -142,7 +142,7 @@ struct ibex_compressed_decoder {
                          b1(instr_i, 6), b4(0b0), b5(0x02), b3(0b0), b5(0x02), b7(OPCODE_OP_IMM));
             }
 
-            if (cat(b1(instr_i, 12), b5(instr_i, 2)) == b6(0b0)) illegal_instr_o = 0b1;
+            if (cat(b1(instr_i, 12), b5(instr_i, 2)) == b6(0b0)) illegal_instr_o = b1(0b1);
             break;
           }
 
@@ -155,7 +155,7 @@ struct ibex_compressed_decoder {
                 // (c.srli/c.srai hints are translated into a srli/srai hint)
                 instr_o = cat(b1(0b0), b1(instr_i, 10), b5(0b0), b5(instr_i, 2), b2(0b01), b3(instr_i, 7),
                            b3(0b101), b2(0b01), b3(instr_i, 7), b7(OPCODE_OP_IMM));
-                if (b1(instr_i, 12) == 0b1)  illegal_instr_o = 0b1;
+                if (b1(instr_i, 12) == 0b1)  illegal_instr_o = b1(0b1);
                 break;
               }
               case 0b10: {
@@ -197,19 +197,19 @@ struct ibex_compressed_decoder {
                   case 0b111: {
                     // 100: c.subw
                     // 101: c.addw
-                    illegal_instr_o = 0b1;
+                    illegal_instr_o = b1(0b1);
                     break;
                   }
 
                   default: {
-                    illegal_instr_o = 0b1;
+                    illegal_instr_o = b1(0b1);
                     break;
                   }
                 }
                 break;
               }
               default: {
-                illegal_instr_o = 0b1;
+                illegal_instr_o = b1(0b1);
                 break;
               }
             }
@@ -226,7 +226,7 @@ struct ibex_compressed_decoder {
           }
 
           default: {
-            illegal_instr_o = 0b1;
+            illegal_instr_o = b1(0b1);
             break;
           }
         }
@@ -244,7 +244,7 @@ struct ibex_compressed_decoder {
             // c.slli -> slli rd, rd, shamt
             // (c.ssli hints are translated into a slli hint)
             instr_o = cat(b7(0b0), b5(instr_i, 2), b5(instr_i, 7), b3(0b001), b5(instr_i, 7), b7(OPCODE_OP_IMM));
-            if (b1(instr_i, 12) == 0b1)  illegal_instr_o = 0b1; // reserved for custom extensions
+            if (b1(instr_i, 12) == 0b1)  illegal_instr_o = b1(0b1); // reserved for custom extensions
             break;
           }
 
@@ -252,7 +252,7 @@ struct ibex_compressed_decoder {
             // c.lwsp -> lw rd, imm(x2)
             instr_o = cat(b4(0b0), b2(instr_i, 2), b1(instr_i, 12), b3(instr_i, 4), b2(0b00), b5(0x02),
                        b3(0b010), b5(instr_i, 7), b7(OPCODE_LOAD));
-            if (b5(instr_i, 7) == b5(0b0))  illegal_instr_o = 0b1;
+            if (b5(instr_i, 7) == b5(0b0))  illegal_instr_o = b1(0b1);
             break;
           }
 
@@ -265,7 +265,7 @@ struct ibex_compressed_decoder {
               } else {
                 // c.jr -> jalr x0, rd/rs1, 0
                 instr_o = cat(b12(0b0), b5(instr_i, 7), b3(0b0), b5(0b0), b7(OPCODE_JALR));
-                if (b5(instr_i, 7) == b5(0b0)) illegal_instr_o = 0b1;
+                if (b5(instr_i, 7) == b5(0b0)) illegal_instr_o = b1(0b1);
               }
             } else {
               if (b5(instr_i, 2) != b5(0b0)) {
@@ -275,7 +275,7 @@ struct ibex_compressed_decoder {
               } else {
                 if (b5(instr_i, 7) == b5(0b0)) {
                   // c.ebreak -> ebreak
-                  instr_o = 0x00100073;
+                  instr_o = b32(0x00100073);
                 } else {
                   // c.jalr -> jalr x1, rs1, 0
                   instr_o = cat(b12(0b0), b5(instr_i, 7), b3(0b000), b5(0b00001), b7(OPCODE_JALR));
@@ -296,12 +296,12 @@ struct ibex_compressed_decoder {
           case 0b011:
           case 0b101:
           case 0b111: {
-            illegal_instr_o = 0b1;
+            illegal_instr_o = b1(0b1);
             break;
           }
 
           default: {
-            illegal_instr_o = 0b1;
+            illegal_instr_o = b1(0b1);
             break;
           }
         }
@@ -314,7 +314,7 @@ struct ibex_compressed_decoder {
       }
 
       default: {
-        illegal_instr_o = 0b1;
+        illegal_instr_o = b1(0b1);
       }
     }
 

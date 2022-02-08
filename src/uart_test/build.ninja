@@ -33,6 +33,9 @@ rule run_test
 rule touch
   command = ls -al $in > $out
 
+rule sv2v
+  command = sv2v -w $out $in
+
 ################################################################################
 
 build bin/all_sv : touch metron.h.sv uart_top.h.sv uart_hello.h.sv uart_rx.h.sv uart_tx.h.sv ibex_compressed_decoder.h.sv prim_arbiter_fixed.h.sv obj/message.hex
@@ -55,6 +58,7 @@ build bin/uart_test_mt.pass : run_test bin/uart_test_mt
 build bin/uart_test_iv.pass : run_test bin/uart_test_iv
 build bin/uart_test_vl.pass : run_test bin/uart_test_vl
 
-build obj/uart_test_ice40.json  : yosys uart_test_ice40.sv | bin/all_sv
+build obj/uart_test_ice40.sv.v  : sv2v uart_test_ice40.sv | bin/all_sv
+build obj/uart_test_ice40.json  : yosys obj/uart_test_ice40.sv.v
 build obj/uart_test_ice40.asc   : nextpnr-ice40 obj/uart_test_ice40.json
-build bin/uart_test_ice40.bin   : iceprog obj/uart_test_ice40.asc
+#build bin/uart_test_ice40.bin   : iceprog obj/uart_test_ice40.asc

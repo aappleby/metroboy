@@ -33,6 +33,7 @@ struct MtCursor {
 
   void emit_number_literal(MtNode n);
   void emit_primitive_type(MtNode n);
+  void emit_identifier(MtNode n);
   void emit_type_identifier(MtNode n);
   void emit_preproc_include(MtNode n);
   void emit_return_statement(MtNode n);

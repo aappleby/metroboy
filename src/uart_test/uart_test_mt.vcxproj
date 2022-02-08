@@ -169,6 +169,7 @@
     <None Include="build.ninja" />
     <None Include="ibex_compressed_decoder.h.sv" />
     <None Include="ibex_compressed_decoder.sv" />
+    <None Include="ibex_multdiv_slow.sv" />
     <None Include="metron.h.sv" />
     <None Include="prim_arbiter_fixed.h.sv" />
     <None Include="prim_arbiter_fixed.sv" />

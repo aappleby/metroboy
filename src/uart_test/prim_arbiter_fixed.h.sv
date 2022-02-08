@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------
 // MODULE:       prim_arbiter_fixed
 // MODULEPARAMS: N, DW, EnDataPort, IdxW, 
-// INPUTS:       
+// INPUTS:       req_i, data_i, ready_i, 
 // OUTPUTS:      gnt_o, idx_o, valid_o, data_o, 
 // LOCALPARAMS:  
 // FIELDS:       req_tree, gnt_tree, idx_tree, data_tree, 
@@ -39,11 +39,14 @@ module prim_arbiter_fixed
   // Derived parameters
   parameter int IdxW = $clog2(N)
 )
-(clk, rst_n, gnt_o, idx_o, valid_o, data_o);
+(clk, rst_n, req_i, data_i, ready_i, gnt_o, idx_o, valid_o, data_o);
   /*verilator public_module*/
   
   input logic clk;
-  input logic rst_n; 
+  input logic rst_n;
+  input logic[N-1:0] req_i;
+  input logic[DW-1:0] data_i[N];
+  input logic ready_i; 
 
   output logic[N-1:0]    gnt_o;
   output logic[IdxW-1:0] idx_o;
@@ -68,7 +71,8 @@ module prim_arbiter_fixed
   
 
   always_comb begin : TOCK
-
+    for (int level = 'd0; level < IdxW + 'd1; level++) begin
+    end
   end
 
 endmodule

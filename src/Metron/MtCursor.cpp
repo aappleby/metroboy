@@ -202,8 +202,9 @@ void MtCursor::emit_bit_extract(MtNode n, int bx_width) {
 
   if (arg_count == 1) {
     if (arg0.sym == sym_identifier) {
-      // Truncate
-      emit_replacement(n, "%s[%d:0]", arg0.body().c_str(), bx_width - 1);
+      // Truncating cast
+      //emit_replacement(n, "%s[%d:0]", arg0.body().c_str(), bx_width - 1);
+      emit_replacement(n, "%d'(%s)", bx_width, arg0.body().c_str());
     }
     else if (arg0.sym == sym_number_literal) {
       // Truncate literal
@@ -313,70 +314,9 @@ void MtCursor::emit_call_expression(MtNode n) {
     comment_out(n);
   }
   else if (func_name == "bx") {
-    advance_to(n);
-
     // Bit extract.
-
-    assert(call_func.sym == sym_template_function);
-    auto template_args = call_func.get_field(field_arguments);
-    auto template_arg = template_args.named_child(0);
-
-    int bx_width = atoi(template_arg.start());
-
-    int arg_count = call_args.named_child_count();
-
-    auto arg0 = call_args.named_child(0);
-    auto arg1 = call_args.named_child(1);
-    auto arg2 = call_args.named_child(2);
-
-    if (arg_count == 1) {
-      if (arg0.sym == sym_identifier) {
-        // Truncate
-        emit_replacement(n, "%s[%d:0]", arg0.body().c_str(), bx_width - 1);
-      }
-      else if (arg0.sym == sym_number_literal) {
-        // Truncate literal
-
-        advance_to(n);
-        emit("%d", bx_width);
-
-        //emit_replacement(n);
-        cursor = arg0.start();
-        emit_number_literal(arg0);
-        cursor = n.end();
-
-        //emit_replacement(n, "lskjdf");
-      }
-      else {
-        debugbreak();
-      }
-    }
-    else if (arg_count == 2) {
-      if (arg0.sym != sym_identifier) debugbreak();
-      if (arg1.sym != sym_number_literal) debugbreak();
-      int offset = atoi(arg1.start());
-
-      // Slice at offset
-      if (bx_width == 1) {
-        emit_replacement(n, "%s[%d]", arg0.body().c_str(), offset);
-      }
-      else {
-        emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), bx_width - 1 + offset, offset);
-      }
-    }
-    else if (arg_count == 3) {
-      if (arg0.sym != sym_identifier) debugbreak();
-      if (arg1.sym != sym_number_literal) debugbreak();
-
-      int b = atoi(arg1.start());
-      int e = atoi(arg2.start());
-
-      // Slice at offset
-      emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), b, e);
-    }
-    else {
-      debugbreak();
-    }
+    auto template_arg = call_func.get_field(field_arguments).named_child(0);
+    emit_bit_extract(n, atoi(template_arg.start()));
   }
   else if (func_name == "b1")  emit_bit_extract(n, 1);
   else if (func_name == "b2")  emit_bit_extract(n, 2);
@@ -724,7 +664,7 @@ void MtCursor::emit_template_glue_declaration(MtNode decl, const std::string& pr
 */
 
 void MtCursor::emit_glue_declaration(MtNode decl, const std::string& prefix) {
-  decl.dump_tree();
+  //decl.dump_tree();
 
   assert(decl.sym == sym_field_declaration ||
          decl.sym == sym_parameter_declaration);
@@ -795,6 +735,7 @@ void MtCursor::emit_field_declaration(MtNode decl) {
   // If this isn't a submodule, just tack on "input" and "output" annotations.
   if (!submod) {
     if (decl.field_is_input()) {
+      //decl.dump_tree();
       advance_to(decl);
       emit("input ");
     }
@@ -845,6 +786,8 @@ void MtCursor::emit_field_declaration(MtNode decl) {
   }
 
   for (auto& input : submod->inputs) {
+    //input.dump_tree();
+
     MtCursor sub_cursor(submod, out);
     sub_cursor.cursor = input.start();
     sub_cursor.indent_stack = indent_stack;
@@ -929,6 +872,7 @@ void MtCursor::emit_class_specifier(MtNode n) {
       emit("input logic rst_n;");
 
       for (auto input : mod->inputs) {
+        //input.dump_tree();
         MtCursor sub_cursor = *this;
         sub_cursor.cursor = input.start();
         emit_newline();
@@ -1035,7 +979,7 @@ void MtCursor::emit_module_parameters(MtNode n) {
 // Change <param, param> to #(param, param)
 
 void MtCursor::emit_template_argument_list(MtNode n) {
-  n.dump_tree();
+  //n.dump_tree();
   for (auto c : n) switch (c.sym) {
   case anon_sym_LT: emit_replacement(c, " #("); break;
   case anon_sym_GT: emit_replacement(c, ")"); break;
@@ -1111,6 +1055,17 @@ void MtCursor::emit_primitive_type(MtNode n) {
 
 //------------------------------------------------------------------------------
 // FIXME translate types here
+
+void MtCursor::emit_identifier(MtNode n) {
+  auto name = n.node_to_name();
+  auto it = id_replacements.find(name);
+  if (it != id_replacements.end()) {
+    emit_replacement(n, it->second.c_str());
+  }
+  else {
+    emit(n);
+  }
+}
 
 void MtCursor::emit_type_identifier(MtNode n) {
   auto name = n.node_to_name();
@@ -1235,7 +1190,7 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
 
   case sym_identifier:
-    emit(n);
+    emit_identifier(n);
     break;
 
   case sym_access_specifier:

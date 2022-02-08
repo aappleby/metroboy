@@ -74,35 +74,19 @@ struct uart_top {
       logic<32> instr_i = 0x12345678;
       logic<32> instr_o;
 
-      /*
       instr_o = cat(
-        bx<2>(0b00),
-        bx<4>(instr_i, 10, 7),
-        bx<2>(instr_i, 12, 11),
-        bx<1>(instr_i, 5),
-        bx<1>(instr_i, 6),
-        bx<2>(0b00),
-        bx<5>(0x02),
-        bx<3>(0b000),
-        bx<2>(0b01),
-        bx<3>(instr_i, 4, 2),
-        bx<7>(OPCODE_OP_IMM)
-      );
-      */
-
-      instr_o = cat(
-        dup<6>(bx<1>(instr_i, 12)),
-        bx<1>(instr_i, 12),
-        bx<5>(instr_i, 6, 2),
-        bx<5>(instr_i, 11, 7),
-        bx<3>(0),
-        bx<5>(instr_i, 11, 7),
-        bx<7>(OPCODE_OP_IMM)
+        dup<6>(b1(instr_i, 12)),
+        b1(instr_i, 12),
+        b5(instr_i, 2),
+        b5(instr_i, 7),
+        b3(0),
+        b5(instr_i, 7),
+        b7(OPCODE_OP_IMM)
       );
 
       logic<32> blep;
 
-      if (bx<5>(instr_i, 6, 2) != bx<5>(0)) {
+      if (b5(instr_i, 2) != b5(0)) {
         blep = 1;
       }
       else {

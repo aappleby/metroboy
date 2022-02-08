@@ -44,13 +44,14 @@ struct prim_arbiter_fixed {
   void init() {
   }
 
-  void tick(bool rst_n) {
+  void tick(bool rst_n, logic<N> req_i, logic<DW> data_i[N], logic<1> ready_i) {
   }
 
   
 
   void tock(bool rst_n, logic<N> req_i, logic<DW> data_i[N], logic<1> ready_i) {
-
+    for (int level = 0; level < IdxW + 1; level++) {
+    }
   }
 
 };

@@ -58,11 +58,14 @@ module uart_top
   ibex_compressed_decoder cdec(clk, rst_n, cdec_valid_i, cdec_instr_i, cdec_is_compressed_o, cdec_illegal_instr_o, cdec_instr_o);
   
 
+  logic[8-1:0] prim_arbiter_req_i;
+  logic[32-1:0] prim_arbiter_data_i[8];
+  logic prim_arbiter_ready_i;
   logic[8-1:0]    prim_arbiter_gnt_o;
   logic[3-1:0] prim_arbiter_idx_o;
   logic    prim_arbiter_valid_o;
   logic[32-1:0]   prim_arbiter_data_o;
-  prim_arbiter_fixed #('d8, 'd32, 'd1, 'd3) prim_arbiter(clk, rst_n, prim_arbiter_gnt_o, prim_arbiter_idx_o, prim_arbiter_valid_o, prim_arbiter_data_o);
+  prim_arbiter_fixed #('d8, 'd32, 'd1, 'd3) prim_arbiter(clk, rst_n, prim_arbiter_req_i, prim_arbiter_data_i, prim_arbiter_ready_i, prim_arbiter_gnt_o, prim_arbiter_idx_o, prim_arbiter_valid_o, prim_arbiter_data_o);
   
 
   output logic o_serial;
@@ -123,22 +126,6 @@ module uart_top
       instr_i = 'h12345678;
       
 
-      /*
-      instr_o = cat(
-        bx<2>(0b00),
-        bx<4>(instr_i, 10, 7),
-        bx<2>(instr_i, 12, 11),
-        bx<1>(instr_i, 5),
-        bx<1>(instr_i, 6),
-        bx<2>(0b00),
-        bx<5>(0x02),
-        bx<3>(0b000),
-        bx<2>(0b01),
-        bx<3>(instr_i, 4, 2),
-        bx<7>(OPCODE_OP_IMM)
-      );
-      */
-
       instr_o = {
         {6 {instr_i[12]}},
         instr_i[12],
@@ -146,7 +133,7 @@ module uart_top
         instr_i[11:7],
         3'd0,
         instr_i[11:7],
-        OPCODE_OP_IMM[6:0]
+        7'(OPCODE_OP_IMM)
       };
 
       

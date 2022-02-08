@@ -44,17 +44,17 @@ NOINLINE uint64_t test_pack1(uint64_t x) {
 NOINLINE uint64_t test_pack3(logic<64> x) {
 
   logic<32> r = cat(
-    bx<2>(0),
-    bx<4>(x, 10, 7),
-    bx<2>(x, 12, 11),
-    bx<1>(x, 5),
-    bx<1>(x, 6),
-    bx<2>(0),
-    bx<5>(2),
-    bx<3>(0),
-    bx<2>(1),
-    bx<3>(x, 4, 2),
-    bx<7>(OPCODE_OP_IMM)
+    b2(0),
+    b4(x, 10, 7),
+    b2(x, 12, 11),
+    b1(x, 5),
+    b1(x, 6),
+    b2(0),
+    b5(2),
+    b3(0),
+    b2(1),
+    b3(x, 4, 2),
+    b7(OPCODE_OP_IMM)
   );
 
   return r;

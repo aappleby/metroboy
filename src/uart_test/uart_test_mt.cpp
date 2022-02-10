@@ -1,125 +1,87 @@
 #include <stdio.h>
 
-#include "metron.h"
-#include "uart_top.h"
-#include "vcd_dump.h"
+#include "Logic.h"
 
-#if 0
-#include <assert.h>
-#include <inttypes.h>
-#include <chrono>
-#include <thread>
+#include "../CoreLib/Tests.h"
+#include "../CoreLib/Log.h"
 
+//#include "metron.h"
+//#include "uart_top.h"
+//#include "vcd_dump.h"
 
-#ifdef _MSC_VER
-
-#include <Windows.h>
-#include <intrin.h>
-#define NOINLINE __declspec(noinline)
-
-#else
-
-#include <unistd.h>
-#include <x86intrin.h>
-#define NOINLINE __attribute__((noinline))
-
-#endif
-
-const uint64_t OPCODE_OP_IMM = 0x13;
-
-NOINLINE uint64_t test_pack1(uint64_t x) {
-  return ((0b00 & 0b11)       << 30) |
-         (((x >> 7) & 0b1111) << 26) |
-         (((x >> 11) & 0b11)  << 24) |
-         (((x >> 5) & 0b1)    << 23) |
-         (((x >> 6) & 0b1)    << 22) |
-         ((0b00ull & 0b11)    << 20) |
-         ((0b00010ull)        << 15) |
-         ((0b000ull & 0b111)  << 12) |
-         ((0b01ull & 0b11)    << 10) |
-         (((x >> 2) & 0b111)  << 7)  |
-         ((OPCODE_OP_IMM)     << 0)  ;
+TestResults logic_test_proxy() {
+  TEST_INIT(__FUNCTION__);
+  TEST_DONE();
 }
 
-NOINLINE uint64_t test_pack3(logic<64> x) {
+TestResults logic_test_truncate() {
+  TEST_INIT("logic_test_truncate");
 
-  logic<32> r = cat(
-    b2(0),
-    b4(x, 10, 7),
-    b2(x, 12, 11),
-    b1(x, 5),
-    b1(x, 6),
-    b2(0),
-    b5(2),
-    b3(0),
-    b2(1),
-    b3(x, 4, 2),
-    b7(OPCODE_OP_IMM)
-  );
+  logic<10> a = 0b1111111111;
+  logic<5>  b = 0;
 
-  return r;
+  // A direct assignment should not compile
+  //b = a;
+
+  // Assignment after addition should compile and truncate.
+  //b = a + 0; // fires truncation assert in debug build
+  b = b5(a + 0);
+  
+  EXPECT_EQ(b, 0b11111);
+
+  TEST_DONE();
 }
 
+TestResults logic_test_add() {
+  TEST_INIT("logic_test_add");
+
+  logic<8> a = 100;
+  logic<8> b = 72;
+  logic<8> c = a + b;
+
+  EXPECT_EQ(c, 172);
+
+  TEST_DONE();
+}
+
+TestResults logic_test_cat() {
+  TEST_INIT("logic_test_cat");
+
+  logic<5> x = cat(logic<2>(0b10), logic<3>(0b101));
+
+  EXPECT_EQ(x[4], 1);
+  EXPECT_EQ(x[3], 0);
+  EXPECT_EQ(x[2], 1);
+  EXPECT_EQ(x[1], 0);
+  EXPECT_EQ(x[0], 1);
+
+  TEST_DONE();
+}
+
+TestResults logic_test_suite() {
+  TEST_INIT("logic_test_suite");
+
+  results += logic_test_cat();
+  results += logic_test_add();
+  results += logic_test_truncate();
+  results += logic_test_proxy();
+
+  TEST_DONE();
+}
+
+int main(int argc, char** argv) {
+
+  // We should be able to concatenate two logics into a third logic.
 
 
-int main(int argc, char** arv) {
+  printf("Hello World\n");
 
-  int64_t a = 0;
-  int64_t b = 0;
-
-  for (int rep = 0; rep < 3; rep++) {
-    a = __rdtsc();
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    b = __rdtsc();
-    printf("ghz %f\n", (b - a) / (300.0 * 1000.0 * 1000.0));
-  }
-
-  const int reps = 1000000;
-
-  {
-    int64_t min = INT64_MAX;
-    for (int rep = 0; rep < reps; rep++)
-    {
-      a = __rdtsc();
-      uint64_t x = 0;
-      for (int i = 0; i < 1000; i++) {
-        x = test_pack1(x);
-      }
-
-      b = __rdtsc();
-      int64_t c = b - a;
-      if (c < min) {
-        min = c;
-        printf("0x%016" PRIx64 " %" PRId64 " %d\n", x, c, rep);
-      }
-    }
-    printf("\n");
-  }
-
-  {
-    int64_t min = INT64_MAX;
-    for (int rep = 0; rep < reps; rep++)
-    {
-      a = __rdtsc();
-      uint64_t x = 0;
-      for (int i = 0; i < 1000; i++) {
-        x = test_pack3(x);
-      }
-      b = __rdtsc();
-      int64_t c = b - a;
-      if (c < min) {
-        min = c;
-        printf("0x%016" PRIx64 " %" PRId64 " %d\n", x, c, rep);
-      }
-    }
-    printf("\n");
-  }
+  logic_test_suite();
 
   return 0;
 }
-#endif
 
-#if 1
+#if 0
 
 int main(int argc, char** arv) {
 

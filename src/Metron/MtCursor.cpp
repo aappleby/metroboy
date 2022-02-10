@@ -19,6 +19,7 @@ void MtCursor::push_indent(MtNode n) {
     auto e = n.start();
     auto b = e;
     while (*b != '\n') b--;
+    for (auto c = b + 1; c < e; c++) assert(*c == ' ');
     indent_stack.push_back(std::string(b + 1, e));
   }
 }
@@ -317,16 +318,18 @@ void MtCursor::emit_call_expression(MtNode n) {
   // If we're calling a member function, look at the name of the member
   // function and not the whole foo.bar().
 
-  std::string func_name;
+  std::string func_name = n.node_to_name();
 
   if (call_func.sym == sym_field_expression) {
     func_name = call_func.get_field(field_field).node_to_name();
   }
-  else {
-    func_name = call_func.node_to_name();
-  }
 
-  if (func_name == "clog2") {
+  if (func_name == "coerce") {
+    // Convert to cast? We probably shouldn't be calling coerce() directly.
+    n.dump_tree();
+    debugbreak();
+  }
+  else if (func_name == "clog2") {
     emit_replacement(call_func, "$clog2");
     emit_dispatch(call_args);
   }
@@ -342,16 +345,16 @@ void MtCursor::emit_call_expression(MtNode n) {
     emit_replacement(call_func, "$write");
     emit_dispatch(call_args);
   }
-  else if (func_name == "init") {
+  else if (func_name.starts_with("init")) {
     comment_out(n);
   }
-  else if (func_name == "final") {
+  else if (func_name.starts_with("final")) {
     comment_out(n);
   }
-  else if (func_name == "tick") {
+  else if (func_name.starts_with("tick")) {
     comment_out(n);
   }
-  else if (func_name == "tock") {
+  else if (func_name.starts_with("tock")) {
     comment_out(n);
   }
   else if (func_name == "bx") {
@@ -403,7 +406,7 @@ void MtCursor::emit_call_expression(MtNode n) {
     }
   }
   else if (func_name == "dup") {
-    // 15 {instr_i[12]}}
+    // Convert "dup<15>(b12(instr_i))" to "15 {instr_i[12]}}"
 
     assert(call_func.sym == sym_template_function);
     auto template_args = call_func.get_field(field_arguments);
@@ -455,6 +458,17 @@ void MtCursor::emit_init_declarator_as_decl(MtNode n) {
 
 void MtCursor::emit_init_declarator_as_assign(MtNode n) {
 
+  bool is_localparam =
+    n.sym == sym_declaration &&
+    n.child_count() >= 4 &&
+    n.child(0).body() == "static" &&
+    n.child(1).body() == "const";
+
+  if (is_localparam) {
+    emit_dispatch(n);
+    return;
+  }
+
   auto node_decl = n.get_field(field_declarator);
 
   if (node_decl.is_init_decl()) {
@@ -476,9 +490,19 @@ void MtCursor::emit_hoisted_decls(MtNode n) {
   MtCursor old_cursor = *this;
   for (auto c : n) {
     if (c.sym == sym_declaration) {
-      cursor = c.start();
-      emit_newline();
-      emit_init_declarator_as_decl(c);
+      bool is_localparam =
+        c.sym == sym_declaration &&
+        c.child_count() >= 4 &&
+        c.child(0).body() == "static" &&
+        c.child(1).body() == "const";
+
+      if (is_localparam) {
+      }
+      else {
+        cursor = c.start();
+        emit_newline();
+        emit_init_declarator_as_decl(c);
+      }
     }
   }
   *this = old_cursor;
@@ -512,9 +536,9 @@ void MtCursor::emit_function_definition(MtNode func_def) {
   in_seq = false;
 
   current_function_name = func_decl.get_field(field_declarator).node_to_name();
-  is_init = is_task && current_function_name == "init";
-  is_tick = is_task && current_function_name == "tick";
-  is_tock = is_task && current_function_name == "tock";
+  is_init = is_task && current_function_name.starts_with("init");
+  is_tick = is_task && current_function_name.starts_with("tick");
+  is_tock = is_task && current_function_name.starts_with("tock");
 
   if (is_init) {
     emit_replacement(func_decl, "initial");
@@ -553,9 +577,9 @@ void MtCursor::emit_function_definition(MtNode func_def) {
 
   for (auto c : func_body) switch (c.sym) {
   case anon_sym_LBRACE:
-    if      (is_init) emit_replacement(c, "begin : INIT");
-    else if (is_tick) emit_replacement(c, "begin : TICK");
-    else if (is_tock) emit_replacement(c, "begin : TOCK");
+    if      (is_init) emit_replacement(c, "begin : %s", current_function_name.c_str());
+    else if (is_tick) emit_replacement(c, "begin : %s", current_function_name.c_str());
+    else if (is_tock) emit_replacement(c, "begin : %s", current_function_name.c_str());
     else if (is_task) emit_replacement(c, "");
     else              emit_replacement(c, "");
     emit_hoisted_decls(func_body);
@@ -569,7 +593,9 @@ void MtCursor::emit_function_definition(MtNode func_def) {
     else              emit_replacement(c, "endfunction");
     break;
 
-  case sym_declaration: emit_init_declarator_as_assign(c); break;
+  case sym_declaration: {
+    emit_init_declarator_as_assign(c); break;
+  }
 
   default: emit_dispatch(c); break;
   }
@@ -801,6 +827,46 @@ void MtCursor::emit_enum_class(MtNode n) {
 // Emit field declarations. For submodules, also emit glue declarations and
 // append the glue parameter list to the field.
 
+/*
+========== tree dump begin
+[0] s236 field_declaration:
+|   [0] f32 s226 type.storage_class_specifier:
+|   |   [0] s64 lit: "static"
+|   [1] f9 s226 declarator.storage_class_specifier:
+|   |   [0] s66 lit: "inline"
+|   [2] s227 type_qualifier:
+|   |   [0] s68 lit: "const"
+|   [3] f11 s321 default_value.template_type:
+|   |   [0] f22 s395 name.type_identifier: "logic"
+|   |   [1] f3 s324 arguments.template_argument_list:
+|   |   |   [0] s36 lit: "<"
+|   |   |   [1] s264 type_descriptor:
+|   |   |   |   [0] f32 s395 type.type_identifier: "cycle_bits"
+|   |   |   [2] s33 lit: ">"
+|   [4] s392 field_identifier: "cycle_max"
+|   [5] s63 lit: "="
+|   [6] s267 call_expression:
+|   |   [0] f15 s354 function.qualified_identifier:
+|   |   |   [0] f30 s321 scope.template_type:
+|   |   |   |   [0] f22 s395 name.type_identifier: "logic"
+|   |   |   |   [1] f3 s324 arguments.template_argument_list:
+|   |   |   |   |   [0] s36 lit: "<"
+|   |   |   |   |   [1] s264 type_descriptor:
+|   |   |   |   |   |   [0] f32 s395 type.type_identifier: "cycle_bits"
+|   |   |   |   |   [2] s33 lit: ">"
+|   |   |   [1] f22 s43 name.lit: "::"
+|   |   |   [2] s1 identifier: "coerce"
+|   |   [1] f3 s268 arguments.argument_list:
+|   |   |   [0] s5 lit: "("
+|   |   |   [1] s261 binary_expression:
+|   |   |   |   [0] f19 s1 left.identifier: "cycles_per_bit"
+|   |   |   |   [1] f23 s21 operator.lit: "-"
+|   |   |   |   [2] f29 s112 right.number_literal: "1"
+|   |   |   [2] s8 lit: ")"
+|   [7] s39 lit: ";"
+========== tree dump end
+*/
+
 void MtCursor::emit_field_declaration(MtNode decl) {
 
   //decl.dump_tree();
@@ -810,22 +876,13 @@ void MtCursor::emit_field_declaration(MtNode decl) {
 
   auto node_type = decl.get_field(field_type);
 
-  {
-    /*
-    [0] s236 field_declaration:
-    |   [0] f32 s230 type.enum_specifier:
-    |   |   [0] s79 lit: "enum"
-    |   |   [1] s80 lit: "class"
-    |   |   [2] f22 s395 name.type_identifier: "state"
-    */
-
-    if (node_type.child_count() == 3 &&
-        node_type.child(0).body() == "enum" &&
-        node_type.child(1).body() == "class" && 
-        node_type.child(2).sym == alias_sym_type_identifier) {
-      emit_enum_class(decl);
-      return;
-    }
+  // Handle "enum class".
+  if (node_type.child_count() == 3 &&
+      node_type.child(0).body() == "enum" &&
+      node_type.child(1).body() == "class" && 
+      node_type.child(2).sym == alias_sym_type_identifier) {
+    emit_enum_class(decl);
+    return;
   }
 
 
@@ -1343,8 +1400,20 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
   }
 
+  case sym_if_statement: {
+    //n.dump_tree();
+    for (auto c : n) {
+      emit_dispatch(c);
+    }
+    break;
+  }
+
+  case anon_sym_else: {
+    emit(n);
+    break;
+  }
+
   case sym_parameter_list:
-  case sym_if_statement:
   case sym_for_statement:
   case sym_parenthesized_expression:
   case sym_parameter_declaration:
@@ -1363,7 +1432,9 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_function_declarator:
   case sym_init_declarator:
   case sym_initializer_list:
-    for (auto c : n) emit_dispatch(c);
+    for (auto c : n) {
+      emit_dispatch(c);
+    }
     break;
 
   case sym_number_literal:         emit_number_literal(n); break;

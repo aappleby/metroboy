@@ -5,6 +5,7 @@
 #include "uart_hello.h"
 #include "ibex_compressed_decoder.h"
 #include "prim_arbiter_fixed.h"
+#include "ibex_multdiv_slow.h"
 
 //==============================================================================
 
@@ -19,12 +20,12 @@ struct uart_top {
 
   prim_arbiter_fixed<8, 32, 1, 3> prim_arbiter;
 
-  logic<1> o_serial;
-  logic<8> o_data;
-  logic<1> o_valid;
-  logic<1> o_done;
+  logic<1>  o_serial;
+  logic<8>  o_data;
+  logic<1>  o_valid;
+  logic<1>  o_done;
   logic<32> o_sum;
-  logic<8> o_onehot;
+  logic<8>  o_onehot;
 
   logic<8> temp;
 

@@ -42,7 +42,14 @@ struct uart_rx {
       if (cycle != 0) {
         cycle = bx<cycle_bits>(cycle - 1);
       } else if (cursor != 0) {
-        logic<8> temp = b8((i_serial << 7) | (buffer >> 1));
+        auto a = i_serial << 7;
+        auto b = buffer >> 1;
+        auto c = a | b;
+        logic<8> temp = b8(c);
+
+
+        //logic<8> temp = b8((i_serial << 7) | (buffer >> 1));
+
         if (cursor - 1 == 1) sum = b32(sum + temp);
         cycle = bx<cycle_bits>(cycle_max);
         cursor = bx<cursor_bits>(cursor - 1);

@@ -17,6 +17,7 @@
 `include "uart_hello.h.sv"
 `include "ibex_compressed_decoder.h.sv"
 `include "prim_arbiter_fixed.h.sv"
+`include "ibex_multdiv_slow.h.sv"
 
 //==============================================================================
 
@@ -58,6 +59,9 @@ module uart_top
   ibex_compressed_decoder cdec(clk, rst_n, cdec_valid_i, cdec_instr_i, cdec_is_compressed_o, cdec_illegal_instr_o, cdec_instr_o);
   
 
+  ibex_multdiv_slow ms(clk, rst_n);
+
+
   logic[8-1:0] prim_arbiter_req_i;
   logic[32-1:0] prim_arbiter_data_i[8];
   logic prim_arbiter_ready_i;
@@ -65,15 +69,25 @@ module uart_top
   logic[3-1:0] prim_arbiter_idx_o;
   logic    prim_arbiter_valid_o;
   logic[32-1:0]   prim_arbiter_data_o;
-  prim_arbiter_fixed #('d8, 'd32, 'd1, 'd3) prim_arbiter(clk, rst_n, prim_arbiter_req_i, prim_arbiter_data_i, prim_arbiter_ready_i, prim_arbiter_gnt_o, prim_arbiter_idx_o, prim_arbiter_valid_o, prim_arbiter_data_o);
+  prim_arbiter_fixed #('d8, 'd32, 'd1) prim_arbiter(
+      clk,
+      rst_n,
+      prim_arbiter_req_i,
+      prim_arbiter_data_i,
+      prim_arbiter_ready_i,
+      prim_arbiter_gnt_o,
+      prim_arbiter_idx_o,
+      prim_arbiter_valid_o,
+      prim_arbiter_data_o
+  );
   
 
-  output logic o_serial;
-  output logic[7:0] o_data;
-  output logic o_valid;
-  output logic o_done;
+  output logic  o_serial;
+  output logic[7:0]  o_data;
+  output logic  o_valid;
+  output logic  o_done;
   output logic[31:0] o_sum;
-  output logic[7:0] o_onehot;
+  output logic[7:0]  o_onehot;
 
   logic[7:0] temp;
 
@@ -93,7 +107,7 @@ module uart_top
 
   //----------------------------------------
 
-  initial begin : INIT
+  initial begin : init
     $write("uart_top.init()\n");
 
     /*hello.init()*/;
@@ -112,7 +126,7 @@ module uart_top
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin : TICK
+  always_ff @(posedge clk, negedge rst_n) begin : tick
     /*hello.tick(rst_n, tx.o_cts, tx.o_idle)*/;
     /*tx.tick(rst_n, hello.o_data, hello.o_req)*/;
     /*rx.tick(rst_n, tx.o_serial)*/;
@@ -168,7 +182,7 @@ module uart_top
 
   //----------------------------------------
 
-  always_comb begin : TOCK
+  always_comb begin : tock
     logic blah;
     /*hello.tock(rst_n)*/;
     /*tx.tock(rst_n)*/;

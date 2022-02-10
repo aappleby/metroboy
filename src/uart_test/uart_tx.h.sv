@@ -31,10 +31,10 @@ module uart_tx
   localparam int extra_stop_bits = 'd7;
 
   localparam int cycle_bits = $clog2(cycles_per_bit);
-  localparam int cycle_max = cycles_per_bit - 'd1;
+  localparam /*inline*/ logic[cycle_bits-1:0] cycle_max = cycle_bits'(cycles_per_bit - 'd1);
 
   localparam int cursor_bits = $clog2('d10 + extra_stop_bits);
-  localparam int cursor_max = 'd10 + extra_stop_bits - 'd1;
+  localparam /*inline*/ logic[cursor_bits-1:0] cursor_max = cursor_bits'('d10 + extra_stop_bits - 'd1);
 
   logic[cycle_bits-1:0] cycle;
   logic[cursor_bits-1:0] cursor;
@@ -46,7 +46,7 @@ module uart_tx
 
   //----------------------------------------
 
-  initial begin : INIT
+  initial begin : init
     o_serial = 1'd0;
     o_cts = 1'd0;
     o_idle = 1'd0;
@@ -54,7 +54,7 @@ module uart_tx
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin : TICK
+  always_ff @(posedge clk, negedge rst_n) begin : tick
     if (!rst_n) begin
       cycle <= cycle_bits'('d0);
       cursor <= cursor_bits'('d0);
@@ -62,18 +62,18 @@ module uart_tx
     end else begin
       if (cursor <= extra_stop_bits && cycle == 'd0 && i_req) begin
         // Transmit start
-        cycle <= cycle_bits'(cycle_max);
-        cursor <= cursor_bits'(cursor_max);
+        cycle <= cycle_max;
+        cursor <= cursor_max;
         buffer <= 9'(i_data << 'd1);
       end else if (cycle != 'd0) begin
         // Bit delay
-        cycle <= cycle_bits'(cycle - 'd1);
-        cursor <= cursor_bits'(cursor);
-        buffer <= 9'(buffer);
+        cycle <= cycle - 1'd1;
+        cursor <= cursor;
+        buffer <= buffer;
       end else if (cursor != 'd0) begin
         // Bit delay done, switch to next bit.
-        cycle <= cycle_bits'(cycle_max);
-        cursor <= cursor_bits'(cursor - 'd1);
+        cycle <= cycle_max;
+        cursor <= cursor - 1'd1;
         buffer <= 9'((buffer >> 'd1) | 'h100);
       end
     end
@@ -81,7 +81,7 @@ module uart_tx
 
   //----------------------------------------
 
-  always_comb begin : TOCK
+  always_comb begin : tock
     o_serial = 1'(buffer & 'd1);
     o_cts = 1'(((cursor == extra_stop_bits) && (cycle == 'd0)) || (cursor < extra_stop_bits));
     o_idle = 1'((cursor == 'd0) && (cycle == 'd0));

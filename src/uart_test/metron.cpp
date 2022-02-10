@@ -1,5 +1,10 @@
-#include "metron.h"
+//#include "metron.h"
 #include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <memory.h>
+
+#pragma warning(disable:4996)
 
 void parse_hex(const char* src_filename, void* dst_data, int dst_size) {
 
@@ -42,8 +47,8 @@ void parse_hex(const char* src_filename, void* dst_data, int dst_size) {
 }
 
 
-void readmemh(const char* path, logic<8>* mem, int begin, int end) {
-  parse_hex(path, mem + begin, end - begin + 1);
+void readmemh(const char* path, void* mem, int begin, int end) {
+  parse_hex(path, (uint8_t*)mem + begin, end - begin + 1);
 }
 
 

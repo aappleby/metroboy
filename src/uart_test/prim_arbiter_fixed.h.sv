@@ -1,15 +1,3 @@
-//--------------------------------------------------------------------------------
-// MODULE:       prim_arbiter_fixed
-// MODULEPARAMS: N, DW, EnDataPort, IdxW, 
-// INPUTS:       req_i, data_i, ready_i, 
-// OUTPUTS:      gnt_o, idx_o, valid_o, data_o, 
-// LOCALPARAMS:  
-// FIELDS:       req_tree, gnt_tree, idx_tree, data_tree, 
-// SUBMODULES:   
-// TASKS:        
-// FUNCTIONS:    
-/* verilator lint_off WIDTH */
-`default_nettype none
 // Copyright lowRISC contributors.
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
@@ -23,56 +11,31 @@
 //
 // See also: prim_arbiter_ppc, prim_arbiter_tree
 
+/* verilator lint_off ALWCOMBORDER */
 
-`include "metron.h.sv"
-
-
-module prim_arbiter_fixed
-#(
-  parameter int N = 'd8,
-  parameter int DW = 'd32,
+module prim_arbiter_fixed #(
+  parameter int N   = 8,
+  parameter int DW  = 32,
 
   // Configurations
   // EnDataPort: {0, 1}, if 0, input data will be ignored
-  parameter int EnDataPort = 'd1,
+  parameter bit EnDataPort = 1,
 
   // Derived parameters
-  parameter int IdxW = $clog2(N)
-)
-(clk, rst_n, req_i, data_i, ready_i, gnt_o, idx_o, valid_o, data_o);
-  /*verilator public_module*/
-  
-  input logic clk;
-  input logic rst_n;
-  input logic[N-1:0] req_i;
-  input logic[DW-1:0] data_i[N];
-  input logic ready_i; 
+  localparam int IdxW = $clog2(N)
+) (
+  // used for assertions only
+  input clk_i,
+  input rst_ni,
 
-  output logic[N-1:0]    gnt_o;
-  output logic[IdxW-1:0] idx_o;
+  input        [ N-1:0]    req_i,
+  input        [DW-1:0]    data_i [N],
+  input                    ready_i,
 
-  output logic    valid_o;
-  output logic[DW-1:0]   data_o;
+  output logic [ N-1:0]    gnt_o,
+  output logic [IdxW-1:0]  idx_o,
+  output logic             valid_o,
+  output logic [DW-1:0]    data_o
+);
 
-
-  // align to powers of 2 for simplicity
-  // a full binary tree with N levels has 2**N + 2**N-1 nodes
-  logic[2**(IdxW + 'd1) - 'd1-1:0] req_tree;
-  logic[2**(IdxW + 'd1) - 'd1-1:0] gnt_tree;
-  logic[2**(IdxW + 'd1) - 'd1-1:0] idx_tree[IdxW];
-  logic[2**(IdxW + 'd1) - 'd1-1:0] data_tree[DW];
-
-  initial begin : INIT
-  end
-
-  always_ff @(posedge clk, negedge rst_n) begin : TICK
-  end
-
-  
-
-  always_comb begin : TOCK
-    for (int level = 'd0; level < IdxW + 'd1; level++) begin
-    end
-  end
-
-endmodule
+endmodule : prim_arbiter_fixed

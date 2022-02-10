@@ -55,12 +55,12 @@ module ibex_compressed_decoder
 
   //----------------------------------------
 
-  initial begin : INIT
+  initial begin : init
   end
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin : TICK
+  always_ff @(posedge clk, negedge rst_n) begin : tick
   end
 
   // valid_i indicates if instr_i is valid and is used for assertions only.
@@ -72,7 +72,7 @@ module ibex_compressed_decoder
   // Compressed decoder //
   ////////////////////////
 
-  always_comb begin : TOCK
+  always_comb begin : tock
     // By default, forward incoming instruction, mark it as legal.
     instr_o = instr_i;
     illegal_instr_o = 1'b0;

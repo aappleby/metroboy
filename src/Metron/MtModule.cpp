@@ -128,6 +128,19 @@ void MtModule::print_error(MtNode n, const char* fmt, ...) {
 MtNode MtModule::get_by_id(std::vector<MtNode>& handles, MtNode id) {
   //id.dump_tree();
 
+  if (id.sym == sym_subscript_expression) {
+    return get_by_id(handles, id.get_field(field_argument));
+  }
+
+  /*
+  [0] f19 s266 left.subscript_expression:
+  |   [0] f2 s1 argument.identifier: "gnt_tree"
+  |   [1] s61 lit: "["
+  |   [2] f16 s112 index.number_literal: "0"
+  |   [3] s62 lit: "]"
+  ========== tree dump end
+  */
+
   assert(id.sym == sym_identifier);
   auto name_a = id.node_to_name();
 
@@ -180,10 +193,10 @@ void MtModule::collect_moduleparams() {
 void MtModule::collect_fields() {
   mod_class.visit_tree([&](MtNode n) {
     if (n.sym == sym_function_definition) {
-      auto func_name = n.get_field(field_declarator).get_field(field_declarator);
+      auto func_name = n.get_field(field_declarator).get_field(field_declarator).body();
       auto func_args = n.get_field(field_declarator).get_field(field_parameters);
 
-      if (func_name.match("tick")) {
+      if (func_name.starts_with("tick") || func_name.starts_with("tock")) {
         func_args.visit_tree([&](MtNode func_arg) {
           if (func_arg.sym == sym_parameter_declaration) {
             auto arg_name = func_arg.get_field(field_declarator);
@@ -276,7 +289,11 @@ void MtModule::check_dirty_write(MtNode n, bool is_seq, std::set<MtNode>& dirty_
   if (!is_seq) {
     auto field = get_field_by_id(n);
     if (field) {
-      print_error(n, "comb wrote field - %s\n", field.node_to_name().c_str());
+
+      // We should generally not be assigning to fields in tock(), but
+      // prim_arbiter_fixed does a big comb tree thing.
+
+      //print_error(n, "comb wrote field - %s\n", field.node_to_name().c_str());
     }
   }
 

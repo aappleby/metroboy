@@ -42,7 +42,7 @@ module uart_rx
 
   //----------------------------------------
 
-  initial begin : INIT
+  initial begin : init
     o_data = 8'd0;
     o_valid = 1'd0;
     o_sum = 32'd0;
@@ -50,7 +50,7 @@ module uart_rx
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin : TICK
+  always_ff @(posedge clk, negedge rst_n) begin : tick
     if (!rst_n) begin
       cycle <= cycle_bits'('d0);
       cursor <= cursor_bits'('d0);
@@ -78,7 +78,7 @@ module uart_rx
 
   //----------------------------------------
 
-  always_comb begin : TOCK
+  always_comb begin : tock
     o_data = buffer;
     o_valid = cursor == 'd1;
     o_sum = sum;

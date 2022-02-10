@@ -1,4 +1,4 @@
-#include "vcd_dump.h"
+//#include "vcd_dump.h"
 
 /*
 fprintf(dump.file, "$timescale 1ns $end\n");

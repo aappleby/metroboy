@@ -11,10 +11,10 @@ struct uart_tx {
   static const int extra_stop_bits = 7;
 
   static const int cycle_bits = clog2(cycles_per_bit);
-  static const int cycle_max = cycles_per_bit - 1;
+  static inline const logic<cycle_bits> cycle_max = bx<cycle_bits>(cycles_per_bit - 1);
 
   static const int cursor_bits = clog2(10 + extra_stop_bits);
-  static const int cursor_max = 10 + extra_stop_bits - 1;
+  static inline const logic<cursor_bits> cursor_max = bx<cursor_bits>(10 + extra_stop_bits - 1);
 
   logic<cycle_bits> cycle;
   logic<cursor_bits> cursor;
@@ -42,18 +42,18 @@ struct uart_tx {
     } else {
       if (cursor <= extra_stop_bits && cycle == 0 && i_req) {
         // Transmit start
-        cycle = bx<cycle_bits>(cycle_max);
-        cursor = bx<cursor_bits>(cursor_max);
-        buffer = b9(i_data << 1);
+        cycle = cycle_max;
+        cursor = cursor_max;
+        buffer = i_data << 1;
       } else if (cycle != 0) {
         // Bit delay
-        cycle = bx<cycle_bits>(cycle - 1);
-        cursor = bx<cursor_bits>(cursor);
-        buffer = b9(buffer);
+        cycle = cycle - b1(1);
+        cursor = cursor;
+        buffer = buffer;
       } else if (cursor != 0) {
         // Bit delay done, switch to next bit.
-        cycle = bx<cycle_bits>(cycle_max);
-        cursor = bx<cursor_bits>(cursor - 1);
+        cycle = cycle_max;
+        cursor = cursor - b1(1);
         buffer = b9((buffer >> 1) | 0x100);
       }
     }

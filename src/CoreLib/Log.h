@@ -2,15 +2,29 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <inttypes.h>
+#include <intrin.h>
+#include <chrono>
+#include <thread>
+#include <time.h>
 
 //-----------------------------------------------------------------------------
 
-double timestamp();
-
 inline void log_putchar(char c) {
+  using namespace std::chrono_literals;
+
   static int log_indent = 0;
   static int log_cursor_x = 0;
   static bool log_start_line = true;
+
+  static uint64_t origin;
+
+  if (!origin) {
+    timespec ts;
+    timespec_get(&ts, TIME_UTC);
+    origin = ts.tv_sec * 1000000000ull + ts.tv_nsec;
+
+  }
 
   if (c == '\n') {
     putchar(c);
@@ -25,7 +39,11 @@ inline void log_putchar(char c) {
   }
   else {
     if (log_start_line) {
-      printf("\u001b[0m[%07.3f] ", timestamp());
+      uint64_t now;
+      timespec ts;
+      timespec_get(&ts, TIME_UTC);
+      now = ts.tv_sec * 1000000000ull + ts.tv_nsec;
+      printf("\u001b[0m[%07.3f] ", double(now - origin) / 1.0e9);
       log_start_line = false;
     }
     for (; log_cursor_x < log_indent; log_cursor_x++) putchar(' ');

@@ -43,16 +43,23 @@ module uart_hello
 
   //----------------------------------------
 
-  initial begin : INIT
+  initial begin : init
+    logic[2:0] a;
+    logic[3:0] b;
+    logic[3:0] c;
     $readmemh("obj/message.hex", memory, 'd0, 'd511);
     o_data = 8'd0;
     o_req = 1'd0;
     o_done = 1'd0;
+  
+    a = 3'd7;
+    b = 4'd0;
+    c = a + b;
   end
 
   //----------------------------------------
 
-  always_ff @(posedge clk, negedge rst_n) begin : TICK
+  always_ff @(posedge clk, negedge rst_n) begin : tick
     if (!rst_n) begin
       s = WAIT;
       cursor <= cursor_bits'('d0);
@@ -63,11 +70,15 @@ module uart_hello
         s = SEND;
       end
       else if (s == SEND && i_cts) begin
-        if (cursor == (message_len - 'd1)) s = DONE;
-        cursor <= cursor_bits'(cursor + 'd1);
+        if (cursor == (message_len - 'd1)) begin
+          s = DONE;
+        end
+        else begin
+          cursor <= cursor + 1'd1;
+        end
       end
       else if (s == DONE) begin
-        //state = WAIT;
+        //s = state::WAIT;
         cursor <= cursor_bits'('d0);
       end
     end
@@ -76,7 +87,7 @@ module uart_hello
 
   //----------------------------------------
 
-  always_comb begin : TOCK
+  always_comb begin : tock
     o_data = data;
     o_req = s == SEND;
     o_done = s == DONE;

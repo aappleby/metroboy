@@ -9,6 +9,7 @@ int main(int argc, char** argv) {
 
   MtModLibrary lib;
 
+  /*
   for (int i = 1; i < argc; i++) {
     std::string arg = argv[i];
     if (arg[0] == '-') {
@@ -16,13 +17,15 @@ int main(int argc, char** argv) {
       lib.load(arg, arg + ".sv");
     }
   }
+  */
 
   //uart_top.h uart_hello.h uart_tx.h uart_rx.h ibex_compressed_decoder.h prim_arbiter_fixed.h
 
   //lib.load("src/uart_test/, arg + ".sv");
   //lib.load("uart_rx.h", "uart_rx.h.sv");
 
-  //lib.load("uart_hello.h", "uart_hello.h.sv");
+  std::string file = "ibex_multdiv_slow.h";
+  lib.load(file, file + ".sv");
 
   for (auto& module : lib.modules)
   {

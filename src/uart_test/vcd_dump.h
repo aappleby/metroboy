@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 #include <map>
 #include <unordered_map>
@@ -196,3 +197,4 @@ inline void dump_top_value(VcdDump& d, uart_top<cycles_per_bit>& top) {
 }
 
 //----------------------------------------
+#endif

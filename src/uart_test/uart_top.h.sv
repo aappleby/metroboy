@@ -15,9 +15,11 @@
 `include "uart_rx.h.sv"
 `include "uart_tx.h.sv"
 `include "uart_hello.h.sv"
-`include "ibex_compressed_decoder.h.sv"
-`include "prim_arbiter_fixed.h.sv"
-`include "ibex_multdiv_slow.h.sv"
+//`include "ibex_compressed_decoder.h.sv"
+//`include "prim_arbiter_fixed.h.sv"
+//`include "ibex_multdiv_slow.h.sv"
+
+`include "ibex_pkg.h.sv"
 
 //==============================================================================
 
@@ -51,35 +53,35 @@ module uart_top
   uart_rx #(cycles_per_bit) rx(clk, rst_n, rx_i_serial, rx_o_data, rx_o_valid, rx_o_sum);
   
 
-  logic cdec_valid_i;
-  logic[31:0] cdec_instr_i;
-  logic  cdec_is_compressed_o;
-  logic  cdec_illegal_instr_o;
-  logic[31:0] cdec_instr_o;
-  ibex_compressed_decoder cdec(clk, rst_n, cdec_valid_i, cdec_instr_i, cdec_is_compressed_o, cdec_illegal_instr_o, cdec_instr_o);
+  //logic cdec_valid_i;
+  //logic[31:0] cdec_instr_i;
+  //logic  cdec_is_compressed_o;
+  //logic  cdec_illegal_instr_o;
+  //logic[31:0] cdec_instr_o;
+  //ibex_compressed_decoder cdec(clk, rst_n, cdec_valid_i, cdec_instr_i, cdec_is_compressed_o, cdec_illegal_instr_o, cdec_instr_o);
   
 
-  ibex_multdiv_slow ms(clk, rst_n);
+  //ibex_multdiv_slow ms(clk, rst_n);
 
 
-  logic[8-1:0] prim_arbiter_req_i;
-  logic[32-1:0] prim_arbiter_data_i[8];
-  logic prim_arbiter_ready_i;
-  logic[8-1:0]    prim_arbiter_gnt_o;
-  logic[3-1:0] prim_arbiter_idx_o;
-  logic    prim_arbiter_valid_o;
-  logic[32-1:0]   prim_arbiter_data_o;
-  prim_arbiter_fixed #('d8, 'd32, 'd1) prim_arbiter(
-      clk,
-      rst_n,
-      prim_arbiter_req_i,
-      prim_arbiter_data_i,
-      prim_arbiter_ready_i,
-      prim_arbiter_gnt_o,
-      prim_arbiter_idx_o,
-      prim_arbiter_valid_o,
-      prim_arbiter_data_o
-  );
+  //logic[8-1:0] prim_arbiter_req_i;
+  //logic[32-1:0] prim_arbiter_data_i[8];
+  //logic prim_arbiter_ready_i;
+  //logic[8-1:0]    prim_arbiter_gnt_o;
+  //logic[3-1:0] prim_arbiter_idx_o;
+  //logic    prim_arbiter_valid_o;
+  //logic[32-1:0]   prim_arbiter_data_o;
+  //prim_arbiter_fixed #('d8, 'd32, 'd1) prim_arbiter(
+  //    clk,
+  //    rst_n,
+  //    prim_arbiter_req_i,
+  //    prim_arbiter_data_i,
+  //    prim_arbiter_ready_i,
+  //    prim_arbiter_gnt_o,
+  //    prim_arbiter_idx_o,
+  //    prim_arbiter_valid_o,
+  //    prim_arbiter_data_o
+  //);
   
 
   output logic  o_serial;

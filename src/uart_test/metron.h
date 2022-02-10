@@ -35,4 +35,4 @@ void parse_hex(const char* src_filename, void* dst_data, int dst_size);
 //----------------------------------------
 // 'end' is INCLUSIVE
 
-void readmemh(const char* path, logic<8>* mem, int begin, int end);
+void readmemh(const char* path, void* mem, int begin, int end);

@@ -88,25 +88,7 @@ template<> struct to_signed<uint64_t> { typedef int64_t signed_type; };
 //----------------------------------------
 
 template<int N> struct logic;
-
-template<typename T>
-struct bit_proxy {
-  bit_proxy(T& s, uint64_t i) : self(s), i(i) {}
-
-  T& self;
-  uint64_t i;
-
-  bit_proxy& operator = (bool x) {
-    self = (self & ~(1 << i)) | (x << i);
-    return *this;
-  }
-
-  operator logic<1>() const;
-  logic<1> operator ~() const;
-  logic<1> operator !() const;
-
-  operator bool() const { return (self >> i) & 1; }
-};
+template<typename T> struct bit_proxy;
 
 //----------------------------------------
 // Statically sized chunk of bits.
@@ -119,25 +101,11 @@ struct logic {
 
   logic()                   { x = 0; }
   logic(uint64_t y)         { x = basetype(y) & mask; }
-  logic(int64_t y)          { x = basetype(y) & mask; }
   operator uint64_t() const { return x; }
 
-  bit_proxy<basetype> operator[](uint64_t i) {
-    bit_proxy<basetype> r(*(basetype*)(this), i);
-    return r;
-  }
+  bit_proxy<basetype> operator[](uint64_t i);
 
-  int64_t as_signed() const {
-    uint64_t y = x;
-    uint64_t m = 1ull << (N - 1);
-    return int64_t((x ^ m) - m));
-  }
-
-  logic operator~() const {
-    return ~x & mask;
-  }
-
-  basetype raw() const { return x; }
+  logic operator~() const { return ~uint64_t(x); }
 
 private:
   basetype x;
@@ -146,19 +114,57 @@ private:
 //----------------------------------------
 
 template<typename T>
+struct bit_proxy {
+  bit_proxy(T& s, uint64_t i) : self(s), i(i) {}
+
+  T& self;
+  uint64_t i;
+
+  bit_proxy& operator = (uint64_t x) {
+    self &= ~(1 << i);
+    self |=  ((x & 1) << i);
+    return *this;
+  }
+
+  operator logic<1>() const;
+  logic<1> operator ~() const;
+  logic<1> operator !() const;
+
+  template<typename S>
+  inline logic<1> operator& (const bit_proxy<S>& b) const {
+    auto ax = (self >> i) & 1;
+    auto bx = (b.self >> b.i) & 1;
+    return uint64_t(ax & bx);
+  }
+
+  operator uint64_t() const { return (self >> i) & 1; }
+};
+
+//----------------------------------------
+
+template<typename T>
 inline bit_proxy<T>::operator logic<1>() const {
-  return logic<1>::coerce((self >> i) & 1);
+  return uint64_t((self >> i) & 1);
 }
 
 template<typename T>
 inline logic<1> bit_proxy<T>::operator ~() const {
-  return logic<1>::coerce((~self >> i) & 1);
+  return uint64_t((~self >> i) & 1);
 }
 
 template<typename T>
 inline logic<1> bit_proxy<T>::operator !() const {
-  return logic<1>::coerce((~self >> i) & 1);
+  return uint64_t((~self >> i) & 1);
 }
+
+//----------------------------------------
+
+template<int N>
+bit_proxy<typename logic<N>::basetype> logic<N>::operator[](uint64_t i) {
+  bit_proxy<basetype> r(*(basetype*)(this), i);
+  return r;
+}
+
 
 //----------------------------------------
 // BitExtract helper methods
@@ -238,77 +244,32 @@ BIT_EXTRACT(62);
 BIT_EXTRACT(63);
 BIT_EXTRACT(64);
 
-//template<int N> inline logic<N> operator&(logic<N> a, logic<N> b) { return a.raw() & b.raw(); }
-//template<int N> inline logic<N> operator|(logic<N> a, logic<N> b) { return a.raw() | b.raw(); }
-//template<int N> inline logic<N> operator^(logic<N> a, logic<N> b) { return a.raw() ^ b.raw(); }
-
-#if 0
-template<int M, int N>
-inline uint64_t operator+(logic<M> a, logic<N> b) {
-  return a.raw() + b.raw();
-}
-
-template<int M, int N>
-inline uint64_t operator-(logic<M> a, logic<N> b) {
-  return a.raw() - b.raw();
-}
-
-template<int M, int N>
-inline uint64_t operator&(logic<M> a, logic<N> b) {
-  return a.raw() & b.raw();
-}
-
-template<int M, int N>
-inline uint64_t operator|(logic<M> a, logic<N> b) {
-  return a.raw() | b.raw();
-}
-
-template<int M, int N>
-inline uint64_t operator^(logic<M> a, logic<N> b) {
-  return a.raw() ^ b.raw();
-}
-
-template<int N> inline uint64_t operator<<(logic<N> a, uint64_t s) {
-  return a.raw() << s;
-}
-
-template<int N> inline auto operator>>(logic<N> a, uint64_t s) -> logic<N> {
-  return a.raw() >> s;
-}
-
-#endif
+template<int N> inline logic<N> operator&(logic<N> a, logic<N> b) { return a & b; }
+template<int N> inline logic<N> operator|(logic<N> a, logic<N> b) { return a | b; }
+template<int N> inline logic<N> operator^(logic<N> a, logic<N> b) { return a ^ b; }
 
 //----------------------------------------
 // Concatenate any number of logic<>s and bit_proxy<>s into one logic<>.
 
 template<int NA, int NB>
 inline logic<NA + NB> cat(logic<NA> a, logic<NB> b) {
-  auto ax = typename logic<NA + NB>::basetype(a);
-  auto bx = typename logic<NA + NB>::basetype(b);
-  return logic<NA + NB>::coerce((ax << NB) | bx);
+  return (a << NB) | b;
 }
 
 template<typename T, int N>
 inline logic<1 + N> cat(bit_proxy<T> a, logic<N> b) {
-  auto ax = typename logic<1 + N>::basetype(a);
-  auto bx = typename logic<1 + N>::basetype(b);
-  return logic<1 + N>::coerce((ax << N) | bx);
+  return (a << N) | b;
 }
 
 template<int N, typename T>
 inline logic<N + 1> cat(logic<N> a, bit_proxy<T> b) {
-  auto ax = typename logic<N + 1>::basetype(a);
-  auto bx = typename logic<N + 1>::basetype(b);
-  return logic<1 + N>::coerce((ax << N) | bx);
+  return (a << N) | b;
 }
 
 template<typename S, typename T>
 inline logic<2> cat(bit_proxy<S> a, bit_proxy<T> b) {
-  auto ax = typename logic<2>::basetype(a);
-  auto bx = typename logic<2>::basetype(b);
-  return logic<2>::coerce((ax << 1) | bx);
+  return (a << 1) | b;
 }
-
 
 template<int N, typename... Args>
 inline auto cat(logic<N> a, Args... args) -> logic<N + decltype(cat(args...))::width> {

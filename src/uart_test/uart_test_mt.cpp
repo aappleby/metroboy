@@ -5,14 +5,8 @@
 #include "../CoreLib/Tests.h"
 #include "../CoreLib/Log.h"
 
-//#include "metron.h"
-//#include "uart_top.h"
-//#include "vcd_dump.h"
-
-TestResults logic_test_proxy() {
-  TEST_INIT(__FUNCTION__);
-  TEST_DONE();
-}
+#include "metron.h"
+#include "uart_top.h"
 
 TestResults logic_test_truncate() {
   TEST_INIT("logic_test_truncate");
@@ -24,8 +18,7 @@ TestResults logic_test_truncate() {
   //b = a;
 
   // Assignment after addition should compile and truncate.
-  //b = a + 0; // fires truncation assert in debug build
-  b = b5(a + 0);
+  b = a + 0;
   
   EXPECT_EQ(b, 0b11111);
 
@@ -58,6 +51,16 @@ TestResults logic_test_cat() {
   TEST_DONE();
 }
 
+TestResults logic_test_proxy() {
+  TEST_INIT(__FUNCTION__);
+
+  logic<8> a = 0;
+  a[3] = 1;
+  EXPECT_EQ(8, a);
+
+  TEST_DONE();
+}
+
 TestResults logic_test_suite() {
   TEST_INIT("logic_test_suite");
 
@@ -69,19 +72,16 @@ TestResults logic_test_suite() {
   TEST_DONE();
 }
 
+#if 0
 int main(int argc, char** argv) {
 
-  // We should be able to concatenate two logics into a third logic.
-
-
-  printf("Hello World\n");
-
-  logic_test_suite();
+  auto r = logic_test_suite();
 
   return 0;
 }
+#endif
 
-#if 0
+#if 1
 
 int main(int argc, char** arv) {
 

@@ -6,6 +6,7 @@
 #include "ibex_compressed_decoder.h"
 #include "prim_arbiter_fixed.h"
 #include "ibex_multdiv_slow.h"
+#include "ibex_pkg.h"
 
 //==============================================================================
 

@@ -97,24 +97,28 @@ struct ibex_multdiv_slow {
     logic<34> imd_val_q_i[2],
     logic<1>  multdiv_ready_id_i) {
 
-    // (accum_window_q + op_a_shift_q)
+     // (accum_window_q + op_a_shift_q)
     res_adder_l = b33(alu_adder_ext_i);
-    // (accum_window_q + op_a_shift_q)>>1
+     // (accum_window_q + op_a_shift_q)>>1
     res_adder_h = b33(alu_adder_ext_i, 1);
 
+    //----------
+    // Intermediate value register shared with ALU
+    imd_val_d_o[0]  = cat(b1(0), accum_window_d);
+    imd_val_we_o[0] = ~multdiv_hold;
+    accum_window_q  = b33(imd_val_q_i[0]);
+    unused_imd_val0 = (imd_val_q_i[0])[33];
+
+    imd_val_d_o[1]  = cat(b2(0), op_numerator_d);
+    imd_val_we_o[1] = multdiv_en;
+    op_numerator_q  = b32(imd_val_q_i[1]);
+    unused_imd_val1 = b2(imd_val_q_i[1], 32);
+
+    //----------
 
     multdiv_en = (mult_en_i | div_en_i) & ~multdiv_hold;
 
-    // Intermediate value register shared with ALU
-    imd_val_d_o[0] = cat(b1(0), accum_window_d);
-    //imd_val_we_o[0] = ~multdiv_hold;
-    accum_window_q = b33(imd_val_q_i[0]);
-    unused_imd_val0 = b1(imd_val_q_i[0], 33);
-
-    //imd_val_d_o[1] = cat(b2(0), op_numerator_d);
-    //imd_val_we_o[1] = multdiv_en;
-    op_numerator_q = b32(imd_val_q_i[1]);
-    //unused_imd_val1 = b2(imd_val_q_i[1], 32);
+    //----------
 
     alu_operand_a_o = accum_window_q;
 
@@ -308,7 +312,7 @@ struct ibex_multdiv_slow {
           switch (operator_i) {
             case md_op_e::MD_OP_MULL: {
               accum_window_d = res_adder_l;
-              op_a_shift_d   = b33(op_a_shift_q << 1);
+              op_a_shift_d   = op_a_shift_q << 1;
               op_b_shift_d   = op_b_shift_q >> 1;
               // Multiplication is complete once op_b is zero, unless in data_ind_timing mode where
               // the maximum possible shift-add operations will be completed regardless of op_b
@@ -320,14 +324,14 @@ struct ibex_multdiv_slow {
               accum_window_d = res_adder_h;
               op_a_shift_d   = op_a_shift_q;
               op_b_shift_d   = op_b_shift_q >> 1;
-              md_state_d     = (multdiv_count_q == b5(1)) ? md_fsm_e::MD_LAST : md_fsm_e::MD_COMP;
+              md_state_d     = (multdiv_count_q == 1) ? md_fsm_e::MD_LAST : md_fsm_e::MD_COMP;
               break;
             }
             case md_op_e::MD_OP_DIV:
             case md_op_e::MD_OP_REM: {
               accum_window_d = cat(b32(next_remainder), op_numerator_q[multdiv_count_d]);
               op_a_shift_d   = next_quotient;
-              md_state_d     = (multdiv_count_q == b5(1)) ? md_fsm_e::MD_LAST : md_fsm_e::MD_COMP;
+              md_state_d     = (multdiv_count_q == 1) ? md_fsm_e::MD_LAST : md_fsm_e::MD_COMP;
               break;
             }
             default: break;

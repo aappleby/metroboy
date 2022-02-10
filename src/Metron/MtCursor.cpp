@@ -193,6 +193,8 @@ void MtCursor::emit_assignment_expression(MtNode n) {
 //------------------------------------------------------------------------------
 
 void MtCursor::emit_static_bit_extract(MtNode n, int bx_width) {
+  //n.dump_tree();
+
   advance_to(n);
 
   auto call_args = n.get_field(field_arguments);
@@ -225,17 +227,31 @@ void MtCursor::emit_static_bit_extract(MtNode n, int bx_width) {
   else if (arg_count == 2) {
     // Slicing logic array - foo[7:2]
 
-    if (arg0.sym != sym_identifier) debugbreak();
-    if (arg1.sym != sym_number_literal) debugbreak();
-    int offset = atoi(arg1.start());
+    if (arg1.sym == sym_number_literal)
+    {
+      // Slice at offset
+      if (bx_width == 1) {
+        emit_replacement(n, "%s[%s]", arg0.body().c_str(), arg1.body().c_str());
+      }
+      else {
+        int offset = atoi(arg1.start());
+        emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), bx_width - 1 + offset, offset);
+      }
+    }
+    else
+    {
+      if (bx_width == 1) {
+        emit_replacement(n, "%s[%s]", arg0.body().c_str(), arg1.body().c_str());;
+      }
+      else {
+        emit_replacement(n, "%s[%d + %s : %s]",
+          arg0.body().c_str(),
+          bx_width - 1,
+          arg1.body().c_str(),
+          arg1.body().c_str());
+      }
+    }
 
-    // Slice at offset
-    if (bx_width == 1) {
-      emit_replacement(n, "%s[%d]", arg0.body().c_str(), offset);
-    }
-    else {
-      emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), bx_width - 1 + offset, offset);
-    }
   }
   else {
     debugbreak();
@@ -372,6 +388,7 @@ void MtCursor::emit_call_expression(MtNode n) {
   else if (func_name == "b7")  emit_static_bit_extract(n, 7);
   else if (func_name == "b8")  emit_static_bit_extract(n, 8);
   else if (func_name == "b9")  emit_static_bit_extract(n, 9);
+
   else if (func_name == "b10") emit_static_bit_extract(n, 10);
   else if (func_name == "b11") emit_static_bit_extract(n, 11);
   else if (func_name == "b12") emit_static_bit_extract(n, 12);
@@ -382,6 +399,7 @@ void MtCursor::emit_call_expression(MtNode n) {
   else if (func_name == "b17") emit_static_bit_extract(n, 17);
   else if (func_name == "b18") emit_static_bit_extract(n, 18);
   else if (func_name == "b19") emit_static_bit_extract(n, 19);
+
   else if (func_name == "b20") emit_static_bit_extract(n, 20);
   else if (func_name == "b21") emit_static_bit_extract(n, 21);
   else if (func_name == "b22") emit_static_bit_extract(n, 22);
@@ -392,9 +410,46 @@ void MtCursor::emit_call_expression(MtNode n) {
   else if (func_name == "b27") emit_static_bit_extract(n, 27);
   else if (func_name == "b28") emit_static_bit_extract(n, 28);
   else if (func_name == "b29") emit_static_bit_extract(n, 29);
+
   else if (func_name == "b30") emit_static_bit_extract(n, 30);
   else if (func_name == "b31") emit_static_bit_extract(n, 31);
   else if (func_name == "b32") emit_static_bit_extract(n, 32);
+  else if (func_name == "b33") emit_static_bit_extract(n, 33);
+  else if (func_name == "b34") emit_static_bit_extract(n, 34);
+  else if (func_name == "b35") emit_static_bit_extract(n, 35);
+  else if (func_name == "b36") emit_static_bit_extract(n, 36);
+  else if (func_name == "b37") emit_static_bit_extract(n, 37);
+  else if (func_name == "b38") emit_static_bit_extract(n, 38);
+  else if (func_name == "b39") emit_static_bit_extract(n, 39);
+
+  else if (func_name == "b40") emit_static_bit_extract(n, 40);
+  else if (func_name == "b41") emit_static_bit_extract(n, 41);
+  else if (func_name == "b42") emit_static_bit_extract(n, 42);
+  else if (func_name == "b43") emit_static_bit_extract(n, 43);
+  else if (func_name == "b44") emit_static_bit_extract(n, 44);
+  else if (func_name == "b45") emit_static_bit_extract(n, 45);
+  else if (func_name == "b46") emit_static_bit_extract(n, 46);
+  else if (func_name == "b47") emit_static_bit_extract(n, 47);
+  else if (func_name == "b48") emit_static_bit_extract(n, 48);
+  else if (func_name == "b49") emit_static_bit_extract(n, 49);
+
+  else if (func_name == "b50") emit_static_bit_extract(n, 50);
+  else if (func_name == "b51") emit_static_bit_extract(n, 51);
+  else if (func_name == "b52") emit_static_bit_extract(n, 52);
+  else if (func_name == "b53") emit_static_bit_extract(n, 53);
+  else if (func_name == "b54") emit_static_bit_extract(n, 54);
+  else if (func_name == "b55") emit_static_bit_extract(n, 55);
+  else if (func_name == "b56") emit_static_bit_extract(n, 56);
+  else if (func_name == "b57") emit_static_bit_extract(n, 57);
+  else if (func_name == "b58") emit_static_bit_extract(n, 58);
+  else if (func_name == "b59") emit_static_bit_extract(n, 59);
+
+  else if (func_name == "b60") emit_static_bit_extract(n, 60);
+  else if (func_name == "b61") emit_static_bit_extract(n, 61);
+  else if (func_name == "b62") emit_static_bit_extract(n, 62);
+  else if (func_name == "b63") emit_static_bit_extract(n, 63);
+  else if (func_name == "b64") emit_static_bit_extract(n, 64);
+
   else if (func_name == "cat") {
     // Remove "cat" and replace parens with brackets
 
@@ -814,7 +869,7 @@ void MtCursor::emit_enum_class(MtNode n) {
   assert(value_list.sym == sym_initializer_list);
 
   advance_to(n);
-  emit("typedef enum logic[%d:0] ", atoi(bit_width.start()));
+  emit("typedef enum logic[%d:0] ", atoi(bit_width.start()) - 1);
 
   cursor = value_list.start();
   emit_dispatch(value_list);
@@ -1010,6 +1065,23 @@ void MtCursor::emit_field_declaration(MtNode decl) {
 // ouptut ports to module param list.
 
 void MtCursor::emit_class_specifier(MtNode n) {
+  if (in_module_or_package) {
+    auto node_name = n.get_field(field_name);
+    auto node_body = n.get_field(field_body);
+
+    //n.dump_tree();
+    // Don't turn nested structs into modules, just switch the 
+    advance_to(n);
+    emit("typedef struct packed ");
+    cursor = node_name.end();
+    emit_dispatch(node_body);
+
+    cursor = node_name.start();
+    emit(" ");
+    emit(node_name);
+    cursor = n.end();
+    return;
+  }
 
   for (auto c : n) {
     if (c.sym == anon_sym_class || c.sym == anon_sym_struct) {
@@ -1386,7 +1458,8 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
 
   case sym_enum_specifier:
-    for (auto c : n) emit_dispatch(c);
+    //for (auto c : n) emit_dispatch(c);
+    debugbreak();
     break;
 
   // Chop "blah::blah::blah::identifier" down to "identifier". We'll deal with it later.
@@ -1424,7 +1497,6 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_enumerator:
   case sym_type_definition:
   case sym_expression_statement:
-  case sym_declaration:
   case sym_binary_expression:
   case sym_argument_list:
   case sym_array_declarator:
@@ -1432,24 +1504,137 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_function_declarator:
   case sym_init_declarator:
   case sym_initializer_list:
+  case sym_declaration_list:
+    //n.dump_tree();
     for (auto c : n) {
       emit_dispatch(c);
     }
     break;
+
+  case sym_field_declaration_list:
+    //n.dump_tree();
+    for (auto c : n) {
+      emit_dispatch(c);
+    }
+    cursor = n.end();
+    break;
+
+  case sym_class_specifier:        emit_class_specifier(n); break;
+  case sym_struct_specifier:       emit_class_specifier(n); break;
 
   case sym_number_literal:         emit_number_literal(n); break;
   case sym_field_expression:       emit_flat_field_expression(n); break;
   case sym_return_statement:       emit_return_statement(n); break;
   case sym_template_declaration:   emit_template_declaration(n); break;
   case sym_preproc_include:        emit_preproc_include(n);      break;
+  
   case sym_field_declaration:      emit_field_declaration(n);  break;
+
+  // enum class declarations not in a struct are super broken
+
+  /*
+  ========== tree dump begin
+  [0] s187 declaration:
+  |   [0] f32 s230 type.enum_specifier:
+  |   |   [0] s79 lit: "enum"
+  |   |   [1] s80 lit: "class"
+  |   |   [2] f22 s395 name.type_identifier: "regfile_e"
+  |   |   [3] f4 s83 base.lit: ":"
+  |   |   [4] s395 type_identifier: "typename"
+  |   [1] f9 s224 declarator.init_declarator:
+  |   |   [0] f9 s354 declarator.qualified_identifier:
+  |   |   |   [0] f30 s321 scope.template_type:
+  |   |   |   |   [0] f22 s395 name.type_identifier: "logic"
+  |   |   |   |   [1] f3 s324 arguments.template_argument_list:
+  |   |   |   |   |   [0] s36 lit: "<"
+  |   |   |   |   |   [1] s112 number_literal: "2"
+  |   |   |   |   |   [2] s33 lit: ">"
+  |   |   |   [1] f22 s43 name.lit: "::"
+  |   |   |   [2] s1 identifier: "basetype"
+  |   |   [1] f34 s272 value.initializer_list:
+  |   |   |   [0] s59 lit: "{"
+  |   |   |   [1] s258 assignment_expression:
+  |   |   |   |   [0] f19 s1 left.identifier: "RegFileFF"
+  |   |   |   |   [1] f23 s63 operator.lit: "="
+  |   |   |   |   [2] f29 s112 right.number_literal: "0"
+  |   |   |   [2] s7 lit: ","
+  |   |   |   [3] s258 assignment_expression:
+  |   |   |   |   [0] f19 s1 left.identifier: "RegFileFPGA"
+  |   |   |   |   [1] f23 s63 operator.lit: "="
+  |   |   |   |   [2] f29 s112 right.number_literal: "1"
+  |   |   |   [4] s7 lit: ","
+  |   |   |   [5] s258 assignment_expression:
+  |   |   |   |   [0] f19 s1 left.identifier: "RegFileLatch"
+  |   |   |   |   [1] f23 s63 operator.lit: "="
+  |   |   |   |   [2] f29 s112 right.number_literal: "2"
+  |   |   |   [6] s60 lit: "}"
+  |   [2] s39 lit: ";"
+  ========== tree dump end
+  */
+
+  /*
+    auto enum_name = n.get_field(field_type).get_field(field_name);
+    assert(enum_name.sym == alias_sym_type_identifier);
+
+    auto bitfield_clause = n.child(1);
+    assert(bitfield_clause.sym == sym_bitfield_clause);
+
+    auto base_type = bitfield_clause.child(1).get_field(field_type);
+
+    auto bit_width = base_type.child(0).child(2).child(1);
+
+    assert(bit_width.sym == sym_number_literal);
+
+    auto value_list = bitfield_clause.child(1).child(1);
+    assert(value_list.sym == sym_initializer_list);
+
+    advance_to(n);
+    emit("typedef enum logic[%d:0] ", atoi(bit_width.start()));
+
+    cursor = value_list.start();
+    emit_dispatch(value_list);
+    emit(" %s;", enum_name.body().c_str());
+    cursor = n.end();
+  */
+
+  case sym_declaration: {
+
+    // Handle "enum class".
+    auto node_type = n.get_field(field_type);
+    if (node_type.child_count() >= 2 &&
+        node_type.child(0).body() == "enum" &&
+        node_type.child(1).body() == "class") {
+      advance_to(n);
+
+      auto enum_name = n.get_field(field_type).get_field(field_name);
+      assert(enum_name.sym == alias_sym_type_identifier);
+
+      auto declarator = n.child(1);
+
+      assert(declarator.child(0).child(0).child(0).body() == "logic");
+      auto bit_width = declarator.child(0).child(0).child(1).child(1);
+
+      auto value_list = declarator.child(1);
+
+      advance_to(n);
+      emit("typedef enum logic[%d:0] ", atoi(bit_width.start()) - 1);
+
+      cursor = value_list.start();
+      emit_dispatch(value_list);
+      emit(" %s;", enum_name.body().c_str());
+      cursor = n.end();
+      return;
+    }
+
+    debugbreak();
+    break;
+  }
+
   case sym_compound_statement:     emit_compound_statement(n); break;
   case sym_template_type:          emit_template_type(n);      break;
   case sym_translation_unit:       emit_translation_unit(n); break;
   case sym_primitive_type:         emit_primitive_type(n); break;
   case alias_sym_type_identifier:  emit_type_identifier(n); break;
-  case sym_class_specifier:        emit_class_specifier(n); break;
-  case sym_struct_specifier:       emit_class_specifier(n); break;
   case sym_function_definition:    emit_function_definition(n); break;
   case sym_call_expression:        emit_call_expression(n); break;
   case sym_assignment_expression:  emit_assignment_expression(n); break;
@@ -1458,8 +1643,52 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_case_statement:         emit_case(n); break;
   case sym_switch_statement:       emit_switch(n); break;
 
+
+
+  case sym_namespace_definition: {
+
+    in_module_or_package = true;
+    auto node_name = n.get_field(field_name);
+    auto node_body = n.get_field(field_body);
+    advance_to(n);
+    emit("package %s;", node_name.body().c_str());
+    cursor = node_body.start();
+    
+    for (auto c : node_body) {
+      if      (c.sym == anon_sym_LBRACE) emit_replacement(c, "");
+      else if (c.sym == anon_sym_RBRACE) emit_replacement(c, "");
+      else                               emit_dispatch(c);
+    }
+    //emit_dispatch(node_body);
+    
+    emit("endpackage");
+    emit_newline();
+    cursor = n.end();
+    in_module_or_package = false;
+    break;
+  }
+
   default:
-    emit(n);
+    static std::set<int> passthru_syms = {
+      sym_comment,
+      alias_sym_field_identifier,
+      anon_sym_enum,
+      anon_sym_class,
+      anon_sym_COLON,
+      anon_sym_EQ,
+      anon_sym_COMMA,
+      anon_sym_LF,
+      anon_sym_SEMI,
+      anon_sym_LBRACK, anon_sym_RBRACK, anon_sym_LPAREN, anon_sym_RPAREN, anon_sym_LBRACE, anon_sym_RBRACE,
+    };
+
+    if (passthru_syms.contains(n.sym)) {
+      emit(n);
+    } else {
+      printf("Don't know what to do with %d %s\n", n.sym, n.type());
+      n.dump_tree();
+      debugbreak();
+    }
     break;
   }
 }

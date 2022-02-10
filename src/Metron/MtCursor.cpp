@@ -1072,7 +1072,7 @@ void MtCursor::emit_class_specifier(MtNode n) {
     //n.dump_tree();
     // Don't turn nested structs into modules, just switch the 
     advance_to(n);
-    emit("typedef struct packed ");
+    emit("typedef struct packed");
     cursor = node_name.end();
     emit_dispatch(node_body);
 
@@ -1626,6 +1626,24 @@ void MtCursor::emit_dispatch(MtNode n) {
       return;
     }
 
+    if (n.child_count() >= 5 &&
+        n.child(0).body() == "static" &&
+        n.child(1).body() == "const") {
+      //n.dump_tree();
+
+      advance_to(n);
+      emit("parameter ");
+      cursor = n.child(2).start();
+      emit_dispatch(n.child(2));
+      emit_dispatch(n.child(3));
+      emit_dispatch(n.child(4));
+
+      cursor = n.end();
+      //debugbreak();
+      return;
+    }
+
+    n.dump_tree();
     debugbreak();
     break;
   }
@@ -1679,6 +1697,9 @@ void MtCursor::emit_dispatch(MtNode n) {
       anon_sym_COMMA,
       anon_sym_LF,
       anon_sym_SEMI,
+      anon_sym_SLASH,
+      anon_sym_PLUS,
+      anon_sym_DASH,
       anon_sym_LBRACK, anon_sym_RBRACK, anon_sym_LPAREN, anon_sym_RPAREN, anon_sym_LBRACE, anon_sym_RBRACE,
     };
 

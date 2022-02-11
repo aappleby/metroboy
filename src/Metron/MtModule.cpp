@@ -153,6 +153,24 @@ MtNode MtModule::get_by_id(std::vector<MtNode>& handles, MtNode id) {
   return MtNode::null;
 }
 
+MtField MtModule::get_by_id(std::vector<MtField>& handles, MtNode id) {
+
+  if (id.sym == sym_subscript_expression) {
+    return get_by_id(handles, id.get_field(field_argument));
+  }
+
+  assert(id.sym == sym_identifier);
+  auto name_a = id.node_to_name();
+
+  for (auto& c : handles) {
+    //c.dump_tree();
+    auto name_b = c.name.node_to_name();
+    if (name_a == name_b) return c;
+  }
+
+  return MtField::null;
+}
+
 //------------------------------------------------------------------------------
 // Scanner
 
@@ -189,8 +207,11 @@ void MtModule::collect_moduleparams() {
   }
 }
 
+// FIXME does not handle comma-separated fields "int a, b"
 
 void MtModule::collect_fields() {
+  //std::map<std::string, MtNode> input_dedup;
+
   mod_class.visit_tree([&](MtNode n) {
     if (n.sym == sym_function_definition) {
       auto func_name = n.get_field(field_declarator).get_field(field_declarator).body();
@@ -199,10 +220,11 @@ void MtModule::collect_fields() {
       if (func_name.starts_with("tick") || func_name.starts_with("tock")) {
         func_args.visit_tree([&](MtNode func_arg) {
           if (func_arg.sym == sym_parameter_declaration) {
+            auto arg_type = func_arg.get_field(field_type);
             auto arg_name = func_arg.get_field(field_declarator);
 
             if (!arg_name.match("rst_n")) {
-              inputs.push_back(func_arg);
+              inputs.push_back({func_arg, arg_type, arg_name});
             }
           }
         });
@@ -212,11 +234,63 @@ void MtModule::collect_fields() {
 
   mod_class.visit_tree([&](MtNode n) {
     if (n.sym == sym_field_declaration) {
-      if      (n.field_is_input())  inputs.push_back(n);
-      else if (n.field_is_output()) outputs.push_back(n);
-      else if (n.field_is_param())  localparams.push_back(n);
-      else if (n.field_is_module()) submodules.push_back(n);
-      else                          fields.push_back(n);
+      //n.dump_tree();
+
+      for (auto c : n) {
+        if (c.sym == sym_storage_class_specifier) {
+          n.dump_tree();
+          debugbreak();
+        }
+      }
+
+      int id_count = 0;
+      auto node_type = n.get_field(field_type);
+
+      for (auto c : n) {
+        if (c.sym == alias_sym_field_identifier || c.sym == sym_array_declarator) {
+          id_count++;
+          auto node_name = c;
+          MtField f = { n, node_type, node_name };
+          if (f.is_input()) {
+            inputs.push_back(f);
+          }
+          else if (f.is_output()) {
+            outputs.push_back(f);
+          }
+          else {
+            fields.push_back(f);
+          }
+        }
+      }
+
+
+      //n.dump_tree();
+      //int x = 1;
+      //x++;
+
+      if (id_count == 0) {
+        if (node_type.sym == sym_enum_specifier) {
+          enums.push_back(n);
+        }
+        else {
+          n.dump_tree();
+          debugbreak();
+        }
+      }
+
+      /*
+      else if (f.is_param())  {
+        localparams.push_back(n);
+      }
+      else if (f.is_module()) {
+        submodules.push_back(n);
+      }
+      else if (f.is_enum()) {
+      }
+      else {
+        //fields.push_back(n);
+      }
+      */
     }
 
     if (n.sym == sym_function_definition) {
@@ -241,18 +315,18 @@ void MtModule::collect_fields() {
 //------------------------------------------------------------------------------
 
 void MtModule::check_dirty_tick(MtNode func_def) {
-  std::set<MtNode> dirty_fields;
+  std::set<MtField> dirty_fields;
   check_dirty_dispatch(func_def, true, dirty_fields, 0);
 }
 
 void MtModule::check_dirty_tock(MtNode func_def) {
-  std::set<MtNode> dirty_fields;
+  std::set<MtField> dirty_fields;
   check_dirty_dispatch(func_def, false, dirty_fields, 0);
 }
 
 //----------------------------------------
 
-void MtModule::check_dirty_read(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth) {
+void MtModule::check_dirty_read(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
 
   // Reading from a dirty field in a seq block is forbidden.
   if (is_seq) {
@@ -273,7 +347,7 @@ void MtModule::check_dirty_read(MtNode n, bool is_seq, std::set<MtNode>& dirty_f
 
 //----------------------------------------
 
-void MtModule::check_dirty_write(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth) {
+void MtModule::check_dirty_write(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
   // Writing to an already-dirty field in a seq block is forbidden.
   if (is_seq) {
     auto field = get_field_by_id(n);
@@ -312,7 +386,7 @@ void MtModule::check_dirty_write(MtNode n, bool is_seq, std::set<MtNode>& dirty_
 
 //------------------------------------------------------------------------------
 
-void MtModule::check_dirty_dispatch(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth) {
+void MtModule::check_dirty_dispatch(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
   if (!n || !n.is_named()) return;
 
   switch (n.sym) {
@@ -328,7 +402,7 @@ void MtModule::check_dirty_dispatch(MtNode n, bool is_seq, std::set<MtNode>& dir
 //------------------------------------------------------------------------------
 // Check for reads on the RHS of an assignment, then check the write on the left.
 
-void MtModule::check_dirty_assign(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth) {
+void MtModule::check_dirty_assign(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
   auto lhs = n.get_field(field_left);
   auto rhs = n.get_field(field_right);
 
@@ -339,11 +413,11 @@ void MtModule::check_dirty_assign(MtNode n, bool is_seq, std::set<MtNode>& dirty
 //----------------------------------------
 // Check the "if" branch and the "else" branch independently and then merge the results.
 
-void MtModule::check_dirty_if(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth) {
+void MtModule::check_dirty_if(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
   check_dirty_dispatch(n.get_field(field_condition), is_seq, dirty_fields, depth + 1);
 
-  std::set<MtNode> if_set = dirty_fields;
-  std::set<MtNode> else_set = dirty_fields;
+  std::set<MtField> if_set = dirty_fields;
+  std::set<MtField> else_set = dirty_fields;
 
   check_dirty_dispatch(n.get_field(field_consequence), is_seq, if_set, depth + 1);
   check_dirty_dispatch(n.get_field(field_alternative), is_seq, else_set, depth + 1);
@@ -355,7 +429,7 @@ void MtModule::check_dirty_if(MtNode n, bool is_seq, std::set<MtNode>& dirty_fie
 //----------------------------------------
 // Follow member function calls.
 
-void MtModule::check_dirty_call(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth) {
+void MtModule::check_dirty_call(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
   auto node_func = n.get_field(field_function);
   auto node_args = n.get_field(field_arguments);
 
@@ -374,7 +448,7 @@ void MtModule::check_dirty_call(MtNode n, bool is_seq, std::set<MtNode>& dirty_f
 //----------------------------------------
 // Check the condition of a switch statement, then check each case independently.
 
-void MtModule::check_dirty_switch(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth) {
+void MtModule::check_dirty_switch(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
 
   auto cond = n.get_field(field_condition);
   auto body = n.get_field(field_body);

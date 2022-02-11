@@ -27,18 +27,13 @@ module ibex_multdiv_slow
   input  logic [31:0]      alu_adder_i,
   input  logic             equal_to_zero_i,
   input  logic             data_ind_timing_i,
-
   output logic [32:0]      alu_operand_a_o,
   output logic [32:0]      alu_operand_b_o,
-
   input  logic [33:0]      imd_val_q_i[2],
   output logic [33:0]      imd_val_d_o[2],
   output logic  [1:0]      imd_val_we_o,
-
   input  logic             multdiv_ready_id_i,
-
   output logic [31:0]      multdiv_result_o,
-
   output logic             valid_o
 );
 
@@ -83,7 +78,7 @@ module ibex_multdiv_slow
   /////////////////////
 
   // Intermediate value register shared with ALU
-  assign imd_val_d_o[0]  = {1'b0,accum_window_d};
+  assign imd_val_d_o[0]  = {1'b0, accum_window_d};
   assign imd_val_we_o[0] = ~multdiv_hold;
   assign accum_window_q  = imd_val_q_i[0][32:0];
   assign unused_imd_val0 = imd_val_q_i[0][33];
@@ -144,7 +139,7 @@ module ibex_multdiv_slow
   end
 
   // Multiplier partial product calculation
-  assign b_0             = {32{op_b_shift_q[0]}};
+  assign b_0             = {32 {op_b_shift_q[0]}};
   assign op_a_bw_pp      = { ~(op_a_shift_q[32] & op_b_shift_q[0]),  (op_a_shift_q[31:0] & b_0) };
   assign op_a_bw_last_pp = {  (op_a_shift_q[32] & op_b_shift_q[0]), ~(op_a_shift_q[31:0] & b_0) };
 
@@ -163,13 +158,13 @@ module ibex_multdiv_slow
   assign is_greater_equal = (accum_window_q[31] == op_b_shift_q[31]) ?
       ~res_adder_h[31] : accum_window_q[31];
 
-  assign one_shift      = {32'b0, 1'b1} << multdiv_count_q;
+  assign one_shift      = { 32'b0, 1'b1 } << multdiv_count_q;
 
   assign next_remainder = is_greater_equal ? res_adder_h[31:0]        : accum_window_q[31:0];
   assign next_quotient  = is_greater_equal ? op_a_shift_q | one_shift : op_a_shift_q;
 
-  assign div_change_sign  = (sign_a ^ sign_b) & ~div_by_zero_q;
-  assign rem_change_sign  = sign_a;
+  assign div_change_sign = (sign_a ^ sign_b) & ~div_by_zero_q;
+  assign rem_change_sign = sign_a;
 
   always_comb begin
     multdiv_count_d  = multdiv_count_q;
@@ -225,7 +220,7 @@ module ibex_multdiv_slow
 
         MD_ABS_A: begin
           // quotient
-          op_a_shift_d   = '0;
+          op_a_shift_d   = 0;
           // A abs value
           op_numerator_d = sign_a ? alu_adder_i : op_a_i;
           md_state_d     = MD_ABS_B;

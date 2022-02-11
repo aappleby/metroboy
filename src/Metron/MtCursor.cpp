@@ -164,8 +164,6 @@ void MtCursor::emit_preproc_include(MtNode n) {
 // Change '=' to '<=' if lhs is a field and we're inside a sequential block.
 
 void MtCursor::emit_assignment_expression(MtNode n) {
-  //n.dump_tree();
-
   auto lhs = n.get_field(field_left);
   auto op  = n.get_field(field_operator);
   auto rhs = n.get_field(field_right);
@@ -174,7 +172,7 @@ void MtCursor::emit_assignment_expression(MtNode n) {
   if (lhs.sym == sym_identifier) {
     std::string lhs_name = lhs.body();
     for (auto& f : mod->fields) {
-      if (f.node_to_name() == lhs_name) {
+      if (f.name.node_to_name() == lhs_name) {
         lhs_is_field = true;
         break;
       }
@@ -211,16 +209,33 @@ void MtCursor::emit_static_bit_extract(MtNode n, int bx_width) {
 
       emit("%d", bx_width);
       cursor = arg0.start();
-      emit_number_literal(arg0);
+      emit_number_literal(arg0, true);
+      cursor = n.end();
+    }
+    else if (arg0.sym == sym_identifier || arg0.sym == sym_subscript_expression) {
+      // Size-casting expression
+      cursor = arg0.start();
+      emit_dispatch(arg0);
+      if (bx_width > 1) {
+        emit("[%d:0]", bx_width - 1);
+      } else {
+        emit("[0]");
+      }
       cursor = n.end();
     }
     else {
-      // Size-casting expression - 8'b(foo << 2)
+      arg0.dump_tree();
 
-      emit("%d'(", bx_width);
+      // Size-casting expression
       cursor = arg0.start();
+      emit("(");
       emit_dispatch(arg0);
       emit(")");
+      if (bx_width > 1) {
+        emit("[%d:0]", bx_width - 1);
+      } else {
+        emit("[0]");
+      }
       cursor = n.end();
     }
   }
@@ -666,7 +681,7 @@ void MtCursor::emit_function_definition(MtNode func_def) {
   in_seq  = false;
 
   if (is_tick && !mod->submodules.empty()) {
-    emit_newline();
+    //emit_newline();
 
     std::vector<MtNode> submod_call_nodes;
 
@@ -786,31 +801,29 @@ void MtCursor::emit_template_glue_declaration(MtNode decl, const std::string& pr
 
 */
 
-void MtCursor::emit_glue_declaration(MtNode decl, const std::string& prefix) {
+void MtCursor::emit_glue_declaration(MtField f, const std::string& prefix) {
+  cursor = f.type.start();
   //decl.dump_tree();
 
-  assert(decl.sym == sym_field_declaration ||
-         decl.sym == sym_parameter_declaration);
-
-  auto node_type = decl.get_field(field_type);
-  auto node_name = decl.get_field(field_declarator);
+  //assert(decl.sym == sym_field_declaration ||
+  //       decl.sym == sym_parameter_declaration);
 
   std::string type_name;
 
-  if (node_type.sym == alias_sym_type_identifier || node_type.sym == sym_primitive_type) {
-    type_name = node_type.body();
+  if (f.type.sym == alias_sym_type_identifier || f.type.sym == sym_primitive_type) {
+    type_name = f.type.body();
   }
-  else if (node_type.sym == sym_template_type) {
-    type_name = node_type.get_field(field_name).body();
+  else if (f.type.sym == sym_template_type) {
+    type_name = f.type.get_field(field_name).body();
   }
   else {
     debugbreak();
   }
 
-  emit_dispatch(node_type);
-  advance_to(node_name);
+  emit_dispatch(f.type);
+  advance_to(f.name);
   emit("%s_", prefix.c_str());
-  emit_dispatch(node_name);
+  emit_dispatch(f.name);
   emit(";");
   emit_newline();
 }
@@ -923,40 +936,40 @@ void MtCursor::emit_enum_class(MtNode n) {
 */
 
 void MtCursor::emit_field_declaration(MtNode decl) {
+  // FIXME - There can be more than one field in a single FieldDecl - "int a, b, c"
 
-  //decl.dump_tree();
+  MtField field(decl, decl.get_field(field_type), decl.get_field(field_declarator));
+
+  // Input and output fields go in the port list, not in the module body.
+  if (!in_ports && (field.is_input() || field.is_output())) {
+    skip_over(decl);
+    return;
+  }
 
   // Check if this field is a submodule by looking up its type name in our
   // module list.
 
-  auto node_type = decl.get_field(field_type);
-
   // Handle "enum class".
-  if (node_type.child_count() == 3 &&
-      node_type.child(0).body() == "enum" &&
-      node_type.child(1).body() == "class" && 
-      node_type.child(2).sym == alias_sym_type_identifier) {
+  if (field.type.child_count() == 3 &&
+      field.type.child(0).body() == "enum" &&
+      field.type.child(1).body() == "class" && 
+      field.type.child(2).sym == alias_sym_type_identifier) {
     emit_enum_class(decl);
     return;
   }
 
-
+  // FIXME need cleaner way to get type string
   std::string type_name;
 
-  switch (node_type.sym) {
-  case alias_sym_type_identifier: type_name = node_type.body(); break;
-  case sym_primitive_type:        type_name = node_type.body(); break;
-  case sym_template_type:         type_name = node_type.get_field(field_name).body(); break;
+  switch (field.type.sym) {
+  case alias_sym_type_identifier: type_name = field.type.body(); break;
+  case sym_primitive_type:        type_name = field.type.body(); break;
+  case sym_template_type:         type_name = field.type.get_field(field_name).body(); break;
   
   case sym_enum_specifier: {
-    //decl.dump_tree();
-
-    auto name = node_type.get_field(field_name);
-    if (name.is_null()) {
+    type_name = field.type.get_field(field_name);
+    if (field.type.is_null()) {
       type_name = "<anonymous enum>";
-    }
-    else {
-      type_name = node_type.get_field(field_name).body(); break;
     }
     break;
   }
@@ -969,20 +982,10 @@ void MtCursor::emit_field_declaration(MtNode decl) {
 
   auto submod = mod->lib->find_module(type_name);
 
-
   // If this isn't a submodule, just tack on "input" and "output" annotations.
   if (!submod) {
-    if (decl.field_is_input()) {
-      //decl.dump_tree();
-      advance_to(decl);
-      emit("input ");
-    }
-    if (decl.field_is_output()) {
-      advance_to(decl);
-      emit("output ");
-    }
 
-    if (node_type.sym == sym_enum_specifier) {
+    if (field.type.sym == sym_enum_specifier) {
       //decl.dump_tree();
 
       advance_to(decl);
@@ -991,7 +994,7 @@ void MtCursor::emit_field_declaration(MtNode decl) {
       cursor = node_value.start();
       emit_dispatch(node_value);
 
-      auto name = node_type.get_field(field_name);
+      auto name = field.type.get_field(field_name);
       cursor = name.start();
       emit(" ");
       emit_dispatch(name);
@@ -1027,7 +1030,6 @@ void MtCursor::emit_field_declaration(MtNode decl) {
     //input.dump_tree();
 
     MtCursor sub_cursor(submod, out);
-    sub_cursor.cursor = input.start();
     sub_cursor.indent_stack = indent_stack;
     sub_cursor.id_replacements = id_replacements;
     sub_cursor.emit_glue_declaration(input, inst_name);
@@ -1035,7 +1037,6 @@ void MtCursor::emit_field_declaration(MtNode decl) {
 
   for (auto& output : submod->outputs) {
     MtCursor sub_cursor(submod, out);
-    sub_cursor.cursor = output.start();
     sub_cursor.indent_stack = indent_stack;
     sub_cursor.id_replacements = id_replacements;
     sub_cursor.emit_glue_declaration(output, inst_name);
@@ -1065,11 +1066,12 @@ void MtCursor::emit_field_declaration(MtNode decl) {
 // ouptut ports to module param list.
 
 void MtCursor::emit_class_specifier(MtNode n) {
+  //n.dump_tree();
+
   if (in_module_or_package) {
     auto node_name = n.get_field(field_name);
     auto node_body = n.get_field(field_body);
 
-    //n.dump_tree();
     // Don't turn nested structs into modules, just switch the 
     advance_to(n);
     emit("typedef struct packed");
@@ -1081,6 +1083,16 @@ void MtCursor::emit_class_specifier(MtNode n) {
     emit(node_name);
     cursor = n.end();
     return;
+  }
+
+  std::set<std::string> input_dedup;
+  std::vector<MtField> inputs2;
+  for (auto input : mod->inputs) {
+    auto input_name = input.name.body();
+    if (!input_dedup.contains(input_name)) {
+      input_dedup.insert(input_name);
+      inputs2.push_back(input);
+    }
   }
 
   for (auto c : n) {
@@ -1099,15 +1111,49 @@ void MtCursor::emit_class_specifier(MtNode n) {
       }
 
       // Emit an old-style port list
+      in_ports = true;
+      trim_namespaces = false;
+
       emit_newline();
-      emit("(clk, rst_n");
-      for (auto input : mod->inputs) {
-        emit(", %s", input.node_to_name().c_str());
+      emit("(\n");
+
+      emit_newline();
+      emit("input logic clk,");
+
+      emit_newline();
+      emit("input logic rst_n,");
+
+      for (int i = 0; i < inputs2.size(); i++)  {
+        auto& input = inputs2[i];
+        MtCursor sub_cursor = *this;
+        emit_newline();
+        emit("input ");
+        sub_cursor.cursor = input.type.start();
+        sub_cursor.emit_dispatch(input.type);
+        emit(" ");
+        sub_cursor.cursor = input.name.start();
+        sub_cursor.emit_dispatch(input.name);
+        emit(",");
       }
-      for (auto output : mod->outputs) {
-        emit(", %s", output.node_to_name().c_str());
+
+      for (int i = 0; i < mod->outputs.size(); i++)  {
+        auto& output = mod->outputs[i];
+        MtCursor sub_cursor = *this;
+        emit_newline();
+        emit("output ");
+        sub_cursor.cursor = output.type.start();
+        sub_cursor.emit_dispatch(output.type);
+        emit(" ");
+        sub_cursor.cursor = output.name.start();
+        sub_cursor.emit_dispatch(output.name);
+        
+        if (i != mod->outputs.size() - 1) emit(",");
       }
-      emit(");");
+
+      emit("\n);");
+
+      trim_namespaces = true;
+      in_ports = false;
 
     }
     else if (c.field == field_body) {
@@ -1119,22 +1165,6 @@ void MtCursor::emit_class_specifier(MtNode n) {
       emit_newline();
       emit("/*verilator public_module*/");
       emit_newline();
-
-      emit_newline();
-      emit("input logic clk;");
-
-      emit_newline();
-      emit("input logic rst_n;");
-
-      for (auto input : mod->inputs) {
-        //input.dump_tree();
-        MtCursor sub_cursor = *this;
-        sub_cursor.cursor = input.start();
-        emit_newline();
-        emit("input ");
-        sub_cursor.emit_dispatch(input);
-        emit(";");
-      }
 
       // Emit the module body, with a few modifications.
       // Discard the opening brace
@@ -1275,7 +1305,7 @@ void MtCursor::emit_translation_unit(MtNode n) {
 // Replace "0x" prefixes with "'h"
 // Replace "0b" prefixes with "'b"
 
-void MtCursor::emit_number_literal(MtNode n) {
+void MtCursor::emit_number_literal(MtNode n, bool use_decimal_prefix) {
   std::string body = n.body();
   if (body.starts_with("0x")) {
     emit_replacement(n, "'h%s", body.c_str() + 2);
@@ -1285,7 +1315,7 @@ void MtCursor::emit_number_literal(MtNode n) {
   }
   else {
     advance_to(n);
-    emit("'d");
+    if (use_decimal_prefix) emit("'d");
     emit(n);
   }
 }
@@ -1440,8 +1470,8 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
 
   case sym_break_statement:
-    //emit_replacement(n, "/*break;*/");
-    comment_out(n);
+    emit_replacement(n, "/*break*/;");
+    //comment_out(n);
     break;
 
   case sym_identifier:
@@ -1464,12 +1494,38 @@ void MtCursor::emit_dispatch(MtNode n) {
 
   // Chop "blah::blah::blah::identifier" down to "identifier". We'll deal with it later.
   // TreeSitter bug: The field tags seem broken here.
+
+  // no don't do that we need ibex_pkg::md_op_e
+  // we do need to prune it for qualified enum names tho...
+
+  /*
+  ========== tree dump begin
+  [0] f29 s354 right.qualified_identifier:
+  |   [0] f30 s393 scope.namespace_identifier: "md_fsm_e"
+  |   [1] f22 s43 name.lit: "::"
+  |   [2] s1 identifier: "MD_FINISH"
+  ========== tree dump end
+
+  ========== tree dump begin
+  [0] f32 s354 type.qualified_identifier:
+  |   [0] f30 s393 scope.namespace_identifier: "ibex_pkg"
+  |   [1] f22 s43 name.lit: "::"
+  |   [2] s395 type_identifier: "md_op_e"
+  ========== tree dump end
+  */
+
   case sym_qualified_identifier: {
-    auto last_child = n.child(n.child_count() - 1);
-    advance_to(n);
-    cursor = last_child.start();
-    emit_dispatch(last_child);
-    cursor = n.end();
+    //n.dump_tree();
+
+    if (trim_namespaces) {
+      auto last_child = n.child(n.child_count() - 1);
+      advance_to(n);
+      cursor = last_child.start();
+      emit_dispatch(last_child);
+      cursor = n.end();
+    } else {
+      for (auto c : n) emit_dispatch(c);
+    }
     break;
   }
 
@@ -1510,6 +1566,15 @@ void MtCursor::emit_dispatch(MtNode n) {
       emit_dispatch(c);
     }
     break;
+
+  // TreeSitter nodes slightly broken for "a = b ? c : d;"...                              
+  case sym_conditional_expression: {
+    for (auto c : n) {
+      emit_dispatch(c);
+    }
+    cursor = n.end();
+    break;
+  }
 
   case sym_field_declaration_list:
     //n.dump_tree();
@@ -1661,7 +1726,11 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_case_statement:         emit_case(n); break;
   case sym_switch_statement:       emit_switch(n); break;
 
-
+  case sym_using_declaration: {
+    auto name = n.child(2).body();
+    emit_replacement(n, "import %s::*;", name.c_str());
+    break;
+  }
 
   case sym_namespace_definition: {
 
@@ -1689,21 +1758,14 @@ void MtCursor::emit_dispatch(MtNode n) {
   default:
     static std::set<int> passthru_syms = {
       sym_comment,
+      alias_sym_namespace_identifier,
       alias_sym_field_identifier,
-      anon_sym_enum,
-      anon_sym_class,
-      anon_sym_COLON,
-      anon_sym_EQ,
-      anon_sym_COMMA,
-      anon_sym_LF,
-      anon_sym_SEMI,
-      anon_sym_SLASH,
-      anon_sym_PLUS,
-      anon_sym_DASH,
-      anon_sym_LBRACK, anon_sym_RBRACK, anon_sym_LPAREN, anon_sym_RPAREN, anon_sym_LBRACE, anon_sym_RBRACE,
     };
 
-    if (passthru_syms.contains(n.sym)) {
+    if (!n.is_named()) {
+      emit(n);
+    }
+    else if (passthru_syms.contains(n.sym)) {
       emit(n);
     } else {
       printf("Don't know what to do with %d %s\n", n.sym, n.type());

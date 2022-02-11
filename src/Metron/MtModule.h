@@ -2,6 +2,7 @@
 #include "Platform.h"
 
 #include "MtNode.h"
+#include "MtField.h"
 
 //------------------------------------------------------------------------------
 
@@ -16,11 +17,13 @@ struct MtModule {
   // Identifier lookup
 
   MtNode get_by_id(std::vector<MtNode>& handles, MtNode id);
-  MtNode get_field_by_id(MtNode id)    { return get_by_id(fields, id); }
   MtNode get_task_by_id(MtNode id)     { return get_by_id(tasks, id); }
   MtNode get_function_by_id(MtNode id) { return get_by_id(functions, id);}
-  MtNode get_input_by_id(MtNode id)    { return get_by_id(inputs, id); }
-  MtNode get_output_by_id(MtNode id)   { return get_by_id(outputs, id); }
+
+  MtField get_by_id(std::vector<MtField>& handles, MtNode id);
+  MtField get_input_by_id(MtNode id)  { return get_by_id(inputs, id); }
+  MtField get_output_by_id(MtNode id) { return get_by_id(outputs, id); }
+  MtField get_field_by_id(MtNode id)  { return get_by_id(outputs, id); }
 
   // Scanner
   
@@ -32,13 +35,13 @@ struct MtModule {
 
   void check_dirty_tick(MtNode n);
   void check_dirty_tock(MtNode n);
-  void check_dirty_read(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth);
-  void check_dirty_write(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth);
-  void check_dirty_dispatch(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth);
-  void check_dirty_assign(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth);
-  void check_dirty_if(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth);
-  void check_dirty_call(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth);
-  void check_dirty_switch(MtNode n, bool is_seq, std::set<MtNode>& dirty_fields, int depth);
+  void check_dirty_read(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
+  void check_dirty_write(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
+  void check_dirty_dispatch(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
+  void check_dirty_assign(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
+  void check_dirty_if(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
+  void check_dirty_call(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
+  void check_dirty_switch(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
 
   //----------
 
@@ -65,10 +68,13 @@ struct MtModule {
   MtNode mod_param_list;
 
   std::vector<MtNode> modparams;
-  std::vector<MtNode> inputs;
-  std::vector<MtNode> outputs;
   std::vector<MtNode> localparams;
-  std::vector<MtNode> fields;
+
+  std::vector<MtField> inputs;
+  std::vector<MtField> outputs;
+  std::vector<MtField> fields;
+
+  std::vector<MtNode> enums;
   std::vector<MtNode> tasks;
   std::vector<MtNode> functions;
   std::vector<MtNode> submodules;

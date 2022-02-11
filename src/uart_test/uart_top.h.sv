@@ -17,9 +17,7 @@
 `include "uart_hello.h.sv"
 //`include "ibex_compressed_decoder.h.sv"
 //`include "prim_arbiter_fixed.h.sv"
-//`include "ibex_multdiv_slow.h.sv"
-
-`include "ibex_pkg.h.sv"
+`include "ibex_multdiv_slow.h.sv"
 
 //==============================================================================
 

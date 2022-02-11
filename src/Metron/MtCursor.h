@@ -1,6 +1,8 @@
 #pragma once
 #include "Platform.h"
 
+struct MtField;
+
 //------------------------------------------------------------------------------
 
 struct MtCursor {
@@ -31,7 +33,7 @@ struct MtCursor {
 
   // Per-symbol emit()s.
 
-  void emit_number_literal(MtNode n);
+  void emit_number_literal(MtNode n, bool use_decimal_prefix = false);
   void emit_primitive_type(MtNode n);
   void emit_identifier(MtNode n);
   void emit_type_identifier(MtNode n);
@@ -41,7 +43,7 @@ struct MtCursor {
   void emit_call_expression(MtNode n);
   void emit_function_definition(MtNode n);
   void emit_template_glue_declaration(MtNode decl, const std::string& prefix);
-  void emit_glue_declaration(MtNode decl, const std::string& prefix);
+  void emit_glue_declaration(MtField f, const std::string& prefix);
   void emit_field_declaration(MtNode decl);
   void emit_class_specifier(MtNode n);
   void emit_compound_statement(MtNode n);
@@ -80,6 +82,9 @@ struct MtCursor {
   bool in_seq = false;
   bool in_final = false;
   bool in_module_or_package = false;
+
+  bool trim_namespaces = true;
+  bool in_ports = false;
 };
 
 //------------------------------------------------------------------------------

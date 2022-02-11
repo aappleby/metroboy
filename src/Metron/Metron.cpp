@@ -24,8 +24,8 @@ int main(int argc, char** argv) {
   //lib.load("src/uart_test/, arg + ".sv");
   //lib.load("uart_rx.h", "uart_rx.h.sv");
 
-  //std::string file = "ibex_multdiv_slow.h";
-  std::string file = "ibex_pkg.h";
+  std::string file = "ibex_multdiv_slow.h";
+  //std::string file = "ibex_pkg.h";
   lib.load(file, file + ".sv");
 
   for (auto& module : lib.modules)
@@ -60,6 +60,12 @@ int main(int argc, char** argv) {
 
       cursor.emit("// FIELDS:       ");
       for (auto f : module->fields) {
+        cursor.emit("%s, ", f.name.node_to_name().c_str());
+      }
+      cursor.emit("\n");
+
+      cursor.emit("// ENUMS:       ");
+      for (auto f : module->enums) {
         cursor.emit("%s, ", f.node_to_name().c_str());
       }
       cursor.emit("\n");
@@ -81,6 +87,7 @@ int main(int argc, char** argv) {
 
     //module->mod_root.dump_tree();
 
+    cursor.emit("\n");
     cursor.cursor = module->source;
     cursor.emit_dispatch(module->mod_root);
     printf("\n");

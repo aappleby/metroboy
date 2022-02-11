@@ -91,20 +91,6 @@ module uart_top
 
   logic[7:0] temp;
 
-  typedef enum {
-    OPCODE_LOAD = 'h03,
-    OPCODE_MISC_MEM = 'h0f,
-    OPCODE_OP_IMM = 'h13,
-    OPCODE_AUIPC = 'h17,
-    OPCODE_STORE = 'h23,
-    OPCODE_OP = 'h33,
-    OPCODE_LUI = 'h37,
-    OPCODE_BRANCH = 'h63,
-    OPCODE_JALR = 'h67,
-    OPCODE_JAL = 'h6f,
-    OPCODE_SYSTEM = 'h73
-  } opcode_e;
-
   //----------------------------------------
 
   initial begin : init

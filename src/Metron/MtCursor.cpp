@@ -207,9 +207,8 @@ void MtCursor::emit_static_bit_extract(MtNode n, int bx_width) {
     if (arg0.sym == sym_number_literal) {
       // Explicitly sized literal - 8'd10
 
-      emit("%d", bx_width);
       cursor = arg0.start();
-      emit_number_literal(arg0, true);
+      emit_number_literal(arg0, bx_width);
       cursor = n.end();
     }
     else if (arg0.sym == sym_identifier || arg0.sym == sym_subscript_expression) {
@@ -1305,18 +1304,42 @@ void MtCursor::emit_translation_unit(MtNode n) {
 // Replace "0x" prefixes with "'h"
 // Replace "0b" prefixes with "'b"
 
-void MtCursor::emit_number_literal(MtNode n, bool use_decimal_prefix) {
+void MtCursor::emit_number_literal(MtNode n, int size_cast) {
+  advance_to(n);
+
   std::string body = n.body();
+
+  // Count how many 's are in the number
+  int spacer_count = 0;
+  
+  for(auto& c : body) if (c == '\'') {
+    c = '_';
+    spacer_count++;
+  }
+  
+  char type_prefix = 'd';
+  auto size = body.size() - spacer_count;
+  
   if (body.starts_with("0x")) {
-    emit_replacement(n, "'h%s", body.c_str() + 2);
+    type_prefix = 'h';
+    body.erase(0,2);
+    size = size_cast ? size_cast : (body.size() - spacer_count) * 4;
   }
   else if (body.starts_with("0b")) {
-    emit_replacement(n, "'b%s", body.c_str() + 2);
+    type_prefix = 'b';
+    body.erase(0,2);
+    size = size_cast ? size_cast : body.size() - spacer_count;
   }
   else {
-    advance_to(n);
-    if (use_decimal_prefix) emit("'d");
-    emit(n);
+    type_prefix = 'd';
+    size = size_cast;
+  }
+
+  if (type_prefix == 'd' && !size) {
+    emit_replacement(n, "%s", body.c_str());
+  }
+  else {
+    emit_replacement(n, "%d'%c%s", size, type_prefix, body.c_str());
   }
 }
 
@@ -1429,6 +1452,21 @@ void MtCursor::emit_switch(MtNode n) {
 
 //------------------------------------------------------------------------------
 
+void MtCursor::emit_comment(MtNode n) {
+  auto body = n.body();
+  if (body.starts_with("/*#")) {
+    body.erase(body.size() - 3, 3);
+    body.erase(0, 3);
+    //emit_replacement(n, "Magic Comment!");
+    emit_replacement(n, body.c_str());
+  }
+  else {
+    emit(n);
+  }
+}
+
+//------------------------------------------------------------------------------
+
 /*
 ========== tree dump begin
 [0] s236 field_declaration:
@@ -1470,8 +1508,10 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
 
   case sym_break_statement:
-    emit_replacement(n, "/*break*/;");
+    //n.dump_tree();
+    //emit_replacement(n, "/*break*/;");
     //comment_out(n);
+    cursor = n.end();
     break;
 
   case sym_identifier:
@@ -1755,9 +1795,10 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
   }
 
+  case sym_comment: emit_comment(n); break;
+
   default:
     static std::set<int> passthru_syms = {
-      sym_comment,
       alias_sym_namespace_identifier,
       alias_sym_field_identifier,
     };

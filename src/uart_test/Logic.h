@@ -173,8 +173,8 @@ template<int N> inline logic<N> bx(uint64_t a)        { return a; }
 template<int N> inline logic<N> bx(uint64_t a, int e) { return a >> e; }
 
 #define BIT_EXTRACT(A) \
-inline logic<A> b##A(uint64_t a)            { return a; } \
-inline logic<A> b##A(uint64_t a, int e)     { return a >> e; } \
+template<typename T> inline logic<A> b##A(T a)            { return uint64_t(a); } \
+template<typename T> inline logic<A> b##A(T a, int e)     { return uint64_t(a) >> e; }
 
 BIT_EXTRACT(1);
 BIT_EXTRACT(2);

@@ -21,12 +21,10 @@ int main(int argc, char** argv) {
 
   //uart_top.h uart_hello.h uart_tx.h uart_rx.h ibex_compressed_decoder.h prim_arbiter_fixed.h
 
-  //lib.load("src/uart_test/, arg + ".sv");
-  //lib.load("uart_rx.h", "uart_rx.h.sv");
-
-  std::string file = "ibex_multdiv_slow.h";
-  //std::string file = "ibex_pkg.h";
-  lib.load(file, file + ".sv");
+  //lib.load("ibex_multdiv_slow.h", "ibex_multdiv_slow.h.sv");
+  lib.load("ibex_compressed_decoder.h", "ibex_compressed_decoder.h.sv");
+  //lib.load("ibex_pkg.h", "ibex_pkg.h.sv");
+  //lib.load("prim_arbiter_fixed.h", "prim_arbiter_fixed.h.sv");
 
   for (auto& module : lib.modules)
   {

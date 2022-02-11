@@ -33,7 +33,7 @@ struct MtCursor {
 
   // Per-symbol emit()s.
 
-  void emit_number_literal(MtNode n, bool use_decimal_prefix = false);
+  void emit_number_literal(MtNode n, int size_cast = 0);
   void emit_primitive_type(MtNode n);
   void emit_identifier(MtNode n);
   void emit_type_identifier(MtNode n);
@@ -60,6 +60,7 @@ struct MtCursor {
   void emit_static_bit_extract(MtNode n, int bx_width);
   void emit_dynamic_bit_extract(MtNode n, MtNode bx_node);
   void emit_enum_class(MtNode n);
+  void emit_comment(MtNode n);
 
   // Special-purpose emit()s
 

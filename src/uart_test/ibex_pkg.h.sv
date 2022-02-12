@@ -347,34 +347,34 @@ package ibex_pkg;
   } dbg_cause_e;
 
   // ICache constants
-  parameter unsigned int ADDR_W           = 32; 
-  parameter unsigned int BUS_SIZE         = 32;
-  parameter unsigned int BUS_BYTES        = BUS_SIZE/8;
-  parameter unsigned int BUS_W            = $clog2(BUS_BYTES);
-  parameter unsigned int IC_SIZE_BYTES    = 4096;
-  parameter unsigned int IC_NUM_WAYS      = 2;
-  parameter unsigned int IC_LINE_SIZE     = 64;
-  parameter unsigned int IC_LINE_BYTES    = IC_LINE_SIZE/8;
-  parameter unsigned int IC_LINE_W        = $clog2(IC_LINE_BYTES);
-  parameter unsigned int IC_NUM_LINES     = IC_SIZE_BYTES / IC_NUM_WAYS / IC_LINE_BYTES;
-  parameter unsigned int IC_LINE_BEATS    = IC_LINE_BYTES / BUS_BYTES;
-  parameter unsigned int IC_LINE_BEATS_W  = $clog2(IC_LINE_BEATS);
-  parameter unsigned int IC_INDEX_W       = $clog2(IC_NUM_LINES);
-  parameter unsigned int IC_INDEX_HI      = IC_INDEX_W + IC_LINE_W - 1;
-  parameter unsigned int IC_TAG_SIZE      = ADDR_W - IC_INDEX_W - IC_LINE_W + 1; // 1 valid bit
-  parameter unsigned int IC_OUTPUT_BEATS  = (BUS_BYTES / 2); // number of halfwords
+  parameter int unsigned ADDR_W           = 32; 
+  parameter int unsigned BUS_SIZE         = 32;
+  parameter int unsigned BUS_BYTES        = BUS_SIZE/8;
+  parameter int unsigned BUS_W            = $clog2(BUS_BYTES);
+  parameter int unsigned IC_SIZE_BYTES    = 4096;
+  parameter int unsigned IC_NUM_WAYS      = 2;
+  parameter int unsigned IC_LINE_SIZE     = 64;
+  parameter int unsigned IC_LINE_BYTES    = IC_LINE_SIZE/8;
+  parameter int unsigned IC_LINE_W        = $clog2(IC_LINE_BYTES);
+  parameter int unsigned IC_NUM_LINES     = IC_SIZE_BYTES / IC_NUM_WAYS / IC_LINE_BYTES;
+  parameter int unsigned IC_LINE_BEATS    = IC_LINE_BYTES / BUS_BYTES;
+  parameter int unsigned IC_LINE_BEATS_W  = $clog2(IC_LINE_BEATS);
+  parameter int unsigned IC_INDEX_W       = $clog2(IC_NUM_LINES);
+  parameter int unsigned IC_INDEX_HI      = IC_INDEX_W + IC_LINE_W - 1;
+  parameter int unsigned IC_TAG_SIZE      = ADDR_W - IC_INDEX_W - IC_LINE_W + 1; // 1 valid bit
+  parameter int unsigned IC_OUTPUT_BEATS  = (BUS_BYTES / 2); // number of halfwords
   // ICache Scrambling Parameters
-  parameter unsigned int SCRAMBLE_KEY_W   = 128;
-  parameter unsigned int SCRAMBLE_NONCE_W = 64;
+  parameter int unsigned SCRAMBLE_KEY_W   = 128;
+  parameter int unsigned SCRAMBLE_NONCE_W = 64;
 
   // PMP constants
-  parameter unsigned int PMP_MAX_REGIONS      = 16;
-  parameter unsigned int PMP_CFG_W            = 8;
+  parameter int unsigned PMP_MAX_REGIONS      = 16;
+  parameter int unsigned PMP_CFG_W            = 8;
 
   // PMP acces type
-  parameter unsigned int PMP_I  = 0;
-  parameter unsigned int PMP_I2 = 1;
-  parameter unsigned int PMP_D  = 2;
+  parameter int unsigned PMP_I  = 0;
+  parameter int unsigned PMP_I2 = 1;
+  parameter int unsigned PMP_D  = 2;
 
   typedef enum logic[1:0] {
     PMP_ACC_EXEC    = 2'b00,
@@ -396,7 +396,7 @@ package ibex_pkg;
     logic       exec;
     logic       write;
     logic       read;
-  } pmp_config_t;
+  } pmp_cfg_t;
 
   // Machine Security Configuration (ePMP)
   typedef struct packed {
@@ -571,53 +571,53 @@ package ibex_pkg;
   parameter logic[11:0] CSR_OFF_PMP_ADDR = 12'h3B0; // pmp_addr @ 12'h3b0 - 12'h3bf
 
   // CSR status bits
-  parameter int CSR_MSTATUS_MIE_BIT      = 3;
-  parameter int CSR_MSTATUS_MPIE_BIT     = 7;
-  parameter int CSR_MSTATUS_MPP_BIT_LOW  = 11;
-  parameter int CSR_MSTATUS_MPP_BIT_HIGH = 12;
-  parameter int CSR_MSTATUS_MPRV_BIT     = 17;
-  parameter int CSR_MSTATUS_TW_BIT       = 21;
+  parameter int unsigned CSR_MSTATUS_MIE_BIT      = 3;
+  parameter int unsigned CSR_MSTATUS_MPIE_BIT     = 7;
+  parameter int unsigned CSR_MSTATUS_MPP_BIT_LOW  = 11;
+  parameter int unsigned CSR_MSTATUS_MPP_BIT_HIGH = 12;
+  parameter int unsigned CSR_MSTATUS_MPRV_BIT     = 17;
+  parameter int unsigned CSR_MSTATUS_TW_BIT       = 21;
 
   // CSR machine ISA
-  parameter logic[1:0] CSR_MISA_MXL = 1; // M-XLEN: XLEN in M-Mode for RV32
+  parameter logic[1:0] CSR_MISA_MXL = 2'd1; // M-XLEN: XLEN in M-Mode for RV32
 
   // CSR interrupt pending/enable bits
-  parameter int CSR_MSIX_BIT      = 3;
-  parameter int CSR_MTIX_BIT      = 7;
-  parameter int CSR_MEIX_BIT      = 11;
-  parameter int CSR_MFIX_BIT_LOW  = 16;
-  parameter int CSR_MFIX_BIT_HIGH = 30;
+  parameter int unsigned CSR_MSIX_BIT      = 3;
+  parameter int unsigned CSR_MTIX_BIT      = 7;
+  parameter int unsigned CSR_MEIX_BIT      = 11;
+  parameter int unsigned CSR_MFIX_BIT_LOW  = 16;
+  parameter int unsigned CSR_MFIX_BIT_HIGH = 30;
 
   // CSR Machine Security Configuration bits
-  parameter int CSR_MSECCFG_MML_BIT  = 0;
-  parameter int CSR_MSECCFG_MMWP_BIT = 1;
-  parameter int CSR_MSECCFG_RLB_BIT  = 2;
+  parameter int unsigned CSR_MSECCFG_MML_BIT  = 0;
+  parameter int unsigned CSR_MSECCFG_MMWP_BIT = 1;
+  parameter int unsigned CSR_MSECCFG_RLB_BIT  = 2;
 
   // Vendor ID
   // No JEDEC ID has been allocated to lowRISC so the value is 0 to indicate the field is not
   // implemented
-  parameter logic[31:0] CSR_MVENDORID_VALUE  = 0;
+  parameter logic[31:0] CSR_MVENDORID_VALUE  = 32'b0;
 
   // Architecture ID
   // Top bit is unset to indicate an open source project. The lower bits are an ID allocated by the
   // RISC-V Foundation. Note this is allocated specifically to Ibex, should significant changes be
   // made a different architecture ID should be supplied.
-  parameter logic[31:0] CSR_MARCHID_VALUE = 22;
+  parameter logic[31:0] CSR_MARCHID_VALUE = 32'd22;
 
   // Implementation ID
   // 0 indicates this field is not implemeted. Ibex implementors may wish to indicate an RTL/netlist
   // version here using their own unique encoding (e.g. 32 bits of the git hash of the implemented
   // commit).
-  parameter logic[31:0] CSR_MIMPID_VALUE = 0;
+  parameter logic[31:0] CSR_MIMPID_VALUE = 32'b0;
 
   // These LFSR parameters have been generated with
   // $ opentitan/util/design/gen-lfsr-seed.py --width 32 --seed 2480124384 --prefix ""
-  /*
-  static const int LfsrWidth = 32;
-  typedef logic [LfsrWidth-1:0] lfsr_seed_t;
-  typedef logic [LfsrWidth-1:0][$clog2(LfsrWidth)-1:0] lfsr_perm_t;
+  parameter int LfsrWidth = 32;
+  typedef logic[LfsrWidth-1:0] lfsr_seed_t;
+  typedef logic[LfsrWidth-1:0] lfsr_perm_t[$clog2(LfsrWidth)]; 
   parameter lfsr_seed_t RndCnstLfsrSeedDefault = 32'hac533bf4;
-  parameter lfsr_perm_t RndCnstLfsrPermDefault = { 160'h1e35ecba467fd1b12e958152c04fa43878a8daed };
+  parameter lfsr_perm_t RndCnstLfsrPermDefault = { 32'h78a8daed, 32'hc04fa438, 32'h2e958152, 32'h467fd1b1, 32'h1e35ecba };
+  /*
   parameter logic [SCRAMBLE_KEY_W-1:0]   RndCnstIbexKeyDefault = 128'h14e8cecae3040d5e12286bb3cc113298;
   parameter logic [SCRAMBLE_NONCE_W-1:0] RndCnstIbexNonceDefault = 64'hf79780bc735f3843;
   */

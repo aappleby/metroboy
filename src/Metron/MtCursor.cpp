@@ -1637,6 +1637,22 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
   }
 
+  // "unsigned int" -> "int unsigned"
+  case sym_sized_type_specifier:
+    assert(n.child_count() == 2);
+    advance_to(n);
+
+    cursor = n.child(1).start();
+    emit_dispatch(n.child(1));
+    
+    emit_span(n.child(0).end(), n.child(1).start());
+
+    cursor = n.child(0).start();
+    emit_dispatch(n.child(0));
+
+    cursor = n.end();
+    break;
+
   case sym_comment: emit_comment(n); break;
 
   default:

@@ -376,7 +376,7 @@ namespace ibex_pkg {
     PMP_MODE_NAPOT = 0b11
   };
 
-  struct pmp_config_t {
+  struct pmp_cfg_t {
     logic<1>       lock;
     pmp_cfg_mode_e mode;
     logic<1>       exec;
@@ -557,54 +557,54 @@ namespace ibex_pkg {
   static const logic<12> CSR_OFF_PMP_ADDR = 0x3B0; // pmp_addr @ 12'h3b0 - 12'h3bf
 
   // CSR status bits
-  static const int CSR_MSTATUS_MIE_BIT      = 3;
-  static const int CSR_MSTATUS_MPIE_BIT     = 7;
-  static const int CSR_MSTATUS_MPP_BIT_LOW  = 11;
-  static const int CSR_MSTATUS_MPP_BIT_HIGH = 12;
-  static const int CSR_MSTATUS_MPRV_BIT     = 17;
-  static const int CSR_MSTATUS_TW_BIT       = 21;
+  static const unsigned int CSR_MSTATUS_MIE_BIT      = 3;
+  static const unsigned int CSR_MSTATUS_MPIE_BIT     = 7;
+  static const unsigned int CSR_MSTATUS_MPP_BIT_LOW  = 11;
+  static const unsigned int CSR_MSTATUS_MPP_BIT_HIGH = 12;
+  static const unsigned int CSR_MSTATUS_MPRV_BIT     = 17;
+  static const unsigned int CSR_MSTATUS_TW_BIT       = 21;
 
   // CSR machine ISA
-  static const logic<2> CSR_MISA_MXL = 1; // M-XLEN: XLEN in M-Mode for RV32
+  static const logic<2> CSR_MISA_MXL = b2(1); // M-XLEN: XLEN in M-Mode for RV32
 
   // CSR interrupt pending/enable bits
-  static const int CSR_MSIX_BIT      = 3;
-  static const int CSR_MTIX_BIT      = 7;
-  static const int CSR_MEIX_BIT      = 11;
-  static const int CSR_MFIX_BIT_LOW  = 16;
-  static const int CSR_MFIX_BIT_HIGH = 30;
+  static const unsigned int CSR_MSIX_BIT      = 3;
+  static const unsigned int CSR_MTIX_BIT      = 7;
+  static const unsigned int CSR_MEIX_BIT      = 11;
+  static const unsigned int CSR_MFIX_BIT_LOW  = 16;
+  static const unsigned int CSR_MFIX_BIT_HIGH = 30;
 
   // CSR Machine Security Configuration bits
-  static const int CSR_MSECCFG_MML_BIT  = 0;
-  static const int CSR_MSECCFG_MMWP_BIT = 1;
-  static const int CSR_MSECCFG_RLB_BIT  = 2;
+  static const unsigned int CSR_MSECCFG_MML_BIT  = 0;
+  static const unsigned int CSR_MSECCFG_MMWP_BIT = 1;
+  static const unsigned int CSR_MSECCFG_RLB_BIT  = 2;
 
   // Vendor ID
   // No JEDEC ID has been allocated to lowRISC so the value is 0 to indicate the field is not
   // implemented
-  static const logic<32> CSR_MVENDORID_VALUE  = 0;
+  static const logic<32> CSR_MVENDORID_VALUE  = b32(0b0);
 
   // Architecture ID
   // Top bit is unset to indicate an open source project. The lower bits are an ID allocated by the
   // RISC-V Foundation. Note this is allocated specifically to Ibex, should significant changes be
   // made a different architecture ID should be supplied.
-  static const logic<32> CSR_MARCHID_VALUE = 22;
+  static const logic<32> CSR_MARCHID_VALUE = b32(22);
 
   // Implementation ID
   // 0 indicates this field is not implemeted. Ibex implementors may wish to indicate an RTL/netlist
   // version here using their own unique encoding (e.g. 32 bits of the git hash of the implemented
   // commit).
-  static const logic<32> CSR_MIMPID_VALUE = 0;
+  static const logic<32> CSR_MIMPID_VALUE = b32(0b0);
 
   // These LFSR parameters have been generated with
   // $ opentitan/util/design/gen-lfsr-seed.py --width 32 --seed 2480124384 --prefix ""
-  /*
   static const int LfsrWidth = 32;
-  typedef logic [LfsrWidth-1:0] lfsr_seed_t;
-  typedef logic [LfsrWidth-1:0][$clog2(LfsrWidth)-1:0] lfsr_perm_t;
-  parameter lfsr_seed_t RndCnstLfsrSeedDefault = 32'hac533bf4;
-  parameter lfsr_perm_t RndCnstLfsrPermDefault = { 160'h1e35ecba467fd1b12e958152c04fa43878a8daed };
-  parameter logic [SCRAMBLE_KEY_W-1:0]   RndCnstIbexKeyDefault = 128'h14e8cecae3040d5e12286bb3cc113298;
-  parameter logic [SCRAMBLE_NONCE_W-1:0] RndCnstIbexNonceDefault = 64'hf79780bc735f3843;
-  */
+  typedef logic<LfsrWidth> lfsr_seed_t;
+  typedef logic<LfsrWidth> lfsr_perm_t[clog2(LfsrWidth)]; 
+  static const lfsr_seed_t RndCnstLfsrSeedDefault = b32(0xac533bf4);
+  static const lfsr_perm_t RndCnstLfsrPermDefault = { b32(0x78a8daed), b32(0xc04fa438), b32(0x2e958152), b32(0x467fd1b1), b32(0x1e35ecba) };
+
+  // we don't support 128-bit logic<>s in Metron yet
+  //parameter logic [SCRAMBLE_KEY_W-1:0]   RndCnstIbexKeyDefault = 128'h14e8cecae3040d5e12286bb3cc113298;
+  //parameter logic [SCRAMBLE_NONCE_W-1:0] RndCnstIbexNonceDefault = 64'hf79780bc735f3843;
 }

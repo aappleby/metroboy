@@ -191,8 +191,6 @@ void MtCursor::emit_assignment_expression(MtNode n) {
 //------------------------------------------------------------------------------
 
 void MtCursor::emit_static_bit_extract(MtNode n, int bx_width) {
-  //n.dump_tree();
-
   advance_to(n);
 
   auto call_args = n.get_field(field_arguments);
@@ -223,8 +221,6 @@ void MtCursor::emit_static_bit_extract(MtNode n, int bx_width) {
       cursor = n.end();
     }
     else {
-      arg0.dump_tree();
-
       // Size-casting expression
       cursor = arg0.start();
       emit("(");
@@ -276,8 +272,6 @@ void MtCursor::emit_static_bit_extract(MtNode n, int bx_width) {
 //------------------------------------------------------------------------------
 
 void MtCursor::emit_dynamic_bit_extract(MtNode n, MtNode bx_node) {
-  //n.dump_tree();
-
   advance_to(n);
 
 
@@ -784,25 +778,8 @@ void MtCursor::emit_template_glue_declaration(MtNode decl, const std::string& pr
 // Emit "<type> <submod_name>_<output_name>;" glue declarations because we can't
 // directly pass arguments to submodules.
 
-/*
-========== tree dump begin
-[0] s236 field_declaration:
-|   [0] f32 s321 type.template_type:
-|   |   [0] f22 s395 name.type_identifier: "logic"
-|   |   [1] f3 s324 arguments.template_argument_list:
-|   |   |   [0] s36 lit: "<"
-|   |   |   [1] s264 type_descriptor:
-|   |   |   |   [0] f32 s395 type.type_identifier: "N"
-|   |   |   [2] s33 lit: ">"
-|   [1] f9 s392 declarator.field_identifier: "gnt_o"
-|   [2] s39 lit: ";"
-========== tree dump end
-
-*/
-
 void MtCursor::emit_glue_declaration(MtField f, const std::string& prefix) {
   cursor = f.type.start();
-  //decl.dump_tree();
 
   //assert(decl.sym == sym_field_declaration ||
   //       decl.sym == sym_parameter_declaration);
@@ -828,111 +805,109 @@ void MtCursor::emit_glue_declaration(MtField f, const std::string& prefix) {
 }
 
 //------------------------------------------------------------------------------
-// TreeSitterCPP seems to choke on "enum class foo : typename logic<3>::basetype {};"
+// TreeSitterCPP support for enums is SUPER BROKEN and produces different parse
+// trees in different contexts. :/
 // So, we're going to dig the info we need out of it but it may be flaky.
 
-/*
-========== tree dump begin
-[0] s236 field_declaration:
-|   [0] f32 s230 type.enum_specifier:
-|   |   [0] s79 lit: "enum"
-|   |   [1] s80 lit: "class"
-|   |   [2] f22 s395 name.type_identifier: "state"
-|   [1] s237 bitfield_clause:
-|   |   [0] s83 lit: ":"
-|   |   [1] s270 compound_literal_expression:
-|   |   |   [0] f32 s354 type.qualified_identifier:
-|   |   |   |   [0] f30 s321 scope.template_type:
-|   |   |   |   |   [0] f22 s395 name.type_identifier: "typename"
-|   |   |   |   |   [1] f3 s65535 arguments.ERROR:
-|   |   |   |   |   |   [0] s1 identifier: "logic"
-|   |   |   |   |   [2] s324 template_argument_list:
-|   |   |   |   |   |   [0] s36 lit: "<"
-|   |   |   |   |   |   [1] s112 number_literal: "2"
-|   |   |   |   |   |   [2] s33 lit: ">"
-|   |   |   |   [1] f22 s43 name.lit: "::"
-|   |   |   |   [2] s395 type_identifier: "basetype"
-|   |   |   [1] f34 s272 value.initializer_list:
-|   |   |   |   [0] s59 lit: "{"
-|   |   |   |   [1] s1 identifier: "WAIT"
-|   |   |   |   [2] s7 lit: ","
-|   |   |   |   [3] s1 identifier: "SEND"
-|   |   |   |   [4] s7 lit: ","
-|   |   |   |   [5] s1 identifier: "DONE"
-|   |   |   |   [6] s60 lit: "}"
-|   [2] s39 lit: ";"
-========== tree dump end
-*/
-
 void MtCursor::emit_enum_class(MtNode n) {
-  auto enum_name = n.get_field(field_type).get_field(field_name);
-  assert(enum_name.sym == alias_sym_type_identifier);
+  //n.dump_tree();
 
-  auto bitfield_clause = n.child(1);
-  assert(bitfield_clause.sym == sym_bitfield_clause);
+  std::string enum_name;
+  MtNode node_values;
+  int bit_width = 0;
+  std::string enum_type = "";
 
-  auto base_type = bitfield_clause.child(1).get_field(field_type);
+  if (n.sym == sym_enum_specifier &&
+      n.get_field(field_body).sym == sym_enumerator_list) {
+    auto node_name = n.get_field(field_name);
+    auto node_base = n.get_field(field_base);
+    enum_name   = node_name.is_null() ? "" : node_name.body();
+    enum_type   = node_base.is_null() ? "" : node_base.body();
+    node_values = n.get_field(field_body);
+    bit_width = 0;
+  }
+  else if (n.sym == sym_field_declaration &&
+           n.get_field(field_type).sym == sym_enum_specifier &&
+           n.get_field(field_type).get_field(field_body).sym == sym_enumerator_list) {
+    // Anonymous enums have "body" nested under "type"
+    node_values = n.get_field(field_type).get_field(field_body);
+    bit_width = 0;
+  }
+  else if (n.sym == sym_field_declaration &&
+      n.get_field(field_type).sym == sym_enum_specifier &&
+      n.get_field(field_default_value).sym == sym_initializer_list) {
+    // TreeSitterCPP BUG - "enum class foo : int = {}" misinterpreted as default_value
 
-  auto bit_width = base_type.child(0).child(2).child(1);
+    enum_name   = n.get_field(field_type).get_field(field_name).body();
+    node_values = n.get_field(field_default_value);
+    bit_width   = 0;
+  }
+  else if (n.sym == sym_field_declaration &&
+      n.child_count() == 3 &&
+      n.child(0).sym == sym_enum_specifier &&
+      n.child(1).sym == sym_bitfield_clause) {
+    // TreeSitterCPP BUG - "enum class foo : typename logic<2> = {}" misinterpreted as bitfield
+    auto node_bitfield = n.child(1);
+    auto node_compound = node_bitfield.child(1);
+    auto node_basetype = node_compound.get_field(field_type);
+    auto node_scope    = node_basetype.get_field(field_scope);
+    auto node_args     = node_scope.get_field(field_arguments);
+    auto node_bitwidth = node_args.child(1);
+    assert(node_bitwidth.sym == sym_number_literal);
 
-  assert(bit_width.sym == sym_number_literal);
+    enum_name   = n.get_field(field_type).get_field(field_name).body();
+    node_values = node_compound.get_field(field_value);
+    bit_width   = atoi(node_bitwidth.start());
+  }
+  else if (n.sym == sym_declaration &&
+      n.child_count() == 3 &&
+      n.child(0).sym == sym_enum_specifier &&
+      n.child(1).sym == sym_init_declarator) {
+    // TreeSitterCPP BUG - "enum class foo : typename logic<2> = {}" in namespace misinterpreted as declarator
+    auto node_decl1    = n.get_field(field_declarator);
+    auto node_decl2    = node_decl1.get_field(field_declarator);
+    auto node_scope    = node_decl2.get_field(field_scope);
+    auto node_args     = node_scope.get_field(field_arguments);
+    auto node_bitwidth = node_args.child(1);
+    assert(node_bitwidth.sym == sym_number_literal);
 
-  auto value_list = bitfield_clause.child(1).child(1);
-  assert(value_list.sym == sym_initializer_list);
+    enum_name   = n.get_field(field_type).get_field(field_name).body();
+    node_values = node_decl1.get_field(field_value);
+    bit_width   = atoi(node_bitwidth.start());
+  }
+  else {
+    n.dump_tree();
+    debugbreak();
+  }
 
   advance_to(n);
-  emit("typedef enum logic[%d:0] ", atoi(bit_width.start()) - 1);
-
-  cursor = value_list.start();
-  emit_dispatch(value_list);
-  emit(" %s;", enum_name.body().c_str());
+  emit("typedef enum ");
+  if (bit_width == 1) {
+    emit("logic ", bit_width - 1);
+  }
+  else if (bit_width > 1) {
+    emit("logic[%d:0] ", bit_width - 1);
+  }
+  else if (enum_type.size()) {
+    if (enum_type == "int") emit("integer ");
+  }
+  else {
+    //emit("integer ");
+  }
+  override_size = bit_width;
+  cursor = node_values.start();
+  emit_dispatch(node_values);
+  if (enum_name.size()) emit(" %s", enum_name.c_str());
+  override_size = 0;
   cursor = n.end();
 
+  // BUG: Trailing semicolons are inconsistent.
+  if (n.body().back() == ';') emit(";");
 }
 
 //------------------------------------------------------------------------------
 // Emit field declarations. For submodules, also emit glue declarations and
 // append the glue parameter list to the field.
-
-/*
-========== tree dump begin
-[0] s236 field_declaration:
-|   [0] f32 s226 type.storage_class_specifier:
-|   |   [0] s64 lit: "static"
-|   [1] f9 s226 declarator.storage_class_specifier:
-|   |   [0] s66 lit: "inline"
-|   [2] s227 type_qualifier:
-|   |   [0] s68 lit: "const"
-|   [3] f11 s321 default_value.template_type:
-|   |   [0] f22 s395 name.type_identifier: "logic"
-|   |   [1] f3 s324 arguments.template_argument_list:
-|   |   |   [0] s36 lit: "<"
-|   |   |   [1] s264 type_descriptor:
-|   |   |   |   [0] f32 s395 type.type_identifier: "cycle_bits"
-|   |   |   [2] s33 lit: ">"
-|   [4] s392 field_identifier: "cycle_max"
-|   [5] s63 lit: "="
-|   [6] s267 call_expression:
-|   |   [0] f15 s354 function.qualified_identifier:
-|   |   |   [0] f30 s321 scope.template_type:
-|   |   |   |   [0] f22 s395 name.type_identifier: "logic"
-|   |   |   |   [1] f3 s324 arguments.template_argument_list:
-|   |   |   |   |   [0] s36 lit: "<"
-|   |   |   |   |   [1] s264 type_descriptor:
-|   |   |   |   |   |   [0] f32 s395 type.type_identifier: "cycle_bits"
-|   |   |   |   |   [2] s33 lit: ">"
-|   |   |   [1] f22 s43 name.lit: "::"
-|   |   |   [2] s1 identifier: "coerce"
-|   |   [1] f3 s268 arguments.argument_list:
-|   |   |   [0] s5 lit: "("
-|   |   |   [1] s261 binary_expression:
-|   |   |   |   [0] f19 s1 left.identifier: "cycles_per_bit"
-|   |   |   |   [1] f23 s21 operator.lit: "-"
-|   |   |   |   [2] f29 s112 right.number_literal: "1"
-|   |   |   [2] s8 lit: ")"
-|   [7] s39 lit: ";"
-========== tree dump end
-*/
 
 void MtCursor::emit_field_declaration(MtNode decl) {
   // FIXME - There can be more than one field in a single FieldDecl - "int a, b, c"
@@ -949,13 +924,19 @@ void MtCursor::emit_field_declaration(MtNode decl) {
   // module list.
 
   // Handle "enum class".
-  if (field.type.child_count() == 3 &&
+  if (field.type.child_count() >= 3 &&
       field.type.child(0).body() == "enum" &&
       field.type.child(1).body() == "class" && 
       field.type.child(2).sym == alias_sym_type_identifier) {
     emit_enum_class(decl);
     return;
   }
+
+  if (field.type.sym == sym_enum_specifier) {
+    emit_enum_class(decl);
+    return;
+  }
+
 
   // FIXME need cleaner way to get type string
   std::string type_name;
@@ -983,30 +964,9 @@ void MtCursor::emit_field_declaration(MtNode decl) {
 
   // If this isn't a submodule, just tack on "input" and "output" annotations.
   if (!submod) {
-
-    if (field.type.sym == sym_enum_specifier) {
-      //decl.dump_tree();
-
-      advance_to(decl);
-      auto node_value = decl.get_field(field_default_value);
-      emit("typedef enum ");
-      cursor = node_value.start();
-      emit_dispatch(node_value);
-
-      auto name = field.type.get_field(field_name);
-      cursor = name.start();
-      emit(" ");
-      emit_dispatch(name);
-      cursor = decl.end();
-      emit(";");
-      return;
+    for (auto c : decl) {
+      emit_dispatch(c);
     }
-    else {
-      for (auto c : decl) {
-        emit_dispatch(c);
-      }
-    }
-
     return;
   }
 
@@ -1026,8 +986,6 @@ void MtCursor::emit_field_declaration(MtNode decl) {
   }
 
   for (auto& input : submod->inputs) {
-    //input.dump_tree();
-
     MtCursor sub_cursor(submod, out);
     sub_cursor.indent_stack = indent_stack;
     sub_cursor.id_replacements = id_replacements;
@@ -1065,8 +1023,6 @@ void MtCursor::emit_field_declaration(MtNode decl) {
 // ouptut ports to module param list.
 
 void MtCursor::emit_class_specifier(MtNode n) {
-  //n.dump_tree();
-
   if (in_module_or_package) {
     auto node_name = n.get_field(field_name);
     auto node_body = n.get_field(field_body);
@@ -1263,7 +1219,6 @@ void MtCursor::emit_module_parameters(MtNode n) {
 // Change <param, param> to #(param, param)
 
 void MtCursor::emit_template_argument_list(MtNode n) {
-  //n.dump_tree();
   for (auto c : n) switch (c.sym) {
   case anon_sym_LT: emit_replacement(c, " #("); break;
   case anon_sym_GT: emit_replacement(c, ")"); break;
@@ -1306,6 +1261,9 @@ void MtCursor::emit_translation_unit(MtNode n) {
 
 void MtCursor::emit_number_literal(MtNode n, int size_cast) {
   advance_to(n);
+
+  assert(!override_size || !size_cast);
+  if (override_size) size_cast = override_size;
 
   std::string body = n.body();
 
@@ -1430,8 +1388,6 @@ void MtCursor::emit_case(MtNode n) {
 }
 
 void MtCursor::emit_switch(MtNode n) {
-  //n.dump_tree();
-
   for (auto c : n) {
     if (c.sym == anon_sym_switch) {
       emit_replacement(c, "case");
@@ -1508,7 +1464,6 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
 
   case sym_break_statement:
-    //n.dump_tree();
     //emit_replacement(n, "/*break*/;");
     //comment_out(n);
     cursor = n.end();
@@ -1528,35 +1483,12 @@ void MtCursor::emit_dispatch(MtNode n) {
     break;
 
   case sym_enum_specifier:
+    emit_enum_class(n);
     //for (auto c : n) emit_dispatch(c);
-    debugbreak();
+    //debugbreak();
     break;
 
-  // Chop "blah::blah::blah::identifier" down to "identifier". We'll deal with it later.
-  // TreeSitter bug: The field tags seem broken here.
-
-  // no don't do that we need ibex_pkg::md_op_e
-  // we do need to prune it for qualified enum names tho...
-
-  /*
-  ========== tree dump begin
-  [0] f29 s354 right.qualified_identifier:
-  |   [0] f30 s393 scope.namespace_identifier: "md_fsm_e"
-  |   [1] f22 s43 name.lit: "::"
-  |   [2] s1 identifier: "MD_FINISH"
-  ========== tree dump end
-
-  ========== tree dump begin
-  [0] f32 s354 type.qualified_identifier:
-  |   [0] f30 s393 scope.namespace_identifier: "ibex_pkg"
-  |   [1] f22 s43 name.lit: "::"
-  |   [2] s395 type_identifier: "md_op_e"
-  ========== tree dump end
-  */
-
   case sym_qualified_identifier: {
-    //n.dump_tree();
-
     if (trim_namespaces) {
       auto last_child = n.child(n.child_count() - 1);
       advance_to(n);
@@ -1570,7 +1502,6 @@ void MtCursor::emit_dispatch(MtNode n) {
   }
 
   case sym_if_statement: {
-    //n.dump_tree();
     for (auto c : n) {
       emit_dispatch(c);
     }
@@ -1601,13 +1532,12 @@ void MtCursor::emit_dispatch(MtNode n) {
   case sym_init_declarator:
   case sym_initializer_list:
   case sym_declaration_list:
-    //n.dump_tree();
     for (auto c : n) {
       emit_dispatch(c);
     }
     break;
 
-  // TreeSitter nodes slightly broken for "a = b ? c : d;"...                              
+  // TreeSitter nodes slightly broken for "a = b ? c : d;"...
   case sym_conditional_expression: {
     for (auto c : n) {
       emit_dispatch(c);
@@ -1617,7 +1547,6 @@ void MtCursor::emit_dispatch(MtNode n) {
   }
 
   case sym_field_declaration_list:
-    //n.dump_tree();
     for (auto c : n) {
       emit_dispatch(c);
     }
@@ -1635,106 +1564,20 @@ void MtCursor::emit_dispatch(MtNode n) {
   
   case sym_field_declaration:      emit_field_declaration(n);  break;
 
-  // enum class declarations not in a struct are super broken
-
-  /*
-  ========== tree dump begin
-  [0] s187 declaration:
-  |   [0] f32 s230 type.enum_specifier:
-  |   |   [0] s79 lit: "enum"
-  |   |   [1] s80 lit: "class"
-  |   |   [2] f22 s395 name.type_identifier: "regfile_e"
-  |   |   [3] f4 s83 base.lit: ":"
-  |   |   [4] s395 type_identifier: "typename"
-  |   [1] f9 s224 declarator.init_declarator:
-  |   |   [0] f9 s354 declarator.qualified_identifier:
-  |   |   |   [0] f30 s321 scope.template_type:
-  |   |   |   |   [0] f22 s395 name.type_identifier: "logic"
-  |   |   |   |   [1] f3 s324 arguments.template_argument_list:
-  |   |   |   |   |   [0] s36 lit: "<"
-  |   |   |   |   |   [1] s112 number_literal: "2"
-  |   |   |   |   |   [2] s33 lit: ">"
-  |   |   |   [1] f22 s43 name.lit: "::"
-  |   |   |   [2] s1 identifier: "basetype"
-  |   |   [1] f34 s272 value.initializer_list:
-  |   |   |   [0] s59 lit: "{"
-  |   |   |   [1] s258 assignment_expression:
-  |   |   |   |   [0] f19 s1 left.identifier: "RegFileFF"
-  |   |   |   |   [1] f23 s63 operator.lit: "="
-  |   |   |   |   [2] f29 s112 right.number_literal: "0"
-  |   |   |   [2] s7 lit: ","
-  |   |   |   [3] s258 assignment_expression:
-  |   |   |   |   [0] f19 s1 left.identifier: "RegFileFPGA"
-  |   |   |   |   [1] f23 s63 operator.lit: "="
-  |   |   |   |   [2] f29 s112 right.number_literal: "1"
-  |   |   |   [4] s7 lit: ","
-  |   |   |   [5] s258 assignment_expression:
-  |   |   |   |   [0] f19 s1 left.identifier: "RegFileLatch"
-  |   |   |   |   [1] f23 s63 operator.lit: "="
-  |   |   |   |   [2] f29 s112 right.number_literal: "2"
-  |   |   |   [6] s60 lit: "}"
-  |   [2] s39 lit: ";"
-  ========== tree dump end
-  */
-
-  /*
-    auto enum_name = n.get_field(field_type).get_field(field_name);
-    assert(enum_name.sym == alias_sym_type_identifier);
-
-    auto bitfield_clause = n.child(1);
-    assert(bitfield_clause.sym == sym_bitfield_clause);
-
-    auto base_type = bitfield_clause.child(1).get_field(field_type);
-
-    auto bit_width = base_type.child(0).child(2).child(1);
-
-    assert(bit_width.sym == sym_number_literal);
-
-    auto value_list = bitfield_clause.child(1).child(1);
-    assert(value_list.sym == sym_initializer_list);
-
-    advance_to(n);
-    emit("typedef enum logic[%d:0] ", atoi(bit_width.start()));
-
-    cursor = value_list.start();
-    emit_dispatch(value_list);
-    emit(" %s;", enum_name.body().c_str());
-    cursor = n.end();
-  */
-
   case sym_declaration: {
-
+    // Enum class declarations not in a struct are super broken
     // Handle "enum class".
     auto node_type = n.get_field(field_type);
     if (node_type.child_count() >= 2 &&
         node_type.child(0).body() == "enum" &&
         node_type.child(1).body() == "class") {
-      advance_to(n);
-
-      auto enum_name = n.get_field(field_type).get_field(field_name);
-      assert(enum_name.sym == alias_sym_type_identifier);
-
-      auto declarator = n.child(1);
-
-      assert(declarator.child(0).child(0).child(0).body() == "logic");
-      auto bit_width = declarator.child(0).child(0).child(1).child(1);
-
-      auto value_list = declarator.child(1);
-
-      advance_to(n);
-      emit("typedef enum logic[%d:0] ", atoi(bit_width.start()) - 1);
-
-      cursor = value_list.start();
-      emit_dispatch(value_list);
-      emit(" %s;", enum_name.body().c_str());
-      cursor = n.end();
-      return;
+      emit_enum_class(n);
+      break;
     }
 
     if (n.child_count() >= 5 &&
         n.child(0).body() == "static" &&
         n.child(1).body() == "const") {
-      //n.dump_tree();
 
       advance_to(n);
       emit("parameter ");
@@ -1744,8 +1587,7 @@ void MtCursor::emit_dispatch(MtNode n) {
       emit_dispatch(n.child(4));
 
       cursor = n.end();
-      //debugbreak();
-      return;
+      break;
     }
 
     n.dump_tree();
@@ -1801,6 +1643,7 @@ void MtCursor::emit_dispatch(MtNode n) {
     static std::set<int> passthru_syms = {
       alias_sym_namespace_identifier,
       alias_sym_field_identifier,
+      sym_sized_type_specifier
     };
 
     if (!n.is_named()) {

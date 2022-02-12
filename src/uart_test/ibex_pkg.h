@@ -34,20 +34,20 @@ namespace ibex_pkg {
   // Parameter Enums //
   /////////////////////
 
-  enum class regfile_e : typename logic<2>::basetype {
+  enum class regfile_e : int {
     RegFileFF    = 0,
     RegFileFPGA  = 1,
     RegFileLatch = 2
   };
 
-  enum class rv32m_e : typename logic<2>::basetype {
+  enum class rv32m_e : int {
     RV32MNone        = 0,
     RV32MSlow        = 1,
     RV32MFast        = 2,
     RV32MSingleCycle = 3
   };
 
-  enum class rv32b_e : typename logic<2>::basetype {
+  enum class rv32b_e : int {
     RV32BNone       = 0,
     RV32BBalanced   = 1,
     RV32BOTEarlGrey = 2,
@@ -71,6 +71,7 @@ namespace ibex_pkg {
     OPCODE_JAL      = 0x6f,
     OPCODE_SYSTEM   = 0x73
   };
+
 
   ////////////////////
   // ALU operations //
@@ -193,6 +194,7 @@ namespace ibex_pkg {
     MD_OP_REM
   };
 
+
   //////////////////////////////////
   // Control and status registers //
   //////////////////////////////////
@@ -250,7 +252,7 @@ namespace ibex_pkg {
   };
 
   // Operand b selection
-  enum class op_b_sel_e : typename logic<1>::basetype {
+  enum class op_b_sel_e : typename logic<1>::basetype  {
     OP_B_REG_B,
     OP_B_IMM
   };
@@ -267,7 +269,7 @@ namespace ibex_pkg {
   };
 
   // Regfile write data selection
-  enum class rf_wd_sel_e : typename logic<1>::basetype {
+  enum class rf_wd_sel_e : typename logic<1>::basetype  {
     RF_WD_EX,
     RF_WD_CSR
   };
@@ -331,35 +333,34 @@ namespace ibex_pkg {
   };
 
   // ICache constants
-  static const int ADDR_W           = 32; 
-
-  static const int BUS_SIZE         = 32;
-  static const int BUS_BYTES        = BUS_SIZE/8;
-  static const int BUS_W            = clog2(BUS_BYTES);
-  static const int IC_SIZE_BYTES    = 4096;
-  static const int IC_NUM_WAYS      = 2;
-  static const int IC_LINE_SIZE     = 64;
-  static const int IC_LINE_BYTES    = IC_LINE_SIZE/8;
-  static const int IC_LINE_W        = clog2(IC_LINE_BYTES);
-  static const int IC_NUM_LINES     = IC_SIZE_BYTES / IC_NUM_WAYS / IC_LINE_BYTES;
-  static const int IC_LINE_BEATS    = IC_LINE_BYTES / BUS_BYTES;
-  static const int IC_LINE_BEATS_W  = clog2(IC_LINE_BEATS);
-  static const int IC_INDEX_W       = clog2(IC_NUM_LINES);
-  static const int IC_INDEX_HI      = IC_INDEX_W + IC_LINE_W - 1;
-  static const int IC_TAG_SIZE      = ADDR_W - IC_INDEX_W - IC_LINE_W + 1; // 1 valid bit
-  static const int IC_OUTPUT_BEATS  = (BUS_BYTES / 2); // number of halfwords
+  static const unsigned int ADDR_W           = 32; 
+  static const unsigned int BUS_SIZE         = 32;
+  static const unsigned int BUS_BYTES        = BUS_SIZE/8;
+  static const unsigned int BUS_W            = clog2(BUS_BYTES);
+  static const unsigned int IC_SIZE_BYTES    = 4096;
+  static const unsigned int IC_NUM_WAYS      = 2;
+  static const unsigned int IC_LINE_SIZE     = 64;
+  static const unsigned int IC_LINE_BYTES    = IC_LINE_SIZE/8;
+  static const unsigned int IC_LINE_W        = clog2(IC_LINE_BYTES);
+  static const unsigned int IC_NUM_LINES     = IC_SIZE_BYTES / IC_NUM_WAYS / IC_LINE_BYTES;
+  static const unsigned int IC_LINE_BEATS    = IC_LINE_BYTES / BUS_BYTES;
+  static const unsigned int IC_LINE_BEATS_W  = clog2(IC_LINE_BEATS);
+  static const unsigned int IC_INDEX_W       = clog2(IC_NUM_LINES);
+  static const unsigned int IC_INDEX_HI      = IC_INDEX_W + IC_LINE_W - 1;
+  static const unsigned int IC_TAG_SIZE      = ADDR_W - IC_INDEX_W - IC_LINE_W + 1; // 1 valid bit
+  static const unsigned int IC_OUTPUT_BEATS  = (BUS_BYTES / 2); // number of halfwords
   // ICache Scrambling Parameters
-  static const int SCRAMBLE_KEY_W   = 128;
-  static const int SCRAMBLE_NONCE_W = 64;
+  static const unsigned int SCRAMBLE_KEY_W   = 128;
+  static const unsigned int SCRAMBLE_NONCE_W = 64;
 
   // PMP constants
-  static const int PMP_MAX_REGIONS      = 16;
-  static const int PMP_CFG_W            = 8;
+  static const unsigned int PMP_MAX_REGIONS      = 16;
+  static const unsigned int PMP_CFG_W            = 8;
 
   // PMP acces type
-  static const int PMP_I  = 0;
-  static const int PMP_I2 = 1;
-  static const int PMP_D  = 2;
+  static const unsigned int PMP_I  = 0;
+  static const unsigned int PMP_I2 = 1;
+  static const unsigned int PMP_D  = 2;
 
   enum class pmp_req_e : typename logic<2>::basetype {
     PMP_ACC_EXEC    = 0b00,

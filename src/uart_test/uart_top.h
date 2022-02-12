@@ -4,7 +4,7 @@
 #include "uart_tx.h"
 #include "uart_hello.h"
 
-#include "ibex_compressed_decoder.h"
+//#include "ibex_compressed_decoder.h"
 
 //==============================================================================
 

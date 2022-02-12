@@ -86,6 +86,8 @@ struct MtCursor {
 
   bool trim_namespaces = true;
   bool in_ports = false;
+
+  int override_size = 0;
 };
 
 //------------------------------------------------------------------------------

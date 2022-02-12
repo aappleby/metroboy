@@ -5,9 +5,11 @@
 // OUTPUTS:      
 // LOCALPARAMS:  
 // FIELDS:       rlb, mmwp, mml, 
+// ENUMS:       
 // SUBMODULES:   
 // TASKS:        
 // FUNCTIONS:    
+
 /* verilator lint_off WIDTH */
 `default_nettype none
 // Copyright lowRISC contributors.
@@ -46,24 +48,24 @@ package ibex_pkg;
   // Parameter Enums //
   /////////////////////
 
-  typedef enum logic[1:0] {
-    RegFileFF    = 'd0,
-    RegFileFPGA  = 'd1,
-    RegFileLatch = 'd2
+  typedef enum integer {
+    RegFileFF    = 0,
+    RegFileFPGA  = 1,
+    RegFileLatch = 2
   } regfile_e;
 
-  typedef enum logic[1:0] {
-    RV32MNone        = 'd0,
-    RV32MSlow        = 'd1,
-    RV32MFast        = 'd2,
-    RV32MSingleCycle = 'd3
+  typedef enum integer {
+    RV32MNone        = 0,
+    RV32MSlow        = 1,
+    RV32MFast        = 2,
+    RV32MSingleCycle = 3
   } rv32m_e;
 
-  typedef enum logic[1:0] {
-    RV32BNone       = 'd0,
-    RV32BBalanced   = 'd1,
-    RV32BOTEarlGrey = 'd2,
-    RV32BFull       = 'd3
+  typedef enum integer {
+    RV32BNone       = 0,
+    RV32BBalanced   = 1,
+    RV32BOTEarlGrey = 2,
+    RV32BFull       = 3
   } rv32b_e;
 
   /////////////
@@ -71,18 +73,19 @@ package ibex_pkg;
   /////////////
 
   typedef enum logic[6:0] {
-    OPCODE_LOAD     = 'h03,
-    OPCODE_MISC_MEM = 'h0f,
-    OPCODE_OP_IMM   = 'h13,
-    OPCODE_AUIPC    = 'h17,
-    OPCODE_STORE    = 'h23,
-    OPCODE_OP       = 'h33,
-    OPCODE_LUI      = 'h37,
-    OPCODE_BRANCH   = 'h63,
-    OPCODE_JALR     = 'h67,
-    OPCODE_JAL      = 'h6f,
-    OPCODE_SYSTEM   = 'h73
+    OPCODE_LOAD     = 7'h03,
+    OPCODE_MISC_MEM = 7'h0f,
+    OPCODE_OP_IMM   = 7'h13,
+    OPCODE_AUIPC    = 7'h17,
+    OPCODE_STORE    = 7'h23,
+    OPCODE_OP       = 7'h33,
+    OPCODE_LUI      = 7'h37,
+    OPCODE_BRANCH   = 7'h63,
+    OPCODE_JALR     = 7'h67,
+    OPCODE_JAL      = 7'h6f,
+    OPCODE_SYSTEM   = 7'h73
   } opcode_e;
+
 
   ////////////////////
   // ALU operations //
@@ -205,6 +208,7 @@ package ibex_pkg;
     MD_OP_REM
   } md_op_e;
 
+
   //////////////////////////////////
   // Control and status registers //
   //////////////////////////////////
@@ -219,17 +223,17 @@ package ibex_pkg;
 
   // Privileged mode
   typedef enum logic[1:0] {
-    PRIV_LVL_M = 'b11,
-    PRIV_LVL_H = 'b10,
-    PRIV_LVL_S = 'b01,
-    PRIV_LVL_U = 'b00
+    PRIV_LVL_M = 2'b11,
+    PRIV_LVL_H = 2'b10,
+    PRIV_LVL_S = 2'b01,
+    PRIV_LVL_U = 2'b00
   } priv_lvl_e;
 
   // Constants for the dcsr.xdebugver fields
   typedef enum logic[3:0] {
-    XDEBUGVER_NO     = 'd0, // no external debug support
-    XDEBUGVER_STD    = 'd4, // external debug according to RISC-V debug spec
-    XDEBUGVER_NONSTD = 'd15 // debug not conforming to RISC-V debug spec
+    XDEBUGVER_NO     = 4'd0, // no external debug support
+    XDEBUGVER_STD    = 4'd4, // external debug according to RISC-V debug spec
+    XDEBUGVER_NONSTD = 4'd15 // debug not conforming to RISC-V debug spec
   } x_debug_ver_e;
 
   //////////////
@@ -256,13 +260,13 @@ package ibex_pkg;
   } op_a_sel_e;
 
   // Immediate a selection
-  typedef enum logic[0:0] {
+  typedef enum logic {
     IMM_A_Z,
     IMM_A_ZERO
   } imm_a_sel_e;
 
   // Operand b selection
-  typedef enum logic[0:0] {
+  typedef enum logic {
     OP_B_REG_B,
     OP_B_IMM
   } op_b_sel_e;
@@ -279,7 +283,7 @@ package ibex_pkg;
   } imm_b_sel_e;
 
   // Regfile write data selection
-  typedef enum logic[0:0] {
+  typedef enum logic {
     RF_WD_EX,
     RF_WD_CSR
   } rf_wd_sel_e;
@@ -317,74 +321,73 @@ package ibex_pkg;
 
   // Exception cause
   typedef enum logic[5:0] {
-    EXC_CAUSE_IRQ_SOFTWARE_M     = 'b100011,
-    EXC_CAUSE_IRQ_TIMER_M        = 'b100111,
-    EXC_CAUSE_IRQ_EXTERNAL_M     = 'b101011,
+    EXC_CAUSE_IRQ_SOFTWARE_M     = 6'b100011,
+    EXC_CAUSE_IRQ_TIMER_M        = 6'b100111,
+    EXC_CAUSE_IRQ_EXTERNAL_M     = 6'b101011,
     // EXC_CAUSE_IRQ_FAST_0      = 0b110000,
     // EXC_CAUSE_IRQ_FAST_14     = 0b111110,
-    EXC_CAUSE_IRQ_NM             = 'b111111, // == EXC_CAUSE_IRQ_FAST_15
-    EXC_CAUSE_INSN_ADDR_MISA     = 'b000000,
-    EXC_CAUSE_INSTR_ACCESS_FAULT = 'b000001,
-    EXC_CAUSE_ILLEGAL_INSN       = 'b000010,
-    EXC_CAUSE_BREAKPOINT         = 'b000011,
-    EXC_CAUSE_LOAD_ACCESS_FAULT  = 'b000101,
-    EXC_CAUSE_STORE_ACCESS_FAULT = 'b000111,
-    EXC_CAUSE_ECALL_UMODE        = 'b001000,
-    EXC_CAUSE_ECALL_MMODE        = 'b001011
+    EXC_CAUSE_IRQ_NM             = 6'b111111, // == EXC_CAUSE_IRQ_FAST_15
+    EXC_CAUSE_INSN_ADDR_MISA     = 6'b000000,
+    EXC_CAUSE_INSTR_ACCESS_FAULT = 6'b000001,
+    EXC_CAUSE_ILLEGAL_INSN       = 6'b000010,
+    EXC_CAUSE_BREAKPOINT         = 6'b000011,
+    EXC_CAUSE_LOAD_ACCESS_FAULT  = 6'b000101,
+    EXC_CAUSE_STORE_ACCESS_FAULT = 6'b000111,
+    EXC_CAUSE_ECALL_UMODE        = 6'b001000,
+    EXC_CAUSE_ECALL_MMODE        = 6'b001011
   } exc_cause_e;
 
   // Debug cause
   typedef enum logic[2:0] {
-    DBG_CAUSE_NONE    = 'h0,
-    DBG_CAUSE_EBREAK  = 'h1,
-    DBG_CAUSE_TRIGGER = 'h2,
-    DBG_CAUSE_HALTREQ = 'h3,
-    DBG_CAUSE_STEP    = 'h4
+    DBG_CAUSE_NONE    = 3'h0,
+    DBG_CAUSE_EBREAK  = 3'h1,
+    DBG_CAUSE_TRIGGER = 3'h2,
+    DBG_CAUSE_HALTREQ = 3'h3,
+    DBG_CAUSE_STEP    = 3'h4
   } dbg_cause_e;
 
   // ICache constants
-  parameter int ADDR_W           = 'd32; 
-
-  parameter int BUS_SIZE         = 'd32;
-  parameter int BUS_BYTES        = BUS_SIZE/'d8;
-  parameter int BUS_W            = $clog2(BUS_BYTES);
-  parameter int IC_SIZE_BYTES    = 'd4096;
-  parameter int IC_NUM_WAYS      = 'd2;
-  parameter int IC_LINE_SIZE     = 'd64;
-  parameter int IC_LINE_BYTES    = IC_LINE_SIZE/'d8;
-  parameter int IC_LINE_W        = $clog2(IC_LINE_BYTES);
-  parameter int IC_NUM_LINES     = IC_SIZE_BYTES / IC_NUM_WAYS / IC_LINE_BYTES;
-  parameter int IC_LINE_BEATS    = IC_LINE_BYTES / BUS_BYTES;
-  parameter int IC_LINE_BEATS_W  = $clog2(IC_LINE_BEATS);
-  parameter int IC_INDEX_W       = $clog2(IC_NUM_LINES);
-  parameter int IC_INDEX_HI      = IC_INDEX_W + IC_LINE_W - 'd1;
-  parameter int IC_TAG_SIZE      = ADDR_W - IC_INDEX_W - IC_LINE_W + 'd1; // 1 valid bit
-  parameter int IC_OUTPUT_BEATS  = (BUS_BYTES / 'd2); // number of halfwords
+  parameter unsigned int ADDR_W           = 32; 
+  parameter unsigned int BUS_SIZE         = 32;
+  parameter unsigned int BUS_BYTES        = BUS_SIZE/8;
+  parameter unsigned int BUS_W            = $clog2(BUS_BYTES);
+  parameter unsigned int IC_SIZE_BYTES    = 4096;
+  parameter unsigned int IC_NUM_WAYS      = 2;
+  parameter unsigned int IC_LINE_SIZE     = 64;
+  parameter unsigned int IC_LINE_BYTES    = IC_LINE_SIZE/8;
+  parameter unsigned int IC_LINE_W        = $clog2(IC_LINE_BYTES);
+  parameter unsigned int IC_NUM_LINES     = IC_SIZE_BYTES / IC_NUM_WAYS / IC_LINE_BYTES;
+  parameter unsigned int IC_LINE_BEATS    = IC_LINE_BYTES / BUS_BYTES;
+  parameter unsigned int IC_LINE_BEATS_W  = $clog2(IC_LINE_BEATS);
+  parameter unsigned int IC_INDEX_W       = $clog2(IC_NUM_LINES);
+  parameter unsigned int IC_INDEX_HI      = IC_INDEX_W + IC_LINE_W - 1;
+  parameter unsigned int IC_TAG_SIZE      = ADDR_W - IC_INDEX_W - IC_LINE_W + 1; // 1 valid bit
+  parameter unsigned int IC_OUTPUT_BEATS  = (BUS_BYTES / 2); // number of halfwords
   // ICache Scrambling Parameters
-  parameter int SCRAMBLE_KEY_W   = 'd128;
-  parameter int SCRAMBLE_NONCE_W = 'd64;
+  parameter unsigned int SCRAMBLE_KEY_W   = 128;
+  parameter unsigned int SCRAMBLE_NONCE_W = 64;
 
   // PMP constants
-  parameter int PMP_MAX_REGIONS      = 'd16;
-  parameter int PMP_CFG_W            = 'd8;
+  parameter unsigned int PMP_MAX_REGIONS      = 16;
+  parameter unsigned int PMP_CFG_W            = 8;
 
   // PMP acces type
-  parameter int PMP_I  = 'd0;
-  parameter int PMP_I2 = 'd1;
-  parameter int PMP_D  = 'd2;
+  parameter unsigned int PMP_I  = 0;
+  parameter unsigned int PMP_I2 = 1;
+  parameter unsigned int PMP_D  = 2;
 
   typedef enum logic[1:0] {
-    PMP_ACC_EXEC    = 'b00,
-    PMP_ACC_WRITE   = 'b01,
-    PMP_ACC_READ    = 'b10
+    PMP_ACC_EXEC    = 2'b00,
+    PMP_ACC_WRITE   = 2'b01,
+    PMP_ACC_READ    = 2'b10
   } pmp_req_e;
 
   // PMP cfg structures
   typedef enum logic[1:0] {
-    PMP_MODE_OFF   = 'b00,
-    PMP_MODE_TOR   = 'b01,
-    PMP_MODE_NA4   = 'b10,
-    PMP_MODE_NAPOT = 'b11
+    PMP_MODE_OFF   = 2'b00,
+    PMP_MODE_TOR   = 2'b01,
+    PMP_MODE_NA4   = 2'b10,
+    PMP_MODE_NAPOT = 2'b11
   } pmp_cfg_mode_e;
 
   typedef struct packed {
@@ -405,207 +408,207 @@ package ibex_pkg;
   // CSRs
   typedef enum logic[11:0] {
     // Machine information
-    CSR_MVENDORID = 'hF11,
-    CSR_MARCHID   = 'hF12,
-    CSR_MIMPID    = 'hF13,
-    CSR_MHARTID   = 'hF14,
+    CSR_MVENDORID = 12'hF11,
+    CSR_MARCHID   = 12'hF12,
+    CSR_MIMPID    = 12'hF13,
+    CSR_MHARTID   = 12'hF14,
 
     // Machine trap setup
-    CSR_MSTATUS   = 'h300,
-    CSR_MISA      = 'h301,
-    CSR_MIE       = 'h304,
-    CSR_MTVEC     = 'h305,
-    CSR_MCOUNTEREN= 'h306,
+    CSR_MSTATUS   = 12'h300,
+    CSR_MISA      = 12'h301,
+    CSR_MIE       = 12'h304,
+    CSR_MTVEC     = 12'h305,
+    CSR_MCOUNTEREN= 12'h306,
 
     // Machine trap handling
-    CSR_MSCRATCH  = 'h340,
-    CSR_MEPC      = 'h341,
-    CSR_MCAUSE    = 'h342,
-    CSR_MTVAL     = 'h343,
-    CSR_MIP       = 'h344,
+    CSR_MSCRATCH  = 12'h340,
+    CSR_MEPC      = 12'h341,
+    CSR_MCAUSE    = 12'h342,
+    CSR_MTVAL     = 12'h343,
+    CSR_MIP       = 12'h344,
 
     // Physical memory protection
-    CSR_PMPCFG0   = 'h3A0,
-    CSR_PMPCFG1   = 'h3A1,
-    CSR_PMPCFG2   = 'h3A2,
-    CSR_PMPCFG3   = 'h3A3,
-    CSR_PMPADDR0  = 'h3B0,
-    CSR_PMPADDR1  = 'h3B1,
-    CSR_PMPADDR2  = 'h3B2,
-    CSR_PMPADDR3  = 'h3B3,
-    CSR_PMPADDR4  = 'h3B4,
-    CSR_PMPADDR5  = 'h3B5,
-    CSR_PMPADDR6  = 'h3B6,
-    CSR_PMPADDR7  = 'h3B7,
-    CSR_PMPADDR8  = 'h3B8,
-    CSR_PMPADDR9  = 'h3B9,
-    CSR_PMPADDR10 = 'h3BA,
-    CSR_PMPADDR11 = 'h3BB,
-    CSR_PMPADDR12 = 'h3BC,
-    CSR_PMPADDR13 = 'h3BD,
-    CSR_PMPADDR14 = 'h3BE,
-    CSR_PMPADDR15 = 'h3BF,
+    CSR_PMPCFG0   = 12'h3A0,
+    CSR_PMPCFG1   = 12'h3A1,
+    CSR_PMPCFG2   = 12'h3A2,
+    CSR_PMPCFG3   = 12'h3A3,
+    CSR_PMPADDR0  = 12'h3B0,
+    CSR_PMPADDR1  = 12'h3B1,
+    CSR_PMPADDR2  = 12'h3B2,
+    CSR_PMPADDR3  = 12'h3B3,
+    CSR_PMPADDR4  = 12'h3B4,
+    CSR_PMPADDR5  = 12'h3B5,
+    CSR_PMPADDR6  = 12'h3B6,
+    CSR_PMPADDR7  = 12'h3B7,
+    CSR_PMPADDR8  = 12'h3B8,
+    CSR_PMPADDR9  = 12'h3B9,
+    CSR_PMPADDR10 = 12'h3BA,
+    CSR_PMPADDR11 = 12'h3BB,
+    CSR_PMPADDR12 = 12'h3BC,
+    CSR_PMPADDR13 = 12'h3BD,
+    CSR_PMPADDR14 = 12'h3BE,
+    CSR_PMPADDR15 = 12'h3BF,
 
     // ePMP control
-    CSR_MSECCFG   = 'h747,
-    CSR_MSECCFGH  = 'h757,
+    CSR_MSECCFG   = 12'h747,
+    CSR_MSECCFGH  = 12'h757,
 
     // Debug trigger
-    CSR_TSELECT   = 'h7A0,
-    CSR_TDATA1    = 'h7A1,
-    CSR_TDATA2    = 'h7A2,
-    CSR_TDATA3    = 'h7A3,
-    CSR_MCONTEXT  = 'h7A8,
-    CSR_SCONTEXT  = 'h7AA,
+    CSR_TSELECT   = 12'h7A0,
+    CSR_TDATA1    = 12'h7A1,
+    CSR_TDATA2    = 12'h7A2,
+    CSR_TDATA3    = 12'h7A3,
+    CSR_MCONTEXT  = 12'h7A8,
+    CSR_SCONTEXT  = 12'h7AA,
 
     // Debug/trace
-    CSR_DCSR      = 'h7b0,
-    CSR_DPC       = 'h7b1,
+    CSR_DCSR      = 12'h7b0,
+    CSR_DPC       = 12'h7b1,
 
     // Debug
-    CSR_DSCRATCH0 = 'h7b2, // optional
-    CSR_DSCRATCH1 = 'h7b3, // optional
+    CSR_DSCRATCH0 = 12'h7b2, // optional
+    CSR_DSCRATCH1 = 12'h7b3, // optional
 
     // Machine Counter/Timers
-    CSR_MCOUNTINHIBIT  = 'h320,
-    CSR_MHPMEVENT3     = 'h323,
-    CSR_MHPMEVENT4     = 'h324,
-    CSR_MHPMEVENT5     = 'h325,
-    CSR_MHPMEVENT6     = 'h326,
-    CSR_MHPMEVENT7     = 'h327,
-    CSR_MHPMEVENT8     = 'h328,
-    CSR_MHPMEVENT9     = 'h329,
-    CSR_MHPMEVENT10    = 'h32A,
-    CSR_MHPMEVENT11    = 'h32B,
-    CSR_MHPMEVENT12    = 'h32C,
-    CSR_MHPMEVENT13    = 'h32D,
-    CSR_MHPMEVENT14    = 'h32E,
-    CSR_MHPMEVENT15    = 'h32F,
-    CSR_MHPMEVENT16    = 'h330,
-    CSR_MHPMEVENT17    = 'h331,
-    CSR_MHPMEVENT18    = 'h332,
-    CSR_MHPMEVENT19    = 'h333,
-    CSR_MHPMEVENT20    = 'h334,
-    CSR_MHPMEVENT21    = 'h335,
-    CSR_MHPMEVENT22    = 'h336,
-    CSR_MHPMEVENT23    = 'h337,
-    CSR_MHPMEVENT24    = 'h338,
-    CSR_MHPMEVENT25    = 'h339,
-    CSR_MHPMEVENT26    = 'h33A,
-    CSR_MHPMEVENT27    = 'h33B,
-    CSR_MHPMEVENT28    = 'h33C,
-    CSR_MHPMEVENT29    = 'h33D,
-    CSR_MHPMEVENT30    = 'h33E,
-    CSR_MHPMEVENT31    = 'h33F,
-    CSR_MCYCLE         = 'hB00,
-    CSR_MINSTRET       = 'hB02,
-    CSR_MHPMCOUNTER3   = 'hB03,
-    CSR_MHPMCOUNTER4   = 'hB04,
-    CSR_MHPMCOUNTER5   = 'hB05,
-    CSR_MHPMCOUNTER6   = 'hB06,
-    CSR_MHPMCOUNTER7   = 'hB07,
-    CSR_MHPMCOUNTER8   = 'hB08,
-    CSR_MHPMCOUNTER9   = 'hB09,
-    CSR_MHPMCOUNTER10  = 'hB0A,
-    CSR_MHPMCOUNTER11  = 'hB0B,
-    CSR_MHPMCOUNTER12  = 'hB0C,
-    CSR_MHPMCOUNTER13  = 'hB0D,
-    CSR_MHPMCOUNTER14  = 'hB0E,
-    CSR_MHPMCOUNTER15  = 'hB0F,
-    CSR_MHPMCOUNTER16  = 'hB10,
-    CSR_MHPMCOUNTER17  = 'hB11,
-    CSR_MHPMCOUNTER18  = 'hB12,
-    CSR_MHPMCOUNTER19  = 'hB13,
-    CSR_MHPMCOUNTER20  = 'hB14,
-    CSR_MHPMCOUNTER21  = 'hB15,
-    CSR_MHPMCOUNTER22  = 'hB16,
-    CSR_MHPMCOUNTER23  = 'hB17,
-    CSR_MHPMCOUNTER24  = 'hB18,
-    CSR_MHPMCOUNTER25  = 'hB19,
-    CSR_MHPMCOUNTER26  = 'hB1A,
-    CSR_MHPMCOUNTER27  = 'hB1B,
-    CSR_MHPMCOUNTER28  = 'hB1C,
-    CSR_MHPMCOUNTER29  = 'hB1D,
-    CSR_MHPMCOUNTER30  = 'hB1E,
-    CSR_MHPMCOUNTER31  = 'hB1F,
-    CSR_MCYCLEH        = 'hB80,
-    CSR_MINSTRETH      = 'hB82,
-    CSR_MHPMCOUNTER3H  = 'hB83,
-    CSR_MHPMCOUNTER4H  = 'hB84,
-    CSR_MHPMCOUNTER5H  = 'hB85,
-    CSR_MHPMCOUNTER6H  = 'hB86,
-    CSR_MHPMCOUNTER7H  = 'hB87,
-    CSR_MHPMCOUNTER8H  = 'hB88,
-    CSR_MHPMCOUNTER9H  = 'hB89,
-    CSR_MHPMCOUNTER10H = 'hB8A,
-    CSR_MHPMCOUNTER11H = 'hB8B,
-    CSR_MHPMCOUNTER12H = 'hB8C,
-    CSR_MHPMCOUNTER13H = 'hB8D,
-    CSR_MHPMCOUNTER14H = 'hB8E,
-    CSR_MHPMCOUNTER15H = 'hB8F,
-    CSR_MHPMCOUNTER16H = 'hB90,
-    CSR_MHPMCOUNTER17H = 'hB91,
-    CSR_MHPMCOUNTER18H = 'hB92,
-    CSR_MHPMCOUNTER19H = 'hB93,
-    CSR_MHPMCOUNTER20H = 'hB94,
-    CSR_MHPMCOUNTER21H = 'hB95,
-    CSR_MHPMCOUNTER22H = 'hB96,
-    CSR_MHPMCOUNTER23H = 'hB97,
-    CSR_MHPMCOUNTER24H = 'hB98,
-    CSR_MHPMCOUNTER25H = 'hB99,
-    CSR_MHPMCOUNTER26H = 'hB9A,
-    CSR_MHPMCOUNTER27H = 'hB9B,
-    CSR_MHPMCOUNTER28H = 'hB9C,
-    CSR_MHPMCOUNTER29H = 'hB9D,
-    CSR_MHPMCOUNTER30H = 'hB9E,
-    CSR_MHPMCOUNTER31H = 'hB9F,
-    CSR_CPUCTRL        = 'h7C0,
-    CSR_SECURESEED     = 'h7C1
+    CSR_MCOUNTINHIBIT  = 12'h320,
+    CSR_MHPMEVENT3     = 12'h323,
+    CSR_MHPMEVENT4     = 12'h324,
+    CSR_MHPMEVENT5     = 12'h325,
+    CSR_MHPMEVENT6     = 12'h326,
+    CSR_MHPMEVENT7     = 12'h327,
+    CSR_MHPMEVENT8     = 12'h328,
+    CSR_MHPMEVENT9     = 12'h329,
+    CSR_MHPMEVENT10    = 12'h32A,
+    CSR_MHPMEVENT11    = 12'h32B,
+    CSR_MHPMEVENT12    = 12'h32C,
+    CSR_MHPMEVENT13    = 12'h32D,
+    CSR_MHPMEVENT14    = 12'h32E,
+    CSR_MHPMEVENT15    = 12'h32F,
+    CSR_MHPMEVENT16    = 12'h330,
+    CSR_MHPMEVENT17    = 12'h331,
+    CSR_MHPMEVENT18    = 12'h332,
+    CSR_MHPMEVENT19    = 12'h333,
+    CSR_MHPMEVENT20    = 12'h334,
+    CSR_MHPMEVENT21    = 12'h335,
+    CSR_MHPMEVENT22    = 12'h336,
+    CSR_MHPMEVENT23    = 12'h337,
+    CSR_MHPMEVENT24    = 12'h338,
+    CSR_MHPMEVENT25    = 12'h339,
+    CSR_MHPMEVENT26    = 12'h33A,
+    CSR_MHPMEVENT27    = 12'h33B,
+    CSR_MHPMEVENT28    = 12'h33C,
+    CSR_MHPMEVENT29    = 12'h33D,
+    CSR_MHPMEVENT30    = 12'h33E,
+    CSR_MHPMEVENT31    = 12'h33F,
+    CSR_MCYCLE         = 12'hB00,
+    CSR_MINSTRET       = 12'hB02,
+    CSR_MHPMCOUNTER3   = 12'hB03,
+    CSR_MHPMCOUNTER4   = 12'hB04,
+    CSR_MHPMCOUNTER5   = 12'hB05,
+    CSR_MHPMCOUNTER6   = 12'hB06,
+    CSR_MHPMCOUNTER7   = 12'hB07,
+    CSR_MHPMCOUNTER8   = 12'hB08,
+    CSR_MHPMCOUNTER9   = 12'hB09,
+    CSR_MHPMCOUNTER10  = 12'hB0A,
+    CSR_MHPMCOUNTER11  = 12'hB0B,
+    CSR_MHPMCOUNTER12  = 12'hB0C,
+    CSR_MHPMCOUNTER13  = 12'hB0D,
+    CSR_MHPMCOUNTER14  = 12'hB0E,
+    CSR_MHPMCOUNTER15  = 12'hB0F,
+    CSR_MHPMCOUNTER16  = 12'hB10,
+    CSR_MHPMCOUNTER17  = 12'hB11,
+    CSR_MHPMCOUNTER18  = 12'hB12,
+    CSR_MHPMCOUNTER19  = 12'hB13,
+    CSR_MHPMCOUNTER20  = 12'hB14,
+    CSR_MHPMCOUNTER21  = 12'hB15,
+    CSR_MHPMCOUNTER22  = 12'hB16,
+    CSR_MHPMCOUNTER23  = 12'hB17,
+    CSR_MHPMCOUNTER24  = 12'hB18,
+    CSR_MHPMCOUNTER25  = 12'hB19,
+    CSR_MHPMCOUNTER26  = 12'hB1A,
+    CSR_MHPMCOUNTER27  = 12'hB1B,
+    CSR_MHPMCOUNTER28  = 12'hB1C,
+    CSR_MHPMCOUNTER29  = 12'hB1D,
+    CSR_MHPMCOUNTER30  = 12'hB1E,
+    CSR_MHPMCOUNTER31  = 12'hB1F,
+    CSR_MCYCLEH        = 12'hB80,
+    CSR_MINSTRETH      = 12'hB82,
+    CSR_MHPMCOUNTER3H  = 12'hB83,
+    CSR_MHPMCOUNTER4H  = 12'hB84,
+    CSR_MHPMCOUNTER5H  = 12'hB85,
+    CSR_MHPMCOUNTER6H  = 12'hB86,
+    CSR_MHPMCOUNTER7H  = 12'hB87,
+    CSR_MHPMCOUNTER8H  = 12'hB88,
+    CSR_MHPMCOUNTER9H  = 12'hB89,
+    CSR_MHPMCOUNTER10H = 12'hB8A,
+    CSR_MHPMCOUNTER11H = 12'hB8B,
+    CSR_MHPMCOUNTER12H = 12'hB8C,
+    CSR_MHPMCOUNTER13H = 12'hB8D,
+    CSR_MHPMCOUNTER14H = 12'hB8E,
+    CSR_MHPMCOUNTER15H = 12'hB8F,
+    CSR_MHPMCOUNTER16H = 12'hB90,
+    CSR_MHPMCOUNTER17H = 12'hB91,
+    CSR_MHPMCOUNTER18H = 12'hB92,
+    CSR_MHPMCOUNTER19H = 12'hB93,
+    CSR_MHPMCOUNTER20H = 12'hB94,
+    CSR_MHPMCOUNTER21H = 12'hB95,
+    CSR_MHPMCOUNTER22H = 12'hB96,
+    CSR_MHPMCOUNTER23H = 12'hB97,
+    CSR_MHPMCOUNTER24H = 12'hB98,
+    CSR_MHPMCOUNTER25H = 12'hB99,
+    CSR_MHPMCOUNTER26H = 12'hB9A,
+    CSR_MHPMCOUNTER27H = 12'hB9B,
+    CSR_MHPMCOUNTER28H = 12'hB9C,
+    CSR_MHPMCOUNTER29H = 12'hB9D,
+    CSR_MHPMCOUNTER30H = 12'hB9E,
+    CSR_MHPMCOUNTER31H = 12'hB9F,
+    CSR_CPUCTRL        = 12'h7C0,
+    CSR_SECURESEED     = 12'h7C1
   } csr_num_e;
 
   // CSR pmp-related offsets
-  parameter logic[11:0] CSR_OFF_PMP_CFG  = 'h3A0; // pmp_cfg  @ 12'h3a0 - 12'h3a3
-  parameter logic[11:0] CSR_OFF_PMP_ADDR = 'h3B0; // pmp_addr @ 12'h3b0 - 12'h3bf
+  parameter logic[11:0] CSR_OFF_PMP_CFG  = 12'h3A0; // pmp_cfg  @ 12'h3a0 - 12'h3a3
+  parameter logic[11:0] CSR_OFF_PMP_ADDR = 12'h3B0; // pmp_addr @ 12'h3b0 - 12'h3bf
 
   // CSR status bits
-  parameter int CSR_MSTATUS_MIE_BIT      = 'd3;
-  parameter int CSR_MSTATUS_MPIE_BIT     = 'd7;
-  parameter int CSR_MSTATUS_MPP_BIT_LOW  = 'd11;
-  parameter int CSR_MSTATUS_MPP_BIT_HIGH = 'd12;
-  parameter int CSR_MSTATUS_MPRV_BIT     = 'd17;
-  parameter int CSR_MSTATUS_TW_BIT       = 'd21;
+  parameter int CSR_MSTATUS_MIE_BIT      = 3;
+  parameter int CSR_MSTATUS_MPIE_BIT     = 7;
+  parameter int CSR_MSTATUS_MPP_BIT_LOW  = 11;
+  parameter int CSR_MSTATUS_MPP_BIT_HIGH = 12;
+  parameter int CSR_MSTATUS_MPRV_BIT     = 17;
+  parameter int CSR_MSTATUS_TW_BIT       = 21;
 
   // CSR machine ISA
-  parameter logic[1:0] CSR_MISA_MXL = 'd1; // M-XLEN: XLEN in M-Mode for RV32
+  parameter logic[1:0] CSR_MISA_MXL = 1; // M-XLEN: XLEN in M-Mode for RV32
 
   // CSR interrupt pending/enable bits
-  parameter int CSR_MSIX_BIT      = 'd3;
-  parameter int CSR_MTIX_BIT      = 'd7;
-  parameter int CSR_MEIX_BIT      = 'd11;
-  parameter int CSR_MFIX_BIT_LOW  = 'd16;
-  parameter int CSR_MFIX_BIT_HIGH = 'd30;
+  parameter int CSR_MSIX_BIT      = 3;
+  parameter int CSR_MTIX_BIT      = 7;
+  parameter int CSR_MEIX_BIT      = 11;
+  parameter int CSR_MFIX_BIT_LOW  = 16;
+  parameter int CSR_MFIX_BIT_HIGH = 30;
 
   // CSR Machine Security Configuration bits
-  parameter int CSR_MSECCFG_MML_BIT  = 'd0;
-  parameter int CSR_MSECCFG_MMWP_BIT = 'd1;
-  parameter int CSR_MSECCFG_RLB_BIT  = 'd2;
+  parameter int CSR_MSECCFG_MML_BIT  = 0;
+  parameter int CSR_MSECCFG_MMWP_BIT = 1;
+  parameter int CSR_MSECCFG_RLB_BIT  = 2;
 
   // Vendor ID
   // No JEDEC ID has been allocated to lowRISC so the value is 0 to indicate the field is not
   // implemented
-  parameter logic[31:0] CSR_MVENDORID_VALUE  = 'd0;
+  parameter logic[31:0] CSR_MVENDORID_VALUE  = 0;
 
   // Architecture ID
   // Top bit is unset to indicate an open source project. The lower bits are an ID allocated by the
   // RISC-V Foundation. Note this is allocated specifically to Ibex, should significant changes be
   // made a different architecture ID should be supplied.
-  parameter logic[31:0] CSR_MARCHID_VALUE = 'd22;
+  parameter logic[31:0] CSR_MARCHID_VALUE = 22;
 
   // Implementation ID
   // 0 indicates this field is not implemeted. Ibex implementors may wish to indicate an RTL/netlist
   // version here using their own unique encoding (e.g. 32 bits of the git hash of the implemented
   // commit).
-  parameter logic[31:0] CSR_MIMPID_VALUE = 'd0;
+  parameter logic[31:0] CSR_MIMPID_VALUE = 0;
 
   // These LFSR parameters have been generated with
   // $ opentitan/util/design/gen-lfsr-seed.py --width 32 --seed 2480124384 --prefix ""

@@ -16,3 +16,6 @@
 [submodule "src/tree-sitter-cpp"]
 	path = src/tree-sitter-cpp
 	url = https://github.com/tree-sitter/tree-sitter-cpp
+[submodule "riscv-simple-sv"]
+	path = riscv-simple-sv
+	url = https://github.com/tilk/riscv-simple-sv

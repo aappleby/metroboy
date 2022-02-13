@@ -153,6 +153,7 @@
     <ClCompile Include="MtModLibrary.cpp" />
     <ClCompile Include="MtModule.cpp" />
     <ClCompile Include="MtNode.cpp" />
+    <ClCompile Include="MtTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />

@@ -11,6 +11,9 @@
 
 #pragma warning(disable:4996)
 
+// "Magic" constant that gets translated to 'x' in Verilog
+static const uint64_t DONTCARE = 0;
+
 constexpr int clog2(uint64_t x) {
   if (x == 0) return 0;
   x--;

@@ -2,6 +2,8 @@
 
 #include "MtModule.h"
 
+#include <sys/stat.h>
+
 //------------------------------------------------------------------------------
 
 void MtModLibrary::reset() {
@@ -9,11 +11,24 @@ void MtModLibrary::reset() {
   modules.clear();
 }
 
+void MtModLibrary::load(const std::string& input_filename) {
+  load(input_filename, input_filename + ".sv");
+}
+
 void MtModLibrary::load(const std::string& input_filename, const std::string& output_filename) {
-  auto mod = new MtModule();
-  mod->load(input_filename, output_filename);
-  mod->lib = this;
-  modules.push_back(mod);
+  for (auto& prefix : search_paths) {
+    auto input_path  = prefix + input_filename;
+    auto output_path = prefix + output_filename;
+
+    struct stat s;
+    if (stat(input_path.c_str(), &s) == 0) {
+      auto mod = new MtModule();
+      mod->load(input_path, output_path);
+      mod->lib = this;
+      modules.push_back(mod);
+    }
+  }
+
 }
 
 MtModule* MtModLibrary::find_module(const std::string& module_name) {

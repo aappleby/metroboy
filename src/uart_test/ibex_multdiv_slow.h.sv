@@ -123,12 +123,10 @@ output logic valid_o
     case (operator_i) 
       MD_OP_MULL: begin
         alu_operand_b_o = op_a_bw_pp;
-        /*break*/;
       end
 
       MD_OP_MULH: begin
         alu_operand_b_o = (md_state_q == MD_LAST) ? op_a_bw_last_pp : op_a_bw_pp;
-        /*break*/;
       end
 
       MD_OP_DIV,
@@ -138,39 +136,32 @@ output logic valid_o
             // 0 - B = 0 iff B == 0
             alu_operand_a_o = {32'h0, 1'b1};
             alu_operand_b_o = {~op_b_i, 1'b1};
-            /*break*/;
           end
           MD_ABS_A: begin
             // ABS(A) = 0 - A
             alu_operand_a_o = {32'h0, 1'b1};
             alu_operand_b_o = {~op_a_i, 1'b1};
-            /*break*/;
           end
           MD_ABS_B: begin
             // ABS(B) = 0 - B
             alu_operand_a_o = {32'h0, 1'b1};
             alu_operand_b_o = {~op_b_i, 1'b1};
-            /*break*/;
           end
           MD_CHANGE_SIGN: begin
             // ABS(Quotient) = 0 - Quotient (or Reminder)
             alu_operand_a_o = {32'h0, 1'b1};
             alu_operand_b_o = {~accum_window_q[31:0], 1'b1};
-            /*break*/;
           end
           default: begin
             // Division
             alu_operand_a_o = {accum_window_q[31:0], 1'b1}; // it contains the remainder
             alu_operand_b_o = {~op_b_shift_q[31:0], 1'b1};     // -denominator two's compliment
-            /*break*/;
          end
         endcase
-        /*break*/;
       end
       default: begin
         alu_operand_a_o = accum_window_q;
         alu_operand_b_o = {~op_b_shift_q[31:0], 1'b1};
-        /*break*/;
       end
     endcase
   end
@@ -226,7 +217,6 @@ output logic valid_o
               op_b_shift_d   = op_b_ext >> 1;
               // Proceed with multiplication by 0/1 in data-independent time mode
               md_state_d     = (!data_ind_timing_i && ((op_b_ext >> 1) == 0)) ? MD_LAST : MD_COMP;
-              /*break*/;
             end
             MD_OP_MULH: begin
               op_a_shift_d   = op_a_ext;
@@ -234,7 +224,6 @@ output logic valid_o
                                    op_a_ext[31:1] & {31 {op_b_i[0]}}  };
               op_b_shift_d   = op_b_ext >> 1;
               md_state_d     = MD_COMP;
-              /*break*/;
             end
             MD_OP_DIV : begin
               // Check if the denominator is 0
@@ -246,7 +235,6 @@ output logic valid_o
               // Record that this is a div by zero to stop the sign change at the end of the
               // division (in data_ind_timing mode).
               div_by_zero_d  = equal_to_zero_i;
-              /*break*/;
             end
             MD_OP_REM : begin
               // Check if the denominator is 0
@@ -255,12 +243,10 @@ output logic valid_o
               // normal and will naturally return operand a
               accum_window_d = op_a_ext;
               md_state_d     = (!data_ind_timing_i && equal_to_zero_i) ? MD_FINISH : MD_ABS_A;
-              /*break*/;
             end
-            default: /*break*/;
+            default:
           endcase
           multdiv_count_d   = 5'd31;
-          /*break*/;
         end
 
         MD_ABS_A: begin
@@ -269,7 +255,6 @@ output logic valid_o
           // A abs value
           op_numerator_d = sign_a ? alu_adder_i : op_a_i;
           md_state_d     = MD_ABS_B;
-          /*break*/;
         end
 
         MD_ABS_B: begin
@@ -278,7 +263,6 @@ output logic valid_o
           // B abs value
           op_b_shift_d   = sign_b ? {1'b0, alu_adder_i} : {1'b0, op_b_i};
           md_state_d     = MD_COMP;
-          /*break*/;
         end
 
         MD_COMP: begin
@@ -292,25 +276,21 @@ output logic valid_o
               // the maximum possible shift-add operations will be completed regardless of op_b
               md_state_d     = ((!data_ind_timing_i && (op_b_shift_d == 0)) ||
                                 (multdiv_count_q == 5'd1)) ? MD_LAST : MD_COMP;
-              /*break*/;
             end
             MD_OP_MULH: begin
               accum_window_d = res_adder_h;
               op_a_shift_d   = op_a_shift_q;
               op_b_shift_d   = op_b_shift_q >> 1;
               md_state_d     = (multdiv_count_q == 5'd1) ? MD_LAST : MD_COMP;
-              /*break*/;
             end
             MD_OP_DIV,
             MD_OP_REM: begin
               accum_window_d = {next_remainder[31:0], op_numerator_q[multdiv_count_d]};
               op_a_shift_d   = next_quotient;
               md_state_d     = (multdiv_count_q == 5'd1) ? MD_LAST : MD_COMP;
-              /*break*/;
             end
-            default: /*break*/;
+            default:
           endcase
-          /*break*/;
         end
 
         MD_LAST: begin
@@ -321,7 +301,6 @@ output logic valid_o
               // Note no state transition will occur if multdiv_hold is set
               md_state_d   = MD_IDLE;
               multdiv_hold = ~multdiv_ready_id_i;
-              /*break*/;
             end
             MD_OP_MULH: begin
               accum_window_d = res_adder_l;
@@ -330,24 +309,20 @@ output logic valid_o
               // Note no state transition will occur if multdiv_hold is set
               md_state_d   = MD_IDLE;
               multdiv_hold = ~multdiv_ready_id_i;
-              /*break*/;
             end
             MD_OP_DIV: begin
               // this time we save the quotient in accum_window_q since we do not need anymore the
               // remainder
               accum_window_d = next_quotient;
               md_state_d     = MD_CHANGE_SIGN;
-              /*break*/;
             end
             MD_OP_REM: begin
               // this time we do not save the quotient anymore since we need only the remainder
               accum_window_d = {1'b0, next_remainder[31:0]};
               md_state_d     = MD_CHANGE_SIGN;
-              /*break*/;
             end
-            default: /*break*/;
+            default:
           endcase
-          /*break*/;
         end
 
         MD_CHANGE_SIGN: begin
@@ -355,25 +330,20 @@ output logic valid_o
           case (operator_i) 
             MD_OP_DIV:
               accum_window_d = div_change_sign ? {1'b0, alu_adder_i} : accum_window_q;
-              /*break*/;
             MD_OP_REM:
               accum_window_d = rem_change_sign ? {1'b0, alu_adder_i} : accum_window_q;
-              /*break*/;
-            default: /*break*/;
+            default:
           endcase
-          /*break*/;
         end
 
         MD_FINISH : begin
           // Note no state transition will occur if multdiv_hold is set
           md_state_d   = MD_IDLE;
           multdiv_hold = ~multdiv_ready_id_i;
-          /*break*/;
         end
 
         default: begin
           md_state_d = MD_IDLE;
-          /*break*/;
         end
       endcase // md_state_q
     end // (mult_sel_i || div_sel_i)

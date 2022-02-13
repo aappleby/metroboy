@@ -85,6 +85,8 @@ void MtModule::load(const std::string& input_filename, const std::string& output
 
   check_dirty_tick(mod_tick);
   check_dirty_tock(mod_tock);
+
+  printf("loading %s done\n", input_filename.c_str());
 }
 
 //------------------------------------------------------------------------------

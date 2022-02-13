@@ -4,12 +4,61 @@
 #include "MtCursor.h"
 
 #include "../uart_test/ibex_pkg.h"
+#include "../uart_test/ibex_alu.h"
+
+#include "../../riscv-simple-sv/synth/config.h"
+#include "../../riscv-simple-sv/core/common/constants.h"
+#include "../../riscv-simple-sv/core/common/adder.h"
+#include "../../riscv-simple-sv/core/common/alu.h"
+#include "../../riscv-simple-sv/core/common/alu_control.h"
+#include "../../riscv-simple-sv/core/common/control_transfer.h"
+#include "../../riscv-simple-sv/core/common/data_memory_interface.h"
+#include "../../riscv-simple-sv/core/common/immediate_generator.h"
 
 //------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
 
+  std::vector<std::string> args;
+  for (int i = 0; i < argc; i++) {
+    args.push_back(argv[i]);
+  }
+
+  args = {
+    "-I.",
+    "-I../../riscv-simple-sv",
+    "-Isrc/uart_test",
+
+    "-Iriscv-simple-sv/core/common",
+    "-Iriscv-simple-sv/core/multicycle",
+    "-Iriscv-simple-sv/core/pipeine",
+    "-Iriscv-simple-sv/core/singlecycle",
+
+    "ibex_alu.h"
+  };
+
+
   MtModLibrary lib;
+  //lib.add_search_path(".");
+  //lib.add_search_path("../../riscv-simple-sv");
+  //lib.add_search_path("src/uart_test");
+
+  for (auto& arg : args) {
+    if (arg[0] == '-'){
+      switch(arg[1]) {
+      case 'I':
+        printf("Adding search path %s\n", &arg[2]);
+        lib.add_search_path(&arg[2]);
+        break;
+      default:
+        printf("Bad command line arg '%s'\n", arg.c_str());
+        return -1;
+      }
+    }
+    else {
+      lib.load(arg);
+    }
+  }
 
   /*
   for (int i = 1; i < argc; i++) {
@@ -25,9 +74,11 @@ int main(int argc, char** argv) {
 
   //lib.load("ibex_multdiv_slow.h", "ibex_multdiv_slow.h.sv");
   //lib.load("ibex_compressed_decoder.h", "ibex_compressed_decoder.h.sv");
-  lib.load("ibex_pkg.h", "ibex_pkg.h.sv");
+  //lib.load("ibex_pkg.h", "ibex_pkg.h.sv");
+  //lib.load("ibex_alu.h");
   //lib.load("prim_arbiter_fixed.h", "prim_arbiter_fixed.h.sv");
 
+#if 0
   for (auto& module : lib.modules)
   {
     //auto& module = lib.modules[5];
@@ -92,6 +143,7 @@ int main(int argc, char** argv) {
     cursor.emit_dispatch(module->mod_root);
     printf("\n");
   }
+#endif
 
   return 0;
 }

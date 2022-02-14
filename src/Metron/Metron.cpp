@@ -14,6 +14,21 @@
 #include "../../riscv-simple-sv/core/common/control_transfer.h"
 #include "../../riscv-simple-sv/core/common/data_memory_interface.h"
 #include "../../riscv-simple-sv/core/common/immediate_generator.h"
+#include "../../riscv-simple-sv/core/common/instruction_decoder.h"
+#include "../../riscv-simple-sv/core/common/multiplexer.h"
+#include "../../riscv-simple-sv/core/common/multiplexer2.h"
+#include "../../riscv-simple-sv/core/common/multiplexer4.h"
+#include "../../riscv-simple-sv/core/common/multiplexer8.h"
+#include "../../riscv-simple-sv/core/common/regfile.h"
+#include "../../riscv-simple-sv/core/common/register.h"
+#include "../../riscv-simple-sv/core/common/example_text_memory.h"
+#include "../../riscv-simple-sv/core/common/example_text_memory_bus.h"
+#include "../../riscv-simple-sv/core/singlecycle/riscv_core.h"
+#include "../../riscv-simple-sv/core/singlecycle/singlecycle_control.h"
+#include "../../riscv-simple-sv/core/singlecycle/singlecycle_ctlpath.h"
+#include "../../riscv-simple-sv/core/singlecycle/singlecycle_datapath.h"
+
+multiplexer<> blah_multiplexer;
 
 //------------------------------------------------------------------------------
 

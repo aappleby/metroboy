@@ -178,6 +178,8 @@
     <ClInclude Include="..\..\riscv-simple-sv\core\common\constants.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\control_transfer.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\data_memory_interface.h" />
+    <ClInclude Include="..\..\riscv-simple-sv\core\common\example_data_memory.h" />
+    <ClInclude Include="..\..\riscv-simple-sv\core\common\example_data_memory_bus.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\example_text_memory.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\example_text_memory_bus.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\immediate_generator.h" />

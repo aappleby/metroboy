@@ -1,12 +1,13 @@
 #pragma once
 #include <stdint.h>
 #include <assert.h>
+#include <type_traits>
 
 //----------------------------------------
 // Silly template to convert size-in-bits to a primitive type.
 
 template<int N> struct bitsize_to_basetype {};
-#define DECLARE_SIZE(T, N) template<> struct bitsize_to_basetype<N> { typedef T basetype; };
+#define DECLARE_SIZE(T, N) template<> struct bitsize_to_basetype<N> { typedef T type; };
 
 DECLARE_SIZE(uint8_t, 1);
 DECLARE_SIZE(uint8_t, 2);
@@ -78,177 +79,283 @@ DECLARE_SIZE(uint64_t, 64);
 
 //----------------------------------------
 
-template<typename T> struct to_signed;
+template<int N> class logic;
+template<int WIDTH, typename SRC, int SRC_WIDTH> class bit_slice;
 
-template<> struct to_signed<uint8_t>  { typedef int8_t  signed_type; };
-template<> struct to_signed<uint16_t> { typedef int16_t signed_type; };
-template<> struct to_signed<uint32_t> { typedef int32_t signed_type; };
-template<> struct to_signed<uint64_t> { typedef int64_t signed_type; };
-
-//----------------------------------------
-
-template<int N> struct logic;
-template<int W, typename T> struct bit_proxy;
-
-template<int N, int W>
-bit_proxy<W, typename bitsize_to_basetype<N>::basetype> slice(typename bitsize_to_basetype<N>::basetype& x, uint64_t i);
-
-//----------------------------------------
-
-template<int N>
-inline logic<1> reduce_xor(logic<N> y) {
-  static const uint64_t mask = 0xFFFFFFFFFFFFFFFFull >> (64 - N);
-  uint64_t x = y & mask;
-  x &= mask;
-  x ^= x >> 32;
-  x ^= x >> 16;
-  x ^= x >> 8;
-  x ^= x >> 4;
-  x ^= x >> 2;
-  x ^= x >> 1;
-  return x & 1;
-}
-
-//----------------------------------------
-
-template<int N>
-inline logic<1> reduce_or(logic<N> x) {
-  static const uint64_t mask = 0xFFFFFFFFFFFFFFFFull >> (64 - N);
-  return (x & mask) != 0;
-}
-
-//----------------------------------------
-
-template<int N>
-inline logic<1> reduce_and(logic<N> x) {
-  static const uint64_t mask = 0xFFFFFFFFFFFFFFFFull >> (64 - N);
-  return (x & mask) == mask;
-}
-
-//----------------------------------------
+//------------------------------------------------------------------------------
 // Statically sized chunk of bits.
 
-template<int N = 1>
-struct logic {
-  typedef typename bitsize_to_basetype<N>::basetype basetype;
-  static const int width = N;
-  static const uint64_t mask = 0xFFFFFFFFFFFFFFFFull >> (64 - N);
+template<int WIDTH = 1>
+class logic {
+public:
 
-  logic()                   { x = 0; }
-  logic(uint64_t y)         { x = basetype(y) & mask; }
-  operator uint64_t() const {
-    return x;
+  typedef bitsize_to_basetype<WIDTH>::type   BASE;
+  typedef std::make_signed<BASE>::type   SBASE; 
+  typedef std::make_unsigned<BASE>::type UBASE;
+
+  //----------
+  // Logics can be constructed from their base type, other logics of the same
+  // size, or slices of the same size.
+
+  logic();
+  logic(const BASE& y);
+  logic(const logic& y);
+
+  template<typename SRC, int SRC_WIDTH>
+  logic(const bit_slice<WIDTH, SRC, SRC_WIDTH>& y);
+
+  static logic coerce(BASE y);
+
+  //----------
+  // Logics can be assigned from their base type, other logics of the same
+  // size, or slices of the same size.
+
+  void operator=(BASE y);
+  void operator=(const logic& y);
+  
+  template<typename SRC, int SRC_WIDTH>
+  void operator=(const bit_slice<WIDTH, SRC, SRC_WIDTH>& y);
+
+  //----------
+  // Logics decay to BASE.
+
+  operator BASE() const { return x; }
+  BASE  get() const { return x; }
+  SBASE as_signed()   const;
+  UBASE as_unsigned() const;
+
+  BASE& as_ref() { return x; }
+  const BASE& as_ref() const { return x; }
+
+  //----------
+  // Logics can be sliced into bit_slices
+
+  bit_slice<1, BASE, WIDTH> operator[](int i);
+  template<int W> bit_slice<W, BASE, WIDTH> slice(int i = 0);
+  template<int W> const bit_slice<W, BASE, WIDTH> slice(int i = 0) const;
+
+  static const int width = WIDTH;
+
+private:
+
+  // Logic<>s can _not_ be copied or assigned from logic<>s of other widths.
+  //template<int M> logic(const logic<M>& y);
+  //template<int M> logic& operator=(const logic<M>& y);
+
+  static_assert(std::is_integral<BASE>::value);
+  static_assert(std::is_unsigned<BASE>::value);
+
+  static const BASE mask = BASE(~0) >> ((sizeof(BASE) * 8) - WIDTH);
+
+  BASE x;
+};
+
+//------------------------------------------------------------------------------
+// BIT_SLICE
+
+template<int WIDTH, typename SRC, int SRC_WIDTH>
+class bit_slice {
+public:
+  static_assert(WIDTH > 0);
+  static_assert(SRC_WIDTH > 0);
+  static_assert(std::is_integral<SRC>::value);
+
+  typedef logic<WIDTH>::BASE BASE;
+
+  //----------
+
+  bit_slice(SRC& s, int i) : self(s), i(i) {}
+  bit_slice(const bit_slice& b) : self(b.self), i(b.i) {}
+
+  //----------
+
+  operator BASE() const { return get(); }
+  operator const logic<WIDTH>() const { return get(); }
+
+  //----------
+
+  void operator = (const BASE& x) { set(x); }
+  void operator = (const bit_slice& b) { set(b.get()); }
+  void operator = (const logic<WIDTH>& b) { set(b.get()); }
+
+  template<typename OTHER_SRC, int OTHER_SRC_WIDTH>
+  void operator = (const bit_slice<WIDTH, OTHER_SRC, OTHER_SRC_WIDTH>& b) { set(b.get()); }
+
+  //----------
+  
+  BASE get() const {
+    return (self >> i) & mask;
   }
 
-  bit_proxy<1, basetype> operator[](uint64_t i);
-
-  template<int W>
-  bit_proxy<W, basetype> slice(uint64_t i = 0);
-
-  logic operator~() const { return ~uint64_t(x); }
-
-  logic<1> reduce_or()  const { return x != 0; }
-  logic<1> reduce_and() const { return x == mask; }
-  logic<1> reduce_xor() const { return ::reduce_xor<N>(x); }
-
-  logic& operator=(uint64_t y) { x = basetype(y) & mask; return *this; }
-
-private:
-  basetype x;
-};
-
-//----------------------------------------
-// Signed logic wrapper, not sure what I want to do with this yet.
-
-template<int N = 1>
-struct slogic {
-  typedef typename to_signed<typename bitsize_to_basetype<N>::basetype>::signed_type basetype;
-
-  slogic()          { x = 0; }
-  slogic(int64_t y) { x = basetype(y); }
-  operator int64_t() const { return x; }
-
-private:
-  basetype x;
-};
-
-//----------------------------------------
-
-template<int W, typename T>
-struct bit_proxy {
-  bit_proxy(T& s, uint64_t i) : self(s), i(i) {}
-
-  static const T mask = T(0xFFFFFFFFFFFFFFFFull >> (64 - W));
-
-  T& self;
-  uint64_t i;
-
-  bit_proxy& operator = (uint64_t x) {
+  template<typename T>
+  void set(const T& x) {
+    static_assert(std::is_integral<T>::value);
     self &= ~(mask << i);
     self |=  ((x & mask) << i);
-    return *this;
   }
 
-  operator logic<W>() const;
-  logic<W> operator ~() const;
-  logic<W> operator !() const;
+private:
+  // Slices can _not_ be copied or assigned from slices of other widths.
 
-  template<typename S>
-  inline logic<W> operator& (const bit_proxy<W, S>& b) const {
-    auto ax = (self >> i) & mask;
-    auto bx = (b.self >> b.i) & mask;
-    return uint64_t(ax & bx);
-  }
+  template<int OTHER_WIDTH, typename OTHER_SRC, int OTHER_SRC_WIDTH>
+  bit_slice(const bit_slice<OTHER_WIDTH, OTHER_SRC, OTHER_SRC_WIDTH>& b);
 
-  operator uint64_t() const { return (self >> i) & mask; }
+  template<int OTHER_WIDTH>
+  bit_slice& operator = (const logic<OTHER_WIDTH>& b);
+
+  template<int OTHER_WIDTH, typename OTHER_SRC, int OTHER_SRC_WIDTH>
+  bit_slice& operator = (const bit_slice<OTHER_WIDTH, OTHER_SRC, OTHER_SRC_WIDTH>& b);
+
+  static const int mask_width = WIDTH > SRC_WIDTH ? SRC_WIDTH : WIDTH;
+  static const SRC mask = SRC(-1) >> (sizeof(SRC) * 8 - mask_width);
+  SRC& self;
+  const int i;
+
 };
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 
-template<int W, typename T>
-inline bit_proxy<W, T>::operator logic<W>() const {
-  return uint64_t((self >> i) & mask);
+template<int WIDTH, typename SRC, int SRC_WIDTH>
+inline bit_slice<WIDTH, SRC, SRC_WIDTH> make_prim_slice(SRC& x, int i = 0) {
+  return {x, i};
 }
 
-template<int W, typename T>
-inline logic<W> bit_proxy<W, T>::operator ~() const {
-  return uint64_t((~self >> i) & mask);
+template<int WIDTH, typename SRC, int SRC_WIDTH>
+inline const bit_slice<WIDTH, SRC, SRC_WIDTH> make_const_prim_slice(const SRC& x, int i = 0) {
+  return {const_cast<SRC&>(x), i};
 }
 
-template<int W, typename T>
-inline logic<W> bit_proxy<W, T>::operator !() const {
-  return uint64_t((~self >> i) & mask);
+template<int WIDTH, int SRC_WIDTH>
+inline bit_slice<WIDTH, typename logic<SRC_WIDTH>::BASE, SRC_WIDTH> make_logic_slice(logic<SRC_WIDTH>& x, int i = 0) {
+  return {x.as_ref(), i};
 }
 
-//----------------------------------------
+template<int WIDTH, int SRC_WIDTH>
+inline const bit_slice<WIDTH, typename logic<SRC_WIDTH>::BASE, SRC_WIDTH> make_const_logic_slice(const logic<SRC_WIDTH>& x, int i = 0) {
+  return {const_cast<logic<SRC_WIDTH>::BASE&>(x.as_ref()), i};
+}
 
-template<int N>
-bit_proxy<1, typename bitsize_to_basetype<N>::basetype> logic<N>::operator[](uint64_t i) {
-  bit_proxy<1, basetype> r(*(basetype*)(this), i);
+//------------------------------------------------------------------------------
+// Logic impl
+
+template<int WIDTH>
+inline logic<WIDTH>::logic() {
+  x = 0;
+}
+
+template<int WIDTH>
+inline logic<WIDTH>::logic(const BASE& y) {
+  x = y & mask;
+}
+
+template<int WIDTH>
+inline logic<WIDTH>::logic(const logic& y) {
+  x = y.x;
+}
+
+template<int WIDTH>
+template<typename SRC, int SRC_WIDTH>
+inline logic<WIDTH>::logic(const bit_slice<WIDTH, SRC, SRC_WIDTH>& y) {
+  x = y.get();
+}
+
+//----------
+
+template<int WIDTH>
+void logic<WIDTH>::operator=(BASE y) {
+  x = y & mask;
+}
+
+template<int WIDTH>
+void logic<WIDTH>::operator=(const logic& y) {
+  x = y.get();
+}
+  
+template<int WIDTH>
+template<typename SRC, int SRC_WIDTH>
+void logic<WIDTH>::operator=(const bit_slice<WIDTH, SRC, SRC_WIDTH>& y) {
+  x = y.get();
+}
+
+//----------
+
+template<int WIDTH>
+logic<WIDTH>::SBASE logic<WIDTH>::as_signed() const {
+  auto s = 1 << (WIDTH - 1);
+  return (x & ~s) - s;
+}
+
+template<int WIDTH>
+logic<WIDTH>::UBASE logic<WIDTH>::as_unsigned() const {
+  return x;
+}
+
+template<int WIDTH>
+inline logic<WIDTH> logic<WIDTH>::coerce(BASE y) {
+  logic r;
+  r.x = y & mask;
   return r;
 }
 
-template<int N, int W>
-bit_proxy<W, typename bitsize_to_basetype<N>::basetype> slice(typename bitsize_to_basetype<N>::basetype& x, uint64_t i) {
-  return bit_proxy<W, typename bitsize_to_basetype<N>::basetype>(x, i);
+//----------
+
+template<int WIDTH>
+bit_slice<1, typename logic<WIDTH>::BASE, WIDTH>
+logic<WIDTH>::operator[](int i) {
+  return make_prim_slice<1, BASE, WIDTH>(x, i);
 }
 
-template<int N>
-template<int W>
-bit_proxy<W, typename bitsize_to_basetype<N>::basetype> logic<N>::slice(uint64_t i) {
-  return bit_proxy<W, typename bitsize_to_basetype<N>::basetype>(x, i);
+template<int WIDTH>
+template<int SLICE_WIDTH>
+bit_slice<SLICE_WIDTH, typename logic<WIDTH>::BASE, WIDTH>
+logic<WIDTH>::slice(int i) {
+  return make_prim_slice<SLICE_WIDTH, BASE, WIDTH>(x, i);
 }
 
-//----------------------------------------
-// BitExtract helper methods
+template<int WIDTH>
+template<int SLICE_WIDTH>
+const bit_slice<SLICE_WIDTH, typename logic<WIDTH>::BASE, WIDTH>
+logic<WIDTH>::slice(int i) const {
+  return make_const_prim_slice<SLICE_WIDTH, BASE, WIDTH>(x, i);
+}
 
-template<int N> inline logic<N> bx(uint64_t a)        { return a; }
-template<int N> inline logic<N> bx(uint64_t a, int e) { return a >> e; }
+//------------------------------------------------------------------------------
+// boolean ops on logic/slice that preserve bit size
+
+template<int WIDTH>                                 inline logic<WIDTH> operator ~ (const logic<WIDTH>& x)           { return ~x.get(); }
+template<int WIDTH, typename SRC, int SRC_WIDTH>    inline logic<WIDTH> operator ~ (const bit_slice<WIDTH, SRC, SRC_WIDTH>& x) { return ~x.get(); }
+
+template<int WIDTH>                                 inline logic<WIDTH> operator & (const logic<WIDTH>& a, const logic<WIDTH>& b)                     { return logic<WIDTH>::BASE(a) & logic<WIDTH>::BASE(b); }
+template<int WIDTH>                                 inline logic<WIDTH> operator | (const logic<WIDTH>& a, const logic<WIDTH>& b)                     { return logic<WIDTH>::BASE(a) | logic<WIDTH>::BASE(b); }
+template<int WIDTH>                                 inline logic<WIDTH> operator ^ (const logic<WIDTH>& a, const logic<WIDTH>& b)                     { return logic<WIDTH>::BASE(a) ^ logic<WIDTH>::BASE(b); }
+
+template<int WIDTH, typename SRC, int SRC_WIDTH>    inline logic<WIDTH> operator & (const logic<WIDTH>& a, const bit_slice<WIDTH, SRC, SRC_WIDTH>& b) { return logic<WIDTH>::BASE(a) & logic<WIDTH>::BASE(b); }
+template<int WIDTH, typename SRC, int SRC_WIDTH>    inline logic<WIDTH> operator | (const logic<WIDTH>& a, const bit_slice<WIDTH, SRC, SRC_WIDTH>& b) { return logic<WIDTH>::BASE(a) | logic<WIDTH>::BASE(b); }
+template<int WIDTH, typename SRC, int SRC_WIDTH>    inline logic<WIDTH> operator ^ (const logic<WIDTH>& a, const bit_slice<WIDTH, SRC, SRC_WIDTH>& b) { return logic<WIDTH>::BASE(a) ^ logic<WIDTH>::BASE(b); }
+
+template<int WIDTH, typename SRC, int SRC_WIDTH>    inline logic<WIDTH> operator & (const bit_slice<WIDTH, SRC, SRC_WIDTH>& a, const logic<WIDTH>& b) { return logic<WIDTH>::BASE(a) & logic<WIDTH>::BASE(b); }
+template<int WIDTH, typename SRC, int SRC_WIDTH>    inline logic<WIDTH> operator | (const bit_slice<WIDTH, SRC, SRC_WIDTH>& a, const logic<WIDTH>& b) { return logic<WIDTH>::BASE(a) | logic<WIDTH>::BASE(b); }
+template<int WIDTH, typename SRC, int SRC_WIDTH>    inline logic<WIDTH> operator ^ (const bit_slice<WIDTH, SRC, SRC_WIDTH>& a, const logic<WIDTH>& b) { return logic<WIDTH>::BASE(a) ^ logic<WIDTH>::BASE(b); }
+                                                                                                                                                                        
+template<int WIDTH, typename SRC1, int SRC_WIDTH1, typename SRC2, int SRC_WIDTH2> inline logic<WIDTH> operator & (const bit_slice<WIDTH, SRC1, SRC_WIDTH1>& a, const bit_slice<WIDTH, SRC2, SRC_WIDTH2>& b) { return logic<WIDTH>::BASE(a) & logic<WIDTH>::BASE(b); }
+template<int WIDTH, typename SRC1, int SRC_WIDTH1, typename SRC2, int SRC_WIDTH2> inline logic<WIDTH> operator | (const bit_slice<WIDTH, SRC1, SRC_WIDTH1>& a, const bit_slice<WIDTH, SRC2, SRC_WIDTH2>& b) { return logic<WIDTH>::BASE(a) | logic<WIDTH>::BASE(b); }
+template<int WIDTH, typename SRC1, int SRC_WIDTH1, typename SRC2, int SRC_WIDTH2> inline logic<WIDTH> operator ^ (const bit_slice<WIDTH, SRC1, SRC_WIDTH1>& a, const bit_slice<WIDTH, SRC2, SRC_WIDTH2>& b) { return logic<WIDTH>::BASE(a) ^ logic<WIDTH>::BASE(b); }
+
+//------------------------------------------------------------------------------
+// Bit-size casting functions
+
+template<int WIDTH, typename SRC>  inline       bit_slice<WIDTH, SRC, sizeof(SRC) * 8>                       bx(      SRC& a, int i = 0)              { return make_prim_slice<WIDTH, SRC, sizeof(SRC) * 8>(a, i); }
+template<int WIDTH, typename SRC>  inline const bit_slice<WIDTH, SRC, sizeof(SRC) * 8>                       bx(const SRC& a, int i = 0)              { return make_const_prim_slice<WIDTH, SRC, sizeof(SRC) * 8>(a, i); }
+template<int WIDTH, int SRC_WIDTH> inline       bit_slice<WIDTH, typename logic<SRC_WIDTH>::BASE, SRC_WIDTH> bx(      logic<SRC_WIDTH>& a, int i = 0) { return make_logic_slice<WIDTH, SRC_WIDTH>(a, i); }
+template<int WIDTH, int SRC_WIDTH> inline const bit_slice<WIDTH, typename logic<SRC_WIDTH>::BASE, SRC_WIDTH> bx(const logic<SRC_WIDTH>& a, int i = 0) { return make_const_logic_slice<WIDTH, SRC_WIDTH>(a, i); }
 
 #define BIT_EXTRACT(A) \
-template<typename T> inline logic<A> b##A(T a)            { return uint64_t(a); } \
-template<typename T> inline logic<A> b##A(T a, int e)     { return uint64_t(a) >> e; }
+template<typename SRC> inline       bit_slice<A, typename SRC, sizeof(SRC)*8>        b##A(      SRC& a,          int i = 0) { return make_prim_slice<A, SRC, sizeof(SRC)*8>(a, i); } \
+template<typename SRC> inline const bit_slice<A, typename SRC, sizeof(SRC)*8>        b##A(const SRC& a,          int i = 0) { return make_const_prim_slice<A, SRC, sizeof(SRC)*8>(a, i); } \
+template<int WIDTH>    inline       bit_slice<A, typename logic<WIDTH>::BASE, WIDTH> b##A(      logic<WIDTH>& a, int i = 0) { return make_logic_slice<A, WIDTH>(a, i); } \
+template<int WIDTH>    inline const bit_slice<A, typename logic<WIDTH>::BASE, WIDTH> b##A(const logic<WIDTH>& a, int i = 0) { return make_const_logic_slice<A, WIDTH>(a, i); } \
 
+#if 1
 BIT_EXTRACT(1);
 BIT_EXTRACT(2);
 BIT_EXTRACT(3);
@@ -316,66 +423,117 @@ BIT_EXTRACT(61);
 BIT_EXTRACT(62);
 BIT_EXTRACT(63);
 BIT_EXTRACT(64);
+#endif
 
-template<int N> inline logic<N> operator&(logic<N> a, logic<N> b) { return a & b; }
-template<int N> inline logic<N> operator|(logic<N> a, logic<N> b) { return a | b; }
-template<int N> inline logic<N> operator^(logic<N> a, logic<N> b) { return a ^ b; }
+//------------------------------------------------------------------------------
+
+template<int WIDTH, typename SRC, int SRC_WIDTH>
+inline logic<1> reduce_xor(const bit_slice<WIDTH, SRC, SRC_WIDTH>& x) {
+  auto t = x.get();
+  t ^= t >> 32;
+  t ^= t >> 16;
+  t ^= t >> 8;
+  t ^= t >> 4;
+  t ^= t >> 2;
+  t ^= t >> 1;
+  return t & 1;
+}
+
+template<int WIDTH, typename SRC, int SRC_WIDTH>
+inline logic<1> reduce_or(const bit_slice<WIDTH, SRC, SRC_WIDTH>& x) {
+  return x.get() != 0;
+}
+
+template<int WIDTH, typename SRC, int SRC_WIDTH>
+inline logic<1> reduce_and(const bit_slice<WIDTH, SRC, SRC_WIDTH>& x) {
+  return x.get() == logic<WIDTH>::mask;
+}
+
+template<int WIDTH>
+inline logic<1> reduce_xor(const logic<WIDTH>& x) {
+  auto t = x.get();
+  t ^= t >> 32;
+  t ^= t >> 16;
+  t ^= t >> 8;
+  t ^= t >> 4;
+  t ^= t >> 2;
+  t ^= t >> 1;
+  return t & 1;
+}
+
+template<int WIDTH>
+inline logic<1> reduce_or(const logic<WIDTH>& x) {
+  return x.get() != 0;
+}
+
+template<int WIDTH>
+inline logic<1> reduce_and(const logic<WIDTH>& x) {
+  return x.get() == logic<WIDTH>::mask;
+}
 
 //----------------------------------------
-// Concatenate any number of logic<>s and bit_proxy<>s into one logic<>.
+// Concatenate any number of logic<>s and bit_slice<>s into one logic<>.
 
-template<int M, int N>
-inline logic<M + N> cat(logic<M> a, logic<N> b) {
-  return (a << N) | b;
+template<int WIDTH1, int WIDTH2>
+inline logic<WIDTH1 + WIDTH2> cat(const logic<WIDTH1>& a, const logic<WIDTH2>& b) {
+  return (logic<WIDTH1 + WIDTH2>::BASE(a.get()) << WIDTH2) | logic<WIDTH1 + WIDTH2>::BASE(b.get());
 }
 
-template<int M, typename T, int N>
-inline logic<M + N> cat(bit_proxy<M, T> a, logic<N> b) {
-  return (a << N) | b;
+template<int WIDTH1, typename SRC1, int SRC_WIDTH1, int WIDTH2>
+inline logic<WIDTH1 + WIDTH2> cat(const bit_slice<WIDTH1, SRC1, SRC_WIDTH1>& a, const logic<WIDTH2>& b) {
+  return (logic<WIDTH1 + WIDTH2>::BASE(a.get()) << WIDTH2) | logic<WIDTH1 + WIDTH2>::BASE(b.get());
 }
 
-template<int M, int N, typename T>
-inline logic<M + N> cat(logic<M> a, bit_proxy<N, T> b) {
-  return (a << N) | b;
+template<int WIDTH1, int WIDTH2, typename SRC2, int SRC_WIDTH2>
+inline logic<WIDTH1 + WIDTH2> cat(const logic<WIDTH1>& a, const bit_slice<WIDTH2, SRC2, SRC_WIDTH2>& b) {
+  return (logic<WIDTH1 + WIDTH2>::BASE(a.get()) << WIDTH2) | logic<WIDTH1 + WIDTH2>::BASE(b.get());
 }
 
-template<int M, typename S, int N, typename T>
-inline logic<M + N> cat(bit_proxy<M, S> a, bit_proxy<N, T> b) {
-  return (a << N) | b;
+template<int WIDTH1, typename SRC1, int SRC_WIDTH1, int WIDTH2, typename SRC2, int SRC_WIDTH2>
+inline logic<WIDTH1 + WIDTH2> cat(const bit_slice<WIDTH1, SRC1, SRC_WIDTH1>& a, const bit_slice<WIDTH2, SRC2, SRC_WIDTH2>& b) {
+  return (logic<WIDTH1 + WIDTH2>::BASE(a.get()) << WIDTH2) | logic<WIDTH1 + WIDTH2>::BASE(b.get());
 }
 
-template<int N, typename... Args>
-inline auto cat(logic<N> a, Args... args) -> logic<N + decltype(cat(args...))::width> {
+template<int WIDTH, typename... Args>
+inline auto cat(const logic<WIDTH>& a, Args... args) -> logic<WIDTH + decltype(cat(args...))::width> {
   return cat(a, cat(args...));
 }
 
-template<int M, typename T, typename... Args>
-inline auto cat(bit_proxy<M, T> a, Args... args) -> logic<1 + decltype(cat(args...))::width> {
-  return cat(b1(a), cat(args...));
+template<int WIDTH, typename SRC, int SRC_WIDTH, typename... Args>
+inline auto cat(const bit_slice<WIDTH, SRC, SRC_WIDTH>& a, Args... args) -> logic<WIDTH + decltype(cat(args...))::width> {
+  return cat(a, cat(args...));
 }
 
 //----------------------------------------
-// Duplicate a logic<> or bit_proxy<>
+// Duplicate a logic<> or bit_slice<>
 //
 // logic<3> boop = 0b101;
 // logic<9> moop = dup<3>(boop);
 
-template<int D>
+template<int DUPS>
 struct duper {
-  template<int N>
-  static logic<N* D> dup(logic<N> a) {
-    return cat(a, duper<D - 1>::dup(a));
+  template<int WIDTH>
+  static logic<WIDTH * DUPS> dup(const logic<WIDTH>& a) {
+    return cat(a, duper<DUPS - 1>::dup(a));
+  }
+
+  template<int WIDTH, typename SRC, int SRC_WIDTH>
+  static logic<WIDTH * DUPS> dup(const bit_slice<WIDTH, SRC, SRC_WIDTH>& a) {
+    return cat(a, duper<DUPS - 1>::dup(a));
   }
 };
 
 template<>
 struct duper<1> {
-  template<int N>
-  static logic<N> dup(logic<N> a) { return a; }
+  template<int WIDTH>
+  static logic<WIDTH> dup(const logic<WIDTH>& a) { return a; }
+
+  template<int WIDTH, typename SRC, int SRC_WIDTH>
+  static logic<WIDTH> dup(const bit_slice<WIDTH, SRC, SRC_WIDTH>& a) { return a; }
 };
 
-template<int D, int N>
-logic<D*N> dup(logic<N> a) { return duper<D>::dup(a); }
+template<int DUPS, int WIDTH>
+logic<WIDTH*DUPS> dup(const logic<WIDTH>& a) { return duper<DUPS>::dup<WIDTH>(a); }
 
-template<int D, int N, typename T>
-logic<D*N> dup(bit_proxy<N, T> a) { return duper<D>::dup(b1(a)); }
+template<int DUPS, int WIDTH, typename SRC, int SRC_WIDTH>
+logic<WIDTH*DUPS> dup(const bit_slice<WIDTH, SRC, SRC_WIDTH>& a) { return duper<DUPS>::dup<WIDTH>(a); }

@@ -58,7 +58,7 @@ namespace ibex_pkg {
   // Opcodes //
   /////////////
 
-  enum class opcode_e : typename logic<7>::basetype {
+  enum class opcode_e : logic<7>::BASE {
     OPCODE_LOAD     = 0x03,
     OPCODE_MISC_MEM = 0x0f,
     OPCODE_OP_IMM   = 0x13,
@@ -77,7 +77,7 @@ namespace ibex_pkg {
   // ALU operations //
   ////////////////////
 
-  enum class alu_op_e : typename logic<7>::basetype {
+  enum class alu_op_e : logic<7>::BASE {
     // Arithmetics
     ALU_ADD,
     ALU_SUB,
@@ -186,7 +186,7 @@ namespace ibex_pkg {
     ALU_CRC32C_W
   };
 
-  enum class md_op_e : typename logic<2>::basetype {
+  enum class md_op_e : logic<2>::BASE {
     // Multiplier/divider
     MD_OP_MULL,
     MD_OP_MULH,
@@ -200,7 +200,7 @@ namespace ibex_pkg {
   //////////////////////////////////
 
   // CSR operations
-  enum class csr_op_e : typename logic<2>::basetype {
+  enum class csr_op_e : logic<2>::BASE {
     CSR_OP_READ,
     CSR_OP_WRITE,
     CSR_OP_SET,
@@ -208,7 +208,7 @@ namespace ibex_pkg {
   };
 
   // Privileged mode
-  enum class priv_lvl_e : typename logic<2>::basetype {
+  enum class priv_lvl_e : logic<2>::BASE {
     PRIV_LVL_M = 0b11,
     PRIV_LVL_H = 0b10,
     PRIV_LVL_S = 0b01,
@@ -216,7 +216,7 @@ namespace ibex_pkg {
   };
 
   // Constants for the dcsr.xdebugver fields
-  enum class x_debug_ver_e : typename logic<4>::basetype {
+  enum class x_debug_ver_e : logic<4>::BASE {
     XDEBUGVER_NO     = 0, // no external debug support
     XDEBUGVER_STD    = 4, // external debug according to RISC-V debug spec
     XDEBUGVER_NONSTD = 15 // debug not conforming to RISC-V debug spec
@@ -227,7 +227,7 @@ namespace ibex_pkg {
   //////////////
 
   // Type of instruction present in writeback stage
-  enum class wb_instr_type_e : typename logic<2>::basetype {
+  enum class wb_instr_type_e : logic<2>::BASE {
     WB_INSTR_LOAD,  // Instruction is awaiting load data
     WB_INSTR_STORE, // Instruction is awaiting store response
     WB_INSTR_OTHER  // Instruction doesn't fit into above categories
@@ -238,7 +238,7 @@ namespace ibex_pkg {
   //////////////
 
   // Operand a selection
-  enum class op_a_sel_e : typename logic<2>::basetype {
+  enum class op_a_sel_e : logic<2>::BASE {
     OP_A_REG_A,
     OP_A_FWD,
     OP_A_CURRPC,
@@ -246,19 +246,19 @@ namespace ibex_pkg {
   };
 
   // Immediate a selection
-  enum class imm_a_sel_e : typename logic<1>::basetype {
+  enum class imm_a_sel_e : logic<1>::BASE {
     IMM_A_Z,
     IMM_A_ZERO
   };
 
   // Operand b selection
-  enum class op_b_sel_e : typename logic<1>::basetype  {
+  enum class op_b_sel_e : logic<1>::BASE  {
     OP_B_REG_B,
     OP_B_IMM
   };
 
   // Immediate b selection
-  enum class imm_b_sel_e : typename logic<3>::basetype {
+  enum class imm_b_sel_e : logic<3>::BASE {
     IMM_B_I,
     IMM_B_S,
     IMM_B_B,
@@ -269,7 +269,7 @@ namespace ibex_pkg {
   };
 
   // Regfile write data selection
-  enum class rf_wd_sel_e : typename logic<1>::basetype  {
+  enum class rf_wd_sel_e : logic<1>::BASE  {
     RF_WD_EX,
     RF_WD_CSR
   };
@@ -279,7 +279,7 @@ namespace ibex_pkg {
   //////////////
 
   // PC mux selection
-  enum class pc_sel_e : typename logic<3>::basetype {
+  enum class pc_sel_e : logic<3>::BASE {
     PC_BOOT,
     PC_JUMP,
     PC_EXC,
@@ -289,7 +289,7 @@ namespace ibex_pkg {
   };
 
   // Exception PC mux selection
-  enum class exc_pc_sel_e : typename logic<2>::basetype {
+  enum class exc_pc_sel_e : logic<2>::BASE {
     EXC_PC_EXC,
     EXC_PC_IRQ,
     EXC_PC_DBD,
@@ -306,7 +306,7 @@ namespace ibex_pkg {
   };
 
   // Exception cause
-  enum class exc_cause_e : typename logic<6>::basetype {
+  enum class exc_cause_e : logic<6>::BASE {
     EXC_CAUSE_IRQ_SOFTWARE_M     = 0b100011,
     EXC_CAUSE_IRQ_TIMER_M        = 0b100111,
     EXC_CAUSE_IRQ_EXTERNAL_M     = 0b101011,
@@ -324,7 +324,7 @@ namespace ibex_pkg {
   };
 
   // Debug cause
-  enum class dbg_cause_e : typename logic<3>::basetype {
+  enum class dbg_cause_e : logic<3>::BASE {
     DBG_CAUSE_NONE    = 0x0,
     DBG_CAUSE_EBREAK  = 0x1,
     DBG_CAUSE_TRIGGER = 0x2,
@@ -362,14 +362,14 @@ namespace ibex_pkg {
   static const unsigned int PMP_I2 = 1;
   static const unsigned int PMP_D  = 2;
 
-  enum class pmp_req_e : typename logic<2>::basetype {
+  enum class pmp_req_e : logic<2>::BASE {
     PMP_ACC_EXEC    = 0b00,
     PMP_ACC_WRITE   = 0b01,
     PMP_ACC_READ    = 0b10
   };
 
   // PMP cfg structures
-  enum class pmp_cfg_mode_e : typename logic<2>::basetype {
+  enum class pmp_cfg_mode_e : logic<2>::BASE {
     PMP_MODE_OFF   = 0b00,
     PMP_MODE_TOR   = 0b01,
     PMP_MODE_NA4   = 0b10,
@@ -392,7 +392,7 @@ namespace ibex_pkg {
   };
 
   // CSRs
-  enum class csr_num_e : typename logic<12>::basetype {
+  enum class csr_num_e : logic<12>::BASE {
     // Machine information
     CSR_MVENDORID = 0xF11,
     CSR_MARCHID   = 0xF12,

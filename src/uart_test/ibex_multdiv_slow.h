@@ -22,7 +22,7 @@ struct ibex_multdiv_slow {
   logic<32> multdiv_result_o;
   logic<1>  valid_o;
 
-  enum class md_fsm_e : typename logic<3>::basetype {
+  enum class md_fsm_e : logic<3>::BASE {
     MD_IDLE, MD_ABS_A, MD_ABS_B, MD_COMP, MD_LAST, MD_CHANGE_SIGN, MD_FINISH
   };
   md_fsm_e md_state_q, md_state_d;

@@ -145,11 +145,16 @@ void MtCursor::comment_out(MtNode n) {
 // Replace "#include" with "`include" and ".h" with ".sv"
 
 void MtCursor::emit_preproc_include(MtNode n) {
+  auto path = n.get_field(field_path).body();
+  path.pop_back();
+  path.append(".sv\"");
+  emit_replacement(n, "`include %s", path.c_str());
+
+  /*
   for (auto c : n) {
     switch (c.sym) {
     case aux_sym_preproc_include_token1: emit_replacement(c, "`include"); break;
     case sym_string_literal: {
-      auto path = c.body();
       path.pop_back();
       path.append(".sv\"");
       emit_replacement(c, "%s", path.c_str());
@@ -158,6 +163,7 @@ void MtCursor::emit_preproc_include(MtNode n) {
     default: emit_dispatch(c); break;
     }
   }
+  */
 }
 
 //------------------------------------------------------------------------------
@@ -211,26 +217,33 @@ void MtCursor::emit_static_bit_extract(MtNode n, int bx_width) {
     }
     else if (arg0.sym == sym_identifier || arg0.sym == sym_subscript_expression) {
       // Size-casting expression
-      cursor = arg0.start();
-      emit_dispatch(arg0);
+      /*
       if (bx_width > 1) {
+        cursor = arg0.start();
+        emit_dispatch(arg0);
         emit("[%d:0]", bx_width - 1);
+        cursor = n.end();
       } else {
+        cursor = arg0.start();
+        emit_dispatch(arg0);
         emit("[0]");
+        cursor = n.end();
       }
+      */
+      cursor = arg0.start();
+      emit("%d'", bx_width);
+      emit("(");
+      emit_dispatch(arg0);
+      emit(")");
       cursor = n.end();
     }
     else {
       // Size-casting expression
       cursor = arg0.start();
+      emit("%d'", bx_width);
       emit("(");
       emit_dispatch(arg0);
       emit(")");
-      if (bx_width > 1) {
-        emit("[%d:0]", bx_width - 1);
-      } else {
-        emit("[0]");
-      }
       cursor = n.end();
     }
   }
@@ -352,6 +365,10 @@ void MtCursor::emit_call_expression(MtNode n) {
     // Convert to cast? We probably shouldn't be calling coerce() directly.
     n.dump_tree();
     debugbreak();
+  }
+  else if (func_name == "signed") {
+    emit_replacement(call_func, "$signed");
+    emit_dispatch(call_args);
   }
   else if (func_name == "clog2") {
     emit_replacement(call_func, "$clog2");
@@ -846,7 +863,7 @@ void MtCursor::emit_enum_class(MtNode n) {
       n.child_count() == 3 &&
       n.child(0).sym == sym_enum_specifier &&
       n.child(1).sym == sym_bitfield_clause) {
-    // TreeSitterCPP BUG - "enum class foo : typename logic<2> = {}" misinterpreted as bitfield
+    // TreeSitterCPP BUG - "enum class foo : logic<2> = {}" misinterpreted as bitfield
     auto node_bitfield = n.child(1);
     auto node_compound = node_bitfield.child(1);
     auto node_basetype = node_compound.get_field(field_type);
@@ -863,7 +880,7 @@ void MtCursor::emit_enum_class(MtNode n) {
       n.child_count() == 3 &&
       n.child(0).sym == sym_enum_specifier &&
       n.child(1).sym == sym_init_declarator) {
-    // TreeSitterCPP BUG - "enum class foo : typename logic<2> = {}" in namespace misinterpreted as declarator
+    // TreeSitterCPP BUG - "enum class foo : logic<2> = {}" in namespace misinterpreted as declarator
     auto node_decl1    = n.get_field(field_declarator);
     auto node_decl2    = node_decl1.get_field(field_declarator);
     auto node_scope    = node_decl2.get_field(field_scope);
@@ -1019,127 +1036,124 @@ void MtCursor::emit_field_declaration(MtNode decl) {
 }
 
 //------------------------------------------------------------------------------
+
+void MtCursor::emit_input_ports(std::vector<MtField>& fields) {
+  for (auto& input : fields) {
+    MtCursor sub_cursor = *this;
+    emit_newline();
+    emit("input ");
+    sub_cursor.cursor = input.type.start();
+    sub_cursor.emit_dispatch(input.type);
+    emit(" ");
+    sub_cursor.cursor = input.name.start();
+    sub_cursor.emit_dispatch(input.name);
+    emit(",");
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void MtCursor::emit_output_ports(std::vector<MtField>& fields) {
+  for (int i = 0; i < fields.size(); i++)  {
+    auto& output = fields[i];
+    MtCursor sub_cursor = *this;
+    emit_newline();
+    emit("output ");
+    sub_cursor.cursor = output.type.start();
+    sub_cursor.emit_dispatch(output.type);
+    emit(" ");
+    sub_cursor.cursor = output.name.start();
+    sub_cursor.emit_dispatch(output.name);
+        
+    if (i != fields.size() - 1) emit(",");
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void MtCursor::emit_port_list() {
+  // Patch the template parameter list in after the module declaration
+  if (mod->mod_param_list) {
+    emit_newline();
+    MtCursor sub_cursor = *this;
+    sub_cursor.cursor = mod->mod_param_list.start();
+    sub_cursor.emit_module_parameters(mod->mod_param_list);
+  }
+
+  // Emit an old-style port list
+  in_ports = true;
+  trim_namespaces = false;
+
+  emit_newline();
+  emit("("); emit_newline();
+  emit("input logic clk,"); emit_newline();
+  emit("input logic rst_n,"); emit_newline();
+
+  emit_input_ports(mod->inputs);
+  emit_output_ports(mod->outputs);
+
+  emit_newline();
+  emit(");");
+
+  trim_namespaces = true;
+  in_ports = false;
+}
+
+//------------------------------------------------------------------------------
+// Emit the module body, with a few modifications.
+// Discard the opening brace
+// Replace the closing brace with "endmodule"
+// Discard the seimcolon at the end of class{};"
+
+void MtCursor::emit_class_body(MtNode class_body) {
+  push_indent(class_body.first_named_child());
+
+  for (auto c : class_body) switch (c.sym) {
+  case anon_sym_LBRACE: emit_replacement(c, ""); break;
+  case anon_sym_RBRACE: emit_replacement(c, "endmodule"); break;
+  case anon_sym_SEMI:   emit_replacement(c, ""); break;
+  default:              emit_dispatch(c); break;
+  }
+
+  pop_indent(class_body.first_named_child());
+}
+
+//------------------------------------------------------------------------------
 // Change class/struct to module, add default clk/rst inputs, add input and
 // ouptut ports to module param list.
 
 void MtCursor::emit_class_specifier(MtNode n) {
-  if (in_module_or_package) {
-    auto node_name = n.get_field(field_name);
-    auto node_body = n.get_field(field_body);
+  //n.dump_tree(0, 0, 2);
 
+  auto class_lit  = n.child(0);
+  auto class_name = n.get_field(field_name);
+  auto class_body = n.get_field(field_body);
+
+  if (in_module_or_package) {
     // Don't turn nested structs into modules, just switch the 
     advance_to(n);
     emit("typedef struct packed");
-    cursor = node_name.end();
-    emit_dispatch(node_body);
+    cursor = class_name.end();
+    emit_dispatch(class_body);
 
-    cursor = node_name.start();
+    cursor = class_name.start();
     emit(" ");
-    emit(node_name);
+    emit(class_name);
     cursor = n.end();
     return;
   }
 
-  std::set<std::string> input_dedup;
-  std::vector<MtField> inputs2;
-  for (auto input : mod->inputs) {
-    auto input_name = input.name.body();
-    if (!input_dedup.contains(input_name)) {
-      input_dedup.insert(input_name);
-      inputs2.push_back(input);
-    }
-  }
+  //----------
 
-  for (auto c : n) {
-    if (c.sym == anon_sym_class || c.sym == anon_sym_struct) {
-      emit_replacement(c, "module");
-    }
-    else if (c.field == field_name) {
-      emit_dispatch(c);
+  advance_to(class_lit);
+  emit_replacement(class_lit, "module");
 
-      // Patch the template parameter list in after the module declaration
-      if (mod->mod_param_list) {
-        emit_newline();
-        MtCursor sub_cursor = *this;
-        sub_cursor.cursor = mod->mod_param_list.start();
-        sub_cursor.emit_module_parameters(mod->mod_param_list);
-      }
+  advance_to(class_name);
+  emit_dispatch(class_name);
+  emit_port_list();
+  emit_class_body(class_body);
 
-      // Emit an old-style port list
-      in_ports = true;
-      trim_namespaces = false;
-
-      emit_newline();
-      emit("(\n");
-
-      emit_newline();
-      emit("input logic clk,");
-
-      emit_newline();
-      emit("input logic rst_n,");
-
-      for (int i = 0; i < inputs2.size(); i++)  {
-        auto& input = inputs2[i];
-        MtCursor sub_cursor = *this;
-        emit_newline();
-        emit("input ");
-        sub_cursor.cursor = input.type.start();
-        sub_cursor.emit_dispatch(input.type);
-        emit(" ");
-        sub_cursor.cursor = input.name.start();
-        sub_cursor.emit_dispatch(input.name);
-        emit(",");
-      }
-
-      for (int i = 0; i < mod->outputs.size(); i++)  {
-        auto& output = mod->outputs[i];
-        MtCursor sub_cursor = *this;
-        emit_newline();
-        emit("output ");
-        sub_cursor.cursor = output.type.start();
-        sub_cursor.emit_dispatch(output.type);
-        emit(" ");
-        sub_cursor.cursor = output.name.start();
-        sub_cursor.emit_dispatch(output.name);
-        
-        if (i != mod->outputs.size() - 1) emit(",");
-      }
-
-      emit("\n);");
-
-      trim_namespaces = true;
-      in_ports = false;
-
-    }
-    else if (c.field == field_body) {
-      // And the declaration of the ports will be in the module body along with
-      // the rest of the module.
-
-      push_indent(c.first_named_child());
-
-      emit_newline();
-      emit("/*verilator public_module*/");
-      emit_newline();
-
-      // Emit the module body, with a few modifications.
-      // Discard the opening brace
-      // Replace the closing brace with "endmodule"
-      // Discard the seimcolon at the end of class{};"
-
-      for (auto gc : c) switch (gc.sym) {
-      case anon_sym_LBRACE: emit_replacement(gc, ""); break;
-      case anon_sym_RBRACE: emit_replacement(gc, "endmodule"); break;
-      case anon_sym_SEMI:   emit_replacement(gc, ""); break;
-      default:              emit_dispatch(gc); break;
-      }
-
-      pop_indent(c.first_named_child());
-    }
-    else {
-      c.dump_tree(0, 0, 1);
-      debugbreak();
-    }
-  }
+  cursor = n.end();
 }
 
 //------------------------------------------------------------------------------
@@ -1244,8 +1258,9 @@ void MtCursor::emit_enumerator_list(MtNode n) {
 // Discard any trailing semicolons in the translation unit.
 
 void MtCursor::emit_translation_unit(MtNode n) {
-  emit("/* verilator lint_off WIDTH */\n");
+  //emit("/* verilator lint_off WIDTH */\n");
   emit("`default_nettype none\n");
+  emit("\n");
 
   for (auto c : n) switch (c.sym) {
   case anon_sym_SEMI: skip_over(c); break;
@@ -1659,7 +1674,8 @@ void MtCursor::emit_dispatch(MtNode n) {
     static std::set<int> passthru_syms = {
       alias_sym_namespace_identifier,
       alias_sym_field_identifier,
-      sym_sized_type_specifier
+      sym_sized_type_specifier,
+      sym_string_literal
     };
 
     if (!n.is_named()) {

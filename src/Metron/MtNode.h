@@ -36,6 +36,11 @@ struct MtNode {
   uint32_t start_byte() const { return ts_node_start_byte(node); }
   uint32_t end_byte()   const { return ts_node_end_byte(node); }
 
+  MtNode& check_null() {
+    if (is_null()) debugbreak();
+    return *this;
+  }
+
   //----------
 
   int child_count() const { return (int)ts_node_child_count(node); }

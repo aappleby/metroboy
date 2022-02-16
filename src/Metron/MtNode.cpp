@@ -66,7 +66,6 @@ MtNode MtNode::first_named_child() const {
 
 std::string MtNode::body() {
   assert(!is_null());
-
   auto a = &mod->source[start_byte()];
   auto b = &mod->source[end_byte()];
 
@@ -79,6 +78,7 @@ std::string MtNode::body() {
 }
 
 const char* MtNode::start() {
+  assert(!is_null());
   auto a = &mod->source[start_byte()];
   auto b = &mod->source[end_byte()];
 
@@ -89,6 +89,7 @@ const char* MtNode::start() {
 }
 
 const char* MtNode::end() {
+  assert(!is_null());
   auto a = &mod->source[start_byte()];
   auto b = &mod->source[end_byte()];
 
@@ -99,6 +100,7 @@ const char* MtNode::end() {
 }
 
 bool MtNode::match(const char* s) {
+  assert(!is_null());
   const char* a = start();
   const char* b = end();
 

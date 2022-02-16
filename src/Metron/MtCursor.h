@@ -68,6 +68,11 @@ struct MtCursor {
   void emit_init_declarator_as_decl(MtNode n);
   void emit_init_declarator_as_assign(MtNode n);
 
+  void emit_port_list();
+  void emit_class_body(MtNode class_body);
+  void emit_input_ports(std::vector<MtField>& fields);
+  void emit_output_ports(std::vector<MtField>& fields);
+
   //----------
 
   MtModule* mod;

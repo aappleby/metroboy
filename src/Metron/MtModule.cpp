@@ -60,7 +60,6 @@ MtModule::~MtModule() {
 }
 
 void MtModule::load(const std::string& input_filename, const std::string& output_filename) {
-  printf("loading %s\n", input_filename.c_str());
   this->input_filename = input_filename;
   this->output_filename = output_filename;
 
@@ -71,6 +70,12 @@ void MtModule::load(const std::string& input_filename, const std::string& output
   src_blob = load_blob(input_filename.c_str());
 
   out_file = fopen(output_filename.c_str(), "wb");
+
+  // Copy the BOM over if needed.
+  if (src_blob[0] == 239 && src_blob[1] == 187 && src_blob[2] == 191) {
+    fwrite(src_blob.data(), 1, 3, out_file);
+    src_blob.erase(src_blob.begin(), src_blob.begin() + 3);
+  }
 
   source = (const char*)src_blob.data();
   source_end = source + src_blob.size();
@@ -85,8 +90,6 @@ void MtModule::load(const std::string& input_filename, const std::string& output
 
   check_dirty_tick(mod_tick);
   check_dirty_tock(mod_tock);
-
-  printf("loading %s done\n", input_filename.c_str());
 }
 
 //------------------------------------------------------------------------------
@@ -177,16 +180,13 @@ MtField MtModule::get_by_id(std::vector<MtField>& handles, MtNode id) {
 // Scanner
 
 void MtModule::find_module() {
-  mod_template = MtNode();
-  mod_class = MtNode();
+  mod_template = MtNode::null;
+  mod_class = MtNode::null;
 
   mod_root.visit_tree2([&](MtNode parent, MtNode child) {
     if (child.sym == sym_struct_specifier || child.sym == sym_class_specifier) {
       if (parent.sym == sym_template_declaration) mod_template = parent;
       mod_class = child;
-
-      auto name_node = mod_class.get_field(field_name);
-      mod_name = name_node.body();
     }
 
     if (child.sym == sym_template_parameter_list) {
@@ -194,7 +194,10 @@ void MtModule::find_module() {
     }
   });
 
+  mod_name = mod_class.get_field(field_name).body();
 }
+
+//------------------------------------------------------------------------------
 
 void MtModule::collect_moduleparams() {
   if (!mod_template) return;
@@ -209,41 +212,44 @@ void MtModule::collect_moduleparams() {
   }
 }
 
-// FIXME does not handle comma-separated fields "int a, b"
+//------------------------------------------------------------------------------
 
 void MtModule::collect_fields() {
-  //std::map<std::string, MtNode> input_dedup;
+  if (mod_class.is_null()) {
+    return;
+  }
+  
+  auto mod_name = mod_class.get_field(field_name).check_null();
+  auto mod_body = mod_class.get_field(field_body).check_null();
 
-  mod_class.visit_tree([&](MtNode n) {
+  for (auto n : mod_body) {
     if (n.sym == sym_function_definition) {
       auto func_name = n.get_field(field_declarator).get_field(field_declarator).body();
       auto func_args = n.get_field(field_declarator).get_field(field_parameters);
 
       if (func_name.starts_with("tick") || func_name.starts_with("tock")) {
-        func_args.visit_tree([&](MtNode func_arg) {
+        for (auto func_arg : func_args) {
           if (func_arg.sym == sym_parameter_declaration) {
             auto arg_type = func_arg.get_field(field_type);
             auto arg_name = func_arg.get_field(field_declarator);
+
+            if (arg_name.is_null()) {
+              n.dump_tree();
+              arg_type.dump_tree();
+              debugbreak();
+            }
 
             if (!arg_name.match("rst_n")) {
               inputs.push_back({func_arg, arg_type, arg_name});
             }
           }
-        });
-      }
-    }
-  });
-
-  mod_class.visit_tree([&](MtNode n) {
-    if (n.sym == sym_field_declaration) {
-      //n.dump_tree();
-
-      for (auto c : n) {
-        if (c.sym == sym_storage_class_specifier) {
-          n.dump_tree();
-          debugbreak();
         }
       }
+    }
+  }
+
+  for (auto n : mod_body) {
+    if (n.sym == sym_field_declaration) {
 
       int id_count = 0;
       auto node_type = n.get_field(field_type);
@@ -266,10 +272,6 @@ void MtModule::collect_fields() {
       }
 
 
-      //n.dump_tree();
-      //int x = 1;
-      //x++;
-
       if (id_count == 0) {
         if (node_type.sym == sym_enum_specifier) {
           enums.push_back(n);
@@ -279,20 +281,6 @@ void MtModule::collect_fields() {
           debugbreak();
         }
       }
-
-      /*
-      else if (f.is_param())  {
-        localparams.push_back(n);
-      }
-      else if (f.is_module()) {
-        submodules.push_back(n);
-      }
-      else if (f.is_enum()) {
-      }
-      else {
-        //fields.push_back(n);
-      }
-      */
     }
 
     if (n.sym == sym_function_definition) {
@@ -311,7 +299,21 @@ void MtModule::collect_fields() {
       else if (is_task) tasks.push_back(n);
       else              functions.push_back(n);
     }
-  });
+  }
+
+  //----------
+  // Dedup the input ports
+
+  std::set<std::string> input_dedup;
+  std::vector<MtField> inputs2;
+  for (auto input : inputs) {
+    auto input_name = input.name.body();
+    if (!input_dedup.contains(input_name)) {
+      input_dedup.insert(input_name);
+      inputs2.push_back(input);
+    }
+  }
+  inputs = inputs2;
 }
 
 //------------------------------------------------------------------------------

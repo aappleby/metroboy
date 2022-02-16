@@ -16,6 +16,7 @@ void MtModLibrary::load(const std::string& input_filename) {
 }
 
 void MtModLibrary::load(const std::string& input_filename, const std::string& output_filename) {
+  printf("loading %s\n", input_filename.c_str());
   for (auto& prefix : search_paths) {
     auto input_path  = prefix + input_filename;
     auto output_path = prefix + output_filename;
@@ -26,9 +27,11 @@ void MtModLibrary::load(const std::string& input_filename, const std::string& ou
       mod->load(input_path, output_path);
       mod->lib = this;
       modules.push_back(mod);
+      printf("loading %s done\n", input_filename.c_str());
+      return;
     }
   }
-
+  printf("loading %s failed\n", input_filename.c_str());
 }
 
 MtModule* MtModLibrary::find_module(const std::string& module_name) {

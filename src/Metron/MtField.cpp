@@ -26,6 +26,7 @@ void MtField::sanity_check() {
   if (type.sym == sym_qualified_identifier) type_ok = true;
   if (type.sym == alias_sym_type_identifier) type_ok = true;
   if (type.sym == sym_enum_specifier) type_ok = true;
+  if (type.sym == sym_primitive_type) type_ok = true;
   if (!type_ok) {
     decl.dump_tree();
     type.dump_tree();

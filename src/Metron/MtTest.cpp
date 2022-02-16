@@ -4,7 +4,7 @@
 
 template<int N>
 struct blogic {
-  typedef typename bitsize_to_basetype<N>::basetype basetype;
+  typedef typename bitsize_to_basetype<N>::type type;
 
   blogic() {}
 
@@ -22,8 +22,7 @@ struct blogic {
 
 private:
 
-  basetype x;
-
+  type x;
 };
 
 void blogic_test() {

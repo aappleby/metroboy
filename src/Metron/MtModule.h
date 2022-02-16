@@ -51,6 +51,8 @@ struct MtModule {
   FILE* out_file;
 
   blob src_blob;
+  bool use_utf8_bom = false;
+
   const char* source = nullptr;
   const char* source_end = nullptr;
   const TSLanguage* lang = nullptr;

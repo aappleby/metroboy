@@ -36,7 +36,7 @@ void blogic_test() {
 
 __declspec(noinline) uint32_t test_bitproxy(int offset) {
   logic<32> x = 0;
-  x.slice<10>(offset) = 0b1111111111;
+  b10(x, offset) = 0b1111111111;
   return uint32_t(x);
 }
 

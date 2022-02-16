@@ -94,7 +94,9 @@ struct ibex_alu {
     else                        adder_in_a = cat(operand_a_i,b1(0b1));
 
     // prepare operand b
-    operand_b_neg = cat(operand_b_i, b1(0b0)) ^ dup<33>(b1(0b1));
+    //operand_b_neg = cat(operand_b_i, b1(0b0)) ^ dup<33>(b1(0b1));
+    // FIXME
+    operand_b_neg = l32(cat(operand_b_i, b1(0b0)) ^ dup<33>(b1(0b1)));
     if      (multdiv_sel_i)     adder_in_b = multdiv_operand_b_i;
     else if (adder_op_b_negate) adder_in_b = operand_b_neg;
     else                        adder_in_b = cat(operand_b_i, b1(0b0));
@@ -285,11 +287,12 @@ struct ibex_alu {
     shift_amt_compl = 32 - b5(operand_b_i);
 
     if (bfp_op) {
-      shift_amt.slice<5>() = bfp_off;  // length field of bfp control word
+      b5(shift_amt) = bfp_off;  // length field of bfp control word
     } else {
-      shift_amt.slice<5>() = instr_first_cycle_i ?
-          (operand_b_i[5] && shift_funnel ? b5(shift_amt_compl) : b5(operand_b_i)) :
-          (operand_b_i[5] && shift_funnel ? b5(operand_b_i) : b5(shift_amt_compl));
+      // FIXME
+      b5(shift_amt) = instr_first_cycle_i ?
+          (operand_b_i[5] && shift_funnel ? l5(shift_amt_compl) : l5(operand_b_i)) :
+          (operand_b_i[5] && shift_funnel ? l5(operand_b_i) : l5(shift_amt_compl));
     }
 
     // single-bit mode: shift
@@ -309,8 +312,8 @@ struct ibex_alu {
       case alu_op_e::ALU_SLL: shift_left = b1(0b1); break;
       case alu_op_e::ALU_SLO: shift_left = (RV32B == rv32b_e::RV32BOTEarlGrey || RV32B == rv32b_e::RV32BFull) ? b1(0b1) : b1(0b0); break;
       case alu_op_e::ALU_BFP: shift_left = (RV32B != rv32b_e::RV32BNone) ? b1(0b1) : b1(0b0); break;
-      case alu_op_e::ALU_ROL: shift_left = (RV32B != rv32b_e::RV32BNone) ? instr_first_cycle_i : 0; break;
-      case alu_op_e::ALU_ROR: shift_left = (RV32B != rv32b_e::RV32BNone) ? ~instr_first_cycle_i : 0; break;
+      case alu_op_e::ALU_ROL: shift_left = (RV32B != rv32b_e::RV32BNone) ? instr_first_cycle_i : logic<1>(0); break;
+      case alu_op_e::ALU_ROR: shift_left = (RV32B != rv32b_e::RV32BNone) ? ~instr_first_cycle_i : logic<1>(0); break;
       case alu_op_e::ALU_FSL: shift_left = (RV32B != rv32b_e::RV32BNone) ?
         (shift_amt[5] ? ~instr_first_cycle_i : instr_first_cycle_i) : b1(0b0); break;
       case alu_op_e::ALU_FSR: shift_left = (RV32B != rv32b_e::RV32BNone) ?

@@ -181,6 +181,18 @@ public:
   template<typename OTHER_SRC, int OTHER_SRC_WIDTH>
   void operator = (const bit_slice<WIDTH, OTHER_SRC, OTHER_SRC_WIDTH>& b) { set(b.get()); }
 
+  template<int OTHER_WIDTH>
+  void operator = (const logic<OTHER_WIDTH>& b) {
+    static_assert(false);
+  }
+
+
+  template<int OTHER_WIDTH>
+  void sderp(const logic<OTHER_WIDTH>& b) {
+    static_assert(false);
+  }
+
+
   //----------
   
   BASE get() const {
@@ -199,9 +211,6 @@ private:
 
   template<int OTHER_WIDTH, typename OTHER_SRC, int OTHER_SRC_WIDTH>
   bit_slice(const bit_slice<OTHER_WIDTH, OTHER_SRC, OTHER_SRC_WIDTH>& b);
-
-  template<int OTHER_WIDTH>
-  bit_slice& operator = (const logic<OTHER_WIDTH>& b);
 
   template<int OTHER_WIDTH, typename OTHER_SRC, int OTHER_SRC_WIDTH>
   bit_slice& operator = (const bit_slice<OTHER_WIDTH, OTHER_SRC, OTHER_SRC_WIDTH>& b);
@@ -424,6 +433,9 @@ BIT_EXTRACT(62);
 BIT_EXTRACT(63);
 BIT_EXTRACT(64);
 #endif
+
+template<typename T> logic<5>  l5(const T& a)  { return logic<5>::BASE(a.get()); }
+template<typename T> logic<32> l32(const T& a) { return logic<32>::BASE(a.get()); }
 
 //------------------------------------------------------------------------------
 

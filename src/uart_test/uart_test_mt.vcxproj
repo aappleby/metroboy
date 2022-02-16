@@ -169,7 +169,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="vcd_dump.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\riscv-simple-sv\core\common\adder.h" />
@@ -227,7 +226,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="vcd_dump.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\riscv-simple-sv\core\common\adder.sv" />

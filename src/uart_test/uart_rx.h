@@ -2,6 +2,7 @@
 #include "metron.h"
 
 //==============================================================================
+/* verilator lint_off WIDTH */
 
 template<int cycles_per_bit = 4>
 struct uart_rx {
@@ -24,40 +25,33 @@ struct uart_rx {
   //----------------------------------------
 
   void init() {
-    o_data = b8(0);
-    o_valid = b1(0);
-    o_sum = b32(0);
+    o_data = 0;
+    o_valid = 0;
+    o_sum = 0;
   }
 
   //----------------------------------------
 
   void tick(bool rst_n, logic<1> i_serial) {
     if (!rst_n) {
-      cycle = bx<cycle_bits>(0);
-      cursor = bx<cursor_bits>(0);
-      buffer = b8(0);
-      sum = b32(0);
-      temp = b8(0);
+      cycle = 0;
+      cursor = 0;
+      buffer = 0;
+      sum = 0;
+      temp = 0;
     } else {
       if (cycle != 0) {
-        cycle = bx<cycle_bits>(cycle - 1);
+        cycle = cycle - 1;
       } else if (cursor != 0) {
-        auto a = i_serial << 7;
-        auto b = buffer >> 1;
-        auto c = a | b;
-        logic<8> temp = b8(c);
-
-
-        //logic<8> temp = b8((i_serial << 7) | (buffer >> 1));
-
-        if (cursor - 1 == 1) sum = b32(sum + temp);
-        cycle = bx<cycle_bits>(cycle_max);
-        cursor = bx<cursor_bits>(cursor - 1);
-        buffer = b8(temp);
+        logic<8> temp = (i_serial << 7) | (buffer >> 1);
+        if (cursor - 1 == 1) sum = sum + temp;
+        cycle = cycle_max;
+        cursor = cursor - 1;
+        buffer = temp;
       }
       else if (i_serial == 0) {
-        cycle = bx<cycle_bits>(cycle_max);
-        cursor = bx<cursor_bits>(cursor_max);
+        cycle = cycle_max;
+        cursor = cursor_max;
       }
 
     }

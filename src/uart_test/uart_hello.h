@@ -9,7 +9,7 @@ struct uart_hello {
   static const int message_len = 512;
   static const int cursor_bits = clog2(message_len);
 
-  enum class state : typename logic<2>::basetype {
+  enum class state : logic<2>::BASE {
     WAIT, SEND, DONE
   };
 
@@ -26,13 +26,9 @@ struct uart_hello {
 
   void init() {
     readmemh("obj/message.hex", memory, 0, 511);
-    o_data = b8(0);
-    o_req = b1(0);
-    o_done = b1(0);
-  
-    logic<3> a = b3(7);
-    logic<4> b = b4(0);
-    logic<4> c = a + b;
+    o_data = 0;
+    o_req = 0;
+    o_done = 0;
   }
 
   //----------------------------------------
@@ -40,7 +36,7 @@ struct uart_hello {
   void tick(bool rst_n, bool i_cts, bool i_idle) {
     if (!rst_n) {
       s = state::WAIT;
-      cursor = bx<cursor_bits>(0);
+      cursor = 0;
     }
     else {
       data = memory[cursor];
@@ -48,16 +44,16 @@ struct uart_hello {
         s = state::SEND;
       }
       else if (s == state::SEND && i_cts) {
-        if (cursor == (message_len - 1)) {
+        if (cursor == message_len - 1) {
           s = state::DONE;
         }
         else {
-          cursor = cursor + b1(1);
+          cursor = cursor + 1;
         }
       }
       else if (s == state::DONE) {
         //s = state::WAIT;
-        cursor = bx<cursor_bits>(0);
+        cursor = 0;
       }
     }
   }
@@ -66,8 +62,8 @@ struct uart_hello {
 
   void tock(bool rst_n) {
     o_data = data;
-    o_req  = uint64_t(s == state::SEND);
-    o_done = uint64_t(s == state::DONE);
+    o_req  = (s == state::SEND);
+    o_done = (s == state::DONE);
   }
 
 };

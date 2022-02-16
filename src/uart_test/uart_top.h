@@ -30,11 +30,11 @@ struct uart_top {
     tx.init();
     rx.init();
 
-    o_serial = b1(0);
-    o_data = b8(0);
-    o_valid = b1(0);
-    o_done = b1(0);
-    o_sum = b32(0);
+    o_serial = 0;
+    o_data = 0;
+    o_valid = 0;
+    o_done = 0;
+    o_sum = 0;
   }
 
   //----------------------------------------

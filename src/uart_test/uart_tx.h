@@ -2,6 +2,7 @@
 #include "metron.h"
 
 //==============================================================================
+/* verilator lint_off WIDTH */
 
 template<int cycles_per_bit = 4>
 struct uart_tx {
@@ -27,18 +28,18 @@ struct uart_tx {
   //----------------------------------------
 
   void init() {
-    o_serial = b1(0);
-    o_cts = b1(0);
-    o_idle = b1(0);
+    o_serial = 0;
+    o_cts = 0;
+    o_idle = 0;
   }
 
   //----------------------------------------
 
   void tick(bool rst_n, logic<8> i_data, logic<1> i_req) {
     if (!rst_n) {
-      cycle = bx<cycle_bits>(0);
-      cursor = bx<cursor_bits>(0);
-      buffer = b9(0x1FF);
+      cycle = 0;
+      cursor = 0;
+      buffer = 0x1FF;
     } else {
       if (cursor <= extra_stop_bits && cycle == 0 && i_req) {
         // Transmit start
@@ -47,14 +48,14 @@ struct uart_tx {
         buffer = i_data << 1;
       } else if (cycle != 0) {
         // Bit delay
-        cycle = cycle - b1(1);
+        cycle = cycle - 1;
         cursor = cursor;
         buffer = buffer;
       } else if (cursor != 0) {
         // Bit delay done, switch to next bit.
         cycle = cycle_max;
-        cursor = cursor - b1(1);
-        buffer = b9((buffer >> 1) | 0x100);
+        cursor = cursor - 1;
+        buffer = (buffer >> 1) | 0x100;
       }
     }
   }
@@ -62,9 +63,9 @@ struct uart_tx {
   //----------------------------------------
 
   void tock(bool rst_n) {
-    o_serial = b1(buffer & 1);
-    o_cts = b1(((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits));
-    o_idle = b1((cursor == 0) && (cycle == 0));
+    o_serial = buffer & 1;
+    o_cts = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
+    o_idle = (cursor == 0) && (cycle == 0);
   }
 
 };

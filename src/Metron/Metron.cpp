@@ -63,6 +63,23 @@ void test_ibex_alu() {
   alu.tock8(ibex_pkg::alu_op_e::ALU_XPERM_N, 0, 0);
 }
 
+void test_ibex_multdiv_slow() {
+  using namespace ibex_pkg;
+
+  ibex_multdiv_slow multdiv;
+
+  logic<34> imd_val_q_i[2];
+
+  multdiv.tick(false);
+  multdiv.tock1(0, 0, 0, 0, md_op_e::MD_OP_DIV, 0, 0, 0, 0, 0, 0, 0, imd_val_q_i, 0);
+  multdiv.tock2(0, 0, 0, 0, md_op_e::MD_OP_DIV, 0, 0, 0, 0, 0, 0, 0, imd_val_q_i, 0);
+  multdiv.tock3(false, md_op_e::MD_OP_DIV, 0);
+  multdiv.tock4(0ull);
+  multdiv.tock5(0, 0);
+  multdiv.tock6(0, 0, 0);
+  multdiv.tock7(imd_val_q_i);
+}
+
 void test_rvs() {
   toplevel t;
   t.tick(1);
@@ -74,6 +91,8 @@ void test_rvs() {
 //------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+  test_rvs();
+
 
   {
     logic<33> op_b_shift_q;
@@ -82,7 +101,7 @@ int main(int argc, char** argv) {
 
   {
     logic<7> a = 0;
-    b32(a) = 0xDEADBEEF;
+    s32(a) = 0xDEADBEEF;
     printf("a = 0x%08x\n", a.get());
     printf("sizeof(a) = %d\n", (int)sizeof(a));
   }
@@ -91,7 +110,7 @@ int main(int argc, char** argv) {
   {
     logic<16> a = b16(0x12345678, 8);
     logic<16> b;
-    b8(b, 8) = b8(a);
+    s8(b, 8) = b8(a);
     printf("0x%08x\n", b.get());
   }
 
@@ -112,7 +131,7 @@ int main(int argc, char** argv) {
   {
     uint32_t temp = 0x00000000;
     for (int i = 0; i < 32; i++) {
-      b1(temp, i) = 1;
+      s1(temp, i) = 1;
       assert(temp == 0xFFFFFFFF >> (32 - i - 1));
     }
   }
@@ -128,7 +147,7 @@ int main(int argc, char** argv) {
   {
     logic<32> temp = b32(0x00000000);
     for (int i = 0; i < 32; i++) {
-      b1(temp, i) = 1;
+      s1(temp, i) = 1;
 
       //printf("0x%08x 0x%08x\n", temp.get(), 0xFFFFFFFF >> (32 - i - 1));
 

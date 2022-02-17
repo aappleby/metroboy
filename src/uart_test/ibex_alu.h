@@ -87,18 +87,16 @@ struct ibex_alu {
   {
     // prepare operand a
     // can't translate reverse case directly
-    if      (multdiv_sel_i)     adder_in_a = multdiv_operand_a_i;
-    else if (adder_op_a_shift1) adder_in_a = cat(b30(operand_a_i),b2(0b01));
-    else if (adder_op_a_shift2) adder_in_a = cat(b29(operand_a_i),b3(0b001));
-    else if (adder_op_a_shift3) adder_in_a = cat(b28(operand_a_i),b4(0b0001));
+    if      (multdiv_sel_i)     adder_in_a = cat(b1(0), multdiv_operand_a_i);
+    else if (adder_op_a_shift1) adder_in_a = cat(b1(0), b30(operand_a_i),b2(0b01));
+    else if (adder_op_a_shift2) adder_in_a = cat(b1(0), b29(operand_a_i),b3(0b001));
+    else if (adder_op_a_shift3) adder_in_a = cat(b1(0), b28(operand_a_i),b4(0b0001));
     else                        adder_in_a = cat(operand_a_i,b1(0b1));
 
     // prepare operand b
-    //operand_b_neg = cat(operand_b_i, b1(0b0)) ^ dup<33>(b1(0b1));
-    // FIXME
-    operand_b_neg = l32(cat(operand_b_i, b1(0b0)) ^ dup<33>(b1(0b1)));
-    if      (multdiv_sel_i)     adder_in_b = multdiv_operand_b_i;
-    else if (adder_op_b_negate) adder_in_b = operand_b_neg;
+    operand_b_neg = b32(cat(operand_b_i, b1(0b0)) ^ dup<33>(b1(0b1)));
+    if      (multdiv_sel_i)     adder_in_b = cat(b1(0), multdiv_operand_b_i);
+    else if (adder_op_b_negate) adder_in_b = cat(b1(0), operand_b_neg);
     else                        adder_in_b = cat(operand_b_i, b1(0b0));
 
     // actual adder
@@ -287,17 +285,17 @@ struct ibex_alu {
     shift_amt_compl = 32 - b5(operand_b_i);
 
     if (bfp_op) {
-      b5(shift_amt) = bfp_off;  // length field of bfp control word
+      s5(shift_amt) = bfp_off;  // length field of bfp control word
     } else {
       // FIXME
-      b5(shift_amt) = instr_first_cycle_i ?
-          (operand_b_i[5] && shift_funnel ? l5(shift_amt_compl) : l5(operand_b_i)) :
-          (operand_b_i[5] && shift_funnel ? l5(operand_b_i) : l5(shift_amt_compl));
+      s5(shift_amt) = instr_first_cycle_i ?
+          (operand_b_i[5] && shift_funnel ? b5(shift_amt_compl) : b5(operand_b_i)) :
+          (operand_b_i[5] && shift_funnel ? b5(operand_b_i) : b5(shift_amt_compl));
     }
 
     // single-bit mode: shift
     shift_sbmode = (RV32B != rv32b_e::RV32BNone) ?
-        (operator_i == alu_op_e::ALU_BSET) | (operator_i == alu_op_e::ALU_BCLR) | (operator_i == alu_op_e::ALU_BINV) : b1(0b0);
+        (operator_i == alu_op_e::ALU_BSET) | (operator_i == alu_op_e::ALU_BCLR) | (operator_i == alu_op_e::ALU_BINV) : 0b0;
 
 
     // left shift if this is:
@@ -326,9 +324,9 @@ struct ibex_alu {
 
     shift_arith  = (operator_i == alu_op_e::ALU_SRA);
     shift_ones   = (RV32B == rv32b_e::RV32BOTEarlGrey || RV32B == rv32b_e::RV32BFull) ?
-      (operator_i == alu_op_e::ALU_SLO) | (operator_i == alu_op_e::ALU_SRO) : b1(0b0);
+      (operator_i == alu_op_e::ALU_SLO) | (operator_i == alu_op_e::ALU_SRO) : 0b0;
     shift_funnel = (RV32B != rv32b_e::RV32BNone) ?
-      (operator_i == alu_op_e::ALU_FSL) | (operator_i == alu_op_e::ALU_FSR) : b1(0b0);
+      (operator_i == alu_op_e::ALU_FSL) | (operator_i == alu_op_e::ALU_FSR) : 0b0;
 
     // shifter structure.
     // select shifter input
@@ -341,18 +339,15 @@ struct ibex_alu {
       else                   shift_operand = shift_left ? operand_a_rev : operand_a_i;
     }
 
-    /*
-    shift_result_ext_signed =
-        $signed({shift_ones | (shift_arith & shift_operand[31]), shift_operand}) >>> shift_amt[4:0];
-    shift_result_ext = $unsigned(shift_result_ext_signed);
-    */
+    shift_result_ext_signed = signed(
+      cat(
+        shift_ones | (shift_arith & shift_operand[31]),
+        shift_operand
+      )
+     ) >> b5(shift_amt);
 
+    shift_result_ext = unsigned(shift_result_ext_signed);
   
-    logic<7> a = 12;
-    logic<8> b;
-
-    b = a;
-
     shift_result            = b32(shift_result_ext); // LKSDJLFKJS did I break the logic<N> = logic<M> checkig?
     unused_shift_result_ext = shift_result_ext[32];
 

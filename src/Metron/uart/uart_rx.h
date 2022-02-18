@@ -1,5 +1,5 @@
 #pragma once
-#include "metron_tools.h"
+#include "../metron_tools.h"
 
 //==============================================================================
 /* verilator lint_off WIDTH */

@@ -1,12 +1,12 @@
 #include <stdio.h>
 
-#include "Logic.h"
+#include "../Logic.h"
 
-#include "../CoreLib/Tests.h"
-#include "../CoreLib/Log.h"
+#include "../../CoreLib/Tests.h"
+#include "../../CoreLib/Log.h"
 
-#include "metron_tools.h"
-#include "uart_top.h"
+#include "../metron_tools.h"
+#include "../uart/uart_top.h"
 
 TestResults logic_test_truncate() {
   TEST_INIT("logic_test_truncate");

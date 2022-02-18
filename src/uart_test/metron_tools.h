@@ -7,7 +7,6 @@
 #include <cstring>
 
 #include "Logic.h"
-#include "Slice.h"
 
 #pragma warning(disable:4996)
 

@@ -43,20 +43,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{8BFC4262-B3BA-4CB6-8199-FE4EF2E72406}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{9DD717FC-9FDF-4BCA-A77F-CA1A9E67B745}"
-	ProjectSection(SolutionItems) = preProject
-		build.ninja = build.ninja
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3E153BAB-251F-4662-8D41-70F562B05B3F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4815CA23-8777-47A1-A13A-561EB8A9CC44}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Metron", "src\Metron\Metron.vcxproj", "{66066533-DE54-4241-8C3F-15FC0D993537}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uart_test_mt", "src\uart_test\uart_test_mt.vcxproj", "{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uart_test", "src\uart_test\uart_test_mt.vcxproj", "{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

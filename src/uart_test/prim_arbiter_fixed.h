@@ -12,7 +12,7 @@
 // See also: prim_arbiter_ppc, prim_arbiter_tree
 
 #pragma once
-#include "metron.h"
+#include "metron_tools.h"
 
 template<
   int N = 8,

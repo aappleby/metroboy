@@ -12,7 +12,7 @@
  */
 
 #pragma once
-#include "metron.h"
+#include "metron_tools.h"
 #include "ibex_pkg.h"
 
 struct ibex_compressed_decoder {

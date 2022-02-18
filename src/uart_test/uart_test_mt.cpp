@@ -5,7 +5,7 @@
 #include "../CoreLib/Tests.h"
 #include "../CoreLib/Log.h"
 
-#include "metron.h"
+#include "metron_tools.h"
 #include "uart_top.h"
 
 TestResults logic_test_truncate() {

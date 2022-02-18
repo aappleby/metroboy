@@ -42,7 +42,7 @@
 #include "../../riscv-simple-sv/core/singlecycle/toplevel.h"
 #endif
 
-//#define TEXT_BITS 12
+//------------------------------------------------------------------------------
 
 void test_ibex_alu() {
   using namespace ibex_pkg;
@@ -88,11 +88,22 @@ void test_rvs() {
   t.tock();
 }
 
+void test_uart() {
+  uart_top t;
+  t.tick(false);
+  t.tock(false);
+}
+
 //------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
   test_rvs();
 
+  {
+    logic<32> a = 0x00000000;
+    slice<12>(a, 12) = 0x123;
+    printf("a = 0x%08x\n", a.x); // should print "a = 0x00123000"
+  }
 
   {
     logic<33> op_b_shift_q;

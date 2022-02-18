@@ -142,16 +142,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\riscv-simple-sv\core\common\example_memory_bus.cpp" />
     <ClCompile Include="Logic.cpp" />
     <ClCompile Include="make_blob_h.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="metron.cpp" />
+    <ClCompile Include="metron_tools.cpp" />
+    <ClCompile Include="uart_hello.cpp" />
     <ClCompile Include="uart_hello.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="uart_rx.cpp" />
     <ClCompile Include="uart_rx.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -161,10 +164,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="uart_top.cpp" />
     <ClCompile Include="uart_top.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="uart_tx.cpp" />
     <ClCompile Include="uart_tx.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -179,6 +184,7 @@
     <ClInclude Include="..\..\riscv-simple-sv\core\common\data_memory_interface.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\example_data_memory.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\example_data_memory_bus.h" />
+    <ClInclude Include="..\..\riscv-simple-sv\core\common\example_memory_bus.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\example_text_memory.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\example_text_memory_bus.h" />
     <ClInclude Include="..\..\riscv-simple-sv\core\common\immediate_generator.h" />
@@ -213,7 +219,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="message.blob.h" />
-    <ClInclude Include="metron.h">
+    <ClInclude Include="metron_tools.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
@@ -222,12 +228,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Slice.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\build.ninja" />
     <None Include="..\..\riscv-simple-sv\core\common\adder.sv" />
     <None Include="..\..\riscv-simple-sv\core\common\alu.sv" />
     <None Include="..\..\riscv-simple-sv\core\common\alu_control.sv" />
@@ -271,19 +274,16 @@
     <None Include="ibex_multdiv_slow.sv" />
     <None Include="ibex_pkg.h.sv" />
     <None Include="ibex_pkg.sv" />
-    <None Include="metron.h.sv" />
+    <None Include="metron_tools.h.sv" />
     <None Include="prim_arbiter_fixed.h.sv" />
     <None Include="prim_arbiter_fixed.sv" />
     <None Include="SB_PLL40_CORE.v" />
     <None Include="uart_hello.h.sv" />
-    <None Include="uart_ice40.sv" />
     <None Include="uart_rx.h.sv" />
-    <None Include="uart_test.sv" />
     <None Include="uart_test_ice40.sv" />
     <None Include="uart_test_iv.sv" />
     <None Include="uart_top.h.sv" />
     <None Include="uart_tx.h.sv" />
-    <None Include="uart_tx_buf.v" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="message.txt" />

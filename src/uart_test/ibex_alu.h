@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #pragma once
-#include "metron.h"
+#include "metron_tools.h"
 #include "ibex_pkg.h"
 
 /**

@@ -171,13 +171,13 @@ public:
 };
 
 //------------------------------------------------------------------------------
-// A bitslice is a proxy view into the bits of a primitive type that lets you
-// write to those bits as if they were another primitive type of a different
-// size. For example:
+// A bitslice is a write-only proxy view into the bits of a primitive type that
+// lets you write to those bits as if they were another primitive type of a
+// different size. For example:
 // 
 // uint32_t a = 0x00000000;
 // bitslice<12, uint32_t, 32>(a, 12) = 0x123;
-// printf("a = 0x%08x\n", a); // should print "a = 0x00123000"
+// printf("a = 0x%08x\n", a.x); // should print "a = 0x00123000"
 //
 // Bit slices can be larger or smaller than the primitive they reference -
 // writing to a slice larger than its source throws away any overflow bits.
@@ -187,7 +187,7 @@ public:
 // or a 7 bit slice of the high 13 bits of a uint16_t or whatever. Not all of
 // those will translate into Verilog, however.
 
-template<int WIDTH, typename SRC, int SRC_WIDTH>
+template<int WIDTH, typename SRC, int SRC_WIDTH = sizeof(SRC) * 8>
 class bitslice {
 public:
 
@@ -197,8 +197,6 @@ public:
 
   static const int width = WIDTH;
   typedef bitsize_to_basetype<WIDTH>::type BASE;
-  typedef std::make_signed<BASE>::type   SBASE; 
-  typedef std::make_unsigned<BASE>::type UBASE;
 
   SRC& self;
   const int offset;
@@ -385,7 +383,7 @@ inline auto cat(const logic<WIDTH>& a, Args... args) -> logic<WIDTH + decltype(c
 }
 
 //------------------------------------------------------------------------------
-// Duplicate a logic<>
+// Duplicate a logic<>. There's probably a better way to do this.
 //
 // logic<3> boop = 0b101;
 // logic<9> moop = dup<3>(boop);

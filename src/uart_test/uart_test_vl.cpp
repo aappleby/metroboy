@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "metron.h"
+#include "metron_tools.h"
 #include "uart_top.h"
 #include "vcd_dump.h"
 

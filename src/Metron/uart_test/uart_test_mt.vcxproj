@@ -29,7 +29,6 @@
     <None Include="uart_test_iv.sv" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\metron_tools.cpp" />
     <ClCompile Include="..\uart\uart_hello.cpp" />
     <ClCompile Include="..\uart\uart_rx.cpp" />
     <ClCompile Include="..\uart\uart_top.cpp" />
@@ -154,6 +153,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src\Metron;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -169,6 +169,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\src\Metron;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

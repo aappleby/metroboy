@@ -10,12 +10,8 @@ struct uart_tx {
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages
   static const int extra_stop_bits = 7;
-
   static const int cycle_bits = clog2(cycles_per_bit);
-  static inline const logic<cycle_bits> cycle_max = bx<cycle_bits>(cycles_per_bit - 1);
-
   static const int cursor_bits = clog2(10 + extra_stop_bits);
-  static inline const logic<cursor_bits> cursor_max = bx<cursor_bits>(10 + extra_stop_bits - 1);
 
   logic<cycle_bits> cycle;
   logic<cursor_bits> cursor;
@@ -41,6 +37,9 @@ struct uart_tx {
       cursor = 0;
       buffer = 0x1FF;
     } else {
+      logic<cycle_bits> cycle_max = bx<cycle_bits>(cycles_per_bit - 1);
+      logic<cursor_bits> cursor_max = bx<cursor_bits>(10 + extra_stop_bits - 1);
+
       if (cursor <= extra_stop_bits && cycle == 0 && i_req) {
         // Transmit start
         cycle = cycle_max;

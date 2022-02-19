@@ -8,16 +8,15 @@
 // 
 // There are two fundamental types - "logic" for storing blocks of up to 64
 // bits, and "bitslice" for manipulating the bits inside logics and primitive
-// types in a similar fashion as Verilog's "a[7:2] = b[31:26]" syntax.
+// types in a similar fashion as Verilog's "a[7:2] = 6'b010101" syntax.
 //
-// Logics and bitslices can also be type-safely concatenated and replicated -
-// "cat(a,b)" is equivalent to Verilog's "{a,b}" and "dup<13>(a)" is equivalent
-// to Verilog's "{13{a}}".
+// Logics can also be type-safely concatenated and replicated - "cat(a,b)" is
+// equivalent to Verilog's "{a,b}" and "dup<13>(a)" is equivalent to Verilog's
+// "{13{a}}".
 //
-// Assigning logics and bitslices of different sizes obey Verilog's rules, which
-// is to say there's no typechecking and values are truncated or zero-extended
-// as needed. Adding static assertions to disallow some assignments is a future
-// option.
+// Assigning logics of different sizes obey Verilog's rules, which is to say
+// there's no typechecking and values are truncated or zero-extended as needed.
+// Adding static assertions to disallow some assignments is a future option.
 
 //------------------------------------------------------------------------------
 // This template converts size-in-bits to a primitive type. There's probably a
@@ -107,15 +106,15 @@ public:
   // type that can hold them.
 
   static const int width = WIDTH;
-  typedef bitsize_to_basetype<WIDTH>::type BASE;
-  typedef std::make_signed<BASE>::type   SBASE; 
-  typedef std::make_unsigned<BASE>::type UBASE;
+  typedef typename bitsize_to_basetype<WIDTH>::type BASE;
+  typedef typename std::make_signed<BASE>::type   SBASE; 
+  typedef typename std::make_unsigned<BASE>::type UBASE;
   
   BASE x = 0;
 
   //----------
-  // Logics can be constructed and assigned from their base type, other logics
-  // of the same size, or slices of the same size.
+  // Logics can be constructed and assigned from their base type or other logics
+  // of the same size.
 
   logic() = default;
 
@@ -196,7 +195,7 @@ public:
   // primitive type plus an (optional) offset into that type's bits.
 
   static const int width = WIDTH;
-  typedef bitsize_to_basetype<WIDTH>::type BASE;
+  typedef typename bitsize_to_basetype<WIDTH>::type BASE;
 
   SRC& self;
   const int offset;
@@ -241,8 +240,8 @@ inline bitslice<WIDTH, typename logic<SRC_WIDTH>::BASE, SRC_WIDTH> slice(logic<S
 }
 
 //------------------------------------------------------------------------------
-// Boolean operations applied to logics and bitslices of the same size produce
-// logics of the same size.
+// Boolean operations applied to logics of the same size produce logics of the
+// same size.
 
 template<int WIDTH> inline logic<WIDTH> operator ~ (const logic<WIDTH>& x)                        { return ~x.get(); }
 template<int WIDTH> inline logic<WIDTH> operator & (const logic<WIDTH>& a, const logic<WIDTH>& b) { return logic<WIDTH>::BASE(a) & logic<WIDTH>::BASE(b); }
@@ -264,9 +263,9 @@ template<int WIDTH, typename SRC>  inline const logic<WIDTH> bx(const SRC& a, in
 template<int WIDTH, int SRC_WIDTH> inline const logic<WIDTH> bx(const logic<SRC_WIDTH>& a, int offset = 0) { return logic<WIDTH>::coerce(a.get() >> offset); }
 
 #define DECLARE_BN_SN_HELPERS(WIDTH) \
-template<typename SRC>  inline bitslice<WIDTH, typename SRC, sizeof(SRC)*8>                 s##WIDTH(      SRC& a,              int offset = 0) { const int SRC_WIDTH = sizeof(SRC)*8; return slice<WIDTH, SRC, SRC_WIDTH>(a, offset); } \
-template<int SRC_WIDTH> inline bitslice<WIDTH, typename logic<SRC_WIDTH>::BASE, SRC_WIDTH>  s##WIDTH(      logic<SRC_WIDTH>& a, int offset = 0) { typedef logic<SRC_WIDTH>::BASE SRC;  return slice<WIDTH, SRC, SRC_WIDTH>(a.x, offset); } \
-template<typename SRC>  inline const logic<WIDTH>                                           b##WIDTH(const SRC& a, int offset = 0)              { return logic<WIDTH>::coerce(a >> offset); } \
+template<typename SRC>  inline bitslice<WIDTH, SRC, sizeof(SRC)*8>                          s##WIDTH(      SRC& a,              int offset = 0) { return slice<WIDTH, SRC, sizeof(SRC)*8>(a, offset); } \
+template<int SRC_WIDTH> inline bitslice<WIDTH, typename logic<SRC_WIDTH>::BASE, SRC_WIDTH>  s##WIDTH(      logic<SRC_WIDTH>& a, int offset = 0) { return slice<WIDTH, logic<SRC_WIDTH>::BASE, SRC_WIDTH>(a.x, offset); } \
+template<typename SRC>  inline const logic<WIDTH>                                           b##WIDTH(const SRC& a,              int offset = 0) { return logic<WIDTH>::coerce(a >> offset); } \
 template<int SRC_WIDTH> inline const logic<WIDTH>                                           b##WIDTH(const logic<SRC_WIDTH>& a, int offset = 0) { return logic<WIDTH>::coerce(a >> offset); } \
 
 DECLARE_BN_SN_HELPERS(1);
@@ -383,27 +382,20 @@ inline auto cat(const logic<WIDTH>& a, Args... args) -> logic<WIDTH + decltype(c
 }
 
 //------------------------------------------------------------------------------
-// Duplicate a logic<>. There's probably a better way to do this.
+// Duplicate a logic<>.
 //
 // logic<3> boop = 0b101;
 // logic<9> moop = dup<3>(boop);
 // assert(moop == 0b101101101);
 
-template<int DUPS>
-struct duper {
-  template<int WIDTH>
-  static logic<WIDTH * DUPS> dup(const logic<WIDTH>& a) {
-    return cat(a, duper<DUPS - 1>::dup(a));
-  }
-};
-
-template<>
-struct duper<1> {
-  template<int WIDTH>
-  static logic<WIDTH> dup(const logic<WIDTH>& a) { return a; }
-};
-
 template<int DUPS, int WIDTH>
-logic<WIDTH*DUPS> dup(const logic<WIDTH>& a) { return duper<DUPS>::dup<WIDTH>(a); }
+logic<WIDTH*DUPS> dup(const logic<WIDTH>& a) {
+  typename logic<WIDTH*DUPS>::BASE temp = 0;
+  for (int i = 0; i < DUPS; i++) {
+    temp = temp << WIDTH;
+    temp |= a;
+  }
+  return temp;
+}
 
 //------------------------------------------------------------------------------

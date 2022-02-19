@@ -41,7 +41,7 @@ inline void parse_hex(const char* src_filename, void* dst_data, int dst_size) {
   int src_size = ftell(f);
   fseek(f, 0, SEEK_SET);
   uint8_t* src_data = (uint8_t*)malloc(src_size);
-  fread(src_data, 1, src_size, f);
+  size_t read = fread(src_data, 1, src_size, f);
 
   memset(dst_data, 0, dst_size);
   uint8_t* dst_bytes = (uint8_t*)dst_data;

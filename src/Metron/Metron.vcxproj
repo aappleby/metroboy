@@ -147,6 +147,11 @@
     <ClCompile Include="..\tree-sitter-cpp\src\parser.c" />
     <ClCompile Include="..\tree-sitter-cpp\src\scanner.cc" />
     <ClCompile Include="..\tree-sitter\lib\src\lib.c" />
+    <ClCompile Include="Logic.cpp" />
+    <ClCompile Include="make_blob_h.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Metron.cpp" />
     <ClCompile Include="MtCursor.cpp" />
     <ClCompile Include="MtField.cpp" />
@@ -157,15 +162,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
+    <ClInclude Include="Logic.h" />
+    <ClInclude Include="message.blob.h" />
+    <ClInclude Include="metron_test.h" />
+    <ClInclude Include="metron_tools.h" />
     <ClInclude Include="MtCursor.h" />
     <ClInclude Include="MtField.h" />
     <ClInclude Include="MtModLibrary.h" />
     <ClInclude Include="MtModule.h" />
     <ClInclude Include="MtNode.h" />
     <ClInclude Include="Platform.h" />
+    <ClInclude Include="TreeSymbols.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="build.ninja" />
+    <None Include="metron_tools.h.sv" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="message.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

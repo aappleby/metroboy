@@ -4,9 +4,8 @@
 #include "uart_tx.h"
 #include "uart_hello.h"
 
-//#include "ibex_compressed_decoder.h"
-
 //==============================================================================
+/* verilator lint_off WIDTH */
 
 template<int cycles_per_bit = 3>
 struct uart_top {

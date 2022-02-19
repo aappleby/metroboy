@@ -1,18 +1,16 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "metron_tools.h"
-#include "uart_top.h"
-#include "vcd_dump.h"
+#include "../uart/uart_top.h"
 
-#include "message.blob.h"
+#include "../message.blob.h"
 
 #include "verilated_vcd_c.h"
-#include "obj/DUT.h"
-#include "obj/DUT_uart_top.h"
-#include "obj/DUT_uart_hello.h"
-#include "obj/DUT_uart_tx__C3.h"
-#include "obj/DUT_uart_rx__C3.h"
+#include "../obj/DUT.h"
+#include "../obj/DUT_uart_top.h"
+#include "../obj/DUT_uart_hello.h"
+#include "../obj/DUT_uart_tx__C3.h"
+#include "../obj/DUT_uart_rx__C3.h"
 
 int main(int argc, char** argv) {
   printf("Metron+Verilator lockstep simulation:\n");

@@ -1,8 +1,8 @@
 #pragma once
 #include "../metron_tools.h"
 
-
 //==============================================================================
+/* verilator lint_off WIDTH */
 
 struct uart_hello {
 
@@ -44,7 +44,7 @@ struct uart_hello {
         s = state::SEND;
       }
       else if (s == state::SEND && i_cts) {
-        if (cursor == message_len - 1) {
+        if (cursor == b9(message_len - 1)) {
           s = state::DONE;
         }
         else {

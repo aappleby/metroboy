@@ -101,7 +101,6 @@ void MetroBoySPU::tock(int phase_total, const Req& req) {
   // length
 
   if (length_tick) {
-    /* verilator lint_off WIDTH */
     bool s1_length_enable = (nr14 & 0b01000000) >> 6;
     bool s2_length_enable = (nr24 & 0b01000000) >> 6;
     bool s3_length_enable = (nr34 & 0b01000000) >> 6;
@@ -131,11 +130,9 @@ void MetroBoySPU::tock(int phase_total, const Req& req) {
   // env
 
   if (env_tick) {
-    /* verilator lint_off WIDTH */
     const bool s1_env_dir = (nr12 & 0b00001000) >> 3;
     const bool s2_env_dir = (nr22 & 0b00001000) >> 3;
     const bool s4_env_dir = (nr42 & 0b00001000) >> 3;
-    /* verilator lint_on WIDTH */
 
     const uint8_t s1_env_period = (nr12 & 0b00000111) >> 0;
     const uint8_t s2_env_period = (nr22 & 0b00000111) >> 0;
@@ -223,17 +220,12 @@ void MetroBoySPU::tock(int phase_total, const Req& req) {
 
     s4_phase_clock = s4_phase_period;
     bool lfsr_bit = (s4_lfsr ^ (s4_lfsr >> 1)) & 1;
-    /* verilator lint_on WIDTH */
     s4_phase_clock = s4_phase_period;
     if (s4_lfsr_mode) {
-      /* verilator lint_off WIDTH */
       s4_lfsr = ((s4_lfsr >> 1) & 0b0111111111011111) | (lfsr_bit << 5);
-      /* verilator lint_on WIDTH */
     }
     else {
-      /* verilator lint_off WIDTH */
       s4_lfsr = ((s4_lfsr >> 1) & 0b0011111111111111) | (lfsr_bit << 14);
-      /* verilator lint_on WIDTH */
     }
   }
   else {
@@ -292,7 +284,6 @@ void MetroBoySPU::tock(int phase_total, const Req& req) {
   out_r = 0;
   out_l = 0;
 
-  /* verilator lint_off WIDTH */
   if (nr51 & 0b00000001) out_r += s1_out;
   if (nr51 & 0b00000010) out_r += s2_out;
   if (nr51 & 0b00000100) out_r += s3_out;
@@ -301,7 +292,6 @@ void MetroBoySPU::tock(int phase_total, const Req& req) {
   if (nr51 & 0b00100000) out_l += s2_out;
   if (nr51 & 0b01000000) out_l += s3_out;
   if (nr51 & 0b10000000) out_l += s4_out;
-  /* verilator lint_on WIDTH */
 
   const uint8_t volume_r = ((nr50 & 0b00000111) >> 0) + 1;
   const uint8_t volume_l = ((nr50 & 0b01110000) >> 4) + 1;

@@ -29,9 +29,9 @@ int main(int argc, char** argv) {
   args.push_back("multiplexer.h");
   */
 
-  //args.push_back("uart_top.h");
-  //args.push_back("uart_hello.h");
-  //args.push_back("uart_tx.h");
+  args.push_back("uart_top.h");
+  args.push_back("uart_hello.h");
+  args.push_back("uart_tx.h");
   args.push_back("uart_rx.h");
 
   MtModLibrary lib;

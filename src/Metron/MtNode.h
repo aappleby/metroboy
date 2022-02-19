@@ -30,7 +30,11 @@ struct MtNode {
   }
 
   operator bool() const { return !ts_node_is_null(node); }
-  std::strong_ordering operator<=>(const MtNode& b) const { return node <=> b.node; }
+  //std::strong_ordering operator<=>(const MtNode& b) const { return node <=> b.node; }
+
+  bool operator<(const MtNode& b) const {
+    return node < b.node;
+  }
 
   const char* type() const { return ts_node_type(node); }
   uint32_t start_byte() const { return ts_node_start_byte(node); }
@@ -135,8 +139,10 @@ struct MtIterator {
     return *this;
   }
 
-  std::strong_ordering operator<=>(const MtIterator& b) const { return cursor <=> b.cursor; }
-  bool operator != (const MtIterator& b) const { return (*this <=> b) != std::strong_ordering::equal; }
+  //std::strong_ordering operator<=>(const MtIterator& b) const { return cursor <=> b.cursor; }
+  //bool operator != (const MtIterator& b) const { return (*this <=> b) != std::strong_ordering::equal; }
+  bool operator <  (const MtIterator& b) const { return cursor < b.cursor; }
+  bool operator != (const MtIterator& b) const { return cursor != b.cursor; }
 
   MtNode operator*() const {
     auto child = ts_tree_cursor_current_node(&cursor);

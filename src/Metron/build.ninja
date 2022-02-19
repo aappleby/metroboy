@@ -45,17 +45,18 @@ rule sv2v
 
 ################################################################################
 
-#build obj/lib.o     : compile_c ../tree-sitter/lib/src/lib.c
-#build obj/parser.o  : compile_c ../tree-sitter-cpp/src/parser.c
-#build obj/scanner.o : compile_c ../tree-sitter-cpp/src/scanner.cc
+build obj/lib.o     : compile_c ../tree-sitter/lib/src/lib.c
+build obj/parser.o  : compile_c ../tree-sitter-cpp/src/parser.c
+build obj/scanner.o : compile_c ../tree-sitter-cpp/src/scanner.cc
 
-#build obj/Metron.o       : compile Metron.cpp
-#build obj/MtCursor.o     : compile MtCursor.cpp
-#build obj/MtIterator.o   : compile MtIterator.cpp
-#build obj/MtModule.o     : compile MtModule.cpp
-#build obj/MtModLibrary.o : compile MtModLibrary.cpp
+build obj/Metron.o       : compile Metron.cpp
+build obj/MtCursor.o     : compile MtCursor.cpp
+build obj/MtField.o      : compile MtField.cpp
+build obj/MtModLibrary.o : compile MtModLibrary.cpp
+build obj/MtModule.o     : compile MtModule.cpp
+build obj/MtNode.o       : compile MtNode.cpp
 
-#build bin/metron           : link obj/Metron.o obj/MtCursor.o obj/MtIterator.o obj/MtModule.o obj/MtModLibrary.o obj/lib.o obj/parser.o obj/scanner.o
+build bin/metron          : link obj/Metron.o obj/MtCursor.o obj/MtField.o obj/MtModLibrary.o obj/MtModule.o obj/MtNode.o obj/lib.o obj/parser.o obj/scanner.o
 
 ################################################################################
 

@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 #include <algorithm>
-#include <compare>
+//#include <compare> // not in gcc?
 #include <functional>
 #include <regex>
 #include <set>
@@ -31,25 +31,55 @@ typedef int64_t LARGE_INTEGER;
 
 //------------------------------------------------------------------------------
 
-inline std::strong_ordering operator<=>(const TSNode& a, const TSNode& b) {
-  constexpr auto eq = std::strong_ordering::equal;
-  if (auto x = (a.context[0] <=> b.context[0]); x != eq) return x;
-  if (auto x = (a.context[1] <=> b.context[1]); x != eq) return x;
-  if (auto x = (a.context[2] <=> b.context[2]); x != eq) return x;
-  if (auto x = (a.context[3] <=> b.context[3]); x != eq) return x;
-  if (auto x = (a.id <=> b.id);         x != eq) return x;
-  if (auto x = (a.tree <=> b.tree);       x != eq) return x;
-  return eq;
+inline bool operator<(const TSNode& a, const TSNode& b) {
+  if (a.context[0] < b.context[0]) return true;
+  if (a.context[0] > b.context[0]) return false;
+  if (a.context[1] < b.context[1]) return true;
+  if (a.context[1] > b.context[1]) return false;
+  if (a.context[2] < b.context[2]) return true;
+  if (a.context[2] > b.context[2]) return false;
+  if (a.context[3] < b.context[3]) return true;
+  if (a.context[3] > b.context[3]) return false;
+  if (a.id < b.id) return true;
+  if (a.id > b.id) return false;
+  if (a.tree < b.tree) return true;
+  if (a.tree > b.tree) return false;
+  return false;
 }
 
-inline std::strong_ordering operator<=>(const TSTreeCursor& a, const TSTreeCursor& b) {
-  constexpr auto eq = std::strong_ordering::equal;
-  if (auto x = a.context[0] <=> b.context[0]; x != eq) return x;
-  if (auto x = a.context[1] <=> b.context[1]; x != eq) return x;
-  if (auto x = a.tree <=> b.tree;       x != eq) return x;
-  if (auto x = a.id <=> b.id;         x != eq) return x;
-  return eq;
+inline bool operator==(const TSNode& a, const TSNode& b) {
+  if (a.context[0] != b.context[0]) return false;
+  if (a.context[1] != b.context[1]) return false;
+  if (a.context[2] != b.context[2]) return false;
+  if (a.context[3] != b.context[3]) return false;
+  if (a.id != b.id) return false;
+  if (a.tree != b.tree) return false;
+  return true;
 }
+
+inline bool operator!=(const TSNode& a, const TSNode& b) { return !(a == b); }
+
+inline bool operator<(const TSTreeCursor& a, const TSTreeCursor& b) {
+  if (a.context[0] < b.context[0]) return true;
+  if (a.context[0] > b.context[0]) return false;
+  if (a.context[1] < b.context[1]) return true;
+  if (a.context[1] > b.context[1]) return false;
+  if (a.tree < b.tree) return true;
+  if (a.tree > b.tree) return false;
+  if (a.id < b.id) return true;
+  if (a.id > b.id) return false;
+  return false;
+}
+
+inline bool operator == (const TSTreeCursor& a, const TSTreeCursor& b) {
+  if (a.context[0] != b.context[0]) return false;
+  if (a.context[1] != b.context[1]) return false;
+  if (a.tree != b.tree) return false;
+  if (a.id != b.id) return false;
+  return true;
+}
+
+inline bool operator != (const TSTreeCursor& a, const TSTreeCursor& b) { return !(a == b); }
 
 //------------------------------------------------------------------------------
 

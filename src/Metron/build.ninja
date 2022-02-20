@@ -43,6 +43,9 @@ rule touch
 rule sv2v
   command = sv2v -w $out $in
 
+rule metron
+  command = bin/metron $in > $out
+
 ################################################################################
 
 build obj/lib.o     : compile_c ../tree-sitter/lib/src/lib.c
@@ -58,31 +61,33 @@ build obj/MtNode.o       : compile MtNode.cpp
 
 build bin/metron          : link obj/Metron.o obj/MtCursor.o obj/MtField.o obj/MtModLibrary.o obj/MtModule.o obj/MtNode.o obj/lib.o obj/parser.o obj/scanner.o
 
+build bin/metron_ran : metron obj/message.hex | bin/metron
+
 ################################################################################
 
-build bin/all_sv : touch metron_tools.h.sv uart/uart_top.h.sv uart/uart_hello.h.sv uart/uart_rx.h.sv uart/uart_tx.h.sv
-build bin/all_h  : touch uart/uart_top.h  uart/uart_hello.h  uart/uart_rx.h  uart/uart_tx.h
-
-build obj/make_blob_h.o  : compile make_blob_h.cpp
-build bin/make_blob_h    : link obj/make_blob_h.o
-
-build obj/message.hex    : hexdump message.txt
-build message.blob.h     : make_blob_h message.txt | bin/make_blob_h
-
-build obj/uart_test_mt.o : compile uart_test/uart_test_mt.cpp | bin/all_h
-
-build bin/uart_test_mt   : link obj/uart_test_mt.o
-build bin/uart_test_vl   : verilator uart/uart_top.h.sv uart_test/uart_test_vl.cpp | bin/all_sv
+#build bin/all_sv : touch metron_tools.h.sv uart/uart_top.h.sv uart/uart_hello.h.sv uart/uart_rx.h.sv uart/uart_tx.h.sv
+#build bin/all_h  : touch uart/uart_top.h  uart/uart_hello.h  uart/uart_rx.h  uart/uart_tx.h
+#
+#build obj/make_blob_h.o  : compile make_blob_h.cpp
+#build bin/make_blob_h    : link obj/make_blob_h.o
+#
+#build obj/message.hex    : hexdump message.txt
+#build message.blob.h     : make_blob_h message.txt | bin/make_blob_h
+#
+#build obj/uart_test_mt.o : compile uart_test/uart_test_mt.cpp | bin/all_h
+#
+#build bin/uart_test_mt   : link obj/uart_test_mt.o
+#build bin/uart_test_vl   : verilator uart/uart_top.h.sv uart_test/uart_test_vl.cpp | bin/all_sv
 #build bin/uart_test_iv   : iverilog uart_test/uart_test_iv.sv | bin/all_sv
-
+#
 #build bin/uart_test_mt.pass : run_test bin/uart_test_mt
 #build bin/uart_test_iv.pass : run_test bin/uart_test_iv
 #build bin/uart_test_vl.pass : run_test bin/uart_test_vl
-
+#
 #build obj/uart_test_ice40.sv.v  : sv2v uart_test_ice40.sv | bin/all_sv
 #build obj/uart_test_ice40.json  : yosys obj/uart_test_ice40.sv.v
 #build obj/uart_test_ice40.asc   : nextpnr-ice40 obj/uart_test_ice40.json
-#build bin/uart_test_ice40.bin   : iceprog obj/uart_test_ice40.asc
+##build bin/uart_test_ice40.bin   : iceprog obj/uart_test_ice40.asc
 
 
 

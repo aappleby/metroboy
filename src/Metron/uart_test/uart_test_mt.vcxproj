@@ -29,6 +29,14 @@
     <None Include="uart_test_iv.sv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\verilator\include\verilated.cpp" />
+    <ClCompile Include="..\obj_dir\DUT.cpp" />
+    <ClCompile Include="..\obj_dir\DUT__Syms.cpp" />
+    <ClCompile Include="..\obj_dir\DUT___024root__DepSet_hb36aadf3__0.cpp" />
+    <ClCompile Include="..\obj_dir\DUT___024root__DepSet_hb36aadf3__0__Slow.cpp" />
+    <ClCompile Include="..\obj_dir\DUT___024root__Slow.cpp" />
+    <ClCompile Include="..\obj_dir\DUT___024unit__DepSet_h79e50625__0__Slow.cpp" />
+    <ClCompile Include="..\obj_dir\DUT___024unit__Slow.cpp" />
     <ClCompile Include="..\uart\uart_hello.cpp" />
     <ClCompile Include="..\uart\uart_rx.cpp" />
     <ClCompile Include="..\uart\uart_top.cpp" />
@@ -37,13 +45,17 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="uart_test_mt.cpp" />
-    <ClCompile Include="uart_test_vl.cpp">
+    <ClCompile Include="uart_test_mt.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="uart_test_vl.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\obj_dir\DUT.h" />
     <ClInclude Include="..\uart\uart_hello.h" />
     <ClInclude Include="..\uart\uart_rx.h" />
     <ClInclude Include="..\uart\uart_top.h" />
@@ -152,8 +164,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src\Metron;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\verilator\include\vltstd;$(SolutionDir)\verilator\include;$(SolutionDir)\src\Metron;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,8 +181,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src\Metron;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\verilator\include\vltstd;$(SolutionDir)\verilator\include;$(SolutionDir)\src\Metron;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

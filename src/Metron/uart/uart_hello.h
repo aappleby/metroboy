@@ -25,7 +25,7 @@ struct uart_hello {
   //----------------------------------------
 
   void init() {
-    readmemh("obj/message.hex", memory, 0, 511);
+    readmemh("message.hex", memory, 0, 511);
     o_data = 0;
     o_req = 0;
     o_done = 0;

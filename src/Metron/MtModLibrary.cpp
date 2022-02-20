@@ -12,7 +12,7 @@ void MtModLibrary::reset() {
 }
 
 void MtModLibrary::load(const std::string& input_filename) {
-  load(input_filename, input_filename + ".sv");
+  load(input_filename, "generated/" + input_filename + ".sv");
 }
 
 void MtModLibrary::load(const std::string& input_filename, const std::string& output_filename) {

@@ -28,7 +28,6 @@ module uart_test;
   logic out_valid;
   logic out_done;
   logic[31:0] out_sum;
-  logic[7:0] out_onehot;
 
   uart_top #(.cycles_per_bit(3)) top
   (
@@ -38,8 +37,7 @@ module uart_test;
     out_data,
     out_valid,
     out_done,
-    out_sum,
-    out_onehot
+    out_sum
   );
 
   always begin

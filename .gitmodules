@@ -19,3 +19,6 @@
 [submodule "riscv-simple-sv"]
 	path = riscv-simple-sv
 	url = https://github.com/tilk/riscv-simple-sv
+[submodule "verilator"]
+	path = verilator
+	url = https://github.com/verilator/verilator

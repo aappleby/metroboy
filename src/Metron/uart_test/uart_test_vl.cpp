@@ -1,18 +1,46 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "verilated_vcd_c.h"
+//#include "../obj/DUT.h"
+#include "obj_dir/DUT.h"
+#include "../message.blob.h"
 #include "../uart/uart_top.h"
 
-#include "../message.blob.h"
+//------------------------------------------------------------------------------
 
-#include "verilated_vcd_c.h"
-#include "../obj/DUT.h"
-#include "../obj/DUT_uart_top.h"
-#include "../obj/DUT_uart_hello.h"
-#include "../obj/DUT_uart_tx__C3.h"
-#include "../obj/DUT_uart_rx__C3.h"
+int test_metron(int argc, char** argv) {
+  printf("Metron simulation:\n");
+  printf("================================================================================\n");
 
-int main(int argc, char** argv) {
+  const int cycles_per_bit = 3;
+  uart_top<cycles_per_bit> top;
+  top.init();
+  top.tick(0);
+  top.tock(0);
+
+  for (int cycle = 0; cycle < 20000; cycle++) {
+    bool old_valid = top.o_valid;
+    top.tick(1);
+    top.tock(1);
+    if (!old_valid && top.o_valid) printf("%c", (uint8_t)top.o_data);
+    
+    if (top.o_done) {
+      printf("\n");
+      printf("================================================================================\n");
+      printf("%d\n", cycle);
+      if (top.o_sum == 0x0000b764) {
+        printf("All tests pass.\n");
+        return 0;
+      }
+    }
+  }
+  return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void test_lockstep(int argc, char** argv) {
   printf("Metron+Verilator lockstep simulation:\n");
   printf("================================================================================\n");
 
@@ -20,9 +48,9 @@ int main(int argc, char** argv) {
 
   // Trace setup
   Verilated::commandArgs(argc, argv);
-  Verilated::traceEverOn(true);
-  VerilatedVcdC* tfp = new VerilatedVcdC;
-  tfp->spTrace()->set_time_resolution("1 ns");
+  //Verilated::traceEverOn(true);
+  //VerilatedVcdC* tfp = new VerilatedVcdC;
+  //tfp->spTrace()->set_time_resolution("1 ns");
 
   // Metron sim
   const int cycles_per_bit = 3;
@@ -34,19 +62,19 @@ int main(int argc, char** argv) {
 
   // Verilated Metron sim
   DUT dut;
-  dut.trace(tfp, 99);
-  tfp->open("uart_test_vl.vcd");
+  //dut.trace(tfp, 99);
+  //tfp->open("uart_test_vl.vcd");
 
   dut.clk = 0;
   dut.rst_n = 0;
   dut.eval();
-  tfp->dump(timestamp);
+  //tfp->dump(timestamp);
   timestamp += 5;
 
   dut.clk = 1;
   dut.rst_n = 0;
   dut.eval();
-  tfp->dump(timestamp);
+  //tfp->dump(timestamp);
   timestamp += 5;
 
   for (int cycle = 0; cycle < 20000; cycle++) {
@@ -56,13 +84,13 @@ int main(int argc, char** argv) {
     dut.clk = 0;
     dut.rst_n = 1;
     dut.eval();
-    tfp->dump(timestamp);
+    //tfp->dump(timestamp);
     timestamp += 5;
 
     dut.clk = 1;
     dut.rst_n = 1;
     dut.eval();
-    tfp->dump(timestamp);
+    //tfp->dump(timestamp);
     timestamp += 5;
 
     top.tick(1);
@@ -81,11 +109,19 @@ int main(int argc, char** argv) {
       printf("\n");
       printf("================================================================================\n");
       if (top.o_sum == 0x0000b764) printf("All tests pass.\n");
-      tfp->close();
-      return 0;
+      break;
     }
   }
 
-  tfp->close();
-  return -1;
+  //tfp->close();
 }
+
+//------------------------------------------------------------------------------
+
+int main(int argc, char** argv) {
+  test_metron(argc, argv);
+  test_lockstep(argc, argv);
+  return 0;
+}
+
+//------------------------------------------------------------------------------

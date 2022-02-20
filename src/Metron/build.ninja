@@ -91,3 +91,4 @@ build bin/metron_ran : metron obj/message.hex | bin/metron
 
 
 
+ #verilator -cc -Iuart  uart/uart_top.h.sv --prefix DUT

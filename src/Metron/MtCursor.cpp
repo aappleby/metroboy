@@ -79,7 +79,7 @@ void MtCursor::emit_span(const char* a, const char* b) {
   for (auto o : out) fwrite(a, 1, b - a, o);
 }
 
-void MtCursor::emit_body(MtNode n) {
+void MtCursor::emit_text(MtNode n) {
   emit_span(cursor, n.end());
   cursor = n.end();
 }
@@ -124,7 +124,7 @@ void MtCursor::advance_to(MtNode n) {
 void MtCursor::comment_out(MtNode n) {
   advance_to(n);
   emit("/*");
-  emit_body(n);
+  emit_text(n);
   emit("*/");
 }
 
@@ -132,7 +132,7 @@ void MtCursor::comment_out(MtNode n) {
 // Replace "#include" with "`include" and ".h" with ".sv"
 
 void MtCursor::emit(MtPreprocInclude n) {
-  auto path = n.get_field(field_path).body();
+  auto path = n.get_field(field_path).text();
   path.pop_back();
   path.append(".sv\"");
   emit_replacement(n, "`include %s", path.c_str());
@@ -147,7 +147,7 @@ void MtCursor::emit(MtAssignmentExpr n) {
 
   bool lhs_is_field = false;
   if (n.lhs().sym == sym_identifier) {
-    std::string lhs_name = n.lhs().body();
+    std::string lhs_name = n.lhs().text();
     for (auto& f : mod->fields) {
       if (f.name.node_to_name() == lhs_name) {
         lhs_is_field = true;
@@ -167,15 +167,15 @@ void MtCursor::emit(MtAssignmentExpr n) {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::emit_static_bit_extract(MtCallExpression n, int bx_width) {
-  advance_to(n);
+void MtCursor::emit_static_bit_extract(MtCallExpression call, int bx_width) {
+  call.dump_tree(0, 0, 1);
 
-  auto call_args = n.get_field(field_arguments);
+  advance_to(call);
 
-  int arg_count = call_args.named_child_count();
+  int arg_count = call.args().named_child_count();
 
-  auto arg0 = call_args.named_child(0);
-  auto arg1 = call_args.named_child(1);
+  auto arg0 = call.args().named_child(0);
+  auto arg1 = call.args().named_child(1);
 
   if (arg_count == 1) {
   
@@ -184,7 +184,7 @@ void MtCursor::emit_static_bit_extract(MtCallExpression n, int bx_width) {
 
       cursor = arg0.start();
       emit(MtNumberLiteral(arg0), bx_width);
-      cursor = n.end();
+      cursor = call.end();
     }
     else if (arg0.sym == sym_identifier || arg0.sym == sym_subscript_expression) {
       // Size-casting expression
@@ -206,7 +206,7 @@ void MtCursor::emit_static_bit_extract(MtCallExpression n, int bx_width) {
       emit("(");
       emit_dispatch(arg0);
       emit(")");
-      cursor = n.end();
+      cursor = call.end();
     }
     else {
       // Size-casting expression
@@ -215,7 +215,7 @@ void MtCursor::emit_static_bit_extract(MtCallExpression n, int bx_width) {
       emit("(");
       emit_dispatch(arg0);
       emit(")");
-      cursor = n.end();
+      cursor = call.end();
     }
   }
   else if (arg_count == 2) {
@@ -225,24 +225,24 @@ void MtCursor::emit_static_bit_extract(MtCallExpression n, int bx_width) {
     {
       // Slice at offset
       if (bx_width == 1) {
-        emit_replacement(n, "%s[%s]", arg0.body().c_str(), arg1.body().c_str());
+        emit_replacement(call, "%s[%s]", arg0.text().c_str(), arg1.text().c_str());
       }
       else {
         int offset = atoi(arg1.start());
-        emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), bx_width - 1 + offset, offset);
+        emit_replacement(call, "%s[%d:%d]", arg0.text().c_str(), bx_width - 1 + offset, offset);
       }
     }
     else
     {
       if (bx_width == 1) {
-        emit_replacement(n, "%s[%s]", arg0.body().c_str(), arg1.body().c_str());;
+        emit_replacement(call, "%s[%s]", arg0.text().c_str(), arg1.text().c_str());;
       }
       else {
-        emit_replacement(n, "%s[%d + %s : %s]",
-          arg0.body().c_str(),
+        emit_replacement(call, "%s[%d + %s : %s]",
+          arg0.text().c_str(),
           bx_width - 1,
-          arg1.body().c_str(),
-          arg1.body().c_str());
+          arg1.text().c_str(),
+          arg1.text().c_str());
       }
     }
 
@@ -254,16 +254,13 @@ void MtCursor::emit_static_bit_extract(MtCallExpression n, int bx_width) {
 
 //------------------------------------------------------------------------------
 
-void MtCursor::emit_dynamic_bit_extract(MtNode n, MtNode bx_node) {
-  advance_to(n);
+void MtCursor::emit_dynamic_bit_extract(MtCallExpression call, MtNode bx_node) {
+  advance_to(call);
 
+  int arg_count = call.args().named_child_count();
 
-  auto call_args = n.get_field(field_arguments);
-
-  int arg_count = call_args.named_child_count();
-
-  auto arg0 = call_args.named_child(0);
-  auto arg1 = call_args.named_child(1);
+  auto arg0 = call.args().named_child(0);
+  auto arg1 = call.args().named_child(1);
 
   if (arg_count == 1) {
     // Size-casting expression - cursor_bits'(expression)
@@ -273,7 +270,7 @@ void MtCursor::emit_dynamic_bit_extract(MtNode n, MtNode bx_node) {
     cursor = arg0.start();
     emit_dispatch(arg0);
     emit(")");
-    cursor = n.end();
+    cursor = call.end();
   }
   else if (arg_count == 2) {
     // Not sure if this is right
@@ -318,137 +315,137 @@ void MtCursor::emit_dynamic_bit_extract(MtNode n, MtNode bx_node) {
 |   |   [2] s8 lit: ")"
 */
 
-void MtCursor::emit(MtCallExpression n) {
-  auto call_func = n.get_field(field_function);
-  auto call_args = n.get_field(field_arguments);
+void MtCursor::emit(MtCallExpression call) {
+  auto func = call.func();
+  auto args = call.args();
 
   // If we're calling a member function, look at the name of the member
   // function and not the whole foo.bar().
 
-  std::string func_name = n.node_to_name();
+  std::string func_name = call.node_to_name();
 
-  if (call_func.sym == sym_field_expression) {
-    func_name = call_func.get_field(field_field).node_to_name();
+  if (func.sym == sym_field_expression) {
+    func_name = func.get_field(field_field).node_to_name();
   }
 
   if (func_name == "coerce") {
     // Convert to cast? We probably shouldn't be calling coerce() directly.
-    n.error();
+    call.error();
   }
   else if (func_name == "signed") {
-    emit_replacement(call_func, "$signed");
-    emit_dispatch(call_args);
+    emit_replacement(func, "$signed");
+    emit_dispatch(args);
   }
   else if (func_name == "clog2") {
-    emit_replacement(call_func, "$clog2");
-    emit_dispatch(call_args);
+    emit_replacement(func, "$clog2");
+    emit_dispatch(args);
   }
   else if (func_name == "pow2") {
-    emit_replacement(call_func, "2**");
-    emit_dispatch(call_args);
+    emit_replacement(func, "2**");
+    emit_dispatch(args);
   }
   else if (func_name == "readmemh") {
-    emit_replacement(call_func, "$readmemh");
-    emit_dispatch(call_args);
+    emit_replacement(func, "$readmemh");
+    emit_dispatch(args);
   }
   else if (func_name == "printf") {
-    emit_replacement(call_func, "$write");
-    emit_dispatch(call_args);
+    emit_replacement(func, "$write");
+    emit_dispatch(args);
   }
   else if (func_name.starts_with("init")) {
-    comment_out(n);
+    comment_out(call);
   }
   else if (func_name.starts_with("final")) {
-    comment_out(n);
+    comment_out(call);
   }
   else if (func_name.starts_with("tick")) {
-    comment_out(n);
+    comment_out(call);
   }
   else if (func_name.starts_with("tock")) {
-    comment_out(n);
+    comment_out(call);
   }
   else if (func_name == "bx") {
     // Bit extract.
-    auto template_arg = call_func.get_field(field_arguments).named_child(0);
+    auto template_arg = func.get_field(field_arguments).named_child(0);
     //emit_static_bit_extract(n, atoi(template_arg.start()));
-    emit_dynamic_bit_extract(n, template_arg);
+    emit_dynamic_bit_extract(call, template_arg);
   }
-  else if (func_name == "b1")  emit_static_bit_extract(n, 1);
-  else if (func_name == "b2")  emit_static_bit_extract(n, 2);
-  else if (func_name == "b3")  emit_static_bit_extract(n, 3);
-  else if (func_name == "b4")  emit_static_bit_extract(n, 4);
-  else if (func_name == "b5")  emit_static_bit_extract(n, 5);
-  else if (func_name == "b6")  emit_static_bit_extract(n, 6);
-  else if (func_name == "b7")  emit_static_bit_extract(n, 7);
-  else if (func_name == "b8")  emit_static_bit_extract(n, 8);
-  else if (func_name == "b9")  emit_static_bit_extract(n, 9);
+  else if (func_name == "b1")  emit_static_bit_extract(call, 1);
+  else if (func_name == "b2")  emit_static_bit_extract(call, 2);
+  else if (func_name == "b3")  emit_static_bit_extract(call, 3);
+  else if (func_name == "b4")  emit_static_bit_extract(call, 4);
+  else if (func_name == "b5")  emit_static_bit_extract(call, 5);
+  else if (func_name == "b6")  emit_static_bit_extract(call, 6);
+  else if (func_name == "b7")  emit_static_bit_extract(call, 7);
+  else if (func_name == "b8")  emit_static_bit_extract(call, 8);
+  else if (func_name == "b9")  emit_static_bit_extract(call, 9);
 
-  else if (func_name == "b10") emit_static_bit_extract(n, 10);
-  else if (func_name == "b11") emit_static_bit_extract(n, 11);
-  else if (func_name == "b12") emit_static_bit_extract(n, 12);
-  else if (func_name == "b13") emit_static_bit_extract(n, 13);
-  else if (func_name == "b14") emit_static_bit_extract(n, 14);
-  else if (func_name == "b15") emit_static_bit_extract(n, 15);
-  else if (func_name == "b16") emit_static_bit_extract(n, 16);
-  else if (func_name == "b17") emit_static_bit_extract(n, 17);
-  else if (func_name == "b18") emit_static_bit_extract(n, 18);
-  else if (func_name == "b19") emit_static_bit_extract(n, 19);
+  else if (func_name == "b10") emit_static_bit_extract(call, 10);
+  else if (func_name == "b11") emit_static_bit_extract(call, 11);
+  else if (func_name == "b12") emit_static_bit_extract(call, 12);
+  else if (func_name == "b13") emit_static_bit_extract(call, 13);
+  else if (func_name == "b14") emit_static_bit_extract(call, 14);
+  else if (func_name == "b15") emit_static_bit_extract(call, 15);
+  else if (func_name == "b16") emit_static_bit_extract(call, 16);
+  else if (func_name == "b17") emit_static_bit_extract(call, 17);
+  else if (func_name == "b18") emit_static_bit_extract(call, 18);
+  else if (func_name == "b19") emit_static_bit_extract(call, 19);
 
-  else if (func_name == "b20") emit_static_bit_extract(n, 20);
-  else if (func_name == "b21") emit_static_bit_extract(n, 21);
-  else if (func_name == "b22") emit_static_bit_extract(n, 22);
-  else if (func_name == "b23") emit_static_bit_extract(n, 23);
-  else if (func_name == "b24") emit_static_bit_extract(n, 24);
-  else if (func_name == "b25") emit_static_bit_extract(n, 25);
-  else if (func_name == "b26") emit_static_bit_extract(n, 26);
-  else if (func_name == "b27") emit_static_bit_extract(n, 27);
-  else if (func_name == "b28") emit_static_bit_extract(n, 28);
-  else if (func_name == "b29") emit_static_bit_extract(n, 29);
+  else if (func_name == "b20") emit_static_bit_extract(call, 20);
+  else if (func_name == "b21") emit_static_bit_extract(call, 21);
+  else if (func_name == "b22") emit_static_bit_extract(call, 22);
+  else if (func_name == "b23") emit_static_bit_extract(call, 23);
+  else if (func_name == "b24") emit_static_bit_extract(call, 24);
+  else if (func_name == "b25") emit_static_bit_extract(call, 25);
+  else if (func_name == "b26") emit_static_bit_extract(call, 26);
+  else if (func_name == "b27") emit_static_bit_extract(call, 27);
+  else if (func_name == "b28") emit_static_bit_extract(call, 28);
+  else if (func_name == "b29") emit_static_bit_extract(call, 29);
 
-  else if (func_name == "b30") emit_static_bit_extract(n, 30);
-  else if (func_name == "b31") emit_static_bit_extract(n, 31);
-  else if (func_name == "b32") emit_static_bit_extract(n, 32);
-  else if (func_name == "b33") emit_static_bit_extract(n, 33);
-  else if (func_name == "b34") emit_static_bit_extract(n, 34);
-  else if (func_name == "b35") emit_static_bit_extract(n, 35);
-  else if (func_name == "b36") emit_static_bit_extract(n, 36);
-  else if (func_name == "b37") emit_static_bit_extract(n, 37);
-  else if (func_name == "b38") emit_static_bit_extract(n, 38);
-  else if (func_name == "b39") emit_static_bit_extract(n, 39);
+  else if (func_name == "b30") emit_static_bit_extract(call, 30);
+  else if (func_name == "b31") emit_static_bit_extract(call, 31);
+  else if (func_name == "b32") emit_static_bit_extract(call, 32);
+  else if (func_name == "b33") emit_static_bit_extract(call, 33);
+  else if (func_name == "b34") emit_static_bit_extract(call, 34);
+  else if (func_name == "b35") emit_static_bit_extract(call, 35);
+  else if (func_name == "b36") emit_static_bit_extract(call, 36);
+  else if (func_name == "b37") emit_static_bit_extract(call, 37);
+  else if (func_name == "b38") emit_static_bit_extract(call, 38);
+  else if (func_name == "b39") emit_static_bit_extract(call, 39);
 
-  else if (func_name == "b40") emit_static_bit_extract(n, 40);
-  else if (func_name == "b41") emit_static_bit_extract(n, 41);
-  else if (func_name == "b42") emit_static_bit_extract(n, 42);
-  else if (func_name == "b43") emit_static_bit_extract(n, 43);
-  else if (func_name == "b44") emit_static_bit_extract(n, 44);
-  else if (func_name == "b45") emit_static_bit_extract(n, 45);
-  else if (func_name == "b46") emit_static_bit_extract(n, 46);
-  else if (func_name == "b47") emit_static_bit_extract(n, 47);
-  else if (func_name == "b48") emit_static_bit_extract(n, 48);
-  else if (func_name == "b49") emit_static_bit_extract(n, 49);
+  else if (func_name == "b40") emit_static_bit_extract(call, 40);
+  else if (func_name == "b41") emit_static_bit_extract(call, 41);
+  else if (func_name == "b42") emit_static_bit_extract(call, 42);
+  else if (func_name == "b43") emit_static_bit_extract(call, 43);
+  else if (func_name == "b44") emit_static_bit_extract(call, 44);
+  else if (func_name == "b45") emit_static_bit_extract(call, 45);
+  else if (func_name == "b46") emit_static_bit_extract(call, 46);
+  else if (func_name == "b47") emit_static_bit_extract(call, 47);
+  else if (func_name == "b48") emit_static_bit_extract(call, 48);
+  else if (func_name == "b49") emit_static_bit_extract(call, 49);
 
-  else if (func_name == "b50") emit_static_bit_extract(n, 50);
-  else if (func_name == "b51") emit_static_bit_extract(n, 51);
-  else if (func_name == "b52") emit_static_bit_extract(n, 52);
-  else if (func_name == "b53") emit_static_bit_extract(n, 53);
-  else if (func_name == "b54") emit_static_bit_extract(n, 54);
-  else if (func_name == "b55") emit_static_bit_extract(n, 55);
-  else if (func_name == "b56") emit_static_bit_extract(n, 56);
-  else if (func_name == "b57") emit_static_bit_extract(n, 57);
-  else if (func_name == "b58") emit_static_bit_extract(n, 58);
-  else if (func_name == "b59") emit_static_bit_extract(n, 59);
+  else if (func_name == "b50") emit_static_bit_extract(call, 50);
+  else if (func_name == "b51") emit_static_bit_extract(call, 51);
+  else if (func_name == "b52") emit_static_bit_extract(call, 52);
+  else if (func_name == "b53") emit_static_bit_extract(call, 53);
+  else if (func_name == "b54") emit_static_bit_extract(call, 54);
+  else if (func_name == "b55") emit_static_bit_extract(call, 55);
+  else if (func_name == "b56") emit_static_bit_extract(call, 56);
+  else if (func_name == "b57") emit_static_bit_extract(call, 57);
+  else if (func_name == "b58") emit_static_bit_extract(call, 58);
+  else if (func_name == "b59") emit_static_bit_extract(call, 59);
 
-  else if (func_name == "b60") emit_static_bit_extract(n, 60);
-  else if (func_name == "b61") emit_static_bit_extract(n, 61);
-  else if (func_name == "b62") emit_static_bit_extract(n, 62);
-  else if (func_name == "b63") emit_static_bit_extract(n, 63);
-  else if (func_name == "b64") emit_static_bit_extract(n, 64);
+  else if (func_name == "b60") emit_static_bit_extract(call, 60);
+  else if (func_name == "b61") emit_static_bit_extract(call, 61);
+  else if (func_name == "b62") emit_static_bit_extract(call, 62);
+  else if (func_name == "b63") emit_static_bit_extract(call, 63);
+  else if (func_name == "b64") emit_static_bit_extract(call, 64);
 
   else if (func_name == "cat") {
     // Remove "cat" and replace parens with brackets
 
-    skip_over(call_func);
-    for (const auto& arg : call_args) switch (arg.sym) {
+    skip_over(func);
+    for (const auto& arg : (MtNode&)args) switch (arg.sym) {
     case anon_sym_LPAREN: emit_replacement(arg, "{"); break;
     case anon_sym_RPAREN: emit_replacement(arg, "}"); break;
     default: emit_dispatch(arg); break;
@@ -457,23 +454,23 @@ void MtCursor::emit(MtCallExpression n) {
   else if (func_name == "dup") {
     // Convert "dup<15>(b12(instr_i))" to "15 {instr_i[12]}}"
 
-    assert(call_func.sym == sym_template_function);
-    auto template_args = call_func.get_field(field_arguments);
+    assert(func.sym == sym_template_function);
+    auto template_args = func.get_field(field_arguments);
     auto template_arg = template_args.named_child(0);
 
     int dup_count = atoi(template_arg.start());
-    int arg_count = call_args.named_child_count();
+    int arg_count = args.named_child_count();
 
-    auto arg0 = call_args.named_child(0);
+    auto arg0 = args.named_child(0);
 
     if (arg_count == 1) {
-      skip_over(call_func);
+      skip_over(func);
       emit("{%d ", dup_count);
       emit("{");
       cursor = arg0.start();
       emit_dispatch(arg0);
       emit("}}");
-      cursor = n.end();
+      cursor = call.end();
     }
     else {
       debugbreak();
@@ -482,7 +479,7 @@ void MtCursor::emit(MtCallExpression n) {
   }
   else {
     // All other function/task calls go through normally.
-    for (auto c : (MtNode&)n) emit_dispatch(c);
+    for (auto c : (MtNode&)call) emit_dispatch(c);
   }
 }
 
@@ -495,7 +492,7 @@ void MtCursor::emit_init_declarator_as_decl(MtDeclaration n) {
   for (auto c : (MtNode&)n) switch (c.field) {
   case field_declarator:
     for (auto gc : c) switch (gc.field) {
-    case field_declarator: emit_body(gc); skip_space(); break;
+    case field_declarator: emit_text(gc); skip_space(); break;
     default: skip_over(gc); skip_space(); break;
     }
     break;
@@ -511,8 +508,8 @@ void MtCursor::emit_init_declarator_as_assign(MtNode n) {
   bool is_localparam =
     n.sym == sym_declaration &&
     n.child_count() >= 4 &&
-    n.child(0).body() == "static" &&
-    n.child(1).body() == "const";
+    n.child(0).text() == "static" &&
+    n.child(1).text() == "const";
 
   if (is_localparam) {
     emit_dispatch(n);
@@ -545,8 +542,8 @@ void MtCursor::emit_hoisted_decls(MtCompoundStatement n) {
       bool is_localparam =
         c.sym == sym_declaration &&
         c.child_count() >= 4 &&
-        c.child(0).body() == "static" &&
-        c.child(1).body() == "const";
+        c.child(0).text() == "static" &&
+        c.child(1).text() == "const";
 
       if (is_localparam) {
       }
@@ -607,13 +604,11 @@ void MtCursor::emit_glue_assignment(MtNode call_expr) {
 //------------------------------------------------------------------------------
 
 void MtCursor::emit_glue_assignments(MtFuncDefinition func_def) {
-  assert(func_def.sym == sym_function_definition);
-
   emit_newline();
 
   std::vector<MtNode> submod_call_nodes;
 
-  func_def.visit_tree([&](MtNode child) {
+  func_def.body().visit_tree([&](MtNode child) {
     if (child.sym == sym_call_expression) {
       auto call_func = child.get_field(field_function);
 
@@ -697,16 +692,12 @@ void MtCursor::emit_function_body(MtCompoundStatement func_body) {
 
 // func_def = { field_type, field_declarator, field_body }
 
-void MtCursor::emit(MtFuncDefinition func_def) {
-  auto func_type = func_def.get_field(field_type);
-  auto func_decl = func_def.get_field(field_declarator);
-  MtCompoundStatement func_body = MtCompoundStatement(func_def.get_field(field_body));
-
-  skip_over(func_type);
+void MtCursor::emit(MtFuncDefinition func) {
+  skip_over(func.type());
   skip_space();
 
-  current_function_name = func_decl.get_field(field_declarator).node_to_name();
-  in_task = func_type.match("void");
+  current_function_name = func.decl().get_field(field_declarator).node_to_name();
+  in_task = func.type().match("void");
   in_func = !in_task;
   in_init = in_task && current_function_name.starts_with("init");
   in_tick = in_task && current_function_name.starts_with("tick");
@@ -715,25 +706,25 @@ void MtCursor::emit(MtFuncDefinition func_def) {
   //----------
 
   if (in_init) {
-    emit_replacement(func_decl, "initial");
+    emit_replacement(func.decl(), "initial");
   }
   else if (in_tick) {
-    emit_replacement(func_decl, "always_ff @(posedge clk, negedge rst_n)");
+    emit_replacement(func.decl(), "always_ff @(posedge clk, negedge rst_n)");
   }
   else if (in_tock) {
-    emit_replacement(func_decl, "always_comb");
+    emit_replacement(func.decl(), "always_comb");
   }
   else if (in_task) {
-    advance_to(func_decl);
+    advance_to(func.decl());
     emit("task ");
-    emit_dispatch(func_decl);
+    emit_dispatch(func.decl());
     skip_space();
     emit(";");
   }
   else if (in_func) {
-    advance_to(func_decl);
-    emit("function %s ", func_type.body().c_str());
-    emit_dispatch(func_decl);
+    advance_to(func.decl());
+    emit("function %s ", func.type().text().c_str());
+    emit_dispatch(func.decl());
     skip_space();
     emit(";");
   }
@@ -741,13 +732,13 @@ void MtCursor::emit(MtFuncDefinition func_def) {
     debugbreak();
   }
 
-  emit_function_body(func_body);
+  emit_function_body(func.body());
 
   //----------
   // For each call to {submodule}.tick() in module::tick(), emit glue assignments.
 
   if (in_tick && !mod->submodules.empty()) {
-    emit_glue_assignments(func_def);
+    emit_glue_assignments(func);
   }
 
   //----------
@@ -773,10 +764,10 @@ void MtCursor::emit_glue_declaration(MtField f, const std::string& prefix) {
   std::string type_name;
 
   if (f.type.sym == alias_sym_type_identifier || f.type.sym == sym_primitive_type) {
-    type_name = f.type.body();
+    type_name = f.type.text();
   }
   else if (f.type.sym == sym_template_type) {
-    type_name = f.type.get_field(field_name).body();
+    type_name = f.type.get_field(field_name).text();
   }
   else {
     debugbreak();
@@ -838,8 +829,8 @@ void MtCursor::emit_field_decl_as_enum_class(MtFieldDecl n) {
       n.get_field(field_body).sym == sym_enumerator_list) {
     auto node_name = n.get_field(field_name);
     auto node_base = n.get_field(field_base);
-    enum_name   = node_name.is_null() ? "" : node_name.body();
-    enum_type   = node_base.is_null() ? "" : node_base.body();
+    enum_name   = node_name.is_null() ? "" : node_name.text();
+    enum_type   = node_base.is_null() ? "" : node_base.text();
     node_values = n.get_field(field_body);
     bit_width = 0;
   }
@@ -855,7 +846,7 @@ void MtCursor::emit_field_decl_as_enum_class(MtFieldDecl n) {
       n.get_field(field_default_value).sym == sym_initializer_list) {
     // TreeSitterCPP BUG - "enum class foo : int = {}" misinterpreted as default_value
 
-    enum_name   = n.get_field(field_type).get_field(field_name).body();
+    enum_name   = n.get_field(field_type).get_field(field_name).text();
     node_values = n.get_field(field_default_value);
     bit_width   = 0;
   }
@@ -872,7 +863,7 @@ void MtCursor::emit_field_decl_as_enum_class(MtFieldDecl n) {
     auto node_bitwidth = node_args.child(1);
     assert(node_bitwidth.sym == sym_number_literal);
 
-    enum_name   = n.get_field(field_type).get_field(field_name).body();
+    enum_name   = n.get_field(field_type).get_field(field_name).text();
     node_values = node_compound.get_field(field_value);
     bit_width   = atoi(node_bitwidth.start());
   }
@@ -888,7 +879,7 @@ void MtCursor::emit_field_decl_as_enum_class(MtFieldDecl n) {
     auto node_bitwidth = node_args.child(1);
     assert(node_bitwidth.sym == sym_number_literal);
 
-    enum_name   = n.get_field(field_type).get_field(field_name).body();
+    enum_name   = n.get_field(field_type).get_field(field_name).text();
     node_values = node_decl1.get_field(field_value);
     bit_width   = atoi(node_bitwidth.start());
   }
@@ -918,7 +909,7 @@ void MtCursor::emit_field_decl_as_enum_class(MtFieldDecl n) {
   cursor = n.end();
 
   // BUG: Trailing semicolons are inconsistent.
-  if (n.body().back() == ';') emit(";");
+  if (n.text().back() == ';') emit(";");
 }
 
 //------------------------------------------------------------------------------
@@ -933,9 +924,9 @@ void MtCursor::emit_glue_declarations(MtFieldDecl decl) {
   std::string type_name;
 
   switch (field.type.sym) {
-  case alias_sym_type_identifier: type_name = field.type.body(); break;
-  case sym_primitive_type:        type_name = field.type.body(); break;
-  case sym_template_type:         type_name = field.type.get_field(field_name).body(); break;
+  case alias_sym_type_identifier: type_name = field.type.text(); break;
+  case sym_primitive_type:        type_name = field.type.text(); break;
+  case sym_template_type:         type_name = field.type.get_field(field_name).text(); break;
   
   case sym_enum_specifier: {
     type_name = field.type.get_field(field_name);
@@ -959,7 +950,7 @@ void MtCursor::emit_glue_declarations(MtFieldDecl decl) {
 
     for (int i = 0; i < templ_args.named_child_count(); i++) {
       auto param_name = submod->modparams[i].node_to_name();
-      id_replacements[param_name] = templ_args.named_child(i).body();
+      id_replacements[param_name] = templ_args.named_child(i).text();
     }
   }
 
@@ -1033,8 +1024,8 @@ void MtCursor::emit(MtFieldDecl field_decl) {
 
   // Handle "enum class", which is broken a bit in TreeSitterCpp
   if (field_type.child_count() >= 3 &&
-      field_type.child(0).body() == "enum" &&
-      field_type.child(1).body() == "class" && 
+      field_type.child(0).text() == "enum" &&
+      field_type.child(1).text() == "class" && 
       field_type.child(2).sym == alias_sym_type_identifier) {
     emit_field_decl_as_enum_class(field_decl);
     return;
@@ -1193,7 +1184,7 @@ void MtCursor::emit(MtStructSpecifier n) {
 
     cursor = class_name.start();
     emit(" ");
-    emit_body(class_name);
+    emit_text(class_name);
     cursor = n.end();
     return;
   }
@@ -1310,8 +1301,8 @@ void MtCursor::emit(MtEnumeratorList n) {
   assert(n.sym == sym_enumerator_list);
 
   for (auto c : (MtNode&)n) switch (c.sym) {
-  case anon_sym_LBRACE: emit_body(c); break;
-  case anon_sym_RBRACE: emit_body(c); break;
+  case anon_sym_LBRACE: emit_text(c); break;
+  case anon_sym_RBRACE: emit_text(c); break;
   default: {
     emit_dispatch(c);
     break;
@@ -1348,7 +1339,7 @@ void MtCursor::emit(MtNumberLiteral n, int size_cast) {
   assert(!override_size || !size_cast);
   if (override_size) size_cast = override_size;
 
-  std::string body = n.body();
+  std::string body = n.text();
 
   // Count how many 's are in the number
   int spacer_count = 0;
@@ -1401,7 +1392,7 @@ void MtCursor::emit(MtReturnStatement n) {
 
 void MtCursor::emit(MtPrimitiveType n) {
   assert(n.sym == sym_primitive_type);
-  emit_body(n);
+  emit_text(n);
 }
 
 //------------------------------------------------------------------------------
@@ -1415,7 +1406,7 @@ void MtCursor::emit(MtIdentifier n) {
     emit_replacement(n, it->second.c_str());
   }
   else {
-    emit_body(n);
+    emit_text(n);
   }
 }
 
@@ -1427,7 +1418,7 @@ void MtCursor::emit(MtTypeIdentifier n) {
     emit_replacement(n, it->second.c_str());
   }
   else {
-    emit_body(n);
+    emit_text(n);
   }
 }
 
@@ -1451,7 +1442,7 @@ void MtCursor::emit(MtTemplateDecl n) {
 void MtCursor::emit(MtFieldExpression n) {
 
   assert(n.sym == sym_field_expression);
-  auto field = n.body();
+  auto field = n.text();
   for (auto& c : field) if (c == '.') c = '_';
   emit_replacement(n, field.c_str());
 }
@@ -1504,14 +1495,14 @@ void MtCursor::emit(MtSwitchStatement n) {
 
 void MtCursor::emit(MtComment n) {
   assert(n.sym == sym_comment);
-  auto body = n.body();
+  auto body = n.text();
   if (body.starts_with("/*#")) {
     body.erase(body.size() - 3, 3);
     body.erase(0, 3);
     emit_replacement(n, body.c_str());
   }
   else {
-    emit_body(n);
+    emit_text(n);
   }
 }
 
@@ -1565,7 +1556,7 @@ void MtCursor::emit(MtEnumSpecifier n) {
 }
 
 void MtCursor::emit(MtUsingDecl n) {
-  auto name = n.child(2).body();
+  auto name = n.child(2).text();
   emit_replacement(n, "import %s::*;", name.c_str());
 }
 
@@ -1576,16 +1567,16 @@ void MtCursor::emit(MtUsingDecl n) {
 void MtCursor::emit(MtDeclaration n) {
   auto node_type = n.get_field(field_type);
   if (node_type.child_count() >= 2 &&
-      node_type.child(0).body() == "enum" &&
-      node_type.child(1).body() == "class") {
+      node_type.child(0).text() == "enum" &&
+      node_type.child(1).text() == "class") {
     debugbreak();
     //emit_field_decl_as_enum_class(MtFieldDecl(n));
     return;
   }
 
   if (n.child_count() >= 5 &&
-      n.child(0).body() == "static" &&
-      n.child(1).body() == "const") {
+      n.child(0).text() == "static" &&
+      n.child(1).text() == "const") {
 
     advance_to(n);
     emit("parameter ");
@@ -1626,7 +1617,7 @@ void MtCursor::emit(MtNamespaceDef n) {
   auto node_name = n.get_field(field_name);
   auto node_body = n.get_field(field_body);
   advance_to(n);
-  emit("package %s;", node_name.body().c_str());
+  emit("package %s;", node_name.text().c_str());
   cursor = node_body.start();
     
   for (auto c : node_body) {
@@ -1726,10 +1717,10 @@ void MtCursor::emit_dispatch(MtNode n) {
     };
 
     if (!n.is_named()) {
-      emit_body(n);
+      emit_text(n);
     }
     else if (passthru_syms.contains(n.sym)) {
-      emit_body(n);
+      emit_text(n);
     } else {
       printf("Don't know what to do with %d %s\n", n.sym, n.type());
       n.error();

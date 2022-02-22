@@ -64,14 +64,14 @@ MtNode MtNode::first_named_child() const {
 
 bool MtNode::is_static() const {
   for (auto c : *this) {
-    if (c.sym == sym_storage_class_specifier && c.body() == "static") return true;
+    if (c.sym == sym_storage_class_specifier && c.text() == "static") return true;
   }
   return false;
 }
 
 bool MtNode::is_const() const {
   for (auto c : *this) {
-    if (c.sym == sym_type_qualifier && c.body() == "const") return true;
+    if (c.sym == sym_type_qualifier && c.text() == "const") return true;
   }
   return false;
 }
@@ -79,7 +79,7 @@ bool MtNode::is_const() const {
 
 //------------------------------------------------------------------------------
 
-std::string MtNode::body() {
+std::string MtNode::text() {
   assert(!is_null());
   auto a = &mod->source[start_byte()];
   auto b = &mod->source[end_byte()];
@@ -153,7 +153,7 @@ std::string MtNode::node_to_name() {
 
   case sym_field_expression:
     //return get_field(field_field).node_to_name();
-    return body();
+    return text();
 
   case sym_call_expression:
     return get_field(field_function).node_to_name();
@@ -161,7 +161,7 @@ std::string MtNode::node_to_name() {
   case alias_sym_type_identifier:
   case sym_identifier:
   case alias_sym_field_identifier:
-    return body();
+    return text();
 
   case sym_field_declaration: {
     auto node_type = get_field(field_type);
@@ -203,8 +203,8 @@ std::string MtNode::node_to_name() {
 
 std::string MtNode::node_to_type() {
   switch (sym) {
-  case alias_sym_type_identifier: return body();
-  case sym_primitive_type:        return body();
+  case alias_sym_type_identifier: return text();
+  case sym_primitive_type:        return text();
   case sym_field_declaration:     return get_field(field_type).node_to_type();
   case sym_template_type:         return get_field(field_name).node_to_type();
   case sym_enum_specifier:        return get_field(field_name).node_to_type();

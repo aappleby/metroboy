@@ -51,13 +51,13 @@ std::string get_field_type_name(MtNode n) {
 
   auto node_type = n.get_field(field_type);
   if (node_type.sym == sym_primitive_type) {
-    return node_type.body();
+    return node_type.text();
   }
   else if (node_type.sym == sym_identifier) {
-    return node_type.body();
+    return node_type.text();
   }
   else if (node_type.sym == alias_sym_type_identifier) {
-    return node_type.body();
+    return node_type.text();
   }
   else {
     auto type_name = node_type.get_field(field_name);
@@ -65,7 +65,7 @@ std::string get_field_type_name(MtNode n) {
       n.error();
     }
     else {
-      return type_name.body();
+      return type_name.text();
     }
   }
 
@@ -206,7 +206,7 @@ void MtModule::find_module() {
     }
   });
 
-  mod_name = mod_class.get_field(field_name).body();
+  mod_name = mod_class.get_field(field_name).text();
 }
 
 //------------------------------------------------------------------------------
@@ -337,7 +337,7 @@ void MtModule::collect_fields() {
 
         MtField f = { n, field_type, name };
 
-        if (name.body().starts_with("o_")) {
+        if (name.text().starts_with("o_")) {
           outputs.push_back(f);
         }
         else {
@@ -403,7 +403,7 @@ void MtModule::dedup_inputs() {
   std::set<std::string> input_dedup;
   std::vector<MtField> inputs2;
   for (auto input : inputs) {
-    auto input_name = input.name.body();
+    auto input_name = input.name.text();
     if (!input_dedup.contains(input_name)) {
       input_dedup.insert(input_name);
       inputs2.push_back(input);

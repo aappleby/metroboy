@@ -73,7 +73,7 @@ bool MtField::is_enum() {
 }
 
 bool MtField::is_module() {
-  return decl.mod->lib->find_module(name.body());
+  return decl.mod->lib->find_module(name.text());
 
 }
 
@@ -102,13 +102,13 @@ bool MtField::is_param() {
 bool MtField::is_input() {  
   if (is_static() || is_const() || is_enum()) return false;
 
-  auto base_name = name.sym == sym_array_declarator ? name.get_field(field_declarator).body() : name.body();
+  auto base_name = name.sym == sym_array_declarator ? name.get_field(field_declarator).text() : name.text();
   return base_name.starts_with("i_") || base_name.ends_with("_i");
 }
 
 bool MtField::is_output() {
   if (is_static() || is_const() || is_enum()) return false;
-  auto base_name = name.sym == sym_array_declarator ? name.get_field(field_declarator).body() : name.body();
+  auto base_name = name.sym == sym_array_declarator ? name.get_field(field_declarator).text() : name.text();
   return base_name.starts_with("o_") || base_name.ends_with("_o");
 }
 

@@ -24,7 +24,7 @@ struct MtCursor {
   // Generic emit()s.
 
   void emit_span(const char* a, const char* b);
-  void emit_body(MtNode n);
+  void emit_text(MtNode n);
   void emit(const char* fmt, ...);
   void emit_replacement(MtNode n, const char* fmt, ...);
   void skip_over(MtNode n);
@@ -72,7 +72,7 @@ struct MtCursor {
   void emit(MtNamespaceDef n);
 
   void emit_static_bit_extract(MtCallExpression n, int bx_width);
-  void emit_dynamic_bit_extract(MtNode n, MtNode bx_node);
+  void emit_dynamic_bit_extract(MtCallExpression n, MtNode bx_node);
   void emit(MtComment n);
   void emit_function_body(MtCompoundStatement n);
 

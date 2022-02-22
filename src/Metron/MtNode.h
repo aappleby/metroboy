@@ -100,7 +100,7 @@ struct MtNode {
 
   //----------
 
-  std::string body();
+  std::string text();
   const char* start();
   const char* end();
   bool match(const char* s);
@@ -179,43 +179,91 @@ struct MtPrimitiveType     : public MtNode {
 
 //------------------------------------------------------------------------------
 
+struct MtFuncDeclarator : public MtNode {
+  MtFuncDeclarator() {};
+  MtFuncDeclarator(const MtNode& n) : MtNode(n) {
+    assert(sym == sym_function_declarator);
+  }
+};
+
+//------------------------------------------------------------------------------
+
+struct MtCompoundStatement : public MtNode {
+  MtCompoundStatement() {};
+  MtCompoundStatement(const MtNode& n) : MtNode(n) {
+    assert(sym == sym_compound_statement);
+  }
+};
+
+//------------------------------------------------------------------------------
+
 struct MtFuncDefinition : public MtNode {
   MtFuncDefinition() {};
   MtFuncDefinition(const MtNode& n) : MtNode(n) {
     assert(sym == sym_function_definition);
   }
   
-  MtPrimitiveType type() { return MtPrimitiveType(get_field(field_type)); }
+  MtPrimitiveType     type() { return MtPrimitiveType(get_field(field_type)); }
+  MtFuncDeclarator    decl() { return MtFuncDeclarator(get_field(field_declarator)); }
+  MtCompoundStatement body() { return MtCompoundStatement(get_field(field_body)); }
 };
 
 //------------------------------------------------------------------------------
 
-struct MtFieldDecl         : public MtNode { /*MtFieldDecl         () {}; MtFieldDecl         (const MtNode& n) : MtNode(n) { assert(sym == sym_field_declaration); }      */ };
-struct MtNumberLiteral     : public MtNode { /*MtNumberLiteral     () {}; MtNumberLiteral     (const MtNode& n) : MtNode(n) { assert(sym == sym_number_literal); }         */ };
-struct MtFieldExpression   : public MtNode { /*MtFieldExpression   () {}; MtFieldExpression   (const MtNode& n) : MtNode(n) { assert(sym == sym_field_expression); }       */ };
-struct MtReturnStatement   : public MtNode { /*MtReturnStatement   () {}; MtReturnStatement   (const MtNode& n) : MtNode(n) { assert(sym == sym_return_statement); }       */ };
-struct MtTemplateDecl      : public MtNode { /*MtTemplateDecl      () {}; MtTemplateDecl      (const MtNode& n) : MtNode(n) { assert(sym == sym_template_declaration); }   */ };
-struct MtPreprocInclude    : public MtNode { /*MtPreprocInclude    () {}; MtPreprocInclude    (const MtNode& n) : MtNode(n) { assert(sym == sym_preproc_include); }        */ };
-struct MtCompoundStatement : public MtNode { /*MtCompoundStatement () {}; MtCompoundStatement (const MtNode& n) : MtNode(n) { assert(sym == sym_compound_statement); }     */ };
-struct MtTemplateType      : public MtNode { /*MtTemplateType      () {}; MtTemplateType      (const MtNode& n) : MtNode(n) { assert(sym == sym_template_type); }          */ };
-struct MtTranslationUnit   : public MtNode { /*MtTranslationUnit   () {}; MtTranslationUnit   (const MtNode& n) : MtNode(n) { assert(sym == sym_translation_unit); }       */ };
-struct MtCallExpression    : public MtNode { /*MtCallExpression    () {}; MtCallExpression    (const MtNode& n) : MtNode(n) { assert(sym == sym_call_expression); }        */ };
-struct MtTemplateParamList : public MtNode { /*MtTemplateParamList () {}; MtTemplateParamList (const MtNode& n) : MtNode(n) { assert(sym == sym_template_parameter_list); }*/ };
-struct MtTemplateArgList   : public MtNode { /*MtTemplateArgList   () {}; MtTemplateArgList   (const MtNode& n) : MtNode(n) { assert(sym == sym_template_argument_list); } */ };
-struct MtEnumeratorList    : public MtNode { /*MtEnumeratorList    () {}; MtEnumeratorList    (const MtNode& n) : MtNode(n) { assert(sym == sym_enumerator_list); }        */ };
-struct MtDeclaration       : public MtNode { /*MtDeclaration       () {}; MtDeclaration       (const MtNode& n) : MtNode(n) { assert(sym == sym_declaration); }            */ };
-struct MtComment           : public MtNode { /*MtComment           () {}; MtComment           (const MtNode& n) : MtNode(n) { assert(sym == sym_comment); }                */ };
-struct MtCaseStatement     : public MtNode { /*MtCaseStatement     () {}; MtCaseStatement     (const MtNode& n) : MtNode(n) { assert(sym == sym_case_statement); }         */ };
-struct MtSwitchStatement   : public MtNode { /*MtSwitchStatement   () {}; MtSwitchStatement   (const MtNode& n) : MtNode(n) { assert(sym == sym_switch_statement); }       */ };
-struct MtUsingDecl         : public MtNode { /*MtUsingDecl         () {}; MtUsingDecl         (const MtNode& n) : MtNode(n) { assert(sym == sym_using_declaration); }      */ };
-struct MtBreakStatement    : public MtNode { /*MtBreakStatement    () {}; MtBreakStatement    (const MtNode& n) : MtNode(n) { assert(sym == sym_break_statement); }        */ };
-struct MtCondExpression    : public MtNode { /*MtCondExpression    () {}; MtCondExpression    (const MtNode& n) : MtNode(n) { assert(sym == sym_conditional_expression); } */ };
-struct MtStorageSpec       : public MtNode { /*MtStorageSpec       () {}; MtStorageSpec       (const MtNode& n) : MtNode(n) { assert(sym == sym_storage_class_specifier); }*/ };
-struct MtQualifiedId       : public MtNode { /*MtQualifiedId       () {}; MtQualifiedId       (const MtNode& n) : MtNode(n) { assert(sym == sym_qualified_identifier); }   */ };
-struct MtIfStatement       : public MtNode { /*MtIfStatement       () {}; MtIfStatement       (const MtNode& n) : MtNode(n) { assert(sym == sym_if_statement); }           */ };
-struct MtEnumSpecifier     : public MtNode { /*MtEnumSpecifier     () {}; MtEnumSpecifier     (const MtNode& n) : MtNode(n) { assert(sym == sym_enum_specifier); }         */ };
-struct MtSizedTypeSpec     : public MtNode { /*MtSizedTypeSpec     () {}; MtSizedTypeSpec     (const MtNode& n) : MtNode(n) { assert(sym == sym_sized_type_specifier); }   */ };
-struct MtNamespaceDef      : public MtNode { /*MtNamespaceDef      () {}; MtNamespaceDef      (const MtNode& n) : MtNode(n) { assert(sym == sym_namespace_definition); }   */ };
+struct MtArgList : public MtNode {
+  MtArgList() {};
+  MtArgList(const MtNode& n) : MtNode(n) {
+    assert(sym == sym_argument_list);
+  }
+};
+
+//------------------------------------------------------------------------------
+
+struct MtFieldExpression : public MtNode {
+  MtFieldExpression() {};
+  MtFieldExpression(const MtNode& n) : MtNode(n) {
+    assert(sym == sym_field_expression);
+  }
+};
+
+//------------------------------------------------------------------------------
+
+struct MtCallExpression : public MtNode {
+  MtCallExpression() {};
+  MtCallExpression(const MtNode& n) : MtNode(n) {
+    assert(sym == sym_call_expression);
+  }
+
+  // identifier or field expression
+  MtNode            func() { return get_field(field_function); }
+  MtArgList         args() { return MtArgList(get_field(field_arguments)); }
+};
+
+//------------------------------------------------------------------------------
+
+struct MtFieldDecl         : public MtNode { MtFieldDecl         () {}; MtFieldDecl         (const MtNode& n) : MtNode(n) { assert(sym == sym_field_declaration); }       };
+struct MtNumberLiteral     : public MtNode { MtNumberLiteral     () {}; MtNumberLiteral     (const MtNode& n) : MtNode(n) { assert(sym == sym_number_literal); }          };
+struct MtReturnStatement   : public MtNode { MtReturnStatement   () {}; MtReturnStatement   (const MtNode& n) : MtNode(n) { assert(sym == sym_return_statement); }        };
+struct MtTemplateDecl      : public MtNode { MtTemplateDecl      () {}; MtTemplateDecl      (const MtNode& n) : MtNode(n) { assert(sym == sym_template_declaration); }    };
+struct MtPreprocInclude    : public MtNode { MtPreprocInclude    () {}; MtPreprocInclude    (const MtNode& n) : MtNode(n) { assert(sym == sym_preproc_include); }         };
+struct MtTemplateType      : public MtNode { MtTemplateType      () {}; MtTemplateType      (const MtNode& n) : MtNode(n) { assert(sym == sym_template_type); }           };
+struct MtTranslationUnit   : public MtNode { MtTranslationUnit   () {}; MtTranslationUnit   (const MtNode& n) : MtNode(n) { assert(sym == sym_translation_unit); }        };
+struct MtTemplateParamList : public MtNode { MtTemplateParamList () {}; MtTemplateParamList (const MtNode& n) : MtNode(n) { assert(sym == sym_template_parameter_list); } };
+struct MtTemplateArgList   : public MtNode { MtTemplateArgList   () {}; MtTemplateArgList   (const MtNode& n) : MtNode(n) { assert(sym == sym_template_argument_list); }  };
+struct MtEnumeratorList    : public MtNode { MtEnumeratorList    () {}; MtEnumeratorList    (const MtNode& n) : MtNode(n) { assert(sym == sym_enumerator_list); }         };
+struct MtDeclaration       : public MtNode { MtDeclaration       () {}; MtDeclaration       (const MtNode& n) : MtNode(n) { assert(sym == sym_declaration); }             };
+struct MtComment           : public MtNode { MtComment           () {}; MtComment           (const MtNode& n) : MtNode(n) { assert(sym == sym_comment); }                 };
+struct MtCaseStatement     : public MtNode { MtCaseStatement     () {}; MtCaseStatement     (const MtNode& n) : MtNode(n) { assert(sym == sym_case_statement); }          };
+struct MtSwitchStatement   : public MtNode { MtSwitchStatement   () {}; MtSwitchStatement   (const MtNode& n) : MtNode(n) { assert(sym == sym_switch_statement); }        };
+struct MtUsingDecl         : public MtNode { MtUsingDecl         () {}; MtUsingDecl         (const MtNode& n) : MtNode(n) { assert(sym == sym_using_declaration); }       };
+struct MtBreakStatement    : public MtNode { MtBreakStatement    () {}; MtBreakStatement    (const MtNode& n) : MtNode(n) { assert(sym == sym_break_statement); }         };
+struct MtCondExpression    : public MtNode { MtCondExpression    () {}; MtCondExpression    (const MtNode& n) : MtNode(n) { assert(sym == sym_conditional_expression); }  };
+struct MtStorageSpec       : public MtNode { MtStorageSpec       () {}; MtStorageSpec       (const MtNode& n) : MtNode(n) { assert(sym == sym_storage_class_specifier); } };
+struct MtQualifiedId       : public MtNode { MtQualifiedId       () {}; MtQualifiedId       (const MtNode& n) : MtNode(n) { assert(sym == sym_qualified_identifier); }    };
+struct MtIfStatement       : public MtNode { MtIfStatement       () {}; MtIfStatement       (const MtNode& n) : MtNode(n) { assert(sym == sym_if_statement); }            };
+struct MtEnumSpecifier     : public MtNode { MtEnumSpecifier     () {}; MtEnumSpecifier     (const MtNode& n) : MtNode(n) { assert(sym == sym_enum_specifier); }          };
+struct MtSizedTypeSpec     : public MtNode { MtSizedTypeSpec     () {}; MtSizedTypeSpec     (const MtNode& n) : MtNode(n) { assert(sym == sym_sized_type_specifier); }    };
+struct MtNamespaceDef      : public MtNode { MtNamespaceDef      () {}; MtNamespaceDef      (const MtNode& n) : MtNode(n) { assert(sym == sym_namespace_definition); }    };
 
 //------------------------------------------------------------------------------
 

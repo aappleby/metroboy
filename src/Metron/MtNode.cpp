@@ -62,6 +62,21 @@ MtNode MtNode::first_named_child() const {
   return named_child(0);
 }
 
+bool MtNode::is_static() const {
+  for (auto c : *this) {
+    if (c.sym == sym_storage_class_specifier && c.body() == "static") return true;
+  }
+  return false;
+}
+
+bool MtNode::is_const() const {
+  for (auto c : *this) {
+    if (c.sym == sym_type_qualifier && c.body() == "const") return true;
+  }
+  return false;
+}
+
+
 //------------------------------------------------------------------------------
 
 std::string MtNode::body() {
@@ -181,27 +196,19 @@ std::string MtNode::node_to_name() {
     return get_field(field_name).node_to_name();
 
   default:
-    dump_tree();
-    debugbreak();
+    error();
     return "";
   }
 }
 
 std::string MtNode::node_to_type() {
   switch (sym) {
-  case alias_sym_type_identifier:
-    return body();
-
-  case sym_field_declaration:
-    return get_field(field_type).node_to_type();
-
-  case sym_template_type:
-    return get_field(field_name).node_to_type();
-
-  default:
-    dump_tree();
-    debugbreak();
-    return "";
+  case alias_sym_type_identifier: return body();
+  case sym_primitive_type:        return body();
+  case sym_field_declaration:     return get_field(field_type).node_to_type();
+  case sym_template_type:         return get_field(field_name).node_to_type();
+  case sym_enum_specifier:        return get_field(field_name).node_to_type();
+  default:                        error(); return "";
   }
 }
 

@@ -5,7 +5,7 @@
 
 #ifdef _MSC_VER
 
-#include <windows.h> /* for HANDLE type, and console functions */
+#include <windows.h> /* for HANDLE type, and console funcs */
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 

@@ -19,10 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\uart\uart_hello.h.sv" />
-    <None Include="..\uart\uart_rx.h.sv" />
-    <None Include="..\uart\uart_top.h.sv" />
-    <None Include="..\uart\uart_tx.h.sv" />
+    <None Include="..\out\uart\uart_hello.h.sv" />
+    <None Include="..\out\uart\uart_rx.h.sv" />
+    <None Include="..\out\uart\uart_top.h.sv" />
+    <None Include="..\out\uart\uart_tx.h.sv" />
+    <None Include="..\rules.ninja" />
+    <None Include="..\uart.ninja" />
+    <None Include="..\uart\uart.ninja" />
+    <None Include="..\uart_test.ninja" />
     <None Include="ice40-hx8k-b-evn.pcf" />
     <None Include="SB_PLL40_CORE.v" />
     <None Include="uart_test_ice40.sv" />
@@ -30,13 +34,30 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\verilator\include\verilated.cpp" />
-    <ClCompile Include="..\obj_dir\DUT.cpp" />
-    <ClCompile Include="..\obj_dir\DUT__Syms.cpp" />
-    <ClCompile Include="..\obj_dir\DUT___024root__DepSet_hb36aadf3__0.cpp" />
-    <ClCompile Include="..\obj_dir\DUT___024root__DepSet_hb36aadf3__0__Slow.cpp" />
-    <ClCompile Include="..\obj_dir\DUT___024root__Slow.cpp" />
-    <ClCompile Include="..\obj_dir\DUT___024unit__DepSet_h79e50625__0__Slow.cpp" />
-    <ClCompile Include="..\obj_dir\DUT___024unit__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_hello__DepSet_h61189a79__0.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_hello__DepSet_h61189a79__0__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_hello__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_rx__C3__DepSet_hf94ff59c__0.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_rx__C3__DepSet_hf94ff59c__0__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_rx__C3__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_top__DepSet_h1abbe5f1__0.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_top__DepSet_h1abbe5f1__0__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_top__DepSet_h9c20fbf2__0.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_top__DepSet_h9c20fbf2__0__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_top__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_tx__C3__DepSet_hb9658a62__0.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_tx__C3__DepSet_hb9658a62__0__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top_uart_tx__C3__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top__Dpi.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top__Syms.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top___024root__DepSet_h647a6929__0.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top___024root__DepSet_h647a6929__0__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top___024root__DepSet_hc6ee783a__0.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top___024root__DepSet_hc6ee783a__0__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top___024root__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top___024unit__DepSet_h2cde71a6__0__Slow.cpp" />
+    <ClCompile Include="..\out\uart\Vuart_top___024unit__Slow.cpp" />
     <ClCompile Include="..\uart\uart_hello.cpp" />
     <ClCompile Include="..\uart\uart_rx.cpp" />
     <ClCompile Include="..\uart\uart_top.cpp" />
@@ -55,7 +76,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\obj_dir\DUT.h" />
+    <ClInclude Include="..\out\uart\Vuart_top.h" />
+    <ClInclude Include="..\out\uart\Vuart_top_uart_hello.h" />
+    <ClInclude Include="..\out\uart\Vuart_top_uart_rx__C3.h" />
+    <ClInclude Include="..\out\uart\Vuart_top_uart_top.h" />
+    <ClInclude Include="..\out\uart\Vuart_top_uart_tx__C3.h" />
+    <ClInclude Include="..\out\uart\Vuart_top__Dpi.h" />
+    <ClInclude Include="..\out\uart\Vuart_top__Syms.h" />
+    <ClInclude Include="..\out\uart\Vuart_top___024root.h" />
+    <ClInclude Include="..\out\uart\Vuart_top___024unit.h" />
     <ClInclude Include="..\uart\uart_hello.h" />
     <ClInclude Include="..\uart\uart_rx.h" />
     <ClInclude Include="..\uart\uart_top.h" />

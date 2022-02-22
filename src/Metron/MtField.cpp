@@ -15,10 +15,7 @@ MtField::MtField(MtNode _decl, MtNode _type, MtNode _name)
 
 void MtField::sanity_check() {
   if (decl.is_null()) {
-    decl.dump_tree();
-    type.dump_tree();
-    name.dump_tree();
-    debugbreak();
+    decl.error();
   }
 
   bool type_ok = false;
@@ -28,10 +25,7 @@ void MtField::sanity_check() {
   if (type.sym == sym_enum_specifier) type_ok = true;
   if (type.sym == sym_primitive_type) type_ok = true;
   if (!type_ok) {
-    decl.dump_tree();
-    type.dump_tree();
-    name.dump_tree();
-    debugbreak();
+    type.error();
   }
 
   if (!name.is_null()) {
@@ -40,10 +34,7 @@ void MtField::sanity_check() {
     if (name.sym == sym_identifier) name_ok = true; // for tick/tock parameters
     if (name.sym == sym_array_declarator) name_ok = true;
     if (!name_ok) {
-      decl.dump_tree();
-      type.dump_tree();
-      name.dump_tree();
-      debugbreak();
+      name.error();
     }
   }
 
@@ -75,7 +66,7 @@ bool MtField::is_enum() {
       type.child(0).body() == "enum" &&
       type.child(1).body() == "class" && 
       type.child(2).sym == alias_sym_type_identifier) {
-    emit_enum_class(decl);
+    emit_sym_field_declaration_as_enum_class(decl);
   */
 
   return type.sym == sym_enum_specifier;
@@ -108,7 +99,7 @@ bool MtField::is_param() {
   return is_static() && is_const();
 }
 
-bool MtField::is_input() {
+bool MtField::is_input() {  
   if (is_static() || is_const() || is_enum()) return false;
 
   auto base_name = name.sym == sym_array_declarator ? name.get_field(field_declarator).body() : name.body();

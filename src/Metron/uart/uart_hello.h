@@ -1,10 +1,15 @@
 #pragma once
-#include "../metron_tools.h"
+#include "metron_tools.h"
 
 //==============================================================================
 /* verilator lint_off WIDTH */
 
 struct uart_hello {
+  /*verilator public_module*/
+
+  logic<8> o_data;
+  logic<1> o_req;
+  logic<1> o_done;
 
   static const int message_len = 512;
   static const int cursor_bits = clog2(message_len);
@@ -17,10 +22,6 @@ struct uart_hello {
   logic<cursor_bits> cursor;
   logic<8> memory[512];
   logic<8> data;
-
-  logic<8> o_data;
-  logic<1> o_req;
-  logic<1> o_done;
 
   //----------------------------------------
 

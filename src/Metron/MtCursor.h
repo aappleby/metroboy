@@ -1,13 +1,14 @@
 #pragma once
 #include "Platform.h"
 
+#include "MtNode.h"
 struct MtField;
 
 //------------------------------------------------------------------------------
 
 struct MtCursor {
 
-  MtCursor(MtModule* mod, FILE* out);
+  MtCursor(MtModule* mod);
 
   // Debugging
   
@@ -23,7 +24,7 @@ struct MtCursor {
   // Generic emit()s.
 
   void emit_span(const char* a, const char* b);
-  void emit(MtNode n);
+  void emit_body(MtNode n);
   void emit(const char* fmt, ...);
   void emit_replacement(MtNode n, const char* fmt, ...);
   void skip_over(MtNode n);
@@ -33,43 +34,64 @@ struct MtCursor {
 
   // Per-symbol emit()s.
 
-  void emit_number_literal(MtNode n, int size_cast = 0);
-  void emit_primitive_type(MtNode n);
-  void emit_identifier(MtNode n);
-  void emit_type_identifier(MtNode n);
-  void emit_preproc_include(MtNode n);
-  void emit_return_statement(MtNode n);
-  void emit_assignment_expression(MtNode n);
-  void emit_call_expression(MtNode n);
-  void emit_function_definition(MtNode n);
-  void emit_template_glue_declaration(MtNode decl, const std::string& prefix);
-  void emit_glue_declaration(MtField f, const std::string& prefix);
-  void emit_field_declaration(MtNode decl);
-  void emit_class_specifier(MtNode n);
-  void emit_compound_statement(MtNode n);
-  void emit_template_type(MtNode n);
-  void emit_module_parameters(MtNode n);
-  void emit_template_declaration(MtNode n);
-  void emit_template_argument_list(MtNode n);
-  void emit_enumerator_list(MtNode n);
-  void emit_translation_unit(MtNode n);
-  void emit_flat_field_expression(MtNode n);
+  void emit(MtAssignmentExpr n);
+  void emit(MtPreprocInclude n);
+  void emit(MtCallExpression n);
+  void emit(MtFuncDefinition n);
+  void emit(MtReturnStatement n);
+  void emit(MtNumberLiteral n, int size_cast = 0);
+  void emit(MtPrimitiveType n);
+  void emit(MtIdentifier n);
+  void emit(MtTypeIdentifier n);
+  void emit(MtFieldDecl decl);
+  void emit(MtStructSpecifier n);
+  void emit(MtCompoundStatement n);
+  void emit(MtTemplateType n);
+  void emit(MtTemplateDecl n);
+  void emit(MtTranslationUnit n);
+  void emit(MtFieldExpression n);
+
+  void emit(MtTemplateParamList n);
+  void emit(MtTemplateArgList n);
+  void emit_field_decl_as_enum_class(MtFieldDecl n);
+
+  void emit(MtEnumeratorList n);
   void emit_dispatch(MtNode n);
-  void emit_case(MtNode n);
-  void emit_switch(MtNode n);
-  void emit_static_bit_extract(MtNode n, int bx_width);
+  void emit(MtCaseStatement n);
+  void emit(MtSwitchStatement n);
+  void emit(MtBreakStatement n);
+  void emit(MtFieldDeclList n);
+  void emit(MtCondExpression n);
+  void emit(MtStorageSpec n);
+  void emit(MtQualifiedId n);
+  void emit(MtIfStatement n);
+  void emit(MtEnumSpecifier n);
+  void emit(MtUsingDecl n);
+  void emit(MtDeclaration n);
+  void emit(MtSizedTypeSpec n);
+  void emit(MtNamespaceDef n);
+
+  void emit_static_bit_extract(MtCallExpression n, int bx_width);
   void emit_dynamic_bit_extract(MtNode n, MtNode bx_node);
-  void emit_enum_class(MtNode n);
-  void emit_comment(MtNode n);
+  void emit(MtComment n);
+  void emit_function_body(MtCompoundStatement n);
+
+  void emit_submodule_port_list(MtFieldDecl decl);
+
+  void emit_glue_declaration(MtField f, const std::string& prefix);
+  void emit_glue_declarations(MtFieldDecl decl);
+  void emit_glue_assignments(MtFuncDefinition n);
+  void emit_glue_assignment(MtNode call_expr);
+
 
   // Special-purpose emit()s
 
-  void emit_hoisted_decls(MtNode n);
-  void emit_init_declarator_as_decl(MtNode n);
+  void emit_hoisted_decls(MtCompoundStatement n);
+  void emit_init_declarator_as_decl(MtDeclaration n);
   void emit_init_declarator_as_assign(MtNode n);
 
   void emit_port_list();
-  void emit_class_body(MtNode class_body);
+  void emit_sym_field_declaration_list(MtFieldDeclList class_body);
   void emit_input_ports(std::vector<MtField>& fields);
   void emit_output_ports(std::vector<MtField>& fields);
 
@@ -79,14 +101,17 @@ struct MtCursor {
   const char* cursor = nullptr;
   std::string current_function_name;
   std::vector<std::string> indent_stack;
-  FILE* out;
+  
+  std::vector<FILE*> out;
 
   std::map<std::string, std::string> id_replacements;
 
   bool in_init = false;
-  bool in_comb = false;
-  bool in_seq = false;
-  bool in_final = false;
+  bool in_tick = false;
+  bool in_tock = false;
+  bool in_task = false;
+  bool in_func = false;
+
   bool in_module_or_package = false;
 
   bool trim_namespaces = true;

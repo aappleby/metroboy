@@ -338,7 +338,7 @@ DECLARE_BN_SN_HELPERS(64);
 
 //------------------------------------------------------------------------------
 // We can't replicate Verilog's "^A" syntax, but we can provide equivalent
-// reduce_xor/or/and functions.
+// reduce_xor/or/and funcs.
 
 template<int WIDTH>
 inline logic<1> reduce_xor(const logic<WIDTH>& x) {

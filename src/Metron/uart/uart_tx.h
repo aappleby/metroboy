@@ -1,11 +1,12 @@
 #pragma once
-#include "../metron_tools.h"
+#include "metron_tools.h"
 
 //==============================================================================
 /* verilator lint_off WIDTH */
 
 template<int cycles_per_bit = 4>
 struct uart_tx {
+  /*verilator public_module*/
 
   // 1 start bit, 8 data bits, 1 stop bit, 7 additional stop bits to guarantee
   // that recevier can resync between messages

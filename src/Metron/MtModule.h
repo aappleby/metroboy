@@ -11,14 +11,14 @@ struct MtModule {
   MtModule();
   ~MtModule();
 
-  void load(const std::string& input_filename, const std::string& output_filename);
+  void load(const std::string& full_path);
   void print_error(MtNode n, const char* fmt, ...);
 
   // Identifier lookup
 
   MtNode get_by_id(std::vector<MtNode>& handles, MtNode id);
   MtNode get_task_by_id(MtNode id)     { return get_by_id(tasks, id); }
-  MtNode get_function_by_id(MtNode id) { return get_by_id(functions, id);}
+  MtNode get_function_by_id(MtNode id) { return get_by_id(funcs, id);}
 
   MtField get_by_id(std::vector<MtField>& handles, MtNode id);
   MtField get_input_by_id(MtNode id)  { return get_by_id(inputs, id); }
@@ -28,13 +28,21 @@ struct MtModule {
   // Scanner
   
   void find_module();
-  void collect_moduleparams();
+  void collect_modparams();
+  void collect_localparams();
+
+  void collect_functions();
+
+  void collect_ports();
+
   void collect_fields();
+
+  void dedup_inputs();
 
   // Rule checker
 
-  void check_dirty_tick(MtNode n);
-  void check_dirty_tock(MtNode n);
+  void check_dirty_ticks();
+  void check_dirty_tocks();
   void check_dirty_read(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
   void check_dirty_write(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
   void check_dirty_dispatch(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
@@ -46,9 +54,7 @@ struct MtModule {
   //----------
 
   MtModLibrary* lib;
-  std::string input_filename;
-  std::string output_filename;
-  FILE* out_file;
+  std::string full_path;
 
   blob src_blob;
   bool use_utf8_bom = false;
@@ -61,25 +67,25 @@ struct MtModule {
 
   std::string mod_name;
 
-  MtNode mod_root;
-  MtNode mod_init;
-  MtNode mod_tick;
-  MtNode mod_tock;
-  MtNode mod_template;
-  MtNode mod_class;
-  MtNode mod_param_list;
+  MtTranslationUnit   mod_root;
+  MtTemplateDecl      mod_template;
+  MtStructSpecifier   mod_class;
+  MtTemplateParamList mod_param_list;
 
   std::vector<MtNode> modparams;
   std::vector<MtNode> localparams;
+  std::vector<MtNode> enums;
+
+  std::vector<MtNode> inits;
+  std::vector<MtNode> ticks;
+  std::vector<MtNode> tocks;
+  std::vector<MtNode> tasks;
+  std::vector<MtNode> funcs;
 
   std::vector<MtField> inputs;
   std::vector<MtField> outputs;
   std::vector<MtField> fields;
-
-  std::vector<MtNode> enums;
-  std::vector<MtNode> tasks;
-  std::vector<MtNode> functions;
-  std::vector<MtNode> submodules;
+  std::vector<MtNode>  submodules;
 };
 
 //------------------------------------------------------------------------------

@@ -4,7 +4,8 @@
 //                Marek Materzok, University of Wrocław
 
 #pragma once
-#include "../../synth/config.h"
+#include "../metron_tools.h"
+#include "config.h"
 #include "constants.h"
 
 template<int WIDTH = 32>

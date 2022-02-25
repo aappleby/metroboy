@@ -4,12 +4,12 @@
 //                Marek Materzok, University of Wrocław
 
 #pragma once
-#include "../../../src/Metron/metron_tools.h"
-#include "../../synth/config.h"
-#include "../common/constants.h"
+#include "../metron_tools.h"
+#include "config.h"
+#include "constants.h"
 #include "singlecycle_datapath.h"
 #include "singlecycle_ctlpath.h"
-#include "../common/data_memory_interface.h"
+#include "data_memory_interface.h"
 
 struct riscv_core {
   logic<32> o_pc;

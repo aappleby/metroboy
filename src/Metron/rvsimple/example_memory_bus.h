@@ -3,8 +3,8 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#include "../../../src/Metron/metron_tools.h"
-#include "../../synth/config.h"
+#include "../metron_tools.h"
+#include "config.h"
 #include "constants.h"
 #include "example_data_memory.h"
 #include "example_text_memory.h"

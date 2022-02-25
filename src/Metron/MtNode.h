@@ -472,7 +472,6 @@ struct MtCallExpr : public MtNode {
 
   // identifier or field expression or template function?
   MtFunc    func() {
-    dump_tree();
     return MtFunc(get_field(field_function));
   }
   MtArgList args() { return MtArgList(get_field(field_arguments)); }
@@ -537,7 +536,6 @@ struct MtTemplateType : public MtNode {
 struct MtDecl : public MtNode {
   MtDecl() {};
   MtDecl(const MtNode& n) : MtNode(n) {
-    dump_tree();
     check_sym(sym_declaration);
   }
 

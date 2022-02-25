@@ -4,8 +4,8 @@
 //                Marek Materzok, University of Wrocław
 
 #pragma once
-#include "../../../src/Metron/metron_tools.h"
-#include "../../synth/config.h"
+#include "../metron_tools.h"
+#include "config.h"
 #include "constants.h"
 
 template<int WIDTH = 32, int CHANNELS = 2, int SEL_BITS = clog2(CHANNELS)>

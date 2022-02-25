@@ -4,8 +4,8 @@
 //                Marek Materzok, University of Wrocław
 
 #pragma once
-#include "../../../src/Metron/top.h"
-#include "../../synth/config.h"
+#include "../metron_tools.h"
+#include "config.h"
 #include "constants.h"
 
 struct alu_control {

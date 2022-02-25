@@ -87,19 +87,17 @@ int main(int argc, char** argv) {
   //args.push_back("uart/uart_tx.h");
   //args.push_back("uart/uart_rx.h");
 
-  //args.push_back("../../riscv-simple-sv/synth/config.h");
-
   args.push_back("adder.h");
   args.push_back("config.h");
   args.push_back("constants.h");
   args.push_back("alu.h");
   args.push_back("alu_control.h");
-  /*
   args.push_back("control_transfer.h");
   args.push_back("data_memory_interface.h");
   args.push_back("immediate_generator.h");
   args.push_back("instruction_decoder.h");
   args.push_back("multiplexer.h");
+  /*
   args.push_back("multiplexer2.h");
   args.push_back("multiplexer4.h");
   args.push_back("multiplexer8.h");
@@ -217,9 +215,9 @@ int main(int argc, char** argv) {
 
   // Emit all modules.
 
-  //for (auto& module : library.modules)
+  for (auto& module : library.modules)
   {
-    auto& module = library.modules.back();
+    //auto& module = library.modules.back();
 
     module->mod_root.dump_tree(0, 0, 2);
 

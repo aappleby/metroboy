@@ -88,7 +88,7 @@ void MtCursor::print_error(MtNode n, const char* fmt, ...) {
 // Generic emit() methods
 
 void MtCursor::emit_char(char c) {
-  putc(c, stdout);
+  putchar(c);
   str_out->push_back(c);
 }
 
@@ -424,7 +424,6 @@ void MtCursor::emit(MtCallExpr call) {
   }
   else if (func_name == "bx") {
     // Bit extract.
-    func.dump_tree(0, 0, 1);
     auto template_arg = func.as_templ().args().named_child(0);
     //emit_static_bit_extract(n, atoi(template_arg.start()));
     emit_dynamic_bit_extract(call, template_arg);
@@ -505,33 +504,37 @@ void MtCursor::emit(MtCallExpr call) {
     advance_to(func);
     skip_over(func);
     for (const auto& arg : (MtNode&)args) switch (arg.sym) {
-    case anon_sym_LPAREN: emit_replacement(arg, "{"); break;
-    case anon_sym_RPAREN: emit_replacement(arg, "}"); break;
+    case anon_sym_LPAREN: {
+      advance_to(arg);
+      emit_replacement(arg, "{"); break;
+    }
+    case anon_sym_RPAREN: {
+      advance_to(arg);
+      emit_replacement(arg, "}"); break;
+    }
     default: emit_dispatch(arg); break;
     }
   }
   else if (func_name == "dup") {
+    call.dump_tree();
     // Convert "dup<15>(b12(instr_i))" to "15 {instr_i[12]}}"
 
+    assert(args.named_child_count() == 1);
+
+    advance_to(func);
+    skip_over(func);
+
     auto template_arg = func.as_templ().args().named_child(0);
-
     int dup_count = atoi(template_arg.start());
+    emit("{%d ", dup_count);
+    emit("{");
 
+    auto func_arg = args.named_child(0);
+    cursor = func_arg.start();
+    emit_dispatch(func_arg);
 
-    if (args.named_child_count() == 1) {
-      auto arg0 = args.named_child(0);
-      skip_over(func);
-      emit("{%d ", dup_count);
-      emit("{");
-      cursor = arg0.start();
-      emit_dispatch(arg0);
-      emit("}}");
-      cursor = call.end();
-    }
-    else {
-      debugbreak();
-    }
-
+    emit("}}");
+    cursor = call.end();
   }
   else {
     // All other function/task calls go through normally.
@@ -560,8 +563,6 @@ void MtCursor::emit_init_declarator_as_decl(MtDecl n) {
 // Replace "logic blah = x;" with "blah = x;"
 
 void MtCursor::emit_init_declarator_as_assign(MtDecl n) {
-  n.dump_tree();
-
   bool is_localparam =
     n.sym == sym_declaration &&
     n.child_count() >= 4 &&
@@ -574,8 +575,6 @@ void MtCursor::emit_init_declarator_as_assign(MtDecl n) {
   }
 
   if (n.is_init_decl()) {
-    n.dump_tree();
-
     advance_to(n._type());
     skip_to_next_sibling(n._type());
     emit_dispatch(n._init_decl());
@@ -1071,8 +1070,6 @@ void MtCursor::emit_submodule_port_list(MtFieldDecl field_decl) {
 // field_declaration = { type:enum_specifier,  bitfield_clause (TREESITTER BUG) }
 
 void MtCursor::emit(MtFieldDecl field_decl) {
-  //field_decl.dump_tree(0, 0, 1);
-
   // Handle "enum class", which is broken a bit in TreeSitterCpp
   if (field_decl.type().child_count() >= 3 &&
       field_decl.type().child(0).text() == "enum" &&
@@ -1325,8 +1322,6 @@ void MtCursor::emit(MtCompoundStatement body) {
 // Change logic<N> to logic[N-1:0]
 
 void MtCursor::emit(MtTemplateType templ_type) {
-  //templ_type.dump_tree(0, 0, 1);
-
   bool is_logic = templ_type.name().match("logic");
 
   if (!is_logic) {
@@ -1551,9 +1546,10 @@ void MtCursor::emit(MtFieldExpr n) {
 void MtCursor::emit(MtCaseStatement n) {
   auto tag = n.child(0);
 
+  /*
   if (tag.sym != anon_sym_default && n.child_count() == 3) {
     debugbreak();
-    emit_replacement(n.child(0), "/**/");
+    emit_replacement(n.child(0), "/ * * /");
     //skip_over(n.child(0));
     //skip_space();
     cursor = n.child(1).start();
@@ -1562,12 +1558,13 @@ void MtCursor::emit(MtCaseStatement n) {
     cursor = n.end();
     return;
   }
+*/
 
   for (auto c : (MtNode&)n) {
     if (c.sym == anon_sym_case) {
       advance_to(c);
-      emit_replacement(c, "/**/");
-      //skip_to_next_sibling(c);
+      //emit_replacement(c, "/**/");
+      skip_to_next_sibling(c);
     }
     else emit_dispatch(c);
   }
@@ -1621,7 +1618,6 @@ void MtCursor::emit(MtComment n) {
 // Verilog doesn't use "break"
 
 void MtCursor::emit(MtBreakStatement n) {
-  n.dump_tree();
   advance_to(n);
   emit_replacement(n, "/*-*/;");
 }
@@ -1800,8 +1796,6 @@ void MtCursor::emit_dispatch(MtNode n) {
 
   case sym_preproc_ifdef: {
     /*
-    n.dump_tree(0, 0, 1);
-
     auto child0 = n.child(0);
     auto text = child0.text();
     advance_to(child0);
@@ -1831,6 +1825,7 @@ void MtCursor::emit_dispatch(MtNode n) {
   }
 
   case sym_preproc_arg: {
+    advance_to(n);
     emit_text(n);
     break;
   }

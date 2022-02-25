@@ -4,10 +4,10 @@
 //                Marek Materzok, University of Wrocław
 
 #pragma once
-#include "../../../src/Metron/metron_tools.h"
-#include "../../synth/config.h"
-#include "../common/constants.h"
-#include "../common/example_data_memory.h"
+#include "../metron_tools.h"
+#include "config.h"
+#include "constants.h"
+#include "example_data_memory.h"
 
 struct example_data_memory_bus {
 

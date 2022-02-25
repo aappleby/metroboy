@@ -4,19 +4,19 @@
 //                Marek Materzok, University of Wrocław
 
 #pragma once
-#include "../../../src/Metron/metron_tools.h"
-#include "../../synth/config.h"
-#include "../common/constants.h"
+#include "../metron_tools.h"
+#include "config.h"
+#include "constants.h"
 
-#include "../common/adder.h"
-#include "../common/alu.h"
-#include "../common/instruction_decoder.h"
-#include "../common/immediate_generator.h"
-#include "../common/register.h"
-#include "../common/regfile.h"
-#include "../common/multiplexer2.h"
-#include "../common/multiplexer4.h"
-#include "../common/multiplexer8.h"
+#include "adder.h"
+#include "alu.h"
+#include "instruction_decoder.h"
+#include "immediate_generator.h"
+#include "register.h"
+#include "regfile.h"
+#include "multiplexer2.h"
+#include "multiplexer4.h"
+#include "multiplexer8.h"
 
 struct singlecycle_datapath {
   logic<32> o_data_mem_address;

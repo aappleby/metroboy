@@ -4,7 +4,7 @@
 //                Marek Materzok, University of Wrocław
 
 #pragma once
-#include "../../../src/Metron/metron_tools.h"
+#include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
 
@@ -18,7 +18,7 @@ struct alu {
 #endif
 
     
-  void tock2(
+  void tock(
     logic<5>  i_alu_function,
     logic<32> i_operand_a, // signed?
     logic<32> i_operand_b  // signed?

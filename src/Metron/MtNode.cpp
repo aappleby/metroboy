@@ -80,6 +80,10 @@ bool MtNode::is_const() const {
 //------------------------------------------------------------------------------
 
 std::string MtNode::text() {
+  if (sym == anon_sym_SEMI) {
+    int x = 0;
+  }
+
   assert(!is_null());
   auto a = &mod->source[start_byte()];
   auto b = &mod->source[end_byte()];
@@ -235,6 +239,7 @@ void MtNode::visit_tree2(NodeVisitor2 cv) {
 //------------------------------------------------------------------------------
 // Node debugging
 
+/*
 int cprintf(uint32_t color, const char *format, ...) {
   printf("\u001b[38;2;%d;%d;%dm", (color >> 0) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF);
   va_list args;
@@ -244,10 +249,28 @@ int cprintf(uint32_t color, const char *format, ...) {
   printf("\u001b[0m");
   return r;
 }
+*/
+
+inline void dprint_escaped(char s) {
+  if      (s == '\n') dprintf("\\n");
+  else if (s == '\r') dprintf("\\r");
+  else if (s == '\t') dprintf("\\t");
+  else if (s == '"')  dprintf("\\\"");
+  else if (s == '\\') dprintf("\\\\");
+  else                dprintf("%c", s);
+}
+
+inline void dprint_escaped(const char* source, uint32_t a, uint32_t b) {
+  dprintf("\"");
+  for (; a < b; a++) {
+    dprint_escaped(source[a]);
+  }
+  dprintf("\"");
+}
 
 void MtNode::dump_node(int index, int depth) {
   if (is_null()) {
-    printf("### NULL ###\n");
+    dprintf("### NULL ###\n");
     return;
   }
 
@@ -262,24 +285,25 @@ void MtNode::dump_node(int index, int depth) {
   if (sym == sym_field_declaration)    color = 0xFFAAAA;
   if (sym == sym_comment)              color = 0xAAFFAA;
 
-  cprintf(color, "[%02d:%03d:%03d] ", index, int16_t(field), int16_t(sym));
+  dprintf("[%02d:%03d:%03d] ", index, int16_t(field), int16_t(sym));
 
-  for (int i = 0; i < depth; i++) cprintf(color, color != 0x888888 ? "|--" : "|  ");
+  for (int i = 0; i < depth; i++) dprintf(color != 0x888888 ? "|--" : "|  ");
 
-  if (field) cprintf(0xFFAAAA, "%s: ", ts_language_field_name_for_id(mod->lang, field));
+  if (field) dprintf("%s: ", ts_language_field_name_for_id(mod->lang, field));
 
-  cprintf(0xAAFFAA, "%s = ", is_named() ? type() : "lit" );
+  dprintf("%s = ", is_named() ? type() : "lit" );
 
-  if (!child_count()) ::print_escaped(mod->source, start_byte(), end_byte());
+  if (!child_count()) dprint_escaped(mod->source, start_byte(), end_byte());
 
-  printf("\n\u001b[0m");
+  dprintf("\n");
 }
 
 //------------------------------------------------------------------------------
 
 void MtNode::dump_tree(int index, int depth, int maxdepth) {
   if (depth == 0) {
-    cprintf(0x00FFFF, "\n========== tree dump begin\n");
+    //cprintf(0x00FFFF, "\n========== tree dump begin\n");
+    dprintf("\n========== tree dump begin\n");
   }
   dump_node(index, depth);
 
@@ -295,7 +319,7 @@ void MtNode::dump_tree(int index, int depth, int maxdepth) {
       i++;
     }
   }
-  if (depth == 0) cprintf(0x00FFFF, "========== tree dump end\n");
+  if (depth == 0) dprintf("========== tree dump end\n");
 }
 
 //------------------------------------------------------------------------------

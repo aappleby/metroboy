@@ -43,14 +43,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -159,6 +159,7 @@
     <ClCompile Include="MtModule.cpp" />
     <ClCompile Include="MtNode.cpp" />
     <ClCompile Include="MtTest.cpp" />
+    <ClCompile Include="Platform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
@@ -172,6 +173,31 @@
     <ClInclude Include="MtModule.h" />
     <ClInclude Include="MtNode.h" />
     <ClInclude Include="Platform.h" />
+    <ClInclude Include="rvsimple\adder.h" />
+    <ClInclude Include="rvsimple\alu.h" />
+    <ClInclude Include="rvsimple\alu_control.h" />
+    <ClInclude Include="rvsimple\config.h" />
+    <ClInclude Include="rvsimple\constants.h" />
+    <ClInclude Include="rvsimple\control_transfer.h" />
+    <ClInclude Include="rvsimple\data_memory_interface.h" />
+    <ClInclude Include="rvsimple\example_data_memory.h" />
+    <ClInclude Include="rvsimple\example_data_memory_bus.h" />
+    <ClInclude Include="rvsimple\example_memory_bus.h" />
+    <ClInclude Include="rvsimple\example_text_memory.h" />
+    <ClInclude Include="rvsimple\example_text_memory_bus.h" />
+    <ClInclude Include="rvsimple\immediate_generator.h" />
+    <ClInclude Include="rvsimple\instruction_decoder.h" />
+    <ClInclude Include="rvsimple\multiplexer.h" />
+    <ClInclude Include="rvsimple\multiplexer2.h" />
+    <ClInclude Include="rvsimple\multiplexer4.h" />
+    <ClInclude Include="rvsimple\multiplexer8.h" />
+    <ClInclude Include="rvsimple\regfile.h" />
+    <ClInclude Include="rvsimple\register.h" />
+    <ClInclude Include="rvsimple\riscv_core.h" />
+    <ClInclude Include="rvsimple\singlecycle_control.h" />
+    <ClInclude Include="rvsimple\singlecycle_ctlpath.h" />
+    <ClInclude Include="rvsimple\singlecycle_datapath.h" />
+    <ClInclude Include="rvsimple\toplevel.h" />
     <ClInclude Include="TreeSymbols.h" />
   </ItemGroup>
   <ItemGroup>

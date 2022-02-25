@@ -1,10 +1,10 @@
-﻿// RISC-V SiMPLE SV -- control path
+// RISC-V SiMPLE SV -- control path
 // BSD 3-Clause License
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
 #pragma once
-#include "../../../src/uart_test/metron_tools.h"
+#include "../../../src/Metron/metron_tools.h"
 #include "../../synth/config.h"
 #include "../common/constants.h"
 

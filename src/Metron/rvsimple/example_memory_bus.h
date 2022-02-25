@@ -1,9 +1,9 @@
-﻿// RISC-V SiMPLE SV -- combined text/data memory bus
+// RISC-V SiMPLE SV -- combined text/data memory bus
 // BSD 3-Clause License
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#include "../../../src/uart_test/metron_tools.h"
+#include "../../../src/Metron/metron_tools.h"
 #include "../../synth/config.h"
 #include "constants.h"
 #include "example_data_memory.h"

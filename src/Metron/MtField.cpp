@@ -60,15 +60,6 @@ bool MtField::is_primitive() {
 }
 
 bool MtField::is_enum() {
-
-  /*
-  if (type.child_count() >= 3 &&
-      type.child(0).body() == "enum" &&
-      type.child(1).body() == "class" && 
-      type.child(2).sym == alias_sym_type_identifier) {
-    emit_sym_field_declaration_as_enum_class(decl);
-  */
-
   return type.sym == sym_enum_specifier;
 }
 

@@ -45,7 +45,7 @@ struct uart_top {
 
     hello.init();
     tx.init();
-    rx.init();
+    //rx.init();
 
     o_serial = 0;
     o_data = 0;

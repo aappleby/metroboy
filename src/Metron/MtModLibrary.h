@@ -1,11 +1,14 @@
 #pragma once
 #include "Platform.h"
+#include <string>
+#include <vector>
+
+struct MtModule;
 
 //------------------------------------------------------------------------------
 
 struct MtModLibrary {
   void reset();
-  void load(const std::string& input_filename);
   MtModule* find_module(const std::string & module_name);
   bool has_mod(const std::string& name);
   void add_search_path(const std::string& path);

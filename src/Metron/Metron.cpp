@@ -3,19 +3,14 @@
 #include "MtModLibrary.h"
 #include "MtCursor.h"
 
+#include "../CoreLib/Log.h"
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifdef __GNUC__
-#include <unistd.h>
-#define _getcwd getcwd
-#define _mkdir mkdir
-#else
-#include <direct.h>
-int _mkdir(const char* path, int mode) { return _mkdir(path); }
-#endif
+#include <stdarg.h>
 
-#pragma warning(disable:4996) // unsafe fopen
+#pragma warning(disable:4996)
 
 //------------------------------------------------------------------------------
 
@@ -57,37 +52,82 @@ void mkdir_all(const std::vector<std::string>& full_path) {
   for (size_t i = 0; i < full_path.size() - 1; i++) {
     if (temp.size()) temp += "/";
     temp += full_path[i];
-    auto d = _mkdir(temp.c_str(), 0x777);
+    auto d = mkdir(temp.c_str(), 0x777);
   }
 }
 
 //------------------------------------------------------------------------------
 
+void metron_test_suite();
+
 int main(int argc, char** argv) {
+  std::vector<std::string> args;
+  for (int i = 0; i < argc; i++) {
+    //LOG_R("argv[%02d] = %s\n", i, argv[i]);
+    args.push_back(argv[i]);
+  }
 
   /*
   {
-    char * cwd;
-    cwd = (char*) malloc( FILENAME_MAX * sizeof(char) );
-    _getcwd(cwd,FILENAME_MAX);
-    printf("cwd %s\n", cwd);
-    free(cwd);
+    std::string cwd;
+    cwd.resize(FILENAME_MAX);
+    getcwd(cwd.data(),FILENAME_MAX);
+    LOG_R("cwd %s\n", cwd);
   }
   */
 
-  for (int i = 1; i < argc; i++) {
-    printf("argv[%02d] = %s\n", i, argv[i]);
+  args.clear();
+  args.push_back("-Iuart");
+  args.push_back("-Iuart_test");
+  args.push_back("-Irvsimple");
+  args.push_back("-Oout");
+
+  //args.push_back("uart/uart_top.h");
+  //args.push_back("uart/uart_hello.h");
+  //args.push_back("uart/uart_tx.h");
+  //args.push_back("uart/uart_rx.h");
+
+  //args.push_back("../../riscv-simple-sv/synth/config.h");
+
+  args.push_back("adder.h");
+  args.push_back("config.h");
+  args.push_back("constants.h");
+  args.push_back("alu.h");
+  args.push_back("alu_control.h");
+  /*
+  args.push_back("control_transfer.h");
+  args.push_back("data_memory_interface.h");
+  args.push_back("immediate_generator.h");
+  args.push_back("instruction_decoder.h");
+  args.push_back("multiplexer.h");
+  args.push_back("multiplexer2.h");
+  args.push_back("multiplexer4.h");
+  args.push_back("multiplexer8.h");
+  args.push_back("regfile.h");
+  args.push_back("register.h");
+  args.push_back("example_text_memory.h");
+  args.push_back("example_text_memory_bus.h");
+  args.push_back("example_data_memory.h");
+  args.push_back("example_data_memory_bus.h");
+  #include "../../riscv-simple-sv/core/singlecycle/riscv_core.h"
+  #include "../../riscv-simple-sv/core/singlecycle/singlecycle_control.h"
+  #include "../../riscv-simple-sv/core/singlecycle/singlecycle_ctlpath.h"
+  #include "../../riscv-simple-sv/core/singlecycle/singlecycle_datapath.h"
+  #include "../../riscv-simple-sv/core/singlecycle/toplevel.h"
+  */
+
+  for (auto& arg : args) {
+    LOG_R("arg = %s\n", arg.c_str());
   }
 
   // Parse args
-
   std::vector<std::string> mod_names;
   std::vector<std::string> mod_paths = {""};
   std::string out_dir = "";
   bool quiet = false;
 
-  for (int i = 1; i < argc; i++) {
-    char* arg_cursor = argv[i];
+  for (auto& arg : args) {
+    const char* arg_cursor = arg.c_str();
     if (*arg_cursor == '-'){
       arg_cursor++;
       auto option = *arg_cursor++;
@@ -95,18 +135,18 @@ int main(int argc, char** argv) {
 
       switch(option) {
       case 'I':
-        printf("Adding search path \"%s\"\n", arg_cursor);
+        LOG_G("Adding search path \"%s\"\n", arg_cursor);
         mod_paths.push_back(arg_cursor);
         break;
       case 'O':
-        printf("Adding output directory \"%s\"\n", arg_cursor);
+        LOG_G("Adding output directory \"%s\"\n", arg_cursor);
         out_dir = arg_cursor;
         break;
       case 'q':
         quiet = true;
         break;
       default:
-        printf("Bad command line arg \"%s\"\n", argv[i]);
+        LOG_G("Bad command line arg \"%s\"\n", arg.c_str());
         return -1;
       }
     }
@@ -115,45 +155,75 @@ int main(int argc, char** argv) {
     }
   }
 
+  // Run test suite?
+  //metron_test_suite();
+
   // Load all modules.
 
   MtModLibrary library;
   for (auto& name : mod_names) {
+    bool found = false;
     for (auto& path : mod_paths) {
       auto full_path = path.size() ? path + "/" + name : name;
       struct stat s;
       auto stat_result = stat(full_path.c_str(), &s);
       if (stat_result == 0) {
-        printf("loading %s from %s\n", name.c_str(), full_path.c_str());
-        library.load(full_path);
+        found = true;
+        LOG_B("loading %s from %s\n", name.c_str(), full_path.c_str());
+
+        {
+          LOG_INDENT_SCOPE();
+          blob src_blob;
+          src_blob.resize(s.st_size);
+          auto f = fopen(full_path.c_str(), "rb");
+          fread(src_blob.data(), 1, src_blob.size(), f);
+          fclose(f);
+
+          LOG_B("parsing %s\n", name.c_str());
+          auto mod = new MtModule();
+          mod->load(full_path.c_str(), src_blob);
+          mod->lib = &library;
+
+          LOG_B("parsing %s done\n", name.c_str());
+          library.modules.push_back(mod);
+        }
+
         break;
       }
     }
+    if (!found) {
+      LOG_R("Couldn't find %s in path!\n", name.c_str());
+    }
   }
-  printf("\n");
 
   // Cross-reference all modules
 
-  {
-    for (auto& mod : library.modules) {
-      mod->collect_modparams();
-      mod->collect_localparams();
-      mod->collect_functions();
-      mod->collect_ports();
-      mod->collect_fields();
-      mod->dedup_inputs();
+  LOG_G("Cross-referencing modules\n");
+  for (auto& mod : library.modules) {
+    mod->collect_modparams();
+    mod->collect_localparams();
+    mod->collect_functions();
+    mod->collect_ports();
+    mod->collect_fields();
+    mod->dedup_inputs();
+  }
 
-      // Verify that tick()/tock() obey read/write ordering rules.
-
-      mod->check_dirty_ticks();
-      mod->check_dirty_tocks();
-    }
+  // Verify that tick()/tock() obey read/write ordering rules.
+  LOG_G("Checking tick/tock rules\n")
+  for (auto& mod : library.modules) {
+    mod->check_dirty_ticks();
+    mod->check_dirty_tocks();
   }
 
   // Emit all modules.
 
-  for (auto& module : library.modules)
+  //for (auto& module : library.modules)
   {
+    auto& module = library.modules.back();
+
+    module->mod_root.dump_tree(0, 0, 2);
+
+    LOG_G("Processing module %s\n", module->mod_name.c_str());
     //auto& module = library.modules.back();
     //if (module->mod_class.is_null()) continue;
 
@@ -162,15 +232,15 @@ int main(int argc, char** argv) {
 
     FILE* out_file = fopen(out_path.c_str(), "wb");
     if (!out_file) {
-      printf("ERROR Could not open %s for output\n", out_path.c_str());
+      LOG_R("ERROR Could not open %s for output\n", out_path.c_str());
       //continue;
     }
 
-    printf("Opened %s for output\n", out_path.c_str());
+    LOG_G("Opened %s for output\n", out_path.c_str());
 
-    MtCursor cursor(module);
-    cursor.out.push_back(out_file);
-    if (!quiet) cursor.out.push_back(stdout);
+    std::string out_string;
+
+    MtCursor cursor(module, &out_string);
 
     // Copy the BOM over if needed.
     if (module->use_utf8_bom) {
@@ -178,85 +248,26 @@ int main(int argc, char** argv) {
       fwrite(bom, 1, 3, out_file);
     }
 
-    if (!quiet) {
-      /*
-      std::vector<MtNode> modparams;
-      std::vector<MtNode> localparams;
-      std::vector<MtNode> enums;
+    if (!quiet) module->dump_banner();
 
-      std::vector<MtNode> inits;
-      std::vector<MtNode> ticks;
-      std::vector<MtNode> tocks;
-      std::vector<MtNode> tasks;
-      std::vector<MtNode> funcs;
-
-      std::vector<MtField> inputs;
-      std::vector<MtField> outputs;
-      std::vector<MtField> fields;
-      std::vector<MtNode>  submodules;
-      */
-
-      printf("\n");
-      printf("//--------------------------------------------------------------------------------\n");
-      printf("// MODULE:       ");
-      printf("%s\n", module->mod_class.node_to_name().c_str());
-
-      printf("// MODULEPARAMS: ");
-      for (auto f : module->modparams) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("// LOCALPARAMS:  ");
-      for (auto f : module->localparams) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("// ENUMS:        ");
-      for (auto f : module->enums) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("// INITS:        ");
-      for (auto f : module->inits) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("// TICKS:        ");
-      for (auto f : module->ticks) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("// TOCKS:        ");
-      for (auto f : module->tocks) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-      printf("// TASKS:        ");
-      for (auto f : module->tasks) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("// FUNCS:        ");
-      for (auto f : module->funcs) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("// INPUTS:       ");
-      for (auto f : module->inputs) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("// OUTPUTS:      ");
-      for (auto f : module->outputs) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("// FIELDS:       ");
-      for (auto f : module->fields) printf("%s, ", f.name.node_to_name().c_str());
-      printf("\n");
-
-      printf("// SUBMODULES:   ");
-      for (auto f : module->submodules) printf("%s, ", f.node_to_name().c_str());
-      printf("\n");
-
-      printf("//--------------------------------------------------------------------------------\n");
-
-      printf("\n");
-    }
+    LOG_G("Emitting SystemVerilog\n");
 
     cursor.cursor = module->source;
-    cursor.emit_dispatch(module->mod_root);
+    cursor.emit(module->mod_root);
+    cursor.emit("\n");
 
+    //cursor.emit("foo\n");
+    //cursor.emit("bar\n");
+    //cursor.emit("baz\n");
+
+    //printf(out_string.c_str());
+
+    LOG_G("Saving SystemVerilog\n");
+
+    fwrite(out_string.data(), 1, out_string.size(), out_file);
     fclose(out_file);
+
+    LOG_G("Done\n");
   }
 
   return 0;

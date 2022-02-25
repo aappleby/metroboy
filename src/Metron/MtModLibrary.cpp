@@ -14,13 +14,6 @@ void MtModLibrary::add_search_path(const std::string& path) {
   search_paths.push_back(path);
 }
 
-void MtModLibrary::load(const std::string& full_path) {
-  auto mod = new MtModule();
-  mod->load(full_path);
-  mod->lib = this;
-  modules.push_back(mod);
-}
-
 MtModule* MtModLibrary::find_module(const std::string& module_name) {
   for (auto mod : modules) {
     if (mod->mod_name == module_name) return mod;

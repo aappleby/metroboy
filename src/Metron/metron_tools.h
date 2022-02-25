@@ -1,12 +1,12 @@
 #pragma once
 
 #include <assert.h>
-#include <cstring>
+//#include <cstring>
 #include <memory.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <cstdlib>
+//#include <cstdlib>
 
 #include "Logic.h"
 

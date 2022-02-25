@@ -3,6 +3,10 @@
 
 #include "MtNode.h"
 #include "MtField.h"
+#include <set>
+
+struct MtModLibrary;
+typedef std::vector<uint8_t> blob;
 
 //------------------------------------------------------------------------------
 
@@ -11,8 +15,9 @@ struct MtModule {
   MtModule();
   ~MtModule();
 
-  void load(const std::string& full_path);
+  void load(const char* full_path, blob& src_blob);
   void print_error(MtNode n, const char* fmt, ...);
+  void dump_banner();
 
   // Identifier lookup
 

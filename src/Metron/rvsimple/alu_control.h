@@ -4,7 +4,7 @@
 //                Marek Materzok, University of Wrocław
 
 #pragma once
-#include "../../../src/uart_test/metron_tools.h"
+#include "../../../src/Metron/top.h"
 #include "../../synth/config.h"
 #include "constants.h"
 
@@ -36,7 +36,7 @@ struct alu_control {
       default:                 secondary_funct = b5(DONTCARE); break;
     }
    
-/*
+    logic<5> op_funct;
 #ifdef M_MODULE
     logic<5> m_extension_funct;
     switch (inst_funct3) {
@@ -50,26 +50,20 @@ struct alu_control {
       case FUNCT3_ALU_REMU:   m_extension_funct = ALU_REMU; break;
       default:                m_extension_funct = b5(DONTCARE); break;
     }
-  }
-#endif
-*/
 
-    logic<5> op_funct;
     if (i_inst_funct7[5])   op_funct = secondary_funct;
-/*
-#ifdef M_MODULE
-    else if(inst_funct7[0]) op_funct = m_extension_funct;
-#endif
-*/
+    else if(inst_funct7[0]) op_funct = extension_funct;
     else                    op_funct = default_funct;
+#else
+    if (i_inst_funct7[5])   op_funct = secondary_funct;
+    else                    op_funct = default_funct;
+#endif
 
     logic<5> op_imm_funct;
-    /*
     if (i_inst_funct7[5] && b2(i_inst_funct3) == b2(0b01))
       op_imm_funct = secondary_funct;
     else
       op_imm_funct = default_funct;
-    */
 
     logic<5> branch_funct;
     switch (i_inst_funct3) {

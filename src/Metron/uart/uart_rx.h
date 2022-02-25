@@ -24,14 +24,6 @@ struct uart_rx {
 
   //----------------------------------------
 
-  void init() {
-    o_data = 0;
-    o_valid = 0;
-    o_sum = 0;
-  }
-
-  //----------------------------------------
-
   void tick(bool rst_n, logic<1> i_serial) {
     if (!rst_n) {
       cycle = 0;
@@ -52,7 +44,29 @@ struct uart_rx {
         cycle = cycle_max;
         cursor = cursor_max;
       }
+    }
 
+    {
+      logic<3> a = 1;
+      logic<3> b = 0;
+      switch(a) {
+        case 0: {
+          b = 2;
+          break;
+        }
+        case 1: {
+          b = 1;
+          break;
+        }
+        case 2: {
+          b = 0;
+          break;
+        }
+        default: {
+          b = 0;
+          break;
+        }
+      }
     }
   }
 

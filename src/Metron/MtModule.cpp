@@ -3,11 +3,76 @@
 
 #include "MtNode.h"
 #include "MtModLibrary.h"
+#include "../CoreLib/Log.h"
 
 #pragma warning(disable:4996) // unsafe fopen()
 
 extern "C" {
   extern const TSLanguage* tree_sitter_cpp();
+}
+
+//------------------------------------------------------------------------------
+
+void MtModule::dump_banner() {
+  if (mod_class.is_null()) {
+    LOG_B("\n");
+    LOG_B("// PACKAGE:       ");
+    LOG_B("%s\n", full_path.c_str());
+    return;
+  }
+
+  LOG_B("\n");
+  LOG_B("// MODULE:       ");
+  LOG_B("%s\n", mod_class.node_to_name().c_str());
+
+  LOG_B("// MODULEPARAMS: ");
+  for (auto f : modparams) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// LOCALPARAMS:  ");
+  for (auto f : localparams) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// ENUMS:        ");
+  for (auto f : enums) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// INITS:        ");
+  for (auto f : inits) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// TICKS:        ");
+  for (auto f : ticks) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// TOCKS:        ");
+  for (auto f : tocks) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+  LOG_B("// TASKS:        ");
+  for (auto f : tasks) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// FUNCS:        ");
+  for (auto f : funcs) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// INPUTS:       ");
+  for (auto f : inputs) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// OUTPUTS:      ");
+  for (auto f : outputs) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// FIELDS:       ");
+  for (auto f : fields) LOG_B("%s, ", f.name.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("// SUBMODULES:   ");
+  for (auto f : submodules) LOG_B("%s, ", f.node_to_name().c_str());
+  LOG_B("\n");
+
+  LOG_B("\n");
 }
 
 //------------------------------------------------------------------------------
@@ -92,14 +157,13 @@ MtModule::~MtModule() {
 
 //------------------------------------------------------------------------------
 
-void MtModule::load(const std::string& full_path) {
-  this->full_path = full_path;
+void MtModule::load(const char* _full_path, blob& _src_blob) {
+  this->full_path = _full_path;
+  this->src_blob = _src_blob;
 
   parser = ts_parser_new();
   lang = tree_sitter_cpp();
   ts_parser_set_language(parser, lang);
-
-  src_blob = load_blob(full_path.c_str());
 
   if (src_blob[0] == 239 && src_blob[1] == 187 && src_blob[2] == 191) {
     use_utf8_bom = true;
@@ -143,7 +207,7 @@ void MtModule::print_error(MtNode n, const char* fmt, ...) {
 
   printf("\n");
 
-  n.dump_tree();
+  n.error();
 
   printf("halting...\n");
   printf("########################################\n");
@@ -195,9 +259,6 @@ void MtModule::find_module() {
   mod_root.visit_tree2([&](MtNode parent, MtNode child) {
     if (child.sym == sym_struct_specifier) {
       if (parent.sym == sym_template_declaration) mod_template = MtTemplateDecl(parent);
-
-      //child.dump_tree(0, 0, 1);
-
       mod_class = MtStructSpecifier(child);
     }
 
@@ -206,7 +267,9 @@ void MtModule::find_module() {
     }
   });
 
-  mod_name = mod_class.get_field(field_name).text();
+  if (!mod_class.is_null()) {
+    mod_name = mod_class.get_field(field_name).text();
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -231,10 +294,8 @@ void MtModule::collect_localparams() {
 
 void MtModule::collect_functions() {
 
-  for (auto n : (MtNode&)mod_class.body()) {
+  for (auto n : (MtNode)mod_class.body()) {
     if (n.sym == sym_function_definition) {
-      n.dump_tree(0, 0, 1);
-
       auto func_decl = n.get_field(field_declarator);
       auto func_name = func_decl.get_field(field_declarator).node_to_name();
       auto func_args = n.get_field(field_declarator).get_field(field_parameters);
@@ -302,21 +363,18 @@ submodule with template arg
 */
 
 void MtModule::collect_fields() {
+  if (mod_class.is_null()) return;
+
   auto mod_name = mod_class.get_field(field_name).check_null();
   auto mod_body = mod_class.get_field(field_body).check_null();
 
   for (auto n : mod_body) {
     if (n.sym != sym_field_declaration) continue;
 
-    //n.dump_tree();
-    //continue;
-
     auto field_type = n.get_field(::field_type);
 
     // enum class
     if (field_type.sym == sym_enum_specifier) {
-      //printf("enum\n");
-      //n.dump_tree();
       enums.push_back(n);
       continue;
     }
@@ -343,16 +401,13 @@ void MtModule::collect_fields() {
         else {
           auto type_name = get_field_type_name(n);
           if (lib->has_mod(type_name)) {
-            printf("SUBMOD %s\n", type_name.c_str());
+            //printf("SUBMOD %s\n", type_name.c_str());
             submodules.push_back(n);
           }
           else {
-            printf("FIELD  %s\n", type_name.c_str());
+            //printf("FIELD  %s\n", type_name.c_str());
             fields.push_back(f);
           }
-
-          //n.dump_tree();
-          //fields.push_back(f);
         }
       }
     }
@@ -385,12 +440,6 @@ void MtModule::collect_fields() {
       }
     }
     */
-
-
-    //if (id_count == 0) {
-    //  n.dump_tree();
-    //  debugbreak();
-    //}
   }
 }
 

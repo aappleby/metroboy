@@ -4,21 +4,28 @@
 #include "Config.h"
 #include <vector> // for blob
 #include <stdint.h>
-#include <span>
+
+//------------------------------------------------------------------------------
 
 #ifdef __GNUC__
 #include <csignal>
 #define debugbreak() raise(SIGTRAP);
 
 typedef int64_t LARGE_INTEGER;
+#endif
 
-#else
+//------------------------------------------------------------------------------
+
+#ifdef _MSC_VER
+
+#include <span>
+typedef std::span<const char> cspan;
 
 #define debugbreak() __debugbreak();
 
 #endif
 
-typedef std::span<const char> cspan;
+//------------------------------------------------------------------------------
 
 typedef int16_t sample_t;
 

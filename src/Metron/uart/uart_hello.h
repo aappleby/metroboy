@@ -7,10 +7,6 @@
 struct uart_hello {
   /*verilator public_module*/
 
-  logic<8> o_data;
-  logic<1> o_req;
-  logic<1> o_done;
-
   static const int message_len = 512;
   static const int cursor_bits = clog2(message_len);
 
@@ -23,19 +19,20 @@ struct uart_hello {
   logic<8> memory[512];
   logic<8> data;
 
+  logic<8> o_data;
+  logic<1> o_req;
+  logic<1> o_done;
+
   //----------------------------------------
 
   void init() {
     readmemh("message.hex", memory, 0, 511);
-    o_data = 0;
-    o_req = 0;
-    o_done = 0;
   }
 
   //----------------------------------------
 
-  void tick(bool rst_n, bool i_cts, bool i_idle) {
-    if (!rst_n) {
+  void tick(logic<1> i_rstn, logic<1> i_cts, logic<1> i_idle) {
+    if (!i_rstn) {
       s = state::WAIT;
       cursor = 0;
     }
@@ -61,7 +58,7 @@ struct uart_hello {
 
   //----------------------------------------
 
-  void tock(bool rst_n) {
+  void tock(logic<1> i_rstn) {
     o_data = data;
     o_req  = (s == state::SEND);
     o_done = (s == state::DONE);

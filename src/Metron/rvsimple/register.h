@@ -18,7 +18,7 @@ struct reg {
     value = INITIAL;
   }
 
-  void tick(const logic<1>& i_reset, logic<1> i_write_enable, logic<WIDTH> i_next) {
+  void tick(logic<1> i_reset, logic<1> i_write_enable, logic<WIDTH> i_next) {
     if (i_reset) value = INITIAL;
     else if (i_write_enable) value = i_next;
   }

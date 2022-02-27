@@ -200,11 +200,12 @@ void MtCursor::comment_out(MtNode n) {
 // Replace "#include" with "`include" and ".h" with ".sv"
 
 void MtCursor::emit(MtPreprocInclude n) {
-  auto path = n.path();
-  path.pop_back();
-  path.append(".sv\"");
-  advance_to(n);
-  emit_replacement(n, "`include %s", path.c_str());
+  advance_to(n.child(0));
+  emit_replacement(n.child(0), "`include");
+  advance_to(n.path_node());
+  emit_span(n.path_node().start(), n.path_node().end() - 1);
+  emit(".sv\"");
+  cursor = n.end();
 }
 
 //------------------------------------------------------------------------------
@@ -218,14 +219,14 @@ void MtCursor::emit(MtAssignmentExpr n) {
   if (n.lhs().sym == sym_identifier) {
     std::string lhs_name = n.lhs().text();
     for (auto& f : mod->fields) {
-      if (f.name.node_to_name() == lhs_name) {
+      if (f.name == lhs_name) {
         lhs_is_field = true;
         break;
       }
     }
   }
 
-  emit(n.lhs());
+  emit_dispatch(n.lhs());
   advance_to(n.op());
   if (in_tick && lhs_is_field) emit("<");
   emit_text(n.op());
@@ -315,7 +316,7 @@ void MtCursor::emit_dynamic_bit_extract(MtCallExpr call, MtNode bx_node) {
   auto arg1 = call.args().named_child(1);
 
   if (arg_count == 1) {
-    // Size-casting expression - cursor_bits'(expression)
+    // Non-literal size-casting expression - bits'(expression)
     cursor = bx_node.start();
     emit_dispatch(bx_node);
     emit("'(");
@@ -325,23 +326,16 @@ void MtCursor::emit_dynamic_bit_extract(MtCallExpr call, MtNode bx_node) {
     cursor = call.end();
   }
   else if (arg_count == 2) {
-    // Not sure if this is right
-    debugbreak();
-    /*
-    if (arg0.sym != sym_identifier) debugbreak();
-    if (arg1.sym != sym_number_literal) debugbreak();
+    // Non-literal slice expression - expression[bits+offset-1:offset];
 
+    cursor = arg0.start();
+    emit_dispatch(arg0);
+
+    if (arg1.sym != sym_number_literal) debugbreak();
     int offset = atoi(arg1.start());
 
-    // Slice at offset
-    int bx_width = atoi(bx_node.start());
-    if (bx_width == 1) {
-      emit_replacement(n, "%s[%d]", arg0.body().c_str(), offset);
-    }
-    else {
-      emit_replacement(n, "%s[%d:%d]", arg0.body().c_str(), bx_width - 1 + offset, offset);
-    }
-    */
+    emit("[%s+%d:%d]", bx_node.text().c_str(), offset - 1, offset);
+    cursor = call.end();
   }
   else {
     debugbreak();
@@ -516,7 +510,6 @@ void MtCursor::emit(MtCallExpr call) {
     }
   }
   else if (func_name == "dup") {
-    call.dump_tree();
     // Convert "dup<15>(b12(instr_i))" to "15 {instr_i[12]}}"
 
     assert(args.named_child_count() == 1);
@@ -616,12 +609,8 @@ void MtCursor::emit_glue_assignment(MtCallExpr call) {
   auto call_this = call.func().get_field(field_argument);
   auto func_name = call.func().get_field(field_field);
 
-  for (auto& sm : mod->submodules) {
-    auto submod_type = sm.node_to_type();
-    auto submod_name = sm.node_to_name();
-    if (submod_name == call_this.node_to_name()) {
-      auto submod = mod->lib->find_module(submod_type);
-
+  for (auto& submod : mod->submods) {
+    if (submod.name == call_this.node_to_name()) {
       std::vector<std::string> call_src;
       std::vector<std::string> call_dst;
 
@@ -629,10 +618,10 @@ void MtCursor::emit_glue_assignment(MtCallExpr call) {
         if (!arg.is_named()) continue;
         auto src = arg.node_to_name();
         for (auto& c : src) if (c == '.') c = '_';
-        if (src != "rst_n") call_src.push_back(src);
+        call_src.push_back(src);
       }
 
-      for (auto& input : submod->inputs) {
+      for (auto& input : submod.mod->inputs) {
         call_dst.push_back(input.node_to_name());
       }
 
@@ -642,7 +631,7 @@ void MtCursor::emit_glue_assignment(MtCallExpr call) {
             
         emit_newline();
         emit("assign %s_%s = %s;",
-          submod_name.c_str(),
+          submod.name.c_str(),
           call_dst[i].c_str(),
           call_src[i].c_str());
       }
@@ -712,10 +701,11 @@ void MtCursor::emit_function_body(MtCompoundStatement func_body) {
 
       case sym_expression_statement:
         if (c.child(0).sym == sym_call_expression && in_tick) {
+          c.dump_tree();
           advance_to(c);
           //emit("CALL EXPRESSION ");
           comment_out(c);
-          emit_glue_assignment(c.child(0));
+          //emit_glue_assignment(c.child(0));
         }
         else {
           emit_dispatch(c);
@@ -791,9 +781,13 @@ void MtCursor::emit(MtFuncDefinition func) {
   //----------
   // For each call to {submodule}.tick() in module::tick(), emit glue assignments.
 
+  // FIXME needs to go in its own always_comb otherwise we get dupes
+
+  /*
   if (in_tick && !mod->submodules.empty()) {
     emit_glue_assignments(func);
   }
+  */
 
   //----------
 
@@ -809,31 +803,20 @@ void MtCursor::emit(MtFuncDefinition func) {
 // Emit "<type> <submod_name>_<output_name>;" glue declarations because we can't
 // directly pass arguments to submodules.
 
+/*
 void MtCursor::emit_glue_declaration(MtField f, const std::string& prefix) {
-  cursor = f.type.start();
+  cursor = f.foo_type.start();
 
-  //assert(field_decl.sym == sym_field_declaration ||
-  //       field_decl.sym == sym_parameter_declaration);
+  auto decl = f.get_field(field_declarator);
 
-  std::string type_name;
-
-  if (f.type.sym == alias_sym_type_identifier || f.type.sym == sym_primitive_type) {
-    type_name = f.type.text();
-  }
-  else if (f.type.sym == sym_template_type) {
-    type_name = f.type.get_field(field_name).text();
-  }
-  else {
-    debugbreak();
-  }
-
-  emit_dispatch(f.type);
-  advance_to(f.name);
+  emit_dispatch(f.foo_type);
+  advance_to(decl);
   emit("%s_", prefix.c_str());
-  emit_dispatch(f.name);
+  emit_dispatch(decl);
   emit(";");
   emit_newline();
 }
+*/
 
 //------------------------------------------------------------------------------
 // TreeSitterCPP support for enums is SUPER BROKEN and produces different parse
@@ -971,31 +954,17 @@ void MtCursor::emit_field_decl_as_enum_class(MtFieldDecl field_decl) {
 // If this field field_decl is a submodule, emit glue parameters and patch the glue
 // parameter list into the submodule declaration.
 
+/*
 void MtCursor::emit_glue_declarations(MtFieldDecl decl) {
 
-  MtField field(decl, decl.get_field(field_type), decl.get_field(field_declarator));
+  auto type_name = decl.get_field(field_type).node_to_type();
 
-  // FIXME need cleaner way to get type string
-  std::string type_name;
+  MtField field(decl,
+                decl.get_field(field_type),
+                type_name,
+                decl.get_field(field_declarator).text());
 
-  switch (field.type.sym) {
-  case alias_sym_type_identifier: type_name = field.type.text(); break;
-  case sym_primitive_type:        type_name = field.type.text(); break;
-  case sym_template_type:         type_name = field.type.get_field(field_name).text(); break;
-  
-  case sym_enum_specifier: {
-    type_name = field.type.get_field(field_name);
-    if (field.type.is_null()) {
-      type_name = "<anonymous enum>";
-    }
-    break;
-  }
-  
-  default: {
-    decl.error();
-  }
-  }
-  auto submod = mod->lib->find_module(type_name);
+  auto submod = mod->lib->find_mod(type_name);
 
   advance_to(decl);
   std::string inst_name = decl.node_to_name();
@@ -1025,6 +994,7 @@ void MtCursor::emit_glue_declarations(MtFieldDecl decl) {
 
   id_replacements.clear();
 }
+*/
 
 //------------------------------------------------------------------------------
 // Emit submodule port list:
@@ -1040,7 +1010,7 @@ void MtCursor::emit_submodule_port_list(MtFieldDecl field_decl) {
 
   std::string type_name = field_type.node_to_type();
 
-  auto submod = mod->lib->find_module(type_name);
+  auto submod = mod->lib->find_mod(type_name);
 
   {
     std::string inst_name = field_decl.node_to_name();
@@ -1081,7 +1051,7 @@ void MtCursor::emit(MtFieldDecl field_decl) {
 
   // If this isn't a submodule, just tack on "input" and "output" annotations.
   std::string type_name = field_decl.type().node_to_type();
-  auto submod = mod->lib->find_module(type_name);
+  auto submod = mod->lib->find_mod(type_name);
 
   if (submod) {
     // Input and output fields go in the port list, not in the module body.
@@ -1098,7 +1068,7 @@ void MtCursor::emit(MtFieldDecl field_decl) {
     // Check if this field is a submodule by looking up its type name in our
     // module list.
 
-    emit_glue_declarations(field_decl);
+    //emit_glue_declarations(field_decl);
     emit_submodule_port_list(field_decl);
     emit_newline();
   }
@@ -1144,9 +1114,9 @@ void MtCursor::emit_input_ports(std::vector<MtField>& fields) {
     //emit(" ");
     //sub_cursor.cursor = input.name.start();
     //sub_cursor.emit_dispatch(input.name);
-    sub_cursor.cursor = input.decl.start();
+    sub_cursor.cursor = input.start();
     //sub_cursor.emit_dispatch(input.decl);
-    sub_cursor.emit_decl_no_semi(input.decl);
+    sub_cursor.emit_decl_no_semi(input);
     emit(",");
   }
 }
@@ -1164,9 +1134,9 @@ void MtCursor::emit_output_ports(std::vector<MtField>& fields) {
     //emit(" ");
     //sub_cursor.cursor = output.name.start();
     //sub_cursor.emit_dispatch(output.name);
-    sub_cursor.cursor = output.decl.start();
+    sub_cursor.cursor = output.start();
     //sub_cursor.emit_dispatch(output.decl);
-    sub_cursor.emit_decl_no_semi(output.decl);
+    sub_cursor.emit_decl_no_semi(output);
 
     if (i != fields.size() - 1) emit(",");
   }
@@ -1222,7 +1192,7 @@ void MtCursor::emit_sym_field_declaration_list(MtFieldDeclList class_body) {
     emit_newline();
     //emit("// Submod outputs go here");
     //emit_newline();
-    for (auto& submod : mod->submodules) {
+    for (auto& submod : mod->submods) {
       emit(submod.node_to_name().c_str());
       emit_newline();
     }
@@ -1489,6 +1459,7 @@ void MtCursor::emit(MtReturnStatement n) {
 // FIXME translate types here
 
 void MtCursor::emit(MtPrimitiveType n) {
+  advance_to(n);
   emit_text(n);
 }
 

@@ -24,16 +24,8 @@ struct uart_tx {
 
   //----------------------------------------
 
-  void init() {
-    o_serial = 0;
-    o_cts = 0;
-    o_idle = 0;
-  }
-
-  //----------------------------------------
-
-  void tick(bool rst_n, logic<8> i_data, logic<1> i_req) {
-    if (!rst_n) {
+  void tick(logic<1> i_rstn, logic<8> i_data, logic<1> i_req) {
+    if (!i_rstn) {
       cycle = 0;
       cursor = 0;
       buffer = 0x1FF;
@@ -62,7 +54,7 @@ struct uart_tx {
 
   //----------------------------------------
 
-  void tock(bool rst_n) {
+  void tock(logic<1> i_rstn) {
     o_serial = buffer & 1;
     o_cts = ((cursor == extra_stop_bits) && (cycle == 0)) || (cursor < extra_stop_bits);
     o_idle = (cursor == 0) && (cycle == 0);

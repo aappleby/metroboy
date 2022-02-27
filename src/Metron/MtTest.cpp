@@ -108,14 +108,9 @@ std::string translate_simple(std::string src) {
 
   MtModLibrary library;
   auto mod = new MtModule();
-  mod->load("test.h", src_blob);
+  mod->load_pass1("test.h", src_blob);
   mod->lib = &library;
-  mod->collect_modparams();
-  mod->collect_localparams();
-  mod->collect_functions();
-  mod->collect_ports();
-  mod->collect_fields();
-  mod->dedup_inputs();
+  mod->load_pass2();
   mod->check_dirty_ticks();
   mod->check_dirty_tocks();
 

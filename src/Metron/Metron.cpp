@@ -82,11 +82,12 @@ int main(int argc, char** argv) {
   args.push_back("-Irvsimple");
   args.push_back("-Oout");
 
-  //args.push_back("uart/uart_top.h");
-  //args.push_back("uart/uart_hello.h");
-  //args.push_back("uart/uart_tx.h");
-  //args.push_back("uart/uart_rx.h");
+  args.push_back("uart/uart_top.h");
+  args.push_back("uart/uart_hello.h");
+  args.push_back("uart/uart_tx.h");
+  args.push_back("uart/uart_rx.h");
 
+  /*
   args.push_back("adder.h");
   args.push_back("config.h");
   args.push_back("constants.h");
@@ -97,7 +98,6 @@ int main(int argc, char** argv) {
   args.push_back("immediate_generator.h");
   args.push_back("instruction_decoder.h");
   args.push_back("multiplexer.h");
-  /*
   args.push_back("multiplexer2.h");
   args.push_back("multiplexer4.h");
   args.push_back("multiplexer8.h");
@@ -107,11 +107,11 @@ int main(int argc, char** argv) {
   args.push_back("example_text_memory_bus.h");
   args.push_back("example_data_memory.h");
   args.push_back("example_data_memory_bus.h");
-  #include "../../riscv-simple-sv/core/singlecycle/riscv_core.h"
-  #include "../../riscv-simple-sv/core/singlecycle/singlecycle_control.h"
-  #include "../../riscv-simple-sv/core/singlecycle/singlecycle_ctlpath.h"
-  #include "../../riscv-simple-sv/core/singlecycle/singlecycle_datapath.h"
-  #include "../../riscv-simple-sv/core/singlecycle/toplevel.h"
+  args.push_back("singlecycle_control.h");
+  args.push_back("singlecycle_ctlpath.h");
+  args.push_back("riscv_core.h");
+  args.push_back("singlecycle_datapath.h");
+  args.push_back("toplevel.h");
   */
 
   for (auto& arg : args) {
@@ -179,7 +179,7 @@ int main(int argc, char** argv) {
 
           LOG_B("parsing %s\n", name.c_str());
           auto mod = new MtModule();
-          mod->load(full_path.c_str(), src_blob);
+          mod->load_pass1(full_path.c_str(), src_blob);
           mod->lib = &library;
 
           LOG_B("parsing %s done\n", name.c_str());
@@ -194,16 +194,12 @@ int main(int argc, char** argv) {
     }
   }
 
-  // Cross-reference all modules
-
-  LOG_G("Cross-referencing modules\n");
   for (auto& mod : library.modules) {
-    mod->collect_modparams();
-    mod->collect_localparams();
-    mod->collect_functions();
-    mod->collect_ports();
-    mod->collect_fields();
-    mod->dedup_inputs();
+    mod->load_pass2();
+  }
+
+  for (auto& mod : library.modules) {
+    mod->load_pass3();
   }
 
   // Verify that tick()/tock() obey read/write ordering rules.
@@ -213,6 +209,14 @@ int main(int argc, char** argv) {
     mod->check_dirty_tocks();
   }
 
+  // Dump out info on modules for debugging.
+
+  for (auto& mod : library.modules) {
+    mod->dump_banner();
+  }
+
+
+#if 0
   // Emit all modules.
 
   for (auto& module : library.modules)
@@ -267,6 +271,7 @@ int main(int argc, char** argv) {
 
     LOG_G("Done\n");
   }
+#endif
 
   return 0;
 }

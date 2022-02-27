@@ -130,7 +130,6 @@ struct MtNode {
   typedef std::function<void(MtNode parent, MtNode child)> NodeVisitor2;
 
   void visit_tree(NodeVisitor cv);
-  void visit_tree2(NodeVisitor2 cv);
 
   void check_sym(TSSymbol sym) {
     if (!is_null() && this->sym != sym) {
@@ -302,7 +301,7 @@ struct MtAssignmentExpr : public MtNode {
   MtAssignmentExpr(const MtNode& n) : MtNode(n) {
     check_sym(sym_assignment_expression);
   }
-  MtIdentifier lhs() { return MtIdentifier(get_field(field_left)); }
+  MtNode       lhs() { return get_field(field_left); }
   MtLiteral    op()  { return MtLiteral(get_field(field_operator)); }
   MtNode       rhs() { return get_field(field_right); }
 };
@@ -438,10 +437,16 @@ struct MtTemplateFunc : public MtNode {
 //------------------------------------------------------------------------------
 // MtIdentifier || MtTemplateFunc
 
+// primitive type because int(x) style casts
+
 struct MtFunc : public MtNode {
   MtFunc() {}
   MtFunc(const MtNode& n) : MtNode(n) {
-    assert(is_null() || is_id() || is_templ() || is_field());
+    if (is_null() || is_id() || is_templ() || is_field() || is_prim()) {
+    }
+    else {
+      error();
+    }
   }
 
   std::string name() {
@@ -456,6 +461,7 @@ struct MtFunc : public MtNode {
   bool is_id()    { return sym == sym_identifier; }
   bool is_templ() { return sym == sym_template_function; }
   bool is_field() { return sym == sym_field_expression; }
+  bool is_prim()  { return sym == sym_primitive_type; }
 
   MtIdentifier   as_id()    { return MtIdentifier(*this); }
   MtTemplateFunc as_templ() { return MtTemplateFunc(*this); }
@@ -661,6 +667,11 @@ struct MtPreprocInclude : public MtNode {
   MtPreprocInclude(const MtNode& n) : MtNode(n) {
     check_sym(sym_preproc_include);
   }
+
+  MtNode path_node() {
+    return get_field(field_path);
+  }
+
   std::string path() {
     return get_field(field_path).text();
   }

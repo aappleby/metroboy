@@ -12,6 +12,44 @@ const MtNode MtNode::null;
 
 //------------------------------------------------------------------------------
 
+#if 0
+void MtModule::print_error(MtNode n, const char* fmt, ...) {
+  printf("\n########################################\n");
+
+  va_list args;
+  va_start(args, fmt);
+  vprintf(fmt, args);
+  va_end(args);
+
+  printf("@%04d: ", ts_node_start_point(n.node).row + 1);
+  
+  {
+    auto start = &source[n.start_byte()];
+
+    auto a = start;
+    auto b = start;
+    while (a > source     && *a != '\n' && *a != '\r') a--;
+    while (b < source_end && *b != '\n' && *b != '\r') b++;
+
+    if (*a == '\n' || *a == '\r') a++;
+
+    while (a != b) {
+      putc(*a++, stdout);
+    }
+  }
+
+  printf("\n");
+
+  n.error();
+
+  printf("halting...\n");
+  printf("########################################\n");
+  debugbreak();
+}
+#endif
+
+//------------------------------------------------------------------------------
+
 MtNode MtNode::from_mod(MtModule* mod) {
   auto root = ts_tree_root_node(mod->tree);
 
@@ -199,6 +237,9 @@ std::string MtNode::node_to_name() {
   case sym_template_function:
     return get_field(field_name).node_to_name();
 
+  case sym_primitive_type:
+    return text();
+
   default:
     error();
     return "";
@@ -229,13 +270,6 @@ void MtNode::visit_tree(NodeVisitor cv) {
   }
 }
 
-void MtNode::visit_tree2(NodeVisitor2 cv) {
-  for (auto c : *this) {
-    cv(*this, c);
-    c.visit_tree2(cv);
-  }
-}
-
 //------------------------------------------------------------------------------
 // Node debugging
 
@@ -251,26 +285,28 @@ int cprintf(uint32_t color, const char *format, ...) {
 }
 */
 
-inline void dprint_escaped(char s) {
-  if      (s == '\n') dprintf("\\n");
-  else if (s == '\r') dprintf("\\r");
-  else if (s == '\t') dprintf("\\t");
-  else if (s == '"')  dprintf("\\\"");
-  else if (s == '\\') dprintf("\\\\");
-  else                dprintf("%c", s);
+/*
+void print_escaped(char s) {
+  if      (s == '\n') printf("\\n");
+  else if (s == '\r') printf("\\r");
+  else if (s == '\t') printf("\\t");
+  else if (s == '"')  printf("\\\"");
+  else if (s == '\\') printf("\\\\");
+  else                printf("%c", s);
 }
 
-inline void dprint_escaped(const char* source, uint32_t a, uint32_t b) {
-  dprintf("\"");
+void print_escaped(const char* source, uint32_t a, uint32_t b) {
+  printf("\"");
   for (; a < b; a++) {
-    dprint_escaped(source[a]);
+    print_escaped(source[a]);
   }
-  dprintf("\"");
+  printf("\"");
 }
+*/
 
 void MtNode::dump_node(int index, int depth) {
   if (is_null()) {
-    dprintf("### NULL ###\n");
+    printf("### NULL ###\n");
     return;
   }
 
@@ -285,25 +321,24 @@ void MtNode::dump_node(int index, int depth) {
   if (sym == sym_field_declaration)    color = 0xFFAAAA;
   if (sym == sym_comment)              color = 0xAAFFAA;
 
-  dprintf("[%02d:%03d:%03d] ", index, int16_t(field), int16_t(sym));
+  printf("[%02d:%03d:%03d] ", index, int16_t(field), int16_t(sym));
 
-  for (int i = 0; i < depth; i++) dprintf(color != 0x888888 ? "|--" : "|  ");
+  for (int i = 0; i < depth; i++) printf(color != 0x888888 ? "|--" : "|  ");
 
-  if (field) dprintf("%s: ", ts_language_field_name_for_id(mod->lang, field));
+  if (field) printf("%s: ", ts_language_field_name_for_id(mod->lang, field));
 
-  dprintf("%s = ", is_named() ? type() : "lit" );
+  printf("%s = ", is_named() ? type() : "lit" );
 
-  if (!child_count()) dprint_escaped(mod->source, start_byte(), end_byte());
+  if (!child_count()) print_escaped(mod->source, start_byte(), end_byte());
 
-  dprintf("\n");
+  printf("\n");
 }
 
 //------------------------------------------------------------------------------
 
 void MtNode::dump_tree(int index, int depth, int maxdepth) {
   if (depth == 0) {
-    //cprintf(0x00FFFF, "\n========== tree dump begin\n");
-    dprintf("\n========== tree dump begin\n");
+    printf("\n========== tree dump begin\n");
   }
   dump_node(index, depth);
 
@@ -319,7 +354,7 @@ void MtNode::dump_tree(int index, int depth, int maxdepth) {
       i++;
     }
   }
-  if (depth == 0) dprintf("========== tree dump end\n");
+  if (depth == 0) printf("========== tree dump end\n");
 }
 
 //------------------------------------------------------------------------------

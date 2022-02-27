@@ -24,8 +24,8 @@ struct uart_rx {
 
   //----------------------------------------
 
-  void tick(bool rst_n, logic<1> i_serial) {
-    if (!rst_n) {
+  void tick(logic<1> i_rstn, logic<1> i_serial) {
+    if (!i_rstn) {
       cycle = 0;
       cursor = 0;
       buffer = 0;
@@ -45,34 +45,11 @@ struct uart_rx {
         cursor = cursor_max;
       }
     }
-
-    {
-      logic<3> a = 1;
-      logic<3> b = 0;
-      switch(a) {
-        case 0: {
-          b = 2;
-          break;
-        }
-        case 1: {
-          b = 1;
-          break;
-        }
-        case 2: {
-          b = 0;
-          break;
-        }
-        default: {
-          b = 0;
-          break;
-        }
-      }
-    }
   }
 
   //----------------------------------------
 
-  void tock(bool rst_n) {
+  void tock(logic<1> i_rstn) {
     o_data = buffer;
     o_valid = cursor == 1;
     o_sum = sum;

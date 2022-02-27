@@ -154,7 +154,6 @@
     </ClCompile>
     <ClCompile Include="Metron.cpp" />
     <ClCompile Include="MtCursor.cpp" />
-    <ClCompile Include="MtField.cpp" />
     <ClCompile Include="MtModLibrary.cpp" />
     <ClCompile Include="MtModule.cpp" />
     <ClCompile Include="MtNode.cpp" />
@@ -192,12 +191,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
+    <ClInclude Include="ibex\ibex_alu.h" />
+    <ClInclude Include="ibex\ibex_compressed_decoder.h" />
+    <ClInclude Include="ibex\ibex_multdiv_slow.h" />
+    <ClInclude Include="ibex\ibex_pkg.h" />
+    <ClInclude Include="ibex\prim_arbiter_fixed.h" />
     <ClInclude Include="Logic.h" />
     <ClInclude Include="message.blob.h" />
     <ClInclude Include="metron_test.h" />
     <ClInclude Include="metron_tools.h" />
     <ClInclude Include="MtCursor.h" />
-    <ClInclude Include="MtField.h" />
     <ClInclude Include="MtModLibrary.h" />
     <ClInclude Include="MtModule.h" />
     <ClInclude Include="MtNode.h" />
@@ -235,6 +238,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="build.ninja" />
+    <None Include="ibex\ibex_alu.sv" />
+    <None Include="ibex\ibex_compressed_decoder.sv" />
+    <None Include="ibex\ibex_multdiv_slow.sv" />
+    <None Include="ibex\ibex_pkg.sv" />
+    <None Include="ibex\prim_arbiter_fixed.sv" />
     <None Include="metron_tools.h.sv" />
   </ItemGroup>
   <ItemGroup>

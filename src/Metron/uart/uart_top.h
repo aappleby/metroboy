@@ -53,6 +53,7 @@ struct uart_top {
     tx.tock(i_rstn);
     rx.tock(i_rstn);
 
+    //counter = 3;
     o_serial = tx.o_serial;
     o_data = rx.o_data;
     o_valid = rx.o_valid;

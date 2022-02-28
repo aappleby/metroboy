@@ -7,12 +7,28 @@
 
 struct MtModLibrary;
 typedef std::vector<uint8_t> blob;
+typedef std::set<std::string> name_set;
 
 //------------------------------------------------------------------------------
 
 struct MtMethod : public MtNode {
   std::string name;
   std::vector<std::string> params;
+  bool dirty_check_done = false;
+  bool dirty_check_pass = false;
+  name_set always_dirty;
+  name_set maybe_dirty;
+  bool is_tick = false;
+  bool is_tock = false;
+
+  void check_dirty();
+  void check_dirty_read    (MtNode n);
+  void check_dirty_write   (MtNode n);
+  void check_dirty_dispatch(MtNode n);
+  void check_dirty_assign  (MtNode n);
+  void check_dirty_if      (MtNode n);
+  void check_dirty_call    (MtNode n);
+  void check_dirty_switch  (MtNode n);
 };
 
 struct MtSubmod : public MtNode {
@@ -102,20 +118,24 @@ struct MtModule {
   void dump_method_list(std::vector<MtMethod>& methods);
   void dump_call_list(std::vector<MtCall>& calls);
 
+  bool load_error = false;
+
   MtMethod node_to_method(MtNode n);
   MtCall   node_to_submod_call(MtNode n);
 
   // Rule checker
 
+  void update_dirty_sets(MtMethod& m);
+
   void check_dirty_ticks();
   void check_dirty_tocks();
-  void check_dirty_read(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
-  void check_dirty_write(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
-  void check_dirty_dispatch(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
-  void check_dirty_assign(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
-  void check_dirty_if(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
-  void check_dirty_call(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
-  void check_dirty_switch(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth);
+  //void check_dirty_read    (MtMethod& method, MtNode n);
+  //void check_dirty_write   (MtMethod& method, MtNode n);
+  //void check_dirty_dispatch(MtMethod& method, MtNode n);
+  //void check_dirty_assign  (MtMethod& method, MtNode n);
+  //void check_dirty_if      (MtMethod& method, MtNode n);
+  //void check_dirty_call    (MtMethod& method, MtNode n);
+  //void check_dirty_switch  (MtMethod& method, MtNode n);
 
   MtSubmod* get_submod(const std::string& name) {
     for (auto& n : submods) {

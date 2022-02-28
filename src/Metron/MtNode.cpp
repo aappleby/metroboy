@@ -12,44 +12,6 @@ const MtNode MtNode::null;
 
 //------------------------------------------------------------------------------
 
-#if 0
-void MtModule::print_error(MtNode n, const char* fmt, ...) {
-  printf("\n########################################\n");
-
-  va_list args;
-  va_start(args, fmt);
-  vprintf(fmt, args);
-  va_end(args);
-
-  printf("@%04d: ", ts_node_start_point(n.node).row + 1);
-  
-  {
-    auto start = &source[n.start_byte()];
-
-    auto a = start;
-    auto b = start;
-    while (a > source     && *a != '\n' && *a != '\r') a--;
-    while (b < source_end && *b != '\n' && *b != '\r') b++;
-
-    if (*a == '\n' || *a == '\r') a++;
-
-    while (a != b) {
-      putc(*a++, stdout);
-    }
-  }
-
-  printf("\n");
-
-  n.error();
-
-  printf("halting...\n");
-  printf("########################################\n");
-  debugbreak();
-}
-#endif
-
-//------------------------------------------------------------------------------
-
 MtNode MtNode::from_mod(MtModule* mod) {
   auto root = ts_tree_root_node(mod->tree);
 

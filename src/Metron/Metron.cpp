@@ -212,8 +212,11 @@ int main(int argc, char** argv) {
   {
     LOG_G("Checking tick/tock rules\n")
     LOG_INDENT_SCOPE();
-    for (auto& mod : library.modules) {
+    for (auto& mod : library.modules)
+    {
+      //auto& mod = library.modules[3];
       LOG_G("Checking %s\n", mod->mod_name.c_str());
+      LOG_INDENT_SCOPE();
       mod->check_dirty_ticks();
       mod->check_dirty_tocks();
     }

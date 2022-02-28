@@ -11,6 +11,53 @@ extern "C" {
   extern const TSLanguage* tree_sitter_cpp();
 }
 
+//-----------------------------------------------------------------------------
+// alwaysOut = alwaysA && alwaysB
+// maybeOut = maybeA || maybeB || (alwaysA && !alwaysB) || (alwaysB && !alwaysA)
+
+template<typename T>
+void fold_parallel(const std::set<T>& always_a, const std::set<T>& maybe_a,
+                   const std::set<T>& always_b, const std::set<T>& maybe_b,
+                   std::set<T>& always_out, std::set<T>& maybe_out) {
+  always_out.clear();
+  maybe_out.clear();
+
+  for (const auto& d : always_a) {
+    if (always_b.contains(d)) always_out.insert(d);
+  }
+
+  for (const auto& d : always_a) {
+    if (!always_b.contains(d)) maybe_out.insert(d);
+  }
+
+  for (const auto& d : always_b) {
+    if (!always_a.contains(d)) maybe_out.insert(d);
+  }
+
+  maybe_out.insert(maybe_a.begin(), maybe_a.end());
+  maybe_out.insert(maybe_b.begin(), maybe_b.end());
+}
+
+//------------------------------------------------------------------------------
+// alwaysOut = alwaysA || alwaysB
+// maybeOut  = (maybeA || maybeB) && !(alwaysA || alwaysB);
+
+template<typename T>
+void fold_series(const std::set<T>& always_a, const std::set<T>& maybe_a,
+                 const std::set<T>& always_b, const std::set<T>& maybe_b,
+                 std::set<T>& always_out, std::set<T>& maybe_out) {
+  always_out.insert(always_a.begin(), always_a.end());
+  always_out.insert(always_b.begin(), always_b.end());
+
+  for (const auto& d : maybe_a) {
+    if (!always_out.contains(d)) maybe_out.insert(d);
+  }
+
+  for (const auto& d : maybe_b) {
+    if (!always_out.contains(d)) maybe_out.insert(d);
+  }
+}
+
 //------------------------------------------------------------------------------
 
 MtModule::MtModule() {
@@ -159,6 +206,48 @@ void MtModule::dump_banner() {
 
 //------------------------------------------------------------------------------
 
+void log_error(MtNode n, const char* fmt, ...) {
+  printf("\n########################################\n");
+
+  va_list args;
+  va_start(args, fmt);
+  vprintf(fmt, args);
+  va_end(args);
+
+  printf("@%04d: ", ts_node_start_point(n.node).row + 1);
+  
+  /*
+  {
+    auto start = &source[n.start_byte()];
+
+    auto a = start;
+    auto b = start;
+    while (a > source     && *a != '\n' && *a != '\r') a--;
+    while (b < source_end && *b != '\n' && *b != '\r') b++;
+
+    if (*a == '\n' || *a == '\r') a++;
+
+    while (a != b) {
+      putc(*a++, stdout);
+    }
+  }
+
+  printf("\n");
+  */
+
+  //n.error();
+  n.dump_tree();
+
+  //printf("halting...\n");
+  printf("########################################\n");
+
+  //load_error = true;
+
+  //debugbreak();
+}
+
+//------------------------------------------------------------------------------
+
 void MtModule::load_pass1(const char* _full_path, blob& _src_blob) {
   this->full_path = _full_path;
   this->src_blob = _src_blob;
@@ -239,6 +328,9 @@ void MtModule::load_pass1(const char* _full_path, blob& _src_blob) {
     else              func_methods.push_back(node_to_method(n));
   }
 
+  for (auto& n : tick_methods) n.is_tick = true;
+  for (auto& n : tock_methods) n.is_tock = true;
+
   // Collect all inputs to all tick and tock methods and merge them into a list
   // of input ports. Input ports can be declared in multiple tick/tock methods,
   // but we don't want duplicates in the Verilog port list.
@@ -246,6 +338,8 @@ void MtModule::load_pass1(const char* _full_path, blob& _src_blob) {
   std::set<std::string> input_dedup;
 
   for (auto n : tick_methods) {
+    n.is_tick = true;
+
     for (auto tick_arg : n.get_field(field_declarator).get_field(field_parameters)) {
       if (tick_arg.sym == sym_parameter_declaration) {
         auto arg_type = tick_arg.get_field(field_type);
@@ -434,204 +528,195 @@ MtCall MtModule::node_to_submod_call(MtNode n) {
 
 //------------------------------------------------------------------------------
 
+void MtMethod::check_dirty() {
+  dirty_check_done = false;
+  dirty_check_pass = true;
+  check_dirty_dispatch((MtNode)*this);
+  dirty_check_done = false;
+}
+
+//------------------------------------------------------------------------------
+
 void MtModule::check_dirty_ticks() {
   for (auto& tick : tick_methods) {
-    std::set<MtField> dirty_fields;
-    check_dirty_dispatch(tick, true, dirty_fields, 0);
+    tick.check_dirty();
   }
 }
 
 void MtModule::check_dirty_tocks() {
   for (auto& tock : tock_methods) {
-    std::set<MtField> dirty_fields;
-    check_dirty_dispatch(tock, false, dirty_fields, 0);
+    tock.check_dirty();
   }
 }
 
 //------------------------------------------------------------------------------
 
-void MtModule::check_dirty_dispatch(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
+void MtMethod::check_dirty_dispatch(MtNode n) {
+  //n.dump_tree();
+
   if (n.is_null() || !n.is_named()) return;
 
+  //LOG_B("check_dirty_dispatch %s\n", ts_node_type(n.node));
+  //LOG_INDENT_SCOPE();
+
   switch (n.sym) {
-    case sym_identifier: {
-      check_dirty_read(n, is_seq, dirty_fields, depth);
-      break;
-    }
-
-    case sym_assignment_expression: {
-      check_dirty_assign(n, is_seq, dirty_fields, depth);
-      break;
-    }
-
-    case sym_if_statement: {
-      check_dirty_if(n, is_seq, dirty_fields, depth);
-      break;
-    }
-
-    case sym_call_expression: {
-      check_dirty_call(n, is_seq, dirty_fields, depth);
-      break;
-    }
-
-    case sym_switch_statement: {
-      check_dirty_switch(n, is_seq, dirty_fields, depth);
-      break;
-    }
+    case sym_identifier:            check_dirty_read(n); break;
+    case sym_assignment_expression: check_dirty_assign(n); break;
+    case sym_if_statement:          check_dirty_if(n); break;
+    case sym_call_expression:       check_dirty_call(n); break;
+    case sym_switch_statement:      check_dirty_switch(n); break;
 
     default: {
-      for (auto c : n) {
-        check_dirty_dispatch(c, is_seq, dirty_fields, depth + 1); break;
-      }
+      for (auto c : n) check_dirty_dispatch(c);
     }
   }
 }
 
 //----------------------------------------
 
-void MtModule::check_dirty_read(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
+void MtMethod::check_dirty_read(MtNode n) {
+  //LOG_G("check_dirty_read %s\n", ts_node_type(n.node));
 
-#if 0
-  // Reading from a dirty field in a seq block is forbidden.
-  if (is_seq) {
-    auto field = get_field_by_id(n);
-    if (field && dirty_fields.contains(field)) {
-      print_error(n, "seq read dirty field - %s\n", field.node_to_name().c_str());
-    }
+  assert(n.sym == sym_identifier);
+  auto field_name = n.text();
+
+  // Reading from a dirty field in tick() is forbidden.
+  if (is_tick && (maybe_dirty.contains(field_name) || always_dirty.contains(field_name))) {
+    log_error(n, "%s() read dirty field - %s\n", field_name.c_str(), field_name.c_str());
+    dirty_check_pass = false;
   }
 
-  // Reading from a clean output in a comb block is forbidden.
-  if (!is_seq) {
-    auto output = get_output_by_id(n);
-    if (output && !dirty_fields.contains(output)) {
-      print_error(n, "comb read clean output - %s\n", output.node_to_name().c_str());
-    }
+  // Reading from a clean output in tock() is forbidden.
+  if (is_tock && field_name.starts_with("o_") && !always_dirty.contains(field_name)) {
+    log_error(n, "%s() read clean output - %s\n", name.c_str(), field_name.c_str());
+    dirty_check_pass = false;
   }
-
-#endif
 }
 
 //----------------------------------------
 
-void MtModule::check_dirty_write(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
-#if 0
+void MtMethod::check_dirty_write(MtNode n) {
+  //LOG_R("check_dirty_write %s\n", ts_node_type(n.node));
 
-  // Writing to an already-dirty field in a seq block is forbidden.
-  if (is_seq) {
-    auto field = get_field_by_id(n);
-    if (field) {
-      if (dirty_fields.contains(field)) {
-        print_error(n, "seq wrote dirty field - %s\n", field.node_to_name().c_str());
-      }
-      dirty_fields.insert(field);
-    }
+  assert(n.sym == sym_identifier);
+  auto field_name = n.text();
+
+  // Writing to an output in tick() is forbidden.
+  if (is_tick && field_name.starts_with("o_")) {
+    log_error(n, "%s() wrote output %s\n", field_name.c_str(), field_name.c_str());
+    dirty_check_pass = false;
   }
 
-  // Writing to any field in a comb block is forbidden.
-  if (!is_seq) {
-    auto field = get_field_by_id(n);
-    if (field) {
-
-      // We should generally not be assigning to fields in tock(), but
-      // prim_arbiter_fixed does a big comb tree thing.
-
-      //print_error(n, "comb wrote field - %s\n", field.node_to_name().c_str());
-    }
+  // Writing to a field twice is forbidden.
+  if (maybe_dirty.contains(field_name) || always_dirty.contains(field_name)) {
+    log_error(n, "%s() wrote dirty field %s\n", field_name.c_str(), field_name.c_str());
+    dirty_check_pass = false;
   }
 
-  // Writing to an already-dirty field in a comb block is forbidden.
-  if (!is_seq) {
-    auto output = get_output_by_id(n);
-    if (output) {
-      if (dirty_fields.contains(output)) {
-        // we need this for ibex_compressed_decoder
-        //print_error(n, "comb wrote dirty output - %s\n", output.node_to_name().c_str());
-      }
-      dirty_fields.insert(output);
-    }
+  // Writing to a non-output field in tock() is forbidden.
+  if (is_tock && !field_name.starts_with("o_")) {
+    log_error(n, "%s() wrote non-output %s\n", name.c_str(), field_name.c_str());
+    dirty_check_pass = false;
   }
 
-#endif
+  always_dirty.insert(field_name);
 }
 
 //------------------------------------------------------------------------------
 // Check for reads on the RHS of an assignment, then check the write on the left.
 
-void MtModule::check_dirty_assign(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
-#if 0
+void MtMethod::check_dirty_assign(MtNode n) {
+  //LOG_Y("check_dirty_assign %s\n", ts_node_type(n.node));
+
   auto lhs = n.get_field(field_left);
   auto rhs = n.get_field(field_right);
 
-  check_dirty_dispatch(rhs, is_seq, dirty_fields, depth + 1);
-  check_dirty_write(lhs, is_seq, dirty_fields, depth + 1);
-#endif
+  check_dirty_dispatch(rhs);
+  check_dirty_write(lhs);
 }
 
 //----------------------------------------
 // Check the "if" branch and the "else" branch independently and then merge the results.
 
-void MtModule::check_dirty_if(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
-#if 0
-  check_dirty_dispatch(n.get_field(field_condition), is_seq, dirty_fields, depth + 1);
+void MtMethod::check_dirty_if(MtNode n) {
+  //LOG_M("check_dirty_if %s\n", ts_node_type(n.node));
 
-  std::set<MtField> if_set = dirty_fields;
-  std::set<MtField> else_set = dirty_fields;
+  check_dirty_dispatch(n.get_field(field_condition));
 
-  check_dirty_dispatch(n.get_field(field_consequence), is_seq, if_set, depth + 1);
-  check_dirty_dispatch(n.get_field(field_alternative), is_seq, else_set, depth + 1);
+  MtMethod if_branch = *this;
+  MtMethod else_branch = *this;
 
-  dirty_fields.merge(if_set);
-  dirty_fields.merge(else_set);
-#endif
+  if_branch.check_dirty_dispatch(n.get_field(field_consequence));
+  else_branch.check_dirty_dispatch(n.get_field(field_alternative));
+
+  fold_parallel(
+    if_branch.always_dirty, if_branch.maybe_dirty,
+    else_branch.always_dirty, else_branch.maybe_dirty,
+    always_dirty, maybe_dirty);
 }
 
 //----------------------------------------
-// Follow member function calls.
+// Traverse function calls.
 
-void MtModule::check_dirty_call(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
-#if 0
-  auto node_func = n.get_field(field_function);
+void MtMethod::check_dirty_call(MtNode n) {
+  //LOG_C("check_dirty_call %s\n", ts_node_type(n.node));
+
   auto node_args = n.get_field(field_arguments);
+  assert(node_args.sym == sym_argument_list);
+  check_dirty_dispatch(node_args);
 
+  auto node_func = n.get_field(field_function);
   if (node_func.is_identifier()) {
     // local function call, traverse args and then function body
-    check_dirty_dispatch(node_args, is_seq, dirty_fields, depth + 1);
-
-    // FIXME 
-    /*
-    auto task = get_task_by_id(node_func);
-    if (task) check_dirty_dispatch(task, is_seq, dirty_fields, depth + 1);
-
-    auto func = get_function_by_id(node_func);
-    if (func) check_dirty_dispatch(func, is_seq, dirty_fields, depth + 1);
-    */
+    // TODO - traverse function body
+  }
+  else if (node_func.is_field_expr()) {
+    // submod function call, traverse args and then function body
+    // TODO - traverse function body
+  }
+  else if (node_func.sym == sym_template_function) {
   }
   else {
+    n.dump_tree();
     debugbreak();
   }
-#endif
 }
 
 //----------------------------------------
 // Check the condition of a switch statement, then check each case independently.
 
-void MtModule::check_dirty_switch(MtNode n, bool is_seq, std::set<MtField>& dirty_fields, int depth) {
-#if 0
-  auto cond = n.get_field(field_condition);
+void MtMethod::check_dirty_switch(MtNode n) {
+  //LOG_W("check_dirty_switch %s\n", ts_node_type(n.node));
+
+  check_dirty_dispatch(n.get_field(field_condition));
+
+  MtMethod old_method = *this;
+  MtMethod accum;
+
+  bool first_branch = true;
+
   auto body = n.get_field(field_body);
-
-  check_dirty_dispatch(cond, is_seq, dirty_fields, depth + 1);
-
-  auto old_dirty_fields = dirty_fields;
-
   for (auto c : body) {
     if (c.sym == sym_case_statement) {
-      auto temp = old_dirty_fields;
-      check_dirty_dispatch(c, is_seq, temp, depth + 1);
-      dirty_fields.merge(temp);
+      MtMethod case_branch = old_method;
+      case_branch.check_dirty_dispatch(c);
+
+      if (first_branch) {
+        always_dirty = case_branch.always_dirty;
+        maybe_dirty = case_branch.maybe_dirty;
+        first_branch = false;
+      }
+      else {
+        fold_parallel(always_dirty, maybe_dirty,
+                      case_branch.always_dirty, case_branch.maybe_dirty,
+                      accum.always_dirty, accum.maybe_dirty);
+        always_dirty.swap(accum.always_dirty);
+        maybe_dirty.swap(accum.maybe_dirty);
+        accum.always_dirty.clear();
+        accum.maybe_dirty.clear();
+      }
     }
   }
-#endif
 }
 
 //------------------------------------------------------------------------------

@@ -202,19 +202,22 @@ int main(int argc, char** argv) {
     mod->load_pass3();
   }
 
-  // Verify that tick()/tock() obey read/write ordering rules.
-  LOG_G("Checking tick/tock rules\n")
-  for (auto& mod : library.modules) {
-    mod->check_dirty_ticks();
-    mod->check_dirty_tocks();
-  }
-
   // Dump out info on modules for debugging.
 
   for (auto& mod : library.modules) {
     mod->dump_banner();
   }
 
+  // Verify that tick()/tock() obey read/write ordering rules.
+  {
+    LOG_G("Checking tick/tock rules\n")
+    LOG_INDENT_SCOPE();
+    for (auto& mod : library.modules) {
+      LOG_G("Checking %s\n", mod->mod_name.c_str());
+      mod->check_dirty_ticks();
+      mod->check_dirty_tocks();
+    }
+  }
 
 #if 0
   // Emit all modules.

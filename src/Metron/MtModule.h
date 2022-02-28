@@ -27,14 +27,43 @@ struct MtCall : public MtNode {
 };
 
 struct MtEnum : public MtNode {
+  MtEnum(MtNode n) : MtNode(n) {
+
+    if (n.sym == sym_field_declaration) {
+      auto enum_type = n.get_field(field_type);
+      auto enum_name = enum_type.get_field(field_name);
+      name = enum_name.text();
+    }
+    else {
+      n.dump_tree();
+      debugbreak();
+    }
+  }
+
+  std::string name;
 };
 
 struct MtParam : public MtNode {
-  MtParam(const MtNode& n) : MtNode(n) {
+  MtParam(MtNode n) : MtNode(n) {
     assert(sym == sym_parameter_declaration ||
            sym == sym_optional_parameter_declaration || 
            sym == sym_field_declaration);
+
+    if (sym == sym_parameter_declaration) {
+      name = n.get_field(field_declarator).text();
+    }
+    else if (sym == sym_optional_parameter_declaration) {
+      name = n.get_field(field_declarator).text();
+    }
+    else if (sym == sym_field_declaration) {
+      name = n.get_field(field_declarator).text();
+    }
+    else {
+      n.dump_tree();
+      debugbreak();
+    }
   }
+  std::string name;
 };
 
 struct MtField : public MtNode {
@@ -70,6 +99,8 @@ struct MtModule {
   void load_pass3();
 
   void dump_banner();
+  void dump_method_list(std::vector<MtMethod>& methods);
+  void dump_call_list(std::vector<MtCall>& calls);
 
   MtMethod node_to_method(MtNode n);
   MtCall   node_to_submod_call(MtNode n);
@@ -94,12 +125,13 @@ struct MtModule {
   }
 
   MtMethod* get_method(const std::string& name) {
-    for (auto& n : tick_methods) {
-      if (n.name == name) return &n;
-    }
-    for (auto& n : tock_methods) {
-      if (n.name == name) return &n;
-    }
+    for (auto& n : tick_methods) if (n.name == name) return &n;
+    for (auto& n : tock_methods) if (n.name == name) return &n;
+    return nullptr;
+  }
+
+  MtField* get_output(const std::string& name) {
+    for (auto& n : outputs) if (n.name == name) return &n;
     return nullptr;
   }
 
@@ -120,8 +152,8 @@ struct MtModule {
   std::string mod_name;
 
   MtTranslationUnit   mod_root;
+  MtStructSpecifier   mod_struct;
   MtTemplateDecl      mod_template;
-  MtStructSpecifier   mod_class;
   MtTemplateParamList mod_param_list;
 
   std::vector<MtParam>  modparams;
@@ -131,6 +163,7 @@ struct MtModule {
   std::vector<MtField>  inputs;
   std::vector<MtField>  outputs;
   std::vector<MtField>  fields;
+  std::vector<MtSubmod> submods;
 
   std::vector<MtMethod> init_methods;
   std::vector<MtMethod> tick_methods;
@@ -138,13 +171,10 @@ struct MtModule {
   std::vector<MtMethod> task_methods;
   std::vector<MtMethod> func_methods;
   
-  std::vector<MtSubmod> submods;
-  std::vector<MtCall>   submod_tick_calls;
-  std::vector<MtCall>   submod_tock_calls;
+  std::vector<MtCall>   tick_calls;
+  std::vector<MtCall>   tock_calls;
 
   std::map<std::string, std::string> port_map;
-
-  std::map<std::string, std::vector<std::string>> method_to_params;
 };
 
 //------------------------------------------------------------------------------

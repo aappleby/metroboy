@@ -42,13 +42,13 @@ struct MtNode {
 
   //----------
 
-  void dump_node(int index, int depth);
-  void dump_tree(int index, int depth, int maxdepth);
-  void dump_tree() {
+  void dump_node(int index, int depth) const;
+  void dump_tree(int index, int depth, int maxdepth) const;
+  void dump_tree() const {
     dump_tree(0, 0, 255);
   }
 
-  void error() {
+  void error() const {
     dump_tree(0, 0, 255);
     debugbreak();
   }

@@ -63,6 +63,7 @@ MtNode MtNode::from_mod(MtModule* mod) {
 
 
 MtNode MtNode::get_field(int field_id) {
+  if (is_null()) return MtNode::null;
 
   for (auto c : *this) {
     if (c.field == field_id) return c;
@@ -118,11 +119,12 @@ bool MtNode::is_const() const {
 //------------------------------------------------------------------------------
 
 std::string MtNode::text() {
+  assert(!is_null());
+
   if (sym == anon_sym_SEMI) {
     int x = 0;
   }
 
-  assert(!is_null());
   auto a = &mod->source[start_byte()];
   auto b = &mod->source[end_byte()];
 
@@ -304,7 +306,7 @@ void print_escaped(const char* source, uint32_t a, uint32_t b) {
 }
 */
 
-void MtNode::dump_node(int index, int depth) {
+void MtNode::dump_node(int index, int depth) const {
   if (is_null()) {
     printf("### NULL ###\n");
     return;
@@ -336,7 +338,7 @@ void MtNode::dump_node(int index, int depth) {
 
 //------------------------------------------------------------------------------
 
-void MtNode::dump_tree(int index, int depth, int maxdepth) {
+void MtNode::dump_tree(int index, int depth, int maxdepth) const {
   if (depth == 0) {
     printf("\n========== tree dump begin\n");
   }

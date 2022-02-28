@@ -71,6 +71,7 @@ inline void log_printf(const char* format = "", ...) {
 #define LOG_C(...) do { log_printf("\u001b[38;2;128;255;255m"); log_printf(__VA_ARGS__); printf("\u001b[0m"); } while(0);
 #define LOG_M(...) do { log_printf("\u001b[38;2;255;128;255m"); log_printf(__VA_ARGS__); printf("\u001b[0m"); } while(0);
 #define LOG_Y(...) do { log_printf("\u001b[38;2;255;255;128m"); log_printf(__VA_ARGS__); printf("\u001b[0m"); } while(0);
+#define LOG_W(...) do { log_printf("\u001b[38;2;255;255;255m"); log_printf(__VA_ARGS__); printf("\u001b[0m"); } while(0);
 
 #define LOG_INDENT() log_putchar('\t')
 #define LOG_DEDENT() log_putchar('\v')

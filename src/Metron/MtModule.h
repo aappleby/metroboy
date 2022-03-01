@@ -1,116 +1,27 @@
 #pragma once
 #include "Platform.h"
 
-#include "MtNode.h"
+#include "MtCall.h"
+#include "MtEnum.h"
+#include "MtField.h"
+#include "MtMethod.h"
+#include "MtParam.h"
+#include "MtSubmod.h"
+
 #include <set>
 #include <map>
 
+struct MtMethod;
 struct MtModLibrary;
+struct MtSourceFile;
 typedef std::vector<uint8_t> blob;
 typedef std::set<std::string> name_set;
 
 //------------------------------------------------------------------------------
 
-struct MtMethod : public MtNode {
-  std::string name;
-  std::vector<std::string> params;
-  bool dirty_check_done = false;
-  bool dirty_check_pass = false;
-  name_set always_dirty;
-  name_set maybe_dirty;
-  bool is_tick = false;
-  bool is_tock = false;
-
-  void check_dirty();
-  void check_dirty_read    (MtNode n);
-  void check_dirty_write   (MtNode n);
-  void check_dirty_dispatch(MtNode n);
-  void check_dirty_assign  (MtNode n);
-  void check_dirty_if      (MtNode n);
-  void check_dirty_call    (MtNode n);
-  void check_dirty_switch  (MtNode n);
-};
-
-struct MtSubmod : public MtNode {
-  std::string name;
-  MtModule* mod;
-};
-
-struct MtCall : public MtNode {
-  MtSubmod* submod;
-  MtMethod* method;
-  std::vector<std::string> args;
-};
-
-struct MtEnum : public MtNode {
-  MtEnum(MtNode n) : MtNode(n) {
-
-    if (n.sym == sym_field_declaration) {
-      auto enum_type = n.get_field(field_type);
-      auto enum_name = enum_type.get_field(field_name);
-      name = enum_name.text();
-    }
-    else {
-      n.dump_tree();
-      debugbreak();
-    }
-  }
-
-  std::string name;
-};
-
-struct MtParam : public MtNode {
-  MtParam(MtNode n) : MtNode(n) {
-    assert(sym == sym_parameter_declaration ||
-           sym == sym_optional_parameter_declaration || 
-           sym == sym_field_declaration);
-
-    if (sym == sym_parameter_declaration) {
-      name = n.get_field(field_declarator).text();
-    }
-    else if (sym == sym_optional_parameter_declaration) {
-      name = n.get_field(field_declarator).text();
-    }
-    else if (sym == sym_field_declaration) {
-      name = n.get_field(field_declarator).text();
-    }
-    else {
-      n.dump_tree();
-      debugbreak();
-    }
-  }
-  std::string name;
-};
-
-struct MtField : public MtNode {
-  MtField(MtNode n, std::string _type_name, std::string _name)
-    : MtNode(n), name(_name), type_name(_type_name) {
-
-    for (auto c : (MtNode)*this) {
-      if (c.sym == sym_storage_class_specifier) {
-        if (c.match("static")) is_static = true;;
-      }
-      if (c.sym == sym_type_qualifier) {
-        if (c.match("const")) is_const = true;
-      }
-    }
-  }
-
-  std::string name;
-  std::string type_name;
-  int index = 0; // if this is part of a multi-decl, index of the sub-decl. not hooked up yet.
-  bool is_static = false;
-  bool is_const = false;
-};
-
-//------------------------------------------------------------------------------
-
 struct MtModule {
 
-  MtModule();
-  ~MtModule();
-
-  void load_pass1(const char* full_path, blob& src_blob);
+  void load_pass1();
   void load_pass2();
   void load_pass3();
 
@@ -121,7 +32,7 @@ struct MtModule {
   bool load_error = false;
 
   MtMethod node_to_method(MtNode n);
-  MtCall   node_to_submod_call(MtNode n);
+  MtCall   node_to_call(MtNode n);
 
   // Rule checker
 
@@ -129,13 +40,6 @@ struct MtModule {
 
   void check_dirty_ticks();
   void check_dirty_tocks();
-  //void check_dirty_read    (MtMethod& method, MtNode n);
-  //void check_dirty_write   (MtMethod& method, MtNode n);
-  //void check_dirty_dispatch(MtMethod& method, MtNode n);
-  //void check_dirty_assign  (MtMethod& method, MtNode n);
-  //void check_dirty_if      (MtMethod& method, MtNode n);
-  //void check_dirty_call    (MtMethod& method, MtNode n);
-  //void check_dirty_switch  (MtMethod& method, MtNode n);
 
   MtSubmod* get_submod(const std::string& name) {
     for (auto& n : submods) {
@@ -155,19 +59,30 @@ struct MtModule {
     return nullptr;
   }
 
+  bool has_field(const std::string& name) {
+    for (auto& f : fields) if (f.name == name) return true;
+    return false;
+  }
+
+  bool has_output(const std::string& name) {
+    for (auto& f : outputs) if (f.name == name) return true;
+    return false;
+  }
+
   //----------
 
   MtModLibrary* lib;
-  std::string full_path;
+  //std::string full_path;
 
-  blob src_blob;
-  bool use_utf8_bom = false;
+  //blob src_blob;
+  //bool use_utf8_bom = false;
 
-  const char* source = nullptr;
-  const char* source_end = nullptr;
-  const TSLanguage* lang = nullptr;
-  TSParser* parser = nullptr;
-  TSTree* tree = nullptr;
+  MtSourceFile* source_file = nullptr;
+  //const char* source = nullptr;
+  //const char* source_end = nullptr;
+  //const TSLanguage* lang = nullptr;
+  //TSParser* parser = nullptr;
+  //TSTree* tree = nullptr;
 
   std::string mod_name;
 

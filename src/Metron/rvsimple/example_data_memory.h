@@ -19,10 +19,17 @@ struct example_data_memory {
 
   void tick(logic<DATA_BITS - 2> i_address, logic<1> i_wren, logic<4> i_byteena, logic<32> i_data) {
     if (i_wren) {
-      if (i_byteena[0]) s8(mem[i_address], 0)  = b8(i_data, 0);
-      if (i_byteena[1]) s8(mem[i_address], 8)  = b8(i_data, 8);
-      if (i_byteena[2]) s8(mem[i_address], 16) = b8(i_data, 16);
-      if (i_byteena[3]) s8(mem[i_address], 24) = b8(i_data, 24);
+      logic<8> byte0 = b8(mem[i_address], 0);
+      logic<8> byte1 = b8(mem[i_address], 8);
+      logic<8> byte2 = b8(mem[i_address], 16);
+      logic<8> byte3 = b8(mem[i_address], 24);
+
+      if (i_byteena[0]) byte0 = b8(i_data, 0);
+      if (i_byteena[1]) byte1 = b8(i_data, 8);
+      if (i_byteena[2]) byte2 = b8(i_data, 16);
+      if (i_byteena[3]) byte3 = b8(i_data, 24);
+
+      mem[i_address] = cat(byte3, byte2, byte1, byte0);
     }
   }
 

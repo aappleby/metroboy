@@ -30,23 +30,17 @@ struct singlecycle_control {
   }
 
   void tock_decode(logic<7> i_inst_opcode) {
-    o_pc_write_enable         = b1(1);
-    o_regfile_write_enable    = b1(0);
-    o_alu_operand_a_select    = b1(DONTCARE);
-    o_alu_operand_b_select    = b1(DONTCARE);
-    o_alu_op_type             = b2(DONTCARE);
-    o_data_mem_read_enable    = b1(0);
-    o_data_mem_write_enable   = b1(0);
-    o_reg_writeback_select    = b3(DONTCARE);
     
     switch (i_inst_opcode) {
       case OPCODE_LOAD:
       {
+        o_pc_write_enable         = b1(1);
         o_regfile_write_enable    = b1(1);
         o_alu_operand_a_select    = CTL_ALU_A_RS1;
         o_alu_operand_b_select    = CTL_ALU_B_IMM;
         o_alu_op_type             = CTL_ALU_ADD;
         o_data_mem_read_enable    = b1(1);
+        o_data_mem_write_enable   = b1(0);
         o_reg_writeback_select    = CTL_WRITEBACK_DATA;
         break;
       }
@@ -54,81 +48,117 @@ struct singlecycle_control {
       case OPCODE_MISC_MEM:
       {
         // Fence - ignore
+        o_pc_write_enable         = b1(1);
+        o_regfile_write_enable    = b1(0);
+        o_alu_operand_a_select    = b1(DONTCARE);
+        o_alu_operand_b_select    = b1(DONTCARE);
+        o_alu_op_type             = b2(DONTCARE);
+        o_data_mem_read_enable    = b1(0);
+        o_data_mem_write_enable   = b1(0);
+        o_reg_writeback_select    = b3(DONTCARE);
         break;
       }
     
       case OPCODE_OP_IMM:
       {
+        o_pc_write_enable         = b1(1);
         o_regfile_write_enable    = b1(1);
         o_alu_operand_a_select    = CTL_ALU_A_RS1;
         o_alu_operand_b_select    = CTL_ALU_B_IMM;
         o_alu_op_type             = CTL_ALU_OP_IMM;
+        o_data_mem_read_enable    = b1(0);
+        o_data_mem_write_enable   = b1(0);
         o_reg_writeback_select    = CTL_WRITEBACK_ALU;
         break;
       }
     
       case OPCODE_AUIPC:
       {
+        o_pc_write_enable         = b1(1);
         o_regfile_write_enable    = b1(1);
         o_alu_operand_a_select    = CTL_ALU_A_PC;
         o_alu_operand_b_select    = CTL_ALU_B_IMM;
         o_alu_op_type             = CTL_ALU_ADD;
+        o_data_mem_read_enable    = b1(0);
+        o_data_mem_write_enable   = b1(0);
         o_reg_writeback_select    = CTL_WRITEBACK_ALU;
         break;
       }
     
       case OPCODE_STORE:
       {
+        o_pc_write_enable         = b1(1);
+        o_regfile_write_enable    = b1(0);
         o_alu_operand_a_select    = CTL_ALU_A_RS1;
         o_alu_operand_b_select    = CTL_ALU_B_IMM;
         o_alu_op_type             = CTL_ALU_ADD;
+        o_data_mem_read_enable    = b1(0);
         o_data_mem_write_enable   = b1(1);
+        o_reg_writeback_select    = b3(DONTCARE);
         break;
       }
     
       case OPCODE_OP:
       {
+        o_pc_write_enable         = b1(1);
         o_regfile_write_enable    = b1(1);
         o_alu_operand_a_select    = CTL_ALU_A_RS1;
         o_alu_operand_b_select    = CTL_ALU_B_RS2;
         o_reg_writeback_select    = CTL_WRITEBACK_ALU;
         o_alu_op_type             = CTL_ALU_OP;
+        o_data_mem_read_enable    = b1(0);
+        o_data_mem_write_enable   = b1(0);
         break;
       }
     
       case OPCODE_LUI:
       {
+        o_pc_write_enable         = b1(1);
         o_regfile_write_enable    = b1(1);
         o_alu_operand_a_select    = CTL_ALU_A_RS1;
         o_alu_operand_b_select    = CTL_ALU_B_RS2;
+        o_alu_op_type             = b2(DONTCARE);
+        o_data_mem_read_enable    = b1(0);
+        o_data_mem_write_enable   = b1(0);
         o_reg_writeback_select    = CTL_WRITEBACK_IMM;
         break;
       }
     
       case OPCODE_BRANCH:
       {
+        o_pc_write_enable         = b1(1);
+        o_regfile_write_enable    = b1(0);
         o_alu_operand_a_select    = CTL_ALU_A_RS1;
         o_alu_operand_b_select    = CTL_ALU_B_RS2;
         o_alu_op_type             = CTL_ALU_BRANCH;
+        o_data_mem_read_enable    = b1(0);
+        o_data_mem_write_enable   = b1(0);
+        o_reg_writeback_select    = b3(DONTCARE);
         break;
       }
     
       case OPCODE_JALR:
       {
+        o_pc_write_enable         = b1(1);
         o_regfile_write_enable    = b1(1);
         o_alu_operand_a_select    = CTL_ALU_A_RS1;
         o_alu_operand_b_select    = CTL_ALU_B_IMM;
         o_alu_op_type             = CTL_ALU_ADD;
+        o_data_mem_read_enable    = b1(0);
+        o_data_mem_write_enable   = b1(0);
         o_reg_writeback_select    = CTL_WRITEBACK_PC4;
         break;
       }
     
       case OPCODE_JAL:
       {
+        o_pc_write_enable         = b1(1);
         o_regfile_write_enable    = b1(1);
         o_alu_operand_a_select    = CTL_ALU_A_PC;
         o_alu_operand_b_select    = CTL_ALU_B_IMM;
         o_alu_op_type             = CTL_ALU_ADD;
+        o_data_mem_read_enable    = b1(0);
+        o_data_mem_write_enable   = b1(0);
         o_reg_writeback_select    = CTL_WRITEBACK_PC4;
         break;
       }
@@ -137,8 +167,12 @@ struct singlecycle_control {
       {
         o_pc_write_enable         = b1(DONTCARE);
         o_regfile_write_enable    = b1(DONTCARE);
+        o_alu_operand_a_select    = CTL_ALU_A_RS1;
+        o_alu_operand_b_select    = CTL_ALU_B_IMM;
+        o_alu_op_type             = CTL_ALU_ADD;
         o_data_mem_read_enable    = b1(DONTCARE);
         o_data_mem_write_enable   = b1(DONTCARE);
+        o_reg_writeback_select    = b3(DONTCARE);
         break;
       }
     }

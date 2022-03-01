@@ -1,77 +1,19 @@
 #include "MtModule.h"
 #include "Platform.h"
 
-#include "MtNode.h"
+#include "MtMethod.h"
 #include "MtModLibrary.h"
+#include "MtNode.h"
+#include "MtSourceFile.h"
+
 #include "../CoreLib/Log.h"
+
+#include "tree_sitter/api.h"
 
 #pragma warning(disable:4996) // unsafe fopen()
 
 extern "C" {
   extern const TSLanguage* tree_sitter_cpp();
-}
-
-//-----------------------------------------------------------------------------
-// alwaysOut = alwaysA && alwaysB
-// maybeOut = maybeA || maybeB || (alwaysA && !alwaysB) || (alwaysB && !alwaysA)
-
-template<typename T>
-void fold_parallel(const std::set<T>& always_a, const std::set<T>& maybe_a,
-                   const std::set<T>& always_b, const std::set<T>& maybe_b,
-                   std::set<T>& always_out, std::set<T>& maybe_out) {
-  always_out.clear();
-  maybe_out.clear();
-
-  for (const auto& d : always_a) {
-    if (always_b.contains(d)) always_out.insert(d);
-  }
-
-  for (const auto& d : always_a) {
-    if (!always_b.contains(d)) maybe_out.insert(d);
-  }
-
-  for (const auto& d : always_b) {
-    if (!always_a.contains(d)) maybe_out.insert(d);
-  }
-
-  maybe_out.insert(maybe_a.begin(), maybe_a.end());
-  maybe_out.insert(maybe_b.begin(), maybe_b.end());
-}
-
-//------------------------------------------------------------------------------
-// alwaysOut = alwaysA || alwaysB
-// maybeOut  = (maybeA || maybeB) && !(alwaysA || alwaysB);
-
-template<typename T>
-void fold_series(const std::set<T>& always_a, const std::set<T>& maybe_a,
-                 const std::set<T>& always_b, const std::set<T>& maybe_b,
-                 std::set<T>& always_out, std::set<T>& maybe_out) {
-  always_out.insert(always_a.begin(), always_a.end());
-  always_out.insert(always_b.begin(), always_b.end());
-
-  for (const auto& d : maybe_a) {
-    if (!always_out.contains(d)) maybe_out.insert(d);
-  }
-
-  for (const auto& d : maybe_b) {
-    if (!always_out.contains(d)) maybe_out.insert(d);
-  }
-}
-
-//------------------------------------------------------------------------------
-
-MtModule::MtModule() {
-}
-
-MtModule::~MtModule() {
-  ts_tree_delete(tree);
-  ts_parser_delete(parser);
-
-  src_blob.clear();
-  lang = nullptr;
-  parser = nullptr;
-  tree = nullptr;
-  source = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -110,7 +52,7 @@ void MtModule::dump_call_list(std::vector<MtCall>& calls) {
 void MtModule::dump_banner() {
   LOG_Y("//----------------------------------------\n");
   if (mod_struct.is_null()) {
-    LOG_Y("// Package %s\n", full_path.c_str());
+    LOG_Y("// Package %s\n", source_file->full_path.c_str());
     LOG_Y("\n");
     return;
   }
@@ -248,24 +190,43 @@ void log_error(MtNode n, const char* fmt, ...) {
 
 //------------------------------------------------------------------------------
 
-void MtModule::load_pass1(const char* _full_path, blob& _src_blob) {
-  this->full_path = _full_path;
-  this->src_blob = _src_blob;
+MtModule* load_pass1(const char* full_path, blob& src_blob) {
+  MtSourceFile* source_file = new MtSourceFile();
+  source_file->parse_source(full_path, src_blob);
 
-  if (src_blob[0] == 239 && src_blob[1] == 187 && src_blob[2] == 191) {
-    use_utf8_bom = true;
-    src_blob.erase(src_blob.begin(), src_blob.begin() + 3);
+  TSNode ts_root = ts_tree_root_node(source_file->tree);
+
+  auto mod = new MtModule();
+  MtNode mt_root(ts_root, ts_node_symbol(ts_root), 0, mod);
+
+
+  MtNode mod_template;
+  MtNode mod_param_list;
+  MtNode mod_struct;
+
+  //mod_root = MtTranslationUnit(MtNode::from_mod(this));
+
+  for (auto n : (MtNode)mt_root) {
+    if (n.sym == sym_template_declaration) {
+      mod_template = MtTemplateDecl(n);
+      mod_param_list = MtTemplateParamList(n.child(1));
+      mod_struct = MtStructSpecifier(n.child(2));
+      break;
+    }
+    if (n.sym == sym_struct_specifier) {
+      mod_struct = MtStructSpecifier(n);
+      break;
+    }
   }
 
-  source = (const char*)src_blob.data();
-  source_end = source + src_blob.size();
+  mod->source_file = source_file;
+  mod->load_pass1();
+  return mod;
+}
 
-  // Parse the module and find the root class/struct/template.
+//------------------------------------------------------------------------------
 
-  parser = ts_parser_new();
-  lang = tree_sitter_cpp();
-  ts_parser_set_language(parser, lang);
-  tree = ts_parser_parse_string(parser, NULL, source, (uint32_t)src_blob.size());
+void MtModule::load_pass1() {
   mod_root = MtTranslationUnit(MtNode::from_mod(this));
 
   for (auto n : (MtNode)mod_root) {
@@ -443,7 +404,7 @@ void MtModule::load_pass3() {
     n.visit_tree([&](MtNode child) {
       if (child.sym != sym_call_expression) return;
       if (child.get_field(field_function).sym != sym_field_expression) return;
-      tick_calls.push_back(node_to_submod_call(child));
+      tick_calls.push_back(node_to_call(child));
     });
   }
 
@@ -451,7 +412,7 @@ void MtModule::load_pass3() {
     n.visit_tree([&](MtNode child) {
       if (child.sym != sym_call_expression) return;
       if (child.get_field(field_function).sym != sym_field_expression) return;
-      tock_calls.push_back(node_to_submod_call(child));
+      tock_calls.push_back(node_to_call(child));
     });
   }
 
@@ -487,7 +448,9 @@ void MtModule::load_pass3() {
 //------------------------------------------------------------------------------
 
 MtMethod MtModule::node_to_method(MtNode n) {
-  MtMethod result(n);
+  assert(n.sym == sym_function_definition);
+
+  MtMethod result(n, this);
 
   auto method_name = n.get_field(field_declarator).get_field(field_declarator).text();
   auto method_params = n.get_field(field_declarator).get_field(field_parameters);
@@ -507,32 +470,29 @@ MtMethod MtModule::node_to_method(MtNode n) {
 
 //------------------------------------------------------------------------------
 
-MtCall MtModule::node_to_submod_call(MtNode n) {
+MtCall MtModule::node_to_call(MtNode n) {
   MtCall result(n);
 
   auto call = MtCallExpr(n);
-  auto call_this = call.get_field(field_function).get_field(field_argument);
-  auto call_func = call.get_field(field_function).get_field(field_field);
+  auto call_func = call.get_field(field_function);
   auto call_args = call.get_field(field_arguments);
 
-  auto submod = get_submod(call_this.text());
-  assert(submod);
+  if (call_func.sym == sym_field_expression) {
+    auto call_this   = call_func.get_field(field_argument);
+    auto call_method = call_func.get_field(field_field);
 
-  result.submod = submod;
-  result.method = submod->mod->get_method(call_func.text());
+    auto submod = get_submod(call_this.text());
+    assert(submod);
+
+    result.submod = submod;
+    result.method = submod->mod->get_method(call_method.text());
+  }
+
   for (int i = 0; i < call_args.named_child_count(); i++) {
     result.args.push_back(call_args.named_child(i).text());
   }
+
   return result;
-}
-
-//------------------------------------------------------------------------------
-
-void MtMethod::check_dirty() {
-  dirty_check_done = false;
-  dirty_check_pass = true;
-  check_dirty_dispatch((MtNode)*this);
-  dirty_check_done = false;
 }
 
 //------------------------------------------------------------------------------
@@ -549,174 +509,3 @@ void MtModule::check_dirty_tocks() {
   }
 }
 
-//------------------------------------------------------------------------------
-
-void MtMethod::check_dirty_dispatch(MtNode n) {
-  //n.dump_tree();
-
-  if (n.is_null() || !n.is_named()) return;
-
-  //LOG_B("check_dirty_dispatch %s\n", ts_node_type(n.node));
-  //LOG_INDENT_SCOPE();
-
-  switch (n.sym) {
-    case sym_identifier:            check_dirty_read(n); break;
-    case sym_assignment_expression: check_dirty_assign(n); break;
-    case sym_if_statement:          check_dirty_if(n); break;
-    case sym_call_expression:       check_dirty_call(n); break;
-    case sym_switch_statement:      check_dirty_switch(n); break;
-
-    default: {
-      for (auto c : n) check_dirty_dispatch(c);
-    }
-  }
-}
-
-//----------------------------------------
-
-void MtMethod::check_dirty_read(MtNode n) {
-  //LOG_G("check_dirty_read %s\n", ts_node_type(n.node));
-
-  assert(n.sym == sym_identifier);
-  auto field_name = n.text();
-
-  // Reading from a dirty field in tick() is forbidden.
-  if (is_tick && (maybe_dirty.contains(field_name) || always_dirty.contains(field_name))) {
-    log_error(n, "%s() read dirty field - %s\n", field_name.c_str(), field_name.c_str());
-    dirty_check_pass = false;
-  }
-
-  // Reading from a clean output in tock() is forbidden.
-  if (is_tock && field_name.starts_with("o_") && !always_dirty.contains(field_name)) {
-    log_error(n, "%s() read clean output - %s\n", name.c_str(), field_name.c_str());
-    dirty_check_pass = false;
-  }
-}
-
-//----------------------------------------
-
-void MtMethod::check_dirty_write(MtNode n) {
-  //LOG_R("check_dirty_write %s\n", ts_node_type(n.node));
-
-  assert(n.sym == sym_identifier);
-  auto field_name = n.text();
-
-  // Writing to an output in tick() is forbidden.
-  if (is_tick && field_name.starts_with("o_")) {
-    log_error(n, "%s() wrote output %s\n", field_name.c_str(), field_name.c_str());
-    dirty_check_pass = false;
-  }
-
-  // Writing to a field twice is forbidden.
-  if (maybe_dirty.contains(field_name) || always_dirty.contains(field_name)) {
-    log_error(n, "%s() wrote dirty field %s\n", field_name.c_str(), field_name.c_str());
-    dirty_check_pass = false;
-  }
-
-  // Writing to a non-output field in tock() is forbidden.
-  if (is_tock && !field_name.starts_with("o_")) {
-    log_error(n, "%s() wrote non-output %s\n", name.c_str(), field_name.c_str());
-    dirty_check_pass = false;
-  }
-
-  always_dirty.insert(field_name);
-}
-
-//------------------------------------------------------------------------------
-// Check for reads on the RHS of an assignment, then check the write on the left.
-
-void MtMethod::check_dirty_assign(MtNode n) {
-  //LOG_Y("check_dirty_assign %s\n", ts_node_type(n.node));
-
-  auto lhs = n.get_field(field_left);
-  auto rhs = n.get_field(field_right);
-
-  check_dirty_dispatch(rhs);
-  check_dirty_write(lhs);
-}
-
-//----------------------------------------
-// Check the "if" branch and the "else" branch independently and then merge the results.
-
-void MtMethod::check_dirty_if(MtNode n) {
-  //LOG_M("check_dirty_if %s\n", ts_node_type(n.node));
-
-  check_dirty_dispatch(n.get_field(field_condition));
-
-  MtMethod if_branch = *this;
-  MtMethod else_branch = *this;
-
-  if_branch.check_dirty_dispatch(n.get_field(field_consequence));
-  else_branch.check_dirty_dispatch(n.get_field(field_alternative));
-
-  fold_parallel(
-    if_branch.always_dirty, if_branch.maybe_dirty,
-    else_branch.always_dirty, else_branch.maybe_dirty,
-    always_dirty, maybe_dirty);
-}
-
-//----------------------------------------
-// Traverse function calls.
-
-void MtMethod::check_dirty_call(MtNode n) {
-  //LOG_C("check_dirty_call %s\n", ts_node_type(n.node));
-
-  auto node_args = n.get_field(field_arguments);
-  assert(node_args.sym == sym_argument_list);
-  check_dirty_dispatch(node_args);
-
-  auto node_func = n.get_field(field_function);
-  if (node_func.is_identifier()) {
-    // local function call, traverse args and then function body
-    // TODO - traverse function body
-  }
-  else if (node_func.is_field_expr()) {
-    // submod function call, traverse args and then function body
-    // TODO - traverse function body
-  }
-  else if (node_func.sym == sym_template_function) {
-  }
-  else {
-    n.dump_tree();
-    debugbreak();
-  }
-}
-
-//----------------------------------------
-// Check the condition of a switch statement, then check each case independently.
-
-void MtMethod::check_dirty_switch(MtNode n) {
-  //LOG_W("check_dirty_switch %s\n", ts_node_type(n.node));
-
-  check_dirty_dispatch(n.get_field(field_condition));
-
-  MtMethod old_method = *this;
-  MtMethod accum;
-
-  bool first_branch = true;
-
-  auto body = n.get_field(field_body);
-  for (auto c : body) {
-    if (c.sym == sym_case_statement) {
-      MtMethod case_branch = old_method;
-      case_branch.check_dirty_dispatch(c);
-
-      if (first_branch) {
-        always_dirty = case_branch.always_dirty;
-        maybe_dirty = case_branch.maybe_dirty;
-        first_branch = false;
-      }
-      else {
-        fold_parallel(always_dirty, maybe_dirty,
-                      case_branch.always_dirty, case_branch.maybe_dirty,
-                      accum.always_dirty, accum.maybe_dirty);
-        always_dirty.swap(accum.always_dirty);
-        maybe_dirty.swap(accum.maybe_dirty);
-        accum.always_dirty.clear();
-        accum.maybe_dirty.clear();
-      }
-    }
-  }
-}
-
-//------------------------------------------------------------------------------

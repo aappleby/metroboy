@@ -29,7 +29,7 @@ struct data_memory_interface {
     o_bus_write_data   = i_write_data << (8*b2(i_address));
     
     // calculate byte enable
-    o_bus_byte_enable = b4(0b0000);
+    //o_bus_byte_enable = b4(0b0000);
     switch (b2(i_data_format)) {
         case 0b00: o_bus_byte_enable = b4(0b0001) << b2(i_address); break;
         case 0b01: o_bus_byte_enable = b4(0b0011) << b2(i_address); break;

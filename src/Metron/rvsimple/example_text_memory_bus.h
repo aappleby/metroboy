@@ -17,7 +17,11 @@ struct example_text_memory_bus {
   void tock(logic<32> i_address) {
     text_memory.tock(bx<TEXT_BITS-2>(i_address, 2));
 
-    o_read_data = b32(DONTCARE);
-    if (i_address >= TEXT_BEGIN && i_address <= TEXT_END) o_read_data = text_memory.o_q;
+    if (i_address >= TEXT_BEGIN && i_address <= TEXT_END) {
+      o_read_data = text_memory.o_q;
+    }
+    else {
+      o_read_data = b32(DONTCARE);
+    }
   }
 };

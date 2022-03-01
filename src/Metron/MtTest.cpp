@@ -2,6 +2,7 @@
 #include "MtModule.h"
 #include "MtModLibrary.h"
 #include "MtCursor.h"
+#include "MtSourceFile.h"
 
 #include <algorithm>
 
@@ -107,8 +108,13 @@ std::string translate_simple(std::string src) {
   std::string out;
 
   MtModLibrary library;
+
+  auto source_file = new MtSourceFile();
+  source_file->parse_source("test.h", src_blob);
+
   auto mod = new MtModule();
-  mod->load_pass1("test.h", src_blob);
+  mod->source_file = source_file;
+  mod->load_pass1();
   mod->lib = &library;
   mod->load_pass2();
   mod->check_dirty_ticks();
@@ -117,7 +123,7 @@ std::string translate_simple(std::string src) {
   library.modules.push_back(mod);
 
   MtCursor cursor(mod, &out);
-  cursor.cursor = mod->source;
+  cursor.cursor = mod->source_file->source;
   cursor.emit(mod->mod_root);
   cursor.emit("\n");
   for (auto c : out) assert(c > 0);

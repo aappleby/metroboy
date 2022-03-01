@@ -18,12 +18,13 @@ struct multiplexer4 {
               logic<WIDTH> in1,
               logic<WIDTH> in2,
               logic<WIDTH> in3) {
-      o_out = bx<WIDTH>(DONTCARE);
+      
       switch(sel) {
-      case 0: o_out = in0; break;
-      case 1: o_out = in1; break;
-      case 2: o_out = in2; break;
-      case 3: o_out = in3; break;
+      case 0:  o_out = in0; break;
+      case 1:  o_out = in1; break;
+      case 2:  o_out = in2; break;
+      case 3:  o_out = in3; break;
+      default: o_out = bx<WIDTH>(DONTCARE); break;
       }
     }
 };

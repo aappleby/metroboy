@@ -25,7 +25,11 @@ struct example_data_memory_bus {
   void tock(logic<32> i_address, logic<1> i_read_enable) {
     data_memory.tock(bx<DATA_BITS-2>(i_address, 2));
 
-    o_read_data = b32(DONTCARE);
-    if (i_read_enable && i_address >= DATA_BEGIN && i_address <= DATA_END) o_read_data = data_memory.o_q;
+    if (i_read_enable && i_address >= DATA_BEGIN && i_address <= DATA_END) {
+      o_read_data = data_memory.o_q;
+    }
+    else {
+      o_read_data = b32(DONTCARE);
+    }
   }
 };

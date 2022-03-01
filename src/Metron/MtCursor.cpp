@@ -5,6 +5,7 @@
 #include "MtModule.h"
 #include "MtNode.h"
 #include <stdarg.h>
+#include "MtSourceFile.h"
 
 void print_escaped(char s);
 
@@ -12,7 +13,7 @@ void print_escaped(char s);
 
 MtCursor::MtCursor(MtModule* mod, std::string* out) : mod(mod), str_out(out) {
   spacer_stack.push_back("\n");
-  cursor = mod->source;
+  cursor = mod->source_file->source;
 }
 
 //------------------------------------------------------------------------------
@@ -49,12 +50,12 @@ void MtCursor::emit_newline() {
 //------------------------------------------------------------------------------
 
 void MtCursor::dump_node_line(MtNode n) {
-  auto start = &mod->source[n.start_byte()];
+  auto start = &(mod->source_file->source[n.start_byte()]);
 
   auto a = start;
   auto b = start;
-  while (a > mod->source     && *a != '\n' && *a != '\r') a--;
-  while (b < mod->source_end && *b != '\n' && *b != '\r') b++;
+  while (a > mod->source_file->source     && *a != '\n' && *a != '\r') a--;
+  while (b < mod->source_file->source_end && *b != '\n' && *b != '\r') b++;
 
   if (*a == '\n' || *a == '\r') a++;
 
@@ -94,8 +95,8 @@ void MtCursor::emit_char(char c) {
 
 void MtCursor::emit_span(const char* a, const char* b) {
   assert(a != b);
-  assert(cursor >= mod->source);
-  assert(cursor <= mod->source_end);
+  assert(cursor >= mod->source_file->source);
+  assert(cursor <= mod->source_file->source_end);
   for (auto c = a; c < b; c++) emit_char(*c);
 }
 
@@ -169,8 +170,8 @@ void MtCursor::skip_over(MtNode n) {
 void MtCursor::skip_to_next_sibling(MtNode n) {
   assert(!n.is_null());
   auto next_node = ts_node_next_sibling(n.node);
-  auto a = &mod->source[ts_node_start_byte(next_node)];
-  auto b = &mod->source[ts_node_end_byte(next_node)];
+  auto a = &mod->source_file->source[ts_node_start_byte(next_node)];
+  auto b = &mod->source_file->source[ts_node_end_byte(next_node)];
   while (a < b && isspace(a[0])) a++;
   cursor = a;
 }
@@ -1393,8 +1394,8 @@ void MtCursor::emit(MtTranslationUnit n) {
     default:            emit_dispatch(c); break;
   }
 
-  if (cursor < mod->source_end) {
-    emit_span(cursor, mod->source_end);
+  if (cursor < mod->source_file->source_end) {
+    emit_span(cursor, mod->source_file->source_end);
   }
 }
 

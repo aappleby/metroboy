@@ -20,7 +20,7 @@ struct immediate_generator {
   // J = { {12{inst[31]}},              inst[19:12], inst[20], inst[30:25], inst[24:21],  1'b0  };
     
   void tock(logic<32> i_inst) {
-    o_immediate = b32(0);
+    //o_immediate = b32(0);
     switch (b7(i_inst)) { // Opcode
       case OPCODE_LOAD:
       case OPCODE_LOAD_FP:

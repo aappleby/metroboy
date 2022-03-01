@@ -15,9 +15,6 @@ struct uart_top {
   uart_tx<cycles_per_bit> tx;
   uart_rx<cycles_per_bit> rx;
 
-  logic<8> counter;
-  logic<1> foo, bar, baz;
-
   logic<1>  o_serial;
   logic<8>  o_data;
   logic<1>  o_valid;
@@ -37,13 +34,6 @@ struct uart_top {
     hello.tick(i_rstn, tx.o_cts, tx.o_idle);
     tx.tick(i_rstn, hello.o_data, hello.o_req);
     rx.tick(i_rstn, tx.o_serial);
-
-    if (!i_rstn) {
-      counter = 17;
-    }
-    else {
-      counter = counter + 1;
-    }
   }
 
   //----------------------------------------
@@ -53,7 +43,6 @@ struct uart_top {
     tx.tock(i_rstn);
     rx.tock(i_rstn);
 
-    //counter = 3;
     o_serial = tx.o_serial;
     o_data = rx.o_data;
     o_valid = rx.o_valid;

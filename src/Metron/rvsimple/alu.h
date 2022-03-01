@@ -33,7 +33,6 @@ struct alu {
     signed_unsigned_multiplication = signed(i_operand_a)   * unsigned(i_operand_b);
 #endif
 
-    o_result = b32(ZERO);
     switch (i_alu_function) {
     case ALU_ADD:   o_result = i_operand_a +    i_operand_b; break;
     case ALU_SUB:   o_result = i_operand_a -    i_operand_b; break;
@@ -77,7 +76,8 @@ struct alu {
         result = b64(operand_a) % b64(operand_b);
 #endif
     default:
-      o_result = ZERO; break;
+      o_result = b32(ZERO);
+      break;
     }
 
     o_result_equal_zero = (o_result == b32(0));

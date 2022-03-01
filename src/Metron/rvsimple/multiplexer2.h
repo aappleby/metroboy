@@ -14,10 +14,10 @@ struct multiplexer2 {
     logic<WIDTH> o_out;
 
     void tock(logic<1> sel, logic<WIDTH> in0, logic<WIDTH> in1) {
-      o_out = bx<WIDTH>(DONTCARE);
       switch(sel) {
-      case 0: o_out = in0; break;
-      case 1: o_out = in1; break;
+      case 0:  o_out = in0; break;
+      case 1:  o_out = in1; break;
+      default: o_out = bx<WIDTH>(DONTCARE); break;
       }
     }
 };

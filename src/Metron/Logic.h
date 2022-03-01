@@ -151,6 +151,7 @@ public:
     const int mask_width = M > WIDTH ? WIDTH : M;
     static const BASE mask = BASE(~0) >> ((sizeof(BASE) * 8) - mask_width);
     x = (x & ~mask) | (y & mask);
+    return *this;
   }
 
   //----------

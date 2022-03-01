@@ -154,9 +154,11 @@
     </ClCompile>
     <ClCompile Include="Metron.cpp" />
     <ClCompile Include="MtCursor.cpp" />
+    <ClCompile Include="MtMethod.cpp" />
     <ClCompile Include="MtModLibrary.cpp" />
     <ClCompile Include="MtModule.cpp" />
     <ClCompile Include="MtNode.cpp" />
+    <ClCompile Include="MtSourceFile.cpp" />
     <ClCompile Include="MtTest.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="rvsimple\adder.cpp" />
@@ -184,10 +186,22 @@
     <ClCompile Include="rvsimple\singlecycle_ctlpath.cpp" />
     <ClCompile Include="rvsimple\singlecycle_datapath.cpp" />
     <ClCompile Include="rvsimple\toplevel.cpp" />
-    <ClCompile Include="uart\uart_hello.cpp" />
-    <ClCompile Include="uart\uart_rx.cpp" />
-    <ClCompile Include="uart\uart_top.cpp" />
-    <ClCompile Include="uart\uart_tx.cpp" />
+    <ClCompile Include="uart\uart_hello.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="uart\uart_rx.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="uart\uart_top.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="uart\uart_tx.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
@@ -200,10 +214,16 @@
     <ClInclude Include="message.blob.h" />
     <ClInclude Include="metron_test.h" />
     <ClInclude Include="metron_tools.h" />
+    <ClInclude Include="MtCall.h" />
     <ClInclude Include="MtCursor.h" />
+    <ClInclude Include="MtEnum.h" />
+    <ClInclude Include="MtField.h" />
     <ClInclude Include="MtModLibrary.h" />
     <ClInclude Include="MtModule.h" />
     <ClInclude Include="MtNode.h" />
+    <ClInclude Include="MtParam.h" />
+    <ClInclude Include="MtSourceFile.h" />
+    <ClInclude Include="MtSubmod.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="rvsimple\adder.h" />
     <ClInclude Include="rvsimple\alu.h" />
@@ -231,10 +251,22 @@
     <ClInclude Include="rvsimple\singlecycle_datapath.h" />
     <ClInclude Include="rvsimple\toplevel.h" />
     <ClInclude Include="TreeSymbols.h" />
-    <ClInclude Include="uart\uart_hello.h" />
-    <ClInclude Include="uart\uart_rx.h" />
-    <ClInclude Include="uart\uart_top.h" />
-    <ClInclude Include="uart\uart_tx.h" />
+    <ClInclude Include="uart\uart_hello.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="uart\uart_rx.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="uart\uart_top.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="uart\uart_tx.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="build.ninja" />
@@ -244,6 +276,7 @@
     <None Include="ibex\ibex_pkg.sv" />
     <None Include="ibex\prim_arbiter_fixed.sv" />
     <None Include="metron_tools.h.sv" />
+    <None Include="MtMethod.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="message.txt" />

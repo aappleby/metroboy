@@ -59,6 +59,7 @@ void mkdir_all(const std::vector<std::string>& full_path) {
 //------------------------------------------------------------------------------
 
 void metron_test_suite();
+MtModule* load_pass1(const char* _full_path, blob& _src_blob);
 
 int main(int argc, char** argv) {
   std::vector<std::string> args;
@@ -109,8 +110,10 @@ int main(int argc, char** argv) {
   args.push_back("example_data_memory_bus.h");
   args.push_back("singlecycle_control.h");
   args.push_back("singlecycle_ctlpath.h");
-  args.push_back("riscv_core.h");
   args.push_back("singlecycle_datapath.h");
+  */
+  /*
+  args.push_back("riscv_core.h");
   args.push_back("toplevel.h");
   */
 
@@ -178,8 +181,7 @@ int main(int argc, char** argv) {
           fclose(f);
 
           LOG_B("parsing %s\n", name.c_str());
-          auto mod = new MtModule();
-          mod->load_pass1(full_path.c_str(), src_blob);
+          auto mod = load_pass1(full_path.c_str(), src_blob);
           mod->lib = &library;
 
           LOG_B("parsing %s done\n", name.c_str());
@@ -214,13 +216,36 @@ int main(int argc, char** argv) {
     LOG_INDENT_SCOPE();
     for (auto& mod : library.modules)
     {
-      //auto& mod = library.modules[3];
+      //auto& mod = library.modules[0];
       LOG_G("Checking %s\n", mod->mod_name.c_str());
       LOG_INDENT_SCOPE();
       mod->check_dirty_ticks();
       mod->check_dirty_tocks();
     }
   }
+
+  for (auto& mod : library.modules)
+  {
+    if (mod->mod_struct.is_null()) continue;
+
+    LOG_G("%s\n", mod->mod_name.c_str());
+    LOG_INDENT_SCOPE();
+
+    for (auto& tick : mod->tick_methods) {
+      LOG_G("%s\n", tick.name.c_str());
+      LOG_INDENT_SCOPE();
+      for (auto always : tick.always_dirty) LOG_G("%s always dirty\n", always.c_str());
+      for (auto maybe : tick.maybe_dirty)   LOG_G("%s maybe dirty\n", maybe.c_str());
+    }
+
+    for (auto& tock : mod->tock_methods) {
+      LOG_G("%s\n", tock.name.c_str());
+      LOG_INDENT_SCOPE();
+      for (auto always : tock.always_dirty) LOG_G("%s always dirty\n", always.c_str());
+      for (auto maybe : tock.maybe_dirty)   LOG_G("%s maybe dirty\n", maybe.c_str());
+    }
+  }
+
 
 #if 0
   // Emit all modules.
@@ -229,7 +254,7 @@ int main(int argc, char** argv) {
   {
     //auto& module = library.modules.back();
 
-    module->mod_root.dump_tree(0, 0, 2);
+    //module->mod_root.dump_tree(0, 0, 2);
 
     LOG_G("Processing module %s\n", module->mod_name.c_str());
     //auto& module = library.modules.back();

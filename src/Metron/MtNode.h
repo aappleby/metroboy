@@ -1,11 +1,12 @@
 #pragma once
 #include "Platform.h"
-#include <string>
-#include <functional>
 #include "TreeSymbols.h"
-#include <assert.h>
 
 #include "tree_sitter/api.h"
+
+#include <string>
+#include <functional>
+#include <assert.h>
 
 bool operator <  (const TSNode& a, const TSNode& b);
 bool operator == (const TSNode& a, const TSNode& b);
@@ -15,6 +16,7 @@ bool operator == (const TSTreeCursor& a, const TSTreeCursor& b);
 bool operator != (const TSTreeCursor& a, const TSTreeCursor& b);
 
 struct MtModule;
+struct MtSourceFile;
 
 //------------------------------------------------------------------------------
 
@@ -24,21 +26,17 @@ struct MtNode {
     this->node = { 0 };
     this->sym = 0;
     this->field = 0;
-    this->mod = nullptr;
+    this->source = nullptr;
   }
 
-  MtNode(TSNode node, int sym, int field, MtModule* mod) {
+  MtNode(TSNode node, int sym, int field, MtSourceFile* source) {
     this->node = node;
     this->sym = sym;
     this->field = field;
-    this->mod = mod;
+    this->source = source;
   }
 
-  /*
-  ts_node_next_sibling
-  */
-
-  static MtNode from_mod(MtModule* mod);
+  //static MtNode from_mod(MtModule* mod);
 
   //----------
 
@@ -143,7 +141,7 @@ struct MtNode {
   TSNode node;
   TSSymbol sym;
   int field;
-  MtModule* mod;
+  MtSourceFile* source;
 
   static const MtNode null;
 };
@@ -164,7 +162,7 @@ struct MtConstIterator {
         cursor = { 0 };
       }
     }
-    this->mod = parent.mod;
+    this->source = parent.source;
   }
 
   ~MtConstIterator() {
@@ -195,12 +193,12 @@ struct MtConstIterator {
       child,
       sym,
       field,
-      mod
+      source
     };
   }
 
   TSTreeCursor cursor;
-  MtModule* mod;
+  MtSourceFile* source;
 };
 
 //------------------------------------------------------------------------------
@@ -219,7 +217,7 @@ struct MtIterator {
         cursor = { 0 };
       }
     }
-    this->mod = parent.mod;
+    this->source = parent.source;
   }
 
   ~MtIterator() {
@@ -250,12 +248,12 @@ struct MtIterator {
       child,
       sym,
       field,
-      mod
+      source
     };
   }
 
   TSTreeCursor cursor;
-  MtModule* mod;
+  MtSourceFile* source;
 };
 
 //------------------------------------------------------------------------------

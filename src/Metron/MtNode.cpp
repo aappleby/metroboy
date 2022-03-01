@@ -13,6 +13,7 @@ const MtNode MtNode::null;
 
 //------------------------------------------------------------------------------
 
+/*
 MtNode MtNode::from_mod(MtModule* mod) {
   auto root = ts_tree_root_node(mod->source_file->tree);
 
@@ -23,7 +24,7 @@ MtNode MtNode::from_mod(MtModule* mod) {
     mod
   );
 }
-
+*/
 
 MtNode MtNode::get_field(int field_id) {
   if (is_null()) return MtNode::null;
@@ -88,8 +89,8 @@ std::string MtNode::text() {
     int x = 0;
   }
 
-  auto a = &mod->source_file->source[start_byte()];
-  auto b = &mod->source_file->source[end_byte()];
+  auto a = &source->source[start_byte()];
+  auto b = &source->source[end_byte()];
 
   if (sym == anon_sym_LF) return a;
 
@@ -101,8 +102,8 @@ std::string MtNode::text() {
 
 const char* MtNode::start() {
   assert(!is_null());
-  auto a = &mod->source_file->source[start_byte()];
-  auto b = &mod->source_file->source[end_byte()];
+  auto a = &source->source[start_byte()];
+  auto b = &source->source[end_byte()];
 
   if (sym == anon_sym_LF) return a;
 
@@ -112,8 +113,8 @@ const char* MtNode::start() {
 
 const char* MtNode::end() {
   assert(!is_null());
-  auto a = &mod->source_file->source[start_byte()];
-  auto b = &mod->source_file->source[end_byte()];
+  auto a = &source->source[start_byte()];
+  auto b = &source->source[end_byte()];
 
   if (sym == anon_sym_LF) return b;
 
@@ -290,11 +291,11 @@ void MtNode::dump_node(int index, int depth) const {
 
   for (int i = 0; i < depth; i++) printf(color != 0x888888 ? "|--" : "|  ");
 
-  if (field) printf("%s: ", ts_language_field_name_for_id(mod->source_file->lang, field));
+  if (field) printf("%s: ", ts_language_field_name_for_id(source->lang, field));
 
   printf("%s = ", is_named() ? type() : "lit" );
 
-  if (!child_count()) print_escaped(mod->source_file->source, start_byte(), end_byte());
+  if (!child_count()) print_escaped(source->source, start_byte(), end_byte());
 
   printf("\n");
 }

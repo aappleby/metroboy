@@ -2,6 +2,7 @@
 #include "MtModule.h"
 #include "MtModLibrary.h"
 #include "MtCursor.h"
+#include "MtSourceFile.h"
 
 #include "../CoreLib/Log.h"
 
@@ -83,9 +84,9 @@ int main(int argc, char** argv) {
   args.push_back("-Irvsimple");
   args.push_back("-Oout");
 
-  args.push_back("uart/uart_top.h");
-  args.push_back("uart/uart_hello.h");
-  args.push_back("uart/uart_tx.h");
+  //args.push_back("uart/uart_top.h");
+  //args.push_back("uart/uart_hello.h");
+  //args.push_back("uart/uart_tx.h");
   args.push_back("uart/uart_rx.h");
 
   /*
@@ -162,6 +163,7 @@ int main(int argc, char** argv) {
   // Load all modules.
 
   MtModLibrary library;
+
   for (auto& name : mod_names) {
     bool found = false;
     for (auto& path : mod_paths) {
@@ -171,22 +173,26 @@ int main(int argc, char** argv) {
       if (stat_result == 0) {
         found = true;
         LOG_B("loading %s from %s\n", name.c_str(), full_path.c_str());
+        LOG_INDENT_SCOPE();
 
-        {
-          LOG_INDENT_SCOPE();
-          blob src_blob;
-          src_blob.resize(s.st_size);
-          auto f = fopen(full_path.c_str(), "rb");
-          fread(src_blob.data(), 1, src_blob.size(), f);
-          fclose(f);
+        std::string src_blob;
+        src_blob.resize(s.st_size);
 
-          LOG_B("parsing %s\n", name.c_str());
-          auto mod = load_pass1(full_path.c_str(), src_blob);
-          mod->lib = &library;
+        auto f = fopen(full_path.c_str(), "rb");
+        fread(src_blob.data(), 1, src_blob.size(), f);
+        fclose(f);
 
-          LOG_B("parsing %s done\n", name.c_str());
-          library.modules.push_back(mod);
+        bool use_utf8_bom = false;
+        if (src_blob[0] == 239 && src_blob[1] == 187 && src_blob[2] == 191) {
+          use_utf8_bom = true;
+          src_blob.erase(src_blob.begin(), src_blob.begin() + 3);
         }
+        src_blob.push_back(0);
+ 
+        auto source_file = new MtSourceFile(&library, full_path, src_blob);
+        source_file->use_utf8_bom = use_utf8_bom;
+
+        library.source_files.push_back(source_file);
 
         break;
       }
@@ -196,9 +202,70 @@ int main(int argc, char** argv) {
     }
   }
 
-  for (auto& mod : library.modules) {
-    mod->load_pass2();
+#if 0
+  {
+    std::string source = R"(
+//----------------------------------------
+
+struct derp {
+  logic<1> o_foo;
+
+  void tock() {
+    o_foo = 1;
   }
+  
+};
+
+//----------------------------------------
+
+struct gerp {
+  derp m;
+  logic<1> o_bar;
+
+  void tock(logic<1> i_foo) {
+    m.tock();
+    o_bar = m.o_foo;
+  }
+};
+
+//----------------------------------------
+
+)";
+
+
+    auto source_file = new MtSourceFile(&library, "<inline>", source);
+
+    library.source_files.push_back(source_file);
+  }
+#endif
+
+  //----------
+
+  for(auto& source : library.source_files) {
+    for (auto& mod : source->modules) {
+      library.modules.push_back(mod);
+    }
+  }
+
+  {
+    LOG_G("Library\n");
+    LOG_INDENT_SCOPE();
+    for(auto& source_file : library.source_files) {
+      LOG_G("Source file %s\n", source_file->full_path.c_str());
+      LOG_INDENT_SCOPE();
+      for (auto& mod : source_file->modules) {
+        LOG_G("Module %s\n", mod->mod_name.c_str());
+      }
+    }
+    for (auto& mod : library.modules) {
+      LOG_G("Module %s\n", mod->mod_name.c_str());
+    }
+  }
+
+
+  for (auto& mod : library.modules) mod->load_pass1();
+  for (auto& mod : library.modules) mod->load_pass2();
+  for (auto& mod : library.modules) mod->load_pass3();
 
   for (auto& mod : library.modules) {
     mod->load_pass3();
@@ -211,6 +278,9 @@ int main(int argc, char** argv) {
   }
 
   // Verify that tick()/tock() obey read/write ordering rules.
+
+  bool any_fail_dirty_check = false;
+
   {
     LOG_G("Checking tick/tock rules\n")
     LOG_INDENT_SCOPE();
@@ -221,7 +291,14 @@ int main(int argc, char** argv) {
       LOG_INDENT_SCOPE();
       mod->check_dirty_ticks();
       mod->check_dirty_tocks();
+      mod->dirty_check_done = true;
+      any_fail_dirty_check |= mod->dirty_check_fail;
     }
+  }
+
+  if (any_fail_dirty_check) {
+    printf("Dirty check fail!\n");
+    return -1;
   }
 
   for (auto& mod : library.modules)
@@ -247,58 +324,44 @@ int main(int argc, char** argv) {
   }
 
 
-#if 0
+#if 1
   // Emit all modules.
 
-  for (auto& module : library.modules)
-  {
-    //auto& module = library.modules.back();
+  for (auto& source_file : library.source_files) {
 
-    //module->mod_root.dump_tree(0, 0, 2);
-
-    LOG_G("Processing module %s\n", module->mod_name.c_str());
-    //auto& module = library.modules.back();
-    //if (module->mod_class.is_null()) continue;
-
-    auto out_path = out_dir + "/" + module->full_path + ".sv";
+    auto out_path = out_dir + "/" + source_file->full_path + ".sv";
     mkdir_all(split_path(out_path));
-
-    FILE* out_file = fopen(out_path.c_str(), "wb");
-    if (!out_file) {
-      LOG_R("ERROR Could not open %s for output\n", out_path.c_str());
-      //continue;
-    }
-
-    LOG_G("Opened %s for output\n", out_path.c_str());
 
     std::string out_string;
 
-    MtCursor cursor(module, &out_string);
+    MtCursor cursor(&library, source_file, &out_string);
+
+    //if (!quiet) module->dump_banner();
+    LOG_G("Emitting SystemVerilog\n");
+
+    cursor.cursor = source_file->source;
+    cursor.source_file = source_file;
+    cursor.emit(source_file->mt_root);
+    cursor.emit("\n");
+
+    /*
+    LOG_G("Saving SystemVerilog\n");
+    FILE* out_file = fopen(out_path.c_str(), "wb");
+    if (!out_file) {
+      LOG_R("ERROR Could not open %s for output\n", out_path.c_str());
+      continue;
+    }
+    LOG_G("Opened %s for output\n", out_path.c_str());
 
     // Copy the BOM over if needed.
-    if (module->use_utf8_bom) {
+    if (source_file->use_utf8_bom) {
       uint8_t bom[3] = { 239, 187, 191 };
       fwrite(bom, 1, 3, out_file);
     }
 
-    if (!quiet) module->dump_banner();
-
-    LOG_G("Emitting SystemVerilog\n");
-
-    cursor.cursor = module->source;
-    cursor.emit(module->mod_root);
-    cursor.emit("\n");
-
-    //cursor.emit("foo\n");
-    //cursor.emit("bar\n");
-    //cursor.emit("baz\n");
-
-    //printf(out_string.c_str());
-
-    LOG_G("Saving SystemVerilog\n");
-
     fwrite(out_string.data(), 1, out_string.size(), out_file);
     fclose(out_file);
+    */
 
     LOG_G("Done\n");
   }

@@ -4,6 +4,7 @@
 #include <vector>
 
 struct MtModule;
+struct MtSourceFile;
 
 //------------------------------------------------------------------------------
 
@@ -15,8 +16,9 @@ struct MtModLibrary {
 
   //----------
 
-  std::vector<MtModule*> modules;
-  std::vector<std::string> search_paths;
+  std::vector<std::string>   search_paths;
+  std::vector<MtSourceFile*> source_files;
+  std::vector<MtModule*>     modules;
 };
 
 //------------------------------------------------------------------------------

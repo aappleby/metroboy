@@ -21,6 +21,9 @@ typedef std::set<std::string> name_set;
 
 struct MtModule {
 
+  MtModule(MtSourceFile* source_file, MtTemplateDecl node);
+  MtModule(MtSourceFile* source_file, MtStructSpecifier node);
+
   void load_pass1();
   void load_pass2();
   void load_pass3();
@@ -71,22 +74,13 @@ struct MtModule {
 
   //----------
 
-  MtModLibrary* lib;
-  //std::string full_path;
-
-  //blob src_blob;
-  //bool use_utf8_bom = false;
-
   MtSourceFile* source_file = nullptr;
-  //const char* source = nullptr;
-  //const char* source_end = nullptr;
-  //const TSLanguage* lang = nullptr;
-  //TSParser* parser = nullptr;
-  //TSTree* tree = nullptr;
 
   std::string mod_name;
 
-  MtTranslationUnit   mod_root;
+  bool dirty_check_done = false;
+  bool dirty_check_fail = false;
+
   MtStructSpecifier   mod_struct;
   MtTemplateDecl      mod_template;
   MtTemplateParamList mod_param_list;

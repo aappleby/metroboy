@@ -4,13 +4,16 @@
 #include "MtNode.h"
 #include <map>
 
+struct MtModule;
 struct MtField;
+struct MtSourceFile;
+struct MtModLibrary;
 
 //------------------------------------------------------------------------------
 
 struct MtCursor {
 
-  MtCursor(MtModule* mod, std::string* out);
+  MtCursor(MtModLibrary* lib, MtSourceFile* source_file, std::string* out);
 
   // Debugging
   
@@ -103,7 +106,9 @@ struct MtCursor {
 
   //----------
 
-  MtModule* mod;
+  MtModLibrary* lib = nullptr;
+  MtSourceFile* source_file = nullptr;
+  MtModule* current_mod = nullptr;
   const char* cursor = nullptr;
   std::string current_function_name;
   std::vector<std::string> spacer_stack;
@@ -119,7 +124,7 @@ struct MtCursor {
   bool in_task = false;
   bool in_func = false;
 
-  bool in_module_or_package = false;
+  int in_module_or_package = 0;
 
   bool trim_namespaces = true;
   bool in_ports = false;

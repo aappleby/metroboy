@@ -61,7 +61,6 @@ void MtMethod::check_dirty() {
   if (!dirty_check_done) {
     auto body = get_field(field_body);
     //body.dump_tree();
-    dirty_check_pass = true;
     check_dirty_dispatch(body);
     dirty_check_done = true;
   }
@@ -118,13 +117,13 @@ void MtMethod::check_dirty_read_identifier(MtNode n) {
   // Reading from a dirty field in tick() is forbidden.
   if (is_tick && mod->has_field(field) && (maybe_dirty.contains(field) || always_dirty.contains(field))) {
     log_error(n, "%s() read dirty field - %s\n", name.c_str(), field.c_str());
-    dirty_check_pass = false;
+    dirty_check_fail = true;
   }
 
   // Reading from a clean output in tock() is forbidden.
   if (is_tock && mod->has_output(field) && !always_dirty.contains(field)) {
     log_error(n, "%s() read clean output - %s\n", name.c_str(), field.c_str());
-    dirty_check_pass = false;
+    dirty_check_fail = true;
   }
 }
 
@@ -138,7 +137,7 @@ void MtMethod::check_dirty_read_submod(MtNode n) {
 
   if (field.find(".o_") == std::string::npos) {
     log_error(n, "%s() read non-output from submodule - %s\n", name.c_str(), field.c_str());
-    dirty_check_pass = false;
+    dirty_check_fail = true;
   }
 
   //printf("field %s\n", field.c_str());
@@ -146,42 +145,17 @@ void MtMethod::check_dirty_read_submod(MtNode n) {
   // Reading from a dirty field in tick() is forbidden.
   if (is_tick && (maybe_dirty.contains(field) || always_dirty.contains(field))) {
     log_error(n, "%s() read dirty field - %s\n", name.c_str(), field.c_str());
-    dirty_check_pass = false;
+    dirty_check_fail = true;
   }
 
   // Reading from a clean output in tock() is forbidden.
   if (is_tock && !always_dirty.contains(field)) {
     log_error(n, "%s() read clean output - %s\n", name.c_str(), field.c_str());
-    dirty_check_pass = false;
+    dirty_check_fail = true;
   }
 }
 
 //----------------------------------------
-
-/*
-========== tree dump begin
-[00:019:266] left: subscript_expression =
-[00:002:001] |  argument: identifier = "regs"
-[01:000:061] |  lit = "["
-[02:016:001] |  index: identifier = "i_rd_address"
-[03:000:062] |  lit = "]"
-========== tree dump end
-
-========== tree dump begin
-[00:019:267] left: call_expression =
-[00:015:001] |  function: identifier = "s8"
-[01:003:268] |  arguments: argument_list =
-[00:000:005] |  |  lit = "("
-[01:000:266] |  |  subscript_expression =
-[00:002:001] |  |  |  argument: identifier = "mem"
-[01:000:061] |  |  |  lit = "["
-[02:016:001] |  |  |  index: identifier = "i_address"
-[03:000:062] |  |  |  lit = "]"
-[02:000:007] |  |  lit = ","
-[03:000:112] |  |  number_literal = "0"
-[04:000:008] |  |  lit = ")"
-========== tree dump end
-*/
 
 void MtMethod::check_dirty_write(MtNode n) {
   //LOG_R("check_dirty_write %s\n", ts_node_type(n.node));
@@ -219,19 +193,19 @@ void MtMethod::check_dirty_write(MtNode n) {
   // Writing to a field twice is forbidden.
   if (maybe_dirty.contains(field) || always_dirty.contains(field)) {
     log_error(n, "%s() wrote dirty field %s\n", name.c_str(), field.c_str());
-    dirty_check_pass = false;
+    dirty_check_fail = true;
   }
 
   // Writing to an output in tick() is forbidden.
   if (is_tick && mod->has_output(field)) {
     log_error(n, "%s() wrote output %s\n", field.c_str(), field.c_str());
-    dirty_check_pass = false;
+    dirty_check_fail = true;
   }
 
   // Writing to a field in tock() is forbidden.
   if (is_tock && mod->has_field(field)) {
     log_error(n, "%s() wrote non-output %s\n", name.c_str(), field.c_str());
-    dirty_check_pass = false;
+    dirty_check_fail = true;
   }
 
   if (mod->has_field(field) || mod->has_output(field)) {

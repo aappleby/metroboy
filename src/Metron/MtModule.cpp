@@ -16,6 +16,21 @@ extern "C" {
   extern const TSLanguage* tree_sitter_cpp();
 }
 
+MtModule::MtModule(MtSourceFile* source_file, MtTemplateDecl node) : source_file(source_file) {
+  mod_template = node;
+  mod_param_list = MtTemplateParamList(mod_template.child(1));
+  mod_struct = MtStructSpecifier(mod_template.child(2));
+  mod_name = mod_struct.get_field(field_name).text();
+}
+
+
+MtModule::MtModule(MtSourceFile* source_file, MtStructSpecifier node) : source_file(source_file) {
+  mod_template = MtNode::null;
+  mod_param_list = MtNode::null;
+  mod_struct = node;
+  mod_name = mod_struct.get_field(field_name).text();
+}
+
 //------------------------------------------------------------------------------
 
 void MtModule::dump_method_list(std::vector<MtMethod>& methods) {
@@ -190,63 +205,10 @@ void log_error(MtNode n, const char* fmt, ...) {
 
 //------------------------------------------------------------------------------
 
-MtModule* load_pass1(const char* full_path, blob& src_blob) {
-  MtSourceFile* source_file = new MtSourceFile();
-  source_file->parse_source(full_path, src_blob);
-
-  TSNode ts_root = ts_tree_root_node(source_file->tree);
-
-  auto mod = new MtModule();
-  MtNode mt_root(ts_root, ts_node_symbol(ts_root), 0, mod);
-
-
-  MtNode mod_template;
-  MtNode mod_param_list;
-  MtNode mod_struct;
-
-  //mod_root = MtTranslationUnit(MtNode::from_mod(this));
-
-  for (auto n : (MtNode)mt_root) {
-    if (n.sym == sym_template_declaration) {
-      mod_template = MtTemplateDecl(n);
-      mod_param_list = MtTemplateParamList(n.child(1));
-      mod_struct = MtStructSpecifier(n.child(2));
-      break;
-    }
-    if (n.sym == sym_struct_specifier) {
-      mod_struct = MtStructSpecifier(n);
-      break;
-    }
-  }
-
-  mod->source_file = source_file;
-  mod->load_pass1();
-  return mod;
-}
-
-//------------------------------------------------------------------------------
-
 void MtModule::load_pass1() {
-  mod_root = MtTranslationUnit(MtNode::from_mod(this));
-
-  for (auto n : (MtNode)mod_root) {
-    if (n.sym == sym_template_declaration) {
-      mod_template = MtTemplateDecl(n);
-      mod_param_list = MtTemplateParamList(n.child(1));
-      mod_struct = MtStructSpecifier(n.child(2));
-      break;
-    }
-    if (n.sym == sym_struct_specifier) {
-      mod_struct = MtStructSpecifier(n);
-      break;
-    }
-  }
-
   if (mod_struct.is_null()) return;
 
   // We've loaded and parsed a module, we can start pulling stuff out of it.
-
-  mod_name = mod_struct.get_field(field_name).text();
 
   auto mod_name = mod_struct.get_field(field_name).check_null();
   auto mod_body = mod_struct.get_field(field_body).check_null();
@@ -366,21 +328,23 @@ void MtModule::load_pass2() {
     // Everything not an enum shoul have 1 or more declarator fields that
     // contain the field name(s).
 
+    int field_count = 0;
+
     for (auto c : n) {
       if (c.field == field_declarator) {
+        field_count++;
         auto name = c.sym == sym_array_declarator ? c.get_field(field_declarator) : c;
 
-
-        MtField f = { c, field_type.node_to_type(), name.text() };
+        MtField f = { n, field_type.node_to_type(), name.text() };
 
         if (name.text().starts_with("o_")) {
           outputs.push_back(f);
         }
         else {
           auto type_name = n.node_to_type();
-          if (lib->has_mod(type_name)) {
+          if (source_file->lib->has_mod(type_name)) {
             MtSubmod submod(n);
-            submod.mod = lib->find_mod(type_name);
+            submod.mod = source_file->lib->find_mod(type_name);
             submod.name = n.get_field(field_declarator).text();
             submods.push_back(submod);
           }
@@ -390,6 +354,8 @@ void MtModule::load_pass2() {
         }
       }
     }
+
+    assert(field_count == 1);
   }
 }
 
@@ -500,12 +466,14 @@ MtCall MtModule::node_to_call(MtNode n) {
 void MtModule::check_dirty_ticks() {
   for (auto& tick : tick_methods) {
     tick.check_dirty();
+    dirty_check_fail |= tick.dirty_check_fail;
   }
 }
 
 void MtModule::check_dirty_tocks() {
   for (auto& tock : tock_methods) {
     tock.check_dirty();
+    dirty_check_fail |= tock.dirty_check_fail;
   }
 }
 

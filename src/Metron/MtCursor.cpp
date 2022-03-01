@@ -11,9 +11,9 @@ void print_escaped(char s);
 
 //------------------------------------------------------------------------------
 
-MtCursor::MtCursor(MtModule* mod, std::string* out) : mod(mod), str_out(out) {
+MtCursor::MtCursor(MtModLibrary* lib, MtSourceFile* source_file, std::string* out) : lib(lib), str_out(out) {
   spacer_stack.push_back("\n");
-  cursor = mod->source_file->source;
+  cursor = source_file->source;
 }
 
 //------------------------------------------------------------------------------
@@ -50,12 +50,12 @@ void MtCursor::emit_newline() {
 //------------------------------------------------------------------------------
 
 void MtCursor::dump_node_line(MtNode n) {
-  auto start = &(mod->source_file->source[n.start_byte()]);
+  auto start = &(source_file->source[n.start_byte()]);
 
   auto a = start;
   auto b = start;
-  while (a > mod->source_file->source     && *a != '\n' && *a != '\r') a--;
-  while (b < mod->source_file->source_end && *b != '\n' && *b != '\r') b++;
+  while (a > source_file->source     && *a != '\n' && *a != '\r') a--;
+  while (b < source_file->source_end && *b != '\n' && *b != '\r') b++;
 
   if (*a == '\n' || *a == '\r') a++;
 
@@ -95,8 +95,8 @@ void MtCursor::emit_char(char c) {
 
 void MtCursor::emit_span(const char* a, const char* b) {
   assert(a != b);
-  assert(cursor >= mod->source_file->source);
-  assert(cursor <= mod->source_file->source_end);
+  assert(cursor >= source_file->source);
+  assert(cursor <= source_file->source_end);
   for (auto c = a; c < b; c++) emit_char(*c);
 }
 
@@ -170,8 +170,8 @@ void MtCursor::skip_over(MtNode n) {
 void MtCursor::skip_to_next_sibling(MtNode n) {
   assert(!n.is_null());
   auto next_node = ts_node_next_sibling(n.node);
-  auto a = &mod->source_file->source[ts_node_start_byte(next_node)];
-  auto b = &mod->source_file->source[ts_node_end_byte(next_node)];
+  auto a = &source_file->source[ts_node_start_byte(next_node)];
+  auto b = &source_file->source[ts_node_end_byte(next_node)];
   while (a < b && isspace(a[0])) a++;
   cursor = a;
 }
@@ -215,11 +215,10 @@ void MtCursor::emit(MtPreprocInclude n) {
 // sym_assignment_expression := { left: identifier, operator: lit, right : expr }
 
 void MtCursor::emit(MtAssignmentExpr n) {
-
   bool lhs_is_field = false;
   if (n.lhs().sym == sym_identifier) {
     std::string lhs_name = n.lhs().text();
-    for (auto& f : mod->fields) {
+    for (auto& f : current_mod->fields) {
       if (f.name == lhs_name) {
         lhs_is_field = true;
         break;
@@ -610,7 +609,7 @@ void MtCursor::emit_glue_assignment(MtCallExpr call) {
   auto call_this = call.func().get_field(field_argument);
   auto func_name = call.func().get_field(field_field);
 
-  for (auto& submod : mod->submods) {
+  for (auto& submod : current_mod->submods) {
     if (submod.name == call_this.node_to_name()) {
       std::vector<std::string> call_src;
       std::vector<std::string> call_dst;
@@ -1011,7 +1010,7 @@ void MtCursor::emit_submodule_port_list(MtFieldDecl field_decl) {
 
   std::string type_name = field_type.node_to_type();
 
-  auto submod = mod->lib->find_mod(type_name);
+  auto submod = lib->find_mod(type_name);
 
   {
     std::string inst_name = field_decl.node_to_name();
@@ -1052,7 +1051,7 @@ void MtCursor::emit(MtFieldDecl field_decl) {
 
   // If this isn't a submodule, just tack on "input" and "output" annotations.
   std::string type_name = field_decl.type().node_to_type();
-  auto submod = mod->lib->find_mod(type_name);
+  auto submod = lib->find_mod(type_name);
 
   if (submod) {
     // Input and output fields go in the port list, not in the module body.
@@ -1165,8 +1164,8 @@ void MtCursor::emit_port_list() {
   emit("input logic clk,"); emit_newline();
   emit("input logic rst_n,"); emit_newline();
 
-  emit_input_ports(mod->inputs);
-  emit_output_ports(mod->outputs);
+  emit_input_ports(current_mod->inputs);
+  emit_output_ports(current_mod->outputs);
 
   emit_newline();
   emit(");");
@@ -1193,10 +1192,10 @@ void MtCursor::emit_sym_field_declaration_list(MtFieldDeclList class_body) {
     emit_newline();
     //emit("// Submod outputs go here");
     //emit_newline();
-    for (auto& submod : mod->submods) {
-      emit(submod.node_to_name().c_str());
-      emit_newline();
-    }
+    //for (auto& submod : current_mod->submods) {
+    //  emit(submod.node_to_name().c_str());
+    //  emit_newline();
+    //}
 
     break;
   }
@@ -1224,45 +1223,68 @@ void MtCursor::emit_sym_field_declaration_list(MtFieldDeclList class_body) {
 // ouptut ports to module param list.
 
 void MtCursor::emit(MtStructSpecifier n) {
-  auto class_lit  = n.child(0);
-  auto class_name = n.get_field(field_name);
-  auto class_body = n.get_field(field_body);
+  // FIXME enter mod here
 
+  auto struct_lit  = n.child(0);
+  auto struct_name = n.get_field(field_name);
+  auto struct_body = n.get_field(field_body);
+
+  /*
   if (in_module_or_package) {
     // Don't turn nested structs into modules.
     advance_to(n);
     emit("typedef struct packed");
-    cursor = class_name.end();
-    emit_dispatch(class_body);
+    cursor = struct_name.end();
+    emit_dispatch(struct_body);
 
-    cursor = class_name.start();
+    cursor = struct_name.start();
     emit(" ");
-    emit_text(class_name);
+    emit_text(struct_name);
     cursor = n.end();
     return;
   }
+  */
 
   //----------
 
-  advance_to(class_lit);
-  emit_replacement(class_lit, "module");
+  if (!in_module_or_package) {
+    assert(!current_mod);
+    for (auto& mod : source_file->modules) {
+      if (mod->mod_name == struct_name.text()) {
+        current_mod = mod;
+        break;
+      }
+    }
+    assert(current_mod);
+  }
 
-  advance_to(class_name);
-  emit_dispatch(class_name);
+  in_module_or_package++;
+
+  advance_to(struct_lit);
+  emit_replacement(struct_lit, "module");
+
+  advance_to(struct_name);
+  emit_dispatch(struct_name);
 
   // Patch the template parameter list in after the module declaration, before
   // the port list.
-  if (mod->mod_param_list) {
+  if (current_mod->mod_param_list) {
     emit_newline();
     MtCursor sub_cursor = *this;
-    sub_cursor.cursor = mod->mod_param_list.start();
-    sub_cursor.emit(mod->mod_param_list);
+    sub_cursor.cursor = current_mod->mod_param_list.start();
+    sub_cursor.emit(current_mod->mod_param_list);
   }
 
   emit_port_list();
-  emit_sym_field_declaration_list(MtFieldDeclList(class_body));
+  emit_sym_field_declaration_list(MtFieldDeclList(struct_body));
 
   cursor = n.end();
+
+  in_module_or_package--;
+
+  if (!in_module_or_package) {
+    current_mod = nullptr;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -1394,8 +1416,8 @@ void MtCursor::emit(MtTranslationUnit n) {
     default:            emit_dispatch(c); break;
   }
 
-  if (cursor < mod->source_file->source_end) {
-    emit_span(cursor, mod->source_file->source_end);
+  if (cursor < source_file->source_end) {
+    emit_span(cursor, source_file->source_end);
   }
 }
 
@@ -1495,11 +1517,32 @@ void MtCursor::emit(MtTypeIdentifier n) {
 // For some reason the class's trailing semicolon ends up with the template field_decl, so we prune it here.
 
 void MtCursor::emit(MtTemplateDecl n) {
-  advance_to(n);
   auto struct_specifier = MtStructSpecifier(n.child(2));
+  std::string struct_name = struct_specifier.get_field(field_name).text();
+
+  if (!in_module_or_package) {
+    assert(!current_mod);
+    for (auto& mod : source_file->modules) {
+      if (mod->mod_name == struct_name) {
+        current_mod = mod;
+        break;
+      }
+    }
+    assert(current_mod);
+  }
+
+  in_module_or_package++;
+
+  advance_to(n);
   cursor = struct_specifier.start();
   emit(struct_specifier);
   cursor = n.end();
+
+  in_module_or_package--;
+
+  if (!in_module_or_package) {
+    current_mod = nullptr;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -1718,7 +1761,7 @@ void MtCursor::emit(MtSizedTypeSpec n) {
 // FIXME - Do we have a test case for namespaces?
 
 void MtCursor::emit(MtNamespaceDef n) {
-  in_module_or_package = true;
+  in_module_or_package++;
   auto node_name = n.get_field(field_name);
   auto node_body = n.get_field(field_body);
   advance_to(n);
@@ -1734,7 +1777,7 @@ void MtCursor::emit(MtNamespaceDef n) {
   emit("endpackage");
   emit_newline();
   cursor = n.end();
-  in_module_or_package = false;
+  in_module_or_package++;
 }
 
 //------------------------------------------------------------------------------

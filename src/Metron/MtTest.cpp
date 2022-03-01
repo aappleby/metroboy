@@ -103,29 +103,31 @@ bool find_iws(const std::string& a, const std::string& b) {
 //------------------------------------------------------------------------------
 
 std::string translate_simple(std::string src) {
-  blob src_blob;
-  src_blob.insert(src_blob.begin(), src.begin(), src.end());
   std::string out;
 
   MtModLibrary library;
 
-  auto source_file = new MtSourceFile();
-  source_file->parse_source("test.h", src_blob);
+  // do std::strings created from string literals get trailing nulls?
+  assert(src.back() == 0);
 
-  auto mod = new MtModule();
-  mod->source_file = source_file;
+  auto source_file = new MtSourceFile(&library, "test.h", src);
+  //source_file->parse_source("test.h", src_blob);
+
+  auto mod = source_file->modules[0];
   mod->load_pass1();
-  mod->lib = &library;
   mod->load_pass2();
+  mod->load_pass3();
   mod->check_dirty_ticks();
   mod->check_dirty_tocks();
 
-  library.modules.push_back(mod);
-
+  // FIXME need to redo this now that we have source files w/ multiple modules.
+  /*
   MtCursor cursor(mod, &out);
   cursor.cursor = mod->source_file->source;
   cursor.emit(mod->mod_root);
   cursor.emit("\n");
+  */
+
   for (auto c : out) assert(c > 0);
   out.push_back(0);
 
@@ -136,8 +138,8 @@ std::string translate_simple(std::string src) {
     printf(out.c_str());
     printf("//----------------------------------------\n");
   }
-
   delete mod;
+
   return out;
 }
 
@@ -254,8 +256,6 @@ struct test {
 )";
 
   std::string expected = 1 + R"(
-`default_nettype none
-
 module test(input logic clk,input logic rst_n,input logic i_serial,output logic[7:0] o_count);
   logic[7:0] count;
   logic[7:0] o_count;
@@ -293,8 +293,8 @@ void metron_test_suite() {
   LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
   LOG_G("%s: %6d test pass\n", __FUNCTION__,   results.test_pass);
 
-  LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
-  LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
+  if (results.expect_fail) LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
+  if (results.test_fail)   LOG_R("%s: %6d test fail\n", __FUNCTION__,   results.test_fail);
 
   if (results.test_fail) {
     LOG_R("\n");
@@ -303,58 +303,6 @@ void metron_test_suite() {
     LOG_R("########################################\n");
     LOG_R("\n");
   }
-
-  /*
-  std::string src_in = R"(
-  struct test {
-    logic<8> count;
-    logic<8> o_count;
-
-    void tick(bool rst_n, logic<1> i_serial) {
-      if (!rst_n) {
-        count = 0;
-      } else {
-        count = count + 1;
-      }
-    }
-
-    void tock(bool rst_n) {
-      o_count = count;
-    }
-  };
-  )";
-
-  std::string expected = R"(
-  `default_nettype none
-
-  module test
-  (
-  input logic clk,
-  input logic rst_n,
-  );
-    logic[7:0] count;
-    logic[7:0] o_count;
-
-    always_ff @(posedge clk, negedge rst_n) begin : tick
-      if (!rst_n) begin
-        count = 0;
-      end else begin
-        count = count + 1;
-      end
-    end
-
-    always_comb begin : tock
-      o_count = count;
-    end
-  endmodule
-  )";
-
-  std::string src_out = translate(src_in);
-
-  auto len = src_out.size() < expected.size() ? src_out.size() : expected.size();
-
-  if (comp_no_whitespace(expected, src_out)) printf("MATCH\n");
-  */
 }
 
 #if 0

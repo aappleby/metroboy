@@ -8,7 +8,9 @@
 /* verilator lint_off WIDTH */
 
 template<int cycles_per_bit = 3>
-struct uart_top {
+class uart_top {
+public:
+
   /*verilator public_module*/
 
   uart_hello hello;
@@ -38,10 +40,10 @@ struct uart_top {
 
   //----------------------------------------
 
-  void tock(logic<1> i_rstn) {
-    hello.tock(i_rstn);
-    tx.tock(i_rstn);
-    rx.tock(i_rstn);
+  void tock() {
+    hello.tock();
+    tx.tock();
+    rx.tock();
 
     o_serial = tx.o_serial;
     o_data = rx.o_data;

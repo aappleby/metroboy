@@ -1,6 +1,7 @@
 #include "MtSourceFile.h"
 
 #include "MtModule.h"
+#include "MtModLibrary.h"
 
 #pragma warning(disable:4996)
 
@@ -9,9 +10,10 @@ extern "C" {
 }
 
 MtSourceFile::MtSourceFile(
-  MtModLibrary* _lib,
   const std::string& _full_path,
-  const std::string& _src_blob) : lib(_lib), full_path(_full_path), src_blob(_src_blob) {
+  const std::string& _src_blob) : full_path(_full_path), src_blob(_src_blob) {
+
+  assert(src_blob.back() != 0);
 
   source = (const char*)src_blob.data();
   source_end = source + src_blob.size();
@@ -21,7 +23,7 @@ MtSourceFile::MtSourceFile(
   parser = ts_parser_new();
   lang = tree_sitter_cpp();
   ts_parser_set_language(parser, lang);
-  tree = ts_parser_parse_string(parser, NULL, source, (uint32_t)src_blob.size() - 1);
+  tree = ts_parser_parse_string(parser, NULL, source, (uint32_t)src_blob.size());
 
   // Pull out all modules from the top level of the source.
 
@@ -36,9 +38,9 @@ MtSourceFile::MtSourceFile(
       MtModule* mod = new MtModule(this, MtTemplateDecl(mod_root));
       modules.push_back(mod);
     }
-    else if (ts_node_symbol(child) == sym_struct_specifier) {
+    else if (ts_node_symbol(child) == sym_class_specifier) {
       MtNode mod_root(child, ts_node_symbol(child), 0, this);
-      MtModule* mod = new MtModule(this, MtStructSpecifier(mod_root));
+      MtModule* mod = new MtModule(this, MtClassSpecifier(mod_root));
       modules.push_back(mod);
     }
   }

@@ -19,12 +19,12 @@ extern "C" {
 MtModule::MtModule(MtSourceFile* source_file, MtTemplateDecl node) : source_file(source_file) {
   mod_template = node;
   mod_param_list = MtTemplateParamList(mod_template.child(1));
-  mod_struct = MtStructSpecifier(mod_template.child(2));
+  mod_struct = MtClassSpecifier(mod_template.child(2));
   mod_name = mod_struct.get_field(field_name).text();
 }
 
 
-MtModule::MtModule(MtSourceFile* source_file, MtStructSpecifier node) : source_file(source_file) {
+MtModule::MtModule(MtSourceFile* source_file, MtClassSpecifier node) : source_file(source_file) {
   mod_template = MtNode::null;
   mod_param_list = MtNode::null;
   mod_struct = node;
@@ -163,7 +163,75 @@ void MtModule::dump_banner() {
 
 //------------------------------------------------------------------------------
 
+void log_field_state(FieldState s) {
+  switch(s) {
+  case CLEAN: LOG_G("clean"); break;
+  case MAYBE: LOG_Y("maybe"); break;
+  case DIRTY: LOG_R("dirty"); break;
+  case ERROR: LOG_M("error"); break;
+  }
+}
+
+void MtModule::dump_deltas() {
+  if (mod_struct.is_null()) return;
+
+  LOG_G("%s\n", mod_name.c_str());
+  {
+    LOG_INDENT_SCOPE();
+
+    for (auto& tick : tick_methods) {
+      LOG_G("%s delta valid %d error %d\n", tick.name.c_str(), tick.delta2.valid, tick.delta2.error);
+      LOG_INDENT_SCOPE();
+      {
+        for (auto& s : tick.delta2.state_old) {
+          LOG_G("%s", s.first.c_str());
+          LOG_W(" : ");
+          log_field_state(s.second);
+
+          if (tick.delta2.state_new.contains(s.first)) {
+            auto s2 = tick.delta2.state_new[s.first];
+            if (s2 != s.second) {
+              LOG_W(" -> ");
+              log_field_state(s2);
+            }
+          }
+
+          LOG_G("\n");
+        }
+      }
+    }
+
+    for (auto& tock : tock_methods) {
+      LOG_G("%s delta valid %d error %d\n", tock.name.c_str(), tock.delta2.valid, tock.delta2.error);
+      LOG_INDENT_SCOPE();
+      {
+        for (auto& s : tock.delta2.state_old) {
+          LOG_G("%s", s.first.c_str());
+          LOG_W(" : ");
+          log_field_state(s.second);
+
+          if (tock.delta2.state_new.contains(s.first)) {
+            auto s2 = tock.delta2.state_new[s.first];
+            if (s2 != s.second) {
+              LOG_W(" -> ");
+              log_field_state(s2);
+            }
+          }
+
+          LOG_G("\n");
+        }
+      }
+    }
+  }
+  LOG_G("\n");
+}
+
+//------------------------------------------------------------------------------
+
 void log_error(MtNode n, const char* fmt, ...) {
+  // FIXME
+  return;
+
   printf("\n########################################\n");
 
   va_list args;
@@ -344,7 +412,7 @@ void MtModule::load_pass2() {
           auto type_name = n.node_to_type();
           if (source_file->lib->has_mod(type_name)) {
             MtSubmod submod(n);
-            submod.mod = source_file->lib->find_mod(type_name);
+            submod.mod = source_file->lib->get_mod(type_name);
             submod.name = n.get_field(field_declarator).text();
             submods.push_back(submod);
           }
@@ -465,15 +533,15 @@ MtCall MtModule::node_to_call(MtNode n) {
 
 void MtModule::check_dirty_ticks() {
   for (auto& tick : tick_methods) {
-    tick.check_dirty();
-    dirty_check_fail |= tick.dirty_check_fail;
+    tick.update_delta();
+    dirty_check_fail |= tick.delta2.error;
   }
 }
 
 void MtModule::check_dirty_tocks() {
   for (auto& tock : tock_methods) {
-    tock.check_dirty();
-    dirty_check_fail |= tock.dirty_check_fail;
+    tock.update_delta();
+    dirty_check_fail |= tock.delta2.error;
   }
 }
 

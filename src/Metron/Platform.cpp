@@ -44,6 +44,15 @@ void dprintf(const char* format = "", ...) {
   va_end(args);
 }
 
+/*
+  {
+    std::string cwd;
+    cwd.resize(FILENAME_MAX);
+    getcwd(cwd.data(),FILENAME_MAX);
+    LOG_R("cwd %s\n", cwd);
+  }
+*/ 
+
 #endif
 
 //------------------------------------------------------------------------------
@@ -71,6 +80,15 @@ void dprintf(const char* format, ...) {
   va_end(args);
   OutputDebugString(buffer);
 }
+
+/*
+  {
+    std::string cwd;
+    cwd.resize(FILENAME_MAX);
+    getcwd(cwd.data(),FILENAME_MAX);
+    LOG_R("cwd %s\n", cwd);
+  }
+*/ 
 
 #endif
 

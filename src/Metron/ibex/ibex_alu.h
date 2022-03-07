@@ -284,6 +284,8 @@ struct ibex_alu {
     shift_amt[5] = operand_b_i[5] & shift_funnel;
     shift_amt_compl = 32 - b5(operand_b_i);
 
+    // FIXME 
+    /*
     if (bfp_op) {
       s5(shift_amt) = bfp_off;  // length field of bfp control word
     } else {
@@ -292,6 +294,7 @@ struct ibex_alu {
           (operand_b_i[5] && shift_funnel ? b5(shift_amt_compl) : b5(operand_b_i)) :
           (operand_b_i[5] && shift_funnel ? b5(operand_b_i) : b5(shift_amt_compl));
     }
+    */
 
     // single-bit mode: shift
     shift_sbmode = (RV32B != rv32b_e::RV32BNone) ?

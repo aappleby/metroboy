@@ -6,50 +6,75 @@
 void log_error(MtNode n, const char* fmt, ...);
 
 //-----------------------------------------------------------------------------
-// alwaysOut = alwaysA && alwaysB
-// maybeOut = maybeA || maybeB || (alwaysA && !alwaysB) || (alwaysB && !alwaysA)
+// Given two blocks that execute as branches, merge their dependencies and
+// writes together.
 
-template<typename T>
-void fold_parallel(const std::set<T>& always_a, const std::set<T>& maybe_a,
-                   const std::set<T>& always_b, const std::set<T>& maybe_b,
-                   std::set<T>& always_out, std::set<T>& maybe_out) {
-  always_out.clear();
-  maybe_out.clear();
+bool merge_branch(MtDelta& a, MtDelta& b, MtDelta& out) {
+  out.wipe();
 
-  for (const auto& d : always_a) {
-    if (always_b.contains(d)) always_out.insert(d);
+  // Delta A's input and delta B's input must agree about the state of all
+  // matching fields.
+
+  for (auto& s1 : a.state_old) {
+    if (b.state_old.contains(s1.first)) {
+      auto& s2 = *b.state_old.find(s1.first);
+      assert(s1.second != ERROR);
+      assert(s2.second != ERROR);
+      if (s1.second != s2.second) return false;
+    }
   }
 
-  for (const auto& d : always_a) {
-    if (!always_b.contains(d)) maybe_out.insert(d);
+  // The merged state inputs is the union of the two delta's inputs.
+
+  for (auto& s1 : a.state_old) out.state_old[s1.first] = s1.second;
+  for (auto& s2 : b.state_old) out.state_old[s2.first] = s2.second;
+
+  // If the two deltas disagree on the state of an output, we set it to "maybe".
+
+  for(auto& s : a.state_new) out.state_new[s.first] = ERROR;
+  for(auto& s : b.state_new) out.state_new[s.first] = ERROR;
+
+  for(auto& s : out.state_new) {
+    auto& an = a.state_new[s.first];
+    auto& bn = b.state_new[s.first];
+
+    s.second = an == bn ? an : MAYBE;
   }
 
-  for (const auto& d : always_b) {
-    if (!always_a.contains(d)) maybe_out.insert(d);
-  }
-
-  maybe_out.insert(maybe_a.begin(), maybe_a.end());
-  maybe_out.insert(maybe_b.begin(), maybe_b.end());
+  return true;
 }
 
 //------------------------------------------------------------------------------
-// alwaysOut = alwaysA || alwaysB
-// maybeOut  = (maybeA || maybeB) && !(alwaysA || alwaysB);
+// Given two blocks that execute in series, merge their dependencies and
+// writes together.
 
-template<typename T>
-void fold_series(const std::set<T>& always_a, const std::set<T>& maybe_a,
-                 const std::set<T>& always_b, const std::set<T>& maybe_b,
-                 std::set<T>& always_out, std::set<T>& maybe_out) {
-  always_out.insert(always_a.begin(), always_a.end());
-  always_out.insert(always_b.begin(), always_b.end());
+bool merge_series(MtDelta& a, MtDelta& b, MtDelta& out) {
+  // Delta A's output must be compatible with delta B's input.
 
-  for (const auto& d : maybe_a) {
-    if (!always_out.contains(d)) maybe_out.insert(d);
+  for (auto& s2 : b.state_old) {
+    if (a.state_new.contains(s2.first)) {
+      auto& s1 = *a.state_new.find(s2.first);
+      assert(s1.second != ERROR);
+      assert(s2.second != ERROR);
+      if (s1.second != s2.second) {
+        log_error(MtNode::null, "merge_series error - a.state_new %s = %s, b.state_old %s = %s\n",
+          s1.first.c_str(), to_string(s1.second),
+          s2.first.c_str(), to_string(s2.second));
+        out.error = true;
+        return false;
+      }
+    }
   }
 
-  for (const auto& d : maybe_b) {
-    if (!always_out.contains(d)) maybe_out.insert(d);
-  }
+  // The resulting state is just delta B applied on top of delta A.
+
+  out.state_old = a.state_old;
+  out.state_new = a.state_new;
+
+  for (auto& s2 : b.state_old) out.state_old[s2.first] = s2.second;
+  for (auto& s2 : b.state_new) out.state_new[s2.first] = s2.second;
+
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -57,19 +82,30 @@ void fold_series(const std::set<T>& always_a, const std::set<T>& maybe_a,
 MtMethod::MtMethod(MtNode n, MtModule* _mod) : MtNode(n), mod(_mod) {
 }
 
-void MtMethod::check_dirty() {
-  if (!dirty_check_done) {
+void MtMethod::update_delta() {
+  if (!delta2.valid) {
+    delta2.wipe();
     auto body = get_field(field_body);
-    //body.dump_tree();
-    check_dirty_dispatch(body);
-    dirty_check_done = true;
+
+    /*
+    // If we're updating a tock delta, we can assume that all fields are dirty.
+    if (is_tock) {
+      for (auto& f : mod->fields) {
+        delta2.state_old[f.name] = DIRTY;
+      }
+    }
+    */
+
+    check_dirty_dispatch(body, delta2);
+    delta2.valid = true;
   }
 }
 
 //------------------------------------------------------------------------------
 
-void MtMethod::check_dirty_dispatch(MtNode n) {
-  //n.dump_tree();
+void MtMethod::check_dirty_dispatch(MtNode n, MtDelta& d) {
+  for (auto& n : d.state_old) assert(n.second != ERROR);
+  for (auto& n : d.state_new) assert(n.second != ERROR);
 
   if (n.is_null() || !n.is_named()) return;
 
@@ -78,186 +114,241 @@ void MtMethod::check_dirty_dispatch(MtNode n) {
 
   switch (n.sym) {
 
-    case sym_field_expression:      check_dirty_read_submod(n); break;
-    case sym_identifier:            check_dirty_read_identifier(n); break;
-    case sym_assignment_expression: check_dirty_assign(n); break;
-    case sym_if_statement:          check_dirty_if(n); break;
+    case sym_field_expression:      check_dirty_read_submod(n, d); break;
+    case sym_identifier:            check_dirty_read_identifier(n, d); break;
+    case sym_assignment_expression: check_dirty_assign(n, d); break;
+    case sym_if_statement:          check_dirty_if(n, d); break;
     case sym_call_expression: {
       if (n.get_field(field_function).sym == sym_field_expression) {
         // submod.tick()/tock()
+        check_dirty_call(n, d);
       }
       else if (n.get_field(field_function).sym == sym_template_function) {
         // foo = bx<x>(bar);
+        check_dirty_call(n, d);
       }
       else {
         // cat() etc
-        //n.dump_tree();
+        check_dirty_call(n, d);
       }
-      check_dirty_call(n);
       break;
     }
-    case sym_switch_statement:      check_dirty_switch(n); break;
+    case sym_switch_statement:      check_dirty_switch(n, d); break;
 
     default: {
-      for (auto c : n) check_dirty_dispatch(c);
+      for (auto c : n) check_dirty_dispatch(c, d);
     }
   }
 }
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 
-void MtMethod::check_dirty_read_identifier(MtNode n) {
-  //LOG_G("check_dirty_read %s\n", ts_node_type(n.node));
-
+void MtMethod::check_dirty_read_identifier(MtNode n, MtDelta& d) {
   assert(n.sym == sym_identifier);
   auto field = n.text();
-
-  //printf("field %s\n", field.c_str());
+  
+  // Ignore reads from inputs and local variables.
+  if (field.starts_with("i_")) return;
+  if (!mod->has_field(field) && !mod->has_output(field)) return;
 
   // Reading from a dirty field in tick() is forbidden.
-  if (is_tick && mod->has_field(field) && (maybe_dirty.contains(field) || always_dirty.contains(field))) {
-    log_error(n, "%s() read dirty field - %s\n", name.c_str(), field.c_str());
-    dirty_check_fail = true;
+  if (is_tick) {
+    if (d.state_new.contains(field)) {
+      if (d.state_new[field] != CLEAN) {
+        log_error(n, "%s() read dirty new field - %s\n", name.c_str(), field.c_str());
+        d.error = true;
+      }
+    }
+    else if (d.state_old.contains(field)) {
+      if (d.state_old[field] != CLEAN) {
+        log_error(n, "%s() read dirty old field - %s\n", name.c_str(), field.c_str());
+        d.error = true;
+      }
+    }
+    else {
+      // Haven't seen this field before. We're in tock(), so we expect it to be clean.
+      d.state_old[field] = CLEAN;
+      d.state_new[field] = CLEAN;
+    }
   }
 
-  // Reading from a clean output in tock() is forbidden.
-  if (is_tock && mod->has_output(field) && !always_dirty.contains(field)) {
-    log_error(n, "%s() read clean output - %s\n", name.c_str(), field.c_str());
-    dirty_check_fail = true;
+  // Reading from a clean field in tock() is forbidden.
+  if (is_tock) {
+    if (d.state_new.contains(field)) {
+      if (d.state_new[field] != DIRTY) {
+        log_error(n, "%s() read clean new field - %s\n", name.c_str(), field.c_str());
+        d.error = true;
+      }
+    }
+    else if (d.state_old.contains(field)) {
+      if (d.state_old[field] != DIRTY) {
+        log_error(n, "%s() read clean old field - %s\n", name.c_str(), field.c_str());
+        d.error = true;
+      }
+    }
+    else {
+      // Haven't seen this field before. We're in tock(), so we expect it to be dirty.
+      d.state_old[field] = DIRTY;
+      d.state_new[field] = DIRTY;
+    }
   }
 }
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 
-void MtMethod::check_dirty_read_submod(MtNode n) {
-  //LOG_G("check_dirty_read %s\n", ts_node_type(n.node));
-
+void MtMethod::check_dirty_read_submod(MtNode n, MtDelta& d) {
   assert(n.sym == sym_field_expression);
   auto field = n.text();
 
   if (field.find(".o_") == std::string::npos) {
     log_error(n, "%s() read non-output from submodule - %s\n", name.c_str(), field.c_str());
-    dirty_check_fail = true;
+    d.error = true;
   }
 
-  //printf("field %s\n", field.c_str());
+  //----------
 
   // Reading from a dirty field in tick() is forbidden.
-  if (is_tick && (maybe_dirty.contains(field) || always_dirty.contains(field))) {
-    log_error(n, "%s() read dirty field - %s\n", name.c_str(), field.c_str());
-    dirty_check_fail = true;
+  if (is_tick) {
+    if (d.state_new.contains(field)) {
+      if (d.state_new[field] != CLEAN) {
+        log_error(n, "%s() read dirty new submod field - %s\n", name.c_str(), field.c_str());
+        d.error = true;
+      }
+    }
+    else if (d.state_old.contains(field)) {
+      if (d.state_old[field] != CLEAN) {
+        log_error(n, "%s() read dirty old submod field - %s\n", name.c_str(), field.c_str());
+        d.error = true;
+      }
+    }
+    else {
+      d.state_old[field] = CLEAN;
+      d.state_new[field] = CLEAN;
+    }
   }
 
-  // Reading from a clean output in tock() is forbidden.
-  if (is_tock && !always_dirty.contains(field)) {
-    log_error(n, "%s() read clean output - %s\n", name.c_str(), field.c_str());
-    dirty_check_fail = true;
+  // Reading from a clean field in tock() is forbidden.
+  if (is_tock) {
+    if (d.state_new.contains(field)) {
+      if (d.state_new[field] == CLEAN) {
+        log_error(n, "%s() read clean new submod field - %s\n", name.c_str(), field.c_str());
+        d.error = true;
+      }
+    }
+    else if (d.state_old.contains(field)) {
+      if (d.state_old[field] == CLEAN) {
+        log_error(n, "%s() read clean old submod field - %s\n", name.c_str(), field.c_str());
+        d.error = true;
+      }
+    }
+    else {
+      d.state_old[field] = DIRTY;
+      d.state_new[field] = DIRTY;
+    }
   }
 }
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 
-void MtMethod::check_dirty_write(MtNode n) {
-  //LOG_R("check_dirty_write %s\n", ts_node_type(n.node));
+void MtMethod::check_dirty_write(MtNode n, MtDelta& d) {
 
+  // If the LHS is a subscript expression, check the source field.
   if (n.sym == sym_subscript_expression) {
-    return check_dirty_write(n.get_field(field_argument));
+    return check_dirty_write(n.get_field(field_argument), d);
   }
 
+  // If the LHS is a slice expression, check the source field.
   if (n.sym == sym_call_expression) {
-    // assign to slice of a logic
     auto func_name = n.get_field(field_function).text();
     for (int i = 0; i < func_name.size(); i++) {
-      if (i) {
-        assert(isdigit(func_name[i]));
-      }
-      else {
-        assert(func_name[i] == 's');
-      }
+      assert(i ? isdigit(func_name[i]) : func_name[i] == 's');
     }
     auto field_node = n.get_field(field_arguments).named_child(0);
-    field_node.dump_tree();
-    return check_dirty_write(field_node);
+    return check_dirty_write(field_node, d);
   }
 
-  std::string field = "";
+  //----------
 
-  if (n.sym == sym_identifier) {
-    field = n.text();
-  }
-  else {
-    n.dump_tree();
-    assert(false);
-  }
+  assert(n.sym == sym_identifier);
+  auto field = n.text();
 
-  // Writing to a field twice is forbidden.
-  if (maybe_dirty.contains(field) || always_dirty.contains(field)) {
-    log_error(n, "%s() wrote dirty field %s\n", name.c_str(), field.c_str());
-    dirty_check_fail = true;
-  }
+  // Writing to inputs is forbidden.
+  assert(!field.starts_with("i_"));
 
-  // Writing to an output in tick() is forbidden.
-  if (is_tick && mod->has_output(field)) {
-    log_error(n, "%s() wrote output %s\n", field.c_str(), field.c_str());
-    dirty_check_fail = true;
+  // Ignore writes to local variables.
+  if (!mod->has_field(field) && !mod->has_output(field)) return;
+
+  //----------
+
+  if (is_tick && !mod->has_field(field)) {
+    log_error(n, "%s() wrote output - %s\n", name.c_str(), field.c_str());
+    d.error = true;
   }
 
-  // Writing to a field in tock() is forbidden.
-  if (is_tock && mod->has_field(field)) {
-    log_error(n, "%s() wrote non-output %s\n", name.c_str(), field.c_str());
-    dirty_check_fail = true;
+  if (is_tock && !mod->has_output(field)) {
+    log_error(n, "%s() wrote non-output - %s\n", name.c_str(), field.c_str());
+    d.error = true;
   }
 
-  if (mod->has_field(field) || mod->has_output(field)) {
-    always_dirty.insert(field);
-    maybe_dirty.erase(field);
+  if (d.state_old.contains(field)) {
+    if (d.state_old[field] != CLEAN) {
+      log_error(n, "%s() wrote dirty old field - %s\n", name.c_str(), field.c_str());
+      d.error = true;
+    }
   }
+
+  if (d.state_new.contains(field)) {
+    if (d.state_new[field] != CLEAN) {
+      log_error(n, "%s() wrote dirty new field - %s\n", name.c_str(), field.c_str());
+      d.error = true;
+    }
+  }
+
+  d.state_old[field] = CLEAN;
+  d.state_new[field] = DIRTY;
 }
 
 //------------------------------------------------------------------------------
 // Check for reads on the RHS of an assignment, then check the write on the left.
 
-void MtMethod::check_dirty_assign(MtNode n) {
+void MtMethod::check_dirty_assign(MtNode n, MtDelta& d) {
   //LOG_Y("check_dirty_assign %s\n", ts_node_type(n.node));
 
   auto lhs = n.get_field(field_left);
   auto rhs = n.get_field(field_right);
 
-  check_dirty_dispatch(rhs);
-  check_dirty_write(lhs);
+  check_dirty_dispatch(rhs, d);
+  check_dirty_write(lhs, d);
 }
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 // Check the "if" branch and the "else" branch independently and then merge the results.
 
-void MtMethod::check_dirty_if(MtNode n) {
+void MtMethod::check_dirty_if(MtNode n, MtDelta& d) {
   //LOG_M("check_dirty_if %s\n", ts_node_type(n.node));
 
-  check_dirty_dispatch(n.get_field(field_condition));
+  check_dirty_dispatch(n.get_field(field_condition), d);
 
-  MtMethod if_branch = *this;
-  MtMethod else_branch = *this;
+  MtDelta if_delta = d;
+  MtDelta else_delta = d;
 
-  if_branch.check_dirty_dispatch(n.get_field(field_consequence));
-  else_branch.check_dirty_dispatch(n.get_field(field_alternative));
+  check_dirty_dispatch(n.get_field(field_consequence), if_delta);
+  check_dirty_dispatch(n.get_field(field_alternative), else_delta);
 
-  fold_parallel(
-    if_branch.always_dirty, if_branch.maybe_dirty,
-    else_branch.always_dirty, else_branch.maybe_dirty,
-    always_dirty, maybe_dirty);
+  merge_branch(if_delta, else_delta, d);
 }
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 // Traverse function calls.
 
-void MtMethod::check_dirty_call(MtNode n) {
+void MtMethod::check_dirty_call(MtNode n, MtDelta& d) {
   auto call = mod->node_to_call(n);
 
   //LOG_C("check_dirty_call %s\n", ts_node_type(n.node));
 
   auto node_args = call.get_field(field_arguments);
   assert(node_args.sym == sym_argument_list);
-  check_dirty_dispatch(node_args);
+  check_dirty_dispatch(node_args, d);
 
   auto node_func = call.get_field(field_function);
 
@@ -265,50 +356,24 @@ void MtMethod::check_dirty_call(MtNode n) {
     // local function call, traverse args and then function body
     // TODO - traverse function body
     //printf("%s\n", node_func.text().c_str());
+    //n.dump_tree();
+    //debugbreak();
   }
   else if (node_func.is_field_expr()) {
-    //assert(call.method);
-    //call.method->check_dirty();
+    LOG_G("%s.%s\n", call.submod->name.c_str(), call.method->name.c_str());
+    assert(call.method);
+    call.method->update_delta();
 
-    {
-      LOG_G("%s.%s\n", call.submod->name.c_str(), call.method->name.c_str());
-      LOG_INDENT_SCOPE();
-      call.method->check_dirty();
-    }
+    MtDelta temp_delta = d;
+    MtDelta call_delta = call.method->delta2;
+    call_delta.add_prefix(call.submod->name);
 
-    name_set call_always;
-    name_set call_maybe;
-
-    for (auto always : call.method->always_dirty) {
-      auto field_name = call.submod->name + "." + always;
-      //printf("%s always dirty\n", field_name.c_str());
-      call_always.insert(field_name);
-    }
-    
-    for (auto maybe : call.method->maybe_dirty) {
-      auto field_name = call.submod->name + "." + maybe;
-      //printf("%s maybe dirty\n", field_name.c_str());
-      call_maybe.insert(field_name);
-    }
-
-    name_set temp_always;
-    name_set temp_maybe;
-
-    temp_always.swap(always_dirty);
-    temp_maybe.swap(maybe_dirty);
-
-    fold_series(call_always, call_maybe,
-                temp_always, temp_maybe,
-                always_dirty, maybe_dirty);
-
-    //call.submod->get_
-
-    //node_func.dump_tree();
-    // submod function call, traverse args and then function body
-    // TODO - traverse function body
-    //printf("%s\n", node_func.text().c_str());
+    merge_series(temp_delta, call_delta, d);
   }
   else if (node_func.sym == sym_template_function) {
+    // local function call, probably bx<n>(things);
+    //n.dump_tree();
+    //debugbreak();
   }
   else {
     n.dump_tree();
@@ -316,39 +381,31 @@ void MtMethod::check_dirty_call(MtNode n) {
   }
 }
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 // Check the condition of a switch statement, then check each case independently.
 
-void MtMethod::check_dirty_switch(MtNode n) {
+void MtMethod::check_dirty_switch(MtNode n, MtDelta& d) {
   //LOG_W("check_dirty_switch %s\n", ts_node_type(n.node));
 
-  check_dirty_dispatch(n.get_field(field_condition));
+  check_dirty_dispatch(n.get_field(field_condition), d);
 
   MtMethod old_method = *this;
-  name_set accum_always;
-  name_set accum_maybe;
 
   bool first_branch = true;
 
   auto body = n.get_field(field_body);
   for (auto c : body) {
     if (c.sym == sym_case_statement) {
-      MtMethod case_branch = old_method;
-      case_branch.check_dirty_dispatch(c);
+      MtDelta case_delta = d;
+      check_dirty_dispatch(c, d);
 
       if (first_branch) {
-        always_dirty = case_branch.always_dirty;
-        maybe_dirty = case_branch.maybe_dirty;
+        d = case_delta;
         first_branch = false;
       }
       else {
-        fold_parallel(always_dirty, maybe_dirty,
-                      case_branch.always_dirty, case_branch.maybe_dirty,
-                      accum_always, accum_maybe);
-        always_dirty.swap(accum_always);
-        maybe_dirty.swap(accum_maybe);
-        accum_always.clear();
-        accum_maybe.clear();
+        MtDelta temp = d;
+        merge_branch(temp, case_delta, d);
       }
     }
   }

@@ -82,12 +82,15 @@ bool MtNode::is_const() const {
 
 //------------------------------------------------------------------------------
 
+std::string MtNode::raw_text() {
+  assert(!is_null());
+  auto a = &source->source[start_byte()];
+  auto b = &source->source[end_byte()];
+  return std::string(a, b);
+}
+
 std::string MtNode::text() {
   assert(!is_null());
-
-  if (sym == anon_sym_SEMI) {
-    int x = 0;
-  }
 
   auto a = &source->source[start_byte()];
   auto b = &source->source[end_byte()];
@@ -199,7 +202,6 @@ std::string MtNode::node_to_name() {
   }
 
   case sym_struct_specifier:
-  case sym_class_specifier:
   case sym_template_function:
     return get_field(field_name).node_to_name();
 
@@ -278,7 +280,7 @@ void MtNode::dump_node(int index, int depth) const {
 
   uint32_t color = 0x888888;
   if (sym == sym_template_declaration) color = 0xAADDFF;
-  if (sym == sym_struct_specifier)     color = 0xFFAAFF;
+  if (sym == sym_struct_specifier)     color = 0xFF00FF;
   if (sym == sym_class_specifier)      color = 0xFFAAFF;
   if (sym == sym_expression_statement) color = 0xAAFFFF;
   if (sym == sym_expression_statement) color = 0xAAFFFF;

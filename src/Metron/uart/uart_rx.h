@@ -5,7 +5,9 @@
 /* verilator lint_off WIDTH */
 
 template<int cycles_per_bit = 4>
-struct uart_rx {
+class uart_rx {
+public:
+
   /*verilator public_module*/
 
   static const int cycle_bits = clog2(cycles_per_bit);
@@ -24,7 +26,7 @@ struct uart_rx {
 
   //----------------------------------------
 
-  void tick(logic<1> i_rstn, logic<1> i_serial) {
+  void derp(logic<1> i_rstn, logic<1> i_serial) {
     if (!i_rstn) {
       cycle = 0;
       cursor = 0;
@@ -49,7 +51,13 @@ struct uart_rx {
 
   //----------------------------------------
 
-  void tock(logic<1> i_rstn) {
+  void tick(logic<1> i_rstn, logic<1> i_serial) {
+    derp(i_rstn, i_serial);
+  }
+
+  //----------------------------------------
+
+  void tock() {
     o_data = buffer;
     o_valid = cursor == 1;
     o_sum = sum;

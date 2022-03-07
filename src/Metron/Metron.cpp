@@ -65,18 +65,8 @@ MtModule* load_pass1(const char* _full_path, blob& _src_blob);
 int main(int argc, char** argv) {
   std::vector<std::string> args;
   for (int i = 0; i < argc; i++) {
-    //LOG_R("argv[%02d] = %s\n", i, argv[i]);
     args.push_back(argv[i]);
   }
-
-  /*
-  {
-    std::string cwd;
-    cwd.resize(FILENAME_MAX);
-    getcwd(cwd.data(),FILENAME_MAX);
-    LOG_R("cwd %s\n", cwd);
-  }
-  */
 
   args.clear();
   args.push_back("-Iuart");
@@ -84,10 +74,10 @@ int main(int argc, char** argv) {
   args.push_back("-Irvsimple");
   args.push_back("-Oout");
 
-  //args.push_back("uart/uart_top.h");
-  //args.push_back("uart/uart_hello.h");
-  //args.push_back("uart/uart_tx.h");
-  args.push_back("uart/uart_rx.h");
+  args.push_back("uart_top.h");
+  args.push_back("uart_hello.h");
+  args.push_back("uart_tx.h");
+  args.push_back("uart_rx.h");
 
   /*
   args.push_back("adder.h");
@@ -121,10 +111,14 @@ int main(int argc, char** argv) {
   for (auto& arg : args) {
     LOG_R("arg = %s\n", arg.c_str());
   }
+  LOG_R("\n");
 
+
+  //----------
   // Parse args
+
+  std::vector<std::string> mod_paths;
   std::vector<std::string> mod_names;
-  std::vector<std::string> mod_paths = {""};
   std::string out_dir = "";
   bool quiet = false;
 
@@ -156,193 +150,57 @@ int main(int argc, char** argv) {
       mod_names.push_back(arg_cursor);
     }
   }
+  LOG("\n");
 
-  // Run test suite?
-  //metron_test_suite();
-
+  //----------
   // Load all modules.
 
   MtModLibrary library;
+  library.add_search_path("");
+  for (auto& path : mod_paths) {
+    library.add_search_path(path);
+  }
 
   for (auto& name : mod_names) {
-    bool found = false;
-    for (auto& path : mod_paths) {
-      auto full_path = path.size() ? path + "/" + name : name;
-      struct stat s;
-      auto stat_result = stat(full_path.c_str(), &s);
-      if (stat_result == 0) {
-        found = true;
-        LOG_B("loading %s from %s\n", name.c_str(), full_path.c_str());
-        LOG_INDENT_SCOPE();
-
-        std::string src_blob;
-        src_blob.resize(s.st_size);
-
-        auto f = fopen(full_path.c_str(), "rb");
-        fread(src_blob.data(), 1, src_blob.size(), f);
-        fclose(f);
-
-        bool use_utf8_bom = false;
-        if (src_blob[0] == 239 && src_blob[1] == 187 && src_blob[2] == 191) {
-          use_utf8_bom = true;
-          src_blob.erase(src_blob.begin(), src_blob.begin() + 3);
-        }
-        src_blob.push_back(0);
- 
-        auto source_file = new MtSourceFile(&library, full_path, src_blob);
-        source_file->use_utf8_bom = use_utf8_bom;
-
-        library.source_files.push_back(source_file);
-
-        break;
-      }
-    }
-    if (!found) {
-      LOG_R("Couldn't find %s in path!\n", name.c_str());
-    }
+    library.load_source(name.c_str());
   }
+  LOG("\n");
 
-#if 0
-  {
-    std::string source = R"(
-//----------------------------------------
-
-struct derp {
-  logic<1> o_foo;
-
-  void tock() {
-    o_foo = 1;
-  }
-  
-};
-
-//----------------------------------------
-
-struct gerp {
-  derp m;
-  logic<1> o_bar;
-
-  void tock(logic<1> i_foo) {
-    m.tock();
-    o_bar = m.o_foo;
-  }
-};
-
-//----------------------------------------
-
-)";
-
-
-    auto source_file = new MtSourceFile(&library, "<inline>", source);
-
-    library.source_files.push_back(source_file);
-  }
-#endif
+  library.cross_reference();
 
   //----------
-
-  for(auto& source : library.source_files) {
-    for (auto& mod : source->modules) {
-      library.modules.push_back(mod);
-    }
-  }
-
-  {
-    LOG_G("Library\n");
-    LOG_INDENT_SCOPE();
-    for(auto& source_file : library.source_files) {
-      LOG_G("Source file %s\n", source_file->full_path.c_str());
-      LOG_INDENT_SCOPE();
-      for (auto& mod : source_file->modules) {
-        LOG_G("Module %s\n", mod->mod_name.c_str());
-      }
-    }
-    for (auto& mod : library.modules) {
-      LOG_G("Module %s\n", mod->mod_name.c_str());
-    }
-  }
-
-
-  for (auto& mod : library.modules) mod->load_pass1();
-  for (auto& mod : library.modules) mod->load_pass2();
-  for (auto& mod : library.modules) mod->load_pass3();
-
-  for (auto& mod : library.modules) {
-    mod->load_pass3();
-  }
-
   // Dump out info on modules for debugging.
-
-  for (auto& mod : library.modules) {
-    mod->dump_banner();
-  }
-
-  // Verify that tick()/tock() obey read/write ordering rules.
-
-  bool any_fail_dirty_check = false;
-
-  {
-    LOG_G("Checking tick/tock rules\n")
-    LOG_INDENT_SCOPE();
-    for (auto& mod : library.modules)
-    {
-      //auto& mod = library.modules[0];
-      LOG_G("Checking %s\n", mod->mod_name.c_str());
-      LOG_INDENT_SCOPE();
-      mod->check_dirty_ticks();
-      mod->check_dirty_tocks();
-      mod->dirty_check_done = true;
-      any_fail_dirty_check |= mod->dirty_check_fail;
-    }
-  }
-
-  if (any_fail_dirty_check) {
-    printf("Dirty check fail!\n");
-    return -1;
-  }
 
   for (auto& mod : library.modules)
   {
-    if (mod->mod_struct.is_null()) continue;
-
-    LOG_G("%s\n", mod->mod_name.c_str());
-    LOG_INDENT_SCOPE();
-
-    for (auto& tick : mod->tick_methods) {
-      LOG_G("%s\n", tick.name.c_str());
-      LOG_INDENT_SCOPE();
-      for (auto always : tick.always_dirty) LOG_G("%s always dirty\n", always.c_str());
-      for (auto maybe : tick.maybe_dirty)   LOG_G("%s maybe dirty\n", maybe.c_str());
-    }
-
-    for (auto& tock : mod->tock_methods) {
-      LOG_G("%s\n", tock.name.c_str());
-      LOG_INDENT_SCOPE();
-      for (auto always : tock.always_dirty) LOG_G("%s always dirty\n", always.c_str());
-      for (auto maybe : tock.maybe_dirty)   LOG_G("%s maybe dirty\n", maybe.c_str());
-    }
+    mod->dump_banner();
+    mod->dump_deltas();
   }
 
 
 #if 1
   // Emit all modules.
 
-  for (auto& source_file : library.source_files) {
+  for (auto& source_file : library.source_files)
+  {
+    //auto& source_file = library.source_files[0];
 
     auto out_path = out_dir + "/" + source_file->full_path + ".sv";
     mkdir_all(split_path(out_path));
 
-    std::string out_string;
-
-    MtCursor cursor(&library, source_file, &out_string);
-
     //if (!quiet) module->dump_banner();
     LOG_G("Emitting SystemVerilog\n");
 
+    std::string out_string;
+
+    MtCursor cursor(&library, source_file, &out_string);
+    cursor.quiet = false;
     cursor.cursor = source_file->source;
     cursor.source_file = source_file;
     cursor.emit(source_file->mt_root);
     cursor.emit("\n");
+
+    //printf("%s\n", out_string.c_str());
 
     /*
     LOG_G("Saving SystemVerilog\n");

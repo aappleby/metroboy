@@ -4,7 +4,9 @@
 //==============================================================================
 /* verilator lint_off WIDTH */
 
-struct uart_hello {
+class uart_hello {
+public:
+
   /*verilator public_module*/
 
   static const int message_len = 512;
@@ -58,7 +60,7 @@ struct uart_hello {
 
   //----------------------------------------
 
-  void tock(logic<1> i_rstn) {
+  void tock() {
     o_data = data;
     o_req  = (s == state::SEND);
     o_done = (s == state::DONE);

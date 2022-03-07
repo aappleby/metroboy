@@ -116,6 +116,7 @@ struct MtNode {
 
   //----------
 
+  std::string raw_text();
   std::string text();
   const char* start();
   const char* end();
@@ -324,10 +325,10 @@ struct MtFieldDeclList : public MtNode {
 
 //------------------------------------------------------------------------------
 
-struct MtStructSpecifier : public MtNode {
-  MtStructSpecifier() {};
-  MtStructSpecifier(const MtNode& n) : MtNode(n) {
-    check_sym(sym_struct_specifier);
+struct MtClassSpecifier : public MtNode {
+  MtClassSpecifier() {};
+  MtClassSpecifier(const MtNode& n) : MtNode(n) {
+    check_sym(sym_class_specifier);
   }
   MtTypeIdentifier name() { return MtTypeIdentifier(get_field(field_name)); }
   MtFieldDeclList  body() { return MtFieldDeclList(get_field(field_body)); }
@@ -339,6 +340,15 @@ struct MtPrimitiveType     : public MtNode {
   MtPrimitiveType() {};
   MtPrimitiveType(const MtNode& n) : MtNode(n) {
     check_sym(sym_primitive_type);
+  }
+};
+
+//------------------------------------------------------------------------------
+
+struct MtExprStatement     : public MtNode {
+  MtExprStatement() {};
+  MtExprStatement(const MtNode& n) : MtNode(n) {
+    check_sym(sym_expression_statement);
   }
 };
 
@@ -368,8 +378,8 @@ struct MtFuncDeclarator : public MtNode {
     check_sym(sym_function_declarator);
   }
 
-  MtFieldName decl()   { return MtFieldName(get_field(field_declarator)); }
-  MtParameterList   params() { return MtParameterList(get_field(field_parameters)); }
+  MtFieldName     decl()   { return MtFieldName(get_field(field_declarator)); }
+  MtParameterList params() { return MtParameterList(get_field(field_parameters)); }
 };
 
 //------------------------------------------------------------------------------
@@ -409,6 +419,15 @@ struct MtFieldExpr : public MtNode {
   MtFieldExpr() {};
   MtFieldExpr(const MtNode& n) : MtNode(n) {
     check_sym(sym_field_expression);
+  }
+};
+
+//------------------------------------------------------------------------------
+
+struct MtFieldIdentifier : public MtNode {
+  MtFieldIdentifier() {};
+  MtFieldIdentifier(const MtNode& n) : MtNode(n) {
+    check_sym(alias_sym_field_identifier);
   }
 };
 
@@ -623,6 +642,24 @@ struct MtFieldDecl : public MtNode {
 
   bool is_const() {
     for (auto c : (MtNode)name()) {
+      if (c.sym == sym_type_qualifier) {
+        if (c.match("const")) return true;
+      }
+    }
+    return false;
+  }
+
+  bool is_static2() {
+    for (auto c : (MtNode&)*this) {
+      if (c.sym == sym_storage_class_specifier) {
+        if (c.match("static")) return true;
+      }
+    }
+    return false;
+  }
+
+  bool is_const2() {
+    for (auto c : (MtNode&)*this) {
       if (c.sym == sym_type_qualifier) {
         if (c.match("const")) return true;
       }

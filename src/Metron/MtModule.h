@@ -22,7 +22,7 @@ typedef std::set<std::string> name_set;
 struct MtModule {
 
   MtModule(MtSourceFile* source_file, MtTemplateDecl node);
-  MtModule(MtSourceFile* source_file, MtStructSpecifier node);
+  MtModule(MtSourceFile* source_file, MtClassSpecifier node);
 
   void load_pass1();
   void load_pass2();
@@ -31,6 +31,7 @@ struct MtModule {
   void dump_banner();
   void dump_method_list(std::vector<MtMethod>& methods);
   void dump_call_list(std::vector<MtCall>& calls);
+  void dump_deltas();
 
   bool load_error = false;
 
@@ -62,6 +63,20 @@ struct MtModule {
     return nullptr;
   }
 
+  bool has_submod(const std::string& name) {
+    for (auto& n : submods) {
+      if (n.name == name) return true;
+    }
+    return false;
+  }
+
+  bool has_enum(const std::string& name) {
+    for (auto& n : enums) {
+      if (n.name == name) return true;
+    }
+    return false;
+  }
+
   bool has_field(const std::string& name) {
     for (auto& f : fields) if (f.name == name) return true;
     return false;
@@ -81,7 +96,7 @@ struct MtModule {
   bool dirty_check_done = false;
   bool dirty_check_fail = false;
 
-  MtStructSpecifier   mod_struct;
+  MtClassSpecifier   mod_struct;
   MtTemplateDecl      mod_template;
   MtTemplateParamList mod_param_list;
 

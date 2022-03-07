@@ -171,73 +171,33 @@ public:
 };
 
 //------------------------------------------------------------------------------
-// A bitslice is a write-only proxy view into the bits of a primitive type that
-// lets you write to those bits as if they were another primitive type of a
-// different size. For example:
-// 
-// uint32_t a = 0x00000000;
-// bitslice<12, uint32_t, 32>(a, 12) = 0x123;
-// printf("a = 0x%08x\n", a.x); // should print "a = 0x00123000"
-//
-// Bit slices can be larger or smaller than the primitive they reference -
-// writing to a slice larger than its source throws away any overflow bits.
-// 
-// The number of writable bit in the slice's primitive can also be set, so
-// you can have a 24-bit slice referencing the middle 12 bits of a uint32_t,
-// or a 7 bit slice of the high 13 bits of a uint16_t or whatever. Not all of
-// those will translate into Verilog, however.
+// Helper struct to emulate Verilog's "foo[7:2] = bar;" slice assignment syntax.
 
-template<int WIDTH, typename SRC, int SRC_WIDTH = sizeof(SRC) * 8>
-class bitslice {
-public:
+// Using this will probably break Metron's multiple-write detection, so... use
+// sparingly.
 
-  //----------
-  // A bitslice's internal representation is just a mutable reference to a
-  // primitive type plus an (optional) offset into that type's bits.
+template<int HI, int LO, int WIDTH, typename DST>
+struct bitslice {
 
-  static const int width = WIDTH;
-  typedef typename bitsize_to_basetype<WIDTH>::type BASE;
+  DST& self;
 
-  SRC& self;
-  const int offset;
-
-  //----------
-  // Bitslices can _only_ be created directly from a primitive type plus an
-  // optional offset and cannot be copied or default-assigned.
-
-  bitslice(SRC& s, int offset = 0) : self(s), offset(offset) {}
+  bitslice(DST& s) : self(s) {}
   bitslice(const bitslice& b) = delete;
   bitslice& operator = (const bitslice& b) = delete;
 
-  //----------
-  // Assigning to a bitslice writes to the selected bits of the source
-  // primitive.
+  void operator = (logic<HI-LO+1> x) {
+    int hi = HI;
+    int lo = LO;
+    if (hi > WIDTH - 1) hi = WIDTH - 1;
 
-  void operator = (const BASE& x) {
-    int mask_width = WIDTH > SRC_WIDTH ? SRC_WIDTH : WIDTH;
-    SRC mask = (SRC(-1) >> (sizeof(SRC) * 8 - mask_width)) << offset;
-
-    self = (self & ~mask) | ((x << offset) & mask);
+    const DST mask = DST(-1ll) >> ((sizeof(DST) * 8) - (hi - lo + 1));
+    self = DST((self & ~(mask << LO)) | ((x & mask) << LO));
   }
 };
 
-//------------------------------------------------------------------------------
-// Convenience methods for producing bitslices.
-//
-// logic<17> a = 0;
-// slice<9>(a, 3) = 12;
-//
-// uint64_t b = 77;
-// slice<53>(b, 9) = 12345;
-
-template<int WIDTH, typename SRC, int SRC_WIDTH = sizeof(SRC)*8>
-inline bitslice<WIDTH, SRC, SRC_WIDTH> slice(SRC& x, int offset = 0) {
-  return {x, offset};
-}
-
-template<int WIDTH, int SRC_WIDTH>
-inline bitslice<WIDTH, typename logic<SRC_WIDTH>::BASE, SRC_WIDTH> slice(logic<SRC_WIDTH>& x, int offset = 0) {
-  return {x.x, offset};
+template<int HI, int LO, int WIDTH>
+inline auto slice(logic<WIDTH>& x) -> bitslice<HI, LO, WIDTH, typename logic<WIDTH>::BASE> {
+  return {x.x};
 }
 
 //------------------------------------------------------------------------------
@@ -263,9 +223,17 @@ template<int WIDTH> inline logic<WIDTH> operator ^ (const logic<WIDTH>& a, const
 template<int WIDTH, typename SRC>  inline const logic<WIDTH> bx(const SRC& a, int offset = 0)              { return logic<WIDTH>::coerce(a >> offset); }
 template<int WIDTH, int SRC_WIDTH> inline const logic<WIDTH> bx(const logic<SRC_WIDTH>& a, int offset = 0) { return logic<WIDTH>::coerce(a.get() >> offset); }
 
+#if 0
+
 #define DECLARE_BN_SN_HELPERS(WIDTH) \
 template<typename SRC>  inline bitslice<WIDTH, SRC, sizeof(SRC)*8>                          s##WIDTH(      SRC& a,              int offset = 0) { return slice<WIDTH, SRC, sizeof(SRC)*8>(a, offset); } \
 template<int SRC_WIDTH> inline bitslice<WIDTH, typename logic<SRC_WIDTH>::BASE, SRC_WIDTH>  s##WIDTH(      logic<SRC_WIDTH>& a, int offset = 0) { return slice<WIDTH, logic<SRC_WIDTH>::BASE, SRC_WIDTH>(a.x, offset); } \
+template<typename SRC>  inline const logic<WIDTH>                                           b##WIDTH(const SRC& a,              int offset = 0) { return logic<WIDTH>::coerce(a >> offset); } \
+template<int SRC_WIDTH> inline const logic<WIDTH>                                           b##WIDTH(const logic<SRC_WIDTH>& a, int offset = 0) { return logic<WIDTH>::coerce(a >> offset); } \
+
+#endif
+
+#define DECLARE_BN_SN_HELPERS(WIDTH) \
 template<typename SRC>  inline const logic<WIDTH>                                           b##WIDTH(const SRC& a,              int offset = 0) { return logic<WIDTH>::coerce(a >> offset); } \
 template<int SRC_WIDTH> inline const logic<WIDTH>                                           b##WIDTH(const logic<SRC_WIDTH>& a, int offset = 0) { return logic<WIDTH>::coerce(a >> offset); } \
 

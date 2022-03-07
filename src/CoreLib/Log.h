@@ -10,79 +10,89 @@
 
 //-----------------------------------------------------------------------------
 
-inline void log_putchar(char c) {
-  using namespace std::chrono_literals;
+inline void log_set_color(uint32_t color) {
+  static uint32_t log_color = 0;
+  if (color == log_color) return;
 
-  static int log_indent = 0;
-  static int log_cursor_x = 0;
-  static bool log_start_line = true;
-
-  static uint64_t origin;
-
-  if (!origin) {
-    timespec ts;
-    timespec_get(&ts, TIME_UTC);
-    origin = ts.tv_sec * 1000000000ull + ts.tv_nsec;
-
-  }
-
-  if (c == '\n') {
-    putchar(c);
-    log_cursor_x = 0;
-    log_start_line = true;
-  }
-  else if (c == '\t') {
-    log_indent += 2;
-  }
-  else if (c == '\v') {
-    log_indent -= 2;
+  if (color == 0) {
+    printf("\u001b[0m");
   }
   else {
-    if (log_start_line) {
-      uint64_t now;
-      timespec ts;
-      timespec_get(&ts, TIME_UTC);
-      now = ts.tv_sec * 1000000000ull + ts.tv_nsec;
-      printf("\u001b[0m[%07.3f] ", double(now - origin) / 1.0e9);
-      log_start_line = false;
-    }
-    for (; log_cursor_x < log_indent; log_cursor_x++) putchar(' ');
-    putchar(c);
+    printf("\u001b[38;2;%d;%d;%dm", (color >> 0) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF);
   }
+
+  log_color = color;
 }
 
-inline void log_printf(const char* format = "", ...) {
-  static char buffer[256];
+//-----------------------------------------------------------------------------
 
+inline void log_prefix() {
+  timespec ts;
+  timespec_get(&ts, TIME_UTC);
+  uint64_t now = ts.tv_sec * 1000000000ull + ts.tv_nsec;
+
+  static uint64_t time_origin = 0;
+  if (!time_origin) time_origin = now;
+
+  log_set_color(0);
+  printf("[%07.3f] ", double(now - time_origin) / 1.0e9);
+}
+
+//-----------------------------------------------------------------------------
+
+inline void log_printf(uint32_t color, const char* format = "", ...) {
+  static int log_indent = 0;
+  static bool log_start_line = true;
+
+  char buffer[256];
   va_list args;
   va_start(args, format);
-  vsnprintf(buffer, 256, format, args);
+  int len = vsnprintf(buffer, 256, format, args);
   va_end(args);
 
-  for (char* b = buffer; *b; b++) {
-    log_putchar(*b);
+  log_set_color(color);
+  for (int i = 0; i < len; i++) {
+    auto c = buffer[i];
+
+    if (c == '\t') {
+      log_indent += 2;
+    }
+    else if (c == '\v') {
+      log_indent -= 2;
+    }
+    else {
+      if (log_start_line) {
+        log_prefix();
+        log_set_color(color);
+        for (int j = 0; j < log_indent; j++) putchar(' ');
+        log_start_line = false;
+      }
+
+      putchar(c);
+      if (c == '\n') log_start_line = true;
+    }
   }
+  log_set_color(0);
 }
 
-#define LOG(...)   do { log_printf(__VA_ARGS__); } while(0);
-#define LOG_R(...) do { log_printf("\u001b[38;2;255;128;128m"); log_printf(__VA_ARGS__); log_printf("\u001b[0m"); } while(0);
-#define LOG_G(...) do { log_printf("\u001b[38;2;128;255;128m"); log_printf(__VA_ARGS__); log_printf("\u001b[0m"); } while(0);
-#define LOG_B(...) do { log_printf("\u001b[38;2;128;128;255m"); log_printf(__VA_ARGS__); log_printf("\u001b[0m"); } while(0);
-#define LOG_C(...) do { log_printf("\u001b[38;2;128;255;255m"); log_printf(__VA_ARGS__); log_printf("\u001b[0m"); } while(0);
-#define LOG_M(...) do { log_printf("\u001b[38;2;255;128;255m"); log_printf(__VA_ARGS__); log_printf("\u001b[0m"); } while(0);
-#define LOG_Y(...) do { log_printf("\u001b[38;2;255;255;128m"); log_printf(__VA_ARGS__); log_printf("\u001b[0m"); } while(0);
-#define LOG_W(...) do { log_printf("\u001b[38;2;255;255;255m"); log_printf(__VA_ARGS__); log_printf("\u001b[0m"); } while(0);
+//-----------------------------------------------------------------------------
 
-#define LOG_INDENT() log_putchar('\t')
-#define LOG_DEDENT() log_putchar('\v')
+#define LOG(...)   log_printf(0x00'00'00'00, __VA_ARGS__);
+#define LOG_R(...) log_printf(0x00'80'80'FF, __VA_ARGS__);
+#define LOG_G(...) log_printf(0x00'80'FF'80, __VA_ARGS__);
+#define LOG_B(...) log_printf(0x00'FF'A0'A0, __VA_ARGS__);
+
+#define LOG_C(...) log_printf(0x00'FF'FF'80, __VA_ARGS__);
+#define LOG_M(...) log_printf(0x00'FF'80'FF, __VA_ARGS__);
+#define LOG_Y(...) log_printf(0x00'80'FF'FF, __VA_ARGS__);
+#define LOG_W(...) log_printf(0x00'FF'FF'FF, __VA_ARGS__);
+
+#define LOG_INDENT() log_printf(0, "\t")
+#define LOG_DEDENT() log_printf(0, "\v")
 
 struct LogIndenter {
-  LogIndenter() {
-    LOG_INDENT();
-  }
-  ~LogIndenter() {
-    LOG_DEDENT();
-  }
+  LogIndenter()  { LOG_INDENT(); }
+  ~LogIndenter() { LOG_DEDENT(); }
 };
 
 #define LOG_INDENT_SCOPE() LogIndenter indenter##__LINE__;

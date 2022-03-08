@@ -1,9 +1,9 @@
 #pragma once
-#include "Platform.h"
+#include <map>
+#include <set>
 
 #include "MtNode.h"
-#include <set>
-#include <map>
+#include "Platform.h"
 
 struct MtModule;
 struct MtModLibrary;
@@ -16,12 +16,17 @@ enum FieldState {
 };
 
 inline const char* to_string(FieldState s) {
-  switch(s) {
-  case CLEAN: return "CLEAN";
-  case MAYBE: return "MAYBE";
-  case DIRTY: return "DIRTY";
-  case ERROR: return "ERROR";
-  default:    return "INVALID";
+  switch (s) {
+    case CLEAN:
+      return "CLEAN";
+    case MAYBE:
+      return "MAYBE";
+    case DIRTY:
+      return "DIRTY";
+    case ERROR:
+      return "ERROR";
+    default:
+      return "INVALID";
   }
 }
 
@@ -73,7 +78,7 @@ struct MtMethod : public MtNode {
   MtModLibrary* lib;
   std::string name;
   std::vector<std::string> params;
-  
+
   MtDelta delta2;
 
   bool is_tick = false;
@@ -81,14 +86,14 @@ struct MtMethod : public MtNode {
 
   void update_delta();
 
-  void check_dirty_read_identifier (MtNode n, MtDelta& d);
-  void check_dirty_read_submod     (MtNode n, MtDelta& d);
-  void check_dirty_write           (MtNode n, MtDelta& d);
-  void check_dirty_dispatch        (MtNode n, MtDelta& d);
-  void check_dirty_assign          (MtNode n, MtDelta& d);
-  void check_dirty_if              (MtNode n, MtDelta& d);
-  void check_dirty_call            (MtNode n, MtDelta& d);
-  void check_dirty_switch          (MtNode n, MtDelta& d);
+  void check_dirty_read_identifier(MtNode n, MtDelta& d);
+  void check_dirty_read_submod(MtNode n, MtDelta& d);
+  void check_dirty_write(MtNode n, MtDelta& d);
+  void check_dirty_dispatch(MtNode n, MtDelta& d);
+  void check_dirty_assign(MtNode n, MtDelta& d);
+  void check_dirty_if(MtNode n, MtDelta& d);
+  void check_dirty_call(MtNode n, MtDelta& d);
+  void check_dirty_switch(MtNode n, MtDelta& d);
 };
 
 //------------------------------------------------------------------------------

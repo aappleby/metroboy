@@ -1,6 +1,5 @@
-#include "test_utils.h"
-
 #include "MtModLibrary.h"
+#include "test_utils.h"
 
 //------------------------------------------------------------------------------
 // The tock functions may have valid deltas individually, but the module may
@@ -21,17 +20,16 @@ struct test {
 };
 )";
 
-
 TestResults test_tock_tangle() {
   TEST_INIT();
 
-  //auto dst = translate_simple(tangle);
-  //printf("%s\n", dst.c_str());
+  // auto dst = translate_simple(tangle);
+  // printf("%s\n", dst.c_str());
 
   MtModLibrary lib;
   parse_simple(tangle, lib);
 
-  //auto mod = lib.modules[0];
+  // auto mod = lib.modules[0];
 
   TEST_DONE();
 }

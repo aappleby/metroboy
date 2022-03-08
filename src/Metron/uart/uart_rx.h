@@ -4,10 +4,9 @@
 //==============================================================================
 /* verilator lint_off WIDTH */
 
-template<int cycles_per_bit = 4>
+template <int cycles_per_bit = 4>
 class uart_rx {
-public:
-
+ public:
   /*verilator public_module*/
 
   static const int cycle_bits = clog2(cycles_per_bit);
@@ -16,7 +15,7 @@ public:
   static const int cursor_bits = clog2(cursor_max);
 
   logic<cycle_bits> cycle;
-  logic<cursor_bits> cursor;  
+  logic<cursor_bits> cursor;
   logic<8> buffer;
   logic<32> sum;
 
@@ -26,7 +25,7 @@ public:
 
   //----------------------------------------
 
-  void derp(logic<1> i_rstn, logic<1> i_serial) {
+  void tick(logic<1> i_rstn, logic<1> i_serial) {
     if (!i_rstn) {
       cycle = 0;
       cursor = 0;
@@ -41,18 +40,11 @@ public:
         cycle = cycle_max;
         cursor = cursor - 1;
         buffer = temp;
-      }
-      else if (i_serial == 0) {
+      } else if (i_serial == 0) {
         cycle = cycle_max;
         cursor = cursor_max;
       }
     }
-  }
-
-  //----------------------------------------
-
-  void tick(logic<1> i_rstn, logic<1> i_serial) {
-    derp(i_rstn, i_serial);
   }
 
   //----------------------------------------
@@ -62,7 +54,6 @@ public:
     o_valid = cursor == 1;
     o_sum = sum;
   }
-
 };
 
 //==============================================================================

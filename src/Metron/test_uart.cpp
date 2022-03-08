@@ -6,5 +6,4 @@ void test_uart() {
   t.tock(false);
 }
 
-
 #endif

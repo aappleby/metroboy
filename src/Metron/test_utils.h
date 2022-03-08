@@ -1,5 +1,6 @@
-#include "../CoreLib/Tests.h"
 #include <string>
+
+#include "../CoreLib/Tests.h"
 
 struct MtModLibrary;
 

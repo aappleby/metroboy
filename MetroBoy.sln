@@ -53,8 +53,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Metron", "Metron", "{FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}"
 	ProjectSection(SolutionItems) = preProject
 		src\Metron\build.ninja = src\Metron\build.ninja
-		src\Metron\make_blob_h.cpp = src\Metron\make_blob_h.cpp
-		src\Metron\message.blob.h = src\Metron\message.blob.h
 		src\Metron\message.txt = src\Metron\message.txt
 	EndProjectSection
 EndProject

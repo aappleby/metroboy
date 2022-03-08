@@ -1,30 +1,87 @@
 #include "MtModule.h"
-#include "Platform.h"
 
+#include "../CoreLib/Log.h"
 #include "MtMethod.h"
 #include "MtModLibrary.h"
 #include "MtNode.h"
 #include "MtSourceFile.h"
-
-#include "../CoreLib/Log.h"
-
+#include "Platform.h"
 #include "tree_sitter/api.h"
 
-#pragma warning(disable:4996) // unsafe fopen()
+#pragma warning(disable : 4996)  // unsafe fopen()
 
 extern "C" {
-  extern const TSLanguage* tree_sitter_cpp();
+extern const TSLanguage *tree_sitter_cpp();
 }
 
-MtModule::MtModule(MtSourceFile* source_file, MtTemplateDecl node) : source_file(source_file) {
+void log_field_state(FieldState s) {
+  switch (s) {
+    case CLEAN:
+      LOG_G("clean");
+      break;
+    case MAYBE:
+      LOG_Y("maybe");
+      break;
+    case DIRTY:
+      LOG_R("dirty");
+      break;
+    case ERROR:
+      LOG_M("error");
+      break;
+  }
+}
+
+// FIXME
+void log_error(MtNode n, const char *fmt, ...) {
+  printf("\n########################################\n");
+
+  va_list args;
+  va_start(args, fmt);
+  vprintf(fmt, args);
+  va_end(args);
+
+  printf("@%04d: ", ts_node_start_point(n.node).row + 1);
+
+  /*
+{
+  auto start = &source[n.start_byte()];
+
+  auto a = start;
+  auto b = start;
+  while (a > source     && *a != '\n' && *a != '\r') a--;
+  while (b < source_end && *b != '\n' && *b != '\r') b++;
+
+  if (*a == '\n' || *a == '\r') a++;
+
+  while (a != b) {
+    putc(*a++, stdout);
+  }
+}
+
+printf("\n");
+*/
+
+  // n.error();
+  n.dump_tree();
+
+  // printf("halting...\n");
+  printf("########################################\n");
+}
+
+//------------------------------------------------------------------------------
+
+MtModule::MtModule(MtSourceFile *source_file, MtTemplateDecl node)
+    : source_file(source_file) {
   mod_template = node;
   mod_param_list = MtTemplateParamList(mod_template.child(1));
   mod_struct = MtClassSpecifier(mod_template.child(2));
   mod_name = mod_struct.get_field(field_name).text();
 }
 
+//------------------------------------------------------------------------------
 
-MtModule::MtModule(MtSourceFile* source_file, MtClassSpecifier node) : source_file(source_file) {
+MtModule::MtModule(MtSourceFile *source_file, MtClassSpecifier node)
+    : source_file(source_file) {
   mod_template = MtNode::null;
   mod_param_list = MtNode::null;
   mod_struct = node;
@@ -33,12 +90,61 @@ MtModule::MtModule(MtSourceFile* source_file, MtClassSpecifier node) : source_fi
 
 //------------------------------------------------------------------------------
 
-void MtModule::dump_method_list(std::vector<MtMethod>& methods) {
-  for (auto& n : methods) {
+MtSubmod *MtModule::get_submod(const std::string &name) {
+  for (auto &n : submods) {
+    if (n.name == name) return &n;
+  }
+  return nullptr;
+}
+
+MtMethod *MtModule::get_method(const std::string &name) {
+  for (auto &n : tick_methods)
+    if (n.name == name) return &n;
+  for (auto &n : tock_methods)
+    if (n.name == name) return &n;
+  return nullptr;
+}
+
+MtField *MtModule::get_output(const std::string &name) {
+  for (auto &n : outputs)
+    if (n.name == name) return &n;
+  return nullptr;
+}
+
+bool MtModule::has_submod(const std::string &name) {
+  for (auto &n : submods) {
+    if (n.name == name) return true;
+  }
+  return false;
+}
+
+bool MtModule::has_enum(const std::string &name) {
+  for (auto &n : enums) {
+    if (n.name == name) return true;
+  }
+  return false;
+}
+
+bool MtModule::has_field(const std::string &name) {
+  for (auto &f : fields)
+    if (f.name == name) return true;
+  return false;
+}
+
+bool MtModule::has_output(const std::string &name) {
+  for (auto &f : outputs)
+    if (f.name == name) return true;
+  return false;
+}
+
+//------------------------------------------------------------------------------
+
+void MtModule::dump_method_list(std::vector<MtMethod> &methods) {
+  for (auto &n : methods) {
     LOG_INDENT_SCOPE();
     LOG_R("%s(", n.name.c_str());
     for (int i = 0; i < n.params.size(); i++) {
-      auto& param = n.params[i];
+      auto &param = n.params[i];
       LOG_R("%s", param.c_str());
       if (i != n.params.size() - 1) LOG_C(", ");
     }
@@ -46,8 +152,10 @@ void MtModule::dump_method_list(std::vector<MtMethod>& methods) {
   }
 }
 
-void MtModule::dump_call_list(std::vector<MtCall>& calls) {
-  for (auto& call : calls) {
+//------------------------------------------------------------------------------
+
+void MtModule::dump_call_list(std::vector<MtCall> &calls) {
+  for (auto &call : calls) {
     LOG_INDENT_SCOPE();
     LOG_C("%s.%s(", call.submod->name.c_str(), call.method->name.c_str());
     if (call.args.size()) {
@@ -78,43 +186,47 @@ void MtModule::dump_banner() {
   if (modparams.size()) {
     LOG_B("Modparams:\n")
     LOG_INDENT_SCOPE();
-    for (auto& param : modparams) LOG_G("%s\n", param.name.c_str());
+    for (auto &param : modparams) LOG_G("%s\n", param.name.c_str());
   }
 
   if (localparams.size()) {
     LOG_B("Localparams:\n");
     LOG_INDENT_SCOPE();
-    for (auto& param : localparams) LOG_G("%s\n", param.name.c_str());
+    for (auto &param : localparams) LOG_G("%s\n", param.name.c_str());
   }
 
   if (enums.size()) {
     LOG_B("Enums:\n");
     LOG_INDENT_SCOPE();
-    for (auto& n : enums) LOG_G("%s\n", n.name.c_str());
+    for (auto &n : enums) LOG_G("%s\n", n.name.c_str());
   }
 
   if (inputs.size()) {
     LOG_B("Inputs:\n");
     LOG_INDENT_SCOPE();
-    for (auto& n : inputs) LOG_G("%s:%s\n", n.name.c_str(), n.type_name.c_str());
+    for (auto &n : inputs)
+      LOG_G("%s:%s\n", n.name.c_str(), n.type_name.c_str());
   }
 
   if (outputs.size()) {
     LOG_B("Outputs:\n");
     LOG_INDENT_SCOPE();
-    for (auto& n : outputs) LOG_G("%s:%s\n", n.name.c_str(), n.type_name.c_str());
+    for (auto &n : outputs)
+      LOG_G("%s:%s\n", n.name.c_str(), n.type_name.c_str());
   }
 
   if (fields.size()) {
     LOG_B("Fields:\n");
     LOG_INDENT_SCOPE();
-    for (auto& n : fields) LOG_G("%s:%s\n", n.name.c_str(), n.type_name.c_str());
+    for (auto &n : fields)
+      LOG_G("%s:%s\n", n.name.c_str(), n.type_name.c_str());
   }
 
   if (submods.size()) {
     LOG_B("Submods:\n");
     LOG_INDENT_SCOPE();
-    for (auto& submod : submods) LOG_G("%s:%s\n", submod.name.c_str(), submod.mod->mod_name.c_str());
+    for (auto &submod : submods)
+      LOG_G("%s:%s\n", submod.name.c_str(), submod.mod->mod_name.c_str());
   }
 
   if (init_methods.size()) {
@@ -155,22 +267,14 @@ void MtModule::dump_banner() {
   if (port_map.size()) {
     LOG_B("Port map:\n");
     LOG_INDENT_SCOPE();
-    for (auto& kv : port_map) LOG_G("%s = %s\n", kv.first.c_str(), kv.second.c_str());
+    for (auto &kv : port_map)
+      LOG_G("%s = %s\n", kv.first.c_str(), kv.second.c_str());
   }
 
   LOG_B("\n");
 }
 
 //------------------------------------------------------------------------------
-
-void log_field_state(FieldState s) {
-  switch(s) {
-  case CLEAN: LOG_G("clean"); break;
-  case MAYBE: LOG_Y("maybe"); break;
-  case DIRTY: LOG_R("dirty"); break;
-  case ERROR: LOG_M("error"); break;
-  }
-}
 
 void MtModule::dump_deltas() {
   if (mod_struct.is_null()) return;
@@ -179,11 +283,12 @@ void MtModule::dump_deltas() {
   {
     LOG_INDENT_SCOPE();
 
-    for (auto& tick : tick_methods) {
-      LOG_G("%s delta valid %d error %d\n", tick.name.c_str(), tick.delta2.valid, tick.delta2.error);
+    for (auto &tick : tick_methods) {
+      LOG_G("%s delta valid %d error %d\n", tick.name.c_str(),
+            tick.delta2.valid, tick.delta2.error);
       LOG_INDENT_SCOPE();
       {
-        for (auto& s : tick.delta2.state_old) {
+        for (auto &s : tick.delta2.state_old) {
           LOG_G("%s", s.first.c_str());
           LOG_W(" : ");
           log_field_state(s.second);
@@ -201,11 +306,12 @@ void MtModule::dump_deltas() {
       }
     }
 
-    for (auto& tock : tock_methods) {
-      LOG_G("%s delta valid %d error %d\n", tock.name.c_str(), tock.delta2.valid, tock.delta2.error);
+    for (auto &tock : tock_methods) {
+      LOG_G("%s delta valid %d error %d\n", tock.name.c_str(),
+            tock.delta2.valid, tock.delta2.error);
       LOG_INDENT_SCOPE();
       {
-        for (auto& s : tock.delta2.state_old) {
+        for (auto &s : tock.delta2.state_old) {
           LOG_G("%s", s.first.c_str());
           LOG_W(" : ");
           log_field_state(s.second);
@@ -228,51 +334,6 @@ void MtModule::dump_deltas() {
 
 //------------------------------------------------------------------------------
 
-void log_error(MtNode n, const char* fmt, ...) {
-  // FIXME
-  return;
-
-  printf("\n########################################\n");
-
-  va_list args;
-  va_start(args, fmt);
-  vprintf(fmt, args);
-  va_end(args);
-
-  printf("@%04d: ", ts_node_start_point(n.node).row + 1);
-  
-  /*
-  {
-    auto start = &source[n.start_byte()];
-
-    auto a = start;
-    auto b = start;
-    while (a > source     && *a != '\n' && *a != '\r') a--;
-    while (b < source_end && *b != '\n' && *b != '\r') b++;
-
-    if (*a == '\n' || *a == '\r') a++;
-
-    while (a != b) {
-      putc(*a++, stdout);
-    }
-  }
-
-  printf("\n");
-  */
-
-  //n.error();
-  n.dump_tree();
-
-  //printf("halting...\n");
-  printf("########################################\n");
-
-  //load_error = true;
-
-  //debugbreak();
-}
-
-//------------------------------------------------------------------------------
-
 void MtModule::load_pass1() {
   if (mod_struct.is_null()) return;
 
@@ -291,8 +352,7 @@ void MtModule::load_pass1() {
       if (child.sym == sym_parameter_declaration ||
           child.sym == sym_optional_parameter_declaration) {
         modparams.push_back(MtParam(child));
-      }
-      else {
+      } else {
         debugbreak();
       }
     }
@@ -312,15 +372,20 @@ void MtModule::load_pass1() {
     bool is_tick = is_task && func_name.starts_with("tick");
     bool is_tock = is_task && func_name.starts_with("tock");
 
-    if      (is_init) init_methods.push_back(node_to_method(n));
-    else if (is_tick) tick_methods.push_back(node_to_method(n));
-    else if (is_tock) tock_methods.push_back(node_to_method(n));
-    else if (is_task) task_methods.push_back(node_to_method(n));
-    else              func_methods.push_back(node_to_method(n));
+    if (is_init)
+      init_methods.push_back(node_to_method(n));
+    else if (is_tick)
+      tick_methods.push_back(node_to_method(n));
+    else if (is_tock)
+      tock_methods.push_back(node_to_method(n));
+    else if (is_task)
+      task_methods.push_back(node_to_method(n));
+    else
+      func_methods.push_back(node_to_method(n));
   }
 
-  for (auto& n : tick_methods) n.is_tick = true;
-  for (auto& n : tock_methods) n.is_tock = true;
+  for (auto &n : tick_methods) n.is_tick = true;
+  for (auto &n : tock_methods) n.is_tock = true;
 
   // Collect all inputs to all tick and tock methods and merge them into a list
   // of input ports. Input ports can be declared in multiple tick/tock methods,
@@ -331,7 +396,8 @@ void MtModule::load_pass1() {
   for (auto n : tick_methods) {
     n.is_tick = true;
 
-    for (auto tick_arg : n.get_field(field_declarator).get_field(field_parameters)) {
+    for (auto tick_arg :
+         n.get_field(field_declarator).get_field(field_parameters)) {
       if (tick_arg.sym == sym_parameter_declaration) {
         auto arg_type = tick_arg.get_field(field_type);
         auto arg_name = tick_arg.get_field(field_declarator);
@@ -339,7 +405,8 @@ void MtModule::load_pass1() {
         if (arg_name.is_null()) n.error();
 
         if (!input_dedup.contains(arg_name.text())) {
-          inputs.push_back({tick_arg, arg_type.node_to_type(), arg_name.text()});
+          inputs.push_back(
+              {tick_arg, arg_type.node_to_type(), arg_name.text()});
           input_dedup.insert(arg_name.text());
         }
       }
@@ -347,7 +414,8 @@ void MtModule::load_pass1() {
   }
 
   for (auto n : tock_methods) {
-    for (auto tock_arg : n.get_field(field_declarator).get_field(field_parameters)) {
+    for (auto tock_arg :
+         n.get_field(field_declarator).get_field(field_parameters)) {
       if (tock_arg.sym == sym_parameter_declaration) {
         auto arg_type = tock_arg.get_field(field_type);
         auto arg_name = tock_arg.get_field(field_declarator);
@@ -355,7 +423,8 @@ void MtModule::load_pass1() {
         if (arg_name.is_null()) n.error();
 
         if (!input_dedup.contains(arg_name.text())) {
-          inputs.push_back({tock_arg, arg_type.node_to_type(), arg_name.text()});
+          inputs.push_back(
+              {tock_arg, arg_type.node_to_type(), arg_name.text()});
           input_dedup.insert(arg_name.text());
         }
       }
@@ -401,22 +470,21 @@ void MtModule::load_pass2() {
     for (auto c : n) {
       if (c.field == field_declarator) {
         field_count++;
-        auto name = c.sym == sym_array_declarator ? c.get_field(field_declarator) : c;
+        auto name =
+            c.sym == sym_array_declarator ? c.get_field(field_declarator) : c;
 
-        MtField f = { n, field_type.node_to_type(), name.text() };
+        MtField f = {n, field_type.node_to_type(), name.text()};
 
         if (name.text().starts_with("o_")) {
           outputs.push_back(f);
-        }
-        else {
+        } else {
           auto type_name = n.node_to_type();
           if (source_file->lib->has_mod(type_name)) {
             MtSubmod submod(n);
             submod.mod = source_file->lib->get_mod(type_name);
             submod.name = n.get_field(field_declarator).text();
             submods.push_back(submod);
-          }
-          else {
+          } else {
             fields.push_back(f);
           }
         }
@@ -450,29 +518,27 @@ void MtModule::load_pass3() {
     });
   }
 
-  for (auto& call : tick_calls) {
+  for (auto &call : tick_calls) {
     for (auto i = 0; i < call.args.size(); i++) {
       auto key = call.submod->name + "." + call.method->params[i];
       auto val = call.args[i];
       auto it = port_map.find(key);
       if (it != port_map.end()) {
         assert((*it).second == val);
-      }
-      else {
+      } else {
         port_map.insert({key, val});
       }
     }
   }
 
-  for (auto& call : tock_calls) {
+  for (auto &call : tock_calls) {
     for (auto i = 0; i < call.args.size(); i++) {
       auto key = call.submod->name + "." + call.method->params[i];
       auto val = call.args[i];
       auto it = port_map.find(key);
       if (it != port_map.end()) {
         assert((*it).second == val);
-      }
-      else {
+      } else {
         port_map.insert({key, val});
       }
     }
@@ -486,8 +552,10 @@ MtMethod MtModule::node_to_method(MtNode n) {
 
   MtMethod result(n, this);
 
-  auto method_name = n.get_field(field_declarator).get_field(field_declarator).text();
-  auto method_params = n.get_field(field_declarator).get_field(field_parameters);
+  auto method_name =
+      n.get_field(field_declarator).get_field(field_declarator).text();
+  auto method_params =
+      n.get_field(field_declarator).get_field(field_parameters);
 
   result.name = method_name;
 
@@ -512,7 +580,7 @@ MtCall MtModule::node_to_call(MtNode n) {
   auto call_args = call.get_field(field_arguments);
 
   if (call_func.sym == sym_field_expression) {
-    auto call_this   = call_func.get_field(field_argument);
+    auto call_this = call_func.get_field(field_argument);
     auto call_method = call_func.get_field(field_field);
 
     auto submod = get_submod(call_this.text());
@@ -532,16 +600,19 @@ MtCall MtModule::node_to_call(MtNode n) {
 //------------------------------------------------------------------------------
 
 void MtModule::check_dirty_ticks() {
-  for (auto& tick : tick_methods) {
+  for (auto &tick : tick_methods) {
     tick.update_delta();
     dirty_check_fail |= tick.delta2.error;
   }
 }
 
+//------------------------------------------------------------------------------
+
 void MtModule::check_dirty_tocks() {
-  for (auto& tock : tock_methods) {
+  for (auto &tock : tock_methods) {
     tock.update_delta();
     dirty_check_fail |= tock.delta2.error;
   }
 }
 
+//------------------------------------------------------------------------------

@@ -1,8 +1,8 @@
 #include "test_utils.h"
 
 #include "MtCursor.h"
-#include "MtModule.h"
 #include "MtModLibrary.h"
+#include "MtModule.h"
 #include "MtSourceFile.h"
 
 //------------------------------------------------------------------------------
@@ -11,10 +11,10 @@ bool comp_iws(const char* a, const char* b) {
   if (!a) return false;
   if (!b) return false;
 
-  while(1) {
-    if(isspace(*a) != isspace(*b)) return false;
-    while(isspace(*a)) a++;
-    while(isspace(*b)) b++;
+  while (1) {
+    if (isspace(*a) != isspace(*b)) return false;
+    while (isspace(*a)) a++;
+    while (isspace(*b)) b++;
     if (*a != *b) return false;
     if (*a == 0) break;
     a++;
@@ -35,13 +35,13 @@ bool find_iws(const char* a, const char* b) {
   const char* c = a;
   const char* d = b;
 
-  while(1) {
+  while (1) {
     if (*d == 0) return true;
     if (*c == 0) return false;
 
     if (isspace(*c) && isspace(*d)) {
-      while(*c && isspace(*c)) c++;
-      while(*d && isspace(*d)) d++;
+      while (*c && isspace(*c)) c++;
+      while (*d && isspace(*d)) d++;
       if (*d == 0) return true;
       if (*c == 0) return false;
     }
@@ -50,8 +50,7 @@ bool find_iws(const char* a, const char* b) {
       // Mismatch, restart
       c++;
       d = b;
-    }
-    else {
+    } else {
       // Match, continue
       c++;
       d++;
@@ -141,20 +140,20 @@ static TestResults test_match() {
   TEST_INIT("Substring find should treat all whitespace as \"\\w+\"");
   LOG_INDENT_SCOPE();
 
-  EXPECT(+find_iws("foobarbaz",   "bar"));
-  EXPECT(!find_iws("foobarbaz",   " bar"));
-  EXPECT(!find_iws("foobarbaz",   "bar "));
-  EXPECT(!find_iws("foobarbaz",   " bar "));
+  EXPECT(+find_iws("foobarbaz", "bar"));
+  EXPECT(!find_iws("foobarbaz", " bar"));
+  EXPECT(!find_iws("foobarbaz", "bar "));
+  EXPECT(!find_iws("foobarbaz", " bar "));
 
-  EXPECT(+find_iws("foo barbaz",  "bar"));
-  EXPECT(+find_iws("foo barbaz",  " bar"));
-  EXPECT(!find_iws("foo barbaz",  "bar "));
-  EXPECT(!find_iws("foo barbaz",  " bar "));
+  EXPECT(+find_iws("foo barbaz", "bar"));
+  EXPECT(+find_iws("foo barbaz", " bar"));
+  EXPECT(!find_iws("foo barbaz", "bar "));
+  EXPECT(!find_iws("foo barbaz", " bar "));
 
-  EXPECT(+find_iws("foobar baz",  "bar"));
-  EXPECT(!find_iws("foobar baz",  " bar"));
-  EXPECT(+find_iws("foobar baz",  "bar "));
-  EXPECT(!find_iws("foobar baz",  " bar "));
+  EXPECT(+find_iws("foobar baz", "bar"));
+  EXPECT(!find_iws("foobar baz", " bar"));
+  EXPECT(+find_iws("foobar baz", "bar "));
+  EXPECT(!find_iws("foobar baz", " bar "));
 
   EXPECT(+find_iws("foo bar baz", "bar"));
   EXPECT(+find_iws("foo bar baz", " bar"));

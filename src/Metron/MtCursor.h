@@ -1,8 +1,8 @@
 #pragma once
-#include "Platform.h"
+#include <map>
 
 #include "MtNode.h"
-#include <map>
+#include "Platform.h"
 
 struct MtModule;
 struct MtField;
@@ -12,11 +12,10 @@ struct MtModLibrary;
 //------------------------------------------------------------------------------
 
 struct MtCursor {
-
   MtCursor(MtModLibrary* lib, MtSourceFile* source_file, std::string* out);
 
   // Debugging
-  
+
   void dump_node_line(MtNode n);
   void print_error(MtNode n, const char* fmt, ...);
 
@@ -108,7 +107,7 @@ struct MtCursor {
   const char* cursor = nullptr;
   std::string current_function_name;
   std::vector<std::string> indent_stack;
-  
+
   std::string* str_out;
 
   std::map<std::string, std::string> id_replacements;

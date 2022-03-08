@@ -1,17 +1,15 @@
-#include "Platform.h"
-#include "MtModule.h"
-#include "MtModLibrary.h"
-#include "MtCursor.h"
-#include "MtSourceFile.h"
-
-#include "../CoreLib/Log.h"
-
+#include <stdarg.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <stdarg.h>
+#include "../CoreLib/Log.h"
+#include "MtCursor.h"
+#include "MtModLibrary.h"
+#include "MtModule.h"
+#include "MtSourceFile.h"
+#include "Platform.h"
 
-#pragma warning(disable:4996)
+#pragma warning(disable : 4996)
 
 //------------------------------------------------------------------------------
 
@@ -25,12 +23,10 @@ std::vector<std::string> split_path(const std::string& input) {
     if (*c == '/' || *c == '\\' || *c == 0) {
       if (temp.size()) result.push_back(temp);
       temp.clear();
-    }
-    else {
+    } else {
       temp.push_back(*c);
     }
-  }
-  while(*c++ != 0);
+  } while (*c++ != 0);
 
   return result;
 }
@@ -113,7 +109,6 @@ int main(int argc, char** argv) {
   }
   LOG_R("\n");
 
-
   //----------
   // Parse args
 
@@ -124,29 +119,29 @@ int main(int argc, char** argv) {
 
   for (auto& arg : args) {
     const char* arg_cursor = arg.c_str();
-    if (*arg_cursor == '-'){
+    if (*arg_cursor == '-') {
       arg_cursor++;
       auto option = *arg_cursor++;
-      while(*arg_cursor && (*arg_cursor == ' ' || *arg_cursor == '=')) arg_cursor++;
+      while (*arg_cursor && (*arg_cursor == ' ' || *arg_cursor == '='))
+        arg_cursor++;
 
-      switch(option) {
-      case 'I':
-        LOG_G("Adding search path \"%s\"\n", arg_cursor);
-        mod_paths.push_back(arg_cursor);
-        break;
-      case 'O':
-        LOG_G("Adding output directory \"%s\"\n", arg_cursor);
-        out_dir = arg_cursor;
-        break;
-      case 'q':
-        quiet = true;
-        break;
-      default:
-        LOG_G("Bad command line arg \"%s\"\n", arg.c_str());
-        return -1;
+      switch (option) {
+        case 'I':
+          LOG_G("Adding search path \"%s\"\n", arg_cursor);
+          mod_paths.push_back(arg_cursor);
+          break;
+        case 'O':
+          LOG_G("Adding output directory \"%s\"\n", arg_cursor);
+          out_dir = arg_cursor;
+          break;
+        case 'q':
+          quiet = true;
+          break;
+        default:
+          LOG_G("Bad command line arg \"%s\"\n", arg.c_str());
+          return -1;
       }
-    }
-    else {
+    } else {
       mod_names.push_back(arg_cursor);
     }
   }
@@ -171,24 +166,21 @@ int main(int argc, char** argv) {
   //----------
   // Dump out info on modules for debugging.
 
-  for (auto& mod : library.modules)
-  {
+  for (auto& mod : library.modules) {
     mod->dump_banner();
     mod->dump_deltas();
   }
 
-
 #if 1
   // Emit all modules.
 
-  for (auto& source_file : library.source_files)
-  {
-    //auto& source_file = library.source_files[0];
+  for (auto& source_file : library.source_files) {
+    // auto& source_file = library.source_files[0];
 
     auto out_path = out_dir + "/" + source_file->full_path + ".sv";
     mkdir_all(split_path(out_path));
 
-    //if (!quiet) module->dump_banner();
+    // if (!quiet) module->dump_banner();
     LOG_G("Emitting SystemVerilog\n");
 
     std::string out_string;
@@ -200,7 +192,7 @@ int main(int argc, char** argv) {
     cursor.emit(source_file->mt_root);
     cursor.emit("\n");
 
-    //printf("%s\n", out_string.c_str());
+    // printf("%s\n", out_string.c_str());
 
     /*
     LOG_G("Saving SystemVerilog\n");

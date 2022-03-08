@@ -1,13 +1,12 @@
 #pragma once
-#include "Platform.h"
+#include <string>
+#include <vector>
 
 #include "MtNode.h"
-
+#include "Platform.h"
 #include "tree_sitter/api.h"
 
-#include <vector>
-#include <string>
-
+struct MtTranslationUnit;
 struct MtModule;
 struct MtModLibrary;
 typedef std::vector<uint8_t> blob;
@@ -15,7 +14,6 @@ typedef std::vector<uint8_t> blob;
 //------------------------------------------------------------------------------
 
 struct MtSourceFile {
-
   MtSourceFile(const std::string& _full_path, const std::string& _src_blob);
   ~MtSourceFile();
 

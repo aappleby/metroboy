@@ -5,16 +5,13 @@
 /* verilator lint_off WIDTH */
 
 class uart_hello {
-public:
-
+ public:
   /*verilator public_module*/
 
   static const int message_len = 512;
   static const int cursor_bits = clog2(message_len);
 
-  enum class state : logic<2>::BASE {
-    WAIT, SEND, DONE
-  };
+  enum class state : logic<2>::BASE{WAIT, SEND, DONE};
 
   state s;
   logic<cursor_bits> cursor;
@@ -37,22 +34,18 @@ public:
     if (!i_rstn) {
       s = state::WAIT;
       cursor = 0;
-    }
-    else {
+    } else {
       data = memory[cursor];
       if (s == state::WAIT && i_idle) {
         s = state::SEND;
-      }
-      else if (s == state::SEND && i_cts) {
+      } else if (s == state::SEND && i_cts) {
         if (cursor == b9(message_len - 1)) {
           s = state::DONE;
-        }
-        else {
+        } else {
           cursor = cursor + 1;
         }
-      }
-      else if (s == state::DONE) {
-        //s = state::WAIT;
+      } else if (s == state::DONE) {
+        // s = state::WAIT;
         cursor = 0;
       }
     }
@@ -62,10 +55,9 @@ public:
 
   void tock() {
     o_data = data;
-    o_req  = (s == state::SEND);
+    o_req = (s == state::SEND);
     o_done = (s == state::DONE);
   }
-
 };
 
 //==============================================================================

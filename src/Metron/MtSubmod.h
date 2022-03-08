@@ -1,7 +1,6 @@
 #pragma once
-#include "Platform.h"
-
 #include "MtNode.h"
+#include "Platform.h"
 
 struct MtModule;
 

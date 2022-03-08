@@ -2,20 +2,20 @@
 
 //------------------------------------------------------------------------------
 
-#include "tree_sitter/api.h"
-#include "TreeSymbols.h"
-
 #include <assert.h>
 #include <memory.h>
 #include <stdarg.h>
 #include <stdio.h>
 
 #include <algorithm>
+
+#include "TreeSymbols.h"
+#include "tree_sitter/api.h"
 //#include <compare> // not in gcc?
 #include <functional>
+#include <map>
 #include <regex>
 #include <set>
-#include <map>
 #include <string>
 #include <vector>
 
@@ -23,18 +23,17 @@
 // GCC platform
 
 #ifdef __GNUC__
-#include <csignal>
 #include <unistd.h>
+
+#include <csignal>
 
 typedef int64_t LARGE_INTEGER;
 
-//int mkdir(const char* path, int mode) {
+// int mkdir(const char* path, int mode) {
 //  mkdir(path, mode);
 //}
 
-void debugbreak() {
-  raise(SIGTRAP);
-}
+void debugbreak() { raise(SIGTRAP); }
 
 void dprintf(const char* format = "", ...) {
   static char buffer[256];
@@ -51,7 +50,7 @@ void dprintf(const char* format = "", ...) {
     getcwd(cwd.data(),FILENAME_MAX);
     LOG_R("cwd %s\n", cwd);
   }
-*/ 
+*/
 
 #endif
 
@@ -62,15 +61,11 @@ void dprintf(const char* format = "", ...) {
 #include <Windows.h>
 #include <direct.h>
 
-#pragma warning(disable:4996) // unsafe fopen
+#pragma warning(disable : 4996)  // unsafe fopen
 
-void debugbreak() {
-  __debugbreak();
-}
+void debugbreak() { __debugbreak(); }
 
-int mkdir(const char* path, int mode) {
-  return _mkdir(path);
-}
+int mkdir(const char* path, int mode) { return _mkdir(path); }
 
 void dprintf(const char* format, ...) {
   static char buffer[256];
@@ -88,7 +83,7 @@ void dprintf(const char* format, ...) {
     getcwd(cwd.data(),FILENAME_MAX);
     LOG_R("cwd %s\n", cwd);
   }
-*/ 
+*/
 
 #endif
 
@@ -134,7 +129,7 @@ bool operator<(const TSTreeCursor& a, const TSTreeCursor& b) {
   return false;
 }
 
-bool operator == (const TSTreeCursor& a, const TSTreeCursor& b) {
+bool operator==(const TSTreeCursor& a, const TSTreeCursor& b) {
   if (a.context[0] != b.context[0]) return false;
   if (a.context[1] != b.context[1]) return false;
   if (a.tree != b.tree) return false;
@@ -142,7 +137,9 @@ bool operator == (const TSTreeCursor& a, const TSTreeCursor& b) {
   return true;
 }
 
-bool operator != (const TSTreeCursor& a, const TSTreeCursor& b) { return !(a == b); }
+bool operator!=(const TSTreeCursor& a, const TSTreeCursor& b) {
+  return !(a == b);
+}
 
 //------------------------------------------------------------------------------
 

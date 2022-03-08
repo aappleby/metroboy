@@ -46,5 +46,3 @@ void test_rvs() {
   t.tock();
 }
 #endif
-
-

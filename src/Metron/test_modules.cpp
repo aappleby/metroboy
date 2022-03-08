@@ -3,7 +3,9 @@
 //------------------------------------------------------------------------------
 
 static TestResults test_comb_assign() {
-  TEST_INIT("Assignments in always_ff should be non-blocking, assignments in always_comb should be blocking");
+  TEST_INIT(
+      "Assignments in always_ff should be non-blocking, assignments in "
+      "always_comb should be blocking");
   LOG_INDENT_SCOPE();
 
   std::string src = R"(
@@ -26,11 +28,15 @@ struct test {
 
   auto out = translate_simple(src);
 
-  EXPECT(!find_iws(out, "count ="),   "Assignments to 'count' should always be non-blocking.");
-  EXPECT(+find_iws(out, "count <="),  "Assignments to 'count' should always be non-blocking.");
+  EXPECT(!find_iws(out, "count ="),
+         "Assignments to 'count' should always be non-blocking.");
+  EXPECT(+find_iws(out, "count <="),
+         "Assignments to 'count' should always be non-blocking.");
 
-  EXPECT(+find_iws(out, "o_blep ="),  "Assignments to 'o_count' should always be blocking.");
-  EXPECT(!find_iws(out, "o_blep <="), "Assignments to 'o_count' should always be blocking.");
+  EXPECT(+find_iws(out, "o_blep ="),
+         "Assignments to 'o_count' should always be blocking.");
+  EXPECT(!find_iws(out, "o_blep <="),
+         "Assignments to 'o_count' should always be blocking.");
 
   TEST_DONE();
 }

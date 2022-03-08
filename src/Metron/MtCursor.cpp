@@ -14,7 +14,7 @@ void print_escaped(char s);
 
 MtCursor::MtCursor(MtModLibrary* lib, MtSourceFile* source_file,
                    std::string* out)
-    : lib(lib), str_out(out) {
+    : lib(lib), source_file(source_file), str_out(out) {
   indent_stack.push_back("");
   cursor = source_file->source;
 }
@@ -37,11 +37,22 @@ void MtCursor::push_indent(MtNode body) {
   const char* begin = &source_file->source[ts_node_start_byte(n)] - 1;
   const char* end = &source_file->source[ts_node_start_byte(n)];
 
-  while (*begin != '\n' && *begin != '{') begin--;
-  if (*begin == '{') begin++;
+  std::string indent;
 
-  std::string indent(begin + 1, end);
-  for (auto c : indent) assert(isspace(c));
+  while (*begin != '\n' && *begin != '{') begin--;
+  if (*begin == '{') {
+    //begin++;
+    //indent = std::string(begin + 1, end);
+    indent = "";
+  }
+  else {
+    indent = std::string(begin + 1, end);
+  }
+
+  for (auto& c : indent) {
+    assert(isspace(c));
+    //c = '#';
+  }
 
   indent_stack.push_back(indent);
 }
@@ -216,6 +227,20 @@ void MtCursor::emit_replacement(MtNode n, const char* fmt, ...) {
 
 void MtCursor::skip_over(MtNode n) {
   assert(cursor == n.start());
+
+  /*
+  if (!quiet) {
+    printf("\u001b[38;2;255;128;128m");
+
+    for (auto c = n.start(); c < n.end(); c++) {
+      if (*c == ' ') putchar('#');
+      else putchar(*c);
+    }
+
+    printf("\u001b[0m");
+  }
+  */
+
   cursor = n.end();
 }
 
@@ -226,15 +251,36 @@ void MtCursor::skip_to_next_sibling(MtNode n) {
 
   auto next_node = ts_node_next_sibling(n.node);
   auto a = &source_file->source[ts_node_start_byte(next_node)];
-  // auto b = &source_file->source[ts_node_end_byte(next_node)];
-  // while (a < b && isspace(a[0])) a++;
+
+  /*
+  if (!quiet) {
+    printf("\u001b[38;2;255;128;128m");
+
+    for (auto c = cursor; c < a; c++) {
+      if (*c == ' ') putchar('#');
+      else putchar(*c);
+    }
+
+    printf("\u001b[0m");
+  }
+  */
+
   cursor = a;
-  // skip_over(n);
 }
 
 void MtCursor::skip_to_next_line() {
-  while (*cursor != '\n') cursor++;
+  //if (!quiet) printf("\u001b[38;2;255;128;128m");
+
+  while (*cursor != '\n') {
+    //if (!quiet) {
+    //  if (*cursor == ' ') putchar('#');
+    //  else putchar(*cursor);
+    //}
+    cursor++;
+  }
   cursor++;
+
+  //if (!quiet) printf("\u001b[0m");
 }
 
 void MtCursor::emit_to_newline() {
@@ -245,9 +291,19 @@ void MtCursor::emit_to_newline() {
 //----------------------------------------
 
 void MtCursor::skip_ws() {
+  //if (!quiet) printf("\u001b[38;2;255;128;128m");
+
   while (*cursor && isspace(*cursor)) {
+    /*
+    if (!quiet) {
+      if (*cursor == ' ') putchar('#');
+      else putchar(*cursor);
+    }
+    */
     cursor++;
   }
+
+  //if (!quiet) printf("\u001b[0m");
 }
 
 //----------------------------------------
@@ -782,7 +838,13 @@ void MtCursor::emit(MtFuncDefinition func) {
     switch (c.sym) {
       case anon_sym_LBRACE:
         skip_over(c);
-        emit_to_newline();
+        //emit_to_newline();
+
+        //while (*cursor != '\n') emit_char(*cursor++);
+        //emit_char(*cursor++);
+        emit_ws();
+
+
         emit_hoisted_decls(func_body);
         break;
 
@@ -791,9 +853,11 @@ void MtCursor::emit(MtFuncDefinition func) {
         break;
 
       case sym_expression_statement:
-        if (c.child(0).sym == sym_call_expression && in_tick) {
+        if (c.child(0).sym == sym_call_expression && c.child(0).child(0).sym == sym_field_expression) {
+          // Calls to submodules get commented out.
           comment_out(c);
         } else {
+          // Other calls get translated.
           emit_dispatch(c);
         }
         break;
@@ -827,74 +891,6 @@ void MtCursor::emit(MtFuncDefinition func) {
     debugbreak();
 
   emit_to_newline();
-
-  //----------
-  // For each call to {submodule}.tick() in module::tick(), emit glue
-  // assignments.
-
-  // FIXME needs to go in its own always_comb otherwise we get dupes
-
-  if (in_tick && !current_mod->submods.empty()) {
-    emit_newline();
-
-    // emit_glue_assignments(func);
-
-    std::vector<MtNode> submod_call_nodes;
-
-    func.body().visit_tree([&](MtNode child) {
-      if (child.sym == sym_call_expression) {
-        auto call = MtCallExpr(child);
-
-        if (call.func().sym == sym_field_expression) {
-          auto call_args = child.get_field(field_arguments);
-          auto call_this = call.func().get_field(field_argument);
-          auto func_name = call.func().get_field(field_field);
-
-          if (func_name.is_null()) {
-            printf("FUNC NAME NULL\n");
-          }
-
-          if (func_name.match("tick")) {
-            submod_call_nodes.push_back(child);
-          }
-        }
-      }
-    });
-
-    for (auto& n : submod_call_nodes) {
-      MtCallExpr submod_call(n);
-      auto call_this = submod_call.func().get_field(field_argument);
-      auto func_name = submod_call.func().get_field(field_field);
-
-      for (auto& submod : current_mod->submods) {
-        if (submod.name == call_this.node_to_name()) {
-          std::vector<std::string> call_src;
-          std::vector<std::string> call_dst;
-
-          for (auto arg : (MtNode)submod_call.args()) {
-            if (!arg.is_named()) continue;
-            auto src = arg.node_to_name();
-            for (auto& c : src)
-              if (c == '.') c = '_';
-            call_src.push_back(src);
-          }
-
-          for (auto& input : submod.mod->inputs) {
-            call_dst.push_back(input.node_to_name());
-          }
-
-          assert(call_src.size() == call_dst.size());
-
-          for (int i = 0; i < call_src.size(); i++) {
-            emit_indent();
-            emit("assign %s_%s = %s;", submod.name.c_str(), call_dst[i].c_str(),
-                 call_src[i].c_str());
-            emit_newline();
-          }
-        }
-      }
-    }
-  }
 
   //----------
 
@@ -1071,17 +1067,82 @@ void MtCursor::emit(MtFieldDecl field_decl) {
     auto c1 = field_decl.child(1);  // decl
     auto c2 = field_decl.child(2);  // semi
 
+    auto inst_name = c1.text();
+
+    auto mod = lib->get_mod(type_name);
+
+    for (auto& n : mod->inputs) {
+      MtCursor subcursor(lib, mod->source_file, str_out);
+      subcursor.quiet = quiet;
+      subcursor.in_ports = true;
+
+      // parameter_declaration
+      auto input_type = n.get_field(field_type);
+      auto input_decl = n.get_field(field_declarator);
+
+      subcursor.cursor = input_type.start();
+      subcursor.emit_dispatch(input_type);
+      subcursor.emit_ws();
+      emit("%s_", inst_name.c_str());
+      subcursor.emit_dispatch(input_decl);
+
+      emit(";\n");
+      emit_indent();
+    }
+
+    for (auto& n : mod->outputs) {
+      MtCursor subcursor(lib, mod->source_file, str_out);
+      subcursor.quiet = quiet;
+      subcursor.in_ports = true;
+
+      // field_declaration
+      auto output_type = n.get_field(field_type);
+      auto output_decl = n.get_field(field_declarator);
+
+      subcursor.cursor = output_type.start();
+      subcursor.emit_dispatch(output_type);
+      subcursor.emit_ws();
+      emit("%s_", inst_name.c_str());
+      subcursor.emit_dispatch(output_decl);
+
+      emit(";\n");
+      emit_indent();
+    }
+
+
+    cursor = c0.start();
     emit_dispatch(c0);
     emit_ws();
     emit_dispatch(c1);
     emit_ws();
-    emit("(PORTS, GO, HEREE)");  // FIXME patch in the params before the
-                                 // semicolon
+
+    // FIXME patch in the params before the semicolon
+    emit("(");  
+
+    for (auto& n : mod->inputs) {
+      emit("%s_%s, ", inst_name.c_str(), n.name.c_str());
+    }
+
+    for (int i = 0; i < mod->outputs.size(); i++) {
+      auto& n  = mod->outputs[i];
+      emit("%s_%s", inst_name.c_str(), n.name.c_str());
+      if (i != mod->outputs.size() - 1) emit(", ");
+    }
+
+    emit(")");  
+
     emit_dispatch(c2);
+    cursor = field_decl.end();
+
   } else if (field_decl.type().is_enum()) {
     emit_field_as_enum_class(field_decl);
-  } else if (!in_ports && field_decl.is_output()) {
-    skip_to_next_sibling(field_decl);
+  } else if (field_decl.is_output()) {
+    if (!in_ports) {
+      skip_to_next_sibling(field_decl);
+    }
+    else {
+      emit_children(field_decl);
+    }
   } else if (field_decl.is_static2() && field_decl.is_const2()) {
     emit_field_as_localparam(field_decl);
   } else if (current_mod->has_enum(type_name)) {
@@ -1359,20 +1420,28 @@ void MtCursor::emit(MtClassSpecifier n) {
     auto c = struct_body.child(i);
     switch (c.sym) {
       case anon_sym_LBRACE: {
-        // emit_replacement(c, "");
         skip_over(c);
-        emit_to_newline();
-        emit_indent();
-        emit("// Submod outputs go here");
-        emit_newline();
-        for (auto& submod : current_mod->submods) {
-          emit_indent();
-          emit(submod.node_to_name().c_str());
-          emit_newline();
-        }
         break;
       }
       case anon_sym_RBRACE: {
+
+        if (current_mod->port_map.size()) {
+          emit_newline();
+          emit_indent();
+          emit("// Port map:\n");
+          for (auto& p : current_mod->port_map) {
+            emit_indent();
+
+            auto a = p.first;
+            auto b = p.second;
+            for (auto& c : a) if (c == '.') c = '_';
+            for (auto& c : b) if (c == '.') c = '_';
+
+            printf("assign %s = %s;\n", a.c_str(), b.c_str());
+          }
+          emit_newline();
+        }
+
         emit_replacement(c, "endmodule");
         break;
       }
@@ -1391,7 +1460,8 @@ void MtCursor::emit(MtClassSpecifier n) {
         break;
 
       case sym_access_specifier:
-        skip_to_next_line();
+        comment_out(c);
+        //skip_to_next_line();
         break;
 
       default:

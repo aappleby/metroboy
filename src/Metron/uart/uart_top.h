@@ -12,8 +12,13 @@ class uart_top {
  public:
   /*verilator public_module*/
 
+  // Our "hello world" transmitter.
   uart_hello hello;
+
+  // Serializer
   uart_tx<cycles_per_bit> tx;
+
+  // Deserializer
   uart_rx<cycles_per_bit> rx;
 
   logic<1> o_serial;

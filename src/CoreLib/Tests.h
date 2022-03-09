@@ -37,9 +37,9 @@ struct TestResults {
 };
 
 #define TEST_INIT(...) TestResults results; do { LOG("%s: ", __FUNCTION__); LOG_B("" __VA_ARGS__); LOG("\n"); LOG_INDENT(); } while(0);
-#define TEST_DONE()    do {                        return results.finish(__FUNCTION__); } while(0);
-#define TEST_PASS()    do { results.expect_pass++; return results.finish(__FUNCTION__); } while(0);
-#define TEST_FAIL()    do { results.expect_fail++; return results.finish(__FUNCTION__); } while(0);
+#define TEST_DONE()    do { return results.finish(__FUNCTION__); } while(0);
+#define TEST_PASS()    do { results.test_pass++; return results.finish(__FUNCTION__); } while(0);
+#define TEST_FAIL(...) do { results.test_fail++; LOG_R("\n"); LOG_R("%s: ", __FUNCTION__); LOG_R("" __VA_ARGS__); LOG_R("\n"); return results.finish(__FUNCTION__); } while(0);
 
 #define EXPECT(A, ...)       if ((A))        { results.expect_pass++; } else { LOG_Y("EXPECT fail @ %s : %d ",                                          __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.expect_fail++; } 
 #define EXPECT_EQ(A, B, ...) if ((A) == (B)) { results.expect_pass++; } else { LOG_Y("EXPECT_EQ fail: %02x != %02x @ %s : %d ", A, B, __FILE__, __LINE__); LOG_Y(__VA_ARGS__); LOG("\n"); results.expect_fail++; } 

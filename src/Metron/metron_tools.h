@@ -1,14 +1,14 @@
 #pragma once
 
 #include <assert.h>
-//#include <cstring>
 #include <memory.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-//#include <cstdlib>
+#include <stdarg.h>
 
 #include "Logic.h"
+//#include "../CoreLib/Log.h"
 
 #pragma warning(disable:4996)
 
@@ -102,3 +102,18 @@ inline void readmemh(const char* path, void* mem, int begin, int end) {
   parse_hex(path, (uint8_t*)mem + begin, end - begin + 1);
 }
 
+//----------------------------------------
+
+inline int display(const char* fmt, ...) {
+  return 0;
+}
+
+inline int write(const char* fmt, ...) {
+  char buffer[256];
+  va_list args;
+  va_start(args, fmt);
+  int len = vsnprintf(buffer, 256, fmt, args);
+  va_end(args);
+  log_print(0xFFFFFF, buffer, len);
+  return len;
+}

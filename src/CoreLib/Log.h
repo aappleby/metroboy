@@ -40,15 +40,9 @@ inline void log_prefix() {
 
 //-----------------------------------------------------------------------------
 
-inline void log_printf(uint32_t color, const char* format = "", ...) {
+inline void log_print(uint32_t color, const char* buffer, int len) {
   static int log_indent = 0;
   static bool log_start_line = true;
-
-  char buffer[256];
-  va_list args;
-  va_start(args, format);
-  int len = vsnprintf(buffer, 256, format, args);
-  va_end(args);
 
   log_set_color(color);
   for (int i = 0; i < len; i++) {
@@ -73,6 +67,17 @@ inline void log_printf(uint32_t color, const char* format = "", ...) {
     }
   }
   log_set_color(0);
+}
+
+//-----------------------------------------------------------------------------
+
+inline void log_printf(uint32_t color, const char* format = "", ...) {
+  char buffer[256];
+  va_list args;
+  va_start(args, format);
+  int len = vsnprintf(buffer, 256, format, args);
+  va_end(args);
+  log_print(color, buffer, len);
 }
 
 //-----------------------------------------------------------------------------

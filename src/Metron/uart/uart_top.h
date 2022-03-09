@@ -30,7 +30,7 @@ class uart_top {
   //----------------------------------------
 
   void init() {
-    printf("uart_top.init()\n");
+    write("uart_top.init()\n");
     hello.init();
   }
 

@@ -514,7 +514,7 @@ void MtCursor::emit(MtCallExpr call) {
   } else if (func_name == "readmemh") {
     emit_replacement(func, "$readmemh");
     emit(args);
-  } else if (func_name == "printf") {
+  } else if (func_name == "write") {
     emit_replacement(func, "$write");
     emit(args);
   } else if (func_name.starts_with("init")) {

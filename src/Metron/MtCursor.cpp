@@ -1117,7 +1117,7 @@ void MtCursor::emit(MtFieldDecl field_decl) {
     emit_ws();
 
     // FIXME patch in the params before the semicolon
-    emit("(");  
+    emit("(clk, ");  
 
     for (auto& n : mod->inputs) {
       emit("%s_%s, ", inst_name.c_str(), n.name.c_str());
@@ -1437,7 +1437,7 @@ void MtCursor::emit(MtClassSpecifier n) {
             for (auto& c : a) if (c == '.') c = '_';
             for (auto& c : b) if (c == '.') c = '_';
 
-            printf("assign %s = %s;\n", a.c_str(), b.c_str());
+            emit("assign %s = %s;\n", a.c_str(), b.c_str());
           }
           emit_newline();
         }

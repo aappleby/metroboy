@@ -166,42 +166,36 @@ int main(int argc, char** argv) {
   //----------
   // Dump out info on modules for debugging.
 
+  /*
   for (auto& mod : library.modules) {
     mod->dump_banner();
     mod->dump_deltas();
   }
+  */
 
-#if 1
   // Emit all modules.
 
   for (auto& source_file : library.source_files) {
-    // auto& source_file = library.source_files[0];
 
     auto out_path = out_dir + "/" + source_file->full_path + ".sv";
     mkdir_all(split_path(out_path));
 
-    // if (!quiet) module->dump_banner();
-    LOG_G("Emitting SystemVerilog\n");
+    LOG_G("Converting %s -> %s\n", source_file->full_path.c_str(), out_path.c_str());
 
     std::string out_string;
 
     MtCursor cursor(&library, source_file, &out_string);
-    cursor.quiet = false;
+    //cursor.quiet = false;
     cursor.cursor = source_file->source;
     cursor.source_file = source_file;
     cursor.emit(source_file->mt_root);
     cursor.emit("\n");
 
-    // printf("%s\n", out_string.c_str());
-
-    /*
-    LOG_G("Saving SystemVerilog\n");
     FILE* out_file = fopen(out_path.c_str(), "wb");
     if (!out_file) {
       LOG_R("ERROR Could not open %s for output\n", out_path.c_str());
       continue;
     }
-    LOG_G("Opened %s for output\n", out_path.c_str());
 
     // Copy the BOM over if needed.
     if (source_file->use_utf8_bom) {
@@ -211,11 +205,7 @@ int main(int argc, char** argv) {
 
     fwrite(out_string.data(), 1, out_string.size(), out_file);
     fclose(out_file);
-    */
-
-    LOG_G("Done\n");
   }
-#endif
 
   return 0;
 }

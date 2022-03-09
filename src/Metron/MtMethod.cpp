@@ -373,7 +373,7 @@ void MtMethod::check_dirty_call(MtNode n, MtDelta& d) {
     // n.dump_tree();
     // debugbreak();
   } else if (node_func.sym == sym_field_expression) {
-    LOG_G("%s.%s\n", call.submod->name.c_str(), call.method->name.c_str());
+    //LOG_G("%s.%s\n", call.submod->name.c_str(), call.method->name.c_str());
     assert(call.method);
     call.method->update_delta();
 

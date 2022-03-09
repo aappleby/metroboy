@@ -1,5 +1,5 @@
 #pragma once
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "uart_hello.h"
 #include "uart_rx.h"
 #include "uart_tx.h"

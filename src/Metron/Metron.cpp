@@ -49,7 +49,7 @@ void mkdir_all(const std::vector<std::string>& full_path) {
   for (size_t i = 0; i < full_path.size() - 1; i++) {
     if (temp.size()) temp += "/";
     temp += full_path[i];
-    auto d = mkdir(temp.c_str(), 0x777);
+    auto d = plat_mkdir(temp.c_str(), 0x777);
   }
 }
 
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
   args.push_back("-Iuart");
   args.push_back("-Iuart_test");
   args.push_back("-Irvsimple");
-  args.push_back("-Oout");
+  args.push_back("-Ogenerated");
 
   args.push_back("uart_top.h");
   args.push_back("uart_hello.h");
@@ -180,7 +180,7 @@ int main(int argc, char** argv) {
     auto out_path = out_dir + "/" + source_file->full_path + ".sv";
     mkdir_all(split_path(out_path));
 
-    LOG_G("Converting %s -> %s\n", source_file->full_path.c_str(), out_path.c_str());
+    LOG_G("%s -> %s\n", source_file->full_path.c_str(), out_path.c_str());
 
     std::string out_string;
 

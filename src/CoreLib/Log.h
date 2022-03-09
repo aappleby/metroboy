@@ -77,15 +77,15 @@ inline void log_printf(uint32_t color, const char* format = "", ...) {
 
 //-----------------------------------------------------------------------------
 
-#define LOG(...)   log_printf(0x00'00'00'00, __VA_ARGS__);
-#define LOG_R(...) log_printf(0x00'80'80'FF, __VA_ARGS__);
-#define LOG_G(...) log_printf(0x00'80'FF'80, __VA_ARGS__);
-#define LOG_B(...) log_printf(0x00'FF'A0'A0, __VA_ARGS__);
+#define LOG(...)   log_printf(0x00000000, __VA_ARGS__);
+#define LOG_R(...) log_printf(0x008080FF, __VA_ARGS__);
+#define LOG_G(...) log_printf(0x0080FF80, __VA_ARGS__);
+#define LOG_B(...) log_printf(0x00FFA0A0, __VA_ARGS__);
 
-#define LOG_C(...) log_printf(0x00'FF'FF'80, __VA_ARGS__);
-#define LOG_M(...) log_printf(0x00'FF'80'FF, __VA_ARGS__);
-#define LOG_Y(...) log_printf(0x00'80'FF'FF, __VA_ARGS__);
-#define LOG_W(...) log_printf(0x00'FF'FF'FF, __VA_ARGS__);
+#define LOG_C(...) log_printf(0x00FFFF80, __VA_ARGS__);
+#define LOG_M(...) log_printf(0x00FF80FF, __VA_ARGS__);
+#define LOG_Y(...) log_printf(0x0080FFFF, __VA_ARGS__);
+#define LOG_W(...) log_printf(0x00FFFFFF, __VA_ARGS__);
 
 #define LOG_INDENT() log_printf(0, "\t")
 #define LOG_DEDENT() log_printf(0, "\v")

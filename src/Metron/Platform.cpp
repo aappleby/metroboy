@@ -27,15 +27,17 @@
 
 #include <csignal>
 
+#include <sys/stat.h>
+
 typedef int64_t LARGE_INTEGER;
 
-// int mkdir(const char* path, int mode) {
-//  mkdir(path, mode);
-//}
+int plat_mkdir(const char* path, int mode) {
+  return mkdir(path, mode);
+}
 
 void debugbreak() { raise(SIGTRAP); }
 
-void dprintf(const char* format = "", ...) {
+void dprintf(const char* format, ...) {
   static char buffer[256];
   va_list args;
   va_start(args, format);
@@ -65,7 +67,7 @@ void dprintf(const char* format = "", ...) {
 
 void debugbreak() { __debugbreak(); }
 
-int mkdir(const char* path, int mode) { return _mkdir(path); }
+int plat_mkdir(const char* path, int mode) { return _mkdir(path); }
 
 void dprintf(const char* format, ...) {
   static char buffer[256];

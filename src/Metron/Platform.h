@@ -24,10 +24,11 @@
 
 //------------------------------------------------------------------------------
 
+int   plat_mkdir(const char* path, int mode);
+char* plat_getcwd();
+
 void debugbreak();
-int mkdir(const char* path, int mode);
 void dprintf(const char* format = "", ...);
-char* getcwd();
 
 inline void print_escaped(char s) {
   if (s == '\n')

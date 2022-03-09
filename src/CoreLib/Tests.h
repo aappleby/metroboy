@@ -36,7 +36,7 @@ struct TestResults {
   }
 };
 
-#define TEST_INIT(...) TestResults results; do { LOG("%s: ", __FUNCTION__); LOG_B(__VA_ARGS__); LOG("\n"); LOG_INDENT(); } while(0);
+#define TEST_INIT(...) TestResults results; do { LOG("%s: ", __FUNCTION__); LOG_B("" __VA_ARGS__); LOG("\n"); LOG_INDENT(); } while(0);
 #define TEST_DONE()    do {                        return results.finish(__FUNCTION__); } while(0);
 #define TEST_PASS()    do { results.expect_pass++; return results.finish(__FUNCTION__); } while(0);
 #define TEST_FAIL()    do { results.expect_fail++; return results.finish(__FUNCTION__); } while(0);

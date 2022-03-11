@@ -478,6 +478,24 @@ struct MtDecl : public MtNode {
     return get_field(field_declarator).sym == sym_init_declarator;
   }
 
+  bool is_static2() {
+    for (auto c : (MtNode&)*this) {
+      if (c.sym == sym_storage_class_specifier) {
+        if (c.match("static")) return true;
+      }
+    }
+    return false;
+  }
+
+  bool is_const2() {
+    for (auto c : (MtNode&)*this) {
+      if (c.sym == sym_type_qualifier) {
+        if (c.match("const")) return true;
+      }
+    }
+    return false;
+  }
+
   MtTemplateType _type() { return MtTemplateType(get_field(field_type)); }
   MtIdentifier _decl() { return MtIdentifier(get_field(field_declarator)); }
   MtInitDecl _init_decl() { return MtInitDecl(get_field(field_declarator)); }

@@ -82,8 +82,18 @@ bool MtNode::is_const() const {
 
 const char* MtNode::start() {
   assert(!is_null());
+
   auto a = &source->source[start_byte()];
-  assert(!isspace(a[0]));
+  auto b = &source->source[end_byte()];
+
+  if (sym == sym_preproc_arg) {
+    // TreeSitter bug - #defines include the whitespace before the value, trim it.
+    while(isspace(*a)) a++;
+  }
+  else {
+    assert(!isspace(a[0]));
+  }
+
   return a;
 }
 

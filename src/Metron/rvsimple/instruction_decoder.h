@@ -3,12 +3,15 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_INSTRUCTION_DECODER_H
+#define RVSIMPLE_INSTRUCTION_DECODER_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
 
-struct instruction_decoder {
+class instruction_decoder {
+public:
   logic<7> o_inst_opcode;
   logic<3> o_inst_funct3;
   logic<7> o_inst_funct7;
@@ -25,3 +28,5 @@ struct instruction_decoder {
     o_inst_rs2    = b5(i_inst, 20);
   }
 };
+
+#endif // RVSIMPLE_INSTRUCTION_DECODER_H

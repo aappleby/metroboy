@@ -32,7 +32,7 @@ struct singlecycle_datapath {
   alu alu;
   instruction_decoder instruction_decoder;
   immediate_generator immediate_generator;
-  reg<32, INITIAL_PC> program_counter;
+  _register<32, INITIAL_PC> program_counter;
 
   multiplexer4<32> mux_next_pc_select;
   multiplexer2<32> mux_operand_a;

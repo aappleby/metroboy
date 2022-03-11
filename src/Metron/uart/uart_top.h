@@ -5,7 +5,6 @@
 #include "uart_tx.h"
 
 //==============================================================================
-/* verilator lint_off WIDTH */
 
 template <int cycles_per_bit = 3>
 class uart_top {

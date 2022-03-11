@@ -70,6 +70,81 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetronTest", "src\Metron\Me
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetronLib", "src\Metron\MetronLib.vcxproj", "{50CBE33D-A4AE-4202-B80D-49F27ECD10E2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rvsimple", "rvsimple", "{9E7E904C-1F1B-40D1-93BA-FCB5FA6155FE}"
+	ProjectSection(SolutionItems) = preProject
+		src\Metron\rvsimple\adder.cpp = src\Metron\rvsimple\adder.cpp
+		src\Metron\rvsimple\adder.h = src\Metron\rvsimple\adder.h
+		src\Metron\rvsimple\alu.cpp = src\Metron\rvsimple\alu.cpp
+		src\Metron\rvsimple\alu.h = src\Metron\rvsimple\alu.h
+		src\Metron\rvsimple\alu_control.cpp = src\Metron\rvsimple\alu_control.cpp
+		src\Metron\rvsimple\alu_control.h = src\Metron\rvsimple\alu_control.h
+		src\Metron\rvsimple\config.cpp = src\Metron\rvsimple\config.cpp
+		src\Metron\rvsimple\config.h = src\Metron\rvsimple\config.h
+		src\Metron\rvsimple\constants.cpp = src\Metron\rvsimple\constants.cpp
+		src\Metron\rvsimple\constants.h = src\Metron\rvsimple\constants.h
+		src\Metron\rvsimple\control_transfer.cpp = src\Metron\rvsimple\control_transfer.cpp
+		src\Metron\rvsimple\control_transfer.h = src\Metron\rvsimple\control_transfer.h
+		src\Metron\rvsimple\data_memory_interface.cpp = src\Metron\rvsimple\data_memory_interface.cpp
+		src\Metron\rvsimple\data_memory_interface.h = src\Metron\rvsimple\data_memory_interface.h
+		src\Metron\rvsimple\example_data_memory.cpp = src\Metron\rvsimple\example_data_memory.cpp
+		src\Metron\rvsimple\example_data_memory.h = src\Metron\rvsimple\example_data_memory.h
+		src\Metron\rvsimple\example_data_memory_bus.cpp = src\Metron\rvsimple\example_data_memory_bus.cpp
+		src\Metron\rvsimple\example_data_memory_bus.h = src\Metron\rvsimple\example_data_memory_bus.h
+		src\Metron\rvsimple\example_memory_bus.cpp = src\Metron\rvsimple\example_memory_bus.cpp
+		src\Metron\rvsimple\example_memory_bus.h = src\Metron\rvsimple\example_memory_bus.h
+		src\Metron\rvsimple\example_text_memory.cpp = src\Metron\rvsimple\example_text_memory.cpp
+		src\Metron\rvsimple\example_text_memory.h = src\Metron\rvsimple\example_text_memory.h
+		src\Metron\rvsimple\example_text_memory_bus.cpp = src\Metron\rvsimple\example_text_memory_bus.cpp
+		src\Metron\rvsimple\example_text_memory_bus.h = src\Metron\rvsimple\example_text_memory_bus.h
+		src\Metron\rvsimple\immediate_generator.cpp = src\Metron\rvsimple\immediate_generator.cpp
+		src\Metron\rvsimple\immediate_generator.h = src\Metron\rvsimple\immediate_generator.h
+		src\Metron\rvsimple\instruction_decoder.cpp = src\Metron\rvsimple\instruction_decoder.cpp
+		src\Metron\rvsimple\instruction_decoder.h = src\Metron\rvsimple\instruction_decoder.h
+		src\Metron\rvsimple\multiplexer.cpp = src\Metron\rvsimple\multiplexer.cpp
+		src\Metron\rvsimple\multiplexer.h = src\Metron\rvsimple\multiplexer.h
+		src\Metron\rvsimple\multiplexer2.cpp = src\Metron\rvsimple\multiplexer2.cpp
+		src\Metron\rvsimple\multiplexer2.h = src\Metron\rvsimple\multiplexer2.h
+		src\Metron\rvsimple\multiplexer4.cpp = src\Metron\rvsimple\multiplexer4.cpp
+		src\Metron\rvsimple\multiplexer4.h = src\Metron\rvsimple\multiplexer4.h
+		src\Metron\rvsimple\multiplexer8.cpp = src\Metron\rvsimple\multiplexer8.cpp
+		src\Metron\rvsimple\multiplexer8.h = src\Metron\rvsimple\multiplexer8.h
+		src\Metron\rvsimple\regfile.cpp = src\Metron\rvsimple\regfile.cpp
+		src\Metron\rvsimple\regfile.h = src\Metron\rvsimple\regfile.h
+		src\Metron\rvsimple\register.cpp = src\Metron\rvsimple\register.cpp
+		src\Metron\rvsimple\register.h = src\Metron\rvsimple\register.h
+		src\Metron\rvsimple\riscv_core.cpp = src\Metron\rvsimple\riscv_core.cpp
+		src\Metron\rvsimple\riscv_core.h = src\Metron\rvsimple\riscv_core.h
+		src\Metron\rvsimple\singlecycle_control.cpp = src\Metron\rvsimple\singlecycle_control.cpp
+		src\Metron\rvsimple\singlecycle_control.h = src\Metron\rvsimple\singlecycle_control.h
+		src\Metron\rvsimple\singlecycle_ctlpath.cpp = src\Metron\rvsimple\singlecycle_ctlpath.cpp
+		src\Metron\rvsimple\singlecycle_ctlpath.h = src\Metron\rvsimple\singlecycle_ctlpath.h
+		src\Metron\rvsimple\singlecycle_datapath.cpp = src\Metron\rvsimple\singlecycle_datapath.cpp
+		src\Metron\rvsimple\singlecycle_datapath.h = src\Metron\rvsimple\singlecycle_datapath.h
+		src\Metron\rvsimple\toplevel.cpp = src\Metron\rvsimple\toplevel.cpp
+		src\Metron\rvsimple\toplevel.h = src\Metron\rvsimple\toplevel.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rvsimple generated", "rvsimple generated", "{19FBF839-DE03-487A-A74D-7CBFA7095E7C}"
+	ProjectSection(SolutionItems) = preProject
+		src\Metron\generated\rvsimple\adder.h.sv = src\Metron\generated\rvsimple\adder.h.sv
+		src\Metron\generated\rvsimple\alu.h.sv = src\Metron\generated\rvsimple\alu.h.sv
+		src\Metron\generated\rvsimple\alu_control.h.sv = src\Metron\generated\rvsimple\alu_control.h.sv
+		src\Metron\generated\rvsimple\config.h.sv = src\Metron\generated\rvsimple\config.h.sv
+		src\Metron\generated\rvsimple\constants.h.sv = src\Metron\generated\rvsimple\constants.h.sv
+		src\Metron\generated\rvsimple\control_transfer.h.sv = src\Metron\generated\rvsimple\control_transfer.h.sv
+		src\Metron\generated\rvsimple\data_memory_interface.h.sv = src\Metron\generated\rvsimple\data_memory_interface.h.sv
+		src\Metron\generated\rvsimple\example_text_memory.h.sv = src\Metron\generated\rvsimple\example_text_memory.h.sv
+		src\Metron\generated\rvsimple\example_text_memory_bus.h.sv = src\Metron\generated\rvsimple\example_text_memory_bus.h.sv
+		src\Metron\generated\rvsimple\immediate_generator.h.sv = src\Metron\generated\rvsimple\immediate_generator.h.sv
+		src\Metron\generated\rvsimple\instruction_decoder.h.sv = src\Metron\generated\rvsimple\instruction_decoder.h.sv
+		src\Metron\generated\rvsimple\multiplexer.h.sv = src\Metron\generated\rvsimple\multiplexer.h.sv
+		src\Metron\generated\rvsimple\multiplexer2.h.sv = src\Metron\generated\rvsimple\multiplexer2.h.sv
+		src\Metron\generated\rvsimple\multiplexer4.h.sv = src\Metron\generated\rvsimple\multiplexer4.h.sv
+		src\Metron\generated\rvsimple\multiplexer8.h.sv = src\Metron\generated\rvsimple\multiplexer8.h.sv
+		src\Metron\generated\rvsimple\regfile.h.sv = src\Metron\generated\rvsimple\regfile.h.sv
+		src\Metron\generated\rvsimple\register.h.sv = src\Metron\generated\rvsimple\register.h.sv
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -281,6 +356,8 @@ Global
 		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
 		{73D9A771-6462-4D34-93E4-08620FFFBE0F} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
 		{50CBE33D-A4AE-4202-B80D-49F27ECD10E2} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
+		{9E7E904C-1F1B-40D1-93BA-FCB5FA6155FE} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
+		{19FBF839-DE03-487A-A74D-7CBFA7095E7C} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98604A08-7834-4268-B908-11FE80403D7A}

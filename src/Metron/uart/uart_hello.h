@@ -2,7 +2,6 @@
 #include "metron_tools.h"
 
 //==============================================================================
-/* verilator lint_off WIDTH */
 
 class uart_hello {
  public:

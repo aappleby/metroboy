@@ -8,7 +8,10 @@
 #include "config.h"
 #include "constants.h"
 
+using namespace rv_config;
+
 struct example_data_memory {
+
 
   logic<32> mem[pow2(DATA_BITS - 2)];
 	logic<32> o_q;

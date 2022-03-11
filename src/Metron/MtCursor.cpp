@@ -41,17 +41,16 @@ void MtCursor::push_indent(MtNode body) {
 
   while (*begin != '\n' && *begin != '{') begin--;
   if (*begin == '{') {
-    //begin++;
-    //indent = std::string(begin + 1, end);
+    // begin++;
+    // indent = std::string(begin + 1, end);
     indent = "";
-  }
-  else {
+  } else {
     indent = std::string(begin + 1, end);
   }
 
   for (auto& c : indent) {
     assert(isspace(c));
-    //c = '#';
+    // c = '#';
   }
 
   indent_stack.push_back(indent);
@@ -126,7 +125,7 @@ void MtCursor::print_error(MtNode n, const char* fmt, ...) {
 // Generic emit() methods
 
 void MtCursor::emit_char(char c) {
-  if (!isspace(c)) {
+  if (c < 0 || !isspace(c)) {
     line_dirty = true;
   }
 
@@ -269,10 +268,10 @@ void MtCursor::skip_to_next_sibling(MtNode n) {
 }
 
 void MtCursor::skip_to_next_line() {
-  //if (!quiet) printf("\u001b[38;2;255;128;128m");
+  // if (!quiet) printf("\u001b[38;2;255;128;128m");
 
   while (*cursor != '\n') {
-    //if (!quiet) {
+    // if (!quiet) {
     //  if (*cursor == ' ') putchar('#');
     //  else putchar(*cursor);
     //}
@@ -280,7 +279,7 @@ void MtCursor::skip_to_next_line() {
   }
   cursor++;
 
-  //if (!quiet) printf("\u001b[0m");
+  // if (!quiet) printf("\u001b[0m");
 }
 
 void MtCursor::emit_to_newline() {
@@ -291,7 +290,7 @@ void MtCursor::emit_to_newline() {
 //----------------------------------------
 
 void MtCursor::skip_ws() {
-  //if (!quiet) printf("\u001b[38;2;255;128;128m");
+  // if (!quiet) printf("\u001b[38;2;255;128;128m");
 
   while (*cursor && isspace(*cursor)) {
     /*
@@ -303,7 +302,7 @@ void MtCursor::skip_ws() {
     cursor++;
   }
 
-  //if (!quiet) printf("\u001b[0m");
+  // if (!quiet) printf("\u001b[0m");
 }
 
 //----------------------------------------
@@ -353,7 +352,12 @@ void MtCursor::emit(MtAssignmentExpr n) {
 
   if (lhs.sym == sym_identifier) {
     emit(MtIdentifier(lhs));
-  } else {
+  }
+  else if (lhs.sym == sym_subscript_expression) {
+    emit_children(lhs);
+  }
+  else {
+    lhs.dump_tree();
     debugbreak();
   }
   emit_ws();
@@ -386,13 +390,21 @@ void MtCursor::emit_static_bit_extract(MtCallExpr call, int bx_width) {
       cursor = call.end();
     } else if (arg0.sym == sym_identifier ||
                arg0.sym == sym_subscript_expression) {
-      // Size-casting expression
-      cursor = arg0.start();
-      emit("%d'", bx_width);
-      emit("(");
-      emit_dispatch(arg0);
-      emit(")");
-      cursor = call.end();
+      if (arg0.text() == "DONTCARE") {
+        // Size-casting expression
+        emit("%d'", bx_width);
+        emit("x");
+        cursor = call.end();
+      } else {
+        // Size-casting expression
+        cursor = arg0.start();
+        emit("%d'", bx_width);
+        emit("(");
+        emit_dispatch(arg0);
+        emit(")");
+        cursor = call.end();
+      }
+
     } else {
       // Size-casting expression
       cursor = arg0.start();
@@ -444,13 +456,22 @@ void MtCursor::emit_dynamic_bit_extract(MtCallExpr call, MtNode bx_node) {
 
   if (arg_count == 1) {
     // Non-literal size-casting expression - bits'(expression)
-    cursor = bx_node.start();
-    emit_dispatch(bx_node);
-    emit("'(");
-    cursor = arg0.start();
-    emit_dispatch(arg0);
-    emit(")");
-    cursor = call.end();
+    if (arg0.text() == "DONTCARE") {
+      cursor = bx_node.start();
+      emit_dispatch(bx_node);
+      emit("'(1'bx)");
+      cursor = call.end();
+    }
+    else {
+      cursor = bx_node.start();
+      emit_dispatch(bx_node);
+      emit("'(");
+      cursor = arg0.start();
+      emit_dispatch(arg0);
+      emit(")");
+      cursor = call.end();
+    }
+
   } else if (arg_count == 2) {
     // Non-literal slice expression - expression[bits+offset-1:offset];
 
@@ -682,6 +703,7 @@ void MtCursor::emit(MtCallExpr call) {
           emit_dispatch(arg);
           break;
       }
+      emit_ws();
     }
   } else if (func_name == "dup") {
     // Convert "dup<15>(b12(instr_i))" to "15 {instr_i[12]}}"
@@ -713,7 +735,11 @@ void MtCursor::emit(MtCallExpr call) {
 void MtCursor::emit_init_declarator_as_decl(MtDecl n) {
   assert(cursor == n.start());
 
-  assert(n.is_init_decl());
+  // if (!n.is_init_decl()) {
+  //  n.dump_tree();
+  //}
+  // assert(n.is_init_decl());
+
   emit(n._type());
   emit_ws();
   emit(n._init_decl().decl());
@@ -749,8 +775,14 @@ void MtCursor::emit_hoisted_decls(MtCompoundStatement n) {
       } else {
         cursor = c.start();
 
+        auto d = MtDecl(c);
+
         emit_indent();
-        emit_init_declarator_as_decl(MtDecl(c));
+        if (d.is_init_decl()) {
+          emit_init_declarator_as_decl(MtDecl(c));
+        } else {
+          emit_dispatch(d);
+        }
         emit_newline();
       }
     }
@@ -838,22 +870,28 @@ void MtCursor::emit(MtFuncDefinition func) {
     switch (c.sym) {
       case anon_sym_LBRACE:
         skip_over(c);
-        //emit_to_newline();
+        // emit_to_newline();
 
-        //while (*cursor != '\n') emit_char(*cursor++);
-        //emit_char(*cursor++);
+        // while (*cursor != '\n') emit_char(*cursor++);
+        // emit_char(*cursor++);
         emit_ws();
-
 
         emit_hoisted_decls(func_body);
         break;
 
-      case sym_declaration:
-        emit_init_declarator_as_assign(c);
+      case sym_declaration: {
+        MtDecl d(c);
+        if (d.is_init_decl()) {
+          emit_init_declarator_as_assign(c);
+        } else {
+          skip_over(c);
+        }
         break;
+      }
 
       case sym_expression_statement:
-        if (c.child(0).sym == sym_call_expression && c.child(0).child(0).sym == sym_field_expression) {
+        if (c.child(0).sym == sym_call_expression &&
+            c.child(0).child(0).sym == sym_field_expression) {
           // Calls to submodules get commented out.
           comment_out(c);
         } else {
@@ -1109,7 +1147,6 @@ void MtCursor::emit(MtFieldDecl field_decl) {
       emit_indent();
     }
 
-
     cursor = c0.start();
     emit_dispatch(c0);
     emit_ws();
@@ -1117,19 +1154,19 @@ void MtCursor::emit(MtFieldDecl field_decl) {
     emit_ws();
 
     // FIXME patch in the params before the semicolon
-    emit("(clk, ");  
+    emit("(clk, ");
 
     for (auto& n : mod->inputs) {
       emit("%s_%s, ", inst_name.c_str(), n.name.c_str());
     }
 
     for (int i = 0; i < mod->outputs.size(); i++) {
-      auto& n  = mod->outputs[i];
+      auto& n = mod->outputs[i];
       emit("%s_%s", inst_name.c_str(), n.name.c_str());
       if (i != mod->outputs.size() - 1) emit(", ");
     }
 
-    emit(")");  
+    emit(")");
 
     emit_dispatch(c2);
     cursor = field_decl.end();
@@ -1139,8 +1176,7 @@ void MtCursor::emit(MtFieldDecl field_decl) {
   } else if (field_decl.is_output()) {
     if (!in_ports) {
       skip_to_next_sibling(field_decl);
-    }
-    else {
+    } else {
       emit_children(field_decl);
     }
   } else if (field_decl.is_static2() && field_decl.is_const2()) {
@@ -1312,7 +1348,8 @@ void MtCursor::emit(MtClassSpecifier n) {
     emit_indent();
     MtCursor sub_cursor = *this;
     sub_cursor.cursor = current_mod->mod_param_list.start();
-    for (auto c : (MtNode&)current_mod->mod_param_list) switch (c.sym) {
+    for (auto c : (MtNode&)current_mod->mod_param_list) {
+      switch (c.sym) {
         case anon_sym_LT:
           sub_cursor.emit_replacement(c, "#(");
           break;
@@ -1330,10 +1367,17 @@ void MtCursor::emit(MtClassSpecifier n) {
           sub_cursor.emit_dispatch(c);
           break;
 
+        case anon_sym_COMMA:
+          sub_cursor.emit_text(c);
+          break;
+
         default:
+          c.dump_tree();
           assert(false);
           break;
       }
+      sub_cursor.emit_ws();
+    }
     emit_newline();
   }
 
@@ -1424,7 +1468,6 @@ void MtCursor::emit(MtClassSpecifier n) {
         break;
       }
       case anon_sym_RBRACE: {
-
         if (current_mod->port_map.size()) {
           emit_newline();
           emit_indent();
@@ -1434,8 +1477,10 @@ void MtCursor::emit(MtClassSpecifier n) {
 
             auto a = p.first;
             auto b = p.second;
-            for (auto& c : a) if (c == '.') c = '_';
-            for (auto& c : b) if (c == '.') c = '_';
+            for (auto& c : a)
+              if (c == '.') c = '_';
+            for (auto& c : b)
+              if (c == '.') c = '_';
 
             emit("assign %s = %s;\n", a.c_str(), b.c_str());
           }
@@ -1461,7 +1506,11 @@ void MtCursor::emit(MtClassSpecifier n) {
 
       case sym_access_specifier:
         comment_out(c);
-        //skip_to_next_line();
+        // skip_to_next_line();
+        break;
+
+      case sym_preproc_ifdef:
+        emit_dispatch(c);
         break;
 
       default:
@@ -1542,6 +1591,10 @@ void MtCursor::emit(MtCompoundStatement body) {
 
       case sym_comment:
         emit(MtComment(c));
+        break;
+
+      case sym_break_statement:
+        emit(MtBreakStatement(c));
         break;
 
       default:
@@ -1833,8 +1886,10 @@ void MtCursor::emit(MtCaseStatement n) {
   for (auto c : (MtNode&)n) {
     if (c.sym == anon_sym_case) {
       skip_to_next_sibling(c);
-    } else
+    } else {
       emit_dispatch(c);
+    }
+    emit_ws();
   }
 }
 
@@ -1852,13 +1907,16 @@ void MtCursor::emit(MtSwitchStatement n) {
           skip_over(gc);
         } else if (gc.sym == anon_sym_RBRACE) {
           emit_replacement(gc, "endcase");
-        } else
+        } else {
           emit_dispatch(gc);
+        }
+        emit_ws();
       }
 
     } else {
       emit_dispatch(c);
     }
+    emit_ws();
   }
 }
 
@@ -1883,7 +1941,7 @@ void MtCursor::emit(MtComment n) {
 
 void MtCursor::emit(MtBreakStatement n) {
   assert(cursor == n.start());
-  emit_replacement(n, "/*-*/;");
+  comment_out(n);
 }
 
 //------------------------------------------------------------------------------
@@ -1953,9 +2011,56 @@ void MtCursor::emit(MtUsingDecl n) {
 
 //------------------------------------------------------------------------------
 // FIXME - When do we hit this? It doesn't look finished.
+// It's for namespace decls
+
+// FIXME need to handle const char* string declarations
+
+/*
+========== tree dump begin
+[00:000:187] declaration =
+[00:000:226] |  storage_class_specifier =
+[00:000:064] |  |  lit = "static"
+[01:000:227] |  type_qualifier =
+[00:000:068] |  |  lit = "const"
+[02:032:078] |  type: primitive_type = "char"
+[03:009:224] |  declarator: init_declarator =
+[00:009:212] |  |  declarator: pointer_declarator =
+[00:000:023] |  |  |  lit = "*"
+[01:009:001] |  |  |  declarator: identifier = "TEXT_HEX"
+[01:000:063] |  |  lit = "="
+[02:034:278] |  |  value: string_literal =
+[00:000:123] |  |  |  lit = "\""
+[01:000:123] |  |  |  lit = "\""
+[04:000:039] |  lit = ";"
+========== tree dump end
+*/
 
 void MtCursor::emit(MtDecl n) {
+  //n.dump_tree();
+
   assert(cursor == n.start());
+
+  // Check for "static const char"
+  if (n.is_static2() && n.is_const2()) {
+    auto node_type = n.get_field(field_type);
+    if (node_type.text() == "char") {
+      emit("localparam string ");
+      auto init_decl = n.get_field(field_declarator);
+      auto pointer_decl = init_decl.get_field(field_declarator);
+      auto name = pointer_decl.get_field(field_declarator);
+      cursor = name.start();
+      emit_text(name);
+      emit(" = ");
+
+      auto val = init_decl.get_field(field_value);
+      cursor = val.start();
+      emit_text(val);
+      emit(";");
+      cursor = n.end();
+      return;
+    }
+  }
+
 
   // Check for enum classes, which are broken.
   auto node_type = n.get_field(field_type);
@@ -1971,7 +2076,9 @@ void MtCursor::emit(MtDecl n) {
     emit("parameter ");
     cursor = n.child(2).start();
     emit_dispatch(n.child(2));
+    emit_ws();
     emit_dispatch(n.child(3));
+    emit_ws();
     emit_dispatch(n.child(4));
 
     cursor = n.end();
@@ -1979,7 +2086,10 @@ void MtCursor::emit(MtDecl n) {
   }
 
   // Regular boring local variable declaration?
-  for (auto c : (MtNode)n) emit_dispatch(c);
+  for (auto c : (MtNode)n) {
+    emit_dispatch(c);
+    emit_ws();
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -2015,16 +2125,17 @@ void MtCursor::emit(MtNamespaceDef n) {
   cursor = node_body.start();
 
   for (auto c : node_body) {
-    if (c.sym == anon_sym_LBRACE)
+    if (c.sym == anon_sym_LBRACE) {
       emit_replacement(c, "");
-    else if (c.sym == anon_sym_RBRACE)
+    } else if (c.sym == anon_sym_RBRACE) {
       emit_replacement(c, "");
-    else
+    } else {
       emit_dispatch(c);
+    }
+    emit_ws();
   }
 
   emit("endpackage");
-  emit_newline();
 
   emit_indent();
   cursor = n.end();
@@ -2053,7 +2164,10 @@ void MtCursor::emit(MtFieldIdentifier n) {
 // Call the correct emit() method based on the node type.
 
 void MtCursor::emit_dispatch(MtNode n) {
-  assert(cursor == n.start());
+  if (cursor != n.start()) {
+    n.dump_tree();
+    assert(cursor == n.start());
+  }
 
   switch (n.sym) {
     case sym_preproc_def: {
@@ -2062,7 +2176,9 @@ void MtCursor::emit_dispatch(MtNode n) {
       auto value = n.get_field(field_value);
 
       emit_replacement(lit, "`define");
+      emit_ws();
       emit_dispatch(name);
+      emit_ws();
       if (!value.is_null()) emit_dispatch(value);
       break;
     }

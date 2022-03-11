@@ -8,7 +8,7 @@
 #include <stdarg.h>
 
 #include "Logic.h"
-//#include "../CoreLib/Log.h"
+#include "../CoreLib/Log.h"
 
 #pragma warning(disable:4996)
 

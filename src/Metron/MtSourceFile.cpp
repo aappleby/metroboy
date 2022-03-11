@@ -14,34 +14,44 @@ MtSourceFile::MtSourceFile(const std::string& _full_path,
     : full_path(_full_path), src_blob(_src_blob) {
   assert(src_blob.back() != 0);
 
+  auto blob_size = src_blob.size();
   source = (const char*)src_blob.data();
-  source_end = source + src_blob.size();
+  source_end = source + blob_size;
 
   // Parse the source file.
 
   parser = ts_parser_new();
   lang = tree_sitter_cpp();
   ts_parser_set_language(parser, lang);
-  tree =
-      ts_parser_parse_string(parser, NULL, source, (uint32_t)src_blob.size());
+  tree = ts_parser_parse_string(parser, NULL, source, (uint32_t)blob_size);
 
   // Pull out all modules from the top level of the source.
 
   TSNode ts_root = ts_tree_root_node(tree);
+  auto root_sym = ts_node_symbol(ts_root);
+  mt_root = MtTranslationUnit(MtNode(ts_root, root_sym, 0, this));
+  find_modules(mt_root);
+}
 
-  mt_root =
-      MtTranslationUnit(MtNode(ts_root, ts_node_symbol(ts_root), 0, this));
-
-  for (int i = 0; i < (int)ts_node_child_count(ts_root); i++) {
-    auto child = ts_node_child(ts_root, i);
-    if (ts_node_symbol(child) == sym_template_declaration) {
-      MtNode mod_root(child, ts_node_symbol(child), 0, this);
-      MtModule* mod = new MtModule(this, MtTemplateDecl(mod_root));
-      modules.push_back(mod);
-    } else if (ts_node_symbol(child) == sym_class_specifier) {
-      MtNode mod_root(child, ts_node_symbol(child), 0, this);
-      MtModule* mod = new MtModule(this, MtClassSpecifier(mod_root));
-      modules.push_back(mod);
+void MtSourceFile::find_modules(MtNode toplevel) {
+  for (auto c : toplevel) {
+    switch (c.sym) {
+      case sym_template_declaration: {
+        MtNode mod_root(c.node, c.sym, 0, this);
+        MtModule* mod = new MtModule(this, MtTemplateDecl(mod_root));
+        modules.push_back(mod);
+        break;
+      }
+      case sym_class_specifier: {
+        MtNode mod_root(c.node, c.sym, 0, this);
+        MtModule* mod = new MtModule(this, MtClassSpecifier(mod_root));
+        modules.push_back(mod);
+        break;
+      }
+      case sym_preproc_ifdef: {
+        find_modules(c);
+        break;
+      }
     }
   }
 }

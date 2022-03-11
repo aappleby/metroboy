@@ -70,12 +70,13 @@ int main(int argc, char** argv) {
   args.push_back("-Irvsimple");
   args.push_back("-Ogenerated");
 
+  /*
   args.push_back("uart_top.h");
   args.push_back("uart_hello.h");
   args.push_back("uart_tx.h");
   args.push_back("uart_rx.h");
+  */
 
-  /*
   args.push_back("adder.h");
   args.push_back("config.h");
   args.push_back("constants.h");
@@ -91,8 +92,10 @@ int main(int argc, char** argv) {
   args.push_back("multiplexer8.h");
   args.push_back("regfile.h");
   args.push_back("register.h");
-  args.push_back("example_text_memory.h");
-  args.push_back("example_text_memory_bus.h");
+  //args.push_back("example_text_memory.h");
+  //args.push_back("example_text_memory_bus.h");
+
+  /*
   args.push_back("example_data_memory.h");
   args.push_back("example_data_memory_bus.h");
   args.push_back("singlecycle_control.h");
@@ -176,7 +179,6 @@ int main(int argc, char** argv) {
   // Emit all modules.
 
   for (auto& source_file : library.source_files) {
-
     auto out_path = out_dir + "/" + source_file->full_path + ".sv";
     mkdir_all(split_path(out_path));
 
@@ -199,7 +201,7 @@ int main(int argc, char** argv) {
 
     // Copy the BOM over if needed.
     if (source_file->use_utf8_bom) {
-      uint8_t bom[3] = { 239, 187, 191 };
+      uint8_t bom[3] = {239, 187, 191};
       fwrite(bom, 1, 3, out_file);
     }
 

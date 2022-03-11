@@ -74,7 +74,7 @@ bool MtModLibrary::load_source(const char* name) {
       fclose(f);
 
       bool use_utf8_bom = false;
-      if (src_blob[0] == 239 && src_blob[1] == 187 && src_blob[2] == 191) {
+      if (uint8_t(src_blob[0]) == 239 && uint8_t(src_blob[1]) == 187 && uint8_t(src_blob[2]) == 191) {
         use_utf8_bom = true;
         src_blob.erase(src_blob.begin(), src_blob.begin() + 3);
       }

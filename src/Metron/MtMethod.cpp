@@ -162,13 +162,23 @@ void MtMethod::check_dirty_read_identifier(MtNode n, MtDelta& d) {
   // Reading from a dirty field in tick() is forbidden.
   if (is_tick) {
     if (d.state_new.contains(field)) {
-      if (d.state_new[field] != CLEAN) {
+      if (d.state_new[field] == MAYBE) {
+        log_error(n, "%s() read maybe new field - %s\n", name.c_str(),
+                  field.c_str());
+        d.error = true;
+      }
+      else if (d.state_new[field] == DIRTY) {
         log_error(n, "%s() read dirty new field - %s\n", name.c_str(),
                   field.c_str());
         d.error = true;
       }
     } else if (d.state_old.contains(field)) {
-      if (d.state_old[field] != CLEAN) {
+      if (d.state_old[field] == MAYBE) {
+        log_error(n, "%s() read maybe old field - %s\n", name.c_str(),
+                  field.c_str());
+        d.error = true;
+      }
+      else if (d.state_old[field] == DIRTY) {
         log_error(n, "%s() read dirty old field - %s\n", name.c_str(),
                   field.c_str());
         d.error = true;
@@ -184,14 +194,22 @@ void MtMethod::check_dirty_read_identifier(MtNode n, MtDelta& d) {
   // Reading from a clean field in tock() is forbidden.
   if (is_tock) {
     if (d.state_new.contains(field)) {
-      if (d.state_new[field] != DIRTY) {
+      if (d.state_new[field] == CLEAN) {
         log_error(n, "%s() read clean new field - %s\n", name.c_str(),
+                  field.c_str());
+        d.error = true;
+      } else if (d.state_new[field] == MAYBE) {
+        log_error(n, "%s() read maybe new field - %s\n", name.c_str(),
                   field.c_str());
         d.error = true;
       }
     } else if (d.state_old.contains(field)) {
-      if (d.state_old[field] != DIRTY) {
+      if (d.state_old[field] == CLEAN) {
         log_error(n, "%s() read clean old field - %s\n", name.c_str(),
+                  field.c_str());
+        d.error = true;
+      } else if (d.state_old[field] == MAYBE) {
+        log_error(n, "%s() read maybe old field - %s\n", name.c_str(),
                   field.c_str());
         d.error = true;
       }
@@ -373,7 +391,7 @@ void MtMethod::check_dirty_call(MtNode n, MtDelta& d) {
     // n.dump_tree();
     // debugbreak();
   } else if (node_func.sym == sym_field_expression) {
-    //LOG_G("%s.%s\n", call.submod->name.c_str(), call.method->name.c_str());
+    // LOG_G("%s.%s\n", call.submod->name.c_str(), call.method->name.c_str());
     assert(call.method);
     call.method->update_delta();
 
@@ -401,6 +419,7 @@ void MtMethod::check_dirty_switch(MtNode n, MtDelta& d) {
 
   check_dirty_dispatch(n.get_field(field_condition), d);
 
+  MtDelta init_delta = d;
   MtMethod old_method = *this;
 
   bool first_branch = true;
@@ -408,8 +427,9 @@ void MtMethod::check_dirty_switch(MtNode n, MtDelta& d) {
   auto body = n.get_field(field_body);
   for (auto c : body) {
     if (c.sym == sym_case_statement) {
-      MtDelta case_delta = d;
-      check_dirty_dispatch(c, d);
+      // c.dump_tree();
+      MtDelta case_delta = init_delta;
+      check_dirty_dispatch(c, case_delta);
 
       if (first_branch) {
         d = case_delta;

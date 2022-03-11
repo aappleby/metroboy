@@ -3,13 +3,16 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_REGISTER_H
+#define RVSIMPLE_REGISTER_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
 
 template<int WIDTH = 32, int INITIAL = 0>
-struct reg {
+class _register {
+public:
 
   logic<WIDTH> value;
   logic<WIDTH> o_value;
@@ -27,3 +30,5 @@ struct reg {
     o_value = value;
   }
 };
+
+#endif // RVSIMPLE_REGISTER_H

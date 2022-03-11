@@ -1,6 +1,7 @@
 #include "MtModule.h"
 
 #include "../CoreLib/Log.h"
+#include "MtCursor.h"
 #include "MtMethod.h"
 #include "MtModLibrary.h"
 #include "MtNode.h"
@@ -591,7 +592,13 @@ MtCall MtModule::node_to_call(MtNode n) {
   }
 
   for (int i = 0; i < call_args.named_child_count(); i++) {
-    result.args.push_back(call_args.named_child(i).text());
+    auto arg_node = call_args.named_child(i);
+
+    std::string out_string;
+    MtCursor cursor(source_file->lib, source_file, &out_string);
+    cursor.cursor = arg_node.start();
+    cursor.emit_dispatch(arg_node);
+    result.args.push_back(out_string);
   }
 
   return result;

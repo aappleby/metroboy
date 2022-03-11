@@ -2,7 +2,6 @@
 #include "metron_tools.h"
 
 //==============================================================================
-/* verilator lint_off WIDTH */
 
 template <int cycles_per_bit = 4>
 class uart_rx {

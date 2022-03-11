@@ -3,18 +3,23 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_ALU_CONTROL_H
+#define RVSIMPLE_ALU_CONTROL_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
 
-struct alu_control {
+class alu_control {
+public:
   logic<5> o_alu_function;
 
   void tock(
     logic<2> i_alu_op_type,
     logic<3> i_inst_funct3,
     logic<7> i_inst_funct7) {
+
+    using namespace rv_constants;
 
     logic<5> default_funct;
     switch (i_inst_funct3) {
@@ -37,27 +42,8 @@ struct alu_control {
     }
    
     logic<5> op_funct;
-#ifdef M_MODULE
-    logic<5> m_extension_funct;
-    switch (inst_funct3) {
-      case FUNCT3_ALU_MUL:    m_extension_funct = ALU_MUL; break;
-      case FUNCT3_ALU_MULH:   m_extension_funct = ALU_MULH; break;
-      case FUNCT3_ALU_MULHSU: m_extension_funct = ALU_MULHSU; break;
-      case FUNCT3_ALU_MULHU:  m_extension_funct = ALU_MULHU; break;
-      case FUNCT3_ALU_DIV:    m_extension_funct = ALU_DIV; break;
-      case FUNCT3_ALU_DIVU:   m_extension_funct = ALU_DIVU; break;
-      case FUNCT3_ALU_REM:    m_extension_funct = ALU_REM; break;
-      case FUNCT3_ALU_REMU:   m_extension_funct = ALU_REMU; break;
-      default:                m_extension_funct = b5(DONTCARE); break;
-    }
-
-    if (i_inst_funct7[5])   op_funct = secondary_funct;
-    else if(inst_funct7[0]) op_funct = extension_funct;
-    else                    op_funct = default_funct;
-#else
     if (i_inst_funct7[5])   op_funct = secondary_funct;
     else                    op_funct = default_funct;
-#endif
 
     logic<5> op_imm_funct;
     if (i_inst_funct7[5] && b2(i_inst_funct3) == b2(0b01))
@@ -86,3 +72,4 @@ struct alu_control {
   }
 };
 
+#endif // RVSIMPLE_ALU_CONTROL_H

@@ -21,6 +21,7 @@ struct singlecycle_control {
 
   void tock_next_pc_select(logic<7> i_inst_opcode,
                            logic<1> i_take_branch) {
+    using namespace rv_constants;
     switch (i_inst_opcode) {
       case OPCODE_BRANCH: o_next_pc_select = i_take_branch ? CTL_PC_PC_IMM : CTL_PC_PC4; break;
       case OPCODE_JALR:   o_next_pc_select = CTL_PC_RS1_IMM; break;
@@ -30,6 +31,7 @@ struct singlecycle_control {
   }
 
   void tock_decode(logic<7> i_inst_opcode) {
+    using namespace rv_constants;
     
     switch (i_inst_opcode) {
       case OPCODE_LOAD:

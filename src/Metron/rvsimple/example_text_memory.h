@@ -8,16 +8,19 @@
 #include "config.h"
 #include "constants.h"
 
-struct example_text_memory {
+using namespace rv_config;
 
-  logic<32> mem[pow2(TEXT_BITS - 2)];
+class example_text_memory {
+public:
+
+  logic<32> mem[pow2(rv_config::TEXT_BITS - 2)];
   logic<32> o_q;
 
   void init() {
-    readmemh(TEXT_HEX, mem, 0, int(pow2(TEXT_BITS) - 1));
+    readmemh(rv_config::TEXT_HEX, mem, 0, pow2(rv_config::TEXT_BITS) - 1);
   }
 
-  void tock(logic<TEXT_BITS - 2> address) {
+  void tock(logic<rv_config::TEXT_BITS - 2> address) {
     o_q = mem[address];
   }
 };

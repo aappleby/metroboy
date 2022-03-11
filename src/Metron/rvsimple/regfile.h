@@ -3,12 +3,15 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_REGFILE_H
+#define RVSIMPLE_REGFILE_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
 
-struct regfile {
+class regfile {
+public:
 
   logic<32> o_rs1_data;
   logic<32> o_rs2_data;
@@ -42,5 +45,6 @@ struct regfile {
     o_rs1_data = reg_out_1;
     o_rs2_data = reg_out_2;
   }
-
 };
+
+#endif // RVSIMPLE_REGFILE_H

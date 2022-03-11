@@ -2,6 +2,15 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifdef _MSC_VER
+
+int main(int argc, char** argv) {
+  printf("Need to fix verilated build for MSVC...\n");
+  return -1;
+}
+
+#else
+
 #include "../CoreLib/Tests.h"
 #include "generated/uart/Vuart_top.h"
 #include "generated/uart/Vuart_top_uart_hello.h"
@@ -9,18 +18,6 @@
 #include "generated/uart/Vuart_top_uart_top.h"
 #include "generated/uart/Vuart_top_uart_tx__C3.h"
 #include "uart/uart_top.h"
-
-//------------------------------------------------------------------------------
-
-void dump(Vuart_top& vtop) {
-  printf("v: ");
-  printf("s %03d d %03d v %03d d %03d s %03d", (int)vtop.o_serial, (int)vtop.o_data, (int)vtop.o_valid, (int)vtop.o_done, (int)vtop.o_sum);
-}
-
-void dump(uart_top<3>& mtop) {
-  printf("m: ");
-  printf("s %03d d %03d v %03d d %03d s %03d", (int)mtop.o_serial, (int)mtop.o_data, (int)mtop.o_valid, (int)mtop.o_done, (int)mtop.o_sum);
-}
 
 //------------------------------------------------------------------------------
 
@@ -33,15 +30,17 @@ TestResults test_lockstep(int argc, char** argv) {
   mtop.tick(0);
   mtop.tock();
 
+  // Synchronous reset cycle.
   Vuart_top vtop;
-
-  vtop.clk = 0;
   vtop.i_rstn = 0;
+  vtop.clk = 0;
   vtop.eval();
-  vtop.i_rstn = 1;
   vtop.clk = 1;
   vtop.eval();
+
+  // Reset done, clock starts low.
   vtop.clk = 0;
+  vtop.i_rstn = 1;
   vtop.eval();
 
   LOG_B("========================================\n");
@@ -98,3 +97,5 @@ int main(int argc, char** argv) {
 }
 
 //------------------------------------------------------------------------------
+
+#endif

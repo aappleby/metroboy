@@ -3,12 +3,15 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_DATA_MEMORY_INTERFACE_H
+#define RVSIMPLE_DATA_MEMORY_INTERFACE_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
 
-struct data_memory_interface {
+class data_memory_interface {
+public:
 
   logic<32> o_read_data;
   logic<32> o_bus_address;
@@ -29,7 +32,6 @@ struct data_memory_interface {
     o_bus_write_data   = i_write_data << (8*b2(i_address));
     
     // calculate byte enable
-    //o_bus_byte_enable = b4(0b0000);
     switch (b2(i_data_format)) {
         case 0b00: o_bus_byte_enable = b4(0b0001) << b2(i_address); break;
         case 0b01: o_bus_byte_enable = b4(0b0011) << b2(i_address); break;
@@ -57,3 +59,5 @@ struct data_memory_interface {
     o_read_data = sign_fix;
   }
 };
+
+#endif // RVSIMPLE_DATA_MEMORY_INTERFACE_H

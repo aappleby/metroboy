@@ -17,6 +17,8 @@ struct MtSourceFile {
   MtSourceFile(const std::string& _full_path, const std::string& _src_blob);
   ~MtSourceFile();
 
+  void find_modules(MtNode toplevel);
+
   MtModule* get_module(const std::string& name);
 
   MtModLibrary* lib = nullptr;

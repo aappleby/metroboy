@@ -3,7 +3,9 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_SINGLECYCLE_CTLPATH_H
+#define RVSIMPLE_SINGLECYCLE_CTLPATH_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
@@ -12,7 +14,8 @@
 #include "control_transfer.h"
 #include "alu_control.h"
 
-struct singlecycle_ctlpath {
+class singlecycle_ctlpath {
+public:
 
   logic<1> o_pc_write_enable;
   logic<1> o_regfile_write_enable;
@@ -68,3 +71,5 @@ struct singlecycle_ctlpath {
   }
 
 };
+
+#endif // RVSIMPLE_SINGLECYCLE_CTLPATH_H

@@ -3,7 +3,9 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_RISCV_CORE_H
+#define RVSIMPLE_RISCV_CORE_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
@@ -11,7 +13,9 @@
 #include "singlecycle_ctlpath.h"
 #include "data_memory_interface.h"
 
-struct riscv_core {
+class riscv_core {
+public:
+
   logic<32> o_pc;
   logic<32> o_bus_address;
   logic<32> o_bus_write_data;
@@ -84,3 +88,5 @@ struct riscv_core {
       singlecycle_ctlpath.o_reg_writeback_select);
   }
 };
+
+#endif // RVSIMPLE_RISCV_CORE_H

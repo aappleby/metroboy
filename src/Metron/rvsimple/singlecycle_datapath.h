@@ -3,7 +3,9 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_SINGLECYCLE_DATAPATH_H
+#define RVSIMPLE_SINGLECYCLE_DATAPATH_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
@@ -18,7 +20,10 @@
 #include "multiplexer4.h"
 #include "multiplexer8.h"
 
-struct singlecycle_datapath {
+using namespace rv_config;
+
+class singlecycle_datapath {
+public:
   logic<32> o_data_mem_address;
   logic<32> o_data_mem_write_data;
   logic<32> o_pc;
@@ -28,17 +33,25 @@ struct singlecycle_datapath {
   logic<1>  o_alu_result_equal_zero;
 
   adder<32> adder_pc_plus_4;
+
   adder<32> adder_pc_plus_immediate;
+
   alu alu;
+
   instruction_decoder instruction_decoder;
+
   immediate_generator immediate_generator;
+
   _register<32, INITIAL_PC> program_counter;
 
   multiplexer4<32> mux_next_pc_select;
+
   multiplexer2<32> mux_operand_a;
+
   multiplexer2<32> mux_operand_b;
 
   multiplexer8<32> mux_reg_writeback;
+
   regfile regfile;
 
   void init() {
@@ -128,3 +141,4 @@ struct singlecycle_datapath {
   }
 };
 
+#endif // RVSIMPLE_SINGLECYCLE_DATAPATH_H

@@ -14,7 +14,7 @@ typedef std::vector<uint8_t> blob;
 //------------------------------------------------------------------------------
 
 struct MtSourceFile {
-  MtSourceFile(const std::string& _full_path, const std::string& _src_blob);
+  MtSourceFile(const std::string& _filename, const std::string& _full_path, const std::string& _src_blob);
   ~MtSourceFile();
 
   void find_modules(MtNode toplevel);
@@ -23,6 +23,7 @@ struct MtSourceFile {
 
   MtModLibrary* lib = nullptr;
 
+  const std::string filename;
   const std::string full_path;
   const std::string src_blob;
   bool use_utf8_bom = false;

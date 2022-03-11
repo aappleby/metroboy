@@ -133,6 +133,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rvsimple generated", "rvsim
 		src\Metron\generated\rvsimple\constants.h.sv = src\Metron\generated\rvsimple\constants.h.sv
 		src\Metron\generated\rvsimple\control_transfer.h.sv = src\Metron\generated\rvsimple\control_transfer.h.sv
 		src\Metron\generated\rvsimple\data_memory_interface.h.sv = src\Metron\generated\rvsimple\data_memory_interface.h.sv
+		src\Metron\generated\rvsimple\example_data_memory.h.sv = src\Metron\generated\rvsimple\example_data_memory.h.sv
+		src\Metron\generated\rvsimple\example_data_memory_bus.h.sv = src\Metron\generated\rvsimple\example_data_memory_bus.h.sv
 		src\Metron\generated\rvsimple\example_text_memory.h.sv = src\Metron\generated\rvsimple\example_text_memory.h.sv
 		src\Metron\generated\rvsimple\example_text_memory_bus.h.sv = src\Metron\generated\rvsimple\example_text_memory_bus.h.sv
 		src\Metron\generated\rvsimple\immediate_generator.h.sv = src\Metron\generated\rvsimple\immediate_generator.h.sv
@@ -143,6 +145,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rvsimple generated", "rvsim
 		src\Metron\generated\rvsimple\multiplexer8.h.sv = src\Metron\generated\rvsimple\multiplexer8.h.sv
 		src\Metron\generated\rvsimple\regfile.h.sv = src\Metron\generated\rvsimple\regfile.h.sv
 		src\Metron\generated\rvsimple\register.h.sv = src\Metron\generated\rvsimple\register.h.sv
+		src\Metron\generated\rvsimple\riscv_core.h.sv = src\Metron\generated\rvsimple\riscv_core.h.sv
+		src\Metron\generated\rvsimple\singlecycle_control.h.sv = src\Metron\generated\rvsimple\singlecycle_control.h.sv
+		src\Metron\generated\rvsimple\singlecycle_ctlpath.h.sv = src\Metron\generated\rvsimple\singlecycle_ctlpath.h.sv
+		src\Metron\generated\rvsimple\singlecycle_datapath.h.sv = src\Metron\generated\rvsimple\singlecycle_datapath.h.sv
+		src\Metron\generated\rvsimple\toplevel.h.sv = src\Metron\generated\rvsimple\toplevel.h.sv
 	EndProjectSection
 EndProject
 Global

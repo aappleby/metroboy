@@ -31,6 +31,15 @@ void MtModLibrary::add_source(MtSourceFile* source_file) {
   }
 }
 
+MtSourceFile* MtModLibrary::find_source(const std::string& filename) {
+  for (auto& s : source_files) {
+    if (s->filename == filename) {
+      return s;
+    }
+  }
+  return nullptr;
+}
+
 //------------------------------------------------------------------------------
 
 MtModule* MtModLibrary::get_mod(const std::string& name) {
@@ -46,24 +55,25 @@ bool MtModLibrary::has_mod(const std::string& name) {
 
 //------------------------------------------------------------------------------
 
-void MtModLibrary::load_blob(const std::string& full_path,
+void MtModLibrary::load_blob(const std::string& filename,
+                             const std::string& full_path,
                              const std::string& src_blob, bool use_utf8_bom) {
-  auto source_file = new MtSourceFile(full_path, src_blob);
+  auto source_file = new MtSourceFile(filename, full_path, src_blob);
   source_file->use_utf8_bom = use_utf8_bom;
   add_source(source_file);
 }
 
 //------------------------------------------------------------------------------
 
-bool MtModLibrary::load_source(const char* name) {
+bool MtModLibrary::load_source(const char* filename) {
   bool found = false;
   for (auto& path : search_paths) {
-    auto full_path = path.size() ? path + "/" + name : name;
+    auto full_path = path.size() ? path + "/" + filename : filename;
     struct stat s;
     auto stat_result = stat(full_path.c_str(), &s);
     if (stat_result == 0) {
       found = true;
-      LOG_B("Loading %s from %s\n", name, full_path.c_str());
+      LOG_B("Loading %s from %s\n", filename, full_path.c_str());
       LOG_INDENT_SCOPE();
 
       std::string src_blob;
@@ -74,16 +84,17 @@ bool MtModLibrary::load_source(const char* name) {
       fclose(f);
 
       bool use_utf8_bom = false;
-      if (uint8_t(src_blob[0]) == 239 && uint8_t(src_blob[1]) == 187 && uint8_t(src_blob[2]) == 191) {
+      if (uint8_t(src_blob[0]) == 239 && uint8_t(src_blob[1]) == 187 &&
+          uint8_t(src_blob[2]) == 191) {
         use_utf8_bom = true;
         src_blob.erase(src_blob.begin(), src_blob.begin() + 3);
       }
-      load_blob(full_path, src_blob, use_utf8_bom);
+      load_blob(filename, full_path, src_blob, use_utf8_bom);
       break;
     }
   }
   if (!found) {
-    LOG_R("Couldn't find %s in path!\n", name);
+    LOG_R("Couldn't find %s in path!\n", filename);
     return false;
   }
 

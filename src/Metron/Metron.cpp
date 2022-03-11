@@ -97,14 +97,10 @@ int main(int argc, char** argv) {
   args.push_back("example_data_memory.h");
   args.push_back("example_data_memory_bus.h");
   args.push_back("singlecycle_control.h");
-  /*
   args.push_back("singlecycle_ctlpath.h");
   args.push_back("singlecycle_datapath.h");
-  */
-  /*
   args.push_back("riscv_core.h");
   args.push_back("toplevel.h");
-  */
 
   for (auto& arg : args) {
     LOG_R("arg = %s\n", arg.c_str());
@@ -177,7 +173,11 @@ int main(int argc, char** argv) {
 
   // Emit all modules.
 
-  for (auto& source_file : library.source_files) {
+  for (auto& source_file : library.source_files)
+  {
+    //auto source_file = library.find_source("singlecycle_datapath.h");
+
+
     auto out_path = out_dir + "/" + source_file->full_path + ".sv";
     mkdir_all(split_path(out_path));
 
@@ -186,7 +186,7 @@ int main(int argc, char** argv) {
     std::string out_string;
 
     MtCursor cursor(&library, source_file, &out_string);
-    //cursor.quiet = false;
+    cursor.quiet = false;
     cursor.cursor = source_file->source;
     cursor.source_file = source_file;
     cursor.emit(source_file->mt_root);
@@ -195,17 +195,18 @@ int main(int argc, char** argv) {
     FILE* out_file = fopen(out_path.c_str(), "wb");
     if (!out_file) {
       LOG_R("ERROR Could not open %s for output\n", out_path.c_str());
-      continue;
+    }
+    else {
+      // Copy the BOM over if needed.
+      if (source_file->use_utf8_bom) {
+        uint8_t bom[3] = {239, 187, 191};
+        fwrite(bom, 1, 3, out_file);
+      }
+
+      fwrite(out_string.data(), 1, out_string.size(), out_file);
+      fclose(out_file);
     }
 
-    // Copy the BOM over if needed.
-    if (source_file->use_utf8_bom) {
-      uint8_t bom[3] = {239, 187, 191};
-      fwrite(bom, 1, 3, out_file);
-    }
-
-    fwrite(out_string.data(), 1, out_string.size(), out_file);
-    fclose(out_file);
   }
 
   return 0;

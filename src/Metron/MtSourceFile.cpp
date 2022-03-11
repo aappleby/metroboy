@@ -9,9 +9,10 @@ extern "C" {
 extern const TSLanguage* tree_sitter_cpp();
 }
 
-MtSourceFile::MtSourceFile(const std::string& _full_path,
+MtSourceFile::MtSourceFile(const std::string& _filename,
+                           const std::string& _full_path,
                            const std::string& _src_blob)
-    : full_path(_full_path), src_blob(_src_blob) {
+    : filename(_filename), full_path(_full_path), src_blob(_src_blob) {
   assert(src_blob.back() != 0);
 
   auto blob_size = src_blob.size();

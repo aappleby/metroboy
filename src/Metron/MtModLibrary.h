@@ -15,8 +15,9 @@ struct MtModLibrary {
   bool has_mod(const std::string& name);
   void add_search_path(const std::string& path);
   void add_source(MtSourceFile* source_file);
-  void load_blob(const std::string& full_path, const std::string& src_blob,
-                 bool use_utf8_bom = false);
+  MtSourceFile* find_source(const std::string& filename);
+  void load_blob(const std::string& filename, const std::string& full_path,
+                 const std::string& src_blob, bool use_utf8_bom = false);
   bool load_source(const char* name);
   void cross_reference();
 

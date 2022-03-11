@@ -92,13 +92,12 @@ int main(int argc, char** argv) {
   args.push_back("multiplexer8.h");
   args.push_back("regfile.h");
   args.push_back("register.h");
-  //args.push_back("example_text_memory.h");
-  //args.push_back("example_text_memory_bus.h");
-
-  /*
+  args.push_back("example_text_memory.h");
+  args.push_back("example_text_memory_bus.h");
   args.push_back("example_data_memory.h");
   args.push_back("example_data_memory_bus.h");
   args.push_back("singlecycle_control.h");
+  /*
   args.push_back("singlecycle_ctlpath.h");
   args.push_back("singlecycle_datapath.h");
   */

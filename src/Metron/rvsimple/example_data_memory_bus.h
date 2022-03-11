@@ -3,13 +3,16 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_EXAMPLE_DATA_MEMORY_BUS_H
+#define RVSIMPLE_EXAMPLE_DATA_MEMORY_BUS_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
 #include "example_data_memory.h"
 
-struct example_data_memory_bus {
+class example_data_memory_bus {
+public:
 
   example_data_memory data_memory;
   logic<32> o_read_data;
@@ -33,3 +36,5 @@ struct example_data_memory_bus {
     }
   }
 };
+
+#endif // RVSIMPLE_EXAMPLE_DATA_MEMORY_BUS_H

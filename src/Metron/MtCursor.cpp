@@ -1550,6 +1550,10 @@ void MtCursor::emit(MtExprStatement n) {
         emit_text(c);
         break;
 
+      case sym_conditional_expression:
+        emit_children(c);
+        break;
+
       default:
         c.dump_tree();
         debugbreak();

@@ -3,21 +3,23 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_EXAMPLE_DATA_MEMORY_H
+#define RVSIMPLE_EXAMPLE_DATA_MEMORY_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
 
 using namespace rv_config;
 
-struct example_data_memory {
-
+class example_data_memory {
+public:
 
   logic<32> mem[pow2(DATA_BITS - 2)];
 	logic<32> o_q;
 
   void init() {
-    readmemh(DATA_HEX, mem, 0, int(pow2(DATA_BITS) - 1));
+    readmemh(DATA_HEX, mem, 0, pow2(DATA_BITS) - 1);
   }
 
   void tick(logic<DATA_BITS - 2> i_address, logic<1> i_wren, logic<4> i_byteena, logic<32> i_data) {
@@ -40,3 +42,5 @@ struct example_data_memory {
     o_q = mem[i_address];
   }
 };
+
+#endif // RVSIMPLE_EXAMPLE_DATA_MEMORY_H

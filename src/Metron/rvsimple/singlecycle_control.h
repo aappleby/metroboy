@@ -3,12 +3,16 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
-#pragma once
+#ifndef RVSIMPLE_SINGLECYCLE_CONTROL_H
+#define RVSIMPLE_SINGLECYCLE_CONTROL_H
+
 #include "../metron_tools.h"
 #include "config.h"
 #include "constants.h"
 
-struct singlecycle_control {
+class singlecycle_control {
+public:
+
   logic<1> o_pc_write_enable;
   logic<1> o_regfile_write_enable;
   logic<1> o_alu_operand_a_select;
@@ -180,3 +184,5 @@ struct singlecycle_control {
     }
   }
 };
+
+#endif // RVSIMPLE_SINGLECYCLE_CONTROL_H

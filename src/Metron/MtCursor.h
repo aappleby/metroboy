@@ -98,6 +98,8 @@ struct MtCursor {
   void emit_hoisted_decls(MtCompoundStatement n);
   void emit_init_declarator_as_decl(MtDecl n);
   void emit_init_declarator_as_assign(MtDecl n);
+  void emit_output_ports();
+  void emit_field_as_submod(MtFieldDecl field_decl);
 
   //----------
 

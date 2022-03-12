@@ -18,18 +18,22 @@ void MtModLibrary::reset() {
 //------------------------------------------------------------------------------
 
 void MtModLibrary::add_search_path(const std::string& path) {
+  assert(!sources_loaded);
   search_paths.push_back(path);
 }
 
 //------------------------------------------------------------------------------
 
 void MtModLibrary::add_source(MtSourceFile* source_file) {
+  assert(!sources_loaded);
   source_file->lib = this;
   source_files.push_back(source_file);
-  for (auto m : source_file->modules) {
+  for (auto m : *source_file->modules) {
     modules.push_back(m);
   }
 }
+
+//------------------------------------------------------------------------------
 
 MtSourceFile* MtModLibrary::find_source(const std::string& filename) {
   for (auto& s : source_files) {
@@ -42,30 +46,8 @@ MtSourceFile* MtModLibrary::find_source(const std::string& filename) {
 
 //------------------------------------------------------------------------------
 
-MtModule* MtModLibrary::get_mod(const std::string& name) {
-  for (auto mod : modules) {
-    if (mod->mod_name == name) return mod;
-  }
-  return nullptr;
-}
-
-bool MtModLibrary::has_mod(const std::string& name) {
-  return get_mod(name) != nullptr;
-}
-
-//------------------------------------------------------------------------------
-
-void MtModLibrary::load_blob(const std::string& filename,
-                             const std::string& full_path,
-                             const std::string& src_blob, bool use_utf8_bom) {
-  auto source_file = new MtSourceFile(filename, full_path, src_blob);
-  source_file->use_utf8_bom = use_utf8_bom;
-  add_source(source_file);
-}
-
-//------------------------------------------------------------------------------
-
 bool MtModLibrary::load_source(const char* filename) {
+  assert(!sources_loaded);
   bool found = false;
   for (auto& path : search_paths) {
     auto full_path = path.size() ? path + "/" + filename : filename;
@@ -103,10 +85,36 @@ bool MtModLibrary::load_source(const char* filename) {
 
 //------------------------------------------------------------------------------
 
+void MtModLibrary::load_blob(const std::string& filename,
+                             const std::string& full_path,
+                             const std::string& src_blob, bool use_utf8_bom) {
+  assert(!sources_loaded);
+  auto source_file = new MtSourceFile(filename, full_path, src_blob);
+  source_file->use_utf8_bom = use_utf8_bom;
+  add_source(source_file);
+}
+
+//------------------------------------------------------------------------------
+
+MtModule* MtModLibrary::get_mod(const std::string& name) {
+  assert(sources_loaded);
+  for (auto mod : modules) {
+    if (mod->mod_name == name) return mod;
+  }
+  return nullptr;
+}
+
+bool MtModLibrary::has_mod(const std::string& name) {
+  assert(sources_loaded);
+  return get_mod(name) != nullptr;
+}
+
+//------------------------------------------------------------------------------
+
 void MtModLibrary::cross_reference() {
+  assert(sources_loaded);
   for (auto& mod : modules) mod->load_pass1();
   for (auto& mod : modules) mod->load_pass2();
-  for (auto& mod : modules) mod->load_pass3();
 
   // Verify that tick()/tock() obey read/write ordering rules.
   bool any_fail_dirty_check = false;
@@ -121,6 +129,7 @@ void MtModLibrary::cross_reference() {
   if (any_fail_dirty_check) {
     printf("Dirty check fail!\n");
   }
+  modules_crossed = true;
 }
 
 //------------------------------------------------------------------------------

@@ -183,17 +183,12 @@
     <ClInclude Include="..\tree-sitter\lib\include\tree_sitter\api.h" />
     <ClInclude Include="Logic.h" />
     <ClInclude Include="metron_tools.h" />
-    <ClInclude Include="MtCall.h" />
     <ClInclude Include="MtCursor.h" />
-    <ClInclude Include="MtEnum.h" />
-    <ClInclude Include="MtField.h" />
     <ClInclude Include="MtMethod.h" />
     <ClInclude Include="MtModLibrary.h" />
     <ClInclude Include="MtModule.h" />
     <ClInclude Include="MtNode.h" />
-    <ClInclude Include="MtParam.h" />
     <ClInclude Include="MtSourceFile.h" />
-    <ClInclude Include="MtSubmod.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="TreeSymbols.h" />
   </ItemGroup>

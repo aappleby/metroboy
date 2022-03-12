@@ -84,21 +84,11 @@ bool merge_series(MtDelta& a, MtDelta& b, MtDelta& out) {
 MtMethod::MtMethod(MtNode n, MtModule* _mod) : MtNode(n), mod(_mod) {}
 
 void MtMethod::update_delta() {
-  if (!delta2.valid) {
-    delta2.wipe();
+  if (delta == nullptr) {
+    auto temp_delta = new MtDelta();
     auto body = get_field(field_body);
-
-    /*
-    // If we're updating a tock delta, we can assume that all fields are dirty.
-    if (is_tock) {
-      for (auto& f : mod->fields) {
-        delta2.state_old[f.name] = DIRTY;
-      }
-    }
-    */
-
-    check_dirty_dispatch(body, delta2);
-    delta2.valid = true;
+    check_dirty_dispatch(body, *temp_delta);
+    delta = temp_delta;
   }
 }
 
@@ -109,9 +99,6 @@ void MtMethod::check_dirty_dispatch(MtNode n, MtDelta& d) {
   for (auto& n : d.state_new) assert(n.second != ERROR);
 
   if (n.is_null() || !n.is_named()) return;
-
-  // LOG_B("check_dirty_dispatch %s\n", ts_node_type(n.node));
-  // LOG_INDENT_SCOPE();
 
   switch (n.sym) {
     case sym_field_expression:
@@ -155,9 +142,8 @@ void MtMethod::check_dirty_read_identifier(MtNode n, MtDelta& d) {
   assert(n.sym == sym_identifier);
   auto field = n.text();
 
-  // Ignore reads from inputs and local variables.
-  if (field.starts_with("i_")) return;
-  if (!mod->has_field(field) && !mod->has_output(field)) return;
+  // Only check reads of regs and outputs.
+  if (!mod->has_register(field) && !mod->has_output(field)) return;
 
   // Reading from a dirty field in tick() is forbidden.
   if (is_tick) {
@@ -166,8 +152,7 @@ void MtMethod::check_dirty_read_identifier(MtNode n, MtDelta& d) {
         log_error(n, "%s() read maybe new field - %s\n", name.c_str(),
                   field.c_str());
         d.error = true;
-      }
-      else if (d.state_new[field] == DIRTY) {
+      } else if (d.state_new[field] == DIRTY) {
         log_error(n, "%s() read dirty new field - %s\n", name.c_str(),
                   field.c_str());
         d.error = true;
@@ -177,8 +162,7 @@ void MtMethod::check_dirty_read_identifier(MtNode n, MtDelta& d) {
         log_error(n, "%s() read maybe old field - %s\n", name.c_str(),
                   field.c_str());
         d.error = true;
-      }
-      else if (d.state_old[field] == DIRTY) {
+      } else if (d.state_old[field] == DIRTY) {
         log_error(n, "%s() read dirty old field - %s\n", name.c_str(),
                   field.c_str());
         d.error = true;
@@ -301,20 +285,24 @@ void MtMethod::check_dirty_write(MtNode n, MtDelta& d) {
   auto field = n.text();
 
   // Writing to inputs is forbidden.
-  assert(!field.starts_with("i_"));
+  assert(!mod->has_input(field));
 
-  // Ignore writes to local variables.
-  if (!mod->has_field(field) && !mod->has_output(field)) return;
+  // Only check writes to regs and outputs
+
+  bool field_is_register = mod->has_register(field);
+  bool field_is_output = mod->has_output(field);
+
+  if (!field_is_register && !field_is_output) return;
 
   //----------
 
-  if (is_tick && !mod->has_field(field)) {
+  if (is_tick && field_is_output) {
     log_error(n, "%s() wrote output - %s\n", name.c_str(), field.c_str());
     d.error = true;
   }
 
-  if (is_tock && !mod->has_output(field)) {
-    log_error(n, "%s() wrote non-output - %s\n", name.c_str(), field.c_str());
+  if (is_tock && field_is_register) {
+    log_error(n, "%s() wrote reg - %s\n", name.c_str(), field.c_str());
     d.error = true;
   }
 
@@ -343,8 +331,6 @@ void MtMethod::check_dirty_write(MtNode n, MtDelta& d) {
 // left.
 
 void MtMethod::check_dirty_assign(MtNode n, MtDelta& d) {
-  // LOG_Y("check_dirty_assign %s\n", ts_node_type(n.node));
-
   auto lhs = n.get_field(field_left);
   auto rhs = n.get_field(field_right);
 
@@ -357,8 +343,6 @@ void MtMethod::check_dirty_assign(MtNode n, MtDelta& d) {
 // results.
 
 void MtMethod::check_dirty_if(MtNode n, MtDelta& d) {
-  // LOG_M("check_dirty_if %s\n", ts_node_type(n.node));
-
   check_dirty_dispatch(n.get_field(field_condition), d);
 
   MtDelta if_delta = d;
@@ -376,8 +360,6 @@ void MtMethod::check_dirty_if(MtNode n, MtDelta& d) {
 void MtMethod::check_dirty_call(MtNode n, MtDelta& d) {
   auto call = mod->node_to_call(n);
 
-  // LOG_C("check_dirty_call %s\n", ts_node_type(n.node));
-
   auto node_args = call.get_field(field_arguments);
   assert(node_args.sym == sym_argument_list);
   check_dirty_dispatch(node_args, d);
@@ -390,14 +372,17 @@ void MtMethod::check_dirty_call(MtNode n, MtDelta& d) {
     // printf("%s\n", node_func.text().c_str());
     // n.dump_tree();
     // debugbreak();
+
+    // We hit this in b9(x) calls and whatnot, we need to sort them out and
+    // resolve the local task/function calls.
+
   } else if (node_func.sym == sym_field_expression) {
-    // LOG_G("%s.%s\n", call.submod->name.c_str(), call.method->name.c_str());
     assert(call.method);
     call.method->update_delta();
 
     MtDelta temp_delta = d;
-    MtDelta call_delta = call.method->delta2;
-    call_delta.add_prefix(call.submod->name);
+    MtDelta call_delta = *call.method->delta;
+    call_delta.add_prefix(call.submod->name());
 
     merge_series(temp_delta, call_delta, d);
   } else if (node_func.sym == sym_template_function) {
@@ -415,8 +400,6 @@ void MtMethod::check_dirty_call(MtNode n, MtDelta& d) {
 // independently.
 
 void MtMethod::check_dirty_switch(MtNode n, MtDelta& d) {
-  // LOG_W("check_dirty_switch %s\n", ts_node_type(n.node));
-
   check_dirty_dispatch(n.get_field(field_condition), d);
 
   MtDelta init_delta = d;

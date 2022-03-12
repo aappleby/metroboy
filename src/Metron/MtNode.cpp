@@ -10,6 +10,8 @@ void print_escaped(const char* source, uint32_t a, uint32_t b);
 
 const MtNode MtNode::null;
 
+//------------------------------------------------------------------------------
+
 MtNode::MtNode() {
   this->node = {0};
   this->sym = 0;

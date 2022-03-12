@@ -8,6 +8,8 @@
 struct MtModule;
 struct MtModLibrary;
 
+//------------------------------------------------------------------------------
+
 enum FieldState {
   CLEAN = 0,
   MAYBE = 1,
@@ -74,12 +76,12 @@ struct MtDelta {
 struct MtMethod : public MtNode {
   MtMethod(MtNode n, MtModule* _mod);
 
-  MtModule* mod;
-  MtModLibrary* lib;
+  MtModule* mod = nullptr;
+  MtModLibrary* lib = nullptr;
   std::string name;
-  std::vector<std::string> params;
 
-  MtDelta delta2;
+  std::vector<std::string>* params = nullptr;
+  MtDelta* delta = nullptr;
 
   bool is_tick = false;
   bool is_tock = false;

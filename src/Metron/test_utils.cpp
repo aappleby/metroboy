@@ -93,7 +93,7 @@ std::string translate_simple(std::string src) {
 
   auto source_file = library.source_files[0];
 
-  for (auto& mod : source_file->modules) {
+  for (auto& mod : *source_file->modules) {
     if (mod->dirty_check_fail) return "DCF";
   }
 

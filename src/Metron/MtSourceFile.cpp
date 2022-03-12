@@ -9,6 +9,8 @@ extern "C" {
 extern const TSLanguage* tree_sitter_cpp();
 }
 
+//------------------------------------------------------------------------------
+
 MtSourceFile::MtSourceFile(const std::string& _filename,
                            const std::string& _full_path,
                            const std::string& _src_blob)
@@ -34,19 +36,39 @@ MtSourceFile::MtSourceFile(const std::string& _filename,
   find_modules(mt_root);
 }
 
+//------------------------------------------------------------------------------
+
+MtSourceFile::~MtSourceFile() {
+  ts_tree_delete(tree);
+  ts_parser_delete(parser);
+
+  for (auto m : *modules) delete m;
+  delete modules;
+  modules = nullptr;
+
+  lang = nullptr;
+  parser = nullptr;
+  tree = nullptr;
+  source = nullptr;
+}
+
+//------------------------------------------------------------------------------
+
 void MtSourceFile::find_modules(MtNode toplevel) {
+  auto temp_modules = new std::vector<MtModule*>();
+
   for (auto c : toplevel) {
     switch (c.sym) {
       case sym_template_declaration: {
         MtNode mod_root(c.node, c.sym, 0, this);
         MtModule* mod = new MtModule(this, MtTemplateDecl(mod_root));
-        modules.push_back(mod);
+        temp_modules->push_back(mod);
         break;
       }
       case sym_class_specifier: {
         MtNode mod_root(c.node, c.sym, 0, this);
         MtModule* mod = new MtModule(this, MtClassSpecifier(mod_root));
-        modules.push_back(mod);
+        temp_modules->push_back(mod);
         break;
       }
       case sym_preproc_ifdef: {
@@ -55,21 +77,17 @@ void MtSourceFile::find_modules(MtNode toplevel) {
       }
     }
   }
+
+  modules = temp_modules;
 }
 
-MtSourceFile::~MtSourceFile() {
-  ts_tree_delete(tree);
-  ts_parser_delete(parser);
-
-  lang = nullptr;
-  parser = nullptr;
-  tree = nullptr;
-  source = nullptr;
-}
+//------------------------------------------------------------------------------
 
 MtModule* MtSourceFile::get_module(const std::string& name) {
-  for (auto n : modules) {
+  for (auto n : *modules) {
     if (n->mod_name == name) return n;
   }
   return nullptr;
 }
+
+//------------------------------------------------------------------------------

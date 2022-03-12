@@ -17,6 +17,7 @@ bool operator!=(const TSTreeCursor& a, const TSTreeCursor& b);
 
 struct MtModule;
 struct MtSourceFile;
+struct MtMethod;
 
 //------------------------------------------------------------------------------
 
@@ -478,24 +479,6 @@ struct MtDecl : public MtNode {
     return get_field(field_declarator).sym == sym_init_declarator;
   }
 
-  bool is_static2() {
-    for (auto c : (MtNode&)*this) {
-      if (c.sym == sym_storage_class_specifier) {
-        if (c.match("static")) return true;
-      }
-    }
-    return false;
-  }
-
-  bool is_const2() {
-    for (auto c : (MtNode&)*this) {
-      if (c.sym == sym_type_qualifier) {
-        if (c.match("const")) return true;
-      }
-    }
-    return false;
-  }
-
   MtTemplateType _type() { return MtTemplateType(get_field(field_type)); }
   MtIdentifier _decl() { return MtIdentifier(get_field(field_declarator)); }
   MtInitDecl _init_decl() { return MtInitDecl(get_field(field_declarator)); }
@@ -554,61 +537,7 @@ struct MtFieldDecl : public MtNode {
 
   bool is_enum() { return type().sym == sym_enum_specifier; }
 
-  bool is_static() {
-    MtNode n = name();
-    for (auto c : n) {
-      if (c.sym == sym_storage_class_specifier) {
-        if (c.match("static")) return true;
-      }
-    }
-    return false;
-  }
-
-  bool is_const() {
-    for (auto c : (MtNode)name()) {
-      if (c.sym == sym_type_qualifier) {
-        if (c.match("const")) return true;
-      }
-    }
-    return false;
-  }
-
-  bool is_static2() {
-    for (auto c : (MtNode&)*this) {
-      if (c.sym == sym_storage_class_specifier) {
-        if (c.match("static")) return true;
-      }
-    }
-    return false;
-  }
-
-  bool is_const2() {
-    for (auto c : (MtNode&)*this) {
-      if (c.sym == sym_type_qualifier) {
-        if (c.match("const")) return true;
-      }
-    }
-    return false;
-  }
-
   bool is_param() { return is_static() && is_const(); }
-
-  bool is_input() {
-    if (is_static() || is_const() || is_enum()) return false;
-
-    auto base_name = name().sym == sym_array_declarator
-                         ? name().get_field(field_declarator).text()
-                         : name().text();
-    return base_name.starts_with("i_") || base_name.ends_with("_i");
-  }
-
-  bool is_output() {
-    if (is_static() || is_const() || is_enum()) return false;
-    auto base_name = name().sym == sym_array_declarator
-                         ? name().get_field(field_declarator).text()
-                         : name().text();
-    return base_name.starts_with("o_") || base_name.ends_with("_o");
-  }
 
   MtType type() { return MtType(get_field(field_type)); }
   MtFieldName name() {
@@ -732,5 +661,89 @@ struct MtNamespaceDef : public MtNode {
     check_sym(sym_namespace_definition);
   }
 };
+
+//------------------------------------------------------------------------------
+
+
+
+
+
+struct MtSubmod : public MtNode {
+  MtSubmod(const MtNode& n) : MtNode(n) {
+    assert(sym == sym_field_declaration);
+  }
+
+  std::string name() {
+    return get_field(field_declarator).text();
+  }
+
+  MtModule* mod;
+};
+
+
+//------------------------------------------------------------------------------
+
+struct MtField : public MtNode {
+  MtField(const MtNode& n) : MtNode(n) {
+    assert(sym == sym_field_declaration || sym == sym_parameter_declaration);
+  }
+
+  std::string name() {
+    return get_field(field_declarator).text();
+  }
+
+  std::string type_name() {
+    return get_field(field_type).node_to_type();
+  }
+};
+
+//------------------------------------------------------------------------------
+
+struct MtEnum : public MtNode {
+
+  std::string name() {
+    if (sym == sym_field_declaration) {
+      auto enum_type = get_field(field_type);
+      auto enum_name = enum_type.get_field(field_name);
+      return enum_name.text();
+    } else {
+      dump_tree();
+      debugbreak();
+      return "";
+    }
+  }
+};
+
+
+//------------------------------------------------------------------------------
+
+struct MtCall : public MtNode {
+  MtCall(const MtNode& n) : MtNode(n) { assert(sym == sym_call_expression); }
+
+  MtSubmod* submod = nullptr;
+  MtMethod* method = nullptr;
+  std::vector<std::string>* args = nullptr;
+};
+
+
+//------------------------------------------------------------------------------
+
+struct MtParam : public MtNode {
+
+  std::string name() {
+    if (sym == sym_parameter_declaration) {
+      return get_field(field_declarator).text();
+    } else if (sym == sym_optional_parameter_declaration) {
+      return get_field(field_declarator).text();
+    } else if (sym == sym_field_declaration) {
+      return get_field(field_declarator).text();
+    } else {
+      dump_tree();
+      debugbreak();
+      return "";
+    }
+  }
+};
+
 
 //------------------------------------------------------------------------------

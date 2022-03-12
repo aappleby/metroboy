@@ -2,19 +2,14 @@
 #include <map>
 #include <set>
 
-#include "MtCall.h"
-#include "MtEnum.h"
-#include "MtField.h"
 #include "MtMethod.h"
-#include "MtParam.h"
-#include "MtSubmod.h"
 #include "Platform.h"
 
 struct MtMethod;
 struct MtModLibrary;
 struct MtSourceFile;
+
 typedef std::vector<uint8_t> blob;
-typedef std::set<std::string> name_set;
 
 //------------------------------------------------------------------------------
 
@@ -22,28 +17,43 @@ struct MtModule {
   MtModule(MtSourceFile* source_file, MtTemplateDecl node);
   MtModule(MtSourceFile* source_file, MtClassSpecifier node);
 
-  MtSubmod* get_submod(const std::string& name);
-  MtMethod* get_method(const std::string& name);
-  MtField* get_output(const std::string& name);
+  bool has_field(const std::string& name);
+  bool has_input(const std::string& name);
+  bool has_output(const std::string& name);
+  bool has_register(const std::string& name);
   bool has_submod(const std::string& name);
   bool has_enum(const std::string& name);
-  bool has_field(const std::string& name);
-  bool has_output(const std::string& name);
+
+  MtField* get_field(const std::string& name);
+  MtField* get_output(const std::string& name);
+  MtSubmod* get_submod(const std::string& name);
+  MtMethod* get_method(const std::string& name);
 
   void load_pass1();
   void load_pass2();
-  void load_pass3();
 
   void dump_method_list(std::vector<MtMethod>& methods);
   void dump_call_list(std::vector<MtCall>& calls);
   void dump_banner();
   void dump_deltas();
 
-  MtMethod node_to_method(MtNode n);
-  MtCall node_to_call(MtNode n);
+  void collect_params();
+  void collect_fields();
+  void collect_methods();
+  void collect_inputs();
+  void collect_outputs();
+  void collect_registers();
+  void collect_submods();
+  void collect_submod_calls();
+  void build_port_map();
 
   void check_dirty_ticks();
   void check_dirty_tocks();
+
+  void sanity_check();
+
+  MtMethod node_to_method(MtNode n);
+  MtCall node_to_call(MtNode n);
 
   //----------
 
@@ -60,25 +70,28 @@ struct MtModule {
   MtTemplateDecl mod_template;
   MtTemplateParamList mod_param_list;
 
-  std::vector<MtParam> modparams;
-  std::vector<MtParam> localparams;
+  std::vector<MtParam>* modparams = nullptr;
+  std::vector<MtParam>* localparams = nullptr;
 
-  std::vector<MtEnum> enums;
-  std::vector<MtField> inputs;
-  std::vector<MtField> outputs;
-  std::vector<MtField> fields;
-  std::vector<MtSubmod> submods;
+  std::vector<MtEnum>* enums = nullptr;
 
-  std::vector<MtMethod> init_methods;
-  std::vector<MtMethod> tick_methods;
-  std::vector<MtMethod> tock_methods;
-  std::vector<MtMethod> task_methods;
-  std::vector<MtMethod> func_methods;
+  // inputs + outputs + regs + submods
+  std::vector<MtField>* all_fields = nullptr;
+  std::vector<MtField>* inputs = nullptr;
+  std::vector<MtField>* outputs = nullptr;
+  std::vector<MtField>* registers = nullptr;
+  std::vector<MtSubmod>* submods = nullptr;
 
-  std::vector<MtCall> tick_calls;
-  std::vector<MtCall> tock_calls;
+  std::vector<MtMethod>* init_methods = nullptr;
+  std::vector<MtMethod>* tick_methods = nullptr;
+  std::vector<MtMethod>* tock_methods = nullptr;
+  std::vector<MtMethod>* task_methods = nullptr;
+  std::vector<MtMethod>* func_methods = nullptr;
 
-  std::map<std::string, std::string> port_map;
+  std::vector<MtCall>* tick_calls = nullptr;
+  std::vector<MtCall>* tock_calls = nullptr;
+
+  std::map<std::string, std::string>* port_map = nullptr;
 };
 
 //------------------------------------------------------------------------------

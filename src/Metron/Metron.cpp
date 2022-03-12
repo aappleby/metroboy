@@ -70,13 +70,12 @@ int main(int argc, char** argv) {
   args.push_back("-Irvsimple");
   args.push_back("-Ogenerated");
 
-  /*
   args.push_back("uart_top.h");
   args.push_back("uart_hello.h");
   args.push_back("uart_tx.h");
   args.push_back("uart_rx.h");
-  */
 
+  /*
   args.push_back("adder.h");
   args.push_back("config.h");
   args.push_back("constants.h");
@@ -101,6 +100,7 @@ int main(int argc, char** argv) {
   args.push_back("singlecycle_datapath.h");
   args.push_back("riscv_core.h");
   args.push_back("toplevel.h");
+  */
 
   for (auto& arg : args) {
     LOG_R("arg = %s\n", arg.c_str());
@@ -157,6 +157,7 @@ int main(int argc, char** argv) {
   for (auto& name : mod_names) {
     library.load_source(name.c_str());
   }
+  library.lock();
   LOG("\n");
 
   library.cross_reference();
@@ -164,12 +165,10 @@ int main(int argc, char** argv) {
   //----------
   // Dump out info on modules for debugging.
 
-  /*
   for (auto& mod : library.modules) {
     mod->dump_banner();
     mod->dump_deltas();
   }
-  */
 
   // Emit all modules.
 
@@ -206,7 +205,6 @@ int main(int argc, char** argv) {
       fwrite(out_string.data(), 1, out_string.size(), out_file);
       fclose(out_file);
     }
-
   }
 
   return 0;

@@ -13,20 +13,20 @@
 class control_transfer {
 public:
 
-  logic<1> o_take_branch;
+  logic<1> take_branch;
   
-  void tock(logic<3> i_inst_funct3,
-            logic<1> i_result_equal_zero) {
+  void tock(logic<3> inst_funct3,
+            logic<1> result_equal_zero) {
     using namespace rv_constants;
 
-    switch (i_inst_funct3) {
-      case FUNCT3_BRANCH_EQ:  o_take_branch = !i_result_equal_zero; break;
-      case FUNCT3_BRANCH_NE:  o_take_branch = i_result_equal_zero; break;
-      case FUNCT3_BRANCH_LT:  o_take_branch = !i_result_equal_zero; break;
-      case FUNCT3_BRANCH_GE:  o_take_branch = i_result_equal_zero; break;
-      case FUNCT3_BRANCH_LTU: o_take_branch = !i_result_equal_zero; break;
-      case FUNCT3_BRANCH_GEU: o_take_branch = i_result_equal_zero; break;
-      default:                o_take_branch = b1(DONTCARE); break;
+    switch (inst_funct3) {
+      case FUNCT3_BRANCH_EQ:  take_branch = !result_equal_zero; break;
+      case FUNCT3_BRANCH_NE:  take_branch = result_equal_zero; break;
+      case FUNCT3_BRANCH_LT:  take_branch = !result_equal_zero; break;
+      case FUNCT3_BRANCH_GE:  take_branch = result_equal_zero; break;
+      case FUNCT3_BRANCH_LTU: take_branch = !result_equal_zero; break;
+      case FUNCT3_BRANCH_GEU: take_branch = result_equal_zero; break;
+      default:                take_branch = b1(DONTCARE); break;
     }
   }
 };

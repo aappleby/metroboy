@@ -96,7 +96,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Metron;$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Metron;$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -128,7 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Metron;$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -144,7 +144,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Metron;$(SolutionDir)\src\tree-sitter\lib\src;$(SolutionDir)\src\tree-sitter\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -155,6 +155,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="rvsimple\adder.cpp" />
+    <ClCompile Include="rvsimple\alu.cpp" />
+    <ClCompile Include="rvsimple\alu_control.cpp" />
+    <ClCompile Include="rvsimple\config.cpp" />
+    <ClCompile Include="rvsimple\constants.cpp" />
+    <ClCompile Include="rvsimple\control_transfer.cpp" />
+    <ClCompile Include="rvsimple\data_memory_interface.cpp" />
+    <ClCompile Include="rvsimple\example_data_memory.cpp" />
+    <ClCompile Include="rvsimple\example_data_memory_bus.cpp" />
+    <ClCompile Include="rvsimple\example_memory_bus.cpp" />
+    <ClCompile Include="rvsimple\example_text_memory.cpp" />
+    <ClCompile Include="rvsimple\example_text_memory_bus.cpp" />
+    <ClCompile Include="rvsimple\immediate_generator.cpp" />
+    <ClCompile Include="rvsimple\instruction_decoder.cpp" />
+    <ClCompile Include="rvsimple\multiplexer.cpp" />
+    <ClCompile Include="rvsimple\multiplexer2.cpp" />
+    <ClCompile Include="rvsimple\multiplexer4.cpp" />
+    <ClCompile Include="rvsimple\multiplexer8.cpp" />
+    <ClCompile Include="rvsimple\regfile.cpp" />
+    <ClCompile Include="rvsimple\register.cpp" />
+    <ClCompile Include="rvsimple\riscv_core.cpp" />
+    <ClCompile Include="rvsimple\singlecycle_control.cpp" />
+    <ClCompile Include="rvsimple\singlecycle_ctlpath.cpp" />
+    <ClCompile Include="rvsimple\singlecycle_datapath.cpp" />
+    <ClCompile Include="rvsimple\toplevel.cpp" />
     <ClCompile Include="test_build.cpp" />
     <ClCompile Include="test_deltas.cpp" />
     <ClCompile Include="test_ibex.cpp" />
@@ -174,6 +199,31 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="rvsimple\adder.h" />
+    <ClInclude Include="rvsimple\alu.h" />
+    <ClInclude Include="rvsimple\alu_control.h" />
+    <ClInclude Include="rvsimple\config.h" />
+    <ClInclude Include="rvsimple\constants.h" />
+    <ClInclude Include="rvsimple\control_transfer.h" />
+    <ClInclude Include="rvsimple\data_memory_interface.h" />
+    <ClInclude Include="rvsimple\example_data_memory.h" />
+    <ClInclude Include="rvsimple\example_data_memory_bus.h" />
+    <ClInclude Include="rvsimple\example_memory_bus.h" />
+    <ClInclude Include="rvsimple\example_text_memory.h" />
+    <ClInclude Include="rvsimple\example_text_memory_bus.h" />
+    <ClInclude Include="rvsimple\immediate_generator.h" />
+    <ClInclude Include="rvsimple\instruction_decoder.h" />
+    <ClInclude Include="rvsimple\multiplexer.h" />
+    <ClInclude Include="rvsimple\multiplexer2.h" />
+    <ClInclude Include="rvsimple\multiplexer4.h" />
+    <ClInclude Include="rvsimple\multiplexer8.h" />
+    <ClInclude Include="rvsimple\regfile.h" />
+    <ClInclude Include="rvsimple\register.h" />
+    <ClInclude Include="rvsimple\riscv_core.h" />
+    <ClInclude Include="rvsimple\singlecycle_control.h" />
+    <ClInclude Include="rvsimple\singlecycle_ctlpath.h" />
+    <ClInclude Include="rvsimple\singlecycle_datapath.h" />
+    <ClInclude Include="rvsimple\toplevel.h" />
     <ClInclude Include="test_utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

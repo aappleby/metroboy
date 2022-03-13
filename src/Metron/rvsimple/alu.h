@@ -13,34 +13,34 @@
 
 class alu {
 public:
-  logic<32> o_result;
-  logic<1>  o_result_equal_zero;
+  logic<32> result;
+  logic<1>  result_equal_zero;
 
   void tock(
-    logic<5>  i_alu_function,
-    logic<32> i_operand_a, // signed?
-    logic<32> i_operand_b  // signed?
+    logic<5>  alu_function,
+    logic<32> operand_a, // signed?
+    logic<32> operand_b  // signed?
   ) {
     using namespace rv_constants;
 
-    switch (i_alu_function) {
-    case ALU_ADD:   o_result = i_operand_a +    i_operand_b; break;
-    case ALU_SUB:   o_result = i_operand_a -    i_operand_b; break;
-    case ALU_SLL:   o_result = i_operand_a <<   b5(i_operand_b); break;
-    case ALU_SRL:   o_result = i_operand_a >>   b5(i_operand_b); break;
-    case ALU_SRA:   o_result = signed(i_operand_a) >>  b5(i_operand_b); break;
-    case ALU_SEQ:   o_result = cat(b31(0), b1(i_operand_a == i_operand_b)); break;
-    case ALU_SLT:   o_result = cat(b31(0), b1(i_operand_a < i_operand_b)); break;
-    case ALU_SLTU:  o_result = cat(b31(0), b1(i_operand_a < i_operand_b)); break;
-    case ALU_XOR:   o_result = i_operand_a ^    i_operand_b; break;
-    case ALU_OR:    o_result = i_operand_a |    i_operand_b; break;
-    case ALU_AND:   o_result = i_operand_a &    i_operand_b; break;
+    switch (alu_function) {
+    case ALU_ADD:   result = operand_a +    operand_b; break;
+    case ALU_SUB:   result = operand_a -    operand_b; break;
+    case ALU_SLL:   result = operand_a <<   b5(operand_b); break;
+    case ALU_SRL:   result = operand_a >>   b5(operand_b); break;
+    case ALU_SRA:   result = signed(operand_a) >>  b5(operand_b); break;
+    case ALU_SEQ:   result = cat(b31(0), b1(operand_a == operand_b)); break;
+    case ALU_SLT:   result = cat(b31(0), b1(operand_a < operand_b)); break;
+    case ALU_SLTU:  result = cat(b31(0), b1(operand_a < operand_b)); break;
+    case ALU_XOR:   result = operand_a ^    operand_b; break;
+    case ALU_OR:    result = operand_a |    operand_b; break;
+    case ALU_AND:   result = operand_a &    operand_b; break;
     default:
-      o_result = b32(ZERO);
+      result = b32(ZERO);
       break;
     }
 
-    o_result_equal_zero = (o_result == b32(0));
+    result_equal_zero = (result == b32(0));
   }
 };
 

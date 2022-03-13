@@ -135,6 +135,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rvsimple generated", "rvsim
 		src\Metron\generated\rvsimple\data_memory_interface.h.sv = src\Metron\generated\rvsimple\data_memory_interface.h.sv
 		src\Metron\generated\rvsimple\example_data_memory.h.sv = src\Metron\generated\rvsimple\example_data_memory.h.sv
 		src\Metron\generated\rvsimple\example_data_memory_bus.h.sv = src\Metron\generated\rvsimple\example_data_memory_bus.h.sv
+		src\Metron\generated\rvsimple\example_memory_bus.h.sv = src\Metron\generated\rvsimple\example_memory_bus.h.sv
 		src\Metron\generated\rvsimple\example_text_memory.h.sv = src\Metron\generated\rvsimple\example_text_memory.h.sv
 		src\Metron\generated\rvsimple\example_text_memory_bus.h.sv = src\Metron\generated\rvsimple\example_text_memory_bus.h.sv
 		src\Metron\generated\rvsimple\immediate_generator.h.sv = src\Metron\generated\rvsimple\immediate_generator.h.sv

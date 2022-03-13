@@ -1,5 +1,5 @@
 #include "register.h"
 
 static void test() {
-  reg dut;
+  _register dut;
 }

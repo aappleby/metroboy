@@ -20,20 +20,20 @@ public:
   example_text_memory_bus text_memory_bus;
   example_data_memory_bus data_memory_bus;
 
-  void tick(logic<1> i_reset) {
-    riscv_core.tick(i_reset);
-    data_memory_bus.tick(riscv_core.o_bus_address,
-                          riscv_core.o_bus_write_enable,
-                          riscv_core.o_bus_byte_enable,
-                          riscv_core.o_bus_write_data);
+  void tick(logic<1> reset) {
+    riscv_core.tick(reset);
+    data_memory_bus.tick(riscv_core.bus_address,
+                          riscv_core.bus_write_enable,
+                          riscv_core.bus_byte_enable,
+                          riscv_core.bus_write_data);
   }
 
   void tock() {
     riscv_core.tock_pc();
-    text_memory_bus.tock(riscv_core.o_pc);
-    riscv_core.tock_execute(text_memory_bus.o_read_data);
-    data_memory_bus.tock(riscv_core.o_bus_address, riscv_core.o_bus_read_enable);
-    riscv_core.tock_writeback(data_memory_bus.o_read_data);
+    text_memory_bus.tock(riscv_core.pc);
+    riscv_core.tock_execute(text_memory_bus.read_data);
+    data_memory_bus.tock(riscv_core.bus_address, riscv_core.bus_read_enable);
+    riscv_core.tock_writeback(data_memory_bus.read_data);
   }
 };
 

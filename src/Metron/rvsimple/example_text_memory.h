@@ -17,14 +17,14 @@ class example_text_memory {
 public:
 
   logic<32> mem[pow2(rv_config::TEXT_BITS - 2)];
-  logic<32> o_q;
+  logic<32> q;
 
   void init() {
     readmemh(rv_config::TEXT_HEX, mem, 0, pow2(rv_config::TEXT_BITS) - 1);
   }
 
   void tock(logic<rv_config::TEXT_BITS - 2> address) {
-    o_q = mem[address];
+    q = mem[address];
   }
 };
 

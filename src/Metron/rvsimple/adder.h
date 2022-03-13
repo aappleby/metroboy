@@ -13,10 +13,10 @@
 template<int WIDTH = 32>
 class adder {
 public:
-  logic<WIDTH> o_result;
+  logic<WIDTH> result;
 
-  void tock(logic<WIDTH> i_operand_a, logic<WIDTH> i_operand_b) {
-    o_result = i_operand_a + i_operand_b;
+  void tock(logic<WIDTH> operand_a, logic<WIDTH> operand_b) {
+    result = operand_a + operand_b;
   }
 };
 

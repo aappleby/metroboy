@@ -16,76 +16,76 @@
 class riscv_core {
 public:
 
-  logic<32> o_pc;
-  logic<32> o_bus_address;
-  logic<32> o_bus_write_data;
-  logic<4>  o_bus_byte_enable;
-  logic<1>  o_bus_read_enable;
-  logic<1>  o_bus_write_enable;
+  logic<32> pc;
+  logic<32> bus_address;
+  logic<32> bus_write_data;
+  logic<4>  bus_byte_enable;
+  logic<1>  bus_read_enable;
+  logic<1>  bus_write_enable;
 
   singlecycle_datapath singlecycle_datapath;
   singlecycle_ctlpath singlecycle_ctlpath;
   data_memory_interface data_memory_interface;
 
-  void tick(logic<1> i_reset) {
+  void tick(logic<1> reset) {
     singlecycle_datapath.tick(
-      i_reset,
-      singlecycle_ctlpath.o_pc_write_enable,
-      singlecycle_ctlpath.o_regfile_write_enable);
+      reset,
+      singlecycle_ctlpath.pc_write_enable,
+      singlecycle_ctlpath.regfile_write_enable);
   }
 
   void tock_pc() {
     singlecycle_datapath.tock_pc();
 
-    o_pc = singlecycle_datapath.o_pc;
+    pc = singlecycle_datapath.pc;
   }
 
-  void tock_execute(logic<32> i_inst) {
+  void tock_execute(logic<32> inst) {
     singlecycle_datapath.tock_regfile();
 
-    singlecycle_datapath.tock_decode(i_inst);
+    singlecycle_datapath.tock_decode(inst);
 
-    singlecycle_ctlpath.tock_decode(singlecycle_datapath.o_inst_opcode);
+    singlecycle_ctlpath.tock_decode(singlecycle_datapath.inst_opcode);
 
     singlecycle_ctlpath.tock_alu_control(
-      singlecycle_datapath.o_inst_funct3,
-      singlecycle_datapath.o_inst_funct7);
+      singlecycle_datapath.inst_funct3,
+      singlecycle_datapath.inst_funct7);
 
     singlecycle_datapath.tock_alu(
-      singlecycle_ctlpath.o_alu_function,
-      singlecycle_ctlpath.o_alu_operand_a_select,
-      singlecycle_ctlpath.o_alu_operand_b_select);
+      singlecycle_ctlpath.alu_function,
+      singlecycle_ctlpath.alu_operand_a_select,
+      singlecycle_ctlpath.alu_operand_b_select);
 
     singlecycle_ctlpath.tock_next_pc_select(
-      singlecycle_datapath.o_inst_opcode,
-      singlecycle_datapath.o_inst_funct3,
-      singlecycle_datapath.o_alu_result_equal_zero);
+      singlecycle_datapath.inst_opcode,
+      singlecycle_datapath.inst_funct3,
+      singlecycle_datapath.alu_result_equal_zero2);
 
-    singlecycle_datapath.tock_next_pc(singlecycle_ctlpath.o_next_pc_select);
+    singlecycle_datapath.tock_next_pc(singlecycle_ctlpath.next_pc_select);
 
     data_memory_interface.tock_bus(
-      singlecycle_ctlpath.o_data_mem_read_enable,
-      singlecycle_ctlpath.o_data_mem_write_enable,
-      singlecycle_datapath.o_inst_funct3,
-      singlecycle_datapath.o_data_mem_address,
-      singlecycle_datapath.o_data_mem_write_data);
+      singlecycle_ctlpath.data_mem_read_enable,
+      singlecycle_ctlpath.data_mem_write_enable,
+      singlecycle_datapath.inst_funct3,
+      singlecycle_datapath.data_mem_address,
+      singlecycle_datapath.data_mem_write_data);
     
-    o_bus_address      = data_memory_interface.o_bus_address;
-    o_bus_write_data   = data_memory_interface.o_bus_write_data;
-    o_bus_read_enable  = data_memory_interface.o_bus_read_enable;
-    o_bus_write_enable = data_memory_interface.o_bus_write_enable;
-    o_bus_byte_enable  = data_memory_interface.o_bus_byte_enable;
+    bus_address      = data_memory_interface.bus_address;
+    bus_write_data   = data_memory_interface.bus_write_data;
+    bus_read_enable  = data_memory_interface.bus_read_enable;
+    bus_write_enable = data_memory_interface.bus_write_enable;
+    bus_byte_enable  = data_memory_interface.bus_byte_enable;
   }
 
-  void tock_writeback(logic<32> i_bus_read_data) {
+  void tock_writeback(logic<32> bus_read_data) {
     data_memory_interface.tock_read_data(
-      singlecycle_datapath.o_inst_funct3,
-      singlecycle_datapath.o_data_mem_address,
-      i_bus_read_data);
+      singlecycle_datapath.inst_funct3,
+      singlecycle_datapath.data_mem_address,
+      bus_read_data);
 
     singlecycle_datapath.tock_writeback(
-      data_memory_interface.o_read_data,
-      singlecycle_ctlpath.o_reg_writeback_select);
+      data_memory_interface.read_data,
+      singlecycle_ctlpath.reg_writeback_select);
   }
 };
 

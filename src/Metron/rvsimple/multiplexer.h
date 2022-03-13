@@ -14,10 +14,10 @@
 template<int WIDTH = 32, int CHANNELS = 2, int SEL_BITS = clog2(CHANNELS)>
 class multiplexer {
 public:
-  logic<WIDTH> o_out;
+  logic<WIDTH> out;
 
   void tock(logic<WIDTH> in_bus[CHANNELS], logic<SEL_BITS> sel) {
-    o_out = in_bus[sel];
+    out = in_bus[sel];
   }
 };
 

@@ -14,20 +14,20 @@ template<int WIDTH = 32, int INITIAL = 0>
 class _register {
 public:
 
+  logic<WIDTH> reg_value;
   logic<WIDTH> value;
-  logic<WIDTH> o_value;
 
   void init() {
-    value = INITIAL;
+    reg_value = INITIAL;
   }
 
-  void tick(logic<1> i_reset, logic<1> i_write_enable, logic<WIDTH> i_next) {
-    if (i_reset) value = INITIAL;
-    else if (i_write_enable) value = i_next;
+  void tick(logic<1> reset, logic<1> write_enable, logic<WIDTH> next) {
+    if (reset) reg_value = INITIAL;
+    else if (write_enable) reg_value = next;
   }
 
   void tock() {
-    o_value = value;
+    value = reg_value;
   }
 };
 

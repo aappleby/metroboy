@@ -12,20 +12,20 @@
 
 class instruction_decoder {
 public:
-  logic<7> o_inst_opcode;
-  logic<3> o_inst_funct3;
-  logic<7> o_inst_funct7;
-  logic<5> o_inst_rd;
-  logic<5> o_inst_rs1;
-  logic<5> o_inst_rs2;
+  logic<7> inst_opcode;
+  logic<3> inst_funct3;
+  logic<7> inst_funct7;
+  logic<5> inst_rd;
+  logic<5> inst_rs1;
+  logic<5> inst_rs2;
 
-  void tock(logic<32> i_inst) {
-    o_inst_opcode = b7(i_inst, 0);
-    o_inst_funct3 = b3(i_inst, 12);
-    o_inst_funct7 = b7(i_inst, 25);
-    o_inst_rd     = b5(i_inst, 7);
-    o_inst_rs1    = b5(i_inst, 15);
-    o_inst_rs2    = b5(i_inst, 20);
+  void tock(logic<32> inst) {
+    inst_opcode = b7(inst, 0);
+    inst_funct3 = b3(inst, 12);
+    inst_funct7 = b7(inst, 25);
+    inst_rd     = b5(inst, 7);
+    inst_rs1    = b5(inst, 15);
+    inst_rs2    = b5(inst, 20);
   }
 };
 

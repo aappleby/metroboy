@@ -12,7 +12,7 @@
 
 class immediate_generator {
 public:
-  logic<32> o_immediate;
+  logic<32> immediate;
 
   // Immediate format
   //       31.............30........20.19........12.11.....11.10.........5.4..........1.0.....0
@@ -22,63 +22,63 @@ public:
   // U = { {1{inst[31]}},  inst[30:20], inst[19:12],                                      12'b0 };
   // J = { {12{inst[31]}},              inst[19:12], inst[20], inst[30:25], inst[24:21],  1'b0  };
     
-  void tock(logic<32> i_inst) {
+  void tock(logic<32> inst) {
     using namespace rv_constants;
 
     //o_immediate = b32(0);
-    switch (b7(i_inst)) {
+    switch (b7(inst)) {
       // Opcode
       // FIXME didn't we need to translate fallthrough into "x, y, z:"?
       case OPCODE_LOAD: {
         // FIXME comments on the same line as the opening brace are broken
         // I-type immediate
-        o_immediate = cat( dup<21>(i_inst[31]), b6(i_inst, 26), b5(i_inst, 20) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 26), b5(inst, 20) );
         break;
       }
       case OPCODE_LOAD_FP: {
         // FIXME comments on the same line as the opening brace are broken
         // I-type immediate
-        o_immediate = cat( dup<21>(i_inst[31]), b6(i_inst, 26), b5(i_inst, 20) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 26), b5(inst, 20) );
         break;
       }
       case OPCODE_OP_IMM: {
         // FIXME comments on the same line as the opening brace are broken
         // I-type immediate
-        o_immediate = cat( dup<21>(i_inst[31]), b6(i_inst, 26), b5(i_inst, 20) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 26), b5(inst, 20) );
         break;
       }
       case OPCODE_JALR: {
         // FIXME comments on the same line as the opening brace are broken
         // I-type immediate
-        o_immediate = cat( dup<21>(i_inst[31]), b6(i_inst, 26), b5(i_inst, 20) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 26), b5(inst, 20) );
         break;
       }
       case OPCODE_STORE_FP:
         // S-type immediate
-        o_immediate = cat( dup<21>(i_inst[31]), b6(i_inst, 25), b5(i_inst, 7) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 25), b5(inst, 7) );
         break;
       case OPCODE_STORE:
         // S-type immediate
-        o_immediate = cat( dup<21>(i_inst[31]), b6(i_inst, 25), b5(i_inst, 7) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 25), b5(inst, 7) );
         break;
       case OPCODE_BRANCH:
         // B-type immediate
-        o_immediate = cat( dup<20>(i_inst[31]), i_inst[7], b6(i_inst, 25), b4(i_inst, 8), b1(0) );
+        immediate = cat( dup<20>(inst[31]), inst[7], b6(inst, 25), b4(inst, 8), b1(0) );
         break;
       case OPCODE_AUIPC:
         // U-type immediate
-        o_immediate = cat( i_inst[31], b11(i_inst, 20), b8(i_inst, 12), b12(0) );
+        immediate = cat( inst[31], b11(inst, 20), b8(inst, 12), b12(0) );
         break;
       case OPCODE_LUI:
         // U-type immediate
-        o_immediate = cat( i_inst[31], b11(i_inst, 20), b8(i_inst, 12), b12(0) );
+        immediate = cat( inst[31], b11(inst, 20), b8(inst, 12), b12(0) );
         break;
       case OPCODE_JAL:
         // J-type immediate
-        o_immediate = cat( dup<12>(i_inst[31]), b8(i_inst, 12), i_inst[20], b6(i_inst, 25), b4(i_inst, 21), b1(0) );
+        immediate = cat( dup<12>(inst[31]), b8(inst, 12), inst[20], b6(inst, 25), b4(inst, 21), b1(0) );
         break;
       default:
-        o_immediate = b32(0);
+        immediate = b32(0);
         break;
     }
   }

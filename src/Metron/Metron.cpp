@@ -92,6 +92,7 @@ int main(int argc, char** argv) {
   args.push_back("multiplexer8.h");
   args.push_back("regfile.h");
   args.push_back("register.h");
+  args.push_back("example_memory_bus.h");
   args.push_back("example_text_memory.h");
   args.push_back("example_text_memory_bus.h");
   args.push_back("example_data_memory.h");
@@ -162,10 +163,12 @@ int main(int argc, char** argv) {
   //----------
   // Dump out info on modules for debugging.
 
+  /*
   for (auto& mod : library.modules) {
     mod->dump_banner();
     mod->dump_deltas();
   }
+  */
 
   //----------
   // Emit all modules.
@@ -181,7 +184,7 @@ int main(int argc, char** argv) {
     std::string out_string;
 
     MtCursor cursor(&library, source_file, &out_string);
-    cursor.quiet = false;
+    //cursor.quiet = false;
     cursor.cursor = source_file->source;
     cursor.source_file = source_file;
     cursor.emit(source_file->mt_root);

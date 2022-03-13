@@ -74,7 +74,7 @@ struct MtDelta {
 //------------------------------------------------------------------------------
 
 struct MtMethod : public MtNode {
-  MtMethod(MtNode n, MtModule* _mod);
+  MtMethod(MtNode n, MtModule* _mod, MtModLibrary* _lib);
 
   MtModule* mod = nullptr;
   MtModLibrary* lib = nullptr;

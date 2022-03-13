@@ -1,6 +1,7 @@
 #include "MtMethod.h"
 
 #include "../CoreLib/Log.h"
+#include "MtModLibrary.h"
 #include "MtModule.h"
 
 void log_error(MtNode n, const char* fmt, ...);
@@ -81,7 +82,11 @@ bool merge_series(MtDelta& a, MtDelta& b, MtDelta& out) {
 
 //------------------------------------------------------------------------------
 
-MtMethod::MtMethod(MtNode n, MtModule* _mod) : MtNode(n), mod(_mod) {}
+MtMethod::MtMethod(MtNode n, MtModule* _mod, MtModLibrary* _lib)
+    : MtNode(n), mod(_mod), lib(_lib) {
+  assert(mod);
+  assert(lib);
+}
 
 void MtMethod::update_delta() {
   if (delta == nullptr) {
@@ -212,7 +217,13 @@ void MtMethod::check_dirty_read_submod(MtNode n, MtDelta& d) {
   assert(n.sym == sym_field_expression);
   auto field = n.text();
 
-  if (field.find(".o_") == std::string::npos) {
+  auto dot_pos = field.find('.');
+  std::string submod_name = field.substr(0, dot_pos);
+  std::string submod_field = field.substr(dot_pos + 1, field.size());
+  auto submod_node = mod->get_submod(submod_name);
+  auto submod_mod = submod_node->mod;
+
+  if (!submod_mod->has_output(submod_field)) {
     log_error(n, "%s() read non-output from submodule - %s\n", name.c_str(),
               field.c_str());
     d.error = true;

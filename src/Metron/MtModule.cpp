@@ -696,7 +696,7 @@ void MtModule::sanity_check() {
 MtMethod MtModule::node_to_method(MtNode n) {
   assert(n.sym == sym_function_definition);
 
-  MtMethod result(n, this);
+  MtMethod result(n, this, source_file->lib);
 
   auto method_name =
       n.get_field(field_declarator).get_field(field_declarator).text();

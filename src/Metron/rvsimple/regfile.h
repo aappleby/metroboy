@@ -13,8 +13,8 @@
 class regfile {
 public:
 
-  logic<32> o_rs1_data;
-  logic<32> o_rs2_data;
+  logic<32> rs1_data;
+  logic<32> rs2_data;
 
   // 32 registers of 32-bit width
   logic<32> regs[32];
@@ -27,23 +27,23 @@ public:
   }
 
   // Write port for rd
-  void tick(logic<1>  i_write_enable,
-            logic<5>  i_rd_address,
-            logic<5>  i_rs1_address,
-            logic<5>  i_rs2_address,
-            logic<32> i_rd_data) {
+  void tick(logic<1>  write_enable,
+            logic<5>  rd_address,
+            logic<5>  rs1_address,
+            logic<5>  rs2_address,
+            logic<32> rd_data) {
     // Read ports for rs1 and rs2
-    reg_out_1 = regs[i_rs1_address];
-    reg_out_2 = regs[i_rs2_address];
+    reg_out_1 = regs[rs1_address];
+    reg_out_2 = regs[rs2_address];
 
-    if (i_write_enable && i_rd_address != b5(0)) {
-      regs[i_rd_address] = i_rd_data;
+    if (write_enable && rd_address != b5(0)) {
+      regs[rd_address] = rd_data;
     }
   }
 
   void tock() {
-    o_rs1_data = reg_out_1;
-    o_rs2_data = reg_out_2;
+    rs1_data = reg_out_1;
+    rs2_data = reg_out_2;
   }
 };
 

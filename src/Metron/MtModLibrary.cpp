@@ -108,6 +108,10 @@ void MtModLibrary::process_sources() {
   for (auto& mod : modules) mod->load_pass1();
   for (auto& mod : modules) mod->load_pass2();
 
+  for (auto& mod : modules) {
+    assert(mod->outputs);
+  }
+
   // Verify that tick()/tock() obey read/write ordering rules.
   bool any_fail_dirty_check = false;
 

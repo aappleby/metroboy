@@ -11,30 +11,30 @@
 
 class example_memory_bus {
 public:
-  logic<32> o_read_data;
+  logic<32> read_data;
 
   example_data_memory data_memory;
   example_text_memory text_memory;
 
-  void tick(logic<32> i_address, logic<1>  i_write_enable, logic<4>  i_byte_enable, logic<32> i_write_data) {
+  void tick(logic<32> address, logic<1> write_enable, logic<4> byte_enable, logic<32> write_data) {
     data_memory.tick(
-      bx<DATA_BITS-2>(i_address),
-      i_write_enable && i_address >= DATA_BEGIN && i_address <= DATA_END,
-      i_byte_enable,
-      i_write_data);
+      bx<DATA_BITS-2>(address),
+      write_enable && address >= DATA_BEGIN && address <= DATA_END,
+      byte_enable,
+      write_data);
   }
 
-  void tock(logic<32> i_address, logic<1>  i_read_enable) {
-    data_memory.tock(bx<DATA_BITS-2>(i_address));
-    text_memory.tock(bx<TEXT_BITS-2>(i_address));
+  void tock(logic<32> address, logic<1>  read_enable) {
+    data_memory.tock(bx<DATA_BITS-2>(address));
+    text_memory.tock(bx<TEXT_BITS-2>(address));
 
-    if (i_read_enable) {
-      if (i_address >= TEXT_BEGIN && i_address <= TEXT_END) o_read_data = text_memory.q;
-      else if (i_address >= DATA_BEGIN && i_address <= DATA_END) o_read_data = data_memory.q;
-      else o_read_data = b32(DONTCARE);
+    if (read_enable) {
+      if (address >= TEXT_BEGIN && address <= TEXT_END) read_data = text_memory.q;
+      else if (address >= DATA_BEGIN && address <= DATA_END) read_data = data_memory.q;
+      else read_data = b32(DONTCARE);
     }
     else {
-      o_read_data = b32(DONTCARE);
+      read_data = b32(DONTCARE);
     }
   }
 };

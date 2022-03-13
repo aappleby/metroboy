@@ -38,8 +38,8 @@ public:
     }
   }
 
-  void tock(logic<DATA_BITS - 2> i_address) {
-    q = mem[i_address];
+  void tock(logic<DATA_BITS - 2> address) {
+    q = mem[address];
   }
 };
 

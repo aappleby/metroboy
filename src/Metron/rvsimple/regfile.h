@@ -6,7 +6,7 @@
 #ifndef RVSIMPLE_REGFILE_H
 #define RVSIMPLE_REGFILE_H
 
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 

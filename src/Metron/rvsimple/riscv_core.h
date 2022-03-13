@@ -6,7 +6,7 @@
 #ifndef RVSIMPLE_RISCV_CORE_H
 #define RVSIMPLE_RISCV_CORE_H
 
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 #include "singlecycle_datapath.h"

@@ -70,12 +70,13 @@ int main(int argc, char** argv) {
   args.push_back("-Irvsimple");
   args.push_back("-Ogenerated");
 
+  /*
   args.push_back("uart_top.h");
   args.push_back("uart_hello.h");
   args.push_back("uart_tx.h");
   args.push_back("uart_rx.h");
+  */
 
-  /*
   args.push_back("adder.h");
   args.push_back("config.h");
   args.push_back("constants.h");
@@ -100,7 +101,6 @@ int main(int argc, char** argv) {
   args.push_back("singlecycle_datapath.h");
   args.push_back("riscv_core.h");
   args.push_back("toplevel.h");
-  */
 
   for (auto& arg : args) {
     LOG_R("arg = %s\n", arg.c_str());
@@ -110,8 +110,8 @@ int main(int argc, char** argv) {
   //----------
   // Parse args
 
-  std::vector<std::string> mod_paths;
-  std::vector<std::string> mod_names;
+  std::vector<std::string> path_names;
+  std::vector<std::string> source_names;
   std::string out_dir = "";
   bool quiet = false;
 
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
       switch (option) {
         case 'I':
           LOG_G("Adding search path \"%s\"\n", arg_cursor);
-          mod_paths.push_back(arg_cursor);
+          path_names.push_back(arg_cursor);
           break;
         case 'O':
           LOG_G("Adding output directory \"%s\"\n", arg_cursor);
@@ -140,27 +140,24 @@ int main(int argc, char** argv) {
           return -1;
       }
     } else {
-      mod_names.push_back(arg_cursor);
+      source_names.push_back(arg_cursor);
     }
   }
   LOG("\n");
 
   //----------
-  // Load all modules.
+  // Load all source files.
 
   MtModLibrary library;
   library.add_search_path("");
-  for (auto& path : mod_paths) {
+  for (auto& path : path_names) {
     library.add_search_path(path);
   }
 
-  for (auto& name : mod_names) {
+  for (auto& name : source_names) {
     library.load_source(name.c_str());
   }
-  library.lock();
-  LOG("\n");
-
-  library.cross_reference();
+  library.process_sources();
 
   //----------
   // Dump out info on modules for debugging.
@@ -170,12 +167,11 @@ int main(int argc, char** argv) {
     mod->dump_deltas();
   }
 
+  //----------
   // Emit all modules.
 
-  for (auto& source_file : library.source_files)
-  {
-    //auto source_file = library.find_source("singlecycle_datapath.h");
-
+  for (auto& source_file : library.source_files) {
+    // auto source_file = library.find_source("singlecycle_datapath.h");
 
     auto out_path = out_dir + "/" + source_file->full_path + ".sv";
     mkdir_all(split_path(out_path));
@@ -194,8 +190,7 @@ int main(int argc, char** argv) {
     FILE* out_file = fopen(out_path.c_str(), "wb");
     if (!out_file) {
       LOG_R("ERROR Could not open %s for output\n", out_path.c_str());
-    }
-    else {
+    } else {
       // Copy the BOM over if needed.
       if (source_file->use_utf8_bom) {
         uint8_t bom[3] = {239, 187, 191};

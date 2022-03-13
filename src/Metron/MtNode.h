@@ -571,90 +571,106 @@ struct MtNumberLiteral : public MtNode {
     check_sym(sym_number_literal);
   }
 };
+
 struct MtReturnStatement : public MtNode {
   MtReturnStatement(){};
   MtReturnStatement(const MtNode& n) : MtNode(n) {
     check_sym(sym_return_statement);
   }
 };
+
 struct MtTemplateDecl : public MtNode {
   MtTemplateDecl(){};
   MtTemplateDecl(const MtNode& n) : MtNode(n) {
     check_sym(sym_template_declaration);
   }
 };
+
 struct MtTranslationUnit : public MtNode {
   MtTranslationUnit(){};
   MtTranslationUnit(const MtNode& n) : MtNode(n) {
     check_sym(sym_translation_unit);
   }
 };
+
 struct MtTemplateParamList : public MtNode {
   MtTemplateParamList(){};
   MtTemplateParamList(const MtNode& n) : MtNode(n) {
     check_sym(sym_template_parameter_list);
   }
 };
+
 struct MtEnumeratorList : public MtNode {
   MtEnumeratorList(){};
   MtEnumeratorList(const MtNode& n) : MtNode(n) {
     check_sym(sym_enumerator_list);
   }
 };
+
 struct MtComment : public MtNode {
   MtComment(){};
   MtComment(const MtNode& n) : MtNode(n) { check_sym(sym_comment); }
 };
+
 struct MtCaseStatement : public MtNode {
   MtCaseStatement(){};
   MtCaseStatement(const MtNode& n) : MtNode(n) {
     check_sym(sym_case_statement);
   }
 };
+
 struct MtSwitchStatement : public MtNode {
   MtSwitchStatement(){};
   MtSwitchStatement(const MtNode& n) : MtNode(n) {
     check_sym(sym_switch_statement);
   }
 };
+
 struct MtUsingDecl : public MtNode {
   MtUsingDecl(){};
   MtUsingDecl(const MtNode& n) : MtNode(n) { check_sym(sym_using_declaration); }
 };
+
 struct MtBreakStatement : public MtNode {
   MtBreakStatement(){};
   MtBreakStatement(const MtNode& n) : MtNode(n) {
     check_sym(sym_break_statement);
   }
 };
+
 struct MtCondExpr : public MtNode {
   MtCondExpr(){};
   MtCondExpr(const MtNode& n) : MtNode(n) {
     check_sym(sym_conditional_expression);
   }
 };
+
 struct MtStorageSpec : public MtNode {
   MtStorageSpec(){};
   MtStorageSpec(const MtNode& n) : MtNode(n) {
     check_sym(sym_storage_class_specifier);
   }
 };
+
 struct MtQualifiedId : public MtNode {
   MtQualifiedId(){};
   MtQualifiedId(const MtNode& n) : MtNode(n) {
     check_sym(sym_qualified_identifier);
   }
 };
+
 struct MtIfStatement : public MtNode {
   MtIfStatement(){};
   MtIfStatement(const MtNode& n) : MtNode(n) { check_sym(sym_if_statement); }
 };
+
 struct MtSizedTypeSpec : public MtNode {
   MtSizedTypeSpec(){};
   MtSizedTypeSpec(const MtNode& n) : MtNode(n) {
     check_sym(sym_sized_type_specifier);
   }
 };
+
 struct MtNamespaceDef : public MtNode {
   MtNamespaceDef(){};
   MtNamespaceDef(const MtNode& n) : MtNode(n) {
@@ -664,22 +680,15 @@ struct MtNamespaceDef : public MtNode {
 
 //------------------------------------------------------------------------------
 
-
-
-
-
 struct MtSubmod : public MtNode {
   MtSubmod(const MtNode& n) : MtNode(n) {
     assert(sym == sym_field_declaration);
   }
 
-  std::string name() {
-    return get_field(field_declarator).text();
-  }
+  std::string name() { return get_field(field_declarator).text(); }
 
   MtModule* mod;
 };
-
 
 //------------------------------------------------------------------------------
 
@@ -688,19 +697,14 @@ struct MtField : public MtNode {
     assert(sym == sym_field_declaration || sym == sym_parameter_declaration);
   }
 
-  std::string name() {
-    return get_field(field_declarator).text();
-  }
+  std::string name() { return get_field(field_declarator).text(); }
 
-  std::string type_name() {
-    return get_field(field_type).node_to_type();
-  }
+  std::string type_name() { return get_field(field_type).node_to_type(); }
 };
 
 //------------------------------------------------------------------------------
 
 struct MtEnum : public MtNode {
-
   std::string name() {
     if (sym == sym_field_declaration) {
       auto enum_type = get_field(field_type);
@@ -714,7 +718,6 @@ struct MtEnum : public MtNode {
   }
 };
 
-
 //------------------------------------------------------------------------------
 
 struct MtCall : public MtNode {
@@ -725,11 +728,9 @@ struct MtCall : public MtNode {
   std::vector<std::string>* args = nullptr;
 };
 
-
 //------------------------------------------------------------------------------
 
 struct MtParam : public MtNode {
-
   std::string name() {
     if (sym == sym_parameter_declaration) {
       return get_field(field_declarator).text();
@@ -744,6 +745,5 @@ struct MtParam : public MtNode {
     }
   }
 };
-
 
 //------------------------------------------------------------------------------

@@ -80,7 +80,7 @@ void parse_simple(std::string src, MtModLibrary& library) {
   */
 
   library.load_blob("test.h", "test.h", src);
-  library.cross_reference();
+  library.process_sources();
 }
 
 //------------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 #ifndef RVSIMPLE_SINGLECYCLE_CTLPATH_H
 #define RVSIMPLE_SINGLECYCLE_CTLPATH_H
 
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 

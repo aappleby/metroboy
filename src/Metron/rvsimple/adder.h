@@ -6,7 +6,7 @@
 #ifndef RVSIMPLE_ADDER_H
 #define RVSIMPLE_ADDER_H
 
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 

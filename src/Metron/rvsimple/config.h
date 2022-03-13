@@ -7,7 +7,7 @@
 #define RVSIMPLE_CONFIG_H
 
 #pragma once
-#include "../metron_tools.h"
+#include "metron_tools.h"
 
 namespace rv_config {
 

@@ -28,9 +28,6 @@ void MtModLibrary::add_source(MtSourceFile* source_file) {
   assert(!sources_loaded);
   source_file->lib = this;
   source_files.push_back(source_file);
-  for (auto m : *source_file->modules) {
-    modules.push_back(m);
-  }
 }
 
 //------------------------------------------------------------------------------
@@ -96,23 +93,18 @@ void MtModLibrary::load_blob(const std::string& filename,
 
 //------------------------------------------------------------------------------
 
-MtModule* MtModLibrary::get_mod(const std::string& name) {
-  assert(sources_loaded);
-  for (auto mod : modules) {
-    if (mod->mod_name == name) return mod;
+void MtModLibrary::process_sources() {
+  assert(!sources_loaded);
+  assert(!sources_processed);
+
+  sources_loaded = true;
+  
+  for (auto s : source_files) {
+    for (auto m : *s->modules) {
+      modules.push_back(m);
+    }
   }
-  return nullptr;
-}
 
-bool MtModLibrary::has_mod(const std::string& name) {
-  assert(sources_loaded);
-  return get_mod(name) != nullptr;
-}
-
-//------------------------------------------------------------------------------
-
-void MtModLibrary::cross_reference() {
-  assert(sources_loaded);
   for (auto& mod : modules) mod->load_pass1();
   for (auto& mod : modules) mod->load_pass2();
 
@@ -129,7 +121,22 @@ void MtModLibrary::cross_reference() {
   if (any_fail_dirty_check) {
     printf("Dirty check fail!\n");
   }
-  modules_crossed = true;
+  sources_processed = true;
+}
+
+//------------------------------------------------------------------------------
+
+MtModule* MtModLibrary::get_mod(const std::string& name) {
+  assert(sources_loaded);
+  for (auto mod : modules) {
+    if (mod->mod_name == name) return mod;
+  }
+  return nullptr;
+}
+
+bool MtModLibrary::has_mod(const std::string& name) {
+  assert(sources_loaded);
+  return get_mod(name) != nullptr;
 }
 
 //------------------------------------------------------------------------------

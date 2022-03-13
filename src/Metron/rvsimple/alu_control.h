@@ -6,7 +6,7 @@
 #ifndef RVSIMPLE_ALU_CONTROL_H
 #define RVSIMPLE_ALU_CONTROL_H
 
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 

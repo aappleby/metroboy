@@ -7,7 +7,7 @@
 #define RVSIMPLE_MULTIPLEXER_H
 
 #pragma once
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 

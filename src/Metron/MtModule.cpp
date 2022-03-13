@@ -548,8 +548,18 @@ void MtModule::collect_registers() {
       if (child.sym != sym_assignment_expression) return;
 
       auto lhs = child.get_field(field_left);
-      assert(lhs.sym == sym_identifier);
-      auto lhs_name = lhs.text();
+      std::string lhs_name;
+
+      if (lhs.sym == sym_identifier) {
+        lhs_name = lhs.text();
+      }
+      else if (lhs.sym == sym_subscript_expression) {
+        lhs_name = lhs.get_field(field_argument).text();
+      }
+      else {
+        lhs.dump_tree();
+        debugbreak();
+      }
 
       if (dedup.contains(lhs_name)) return;
       dedup.insert(lhs_name);

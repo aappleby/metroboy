@@ -6,7 +6,7 @@
 #ifndef RVSIMPLE_DATA_MEMORY_INTERFACE_H
 #define RVSIMPLE_DATA_MEMORY_INTERFACE_H
 
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 

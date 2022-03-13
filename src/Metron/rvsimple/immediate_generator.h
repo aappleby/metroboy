@@ -6,7 +6,7 @@
 #ifndef RVSIMPLE_IMMEDIATE_GENERATOR_H
 #define RVSIMPLE_IMMEDIATE_GENERATOR_H
 
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 

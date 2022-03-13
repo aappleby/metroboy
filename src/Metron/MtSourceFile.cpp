@@ -33,6 +33,8 @@ MtSourceFile::MtSourceFile(const std::string& _filename,
   TSNode ts_root = ts_tree_root_node(tree);
   auto root_sym = ts_node_symbol(ts_root);
   mt_root = MtTranslationUnit(MtNode(ts_root, root_sym, 0, this));
+
+  modules = new std::vector<MtModule*>();
   find_modules(mt_root);
 }
 
@@ -55,20 +57,18 @@ MtSourceFile::~MtSourceFile() {
 //------------------------------------------------------------------------------
 
 void MtSourceFile::find_modules(MtNode toplevel) {
-  auto temp_modules = new std::vector<MtModule*>();
-
   for (auto c : toplevel) {
     switch (c.sym) {
       case sym_template_declaration: {
         MtNode mod_root(c.node, c.sym, 0, this);
         MtModule* mod = new MtModule(this, MtTemplateDecl(mod_root));
-        temp_modules->push_back(mod);
+        modules->push_back(mod);
         break;
       }
       case sym_class_specifier: {
         MtNode mod_root(c.node, c.sym, 0, this);
         MtModule* mod = new MtModule(this, MtClassSpecifier(mod_root));
-        temp_modules->push_back(mod);
+        modules->push_back(mod);
         break;
       }
       case sym_preproc_ifdef: {
@@ -77,8 +77,6 @@ void MtSourceFile::find_modules(MtNode toplevel) {
       }
     }
   }
-
-  modules = temp_modules;
 }
 
 //------------------------------------------------------------------------------

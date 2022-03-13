@@ -19,14 +19,10 @@ struct MtModLibrary {
   void load_blob(const std::string& filename, const std::string& full_path,
                  const std::string& src_blob, bool use_utf8_bom = false);
 
-  void cross_reference();
+  void process_sources();
 
   MtModule* get_mod(const std::string& module_name);
   bool has_mod(const std::string& name);
-
-  void lock() {
-    sources_loaded = true;
-  }
 
   //----------
 
@@ -35,7 +31,7 @@ struct MtModLibrary {
   std::vector<MtModule*> modules;
 
   bool sources_loaded = false;
-  bool modules_crossed = false;
+  bool sources_processed = false;
 };
 
 //------------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 #ifndef RVSIMPLE_MULTIPLEXER2_H
 #define RVSIMPLE_MULTIPLEXER2_H
 
-#include "../metron_tools.h"
+#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 

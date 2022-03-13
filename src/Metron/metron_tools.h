@@ -117,3 +117,12 @@ inline int write(const char* fmt, ...) {
   log_print(0xFFFFFF, buffer, len);
   return len;
 }
+
+//----------
+// Verilog's signed right shift doesn't work quite the same as C++'s, so we
+// patch around it here.
+
+template<int WIDTH>
+inline logic<WIDTH> sra(logic<WIDTH> x, int s) {
+  return x.as_signed() >> s;
+}

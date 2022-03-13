@@ -445,7 +445,42 @@ void MtCursor::emit(MtCallExpr call) {
   if (func_name == "coerce") {
     // Convert to cast? We probably shouldn't be calling coerce() directly.
     call.error();
-  } else if (func_name == "signed") {
+  }
+  else if (func_name == "sra") {
+    /*
+    ========== tree dump begin
+    [00:029:267] right: call_expression =
+    [00:015:001] |  function: identifier = "sra"
+    [01:003:268] |  arguments: argument_list =
+    [00:000:005] |  |  lit = "("
+    [01:000:001] |  |  identifier = "operand_a"
+    [02:000:007] |  |  lit = ","
+    [03:000:267] |  |  call_expression =
+    [00:015:001] |  |  |  function: identifier = "b5"
+    [01:003:268] |  |  |  arguments: argument_list =
+    [00:000:005] |  |  |  |  lit = "("
+    [01:000:001] |  |  |  |  identifier = "operand_b"
+    [02:000:008] |  |  |  |  lit = ")"
+    [04:000:008] |  |  lit = ")"
+    ========== tree dump end
+    */
+   
+    auto lhs = args.named_child(0);
+    auto rhs = args.named_child(1);
+
+    emit("($signed(");
+    cursor = lhs.start();
+    emit_dispatch(lhs);
+    emit(") >>> ");
+    cursor = rhs.start();
+    emit_dispatch(rhs);
+    emit(")");
+    cursor = call.end();
+    
+    //call.dump_tree();
+
+  }
+  else if (func_name == "signed") {
     emit_replacement(func, "$signed");
     emit(args);
   } else if (func_name == "unsigned") {
@@ -1204,7 +1239,7 @@ void MtCursor::emit(MtClassSpecifier n) {
     trim_namespaces = false;
 
     emit_indent();
-    emit("input logic clk,");
+    emit("input logic clock,");
     emit_newline();
 
     int port_count =

@@ -1,6 +1,17 @@
 #include "Logic.h"
 #include "test_utils.h"
 
+/*
+  logic<27> a = -8;
+  printf("%d\n", int(a));
+  printf("%d\n", int(a.as_signed()));
+  printf("0x%08x\n", int(a));
+  printf("0x%08x\n", int(a.as_signed()));
+  printf("0x%08x\n", int(a >> 2));
+  printf("0x%08x\n", sra(a, 2));
+  return 0;
+*/
+
 //------------------------------------------------------------------------------
 
 TestResults test_logic_truncate() {

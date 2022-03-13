@@ -8,6 +8,9 @@
 #include "MtModule.h"
 #include "MtSourceFile.h"
 #include "Platform.h"
+#include "Logic.h"
+
+#include "metron_tools.h"
 
 #pragma warning(disable : 4996)
 
@@ -184,7 +187,7 @@ int main(int argc, char** argv) {
     std::string out_string;
 
     MtCursor cursor(&library, source_file, &out_string);
-    //cursor.quiet = false;
+    cursor.quiet = false;
     cursor.cursor = source_file->source;
     cursor.source_file = source_file;
     cursor.emit(source_file->mt_root);

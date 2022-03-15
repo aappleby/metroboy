@@ -32,25 +32,25 @@ public:
       case OPCODE_LOAD: {
         // FIXME comments on the same line as the opening brace are broken
         // I-type immediate
-        immediate = cat( dup<21>(inst[31]), b6(inst, 26), b5(inst, 20) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 25), b5(inst, 20) );
         break;
       }
       case OPCODE_LOAD_FP: {
         // FIXME comments on the same line as the opening brace are broken
         // I-type immediate
-        immediate = cat( dup<21>(inst[31]), b6(inst, 26), b5(inst, 20) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 25), b5(inst, 20) );
         break;
       }
       case OPCODE_OP_IMM: {
         // FIXME comments on the same line as the opening brace are broken
         // I-type immediate
-        immediate = cat( dup<21>(inst[31]), b6(inst, 26), b5(inst, 20) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 25), b5(inst, 20) );
         break;
       }
       case OPCODE_JALR: {
         // FIXME comments on the same line as the opening brace are broken
         // I-type immediate
-        immediate = cat( dup<21>(inst[31]), b6(inst, 26), b5(inst, 20) );
+        immediate = cat( dup<21>(inst[31]), b6(inst, 25), b5(inst, 20) );
         break;
       }
       case OPCODE_STORE_FP:

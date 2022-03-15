@@ -3,6 +3,9 @@
 // (c) 2017-2019, Arthur Matos, Marcus Vinicius Lamar, Universidade de Brasília,
 //                Marek Materzok, University of Wrocław
 
+#ifndef RVSIMPLE_EXAMPLE_MEMORY_BUS_H
+#define RVSIMPLE_EXAMPLE_MEMORY_BUS_H
+
 #include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
@@ -38,3 +41,5 @@ public:
     }
   }
 };
+
+#endif // RVSIMPLE_EXAMPLE_MEMORY_BUS_H

@@ -27,6 +27,8 @@ public:
   singlecycle_ctlpath singlecycle_ctlpath;
   data_memory_interface data_memory_interface;
 
+  //----------------------------------------
+
   void tick(logic<1> reset) {
     singlecycle_datapath.tick(
       reset,
@@ -34,16 +36,17 @@ public:
       singlecycle_ctlpath.regfile_write_enable);
   }
 
+  //----------------------------------------
+
   void tock_pc() {
     singlecycle_datapath.tock_pc();
-
     pc = singlecycle_datapath.pc;
   }
 
   void tock_execute(logic<32> inst) {
-    singlecycle_datapath.tock_regfile();
-
     singlecycle_datapath.tock_decode(inst);
+
+    singlecycle_datapath.tock_regfile();
 
     singlecycle_ctlpath.tock_decode(singlecycle_datapath.inst_opcode);
 
@@ -87,6 +90,8 @@ public:
       data_memory_interface.read_data,
       singlecycle_ctlpath.reg_writeback_select);
   }
+
+  //----------------------------------------
 };
 
 #endif // RVSIMPLE_RISCV_CORE_H

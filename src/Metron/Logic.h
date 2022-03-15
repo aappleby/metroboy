@@ -4,6 +4,7 @@
 
 #include <type_traits>
 
+
 //------------------------------------------------------------------------------
 // This file contains classes to support Verilog-style bit manipulation in C++.
 //

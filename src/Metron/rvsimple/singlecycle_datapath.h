@@ -42,7 +42,7 @@ public:
 
   immediate_generator immediate_generator;
 
-  _register<32, INITIAL_PC> program_counter;
+  single_register<32, INITIAL_PC> program_counter;
 
   multiplexer4<32> mux_next_pc_select;
 
@@ -54,9 +54,13 @@ public:
 
   regfile regfile;
 
+  //----------------------------------------
+
   void init() {
     program_counter.init();
   }
+
+  //----------------------------------------
 
   void tick(logic<1> reset,
             logic<1> pc_write_enable,
@@ -68,18 +72,26 @@ public:
 
     regfile.tick(regfile_write_enable,
                  instruction_decoder.inst_rd,
-                 instruction_decoder.inst_rs1,
-                 instruction_decoder.inst_rs2,
                  mux_reg_writeback.out);
   }
+
+  //----------------------------------------
 
   void tock_pc() {
     program_counter.tock();
     pc = program_counter.value;
   }
 
+  void tock_decode(logic<32> inst) {
+    instruction_decoder.tock(inst);
+    immediate_generator.tock(inst);
+    inst_funct7 = instruction_decoder.inst_funct7;
+    inst_funct3 = instruction_decoder.inst_funct3;
+    inst_opcode = instruction_decoder.inst_opcode;
+  }
+
   void tock_regfile() {
-    regfile.tock();
+    regfile.tock(instruction_decoder.inst_rs1, instruction_decoder.inst_rs2);
     data_mem_write_data = regfile.rs2_data; 
   }
 
@@ -102,15 +114,6 @@ public:
 
     data_mem_address = alu.result;
     alu_result_equal_zero2 = alu.result_equal_zero;
-  }
-
-  void tock_decode(logic<32> inst) {
-    instruction_decoder.tock(inst);
-    immediate_generator.tock(inst);
-    inst_funct7 = instruction_decoder.inst_funct7;
-    inst_funct3 = instruction_decoder.inst_funct3;
-    inst_opcode = instruction_decoder.inst_opcode;
-
   }
 
   void tock_next_pc(logic<2> next_pc_select) {

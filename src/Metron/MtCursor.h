@@ -34,14 +34,12 @@ struct MtCursor {
 
   void emit_char(char c);
   void emit_ws();
+  void emit_ws_to_newline();
   void emit_span(const char* a, const char* b);
   void emit_text(MtNode n);
   void emit(const char* fmt, ...);
   void emit_replacement(MtNode n, const char* fmt, ...);
   void skip_over(MtNode n);
-  void skip_to_next_sibling(MtNode n);
-  void skip_to_next_line();
-  void emit_to_newline();
   void skip_ws();
   void comment_out(MtNode n);
 
@@ -109,6 +107,9 @@ struct MtCursor {
   const char* cursor = nullptr;
   std::string current_function_name;
   std::vector<std::string> indent_stack;
+  bool at_newline = true;
+  bool line_dirty = false;
+  bool line_elided = false;
 
   std::string* str_out;
 
@@ -125,9 +126,6 @@ struct MtCursor {
 
   bool trim_namespaces = true;
   bool in_ports = false;
-
-  bool line_dirty = false;
-  bool line_elided = false;
 
   int override_size = 0;
 };

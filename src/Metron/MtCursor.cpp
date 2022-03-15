@@ -8,6 +8,8 @@
 #include "MtSourceFile.h"
 #include "Platform.h"
 
+#include "../CoreLib/Log.h"
+
 void print_escaped(char s);
 
 //------------------------------------------------------------------------------
@@ -133,6 +135,8 @@ void MtCursor::emit_char(char c) {
 
   if (!quiet) putchar(c);
   str_out->push_back(c);
+
+  at_newline = c == '\n';
 }
 
 //----------------------------------------
@@ -142,6 +146,41 @@ void MtCursor::emit_ws() {
     emit_char(*cursor++);
   }
 }
+
+void MtCursor::emit_ws_to_newline() {
+  while (cursor < source_file->source_end && isspace(*cursor)) {
+    auto c = *cursor++;
+    emit_char(c);
+    if (c == '\n') return;
+  }
+}
+
+//----------------------------------------
+
+void MtCursor::skip_over(MtNode n) {
+  assert(cursor == n.start());
+  cursor = n.end();
+  line_elided = true;
+}
+
+//----------------------------------------
+
+void MtCursor::skip_ws() {
+  while (*cursor && isspace(*cursor)) {
+    cursor++;
+  }
+}
+
+//----------------------------------------
+
+void MtCursor::comment_out(MtNode n) {
+  assert(cursor == n.start());
+  emit("/*");
+  emit_text(n);
+  emit("*/");
+  assert(cursor == n.end());
+}
+
 
 //----------------------------------------
 
@@ -208,52 +247,6 @@ void MtCursor::emit_replacement(MtNode n, const char* fmt, ...) {
   if (!quiet) printf("\u001b[0m");
 }
 
-//----------------------------------------
-
-void MtCursor::skip_over(MtNode n) {
-  assert(cursor == n.start());
-  cursor = n.end();
-}
-
-//----------------------------------------
-
-void MtCursor::skip_to_next_sibling(MtNode n) {
-  assert(cursor == n.start());
-
-  auto next_node = ts_node_next_sibling(n.node);
-  auto a = &source_file->source[ts_node_start_byte(next_node)];
-  cursor = a;
-}
-
-void MtCursor::skip_to_next_line() {
-  while (*cursor != '\n') {
-    cursor++;
-  }
-  cursor++;
-}
-
-void MtCursor::emit_to_newline() {
-  while (*cursor != '\n') emit_char(*cursor++);
-  emit_char(*cursor++);
-}
-
-//----------------------------------------
-
-void MtCursor::skip_ws() {
-  while (*cursor && isspace(*cursor)) {
-    cursor++;
-  }
-}
-
-//----------------------------------------
-
-void MtCursor::comment_out(MtNode n) {
-  assert(cursor == n.start());
-  emit("/*");
-  emit_text(n);
-  emit("*/");
-}
-
 //------------------------------------------------------------------------------
 // Replace "#include" with "`include" and ".h" with ".sv"
 
@@ -265,6 +258,7 @@ void MtCursor::emit(MtPreprocInclude n) {
   emit_span(n.path_node().start(), n.path_node().end() - 1);
   emit(".sv\"");
   cursor = n.end();
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -309,6 +303,8 @@ void MtCursor::emit(MtAssignmentExpr n) {
   // rhs.
   emit_ws();
   emit_dispatch(rhs);
+
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -431,11 +427,11 @@ void MtCursor::emit_dynamic_bit_extract(MtCallExpr call, MtNode bx_node) {
 // Replace function names with macro names where needed, comment out explicit
 // init/final/tick/tock calls.
 
-void MtCursor::emit(MtCallExpr call) {
-  assert(cursor == call.start());
+void MtCursor::emit(MtCallExpr n) {
+  assert(cursor == n.start());
 
-  MtFunc func = call.func();
-  MtArgList args = call.args();
+  MtFunc func = n.func();
+  MtArgList args = n.args();
 
   // If we're calling a member function, look at the name of the member
   // function and not the whole foo.bar().
@@ -444,27 +440,9 @@ void MtCursor::emit(MtCallExpr call) {
 
   if (func_name == "coerce") {
     // Convert to cast? We probably shouldn't be calling coerce() directly.
-    call.error();
+    n.error();
   }
   else if (func_name == "sra") {
-    /*
-    ========== tree dump begin
-    [00:029:267] right: call_expression =
-    [00:015:001] |  function: identifier = "sra"
-    [01:003:268] |  arguments: argument_list =
-    [00:000:005] |  |  lit = "("
-    [01:000:001] |  |  identifier = "operand_a"
-    [02:000:007] |  |  lit = ","
-    [03:000:267] |  |  call_expression =
-    [00:015:001] |  |  |  function: identifier = "b5"
-    [01:003:268] |  |  |  arguments: argument_list =
-    [00:000:005] |  |  |  |  lit = "("
-    [01:000:001] |  |  |  |  identifier = "operand_b"
-    [02:000:008] |  |  |  |  lit = ")"
-    [04:000:008] |  |  lit = ")"
-    ========== tree dump end
-    */
-   
     auto lhs = args.named_child(0);
     auto rhs = args.named_child(1);
 
@@ -475,7 +453,7 @@ void MtCursor::emit(MtCallExpr call) {
     cursor = rhs.start();
     emit_dispatch(rhs);
     emit(")");
-    cursor = call.end();
+    cursor = n.end();
     
     //call.dump_tree();
 
@@ -495,155 +473,158 @@ void MtCursor::emit(MtCallExpr call) {
   } else if (func_name == "readmemh") {
     emit_replacement(func, "$readmemh");
     emit(args);
+  } else if (func_name == "value_plusargs") {
+    emit_replacement(func, "$value$plusargs");
+    emit(args);
   } else if (func_name == "write") {
     emit_replacement(func, "$write");
     emit(args);
   } else if (func_name.starts_with("init")) {
-    comment_out(call);
+    comment_out(n);
   } else if (func_name.starts_with("final")) {
-    comment_out(call);
+    comment_out(n);
   } else if (func_name.starts_with("tick")) {
-    comment_out(call);
+    comment_out(n);
   } else if (func_name.starts_with("tock")) {
-    comment_out(call);
+    comment_out(n);
   } else if (func_name == "bx") {
     // Bit extract.
     auto template_arg = func.as_templ().args().named_child(0);
-    emit_dynamic_bit_extract(call, template_arg);
+    emit_dynamic_bit_extract(n, template_arg);
   } else if (func_name == "b1")
-    emit_static_bit_extract(call, 1);
+    emit_static_bit_extract(n, 1);
   else if (func_name == "b2")
-    emit_static_bit_extract(call, 2);
+    emit_static_bit_extract(n, 2);
   else if (func_name == "b3")
-    emit_static_bit_extract(call, 3);
+    emit_static_bit_extract(n, 3);
   else if (func_name == "b4")
-    emit_static_bit_extract(call, 4);
+    emit_static_bit_extract(n, 4);
   else if (func_name == "b5")
-    emit_static_bit_extract(call, 5);
+    emit_static_bit_extract(n, 5);
   else if (func_name == "b6")
-    emit_static_bit_extract(call, 6);
+    emit_static_bit_extract(n, 6);
   else if (func_name == "b7")
-    emit_static_bit_extract(call, 7);
+    emit_static_bit_extract(n, 7);
   else if (func_name == "b8")
-    emit_static_bit_extract(call, 8);
+    emit_static_bit_extract(n, 8);
   else if (func_name == "b9")
-    emit_static_bit_extract(call, 9);
+    emit_static_bit_extract(n, 9);
 
   else if (func_name == "b10")
-    emit_static_bit_extract(call, 10);
+    emit_static_bit_extract(n, 10);
   else if (func_name == "b11")
-    emit_static_bit_extract(call, 11);
+    emit_static_bit_extract(n, 11);
   else if (func_name == "b12")
-    emit_static_bit_extract(call, 12);
+    emit_static_bit_extract(n, 12);
   else if (func_name == "b13")
-    emit_static_bit_extract(call, 13);
+    emit_static_bit_extract(n, 13);
   else if (func_name == "b14")
-    emit_static_bit_extract(call, 14);
+    emit_static_bit_extract(n, 14);
   else if (func_name == "b15")
-    emit_static_bit_extract(call, 15);
+    emit_static_bit_extract(n, 15);
   else if (func_name == "b16")
-    emit_static_bit_extract(call, 16);
+    emit_static_bit_extract(n, 16);
   else if (func_name == "b17")
-    emit_static_bit_extract(call, 17);
+    emit_static_bit_extract(n, 17);
   else if (func_name == "b18")
-    emit_static_bit_extract(call, 18);
+    emit_static_bit_extract(n, 18);
   else if (func_name == "b19")
-    emit_static_bit_extract(call, 19);
+    emit_static_bit_extract(n, 19);
 
   else if (func_name == "b20")
-    emit_static_bit_extract(call, 20);
+    emit_static_bit_extract(n, 20);
   else if (func_name == "b21")
-    emit_static_bit_extract(call, 21);
+    emit_static_bit_extract(n, 21);
   else if (func_name == "b22")
-    emit_static_bit_extract(call, 22);
+    emit_static_bit_extract(n, 22);
   else if (func_name == "b23")
-    emit_static_bit_extract(call, 23);
+    emit_static_bit_extract(n, 23);
   else if (func_name == "b24")
-    emit_static_bit_extract(call, 24);
+    emit_static_bit_extract(n, 24);
   else if (func_name == "b25")
-    emit_static_bit_extract(call, 25);
+    emit_static_bit_extract(n, 25);
   else if (func_name == "b26")
-    emit_static_bit_extract(call, 26);
+    emit_static_bit_extract(n, 26);
   else if (func_name == "b27")
-    emit_static_bit_extract(call, 27);
+    emit_static_bit_extract(n, 27);
   else if (func_name == "b28")
-    emit_static_bit_extract(call, 28);
+    emit_static_bit_extract(n, 28);
   else if (func_name == "b29")
-    emit_static_bit_extract(call, 29);
+    emit_static_bit_extract(n, 29);
 
   else if (func_name == "b30")
-    emit_static_bit_extract(call, 30);
+    emit_static_bit_extract(n, 30);
   else if (func_name == "b31")
-    emit_static_bit_extract(call, 31);
+    emit_static_bit_extract(n, 31);
   else if (func_name == "b32")
-    emit_static_bit_extract(call, 32);
+    emit_static_bit_extract(n, 32);
   else if (func_name == "b33")
-    emit_static_bit_extract(call, 33);
+    emit_static_bit_extract(n, 33);
   else if (func_name == "b34")
-    emit_static_bit_extract(call, 34);
+    emit_static_bit_extract(n, 34);
   else if (func_name == "b35")
-    emit_static_bit_extract(call, 35);
+    emit_static_bit_extract(n, 35);
   else if (func_name == "b36")
-    emit_static_bit_extract(call, 36);
+    emit_static_bit_extract(n, 36);
   else if (func_name == "b37")
-    emit_static_bit_extract(call, 37);
+    emit_static_bit_extract(n, 37);
   else if (func_name == "b38")
-    emit_static_bit_extract(call, 38);
+    emit_static_bit_extract(n, 38);
   else if (func_name == "b39")
-    emit_static_bit_extract(call, 39);
+    emit_static_bit_extract(n, 39);
 
   else if (func_name == "b40")
-    emit_static_bit_extract(call, 40);
+    emit_static_bit_extract(n, 40);
   else if (func_name == "b41")
-    emit_static_bit_extract(call, 41);
+    emit_static_bit_extract(n, 41);
   else if (func_name == "b42")
-    emit_static_bit_extract(call, 42);
+    emit_static_bit_extract(n, 42);
   else if (func_name == "b43")
-    emit_static_bit_extract(call, 43);
+    emit_static_bit_extract(n, 43);
   else if (func_name == "b44")
-    emit_static_bit_extract(call, 44);
+    emit_static_bit_extract(n, 44);
   else if (func_name == "b45")
-    emit_static_bit_extract(call, 45);
+    emit_static_bit_extract(n, 45);
   else if (func_name == "b46")
-    emit_static_bit_extract(call, 46);
+    emit_static_bit_extract(n, 46);
   else if (func_name == "b47")
-    emit_static_bit_extract(call, 47);
+    emit_static_bit_extract(n, 47);
   else if (func_name == "b48")
-    emit_static_bit_extract(call, 48);
+    emit_static_bit_extract(n, 48);
   else if (func_name == "b49")
-    emit_static_bit_extract(call, 49);
+    emit_static_bit_extract(n, 49);
 
   else if (func_name == "b50")
-    emit_static_bit_extract(call, 50);
+    emit_static_bit_extract(n, 50);
   else if (func_name == "b51")
-    emit_static_bit_extract(call, 51);
+    emit_static_bit_extract(n, 51);
   else if (func_name == "b52")
-    emit_static_bit_extract(call, 52);
+    emit_static_bit_extract(n, 52);
   else if (func_name == "b53")
-    emit_static_bit_extract(call, 53);
+    emit_static_bit_extract(n, 53);
   else if (func_name == "b54")
-    emit_static_bit_extract(call, 54);
+    emit_static_bit_extract(n, 54);
   else if (func_name == "b55")
-    emit_static_bit_extract(call, 55);
+    emit_static_bit_extract(n, 55);
   else if (func_name == "b56")
-    emit_static_bit_extract(call, 56);
+    emit_static_bit_extract(n, 56);
   else if (func_name == "b57")
-    emit_static_bit_extract(call, 57);
+    emit_static_bit_extract(n, 57);
   else if (func_name == "b58")
-    emit_static_bit_extract(call, 58);
+    emit_static_bit_extract(n, 58);
   else if (func_name == "b59")
-    emit_static_bit_extract(call, 59);
+    emit_static_bit_extract(n, 59);
 
   else if (func_name == "b60")
-    emit_static_bit_extract(call, 60);
+    emit_static_bit_extract(n, 60);
   else if (func_name == "b61")
-    emit_static_bit_extract(call, 61);
+    emit_static_bit_extract(n, 61);
   else if (func_name == "b62")
-    emit_static_bit_extract(call, 62);
+    emit_static_bit_extract(n, 62);
   else if (func_name == "b63")
-    emit_static_bit_extract(call, 63);
+    emit_static_bit_extract(n, 63);
   else if (func_name == "b64")
-    emit_static_bit_extract(call, 64);
+    emit_static_bit_extract(n, 64);
 
   else if (func_name == "cat") {
     // Remove "cat" and replace parens with brackets
@@ -681,11 +662,13 @@ void MtCursor::emit(MtCallExpr call) {
     emit_dispatch(func_arg);
 
     emit("}}");
-    cursor = call.end();
+    cursor = n.end();
   } else {
     // All other function/task calls go through normally.
-    emit_children(call);
+    emit_children(n);
   }
+
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -699,6 +682,8 @@ void MtCursor::emit_init_declarator_as_decl(MtDecl n) {
   emit(n._init_decl().decl());
   emit(";");
   cursor = n.end();
+
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -712,12 +697,39 @@ void MtCursor::emit_init_declarator_as_assign(MtDecl n) {
   emit_dispatch(n._init_decl());
   emit(";");
   cursor = n.end();
+
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
 // Emit local variable declarations at the top of the block scope.
 
 void MtCursor::emit_hoisted_decls(MtCompoundStatement n) {
+  bool any_to_hoist = false;
+
+  for (auto c : (MtNode&)n) {
+    if (c.sym == sym_declaration) {
+      bool is_localparam = c.sym == sym_declaration && c.child_count() >= 4 &&
+                           c.child(0).text() == "static" &&
+                           c.child(1).text() == "const";
+
+      if (is_localparam) {
+      } else {
+        any_to_hoist = true;
+        break;
+      }
+    }
+  }
+
+  if (!any_to_hoist) return;
+
+  if (!at_newline) {
+    LOG_R("We're in some weird one-liner with a local variable?");
+    debugbreak();
+    emit_newline();
+    emit_indent();
+  }
+
   MtCursor old_cursor = *this;
   for (auto c : (MtNode&)n) {
     if (c.sym == sym_declaration) {
@@ -731,17 +743,21 @@ void MtCursor::emit_hoisted_decls(MtCompoundStatement n) {
 
         auto d = MtDecl(c);
 
-        emit_indent();
         if (d.is_init_decl()) {
+          emit_indent();
           emit_init_declarator_as_decl(MtDecl(c));
+          emit_newline();
         } else {
+          emit_indent();
           emit_dispatch(d);
+          emit_newline();
         }
-        emit_newline();
       }
     }
   }
   *this = old_cursor;
+
+  assert(at_newline);
 }
 
 //------------------------------------------------------------------------------
@@ -759,14 +775,11 @@ void MtCursor::emit_func_decl(MtFuncDeclarator n) {
 
 // func_def = { field_type, field_declarator, field_body }
 
-void MtCursor::emit(MtFuncDefinition func) {
-  assert(cursor == func.start());
+void MtCursor::emit(MtFuncDefinition n) {
+  assert(cursor == n.start());
 
-  skip_over(func.type());
-  skip_ws();
-
-  current_function_name = func.decl().decl().node_to_name();
-  in_task = func.type().match("void");
+  current_function_name = n.decl().decl().node_to_name();
+  in_task = n.type().match("void");
   in_func = !in_task;
   in_init = in_task && current_function_name.starts_with("init");
   in_tick = in_task && current_function_name.starts_with("tick");
@@ -775,28 +788,28 @@ void MtCursor::emit(MtFuncDefinition func) {
   //----------
   // Emit a block declaration for the type of function we're in.
 
+  skip_over(n.type());
+  skip_ws();
+
   if (in_init) {
-    emit_replacement(func.decl(), "initial");
-    emit_ws();
+    emit_replacement(n.decl(), "initial");
   } else if (in_tick) {
-    emit_replacement(func.decl(), "always_ff @(posedge clk)");
-    emit_ws();
+    emit_replacement(n.decl(), "always_ff @(posedge clock)");
   } else if (in_tock) {
-    emit_replacement(func.decl(), "always_comb");
-    emit_ws();
+    emit_replacement(n.decl(), "always_comb");
   } else if (in_task) {
     emit("task ");
-    emit_dispatch(func.decl());
+    emit_dispatch(n.decl());
     emit(";");
-    skip_ws();
   } else if (in_func) {
-    emit("function %s ", func.type().text().c_str());
-    emit_dispatch(func.decl());
+    emit("function %s ", n.type().text().c_str());
+    emit_dispatch(n.decl());
     emit(";");
-    skip_ws();
   } else {
     debugbreak();
   }
+
+  emit_ws();
 
   if (in_init)
     emit("begin : %s", current_function_name.c_str());
@@ -815,7 +828,7 @@ void MtCursor::emit(MtFuncDefinition func) {
   // Emit the function body with the correct type of "begin/end" pair,
   // hoisting locals to the top of the body scope.
 
-  auto func_body = func.body();
+  auto func_body = n.body();
   push_indent(func_body);
 
   auto body_count = func_body.child_count();
@@ -824,13 +837,12 @@ void MtCursor::emit(MtFuncDefinition func) {
     switch (c.sym) {
       case anon_sym_LBRACE:
         skip_over(c);
-        // emit_to_newline();
 
         // while (*cursor != '\n') emit_char(*cursor++);
         // emit_char(*cursor++);
-        emit_ws();
-
+        emit_ws_to_newline();
         emit_hoisted_decls(func_body);
+        emit_ws();
         break;
 
       case sym_declaration: {
@@ -839,6 +851,7 @@ void MtCursor::emit(MtFuncDefinition func) {
           emit_init_declarator_as_assign(c);
         } else {
           skip_over(c);
+          //comment_out(c);
         }
         break;
       }
@@ -882,7 +895,7 @@ void MtCursor::emit(MtFuncDefinition func) {
   else
     debugbreak();
 
-  emit_to_newline();
+  assert(cursor == n.end());
 
   //----------
 
@@ -892,6 +905,7 @@ void MtCursor::emit(MtFuncDefinition func) {
   in_tock = false;
   in_task = false;
   in_func = false;
+
 }
 
 //------------------------------------------------------------------------------
@@ -930,48 +944,48 @@ void MtCursor::emit(MtFuncDefinition func) {
 ========== tree dump end
 */
 
-void MtCursor::emit_field_as_enum_class(MtFieldDecl field_decl) {
-  assert(cursor == field_decl.start());
+void MtCursor::emit_field_as_enum_class(MtFieldDecl n) {
+  assert(cursor == n.start());
 
-  assert(field_decl.sym == sym_field_declaration);
+  assert(n.sym == sym_field_declaration);
 
   std::string enum_name;
   MtNode node_values;
   int bit_width = 0;
   std::string enum_type = "";
 
-  if (field_decl.sym == sym_enum_specifier &&
-      field_decl.get_field(field_body).sym == sym_enumerator_list) {
-    auto node_name = field_decl.get_field(field_name);
-    auto node_base = field_decl.get_field(field_base);
+  if (n.sym == sym_enum_specifier &&
+      n.get_field(field_body).sym == sym_enumerator_list) {
+    auto node_name = n.get_field(field_name);
+    auto node_base = n.get_field(field_base);
     enum_name = node_name.is_null() ? "" : node_name.text();
     enum_type = node_base.is_null() ? "" : node_base.text();
-    node_values = field_decl.get_field(field_body);
+    node_values = n.get_field(field_body);
     bit_width = 0;
-  } else if (field_decl.sym == sym_field_declaration &&
-             field_decl.get_field(field_type).sym == sym_enum_specifier &&
-             field_decl.get_field(field_type).get_field(field_body).sym ==
+  } else if (n.sym == sym_field_declaration &&
+             n.get_field(field_type).sym == sym_enum_specifier &&
+             n.get_field(field_type).get_field(field_body).sym ==
                  sym_enumerator_list) {
     // Anonymous enums have "body" nested under "type"
-    node_values = field_decl.get_field(field_type).get_field(field_body);
+    node_values = n.get_field(field_type).get_field(field_body);
     bit_width = 0;
-  } else if (field_decl.sym == sym_field_declaration &&
-             field_decl.get_field(field_type).sym == sym_enum_specifier &&
-             field_decl.get_field(field_default_value).sym ==
+  } else if (n.sym == sym_field_declaration &&
+             n.get_field(field_type).sym == sym_enum_specifier &&
+             n.get_field(field_default_value).sym ==
                  sym_initializer_list) {
     // TreeSitterCPP BUG - "enum class foo : int = {}" misinterpreted as
     // default_value
 
-    enum_name = field_decl.get_field(field_type).get_field(field_name).text();
-    node_values = field_decl.get_field(field_default_value);
+    enum_name = n.get_field(field_type).get_field(field_name).text();
+    node_values = n.get_field(field_default_value);
     bit_width = 0;
-  } else if (field_decl.sym == sym_field_declaration &&
-             field_decl.child_count() == 3 &&
-             field_decl.child(0).sym == sym_enum_specifier &&
-             field_decl.child(1).sym == sym_bitfield_clause) {
+  } else if (n.sym == sym_field_declaration &&
+             n.child_count() == 3 &&
+             n.child(0).sym == sym_enum_specifier &&
+             n.child(1).sym == sym_bitfield_clause) {
     // TreeSitterCPP BUG - "enum class foo : logic<2> = {}" misinterpreted as
     // bitfield
-    auto node_bitfield = field_decl.child(1);
+    auto node_bitfield = n.child(1);
     auto node_compound = node_bitfield.child(1);
     auto node_basetype = node_compound.get_field(field_type);
     auto node_scope = node_basetype.get_field(field_scope);
@@ -979,27 +993,27 @@ void MtCursor::emit_field_as_enum_class(MtFieldDecl field_decl) {
     auto node_bitwidth = node_args.child(1);
     assert(node_bitwidth.sym == sym_number_literal);
 
-    enum_name = field_decl.get_field(field_type).get_field(field_name).text();
+    enum_name = n.get_field(field_type).get_field(field_name).text();
     node_values = node_compound.get_field(field_value);
     bit_width = atoi(node_bitwidth.start());
-  } else if (field_decl.sym == sym_declaration &&
-             field_decl.child_count() == 3 &&
-             field_decl.child(0).sym == sym_enum_specifier &&
-             field_decl.child(1).sym == sym_init_declarator) {
+  } else if (n.sym == sym_declaration &&
+             n.child_count() == 3 &&
+             n.child(0).sym == sym_enum_specifier &&
+             n.child(1).sym == sym_init_declarator) {
     // TreeSitterCPP BUG - "enum class foo : logic<2> = {}" in namespace
     // misinterpreted as declarator
-    auto node_decl1 = field_decl.get_field(field_declarator);
+    auto node_decl1 = n.get_field(field_declarator);
     auto node_decl2 = node_decl1.get_field(field_declarator);
     auto node_scope = node_decl2.get_field(field_scope);
     auto node_args = node_scope.get_field(field_arguments);
     auto node_bitwidth = node_args.child(1);
     assert(node_bitwidth.sym == sym_number_literal);
 
-    enum_name = field_decl.get_field(field_type).get_field(field_name).text();
+    enum_name = n.get_field(field_type).get_field(field_name).text();
     node_values = node_decl1.get_field(field_value);
     bit_width = atoi(node_bitwidth.start());
   } else {
-    field_decl.error();
+    n.error();
   }
 
   emit("typedef enum ");
@@ -1018,21 +1032,22 @@ void MtCursor::emit_field_as_enum_class(MtFieldDecl field_decl) {
   emit_dispatch(node_values);
   if (enum_name.size()) emit(" %s", enum_name.c_str());
   override_size = 0;
-  cursor = field_decl.end();
+  cursor = n.end();
 
   // BUG: Trailing semicolons are inconsistent.
-  if (field_decl.text().back() == ';') emit(";");
+  if (n.text().back() == ';') emit(";");
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
 
-void MtCursor::emit_field_as_submod(MtFieldDecl field_decl) {
-  std::string type_name = field_decl.type().node_to_type();
+void MtCursor::emit_field_as_submod(MtFieldDecl n) {
+  std::string type_name = n.type().node_to_type();
   auto submod_mod = lib->get_mod(type_name);
 
-  auto node_type = field_decl.child(0);  // type
-  auto node_decl = field_decl.child(1);  // decl
-  auto node_semi = field_decl.child(2);  // semi
+  auto node_type = n.child(0);  // type
+  auto node_decl = n.child(1);  // decl
+  auto node_semi = n.child(2);  // semi
 
   auto inst_name = node_decl.text();
 
@@ -1065,7 +1080,7 @@ void MtCursor::emit_field_as_submod(MtFieldDecl field_decl) {
 
   emit_newline();
   emit_indent();
-  emit("clk,");
+  emit(".clock(clock),");
 
   int port_count =
       int(submod_mod->inputs->size() + submod_mod->outputs->size());
@@ -1102,7 +1117,9 @@ void MtCursor::emit_field_as_submod(MtFieldDecl field_decl) {
   emit(")");
 
   emit_dispatch(node_semi);
-  cursor = field_decl.end();
+  cursor = n.end();
+
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1114,40 +1131,43 @@ void MtCursor::emit_field_as_submod(MtFieldDecl field_decl) {
 // field_declaration = { type:enum_specifier,  bitfield_clause (TREESITTER BUG)
 // }
 
-void MtCursor::emit(MtFieldDecl field_decl) {
-  assert(cursor == field_decl.start());
+void MtCursor::emit(MtFieldDecl n) {
+  assert(cursor == n.start());
 
   // Handle "enum class", which is broken a bit in TreeSitterCpp
-  if (field_decl.type().child_count() >= 3 &&
-      field_decl.type().child(0).text() == "enum" &&
-      field_decl.type().child(1).text() == "class" &&
-      field_decl.type().child(2).sym == alias_sym_type_identifier) {
-    emit_field_as_enum_class(field_decl);
+  if (n.type().child_count() >= 3 &&
+      n.type().child(0).text() == "enum" &&
+      n.type().child(1).text() == "class" &&
+      n.type().child(2).sym == alias_sym_type_identifier) {
+    emit_field_as_enum_class(n);
     return;
   }
 
-  std::string type_name = field_decl.type().node_to_type();
+  std::string type_name = n.type().node_to_type();
 
   if (lib->has_mod(type_name)) {
-    emit_field_as_submod(field_decl);
-  } else if (field_decl.type().is_enum()) {
-    emit_field_as_enum_class(field_decl);
-  } else if (current_mod->has_output(field_decl.name().text())) {
+    emit_field_as_submod(n);
+  } else if (n.type().is_enum()) {
+    emit_field_as_enum_class(n);
+  } else if (current_mod->has_output(n.name().text())) {
     if (!in_ports) {
-      skip_to_next_sibling(field_decl);
+      //skip_to_next_sibling(n);
+      //skip_over(n);
+      comment_out(n);
     } else {
-      emit_children(field_decl);
+      emit_children(n);
     }
-  } else if (field_decl.is_static() && field_decl.is_const()) {
-    emit_children(field_decl);
+  } else if (n.is_static() && n.is_const()) {
+    emit_children(n);
   } else if (current_mod->has_enum(type_name)) {
-    emit_children(field_decl);
+    emit_children(n);
   } else if (type_name == "logic") {
-    emit_children(field_decl);
+    emit_children(n);
   } else {
-    field_decl.dump_tree();
+    n.dump_tree();
     debugbreak();
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1285,7 +1305,6 @@ void MtCursor::emit(MtClassSpecifier n) {
     pop_indent(struct_body);
     emit_indent();
     emit(");");
-    emit_newline();
     trim_namespaces = true;
     in_ports = false;
   }
@@ -1308,7 +1327,9 @@ void MtCursor::emit(MtClassSpecifier n) {
     switch (c.sym) {
       case anon_sym_LBRACE:
         skip_over(c);
+        emit_ws_to_newline();
         emit_output_ports();
+        emit_ws();
         break;
       case anon_sym_RBRACE:
         emit_replacement(c, "endmodule");
@@ -1348,6 +1369,7 @@ void MtCursor::emit(MtClassSpecifier n) {
   if (!in_module_or_package) {
     current_mod = nullptr;
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1355,11 +1377,24 @@ void MtCursor::emit(MtClassSpecifier n) {
 void MtCursor::emit_output_ports() {
   if (current_mod->submods->empty()) return;
 
+  assert(at_newline);
+
   emit_indent();
   emit("// Submodule output port bindings");
   emit_newline();
 
-  emit_indent();
+  int output_count = 0;
+
+  for (auto& submod : *current_mod->submods) {
+    auto submod_type = submod.child(0);
+    std::string type_name = submod_type.node_to_type();
+    auto submod_mod = lib->get_mod(type_name);
+    output_count += (int)submod_mod->outputs->size();
+  }
+
+
+  int output_index = 0;
+
   for (auto& submod : *current_mod->submods) {
     auto submod_type = submod.child(0);  // type
     auto submod_decl = submod.child(1);  // decl
@@ -1397,15 +1432,20 @@ void MtCursor::emit_output_ports() {
       auto output_decl = n.get_field(field_declarator);
 
       subcursor.cursor = output_type.start();
+
+      emit_indent();
       subcursor.emit_dispatch(output_type);
       subcursor.emit_ws();
       emit("%s_", inst_name.c_str());
       subcursor.emit_dispatch(output_decl);
+      emit(";");
+      emit_newline();
 
-      emit(";\n");
-      emit_indent();
+      output_index++;
     }
   }
+
+  emit_newline();
 }
 
 //------------------------------------------------------------------------------
@@ -1433,24 +1473,26 @@ void MtCursor::emit(MtExprStatement n) {
         break;
     }
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
 // Change "{ blah(); foo(); int x = 1; }" to "begin blah(); ... end"
 
-void MtCursor::emit(MtCompoundStatement body) {
-  assert(cursor == body.start());
+void MtCursor::emit(MtCompoundStatement n) {
+  assert(cursor == n.start());
 
-  push_indent(body);
+  push_indent(n);
 
-  auto body_count = body.child_count();
+  auto body_count = n.child_count();
   for (int i = 0; i < body_count; i++) {
-    auto c = body.child(i);
+    auto c = n.child(i);
     switch (c.sym) {
       case anon_sym_LBRACE:
         emit_replacement(c, "begin");
-        emit_to_newline();
-        emit_hoisted_decls(body);
+        emit_ws_to_newline();
+        emit_hoisted_decls(n);
+        emit_ws();
         break;
       case sym_declaration:
         emit_init_declarator_as_assign(c);
@@ -1483,21 +1525,22 @@ void MtCursor::emit(MtCompoundStatement body) {
     if (i != body_count - 1) emit_ws();
   }
 
-  pop_indent(body);
+  pop_indent(n);
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
 // Change logic<N> to logic[N-1:0]
 
-void MtCursor::emit(MtTemplateType templ_type) {
-  assert(cursor == templ_type.start());
+void MtCursor::emit(MtTemplateType n) {
+  assert(cursor == n.start());
 
-  emit(templ_type.name());
+  emit(n.name());
   emit_ws();
 
-  auto args = templ_type.args();
+  auto args = n.args();
 
-  bool is_logic = templ_type.name().match("logic");
+  bool is_logic = n.name().match("logic");
   if (is_logic) {
     auto logic_size = args.first_named_child();
     switch (logic_size.sym) {
@@ -1518,7 +1561,8 @@ void MtCursor::emit(MtTemplateType templ_type) {
     emit(args);
   }
 
-  cursor = templ_type.end();
+  cursor = n.end();
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1549,6 +1593,7 @@ void MtCursor::emit(MtTemplateParamList n) {
         break;
     }
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1557,7 +1602,9 @@ void MtCursor::emit(MtTemplateParamList n) {
 void MtCursor::emit(MtTemplateArgList n) {
   assert(cursor == n.start());
 
-  for (auto c : (MtNode&)n) {
+  auto child_count = n.child_count();
+  for (int i = 0; i < child_count; i++) {
+    auto c = n.child(i);
     switch (c.sym) {
       case anon_sym_LT:
         emit_replacement(c, " #(");
@@ -1569,8 +1616,9 @@ void MtCursor::emit(MtTemplateArgList n) {
         emit_dispatch(c);
         break;
     }
-    emit_ws();
+    if (i != child_count - 1) emit_ws();
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1593,6 +1641,7 @@ void MtCursor::emit(MtEnumeratorList n) {
     }
     emit_ws();
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1618,6 +1667,7 @@ void MtCursor::emit(MtTranslationUnit n) {
   if (cursor < source_file->source_end) {
     emit_span(cursor, source_file->source_end);
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1662,6 +1712,7 @@ void MtCursor::emit(MtNumberLiteral n, int size_cast) {
   }
 
   cursor = n.end();
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1680,6 +1731,7 @@ void MtCursor::emit(MtReturnStatement n) {
         break;
     }
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1688,6 +1740,7 @@ void MtCursor::emit(MtReturnStatement n) {
 void MtCursor::emit(MtPrimitiveType n) {
   assert(cursor == n.start());
   emit_text(n);
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1703,6 +1756,7 @@ void MtCursor::emit(MtIdentifier n) {
   } else {
     emit_text(n);
   }
+  assert(cursor == n.end());
 }
 
 void MtCursor::emit(MtTypeIdentifier n) {
@@ -1715,6 +1769,7 @@ void MtCursor::emit(MtTypeIdentifier n) {
   } else {
     emit_text(n);
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1749,6 +1804,7 @@ void MtCursor::emit(MtTemplateDecl n) {
   if (!in_module_or_package) {
     current_mod = nullptr;
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1763,6 +1819,7 @@ void MtCursor::emit(MtFieldExpr n) {
     if (c == '.') c = '_';
   }
   emit_replacement(n, field.c_str());
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1772,12 +1829,15 @@ void MtCursor::emit(MtCaseStatement n) {
 
   for (auto c : (MtNode&)n) {
     if (c.sym == anon_sym_case) {
-      skip_to_next_sibling(c);
+      //skip_to_next_sibling(c);
+      //skip_over(c);
+      comment_out(c);
     } else {
       emit_dispatch(c);
     }
     emit_ws();
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1805,6 +1865,7 @@ void MtCursor::emit(MtSwitchStatement n) {
     }
     emit_ws();
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1821,6 +1882,7 @@ void MtCursor::emit(MtComment n) {
   } else {
     emit_text(n);
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1829,6 +1891,7 @@ void MtCursor::emit(MtComment n) {
 void MtCursor::emit(MtBreakStatement n) {
   assert(cursor == n.start());
   comment_out(n);
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1836,6 +1899,7 @@ void MtCursor::emit(MtBreakStatement n) {
 void MtCursor::emit(MtFieldDeclList n) {
   assert(cursor == n.start());
   emit_children(n);
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1844,6 +1908,7 @@ void MtCursor::emit(MtFieldDeclList n) {
 void MtCursor::emit(MtCondExpr n) {
   assert(cursor == n.start());
   emit_children(n);
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1852,14 +1917,23 @@ void MtCursor::emit(MtCondExpr n) {
 void MtCursor::emit(MtStorageSpec n) {
   assert(cursor == n.start());
   n.match("static") ? emit_replacement(n, "localparam") : comment_out(n);
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
 // ...er, this was something about namespace resolution?
+// so this is chopping off the std:: in std::string...
 
 void MtCursor::emit(MtQualifiedId n) {
   assert(cursor == n.start());
+
+  if (n.text() == "std::string") {
+    emit_replacement(n, "string");
+    return;
+  }
+
   if (trim_namespaces) {
+    // Chop "enum::" off off "enum::enum_value"
     auto last_child = n.child(n.child_count() - 1);
     cursor = last_child.start();
     emit_dispatch(last_child);
@@ -1867,6 +1941,7 @@ void MtCursor::emit(MtQualifiedId n) {
   } else {
     emit_children(n);
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1875,6 +1950,7 @@ void MtCursor::emit(MtQualifiedId n) {
 void MtCursor::emit(MtIfStatement n) {
   assert(cursor == n.start());
   emit_children(n);
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1894,6 +1970,7 @@ void MtCursor::emit(MtUsingDecl n) {
   assert(cursor == n.start());
   auto name = n.child(2).text();
   emit_replacement(n, "import %s::*;", name.c_str());
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -1923,7 +2000,7 @@ void MtCursor::emit(MtUsingDecl n) {
 */
 
 void MtCursor::emit(MtDecl n) {
-  // n.dump_tree();
+  //n.dump_tree();
 
   assert(cursor == n.start());
 
@@ -1973,9 +2050,11 @@ void MtCursor::emit(MtDecl n) {
 
   // Regular boring local variable declaration?
   for (auto c : (MtNode)n) {
-    emit_dispatch(c);
     emit_ws();
+    emit_dispatch(c);
   }
+
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------
@@ -2084,11 +2163,14 @@ void MtCursor::emit_dispatch(MtNode n) {
       break;
     }
 
+    case sym_type_qualifier:
+      comment_out(n);
+      break;
+
     case sym_preproc_call:
     case sym_access_specifier:
-    case sym_type_qualifier:
     case sym_preproc_if:
-      skip_to_next_sibling(n);
+      skip_over(n);
       break;
 
     case sym_for_statement:
@@ -2221,6 +2303,10 @@ void MtCursor::emit_dispatch(MtNode n) {
       emit(MtNamespaceDef(n));
       break;
 
+    case alias_sym_namespace_identifier:
+      debugbreak();
+      break;
+
     default:
       static std::set<int> passthru_syms = {
           alias_sym_namespace_identifier, alias_sym_field_identifier,
@@ -2252,6 +2338,7 @@ void MtCursor::emit_dispatch(MtNode n) {
       }
       break;
   }
+  assert(cursor == n.end());
 }
 
 //------------------------------------------------------------------------------

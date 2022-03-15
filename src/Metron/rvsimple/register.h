@@ -11,7 +11,7 @@
 #include "constants.h"
 
 template<int WIDTH = 32, int INITIAL = 0>
-class _register {
+class single_register {
 public:
 
   logic<WIDTH> reg_value;

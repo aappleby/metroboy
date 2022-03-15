@@ -73,13 +73,12 @@ int main(int argc, char** argv) {
   args.push_back("-Irvsimple");
   args.push_back("-Ogenerated");
 
-  /*
   args.push_back("uart_top.h");
   args.push_back("uart_hello.h");
   args.push_back("uart_tx.h");
   args.push_back("uart_rx.h");
-  */
 
+  /*
   args.push_back("adder.h");
   args.push_back("config.h");
   args.push_back("constants.h");
@@ -105,6 +104,7 @@ int main(int argc, char** argv) {
   args.push_back("singlecycle_datapath.h");
   args.push_back("riscv_core.h");
   args.push_back("toplevel.h");
+  */
 
   for (auto& arg : args) {
     LOG_R("arg = %s\n", arg.c_str());
@@ -166,18 +166,23 @@ int main(int argc, char** argv) {
   //----------
   // Dump out info on modules for debugging.
 
-  /*
   for (auto& mod : library.modules) {
-    mod->dump_banner();
-    mod->dump_deltas();
+    if (mod->dirty_check_fail) {
+      printf("Module %s failed dirty check\n", mod->mod_name.c_str());
+      return -1;
+    }
+    //mod->dump_banner();
+    //mod->dump_deltas();
   }
-  */
 
   //----------
   // Emit all modules.
 
-  for (auto& source_file : library.source_files) {
-    // auto source_file = library.find_source("singlecycle_datapath.h");
+  for (auto& source_file : library.source_files)
+  {
+    //auto source_file = library.find_source("example_text_memory.h");
+
+    //source_file->modules->at(0)->mod_struct.dump_tree();
 
     auto out_path = out_dir + "/" + source_file->full_path + ".sv";
     mkdir_all(split_path(out_path));

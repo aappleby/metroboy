@@ -16,9 +16,20 @@
 
 class toplevel {
 public:
+
   riscv_core riscv_core;
   example_text_memory_bus text_memory_bus;
   example_data_memory_bus data_memory_bus;
+
+  logic<32> bus_read_data;
+  logic<32> bus_address;
+  logic<32> bus_write_data;
+  logic<4>  bus_byte_enable;
+  logic<1>  bus_read_enable;
+  logic<1>  bus_write_enable;
+
+  logic<32> inst;
+  logic<32> pc;
 
   void tick(logic<1> reset) {
     riscv_core.tick(reset);
@@ -34,6 +45,16 @@ public:
     riscv_core.tock_execute(text_memory_bus.read_data);
     data_memory_bus.tock(riscv_core.bus_address, riscv_core.bus_read_enable);
     riscv_core.tock_writeback(data_memory_bus.read_data);
+
+    bus_read_data = data_memory_bus.read_data;
+    bus_address = riscv_core.bus_address;
+    bus_write_data = riscv_core.bus_write_data;
+    bus_byte_enable = riscv_core.bus_byte_enable;
+    bus_read_enable = riscv_core.bus_read_enable;
+    bus_write_enable = riscv_core.bus_write_enable;
+
+    inst = text_memory_bus.read_data;
+    pc = riscv_core.pc;
   }
 };
 

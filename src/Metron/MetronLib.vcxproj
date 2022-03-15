@@ -171,6 +171,7 @@
     <ClCompile Include="..\tree-sitter-cpp\src\scanner.cc" />
     <ClCompile Include="..\tree-sitter\lib\src\lib.c" />
     <ClCompile Include="Logic.cpp" />
+    <ClCompile Include="metron_tools.cpp" />
     <ClCompile Include="MtCursor.cpp" />
     <ClCompile Include="MtMethod.cpp" />
     <ClCompile Include="MtModLibrary.cpp" />

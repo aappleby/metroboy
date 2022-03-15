@@ -33,25 +33,15 @@ public:
   logic<1>  alu_result_equal_zero2;
 
   adder<32> adder_pc_plus_4;
-
   adder<32> adder_pc_plus_immediate;
-
   alu alu;
-
   instruction_decoder instruction_decoder;
-
   immediate_generator immediate_generator;
-
   single_register<32, INITIAL_PC> program_counter;
-
   multiplexer4<32> mux_next_pc_select;
-
   multiplexer2<32> mux_operand_a;
-
   multiplexer2<32> mux_operand_b;
-
   multiplexer8<32> mux_reg_writeback;
-
   regfile regfile;
 
   //----------------------------------------

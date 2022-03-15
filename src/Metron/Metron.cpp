@@ -73,12 +73,13 @@ int main(int argc, char** argv) {
   args.push_back("-Irvsimple");
   args.push_back("-Ogenerated");
 
+  /*
   args.push_back("uart_top.h");
   args.push_back("uart_hello.h");
   args.push_back("uart_tx.h");
   args.push_back("uart_rx.h");
+  */
 
-  /*
   args.push_back("adder.h");
   args.push_back("config.h");
   args.push_back("constants.h");
@@ -104,7 +105,6 @@ int main(int argc, char** argv) {
   args.push_back("singlecycle_datapath.h");
   args.push_back("riscv_core.h");
   args.push_back("toplevel.h");
-  */
 
   for (auto& arg : args) {
     LOG_R("arg = %s\n", arg.c_str());

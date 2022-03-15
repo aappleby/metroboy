@@ -1115,8 +1115,9 @@ void MtCursor::emit_field_as_submod(MtFieldDecl n) {
   emit_newline();
   emit_indent();
   emit(")");
-
   emit_dispatch(node_semi);
+  emit_newline();
+
   cursor = n.end();
 
   assert(cursor == n.end());
@@ -1827,7 +1828,9 @@ void MtCursor::emit(MtFieldExpr n) {
 void MtCursor::emit(MtCaseStatement n) {
   assert(cursor == n.start());
 
-  for (auto c : (MtNode&)n) {
+  auto child_count = n.child_count();
+  for (int i = 0; i < child_count; i++) {
+    auto c = n.child(i);
     if (c.sym == anon_sym_case) {
       //skip_to_next_sibling(c);
       //skip_over(c);
@@ -1835,7 +1838,7 @@ void MtCursor::emit(MtCaseStatement n) {
     } else {
       emit_dispatch(c);
     }
-    emit_ws();
+    if (i != child_count - 1) emit_ws();
   }
   assert(cursor == n.end());
 }
@@ -1845,11 +1848,17 @@ void MtCursor::emit(MtCaseStatement n) {
 void MtCursor::emit(MtSwitchStatement n) {
   assert(cursor == n.start());
 
-  for (auto c : (MtNode&)n) {
+  auto child_count = n.child_count();
+  for (int i = 0; i < child_count; i++) {
+    auto c = n.child(i);
     if (c.sym == anon_sym_switch) {
       emit_replacement(c, "case");
     } else if (c.field == field_body) {
-      for (auto gc : c) {
+
+
+      auto gc_count = c.child_count();
+      for (int j = 0; j < gc_count; j++) {
+        auto gc = c.child(j);
         if (gc.sym == anon_sym_LBRACE) {
           skip_over(gc);
         } else if (gc.sym == anon_sym_RBRACE) {
@@ -1857,13 +1866,14 @@ void MtCursor::emit(MtSwitchStatement n) {
         } else {
           emit_dispatch(gc);
         }
-        emit_ws();
+        if (j != gc_count - 1) emit_ws();
       }
 
     } else {
       emit_dispatch(c);
     }
-    emit_ws();
+
+    if (i != child_count - 1) emit_ws();
   }
   assert(cursor == n.end());
 }
@@ -2143,8 +2153,10 @@ void MtCursor::emit_dispatch(MtNode n) {
       emit_replacement(lit, "`define");
       emit_ws();
       emit_dispatch(name);
-      emit_ws();
-      if (!value.is_null()) emit_dispatch(value);
+      if (!value.is_null()) {
+        emit_ws();
+        emit_dispatch(value);
+      }
       break;
     }
 

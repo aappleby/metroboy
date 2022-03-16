@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
 
   std::vector<std::string> path_names;
   std::vector<std::string> source_names;
-  std::string out_dir = "";
+  std::string out_dir = ".";
   bool quiet = false;
 
   for (auto& arg : args) {

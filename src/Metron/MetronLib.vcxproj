@@ -194,7 +194,9 @@
     <ClInclude Include="TreeSymbols.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="build.ninja" />
     <None Include="metron_tools.h.sv" />
+    <None Include="rules.ninja" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

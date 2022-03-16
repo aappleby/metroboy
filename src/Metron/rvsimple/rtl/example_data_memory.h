@@ -43,6 +43,7 @@ public:
 
   void tock(logic<DATA_BITS - 2> address) {
     q = mem[address];
+    //printf("data out 0x%08x\n", (uint32_t)q);
   }
 };
 

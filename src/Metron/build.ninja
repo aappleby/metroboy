@@ -1,43 +1,9 @@
-includes = -I. -I../tree-sitter/lib/src -I../tree-sitter/lib/include -I/usr/local/share/verilator/include -I/usr/local/share/verilator/include/vltstd
+include rules.ninja
 
-rule compile
-  command = g++ -g -O0 -std=gnu++2a $includes -MMD -MF $out.d -c $in -o $out
-  deps = gcc
-  depfile = $out.d
-
-rule compile_c
-  command = gcc -g -O0 $includes -MMD -MF $out.d -c $in -o $out
-  deps = gcc
-  depfile = $out.d
-
-rule link
-  command = g++ -g -O0 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
-
-rule metron
-  command = out/metron -q -I. -Iuart -Iuart_test -Irvsimple -Ogenerated $in
-
-#command = rm -f obj/DUT && verilator --trace --exe --prefix DUT -O0 --public-flat-rw --Mdir obj --cc --build $in && cp obj/DUT $out
-
-rule verilator
-  command = verilator -cc --public -I. -Iuart -Iuart_test -Irvsimple -Mdir generated/uart $in && cd generated/uart && make -f Vuart_top.mk
-
-rule iverilog
-  command = iverilog -g2012 -DIVERILOG $in -o $out
-
-rule yosys
-  command = yosys -p 'read_verilog -sv $in; dump; synth_ice40 -json $out;'
-
-rule nextpnr-ice40
-  command = nextpnr-ice40 -q --hx8k --package ct256 --json $in --asc $out --pcf ice40-hx8k-b-evn.pcf
-
-rule iceprog
-  command = icepack $in $out && iceprog -S $out
-
-rule run_test
-  command = $in | grep "All tests pass." && touch $out
-
-rule sv2v
-  command = sv2v -w $out $in
+includes = ${includes} -I/usr/local/share/verilator/include
+includes = ${includes} -I/usr/local/share/verilator/include/vltstd
+includes = ${includes} -I../tree-sitter/lib/src
+includes = ${includes} -I../tree-sitter/lib/include
 
 ################################################################################
 
@@ -54,7 +20,8 @@ build out/MtNode.o       : compile MtNode.cpp
 build out/MtSourceFile.o : compile MtSourceFile.cpp
 build out/Platform.o     : compile Platform.cpp
 
-build out/metron         : link $
+build out/metron $
+: link $
   out/Metron.o $
   out/MtCursor.o $
   out/MtMethod.o $
@@ -66,63 +33,4 @@ build out/metron         : link $
   out/lib.o $
   out/parser.o $
   out/scanner.o
-
-################################################################################
-
-verilator_root = /usr/local/share/verilator
-verilator_top_prefix = uart_top
-
-build $
-  generated/uart/uart_top.h.sv $
-  generated/uart/uart_hello.h.sv $
-  generated/uart/uart_tx.h.sv $
-  generated/uart/uart_rx.h.sv $
-  : metron $
-    uart/uart_top.h $
-    uart/uart_hello.h $
-    uart/uart_tx.h $
-    uart/uart_rx.h $
-  | out/metron
-
-
-
-################################################################################
-# Metron uart test suite
-
-#build out/uart_top.o        : compile uart/uart_top.cpp
-#build out/uart_hello.o      : compile uart/uart_hello.cpp
-#build out/uart_tx.o         : compile uart/uart_tx.cpp
-#build out/uart_rx.o         : compile uart/uart_rx.cpp
-#build out/uart_test_mt.o    : compile uart_test/uart_test_mt.cpp
-#
-#build out/uart_test_mt      : link out/uart_test_mt.o out/uart_top.o out/uart_hello.o out/uart_tx.o out/uart_rx.o
-#
-#build out/uart_test_mt.pass : run_test out/uart_test_mt
-
-################################################################################
-# Verilator uart test suite
-
-build generated/uart/Vuart_top.h generated/uart/Vuart_top__ALL.a : verilator generated/uart/uart_top.h.sv
-build out/uart_test/uart_test_vl.o : compile uart_test/uart_test_vl.cpp | generated/uart/Vuart_top.h
-build out/uart_test/verilated.o : compile $verilator_root/include/verilated.cpp
-
-build out/uart_test/uart_test_vl : link $
-  generated/uart/Vuart_top__ALL.a $
-  out/uart_test/uart_test_vl.o $
-  out/uart_test/verilated.o
-
-build out/uart_test/uart_test_vl.pass : run_test out/uart_test/uart_test_vl
-
-################################################################################
-# Icarus uart test suite
-
-#build out/uart_test_iv      : iverilog uart/uart_test_iv.sv | metron.h.sv uart_top.h.sv uart_hello.h.sv uart_rx.h.sv uart_tx.h.sv 
-#build out/uart_test_iv.pass : run_test out/uart_test_iv
-
-################################################################################
-# Yosys uart test suite
-
-#build out/uart_test_ice40.sv.v  : sv2v uart_test_ice40.sv | out/all_sv
-#build out/uart_test_ice40.json  : yosys out/uart_test_ice40.sv.v
-#build out/uart_test_ice40.asc   : nextpnr-ice40 out/uart_test_ice40.json
-##build out/uart_test_ice40.bin   : iceprog out/uart_test_ice40.asc
+    link_libs = -lSDL2 -ldl -lpthread

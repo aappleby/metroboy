@@ -8,7 +8,7 @@
 // Trivial support for Verilog's "+foo=bar" test arg syntax.
 // This only works for $value$plusargs("NAME=%s", s);
 
-void metron_init(int argc, char** argv);
+void metron_init(int argc, const char** argv);
 void metron_reset();
 void value_plusargs(const char* fmt, std::string& out);
 

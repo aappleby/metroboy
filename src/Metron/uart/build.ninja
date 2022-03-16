@@ -1,0 +1,58 @@
+include ../rules.ninja
+
+rule metron
+  command = metron -q $includes -O$outdir $in
+
+#verilator_mk = Vuart_top.mk
+rule verilator
+  command = verilator -cc --public -Mdir generated $in && cd generated && make -f ${verilator_mk}
+
+
+################################################################################
+
+build generated/uart_top.h.sv generated/uart_hello.h.sv generated/uart_tx.h.sv generated/uart_rx.h.sv : $
+  metron uart_top.h uart_hello.h uart_tx.h uart_rx.h
+    outdir = generated
+    includes = -I.
+
+################################################################################
+# Metron uart test suite
+
+#build out/uart_top.o        : compile uart/uart_top.cpp
+#build out/uart_hello.o      : compile uart/uart_hello.cpp
+#build out/uart_tx.o         : compile uart/uart_tx.cpp
+#build out/uart_rx.o         : compile uart/uart_rx.cpp
+#build out/uart_test_mt.o    : compile uart_test/uart_test_mt.cpp
+#
+#build out/uart_test_mt      : link out/uart_test_mt.o out/uart_top.o out/uart_hello.o out/uart_tx.o out/uart_rx.o
+#
+#build out/uart_test_mt.pass : run_test out/uart_test_mt
+
+################################################################################
+# Verilator uart test suite
+
+#build generated/uart/Vuart_top.h generated/uart/Vuart_top__ALL.a : verilator generated/uart/uart_top.h.sv
+#build out/uart_test/uart_test_vl.o : compile uart_test/uart_test_vl.cpp | generated/uart/Vuart_top.h
+#build out/uart_test/verilated.o : compile $verilator_root/include/verilated.cpp
+
+#build out/uart_test/uart_test_vl : link $
+#  generated/uart/Vuart_top__ALL.a $
+#  out/uart_test/uart_test_vl.o $
+#  out/uart_test/verilated.o
+
+#build out/uart_test/uart_test_vl.pass : run_test out/uart_test/uart_test_vl
+
+################################################################################
+# Icarus uart test suite
+
+#build out/uart_test_iv      : iverilog uart/uart_test_iv.sv | metron.h.sv uart_top.h.sv uart_hello.h.sv uart_rx.h.sv uart_tx.h.sv 
+#build out/uart_test_iv.pass : run_test out/uart_test_iv
+
+################################################################################
+# Yosys uart test suite
+
+#build out/uart_test_ice40.sv.v  : sv2v uart_test_ice40.sv | out/all_sv
+#build out/uart_test_ice40.json  : yosys out/uart_test_ice40.sv.v
+#build out/uart_test_ice40.asc   : nextpnr-ice40 out/uart_test_ice40.json
+#  pcf = ice40-hx8k-b-evn.pcf
+##build out/uart_test_ice40.bin   : iceprog out/uart_test_ice40.asc

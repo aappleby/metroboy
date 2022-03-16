@@ -17,6 +17,10 @@ public:
 
   example_text_memory text_memory;
 
+  void init() {
+    text_memory.init();
+  }
+
   void tock(logic<32> address) {
     text_memory.tock(bx<TEXT_BITS-2>(address, 2));
 

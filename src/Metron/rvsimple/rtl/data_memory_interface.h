@@ -20,6 +20,12 @@ public:
   logic<1>  bus_read_enable;
   logic<1>  bus_write_enable;
 
+  void init() {
+  }
+
+  void tick() {
+  }
+
   void tock_bus(logic<1>  read_enable,
                 logic<1>  write_enable,
                 logic<3>  data_format,

@@ -62,6 +62,8 @@ void metron_test_suite();
 MtModule* load_pass1(const char* _full_path, blob& _src_blob);
 
 int main(int argc, char** argv) {
+  LOG_B("Metron v0.0.1\n");
+
   std::vector<std::string> args;
   for (int i = 1; i < argc; i++) {
     args.push_back(argv[i]);

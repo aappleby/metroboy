@@ -35,6 +35,16 @@ public:
 
   //----------------------------------------
 
+  void init() {
+  }
+
+  //----------------------------------------
+
+  void tick() {
+  }
+
+  //----------------------------------------
+
   void tock_decode(logic<7> inst_opcode) {
     control.tock_decode(inst_opcode);
     pc_write_enable       = control.pc_write_enable;

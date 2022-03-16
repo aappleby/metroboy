@@ -29,11 +29,18 @@ public:
 
   //----------------------------------------
 
+  void init() {
+    datapath.init();
+    ctlpath.init();
+    dmem.init();
+  }
+
+  //----------------------------------------
+
   void tick(logic<1> reset) {
-    datapath.tick(
-      reset,
-      ctlpath.pc_write_enable,
-      ctlpath.regfile_write_enable);
+    datapath.tick(reset, ctlpath.pc_write_enable, ctlpath.regfile_write_enable);
+    ctlpath.tick();
+    dmem.tick();
   }
 
   //----------------------------------------

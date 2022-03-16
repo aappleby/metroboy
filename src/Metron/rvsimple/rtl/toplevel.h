@@ -31,6 +31,12 @@ public:
   logic<32> inst;
   logic<32> pc;
 
+  void init() {
+    core.init();
+    text_memory_bus.init();
+    data_memory_bus.init();
+  }
+
   void tick(logic<1> reset) {
     core.tick(reset);
     data_memory_bus.tick(core.bus_address,

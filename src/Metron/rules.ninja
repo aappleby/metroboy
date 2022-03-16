@@ -1,0 +1,30 @@
+rule compile
+  command = g++ -g -O0 -std=gnu++2a ${includes} -MMD -MF ${out}.d -c ${in} -o ${out}
+  deps = gcc
+  depfile = ${out}.d
+
+rule compile_c
+  command = gcc -g -O0 ${includes} -MMD -MF ${out}.d -c ${in} -o ${out}
+  deps = gcc
+  depfile = ${out}.d
+
+rule link
+  command = g++ -g -O0 -Wl,--whole-archive ${in} -Wl,--no-whole-archive ${link_libs} -o ${out}
+
+rule iverilog
+  command = iverilog -g2012 -DIVERILOG ${in} -o ${out}
+
+rule yosys
+  command = yosys -p 'read_verilog -sv ${in}; dump; synth_ice40 -json ${out};'
+
+rule nextpnr-ice40
+  command = nextpnr-ice40 -q --hx8k --package ct256 --json ${in} --asc ${out} --pcf ${pcf}
+
+rule iceprog
+  command = icepack ${in} ${out} && iceprog -S ${out}
+
+rule run_test
+  command = ${in} | grep "All tests pass." && touch ${out}
+
+rule sv2v
+  command = sv2v -w ${out} ${in}

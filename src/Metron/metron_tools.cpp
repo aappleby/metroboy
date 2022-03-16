@@ -10,12 +10,11 @@
 
 #pragma warning(disable : 4996)
 
-
 //----------------------------------------
 
 static std::vector<std::string> plusargs;
 
-void metron_init(int argc, char** argv) {
+void metron_init(int argc, const char** argv) {
   for (int argi = 0; argi < argc; argi++) {
     if (argv[argi][0] == '+') {
       plusargs.push_back(argv[argi] + 1);
@@ -23,9 +22,7 @@ void metron_init(int argc, char** argv) {
   }
 }
 
-void metron_reset() {
-  plusargs.clear();
-}
+void metron_reset() { plusargs.clear(); }
 
 void value_plusargs(const char* fmt, std::string& out) {
   int prefix_len = 0;
@@ -54,44 +51,98 @@ static_assert(clog2(255) == 8);
 static_assert(clog2(256) == 8);
 static_assert(clog2(257) == 9);
 
-//----------------------------------------
+//------------------------------------------------------------------------------
+
+int to_hex(uint8_t c) {
+  if      (c >= '0' && c <= '9') return c - '0';
+  else if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+  else if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+  else return -1;
+}
+
+//------------------------------------------------------------------------------
 
 void parse_hex(const char* src_filename, void* dst_data, int dst_size) {
   FILE* f = fopen(src_filename, "rb");
   fseek(f, 0, SEEK_END);
   int src_size = ftell(f);
   fseek(f, 0, SEEK_SET);
-  uint8_t* src_data = (uint8_t*)malloc(src_size);
+
+  // Stick a chunk of nulls on the end so we don't have to worry about reading a
+  // byte past the buffer.
+  void* src_data = malloc(src_size + 256);
+  memset(src_data, 0, src_size + 256);
   size_t read = fread(src_data, 1, src_size, f);
+  fclose(f);
 
-  uint8_t* dst_bytes = (uint8_t*)dst_data;
+  uint8_t* sc = (uint8_t*)src_data;
+  uint8_t* sc_end = sc + src_size;
 
-  int dst_cursor = 0;
-  int hi_lo = 1;
-  for (int src_cursor = 0; src_cursor < src_size; src_cursor++) {
-    auto c = src_data[src_cursor];
-    int d = -1;
-    if (c >= '0' && c <= '9') d = c - '0';
-    if (c >= 'a' && c <= 'f') d = c - 'a' + 10;
-    if (c >= 'A' && c <= 'F') d = c - 'A' + 10;
+  uint8_t* dc = (uint8_t*)dst_data;
+  uint8_t* dc_end = dc + (dst_size == -1 ? 0xFFFFFFFF : dst_size);
 
-    if (d >= 0) {
-      if (hi_lo == 1) {
-        dst_bytes[dst_cursor] |= d << 4;
-        hi_lo = 0;
-      } else {
-        dst_bytes[dst_cursor] |= d << 0;
-        dst_cursor++;
-        hi_lo = 1;
-      }
+  while(sc[0] && sc < sc_end) {
+
+    // Skip single-line comments
+    if (sc[0] == '/' && sc[1] == '/') {
+      while(sc[0] && sc[0] != '\n') sc++;
+      sc++;
+      continue;
     }
 
-    if (dst_cursor == dst_size) break;
+    // Skip multi-line comments
+    if (sc[0] == '/' && sc[1] == '*') {
+      while(sc[0] && (sc[0] != '*' || sc[1] != '/')) sc++;
+      sc += 2;
+      continue;
+    }
+
+    // Skip whitespace
+    if (isspace(sc[0])) {
+      sc++;
+      continue;
+    }
+
+    // Current char isn't a comment or whitespace, so check for address marker.
+    bool is_addr = false;
+    if (sc[0] == '@') {
+      is_addr = true;
+      sc++;
+    }
+
+    // We should be at a big-endian hex value now, decode it.
+    int chunk_data= 0;
+    int chunk_size = 0;
+    while(sc[0]) {
+      int d = to_hex(sc[0]);
+      if (d == -1) break;
+      chunk_data <<= 4;
+      chunk_data |= d;
+      chunk_size++;
+      sc++;
+    }
+
+    if (!chunk_size || (chunk_size & 1)) {
+      printf("Error loading %s: Invalid vmem character 0x%02x (%c)\n", src_filename, sc[0], sc[0]);
+      return;
+    }
+
+    // Store hex value in address or in output stream, little-endian.
+    if (is_addr) {
+      dc = (uint8_t*)dst_data + (chunk_data * 4);
+    }
+    else {
+      for (;chunk_size; chunk_size -= 2) {
+        if (dc < dc_end) *dc++ = chunk_data & 0xFF;
+        chunk_data >>= 8;
+      }
+    }
   }
 
-  fclose(f);
   free(src_data);
 }
+
+//------------------------------------------------------------------------------
 
 /*
 void print_hex(const char* buf_name, void* src_data, int src_size) {
@@ -157,4 +208,3 @@ int write(const char* fmt, ...) {
   log_print(0xFFFFFF, buffer, len);
   return len;
 }
-

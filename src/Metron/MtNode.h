@@ -705,6 +705,9 @@ struct MtField : public MtNode {
 //------------------------------------------------------------------------------
 
 struct MtEnum : public MtNode {
+  MtEnum(const MtNode& n) : MtNode(n) {
+  }
+
   std::string name() {
     if (sym == sym_field_declaration) {
       auto enum_type = get_field(field_type);
@@ -731,6 +734,9 @@ struct MtCall : public MtNode {
 //------------------------------------------------------------------------------
 
 struct MtParam : public MtNode {
+  MtParam(const MtNode& n) : MtNode(n) {
+  }
+
   std::string name() {
     if (sym == sym_parameter_declaration) {
       return get_field(field_declarator).text();

@@ -48,13 +48,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetronApp", "src\Metron\Met
 		{6E04C36F-3672-4257-B250-DA34DA7F6A42} = {6E04C36F-3672-4257-B250-DA34DA7F6A42}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uart_test", "src\Metron\uart_test\uart_test_mt.vcxproj", "{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Metron", "Metron", "{FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}"
-	ProjectSection(SolutionItems) = preProject
-		src\Metron\build.ninja = src\Metron\build.ninja
-		src\Metron\message.txt = src\Metron\message.txt
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plait", "Plait", "{167A0946-F6E3-4840-8E9C-C3E5DD96D71F}"
 EndProject
@@ -70,88 +64,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetronTest", "src\Metron\Me
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetronLib", "src\Metron\MetronLib.vcxproj", "{50CBE33D-A4AE-4202-B80D-49F27ECD10E2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rvsimple", "rvsimple", "{9E7E904C-1F1B-40D1-93BA-FCB5FA6155FE}"
-	ProjectSection(SolutionItems) = preProject
-		src\Metron\rvsimple\adder.cpp = src\Metron\rvsimple\adder.cpp
-		src\Metron\rvsimple\adder.h = src\Metron\rvsimple\adder.h
-		src\Metron\rvsimple\alu.cpp = src\Metron\rvsimple\alu.cpp
-		src\Metron\rvsimple\alu.h = src\Metron\rvsimple\alu.h
-		src\Metron\rvsimple\alu_control.cpp = src\Metron\rvsimple\alu_control.cpp
-		src\Metron\rvsimple\alu_control.h = src\Metron\rvsimple\alu_control.h
-		src\Metron\rvsimple\config.cpp = src\Metron\rvsimple\config.cpp
-		src\Metron\rvsimple\config.h = src\Metron\rvsimple\config.h
-		src\Metron\rvsimple\constants.cpp = src\Metron\rvsimple\constants.cpp
-		src\Metron\rvsimple\constants.h = src\Metron\rvsimple\constants.h
-		src\Metron\rvsimple\control_transfer.cpp = src\Metron\rvsimple\control_transfer.cpp
-		src\Metron\rvsimple\control_transfer.h = src\Metron\rvsimple\control_transfer.h
-		src\Metron\rvsimple\data_memory_interface.cpp = src\Metron\rvsimple\data_memory_interface.cpp
-		src\Metron\rvsimple\data_memory_interface.h = src\Metron\rvsimple\data_memory_interface.h
-		src\Metron\rvsimple\example_data_memory.cpp = src\Metron\rvsimple\example_data_memory.cpp
-		src\Metron\rvsimple\example_data_memory.h = src\Metron\rvsimple\example_data_memory.h
-		src\Metron\rvsimple\example_data_memory_bus.cpp = src\Metron\rvsimple\example_data_memory_bus.cpp
-		src\Metron\rvsimple\example_data_memory_bus.h = src\Metron\rvsimple\example_data_memory_bus.h
-		src\Metron\rvsimple\example_memory_bus.cpp = src\Metron\rvsimple\example_memory_bus.cpp
-		src\Metron\rvsimple\example_memory_bus.h = src\Metron\rvsimple\example_memory_bus.h
-		src\Metron\rvsimple\example_text_memory.cpp = src\Metron\rvsimple\example_text_memory.cpp
-		src\Metron\rvsimple\example_text_memory.h = src\Metron\rvsimple\example_text_memory.h
-		src\Metron\rvsimple\example_text_memory_bus.cpp = src\Metron\rvsimple\example_text_memory_bus.cpp
-		src\Metron\rvsimple\example_text_memory_bus.h = src\Metron\rvsimple\example_text_memory_bus.h
-		src\Metron\rvsimple\immediate_generator.cpp = src\Metron\rvsimple\immediate_generator.cpp
-		src\Metron\rvsimple\immediate_generator.h = src\Metron\rvsimple\immediate_generator.h
-		src\Metron\rvsimple\instruction_decoder.cpp = src\Metron\rvsimple\instruction_decoder.cpp
-		src\Metron\rvsimple\instruction_decoder.h = src\Metron\rvsimple\instruction_decoder.h
-		src\Metron\rvsimple\multiplexer.cpp = src\Metron\rvsimple\multiplexer.cpp
-		src\Metron\rvsimple\multiplexer.h = src\Metron\rvsimple\multiplexer.h
-		src\Metron\rvsimple\multiplexer2.cpp = src\Metron\rvsimple\multiplexer2.cpp
-		src\Metron\rvsimple\multiplexer2.h = src\Metron\rvsimple\multiplexer2.h
-		src\Metron\rvsimple\multiplexer4.cpp = src\Metron\rvsimple\multiplexer4.cpp
-		src\Metron\rvsimple\multiplexer4.h = src\Metron\rvsimple\multiplexer4.h
-		src\Metron\rvsimple\multiplexer8.cpp = src\Metron\rvsimple\multiplexer8.cpp
-		src\Metron\rvsimple\multiplexer8.h = src\Metron\rvsimple\multiplexer8.h
-		src\Metron\rvsimple\regfile.cpp = src\Metron\rvsimple\regfile.cpp
-		src\Metron\rvsimple\regfile.h = src\Metron\rvsimple\regfile.h
-		src\Metron\rvsimple\register.cpp = src\Metron\rvsimple\register.cpp
-		src\Metron\rvsimple\register.h = src\Metron\rvsimple\register.h
-		src\Metron\rvsimple\riscv_core.cpp = src\Metron\rvsimple\riscv_core.cpp
-		src\Metron\rvsimple\riscv_core.h = src\Metron\rvsimple\riscv_core.h
-		src\Metron\rvsimple\singlecycle_control.cpp = src\Metron\rvsimple\singlecycle_control.cpp
-		src\Metron\rvsimple\singlecycle_control.h = src\Metron\rvsimple\singlecycle_control.h
-		src\Metron\rvsimple\singlecycle_ctlpath.cpp = src\Metron\rvsimple\singlecycle_ctlpath.cpp
-		src\Metron\rvsimple\singlecycle_ctlpath.h = src\Metron\rvsimple\singlecycle_ctlpath.h
-		src\Metron\rvsimple\singlecycle_datapath.cpp = src\Metron\rvsimple\singlecycle_datapath.cpp
-		src\Metron\rvsimple\singlecycle_datapath.h = src\Metron\rvsimple\singlecycle_datapath.h
-		src\Metron\rvsimple\toplevel.cpp = src\Metron\rvsimple\toplevel.cpp
-		src\Metron\rvsimple\toplevel.h = src\Metron\rvsimple\toplevel.h
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rvsimple_test", "src\Metron\rvsimple\rvsimple_test.vcxproj", "{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "rvsimple generated", "rvsimple generated", "{19FBF839-DE03-487A-A74D-7CBFA7095E7C}"
-	ProjectSection(SolutionItems) = preProject
-		src\Metron\generated\rvsimple\adder.h.sv = src\Metron\generated\rvsimple\adder.h.sv
-		src\Metron\generated\rvsimple\alu.h.sv = src\Metron\generated\rvsimple\alu.h.sv
-		src\Metron\generated\rvsimple\alu_control.h.sv = src\Metron\generated\rvsimple\alu_control.h.sv
-		src\Metron\generated\rvsimple\config.h.sv = src\Metron\generated\rvsimple\config.h.sv
-		src\Metron\generated\rvsimple\constants.h.sv = src\Metron\generated\rvsimple\constants.h.sv
-		src\Metron\generated\rvsimple\control_transfer.h.sv = src\Metron\generated\rvsimple\control_transfer.h.sv
-		src\Metron\generated\rvsimple\data_memory_interface.h.sv = src\Metron\generated\rvsimple\data_memory_interface.h.sv
-		src\Metron\generated\rvsimple\example_data_memory.h.sv = src\Metron\generated\rvsimple\example_data_memory.h.sv
-		src\Metron\generated\rvsimple\example_data_memory_bus.h.sv = src\Metron\generated\rvsimple\example_data_memory_bus.h.sv
-		src\Metron\generated\rvsimple\example_memory_bus.h.sv = src\Metron\generated\rvsimple\example_memory_bus.h.sv
-		src\Metron\generated\rvsimple\example_text_memory.h.sv = src\Metron\generated\rvsimple\example_text_memory.h.sv
-		src\Metron\generated\rvsimple\example_text_memory_bus.h.sv = src\Metron\generated\rvsimple\example_text_memory_bus.h.sv
-		src\Metron\generated\rvsimple\immediate_generator.h.sv = src\Metron\generated\rvsimple\immediate_generator.h.sv
-		src\Metron\generated\rvsimple\instruction_decoder.h.sv = src\Metron\generated\rvsimple\instruction_decoder.h.sv
-		src\Metron\generated\rvsimple\multiplexer.h.sv = src\Metron\generated\rvsimple\multiplexer.h.sv
-		src\Metron\generated\rvsimple\multiplexer2.h.sv = src\Metron\generated\rvsimple\multiplexer2.h.sv
-		src\Metron\generated\rvsimple\multiplexer4.h.sv = src\Metron\generated\rvsimple\multiplexer4.h.sv
-		src\Metron\generated\rvsimple\multiplexer8.h.sv = src\Metron\generated\rvsimple\multiplexer8.h.sv
-		src\Metron\generated\rvsimple\regfile.h.sv = src\Metron\generated\rvsimple\regfile.h.sv
-		src\Metron\generated\rvsimple\register.h.sv = src\Metron\generated\rvsimple\register.h.sv
-		src\Metron\generated\rvsimple\riscv_core.h.sv = src\Metron\generated\rvsimple\riscv_core.h.sv
-		src\Metron\generated\rvsimple\singlecycle_control.h.sv = src\Metron\generated\rvsimple\singlecycle_control.h.sv
-		src\Metron\generated\rvsimple\singlecycle_ctlpath.h.sv = src\Metron\generated\rvsimple\singlecycle_ctlpath.h.sv
-		src\Metron\generated\rvsimple\singlecycle_datapath.h.sv = src\Metron\generated\rvsimple\singlecycle_datapath.h.sv
-		src\Metron\generated\rvsimple\toplevel.h.sv = src\Metron\generated\rvsimple\toplevel.h.sv
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uart_test", "src\Metron\uart\uart_test.vcxproj", "{B11A6CCD-B7E1-476E-861D-B4A362E466E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -298,22 +213,6 @@ Global
 		{66066533-DE54-4241-8C3F-15FC0D993537}.Release|x64.Build.0 = Release|x64
 		{66066533-DE54-4241-8C3F-15FC0D993537}.Release|x86.ActiveCfg = Release|Win32
 		{66066533-DE54-4241-8C3F-15FC0D993537}.Release|x86.Build.0 = Release|Win32
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Debug|x64.ActiveCfg = Debug|x64
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Debug|x64.Build.0 = Debug|x64
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Debug|x86.ActiveCfg = Debug|Win32
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Debug|x86.Build.0 = Debug|Win32
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Fast|x64.ActiveCfg = Debug|x64
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Fast|x64.Build.0 = Debug|x64
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Fast|x86.ActiveCfg = Debug|Win32
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Fast|x86.Build.0 = Debug|Win32
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Regression|x64.ActiveCfg = Release|x64
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Regression|x64.Build.0 = Release|x64
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Regression|x86.ActiveCfg = Release|Win32
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Regression|x86.Build.0 = Release|Win32
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Release|x64.ActiveCfg = Release|x64
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Release|x64.Build.0 = Release|x64
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Release|x86.ActiveCfg = Release|Win32
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5}.Release|x86.Build.0 = Release|Win32
 		{73D9A771-6462-4D34-93E4-08620FFFBE0F}.Debug|x64.ActiveCfg = Debug|x64
 		{73D9A771-6462-4D34-93E4-08620FFFBE0F}.Debug|x64.Build.0 = Debug|x64
 		{73D9A771-6462-4D34-93E4-08620FFFBE0F}.Debug|x86.ActiveCfg = Debug|Win32
@@ -346,6 +245,38 @@ Global
 		{50CBE33D-A4AE-4202-B80D-49F27ECD10E2}.Release|x64.Build.0 = Release|x64
 		{50CBE33D-A4AE-4202-B80D-49F27ECD10E2}.Release|x86.ActiveCfg = Release|Win32
 		{50CBE33D-A4AE-4202-B80D-49F27ECD10E2}.Release|x86.Build.0 = Release|Win32
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Debug|x64.ActiveCfg = Debug|x64
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Debug|x64.Build.0 = Debug|x64
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Debug|x86.ActiveCfg = Debug|Win32
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Debug|x86.Build.0 = Debug|Win32
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Fast|x64.ActiveCfg = Debug|x64
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Fast|x64.Build.0 = Debug|x64
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Fast|x86.ActiveCfg = Debug|Win32
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Fast|x86.Build.0 = Debug|Win32
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Regression|x64.ActiveCfg = Release|x64
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Regression|x64.Build.0 = Release|x64
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Regression|x86.ActiveCfg = Release|Win32
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Regression|x86.Build.0 = Release|Win32
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Release|x64.ActiveCfg = Release|x64
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Release|x64.Build.0 = Release|x64
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Release|x86.ActiveCfg = Release|Win32
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F}.Release|x86.Build.0 = Release|Win32
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Debug|x64.ActiveCfg = Debug|x64
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Debug|x64.Build.0 = Debug|x64
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Debug|x86.ActiveCfg = Debug|Win32
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Debug|x86.Build.0 = Debug|Win32
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Fast|x64.ActiveCfg = Debug|x64
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Fast|x64.Build.0 = Debug|x64
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Fast|x86.ActiveCfg = Debug|Win32
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Fast|x86.Build.0 = Debug|Win32
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Regression|x64.ActiveCfg = Release|x64
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Regression|x64.Build.0 = Release|x64
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Regression|x86.ActiveCfg = Release|Win32
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Regression|x86.Build.0 = Release|Win32
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Release|x64.ActiveCfg = Release|x64
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Release|x64.Build.0 = Release|x64
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Release|x86.ActiveCfg = Release|Win32
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -361,11 +292,10 @@ Global
 		{B508ED94-47CC-425C-B2F0-D9278A262207} = {043F7473-BACD-4D7B-AF7D-B6B438D14BCC}
 		{102DDF49-D6E2-4B48-8FBB-739003ACE370} = {167A0946-F6E3-4840-8E9C-C3E5DD96D71F}
 		{66066533-DE54-4241-8C3F-15FC0D993537} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
-		{876DB2BF-A5DA-4E00-8AE0-EC9DC8AD5BC5} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
 		{73D9A771-6462-4D34-93E4-08620FFFBE0F} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
 		{50CBE33D-A4AE-4202-B80D-49F27ECD10E2} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
-		{9E7E904C-1F1B-40D1-93BA-FCB5FA6155FE} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
-		{19FBF839-DE03-487A-A74D-7CBFA7095E7C} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
+		{AFA3BAA6-66C4-4041-9996-33DBB7ECBF8F} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
+		{B11A6CCD-B7E1-476E-861D-B4A362E466E6} = {FA08421C-2CF6-4839-8A75-CFD3ADBD9E35}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98604A08-7834-4268-B908-11FE80403D7A}

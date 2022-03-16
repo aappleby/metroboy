@@ -63,10 +63,11 @@ MtModule* load_pass1(const char* _full_path, blob& _src_blob);
 
 int main(int argc, char** argv) {
   std::vector<std::string> args;
-  for (int i = 0; i < argc; i++) {
+  for (int i = 1; i < argc; i++) {
     args.push_back(argv[i]);
   }
 
+#if 0
   args.clear();
   args.push_back("-Iuart");
   args.push_back("-Iuart_test");
@@ -105,6 +106,7 @@ int main(int argc, char** argv) {
   args.push_back("singlecycle_datapath.h");
   args.push_back("riscv_core.h");
   args.push_back("toplevel.h");
+#endif
 
   for (auto& arg : args) {
     LOG_R("arg = %s\n", arg.c_str());

@@ -23,72 +23,72 @@ public:
   logic<1>  bus_read_enable;
   logic<1>  bus_write_enable;
 
-  singlecycle_datapath singlecycle_datapath;
-  singlecycle_ctlpath singlecycle_ctlpath;
-  data_memory_interface data_memory_interface;
+  singlecycle_datapath  datapath;
+  singlecycle_ctlpath   ctlpath;
+  data_memory_interface dmem;
 
   //----------------------------------------
 
   void tick(logic<1> reset) {
-    singlecycle_datapath.tick(
+    datapath.tick(
       reset,
-      singlecycle_ctlpath.pc_write_enable,
-      singlecycle_ctlpath.regfile_write_enable);
+      ctlpath.pc_write_enable,
+      ctlpath.regfile_write_enable);
   }
 
   //----------------------------------------
 
   void tock_pc() {
-    singlecycle_datapath.tock_pc();
-    pc = singlecycle_datapath.pc;
+    datapath.tock_pc();
+    pc = datapath.pc;
   }
 
   void tock_execute(logic<32> inst) {
-    singlecycle_datapath.tock_decode(inst);
+    datapath.tock_decode(inst);
 
-    singlecycle_datapath.tock_regfile();
+    datapath.tock_regfile();
 
-    singlecycle_ctlpath.tock_decode(singlecycle_datapath.inst_opcode);
+    ctlpath.tock_decode(datapath.inst_opcode);
 
-    singlecycle_ctlpath.tock_alu_control(
-      singlecycle_datapath.inst_funct3,
-      singlecycle_datapath.inst_funct7);
+    ctlpath.tock_alu_control(
+      datapath.inst_funct3,
+      datapath.inst_funct7);
 
-    singlecycle_datapath.tock_alu(
-      singlecycle_ctlpath.alu_function,
-      singlecycle_ctlpath.alu_operand_a_select,
-      singlecycle_ctlpath.alu_operand_b_select);
+    datapath.tock_alu(
+      ctlpath.alu_function,
+      ctlpath.alu_operand_a_select,
+      ctlpath.alu_operand_b_select);
 
-    singlecycle_ctlpath.tock_next_pc_select(
-      singlecycle_datapath.inst_opcode,
-      singlecycle_datapath.inst_funct3,
-      singlecycle_datapath.alu_result_equal_zero2);
+    ctlpath.tock_next_pc_select(
+      datapath.inst_opcode,
+      datapath.inst_funct3,
+      datapath.alu_result_equal_zero2);
 
-    singlecycle_datapath.tock_next_pc(singlecycle_ctlpath.next_pc_select);
+    datapath.tock_next_pc(ctlpath.next_pc_select);
 
-    data_memory_interface.tock_bus(
-      singlecycle_ctlpath.data_mem_read_enable,
-      singlecycle_ctlpath.data_mem_write_enable,
-      singlecycle_datapath.inst_funct3,
-      singlecycle_datapath.data_mem_address,
-      singlecycle_datapath.data_mem_write_data);
+    dmem.tock_bus(
+      ctlpath.data_mem_read_enable,
+      ctlpath.data_mem_write_enable,
+      datapath.inst_funct3,
+      datapath.data_mem_address,
+      datapath.data_mem_write_data);
     
-    bus_address      = data_memory_interface.bus_address;
-    bus_write_data   = data_memory_interface.bus_write_data;
-    bus_read_enable  = data_memory_interface.bus_read_enable;
-    bus_write_enable = data_memory_interface.bus_write_enable;
-    bus_byte_enable  = data_memory_interface.bus_byte_enable;
+    bus_address      = dmem.bus_address;
+    bus_write_data   = dmem.bus_write_data;
+    bus_read_enable  = dmem.bus_read_enable;
+    bus_write_enable = dmem.bus_write_enable;
+    bus_byte_enable  = dmem.bus_byte_enable;
   }
 
   void tock_writeback(logic<32> bus_read_data) {
-    data_memory_interface.tock_read_data(
-      singlecycle_datapath.inst_funct3,
-      singlecycle_datapath.data_mem_address,
+    dmem.tock_read_data(
+      datapath.inst_funct3,
+      datapath.data_mem_address,
       bus_read_data);
 
-    singlecycle_datapath.tock_writeback(
-      data_memory_interface.read_data,
-      singlecycle_ctlpath.reg_writeback_select);
+    datapath.tock_writeback(
+      dmem.read_data,
+      ctlpath.reg_writeback_select);
   }
 
   //----------------------------------------

@@ -17,7 +17,7 @@
 class toplevel {
 public:
 
-  riscv_core riscv_core;
+  riscv_core core;
   example_text_memory_bus text_memory_bus;
   example_data_memory_bus data_memory_bus;
 
@@ -32,29 +32,29 @@ public:
   logic<32> pc;
 
   void tick(logic<1> reset) {
-    riscv_core.tick(reset);
-    data_memory_bus.tick(riscv_core.bus_address,
-                          riscv_core.bus_write_enable,
-                          riscv_core.bus_byte_enable,
-                          riscv_core.bus_write_data);
+    core.tick(reset);
+    data_memory_bus.tick(core.bus_address,
+                          core.bus_write_enable,
+                          core.bus_byte_enable,
+                          core.bus_write_data);
   }
 
   void tock() {
-    riscv_core.tock_pc();
-    text_memory_bus.tock(riscv_core.pc);
-    riscv_core.tock_execute(text_memory_bus.read_data);
-    data_memory_bus.tock(riscv_core.bus_address, riscv_core.bus_read_enable);
-    riscv_core.tock_writeback(data_memory_bus.read_data);
+    core.tock_pc();
+    text_memory_bus.tock(core.pc);
+    core.tock_execute(text_memory_bus.read_data);
+    data_memory_bus.tock(core.bus_address, core.bus_read_enable);
+    core.tock_writeback(data_memory_bus.read_data);
 
     bus_read_data = data_memory_bus.read_data;
-    bus_address = riscv_core.bus_address;
-    bus_write_data = riscv_core.bus_write_data;
-    bus_byte_enable = riscv_core.bus_byte_enable;
-    bus_read_enable = riscv_core.bus_read_enable;
-    bus_write_enable = riscv_core.bus_write_enable;
+    bus_address = core.bus_address;
+    bus_write_data = core.bus_write_data;
+    bus_byte_enable = core.bus_byte_enable;
+    bus_read_enable = core.bus_read_enable;
+    bus_write_enable = core.bus_write_enable;
 
     inst = text_memory_bus.read_data;
-    pc = riscv_core.pc;
+    pc = core.pc;
   }
 };
 

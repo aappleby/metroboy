@@ -4,55 +4,50 @@
 
 #include "Vtoplevel.h"
 #include "verilated.h"
-#include <iostream>
-#include <iomanip>
-#include <memory>
-#include <string>
+#include <stdio.h>
 
-int main(int argc, const char **argv, const char **env)
-{
-    Verilated::commandArgs(argc, argv);
+int run_test(const char* test_name) {
+  printf("running %6s: ", test_name);
 
-    bool verbose = false;
-    const char *str;
-    str = Verilated::commandArgsPlusMatch("verbose");
-    if (str && str[0]) verbose = true;
+  char buf1[256];
+  char buf2[256];
+  sprintf(buf1, "+text_file=tests/%s.text.vh", test_name);
+  sprintf(buf2, "+data_file=tests/%s.data.vh", test_name);
+  const char* argv2[2] = { buf1, buf2 };
+  Verilated::commandArgs(2, argv2);
 
-    std::unique_ptr<Vtoplevel> top(new Vtoplevel);
+  Vtoplevel top;
 
-    top->reset = 0;
+  int time;
+  for (time = 0; time < 100000; time++) {
+    top.reset = time >= 4 && time <= 7;
+    top.clock = time & 1;
+    top.eval();
+    if (top.bus_write_enable && top.bus_address == 0xfffffff0) break;
+  }
 
-    for (int time = 0; time < 100000; time++) {
-        if (time > 9)
-            top->reset = 0;
-        else if (time > 4)
-            top->reset = 1;
-        top->clock = time & 1;
-        top->eval();
-        if (verbose && top->clock && time > 8) {
-            std::cout << std::hex << std::setfill('0')
-                      << "pc=" << std::setw(8) << top->pc << " "
-                      << "inst=" << std::setw(8) << top->inst << " "
-                      << "addr=" << std::setw(8) << top->bus_address << " "
-                      << "in=" << std::setw(8) << top->bus_read_data << " "
-                      << (top->bus_read_enable ? "1" : "0") << " "
-                      << "out=" << std::setw(8) << top->bus_write_data << " "
-                      << (top->bus_write_enable ? "1" : "0") << " " 
-                      << "fmt=" << (int)top->bus_byte_enable << std::endl;
-        }
-        if (top->bus_write_enable && top->bus_address == 0xfffffff0) {
-            if (top->bus_write_data) {
-                std::cout << "PASS" << std::endl;
-                return 0;
-            } else {
-                std::cout << "FAIL" << std::endl;
-                return -1;
-            }
-        }
-    }
-
-    std::cout << "TIMEOUT" << std::endl;
-
+  if (time == 100000) {
+    printf("TIMEOUT\n");
     return -1;
+  } else if (top.bus_write_data) {
+    printf("PASS %d\n", top.bus_write_data);
+    return 0;
+  } else {
+    printf("FAIL %d\n", top.bus_write_data);
+    return -1;
+  }
 }
 
+int main(int argc, const char **argv, const char **env) {
+  const char* instructions[38] = {
+    "add", "addi", "and", "andi", "auipc", "beq", "bge", "bgeu", "blt", "bltu",
+    "bne", "jal", "jalr", "lb", "lbu", "lh", "lhu", "lui", "lw", "or", "ori",
+    "sb", "sh", "simple", "sll", "slli", "slt", "slti", "sltiu", "sltu", "sra",
+    "srai", "srl", "srli", "sub", "sw", "xor", "xori"
+  };
+
+  for (int i = 0; i < 38; i++) {
+    run_test(instructions[i]);
+  }
+  return 0;
+}

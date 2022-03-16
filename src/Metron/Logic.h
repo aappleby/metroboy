@@ -224,15 +224,15 @@ inline logic<WIDTH> operator~(const logic<WIDTH>& x) {
 }
 template <int WIDTH>
 inline logic<WIDTH> operator&(const logic<WIDTH>& a, const logic<WIDTH>& b) {
-  return logic<WIDTH>::BASE(a) & logic<WIDTH>::BASE(b);
+  return typename logic<WIDTH>::BASE(a) & typename logic<WIDTH>::BASE(b);
 }
 template <int WIDTH>
 inline logic<WIDTH> operator|(const logic<WIDTH>& a, const logic<WIDTH>& b) {
-  return logic<WIDTH>::BASE(a) | logic<WIDTH>::BASE(b);
+  return typename logic<WIDTH>::BASE(a) | typename logic<WIDTH>::BASE(b);
 }
 template <int WIDTH>
 inline logic<WIDTH> operator^(const logic<WIDTH>& a, const logic<WIDTH>& b) {
-  return logic<WIDTH>::BASE(a) ^ logic<WIDTH>::BASE(b);
+  return typename logic<WIDTH>::BASE(a) ^ typename logic<WIDTH>::BASE(b);
 }
 
 //------------------------------------------------------------------------------
@@ -397,8 +397,8 @@ inline logic<1> reduce_and(const logic<WIDTH>& x) {
 template <int WIDTH1, int WIDTH2>
 inline logic<WIDTH1 + WIDTH2> cat(const logic<WIDTH1>& a,
                                   const logic<WIDTH2>& b) {
-  return (logic<WIDTH1 + WIDTH2>::BASE(a.get()) << WIDTH2) |
-         logic<WIDTH1 + WIDTH2>::BASE(b.get());
+  return (typename logic<WIDTH1 + WIDTH2>::BASE(a.get()) << WIDTH2) |
+         typename logic<WIDTH1 + WIDTH2>::BASE(b.get());
 }
 
 template <int WIDTH, typename... Args>

@@ -15,11 +15,6 @@ class regfile {
   logic<32> rs1_data;
   logic<32> rs2_data;
 
-  // 32 registers of 32-bit width
-  logic<32> regs[32];
-  logic<32> reg_out_1;
-  logic<32> reg_out_2;
-
   // Register x0 is always 0
   void init() { regs[0] = b32(0); }
 
@@ -35,6 +30,10 @@ class regfile {
     rs1_data = regs[rs1_address];
     rs2_data = regs[rs2_address];
   }
+
+ private:
+  // 32 registers of 32-bit width
+  logic<32> regs[32];
 };
 
 #endif  // RVSIMPLE_REGFILE_H

@@ -1,7 +1,7 @@
 #include "metron_tools.h"
 
 #include <stdarg.h>
-
+#include <cstring>
 #include <map>
 #include <string>
 #include <vector>

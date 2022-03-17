@@ -1,14 +1,15 @@
 #include "rtl/toplevel.h"
 #include <stdio.h>
 
+#include "Log.h"
+#include "Tests.h"
+
 #pragma warning(disable:4996)
 
 //------------------------------------------------------------------------------
 
-toplevel top;
-
 int run_test(const char* test_name) {
-  printf("running %6s: ", test_name);
+  fflush(stdout);
 
   char buf1[256];
   char buf2[256];
@@ -19,28 +20,40 @@ int run_test(const char* test_name) {
   metron_reset();
   metron_init(2, argv2);
 
+  int time;
+  int result = 0;
+
+  toplevel top;
   top.init();
 
-  int time;
-  for (time = 0; time < 100000; time++) {
-    top.tick(time >= 4 && time <= 7);
+  LOG_R("running %6s: \n", test_name);
+  for (int rep = 0; rep < 100000; rep++)
+  {
+    top.tick(1);
     top.tock();
 
-    //printf("0x%08x\n", top.bus_address);
+    for (time = 0; time < 100000; time++) {
+      top.tick(0);
+      top.tock();
 
-    if (top.bus_write_enable && top.bus_address == 0xfffffff0) break;
+      //printf("0x%08x\n", top.bus_address);
+
+      if (top.bus_write_enable && top.bus_address == 0xfffffff0) {
+        //printf("finish at %d\n", time);
+        result = top.bus_write_data;
+        break;
+      }
+    }
   }
 
-  //exit(0);
-
   if (time == 100000) {
-    printf("TIMEOUT\n");
+    LOG_Y("TIMEOUT\n");
     return -1;
-  } else if (top.bus_write_data) {
-    printf("PASS %d\n", (int)top.bus_write_data);
+  } else if (result) {
+    LOG_G("PASS %d @ %d\n", result, time);
     return 0;
   } else {
-    printf("FAIL %d\n", (int)top.bus_write_data);
+    LOG_R("FAIL %d @ %d\n", result, time);
     return -1;
   }
 }
@@ -58,8 +71,6 @@ int main(int argc, const char **argv) {
   for (int i = 0; i < 38; i++) {
     run_test(instructions[i]);
   }
-
-  printf("Hello World\n");
 
   return 0;
 }

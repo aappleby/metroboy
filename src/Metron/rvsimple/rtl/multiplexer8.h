@@ -6,9 +6,9 @@
 #ifndef RVSIMPLE_MULTIPLEXER8_H
 #define RVSIMPLE_MULTIPLEXER8_H
 
-#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
+#include "metron_tools.h"
 
 template <int WIDTH = 32>
 class multiplexer8 {
@@ -50,4 +50,4 @@ class multiplexer8 {
   }
 };
 
-#endif // RVSIMPLE_MULTIPLEXER2_H
+#endif  // RVSIMPLE_MULTIPLEXER2_H

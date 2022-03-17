@@ -6,30 +6,26 @@
 #ifndef RVSIMPLE_TOPLEVEL_H
 #define RVSIMPLE_TOPLEVEL_H
 
-#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
-
-#include "riscv_core.h"
-#include "example_text_memory_bus.h"
 #include "example_data_memory_bus.h"
+#include "example_text_memory_bus.h"
+#include "metron_tools.h"
+#include "riscv_core.h"
 
 class toplevel {
-public:
-
-  riscv_core core;
-  example_text_memory_bus text_memory_bus;
-  example_data_memory_bus data_memory_bus;
-
+ public:
   logic<32> bus_read_data;
   logic<32> bus_address;
   logic<32> bus_write_data;
-  logic<4>  bus_byte_enable;
-  logic<1>  bus_read_enable;
-  logic<1>  bus_write_enable;
+  logic<4> bus_byte_enable;
+  logic<1> bus_read_enable;
+  logic<1> bus_write_enable;
 
   logic<32> inst;
   logic<32> pc;
+
+  //----------------------------------------
 
   void init() {
     core.init();
@@ -37,13 +33,14 @@ public:
     data_memory_bus.init();
   }
 
+  //----------------------------------------
+
   void tick(logic<1> reset) {
     core.tick(reset);
-    data_memory_bus.tick(core.bus_address,
-                          core.bus_write_enable,
-                          core.bus_byte_enable,
-                          core.bus_write_data);
+    data_memory_bus.tick(core.bus_address, core.bus_write_enable,
+                         core.bus_byte_enable, core.bus_write_data);
   }
+  //----------------------------------------
 
   void tock() {
     core.tock_pc();
@@ -62,6 +59,13 @@ public:
     inst = text_memory_bus.read_data;
     pc = core.pc;
   }
+
+  //----------------------------------------
+
+ private:
+  riscv_core core;
+  example_text_memory_bus text_memory_bus;
+  example_data_memory_bus data_memory_bus;
 };
 
-#endif // RVSIMPLE_TOPLEVEL_H
+#endif  // RVSIMPLE_TOPLEVEL_H

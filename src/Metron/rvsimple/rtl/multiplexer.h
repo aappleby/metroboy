@@ -7,13 +7,13 @@
 #define RVSIMPLE_MULTIPLEXER_H
 
 #pragma once
-#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
+#include "metron_tools.h"
 
-template<int WIDTH = 32, int CHANNELS = 2, int SEL_BITS = clog2(CHANNELS)>
+template <int WIDTH = 32, int CHANNELS = 2, int SEL_BITS = clog2(CHANNELS)>
 class multiplexer {
-public:
+ public:
   logic<WIDTH> out;
 
   void tock(logic<WIDTH> in_bus[CHANNELS], logic<SEL_BITS> sel) {
@@ -21,4 +21,4 @@ public:
   }
 };
 
-#endif // RVSIMPLE_MULTIPLEXER_H
+#endif  // RVSIMPLE_MULTIPLEXER_H

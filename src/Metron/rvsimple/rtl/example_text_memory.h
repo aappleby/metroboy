@@ -6,15 +6,14 @@
 #ifndef RVSIMPLE_EXAMPLE_TEXT_MEMORY_H
 #define RVSIMPLE_EXAMPLE_TEXT_MEMORY_H
 
-#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
+#include "metron_tools.h"
 
 using namespace rv_config;
 
 class example_text_memory {
-public:
-
+ public:
   logic<32> mem[pow2(TEXT_BITS - 2)];
   logic<32> q;
 
@@ -24,10 +23,7 @@ public:
     readmemh(s, mem);
   }
 
-  void tock(logic<TEXT_BITS - 2> address) {
-    q = mem[address];
-    //printf("text out 0x%08x\n", (uint32_t)q);
-  }
+  void tock(logic<TEXT_BITS - 2> address) { q = mem[address]; }
 };
 
-#endif // RVSIMPLE_EXAMPLE_TEXT_MEMORY_H
+#endif  // RVSIMPLE_EXAMPLE_TEXT_MEMORY_H

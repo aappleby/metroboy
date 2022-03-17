@@ -6,39 +6,37 @@
 #ifndef RVSIMPLE_EXAMPLE_DATA_MEMORY_BUS_H
 #define RVSIMPLE_EXAMPLE_DATA_MEMORY_BUS_H
 
-#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
 #include "example_data_memory.h"
+#include "metron_tools.h"
 
 class example_data_memory_bus {
-public:
-
-  example_data_memory data_memory;
+ public:
   logic<32> read_data;
 
-  void init() {
-    data_memory.init();
-  }
+  void init() { data_memory.init(); }
 
-  void tick(logic<32> address, logic<1> write_enable, logic<4> byte_enable, logic<32> write_data) {
+  void tick(logic<32> address, logic<1> write_enable, logic<4> byte_enable,
+            logic<32> write_data) {
     data_memory.tick(
-      bx<DATA_BITS-2>(address, 2),
-      b1(write_enable && address >= DATA_BEGIN && address <= DATA_END),
-      byte_enable,
-      write_data);
+        bx<DATA_BITS - 2>(address, 2),
+        b1(write_enable && address >= DATA_BEGIN && address <= DATA_END),
+        byte_enable, write_data);
   }
 
   void tock(logic<32> address, logic<1> read_enable) {
-    data_memory.tock(bx<DATA_BITS-2>(address, 2));
+    data_memory.tock(bx<DATA_BITS - 2>(address, 2));
 
     if (read_enable && address >= DATA_BEGIN && address <= DATA_END) {
       read_data = data_memory.q;
-    }
-    else {
+    } else {
       read_data = b32(DONTCARE);
     }
   }
+
+ private:
+  example_data_memory data_memory;
 };
 
-#endif // RVSIMPLE_EXAMPLE_DATA_MEMORY_BUS_H
+#endif  // RVSIMPLE_EXAMPLE_DATA_MEMORY_BUS_H

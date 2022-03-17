@@ -6,13 +6,13 @@
 #ifndef RVSIMPLE_ADDER_H
 #define RVSIMPLE_ADDER_H
 
-#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
+#include "metron_tools.h"
 
-template<int WIDTH = 32>
+template <int WIDTH = 32>
 class adder {
-public:
+ public:
   logic<WIDTH> result;
 
   void tock(logic<WIDTH> operand_a, logic<WIDTH> operand_b) {
@@ -20,4 +20,4 @@ public:
   }
 };
 
-#endif // RVSIMPLE_ADDER_H
+#endif  // RVSIMPLE_ADDER_H

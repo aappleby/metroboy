@@ -6,8 +6,11 @@
 #include "verilated.h"
 #include <stdio.h>
 
+#include "../Log.h"
+#include "../Tests.h"
+
 int run_test(const char* test_name) {
-  printf("running %6s: ", test_name);
+  LOG_R("running %6s:\n", test_name);
 
   char buf1[256];
   char buf2[256];
@@ -16,24 +19,39 @@ int run_test(const char* test_name) {
   const char* argv2[2] = { buf1, buf2 };
   Verilated::commandArgs(2, argv2);
 
-  Vtoplevel top;
+  fflush(stdout);
 
   int time;
-  for (time = 0; time < 100000; time++) {
-    top.reset = time >= 4 && time <= 7;
-    top.clock = time & 1;
+  int result = 0;
+  Vtoplevel top;
+  for (int rep = 0; rep < 10000; rep++) {
+    top.reset = 1;
+    top.clock = 0;
     top.eval();
-    if (top.bus_write_enable && top.bus_address == 0xfffffff0) break;
+    top.reset = 1;
+    top.clock = 1;
+    top.eval();
+    top.reset = 0;
+    top.clock = 0;
+
+    for (time = 0; time < 100000; time++) {
+      top.clock = time & 1;
+      top.eval();
+      if (top.bus_write_enable && top.bus_address == 0xfffffff0) {
+        result = top.bus_write_data;
+        break;
+      }
+    }
   }
 
   if (time == 100000) {
-    printf("TIMEOUT\n");
+    LOG_Y("TIMEOUT\n");
     return -1;
-  } else if (top.bus_write_data) {
-    printf("PASS %d\n", top.bus_write_data);
+  } else if (result) {
+    LOG_G("PASS %d @ %d\n", result, time);
     return 0;
   } else {
-    printf("FAIL %d\n", top.bus_write_data);
+    LOG_R("FAIL %d @ %d\n", result, time);
     return -1;
   }
 }

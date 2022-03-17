@@ -2,14 +2,15 @@
 VERILATOR_INCLUDE=/usr/share/verilator/include
 SRCS=$(wildcard *.cpp)
 OBJS=$(SRCS:.cpp=.o)
-CXXFLAGS=-I ${VERILATOR_INCLUDE} -I ${VERILATOR_INCLUDE}/vltstd
+CXXFLAGS = -O3 -I ${VERILATOR_INCLUDE} -I ${VERILATOR_INCLUDE}/vltstd
 SV_SOURCES=$(wildcard *.sv)
 
 build: Vtoplevel.h main.cpp
 	${MAKE} run
 
 Vtoplevel.h: $(SV_SOURCES)
-	verilator -Wno-fatal --cc toplevel.sv --Mdir .
+	verilator -O3 --x-assign fast --x-initial fast --noassert -Wno-fatal --cc toplevel.sv --Mdir .
+#	verilator -Wno-fatal --cc toplevel.sv --Mdir .
 
 run: testbench
 	./testbench

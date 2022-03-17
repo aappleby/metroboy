@@ -6,17 +6,15 @@
 #ifndef RVSIMPLE_SINGLECYCLE_CTLPATH_H
 #define RVSIMPLE_SINGLECYCLE_CTLPATH_H
 
-#include "metron_tools.h"
+#include "alu_control.h"
 #include "config.h"
 #include "constants.h"
-
-#include "singlecycle_control.h"
 #include "control_transfer.h"
-#include "alu_control.h"
+#include "metron_tools.h"
+#include "singlecycle_control.h"
 
 class singlecycle_ctlpath {
-public:
-
+ public:
   logic<1> pc_write_enable;
   logic<1> regfile_write_enable;
   logic<1> alu_operand_a_select;
@@ -29,57 +27,36 @@ public:
 
   //----------------------------------------
 
-  singlecycle_control control;
-  control_transfer transfer;
-  alu_control alu;
-
-  //----------------------------------------
-
-  void init() {
-  }
-
-  //----------------------------------------
-
-  void tick() {
-  }
-
-  //----------------------------------------
-
   void tock_decode(logic<7> inst_opcode) {
     control.tock_decode(inst_opcode);
-    pc_write_enable       = control.pc_write_enable;
-    regfile_write_enable  = control.regfile_write_enable;
-    alu_operand_a_select  = control.alu_operand_a_select;
-    alu_operand_b_select  = control.alu_operand_b_select;
-    data_mem_read_enable  = control.data_mem_read_enable;
+    pc_write_enable = control.pc_write_enable;
+    regfile_write_enable = control.regfile_write_enable;
+    alu_operand_a_select = control.alu_operand_a_select;
+    alu_operand_b_select = control.alu_operand_b_select;
+    data_mem_read_enable = control.data_mem_read_enable;
     data_mem_write_enable = control.data_mem_write_enable;
-    reg_writeback_select  = control.reg_writeback_select;
+    reg_writeback_select = control.reg_writeback_select;
   }
 
-  void tock_next_pc_select(logic<7> inst_opcode,
-                           logic<3> inst_funct3,
-                           logic<1> alu_result_equal_zero)
-  {
-    transfer.tock(
-      inst_funct3,
-      alu_result_equal_zero);
+  void tock_next_pc_select(logic<7> inst_opcode, logic<3> inst_funct3,
+                           logic<1> alu_result_equal_zero) {
+    transfer.tock(inst_funct3, alu_result_equal_zero);
 
-    control.tock_next_pc_select(
-      inst_opcode,
-      transfer.take_branch);
+    control.tock_next_pc_select(inst_opcode, transfer.take_branch);
     next_pc_select = control.next_pc_select;
   }
 
-  void tock_alu_control(logic<3> inst_funct3,
-                        logic<7> inst_funct7)
-  {
-    alu.tock(
-      control.alu_op_type,
-      inst_funct3,
-      inst_funct7);
+  void tock_alu_control(logic<3> inst_funct3, logic<7> inst_funct7) {
+    alu.tock(control.alu_op_type, inst_funct3, inst_funct7);
     alu_function = alu.alu_function;
   }
 
+  //----------------------------------------
+
+ private:
+  singlecycle_control control;
+  control_transfer transfer;
+  alu_control alu;
 };
 
-#endif // RVSIMPLE_SINGLECYCLE_CTLPATH_H
+#endif  // RVSIMPLE_SINGLECYCLE_CTLPATH_H

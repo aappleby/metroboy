@@ -6,17 +6,14 @@
 #ifndef RVSIMPLE_EXAMPLE_DATA_MEMORY_H
 #define RVSIMPLE_EXAMPLE_DATA_MEMORY_H
 
-#include "metron_tools.h"
 #include "config.h"
 #include "constants.h"
+#include "metron_tools.h"
 
 using namespace rv_config;
 
 class example_data_memory {
-public:
-
-  logic<32> mem[pow2(DATA_BITS - 2)];
-	
+ public:
   logic<32> q;
 
   void init() {
@@ -25,26 +22,22 @@ public:
     readmemh(s, mem);
   }
 
-  void tick(logic<DATA_BITS - 2> address, logic<1> wren, logic<4> byteena, logic<32> data) {
+  void tick(logic<DATA_BITS - 2> address, logic<1> wren, logic<4> byteena,
+            logic<32> data) {
     if (wren) {
-      logic<8> byte0 = b8(mem[address], 0);
-      logic<8> byte1 = b8(mem[address], 8);
-      logic<8> byte2 = b8(mem[address], 16);
-      logic<8> byte3 = b8(mem[address], 24);
-
-      if (byteena[0]) byte0 = b8(data, 0);
-      if (byteena[1]) byte1 = b8(data, 8);
-      if (byteena[2]) byte2 = b8(data, 16);
-      if (byteena[3]) byte3 = b8(data, 24);
-
-      mem[address] = cat(byte3, byte2, byte1, byte0);
+      uint32_t mask = 0;
+      if (byteena[0]) mask |= 0x000000FF;
+      if (byteena[1]) mask |= 0x0000FF00;
+      if (byteena[2]) mask |= 0x00FF0000;
+      if (byteena[3]) mask |= 0xFF000000;
+      mem[address] = (mem[address] & ~mask) | (data & mask);
     }
   }
 
-  void tock(logic<DATA_BITS - 2> address) {
-    q = mem[address];
-    //printf("data out 0x%08x\n", (uint32_t)q);
-  }
+  void tock(logic<DATA_BITS - 2> address) { q = mem[address]; }
+
+ private:
+  logic<32> mem[pow2(DATA_BITS - 2)];
 };
 
-#endif // RVSIMPLE_EXAMPLE_DATA_MEMORY_H
+#endif  // RVSIMPLE_EXAMPLE_DATA_MEMORY_H

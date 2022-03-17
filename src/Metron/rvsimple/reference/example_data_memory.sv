@@ -29,7 +29,10 @@ module example_data_memory (
         end
 
 `ifdef DATA_HEX
-    initial $readmemh(`DATA_HEX, mem);
+    initial begin
+        //$display("Loading %s", `DATA_HEX);
+        $readmemh(`DATA_HEX, mem);
+    end
 `endif
 
 endmodule

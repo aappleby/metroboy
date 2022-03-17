@@ -19,25 +19,25 @@ namespace rv_config {
 //////////////////////////////////////////
 
 // Program counter initial value
-static const unsigned int INITIAL_PC      = 0x00400000;
+static const unsigned int INITIAL_PC = 0x00400000;
 
 // Instruction memory
-static const unsigned int TEXT_BEGIN      = INITIAL_PC;
-static const unsigned int TEXT_BITS       = 16;
-static const unsigned int TEXT_WIDTH      = (1 << TEXT_BITS);
-static const unsigned int TEXT_END        = (TEXT_BEGIN + TEXT_WIDTH - 1);
+static const unsigned int TEXT_BEGIN = INITIAL_PC;
+static const unsigned int TEXT_BITS = 16;
+static const unsigned int TEXT_WIDTH = (1 << TEXT_BITS);
+static const unsigned int TEXT_END = (TEXT_BEGIN + TEXT_WIDTH - 1);
 
 // Data memory
-static const unsigned int DATA_BEGIN      = 0x80000000;
-static const unsigned int DATA_BITS       = 17;
-static const unsigned int DATA_WIDTH      = (1 << DATA_BITS);
-static const unsigned int DATA_END        = (DATA_BEGIN + DATA_WIDTH - 1);
+static const unsigned int DATA_BEGIN = 0x80000000;
+static const unsigned int DATA_BITS = 17;
+static const unsigned int DATA_WIDTH = (1 << DATA_BITS);
+static const unsigned int DATA_END = (DATA_BEGIN + DATA_WIDTH - 1);
 
 static const char* TEXT_HEX = "add.text.vh";
 static const char* DATA_HEX = "add.data.vh";
 
-}; // namespace rv_config
+};  // namespace rv_config
 
 /*verilator lint_off width*/
 
-#endif // RVSIMPLE_CONFIG_H
+#endif  // RVSIMPLE_CONFIG_H

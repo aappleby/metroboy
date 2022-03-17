@@ -414,14 +414,19 @@ inline auto cat(const logic<WIDTH>& a, Args... args)
 // logic<9> moop = dup<3>(boop);
 // assert(moop == 0b101101101);
 
-template <int DUPS, int WIDTH>
-logic<WIDTH * DUPS> dup(const logic<WIDTH>& a) {
-  typename logic<WIDTH* DUPS>::BASE temp = 0;
-  for (int i = 0; i < DUPS; i++) {
-    temp = temp << WIDTH;
-    temp |= a;
+constexpr uint64_t dup_pattern(int width, int dups) {
+  uint64_t p = 0;
+  for (int i = 0; i < dups; i++) {
+    p <<= width;
+    p |= 1;
   }
-  return temp;
+  return p;
+}
+
+template <int DUPS, int WIDTH>
+inline logic<WIDTH * DUPS> dup(const logic<WIDTH>& a) {
+  const uint64_t p = dup_pattern(WIDTH, DUPS);
+  return p * a;
 }
 
 //------------------------------------------------------------------------------

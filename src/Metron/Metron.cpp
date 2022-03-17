@@ -58,9 +58,6 @@ void mkdir_all(const std::vector<std::string>& full_path) {
 
 //------------------------------------------------------------------------------
 
-void metron_test_suite();
-MtModule* load_pass1(const char* _full_path, blob& _src_blob);
-
 int main(int argc, char** argv) {
   LOG_B("Metron v0.0.1\n");
 
@@ -188,7 +185,10 @@ int main(int argc, char** argv) {
 
     //source_file->modules->at(0)->mod_struct.dump_tree();
 
-    auto out_path = out_dir + "/" + source_file->full_path + ".sv";
+    auto out_name = source_file->full_path;
+    assert(out_name.ends_with(".h"));
+    out_name.resize(out_name.size() - 2);
+    auto out_path = out_dir + "/" + out_name + ".sv";
     mkdir_all(split_path(out_path));
 
     LOG_G("%s -> %s\n", source_file->full_path.c_str(), out_path.c_str());
@@ -196,7 +196,7 @@ int main(int argc, char** argv) {
     std::string out_string;
 
     MtCursor cursor(&library, source_file, &out_string);
-    cursor.quiet = false;
+    cursor.quiet = quiet;
     cursor.cursor = source_file->source;
     cursor.source_file = source_file;
     cursor.emit(source_file->mt_root);

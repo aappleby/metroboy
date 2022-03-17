@@ -25,11 +25,11 @@ class example_data_memory {
   void tick(logic<DATA_BITS - 2> address, logic<1> wren, logic<4> byteena,
             logic<32> data) {
     if (wren) {
-      uint32_t mask = 0;
-      if (byteena[0]) mask |= 0x000000FF;
-      if (byteena[1]) mask |= 0x0000FF00;
-      if (byteena[2]) mask |= 0x00FF0000;
-      if (byteena[3]) mask |= 0xFF000000;
+      logic<32> mask = 0;
+      if (byteena[0]) mask = mask | 0x000000FF;
+      if (byteena[1]) mask = mask | 0x0000FF00;
+      if (byteena[2]) mask = mask | 0x00FF0000;
+      if (byteena[3]) mask = mask | 0xFF000000;
       mem[address] = (mem[address] & ~mask) | (data & mask);
     }
   }

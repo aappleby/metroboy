@@ -255,8 +255,11 @@ void MtCursor::emit(MtPreprocInclude n) {
 
   emit_replacement(n.child(0), "`include");
   emit_ws();
-  emit_span(n.path_node().start(), n.path_node().end() - 1);
-  emit(".sv\"");
+  auto path = n.path_node().text();
+  assert(path.ends_with(".h\""));
+  path.resize(path.size() - 3);
+  path = path + ".sv\"";
+  emit(path.c_str());
   cursor = n.end();
   assert(cursor == n.end());
 }
@@ -399,7 +402,9 @@ void MtCursor::emit_dynamic_bit_extract(MtCallExpr call, MtNode bx_node) {
       cursor = call.end();
     } else {
       cursor = bx_node.start();
+      emit("(");
       emit_dispatch(bx_node);
+      emit(")");
       emit("'(");
       cursor = arg0.start();
       emit_dispatch(arg0);

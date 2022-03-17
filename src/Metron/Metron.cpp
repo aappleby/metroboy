@@ -58,9 +58,6 @@ void mkdir_all(const std::vector<std::string>& full_path) {
 
 //------------------------------------------------------------------------------
 
-void metron_test_suite();
-MtModule* load_pass1(const char* _full_path, blob& _src_blob);
-
 int main(int argc, char** argv) {
   LOG_B("Metron v0.0.1\n");
 
@@ -118,9 +115,10 @@ int main(int argc, char** argv) {
   //----------
   // Parse args
 
-  std::vector<std::string> path_names;
+  //std::vector<std::string> path_names;
   std::vector<std::string> source_names;
   std::string out_dir = ".";
+  std::string root_dir = ".";
   bool quiet = false;
 
   for (auto& arg : args) {
@@ -132,10 +130,14 @@ int main(int argc, char** argv) {
         arg_cursor++;
 
       switch (option) {
-        case 'I':
-          LOG_G("Adding search path \"%s\"\n", arg_cursor);
-          path_names.push_back(arg_cursor);
+        case 'R':
+          LOG_G("Adding root directory \"%s\"\n", arg_cursor);
+          root_dir = arg_cursor;
           break;
+        //case 'I':
+        //  LOG_G("Adding search path \"%s\"\n", arg_cursor);
+        //  path_names.push_back(arg_cursor);
+        //  break;
         case 'O':
           LOG_G("Adding output directory \"%s\"\n", arg_cursor);
           out_dir = arg_cursor;
@@ -158,9 +160,10 @@ int main(int argc, char** argv) {
 
   MtModLibrary library;
   library.add_search_path("");
-  for (auto& path : path_names) {
-    library.add_search_path(path);
-  }
+  //for (auto& path : path_names) {
+  //  library.add_search_path(path);
+  //}
+  library.add_search_path(root_dir);
 
   for (auto& name : source_names) {
     library.load_source(name.c_str());
@@ -188,7 +191,10 @@ int main(int argc, char** argv) {
 
     //source_file->modules->at(0)->mod_struct.dump_tree();
 
-    auto out_path = out_dir + "/" + source_file->full_path + ".sv";
+    auto out_name = source_file->filename;
+    assert(out_name.ends_with(".h"));
+    out_name.resize(out_name.size() - 2);
+    auto out_path = out_dir + "/" + out_name + ".sv";
     mkdir_all(split_path(out_path));
 
     LOG_G("%s -> %s\n", source_file->full_path.c_str(), out_path.c_str());
@@ -196,7 +202,7 @@ int main(int argc, char** argv) {
     std::string out_string;
 
     MtCursor cursor(&library, source_file, &out_string);
-    cursor.quiet = false;
+    cursor.quiet = quiet;
     cursor.cursor = source_file->source;
     cursor.source_file = source_file;
     cursor.emit(source_file->mt_root);

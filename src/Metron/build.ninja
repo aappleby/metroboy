@@ -20,7 +20,7 @@ build out/MtNode.o       : compile MtNode.cpp
 build out/MtSourceFile.o : compile MtSourceFile.cpp
 build out/Platform.o     : compile Platform.cpp
 
-build out/metron $
+build metron $
 : link $
   out/Metron.o $
   out/MtCursor.o $

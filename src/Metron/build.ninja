@@ -11,17 +11,16 @@ build out/lib.o          : compile_c ../tree-sitter/lib/src/lib.c
 build out/parser.o       : compile_c ../tree-sitter-cpp/src/parser.c
 build out/scanner.o      : compile_c ../tree-sitter-cpp/src/scanner.cc
 
-build out/Metron.o       : compile Metron.cpp
-build out/MtCursor.o     : compile MtCursor.cpp
-build out/MtMethod.o     : compile MtMethod.cpp
-build out/MtModLibrary.o : compile MtModLibrary.cpp
-build out/MtModule.o     : compile MtModule.cpp
-build out/MtNode.o       : compile MtNode.cpp
-build out/MtSourceFile.o : compile MtSourceFile.cpp
-build out/Platform.o     : compile Platform.cpp
+build out/Metron.o       : compile src/Metron.cpp
+build out/MtCursor.o     : compile src/MtCursor.cpp
+build out/MtMethod.o     : compile src/MtMethod.cpp
+build out/MtModLibrary.o : compile src/MtModLibrary.cpp
+build out/MtModule.o     : compile src/MtModule.cpp
+build out/MtNode.o       : compile src/MtNode.cpp
+build out/MtSourceFile.o : compile src/MtSourceFile.cpp
+build out/Platform.o     : compile src/Platform.cpp
 
-build metron $
-: link $
+build metron : link $
   out/Metron.o $
   out/MtCursor.o $
   out/MtMethod.o $

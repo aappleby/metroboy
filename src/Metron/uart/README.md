@@ -1,0 +1,1 @@
+A simple UART-based testbench for Metron that exercises translation to SystemVerilog, simulation via Icarus, translation back to C via Verilator, synthesis via Yosys, place+route via NextPNR, and uploading to a Lattice ICE40 fpga via Icestorm.

@@ -3,13 +3,12 @@
 #include <sys/types.h>
 
 #include "../CoreLib/Log.h"
+#include "Logic.h"
 #include "MtCursor.h"
 #include "MtModLibrary.h"
 #include "MtModule.h"
 #include "MtSourceFile.h"
 #include "Platform.h"
-#include "Logic.h"
-
 #include "metron_tools.h"
 
 #pragma warning(disable : 4996)
@@ -62,64 +61,22 @@ int main(int argc, char** argv) {
   LOG_B("Metron v0.0.1\n");
 
   std::vector<std::string> args;
-  for (int i = 1; i < argc; i++) {
-    args.push_back(argv[i]);
+  for (int i = 0; i < argc; i++) {
+    LOG_B("arg[%d] = %s\n", i, argv[i]);
+    if (i) args.push_back(argv[i]);
   }
-
-#if 0
-  args.clear();
-  args.push_back("-Iuart");
-  args.push_back("-Iuart_test");
-  args.push_back("-Irvsimple");
-  args.push_back("-Ogenerated");
-
-  /*
-  args.push_back("uart_top.h");
-  args.push_back("uart_hello.h");
-  args.push_back("uart_tx.h");
-  args.push_back("uart_rx.h");
-  */
-
-  args.push_back("adder.h");
-  args.push_back("config.h");
-  args.push_back("constants.h");
-  args.push_back("alu.h");
-  args.push_back("alu_control.h");
-  args.push_back("control_transfer.h");
-  args.push_back("data_memory_interface.h");
-  args.push_back("immediate_generator.h");
-  args.push_back("instruction_decoder.h");
-  args.push_back("multiplexer.h");
-  args.push_back("multiplexer2.h");
-  args.push_back("multiplexer4.h");
-  args.push_back("multiplexer8.h");
-  args.push_back("regfile.h");
-  args.push_back("register.h");
-  args.push_back("example_memory_bus.h");
-  args.push_back("example_text_memory.h");
-  args.push_back("example_text_memory_bus.h");
-  args.push_back("example_data_memory.h");
-  args.push_back("example_data_memory_bus.h");
-  args.push_back("singlecycle_control.h");
-  args.push_back("singlecycle_ctlpath.h");
-  args.push_back("singlecycle_datapath.h");
-  args.push_back("riscv_core.h");
-  args.push_back("toplevel.h");
-#endif
-
-  for (auto& arg : args) {
-    LOG_R("arg = %s\n", arg.c_str());
-  }
-  LOG_R("\n");
+  LOG_B("\n");
 
   //----------
   // Parse args
 
-  //std::vector<std::string> path_names;
+  // std::vector<std::string> path_names;
   std::vector<std::string> source_names;
-  std::string out_dir = ".";
+  std::string out_dir = "";
   std::string root_dir = ".";
   bool quiet = false;
+  bool verbose = false;
+  bool show_help = false;
 
   for (auto& arg : args) {
     const char* arg_cursor = arg.c_str();
@@ -129,21 +86,29 @@ int main(int argc, char** argv) {
       while (*arg_cursor && (*arg_cursor == ' ' || *arg_cursor == '='))
         arg_cursor++;
 
-      switch (option) {
-        case 'R':
+      switch (tolower(option)) {
+        case 'r':
           LOG_G("Adding root directory \"%s\"\n", arg_cursor);
           root_dir = arg_cursor;
           break;
-        //case 'I':
-        //  LOG_G("Adding search path \"%s\"\n", arg_cursor);
-        //  path_names.push_back(arg_cursor);
-        //  break;
-        case 'O':
+        // case 'I':
+        //   LOG_G("Adding search path \"%s\"\n", arg_cursor);
+        //   path_names.push_back(arg_cursor);
+        //   break;
+        case 'o':
           LOG_G("Adding output directory \"%s\"\n", arg_cursor);
           out_dir = arg_cursor;
           break;
+        case 'v':
+          LOG_G("Verbose mode on\n", arg_cursor);
+          verbose = true;
+          break;
         case 'q':
+          LOG_G("Quiet mode on\n", arg_cursor);
           quiet = true;
+          break;
+        case 'h':
+          show_help = true;
           break;
         default:
           LOG_G("Bad command line arg \"%s\"\n", arg.c_str());
@@ -156,16 +121,31 @@ int main(int argc, char** argv) {
   LOG("\n");
 
   //----------
+
+  if (show_help || source_names.empty()) {
+    LOG_G("Print help screen here.\n");
+    return 0;
+  }
+
+  for (auto& name : source_names) {
+    if (!name.ends_with(".h")) {
+      LOG_R("Source file %s is not a C++ header\n", name.c_str());
+      return -1;
+    }
+  }
+
+  //----------
   // Load all source files.
 
   MtModLibrary library;
   library.add_search_path("");
-  //for (auto& path : path_names) {
-  //  library.add_search_path(path);
-  //}
+  // for (auto& path : path_names) {
+  //   library.add_search_path(path);
+  // }
   library.add_search_path(root_dir);
 
   for (auto& name : source_names) {
+    assert(name.ends_with(".h"));
     library.load_source(name.c_str());
   }
   library.process_sources();
@@ -178,48 +158,49 @@ int main(int argc, char** argv) {
       printf("Module %s failed dirty check\n", mod->mod_name.c_str());
       return -1;
     }
-    //mod->dump_banner();
-    //mod->dump_deltas();
+
+    if (verbose) {
+      mod->dump_banner();
+      mod->dump_deltas();
+    }
   }
 
   //----------
   // Emit all modules.
 
-  for (auto& source_file : library.source_files)
-  {
-    //auto source_file = library.find_source("example_text_memory.h");
-
-    //source_file->modules->at(0)->mod_struct.dump_tree();
-
-    auto out_name = source_file->filename;
-    assert(out_name.ends_with(".h"));
-    out_name.resize(out_name.size() - 2);
-    auto out_path = out_dir + "/" + out_name + ".sv";
-    mkdir_all(split_path(out_path));
-
-    LOG_G("%s -> %s\n", source_file->full_path.c_str(), out_path.c_str());
-
+  for (auto& source_file : library.source_files) {
+    // Translate the source.
     std::string out_string;
-
     MtCursor cursor(&library, source_file, &out_string);
-    cursor.quiet = quiet;
+    cursor.quiet = quiet && !verbose;
     cursor.cursor = source_file->source;
     cursor.source_file = source_file;
     cursor.emit(source_file->mt_root);
     cursor.emit("\n");
 
-    FILE* out_file = fopen(out_path.c_str(), "wb");
-    if (!out_file) {
-      LOG_R("ERROR Could not open %s for output\n", out_path.c_str());
-    } else {
-      // Copy the BOM over if needed.
-      if (source_file->use_utf8_bom) {
-        uint8_t bom[3] = {239, 187, 191};
-        fwrite(bom, 1, 3, out_file);
-      }
+    // Save translated source to output directory, if there is one.
+    if (out_dir.size()) {
+      auto out_name = source_file->filename;
+      assert(out_name.ends_with(".h"));
+      out_name.resize(out_name.size() - 2);
+      auto out_path = out_dir + "/" + out_name + ".sv";
+      mkdir_all(split_path(out_path));
 
-      fwrite(out_string.data(), 1, out_string.size(), out_file);
-      fclose(out_file);
+      LOG_G("%s -> %s\n", source_file->full_path.c_str(), out_path.c_str());
+
+      FILE* out_file = fopen(out_path.c_str(), "wb");
+      if (!out_file) {
+        LOG_R("ERROR Could not open %s for output\n", out_path.c_str());
+      } else {
+        // Copy the BOM over if needed.
+        if (source_file->use_utf8_bom) {
+          uint8_t bom[3] = {239, 187, 191};
+          fwrite(bom, 1, 3, out_file);
+        }
+
+        fwrite(out_string.data(), 1, out_string.size(), out_file);
+        fclose(out_file);
+      }
     }
   }
 

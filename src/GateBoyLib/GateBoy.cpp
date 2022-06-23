@@ -67,14 +67,14 @@ FieldInfo GateBoyCpu::fields[] = {
   DECLARE_FIELD(GateBoyCpu, core.reg.f),
   DECLARE_FIELD(GateBoyCpu, core.reg.a),
 
-  DECLARE_FIELD(GateBoyCpu, bus_req_new.addr),
-  DECLARE_FIELD(GateBoyCpu, bus_req_new.data),
-  DECLARE_FIELD(GateBoyCpu, bus_req_new.read),
-  DECLARE_FIELD(GateBoyCpu, bus_req_new.write),
+  DECLARE_FIELD(GateBoyCpu, core.reg.bus_req_new.addr),
+  DECLARE_FIELD(GateBoyCpu, core.reg.bus_req_new.data),
+  DECLARE_FIELD(GateBoyCpu, core.reg.bus_req_new.read),
+  DECLARE_FIELD(GateBoyCpu, core.reg.bus_req_new.write),
 
-  DECLARE_FIELD(GateBoyCpu, cpu_data_latch),
-  DECLARE_FIELD(GateBoyCpu, intf_latch),
-  DECLARE_FIELD(GateBoyCpu, halt_latch),
+  DECLARE_FIELD(GateBoyCpu, core.reg.cpu_data_latch),
+  DECLARE_FIELD(GateBoyCpu, core.reg.intf_latch),
+  DECLARE_FIELD(GateBoyCpu, core.reg.halt_latch),
 
   END_FIELDS()
 };
@@ -218,10 +218,10 @@ GBResult GateBoy::poke(int addr, uint8_t data_in) {
 GBResult GateBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
   CHECK_P((sys.gb_phase_total & 7) == 7);
 
-  cpu.bus_req_new.addr = addr;
-  cpu.bus_req_new.data = data;
-  cpu.bus_req_new.read = !write;
-  cpu.bus_req_new.write = write;
+  cpu.core.reg.bus_req_new.addr = addr;
+  cpu.core.reg.bus_req_new.data = data;
+  cpu.core.reg.bus_req_new.read = !write;
+  cpu.core.reg.bus_req_new.write = write;
 
   return GBResult::ok();
 }
@@ -231,17 +231,17 @@ GBResult GateBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
 GBResult GateBoy::dbg_read(const blob& cart_blob, int addr) {
   CHECK_P((sys.gb_phase_total & 7) == 7);
 
-  Req old_req = cpu.bus_req_new;
+  Req old_req = cpu.core.reg.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
   sys.cpu_en = false;
 
   dbg_req((uint16_t)addr, 0, 0);
   run_phases(cart_blob, 8);
 
-  cpu.bus_req_new = old_req;
+  cpu.core.reg.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
 
-  return GBResult(cpu.cpu_data_latch);
+  return GBResult(cpu.core.reg.cpu_data_latch);
 }
 
 //-----------------------------------------------------------------------------
@@ -249,14 +249,14 @@ GBResult GateBoy::dbg_read(const blob& cart_blob, int addr) {
 GBResult GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
   CHECK_P((sys.gb_phase_total & 7) == 7);
 
-  Req old_req = cpu.bus_req_new;
+  Req old_req = cpu.core.reg.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
   sys.cpu_en = false;
 
   dbg_req((uint16_t)addr, data, 1);
   GBResult res = run_phases(cart_blob, 8);
 
-  cpu.bus_req_new = old_req;
+  cpu.core.reg.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
   return res;
 }
@@ -461,8 +461,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
     // Data has to be driven on EFGH or we fail the wave tests
-    reg_new.cpu_dbus.set_data(cpu.bus_req_new.write, cpu.bus_req_new.data_lo);
-    EXT_cpu_latch_ext = cpu.bus_req_new.read;
+    reg_new.cpu_dbus.set_data(cpu.core.reg.bus_req_new.write, cpu.core.reg.bus_req_new.data_lo);
+    EXT_cpu_latch_ext = cpu.core.reg.bus_req_new.read;
   }
   else {
     reg_new.cpu_dbus.set_data(false, 0);
@@ -470,11 +470,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   }
   /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
 
-  bool EXT_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write);
+  bool EXT_addr_new = (cpu.core.reg.bus_req_new.read || cpu.core.reg.bus_req_new.write);
   bool in_bootrom = bit0(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
-  bool addr_boot = (cpu.bus_req_new.addr <= 0x00FF) && in_bootrom;
-  bool addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
-  bool addr_high = (cpu.bus_req_new.addr >= 0xFE00);
+  bool addr_boot = (cpu.core.reg.bus_req_new.addr <= 0x00FF) && in_bootrom;
+  bool addr_vram = (cpu.core.reg.bus_req_new.addr >= 0x8000) && (cpu.core.reg.bus_req_new.addr <= 0x9FFF);
+  bool addr_high = (cpu.core.reg.bus_req_new.addr >= 0xFE00);
 
   bool EXT_cpu_rd;
   bool EXT_cpu_wr;
@@ -482,16 +482,16 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   if (DELTA_HA_new) {
     EXT_cpu_rd = 0;
     EXT_cpu_wr = 0;
-    reg_new.cpu_abus.set_addr(cpu.bus_req_new.addr & 0x00FF);
+    reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr & 0x00FF);
 
     if (addr_high) EXT_addr_new = false;
     if (addr_boot) EXT_addr_new = false;
     if (addr_vram) EXT_addr_new = false;
   }
   else {
-    EXT_cpu_rd = cpu.bus_req_new.read;
-    EXT_cpu_wr = cpu.bus_req_new.write;
-    reg_new.cpu_abus.set_addr(cpu.bus_req_new.addr);
+    EXT_cpu_rd = cpu.core.reg.bus_req_new.read;
+    EXT_cpu_wr = cpu.core.reg.bus_req_new.write;
+    reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
 
     if (addr_high) EXT_addr_new = false;
     if (addr_boot) EXT_addr_new = false;
@@ -1076,19 +1076,19 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   // There doesn't seem to be a good config for halt_latch that works with the latch always latching...
 
-  cpu.cpu_data_latch &= (uint8_t)bit_pack(reg_new.cpu_dbus);
+  cpu.core.reg.cpu_data_latch &= (uint8_t)bit_pack(reg_new.cpu_dbus);
 
   if (DELTA_AB_new) {
   }
 
   if (DELTA_BC_new) {
     // -AB +BC +CD -DE
-    if (bit0(reg_new.reg_if.LOPE_FF0F_D0p.state)) cpu.halt_latch |= INT_VBLANK_MASK;
-    if (bit0(reg_new.reg_if.LALU_FF0F_D1p.state)) cpu.halt_latch |= INT_STAT_MASK;
-    if (bit0(reg_new.reg_if.UBUL_FF0F_D3p.state)) cpu.halt_latch |= INT_SERIAL_MASK;
-    if (bit0(reg_new.reg_if.ULAK_FF0F_D4p.state)) cpu.halt_latch |= INT_JOYPAD_MASK;
-    if (cpu.core.reg.op_next == 0x76 && (bit_pack(reg_new.reg_ie) & cpu.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
-    cpu.halt_latch = 0; // +BC +CD +DE +EF +FG
+    if (bit0(reg_new.reg_if.LOPE_FF0F_D0p.state)) cpu.core.reg.halt_latch |= INT_VBLANK_MASK;
+    if (bit0(reg_new.reg_if.LALU_FF0F_D1p.state)) cpu.core.reg.halt_latch |= INT_STAT_MASK;
+    if (bit0(reg_new.reg_if.UBUL_FF0F_D3p.state)) cpu.core.reg.halt_latch |= INT_SERIAL_MASK;
+    if (bit0(reg_new.reg_if.ULAK_FF0F_D4p.state)) cpu.core.reg.halt_latch |= INT_JOYPAD_MASK;
+    if (cpu.core.reg.op_next == 0x76 && (bit_pack(reg_new.reg_ie) & cpu.core.reg.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
+    cpu.core.reg.halt_latch = 0; // +BC +CD +DE +EF +FG
   }
 
   if (DELTA_CD_new) {
@@ -1103,18 +1103,18 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   }
 
   if (DELTA_EF_new) {
-    cpu.cpu_data_latch = 0xFF; // -DE +EF
+    cpu.core.reg.cpu_data_latch = 0xFF; // -DE +EF
   }
 
   if (DELTA_FG_new) {
 
-    cpu.intf_latch = (uint8_t)bit_pack(reg_new.reg_if); // -EF +FG +GH -HA
-    if (bit0(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
+    cpu.core.reg.intf_latch = (uint8_t)bit_pack(reg_new.reg_if); // -EF +FG +GH -HA
+    if (bit0(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
 
 
     if (sys.cpu_en) {
       if (cpu.core.reg.op_state == 0) {
-        if ((bit_pack(reg_new.reg_ie) & cpu.intf_latch) && cpu.core.reg.ime) {
+        if ((bit_pack(reg_new.reg_ie) & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
           cpu.core.reg.op_next = 0xF4; // fake opcode
           cpu.core.reg.ime = false;
           cpu.core.reg.ime_delay = false;
@@ -1129,12 +1129,23 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   }
 
   if (DELTA_HA_new) {
-    if (cpu.core.reg.bus_read) cpu.core.reg.data_in = cpu.cpu_data_latch; // -FG +GH +HA -AB
+
+
+    if (cpu.core.reg.bus_read) {
+      cpu.core.reg.data_in = cpu.core.reg.cpu_data_latch; // -FG +GH +HA -AB
+    }
 
 
     if (sys.cpu_en) {
-      cpu.core.execute((uint8_t)bit_pack(reg_new.reg_ie), cpu.intf_latch);
-      cpu.bus_req_new = cpu.core.get_bus_req();
+      cpu.core.execute((uint8_t)bit_pack(reg_new.reg_ie), cpu.core.reg.intf_latch);
+      cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
+
+      /*
+      auto r = cpu.core.reg.bus_req_new;
+      if (r.write && r.addr >= 0xFF10 && r.addr <= 0xFF3F) {
+        printf("0x%08x 0x%04x 0x%02x\n", sys.gb_phase_total, r.addr, r.data);
+      }
+      */
     }
   }
 }

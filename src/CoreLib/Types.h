@@ -4,6 +4,7 @@
 #include "Config.h"
 #include <vector> // for blob
 #include <stdint.h>
+#include <string.h>
 
 //------------------------------------------------------------------------------
 
@@ -16,14 +17,14 @@ typedef int64_t LARGE_INTEGER;
 
 //------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
+//#ifdef _MSC_VER
 
 #include <span>
 typedef std::span<const char> cspan;
 
-#define debugbreak() __debugbreak();
+//#define debugbreak() __debugbreak();
 
-#endif
+//#endif
 
 //------------------------------------------------------------------------------
 
@@ -33,7 +34,7 @@ typedef const uint8_t wire;
 //typedef uint8_t wire;
 struct triwire { wire state; };
 
-inline wire bit0(uint32_t w) { return wire(w & 1); }
+__attribute__((always_inline)) inline wire bit0(uint32_t w) { return wire(w & 1); }
 inline wire bit(uint32_t w, int i) { return wire((w >> i) & 1); }
 
 template<typename T>

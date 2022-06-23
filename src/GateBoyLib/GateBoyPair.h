@@ -24,7 +24,7 @@ struct GateBoyPair : public IGateBoy {
   GBResult dbg_req(uint16_t addr, uint8_t data, bool write) override;
   GBResult dbg_read(const blob& cart_blob, int addr) override;
   GBResult dbg_write (const blob& cart_blob, int addr, uint8_t data_in) override;
-  GBResult dbg_flip();
+  GBResult dbg_flip() override;
 
   GBResult run_phases(const blob& cart_blob, int phase_count) override;
   GBResult next_phase(const blob& cart_blob) override;

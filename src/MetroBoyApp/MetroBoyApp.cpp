@@ -352,8 +352,8 @@ void MetroBoyApp::app_render_ui(dvec2 screen_size, double delta) {
   size_t state_size = gb.state_size_bytes();
   text_painter.dprintf("State size %d K\n", state_size / 1024);
 
-  double phases_per_frame = 114 * 154 * 60 * 8;
-  double sim_ratio = sim_rate / phases_per_frame;
+  double phases_per_second = 114 * 154 * 60 * 8;
+  double sim_ratio = sim_rate / phases_per_second;
 
   text_painter.dprintf("Sim time %f, sim ratio %f\n", sim_time, sim_ratio);
   text_painter.dprintf("Frame time %f\n", frame_time);

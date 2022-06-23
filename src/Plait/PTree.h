@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tree_sitter/api.h>
+#include "tree-sitter/lib/include/tree_sitter/api.h"
 
 #include <deque>
 #include <string>

@@ -34,6 +34,12 @@ struct CpuState {
     bus_write = 0;
   }
 
+  Req      bus_req_new = {0};
+
+  uint8_t  cpu_data_latch = 0;
+  uint8_t  intf_latch = 0;
+  uint8_t  halt_latch = 0;
+
   uint16_t bus_addr;
   uint8_t  bus_data;
   uint8_t  bus_read;
@@ -108,7 +114,7 @@ public:
     if      (reg.op_next == 0xF4) execute_int(_imask, _intf);   // INT
     else if (reg.op_next == 0x76) execute_halt(_imask, _intf);  // HALT
     else if (reg.op_next == 0xCB) execute_cb();                 // CB
-    else                            execute_op();
+    else                          execute_op();
   }
 
   /*

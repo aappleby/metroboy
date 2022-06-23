@@ -6,7 +6,7 @@
 
 //-----------------------------------------------------------------------------
 
-inline wire not1(wire a) { return ~a; }
+__attribute__((always_inline)) inline wire not1(wire a) { return ~a; }
 
 inline wire and2(wire a, wire b) { return a & b; }
 inline wire and3(wire a, wire b, wire c) { return  (a & b & c); }

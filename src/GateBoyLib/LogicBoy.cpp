@@ -87,10 +87,10 @@ GBResult LogicBoy::poke(int addr, uint8_t data_in) {
 GBResult LogicBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
   CHECK_P((sys.gb_phase_total & 7) == 0);
 
-  cpu.bus_req_new.addr = addr;
-  cpu.bus_req_new.data = data;
-  cpu.bus_req_new.read = !write;
-  cpu.bus_req_new.write = write;
+  cpu.core.reg.bus_req_new.addr = addr;
+  cpu.core.reg.bus_req_new.data = data;
+  cpu.core.reg.bus_req_new.read = !write;
+  cpu.core.reg.bus_req_new.write = write;
 
   return GBResult::ok();
 }
@@ -100,17 +100,17 @@ GBResult LogicBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
 GBResult LogicBoy::dbg_read(const blob& cart_blob, int addr) {
   CHECK_P((sys.gb_phase_total & 7) == 0);
 
-  Req old_req = cpu.bus_req_new;
+  Req old_req = cpu.core.reg.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
   sys.cpu_en = false;
 
   dbg_req((uint16_t)addr, 0, 0);
   run_phases(cart_blob, 8);
 
-  cpu.bus_req_new = old_req;
+  cpu.core.reg.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
 
-  return GBResult(cpu.cpu_data_latch);
+  return GBResult(cpu.core.reg.cpu_data_latch);
 }
 
 //------------------------------------------------------------------------------
@@ -118,14 +118,14 @@ GBResult LogicBoy::dbg_read(const blob& cart_blob, int addr) {
 GBResult LogicBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data_in) {
   CHECK_P((sys.gb_phase_total & 7) == 0);
 
-  Req old_req = cpu.bus_req_new;
+  Req old_req = cpu.core.reg.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
   sys.cpu_en = false;
 
   dbg_req((uint16_t)addr, data_in, 1);
   GBResult res = run_phases(cart_blob, 8);
 
-  cpu.bus_req_new = old_req;
+  cpu.core.reg.bus_req_new = old_req;
   sys.cpu_en = old_cpu_en;
   return res;
 }
@@ -305,14 +305,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // Data has to be driven on EFGH or we fail the wave tests
 
-  state_new.cpu_dbus = (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) && cpu.bus_req_new.write ? cpu.bus_req_new.data_lo : 0xFF; // must be pulled up or we fail regression
-  state_new.cpu_abus = (DELTA_HA_new ? cpu.bus_req_new.addr & 0x00FF : cpu.bus_req_new.addr);
+  state_new.cpu_dbus = (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) && cpu.core.reg.bus_req_new.write ? cpu.core.reg.bus_req_new.data_lo : 0xFF; // must be pulled up or we fail regression
+  state_new.cpu_abus = (DELTA_HA_new ? cpu.core.reg.bus_req_new.addr & 0x00FF : cpu.core.reg.bus_req_new.addr);
 
-  wire req_addr_vram = (cpu.bus_req_new.addr >= 0x8000) && (cpu.bus_req_new.addr <= 0x9FFF);
-  wire req_addr_ram  = (cpu.bus_req_new.addr >= 0xA000) && (cpu.bus_req_new.addr <= 0xFDFF);
-  wire req_addr_oam  = (cpu.bus_req_new.addr >= 0xFE00) && (cpu.bus_req_new.addr <= 0xFEFF);
-  wire req_addr_hi   = (cpu.bus_req_new.addr >= 0xFE00);
-  wire req_addr_lo   = (cpu.bus_req_new.addr <= 0x00FF);
+  wire req_addr_vram = (cpu.core.reg.bus_req_new.addr >= 0x8000) && (cpu.core.reg.bus_req_new.addr <= 0x9FFF);
+  wire req_addr_ram  = (cpu.core.reg.bus_req_new.addr >= 0xA000) && (cpu.core.reg.bus_req_new.addr <= 0xFDFF);
+  wire req_addr_oam  = (cpu.core.reg.bus_req_new.addr >= 0xFE00) && (cpu.core.reg.bus_req_new.addr <= 0xFEFF);
+  wire req_addr_hi   = (cpu.core.reg.bus_req_new.addr >= 0xFE00);
+  wire req_addr_lo   = (cpu.core.reg.bus_req_new.addr <= 0x00FF);
 
   wire cpu_addr_oam_old  = (state_old.cpu_abus >= 0xFE00) && (state_old.cpu_abus <= 0xFEFF);
 
@@ -320,8 +320,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire cpu_addr_ram_new  = req_addr_ram && !DELTA_HA_new;
   wire cpu_addr_oam_new  = req_addr_oam && !DELTA_HA_new;
 
-  wire cpu_rd = cpu.bus_req_new.read  && !DELTA_HA_new;
-  wire cpu_wr = cpu.bus_req_new.write && !DELTA_HA_new;
+  wire cpu_rd = cpu.core.reg.bus_req_new.read  && !DELTA_HA_new;
+  wire cpu_wr = cpu.core.reg.bus_req_new.write && !DELTA_HA_new;
 
   const auto cpu_addr_new = state_new.cpu_abus;
   auto& cpu_dbus_new = state_new.cpu_dbus;
@@ -400,9 +400,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (cpu_wr && DELTA_GH_new && (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE)) mem.zero_ram[cpu_addr_new & 0x007F] = state_old.cpu_dbus;
 
-  wire req_addr_boot = (cpu.bus_req_new.addr >= 0x0000) && (cpu.bus_req_new.addr <= 0x00FF) && !state_new.cpu_signals.TEPU_BOOT_BITn.state;
+  wire req_addr_boot = (cpu.core.reg.bus_req_new.addr >= 0x0000) && (cpu.core.reg.bus_req_new.addr <= 0x00FF) && !state_new.cpu_signals.TEPU_BOOT_BITn.state;
 
-  wire ext_addr_new = (cpu.bus_req_new.read || cpu.bus_req_new.write) &&
+  wire ext_addr_new = (cpu.core.reg.bus_req_new.read || cpu.core.reg.bus_req_new.write) &&
                             (( DELTA_HA_new && !req_addr_hi && !req_addr_boot && !req_addr_vram) ||
                             (!DELTA_HA_new && !req_addr_hi && !req_addr_boot));
 
@@ -966,7 +966,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // sprite reset
 
-  int sprite_reset_index = 32 - __lzcnt(state_new.sprite_reset_flags - 1);
+  int sprite_reset_index = 32 - __builtin_clz(state_new.sprite_reset_flags - 1);
   if (sprite_reset_index != 32) (&state_new.store_x0)[sprite_reset_index] = 0xFF;
 
 
@@ -1488,11 +1488,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
   else if (ext_addr_new) {
     pins_vram_ctrl_csn_new = (cpu_addr_vram_new && gen_clk(phase_new, 0b00111111) && 1);
-    pins_vram_ctrl_oen_new = !cpu_addr_vram_new || !cpu.bus_req_new.write || DELTA_HA_new;
+    pins_vram_ctrl_oen_new = !cpu_addr_vram_new || !cpu.core.reg.bus_req_new.write || DELTA_HA_new;
   }
   else {
     pins_vram_ctrl_csn_new = 0;
-    pins_vram_ctrl_oen_new = !cpu_addr_vram_new || !cpu.bus_req_new.write || DELTA_HA_new;;
+    pins_vram_ctrl_oen_new = !cpu_addr_vram_new || !cpu.core.reg.bus_req_new.write || DELTA_HA_new;;
   }
 
 
@@ -1533,7 +1533,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     if (pins_vram_ctrl_wrn_new) mem.vid_ram[state_new.vram_abus ^ 0x1FFF] = ~pins_vram_dbus;
 
-    if (cpu_addr_vram_new && gen_clk(phase_new, 0b00111111) && (cpu.bus_req_new.read && !DELTA_HA_new) && (DELTA_DH_new && cpu.bus_req_new.read)) {
+    if (cpu_addr_vram_new && gen_clk(phase_new, 0b00111111) && (cpu.core.reg.bus_req_new.read && !DELTA_HA_new) && (DELTA_DH_new && cpu.core.reg.bus_req_new.read)) {
       state_new.cpu_dbus = state_new.vram_dbus;
     }
   }
@@ -1556,7 +1556,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   // But ZRAM can't be before OAM because ZRAM _doesn't_ show up on the oam bus? That seems wrong...
 
-  if ((cpu.bus_req_new.read && !DELTA_HA_new)) {
+  if ((cpu.core.reg.bus_req_new.read && !DELTA_HA_new)) {
     if (cpu_addr_new == 0xFF00) {
       set_bit(state_new.cpu_dbus, 0, !bit(state_new.joy_latch, 0));
       set_bit(state_new.cpu_dbus, 1, !bit(state_new.joy_latch, 1));
@@ -1631,7 +1631,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
     }
     if (DELTA_CD_new) {
-      if (cpu_addr_oam_new && cpu.bus_req_new.read) {
+      if (cpu_addr_oam_new && cpu.core.reg.bus_req_new.read) {
         oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
         oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
       }
@@ -1659,7 +1659,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
       oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
     }
-    else if (cpu_addr_oam_new && (!cpu.bus_req_new.read || DELTA_AD_new)) {
+    else if (cpu_addr_oam_new && (!cpu.core.reg.bus_req_new.read || DELTA_AD_new)) {
       oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
       oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
     }
@@ -1674,7 +1674,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     // CPUing
 
     if (DELTA_HD_new) {
-      if (cpu.bus_req_new.read && !DELTA_HA_new) {
+      if (cpu.core.reg.bus_req_new.read && !DELTA_HA_new) {
         oam_dbus_a = ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
         oam_dbus_b = ~mem.oam_ram[(cpu_addr_new & 0xFF) |  1];
         state_new.oam_latch_a = ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
@@ -1682,7 +1682,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
     }
     else if (DELTA_DH_new) {
-      if (cpu.bus_req_new.read) {
+      if (cpu.core.reg.bus_req_new.read) {
         state_new.cpu_dbus = !bit(cpu_addr_new, 0) ? ~state_old.oam_latch_a : ~state_old.oam_latch_b;
       }
 
@@ -1705,7 +1705,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // zram
 
-  if ((cpu.bus_req_new.read && !DELTA_HA_new)) {
+  if ((cpu.core.reg.bus_req_new.read && !DELTA_HA_new)) {
     if ((cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE)) state_new.cpu_dbus = mem.zero_ram[cpu_addr_new & 0x007F];
   }
 
@@ -1742,7 +1742,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     pack_stat = (~pack_cpu_dbus_old >> 3) & 0b00001111;
   }
 
-  if (cpu_addr_new == 0xFF41 && (cpu.bus_req_new.read && !DELTA_HA_new)) {
+  if (cpu_addr_new == 0xFF41 && (cpu.core.reg.bus_req_new.read && !DELTA_HA_new)) {
     uint8_t stat = 0x80;
 
     stat |= (!state_new.XYMU_RENDERINGn || vblank_new) << 0;
@@ -1794,7 +1794,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   pack_if &= ~cpu.core.get_int_ack();
 
-  if ((cpu.bus_req_new.read && !DELTA_HA_new)) {
+  if ((cpu.core.reg.bus_req_new.read && !DELTA_HA_new)) {
     if (cpu_addr_new == 0xFFFF) pack_cpu_dbus_new = pack_ie | 0b11100000;
     if (cpu_addr_new == 0xFF0F) state_new.int_latch = (uint8_t)pack_if;
     if (cpu_addr_new == 0xFF0F) pack_cpu_dbus_new = pack_if | 0b11100000;
@@ -1842,19 +1842,19 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
-  cpu.cpu_data_latch &= (uint8_t)state_new.cpu_dbus;
+  cpu.core.reg.cpu_data_latch &= (uint8_t)state_new.cpu_dbus;
 
   if (DELTA_AB_new) {
   }
 
   if (DELTA_BC_new) {
     // -AB +BC +CD -DE
-    if (bit(state_new.reg_if, 0)) cpu.halt_latch |= INT_VBLANK_MASK;
-    if (bit(state_new.reg_if, 1)) cpu.halt_latch |= INT_STAT_MASK;
-    if (bit(state_new.reg_if, 3)) cpu.halt_latch |= INT_SERIAL_MASK;
-    if (bit(state_new.reg_if, 4)) cpu.halt_latch |= INT_JOYPAD_MASK;
-    if (cpu.core.reg.op_next == 0x76 && (bit_pack(state_new.reg_ie) & cpu.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
-    cpu.halt_latch = 0; // +BC +CD +DE +EF +FG
+    if (bit(state_new.reg_if, 0)) cpu.core.reg.halt_latch |= INT_VBLANK_MASK;
+    if (bit(state_new.reg_if, 1)) cpu.core.reg.halt_latch |= INT_STAT_MASK;
+    if (bit(state_new.reg_if, 3)) cpu.core.reg.halt_latch |= INT_SERIAL_MASK;
+    if (bit(state_new.reg_if, 4)) cpu.core.reg.halt_latch |= INT_JOYPAD_MASK;
+    if (cpu.core.reg.op_next == 0x76 && (bit_pack(state_new.reg_ie) & cpu.core.reg.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
+    cpu.core.reg.halt_latch = 0; // +BC +CD +DE +EF +FG
   }
 
   if (DELTA_CD_new) {
@@ -1869,18 +1869,18 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (DELTA_EF_new) {
-    cpu.cpu_data_latch = 0xFF; // -DE +EF
+    cpu.core.reg.cpu_data_latch = 0xFF; // -DE +EF
   }
 
   if (DELTA_FG_new) {
 
-    cpu.intf_latch = state_new.reg_if; // -EF +FG +GH -HA
-    if (bit(state_new.reg_if, 2)) cpu.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug    
+    cpu.core.reg.intf_latch = state_new.reg_if; // -EF +FG +GH -HA
+    if (bit(state_new.reg_if, 2)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug    
 
 
     if (sys.cpu_en) {
       if (cpu.core.reg.op_state == 0) {
-        if ((state_new.reg_ie & cpu.intf_latch) && cpu.core.reg.ime) {
+        if ((state_new.reg_ie & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
           cpu.core.reg.op_next = 0xF4; // fake opcode
           cpu.core.reg.ime = false;
           cpu.core.reg.ime_delay = false;
@@ -1895,12 +1895,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (DELTA_HA_new) {
-    if (cpu.core.reg.bus_read) cpu.core.reg.data_in = cpu.cpu_data_latch; // -FG +GH +HA -AB
+    if (cpu.core.reg.bus_read) cpu.core.reg.data_in = cpu.core.reg.cpu_data_latch; // -FG +GH +HA -AB
 
 
     if (sys.cpu_en) {
-      cpu.core.execute(state_new.reg_ie, cpu.intf_latch);
-      cpu.bus_req_new = cpu.core.get_bus_req();
+      cpu.core.execute(state_new.reg_ie, cpu.core.reg.intf_latch);
+      cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
     }
   }
 
@@ -1998,7 +1998,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
       if (DELTA_CD_new) {
         state_new.oam_ctrl.SIG_OAM_CLKn.state  = 0;
-        state_new.oam_ctrl.SIG_OAM_OEn.state   = !(cpu_addr_oam_new && cpu.bus_req_new.read);
+        state_new.oam_ctrl.SIG_OAM_OEn.state   = !(cpu_addr_oam_new && cpu.core.reg.bus_req_new.read);
       }
       if (DELTA_DE_new) {
         state_new.oam_ctrl.SIG_OAM_CLKn.state  = !cpu_addr_oam_new;
@@ -2025,14 +2025,14 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = sfetch_oam_clk_new && (!cpu_addr_oam_new || gen_clk(phase_new, 0b11110000));
       state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
       state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = sfetch_oam_oen_new && !(cpu_addr_oam_new && (cpu.bus_req_new.read && !DELTA_HA_new) && !(DELTA_DH_new && cpu.bus_req_new.read));
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = sfetch_oam_oen_new && !(cpu_addr_oam_new && (cpu.core.reg.bus_req_new.read && !DELTA_HA_new) && !(DELTA_DH_new && cpu.core.reg.bus_req_new.read));
     }
     else if (cpu_addr_oam_new) {
       state_new.oam_abus = uint8_t(~cpu_addr_new);
       state_new.oam_ctrl.SIG_OAM_CLKn.state  = DELTA_HD_new;
       state_new.oam_ctrl.SIG_OAM_WRn_A.state = 1;
       state_new.oam_ctrl.SIG_OAM_WRn_B.state = 1;
-      state_new.oam_ctrl.SIG_OAM_OEn.state   = !DELTA_AD_new || !cpu.bus_req_new.read;
+      state_new.oam_ctrl.SIG_OAM_OEn.state   = !DELTA_AD_new || !cpu.core.reg.bus_req_new.read;
 
       if (DELTA_DH_new) {
         if (cpu_wr) {
@@ -2174,7 +2174,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
     state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
-    state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = DELTA_DH_new && cpu.bus_req_new.read;
+    state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = DELTA_DH_new && cpu.core.reg.bus_req_new.read;
     state_new.cpu_signals.SIG_IN_CPU_WRp.state = cpu_wr;
     state_new.cpu_signals.SIG_IN_CPU_RDp.state = cpu_rd;
     if (!vid_rst_evn_new) {
@@ -2272,7 +2272,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
       state_new.cpu_signals.SIG_CPU_BOOTp.state = !state_new.cpu_signals.TEPU_BOOT_BITn.state;
 
-      if ((cpu.bus_req_new.read && !DELTA_HA_new) && !state_new.cpu_signals.TEPU_BOOT_BITn.state) {
+      if ((cpu.core.reg.bus_req_new.read && !DELTA_HA_new) && !state_new.cpu_signals.TEPU_BOOT_BITn.state) {
         state_new.cpu_signals.SIG_BOOT_CSp.state = 1;
       }
     }
@@ -2337,7 +2337,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sys_clk.SIG_CPU_BOMA_xBCDEFGH.state = gen_clk(phase_new, 0b01111111); // dead signal
     state_new.sys_clk.SIG_CPU_BOGA_Axxxxxxx.state = gen_clk(phase_new, 0b10000000); // dead signal
 
-    state_new.cpu_signals.TEDO_CPU_RDp.state = (cpu.bus_req_new.read && !DELTA_HA_new); // dead signal
+    state_new.cpu_signals.TEDO_CPU_RDp.state = (cpu.core.reg.bus_req_new.read && !DELTA_HA_new); // dead signal
     state_new.cpu_signals.APOV_CPU_WRp.state = gen_clk(phase_new, 0b00001110) && cpu_wr; // dead signal
     state_new.cpu_signals.TAPU_CPU_WRp.state = gen_clk(phase_new, 0b00001110) && cpu_wr; // dead signal
     state_new.cpu_signals.ABUZ_EXT_RAM_CS_CLK.state = (gen_clk(phase_new, 0b00111111) && state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state); // dead signal

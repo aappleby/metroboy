@@ -174,7 +174,7 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public BitBase {
-  void dff8n(wire CLKn, wire Dn) {
+  __attribute__((always_inline)) void dff8n(wire CLKn, wire Dn) {
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
@@ -228,7 +228,7 @@ struct DFF8p : public BitBase {
 // DFF9_09 |xxx-O-xxx| >> Q
 
 struct DFF9 : public BitBase {
-  void dff9(wire CLKp, wire SETn, wire Dn) {
+  __attribute__((always_inline)) void dff9(wire CLKp, wire SETn, wire Dn) {
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
@@ -327,12 +327,12 @@ struct DFF17 : public BitBase {
   }
 
 
-  void dff17(wire CLKp, wire RSTn, wire Dp) {
+  __attribute__((always_inline)) void dff17(wire CLKp, wire RSTn, wire Dp) {
     check_invalid();
     dff17_any(CLKp, RSTn, Dp);
   }
 
-  void dff17_any(wire CLKp, wire RSTn, wire Dp) {
+  __attribute__((always_inline)) void dff17_any(wire CLKp, wire RSTn, wire Dp) {
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
 

@@ -33,31 +33,27 @@ struct GateBoyCpu {
 
   void reset_to_bootrom() {
     core.reset_to_bootrom();
-    bus_req_new.addr = 0x0000;
-    bus_req_new.data = 0;
-    bus_req_new.read = 1;
-    bus_req_new.write = 0;
-    cpu_data_latch = 49;
-    intf_latch = 0;
-    halt_latch = 0;
+    core.reg.bus_req_new.addr = 0x0000;
+    core.reg.bus_req_new.data = 0;
+    core.reg.bus_req_new.read = 1;
+    core.reg.bus_req_new.write = 0;
+    core.reg.cpu_data_latch = 49;
+    core.reg.intf_latch = 0;
+    core.reg.halt_latch = 0;
   }
 
   void reset_to_cart() {
     core.reset_to_cart();
-    bus_req_new.addr = 0xFF50;
-    bus_req_new.data = 1;
-    bus_req_new.read = 0;
-    bus_req_new.write = 1;
-    cpu_data_latch = 1;
-    intf_latch = 1;
-    halt_latch = 0;
+    core.reg.bus_req_new.addr = 0xFF50;
+    core.reg.bus_req_new.data = 1;
+    core.reg.bus_req_new.read = 0;
+    core.reg.bus_req_new.write = 1;
+    core.reg.cpu_data_latch = 1;
+    core.reg.intf_latch = 1;
+    core.reg.halt_latch = 0;
   }
 
   MetroBoyCPU core;
-  Req      bus_req_new = {0};
-  uint8_t  cpu_data_latch = 0;
-  uint8_t  intf_latch = 0;
-  uint8_t  halt_latch = 0;
 };
 #pragma pack(pop)
 
@@ -71,7 +67,7 @@ struct GateBoyMem {
     // The first thing the bootrom does is clear VRAM, so put some recognizable
     // pattern in vram so we can see it running.
     for (int i = 0; i < 8192; i++) {
-      uint32_t h = i * 0x1234567;
+      uint32_t h = i * 0x1234567ull;
       vid_ram[i] = uint8_t(h ^ (h >> 4));
     }
 
@@ -84,7 +80,7 @@ struct GateBoyMem {
     // The first thing the bootrom does is clear VRAM, so put some recognizable
     // pattern in vram so we can see it running.
     for (int i = 0; i < 8192; i++) {
-      uint32_t h = i * 0x1234567;
+      uint32_t h = i * 0x1234567ull;
       vid_ram[i] = uint8_t(h ^ (h >> 4));
     }
 

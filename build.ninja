@@ -1,55 +1,115 @@
-rule compile
-  command = g++ -DFAST_MODE -O3 -Wno-format -Isrc -std=gnu++2a -c $in -o $out
+################################################################################
+
+#build_mode   = -DCONFIG_FASTMODE
+#opt_mode     = -Ofast
+
+build_mode   = -DCONFIG_DEBUG
+
+cpp_compiler = g++
+c_compiler   = gcc
+cpp_std      = -std=gnu++2a
+global_libs  = -lSDL2
+
+default_includes = -Isrc -Isrc/tree-sitter/lib/include -Isubmodules -Isubmodules/tree-sitter/lib/include
+
+################################################################################
+
+rule compile_cpp
+  command = ${cpp_compiler} -g ${build_mode} ${opt_mode} ${default_includes} ${includes} ${cpp_std} -MMD -MF ${out}.d -c ${in} -o ${out}
+  depfile = ${out}.d
+  deps = gcc
+
+rule compile_c
+  command = ${c_compiler} -g ${build_mode} ${opt_mode} ${default_includes} ${includes} -MMD -MF ${out}.d -c ${in} -o ${out}
+  depfile = ${out}.d
+  deps = gcc
 
 rule lib
-  command = ar rcs $out $in
+  command = ar rcs ${out} ${in} > /dev/null
 
 rule link
-  command = g++ -O3 -Wl,--whole-archive $in -Wl,--no-whole-archive -lSDL2 -ldl -lpthread -o $out
+  command = g++ -g ${opt_mode} -Wl,--whole-archive ${in} -Wl,--no-whole-archive ${global_libs} -o ${out}
+
+################################################################################
+# TreeSitter libraries
+
+build obj/tree-sitter/lib.o     : compile_c submodules/tree-sitter/lib/src/lib.c
+build obj/tree-sitter/parser.o  : compile_c submodules/tree-sitter-cpp/src/parser.c
+build obj/tree-sitter/scanner.o : compile_c submodules/tree-sitter-cpp/src/scanner.cc
+
+build bin/TreeSitter.a : lib $
+  obj/tree-sitter/lib.o $
+  obj/tree-sitter/parser.o $
+  obj/tree-sitter/scanner.o
 
 ################################################################################
 # GateBoyApp
 
-build obj/GateBoyApp.o : compile src/GateBoyApp/GateBoyApp.cpp
+build obj/GateBoyApp.o : compile_cpp src/GateBoyApp/GateBoyApp.cpp
+
 build bin/GateBoyApp : link $
+  obj/GateBoyApp.o $
+  obj/glad.o $
   bin/AppLib.a $
   bin/CoreLib.a $
   bin/GateBoyLib.a $
-  bin/imgui.a $
-  bin/glad.o $
-  obj/GateBoyApp.o
+  bin/imgui.a
 
 ################################################################################
 # MetroBoyApp
 
-build obj/MetroBoyApp.o : compile src/MetroBoyApp/MetroBoyApp.cpp
+build obj/MetroBoyApp.o : compile_cpp src/MetroBoyApp/MetroBoyApp.cpp
+
+build bin/MetroBoyApp : link $
+  obj/MetroBoyApp.o $
+  obj/glad.o $
+  bin/MetroBoyLib.a $
+  bin/AppLib.a $
+  bin/CoreLib.a $
+  bin/imgui.a
+
+################################################################################
+# MetronicaApp
+
+build obj/MetronicaApp.o : compile_cpp src/Metronica/MetronicaApp.cpp
+
+build bin/MetronicaApp : link $
+  obj/MetronicaApp.o $
+  obj/glad.o $
+  bin/MetroBoyLib.a $
+  bin/AppLib.a $
+  bin/CoreLib.a $
+  bin/imgui.a
 
 ################################################################################
 # Plait
 
-build obj/Plait/CellDB.o   : compile src/Plait/CellDB.cpp
-build obj/Plait/Plait.o    : compile src/Plait/Plait.cpp
-build obj/Plait/PlaitApp.o : compile src/Plait/PlaitApp.cpp
+build obj/Plait/CellDB.o   : compile_cpp src/Plait/CellDB.cpp
+build obj/Plait/Plait.o    : compile_cpp src/Plait/Plait.cpp
+build obj/Plait/PlaitApp.o : compile_cpp src/Plait/PlaitApp.cpp
+build obj/Plait/PTree.o    : compile_cpp src/Plait/PTree.cpp
 
 build bin/Plait : link $
   bin/CoreLib.a $
   bin/AppLib.a $
   bin/imgui.a $
-  bin/glad.o $
+  bin/TreeSitter.a $
+  obj/glad.o $
   obj/Plait/Plait.o $
   obj/Plait/PlaitApp.o $
-  obj/Plait/CellDB.o $
+  obj/Plait/PTree.o $
+  obj/Plait/CellDB.o
 
 ################################################################################
 # CoreLib
 
-build obj/CoreLib/Assembler.o     : compile src/CoreLib/Assembler.cpp
-build obj/CoreLib/Constants.o     : compile src/CoreLib/Constants.cpp
-build obj/CoreLib/Debug.o         : compile src/CoreLib/Debug.cpp
-build obj/CoreLib/File.o          : compile src/CoreLib/File.cpp
-build obj/CoreLib/MetroBoyCPU.o   : compile src/CoreLib/MetroBoyCPU.cpp
-build obj/CoreLib/StateManager2.o : compile src/CoreLib/StateManager2.cpp
-build obj/CoreLib/Types.o         : compile src/CoreLib/Types.cpp
+build obj/CoreLib/Assembler.o     : compile_cpp src/CoreLib/Assembler.cpp
+build obj/CoreLib/Constants.o     : compile_cpp src/CoreLib/Constants.cpp
+build obj/CoreLib/Debug.o         : compile_cpp src/CoreLib/Debug.cpp
+build obj/CoreLib/File.o          : compile_cpp src/CoreLib/File.cpp
+build obj/CoreLib/MetroBoyCPU.o   : compile_cpp src/CoreLib/MetroBoyCPU.cpp
+build obj/CoreLib/StateManager2.o : compile_cpp src/CoreLib/StateManager2.cpp
+build obj/CoreLib/Types.o         : compile_cpp src/CoreLib/Types.cpp
 
 build bin/CoreLib.a : lib $
   obj/CoreLib/Assembler.o $
@@ -63,21 +123,21 @@ build bin/CoreLib.a : lib $
 ################################################################################
 # AppLib
 
-build obj/AppLib/AppHost.o        : compile src/AppLib/AppHost.cpp
-build obj/AppLib/Audio.o          : compile src/AppLib/Audio.cpp
-build obj/AppLib/Blitter.o        : compile src/AppLib/Blitter.cpp
-build obj/AppLib/BoxPainter.o     : compile src/AppLib/BoxPainter.cpp
-build obj/AppLib/Console.o        : compile src/AppLib/Console.cpp
-build obj/AppLib/DummyApp.o       : compile src/AppLib/DummyApp.cpp
-build obj/AppLib/DumpPainter.o    : compile src/AppLib/DumpPainter.cpp
-build obj/AppLib/GatePix.o        : compile src/AppLib/GatePix.cpp
-build obj/AppLib/GBBlitter.o      : compile src/AppLib/GBBlitter.cpp
-build obj/AppLib/GLBase.o         : compile src/AppLib/GLBase.cpp
-build obj/AppLib/GridPainter.o    : compile src/AppLib/GridPainter.cpp
-build obj/AppLib/LinePainter.o    : compile src/AppLib/LinePainter.cpp
-build obj/AppLib/Terminus.o       : compile src/AppLib/Terminus.cpp
-build obj/AppLib/TextPainter.o    : compile src/AppLib/TextPainter.cpp
-build obj/AppLib/Viewport.o       : compile src/AppLib/Viewport.cpp
+build obj/AppLib/AppHost.o        : compile_cpp src/AppLib/AppHost.cpp
+build obj/AppLib/Audio.o          : compile_cpp src/AppLib/Audio.cpp
+build obj/AppLib/Blitter.o        : compile_cpp src/AppLib/Blitter.cpp
+build obj/AppLib/BoxPainter.o     : compile_cpp src/AppLib/BoxPainter.cpp
+build obj/AppLib/Console.o        : compile_cpp src/AppLib/Console.cpp
+build obj/AppLib/DummyApp.o       : compile_cpp src/AppLib/DummyApp.cpp
+build obj/AppLib/DumpPainter.o    : compile_cpp src/AppLib/DumpPainter.cpp
+build obj/AppLib/GatePix.o        : compile_cpp src/AppLib/GatePix.cpp
+build obj/AppLib/GBBlitter.o      : compile_cpp src/AppLib/GBBlitter.cpp
+build obj/AppLib/GLBase.o         : compile_cpp src/AppLib/GLBase.cpp
+build obj/AppLib/GridPainter.o    : compile_cpp src/AppLib/GridPainter.cpp
+build obj/AppLib/LinePainter.o    : compile_cpp src/AppLib/LinePainter.cpp
+build obj/AppLib/Terminus.o       : compile_cpp src/AppLib/Terminus.cpp
+build obj/AppLib/TextPainter.o    : compile_cpp src/AppLib/TextPainter.cpp
+build obj/AppLib/Viewport.o       : compile_cpp src/AppLib/Viewport.cpp
 
 build bin/AppLib.a : lib $
   obj/AppLib/AppHost.o $
@@ -99,36 +159,42 @@ build bin/AppLib.a : lib $
 ################################################################################
 # GateBoyLib
 
-build obj/GateBoyLib/GateBoy.o              : compile src/GateBoyLib/GateBoy.cpp
-build obj/GateBoyLib/GateBoyClocks.o        : compile src/GateBoyLib/GateBoyClocks.cpp
-build obj/GateBoyLib/GateBoyCpuBus.o        : compile src/GateBoyLib/GateBoyCpuBus.cpp
-build obj/GateBoyLib/GateBoyDMA.o           : compile src/GateBoyLib/GateBoyDMA.cpp
-build obj/GateBoyLib/GateBoyDumper.o        : compile src/GateBoyLib/GateBoyDumper.cpp
-build obj/GateBoyLib/GateBoyExtBus.o        : compile src/GateBoyLib/GateBoyExtBus.cpp
-build obj/GateBoyLib/GateBoyInterrupts.o    : compile src/GateBoyLib/GateBoyInterrupts.cpp
-build obj/GateBoyLib/GateBoyJoypad.o        : compile src/GateBoyLib/GateBoyJoypad.cpp
-build obj/GateBoyLib/GateBoyLCD.o           : compile src/GateBoyLib/GateBoyLCD.cpp
-build obj/GateBoyLib/GateBoyOamBus.o        : compile src/GateBoyLib/GateBoyOamBus.cpp
-build obj/GateBoyLib/GateBoyPixPipe.o       : compile src/GateBoyLib/GateBoyPixPipe.cpp
-build obj/GateBoyLib/GateBoyRegisters.o     : compile src/GateBoyLib/GateBoyRegisters.cpp
-build obj/GateBoyLib/GateBoyReset.o         : compile src/GateBoyLib/GateBoyReset.cpp
-build obj/GateBoyLib/GateBoySerial.o        : compile src/GateBoyLib/GateBoySerial.cpp
-build obj/GateBoyLib/GateBoySpriteFetcher.o : compile src/GateBoyLib/GateBoySpriteFetcher.cpp
-build obj/GateBoyLib/GateBoySpriteScanner.o : compile src/GateBoyLib/GateBoySpriteScanner.cpp
-build obj/GateBoyLib/GateBoySpriteStore.o   : compile src/GateBoyLib/GateBoySpriteStore.cpp
-build obj/GateBoyLib/GateBoySPU.o           : compile src/GateBoyLib/GateBoySPU.cpp
-build obj/GateBoyLib/GateBoyThread.o        : compile src/GateBoyLib/GateBoyThread.cpp
-build obj/GateBoyLib/GateBoyTileFetcher.o   : compile src/GateBoyLib/GateBoyTileFetcher.cpp
-build obj/GateBoyLib/GateBoyTimer.o         : compile src/GateBoyLib/GateBoyTimer.cpp
-build obj/GateBoyLib/GateBoyVramBus.o       : compile src/GateBoyLib/GateBoyVramBus.cpp
-build obj/GateBoyLib/GateBoyZramBus.o       : compile src/GateBoyLib/GateBoyZramBus.cpp
-build obj/GateBoyLib/Gates.o                : compile src/GateBoyLib/Gates.cpp
-build obj/GateBoyLib/Probe.o                : compile src/GateBoyLib/Probe.cpp
-build obj/GateBoyLib/Sch_ApuControl.o       : compile src/GateBoyLib/Sch_ApuControl.cpp
-build obj/GateBoyLib/Sch_Channel1.o         : compile src/GateBoyLib/Sch_Channel1.cpp
-build obj/GateBoyLib/Sch_Channel2.o         : compile src/GateBoyLib/Sch_Channel2.cpp
-build obj/GateBoyLib/Sch_Channel3.o         : compile src/GateBoyLib/Sch_Channel3.cpp
-build obj/GateBoyLib/Sch_Channel4.o         : compile src/GateBoyLib/Sch_Channel4.cpp
+build obj/GateBoyLib/GateBoy.o              : compile_cpp src/GateBoyLib/GateBoy.cpp
+build obj/GateBoyLib/GateBoyClocks.o        : compile_cpp src/GateBoyLib/GateBoyClocks.cpp
+build obj/GateBoyLib/GateBoyCpuBus.o        : compile_cpp src/GateBoyLib/GateBoyCpuBus.cpp
+build obj/GateBoyLib/GateBoyDMA.o           : compile_cpp src/GateBoyLib/GateBoyDMA.cpp
+build obj/GateBoyLib/GateBoyDumper.o        : compile_cpp src/GateBoyLib/GateBoyDumper.cpp
+build obj/GateBoyLib/GateBoyExtBus.o        : compile_cpp src/GateBoyLib/GateBoyExtBus.cpp
+build obj/GateBoyLib/GateBoyInterrupts.o    : compile_cpp src/GateBoyLib/GateBoyInterrupts.cpp
+build obj/GateBoyLib/GateBoyJoypad.o        : compile_cpp src/GateBoyLib/GateBoyJoypad.cpp
+build obj/GateBoyLib/GateBoyLCD.o           : compile_cpp src/GateBoyLib/GateBoyLCD.cpp
+build obj/GateBoyLib/GateBoyOamBus.o        : compile_cpp src/GateBoyLib/GateBoyOamBus.cpp
+build obj/GateBoyLib/GateBoyPair.o          : compile_cpp src/GateBoyLib/GateBoyPair.cpp
+build obj/GateBoyLib/GateBoyPins.o          : compile_cpp src/GateBoyLib/GateBoyPins.cpp
+build obj/GateBoyLib/GateBoyPixPipe.o       : compile_cpp src/GateBoyLib/GateBoyPixPipe.cpp
+build obj/GateBoyLib/GateBoyRegisters.o     : compile_cpp src/GateBoyLib/GateBoyRegisters.cpp
+build obj/GateBoyLib/GateBoyReset.o         : compile_cpp src/GateBoyLib/GateBoyReset.cpp
+build obj/GateBoyLib/GateBoySerial.o        : compile_cpp src/GateBoyLib/GateBoySerial.cpp
+build obj/GateBoyLib/GateBoySpriteFetcher.o : compile_cpp src/GateBoyLib/GateBoySpriteFetcher.cpp
+build obj/GateBoyLib/GateBoySpriteScanner.o : compile_cpp src/GateBoyLib/GateBoySpriteScanner.cpp
+build obj/GateBoyLib/GateBoySpriteStore.o   : compile_cpp src/GateBoyLib/GateBoySpriteStore.cpp
+build obj/GateBoyLib/GateBoySPU.o           : compile_cpp src/GateBoyLib/GateBoySPU.cpp
+build obj/GateBoyLib/GateBoyState.o         : compile_cpp src/GateBoyLib/GateBoyState.cpp
+build obj/GateBoyLib/GateBoyThread.o        : compile_cpp src/GateBoyLib/GateBoyThread.cpp
+build obj/GateBoyLib/GateBoyTileFetcher.o   : compile_cpp src/GateBoyLib/GateBoyTileFetcher.cpp
+build obj/GateBoyLib/GateBoyTimer.o         : compile_cpp src/GateBoyLib/GateBoyTimer.cpp
+build obj/GateBoyLib/GateBoyVramBus.o       : compile_cpp src/GateBoyLib/GateBoyVramBus.cpp
+build obj/GateBoyLib/GateBoyZramBus.o       : compile_cpp src/GateBoyLib/GateBoyZramBus.cpp
+build obj/GateBoyLib/Gates.o                : compile_cpp src/GateBoyLib/Gates.cpp
+build obj/GateBoyLib/LogicBoy.o             : compile_cpp src/GateBoyLib/LogicBoy.cpp
+build obj/GateBoyLib/LogicBoyState.o        : compile_cpp src/GateBoyLib/LogicBoyState.cpp
+build obj/GateBoyLib/Probe.o                : compile_cpp src/GateBoyLib/Probe.cpp
+build obj/GateBoyLib/Sch_ApuControl.o       : compile_cpp src/GateBoyLib/Sch_ApuControl.cpp
+build obj/GateBoyLib/Sch_Channel1.o         : compile_cpp src/GateBoyLib/Sch_Channel1.cpp
+build obj/GateBoyLib/Sch_Channel2.o         : compile_cpp src/GateBoyLib/Sch_Channel2.cpp
+build obj/GateBoyLib/Sch_Channel3.o         : compile_cpp src/GateBoyLib/Sch_Channel3.cpp
+build obj/GateBoyLib/Sch_Channel4.o         : compile_cpp src/GateBoyLib/Sch_Channel4.cpp
+build obj/GateBoyLib/Utils.o                : compile_cpp src/GateBoyLib/Utils.cpp
 
 build bin/GateBoyLib.a : lib $
   obj/GateBoyLib/GateBoy.o $
@@ -141,6 +207,8 @@ build bin/GateBoyLib.a : lib $
   obj/GateBoyLib/GateBoyJoypad.o $
   obj/GateBoyLib/GateBoyLCD.o $
   obj/GateBoyLib/GateBoyOamBus.o $
+  obj/GateBoyLib/GateBoyPair.o $
+  obj/GateBoyLib/GateBoyPins.o $
   obj/GateBoyLib/GateBoyPixPipe.o $
   obj/GateBoyLib/GateBoyRegisters.o $
   obj/GateBoyLib/GateBoyReset.o $
@@ -149,35 +217,39 @@ build bin/GateBoyLib.a : lib $
   obj/GateBoyLib/GateBoySpriteScanner.o $
   obj/GateBoyLib/GateBoySpriteStore.o $
   obj/GateBoyLib/GateBoySPU.o $
+  obj/GateBoyLib/GateBoyState.o $
   obj/GateBoyLib/GateBoyThread.o $
   obj/GateBoyLib/GateBoyTileFetcher.o $
   obj/GateBoyLib/GateBoyTimer.o $
   obj/GateBoyLib/GateBoyVramBus.o $
   obj/GateBoyLib/GateBoyZramBus.o $
   obj/GateBoyLib/Gates.o $
+  obj/GateBoyLib/LogicBoy.o $
+  obj/GateBoyLib/LogicBoyState.o $
   obj/GateBoyLib/Probe.o $
   obj/GateBoyLib/Sch_ApuControl.o $
   obj/GateBoyLib/Sch_Channel1.o $
   obj/GateBoyLib/Sch_Channel2.o $
   obj/GateBoyLib/Sch_Channel3.o $
-  obj/GateBoyLib/Sch_Channel4.o
+  obj/GateBoyLib/Sch_Channel4.o $
+  obj/GateBoyLib/Utils.o $
 
 ################################################################################
 # MetroBoyLib
 
-build obj/MetroBoy.o           : compile src/MetroBoyLib/MetroBoy.cpp
-build obj/MetroBoyBootrom.o    : compile src/MetroBoyLib/MetroBoyBootrom.cpp
-build obj/MetroBoyCart.o       : compile src/MetroBoyLib/MetroBoyCart.cpp
-build obj/MetroBoyDMA.o        : compile src/MetroBoyLib/MetroBoyDMA.cpp
-build obj/MetroBoyInterrupts.o : compile src/MetroBoyLib/MetroBoyInterrupts.cpp
-build obj/MetroBoyJoypad.o     : compile src/MetroBoyLib/MetroBoyJoypad.cpp
-build obj/MetroBoyOAM.o        : compile src/MetroBoyLib/MetroBoyOAM.cpp
-build obj/MetroBoyPPU.o        : compile src/MetroBoyLib/MetroBoyPPU.cpp
-build obj/MetroBoySerial.o     : compile src/MetroBoyLib/MetroBoySerial.cpp
-build obj/MetroBoySPU.o        : compile src/MetroBoyLib/MetroBoySPU.cpp
-build obj/MetroBoyTimer.o      : compile src/MetroBoyLib/MetroBoyTimer.cpp
-build obj/MetroBoyVRAM.o       : compile src/MetroBoyLib/MetroBoyVRAM.cpp
-build obj/MetroBoyZRAM.o       : compile src/MetroBoyLib/MetroBoyZRAM.cpp
+build obj/MetroBoy.o           : compile_cpp src/MetroBoyLib/MetroBoy.cpp
+build obj/MetroBoyBootrom.o    : compile_cpp src/MetroBoyLib/MetroBoyBootrom.cpp
+build obj/MetroBoyCart.o       : compile_cpp src/MetroBoyLib/MetroBoyCart.cpp
+build obj/MetroBoyDMA.o        : compile_cpp src/MetroBoyLib/MetroBoyDMA.cpp
+build obj/MetroBoyInterrupts.o : compile_cpp src/MetroBoyLib/MetroBoyInterrupts.cpp
+build obj/MetroBoyJoypad.o     : compile_cpp src/MetroBoyLib/MetroBoyJoypad.cpp
+build obj/MetroBoyOAM.o        : compile_cpp src/MetroBoyLib/MetroBoyOAM.cpp
+build obj/MetroBoyPPU.o        : compile_cpp src/MetroBoyLib/MetroBoyPPU.cpp
+build obj/MetroBoySerial.o     : compile_cpp src/MetroBoyLib/MetroBoySerial.cpp
+build obj/MetroBoySPU.o        : compile_cpp src/MetroBoyLib/MetroBoySPU.cpp
+build obj/MetroBoyTimer.o      : compile_cpp src/MetroBoyLib/MetroBoyTimer.cpp
+build obj/MetroBoyVRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyVRAM.cpp
+build obj/MetroBoyZRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyZRAM.cpp
 
 build bin/MetroBoyLib.a : lib $
   obj/MetroBoy.o $
@@ -197,13 +269,13 @@ build bin/MetroBoyLib.a : lib $
 ################################################################################
 # Other libs
 
-build bin/glad.o          : compile src/glad/glad.c
+build obj/glad.o          : compile_cpp submodules/glad/glad.c
 
-build obj/imgui.o         : compile src/imgui/imgui.cpp
-build obj/imgui_demo.o    : compile src/imgui/imgui_demo.cpp
-build obj/imgui_draw.o    : compile src/imgui/imgui_draw.cpp
-build obj/imgui_tables.o  : compile src/imgui/imgui_tables.cpp
-build obj/imgui_widgets.o : compile src/imgui/imgui_widgets.cpp
+build obj/imgui.o         : compile_cpp submodules/imgui/imgui.cpp
+build obj/imgui_demo.o    : compile_cpp submodules/imgui/imgui_demo.cpp
+build obj/imgui_draw.o    : compile_cpp submodules/imgui/imgui_draw.cpp
+build obj/imgui_tables.o  : compile_cpp submodules/imgui/imgui_tables.cpp
+build obj/imgui_widgets.o : compile_cpp submodules/imgui/imgui_widgets.cpp
 
 build bin/imgui.a : lib $
   obj/imgui.o $
@@ -215,7 +287,7 @@ build bin/imgui.a : lib $
 ################################################################################
 # GateBoyTests
 
-build obj/GateBoyTests.o : compile src/GateBoyTests/GateBoyTests.cpp
+build obj/GateBoyTests.o : compile_cpp src/GateBoyTests/GateBoyTests.cpp
 
 build bin/GateBoyTests : link $
   bin/CoreLib.a $
@@ -225,10 +297,10 @@ build bin/GateBoyTests : link $
 ################################################################################
 # MetroBoyTests
 
-build obj/MetroBoyTests.o   : compile src/MetroBoyTests/MetroBoyTests.cpp
-build obj/test_codegen.o    : compile src/MetroBoyTests/test_codegen.cpp
-build obj/test_mooneye.o    : compile src/MetroBoyTests/test_mooneye.cpp
-build obj/test_screenshot.o : compile src/MetroBoyTests/test_screenshot.cpp
+build obj/MetroBoyTests.o   : compile_cpp src/MetroBoyTests/MetroBoyTests.cpp
+build obj/test_codegen.o    : compile_cpp src/MetroBoyTests/test_codegen.cpp
+build obj/test_mooneye.o    : compile_cpp src/MetroBoyTests/test_mooneye.cpp
+build obj/test_screenshot.o : compile_cpp src/MetroBoyTests/test_screenshot.cpp
 
 build bin/MetroBoyTests : link $
   bin/CoreLib.a $

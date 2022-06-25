@@ -1,8 +1,6 @@
 ################################################################################
 
-#build_mode   = -DCONFIG_FASTMODE
-#opt_mode     = -Ofast
-
+#build_mode   = -DCONFIG_FASTMODE -Ofast
 build_mode   = -DCONFIG_DEBUG
 
 cpp_compiler = g++
@@ -15,12 +13,12 @@ default_includes = -Isrc -Isrc/tree-sitter/lib/include -Isubmodules -Isubmodules
 ################################################################################
 
 rule compile_cpp
-  command = ${cpp_compiler} -g ${build_mode} ${opt_mode} ${default_includes} ${includes} ${cpp_std} -MMD -MF ${out}.d -c ${in} -o ${out}
+  command = ${cpp_compiler} -g ${build_mode} ${default_includes} ${includes} ${cpp_std} -MMD -MF ${out}.d -c ${in} -o ${out}
   depfile = ${out}.d
   deps = gcc
 
 rule compile_c
-  command = ${c_compiler} -g ${build_mode} ${opt_mode} ${default_includes} ${includes} -MMD -MF ${out}.d -c ${in} -o ${out}
+  command = ${c_compiler} -g ${build_mode} ${default_includes} ${includes} -MMD -MF ${out}.d -c ${in} -o ${out}
   depfile = ${out}.d
   deps = gcc
 
@@ -28,7 +26,7 @@ rule lib
   command = ar rcs ${out} ${in} > /dev/null
 
 rule link
-  command = g++ -g ${opt_mode} -Wl,--whole-archive ${in} -Wl,--no-whole-archive ${global_libs} -o ${out}
+  command = g++ -g ${build_mode} -Wl,--whole-archive ${in} -Wl,--no-whole-archive ${global_libs} -o ${out}
 
 ################################################################################
 # TreeSitter libraries

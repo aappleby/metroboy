@@ -3,5 +3,11 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"files.associations": {
+			"ratio": "cpp",
+			"semaphore": "cpp"
+		}
+	}
 }

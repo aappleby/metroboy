@@ -11,6 +11,7 @@
 #include "GateBoyLib/LogicBoy.h"
 #include "GateBoyLib/Utils.h"
 #include "MetroBoyLib/MetroBoySPU.h"
+#include "MetroBoyLib/MetroBoySPU2.h"
 
 #define SDL_MAIN_HANDLED
 #ifdef _MSC_VER
@@ -24,7 +25,7 @@
 #include <inttypes.h>
 
 uint64_t phases_per_second = 114 * 154 * 60 * 8; // 8426880
-
+//uint64_t phases_per_second_adapt = phases_per_second;
 const uint64_t gb_phase_total = 46880719;
 
 //-----------------------------------------------------------------------------
@@ -55,6 +56,7 @@ std::vector<MusicEvent> music;
 int music_cursor = 0;
 
 MetroBoySPU spu;
+MetroBoySPU2 spu2;
 
 void MetronicaApp::app_init(int screen_w, int screen_h) {
   dvec2 screen_size(screen_w, screen_h);
@@ -62,13 +64,7 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
   LOG_G("MetronicaApp::app_init()\n");
   LOG_INDENT();
 
-  counter_start = SDL_GetPerformanceCounter();
-  counter_per_second = SDL_GetPerformanceFrequency();
-  counter_old = counter_start;
-  counter_new = counter_start;
-  time_bucket = 0;
-  phase_old = gb_phase_total;
-  phase_new = gb_phase_total;
+  spu2.tick(true, 0, 0, 0);
 
   audio_init();
 
@@ -124,12 +120,29 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
 
   frame_begin = timestamp();
 
-  counter_old = counter_new;
-  counter_new = SDL_GetPerformanceCounter();
-  time_bucket += (counter_new - counter_old) * phases_per_second;
-  phase_old = phase_new;
-  phase_new = phase_new + (time_bucket / counter_per_second);
-  time_bucket %= counter_per_second;
+  if (frame_count < 5) {
+    counter_start = SDL_GetPerformanceCounter();
+    counter_per_second = SDL_GetPerformanceFrequency();
+    counter_old = counter_start;
+    counter_new = counter_start;
+    time_bucket = 0;
+    phase_old = gb_phase_total;
+    phase_new = gb_phase_total;
+  }
+  else {
+    counter_old = counter_new;
+    counter_new = SDL_GetPerformanceCounter();
+
+    if (!app_paused) {
+      time_bucket += (counter_new - counter_old) * phases_per_second;
+      phase_old = phase_new;
+      phase_new += time_bucket / counter_per_second;
+      time_bucket = time_bucket % counter_per_second;
+    }
+  }
+
+  //printf("phase delta  %d\n", int(phase_new - phase_old));
+  //printf("queue %d counter delta %ld\n", audio_queue_size(), counter_new - counter_old);
 
   SDL_Event event;
 
@@ -155,7 +168,6 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
 
       case SDLK_SPACE: {
         app_paused = !app_paused;
-        loud = !loud;
         break;
       }
     }
@@ -185,25 +197,62 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
   //----------------------------------------
   // Run sim
 
-  for (int i = phase_old; i < phase_new; i++) {
-    if (music[music_cursor].phase == i) {
-      auto& m = music[music_cursor];
-      //printf("0x%08lx 0x%04x 0x%02x\n", m.phase, m.addr, m.data);
-      music_cursor++;
-    }
+  //printf("%d\n", int(phase_new - phase_old));
 
-    if ((i & 7) == 0) {
-      if (loud) {
-        audio_post(rand() & 63, rand() & 63);
+  if (!app_paused) {
+    for (int i = phase_old; i < phase_new; i++) {
+      Req req;
+      Ack ack;
+
+      req.addr = 0x0000;
+      req.data = 0;
+      req.read = 0;
+      req.write = 0;
+
+      ack.addr = 0x0000;
+      ack.data = 0;
+      ack.read = 0;
+
+      if (music[music_cursor].phase == i) {
+        auto& m = music[music_cursor];
+        //printf("0x%08lx 0x%04x 0x%02x\n", m.phase, m.addr, m.data);
+        req.addr = m.addr;
+        req.data = m.data;
+        req.read = 0;
+        req.write = 1;
+        music_cursor++;
       }
-      else {
-        audio_post(rand() & 15, rand() & 15);
+
+      spu.tick(i, req, ack);
+      spu.tock(i, req);
+
+      if ((i & 7) == 0) {
+        spu2.tick(false, req.addr, req.data, req.write);
+        spu2.tock_out();
+
+        auto l = spu2.out_l;
+        auto r = spu2.out_r;
+
+        static int max = 0;
+        if (l > max) {
+          max = l;
+          printf("%d\n", max);
+        }
+        if (r > max) {
+          max = r;
+          printf("%d\n", max);
+        }
+        audio_post(l, r);
       }
     }
   }
 }
 
 //-----------------------------------------------------------------------------
+
+//extern sample_t spu_buffer[];
+
+uint8_t buf[256*256];
 
 void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
   auto& view = view_control.view_smooth_snap;
@@ -229,18 +278,50 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
     text_painter.render_string(view, screen_size, d.s, 256, 512);
   }
 
-  /*
-  uint8_t buf[256*256];
-  for (int i = 0; i < 65536; i++) {
-    buf[i] = i + (rand() % 32);
+  {
+    StringDumper d;
+    spu2.dump(d);
+    text_painter.render_string(view, screen_size, d.s, 512, 512);
   }
-  update_texture_u8(ram_tex, 0x00, 0x00, 256, 256,  buf);
+
+  if (spu_buffer && !app_paused) {
+    for (int i = 0; i < 65536; i++) {
+      buf[i] = buf[i] >> 1;
+    }
+    for (int i = 0; i < 255; i++) {
+      int x = i;
+      int y1 = 64 - (spu_buffer[2 * i + 0] * 64) / 16383;
+      int y2 = 64 - (spu_buffer[2 * i + 2] * 64) / 16383;
+      if (y1 > y2) {
+        auto t = y1;
+        y1 = y2;
+        y2 = t;
+      }
+      for (int y = y1; y <= y2; y++) {
+        buf[x + y * 256] = 0xFF;
+      }
+    }
+
+    for (int i = 0; i < 255; i++) {
+      int x = i;
+      int y1 = 192 - (spu_buffer[2 * i + 1] * 64) / 16383;
+      int y2 = 192 - (spu_buffer[2 * i + 3] * 64) / 16383;
+      if (y1 > y2) {
+        auto t = y1;
+        y1 = y2;
+        y2 = t;
+      }
+      for (int y = y1; y <= y2; y++) {
+        buf[x + y * 256] = 0xFF;
+      }
+    }
+    update_texture_u8(ram_tex, 0x00, 0x00, 256, 256,  buf);
+  }
 
   blitter.blit_mono(view, screen_size,
     ram_tex, 256, 256,
     0, 0, 256, 256,
     32*40, 784, 256, 256);
-  */
 
   frame_count++;
   frame_end = timestamp();

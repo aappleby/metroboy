@@ -158,6 +158,10 @@ build bin/AppLib.a : lib $
 # GateBoyLib
 
 build obj/GateBoyLib/GateBoy.o              : compile_cpp src/GateBoyLib/GateBoy.cpp
+build obj/GateBoyLib/GateBoyCh1.o           : compile_cpp src/GateBoyLib/GateBoyCh1.cpp
+build obj/GateBoyLib/GateBoyCh2.o           : compile_cpp src/GateBoyLib/GateBoyCh2.cpp
+build obj/GateBoyLib/GateBoyCh3.o           : compile_cpp src/GateBoyLib/GateBoyCh3.cpp
+build obj/GateBoyLib/GateBoyCh4.o           : compile_cpp src/GateBoyLib/GateBoyCh4.cpp
 build obj/GateBoyLib/GateBoyClocks.o        : compile_cpp src/GateBoyLib/GateBoyClocks.cpp
 build obj/GateBoyLib/GateBoyCpuBus.o        : compile_cpp src/GateBoyLib/GateBoyCpuBus.cpp
 build obj/GateBoyLib/GateBoyDMA.o           : compile_cpp src/GateBoyLib/GateBoyDMA.cpp
@@ -196,6 +200,10 @@ build obj/GateBoyLib/Utils.o                : compile_cpp src/GateBoyLib/Utils.c
 
 build bin/GateBoyLib.a : lib $
   obj/GateBoyLib/GateBoy.o $
+  obj/GateBoyLib/GateBoyCh1.o $
+  obj/GateBoyLib/GateBoyCh2.o $
+  obj/GateBoyLib/GateBoyCh3.o $
+  obj/GateBoyLib/GateBoyCh4.o $
   obj/GateBoyLib/GateBoyClocks.o $
   obj/GateBoyLib/GateBoyCpuBus.o $
   obj/GateBoyLib/GateBoyDMA.o $

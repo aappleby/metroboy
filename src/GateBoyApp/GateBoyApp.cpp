@@ -392,8 +392,8 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   double fps = 1.0f / delta;
   static double smooth_fps = 0.0;
-  smooth_fps = ease(smooth_fps, fps, delta);
-  d("App fps       : %d\n", (int)round(smooth_fps));
+  smooth_fps = ease(smooth_fps, fps, delta / 2.0);
+  d("App fps       : %d\n", (int)floor(smooth_fps + 0.5));
 
   if (app_paused) {
     d("\003GB_THREAD IS PAUSED\001\n");

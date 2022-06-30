@@ -1141,6 +1141,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
       cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
 
       /*
+      // Dump writes to audio mem.
       auto r = cpu.core.reg.bus_req_new;
       if (r.write && r.addr >= 0xFF10 && r.addr <= 0xFF3F) {
         printf("0x%08x 0x%04x 0x%02x\n", sys.gb_phase_total, r.addr, r.data);

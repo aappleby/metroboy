@@ -1,10 +1,13 @@
+
+struct GateBoyState;
+
 //==============================================================================
 //             CHANNEL 3
 //==============================================================================
 
 struct SpuChannel3 {
 
-  uint32_t tick_out();
+  uint32_t tick_out(const GateBoyState& reg_old, GateBoyState& reg_new);
 
   /*#p18.COKA*/ wire COKA_CH3_ACTIVEp() const { return not1(DAVO_CH3_ACTIVEp.qn_new()); }
 

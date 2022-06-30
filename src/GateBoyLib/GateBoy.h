@@ -9,6 +9,7 @@
 #include "GateBoyLib/Probe.h"
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/LogicBoyState.h"
+#include "GateBoyLib/GateBoyRegisters.h"
 
 #include <atomic>
 #include <cstring>

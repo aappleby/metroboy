@@ -2,7 +2,7 @@
 
 #include "GateBoyLib/GateBoyState.h"
 
-void GBSound::tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     // this is freq overflow or something
     /*#p15.GALU*/ wire GALU_CH2_FREQ_OVERFLOWp = not1(ch2.HERO_CH2_FREQ_10.qp_new());
@@ -124,7 +124,7 @@ void GBSound::tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr21(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr21(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p15.DEME*/ wire DEME = nor3(ch2.CYRE_CH2_LEN_DONEp.qp_new(), BUFY_CLK_256n(), ch2.EMER_NR24_LENENp.qp_new()); // why was this or2?
   /*_p15.DYRO*/ wire DYRO_CH2_LEN_CLK = not1(DEME);
 
@@ -164,7 +164,7 @@ void GBSound::tick_nr21(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr22(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr22(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   // FIXME wtf with the different clock polarities? i guess it doesn't matter much.
   /*#p14.ENUF*/ wire ENUF = and2(reg_new.cpu_abus.DUTU_ADDR_FF17p(), BOGY_CPU_WRp());
@@ -206,7 +206,7 @@ void GBSound::tick_nr22(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr23(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr23(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p14.DOSA*/ wire DOSA_NR23_WR1 = and2(reg_new.cpu_abus.DARA_ADDR_FF18p(), BOGY_CPU_WRp());
   /*_p14.EXUC*/ wire EXUC_NR23_WR2 = and2(reg_new.cpu_abus.DARA_ADDR_FF18p(), BOGY_CPU_WRp());
   /*_p14.ESUR*/ wire ESUR_NR23_WRn1 = not1(DOSA_NR23_WR1);
@@ -246,7 +246,7 @@ void GBSound::tick_nr23(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr24(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr24(const GateBoyState& reg_old, GateBoyState& reg_new) {
   // NR24 frequency bits
   {
     /*_pXX.JENU*/ wire JENU_NR24_WRp = and2(reg_new.cpu_abus.DOZA_ADDR_FF19p(), BOGY_CPU_WRp());

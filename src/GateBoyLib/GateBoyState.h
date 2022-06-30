@@ -67,6 +67,67 @@ struct GateBoyState {
   /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp_new() const;
   /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn_new() const;
 
+  /*_p09.HAPO*/ wire HAPO_SYS_RSTp() const { return not1(sys_rst.ALUR_SYS_RSTn_new()); }
+  /*_p09.GUFO*/ wire GUFO_SYS_RSTn() const { return not1(HAPO_SYS_RSTp()); }
+
+  /*_p09.JYRO*/ wire JYRO_APU_RSTp() const { return  or2(HAPO_SYS_RSTp(), spu.HADA_NR52_ALL_SOUND_ON.qn_new()); }
+  /*_p09.KEPY*/ wire KEPY_APU_RSTn() const { return not1(JYRO_APU_RSTp()); }
+  /*_p09.KUBY*/ wire KUBY_APU_RSTn() const { return not1(JYRO_APU_RSTp()); }
+  /*_p09.KEBA*/ wire KEBA_APU_RSTp() const { return not1(KUBY_APU_RSTn()); }
+
+  /*_p01.ATUS*/ wire ATUS_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p01.BELA*/ wire BELA_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p01.BOPO*/ wire BOPO_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p09.ATYV*/ wire ATYV_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p09.KAME*/ wire KAME_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p14.HUDE*/ wire HUDE_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p14.JYBU*/ wire JYBU_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p15.BUWE*/ wire BUWE_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p15.CEXE*/ wire CEXE_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p15.CYWU*/ wire CYWU_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p09.AFAT*/ wire AFAT_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p09.AGUR*/ wire AGUR_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p11.CAMY*/ wire CAMY_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p11.CEPO*/ wire CEPO_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p19.CABE*/ wire CABE_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p14.KYPU*/ wire KYPU_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p14.FAZO*/ wire FAZO_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p16.GOVE*/ wire GOVE_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p11.HATO*/ wire HATO_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p16.KOPY*/ wire KOPY_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p16.HEKY*/ wire HEKY_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p16.GAZE*/ wire GAZE_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p18.CALU*/ wire CALU_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p17.BAMA*/ wire BAMA_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p17.ACOR*/ wire ACOR_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p09.DAPA*/ wire DAPA_APU_RSTn() const { return not1(KEBA_APU_RSTp()); } // bavu crosses over this? why is it 3-rung?
+  /*#p19.FEXO*/ wire FEXO_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p19.HYNE*/ wire HYNE_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p20.GASO*/ wire GASO_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p20.FEBY*/ wire FEBY_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p20.BOKY*/ wire BOKY_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p13.DUKA*/ wire DUKA_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p13.ERUM*/ wire ERUM_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p13.KADO*/ wire KADO_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p15.KATY*/ wire KATY_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p16.GURO*/ wire GURO_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*_p16.KUHA*/ wire KUHA_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+  /*#p16.GOMA*/ wire GOMA_APU_RSTn() const { return not1(KEBA_APU_RSTp()); }
+
+
+  /*_p16.ANUJ*/ wire ANUJ_CPU_WR_WEIRD()  const { return and2(cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_new(), cpu_signals.BOGY_CPU_WRp()); }
+  /*_p09.EDEK*/ wire EDEK_NR52_DBG_APUp() const { return not1(spu.FERO_NR52_DBG_APUn.qn_new()); }
+  /*_p14.FAPE*/ wire FAPE_CPU_RDp_DBGp()  const { return and2(cpu_signals.FOGE_CPU_RDp(), EDEK_NR52_DBG_APUp()); }
+  /*_p16.EGAD*/ wire EGAD_CPU_RDn_DBGn()  const { return nand2(cpu_signals.DOVO_CPU_RDp(), EDEK_NR52_DBG_APUp()); }
+  /*#p11.DAXA*/ wire DAXA_CPU_RDn_DBGn()  const { return nand2(cpu_signals.CEGE_CPU_RDp(), EDEK_NR52_DBG_APUp()); }
+
+  /*_p10.TACE*/ wire TACE_AMP_ENn() const {
+    return and4(ch1.HOCA_CH1_AMP_ENn(),
+                ch2.FUTE_CH2_AMP_ENn(),
+                ch3.GUXE_CH3_AMP_ENn.qp_new(),
+                ch4.GEVY_CH4_AMP_ENn());
+  }
+
   //----------------------------------------
 
   /*_SIG_VCC*/ SigIn SIG_VCC;
@@ -235,27 +296,10 @@ struct GateBoyState {
 
   LCDControl lcd;
 
-  //NR10 reg_NR10;
-  //NR11 reg_NR11;
-  //NR12 reg_NR12;
-  //NR14 reg_NR14;
-
-  //NR21 reg_NR21;
-  //NR22 reg_NR22;
-  //NR24 reg_NR24;
-
-  //NR30 reg_NR30;
-  //NR31 reg_NR31;
-  //NR32 reg_NR32;
-  //NR34 reg_NR34;
-
-  //NR41 reg_NR41;
-  //NR42 reg_NR42;
-  //NR43 reg_NR43;
-  //NR44 reg_NR44;
-
-  //NR50 reg_NR50;
-  //NR51 reg_NR51;
-  //NR52 reg_NR52;
+  GateBoySPU  spu;
+  SpuChannel1 ch1;
+  SpuChannel2 ch2;
+  SpuChannel3 ch3;
+  SpuChannel4 ch4;
 };
 #pragma pack(pop)

@@ -1,5 +1,6 @@
 #pragma once
 #include "GateBoyLib/Regs.h"
+#include "GateBoyLib/Gates.h"
 
 //-----------------------------------------------------------------------------
 
@@ -75,6 +76,18 @@ struct GateBoyClock {
   wire WUDA_xxCDxxGH_new() const;
   wire AWOH_xxCDxxGH_new() const;
   wire AJAX_xxxxEFGH_new() const;
+
+  /*#p17.ABUR*/ wire ABUR_xxCDEFGx() const { return not1(BUKE_AxxxxxGH_new()); }
+  /*#p17.BORY*/ wire BORY_ABxxxxxH() const { return not1(ABUR_xxCDEFGx()); }
+
+  /*_p01.ATAG*/ wire ATAG_AxCxExGx() const { return not1(AZOF_odd_new()); }
+  /*_p01.DOVA*/ wire DOVA_ABCDxxxx() const { return not1(BUDE_xxxxEFGH_new()); } // this goes to all the trigger regs
+
+  /*_p01.AMUK*/ wire AMUK_xBxDxFxH() const { return not1(ATAG_AxCxExGx()); } // goes to clock generators and wave ram clock
+  /*_p01.CYBO*/ wire CYBO_AxCxExGx() const { return not1(AMUK_xBxDxFxH()); }
+  /*_p01.ARYF*/ wire ARYF_AxCxExGx() const { return not1(AMUK_xBxDxFxH()); }
+  /*_p01.APUV*/ wire APUV_AxCxExGx() const { return not1(AMUK_xBxDxFxH()); }
+  /*_p15.AZEG*/ wire AZEG_AxCxExGx() const { return not1(AMUK_xBxDxFxH()); }
 
   //----------------------------------------
 

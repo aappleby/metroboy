@@ -2,7 +2,7 @@
 
 #include "GateBoyState.h"
 
-void GBSound::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     /*#p20.GYSU*/ ch4.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx(), GASO_APU_RSTn(), ch4.HOGA_NR44_TRIG.qn_old());
   }
@@ -174,7 +174,7 @@ void GBSound::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr41(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr41(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p19.CAZE*/ wire CAZE_FF20_WRn = nand2(BOGY_CPU_WRp(), reg_new.cpu_abus.DANU_ADDR_FF20p());
   /*#p19.FURU*/ wire FURU_FF20_WRa = not1(CAZE_FF20_WRn);
   /*#p19.DOTU*/ wire DOTU_FF20_WRb = not1(CAZE_FF20_WRn);
@@ -199,7 +199,7 @@ void GBSound::tick_nr41(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr42(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr42(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p19.DACO*/ wire DACO_FF21_WRp = and2(BOGY_CPU_WRp(), reg_new.cpu_abus.COVO_ADDR_FF21p());
   /*#p19.GOKO*/ wire GOKO_FF21_WRp = and2(reg_new.cpu_abus.COVO_ADDR_FF21p(), BOGY_CPU_WRp());
   /*#p19.DYKE*/ wire DYKE_FF21_WRn = not1(DACO_FF21_WRp);
@@ -231,7 +231,7 @@ void GBSound::tick_nr42(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr43(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr43(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p19.HUMO*/ wire HUMO_FF22_WRp =  and2(BOGY_CPU_WRp(), reg_new.cpu_abus.EKEZ_ADDR_FF22p());
   /*#p19.GETU*/ wire GETU_FF22_WRp =  and2(BOGY_CPU_WRp(), reg_new.cpu_abus.EKEZ_ADDR_FF22p());
   /*#p19.HOVA*/ wire HOVA_FF22_WRn = not1(HUMO_FF22_WRp);
@@ -266,7 +266,7 @@ void GBSound::tick_nr43(const GateBoyState& reg_old, GateBoyState& reg_new) {
 //-----------------------------------------------------------------------------
 // Some weird debug voodoo here.
 
-void GBSound::tick_nr44(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr44(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p20.DYRY*/ wire DYRY_DBG = and2(ch4.CUNY_NR44_LEN_ENp.qn_new(), EDEK_NR52_DBG_APUp());
 
   /*#p19.BARE*/ wire BARE_FF23_RDn = nand2(reg_new.cpu_abus.CUGE_ADDR_FF23p(), BYLO_CPU_RDp());

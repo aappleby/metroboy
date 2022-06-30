@@ -2,7 +2,7 @@
 
 #include "GateBoyLib/GateBoyState.h"
 
-void GBSound::tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   /*#p17.BENA*/ wire BENA_CPU_WAVE_RDp = nand2(BOKE_CPU_RDp(), reg_new.cpu_abus.BARO_ADDR_FF3Xp());
   /*#p17.CAZU*/ wire CAZU_CPU_WAVE_RDn = not1(BENA_CPU_WAVE_RDp);
@@ -171,7 +171,7 @@ void GBSound::tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr30(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr30(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p16.GEJO*/ wire GEJO_FF1A_WRp = and2(BOGY_CPU_WRp(), reg_new.cpu_abus.EMOR_ADDR_FF1Ap());
   /*_p16.GUCY*/ wire GUCY_FF1A_WRn = not1(GEJO_FF1A_WRp);
   /*_p16.GUXE*/ ch3.GUXE_CH3_AMP_ENn.dff9(GUCY_FF1A_WRn, GOVE_APU_RSTn(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
@@ -188,7 +188,7 @@ void GBSound::tick_nr30(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr31(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr31(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p16.DERY*/ wire DERY_FF1B_WRn = nand2(BOGY_CPU_WRp(), reg_new.cpu_abus.DUSA_ADDR_FF1Bp());
 
   // fexu/hoto polarity seems wrong
@@ -214,7 +214,7 @@ void GBSound::tick_nr31(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr32(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr32(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p16.HAGA*/ wire HAGA_FF1C_WR = and2(BOGY_CPU_WRp(), reg_new.cpu_abus.GEFO_ADDR_FF1Cp());
 
   /*_p16.GUZU*/ wire GUZU_FF1C_WRn = not1(HAGA_FF1C_WR);
@@ -241,7 +241,7 @@ void GBSound::tick_nr32(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr33(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr33(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   /*_p16.KOTA*/ wire KOTA_FF1D_WRn = nand2(reg_new.cpu_abus.FENY_ADDR_FF1Dp(), BOGY_CPU_WRp());
   /*_p16.JAFA*/ wire JAFA_FF1D_WRo = nand2(reg_new.cpu_abus.FENY_ADDR_FF1Dp(), BOGY_CPU_WRp());
@@ -277,7 +277,7 @@ void GBSound::tick_nr33(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GBSound::tick_nr34(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void GateBoySPU::tick_nr34(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p16.HUDA*/ wire HUDA_FF1E_WRp = and2(reg_new.cpu_abus.DUGO_ADDR_FF1Ep(), BOGY_CPU_WRp());
   /*#p16.JUZO*/ wire JUZO_FF1E_WRn = not1(HUDA_FF1E_WRp);
 

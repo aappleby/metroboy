@@ -2,11 +2,11 @@
 
 #include "GateBoyLib/GateBoyState.h"
 
-void GateBoySPU::tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     // this is freq overflow or something
     /*#p15.GALU*/ wire GALU_CH2_FREQ_OVERFLOWp = not1(reg_new.ch2.HERO_CH2_FREQ_10.qp_new());
-    /*#p15.FUJY*/ wire FUJY = and2(reg_new.ch2.GYKO_SAMPLE_CLKp.qp_new(), CEMO_CLK_1M.qp_new());
+    /*#p15.FUJY*/ wire FUJY = and2(reg_new.ch2.GYKO_SAMPLE_CLKp.qp_new(), reg_new.spu.CEMO_CLK_1M.qp_new());
     /*#p15.GYRE*/ wire GYRE_RSTn = nor3(reg_new.KEBA_APU_RSTp(), reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), FUJY);
     /*#p15.GYKO*/ reg_new.ch2.GYKO_SAMPLE_CLKp.dff17(GALU_CH2_FREQ_OVERFLOWp, GYRE_RSTn, reg_new.ch2.GYKO_SAMPLE_CLKp.qn_old());
   }
@@ -16,7 +16,7 @@ void GateBoySPU::tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p15.ARES*/ wire ARES = nor2(reg_new.ch2.FUTE_CH2_AMP_ENn(), reg_new.KEBA_APU_RSTp()); // looks like nor on the die?
     /*#p15.BODO*/ wire BODO = not1(reg_new.ch2.CAZA_CH2_TRIGp.qp_new());
     /*_p15.BUTA*/ reg_new.ch2.BUTA_FREQ_GATEp.nand_latch(ARES, BODO);
-    /*#p15.CAMA*/ wire CAMA_FREQ_TICKp = nor2(CEMO_CLK_1M.qp_new(), reg_new.ch2.BUTA_FREQ_GATEp.qp_new()); // no idea of buta polarity
+    /*#p15.CAMA*/ wire CAMA_FREQ_TICKp = nor2(reg_new.spu.CEMO_CLK_1M.qp_new(), reg_new.ch2.BUTA_FREQ_GATEp.qp_new()); // no idea of buta polarity
     /*_p15.DOCA*/ wire DOCA_FREQ_TICKn = not1(CAMA_FREQ_TICKp);
     /*#p15.DUJU*/ wire DUJU_LOADn = nor2(reg_new.ch2.DAVU_CLK(), reg_new.ch2.ELOX_CH2_TRIGp.qp_new());
 
@@ -41,7 +41,7 @@ void GateBoySPU::tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
   {
-    /*#p15.HOTA*/ wire HOTA_CLK_128 = not1(BYFE_CLK_128n());
+    /*#p15.HOTA*/ wire HOTA_CLK_128 = not1(reg_new.spu.BYFE_CLK_128n());
     /*#p15.JYNA*/ reg_new.ch2.JYNA_CLK_64n.dff17(HOTA_CLK_128, reg_new.KATY_APU_RSTn(), reg_new.ch2.JYNA_CLK_64n.qn_old());
 
     /*#p15.KYLO*/ wire KYLO_CLK_64p = not1(reg_new.ch2.JYNA_CLK_64n.qp_new());
@@ -55,10 +55,10 @@ void GateBoySPU::tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p15.JEVY*/ reg_new.ch2.JEVY_CH2_ENV_DELAYp.dff20(reg_new.ch2.JONA_CH2_ENV_DELAYp.qp_new(), JAKE_ENV_LOADp, reg_new.ch2.HAVA_NR22_P2n.qp_new());
 
     /*#p15.GADE*/ wire GADE = not1(reg_new.ch2.JOPA_CH2_ENV_TICK.qp_new());
-    /*#p15.HOLY*/ wire HOLY_CLKp = nor2(HORU_CLK_512p(), GADE);
+    /*#p15.HOLY*/ wire HOLY_CLKp = nor2(reg_new.spu.HORU_CLK_512p(), GADE);
     /*#p15.HAFE*/ wire HAFE_RSTn = nor4(HOLY_CLKp, reg_new.ch2.JUPU_ENV_OFFp(), reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_new.KEBA_APU_RSTp()); // schematic wrong this is nor4
     /*#p15.KYVO*/ wire KYVO_CH2_ENV_TICK = and3(reg_new.ch2.JEVY_CH2_ENV_DELAYp.qp_new(), reg_new.ch2.JONA_CH2_ENV_DELAYp.qp_new(), reg_new.ch2.JORE_CH2_ENV_DELAYp.qp_new());
-    /*#p15.JOPA*/ reg_new.ch2.JOPA_CH2_ENV_TICK.dff17(HORU_CLK_512p(), HAFE_RSTn, KYVO_CH2_ENV_TICK);
+    /*#p15.JOPA*/ reg_new.ch2.JOPA_CH2_ENV_TICK.dff17(reg_new.spu.HORU_CLK_512p(), HAFE_RSTn, KYVO_CH2_ENV_TICK);
   }
 
   {
@@ -124,8 +124,8 @@ void GateBoySPU::tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoySPU::tick_nr21(const GateBoyState& reg_old, GateBoyState& reg_new) {
-  /*_p15.DEME*/ wire DEME = nor3(reg_new.ch2.CYRE_CH2_LEN_DONEp.qp_new(), BUFY_CLK_256n(), reg_new.ch2.EMER_NR24_LENENp.qp_new()); // why was this or2?
+void tick_nr21(const GateBoyState& reg_old, GateBoyState& reg_new) {
+  /*_p15.DEME*/ wire DEME = nor3(reg_new.ch2.CYRE_CH2_LEN_DONEp.qp_new(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch2.EMER_NR24_LENENp.qp_new()); // why was this or2?
   /*_p15.DYRO*/ wire DYRO_CH2_LEN_CLK = not1(DEME);
 
   /*_p14.AGYN*/ wire AGYN_FF16_WRn = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.COVY_ADDR_FF16p());
@@ -164,7 +164,7 @@ void GateBoySPU::tick_nr21(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoySPU::tick_nr22(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void tick_nr22(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   // FIXME wtf with the different clock polarities? i guess it doesn't matter much.
   /*#p14.ENUF*/ wire ENUF = and2(reg_new.cpu_abus.DUTU_ADDR_FF17p(), reg_new.cpu_signals.BOGY_CPU_WRp());
@@ -206,7 +206,7 @@ void GateBoySPU::tick_nr22(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoySPU::tick_nr23(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void tick_nr23(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p14.DOSA*/ wire DOSA_NR23_WR1 = and2(reg_new.cpu_abus.DARA_ADDR_FF18p(), reg_new.cpu_signals.BOGY_CPU_WRp());
   /*_p14.EXUC*/ wire EXUC_NR23_WR2 = and2(reg_new.cpu_abus.DARA_ADDR_FF18p(), reg_new.cpu_signals.BOGY_CPU_WRp());
   /*_p14.ESUR*/ wire ESUR_NR23_WRn1 = not1(DOSA_NR23_WR1);
@@ -246,7 +246,7 @@ void GateBoySPU::tick_nr23(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoySPU::tick_nr24(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void tick_nr24(const GateBoyState& reg_old, GateBoyState& reg_new) {
   // NR24 frequency bits
   {
     /*_pXX.JENU*/ wire JENU_NR24_WRp = and2(reg_new.cpu_abus.DOZA_ADDR_FF19p(), reg_new.cpu_signals.BOGY_CPU_WRp());
@@ -289,9 +289,9 @@ void GateBoySPU::tick_nr24(const GateBoyState& reg_old, GateBoyState& reg_new) {
     
     /*#p15.DALA*/ reg_new.ch2.DALA_CH2_TRIGp.nor_latch(CELO_CH2_TRIGp, reg_new.ch2.DOPE_CH2_TRIGp.qp_new());
 
-    /*#p15.ELOX*/ reg_new.ch2.ELOX_CH2_TRIGp.dff17(CEMO_CLK_1M.qp_new(), DOXA_TRIG_RSTn,  reg_new.ch2.DALA_CH2_TRIGp.qn_new());
-    /*#p15.DORY*/ reg_new.ch2.DORY_CH2_TRIGp.dff17(CEMO_CLK_1M.qp_new(), reg_new.CEXE_APU_RSTn(), reg_new.ch2.ELOX_CH2_TRIGp.qp_old());
-    /*#p15.CAZA*/ reg_new.ch2.CAZA_CH2_TRIGp.dff17(CEMO_CLK_1M.qp_new(), reg_new.CEXE_APU_RSTn(), reg_new.ch2.DORY_CH2_TRIGp.qp_old());
+    /*#p15.ELOX*/ reg_new.ch2.ELOX_CH2_TRIGp.dff17(reg_new.spu.CEMO_CLK_1M.qp_new(), DOXA_TRIG_RSTn,  reg_new.ch2.DALA_CH2_TRIGp.qn_new());
+    /*#p15.DORY*/ reg_new.ch2.DORY_CH2_TRIGp.dff17(reg_new.spu.CEMO_CLK_1M.qp_new(), reg_new.CEXE_APU_RSTn(), reg_new.ch2.ELOX_CH2_TRIGp.qp_old());
+    /*#p15.CAZA*/ reg_new.ch2.CAZA_CH2_TRIGp.dff17(reg_new.spu.CEMO_CLK_1M.qp_new(), reg_new.CEXE_APU_RSTn(), reg_new.ch2.DORY_CH2_TRIGp.qp_old());
   }
 }
 

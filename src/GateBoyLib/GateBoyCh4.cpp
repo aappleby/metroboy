@@ -2,7 +2,7 @@
 
 #include "GateBoyState.h"
 
-void GateBoySPU::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     /*#p20.GYSU*/ reg_new.ch4.GYSU_CH4_TRIG.dff17(reg_new.sys_clk.DOVA_ABCDxxxx(), reg_new.GASO_APU_RSTn(), reg_new.ch4.HOGA_NR44_TRIG.qn_old());
   }
@@ -18,9 +18,9 @@ void GateBoySPU::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p20.HELU*/ wire HELU_RESET_LATCHp  = not1(FALE_RESET_LATCHp);
     /*#p20.HAZO*/ reg_new.ch4.HAZO_CH4_TRIGn.nor_latch(HELU_RESET_LATCHp, reg_new.ch4.GYSU_CH4_TRIG.qp_new());
 
-    /*#p20.GONE*/ reg_new.ch4.GONE_CH4_TRIGp.dff17(HAMA_CLK_512K(), FALE_RESET_LATCHp,         reg_new.ch4.HAZO_CH4_TRIGn.qn_new());
-    /*#p20.GORA*/ reg_new.ch4.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K(), reg_new.FEBY_APU_RSTn(),   reg_new.ch4.GONE_CH4_TRIGp.qp_old());
-    /*#p20.GATY*/ reg_new.ch4.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K(), reg_new.FEBY_APU_RSTn(),   reg_new.ch4.GORA_CH4_TRIGp.qp_old());
+    /*#p20.GONE*/ reg_new.ch4.GONE_CH4_TRIGp.dff17(reg_new.spu.HAMA_CLK_512K(), FALE_RESET_LATCHp,         reg_new.ch4.HAZO_CH4_TRIGn.qn_new());
+    /*#p20.GORA*/ reg_new.ch4.GORA_CH4_TRIGp.dff17(reg_new.spu.HAMA_CLK_512K(), reg_new.FEBY_APU_RSTn(),   reg_new.ch4.GONE_CH4_TRIGp.qp_old());
+    /*#p20.GATY*/ reg_new.ch4.GATY_CH4_TRIGp.dff17(reg_new.spu.HAMA_CLK_512K(), reg_new.FEBY_APU_RSTn(),   reg_new.ch4.GORA_CH4_TRIGp.qp_old());
   }
 
   {
@@ -30,7 +30,7 @@ void GateBoySPU::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
   {
-    /*#p20.KYKU*/ wire KYKU_DIV_CLKb  = or2(reg_new.ch4.JERY_DIV_GATE.qp_new(), JESO_CLK_512K.qp_new());
+    /*#p20.KYKU*/ wire KYKU_DIV_CLKb  = or2(reg_new.ch4.JERY_DIV_GATE.qp_new(), reg_new.spu.JESO_CLK_512K.qp_new());
     /*#p20.KONY*/ wire KONY_DIV_CLKn  = not1(KYKU_DIV_CLKb);
     /*#p20.KANU*/ wire KANU_DIV_CLKa  = not1(KONY_DIV_CLKn);
 
@@ -45,12 +45,12 @@ void GateBoySPU::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     /*#p20.GUNY*/ wire GUNY_FREQ_GATE_RSTn = nor2(reg_new.KEBA_APU_RSTp(), reg_new.ch4.GONE_CH4_TRIGp.qp_new());
     /*#p20.HYNO*/ wire HYNO_DIV_MAX = or3(reg_new.ch4.JYFU_DIV2.qp_new(), reg_new.ch4.JYRE_DIV1.qp_new(), reg_new.ch4.JYCO_DIV0.qp_new());
-    /*#p20.GARY*/ reg_new.ch4.GARY_FREQ_GATEp.dff17(GYBA_CLK_1M(), GUNY_FREQ_GATE_RSTn, HYNO_DIV_MAX);
+    /*#p20.GARY*/ reg_new.ch4.GARY_FREQ_GATEp.dff17(reg_new.spu.GYBA_CLK_1M(), GUNY_FREQ_GATE_RSTn, HYNO_DIV_MAX);
   }
 
   {
 
-    /*#p20.CARY*/ wire CARY_FREQ_CLK = and2(BAVU_CLK_1M(), reg_new.ch4.GARY_FREQ_GATEp.qp_new());
+    /*#p20.CARY*/ wire CARY_FREQ_CLK = and2(reg_new.spu.BAVU_CLK_1M(), reg_new.ch4.GARY_FREQ_GATEp.qp_new());
     /*#p20.CEXO*/ reg_new.ch4.CEXO_FREQ_00.dff17(CARY_FREQ_CLK,                     reg_new.DAPA_APU_RSTn(), reg_new.ch4.CEXO_FREQ_00.qn_old());
     /*_p20.DEKO*/ reg_new.ch4.DEKO_FREQ_01.dff17(reg_new.ch4.CEXO_FREQ_00.qn_new(), reg_new.DAPA_APU_RSTn(), reg_new.ch4.DEKO_FREQ_01.qn_old());
     /*_p20.EZEF*/ reg_new.ch4.EZEF_FREQ_02.dff17(reg_new.ch4.DEKO_FREQ_01.qn_new(), reg_new.DAPA_APU_RSTn(), reg_new.ch4.EZEF_FREQ_02.qn_old());
@@ -103,7 +103,7 @@ void GateBoySPU::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   // Env
 
   {
-    /*#p20.ABEL*/ reg_new.ch4.ABEL_CLK_64.dff17(ALOP_CLK_128(), reg_new.BOKY_APU_RSTn(), reg_new.ch4.ABEL_CLK_64.qn_old());
+    /*#p20.ABEL*/ reg_new.ch4.ABEL_CLK_64.dff17(reg_new.spu.ALOP_CLK_128(), reg_new.BOKY_APU_RSTn(), reg_new.ch4.ABEL_CLK_64.qn_old());
     /*#p20.BAWA*/ wire BAWA_CLK_64  = not1(reg_new.ch4.ABEL_CLK_64.qp_new());
     /*#p20.BUXO*/ wire BUXO_CLK_64  = not1(BAWA_CLK_64);
 
@@ -118,10 +118,10 @@ void GateBoySPU::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     // Generates a 1 usec pulse when the env timer hits 111
     /*#p20.GEXE*/ wire GEXE_ENV_PULSEn  = not1(reg_new.ch4.FOSY_ENV_CLKp.qp_new());
-    /*#p20.HURY*/ wire HURY_ENV_PULSE_RSTp = nor2(HORU_CLK_512p(), GEXE_ENV_PULSEn);
+    /*#p20.HURY*/ wire HURY_ENV_PULSE_RSTp = nor2(reg_new.spu.HORU_CLK_512p(), GEXE_ENV_PULSEn);
     /*#p20.GOPA*/ wire GOPA_ENV_PULSE_RSTn = nor4(HURY_ENV_PULSE_RSTp, reg_new.ch4.FOWA_ENV_OFFp(), reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.KEBA_APU_RSTp());
     /*#p20.EJEX*/ wire EJEX_ENV_TIMER_MAX = or3(reg_new.ch4.DOGO_ENV_DELAY2n.qp_new(), reg_new.ch4.COFE_ENV_DELAY1n.qp_new(), reg_new.ch4.CUNA_ENV_DELAY0n.qp_new());
-    /*#p20.FOSY*/ reg_new.ch4.FOSY_ENV_CLKp.dff17(HORU_CLK_512p(), GOPA_ENV_PULSE_RSTn, EJEX_ENV_TIMER_MAX);
+    /*#p20.FOSY*/ reg_new.ch4.FOSY_ENV_CLKp.dff17(reg_new.spu.HORU_CLK_512p(), GOPA_ENV_PULSE_RSTn, EJEX_ENV_TIMER_MAX);
   }
 
   {
@@ -174,7 +174,7 @@ void GateBoySPU::tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoySPU::tick_nr41(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void tick_nr41(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p19.CAZE*/ wire CAZE_FF20_WRn = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.DANU_ADDR_FF20p());
   /*#p19.FURU*/ wire FURU_FF20_WRa = not1(CAZE_FF20_WRn);
   /*#p19.DOTU*/ wire DOTU_FF20_WRb = not1(CAZE_FF20_WRn);
@@ -182,7 +182,7 @@ void GateBoySPU::tick_nr41(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   /*#p19.GAPY*/ wire GAPY_LEN_RSTn = nor3(FURU_FF20_WRa, reg_new.KEBA_APU_RSTp(), reg_new.ch4.GONE_CH4_TRIGp.qp_new());
 
-  /*#p19.DODA*/ wire DODA_LEN_CLKn = nor3(reg_new.ch4.FUGO_CH4_LEN_DONEp.qp_new(), BUFY_CLK_256n(), reg_new.ch4.CUNY_NR44_LEN_ENp.qp_new());
+  /*#p19.DODA*/ wire DODA_LEN_CLKn = nor3(reg_new.ch4.FUGO_CH4_LEN_DONEp.qp_new(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch4.CUNY_NR44_LEN_ENp.qp_new());
   /*#p19.CUWA*/ wire CUWA_LEN_CLKa = not1(DODA_LEN_CLKn);
 
   /*#p19.DANO*/ reg_new.ch4.DANO_NR41_LEN0.dff20(CUWA_LEN_CLKa,   DOTU_FF20_WRb, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
@@ -199,7 +199,7 @@ void GateBoySPU::tick_nr41(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoySPU::tick_nr42(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void tick_nr42(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p19.DACO*/ wire DACO_FF21_WRp = and2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.COVO_ADDR_FF21p());
   /*#p19.GOKO*/ wire GOKO_FF21_WRp = and2(reg_new.cpu_abus.COVO_ADDR_FF21p(), reg_new.cpu_signals.BOGY_CPU_WRp());
   /*#p19.DYKE*/ wire DYKE_FF21_WRn = not1(DACO_FF21_WRp);
@@ -231,7 +231,7 @@ void GateBoySPU::tick_nr42(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoySPU::tick_nr43(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void tick_nr43(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p19.HUMO*/ wire HUMO_FF22_WRp =  and2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.EKEZ_ADDR_FF22p());
   /*#p19.GETU*/ wire GETU_FF22_WRp =  and2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.EKEZ_ADDR_FF22p());
   /*#p19.HOVA*/ wire HOVA_FF22_WRn = not1(HUMO_FF22_WRp);
@@ -266,7 +266,7 @@ void GateBoySPU::tick_nr43(const GateBoyState& reg_old, GateBoyState& reg_new) {
 //-----------------------------------------------------------------------------
 // Some weird debug voodoo here.
 
-void GateBoySPU::tick_nr44(const GateBoyState& reg_old, GateBoyState& reg_new) {
+void tick_nr44(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p20.DYRY*/ wire DYRY_DBG = and2(reg_new.ch4.CUNY_NR44_LEN_ENp.qn_new(), reg_new.EDEK_NR52_DBG_APUp());
 
   /*#p19.BARE*/ wire BARE_FF23_RDn = nand2(reg_new.cpu_abus.CUGE_ADDR_FF23p(), reg_new.cpu_signals.BYLO_CPU_RDp());

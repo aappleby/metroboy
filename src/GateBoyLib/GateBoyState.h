@@ -15,6 +15,7 @@
 #include "GateBoyLib/GateBoyExtBus.h"
 #include "GateBoyLib/GateBoyOamBus.h"
 #include "GateBoyLib/GateBoyVramBus.h"
+#include "GateBoyLib/GateBoyWaveBus.h"
 #include "GateBoyLib/GateBoyZramBus.h"
 #include "GateBoyLib/GateBoyReset.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
@@ -186,7 +187,9 @@ struct GateBoyState {
   OamLatchB      oam_latch_b;
   OamTempA       oam_temp_a;
   OamTempB       oam_temp_b;
-                 
+
+  WaveBus        wave_bus;
+
   ExtDataLatch   ext_data_latch;
   ExtAddrLatch   ext_addr_latch;
 

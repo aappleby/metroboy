@@ -90,7 +90,7 @@ struct SpuChannel3 {
   // This is a pulse generator for wave ram control line 2/3
   /*_p17.BUSA*/ DFF17 BUSA_WAVE_CLK_D1;
   /*_p17.BANO*/ DFF17 BANO_WAVE_CLK_D2;
-  /*_p17.AZUS*/ DFF17 AZUS_WAVE_CLK_D3p;
+  /*_p17.AZUS*/ DFF17 AZUS_WAVE_CLK_D3;
   /*_p17.AZET*/ DFF17 AZET_WAVE_CLK_D4;
 };
 

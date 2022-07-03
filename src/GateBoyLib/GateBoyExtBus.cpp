@@ -135,6 +135,9 @@ uint8_t GateBoy::read_flat_addr(const blob& cart_blob, int addr) const {
   else if (addr >= 0xFE00 && addr < 0xFF00) {
     return mem.oam_ram[addr & 0x00FF];
   }
+  else if (addr >= 0xFF30 && addr < 0xFF3F) {
+    return mem.wave_ram[addr & 0x000F];
+  }
   else if (addr >= 0xFF80 && addr < 0xFFFF) {
     return mem.zero_ram[addr & 0x007F];
   }

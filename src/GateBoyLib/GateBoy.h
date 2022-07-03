@@ -103,6 +103,7 @@ struct GateBoyMem {
   uint8_t int_ram [8192];
   uint8_t oam_ram [256];
   uint8_t zero_ram[128];
+  uint8_t wave_ram[16];
   uint8_t framebuffer[160*144];
 };
 #pragma pack(pop)

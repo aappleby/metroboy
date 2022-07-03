@@ -12,9 +12,15 @@ struct SpuChannel4 {
                 GEDU_NR42_ENV3.qn_new());
   }
 
-  /*#p20.FOWA*/ wire FOWA_ENV_OFFp() const {
+  /*#p20.FOWA*/ wire FOWA_ENV_OFFp_old() const {
+    return nor3(EMOK_NR42_ENV_TIMER0.qn_old(), ETYJ_NR42_ENV_TIMER1.qn_old(), EZYK_NR42_ENV_TIMER2.qn_old());
+  }
+
+  /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new() const {
     return nor3(EMOK_NR42_ENV_TIMER0.qn_new(), ETYJ_NR42_ENV_TIMER1.qn_new(), EZYK_NR42_ENV_TIMER2.qn_new());
   }
+
+#if 0
 
   /*#p20.FEME*/ bool FEME_LFSR_CLKp() const {
     /*_p20.EMOF*/ wire EMOF_LFSR_CLK_MUX_7 = nor3(FETA_NR43_FREQ0.qn_new(), FYTO_NR43_FREQ1.qn_new(), GOGO_NR43_FREQ2.qn_new());
@@ -56,7 +62,7 @@ struct SpuChannel4 {
   /*#p20.KARA*/ wire KARA_LFSR_CLKn() const { return not1(GYVE_LFSR_CLKp()); }
   /*#p20.KOPA*/ wire KOPA_LFSR_CLKp() const { return not1(KARA_LFSR_CLKn()); }
 
-
+#endif
 
 
   /*_p19.EMOK*/ DFF9 EMOK_NR42_ENV_TIMER0;

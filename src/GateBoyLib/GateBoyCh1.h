@@ -6,7 +6,7 @@
 
 struct SpuChannel1 {
 
-  /*#p13.HOCA*/ wire HOCA_CH1_AMP_ENn() const {
+  /*#p13.HOCA*/ wire HOCA_CH1_AMP_ENn_new() const {
     return nor5(JAFY_NR12_ENV_DIR.qn_new(),
                 JATY_NR12_VOL0.qn_new(),
                 JAXO_NR12_VOL1.qn_new(),
@@ -15,37 +15,34 @@ struct SpuChannel1 {
   }
 
 
-  /*#p13.BUGE*/ wire BUGE_SWEEP_DONEn() const {
+  /*#p13.BUGE*/ wire BUGE_SWEEP_DONEn_new() const {
     return nand3(ANAZ_NR10_SWEEP_SHIFT2.qp_new(),
                  ARAX_NR10_SWEEP_SHIFT1.qp_new(),
                  BANY_NR10_SWEEP_SHIFT0.qp_new());
   }
 
-  wire EGOR_SHIFT_CLK() const {
-    /*#p13.EGYP*/ wire EGYP_SHIFT_CLK = nor2(FEMU_SHIFTINGn.qn_new(), DYFA_CLK_1M());
-    /*#p13.CELE*/ wire CELE_SWEEP_DONEp = not1(BUGE_SWEEP_DONEn());
-    /*#p13.DODY*/ wire DODY_SHIFT_CLK = nor2(EGYP_SHIFT_CLK, CELE_SWEEP_DONEp); // border color wrong on die
-    /*?p13.EGOR*/ wire EGOR_SHIFT_CLK = not1(DODY_SHIFT_CLK); // This looks like a nor3, but it almost definiteily is a not1.
-    return EGOR_SHIFT_CLK;
+  wire EGOR_SHIFT_CLK_new() const {
+    /*#p13.EGYP*/ wire EGYP_SHIFT_CLK_new = nor2(FEMU_SHIFTINGn.qn_new(), DYFA_CLK_1M_new());
+    /*#p13.CELE*/ wire CELE_SWEEP_DONEp_new = not1(BUGE_SWEEP_DONEn_new());
+    /*#p13.DODY*/ wire DODY_SHIFT_CLK_new = nor2(EGYP_SHIFT_CLK_new, CELE_SWEEP_DONEp_new); // border color wrong on die
+    /*?p13.EGOR*/ wire EGOR_SHIFT_CLK_new = not1(DODY_SHIFT_CLK_new); // This looks like a nor3, but it almost definiteily is a not1.
+    return EGOR_SHIFT_CLK_new;
   }
 
-  /*#p12.FAJA*/ wire FAJA_SHIFT_CLK() const { return not1(EGOR_SHIFT_CLK()); }
-  /*#p12.EJYB*/ wire EJYB_SHIFT_CLK() const { return not1(FAJA_SHIFT_CLK()); }
-  /*#p12.CYBE*/ wire CYBE_SHIFT_CLK() const { return not1(EJYB_SHIFT_CLK()); }
-  /*#p12.BECY*/ wire BECY_SHIFT_CLK() const { return not1(CYBE_SHIFT_CLK()); }
+  /*#p12.FAJA*/ wire FAJA_SHIFT_CLK_new() const { return not1(EGOR_SHIFT_CLK_new()); }
+  /*#p12.EJYB*/ wire EJYB_SHIFT_CLK_new() const { return not1(FAJA_SHIFT_CLK_new()); }
+  /*#p12.CYBE*/ wire CYBE_SHIFT_CLK_new() const { return not1(EJYB_SHIFT_CLK_new()); }
+  /*#p12.BECY*/ wire BECY_SHIFT_CLK_new() const { return not1(CYBE_SHIFT_CLK_new()); }
 
+  /*#p09.DYFA*/ wire DYFA_CLK_1M_old() const { return not1(CALO_CLK_1M.qn_old()); }
+  /*#p09.DYFA*/ wire DYFA_CLK_1M_new() const { return not1(CALO_CLK_1M.qn_new()); }
 
-
-  /*#p09.DYFA*/ wire DYFA_CLK_1M() const { return not1(CALO_CLK_1M.qn_new()); }
-
-  /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn() const { return not1(AVAF_NR10_SWEEP_DIR_p.qp_new()); }
+  /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_new() const { return not1(AVAF_NR10_SWEEP_DIR_p.qp_new()); }
+  /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_old() const { return not1(AVAF_NR10_SWEEP_DIR_p.qp_old()); }
 
   // so this implies that NR12_DELAY* is DFFn?
-  /*#p13.KOMA*/ wire KOMA_ENV_OFFp() const { return nor3(JUSA_NR12_DELAY0n.qn_new(), JUZY_NR12_DELAY1n.qn_new(), JOMA_NR12_DELAY2n.qn_new()); }
-
- 
-
-
+  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_old() const { return nor3(JUSA_NR12_DELAY0n.qn_old(), JUZY_NR12_DELAY1n.qn_old(), JOMA_NR12_DELAY2n.qn_old()); }
+  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_new() const { return nor3(JUSA_NR12_DELAY0n.qn_new(), JUZY_NR12_DELAY1n.qn_new(), JOMA_NR12_DELAY2n.qn_new()); }
 
   /*#p11.BANY*/ DFF9 BANY_NR10_SWEEP_SHIFT0;
   /*#p11.ARAX*/ DFF9 ARAX_NR10_SWEEP_SHIFT1;

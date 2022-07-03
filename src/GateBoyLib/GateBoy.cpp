@@ -198,17 +198,19 @@ GBResult GateBoy::peek(int addr) const {
   if (addr >= 0xC000 && addr <= 0xDFFF) { return GBResult(mem.int_ram[addr - 0xC000]);  }
   if (addr >= 0xE000 && addr <= 0xFDFF) { return GBResult(mem.int_ram[addr - 0xE000]);  }
   if (addr >= 0xFE00 && addr <= 0xFEFF) { return GBResult(mem.oam_ram[addr - 0xFE00]);  }
+  if (addr >= 0xFF30 && addr <= 0xFF3F) { return GBResult(mem.wave_ram[addr - 0xFF30]); }
   if (addr >= 0xFF80 && addr <= 0xFFFE) { return GBResult(mem.zero_ram[addr - 0xFF80]); }
   return gb_state.peek(addr);
 }
 
 GBResult GateBoy::poke(int addr, uint8_t data_in) {
   //if (addr >= 0x0000 && addr <= 0x7FFF) { cart_blob.data()[addr - 0x0000] = data_in; return data_in; }
-  if (addr >= 0x8000 && addr <= 0x9FFF) { mem.vid_ram[addr - 0x8000] = data_in;  return GBResult::ok(); }
+  if (addr >= 0x8000 && addr <= 0x9FFF) { mem.vid_ram [addr - 0x8000] = data_in; return GBResult::ok(); }
   if (addr >= 0xA000 && addr <= 0xBFFF) { mem.cart_ram[addr - 0xA000] = data_in; return GBResult::ok(); }
-  if (addr >= 0xC000 && addr <= 0xDFFF) { mem.int_ram[addr - 0xC000] = data_in;  return GBResult::ok(); }
-  if (addr >= 0xE000 && addr <= 0xFDFF) { mem.int_ram[addr - 0xE000] = data_in;  return GBResult::ok(); }
-  if (addr >= 0xFE00 && addr <= 0xFEFF) { mem.oam_ram[addr - 0xFE00] = data_in;  return GBResult::ok(); }
+  if (addr >= 0xC000 && addr <= 0xDFFF) { mem.int_ram [addr - 0xC000] = data_in; return GBResult::ok(); }
+  if (addr >= 0xE000 && addr <= 0xFDFF) { mem.int_ram [addr - 0xE000] = data_in; return GBResult::ok(); }
+  if (addr >= 0xFE00 && addr <= 0xFEFF) { mem.oam_ram [addr - 0xFE00] = data_in; return GBResult::ok(); }
+  if (addr >= 0xFF30 && addr <= 0xFF3F) { mem.wave_ram[addr - 0xFF30] = data_in; return GBResult::ok(); }
   if (addr >= 0xFF80 && addr <= 0xFFFE) { mem.zero_ram[addr - 0xFF80] = data_in; return GBResult::ok(); }
   return gb_state.poke(addr, data_in);
 }
@@ -456,8 +458,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   bool EXT_cpu_latch_ext;
 
-  memset(&reg_new.cpu_abus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
-  memset(&reg_new.cpu_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
+  memset(&reg_new.cpu_abus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
+  memset(&reg_new.cpu_dbus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
+  memset(&reg_new.wave_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.wave_dbus));
 
   if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
     // Data has to be driven on EFGH or we fail the wave tests
@@ -1054,6 +1057,14 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   tock_vram_bus_gates(reg_old, TEVO_WIN_FETCH_TRIGp_xxx);
   tock_oam_bus_gates(reg_old);
   tock_zram_gates(reg_old);
+
+  //----------------------------------------
+  // Sound
+
+  tick_spu(reg_old, reg_new, mem.wave_ram);
+
+  printf("spu ticked?\n");
+  exit(0);
 
   //----------------------------------------
   // And finally, interrupts.

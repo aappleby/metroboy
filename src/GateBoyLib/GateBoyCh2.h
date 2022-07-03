@@ -4,11 +4,15 @@
 
 struct SpuChannel2 {
 
-  /*#p15.ETUK*/ wire ETUK_CLK() const { return not1(GYKO_SAMPLE_CLKp.qp_new()); }
-  /*#p15.DAVU*/ wire DAVU_CLK() const { return not1(ETUK_CLK()); }
-  /*#p15.CULE*/ wire CULE_CLK() const { return not1(DAVU_CLK()); }
+  /*#p15.ETUK*/ wire ETUK_SAMPLE_CLKn_old() const { return not1(GYKO_SAMPLE_CLKp.qp_old()); }
+  /*#p15.DAVU*/ wire DAVU_SAMPLE_CLKp_old() const { return not1(ETUK_SAMPLE_CLKn_old()); }
+  /*#p15.CULE*/ wire CULE_SAMPLE_CLKn_old() const { return not1(DAVU_SAMPLE_CLKp_old()); }
 
-  /*#p15.FUTE*/ wire FUTE_CH2_AMP_ENn() const {
+  /*#p15.ETUK*/ wire ETUK_SAMPLE_CLKn_new() const { return not1(GYKO_SAMPLE_CLKp.qp_new()); }
+  /*#p15.DAVU*/ wire DAVU_SAMPLE_CLKp_new() const { return not1(ETUK_SAMPLE_CLKn_new()); }
+  /*#p15.CULE*/ wire CULE_SAMPLE_CLKn_new() const { return not1(DAVU_SAMPLE_CLKp_new()); }
+
+  /*#p15.FUTE*/ wire FUTE_CH2_AMP_ENn_new() const {
     return nor5(FORE_NR22_ADD.qn_new(),
                 GATA_NR22_V0.qn_new(),
                 GUFE_NR22_V1.qn_new(),
@@ -16,7 +20,8 @@ struct SpuChannel2 {
                 GAGE_NR22_V3.qn_new());
   }
 
-  /*#p15.JUPU*/ wire JUPU_ENV_OFFp() const { return nor3(HYFU_NR22_P0n.qn_new(), HORE_NR22_P1n.qn_new(), HAVA_NR22_P2n.qn_new()); }
+  /*#p15.JUPU*/ wire JUPU_ENV_OFFp_old() const { return nor3(HYFU_NR22_P0n.qn_old(), HORE_NR22_P1n.qn_old(), HAVA_NR22_P2n.qn_old()); }
+  /*#p15.JUPU*/ wire JUPU_ENV_OFFp_new() const { return nor3(HYFU_NR22_P0n.qn_new(), HORE_NR22_P1n.qn_new(), HAVA_NR22_P2n.qn_new()); }
 
 
   /*_p15.ERYC*/ DFF20 ERYC_NR21_L0;
@@ -96,8 +101,8 @@ struct SpuChannel2 {
   DFF20 FOMY_CH2_ENV2;
   DFF20 FETE_CH2_ENV1;
   DFF20 FENO_CH2_ENV0;
-  DFF17 HEPO;
-  NorLatch JEME;
+  DFF17 HEPO_ENV_MAXp;
+  NorLatch JEME_ENV_DONEp;
 
   DFF17 JYNA_CLK_64n;
   /*_p15.CYRE*/ DFF17 CYRE_CH2_LEN_DONEp;

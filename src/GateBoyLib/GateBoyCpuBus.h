@@ -213,13 +213,13 @@ struct GateBoyCpuABus {
   /*_p10.DOSO*/ wire DOSO_A00p() const { return not1(DYTE_A00n()); }
   /*_p10.DUPA*/ wire DUPA_A01p() const { return not1(AFOB_A01n()); }
   /*_p10.DENO*/ wire DENO_A02p() const { return not1(ABUB_A02n()); }
-  /*_p10.DUCE*/ wire DUCE_A03p() const { return not1(ACOL_A03n()); }
+  /*#p10.DUCE*/ wire DUCE_A03p() const { return not1(ACOL_A03n()); }
 
   /*_p10.ATEG*/ wire ATEG_ADDR_XX1Xn() const { return or4(BUS_CPU_A07p.out_new(), BUS_CPU_A06p.out_new(), BUS_CPU_A05p.out_new(), ATUP_A04n()); }
   /*_p10.AWET*/ wire AWET_ADDR_XX2Xn() const { return or4(BUS_CPU_A07p.out_new(), BUS_CPU_A06p.out_new(), BOXY_A05n(), BUS_CPU_A04p.out_new()); }
   /*#p10.ACOM*/ wire ACOM_ADDR_XX3Xn() const { return nand4(AVUN_A07n(), ASAD_A06n(), BUS_CPU_A05p.out_new(), BUS_CPU_A04p.out_new()); }
 
-  /*_p07.BAKO*/ wire BAKO_ADDR_FFXXn() const { return not1(SYKE_ADDR_HIp_old()); }
+  /*_p07.BAKO*/ wire BAKO_ADDR_FFXXn() const { return not1(SYKE_ADDR_HIp_new()); }
 
   /*_p10.BUNO*/ wire BUNO_ADDR_FF1Xp() const { return nor2(BAKO_ADDR_FFXXn(), ATEG_ADDR_XX1Xn()); }
   /*_p10.BEZY*/ wire BEZY_ADDR_FF2Xn() const { return  or2(AWET_ADDR_XX2Xn(), BAKO_ADDR_FFXXn()); }

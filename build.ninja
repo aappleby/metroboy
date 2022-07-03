@@ -186,6 +186,7 @@ build obj/GateBoyLib/GateBoyThread.o        : compile_cpp src/GateBoyLib/GateBoy
 build obj/GateBoyLib/GateBoyTileFetcher.o   : compile_cpp src/GateBoyLib/GateBoyTileFetcher.cpp
 build obj/GateBoyLib/GateBoyTimer.o         : compile_cpp src/GateBoyLib/GateBoyTimer.cpp
 build obj/GateBoyLib/GateBoyVramBus.o       : compile_cpp src/GateBoyLib/GateBoyVramBus.cpp
+build obj/GateBoyLib/GateBoyWaveBus.o       : compile_cpp src/GateBoyLib/GateBoyWaveBus.cpp
 build obj/GateBoyLib/GateBoyZramBus.o       : compile_cpp src/GateBoyLib/GateBoyZramBus.cpp
 build obj/GateBoyLib/Gates.o                : compile_cpp src/GateBoyLib/Gates.cpp
 build obj/GateBoyLib/LogicBoy.o             : compile_cpp src/GateBoyLib/LogicBoy.cpp
@@ -228,6 +229,7 @@ build bin/GateBoyLib.a : lib $
   obj/GateBoyLib/GateBoyTileFetcher.o $
   obj/GateBoyLib/GateBoyTimer.o $
   obj/GateBoyLib/GateBoyVramBus.o $
+  obj/GateBoyLib/GateBoyWaveBus.o $
   obj/GateBoyLib/GateBoyZramBus.o $
   obj/GateBoyLib/Gates.o $
   obj/GateBoyLib/LogicBoy.o $

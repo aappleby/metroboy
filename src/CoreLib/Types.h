@@ -36,6 +36,8 @@ struct triwire { wire state; };
 
 __attribute__((always_inline)) inline wire bit0(uint32_t w) { return wire(w & 1); }
 inline wire bit(uint32_t w, int i) { return wire((w >> i) & 1); }
+inline wire bit(int w, int i) { return wire((w >> i) & 1); }
+inline wire bit(int w) { return wire(w & 1); }
 
 template<typename T>
 inline void set_bit(T& t, int c, bool x) {

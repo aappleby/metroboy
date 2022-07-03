@@ -106,6 +106,7 @@ void GateBoyState::reset_to_poweron() {
   oam_latch_b.reset_to_poweron();
   oam_temp_a.reset_to_poweron();
   oam_temp_b.reset_to_poweron();
+  wave_dbus.reset_to_poweron();
   ext_data_latch.reset_to_poweron();
   ext_addr_latch.reset_to_poweron();
   ext_mbc.reset_to_poweron();
@@ -254,6 +255,7 @@ void GateBoyState::reset_to_bootrom() {
   oam_latch_b.reset_to_bootrom();
   oam_temp_a.reset_to_bootrom();
   oam_temp_b.reset_to_bootrom();
+  wave_dbus.reset_to_bootrom();
   ext_data_latch.reset_to_bootrom();
   ext_addr_latch.reset_to_bootrom();
   ext_mbc.reset_to_bootrom();
@@ -404,6 +406,7 @@ void GateBoyState::reset_to_cart() {
   oam_latch_b.reset_to_cart();
   oam_temp_a.reset_to_cart();
   oam_temp_b.reset_to_cart();
+  wave_dbus.reset_to_cart();
   ext_data_latch.reset_to_cart();
   ext_addr_latch.reset_to_cart();
   ext_mbc.reset_to_cart();
@@ -607,6 +610,25 @@ GBResult GateBoyState::poke(int addr, uint8_t data_in) {
 //-----------------------------------------------------------------------------
 
 void GateBoyState::commit() {
+#if 0
+  static bool dumped = false;
+  if (!dumped) {
+    for (int i = 0; i < sizeof(GateBoyState); i++) {
+      printf("@%04x ", i);
+      print_field_at(i, GateBoyState::fields);
+      printf("\n");
+    }
+    /*
+    for (int i = 0; i < 1024; i++) {
+      auto f = GateBoyState::fields[i];
+      if (f.name == nullptr) break;
+      printf("%d %s 0x%04x %d\n", i, f.name, f.offset, f.size);
+    }
+    */
+    dumped = true;
+  }
+#endif
+
   if (!config_check_flags && !config_use_flags) return;
 
   uint8_t* cursor = (uint8_t*)this;
@@ -616,22 +638,32 @@ void GateBoyState::commit() {
     if (config_check_flags) {
       auto drive_flags = s & (BIT_DRIVEN | BIT_PULLED);
 
+      bool bad_bit = false;
+
       if (drive_flags == (BIT_DRIVEN | BIT_PULLED)) {
-        LOG_Y("Bit %d both driven and pulled up!\n", i);
-        bad_bits = true;
+        LOG_Y("Bit %d both driven and pulled up! ", i);
+        bad_bit = true;
       }
 
       if (drive_flags == 0) {
-        LOG_Y("Bit %d floating!\n", i);
-        bad_bits = true;
+        LOG_Y("Bit %d floating! ", i);
+        bad_bit = true;
       }
 
       auto oldnew_flags = s & (BIT_OLD | BIT_NEW);
 
       if (oldnew_flags != BIT_NEW) {
-        LOG_Y("Bit %d not dirty after sim pass!\n", i);
-        bad_bits = true;
+        LOG_Y("Bit %d not dirty after sim pass! ", i);
+        bad_bit = true;
       }
+
+      if (bad_bit) {
+        print_field_at(i, GateBoyState::fields);
+        printf("\n");
+      }
+
+
+      bad_bits |= bad_bit;
     }
 
     *cursor++ = (s & 0b00001111) | BIT_OLD;
@@ -720,6 +752,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, oam_latch_b),
   DECLARE_FIELD(GateBoyState, oam_temp_a),
   DECLARE_FIELD(GateBoyState, oam_temp_b),
+  DECLARE_FIELD(GateBoyState, wave_dbus),
 
   DECLARE_FIELD(GateBoyState, ext_data_latch),
   DECLARE_FIELD(GateBoyState, ext_addr_latch),
@@ -878,6 +911,13 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, reg_obp0),
   DECLARE_FIELD(GateBoyState, reg_obp1),
   DECLARE_FIELD(GateBoyState, flipped_sprite),
+
+  DECLARE_FIELD(GateBoyState, spu),
+  DECLARE_FIELD(GateBoyState, ch1),
+  DECLARE_FIELD(GateBoyState, ch2),
+  DECLARE_FIELD(GateBoyState, ch3),
+  DECLARE_FIELD(GateBoyState, ch4),
+
   END_FIELDS()
 };
 

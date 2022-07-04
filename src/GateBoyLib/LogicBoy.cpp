@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include <assert.h>
 
 //#pragma optimize("", off)
 
@@ -27,8 +28,13 @@ using std::min;
 
 //-----------------------------------------------------------------------------
 
-GBResult LogicBoy::reset_to_bootrom(const blob& cart_blob, bool slow)
-{
+GBResult LogicBoy::reset_to_poweron(const blob& cart_blob) {
+  assert(false);
+}
+
+//-----------------------------------------------------------------------------
+
+GBResult LogicBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
   (void)slow;
 
   lb_state.reset_to_bootrom();

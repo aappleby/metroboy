@@ -2,6 +2,8 @@
 
 #include "GateBoyLib/GateBoyState.h"
 
+#ifdef SIM_AUDIO
+
 void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram) {
   {
     /*_p16.GEJO*/ wire GEJO_FF1A_WRp = and2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.EMOR_ADDR_FF1Ap());
@@ -476,12 +478,4 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 #endif
 }
 
-
-
-
-
-
-
-
-
-
+#endif

@@ -2,6 +2,8 @@
 
 #include "GateBoyState.h"
 
+#ifdef SIM_AUDIO
+
 void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   {
@@ -384,3 +386,5 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
 }
+
+#endif

@@ -120,6 +120,8 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 
   sys.gb_phase_total = 0;
 
+  LOG_G("derp\n");
+
   //----------------------------------------
   // Wait for SIG_CPU_START
 
@@ -163,7 +165,9 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 GBResult GateBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
   if (slow) {
     reset_to_poweron(cart_blob);
+    LOG_R("GateBoy::reset_to_poweron done\n");
     run_poweron_reset(cart_blob, true);
+    LOG_R("GateBoy::run_poweron_reset done\n");
   }
   else {
     gb_state.reset_to_bootrom();
@@ -276,18 +280,18 @@ GBResult GateBoy::run_phases(const blob& cart_blob, int phase_count) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::next_phase(const blob& cart_blob) {
+  int x = 10;
+
   probes.begin_pass((sys.gb_phase_total + 1) & 7);
   sys.gb_phase_total++;
 
-#if 0
-  if (config_idempotence) {
-    debugbreak()
-#if 0
-    tock_gates(cart_blob);
+  tock_gates(cart_blob);
+  gb_state.commit();
+  pins.commit();
 
-    gb_state.commit();
-    pins.commit();
+  if (config_idempotence) {
     auto gb_state_old = gb_state;
+
     tock_gates(cart_blob);
     gb_state.commit();
     pins.commit();
@@ -296,15 +300,6 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
       LOG_R("idempotence fail!\n");
       debugbreak();
     }
-#endif
-  }
-  else
-#endif
-  {
-    tock_gates(cart_blob);
-
-    gb_state.commit();
-    pins.commit();
   }
 
   update_framebuffer();
@@ -460,7 +455,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   memset(&reg_new.cpu_abus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
   memset(&reg_new.cpu_dbus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
-  memset(&reg_new.wave_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.wave_dbus));
 
   if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
     // Data has to be driven on EFGH or we fail the wave tests
@@ -1061,10 +1055,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Sound
 
+#ifdef SIM_AUDIO
   tick_spu(reg_old, reg_new, mem.wave_ram);
-
-  printf("spu ticked?\n");
-  exit(0);
+#endif
 
   //----------------------------------------
   // And finally, interrupts.

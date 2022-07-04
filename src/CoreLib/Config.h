@@ -7,6 +7,7 @@
 
 //#pragma optimize("", off)
 
+#if 0
 // Debug builds - painfully, ungodly slow.
 #ifdef CONFIG_DEBUG
 constexpr bool config_debug = true;
@@ -37,6 +38,12 @@ constexpr bool config_fastmode = false;
 #endif
 
 static_assert(((int)config_debug + (int)config_regression + (int)config_release + (int)config_fastmode) == 1, "Bad build config");
+#endif
+
+constexpr bool config_debug = true;
+constexpr bool config_regression = false;
+constexpr bool config_release = false;
+constexpr bool config_fastmode = false;
 
 // debug      - use flags, dchecks, idempotence checks
 // release    - use flags, no dchecks

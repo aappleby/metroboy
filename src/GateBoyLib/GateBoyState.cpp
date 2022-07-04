@@ -106,7 +106,6 @@ void GateBoyState::reset_to_poweron() {
   oam_latch_b.reset_to_poweron();
   oam_temp_a.reset_to_poweron();
   oam_temp_b.reset_to_poweron();
-  wave_dbus.reset_to_poweron();
   ext_data_latch.reset_to_poweron();
   ext_addr_latch.reset_to_poweron();
   ext_mbc.reset_to_poweron();
@@ -179,6 +178,16 @@ void GateBoyState::reset_to_poweron() {
   spr_pipe_b.reset_to_poweron();
   pal_pipe.reset_to_poweron();
   lcd.reset_to_poweron();
+
+#ifdef SIM_AUDIO
+  spu.reset_to_poweron();
+  ch1.reset_to_poweron();
+  ch2.reset_to_poweron();
+  ch3.reset_to_poweron();
+  ch4.reset_to_poweron();
+  wave_dbus.reset_to_poweron();
+#endif
+
   //reg_NR10.reset_to_poweron();
   //reg_NR11.reset_to_poweron();
   //reg_NR12.reset_to_poweron();
@@ -255,7 +264,6 @@ void GateBoyState::reset_to_bootrom() {
   oam_latch_b.reset_to_bootrom();
   oam_temp_a.reset_to_bootrom();
   oam_temp_b.reset_to_bootrom();
-  wave_dbus.reset_to_bootrom();
   ext_data_latch.reset_to_bootrom();
   ext_addr_latch.reset_to_bootrom();
   ext_mbc.reset_to_bootrom();
@@ -328,24 +336,16 @@ void GateBoyState::reset_to_bootrom() {
   spr_pipe_b.reset_to_bootrom();
   pal_pipe.reset_to_bootrom();
   lcd.reset_to_bootrom();
-  //reg_NR10.reset_to_bootrom();
-  //reg_NR11.reset_to_bootrom();
-  //reg_NR12.reset_to_bootrom();
-  //reg_NR14.reset_to_bootrom();
-  //reg_NR21.reset_to_bootrom();
-  //reg_NR22.reset_to_bootrom();
-  //reg_NR24.reset_to_bootrom();
-  //reg_NR30.reset_to_bootrom();
-  //reg_NR31.reset_to_bootrom();
-  //reg_NR32.reset_to_bootrom();
-  //reg_NR34.reset_to_bootrom();
-  //reg_NR41.reset_to_bootrom();
-  //reg_NR42.reset_to_bootrom();
-  //reg_NR43.reset_to_bootrom();
-  //reg_NR44.reset_to_bootrom();
-  //reg_NR50.reset_to_bootrom();
-  //reg_NR51.reset_to_bootrom();
-  //reg_NR52.reset_to_bootrom();
+
+#ifdef SIM_AUDIO
+  spu.reset_to_bootrom();
+  ch1.reset_to_bootrom();
+  ch2.reset_to_bootrom();
+  ch3.reset_to_bootrom();
+  ch4.reset_to_bootrom();
+  wave_dbus.reset_to_bootrom();
+#endif
+
 
   check_state_old_and_driven_or_pulled();
 }
@@ -406,7 +406,6 @@ void GateBoyState::reset_to_cart() {
   oam_latch_b.reset_to_cart();
   oam_temp_a.reset_to_cart();
   oam_temp_b.reset_to_cart();
-  wave_dbus.reset_to_cart();
   ext_data_latch.reset_to_cart();
   ext_addr_latch.reset_to_cart();
   ext_mbc.reset_to_cart();
@@ -479,24 +478,15 @@ void GateBoyState::reset_to_cart() {
   spr_pipe_b.reset_to_cart();
   pal_pipe.reset_to_cart();
   lcd.reset_to_cart();
-  //reg_NR10.reset_to_cart();
-  //reg_NR11.reset_to_cart();
-  //reg_NR12.reset_to_cart();
-  //reg_NR14.reset_to_cart();
-  //reg_NR21.reset_to_cart();
-  //reg_NR22.reset_to_cart();
-  //reg_NR24.reset_to_cart();
-  //reg_NR30.reset_to_cart();
-  //reg_NR31.reset_to_cart();
-  //reg_NR32.reset_to_cart();
-  //reg_NR34.reset_to_cart();
-  //reg_NR41.reset_to_cart();
-  //reg_NR42.reset_to_cart();
-  //reg_NR43.reset_to_cart();
-  //reg_NR44.reset_to_cart();
-  //reg_NR50.reset_to_cart();
-  //reg_NR51.reset_to_cart();
-  //reg_NR52.reset_to_cart();
+
+#ifdef SIM_AUDIO
+  spu.reset_to_cart();
+  ch1.reset_to_cart();
+  ch2.reset_to_cart();
+  ch3.reset_to_cart();
+  ch4.reset_to_cart();
+  wave_dbus.reset_to_cart();
+#endif
 
   check_state_old_and_driven_or_pulled();
 }
@@ -752,7 +742,6 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, oam_latch_b),
   DECLARE_FIELD(GateBoyState, oam_temp_a),
   DECLARE_FIELD(GateBoyState, oam_temp_b),
-  DECLARE_FIELD(GateBoyState, wave_dbus),
 
   DECLARE_FIELD(GateBoyState, ext_data_latch),
   DECLARE_FIELD(GateBoyState, ext_addr_latch),
@@ -912,11 +901,16 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, reg_obp1),
   DECLARE_FIELD(GateBoyState, flipped_sprite),
 
+#ifdef SIM_AUDIO
   DECLARE_FIELD(GateBoyState, spu),
   DECLARE_FIELD(GateBoyState, ch1),
   DECLARE_FIELD(GateBoyState, ch2),
   DECLARE_FIELD(GateBoyState, ch3),
   DECLARE_FIELD(GateBoyState, ch4),
+  DECLARE_FIELD(GateBoyState, ch1.CERO_CH1_LEN_DONE),
+  DECLARE_FIELD(GateBoyState, wave_dbus),
+#endif
+  
 
   END_FIELDS()
 };

@@ -219,10 +219,10 @@ struct DFF8p : public BitBase {
 
 // DFF9_01 | O===--o |
 // DFF9_02 |==--O====| << CLKp
-// DFF9_03 | ------- | << D
+// DFF9_03 | ------- | << Dn
 // DFF9_04 |o-------O| << CLKn
 // DFF9_05 |  -----  |
-// DFF9_06 |--xxOxx--| << RSTn
+// DFF9_06 |--xxOxx--| << SETn
 // DFF9_07 |o-------o|
 // DFF9_08 |xxx-O-xxx| >> Qn
 // DFF9_09 |xxx-O-xxx| >> Q

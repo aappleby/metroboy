@@ -72,8 +72,10 @@ struct GateBoyState {
   /*_p09.HAPO*/ wire HAPO_SYS_RSTp_new() const { return not1(sys_rst.ALUR_SYS_RSTn_new()); }
   /*_p09.GUFO*/ wire GUFO_SYS_RSTn_new() const { return not1(HAPO_SYS_RSTp_new()); }
 
+#ifdef SIM_AUDIO
   /*_p09.JYRO*/ wire JYRO_APU_RSTp_old() const { return  or2(HAPO_SYS_RSTp_old(), spu.HADA_NR52_ALL_SOUND_ON.qn_old()); }
   /*_p09.JYRO*/ wire JYRO_APU_RSTp_new() const { return  or2(HAPO_SYS_RSTp_new(), spu.HADA_NR52_ALL_SOUND_ON.qn_new()); }
+
   /*_p09.KEPY*/ wire KEPY_APU_RSTn_new() const { return not1(JYRO_APU_RSTp_new()); }
   /*_p09.KUBY*/ wire KUBY_APU_RSTn_old() const { return not1(JYRO_APU_RSTp_old()); }
   /*_p09.KUBY*/ wire KUBY_APU_RSTn_new() const { return not1(JYRO_APU_RSTp_new()); }
@@ -119,8 +121,6 @@ struct GateBoyState {
   /*_p16.KUHA*/ wire KUHA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
   /*#p16.GOMA*/ wire GOMA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
 
-
-  /*_p16.ANUJ*/ wire ANUJ_CPU_WR_WEIRD()  const { return and2(cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_new(), cpu_signals.BOGY_CPU_WRp()); }
   /*_p09.EDEK*/ wire EDEK_NR52_DBG_APUp() const { return not1(spu.FERO_NR52_DBG_APUp.qp_new()); }
   /*#p14.FAPE*/ wire FAPE_CPU_RDp_DBGn()  const { return nand2(cpu_signals.FOGE_CPU_RDp(), EDEK_NR52_DBG_APUp()); } // schematic wrong? was and2
   /*_p16.EGAD*/ wire EGAD_CPU_RDn_DBGn()  const { return nand2(cpu_signals.DOVO_CPU_RDp(), EDEK_NR52_DBG_APUp()); }
@@ -132,6 +132,9 @@ struct GateBoyState {
                 ch3.GUXE_CH3_AMP_ENn.qp_new(),
                 ch4.GEVY_CH4_AMP_ENn());
   }
+#endif
+
+  /*_p16.ANUJ*/ wire ANUJ_CPU_WR_WEIRD()  const { return and2(cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_new(), cpu_signals.BOGY_CPU_WRp()); }
 
   //----------------------------------------
 
@@ -191,8 +194,6 @@ struct GateBoyState {
   OamLatchB      oam_latch_b;
   OamTempA       oam_temp_a;
   OamTempB       oam_temp_b;
-
-  GateBoyWaveBus wave_dbus;
 
   ExtDataLatch   ext_data_latch;
   ExtAddrLatch   ext_addr_latch;
@@ -303,10 +304,13 @@ struct GateBoyState {
 
   LCDControl lcd;
 
+#if SIM_AUDIO
   GateBoySPU  spu;
   SpuChannel1 ch1;
   SpuChannel2 ch2;
   SpuChannel3 ch3;
   SpuChannel4 ch4;
+  GateBoyWaveBus wave_dbus;
+#endif
 };
 #pragma pack(pop)

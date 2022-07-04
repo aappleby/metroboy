@@ -63,6 +63,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   gb_thread->start();
   gb_thread->reset_to_bootrom(true);
+  //gb_thread->reset_to_poweron();
 
   //gb_thread->run_to(459148 - 1);
 
@@ -111,11 +112,11 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   // gejmboj also around 120
   // pocket around 140
 
-  blob cart;
+  //blob cart;
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
 
-  load_blob("LinksAwakening.gb", cart);     // broken
+  //load_blob("LinksAwakening.gb", cart);     // broken
   //load_blob("tetris.gb", cart);             // broken
   //load_blob("SML.gb", cart); // reboot loop
   //load_blob("pman.gb", cart); // title screen funkd up
@@ -126,8 +127,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //load_blob("tests/cpu_instrs/individual/10-bit ops.gb", cart);
   //load_blob("tests/microtests/DMG/timer_tma_write_a.gb", cart);
 
-  gb_thread->load_cart_blob(cart);
-  gb_thread->reset_to_cart();
+  //gb_thread->load_cart_blob(cart);
+  //gb_thread->reset_to_cart();
 
   //gb_thread->run_to(49583368);
 
@@ -502,6 +503,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   //----------------------------------------
   // Column 4
 
+#if 0
   d("\002===== PPU =====\001\n");
   dumper.dump_ppu(state, d);
   d("\n");
@@ -513,14 +515,17 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   d("\002===== MBC1 =====\001\n");
   dumper.dump_mbc1(state, d);
   d("\n");
+#endif
 
   d("\002===== SPU =====\001\n");
   dumper.dump_spu(state, d);
   d("\n");
 
+#if 0
   d("\002===== Serial =====\001\n");
   dumper.dump_serial(state, d);
   d("\n");
+#endif
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col4, row1);
   d.clear();

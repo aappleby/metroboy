@@ -2,6 +2,8 @@
 
 #include "GateBoyLib/GateBoy.h"
 
+#ifdef SIM_AUDIO
+
 void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new);
 void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new);
 void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram);
@@ -10,6 +12,8 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new);
 //-----------------------------------------------------------------------------
 
 void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram) {
+
+  memset(&reg_new.wave_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.wave_dbus));
 
   // The APU reset register _must_ be ticked first.
   {
@@ -158,3 +162,5 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*_BUS_CPU_D03p*/ reg_new.cpu_dbus.BUS_CPU_D03p.tri_bus(KOGE_D3);
   /*_BUS_CPU_D07p*/ reg_new.cpu_dbus.BUS_CPU_D07p.tri_bus(HOPE_D7);
 }
+
+#endif

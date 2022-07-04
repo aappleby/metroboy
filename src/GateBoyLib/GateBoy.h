@@ -209,6 +209,8 @@ struct GateBoy  : public IGateBoy {
     return write_ok ? GBResult::ok() : Error::CORRUPT;;
   }
 
+  GBResult reset_to_poweron(const blob& cart_blob);
+  GBResult run_poweron_reset(const blob& cart_blob, bool fastboot);
   GBResult reset_to_bootrom(const blob& cart_blob, bool slow) override;
   GBResult reset_to_cart(const blob& cart_blob) override;
 
@@ -243,8 +245,6 @@ struct GateBoy  : public IGateBoy {
 
   //----------------------------------------
 
-  GBResult reset_to_poweron(const blob& cart_blob);
-  GBResult run_poweron_reset(const blob& cart_blob, bool fastboot);
 
   void set_boot_bit(const blob& cart_blob) {
     dbg_write(cart_blob, 0xFF50, 0xFF);

@@ -2,6 +2,8 @@
 
 #include "GateBoyLib/GateBoyState.h"
 
+#ifdef SIM_AUDIO
+
 void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   /*#p15.DOPE*/ reg_new.ch2.DOPE_CH2_TRIGp.dff17(reg_new.sys_clk.DOVA_ABCDxxxx(), reg_new.CYWU_APU_RSTn_new(), reg_old.ch2.ETAP_NR24_TRIGp.qn_old());
@@ -371,18 +373,4 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endif

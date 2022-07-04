@@ -1,7 +1,7 @@
 ################################################################################
 
 #build_mode   = -DCONFIG_FASTMODE -Ofast
-build_mode   = -DCONFIG_DEBUG
+build_mode   = -DCONFIG_DEBUG -O0
 
 cpp_compiler = g++
 c_compiler   = gcc

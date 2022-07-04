@@ -428,7 +428,73 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
-  (void)d;
-  //d.dump_bitp   ("HADA_ALL_SOUND_ONp     : ", reg_NR52.HADA_ALL_SOUND_ONp.state);
-  //d.dump_slice2p("NR50 : ", &reg_NR50.APEG_VOL_L0, 8);
+#ifdef SIM_AUDIO
+  d.dump_bitp("CEMO_CLK_1M   : ", s.spu.CEMO_CLK_1M.state);
+  d.dump_bitp("ATEP_CLK_2M   : ", s.spu.ATEP_CLK_2M.state);
+  d.dump_bitp("CERY_CLK_2M   : ", s.spu.CERY_CLK_2M.state);
+  d.dump_bitp("ATYK_CLK_2M   : ", s.spu.ATYK_CLK_2M.state);
+  d.dump_bitp("AVOK_CLK_1M   : ", s.spu.AVOK_CLK_1M.state);
+  d.dump_bitp("AJER_CLK_2M   : ", s.spu.AJER_CLK_2M.state);
+  d.dump_bitp("JESO_CLK_512K : ", s.spu.JESO_CLK_512K.state);
+  d.dump_bitp("BARA_CLK_512  : ", s.spu.BARA_CLK_512.state);
+  d.dump_bitp("CARU_CLK_256  : ", s.spu.CARU_CLK_256.state);
+  d.dump_bitp("BYLU_CLK_128  : ", s.spu.BYLU_CLK_128.state);
+  d("\n");
+
+  d.dump_bitp("APEG_NR50_VOL_L0   : ", s.spu.APEG_NR50_VOL_L0.state);
+  d.dump_bitp("BYGA_NR50_VOL_L1   : ", s.spu.BYGA_NR50_VOL_L1.state);
+  d.dump_bitp("AGER_NR50_VOL_L2   : ", s.spu.AGER_NR50_VOL_L2.state);
+  d.dump_bitp("APOS_NR50_VIN_TO_L : ", s.spu.APOS_NR50_VIN_TO_L.state);
+  d.dump_bitp("BYRE_NR50_VOL_R0   : ", s.spu.BYRE_NR50_VOL_R0.state);
+  d.dump_bitp("BUMO_NR50_VOL_R1   : ", s.spu.BUMO_NR50_VOL_R1.state);
+  d.dump_bitp("COZU_NR50_VOL_R2   : ", s.spu.COZU_NR50_VOL_R2.state);
+  d.dump_bitp("BEDU_NR50_VIN_TO_R : ", s.spu.BEDU_NR50_VIN_TO_R.state);
+  d("\n");
+
+  d.dump_bitp("ANEV_NR51_D0 : ", s.spu.ANEV_NR51_D0.state); // these are mixer control bits
+  d.dump_bitp("BOGU_NR51_D1 : ", s.spu.BOGU_NR51_D1.state);
+  d.dump_bitp("BAFO_NR51_D2 : ", s.spu.BAFO_NR51_D2.state);
+  d.dump_bitp("ATUF_NR51_D3 : ", s.spu.ATUF_NR51_D3.state);
+  d.dump_bitp("BUME_NR51_D4 : ", s.spu.BUME_NR51_D4.state);
+  d.dump_bitp("BOFA_NR51_D5 : ", s.spu.BOFA_NR51_D5.state);
+  d.dump_bitp("BEFO_NR51_D6 : ", s.spu.BEFO_NR51_D6.state);
+  d.dump_bitp("BEPU_NR51_D7 : ", s.spu.BEPU_NR51_D7.state);
+  d("\n");
+
+  d.dump_bitp("FERO_NR52_DBG_APUp     : ", s.spu.FERO_NR52_DBG_APUp.state);
+  d.dump_bitp("BOWY_NR52_DBG_SWEEP    : ", s.spu.BOWY_NR52_DBG_SWEEP.state);
+  d.dump_bitp("HADA_NR52_ALL_SOUND_ON : ", s.spu.HADA_NR52_ALL_SOUND_ON.state);
+  d("\n");
+
+
+  d("===== CH1 =====\n");
+  d.dump_bitp("BANY_NR10_SWEEP_SHIFT0n  : " , s.ch1.BANY_NR10_SWEEP_SHIFT0n.state);
+  d.dump_bitp("ARAX_NR10_SWEEP_SHIFT1n  : " , s.ch1.ARAX_NR10_SWEEP_SHIFT1n.state);
+  d.dump_bitp("ANAZ_NR10_SWEEP_SHIFT2n  : " , s.ch1.ANAZ_NR10_SWEEP_SHIFT2n.state);
+  d.dump_bitp("AVAF_NR10_SWEEP_DIRn     : " , s.ch1.AVAF_NR10_SWEEP_DIRn.state);
+  d.dump_bitp("ADEK_NR10_SWEEP_PERIOD0n : " , s.ch1.ADEK_NR10_SWEEP_PERIOD0n.state);
+  d.dump_bitp("BANA_NR10_SWEEP_PERIOD1n : " , s.ch1.BANA_NR10_SWEEP_PERIOD1n.state);
+  d.dump_bitp("BOTU_NR10_SWEEP_PERIOD2n : " , s.ch1.BOTU_NR10_SWEEP_PERIOD2n.state);
+  d("\n");
+
+  d.dump_bitp("CENA_NR11_DUTY0n : ", s.ch1.CENA_NR11_DUTY0n.state);
+  d.dump_bitp("DYCA_NR11_DUTY1n : ", s.ch1.DYCA_NR11_DUTY1n.state);
+  d.dump_bitp("BACY_NR11_LEN0n  : ", s.ch1.BACY_NR11_LEN0.state);
+  d.dump_bitp("CAVY_NR11_LEN1n  : ", s.ch1.CAVY_NR11_LEN1.state);
+  d.dump_bitp("BOVY_NR11_LEN2n  : ", s.ch1.BOVY_NR11_LEN2.state);
+  d.dump_bitp("CUNO_NR11_LEN3n  : ", s.ch1.CUNO_NR11_LEN3.state);
+  d.dump_bitp("CURA_NR11_LEN4n  : ", s.ch1.CURA_NR11_LEN4.state);
+  d.dump_bitp("ERAM_NR11_LEN5n  : ", s.ch1.ERAM_NR11_LEN5.state);
+  d("\n");
+
+  d.dump_bitp("JUSA_NR12_DELAY0n  : ", s.ch1.JUSA_NR12_DELAY0n.state);
+  d.dump_bitp("JUZY_NR12_DELAY1n  : ", s.ch1.JUZY_NR12_DELAY1n.state);
+  d.dump_bitp("JOMA_NR12_DELAY2n  : ", s.ch1.JOMA_NR12_DELAY2n.state);
+  d.dump_bitp("JAFY_NR12_ENV_DIRn : ", s.ch1.JAFY_NR12_ENV_DIRn.state);
+  d.dump_bitp("JATY_NR12_VOL0n    : ", s.ch1.JATY_NR12_VOL0n.state);
+  d.dump_bitp("JAXO_NR12_VOL1n    : ", s.ch1.JAXO_NR12_VOL1n.state);
+  d.dump_bitp("JENA_NR12_VOL2n    : ", s.ch1.JENA_NR12_VOL2n.state);
+  d.dump_bitp("JOPU_NR12_VOL3n    : ", s.ch1.JOPU_NR12_VOL3n.state);
+  d("\n");
+#endif
 }

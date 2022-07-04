@@ -273,6 +273,7 @@ build DMG/oam_write_l1_c.gb : compile_and_link oam_write_l1_c.s
 build DMG/oam_write_l1_d.gb : compile_and_link oam_write_l1_d.s
 build DMG/oam_write_l1_e.gb : compile_and_link oam_write_l1_e.s
 build DMG/oam_write_l1_f.gb : compile_and_link oam_write_l1_f.s
+build DMG/poweron.gb : compile_and_link poweron.s
 build DMG/poweron_bgp_000.gb : compile_and_link poweron_bgp_000.s
 build DMG/poweron_div_000.gb : compile_and_link poweron_div_000.s
 build DMG/poweron_div_004.gb : compile_and_link poweron_div_004.s

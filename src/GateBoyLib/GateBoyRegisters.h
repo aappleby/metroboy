@@ -111,14 +111,14 @@ struct RegLCDC {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*#p23.VYXE*/ DFF9 VYXE_LCDC_BGENn;   // xxxxxxxH
-  /*_p23.XYLO*/ DFF9 XYLO_LCDC_SPENn;   // xxxxxxxH
-  /*_p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEn; // xxxxxxxH
-  /*_p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPn;  // xxxxxxxH
-  /*_p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEn; // xxxxxxxH
-  /*_p23.WYMO*/ DFF9 WYMO_LCDC_WINENn;  // xxxxxxxH
-  /*_p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPn; // xxxxxxxH
-  /*_p23.XONA*/ DFF9 XONA_LCDC_LCDENn;  // xxxxxxxH
+  /*#p23.VYXE*/ DFF9B VYXE_LCDC_BGENp;   // xxxxxxxH
+  /*_p23.XYLO*/ DFF9B XYLO_LCDC_SPENp;   // xxxxxxxH
+  /*_p23.XYMO*/ DFF9B XYMO_LCDC_SPSIZEp; // xxxxxxxH
+  /*_p23.XAFO*/ DFF9B XAFO_LCDC_BGMAPp;  // xxxxxxxH
+  /*_p23.WEXU*/ DFF9B WEXU_LCDC_BGTILEp; // xxxxxxxH
+  /*_p23.WYMO*/ DFF9B WYMO_LCDC_WINENp;  // xxxxxxxH
+  /*_p23.WOKY*/ DFF9B WOKY_LCDC_WINMAPp; // xxxxxxxH
+  /*_p23.XONA*/ DFF9B XONA_LCDC_LCDENp;  // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

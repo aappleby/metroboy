@@ -203,8 +203,8 @@ void GateBoy::set_lcd_pins_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_
   /*#p24.KEBO*/ wire KEBO = not1(MECO);
   /*_p01.UREK*/ wire UREK_DIV07n = not1(reg_new.reg_div.TULU_DIV07p.qp_new());
   /*#p24.USEC*/ wire USEC_DIV07p = not1(UREK_DIV07n);
-  /*#p24.KEDY*/ wire KEDY_LCDC_ENn = not1(reg_new.reg_lcdc.XONA_LCDC_LCDENn.qn_new());
-  /*#p24.KUPA*/ wire KUPA = amux2(reg_new.reg_lcdc.XONA_LCDC_LCDENn.qn_new(), KEBO, KEDY_LCDC_ENn, USEC_DIV07p);
+  /*#p24.KEDY*/ wire KEDY_LCDC_ENn = not1(reg_new.reg_lcdc.XONA_LCDC_LCDENp.qp_newB());
+  /*#p24.KUPA*/ wire KUPA = amux2(reg_new.reg_lcdc.XONA_LCDC_LCDENp.qp_newB(), KEBO, KEDY_LCDC_ENn, USEC_DIV07p);
   /*#p24.KOFO*/ wire KOFO = not1(KUPA);
   /*_PIN_56*/ pins.lcd.PIN_56_LCD_FLIPS.pin_out(KOFO, KOFO);
 
@@ -247,7 +247,7 @@ void GateBoy::set_lcd_pins_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_
   /*#p21.PURE*/ wire PURE_LINE_ENDn_new = not1(reg_new.lcd.RUTU_LINE_ENDp_odd.qp_new());
   /*#p24.KASA*/ wire KASA_LINE_ENDp = not1(PURE_LINE_ENDn_new);
   /*#p24.UMOB*/ wire UMOB_DIV_06p = not1(UMEK_DIV06n);
-  /*#p24.KAHE*/ wire KAHE_LINE_ENDp = amux2(reg_new.reg_lcdc.XONA_LCDC_LCDENn.qn_new(), KASA_LINE_ENDp, KEDY_LCDC_ENn, UMOB_DIV_06p);
+  /*#p24.KAHE*/ wire KAHE_LINE_ENDp = amux2(reg_new.reg_lcdc.XONA_LCDC_LCDENp.qp_newB(), KASA_LINE_ENDp, KEDY_LCDC_ENn, UMOB_DIV_06p);
   /*#p24.KYMO*/ wire KYMO_LINE_ENDn = not1(KAHE_LINE_ENDp);
   /*_PIN_55*/ pins.lcd.PIN_55_LCD_LATCH.pin_out(KYMO_LINE_ENDn, KYMO_LINE_ENDn);
 

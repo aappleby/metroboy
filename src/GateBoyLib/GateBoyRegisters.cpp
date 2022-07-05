@@ -45,25 +45,25 @@ void GateBoy::tock_lcdc_gates(const GateBoyState& reg_old) {
 
   /*_p23.WARU*/ wire WARU_FF40_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VOCA_FF40p_new());
   /*_p23.XUBO*/ wire XUBO_FF40_WRn_new = not1(WARU_FF40_WRp_new);
-  /*#p23.VYXE*/ reg_new.reg_lcdc.VYXE_LCDC_BGENn  .dff9(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  /*_p23.XYLO*/ reg_new.reg_lcdc.XYLO_LCDC_SPENn  .dff9(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  /*_p23.XYMO*/ reg_new.reg_lcdc.XYMO_LCDC_SPSIZEn.dff9(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-  /*_p23.XAFO*/ reg_new.reg_lcdc.XAFO_LCDC_BGMAPn .dff9(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p23.WEXU*/ reg_new.reg_lcdc.WEXU_LCDC_BGTILEn.dff9(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p23.WYMO*/ reg_new.reg_lcdc.WYMO_LCDC_WINENn .dff9(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p23.WOKY*/ reg_new.reg_lcdc.WOKY_LCDC_WINMAPn.dff9(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-  /*_p23.XONA*/ reg_new.reg_lcdc.XONA_LCDC_LCDENn. dff9(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+  /*#p23.VYXE*/ reg_new.reg_lcdc.VYXE_LCDC_BGENp  .dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+  /*_p23.XYLO*/ reg_new.reg_lcdc.XYLO_LCDC_SPENp  .dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+  /*_p23.XYMO*/ reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+  /*_p23.XAFO*/ reg_new.reg_lcdc.XAFO_LCDC_BGMAPp .dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p23.WEXU*/ reg_new.reg_lcdc.WEXU_LCDC_BGTILEp.dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p23.WYMO*/ reg_new.reg_lcdc.WYMO_LCDC_WINENp .dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p23.WOKY*/ reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p23.XONA*/ reg_new.reg_lcdc.XONA_LCDC_LCDENp. dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
   /*_p23.VYRE*/ wire VYRE_FF40_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.VOCA_FF40p_new());
   /*_p23.WYCE*/ wire WYCE_FF40_RDn_new = not1(VYRE_FF40_RDp_new);
-  /*#p23.WYPO*/ triwire WYPO_LCDC0_TO_CD0_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.VYXE_LCDC_BGENn.qp_new());
-  /*#p23.XERO*/ triwire XERO_LCDC1_TO_CD1_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XYLO_LCDC_SPENn.qp_new());
-  /*_p23.WYJU*/ triwire WYJU_LCDC2_TO_CD2_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XYMO_LCDC_SPSIZEn.qp_new());
-  /*_p23.WUKA*/ triwire WUKA_LCDC3_TO_CD3_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XAFO_LCDC_BGMAPn.qp_new());
-  /*_p23.VOKE*/ triwire VOKE_LCDC4_TO_CD4_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WEXU_LCDC_BGTILEn.qp_new());
-  /*_p23.VATO*/ triwire VATO_LCDC5_TO_CD5_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WYMO_LCDC_WINENn.qp_new());
-  /*#p23.VAHA*/ triwire VAHA_LCDC6_TO_CD6_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WOKY_LCDC_WINMAPn.qp_new());
-  /*#p23.XEBU*/ triwire XEBU_LCDC7_TO_CD7_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XONA_LCDC_LCDENn.qp_new());
+  /*#p23.WYPO*/ triwire WYPO_LCDC0_TO_CD0_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.VYXE_LCDC_BGENp.qn_newB());
+  /*#p23.XERO*/ triwire XERO_LCDC1_TO_CD1_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XYLO_LCDC_SPENp.qn_newB());
+  /*_p23.WYJU*/ triwire WYJU_LCDC2_TO_CD2_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.qn_newB());
+  /*_p23.WUKA*/ triwire WUKA_LCDC3_TO_CD3_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XAFO_LCDC_BGMAPp.qn_newB());
+  /*_p23.VOKE*/ triwire VOKE_LCDC4_TO_CD4_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WEXU_LCDC_BGTILEp.qn_newB());
+  /*_p23.VATO*/ triwire VATO_LCDC5_TO_CD5_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WYMO_LCDC_WINENp.qn_newB());
+  /*#p23.VAHA*/ triwire VAHA_LCDC6_TO_CD6_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.qn_newB());
+  /*#p23.XEBU*/ triwire XEBU_LCDC7_TO_CD7_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XONA_LCDC_LCDENp.qn_newB());
 
   /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(WYPO_LCDC0_TO_CD0_new);
   /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(XERO_LCDC1_TO_CD1_new);
@@ -131,14 +131,14 @@ void RegLCDC::reset_to_bootrom() {
 }
 
 void RegLCDC::reset_to_cart() {
-  VYXE_LCDC_BGENn.state   = 0b00011010;
-  XYLO_LCDC_SPENn.state   = 0b00011011;
-  XYMO_LCDC_SPSIZEn.state = 0b00011011;
-  XAFO_LCDC_BGMAPn.state  = 0b00011011;
-  WEXU_LCDC_BGTILEn.state = 0b00011010;
-  WYMO_LCDC_WINENn.state  = 0b00011011;
-  WOKY_LCDC_WINMAPn.state = 0b00011011;
-  XONA_LCDC_LCDENn.state  = 0b00011010;
+  VYXE_LCDC_BGENp.set_state(0b00011010);
+  XYLO_LCDC_SPENp.set_state(0b00011011);
+  XYMO_LCDC_SPSIZEp.set_state(0b00011011);
+  XAFO_LCDC_BGMAPp.set_state(0b00011011);
+  WEXU_LCDC_BGTILEp.set_state(0b00011010);
+  WYMO_LCDC_WINENp.set_state(0b00011011);
+  WOKY_LCDC_WINMAPp.set_state(0b00011011);
+  XONA_LCDC_LCDENp.set_state(0b00011010);
 }
 
 //-----------------------------------------------------------------------------

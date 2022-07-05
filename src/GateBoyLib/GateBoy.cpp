@@ -698,7 +698,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p27.NUNU*/ reg_new.win_ctrl.NUNU_WIN_MATCHp_odd.dff17 (reg_new.sys_clk.MEHE_odd_new(), reg_new.XAPO_VID_RSTn_new(), reg_old.win_ctrl.PYCO_WIN_MATCHp_evn.qp_old());
   /*_p27.NOPA*/ reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.dff17(reg_new.sys_clk.ALET_evn_new(), reg_new.XAPO_VID_RSTn_new(), reg_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_old());
 
-  /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(reg_new.reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn_odd_new, reg_new.XAPO_VID_RSTn_new());
+  /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(reg_new.reg_lcdc.WYMO_LCDC_WINENp.qp_newB(), XAHY_LINE_RSTn_odd_new, reg_new.XAPO_VID_RSTn_new());
   /*_p27.PYNU*/ reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.nor_latch(reg_new.win_ctrl.NUNU_WIN_MATCHp_odd.qp_new(), XOFO_WIN_RSTp);
 
   /*#p27.NUNY*/ uint8_t NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
@@ -792,7 +792,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p29.GYDA*/ wire GYDA_SPRITE_DELTA6 = not1(sprite_delta_y.GOJU_YDIFF6.sum);
     /*_p29.GEWY*/ wire GEWY_SPRITE_DELTA7 = not1(sprite_delta_y.WUHU_YDIFF7.sum);
 
-    /*#p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or2(reg_new.reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), sprite_delta_y.GYKY_YDIFF3.sum);
+    /*#p29.GOVU*/ wire GOVU_SPSIZE_MATCH = or2(reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.qp_newB(), sprite_delta_y.GYKY_YDIFF3.sum);
     /*_p29.WOTA*/ wire WOTA_SCAN_MATCH_Yn = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, sprite_delta_y.WUHU_YDIFF7.carry, GOVU_SPSIZE_MATCH);
     /*_p29.GESE*/ wire GESE_SCAN_MATCH_Yp = not1(WOTA_SCAN_MATCH_Yn);
     /*_p29.CEHA*/ wire CEHA_SCANNINGp_odd = not1(reg_new.sprite_scanner.CENO_SCAN_DONEn_odd.qn_new());
@@ -851,7 +851,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p29.CEHA*/ wire CEHA_SCANNINGp_odd  = not1(reg_new.sprite_scanner.CENO_SCAN_DONEn_odd.qn_new());
     /*#p29.BYJO*/ wire BYJO_SCANNINGn_odd  = not1(CEHA_SCANNINGp_odd);
     /*#p29.AZEM*/ wire AZEM_RENDERINGp_odd = and2(reg_new.XYMU_RENDERING_LATCHn.qn_new(), BYJO_SCANNINGn_odd);
-    /*#p29.AROR*/ wire AROR_MATCH_ENp_odd  = and2(AZEM_RENDERINGp_odd, reg_new.reg_lcdc.XYLO_LCDC_SPENn.qn_new());
+    /*#p29.AROR*/ wire AROR_MATCH_ENp_odd  = and2(AZEM_RENDERINGp_odd, reg_new.reg_lcdc.XYLO_LCDC_SPENp.qp_newB());
 
     /*#p27.PUXA*/ reg_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.dff17_any(ROXO_CLKPIPE_evn_new,           reg_new.XYMU_RENDERING_LATCHn.qn_new(), POHU_SCX_FINE_MATCHp_old_odd);
     /*#p27.NYZE*/ reg_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.dff17_any(reg_new.sys_clk.MOXE_odd_new(), reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_old.fine_scroll.PUXA_SCX_FINE_MATCH_evn.qp_old());

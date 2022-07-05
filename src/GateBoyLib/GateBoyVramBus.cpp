@@ -196,7 +196,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*_p26.CYPO*/ triwire CYPO_MY02_TO_VA07_new = tri6_nn(BAFY_BG_MAP_READn_new, DABA_MAP_Y2_new.sum);
   /*_p26.CETA*/ triwire CETA_MY03_TO_VA08_new = tri6_nn(BAFY_BG_MAP_READn_new, EFYK_MAP_Y3_new.sum);
   /*_p26.DAFE*/ triwire DAFE_MY04_TO_VA09_new = tri6_nn(BAFY_BG_MAP_READn_new, EJOK_MAP_Y4_new.sum);
-  /*#p26.AMUV*/ triwire AMUV_BMAP_TO_VA10_new = tri6_nn(BAFY_BG_MAP_READn_new, reg_new.reg_lcdc.XAFO_LCDC_BGMAPn.qn_new());
+  /*#p26.AMUV*/ triwire AMUV_BMAP_TO_VA10_new = tri6_nn(BAFY_BG_MAP_READn_new, reg_new.reg_lcdc.XAFO_LCDC_BGMAPp.qp_newB());
   /*_p26.COVE*/ triwire COVE_BMAP_TO_VA11_new = tri6_nn(BAFY_BG_MAP_READn_new, reg_new.SIG_VCC.out_new());
   /*_p26.COXO*/ triwire COXO_BMAP_TO_VA12_new = tri6_nn(BAFY_BG_MAP_READn_new, reg_new.SIG_VCC.out_new());
 
@@ -222,7 +222,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
 
   /*_p27.VETU*/ wire VETU_WIN_MAPp_new = and2(TEVO_WIN_FETCH_TRIGp_new, PORE_WIN_MODEp_new);
   /*_p27.XAHY*/ wire XAHY_LINE_RSTn_odd_new = not1(reg_new.ATEJ_LINE_RST_TRIGp_odd.out_new());
-  /*#p27.XOFO*/ wire XOFO_WIN_RSTp_new = nand3(reg_new.reg_lcdc.WYMO_LCDC_WINENn.qn_new(), XAHY_LINE_RSTn_odd_new, reg_new.XAPO_VID_RSTn_new());
+  /*#p27.XOFO*/ wire XOFO_WIN_RSTp_new = nand3(reg_new.reg_lcdc.WYMO_LCDC_WINENp.qp_newB(), XAHY_LINE_RSTn_odd_new, reg_new.XAPO_VID_RSTn_new());
   /*_p27.XACO*/ wire XACO_WIN_RSTn_new = not1(XOFO_WIN_RSTp_new);
   /*_p27.WYKA*/ reg_new.win_x.map.WYKA_WIN_MAP_X0.dff17(VETU_WIN_MAPp_new,                          XACO_WIN_RSTn_new, reg_old.win_x.map.WYKA_WIN_MAP_X0.qn_old());
   /*_p27.WODY*/ reg_new.win_x.map.WODY_WIN_MAP_X1.dff17(reg_new.win_x.map.WYKA_WIN_MAP_X0.qn_new(), XACO_WIN_RSTn_new, reg_old.win_x.map.WODY_WIN_MAP_X1.qn_old());
@@ -254,7 +254,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*_p27.VACE*/ triwire VACE_WY05_TO_VA07_new = tri6_nn(WUKO_WIN_MAP_READn_new, reg_new.win_y.map.TOZO_WIN_MAP_Y2.qp_new());
   /*_p27.VOVO*/ triwire VOVO_WY06_TO_VA08_new = tri6_nn(WUKO_WIN_MAP_READn_new, reg_new.win_y.map.TATE_WIN_MAP_Y3.qp_new());
   /*_p27.VULO*/ triwire VULO_WY07_TO_VA09_new = tri6_nn(WUKO_WIN_MAP_READn_new, reg_new.win_y.map.TEKE_WIN_MAP_Y4.qp_new());
-  /*#p27.VEVY*/ triwire VEVY_WMAP_TO_VA10_new = tri6_nn(WUKO_WIN_MAP_READn_new, reg_new.reg_lcdc.WOKY_LCDC_WINMAPn.qn_new());
+  /*#p27.VEVY*/ triwire VEVY_WMAP_TO_VA10_new = tri6_nn(WUKO_WIN_MAP_READn_new, reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.qp_newB());
   /*_p27.VEZA*/ triwire VEZA_WMAP_TO_VA11_new = tri6_nn(WUKO_WIN_MAP_READn_new, reg_new.SIG_VCC.out_new());
   /*_p27.VOGU*/ triwire VOGU_WMAP_TO_VA12_new = tri6_nn(WUKO_WIN_MAP_READn_new, reg_new.SIG_VCC.out_new());
 
@@ -319,7 +319,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*_BUS_VRAM_A10n*/ reg_new.vram_abus.hi.BUS_VRAM_A10n.tri_bus(SUVO_TEMP_TO_VA10_new);
   /*_BUS_VRAM_A11n*/ reg_new.vram_abus.hi.BUS_VRAM_A11n.tri_bus(TOBO_TEMP_TO_VA11_new);
 
-  /*#p25.VUZA*/ wire VUZA_TILE_BANKp_new = nor2(reg_new.tile_temp_b.PYJU_TILE_DB7p.qp_new(), reg_new.reg_lcdc.WEXU_LCDC_BGTILEn.qn_new());
+  /*#p25.VUZA*/ wire VUZA_TILE_BANKp_new = nor2(reg_new.tile_temp_b.PYJU_TILE_DB7p.qp_new(), reg_new.reg_lcdc.WEXU_LCDC_BGTILEp.qp_newB());
   /*#p25.VURY*/ triwire VURY_BANK_TO_VA12_new = tri6_pn(NETA_BGW_TILE_READp_new, VUZA_TILE_BANKp_new);
 
   /*_BUS_VRAM_A12n*/ reg_new.vram_abus.hi.BUS_VRAM_A12n.tri_bus(VURY_BANK_TO_VA12_new);
@@ -328,7 +328,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   // Sprite read address
 
   /*#p29.WUKY*/ wire WUKY_FLIP_Yp_new = not1(reg_new.oam_temp_b.YZOS_OAM_DB6p.qp_new());
-  /*#p29.FUFO*/ wire FUFO_LCDC_SPSIZEn_new = not1(reg_new.reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new());
+  /*#p29.FUFO*/ wire FUFO_LCDC_SPSIZEn_new = not1(reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.qp_newB());
 
   /*#p29.XUQU*/ wire XUQU_SPRITE_AB_new = not1(reg_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.qn_new());
 
@@ -336,7 +336,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*#p29.BORE*/ wire BORE_L1_new = xor2(WUKY_FLIP_Yp_new, reg_new.sprite_lbus.BUS_SPR_L1.out_new());
   /*#p29.BUVY*/ wire BUVY_L2_new = xor2(WUKY_FLIP_Yp_new, reg_new.sprite_lbus.BUS_SPR_L2.out_new());
   /*#p29.WAGO*/ wire WAGO_L3_new = xor2(WUKY_FLIP_Yp_new, reg_new.sprite_lbus.BUS_SPR_L3.out_new());
-  /*#p29.GEJY*/ wire GEJY_L3_new = amux2(reg_new.oam_temp_a.XUSO_OAM_DA0p.qp_new(), FUFO_LCDC_SPSIZEn_new, reg_new.reg_lcdc.XYMO_LCDC_SPSIZEn.qn_new(), WAGO_L3_new);
+  /*#p29.GEJY*/ wire GEJY_L3_new = amux2(reg_new.oam_temp_a.XUSO_OAM_DA0p.qp_new(), FUFO_LCDC_SPSIZEn_new, reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.qp_newB(), WAGO_L3_new);
 
   /*_p29.ABON*/ wire ABON_SFETCHINGn_new = not1(reg_new.sfetch_control.TEXY_SFETCHINGp_evn.out_new());
   /*_p29.ABEM*/ triwire ABEM_HILO_TO_VA00_new = tri6_nn(ABON_SFETCHINGn_new, XUQU_SPRITE_AB_new);

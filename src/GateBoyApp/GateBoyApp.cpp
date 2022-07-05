@@ -728,10 +728,10 @@ Step controls:
   int row3 = 640;
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 0 ==========\001", col7, row1);
-  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, mem.vid_ram, 0, (int)!bit0(state.reg_lcdc.WEXU_LCDC_BGTILEn.state));
+  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, mem.vid_ram, 0, (int)!bit0(state.reg_lcdc.WEXU_LCDC_BGTILEp.get_state() ^ 1));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 1 ==========\001", col7, row2);
-  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, mem.vid_ram, 1, (int)!bit0(state.reg_lcdc.WEXU_LCDC_BGTILEn.state));
+  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, mem.vid_ram, 1, (int)!bit0(state.reg_lcdc.WEXU_LCDC_BGTILEp.get_state() ^ 1));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Tiles ==========\001", col7, row3);
   gb_blitter.blit_tiles (view, screen_size, col7, row3 + 16, 1, mem.vid_ram);

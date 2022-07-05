@@ -362,7 +362,7 @@ void GateBoyDumper::dump_serial(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
-  d.dump_slice2n("FF40 LCDC  : ", &s.reg_lcdc.VYXE_LCDC_BGENn, 8);
+  d.dump_slice2p("FF40 LCDC  : ", &s.reg_lcdc.VYXE_LCDC_BGENp, 8);
   
   {
     wire PARU_VBLANKp_odd = not1(s.lcd.POPU_VBLANKp_odd.qn_old());

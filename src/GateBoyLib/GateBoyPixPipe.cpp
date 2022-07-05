@@ -60,7 +60,7 @@ void GateBoy::tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_o
   /*_p27.NONO*/ wire NONO_WX_MATCH6p_odd_new = xnor2(reg_new.pix_count.TAKO_PX6p_odd.qp_new(), reg_new.reg_wx.MUVO_WX6n.qn_new());
   /*_p27.PASE*/ wire PASE_WX_MATCH7p_odd_new = xnor2(reg_new.pix_count.SYBE_PX7p_odd.qp_new(), reg_new.reg_wx.NUKU_WX7n.qn_new());
 
-  /*#p27.PALO*/ wire PALO_WY_MATCHn_odd_new = nand5(reg_new.reg_lcdc.WYMO_LCDC_WINENn.qn_new(), NOJO_WY_MATCH4p_odd_new, PAGA_WY_MATCH5p_odd_new, PEZO_WY_MATCH6p_odd_new, NUPA_WY_MATCH7p_odd_new);
+  /*#p27.PALO*/ wire PALO_WY_MATCHn_odd_new = nand5(reg_new.reg_lcdc.WYMO_LCDC_WINENp.qp_newB(), NOJO_WY_MATCH4p_odd_new, PAGA_WY_MATCH5p_odd_new, PEZO_WY_MATCH6p_odd_new, NUPA_WY_MATCH7p_odd_new);
   /*_p27.NELE*/ wire NELE_WY_MATCHp_odd_new = not1(PALO_WY_MATCHn_odd_new);
   /*_p27.PAFU*/ wire PAFU_WY_MATCHn_odd_new = nand5(NELE_WY_MATCHp_odd_new, NAZE_WY_MATCH0p_odd_new, PEBO_WY_MATCH1p_odd_new, POMO_WY_MATCH2p_odd_new, NEVU_WY_MATCH3p_odd_new);
 
@@ -476,10 +476,10 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   //----------------------------------------
   // Pipe merge
 
-  /*#p35.RAJY*/ wire RAJY_PIX_BG_LOp_new = and2(reg_new.bgw_pipe_a.PYBO_BGW_PIPE_A7.qp_new(), reg_new.reg_lcdc.VYXE_LCDC_BGENn.qn_new());
-  /*#p35.TADE*/ wire TADE_PIX_BG_HIp_new = and2(reg_new.bgw_pipe_b.SOHU_BGW_PIPE_B7.qp_new(), reg_new.reg_lcdc.VYXE_LCDC_BGENn.qn_new());
-  /*#p35.XULA*/ wire XULA_PIX_SP_LOp_new = and2(reg_new.reg_lcdc.XYLO_LCDC_SPENn.qn_new(), reg_new.spr_pipe_a.WUFY_SPR_PIPE_A7.qp_new());
-  /*#p35.WOXA*/ wire WOXA_PIX_SP_HIp_new = and2(reg_new.reg_lcdc.XYLO_LCDC_SPENn.qn_new(), reg_new.spr_pipe_b.VUPY_SPR_PIPE_B7.qp_new());
+  /*#p35.RAJY*/ wire RAJY_PIX_BG_LOp_new = and2(reg_new.bgw_pipe_a.PYBO_BGW_PIPE_A7.qp_new(), reg_new.reg_lcdc.VYXE_LCDC_BGENp.qp_newB());
+  /*#p35.TADE*/ wire TADE_PIX_BG_HIp_new = and2(reg_new.bgw_pipe_b.SOHU_BGW_PIPE_B7.qp_new(), reg_new.reg_lcdc.VYXE_LCDC_BGENp.qp_newB());
+  /*#p35.XULA*/ wire XULA_PIX_SP_LOp_new = and2(reg_new.reg_lcdc.XYLO_LCDC_SPENp.qp_newB(), reg_new.spr_pipe_a.WUFY_SPR_PIPE_A7.qp_new());
+  /*#p35.WOXA*/ wire WOXA_PIX_SP_HIp_new = and2(reg_new.reg_lcdc.XYLO_LCDC_SPENp.qp_newB(), reg_new.spr_pipe_b.VUPY_SPR_PIPE_B7.qp_new());
 
   /*#p35.NULY*/ wire NULY_PIX_SP_MASKn_new = nor2(WOXA_PIX_SP_HIp_new, XULA_PIX_SP_LOp_new);
 

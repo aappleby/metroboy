@@ -696,10 +696,6 @@ void VramABusLo::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void VramABusHi::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void VramABusHi::reset_to_bootrom() {
   BUS_VRAM_A08n.state = BIT_OLD | BIT_DRIVEN | 1;
   BUS_VRAM_A09n.state = BIT_OLD | BIT_DRIVEN | 1;

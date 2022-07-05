@@ -240,10 +240,6 @@ void RegDIV::force_set_div(uint16_t div) {
 
 //-----------------------------------------------------------------------------
 
-void RegTIMA::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void RegTIMA::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }

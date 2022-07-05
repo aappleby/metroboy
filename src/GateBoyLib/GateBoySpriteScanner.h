@@ -20,7 +20,6 @@ struct SpriteScanner {
 // Scan counter tracks which of the 40 sprites in OAM we're scanning.
 
 struct ScanCounter {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

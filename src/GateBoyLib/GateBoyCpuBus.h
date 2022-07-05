@@ -87,7 +87,6 @@ struct GateBoyCpuSignals {
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpuABus {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
   void set_addr(uint16_t bus_addr_new);

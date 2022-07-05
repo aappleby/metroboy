@@ -733,7 +733,6 @@ void FineScroll::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void MaskPipe::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void MaskPipe::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void MaskPipe::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 

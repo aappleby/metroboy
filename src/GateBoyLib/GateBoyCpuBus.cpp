@@ -126,25 +126,6 @@ void GateBoyCpuSignals::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyCpuABus::reset_to_poweron() {
-  BUS_CPU_A00p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A01p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A02p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A03p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A04p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A05p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A06p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A07p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A08p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A09p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A10p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A11p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A12p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A13p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A14p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_A15p.state = BIT_OLD | BIT_PULLED | 1;
-}
-
 void GateBoyCpuABus::reset_to_bootrom() {
   BUS_CPU_A00p.state = BIT_OLD | BIT_DRIVEN;
   BUS_CPU_A01p.state = BIT_OLD | BIT_DRIVEN;

@@ -37,7 +37,6 @@ struct SpriteDeltaY {
 // Pixel counter
 
 struct PixCount {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -70,7 +69,6 @@ struct BGScrollX {
 //-----------------------------------------------------------------------------
 
 struct BGScrollY {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -121,7 +119,6 @@ struct RegLCDC {
 // FF41 - STAT
 
 struct RegStat {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -135,7 +132,6 @@ struct RegStat {
 // FF42 SCY
 
 struct RegSCY {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -187,7 +183,6 @@ struct RegLY {
 // LCD x counter isn't exposed to CPU
 
 struct RegLX {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -204,7 +199,6 @@ struct RegLX {
 // FF45 LYC
 
 struct RegLYC {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
   uint8_t get() const;
@@ -257,7 +251,6 @@ struct RegOBP0 {
 // FF49 - OBP1
 
 struct RegOBP1 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -275,7 +268,6 @@ struct RegOBP1 {
 // FF4A - WY
 
 struct RegWY {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -331,7 +323,6 @@ struct OamLatchA {
 //-----------------------------------------------------------------------------
 
 struct OamLatchB {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -366,7 +357,6 @@ struct OamTempA {
 // oam byte 1, byte 3
 
 struct OamTempB {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -399,7 +389,6 @@ struct TileTempA {
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -432,7 +421,6 @@ struct SpritePixA {
 //-----------------------------------------------------------------------------
 
 struct SpritePixB {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -473,7 +461,6 @@ struct WinTileY {
 //-----------------------------------------------------------------------------
 
 struct WinMapY {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

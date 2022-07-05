@@ -26,15 +26,6 @@ void SpriteScanner::reset_to_cart()    {
 
 //-----------------------------------------------------------------------------
 
-void ScanCounter::reset_to_poweron() {
-  YFEL_SCAN0_odd.state = 0b00011000;
-  WEWY_SCAN1_odd.state = 0b00011000;
-  GOSO_SCAN2_odd.state = 0b00011000;
-  ELYN_SCAN3_odd.state = 0b00011000;
-  FAHA_SCAN4_odd.state = 0b00011000;
-  FONY_SCAN5_odd.state = 0b00011000;
-}
-
 void ScanCounter::reset_to_bootrom() {
   YFEL_SCAN0_odd.state = 0b00011000;
   WEWY_SCAN1_odd.state = 0b00011010;

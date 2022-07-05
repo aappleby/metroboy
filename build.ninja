@@ -1,6 +1,6 @@
 ################################################################################
 
-build_mode   = -DCONFIG_RELEASE -Ofast
+build_mode   = -DSIM_AUDIO -DCONFIG_RELEASE -Ofast
 #build_mode   = -DCONFIG_FASTMODE -Ofast
 #build_mode   = -DCONFIG_DEBUG -O0
 

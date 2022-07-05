@@ -124,7 +124,7 @@ void GateBoyDumper::dump_tile_fetcher(const GateBoyState& s, Dumper& d) {
 
 void GateBoyDumper::dump_clocks(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("AFUR_xxxxEFGHp : ", s.sys_clk.AFUR_xxxxEFGH.get_state());
-  d.dump_bitp("ALEF_AxxxxFGHp : ", s.sys_clk.ALEF_AxxxxFGH.state);
+  d.dump_bitp("ALEF_AxxxxFGHp : ", s.sys_clk.ALEF_AxxxxFGH.get_state());
   d.dump_bitp("APUK_ABxxxxGHp : ", s.sys_clk.APUK_ABxxxxGH.state);
   d.dump_bitp("ADYK_ABCxxxxHp : ", s.sys_clk.ADYK_ABCxxxxH.state);
   d("\n");

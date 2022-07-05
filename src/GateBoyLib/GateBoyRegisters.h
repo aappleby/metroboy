@@ -311,14 +311,14 @@ struct RegWX {
   void set(uint8_t wx);
   int get() const;
 
-  /*_p23.MYPA*/ DFF9 MYPA_WX0n; // xxxxxxxH
-  /*_p23.NOFE*/ DFF9 NOFE_WX1n; // xxxxxxxH
-  /*_p23.NOKE*/ DFF9 NOKE_WX2n; // xxxxxxxH
-  /*_p23.MEBY*/ DFF9 MEBY_WX3n; // xxxxxxxH
-  /*_p23.MYPU*/ DFF9 MYPU_WX4n; // xxxxxxxH
-  /*_p23.MYCE*/ DFF9 MYCE_WX5n; // xxxxxxxH
-  /*_p23.MUVO*/ DFF9 MUVO_WX6n; // xxxxxxxH
-  /*_p23.NUKU*/ DFF9 NUKU_WX7n; // xxxxxxxH
+  /*_p23.MYPA*/ DFF9B MYPA_WX0p; // xxxxxxxH
+  /*_p23.NOFE*/ DFF9B NOFE_WX1p; // xxxxxxxH
+  /*_p23.NOKE*/ DFF9B NOKE_WX2p; // xxxxxxxH
+  /*_p23.MEBY*/ DFF9B MEBY_WX3p; // xxxxxxxH
+  /*_p23.MYPU*/ DFF9B MYPU_WX4p; // xxxxxxxH
+  /*_p23.MYCE*/ DFF9B MYCE_WX5p; // xxxxxxxH
+  /*_p23.MUVO*/ DFF9B MUVO_WX6p; // xxxxxxxH
+  /*_p23.NUKU*/ DFF9B NUKU_WX7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

@@ -326,26 +326,26 @@ int RegWY::get() const { return bit_pack_inv(*this); }
 //-----------------------------------------------------------------------------
 
 void RegWX::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
 void RegWX::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
 void RegWX::reset_to_cart() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
 void RegWX::set(uint8_t wx) {
-  MYPA_WX0n.state = BIT_CLOCK | bit(~wx, 0);
-  NOFE_WX1n.state = BIT_CLOCK | bit(~wx, 1);
-  NOKE_WX2n.state = BIT_CLOCK | bit(~wx, 2);
-  MEBY_WX3n.state = BIT_CLOCK | bit(~wx, 3);
-  MYPU_WX4n.state = BIT_CLOCK | bit(~wx, 4);
-  MYCE_WX5n.state = BIT_CLOCK | bit(~wx, 5);
-  MUVO_WX6n.state = BIT_CLOCK | bit(~wx, 6);
-  NUKU_WX7n.state = BIT_CLOCK | bit(~wx, 7);
+  MYPA_WX0p.set_state(BIT_CLOCK | bit(~wx, 0));
+  NOFE_WX1p.set_state(BIT_CLOCK | bit(~wx, 1));
+  NOKE_WX2p.set_state(BIT_CLOCK | bit(~wx, 2));
+  MEBY_WX3p.set_state(BIT_CLOCK | bit(~wx, 3));
+  MYPU_WX4p.set_state(BIT_CLOCK | bit(~wx, 4));
+  MYCE_WX5p.set_state(BIT_CLOCK | bit(~wx, 5));
+  MUVO_WX6p.set_state(BIT_CLOCK | bit(~wx, 6));
+  NUKU_WX7p.set_state(BIT_CLOCK | bit(~wx, 7));
 }
 
 int RegWX::get() const {

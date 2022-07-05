@@ -97,7 +97,7 @@ struct GateBoyClock {
   /*_p01.AFUR*/ DFF9B AFUR_xxxxEFGH;
   /*_p01.ALEF*/ DFF9B ALEF_AxxxxFGH;
   /*_p01.APUK*/ DFF9B APUK_ABxxxxGH;
-  /*_p01.ADYK*/ DFF9 ADYK_ABCxxxxH;
+  /*_p01.ADYK*/ DFF9B ADYK_ABCxxxxH;
 
   /*_p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
   /*_p21.VENA*/ DFF17 VENA_xxCDEFxx;

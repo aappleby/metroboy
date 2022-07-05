@@ -126,7 +126,7 @@ void GateBoyDumper::dump_clocks(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("AFUR_xxxxEFGHp : ", s.sys_clk.AFUR_xxxxEFGH.get_state());
   d.dump_bitp("ALEF_AxxxxFGHp : ", s.sys_clk.ALEF_AxxxxFGH.get_state());
   d.dump_bitp("APUK_ABxxxxGHp : ", s.sys_clk.APUK_ABxxxxGH.get_state());
-  d.dump_bitp("ADYK_ABCxxxxHp : ", s.sys_clk.ADYK_ABCxxxxH.state);
+  d.dump_bitp("ADYK_ABCxxxxHp : ", s.sys_clk.ADYK_ABCxxxxH.get_state());
   d("\n");
   d.dump_bitp("WUVU_ABxxEFxxp : ", s.sys_clk.WUVU_ABxxEFxx.state);
   d.dump_bitp("VENA_xxCDEFxxp : ", s.sys_clk.VENA_xxCDEFxx.state);

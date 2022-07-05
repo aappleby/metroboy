@@ -30,10 +30,10 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*_p21.SEPA*/ wire SEPA_FF41_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VARY_FF41p_new());
   /*_p21.RYVE*/ wire RYVE_FF41_WRn_new = not1(SEPA_FF41_WRp_new);
 
-  /*_p21.ROXE*/ reg_new.reg_stat.ROXE_STAT_HBI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p21.RUFO*/ reg_new.reg_stat.RUFO_STAT_VBI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p21.REFE*/ reg_new.reg_stat.REFE_STAT_OAI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p21.RUGU*/ reg_new.reg_stat.RUGU_STAT_LYI_ENn.dff9(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p21.ROXE*/ reg_new.reg_stat.ROXE_STAT_HBI_ENp.dff9b(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p21.RUFO*/ reg_new.reg_stat.RUFO_STAT_VBI_ENp.dff9b(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p21.REFE*/ reg_new.reg_stat.REFE_STAT_OAI_ENp.dff9b(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p21.RUGU*/ reg_new.reg_stat.RUGU_STAT_LYI_ENp.dff9b(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
 
   /*_p21.TOBE*/ wire TOBE_FF41_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.VARY_FF41p_new());
   /*_p21.VAVE*/ wire VAVE_FF41_RDn_new = not1(TOBE_FF41_RDp_new);
@@ -45,10 +45,10 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*#p21.TEBY*/ triwire TEBY_STAT0_TO_CD0_new = tri6_pn(TOBE_FF41_RDp_new, SADU_STAT_MODE0n_new);
   /*#p21.WUGA*/ triwire WUGA_STAT1_TO_CD1_new = tri6_pn(TOBE_FF41_RDp_new, XATY_STAT_MODE1n_new);
   /*#p21.SEGO*/ triwire SEGO_STAT2_TO_CD2_new = tri6_pn(TOBE_FF41_RDp_new, reg_new.int_ctrl.RUPO_LYC_MATCHn.qp_new());
-  /*_p21.PUZO*/ triwire PUZO_STAT3_TO_CD3_new = tri6_nn(VAVE_FF41_RDn_new, reg_new.reg_stat.ROXE_STAT_HBI_ENn.qp_new());
-  /*_p21.POFO*/ triwire POFO_STAT4_TO_CD4_new = tri6_nn(VAVE_FF41_RDn_new, reg_new.reg_stat.RUFO_STAT_VBI_ENn.qp_new());
-  /*_p21.SASY*/ triwire SASY_STAT5_TO_CD5_new = tri6_nn(VAVE_FF41_RDn_new, reg_new.reg_stat.REFE_STAT_OAI_ENn.qp_new());
-  /*_p21.POTE*/ triwire POTE_STAT6_TO_CD6_new = tri6_nn(VAVE_FF41_RDn_new, reg_new.reg_stat.RUGU_STAT_LYI_ENn.qp_new());
+  /*_p21.PUZO*/ triwire PUZO_STAT3_TO_CD3_new = tri6_nn(VAVE_FF41_RDn_new, reg_new.reg_stat.ROXE_STAT_HBI_ENp.qn_newB());
+  /*_p21.POFO*/ triwire POFO_STAT4_TO_CD4_new = tri6_nn(VAVE_FF41_RDn_new, reg_new.reg_stat.RUFO_STAT_VBI_ENp.qn_newB());
+  /*_p21.SASY*/ triwire SASY_STAT5_TO_CD5_new = tri6_nn(VAVE_FF41_RDn_new, reg_new.reg_stat.REFE_STAT_OAI_ENp.qn_newB());
+  /*_p21.POTE*/ triwire POTE_STAT6_TO_CD6_new = tri6_nn(VAVE_FF41_RDn_new, reg_new.reg_stat.RUGU_STAT_LYI_ENp.qn_newB());
 
   /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(TEBY_STAT0_TO_CD0_new);
   /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(WUGA_STAT1_TO_CD1_new);
@@ -64,10 +64,10 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*#p21.TAPA*/ wire TAPA_INT_OAM_new   = and2(TOLU_VBLANKn_new, SELA_LINE_ENDp_new);
   /*#p21.TARU*/ wire TARU_INT_HBL_new   = and2(reg_new.WODU_HBLANK_GATEp_odd.out_new(), TOLU_VBLANKn_new);
   /*#p21.SUKO*/ wire SUKO_INT_STATp_new = amux4(
-    reg_new.reg_stat.RUGU_STAT_LYI_ENn.qn_new(), reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp.qp_new(),
-    reg_new.reg_stat.REFE_STAT_OAI_ENn.qn_new(), TAPA_INT_OAM_new,
-    reg_new.reg_stat.RUFO_STAT_VBI_ENn.qn_new(), PARU_VBLANKp_odd_new,
-    reg_new.reg_stat.ROXE_STAT_HBI_ENn.qn_new(), TARU_INT_HBL_new);
+    reg_new.reg_stat.RUGU_STAT_LYI_ENp.qp_newB(), reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp.qp_new(),
+    reg_new.reg_stat.REFE_STAT_OAI_ENp.qp_newB(), TAPA_INT_OAM_new,
+    reg_new.reg_stat.RUFO_STAT_VBI_ENp.qp_newB(), PARU_VBLANKp_odd_new,
+    reg_new.reg_stat.ROXE_STAT_HBI_ENp.qp_newB(), TARU_INT_HBL_new);
 
   /*#p21.VYPU*/ wire VYPU_INT_VBLANKp_new = not1(TOLU_VBLANKn_new);
   /*#p21.TUVA*/ wire TUVA_INT_STATn_new   = not1(SUKO_INT_STATp_new);

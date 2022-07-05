@@ -372,10 +372,10 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
       SADU_STAT_MODE0n,
       XATY_STAT_MODE1n,
       s.int_ctrl.RUPO_LYC_MATCHn.qp_old(),
-      s.reg_stat.ROXE_STAT_HBI_ENn.qp_old(),
-      s.reg_stat.RUFO_STAT_VBI_ENn.qp_old(),
-      s.reg_stat.REFE_STAT_OAI_ENn.qp_old(),
-      s.reg_stat.RUGU_STAT_LYI_ENn.qp_old(),
+      s.reg_stat.ROXE_STAT_HBI_ENp.qn_oldB(),
+      s.reg_stat.RUFO_STAT_VBI_ENp.qn_oldB(),
+      s.reg_stat.REFE_STAT_OAI_ENp.qn_oldB(),
+      s.reg_stat.RUGU_STAT_LYI_ENp.qn_oldB(),
       0,
     };
   

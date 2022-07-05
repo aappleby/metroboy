@@ -129,10 +129,10 @@ struct RegStat {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENn; // xxxxxxxH
-  /*_p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENn; // xxxxxxxH
-  /*_p21.REFE*/ DFF9 REFE_STAT_OAI_ENn; // xxxxxxxH
-  /*_p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENn; // xxxxxxxH
+  /*_p21.ROXE*/ DFF9B ROXE_STAT_HBI_ENp; // xxxxxxxH
+  /*_p21.RUFO*/ DFF9B RUFO_STAT_VBI_ENp; // xxxxxxxH
+  /*_p21.REFE*/ DFF9B REFE_STAT_OAI_ENp; // xxxxxxxH
+  /*_p21.RUGU*/ DFF9B RUGU_STAT_LYI_ENp; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

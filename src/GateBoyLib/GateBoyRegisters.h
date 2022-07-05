@@ -408,14 +408,14 @@ struct SpritePixA {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p33.REWO*/ DFF8n REWO_SPRITE_DA0n; // xBxDxFxH
-  /*_p33.PEBA*/ DFF8n PEBA_SPRITE_DA1n; // xBxDxFxH
-  /*_p33.MOFO*/ DFF8n MOFO_SPRITE_DA2n; // xBxDxFxH
-  /*_p33.PUDU*/ DFF8n PUDU_SPRITE_DA3n; // xBxDxFxH
-  /*_p33.SAJA*/ DFF8n SAJA_SPRITE_DA4n; // xBxDxFxH
-  /*_p33.SUNY*/ DFF8n SUNY_SPRITE_DA5n; // xBxDxFxH
-  /*_p33.SEMO*/ DFF8n SEMO_SPRITE_DA6n; // xBxDxFxH
-  /*_p33.SEGA*/ DFF8n SEGA_SPRITE_DA7n; // xBxDxFxH
+  /*_p33.REWO*/ DFF8nB REWO_SPRITE_DA0n; // xBxDxFxH
+  /*_p33.PEBA*/ DFF8nB PEBA_SPRITE_DA1n; // xBxDxFxH
+  /*_p33.MOFO*/ DFF8nB MOFO_SPRITE_DA2n; // xBxDxFxH
+  /*_p33.PUDU*/ DFF8nB PUDU_SPRITE_DA3n; // xBxDxFxH
+  /*_p33.SAJA*/ DFF8nB SAJA_SPRITE_DA4n; // xBxDxFxH
+  /*_p33.SUNY*/ DFF8nB SUNY_SPRITE_DA5n; // xBxDxFxH
+  /*_p33.SEMO*/ DFF8nB SEMO_SPRITE_DA6n; // xBxDxFxH
+  /*_p33.SEGA*/ DFF8nB SEGA_SPRITE_DA7n; // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------
@@ -424,14 +424,14 @@ struct SpritePixB {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p33.PEFO*/ DFF8n PEFO_SPRITE_DB0n; // xBxDxFxH
-  /*_p33.ROKA*/ DFF8n ROKA_SPRITE_DB1n; // xBxDxFxH
-  /*_p33.MYTU*/ DFF8n MYTU_SPRITE_DB2n; // xBxDxFxH
-  /*_p33.RAMU*/ DFF8n RAMU_SPRITE_DB3n; // xBxDxFxH
-  /*_p33.SELE*/ DFF8n SELE_SPRITE_DB4n; // xBxDxFxH
-  /*_p33.SUTO*/ DFF8n SUTO_SPRITE_DB5n; // xBxDxFxH
-  /*_p33.RAMA*/ DFF8n RAMA_SPRITE_DB6n; // xBxDxFxH
-  /*_p33.RYDU*/ DFF8n RYDU_SPRITE_DB7n; // xBxDxFxH
+  /*_p33.PEFO*/ DFF8nB PEFO_SPRITE_DB0n; // xBxDxFxH
+  /*_p33.ROKA*/ DFF8nB ROKA_SPRITE_DB1n; // xBxDxFxH
+  /*_p33.MYTU*/ DFF8nB MYTU_SPRITE_DB2n; // xBxDxFxH
+  /*_p33.RAMU*/ DFF8nB RAMU_SPRITE_DB3n; // xBxDxFxH
+  /*_p33.SELE*/ DFF8nB SELE_SPRITE_DB4n; // xBxDxFxH
+  /*_p33.SUTO*/ DFF8nB SUTO_SPRITE_DB5n; // xBxDxFxH
+  /*_p33.RAMA*/ DFF8nB RAMA_SPRITE_DB6n; // xBxDxFxH
+  /*_p33.RYDU*/ DFF8nB RYDU_SPRITE_DB7n; // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------

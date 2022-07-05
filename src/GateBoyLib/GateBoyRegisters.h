@@ -220,14 +220,14 @@ struct RegBGP {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*#p36.PAVO*/ DFF8pB PAVO_BGP_D0n; // xxxxxxxH
-  /*_p36.NUSY*/ DFF8pB NUSY_BGP_D1n; // xxxxxxxH
-  /*_p36.PYLU*/ DFF8pB PYLU_BGP_D2n; // xxxxxxxH
-  /*_p36.MAXY*/ DFF8pB MAXY_BGP_D3n; // xxxxxxxH
-  /*_p36.MUKE*/ DFF8pB MUKE_BGP_D4n; // xxxxxxxH
-  /*_p36.MORU*/ DFF8pB MORU_BGP_D5n; // xxxxxxxH
-  /*_p36.MOGY*/ DFF8pB MOGY_BGP_D6n; // xxxxxxxH
-  /*_p36.MENA*/ DFF8pB MENA_BGP_D7n; // xxxxxxxH
+  /*#p36.PAVO*/ DFF8pB PAVO_BGP_D0p; // xxxxxxxH
+  /*_p36.NUSY*/ DFF8pB NUSY_BGP_D1p; // xxxxxxxH
+  /*_p36.PYLU*/ DFF8pB PYLU_BGP_D2p; // xxxxxxxH
+  /*_p36.MAXY*/ DFF8pB MAXY_BGP_D3p; // xxxxxxxH
+  /*_p36.MUKE*/ DFF8pB MUKE_BGP_D4p; // xxxxxxxH
+  /*_p36.MORU*/ DFF8pB MORU_BGP_D5p; // xxxxxxxH
+  /*_p36.MOGY*/ DFF8pB MOGY_BGP_D6p; // xxxxxxxH
+  /*_p36.MENA*/ DFF8pB MENA_BGP_D7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -237,14 +237,14 @@ struct RegOBP0 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p36.XUFU*/ DFF8pB XUFU_OBP0_D0n; // xxxxxxxH
-  /*_p36.XUKY*/ DFF8pB XUKY_OBP0_D1n; // xxxxxxxH
-  /*_p36.XOVA*/ DFF8pB XOVA_OBP0_D2n; // xxxxxxxH
-  /*_p36.XALO*/ DFF8pB XALO_OBP0_D3n; // xxxxxxxH
-  /*_p36.XERU*/ DFF8pB XERU_OBP0_D4n; // xxxxxxxH
-  /*_p36.XYZE*/ DFF8pB XYZE_OBP0_D5n; // xxxxxxxH
-  /*_p36.XUPO*/ DFF8pB XUPO_OBP0_D6n; // xxxxxxxH
-  /*_p36.XANA*/ DFF8pB XANA_OBP0_D7n; // xxxxxxxH
+  /*_p36.XUFU*/ DFF8pB XUFU_OBP0_D0p; // xxxxxxxH
+  /*_p36.XUKY*/ DFF8pB XUKY_OBP0_D1p; // xxxxxxxH
+  /*_p36.XOVA*/ DFF8pB XOVA_OBP0_D2p; // xxxxxxxH
+  /*_p36.XALO*/ DFF8pB XALO_OBP0_D3p; // xxxxxxxH
+  /*_p36.XERU*/ DFF8pB XERU_OBP0_D4p; // xxxxxxxH
+  /*_p36.XYZE*/ DFF8pB XYZE_OBP0_D5p; // xxxxxxxH
+  /*_p36.XUPO*/ DFF8pB XUPO_OBP0_D6p; // xxxxxxxH
+  /*_p36.XANA*/ DFF8pB XANA_OBP0_D7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -254,14 +254,14 @@ struct RegOBP1 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p36.MOXY*/ DFF8pB MOXY_OBP1_D0n; // xxxxxxxH
-  /*_p36.LAWO*/ DFF8pB LAWO_OBP1_D1n; // xxxxxxxH
-  /*_p36.MOSA*/ DFF8pB MOSA_OBP1_D2n; // xxxxxxxH
-  /*_p36.LOSE*/ DFF8pB LOSE_OBP1_D3n; // xxxxxxxH
-  /*_p36.LUNE*/ DFF8pB LUNE_OBP1_D4n; // xxxxxxxH
-  /*_p36.LUGU*/ DFF8pB LUGU_OBP1_D5n; // xxxxxxxH
-  /*_p36.LEPU*/ DFF8pB LEPU_OBP1_D6n; // xxxxxxxH
-  /*_p36.LUXO*/ DFF8pB LUXO_OBP1_D7n; // xxxxxxxH
+  /*_p36.MOXY*/ DFF8pB MOXY_OBP1_D0p; // xxxxxxxH
+  /*_p36.LAWO*/ DFF8pB LAWO_OBP1_D1p; // xxxxxxxH
+  /*_p36.MOSA*/ DFF8pB MOSA_OBP1_D2p; // xxxxxxxH
+  /*_p36.LOSE*/ DFF8pB LOSE_OBP1_D3p; // xxxxxxxH
+  /*_p36.LUNE*/ DFF8pB LUNE_OBP1_D4p; // xxxxxxxH
+  /*_p36.LUGU*/ DFF8pB LUGU_OBP1_D5p; // xxxxxxxH
+  /*_p36.LEPU*/ DFF8pB LEPU_OBP1_D6p; // xxxxxxxH
+  /*_p36.LUXO*/ DFF8pB LUXO_OBP1_D7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -376,14 +376,14 @@ struct TileTempA {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p32.LEGU*/ DFF8pB LEGU_TILE_DA0n;   // xBxDxFxH
-  /*_p32.NUDU*/ DFF8pB NUDU_TILE_DA1n;   // xBxDxFxH
-  /*_p32.MUKU*/ DFF8pB MUKU_TILE_DA2n;   // xBxDxFxH
-  /*_p32.LUZO*/ DFF8pB LUZO_TILE_DA3n;   // xBxDxFxH
-  /*_p32.MEGU*/ DFF8pB MEGU_TILE_DA4n;   // xBxDxFxH
-  /*_p32.MYJY*/ DFF8pB MYJY_TILE_DA5n;   // xBxDxFxH
-  /*_p32.NASA*/ DFF8pB NASA_TILE_DA6n;   // xBxDxFxH
-  /*_p32.NEFO*/ DFF8pB NEFO_TILE_DA7n;   // xBxDxFxH
+  /*_p32.LEGU*/ DFF8pB LEGU_TILE_DA0p;   // xBxDxFxH
+  /*_p32.NUDU*/ DFF8pB NUDU_TILE_DA1p;   // xBxDxFxH
+  /*_p32.MUKU*/ DFF8pB MUKU_TILE_DA2p;   // xBxDxFxH
+  /*_p32.LUZO*/ DFF8pB LUZO_TILE_DA3p;   // xBxDxFxH
+  /*_p32.MEGU*/ DFF8pB MEGU_TILE_DA4p;   // xBxDxFxH
+  /*_p32.MYJY*/ DFF8pB MYJY_TILE_DA5p;   // xBxDxFxH
+  /*_p32.NASA*/ DFF8pB NASA_TILE_DA6p;   // xBxDxFxH
+  /*_p32.NEFO*/ DFF8pB NEFO_TILE_DA7p;   // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------

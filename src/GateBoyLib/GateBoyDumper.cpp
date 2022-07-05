@@ -118,7 +118,7 @@ void GateBoyDumper::dump_tile_fetcher(const GateBoyState& s, Dumper& d) {
   d.dump_bitp   ("PYGO_FETCH_DONEp    : ", s.tfetch_control.PYGO_FETCH_DONEp_evn.state);
   d.dump_bitp   ("LYZU_BFETCH_S0p_D1  : ", s.tfetch_control.LYZU_BFETCH_S0p_D1.state);
   d("\n");
-  d.dump_slice2n("Temp A : ", &s.tile_temp_a.LEGU_TILE_DA0n, 8);
+  d.dump_slice2n("Temp A : ", &s.tile_temp_a.LEGU_TILE_DA0p, 8);
   d.dump_slice2p("Temp B : ", &s.tile_temp_b.RAWU_TILE_DB0p, 8);
 }
 
@@ -384,9 +384,9 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
 
   d.dump_slice2p("FF42 SCY   : ", &s.reg_scy.GAVE_SCY0p, 8);
   d.dump_slice2p("FF43 SCX   : ", &s.reg_scx.DATY_SCX0p, 8);
-  d.dump_slice2n("FF47 BGP   : ", &s.reg_bgp.PAVO_BGP_D0n, 8);
-  d.dump_slice2n("FF48 OBP0  : ", &s.reg_obp0.XUFU_OBP0_D0n, 8);
-  d.dump_slice2n("FF49 OBP1  : ", &s.reg_obp1.MOXY_OBP1_D0n, 8);
+  d.dump_slice2n("FF47 BGP   : ", &s.reg_bgp.PAVO_BGP_D0p, 8);
+  d.dump_slice2n("FF48 OBP0  : ", &s.reg_obp0.XUFU_OBP0_D0p, 8);
+  d.dump_slice2n("FF49 OBP1  : ", &s.reg_obp1.MOXY_OBP1_D0p, 8);
   d.dump_slice2p("FF4A WY    : ", &s.reg_wy.NESO_WY0p, 8);
   d.dump_slice2p("FF4B WX    : ", &s.reg_wx.MYPA_WX0p, 8);
   d.dump_slice2p("WIN MAP X  : ", &s.win_x.map.WYKA_WIN_MAP_X0, 5);
@@ -468,17 +468,17 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
 
 
   d("===== CH1 =====\n");
-  d.dump_bitp("BANY_NR10_SWEEP_SHIFT0n  : " , s.ch1.BANY_NR10_SWEEP_SHIFT0n.get_state());
-  d.dump_bitp("ARAX_NR10_SWEEP_SHIFT1n  : " , s.ch1.ARAX_NR10_SWEEP_SHIFT1n.get_state());
-  d.dump_bitp("ANAZ_NR10_SWEEP_SHIFT2n  : " , s.ch1.ANAZ_NR10_SWEEP_SHIFT2n.get_state());
-  d.dump_bitp("AVAF_NR10_SWEEP_DIRn     : " , s.ch1.AVAF_NR10_SWEEP_DIRn.get_state());
-  d.dump_bitp("ADEK_NR10_SWEEP_PERIOD0n : " , s.ch1.ADEK_NR10_SWEEP_PERIOD0n.get_state());
-  d.dump_bitp("BANA_NR10_SWEEP_PERIOD1n : " , s.ch1.BANA_NR10_SWEEP_PERIOD1n.get_state());
-  d.dump_bitp("BOTU_NR10_SWEEP_PERIOD2n : " , s.ch1.BOTU_NR10_SWEEP_PERIOD2n.get_state());
+  d.dump_bitp("BANY_NR10_SWEEP_SHIFT0p  : " , s.ch1.BANY_NR10_SWEEP_SHIFT0p.get_state());
+  d.dump_bitp("ARAX_NR10_SWEEP_SHIFT1p  : " , s.ch1.ARAX_NR10_SWEEP_SHIFT1p.get_state());
+  d.dump_bitp("ANAZ_NR10_SWEEP_SHIFT2p  : " , s.ch1.ANAZ_NR10_SWEEP_SHIFT2p.get_state());
+  d.dump_bitp("AVAF_NR10_SWEEP_DIRp     : " , s.ch1.AVAF_NR10_SWEEP_DIRp.get_state());
+  d.dump_bitp("ADEK_NR10_SWEEP_PERIOD0p : " , s.ch1.ADEK_NR10_SWEEP_PERIOD0p.get_state());
+  d.dump_bitp("BANA_NR10_SWEEP_PERIOD1p : " , s.ch1.BANA_NR10_SWEEP_PERIOD1p.get_state());
+  d.dump_bitp("BOTU_NR10_SWEEP_PERIOD2p : " , s.ch1.BOTU_NR10_SWEEP_PERIOD2p.get_state());
   d("\n");
 
-  d.dump_bitp("CENA_NR11_DUTY0n : ", s.ch1.CENA_NR11_DUTY0n.get_state());
-  d.dump_bitp("DYCA_NR11_DUTY1n : ", s.ch1.DYCA_NR11_DUTY1n.get_state());
+  d.dump_bitp("CENA_NR11_DUTY0p : ", s.ch1.CENA_NR11_DUTY0p.get_state());
+  d.dump_bitp("DYCA_NR11_DUTY1p : ", s.ch1.DYCA_NR11_DUTY1p.get_state());
   d.dump_bitp("BACY_NR11_LEN0n  : ", s.ch1.BACY_NR11_LEN0.state);
   d.dump_bitp("CAVY_NR11_LEN1n  : ", s.ch1.CAVY_NR11_LEN1.state);
   d.dump_bitp("BOVY_NR11_LEN2n  : ", s.ch1.BOVY_NR11_LEN2.state);
@@ -487,14 +487,14 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("ERAM_NR11_LEN5n  : ", s.ch1.ERAM_NR11_LEN5.state);
   d("\n");
 
-  d.dump_bitp("JUSA_NR12_DELAY0n  : ", s.ch1.JUSA_NR12_DELAY0n.get_state());
-  d.dump_bitp("JUZY_NR12_DELAY1n  : ", s.ch1.JUZY_NR12_DELAY1n.get_state());
-  d.dump_bitp("JOMA_NR12_DELAY2n  : ", s.ch1.JOMA_NR12_DELAY2n.get_state());
-  d.dump_bitp("JAFY_NR12_ENV_DIRn : ", s.ch1.JAFY_NR12_ENV_DIRn.get_state());
-  d.dump_bitp("JATY_NR12_VOL0n    : ", s.ch1.JATY_NR12_VOL0n.get_state());
-  d.dump_bitp("JAXO_NR12_VOL1n    : ", s.ch1.JAXO_NR12_VOL1n.get_state());
-  d.dump_bitp("JENA_NR12_VOL2n    : ", s.ch1.JENA_NR12_VOL2n.get_state());
-  d.dump_bitp("JOPU_NR12_VOL3n    : ", s.ch1.JOPU_NR12_VOL3n.get_state());
+  d.dump_bitp("JUSA_NR12_DELAY0p  : ", s.ch1.JUSA_NR12_DELAY0p.get_state());
+  d.dump_bitp("JUZY_NR12_DELAY1p  : ", s.ch1.JUZY_NR12_DELAY1p.get_state());
+  d.dump_bitp("JOMA_NR12_DELAY2p  : ", s.ch1.JOMA_NR12_DELAY2p.get_state());
+  d.dump_bitp("JAFY_NR12_ENV_DIRp : ", s.ch1.JAFY_NR12_ENV_DIRp.get_state());
+  d.dump_bitp("JATY_NR12_VOL0p    : ", s.ch1.JATY_NR12_VOL0p.get_state());
+  d.dump_bitp("JAXO_NR12_VOL1p    : ", s.ch1.JAXO_NR12_VOL1p.get_state());
+  d.dump_bitp("JENA_NR12_VOL2p    : ", s.ch1.JENA_NR12_VOL2p.get_state());
+  d.dump_bitp("JOPU_NR12_VOL3p    : ", s.ch1.JOPU_NR12_VOL3p.get_state());
   d("\n");
 #endif
 }

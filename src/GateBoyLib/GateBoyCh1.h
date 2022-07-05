@@ -9,18 +9,18 @@ struct SpuChannel1 {
   void reset_to_cart() {}
 
   /*#p13.HOCA*/ wire HOCA_CH1_AMP_ENn_new() const {
-    return nor5(JAFY_NR12_ENV_DIRn.qp_newB(),
-                JATY_NR12_VOL0n   .qp_newB(),
-                JAXO_NR12_VOL1n   .qp_newB(),
-                JENA_NR12_VOL2n   .qp_newB(),
-                JOPU_NR12_VOL3n   .qp_newB());
+    return nor5(JAFY_NR12_ENV_DIRp.qp_newB(),
+                JATY_NR12_VOL0p   .qp_newB(),
+                JAXO_NR12_VOL1p   .qp_newB(),
+                JENA_NR12_VOL2p   .qp_newB(),
+                JOPU_NR12_VOL3p   .qp_newB());
   }
 
 
   /*#p13.BUGE*/ wire BUGE_SWEEP_DONEn_new() const {
-    return nand3(ANAZ_NR10_SWEEP_SHIFT2n.qn_newB(),
-                 ARAX_NR10_SWEEP_SHIFT1n.qn_newB(),
-                 BANY_NR10_SWEEP_SHIFT0n.qn_newB());
+    return nand3(ANAZ_NR10_SWEEP_SHIFT2p.qn_newB(),
+                 ARAX_NR10_SWEEP_SHIFT1p.qn_newB(),
+                 BANY_NR10_SWEEP_SHIFT0p.qn_newB());
   }
 
   wire EGOR_SHIFT_CLK_new() const {
@@ -39,25 +39,25 @@ struct SpuChannel1 {
   /*#p09.DYFA*/ wire DYFA_CLK_1M_old() const { return not1(CALO_CLK_1M.qn_old()); }
   /*#p09.DYFA*/ wire DYFA_CLK_1M_new() const { return not1(CALO_CLK_1M.qn_new()); }
 
-  /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_new() const { return not1(AVAF_NR10_SWEEP_DIRn.qn_newB()); }
-  /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_old() const { return not1(AVAF_NR10_SWEEP_DIRn.qn_oldB()); }
+  /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_new() const { return not1(AVAF_NR10_SWEEP_DIRp.qn_newB()); }
+  /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_old() const { return not1(AVAF_NR10_SWEEP_DIRp.qn_oldB()); }
 
   // so this implies that NR12_DELAY* is DFFn?
-  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_old() const { return nor3(JUSA_NR12_DELAY0n.qp_oldB(), JUZY_NR12_DELAY1n.qp_oldB(), JOMA_NR12_DELAY2n.qp_oldB()); }
-  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_new() const { return nor3(JUSA_NR12_DELAY0n.qp_newB(), JUZY_NR12_DELAY1n.qp_newB(), JOMA_NR12_DELAY2n.qp_newB()); }
+  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_old() const { return nor3(JUSA_NR12_DELAY0p.qp_oldB(), JUZY_NR12_DELAY1p.qp_oldB(), JOMA_NR12_DELAY2p.qp_oldB()); }
+  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_new() const { return nor3(JUSA_NR12_DELAY0p.qp_newB(), JUZY_NR12_DELAY1p.qp_newB(), JOMA_NR12_DELAY2p.qp_newB()); }
 
-  /*#p11.BANY*/ DFF9B BANY_NR10_SWEEP_SHIFT0n;
-  /*#p11.ARAX*/ DFF9B ARAX_NR10_SWEEP_SHIFT1n;
-  /*#p11.ANAZ*/ DFF9B ANAZ_NR10_SWEEP_SHIFT2n;
-  /*#p11.AVAF*/ DFF9B AVAF_NR10_SWEEP_DIRn;
-  /*#p11.ADEK*/ DFF9B ADEK_NR10_SWEEP_PERIOD0n;
-  /*#p11.BANA*/ DFF9B BANA_NR10_SWEEP_PERIOD1n;
-  /*#p11.BOTU*/ DFF9B BOTU_NR10_SWEEP_PERIOD2n;
+  /*#p11.BANY*/ DFF9B BANY_NR10_SWEEP_SHIFT0p;
+  /*#p11.ARAX*/ DFF9B ARAX_NR10_SWEEP_SHIFT1p;
+  /*#p11.ANAZ*/ DFF9B ANAZ_NR10_SWEEP_SHIFT2p;
+  /*#p11.AVAF*/ DFF9B AVAF_NR10_SWEEP_DIRp;
+  /*#p11.ADEK*/ DFF9B ADEK_NR10_SWEEP_PERIOD0p;
+  /*#p11.BANA*/ DFF9B BANA_NR10_SWEEP_PERIOD1p;
+  /*#p11.BOTU*/ DFF9B BOTU_NR10_SWEEP_PERIOD2p;
 
   //----------
 
-  /*_p11.CENA*/ DFF9B CENA_NR11_DUTY0n;
-  /*_p11.DYCA*/ DFF9B DYCA_NR11_DUTY1n;
+  /*_p11.CENA*/ DFF9B CENA_NR11_DUTY0p;
+  /*_p11.DYCA*/ DFF9B DYCA_NR11_DUTY1p;
   /*_p13.BACY*/ DFF20 BACY_NR11_LEN0;
   /*_p13.CAVY*/ DFF20 CAVY_NR11_LEN1;
   /*_p13.BOVY*/ DFF20 BOVY_NR11_LEN2;
@@ -67,19 +67,19 @@ struct SpuChannel1 {
 
   //----------
 
-  /*_p11.JUSA*/ DFF9B JUSA_NR12_DELAY0n;
-  /*_p11.JUZY*/ DFF9B JUZY_NR12_DELAY1n;
-  /*_p11.JOMA*/ DFF9B JOMA_NR12_DELAY2n;
-  /*_p11.JAFY*/ DFF9B JAFY_NR12_ENV_DIRn;
-  /*_p11.JATY*/ DFF9B JATY_NR12_VOL0n;
-  /*_p11.JAXO*/ DFF9B JAXO_NR12_VOL1n;
-  /*_p11.JENA*/ DFF9B JENA_NR12_VOL2n;
-  /*_p11.JOPU*/ DFF9B JOPU_NR12_VOL3n;
+  /*_p11.JUSA*/ DFF9B JUSA_NR12_DELAY0p;
+  /*_p11.JUZY*/ DFF9B JUZY_NR12_DELAY1p;
+  /*_p11.JOMA*/ DFF9B JOMA_NR12_DELAY2p;
+  /*_p11.JAFY*/ DFF9B JAFY_NR12_ENV_DIRp;
+  /*_p11.JATY*/ DFF9B JATY_NR12_VOL0p;
+  /*_p11.JAXO*/ DFF9B JAXO_NR12_VOL1p;
+  /*_p11.JENA*/ DFF9B JENA_NR12_VOL2p;
+  /*_p11.JOPU*/ DFF9B JOPU_NR12_VOL3p;
 
   //----------
 
-  /*_p11.BOKO*/ DFF9B BOKO_NR14_LENENn;
-  /*#p13.DUPE*/ DFF9B DUPE_NR14_TRIGn;
+  /*_p11.BOKO*/ DFF9B BOKO_NR14_LENENp;
+  /*#p13.DUPE*/ DFF9B DUPE_NR14_TRIGp;
 
   /*#p13.CYTO*/ NorLatch CYTO_CH1_ACTIVEp;
 

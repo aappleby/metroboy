@@ -383,7 +383,7 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   }
 
   d.dump_slice2p("FF42 SCY   : ", &s.reg_scy.GAVE_SCY0p, 8);
-  d.dump_slice2n("FF43 SCX   : ", &s.reg_scx.DATY_SCX0n, 8);
+  d.dump_slice2p("FF43 SCX   : ", &s.reg_scx.DATY_SCX0p, 8);
   d.dump_slice2n("FF47 BGP   : ", &s.reg_bgp.PAVO_BGP_D0n, 8);
   d.dump_slice2n("FF48 OBP0  : ", &s.reg_obp0.XUFU_OBP0_D0n, 8);
   d.dump_slice2n("FF49 OBP1  : ", &s.reg_obp1.MOXY_OBP1_D0n, 8);

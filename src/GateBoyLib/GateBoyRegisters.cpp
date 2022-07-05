@@ -155,9 +155,9 @@ void RegSCY::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK,
 
 //-----------------------------------------------------------------------------
 
-void RegSCX::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
-void RegSCX::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
-void RegSCX::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this)); }
+void RegSCX::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this)); }
+void RegSCX::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
+void RegSCX::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 

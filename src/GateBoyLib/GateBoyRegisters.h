@@ -161,14 +161,14 @@ struct RegSCX {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p23.DATY*/ DFF9 DATY_SCX0n;          // xxxxxxxH
-  /*_p23.DUZU*/ DFF9 DUZU_SCX1n;          // xxxxxxxH
-  /*_p23.CYXU*/ DFF9 CYXU_SCX2n;          // xxxxxxxH
-  /*_p23.GUBO*/ DFF9 GUBO_SCX3n;          // xxxxxxxH
-  /*_p23.BEMY*/ DFF9 BEMY_SCX4n;          // xxxxxxxH
-  /*_p23.CUZY*/ DFF9 CUZY_SCX5n;          // xxxxxxxH
-  /*_p23.CABU*/ DFF9 CABU_SCX6n;          // xxxxxxxH
-  /*_p23.BAKE*/ DFF9 BAKE_SCX7n;          // xxxxxxxH
+  /*_p23.DATY*/ DFF9B DATY_SCX0p;          // xxxxxxxH
+  /*_p23.DUZU*/ DFF9B DUZU_SCX1p;          // xxxxxxxH
+  /*_p23.CYXU*/ DFF9B CYXU_SCX2p;          // xxxxxxxH
+  /*_p23.GUBO*/ DFF9B GUBO_SCX3p;          // xxxxxxxH
+  /*_p23.BEMY*/ DFF9B BEMY_SCX4p;          // xxxxxxxH
+  /*_p23.CUZY*/ DFF9B CUZY_SCX5p;          // xxxxxxxH
+  /*_p23.CABU*/ DFF9B CABU_SCX6p;          // xxxxxxxH
+  /*_p23.BAKE*/ DFF9B BAKE_SCX7p;          // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

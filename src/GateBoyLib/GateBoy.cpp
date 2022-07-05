@@ -842,9 +842,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   //for (int feedback = 0; feedback < 2; feedback++) {
   {
-    /*_p27.SUHA*/ wire SUHA_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.DATY_SCX0n.qn_old(), reg_old.fine_count_odd.RYKU_FINE_CNT0_odd.qp_old());
-    /*_p27.SYBY*/ wire SYBY_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.DUZU_SCX1n.qn_old(), reg_old.fine_count_odd.ROGA_FINE_CNT1_odd.qp_old());
-    /*_p27.SOZU*/ wire SOZU_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.CYXU_SCX2n.qn_old(), reg_old.fine_count_odd.RUBU_FINE_CNT2_odd.qp_old());
+    /*_p27.SUHA*/ wire SUHA_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.DATY_SCX0p.qp_oldB(), reg_old.fine_count_odd.RYKU_FINE_CNT0_odd.qp_old());
+    /*_p27.SYBY*/ wire SYBY_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.DUZU_SCX1p.qp_oldB(), reg_old.fine_count_odd.ROGA_FINE_CNT1_odd.qp_old());
+    /*_p27.SOZU*/ wire SOZU_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.CYXU_SCX2p.qp_oldB(), reg_old.fine_count_odd.RUBU_FINE_CNT2_odd.qp_old());
     /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn_old_odd = nand4(reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.qp_old(), SUHA_SCX_FINE_MATCHp_old_odd, SYBY_SCX_FINE_MATCHp_old_odd, SOZU_SCX_FINE_MATCHp_old_odd);
     /*#p27.POHU*/ wire POHU_SCX_FINE_MATCHp_old_odd = not1(RONE_SCX_FINE_MATCHn_old_odd);
 

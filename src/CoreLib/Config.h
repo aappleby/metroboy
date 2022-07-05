@@ -5,9 +5,7 @@
 #pragma warning(disable:4127) // conditional expression is constant
 #pragma warning(disable:4201) // anonymous struct/union
 
-//#pragma optimize("", off)
-
-#if 0
+#if 1
 // Debug builds - painfully, ungodly slow.
 #ifdef CONFIG_DEBUG
 constexpr bool config_debug = true;
@@ -40,10 +38,12 @@ constexpr bool config_fastmode = false;
 static_assert(((int)config_debug + (int)config_regression + (int)config_release + (int)config_fastmode) == 1, "Bad build config");
 #endif
 
+#if 0
 constexpr bool config_debug = true;
 constexpr bool config_regression = false;
 constexpr bool config_release = false;
 constexpr bool config_fastmode = false;
+#endif
 
 // debug      - use flags, dchecks, idempotence checks
 // release    - use flags, no dchecks

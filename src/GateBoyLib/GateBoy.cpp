@@ -113,7 +113,7 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   sys.clk_good = 1;
   run_phases(cart_blob, 2);
 
-  CHECK_N(bit0(gb_state.sys_clk.AFUR_xxxxEFGH.qp_old()));
+  CHECK_N(bit0(gb_state.sys_clk.AFUR_xxxxEFGH.qn_oldB()));
   CHECK_P(bit0(gb_state.sys_clk.ALEF_AxxxxFGH.qp_old()));
   CHECK_P(bit0(gb_state.sys_clk.APUK_ABxxxxGH.qp_old()));
   CHECK_P(bit0(gb_state.sys_clk.ADYK_ABCxxxxH.qp_old()));
@@ -137,14 +137,8 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   //----------------------------------------
   // Fetch the first instruction in the bootrom
 
-  //dbg_read(cart_blob, 0x0000);
-  {
-    dbg_req(0x0000, 0, 0);
-    run_phases(cart_blob, 8);
-  }
-  //dbg_req(0x0000, 0, 0);
-  //run_phases(cart_blob, 8);
-
+  dbg_req(0x0000, 0, 0);
+  run_phases(cart_blob, 8);
 
   //----------------------------------------
   // We're ready to go, release the CPU so it can start running the bootrom.
@@ -157,6 +151,7 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
     gb_state.reg_div.UNYK_DIV04p.state = 0b00011010;
     gb_state.reg_div.UPOF_DIV15p.state = 0b00011011;
   }
+
   return GBResult::ok();
 }
 
@@ -190,6 +185,7 @@ GBResult GateBoy::reset_to_cart(const blob& cart_blob) {
   sys.reset_to_cart();
   pins.reset_to_cart();
   probes.reset_to_cart();
+
   return GBResult::ok();
 }
 
@@ -197,11 +193,11 @@ GBResult GateBoy::reset_to_cart(const blob& cart_blob) {
 
 GBResult GateBoy::peek(int addr) const {
   //if (addr >= 0x0000 && addr <= 0x7FFF) { return cart_blob.data()[addr - 0x0000]; }
-  if (addr >= 0x8000 && addr <= 0x9FFF) { return GBResult(mem.vid_ram[addr - 0x8000]);  }
+  if (addr >= 0x8000 && addr <= 0x9FFF) { return GBResult(mem.vid_ram [addr - 0x8000]);  }
   if (addr >= 0xA000 && addr <= 0xBFFF) { return GBResult(mem.cart_ram[addr - 0xA000]); }
-  if (addr >= 0xC000 && addr <= 0xDFFF) { return GBResult(mem.int_ram[addr - 0xC000]);  }
-  if (addr >= 0xE000 && addr <= 0xFDFF) { return GBResult(mem.int_ram[addr - 0xE000]);  }
-  if (addr >= 0xFE00 && addr <= 0xFEFF) { return GBResult(mem.oam_ram[addr - 0xFE00]);  }
+  if (addr >= 0xC000 && addr <= 0xDFFF) { return GBResult(mem.int_ram [addr - 0xC000]);  }
+  if (addr >= 0xE000 && addr <= 0xFDFF) { return GBResult(mem.int_ram [addr - 0xE000]);  }
+  if (addr >= 0xFE00 && addr <= 0xFEFF) { return GBResult(mem.oam_ram [addr - 0xFE00]);  }
   if (addr >= 0xFF30 && addr <= 0xFF3F) { return GBResult(mem.wave_ram[addr - 0xFF30]); }
   if (addr >= 0xFF80 && addr <= 0xFFFE) { return GBResult(mem.zero_ram[addr - 0xFF80]); }
   return gb_state.peek(addr);
@@ -280,6 +276,7 @@ GBResult GateBoy::run_phases(const blob& cart_blob, int phase_count) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::next_phase(const blob& cart_blob) {
+  //LOG_G("GateBoy::next_phase()\n");
   int x = 10;
 
   probes.begin_pass((sys.gb_phase_total + 1) & 7);
@@ -289,6 +286,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   gb_state.commit();
   pins.commit();
 
+  /*
   if (config_idempotence) {
     auto gb_state_old = gb_state;
 
@@ -301,6 +299,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
       debugbreak();
     }
   }
+  */
 
   update_framebuffer();
   probes.end_pass();
@@ -331,40 +330,6 @@ void GateBoy::update_framebuffer() {
 
     mem.framebuffer[lcd_x + lcd_y * 160] = uint8_t(3 - new_pix);
   }
-
-#if 0
-  if (bit(~lcd.old_lcd_clock.qp_old()) && lcd.PIN_53_LCD_CLOCK.qp_new()) {
-    gb_screen_x++;
-  }
-  if (lcd.PIN_54_LCD_HSYNC.qp_new() || lcd.PIN_55_LCD_LATCH.qp_new()) {
-    gb_screen_x = 0;
-  }
-
-  if (bit(~lcd.old_lcd_latch.qp_old()) && lcd.PIN_55_LCD_LATCH.qp_new()) {
-    if (gb_screen_y < 144) {
-      for (int x = 0; x < 159; x++) {
-        uint8_t p0 = lcd.lcd_pipe_lo[x + 1].qp_new();
-        uint8_t p1 = lcd.lcd_pipe_hi[x + 1].qp_new();
-        framebuffer[x + gb_screen_y * 160] = p0 + p1 * 2;
-      }
-      {
-        uint8_t p0 = lcd.lcd_pix_lo.qp_new();
-        uint8_t p1 = lcd.lcd_pix_hi.qp_new();
-        framebuffer[159 + gb_screen_y * 160] = p0 + p1 * 2;
-      }
-    }
-
-    if (lcd.PIN_57_LCD_VSYNC.qp_new()) {
-      gb_screen_y = 0;
-    }
-    else {
-      gb_screen_y++;
-    }
-  }
-
-  lcd.old_lcd_clock.set_new(lcd.PIN_53_LCD_CLOCK.qp_new());
-  lcd.old_lcd_latch.set_new(lcd.PIN_55_LCD_LATCH.qp_new());
-#endif
 }
 
 

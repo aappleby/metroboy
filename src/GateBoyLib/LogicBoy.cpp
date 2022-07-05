@@ -973,7 +973,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // sprite reset
 
   int sprite_reset_index = 32 - __builtin_clz(state_new.sprite_reset_flags - 1);
-  if (sprite_reset_index != 32) (&state_new.store_x0)[sprite_reset_index] = 0xFF;
+  if (sprite_reset_index != 32) state_new.store_x[sprite_reset_index] = 0xFF;
 
 
 
@@ -2327,7 +2327,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sys_clk.AVET_DEGLITCH.state = pins.sys.PIN_74_CLK.CLK.state; // dead signal
     state_new.sys_clk.ANOS_DEGLITCH.state = !pins.sys.PIN_74_CLK.CLK.state; // dead signal
 
-    state_new.sys_clk.AFUR_xxxxEFGH.state = gen_clk(phase_new, 0b00001111); // dead signal
+    state_new.sys_clk.AFUR_xxxxEFGH.set_state(gen_clk(phase_new, 0b00001111)); // dead signal
     state_new.sys_clk.ALEF_AxxxxFGH.state = gen_clk(phase_new, 0b10000111); // dead signal
     state_new.sys_clk.APUK_ABxxxxGH.state = gen_clk(phase_new, 0b11000011); // dead signal
     state_new.sys_clk.ADYK_ABCxxxxH.state = gen_clk(phase_new, 0b11100001); // dead signal

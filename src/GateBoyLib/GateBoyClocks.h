@@ -94,7 +94,7 @@ struct GateBoyClock {
   /*_p01.ANOS*/ Gate ANOS_DEGLITCH; // NAND latch deglitcher
   /*_p01.AVET*/ Gate AVET_DEGLITCH; // NAND latch deglitcher
 
-  /*_p01.AFUR*/ DFF9 AFUR_xxxxEFGH;
+  /*_p01.AFUR*/ DFF9B AFUR_xxxxEFGH;
   /*_p01.ALEF*/ DFF9 ALEF_AxxxxFGH;
   /*_p01.APUK*/ DFF9 APUK_ABxxxxGH;
   /*_p01.ADYK*/ DFF9 ADYK_ABCxxxxH;

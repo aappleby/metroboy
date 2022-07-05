@@ -10,10 +10,12 @@ void GateBoyClock::reset_to_poweron() {
 void GateBoyClock::reset_to_bootrom() {
   ANOS_DEGLITCH.state = 0b00011001;
   AVET_DEGLITCH.state = 0b00011000;
-  AFUR_xxxxEFGH.state = 0b00011001;
+  
+  AFUR_xxxxEFGH.set_state(0b00011001);
   ALEF_AxxxxFGH.state = 0b00011011;
   APUK_ABxxxxGH.state = 0b00011001;
   ADYK_ABCxxxxH.state = 0b00011011;
+
   WUVU_ABxxEFxx.state = 0b00011000;
   VENA_xxCDEFxx.state = 0b00011010;
   WOSU_AxxDExxH.state = 0b00011010;
@@ -32,10 +34,12 @@ void GateBoyClock::reset_to_bootrom() {
 void GateBoyClock::reset_to_cart() {
   ANOS_DEGLITCH.state = 0b00011001;
   AVET_DEGLITCH.state = 0b00011000;
-  AFUR_xxxxEFGH.state = 0b00011001;
+  
+  AFUR_xxxxEFGH.set_state(0b00011001);
   ALEF_AxxxxFGH.state = 0b00011011;
   APUK_ABxxxxGH.state = 0b00011001;
   ADYK_ABCxxxxH.state = 0b00011011;
+
   WUVU_ABxxEFxx.state = 0b00011000;
   VENA_xxCDEFxx.state = 0b00011010;
   WOSU_AxxDExxH.state = 0b00011011;
@@ -90,7 +94,7 @@ wire GateBoyClock::AZOF_odd_new() const {
 /*_p27.MOXE*/ wire GateBoyClock::MOXE_odd_new() const { return not1(ALET_evn_new()); }
 /*_p27.TAVA*/ wire GateBoyClock::TAVA_evn_new() const { return not1(LAPE_odd_new()); }
 
-/*#p01.ATYP*/ wire GateBoyClock::ATYP_ABCDxxxx_new() const { return not1(AFUR_xxxxEFGH.qp_new()); }
+/*#p01.ATYP*/ wire GateBoyClock::ATYP_ABCDxxxx_new() const { return not1(AFUR_xxxxEFGH.qn_newB()); }
 /*#p01.AFEP*/ wire GateBoyClock::AFEP_AxxxxFGH_new() const { return not1(ALEF_AxxxxFGH.qn_new()); }
 /*#p01.AROV*/ wire GateBoyClock::AROV_xxCDEFxx_new() const { return not1(APUK_ABxxxxGH.qp_new()); }
 /*#p01.ADAR*/ wire GateBoyClock::ADAR_ABCxxxxH_new() const { return not1(ADYK_ABCxxxxH.qn_new()); }
@@ -155,7 +159,7 @@ void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {
   /*_p01.ATAN*/ wire ATAN_OLD = not1(ATAL_EVN); // cell not marked on die but it's next to ATAL
 
   /*_p01.AFUR*/ reg_new.sys_clk.AFUR_xxxxEFGH.dff9(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ADYK_ABCxxxxH.qp_old());
-  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_AxxxxFGH.dff9(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_xxxxEFGH.qn_old());
+  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_AxxxxFGH.dff9(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_xxxxEFGH.qp_oldB());
   /*_p01.APUK*/ reg_new.sys_clk.APUK_ABxxxxGH.dff9(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ALEF_AxxxxFGH.qn_old());
   /*_p01.ADYK*/ reg_new.sys_clk.ADYK_ABCxxxxH.dff9(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.APUK_ABxxxxGH.qn_old());
 

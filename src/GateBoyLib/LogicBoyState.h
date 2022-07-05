@@ -141,16 +141,21 @@ struct LogicBoyState {
   uint8_t store_l8;
   uint8_t store_l9;
 
-  uint8_t store_x0;
-  uint8_t store_x1;
-  uint8_t store_x2;
-  uint8_t store_x3;
-  uint8_t store_x4;
-  uint8_t store_x5;
-  uint8_t store_x6;
-  uint8_t store_x7;
-  uint8_t store_x8;
-  uint8_t store_x9;
+  union {
+    struct {
+      uint8_t store_x0;
+      uint8_t store_x1;
+      uint8_t store_x2;
+      uint8_t store_x3;
+      uint8_t store_x4;
+      uint8_t store_x5;
+      uint8_t store_x6;
+      uint8_t store_x7;
+      uint8_t store_x8;
+      uint8_t store_x9;
+    };
+    uint8_t store_x[10];
+  };
 
   //----------
 

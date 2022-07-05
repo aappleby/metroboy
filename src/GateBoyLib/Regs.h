@@ -217,6 +217,9 @@ struct DFF8p : public BitBase {
 // Reg8 with a hat and a belt. Used by clock phase (CHECK), LYC, BGP, OBP0,
 // OBP1, stat int enable, sprite store, SCY, SCX, LCDC, WX, WY.
 
+// FIXME having SETn and Dn doesn't make sense, inverting the polarity of the
+// internal bit makes more sense but would switch the Qn/Qp outputs
+
 // DFF9_01 | O===--o |
 // DFF9_02 |==--O====| << CLKp
 // DFF9_03 | ------- | << Dn
@@ -237,6 +240,48 @@ struct DFF9 : public BitBase {
     wire d1 = (~clk_old & clk_new) ? ~Dn : state;
 
     state = uint8_t(bit0(d1 | (~SETn)) | clk_new | BIT_NEW | BIT_DRIVEN);
+  }
+};
+
+struct DFF9B : private BitBase {
+
+  uint8_t get_state() const { return state; }
+
+  void set_state(uint8_t new_state) {
+    state = new_state;
+  }
+
+  wire qp_oldB() const { return qp_old(); }
+  wire qn_oldB() const { return qn_old(); }
+
+  wire qp_newB() const { return qp_new(); }
+  wire qn_newB() const { return qn_new(); }
+
+  __attribute__((always_inline)) void dff9(wire CLKp, wire RSTn, wire Dp) {
+
+    check_invalid();
+
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
+
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
+
+    state = uint8_t(bit0(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
+
+    /*
+    check_invalid();
+
+    state ^= 1;
+
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
+
+    wire d1 = (~clk_old & clk_new) ? ~Dn : state;
+
+    state = uint8_t(bit0(d1 | (~SETn)) | clk_new | BIT_NEW | BIT_DRIVEN);
+
+    state ^= 1;
+    */
   }
 };
 

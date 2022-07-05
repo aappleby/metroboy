@@ -111,14 +111,14 @@ void GateBoy::store_sprite_gates(
   /*_p31.XATU*/ wire XATU_SPX6n_old = not1(oam_temp_b_old.YZOS_OAM_DB6p.qp_old());
   /*_p31.BADY*/ wire BADY_SPX7n_old = not1(oam_temp_b_old.DEPO_OAM_DB7p.qp_old());
 
-  /*#p31.XEPE*/ reg_new.store_x0.XEPE_STORE0_X0p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_SPX0n_old);
-  /*_p31.YLAH*/ reg_new.store_x0.YLAH_STORE0_X1p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZOCY_SPX1n_old);
-  /*_p31.ZOLA*/ reg_new.store_x0.ZOLA_STORE0_X2p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, YPUR_SPX2n_old);
-  /*_p31.ZULU*/ reg_new.store_x0.ZULU_STORE0_X3p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, YVOK_SPX3n_old);
-  /*_p31.WELO*/ reg_new.store_x0.WELO_STORE0_X4p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, COSE_SPX4n_old);
-  /*_p31.XUNY*/ reg_new.store_x0.XUNY_STORE0_X5p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, AROP_SPX5n_old);
-  /*_p31.WOTE*/ reg_new.store_x0.WOTE_STORE0_X6p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, XATU_SPX6n_old);
-  /*_p31.XAKO*/ reg_new.store_x0.XAKO_STORE0_X7p.dff9(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, BADY_SPX7n_old);
+  /*#p31.XEPE*/ reg_new.store_x0.XEPE_STORE0_X0n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_SPX0n_old);
+  /*_p31.YLAH*/ reg_new.store_x0.YLAH_STORE0_X1n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZOCY_SPX1n_old);
+  /*_p31.ZOLA*/ reg_new.store_x0.ZOLA_STORE0_X2n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, YPUR_SPX2n_old);
+  /*_p31.ZULU*/ reg_new.store_x0.ZULU_STORE0_X3n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, YVOK_SPX3n_old);
+  /*_p31.WELO*/ reg_new.store_x0.WELO_STORE0_X4n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, COSE_SPX4n_old);
+  /*_p31.XUNY*/ reg_new.store_x0.XUNY_STORE0_X5n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, AROP_SPX5n_old);
+  /*_p31.WOTE*/ reg_new.store_x0.WOTE_STORE0_X6n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, XATU_SPX6n_old);
+  /*_p31.XAKO*/ reg_new.store_x0.XAKO_STORE0_X7n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, BADY_SPX7n_old);
 
   /*_p31.DANY*/ reg_new.store_x1.DANY_STORE1_X0p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, ZAGO_SPX0n_old);
   /*_p31.DUKO*/ reg_new.store_x1.DUKO_STORE1_X1p.dff9(ASYS_STORE1_CLKp, DOKU_STORE1_RSTn, ZOCY_SPX1n_old);
@@ -364,14 +364,14 @@ void GateBoy::get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags
   /*_p21.ADAZ*/ wire ADAZ_PX6n_odd = not1(reg_new.pix_count.TAKO_PX6p_odd.qp_new());
   /*_p21.ASAH*/ wire ASAH_PX7n_odd = not1(reg_new.pix_count.SYBE_PX7p_odd.qp_new());
 
-  /*#p31.ZOGY*/ wire ZOGY_STORE0_MATCH0n = xor2(reg_new.store_x0.XEPE_STORE0_X0p.qn_new(), ACAM_PX0n_odd);
-  /*_p31.ZEBA*/ wire ZEBA_STORE0_MATCH1n = xor2(reg_new.store_x0.YLAH_STORE0_X1p.qn_new(), AZUB_PX1n_odd);
-  /*_p31.ZAHA*/ wire ZAHA_STORE0_MATCH2n = xor2(reg_new.store_x0.ZOLA_STORE0_X2p.qn_new(), AMEL_PX2n_odd);
-  /*_p31.ZOKY*/ wire ZOKY_STORE0_MATCH3n = xor2(reg_new.store_x0.ZULU_STORE0_X3p.qn_new(), AHAL_PX3n_odd);
-  /*_p31.WOJU*/ wire WOJU_STORE0_MATCH4n = xor2(reg_new.store_x0.WELO_STORE0_X4p.qn_new(), APUX_PX4n_odd);
-  /*_p31.YFUN*/ wire YFUN_STORE0_MATCH5n = xor2(reg_new.store_x0.XUNY_STORE0_X5p.qn_new(), ABEF_PX5n_odd);
-  /*_p31.WYZA*/ wire WYZA_STORE0_MATCH6n = xor2(reg_new.store_x0.WOTE_STORE0_X6p.qn_new(), ADAZ_PX6n_odd);
-  /*_p31.YPUK*/ wire YPUK_STORE0_MATCH7n = xor2(reg_new.store_x0.XAKO_STORE0_X7p.qn_new(), ASAH_PX7n_odd);
+  /*#p31.ZOGY*/ wire ZOGY_STORE0_MATCH0n = xor2(reg_new.store_x0.XEPE_STORE0_X0n.qp_newB(), ACAM_PX0n_odd);
+  /*_p31.ZEBA*/ wire ZEBA_STORE0_MATCH1n = xor2(reg_new.store_x0.YLAH_STORE0_X1n.qp_newB(), AZUB_PX1n_odd);
+  /*_p31.ZAHA*/ wire ZAHA_STORE0_MATCH2n = xor2(reg_new.store_x0.ZOLA_STORE0_X2n.qp_newB(), AMEL_PX2n_odd);
+  /*_p31.ZOKY*/ wire ZOKY_STORE0_MATCH3n = xor2(reg_new.store_x0.ZULU_STORE0_X3n.qp_newB(), AHAL_PX3n_odd);
+  /*_p31.WOJU*/ wire WOJU_STORE0_MATCH4n = xor2(reg_new.store_x0.WELO_STORE0_X4n.qp_newB(), APUX_PX4n_odd);
+  /*_p31.YFUN*/ wire YFUN_STORE0_MATCH5n = xor2(reg_new.store_x0.XUNY_STORE0_X5n.qp_newB(), ABEF_PX5n_odd);
+  /*_p31.WYZA*/ wire WYZA_STORE0_MATCH6n = xor2(reg_new.store_x0.WOTE_STORE0_X6n.qp_newB(), ADAZ_PX6n_odd);
+  /*_p31.YPUK*/ wire YPUK_STORE0_MATCH7n = xor2(reg_new.store_x0.XAKO_STORE0_X7n.qp_newB(), ASAH_PX7n_odd);
 
   /*_p31.EDYM*/ wire EDYM_STORE1_MATCH0n = xor2(reg_new.store_x1.DANY_STORE1_X0p.qn_new(), ACAM_PX0n_odd);
   /*_p31.EMYB*/ wire EMYB_STORE1_MATCH1n = xor2(reg_new.store_x1.DUKO_STORE1_X1p.qn_new(), AZUB_PX1n_odd);

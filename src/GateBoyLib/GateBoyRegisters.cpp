@@ -143,8 +143,8 @@ void RegLCDC::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegStat::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
-void RegStat::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
+void RegStat::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this)); }
+void RegStat::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this)); }
 void RegStat::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------

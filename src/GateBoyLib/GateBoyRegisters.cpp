@@ -299,26 +299,26 @@ void RegOBP1::reset_to_cart() {
 //-----------------------------------------------------------------------------
 
 void RegWY::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
 void RegWY::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
 void RegWY::reset_to_cart() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
 void RegWY::set(uint8_t wy) {
-  NESO_WY0n.state = BIT_CLOCK | bit(~wy, 0);
-  NYRO_WY1n.state = BIT_CLOCK | bit(~wy, 1);
-  NAGA_WY2n.state = BIT_CLOCK | bit(~wy, 2);
-  MELA_WY3n.state = BIT_CLOCK | bit(~wy, 3);
-  NULO_WY4n.state = BIT_CLOCK | bit(~wy, 4);
-  NENE_WY5n.state = BIT_CLOCK | bit(~wy, 5);
-  NUKA_WY6n.state = BIT_CLOCK | bit(~wy, 6);
-  NAFU_WY7n.state = BIT_CLOCK | bit(~wy, 7);
+  NESO_WY0p.set_state(BIT_CLOCK | bit(~wy, 0));
+  NYRO_WY1p.set_state(BIT_CLOCK | bit(~wy, 1));
+  NAGA_WY2p.set_state(BIT_CLOCK | bit(~wy, 2));
+  MELA_WY3p.set_state(BIT_CLOCK | bit(~wy, 3));
+  NULO_WY4p.set_state(BIT_CLOCK | bit(~wy, 4));
+  NENE_WY5p.set_state(BIT_CLOCK | bit(~wy, 5));
+  NUKA_WY6p.set_state(BIT_CLOCK | bit(~wy, 6));
+  NAFU_WY7p.set_state(BIT_CLOCK | bit(~wy, 7));
 }
 
 int RegWY::get() const { return bit_pack_inv(*this); }

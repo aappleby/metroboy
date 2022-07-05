@@ -387,7 +387,7 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_slice2n("FF47 BGP   : ", &s.reg_bgp.PAVO_BGP_D0n, 8);
   d.dump_slice2n("FF48 OBP0  : ", &s.reg_obp0.XUFU_OBP0_D0n, 8);
   d.dump_slice2n("FF49 OBP1  : ", &s.reg_obp1.MOXY_OBP1_D0n, 8);
-  d.dump_slice2n("FF4A WY    : ", &s.reg_wy.NESO_WY0n, 8);
+  d.dump_slice2p("FF4A WY    : ", &s.reg_wy.NESO_WY0p, 8);
   d.dump_slice2n("FF4B WX    : ", &s.reg_wx.MYPA_WX0n, 8);
   d.dump_slice2p("WIN MAP X  : ", &s.win_x.map.WYKA_WIN_MAP_X0, 5);
   d.dump_slice2p("WIN MAP Y  : ", &s.win_y.map.TUFU_WIN_MAP_Y0, 5);

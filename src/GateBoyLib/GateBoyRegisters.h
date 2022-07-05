@@ -290,14 +290,14 @@ struct RegWY {
   void set(uint8_t wy);
   int get() const;
 
-  /*_p23.NESO*/ DFF9 NESO_WY0n; // xxxxxxxH
-  /*_p23.NYRO*/ DFF9 NYRO_WY1n; // xxxxxxxH
-  /*_p23.NAGA*/ DFF9 NAGA_WY2n; // xxxxxxxH
-  /*_p23.MELA*/ DFF9 MELA_WY3n; // xxxxxxxH
-  /*_p23.NULO*/ DFF9 NULO_WY4n; // xxxxxxxH
-  /*_p23.NENE*/ DFF9 NENE_WY5n; // xxxxxxxH
-  /*_p23.NUKA*/ DFF9 NUKA_WY6n; // xxxxxxxH
-  /*_p23.NAFU*/ DFF9 NAFU_WY7n; // xxxxxxxH
+  /*_p23.NESO*/ DFF9B NESO_WY0p; // xxxxxxxH
+  /*_p23.NYRO*/ DFF9B NYRO_WY1p; // xxxxxxxH
+  /*_p23.NAGA*/ DFF9B NAGA_WY2p; // xxxxxxxH
+  /*_p23.MELA*/ DFF9B MELA_WY3p; // xxxxxxxH
+  /*_p23.NULO*/ DFF9B NULO_WY4p; // xxxxxxxH
+  /*_p23.NENE*/ DFF9B NENE_WY5p; // xxxxxxxH
+  /*_p23.NUKA*/ DFF9B NUKA_WY6p; // xxxxxxxH
+  /*_p23.NAFU*/ DFF9B NAFU_WY7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

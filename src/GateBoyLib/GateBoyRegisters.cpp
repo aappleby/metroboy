@@ -211,22 +211,22 @@ void RegLX::reset_to_cart() {
 //-----------------------------------------------------------------------------
 
 void RegLYC::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF);
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
 }
 
 void RegLYC::reset_to_bootrom() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF);
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
 }
 
 void RegLYC::reset_to_cart() {
-  SYRY_LYC0n.state = 0b00011011;
-  VUCE_LYC1n.state = 0b00011011;
-  SEDY_LYC2n.state = 0b00011011;
-  SALO_LYC3n.state = 0b00011011;
-  SOTA_LYC4n.state = 0b00011011;
-  VAFA_LYC5n.state = 0b00011011;
-  VEVO_LYC6n.state = 0b00011011;
-  RAHA_LYC7n.state = 0b00011011;
+  SYRY_LYC0p.set_state(0b00011011);
+  VUCE_LYC1p.set_state(0b00011011);
+  SEDY_LYC2p.set_state(0b00011011);
+  SALO_LYC3p.set_state(0b00011011);
+  SOTA_LYC4p.set_state(0b00011011);
+  VAFA_LYC5p.set_state(0b00011011);
+  VEVO_LYC6p.set_state(0b00011011);
+  RAHA_LYC7p.set_state(0b00011011);
 }
 
 uint8_t RegLYC::get() const {

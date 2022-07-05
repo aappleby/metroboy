@@ -193,7 +193,7 @@ void GateBoyDumper::dump_lcd(const GateBoyState& s, Dumper& d) {
   d("\n");
   d.dump_slice2p("LX              : ", &s.reg_lx.SAXO_LX0p_odd.state,  7);
   d.dump_slice2p("FF44 LY         : ", &s.reg_ly.MUWY_LY0p_odd.state,  8);
-  d.dump_slice2n("FF45 LYC        : ", &s.reg_lyc.SYRY_LYC0n.state, 8);
+  d.dump_slice2p("FF45 LYC        : ", &s.reg_lyc.SYRY_LYC0p, 8);
 }
 
 void GateBoyDumper::dump_oam_bus(const GateBoyState& s, Dumper& d) {

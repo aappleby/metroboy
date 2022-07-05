@@ -215,14 +215,14 @@ struct RegLYC {
   void reset_to_cart();
   uint8_t get() const;
 
-  /*_p23.SYRY*/ DFF9 SYRY_LYC0n; // xxxxxxxH
-  /*_p23.VUCE*/ DFF9 VUCE_LYC1n; // xxxxxxxH
-  /*_p23.SEDY*/ DFF9 SEDY_LYC2n; // xxxxxxxH
-  /*_p23.SALO*/ DFF9 SALO_LYC3n; // xxxxxxxH
-  /*_p23.SOTA*/ DFF9 SOTA_LYC4n; // xxxxxxxH
-  /*_p23.VAFA*/ DFF9 VAFA_LYC5n; // xxxxxxxH
-  /*_p23.VEVO*/ DFF9 VEVO_LYC6n; // xxxxxxxH
-  /*_p23.RAHA*/ DFF9 RAHA_LYC7n; // xxxxxxxH
+  /*_p23.SYRY*/ DFF9B SYRY_LYC0p; // xxxxxxxH
+  /*_p23.VUCE*/ DFF9B VUCE_LYC1p; // xxxxxxxH
+  /*_p23.SEDY*/ DFF9B SEDY_LYC2p; // xxxxxxxH
+  /*_p23.SALO*/ DFF9B SALO_LYC3p; // xxxxxxxH
+  /*_p23.SOTA*/ DFF9B SOTA_LYC4p; // xxxxxxxH
+  /*_p23.VAFA*/ DFF9B VAFA_LYC5p; // xxxxxxxH
+  /*_p23.VEVO*/ DFF9B VEVO_LYC6p; // xxxxxxxH
+  /*_p23.RAHA*/ DFF9B RAHA_LYC7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

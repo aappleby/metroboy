@@ -251,6 +251,10 @@ struct DFF9B : private BitBase {
     state = new_state ^ 1;
   }
 
+  void set_stateB(uint8_t new_state) {
+    state = new_state;
+  }
+
   wire qp_oldB() const { return qp_old(); }
   wire qn_oldB() const { return qn_old(); }
 

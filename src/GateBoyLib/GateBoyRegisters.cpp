@@ -123,22 +123,22 @@ void SpritePix::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
 //-----------------------------------------------------------------------------
 
 void RegLCDC::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
 
 void RegLCDC::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
 
 void RegLCDC::reset_to_cart() {
-  VYXE_LCDC_BGENp.set_state(0b00011010);
-  XYLO_LCDC_SPENp.set_state(0b00011011);
-  XYMO_LCDC_SPSIZEp.set_state(0b00011011);
-  XAFO_LCDC_BGMAPp.set_state(0b00011011);
-  WEXU_LCDC_BGTILEp.set_state(0b00011010);
-  WYMO_LCDC_WINENp.set_state(0b00011011);
-  WOKY_LCDC_WINMAPp.set_state(0b00011011);
-  XONA_LCDC_LCDENp.set_state(0b00011010);
+  VYXE_LCDC_BGENp  .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
+  XYLO_LCDC_SPENp  .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  XYMO_LCDC_SPSIZEp.set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  XAFO_LCDC_BGMAPp .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  WEXU_LCDC_BGTILEp.set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
+  WYMO_LCDC_WINENp .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  WOKY_LCDC_WINMAPp.set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  XONA_LCDC_LCDENp .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
 }
 
 //-----------------------------------------------------------------------------

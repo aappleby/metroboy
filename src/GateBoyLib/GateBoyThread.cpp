@@ -14,7 +14,7 @@
 
 GateBoyThread::GateBoyThread(IGateBoy* prototype) : gb(prototype)
 {
-  reset_gb();
+  gb.reset_states();
 }
 
 //----------------------------------------
@@ -57,30 +57,24 @@ void GateBoyThread::resume() {
 
 //----------------------------------------
 
-void GateBoyThread::reset_gb() {
-  gb.reset_states();
-}
-
-//----------------------------------------
-
 void GateBoyThread::reset_to_poweron() {
   CHECK_P(sim_paused());
   clear_steps();
-  reset_gb();
+  gb.reset_states();
   gb->reset_to_poweron(cart_blob);
 }
 
 void GateBoyThread::reset_to_bootrom(bool slow) {
   CHECK_P(sim_paused());
   clear_steps();
-  reset_gb();
+  gb.reset_states();
   gb->reset_to_bootrom(cart_blob, slow);
 }
 
 void GateBoyThread::reset_to_cart() {
   CHECK_P(sim_paused());
   clear_steps();
-  reset_gb();
+  gb.reset_states();
   gb->reset_to_cart(cart_blob);
 }
 
@@ -93,13 +87,9 @@ void GateBoyThread::add_steps(int64_t steps) {
 }
 
 void GateBoyThread::run_to(uint64_t phase) {
-  //uint64_t delta = phase - gb->get_sys().gb_phase_total;
-  //add_steps((int)delta);
-
   while(gb->get_sys().gb_phase_total != phase) {
     gb->next_phase(cart_blob);
   }
-
 }
 
 void GateBoyThread::rewind(int steps) {
@@ -174,7 +164,7 @@ void GateBoyThread::dump(Dumper& d) {
 
 void GateBoyThread::load_raw_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
-  reset_gb();
+  gb.reset_states();
   clear_steps();
   gb->load_raw_dump(bs);
   cart_blob = bs.rest();

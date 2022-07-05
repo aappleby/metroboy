@@ -108,7 +108,6 @@ struct GateBoyThread {
 
 private:
 
-  void reset_gb();
   void thread_main();
 
   void run_normal();

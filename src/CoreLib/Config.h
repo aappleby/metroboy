@@ -5,6 +5,7 @@
 #pragma warning(disable:4127) // conditional expression is constant
 #pragma warning(disable:4201) // anonymous struct/union
 
+#define SIM_AUDIO
 
 #if 1
 // Debug builds - painfully, ungodly slow.

@@ -441,27 +441,27 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("BYLU_CLK_128  : ", s.spu.BYLU_CLK_128.state);
   d("\n");
 
-  d.dump_bitp("APEG_NR50_VOL_L0   : ", s.spu.APEG_NR50_VOL_L0.state);
-  d.dump_bitp("BYGA_NR50_VOL_L1   : ", s.spu.BYGA_NR50_VOL_L1.state);
-  d.dump_bitp("AGER_NR50_VOL_L2   : ", s.spu.AGER_NR50_VOL_L2.state);
-  d.dump_bitp("APOS_NR50_VIN_TO_L : ", s.spu.APOS_NR50_VIN_TO_L.state);
-  d.dump_bitp("BYRE_NR50_VOL_R0   : ", s.spu.BYRE_NR50_VOL_R0.state);
-  d.dump_bitp("BUMO_NR50_VOL_R1   : ", s.spu.BUMO_NR50_VOL_R1.state);
-  d.dump_bitp("COZU_NR50_VOL_R2   : ", s.spu.COZU_NR50_VOL_R2.state);
-  d.dump_bitp("BEDU_NR50_VIN_TO_R : ", s.spu.BEDU_NR50_VIN_TO_R.state);
+  d.dump_bitp("APEG_NR50_VOL_L0   : ", s.spu.APEG_NR50_VOL_L0.get_state());
+  d.dump_bitp("BYGA_NR50_VOL_L1   : ", s.spu.BYGA_NR50_VOL_L1.get_state());
+  d.dump_bitp("AGER_NR50_VOL_L2   : ", s.spu.AGER_NR50_VOL_L2.get_state());
+  d.dump_bitp("APOS_NR50_VIN_TO_L : ", s.spu.APOS_NR50_VIN_TO_L.get_state());
+  d.dump_bitp("BYRE_NR50_VOL_R0   : ", s.spu.BYRE_NR50_VOL_R0.get_state());
+  d.dump_bitp("BUMO_NR50_VOL_R1   : ", s.spu.BUMO_NR50_VOL_R1.get_state());
+  d.dump_bitp("COZU_NR50_VOL_R2   : ", s.spu.COZU_NR50_VOL_R2.get_state());
+  d.dump_bitp("BEDU_NR50_VIN_TO_R : ", s.spu.BEDU_NR50_VIN_TO_R.get_state());
   d("\n");
 
-  d.dump_bitp("ANEV_NR51_D0 : ", s.spu.ANEV_NR51_D0.state); // these are mixer control bits
-  d.dump_bitp("BOGU_NR51_D1 : ", s.spu.BOGU_NR51_D1.state);
-  d.dump_bitp("BAFO_NR51_D2 : ", s.spu.BAFO_NR51_D2.state);
-  d.dump_bitp("ATUF_NR51_D3 : ", s.spu.ATUF_NR51_D3.state);
-  d.dump_bitp("BUME_NR51_D4 : ", s.spu.BUME_NR51_D4.state);
-  d.dump_bitp("BOFA_NR51_D5 : ", s.spu.BOFA_NR51_D5.state);
-  d.dump_bitp("BEFO_NR51_D6 : ", s.spu.BEFO_NR51_D6.state);
-  d.dump_bitp("BEPU_NR51_D7 : ", s.spu.BEPU_NR51_D7.state);
+  d.dump_bitp("ANEV_NR51_D0 : ", s.spu.ANEV_NR51_D0.get_state()); // these are mixer control bits
+  d.dump_bitp("BOGU_NR51_D1 : ", s.spu.BOGU_NR51_D1.get_state());
+  d.dump_bitp("BAFO_NR51_D2 : ", s.spu.BAFO_NR51_D2.get_state());
+  d.dump_bitp("ATUF_NR51_D3 : ", s.spu.ATUF_NR51_D3.get_state());
+  d.dump_bitp("BUME_NR51_D4 : ", s.spu.BUME_NR51_D4.get_state());
+  d.dump_bitp("BOFA_NR51_D5 : ", s.spu.BOFA_NR51_D5.get_state());
+  d.dump_bitp("BEFO_NR51_D6 : ", s.spu.BEFO_NR51_D6.get_state());
+  d.dump_bitp("BEPU_NR51_D7 : ", s.spu.BEPU_NR51_D7.get_state());
   d("\n");
 
-  d.dump_bitp("FERO_NR52_DBG_APUp     : ", s.spu.FERO_NR52_DBG_APUp.state);
+  d.dump_bitp("FERO_NR52_DBG_APUp     : ", s.spu.FERO_NR52_DBG_APUp.get_state());
   d.dump_bitp("BOWY_NR52_DBG_SWEEP    : ", s.spu.BOWY_NR52_DBG_SWEEP.state);
   d.dump_bitp("HADA_NR52_ALL_SOUND_ON : ", s.spu.HADA_NR52_ALL_SOUND_ON.state);
   d("\n");

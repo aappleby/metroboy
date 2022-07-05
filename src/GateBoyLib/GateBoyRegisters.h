@@ -343,14 +343,14 @@ struct OamTempA {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*#p29.XUSO*/ DFF8nB XUSO_OAM_DA0p; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
-  /*_p29.XEGU*/ DFF8nB XEGU_OAM_DA1p; // AxxxExxx - sprite y bit 1, sprite tile index bit 1
-  /*_p29.YJEX*/ DFF8nB YJEX_OAM_DA2p; // AxxxExxx - sprite y bit 2, sprite tile index bit 2
-  /*_p29.XYJU*/ DFF8nB XYJU_OAM_DA3p; // AxxxExxx - sprite y bit 3, sprite tile index bit 3
-  /*_p29.YBOG*/ DFF8nB YBOG_OAM_DA4p; // AxxxExxx - sprite y bit 4, sprite tile index bit 4
-  /*_p29.WYSO*/ DFF8nB WYSO_OAM_DA5p; // AxxxExxx - sprite y bit 5, sprite tile index bit 5
-  /*_p29.XOTE*/ DFF8nB XOTE_OAM_DA6p; // AxxxExxx - sprite y bit 6, sprite tile index bit 6
-  /*_p29.YZAB*/ DFF8nB YZAB_OAM_DA7p; // AxxxExxx - sprite y bit 7, sprite tile index bit 7
+  /*#p29.XUSO*/ DFF8nB XUSO_OAM_DA0n; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
+  /*_p29.XEGU*/ DFF8nB XEGU_OAM_DA1n; // AxxxExxx - sprite y bit 1, sprite tile index bit 1
+  /*_p29.YJEX*/ DFF8nB YJEX_OAM_DA2n; // AxxxExxx - sprite y bit 2, sprite tile index bit 2
+  /*_p29.XYJU*/ DFF8nB XYJU_OAM_DA3n; // AxxxExxx - sprite y bit 3, sprite tile index bit 3
+  /*_p29.YBOG*/ DFF8nB YBOG_OAM_DA4n; // AxxxExxx - sprite y bit 4, sprite tile index bit 4
+  /*_p29.WYSO*/ DFF8nB WYSO_OAM_DA5n; // AxxxExxx - sprite y bit 5, sprite tile index bit 5
+  /*_p29.XOTE*/ DFF8nB XOTE_OAM_DA6n; // AxxxExxx - sprite y bit 6, sprite tile index bit 6
+  /*_p29.YZAB*/ DFF8nB YZAB_OAM_DA7n; // AxxxExxx - sprite y bit 7, sprite tile index bit 7
 };
 
 //-----------------------------------------------------------------------------
@@ -360,14 +360,14 @@ struct OamTempB {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.YLOR*/ DFF8nB YLOR_OAM_DB0p; // AxxxExxx - sprite x bit 0,
-  /*_p31.ZYTY*/ DFF8nB ZYTY_OAM_DB1p; // AxxxExxx - sprite x bit 1,
-  /*_p31.ZYVE*/ DFF8nB ZYVE_OAM_DB2p; // AxxxExxx - sprite x bit 2,
-  /*_p31.ZEZY*/ DFF8nB ZEZY_OAM_DB3p; // AxxxExxx - sprite x bit 3,
-  /*_p31.GOMO*/ DFF8nB GOMO_OAM_DB4p; // AxxxExxx - sprite x bit 4, sprite palette
-  /*_p31.BAXO*/ DFF8nB BAXO_OAM_DB5p; // AxxxExxx - sprite x bit 5, sprite x flip
-  /*_p31.YZOS*/ DFF8nB YZOS_OAM_DB6p; // AxxxExxx - sprite x bit 6, sprite y flip
-  /*_p31.DEPO*/ DFF8nB DEPO_OAM_DB7p; // AxxxExxx - sprite x bit 7, sprite priority
+  /*_p31.YLOR*/ DFF8nB YLOR_OAM_DB0n; // AxxxExxx - sprite x bit 0,
+  /*_p31.ZYTY*/ DFF8nB ZYTY_OAM_DB1n; // AxxxExxx - sprite x bit 1,
+  /*_p31.ZYVE*/ DFF8nB ZYVE_OAM_DB2n; // AxxxExxx - sprite x bit 2,
+  /*_p31.ZEZY*/ DFF8nB ZEZY_OAM_DB3n; // AxxxExxx - sprite x bit 3,
+  /*_p31.GOMO*/ DFF8nB GOMO_OAM_DB4n; // AxxxExxx - sprite x bit 4, sprite palette
+  /*_p31.BAXO*/ DFF8nB BAXO_OAM_DB5n; // AxxxExxx - sprite x bit 5, sprite x flip
+  /*_p31.YZOS*/ DFF8nB YZOS_OAM_DB6n; // AxxxExxx - sprite x bit 6, sprite y flip
+  /*_p31.DEPO*/ DFF8nB DEPO_OAM_DB7n; // AxxxExxx - sprite x bit 7, sprite priority
 };
 
 //-----------------------------------------------------------------------------
@@ -408,14 +408,14 @@ struct SpritePixA {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p33.REWO*/ DFF8nB REWO_SPRITE_DA0n; // xBxDxFxH
-  /*_p33.PEBA*/ DFF8nB PEBA_SPRITE_DA1n; // xBxDxFxH
-  /*_p33.MOFO*/ DFF8nB MOFO_SPRITE_DA2n; // xBxDxFxH
-  /*_p33.PUDU*/ DFF8nB PUDU_SPRITE_DA3n; // xBxDxFxH
-  /*_p33.SAJA*/ DFF8nB SAJA_SPRITE_DA4n; // xBxDxFxH
-  /*_p33.SUNY*/ DFF8nB SUNY_SPRITE_DA5n; // xBxDxFxH
-  /*_p33.SEMO*/ DFF8nB SEMO_SPRITE_DA6n; // xBxDxFxH
-  /*_p33.SEGA*/ DFF8nB SEGA_SPRITE_DA7n; // xBxDxFxH
+  /*_p33.REWO*/ DFF8nB REWO_SPRITE_DA0p; // xBxDxFxH
+  /*_p33.PEBA*/ DFF8nB PEBA_SPRITE_DA1p; // xBxDxFxH
+  /*_p33.MOFO*/ DFF8nB MOFO_SPRITE_DA2p; // xBxDxFxH
+  /*_p33.PUDU*/ DFF8nB PUDU_SPRITE_DA3p; // xBxDxFxH
+  /*_p33.SAJA*/ DFF8nB SAJA_SPRITE_DA4p; // xBxDxFxH
+  /*_p33.SUNY*/ DFF8nB SUNY_SPRITE_DA5p; // xBxDxFxH
+  /*_p33.SEMO*/ DFF8nB SEMO_SPRITE_DA6p; // xBxDxFxH
+  /*_p33.SEGA*/ DFF8nB SEGA_SPRITE_DA7p; // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------
@@ -424,14 +424,14 @@ struct SpritePixB {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p33.PEFO*/ DFF8nB PEFO_SPRITE_DB0n; // xBxDxFxH
-  /*_p33.ROKA*/ DFF8nB ROKA_SPRITE_DB1n; // xBxDxFxH
-  /*_p33.MYTU*/ DFF8nB MYTU_SPRITE_DB2n; // xBxDxFxH
-  /*_p33.RAMU*/ DFF8nB RAMU_SPRITE_DB3n; // xBxDxFxH
-  /*_p33.SELE*/ DFF8nB SELE_SPRITE_DB4n; // xBxDxFxH
-  /*_p33.SUTO*/ DFF8nB SUTO_SPRITE_DB5n; // xBxDxFxH
-  /*_p33.RAMA*/ DFF8nB RAMA_SPRITE_DB6n; // xBxDxFxH
-  /*_p33.RYDU*/ DFF8nB RYDU_SPRITE_DB7n; // xBxDxFxH
+  /*_p33.PEFO*/ DFF8nB PEFO_SPRITE_DB0p; // xBxDxFxH
+  /*_p33.ROKA*/ DFF8nB ROKA_SPRITE_DB1p; // xBxDxFxH
+  /*_p33.MYTU*/ DFF8nB MYTU_SPRITE_DB2p; // xBxDxFxH
+  /*_p33.RAMU*/ DFF8nB RAMU_SPRITE_DB3p; // xBxDxFxH
+  /*_p33.SELE*/ DFF8nB SELE_SPRITE_DB4p; // xBxDxFxH
+  /*_p33.SUTO*/ DFF8nB SUTO_SPRITE_DB5p; // xBxDxFxH
+  /*_p33.RAMA*/ DFF8nB RAMA_SPRITE_DB6p; // xBxDxFxH
+  /*_p33.RYDU*/ DFF8nB RYDU_SPRITE_DB7p; // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------

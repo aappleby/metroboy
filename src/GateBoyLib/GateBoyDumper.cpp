@@ -209,8 +209,8 @@ void GateBoyDumper::dump_oam_bus(const GateBoyState& s, Dumper& d) {
   d.dump_slice2n("BUS_OAM_DBn : ", &s.oam_dbus_b.BUS_OAM_DB00n, 8);
   d.dump_slice2n("OAM LATCH A : ", &s.oam_latch_a.YDYV_OAM_LATCH_DA0n, 8);
   d.dump_slice2n("OAM LATCH B : ", &s.oam_latch_b.XYKY_OAM_LATCH_DB0n, 8);
-  d.dump_slice2p("OAM TEMP A  : ", &s.oam_temp_a.XUSO_OAM_DA0p, 8);
-  d.dump_slice2p("OAM TEMP B  : ", &s.oam_temp_b.YLOR_OAM_DB0p, 8);
+  d.dump_slice2p("OAM TEMP A  : ", &s.oam_temp_a.XUSO_OAM_DA0n, 8);
+  d.dump_slice2p("OAM TEMP B  : ", &s.oam_temp_b.YLOR_OAM_DB0n, 8);
 
 }
 
@@ -316,8 +316,8 @@ void GateBoyDumper::dump_sprite_fetcher(const GateBoyState& s, Dumper& d) {
   d.dump_bitp   ("TOBU_SFETCH_S1_D2    : ", s.sfetch_control.TOBU_SFETCH_S1p_D2_evn  .state);
   d.dump_bitp   ("VONU_SFETCH_S1_D4    : ", s.sfetch_control.VONU_SFETCH_S1p_D4_evn  .state);
   d.dump_bitp   ("SEBA_SFETCH_S1_D5    : ", s.sfetch_control.SEBA_SFETCH_S1p_D5_odd  .state);
-  d.dump_slice2n("Temp A : ", &s.sprite_pix_a.REWO_SPRITE_DA0n, 8);
-  d.dump_slice2n("Temp B : ", &s.sprite_pix_b.PEFO_SPRITE_DB0n, 8);
+  d.dump_slice2n("Temp A : ", &s.sprite_pix_a.REWO_SPRITE_DA0p, 8);
+  d.dump_slice2n("Temp B : ", &s.sprite_pix_b.PEFO_SPRITE_DB0p, 8);
 }
 
 void GateBoyDumper::dump_timer(const GateBoyState& s, Dumper& d) {

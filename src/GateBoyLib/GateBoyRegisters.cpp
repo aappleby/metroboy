@@ -17,14 +17,14 @@ SpriteDeltaY GateBoy::sub_sprite_y_gates() {
   /*_p29.FEMO*/ wire FEMO_LY6n = not1(reg_new.reg_ly.MATO_LY6p_odd.qp_new());
   /*_p29.GUSU*/ wire GUSU_LY7n = not1(reg_new.reg_ly.LAFO_LY7p_odd.qp_new());
 
-  /*_p29.ERUC*/ Adder ERUC_YDIFF0 = add3(EBOS_LY0n, reg_new.oam_temp_a.XUSO_OAM_DA0p.qn_newB(), reg_new.SIG_GND.out_new());
-  /*_p29.ENEF*/ Adder ENEF_YDIFF1 = add3(DASA_LY1n, reg_new.oam_temp_a.XEGU_OAM_DA1p.qn_newB(), ERUC_YDIFF0.carry);
-  /*_p29.FECO*/ Adder FECO_YDIFF2 = add3(FUKY_LY2n, reg_new.oam_temp_a.YJEX_OAM_DA2p.qn_newB(), ENEF_YDIFF1.carry);
-  /*_p29.GYKY*/ Adder GYKY_YDIFF3 = add3(FUVE_LY3n, reg_new.oam_temp_a.XYJU_OAM_DA3p.qn_newB(), FECO_YDIFF2.carry);
-  /*_p29.GOPU*/ Adder GOPU_YDIFF4 = add3(FEPU_LY4n, reg_new.oam_temp_a.YBOG_OAM_DA4p.qn_newB(), GYKY_YDIFF3.carry);
-  /*_p29.FUWA*/ Adder FUWA_YDIFF5 = add3(FOFA_LY5n, reg_new.oam_temp_a.WYSO_OAM_DA5p.qn_newB(), GOPU_YDIFF4.carry);
-  /*_p29.GOJU*/ Adder GOJU_YDIFF6 = add3(FEMO_LY6n, reg_new.oam_temp_a.XOTE_OAM_DA6p.qn_newB(), FUWA_YDIFF5.carry);
-  /*_p29.WUHU*/ Adder WUHU_YDIFF7 = add3(GUSU_LY7n, reg_new.oam_temp_a.YZAB_OAM_DA7p.qn_newB(), GOJU_YDIFF6.carry);
+  /*_p29.ERUC*/ Adder ERUC_YDIFF0 = add3(EBOS_LY0n, reg_new.oam_temp_a.XUSO_OAM_DA0n.qn_newB(), reg_new.SIG_GND.out_new());
+  /*_p29.ENEF*/ Adder ENEF_YDIFF1 = add3(DASA_LY1n, reg_new.oam_temp_a.XEGU_OAM_DA1n.qn_newB(), ERUC_YDIFF0.carry);
+  /*_p29.FECO*/ Adder FECO_YDIFF2 = add3(FUKY_LY2n, reg_new.oam_temp_a.YJEX_OAM_DA2n.qn_newB(), ENEF_YDIFF1.carry);
+  /*_p29.GYKY*/ Adder GYKY_YDIFF3 = add3(FUVE_LY3n, reg_new.oam_temp_a.XYJU_OAM_DA3n.qn_newB(), FECO_YDIFF2.carry);
+  /*_p29.GOPU*/ Adder GOPU_YDIFF4 = add3(FEPU_LY4n, reg_new.oam_temp_a.YBOG_OAM_DA4n.qn_newB(), GYKY_YDIFF3.carry);
+  /*_p29.FUWA*/ Adder FUWA_YDIFF5 = add3(FOFA_LY5n, reg_new.oam_temp_a.WYSO_OAM_DA5n.qn_newB(), GOPU_YDIFF4.carry);
+  /*_p29.GOJU*/ Adder GOJU_YDIFF6 = add3(FEMO_LY6n, reg_new.oam_temp_a.XOTE_OAM_DA6n.qn_newB(), FUWA_YDIFF5.carry);
+  /*_p29.WUHU*/ Adder WUHU_YDIFF7 = add3(GUSU_LY7n, reg_new.oam_temp_a.YZAB_OAM_DA7n.qn_newB(), GOJU_YDIFF6.carry);
 
   return {
     ERUC_YDIFF0,

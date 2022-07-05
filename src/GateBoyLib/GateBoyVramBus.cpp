@@ -327,7 +327,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   //--------------------------------------------
   // Sprite read address
 
-  /*#p29.WUKY*/ wire WUKY_FLIP_Yp_new = not1(reg_new.oam_temp_b.YZOS_OAM_DB6p.qn_newB());
+  /*#p29.WUKY*/ wire WUKY_FLIP_Yp_new = not1(reg_new.oam_temp_b.YZOS_OAM_DB6n.qn_newB());
   /*#p29.FUFO*/ wire FUFO_LCDC_SPSIZEn_new = not1(reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.qp_newB());
 
   /*#p29.XUQU*/ wire XUQU_SPRITE_AB_new = not1(reg_new.sfetch_control.VONU_SFETCH_S1p_D4_evn.qn_new());
@@ -336,7 +336,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*#p29.BORE*/ wire BORE_L1_new = xor2(WUKY_FLIP_Yp_new, reg_new.sprite_lbus.BUS_SPR_L1.out_new());
   /*#p29.BUVY*/ wire BUVY_L2_new = xor2(WUKY_FLIP_Yp_new, reg_new.sprite_lbus.BUS_SPR_L2.out_new());
   /*#p29.WAGO*/ wire WAGO_L3_new = xor2(WUKY_FLIP_Yp_new, reg_new.sprite_lbus.BUS_SPR_L3.out_new());
-  /*#p29.GEJY*/ wire GEJY_L3_new = amux2(reg_new.oam_temp_a.XUSO_OAM_DA0p.qn_newB(), FUFO_LCDC_SPSIZEn_new, reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.qp_newB(), WAGO_L3_new);
+  /*#p29.GEJY*/ wire GEJY_L3_new = amux2(reg_new.oam_temp_a.XUSO_OAM_DA0n.qn_newB(), FUFO_LCDC_SPSIZEn_new, reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.qp_newB(), WAGO_L3_new);
 
   /*_p29.ABON*/ wire ABON_SFETCHINGn_new = not1(reg_new.sfetch_control.TEXY_SFETCHINGp_evn.out_new());
   /*_p29.ABEM*/ triwire ABEM_HILO_TO_VA00_new = tri6_nn(ABON_SFETCHINGn_new, XUQU_SPRITE_AB_new);
@@ -344,13 +344,13 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*_p29.ARAS*/ triwire ARAS_SPL1_TO_VA02_new = tri6_nn(ABON_SFETCHINGn_new, BORE_L1_new);
   /*_p29.AGAG*/ triwire AGAG_SPL2_TO_VA03_new = tri6_nn(ABON_SFETCHINGn_new, BUVY_L2_new);
   /*_p29.FAMU*/ triwire FAMU_SPL3_TO_VA04_new = tri6_nn(ABON_SFETCHINGn_new, GEJY_L3_new);
-  /*#p29.FUGY*/ triwire FUGY_ODA1_TO_VA05_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.XEGU_OAM_DA1p.qn_newB());
-  /*_p29.GAVO*/ triwire GAVO_ODA2_TO_VA06_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.YJEX_OAM_DA2p.qn_newB());
-  /*_p29.WYGA*/ triwire WYGA_ODA3_TO_VA07_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.XYJU_OAM_DA3p.qn_newB());
-  /*_p29.WUNE*/ triwire WUNE_ODA4_TO_VA08_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.YBOG_OAM_DA4p.qn_newB());
-  /*_p29.GOTU*/ triwire GOTU_ODA5_TO_VA09_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.WYSO_OAM_DA5p.qn_newB());
-  /*_p29.GEGU*/ triwire GEGU_ODA6_TO_VA10_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.XOTE_OAM_DA6p.qn_newB());
-  /*_p29.XEHE*/ triwire XEHE_ODA7_TO_VA11_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.YZAB_OAM_DA7p.qn_newB());
+  /*#p29.FUGY*/ triwire FUGY_ODA1_TO_VA05_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.XEGU_OAM_DA1n.qn_newB());
+  /*_p29.GAVO*/ triwire GAVO_ODA2_TO_VA06_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.YJEX_OAM_DA2n.qn_newB());
+  /*_p29.WYGA*/ triwire WYGA_ODA3_TO_VA07_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.XYJU_OAM_DA3n.qn_newB());
+  /*_p29.WUNE*/ triwire WUNE_ODA4_TO_VA08_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.YBOG_OAM_DA4n.qn_newB());
+  /*_p29.GOTU*/ triwire GOTU_ODA5_TO_VA09_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.WYSO_OAM_DA5n.qn_newB());
+  /*_p29.GEGU*/ triwire GEGU_ODA6_TO_VA10_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.XOTE_OAM_DA6n.qn_newB());
+  /*_p29.XEHE*/ triwire XEHE_ODA7_TO_VA11_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.oam_temp_a.YZAB_OAM_DA7n.qn_newB());
   /*_p29.DYSO*/ triwire DYSO_BANK_TO_VA12_new = tri6_nn(ABON_SFETCHINGn_new, reg_new.SIG_GND.out_new());   // sprites always in low half of tile store
 
   /*_BUS_VRAM_A00n*/ reg_new.vram_abus.lo.BUS_VRAM_A00n.tri_bus(ABEM_HILO_TO_VA00_new);
@@ -659,7 +659,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   //--------------------------------------------
   // Vram bus to sprite x flipper
 
-  /*#p29.XONO*/ wire XONO_FLIP_X_new = and2(reg_new.oam_temp_b.BAXO_OAM_DB5p.qn_newB(), reg_new.sfetch_control.TEXY_SFETCHINGp_evn.out_new());
+  /*#p29.XONO*/ wire XONO_FLIP_X_new = and2(reg_new.oam_temp_b.BAXO_OAM_DB5n.qn_newB(), reg_new.sfetch_control.TEXY_SFETCHINGp_evn.out_new());
   /*_p33.PUTE*/ reg_new.flipped_sprite.PUTE_FLIP0p <<= mux2p(XONO_FLIP_X_new, reg_new.vram_dbus.BUS_VRAM_D07p.out_new(), reg_new.vram_dbus.BUS_VRAM_D00p.out_new());
   /*_p33.PELO*/ reg_new.flipped_sprite.PELO_FLIP1p <<= mux2p(XONO_FLIP_X_new, reg_new.vram_dbus.BUS_VRAM_D06p.out_new(), reg_new.vram_dbus.BUS_VRAM_D01p.out_new());
   /*_p33.PONO*/ reg_new.flipped_sprite.PONO_FLIP2p <<= mux2p(XONO_FLIP_X_new, reg_new.vram_dbus.BUS_VRAM_D05p.out_new(), reg_new.vram_dbus.BUS_VRAM_D02p.out_new());

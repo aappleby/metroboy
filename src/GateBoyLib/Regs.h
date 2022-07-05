@@ -161,30 +161,16 @@ struct DFF : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
-// 8-rung register with no reset, inverting input, and dual outputs. Used by
-// sprite store, bg pix a, spr pix a/b, dma hi, bus mux sprite temp
+// 8-rung register with no reset and dual outputs.
 
 // DFF8_01 |o------O | << CLKn
-// DFF8_02 |====O====| << Dn
+// DFF8_02 |====O====| << Dp
 // DFF8_03 |  -----  |
 // DFF8_04 |O-------o| << CLKp
 // DFF8_05 |  -----  |
 // DFF8_06 |==     ==|
-// DFF8_07 |xxx-O-xxx| >> Qn
-// DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
-
-struct DFF8n : public BitBase {
-  void dff8n(wire CLKn, wire Dn) {
-    check_invalid();
-
-    wire clk_old = state & BIT_CLOCK;
-    wire clk_new = (~CLKn << 1) & BIT_CLOCK;
-
-    wire d1 = (~clk_old & clk_new) ? ~Dn : state;
-
-    state = uint8_t(bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN);
-  }
-};
+// DFF8_07 |xxx-O-xxx| >> Qp
+// DFF8_08 |xxx-O-xxx| >> Qn or this rung can be empty
 
 struct DFF8nB : private BitBase {
   void set_state(uint8_t new_state) { state = new_state ^ 1; }
@@ -212,32 +198,17 @@ struct DFF8nB : private BitBase {
 };
 
 //-----------------------------------------------------------------------------
-// same w/ swapped clock inputs, not 100% positive this is correct but BGP has
+// Same w/ swapped clock inputs, not 100% positive this is correct but BGP has
 // to latch on the rising edge of the clock or m3_bgp_change is way off.
 
 // DFF8_01 |o------O | << CLKp
-// DFF8_02 |====O====| << Dn
+// DFF8_02 |====O====| << Dp
 // DFF8_03 |  -----  |
 // DFF8_04 |O-------o| << CLKn
 // DFF8_05 |  -----  |
 // DFF8_06 |==     ==|
-// DFF8_07 |xxx-O-xxx| >> Qn
-// DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
-
-/*
-struct DFF8p : public BitBase {
-  void dff8p(wire CLKp, wire Dn) {
-    check_invalid();
-
-    wire clk_old = state & BIT_CLOCK;
-    wire clk_new = (CLKp << 1) & BIT_CLOCK;
-
-    wire d1 = (~clk_old & clk_new) ? ~Dn : state;
-
-    state = uint8_t(bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN);
-  }
-};
-*/
+// DFF8_07 |xxx-O-xxx| >> Qp
+// DFF8_08 |xxx-O-xxx| >> Qn (or this rung can be empty)
 
 struct DFF8pB : private BitBase {
 
@@ -276,8 +247,8 @@ struct DFF8pB : private BitBase {
 // DFF9_05 |  -----  |
 // DFF9_06 |--xxOxx--| << RSTn
 // DFF9_07 |o-------o|
-// DFF9_08 |xxx-O-xxx| >> Q   // NOTE THESE ARE SWAPPED COMPARED TO OTHER DFFS
-// DFF9_09 |xxx-O-xxx| >> Qn  // NOTE THESE ARE SWAPPED COMPARED TO OTHER DFFS
+// DFF9_08 |xxx-O-xxx| >> Qp
+// DFF9_09 |xxx-O-xxx| >> Qn
 
 struct DFF9B : private BitBase {
 
@@ -332,7 +303,6 @@ struct DFF11 : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
-
 // DFF13_01 nc
 // DFF13_02 << RSTn
 // DFF13_03 << D

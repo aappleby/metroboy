@@ -21,7 +21,7 @@
 
 using namespace std;
 
-const bool run_slow_tests = true;
+const bool run_slow_tests = false;
 
 //#define TEST_MOONEYE
 

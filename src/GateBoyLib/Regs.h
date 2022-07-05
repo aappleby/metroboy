@@ -248,7 +248,7 @@ struct DFF9B : private BitBase {
   uint8_t get_state() const { return state; }
 
   void set_state(uint8_t new_state) {
-    state = new_state;
+    state = new_state ^ 1;
   }
 
   wire qp_oldB() const { return qp_old(); }
@@ -258,7 +258,6 @@ struct DFF9B : private BitBase {
   wire qn_newB() const { return qn_new(); }
 
   __attribute__((always_inline)) void dff9(wire CLKp, wire RSTn, wire Dp) {
-
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
@@ -267,21 +266,6 @@ struct DFF9B : private BitBase {
     wire d1 = (~clk_old & clk_new) ? Dp : state;
 
     state = uint8_t(bit0(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN);
-
-    /*
-    check_invalid();
-
-    state ^= 1;
-
-    wire clk_old = state & BIT_CLOCK;
-    wire clk_new = (CLKp << 1) & BIT_CLOCK;
-
-    wire d1 = (~clk_old & clk_new) ? ~Dn : state;
-
-    state = uint8_t(bit0(d1 | (~SETn)) | clk_new | BIT_NEW | BIT_DRIVEN);
-
-    state ^= 1;
-    */
   }
 };
 

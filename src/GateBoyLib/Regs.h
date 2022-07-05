@@ -257,7 +257,7 @@ struct DFF9B : private BitBase {
   wire qp_newB() const { return qp_new(); }
   wire qn_newB() const { return qn_new(); }
 
-  __attribute__((always_inline)) void dff9(wire CLKp, wire RSTn, wire Dp) {
+  __attribute__((always_inline)) void dff9b(wire CLKp, wire RSTn, wire Dp) {
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;

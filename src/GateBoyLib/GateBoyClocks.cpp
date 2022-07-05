@@ -13,7 +13,7 @@ void GateBoyClock::reset_to_bootrom() {
   
   AFUR_xxxxEFGH.set_state(0b00011001);
   ALEF_AxxxxFGH.set_state(0b00011011);
-  APUK_ABxxxxGH.state = 0b00011001;
+  APUK_ABxxxxGH.set_state(0b00011001);
   ADYK_ABCxxxxH.state = 0b00011011;
 
   WUVU_ABxxEFxx.state = 0b00011000;
@@ -37,7 +37,7 @@ void GateBoyClock::reset_to_cart() {
   
   AFUR_xxxxEFGH.set_state(0b00011001);
   ALEF_AxxxxFGH.set_state(0b00011011);
-  APUK_ABxxxxGH.state = 0b00011001;
+  APUK_ABxxxxGH.set_state(0b00011001);
   ADYK_ABCxxxxH.state = 0b00011011;
 
   WUVU_ABxxEFxx.state = 0b00011000;
@@ -96,7 +96,7 @@ wire GateBoyClock::AZOF_odd_new() const {
 
 /*#p01.ATYP*/ wire GateBoyClock::ATYP_ABCDxxxx_new() const { return not1(AFUR_xxxxEFGH.qn_newB()); }
 /*#p01.AFEP*/ wire GateBoyClock::AFEP_AxxxxFGH_new() const { return not1(ALEF_AxxxxFGH.qp_newB()); }
-/*#p01.AROV*/ wire GateBoyClock::AROV_xxCDEFxx_new() const { return not1(APUK_ABxxxxGH.qp_new()); }
+/*#p01.AROV*/ wire GateBoyClock::AROV_xxCDEFxx_new() const { return not1(APUK_ABxxxxGH.qn_newB()); }
 /*#p01.ADAR*/ wire GateBoyClock::ADAR_ABCxxxxH_new() const { return not1(ADYK_ABCxxxxH.qn_new()); }
 
 /*#p01.BEKO*/ wire GateBoyClock::BEKO_ABCDxxxx_new() const { return not1(BUDE_xxxxEFGH_new()); } // BEKO+BAVY parallel
@@ -158,10 +158,10 @@ void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {
   /*_p01.ATAL*/ wire ATAL_EVN = not1(reg_new.sys_clk.AVET_DEGLITCH.out_new());
   /*_p01.ATAN*/ wire ATAN_OLD = not1(ATAL_EVN); // cell not marked on die but it's next to ATAL
 
-  /*_p01.AFUR*/ reg_new.sys_clk.AFUR_xxxxEFGH.dff9(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ADYK_ABCxxxxH.qp_old());
-  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_AxxxxFGH.dff9(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_xxxxEFGH.qp_oldB());
-  /*_p01.APUK*/ reg_new.sys_clk.APUK_ABxxxxGH.dff9(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ALEF_AxxxxFGH.qp_oldB());
-  /*_p01.ADYK*/ reg_new.sys_clk.ADYK_ABCxxxxH.dff9(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.APUK_ABxxxxGH.qn_old());
+  /*_p01.AFUR*/ reg_new.sys_clk.AFUR_xxxxEFGH.dff9b(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ADYK_ABCxxxxH.qp_old());
+  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_AxxxxFGH.dff9b(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_xxxxEFGH.qp_oldB());
+  /*_p01.APUK*/ reg_new.sys_clk.APUK_ABxxxxGH.dff9b(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ALEF_AxxxxFGH.qp_oldB());
+  /*_p01.ADYK*/ reg_new.sys_clk.ADYK_ABCxxxxH.dff9(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.APUK_ABxxxxGH.qp_oldB());
 
   /*_PIN_75*/ pins.sys.PIN_75_CLK_OUT.pin_out(reg_new.sys_clk.BUDE_xxxxEFGH_new(), reg_new.sys_clk.BUDE_xxxxEFGH_new());
 

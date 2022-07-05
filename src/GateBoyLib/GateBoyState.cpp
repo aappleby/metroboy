@@ -179,7 +179,7 @@ void GateBoyState::reset_to_poweron() {
   pal_pipe.reset_to_poweron();
   lcd.reset_to_poweron();
 
-#ifdef SIM_AUDIO
+#if SIM_AUDIO
   spu.reset_to_poweron();
   ch1.reset_to_poweron();
   ch2.reset_to_poweron();
@@ -337,7 +337,7 @@ void GateBoyState::reset_to_bootrom() {
   pal_pipe.reset_to_bootrom();
   lcd.reset_to_bootrom();
 
-#ifdef SIM_AUDIO
+#if SIM_AUDIO
   spu.reset_to_bootrom();
   ch1.reset_to_bootrom();
   ch2.reset_to_bootrom();
@@ -479,7 +479,7 @@ void GateBoyState::reset_to_cart() {
   pal_pipe.reset_to_cart();
   lcd.reset_to_cart();
 
-#ifdef SIM_AUDIO
+#if SIM_AUDIO
   spu.reset_to_cart();
   ch1.reset_to_cart();
   ch2.reset_to_cart();
@@ -901,7 +901,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, reg_obp1),
   DECLARE_FIELD(GateBoyState, flipped_sprite),
 
-#ifdef SIM_AUDIO
+#if SIM_AUDIO
   DECLARE_FIELD(GateBoyState, spu),
   DECLARE_FIELD(GateBoyState, ch1),
   DECLARE_FIELD(GateBoyState, ch2),

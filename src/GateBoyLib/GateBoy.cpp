@@ -1020,7 +1020,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Sound
 
-#ifdef SIM_AUDIO
+#if SIM_AUDIO
   tick_spu(reg_old, reg_new, mem.wave_ram);
 #endif
 

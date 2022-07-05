@@ -428,7 +428,7 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
-#ifdef SIM_AUDIO
+#if SIM_AUDIO
   d.dump_bitp("CEMO_CLK_1M   : ", s.spu.CEMO_CLK_1M.state);
   d.dump_bitp("ATEP_CLK_2M   : ", s.spu.ATEP_CLK_2M.state);
   d.dump_bitp("CERY_CLK_2M   : ", s.spu.CERY_CLK_2M.state);

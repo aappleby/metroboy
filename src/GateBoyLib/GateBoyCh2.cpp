@@ -2,7 +2,7 @@
 
 #include "GateBoyLib/GateBoyState.h"
 
-#ifdef SIM_AUDIO
+#if SIM_AUDIO
 
 void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 

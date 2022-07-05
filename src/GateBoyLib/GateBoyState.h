@@ -72,7 +72,7 @@ struct GateBoyState {
   /*_p09.HAPO*/ wire HAPO_SYS_RSTp_new() const { return not1(sys_rst.ALUR_SYS_RSTn_new()); }
   /*_p09.GUFO*/ wire GUFO_SYS_RSTn_new() const { return not1(HAPO_SYS_RSTp_new()); }
 
-#ifdef SIM_AUDIO
+#if SIM_AUDIO
   /*_p09.JYRO*/ wire JYRO_APU_RSTp_old() const { return  or2(HAPO_SYS_RSTp_old(), spu.HADA_NR52_ALL_SOUND_ON.qn_old()); }
   /*_p09.JYRO*/ wire JYRO_APU_RSTp_new() const { return  or2(HAPO_SYS_RSTp_new(), spu.HADA_NR52_ALL_SOUND_ON.qn_new()); }
 

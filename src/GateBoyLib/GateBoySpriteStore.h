@@ -162,14 +162,14 @@ struct StoreX1 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.DANY*/ DFF9 DANY_STORE1_X0p;
-  /*_p31.DUKO*/ DFF9 DUKO_STORE1_X1p;
-  /*_p31.DESU*/ DFF9 DESU_STORE1_X2p;
-  /*_p31.DAZO*/ DFF9 DAZO_STORE1_X3p;
-  /*_p31.DAKE*/ DFF9 DAKE_STORE1_X4p;
-  /*_p31.CESO*/ DFF9 CESO_STORE1_X5p;
-  /*_p31.DYFU*/ DFF9 DYFU_STORE1_X6p;
-  /*_p31.CUSY*/ DFF9 CUSY_STORE1_X7p;
+  /*_p31.DANY*/ DFF9B DANY_STORE1_X0n;
+  /*_p31.DUKO*/ DFF9B DUKO_STORE1_X1n;
+  /*_p31.DESU*/ DFF9B DESU_STORE1_X2n;
+  /*_p31.DAZO*/ DFF9B DAZO_STORE1_X3n;
+  /*_p31.DAKE*/ DFF9B DAKE_STORE1_X4n;
+  /*_p31.CESO*/ DFF9B CESO_STORE1_X5n;
+  /*_p31.DYFU*/ DFF9B DYFU_STORE1_X6n;
+  /*_p31.CUSY*/ DFF9B CUSY_STORE1_X7n;
 };
 
 struct StoreI2 {
@@ -201,14 +201,14 @@ struct StoreX2 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.FOKA*/ DFF9 FOKA_STORE2_X0p;
-  /*_p31.FYTY*/ DFF9 FYTY_STORE2_X1p;
-  /*_p31.FUBY*/ DFF9 FUBY_STORE2_X2p;
-  /*_p31.GOXU*/ DFF9 GOXU_STORE2_X3p;
-  /*_p31.DUHY*/ DFF9 DUHY_STORE2_X4p;
-  /*_p31.EJUF*/ DFF9 EJUF_STORE2_X5p;
-  /*_p31.ENOR*/ DFF9 ENOR_STORE2_X6p;
-  /*_p31.DEPY*/ DFF9 DEPY_STORE2_X7p;
+  /*_p31.FOKA*/ DFF9B FOKA_STORE2_X0n;
+  /*_p31.FYTY*/ DFF9B FYTY_STORE2_X1n;
+  /*_p31.FUBY*/ DFF9B FUBY_STORE2_X2n;
+  /*_p31.GOXU*/ DFF9B GOXU_STORE2_X3n;
+  /*_p31.DUHY*/ DFF9B DUHY_STORE2_X4n;
+  /*_p31.EJUF*/ DFF9B EJUF_STORE2_X5n;
+  /*_p31.ENOR*/ DFF9B ENOR_STORE2_X6n;
+  /*_p31.DEPY*/ DFF9B DEPY_STORE2_X7n;
 };
 
 struct StoreI3 {
@@ -240,14 +240,14 @@ struct StoreX3 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.XOLY*/ DFF9 XOLY_STORE3_X0p;
-  /*_p31.XYBA*/ DFF9 XYBA_STORE3_X1p;
-  /*_p31.XABE*/ DFF9 XABE_STORE3_X2p;
-  /*_p31.XEKA*/ DFF9 XEKA_STORE3_X3p;
-  /*_p31.XOMY*/ DFF9 XOMY_STORE3_X4p;
-  /*_p31.WUHA*/ DFF9 WUHA_STORE3_X5p;
-  /*_p31.WYNA*/ DFF9 WYNA_STORE3_X6p;
-  /*_p31.WECO*/ DFF9 WECO_STORE3_X7p;
+  /*_p31.XOLY*/ DFF9B XOLY_STORE3_X0n;
+  /*_p31.XYBA*/ DFF9B XYBA_STORE3_X1n;
+  /*_p31.XABE*/ DFF9B XABE_STORE3_X2n;
+  /*_p31.XEKA*/ DFF9B XEKA_STORE3_X3n;
+  /*_p31.XOMY*/ DFF9B XOMY_STORE3_X4n;
+  /*_p31.WUHA*/ DFF9B WUHA_STORE3_X5n;
+  /*_p31.WYNA*/ DFF9B WYNA_STORE3_X6n;
+  /*_p31.WECO*/ DFF9B WECO_STORE3_X7n;
 };
 
 struct StoreI4 {
@@ -279,14 +279,14 @@ struct StoreX4 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.WEDU*/ DFF9 WEDU_STORE4_X0p;
-  /*_p31.YGAJ*/ DFF9 YGAJ_STORE4_X1p;
-  /*_p31.ZYJO*/ DFF9 ZYJO_STORE4_X2p;
-  /*_p31.XURY*/ DFF9 XURY_STORE4_X3p;
-  /*_p31.YBED*/ DFF9 YBED_STORE4_X4p;
-  /*_p31.ZALA*/ DFF9 ZALA_STORE4_X5p;
-  /*_p31.WYDE*/ DFF9 WYDE_STORE4_X6p;
-  /*_p31.XEPA*/ DFF9 XEPA_STORE4_X7p;
+  /*_p31.WEDU*/ DFF9B WEDU_STORE4_X0n;
+  /*_p31.YGAJ*/ DFF9B YGAJ_STORE4_X1n;
+  /*_p31.ZYJO*/ DFF9B ZYJO_STORE4_X2n;
+  /*_p31.XURY*/ DFF9B XURY_STORE4_X3n;
+  /*_p31.YBED*/ DFF9B YBED_STORE4_X4n;
+  /*_p31.ZALA*/ DFF9B ZALA_STORE4_X5n;
+  /*_p31.WYDE*/ DFF9B WYDE_STORE4_X6n;
+  /*_p31.XEPA*/ DFF9B XEPA_STORE4_X7n;
 };
 
 struct StoreI5 {
@@ -319,14 +319,14 @@ struct StoreX5 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.FUSA*/ DFF9 FUSA_STORE5_X0p;
-  /*_p31.FAXA*/ DFF9 FAXA_STORE5_X1p;
-  /*_p31.FOZY*/ DFF9 FOZY_STORE5_X2p;
-  /*_p31.FESY*/ DFF9 FESY_STORE5_X3p;
-  /*_p31.CYWE*/ DFF9 CYWE_STORE5_X4p;
-  /*_p31.DYBY*/ DFF9 DYBY_STORE5_X5p;
-  /*_p31.DURY*/ DFF9 DURY_STORE5_X6p;
-  /*_p31.CUVY*/ DFF9 CUVY_STORE5_X7p;
+  /*_p31.FUSA*/ DFF9B FUSA_STORE5_X0n;
+  /*_p31.FAXA*/ DFF9B FAXA_STORE5_X1n;
+  /*_p31.FOZY*/ DFF9B FOZY_STORE5_X2n;
+  /*_p31.FESY*/ DFF9B FESY_STORE5_X3n;
+  /*_p31.CYWE*/ DFF9B CYWE_STORE5_X4n;
+  /*_p31.DYBY*/ DFF9B DYBY_STORE5_X5n;
+  /*_p31.DURY*/ DFF9B DURY_STORE5_X6n;
+  /*_p31.CUVY*/ DFF9B CUVY_STORE5_X7n;
 };
 
 struct StoreI6 {
@@ -358,14 +358,14 @@ struct StoreX6 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.YCOL*/ DFF9 YCOL_STORE6_X0p;
-  /*_p31.YRAC*/ DFF9 YRAC_STORE6_X1p;
-  /*_p31.YMEM*/ DFF9 YMEM_STORE6_X2p;
-  /*_p31.YVAG*/ DFF9 YVAG_STORE6_X3p;
-  /*_p31.ZOLY*/ DFF9 ZOLY_STORE6_X4p;
-  /*_p31.ZOGO*/ DFF9 ZOGO_STORE6_X5p;
-  /*_p31.ZECU*/ DFF9 ZECU_STORE6_X6p;
-  /*_p31.ZESA*/ DFF9 ZESA_STORE6_X7p;
+  /*_p31.YCOL*/ DFF9B YCOL_STORE6_X0n;
+  /*_p31.YRAC*/ DFF9B YRAC_STORE6_X1n;
+  /*_p31.YMEM*/ DFF9B YMEM_STORE6_X2n;
+  /*_p31.YVAG*/ DFF9B YVAG_STORE6_X3n;
+  /*_p31.ZOLY*/ DFF9B ZOLY_STORE6_X4n;
+  /*_p31.ZOGO*/ DFF9B ZOGO_STORE6_X5n;
+  /*_p31.ZECU*/ DFF9B ZECU_STORE6_X6n;
+  /*_p31.ZESA*/ DFF9B ZESA_STORE6_X7n;
 };
 
 struct StoreI7 {
@@ -397,14 +397,14 @@ struct StoreX7 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.ERAZ*/ DFF9 ERAZ_STORE7_X0p;
-  /*_p31.EPUM*/ DFF9 EPUM_STORE7_X1p;
-  /*_p31.EROL*/ DFF9 EROL_STORE7_X2p;
-  /*_p31.EHYN*/ DFF9 EHYN_STORE7_X3p;
-  /*_p31.FAZU*/ DFF9 FAZU_STORE7_X4p;
-  /*_p31.FAXE*/ DFF9 FAXE_STORE7_X5p;
-  /*_p31.EXUK*/ DFF9 EXUK_STORE7_X6p;
-  /*_p31.FEDE*/ DFF9 FEDE_STORE7_X7p;
+  /*_p31.ERAZ*/ DFF9B ERAZ_STORE7_X0n;
+  /*_p31.EPUM*/ DFF9B EPUM_STORE7_X1n;
+  /*_p31.EROL*/ DFF9B EROL_STORE7_X2n;
+  /*_p31.EHYN*/ DFF9B EHYN_STORE7_X3n;
+  /*_p31.FAZU*/ DFF9B FAZU_STORE7_X4n;
+  /*_p31.FAXE*/ DFF9B FAXE_STORE7_X5n;
+  /*_p31.EXUK*/ DFF9B EXUK_STORE7_X6n;
+  /*_p31.FEDE*/ DFF9B FEDE_STORE7_X7n;
 };
 
 struct StoreI8 {
@@ -436,14 +436,14 @@ struct StoreX8 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.EZUF*/ DFF9 EZUF_STORE8_X0p;
-  /*_p31.ENAD*/ DFF9 ENAD_STORE8_X1p;
-  /*_p31.EBOW*/ DFF9 EBOW_STORE8_X2p;
-  /*_p31.FYCA*/ DFF9 FYCA_STORE8_X3p;
-  /*_p31.GAVY*/ DFF9 GAVY_STORE8_X4p;
-  /*_p31.GYPU*/ DFF9 GYPU_STORE8_X5p;
-  /*_p31.GADY*/ DFF9 GADY_STORE8_X6p;
-  /*_p31.GAZA*/ DFF9 GAZA_STORE8_X7p;
+  /*_p31.EZUF*/ DFF9B EZUF_STORE8_X0n;
+  /*_p31.ENAD*/ DFF9B ENAD_STORE8_X1n;
+  /*_p31.EBOW*/ DFF9B EBOW_STORE8_X2n;
+  /*_p31.FYCA*/ DFF9B FYCA_STORE8_X3n;
+  /*_p31.GAVY*/ DFF9B GAVY_STORE8_X4n;
+  /*_p31.GYPU*/ DFF9B GYPU_STORE8_X5n;
+  /*_p31.GADY*/ DFF9B GADY_STORE8_X6n;
+  /*_p31.GAZA*/ DFF9B GAZA_STORE8_X7n;
 };
 
 struct StoreI9 {
@@ -475,14 +475,14 @@ struct StoreX9 {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.XUVY*/ DFF9 XUVY_STORE9_X0p;
-  /*_p31.XERE*/ DFF9 XERE_STORE9_X1p;
-  /*_p31.XUZO*/ DFF9 XUZO_STORE9_X2p;
-  /*_p31.XEXA*/ DFF9 XEXA_STORE9_X3p;
-  /*_p31.YPOD*/ DFF9 YPOD_STORE9_X4p;
-  /*_p31.YROP*/ DFF9 YROP_STORE9_X5p;
-  /*_p31.YNEP*/ DFF9 YNEP_STORE9_X6p;
-  /*_p31.YZOF*/ DFF9 YZOF_STORE9_X7p;
+  /*_p31.XUVY*/ DFF9B XUVY_STORE9_X0n;
+  /*_p31.XERE*/ DFF9B XERE_STORE9_X1n;
+  /*_p31.XUZO*/ DFF9B XUZO_STORE9_X2n;
+  /*_p31.XEXA*/ DFF9B XEXA_STORE9_X3n;
+  /*_p31.YPOD*/ DFF9B YPOD_STORE9_X4n;
+  /*_p31.YROP*/ DFF9B YROP_STORE9_X5n;
+  /*_p31.YNEP*/ DFF9B YNEP_STORE9_X6n;
+  /*_p31.YZOF*/ DFF9B YZOF_STORE9_X7n;
 };
 
 //-----------------------------------------------------------------------------

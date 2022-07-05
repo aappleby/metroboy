@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct RegDIV {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -50,7 +49,6 @@ struct RegTIMA {
 //-----------------------------------------------------------------------------
 
 struct RegTMA {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

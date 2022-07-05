@@ -77,15 +77,10 @@ void GateBoy::tock_lcdc_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void SpriteDeltaY::reset_to_poweron() { memset(this, 0b00011010, sizeof(*this)); }
 void SpriteDeltaY::reset_to_bootrom() { memset(this, 0b00011010, sizeof(*this)); }
 void SpriteDeltaY::reset_to_cart()    { memset(this, 0b00011010, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
-
-void PixCount::reset_to_poweron() {
-  memset(this, 0b00011010, sizeof(*this));
-}
 
 void PixCount::reset_to_bootrom() {
   memset(this, 0b00011010, sizeof(*this));
@@ -104,27 +99,20 @@ void PixCount::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void BGScrollX::reset_to_poweron() { memset(this, 0b00011010, sizeof(*this)); }
 void BGScrollX::reset_to_bootrom() { memset(this, 0b00011010, sizeof(*this)); }
 void BGScrollX::reset_to_cart()    { memset(this, 0b00011010, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void BGScrollY::reset_to_poweron() { memset(this, 0b00011010, sizeof(*this)); }
 void BGScrollY::reset_to_bootrom() { memset(this, 0b00011010, sizeof(*this)); }
 void BGScrollY::reset_to_cart()    { memset(this, 0b00011010, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void SpritePix::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
 void SpritePix::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
 void SpritePix::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
 
 //-----------------------------------------------------------------------------
-
-void RegLCDC::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void RegLCDC::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
@@ -143,27 +131,20 @@ void RegLCDC::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegStat::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this)); }
 void RegStat::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 void RegStat::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void RegSCY::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this)); }
 void RegSCY::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 void RegSCY::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void RegSCX::reset_to_poweron() { memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this)); }
 void RegSCX::reset_to_bootrom() { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 void RegSCX::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
-
-void RegLY::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
-}
 
 void RegLY::reset_to_bootrom() {
   MUWY_LY0p_odd.state = 0b00011000;
@@ -189,10 +170,6 @@ void RegLY::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegLX::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
-}
-
 void RegLX::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
   SAXO_LX0p_odd.state = BIT_OLD | BIT_DRIVEN;
@@ -209,10 +186,6 @@ void RegLX::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void RegLYC::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
 
 void RegLYC::reset_to_bootrom() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
@@ -235,10 +208,6 @@ uint8_t RegLYC::get() const {
 
 //-----------------------------------------------------------------------------
 
-void RegBGP::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
-
 void RegBGP::reset_to_bootrom() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
 }
@@ -255,10 +224,6 @@ void RegBGP::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void RegOBP0::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
-}
 
 void RegOBP0::reset_to_bootrom() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
@@ -277,10 +242,6 @@ void RegOBP0::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegOBP1::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
-}
-
 void RegOBP1::reset_to_bootrom() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
 }
@@ -297,10 +258,6 @@ void RegOBP1::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void RegWY::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void RegWY::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
@@ -324,10 +281,6 @@ void RegWY::set(uint8_t wy) {
 int RegWY::get() const { return bit_pack_inv(*this); }
 
 //-----------------------------------------------------------------------------
-
-void RegWX::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void RegWX::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
@@ -354,10 +307,6 @@ int RegWX::get() const {
 
 //-----------------------------------------------------------------------------
 
-void OamLatchA::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void OamLatchA::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
@@ -374,10 +323,6 @@ void OamLatchA::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void OamLatchB::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void OamLatchB::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
@@ -396,10 +341,6 @@ void OamLatchB::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void OamTempA::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void OamTempA::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
 }
@@ -409,10 +350,6 @@ void OamTempA::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void OamTempB::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void OamTempB::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA, sizeof(*this));
@@ -424,33 +361,25 @@ void OamTempB::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void TileTempA::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void TileTempA::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void TileTempA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void TileTempB::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void TileTempB::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void TileTempB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void SpritePixA::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
 void SpritePixA::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
 void SpritePixA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void SpritePixB::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
 void SpritePixB::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
 void SpritePixB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
 
 //-----------------------------------------------------------------------------
-
-void WinMapX::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
 
 void WinMapX::reset_to_bootrom() {
   WYKA_WIN_MAP_X0.state = BIT_OLD | BIT_DRIVEN;
@@ -470,10 +399,6 @@ void WinMapX::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void WinTileY::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
-
 void WinTileY::reset_to_bootrom() {
   VYNO_WIN_TILE_Y0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   VUJO_WIN_TILE_Y1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
@@ -487,10 +412,6 @@ void WinTileY::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void WinMapY::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
 
 void WinMapY::reset_to_bootrom() {
   TUFU_WIN_MAP_Y0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;

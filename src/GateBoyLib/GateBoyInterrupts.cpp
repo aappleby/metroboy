@@ -165,10 +165,6 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
 
 //-----------------------------------------------------------------------------
 
-void RegIF::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void RegIF::reset_to_bootrom() {
   LOPE_FF0F_D0p.state = 0b00011000;
   LALU_FF0F_D1p.state = 0b00011000;
@@ -188,10 +184,6 @@ void RegIF::reset_to_cart() {
 //-----------------------------------------------------------------------------
 // This is technically in the CPU, but we're going to implement it here for now.
 
-void RegIE::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void RegIE::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
@@ -205,10 +197,6 @@ void RegIE::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void InterruptLatch::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void InterruptLatch::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
@@ -224,10 +212,6 @@ void InterruptLatch::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void CpuInt::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void CpuInt::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
@@ -242,10 +226,6 @@ void CpuInt::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void CpuAck::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void CpuAck::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
@@ -259,10 +239,6 @@ void CpuAck::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void InterruptControl::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void InterruptControl::reset_to_bootrom() {
   AWOB_WAKE_CPU.state        = 0b00011001;

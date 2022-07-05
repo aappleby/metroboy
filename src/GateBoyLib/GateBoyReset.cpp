@@ -34,10 +34,6 @@ void GateBoy::tock_reset_gates(const GateBoyState& reg_old, DFF17 UPOF_DIV15p) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyReset::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void GateBoyReset::reset_to_bootrom() {
   TUBO_WAITINGp.state  = 0b00011001;
   ASOL_POR_DONEn.state = 0b00011000;

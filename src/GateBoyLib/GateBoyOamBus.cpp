@@ -429,10 +429,6 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
 
 //-----------------------------------------------------------------------------
 
-void OamControl::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void OamControl::reset_to_bootrom() {
   MAKA_LATCH_EXTp.state  = 0b00011000;
   WUJE_CPU_OAM_WRn.state = 0b00011001;
@@ -455,10 +451,6 @@ void OamControl::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void OamABus::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
-}
-
 void OamABus::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
 }
@@ -475,10 +467,6 @@ void OamABus::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void OamDBusA::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void OamDBusA::reset_to_bootrom() {
   BUS_OAM_DA00n.state = 0b00011000;
@@ -503,10 +491,6 @@ void OamDBusA::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void OamDBusB::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void OamDBusB::reset_to_bootrom() {
   BUS_OAM_DB00n.state = 0b00011000;

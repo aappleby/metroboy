@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct RegIF {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -19,7 +18,6 @@ struct RegIF {
 // This is technically in the CPU, but we're going to implement it here for now.
 
 struct RegIE {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -33,7 +31,6 @@ struct RegIE {
 //-----------------------------------------------------------------------------
 
 struct InterruptLatch {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -47,7 +44,6 @@ struct InterruptLatch {
 //-----------------------------------------------------------------------------
 
 struct CpuInt {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -61,7 +57,6 @@ struct CpuInt {
 //-----------------------------------------------------------------------------
 
 struct CpuAck {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -75,7 +70,6 @@ struct CpuAck {
 //-----------------------------------------------------------------------------
 
 struct InterruptControl {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

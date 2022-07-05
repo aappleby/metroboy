@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteFetchCounter {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -16,7 +15,6 @@ struct SpriteFetchCounter {
 //-----------------------------------------------------------------------------
 
 struct SpriteFetchControl {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

@@ -276,26 +276,6 @@ void GateBoy::set_lcd_pins_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_
 
 //-----------------------------------------------------------------------------
 
-void LCDControl::reset_to_poweron() {
-  CATU_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN;
-  ANEL_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN;
-  POPU_VBLANKp_odd.state    = BIT_OLD | BIT_DRIVEN;
-  MYTA_FRAME_ENDp_odd.state = BIT_OLD | BIT_DRIVEN;
-  RUTU_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN;
-  NYPE_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN;
-  SYGU_LINE_STROBE.state    = BIT_OLD | BIT_DRIVEN;
-  MEDA_VSYNC_OUTn.state     = BIT_OLD | BIT_DRIVEN;
-  LUCA_LINE_EVENp.state     = BIT_OLD | BIT_DRIVEN;
-  NAPO_FRAME_EVENp.state    = BIT_OLD | BIT_DRIVEN;
-  RUJU.state                = BIT_OLD | BIT_DRIVEN;
-  POFY.state                = BIT_OLD | BIT_DRIVEN;
-  POME_X8_LATCH.state       = BIT_OLD | BIT_DRIVEN;
-  PAHO_X8_SYNC.state        = BIT_OLD | BIT_DRIVEN;
-  WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
-  REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN;
-  RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN;
-}
-
 void LCDControl::reset_to_bootrom() {
   CATU_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN;
   ANEL_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;

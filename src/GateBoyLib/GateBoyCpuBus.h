@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpuSignals {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -313,7 +312,6 @@ struct GateBoyCpuABus {
 //---------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyCpuDBus {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
   void set_data(bool OEp, uint8_t data);

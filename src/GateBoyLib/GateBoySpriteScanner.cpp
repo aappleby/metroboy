@@ -4,10 +4,6 @@
 
 //-----------------------------------------------------------------------------
 
-void SpriteScanner::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
-
 void SpriteScanner::reset_to_bootrom() {
   FETO_SCAN_DONEp.state       = 0b00011000;
   AVAP_SCAN_DONE_tp_odd.state = 0b00011000;
@@ -59,10 +55,6 @@ void ScanCounter::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void SpriteIndex::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
-
 void SpriteIndex::reset_to_bootrom() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
 }
@@ -77,10 +69,6 @@ void SpriteIndex::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void SpriteCounter::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
-}
 
 void SpriteCounter::reset_to_bootrom() {
   BESE_SPRITE_COUNT0_odd.state = BIT_OLD | BIT_DRIVEN;

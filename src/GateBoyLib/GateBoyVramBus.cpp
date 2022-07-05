@@ -672,10 +672,6 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
 
 //-----------------------------------------------------------------------------
 
-void VramABusLo::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void VramABusLo::reset_to_bootrom() {
   BUS_VRAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
   BUS_VRAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -721,10 +717,6 @@ void VramABusHi::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void VramDBus::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void VramDBus::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));

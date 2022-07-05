@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -37,7 +36,6 @@ struct ScanCounter {
 // Sprite index selects which store to write
 
 struct SpriteIndex {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -53,7 +51,6 @@ struct SpriteIndex {
 // Sprite counter tracks how many sprites have been selected for this line.
 
 struct SpriteCounter {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

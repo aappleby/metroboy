@@ -178,10 +178,6 @@ void GateBoy::tock_timer_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void RegDIV::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void RegDIV::reset_to_bootrom() {
   UKUP_DIV00p.state = 0b00011000;
   UFOR_DIV01p.state = 0b00011011;
@@ -271,10 +267,6 @@ void RegTIMA::force_set_tima(uint8_t tima) {
 }
 
 //-----------------------------------------------------------------------------
-
-void RegTMA::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void RegTMA::reset_to_bootrom() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));

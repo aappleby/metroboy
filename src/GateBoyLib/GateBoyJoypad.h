@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct JoyInt {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -17,7 +16,6 @@ struct JoyInt {
 //-----------------------------------------------------------------------------
 
 struct RegJoy {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -35,7 +33,6 @@ struct RegJoy {
 //-----------------------------------------------------------------------------
 
 struct JoyLatch {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

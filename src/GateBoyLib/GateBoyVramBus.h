@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct VramABusLo {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -35,7 +34,6 @@ struct VramABusHi {
 //-----------------------------------------------------------------------------
 
 struct VramDBus {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

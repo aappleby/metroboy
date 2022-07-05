@@ -5,12 +5,6 @@
 
 //-----------------------------------------------------------------------------
 
-void TileFetchCounter::reset_to_poweron() {
-  LAXU_BFETCH_S0p_odd.state = 0b00011000;
-  MESU_BFETCH_S1p_odd.state = 0b00011000;
-  NYVA_BFETCH_S2p_odd.state = 0b00011000;
-}
-
 void TileFetchCounter::reset_to_bootrom() {
   LAXU_BFETCH_S0p_odd.state = 0b00011011;
   MESU_BFETCH_S1p_odd.state = 0b00011000;

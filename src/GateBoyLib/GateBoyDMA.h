@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct RegDmaLo {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -21,7 +20,6 @@ struct RegDmaLo {
 //-----------------------------------------------------------------------------
 
 struct RegDmaHi {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -38,7 +36,6 @@ struct RegDmaHi {
 //-----------------------------------------------------------------------------
 
 struct DmaControl {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

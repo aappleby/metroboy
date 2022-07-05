@@ -58,10 +58,6 @@ void GateBoy::tock_bootrom_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyCpuSignals::reset_to_poweron() {
-  //memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void GateBoyCpuSignals::reset_to_bootrom() {
   ABUZ_EXT_RAM_CS_CLK.state  = 0b00011000;
   SIG_IN_CPU_RDp.state       = 0b00011001;
@@ -332,17 +328,6 @@ void GateBoyCpuABus::set_addr(uint16_t bus_addr_new)
 
 
 //-----------------------------------------------------------------------------
-
-void GateBoyCpuDBus::reset_to_poweron() {
-  BUS_CPU_D00p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D01p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D02p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D03p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D04p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D05p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D06p.state = BIT_OLD | BIT_PULLED | 1;
-  BUS_CPU_D07p.state = BIT_OLD | BIT_PULLED | 1;
-}
 
 void GateBoyCpuDBus::reset_to_bootrom() {
   BUS_CPU_D00p.state = 0b00011001;

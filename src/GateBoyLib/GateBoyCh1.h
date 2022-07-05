@@ -5,7 +5,6 @@
 //==============================================================================
 
 struct SpuChannel1 {
-  void reset_to_poweron() {}
   void reset_to_bootrom() {}
   void reset_to_cart() {}
 

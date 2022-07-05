@@ -81,10 +81,6 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void RegDmaLo::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
-
 void RegDmaLo::reset_to_bootrom() {
   NAKY_DMA_A00p_odd.state = 0b00011000;
   PYRO_DMA_A01p_odd.state = 0b00011010;
@@ -109,10 +105,6 @@ void RegDmaLo::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegDmaHi::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF);
-}
-
 void RegDmaHi::reset_to_bootrom() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF);
 }
@@ -122,10 +114,6 @@ void RegDmaHi::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void DmaControl::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void DmaControl::reset_to_bootrom() {
   LYXE_DMA_LATCHp.state      = 0b00011000;

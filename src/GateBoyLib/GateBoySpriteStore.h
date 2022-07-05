@@ -5,7 +5,6 @@
 // Tristate buses to move sprite index & line in/out of sprite store
 
 struct SpriteIBus {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -20,7 +19,6 @@ struct SpriteIBus {
 //-----------------------------------------------------------------------------
 
 struct SpriteLBus {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -33,7 +31,6 @@ struct SpriteLBus {
 //-----------------------------------------------------------------------------
 
 struct SpriteMatchFlags {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -52,7 +49,6 @@ struct SpriteMatchFlags {
 //-----------------------------------------------------------------------------
 
 struct SpriteResetFlags {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -71,7 +67,6 @@ struct SpriteResetFlags {
 //-----------------------------------------------------------------------------
 
 struct SpriteStoreFlags {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -95,7 +90,6 @@ struct SpriteStoreFlags {
 // STORE_X - During scan, xxxDxxxH. During line, AxCxExGx
 
 struct StoreI0 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -108,7 +102,6 @@ struct StoreI0 {
 };
 
 struct StoreL0 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -119,7 +112,6 @@ struct StoreL0 {
 };
 
 struct StoreX0 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -134,7 +126,6 @@ struct StoreX0 {
 };
 
 struct StoreI1 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -147,7 +138,6 @@ struct StoreI1 {
 };
 
 struct StoreL1 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -158,7 +148,6 @@ struct StoreL1 {
 };
 
 struct StoreX1 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -173,7 +162,6 @@ struct StoreX1 {
 };
 
 struct StoreI2 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -186,7 +174,6 @@ struct StoreI2 {
 };
 
 struct StoreL2 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -197,7 +184,6 @@ struct StoreL2 {
 };
 
 struct StoreX2 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -212,7 +198,6 @@ struct StoreX2 {
 };
 
 struct StoreI3 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -225,7 +210,6 @@ struct StoreI3 {
 };
 
 struct StoreL3 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -236,7 +220,6 @@ struct StoreL3 {
 };
 
 struct StoreX3 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -251,7 +234,6 @@ struct StoreX3 {
 };
 
 struct StoreI4 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -264,7 +246,6 @@ struct StoreI4 {
 };
 
 struct StoreL4 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -275,7 +256,6 @@ struct StoreL4 {
 };
 
 struct StoreX4 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -290,7 +270,6 @@ struct StoreX4 {
 };
 
 struct StoreI5 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -304,7 +283,6 @@ struct StoreI5 {
 
 
 struct StoreL5 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -315,7 +293,6 @@ struct StoreL5 {
 };
 
 struct StoreX5 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -330,7 +307,6 @@ struct StoreX5 {
 };
 
 struct StoreI6 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -343,7 +319,6 @@ struct StoreI6 {
 };
 
 struct StoreL6 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -354,7 +329,6 @@ struct StoreL6 {
 };
 
 struct StoreX6 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -369,7 +343,6 @@ struct StoreX6 {
 };
 
 struct StoreI7 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -382,7 +355,6 @@ struct StoreI7 {
 };
 
 struct StoreL7 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -393,7 +365,6 @@ struct StoreL7 {
 };
 
 struct StoreX7 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -408,7 +379,6 @@ struct StoreX7 {
 };
 
 struct StoreI8 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -421,7 +391,6 @@ struct StoreI8 {
 };
 
 struct StoreL8 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -432,7 +401,6 @@ struct StoreL8 {
 };
 
 struct StoreX8 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -447,7 +415,6 @@ struct StoreX8 {
 };
 
 struct StoreI9 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -460,7 +427,6 @@ struct StoreI9 {
 };
 
 struct StoreL9 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -471,7 +437,6 @@ struct StoreL9 {
 };
 
 struct StoreX9 {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

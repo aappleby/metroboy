@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------------
 
 struct OamControl {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -23,7 +22,6 @@ struct OamControl {
 //-----------------------------------------------------------------------------
 
 struct OamABus {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -40,7 +38,6 @@ struct OamABus {
 //-----------------------------------------------------------------------------
 
 struct OamDBusA {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

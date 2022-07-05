@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct WinControl {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -26,7 +25,6 @@ struct WinControl {
 //-----------------------------------------------------------------------------
 
 struct FineCount {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -36,7 +34,6 @@ struct FineCount {
 };
 
 struct FineScroll {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -65,7 +62,6 @@ struct MaskPipe {
 //-----------------------------------------------------------------------------
 
 struct BgwPipeA {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -82,7 +78,6 @@ struct BgwPipeA {
 //-----------------------------------------------------------------------------
 
 struct BgwPipeB {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -99,7 +94,6 @@ struct BgwPipeB {
 //-----------------------------------------------------------------------------
 
 struct SprPipeA {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -133,7 +127,6 @@ struct SprPipeB {
 //-----------------------------------------------------------------------------
 
 struct PalPipe {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

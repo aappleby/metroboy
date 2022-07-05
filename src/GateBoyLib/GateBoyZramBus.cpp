@@ -46,9 +46,6 @@ void GateBoy::tock_zram_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyZram::reset_to_poweron() {
-}
-
 void GateBoyZram::reset_to_bootrom() {
 }
 

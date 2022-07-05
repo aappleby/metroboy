@@ -6,7 +6,6 @@
 //-----------------------------------------------------------------------------
 
 struct PinsControl {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -18,7 +17,6 @@ struct PinsControl {
 //-----------------------------------------------------------------------------
 
 struct PinsABusLo {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -35,7 +33,6 @@ struct PinsABusLo {
 //-----------------------------------------------------------------------------
 
 struct PinsABusHi {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -69,7 +66,6 @@ struct PinsDBus {
 //-----------------------------------------------------------------------------
 
 struct PinsJoypad {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -85,7 +81,6 @@ struct PinsJoypad {
 //-----------------------------------------------------------------------------
 
 struct PinsSerial {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -97,7 +92,6 @@ struct PinsSerial {
 //-----------------------------------------------------------------------------
 
 struct PinsVramControl {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -109,7 +103,6 @@ struct PinsVramControl {
 //-----------------------------------------------------------------------------
 
 struct PinsVramABus {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -131,7 +124,6 @@ struct PinsVramABus {
 //-----------------------------------------------------------------------------
 
 struct PinsVramDBus {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -148,7 +140,6 @@ struct PinsVramDBus {
 //-----------------------------------------------------------------------------
 
 struct PinsSys {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -189,7 +180,6 @@ struct PinsSys {
 //-----------------------------------------------------------------------------
 
 struct PinsLCD {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

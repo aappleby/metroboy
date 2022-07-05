@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct ExtDataLatch {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -21,7 +20,6 @@ struct ExtDataLatch {
 //-----------------------------------------------------------------------------
 
 struct ExtAddrLatch {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 
@@ -45,7 +43,6 @@ struct ExtAddrLatch {
 //-----------------------------------------------------------------------------
 
 struct GateBoyMBC {
-  void reset_to_poweron();
   void reset_to_bootrom();
   void reset_to_cart();
 

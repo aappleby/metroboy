@@ -95,6 +95,11 @@ inline void bit_init(DST& dst, const uint8_t flags, const uint32_t src) {
   bit_init(&dst, sizeof(DST), flags, src);
 }
 
+template<class DST>
+inline void bit_init2(DST& dst, const uint8_t flags, const uint32_t src) {
+  bit_init(&dst, sizeof(DST), flags, src);
+}
+
 //-----------------------------------------------------------------------------
 
 template<class DST>

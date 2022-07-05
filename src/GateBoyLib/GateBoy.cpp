@@ -113,10 +113,10 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   sys.clk_good = 1;
   run_phases(cart_blob, 2);
 
-  CHECK_N(bit0(gb_state.sys_clk.AFUR_xxxxEFGH.qn_oldB()));
-  CHECK_P(bit0(gb_state.sys_clk.ALEF_AxxxxFGH.qn_oldB()));
-  CHECK_P(bit0(gb_state.sys_clk.APUK_ABxxxxGH.qn_oldB()));
-  CHECK_P(bit0(gb_state.sys_clk.ADYK_ABCxxxxH.qn_oldB()));
+  CHECK_N(bit0(gb_state.sys_clk.AFUR_ABCDxxxx.qn_oldB()));
+  CHECK_P(bit0(gb_state.sys_clk.ALEF_xBCDExxx.qn_oldB()));
+  CHECK_P(bit0(gb_state.sys_clk.APUK_xxCDEFxx.qn_oldB()));
+  CHECK_P(bit0(gb_state.sys_clk.ADYK_xxxDEFGx.qn_oldB()));
 
   sys.gb_phase_total = 0;
 

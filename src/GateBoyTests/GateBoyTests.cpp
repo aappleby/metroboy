@@ -1286,10 +1286,10 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
   for (int i = 0; i < 32; i++) {
     int phase = gb->get_sys().gb_phase_total & 7;
     auto& clk = gb->get_state().sys_clk;
-    EXPECT_CLK(clk.AFUR_xxxxEFGH.state, (uint8_t)0b00001111);
-    EXPECT_CLK(clk.ALEF_AxxxxFGH.state, (uint8_t)0b10000111);
-    EXPECT_CLK(clk.APUK_ABxxxxGH.state, (uint8_t)0b11000011);
-    EXPECT_CLK(clk.ADYK_ABCxxxxH.state, (uint8_t)0b11100001);
+    EXPECT_CLK(clk.AFUR_ABCDxxxx.state, (uint8_t)0b00001111);
+    EXPECT_CLK(clk.ALEF_xBCDExxx.state, (uint8_t)0b10000111);
+    EXPECT_CLK(clk.APUK_xxCDEFxx.state, (uint8_t)0b11000011);
+    EXPECT_CLK(clk.ADYK_xxxDEFGx.state, (uint8_t)0b11100001);
 
     EXPECT_CLK(clk.WUVU_ABxxEFxx.state, (uint8_t)0b11001100);
     EXPECT_CLK(clk.VENA_xxCDEFxx.state, (uint8_t)0b00111100);

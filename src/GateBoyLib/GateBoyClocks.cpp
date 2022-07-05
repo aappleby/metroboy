@@ -11,10 +11,10 @@ void GateBoyClock::reset_to_bootrom() {
   ANOS_DEGLITCH.state = 0b00011001;
   AVET_DEGLITCH.state = 0b00011000;
   
-  AFUR_xxxxEFGH.set_state(0b00011001);
-  ALEF_AxxxxFGH.set_state(0b00011011);
-  APUK_ABxxxxGH.set_state(0b00011001);
-  ADYK_ABCxxxxH.set_state(0b00011011);
+  AFUR_ABCDxxxx.set_state(0b00011001);
+  ALEF_xBCDExxx.set_state(0b00011011);
+  APUK_xxCDEFxx.set_state(0b00011001);
+  ADYK_xxxDEFGx.set_state(0b00011011);
 
   WUVU_ABxxEFxx.state = 0b00011000;
   VENA_xxCDEFxx.state = 0b00011010;
@@ -35,10 +35,10 @@ void GateBoyClock::reset_to_cart() {
   ANOS_DEGLITCH.state = 0b00011001;
   AVET_DEGLITCH.state = 0b00011000;
   
-  AFUR_xxxxEFGH.set_state(0b00011001);
-  ALEF_AxxxxFGH.set_state(0b00011011);
-  APUK_ABxxxxGH.set_state(0b00011001);
-  ADYK_ABCxxxxH.set_state(0b00011011);
+  AFUR_ABCDxxxx.set_state(0b00011001);
+  ALEF_xBCDExxx.set_state(0b00011011);
+  APUK_xxCDEFxx.set_state(0b00011001);
+  ADYK_xxxDEFGx.set_state(0b00011011);
 
   WUVU_ABxxEFxx.state = 0b00011000;
   VENA_xxCDEFxx.state = 0b00011010;
@@ -94,10 +94,10 @@ wire GateBoyClock::AZOF_odd_new() const {
 /*_p27.MOXE*/ wire GateBoyClock::MOXE_odd_new() const { return not1(ALET_evn_new()); }
 /*_p27.TAVA*/ wire GateBoyClock::TAVA_evn_new() const { return not1(LAPE_odd_new()); }
 
-/*#p01.ATYP*/ wire GateBoyClock::ATYP_ABCDxxxx_new() const { return not1(AFUR_xxxxEFGH.qn_newB()); }
-/*#p01.AFEP*/ wire GateBoyClock::AFEP_AxxxxFGH_new() const { return not1(ALEF_AxxxxFGH.qp_newB()); }
-/*#p01.AROV*/ wire GateBoyClock::AROV_xxCDEFxx_new() const { return not1(APUK_ABxxxxGH.qn_newB()); }
-/*#p01.ADAR*/ wire GateBoyClock::ADAR_ABCxxxxH_new() const { return not1(ADYK_ABCxxxxH.qp_newB()); }
+/*#p01.ATYP*/ wire GateBoyClock::ATYP_ABCDxxxx_new() const { return not1(AFUR_ABCDxxxx.qn_newB()); }
+/*#p01.AFEP*/ wire GateBoyClock::AFEP_AxxxxFGH_new() const { return not1(ALEF_xBCDExxx.qp_newB()); }
+/*#p01.AROV*/ wire GateBoyClock::AROV_xxCDEFxx_new() const { return not1(APUK_xxCDEFxx.qn_newB()); }
+/*#p01.ADAR*/ wire GateBoyClock::ADAR_ABCxxxxH_new() const { return not1(ADYK_xxxDEFGx.qp_newB()); }
 
 /*#p01.BEKO*/ wire GateBoyClock::BEKO_ABCDxxxx_new() const { return not1(BUDE_xxxxEFGH_new()); } // BEKO+BAVY parallel
 /*#p01.BAPY*/ wire GateBoyClock::BAPY_xxxxxxGH_new() const { return nor3(ABOL_CLKREQn_new(), AROV_xxCDEFxx_new(), ATYP_ABCDxxxx_new()); }
@@ -158,10 +158,10 @@ void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {
   /*_p01.ATAL*/ wire ATAL_EVN = not1(reg_new.sys_clk.AVET_DEGLITCH.out_new());
   /*_p01.ATAN*/ wire ATAN_OLD = not1(ATAL_EVN); // cell not marked on die but it's next to ATAL
 
-  /*_p01.AFUR*/ reg_new.sys_clk.AFUR_xxxxEFGH.dff9b(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ADYK_ABCxxxxH.qn_oldB());
-  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_AxxxxFGH.dff9b(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_xxxxEFGH.qp_oldB());
-  /*_p01.APUK*/ reg_new.sys_clk.APUK_ABxxxxGH.dff9b(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ALEF_AxxxxFGH.qp_oldB());
-  /*_p01.ADYK*/ reg_new.sys_clk.ADYK_ABCxxxxH.dff9b(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.APUK_ABxxxxGH.qp_oldB());
+  /*_p01.AFUR*/ reg_new.sys_clk.AFUR_ABCDxxxx.dff9b(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ADYK_xxxDEFGx.qn_oldB());
+  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_xBCDExxx.dff9b(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_ABCDxxxx.qp_oldB());
+  /*_p01.APUK*/ reg_new.sys_clk.APUK_xxCDEFxx.dff9b(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ALEF_xBCDExxx.qp_oldB());
+  /*_p01.ADYK*/ reg_new.sys_clk.ADYK_xxxDEFGx.dff9b(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.APUK_xxCDEFxx.qp_oldB());
 
   /*_PIN_75*/ pins.sys.PIN_75_CLK_OUT.pin_out(reg_new.sys_clk.BUDE_xxxxEFGH_new(), reg_new.sys_clk.BUDE_xxxxEFGH_new());
 

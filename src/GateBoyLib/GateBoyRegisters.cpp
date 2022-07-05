@@ -211,7 +211,7 @@ void RegLX::reset_to_cart() {
 //-----------------------------------------------------------------------------
 
 void RegLYC::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
 }
 
 void RegLYC::reset_to_bootrom() {
@@ -236,7 +236,7 @@ uint8_t RegLYC::get() const {
 //-----------------------------------------------------------------------------
 
 void RegBGP::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
 }
 
 void RegBGP::reset_to_bootrom() {
@@ -244,14 +244,14 @@ void RegBGP::reset_to_bootrom() {
 }
 
 void RegBGP::reset_to_cart() {
-  PAVO_BGP_D0n.state = 0b00011011;
-  NUSY_BGP_D1n.state = 0b00011011;
-  PYLU_BGP_D2n.state = 0b00011010;
-  MAXY_BGP_D3n.state = 0b00011010;
-  MUKE_BGP_D4n.state = 0b00011010;
-  MORU_BGP_D5n.state = 0b00011010;
-  MOGY_BGP_D6n.state = 0b00011010;
-  MENA_BGP_D7n.state = 0b00011010;
+  PAVO_BGP_D0n.set_state(0b00011011);
+  NUSY_BGP_D1n.set_state(0b00011011);
+  PYLU_BGP_D2n.set_state(0b00011010);
+  MAXY_BGP_D3n.set_state(0b00011010);
+  MUKE_BGP_D4n.set_state(0b00011010);
+  MORU_BGP_D5n.set_state(0b00011010);
+  MOGY_BGP_D6n.set_state(0b00011010);
+  MENA_BGP_D7n.set_state(0b00011010);
 }
 
 //-----------------------------------------------------------------------------
@@ -265,14 +265,14 @@ void RegOBP0::reset_to_bootrom() {
 }
 
 void RegOBP0::reset_to_cart() {
-  XUFU_OBP0_D0n.state = 0b00011010;
-  XUKY_OBP0_D1n.state = 0b00011010;
-  XOVA_OBP0_D2n.state = 0b00011010;
-  XALO_OBP0_D3n.state = 0b00011010;
-  XERU_OBP0_D4n.state = 0b00011010;
-  XYZE_OBP0_D5n.state = 0b00011010;
-  XUPO_OBP0_D6n.state = 0b00011010;
-  XANA_OBP0_D7n.state = 0b00011010;
+  XUFU_OBP0_D0n.set_state(0b00011010);
+  XUKY_OBP0_D1n.set_state(0b00011010);
+  XOVA_OBP0_D2n.set_state(0b00011010);
+  XALO_OBP0_D3n.set_state(0b00011010);
+  XERU_OBP0_D4n.set_state(0b00011010);
+  XYZE_OBP0_D5n.set_state(0b00011010);
+  XUPO_OBP0_D6n.set_state(0b00011010);
+  XANA_OBP0_D7n.set_state(0b00011010);
 }
 
 //-----------------------------------------------------------------------------
@@ -286,20 +286,20 @@ void RegOBP1::reset_to_bootrom() {
 }
 
 void RegOBP1::reset_to_cart() {
-  MOXY_OBP1_D0n.state = 0b00011010;
-  LAWO_OBP1_D1n.state = 0b00011010;
-  MOSA_OBP1_D2n.state = 0b00011010;
-  LOSE_OBP1_D3n.state = 0b00011010;
-  LUNE_OBP1_D4n.state = 0b00011010;
-  LUGU_OBP1_D5n.state = 0b00011010;
-  LEPU_OBP1_D6n.state = 0b00011010;
-  LUXO_OBP1_D7n.state = 0b00011010;
+  MOXY_OBP1_D0n.set_state(0b00011010);
+  LAWO_OBP1_D1n.set_state(0b00011010);
+  MOSA_OBP1_D2n.set_state(0b00011010);
+  LOSE_OBP1_D3n.set_state(0b00011010);
+  LUNE_OBP1_D4n.set_state(0b00011010);
+  LUGU_OBP1_D5n.set_state(0b00011010);
+  LEPU_OBP1_D6n.set_state(0b00011010);
+  LUXO_OBP1_D7n.set_state(0b00011010);
 }
 
 //-----------------------------------------------------------------------------
 
 void RegWY::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
 
 void RegWY::reset_to_bootrom() {
@@ -326,7 +326,7 @@ int RegWY::get() const { return bit_pack_inv(*this); }
 //-----------------------------------------------------------------------------
 
 void RegWX::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
 
 void RegWX::reset_to_bootrom() {

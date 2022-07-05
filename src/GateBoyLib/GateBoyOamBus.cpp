@@ -189,8 +189,8 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   /*_p25.TUBE*/ wire TUBE_EXT_D6p_new = not1(pins.dbus.PIN_23_D06.qp_int_new());
   /*_p25.SYZO*/ wire SYZO_EXT_D7p_new = not1(pins.dbus.PIN_24_D07.qp_int_new());
 
-  /*#p04.LEBU*/ wire LEBU_DMA_A15n_new  = not1(reg_new.reg_dma.MARU_DMA_A15n.qn_new());
-  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp_new = nor3(reg_new.reg_dma.PULA_DMA_A13n.qn_new(), reg_new.reg_dma.POKU_DMA_A14n.qn_new(), LEBU_DMA_A15n_new);
+  /*#p04.LEBU*/ wire LEBU_DMA_A15n_new  = not1(reg_new.reg_dma.MARU_DMA_A15p.qp_newB());
+  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp_new = nor3(reg_new.reg_dma.PULA_DMA_A13p.qp_newB(), reg_new.reg_dma.POKU_DMA_A14p.qp_newB(), LEBU_DMA_A15n_new);
   /*_p04.LOGO*/ wire LOGO_DMA_VRAMn_new = not1(MUDA_DMA_VRAMp_new);
   /*_p04.MORY*/ wire MORY_DMA_CARTn_new = nand2(reg_new.MATU_DMA_RUNNINGp_odd.qp_new(), LOGO_DMA_VRAMn_new);
   /*_p04.LUMA*/ wire LUMA_DMA_CARTp_new = not1(MORY_DMA_CARTn_new);

@@ -25,14 +25,14 @@ struct RegDmaHi {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*#p04.NAFA*/ DFF8p NAFA_DMA_A08n;      // xxxxxxxH
-  /*_p04.PYNE*/ DFF8p PYNE_DMA_A09n;      // xxxxxxxH
-  /*_p04.PARA*/ DFF8p PARA_DMA_A10n;      // xxxxxxxH
-  /*_p04.NYDO*/ DFF8p NYDO_DMA_A11n;      // xxxxxxxH
-  /*_p04.NYGY*/ DFF8p NYGY_DMA_A12n;      // xxxxxxxH
-  /*_p04.PULA*/ DFF8p PULA_DMA_A13n;      // xxxxxxxH
-  /*_p04.POKU*/ DFF8p POKU_DMA_A14n;      // xxxxxxxH
-  /*_p04.MARU*/ DFF8p MARU_DMA_A15n;      // xxxxxxxH
+  /*#p04.NAFA*/ DFF8pB NAFA_DMA_A08p;      // xxxxxxxH
+  /*_p04.PYNE*/ DFF8pB PYNE_DMA_A09p;      // xxxxxxxH
+  /*_p04.PARA*/ DFF8pB PARA_DMA_A10p;      // xxxxxxxH
+  /*_p04.NYDO*/ DFF8pB NYDO_DMA_A11p;      // xxxxxxxH
+  /*_p04.NYGY*/ DFF8pB NYGY_DMA_A12p;      // xxxxxxxH
+  /*_p04.PULA*/ DFF8pB PULA_DMA_A13p;      // xxxxxxxH
+  /*_p04.POKU*/ DFF8pB POKU_DMA_A14p;      // xxxxxxxH
+  /*_p04.MARU*/ DFF8pB MARU_DMA_A15p;      // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

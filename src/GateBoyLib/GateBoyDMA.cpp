@@ -10,14 +10,14 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
 
   /*#p04.LAVY*/ wire LAVY_FF46_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.XEDA_FF46p_new());
   /*#p04.LORU*/ wire LORU_FF46_WRn_new = not1(LAVY_FF46_WRp_new);
-  /*#p04.NAFA*/ reg_new.reg_dma.NAFA_DMA_A08n.dff8p(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  /*_p04.PYNE*/ reg_new.reg_dma.PYNE_DMA_A09n.dff8p(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  /*_p04.PARA*/ reg_new.reg_dma.PARA_DMA_A10n.dff8p(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-  /*_p04.NYDO*/ reg_new.reg_dma.NYDO_DMA_A11n.dff8p(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p04.NYGY*/ reg_new.reg_dma.NYGY_DMA_A12n.dff8p(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p04.PULA*/ reg_new.reg_dma.PULA_DMA_A13n.dff8p(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p04.POKU*/ reg_new.reg_dma.POKU_DMA_A14n.dff8p(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-  /*_p04.MARU*/ reg_new.reg_dma.MARU_DMA_A15n.dff8p(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+  /*#p04.NAFA*/ reg_new.reg_dma.NAFA_DMA_A08p.dff8pB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+  /*_p04.PYNE*/ reg_new.reg_dma.PYNE_DMA_A09p.dff8pB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+  /*_p04.PARA*/ reg_new.reg_dma.PARA_DMA_A10p.dff8pB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+  /*_p04.NYDO*/ reg_new.reg_dma.NYDO_DMA_A11p.dff8pB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p04.NYGY*/ reg_new.reg_dma.NYGY_DMA_A12p.dff8pB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p04.PULA*/ reg_new.reg_dma.PULA_DMA_A13p.dff8pB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p04.POKU*/ reg_new.reg_dma.POKU_DMA_A14p.dff8pB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p04.MARU*/ reg_new.reg_dma.MARU_DMA_A15p.dff8pB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
   /*#p04.LAVY*/ wire LAVY_FF46_WRp_old = and2(reg_old.cpu_signals.CUPA_CPU_WRp_old(), reg_old.cpu_abus.XEDA_FF46p_old());
   /*#p04.LUPA*/ wire LUPA_DMA_TRIG_old = nor2(LAVY_FF46_WRp_old, reg_old.dma_ctrl.LYXE_DMA_LATCHp.qn_old());
@@ -60,14 +60,14 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
   /*#p04.NYGO*/ wire NYGO_FF46_RDn_new = not1(MOLU_FF46_RDp_new);
   /*#p04.PUSY*/ wire PUSY_FF46_RDp_new = not1(NYGO_FF46_RDn_new);
 
-  /*#p04.POLY*/ triwire POLY_DMA0_TO_CD0_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NAFA_DMA_A08n.qp_new());
-  /*_p04.ROFO*/ triwire ROFO_DMA1_TO_CD1_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PYNE_DMA_A09n.qp_new());
-  /*_p04.REMA*/ triwire REMA_DMA2_TO_CD2_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PARA_DMA_A10n.qp_new());
-  /*_p04.PANE*/ triwire PANE_DMA3_TO_CD3_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NYDO_DMA_A11n.qp_new());
-  /*_p04.PARE*/ triwire PARE_DMA4_TO_CD4_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NYGY_DMA_A12n.qp_new());
-  /*_p04.RALY*/ triwire RALY_DMA5_TO_CD5_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PULA_DMA_A13n.qp_new());
-  /*_p04.RESU*/ triwire RESU_DMA6_TO_CD6_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.POKU_DMA_A14n.qp_new());
-  /*_p04.NUVY*/ triwire NUVY_DMA7_TO_CD7_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.MARU_DMA_A15n.qp_new());
+  /*#p04.POLY*/ triwire POLY_DMA0_TO_CD0_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NAFA_DMA_A08p.qn_newB());
+  /*_p04.ROFO*/ triwire ROFO_DMA1_TO_CD1_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PYNE_DMA_A09p.qn_newB());
+  /*_p04.REMA*/ triwire REMA_DMA2_TO_CD2_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PARA_DMA_A10p.qn_newB());
+  /*_p04.PANE*/ triwire PANE_DMA3_TO_CD3_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NYDO_DMA_A11p.qn_newB());
+  /*_p04.PARE*/ triwire PARE_DMA4_TO_CD4_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NYGY_DMA_A12p.qn_newB());
+  /*_p04.RALY*/ triwire RALY_DMA5_TO_CD5_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PULA_DMA_A13p.qn_newB());
+  /*_p04.RESU*/ triwire RESU_DMA6_TO_CD6_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.POKU_DMA_A14p.qn_newB());
+  /*_p04.NUVY*/ triwire NUVY_DMA7_TO_CD7_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.MARU_DMA_A15p.qn_newB());
 
   /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(POLY_DMA0_TO_CD0_new);
   /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(ROFO_DMA1_TO_CD1_new);
@@ -110,15 +110,15 @@ void RegDmaLo::reset_to_cart() {
 //-----------------------------------------------------------------------------
 
 void RegDmaHi::reset_to_poweron() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF);
 }
 
 void RegDmaHi::reset_to_bootrom() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF);
 }
 
 void RegDmaHi::reset_to_cart() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00);
+  bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); // FIXME why does a test fail if this resets to 0?
 }
 
 //-----------------------------------------------------------------------------
@@ -128,7 +128,7 @@ void DmaControl::reset_to_poweron() {
 }
 
 void DmaControl::reset_to_bootrom() {
-  LYXE_DMA_LATCHp.state  = 0b00011000;
+  LYXE_DMA_LATCHp.state      = 0b00011000;
   MYTE_DMA_DONE_odd.state    = 0b00011000;
   LUVY_DMA_TRIG_d0_odd.state = 0b00011010;
   LENE_DMA_TRIG_d4_odd.state = 0b00011000;

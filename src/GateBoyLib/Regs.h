@@ -174,7 +174,7 @@ struct DFF : public BitBase {
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
 struct DFF8n : public BitBase {
-  __attribute__((always_inline)) void dff8n(wire CLKn, wire Dn) {
+  void dff8n(wire CLKn, wire Dn) {
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
@@ -199,6 +199,7 @@ struct DFF8n : public BitBase {
 // DFF8_07 |xxx-O-xxx| >> Qn
 // DFF8_08 |xxx-O-xxx| >> Q  or this rung can be empty
 
+/*
 struct DFF8p : public BitBase {
   void dff8p(wire CLKp, wire Dn) {
     check_invalid();
@@ -211,51 +212,53 @@ struct DFF8p : public BitBase {
     state = uint8_t(bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
+*/
 
-//-----------------------------------------------------------------------------
-// 9-rung register with async _set_?, inverting input, and dual outputs. Looks like
-// Reg8 with a hat and a belt. Used by clock phase (CHECK), LYC, BGP, OBP0,
-// OBP1, stat int enable, sprite store, SCY, SCX, LCDC, WX, WY.
+struct DFF8pB : private BitBase {
 
-// FIXME having SETn and Dn doesn't make sense, inverting the polarity of the
-// internal bit makes more sense but would switch the Qn/Qp outputs
+  void set_state(uint8_t new_state) { state = new_state ^ 1; }
+  void set_stateB(uint8_t new_state) { state = new_state; }
 
-// DFF9_01 | O===--o |
-// DFF9_02 |==--O====| << CLKp
-// DFF9_03 | ------- | << Dn
-// DFF9_04 |o-------O| << CLKn
-// DFF9_05 |  -----  |
-// DFF9_06 |--xxOxx--| << SETn
-// DFF9_07 |o-------o|
-// DFF9_08 |xxx-O-xxx| >> Qn
-// DFF9_09 |xxx-O-xxx| >> Q
+  wire qp_oldB() const { return qp_old(); }
+  wire qn_oldB() const { return qn_old(); }
 
-/*
-struct DFF9 : public BitBase {
-  __attribute__((always_inline)) void dff9(wire CLKp, wire SETn, wire Dn) {
+  wire qp_anyB() const { return qp_any(); }
+  wire qn_anyB() const { return qn_any(); }
+
+  wire qp_newB() const { return qp_new(); }
+  wire qn_newB() const { return qn_new(); }
+
+  void dff8pB(wire CLKp, wire Dp) {
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    wire d1 = (~clk_old & clk_new) ? ~Dn : state;
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
 
-    state = uint8_t(bit0(d1 | (~SETn)) | clk_new | BIT_NEW | BIT_DRIVEN);
+    state = uint8_t(bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
-*/
+
+//-----------------------------------------------------------------------------
+// 9-rung register with async reset and dual outputs.
+// Looks like DFF8 with a hat and a belt.
+
+// DFF9_01 | O===--o |
+// DFF9_02 |==--O====| << CLKp
+// DFF9_03 | ------- | << Dp
+// DFF9_04 |o-------O| << CLKn
+// DFF9_05 |  -----  |
+// DFF9_06 |--xxOxx--| << RSTn
+// DFF9_07 |o-------o|
+// DFF9_08 |xxx-O-xxx| >> Q   // NOTE THESE ARE SWAPPED COMPARED TO OTHER DFFS
+// DFF9_09 |xxx-O-xxx| >> Qn  // NOTE THESE ARE SWAPPED COMPARED TO OTHER DFFS
 
 struct DFF9B : private BitBase {
 
   uint8_t get_state() const { return state; }
-
-  void set_state(uint8_t new_state) {
-    state = new_state ^ 1;
-  }
-
-  void set_stateB(uint8_t new_state) {
-    state = new_state;
-  }
+  void set_state(uint8_t new_state) { state = new_state ^ 1; }
+  void set_stateB(uint8_t new_state) { state = new_state; }
 
   wire qp_oldB() const { return qp_old(); }
   wire qn_oldB() const { return qn_old(); }
@@ -263,7 +266,7 @@ struct DFF9B : private BitBase {
   wire qp_newB() const { return qp_new(); }
   wire qn_newB() const { return qn_new(); }
 
-  __attribute__((always_inline)) void dff9b(wire CLKp, wire RSTn, wire Dp) {
+  void dff9b(wire CLKp, wire RSTn, wire Dp) {
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
@@ -362,12 +365,12 @@ struct DFF17 : public BitBase {
   }
 
 
-  __attribute__((always_inline)) void dff17(wire CLKp, wire RSTn, wire Dp) {
+  void dff17(wire CLKp, wire RSTn, wire Dp) {
     check_invalid();
     dff17_any(CLKp, RSTn, Dp);
   }
 
-  __attribute__((always_inline)) void dff17_any(wire CLKp, wire RSTn, wire Dp) {
+  void dff17_any(wire CLKp, wire RSTn, wire Dp) {
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
 

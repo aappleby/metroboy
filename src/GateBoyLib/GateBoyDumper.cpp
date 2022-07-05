@@ -266,7 +266,7 @@ void GateBoyDumper::dump_cpu_bus(const GateBoyState& s, Dumper& d) {
 
 void GateBoyDumper::dump_dma(const GateBoyState& s, Dumper& d) {
   d.dump_slice2p("DMA_A_LOW  : ", &s.dma_lo.NAKY_DMA_A00p_odd, 8);
-  d.dump_slice2n("DMA_A_HIGH : ", &s.reg_dma.NAFA_DMA_A08n, 8);
+  d.dump_slice2n("DMA_A_HIGH : ", &s.reg_dma.NAFA_DMA_A08p, 8);
   d             ("DMA Addr   : 0x%02x:%02x\n", bit_pack_inv(s.reg_dma), bit_pack(s.dma_lo));
   d.dump_bitp   ("MATU_DMA_RUNNINGp : ", s.MATU_DMA_RUNNINGp_odd.state);
   d.dump_bitp   ("LYXE_DMA_LATCHp   : ", s.dma_ctrl.LYXE_DMA_LATCHp  .state);

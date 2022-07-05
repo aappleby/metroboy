@@ -230,6 +230,7 @@ struct DFF8p : public BitBase {
 // DFF9_08 |xxx-O-xxx| >> Qn
 // DFF9_09 |xxx-O-xxx| >> Q
 
+/*
 struct DFF9 : public BitBase {
   __attribute__((always_inline)) void dff9(wire CLKp, wire SETn, wire Dn) {
     check_invalid();
@@ -242,6 +243,7 @@ struct DFF9 : public BitBase {
     state = uint8_t(bit0(d1 | (~SETn)) | clk_new | BIT_NEW | BIT_DRIVEN);
   }
 };
+*/
 
 struct DFF9B : private BitBase {
 

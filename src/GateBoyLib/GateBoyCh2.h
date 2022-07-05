@@ -16,15 +16,15 @@ struct SpuChannel2 {
   /*#p15.CULE*/ wire CULE_SAMPLE_CLKn_new() const { return not1(DAVU_SAMPLE_CLKp_new()); }
 
   /*#p15.FUTE*/ wire FUTE_CH2_AMP_ENn_new() const {
-    return nor5(FORE_NR22_ADD.qn_new(),
-                GATA_NR22_V0.qn_new(),
-                GUFE_NR22_V1.qn_new(),
-                GURA_NR22_V2.qn_new(),
-                GAGE_NR22_V3.qn_new());
+    return nor5(FORE_NR22_ADD.qp_newB(),
+                GATA_NR22_V0.qp_newB(),
+                GUFE_NR22_V1.qp_newB(),
+                GURA_NR22_V2.qp_newB(),
+                GAGE_NR22_V3.qp_newB());
   }
 
-  /*#p15.JUPU*/ wire JUPU_ENV_OFFp_old() const { return nor3(HYFU_NR22_P0n.qn_old(), HORE_NR22_P1n.qn_old(), HAVA_NR22_P2n.qn_old()); }
-  /*#p15.JUPU*/ wire JUPU_ENV_OFFp_new() const { return nor3(HYFU_NR22_P0n.qn_new(), HORE_NR22_P1n.qn_new(), HAVA_NR22_P2n.qn_new()); }
+  /*#p15.JUPU*/ wire JUPU_ENV_OFFp_old() const { return nor3(HYFU_NR22_P0n.qp_oldB(), HORE_NR22_P1n.qp_oldB(), HAVA_NR22_P2n.qp_oldB()); }
+  /*#p15.JUPU*/ wire JUPU_ENV_OFFp_new() const { return nor3(HYFU_NR22_P0n.qp_newB(), HORE_NR22_P1n.qp_newB(), HAVA_NR22_P2n.qp_newB()); }
 
 
   /*_p15.ERYC*/ DFF20 ERYC_NR21_L0;
@@ -33,37 +33,37 @@ struct SpuChannel2 {
   /*_p15.CAME*/ DFF20 CAME_NR21_L3;
   /*_p15.BUVA*/ DFF20 BUVA_NR21_L4;
   /*_p15.AKYD*/ DFF20 AKYD_NR21_L5;
-  /*_p14.BERA*/ DFF9  BERA_NR21_D6;
-  /*_p14.BAMY*/ DFF9  BAMY_NR21_D7;
+  /*_p14.BERA*/ DFF9B BERA_NR21_D6;
+  /*_p14.BAMY*/ DFF9B BAMY_NR21_D7;
 
   //----------
   // FF17 NR22 - channel 2 vol/env/period
 
-  /*_p14.HYFU*/ DFF9 HYFU_NR22_P0n;
-  /*_p14.HORE*/ DFF9 HORE_NR22_P1n;
-  /*_p14.HAVA*/ DFF9 HAVA_NR22_P2n;
-  /*_p14.FORE*/ DFF9 FORE_NR22_ADD;
-  /*_p14.GATA*/ DFF9 GATA_NR22_V0;
-  /*_p14.GUFE*/ DFF9 GUFE_NR22_V1;
-  /*_p14.GURA*/ DFF9 GURA_NR22_V2;
-  /*_p14.GAGE*/ DFF9 GAGE_NR22_V3;
+  /*_p14.HYFU*/ DFF9B HYFU_NR22_P0n;
+  /*_p14.HORE*/ DFF9B HORE_NR22_P1n;
+  /*_p14.HAVA*/ DFF9B HAVA_NR22_P2n;
+  /*_p14.FORE*/ DFF9B FORE_NR22_ADD;
+  /*_p14.GATA*/ DFF9B GATA_NR22_V0;
+  /*_p14.GUFE*/ DFF9B GUFE_NR22_V1;
+  /*_p14.GURA*/ DFF9B GURA_NR22_V2;
+  /*_p14.GAGE*/ DFF9B GAGE_NR22_V3;
 
   //----------
 
-  DFF9 FOFE_NR23_FREQ_00;
-  DFF9 FOVA_NR23_FREQ_01;
-  DFF9 FEDY_NR23_FREQ_02;
-  DFF9 FOME_NR23_FREQ_03;
-  DFF9 FORA_NR23_FREQ_04;
-  DFF9 GODA_NR23_FREQ_05;
-  DFF9 GUMY_NR23_FREQ_06;
-  DFF9 GUPU_NR23_FREQ_07;
+  DFF9B FOFE_NR23_FREQ_00;
+  DFF9B FOVA_NR23_FREQ_01;
+  DFF9B FEDY_NR23_FREQ_02;
+  DFF9B FOME_NR23_FREQ_03;
+  DFF9B FORA_NR23_FREQ_04;
+  DFF9B GODA_NR23_FREQ_05;
+  DFF9B GUMY_NR23_FREQ_06;
+  DFF9B GUPU_NR23_FREQ_07;
 
   //----------
 
-  DFF9 JEFU_NR24_FREQ_08;
-  DFF9 JANY_NR24_FREQ_09;
-  DFF9 JUPY_NR24_FREQ_10;
+  DFF9B JEFU_NR24_FREQ_08;
+  DFF9B JANY_NR24_FREQ_09;
+  DFF9B JUPY_NR24_FREQ_10;
 
   /*_p15.DANE*/ NorLatch DANE_CH2_ACTIVEp;
 
@@ -88,12 +88,12 @@ struct SpuChannel2 {
 
   DFF17 ELOX_CH2_TRIGp;
   DFF17 CAZA_CH2_TRIGp;
-  DFF9 EMER_NR24_LENENp;
+  DFF9B EMER_NR24_LENENp;
   DFF17 DOPE_CH2_TRIGp;
 
   NorLatch DALA_CH2_TRIGp;
 
-  DFF9 ETAP_NR24_TRIGp;
+  DFF9B ETAP_NR24_TRIGp;
   DFF17 DORY_CH2_TRIGp;
   DFF17 GYKO_SAMPLE_CLKp;
   /*#p15.CANO*/ DFF17 CANO_00;

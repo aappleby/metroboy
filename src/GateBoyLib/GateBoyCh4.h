@@ -8,19 +8,19 @@ struct SpuChannel4 {
   void reset_to_cart() {}
 
   /*#p20.GEVY*/ wire GEVY_CH4_AMP_ENn() const { 
-    return nor5(GEKY_NR42_ENV_DIR.qn_new(),
-                GARU_NR42_ENV0.qn_new(),
-                GOKY_NR42_ENV1.qn_new(),
-                GOZO_NR42_ENV2.qn_new(),
-                GEDU_NR42_ENV3.qn_new());
+    return nor5(GEKY_NR42_ENV_DIR.qp_newB(),
+                GARU_NR42_ENV0.qp_newB(),
+                GOKY_NR42_ENV1.qp_newB(),
+                GOZO_NR42_ENV2.qp_newB(),
+                GEDU_NR42_ENV3.qp_newB());
   }
 
   /*#p20.FOWA*/ wire FOWA_ENV_OFFp_old() const {
-    return nor3(EMOK_NR42_ENV_TIMER0.qn_old(), ETYJ_NR42_ENV_TIMER1.qn_old(), EZYK_NR42_ENV_TIMER2.qn_old());
+    return nor3(EMOK_NR42_ENV_TIMER0.qp_oldB(), ETYJ_NR42_ENV_TIMER1.qp_oldB(), EZYK_NR42_ENV_TIMER2.qp_oldB());
   }
 
   /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new() const {
-    return nor3(EMOK_NR42_ENV_TIMER0.qn_new(), ETYJ_NR42_ENV_TIMER1.qn_new(), EZYK_NR42_ENV_TIMER2.qn_new());
+    return nor3(EMOK_NR42_ENV_TIMER0.qp_newB(), ETYJ_NR42_ENV_TIMER1.qp_newB(), EZYK_NR42_ENV_TIMER2.qp_newB());
   }
 
 #if 0
@@ -68,25 +68,25 @@ struct SpuChannel4 {
 #endif
 
 
-  /*_p19.EMOK*/ DFF9 EMOK_NR42_ENV_TIMER0;
-  /*_p19.ETYJ*/ DFF9 ETYJ_NR42_ENV_TIMER1;
-  /*_p19.EZYK*/ DFF9 EZYK_NR42_ENV_TIMER2;
-  /*_p19.GEKY*/ DFF9 GEKY_NR42_ENV_DIR;
-  /*_p19.GARU*/ DFF9 GARU_NR42_ENV0;
-  /*_p19.GOKY*/ DFF9 GOKY_NR42_ENV1;
-  /*_p19.GOZO*/ DFF9 GOZO_NR42_ENV2;
-  /*_p19.GEDU*/ DFF9 GEDU_NR42_ENV3;
+  /*_p19.EMOK*/ DFF9B EMOK_NR42_ENV_TIMER0;
+  /*_p19.ETYJ*/ DFF9B ETYJ_NR42_ENV_TIMER1;
+  /*_p19.EZYK*/ DFF9B EZYK_NR42_ENV_TIMER2;
+  /*_p19.GEKY*/ DFF9B GEKY_NR42_ENV_DIR;
+  /*_p19.GARU*/ DFF9B GARU_NR42_ENV0;
+  /*_p19.GOKY*/ DFF9B GOKY_NR42_ENV1;
+  /*_p19.GOZO*/ DFF9B GOZO_NR42_ENV2;
+  /*_p19.GEDU*/ DFF9B GEDU_NR42_ENV3;
 
   //----------
 
-  /*_p19.JARE*/ DFF9 JARE_NR43_DIV0;
-  /*_p19.JERO*/ DFF9 JERO_NR43_DIV1;
-  /*_p19.JAKY*/ DFF9 JAKY_NR43_DIV2;
-  /*_p19.JAMY*/ DFF9 JAMY_NR43_MODE;
-  /*_p19.FETA*/ DFF9 FETA_NR43_FREQ0;
-  /*_p19.FYTO*/ DFF9 FYTO_NR43_FREQ1;
-  /*_p19.GOGO*/ DFF9 GOGO_NR43_FREQ2;
-  /*_p19.GAFO*/ DFF9 GAFO_NR43_FREQ3;
+  /*_p19.JARE*/ DFF9B JARE_NR43_DIV0;
+  /*_p19.JERO*/ DFF9B JERO_NR43_DIV1;
+  /*_p19.JAKY*/ DFF9B JAKY_NR43_DIV2;
+  /*_p19.JAMY*/ DFF9B JAMY_NR43_MODE;
+  /*_p19.FETA*/ DFF9B FETA_NR43_FREQ0;
+  /*_p19.FYTO*/ DFF9B FYTO_NR43_FREQ1;
+  /*_p19.GOGO*/ DFF9B GOGO_NR43_FREQ2;
+  /*_p19.GAFO*/ DFF9B GAFO_NR43_FREQ3;
 
   /*_p20.GENA*/ NorLatch GENA_CH4_ACTIVEp;
 
@@ -106,8 +106,8 @@ struct SpuChannel4 {
   /*#p19.FYLO*/ DFF20 FYLO_NR41_LEN4;
   /*_p19.EDOP*/ DFF20 EDOP_NR41_LEN5;
 
-  /*#p19.CUNY*/ DFF9 CUNY_NR44_LEN_ENp;
-  /*#p19.HOGA*/ DFF9 HOGA_NR44_TRIG;
+  /*#p19.CUNY*/ DFF9B CUNY_NR44_LEN_ENp;
+  /*#p19.HOGA*/ DFF9B HOGA_NR44_TRIG;
   /*#p20.GYSU*/ DFF17 GYSU_CH4_TRIG;
 
   /*#p20.HAZO*/ NorLatch HAZO_CH4_TRIGn;

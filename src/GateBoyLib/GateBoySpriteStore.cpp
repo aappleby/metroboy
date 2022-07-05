@@ -102,14 +102,14 @@ void GateBoy::store_sprite_gates(
 
   // Clock the scanned sprite's X coordinate into the selected sprite store.
 
-  /*#p31.ZAGO*/ wire ZAGO_SPX0n_old = not1(oam_temp_b_old.YLOR_OAM_DB0p.qp_old());
-  /*_p31.ZOCY*/ wire ZOCY_SPX1n_old = not1(oam_temp_b_old.ZYTY_OAM_DB1p.qp_old());
-  /*_p31.YPUR*/ wire YPUR_SPX2n_old = not1(oam_temp_b_old.ZYVE_OAM_DB2p.qp_old());
-  /*_p31.YVOK*/ wire YVOK_SPX3n_old = not1(oam_temp_b_old.ZEZY_OAM_DB3p.qp_old());
-  /*_p31.COSE*/ wire COSE_SPX4n_old = not1(oam_temp_b_old.GOMO_OAM_DB4p.qp_old());
-  /*_p31.AROP*/ wire AROP_SPX5n_old = not1(oam_temp_b_old.BAXO_OAM_DB5p.qp_old());
-  /*_p31.XATU*/ wire XATU_SPX6n_old = not1(oam_temp_b_old.YZOS_OAM_DB6p.qp_old());
-  /*_p31.BADY*/ wire BADY_SPX7n_old = not1(oam_temp_b_old.DEPO_OAM_DB7p.qp_old());
+  /*#p31.ZAGO*/ wire ZAGO_SPX0n_old = not1(oam_temp_b_old.YLOR_OAM_DB0p.qn_oldB());
+  /*_p31.ZOCY*/ wire ZOCY_SPX1n_old = not1(oam_temp_b_old.ZYTY_OAM_DB1p.qn_oldB());
+  /*_p31.YPUR*/ wire YPUR_SPX2n_old = not1(oam_temp_b_old.ZYVE_OAM_DB2p.qn_oldB());
+  /*_p31.YVOK*/ wire YVOK_SPX3n_old = not1(oam_temp_b_old.ZEZY_OAM_DB3p.qn_oldB());
+  /*_p31.COSE*/ wire COSE_SPX4n_old = not1(oam_temp_b_old.GOMO_OAM_DB4p.qn_oldB());
+  /*_p31.AROP*/ wire AROP_SPX5n_old = not1(oam_temp_b_old.BAXO_OAM_DB5p.qn_oldB());
+  /*_p31.XATU*/ wire XATU_SPX6n_old = not1(oam_temp_b_old.YZOS_OAM_DB6p.qn_oldB());
+  /*_p31.BADY*/ wire BADY_SPX7n_old = not1(oam_temp_b_old.DEPO_OAM_DB7p.qn_oldB());
 
   /*#p31.XEPE*/ reg_new.store_x0.XEPE_STORE0_X0n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZAGO_SPX0n_old);
   /*_p31.YLAH*/ reg_new.store_x0.YLAH_STORE0_X1n.dff9b(FUXU_STORE0_CLKp, DYNA_STORE0_RSTn, ZOCY_SPX1n_old);

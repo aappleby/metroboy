@@ -186,6 +186,31 @@ struct DFF8n : public BitBase {
   }
 };
 
+struct DFF8nB : private BitBase {
+  void set_state(uint8_t new_state) { state = new_state ^ 1; }
+  void set_stateB(uint8_t new_state) { state = new_state; }
+
+  wire qp_oldB() const { return qp_old(); }
+  wire qn_oldB() const { return qn_old(); }
+
+  wire qp_anyB() const { return qp_any(); }
+  wire qn_anyB() const { return qn_any(); }
+
+  wire qp_newB() const { return qp_new(); }
+  wire qn_newB() const { return qn_new(); }
+
+  void dff8nB(wire CLKn, wire Dp) {
+    check_invalid();
+
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (~CLKn << 1) & BIT_CLOCK;
+
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
+
+    state = uint8_t(bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN);
+  }
+};
+
 //-----------------------------------------------------------------------------
 // same w/ swapped clock inputs, not 100% positive this is correct but BGP has
 // to latch on the rising edge of the clock or m3_bgp_change is way off.

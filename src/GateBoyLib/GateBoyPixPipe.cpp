@@ -396,23 +396,23 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   //----------------------------------------
   // Mask pipe
   {
-    /*_p26.TEDE*/ wire TEDE_MASK_PIPE_SET0_new = nand2(LESY_SPRITE_MASK0p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.XALA*/ wire XALA_MASK_PIPE_SET1_new = nand2(LOTA_SPRITE_MASK1p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.TYRA*/ wire TYRA_MASK_PIPE_SET2_new = nand2(LYKU_SPRITE_MASK2p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.XYRU*/ wire XYRU_MASK_PIPE_SET3_new = nand2(ROBY_SPRITE_MASK3p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.XUKU*/ wire XUKU_MASK_PIPE_SET4_new = nand2(TYTA_SPRITE_MASK4p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.XELY*/ wire XELY_MASK_PIPE_SET5_new = nand2(TYCO_SPRITE_MASK5p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.TYKO*/ wire TYKO_MASK_PIPE_SET6_new = nand2(SOKA_SPRITE_MASK6p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.TUWU*/ wire TUWU_MASK_PIPE_SET7_new = nand2(XOVU_SPRITE_MASK7p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
+    /*_p26.TEDE*/ wire TEDE_MASK_PIPE_SET0_new = nand2(LESY_SPRITE_MASK0p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.XALA*/ wire XALA_MASK_PIPE_SET1_new = nand2(LOTA_SPRITE_MASK1p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.TYRA*/ wire TYRA_MASK_PIPE_SET2_new = nand2(LYKU_SPRITE_MASK2p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.XYRU*/ wire XYRU_MASK_PIPE_SET3_new = nand2(ROBY_SPRITE_MASK3p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.XUKU*/ wire XUKU_MASK_PIPE_SET4_new = nand2(TYTA_SPRITE_MASK4p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.XELY*/ wire XELY_MASK_PIPE_SET5_new = nand2(TYCO_SPRITE_MASK5p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.TYKO*/ wire TYKO_MASK_PIPE_SET6_new = nand2(SOKA_SPRITE_MASK6p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.TUWU*/ wire TUWU_MASK_PIPE_SET7_new = nand2(XOVU_SPRITE_MASK7p_new, reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
 
-    /*_p26.XOGA*/ wire XOGA_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.XURA*/ wire XURA_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.TAJO*/ wire TAJO_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.XENU*/ wire XENU_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.XYKE*/ wire XYKE_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.XABA*/ wire XABA_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.TAFU*/ wire TAFU_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
-    /*_p26.XUHO*/ wire XUHO_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qp_new());
+    /*_p26.XOGA*/ wire XOGA_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.XURA*/ wire XURA_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.TAJO*/ wire TAJO_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.XENU*/ wire XENU_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.XYKE*/ wire XYKE_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.XABA*/ wire XABA_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.TAFU*/ wire TAFU_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
+    /*_p26.XUHO*/ wire XUHO_MASK_PIPE_DB7n_new = not1(reg_new.oam_temp_b.DEPO_OAM_DB7p.qn_newB());
 
     /*_p26.WOKA*/ wire WOKA_MASK_PIPE_RST0_new = nand2(LESY_SPRITE_MASK0p_new, XOGA_MASK_PIPE_DB7n_new);
     /*_p26.WEDE*/ wire WEDE_MASK_PIPE_RST1_new = nand2(LOTA_SPRITE_MASK1p_new, XURA_MASK_PIPE_DB7n_new);
@@ -436,23 +436,23 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   //----------------------------------------
   // Pal pipe
   {
-    /*_p34.PUME*/ wire PUME_PAL_PIPE_SET0_new = nand2(LESY_SPRITE_MASK0p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.SORO*/ wire SORO_PAL_PIPE_SET1_new = nand2(LOTA_SPRITE_MASK1p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.PAMO*/ wire PAMO_PAL_PIPE_SET2_new = nand2(LYKU_SPRITE_MASK2p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.SUKY*/ wire SUKY_PAL_PIPE_SET3_new = nand2(ROBY_SPRITE_MASK3p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.RORA*/ wire RORA_PAL_PIPE_SET4_new = nand2(TYTA_SPRITE_MASK4p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.MENE*/ wire MENE_PAL_PIPE_SET5_new = nand2(TYCO_SPRITE_MASK5p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.LUKE*/ wire LUKE_PAL_PIPE_SET6_new = nand2(SOKA_SPRITE_MASK6p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.LAMY*/ wire LAMY_PAL_PIPE_SET7_new = nand2(XOVU_SPRITE_MASK7p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
+    /*_p34.PUME*/ wire PUME_PAL_PIPE_SET0_new = nand2(LESY_SPRITE_MASK0p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.SORO*/ wire SORO_PAL_PIPE_SET1_new = nand2(LOTA_SPRITE_MASK1p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.PAMO*/ wire PAMO_PAL_PIPE_SET2_new = nand2(LYKU_SPRITE_MASK2p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.SUKY*/ wire SUKY_PAL_PIPE_SET3_new = nand2(ROBY_SPRITE_MASK3p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.RORA*/ wire RORA_PAL_PIPE_SET4_new = nand2(TYTA_SPRITE_MASK4p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.MENE*/ wire MENE_PAL_PIPE_SET5_new = nand2(TYCO_SPRITE_MASK5p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.LUKE*/ wire LUKE_PAL_PIPE_SET6_new = nand2(SOKA_SPRITE_MASK6p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.LAMY*/ wire LAMY_PAL_PIPE_SET7_new = nand2(XOVU_SPRITE_MASK7p_new, reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
 
-    /*_p34.SYPY*/ wire SYPY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.TOTU*/ wire TOTU_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.NARO*/ wire NARO_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.WEXY*/ wire WEXY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.RYZY*/ wire RYZY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.RYFE*/ wire RYFE_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.LADY*/ wire LADY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
-    /*_p34.LAFY*/ wire LAFY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qp_new());
+    /*_p34.SYPY*/ wire SYPY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.TOTU*/ wire TOTU_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.NARO*/ wire NARO_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.WEXY*/ wire WEXY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.RYZY*/ wire RYZY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.RYFE*/ wire RYFE_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.LADY*/ wire LADY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
+    /*_p34.LAFY*/ wire LAFY_PAL_PIPE_DB4n_new = not1(reg_new.oam_temp_b.GOMO_OAM_DB4p.qn_newB());
 
     /*_p34.SUCO*/ wire SUCO_PAL_PIPE_RST0_new = nand2(LESY_SPRITE_MASK0p_new, SYPY_PAL_PIPE_DB4n_new);
     /*_p34.TAFA*/ wire TAFA_PAL_PIPE_RST1_new = nand2(LOTA_SPRITE_MASK1p_new, TOTU_PAL_PIPE_DB4n_new);

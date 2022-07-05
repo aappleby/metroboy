@@ -343,14 +343,14 @@ struct OamTempA {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*#p29.XUSO*/ DFF8n XUSO_OAM_DA0p; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
-  /*_p29.XEGU*/ DFF8n XEGU_OAM_DA1p; // AxxxExxx - sprite y bit 1, sprite tile index bit 1
-  /*_p29.YJEX*/ DFF8n YJEX_OAM_DA2p; // AxxxExxx - sprite y bit 2, sprite tile index bit 2
-  /*_p29.XYJU*/ DFF8n XYJU_OAM_DA3p; // AxxxExxx - sprite y bit 3, sprite tile index bit 3
-  /*_p29.YBOG*/ DFF8n YBOG_OAM_DA4p; // AxxxExxx - sprite y bit 4, sprite tile index bit 4
-  /*_p29.WYSO*/ DFF8n WYSO_OAM_DA5p; // AxxxExxx - sprite y bit 5, sprite tile index bit 5
-  /*_p29.XOTE*/ DFF8n XOTE_OAM_DA6p; // AxxxExxx - sprite y bit 6, sprite tile index bit 6
-  /*_p29.YZAB*/ DFF8n YZAB_OAM_DA7p; // AxxxExxx - sprite y bit 7, sprite tile index bit 7
+  /*#p29.XUSO*/ DFF8nB XUSO_OAM_DA0p; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
+  /*_p29.XEGU*/ DFF8nB XEGU_OAM_DA1p; // AxxxExxx - sprite y bit 1, sprite tile index bit 1
+  /*_p29.YJEX*/ DFF8nB YJEX_OAM_DA2p; // AxxxExxx - sprite y bit 2, sprite tile index bit 2
+  /*_p29.XYJU*/ DFF8nB XYJU_OAM_DA3p; // AxxxExxx - sprite y bit 3, sprite tile index bit 3
+  /*_p29.YBOG*/ DFF8nB YBOG_OAM_DA4p; // AxxxExxx - sprite y bit 4, sprite tile index bit 4
+  /*_p29.WYSO*/ DFF8nB WYSO_OAM_DA5p; // AxxxExxx - sprite y bit 5, sprite tile index bit 5
+  /*_p29.XOTE*/ DFF8nB XOTE_OAM_DA6p; // AxxxExxx - sprite y bit 6, sprite tile index bit 6
+  /*_p29.YZAB*/ DFF8nB YZAB_OAM_DA7p; // AxxxExxx - sprite y bit 7, sprite tile index bit 7
 };
 
 //-----------------------------------------------------------------------------
@@ -360,14 +360,14 @@ struct OamTempB {
   void reset_to_bootrom();
   void reset_to_cart();
 
-  /*_p31.YLOR*/ DFF8n YLOR_OAM_DB0p; // AxxxExxx - sprite x bit 0,
-  /*_p31.ZYTY*/ DFF8n ZYTY_OAM_DB1p; // AxxxExxx - sprite x bit 1,
-  /*_p31.ZYVE*/ DFF8n ZYVE_OAM_DB2p; // AxxxExxx - sprite x bit 2,
-  /*_p31.ZEZY*/ DFF8n ZEZY_OAM_DB3p; // AxxxExxx - sprite x bit 3,
-  /*_p31.GOMO*/ DFF8n GOMO_OAM_DB4p; // AxxxExxx - sprite x bit 4, sprite palette
-  /*_p31.BAXO*/ DFF8n BAXO_OAM_DB5p; // AxxxExxx - sprite x bit 5, sprite x flip
-  /*_p31.YZOS*/ DFF8n YZOS_OAM_DB6p; // AxxxExxx - sprite x bit 6, sprite y flip
-  /*_p31.DEPO*/ DFF8n DEPO_OAM_DB7p; // AxxxExxx - sprite x bit 7, sprite priority
+  /*_p31.YLOR*/ DFF8nB YLOR_OAM_DB0p; // AxxxExxx - sprite x bit 0,
+  /*_p31.ZYTY*/ DFF8nB ZYTY_OAM_DB1p; // AxxxExxx - sprite x bit 1,
+  /*_p31.ZYVE*/ DFF8nB ZYVE_OAM_DB2p; // AxxxExxx - sprite x bit 2,
+  /*_p31.ZEZY*/ DFF8nB ZEZY_OAM_DB3p; // AxxxExxx - sprite x bit 3,
+  /*_p31.GOMO*/ DFF8nB GOMO_OAM_DB4p; // AxxxExxx - sprite x bit 4, sprite palette
+  /*_p31.BAXO*/ DFF8nB BAXO_OAM_DB5p; // AxxxExxx - sprite x bit 5, sprite x flip
+  /*_p31.YZOS*/ DFF8nB YZOS_OAM_DB6p; // AxxxExxx - sprite x bit 6, sprite y flip
+  /*_p31.DEPO*/ DFF8nB DEPO_OAM_DB7p; // AxxxExxx - sprite x bit 7, sprite priority
 };
 
 //-----------------------------------------------------------------------------

@@ -81,7 +81,7 @@ FieldInfo GateBoyCpu::fields[] = {
 
 //-----------------------------------------------------------------------------
 
-GBResult GateBoy::reset_to_poweron(const blob& cart_blob) {
+GBResult GateBoy::reset_to_poweron() {
   gb_state.reset_to_poweron();
   cpu.reset_to_poweron();
   mem.reset_to_poweron();
@@ -159,7 +159,7 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::reset_to_bootrom(const blob& cart_blob) {
-  reset_to_poweron(cart_blob);
+  reset_to_poweron();
   //LOG_R("GateBoy::reset_to_poweron done\n");
   run_poweron_reset(cart_blob, true);
   //LOG_R("GateBoy::run_poweron_reset done\n");

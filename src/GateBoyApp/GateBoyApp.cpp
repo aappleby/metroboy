@@ -61,7 +61,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //gb_thread = new GateBoyThread(new LogicBoy());
   gb_thread = new GateBoyThread(new GateBoy());
   gb_thread->start();
-  //gb_thread->reset_to_poweron();
+  gb_thread->reset_to_poweron();
 
   //gb_thread->run_to(459148 - 1);
 

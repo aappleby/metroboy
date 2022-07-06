@@ -488,12 +488,12 @@ TestResults GateBoyTests::test_fastboot(const GateBoy* proto, uint8_t mask) {
   unique_ptr<GateBoy> gb2(proto->clone());
 
   LOG_B("run_poweron_reset with fastboot = true\n");
-  gb1->reset_to_poweron(dummy_cart);
+  gb1->reset_to_poweron();
   gb1->run_poweron_reset(dummy_cart, true);
   LOG_G("run_poweron_reset with fastboot = true done\n");
 
   LOG_B("run_poweron_reset with fastboot = false\n");
-  gb2->reset_to_poweron(dummy_cart);
+  gb2->reset_to_poweron();
   gb2->run_poweron_reset(dummy_cart, false);
   LOG_G("run_poweron_reset with fastboot = false done\n");
 
@@ -521,7 +521,7 @@ TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* /*proto*/, uint8
   auto gb2 = new GateBoy();
 
   LOG_B("run_poweron_reset()\n");
-  gb1->reset_to_poweron(dummy_cart);
+  gb1->reset_to_poweron();
   gb1->run_poweron_reset(dummy_cart, true);
   LOG_G("run_poweron_reset() done\n");
 

@@ -28,7 +28,7 @@ using std::min;
 
 //-----------------------------------------------------------------------------
 
-GBResult LogicBoy::reset_to_poweron(const blob& cart_blob) {
+GBResult LogicBoy::reset_to_poweron() {
   assert(false);
 }
 

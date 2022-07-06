@@ -342,9 +342,9 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
 
 
-  /*_p16.DERY*/ wire DERY_FF1B_WRn_new = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.DUSA_ADDR_FF1Bp());
-  /*#p16.GAJY*/ wire GAJY_LOADp_new = not1(DERY_FF1B_WRn_new);
-  /*_p16.EMUT*/ wire EMUT_LOADp_new = not1(DERY_FF1B_WRn_new);
+  /*#p16.DERY*/ wire DERY_FF1B_WRn_new = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.DUSA_ADDR_FF1Bp());
+  /*#p16.GAJY*/ wire GAJY_FF18_WRp_new = not1(DERY_FF1B_WRn_new);
+  /*#p16.EMUT*/ wire EMUT_FF18_WRp_new = not1(DERY_FF1B_WRn_new);
   /*#p16.GETO*/ wire GETO_FF1B_WRp_new = not1(DERY_FF1B_WRn_new);
 
   /*#p16.FOVO*/ wire FOVO_FF1E_WRn_new = nand2(reg_new.ANUJ_CPU_WR_WEIRD(), reg_new.cpu_abus.DUGO_ADDR_FF1Ep());
@@ -356,22 +356,23 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
 
   // using FEXU_old to break the loop
+  {
+    /*#p18.GEPY*/ wire GEPY_LEN_CLKp_new = nor3(reg_old.ch3.FEXU_LEN_DONEp.qp_old(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch3.HOTO_NR34_LENENp.qn_newB()); // fexu/hoto polarity seems wrong
+    /*#p18.GENU*/ wire GENU_LEN_CLKn_new = not1(GEPY_LEN_CLKp_new);
+    /*#p18.GEVO*/ reg_new.ch3.GEVO_NR31_LEN0p.dff20(GENU_LEN_CLKn_new,                    GAJY_FF18_WRp_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+    /*_p18.FORY*/ reg_new.ch3.FORY_NR31_LEN1p.dff20(reg_new.ch3.GEVO_NR31_LEN0p.qp_new(), GAJY_FF18_WRp_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+    /*_p18.GATU*/ reg_new.ch3.GATU_NR31_LEN2p.dff20(reg_new.ch3.FORY_NR31_LEN1p.qp_new(), GAJY_FF18_WRp_new, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+    /*_p18.GAPO*/ reg_new.ch3.GAPO_NR31_LEN3p.dff20(reg_new.ch3.GATU_NR31_LEN2p.qp_new(), GAJY_FF18_WRp_new, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
 
-  /*#p18.GEPY*/ wire GEPY_LEN_CLKp_new = nor3(reg_old.ch3.FEXU_LEN_DONEp.qp_old(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch3.HOTO_NR34_LENENp.qn_newB()); // fexu/hoto polarity seems wrong
-  /*#p18.GENU*/ wire GENU_LEN_CLKn_new = not1(GEPY_LEN_CLKp_new);
-  /*_p18.GEVO*/ reg_new.ch3.GEVO_CH3_LEN0p.dff20(GENU_LEN_CLKn_new,                   GAJY_LOADp_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  /*_p18.FORY*/ reg_new.ch3.FORY_CH3_LEN1p.dff20(reg_new.ch3.GEVO_CH3_LEN0p.qp_new(), GAJY_LOADp_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  /*_p18.GATU*/ reg_new.ch3.GATU_CH3_LEN2p.dff20(reg_new.ch3.FORY_CH3_LEN1p.qp_new(), GAJY_LOADp_new, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-  /*_p18.GAPO*/ reg_new.ch3.GAPO_CH3_LEN3p.dff20(reg_new.ch3.GATU_CH3_LEN2p.qp_new(), GAJY_LOADp_new, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-
-  /*#p18.FALU*/ wire FALU_LEN_CLKp = not1(reg_new.ch3.GAPO_CH3_LEN3p.qn_new());
-  /*_p18.GEMO*/ reg_new.ch3.GEMO_CH3_LEN4p.dff20(FALU_LEN_CLKp,                       EMUT_LOADp_new, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p18.FORO*/ reg_new.ch3.FORO_CH3_LEN5p.dff20(reg_new.ch3.GEMO_CH3_LEN4p.qp_new(), EMUT_LOADp_new, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p18.FAVE*/ reg_new.ch3.FAVE_CH3_LEN6p.dff20(reg_new.ch3.FORO_CH3_LEN5p.qp_new(), EMUT_LOADp_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-  /*_p18.FYRU*/ reg_new.ch3.FYRU_CH3_LEN7p.dff20(reg_new.ch3.FAVE_CH3_LEN6p.qp_new(), EMUT_LOADp_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+    /*#p18.FALU*/ wire FALU_LEN_CLKp = not1(reg_new.ch3.GAPO_NR31_LEN3p.qn_new());
+    /*_p18.GEMO*/ reg_new.ch3.GEMO_NR31_LEN4p.dff20(FALU_LEN_CLKp,                        EMUT_FF18_WRp_new, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+    /*_p18.FORO*/ reg_new.ch3.FORO_NR31_LEN5p.dff20(reg_new.ch3.GEMO_NR31_LEN4p.qp_new(), EMUT_FF18_WRp_new, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+    /*_p18.FAVE*/ reg_new.ch3.FAVE_NR31_LEN6p.dff20(reg_new.ch3.FORO_NR31_LEN5p.qp_new(), EMUT_FF18_WRp_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+    /*_p18.FYRU*/ reg_new.ch3.FYRU_NR31_LEN7p.dff20(reg_new.ch3.FAVE_NR31_LEN6p.qp_new(), EMUT_FF18_WRp_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+  }
 
   /*#p18.GUDA*/ wire GUDA_LEN_DONE_RSTn = nor3(GETO_FF1B_WRp_new, reg_new.KEBA_APU_RSTp_new(), reg_new.ch3.GARA_TRIG_D1.qp_new());
-  /*_p18.FEXU*/ reg_new.ch3.FEXU_LEN_DONEp.dff17(reg_new.ch3.FYRU_CH3_LEN7p.qn_new(), GUDA_LEN_DONE_RSTn, reg_old.ch3.FEXU_LEN_DONEp.qn_old());
+  /*_p18.FEXU*/ reg_new.ch3.FEXU_LEN_DONEp.dff17(reg_new.ch3.FYRU_NR31_LEN7p.qn_new(), GUDA_LEN_DONE_RSTn, reg_old.ch3.FEXU_LEN_DONEp.qn_old());
 
 
 

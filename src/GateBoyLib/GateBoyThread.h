@@ -106,7 +106,6 @@ struct GateBoyThread {
 
   void run_steps();
 
-private:
 
   void thread_main();
 
@@ -115,7 +114,10 @@ private:
   void run_idempotence();
   void panic();
 
+private:
+
   std::thread* main = nullptr;
+  AtomicFlags sync;
 
   blob cart_blob;
   std::atomic_int64_t step_count = 0;
@@ -125,14 +127,6 @@ private:
   uint64_t old_phase_total = 0;
   double   phase_rate_smooth = 0;
 
-  //----------
-
-  // 00 - both threads running
-  // 10 - app thread waiting on sim thread to pause
-  // 11 - sim thread paused, app thread running
-  // 01 - app thread waiting on sim thread to resume
-
-  AtomicFlags sync;
 };
 
 //--------------------------------------------------------------------------------

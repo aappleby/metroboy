@@ -61,9 +61,9 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //gb_thread = new GateBoyThread(new LogicBoy());
   gb_thread = new GateBoyThread(new GateBoy());
 
-  gb_thread->start();
+  //gb_thread->start();
   //gb_thread->reset_to_poweron();
-  gb_thread->reset_to_bootrom(true);
+  //gb_thread->reset_to_bootrom(true);
 
   //gb_thread->run_to(459148 - 1);
 
@@ -142,7 +142,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->load_raw_dump(bs);
 #endif
 
-  gb_thread->resume();
+  //gb_thread->resume();
 
   LOG_DEDENT();
   LOG_G("GateBoyApp::app_init() done\n");
@@ -279,6 +279,9 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
       else {
         gb_thread->add_steps(1);
       }
+
+      gb_thread->run_normal();
+
       break;
     }
     }
@@ -678,6 +681,8 @@ Step controls:
   }
 
   // Draw flat memory view
+
+  if (gb_thread->get_cart().data())
   {
     text_painter.render_string(view, screen_size, "\002========== Flat memory view ==========\001", col6, 768);
     update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread->get_cart().data());

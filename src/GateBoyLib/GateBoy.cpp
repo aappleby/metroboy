@@ -88,7 +88,10 @@ GBResult GateBoy::reset_to_poweron(const blob& cart_blob) {
   sys.reset_to_poweron();
   pins.reset_to_poweron();
   probes.reset_to_poweron();
-  return GBResult::ok();
+ 
+ sys.rst = 1;
+ 
+ return GBResult::ok();
 }
 
 //-----------------------------------------------------------------------------
@@ -98,8 +101,6 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 
   //----------------------------------------
   // Update the sim without ticking the clock to to settle initial reset signals.
-
-  sys.rst = 1;
 
   tock_gates(cart_blob);
   gb_state.commit();

@@ -51,7 +51,7 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
 
   // OAM address from CPU
   /*_p28.ASAM*/ wire ASAM_CPU_OAM_RDn = or3(reg_new.ACYL_SCANNINGp_odd.out_new(), reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_new.MATU_DMA_RUNNINGp_odd.qp_new());
-  /*_p28.GARO*/ triwire GARO_CA0_TO_OA0 = tri6_nn(ASAM_CPU_OAM_RDn, reg_new.cpu_abus.BUS_CPU_A00p.out_new());
+  /*#p28.GARO*/ triwire GARO_CA0_TO_OA0 = tri6_nn(ASAM_CPU_OAM_RDn, reg_new.cpu_abus.BUS_CPU_A00p.out_new());
   /*_p28.WACU*/ triwire WACU_CA1_TO_OA1 = tri6_nn(ASAM_CPU_OAM_RDn, reg_new.cpu_abus.BUS_CPU_A01p.out_new());
   /*_p28.GOSE*/ triwire GOSE_CA2_TO_OA2 = tri6_nn(ASAM_CPU_OAM_RDn, reg_new.cpu_abus.BUS_CPU_A02p.out_new());
   /*_p28.WAPE*/ triwire WAPE_CA3_TO_OA3 = tri6_nn(ASAM_CPU_OAM_RDn, reg_new.cpu_abus.BUS_CPU_A03p.out_new());

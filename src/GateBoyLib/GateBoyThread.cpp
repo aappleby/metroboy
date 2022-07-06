@@ -15,17 +15,16 @@
 GateBoyThread::GateBoyThread(IGateBoy* prototype) : gb(prototype)
 {
   gb.reset_states();
+  cart_blob = Assembler::create_dummy_cart();
+  reset_to_poweron();
 }
 
 //----------------------------------------
 
 void GateBoyThread::start() {
-  if (main) return;
+  CHECK_P(main == nullptr);
   main = new std::thread([this] { thread_main(); });
   pause();
-
-  cart_blob = Assembler::create_dummy_cart();
-  gb->reset_to_bootrom(cart_blob, false);
 }
 
 //----------------------------------------
@@ -44,6 +43,7 @@ void GateBoyThread::stop() {
 //----------------------------------------
 
 void GateBoyThread::pause() {
+  if (!main) return;
   std::unique_lock<std::mutex> lock(sync.mut);
   sync.set(REQ_PAUSE);
   sync.cond.wait(lock, [this] { return sync.test(ACK_PAUSE); });
@@ -52,6 +52,7 @@ void GateBoyThread::pause() {
 //----------------------------------------
 
 void GateBoyThread::resume() {
+  if (!main) return;
   sync.clear(REQ_PAUSE);
 }
 
@@ -108,7 +109,9 @@ void GateBoyThread::set_buttons(uint8_t buttons) {
   gb->set_buttons(buttons);
 }
 
-bool GateBoyThread::sim_paused() const { return sync.test(ACK_PAUSE); }
+bool GateBoyThread::sim_paused() const {
+  return (main == nullptr) || sync.test(ACK_PAUSE);
+}
 
 bool GateBoyThread::has_work() const {
   return step_count != 0;

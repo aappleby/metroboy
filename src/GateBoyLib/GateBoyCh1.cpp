@@ -218,10 +218,10 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
   {
-    /*#p13.BORO*/ wire BORO_FF11_WRna = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.CAXE_ADDR_FF11p());
-    /*#p13.BEPE*/ wire BEPE_FF11_WRa = not1(BORO_FF11_WRna);
-    /*#p13.BUGY*/ wire BUGY_FF11_WRc = not1(BORO_FF11_WRna);
-    /*#p13.BOKA*/ wire BOKA_FF11_WRb = not1(BORO_FF11_WRna);
+    /*#p13.BORO*/ wire BORO_FF11_WRn = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.CAXE_ADDR_FF11p());
+    /*#p13.BEPE*/ wire BEPE_FF11_WRp = not1(BORO_FF11_WRn);
+    /*#p13.BUGY*/ wire BUGY_FF11_WRp = not1(BORO_FF11_WRn);
+    /*#p13.BOKA*/ wire BOKA_FF11_WRp = not1(BORO_FF11_WRn);
 
 
     {
@@ -247,15 +247,15 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
       /*#p13.CAPY*/ wire CAPY_CH1_LEN_CLKn = nor3(reg_old.ch1.CERO_CH1_LEN_DONE.qp_old(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch1.BOKO_NR14_LENENp.qn_newB());
       /*#p13.CANU*/ wire CANU_CH1_LEN_CLKp = not1(CAPY_CH1_LEN_CLKn);
-      /*#p13.BACY*/ reg_new.ch1.BACY_NR11_LEN0.dff20(CANU_CH1_LEN_CLKp,                     BUGY_FF11_WRc, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
-      /*#p13.CAVY*/ reg_new.ch1.CAVY_NR11_LEN1.dff20(reg_new.ch1.BACY_NR11_LEN0.qp_new(),   BUGY_FF11_WRc, reg_old.cpu_dbus.BUS_CPU_D01p.qp_old());
-      /*#p13.BOVY*/ reg_new.ch1.BOVY_NR11_LEN2.dff20(reg_new.ch1.CAVY_NR11_LEN1.qp_new(),   BUGY_FF11_WRc, reg_old.cpu_dbus.BUS_CPU_D02p.qp_old());
-      /*#p13.CUNO*/ reg_new.ch1.CUNO_NR11_LEN3.dff20(reg_new.ch1.BOVY_NR11_LEN2.qp_new(),   BUGY_FF11_WRc, reg_old.cpu_dbus.BUS_CPU_D03p.qp_old());
+      /*#p13.BACY*/ reg_new.ch1.BACY_NR11_LEN0.dff20(CANU_CH1_LEN_CLKp,                     BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
+      /*#p13.CAVY*/ reg_new.ch1.CAVY_NR11_LEN1.dff20(reg_new.ch1.BACY_NR11_LEN0.qp_new(),   BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D01p.qp_old());
+      /*#p13.BOVY*/ reg_new.ch1.BOVY_NR11_LEN2.dff20(reg_new.ch1.CAVY_NR11_LEN1.qp_new(),   BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D02p.qp_old());
+      /*#p13.CUNO*/ reg_new.ch1.CUNO_NR11_LEN3.dff20(reg_new.ch1.BOVY_NR11_LEN2.qp_new(),   BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D03p.qp_old());
       /*#p13.CUSO*/ wire CUSO_NR11_LEN3p = not1(reg_new.ch1.CUNO_NR11_LEN3.qn_new());
-      /*#p13.CURA*/ reg_new.ch1.CURA_NR11_LEN4.dff20(CUSO_NR11_LEN3p,                       BEPE_FF11_WRa, reg_old.cpu_dbus.BUS_CPU_D04p.qp_old());
-      /*#p13.ERAM*/ reg_new.ch1.ERAM_NR11_LEN5.dff20(reg_new.ch1.CURA_NR11_LEN4.qp_new(),   BEPE_FF11_WRa, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
+      /*#p13.CURA*/ reg_new.ch1.CURA_NR11_LEN4.dff20(CUSO_NR11_LEN3p,                       BEPE_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D04p.qp_old());
+      /*#p13.ERAM*/ reg_new.ch1.ERAM_NR11_LEN5.dff20(reg_new.ch1.CURA_NR11_LEN4.qp_new(),   BEPE_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
 
-      /*#p13.CORY*/ wire CORY_CH1_LEN_DONE_RST_new = nor3(BOKA_FF11_WRb, reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.FEKU_CH1_TRIGp.qp_new());
+      /*#p13.CORY*/ wire CORY_CH1_LEN_DONE_RST_new = nor3(BOKA_FF11_WRp, reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.FEKU_CH1_TRIGp.qp_new());
       /*_p13.CERO*/ reg_new.ch1.CERO_CH1_LEN_DONE.dff17(reg_old.ch1.ERAM_NR11_LEN5.qn_old(), CORY_CH1_LEN_DONE_RST_new, reg_old.ch1.CERO_CH1_LEN_DONE.qn_old());
     }
 

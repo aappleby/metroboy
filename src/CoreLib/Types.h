@@ -215,10 +215,6 @@ struct Dumper {
     operator()("%s%c\n", tag, (b & 0x01) ? '1' : '0');
   }
 
-  void dump_bitn(const char* tag, wire b) {
-    operator()("%s%c\n", tag, (b & 0x01) ? '0' : '1');
-  }
-
   void dump_bytep(const char* tag, uint8_t b) {
     operator()(tag);
     for (int i = 7; i >= 0; i--) {

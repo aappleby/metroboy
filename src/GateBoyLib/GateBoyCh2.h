@@ -26,14 +26,14 @@ struct SpuChannel2 {
   /*#p15.JUPU*/ wire JUPU_ENV_OFFp_new() const { return nor3(HYFU_NR22_P0p.qp_newB(), HORE_NR22_P1p.qp_newB(), HAVA_NR22_P2p.qp_newB()); }
 
 
-  /*_p15.ERYC*/ DFF20 ERYC_NR21_L0;
-  /*_p15.CERA*/ DFF20 CERA_NR21_L1;
-  /*_p15.CONU*/ DFF20 CONU_NR21_L2;
-  /*_p15.CAME*/ DFF20 CAME_NR21_L3;
-  /*_p15.BUVA*/ DFF20 BUVA_NR21_L4;
-  /*_p15.AKYD*/ DFF20 AKYD_NR21_L5;
-  /*_p14.BERA*/ DFF9B BERA_NR21_D6;
-  /*_p14.BAMY*/ DFF9B BAMY_NR21_D7;
+  /*_p15.ERYC*/ DFF20 ERYC_NR21_LEN0;
+  /*_p15.CERA*/ DFF20 CERA_NR21_LEN1;
+  /*_p15.CONU*/ DFF20 CONU_NR21_LEN2;
+  /*_p15.CAME*/ DFF20 CAME_NR21_LEN3;
+  /*_p15.BUVA*/ DFF20 BUVA_NR21_LEN4;
+  /*_p15.AKYD*/ DFF20 AKYD_NR21_LEN5;
+  /*_p14.BERA*/ DFF9B BERA_NR21_DUTY0;
+  /*_p14.BAMY*/ DFF9B BAMY_NR21_DUTY1;
 
   //----------
   // FF17 NR22 - channel 2 vol/env/period

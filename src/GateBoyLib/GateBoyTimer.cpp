@@ -241,11 +241,11 @@ void RegDIV::force_set_div(uint16_t div) {
 //-----------------------------------------------------------------------------
 
 void RegTIMA::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
 
 void RegTIMA::reset_to_cart() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
 
 void RegTIMA::force_set_tima(uint8_t tima) {

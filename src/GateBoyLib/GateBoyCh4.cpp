@@ -141,14 +141,14 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p19.DODA*/ wire DODA_LEN_CLKn = nor3(reg_old.ch4.FUGO_CH4_LEN_DONEp.qp_old(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch4.CUNY_NR44_LEN_ENp.qn_newB());
     /*#p19.CUWA*/ wire CUWA_LEN_CLKa = not1(DODA_LEN_CLKn);
 
-    /*#p19.DANO*/ reg_new.ch4.DANO_NR41_LEN0p.dff20(CUWA_LEN_CLKa,                         DOTU_FF20_WRb, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
-    /*#p19.FAVY*/ reg_new.ch4.FAVY_NR41_LEN1p.dff20(reg_new.ch4.DANO_NR41_LEN0p.qp_new(),   DOTU_FF20_WRb, reg_old.cpu_dbus.BUS_CPU_D01p.qp_old());
-    /*#p19.DENA*/ reg_new.ch4.DENA_NR41_LEN2p.dff20(reg_new.ch4.FAVY_NR41_LEN1p.qp_new(),   DOTU_FF20_WRb, reg_old.cpu_dbus.BUS_CPU_D02p.qp_old());
-    /*#p19.CEDO*/ reg_new.ch4.CEDO_NR41_LEN3p.dff20(reg_new.ch4.DENA_NR41_LEN2p.qp_new(),   DOTU_FF20_WRb, reg_old.cpu_dbus.BUS_CPU_D03p.qp_old());
+    /*#p19.DANO*/ reg_new.ch4.DANO_NR41_LEN0p.dff20(CUWA_LEN_CLKa,                        DOTU_FF20_WRb, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
+    /*#p19.FAVY*/ reg_new.ch4.FAVY_NR41_LEN1p.dff20(reg_new.ch4.DANO_NR41_LEN0p.qp_new(), DOTU_FF20_WRb, reg_old.cpu_dbus.BUS_CPU_D01p.qp_old());
+    /*#p19.DENA*/ reg_new.ch4.DENA_NR41_LEN2p.dff20(reg_new.ch4.FAVY_NR41_LEN1p.qp_new(), DOTU_FF20_WRb, reg_old.cpu_dbus.BUS_CPU_D02p.qp_old());
+    /*#p19.CEDO*/ reg_new.ch4.CEDO_NR41_LEN3p.dff20(reg_new.ch4.DENA_NR41_LEN2p.qp_new(), DOTU_FF20_WRb, reg_old.cpu_dbus.BUS_CPU_D03p.qp_old());
 
     /*#p19.DOPU*/ wire DOPU_NR41_LEN3p = not1(reg_new.ch4.CEDO_NR41_LEN3p.qn_new());
-    /*#p19.FYLO*/ reg_new.ch4.FYLO_NR41_LEN4p.dff20(DOPU_NR41_LEN3p,                       EPEK_FF20_WRc, reg_old.cpu_dbus.BUS_CPU_D04p.qp_old());
-    /*#p19.EDOP*/ reg_new.ch4.EDOP_NR41_LEN5p.dff20(reg_new.ch4.FYLO_NR41_LEN4p.qp_new(),   EPEK_FF20_WRc, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
+    /*#p19.FYLO*/ reg_new.ch4.FYLO_NR41_LEN4p.dff20(DOPU_NR41_LEN3p,                      EPEK_FF20_WRc, reg_old.cpu_dbus.BUS_CPU_D04p.qp_old());
+    /*#p19.EDOP*/ reg_new.ch4.EDOP_NR41_LEN5p.dff20(reg_new.ch4.FYLO_NR41_LEN4p.qp_new(), EPEK_FF20_WRc, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
 
     /*#p19.GAPY*/ wire GAPY_LEN_DONE_RSTn = nor3(FURU_FF20_WRa, reg_new.KEBA_APU_RSTp_new(), reg_new.ch4.GONE_CH4_TRIGp.qp_new());
     /*#p19.FUGO*/ reg_new.ch4.FUGO_CH4_LEN_DONEp.dff17(reg_new.ch4.EDOP_NR41_LEN5p.qn_new(), GAPY_LEN_DONE_RSTn, reg_old.ch4.FUGO_CH4_LEN_DONEp.qn_old());

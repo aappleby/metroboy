@@ -189,9 +189,9 @@ struct DFF8nB : private BitBase {
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
-    wire clk_new = (~CLKn << 1) & BIT_CLOCK;
+    wire clk_new = (CLKn << 1) & BIT_CLOCK;
 
-    wire d1 = (~clk_old & clk_new) ? Dp : state;
+    wire d1 = (clk_old != clk_new) ? Dp : state;
 
     state = bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN;
   }
@@ -230,7 +230,7 @@ struct DFF8pB : private BitBase {
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    wire d1 = (~clk_old & clk_new) ? Dp : state;
+    wire d1 = (clk_old != clk_new) ? Dp : state;
 
     state = bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN;
   }
@@ -402,8 +402,6 @@ struct DFF17 : public BitBase {
 struct DFF20 : public BitBase {
 
   void dff20_any(wire CLKn, wire LOADp, wire Dp) {
-    check_invalid();
-
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKn << 1) & BIT_CLOCK;
 

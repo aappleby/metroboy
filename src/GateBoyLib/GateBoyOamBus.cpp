@@ -12,7 +12,9 @@ void GateBoy::oam_latch_to_temp_a_gates(const GateBoyState& reg_old, wire COTA_O
 {
   auto& reg_new = gb_state;
 
-  /*_p29.YWOK*/ wire YWOK_OAM_CLKp = not1(COTA_OAM_CLKn); // inverting this clock does not break anything
+  /*_p29.YWOK*/ wire YWOK_OAM_CLKp = not1(COTA_OAM_CLKn);
+
+  // Must be dff8nB not p or sprites in zelda break
 
   /*#p29.XUSO*/ reg_new.oam_temp_a.XUSO_OAM_DA0n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
   /*_p29.XEGU*/ reg_new.oam_temp_a.XEGU_OAM_DA1n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.YCEB_OAM_LATCH_DA1n.qp_old());
@@ -28,7 +30,10 @@ void GateBoy::oam_latch_to_temp_b_gates(const GateBoyState& reg_old, wire COTA_O
 {
   auto& reg_new = gb_state;
 
-  /*#p31.XEGA*/ wire XEGA_OAM_CLKp = not1(COTA_OAM_CLKn); // inverting this clock does not break anything
+  /*#p31.XEGA*/ wire XEGA_OAM_CLKp = not1(COTA_OAM_CLKn);
+
+  // Must be dff8nB not p or sprites in zelda break
+
   /*_p31.YLOR*/ reg_new.oam_temp_b.YLOR_OAM_DB0n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.XYKY_OAM_LATCH_DB0n.qp_old());
   /*_p31.ZYTY*/ reg_new.oam_temp_b.ZYTY_OAM_DB1n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.YRUM_OAM_LATCH_DB1n.qp_old());
   /*_p31.ZYVE*/ reg_new.oam_temp_b.ZYVE_OAM_DB2n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.YSEX_OAM_LATCH_DB2n.qp_old());
@@ -429,16 +434,6 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
 
 //-----------------------------------------------------------------------------
 
-void OamControl::reset_to_bootrom() {
-  MAKA_LATCH_EXTp.state  = 0b00011000;
-  WUJE_CPU_OAM_WRn.state = 0b00011001;
-  SIG_OAM_CLKn.state     = 0b00011001;
-  SIG_OAM_WRn_A.state    = 0b00011001;
-  SIG_OAM_WRn_B.state    = 0b00011001;
-  SIG_OAM_OEn.state      = 0b00011001;
-  old_oam_clk.state      = 0b00011001;
-}
-
 void OamControl::reset_to_cart() {
   MAKA_LATCH_EXTp.state  = 0b00011000;
   WUJE_CPU_OAM_WRn.state = 0b00011001;
@@ -450,10 +445,6 @@ void OamControl::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void OamABus::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
-}
 
 void OamABus::reset_to_cart() {
   BUS_OAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -468,17 +459,6 @@ void OamABus::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void OamDBusA::reset_to_bootrom() {
-  BUS_OAM_DA00n.state = 0b00011000;
-  BUS_OAM_DA01n.state = 0b00011001;
-  BUS_OAM_DA02n.state = 0b00011001;
-  BUS_OAM_DA03n.state = 0b00011001;
-  BUS_OAM_DA04n.state = 0b00011000;
-  BUS_OAM_DA05n.state = 0b00011000;
-  BUS_OAM_DA06n.state = 0b00011001;
-  BUS_OAM_DA07n.state = 0b00011001;
-}
-
 void OamDBusA::reset_to_cart() {
   BUS_OAM_DA00n.state = 0b00011000;
   BUS_OAM_DA01n.state = 0b00011001;
@@ -491,17 +471,6 @@ void OamDBusA::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void OamDBusB::reset_to_bootrom() {
-  BUS_OAM_DB00n.state = 0b00011000;
-  BUS_OAM_DB01n.state = 0b00011001;
-  BUS_OAM_DB02n.state = 0b00011001;
-  BUS_OAM_DB03n.state = 0b00011001;
-  BUS_OAM_DB04n.state = 0b00011000;
-  BUS_OAM_DB05n.state = 0b00011000;
-  BUS_OAM_DB06n.state = 0b00011001;
-  BUS_OAM_DB07n.state = 0b00011001;
-}
 
 void OamDBusB::reset_to_cart() {
   BUS_OAM_DB00n.state = 0b00011000;

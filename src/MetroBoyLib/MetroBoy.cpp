@@ -57,6 +57,11 @@ void MetroBoy::reset_to_cart(uint8_t* new_rom, size_t new_rom_size) {
 void MetroBoy::reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
+  // FIXME needs power on reset stuff
+
+  CHECK_P(false);
+
+  /*
   gb_cpu.reset_to_bootrom();
   cart.set_rom(new_rom, new_rom_size);
   cart.reset_to_cart();
@@ -81,6 +86,7 @@ void MetroBoy::reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size) {
   ebus_ack.addr = 0x0000;
   ebus_ack.data = 0x00;
   ebus_ack.read = 1;
+  */
 
   memset(framebuffer, 4, 160 * 144);
 }

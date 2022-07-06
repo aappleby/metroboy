@@ -87,7 +87,7 @@ GBResult GateBoy::reset_to_poweron(const blob& cart_blob) {
   mem.reset_to_poweron();
   sys.reset_to_poweron();
   pins.reset_to_poweron();
-  probes.reset_to_poweron();
+  probes.reset();
  
  sys.rst = 1;
  
@@ -121,7 +121,7 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 
   sys.gb_phase_total = 0;
 
-  LOG_G("derp\n");
+  //LOG_G("derp\n");
 
   //----------------------------------------
   // Wait for SIG_CPU_START
@@ -159,20 +159,10 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
-  if (slow) {
-    reset_to_poweron(cart_blob);
-    LOG_R("GateBoy::reset_to_poweron done\n");
-    run_poweron_reset(cart_blob, true);
-    LOG_R("GateBoy::run_poweron_reset done\n");
-  }
-  else {
-    gb_state.reset_to_bootrom();
-    cpu.reset_to_bootrom();
-    mem.reset_to_bootrom();
-    sys.reset_to_bootrom();
-    pins.reset_to_bootrom();
-    probes.reset_to_bootrom();
-  }
+  reset_to_poweron(cart_blob);
+  //LOG_R("GateBoy::reset_to_poweron done\n");
+  run_poweron_reset(cart_blob, true);
+  //LOG_R("GateBoy::run_poweron_reset done\n");
   return GBResult::ok();
 }
 
@@ -185,7 +175,7 @@ GBResult GateBoy::reset_to_cart(const blob& cart_blob) {
   mem.reset_to_cart();
   sys.reset_to_cart();
   pins.reset_to_cart();
-  probes.reset_to_cart();
+  probes.reset();
 
   return GBResult::ok();
 }

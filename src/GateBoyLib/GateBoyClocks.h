@@ -6,7 +6,6 @@
 
 #pragma pack(push, 1)
 struct GateBoyClock {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   wire ABOL_CLKREQn_new() const;

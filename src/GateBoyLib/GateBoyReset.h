@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyReset {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp_old() const;

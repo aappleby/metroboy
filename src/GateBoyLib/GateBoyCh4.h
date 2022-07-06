@@ -3,7 +3,6 @@
 //==============================================================================
 
 struct SpuChannel4 {
-  void reset_to_bootrom() {}
   void reset_to_cart() {}
 
   /*#p20.GEVY*/ wire GEVY_CH4_AMP_ENn() const { 

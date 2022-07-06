@@ -496,6 +496,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
 
   /*_p36.VELY*/ wire VELY_FF47_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.WERA_FF47p_new());
   /*_p36.TEPO*/ wire TEPO_FF47_WRp_new = not1(VELY_FF47_WRp_new);
+
   /*#p36.PAVO*/ reg_new.reg_bgp.PAVO_BGP_D0p.dff8pB(TEPO_FF47_WRp_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
   /*_p36.NUSY*/ reg_new.reg_bgp.NUSY_BGP_D1p.dff8pB(TEPO_FF47_WRp_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
   /*_p36.PYLU*/ reg_new.reg_bgp.PYLU_BGP_D2p.dff8pB(TEPO_FF47_WRp_new, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
@@ -680,22 +681,6 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
 
 //-----------------------------------------------------------------------------
 
-void WinControl::reset_to_bootrom() {
-  NUKO_WX_MATCHp_odd.state       = 0b00011000;
-  ROGE_WY_MATCHp_odd.state       = 0b00011000;
-  PYNU_WIN_MODE_Ap_odd.state     = 0b00011000;
-  PUKU_WIN_HITn_odd.state        = 0b00011001;
-  RYDY_WIN_HITp_odd.state        = 0b00011000;
-  SOVY_WIN_HITp_evn.state        = 0b00011010;
-  NOPA_WIN_MODE_Bp_evn.state     = 0b00011010;
-  PYCO_WIN_MATCHp_evn.state      = 0b00011000;
-  NUNU_WIN_MATCHp_odd.state      = 0b00011000;
-  REJO_WY_MATCH_LATCHp_odd.state = 0b00011000;
-  SARY_WY_MATCHp_odd.state       = 0b00011000;
-  RYFA_WIN_FETCHn_A_evn.state    = 0b00011010;
-  RENE_WIN_FETCHn_B_evn.state    = 0b00011010;
-}
-
 void WinControl::reset_to_cart() {
   NUKO_WX_MATCHp_odd.state       = 0b00011000;
   ROGE_WY_MATCHp_odd.state       = 0b00011000;
@@ -714,16 +699,9 @@ void WinControl::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void FineCount::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void FineCount::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
-
-void FineScroll::reset_to_bootrom() {
-  PUXA_SCX_FINE_MATCH_evn.state    = 0b00011000;
-  NYZE_SCX_FINE_MATCH_odd.state    = 0b00011000;
-  ROXY_FINE_SCROLL_DONEn_evn.state = 0b00011001;
-}
 
 void FineScroll::reset_to_cart() {
   PUXA_SCX_FINE_MATCH_evn.state    = 0b00011000;
@@ -733,33 +711,26 @@ void FineScroll::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void MaskPipe::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void MaskPipe::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void BgwPipeA::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void BgwPipeA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void BgwPipeB::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void BgwPipeB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void SprPipeA::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void SprPipeA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void SprPipeB::reset_to_poweron() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
-void SprPipeB::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void SprPipeB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void PalPipe::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 void PalPipe::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------

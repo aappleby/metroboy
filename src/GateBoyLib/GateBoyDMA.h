@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct RegDmaLo {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p04.NAKY*/ DFF17 NAKY_DMA_A00p_odd;      // Axxxxxxx
@@ -20,23 +19,21 @@ struct RegDmaLo {
 //-----------------------------------------------------------------------------
 
 struct RegDmaHi {
-  void reset_to_bootrom();
   void reset_to_cart();
 
-  /*#p04.NAFA*/ DFF8pB NAFA_DMA_A08p;      // xxxxxxxH
-  /*_p04.PYNE*/ DFF8pB PYNE_DMA_A09p;      // xxxxxxxH
-  /*_p04.PARA*/ DFF8pB PARA_DMA_A10p;      // xxxxxxxH
-  /*_p04.NYDO*/ DFF8pB NYDO_DMA_A11p;      // xxxxxxxH
-  /*_p04.NYGY*/ DFF8pB NYGY_DMA_A12p;      // xxxxxxxH
-  /*_p04.PULA*/ DFF8pB PULA_DMA_A13p;      // xxxxxxxH
-  /*_p04.POKU*/ DFF8pB POKU_DMA_A14p;      // xxxxxxxH
-  /*_p04.MARU*/ DFF8pB MARU_DMA_A15p;      // xxxxxxxH
+  /*#p04.NAFA*/ DFF8nB NAFA_DMA_A08p;      // xxxxxxxH
+  /*_p04.PYNE*/ DFF8nB PYNE_DMA_A09p;      // xxxxxxxH
+  /*_p04.PARA*/ DFF8nB PARA_DMA_A10p;      // xxxxxxxH
+  /*_p04.NYDO*/ DFF8nB NYDO_DMA_A11p;      // xxxxxxxH
+  /*_p04.NYGY*/ DFF8nB NYGY_DMA_A12p;      // xxxxxxxH
+  /*_p04.PULA*/ DFF8nB PULA_DMA_A13p;      // xxxxxxxH
+  /*_p04.POKU*/ DFF8nB POKU_DMA_A14p;      // xxxxxxxH
+  /*_p04.MARU*/ DFF8nB MARU_DMA_A15p;      // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
 
 struct DmaControl {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p04.LYXE*/ NorLatch LYXE_DMA_LATCHp; // xxxxExxx

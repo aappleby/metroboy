@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpuSignals {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   wire AJAS_CPU_RDn_old      () const;
@@ -87,7 +86,6 @@ struct GateBoyCpuSignals {
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpuABus {
-  void reset_to_bootrom();
   void reset_to_cart();
   void set_addr(uint16_t bus_addr_new);
 
@@ -311,7 +309,6 @@ struct GateBoyCpuABus {
 //---------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyCpuDBus {
-  void reset_to_bootrom();
   void reset_to_cart();
   void set_data(bool OEp, uint8_t data);
 

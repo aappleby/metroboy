@@ -33,7 +33,6 @@ struct GateBoyState {
   //----------------------------------------
 
   void reset_to_poweron();
-  void reset_to_bootrom();
   void reset_to_cart();
 
   int64_t hash_regression();

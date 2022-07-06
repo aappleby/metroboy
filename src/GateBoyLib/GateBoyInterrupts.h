@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct RegIF {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p02.LOPE*/ DFF22 LOPE_FF0F_D0p;
@@ -18,7 +17,6 @@ struct RegIF {
 // This is technically in the CPU, but we're going to implement it here for now.
 
 struct RegIE {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   DFF IE_D0;
@@ -31,7 +29,6 @@ struct RegIE {
 //-----------------------------------------------------------------------------
 
 struct InterruptLatch {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p02.MATY*/ TpLatch MATY_FF0F_L0p;
@@ -44,7 +41,6 @@ struct InterruptLatch {
 //-----------------------------------------------------------------------------
 
 struct CpuInt {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_SIG_CPU_INT_VBLANK*/ SigOut SIG_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
@@ -57,7 +53,6 @@ struct CpuInt {
 //-----------------------------------------------------------------------------
 
 struct CpuAck {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_SIG_CPU_ACK_VBLANK*/ SigIn  SIG_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
@@ -70,7 +65,6 @@ struct CpuAck {
 //-----------------------------------------------------------------------------
 
 struct InterruptControl {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?

@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p28.FETO*/ Gate FETO_SCAN_DONEp;
@@ -20,7 +19,6 @@ struct SpriteScanner {
 // Scan counter tracks which of the 40 sprites in OAM we're scanning.
 
 struct ScanCounter {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p28.YFEL*/ DFF17 YFEL_SCAN0_odd;
@@ -35,7 +33,6 @@ struct ScanCounter {
 // Sprite index selects which store to write
 
 struct SpriteIndex {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p30.XADU*/ DFF13 XADU_SPRITE_IDX0p_odd;
@@ -50,7 +47,6 @@ struct SpriteIndex {
 // Sprite counter tracks how many sprites have been selected for this line.
 
 struct SpriteCounter {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p29.BESE*/ DFF17 BESE_SPRITE_COUNT0_odd; // AxxxExxx

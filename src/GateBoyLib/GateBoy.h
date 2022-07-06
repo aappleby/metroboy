@@ -32,17 +32,6 @@ struct GateBoyCpu {
     memset(this, 0, sizeof(*this));
   }
 
-  void reset_to_bootrom() {
-    core.reset_to_bootrom();
-    core.reg.bus_req_new.addr = 0x0000;
-    core.reg.bus_req_new.data = 0;
-    core.reg.bus_req_new.read = 1;
-    core.reg.bus_req_new.write = 0;
-    core.reg.cpu_data_latch = 49;
-    core.reg.intf_latch = 0;
-    core.reg.halt_latch = 0;
-  }
-
   void reset_to_cart() {
     core.reset_to_cart();
     core.reg.bus_req_new.addr = 0xFF50;
@@ -63,19 +52,6 @@ struct GateBoyCpu {
 #pragma pack(push, 1)
 struct GateBoyMem {
   void reset_to_poweron() {
-    memset(this, 0, sizeof(*this));
-
-    // The first thing the bootrom does is clear VRAM, so put some recognizable
-    // pattern in vram so we can see it running.
-    for (int i = 0; i < 8192; i++) {
-      uint32_t h = i * 0x1234567ull;
-      vid_ram[i] = uint8_t(h ^ (h >> 4));
-    }
-
-    memset(framebuffer, 4, sizeof(framebuffer));
-  }
-
-  void reset_to_bootrom() {
     memset(this, 0, sizeof(*this));
 
     // The first thing the bootrom does is clear VRAM, so put some recognizable
@@ -114,19 +90,6 @@ struct GateBoyMem {
 struct GateBoySys {
   void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
-  }
-
-  void reset_to_bootrom() {
-    rst = false;
-    t1 = false;
-    t2 = false;
-    clk_en = true;
-    clk_good = true;
-    clk_req = true;
-    cpu_en = true;
-    fastboot = true;
-    buttons = 0;
-    gb_phase_total = 79;
   }
 
   void reset_to_cart() {
@@ -193,7 +156,7 @@ struct GateBoy  : public IGateBoy {
     read_ok &= bs.read(pins);
     read_ok &= bs.read(probes);
 
-    probes.reset_to_bootrom();
+    probes.reset();
 
     return read_ok ? GBResult::ok() : Error::CORRUPT;
   }

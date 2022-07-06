@@ -178,25 +178,6 @@ void GateBoy::tock_timer_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void RegDIV::reset_to_bootrom() {
-  UKUP_DIV00p.state = 0b00011000;
-  UFOR_DIV01p.state = 0b00011011;
-  UNER_DIV02p.state = 0b00011000;
-  TERO_DIV03p.state = 0b00011010;
-  UNYK_DIV04p.state = 0b00011010;
-  TAMA_DIV05p.state = 0b00011010;
-  UGOT_DIV06p.state = 0b00011010;
-  TULU_DIV07p.state = 0b00011010;
-  TUGO_DIV08p.state = 0b00011010;
-  TOFE_DIV09p.state = 0b00011010;
-  TERU_DIV10p.state = 0b00011010;
-  SOLA_DIV11p.state = 0b00011010;
-  SUBU_DIV12p.state = 0b00011010;
-  TEKA_DIV13p.state = 0b00011010;
-  UKET_DIV14p.state = 0b00011010;
-  UPOF_DIV15p.state = 0b00011011;
-}
-
 void RegDIV::reset_to_cart() {
   UKUP_DIV00p.state = 0b00011000;
   UFOR_DIV01p.state = 0b00011011;
@@ -240,10 +221,6 @@ void RegDIV::force_set_div(uint16_t div) {
 
 //-----------------------------------------------------------------------------
 
-void RegTIMA::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void RegTIMA::reset_to_cart() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
@@ -264,23 +241,11 @@ void RegTIMA::force_set_tima(uint8_t tima) {
 
 //-----------------------------------------------------------------------------
 
-void RegTMA::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
-}
-
 void RegTMA::reset_to_cart() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
-
-void RegTAC::reset_to_poweron() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
-void RegTAC::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
-}
 
 void RegTAC::reset_to_cart() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));

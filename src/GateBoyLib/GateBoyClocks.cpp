@@ -3,30 +3,6 @@
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/Gates.h"
 
-void GateBoyClock::reset_to_bootrom() {
-  ANOS_DEGLITCH.state = 0b00011001;
-  AVET_DEGLITCH.state = 0b00011000;
-  
-  AFUR_ABCDxxxx.set_state(0b00011001);
-  ALEF_xBCDExxx.set_state(0b00011011);
-  APUK_xxCDEFxx.set_state(0b00011001);
-  ADYK_xxxDEFGx.set_state(0b00011011);
-
-  WUVU_ABxxEFxx.state = 0b00011000;
-  VENA_xxCDEFxx.state = 0b00011010;
-  WOSU_AxxDExxH.state = 0b00011010;
-
-  SIG_CPU_CLKREQ.state        = 0b00011000;
-  SIG_CPU_BOWA_Axxxxxxx.state = 0b00011001;
-  SIG_CPU_BEDO_xBCDEFGH.state = 0b00011000;
-  SIG_CPU_BEKO_ABCDxxxx.state = 0b00011001;
-  SIG_CPU_BUDE_xxxxEFGH.state = 0b00011000;
-  SIG_CPU_BOLO_ABCDEFxx.state = 0b00011001;
-  SIG_CPU_BUKE_AxxxxxGH.state = 0b00011000;
-  SIG_CPU_BOMA_xBCDEFGH.state = 0b00011001;
-  SIG_CPU_BOGA_Axxxxxxx.state = 0b00011000;
-}
-
 void GateBoyClock::reset_to_cart() {
   ANOS_DEGLITCH.state = 0b00011001;
   AVET_DEGLITCH.state = 0b00011000;

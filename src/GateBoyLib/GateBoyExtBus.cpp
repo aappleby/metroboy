@@ -507,29 +507,17 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
 
 //-----------------------------------------------------------------------------
 
-void ExtDataLatch::reset_to_bootrom() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
-
 void ExtDataLatch::reset_to_cart() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
 }
 
 //-----------------------------------------------------------------------------
 
-void ExtAddrLatch::reset_to_bootrom() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x0000);
-}
-
 void ExtAddrLatch::reset_to_cart() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x004D);
 }
 
 //-----------------------------------------------------------------------------
-
-void GateBoyMBC::reset_to_bootrom() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
-}
 
 void GateBoyMBC::reset_to_cart() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);

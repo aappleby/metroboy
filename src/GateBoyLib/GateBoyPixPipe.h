@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct WinControl {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p27.NUKO*/ Gate NUKO_WX_MATCHp_odd; // old used
@@ -25,7 +24,6 @@ struct WinControl {
 //-----------------------------------------------------------------------------
 
 struct FineCount {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p27.RYKU*/ DFF17 RYKU_FINE_CNT0_odd;                // ABCDEFGH Ticks on even clocks, reset on odd clocks.
@@ -34,7 +32,6 @@ struct FineCount {
 };
 
 struct FineScroll {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_evn;        // xxxxxFxH
@@ -45,7 +42,6 @@ struct FineScroll {
 //-----------------------------------------------------------------------------
 
 struct MaskPipe {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p26.VEZO*/ DFF22 VEZO_MASK_PIPE_0; // AxCxExGx
@@ -61,7 +57,6 @@ struct MaskPipe {
 //-----------------------------------------------------------------------------
 
 struct BgwPipeA {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p32.MYDE*/ DFF22 MYDE_BGW_PIPE_A0; // AxCxExGx
@@ -77,7 +72,6 @@ struct BgwPipeA {
 //-----------------------------------------------------------------------------
 
 struct BgwPipeB {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p32.TOMY*/ DFF22 TOMY_BGW_PIPE_B0; // AxCxExGx
@@ -93,7 +87,6 @@ struct BgwPipeB {
 //-----------------------------------------------------------------------------
 
 struct SprPipeA {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p33.NURO*/ DFF22 NURO_SPR_PIPE_A0; // AxCxExGx
@@ -109,8 +102,6 @@ struct SprPipeA {
 //-----------------------------------------------------------------------------
 
 struct SprPipeB {
-  void reset_to_poweron();
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p33.NYLU*/ DFF22 NYLU_SPR_PIPE_B0; // AxCxExGx
@@ -126,7 +117,6 @@ struct SprPipeB {
 //-----------------------------------------------------------------------------
 
 struct PalPipe {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p34.RUGO*/ DFF22 RUGO_PAL_PIPE_D0;

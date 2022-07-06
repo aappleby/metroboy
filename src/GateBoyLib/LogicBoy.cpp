@@ -37,6 +37,9 @@ GBResult LogicBoy::reset_to_poweron(const blob& cart_blob) {
 GBResult LogicBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
   (void)slow;
 
+  // FIXME we need to apply the power on reset stuff here
+
+  /*
   lb_state.reset_to_bootrom();
   cpu.reset_to_bootrom();
   mem.reset_to_bootrom();
@@ -46,6 +49,7 @@ GBResult LogicBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
   pins = bit_purge(pins);
 
   probes.reset_to_bootrom();
+  */
   lb_bit_check();
   return GBResult::ok();
 }
@@ -61,7 +65,7 @@ GBResult LogicBoy::reset_to_cart(const blob& cart_blob) {
   pins.reset_to_cart();
   pins = bit_purge(pins);
 
-  probes.reset_to_cart();
+  probes.reset();
   lb_bit_check();
   return GBResult::ok();
 }

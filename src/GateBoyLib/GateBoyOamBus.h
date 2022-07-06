@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------------
 
 struct OamControl {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p04.MAKA*/ DFF17 MAKA_LATCH_EXTp;       // AxxxExxx
@@ -22,7 +21,6 @@ struct OamControl {
 //-----------------------------------------------------------------------------
 
 struct OamABus {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_BUS_OAM_A00n*/ Bus BUS_OAM_A00n;  // ABCDEFGH
@@ -38,7 +36,6 @@ struct OamABus {
 //-----------------------------------------------------------------------------
 
 struct OamDBusA {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_BUS_OAM_DA00n*/ Bus BUS_OAM_DA00n;
@@ -54,7 +51,6 @@ struct OamDBusA {
 //-----------------------------------------------------------------------------
 
 struct OamDBusB {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_BUS_OAM_DB00n*/ Bus BUS_OAM_DB00n;

@@ -276,26 +276,6 @@ void GateBoy::set_lcd_pins_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_
 
 //-----------------------------------------------------------------------------
 
-void LCDControl::reset_to_bootrom() {
-  CATU_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN;
-  ANEL_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  POPU_VBLANKp_odd.state    = BIT_OLD | BIT_DRIVEN;
-  MYTA_FRAME_ENDp_odd.state = BIT_OLD | BIT_DRIVEN;
-  RUTU_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  NYPE_LINE_ENDp_odd.state  = BIT_OLD | BIT_DRIVEN;
-  SYGU_LINE_STROBE.state    = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  MEDA_VSYNC_OUTn.state     = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  LUCA_LINE_EVENp.state     = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  NAPO_FRAME_EVENp.state    = BIT_OLD | BIT_DRIVEN;
-  RUJU.state                = BIT_OLD | BIT_DRIVEN | 1;
-  POFY.state                = BIT_OLD | BIT_DRIVEN | 0;
-  POME_X8_LATCH.state       = BIT_OLD | BIT_DRIVEN | 1;
-  PAHO_X8_SYNC.state        = BIT_OLD | BIT_DRIVEN;
-  WUSA_LCD_CLOCK_GATE.state = BIT_OLD | BIT_DRIVEN;
-  REMY_LD0n.state           = BIT_OLD | BIT_DRIVEN | 1;
-  RAVO_LD1n.state           = BIT_OLD | BIT_DRIVEN | 1;
-}
-
 void LCDControl::reset_to_cart() {
   CATU_LINE_ENDp_odd.state  = 0b00011000;
   ANEL_LINE_ENDp_odd.state  = 0b00011010;

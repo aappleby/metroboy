@@ -20,7 +20,6 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteDeltaY {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p29.ERUC*/ Adder ERUC_YDIFF0;
@@ -37,7 +36,6 @@ struct SpriteDeltaY {
 // Pixel counter
 
 struct PixCount {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p21.XEHO*/ DFF17 XEHO_PX0p_odd; // AxCxExGx
@@ -53,7 +51,6 @@ struct PixCount {
 //-----------------------------------------------------------------------------
 
 struct BGScrollX {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   Adder ATAD_TILE_X0;
@@ -69,7 +66,6 @@ struct BGScrollX {
 //-----------------------------------------------------------------------------
 
 struct BGScrollY {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   Adder FAFO_TILE_Y0;
@@ -85,7 +81,6 @@ struct BGScrollY {
 //-----------------------------------------------------------------------------
 
 struct SpritePix {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   Gate PUTE_FLIP0p;
@@ -102,7 +97,6 @@ struct SpritePix {
 // FF40 LCDC
 
 struct RegLCDC {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p23.VYXE*/ DFF9B VYXE_LCDC_BGENp;   // xxxxxxxH
@@ -119,7 +113,6 @@ struct RegLCDC {
 // FF41 - STAT
 
 struct RegStat {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p21.ROXE*/ DFF9B ROXE_STAT_HBI_ENp; // xxxxxxxH
@@ -132,7 +125,6 @@ struct RegStat {
 // FF42 SCY
 
 struct RegSCY {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p23.GAVE*/ DFF9B GAVE_SCY0p;          // xxxxxxxH
@@ -149,7 +141,6 @@ struct RegSCY {
 // FF43 SCX
 
 struct RegSCX {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p23.DATY*/ DFF9B DATY_SCX0p;          // xxxxxxxH
@@ -166,7 +157,6 @@ struct RegSCX {
 // FF44 LY
 
 struct RegLY {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p21.MUWY*/ DFF17 MUWY_LY0p_odd;  // xxCxxxGx Ticks on G, reset on C
@@ -183,7 +173,6 @@ struct RegLY {
 // LCD x counter isn't exposed to CPU
 
 struct RegLX {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p21.SAXO*/ DFF17 SAXO_LX0p_odd; // xxCxxxGx Ticks on C, reset on G
@@ -199,7 +188,6 @@ struct RegLX {
 // FF45 LYC
 
 struct RegLYC {
-  void reset_to_bootrom();
   void reset_to_cart();
   uint8_t get() const;
 
@@ -217,7 +205,6 @@ struct RegLYC {
 // FF47 - BGP
 
 struct RegBGP {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p36.PAVO*/ DFF8pB PAVO_BGP_D0p; // xxxxxxxH
@@ -234,7 +221,6 @@ struct RegBGP {
 // FF48 - OBP0
 
 struct RegOBP0 {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p36.XUFU*/ DFF8pB XUFU_OBP0_D0p; // xxxxxxxH
@@ -251,7 +237,6 @@ struct RegOBP0 {
 // FF49 - OBP1
 
 struct RegOBP1 {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p36.MOXY*/ DFF8pB MOXY_OBP1_D0p; // xxxxxxxH
@@ -268,7 +253,6 @@ struct RegOBP1 {
 // FF4A - WY
 
 struct RegWY {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   void set(uint8_t wy);
@@ -288,7 +272,6 @@ struct RegWY {
 // FF4B - WX
 
 struct RegWX {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   void set(uint8_t wx);
@@ -307,7 +290,6 @@ struct RegWX {
 //-----------------------------------------------------------------------------
 
 struct OamLatchA {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n; // xBxDxFxx // Proooobably all odd clocks?
@@ -323,7 +305,6 @@ struct OamLatchA {
 //-----------------------------------------------------------------------------
 
 struct OamLatchB {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n; // xBxxxFxx // Proooobably all odd clocks?
@@ -340,7 +321,6 @@ struct OamLatchB {
 // oam byte 0, byte 2
 
 struct OamTempA {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p29.XUSO*/ DFF8nB XUSO_OAM_DA0n; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
@@ -357,7 +337,6 @@ struct OamTempA {
 // oam byte 1, byte 3
 
 struct OamTempB {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p31.YLOR*/ DFF8nB YLOR_OAM_DB0n; // AxxxExxx - sprite x bit 0,
@@ -373,7 +352,6 @@ struct OamTempB {
 //-----------------------------------------------------------------------------
 
 struct TileTempA {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p32.LEGU*/ DFF8pB LEGU_TILE_DA0p;   // xBxDxFxH
@@ -389,7 +367,6 @@ struct TileTempA {
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p32.RAWU*/ DFF11 RAWU_TILE_DB0p;   // xBxDxFxH
@@ -405,7 +382,6 @@ struct TileTempB {
 //-----------------------------------------------------------------------------
 
 struct SpritePixA {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p33.REWO*/ DFF8nB REWO_SPRITE_DA0p; // xBxDxFxH
@@ -421,7 +397,6 @@ struct SpritePixA {
 //-----------------------------------------------------------------------------
 
 struct SpritePixB {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p33.PEFO*/ DFF8nB PEFO_SPRITE_DB0p; // xBxDxFxH
@@ -437,7 +412,6 @@ struct SpritePixB {
 //-----------------------------------------------------------------------------
 
 struct WinMapX {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p27.WYKA*/ DFF17 WYKA_WIN_MAP_X0;   // AxCxExGx
@@ -450,7 +424,6 @@ struct WinMapX {
 //-----------------------------------------------------------------------------
 
 struct WinTileY {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
@@ -461,7 +434,6 @@ struct WinTileY {
 //-----------------------------------------------------------------------------
 
 struct WinMapY {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p27.TUFU*/ DFF17 TUFU_WIN_MAP_Y0;   // AxCxExGh probably, but not enough data.

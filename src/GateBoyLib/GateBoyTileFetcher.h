@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct TileFetchCounter {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p27.LAXU*/ DFF17 LAXU_BFETCH_S0p_odd;         // AxCxExGx
@@ -15,8 +14,6 @@ struct TileFetchCounter {
 //-----------------------------------------------------------------------------
 
 struct TileFetchControl {
-  void reset_to_poweron();
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p27.LYRY*/ Gate LYRY_BFETCH_DONEp_odd;         // old used

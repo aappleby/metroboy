@@ -5,7 +5,6 @@
 //==============================================================================
 
 struct SpuChannel1 {
-  void reset_to_bootrom() {}
   void reset_to_cart() {}
 
   /*#p13.HOCA*/ wire HOCA_CH1_AMP_ENn_new() const {

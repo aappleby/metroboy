@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct JoyInt {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p02.BATU*/ DFF17 BATU_JP_GLITCH0;
@@ -16,7 +15,6 @@ struct JoyInt {
 //-----------------------------------------------------------------------------
 
 struct RegJoy {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   // Ignoring debug stuff for now
@@ -33,7 +31,6 @@ struct RegJoy {
 //-----------------------------------------------------------------------------
 
 struct JoyLatch {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p05.KEVU*/ TpLatch KEVU_JOYP_L0n;

@@ -801,15 +801,6 @@ void GateBoy::sprite_scan_to_bus_gates(SpriteDeltaY sprite_delta_y, NorLatch XYM
 
 //-----------------------------------------------------------------------------
 
-void SpriteIBus::reset_to_bootrom() {
-  BUS_SPR_I0.state = BIT_OLD | BIT_DRIVEN;
-  BUS_SPR_I1.state = BIT_OLD | BIT_DRIVEN;
-  BUS_SPR_I2.state = BIT_OLD | BIT_DRIVEN;
-  BUS_SPR_I3.state = BIT_OLD | BIT_DRIVEN;
-  BUS_SPR_I4.state = BIT_OLD | BIT_DRIVEN;
-  BUS_SPR_I5.state = BIT_OLD | BIT_DRIVEN;
-}
-
 void SpriteIBus::reset_to_cart() {
   BUS_SPR_I0.state = BIT_OLD | BIT_DRIVEN | 0;
   BUS_SPR_I1.state = BIT_OLD | BIT_DRIVEN | 0;
@@ -821,13 +812,6 @@ void SpriteIBus::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void SpriteLBus::reset_to_bootrom() {
-  BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 0;
-  BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_SPR_L2.state = BIT_OLD | BIT_DRIVEN | 1;
-  BUS_SPR_L3.state = BIT_OLD | BIT_DRIVEN | 1;
-}
-
 void SpriteLBus::reset_to_cart() {
   BUS_SPR_L0.state = BIT_OLD | BIT_DRIVEN | 1;
   BUS_SPR_L1.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -837,127 +821,94 @@ void SpriteLBus::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void SpriteMatchFlags::reset_to_bootrom() {}
 void SpriteMatchFlags::reset_to_cart() {}
 
 //-----------------------------------------------------------------------------
 
-void SpriteResetFlags::reset_to_bootrom() {}
 void SpriteResetFlags::reset_to_cart() {}
 
 //-----------------------------------------------------------------------------
 
-void SpriteStoreFlags::reset_to_bootrom() {}
 void SpriteStoreFlags::reset_to_cart() {}
 
 //-----------------------------------------------------------------------------
 
-void StoreI0::reset_to_bootrom() {}
 void StoreI0::reset_to_cart() {}
 
-void StoreL0::reset_to_bootrom() {}
 void StoreL0::reset_to_cart() {}
 
-void StoreX0::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX0::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void StoreI1::reset_to_bootrom() {}
 void StoreI1::reset_to_cart() {}
 
-void StoreL1::reset_to_bootrom() {}
 void StoreL1::reset_to_cart() {}
 
-void StoreX1::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX1::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void StoreI2::reset_to_bootrom() {}
 void StoreI2::reset_to_cart() {}
 
-void StoreL2::reset_to_bootrom() {}
 void StoreL2::reset_to_cart() {}
 
-void StoreX2::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX2::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void StoreI3::reset_to_bootrom() {}
 void StoreI3::reset_to_cart() {}
 
-void StoreL3::reset_to_bootrom() {}
 void StoreL3::reset_to_cart() {}
 
-void StoreX3::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX3::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void StoreI4::reset_to_bootrom() {}
 void StoreI4::reset_to_cart() {}
 
-void StoreL4::reset_to_bootrom() {}
 void StoreL4::reset_to_cart() {}
 
-void StoreX4::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX4::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void StoreI5::reset_to_bootrom() {}
 void StoreI5::reset_to_cart() {}
 
-void StoreL5::reset_to_bootrom() {}
 void StoreL5::reset_to_cart() {}
 
-void StoreX5::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX5::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void StoreI6::reset_to_bootrom() {}
 void StoreI6::reset_to_cart() {}
 
-void StoreL6::reset_to_bootrom() {}
 void StoreL6::reset_to_cart() {}
 
-void StoreX6::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX6::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void StoreI7::reset_to_bootrom() {}
 void StoreI7::reset_to_cart() {}
 
-void StoreL7::reset_to_bootrom() {}
 void StoreL7::reset_to_cart() {}
 
-void StoreX7::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX7::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void StoreI8::reset_to_bootrom() {}
 void StoreI8::reset_to_cart() {}
 
-void StoreL8::reset_to_bootrom() {}
 void StoreL8::reset_to_cart() {}
 
-void StoreX8::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX8::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void StoreI9::reset_to_bootrom() {}
 void StoreI9::reset_to_cart() {}
 
-void StoreL9::reset_to_bootrom() {}
 void StoreL9::reset_to_cart() {}
 
-void StoreX9::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 void StoreX9::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------

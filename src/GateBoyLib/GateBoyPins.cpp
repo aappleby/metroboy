@@ -4,27 +4,22 @@
 
 //-----------------------------------------------------------------------------
 
-void PinsControl::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x02); }
 void PinsControl::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x02); }
 
 //-----------------------------------------------------------------------------
 
-void PinsABusLo::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0xFF); }
 void PinsABusLo::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0xB2); }
 
 //-----------------------------------------------------------------------------
 
-void PinsABusHi::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x7F); }
 void PinsABusHi::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x7F); }
 
 //-----------------------------------------------------------------------------
 
-void PinsDBus::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_PULLED, 0x00); }
 void PinsDBus::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_PULLED, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void PinsJoypad::reset_to_bootrom() { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x30); }
 void PinsJoypad::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x30); }
 
 //-----------------------------------------------------------------------------
@@ -37,12 +32,6 @@ void PinsSerial::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void PinsVramControl::reset_to_bootrom() {
-  PIN_43_VRAM_CSn.state = BIT_OLD | BIT_DRIVEN | 0;
-  PIN_45_VRAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_49_VRAM_WRn.state = BIT_OLD | BIT_DRIVEN | 0;
-}
-
 void PinsVramControl::reset_to_cart() {
   PIN_43_VRAM_CSn.state = BIT_OLD | BIT_DRIVEN | 0;
   PIN_45_VRAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -50,10 +39,6 @@ void PinsVramControl::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void PinsVramABus::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
-}
 
 void PinsVramABus::reset_to_cart() {
   PIN_34_VRAM_A00.state = 0b00011001;
@@ -73,25 +58,11 @@ void PinsVramABus::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void PinsVramDBus::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
-}
-
 void PinsVramDBus::reset_to_cart() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
-
-void PinsSys::reset_to_bootrom() {
-  PIN_71_RST.state         = 0b00011000;
-  PIN_73_CLK_DRIVE.state   = 0b00011000;
-  PIN_74_CLK.CLK.state     = 0b00011000;
-  PIN_74_CLK.CLKGOOD.state = 0b00011001;
-  PIN_75_CLK_OUT.state     = 0b00011000;
-  PIN_76_T2.state          = 0b00011000;
-  PIN_77_T1.state          = 0b00011000;
-}
 
 void PinsSys::reset_to_cart() {
   PIN_71_RST.state         = 0b00011000;
@@ -132,17 +103,6 @@ void PinsSys::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void PinsLCD::reset_to_bootrom() {
-  PIN_50_LCD_DATA1.state    = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_51_LCD_DATA0.state    = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_54_LCD_HSYNC.state    = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_56_LCD_FLIPS.state    = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_52_LCD_CNTRL.state    = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_55_LCD_LATCH.state    = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_53_LCD_CLOCK.state    = BIT_OLD | BIT_DRIVEN | 1;
-  PIN_57_LCD_VSYNC.state    = BIT_OLD | BIT_DRIVEN | 1;
-}
-
 void PinsLCD::reset_to_cart() {
   PIN_50_LCD_DATA1.state    = 0b00011000;
   PIN_51_LCD_DATA0.state    = 0b00011000;
@@ -158,19 +118,6 @@ void PinsLCD::reset_to_cart() {
 
 void GateBoyPins::reset_to_poweron() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-  
-void GateBoyPins::reset_to_bootrom() {
-  abus_lo.reset_to_bootrom();
-  abus_hi.reset_to_bootrom();
-  dbus.reset_to_bootrom();
-  vram_dbus.reset_to_bootrom();
-  vram_abus.reset_to_bootrom();
-  vram_ctrl.reset_to_bootrom();
-  lcd.reset_to_bootrom();
-  joy.reset_to_bootrom();
-  sys.reset_to_bootrom();
-  ctrl.reset_to_bootrom();
 }
   
 void GateBoyPins::reset_to_cart()    {

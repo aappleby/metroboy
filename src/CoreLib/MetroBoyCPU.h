@@ -84,8 +84,6 @@ public:
 
   static FieldInfo fields[];
 
-
-  void reset_to_bootrom();
   void reset_to_cart();
   void dump(Dumper& d) const;
 

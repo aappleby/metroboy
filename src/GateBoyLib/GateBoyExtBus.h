@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct ExtDataLatch {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*#p08.SOMA*/ TpLatch SOMA_EXT_DATA_LATCH_D0n; // AxCxExxx
@@ -20,7 +19,6 @@ struct ExtDataLatch {
 //-----------------------------------------------------------------------------
 
 struct ExtAddrLatch {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx
@@ -43,7 +41,6 @@ struct ExtAddrLatch {
 //-----------------------------------------------------------------------------
 
 struct GateBoyMBC {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   Gate MBC1_RAM_EN;

@@ -5,7 +5,6 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyWaveBus {
-  void reset_to_bootrom();
   void reset_to_cart();
 
 #if 0

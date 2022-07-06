@@ -13,7 +13,13 @@
 void LogicBoyState::reset_to_bootrom() {
   memset(this, 0, sizeof(*this));
   GateBoyState gb_state;
+  
+  // FIXME need to handle power on reset here
+
+  /*
   gb_state.reset_to_bootrom();
+  */
+  
   from_gb_state(gb_state, 0);
 
   phase_lcd = 802;

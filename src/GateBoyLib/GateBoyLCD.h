@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct LCDControl {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   // H deltas are due to reg writes

@@ -3,7 +3,6 @@
 //==============================================================================
 
 struct SpuChannel2 {
-  void reset_to_bootrom() {}
   void reset_to_cart() {}
 
   /*#p15.ETUK*/ wire ETUK_SAMPLE_CLKn_old() const { return not1(GYKO_SAMPLE_CLKp.qp_old()); }

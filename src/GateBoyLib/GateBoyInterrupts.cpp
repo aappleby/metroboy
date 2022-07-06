@@ -165,14 +165,6 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
 
 //-----------------------------------------------------------------------------
 
-void RegIF::reset_to_bootrom() {
-  LOPE_FF0F_D0p.state = 0b00011000;
-  LALU_FF0F_D1p.state = 0b00011000;
-  NYBO_FF0F_D2p.state = 0b00011000;
-  UBUL_FF0F_D3p.state = 0b00011000;
-  ULAK_FF0F_D4p.state = 0b00011010;
-}
-
 void RegIF::reset_to_cart() {
   LOPE_FF0F_D0p.state = 0b00011011;
   LALU_FF0F_D1p.state = 0b00011000;
@@ -184,10 +176,6 @@ void RegIF::reset_to_cart() {
 //-----------------------------------------------------------------------------
 // This is technically in the CPU, but we're going to implement it here for now.
 
-void RegIE::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
-}
-
 void RegIE::reset_to_cart() {
   IE_D0.state = 0b00011010;
   IE_D1.state = 0b00011010;
@@ -197,10 +185,6 @@ void RegIE::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void InterruptLatch::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
 
 void InterruptLatch::reset_to_cart() {
   MATY_FF0F_L0p.state = 0b00011000;
@@ -212,10 +196,6 @@ void InterruptLatch::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void CpuInt::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void CpuInt::reset_to_cart() {
   SIG_CPU_INT_VBLANK.state = 0b00011001;
   SIG_CPU_INT_STAT.state   = 0b00011000;
@@ -226,10 +206,6 @@ void CpuInt::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void CpuAck::reset_to_bootrom() {
-  memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
-}
-
 void CpuAck::reset_to_cart() {
   SIG_CPU_ACK_VBLANK.state = 0b00011000;
   SIG_CPU_ACK_STAT.state   = 0b00011000;
@@ -239,15 +215,6 @@ void CpuAck::reset_to_cart() {
 }
 
 //-----------------------------------------------------------------------------
-
-void InterruptControl::reset_to_bootrom() {
-  AWOB_WAKE_CPU.state        = 0b00011001;
-  SIG_CPU_WAKE.state         = 0b00011001;
-  NYDU_TIMA7p_DELAY.state    = 0b00011000;
-  MOBA_TIMER_OVERFLOWp.state = 0b00011000;
-  RUPO_LYC_MATCHn.state      = 0b00011001;
-  ROPO_LY_MATCH_SYNCp.state  = 0b00011000;
-}
 
 void InterruptControl::reset_to_cart() {
   AWOB_WAKE_CPU.state        = 0b00011001;

@@ -11,10 +11,10 @@
 thread_local Probes* thread_probes = nullptr;
 
 Probes::Probes() {
-  reset_to_poweron();
+  reset();
 }
 
-void Probes::reset_to_poweron() {
+void Probes::reset() {
   phase_cursor = 0;
   for (int i = 0; i < channel_count; i++) {
     memset(names[i], 0, 32);
@@ -23,14 +23,6 @@ void Probes::reset_to_poweron() {
 
   memset(phase_samples, '_', channel_count * sample_count);
   memset(phase_tags, '_', sample_count);
-}
-
-void Probes::reset_to_bootrom() {
-  reset_to_poweron();
-}
-
-void Probes::reset_to_cart() {
-  reset_to_poweron();
 }
 
 void Probes::probe_wire(int index, const char* signal_name, char s) {

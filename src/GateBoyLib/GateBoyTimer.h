@@ -4,7 +4,6 @@
 //-----------------------------------------------------------------------------
 
 struct RegDIV {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   void force_set_div(uint16_t div);
@@ -30,7 +29,6 @@ struct RegDIV {
 //-----------------------------------------------------------------------------
 
 struct RegTIMA {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   void force_set_tima(uint8_t tima);
@@ -48,7 +46,6 @@ struct RegTIMA {
 //-----------------------------------------------------------------------------
 
 struct RegTMA {
-  void reset_to_bootrom();
   void reset_to_cart();
 
   /*_p03.SABU*/ DFF17 SABU_TMA0p; // xxxxxxxH

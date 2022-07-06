@@ -401,19 +401,15 @@ struct DFF17 : public BitBase {
 
 struct DFF20 : public BitBase {
 
-  void dff20_any(wire CLKn, wire LOADp, wire newD) {
+  void dff20_any(wire CLKn, wire LOADp, wire Dp) {
     check_invalid();
 
-    if (bit(state, 1) && !bit0(CLKn)) {
-      state ^= 1;
-    }
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKn << 1) & BIT_CLOCK;
 
-    if (bit0(LOADp)) {
-      state &= ~1;
-      state |= bit0(newD);
-    }
+    wire newD = bit0(LOADp) ? Dp : (clk_old & ~clk_new) ? ~state : state;
 
-    state = bit0(state) | (bit0(CLKn) << 1) | BIT_NEW | BIT_DRIVEN;
+    state = bit0(newD) | (bit0(CLKn) << 1) | BIT_NEW | BIT_DRIVEN;
   }
 
   void dff20(wire CLKn, wire LOADp, wire newD) {

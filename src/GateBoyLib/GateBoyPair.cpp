@@ -49,9 +49,9 @@ GBResult GateBoyPair::reset_to_poweron(const blob& cart_blob) {
   return check_results(r1, r2);
 }
 
-GBResult GateBoyPair::reset_to_bootrom(const blob& cart_blob, bool slow) {
-  GBResult r1 = gb->reset_to_bootrom(cart_blob, slow);
-  GBResult r2 = lb->reset_to_bootrom(cart_blob, slow);
+GBResult GateBoyPair::reset_to_bootrom(const blob& cart_blob) {
+  GBResult r1 = gb->reset_to_bootrom(cart_blob);
+  GBResult r2 = lb->reset_to_bootrom(cart_blob);
   return check_results(r1, r2);
 }
 

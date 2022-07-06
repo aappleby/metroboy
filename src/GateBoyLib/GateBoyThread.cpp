@@ -69,7 +69,7 @@ void GateBoyThread::reset_to_bootrom(bool slow) {
   CHECK_P(sim_paused());
   clear_steps();
   gb.reset_states();
-  gb->reset_to_bootrom(cart_blob, slow);
+  gb->reset_to_bootrom(cart_blob);
 }
 
 void GateBoyThread::reset_to_cart() {

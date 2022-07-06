@@ -34,9 +34,7 @@ GBResult LogicBoy::reset_to_poweron(const blob& cart_blob) {
 
 //-----------------------------------------------------------------------------
 
-GBResult LogicBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
-  (void)slow;
-
+GBResult LogicBoy::reset_to_bootrom(const blob& cart_blob) {
   // FIXME we need to apply the power on reset stuff here
 
   /*

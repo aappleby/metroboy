@@ -247,7 +247,7 @@ TestResults GateBoyTests::test_regression_cart(const char* filename, int cycles,
 
   auto gb = make_unique<GateBoyPair>();
   if (from_bootrom) {
-    gb->reset_to_bootrom(cart_blob, false);
+    gb->reset_to_bootrom(cart_blob);
   }
   else {
     gb->reset_to_cart(cart_blob);
@@ -358,7 +358,7 @@ TestResults GateBoyTests::test_fuzz_reg(const IGateBoy* proto, uint16_t addr, in
     uint32_t r = xorshift32(j);
     LOG_B(".");
     unique_ptr<IGateBoy> gb(proto->clone());
-    gb->reset_to_bootrom(dummy_cart, false);
+    gb->reset_to_bootrom(dummy_cart);
     for (int i = 0; i < 1000; i++) {
       r = xorshift32(r);
       if ((r % 100) >= 90) {
@@ -391,7 +391,7 @@ TestResults GateBoyTests::test_reg(const IGateBoy* proto, const char* tag, uint1
   TEST_INIT("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   unique_ptr<IGateBoy> gb(proto->clone());
-  gb->reset_to_bootrom(dummy_cart, false);
+  gb->reset_to_bootrom(dummy_cart);
 
   for (int i = 0; i < 256; i++) {
     //printf("%d\n", i);
@@ -412,7 +412,7 @@ TestResults GateBoyTests::test_spu(const IGateBoy* proto, const char* tag, uint1
   TEST_INIT("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   unique_ptr<IGateBoy> gb(proto->clone());
-  gb->reset_to_bootrom(dummy_cart, false);
+  gb->reset_to_bootrom(dummy_cart);
 
   gb->dbg_write(dummy_cart, ADDR_NR52, 0x80).unwrap();
 
@@ -526,7 +526,7 @@ TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* /*proto*/, uint8
   LOG_G("run_poweron_reset() done\n");
 
   LOG_B("reset_to_bootrom(fast)\n");
-  gb2->reset_to_bootrom(dummy_cart, false);
+  gb2->reset_to_bootrom(dummy_cart);
   LOG_G("reset_to_bootrom(fast) done\n");
 
   results += diff_gb(gb1, gb2, mask);
@@ -1205,7 +1205,7 @@ TestResults GateBoyTests::test_init(const IGateBoy* proto) {
   TEST_INIT();
 
   unique_ptr<IGateBoy> gb(proto->clone());
-  gb->reset_to_bootrom(dummy_cart, false);
+  gb->reset_to_bootrom(dummy_cart);
 
   LOG_G("Checking reg flags\n");
 
@@ -1261,7 +1261,7 @@ TestResults GateBoyTests::test_first_op(const IGateBoy* proto) {
   TEST_INIT();
 
   unique_ptr<IGateBoy> gb(proto->clone());
-  gb->reset_to_bootrom(dummy_cart, false);
+  gb->reset_to_bootrom(dummy_cart);
   gb->run_to(dummy_cart, 97);
 
   //EXPECT_EQ(gb->get_cpu().core.reg.sp, 0xFFFE);
@@ -1277,7 +1277,7 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
   TEST_INIT();
 
   unique_ptr<IGateBoy> gb(proto->clone());
-  gb->reset_to_bootrom(dummy_cart, false);
+  gb->reset_to_bootrom(dummy_cart);
   //gb->sys.cpu_en = false;
   gb->dbg_write(dummy_cart, ADDR_LCDC, 0x80);
   gb->run_phases(dummy_cart, 8);
@@ -1776,7 +1776,7 @@ TestResults GateBoyTests::test_bootrom(const IGateBoy* proto) {
   TEST_INIT();
 
   unique_ptr<IGateBoy> gb(proto->clone());
-  gb->reset_to_bootrom(dummy_cart, false);
+  gb->reset_to_bootrom(dummy_cart);
 
   for (int i = 0; i < 16; i++) {
     uint8_t data_out = gb->dbg_read(dummy_cart, i).unwrap();
@@ -1799,7 +1799,7 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   LOG("Testing TIMA tick rate and reset_states to TMA...\n");
   {
     unique_ptr<IGateBoy> gb(proto->clone());
-    gb->reset_to_bootrom(dummy_cart, false);
+    gb->reset_to_bootrom(dummy_cart);
     //gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80).unwrap();
@@ -1822,7 +1822,7 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
 
   {
     unique_ptr<IGateBoy> gb(proto->clone());
-    gb->reset_to_bootrom(dummy_cart, false);
+    gb->reset_to_bootrom(dummy_cart);
     //gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80).unwrap();
@@ -1844,7 +1844,7 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   }
   {
     unique_ptr<IGateBoy> gb(proto->clone());
-    gb->reset_to_bootrom(dummy_cart, false);
+    gb->reset_to_bootrom(dummy_cart);
     //gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80);
@@ -1866,7 +1866,7 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   }
   {
     unique_ptr<IGateBoy> gb(proto->clone());
-    gb->reset_to_bootrom(dummy_cart, false);
+    gb->reset_to_bootrom(dummy_cart);
     //gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80);
@@ -1889,7 +1889,7 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
 
   if (run_slow_tests) {
     unique_ptr<IGateBoy> gb(proto->clone());
-    gb->reset_to_bootrom(dummy_cart, false);
+    gb->reset_to_bootrom(dummy_cart);
     //gb->sys.cpu_en = false;
 
     // passes, but slow :/
@@ -1969,7 +1969,7 @@ TestResults GateBoyTests::test_ppu(const IGateBoy* proto) {
     LOG("Checking LY increment rate...\n");
 
     unique_ptr<IGateBoy> gb(proto->clone());
-    gb->reset_to_bootrom(dummy_cart, false);
+    gb->reset_to_bootrom(dummy_cart);
 
     gb->dbg_write(dummy_cart, ADDR_LCDC, 0x80);
 
@@ -2008,7 +2008,7 @@ TestResults GateBoyTests::test_mem(const IGateBoy* proto, const char* tag, uint1
   auto test_cart = dummy_cart;
 
   unique_ptr<IGateBoy> gb(proto->clone());
-  gb->reset_to_bootrom(test_cart, false);
+  gb->reset_to_bootrom(test_cart);
   //gb->sys.cpu_en = false;
 
   gb->dbg_write(test_cart, 0xFF50, 0x01); // disable bootrom

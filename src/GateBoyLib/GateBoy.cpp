@@ -158,7 +158,7 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 
 //-----------------------------------------------------------------------------
 
-GBResult GateBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
+GBResult GateBoy::reset_to_bootrom(const blob& cart_blob) {
   reset_to_poweron(cart_blob);
   //LOG_R("GateBoy::reset_to_poweron done\n");
   run_poweron_reset(cart_blob, true);
@@ -169,7 +169,7 @@ GBResult GateBoy::reset_to_bootrom(const blob& cart_blob, bool slow) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::reset_to_cart(const blob& cart_blob) {
-  reset_to_bootrom(cart_blob, false);
+  reset_to_bootrom(cart_blob);
   gb_state.reset_to_cart();
   cpu.reset_to_cart();
   mem.reset_to_cart();

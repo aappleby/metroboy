@@ -58,7 +58,7 @@ struct LogicBoy : public IGateBoy {
   }
 
   GBResult reset_to_poweron(const blob& cart_blob) override;
-  GBResult reset_to_bootrom(const blob& cart_blob, bool slow) override;
+  GBResult reset_to_bootrom(const blob& cart_blob) override;
   GBResult reset_to_cart   (const blob& cart_blob) override;
 
   GBResult peek(int addr) const override;

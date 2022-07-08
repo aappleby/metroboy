@@ -414,7 +414,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   bit_mask(reg_new, uint8_t(~BIT_OLD));
   bit_mask(pins, uint8_t(~BIT_OLD));
 
-  bool EXT_cpu_latch_ext;
+  bool EXT_cpu_latch_ext = 0;
 
   memset(&reg_new.cpu_abus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
   memset(&reg_new.cpu_dbus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
@@ -422,11 +422,22 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
     // Data has to be driven on EFGH or we fail the wave tests
     reg_new.cpu_dbus.set_data(cpu.core.reg.bus_req_new.write, cpu.core.reg.bus_req_new.data_lo);
-    EXT_cpu_latch_ext = cpu.core.reg.bus_req_new.read;
   }
   else {
     reg_new.cpu_dbus.set_data(false, 0);
-    EXT_cpu_latch_ext = 0;
+  }
+
+  // FIXME: I have no idea why this has to be high when writing 0xFF10 (audio) and higher.
+  // Something to do with ANUJ, maybe some interaction with the timer?
+
+  // Setting SIG_IN_CPU_DBUS_FREE on CD breaks things
+  if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
+    if (cpu.core.reg.bus_req_new.read) {
+      EXT_cpu_latch_ext = 1;
+    }
+    else if (cpu.core.reg.bus_req_new.write) {
+      EXT_cpu_latch_ext = cpu.core.reg.bus_req_new.addr >= 0xFF10;
+    }
   }
   /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
 

@@ -466,11 +466,27 @@ TestResults GateBoyTests::test_spu_regs(const IGateBoy* proto) {
   // since this controls power to the whole sound section, we have to test it as a regular reg
   results += test_reg(proto, "NR52", ADDR_NR52, 0b10000000);
 
-  //results += test_spu_reg(proto, "NR10", ADDR_NR10, 0b01111111);
-  //results += test_spu_reg(proto, "NR11", ADDR_NR11, 0b11000000);
-  //results += test_spu_reg(proto, "NR12", ADDR_NR12, 0b11111111);
-  //results += test_spu_reg(proto, "NR13", ADDR_NR13, 0b00000000);
-  //results += test_spu_reg(proto, "NR14", ADDR_NR14, 0b01000000);
+  results += test_spu_reg(proto, "NR10", ADDR_NR10, 0b01111111);
+  results += test_spu_reg(proto, "NR11", ADDR_NR11, 0b11000000);
+  results += test_spu_reg(proto, "NR12", ADDR_NR12, 0b11111111);
+  results += test_spu_reg(proto, "NR13", ADDR_NR13, 0b00000000); // NR13 can't be read but we'll try anyway
+  results += test_spu_reg(proto, "NR14", ADDR_NR14, 0b01000000);
+
+  results += test_spu_reg(proto, "NR21", ADDR_NR21, 0b11000000);
+  results += test_spu_reg(proto, "NR22", ADDR_NR22, 0b11111111);
+  results += test_spu_reg(proto, "NR23", ADDR_NR23, 0b00000000); // NR23 can't be read but we'll try anyway
+  results += test_spu_reg(proto, "NR24", ADDR_NR24, 0b01000000);
+
+  results += test_spu_reg(proto, "NR30", ADDR_NR30, 0b10000000);
+  results += test_spu_reg(proto, "NR31", ADDR_NR31, 0b00000000); // NR31 can't be read but we'll try anyway
+  results += test_spu_reg(proto, "NR32", ADDR_NR32, 0b01100000);
+  results += test_spu_reg(proto, "NR33", ADDR_NR33, 0b00000000); // NR31 can't be read but we'll try anyway
+  results += test_spu_reg(proto, "NR34", ADDR_NR34, 0b01000000);
+
+  results += test_spu_reg(proto, "NR41", ADDR_NR41, 0b00000000); // NR41 can't be read but we'll try anyway
+  results += test_spu_reg(proto, "NR42", ADDR_NR42, 0b11111111);
+  results += test_spu_reg(proto, "NR43", ADDR_NR43, 0b11111111);
+  results += test_spu_reg(proto, "NR44", ADDR_NR44, 0b01000000);
 
   TEST_DONE();
 }

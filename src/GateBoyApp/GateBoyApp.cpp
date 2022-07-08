@@ -65,7 +65,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->load_program(R"(
     0150:
       ld a, $FF
-      ld ($FF25), a
+      ld ($FF14), a
 
 
       ld a, $FF

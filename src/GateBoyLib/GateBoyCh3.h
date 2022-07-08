@@ -35,7 +35,7 @@ struct SpuChannel3 {
   NorLatch FOZU_CH3_ACTIVEp;
 
 
-  /*_p16.GUXE*/ DFF9B GUXE_CH3_AMP_ENp;
+  /*_p16.GUXE*/ DFF9B GUXE_NR30_AMP_ENp;
 
   /*_p18.GEVO*/ DFF20 GEVO_NR31_LEN0p;
   /*_p18.FORY*/ DFF20 FORY_NR31_LEN1p;

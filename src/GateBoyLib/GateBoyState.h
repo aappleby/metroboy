@@ -128,7 +128,7 @@ struct GateBoyState {
   /*_p10.TACE*/ wire TACE_AMP_ENn() const {
     return and4(ch1.HOCA_CH1_AMP_ENn_new(),
                 ch2.FUTE_CH2_AMP_ENn_new(),
-                ch3.GUXE_CH3_AMP_ENp.qn_newB(),
+                ch3.GUXE_NR30_AMP_ENp.qn_newB(),
                 ch4.GEVY_CH4_AMP_ENn());
   }
 #endif

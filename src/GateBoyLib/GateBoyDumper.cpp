@@ -482,6 +482,8 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("HADA_NR52_ALL_SOUND_ON : ", s.spu.HADA_NR52_ALL_SOUND_ON.state);
   d("\n");
 
+  d.dump_bitp("BOKO_NR14_LENENp : ", s.ch1.BOKO_NR14_LENENp.state);
+  d("\n");
 
 #if 0
   d("===== CH1 =====\n");

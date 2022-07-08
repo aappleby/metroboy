@@ -84,19 +84,21 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
   {
-    // FIXME wtf with the different clock polarities? i guess it doesn't matter much.
     /*#p14.ENUF*/ wire ENUF_FF17_WRp = and2(reg_new.cpu_abus.DUTU_ADDR_FF17p(), reg_new.cpu_signals.BOGY_CPU_WRp());
     /*#p14.GERE*/ wire GERE_FF17_WRp = and2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.DUTU_ADDR_FF17p());
     /*#p14.JEDE*/ wire JEDE_FF17_WRn = not1(GERE_FF17_WRp);
 
+    // Clock polarities wrong on die again
+    /*#p14.ENUF*/ wire ENUF_FF17_WRn = not1(ENUF_FF17_WRp);
+
     /*_p14.HYFU*/ reg_new.ch2.HYFU_NR22_P0p .dff9b(JEDE_FF17_WRn, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
     /*_p14.HORE*/ reg_new.ch2.HORE_NR22_P1p .dff9b(JEDE_FF17_WRn, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
     /*_p14.HAVA*/ reg_new.ch2.HAVA_NR22_P2p .dff9b(JEDE_FF17_WRn, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-    /*_p14.FORE*/ reg_new.ch2.FORE_NR22_ADDp.dff9b(ENUF_FF17_WRp, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-    /*_p14.GATA*/ reg_new.ch2.GATA_NR22_V0p .dff9b(ENUF_FF17_WRp, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-    /*_p14.GUFE*/ reg_new.ch2.GUFE_NR22_V1p .dff9b(ENUF_FF17_WRp, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-    /*_p14.GURA*/ reg_new.ch2.GURA_NR22_V2p .dff9b(ENUF_FF17_WRp, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-    /*_p14.GAGE*/ reg_new.ch2.GAGE_NR22_V3p .dff9b(ENUF_FF17_WRp, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+    /*_p14.FORE*/ reg_new.ch2.FORE_NR22_ADDp.dff9b(ENUF_FF17_WRn, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+    /*_p14.GATA*/ reg_new.ch2.GATA_NR22_V0p .dff9b(ENUF_FF17_WRn, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+    /*_p14.GUFE*/ reg_new.ch2.GUFE_NR22_V1p .dff9b(ENUF_FF17_WRn, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+    /*_p14.GURA*/ reg_new.ch2.GURA_NR22_V2p .dff9b(ENUF_FF17_WRn, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+    /*_p14.GAGE*/ reg_new.ch2.GAGE_NR22_V3p .dff9b(ENUF_FF17_WRn, reg_new.JYBU_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
   }
 
   {
@@ -375,9 +377,9 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p14.GEXA*/ wire GEXA = or2(GURE, reg_new.cpu_signals.AGUZ_CPU_RDn());
     /*_p14.GURU*/ wire GURU = or2(FYRY, reg_new.cpu_signals.AGUZ_CPU_RDn());
 
-    /*_p14.HUVU*/ triwire HUVU_D0 = tri6_nn(GEXA, reg_new.ch2.HYFU_NR22_P0p.qn_newB());
-    /*_p14.HYRE*/ triwire HYRE_D1 = tri6_nn(GEXA, reg_new.ch2.HORE_NR22_P1p.qn_newB());
-    /*_p14.HAVU*/ triwire HAVU_D2 = tri6_nn(GEXA, reg_new.ch2.HYFU_NR22_P0p.qn_newB());
+    /*_p14.HUVU*/ triwire HUVU_D0 = tri6_nn(GEXA, reg_new.ch2.HYFU_NR22_P0p .qn_newB());
+    /*_p14.HYRE*/ triwire HYRE_D1 = tri6_nn(GEXA, reg_new.ch2.HORE_NR22_P1p .qn_newB());
+    /*_p14.HAVU*/ triwire HAVU_D2 = tri6_nn(GEXA, reg_new.ch2.HAVA_NR22_P2p .qn_newB());
     /*_p14.GENE*/ triwire GENE_D3 = tri6_nn(GURU, reg_new.ch2.FORE_NR22_ADDp.qn_newB());
     /*_p14.HUPE*/ triwire HUPE_D4 = tri6_nn(GURU, reg_new.ch2.GATA_NR22_V0p .qn_newB());
     /*_p14.HERE*/ triwire HERE_D5 = tri6_nn(GURU, reg_new.ch2.GUFE_NR22_V1p .qn_newB());

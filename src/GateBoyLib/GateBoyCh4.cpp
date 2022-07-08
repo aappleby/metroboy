@@ -441,6 +441,15 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p19.GODU*/ triwire GODU = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GOKY_NR42_ENV1p      .qn_newB());
     /*#p19.HOGE*/ triwire HOGE = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GOZO_NR42_ENV2p      .qn_newB());
     /*#p19.HACU*/ triwire HACU = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GEDU_NR42_ENV3p      .qn_newB());
+
+    /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(DEMY);
+    /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(COCE);
+    /*_BUS_CPU_D02p*/ reg_new.cpu_dbus.BUS_CPU_D02p.tri_bus(CUZU);
+    /*_BUS_CPU_D03p*/ reg_new.cpu_dbus.BUS_CPU_D03p.tri_bus(GOME);
+    /*_BUS_CPU_D04p*/ reg_new.cpu_dbus.BUS_CPU_D04p.tri_bus(HEDA);
+    /*_BUS_CPU_D05p*/ reg_new.cpu_dbus.BUS_CPU_D05p.tri_bus(GODU);
+    /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(HOGE);
+    /*_BUS_CPU_D07p*/ reg_new.cpu_dbus.BUS_CPU_D07p.tri_bus(HACU);
   }
 
   {
@@ -458,11 +467,21 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p19.GYPE*/ triwire GYPE = tri6_nn(HEZE_FF22_RDn, reg_new.ch4.FYTO_NR43_FREQ1p.qn_newB());
     /*_p19.GAKA*/ triwire GAKA = tri6_nn(HEZE_FF22_RDn, reg_new.ch4.GOGO_NR43_FREQ2p.qn_newB());
     /*_p19.HAPY*/ triwire HAPY = tri6_nn(HEZE_FF22_RDn, reg_new.ch4.GAFO_NR43_FREQ3p.qn_newB());
+
+    /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(KAMO);
+    /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(KAKU);
+    /*_BUS_CPU_D02p*/ reg_new.cpu_dbus.BUS_CPU_D02p.tri_bus(KYRO);
+    /*_BUS_CPU_D03p*/ reg_new.cpu_dbus.BUS_CPU_D03p.tri_bus(KETA);
+    /*_BUS_CPU_D04p*/ reg_new.cpu_dbus.BUS_CPU_D04p.tri_bus(GEDA);
+    /*_BUS_CPU_D05p*/ reg_new.cpu_dbus.BUS_CPU_D05p.tri_bus(GYPE);
+    /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(GAKA);
+    /*_BUS_CPU_D07p*/ reg_new.cpu_dbus.BUS_CPU_D07p.tri_bus(HAPY);
   }
 
   {
     /*#p19.BARE*/ wire BARE_FF23_RDn = nand2(reg_new.cpu_abus.CUGE_ADDR_FF23p(), reg_new.cpu_signals.BYLO_CPU_RDp());
     /*#p19.CURY*/ triwire CURY = tri6_nn(BARE_FF23_RDn, reg_new.ch4.CUNY_NR44_LEN_ENp.qn_newB());
+    /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(CURY);
   }
 
 }

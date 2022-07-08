@@ -306,6 +306,7 @@ TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
   results += test_bootrom(proto);
   results += test_clk(proto);
   results += test_regs(proto);
+  results += test_spu_regs(proto);
   results += test_dma(proto);
 
   results += test_mem(proto);
@@ -397,18 +398,18 @@ TestResults GateBoyTests::test_reg(const IGateBoy* proto, const char* tag, uint1
     //printf("%d\n", i);
     uint8_t data_in = uint8_t(i & mask);
     auto res1 = gb->dbg_write(dummy_cart, addr, data_in);
-    //ASSERT_EQ(true, res1.is_ok(), "dbg_write failed @ %d", i);
+    ASSERT_EQ(true, res1.is_ok(), "dbg_write failed @ %d", i);
 
     auto res2 = gb->dbg_read(dummy_cart, addr);
-    //ASSERT_EQ(true, res2.is_ok(), "dbg_read failed @ %d", i);
+    ASSERT_EQ(true, res2.is_ok(), "dbg_read failed @ %d", i);
     uint8_t data_out = res2.unwrap() & mask;
-    //ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
+    ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
   TEST_DONE();
 }
 
-TestResults GateBoyTests::test_spu(const IGateBoy* proto, const char* tag, uint16_t addr, uint8_t mask) {
+TestResults GateBoyTests::test_spu_reg(const IGateBoy* proto, const char* tag, uint16_t addr, uint8_t mask) {
   TEST_INIT("%-4s @ 0x%04x, mask 0x%02x", tag, addr, mask);
 
   unique_ptr<IGateBoy> gb(proto->clone());
@@ -418,10 +419,13 @@ TestResults GateBoyTests::test_spu(const IGateBoy* proto, const char* tag, uint1
 
   for (int i = 0; i < 256; i++) {
     uint8_t data_in = uint8_t(i & mask);
-    gb->dbg_write(dummy_cart, addr, data_in).unwrap();
-    uint8_t data_out = gb->dbg_read(dummy_cart, addr).unwrap();
-    data_out &= mask;
-    //ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
+    auto res1 = gb->dbg_write(dummy_cart, addr, data_in);
+    ASSERT_EQ(true, res1.is_ok(), "dbg_write failed @ %d", i);
+
+    auto res2 = gb->dbg_read(dummy_cart, addr);
+    ASSERT_EQ(true, res2.is_ok(), "dbg_read failed @ %d", i);
+    uint8_t data_out = res2.unwrap() & mask;
+    ASSERT_EQ(data_in, data_out, "reg %s @ 0x%04x: wrote 0x%02x, read 0x%02x", tag, addr, data_in, data_out);
   }
 
   TEST_DONE();
@@ -451,9 +455,22 @@ TestResults GateBoyTests::test_regs(const IGateBoy* proto) {
   results += test_reg(proto, "WX",   ADDR_WX,   0b11111111);
   results += test_reg(proto, "IE",   ADDR_IE,   0b00011111);
 
-  //results += test_reg(proto, "NR50", ADDR_NR50, 0b11111111);
-  //results += test_reg(proto, "NR51", ADDR_NR51, 0b11111111);
-  //results += test_reg(proto, "NR52", ADDR_NR52, 0b10000000);
+  TEST_DONE();
+}
+
+TestResults GateBoyTests::test_spu_regs(const IGateBoy* proto) {
+  TEST_INIT();
+
+  results += test_spu_reg(proto, "NR50", ADDR_NR50, 0b11111111);
+  results += test_spu_reg(proto, "NR51", ADDR_NR51, 0b11111111);
+  // since this controls power to the whole sound section, we have to test it as a regular reg
+  results += test_reg(proto, "NR52", ADDR_NR52, 0b10000000);
+
+  //results += test_spu_reg(proto, "NR10", ADDR_NR10, 0b01111111);
+  //results += test_spu_reg(proto, "NR11", ADDR_NR11, 0b11000000);
+  //results += test_spu_reg(proto, "NR12", ADDR_NR12, 0b11111111);
+  //results += test_spu_reg(proto, "NR13", ADDR_NR13, 0b00000000);
+  //results += test_spu_reg(proto, "NR14", ADDR_NR14, 0b01000000);
 
   TEST_DONE();
 }

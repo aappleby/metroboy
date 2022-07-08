@@ -716,6 +716,23 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p11.AVEK*/ triwire AVEK_NR10_SWEEP_PERIOD0 = tri6_nn(ASOP_NR10_RDn, reg_new.ch1.ADEK_NR10_SWEEP_PERIOD0p.qn_newB());
     /*#p11.AKUX*/ triwire AKUX_NR10_SWEEP_PERIOD1 = tri6_nn(ASOP_NR10_RDn, reg_new.ch1.BANA_NR10_SWEEP_PERIOD1p.qn_newB());
     /*#p11.AWOS*/ triwire AWOS_NR10_SWEEP_PERIOD2 = tri6_nn(ASOP_NR10_RDn, reg_new.ch1.BOTU_NR10_SWEEP_PERIOD2p.qn_newB());
+
+    /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(AMYD_NR10_SWEEP_SHIFT0);
+    /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(ATAX_NR10_SWEEP_SHIFT1);
+    /*_BUS_CPU_D02p*/ reg_new.cpu_dbus.BUS_CPU_D02p.tri_bus(AZYP_NR10_SWEEP_SHIFT2);
+    /*_BUS_CPU_D03p*/ reg_new.cpu_dbus.BUS_CPU_D03p.tri_bus(AFOX_NR10_SWEEP_NEGATE);
+    /*_BUS_CPU_D04p*/ reg_new.cpu_dbus.BUS_CPU_D04p.tri_bus(AVEK_NR10_SWEEP_PERIOD0);
+    /*_BUS_CPU_D05p*/ reg_new.cpu_dbus.BUS_CPU_D05p.tri_bus(AKUX_NR10_SWEEP_PERIOD1);
+    /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(AWOS_NR10_SWEEP_PERIOD2);
+  }
+
+  {
+    /*#p11.BEXU*/ wire BEXU_NR11_RDn = nand2(reg_new.cpu_signals.BUWA_CPU_RDp(), reg_new.cpu_abus.CAXE_ADDR_FF11p());
+    /*#p11.BOWO*/ triwire BOWO = tri6_nn(BEXU_NR11_RDn, reg_new.ch1.CENA_NR11_DUTY0p.qn_newB());
+    /*#p11.CUDA*/ triwire CUDA = tri6_nn(BEXU_NR11_RDn, reg_new.ch1.DYCA_NR11_DUTY1p.qn_newB());
+
+    /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(BOWO);
+    /*_BUS_CPU_D07p*/ reg_new.cpu_dbus.BUS_CPU_D07p.tri_bus(CUDA);
   }
 
   {
@@ -755,23 +772,32 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p11.GODE*/ triwire GODE = tri6_nn(EVAJ_FF13_RDa, reg_new.ch1.HYKE_CH1_FREQ_CNT_05.qn_new());
     /*_p11.GOJE*/ triwire GOJE = tri6_nn(EVAJ_FF13_RDa, reg_new.ch1.FEVA_CH1_FREQ_CNT_06.qn_new());
     /*_p11.FOZE*/ triwire FOZE = tri6_nn(EVAJ_FF13_RDa, reg_new.ch1.EKOV_CH1_FREQ_CNT_07.qn_new());
+
+    /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(FORU);
+    /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(GEFU);
+    /*_BUS_CPU_D02p*/ reg_new.cpu_dbus.BUS_CPU_D02p.tri_bus(KYVU);
+    /*_BUS_CPU_D03p*/ reg_new.cpu_dbus.BUS_CPU_D03p.tri_bus(KUMO);
+    /*_BUS_CPU_D04p*/ reg_new.cpu_dbus.BUS_CPU_D04p.tri_bus(KARY);
+    /*_BUS_CPU_D05p*/ reg_new.cpu_dbus.BUS_CPU_D05p.tri_bus(GODE);
+    /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(GOJE);
+    /*_BUS_CPU_D07p*/ reg_new.cpu_dbus.BUS_CPU_D07p.tri_bus(FOZE);
   }
 
   {
-    /*#p11.BALE*/ wire BALE_NR14_RDn = nand2(reg_new.cpu_abus.DUJA_ADDR_FF14p(), reg_new.cpu_signals.BUDA_CPU_RDp());
     /*#p11.DUPY*/ wire DUPY_FF14_RDn = or2(reg_new.cpu_abus.CURE_ADDR_FF14n(), reg_new.DAXA_CPU_RDn_DBGn());
- 
-    /*#p11.BYTU*/ triwire BYTU = tri6_nn(BALE_NR14_RDn, reg_new.ch1.BOKO_NR14_LENENp.qn_newB());
     /*_p11.DOPA*/ triwire DOPA = tri6_nn(DUPY_FF14_RDn, reg_new.ch1.EMUS_CH1_FREQ_CNT_08.qn_new());
     /*_p11.DEMU*/ triwire DEMU = tri6_nn(DUPY_FF14_RDn, reg_new.ch1.EVAK_CH1_FREQ_CNT_09.qn_new());
     /*_p11.DEXO*/ triwire DEXO = tri6_nn(DUPY_FF14_RDn, reg_new.ch1.COPU_CH1_FREQ_CNT_10.qn_new());
+
+    /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(DOPA);
+    /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(DEMU);
+    /*_BUS_CPU_D02p*/ reg_new.cpu_dbus.BUS_CPU_D02p.tri_bus(DEXO);
+
+    /*#p11.BALE*/ wire BALE_NR14_RDn = nand2(reg_new.cpu_abus.DUJA_ADDR_FF14p(), reg_new.cpu_signals.BUDA_CPU_RDp());
+    /*#p11.BYTU*/ triwire BYTU = tri6_nn(BALE_NR14_RDn, reg_new.ch1.BOKO_NR14_LENENp.qn_newB());
+    /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(BYTU);
   }
 
-  {
-    /*#p11.BEXU*/ wire BEXU_NR11_RDn = nand2(reg_new.cpu_signals.BUWA_CPU_RDp(), reg_new.cpu_abus.CAXE_ADDR_FF11p());
-    /*#p11.BOWO*/ triwire BOWO = tri6_nn(BEXU_NR11_RDn, reg_new.ch1.CENA_NR11_DUTY0p.qn_newB());
-    /*#p11.CUDA*/ triwire CUDA = tri6_nn(BEXU_NR11_RDn, reg_new.ch1.DYCA_NR11_DUTY1p.qn_newB());
-  }
 }
 
 #endif

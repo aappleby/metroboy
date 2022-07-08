@@ -191,6 +191,16 @@ void GateBoyThread::load_cart_blob(blob& b) {
 }
 
 //------------------------------------------------------------------------------
+
+void GateBoyThread::load_program(const char* source) {
+  CHECK_P(sim_paused());
+  Assembler as;
+  as.assemble(source);
+  cart_blob = as.link();
+  reset_to_cart();
+}
+
+//------------------------------------------------------------------------------
 // Load a flat (just raw contents of memory addresses, no individual regs) dump
 // and copy it into the various regs and memory chunks.
 

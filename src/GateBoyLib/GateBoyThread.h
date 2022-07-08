@@ -88,6 +88,7 @@ struct GateBoyThread {
   void load_flat_dump(BlobStream& bs);
 
   void load_cart_blob(blob& bs);
+  void load_program(const char* source);
   void set_buttons(uint8_t buttons);
 
   const int REQ_PAUSE = 0b0001;

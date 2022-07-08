@@ -270,7 +270,7 @@ struct DFF9B : private BitBase {
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKp << 1) & BIT_CLOCK;
 
-    wire d1 = (~clk_old & clk_new) ? Dp : state;
+    wire d1 = (clk_old == 0 && clk_new != 0) ? Dp : state;
 
     state = bit0(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN;
   }

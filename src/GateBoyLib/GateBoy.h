@@ -102,7 +102,7 @@ struct GateBoySys {
     cpu_en = true;
     fastboot = true;
     buttons = 0;
-    gb_phase_total = 0x2CB57D7; //46880719;
+    gb_phase_total = 46880727;
   }
 
   // External signals

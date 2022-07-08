@@ -101,14 +101,14 @@ struct GateBoySPU {
   //----------
   // FF25 NR51
 
-  /*_p09.ANEV*/ DFF9B ANEV_NR51_D0; // these are mixer control bits
-  /*_p09.BOGU*/ DFF9B BOGU_NR51_D1;
-  /*_p09.BAFO*/ DFF9B BAFO_NR51_D2;
-  /*_p09.ATUF*/ DFF9B ATUF_NR51_D3;
-  /*_p09.BUME*/ DFF9B BUME_NR51_D4;
-  /*_p09.BOFA*/ DFF9B BOFA_NR51_D5;
-  /*_p09.BEFO*/ DFF9B BEFO_NR51_D6;
-  /*_p09.BEPU*/ DFF9B BEPU_NR51_D7;
+  /*_p09.ANEV*/ DFF9B ANEV_NR51_RCH1_ENp; // these are mixer control bits
+  /*_p09.BOGU*/ DFF9B BOGU_NR51_RCH2_ENp;
+  /*_p09.BAFO*/ DFF9B BAFO_NR51_RCH3_ENp;
+  /*_p09.ATUF*/ DFF9B ATUF_NR51_RCH4_ENp;
+  /*_p09.BUME*/ DFF9B BUME_NR51_LCH1_ENp;
+  /*_p09.BOFA*/ DFF9B BOFA_NR51_LCH2_ENp;
+  /*_p09.BEFO*/ DFF9B BEFO_NR51_LCH3_ENp;
+  /*_p09.BEPU*/ DFF9B BEPU_NR51_LCH4_ENp;
 
   //----------
   // FF26 NR52

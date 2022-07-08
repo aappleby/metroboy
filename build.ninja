@@ -1,33 +1,35 @@
 ################################################################################
 
-build_mode   = -DCONFIG_RELEASE -Ofast
-#build_mode   = -DCONFIG_FASTMODE -Ofast
+# we define SIM_AUDIO in config.h otherwise VSCode gets confused about what's
+# enabled and what's not
+#-DSIM_AUDIO 
+
+build_mode   = -DCONFIG_RELEASE -O3
+#build_mode   = -DCONFIG_FASTMODE -O3
 #build_mode   = -DCONFIG_DEBUG -O0
 
-cpp_compiler = g++
-c_compiler   = gcc
-cpp_std      = -std=gnu++2a
-global_libs  = -lSDL2
-
+default_gpp      = g++ -g -MMD -std=gnu++2a
+default_gcc      = gcc -g -MMD
 default_includes = -Isrc -Isrc/tree-sitter/lib/include -Isubmodules -Isubmodules/tree-sitter/lib/include
+global_libs      = -lSDL2
 
 ################################################################################
 
 rule compile_cpp
-  command = ${cpp_compiler} -g ${build_mode} ${default_includes} ${includes} ${cpp_std} -MMD -MF ${out}.d -c ${in} -o ${out}
+  command = ${default_gpp} ${build_mode} ${default_includes} ${includes} -MF ${out}.d -c ${in} -o ${out}
   depfile = ${out}.d
   deps = gcc
 
 rule compile_c
-  command = ${c_compiler} -g ${build_mode} ${default_includes} ${includes} -MMD -MF ${out}.d -c ${in} -o ${out}
+  command = ${default_gcc} ${build_mode} ${default_includes} ${includes} -MF ${out}.d -c ${in} -o ${out}
   depfile = ${out}.d
   deps = gcc
 
-rule lib
-  command = ar rcs ${out} ${in} > /dev/null
-
 rule link
-  command = g++ -g ${build_mode} -Wl,--whole-archive ${in} -Wl,--no-whole-archive ${global_libs} -o ${out}
+  command = ${default_gpp} ${build_mode} -Wl,--whole-archive ${in} -Wl,--no-whole-archive ${global_libs} -o ${out}
+
+rule lib
+  command = ar rcs ${out} ${in}
 
 ################################################################################
 # TreeSitter libraries

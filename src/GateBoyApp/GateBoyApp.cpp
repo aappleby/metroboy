@@ -61,9 +61,19 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //gb_thread = new GateBoyThread(new LogicBoy());
   gb_thread = new GateBoyThread(new GateBoy());
   gb_thread->start();
-  //gb_thread->reset_to_bootrom();
 
-  //gb_thread->run_to(459148 - 1);
+  gb_thread->load_program(R"(
+    0150:
+      ld a, $FF
+      ld ($FF25), a
+
+
+      ld a, $FF
+      ld hl, $8000
+      ld (hl), a
+      inc l
+      jr -4
+  )");
 
 #if 0
   // test_fuzz_reg failed at 1871:0268 - write 0xe5 to 0xff40
@@ -111,33 +121,19 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   // pocket around 140
 
   //blob cart;
+
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
-
   //load_blob("LinksAwakening.gb", cart);     // broken
   //load_blob("tetris.gb", cart);             // broken
   //load_blob("SML.gb", cart); // reboot loop
   //load_blob("pman.gb", cart); // title screen funkd up
-
-
-
   //load_blob("tests/instr_timing.gb", cart);
   //load_blob("tests/cpu_instrs/individual/10-bit ops.gb", cart);
   //load_blob("tests/microtests/DMG/timer_tma_write_a.gb", cart);
 
   //gb_thread->load_cart_blob(cart);
   //gb_thread->reset_to_cart();
-
-  //gb_thread->run_to(49583368);
-
-  //gb_thread->run_to(80203541 - 1);
-  //gb_thread->add_steps(int(80203541 - gb_thread->gb->get_sys().gb_phase_total - 1));
-#endif
-
-#if 0
-  BlobStream bs;
-  load_blob("bad_eyes.dump", bs.b);
-  gb_thread->load_raw_dump(bs);
 #endif
 
   gb_thread->resume();

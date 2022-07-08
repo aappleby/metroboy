@@ -451,14 +451,30 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("BEDU_NR50_VIN_TO_R : ", s.spu.BEDU_NR50_VIN_TO_R.get_state());
   d("\n");
 
-  d.dump_bitp("ANEV_NR51_D0 : ", s.spu.ANEV_NR51_D0.get_state()); // these are mixer control bits
-  d.dump_bitp("BOGU_NR51_D1 : ", s.spu.BOGU_NR51_D1.get_state());
-  d.dump_bitp("BAFO_NR51_D2 : ", s.spu.BAFO_NR51_D2.get_state());
-  d.dump_bitp("ATUF_NR51_D3 : ", s.spu.ATUF_NR51_D3.get_state());
-  d.dump_bitp("BUME_NR51_D4 : ", s.spu.BUME_NR51_D4.get_state());
-  d.dump_bitp("BOFA_NR51_D5 : ", s.spu.BOFA_NR51_D5.get_state());
-  d.dump_bitp("BEFO_NR51_D6 : ", s.spu.BEFO_NR51_D6.get_state());
-  d.dump_bitp("BEPU_NR51_D7 : ", s.spu.BEPU_NR51_D7.get_state());
+#if 0
+  ///*_p09.BUPO*/ wire BUPO_NR51_WRn = nand2(s.cpu_abus.CORA_ADDR_FF25p(), s.cpu_signals.BOGY_CPU_WRp());
+  /*_p09.BONO*/ wire BONO_NR51_WRp = not1(BUPO_NR51_WRn);
+  /*_p09.BYFA*/ wire BYFA_NR51_WRp = not1(BUPO_NR51_WRn);
+
+  d.dump_bitp("BUPO_NR51_WRn : ", BUPO_NR51_WRn);
+  d.dump_bitp("BONO_NR51_WRp : ", BONO_NR51_WRp);
+  d.dump_bitp("BYFA_NR51_WRp : ", BYFA_NR51_WRp);
+  d.dump_bitp("KEPY_APU_RSTn : ", s.KEPY_APU_RSTn_new());
+  d("\n");
+
+#endif
+
+  d.dump_slice2p("NR51: ", &s.spu.ANEV_NR51_RCH1_ENp, 8);
+  /*
+  d.dump_bitp("ANEV_NR51_RCH1_ENp : ", s.spu.ANEV_NR51_RCH1_ENp.get_state()); // these are mixer control bits
+  d.dump_bitp("BOGU_NR51_RCH2_ENp : ", s.spu.BOGU_NR51_RCH2_ENp.get_state());
+  d.dump_bitp("BAFO_NR51_RCH3_ENp : ", s.spu.BAFO_NR51_RCH3_ENp.get_state());
+  d.dump_bitp("ATUF_NR51_RCH4_ENp : ", s.spu.ATUF_NR51_RCH4_ENp.get_state());
+  d.dump_bitp("BUME_NR51_LCH1_ENp : ", s.spu.BUME_NR51_LCH1_ENp.get_state());
+  d.dump_bitp("BOFA_NR51_LCH2_ENp : ", s.spu.BOFA_NR51_LCH2_ENp.get_state());
+  d.dump_bitp("BEFO_NR51_LCH3_ENp : ", s.spu.BEFO_NR51_LCH3_ENp.get_state());
+  d.dump_bitp("BEPU_NR51_LCH4_ENp : ", s.spu.BEPU_NR51_LCH4_ENp.get_state());
+  */
   d("\n");
 
   d.dump_bitp("FERO_NR52_DBG_APUp     : ", s.spu.FERO_NR52_DBG_APUp.get_state());
@@ -467,6 +483,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d("\n");
 
 
+#if 0
   d("===== CH1 =====\n");
   d.dump_bitp("BANY_NR10_SWEEP_SHIFT0p  : " , s.ch1.BANY_NR10_SWEEP_SHIFT0p.get_state());
   d.dump_bitp("ARAX_NR10_SWEEP_SHIFT1p  : " , s.ch1.ARAX_NR10_SWEEP_SHIFT1p.get_state());
@@ -535,7 +552,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("JOPU_NR12_VOL3p    : ", s.ch1.JOPU_NR12_VOL3p.get_state());
   d("\n");
 
- 
+#endif
 
 #endif
 }

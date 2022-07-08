@@ -12,6 +12,7 @@ struct GateBoyTests {
 
   TestResults test_generic(const IGateBoy* proto);
   TestResults test_regs(const IGateBoy* proto);
+  TestResults test_spu_regs(const IGateBoy* proto);
 
   TestResults test_regression_cart     (const char* filename, int cycles, bool from_bootrom);
   TestResults test_regression_dump     (const char* filename, int cycles);
@@ -55,7 +56,7 @@ struct GateBoyTests {
 
   TestResults test_reg(const IGateBoy* proto, const char* tag, uint16_t addr, uint8_t data_in);
   TestResults test_mem(const IGateBoy* proto, const char* tag, uint16_t addr_start, uint16_t addr_end, uint16_t step, bool test_write);
-  TestResults test_spu(const IGateBoy* proto, const char* tag, uint16_t addr, uint8_t data_in);
+  TestResults test_spu_reg(const IGateBoy* proto, const char* tag, uint16_t addr, uint8_t data_in);
 
   void run_benchmark(const IGateBoy* proto);
 

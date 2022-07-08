@@ -84,24 +84,33 @@ constexpr double PHASES_PER_SECOND = TCYCLES_PER_SECOND * 2.0;
 #define ADDR_IOREG_END   0xFF0F
 
 #define ADDR_SPU_BEGIN   0xFF10
+
 #define ADDR_NR10        0xFF10
 #define ADDR_NR11        0xFF11
 #define ADDR_NR12        0xFF12
+#define ADDR_NR13        0xFF13
 #define ADDR_NR14        0xFF14
+
 #define ADDR_NR21        0xFF16
 #define ADDR_NR22        0xFF17
+#define ADDR_NR23        0xFF18
 #define ADDR_NR24        0xFF19
+
 #define ADDR_NR30        0xFF1A
 #define ADDR_NR31        0xFF1B
 #define ADDR_NR32        0xFF1C
+#define ADDR_NR33        0xFF1D
 #define ADDR_NR34        0xFF1E
+
 #define ADDR_NR41        0xFF20
 #define ADDR_NR42        0xFF21
 #define ADDR_NR43        0xFF22
 #define ADDR_NR44        0xFF23
+
 #define ADDR_NR50        0xFF24
 #define ADDR_NR51        0xFF25
 #define ADDR_NR52        0xFF26
+
 #define ADDR_SPU_END     0xFF3F
 
 #define ADDR_GPU_BEGIN   0xFF40

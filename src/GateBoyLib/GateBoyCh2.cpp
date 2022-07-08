@@ -4,6 +4,74 @@
 
 #ifdef SIM_AUDIO
 
+
+void SpuChannel2::reset_to_cart() {
+  ERYC_NR21_LEN0.state = 0x1a;
+  CERA_NR21_LEN1.state = 0x18;
+  CONU_NR21_LEN2.state = 0x18;
+  CAME_NR21_LEN3.state = 0x18;
+  BUVA_NR21_LEN4.state = 0x18;
+  AKYD_NR21_LEN5.state = 0x18;
+  BERA_NR21_DUTY0.state = 0x1a;
+  BAMY_NR21_DUTY1.state = 0x1a;
+  HYFU_NR22_P0p.state = 0x1a;
+  HORE_NR22_P1p.state = 0x1a;
+  HAVA_NR22_P2p.state = 0x1a;
+  FORE_NR22_ADDp.state = 0x18;
+  GATA_NR22_V0p.state = 0x18;
+  GUFE_NR22_V1p.state = 0x18;
+  GURA_NR22_V2p.state = 0x18;
+  GAGE_NR22_V3p.state = 0x18;
+  FOFE_NR23_FREQ00p.state = 0x1a;
+  FOVA_NR23_FREQ01p.state = 0x1a;
+  FEDY_NR23_FREQ02p.state = 0x1a;
+  FOME_NR23_FREQ03p.state = 0x1a;
+  FORA_NR23_FREQ04p.state = 0x1a;
+  GODA_NR23_FREQ05p.state = 0x1a;
+  GUMY_NR23_FREQ06p.state = 0x1a;
+  GUPU_NR23_FREQ07p.state = 0x1a;
+  JEFU_NR24_FREQ08p.state = 0x1a;
+  JANY_NR24_FREQ09p.state = 0x1a;
+  JUPY_NR24_FREQ10p.state = 0x1a;
+  DANE_CH2_ACTIVEp.state = 0x18;
+  JORE_CH2_ENV_DELAYp.state = 0x1a;
+  JONA_CH2_ENV_DELAYp.state = 0x18;
+  JEVY_CH2_ENV_DELAYp.state = 0x18;
+  JOPA_CH2_ENV_TICK.state = 0x1a;
+  DONE_CH2_FREQ_00.state = 0x1a;
+  DYNU_CH2_FREQ_01.state = 0x18;
+  EZOF_CH2_FREQ_02.state = 0x18;
+  CYVO_CH2_FREQ_03.state = 0x18;
+  FUXO_CH2_FREQ_04.state = 0x18;
+  GANO_CH2_FREQ_05.state = 0x18;
+  GOCA_CH2_FREQ_06.state = 0x18;
+  GANE_CH2_FREQ_07.state = 0x18;
+  HEVY_CH2_FREQ_08.state = 0x18;
+  HEPU_CH2_FREQ_09.state = 0x18;
+  HERO_CH2_FREQ_10.state = 0x18;
+  DOME_CH2_OUTp.state = 0x18;
+  ELOX_CH2_TRIGp.state = 0x18;
+  CAZA_CH2_TRIGp.state = 0x18;
+  EMER_NR24_LENENp.state = 0x1a;
+  DOPE_CH2_TRIGp.state = 0x18;
+  DALA_CH2_TRIGp.state = 0x19;
+  ETAP_NR24_TRIGp.state = 0x1a;
+  DORY_CH2_TRIGp.state = 0x18;
+  GYKO_SAMPLE_CLKp.state = 0x1a;
+  CANO_00.state = 0x1a;
+  CAGY_01.state = 0x1a;
+  DYVE_02.state = 0x1a;
+  BUTA_FREQ_GATEp.state = 0x19;
+  FENA_CH2_ENV3.state = 0x1a;
+  FOMY_CH2_ENV2.state = 0x1a;
+  FETE_CH2_ENV1.state = 0x1a;
+  FENO_CH2_ENV0.state = 0x1a;
+  HEPO_ENV_MAXp.state = 0x18;
+  JEME_ENV_DONEp.state = 0x18;
+  JYNA_CLK_64n.state = 0x19;
+  CYRE_CH2_LEN_DONEp.state = 0x1a;
+}
+
 void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   /*#p15.DOPE*/ reg_new.ch2.DOPE_CH2_TRIGp.dff17(reg_new.sys_clk.DOVA_ABCDxxxx(), reg_new.CYWU_APU_RSTn_new(), reg_old.ch2.ETAP_NR24_TRIGp.qp_oldB());

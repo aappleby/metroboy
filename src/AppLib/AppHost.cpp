@@ -65,8 +65,8 @@ int AppHost::app_main(int, char**) {
   //----------------------------------------
   // Create window
 
-  //SDL_Init(SDL_INIT_EVERYTHING);
-  SDL_Init(SDL_INIT_VIDEO);
+  SDL_Init(SDL_INIT_EVERYTHING);
+  //SDL_Init(SDL_INIT_VIDEO);
 
   SDL_DisplayMode display_mode;
   SDL_GetCurrentDisplayMode(0, &display_mode);

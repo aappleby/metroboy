@@ -28,7 +28,7 @@ using std::min;
 
 //-----------------------------------------------------------------------------
 
-GBResult LogicBoy::reset_to_poweron() {
+GBResult LogicBoy::reset_to_poweron(bool fastboot) {
   assert(false);
 }
 

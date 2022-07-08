@@ -17,7 +17,7 @@ struct GateBoyPair : public IGateBoy {
   GBResult get_flags() const override;
   GBResult load_raw_dump(BlobStream& dump_in) override;
   GBResult save_raw_dump(BlobStream& dump_out) const override;
-  GBResult reset_to_poweron() override;
+  GBResult reset_to_poweron(bool fastboot) override;
   GBResult reset_to_bootrom(const blob& cart_blob) override;
   GBResult reset_to_cart   (const blob& cart_blob) override;
   GBResult peek(int addr) const override;

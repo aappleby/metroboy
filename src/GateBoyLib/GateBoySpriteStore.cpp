@@ -833,82 +833,33 @@ void SpriteStoreFlags::reset_to_cart() {}
 
 //-----------------------------------------------------------------------------
 
-void StoreI0::reset_to_cart() {}
-
-void StoreL0::reset_to_cart() {}
-
-void StoreX0::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
-
-void StoreI1::reset_to_cart() {}
-
-void StoreL1::reset_to_cart() {}
-
-void StoreX1::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
-
-void StoreI2::reset_to_cart() {}
-
-void StoreL2::reset_to_cart() {}
-
-void StoreX2::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
-
-void StoreI3::reset_to_cart() {}
-
-void StoreL3::reset_to_cart() {}
-
-void StoreX3::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
-
-void StoreI4::reset_to_cart() {}
-
-void StoreL4::reset_to_cart() {}
-
-void StoreX4::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
-
-void StoreI5::reset_to_cart() {}
-
-void StoreL5::reset_to_cart() {}
-
-void StoreX5::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
-
-void StoreI6::reset_to_cart() {}
-
-void StoreL6::reset_to_cart() {}
-
-void StoreX6::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
-
-void StoreI7::reset_to_cart() {}
-
-void StoreL7::reset_to_cart() {}
-
-void StoreX7::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
-
-void StoreI8::reset_to_cart() {}
-
-void StoreL8::reset_to_cart() {}
-
-void StoreX8::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
-
-void StoreI9::reset_to_cart() {}
-
-void StoreL9::reset_to_cart() {}
-
-void StoreX9::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
-
-//-----------------------------------------------------------------------------
+void StoreI0::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL0::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX0::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreI1::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL1::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX1::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreI2::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL2::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX2::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreI3::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL3::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX3::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreI4::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL4::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX4::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreI5::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL5::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX5::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreI6::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL6::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX6::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreI7::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL7::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX7::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreI8::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL8::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX8::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreI9::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreL9::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void StoreX9::reset_to_cart() { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }

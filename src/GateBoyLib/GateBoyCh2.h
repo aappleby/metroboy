@@ -3,7 +3,7 @@
 //==============================================================================
 
 struct SpuChannel2 {
-  void reset_to_cart() {}
+  void reset_to_cart();
 
   /*#p15.ETUK*/ wire ETUK_SAMPLE_CLKn_old() const { return not1(GYKO_SAMPLE_CLKp.qp_old()); }
   /*#p15.DAVU*/ wire DAVU_SAMPLE_CLKp_old() const { return not1(ETUK_SAMPLE_CLKn_old()); }

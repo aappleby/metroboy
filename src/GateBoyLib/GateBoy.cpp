@@ -81,7 +81,7 @@ FieldInfo GateBoyCpu::fields[] = {
 
 //-----------------------------------------------------------------------------
 
-GBResult GateBoy::reset_to_poweron() {
+GBResult GateBoy::reset_to_poweron(bool fastboot) {
   gb_state.reset_to_poweron();
   cpu.reset_to_poweron();
   mem.reset_to_poweron();
@@ -89,69 +89,9 @@ GBResult GateBoy::reset_to_poweron() {
   pins.reset_to_poweron();
   probes.reset();
  
- sys.rst = 1;
- 
- return GBResult::ok();
-}
-
-//-----------------------------------------------------------------------------
-
-GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
   sys.fastboot = fastboot;
-
-  //----------------------------------------
-  // Update the sim without ticking the clock to to settle initial reset signals.
-
-  tock_gates(cart_blob);
-  gb_state.commit();
-  pins.commit();
-
-  //----------------------------------------
-  // Release reset, start clock, and sync with phase
-
-  sys.rst = 0;
-  sys.clk_en = 1;
-  sys.clk_good = 1;
-  run_phases(cart_blob, 2);
-
-  CHECK_N(bit0(gb_state.sys_clk.AFUR_ABCDxxxx.qn_oldB()));
-  CHECK_P(bit0(gb_state.sys_clk.ALEF_xBCDExxx.qn_oldB()));
-  CHECK_P(bit0(gb_state.sys_clk.APUK_xxCDEFxx.qn_oldB()));
-  CHECK_P(bit0(gb_state.sys_clk.ADYK_xxxDEFGx.qn_oldB()));
-
+  sys.rst = 1;
   sys.gb_phase_total = 0;
-
-  //LOG_G("derp\n");
-
-  //----------------------------------------
-  // Wait for SIG_CPU_START
-
-  while(bit0(~gb_state.sys_rst.SIG_CPU_STARTp.out_old())) {
-    run_phases(cart_blob, 8);
-  }
-
-  //----------------------------------------
-  // Delay to sync up with expected div value
-
-  run_phases(cart_blob, 15);
-
-  //----------------------------------------
-  // Fetch the first instruction in the bootrom
-
-  dbg_req(0x0000, 0, 0);
-  run_phases(cart_blob, 8);
-
-  //----------------------------------------
-  // We're ready to go, release the CPU so it can start running the bootrom.
-
-  sys.clk_req = 1;
-  sys.cpu_en = true;
-
-  if (fastboot) {
-    gb_state.reg_div.TERO_DIV03p.state = 0b00011010;
-    gb_state.reg_div.UNYK_DIV04p.state = 0b00011010;
-    gb_state.reg_div.UPOF_DIV15p.state = 0b00011011;
-  }
 
   return GBResult::ok();
 }
@@ -159,10 +99,15 @@ GBResult GateBoy::run_poweron_reset(const blob& cart_blob, bool fastboot) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::reset_to_bootrom(const blob& cart_blob) {
-  reset_to_poweron();
-  //LOG_R("GateBoy::reset_to_poweron done\n");
-  run_poweron_reset(cart_blob, true);
-  //LOG_R("GateBoy::run_poweron_reset done\n");
+  reset_to_poweron(true);
+
+  while(1) {
+    next_phase(cart_blob);
+    if (sys.gb_phase_total == 87) {
+      break;
+    }
+  }
+
   return GBResult::ok();
 }
 
@@ -268,7 +213,6 @@ GBResult GateBoy::run_phases(const blob& cart_blob, int phase_count) {
 
 GBResult GateBoy::next_phase(const blob& cart_blob) {
   //LOG_G("GateBoy::next_phase()\n");
-  int x = 10;
 
   probes.begin_pass((sys.gb_phase_total + 1) & 7);
   sys.gb_phase_total++;
@@ -294,6 +238,69 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
 
   update_framebuffer();
   probes.end_pass();
+
+  //----------------------------------------
+  // Update the sim without ticking the clock to to settle initial reset signals.
+
+  //run_phases(cart_blob, 6);
+
+  //----------------------------------------
+  // Release reset, start clock, and sync with phase
+
+  if (sys.gb_phase_total == 6) {
+    sys.rst = 0;
+    sys.clk_en = 1;
+    sys.clk_good = 1;
+  }
+
+  //run_phases(cart_blob, 2);
+
+  if (sys.gb_phase_total == 8) {
+    CHECK_N(bit0(gb_state.sys_clk.AFUR_ABCDxxxx.qn_oldB()));
+    CHECK_P(bit0(gb_state.sys_clk.ALEF_xBCDExxx.qn_oldB()));
+    CHECK_P(bit0(gb_state.sys_clk.APUK_xxCDEFxx.qn_oldB()));
+    CHECK_P(bit0(gb_state.sys_clk.ADYK_xxxDEFGx.qn_oldB()));
+  }
+
+  //----------------------------------------
+  // Wait for SIG_CPU_START
+
+  //run_phases(cart_blob, 56);
+
+  if (sys.gb_phase_total == 64) {
+    CHECK_P(gb_state.sys_rst.SIG_CPU_STARTp.out_old());
+  }
+
+
+  //----------------------------------------
+  // Delay to sync up with expected div value
+
+  //run_phases(cart_blob, 15);
+
+  //----------------------------------------
+  // Fetch the first instruction in the bootrom
+
+  if (sys.gb_phase_total == 79) {
+    dbg_req(0x0000, 0, 0);
+  }
+
+  //run_phases(cart_blob, 8);
+
+  //----------------------------------------
+  // We're ready to go, release the CPU so it can start running the bootrom.
+
+  if (sys.gb_phase_total == 87) {
+    sys.clk_req = 1;
+    sys.cpu_en = true;
+
+    if (sys.fastboot) {
+      gb_state.reg_div.TERO_DIV03p.state = 0b00011010;
+      gb_state.reg_div.UNYK_DIV04p.state = 0b00011010;
+      gb_state.reg_div.UPOF_DIV15p.state = 0b00011011;
+    }
+  }
+
+
   return GBResult::ok();
 }
 

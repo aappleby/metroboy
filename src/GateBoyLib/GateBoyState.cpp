@@ -58,6 +58,15 @@ void GateBoyState::reset_to_poweron() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(GateBoyState));
   SIG_VCC.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
   SIG_GND.state = BIT_OLD | BIT_DRIVEN;
+
+  cpu_dbus.BUS_CPU_D00p.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  cpu_dbus.BUS_CPU_D01p.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  cpu_dbus.BUS_CPU_D02p.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  cpu_dbus.BUS_CPU_D03p.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  cpu_dbus.BUS_CPU_D04p.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  cpu_dbus.BUS_CPU_D05p.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  cpu_dbus.BUS_CPU_D06p.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  cpu_dbus.BUS_CPU_D07p.state = BIT_OLD | BIT_DRIVEN | BIT_DATA;
 }
 
 //-----------------------------------------------------------------------------
@@ -617,7 +626,6 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, ch2),
   DECLARE_FIELD(GateBoyState, ch3),
   DECLARE_FIELD(GateBoyState, ch4),
-  DECLARE_FIELD(GateBoyState, ch1.CERO_CH1_LEN_DONE),
   DECLARE_FIELD(GateBoyState, wave_dbus),
 #endif
   

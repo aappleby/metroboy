@@ -252,6 +252,8 @@ struct DFF8pB : private BitBase {
 
 struct DFF9B : private BitBase {
 
+  using BitBase::state;
+
   uint8_t get_state() const { return state; }
   void set_state(uint8_t new_state) { state = new_state ^ 1; }
   void set_stateB(uint8_t new_state) { state = new_state; }

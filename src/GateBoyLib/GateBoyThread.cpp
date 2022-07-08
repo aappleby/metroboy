@@ -16,7 +16,7 @@ GateBoyThread::GateBoyThread(IGateBoy* prototype) : gb(prototype)
 {
   gb.reset_states();
   cart_blob = Assembler::create_dummy_cart();
-  reset_to_poweron();
+  reset_to_poweron(true);
 }
 
 //----------------------------------------
@@ -58,14 +58,14 @@ void GateBoyThread::resume() {
 
 //----------------------------------------
 
-void GateBoyThread::reset_to_poweron() {
+void GateBoyThread::reset_to_poweron(bool fastboot) {
   CHECK_P(sim_paused());
   clear_steps();
   gb.reset_states();
-  gb->reset_to_poweron();
+  gb->reset_to_poweron(fastboot);
 }
 
-void GateBoyThread::reset_to_bootrom(bool slow) {
+void GateBoyThread::reset_to_bootrom() {
   CHECK_P(sim_paused());
   clear_steps();
   gb.reset_states();

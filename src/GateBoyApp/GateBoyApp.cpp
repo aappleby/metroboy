@@ -61,7 +61,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //gb_thread = new GateBoyThread(new LogicBoy());
   gb_thread = new GateBoyThread(new GateBoy());
   gb_thread->start();
-  gb_thread->reset_to_poweron();
+  //gb_thread->reset_to_bootrom();
 
   //gb_thread->run_to(459148 - 1);
 
@@ -110,11 +110,11 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   // gejmboj also around 120
   // pocket around 140
 
-  blob cart;
+  //blob cart;
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
 
-  load_blob("LinksAwakening.gb", cart);     // broken
+  //load_blob("LinksAwakening.gb", cart);     // broken
   //load_blob("tetris.gb", cart);             // broken
   //load_blob("SML.gb", cart); // reboot loop
   //load_blob("pman.gb", cart); // title screen funkd up
@@ -125,8 +125,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //load_blob("tests/cpu_instrs/individual/10-bit ops.gb", cart);
   //load_blob("tests/microtests/DMG/timer_tma_write_a.gb", cart);
 
-  gb_thread->load_cart_blob(cart);
-  gb_thread->reset_to_cart();
+  //gb_thread->load_cart_blob(cart);
+  //gb_thread->reset_to_cart();
 
   //gb_thread->run_to(49583368);
 
@@ -218,7 +218,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
         gb_thread->resume();
       }
       gb_thread->clear_steps();
-      gb_thread->add_steps(46880640);
+      gb_thread->add_steps(46880727);
       break;
     }
 

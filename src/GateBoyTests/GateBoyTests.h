@@ -16,8 +16,8 @@ struct GateBoyTests {
   TestResults test_regression_cart     (const char* filename, int cycles, bool from_bootrom);
   TestResults test_regression_dump     (const char* filename, int cycles);
 
-  TestResults test_fastboot            (const GateBoy* proto, uint8_t mask);
-  TestResults test_reset_to_bootrom    (const IGateBoy* proto, uint8_t mask);
+  //TestResults test_fastboot            (const GateBoy* proto, uint8_t mask);
+  //TestResults test_reset_to_bootrom    (const IGateBoy* proto, uint8_t mask);
   TestResults test_reset_to_cart       (const IGateBoy* proto, uint8_t mask);
 
   TestResults test_init(const IGateBoy* proto);

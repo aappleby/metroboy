@@ -61,8 +61,8 @@ int main(int argc, char** argv) {
 
     LOG_B("========== GateBoy tests ==========\n");
     const auto proto = make_unique<GateBoy>();
-    results += a.test_fastboot        (proto.get(), 0xFF);
-    results += a.test_reset_to_bootrom(proto.get(), 0xFF);
+    //results += a.test_fastboot        (proto.get(), 0xFF);
+    //results += a.test_reset_to_bootrom(proto.get(), 0xFF);
     results += a.test_reset_to_cart   (proto.get(), 0xFF);
     results += a.test_generic         (proto.get());
     LOG_B("\n");
@@ -481,6 +481,9 @@ TestResults GateBoyTests::diff_gb(IGateBoy* gb1, IGateBoy* gb2, uint8_t mask) {
 //-----------------------------------------------------------------------------
 // Power-on reset state should be stable
 
+// I don't think this test makes sense any more with the new boot process
+
+#if 0
 TestResults GateBoyTests::test_fastboot(const GateBoy* proto, uint8_t mask) {
   TEST_INIT();
 
@@ -488,13 +491,11 @@ TestResults GateBoyTests::test_fastboot(const GateBoy* proto, uint8_t mask) {
   unique_ptr<GateBoy> gb2(proto->clone());
 
   LOG_B("run_poweron_reset with fastboot = true\n");
-  gb1->reset_to_poweron();
-  gb1->run_poweron_reset(dummy_cart, true);
+  gb1->reset_to_poweron(true);
   LOG_G("run_poweron_reset with fastboot = true done\n");
 
   LOG_B("run_poweron_reset with fastboot = false\n");
-  gb2->reset_to_poweron();
-  gb2->run_poweron_reset(dummy_cart, false);
+  gb2->reset_to_poweron(false);
   LOG_G("run_poweron_reset with fastboot = false done\n");
 
   //EXPECT_EQ(7, gb1->get_sys().gb_phase_total & 7);
@@ -510,10 +511,14 @@ TestResults GateBoyTests::test_fastboot(const GateBoy* proto, uint8_t mask) {
 
   TEST_DONE();
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Compare 
 
+// I don't think this test makes sense any more with the new boot process
+
+#if 0
 TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* /*proto*/, uint8_t mask) {
   TEST_INIT();
 
@@ -521,8 +526,8 @@ TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* /*proto*/, uint8
   auto gb2 = new GateBoy();
 
   LOG_B("run_poweron_reset()\n");
-  gb1->reset_to_poweron();
-  gb1->run_poweron_reset(dummy_cart, true);
+  gb1->reset_to_poweron(true);
+  gb1->run_poweron_reset(dummy_cart);
   LOG_G("run_poweron_reset() done\n");
 
   LOG_B("reset_to_bootrom(fast)\n");
@@ -533,6 +538,7 @@ TestResults GateBoyTests::test_reset_to_bootrom(const IGateBoy* /*proto*/, uint8
 
   TEST_DONE();
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // reset_cart() should match dumped reset state.

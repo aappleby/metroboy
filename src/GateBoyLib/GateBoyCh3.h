@@ -6,7 +6,7 @@ struct GateBoyState;
 //==============================================================================
 
 struct SpuChannel3 {
-  void reset_to_cart() {}
+  void reset_to_cart();
 
   uint32_t tick_out(const GateBoyState& reg_old, GateBoyState& reg_new);
 

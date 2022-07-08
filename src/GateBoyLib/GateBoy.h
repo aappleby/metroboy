@@ -102,7 +102,7 @@ struct GateBoySys {
     cpu_en = true;
     fastboot = true;
     buttons = 0;
-    gb_phase_total = 46880719;
+    gb_phase_total = 0x2CB57D7; //46880719;
   }
 
   // External signals
@@ -172,8 +172,7 @@ struct GateBoy  : public IGateBoy {
     return write_ok ? GBResult::ok() : Error::CORRUPT;;
   }
 
-  GBResult reset_to_poweron();
-  GBResult run_poweron_reset(const blob& cart_blob, bool fastboot);
+  GBResult reset_to_poweron(bool fastboot);
   GBResult reset_to_bootrom(const blob& cart_blob) override;
   GBResult reset_to_cart(const blob& cart_blob) override;
 

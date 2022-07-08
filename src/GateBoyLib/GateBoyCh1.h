@@ -5,7 +5,7 @@
 //==============================================================================
 
 struct SpuChannel1 {
-  void reset_to_cart() {}
+  void reset_to_cart();
 
   /*#p13.HOCA*/ wire HOCA_CH1_AMP_ENn_new() const {
     return nor5(JAFY_NR12_ENV_DIRp.qp_newB(),

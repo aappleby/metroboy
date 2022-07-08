@@ -20,7 +20,7 @@ public:
   virtual GBResult load_raw_dump(BlobStream& dump_in) = 0;
   virtual GBResult save_raw_dump(BlobStream& dump_out) const = 0;
 
-  virtual GBResult reset_to_poweron() = 0;
+  virtual GBResult reset_to_poweron(bool fastboot) = 0;
   virtual GBResult reset_to_bootrom(const blob& cart_blob) = 0;
   virtual GBResult reset_to_cart   (const blob& cart_blob) = 0;
 

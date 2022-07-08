@@ -238,6 +238,7 @@ struct Dumper {
 
     const uint8_t* d = (const uint8_t*)blob;
     for (int i = byte_count - 1; i >= 0; i--) {
+      // high clock = green, low clock = red
       add_char((d[i] & 0x02) ? '\002' : '\003');
       add_char((d[i] & 0x01) ? '1' : '0');
     }

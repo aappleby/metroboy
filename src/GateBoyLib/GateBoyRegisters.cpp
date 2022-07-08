@@ -279,18 +279,18 @@ void OamLatchB::reset_to_cart() {
 //-----------------------------------------------------------------------------
 
 void OamTempA::reset_to_cart() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
 
 void OamTempB::reset_to_cart() {
-  memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
+  memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
 
-void TileTempA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void TileTempA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
@@ -298,11 +298,11 @@ void TileTempB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_
 
 //-----------------------------------------------------------------------------
 
-void SpritePixA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+void SpritePixA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void SpritePixB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00); }
+void SpritePixB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 

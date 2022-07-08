@@ -3,7 +3,7 @@
 //==============================================================================
 
 struct SpuChannel4 {
-  void reset_to_cart() {}
+  void reset_to_cart();
 
   /*#p20.GEVY*/ wire GEVY_CH4_AMP_ENn() const { 
     return nor5(GEKY_NR42_ENV_DIRp.qp_newB(),

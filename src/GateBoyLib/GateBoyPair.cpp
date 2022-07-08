@@ -43,9 +43,9 @@ GBResult GateBoyPair::save_raw_dump(BlobStream& dump_out) const {
   return check_results(r1, r2);
 }
 
-GBResult GateBoyPair::reset_to_poweron() {
-  GBResult r1 = gb->reset_to_poweron();
-  GBResult r2 = lb->reset_to_poweron();
+GBResult GateBoyPair::reset_to_poweron(bool fastboot) {
+  GBResult r1 = gb->reset_to_poweron(fastboot);
+  GBResult r2 = lb->reset_to_poweron(fastboot);
   return check_results(r1, r2);
 }
 

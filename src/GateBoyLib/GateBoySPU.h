@@ -17,8 +17,8 @@ struct GateBoyState;
 //==============================================================================
 
 struct GateBoySPU {
-  void reset_to_bootrom() {}
-  void reset_to_cart() {}
+
+  void reset_to_cart();
 
   //----------
   // SPU clocks

@@ -11,6 +11,43 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new);
 
 //-----------------------------------------------------------------------------
 
+void GateBoySPU::reset_to_cart() {
+  CEMO_CLK_1M.state   = BIT_OLD | BIT_DRIVEN;
+  ATEP_CLK_2M.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
+  CERY_CLK_2M.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
+  ATYK_CLK_2M.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
+  AVOK_CLK_1M.state   = BIT_OLD | BIT_DRIVEN;
+  AJER_CLK_2M.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
+  JESO_CLK_512K.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  BARA_CLK_512.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
+  CARU_CLK_256.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
+  BYLU_CLK_128.state  = BIT_OLD | BIT_DRIVEN;
+
+  APEG_NR50_VOL_L0.state = 0x1b;
+  BYGA_NR50_VOL_L1.state = 0x1b;
+  AGER_NR50_VOL_L2.state = 0x1b;
+  APOS_NR50_VIN_TO_L.state = 0x1a;
+  BYRE_NR50_VOL_R0.state = 0x1b;
+  BUMO_NR50_VOL_R1.state = 0x1b;
+  COZU_NR50_VOL_R2.state = 0x1b;
+  BEDU_NR50_VIN_TO_R.state = 0x1a;
+
+  ANEV_NR51_D0.state = 0x19;
+  BOGU_NR51_D1.state = 0x19;
+  BAFO_NR51_D2.state = 0x19;
+  ATUF_NR51_D3.state = 0x19;
+  BUME_NR51_D4.state = 0x19;
+  BOFA_NR51_D5.state = 0x19;
+  BEFO_NR51_D6.state = 0x19;
+  BEPU_NR51_D7.state = 0x19;
+
+  FERO_NR52_DBG_APUp.state = 0x1a;
+  BOWY_NR52_DBG_SWEEP.state = 0x1a;
+  HADA_NR52_ALL_SOUND_ON.state = 0x1b;
+}
+
+//-----------------------------------------------------------------------------
+
 void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram) {
 
   memset(&reg_new.wave_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.wave_dbus));

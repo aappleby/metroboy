@@ -32,14 +32,14 @@ void GateBoySPU::reset_to_cart() {
   COZU_NR50_VOL_R2.state = 0x1b;
   BEDU_NR50_VIN_TO_R.state = 0x1a;
 
-  ANEV_NR51_RCH1_ENp.state = 0x19;
-  BOGU_NR51_RCH2_ENp.state = 0x19;
-  BAFO_NR51_RCH3_ENp.state = 0x19;
-  ATUF_NR51_RCH4_ENp.state = 0x19;
-  BUME_NR51_LCH1_ENp.state = 0x19;
-  BOFA_NR51_LCH2_ENp.state = 0x19;
-  BEFO_NR51_LCH3_ENp.state = 0x19;
-  BEPU_NR51_LCH4_ENp.state = 0x19;
+  ANEV_NR51_RCH1_ENp.state = 0x1b;
+  BOGU_NR51_RCH2_ENp.state = 0x1b;
+  BAFO_NR51_RCH3_ENp.state = 0x1a;
+  ATUF_NR51_RCH4_ENp.state = 0x1a;
+  BUME_NR51_LCH1_ENp.state = 0x1b;
+  BOFA_NR51_LCH2_ENp.state = 0x1b;
+  BEFO_NR51_LCH3_ENp.state = 0x1b;
+  BEPU_NR51_LCH4_ENp.state = 0x1b;
 
   FERO_NR52_DBG_APUp.state = 0x1a;
   BOWY_NR52_DBG_SWEEP.state = 0x1a;

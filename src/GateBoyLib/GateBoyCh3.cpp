@@ -5,14 +5,14 @@
 #ifdef SIM_AUDIO
 
 void SpuChannel3::reset_to_cart() {
-  KOGA_NR33_FREQ00p.state = 0x18;
-  JOVY_NR33_FREQ01p.state = 0x18;
-  JAXA_NR33_FREQ02p.state = 0x18;
-  JEFE_NR33_FREQ03p.state = 0x18;
-  JYPO_NR33_FREQ04p.state = 0x18;
-  JOVE_NR33_FREQ05p.state = 0x18;
-  KANA_NR33_FREQ06p.state = 0x18;
-  KOGU_NR33_FREQ07p.state = 0x18;
+  KOGA_NR33_FREQ00p.state = 0x1a;
+  JOVY_NR33_FREQ01p.state = 0x1a;
+  JAXA_NR33_FREQ02p.state = 0x1a;
+  JEFE_NR33_FREQ03p.state = 0x1a;
+  JYPO_NR33_FREQ04p.state = 0x1a;
+  JOVE_NR33_FREQ05p.state = 0x1a;
+  KANA_NR33_FREQ06p.state = 0x1a;
+  KOGU_NR33_FREQ07p.state = 0x1a;
   JEMO_NR34_FREQ08p.state = 0x1a;
   JETY_NR34_FREQ09p.state = 0x1a;
   JACY_NR34_FREQ10p.state = 0x1a;

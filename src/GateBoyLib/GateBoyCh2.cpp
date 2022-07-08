@@ -17,11 +17,11 @@ void SpuChannel2::reset_to_cart() {
   HYFU_NR22_P0p.state = 0x1a;
   HORE_NR22_P1p.state = 0x1a;
   HAVA_NR22_P2p.state = 0x1a;
-  FORE_NR22_ADDp.state = 0x18;
-  GATA_NR22_V0p.state = 0x18;
-  GUFE_NR22_V1p.state = 0x18;
-  GURA_NR22_V2p.state = 0x18;
-  GAGE_NR22_V3p.state = 0x18;
+  FORE_NR22_ADDp.state = 0x1a;
+  GATA_NR22_V0p.state = 0x1a;
+  GUFE_NR22_V1p.state = 0x1a;
+  GURA_NR22_V2p.state = 0x1a;
+  GAGE_NR22_V3p.state = 0x1a;
   FOFE_NR23_FREQ00p.state = 0x1a;
   FOVA_NR23_FREQ01p.state = 0x1a;
   FEDY_NR23_FREQ02p.state = 0x1a;

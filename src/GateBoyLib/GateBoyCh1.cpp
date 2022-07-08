@@ -23,11 +23,11 @@ void SpuChannel1::reset_to_cart() {
   JUSA_NR12_DELAY0p.state = 0x1b;
   JUZY_NR12_DELAY1p.state = 0x1b;
   JOMA_NR12_DELAY2p.state = 0x1a;
-  JAFY_NR12_ENV_DIRp.state = 0x19;
-  JATY_NR12_VOL0p.state = 0x19;
-  JAXO_NR12_VOL1p.state = 0x19;
-  JENA_NR12_VOL2p.state = 0x19;
-  JOPU_NR12_VOL3p.state = 0x19;
+  JAFY_NR12_ENV_DIRp.state = 0x1a;
+  JATY_NR12_VOL0p.state = 0x1b;
+  JAXO_NR12_VOL1p.state = 0x1b;
+  JENA_NR12_VOL2p.state = 0x1b;
+  JOPU_NR12_VOL3p.state = 0x1b;
   BOKO_NR14_LENENp.state = 0x1a;
   DUPE_NR14_TRIGp.state = 0x1a;
   CYTO_CH1_ACTIVEp.state = 0x19;
@@ -109,17 +109,19 @@ void SpuChannel1::reset_to_cart() {
   EROS_PHASE_xxCDxxGH.state = 0x1b;
   DAPE_PHASE_xxxxEFGH.state = 0x18;
   KOZY_ENV_TICKp.state = 0x1a;
-  KYNO_ENV_MAXp.state = 0x18;
+  KYNO_ENV_MAXp.state = 0x19;
   JOVA_ENV_DELAY0p.state = 0x1a;
   KENU_ENV_DELAY1p.state = 0x19;
   KERA_ENV_DELAY2p.state =   0x1b;
-  HEVO_CH1_ENV3p.state = 0x1b;
-  HOKO_CH1_ENV2p.state = 0x1b;
-  HEMY_CH1_ENV1p.state = 0x1b;
+  
+  HEVO_CH1_ENV3p.state = 0x19;
+  HOKO_CH1_ENV2p.state = 0x19;
+  HEMY_CH1_ENV1p.state = 0x19;
   HAFO_CH1_ENV0p.state = 0x19;
+  
   KALY_ENV_DELAY_CLK_64n.state = 0x19;
   DUWO_RAW_BIT_SYNCp.state = 0x18;
-  KEZU_ENV_ACTIVEn.state = 0x18;
+  KEZU_ENV_ACTIVEn.state = 0x19;
 }
 
 void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {

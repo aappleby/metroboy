@@ -62,6 +62,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread = new GateBoyThread(new GateBoy());
   gb_thread->start();
 
+  /*
   gb_thread->load_program(R"(
     0150:
       ld a, $FF
@@ -74,6 +75,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
       inc l
       jr -4
   )");
+  */
 
 #if 0
   // test_fuzz_reg failed at 1871:0268 - write 0xe5 to 0xff40

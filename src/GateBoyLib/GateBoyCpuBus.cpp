@@ -63,7 +63,7 @@ void GateBoyCpuSignals::reset_to_cart() {
   SIG_IN_CPU_RDp.state       = 0b00011000;
   SIG_IN_CPU_WRp.state       = 0b00011001;
   SIG_IN_CPU_EXT_BUSp.state  = 0b00011000;
-  SIG_IN_CPU_DBUS_FREE.state = 0b00011000;
+  SIG_IN_CPU_DBUS_FREE.state = 0b00011001;
   SIG_CPU_UNOR_DBG.state     = 0b00011000;
   SIG_CPU_ADDR_HIp.state     = 0b00011001;
   SIG_CPU_UMUT_DBG.state     = 0b00011000;

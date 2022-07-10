@@ -89,9 +89,9 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   // Low-speed clocks are picked up from DIV
 
   /*_p01.COKE*/ wire COKE_CLK_2M = not1(reg_new.spu.AJER_CLK_2M.qn_new());
-  ///*_p01.UMER*/ wire UMER_DIV10n_old = not1(reg_old.reg_div.TERU_DIV10p.qp_old());
+  /*_p01.UMER*/ wire UMER_DIV10n_old = not1(reg_old.reg_div.TERU_DIV10p.qp_old());
   
-  wire UMER_DIV10n_old = not1(reg_old.reg_div.UNYK_DIV04p.qp_old());
+  //wire UMER_DIV10n_old = not1(reg_old.reg_div.UNYK_DIV04p.qp_old());
 
   probe_wire(12, "UMER", UMER_DIV10n_old);
 

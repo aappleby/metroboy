@@ -483,37 +483,10 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d("\n");
 
   d("===== CH1 =====\n");
-  d.dump_bitp("BANY_NR10_SWEEP_SHIFT0p  : " , s.ch1.BANY_NR10_SWEEP_SHIFT0p.get_state());
-  d.dump_bitp("ARAX_NR10_SWEEP_SHIFT1p  : " , s.ch1.ARAX_NR10_SWEEP_SHIFT1p.get_state());
-  d.dump_bitp("ANAZ_NR10_SWEEP_SHIFT2p  : " , s.ch1.ANAZ_NR10_SWEEP_SHIFT2p.get_state());
-  d.dump_bitp("AVAF_NR10_SWEEP_DIRp     : " , s.ch1.AVAF_NR10_SWEEP_DIRp.get_state());
-  d.dump_bitp("ADEK_NR10_SWEEP_PERIOD0p : " , s.ch1.ADEK_NR10_SWEEP_PERIOD0p.get_state());
-  d.dump_bitp("BANA_NR10_SWEEP_PERIOD1p : " , s.ch1.BANA_NR10_SWEEP_PERIOD1p.get_state());
-  d.dump_bitp("BOTU_NR10_SWEEP_PERIOD2p : " , s.ch1.BOTU_NR10_SWEEP_PERIOD2p.get_state());
-  d("\n");
-
-  d.dump_bitp("BACY_NR11_LEN0n  : ", s.ch1.BACY_NR11_LEN0.state);
-  d.dump_bitp("CAVY_NR11_LEN1n  : ", s.ch1.CAVY_NR11_LEN1.state);
-  d.dump_bitp("BOVY_NR11_LEN2n  : ", s.ch1.BOVY_NR11_LEN2.state);
-  d.dump_bitp("CUNO_NR11_LEN3n  : ", s.ch1.CUNO_NR11_LEN3.state);
-  d.dump_bitp("CURA_NR11_LEN4n  : ", s.ch1.CURA_NR11_LEN4.state);
-  d.dump_bitp("ERAM_NR11_LEN5n  : ", s.ch1.ERAM_NR11_LEN5.state);
-  d.dump_bitp("CENA_NR11_DUTY0p : ", s.ch1.CENA_NR11_DUTY0p.get_state());
-  d.dump_bitp("DYCA_NR11_DUTY1p : ", s.ch1.DYCA_NR11_DUTY1p.get_state());
-  d("\n");
-
-  d.dump_bitp("JUSA_NR12_DELAY0p  : ", s.ch1.JUSA_NR12_PERIOD0p.get_state());
-  d.dump_bitp("JUZY_NR12_DELAY1p  : ", s.ch1.JUZY_NR12_PERIOD1p.get_state());
-  d.dump_bitp("JOMA_NR12_DELAY2p  : ", s.ch1.JOMA_NR12_PERIOD2p.get_state());
-  d.dump_bitp("JAFY_NR12_ENV_DIRp : ", s.ch1.JAFY_NR12_ENV_DIRp.get_state());
-  d.dump_bitp("JATY_NR12_VOL0p    : ", s.ch1.JATY_NR12_VOL0p.get_state());
-  d.dump_bitp("JAXO_NR12_VOL1p    : ", s.ch1.JAXO_NR12_VOL1p.get_state());
-  d.dump_bitp("JENA_NR12_VOL2p    : ", s.ch1.JENA_NR12_VOL2p.get_state());
-  d.dump_bitp("JOPU_NR12_VOL3p    : ", s.ch1.JOPU_NR12_VOL3p.get_state());
-  d("\n");
-
-  d.dump_bitp("BOKO_NR14_LENENp : ", s.ch1.BOKO_NR14_LENENp.get_state());
-  d.dump_bitp("DUPE_NR14_TRIGp  : ", s.ch1.DUPE_NR14_TRIGp.get_state());
+  d.dump_slice2p("NR10 ", &s.ch1.BANY_NR10_SWEEP_SHIFT0p, 8);
+  d.dump_slice2p("NR11 ", &s.ch1.BACY_NR11_LEN0, 8);
+  d.dump_slice2p("NR12 ", &s.ch1.JUSA_NR12_PERIOD0p, 8);
+  d.dump_slice2p("NR14 ", &s.ch1.BOKO_NR14_LENENp, 2);
   d("\n");
 
   d.dump_slice2p("CH1 FREQ     : ", &s.ch1.HYKA_CH1_FREQ00, 11);
@@ -525,14 +498,171 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_slice2p("CH1 ENV      : ", &s.ch1.HEVO_CH1_ENV3p, 4);
   d.dump_slice2p("CH1 ENV DLY  : ", &s.ch1.JOVA_ENV_DELAY0p, 3);
   d.dump_slice2p("CH1 SWP DLY  : ", &s.ch1.CUPO_SWEEP_DELAY0p, 3);
-
-  d.dump_bitp("ESUT_PHASE_xBxDxFxH : ", s.ch1.ESUT_PHASE_xBxDxFxH.state);
-  d.dump_bitp("EROS_PHASE_xxCDxxGH : ", s.ch1.EROS_PHASE_xxCDxxGH.state);
-  d.dump_bitp("DAPE_PHASE_xxxxEFGH : ", s.ch1.DAPE_PHASE_xxxxEFGH.state);
-  d.dump_bitp("DUWO_RAW_BIT_SYNCp  : ", s.ch1.DUWO_RAW_BIT_SYNCp.state);
-
-
+  d(             "CH1 OUT      : %d", s.ch1.audio_out());
   d("\n");
+
+
+
+#if 0
+  /*#p13.CYTO*/ NorLatch CYTO_CH1_ACTIVEp;
+
+  /*#p13.EZEC*/ DFF17 EZEC_CH1_TRIGn;
+
+  /*_p13.FEKU*/ DFF17 FEKU_CH1_TRIGp;
+  /*_p13.FARE*/ DFF17 FARE_CH1_TRIGp;
+  /*_p13.FYTE*/ DFF17 FYTE_CH1_TRIGp;
+
+  /*_p13.BYTE*/ DFF17 BYTE_SHIFT_DONEp;
+
+  /*_p13.CERO*/ DFF17 CERO_CH1_LEN_DONE;
+
+  /*#p09.BAZA*/ DFF17 BAZA_DBG_SWEEP_CLK;
+  /*_p13.BEXA*/ DFF17 BEXA_SWEEP_TRIGGERp;
+
+  /*_p13.FEMU*/ NandLatch FEMU_SHIFTINGn;
+
+  /*_p13.FYFO*/ NorLatch FYFO_CH1_TRIGn;
+  /*_p13.COMY*/ DFF17 COMY_SAMPLE_CLKp;
+  /*_p13.GEXU*/ NandLatch GEXU_FREQ_GATEn;
+
+  /*#p13.KOZY*/ DFF17 KOZY_ENV_TICKp;
+  /*#p13.KYNO*/ DFF17 KYNO_ENV_MAXp;
+
+  /*#p13.KEZU*/ NorLatch KEZU_ENV_ACTIVEn;
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  d("===== CH2 =====\n");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #if 0
   d.dump_bitp("ERYC_NR21_LEN0  : ", s.ch2.ERYC_NR21_LEN0 .state);

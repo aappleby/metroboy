@@ -120,7 +120,7 @@ struct GateBoyState {
   /*_p16.KUHA*/ wire KUHA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
   /*#p16.GOMA*/ wire GOMA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
 
-  /*_p09.EDEK*/ wire EDEK_NR52_DBG_APUn() const { return not1(spu.FERO_NR52_DBG_APUp.qp_newB()); }
+  /*_p09.EDEK*/ wire EDEK_NR52_DBG_APUn() const { return not1(spu.FERO_NR52_DBG_APUp.qn_newB()); }
   
   /*#p14.FAPE*/ wire FAPE_CPU_RDp_DBGn()  const { return nand2(cpu_signals.FOGE_CPU_RDp(), EDEK_NR52_DBG_APUn()); } // schematic wrong? was and2
   /*_p16.EGAD*/ wire EGAD_CPU_RDn_DBGn()  const { return nand2(cpu_signals.DOVO_CPU_RDp(), EDEK_NR52_DBG_APUn()); }

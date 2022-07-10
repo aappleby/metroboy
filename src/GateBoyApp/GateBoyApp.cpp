@@ -66,6 +66,14 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread = new GateBoyThread(new GateBoy());
   gb_thread->start();
 
+  /*
+  NR10 FF10 -PPP NSSS Sweep period, negate, shift
+  NR11 FF11 DDLL LLLL Duty, Length load (64-L)
+  NR12 FF12 VVVV APPP Starting volume, Envelope add mode, period
+  NR13 FF13 FFFF FFFF Frequency LSB
+  NR14 FF14 TL-- -FFF Trigger, Length enable, Frequency MSB
+  */
+
   // baBING
   // 0x000700c0 0xff26 0x80 // apu on
   // 0x00070108 0xff25 0xf3 // left en 0b1111 right en 0b0011
@@ -84,29 +92,20 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
     0150:
       ld a, $00
       ld ($FF26), a
-
       ld a, $80
       ld ($FF26), a
 
-      ld a, $F3
-      ld ($FF25), a
-
-      ld a, $77
-      ld ($FF24), a
 
       ld a, $80
       ld ($FF11), a
-
-      ld a, $F3
+      ld a, $D3
       ld ($FF12), a
 
-      ld a, $83
+
+      ld a, $00
       ld ($FF13), a
-
-      ld a, $87
+      ld a, $86
       ld ($FF14), a
-
-      inc l
 
       jr -2
   )");

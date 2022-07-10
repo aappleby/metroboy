@@ -309,8 +309,9 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
         gb_thread->add_steps(8);
       }
       else {
-        gb_thread->add_steps(1);
-        gb_thread->run_normal();
+        //gb_thread->add_steps(1);
+        //gb_thread->run_normal();
+        gb_thread->next_phase();
       }
 
       break;

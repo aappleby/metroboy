@@ -295,7 +295,7 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   /*#p28.GEKA*/ wire GEKA_OAM_A0p_new = not1(reg_new.oam_abus.BUS_OAM_A00n.out_new());
   /*_p28.WAFO*/ wire WAFO_OAM_A0n_new = not1(GEKA_OAM_A0p_new);
 
-  /*_p04.MAKA*/ reg_new.oam_ctrl.MAKA_LATCH_EXTp.dff17(reg_new.sys_clk.ZEME_odd_new(), reg_new.sys_rst.AVOR_SYS_RSTp_new(), reg_old.cpu_signals.CATY_LATCH_EXTp_old());
+  /*_p04.MAKA*/ reg_new.oam_ctrl.MAKA_LATCH_EXTp.dff17(reg_new.sys_clk.ZEME_AxCxExGx_new(), reg_new.sys_rst.AVOR_SYS_RSTp_new(), reg_old.cpu_signals.CATY_LATCH_EXTp_old());
 
   /*_p04.NAXY*/ wire NAXY_DMA_OAM_WRp_new = nor2(reg_new.sys_clk.UVYT_ABCDxxxx_new(), reg_new.oam_ctrl.MAKA_LATCH_EXTp.qp_new()); // def nor2
   /*_p04.POWU*/ wire POWU_DMA_OAM_WRp_new = and2(reg_new.MATU_DMA_RUNNINGp_odd.qp_new(), NAXY_DMA_OAM_WRp_new); // def and

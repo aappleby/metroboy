@@ -435,8 +435,8 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("ATEP_AxxDExxH   : ", s.spu.ATEP_AxxDExxH.state);
   d.dump_bitp("CERY_CLK_2M   : ", s.spu.CERY_CLK_2M.state);
   d.dump_bitp("ATYK_CLK_2M   : ", s.spu.ATYK_CLK_2M.state);
-  d.dump_bitp("AVOK_CLK_1M   : ", s.spu.AVOK_CLK_1M.state);
-  d.dump_bitp("AJER_CLK_2M   : ", s.spu.AJER_CLK_2M.state);
+  d.dump_bitp("AVOK_xBCDExxx   : ", s.spu.AVOK_xBCDExxx.state);
+  d.dump_bitp("AJER_AxxDExxH   : ", s.spu.AJER_AxxDExxH.state);
   d.dump_bitp("JESO_CLK_512K : ", s.spu.JESO_CLK_512K.state);
   d.dump_bitp("BARA_CLK_512  : ", s.spu.BARA_CLK_512.state);
   d.dump_bitp("CARU_CLK_256  : ", s.spu.CARU_CLK_256.state);

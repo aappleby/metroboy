@@ -2326,8 +2326,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.cpu_signals.SIG_CPU_UMUT_DBG.state = 0; // dead signal
 
     pins.sys.PIN_73_CLK_DRIVE.state = pins.sys.PIN_74_CLK.CLK.state; // dead signal
-    state_new.sys_clk.AVET_DEGLITCH.state = pins.sys.PIN_74_CLK.CLK.state; // dead signal
-    state_new.sys_clk.ANOS_DEGLITCH.state = !pins.sys.PIN_74_CLK.CLK.state; // dead signal
+    state_new.sys_clk.AVET_AxCxExGx.state = pins.sys.PIN_74_CLK.CLK.state; // dead signal
+    state_new.sys_clk.ANOS_xBxDxFxH.state = !pins.sys.PIN_74_CLK.CLK.state; // dead signal
 
     state_new.sys_clk.AFUR_ABCDxxxx.set_state(gen_clk(phase_new, 0b00001111)); // dead signal
     state_new.sys_clk.ALEF_xBCDExxx.set_state(gen_clk(phase_new, 0b10000111)); // dead signal

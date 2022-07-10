@@ -118,7 +118,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   {
     /*#p18.EZAS*/ wire EZAS_CH3_ACTIVEn_old = not1(reg_old.ch3.FOZU_CH3_ACTIVEp.qp_old());
     /*#p18.DORU*/ wire DORU_CH3_ACTIVEp_old = not1(EZAS_CH3_ACTIVEn_old);
-    /*#p18.DAVO*/ reg_new.ch3.DAVO_CH3_ACTIVEp.dff17(reg_new.spu.AJER_CLK_2M.qp_new(), reg_new.CALU_APU_RSTn_new(), DORU_CH3_ACTIVEp_old);
+    /*#p18.DAVO*/ reg_new.ch3.DAVO_CH3_ACTIVEp.dff17(reg_new.spu.AJER_AxxDExxH.qp_new(), reg_new.CALU_APU_RSTn_new(), DORU_CH3_ACTIVEp_old);
   }
 
   {

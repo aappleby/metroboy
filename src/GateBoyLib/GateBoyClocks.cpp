@@ -4,8 +4,8 @@
 #include "GateBoyLib/Gates.h"
 
 void GateBoyClock::reset_to_cart() {
-  ANOS_DEGLITCH.state = 0b00011001;
-  AVET_DEGLITCH.state = 0b00011000;
+  ANOS_xBxDxFxH.state = 0b00011001;
+  AVET_AxCxExGx.state = 0b00011000;
   
   AFUR_ABCDxxxx.set_state(0b00011001);
   ALEF_xBCDExxx.set_state(0b00011011);
@@ -30,41 +30,41 @@ void GateBoyClock::reset_to_cart() {
 /*_p01.ABOL*/ wire GateBoyClock::ABOL_CLKREQn_new() const { return not1(SIG_CPU_CLKREQ.out_new()); }
 /*#p01.BUTY*/ wire GateBoyClock::BUTY_CLKREQp_new() const { return not1(ABOL_CLKREQn_new()); }
 
-wire GateBoyClock::AZOF_odd_old() const {
-  /*_p01.ATAL*/ wire ATAL_EVN_old = not1(AVET_DEGLITCH.out_old());
-  /*_p01.AZOF*/ wire AZOF_odd_old = not1(ATAL_EVN_old);
-  return AZOF_odd_old;
+wire GateBoyClock::AZOF_AxCxExGx_old() const {
+  /*_p01.ATAL*/ wire ATAL_xBxDxFxH_old = not1(AVET_AxCxExGx.out_old());
+  /*_p01.AZOF*/ wire AZOF_AxCxExGx_old = not1(ATAL_xBxDxFxH_old);
+  return AZOF_AxCxExGx_old;
 }
 
-wire GateBoyClock::AZOF_odd_new() const {
-  /*_p01.ATAL*/ wire ATAL_EVN_new = not1(AVET_DEGLITCH.out_new());
-  /*_p01.AZOF*/ wire AZOF_odd_new = not1(ATAL_EVN_new);
-  return AZOF_odd_new;
+wire GateBoyClock::AZOF_AxCxExGx_new() const {
+  /*_p01.ATAL*/ wire ATAL_xBxDxFxH_new = not1(AVET_AxCxExGx.out_new());
+  /*_p01.AZOF*/ wire AZOF_AxCxExGx_new = not1(ATAL_xBxDxFxH_new);
+  return AZOF_AxCxExGx_new;
 }
 
-/*_p01.ZAXY*/ wire GateBoyClock::ZAXY_evn_old() const { return not1(AZOF_odd_old()); }
-/*#p01.ZEME*/ wire GateBoyClock::ZEME_odd_old() const { return not1(ZAXY_evn_old()); }
-/*_p29.XYVA*/ wire GateBoyClock::XYVA_evn_old() const { return not1(ZEME_odd_old()); }
-/*_p29.XOTA*/ wire GateBoyClock::XOTA_odd_old() const { return not1(XYVA_evn_old()); }
-/*_p29.XYFY*/ wire GateBoyClock::XYFY_evn_old() const { return not1(XOTA_odd_old()); }
-/*#p01.ALET*/ wire GateBoyClock::ALET_evn_old() const { return not1(ZEME_odd_old()); }
-/*_p01.LAPE*/ wire GateBoyClock::LAPE_odd_old() const { return not1(ALET_evn_old()); }
-/*#p27.MEHE*/ wire GateBoyClock::MEHE_odd_old() const { return not1(ALET_evn_old()); }
-/*#p27.MYVO*/ wire GateBoyClock::MYVO_odd_old() const { return not1(ALET_evn_old()); }
-/*_p27.MOXE*/ wire GateBoyClock::MOXE_odd_old() const { return not1(ALET_evn_old()); }
-/*_p27.TAVA*/ wire GateBoyClock::TAVA_evn_old() const { return not1(LAPE_odd_old()); }
+/*_p01.ZAXY*/ wire GateBoyClock::ZAXY_xBxDxFxH_old() const { return not1(AZOF_AxCxExGx_old()); }
+/*#p01.ZEME*/ wire GateBoyClock::ZEME_AxCxExGx_old() const { return not1(ZAXY_xBxDxFxH_old()); }
+/*_p29.XYVA*/ wire GateBoyClock::XYVA_xBxDxFxH_old() const { return not1(ZEME_AxCxExGx_old()); }
+/*_p29.XOTA*/ wire GateBoyClock::XOTA_AxCxExGx_old() const { return not1(XYVA_xBxDxFxH_old()); }
+/*_p29.XYFY*/ wire GateBoyClock::XYFY_xBxDxFxH_old() const { return not1(XOTA_AxCxExGx_old()); }
+/*#p01.ALET*/ wire GateBoyClock::ALET_xBxDxFxH_old() const { return not1(ZEME_AxCxExGx_old()); }
+/*_p01.LAPE*/ wire GateBoyClock::LAPE_AxCxExGx_old() const { return not1(ALET_xBxDxFxH_old()); }
+/*#p27.MEHE*/ wire GateBoyClock::MEHE_AxCxExGx_old() const { return not1(ALET_xBxDxFxH_old()); }
+/*#p27.MYVO*/ wire GateBoyClock::MYVO_AxCxExGx_old() const { return not1(ALET_xBxDxFxH_old()); }
+/*_p27.MOXE*/ wire GateBoyClock::MOXE_AxCxExGx_old() const { return not1(ALET_xBxDxFxH_old()); }
+/*_p27.TAVA*/ wire GateBoyClock::TAVA_xBxDxFxH_old() const { return not1(LAPE_AxCxExGx_old()); }
 
-/*_p01.ZAXY*/ wire GateBoyClock::ZAXY_evn_new() const { return not1(AZOF_odd_new()); }
-/*#p01.ZEME*/ wire GateBoyClock::ZEME_odd_new() const { return not1(ZAXY_evn_new()); }
-/*_p29.XYVA*/ wire GateBoyClock::XYVA_evn_new() const { return not1(ZEME_odd_new()); }
-/*_p29.XOTA*/ wire GateBoyClock::XOTA_odd_new() const { return not1(XYVA_evn_new()); }
-/*_p29.XYFY*/ wire GateBoyClock::XYFY_evn_new() const { return not1(XOTA_odd_new()); }
-/*#p01.ALET*/ wire GateBoyClock::ALET_evn_new() const { return not1(ZEME_odd_new()); }
-/*_p01.LAPE*/ wire GateBoyClock::LAPE_odd_new() const { return not1(ALET_evn_new()); }
-/*#p27.MEHE*/ wire GateBoyClock::MEHE_odd_new() const { return not1(ALET_evn_new()); }
-/*#p27.MYVO*/ wire GateBoyClock::MYVO_odd_new() const { return not1(ALET_evn_new()); }
-/*_p27.MOXE*/ wire GateBoyClock::MOXE_odd_new() const { return not1(ALET_evn_new()); }
-/*_p27.TAVA*/ wire GateBoyClock::TAVA_evn_new() const { return not1(LAPE_odd_new()); }
+/*_p01.ZAXY*/ wire GateBoyClock::ZAXY_xBxDxFxH_new() const { return not1(AZOF_AxCxExGx_new()); }
+/*#p01.ZEME*/ wire GateBoyClock::ZEME_AxCxExGx_new() const { return not1(ZAXY_xBxDxFxH_new()); }
+/*_p29.XYVA*/ wire GateBoyClock::XYVA_xBxDxFxH_new() const { return not1(ZEME_AxCxExGx_new()); }
+/*_p29.XOTA*/ wire GateBoyClock::XOTA_AxCxExGx_new() const { return not1(XYVA_xBxDxFxH_new()); }
+/*_p29.XYFY*/ wire GateBoyClock::XYFY_xBxDxFxH_new() const { return not1(XOTA_AxCxExGx_new()); }
+/*#p01.ALET*/ wire GateBoyClock::ALET_xBxDxFxH_new() const { return not1(ZEME_AxCxExGx_new()); }
+/*_p01.LAPE*/ wire GateBoyClock::LAPE_AxCxExGx_new() const { return not1(ALET_xBxDxFxH_new()); }
+/*#p27.MEHE*/ wire GateBoyClock::MEHE_AxCxExGx_new() const { return not1(ALET_xBxDxFxH_new()); }
+/*#p27.MYVO*/ wire GateBoyClock::MYVO_AxCxExGx_new() const { return not1(ALET_xBxDxFxH_new()); }
+/*_p27.MOXE*/ wire GateBoyClock::MOXE_AxCxExGx_new() const { return not1(ALET_xBxDxFxH_new()); }
+/*_p27.TAVA*/ wire GateBoyClock::TAVA_xBxDxFxH_new() const { return not1(LAPE_AxCxExGx_new()); }
 
 /*#p01.ATYP*/ wire GateBoyClock::ATYP_ABCDxxxx_new() const { return not1(AFUR_ABCDxxxx.qn_newB()); }
 /*#p01.AFEP*/ wire GateBoyClock::AFEP_AxxxxFGH_new() const { return not1(ALEF_xBCDExxx.qp_newB()); }
@@ -121,19 +121,19 @@ void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {
 
   /*_PIN_73*/ pins.sys.PIN_73_CLK_DRIVE.pin_out(pins.sys.PIN_74_CLK.clk_new(), pins.sys.PIN_74_CLK.clk_new());
 
-  /*_p01.ARYS*/ wire ARYS_CLKIN = not1(pins.sys.PIN_74_CLK.clk_new());
-  /*_p01.AVET*/ reg_new.sys_clk.AVET_DEGLITCH <<= nand2(reg_new.sys_clk.ANOS_DEGLITCH.out_mid(), ARYS_CLKIN);
-  /*_p01.ANOS*/ reg_new.sys_clk.ANOS_DEGLITCH <<= nand2(pins.sys.PIN_74_CLK.clk_new(), reg_new.sys_clk.AVET_DEGLITCH.out_mid());
-  /*_p01.AVET*/ reg_new.sys_clk.AVET_DEGLITCH <<= nand2(reg_new.sys_clk.ANOS_DEGLITCH.out_mid(), ARYS_CLKIN);
-  /*_p01.ANOS*/ reg_new.sys_clk.ANOS_DEGLITCH <<= nand2(pins.sys.PIN_74_CLK.clk_new(), reg_new.sys_clk.AVET_DEGLITCH.out_mid());
+  /*_p01.ARYS*/ wire ARYS_xBxDxFxH = not1(pins.sys.PIN_74_CLK.clk_new());
+  /*_p01.AVET*/ reg_new.sys_clk.AVET_AxCxExGx <<= nand2(reg_new.sys_clk.ANOS_xBxDxFxH.out_mid(), ARYS_xBxDxFxH);
+  /*_p01.ANOS*/ reg_new.sys_clk.ANOS_xBxDxFxH <<= nand2(pins.sys.PIN_74_CLK.clk_new(), reg_new.sys_clk.AVET_AxCxExGx.out_mid());
+  /*_p01.AVET*/ reg_new.sys_clk.AVET_AxCxExGx <<= nand2(reg_new.sys_clk.ANOS_xBxDxFxH.out_mid(), ARYS_xBxDxFxH);
+  /*_p01.ANOS*/ reg_new.sys_clk.ANOS_xBxDxFxH <<= nand2(pins.sys.PIN_74_CLK.clk_new(), reg_new.sys_clk.AVET_AxCxExGx.out_mid());
 
-  /*_p01.ATAL*/ wire ATAL_EVN = not1(reg_new.sys_clk.AVET_DEGLITCH.out_new());
-  /*_p01.ATAN*/ wire ATAN_OLD = not1(ATAL_EVN); // cell not marked on die but it's next to ATAL
+  /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg_new.sys_clk.AVET_AxCxExGx.out_new());
+  /*_p01.ATAN*/ wire ATAN_AxCxExGx = not1(ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
 
-  /*_p01.AFUR*/ reg_new.sys_clk.AFUR_ABCDxxxx.dff9b(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ADYK_xxxDEFGx.qn_oldB());
-  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_xBCDExxx.dff9b(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_ABCDxxxx.qp_oldB());
-  /*_p01.APUK*/ reg_new.sys_clk.APUK_xxCDEFxx.dff9b(ATAN_OLD, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ALEF_xBCDExxx.qp_oldB());
-  /*_p01.ADYK*/ reg_new.sys_clk.ADYK_xxxDEFGx.dff9b(ATAL_EVN, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.APUK_xxCDEFxx.qp_oldB());
+  /*_p01.AFUR*/ reg_new.sys_clk.AFUR_ABCDxxxx.dff9b(ATAN_AxCxExGx, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ADYK_xxxDEFGx.qn_oldB());
+  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_xBCDExxx.dff9b(ATAL_xBxDxFxH, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_ABCDxxxx.qp_oldB());
+  /*_p01.APUK*/ reg_new.sys_clk.APUK_xxCDEFxx.dff9b(ATAN_AxCxExGx, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ALEF_xBCDExxx.qp_oldB());
+  /*_p01.ADYK*/ reg_new.sys_clk.ADYK_xxxDEFGx.dff9b(ATAL_xBxDxFxH, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.APUK_xxCDEFxx.qp_oldB());
 
   /*_PIN_75*/ pins.sys.PIN_75_CLK_OUT.pin_out(reg_new.sys_clk.BUDE_xxxxEFGH_new(), reg_new.sys_clk.BUDE_xxxxEFGH_new());
 
@@ -151,8 +151,8 @@ void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {
 
 void GateBoy::tock_vid_clocks_gates(const GateBoyState& reg_old) {
   auto& reg_new = gb_state;
-  /*_p29.WOSU*/ reg_new.sys_clk.WOSU_AxxDExxH.dff17(reg_new.sys_clk.XYFY_evn_new(),         reg_new.XAPO_VID_RSTn_new(), reg_old.sys_clk.WUVU_ABxxEFxx.qn_old());
-  /*_p29.WUVU*/ reg_new.sys_clk.WUVU_ABxxEFxx.dff17(reg_new.sys_clk.XOTA_odd_new(),         reg_new.XAPO_VID_RSTn_new(), reg_old.sys_clk.WUVU_ABxxEFxx.qn_old());
+  /*_p29.WOSU*/ reg_new.sys_clk.WOSU_AxxDExxH.dff17(reg_new.sys_clk.XYFY_xBxDxFxH_new(),         reg_new.XAPO_VID_RSTn_new(), reg_old.sys_clk.WUVU_ABxxEFxx.qn_old());
+  /*_p29.WUVU*/ reg_new.sys_clk.WUVU_ABxxEFxx.dff17(reg_new.sys_clk.XOTA_AxCxExGx_new(),         reg_new.XAPO_VID_RSTn_new(), reg_old.sys_clk.WUVU_ABxxEFxx.qn_old());
   /*_p21.VENA*/ reg_new.sys_clk.VENA_xxCDEFxx.dff17(reg_new.sys_clk.WUVU_ABxxEFxx.qn_new(), reg_new.XAPO_VID_RSTn_new(), reg_old.sys_clk.VENA_xxCDEFxx.qn_old()); // inverting the clock to VENA doesn't seem to break anything, which is really weird
 }
 

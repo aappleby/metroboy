@@ -272,19 +272,18 @@ void GateBoyThread::run_steps() {
 
 //------------------------------------------------------------------------------
 
+void GateBoyThread::next_phase() {
+  gb->next_phase(cart_blob);
+  if (step_count) step_count--;
+
+  if (gb->get_sys().gb_phase_total % 10000 == 0) {
+    gb.push();
+  }
+}
+
 void GateBoyThread::run_normal() {
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    if (gb->next_phase(cart_blob).is_ok()) {
-      step_count--;
-    }
-    else {
-      step_count = 0;
-      break;
-    }
-
-    if (gb->get_sys().gb_phase_total % 10000 == 0) {
-      gb.push();
-    }
+    next_phase();
   }
 }
 

@@ -88,7 +88,8 @@ struct GateBoyState {
   /*_p09.KAME*/ wire KAME_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
   /*_p14.HUDE*/ wire HUDE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
   /*_p14.JYBU*/ wire JYBU_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p15.BUWE*/ wire BUWE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
+  /*#p15.BUWE*/ wire BUWE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
+  /*#p15.BYHO*/ wire BYHO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
   /*_p15.CEXE*/ wire CEXE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
   /*_p15.CYWU*/ wire CYWU_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
   /*#p09.AFAT*/ wire AFAT_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }

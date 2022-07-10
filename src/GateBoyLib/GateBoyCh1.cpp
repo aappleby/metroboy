@@ -156,8 +156,8 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   /*_p01.CERY*/ DFF17 CERY_CLK_2M;
   /*_p01.ATYK*/ DFF17 ATYK_CLK_2M;
-  /*_p01.AVOK*/ DFF17 AVOK_CLK_1M;
-  /*_p09.AJER*/ DFF17 AJER_CLK_2M;
+  /*_p01.AVOK*/ DFF17 AVOK_xBCDExxx;
+  /*_p09.AJER*/ DFF17 AJER_AxxDExxH;
   /*_p01.JESO*/ DFF17 JESO_CLK_512K;
 
   /*_p01.BARA*/ DFF17 BARA_CLK_512;
@@ -181,7 +181,7 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
   {
-    /*#p09.BAZA*/ reg_new.ch1.BAZA_DBG_SWEEP_CLK.dff17(reg_new.spu.AJER_CLK_2M.qn_new(), reg_new.ATYV_APU_RSTn_new(), reg_old.spu.BOWY_NR52_DBG_SWEEP.qp_old());
+    /*#p09.BAZA*/ reg_new.ch1.BAZA_DBG_SWEEP_CLK.dff17(reg_new.spu.AJER_AxxDExxH.qn_new(), reg_new.ATYV_APU_RSTn_new(), reg_old.spu.BOWY_NR52_DBG_SWEEP.qp_old());
   }
 
 
@@ -189,7 +189,7 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p13.BAVE*/ wire BAVE_NR10_NO_SWEEPp = and3(reg_new.ch1.BOTU_NR10_SWEEP_PERIOD2p.qn_newB(), reg_new.ch1.BANA_NR10_SWEEP_PERIOD1p.qn_newB(), reg_new.ch1.ADEK_NR10_SWEEP_PERIOD0p.qn_newB());
     /*#p13.BURY*/ wire BURY_SWEEP_TRIGGER_RSTn = nor2(BAVE_NR10_NO_SWEEPp, reg_new.KEBA_APU_RSTp_new());
     /*#p13.COZE*/ wire COZE_SWEEP_MAX_old = and3(reg_old.ch1.CAXY_SWEEP_DELAY2p.qp_old(), reg_old.ch1.CYPU_SWEEP_DELAY1p.qp_old(), reg_old.ch1.CUPO_SWEEP_DELAY0p.qp_old());
-    /*#p13.BEXA*/ reg_new.ch1.BEXA_SWEEP_TRIGGERp.dff17(reg_new.spu.AJER_CLK_2M.qp_new(), BURY_SWEEP_TRIGGER_RSTn, COZE_SWEEP_MAX_old);
+    /*#p13.BEXA*/ reg_new.ch1.BEXA_SWEEP_TRIGGERp.dff17(reg_new.spu.AJER_AxxDExxH.qp_new(), BURY_SWEEP_TRIGGER_RSTn, COZE_SWEEP_MAX_old);
   }
 
   {
@@ -206,7 +206,7 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     /*#p13.ATAT*/ wire ATAT_SWEEP_RSTn = nor2(reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.BEXA_SWEEP_TRIGGERp.qp_new());
     /*#p13.COPY*/ wire COPY_SHIFT_DONEp_old = and3(reg_old.ch1.BYRA_SHIFTCNT2.qp_old(), reg_old.ch1.CAJA_SHIFTCNT1.qp_old(), reg_old.ch1.COPA_SHIFTCNT0.qp_old());
-    /*#p13.BYTE*/ reg_new.ch1.BYTE_SHIFT_DONEp.dff17(reg_new.spu.AJER_CLK_2M.qp_new(), ATAT_SWEEP_RSTn, COPY_SHIFT_DONEp_old);
+    /*#p13.BYTE*/ reg_new.ch1.BYTE_SHIFT_DONEp.dff17(reg_new.spu.AJER_AxxDExxH.qp_new(), ATAT_SWEEP_RSTn, COPY_SHIFT_DONEp_old);
   }
 
   {

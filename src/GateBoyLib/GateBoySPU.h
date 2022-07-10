@@ -23,8 +23,8 @@ struct GateBoySPU {
   //----------
   // SPU clocks
 
-  /*#p01.BATA*/ wire BATA_CLK_2M() const { return not1(AJER_CLK_2M.qp_new()); }
-  /*_p01.BAVU*/ wire BAVU_CLK_1M() const { return not1(AVOK_CLK_1M.qp_new()); }
+  /*#p01.BATA*/ wire BATA_CLK_2M() const { return not1(AJER_AxxDExxH.qp_new()); }
+  /*_p01.BAVU*/ wire BAVU_CLK_1M() const { return not1(AVOK_xBCDExxx.qp_new()); }
   /*#p16.FABO*/ wire FABO_CLK_xxCDxxGH() const { return not1(CERY_CLK_2M.qp_new()); }
 
   /*#p20.GYBA*/ wire GYBA_CLK_1M() const { return not1(BAVU_CLK_1M()); }
@@ -71,16 +71,16 @@ struct GateBoySPU {
   /*#p13.JONE*/ wire JONE_CLK_128p() const { return not1(BYFE_CLK_128n()); }
   /*#p20.ALOP*/ wire ALOP_CLK_128() const { return not1(BYFE_CLK_128n()); }
 
-  /*#p15.CEMO*/ DFF17 CEMO_CLK_1M;
+  /*#p15.CEMO*/ DFF17 CEMO_xBCDExxx;
   /*_p15.ATEP*/ DFF17 ATEP_AxxDExxH;
 
   //----------
   // clocks for the apu
 
   /*_p01.CERY*/ DFF17 CERY_CLK_2M;
-  /*_p01.ATYK*/ DFF17 ATYK_CLK_2M;
-  /*_p01.AVOK*/ DFF17 AVOK_CLK_1M;
-  /*_p09.AJER*/ DFF17 AJER_CLK_2M;
+  /*_p01.ATYK*/ DFF17 ATYK_AxxDExxH;
+  /*_p01.AVOK*/ DFF17 AVOK_xBCDExxx;
+  /*_p09.AJER*/ DFF17 AJER_AxxDExxH;
   /*_p01.JESO*/ DFF17 JESO_CLK_512K;
 
   /*_p01.BARA*/ DFF17 BARA_CLK_512;

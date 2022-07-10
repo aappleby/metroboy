@@ -110,6 +110,8 @@ struct GateBoyThread {
 
   void thread_main();
 
+  void next_phase();
+
   void run_normal();
   void run_regression();
   void run_idempotence();

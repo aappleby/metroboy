@@ -11,31 +11,31 @@ struct GateBoyClock {
   wire ABOL_CLKREQn_new() const;
   wire BUTY_CLKREQp_new() const;
 
-  wire AZOF_odd_old() const;
-  wire ZAXY_evn_old() const;
-  wire ZEME_odd_old() const;
-  wire XYVA_evn_old() const;
-  wire XOTA_odd_old() const;
-  wire XYFY_evn_old() const;
-  wire ALET_evn_old() const;
-  wire LAPE_odd_old() const;
-  wire MEHE_odd_old() const;
-  wire MYVO_odd_old() const;
-  wire MOXE_odd_old() const;
-  wire TAVA_evn_old() const;
+  wire AZOF_AxCxExGx_old() const;
+  wire ZAXY_xBxDxFxH_old() const;
+  wire ZEME_AxCxExGx_old() const;
+  wire XYVA_xBxDxFxH_old() const;
+  wire XOTA_AxCxExGx_old() const;
+  wire XYFY_xBxDxFxH_old() const;
+  wire ALET_xBxDxFxH_old() const;
+  wire LAPE_AxCxExGx_old() const;
+  wire MEHE_AxCxExGx_old() const;
+  wire MYVO_AxCxExGx_old() const;
+  wire MOXE_AxCxExGx_old() const;
+  wire TAVA_xBxDxFxH_old() const;
 
-  wire AZOF_odd_new() const;
-  wire ZAXY_evn_new() const;
-  wire ZEME_odd_new() const;
-  wire XYVA_evn_new() const;
-  wire XOTA_odd_new() const;
-  wire XYFY_evn_new() const;
-  wire ALET_evn_new() const;
-  wire LAPE_odd_new() const;
-  wire MEHE_odd_new() const;
-  wire MYVO_odd_new() const;
-  wire MOXE_odd_new() const;
-  wire TAVA_evn_new() const;
+  wire AZOF_AxCxExGx_new() const;
+  wire ZAXY_xBxDxFxH_new() const;
+  wire ZEME_AxCxExGx_new() const;
+  wire XYVA_xBxDxFxH_new() const;
+  wire XOTA_AxCxExGx_new() const;
+  wire XYFY_xBxDxFxH_new() const;
+  wire ALET_xBxDxFxH_new() const;
+  wire LAPE_AxCxExGx_new() const;
+  wire MEHE_AxCxExGx_new() const;
+  wire MYVO_AxCxExGx_new() const;
+  wire MOXE_AxCxExGx_new() const;
+  wire TAVA_xBxDxFxH_new() const;
 
   wire ATYP_ABCDxxxx_new() const;
   wire AFEP_AxxxxFGH_new() const;
@@ -78,7 +78,7 @@ struct GateBoyClock {
   /*#p17.ABUR*/ wire ABUR_xxCDEFGx() const { return not1(BUKE_AxxxxxGH_new()); }
   /*#p17.BORY*/ wire BORY_ABxxxxxH() const { return not1(ABUR_xxCDEFGx()); }
 
-  /*_p01.ATAG*/ wire ATAG_AxCxExGx() const { return not1(AZOF_odd_new()); }
+  /*_p01.ATAG*/ wire ATAG_AxCxExGx() const { return not1(AZOF_AxCxExGx_new()); }
   /*_p01.DOVA*/ wire DOVA_ABCDxxxx() const { return not1(BUDE_xxxxEFGH_new()); } // this goes to all the trigger regs
 
   /*_p01.AMUK*/ wire AMUK_xBxDxFxH() const { return not1(ATAG_AxCxExGx()); } // goes to clock generators and wave ram clock
@@ -89,8 +89,8 @@ struct GateBoyClock {
 
   //----------------------------------------
 
-  /*_p01.ANOS*/ Gate ANOS_DEGLITCH; // NAND latch deglitcher
-  /*_p01.AVET*/ Gate AVET_DEGLITCH; // NAND latch deglitcher
+  /*_p01.ANOS*/ Gate ANOS_xBxDxFxH; // NAND latch deglitcher
+  /*_p01.AVET*/ Gate AVET_AxCxExGx; // NAND latch deglitcher
 
   /*_p01.AFUR*/ DFF9B AFUR_ABCDxxxx;
   /*_p01.ALEF*/ DFF9B ALEF_xBCDExxx;

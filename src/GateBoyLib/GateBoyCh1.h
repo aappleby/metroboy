@@ -23,7 +23,7 @@ struct SpuChannel1 {
   }
 
   wire EGOR_SHIFT_CLK_new() const {
-    /*#p13.EGYP*/ wire EGYP_SHIFT_CLK_new = nor2(FEMU_SHIFTINGn.qn_new(), DYFA_CLK_1M_new());
+    /*#p13.EGYP*/ wire EGYP_SHIFT_CLK_new = nor2(FEMU_SHIFTINGn.qn_new(), DYFA_xBCDExxx());
     /*#p13.CELE*/ wire CELE_SWEEP_DONEp_new = not1(BUGE_SWEEP_DONEn_new());
     /*#p13.DODY*/ wire DODY_SHIFT_CLK_new = nor2(EGYP_SHIFT_CLK_new, CELE_SWEEP_DONEp_new); // border color wrong on die
     /*?p13.EGOR*/ wire EGOR_SHIFT_CLK_new = not1(DODY_SHIFT_CLK_new); // This looks like a nor3, but it almost definiteily is a not1.
@@ -43,8 +43,8 @@ struct SpuChannel1 {
   /*#p12.CYBE*/ wire CYBE_SHIFT_CLK_new() const { return not1(EJYB_SHIFT_CLK_new()); }
   /*#p12.BECY*/ wire BECY_SHIFT_CLK_new() const { return not1(CYBE_SHIFT_CLK_new()); }
 
-  /*#p09.DYFA*/ wire DYFA_CLK_1M_old() const { return not1(CALO_CLK_1M.qn_old()); }
-  /*#p09.DYFA*/ wire DYFA_CLK_1M_new() const { return not1(CALO_CLK_1M.qn_new()); }
+  /*#p09.DYFA*/ wire DYFA_CLK_1M_old() const { return not1(CALO_xBCDExxx.qn_old()); }
+  /*#p09.DYFA*/ wire DYFA_xBCDExxx() const { return not1(CALO_xBCDExxx.qn_new()); }
 
   /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_new() const { return not1(AVAF_NR10_SWEEP_DIRp.qn_newB()); }
   /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_old() const { return not1(AVAF_NR10_SWEEP_DIRp.qn_oldB()); }
@@ -90,7 +90,7 @@ struct SpuChannel1 {
 
   /*#p13.CYTO*/ NorLatch CYTO_CH1_ACTIVEp;
 
-  /*#p13.EZEC*/ DFF17 EZEC_CH1_TRIGn;
+  /*#p13.EZEC*/ DFF17 EZEC_CH1_TRIGp;
 
   /*_p12.HYKA*/ DFF22 HYKA_CH1_FREQ00;
   /*_p12.JYKA*/ DFF22 JYKA_CH1_FREQ01;
@@ -104,7 +104,7 @@ struct SpuChannel1 {
   /*_p12.EVAB*/ DFF22 EVAB_CH1_FREQ09;
   /*_p12.AXAN*/ DFF22 AXAN_CH1_FREQ10;
 
-  /*_p09.CALO*/ DFF17 CALO_CLK_1M;
+  /*_p09.CALO*/ DFF17 CALO_xBCDExxx;
 
   /*_p13.FEKU*/ DFF17 FEKU_CH1_TRIGp;
   /*_p13.FARE*/ DFF17 FARE_CH1_TRIGp;

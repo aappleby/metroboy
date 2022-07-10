@@ -13,7 +13,7 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new);
 
 void GateBoySPU::reset_to_cart() {
   CEMO_CLK_1M.state   = BIT_OLD | BIT_DRIVEN;
-  ATEP_CLK_2M.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
+  ATEP_AxxDExxH.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
   CERY_CLK_2M.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
   ATYK_CLK_2M.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
   AVOK_CLK_1M.state   = BIT_OLD | BIT_DRIVEN;
@@ -76,14 +76,20 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*_p09.AJER*/ reg_new.spu.AJER_CLK_2M.dff17(reg_new.sys_clk.APUV_AxCxExGx(),  reg_new.ATYV_APU_RSTn_new(), reg_old.spu.AJER_CLK_2M.qn_old());
   /*_p01.AVOK*/ reg_new.spu.AVOK_CLK_1M.dff17(reg_new.spu.ATYK_CLK_2M.qn_new(), reg_new.BOPO_APU_RSTn_new(), reg_old.spu.AVOK_CLK_1M.qn_old());
 
-  /*#p09.CALO*/ reg_new.ch1.CALO_CLK_1M.dff17(reg_new.spu.BATA_CLK_2M(), reg_new.AGUR_APU_RSTn_new(), reg_old.ch1.CALO_CLK_1M.qn_old());
+  /*#p09.CALO*/ reg_new.ch1.CALO_xBCDExxx.dff17(reg_new.spu.BATA_CLK_2M(), reg_new.AGUR_APU_RSTn_new(), reg_old.ch1.CALO_xBCDExxx.qn_old());
 
   /*_p01.JESO*/ reg_new.spu.JESO_CLK_512K.dff17(reg_new.spu.BAVU_CLK_1M(), reg_new.KAME_APU_RSTn_new(), reg_old.spu.JESO_CLK_512K.qn_old());
 
-  /*_p15.ATEP*/ reg_new.spu.ATEP_CLK_2M.dff17(reg_new.sys_clk.AZEG_AxCxExGx(), reg_new.BUWE_APU_RSTn_new(), reg_old.spu.ATEP_CLK_2M.qn_old());
-  /*#p15.BUFO*/   wire BUFO = not1(reg_new.spu.ATEP_CLK_2M.qp_new());
+  /*_p15.ATEP*/ reg_new.spu.ATEP_AxxDExxH.dff17(reg_new.sys_clk.AZEG_AxCxExGx(), reg_new.BUWE_APU_RSTn_new(), reg_old.spu.ATEP_AxxDExxH.qn_old());
+  /*#p15.BUFO*/   wire BUFO = not1(reg_new.spu.ATEP_AxxDExxH.qp_new());
   /*_p15.BYHO*/   wire BYHO_APU_RSTp = not1(reg_new.BUWE_APU_RSTn_new());
   /*#p15.CEMO*/ reg_new.spu.CEMO_CLK_1M.dff17(BUFO, BYHO_APU_RSTp, reg_old.spu.CEMO_CLK_1M.qn_old());
+
+  probe_wire(0, "ATEP", reg_new.spu.ATEP_AxxDExxH.state & 1);
+  probe_wire(1, "CEMO", reg_new.spu.CEMO_CLK_1M.state & 1);
+  probe_wire(2, "BUFO", BUFO);
+  probe_wire(3, "BYHO", BYHO_APU_RSTp);
+  probe_wire(4, "BUWE", reg_new.BUWE_APU_RSTn_new());
 
   //----------
   // Low-speed clocks are picked up from DIV

@@ -94,13 +94,15 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
       ld ($FF26), a
       ld a, $80
       ld ($FF26), a
-
+      ld a, $F3
+      ld ($FF25), a
+      ld a, $77
+      ld ($FF24), a
 
       ld a, $80
       ld ($FF11), a
       ld a, $D3
       ld ($FF12), a
-
 
       ld a, $00
       ld ($FF13), a

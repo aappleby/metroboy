@@ -517,7 +517,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
   {
     /*_p16.HENU*/ wire HENU_FF1C_RDn = nand2(reg_new.cpu_abus.GEFO_ADDR_FF1Cp(), reg_new.cpu_signals.JOTU_CPU_RDp());
-    /*_p18.HONY*/ wire HONY_DBG_FF1C_RD = and3(reg_new.EDEK_NR52_DBG_APUn(), reg_new.cpu_signals.JECO_CPU_RDp(), reg_new.cpu_abus.GEFO_ADDR_FF1Cp());
+    /*_p18.HONY*/ wire HONY_DBG_FF1C_RD = and3(reg_new.EDEK_NR52_DBG_APUp(), reg_new.cpu_signals.JECO_CPU_RDp(), reg_new.cpu_abus.GEFO_ADDR_FF1Cp());
     /*_p18.GENO*/ wire GENO_DBG_FF1C_RDn = not1(HONY_DBG_FF1C_RD);
 
     if (HENU_FF1C_RDn) set_data(

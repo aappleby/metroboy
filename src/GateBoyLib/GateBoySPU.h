@@ -72,7 +72,7 @@ struct GateBoySPU {
   /*#p20.ALOP*/ wire ALOP_CLK_128() const { return not1(BYFE_CLK_128n()); }
 
   /*#p15.CEMO*/ DFF17 CEMO_CLK_1M;
-  /*_p15.ATEP*/ DFF17 ATEP_CLK_2M;
+  /*_p15.ATEP*/ DFF17 ATEP_AxxDExxH;
 
   //----------
   // clocks for the apu

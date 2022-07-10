@@ -375,11 +375,11 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     //----------
     // Output
 
-    /*#p20.DYRY*/ wire DYRY_DBG = and2(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB(), reg_new.EDEK_NR52_DBG_APUn());
+    /*#p20.DYRY*/ wire DYRY_DBG = and2(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB(), reg_new.EDEK_NR52_DBG_APUp());
     /*#p20.GAME*/ wire GAME_LFSR_OUT = and2(reg_new.ch4.GENA_CH4_ACTIVEp.qp_new(), reg_new.ch4.HEZU_LFSR_15.qp_new());
     /*#p20.EZUL*/ wire EZUL_CH4_BIT_MUX = mux2p(DYRY_DBG, FEME_LFSR_CLKp_new, GAME_LFSR_OUT);
     /*#p20.CEPY*/ wire CEPY_NR44_STOPn = not1(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB());
-    /*#p20.COTE*/ wire COTE_DBG_CH4_MUTE = and2(CEPY_NR44_STOPn, reg_new.EDEK_NR52_DBG_APUn());
+    /*#p20.COTE*/ wire COTE_DBG_CH4_MUTE = and2(CEPY_NR44_STOPn, reg_new.EDEK_NR52_DBG_APUp());
     /*#p20.DATO*/ wire DATO_CH4_RAW_BIT  = or2(EZUL_CH4_BIT_MUX, COTE_DBG_CH4_MUTE);
 
     /*#p20.AKOF*/ wire AKOF_CH4_DAC0 = and2(reg_new.ch4.FEKO_CH4_VOL0.qp_new(), DATO_CH4_RAW_BIT);
@@ -393,7 +393,7 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 
 #if 0
-  /*#p20.DYRY*/ wire DYRY_DBG = and2(reg_new.ch4.CUNY_NR44_LEN_ENp.qn_new(), reg_new.EDEK_NR52_DBG_APUn());
+  /*#p20.DYRY*/ wire DYRY_DBG = and2(reg_new.ch4.CUNY_NR44_LEN_ENp.qn_new(), reg_new.EDEK_NR52_DBG_APUp());
   /*_p20.COMO*/ wire COMO_DBG = and2(DYRY_DBG, COSA_CPU_RDp());
   /*_p20.BAGU*/ wire BAGU_DBG = nand2(CUGE_ADDR_FF23p(), COMO_DBG);
   /*_p20.BEFA*/ wire BEFA_DBG = not1(CARY_FREQ_CLK);

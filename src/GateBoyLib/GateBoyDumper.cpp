@@ -429,8 +429,10 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
 
 void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
 #ifdef SIM_AUDIO
+
+  /*
   d.dump_bitp("CEMO_CLK_1M   : ", s.spu.CEMO_CLK_1M.state);
-  d.dump_bitp("ATEP_CLK_2M   : ", s.spu.ATEP_CLK_2M.state);
+  d.dump_bitp("ATEP_AxxDExxH   : ", s.spu.ATEP_AxxDExxH.state);
   d.dump_bitp("CERY_CLK_2M   : ", s.spu.CERY_CLK_2M.state);
   d.dump_bitp("ATYK_CLK_2M   : ", s.spu.ATYK_CLK_2M.state);
   d.dump_bitp("AVOK_CLK_1M   : ", s.spu.AVOK_CLK_1M.state);
@@ -440,46 +442,11 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("CARU_CLK_256  : ", s.spu.CARU_CLK_256.state);
   d.dump_bitp("BYLU_CLK_128  : ", s.spu.BYLU_CLK_128.state);
   d("\n");
-
-  d.dump_bitp("APEG_NR50_VOL_L0   : ", s.spu.APEG_NR50_VOL_L0.get_state());
-  d.dump_bitp("BYGA_NR50_VOL_L1   : ", s.spu.BYGA_NR50_VOL_L1.get_state());
-  d.dump_bitp("AGER_NR50_VOL_L2   : ", s.spu.AGER_NR50_VOL_L2.get_state());
-  d.dump_bitp("APOS_NR50_VIN_TO_L : ", s.spu.APOS_NR50_VIN_TO_L.get_state());
-  d.dump_bitp("BYRE_NR50_VOL_R0   : ", s.spu.BYRE_NR50_VOL_R0.get_state());
-  d.dump_bitp("BUMO_NR50_VOL_R1   : ", s.spu.BUMO_NR50_VOL_R1.get_state());
-  d.dump_bitp("COZU_NR50_VOL_R2   : ", s.spu.COZU_NR50_VOL_R2.get_state());
-  d.dump_bitp("BEDU_NR50_VIN_TO_R : ", s.spu.BEDU_NR50_VIN_TO_R.get_state());
-  d("\n");
-
-#if 0
-  ///*_p09.BUPO*/ wire BUPO_NR51_WRn = nand2(s.cpu_abus.CORA_ADDR_FF25p(), s.cpu_signals.BOGY_CPU_WRp());
-  /*_p09.BONO*/ wire BONO_NR51_WRp = not1(BUPO_NR51_WRn);
-  /*_p09.BYFA*/ wire BYFA_NR51_WRp = not1(BUPO_NR51_WRn);
-
-  d.dump_bitp("BUPO_NR51_WRn : ", BUPO_NR51_WRn);
-  d.dump_bitp("BONO_NR51_WRp : ", BONO_NR51_WRp);
-  d.dump_bitp("BYFA_NR51_WRp : ", BYFA_NR51_WRp);
-  d.dump_bitp("KEPY_APU_RSTn : ", s.KEPY_APU_RSTn_new());
-  d("\n");
-
-#endif
-
-  d.dump_slice2p("NR51: ", &s.spu.ANEV_NR51_RCH1_ENp, 8);
-  /*
-  d.dump_bitp("ANEV_NR51_RCH1_ENp : ", s.spu.ANEV_NR51_RCH1_ENp.get_state()); // these are mixer control bits
-  d.dump_bitp("BOGU_NR51_RCH2_ENp : ", s.spu.BOGU_NR51_RCH2_ENp.get_state());
-  d.dump_bitp("BAFO_NR51_RCH3_ENp : ", s.spu.BAFO_NR51_RCH3_ENp.get_state());
-  d.dump_bitp("ATUF_NR51_RCH4_ENp : ", s.spu.ATUF_NR51_RCH4_ENp.get_state());
-  d.dump_bitp("BUME_NR51_LCH1_ENp : ", s.spu.BUME_NR51_LCH1_ENp.get_state());
-  d.dump_bitp("BOFA_NR51_LCH2_ENp : ", s.spu.BOFA_NR51_LCH2_ENp.get_state());
-  d.dump_bitp("BEFO_NR51_LCH3_ENp : ", s.spu.BEFO_NR51_LCH3_ENp.get_state());
-  d.dump_bitp("BEPU_NR51_LCH4_ENp : ", s.spu.BEPU_NR51_LCH4_ENp.get_state());
   */
-  d("\n");
 
-  d.dump_bitp("FERO_NR52_DBG_APUp     : ", s.spu.FERO_NR52_DBG_APUp.get_state());
-  d.dump_bitp("BOWY_NR52_DBG_SWEEP    : ", s.spu.BOWY_NR52_DBG_SWEEP.state);
-  d.dump_bitp("HADA_NR52_ALL_SOUND_ON : ", s.spu.HADA_NR52_ALL_SOUND_ON.state);
+  d.dump_slice2p("NR50 ", &s.spu.APEG_NR50_VOL_L0, 8);
+  d.dump_slice2p("NR51 ", &s.spu.ANEV_NR51_RCH1_ENp, 8);
+  d.dump_slice2p("NR52 ", &s.spu.FERO_NR52_DBG_APUp, 3);
   d("\n");
 
   d("===== CH1 =====\n");
@@ -495,35 +462,58 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_slice2p("CH1 SHIFTCNT : ", &s.ch1.COPA_SHIFTCNT0, 3);
   d.dump_slice2p("CH1 SUM A    : ", &s.ch1.GALO_SUM_A00, 11);
   d.dump_slice2p("CH1 SUM B    : ", &s.ch1.HORA_SUM_B00, 11);
-  d.dump_slice2p("CH1 ENV      : ", &s.ch1.HEVO_CH1_ENV3p, 4);
+  d("\n");
   d.dump_slice2p("CH1 ENV DLY  : ", &s.ch1.JOVA_ENV_DELAY0p, 3);
+  d.dump_bitp   ("CH1 ENV TICK : ", s.ch1.KOZY_ENV_TICKp.state & 1);
+  d.dump_slice2p("CH1 ENV      : ", &s.ch1.HEVO_CH1_ENV3p, 4);
+  d.dump_bitp   ("CH1 ENV MAX  : ", s.ch1.KYNO_ENV_MAXp.state & 1);
+  d("\n");
   d.dump_slice2p("CH1 SWP DLY  : ", &s.ch1.CUPO_SWEEP_DELAY0p, 3);
-  d(             "CH1 OUT      : %d", s.ch1.audio_out());
+  d(             "CH1 OUT      : %d\n", s.ch1.audio_out());
   d("\n");
 
+
+  d.dump_bitp("DUPE : ", s.ch1.DUPE_NR14_TRIGp.state & 1);
+  d.dump_bitp("EZEC : ", s.ch1.EZEC_CH1_TRIGp.state & 1);
+  d.dump_bitp("FYFO : ", !(s.ch1.FYFO_CH1_TRIGn.state & 1));
+  d.dump_bitp("FEKU : ", s.ch1.FEKU_CH1_TRIGp.state & 1);
+  d.dump_bitp("FYFO : ", s.ch1.FARE_CH1_TRIGp.state & 1);
+  d.dump_bitp("FYFO : ", s.ch1.FYTE_CH1_TRIGp.state & 1);
+
+#if 0
+    /*#p13.EZEC*/ reg_new.ch1.EZEC_CH1_TRIGp.dff17(reg_new.sys_clk.DOVA_ABCDxxxx(), reg_new.DUKA_APU_RSTn_new(), reg_old.ch1.DUPE_NR14_TRIGp.qp_oldB());
+
+    /*#p13.DOGE*/ wire DOGE_FF14_WRn = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.DUJA_ADDR_FF14p());
+    /*#p13.DADO*/ wire DADO_NR14_RSTb = nor2(reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.EZEC_CH1_TRIGp.qp_new());
+    /*#p13.DUPE*/ reg_new.ch1.DUPE_NR14_TRIGp.dff9b(DOGE_FF14_WRn, DADO_NR14_RSTb, reg_old.cpu_dbus.BUS_CPU_D07p.qp_old());
+
+    /*#p13.FYTE*/ reg_new.ch1.FYTE_CH1_TRIGp.dff17(reg_new.ch1.DYFA_xBCDExxx(), reg_new.ERUM_APU_RSTn_new(), reg_old.ch1.FARE_CH1_TRIGp.qp_old());
+    /*#p13.FARE*/ reg_new.ch1.FARE_CH1_TRIGp.dff17(reg_new.ch1.DYFA_xBCDExxx(), reg_new.ERUM_APU_RSTn_new(), reg_old.ch1.FEKU_CH1_TRIGp.qp_old());
+
+    /*#p13.EGET*/ wire EGET_TRIG_RSTn = nor2(reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.FARE_CH1_TRIGp.qp_new());
+    /*#p13.FEKU*/ reg_new.ch1.FEKU_CH1_TRIGp.dff17(reg_new.ch1.DYFA_xBCDExxx(), EGET_TRIG_RSTn, reg_old.ch1.FYFO_CH1_TRIGn.qn_old()); // schematic wrong?
+
+    /*#p13.GEFE*/ wire GEFE_TRIG_RSTp = not1(EGET_TRIG_RSTn);
+    /*#p13.FYFO*/ reg_new.ch1.FYFO_CH1_TRIGn.nor_latch(GEFE_TRIG_RSTp, reg_new.ch1.EZEC_CH1_TRIGp.qp_new());
+#endif
 
 
 #if 0
   /*#p13.CYTO*/ NorLatch CYTO_CH1_ACTIVEp;
 
-  /*#p13.EZEC*/ DFF17 EZEC_CH1_TRIGn;
-
+  /*#p13.EZEC*/ DFF17 EZEC_CH1_TRIGp;
   /*_p13.FEKU*/ DFF17 FEKU_CH1_TRIGp;
   /*_p13.FARE*/ DFF17 FARE_CH1_TRIGp;
   /*_p13.FYTE*/ DFF17 FYTE_CH1_TRIGp;
+  /*_p13.FYFO*/ NorLatch FYFO_CH1_TRIGn;
 
   /*_p13.BYTE*/ DFF17 BYTE_SHIFT_DONEp;
-
   /*_p13.CERO*/ DFF17 CERO_CH1_LEN_DONE;
-
   /*#p09.BAZA*/ DFF17 BAZA_DBG_SWEEP_CLK;
   /*_p13.BEXA*/ DFF17 BEXA_SWEEP_TRIGGERp;
-
   /*_p13.FEMU*/ NandLatch FEMU_SHIFTINGn;
-
-  /*_p13.FYFO*/ NorLatch FYFO_CH1_TRIGn;
-  /*_p13.COMY*/ DFF17 COMY_SAMPLE_CLKp;
   /*_p13.GEXU*/ NandLatch GEXU_FREQ_GATEn;
+  /*_p13.COMY*/ DFF17 COMY_SAMPLE_CLKp;
 
   /*#p13.KOZY*/ DFF17 KOZY_ENV_TICKp;
   /*#p13.KYNO*/ DFF17 KYNO_ENV_MAXp;

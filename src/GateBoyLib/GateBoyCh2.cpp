@@ -347,7 +347,7 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p15.ESYK*/ wire ESYK_CH2_STOPp_new = or3(reg_new.KEBA_APU_RSTp_new(), DORA_CH2_STOPp_new, reg_new.ch2.FUTE_CH2_AMP_ENn_new());
     /*_p15.DANE*/ reg_new.ch2.DANE_CH2_ACTIVEp.nor_latch(reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), ESYK_CH2_STOPp_new);
     /*#p15.CYSE*/ wire CYSE_CH2_OUTp = and2(reg_new.ch2.DANE_CH2_ACTIVEp.qp_new(), reg_new.ch2.DOME_CH2_OUTp.qp_new());
-    /*#p15.BONU*/ wire BONU_CH2_OUTp = or2(CYSE_CH2_OUTp, reg_new.EDEK_NR52_DBG_APUn());
+    /*#p15.BONU*/ wire BONU_CH2_OUTp = or2(CYSE_CH2_OUTp, reg_new.EDEK_NR52_DBG_APUp());
     /*#p15.ANAN*/ wire ANAN_CH2_BIT0 = and2(reg_new.ch2.FENO_CH2_ENV0.qp_new(), BONU_CH2_OUTp);
     /*#p15.ANYV*/ wire ANYV_CH2_BIT1 = and2(reg_new.ch2.FETE_CH2_ENV1.qp_new(), BONU_CH2_OUTp);
     /*#p15.ASOG*/ wire ASOG_CH2_BIT2 = and2(reg_new.ch2.FOMY_CH2_ENV2.qp_new(), BONU_CH2_OUTp);

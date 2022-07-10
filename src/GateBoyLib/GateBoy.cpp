@@ -290,8 +290,8 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
     //l = (gb_state.reg_div.TOFE_DIV09p.state & 1) * 100;
     //r = (gb_state.reg_div.TERU_DIV10p.state & 1) * 100;
 
-    l = (gb_state.ch1.audio_out()) * (480 / 15);
-    r = 0;
+    l = (spu_audio_out_l(gb_state));
+    r = (spu_audio_out_r(gb_state));
 
     audio_post(l, r);
   }

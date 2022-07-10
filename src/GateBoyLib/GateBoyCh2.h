@@ -2,6 +2,9 @@
 //             CHANNEL 2
 //==============================================================================
 
+struct GateBoyState;
+int ch2_audio_out(const GateBoyState& reg_new);
+
 struct SpuChannel2 {
   void reset_to_cart();
 

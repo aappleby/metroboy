@@ -121,3 +121,5 @@ struct GateBoySPU {
 };
 
 void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram);
+int spu_audio_out_r(GateBoyState& reg_new);
+int spu_audio_out_l(GateBoyState& reg_new);

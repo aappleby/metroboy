@@ -4,6 +4,30 @@
 
 #ifdef SIM_AUDIO
 
+int ch4_audio_out(const GateBoyState& reg_new) {
+
+  /*#p20.DYRY*/ wire DYRY_DBG = and2(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB(), reg_new.EDEK_NR52_DBG_APUp());
+  /*#p20.GAME*/ wire GAME_LFSR_OUT = and2(reg_new.ch4.GENA_CH4_ACTIVEp.qp_new(), reg_new.ch4.HEZU_LFSR_15.qp_new());
+
+  // ignoring debug thing on the audio out here
+  ///*#p20.EZUL*/ wire EZUL_CH4_BIT_MUX = mux2p(DYRY_DBG, FEME_LFSR_CLKp_new, GAME_LFSR_OUT);
+  /*#p20.EZUL*/ wire EZUL_CH4_BIT_MUX = GAME_LFSR_OUT;
+
+  /*#p20.CEPY*/ wire CEPY_NR44_STOPn = not1(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB());
+  /*#p20.COTE*/ wire COTE_DBG_CH4_MUTE = and2(CEPY_NR44_STOPn, reg_new.EDEK_NR52_DBG_APUp());
+  /*#p20.DATO*/ wire DATO_CH4_RAW_BIT  = or2(EZUL_CH4_BIT_MUX, COTE_DBG_CH4_MUTE);
+
+  /*#p20.AKOF*/ wire AKOF_CH4_DAC0 = and2(reg_new.ch4.FEKO_CH4_VOL0.qp_new(), DATO_CH4_RAW_BIT);
+  /*#p20.BYZY*/ wire BYZY_CH4_DAC1 = and2(reg_new.ch4.FATY_CH4_VOL1.qp_new(), DATO_CH4_RAW_BIT);
+  /*#p20.APYR*/ wire APYR_CH4_DAC2 = and2(reg_new.ch4.FERU_CH4_VOL2.qp_new(), DATO_CH4_RAW_BIT);
+  /*#p20.BOZA*/ wire BOZA_CH4_DAC3 = and2(reg_new.ch4.FYRO_CH4_VOL3.qp_new(), DATO_CH4_RAW_BIT);
+
+  return ((AKOF_CH4_DAC0 & 1) << 0) |
+         ((BYZY_CH4_DAC1 & 1) << 1) |
+         ((APYR_CH4_DAC2 & 1) << 2) |
+         ((BOZA_CH4_DAC3 & 1) << 3);
+}
+
 void SpuChannel4::reset_to_cart() {
 EMOK_NR42_ENV_TIMER0p.state = 0x1a;
 ETYJ_NR42_ENV_TIMER1p.state = 0x1a;
@@ -370,26 +394,6 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p20.ELAF*/ wire ELAF_VOL_CLK3n = amux2(reg_new.ch4.GEKY_NR42_ENV_DIRp.qp_newB(), reg_new.ch4.FERU_CH4_VOL2.qp_new(), reg_new.ch4.FERU_CH4_VOL2.qn_new(), reg_new.ch4.GEKY_NR42_ENV_DIRp.qn_newB());
     /*#p20.FYRO*/ reg_new.ch4.FYRO_CH4_VOL3.dff20(ELAF_VOL_CLK3n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_old.ch4.GEDU_NR42_ENV3p.qp_oldB());
   }
-
-  {
-    //----------
-    // Output
-
-    /*#p20.DYRY*/ wire DYRY_DBG = and2(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB(), reg_new.EDEK_NR52_DBG_APUp());
-    /*#p20.GAME*/ wire GAME_LFSR_OUT = and2(reg_new.ch4.GENA_CH4_ACTIVEp.qp_new(), reg_new.ch4.HEZU_LFSR_15.qp_new());
-    /*#p20.EZUL*/ wire EZUL_CH4_BIT_MUX = mux2p(DYRY_DBG, FEME_LFSR_CLKp_new, GAME_LFSR_OUT);
-    /*#p20.CEPY*/ wire CEPY_NR44_STOPn = not1(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB());
-    /*#p20.COTE*/ wire COTE_DBG_CH4_MUTE = and2(CEPY_NR44_STOPn, reg_new.EDEK_NR52_DBG_APUp());
-    /*#p20.DATO*/ wire DATO_CH4_RAW_BIT  = or2(EZUL_CH4_BIT_MUX, COTE_DBG_CH4_MUTE);
-
-    /*#p20.AKOF*/ wire AKOF_CH4_DAC0 = and2(reg_new.ch4.FEKO_CH4_VOL0.qp_new(), DATO_CH4_RAW_BIT);
-    /*#p20.BYZY*/ wire BYZY_CH4_DAC1 = and2(reg_new.ch4.FATY_CH4_VOL1.qp_new(), DATO_CH4_RAW_BIT);
-    /*#p20.APYR*/ wire APYR_CH4_DAC2 = and2(reg_new.ch4.FERU_CH4_VOL2.qp_new(), DATO_CH4_RAW_BIT);
-    /*#p20.BOZA*/ wire BOZA_CH4_DAC3 = and2(reg_new.ch4.FYRO_CH4_VOL3.qp_new(), DATO_CH4_RAW_BIT);
-  }
-
-
-
 
 
 #if 0

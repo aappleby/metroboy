@@ -4,6 +4,21 @@
 
 #ifdef SIM_AUDIO
 
+int ch1_audio_out(const GateBoyState& reg_new) {
+  /*#p13.COWE*/ wire COWE_BIT_OUTp = and2(reg_new.ch1.CYTO_CH1_ACTIVEp.qp_new(), reg_new.ch1.DUWO_RAW_BIT_SYNCp.qp_new());
+  /*#p13.BOTO*/ wire BOTO_BIT_OUTp = or2(COWE_BIT_OUTp, reg_new.EDEK_NR52_DBG_APUp());
+  /*#p13.AMOP*/ wire AMOP_CH1_OUT0 = and2(reg_new.ch1.HAFO_CH1_ENV0p.qp_new(), BOTO_BIT_OUTp);
+  /*#p13.ASON*/ wire ASON_CH1_OUT1 = and2(reg_new.ch1.HEMY_CH1_ENV1p.qp_new(), BOTO_BIT_OUTp);
+  /*#p13.AGOF*/ wire AGOF_CH1_OUT2 = and2(reg_new.ch1.HOKO_CH1_ENV2p.qp_new(), BOTO_BIT_OUTp);
+  /*#p13.ACEG*/ wire ACEG_CH1_OUT3 = and2(reg_new.ch1.HEVO_CH1_ENV3p.qp_new(), BOTO_BIT_OUTp);
+
+  return ((AMOP_CH1_OUT0 & 1) << 0) |
+         ((ASON_CH1_OUT1 & 1) << 1) |
+         ((AGOF_CH1_OUT2 & 1) << 2) |
+         ((ACEG_CH1_OUT3 & 1) << 3);
+}
+
+
 void SpuChannel1::reset_to_cart() {
   BANY_NR10_SWEEP_SHIFT0p.state = 0x1a;
   ARAX_NR10_SWEEP_SHIFT1p.state = 0x1a;
@@ -501,8 +516,9 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     // Check to see if our env is 0b0000 or 0b1111
     /*#p13.KORU*/ wire KORU_ENV_MAX_RSTn_new = nor2(reg_new.ch1.FEKU_CH1_TRIGp.qp_new(), reg_new.KEBA_APU_RSTp_new());
-    /*#p13.HUFU*/ wire HUFU_ENV_TOPn_old = nand5(reg_old.ch1.JAFY_NR12_ENV_DIRp.qn_oldB(), reg_old.ch1.HAFO_CH1_ENV0p.qp_old(), reg_old.ch1.HEMY_CH1_ENV1p.qp_old(), reg_old.ch1.HOKO_CH1_ENV2p.qp_old(), reg_old.ch1.HEVO_CH1_ENV3p.qp_old());
-    /*#p13.HANO*/ wire HANO_ENV_BOTp_old = nor5 (reg_old.ch1.JAFY_NR12_ENV_DIRp.qn_oldB(), reg_old.ch1.HAFO_CH1_ENV0p.qp_old(), reg_old.ch1.HEMY_CH1_ENV1p.qp_old(), reg_old.ch1.HOKO_CH1_ENV2p.qp_old(), reg_old.ch1.HEVO_CH1_ENV3p.qp_old());
+    /*#p13.HUFU*/ wire HUFU_ENV_TOPn_old = nand5(reg_old.ch1.JAFY_NR12_ENV_DIRp.qp_oldB(), reg_old.ch1.HAFO_CH1_ENV0p.qp_old(), reg_old.ch1.HEMY_CH1_ENV1p.qp_old(), reg_old.ch1.HOKO_CH1_ENV2p.qp_old(), reg_old.ch1.HEVO_CH1_ENV3p.qp_old());
+    /*#p13.HANO*/ wire HANO_ENV_BOTp_old = nor5 (reg_old.ch1.JAFY_NR12_ENV_DIRp.qp_oldB(), reg_old.ch1.HAFO_CH1_ENV0p.qp_old(), reg_old.ch1.HEMY_CH1_ENV1p.qp_old(), reg_old.ch1.HOKO_CH1_ENV2p.qp_old(), reg_old.ch1.HEVO_CH1_ENV3p.qp_old());
+    
     /*#p13.HAKE*/ wire HAKE_ENV_TOPp_old = not1(HUFU_ENV_TOPn_old);
     /*#p13.JADE*/ wire JADE_ENV_MAXp_old = or2(HANO_ENV_BOTp_old, HAKE_ENV_TOPp_old);
     /*#p13.KYNO*/ reg_new.ch1.KYNO_ENV_MAXp.dff17(reg_new.ch1.KOZY_ENV_TICKp.qp_new(), KORU_ENV_MAX_RSTn_new, JADE_ENV_MAXp_old);
@@ -516,11 +532,6 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 
   /*#p13.KAKE*/ wire KAKE_ENV_CLK = or3(reg_new.ch1.KOZY_ENV_TICKp.qp_new(), reg_new.ch1.KOMA_ENV_OFFp_new(), reg_new.ch1.KEZU_ENV_ACTIVEn.qp_new()); // Die has this as and, but it's definitely or
-
-  probe_wire(0, "KAKE_ENV_CLK", KAKE_ENV_CLK);
-  probe_wire(1, "KOZY_ENV_TICKp", reg_new.ch1.KOZY_ENV_TICKp.state & 1);
-  probe_wire(2, "KOMA_ENV_OFFp", reg_new.ch1.KOMA_ENV_OFFp_new() & 1);
-  probe_wire(3, "KEZU_ENV_ACTIVEn", reg_new.ch1.KEZU_ENV_ACTIVEn.state & 1);
 
   // The muxes select posedge or negedge for the env counter so it can count up _or_ down?
   // these were connected wrong in schematic
@@ -662,19 +673,6 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p11.CENA*/ reg_new.ch1.CENA_NR11_DUTY0p.dff9b(DAFO_NR11_CLK, reg_new.CEPO_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.qp_old());
     /*#p11.DYCA*/ reg_new.ch1.DYCA_NR11_DUTY1p.dff9b(DAFO_NR11_CLK, reg_new.CEPO_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D07p.qp_old());
   }
-
-  //----------
-  // Audio output
-
-  {
-    /*#p13.COWE*/ wire COWE_BIT_OUTp = and2(reg_new.ch1.CYTO_CH1_ACTIVEp.qp_new(), reg_new.ch1.DUWO_RAW_BIT_SYNCp.qp_new());
-    /*#p13.BOTO*/ wire BOTO_BIT_OUTp = or2(COWE_BIT_OUTp, reg_new.EDEK_NR52_DBG_APUp());
-    /*#p13.AMOP*/ wire AMOP_CH1_OUT0 = and2(reg_new.ch1.HAFO_CH1_ENV0p.qp_new(), BOTO_BIT_OUTp);
-    /*#p13.ASON*/ wire ASON_CH1_OUT1 = and2(reg_new.ch1.HEMY_CH1_ENV1p.qp_new(), BOTO_BIT_OUTp);
-    /*#p13.AGOF*/ wire AGOF_CH1_OUT2 = and2(reg_new.ch1.HOKO_CH1_ENV2p.qp_new(), BOTO_BIT_OUTp);
-    /*#p13.ACEG*/ wire ACEG_CH1_OUT3 = and2(reg_new.ch1.HEVO_CH1_ENV3p.qp_new(), BOTO_BIT_OUTp);
-  }
-
 
 
 

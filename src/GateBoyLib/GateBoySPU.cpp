@@ -9,6 +9,39 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new);
 void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram);
 void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new);
 
+int spu_audio_out_r(GateBoyState& reg_new) {
+
+  int mix = 0;
+
+  if (reg_new.spu.ANEV_NR51_RCH1_ENp.state & 1) mix += ch1_audio_out(reg_new);
+  if (reg_new.spu.BOGU_NR51_RCH2_ENp.state & 1) mix += ch2_audio_out(reg_new);
+  if (reg_new.spu.BAFO_NR51_RCH3_ENp.state & 1) mix += ch3_audio_out(reg_new);
+  if (reg_new.spu.ATUF_NR51_RCH4_ENp.state & 1) mix += ch4_audio_out(reg_new);
+
+
+  int vol_r = ((reg_new.spu.BYRE_NR50_VOL_R0.state & 1) << 0) |
+              ((reg_new.spu.BUMO_NR50_VOL_R1.state & 1) << 1) |
+              ((reg_new.spu.COZU_NR50_VOL_R2.state & 1) << 2);
+
+  return mix * vol_r;
+}
+
+int spu_audio_out_l(GateBoyState& reg_new) {
+
+  int mix = 0;
+
+  if (reg_new.spu.BUME_NR51_LCH1_ENp.state & 1) mix += ch1_audio_out(reg_new);
+  if (reg_new.spu.BOFA_NR51_LCH2_ENp.state & 1) mix += ch2_audio_out(reg_new);
+  if (reg_new.spu.BEFO_NR51_LCH3_ENp.state & 1) mix += ch3_audio_out(reg_new);
+  if (reg_new.spu.BEPU_NR51_LCH4_ENp.state & 1) mix += ch4_audio_out(reg_new);
+
+  int vol_l = ((reg_new.spu.APEG_NR50_VOL_L0.state & 1) << 0) |
+              ((reg_new.spu.BYGA_NR50_VOL_L1.state & 1) << 1) |
+              ((reg_new.spu.AGER_NR50_VOL_L2.state & 1) << 2);
+
+  return mix * vol_l;
+}
+
 //-----------------------------------------------------------------------------
 
 void GateBoySPU::reset_to_cart() {

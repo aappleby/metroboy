@@ -4,6 +4,9 @@
 //             CHANNEL 1
 //==============================================================================
 
+struct GateBoyState;
+int ch1_audio_out(const GateBoyState& reg_new);
+
 struct SpuChannel1 {
   void reset_to_cart();
 
@@ -28,14 +31,6 @@ struct SpuChannel1 {
     /*#p13.DODY*/ wire DODY_SHIFT_CLK_new = nor2(EGYP_SHIFT_CLK_new, CELE_SWEEP_DONEp_new); // border color wrong on die
     /*?p13.EGOR*/ wire EGOR_SHIFT_CLK_new = not1(DODY_SHIFT_CLK_new); // This looks like a nor3, but it almost definiteily is a not1.
     return EGOR_SHIFT_CLK_new;
-  }
-
-  int audio_out() const {
-    uint8_t vol = ((HAFO_CH1_ENV0p.state & 1) << 0) |
-                  ((HEMY_CH1_ENV1p.state & 1) << 1) |
-                  ((HOKO_CH1_ENV2p.state & 1) << 2) |
-                  ((HEVO_CH1_ENV3p.state & 1) << 3);
-    return (DUWO_RAW_BIT_SYNCp.state & 1) ? vol : 0;
   }
 
   /*#p12.FAJA*/ wire FAJA_SHIFT_CLK_new() const { return not1(EGOR_SHIFT_CLK_new()); }

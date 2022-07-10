@@ -5,6 +5,9 @@ struct GateBoyState;
 //             CHANNEL 3
 //==============================================================================
 
+struct GateBoyState;
+int ch3_audio_out(const GateBoyState& reg_new);
+
 struct SpuChannel3 {
   void reset_to_cart();
 

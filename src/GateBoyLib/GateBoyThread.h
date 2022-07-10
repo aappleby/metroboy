@@ -112,6 +112,7 @@ struct GateBoyThread {
 
   void next_phase();
 
+  void run_sync();
   void run_normal();
   void run_regression();
   void run_idempotence();

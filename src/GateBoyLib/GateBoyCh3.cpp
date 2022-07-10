@@ -4,6 +4,33 @@
 
 #ifdef SIM_AUDIO
 
+int ch3_audio_out(const GateBoyState& reg_new) {
+
+  /*#p17.DATE*/ wire DATE_WAVE_PLAY_D0 = mux2n(reg_new.ch3.EFAR_WAVE_IDX0.qp_new(), reg_new.ch3.CYFO_SAMPLE0p.qn_newB(), reg_new.ch3.CUVO_SAMPLE4p.qn_newB());
+  /*#p17.DAZY*/ wire DAZY_WAVE_PLAY_D1 = mux2n(reg_new.ch3.EFAR_WAVE_IDX0.qp_new(), reg_new.ch3.CESY_SAMPLE1p.qn_newB(), reg_new.ch3.CEVO_SAMPLE5p.qn_newB());
+  /*#p17.CUZO*/ wire CUZO_WAVE_PLAY_D2 = mux2n(reg_new.ch3.EFAR_WAVE_IDX0.qp_new(), reg_new.ch3.BUDY_SAMPLE2p.qn_newB(), reg_new.ch3.BORA_SAMPLE6p.qn_newB());
+  /*#p17.COPO*/ wire COPO_WAVE_PLAY_D3 = mux2n(reg_new.ch3.EFAR_WAVE_IDX0.qp_new(), reg_new.ch3.BEGU_SAMPLE3p.qn_newB(), reg_new.ch3.BEPA_SAMPLE7p.qn_newB());
+
+  /*#p18.GEMY*/ wire GEMY_WAVE_VOL3 = nor2(reg_new.ch3.HUKY_NR32_VOL0p.qn_newB(), reg_new.ch3.HODY_NR32_VOL1p.qn_newB());
+  /*#p18.GOKA*/ wire GOKA_WAVE_VOL2 = nor2(reg_new.ch3.HUKY_NR32_VOL0p.qn_newB(), reg_new.ch3.HODY_NR32_VOL1p.qp_newB());
+  /*#p18.GEGE*/ wire GEGE_WAVE_VOL4 = nor2(reg_new.ch3.HUKY_NR32_VOL0p.qp_newB(), reg_new.ch3.HODY_NR32_VOL1p.qn_newB());
+
+  /*#p18.EZAG*/ wire EZAG_WAVE_OUT0 = amux3(DATE_WAVE_PLAY_D0, GEGE_WAVE_VOL4, DAZY_WAVE_PLAY_D1, GOKA_WAVE_VOL2, CUZO_WAVE_PLAY_D2, GEMY_WAVE_VOL3);
+  /*#p18.EVUG*/ wire EVUG_WAVE_OUT1 = amux3(DAZY_WAVE_PLAY_D1, GEGE_WAVE_VOL4, CUZO_WAVE_PLAY_D2, GOKA_WAVE_VOL2, COPO_WAVE_PLAY_D3, GEMY_WAVE_VOL3);
+  /*#p18.DOKY*/ wire DOKY_WAVE_OUT2 = amux2(CUZO_WAVE_PLAY_D2, GEGE_WAVE_VOL4, COPO_WAVE_PLAY_D3, GOKA_WAVE_VOL2);
+  /*#p18.DORE*/ wire DORE_WAVE_OUT3 = and2 (COPO_WAVE_PLAY_D3, GEGE_WAVE_VOL4);
+
+  /*#p18.BARY*/ wire BARY_WAVE_DAC0 = and2(reg_new.ch3.COKA_CH3_ACTIVEp(), EZAG_WAVE_OUT0);
+  /*#p18.BYKA*/ wire BYKA_WAVE_DAC1 = and2(reg_new.ch3.COKA_CH3_ACTIVEp(), EVUG_WAVE_OUT1);
+  /*#p18.BOPA*/ wire BOPA_WAVE_DAC2 = and2(reg_new.ch3.COKA_CH3_ACTIVEp(), DOKY_WAVE_OUT2);
+  /*#p18.BELY*/ wire BELY_WAVE_DAC3 = and2(reg_new.ch3.COKA_CH3_ACTIVEp(), DORE_WAVE_OUT3);
+
+  return ((BARY_WAVE_DAC0 & 1) << 0) |
+         ((BYKA_WAVE_DAC1 & 1) << 1) |
+         ((BOPA_WAVE_DAC2 & 1) << 2) |
+         ((BELY_WAVE_DAC3 & 1) << 3);
+}
+
 void SpuChannel3::reset_to_cart() {
   KOGA_NR33_FREQ00p.state = 0x1a;
   JOVY_NR33_FREQ01p.state = 0x1a;
@@ -449,28 +476,6 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
 
 
-
-  /*#p17.DATE*/ wire DATE_WAVE_PLAY_D0 = mux2n(reg_new.ch3.EFAR_WAVE_IDX0.qp_new(), reg_new.ch3.CYFO_SAMPLE0p.qn_newB(), reg_new.ch3.CUVO_SAMPLE4p.qn_newB());
-  /*#p17.DAZY*/ wire DAZY_WAVE_PLAY_D1 = mux2n(reg_new.ch3.EFAR_WAVE_IDX0.qp_new(), reg_new.ch3.CESY_SAMPLE1p.qn_newB(), reg_new.ch3.CEVO_SAMPLE5p.qn_newB());
-  /*#p17.CUZO*/ wire CUZO_WAVE_PLAY_D2 = mux2n(reg_new.ch3.EFAR_WAVE_IDX0.qp_new(), reg_new.ch3.BUDY_SAMPLE2p.qn_newB(), reg_new.ch3.BORA_SAMPLE6p.qn_newB());
-  /*#p17.COPO*/ wire COPO_WAVE_PLAY_D3 = mux2n(reg_new.ch3.EFAR_WAVE_IDX0.qp_new(), reg_new.ch3.BEGU_SAMPLE3p.qn_newB(), reg_new.ch3.BEPA_SAMPLE7p.qn_newB());
-
-  /*#p18.GEMY*/ wire GEMY_WAVE_VOL3 = nor2(reg_new.ch3.HUKY_NR32_VOL0p.qn_newB(), reg_new.ch3.HODY_NR32_VOL1p.qn_newB());
-  /*#p18.GOKA*/ wire GOKA_WAVE_VOL2 = nor2(reg_new.ch3.HUKY_NR32_VOL0p.qn_newB(), reg_new.ch3.HODY_NR32_VOL1p.qp_newB());
-  /*#p18.GEGE*/ wire GEGE_WAVE_VOL4 = nor2(reg_new.ch3.HUKY_NR32_VOL0p.qp_newB(), reg_new.ch3.HODY_NR32_VOL1p.qn_newB());
-
-  /*#p18.EZAG*/ wire EZAG_WAVE_OUT0 = amux3(DATE_WAVE_PLAY_D0, GEGE_WAVE_VOL4, DAZY_WAVE_PLAY_D1, GOKA_WAVE_VOL2, CUZO_WAVE_PLAY_D2, GEMY_WAVE_VOL3);
-  /*#p18.EVUG*/ wire EVUG_WAVE_OUT1 = amux3(DAZY_WAVE_PLAY_D1, GEGE_WAVE_VOL4, CUZO_WAVE_PLAY_D2, GOKA_WAVE_VOL2, COPO_WAVE_PLAY_D3, GEMY_WAVE_VOL3);
-  /*#p18.DOKY*/ wire DOKY_WAVE_OUT2 = amux2(CUZO_WAVE_PLAY_D2, GEGE_WAVE_VOL4, COPO_WAVE_PLAY_D3, GOKA_WAVE_VOL2);
-  /*#p18.DORE*/ wire DORE_WAVE_OUT3 = and2 (COPO_WAVE_PLAY_D3, GEGE_WAVE_VOL4);
-
-  // these go straight to the dac
-  /*#p18.BARY*/ wire BARY_WAVE_DAC0 = and2(reg_new.ch3.COKA_CH3_ACTIVEp(), EZAG_WAVE_OUT0);
-  /*#p18.BYKA*/ wire BYKA_WAVE_DAC1 = and2(reg_new.ch3.COKA_CH3_ACTIVEp(), EVUG_WAVE_OUT1);
-  /*#p18.BOPA*/ wire BOPA_WAVE_DAC2 = and2(reg_new.ch3.COKA_CH3_ACTIVEp(), DOKY_WAVE_OUT2);
-  /*#p18.BELY*/ wire BELY_WAVE_DAC3 = and2(reg_new.ch3.COKA_CH3_ACTIVEp(), DORE_WAVE_OUT3);
-
-  //return (BARY_WAVE_DAC0 << 0) | (BYKA_WAVE_DAC1 << 1) | (BOPA_WAVE_DAC2 << 2) | (BELY_WAVE_DAC3 << 3);
 
 
 

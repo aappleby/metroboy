@@ -114,10 +114,17 @@ struct BiquadLP {
 void audio_callback(void* userdata, Uint8* stream, int len) {
   if (!dev) return;
 
-  sample_t* buf = audio_queue_out.get();
-  if (buf) {
-    memcpy(stream, buf, len);
-    audio_queue_in.put(buf);
+  sample_t* src = audio_queue_out.get();
+  sample_t* dst = (sample_t*)stream;
+
+  if (src) {
+    for (int i = 0; i < samples_per_buffer; i++) {
+      int32_t s = src[i] * 128;
+      if (s >  32767) s =  32767;
+      if (s < -32768) s = -32768;
+      dst[i] = s;
+    }
+    audio_queue_in.put(src);
   }
 }
 
@@ -190,11 +197,6 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
       in_l_accum = 0;
       in_r_accum = 0;
       sample_count = 0;
-
-      // Input samples are in the range [0,480] - 4 channels * 15 max intensity * 8 global volume.
-      // out_l/out_r are in the range [-1,1]
-      out_l = (out_l / 480.0) * 2.0 - 1.0;
-      out_r = (out_r / 480.0) * 2.0 - 1.0;
     }
 
     // high pass to remove dc bias
@@ -203,8 +205,8 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
     static double highpass_r = 0;
     highpass_l = highpass_l * a + out_l * (1 - a);
     highpass_r = highpass_r * a + out_r * (1 - a);
-    out_l -= highpass_l;
-    out_r -= highpass_r;
+    //out_l -= highpass_l;
+    //out_r -= highpass_r;
 
     // adjustable low pass to remove aliasing
     static BiquadLP lo_l1(10000.0 / 48000.0);
@@ -220,11 +222,14 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
 
     // The low pass causes overshoot so clamp the signal.
 
+    /*
     if (out_l >  1.0) out_l =  1.0;
     if (out_l < -1.0) out_l = -1.0;
     if (out_r >  1.0) out_r =  1.0;
     if (out_r < -1.0) out_r = -1.0;
+    */
 
+    /*
     static double max = -1;
     if (out_l > max) {
       max = out_l;
@@ -236,10 +241,11 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
       min = out_l;
       printf("min %f\n", min);
     }
+    */
 
     if (spu_buffer) {
-      spu_buffer[spu_write_cursor++] = int16_t(out_l * 32767);
-      spu_buffer[spu_write_cursor++] = int16_t(out_r * 32767);
+      spu_buffer[spu_write_cursor++] = int16_t(out_l);
+      spu_buffer[spu_write_cursor++] = int16_t(out_r);
     }
 
     if (spu_write_cursor == samples_per_buffer) {

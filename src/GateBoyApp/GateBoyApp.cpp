@@ -96,12 +96,12 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
       ld ($FF26), a
       ld a, $F3
       ld ($FF25), a
-      ld a, $77
+      ld a, $11
       ld ($FF24), a
 
       ld a, $80
       ld ($FF11), a
-      ld a, $e1
+      ld a, $F1
       ld ($FF12), a
 
       ld a, $83
@@ -304,14 +304,15 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
       }
       else if (keyboard_state[SDL_SCANCODE_LALT]) {
         gb_thread->add_steps(114 * 8);
+        gb_thread->run_sync();
       }
       else if (keyboard_state[SDL_SCANCODE_LCTRL]) {
         gb_thread->add_steps(8);
+        gb_thread->run_sync();
       }
       else {
-        //gb_thread->add_steps(1);
-        //gb_thread->run_normal();
-        gb_thread->next_phase();
+        gb_thread->add_steps(1);
+        gb_thread->run_sync();
       }
 
       break;
@@ -787,11 +788,16 @@ Step controls:
       for (int i = 0; i < 255; i++) {
         int x = i;
      
-        int y1 = (spu_buffer[(2 * i + 0 + spu_write_cursor) & 0x1FF] >> 9);
-        int y2 = (spu_buffer[(2 * i + 2 + spu_write_cursor) & 0x1FF] >> 9);
+        int y1 = (spu_buffer[(2 * i + 0 + spu_write_cursor) & 0x1FF]);
+        int y2 = (spu_buffer[(2 * i + 2 + spu_write_cursor) & 0x1FF]);
 
         y1 += 64;
         y2 += 64;
+
+        if (y1 <   0) y1 = 0;
+        if (y1 > 127) y1 = 127;
+        if (y2 <   0) y2 = 0;
+        if (y2 > 127) y2 = 127;
 
         if (y1 > y2) {
           auto t = y1;
@@ -806,11 +812,16 @@ Step controls:
 
       for (int i = 0; i < 255; i++) {
         int x = i;
-        int y1 = (spu_buffer[(2 * i + 1 + spu_write_cursor) & 0x1FF] >> 9);
-        int y2 = (spu_buffer[(2 * i + 3 + spu_write_cursor) & 0x1FF] >> 9);
+        int y1 = (spu_buffer[(2 * i + 1 + spu_write_cursor) & 0x1FF]);
+        int y2 = (spu_buffer[(2 * i + 3 + spu_write_cursor) & 0x1FF]);
 
         y1 += 192;
         y2 += 192;
+
+        if (y1 < 128) y1 = 128;
+        if (y1 > 255) y1 = 255;
+        if (y2 < 128) y2 = 128;
+        if (y2 > 255) y2 = 255;
 
         if (y1 > y2) {
           auto t = y1;

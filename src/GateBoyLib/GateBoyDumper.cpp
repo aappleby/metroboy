@@ -469,7 +469,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp   ("CH1 ENV MAX  : ", s.ch1.KYNO_ENV_MAXp.state & 1);
   d("\n");
   d.dump_slice2p("CH1 SWP DLY  : ", &s.ch1.CUPO_SWEEP_DELAY0p, 3);
-  d(             "CH1 OUT      : %d\n", s.ch1.audio_out());
+  d(             "CH1 OUT      : %d\n", ch1_audio_out(s));
   d("\n");
 
 

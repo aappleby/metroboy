@@ -281,6 +281,12 @@ void GateBoyThread::next_phase() {
   }
 }
 
+void GateBoyThread::run_sync() {
+  while (step_count != 0) {
+    next_phase();
+  }
+}
+
 void GateBoyThread::run_normal() {
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
     next_phase();

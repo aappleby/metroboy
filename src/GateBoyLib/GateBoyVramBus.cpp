@@ -45,8 +45,6 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*_p25.RYNA*/ triwire RYNA_CA11_TO_VA11_new = tri6_nn(XEDU_VRAM_LOCKp_new, reg_new.cpu_abus.BUS_CPU_A11p.out_new());
   /*_p25.RUMO*/ triwire RUMO_CA12_TO_VA12_new = tri6_nn(XEDU_VRAM_LOCKp_new, reg_new.cpu_abus.BUS_CPU_A12p.out_new());
 
-  probe_wire(8, "XEDU", XEDU_VRAM_LOCKp_new);
-
   /*_BUS_VRAM_A00n*/ reg_new.vram_abus.lo.BUS_VRAM_A00n.tri_bus(XAKY_CA00_TO_VA00_new);
   /*_BUS_VRAM_A01n*/ reg_new.vram_abus.lo.BUS_VRAM_A01n.tri_bus(XUXU_CA01_TO_VA01_new);
   /*_BUS_VRAM_A02n*/ reg_new.vram_abus.lo.BUS_VRAM_A02n.tri_bus(XYNE_CA02_TO_VA02_new);

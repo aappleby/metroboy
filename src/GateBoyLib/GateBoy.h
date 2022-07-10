@@ -90,6 +90,7 @@ struct GateBoyMem {
 struct GateBoySys {
   void reset_to_poweron() {
     memset(this, 0, sizeof(*this));
+    cpu_en = true;
   }
 
   void reset_to_cart() {
@@ -100,6 +101,7 @@ struct GateBoySys {
     clk_good = true;
     clk_req = true;
     cpu_en = true;
+    in_por = false;
     fastboot = true;
     buttons = 0;
     gb_phase_total = 46880727;
@@ -112,7 +114,8 @@ struct GateBoySys {
   uint8_t  clk_en = 0;
   uint8_t  clk_good = 0;
   uint8_t  clk_req = 0;
-  uint8_t  cpu_en = 0;
+  uint8_t  cpu_en = true;
+  uint8_t  in_por = 0;
   uint8_t  fastboot = 0;
   uint8_t  buttons = 0;
   uint64_t gb_phase_total = 0;

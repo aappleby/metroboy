@@ -37,23 +37,24 @@ struct GateBoySPU {
 
   /*_p01.HORU*/ wire HORU_CLK_512_old() const {
     /*_p01.FYNE*/ wire FYNE_CLK_512_old = not1(BURE_CLK_512_old());
-    /*_p01.GALE*/ wire GALE_CLK_512_old = mux2p(FERO_NR52_DBG_APUp.qn_oldB(), HAMA_CLK_512K_old(), FYNE_CLK_512_old);
+    /*_p01.GALE*/ wire GALE_CLK_512_old = mux2p(FERO_NR52_DBG_APUp.qp_oldB(), HAMA_CLK_512K_old(), FYNE_CLK_512_old);
     /*_p01.GEXY*/ wire GEXY_CLK_512_old = not1(GALE_CLK_512_old);
     /*_p01.HORU*/ wire HORU_CLK_512_old = not1(GEXY_CLK_512_old);
     return HORU_CLK_512_old;
   }
 
   /*_p01.HORU*/ wire HORU_CLK_512_new() const {
-    /*_p01.FYNE*/ wire FYNE_CLK_512 = not1(BURE_CLK_512_new());
-    /*_p01.GALE*/ wire GALE_CLK_512 = mux2p(FERO_NR52_DBG_APUp.qn_newB(), HAMA_CLK_512K_new(), FYNE_CLK_512);
+    /*#p01.FYNE*/ wire FYNE_CLK_512 = not1(BURE_CLK_512_new());
+    /*_p01.GALE*/ wire GALE_CLK_512 = mux2p(FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K_new(), FYNE_CLK_512);
     /*_p01.GEXY*/ wire GEXY_CLK_512 = not1(GALE_CLK_512);
     /*_p01.HORU*/ wire HORU_CLK_512p = not1(GEXY_CLK_512);
+
     return HORU_CLK_512p;
   }
 
   /*_p01.BUFY*/ wire BUFY_CLK_256n() const {
     /*_p01.CULO*/ wire CULO_CLK_256 = not1(CARU_CLK_256.qp_new());
-    /*_p01.BEZE*/ wire BEZE_CLK_256 = mux2p(FERO_NR52_DBG_APUp.qn_newB(), HAMA_CLK_512K_new(), CULO_CLK_256);
+    /*_p01.BEZE*/ wire BEZE_CLK_256 = mux2p(FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K_new(), CULO_CLK_256);
     /*_p01.COFU*/ wire COFU_CLK_256 = not1(BEZE_CLK_256);
     /*_p01.BUFY*/ wire BUFY_CLK_256n = not1(COFU_CLK_256);
     return BUFY_CLK_256n;
@@ -61,7 +62,7 @@ struct GateBoySPU {
 
   /*_p01.BYFE*/ wire BYFE_CLK_128n() const {
     /*_p01.APEF*/ wire APEF_CLK_128 = not1(BYLU_CLK_128.qp_new());
-    /*_p01.BULE*/ wire BULE_CLK_128 = mux2p(FERO_NR52_DBG_APUp.qn_newB(), HAMA_CLK_512K_new(), APEF_CLK_128);
+    /*_p01.BULE*/ wire BULE_CLK_128 = mux2p(FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K_new(), APEF_CLK_128);
     /*_p01.BARU*/ wire BARU_CLK_128 = not1(BULE_CLK_128);
     /*_p01.BYFE*/ wire BYFE_CLK_128n = not1(BARU_CLK_128);
     return BYFE_CLK_128n;

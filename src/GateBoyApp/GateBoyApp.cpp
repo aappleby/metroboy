@@ -7,6 +7,7 @@
 #include "CoreLib/Tests.h"
 
 #include "AppLib/AppHost.h"
+#include "AppLib/Audio.h"
 #include "AppLib/GLBase.h"
 
 #define SDL_MAIN_HANDLED
@@ -44,6 +45,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   LOG_G("GateBoyApp::app_init()\n");
   LOG_INDENT();
 
+  audio_init();
+
   view_control.init(screen_size);
 
   grid_painter.init(65536, 65536);
@@ -56,26 +59,58 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   ram_tex = create_texture_u8(256, 256, nullptr, false);
   overlay_tex = create_texture_u32(160, 144, nullptr, false);
   keyboard_state = SDL_GetKeyboardState(nullptr);
+  wave_tex = create_texture_u8(256, 256, nullptr, false);
 
   //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
   //gb_thread = new GateBoyThread(new LogicBoy());
   gb_thread = new GateBoyThread(new GateBoy());
   gb_thread->start();
 
-  /*
+  // baBING
+  // 0x000700c0 0xff26 0x80 // apu on
+  // 0x00070108 0xff25 0xf3 // left en 0b1111 right en 0b0011
+  // 0x00070128 0xff24 0x77 // l vol 7 r vol 7
+
+  // 0x000700d0 0xff11 0x80 // ch1 duty 0b10
+  // 0x000700f8 0xff12 0xf3 // ch1 vol 15 env- period 3
+
+  // 0x02150f98 0xff13 0x83 // ch1      freq lo 0b10000011
+  // 0x02150fc0 0xff14 0x87 // ch1 trig freq hi 0b0000011110000011
+
+  // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
+  // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
+
   gb_thread->load_program(R"(
     0150:
-      ld a, $FF
+      ld a, $00
+      ld ($FF26), a
+
+      ld a, $80
+      ld ($FF26), a
+
+      ld a, $F3
+      ld ($FF25), a
+
+      ld a, $77
+      ld ($FF24), a
+
+      ld a, $80
+      ld ($FF11), a
+
+      ld a, $F3
+      ld ($FF12), a
+
+      ld a, $83
+      ld ($FF13), a
+
+      ld a, $87
       ld ($FF14), a
 
-
-      ld a, $FF
-      ld hl, $8000
-      ld (hl), a
       inc l
-      jr -4
+
+      jr -2
   )");
-  */
+
 
 #if 0
   // test_fuzz_reg failed at 1871:0268 - write 0xe5 to 0xff40
@@ -274,9 +309,8 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
       }
       else {
         gb_thread->add_steps(1);
+        gb_thread->run_normal();
       }
-
-      gb_thread->run_normal();
 
       break;
     }
@@ -738,6 +772,65 @@ Step controls:
   gb_blitter.blit_tiles (view, screen_size, col7, row3 + 16, 1, mem.vid_ram);
 
   if (!app_paused) gb_thread->resume();
+
+
+
+  {
+    static uint8_t buf[256*256];
+
+    if (spu_buffer && !app_paused) {
+      for (int i = 0; i < 65536; i++) {
+        buf[i] = buf[i] >> 1;
+      }
+      for (int i = 0; i < 255; i++) {
+        int x = i;
+     
+        int y1 = (spu_buffer[(2 * i + 0 + spu_write_cursor) & 0x1FF] >> 9);
+        int y2 = (spu_buffer[(2 * i + 2 + spu_write_cursor) & 0x1FF] >> 9);
+
+        y1 += 64;
+        y2 += 64;
+
+        if (y1 > y2) {
+          auto t = y1;
+          y1 = y2;
+          y2 = t;
+        }
+
+        for (int y = y1; y <= y2; y++) {
+          buf[x + y * 256] = 0xFF;
+        }
+      }
+
+      for (int i = 0; i < 255; i++) {
+        int x = i;
+        int y1 = (spu_buffer[(2 * i + 1 + spu_write_cursor) & 0x1FF] >> 9);
+        int y2 = (spu_buffer[(2 * i + 3 + spu_write_cursor) & 0x1FF] >> 9);
+
+        y1 += 192;
+        y2 += 192;
+
+        if (y1 > y2) {
+          auto t = y1;
+          y1 = y2;
+          y2 = t;
+        }
+        for (int y = y1; y <= y2; y++) {
+          buf[x + y * 256] = 0xFF;
+        }
+      }
+      update_texture_u8(wave_tex, 0x00, 0x00, 256, 256,  buf);
+    }
+
+    blitter.blit_mono(view, screen_size,
+      wave_tex, 256, 256,
+      0, 0, 256, 256,
+      32*29, 32, 256, 256);
+  }
+
+
+
+
 
   frame_count++;
   frame_end = timestamp();

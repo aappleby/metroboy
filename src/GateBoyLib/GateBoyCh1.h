@@ -30,6 +30,14 @@ struct SpuChannel1 {
     return EGOR_SHIFT_CLK_new;
   }
 
+  int audio_out() const {
+    uint8_t vol = ((HAFO_CH1_ENV0p.state & 1) << 0) |
+                  ((HEMY_CH1_ENV1p.state & 1) << 1) |
+                  ((HOKO_CH1_ENV2p.state & 1) << 2) |
+                  ((HEVO_CH1_ENV3p.state & 1) << 3);
+    return (DUWO_RAW_BIT_SYNCp.state & 1) ? vol : 0;
+  }
+
   /*#p12.FAJA*/ wire FAJA_SHIFT_CLK_new() const { return not1(EGOR_SHIFT_CLK_new()); }
   /*#p12.EJYB*/ wire EJYB_SHIFT_CLK_new() const { return not1(FAJA_SHIFT_CLK_new()); }
   /*#p12.CYBE*/ wire CYBE_SHIFT_CLK_new() const { return not1(EJYB_SHIFT_CLK_new()); }
@@ -42,8 +50,8 @@ struct SpuChannel1 {
   /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_old() const { return not1(AVAF_NR10_SWEEP_DIRp.qn_oldB()); }
 
   // so this implies that NR12_DELAY* is DFFn?
-  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_old() const { return nor3(JUSA_NR12_DELAY0p.qp_oldB(), JUZY_NR12_DELAY1p.qp_oldB(), JOMA_NR12_DELAY2p.qp_oldB()); }
-  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_new() const { return nor3(JUSA_NR12_DELAY0p.qp_newB(), JUZY_NR12_DELAY1p.qp_newB(), JOMA_NR12_DELAY2p.qp_newB()); }
+  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_old() const { return nor3(JUSA_NR12_PERIOD0p.qp_oldB(), JUZY_NR12_PERIOD1p.qp_oldB(), JOMA_NR12_PERIOD2p.qp_oldB()); }
+  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_new() const { return nor3(JUSA_NR12_PERIOD0p.qp_newB(), JUZY_NR12_PERIOD1p.qp_newB(), JOMA_NR12_PERIOD2p.qp_newB()); }
 
   /*#p11.BANY*/ DFF9B BANY_NR10_SWEEP_SHIFT0p;
   /*#p11.ARAX*/ DFF9B ARAX_NR10_SWEEP_SHIFT1p;
@@ -66,9 +74,9 @@ struct SpuChannel1 {
 
   //----------
 
-  /*_p11.JUSA*/ DFF9B JUSA_NR12_DELAY0p;
-  /*_p11.JUZY*/ DFF9B JUZY_NR12_DELAY1p;
-  /*_p11.JOMA*/ DFF9B JOMA_NR12_DELAY2p;
+  /*_p11.JUSA*/ DFF9B JUSA_NR12_PERIOD0p;
+  /*_p11.JUZY*/ DFF9B JUZY_NR12_PERIOD1p;
+  /*_p11.JOMA*/ DFF9B JOMA_NR12_PERIOD2p;
   /*_p11.JAFY*/ DFF9B JAFY_NR12_ENV_DIRp;
   /*_p11.JATY*/ DFF9B JATY_NR12_VOL0p;
   /*_p11.JAXO*/ DFF9B JAXO_NR12_VOL1p;

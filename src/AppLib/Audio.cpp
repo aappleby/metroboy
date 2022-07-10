@@ -20,6 +20,8 @@ constexpr uint16_t samples_per_buffer = samples_per_channel * 2;
 sample_t* spu_buffer = nullptr;
 uint16_t spu_write_cursor = 0;
 
+bool play_audio = false;
+
 //-----------------------------------------------------------------------------
 
 struct AudioQueue {
@@ -122,6 +124,8 @@ void audio_callback(void* userdata, Uint8* stream, int len) {
 //-------------------------------------
 
 void audio_init() {
+  LOG_G("audio_init()\n");
+
   static SDL_AudioSpec want, have;
   memset(&want, 0, sizeof(want));
   want.freq = output_hz;
@@ -131,38 +135,37 @@ void audio_init() {
   want.callback = audio_callback;
   want.userdata = nullptr;
 
-  dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
-
-  if (dev) {
-    for (int i = 0; i < 3; i++) {
-      auto buf = new sample_t[samples_per_buffer];
-      memset(buf, 0, samples_per_buffer * sizeof(sample_t));
-      audio_queue_in.put(buf);
-    }
-
-    SDL_PauseAudioDevice(dev, 0);
+  if (play_audio) {
+    dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
   }
-  else {
-    LOG_R("Could not open audio device!\n");
+
+  for (int i = 0; i < 3; i++) {
+    auto buf = new sample_t[samples_per_buffer];
+    memset(buf, 0, samples_per_buffer * sizeof(sample_t));
+    audio_queue_in.put(buf);
   }
 
   spu_buffer = audio_queue_in.get();
   spu_write_cursor = 0;
+
+  if (dev) SDL_PauseAudioDevice(dev, 0);
 }
 
 //-------------------------------------
 
 void audio_stop() {
-  if (!dev) return;
+  LOG_G("audio_stop()\n");
   audio_queue_in.close();
   audio_queue_out.close();
-  SDL_CloseAudioDevice(dev);
+  delete [] spu_buffer;
+  spu_buffer = nullptr;
+  if (dev) SDL_CloseAudioDevice(dev);
 }
 
 //-------------------------------------
 
 void audio_post(sample_t in_l_i, sample_t in_r_i) {
-  if (!dev) return;
+  if (!spu_buffer) return;
 
   static uint32_t in_l_accum = 0;
   static uint32_t in_r_accum = 0;
@@ -182,13 +185,16 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
     double out_r = 0;
 
     if (sample_count) {
-      // Input samples are in the range [0,480]
-      // - 4 channels * 15 max intensity * 8 global volume.
-      out_l = double(in_l_accum) / double(sample_count * 240);
-      out_r = double(in_r_accum) / double(sample_count * 240);
+      out_l = double(in_l_accum) / double(sample_count);
+      out_r = double(in_r_accum) / double(sample_count);
       in_l_accum = 0;
       in_r_accum = 0;
       sample_count = 0;
+
+      // Input samples are in the range [0,480] - 4 channels * 15 max intensity * 8 global volume.
+      // out_l/out_r are in the range [-1,1]
+      out_l = (out_l / 480.0) * 2.0 - 1.0;
+      out_r = (out_r / 480.0) * 2.0 - 1.0;
     }
 
     // high pass to remove dc bias
@@ -209,21 +215,38 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
     static BiquadLP lo_r2(10000.0 / 48000.0);
     static BiquadLP lo_r3(10000.0 / 48000.0);
 
-    out_l = lo_l3(lo_l2(lo_l1(out_l)));
-    out_r = lo_r3(lo_r2(lo_r1(out_r)));
+    //out_l = lo_l3(lo_l2(lo_l1(out_l)));
+    //out_r = lo_r3(lo_r2(lo_r1(out_r)));
 
-    static double max = 0;
+    // The low pass causes overshoot so clamp the signal.
+
+    if (out_l >  1.0) out_l =  1.0;
+    if (out_l < -1.0) out_l = -1.0;
+    if (out_r >  1.0) out_r =  1.0;
+    if (out_r < -1.0) out_r = -1.0;
+
+    static double max = -1;
     if (out_l > max) {
       max = out_l;
-      printf("max %f\n", out_l);
+      printf("max %f\n", max);
     }
 
-    spu_buffer[spu_write_cursor++] = int16_t(out_l * 16383);
-    spu_buffer[spu_write_cursor++] = int16_t(out_r * 16383);
+    static double min = 1;
+    if (out_l < min) {
+      min = out_l;
+      printf("min %f\n", min);
+    }
+
+    if (spu_buffer) {
+      spu_buffer[spu_write_cursor++] = int16_t(out_l * 32767);
+      spu_buffer[spu_write_cursor++] = int16_t(out_r * 32767);
+    }
 
     if (spu_write_cursor == samples_per_buffer) {
-      audio_queue_out.put(spu_buffer);
-      spu_buffer = audio_queue_in.get();
+      if (dev) {
+        audio_queue_out.put(spu_buffer);
+        spu_buffer = audio_queue_in.get();
+      }
       spu_write_cursor = 0;
     }
   }

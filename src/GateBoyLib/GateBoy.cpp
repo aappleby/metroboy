@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <stdio.h>
 
+#include "AppLib/Audio.h"
 #include "CoreLib/Constants.h"
 #include "CoreLib/Tests.h"
 #include "GateBoyLib/Probe.h"
@@ -92,6 +93,7 @@ GBResult GateBoy::reset_to_poweron(bool fastboot) {
   sys.fastboot = fastboot;
   sys.rst = 1;
   sys.gb_phase_total = 0;
+  sys.in_por = 1;
 
   return GBResult::ok();
 }
@@ -154,7 +156,7 @@ GBResult GateBoy::poke(int addr, uint8_t data_in) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
-  CHECK_P((sys.gb_phase_total & 7) == 7);
+  //CHECK_P((sys.gb_phase_total & 7) == 0);
 
   cpu.core.reg.bus_req_new.addr = addr;
   cpu.core.reg.bus_req_new.data = data;
@@ -167,7 +169,7 @@ GBResult GateBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_read(const blob& cart_blob, int addr) {
-  CHECK_P((sys.gb_phase_total & 7) == 7);
+  //CHECK_P((sys.gb_phase_total & 7) == 7);
 
   Req old_req = cpu.core.reg.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
@@ -185,7 +187,7 @@ GBResult GateBoy::dbg_read(const blob& cart_blob, int addr) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
-  CHECK_P((sys.gb_phase_total & 7) == 7);
+  //CHECK_P((sys.gb_phase_total & 7) == 7);
 
   Req old_req = cpu.core.reg.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
@@ -214,10 +216,49 @@ GBResult GateBoy::run_phases(const blob& cart_blob, int phase_count) {
 GBResult GateBoy::next_phase(const blob& cart_blob) {
   //LOG_G("GateBoy::next_phase()\n");
 
-  probes.begin_pass((sys.gb_phase_total + 1) & 7);
   sys.gb_phase_total++;
 
+  if (sys.gb_phase_total == 7) {
+    // Release reset, start clock, and sync with phase
+    sys.rst = 0;
+    sys.clk_en = 1;
+    sys.clk_good = 1;
+  }
+
+  if (sys.gb_phase_total == 9) {
+    CHECK_P(bit0(gb_state.sys_clk.AFUR_ABCDxxxx.qp_oldB()));
+    CHECK_N(bit0(gb_state.sys_clk.ALEF_xBCDExxx.qp_oldB()));
+    CHECK_N(bit0(gb_state.sys_clk.APUK_xxCDEFxx.qp_oldB()));
+    CHECK_N(bit0(gb_state.sys_clk.ADYK_xxxDEFGx.qp_oldB()));
+  }
+
+  if (sys.gb_phase_total == 65) {
+    // Wait for SIG_CPU_START
+    CHECK_P(gb_state.sys_rst.SIG_CPU_STARTp.out_old());
+  }
+
+  if (sys.gb_phase_total == 80) {
+    // Fetch the first instruction in the bootrom
+    dbg_req(0x0000, 0, 0);
+  }
+
+  if (sys.gb_phase_total == 88) {
+    // We're ready to go, release the CPU so it can start running the bootrom.
+
+    sys.clk_req = 1;
+    sys.in_por = false;
+
+    if (sys.fastboot) {
+      gb_state.reg_div.TERO_DIV03p.state = 0b00011010;
+      gb_state.reg_div.UNYK_DIV04p.state = 0b00011010;
+      gb_state.reg_div.UPOF_DIV15p.state = 0b00011011;
+    }
+  }
+
+  probes.begin_pass(sys.gb_phase_total & 7);
   tock_gates(cart_blob);
+  probes.end_pass();
+
   gb_state.commit();
   pins.commit();
 
@@ -237,69 +278,23 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   */
 
   update_framebuffer();
-  probes.end_pass();
 
-  //----------------------------------------
-  // Update the sim without ticking the clock to to settle initial reset signals.
+  if ((sys.gb_phase_total & 7) == 0) {
+    //audio_post(rand() & 0x7F, rand() & 0x7F);
+    int l = 0;
+    int r = 0;
 
-  //run_phases(cart_blob, 6);
+    //l = (((gb_state.reg_div.TOFE_DIV09p.state & 1) * 2 - 1) * 239) + 240;
+    //r = (((gb_state.reg_div.TUGO_DIV08p.state & 1) * 2 - 1) * 239) + 240;
 
-  //----------------------------------------
-  // Release reset, start clock, and sync with phase
+    //l = (gb_state.reg_div.TOFE_DIV09p.state & 1) * 100;
+    //r = (gb_state.reg_div.TERU_DIV10p.state & 1) * 100;
 
-  if (sys.gb_phase_total == 6) {
-    sys.rst = 0;
-    sys.clk_en = 1;
-    sys.clk_good = 1;
+    l = (gb_state.ch1.audio_out()) * (480 / 15);
+    r = 0;
+
+    audio_post(l, r);
   }
-
-  //run_phases(cart_blob, 2);
-
-  if (sys.gb_phase_total == 8) {
-    CHECK_N(bit0(gb_state.sys_clk.AFUR_ABCDxxxx.qn_oldB()));
-    CHECK_P(bit0(gb_state.sys_clk.ALEF_xBCDExxx.qn_oldB()));
-    CHECK_P(bit0(gb_state.sys_clk.APUK_xxCDEFxx.qn_oldB()));
-    CHECK_P(bit0(gb_state.sys_clk.ADYK_xxxDEFGx.qn_oldB()));
-  }
-
-  //----------------------------------------
-  // Wait for SIG_CPU_START
-
-  //run_phases(cart_blob, 56);
-
-  if (sys.gb_phase_total == 64) {
-    CHECK_P(gb_state.sys_rst.SIG_CPU_STARTp.out_old());
-  }
-
-
-  //----------------------------------------
-  // Delay to sync up with expected div value
-
-  //run_phases(cart_blob, 15);
-
-  //----------------------------------------
-  // Fetch the first instruction in the bootrom
-
-  if (sys.gb_phase_total == 79) {
-    dbg_req(0x0000, 0, 0);
-  }
-
-  //run_phases(cart_blob, 8);
-
-  //----------------------------------------
-  // We're ready to go, release the CPU so it can start running the bootrom.
-
-  if (sys.gb_phase_total == 87) {
-    sys.clk_req = 1;
-    sys.cpu_en = true;
-
-    if (sys.fastboot) {
-      gb_state.reg_div.TERO_DIV03p.state = 0b00011010;
-      gb_state.reg_div.UNYK_DIV04p.state = 0b00011010;
-      gb_state.reg_div.UPOF_DIV15p.state = 0b00011011;
-    }
-  }
-
 
   return GBResult::ok();
 }
@@ -561,10 +556,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p29.BAGY*/ wire BAGY_LINE_RSTn_odd_new = not1(BALU_LINE_RSTp_odd_new);
   /*_p27.XAHY*/ wire XAHY_LINE_RSTn_odd_new = not1(reg_new.ATEJ_LINE_RST_TRIGp_odd.out_new());
 
-  probe_wire(18,  "ANOM", ANOM_LINE_RSTn_odd_new);
-
-  //----------------------------------------
-
   //----------------------------------------
   // Sprite scanner
 
@@ -628,10 +619,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p21.VOGA*/ reg_new.VOGA_HBLANKp_evn.dff17(reg_new.sys_clk.ALET_evn_new(), TADY_LINE_RSTn_odd_new, reg_old.WODU_HBLANK_GATEp_odd.out_old());
   /*#p21.WEGO*/ wire WEGO_HBLANKp_evn_new = or2(reg_new.TOFU_VID_RSTp_new(), reg_new.VOGA_HBLANKp_evn.qp_new());
   /*#p21.XYMU*/ reg_new.XYMU_RENDERING_LATCHn.nor_latch(WEGO_HBLANKp_evn_new, reg_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new());
-
-  probe_wire(15, "XYMU", reg_new.XYMU_RENDERING_LATCHn.state);
-  probe_wire(16, "WEGO", WEGO_HBLANKp_evn_new);
-  probe_wire(17, "AVAP", reg_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.state);
 
   /*_p24.LOBY*/ wire LOBY_RENDERINGn = not1(reg_new.XYMU_RENDERING_LATCHn.qn_new());
   /*#p27.PAHA*/ wire PAHA_RENDERINGn = not1(reg_new.XYMU_RENDERING_LATCHn.qn_new());
@@ -1090,7 +1077,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     if (bit0(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
 
 
-    if (sys.cpu_en) {
+    if (sys.cpu_en && !sys.in_por) {
       if (cpu.core.reg.op_state == 0) {
         if ((bit_pack(reg_new.reg_ie) & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
           cpu.core.reg.op_next = 0xF4; // fake opcode
@@ -1114,7 +1101,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     }
 
 
-    if (sys.cpu_en) {
+    if (sys.cpu_en && !sys.in_por) {
       cpu.core.execute((uint8_t)bit_pack(reg_new.reg_ie), cpu.core.reg.intf_latch);
       cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
 

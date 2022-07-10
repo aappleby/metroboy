@@ -480,7 +480,7 @@ TestResults GateBoyTests::test_spu_regs(const IGateBoy* proto) {
   results += test_spu_reg(proto, "NR30", ADDR_NR30, 0b10000000);
   results += test_spu_reg(proto, "NR31", ADDR_NR31, 0b00000000); // NR31 can't be read but we'll try anyway
   results += test_spu_reg(proto, "NR32", ADDR_NR32, 0b01100000);
-  results += test_spu_reg(proto, "NR33", ADDR_NR33, 0b00000000); // NR31 can't be read but we'll try anyway
+  results += test_spu_reg(proto, "NR33", ADDR_NR33, 0b00000000); // NR33 can't be read but we'll try anyway
   results += test_spu_reg(proto, "NR34", ADDR_NR34, 0b01000000);
 
   results += test_spu_reg(proto, "NR41", ADDR_NR41, 0b00000000); // NR41 can't be read but we'll try anyway
@@ -1317,7 +1317,6 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
 
   unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_bootrom(dummy_cart);
-  //gb->sys.cpu_en = false;
   gb->dbg_write(dummy_cart, ADDR_LCDC, 0x80);
   gb->run_phases(dummy_cart, 8);
 
@@ -1839,7 +1838,6 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   {
     unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    //gb->sys.cpu_en = false;
 
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80).unwrap();
     gb->dbg_write(dummy_cart, ADDR_TIMA,0xFD).unwrap();
@@ -1862,8 +1860,6 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   {
     unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    //gb->sys.cpu_en = false;
-
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80).unwrap();
     gb->dbg_write(dummy_cart, ADDR_TIMA,0xFD).unwrap();
     gb->dbg_write(dummy_cart, ADDR_DIV, 0x00).unwrap();
@@ -1884,8 +1880,6 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   {
     unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    //gb->sys.cpu_en = false;
-
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80);
     gb->dbg_write(dummy_cart, ADDR_TIMA,0xFD);
     gb->dbg_write(dummy_cart, ADDR_DIV, 0x00);
@@ -1906,8 +1900,6 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   {
     unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    //gb->sys.cpu_en = false;
-
     gb->dbg_write(dummy_cart, ADDR_TMA, 0x80);
     gb->dbg_write(dummy_cart, ADDR_TIMA,0xFD);
     gb->dbg_write(dummy_cart, ADDR_DIV, 0x00);
@@ -1929,7 +1921,6 @@ TestResults GateBoyTests::test_timer(const IGateBoy* proto) {
   if (run_slow_tests) {
     unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset_to_bootrom(dummy_cart);
-    //gb->sys.cpu_en = false;
 
     // passes, but slow :/
     LOG("Testing div reset_states + rollover, this takes a minute...");
@@ -2048,7 +2039,6 @@ TestResults GateBoyTests::test_mem(const IGateBoy* proto, const char* tag, uint1
 
   unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset_to_bootrom(test_cart);
-  //gb->sys.cpu_en = false;
 
   gb->dbg_write(test_cart, 0xFF50, 0x01); // disable bootrom
   gb->dbg_write(test_cart, 0x0000, 0x0A); // enable mbc1 ram

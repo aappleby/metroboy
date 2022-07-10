@@ -67,6 +67,7 @@ private:
   bool app_paused = false;
 
   int ram_tex;
+  int wave_tex;
 
   Assembler assembler;
   blob temp_buf;

@@ -465,7 +465,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d("\n");
   d.dump_slice2p("CH1 ENV DLY  : ", &s.ch1.JOVA_ENV_DELAY0p, 3);
   d.dump_bitp   ("CH1 ENV TICK : ", s.ch1.KOZY_ENV_TICKp.state & 1);
-  d.dump_slice2p("CH1 ENV      : ", &s.ch1.HEVO_CH1_ENV3p, 4);
+  d.dump_slice2p("CH1 ENV      : ", &s.ch1.HAFO_CH1_ENV0p, 4);
   d.dump_bitp   ("CH1 ENV MAX  : ", s.ch1.KYNO_ENV_MAXp.state & 1);
   d("\n");
   d.dump_slice2p("CH1 SWP DLY  : ", &s.ch1.CUPO_SWEEP_DELAY0p, 3);
@@ -479,24 +479,6 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("FEKU : ", s.ch1.FEKU_CH1_TRIGp.state & 1);
   d.dump_bitp("FYFO : ", s.ch1.FARE_CH1_TRIGp.state & 1);
   d.dump_bitp("FYFO : ", s.ch1.FYTE_CH1_TRIGp.state & 1);
-
-#if 0
-    /*#p13.EZEC*/ reg_new.ch1.EZEC_CH1_TRIGp.dff17(reg_new.sys_clk.DOVA_ABCDxxxx(), reg_new.DUKA_APU_RSTn_new(), reg_old.ch1.DUPE_NR14_TRIGp.qp_oldB());
-
-    /*#p13.DOGE*/ wire DOGE_FF14_WRn = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.DUJA_ADDR_FF14p());
-    /*#p13.DADO*/ wire DADO_NR14_RSTb = nor2(reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.EZEC_CH1_TRIGp.qp_new());
-    /*#p13.DUPE*/ reg_new.ch1.DUPE_NR14_TRIGp.dff9b(DOGE_FF14_WRn, DADO_NR14_RSTb, reg_old.cpu_dbus.BUS_CPU_D07p.qp_old());
-
-    /*#p13.FYTE*/ reg_new.ch1.FYTE_CH1_TRIGp.dff17(reg_new.ch1.DYFA_xBCDExxx(), reg_new.ERUM_APU_RSTn_new(), reg_old.ch1.FARE_CH1_TRIGp.qp_old());
-    /*#p13.FARE*/ reg_new.ch1.FARE_CH1_TRIGp.dff17(reg_new.ch1.DYFA_xBCDExxx(), reg_new.ERUM_APU_RSTn_new(), reg_old.ch1.FEKU_CH1_TRIGp.qp_old());
-
-    /*#p13.EGET*/ wire EGET_TRIG_RSTn = nor2(reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.FARE_CH1_TRIGp.qp_new());
-    /*#p13.FEKU*/ reg_new.ch1.FEKU_CH1_TRIGp.dff17(reg_new.ch1.DYFA_xBCDExxx(), EGET_TRIG_RSTn, reg_old.ch1.FYFO_CH1_TRIGn.qn_old()); // schematic wrong?
-
-    /*#p13.GEFE*/ wire GEFE_TRIG_RSTp = not1(EGET_TRIG_RSTn);
-    /*#p13.FYFO*/ reg_new.ch1.FYFO_CH1_TRIGn.nor_latch(GEFE_TRIG_RSTp, reg_new.ch1.EZEC_CH1_TRIGp.qp_new());
-#endif
-
 
 #if 0
   /*#p13.CYTO*/ NorLatch CYTO_CH1_ACTIVEp;

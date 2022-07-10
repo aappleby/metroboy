@@ -85,12 +85,6 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*#p15.BUFO*/ wire BUFO = not1(reg_new.spu.ATEP_AxxDExxH.qp_new());
   /*#p15.CEMO*/ reg_new.spu.CEMO_xBCDExxx.dff17(BUFO, reg_new.BYHO_APU_RSTn_new(), reg_old.spu.CEMO_xBCDExxx.qn_old());
 
-  probe_wire(0, "AZOF", reg_new.sys_clk.AZOF_AxCxExGx_new());
-  probe_wire(1, "CEMO", reg_new.spu.CEMO_xBCDExxx.state & 1);
-  probe_wire(2, "ATYK", reg_new.spu.ATYK_AxxDExxH.state & 1);
-  probe_wire(3, "AJER", reg_new.spu.AJER_AxxDExxH.state & 1);
-  probe_wire(4, "AVOK", reg_new.spu.AVOK_xBCDExxx.state & 1);
-
   //----------
   // Low-speed clocks are picked up from DIV
 
@@ -99,13 +93,9 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
   //wire UMER_DIV10n_old = not1(reg_old.reg_div.UNYK_DIV04p.qp_old());
 
-  probe_wire(12, "UMER", UMER_DIV10n_old);
-
   /*_p01.BARA*/ reg_new.spu.BARA_CLK_512.dff17(COKE_AxxDExxH,                     reg_new.ATUS_APU_RSTn_new(), UMER_DIV10n_old);
   /*_p01.CARU*/ reg_new.spu.CARU_CLK_256.dff17(reg_new.spu.BURE_CLK_512_new(),    reg_new.ATUS_APU_RSTn_new(), reg_old.spu.CARU_CLK_256.qn_old());
   /*_p01.BYLU*/ reg_new.spu.BYLU_CLK_128.dff17(reg_new.spu.CARU_CLK_256.qn_new(), reg_new.ATUS_APU_RSTn_new(), reg_old.spu.BYLU_CLK_128.qn_old());
-
-  probe_wire(13, "FEROn", reg_new.spu.FERO_NR52_DBG_APUp.qn_newB());
 
   tick_ch1(reg_old, reg_new);
   tick_ch2(reg_old, reg_new);

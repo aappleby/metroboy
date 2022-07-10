@@ -146,25 +146,6 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p13.FYFO*/ reg_new.ch1.FYFO_CH1_TRIGn.nor_latch(GEFE_TRIG_RSTp, reg_new.ch1.EZEC_CH1_TRIGp.qp_new());
   }
 
-
-#if 0
-  /*#p15.CEMO*/ DFF17 CEMO_CLK_1M;
-  /*_p15.ATEP*/ DFF17 ATEP_AxxDExxH;
-
-  //----------
-  // clocks for the apu
-
-  /*_p01.CERY*/ DFF17 CERY_CLK_2M;
-  /*_p01.ATYK*/ DFF17 ATYK_CLK_2M;
-  /*_p01.AVOK*/ DFF17 AVOK_xBCDExxx;
-  /*_p09.AJER*/ DFF17 AJER_AxxDExxH;
-  /*_p01.JESO*/ DFF17 JESO_CLK_512K;
-
-  /*_p01.BARA*/ DFF17 BARA_CLK_512;
-  /*_p01.CARU*/ DFF17 CARU_CLK_256;
-  /*_p01.BYLU*/ DFF17 BYLU_CLK_128;
-#endif
-
   //----------
   // Sweep timer
 
@@ -183,7 +164,6 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     /*#p09.BAZA*/ reg_new.ch1.BAZA_DBG_SWEEP_CLK.dff17(reg_new.spu.AJER_AxxDExxH.qn_new(), reg_new.ATYV_APU_RSTn_new(), reg_old.spu.BOWY_NR52_DBG_SWEEP.qp_old());
   }
-
 
   {
     /*#p13.BAVE*/ wire BAVE_NR10_NO_SWEEPp = and3(reg_new.ch1.BOTU_NR10_SWEEP_PERIOD2p.qn_newB(), reg_new.ch1.BANA_NR10_SWEEP_PERIOD1p.qn_newB(), reg_new.ch1.ADEK_NR10_SWEEP_PERIOD0p.qn_newB());
@@ -535,7 +515,12 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
 
-  /*#p13.KAKE*/ wire KAKE_ENV_CLK = and3(reg_new.ch1.KOZY_ENV_TICKp.qp_new(), reg_new.ch1.KOMA_ENV_OFFp_new(), reg_new.ch1.KEZU_ENV_ACTIVEn.qp_new());
+  /*#p13.KAKE*/ wire KAKE_ENV_CLK = or3(reg_new.ch1.KOZY_ENV_TICKp.qp_new(), reg_new.ch1.KOMA_ENV_OFFp_new(), reg_new.ch1.KEZU_ENV_ACTIVEn.qp_new()); // Die has this as and, but it's definitely or
+
+  probe_wire(0, "KAKE_ENV_CLK", KAKE_ENV_CLK);
+  probe_wire(1, "KOZY_ENV_TICKp", reg_new.ch1.KOZY_ENV_TICKp.state & 1);
+  probe_wire(2, "KOMA_ENV_OFFp", reg_new.ch1.KOMA_ENV_OFFp_new() & 1);
+  probe_wire(3, "KEZU_ENV_ACTIVEn", reg_new.ch1.KEZU_ENV_ACTIVEn.state & 1);
 
   // The muxes select posedge or negedge for the env counter so it can count up _or_ down?
   // these were connected wrong in schematic

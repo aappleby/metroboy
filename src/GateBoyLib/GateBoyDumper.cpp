@@ -473,33 +473,34 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d("\n");
 
 
+  d.dump_bitp("BYTE_SHIFT_DONEp    : ", s.ch1.BYTE_SHIFT_DONEp.state & 1);
+  d.dump_bitp("BAZA_DBG_SWEEP_CLK  : ", s.ch1.BAZA_DBG_SWEEP_CLK.state & 1);
+  d.dump_bitp("BEXA_SWEEP_TRIGp : ", s.ch1.BEXA_SWEEP_TRIGp.state & 1);
+  d.dump_bitp("FEMU_SHIFTINGn      : ", s.ch1.FEMU_SHIFTINGn.state & 1);
+
+#if 0
+  ///*#p13.EZEC*/ DFF17 EZEC_CH1_TRIGp;
+  ///*_p13.FYFO*/ NorLatch FYFO_CH1_TRIGn;
+  ///*_p13.FEKU*/ DFF17 FEKU_CH1_TRIGp;
+  ///*_p13.FARE*/ DFF17 FARE_CH1_TRIGp;
+  ///*_p13.FYTE*/ DFF17 FYTE_CH1_TRIGp;
+
   d.dump_bitp("DUPE : ", s.ch1.DUPE_NR14_TRIGp.state & 1);
   d.dump_bitp("EZEC : ", s.ch1.EZEC_CH1_TRIGp.state & 1);
   d.dump_bitp("FYFO : ", !(s.ch1.FYFO_CH1_TRIGn.state & 1));
   d.dump_bitp("FEKU : ", s.ch1.FEKU_CH1_TRIGp.state & 1);
-  d.dump_bitp("FYFO : ", s.ch1.FARE_CH1_TRIGp.state & 1);
-  d.dump_bitp("FYFO : ", s.ch1.FYTE_CH1_TRIGp.state & 1);
+  d.dump_bitp("FARE : ", s.ch1.FARE_CH1_TRIGp.state & 1);
+  d.dump_bitp("FYTE : ", s.ch1.FYTE_CH1_TRIGp.state & 1);
+#endif
 
 #if 0
   /*#p13.CYTO*/ NorLatch CYTO_CH1_ACTIVEp;
-
-  /*#p13.EZEC*/ DFF17 EZEC_CH1_TRIGp;
-  /*_p13.FEKU*/ DFF17 FEKU_CH1_TRIGp;
-  /*_p13.FARE*/ DFF17 FARE_CH1_TRIGp;
-  /*_p13.FYTE*/ DFF17 FYTE_CH1_TRIGp;
-  /*_p13.FYFO*/ NorLatch FYFO_CH1_TRIGn;
-
-  /*_p13.BYTE*/ DFF17 BYTE_SHIFT_DONEp;
   /*_p13.CERO*/ DFF17 CERO_CH1_LEN_DONE;
-  /*#p09.BAZA*/ DFF17 BAZA_DBG_SWEEP_CLK;
-  /*_p13.BEXA*/ DFF17 BEXA_SWEEP_TRIGGERp;
-  /*_p13.FEMU*/ NandLatch FEMU_SHIFTINGn;
   /*_p13.GEXU*/ NandLatch GEXU_FREQ_GATEn;
   /*_p13.COMY*/ DFF17 COMY_SAMPLE_CLKp;
 
   /*#p13.KOZY*/ DFF17 KOZY_ENV_TICKp;
   /*#p13.KYNO*/ DFF17 KYNO_ENV_MAXp;
-
   /*#p13.KEZU*/ NorLatch KEZU_ENV_ACTIVEn;
 #endif
 
@@ -517,124 +518,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   d("===== CH2 =====\n");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #if 0
   d.dump_bitp("ERYC_NR21_LEN0  : ", s.ch2.ERYC_NR21_LEN0 .state);

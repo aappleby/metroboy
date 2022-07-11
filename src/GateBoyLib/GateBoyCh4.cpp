@@ -6,21 +6,23 @@
 
 int ch4_audio_out(const GateBoyState& reg_new) {
 
-  /*#p20.DYRY*/ wire DYRY_DBG = and2(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB(), reg_new.EDEK_NR52_DBG_APUp());
-  /*#p20.GAME*/ wire GAME_LFSR_OUT = and2(reg_new.ch4.GENA_CH4_ACTIVEp.qp_new(), reg_new.ch4.HEZU_LFSR_15.qp_new());
+  ///*#p20.DYRY*/ wire DYRY_DBG = and2(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB(), reg_new.EDEK_NR52_DBG_APUp());
+  wire DYRY_DBG = reg_new.ch4.CUNY_NR44_LEN_ENp.qp_any();
+  /*#p20.GAME*/ wire GAME_LFSR_OUT = and2(reg_new.ch4.GENA_CH4_ACTIVEp.qp_any(), reg_new.ch4.HEZU_LFSR_15.qp_any());
 
   // ignoring debug thing on the audio out here
   ///*#p20.EZUL*/ wire EZUL_CH4_BIT_MUX = mux2p(DYRY_DBG, FEME_LFSR_CLKp_new, GAME_LFSR_OUT);
   /*#p20.EZUL*/ wire EZUL_CH4_BIT_MUX = GAME_LFSR_OUT;
 
-  /*#p20.CEPY*/ wire CEPY_NR44_STOPn = not1(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_newB());
-  /*#p20.COTE*/ wire COTE_DBG_CH4_MUTE = and2(CEPY_NR44_STOPn, reg_new.EDEK_NR52_DBG_APUp());
+  /*#p20.CEPY*/ wire CEPY_NR44_STOPn = not1(reg_new.ch4.CUNY_NR44_LEN_ENp.qp_any());
+  ///*#p20.COTE*/ wire COTE_DBG_CH4_MUTE = and2(CEPY_NR44_STOPn, reg_new.EDEK_NR52_DBG_APUp());
+  wire COTE_DBG_CH4_MUTE = CEPY_NR44_STOPn;
   /*#p20.DATO*/ wire DATO_CH4_RAW_BIT  = or2(EZUL_CH4_BIT_MUX, COTE_DBG_CH4_MUTE);
 
-  /*#p20.AKOF*/ wire AKOF_CH4_DAC0 = and2(reg_new.ch4.FEKO_CH4_VOL0.qp_new(), DATO_CH4_RAW_BIT);
-  /*#p20.BYZY*/ wire BYZY_CH4_DAC1 = and2(reg_new.ch4.FATY_CH4_VOL1.qp_new(), DATO_CH4_RAW_BIT);
-  /*#p20.APYR*/ wire APYR_CH4_DAC2 = and2(reg_new.ch4.FERU_CH4_VOL2.qp_new(), DATO_CH4_RAW_BIT);
-  /*#p20.BOZA*/ wire BOZA_CH4_DAC3 = and2(reg_new.ch4.FYRO_CH4_VOL3.qp_new(), DATO_CH4_RAW_BIT);
+  /*#p20.AKOF*/ wire AKOF_CH4_DAC0 = and2(reg_new.ch4.FEKO_CH4_VOL0.qp_any(), DATO_CH4_RAW_BIT);
+  /*#p20.BYZY*/ wire BYZY_CH4_DAC1 = and2(reg_new.ch4.FATY_CH4_VOL1.qp_any(), DATO_CH4_RAW_BIT);
+  /*#p20.APYR*/ wire APYR_CH4_DAC2 = and2(reg_new.ch4.FERU_CH4_VOL2.qp_any(), DATO_CH4_RAW_BIT);
+  /*#p20.BOZA*/ wire BOZA_CH4_DAC3 = and2(reg_new.ch4.FYRO_CH4_VOL3.qp_any(), DATO_CH4_RAW_BIT);
 
   return ((AKOF_CH4_DAC0 & 1) << 0) |
          ((BYZY_CH4_DAC1 & 1) << 1) |

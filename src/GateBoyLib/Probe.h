@@ -20,5 +20,4 @@ struct Probes {
   int  phase_tags[sample_count];
 };
 
-void probe_wire (int index, const char* signal_name, wire s);
-void probe_char(int index, const char* signal_name, char s);
+void probe(int index, const char* signal_name, wire s);

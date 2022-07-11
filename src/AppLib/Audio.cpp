@@ -121,7 +121,7 @@ void audio_callback(void* userdata, Uint8* stream, int len) {
     for (int i = 0; i < samples_per_buffer; i++) {
       int32_t s = src[i] * 128;
       if (s >  32767) s =  32767;
-      if (s < -32768) s = -32768;
+      if (s < -32767) s = -32767;
       dst[i] = s;
     }
     audio_queue_in.put(src);
@@ -205,8 +205,8 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
     static double highpass_r = 0;
     highpass_l = highpass_l * a + out_l * (1 - a);
     highpass_r = highpass_r * a + out_r * (1 - a);
-    //out_l -= highpass_l;
-    //out_r -= highpass_r;
+    out_l -= highpass_l;
+    out_r -= highpass_r;
 
     // adjustable low pass to remove aliasing
     static BiquadLP lo_l1(10000.0 / 48000.0);
@@ -217,19 +217,11 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
     static BiquadLP lo_r2(10000.0 / 48000.0);
     static BiquadLP lo_r3(10000.0 / 48000.0);
 
-    //out_l = lo_l3(lo_l2(lo_l1(out_l)));
-    //out_r = lo_r3(lo_r2(lo_r1(out_r)));
+    out_l = lo_l3(lo_l2(lo_l1(out_l)));
+    out_r = lo_r3(lo_r2(lo_r1(out_r)));
 
     // The low pass causes overshoot so clamp the signal.
 
-    /*
-    if (out_l >  1.0) out_l =  1.0;
-    if (out_l < -1.0) out_l = -1.0;
-    if (out_r >  1.0) out_r =  1.0;
-    if (out_r < -1.0) out_r = -1.0;
-    */
-
-    /*
     static double max = -1;
     if (out_l > max) {
       max = out_l;
@@ -241,7 +233,6 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
       min = out_l;
       printf("min %f\n", min);
     }
-    */
 
     if (spu_buffer) {
       spu_buffer[spu_write_cursor++] = int16_t(out_l);

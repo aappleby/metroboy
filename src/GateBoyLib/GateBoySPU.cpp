@@ -23,6 +23,8 @@ int spu_audio_out_r(GateBoyState& reg_new) {
               ((reg_new.spu.BUMO_NR50_VOL_R1.state & 1) << 1) |
               ((reg_new.spu.COZU_NR50_VOL_R2.state & 1) << 2);
 
+  vol_r += 1;
+
   return mix * vol_r;
 }
 
@@ -38,6 +40,8 @@ int spu_audio_out_l(GateBoyState& reg_new) {
   int vol_l = ((reg_new.spu.APEG_NR50_VOL_L0.state & 1) << 0) |
               ((reg_new.spu.BYGA_NR50_VOL_L1.state & 1) << 1) |
               ((reg_new.spu.AGER_NR50_VOL_L2.state & 1) << 2);
+
+  vol_l += 1;
 
   return mix * vol_l;
 }

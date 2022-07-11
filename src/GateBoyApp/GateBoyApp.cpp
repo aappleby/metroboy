@@ -96,17 +96,19 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
       ld ($FF26), a
       ld a, $F3
       ld ($FF25), a
-      ld a, $11
+      ld a, $55
       ld ($FF24), a
 
+      ld a, $19
+      ld ($FF10), a
       ld a, $80
       ld ($FF11), a
-      ld a, $F1
+      ld a, $F8
       ld ($FF12), a
 
-      ld a, $83
+      ld a, $AA
       ld ($FF13), a
-      ld a, $87
+      ld a, $85
       ld ($FF14), a
 
       jr -2
@@ -572,6 +574,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   // Help
 
+#if 0
   d("\004========== GATEBOY INSTRUCTIONS ==========\001\n");
   d(R"(
 Drag and drop rom files onto the window to load.
@@ -609,6 +612,7 @@ Step controls:
   Ctrl+L      - rewind history 8 steps
 
 )");
+#endif
 
   // Probe dump
   d("\002========== Debug Probes ==========\001\n");
@@ -815,13 +819,16 @@ Step controls:
         int y1 = (spu_buffer[(2 * i + 1 + spu_write_cursor) & 0x1FF]);
         int y2 = (spu_buffer[(2 * i + 3 + spu_write_cursor) & 0x1FF]);
 
-        y1 += 192;
-        y2 += 192;
+        y1 += 64;
+        y2 += 64;
 
-        if (y1 < 128) y1 = 128;
-        if (y1 > 255) y1 = 255;
-        if (y2 < 128) y2 = 128;
-        if (y2 > 255) y2 = 255;
+        if (y1 <   0) y1 = 0;
+        if (y1 > 127) y1 = 127;
+        if (y2 <   0) y2 = 0;
+        if (y2 > 127) y2 = 127;
+
+        y1 += 128;
+        y2 += 128;
 
         if (y1 > y2) {
           auto t = y1;
@@ -838,7 +845,7 @@ Step controls:
     blitter.blit_mono(view, screen_size,
       wave_tex, 256, 256,
       0, 0, 256, 256,
-      32*29, 32, 256, 256);
+      32*29, 784, 256, 256);
   }
 
 

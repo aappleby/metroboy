@@ -6,12 +6,13 @@
 
 int ch2_audio_out(const GateBoyState& reg_new) {
 
-  /*#p15.CYSE*/ wire CYSE_CH2_OUTp = and2(reg_new.ch2.DANE_CH2_ACTIVEp.qp_new(), reg_new.ch2.DOME_CH2_OUTp.qp_new());
-  /*#p15.BONU*/ wire BONU_CH2_OUTp = or2(CYSE_CH2_OUTp, reg_new.EDEK_NR52_DBG_APUp());
-  /*#p15.ANAN*/ wire ANAN_CH2_BIT0 = and2(reg_new.ch2.FENO_CH2_ENV0.qp_new(), BONU_CH2_OUTp);
-  /*#p15.ANYV*/ wire ANYV_CH2_BIT1 = and2(reg_new.ch2.FETE_CH2_ENV1.qp_new(), BONU_CH2_OUTp);
-  /*#p15.ASOG*/ wire ASOG_CH2_BIT2 = and2(reg_new.ch2.FOMY_CH2_ENV2.qp_new(), BONU_CH2_OUTp);
-  /*#p15.AMOV*/ wire AMOV_CH2_BIT3 = and2(reg_new.ch2.FENA_CH2_ENV3.qp_new(), BONU_CH2_OUTp);
+  /*#p15.CYSE*/ wire CYSE_CH2_OUTp = and2(reg_new.ch2.DANE_CH2_ACTIVEp.qp_any(), reg_new.ch2.DOME_CH2_OUTp.qp_any());
+  ///*#p15.BONU*/ wire BONU_CH2_OUTp = or2(CYSE_CH2_OUTp, reg_new.EDEK_NR52_DBG_APUp());
+  wire BONU_CH2_OUTp = CYSE_CH2_OUTp;
+  /*#p15.ANAN*/ wire ANAN_CH2_BIT0 = and2(reg_new.ch2.FENO_CH2_ENV0.qp_any(), BONU_CH2_OUTp);
+  /*#p15.ANYV*/ wire ANYV_CH2_BIT1 = and2(reg_new.ch2.FETE_CH2_ENV1.qp_any(), BONU_CH2_OUTp);
+  /*#p15.ASOG*/ wire ASOG_CH2_BIT2 = and2(reg_new.ch2.FOMY_CH2_ENV2.qp_any(), BONU_CH2_OUTp);
+  /*#p15.AMOV*/ wire AMOV_CH2_BIT3 = and2(reg_new.ch2.FENA_CH2_ENV3.qp_any(), BONU_CH2_OUTp);
 
   return ((ANAN_CH2_BIT0 & 1) << 0) |
          ((ANYV_CH2_BIT1 & 1) << 1) |

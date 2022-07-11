@@ -18,36 +18,6 @@ struct SpuChannel1 {
                 JOPU_NR12_VOL3p   .qp_newB());
   }
 
-
-  /*#p13.BUGE*/ wire BUGE_SWEEP_DONEn_new() const {
-    return nand3(ANAZ_NR10_SWEEP_SHIFT2p.qn_newB(),
-                 ARAX_NR10_SWEEP_SHIFT1p.qn_newB(),
-                 BANY_NR10_SWEEP_SHIFT0p.qn_newB());
-  }
-
-  wire EGOR_SHIFT_CLK_new() const {
-    /*#p13.EGYP*/ wire EGYP_SHIFT_CLK_new = nor2(FEMU_SHIFTINGn.qn_new(), DYFA_xBCDExxx());
-    /*#p13.CELE*/ wire CELE_SWEEP_DONEp_new = not1(BUGE_SWEEP_DONEn_new());
-    /*#p13.DODY*/ wire DODY_SHIFT_CLK_new = nor2(EGYP_SHIFT_CLK_new, CELE_SWEEP_DONEp_new); // border color wrong on die
-    /*?p13.EGOR*/ wire EGOR_SHIFT_CLK_new = not1(DODY_SHIFT_CLK_new); // This looks like a nor3, but it almost definiteily is a not1.
-    return EGOR_SHIFT_CLK_new;
-  }
-
-  /*#p12.FAJA*/ wire FAJA_SHIFT_CLK_new() const { return not1(EGOR_SHIFT_CLK_new()); }
-  /*#p12.EJYB*/ wire EJYB_SHIFT_CLK_new() const { return not1(FAJA_SHIFT_CLK_new()); }
-  /*#p12.CYBE*/ wire CYBE_SHIFT_CLK_new() const { return not1(EJYB_SHIFT_CLK_new()); }
-  /*#p12.BECY*/ wire BECY_SHIFT_CLK_new() const { return not1(CYBE_SHIFT_CLK_new()); }
-
-  /*#p09.DYFA*/ wire DYFA_CLK_1M_old() const { return not1(CALO_xBCDExxx.qn_old()); }
-  /*#p09.DYFA*/ wire DYFA_xBCDExxx() const { return not1(CALO_xBCDExxx.qn_new()); }
-
-  /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_new() const { return not1(AVAF_NR10_SWEEP_DIRp.qn_newB()); }
-  /*#p12.ARYL*/ wire ARYL_NR10_SWEEP_DIRn_old() const { return not1(AVAF_NR10_SWEEP_DIRp.qn_oldB()); }
-
-  // so this implies that NR12_DELAY* is DFFn?
-  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_old() const { return nor3(JUSA_NR12_PERIOD0p.qp_oldB(), JUZY_NR12_PERIOD1p.qp_oldB(), JOMA_NR12_PERIOD2p.qp_oldB()); }
-  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_new() const { return nor3(JUSA_NR12_PERIOD0p.qp_newB(), JUZY_NR12_PERIOD1p.qp_newB(), JOMA_NR12_PERIOD2p.qp_newB()); }
-
   /*#p11.BANY*/ DFF9B BANY_NR10_SWEEP_SHIFT0p;
   /*#p11.ARAX*/ DFF9B ARAX_NR10_SWEEP_SHIFT1p;
   /*#p11.ANAZ*/ DFF9B ANAZ_NR10_SWEEP_SHIFT2p;
@@ -122,7 +92,7 @@ struct SpuChannel1 {
   /*_p11.COPU*/ DFF20 COPU_CH1_FREQ_CNT_10;  
 
   /*#p09.BAZA*/ DFF17 BAZA_DBG_SWEEP_CLK;
-  /*_p13.BEXA*/ DFF17 BEXA_SWEEP_TRIGGERp;
+  /*_p13.BEXA*/ DFF17 BEXA_SWEEP_TRIGp;
   /*_p13.CUPO*/ DFF20 CUPO_SWEEP_DELAY0p;
   /*_p13.CYPU*/ DFF20 CYPU_SWEEP_DELAY1p;
   /*_p13.CAXY*/ DFF20 CAXY_SWEEP_DELAY2p;

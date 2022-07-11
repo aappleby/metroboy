@@ -63,14 +63,8 @@ void Probes::dump(Dumper& d) const {
   }
 }
 
-void probe_wire(int index, const char* signal_name, wire s) {
+void probe(int index, const char* signal_name, wire s) {
   if (thread_probes) {
     thread_probes->probe_wire(index, signal_name, s & 1);
-  }
-}
-
-void probe_char(int index, const char* signal_name, char s) {
-  if (thread_probes) {
-    thread_probes->probe_wire(index, signal_name, s);
   }
 }

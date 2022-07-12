@@ -264,6 +264,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
 
   /*
   if (config_idempotence) {
+    //printf("idempotence?\n");
     auto gb_state_old = gb_state;
 
     tock_gates(cart_blob);
@@ -272,7 +273,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
 
     if (gb_state.diff(gb_state_old, 0xFF)) {
       LOG_R("idempotence fail!\n");
-      debugbreak();
+      //debugbreak();
     }
   }
   */
@@ -402,6 +403,39 @@ void GateBoy::update_framebuffer() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_gates(const blob& cart_blob) {
+
+  // SigOut SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
+  // SigOut SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
+  //
+  // SigOut SIG_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
+  // SigOut SIG_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
+  //
+  // SigOut SIG_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
+  // SigOut SIG_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
+  //
+  // SigOut SIG_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
+  // SigOut SIG_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
+
+  // There doesn't seem to be a good config for halt_latch that works with the latch always latching...
+
+  cpu.core.reg.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
+
+  if (DELTA_AB_new) {
+  }
+
+  if (DELTA_CD_new) {
+    // -AB +BC +CD -DE
+    if (bit0(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.core.reg.halt_latch |= INT_VBLANK_MASK;
+    if (bit0(gb_state.reg_if.LALU_FF0F_D1p.state)) cpu.core.reg.halt_latch |= INT_STAT_MASK;
+    if (bit0(gb_state.reg_if.UBUL_FF0F_D3p.state)) cpu.core.reg.halt_latch |= INT_SERIAL_MASK;
+    if (bit0(gb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.core.reg.halt_latch |= INT_JOYPAD_MASK;
+    if (cpu.core.reg.op_next == 0x76 && (bit_pack(gb_state.reg_ie) & cpu.core.reg.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
+    cpu.core.reg.halt_latch = 0; // +BC +CD +DE +EF +FG
+  }
+
+  if (DELTA_CD_new) {
+  }
+
   const GateBoyState  reg_old = gb_state;
   GateBoyState& reg_new = gb_state;
 
@@ -413,6 +447,86 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   memset(&reg_new.cpu_abus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
   memset(&reg_new.cpu_dbus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
+
+
+
+
+  if (DELTA_EF_new) {
+    // -CD +DE +EF +FG
+    if (cpu.core.reg.op_state == 0) {
+      cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
+      cpu.core.reg.op_next = (uint8_t)bit_pack(reg_old.cpu_dbus);
+    }
+  }
+
+  if (DELTA_FG_new) {
+    cpu.core.reg.cpu_data_latch = 0xFF; // -DE +EF
+  }
+
+  if (DELTA_GH_new) {
+
+    cpu.core.reg.intf_latch = (uint8_t)bit_pack(reg_new.reg_if); // -EF +FG +GH -HA
+    if (bit0(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
+
+
+    if (sys.cpu_en && !sys.in_por) {
+      if (cpu.core.reg.op_state == 0) {
+        if ((bit_pack(reg_new.reg_ie) & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
+          cpu.core.reg.op_next = 0xF4; // fake opcode
+          cpu.core.reg.ime = false;
+          cpu.core.reg.ime_delay = false;
+        }
+      }
+      cpu.core.reg.int_ack = 0;
+      cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
+    }
+  }
+
+  if (DELTA_GH_new) {
+  }
+
+  if (DELTA_HA_new) {
+
+
+    if (cpu.core.reg.bus_read) {
+      cpu.core.reg.data_in = cpu.core.reg.cpu_data_latch; // -FG +GH +HA -AB
+    }
+
+
+    if (sys.cpu_en && !sys.in_por) {
+      cpu.core.execute((uint8_t)bit_pack(reg_new.reg_ie), cpu.core.reg.intf_latch);
+      cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
+
+      /*
+      // Dump writes to audio mem.
+      auto r = cpu.core.reg.bus_req_new;
+      if (r.write && r.addr >= 0xFF10 && r.addr <= 0xFF3F) {
+        printf("0x%08x 0x%04x 0x%02x\n", sys.gb_phase_total, r.addr, r.data);
+      }
+      */
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
     // Data has to be driven on EFGH or we fail the wave tests
@@ -465,6 +579,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   /*_SIG_IN_CPU_RDp*/ reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
   /*_SIG_IN_CPU_WRp*/ reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+
+  //printf("EXT_addr_new = %d\n", EXT_addr_new & 1);
+
   /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
 
   /*_p07.UJYV*/ wire UJYV_CPU_RDn = not1(reg_new.cpu_signals.SIG_IN_CPU_RDp.out_new());
@@ -1024,94 +1141,4 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // And finally, interrupts.
 
   tock_interrupts_gates(reg_old);
-
-  //----------------------------------------
-
-  // SigOut SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
-  // SigOut SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
-  //
-  // SigOut SIG_CPU_BEKO_ABCDxxxx; // top left port PORTD_03: <- this is the "reset for next cycle" clock
-  // SigOut SIG_CPU_BUDE_xxxxEFGH; // top left port PORTD_04: <- this is the "put write data on bus" clock
-  //
-  // SigOut SIG_CPU_BOLO_ABCDEFxx; // top left port PORTD_05: <-
-  // SigOut SIG_CPU_BUKE_AxxxxxGH; // top left port PORTD_07: <- this is probably the "latch bus data" clock
-  //
-  // SigOut SIG_CPU_BOMA_xBCDEFGH; // top left port PORTD_08: <- (RESET_CLK) // These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
-  // SigOut SIG_CPU_BOGA_Axxxxxxx; // top left port PORTD_09: <- test pad 3
-
-  // There doesn't seem to be a good config for halt_latch that works with the latch always latching...
-
-  cpu.core.reg.cpu_data_latch &= (uint8_t)bit_pack(reg_new.cpu_dbus);
-
-  if (DELTA_AB_new) {
-  }
-
-  if (DELTA_BC_new) {
-    // -AB +BC +CD -DE
-    if (bit0(reg_new.reg_if.LOPE_FF0F_D0p.state)) cpu.core.reg.halt_latch |= INT_VBLANK_MASK;
-    if (bit0(reg_new.reg_if.LALU_FF0F_D1p.state)) cpu.core.reg.halt_latch |= INT_STAT_MASK;
-    if (bit0(reg_new.reg_if.UBUL_FF0F_D3p.state)) cpu.core.reg.halt_latch |= INT_SERIAL_MASK;
-    if (bit0(reg_new.reg_if.ULAK_FF0F_D4p.state)) cpu.core.reg.halt_latch |= INT_JOYPAD_MASK;
-    if (cpu.core.reg.op_next == 0x76 && (bit_pack(reg_new.reg_ie) & cpu.core.reg.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
-    cpu.core.reg.halt_latch = 0; // +BC +CD +DE +EF +FG
-  }
-
-  if (DELTA_CD_new) {
-  }
-
-  if (DELTA_DE_new) {
-    // -CD +DE +EF +FG
-    if (cpu.core.reg.op_state == 0) {
-      cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
-      cpu.core.reg.op_next = (uint8_t)bit_pack(reg_new.cpu_dbus);
-    }
-  }
-
-  if (DELTA_EF_new) {
-    cpu.core.reg.cpu_data_latch = 0xFF; // -DE +EF
-  }
-
-  if (DELTA_FG_new) {
-
-    cpu.core.reg.intf_latch = (uint8_t)bit_pack(reg_new.reg_if); // -EF +FG +GH -HA
-    if (bit0(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
-
-
-    if (sys.cpu_en && !sys.in_por) {
-      if (cpu.core.reg.op_state == 0) {
-        if ((bit_pack(reg_new.reg_ie) & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
-          cpu.core.reg.op_next = 0xF4; // fake opcode
-          cpu.core.reg.ime = false;
-          cpu.core.reg.ime_delay = false;
-        }
-      }
-      cpu.core.reg.int_ack = 0;
-      cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
-    }
-  }
-
-  if (DELTA_GH_new) {
-  }
-
-  if (DELTA_HA_new) {
-
-
-    if (cpu.core.reg.bus_read) {
-      cpu.core.reg.data_in = cpu.core.reg.cpu_data_latch; // -FG +GH +HA -AB
-    }
-
-
-    if (sys.cpu_en && !sys.in_por) {
-      cpu.core.execute((uint8_t)bit_pack(reg_new.reg_ie), cpu.core.reg.intf_latch);
-      cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
-
-      /*
-      // Dump writes to audio mem.
-      auto r = cpu.core.reg.bus_req_new;
-      if (r.write && r.addr >= 0xFF10 && r.addr <= 0xFF3F) {
-        printf("0x%08x 0x%04x 0x%02x\n", sys.gb_phase_total, r.addr, r.data);
-      }
-      */
-    }
-  }
 }

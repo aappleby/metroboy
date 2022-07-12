@@ -99,7 +99,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
       ld a, $55
       ld ($FF24), a
 
-      ld a, $19
+      ld a, $17
       ld ($FF10), a
       ld a, $80
       ld ($FF11), a
@@ -404,7 +404,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   const int col2 = 32 *  7 + 8;
   const int col3 = 32 * 14 + 8;
   const int col4 = 32 * 21 + 8;
-  const int col5 = 32 * 29 + 8;
+  const int col5 = 32 * 29 + 8 - 32; // scoot it a bit because i have long probe names
   const int col6 = 32 * 40;
   const int col7 = 32 * 51;
 
@@ -565,6 +565,48 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   d("\n");
 #endif
 
+  d("\002========== Disassembly ==========\001\n");
+  {
+    int pc = gb->get_cpu().core.get_op_addr();
+
+    temp_buf.resize(64);
+    gb->get_flat_blob(gb_thread->get_cart(), pc, 64, temp_buf);
+    assembler.disassemble(temp_buf.data(), 64, pc, pc, 16, d, /*collapse_nops*/ false);
+
+#if 0
+    const uint8_t* code = nullptr;
+    int code_size = 0;
+    int code_base = 0;
+  
+    if (!bit(state.cpu_signals.TEPU_BOOT_BITn.state)) {
+      code      = DMG_ROM_blob.data();
+      code_size = (int)DMG_ROM_blob.size();
+      code_base = ADDR_BOOT_ROM_BEGIN;
+    }
+    else if (pc >= 0x0000 && pc <= 0x7FFF) {
+      // FIXME needs to account for mbc1 mem mapping
+      code      = gb_thread->get_cart().data();
+      code_size = (int)gb_thread->get_cart().size();
+      code_base = ADDR_CART_ROM_BEGIN;
+    }
+    else if (pc >= 0xFF80 && pc <= 0xFFFE) {
+      code      = mem.zero_ram;
+      code_size = 127;
+      code_base = ADDR_ZEROPAGE_BEGIN;
+    }
+  
+    assembler.disassemble(code, code_size, code_base, pc, 16, d, /*collapse_nops*/ false);
+#endif
+  }
+  d("\n");
+
+
+  // Probe dump
+  d("\002========== Debug Probes ==========\001\n");
+  gb->get_probes().dump(d);
+  d("\n");
+
+
   text_painter.render_string(view, screen_size, d.s.c_str(), col4, row1);
   d.clear();
 
@@ -613,46 +655,6 @@ Step controls:
 
 )");
 #endif
-
-  // Probe dump
-  d("\002========== Debug Probes ==========\001\n");
-  gb->get_probes().dump(d);
-  d("\n");
-
-  d("\002========== Disassembly ==========\001\n");
-  {
-    int pc = gb->get_cpu().core.get_op_addr();
-
-    temp_buf.resize(64);
-    gb->get_flat_blob(gb_thread->get_cart(), pc, 64, temp_buf);
-    assembler.disassemble(temp_buf.data(), 64, pc, pc, 16, d, /*collapse_nops*/ false);
-
-#if 0
-    const uint8_t* code = nullptr;
-    int code_size = 0;
-    int code_base = 0;
-  
-    if (!bit(state.cpu_signals.TEPU_BOOT_BITn.state)) {
-      code      = DMG_ROM_blob.data();
-      code_size = (int)DMG_ROM_blob.size();
-      code_base = ADDR_BOOT_ROM_BEGIN;
-    }
-    else if (pc >= 0x0000 && pc <= 0x7FFF) {
-      // FIXME needs to account for mbc1 mem mapping
-      code      = gb_thread->get_cart().data();
-      code_size = (int)gb_thread->get_cart().size();
-      code_base = ADDR_CART_ROM_BEGIN;
-    }
-    else if (pc >= 0xFF80 && pc <= 0xFFFE) {
-      code      = mem.zero_ram;
-      code_size = 127;
-      code_base = ADDR_ZEROPAGE_BEGIN;
-    }
-  
-    assembler.disassemble(code, code_size, code_base, pc, 16, d, /*collapse_nops*/ false);
-#endif
-  }
-  d("\n");
 
   text_painter.render_string(view, screen_size, d.s.c_str(), col5, row1);
   d.clear();
@@ -845,7 +847,7 @@ Step controls:
     blitter.blit_mono(view, screen_size,
       wave_tex, 256, 256,
       0, 0, 256, 256,
-      32*29, 784, 256, 256);
+      32*29, 32, 256, 256);
   }
 
 

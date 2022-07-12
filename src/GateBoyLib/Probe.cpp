@@ -50,7 +50,7 @@ void Probes::end_pass() {
 void Probes::dump(Dumper& d) const {
   for (int y = 0; y < channel_count; y++) {
 
-    d("\001%02d %-16s : ", y, names[y]);
+    d("\001%02d %-22s : ", y, names[y]);
     auto s = phase_samples[y];
     for (int x = 0; x < sample_count; x++) {
       int idx = (phase_cursor + x + 1) % sample_count;

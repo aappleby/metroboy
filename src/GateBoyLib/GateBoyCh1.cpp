@@ -279,22 +279,16 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   {
     /*#p13.ADAD*/ wire ADAD_SHIFT_DONEp = not1(reg_new.ch1.BYTE_SHIFT_DONEp.qn_new());
-    /*#p13.EPUK*/ wire EPUK_SETn = nor2(reg_new.KEBA_APU_RSTp_new(), ADAD_SHIFT_DONEp);
-    /*#p13.EVOL*/ wire EVOL_RSTn = nor2(reg_new.ch1.BEXA_SWEEP_TRIGp.qp_new(), reg_new.ch1.FYTE_CH1_TRIGp.qp_new());
-    /*#p13.FEMU*/ reg_new.ch1.FEMU_SHIFTINGn.nand_latch(EPUK_SETn, EVOL_RSTn);
-
-    probe(0, "KEBA_APU_RSTp", reg_new.KEBA_APU_RSTp_new());
-    probe(1, "ADAD_SHIFT_DONEp", ADAD_SHIFT_DONEp);
-    probe(2, "EPUK_SETn", EPUK_SETn);
-    probe(3, "EVOL_RSTn", EVOL_RSTn);
-    probe(4, "FEMU_SHIFTINGn", reg_new.ch1.FEMU_SHIFTINGn.state);
+    /*#p13.EPUK*/ wire EPUK_STOP_SHIFTINGn = nor2(reg_new.KEBA_APU_RSTp_new(), ADAD_SHIFT_DONEp);
+    /*#p13.EVOL*/ wire EVOL_START_SHIFTINGn = nor2(reg_new.ch1.BEXA_SWEEP_TRIGp.qp_new(), reg_new.ch1.FYTE_CH1_TRIGp.qp_new());
+    /*#p13.FEMU*/ reg_new.ch1.FEMU_SHIFTINGn.nand_latch(EPUK_STOP_SHIFTINGn, EVOL_START_SHIFTINGn);
   }
 
   {
     /*#p13.BUGE*/ wire BUGE_SWEEP_ENp_new = nand3(reg_new.ch1.ANAZ_NR10_SWEEP_SHIFT2p.qn_newB(),
                                                   reg_new.ch1.ARAX_NR10_SWEEP_SHIFT1p.qn_newB(),
                                                   reg_new.ch1.BANY_NR10_SWEEP_SHIFT0p.qn_newB());
-    /*#p13.EGYP*/ wire EGYP_SHIFT_CLK_new = nor2(reg_new.ch1.FEMU_SHIFTINGn.qn_new(), DYFA_xBCDExxx_new);
+    /*#p13.EGYP*/ wire EGYP_SHIFT_CLK_new = nor2(reg_new.ch1.FEMU_SHIFTINGn.qp_new(), DYFA_xBCDExxx_new);
     /*#p13.CELE*/   wire CELE_SWEEP_ENn_new = not1(BUGE_SWEEP_ENp_new);
     /*#p13.DODY*/ wire DODY_SHIFT_CLK_new = nor2(EGYP_SHIFT_CLK_new, CELE_SWEEP_ENn_new); // border color wrong on die
     /*?p13.EGOR*/ wire EGOR_SHIFT_CLK_new = not1(DODY_SHIFT_CLK_new); // This looks like a nor3, but it almost definiteily is a not1.

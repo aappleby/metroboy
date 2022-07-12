@@ -265,9 +265,6 @@ void GateBoyThread::thread_main() {
 
 void GateBoyThread::run_steps() {
   run_normal();
-  //if      (config_regression)  run_regression();
-  //else if (config_idempotence) run_idempotence();
-  //else                         run_normal();
 }
 
 //------------------------------------------------------------------------------
@@ -320,41 +317,6 @@ void GateBoyThread::run_regression() {
 
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
     gb->next_phase(cart_blob);
-    step_count--;
-  }
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoyThread::run_idempotence() {
-  //auto& gba = gbp->gba;
-  //auto& gbb = gbp->gbb;
-
-  while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    gb->next_phase(cart_blob);
-    //gba.tock_cpu();
-    //gba.tock_gates(cart_blob);
-    //gba.gb_state.commit();
-    //gba.update_framebuffer();
-
-    /*
-    uint64_t hash_a = gba.gb_state.hash_all();
-
-    memcpy(&gbp->gbb, &gbp->gba, sizeof(GateBoy));
-    gbb.tock_gates(cart_blob);
-    gbb.update_framebuffer(bit_pack(gbb.gb_state.pix_count) - 8, bit_pack(gbb.gb_state.reg_ly), gbb.gb_state.lcd.PIN_51_LCD_DATA0.qp_ext_old(), gbb.gb_state.lcd.PIN_50_LCD_DATA1.qp_ext_old());
-    uint64_t hash_b = gbb.gb_state.hash_all();
-
-    if (hash_a != hash_b) {
-      LOG_R("Sim not stable after second pass!\n");
-      gba.gb_state.diff(gbb.gb_state, 0xFF);
-      LOG_R("Sim not stable after second pass!\n");
-      step_count = 0;
-      return;
-    }
-    */
-
-    //gba.sys.phase_total++;
     step_count--;
   }
 }

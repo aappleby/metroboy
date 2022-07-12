@@ -107,7 +107,6 @@ struct GateBoyThread {
 
   void run_steps();
 
-
   void thread_main();
 
   void next_phase();
@@ -115,7 +114,6 @@ struct GateBoyThread {
   void run_sync();
   void run_normal();
   void run_regression();
-  void run_idempotence();
   void panic();
 
 private:

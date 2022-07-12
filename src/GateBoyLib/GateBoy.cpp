@@ -256,27 +256,27 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   }
 
   probes.begin_pass(sys.gb_phase_total & 7);
+  tock_cpu(cart_blob);
   tock_gates(cart_blob);
   probes.end_pass();
 
   gb_state.commit();
   pins.commit();
 
-  /*
   if (config_idempotence) {
     //printf("idempotence?\n");
     auto gb_state_old = gb_state;
 
+    tock_cpu(cart_blob);
     tock_gates(cart_blob);
     gb_state.commit();
     pins.commit();
 
     if (gb_state.diff(gb_state_old, 0xFF)) {
-      LOG_R("idempotence fail!\n");
+      //LOG_R("idempotence fail!\n");
       //debugbreak();
     }
   }
-  */
 
   update_framebuffer();
 
@@ -399,6 +399,11 @@ void GateBoy::update_framebuffer() {
 
 
 
+
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_cpu(const blob& cart_blob) {
+}
 
 //-----------------------------------------------------------------------------
 

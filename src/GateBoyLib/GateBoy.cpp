@@ -263,17 +263,17 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   gb_state.commit();
   pins.commit();
 
-  if (config_idempotence) {
+  //if (config_idempotence) {
+  if (true) {
     //printf("idempotence?\n");
     auto gb_state_old = gb_state;
 
-    tock_cpu(cart_blob);
     tock_gates(cart_blob);
     gb_state.commit();
     pins.commit();
 
     if (gb_state.diff(gb_state_old, 0xFF)) {
-      //LOG_R("idempotence fail!\n");
+      LOG_R("idempotence fail!\n");
       //debugbreak();
     }
   }
@@ -403,11 +403,6 @@ void GateBoy::update_framebuffer() {
 //-----------------------------------------------------------------------------
 
 void GateBoy::tock_cpu(const blob& cart_blob) {
-}
-
-//-----------------------------------------------------------------------------
-
-void GateBoy::tock_gates(const blob& cart_blob) {
 
   // SigOut SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
   // SigOut SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
@@ -441,26 +436,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   if (DELTA_CD_new) {
   }
 
-  const GateBoyState  reg_old = gb_state;
-  GateBoyState& reg_new = gb_state;
-
-  // Clear BIT_OLD from reg_new so we can't accidentally read old fields from it.
-  bit_mask(reg_new, uint8_t(~BIT_OLD));
-  bit_mask(pins, uint8_t(~BIT_OLD));
-
-  bool EXT_cpu_latch_ext = 0;
-
-  memset(&reg_new.cpu_abus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
-  memset(&reg_new.cpu_dbus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
-
-
-
 
   if (DELTA_EF_new) {
     // -CD +DE +EF +FG
     if (cpu.core.reg.op_state == 0) {
       cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
-      cpu.core.reg.op_next = (uint8_t)bit_pack(reg_old.cpu_dbus);
+      cpu.core.reg.op_next = (uint8_t)bit_pack(gb_state.cpu_dbus);
     }
   }
 
@@ -470,13 +451,13 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   if (DELTA_GH_new) {
 
-    cpu.core.reg.intf_latch = (uint8_t)bit_pack(reg_new.reg_if); // -EF +FG +GH -HA
-    if (bit0(reg_new.reg_if.NYBO_FF0F_D2p.state)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
+    cpu.core.reg.intf_latch = (uint8_t)bit_pack(gb_state.reg_if); // -EF +FG +GH -HA
+    if (bit0(gb_state.reg_if.NYBO_FF0F_D2p.state)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
 
 
     if (sys.cpu_en && !sys.in_por) {
       if (cpu.core.reg.op_state == 0) {
-        if ((bit_pack(reg_new.reg_ie) & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
+        if ((bit_pack(gb_state.reg_ie) & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
           cpu.core.reg.op_next = 0xF4; // fake opcode
           cpu.core.reg.ime = false;
           cpu.core.reg.ime_delay = false;
@@ -499,7 +480,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
 
     if (sys.cpu_en && !sys.in_por) {
-      cpu.core.execute((uint8_t)bit_pack(reg_new.reg_ie), cpu.core.reg.intf_latch);
+      cpu.core.execute((uint8_t)bit_pack(gb_state.reg_ie), cpu.core.reg.intf_latch);
       cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
 
       /*
@@ -512,7 +493,23 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     }
   }
 
+}
 
+//-----------------------------------------------------------------------------
+
+void GateBoy::tock_gates(const blob& cart_blob) {
+
+  const GateBoyState  reg_old = gb_state;
+  GateBoyState& reg_new = gb_state;
+
+  // Clear BIT_OLD from reg_new so we can't accidentally read old fields from it.
+  bit_mask(reg_new, uint8_t(~BIT_OLD));
+  bit_mask(pins, uint8_t(~BIT_OLD));
+
+  bool EXT_cpu_latch_ext = 0;
+
+  memset(&reg_new.cpu_abus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
+  memset(&reg_new.cpu_dbus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
 
 
 

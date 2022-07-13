@@ -23,6 +23,8 @@ using namespace std;
 
 const bool run_slow_tests = false;
 
+#define TEST_AUDIO
+
 //#define TEST_MOONEYE
 
 //#pragma optimize("", off)
@@ -306,7 +308,9 @@ TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
   results += test_bootrom(proto);
   results += test_clk(proto);
   results += test_regs(proto);
+#ifdef TEST_AUDIO
   results += test_spu_regs(proto);
+#endif
   results += test_dma(proto);
 
   results += test_mem(proto);

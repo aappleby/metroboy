@@ -574,18 +574,22 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 
 
+  /*#p11.BAGE*/ wire BAGE_NR14_WRn = nand2(reg_new.ANUJ_CPU_WR_WEIRD(), reg_new.cpu_abus.DUJA_ADDR_FF14p());
+  /*#p11.BOKO*/ reg_new.ch1.BOKO_NR14_LENENp.dff9b(BAGE_NR14_WRn, reg_new.CAMY_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.qp_old());
+
+  /*#p13.BORO*/ wire BORO_FF11_WRn = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.CAXE_ADDR_FF11p());
+  /*#p13.BEPE*/ wire BEPE_FF11_WRp = not1(BORO_FF11_WRn);
+  /*#p13.BUGY*/ wire BUGY_FF11_WRp = not1(BORO_FF11_WRn);
+  /*#p13.BOKA*/ wire BOKA_FF11_WRp = not1(BORO_FF11_WRn);
+
+
+
+
+
+
+
 
   {
-    /*#p11.BAGE*/ wire BAGE_NR14_WRn = nand2(reg_new.ANUJ_CPU_WR_WEIRD(), reg_new.cpu_abus.DUJA_ADDR_FF14p());
-    /*#p11.BOKO*/ reg_new.ch1.BOKO_NR14_LENENp.dff9b(BAGE_NR14_WRn, reg_new.CAMY_APU_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.qp_old());
-
-    /*#p13.BORO*/ wire BORO_FF11_WRn = nand2(reg_new.cpu_signals.BOGY_CPU_WRp(), reg_new.cpu_abus.CAXE_ADDR_FF11p());
-    /*#p13.BEPE*/ wire BEPE_FF11_WRp = not1(BORO_FF11_WRn);
-    /*#p13.BUGY*/ wire BUGY_FF11_WRp = not1(BORO_FF11_WRn);
-    /*#p13.BOKA*/ wire BOKA_FF11_WRp = not1(BORO_FF11_WRn);
-
-    // using CERO_old here to break the loop
-
     /*#p13.CAPY*/ wire CAPY_CH1_LEN_CLKn = nor3(reg_old.ch1.CERO_CH1_LEN_DONE.qp_old(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch1.BOKO_NR14_LENENp.qn_newB());
     /*#p13.CANU*/ wire CANU_CH1_LEN_CLKp = not1(CAPY_CH1_LEN_CLKn);
     /*#p13.BACY*/ reg_new.ch1.BACY_NR11_LEN0.dff20(CANU_CH1_LEN_CLKp,                     BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
@@ -597,8 +601,76 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p13.ERAM*/ reg_new.ch1.ERAM_NR11_LEN5.dff20(reg_new.ch1.CURA_NR11_LEN4.qp_new(),   BEPE_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
 
     /*#p13.CORY*/ wire CORY_CH1_LEN_DONE_RST_new = nor3(BOKA_FF11_WRp, reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.FEKU_CH1_TRIGp.qp_new());
-    /*_p13.CERO*/ reg_new.ch1.CERO_CH1_LEN_DONE.dff17(reg_old.ch1.ERAM_NR11_LEN5.qn_old(), CORY_CH1_LEN_DONE_RST_new, reg_old.ch1.CERO_CH1_LEN_DONE.qn_old());
+    /*_p13.CERO*/ reg_new.ch1.CERO_CH1_LEN_DONE.dff17(reg_new.ch1.ERAM_NR11_LEN5.qn_new(), CORY_CH1_LEN_DONE_RST_new, reg_old.ch1.CERO_CH1_LEN_DONE.qn_old());
   }
+
+  {
+    /*#p13.CAPY*/ wire CAPY_CH1_LEN_CLKn = nor3(reg_new.ch1.CERO_CH1_LEN_DONE.qp_new(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch1.BOKO_NR14_LENENp.qn_newB());
+    /*#p13.CANU*/ wire CANU_CH1_LEN_CLKp = not1(CAPY_CH1_LEN_CLKn);
+    /*#p13.BACY*/ reg_new.ch1.BACY_NR11_LEN0.dff20_any(CANU_CH1_LEN_CLKp,                     BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
+    /*#p13.CAVY*/ reg_new.ch1.CAVY_NR11_LEN1.dff20_any(reg_new.ch1.BACY_NR11_LEN0.qp_new(),   BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D01p.qp_old());
+    /*#p13.BOVY*/ reg_new.ch1.BOVY_NR11_LEN2.dff20_any(reg_new.ch1.CAVY_NR11_LEN1.qp_new(),   BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D02p.qp_old());
+    /*#p13.CUNO*/ reg_new.ch1.CUNO_NR11_LEN3.dff20_any(reg_new.ch1.BOVY_NR11_LEN2.qp_new(),   BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D03p.qp_old());
+    /*#p13.CUSO*/ wire CUSO_NR11_LEN3p = not1(reg_new.ch1.CUNO_NR11_LEN3.qn_new());
+    /*#p13.CURA*/ reg_new.ch1.CURA_NR11_LEN4.dff20_any(CUSO_NR11_LEN3p,                       BEPE_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D04p.qp_old());
+    /*#p13.ERAM*/ reg_new.ch1.ERAM_NR11_LEN5.dff20_any(reg_new.ch1.CURA_NR11_LEN4.qp_new(),   BEPE_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
+
+    /*#p13.CORY*/ wire CORY_CH1_LEN_DONE_RST_new = nor3(BOKA_FF11_WRp, reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.FEKU_CH1_TRIGp.qp_new());
+    /*_p13.CERO*/ reg_new.ch1.CERO_CH1_LEN_DONE.dff17_any(reg_new.ch1.ERAM_NR11_LEN5.qn_new(), CORY_CH1_LEN_DONE_RST_new, reg_new.ch1.CERO_CH1_LEN_DONE.qn_new());
+  }
+
+  {
+    /*#p13.CAPY*/ wire CAPY_CH1_LEN_CLKn = nor3(reg_new.ch1.CERO_CH1_LEN_DONE.qp_new(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch1.BOKO_NR14_LENENp.qn_newB());
+    /*#p13.CANU*/ wire CANU_CH1_LEN_CLKp = not1(CAPY_CH1_LEN_CLKn);
+    /*#p13.BACY*/ reg_new.ch1.BACY_NR11_LEN0.dff20_any(CANU_CH1_LEN_CLKp,                     BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
+    /*#p13.CAVY*/ reg_new.ch1.CAVY_NR11_LEN1.dff20_any(reg_new.ch1.BACY_NR11_LEN0.qp_new(),   BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D01p.qp_old());
+    /*#p13.BOVY*/ reg_new.ch1.BOVY_NR11_LEN2.dff20_any(reg_new.ch1.CAVY_NR11_LEN1.qp_new(),   BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D02p.qp_old());
+    /*#p13.CUNO*/ reg_new.ch1.CUNO_NR11_LEN3.dff20_any(reg_new.ch1.BOVY_NR11_LEN2.qp_new(),   BUGY_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D03p.qp_old());
+    /*#p13.CUSO*/ wire CUSO_NR11_LEN3p = not1(reg_new.ch1.CUNO_NR11_LEN3.qn_new());
+    /*#p13.CURA*/ reg_new.ch1.CURA_NR11_LEN4.dff20_any(CUSO_NR11_LEN3p,                       BEPE_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D04p.qp_old());
+    /*#p13.ERAM*/ reg_new.ch1.ERAM_NR11_LEN5.dff20_any(reg_new.ch1.CURA_NR11_LEN4.qp_new(),   BEPE_FF11_WRp, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
+
+    /*#p13.CORY*/ wire CORY_CH1_LEN_DONE_RST_new = nor3(BOKA_FF11_WRp, reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.FEKU_CH1_TRIGp.qp_new());
+    /*_p13.CERO*/ reg_new.ch1.CERO_CH1_LEN_DONE.dff17_any(reg_new.ch1.ERAM_NR11_LEN5.qn_new(), CORY_CH1_LEN_DONE_RST_new, reg_new.ch1.CERO_CH1_LEN_DONE.qn_new());
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   {
@@ -695,7 +767,7 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   // Frequency counter
 
-  {
+  //{
     /*#p13.CALA*/ wire CALA_FREQ_OVERFLOWp_old = not1(reg_old.ch1.COPU_CH1_FREQ_CNT_10.qp_old());
     /*#p13.DOKA*/ wire DOKA_COMY_RSTp_old = and2(reg_old.ch1.COMY_SAMPLE_CLKp.qp_old(), DYFA_xBCDExxx_old);
     /*#p13.DYRU*/ wire DYRU_COMY_RSTn_old = nor3(reg_old.KEBA_APU_RSTp_old(), reg_old.ch1.FEKU_CH1_TRIGp.qp_old(), DOKA_COMY_RSTp_old);
@@ -707,35 +779,28 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p11.DEGA*/ wire DEGA_FREQ_LOADp_old = not1(EPYK_FREQ_LOADn_old);
     /*#p11.DAKO*/ wire DAKO_FREQ_LOADp_old = not1(EPYK_FREQ_LOADn_old);
 
-    /*#p11.GAXE*/ reg_new.ch1.GAXE_CH1_FREQ_CNT_00.dff20(GEKU_FREQ_CLK_new,                         FUME_FREQ_LOADp_old, reg_old.ch1.HYKA_CH1_FREQ00.qp_old());
-    /*#p11.HYFE*/ reg_new.ch1.HYFE_CH1_FREQ_CNT_01.dff20(reg_new.ch1.GAXE_CH1_FREQ_CNT_00.qp_new(), FUME_FREQ_LOADp_old, reg_old.ch1.JYKA_CH1_FREQ01.qp_old());
-    /*_p11.JYTY*/ reg_new.ch1.JYTY_CH1_FREQ_CNT_02.dff20(reg_new.ch1.HYFE_CH1_FREQ_CNT_01.qp_new(), FUME_FREQ_LOADp_old, reg_old.ch1.HAVO_CH1_FREQ02.qp_old());
-    /*_p11.KYNA*/ reg_new.ch1.KYNA_CH1_FREQ_CNT_03.dff20(reg_new.ch1.JYTY_CH1_FREQ_CNT_02.qp_new(), FUME_FREQ_LOADp_old, reg_old.ch1.EDUL_CH1_FREQ03.qp_old());
+    /*#p11.GAXE*/ reg_new.ch1.GAXE_CH1_FREQ_CNT_00.dff20(GEKU_FREQ_CLK_new,                         FUME_FREQ_LOADp_old, reg_new.ch1.HYKA_CH1_FREQ00.qp_new());
+    /*#p11.HYFE*/ reg_new.ch1.HYFE_CH1_FREQ_CNT_01.dff20(reg_new.ch1.GAXE_CH1_FREQ_CNT_00.qp_new(), FUME_FREQ_LOADp_old, reg_new.ch1.JYKA_CH1_FREQ01.qp_new());
+    /*_p11.JYTY*/ reg_new.ch1.JYTY_CH1_FREQ_CNT_02.dff20(reg_new.ch1.HYFE_CH1_FREQ_CNT_01.qp_new(), FUME_FREQ_LOADp_old, reg_new.ch1.HAVO_CH1_FREQ02.qp_new());
+    /*_p11.KYNA*/ reg_new.ch1.KYNA_CH1_FREQ_CNT_03.dff20(reg_new.ch1.JYTY_CH1_FREQ_CNT_02.qp_new(), FUME_FREQ_LOADp_old, reg_new.ch1.EDUL_CH1_FREQ03.qp_new());
 
     /*#p11.KYPE*/ wire KYPE_FREQ_CLK_new = not1(reg_new.ch1.KYNA_CH1_FREQ_CNT_03.qn_new());
-    /*_p11.JEMA*/ reg_new.ch1.JEMA_CH1_FREQ_CNT_04.dff20(KYPE_FREQ_CLK_new,                         DEGA_FREQ_LOADp_old, reg_old.ch1.FELY_CH1_FREQ04.qp_old());
-    /*_p11.HYKE*/ reg_new.ch1.HYKE_CH1_FREQ_CNT_05.dff20(reg_new.ch1.JEMA_CH1_FREQ_CNT_04.qp_new(), DEGA_FREQ_LOADp_old, reg_old.ch1.HOLU_CH1_FREQ05.qp_old());
-    /*_p11.FEVA*/ reg_new.ch1.FEVA_CH1_FREQ_CNT_06.dff20(reg_new.ch1.HYKE_CH1_FREQ_CNT_05.qp_new(), DEGA_FREQ_LOADp_old, reg_old.ch1.HYXU_CH1_FREQ06.qp_old());
-    /*_p11.EKOV*/ reg_new.ch1.EKOV_CH1_FREQ_CNT_07.dff20(reg_new.ch1.FEVA_CH1_FREQ_CNT_06.qp_new(), DEGA_FREQ_LOADp_old, reg_old.ch1.HOPO_CH1_FREQ07.qp_old());
+    /*_p11.JEMA*/ reg_new.ch1.JEMA_CH1_FREQ_CNT_04.dff20(KYPE_FREQ_CLK_new,                         DEGA_FREQ_LOADp_old, reg_new.ch1.FELY_CH1_FREQ04.qp_new());
+    /*_p11.HYKE*/ reg_new.ch1.HYKE_CH1_FREQ_CNT_05.dff20(reg_new.ch1.JEMA_CH1_FREQ_CNT_04.qp_new(), DEGA_FREQ_LOADp_old, reg_new.ch1.HOLU_CH1_FREQ05.qp_new());
+    /*_p11.FEVA*/ reg_new.ch1.FEVA_CH1_FREQ_CNT_06.dff20(reg_new.ch1.HYKE_CH1_FREQ_CNT_05.qp_new(), DEGA_FREQ_LOADp_old, reg_new.ch1.HYXU_CH1_FREQ06.qp_new());
+    /*_p11.EKOV*/ reg_new.ch1.EKOV_CH1_FREQ_CNT_07.dff20(reg_new.ch1.FEVA_CH1_FREQ_CNT_06.qp_new(), DEGA_FREQ_LOADp_old, reg_new.ch1.HOPO_CH1_FREQ07.qp_new());
 
     /*#p11.DERU*/ wire DERU_FREQ_CLK_new = not1(reg_new.ch1.EKOV_CH1_FREQ_CNT_07.qn_new());
-    /*#p11.EMUS*/ reg_new.ch1.EMUS_CH1_FREQ_CNT_08.dff20(DERU_FREQ_CLK_new,                         DAKO_FREQ_LOADp_old, reg_old.ch1.DYGY_CH1_FREQ08.qp_old());
-    /*#p11.EVAK*/ reg_new.ch1.EVAK_CH1_FREQ_CNT_09.dff20(reg_new.ch1.EMUS_CH1_FREQ_CNT_08.qp_new(), DAKO_FREQ_LOADp_old, reg_old.ch1.EVAB_CH1_FREQ09.qp_old());
-    /*#p11.COPU*/ reg_new.ch1.COPU_CH1_FREQ_CNT_10.dff20(reg_new.ch1.EVAK_CH1_FREQ_CNT_09.qp_new(), DAKO_FREQ_LOADp_old, reg_old.ch1.AXAN_CH1_FREQ10.qp_old());
-  }
+    /*#p11.EMUS*/ reg_new.ch1.EMUS_CH1_FREQ_CNT_08.dff20(DERU_FREQ_CLK_new,                         DAKO_FREQ_LOADp_old, reg_new.ch1.DYGY_CH1_FREQ08.qp_new());
+    /*#p11.EVAK*/ reg_new.ch1.EVAK_CH1_FREQ_CNT_09.dff20(reg_new.ch1.EMUS_CH1_FREQ_CNT_08.qp_new(), DAKO_FREQ_LOADp_old, reg_new.ch1.EVAB_CH1_FREQ09.qp_new());
+    /*#p11.COPU*/ reg_new.ch1.COPU_CH1_FREQ_CNT_10.dff20(reg_new.ch1.EVAK_CH1_FREQ_CNT_09.qp_new(), DAKO_FREQ_LOADp_old, reg_new.ch1.AXAN_CH1_FREQ10.qp_new());
+  //}
 
   {
     /*#p13.CALA*/ wire CALA_FREQ_OVERFLOWp_new = not1(reg_new.ch1.COPU_CH1_FREQ_CNT_10.qp_new());
     /*#p13.DOKA*/ wire DOKA_COMY_RSTp_old = and2(reg_old.ch1.COMY_SAMPLE_CLKp.qp_old(), DYFA_xBCDExxx_old);
     /*#p13.DYRU*/ wire DYRU_COMY_RSTn_old = nor3(reg_old.KEBA_APU_RSTp_old(), reg_old.ch1.FEKU_CH1_TRIGp.qp_old(), DOKA_COMY_RSTp_old);
     /*_p13.COMY*/ reg_new.ch1.COMY_SAMPLE_CLKp.dff17(CALA_FREQ_OVERFLOWp_new, DYRU_COMY_RSTn_old, reg_old.ch1.COMY_SAMPLE_CLKp.qn_old());
-  }
-
-  {
-    /*#p13.CALA*/ wire CALA_FREQ_OVERFLOWp_new = not1(reg_new.ch1.COPU_CH1_FREQ_CNT_10.qp_new());
-    /*#p13.DOKA*/ wire DOKA_COMY_RSTp_new = and2(reg_new.ch1.COMY_SAMPLE_CLKp.qp_new(), DYFA_xBCDExxx_new);
-    /*#p13.DYRU*/ wire DYRU_COMY_RSTn_new = nor3(reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.FEKU_CH1_TRIGp.qp_new(), DOKA_COMY_RSTp_new);
-    /*_p13.COMY*/ reg_new.ch1.COMY_SAMPLE_CLKp.dff17_any(CALA_FREQ_OVERFLOWp_new, DYRU_COMY_RSTn_new, reg_old.ch1.COMY_SAMPLE_CLKp.qn_old());
   }
 
   {
@@ -747,21 +812,28 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p11.DEGA*/ wire DEGA_FREQ_LOADp_new = not1(EPYK_FREQ_LOADn_new);
     /*#p11.DAKO*/ wire DAKO_FREQ_LOADp_new = not1(EPYK_FREQ_LOADn_new);
 
-    /*#p11.GAXE*/ reg_new.ch1.GAXE_CH1_FREQ_CNT_00.dff20_any(GEKU_FREQ_CLK_new,                         FUME_FREQ_LOADp_new, reg_old.ch1.HYKA_CH1_FREQ00.qp_old());
-    /*#p11.HYFE*/ reg_new.ch1.HYFE_CH1_FREQ_CNT_01.dff20_any(reg_new.ch1.GAXE_CH1_FREQ_CNT_00.qp_new(), FUME_FREQ_LOADp_new, reg_old.ch1.JYKA_CH1_FREQ01.qp_old());
-    /*_p11.JYTY*/ reg_new.ch1.JYTY_CH1_FREQ_CNT_02.dff20_any(reg_new.ch1.HYFE_CH1_FREQ_CNT_01.qp_new(), FUME_FREQ_LOADp_new, reg_old.ch1.HAVO_CH1_FREQ02.qp_old());
-    /*_p11.KYNA*/ reg_new.ch1.KYNA_CH1_FREQ_CNT_03.dff20_any(reg_new.ch1.JYTY_CH1_FREQ_CNT_02.qp_new(), FUME_FREQ_LOADp_new, reg_old.ch1.EDUL_CH1_FREQ03.qp_old());
+    /*#p11.GAXE*/ reg_new.ch1.GAXE_CH1_FREQ_CNT_00.dff20_any(GEKU_FREQ_CLK_new,                         FUME_FREQ_LOADp_new, reg_new.ch1.HYKA_CH1_FREQ00.qp_new());
+    /*#p11.HYFE*/ reg_new.ch1.HYFE_CH1_FREQ_CNT_01.dff20_any(reg_new.ch1.GAXE_CH1_FREQ_CNT_00.qp_new(), FUME_FREQ_LOADp_new, reg_new.ch1.JYKA_CH1_FREQ01.qp_new());
+    /*_p11.JYTY*/ reg_new.ch1.JYTY_CH1_FREQ_CNT_02.dff20_any(reg_new.ch1.HYFE_CH1_FREQ_CNT_01.qp_new(), FUME_FREQ_LOADp_new, reg_new.ch1.HAVO_CH1_FREQ02.qp_new());
+    /*_p11.KYNA*/ reg_new.ch1.KYNA_CH1_FREQ_CNT_03.dff20_any(reg_new.ch1.JYTY_CH1_FREQ_CNT_02.qp_new(), FUME_FREQ_LOADp_new, reg_new.ch1.EDUL_CH1_FREQ03.qp_new());
 
     /*#p11.KYPE*/ wire KYPE_FREQ_CLK_new = not1(reg_new.ch1.KYNA_CH1_FREQ_CNT_03.qn_new());
-    /*_p11.JEMA*/ reg_new.ch1.JEMA_CH1_FREQ_CNT_04.dff20_any(KYPE_FREQ_CLK_new,                         DEGA_FREQ_LOADp_new, reg_old.ch1.FELY_CH1_FREQ04.qp_old());
-    /*_p11.HYKE*/ reg_new.ch1.HYKE_CH1_FREQ_CNT_05.dff20_any(reg_new.ch1.JEMA_CH1_FREQ_CNT_04.qp_new(), DEGA_FREQ_LOADp_new, reg_old.ch1.HOLU_CH1_FREQ05.qp_old());
-    /*_p11.FEVA*/ reg_new.ch1.FEVA_CH1_FREQ_CNT_06.dff20_any(reg_new.ch1.HYKE_CH1_FREQ_CNT_05.qp_new(), DEGA_FREQ_LOADp_new, reg_old.ch1.HYXU_CH1_FREQ06.qp_old());
-    /*_p11.EKOV*/ reg_new.ch1.EKOV_CH1_FREQ_CNT_07.dff20_any(reg_new.ch1.FEVA_CH1_FREQ_CNT_06.qp_new(), DEGA_FREQ_LOADp_new, reg_old.ch1.HOPO_CH1_FREQ07.qp_old());
+    /*_p11.JEMA*/ reg_new.ch1.JEMA_CH1_FREQ_CNT_04.dff20_any(KYPE_FREQ_CLK_new,                         DEGA_FREQ_LOADp_new, reg_new.ch1.FELY_CH1_FREQ04.qp_new());
+    /*_p11.HYKE*/ reg_new.ch1.HYKE_CH1_FREQ_CNT_05.dff20_any(reg_new.ch1.JEMA_CH1_FREQ_CNT_04.qp_new(), DEGA_FREQ_LOADp_new, reg_new.ch1.HOLU_CH1_FREQ05.qp_new());
+    /*_p11.FEVA*/ reg_new.ch1.FEVA_CH1_FREQ_CNT_06.dff20_any(reg_new.ch1.HYKE_CH1_FREQ_CNT_05.qp_new(), DEGA_FREQ_LOADp_new, reg_new.ch1.HYXU_CH1_FREQ06.qp_new());
+    /*_p11.EKOV*/ reg_new.ch1.EKOV_CH1_FREQ_CNT_07.dff20_any(reg_new.ch1.FEVA_CH1_FREQ_CNT_06.qp_new(), DEGA_FREQ_LOADp_new, reg_new.ch1.HOPO_CH1_FREQ07.qp_new());
 
     /*#p11.DERU*/ wire DERU_FREQ_CLK_new = not1(reg_new.ch1.EKOV_CH1_FREQ_CNT_07.qn_new());
-    /*#p11.EMUS*/ reg_new.ch1.EMUS_CH1_FREQ_CNT_08.dff20_any(DERU_FREQ_CLK_new,                         DAKO_FREQ_LOADp_new, reg_old.ch1.DYGY_CH1_FREQ08.qp_old());
-    /*#p11.EVAK*/ reg_new.ch1.EVAK_CH1_FREQ_CNT_09.dff20_any(reg_new.ch1.EMUS_CH1_FREQ_CNT_08.qp_new(), DAKO_FREQ_LOADp_new, reg_old.ch1.EVAB_CH1_FREQ09.qp_old());
-    /*#p11.COPU*/ reg_new.ch1.COPU_CH1_FREQ_CNT_10.dff20_any(reg_new.ch1.EVAK_CH1_FREQ_CNT_09.qp_new(), DAKO_FREQ_LOADp_new, reg_old.ch1.AXAN_CH1_FREQ10.qp_old());
+    /*#p11.EMUS*/ reg_new.ch1.EMUS_CH1_FREQ_CNT_08.dff20_any(DERU_FREQ_CLK_new,                         DAKO_FREQ_LOADp_new, reg_new.ch1.DYGY_CH1_FREQ08.qp_new());
+    /*#p11.EVAK*/ reg_new.ch1.EVAK_CH1_FREQ_CNT_09.dff20_any(reg_new.ch1.EMUS_CH1_FREQ_CNT_08.qp_new(), DAKO_FREQ_LOADp_new, reg_new.ch1.EVAB_CH1_FREQ09.qp_new());
+    /*#p11.COPU*/ reg_new.ch1.COPU_CH1_FREQ_CNT_10.dff20_any(reg_new.ch1.EVAK_CH1_FREQ_CNT_09.qp_new(), DAKO_FREQ_LOADp_new, reg_new.ch1.AXAN_CH1_FREQ10.qp_new());
+  }
+
+  {
+    /*#p13.CALA*/ wire CALA_FREQ_OVERFLOWp_new = not1(reg_new.ch1.COPU_CH1_FREQ_CNT_10.qp_new());
+    /*#p13.DOKA*/ wire DOKA_COMY_RSTp_new = and2(reg_new.ch1.COMY_SAMPLE_CLKp.qp_new(), DYFA_xBCDExxx_new);
+    /*#p13.DYRU*/ wire DYRU_COMY_RSTn_new = nor3(reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.FEKU_CH1_TRIGp.qp_new(), DOKA_COMY_RSTp_new);
+    /*_p13.COMY*/ reg_new.ch1.COMY_SAMPLE_CLKp.dff17_any(CALA_FREQ_OVERFLOWp_new, DYRU_COMY_RSTn_new, reg_new.ch1.COMY_SAMPLE_CLKp.qn_new());
   }
 
   // Duty cycle generator

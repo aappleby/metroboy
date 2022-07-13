@@ -264,7 +264,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   pins.commit();
 
   //if (config_idempotence) {
-  if (true) {
+  if (false) {
     //printf("idempotence?\n");
     auto gb_state_old = gb_state;
 

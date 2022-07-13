@@ -2,6 +2,18 @@
 
 #include "GateBoyLib/GateBoy.h"
 
+#ifndef SIM_AUDIO
+
+int spu_audio_out_r(GateBoyState& reg_new) {
+  return 0;
+}
+
+int spu_audio_out_l(GateBoyState& reg_new) {
+  return 0;
+}
+
+#endif
+
 #ifdef SIM_AUDIO
 
 void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new);

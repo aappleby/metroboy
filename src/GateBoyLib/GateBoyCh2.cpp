@@ -185,21 +185,21 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p15.EROG*/ wire EROG_LOADp_old = not1(DUJU_LOADn_old);
     /*#p15.GYPA*/ wire GYPA_LOADp_old = not1(DUJU_LOADn_old);
 
-    /*_p14.DONE*/ reg_new.ch2.DONE_CH2_FREQ_00.dff20(DOCA_FREQ_TICKn,                        COGU_LOADp_old, reg_old.ch2.FOFE_NR23_FREQ00p.qn_oldB());
-    /*_p14.DYNU*/ reg_new.ch2.DYNU_CH2_FREQ_01.dff20(reg_new.ch2.DONE_CH2_FREQ_00.qp_new(),  COGU_LOADp_old, reg_old.ch2.FOVA_NR23_FREQ01p.qn_oldB());
-    /*_p14.EZOF*/ reg_new.ch2.EZOF_CH2_FREQ_02.dff20(reg_new.ch2.DYNU_CH2_FREQ_01.qp_new(),  COGU_LOADp_old, reg_old.ch2.FEDY_NR23_FREQ02p.qn_oldB());
-    /*_p14.CYVO*/ reg_new.ch2.CYVO_CH2_FREQ_03.dff20(reg_new.ch2.EZOF_CH2_FREQ_02.qp_new(),  COGU_LOADp_old, reg_old.ch2.FOME_NR23_FREQ03p.qn_oldB());
+    /*_p14.DONE*/ reg_new.ch2.DONE_CH2_FREQ_00.dff20(DOCA_FREQ_TICKn,                        COGU_LOADp_old, reg_new.ch2.FOFE_NR23_FREQ00p.qn_newB());
+    /*_p14.DYNU*/ reg_new.ch2.DYNU_CH2_FREQ_01.dff20(reg_new.ch2.DONE_CH2_FREQ_00.qp_new(),  COGU_LOADp_old, reg_new.ch2.FOVA_NR23_FREQ01p.qn_newB());
+    /*_p14.EZOF*/ reg_new.ch2.EZOF_CH2_FREQ_02.dff20(reg_new.ch2.DYNU_CH2_FREQ_01.qp_new(),  COGU_LOADp_old, reg_new.ch2.FEDY_NR23_FREQ02p.qn_newB());
+    /*_p14.CYVO*/ reg_new.ch2.CYVO_CH2_FREQ_03.dff20(reg_new.ch2.EZOF_CH2_FREQ_02.qp_new(),  COGU_LOADp_old, reg_new.ch2.FOME_NR23_FREQ03p.qn_newB());
 
     /*#p14.EDEP*/ wire EDEP_CH2_FREQ_03 = not1(reg_new.ch2.CYVO_CH2_FREQ_03.qn_new());
-    /*_p14.FUXO*/ reg_new.ch2.FUXO_CH2_FREQ_04.dff20(EDEP_CH2_FREQ_03,                       EROG_LOADp_old, reg_old.ch2.FORA_NR23_FREQ04p.qn_oldB());
-    /*_p14.GANO*/ reg_new.ch2.GANO_CH2_FREQ_05.dff20(reg_new.ch2.FUXO_CH2_FREQ_04.qp_new(),  EROG_LOADp_old, reg_old.ch2.GODA_NR23_FREQ05p.qn_oldB());
-    /*_p14.GOCA*/ reg_new.ch2.GOCA_CH2_FREQ_06.dff20(reg_new.ch2.GANO_CH2_FREQ_05.qp_new(),  EROG_LOADp_old, reg_old.ch2.GUMY_NR23_FREQ06p.qn_oldB());
-    /*_p14.GANE*/ reg_new.ch2.GANE_CH2_FREQ_07.dff20(reg_new.ch2.GOCA_CH2_FREQ_06.qp_new(),  EROG_LOADp_old, reg_old.ch2.GUPU_NR23_FREQ07p.qn_oldB());
+    /*_p14.FUXO*/ reg_new.ch2.FUXO_CH2_FREQ_04.dff20(EDEP_CH2_FREQ_03,                       EROG_LOADp_old, reg_new.ch2.FORA_NR23_FREQ04p.qn_newB());
+    /*_p14.GANO*/ reg_new.ch2.GANO_CH2_FREQ_05.dff20(reg_new.ch2.FUXO_CH2_FREQ_04.qp_new(),  EROG_LOADp_old, reg_new.ch2.GODA_NR23_FREQ05p.qn_newB());
+    /*_p14.GOCA*/ reg_new.ch2.GOCA_CH2_FREQ_06.dff20(reg_new.ch2.GANO_CH2_FREQ_05.qp_new(),  EROG_LOADp_old, reg_new.ch2.GUMY_NR23_FREQ06p.qn_newB());
+    /*_p14.GANE*/ reg_new.ch2.GANE_CH2_FREQ_07.dff20(reg_new.ch2.GOCA_CH2_FREQ_06.qp_new(),  EROG_LOADp_old, reg_new.ch2.GUPU_NR23_FREQ07p.qn_newB());
 
     /*#p14.GALA*/ wire GALA_CH2_FREQ_07 = not1(reg_new.ch2.GANE_CH2_FREQ_07.qn_new());
-    /*_p14.HEVY*/ reg_new.ch2.HEVY_CH2_FREQ_08.dff20(GALA_CH2_FREQ_07,                       GYPA_LOADp_old, reg_old.ch2.JEFU_NR24_FREQ08p.qn_oldB());
-    /*_p14.HEPU*/ reg_new.ch2.HEPU_CH2_FREQ_09.dff20(reg_new.ch2.HEVY_CH2_FREQ_08.qp_new(),  GYPA_LOADp_old, reg_old.ch2.JANY_NR24_FREQ09p.qn_oldB());
-    /*_p14.HERO*/ reg_new.ch2.HERO_CH2_FREQ_10.dff20(reg_new.ch2.HEPU_CH2_FREQ_09.qp_new(),  GYPA_LOADp_old, reg_old.ch2.JUPY_NR24_FREQ10p.qn_oldB());
+    /*_p14.HEVY*/ reg_new.ch2.HEVY_CH2_FREQ_08.dff20(GALA_CH2_FREQ_07,                       GYPA_LOADp_old, reg_new.ch2.JEFU_NR24_FREQ08p.qn_newB());
+    /*_p14.HEPU*/ reg_new.ch2.HEPU_CH2_FREQ_09.dff20(reg_new.ch2.HEVY_CH2_FREQ_08.qp_new(),  GYPA_LOADp_old, reg_new.ch2.JANY_NR24_FREQ09p.qn_newB());
+    /*_p14.HERO*/ reg_new.ch2.HERO_CH2_FREQ_10.dff20(reg_new.ch2.HEPU_CH2_FREQ_09.qp_new(),  GYPA_LOADp_old, reg_new.ch2.JUPY_NR24_FREQ10p.qn_newB());
   }
 
   {
@@ -225,21 +225,21 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p15.EROG*/ wire EROG_LOADp_new = not1(DUJU_LOADn_new);
     /*#p15.GYPA*/ wire GYPA_LOADp_new = not1(DUJU_LOADn_new);
 
-    /*_p14.DONE*/ reg_new.ch2.DONE_CH2_FREQ_00.dff20_any(DOCA_FREQ_TICKn,                        COGU_LOADp_new, reg_old.ch2.FOFE_NR23_FREQ00p.qn_oldB());
-    /*_p14.DYNU*/ reg_new.ch2.DYNU_CH2_FREQ_01.dff20_any(reg_new.ch2.DONE_CH2_FREQ_00.qp_new(),  COGU_LOADp_new, reg_old.ch2.FOVA_NR23_FREQ01p.qn_oldB());
-    /*_p14.EZOF*/ reg_new.ch2.EZOF_CH2_FREQ_02.dff20_any(reg_new.ch2.DYNU_CH2_FREQ_01.qp_new(),  COGU_LOADp_new, reg_old.ch2.FEDY_NR23_FREQ02p.qn_oldB());
-    /*_p14.CYVO*/ reg_new.ch2.CYVO_CH2_FREQ_03.dff20_any(reg_new.ch2.EZOF_CH2_FREQ_02.qp_new(),  COGU_LOADp_new, reg_old.ch2.FOME_NR23_FREQ03p.qn_oldB());
+    /*_p14.DONE*/ reg_new.ch2.DONE_CH2_FREQ_00.dff20_any(DOCA_FREQ_TICKn,                        COGU_LOADp_new, reg_new.ch2.FOFE_NR23_FREQ00p.qn_newB());
+    /*_p14.DYNU*/ reg_new.ch2.DYNU_CH2_FREQ_01.dff20_any(reg_new.ch2.DONE_CH2_FREQ_00.qp_new(),  COGU_LOADp_new, reg_new.ch2.FOVA_NR23_FREQ01p.qn_newB());
+    /*_p14.EZOF*/ reg_new.ch2.EZOF_CH2_FREQ_02.dff20_any(reg_new.ch2.DYNU_CH2_FREQ_01.qp_new(),  COGU_LOADp_new, reg_new.ch2.FEDY_NR23_FREQ02p.qn_newB());
+    /*_p14.CYVO*/ reg_new.ch2.CYVO_CH2_FREQ_03.dff20_any(reg_new.ch2.EZOF_CH2_FREQ_02.qp_new(),  COGU_LOADp_new, reg_new.ch2.FOME_NR23_FREQ03p.qn_newB());
 
     /*#p14.EDEP*/ wire EDEP_CH2_FREQ_03 = not1(reg_new.ch2.CYVO_CH2_FREQ_03.qn_new());
-    /*_p14.FUXO*/ reg_new.ch2.FUXO_CH2_FREQ_04.dff20_any(EDEP_CH2_FREQ_03,                       EROG_LOADp_new, reg_old.ch2.FORA_NR23_FREQ04p.qn_oldB());
-    /*_p14.GANO*/ reg_new.ch2.GANO_CH2_FREQ_05.dff20_any(reg_new.ch2.FUXO_CH2_FREQ_04.qp_new(),  EROG_LOADp_new, reg_old.ch2.GODA_NR23_FREQ05p.qn_oldB());
-    /*_p14.GOCA*/ reg_new.ch2.GOCA_CH2_FREQ_06.dff20_any(reg_new.ch2.GANO_CH2_FREQ_05.qp_new(),  EROG_LOADp_new, reg_old.ch2.GUMY_NR23_FREQ06p.qn_oldB());
-    /*_p14.GANE*/ reg_new.ch2.GANE_CH2_FREQ_07.dff20_any(reg_new.ch2.GOCA_CH2_FREQ_06.qp_new(),  EROG_LOADp_new, reg_old.ch2.GUPU_NR23_FREQ07p.qn_oldB());
+    /*_p14.FUXO*/ reg_new.ch2.FUXO_CH2_FREQ_04.dff20_any(EDEP_CH2_FREQ_03,                       EROG_LOADp_new, reg_new.ch2.FORA_NR23_FREQ04p.qn_newB());
+    /*_p14.GANO*/ reg_new.ch2.GANO_CH2_FREQ_05.dff20_any(reg_new.ch2.FUXO_CH2_FREQ_04.qp_new(),  EROG_LOADp_new, reg_new.ch2.GODA_NR23_FREQ05p.qn_newB());
+    /*_p14.GOCA*/ reg_new.ch2.GOCA_CH2_FREQ_06.dff20_any(reg_new.ch2.GANO_CH2_FREQ_05.qp_new(),  EROG_LOADp_new, reg_new.ch2.GUMY_NR23_FREQ06p.qn_newB());
+    /*_p14.GANE*/ reg_new.ch2.GANE_CH2_FREQ_07.dff20_any(reg_new.ch2.GOCA_CH2_FREQ_06.qp_new(),  EROG_LOADp_new, reg_new.ch2.GUPU_NR23_FREQ07p.qn_newB());
 
     /*#p14.GALA*/ wire GALA_CH2_FREQ_07 = not1(reg_new.ch2.GANE_CH2_FREQ_07.qn_new());
-    /*_p14.HEVY*/ reg_new.ch2.HEVY_CH2_FREQ_08.dff20_any(GALA_CH2_FREQ_07,                       GYPA_LOADp_new, reg_old.ch2.JEFU_NR24_FREQ08p.qn_oldB());
-    /*_p14.HEPU*/ reg_new.ch2.HEPU_CH2_FREQ_09.dff20_any(reg_new.ch2.HEVY_CH2_FREQ_08.qp_new(),  GYPA_LOADp_new, reg_old.ch2.JANY_NR24_FREQ09p.qn_oldB());
-    /*_p14.HERO*/ reg_new.ch2.HERO_CH2_FREQ_10.dff20_any(reg_new.ch2.HEPU_CH2_FREQ_09.qp_new(),  GYPA_LOADp_new, reg_old.ch2.JUPY_NR24_FREQ10p.qn_oldB());
+    /*_p14.HEVY*/ reg_new.ch2.HEVY_CH2_FREQ_08.dff20_any(GALA_CH2_FREQ_07,                       GYPA_LOADp_new, reg_new.ch2.JEFU_NR24_FREQ08p.qn_newB());
+    /*_p14.HEPU*/ reg_new.ch2.HEPU_CH2_FREQ_09.dff20_any(reg_new.ch2.HEVY_CH2_FREQ_08.qp_new(),  GYPA_LOADp_new, reg_new.ch2.JANY_NR24_FREQ09p.qn_newB());
+    /*_p14.HERO*/ reg_new.ch2.HERO_CH2_FREQ_10.dff20_any(reg_new.ch2.HEPU_CH2_FREQ_09.qp_new(),  GYPA_LOADp_new, reg_new.ch2.JUPY_NR24_FREQ10p.qn_newB());
   }
 
   //----------------------------------------
@@ -271,9 +271,9 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p15.HYLY*/ wire HYLY_ENV_LOADn_new = nor2(reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_new.ch2.JOPA_CH2_ENV_TICK.qp_new());
     /*_p15.JAKE*/ wire JAKE_ENV_LOADp_new = not1(HYLY_ENV_LOADn_new);
     
-    /*#p15.JORE*/ reg_new.ch2.JORE_CH2_ENV_DELAYp.dff20(KENE_CLK_64n_new,                         JAKE_ENV_LOADp_new, reg_old.ch2.HYFU_NR22_P0p.qn_oldB());
-    /*#p15.JONA*/ reg_new.ch2.JONA_CH2_ENV_DELAYp.dff20(reg_new.ch2.JORE_CH2_ENV_DELAYp.qp_new(), JAKE_ENV_LOADp_new, reg_old.ch2.HORE_NR22_P1p.qn_oldB());
-    /*#p15.JEVY*/ reg_new.ch2.JEVY_CH2_ENV_DELAYp.dff20(reg_new.ch2.JONA_CH2_ENV_DELAYp.qp_new(), JAKE_ENV_LOADp_new, reg_old.ch2.HAVA_NR22_P2p.qn_oldB());
+    /*#p15.JORE*/ reg_new.ch2.JORE_CH2_ENV_DELAYp.dff20(KENE_CLK_64n_new,                         JAKE_ENV_LOADp_new, reg_new.ch2.HYFU_NR22_P0p.qn_newB());
+    /*#p15.JONA*/ reg_new.ch2.JONA_CH2_ENV_DELAYp.dff20(reg_new.ch2.JORE_CH2_ENV_DELAYp.qp_new(), JAKE_ENV_LOADp_new, reg_new.ch2.HORE_NR22_P1p.qn_newB());
+    /*#p15.JEVY*/ reg_new.ch2.JEVY_CH2_ENV_DELAYp.dff20(reg_new.ch2.JONA_CH2_ENV_DELAYp.qp_new(), JAKE_ENV_LOADp_new, reg_new.ch2.HAVA_NR22_P2p.qn_newB());
   }
 
   //----------------------------------------
@@ -300,16 +300,16 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p15.HOFO*/ wire HOFO_ENV_CLK = or3(reg_new.ch2.JOPA_CH2_ENV_TICK.qp_new(), reg_new.ch2.JUPU_ENV_OFFp_new(), reg_new.ch2.JEME_ENV_DONEp.qp_new());
 
     /*#p15.GAFA*/ wire GAFA_ENV_CLK = amux2(reg_new.ch2.FORE_NR22_ADDp.qp_newB(), HOFO_ENV_CLK,                       HOFO_ENV_CLK,                       reg_new.ch2.FORE_NR22_ADDp.qn_newB());
-    /*#p15.FENO*/ reg_new.ch2.FENO_CH2_ENV0.dff20(GAFA_ENV_CLK, reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_old.ch2.GATA_NR22_V0p.qp_oldB());
+    /*#p15.FENO*/ reg_new.ch2.FENO_CH2_ENV0.dff20(GAFA_ENV_CLK, reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_new.ch2.GATA_NR22_V0p.qp_newB());
 
     /*#p15.FARU*/ wire FARU_ENV_CLK = amux2(reg_new.ch2.FORE_NR22_ADDp.qp_newB(), reg_new.ch2.FENO_CH2_ENV0.qp_new(), reg_new.ch2.FENO_CH2_ENV0.qn_new(), reg_new.ch2.FORE_NR22_ADDp.qn_newB());
-    /*#p15.FETE*/ reg_new.ch2.FETE_CH2_ENV1.dff20(FARU_ENV_CLK, reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_old.ch2.GUFE_NR22_V1p.qp_oldB());
+    /*#p15.FETE*/ reg_new.ch2.FETE_CH2_ENV1.dff20(FARU_ENV_CLK, reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_new.ch2.GUFE_NR22_V1p.qp_newB());
 
     /*#p15.ETUP*/ wire ETUP_ENV_CLK = amux2(reg_new.ch2.FORE_NR22_ADDp.qp_newB(), reg_new.ch2.FETE_CH2_ENV1.qp_new(), reg_new.ch2.FETE_CH2_ENV1.qn_new(), reg_new.ch2.FORE_NR22_ADDp.qn_newB());
-    /*#p15.FOMY*/ reg_new.ch2.FOMY_CH2_ENV2.dff20(ETUP_ENV_CLK, reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_old.ch2.GURA_NR22_V2p.qp_oldB());
+    /*#p15.FOMY*/ reg_new.ch2.FOMY_CH2_ENV2.dff20(ETUP_ENV_CLK, reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_new.ch2.GURA_NR22_V2p.qp_newB());
 
     /*#p15.FOPY*/ wire FOPY_ENV_CLK = amux2(reg_new.ch2.FORE_NR22_ADDp.qp_newB(), reg_new.ch2.FOMY_CH2_ENV2.qp_new(), reg_new.ch2.FOMY_CH2_ENV2.qn_new(), reg_new.ch2.FORE_NR22_ADDp.qn_newB());
-    /*#p15.FENA*/ reg_new.ch2.FENA_CH2_ENV3.dff20(FOPY_ENV_CLK, reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_old.ch2.GAGE_NR22_V3p.qp_oldB());
+    /*#p15.FENA*/ reg_new.ch2.FENA_CH2_ENV3.dff20(FOPY_ENV_CLK, reg_new.ch2.ELOX_CH2_TRIGp.qp_new(), reg_new.ch2.GAGE_NR22_V3p.qp_newB());
   }
 
   //----------------------------------------
@@ -326,14 +326,14 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p15.AGET*/ wire AGET_FF16_WRp_new = not1(AGYN_FF16_WRn_new);
     /*_p14.ASYP*/ wire ASYP_FF16_WRp_new = not1(AGYN_FF16_WRn_new);
 
-    /*_p15.ERYC*/ reg_new.ch2.ERYC_NR21_LEN0.dff20(DYRO_LEN_CLKp_new,                 BYMO_FF16_WRp_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-    /*_p15.CERA*/ reg_new.ch2.CERA_NR21_LEN1.dff20(reg_new.ch2.ERYC_NR21_LEN0.qp_new(), BYMO_FF16_WRp_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-    /*_p15.CONU*/ reg_new.ch2.CONU_NR21_LEN2.dff20(reg_new.ch2.CERA_NR21_LEN1.qp_new(), BYMO_FF16_WRp_new, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-    /*_p15.CAME*/ reg_new.ch2.CAME_NR21_LEN3.dff20(reg_new.ch2.CONU_NR21_LEN2.qp_new(), BYMO_FF16_WRp_new, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+    /*_p15.ERYC*/ reg_new.ch2.ERYC_NR21_LEN0.dff20(DYRO_LEN_CLKp_new,                   BYMO_FF16_WRp_new, reg_new.cpu_dbus.BUS_CPU_D00p.out_new());
+    /*_p15.CERA*/ reg_new.ch2.CERA_NR21_LEN1.dff20(reg_new.ch2.ERYC_NR21_LEN0.qp_new(), BYMO_FF16_WRp_new, reg_new.cpu_dbus.BUS_CPU_D01p.out_new());
+    /*_p15.CONU*/ reg_new.ch2.CONU_NR21_LEN2.dff20(reg_new.ch2.CERA_NR21_LEN1.qp_new(), BYMO_FF16_WRp_new, reg_new.cpu_dbus.BUS_CPU_D02p.out_new());
+    /*_p15.CAME*/ reg_new.ch2.CAME_NR21_LEN3.dff20(reg_new.ch2.CONU_NR21_LEN2.qp_new(), BYMO_FF16_WRp_new, reg_new.cpu_dbus.BUS_CPU_D03p.out_new());
 
     /*#p15.BUKO*/ wire BUKO_CH2_LEN_CLK = not1(reg_new.ch2.CAME_NR21_LEN3.qn_new());
-    /*_p15.BUVA*/ reg_new.ch2.BUVA_NR21_LEN4.dff20(BUKO_CH2_LEN_CLK,                  AGET_FF16_WRp_new, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-    /*_p15.AKYD*/ reg_new.ch2.AKYD_NR21_LEN5.dff20(reg_new.ch2.BUVA_NR21_LEN4.qp_new(), AGET_FF16_WRp_new, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+    /*_p15.BUVA*/ reg_new.ch2.BUVA_NR21_LEN4.dff20(BUKO_CH2_LEN_CLK,                    AGET_FF16_WRp_new, reg_new.cpu_dbus.BUS_CPU_D04p.out_new());
+    /*_p15.AKYD*/ reg_new.ch2.AKYD_NR21_LEN5.dff20(reg_new.ch2.BUVA_NR21_LEN4.qp_new(), AGET_FF16_WRp_new, reg_new.cpu_dbus.BUS_CPU_D05p.out_new());
 
     /*_p14.BENY*/ wire BENY_RSTn = nor3(ASYP_FF16_WRp_new, reg_new.KEBA_APU_RSTp_new(), reg_new.ch2.ELOX_CH2_TRIGp.qp_new());
     /*_p15.CYRE*/ reg_new.ch2.CYRE_CH2_LEN_DONEp.dff17(reg_new.ch2.AKYD_NR21_LEN5.qn_new(), BENY_RSTn, reg_old.ch2.CYRE_CH2_LEN_DONEp.qn_old());

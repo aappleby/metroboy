@@ -124,6 +124,10 @@ struct GateBoySys {
 
 //-----------------------------------------------------------------------------
 
+void tock_zram_gates(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t zero_ram[128]);
+
+//-----------------------------------------------------------------------------
+
 struct GateBoy  : public IGateBoy {
   GateBoy() {}
 
@@ -241,7 +245,6 @@ struct GateBoy  : public IGateBoy {
   void tock_oam_bus_gates(const GateBoyState& reg_old);
   void tock_serial_gates(const GateBoyState& reg_old);
   void tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FETCH_TRIGp);
-  void tock_zram_gates(const GateBoyState& reg_old);
   void tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
   void tock_bootrom_gates(const GateBoyState& reg_old);
   void tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);

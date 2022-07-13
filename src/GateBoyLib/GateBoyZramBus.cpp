@@ -12,18 +12,16 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_zram_gates(const GateBoyState& reg_old) {
-  auto& reg_new = gb_state;
-
+void tock_zram_gates(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t zero_ram[128]) {
   auto addr = bit_pack(reg_new.cpu_abus);
   wire CSp = (addr >= 0xFF80) && (addr <= 0xFFFE);
 
   if (bit0(reg_old.zram_bus.clk_old.out_old() & ~reg_new.cpu_signals.TAPU_CPU_WRp.out_new() & CSp)) {
-    mem.zero_ram[addr & 0x007F] = (uint8_t)bit_pack(reg_old.cpu_dbus);
+    zero_ram[addr & 0x007F] = (uint8_t)bit_pack(reg_old.cpu_dbus);
   }
   reg_new.zram_bus.clk_old <<= reg_new.cpu_signals.TAPU_CPU_WRp.out_new();
 
-  uint8_t data = mem.zero_ram[addr & 0x007F];
+  uint8_t data = zero_ram[addr & 0x007F];
 
   triwire tri0 = tri_pp(CSp && bit0(reg_new.cpu_signals.TEDO_CPU_RDp.out_new()), bit(data, 0));
   triwire tri1 = tri_pp(CSp && bit0(reg_new.cpu_signals.TEDO_CPU_RDp.out_new()), bit(data, 1));

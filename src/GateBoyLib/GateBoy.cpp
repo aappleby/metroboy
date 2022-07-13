@@ -264,7 +264,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   pins.commit();
 
   //if (config_idempotence) {
-  if (false) {
+  if (true) {
     //printf("idempotence?\n");
     auto gb_state_old = gb_state;
 
@@ -500,6 +500,22 @@ void GateBoy::tock_cpu(const blob& cart_blob) {
 void GateBoy::tock_gates(const blob& cart_blob) {
 
   const GateBoyState  reg_old = gb_state;
+
+  memset(&gb_state.cpu_abus,  BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_abus));
+  memset(&gb_state.cpu_dbus,  BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_dbus));
+
+  if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
+    // Data has to be driven on EFGH or we fail the wave tests
+    gb_state.cpu_dbus.set_data(cpu.core.reg.bus_req_new.write, cpu.core.reg.bus_req_new.data_lo);
+  }
+  else {
+    gb_state.cpu_dbus.set_data(false, 0);
+  }
+
+
+
+
+
   GateBoyState& reg_new = gb_state;
 
   // Clear BIT_OLD from reg_new so we can't accidentally read old fields from it.
@@ -508,35 +524,30 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   bool EXT_cpu_latch_ext = 0;
 
-  memset(&reg_new.cpu_abus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_abus));
-  memset(&reg_new.cpu_dbus,  BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.cpu_dbus));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
-    // Data has to be driven on EFGH or we fail the wave tests
-    reg_new.cpu_dbus.set_data(cpu.core.reg.bus_req_new.write, cpu.core.reg.bus_req_new.data_lo);
+  if (DELTA_HA_new) {
+    reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr & 0x00FF);
   }
   else {
-    reg_new.cpu_dbus.set_data(false, 0);
+    reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // FIXME: I have no idea why this has to be high when writing 0xFF10 (audio) and higher.
   // Something to do with ANUJ, maybe some interaction with the timer?
@@ -561,10 +572,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   bool EXT_cpu_rd;
   bool EXT_cpu_wr;
 
+
   if (DELTA_HA_new) {
     EXT_cpu_rd = 0;
     EXT_cpu_wr = 0;
-    reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr & 0x00FF);
 
     if (addr_high) EXT_addr_new = false;
     if (addr_boot) EXT_addr_new = false;
@@ -573,7 +584,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   else {
     EXT_cpu_rd = cpu.core.reg.bus_req_new.read;
     EXT_cpu_wr = cpu.core.reg.bus_req_new.write;
-    reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
 
     if (addr_high) EXT_addr_new = false;
     if (addr_boot) EXT_addr_new = false;
@@ -1130,7 +1140,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   tock_ext_gates(reg_old, cart_blob);
   tock_vram_bus_gates(reg_old, TEVO_WIN_FETCH_TRIGp_xxx);
   tock_oam_bus_gates(reg_old);
-  tock_zram_gates(reg_old);
+  tock_zram_gates(reg_old, reg_new, mem.zero_ram);
 
   //----------------------------------------
   // Sound

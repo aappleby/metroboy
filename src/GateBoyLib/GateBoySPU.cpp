@@ -143,7 +143,7 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   ///*_p01.UMER*/ wire UMER_DIV10n_old = not1(reg_old.reg_div.TERU_DIV10p.qp_old());
 
   // FIXME speed up spu clocks for debugging
-  wire UMER_DIV10n_old = not1(reg_old.reg_div.UNYK_DIV04p.qp_old());
+  wire UMER_DIV10n_old = not1(reg_old.reg_div.TULU_DIV07p.qp_old());
 
   /*_p01.BARA*/ reg_new.spu.BARA_CLK_512.dff17(COKE_AxxDExxH,                     reg_new.ATUS_APU_RSTn_new(), UMER_DIV10n_old);
   /*_p01.CARU*/ reg_new.spu.CARU_CLK_256.dff17(reg_new.spu.BURE_CLK_512_new(),    reg_new.ATUS_APU_RSTn_new(), reg_old.spu.CARU_CLK_256.qn_old());

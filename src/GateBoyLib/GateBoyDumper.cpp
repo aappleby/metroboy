@@ -444,66 +444,41 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d("\n");
   */
 
-  d.dump_slice2p("NR50 ", &s.spu.APEG_NR50_VOL_L0, 8);
-  d.dump_slice2p("NR51 ", &s.spu.ANEV_NR51_RCH1_ENp, 8);
-  d.dump_slice2p("NR52 ", &s.spu.FERO_NR52_DBG_APUp, 3);
+  d.dump_slicep("NR50 ", &s.spu.APEG_NR50_VOL_L0, 8);
+  d.dump_slicep("NR51 ", &s.spu.ANEV_NR51_RCH1_ENp, 8);
+  d.dump_slicep("NR52 ", &s.spu.FERO_NR52_DBG_APUp, 3);
   d("\n");
 
   d("===== CH1 =====\n");
-  d.dump_slice2p("NR10 ", &s.ch1.BANY_NR10_SWEEP_SHIFT0p, 8);
-  d.dump_slice2p("NR11 ", &s.ch1.BACY_NR11_LEN0, 8);
-  d.dump_slice2p("NR12 ", &s.ch1.JUSA_NR12_PERIOD0p, 8);
-  d.dump_slice2p("NR14 ", &s.ch1.BOKO_NR14_LENENp, 2);
+  d.dump_slicep("NR10 ", &s.ch1.BANY_NR10_SWEEP_SHIFT0p, 8);
+  d.dump_slicep("NR11 ", &s.ch1.BACY_NR11_LEN0, 8);
+  d.dump_slicep("NR12 ", &s.ch1.JUSA_NR12_PERIOD0p, 8);
+  d.dump_slicep("NR13 ", &s.ch1.HYKA_NR13_FREQ00, 8);
+  d.dump_slicep("NR14 ", &s.ch1.DYGY_NR14_FREQ08, 5);
   d("\n");
 
-  d.dump_slice2p("CH1 FREQ     : ", &s.ch1.HYKA_CH1_FREQ00, 11);
-  d.dump_slice2p("CH1 FREQ CNT : ", &s.ch1.GAXE_CH1_FREQ_CNT_00, 11);
-  d.dump_slice2p("CH1 SHIFT    : ", &s.ch1.FABU_CH1_SHIFT00, 11);
-  d.dump_slice2p("CH1 SHIFTCNT : ", &s.ch1.COPA_SHIFTCNT0, 3);
-  d.dump_slice2p("CH1 SUM A    : ", &s.ch1.GALO_SUM_A00, 11);
-  d.dump_slice2p("CH1 SUM B    : ", &s.ch1.HORA_SUM_B00, 11);
+#if 0
+  d.dump_slicep("CH1 FREQ     : ", &s.ch1.HYKA_NR13_FREQ00, 11);
+  d.dump_slicep("CH1 FREQ CNT : ", &s.ch1.GAXE_CH1_FREQ_CNT_00, 11);
+  d.dump_slicep("CH1 SHIFT    : ", &s.ch1.FABU_CH1_SHIFT00, 11);
+  d.dump_slicep("CH1 SHIFTCNT : ", &s.ch1.COPA_SHIFTCNT0, 3);
+  d.dump_slicep("CH1 SUM A    : ", &s.ch1.GALO_SUM_A00, 11);
+  d.dump_slicep("CH1 SUM B    : ", &s.ch1.HORA_SUM_B00, 11);
   d("\n");
-  d.dump_slice2p("CH1 ENV DLY  : ", &s.ch1.JOVA_ENV_DELAY0p, 3);
-  d.dump_bitp   ("CH1 ENV TICK : ", s.ch1.KOZY_ENV_TICKp.state & 1);
-  d.dump_slice2p("CH1 ENV      : ", &s.ch1.HAFO_CH1_ENV0p, 4);
-  d.dump_bitp   ("CH1 ENV MAX  : ", s.ch1.KYNO_ENV_MAXp.state & 1);
+  d.dump_slicep("CH1 ENV DLY  : ", &s.ch1.JOVA_ENV_DELAY0p, 3);
+  d.dump_bitp  ("CH1 ENV TICK : ", s.ch1.KOZY_ENV_TICKp.state & 1);
+  d.dump_slicep("CH1 ENV      : ", &s.ch1.HAFO_CH1_ENV0p, 4);
+  d.dump_bitp  ("CH1 ENV MAX  : ", s.ch1.KYNO_ENV_MAXp.state & 1);
   d("\n");
-  d.dump_slice2p("CH1 SWP DLY  : ", &s.ch1.CUPO_SWEEP_DELAY0p, 3);
-  d(             "CH1 OUT      : %d\n", ch1_audio_out(s));
+  d.dump_slicep("CH1 SWP DLY  : ", &s.ch1.CUPO_SWEEP_DELAY0p, 3);
+  d(            "CH1 OUT      : %d\n", ch1_audio_out(s));
   d("\n");
-
-
   d.dump_bitp("BYTE_SHIFT_DONEp    : ", s.ch1.BYTE_SHIFT_DONEp.state & 1);
   d.dump_bitp("BAZA_DBG_SWEEP_CLK  : ", s.ch1.BAZA_DBG_SWEEP_CLK.state & 1);
   d.dump_bitp("BEXA_SWEEP_TRIGp : ", s.ch1.BEXA_SWEEP_TRIGp.state & 1);
   d.dump_bitp("FEMU_SHIFTINGn      : ", s.ch1.FEMU_SHIFTINGn.state & 1);
-
-#if 0
-  ///*#p13.EZEC*/ DFF17 EZEC_CH1_TRIGp;
-  ///*_p13.FYFO*/ NorLatch FYFO_CH1_TRIGn;
-  ///*_p13.FEKU*/ DFF17 FEKU_CH1_TRIGp;
-  ///*_p13.FARE*/ DFF17 FARE_CH1_TRIGp;
-  ///*_p13.FYTE*/ DFF17 FYTE_CH1_TRIGp;
-
-  d.dump_bitp("DUPE : ", s.ch1.DUPE_NR14_TRIGp.state & 1);
-  d.dump_bitp("EZEC : ", s.ch1.EZEC_CH1_TRIGp.state & 1);
-  d.dump_bitp("FYFO : ", !(s.ch1.FYFO_CH1_TRIGn.state & 1));
-  d.dump_bitp("FEKU : ", s.ch1.FEKU_CH1_TRIGp.state & 1);
-  d.dump_bitp("FARE : ", s.ch1.FARE_CH1_TRIGp.state & 1);
-  d.dump_bitp("FYTE : ", s.ch1.FYTE_CH1_TRIGp.state & 1);
+  d("\n");
 #endif
-
-#if 0
-  /*#p13.CYTO*/ NorLatch CYTO_CH1_ACTIVEp;
-  /*_p13.CERO*/ DFF17 CERO_CH1_LEN_DONE;
-  /*_p13.GEXU*/ NandLatch GEXU_FREQ_GATEn;
-  /*_p13.COMY*/ DFF17 COMY_SAMPLE_CLKp;
-
-  /*#p13.KOZY*/ DFF17 KOZY_ENV_TICKp;
-  /*#p13.KYNO*/ DFF17 KYNO_ENV_MAXp;
-  /*#p13.KEZU*/ NorLatch KEZU_ENV_ACTIVEn;
-#endif
-
 
 
 
@@ -519,47 +494,26 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
 
 
   d("===== CH2 =====\n");
-
-#if 0
-  d.dump_bitp("ERYC_NR21_LEN0  : ", s.ch2.ERYC_NR21_LEN0 .state);
-  d.dump_bitp("CERA_NR21_LEN1  : ", s.ch2.CERA_NR21_LEN1 .state);
-  d.dump_bitp("CONU_NR21_LEN2  : ", s.ch2.CONU_NR21_LEN2 .state);
-  d.dump_bitp("CAME_NR21_LEN3  : ", s.ch2.CAME_NR21_LEN3 .state);
-  d.dump_bitp("BUVA_NR21_LEN4  : ", s.ch2.BUVA_NR21_LEN4 .state);
-  d.dump_bitp("AKYD_NR21_LEN5  : ", s.ch2.AKYD_NR21_LEN5 .state);
-  d.dump_bitp("BERA_NR21_DUTY0 : ", s.ch2.BERA_NR21_DUTY0.get_state());
-  d.dump_bitp("BAMY_NR21_DUTY1 : ", s.ch2.BAMY_NR21_DUTY1.get_state());
+  d.dump_slicep("NR21 ", &s.ch2.ERYC_NR21_LEN0, 8);
+  d.dump_slicep("NR22 ", &s.ch2.HYFU_NR22_P0p, 8);
+  d.dump_slicep("NR23 ", &s.ch2.FOFE_NR23_FREQ00p, 8);
+  d.dump_slicep("NR24 ", &s.ch2.JEFU_NR24_FREQ08p, 5);
   d("\n");
-
-  d.dump_bitp("GEVO_NR31_LEN0p : ", s.ch3.GEVO_NR31_LEN0p.state);
-  d.dump_bitp("FORY_NR31_LEN1p : ", s.ch3.FORY_NR31_LEN1p.state);
-  d.dump_bitp("GATU_NR31_LEN2p : ", s.ch3.GATU_NR31_LEN2p.state);
-  d.dump_bitp("GAPO_NR31_LEN3p : ", s.ch3.GAPO_NR31_LEN3p.state);
-  d.dump_bitp("GEMO_NR31_LEN4p : ", s.ch3.GEMO_NR31_LEN4p.state);
-  d.dump_bitp("FORO_NR31_LEN5p : ", s.ch3.FORO_NR31_LEN5p.state);
-  d.dump_bitp("FAVE_NR31_LEN6p : ", s.ch3.FAVE_NR31_LEN6p.state);
-  d.dump_bitp("FYRU_NR31_LEN7p : ", s.ch3.FYRU_NR31_LEN7p.state);
+  d.dump_slicep("CH2 FREQ     : ", &s.ch2.FOFE_NR23_FREQ00p, 11);
+  d.dump_slicep("CH2 COUNTER  : ", &s.ch2.DONE_COUNT00, 11);
+  d.dump_bitp  ("CH2 ENV CLK  : ", s.ch2.JYNA_ENV_CLK64.state);
+  d.dump_bitp  ("CH2 ENV TICK : ", s.ch2.JOPA_ENV_TICK.state & 1);
+  d.dump_bitp  ("CH2 ENV MAX  : ", s.ch2.HEPO_ENV_MAXp.state & 1);
+  d.dump_bitp  ("CH2 ENV DONE : ", s.ch2.JEME_ENV_DONEp.state & 1);
+  d.dump_slicep("CH2 ENV DLY  : ", &s.ch2.JORE_ENV_DELAY0p, 3);
+  d.dump_slicep("CH2 ENV VOL  : ", &s.ch2.FENO_ENV_VOL0, 4);
+  d(            "CH2 OUT      : %d\n", ch2_audio_out(s));
   d("\n");
-
-  d.dump_bitp("DANO_NR41_LEN0p : ", s.ch4.DANO_NR41_LEN0p.state);
-  d.dump_bitp("FAVY_NR41_LEN1p : ", s.ch4.FAVY_NR41_LEN1p.state);
-  d.dump_bitp("DENA_NR41_LEN2p : ", s.ch4.DENA_NR41_LEN2p.state);
-  d.dump_bitp("CEDO_NR41_LEN3p : ", s.ch4.CEDO_NR41_LEN3p.state);
-  d.dump_bitp("FYLO_NR41_LEN4p : ", s.ch4.FYLO_NR41_LEN4p.state);
-  d.dump_bitp("EDOP_NR41_LEN5p : ", s.ch4.EDOP_NR41_LEN5p.state);
-  d("\n");
-
-  d.dump_bitp("JUSA_NR12_DELAY0p  : ", s.ch1.JUSA_NR12_DELAY0p.get_state());
-  d.dump_bitp("JUZY_NR12_DELAY1p  : ", s.ch1.JUZY_NR12_DELAY1p.get_state());
-  d.dump_bitp("JOMA_NR12_DELAY2p  : ", s.ch1.JOMA_NR12_DELAY2p.get_state());
-  d.dump_bitp("JAFY_NR12_ENV_DIRp : ", s.ch1.JAFY_NR12_ENV_DIRp.get_state());
-  d.dump_bitp("JATY_NR12_VOL0p    : ", s.ch1.JATY_NR12_VOL0p.get_state());
-  d.dump_bitp("JAXO_NR12_VOL1p    : ", s.ch1.JAXO_NR12_VOL1p.get_state());
-  d.dump_bitp("JENA_NR12_VOL2p    : ", s.ch1.JENA_NR12_VOL2p.get_state());
-  d.dump_bitp("JOPU_NR12_VOL3p    : ", s.ch1.JOPU_NR12_VOL3p.get_state());
-  d("\n");
-
-#endif
+  d.dump_bitp("ELOX_TRIGp    : ", s.ch2.ELOX_TRIGp.state & 1);
+  d.dump_bitp("CAZA_TRIGp    : ", s.ch2.CAZA_TRIGp.state & 1);
+  d.dump_bitp("DOPE_TRIGp    : ", s.ch2.DOPE_TRIGp.state & 1);
+  d.dump_bitp("DALA_TRIGp    : ", s.ch2.DALA_TRIGp.state & 1);
+  d.dump_bitp("DORY_TRIGp    : ", s.ch2.DORY_TRIGp.state & 1);
 
 #endif
 }

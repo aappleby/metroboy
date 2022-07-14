@@ -67,11 +67,50 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->start();
 
   /*
+  Name Addr 7654 3210 Function
+  -----------------------------------------------------------------
+        Square 1
   NR10 FF10 -PPP NSSS Sweep period, negate, shift
   NR11 FF11 DDLL LLLL Duty, Length load (64-L)
   NR12 FF12 VVVV APPP Starting volume, Envelope add mode, period
   NR13 FF13 FFFF FFFF Frequency LSB
   NR14 FF14 TL-- -FFF Trigger, Length enable, Frequency MSB
+
+        Square 2
+      FF15 ---- ---- Not used
+  NR21 FF16 DDLL LLLL Duty, Length load (64-L)
+  NR22 FF17 VVVV APPP Starting volume, Envelope add mode, period
+  NR23 FF18 FFFF FFFF Frequency LSB
+  NR24 FF19 TL-- -FFF Trigger, Length enable, Frequency MSB
+
+        Wave
+  NR30 FF1A E--- ---- DAC power
+  NR31 FF1B LLLL LLLL Length load (256-L)
+  NR32 FF1C -VV- ---- Volume code (00=0%, 01=100%, 10=50%, 11=25%)
+  NR33 FF1D FFFF FFFF Frequency LSB
+  NR34 FF1E TL-- -FFF Trigger, Length enable, Frequency MSB
+
+        Noise
+      FF1F ---- ---- Not used
+  NR41 FF20 --LL LLLL Length load (64-L)
+  NR42 FF21 VVVV APPP Starting volume, Envelope add mode, period
+  NR43 FF22 SSSS WDDD Clock shift, Width mode of LFSR, Divisor code
+  NR44 FF23 TL-- ---- Trigger, Length enable
+
+        Control/Status
+  NR50 FF24 ALLL BRRR Vin L enable, Left vol, Vin R enable, Right vol
+  NR51 FF25 NW21 NW21 Left enables, Right enables
+  NR52 FF26 P--- NW21 Power control/status, Channel length statuses
+
+        Not used
+      FF27 ---- ----
+      .... ---- ----
+      FF2F ---- ----
+
+        Wave Table
+      FF30 0000 1111 Samples 0 and 1
+      ....
+      FF3F 0000 1111 Samples 30 and 31
   */
 
   // baBING
@@ -99,17 +138,17 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
       ld a, $77
       ld ($FF24), a
 
-      ld a, $7F
-      ld ($FF10), a
       ld a, $80
-      ld ($FF11), a
-      ld a, $F0
-      ld ($FF12), a
+      ld ($FF16), a
 
-      ld a, $83
-      ld ($FF13), a
+      ld a, $F0
+      ld ($FF17), a
+
+      ld a, $80
+      ld ($FF18), a
       ld a, $87
-      ld ($FF14), a
+      ld ($FF19), a
+
 
       jr -2
   )");

@@ -232,6 +232,24 @@ struct Dumper {
     add_char('\n');
   }
 
+  void dump_slicep(const char* tag, const void* blob, int byte_count) {
+    operator()(tag);
+    for (int i = byte_count; i < 8; i++) add_char(' ');
+
+    const uint8_t* d = (const uint8_t*)blob;
+    for (int i = byte_count - 1; i >= 0; i--) {
+      // high clock = green, low clock = red
+      add_char((d[i] & 0x02) ? '\002' : '\003');
+      add_char((d[i] & 0x01) ? '1' : '0');
+    }
+    add_char('\001');
+
+    uint16_t val = 0;
+    for (int i = 0; i < byte_count; i++) val |= ((d[i] & 1) << i);
+
+    operator()(" 0x%02x %d\n", val, val);
+  }
+
   void dump_slice2p(const char* tag, const void* blob, int byte_count) {
     operator()(tag);
     for (int i = byte_count; i < 8; i++) add_char(' ');

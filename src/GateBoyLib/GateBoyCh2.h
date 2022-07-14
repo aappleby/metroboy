@@ -75,11 +75,11 @@ struct SpuChannel2 {
   DFF20 HEPU_COUNT09;
   DFF20 HERO_COUNT10;
 
-  /*#p15.ELOX*/ DFF17     ELOX_TRIGp; // o40
-  /*#p15.CAZA*/ DFF17     CAZA_TRIGp;
-  /*#p15.DOPE*/ DFF17     DOPE_TRIGp;
-  /*#p15.DALA*/ NorLatch  DALA_TRIGp;
-  /*#p15.DORY*/ DFF17     DORY_TRIGp;
+  /*#p15.ELOX*/ DFF17     ELOX_TRIGp_d01; // o40
+  /*#p15.CAZA*/ DFF17     CAZA_TRIGp_d17;
+  /*#p15.DOPE*/ DFF17     DOPE_TRIGp_d00;
+  /*#p15.DALA*/ NorLatch  DALA_TRIGp_d00;
+  /*#p15.DORY*/ DFF17     DORY_TRIGp_d09;
 
   /*_p15.CYRE*/ DFF17     CYRE_LEN_DONEp;
 

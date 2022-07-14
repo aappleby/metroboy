@@ -140,9 +140,9 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
       ld a, $80
       ld ($FF16), a
-      ld a, $0F
+      ld a, $70
       ld ($FF17), a
-      ld a, $00
+      ld a, $D0
       ld ($FF18), a
       ld a, $87
       ld ($FF19), a

@@ -509,11 +509,11 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_slicep("CH2 ENV VOL  : ", &s.ch2.FENO_ENV_VOL0, 4);
   d(            "CH2 OUT      : %d\n", ch2_audio_out(s));
   d("\n");
-  d.dump_bitp("ELOX_TRIGp    : ", s.ch2.ELOX_TRIGp.state & 1);
-  d.dump_bitp("CAZA_TRIGp    : ", s.ch2.CAZA_TRIGp.state & 1);
-  d.dump_bitp("DOPE_TRIGp    : ", s.ch2.DOPE_TRIGp.state & 1);
-  d.dump_bitp("DALA_TRIGp    : ", s.ch2.DALA_TRIGp.state & 1);
-  d.dump_bitp("DORY_TRIGp    : ", s.ch2.DORY_TRIGp.state & 1);
+  d.dump_bitp("ELOX_TRIGp_d01 : ", s.ch2.ELOX_TRIGp_d01.state & 1);
+  d.dump_bitp("CAZA_TRIGp_d17 : ", s.ch2.CAZA_TRIGp_d17.state & 1);
+  d.dump_bitp("DOPE_TRIGp_d00 : ", s.ch2.DOPE_TRIGp_d00.state & 1);
+  d.dump_bitp("DALA_TRIGp_d00 : ", s.ch2.DALA_TRIGp_d00.state & 1);
+  d.dump_bitp("DORY_TRIGp_d09 : ", s.ch2.DORY_TRIGp_d09.state & 1);
 
 #endif
 }

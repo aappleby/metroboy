@@ -426,12 +426,23 @@ struct DFF17 : public BitBase {
 
 struct DFF20 : public BitBase {
 
+  void dff20_clk(wire CLKn) {
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKn << 1) & BIT_CLOCK;
+    wire newD = (clk_old & ~clk_new) ? ~state : state;
+    state = bit0(newD) | (bit0(CLKn) << 1) | BIT_NEW | BIT_DRIVEN;
+  }
+
+  void dff20_async(wire LOADp, wire Dp) {
+    if (bit0(LOADp)) {
+      state = (state & ~1) | (Dp & 1);
+    }
+  }
+
   void dff20_any(wire CLKn, wire LOADp, wire Dp) {
     wire clk_old = state & BIT_CLOCK;
     wire clk_new = (CLKn << 1) & BIT_CLOCK;
-
     wire newD = bit0(LOADp) ? Dp : (clk_old & ~clk_new) ? ~state : state;
-
     state = bit0(newD) | (bit0(CLKn) << 1) | BIT_NEW | BIT_DRIVEN;
   }
 

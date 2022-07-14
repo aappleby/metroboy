@@ -88,41 +88,28 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
   // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
 
-  /*
   gb_thread->load_program(R"(
     0150:
       ld a, $00
       ld ($FF26), a
       ld a, $80
       ld ($FF26), a
-      ld a, $F3
+      ld a, $FF
       ld ($FF25), a
-      ld a, $55
+      ld a, $77
       ld ($FF24), a
 
+      ld a, $7F
+      ld ($FF10), a
       ld a, $80
       ld ($FF11), a
-      ld a, $F3
+      ld a, $F0
       ld ($FF12), a
 
-      ld a, $c1
+      ld a, $83
       ld ($FF13), a
       ld a, $87
       ld ($FF14), a
-
-      jr -2
-  )");
-  */
-
-  gb_thread->load_program(R"(
-    0150:
-      ld a, $00
-      ld ($FF26), a
-      ld a, $80
-      ld ($FF26), a
-
-      ld a, $00
-      ld ($FF13), a
 
       jr -2
   )");

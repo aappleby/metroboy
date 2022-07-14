@@ -6,7 +6,9 @@
 
 int ch1_audio_out(const GateBoyState& reg_new) {
   /*#p13.COWE*/ wire COWE_BIT_OUTp = and2(reg_new.ch1.CYTO_CH1_ACTIVEp.state & 1, reg_new.ch1.DUWO_RAW_BIT_SYNCp.state & 1);
-  
+
+  //probe(0, "COWE", COWE_BIT_OUTp);
+
   ///*#p13.BOTO*/ wire BOTO_BIT_OUTp = or2(COWE_BIT_OUTp, reg_new.EDEK_NR52_DBG_APUp());
   wire BOTO_BIT_OUTp = COWE_BIT_OUTp;
 
@@ -273,7 +275,9 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   {
     /*#p13.ATAT*/ wire ATAT_SWEEP_TRIGn = nor2(reg_new.KEBA_APU_RSTp_new(), reg_new.ch1.BEXA_SWEEP_TRIGp.qp_new());
+    
     /*#p13.COPY*/ wire COPY_SHIFT_DONEp_old = and3(reg_old.ch1.BYRA_SHIFTCNT2.qp_old(), reg_old.ch1.CAJA_SHIFTCNT1.qp_old(), reg_old.ch1.COPA_SHIFTCNT0.qp_old());
+    
     /*#p13.BYTE*/ reg_new.ch1.BYTE_SHIFT_DONEp.dff17(reg_new.spu.AJER_AxxDExxH.qp_new(), ATAT_SWEEP_TRIGn, COPY_SHIFT_DONEp_old);
   }
 
@@ -364,6 +368,18 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p12.DYXE*/ Adder DYXE_SUM08 = add3(reg_new.ch1.DEXE_SUM_A08.qp_new(), reg_new.ch1.DEFA_SUM_B08.qp_new(), ETEK_SUM07.carry);
   /*_p12.DULE*/ Adder DULE_SUM09 = add3(reg_new.ch1.DOFY_SUM_A09.qp_new(), reg_new.ch1.ETER_SUM_B09.qp_new(), DYXE_SUM08.carry);
   /*_p12.CORU*/ Adder CORU_SUM10 = add3(reg_new.ch1.DOLY_SUM_A10.qp_new(), reg_new.ch1.DEVA_SUM_B10.qp_new(), DULE_SUM09.carry);
+
+  probe(1, "CORU_SUM",   CORU_SUM10.sum);
+  probe(2, "CORU_CARRY", CORU_SUM10.carry);
+
+#if 0
+  if (ARYL_NR10_SWEEP_DIRn_new) {
+    /*#p12.ATYS*/ wire ATYS_FREQ_OVERFLOWn_new = 1;
+  }
+  else {
+    /*#p12.ATYS*/ wire ATYS_FREQ_OVERFLOWn_new = !CORU_SUM10.carry;
+  }
+#endif
 
   /*#p12.BYLE*/ wire BYLE_FREQ_OVERFLOWn_new = nor2(ARYL_NR10_SWEEP_DIRn_new, CORU_SUM10.carry);
   /*#p12.ATYS*/ wire ATYS_FREQ_OVERFLOWn_new = or2(BYLE_FREQ_OVERFLOWn_new, ARYL_NR10_SWEEP_DIRn_new);
@@ -505,7 +521,9 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p13.BUGE*/ wire BUGE_SWEEP_ENp_new = nand3(reg_new.ch1.ANAZ_NR10_SWEEP_SHIFT2p.qn_newB(),
                                                   reg_new.ch1.ARAX_NR10_SWEEP_SHIFT1p.qn_newB(),
                                                   reg_new.ch1.BANY_NR10_SWEEP_SHIFT0p.qn_newB());
-    /*#p13.EGYP*/ wire EGYP_SHIFT_CLK_new = nor2(reg_new.ch1.FEMU_SHIFTINGn.qn_new(), DYFA_xBCDExxx_new);
+    
+    /*#p13.EGYP*/ wire EGYP_SHIFT_CLK_new = nor2(reg_new.ch1.FEMU_SHIFTINGn.qp_new(), DYFA_xBCDExxx_new);
+
     /*#p13.CELE*/   wire CELE_SWEEP_ENn_new = not1(BUGE_SWEEP_ENp_new);
     /*#p13.DODY*/ wire DODY_SHIFT_CLK_new = nor2(EGYP_SHIFT_CLK_new, CELE_SWEEP_ENn_new); // border color wrong on die
     /*?p13.EGOR*/ wire EGOR_SHIFT_CLK_new = not1(DODY_SHIFT_CLK_new); // This looks like a nor3, but it almost definiteily is a not1.
@@ -677,6 +695,9 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p13.BONE*/ wire BONE_FREQ_OVERFLOWp_new = not1(ATYS_FREQ_OVERFLOWn_new); 
     /*#p13.CYFA*/ wire CYFA_LEN_DONEp_new = and2(reg_new.ch1.CERO_CH1_LEN_DONE.qp_new(), reg_new.ch1.BOKO_NR14_LENENp.qp_newB());
     /*#p13.BERY*/ wire BERY_CH1_STOPp_new = or4(BONE_FREQ_OVERFLOWp_new, reg_new.KEBA_APU_RSTp_new(), CYFA_LEN_DONEp_new, reg_new.ch1.HOCA_CH1_AMP_ENn_new());
+
+    probe(0, "asdf", BONE_FREQ_OVERFLOWp_new);
+
     /*#p13.CYTO*/ reg_new.ch1.CYTO_CH1_ACTIVEp.nor_latch(reg_new.ch1.FEKU_CH1_TRIGp.qp_new(), BERY_CH1_STOPp_new);
   }
 
@@ -964,6 +985,7 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(BYTU);
   }
 
+  /*#p13.COWE*/ wire COWE_BIT_OUTp = and2(reg_new.ch1.CYTO_CH1_ACTIVEp.state & 1, reg_new.ch1.DUWO_RAW_BIT_SYNCp.state & 1);
 }
 
 #endif

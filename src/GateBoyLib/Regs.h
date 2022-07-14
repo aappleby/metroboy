@@ -8,6 +8,27 @@ struct Adder {
   wire carry;
 };
 
+// ADD01
+// ADD02
+// ADD03 << CARRY
+// ADD04
+// ADD05
+// ADD06 >> SUM
+// ADD07
+// ADD08
+// ADD09
+// ADD10 >> CARRY
+// ADD11
+// ADD12
+// ADD13
+// ADD14
+// ADD15
+// ADD16 << A
+// ADD17 << B
+// ADD18
+// ADD19
+// ADD20
+
 inline Adder add3(wire a, wire b, wire c) {
   uint8_t s = bit0(a) + bit0(b) + bit0(c);
   return { bit(s, 0), bit(s, 1) };

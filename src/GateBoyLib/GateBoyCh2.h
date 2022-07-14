@@ -75,7 +75,7 @@ struct SpuChannel2 {
   DFF20 HEPU_COUNT09;
   DFF20 HERO_COUNT10;
 
-  /*#p15.ELOX*/ DFF17     ELOX_TRIGp;
+  /*#p15.ELOX*/ DFF17     ELOX_TRIGp; // o40
   /*#p15.CAZA*/ DFF17     CAZA_TRIGp;
   /*#p15.DOPE*/ DFF17     DOPE_TRIGp;
   /*#p15.DALA*/ NorLatch  DALA_TRIGp;
@@ -88,7 +88,7 @@ struct SpuChannel2 {
   /*#p15.HEPO*/ DFF17     HEPO_ENV_MAXp;
   /*#p15.JEME*/ NorLatch  JEME_ENV_DONEp;
 
-  DFF20 JORE_ENV_DELAY0p;
+  DFF20 JORE_ENV_DELAY0p; // o50
   DFF20 JONA_ENV_DELAY1p;
   DFF20 JEVY_ENV_DELAY2p;
 

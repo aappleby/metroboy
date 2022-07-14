@@ -181,17 +181,17 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   //----------------------------------------
   // Freq counter
 
+  /*#p15.ARES*/ wire ARES = nor2(reg_new.ch2.FUTE_CH2_AMP_ENn_new(), reg_new.KEBA_APU_RSTp_new()); // looks like nor on the die?
+  /*#p15.BODO*/ wire BODO = not1(reg_new.ch2.CAZA_TRIGp.qp_new());
+  /*_p15.BUTA*/ reg_new.ch2.BUTA_FREQ_GATEp.nand_latch(ARES, BODO);
+  /*#p15.CAMA*/ wire CAMA_FREQ_TICKp = nor2(reg_new.spu.CEMO_xBCDExxx.qp_new(), reg_new.ch2.BUTA_FREQ_GATEp.qp_new());
+  /*_p15.DOCA*/ wire DOCA_FREQ_TICKn = not1(CAMA_FREQ_TICKp);
+
+  //----------
+
   {
-    /*#p15.ARES*/ wire ARES = nor2(reg_new.ch2.FUTE_CH2_AMP_ENn_new(), reg_new.KEBA_APU_RSTp_new()); // looks like nor on the die?
-    /*#p15.BODO*/ wire BODO = not1(reg_new.ch2.CAZA_TRIGp.qp_new());
-    /*_p15.BUTA*/ reg_new.ch2.BUTA_FREQ_GATEp.nand_latch(ARES, BODO);
-
-    /*#p15.CAMA*/ wire CAMA_FREQ_TICKp = nor2(reg_new.spu.CEMO_xBCDExxx.qp_new(), reg_new.ch2.BUTA_FREQ_GATEp.qp_new());
-    /*_p15.DOCA*/ wire DOCA_FREQ_TICKn = not1(CAMA_FREQ_TICKp);
-
-    /*#p15.ETUK*/ wire ETUK_SAMPLE_CLKn_old = not1(reg_new.ch2.GYKO_SAMPLE_CLKp.qp_old());
+    /*#p15.ETUK*/ wire ETUK_SAMPLE_CLKn_old = not1(reg_old.ch2.GYKO_SAMPLE_CLKp.qp_old());
     /*#p15.DAVU*/ wire DAVU_SAMPLE_CLKp_old = not1(ETUK_SAMPLE_CLKn_old);
-
     /*#p15.DUJU*/ wire DUJU_LOADn_old = nor2(DAVU_SAMPLE_CLKp_old, reg_old.ch2.ELOX_TRIGp.qp_old());
     /*#p15.COGU*/ wire COGU_LOADp_old = not1(DUJU_LOADn_old);
     /*#p15.EROG*/ wire EROG_LOADp_old = not1(DUJU_LOADn_old);
@@ -215,23 +215,20 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
   {
-    /*#p15.GALU*/ wire GALU_CH2_FREQ_OVERFLOWp = not1(reg_new.ch2.HERO_COUNT10.qp_new());
+    /*#p15.GALU*/ wire GALU_CH2_FREQ_OVERFLOWp_new = not1(reg_new.ch2.HERO_COUNT10.qp_new());
     /*#p15.FUJY*/ wire FUJY_old = and2(reg_old.ch2.GYKO_SAMPLE_CLKp.qp_old(), reg_old.spu.CEMO_xBCDExxx.qp_old());
     /*#p15.GYRE*/ wire GYRE_RSTn_old = nor3(reg_new.KEBA_APU_RSTp_new(), reg_new.ch2.ELOX_TRIGp.qp_new(), FUJY_old);
-    /*#p15.GYKO*/ reg_new.ch2.GYKO_SAMPLE_CLKp.dff17(GALU_CH2_FREQ_OVERFLOWp, GYRE_RSTn_old, reg_old.ch2.GYKO_SAMPLE_CLKp.qn_old());
+    /*#p15.GYKO*/ reg_new.ch2.GYKO_SAMPLE_CLKp.dff17(GALU_CH2_FREQ_OVERFLOWp_new, GYRE_RSTn_old, reg_old.ch2.GYKO_SAMPLE_CLKp.qn_old());
   }
 
   {
-    /*#p15.GALU*/ wire GALU_CH2_FREQ_OVERFLOWp = not1(reg_new.ch2.HERO_COUNT10.qp_new());
+    /*#p15.GALU*/ wire GALU_CH2_FREQ_OVERFLOWp_new = not1(reg_new.ch2.HERO_COUNT10.qp_new());
     /*#p15.FUJY*/ wire FUJY_new = and2(reg_new.ch2.GYKO_SAMPLE_CLKp.qp_new(), reg_new.spu.CEMO_xBCDExxx.qp_new());
     /*#p15.GYRE*/ wire GYRE_RSTn_new = nor3(reg_new.KEBA_APU_RSTp_new(), reg_new.ch2.ELOX_TRIGp.qp_new(), FUJY_new);
-    /*#p15.GYKO*/ reg_new.ch2.GYKO_SAMPLE_CLKp.dff17_any(GALU_CH2_FREQ_OVERFLOWp, GYRE_RSTn_new, reg_old.ch2.GYKO_SAMPLE_CLKp.qn_old());
+    /*#p15.GYKO*/ reg_new.ch2.GYKO_SAMPLE_CLKp.dff17_any(GALU_CH2_FREQ_OVERFLOWp_new, GYRE_RSTn_new, reg_old.ch2.GYKO_SAMPLE_CLKp.qn_old());
   }
 
   {
-    /*#p15.CAMA*/ wire CAMA_FREQ_TICKp = nor2(reg_new.spu.CEMO_xBCDExxx.qp_new(), reg_new.ch2.BUTA_FREQ_GATEp.qp_new());
-    /*_p15.DOCA*/ wire DOCA_FREQ_TICKn = not1(CAMA_FREQ_TICKp);
-
     /*#p15.ETUK*/ wire ETUK_SAMPLE_CLKn_new = not1(reg_new.ch2.GYKO_SAMPLE_CLKp.qp_new());
     /*#p15.DAVU*/ wire DAVU_SAMPLE_CLKp_new = not1(ETUK_SAMPLE_CLKn_new);
     /*#p15.CULE*/ wire CULE_SAMPLE_CLKn_new = not1(DAVU_SAMPLE_CLKp_new);
@@ -256,6 +253,17 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p14.HEPU*/ reg_new.ch2.HEPU_COUNT09.dff20_any(reg_new.ch2.HEVY_COUNT08.qp_new(),  GYPA_LOADp_new, reg_new.ch2.JANY_NR24_FREQ09p.qn_newB());
     /*_p14.HERO*/ reg_new.ch2.HERO_COUNT10.dff20_any(reg_new.ch2.HEPU_COUNT09.qp_new(),  GYPA_LOADp_new, reg_new.ch2.JUPY_NR24_FREQ10p.qn_newB());
   }
+
+  {
+    /*#p15.GALU*/ wire GALU_CH2_FREQ_OVERFLOWp_new = not1(reg_new.ch2.HERO_COUNT10.qp_new());
+    /*#p15.FUJY*/ wire FUJY_new = and2(reg_new.ch2.GYKO_SAMPLE_CLKp.qp_new(), reg_new.spu.CEMO_xBCDExxx.qp_new());
+    /*#p15.GYRE*/ wire GYRE_RSTn_new = nor3(reg_new.KEBA_APU_RSTp_new(), reg_new.ch2.ELOX_TRIGp.qp_new(), FUJY_new);
+    /*#p15.GYKO*/ reg_new.ch2.GYKO_SAMPLE_CLKp.dff17_any(GALU_CH2_FREQ_OVERFLOWp_new, GYRE_RSTn_new, reg_new.ch2.GYKO_SAMPLE_CLKp.qn_new());
+  }
+
+
+
+
 
   //----------------------------------------
   // Env tick

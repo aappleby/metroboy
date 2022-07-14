@@ -398,7 +398,28 @@ struct DFF17 : public BitBase {
 
     state = bit0(d1 & RSTn) | clk_new | BIT_NEW | BIT_DRIVEN;
   }
+
+
+  void dff17_clk(wire CLKp, wire Dp) {
+    wire clk_old = state & BIT_CLOCK;
+    wire clk_new = (CLKp << 1) & BIT_CLOCK;
+
+    wire d1 = (~clk_old & clk_new) ? Dp : state;
+
+    state = bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN;
+  }
+
+  void dff17_async(wire RSTn) {
+    if (!bit0(RSTn)) {
+      state &= ~1;
+    }
+  }
+
+
+
 };
+
+
 
 //-----------------------------------------------------------------------------
 // 20-rung counter ff with async load. Only used by TIMA and a few audio regs.

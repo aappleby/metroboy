@@ -7,8 +7,6 @@
 int ch1_audio_out(const GateBoyState& reg_new) {
   /*#p13.COWE*/ wire COWE_BIT_OUTp = and2(reg_new.ch1.CYTO_CH1_ACTIVEp.state & 1, reg_new.ch1.DUWO_RAW_BIT_SYNCp.state & 1);
 
-  //probe(0, "COWE", COWE_BIT_OUTp);
-
   ///*#p13.BOTO*/ wire BOTO_BIT_OUTp = or2(COWE_BIT_OUTp, reg_new.EDEK_NR52_DBG_APUp());
   wire BOTO_BIT_OUTp = COWE_BIT_OUTp;
 
@@ -369,9 +367,6 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p12.DULE*/ Adder DULE_SUM09 = add3(reg_new.ch1.DOFY_SUM_A09.qp_new(), reg_new.ch1.ETER_SUM_B09.qp_new(), DYXE_SUM08.carry);
   /*_p12.CORU*/ Adder CORU_SUM10 = add3(reg_new.ch1.DOLY_SUM_A10.qp_new(), reg_new.ch1.DEVA_SUM_B10.qp_new(), DULE_SUM09.carry);
 
-  probe(1, "CORU_SUM",   CORU_SUM10.sum);
-  probe(2, "CORU_CARRY", CORU_SUM10.carry);
-
 #if 0
   if (ARYL_NR10_SWEEP_DIRn_new) {
     /*#p12.ATYS*/ wire ATYS_FREQ_OVERFLOWn_new = 1;
@@ -695,8 +690,6 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p13.BONE*/ wire BONE_FREQ_OVERFLOWp_new = not1(ATYS_FREQ_OVERFLOWn_new); 
     /*#p13.CYFA*/ wire CYFA_LEN_DONEp_new = and2(reg_new.ch1.CERO_CH1_LEN_DONE.qp_new(), reg_new.ch1.BOKO_NR14_LENENp.qp_newB());
     /*#p13.BERY*/ wire BERY_CH1_STOPp_new = or4(BONE_FREQ_OVERFLOWp_new, reg_new.KEBA_APU_RSTp_new(), CYFA_LEN_DONEp_new, reg_new.ch1.HOCA_CH1_AMP_ENn_new());
-
-    probe(0, "asdf", BONE_FREQ_OVERFLOWp_new);
 
     /*#p13.CYTO*/ reg_new.ch1.CYTO_CH1_ACTIVEp.nor_latch(reg_new.ch1.FEKU_CH1_TRIGp.qp_new(), BERY_CH1_STOPp_new);
   }

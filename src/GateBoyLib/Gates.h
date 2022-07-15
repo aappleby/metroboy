@@ -24,6 +24,12 @@ inline wire or6(wire a, wire b, wire c, wire d, wire e, wire f) { return a | b |
 
 inline wire xor2(wire a, wire b) { return a ^ b; }
 
+// XNOR01 >> D
+// XNOR02 << A
+// XNOR03 << B
+// XNOR04
+// XNOR05
+// XNOR06
 inline wire xnor2(wire a, wire b) { return ~(a ^ b); }
 
 inline wire nor2(wire a, wire b) { return ~(a | b); }

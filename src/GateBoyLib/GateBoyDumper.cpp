@@ -449,6 +449,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_slicep("NR52 ", &s.spu.FERO_NR52_DBG_APUp, 3);
   d("\n");
 
+#if 0
   d("===== CH1 =====\n");
   d.dump_slicep("NR10 ", &s.ch1.BANY_NR10_SWEEP_SHIFT0p, 8);
   d.dump_slicep("NR11 ", &s.ch1.BACY_NR11_LEN0, 8);
@@ -457,7 +458,6 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_slicep("NR14 ", &s.ch1.DYGY_NR14_FREQ08, 5);
   d("\n");
 
-#if 0
   d.dump_slicep("CH1 FREQ     : ", &s.ch1.HYKA_NR13_FREQ00, 11);
   d.dump_slicep("CH1 FREQ CNT : ", &s.ch1.GAXE_CH1_FREQ_CNT_00, 11);
   d.dump_slicep("CH1 SHIFT    : ", &s.ch1.FABU_CH1_SHIFT00, 11);
@@ -480,19 +480,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d("\n");
 #endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+#if 0
   d("===== CH2 =====\n");
   d.dump_slicep("NR21 ", &s.ch2.ERYC_NR21_LEN0, 8);
   d.dump_slicep("NR22 ", &s.ch2.HYFU_NR22_P0p, 8);
@@ -514,6 +502,52 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("DOPE_TRIGp_d00 : ", s.ch2.DOPE_TRIGp_d00.state & 1);
   d.dump_bitp("DALA_TRIGp_d00 : ", s.ch2.DALA_TRIGp_d00.state & 1);
   d.dump_bitp("DORY_TRIGp_d09 : ", s.ch2.DORY_TRIGp_d09.state & 1);
+#endif
+
+  d("===== CH3 =====\n");
+  d.dump_slicep("NR30 ", &s.ch3.GUXE_NR30_AMP_ENp, 1);
+  d.dump_slicep("NR31 ", &s.ch3.GEVO_NR31_LEN0p,   8);
+  d.dump_slicep("NR32 ", &s.ch3.HUKY_NR32_VOL0p,   2);
+  d.dump_slicep("NR33 ", &s.ch3.KOGA_NR33_FREQ00p, 8);
+  d.dump_slicep("NR34 ", &s.ch3.JEMO_NR34_FREQ08p, 5);
+  d("\n");
+
+#if 0
+  d.dump_slicep("CH3 FREQ     : ", &s.ch3.KOGA_NR33_FREQ00p, 11);
+  d.dump_slicep("CH3 FREQ CNT : ", &s.ch3.KUTU_COUNT00, 11);
+  d.dump_slicep("CH3 WAVE IDX : ", &s.ch3.EFAR_WAVE_IDX0, 5);
+  d.dump_slicep("CH3 WAVE CLK : ", &s.ch3.BUSA_WAVE_CLK_D1, 4);
+  d.dump_slicep("CH3 SAMPLE   : ", &s.ch3.CYFO_SAMPLE0p, 8);
+  d.dump_slicep("CH3 LEN      : ", &s.ch3.GEVO_NR31_LEN0p, 8);
+  d("\n");
+  d.dump_bitp  ("FEXU_LEN_DONEp   : ", s.ch3.FEXU_LEN_DONEp.state & 1);
+  d.dump_bitp  ("GUGU_FREQ_GATE   : ", s.ch3.GUGU_FREQ_GATE.state & 1);
+  d.dump_bitp  ("HUNO_SAMPLE_CLKp : ", s.ch3.HUNO_SAMPLE_CLKp.state & 1);
+  d.dump_bitp  ("FETY_WAVE_LOOP   : ", s.ch3.FETY_WAVE_LOOP.state & 1);
+  d.dump_bitp  ("GARA_TRIG_D1     : ", s.ch3.GARA_TRIG_D1.state & 1);
+  d.dump_bitp  ("GYTA_TRIG_D2     : ", s.ch3.GYTA_TRIG_D2.state & 1);
+  d.dump_bitp  ("GYRA_TRIG_D3     : ", s.ch3.GYRA_TRIG_D3.state & 1);
+  d.dump_bitp  ("GOFY_CH3_TRIGn   : ", s.ch3.GOFY_CH3_TRIGn.state & 1);
+  d.dump_bitp  ("FOBA_CH3_TRIGp   : ", s.ch3.FOBA_CH3_TRIGp.state & 1);
+  d.dump_bitp  ("DAVO_CH3_ACTIVEp : ", s.ch3.DAVO_CH3_ACTIVEp.state & 1);
+  d.dump_bitp  ("FOZU_CH3_ACTIVEp : ", s.ch3.FOZU_CH3_ACTIVEp.state & 1);
+#endif
+
+
+  d("===== CH3 =====\n");
+  d.dump_slicep("NR41 ", &s.ch4.DANO_NR41_LEN0p, 6);
+  d.dump_slicep("NR42 ", &s.ch4.EMOK_NR42_ENV_TIMER0p, 8);
+  d.dump_slicep("NR43 ", &s.ch4.JARE_NR43_DIV0p, 8);
+  d.dump_slicep("NR44 ", &s.ch4.CUNY_NR44_LEN_ENp, 2);
+  d("\n");
+  d.dump_slicep("CH4 FREQ     : ", &s.ch4.CEXO_FREQ_00, 14);
+  d.dump_slicep("CH4 LFSR     : ", &s.ch4.JOTO_LFSR_00, 16);
+  d.dump_slicep("CH4 DIV      : ", &s.ch4.JYCO_DIV0, 3);
+  d.dump_slicep("CH4 VOL      : ", &s.ch4.FEKO_CH4_VOL0, 4);
+  d(            "CH4 OUT      : %d\n", ch4_audio_out(s));
+
+  d("\n");
+
 
 #endif
 }

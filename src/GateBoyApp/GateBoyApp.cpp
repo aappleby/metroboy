@@ -66,6 +66,45 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread = new GateBoyThread(new GateBoy());
   gb_thread->start();
 
+  // baBING
+  // 0x000700c0 0xff26 0x80 // apu on
+  // 0x00070108 0xff25 0xf3 // left en 0b1111 right en 0b0011
+  // 0x00070128 0xff24 0x77 // l vol 7 r vol 7
+
+  // 0x000700d0 0xff11 0x80 // ch1 duty 0b10
+  // 0x000700f8 0xff12 0xf3 // ch1 vol 15 env- period 3
+
+  // 0x02150f98 0xff13 0x83 // ch1      freq lo 0b10000011
+  // 0x02150fc0 0xff14 0x87 // ch1 trig freq hi 0b0000011110000011
+
+  // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
+  // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
+
+  for (int i = 0; i < 16; i++) printf("0x%02x,\n", rand() % 256);
+
+  gb_thread->load_program(R"(
+    0150:
+      ld a, $00
+      ld ($FF26), a
+      ld a, $80
+      ld ($FF26), a
+      ld a, $FF
+      ld ($FF25), a
+      ld a, $77
+      ld ($FF24), a
+
+      ld a, $30
+      ld ($FF20), a
+      ld a, $F0
+      ld ($FF21), a
+      ld a, $20
+      ld ($FF22), a
+      ld a, $C0
+      ld ($FF23), a
+
+      jr -2
+  )");
+
   /*
   Name Addr 7654 3210 Function
   -----------------------------------------------------------------
@@ -112,43 +151,6 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
       ....
       FF3F 0000 1111 Samples 30 and 31
   */
-
-  // baBING
-  // 0x000700c0 0xff26 0x80 // apu on
-  // 0x00070108 0xff25 0xf3 // left en 0b1111 right en 0b0011
-  // 0x00070128 0xff24 0x77 // l vol 7 r vol 7
-
-  // 0x000700d0 0xff11 0x80 // ch1 duty 0b10
-  // 0x000700f8 0xff12 0xf3 // ch1 vol 15 env- period 3
-
-  // 0x02150f98 0xff13 0x83 // ch1      freq lo 0b10000011
-  // 0x02150fc0 0xff14 0x87 // ch1 trig freq hi 0b0000011110000011
-
-  // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
-  // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
-
-  gb_thread->load_program(R"(
-    0150:
-      ld a, $00
-      ld ($FF26), a
-      ld a, $80
-      ld ($FF26), a
-      ld a, $FF
-      ld ($FF25), a
-      ld a, $77
-      ld ($FF24), a
-
-      ld a, $80
-      ld ($FF16), a
-      ld a, $70
-      ld ($FF17), a
-      ld a, $D0
-      ld ($FF18), a
-      ld a, $87
-      ld ($FF19), a
-
-      jr -2
-  )");
 
 
 
@@ -831,8 +833,8 @@ Step controls:
       for (int i = 0; i < 255; i++) {
         int x = i;
      
-        int y1 = (spu_buffer[(2 * i + 0 + spu_write_cursor) & 0x1FF]);
-        int y2 = (spu_buffer[(2 * i + 2 + spu_write_cursor) & 0x1FF]);
+        int y1 = -(spu_buffer[(2 * i + 0 + spu_write_cursor) & 0x1FF]);
+        int y2 = -(spu_buffer[(2 * i + 2 + spu_write_cursor) & 0x1FF]);
 
         y1 += 64;
         y2 += 64;
@@ -855,8 +857,8 @@ Step controls:
 
       for (int i = 0; i < 255; i++) {
         int x = i;
-        int y1 = (spu_buffer[(2 * i + 1 + spu_write_cursor) & 0x1FF]);
-        int y2 = (spu_buffer[(2 * i + 3 + spu_write_cursor) & 0x1FF]);
+        int y1 = -(spu_buffer[(2 * i + 1 + spu_write_cursor) & 0x1FF]);
+        int y2 = -(spu_buffer[(2 * i + 3 + spu_write_cursor) & 0x1FF]);
 
         y1 += 64;
         y2 += 64;

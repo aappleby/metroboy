@@ -113,8 +113,6 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
     /*#p09.FERO*/ reg_new.spu.FERO_NR52_DBG_APUp.dff9b(FOKU_NR52_WRn, reg_new.KEPY_APU_RSTn_new(), EFOP_NR52_DBG_APUp_old);
   }
 
-  probe(0, "KEPY_APU_RSTn", reg_new.KEPY_APU_RSTn_new());
-
   //----------
   // SPU clock dividers
 

@@ -176,11 +176,6 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   
   /*#p20.GARY*/ reg_new.ch4.GARY_FREQ_GATEp.dff17(reg_new.spu.GYBA_CLK_1M(), GUNY_FREQ_GATE_RSTn_new, HYNO_DIV_MAX_old);
 
-  probe(10, "GYBA_CLK_1M",         reg_new.spu.GYBA_CLK_1M());
-  probe(11, "GUNY_FREQ_GATE_RSTn", GUNY_FREQ_GATE_RSTn_new);
-  probe(12, "HYNO_DIV_MAX_old",    HYNO_DIV_MAX_old);
-
-
 
 
 
@@ -284,9 +279,6 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p20.GENA*/ reg_new.ch4.GENA_CH4_ACTIVEp.nor_latch(reg_new.ch4.GONE_CH4_TRIGp.qp_new(), FEGY_CH4_STOPp);
   }
 
-  probe(15, "GENA_CH4_ACTIVEp", reg_new.ch4.GENA_CH4_ACTIVEp.qp_any());
-
-
   {
     /*#p20.HERY*/ wire HERY_DIV_GATE1n = nor2(reg_new.ch4.GEVY_CH4_AMP_ENn(), reg_new.KEBA_APU_RSTp_new());
     /*#p20.HAPU*/ wire HAPU_CH4_TRIGn = not1(reg_new.ch4.GATY_CH4_TRIGp.qp_new());
@@ -300,11 +292,6 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
     /*#p20.GOFU*/ wire GOFU_DIV_LOADn = nor2(reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GARY_FREQ_GATEp.qp_new());
     /*#p20.HUCE*/ wire HUCE_DIV_LOADp  = not1(GOFU_DIV_LOADn);
-
-    probe(5, "KANU_DIV_CLKa", KANU_DIV_CLKa);
-    probe(6, "GONE_CH4_TRIGp", reg_new.ch4.GONE_CH4_TRIGp.state);
-    probe(7, "GARY_FREQ_GATEp", reg_new.ch4.GARY_FREQ_GATEp.state);
-    probe(8, "HUCE_DIV_LOADp", HUCE_DIV_LOADp);
 
     /*#p20.JYCO*/ reg_new.ch4.JYCO_DIV0.dff20(KANU_DIV_CLKa,                  HUCE_DIV_LOADp, reg_new.ch4.JARE_NR43_DIV0p.qn_newB());
     /*#p20.JYRE*/ reg_new.ch4.JYRE_DIV1.dff20(reg_new.ch4.JYCO_DIV0.qp_new(), HUCE_DIV_LOADp, reg_new.ch4.JERO_NR43_DIV1p.qn_newB());
@@ -349,8 +336,6 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p20.HYRO*/ reg_new.ch4.HYRO_LFSR_14.dff17(FEME_LFSR_CLKp_new, GOGE_LFSR_RSTn, reg_old.ch4.HENO_LFSR_13.qp_old());
     /*#p20.HEZU*/ reg_new.ch4.HEZU_LFSR_15.dff17(FEME_LFSR_CLKp_new, GOGE_LFSR_RSTn, reg_old.ch4.HYRO_LFSR_14.qp_old());
   }
-
-  probe(16, "HEZU_LFSR_15", reg_new.ch4.HEZU_LFSR_15.qp_any());
 
   //----------
   // Env

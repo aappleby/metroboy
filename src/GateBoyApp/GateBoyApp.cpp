@@ -93,13 +93,13 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
       ld a, $77
       ld ($FF24), a
 
-      ld a, $30
+      ld a, $00
       ld ($FF20), a
       ld a, $F0
       ld ($FF21), a
       ld a, $20
       ld ($FF22), a
-      ld a, $C0
+      ld a, $80
       ld ($FF23), a
 
       jr -2
@@ -828,13 +828,14 @@ Step controls:
 
     if (spu_buffer && !app_paused) {
       for (int i = 0; i < 65536; i++) {
-        buf[i] = buf[i] >> 1;
+        buf[i] -= buf[i] >> 5;
+        if (buf[i]) buf[i]--;
       }
       for (int i = 0; i < 255; i++) {
         int x = i;
      
-        int y1 = -(spu_buffer[(2 * i + 0 + spu_write_cursor) & 0x1FF]);
-        int y2 = -(spu_buffer[(2 * i + 2 + spu_write_cursor) & 0x1FF]);
+        int y1 = -(spu_buffer[(2 * i + 0 /*+ spu_write_cursor*/) & 0x1FF]);
+        int y2 = -(spu_buffer[(2 * i + 2 /*+ spu_write_cursor*/) & 0x1FF]);
 
         y1 += 64;
         y2 += 64;
@@ -857,8 +858,8 @@ Step controls:
 
       for (int i = 0; i < 255; i++) {
         int x = i;
-        int y1 = -(spu_buffer[(2 * i + 1 + spu_write_cursor) & 0x1FF]);
-        int y2 = -(spu_buffer[(2 * i + 3 + spu_write_cursor) & 0x1FF]);
+        int y1 = -(spu_buffer[(2 * i + 1 /*+ spu_write_cursor*/) & 0x1FF]);
+        int y2 = -(spu_buffer[(2 * i + 3 /*+ spu_write_cursor*/) & 0x1FF]);
 
         y1 += 64;
         y2 += 64;

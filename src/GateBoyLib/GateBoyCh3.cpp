@@ -477,8 +477,6 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
     /*#p18.GEPY*/ wire GEPY_LEN_CLKp_new = nor3(reg_old.ch3.FEXU_LEN_DONEp.qp_old(), reg_new.spu.BUFY_CLK_256n(), reg_new.ch3.HOTO_NR34_LENENp.qn_newB()); // fexu/hoto polarity seems wrong
     /*#p18.GENU*/ wire GENU_LEN_CLKn_new = not1(GEPY_LEN_CLKp_new);
 
-    probe(3, "GAJY_FF1B_WRp_new", GAJY_FF1B_WRp_new);
-
     /*#p18.GEVO*/ reg_new.ch3.GEVO_NR31_LEN0p.dff20(GENU_LEN_CLKn_new,                    GAJY_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D00p.out_new());
     /*_p18.FORY*/ reg_new.ch3.FORY_NR31_LEN1p.dff20(reg_new.ch3.GEVO_NR31_LEN0p.qp_new(), GAJY_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D01p.out_new());
     /*_p18.GATU*/ reg_new.ch3.GATU_NR31_LEN2p.dff20(reg_new.ch3.FORY_NR31_LEN1p.qp_new(), GAJY_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D02p.out_new());

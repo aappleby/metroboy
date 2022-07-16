@@ -5,18 +5,9 @@
 //==============================================================================
 
 struct GateBoyState;
-int ch1_audio_out(const GateBoyState& reg_new);
 
 struct SpuChannel1 {
   void reset_to_cart();
-
-  /*#p13.HOCA*/ wire HOCA_CH1_AMP_ENn_new() const {
-    return nor5(JAFY_NR12_ENV_DIRp.qp_newB(),
-                JATY_NR12_VOL0p   .qp_newB(),
-                JAXO_NR12_VOL1p   .qp_newB(),
-                JENA_NR12_VOL2p   .qp_newB(),
-                JOPU_NR12_VOL3p   .qp_newB());
-  }
 
   /*#p11.BANY*/ DFF9B BANY_NR10_SWEEP_SHIFT0p;
   /*#p11.ARAX*/ DFF9B ARAX_NR10_SWEEP_SHIFT1p;
@@ -171,3 +162,5 @@ struct SpuChannel1 {
   /*_p13.DUWO*/ DFF17 DUWO_RAW_BIT_SYNCp;
   /*#p13.KEZU*/ NorLatch KEZU_ENV_ACTIVEn;
 };
+
+int ch1_audio_out(const SpuChannel1& reg_new);

@@ -3,18 +3,9 @@
 //==============================================================================
 
 struct GateBoyState;
-int ch2_audio_out(const GateBoyState& reg_new);
 
 struct SpuChannel2 {
   void reset_to_cart();
-
-  /*#p15.FUTE*/ wire FUTE_CH2_AMP_ENn_new() const {
-    return nor5(FORE_NR22_ADDp.qp_newB(),
-                GATA_NR22_V0p.qp_newB(),
-                GUFE_NR22_V1p.qp_newB(),
-                GURA_NR22_V2p.qp_newB(),
-                GAGE_NR22_V3p.qp_newB());
-  }
 
   //----------
   // FF16
@@ -107,14 +98,4 @@ struct SpuChannel2 {
   /*#p15.GYKO*/ DFF17     GYKO_SAMPLE_CLKp;
 };
 
-
-
-
-
-
-
-
-
-
-
-
+int ch2_audio_out(const SpuChannel2& ch2);

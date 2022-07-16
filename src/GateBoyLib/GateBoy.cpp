@@ -280,18 +280,17 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   update_framebuffer();
 
   if ((sys.gb_phase_total & 7) == 0) {
-    //audio_post(rand() & 0x7F, rand() & 0x7F);
-    int l = 0;
-    int r = 0;
+#if 0
+    /*_p10.TACE*/ wire TACE_AMP_ENn =  and4(gb_state.ch1.HOCA_CH1_AMP_ENn_new(),
+                                            gb_state.ch2.FUTE_CH2_AMP_ENn_new(),
+                                            gb_state.ch3.GUXE_NR30_AMP_ENp.qn_newB(),
+                                            gb_state.ch4.GEVY_CH4_AMP_ENn());
+#endif
 
-    //l = (((gb_state.reg_div.TOFE_DIV09p.state & 1) * 2 - 1) * 239) + 240;
-    //r = (((gb_state.reg_div.TUGO_DIV08p.state & 1) * 2 - 1) * 239) + 240;
-
-    //l = (gb_state.reg_div.TOFE_DIV09p.state & 1) * 100;
-    //r = (gb_state.reg_div.TERU_DIV10p.state & 1) * 100;
-
-    l = (spu_audio_out_l(gb_state));
-    r = (spu_audio_out_r(gb_state));
+    int l = spu_audio_out_l(gb_state);
+    int r = spu_audio_out_r(gb_state);
+    mem.audio_l[(sys.gb_phase_total >> 7) & 0xFF] = l;
+    mem.audio_r[(sys.gb_phase_total >> 7) & 0xFF] = r;
 
     audio_post(l, r);
   }

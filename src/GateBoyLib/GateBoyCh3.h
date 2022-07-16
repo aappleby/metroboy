@@ -6,14 +6,9 @@ struct GateBoyState;
 //==============================================================================
 
 struct GateBoyState;
-int ch3_audio_out(const GateBoyState& reg_new);
 
 struct SpuChannel3 {
   void reset_to_cart();
-
-  uint32_t tick_out(const GateBoyState& reg_old, GateBoyState& reg_new);
-
-  /*#p18.COKA*/ wire COKA_CH3_ACTIVEp() const { return not1(DAVO_CH3_ACTIVEp.qn_new()); }
 
   //----------
 
@@ -94,3 +89,5 @@ struct SpuChannel3 {
   /*_p17.BORA*/ DFF9B BORA_SAMPLE6p;
   /*_p17.BEPA*/ DFF9B BEPA_SAMPLE7p;
 };
+
+int ch3_audio_out(const SpuChannel3& ch3);

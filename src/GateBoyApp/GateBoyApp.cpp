@@ -82,6 +82,12 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   for (int i = 0; i < 16; i++) printf("0x%02x,\n", rand() % 256);
 
+/*
+
+
+
+*/
+
   gb_thread->load_program(R"(
     0150:
       ld a, $00
@@ -94,8 +100,57 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
       ld ($FF24), a
 
       ld a, $00
-      ld ($FF20), a
+      ld ($FF10), a
+      ld a, $80
+      ld ($FF11), a
       ld a, $F0
+      ld ($FF12), a
+      ld a, $33
+      ld ($FF13), a
+      ld a, $86
+
+      ld ($FF14), a
+      ld a, $80
+      ld ($FF16), a
+      ld a, $F0
+      ld ($FF17), a
+      ld a, $C0
+      ld ($FF18), a
+      ld a, $87
+      ld ($FF19), a
+
+      ld a, $F8
+      ld ($FF30), a
+      ld ($FF31), a
+      ld ($FF32), a
+      ld ($FF33), a
+      ld ($FF34), a
+      ld ($FF35), a
+      ld ($FF36), a
+
+      ld a, $8F
+      ld ($FF39), a
+      ld ($FF3A), a
+      ld ($FF3B), a
+      ld ($FF3C), a
+      ld ($FF3D), a
+      ld ($FF3E), a
+      ld ($FF3F), a
+
+      ld a, $80
+      ld ($FF1A), a
+      ld a, $00
+      ld ($FF1B), a
+      ld a, $40
+      ld ($FF1C), a
+      ld a, $00
+      ld ($FF1D), a
+      ld a, $87
+      ld ($FF1E), a
+
+      ld a, $00
+      ld ($FF20), a
+      ld a, $20
       ld ($FF21), a
       ld a, $20
       ld ($FF22), a
@@ -342,6 +397,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     case SDLK_RIGHT:  {
       if (keyboard_state[SDL_SCANCODE_LCTRL] && keyboard_state[SDL_SCANCODE_LALT]) {
         gb_thread->add_steps(114 * 154 * 8);
+        //gb_thread->add_steps(128 * 1024);
       }
       else if (keyboard_state[SDL_SCANCODE_LALT]) {
         gb_thread->add_steps(114 * 8);
@@ -825,62 +881,54 @@ Step controls:
 
   {
     static uint8_t buf[256*256];
+    bool scroll = false;
+    bool raw_sound = true;
+    int offset = scroll ? spu_write_cursor : 0;
+
+    auto audio_l = gb->get_mem().audio_l;
+    auto audio_r = gb->get_mem().audio_r;
 
     if (spu_buffer && !app_paused) {
-      for (int i = 0; i < 65536; i++) {
-        buf[i] -= buf[i] >> 5;
-        if (buf[i]) buf[i]--;
-      }
-      for (int i = 0; i < 255; i++) {
-        int x = i;
-     
-        int y1 = -(spu_buffer[(2 * i + 0 /*+ spu_write_cursor*/) & 0x1FF]);
-        int y2 = -(spu_buffer[(2 * i + 2 /*+ spu_write_cursor*/) & 0x1FF]);
-
-        y1 += 64;
-        y2 += 64;
-
-        if (y1 <   0) y1 = 0;
-        if (y1 > 127) y1 = 127;
-        if (y2 <   0) y2 = 0;
-        if (y2 > 127) y2 = 127;
-
-        if (y1 > y2) {
-          auto t = y1;
-          y1 = y2;
-          y2 = t;
-        }
-
-        for (int y = y1; y <= y2; y++) {
-          buf[x + y * 256] = 0xFF;
-        }
-      }
+      memset(buf, 0, 65536);
 
       for (int i = 0; i < 255; i++) {
-        int x = i;
-        int y1 = -(spu_buffer[(2 * i + 1 /*+ spu_write_cursor*/) & 0x1FF]);
-        int y2 = -(spu_buffer[(2 * i + 3 /*+ spu_write_cursor*/) & 0x1FF]);
+        int l1, l2, r1, r2;
 
-        y1 += 64;
-        y2 += 64;
+        if (raw_sound) {
+          l1 = audio_l[(i + 0) & 0xFF];
+          l2 = audio_l[(i + 1) & 0xFF];
+          r1 = audio_r[(i + 0) & 0xFF];
+          r2 = audio_r[(i + 1) & 0xFF];
 
-        if (y1 <   0) y1 = 0;
-        if (y1 > 127) y1 = 127;
-        if (y2 <   0) y2 = 0;
-        if (y2 > 127) y2 = 127;
-
-        y1 += 128;
-        y2 += 128;
-
-        if (y1 > y2) {
-          auto t = y1;
-          y1 = y2;
-          y2 = t;
+          l1 = remap_clamp(l1,   0, 511, 127,   0);
+          l2 = remap_clamp(l2,   0, 511, 127,   0);
+          r1 = remap_clamp(r1,   0, 511, 255, 128);
+          r2 = remap_clamp(r2,   0, 511, 255, 128);
         }
-        for (int y = y1; y <= y2; y++) {
-          buf[x + y * 256] = 0xFF;
+        else {
+          l1 = spu_buffer[(2 * i + 0 + offset) & 0x1FF];
+          r1 = spu_buffer[(2 * i + 1 + offset) & 0x1FF];
+          l2 = spu_buffer[(2 * i + 2 + offset) & 0x1FF];
+          r2 = spu_buffer[(2 * i + 3 + offset) & 0x1FF];
+
+          l1 = remap_clamp(l1, -256, 255, 127,   0);
+          l2 = remap_clamp(l2, -256, 255, 127,   0);
+          r1 = remap_clamp(r1, -256, 255, 255, 128);
+          r2 = remap_clamp(r2, -256, 255, 255, 128);
+
+          if (!scroll && i == (spu_write_cursor/2) - 1) {
+            l2 = l1;
+            r2 = r1;
+          }
         }
+
+        sort(l1, l2);
+        sort(r1, r2);
+
+        for (int y = l1; y <= l2; y++) buf[i + y * 256] = 0xFF;
+        for (int y = r1; y <= r2; y++) buf[i + y * 256] = 0xFF;
       }
+
       update_texture_u8(wave_tex, 0x00, 0x00, 256, 256,  buf);
     }
 

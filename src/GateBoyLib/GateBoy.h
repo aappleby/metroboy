@@ -74,13 +74,15 @@ struct GateBoyMem {
     memcpy(framebuffer, framebuffer_boot, 160*144);
   }
 
-  uint8_t vid_ram [8192];
-  uint8_t cart_ram[32768];
-  uint8_t int_ram [8192];
-  uint8_t oam_ram [256];
-  uint8_t zero_ram[128];
-  uint8_t wave_ram[16];
-  uint8_t framebuffer[160*144];
+  uint8_t  vid_ram [8192];
+  uint8_t  cart_ram[32768];
+  uint8_t  int_ram [8192];
+  uint8_t  oam_ram [256];
+  uint8_t  zero_ram[128];
+  uint8_t  wave_ram[16];
+  uint8_t  framebuffer[160*144];
+  sample_t audio_l[256];
+  sample_t audio_r[256];
 };
 #pragma pack(pop)
 

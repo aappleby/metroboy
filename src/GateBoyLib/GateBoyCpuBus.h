@@ -35,30 +35,6 @@ struct GateBoyCpuSignals {
   wire CATY_LATCH_EXTp_new   () const;
   wire BOFE_LATCH_EXTn_new   () const;
 
-  /*_p09.AGUZ*/ wire AGUZ_CPU_RDn() const { return not1(TEDO_CPU_RDp.qp_new()); }
-  /*#p19.BYLO*/ wire BYLO_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p09.GAXO*/ wire GAXO_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*#p20.COSA*/ wire COSA_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p14.FOGE*/ wire FOGE_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p16.DOVO*/ wire DOVO_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*#p11.CEGE*/ wire CEGE_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*#pXX.GADO*/ wire GADO_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*#p17.BOKE*/ wire BOKE_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p14.BYGO*/ wire BYGO_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p09.CETO*/ wire CETO_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p09.KAZO*/ wire KAZO_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p09.CURU*/ wire CURU_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p09.KYDU*/ wire KYDU_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p16.JOTU*/ wire JOTU_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p18.JECO*/ wire JECO_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*_p16.GORY*/ wire GORY_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*#p19.KAGE*/ wire KAGE_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*#p11.BUDA*/ wire BUDA_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-  /*#p11.BUWA*/ wire BUWA_CPU_RDp() const { return not1(AGUZ_CPU_RDn()); }
-
-  /*_p10.BAFU*/ wire BAFU_CPU_WRn() const { return not1(TAPU_CPU_WRp.qp_new()); }
-  /*_p10.BOGY*/ wire BOGY_CPU_WRp() const { return not1(BAFU_CPU_WRn()); }
-
   //----------------------------------------
 
   Gate ABUZ_EXT_RAM_CS_CLK;

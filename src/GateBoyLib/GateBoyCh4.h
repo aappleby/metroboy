@@ -3,26 +3,9 @@
 //==============================================================================
 
 struct GateBoyState;
-int ch4_audio_out(const GateBoyState& reg_new);
 
 struct SpuChannel4 {
   void reset_to_cart();
-
-  /*#p20.GEVY*/ wire GEVY_CH4_AMP_ENn() const { 
-    return nor5(GEKY_NR42_ENV_DIRp.qp_newB(),
-                GARU_NR42_ENV0p.qp_newB(),
-                GOKY_NR42_ENV1p.qp_newB(),
-                GOZO_NR42_ENV2p.qp_newB(),
-                GEDU_NR42_ENV3p.qp_newB());
-  }
-
-  /*#p20.FOWA*/ wire FOWA_ENV_OFFp_old() const {
-    return nor3(EMOK_NR42_ENV_TIMER0p.qp_oldB(), ETYJ_NR42_ENV_TIMER1p.qp_oldB(), EZYK_NR42_ENV_TIMER2p.qp_oldB());
-  }
-
-  /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new() const {
-    return nor3(EMOK_NR42_ENV_TIMER0p.qp_newB(), ETYJ_NR42_ENV_TIMER1p.qp_newB(), EZYK_NR42_ENV_TIMER2p.qp_newB());
-  }
 
   /*#p19.DANO*/ DFF20 DANO_NR41_LEN0p;
   /*#p19.FAVY*/ DFF20 FAVY_NR41_LEN1p;
@@ -116,11 +99,4 @@ struct SpuChannel4 {
   /*#p20.EROX*/ NorLatch EROX_ENV_RUNNINGn;
 };
 
-
-
-
-
-
-
-
-
+int ch4_audio_out(const SpuChannel4& ch4);

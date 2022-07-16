@@ -23,29 +23,21 @@ struct GateBoySPU {
   //----------
   // SPU clocks
 
-  /*#p01.BATA*/ wire BATA_CLK_2M() const { return not1(AJER_AxxDExxH.qp_new()); }
-  /*_p01.BAVU*/ wire BAVU_CLK_1M() const { return not1(AVOK_xBCDExxx.qp_new()); }
-  /*#p16.FABO*/ wire FABO_CLK_xxCDxxGH() const { return not1(CERY_CLK_2M.qp_new()); }
-
-  /*#p20.GYBA*/ wire GYBA_CLK_1M() const { return not1(BAVU_CLK_1M()); }
-
-  /*#p01.HAMA*/ wire HAMA_CLK_512K_old() const { return not1(JESO_CLK_512K.qp_old()); }
-  /*#p01.HAMA*/ wire HAMA_CLK_512K_new() const { return not1(JESO_CLK_512K.qp_new()); }
-  
-  /*_p01.BURE*/ wire BURE_CLK_512_old() const { return not1(BARA_CLK_512.qp_old()); }
-  /*_p01.BURE*/ wire BURE_CLK_512_new() const { return not1(BARA_CLK_512.qp_new()); }
-
   /*_p01.HORU*/ wire HORU_CLK_512_old() const {
-    /*_p01.FYNE*/ wire FYNE_CLK_512_old = not1(BURE_CLK_512_old());
-    /*_p01.GALE*/ wire GALE_CLK_512_old = mux2p(FERO_NR52_DBG_APUp.qp_oldB(), HAMA_CLK_512K_old(), FYNE_CLK_512_old);
+    /*#p01.HAMA*/ wire HAMA_CLK_512K_old = not1(JESO_CLK_512K.qp_old());
+    /*_p01.BURE*/ wire BURE_CLK_512_old = not1(BARA_CLK_512.qp_old());
+    /*_p01.FYNE*/ wire FYNE_CLK_512_old = not1(BURE_CLK_512_old);
+    /*_p01.GALE*/ wire GALE_CLK_512_old = mux2p(FERO_NR52_DBG_APUp.qp_oldB(), HAMA_CLK_512K_old, FYNE_CLK_512_old);
     /*_p01.GEXY*/ wire GEXY_CLK_512_old = not1(GALE_CLK_512_old);
     /*_p01.HORU*/ wire HORU_CLK_512_old = not1(GEXY_CLK_512_old);
     return HORU_CLK_512_old;
   }
 
   /*_p01.HORU*/ wire HORU_CLK_512_new() const {
-    /*#p01.FYNE*/ wire FYNE_CLK_512 = not1(BURE_CLK_512_new());
-    /*_p01.GALE*/ wire GALE_CLK_512 = mux2p(FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K_new(), FYNE_CLK_512);
+    /*#p01.HAMA*/ wire HAMA_CLK_512K_new = not1(JESO_CLK_512K.qp_new());
+    /*_p01.BURE*/ wire BURE_CLK_512_new = not1(BARA_CLK_512.qp_new());
+    /*#p01.FYNE*/ wire FYNE_CLK_512 = not1(BURE_CLK_512_new);
+    /*_p01.GALE*/ wire GALE_CLK_512 = mux2p(FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K_new, FYNE_CLK_512);
     /*_p01.GEXY*/ wire GEXY_CLK_512 = not1(GALE_CLK_512);
     /*_p01.HORU*/ wire HORU_CLK_512p = not1(GEXY_CLK_512);
 
@@ -53,23 +45,22 @@ struct GateBoySPU {
   }
 
   /*_p01.BUFY*/ wire BUFY_CLK_256n() const {
+    /*#p01.HAMA*/ wire HAMA_CLK_512K_new = not1(JESO_CLK_512K.qp_new());
     /*_p01.CULO*/ wire CULO_CLK_256 = not1(CARU_CLK_256.qp_new());
-    /*_p01.BEZE*/ wire BEZE_CLK_256 = mux2p(FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K_new(), CULO_CLK_256);
+    /*_p01.BEZE*/ wire BEZE_CLK_256 = mux2p(FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K_new, CULO_CLK_256);
     /*_p01.COFU*/ wire COFU_CLK_256 = not1(BEZE_CLK_256);
     /*_p01.BUFY*/ wire BUFY_CLK_256n = not1(COFU_CLK_256);
     return BUFY_CLK_256n;
   }
 
   /*_p01.BYFE*/ wire BYFE_CLK_128n() const {
+    /*#p01.HAMA*/ wire HAMA_CLK_512K_new = not1(JESO_CLK_512K.qp_new());
     /*_p01.APEF*/ wire APEF_CLK_128 = not1(BYLU_CLK_128.qp_new());
-    /*_p01.BULE*/ wire BULE_CLK_128 = mux2p(FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K_new(), APEF_CLK_128);
+    /*_p01.BULE*/ wire BULE_CLK_128 = mux2p(FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K_new, APEF_CLK_128);
     /*_p01.BARU*/ wire BARU_CLK_128 = not1(BULE_CLK_128);
     /*_p01.BYFE*/ wire BYFE_CLK_128n = not1(BARU_CLK_128);
     return BYFE_CLK_128n;
   }
-
-  /*#p13.JONE*/ wire JONE_CLK_128p() const { return not1(BYFE_CLK_128n()); }
-  /*#p20.ALOP*/ wire ALOP_CLK_128() const { return not1(BYFE_CLK_128n()); }
 
   /*#p15.CEMO*/ DFF17 CEMO_xBCDExxx;
   /*_p15.ATEP*/ DFF17 ATEP_AxxDExxH;
@@ -77,7 +68,7 @@ struct GateBoySPU {
   //----------
   // clocks for the apu
 
-  /*_p01.CERY*/ DFF17 CERY_CLK_2M;
+  /*_p01.CERY*/ DFF17 CERY_AxxDExxH;
   /*_p01.ATYK*/ DFF17 ATYK_AxxDExxH;
   /*_p01.AVOK*/ DFF17 AVOK_xBCDExxx;
   /*_p09.AJER*/ DFF17 AJER_AxxDExxH;
@@ -121,5 +112,5 @@ struct GateBoySPU {
 };
 
 void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram);
-int spu_audio_out_r(GateBoyState& reg_new);
-int spu_audio_out_l(GateBoyState& reg_new);
+int spu_audio_out_r(const GateBoyState& reg_new);
+int spu_audio_out_l(const GateBoyState& reg_new);

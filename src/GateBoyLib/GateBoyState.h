@@ -67,74 +67,25 @@ struct GateBoyState {
   /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp_new() const;
   /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn_new() const;
 
-  /*_p09.HAPO*/ wire HAPO_SYS_RSTp_old() const { return not1(sys_rst.ALUR_SYS_RSTn_old()); }
-  /*_p09.HAPO*/ wire HAPO_SYS_RSTp_new() const { return not1(sys_rst.ALUR_SYS_RSTn_new()); }
-  /*_p09.GUFO*/ wire GUFO_SYS_RSTn_new() const { return not1(HAPO_SYS_RSTp_new()); }
-
 #ifdef SIM_AUDIO
-  /*_p09.JYRO*/ wire JYRO_APU_RSTp_old() const { return  or2(HAPO_SYS_RSTp_old(), spu.HADA_NR52_ALL_SOUND_ON.qn_old()); }
-  /*_p09.JYRO*/ wire JYRO_APU_RSTp_new() const { return  or2(HAPO_SYS_RSTp_new(), spu.HADA_NR52_ALL_SOUND_ON.qn_new()); }
-
-  /*_p09.KEPY*/ wire KEPY_APU_RSTn_new() const { return not1(JYRO_APU_RSTp_new()); }
-  /*_p09.KUBY*/ wire KUBY_APU_RSTn_old() const { return not1(JYRO_APU_RSTp_old()); }
-  /*_p09.KUBY*/ wire KUBY_APU_RSTn_new() const { return not1(JYRO_APU_RSTp_new()); }
-  /*_p09.KEBA*/ wire KEBA_APU_RSTp_old() const { return not1(KUBY_APU_RSTn_old()); }
-  /*_p09.KEBA*/ wire KEBA_APU_RSTp_new() const { return not1(KUBY_APU_RSTn_new()); }
-
-  /*_p01.ATUS*/ wire ATUS_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p01.BELA*/ wire BELA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p01.BOPO*/ wire BOPO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p09.ATYV*/ wire ATYV_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p09.KAME*/ wire KAME_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p14.HUDE*/ wire HUDE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p14.JYBU*/ wire JYBU_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p15.BUWE*/ wire BUWE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p15.BYHO*/ wire BYHO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p15.CEXE*/ wire CEXE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p15.CYWU*/ wire CYWU_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p09.AFAT*/ wire AFAT_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p09.AGUR*/ wire AGUR_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p11.CAMY*/ wire CAMY_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p11.CEPO*/ wire CEPO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p19.CABE*/ wire CABE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p14.KYPU*/ wire KYPU_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p14.FAZO*/ wire FAZO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p16.GOVE*/ wire GOVE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p11.HATO*/ wire HATO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p16.KOPY*/ wire KOPY_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p16.HEKY*/ wire HEKY_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p16.GAZE*/ wire GAZE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p18.CALU*/ wire CALU_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p17.BAMA*/ wire BAMA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p17.ACOR*/ wire ACOR_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p09.DAPA*/ wire DAPA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); } // bavu crosses over this? why is it 3-rung?
-  /*#p19.FEXO*/ wire FEXO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p19.HYNE*/ wire HYNE_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p20.GASO*/ wire GASO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p20.FEBY*/ wire FEBY_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p20.BOKY*/ wire BOKY_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p13.DUKA*/ wire DUKA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p13.ERUM*/ wire ERUM_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p13.KADO*/ wire KADO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p15.KATY*/ wire KATY_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p16.GURO*/ wire GURO_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*_p16.KUHA*/ wire KUHA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-  /*#p16.GOMA*/ wire GOMA_APU_RSTn_new() const { return not1(KEBA_APU_RSTp_new()); }
-
-  /*_p09.EDEK*/ wire EDEK_NR52_DBG_APUp() const { return not1(spu.FERO_NR52_DBG_APUp.qn_any()); }
-  /*#p14.FAPE*/ wire FAPE_CPU_RDp_DBGn()  const { return nand2(cpu_signals.FOGE_CPU_RDp(), EDEK_NR52_DBG_APUp()); } // schematic wrong? was and2
-  /*_p16.EGAD*/ wire EGAD_CPU_RDn_DBGn()  const { return nand2(cpu_signals.DOVO_CPU_RDp(), EDEK_NR52_DBG_APUp()); }
-  /*#p11.DAXA*/ wire DAXA_CPU_RDn_DBGn()  const { return nand2(cpu_signals.CEGE_CPU_RDp(), EDEK_NR52_DBG_APUp()); }
-
-  /*_p10.TACE*/ wire TACE_AMP_ENn() const {
-    return and4(ch1.HOCA_CH1_AMP_ENn_new(),
-                ch2.FUTE_CH2_AMP_ENn_new(),
-                ch3.GUXE_NR30_AMP_ENp.qn_newB(),
-                ch4.GEVY_CH4_AMP_ENn());
+  
+  wire KEBA_APU_RSTp_old() const {
+    /*_p09.HAPO*/ wire HAPO_SYS_RSTp_old = not1(sys_rst.ALUR_SYS_RSTn_old());
+    /*_p09.JYRO*/ wire JYRO_APU_RSTp_old = or2(HAPO_SYS_RSTp_old, spu.HADA_NR52_ALL_SOUND_ON.qn_old());
+    /*_p09.KUBY*/ wire KUBY_APU_RSTn_old = not1(JYRO_APU_RSTp_old);
+    /*_p09.KEBA*/ wire KEBA_APU_RSTp_old = not1(KUBY_APU_RSTn_old);
+    return KEBA_APU_RSTp_old;
   }
-#endif
 
-  /*_p16.ANUJ*/ wire ANUJ_CPU_WR_WEIRD()  const { return and2(cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_new(), cpu_signals.BOGY_CPU_WRp()); }
+  wire KEBA_APU_RSTp_new() const {
+    /*_p09.HAPO*/ wire HAPO_SYS_RSTp_new = not1(sys_rst.ALUR_SYS_RSTn_new());
+    /*_p09.JYRO*/ wire JYRO_APU_RSTp_new = or2(HAPO_SYS_RSTp_new, spu.HADA_NR52_ALL_SOUND_ON.qn_new());
+    /*_p09.KUBY*/ wire KUBY_APU_RSTn_new = not1(JYRO_APU_RSTp_new);
+    /*_p09.KEBA*/ wire KEBA_APU_RSTp_new = not1(KUBY_APU_RSTn_new);
+    return KEBA_APU_RSTp_new;
+  }
+
+#endif
 
   //----------------------------------------
 

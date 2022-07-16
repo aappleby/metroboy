@@ -4,9 +4,9 @@
 # enabled and what's not
 #-DSIM_AUDIO 
 
-#build_mode   = -DCONFIG_DEBUG -O0
+build_mode   = -DCONFIG_DEBUG -O0
 #build_mode   = -DCONFIG_RELEASE -O3
-build_mode   = -DCONFIG_FASTMODE -O3
+#build_mode   = -DCONFIG_FASTMODE -O3
 
 default_gpp      = g++ -g -MMD -std=gnu++2a
 default_gcc      = gcc -g -MMD

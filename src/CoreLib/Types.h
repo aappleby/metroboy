@@ -5,6 +5,7 @@
 #include <vector> // for blob
 #include <stdint.h>
 #include <string.h>
+#include <math.h>
 
 //------------------------------------------------------------------------------
 
@@ -463,3 +464,39 @@ struct IntWrapper {
 
   int a = 0;
 };
+
+//-----------------------------------------------------------------------------
+
+template<typename T>
+T remap(T x, T a1, T a2, T b1, T b2) {
+  double y = (double(x) - double(a1)) / (double(a2) - double(a1));
+  double z = y * (double(b2) - double(b1)) + b1;
+  return T(z);
+}
+
+template<typename T>
+T remap_clamp(T x, T a1, T a2, T b1, T b2) {
+  double y = (double(x) - double(a1)) / (double(a2) - double(a1));
+  if (y < 0) y = 0;
+  if (y > 1) y = 1;
+  double z = y * (double(b2) - double(b1)) + b1;
+  return T(z);
+}
+
+template<typename T>
+T remap_wrap(T x, T a1, T a2, T b1, T b2) {
+  double y = (double(x) - double(a1)) / (double(a2) - double(a1));
+  y = fmod(double(y), 1.0);
+  double z = y * (double(b2) - double(b1)) + b1;
+  return T(z);
+}
+
+template<typename T>
+void sort(T& a, T& b) {
+  if (a > b) {
+    auto temp = a;
+    a = b;
+    b = temp;
+  }
+}
+

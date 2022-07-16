@@ -102,19 +102,56 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   auto& ch3_old = reg_old.ch3;
   auto& ch3_new = reg_new.ch3;
 
+  auto& abus_new = reg_new.cpu_abus;
+
+  /*_p10.DYTE*/ wire DYTE_A00n = not1(abus_new.BUS_CPU_A00p.out_new());
+  /*_p10.AFOB*/ wire AFOB_A01n = not1(abus_new.BUS_CPU_A01p.out_new());
+  /*_p10.ABUB*/ wire ABUB_A02n = not1(abus_new.BUS_CPU_A02p.out_new());
+  /*_p10.ACOL*/ wire ACOL_A03n = not1(abus_new.BUS_CPU_A03p.out_new());
+  /*#p10.ATUP*/ wire ATUP_A04n = not1(abus_new.BUS_CPU_A04p.out_new());
+  /*#p10.BOXY*/ wire BOXY_A05n = not1(abus_new.BUS_CPU_A05p.out_new());
+  /*#p10.ASAD*/ wire ASAD_A06n = not1(abus_new.BUS_CPU_A06p.out_new());
+  /*#p10.AVUN*/ wire AVUN_A07n = not1(abus_new.BUS_CPU_A07p.out_new());
+  /*_p07.TONA*/ wire TONA_A08n = not1(abus_new.BUS_CPU_A08p.out_new());
+  /*_p10.DOSO*/ wire DOSO_A00p = not1(DYTE_A00n);
+  /*_p10.DUPA*/ wire DUPA_A01p = not1(AFOB_A01n);
+  /*_p10.DENO*/ wire DENO_A02p = not1(ABUB_A02n);
+  /*#p10.DUCE*/ wire DUCE_A03p = not1(ACOL_A03n);
+
+  /*#p10.ACOM*/ wire ACOM_ADDR_XX3Xn = nand4(AVUN_A07n, ASAD_A06n, abus_new.BUS_CPU_A05p.out_new(), abus_new.BUS_CPU_A04p.out_new());
+  /*#p07.SYKE*/ wire SYKE_ADDR_HIp_new = nor2(abus_new.TUNA_0000_FDFF_new(), TONA_A08n);
+  /*_p07.BAKO*/ wire BAKO_ADDR_FFXXn = not1(SYKE_ADDR_HIp_new);
+  /*#p10.BARO*/ wire BARO_ADDR_FF3Xp = nor2(ACOM_ADDR_XX3Xn, BAKO_ADDR_FFXXn);
+
+  /*_p10.EXAT*/ wire EXAT_ADDR_1010n = nand4(DUCE_A03p, ABUB_A02n, DUPA_A01p, DYTE_A00n);
+  /*_p10.EMAX*/ wire EMAX_ADDR_1011n = nand4(DOSO_A00p, DUPA_A01p, ABUB_A02n, DUCE_A03p);
+  /*_p10.GANY*/ wire GANY_ADDR_1100n = nand4(DUCE_A03p, DENO_A02p, AFOB_A01n, DYTE_A00n);
+  /*_p10.EMOS*/ wire EMOS_ADDR_1101n = nand4(DOSO_A00p, AFOB_A01n, DENO_A02p, DUCE_A03p);
+  /*_p10.EGEN*/ wire EGEN_ADDR_1110n = nand4(DUCE_A03p, DENO_A02p, DUPA_A01p, DYTE_A00n);
+
+  /*_p10.ATEG*/ wire ATEG_ADDR_XX1Xn = or4(abus_new.BUS_CPU_A07p.out_new(), abus_new.BUS_CPU_A06p.out_new(), abus_new.BUS_CPU_A05p.out_new(), ATUP_A04n);
+  /*_p10.BUNO*/ wire BUNO_ADDR_FF1Xp = nor2(BAKO_ADDR_FFXXn, ATEG_ADDR_XX1Xn);
+  /*_p10.BANU*/ wire BANU_ADDR_FF1Xn = not1(BUNO_ADDR_FF1Xp);
+  /*_p10.EMOR*/ wire EMOR_ADDR_FF1Ap = nor2(BANU_ADDR_FF1Xn, EXAT_ADDR_1010n);
+  /*_p10.DUSA*/ wire DUSA_ADDR_FF1Bp = nor2(BANU_ADDR_FF1Xn, EMAX_ADDR_1011n);
+  /*_p10.GEFO*/ wire GEFO_ADDR_FF1Cp = nor2(BANU_ADDR_FF1Xn, GANY_ADDR_1100n);
+  /*_p10.FENY*/ wire FENY_ADDR_FF1Dp = nor2(BANU_ADDR_FF1Xn, EMOS_ADDR_1101n);
+  /*_p10.DUGO*/ wire DUGO_ADDR_FF1Ep = nor2(BANU_ADDR_FF1Xn, EGEN_ADDR_1110n);
+
+
   /*_p09.AGUZ*/ wire AGUZ_CPU_RDn = not1(reg_new.cpu_signals.TEDO_CPU_RDp.qp_new());
   /*_p10.BAFU*/ wire BAFU_CPU_WRn = not1(reg_new.cpu_signals.TAPU_CPU_WRp.qp_new());
   /*_p10.BOGY*/ wire BOGY_CPU_WRp = not1(BAFU_CPU_WRn);
 
   {
-    /*_p16.GEJO*/ wire GEJO_FF1A_WRp = and2(BOGY_CPU_WRp, reg_new.cpu_abus.EMOR_ADDR_FF1Ap());
+    /*_p16.GEJO*/ wire GEJO_FF1A_WRp = and2(BOGY_CPU_WRp, EMOR_ADDR_FF1Ap);
     /*_p16.GUCY*/ wire GUCY_FF1A_WRn = not1(GEJO_FF1A_WRp);
     /*_p16.GOVE*/ wire GOVE_APU_RSTn_new = not1(reg_new.KEBA_APU_RSTp_new());
     /*_p16.GUXE*/ ch3_new.GUXE_NR30_AMP_ENp.dff9b(GUCY_FF1A_WRn, GOVE_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
   }
 
   {
-    /*_p16.HAGA*/ wire HAGA_FF1C_WRp = and2(BOGY_CPU_WRp, reg_new.cpu_abus.GEFO_ADDR_FF1Cp());
+    /*_p16.HAGA*/ wire HAGA_FF1C_WRp = and2(BOGY_CPU_WRp, GEFO_ADDR_FF1Cp);
     /*_p16.GUZU*/ wire GUZU_FF1C_WRn = not1(HAGA_FF1C_WRp);
     /*_p16.GURO*/ wire GURO_APU_RSTn_new = not1(reg_new.KEBA_APU_RSTp_new());
     /*_p16.HUKY*/ ch3_new.HUKY_NR32_VOL0p.dff9b(GUZU_FF1C_WRn, GURO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
@@ -122,8 +159,8 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   }
 
   {
-    /*_p16.KOTA*/ wire KOTA_FF1D_WRn = nand2(reg_new.cpu_abus.FENY_ADDR_FF1Dp(), BOGY_CPU_WRp);
-    /*_p16.JAFA*/ wire JAFA_FF1D_WRn = nand2(reg_new.cpu_abus.FENY_ADDR_FF1Dp(), BOGY_CPU_WRp);
+    /*_p16.KOTA*/ wire KOTA_FF1D_WRn = nand2(FENY_ADDR_FF1Dp, BOGY_CPU_WRp);
+    /*_p16.JAFA*/ wire JAFA_FF1D_WRn = nand2(FENY_ADDR_FF1Dp, BOGY_CPU_WRp);
 
     // Clock polarity again
     /*_p16.KYHO*/ wire KYHO_FF1D_WRp = not1(KOTA_FF1D_WRn);
@@ -144,7 +181,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   }
 
   {
-    /*#p16.HUDA*/ wire HUDA_FF1E_WRp = and2(reg_new.cpu_abus.DUGO_ADDR_FF1Ep(), BOGY_CPU_WRp);
+    /*#p16.HUDA*/ wire HUDA_FF1E_WRp = and2(DUGO_ADDR_FF1Ep, BOGY_CPU_WRp);
     /*#p16.JUZO*/ wire JUZO_FF1E_WRn = not1(HUDA_FF1E_WRp);
 
     /*_p16.KOPY*/ wire KOPY_APU_RSTn_new = not1(reg_new.KEBA_APU_RSTp_new());
@@ -165,7 +202,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   {
     /*#p16.GOMA*/ wire GOMA_APU_RSTn_new = not1(reg_new.KEBA_APU_RSTp_new());
     /*#p16.FOBA*/ ch3_new.FOBA_CH3_TRIGp.dff17(reg_new.sys_clk.DOVA_ABCDxxxx(), GOMA_APU_RSTn_new, ch3_old.GAVU_NR34_TRIGp.qp_oldB());
-    /*_p16.EPYX*/ wire EPYX_FF1E_WRp = nor2(BOGY_CPU_WRp, reg_new.cpu_abus.DUGO_ADDR_FF1Ep()); // polarity?
+    /*_p16.EPYX*/ wire EPYX_FF1E_WRp = nor2(BOGY_CPU_WRp, DUGO_ADDR_FF1Ep); // polarity?
     /*_p16.FAKO*/ wire FAKO_RESTART_RST = nor2(reg_new.KEBA_APU_RSTp_new(), ch3_new.FOBA_CH3_TRIGp.qp_new());
     /*_p16.GAVU*/ ch3_new.GAVU_NR34_TRIGp.dff9b(EPYX_FF1E_WRp, FAKO_RESTART_RST, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
   }
@@ -226,7 +263,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
     /*#p18.HUPA*/ wire HUPA_SAMPLE_CLK_RSTp_new = and2(ch3_new.HUNO_SAMPLE_CLKp.qp_new(), reg_new.spu.CERY_AxxDExxH.qp_new());
     /*#p18.GAFU*/ wire GAFU_new = nor3(reg_new.KEBA_APU_RSTp_new(), ch3_new.GARA_TRIG_D1.qp_new(), HUPA_SAMPLE_CLK_RSTp_new);
-    /*#p18.HUNO*/ ch3_new.HUNO_SAMPLE_CLKp.dff17_async(GAFU_new);
+    /*#p18.HUNO*/ ch3_new.HUNO_SAMPLE_CLKp.dff17_rst(GAFU_new);
   }
 
   {
@@ -307,13 +344,11 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
     /*#p18.EFAL*/ ch3_new.EFAL_WAVE_IDX4.dff17(ch3_new.EXEL_WAVE_IDX3.qn_new(), ETAN_WAVE_RST_old, ch3_old.EFAL_WAVE_IDX4.qn_old());
 
 
-    /*#p18.FOTO*/ wire FOTO_old = and2(ch3_old.FETY_WAVE_LOOP.qp_old(), GASE_SAMPLE_CLKp_old);
-    /*#p18.GYRY*/ wire GYRY_LOOP_RST_old = nor3(reg_old.KEBA_APU_RSTp_old(), ch3_old.GARA_TRIG_D1.qp_old(), FOTO_old);
-    /*#p18.FETY*/ ch3_new.FETY_WAVE_LOOP.dff17(ch3_new.EFAL_WAVE_IDX4.qn_new(), GYRY_LOOP_RST_old, ch3_old.FETY_WAVE_LOOP.qn_old());
+    /*#p18.FETY*/ ch3_new.FETY_WAVE_LOOP.dff17_clk(ch3_new.EFAL_WAVE_IDX4.qn_new(), ch3_old.FETY_WAVE_LOOP.qn_old());
 
     /*#p18.FOTO*/ wire FOTO_new = and2(ch3_new.FETY_WAVE_LOOP.qp_new(), GASE_SAMPLE_CLKp_new);
     /*#p18.GYRY*/ wire GYRY_LOOP_RST_new = nor3(reg_new.KEBA_APU_RSTp_new(), ch3_new.GARA_TRIG_D1.qp_new(), FOTO_new);
-    /*#p18.FETY*/ ch3_new.FETY_WAVE_LOOP.dff17_any(ch3_new.EFAL_WAVE_IDX4.qn_new(), GYRY_LOOP_RST_new, ch3_old.FETY_WAVE_LOOP.qn_old());
+    /*#p18.FETY*/ ch3_new.FETY_WAVE_LOOP.dff17_rst(GYRY_LOOP_RST_new);
 
     /*#p18.ETAN*/ wire ETAN_WAVE_RST_new = nor2(ch3_new.GARA_TRIG_D1.qp_new(), ch3_new.FETY_WAVE_LOOP.qp_new());
 
@@ -362,11 +397,11 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
     /*_p18.AXOL*/ wire AXOL_WAVE_A3 = mux2p(COKA_CH3_ACTIVEp, ch3_new.EFAL_WAVE_IDX4.qp_new(), reg_new.cpu_abus.BUS_CPU_A03p.out_new());
 
     /*#p17.BOKE*/ wire BOKE_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*#p17.BENA*/ wire BENA_CPU_WAVE_RDn = nand2(BOKE_CPU_RDp, reg_new.cpu_abus.BARO_ADDR_FF3Xp());
+    /*#p17.BENA*/ wire BENA_CPU_WAVE_RDn = nand2(BOKE_CPU_RDp, BARO_ADDR_FF3Xp);
     /*#p17.CAZU*/ wire CAZU_CPU_WAVE_RDp = not1(BENA_CPU_WAVE_RDn);
 
     // wave ram control line 1
-    /*_p17.BYZA*/ wire BYZA_WAVE_WRp = and2(BOGY_CPU_WRp, reg_new.cpu_abus.BARO_ADDR_FF3Xp());
+    /*_p17.BYZA*/ wire BYZA_WAVE_WRp = and2(BOGY_CPU_WRp, BARO_ADDR_FF3Xp);
     /*#p17.AMYT*/ wire AMYT_WAVE_WRn = not1(BYZA_WAVE_WRp);
 
     // wave ram control line 2
@@ -446,7 +481,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
     // wave ram -> cpu bus
 
     /*#p17.BOKE*/ wire BOKE_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*#p17.BENA*/ wire BENA_CPU_WAVE_RDn = nand2(BOKE_CPU_RDp, reg_new.cpu_abus.BARO_ADDR_FF3Xp());
+    /*#p17.BENA*/ wire BENA_CPU_WAVE_RDn = nand2(BOKE_CPU_RDp, BARO_ADDR_FF3Xp);
     /*#p17.CAZU*/ wire CAZU_CPU_WAVE_RDp = not1(BENA_CPU_WAVE_RDn);
 
     /*#p17.CUGO*/ wire CUGO_WAVE_D0n = not1(reg_new.wave_dbus.BUS_WAVE_D00.qp_new());
@@ -479,14 +514,14 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
 
 
-  /*#p16.DERY*/ wire DERY_FF1B_WRn_new = nand2(BOGY_CPU_WRp, reg_new.cpu_abus.DUSA_ADDR_FF1Bp());
+  /*#p16.DERY*/ wire DERY_FF1B_WRn_new = nand2(BOGY_CPU_WRp, DUSA_ADDR_FF1Bp);
   /*#p16.GAJY*/ wire GAJY_FF1B_WRp_new = not1(DERY_FF1B_WRn_new);
   /*#p16.EMUT*/ wire EMUT_FF1B_WRp_new = not1(DERY_FF1B_WRn_new);
   /*#p16.GETO*/ wire GETO_FF1B_WRp_new = not1(DERY_FF1B_WRn_new);
 
   // This goes to all the CHN_LENENp registers...why?
   /*_p16.ANUJ*/ wire ANUJ_CPU_WR_WEIRD = and2(reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_new(), BOGY_CPU_WRp);
-  /*#p16.FOVO*/ wire FOVO_FF1E_WRn_new = nand2(ANUJ_CPU_WR_WEIRD, reg_new.cpu_abus.DUGO_ADDR_FF1Ep());
+  /*#p16.FOVO*/ wire FOVO_FF1E_WRn_new = nand2(ANUJ_CPU_WR_WEIRD, DUGO_ADDR_FF1Ep);
   /*_p16.HEKY*/ wire HEKY_APU_RSTn_new = not1(reg_new.KEBA_APU_RSTp_new());
   /*_p16.HOTO*/ ch3_new.HOTO_NR34_LENENp.dff9b(FOVO_FF1E_WRn_new, HEKY_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
 
@@ -500,13 +535,13 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
     /*#p18.GEPY*/ wire GEPY_LEN_CLKp_new = nor3(ch3_old.FEXU_LEN_DONEp.qp_old(), reg_new.spu.BUFY_CLK_256n(), ch3_new.HOTO_NR34_LENENp.qn_newB()); // fexu/hoto polarity seems wrong
     /*#p18.GENU*/ wire GENU_LEN_CLKn_new = not1(GEPY_LEN_CLKp_new);
 
-    /*#p18.GEVO*/ ch3_new.GEVO_NR31_LEN0p.dff20(GENU_LEN_CLKn_new,                    GAJY_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D00p.out_new());
+    /*#p18.GEVO*/ ch3_new.GEVO_NR31_LEN0p.dff20(GENU_LEN_CLKn_new,                GAJY_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D00p.out_new());
     /*_p18.FORY*/ ch3_new.FORY_NR31_LEN1p.dff20(ch3_new.GEVO_NR31_LEN0p.qp_new(), GAJY_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D01p.out_new());
     /*_p18.GATU*/ ch3_new.GATU_NR31_LEN2p.dff20(ch3_new.FORY_NR31_LEN1p.qp_new(), GAJY_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D02p.out_new());
     /*_p18.GAPO*/ ch3_new.GAPO_NR31_LEN3p.dff20(ch3_new.GATU_NR31_LEN2p.qp_new(), GAJY_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D03p.out_new());
 
     /*#p18.FALU*/ wire FALU_LEN_CLKp = not1(ch3_new.GAPO_NR31_LEN3p.qn_new());
-    /*_p18.GEMO*/ ch3_new.GEMO_NR31_LEN4p.dff20(FALU_LEN_CLKp,                        EMUT_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D04p.out_new());
+    /*_p18.GEMO*/ ch3_new.GEMO_NR31_LEN4p.dff20(FALU_LEN_CLKp,                    EMUT_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D04p.out_new());
     /*_p18.FORO*/ ch3_new.FORO_NR31_LEN5p.dff20(ch3_new.GEMO_NR31_LEN4p.qp_new(), EMUT_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D05p.out_new());
     /*_p18.FAVE*/ ch3_new.FAVE_NR31_LEN6p.dff20(ch3_new.FORO_NR31_LEN5p.qp_new(), EMUT_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D06p.out_new());
     /*_p18.FYRU*/ ch3_new.FYRU_NR31_LEN7p.dff20(ch3_new.FAVE_NR31_LEN6p.qp_new(), EMUT_FF1B_WRp_new, reg_new.cpu_dbus.BUS_CPU_D07p.out_new());
@@ -543,7 +578,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
   {
     /*_p09.GAXO*/ wire GAXO_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*_p16.FASY*/ wire FASY_FF1A_RDn = nand2(reg_new.cpu_abus.EMOR_ADDR_FF1Ap(), GAXO_CPU_RDp);
+    /*_p16.FASY*/ wire FASY_FF1A_RDn = nand2(EMOR_ADDR_FF1Ap, GAXO_CPU_RDp);
     /*_p16.FEVO*/ wire FEVO_CH3_AMP_ENn  = not1(ch3_new.GUXE_NR30_AMP_ENp.qp_newB());
     /*_p16.GEKO*/ triwire FEVO_NR30_D07p = tri6_nn(FASY_FF1A_RDn, FEVO_CH3_AMP_ENn);
     reg_new.cpu_dbus.BUS_CPU_D07p.tri_bus(FEVO_NR30_D07p);
@@ -551,7 +586,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
   {
     /*_p16.JOTU*/ wire JOTU_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*_p16.HENU*/ wire HENU_FF1C_RDn = nand2(reg_new.cpu_abus.GEFO_ADDR_FF1Cp(), JOTU_CPU_RDp);
+    /*_p16.HENU*/ wire HENU_FF1C_RDn = nand2(GEFO_ADDR_FF1Cp, JOTU_CPU_RDp);
     /*_p16.HAMU*/ triwire HAMU_D05p = tri6_nn(HENU_FF1C_RDn, ch3_new.HUKY_NR32_VOL0p.qn_newB());
     /*_p16.HAMU*/ triwire HUCO_D06p = tri6_nn(HENU_FF1C_RDn, ch3_new.HODY_NR32_VOL1p.qn_newB());
 
@@ -561,7 +596,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
   {
     /*_p16.GORY*/ wire GORY_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*_p16.GAWA*/ wire GAWA_FF1E_RDn = nand2(reg_new.cpu_abus.DUGO_ADDR_FF1Ep(), GORY_CPU_RDp); // polarity?
+    /*_p16.GAWA*/ wire GAWA_FF1E_RDn = nand2(DUGO_ADDR_FF1Ep, GORY_CPU_RDp); // polarity?
     /*_p16.HACA*/ triwire HACA_D06p = tri6_nn(GAWA_FF1E_RDn, ch3_new.HOTO_NR34_LENENp.qn_newB());
     reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(HACA_D06p);
   }
@@ -589,7 +624,8 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*_p16.DOVO*/ wire DOVO_CPU_RDp = not1(AGUZ_CPU_RDn);
   /*_p16.EGAD*/ wire EGAD_CPU_RDn_DBGn = nand2(DOVO_CPU_RDp, EDEK_NR52_DBG_APUp);
 
-  /*_p16.GUTE*/ wire GUTE_DBG_FF1D_RDn = nor2(reg_new.cpu_abus.HOXA_ADDR_FF1Dn(), EGAD_CPU_RDn_DBGn);
+  /*_p16.HOXA*/ wire HOXA_ADDR_FF1Dn = not1(reg_new.cpu_abus.FENY_ADDR_FF1Dp());
+  /*_p16.GUTE*/ wire GUTE_DBG_FF1D_RDn = nor2(HOXA_ADDR_FF1Dn, EGAD_CPU_RDn_DBGn);
   /*_p16.HOVO*/ wire HOVO_DBG_FF1D_RD = not1(GUTE_DBG_FF1D_RDn);
 
   if (HOVO_DBG_FF1D_RD) set_data(
@@ -604,7 +640,8 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   );
 
     if (FUVA_FF1E_RDb) set_data(
-    /*_p16.FUVA*/ wire FUVA_FF1E_RDn = or2(reg_new.cpu_abus.GUNU_ADDR_FF1En(), EGAD_CPU_RDn_DBGn);
+    /*_p16.GUNU*/ wire GUNU_ADDR_FF1En = not1(abus_new.DUGO_ADDR_FF1Ep());
+    /*_p16.FUVA*/ wire FUVA_FF1E_RDn = or2(GUNU_ADDR_FF1En, EGAD_CPU_RDn_DBGn);
 
       /*_p16.JUVY*/ KEJU_COUNT08,
       /*_p16.JURA*/ KEZA_COUNT09,

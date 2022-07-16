@@ -102,6 +102,36 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   auto& ch2_old = reg_old.ch2;
   auto& ch2_new = reg_new.ch2;
 
+  auto& abus_new = reg_new.cpu_abus;
+
+  /*_p10.DYTE*/ wire DYTE_A00n = not1(abus_new.BUS_CPU_A00p.out_new());
+  /*_p10.AFOB*/ wire AFOB_A01n = not1(abus_new.BUS_CPU_A01p.out_new());
+  /*_p10.ABUB*/ wire ABUB_A02n = not1(abus_new.BUS_CPU_A02p.out_new());
+  /*_p10.ACOL*/ wire ACOL_A03n = not1(abus_new.BUS_CPU_A03p.out_new());
+  /*#p10.ATUP*/ wire ATUP_A04n = not1(abus_new.BUS_CPU_A04p.out_new());
+  /*#p10.BOXY*/ wire BOXY_A05n = not1(abus_new.BUS_CPU_A05p.out_new());
+  /*#p10.ASAD*/ wire ASAD_A06n = not1(abus_new.BUS_CPU_A06p.out_new());
+  /*#p10.AVUN*/ wire AVUN_A07n = not1(abus_new.BUS_CPU_A07p.out_new());
+  /*_p07.TONA*/ wire TONA_A08n = not1(abus_new.BUS_CPU_A08p.out_new());
+  /*_p10.DOSO*/ wire DOSO_A00p = not1(DYTE_A00n);
+  /*_p10.DUPA*/ wire DUPA_A01p = not1(AFOB_A01n);
+  /*_p10.DENO*/ wire DENO_A02p = not1(ABUB_A02n);
+  /*#p10.DUCE*/ wire DUCE_A03p = not1(ACOL_A03n);
+
+  /*_p10.DAZA*/ wire DAZA_ADDR_0110n = nand4(ACOL_A03n, DENO_A02p, DUPA_A01p, DYTE_A00n);
+  /*_p10.DUVU*/ wire DUVU_ADDR_0111n = nand4(ACOL_A03n, DENO_A02p, DUPA_A01p, DOSO_A00p);
+  /*_p10.DAFY*/ wire DAFY_ADDR_1000n = nand4(DUCE_A03p, ABUB_A02n, AFOB_A01n, DYTE_A00n);
+  /*_p10.DEJY*/ wire DEJY_ADDR_1001n = nand4(DUCE_A03p, ABUB_A02n, AFOB_A01n, DOSO_A00p);
+
+  /*_p07.BAKO*/ wire BAKO_ADDR_FFXXn = not1(abus_new.SYKE_ADDR_HIp_new());
+  /*_p10.ATEG*/ wire ATEG_ADDR_XX1Xn = or4(abus_new.BUS_CPU_A07p.out_new(), abus_new.BUS_CPU_A06p.out_new(), abus_new.BUS_CPU_A05p.out_new(), ATUP_A04n);
+  /*_p10.BUNO*/ wire BUNO_ADDR_FF1Xp = nor2(BAKO_ADDR_FFXXn, ATEG_ADDR_XX1Xn);
+  /*_p10.BANU*/ wire BANU_ADDR_FF1Xn = not1(BUNO_ADDR_FF1Xp);
+  /*_p10.COVY*/ wire COVY_ADDR_FF16p = nor2(BANU_ADDR_FF1Xn, DAZA_ADDR_0110n);
+  /*_p10.DUTU*/ wire DUTU_ADDR_FF17p = nor2(BANU_ADDR_FF1Xn, DUVU_ADDR_0111n);
+  /*_p10.DARA*/ wire DARA_ADDR_FF18p = nor2(BANU_ADDR_FF1Xn, DAFY_ADDR_1000n);
+  /*_p10.DOZA*/ wire DOZA_ADDR_FF19p = nor2(BANU_ADDR_FF1Xn, DEJY_ADDR_1001n);
+
   /*_p09.AGUZ*/ wire AGUZ_CPU_RDn = not1(reg_new.cpu_signals.TEDO_CPU_RDp.qp_new());
   /*_p10.BAFU*/ wire BAFU_CPU_WRn = not1(reg_new.cpu_signals.TAPU_CPU_WRp.qp_new());
   /*_p10.BOGY*/ wire BOGY_CPU_WRp = not1(BAFU_CPU_WRn);
@@ -110,8 +140,8 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p15.DOPE*/ ch2_new.DOPE_TRIGp_d00.dff17(reg_new.sys_clk.DOVA_ABCDxxxx(), CYWU_APU_RSTn_new, ch2_old.ETAP_NR24_TRIGp.qp_oldB());
 
   {
-    /*#p14.ENUF*/ wire ENUF_FF17_WRp = and2(reg_new.cpu_abus.DUTU_ADDR_FF17p(), BOGY_CPU_WRp);
-    /*#p14.GERE*/ wire GERE_FF17_WRp = and2(BOGY_CPU_WRp, reg_new.cpu_abus.DUTU_ADDR_FF17p());
+    /*#p14.ENUF*/ wire ENUF_FF17_WRp = and2(DUTU_ADDR_FF17p, BOGY_CPU_WRp);
+    /*#p14.GERE*/ wire GERE_FF17_WRp = and2(BOGY_CPU_WRp, DUTU_ADDR_FF17p);
     /*#p14.JEDE*/ wire JEDE_FF17_WRn = not1(GERE_FF17_WRp);
 
     // Clock polarities wrong on die again
@@ -129,8 +159,8 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
   {
-    /*_p14.DOSA*/ wire DOSA_NR23_WR1 = and2(reg_new.cpu_abus.DARA_ADDR_FF18p(), BOGY_CPU_WRp);
-    /*_p14.EXUC*/ wire EXUC_NR23_WR2 = and2(reg_new.cpu_abus.DARA_ADDR_FF18p(), BOGY_CPU_WRp);
+    /*_p14.DOSA*/ wire DOSA_NR23_WR1 = and2(DARA_ADDR_FF18p, BOGY_CPU_WRp);
+    /*_p14.EXUC*/ wire EXUC_NR23_WR2 = and2(DARA_ADDR_FF18p, BOGY_CPU_WRp);
     /*_p14.ESUR*/ wire ESUR_NR23_WRn1 = not1(DOSA_NR23_WR1);
     /*_p14.FYXO*/ wire FYXO_NR23_WRn2 = not1(EXUC_NR23_WR2);
     /*_p14.HUDE*/ wire HUDE_APU_RSTn_new = not1(reg_new.KEBA_APU_RSTp_new());
@@ -145,20 +175,20 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   }
 
   {
-    /*_pXX.JENU*/ wire JENU_NR24_WRp = and2(reg_new.cpu_abus.DOZA_ADDR_FF19p(), BOGY_CPU_WRp);
+    /*_pXX.JENU*/ wire JENU_NR24_WRp = and2(DOZA_ADDR_FF19p, BOGY_CPU_WRp);
     /*_pXX.KYSA*/ wire KYSA_NR24_WRn = not1(JENU_NR24_WRp);
     /*_p14.KYPU*/ wire KYPU_APU_RSTn_new = not1(reg_new.KEBA_APU_RSTp_new());
     /*_pXX.JEFU*/ ch2_new.JEFU_NR24_FREQ08p.dff9b(KYSA_NR24_WRn, KYPU_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
     /*_pXX.JANY*/ ch2_new.JANY_NR24_FREQ09p.dff9b(KYSA_NR24_WRn, KYPU_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
     /*_pXX.JUPY*/ ch2_new.JUPY_NR24_FREQ10p.dff9b(KYSA_NR24_WRn, KYPU_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
 
-    /*#p??.DETA*/ wire DETA_NR24_WRn = nand2(BOGY_CPU_WRp, reg_new.cpu_abus.DOZA_ADDR_FF19p());
+    /*#p??.DETA*/ wire DETA_NR24_WRn = nand2(BOGY_CPU_WRp, DOZA_ADDR_FF19p);
     /*#p15.DERA*/ wire DERA_TRIG_RSTn = nor2(reg_new.KEBA_APU_RSTp_new(), ch2_new.DOPE_TRIGp_d00.qp_new());
     /*#p??.ETAP*/ ch2_new.ETAP_NR24_TRIGp.dff9b(DETA_NR24_WRn, DERA_TRIG_RSTn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
     // This goes to all the CHN_LENENp registers...why?
     /*_p16.ANUJ*/ wire ANUJ_CPU_WR_WEIRD = and2(reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_new(), BOGY_CPU_WRp);
-    /*#pXX.EVYF*/ wire EVYF = nand2(ANUJ_CPU_WR_WEIRD, reg_new.cpu_abus.DOZA_ADDR_FF19p());
+    /*#pXX.EVYF*/ wire EVYF = nand2(ANUJ_CPU_WR_WEIRD, DOZA_ADDR_FF19p);
     /*_p14.FAZO*/ wire FAZO_APU_RSTn_new = not1(reg_new.KEBA_APU_RSTp_new());
     /*#pXX.EMER*/ ch2_new.EMER_NR24_LENENp.dff9b(EVYF, FAZO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
   }
@@ -230,7 +260,7 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
     /*#p15.FUJY*/ wire FUJY_new = and2(ch2_new.GYKO_SAMPLE_CLKp.qp_new(), reg_new.spu.CEMO_xBCDExxx.qp_new());
     /*#p15.GYRE*/ wire GYRE_RSTn_new = nor3(reg_new.KEBA_APU_RSTp_new(), ch2_new.ELOX_TRIGp_d01.qp_new(), FUJY_new);
-    /*#p15.GYKO*/ ch2_new.GYKO_SAMPLE_CLKp.dff17_async(GYRE_RSTn_new);
+    /*#p15.GYKO*/ ch2_new.GYKO_SAMPLE_CLKp.dff17_rst(GYRE_RSTn_new);
 
     /*#p15.ETUK*/ wire ETUK_SAMPLE_CLKn_new = not1(ch2_new.GYKO_SAMPLE_CLKp.qp_new());
     /*#p15.DAVU*/ wire DAVU_SAMPLE_CLKp_new = not1(ETUK_SAMPLE_CLKn_new);
@@ -273,7 +303,7 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p15.HOLY*/ wire HOLY_CLKp_new = nor2(reg_new.spu.HORU_CLK_512_new(), GADE_new);
     /*#p15.JUPU*/ wire JUPU_ENV_OFFp_new = nor3(ch2_new.HYFU_NR22_P0p.qp_newB(), ch2_new.HORE_NR22_P1p.qp_newB(), ch2_new.HAVA_NR22_P2p.qp_newB());
     /*#p15.HAFE*/ wire HAFE_RSTn_new = nor4(HOLY_CLKp_new, JUPU_ENV_OFFp_new, ch2_new.ELOX_TRIGp_d01.qp_new(), reg_new.KEBA_APU_RSTp_new()); // schematic wrong this is nor4
-    /*#p15.JOPA*/ ch2_new.JOPA_ENV_TICK.dff17_async(HAFE_RSTn_new);
+    /*#p15.JOPA*/ ch2_new.JOPA_ENV_TICK.dff17_rst(HAFE_RSTn_new);
   }
 
   //----------------------------------------
@@ -337,7 +367,7 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p15.DEME*/ wire DEME_LEN_CLKn_new = nor3(ch2_old.CYRE_LEN_DONEp.qp_old(), reg_new.spu.BUFY_CLK_256n(), ch2_new.EMER_NR24_LENENp.qn_newB()); // why was this or2?
     /*_p15.DYRO*/ wire DYRO_LEN_CLKp_new = not1(DEME_LEN_CLKn_new);
 
-    /*_p14.AGYN*/ wire AGYN_FF16_WRn_new = nand2(BOGY_CPU_WRp, reg_new.cpu_abus.COVY_ADDR_FF16p());
+    /*_p14.AGYN*/ wire AGYN_FF16_WRn_new = nand2(BOGY_CPU_WRp, COVY_ADDR_FF16p);
     /*_p15.BYMO*/ wire BYMO_FF16_WRp_new = not1(AGYN_FF16_WRn_new);
     /*_p15.AGET*/ wire AGET_FF16_WRp_new = not1(AGYN_FF16_WRn_new);
     /*_p14.ASYP*/ wire ASYP_FF16_WRp_new = not1(AGYN_FF16_WRn_new);
@@ -360,7 +390,7 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   {
     /*#p09.AFAT*/ wire AFAT_APU_RSTn_new = not1(reg_new.KEBA_APU_RSTp_new());
-    /*_p14.BACU*/ wire BACU_FF16_WRp = and2(reg_new.cpu_abus.COVY_ADDR_FF16p(), BOGY_CPU_WRp);
+    /*_p14.BACU*/ wire BACU_FF16_WRp = and2(COVY_ADDR_FF16p, BOGY_CPU_WRp);
     /*_p14.BUDU*/ wire BUDU_FF16_WRn = not1(BACU_FF16_WRp);
     /*_p14.BERA*/ ch2_new.BERA_NR21_DUTY0.dff9b(BUDU_FF16_WRn, AFAT_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
     /*_p14.BAMY*/ ch2_new.BAMY_NR21_DUTY1.dff9b(BUDU_FF16_WRn, AFAT_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
@@ -397,7 +427,7 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   {
     /*_p14.BYGO*/ wire BYGO_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*_p14.CORO*/ wire CORO_NR21_RDn = nand2(reg_new.cpu_abus.COVY_ADDR_FF16p(), BYGO_CPU_RDp);
+    /*_p14.CORO*/ wire CORO_NR21_RDn = nand2(COVY_ADDR_FF16p, BYGO_CPU_RDp);
     /*_p14.CECY*/ triwire CECY_D6 = tri6_nn(CORO_NR21_RDn, ch2_new.BERA_NR21_DUTY0.qn_newB()); // polarity?
     /*_p14.CEKA*/ triwire CEKA_D7 = tri6_nn(CORO_NR21_RDn, ch2_new.BAMY_NR21_DUTY1.qn_newB());
     
@@ -409,8 +439,8 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   // NR22 read
 
   {
-    /*_p14.GURE*/ wire GURE = not1(reg_new.cpu_abus.DUTU_ADDR_FF17p());
-    /*_p14.FYRY*/ wire FYRY = not1(reg_new.cpu_abus.DUTU_ADDR_FF17p());
+    /*_p14.GURE*/ wire GURE = not1(DUTU_ADDR_FF17p);
+    /*_p14.FYRY*/ wire FYRY = not1(DUTU_ADDR_FF17p);
     /*_p14.GEXA*/ wire GEXA = or2(GURE, AGUZ_CPU_RDn);
     /*_p14.GURU*/ wire GURU = or2(FYRY, AGUZ_CPU_RDn);
 
@@ -441,7 +471,7 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p14.FAPE*/ wire FAPE_CPU_RDp_DBGn = nand2(FOGE_CPU_RDp, EDEK_NR52_DBG_APUp); // schematic wrong? was and2
 
   {
-    /*#p14.FERY*/ wire FERY_A03n = not1(reg_new.cpu_abus.DUCE_A03p());
+    /*#p14.FERY*/ wire FERY_A03n = not1(DUCE_A03p);
     /*#p14.GUZA*/ wire GUZA = nor2(FERY_A03n, FAPE_CPU_RDp_DBGn);
     /*#p14.FUTY*/ wire FUTY = not1(GUZA);
 
@@ -469,9 +499,9 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   {
     /*#pXX.GADO*/ wire GADO_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*#p14.GOTE*/ wire GOTE_ADDR_FF19n = not1(reg_new.cpu_abus.DOZA_ADDR_FF19p());
+    /*#p14.GOTE*/ wire GOTE_ADDR_FF19n = not1(DOZA_ADDR_FF19p);
     /*#p14.HYPO*/ wire HYPO_NR24_RDn = or2(GOTE_ADDR_FF19n, FAPE_CPU_RDp_DBGn);
-    /*#pXX.HUMA*/ wire HUMA_NR24_RDn = nand2(reg_new.cpu_abus.DOZA_ADDR_FF19p(), GADO_CPU_RDp);
+    /*#pXX.HUMA*/ wire HUMA_NR24_RDn = nand2(DOZA_ADDR_FF19p, GADO_CPU_RDp);
 
     /*#p14.HUNA*/ triwire HUNA_D0 = tri6_nn(HYPO_NR24_RDn, ch2_new.HEVY_COUNT08.qn_new());
     /*#p14.JARO*/ triwire JARO_D1 = tri6_nn(HYPO_NR24_RDn, ch2_new.HEPU_COUNT09.qn_new());

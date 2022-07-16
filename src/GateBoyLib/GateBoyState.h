@@ -69,14 +69,6 @@ struct GateBoyState {
 
 #ifdef SIM_AUDIO
   
-  wire KEBA_APU_RSTp_old() const {
-    /*_p09.HAPO*/ wire HAPO_SYS_RSTp_old = not1(sys_rst.ALUR_SYS_RSTn_old());
-    /*_p09.JYRO*/ wire JYRO_APU_RSTp_old = or2(HAPO_SYS_RSTp_old, spu.HADA_NR52_ALL_SOUND_ON.qn_old());
-    /*_p09.KUBY*/ wire KUBY_APU_RSTn_old = not1(JYRO_APU_RSTp_old);
-    /*_p09.KEBA*/ wire KEBA_APU_RSTp_old = not1(KUBY_APU_RSTn_old);
-    return KEBA_APU_RSTp_old;
-  }
-
   wire KEBA_APU_RSTp_new() const {
     /*_p09.HAPO*/ wire HAPO_SYS_RSTp_new = not1(sys_rst.ALUR_SYS_RSTn_new());
     /*_p09.JYRO*/ wire JYRO_APU_RSTp_new = or2(HAPO_SYS_RSTp_new, spu.HADA_NR52_ALL_SOUND_ON.qn_new());

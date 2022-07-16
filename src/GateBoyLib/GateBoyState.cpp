@@ -6,7 +6,12 @@
 
 //-----------------------------------------------------------------------------
 
-/*#p08.TEXO*/ wire GateBoyState::TEXO_ADDR_VRAMn_new() const { return and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), cpu_abus.TEVY_ADDR_VRAMn_new()); }
+wire GateBoyState::TEXO_ADDR_VRAMn_new() const {
+  /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(cpu_abus.BUS_CPU_A13p.out_new(), cpu_abus.BUS_CPU_A14p.out_new(), cpu_abus.SORE_A15n_new());
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
+  return TEXO_ADDR_VRAMn_new;
+}
+
 /*#p25.TEFA*/ wire GateBoyState::TEFA_ADDR_VRAMp_new() const { return nor2(cpu_abus.SYRO_FE00_FFFF_new(), TEXO_ADDR_VRAMn_new()); }
 /*#p25.SOSE*/ wire GateBoyState::SOSE_ADDR_VRAMp_new() const { return and2(TEFA_ADDR_VRAMp_new(), cpu_abus.BUS_CPU_A15p.out_any()); }
 /*_p08.LEVO*/ wire GateBoyState::LEVO_ADDR_VRAMn_new() const { return not1(TEXO_ADDR_VRAMn_new()); }

@@ -208,7 +208,6 @@ void GateBoyCpuABus::set_addr(uint16_t bus_addr_new)
 /*_p22.XENO*/ wire GateBoyCpuABus::XENO_A01n_new() const { return not1(BUS_CPU_A01p.out_new()); }
 /*_p22.XUSY*/ wire GateBoyCpuABus::XUSY_A02n_new() const { return not1(BUS_CPU_A02p.out_new()); }
 /*_p22.XERA*/ wire GateBoyCpuABus::XERA_A03n_new() const { return not1(BUS_CPU_A03p.out_new()); }
-/*_p07.TONA*/ wire GateBoyCpuABus::TONA_A08n_new() const { return not1(BUS_CPU_A08p.out_new()); }
 /*#p08.SORE*/ wire GateBoyCpuABus::SORE_A15n_new() const { return not1(BUS_CPU_A15p.out_new()); }
 /*_p06.SEFY*/ wire GateBoyCpuABus::SEFY_A02n_new() const { return not1(BUS_CPU_A02p.out_new()); }
 /*_p08.SOGY*/ wire GateBoyCpuABus::SOGY_A14n_new() const { return not1(BUS_CPU_A14p.out_new()); }
@@ -221,7 +220,12 @@ void GateBoyCpuABus::set_addr(uint16_t bus_addr_new)
 /*_p07.TYRO*/ wire GateBoyCpuABus::TYRO_XX_0x0x0000p_new() const { return nor6(BUS_CPU_A07p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A03p.out_new(), BUS_CPU_A02p.out_new(), BUS_CPU_A01p.out_new(), BUS_CPU_A00p.out_new()); }
 /*_p07.TUFA*/ wire GateBoyCpuABus::TUFA_XX_x1x1xxxxp_new() const { return and2(BUS_CPU_A04p.out_new(), BUS_CPU_A06p.out_new()); }
 
-/*#p07.SYKE*/ wire GateBoyCpuABus::SYKE_ADDR_HIp_new() const { return nor2(TUNA_0000_FDFF_new(), TONA_A08n_new()); }
+wire GateBoyCpuABus::SYKE_ADDR_HIp_new() const {
+  /*_p07.TONA*/ wire TONA_A08n = not1(BUS_CPU_A08p.out_new());
+  /*#p07.SYKE*/ wire SYKE_ADDR_HIp_new = nor2(TUNA_0000_FDFF_new(), TONA_A08n);
+  return SYKE_ADDR_HIp_new;
+}
+
 /*#p07.SOHA*/ wire GateBoyCpuABus::SOHA_ADDR_HIn_new() const { return not1(SYKE_ADDR_HIp_new()); }
 
 /*_p22.XALY*/ wire GateBoyCpuABus::XALY_0x00xxxx_new  () const { return nor3(BUS_CPU_A07p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A04p.out_new()); }
@@ -269,7 +273,6 @@ void GateBoyCpuABus::set_addr(uint16_t bus_addr_new)
 /*_p22.WUTU*/ wire GateBoyCpuABus::WUTU_ADDR_PPUn_new() const { return nand3(SYKE_ADDR_HIp_new(), BUS_CPU_A06p.out_new(), XALY_0x00xxxx_new()); }
 /*_p22.WERO*/ wire GateBoyCpuABus::WERO_ADDR_PPUp_new() const { return not1(WUTU_ADDR_PPUn_new()); }
 
-/*#p08.TEVY*/ wire GateBoyCpuABus::TEVY_ADDR_VRAMn_new() const { return or3(BUS_CPU_A13p.out_new(), BUS_CPU_A14p.out_new(), SORE_A15n_new()); }
 
 
 //-----------------------------------------------------------------------------

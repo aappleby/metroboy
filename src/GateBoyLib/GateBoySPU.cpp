@@ -118,8 +118,31 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   
   /*_p09.HAPO*/ wire HAPO_SYS_RSTp_new = not1(reg_new.sys_rst.ALUR_SYS_RSTn_new());
 
+  /*_p10.DYTE*/ wire DYTE_A00n = not1(abus_new.BUS_CPU_A00p.out_new());
+  /*_p10.AFOB*/ wire AFOB_A01n = not1(abus_new.BUS_CPU_A01p.out_new());
+  /*_p10.ABUB*/ wire ABUB_A02n = not1(abus_new.BUS_CPU_A02p.out_new());
+  /*_p10.ACOL*/ wire ACOL_A03n = not1(abus_new.BUS_CPU_A03p.out_new());
+  /*#p10.ATUP*/ wire ATUP_A04n = not1(abus_new.BUS_CPU_A04p.out_new());
+  /*#p10.BOXY*/ wire BOXY_A05n = not1(abus_new.BUS_CPU_A05p.out_new());
+  /*#p10.ASAD*/ wire ASAD_A06n = not1(abus_new.BUS_CPU_A06p.out_new());
+  /*#p10.AVUN*/ wire AVUN_A07n = not1(abus_new.BUS_CPU_A07p.out_new());
+  /*_p10.DOSO*/ wire DOSO_A00p = not1(DYTE_A00n);
+  /*_p10.DUPA*/ wire DUPA_A01p = not1(AFOB_A01n);
+  /*_p10.DENO*/ wire DENO_A02p = not1(ABUB_A02n);
+  /*#p10.DUCE*/ wire DUCE_A03p = not1(ACOL_A03n);
+
+  /*_p10.AWET*/ wire AWET_ADDR_XX2Xn = or4(abus_new.BUS_CPU_A07p.out_new(), abus_new.BUS_CPU_A06p.out_new(), BOXY_A05n, abus_new.BUS_CPU_A04p.out_new());
+  /*_p07.BAKO*/ wire BAKO_ADDR_FFXXn = not1(abus_new.SYKE_ADDR_HIp_new());
+  /*_p10.BEZY*/ wire BEZY_ADDR_FF2Xn = or2(AWET_ADDR_XX2Xn, BAKO_ADDR_FFXXn);
+  /*_p10.CONA*/ wire CONA_ADDR_FF2Xp = not1(BEZY_ADDR_FF2Xn);
+
+  /*_p10.DATU*/ wire DATU_ADDR_0100n = nand4(ACOL_A03n, DENO_A02p, AFOB_A01n, DYTE_A00n);
+  /*_p10.DURA*/ wire DURA_ADDR_0101n = nand4(ACOL_A03n, DENO_A02p, AFOB_A01n, DOSO_A00p);
+  /*#p10.EKAG*/ wire EKAG_ADDR_0110p =  and4(ACOL_A03n, DENO_A02p, DUPA_A01p, DYTE_A00n);
+
   // The APU reset register _must_ be ticked first.
-  /*#p10.DOXY*/ wire DOXY_ADDR_FF26p = and2(abus_new.CONA_ADDR_FF2Xp(), abus_new.EKAG_ADDR_0110p()); // was this wrong on the schematic?
+
+  /*#p10.DOXY*/ wire DOXY_ADDR_FF26p = and2(CONA_ADDR_FF2Xp, EKAG_ADDR_0110p); // was this wrong on the schematic?
   /*#p09.HAWU*/ wire HAWU_NR52_WRn = nand2(DOXY_ADDR_FF26p, BOGY_CPU_WRp);
   /*_p09.GUFO*/ wire GUFO_SYS_RSTn_new = not1(HAPO_SYS_RSTp_new);
   /*#p09.HADA*/ spu_new.HADA_NR52_ALL_SOUND_ON.dff17(HAWU_NR52_WRn, GUFO_SYS_RSTn_new, dbus_old.BUS_CPU_D07p.out_old()); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
@@ -187,7 +210,8 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   tick_ch4(reg_old, reg_new);
 
   {
-    /*_p09.BOSU*/ wire BOSU_NR50_WRn = nand2(abus_new.CAFY_ADDR_FF24p(), BOGY_CPU_WRp);
+    /*_p10.CAFY*/ wire CAFY_ADDR_FF24p = nor2(BEZY_ADDR_FF2Xn, DATU_ADDR_0100n);
+    /*_p09.BOSU*/ wire BOSU_NR50_WRn = nand2(CAFY_ADDR_FF24p, BOGY_CPU_WRp);
     /*_p09.BAXY*/ wire BAXY_NR50_WRp = not1(BOSU_NR50_WRn);
     /*_p09.BOWE*/ wire BOWE_NR50_WRp = not1(BOSU_NR50_WRn);
     /*_p09.BUBU*/ wire BUBU_NR50_WRn = not1(BAXY_NR50_WRp);
@@ -216,7 +240,8 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   {
     // The die trace for NR51 has the clkp/clkn backwards compared to the other dff9s.
 
-    /*#p09.BUPO*/ wire BUPO_NR51_WRn = nand2(abus_new.CORA_ADDR_FF25p(), BOGY_CPU_WRp);
+    /*_p10.CORA*/ wire CORA_ADDR_FF25p = nor2(BEZY_ADDR_FF2Xn, DURA_ADDR_0101n);
+    /*#p09.BUPO*/ wire BUPO_NR51_WRn = nand2(CORA_ADDR_FF25p, BOGY_CPU_WRp);
     /*#p09.BONO*/ wire BONO_NR51_WRp = not1(BUPO_NR51_WRn);
     /*#p09.BYFA*/ wire BYFA_NR51_WRp = not1(BUPO_NR51_WRn);
     /*#p09.BONO*/ wire BONO_NR51_WRn = not1(BONO_NR51_WRp);
@@ -243,7 +268,7 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   }
 
   {
-    /*#p10.DOXY*/ wire DOXY_ADDR_FF26p = and2(abus_new.CONA_ADDR_FF2Xp(), abus_new.EKAG_ADDR_0110p()); // was this wrong on the schematic?
+    /*#p10.DOXY*/ wire DOXY_ADDR_FF26p = and2(CONA_ADDR_FF2Xp, EKAG_ADDR_0110p); // was this wrong on the schematic?
     /*#p09.BOPY*/ wire BOPY_NR52_WRn = nand2(BOGY_CPU_WRp, DOXY_ADDR_FF26p);
     /*#p09.BOWY*/ spu_new.BOWY_NR52_DBG_SWEEP   .dff17(BOPY_NR52_WRn, KEPY_APU_RSTn_new, dbus_old.BUS_CPU_D05p.out_old());
   }
@@ -258,7 +283,9 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
 
   {
-    /*_p09.BEFU*/ wire BEFU_NR50_RDp = nor2(AGUZ_CPU_RDn, abus_new.BYMA_ADDR_FF24n());
+    /*_p10.CAFY*/ wire CAFY_ADDR_FF24p = nor2(BEZY_ADDR_FF2Xn, DATU_ADDR_0100n);
+    /*_p09.BYMA*/ wire BYMA_ADDR_FF24n = not1(CAFY_ADDR_FF24p);
+    /*_p09.BEFU*/ wire BEFU_NR50_RDp = nor2(AGUZ_CPU_RDn, BYMA_ADDR_FF24n);
     /*_p09.ADAK*/ wire ADAK_NR50_RDn = not1(BEFU_NR50_RDp);
 
     /*_p09.AKOD*/ triwire AKOD_D00 = tri6_nn(ADAK_NR50_RDn, spu_new.APEG_NR50_VOL_L0.qn_newB());
@@ -281,7 +308,9 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   }
 
   {
-    /*_p09.HEFA*/ wire HEFA_NR51_RDp = nor2(abus_new.GEPA_ADDR_FF25n(), AGUZ_CPU_RDn); // outline wrong color in die
+    /*_p10.CORA*/ wire CORA_ADDR_FF25p = nor2(BEZY_ADDR_FF2Xn, DURA_ADDR_0101n);
+    /*_p09.GEPA*/ wire GEPA_ADDR_FF25n = not1(CORA_ADDR_FF25p);
+    /*_p09.HEFA*/ wire HEFA_NR51_RDp = nor2(GEPA_ADDR_FF25n, AGUZ_CPU_RDn); // outline wrong color in die
     /*_p09.GUMU*/ wire GUMU_NR51_RDn = not1(HEFA_NR51_RDp);
 
     /*_p09.BUZU*/ triwire BUZU_D0 = tri6_nn(GUMU_NR51_RDn, spu_new.ANEV_NR51_RCH1_ENp.qn_newB()); 
@@ -310,7 +339,7 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
     /*_p09.CETO*/ wire CETO_CPU_RDp = not1(AGUZ_CPU_RDn);
     /*_p09.GAXO*/ wire GAXO_CPU_RDp = not1(AGUZ_CPU_RDn);
 
-    /*#p10.DOXY*/ wire DOXY_ADDR_FF26p = and2(abus_new.CONA_ADDR_FF2Xp(), abus_new.EKAG_ADDR_0110p()); // was this wrong on the schematic?
+    /*#p10.DOXY*/ wire DOXY_ADDR_FF26p = and2(CONA_ADDR_FF2Xp, EKAG_ADDR_0110p); // was this wrong on the schematic?
     /*#p09.DOLE*/ wire DOLE_NR52_RDn = nand2(DOXY_ADDR_FF26p, CETO_CPU_RDp);
     /*#p09.DURU*/ wire DURU_NR52_RDn = nand2(DOXY_ADDR_FF26p, CURU_CPU_RDp);
     /*#p09.FEWA*/ wire FEWA_NR52_RDn = nand2(DOXY_ADDR_FF26p, GAXO_CPU_RDp);

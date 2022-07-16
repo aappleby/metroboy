@@ -409,7 +409,7 @@ struct DFF17 : public BitBase {
     state = bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN;
   }
 
-  void dff17_async(wire RSTn) {
+  void dff17_rst(wire RSTn) {
     if (!bit0(RSTn)) {
       state &= ~1;
     }

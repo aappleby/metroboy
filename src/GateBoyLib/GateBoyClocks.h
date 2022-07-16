@@ -8,72 +8,84 @@
 struct GateBoyClock {
   void reset_to_cart();
 
-  wire ABOL_CLKREQn_new() const;
-  wire BUTY_CLKREQp_new() const;
+  /*_p01.ABOL*/ wire ABOL_CLKREQn_new() const { return not1(SIG_CPU_CLKREQ.out_new()); }
+  /*#p01.BUTY*/ wire BUTY_CLKREQp_new() const { return not1(ABOL_CLKREQn_new()); }
 
-  wire AZOF_AxCxExGx_old() const;
-  wire ZAXY_xBxDxFxH_old() const;
-  wire ZEME_AxCxExGx_old() const;
-  wire XYVA_xBxDxFxH_old() const;
-  wire XOTA_AxCxExGx_old() const;
-  wire XYFY_xBxDxFxH_old() const;
-  wire ALET_xBxDxFxH_old() const;
-  wire LAPE_AxCxExGx_old() const;
-  wire MEHE_AxCxExGx_old() const;
-  wire MYVO_AxCxExGx_old() const;
-  wire MOXE_AxCxExGx_old() const;
-  wire TAVA_xBxDxFxH_old() const;
+  wire AZOF_AxCxExGx_old() const {
+    /*_p01.ATAL*/ wire ATAL_xBxDxFxH_old = not1(AVET_AxCxExGx.out_old());
+    /*_p01.AZOF*/ wire AZOF_AxCxExGx_old = not1(ATAL_xBxDxFxH_old);
+    return AZOF_AxCxExGx_old;
+  }
 
-  wire AZOF_AxCxExGx_new() const;
-  wire ZAXY_xBxDxFxH_new() const;
-  wire ZEME_AxCxExGx_new() const;
-  wire XYVA_xBxDxFxH_new() const;
-  wire XOTA_AxCxExGx_new() const;
-  wire XYFY_xBxDxFxH_new() const;
-  wire ALET_xBxDxFxH_new() const;
-  wire LAPE_AxCxExGx_new() const;
-  wire MEHE_AxCxExGx_new() const;
-  wire MYVO_AxCxExGx_new() const;
-  wire MOXE_AxCxExGx_new() const;
-  wire TAVA_xBxDxFxH_new() const;
+  wire AZOF_AxCxExGx_new() const {
+    /*_p01.ATAL*/ wire ATAL_xBxDxFxH_new = not1(AVET_AxCxExGx.out_new());
+    /*_p01.AZOF*/ wire AZOF_AxCxExGx_new = not1(ATAL_xBxDxFxH_new);
+    return AZOF_AxCxExGx_new;
+  }
 
-  wire ATYP_ABCDxxxx_new() const;
-  wire AFEP_AxxxxFGH_new() const;
-  wire AROV_xxCDEFxx_new() const;
-  wire ADAR_ABCxxxxH_new() const;
 
-  wire BEKO_ABCDxxxx_new() const;
-  wire BAPY_xxxxxxGH_new() const;
-  wire BERU_ABCDEFxx_new() const;
-  wire BUFA_xxxxxxGH_new() const;
-  wire BOLO_ABCDEFxx_new() const;
-  wire BEJA_xxxxEFGH_new() const;
-  wire BANE_ABCDxxxx_new() const;
-  wire BELO_xxxxEFGH_new() const;
-  wire BAZE_ABCDxxxx_new() const;
-  wire BUTO_xBCDEFGH_new() const;
-  wire BELE_Axxxxxxx_new() const;
-  wire BUGO_xBCDExxx_new() const;
-  wire BATE_AxxxxxGH_new() const;
-  wire BASU_xBCDEFxx_new() const;
-  wire BUKE_AxxxxxGH_new() const;
-  wire BELU_xxxxEFGH_new() const;
-  wire BYRY_ABCDxxxx_new() const;
-  wire BUDE_xxxxEFGH_new() const;
-  wire UVYT_ABCDxxxx_new() const;
-  wire MOPA_xxxxEFGH_new() const;
-  wire XYNY_ABCDxxxx_new() const;
+  /*_p01.ZAXY*/ wire ZAXY_xBxDxFxH_old() const { return not1(AZOF_AxCxExGx_old()); }
+  /*#p01.ZEME*/ wire ZEME_AxCxExGx_old() const { return not1(ZAXY_xBxDxFxH_old()); }
+  /*_p29.XYVA*/ wire XYVA_xBxDxFxH_old() const { return not1(ZEME_AxCxExGx_old()); }
+  /*_p29.XOTA*/ wire XOTA_AxCxExGx_old() const { return not1(XYVA_xBxDxFxH_old()); }
+  /*_p29.XYFY*/ wire XYFY_xBxDxFxH_old() const { return not1(XOTA_AxCxExGx_old()); }
+  /*#p01.ALET*/ wire ALET_xBxDxFxH_old() const { return not1(ZEME_AxCxExGx_old()); }
+  /*_p01.LAPE*/ wire LAPE_AxCxExGx_old() const { return not1(ALET_xBxDxFxH_old()); }
+  /*#p27.MEHE*/ wire MEHE_AxCxExGx_old() const { return not1(ALET_xBxDxFxH_old()); }
+  /*#p27.MYVO*/ wire MYVO_AxCxExGx_old() const { return not1(ALET_xBxDxFxH_old()); }
+  /*_p27.MOXE*/ wire MOXE_AxCxExGx_old() const { return not1(ALET_xBxDxFxH_old()); }
+  /*_p27.TAVA*/ wire TAVA_xBxDxFxH_old() const { return not1(LAPE_AxCxExGx_old()); }
 
-  wire TALU_xxCDEFxx_new() const;
-  wire XUPY_ABxxEFxx_new() const;
-  wire XOCE_xBCxxFGx_new() const;
-  wire WOJO_AxxxExxx_new() const;
-  wire SONO_ABxxxxGH_new() const;
-  wire XYSO_xBCDxFGH_new() const;
-  wire CYKE_ABxxEFxx_new() const;
-  wire WUDA_xxCDxxGH_new() const;
-  wire AWOH_xxCDxxGH_new() const;
-  wire AJAX_xxxxEFGH_new() const;
+  /*_p01.ZAXY*/ wire ZAXY_xBxDxFxH_new() const { return not1(AZOF_AxCxExGx_new()); }
+  /*#p01.ZEME*/ wire ZEME_AxCxExGx_new() const { return not1(ZAXY_xBxDxFxH_new()); }
+  /*_p29.XYVA*/ wire XYVA_xBxDxFxH_new() const { return not1(ZEME_AxCxExGx_new()); }
+  /*_p29.XOTA*/ wire XOTA_AxCxExGx_new() const { return not1(XYVA_xBxDxFxH_new()); }
+  /*_p29.XYFY*/ wire XYFY_xBxDxFxH_new() const { return not1(XOTA_AxCxExGx_new()); }
+  /*#p01.ALET*/ wire ALET_xBxDxFxH_new() const { return not1(ZEME_AxCxExGx_new()); }
+  /*_p01.LAPE*/ wire LAPE_AxCxExGx_new() const { return not1(ALET_xBxDxFxH_new()); }
+  /*#p27.MEHE*/ wire MEHE_AxCxExGx_new() const { return not1(ALET_xBxDxFxH_new()); }
+  /*#p27.MYVO*/ wire MYVO_AxCxExGx_new() const { return not1(ALET_xBxDxFxH_new()); }
+  /*_p27.MOXE*/ wire MOXE_AxCxExGx_new() const { return not1(ALET_xBxDxFxH_new()); }
+  /*_p27.TAVA*/ wire TAVA_xBxDxFxH_new() const { return not1(LAPE_AxCxExGx_new()); }
+
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx_new() const { return not1(AFUR_ABCDxxxx.qn_newB()); }
+  /*#p01.AFEP*/ wire AFEP_AxxxxFGH_new() const { return not1(ALEF_xBCDExxx.qp_newB()); }
+  /*#p01.AROV*/ wire AROV_xxCDEFxx_new() const { return not1(APUK_xxCDEFxx.qn_newB()); }
+  /*#p01.ADAR*/ wire ADAR_ABCxxxxH_new() const { return not1(ADYK_xxxDEFGx.qp_newB()); }
+
+  /*#p01.BEKO*/ wire BEKO_ABCDxxxx_new() const { return not1(BUDE_xxxxEFGH_new()); } // BEKO+BAVY parallel
+  /*#p01.BAPY*/ wire BAPY_xxxxxxGH_new() const { return nor3(ABOL_CLKREQn_new(), AROV_xxCDEFxx_new(), ATYP_ABCDxxxx_new()); }
+  /*#p01.BERU*/ wire BERU_ABCDEFxx_new() const { return not1(BAPY_xxxxxxGH_new()); }
+  /*#p01.BUFA*/ wire BUFA_xxxxxxGH_new() const { return not1(BERU_ABCDEFxx_new()); }
+  /*#p01.BOLO*/ wire BOLO_ABCDEFxx_new() const { return not1(BUFA_xxxxxxGH_new()); }
+  /*#p01.BEJA*/ wire BEJA_xxxxEFGH_new() const { return nand4(BOLO_ABCDEFxx_new(), BOLO_ABCDEFxx_new(), BEKO_ABCDxxxx_new(), BEKO_ABCDxxxx_new()); }
+  /*#p01.BANE*/ wire BANE_ABCDxxxx_new() const { return not1(BEJA_xxxxEFGH_new()); }
+  /*#p01.BELO*/ wire BELO_xxxxEFGH_new() const { return not1(BANE_ABCDxxxx_new()); }
+  /*#p01.BAZE*/ wire BAZE_ABCDxxxx_new() const { return not1(BELO_xxxxEFGH_new()); }
+  /*#p01.BUTO*/ wire BUTO_xBCDEFGH_new() const { return nand3(AFEP_AxxxxFGH_new(), ATYP_ABCDxxxx_new(), BAZE_ABCDxxxx_new()); }
+  /*#p01.BELE*/ wire BELE_Axxxxxxx_new() const { return not1(BUTO_xBCDEFGH_new()); }
+  /*#p01.BUGO*/ wire BUGO_xBCDExxx_new() const { return not1(AFEP_AxxxxFGH_new()); }
+  /*#p01.BATE*/ wire BATE_AxxxxxGH_new() const { return nor3(BUGO_xBCDExxx_new(), AROV_xxCDEFxx_new(), ABOL_CLKREQn_new()); }
+  /*#p01.BASU*/ wire BASU_xBCDEFxx_new() const { return not1(BATE_AxxxxxGH_new()); }
+  /*#p01.BUKE*/ wire BUKE_AxxxxxGH_new() const { return not1(BASU_xBCDEFxx_new()); }
+  /*#p01.BELU*/ wire BELU_xxxxEFGH_new() const { return nor2(ATYP_ABCDxxxx_new(), ABOL_CLKREQn_new()); }
+  /*#p01.BYRY*/ wire BYRY_ABCDxxxx_new() const { return not1(BELU_xxxxEFGH_new()); }
+  /*#p01.BUDE*/ wire BUDE_xxxxEFGH_new() const { return not1(BYRY_ABCDxxxx_new()); }
+  /*_p01.UVYT*/ wire UVYT_ABCDxxxx_new() const { return not1(BUDE_xxxxEFGH_new()); }
+  /*_p04.MOPA*/ wire MOPA_xxxxEFGH_new() const { return not1(UVYT_ABCDxxxx_new()); }
+  /*_p28.XYNY*/ wire XYNY_ABCDxxxx_new() const { return not1(MOPA_xxxxEFGH_new()); }
+
+  /*#p21.TALU*/ wire TALU_xxCDEFxx_new() const { return not1(VENA_xxCDEFxx.qn_new()); }
+  /*#p29.XUPY*/ wire XUPY_ABxxEFxx_new() const { return not1(WUVU_ABxxEFxx.qn_new()); }
+  /*#p29.XOCE*/ wire XOCE_xBCxxFGx_new() const { return not1(WOSU_AxxDExxH.qp_new()); }
+  /*#p29.WOJO*/ wire WOJO_AxxxExxx_new() const { return nor2(WOSU_AxxDExxH.qn_new(), WUVU_ABxxEFxx.qn_new()); }
+  /*#p21.SONO*/ wire SONO_ABxxxxGH_new() const { return not1(TALU_xxCDEFxx_new()); }
+  /*_p29.XYSO*/ wire XYSO_xBCDxFGH_new() const { return not1(WOJO_AxxxExxx_new()); }
+  /*#p30.CYKE*/ wire CYKE_ABxxEFxx_new() const { return not1(XUPY_ABxxEFxx_new()); }
+  /*#p30.WUDA*/ wire WUDA_xxCDxxGH_new() const { return not1(CYKE_ABxxEFxx_new()); }
+  /*#p28.AWOH*/ wire AWOH_xxCDxxGH_new() const { return not1(XUPY_ABxxEFxx_new()); }
+  /*#p01.AJAX*/ wire AJAX_xxxxEFGH_new() const { return not1(ATYP_ABCDxxxx_new()); }
+
 
   /*#p17.ABUR*/ wire ABUR_xxCDEFGx() const { return not1(BUKE_AxxxxxGH_new()); }
   /*#p17.BORY*/ wire BORY_ABxxxxxH() const { return not1(ABUR_xxCDEFGx()); }

@@ -88,7 +88,7 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
   // sentinel
   music.push_back({uint64_t(-1), 0, 0});
   
-  spu.reset_to_cart();
+  spu.reset();
 
   view_control.init(screen_size);
 

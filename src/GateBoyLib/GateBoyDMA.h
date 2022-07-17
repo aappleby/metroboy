@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct RegDmaLo {
-  void reset_to_cart();
+  void reset();
 
   /*#p04.NAKY*/ DFF17 NAKY_DMA_A00p_odd;      // Axxxxxxx
   /*#p04.PYRO*/ DFF17 PYRO_DMA_A01p_odd;      // Axxxxxxx
@@ -19,7 +19,7 @@ struct RegDmaLo {
 //-----------------------------------------------------------------------------
 
 struct RegDmaHi {
-  void reset_to_cart();
+  void reset();
 
   /*#p04.NAFA*/ DFF8nB NAFA_DMA_A08p;      // xxxxxxxH
   /*_p04.PYNE*/ DFF8nB PYNE_DMA_A09p;      // xxxxxxxH
@@ -34,7 +34,7 @@ struct RegDmaHi {
 //-----------------------------------------------------------------------------
 
 struct DmaControl {
-  void reset_to_cart();
+  void reset();
 
   /*#p04.LYXE*/ NorLatch LYXE_DMA_LATCHp; // xxxxExxx
   /*#p04.MYTE*/ DFF17 MYTE_DMA_DONE_odd;      // xxxxExxx

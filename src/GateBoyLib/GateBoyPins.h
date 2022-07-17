@@ -6,7 +6,7 @@
 //-----------------------------------------------------------------------------
 
 struct PinsControl {
-  void reset_to_cart();
+  void reset();
 
   /*_PIN_80*/ PinOut PIN_80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
   /*_PIN_79*/ PinOut PIN_79_RDn;      // RDn idles low, goes high on phase B for an external write
@@ -16,7 +16,7 @@ struct PinsControl {
 //-----------------------------------------------------------------------------
 
 struct PinsABusLo {
-  void reset_to_cart();
+  void reset();
 
   /*_PIN_01*/ PinOut PIN_01_A00;
   /*_PIN_02*/ PinOut PIN_02_A01;
@@ -31,7 +31,7 @@ struct PinsABusLo {
 //-----------------------------------------------------------------------------
 
 struct PinsABusHi {
-  void reset_to_cart();
+  void reset();
 
   /*_PIN_09*/ PinOut PIN_09_A08;
   /*_PIN_10*/ PinOut PIN_10_A09;
@@ -46,7 +46,7 @@ struct PinsABusHi {
 //-----------------------------------------------------------------------------
 
 struct PinsDBus {
-  void reset_to_cart();
+  void reset();
 
   /*_PIN_17*/ PinIO PIN_17_D00;
   /*_PIN_18*/ PinIO PIN_18_D01;
@@ -61,7 +61,7 @@ struct PinsDBus {
 //-----------------------------------------------------------------------------
 
 struct PinsJoypad {
-  void reset_to_cart();
+  void reset();
 
   // Pressing a button pulls the corresponding pin _down_.
   /*_PIN_67*/ PinIn  PIN_67_JOY_P10;
@@ -75,7 +75,7 @@ struct PinsJoypad {
 //-----------------------------------------------------------------------------
 
 struct PinsSerial {
-  void reset_to_cart();
+  void reset();
 
   /*_PIN_68*/ PinIO  PIN_68_SCK;
   /*_PIN_69*/ PinIn  PIN_69_SIN;
@@ -85,7 +85,7 @@ struct PinsSerial {
 //-----------------------------------------------------------------------------
 
 struct PinsVramControl {
-  void reset_to_cart();
+  void reset();
 
   /*_PIN_43*/ PinOut PIN_43_VRAM_CSn;
   /*_PIN_45*/ PinOut PIN_45_VRAM_OEn;
@@ -95,7 +95,7 @@ struct PinsVramControl {
 //-----------------------------------------------------------------------------
 
 struct PinsVramABus {
-  void reset_to_cart();
+  void reset();
 
   /*_PIN_34*/ PinOut PIN_34_VRAM_A00;
   /*_PIN_35*/ PinOut PIN_35_VRAM_A01;
@@ -115,7 +115,7 @@ struct PinsVramABus {
 //-----------------------------------------------------------------------------
 
 struct PinsVramDBus {
-  void reset_to_cart();
+  void reset();
 
   /*_PIN_33*/ PinIO PIN_33_VRAM_D00;
   /*_PIN_31*/ PinIO PIN_31_VRAM_D01;
@@ -130,7 +130,7 @@ struct PinsVramDBus {
 //-----------------------------------------------------------------------------
 
 struct PinsSys {
-  void reset_to_cart();
+  void reset();
 
   wire UCOB_CLKBADp_old() const;
   wire ATEZ_CLKBADp_old() const;
@@ -169,7 +169,7 @@ struct PinsSys {
 //-----------------------------------------------------------------------------
 
 struct PinsLCD {
-  void reset_to_cart();
+  void reset();
 
   /*_PIN_50*/ PinOut PIN_50_LCD_DATA1;
   /*_PIN_51*/ PinOut PIN_51_LCD_DATA0;
@@ -197,8 +197,8 @@ struct GateBoyPins {
   PinsSys         sys;       // 71/76/77
   PinsControl     ctrl;      // 78-80
 
-  void reset_to_poweron();
-  void reset_to_cart();
+  void poweron();
+  void reset();
   void commit();
 };
 

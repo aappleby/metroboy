@@ -6,7 +6,7 @@
 // FIXME split into smaller structs
 
 struct GateBoySerial {
-  void reset_to_cart();
+  void reset();
 
   /*#p06.ETAF*/ DFF17 ETAF_SER_RUN; // xxxxxxxH ?
   /*#p06.CULY*/ DFF17 CULY_SER_DIR; // AxxxDxxH ?

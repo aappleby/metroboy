@@ -22,20 +22,20 @@
 
 //-----------------------------------------------------------------------------
 
-void MetroBoy::reset_to_cart(uint8_t* new_rom, size_t new_rom_size) {
+void MetroBoy::reset(uint8_t* new_rom, size_t new_rom_size) {
   check_sentinel();
 
-  gb_cpu.reset_to_cart();
+  gb_cpu.reset();
   cart.set_rom(new_rom, new_rom_size);
-  cart.reset_to_cart();
-  ppu.reset_to_cart();
-  oam.reset_to_cart();
-  spu.reset_to_cart();
-  timer.reset_to_cart();
-  vram.reset_to_cart();
-  joy.reset_to_cart();
-  serial.reset_to_cart();
-  zram.reset_to_cart();
+  cart.reset();
+  ppu.reset();
+  oam.reset();
+  spu.reset();
+  timer.reset();
+  vram.reset();
+  joy.reset();
+  serial.reset();
+  zram.reset();
 
   boot.disable_bootrom = true;
 
@@ -64,15 +64,15 @@ void MetroBoy::reset_to_bootrom(uint8_t* new_rom, size_t new_rom_size) {
   /*
   gb_cpu.reset_to_bootrom();
   cart.set_rom(new_rom, new_rom_size);
-  cart.reset_to_cart();
+  cart.reset();
   ppu.reset_to_bootrom();
-  oam.reset_to_cart();
-  spu.reset_to_cart();
-  timer.reset_to_cart();
-  vram.reset_to_cart();
-  joy.reset_to_cart();
-  serial.reset_to_cart();
-  zram.reset_to_cart();
+  oam.reset();
+  spu.reset();
+  timer.reset();
+  vram.reset();
+  joy.reset();
+  serial.reset();
+  zram.reset();
 
   boot.disable_bootrom = false;
 

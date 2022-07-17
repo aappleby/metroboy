@@ -18,7 +18,7 @@ struct GateBoyState;
 
 struct GateBoySPU {
 
-  void reset_to_cart();
+  void reset();
 
   //----------
   // SPU clocks

@@ -25,8 +25,7 @@
 struct GateBoyState;
 
 struct LogicBoyState {
-  void reset_to_bootrom();
-  void reset_to_cart();
+  void reset();
 
   Result<uint8_t, Error> peek(int addr) const;
   Result<uint8_t, Error> poke(int addr, uint8_t data_in);

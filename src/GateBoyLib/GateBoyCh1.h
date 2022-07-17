@@ -7,7 +7,7 @@
 struct GateBoyState;
 
 struct SpuChannel1 {
-  void reset_to_cart();
+  void reset();
 
   /*#p11.BANY*/ DFF9B BANY_NR10_SWEEP_SHIFT0p;
   /*#p11.ARAX*/ DFF9B ARAX_NR10_SWEEP_SHIFT1p;

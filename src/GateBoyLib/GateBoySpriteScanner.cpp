@@ -4,7 +4,7 @@
 
 //-----------------------------------------------------------------------------
 
-void SpriteScanner::reset_to_cart()    {
+void SpriteScanner::reset()    {
   FETO_SCAN_DONEp.state       = 0b00011001;
   AVAP_SCAN_DONE_tp_odd.state = 0b00011000;
   BESU_SCAN_DONEn_odd.state   = 0b00011000;
@@ -16,7 +16,7 @@ void SpriteScanner::reset_to_cart()    {
 
 //-----------------------------------------------------------------------------
 
-void ScanCounter::reset_to_cart() {
+void ScanCounter::reset() {
   YFEL_SCAN0_odd.state = 0b00011011;
   WEWY_SCAN1_odd.state = 0b00011001;
   GOSO_SCAN2_odd.state = 0b00011001;
@@ -27,7 +27,7 @@ void ScanCounter::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void SpriteIndex::reset_to_cart() {
+void SpriteIndex::reset() {
   XADU_SPRITE_IDX0p_odd.state = 0b00011000;
   XEDY_SPRITE_IDX1p_odd.state = 0b00011000;
   ZUZE_SPRITE_IDX2p_odd.state = 0b00011001;
@@ -38,7 +38,7 @@ void SpriteIndex::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void SpriteCounter::reset_to_cart()    {
+void SpriteCounter::reset()    {
   BESE_SPRITE_COUNT0_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   CUXY_SPRITE_COUNT1_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   BEGO_SPRITE_COUNT2_odd.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;

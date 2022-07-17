@@ -290,7 +290,7 @@ void GateBoy::set_lcd_pins_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_
 
 //-----------------------------------------------------------------------------
 
-void LCDControl::reset_to_cart() {
+void LCDControl::reset() {
   CATU_LINE_ENDp_odd.state  = 0b00011000;
   ANEL_LINE_ENDp_odd.state  = 0b00011010;
   POPU_VBLANKp_odd.state    = 0b00011001;

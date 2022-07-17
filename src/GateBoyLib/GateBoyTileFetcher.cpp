@@ -5,7 +5,7 @@
 
 //-----------------------------------------------------------------------------
 
-void TileFetchCounter::reset_to_cart() {
+void TileFetchCounter::reset() {
   LAXU_BFETCH_S0p_odd.state = 0b00011011;
   MESU_BFETCH_S1p_odd.state = 0b00011000;
   NYVA_BFETCH_S2p_odd.state = 0b00011011;
@@ -13,7 +13,7 @@ void TileFetchCounter::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void TileFetchControl::reset_to_cart() {
+void TileFetchControl::reset() {
   LYRY_BFETCH_DONEp_odd.state   = 0b00011001;
   POKY_PRELOAD_LATCHp_evn.state = 0b00011000;
   LONY_TFETCHINGp.state         = 0b00011000;

@@ -24,7 +24,7 @@ void MetroBoyCart::set_rom(uint8_t* new_rom, size_t new_rom_size) {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyCart::reset_to_cart() {
+void MetroBoyCart::reset() {
   ram_enable = false;
   mode = 0;
   bank_latch1 = 0;

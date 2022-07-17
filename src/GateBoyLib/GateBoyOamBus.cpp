@@ -452,7 +452,7 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
 
 //-----------------------------------------------------------------------------
 
-void OamControl::reset_to_cart() {
+void OamControl::reset() {
   MAKA_LATCH_EXTp.state  = 0b00011000;
   WUJE_CPU_OAM_WRn.state = 0b00011001;
   SIG_OAM_CLKn.state     = 0b00011001;
@@ -464,7 +464,7 @@ void OamControl::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void OamABus::reset_to_cart() {
+void OamABus::reset() {
   BUS_OAM_A00n.state = BIT_OLD | BIT_DRIVEN | 1;
   BUS_OAM_A01n.state = BIT_OLD | BIT_DRIVEN | 1;
   BUS_OAM_A02n.state = BIT_OLD | BIT_DRIVEN | 1;
@@ -477,7 +477,7 @@ void OamABus::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void OamDBusA::reset_to_cart() {
+void OamDBusA::reset() {
   BUS_OAM_DA00n.state = 0b00011000;
   BUS_OAM_DA01n.state = 0b00011001;
   BUS_OAM_DA02n.state = 0b00011001;
@@ -490,7 +490,7 @@ void OamDBusA::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void OamDBusB::reset_to_cart() {
+void OamDBusB::reset() {
   BUS_OAM_DB00n.state = 0b00011000;
   BUS_OAM_DB01n.state = 0b00011001;
   BUS_OAM_DB02n.state = 0b00011001;

@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyZram {
-  void reset_to_cart();
+  void reset();
 
   Gate clk_old;
 };

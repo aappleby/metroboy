@@ -77,7 +77,7 @@ bool cart_has_ram(const blob& cart_blob) {
 
 uint8_t GateBoy::read_flat_addr(const blob& cart_blob, int addr) const {
   if (!bit0(gb_state.cpu_signals.TEPU_BOOT_BITn.state) && addr >= 0x0000 && addr < 0x0100) {
-    return DMG_ROM_blob[addr];
+    return mem.bootrom[addr];
   }
   else if (addr >= 0x0000 && addr < 0x4000) {
     return cart_blob[addr & 0x7FFF];
@@ -507,19 +507,19 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
 
 //-----------------------------------------------------------------------------
 
-void ExtDataLatch::reset_to_cart() {
+void ExtDataLatch::reset() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
 }
 
 //-----------------------------------------------------------------------------
 
-void ExtAddrLatch::reset_to_cart() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x004D);
+void ExtAddrLatch::reset() {
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x014D);
 }
 
 //-----------------------------------------------------------------------------
 
-void GateBoyMBC::reset_to_cart() {
+void GateBoyMBC::reset() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x00);
 }
 

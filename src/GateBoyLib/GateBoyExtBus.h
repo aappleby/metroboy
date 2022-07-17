@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct ExtDataLatch {
-  void reset_to_cart();
+  void reset();
 
   /*#p08.SOMA*/ TpLatch SOMA_EXT_DATA_LATCH_D0n; // AxCxExxx
   /*_p08.RONY*/ TpLatch RONY_EXT_DATA_LATCH_D1n; // AxCxExxx
@@ -19,7 +19,7 @@ struct ExtDataLatch {
 //-----------------------------------------------------------------------------
 
 struct ExtAddrLatch {
-  void reset_to_cart();
+  void reset();
 
   /*_p08.ALOR*/ TpLatch ALOR_EXT_ADDR_LATCH_00p; // xBxxxxxx
   /*_p08.APUR*/ TpLatch APUR_EXT_ADDR_LATCH_01p; // xBxxxxxx
@@ -41,7 +41,7 @@ struct ExtAddrLatch {
 //-----------------------------------------------------------------------------
 
 struct GateBoyMBC {
-  void reset_to_cart();
+  void reset();
 
   Gate MBC1_RAM_EN;
   Gate MBC1_MODE;

@@ -30,6 +30,12 @@ GBResult GateBoyPair::get_flags() const {
   return GBResult(r1.unwrap() & r2.unwrap());
 }
 
+GBResult GateBoyPair::load_bootrom(const uint8_t* data, int size) {
+  gb->load_bootrom(data, size);
+  lb->load_bootrom(data, size);
+  return GBResult::ok();
+}
+
 GBResult GateBoyPair::load_raw_dump(BlobStream& dump_in) {
   GBResult r1 = gb->load_raw_dump(dump_in);
   GBResult r2 = lb->load_raw_dump(dump_in);
@@ -43,21 +49,15 @@ GBResult GateBoyPair::save_raw_dump(BlobStream& dump_out) const {
   return check_results(r1, r2);
 }
 
-GBResult GateBoyPair::reset_to_poweron(bool fastboot) {
-  GBResult r1 = gb->reset_to_poweron(fastboot);
-  GBResult r2 = lb->reset_to_poweron(fastboot);
+GBResult GateBoyPair::poweron(bool fastboot) {
+  GBResult r1 = gb->poweron(fastboot);
+  GBResult r2 = lb->poweron(fastboot);
   return check_results(r1, r2);
 }
 
-GBResult GateBoyPair::reset_to_bootrom(const blob& cart_blob) {
-  GBResult r1 = gb->reset_to_bootrom(cart_blob);
-  GBResult r2 = lb->reset_to_bootrom(cart_blob);
-  return check_results(r1, r2);
-}
-
-GBResult GateBoyPair::reset_to_cart   (const blob& cart_blob) {
-  GBResult r1 = gb->reset_to_cart(cart_blob);
-  GBResult r2 = lb->reset_to_cart(cart_blob);
+GBResult GateBoyPair::reset() {
+  GBResult r1 = gb->reset();
+  GBResult r2 = lb->reset();
   return check_results(r1, r2);
 }
 

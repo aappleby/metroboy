@@ -32,7 +32,7 @@ int ch3_audio_out(const SpuChannel3& ch3) {
          ((BELY_WAVE_DAC3 & 1) << 3);
 }
 
-void SpuChannel3::reset_to_cart() {
+void SpuChannel3::reset() {
   KOGA_NR33_FREQ00p.state = 0x1a;
   JOVY_NR33_FREQ01p.state = 0x1a;
   JAXA_NR33_FREQ02p.state = 0x1a;
@@ -343,57 +343,57 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
 
 
+  /*#p17.BAMA*/ wire BAMA_APU_RSTn_new = not1(KEBA_APU_RSTp);
+
+  /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg_new.sys_clk.AVET_AxCxExGx.out_new());
+  /*_p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
+  /*_p01.ATAG*/ wire ATAG_AxCxExGx = not1(AZOF_AxCxExGx);
+  /*_p01.AMUK*/ wire AMUK_xBxDxFxH = not1(ATAG_AxCxExGx);
+  /*#p17.ARUC*/ wire ARUC_AxCxExGx = not1(AMUK_xBxDxFxH);
+  /*#p17.COZY*/ wire COZY_AxCxExGx = not1(AMUK_xBxDxFxH);
+
+  /*#p18.HEMA*/ wire HEMA_SAMPLE_CLKn_new = not1(ch3_new.HUNO_SAMPLE_CLKp.qp_new());
+  /*#p18.GASE*/ wire GASE_SAMPLE_CLKp_new = not1(HEMA_SAMPLE_CLKn_new);
+  /*#p18.DERO*/ wire DERO_SAMPLE_CLKn_new = not1(GASE_SAMPLE_CLKp_new);
+
+  /*#p18.HEMA*/ wire HEMA_SAMPLE_CLKn_old = not1(ch3_old.HUNO_SAMPLE_CLKp.qp_old());
+  /*#p18.GASE*/ wire GASE_SAMPLE_CLKp_old = not1(HEMA_SAMPLE_CLKn_old);
+
+  /*#p17.BUSA*/ ch3_new.BUSA_WAVE_CLK_D1.dff17(AMUK_xBxDxFxH, BAMA_APU_RSTn_new, GASE_SAMPLE_CLKp_old);
+  /*#p17.BANO*/ ch3_new.BANO_WAVE_CLK_D2.dff17(COZY_AxCxExGx, BAMA_APU_RSTn_new, ch3_old.BUSA_WAVE_CLK_D1.qp_old());
+  /*#p17.AZUS*/ ch3_new.AZUS_WAVE_CLK_D3.dff17(AMUK_xBxDxFxH, BAMA_APU_RSTn_new, ch3_old.BANO_WAVE_CLK_D2.qp_old());
+  /*_p17.AZET*/ ch3_new.AZET_WAVE_CLK_D4.dff17(ARUC_AxCxExGx, BAMA_APU_RSTn_new, ch3_old.AZUS_WAVE_CLK_D3.qp_old());
 
   {
-    /*#p18.HEMA*/ wire HEMA_SAMPLE_CLKn_old = not1(ch3_old.HUNO_SAMPLE_CLKp.qp_old());
-    /*#p18.GASE*/ wire GASE_SAMPLE_CLKp_old = not1(HEMA_SAMPLE_CLKn_old);
-
-    /*#p18.HEMA*/ wire HEMA_SAMPLE_CLKn_new = not1(ch3_new.HUNO_SAMPLE_CLKp.qp_new());
-    /*#p18.GASE*/ wire GASE_SAMPLE_CLKp_new = not1(HEMA_SAMPLE_CLKn_new);
-    /*#p18.DERO*/ wire DERO_SAMPLE_CLKn_new = not1(GASE_SAMPLE_CLKp_new);
-
-
-    /*#p18.ETAN*/ wire ETAN_WAVE_RST_old = nor2(ch3_old.GARA_TRIG_D1.qp_old(), ch3_old.FETY_WAVE_LOOP.qp_old());
-
-    /*#p18.EFAR*/ ch3_new.EFAR_WAVE_IDX0.dff17(DERO_SAMPLE_CLKn_new,                ETAN_WAVE_RST_old, ch3_old.EFAR_WAVE_IDX0.qn_old());
-    /*#p18.ERUS*/ ch3_new.ERUS_WAVE_IDX1.dff17(ch3_new.EFAR_WAVE_IDX0.qn_new(), ETAN_WAVE_RST_old, ch3_old.ERUS_WAVE_IDX1.qn_old());
-    /*#p18.EFUZ*/ ch3_new.EFUZ_WAVE_IDX2.dff17(ch3_new.ERUS_WAVE_IDX1.qn_new(), ETAN_WAVE_RST_old, ch3_old.EFUZ_WAVE_IDX2.qn_old());
-    /*#p18.EXEL*/ ch3_new.EXEL_WAVE_IDX3.dff17(ch3_new.EFUZ_WAVE_IDX2.qn_new(), ETAN_WAVE_RST_old, ch3_old.EXEL_WAVE_IDX3.qn_old());
-    /*#p18.EFAL*/ ch3_new.EFAL_WAVE_IDX4.dff17(ch3_new.EXEL_WAVE_IDX3.qn_new(), ETAN_WAVE_RST_old, ch3_old.EFAL_WAVE_IDX4.qn_old());
-
-
+    /*#p18.EFAR*/ ch3_new.EFAR_WAVE_IDX0.dff17_clk(DERO_SAMPLE_CLKn_new,            ch3_old.EFAR_WAVE_IDX0.qn_old());
+    /*#p18.ERUS*/ ch3_new.ERUS_WAVE_IDX1.dff17_clk(ch3_new.EFAR_WAVE_IDX0.qn_new(), ch3_old.ERUS_WAVE_IDX1.qn_old());
+    /*#p18.EFUZ*/ ch3_new.EFUZ_WAVE_IDX2.dff17_clk(ch3_new.ERUS_WAVE_IDX1.qn_new(), ch3_old.EFUZ_WAVE_IDX2.qn_old());
+    /*#p18.EXEL*/ ch3_new.EXEL_WAVE_IDX3.dff17_clk(ch3_new.EFUZ_WAVE_IDX2.qn_new(), ch3_old.EXEL_WAVE_IDX3.qn_old());
+    /*#p18.EFAL*/ ch3_new.EFAL_WAVE_IDX4.dff17_clk(ch3_new.EXEL_WAVE_IDX3.qn_new(), ch3_old.EFAL_WAVE_IDX4.qn_old());
     /*#p18.FETY*/ ch3_new.FETY_WAVE_LOOP.dff17_clk(ch3_new.EFAL_WAVE_IDX4.qn_new(), ch3_old.FETY_WAVE_LOOP.qn_old());
+  }
 
-    /*#p18.FOTO*/ wire FOTO_new = and2(ch3_new.FETY_WAVE_LOOP.qp_new(), GASE_SAMPLE_CLKp_new);
-    /*#p18.GYRY*/ wire GYRY_LOOP_RST_new = nor3(KEBA_APU_RSTp, ch3_new.GARA_TRIG_D1.qp_new(), FOTO_new);
+  /*#p18.ETAN*/ wire ETAN_WAVE_RST_new = nor2(ch3_new.GARA_TRIG_D1.qp_new(), ch3_new.FETY_WAVE_LOOP.qp_new());
+  /*#p18.FOTO*/ wire FOTO_new = and2(ch3_new.FETY_WAVE_LOOP.qp_new(), GASE_SAMPLE_CLKp_new);
+  /*#p18.GYRY*/ wire GYRY_LOOP_RST_new = nor3(KEBA_APU_RSTp, ch3_new.GARA_TRIG_D1.qp_new(), FOTO_new);
+  
+  for (int i = 0; i < 6; i++) {
+
+    /*#p18.EFAR*/ ch3_new.EFAR_WAVE_IDX0.dff17_rst(ETAN_WAVE_RST_new);
+    /*#p18.ERUS*/ ch3_new.ERUS_WAVE_IDX1.dff17_rst(ETAN_WAVE_RST_new);
+    /*#p18.EFUZ*/ ch3_new.EFUZ_WAVE_IDX2.dff17_rst(ETAN_WAVE_RST_new);
+    /*#p18.EXEL*/ ch3_new.EXEL_WAVE_IDX3.dff17_rst(ETAN_WAVE_RST_new);
+    /*#p18.EFAL*/ ch3_new.EFAL_WAVE_IDX4.dff17_rst(ETAN_WAVE_RST_new);
     /*#p18.FETY*/ ch3_new.FETY_WAVE_LOOP.dff17_rst(GYRY_LOOP_RST_new);
 
-    /*#p18.ETAN*/ wire ETAN_WAVE_RST_new = nor2(ch3_new.GARA_TRIG_D1.qp_new(), ch3_new.FETY_WAVE_LOOP.qp_new());
-
-    /*#p18.EFAR*/ ch3_new.EFAR_WAVE_IDX0.dff17_any(DERO_SAMPLE_CLKn_new,                ETAN_WAVE_RST_new, ch3_old.EFAR_WAVE_IDX0.qn_old());
-    /*#p18.ERUS*/ ch3_new.ERUS_WAVE_IDX1.dff17_any(ch3_new.EFAR_WAVE_IDX0.qn_new(), ETAN_WAVE_RST_new, ch3_old.ERUS_WAVE_IDX1.qn_old());
-    /*#p18.EFUZ*/ ch3_new.EFUZ_WAVE_IDX2.dff17_any(ch3_new.ERUS_WAVE_IDX1.qn_new(), ETAN_WAVE_RST_new, ch3_old.EFUZ_WAVE_IDX2.qn_old());
-    /*#p18.EXEL*/ ch3_new.EXEL_WAVE_IDX3.dff17_any(ch3_new.EFUZ_WAVE_IDX2.qn_new(), ETAN_WAVE_RST_new, ch3_old.EXEL_WAVE_IDX3.qn_old());
-    /*#p18.EFAL*/ ch3_new.EFAL_WAVE_IDX4.dff17_any(ch3_new.EXEL_WAVE_IDX3.qn_new(), ETAN_WAVE_RST_new, ch3_old.EFAL_WAVE_IDX4.qn_old());
-
-
-
-
-
-
-
-    /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg_new.sys_clk.AVET_AxCxExGx.out_new());
-    /*_p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
-    /*_p01.ATAG*/ wire ATAG_AxCxExGx = not1(AZOF_AxCxExGx);
-    /*_p01.AMUK*/ wire AMUK_xBxDxFxH = not1(ATAG_AxCxExGx);
-    /*#p17.ARUC*/ wire ARUC_AxCxExGx = not1(AMUK_xBxDxFxH);
-    /*#p17.COZY*/ wire COZY_AxCxExGx = not1(AMUK_xBxDxFxH);
-    /*#p17.BAMA*/ wire BAMA_APU_RSTn_new = not1(KEBA_APU_RSTp);
-    /*#p17.BUSA*/ ch3_new.BUSA_WAVE_CLK_D1.dff17(AMUK_xBxDxFxH, BAMA_APU_RSTn_new, GASE_SAMPLE_CLKp_old);
-    /*#p17.BANO*/ ch3_new.BANO_WAVE_CLK_D2.dff17(COZY_AxCxExGx, BAMA_APU_RSTn_new, ch3_old.BUSA_WAVE_CLK_D1.qp_old());
-    /*#p17.AZUS*/ ch3_new.AZUS_WAVE_CLK_D3.dff17(AMUK_xBxDxFxH, BAMA_APU_RSTn_new, ch3_old.BANO_WAVE_CLK_D2.qp_old());
-    /*_p17.AZET*/ ch3_new.AZET_WAVE_CLK_D4.dff17(ARUC_AxCxExGx, BAMA_APU_RSTn_new, ch3_old.AZUS_WAVE_CLK_D3.qp_old());
+    /*#p18.EFAR*/ ch3_new.EFAR_WAVE_IDX0.dff17_clk(DERO_SAMPLE_CLKn_new,            ch3_new.EFAR_WAVE_IDX0.qn_new());
+    /*#p18.ERUS*/ ch3_new.ERUS_WAVE_IDX1.dff17_clk(ch3_new.EFAR_WAVE_IDX0.qn_new(), ch3_new.ERUS_WAVE_IDX1.qn_new());
+    /*#p18.EFUZ*/ ch3_new.EFUZ_WAVE_IDX2.dff17_clk(ch3_new.ERUS_WAVE_IDX1.qn_new(), ch3_new.EFUZ_WAVE_IDX2.qn_new());
+    /*#p18.EXEL*/ ch3_new.EXEL_WAVE_IDX3.dff17_clk(ch3_new.EFUZ_WAVE_IDX2.qn_new(), ch3_new.EXEL_WAVE_IDX3.qn_new());
+    /*#p18.EFAL*/ ch3_new.EFAL_WAVE_IDX4.dff17_clk(ch3_new.EXEL_WAVE_IDX3.qn_new(), ch3_new.EFAL_WAVE_IDX4.qn_new());
+    /*#p18.FETY*/ ch3_new.FETY_WAVE_LOOP.dff17_clk(ch3_new.EFAL_WAVE_IDX4.qn_new(), ch3_new.FETY_WAVE_LOOP.qn_new());
   }
+
 
   //----------
   // Wave ram interface

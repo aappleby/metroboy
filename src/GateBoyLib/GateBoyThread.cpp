@@ -16,7 +16,7 @@ GateBoyThread::GateBoyThread(IGateBoy* prototype) : gb(prototype)
 {
   gb.reset_states();
   cart_blob = Assembler::create_dummy_cart();
-  reset_to_poweron(true);
+  poweron(true);
 }
 
 //----------------------------------------
@@ -58,25 +58,18 @@ void GateBoyThread::resume() {
 
 //----------------------------------------
 
-void GateBoyThread::reset_to_poweron(bool fastboot) {
+void GateBoyThread::poweron(bool fastboot) {
   CHECK_P(sim_paused());
   clear_steps();
   gb.reset_states();
-  gb->reset_to_poweron(fastboot);
+  gb->poweron(fastboot);
 }
 
-void GateBoyThread::reset_to_bootrom() {
+void GateBoyThread::reset() {
   CHECK_P(sim_paused());
   clear_steps();
   gb.reset_states();
-  gb->reset_to_bootrom(cart_blob);
-}
-
-void GateBoyThread::reset_to_cart() {
-  CHECK_P(sim_paused());
-  clear_steps();
-  gb.reset_states();
-  gb->reset_to_cart(cart_blob);
+  gb->reset();
 }
 
 //----------------------------------------
@@ -197,7 +190,14 @@ void GateBoyThread::load_program(const char* source) {
   Assembler as;
   as.assemble(source);
   cart_blob = as.link();
-  reset_to_cart();
+  reset();
+}
+
+void GateBoyThread::load_bootrom(const char* source) {
+  CHECK_P(sim_paused());
+  Assembler as;
+  as.assemble(source);
+  gb->load_bootrom(as.block_code->data(), (int)as.block_code->size());
 }
 
 //------------------------------------------------------------------------------

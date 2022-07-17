@@ -170,7 +170,7 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
 
 //-----------------------------------------------------------------------------
 
-void RegIF::reset_to_cart() {
+void RegIF::reset() {
   LOPE_FF0F_D0p.state = 0b00011011;
   LALU_FF0F_D1p.state = 0b00011000;
   NYBO_FF0F_D2p.state = 0b00011000;
@@ -181,7 +181,7 @@ void RegIF::reset_to_cart() {
 //-----------------------------------------------------------------------------
 // This is technically in the CPU, but we're going to implement it here for now.
 
-void RegIE::reset_to_cart() {
+void RegIE::reset() {
   IE_D0.state = 0b00011010;
   IE_D1.state = 0b00011010;
   IE_D2.state = 0b00011010;
@@ -191,7 +191,7 @@ void RegIE::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void InterruptLatch::reset_to_cart() {
+void InterruptLatch::reset() {
   MATY_FF0F_L0p.state = 0b00011000;
   MOPO_FF0F_L1p.state = 0b00011000;
   PAVY_FF0F_L2p.state = 0b00011000;
@@ -201,7 +201,7 @@ void InterruptLatch::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void CpuInt::reset_to_cart() {
+void CpuInt::reset() {
   SIG_CPU_INT_VBLANK.state = 0b00011001;
   SIG_CPU_INT_STAT.state   = 0b00011000;
   SIG_CPU_INT_TIMER.state  = 0b00011000;
@@ -211,7 +211,7 @@ void CpuInt::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void CpuAck::reset_to_cart() {
+void CpuAck::reset() {
   SIG_CPU_ACK_VBLANK.state = 0b00011000;
   SIG_CPU_ACK_STAT.state   = 0b00011000;
   SIG_CPU_ACK_TIMER.state  = 0b00011000;
@@ -221,7 +221,7 @@ void CpuAck::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void InterruptControl::reset_to_cart() {
+void InterruptControl::reset() {
   AWOB_WAKE_CPU.state        = 0b00011001;
   SIG_CPU_WAKE.state         = 0b00011001;
   NYDU_TIMA7p_DELAY.state    = 0b00011000;

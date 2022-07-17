@@ -5,7 +5,7 @@
 
 //-----------------------------------------------------------------------------
 
-void GateBoy::tock_bootrom_gates(const GateBoyState& reg_old) {
+void GateBoy::tock_bootrom_gates(const GateBoyState& reg_old, const uint8_t* bootrom) {
   GateBoyState& reg_new = gb_state;
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(reg_new.sys_rst.AFER_SYS_RSTp.qp_new(), reg_new.sys_rst.ASOL_POR_DONEn.qp_new());
@@ -20,7 +20,7 @@ void GateBoy::tock_bootrom_gates(const GateBoyState& reg_old) {
   // BOOT -> CBD
   // this is kind of a hack
   auto cpu_addr_old = bit_pack(reg_old.cpu_abus);
-  wire bootrom_data = DMG_ROM_blob[cpu_addr_old & 0xFF];
+  wire bootrom_data = bootrom[cpu_addr_old & 0xFF];
 
   /*_p07.TERA*/ wire TERA_BOOT_BITp_new  = not1(reg_new.cpu_signals.TEPU_BOOT_BITn.qp_new());
   /*_p07.TUTU*/ wire TUTU_READ_BOOTROMp_new = and2(TERA_BOOT_BITp_new, reg_new.cpu_abus.TULO_ADDR_BOOTROMp_new());
@@ -61,7 +61,7 @@ void GateBoy::tock_bootrom_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyCpuSignals::reset_to_cart() {
+void GateBoyCpuSignals::reset() {
   ABUZ_EXT_RAM_CS_CLK.state  = 0b00011000;
   SIG_IN_CPU_RDp.state       = 0b00011000;
   SIG_IN_CPU_WRp.state       = 0b00011001;
@@ -112,7 +112,7 @@ void GateBoyCpuSignals::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyCpuABus::reset_to_cart() {
+void GateBoyCpuABus::reset() {
   BUS_CPU_A00p.state = 0b00011000;
   BUS_CPU_A01p.state = 0b00011000;
   BUS_CPU_A02p.state = 0b00011000;
@@ -280,7 +280,7 @@ wire GateBoyCpuABus::SYKE_ADDR_HIp_new() const {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyCpuDBus::reset_to_cart() {
+void GateBoyCpuDBus::reset() {
   BUS_CPU_D00p.state = 0b00011001;
   BUS_CPU_D01p.state = 0b00011000;
   BUS_CPU_D02p.state = 0b00011000;

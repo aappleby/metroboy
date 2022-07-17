@@ -84,7 +84,7 @@ public:
 
   static FieldInfo fields[];
 
-  void reset_to_cart();
+  void reset();
   void dump(Dumper& d) const;
 
   /*

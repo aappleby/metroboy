@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 
 struct OamControl {
-  void reset_to_cart();
+  void reset();
 
   /*_p04.MAKA*/ DFF17 MAKA_LATCH_EXTp;       // AxxxExxx
   /*_p28.WUJE*/ NorLatch WUJE_CPU_OAM_WRn;   // AxxxExxx
@@ -21,7 +21,7 @@ struct OamControl {
 //-----------------------------------------------------------------------------
 
 struct OamABus {
-  void reset_to_cart();
+  void reset();
 
   /*_BUS_OAM_A00n*/ Bus BUS_OAM_A00n;  // ABCDEFGH
   /*_BUS_OAM_A01n*/ Bus BUS_OAM_A01n;  // ABCDEFGH
@@ -36,7 +36,7 @@ struct OamABus {
 //-----------------------------------------------------------------------------
 
 struct OamDBusA {
-  void reset_to_cart();
+  void reset();
 
   /*_BUS_OAM_DA00n*/ Bus BUS_OAM_DA00n;
   /*_BUS_OAM_DA01n*/ Bus BUS_OAM_DA01n;
@@ -51,7 +51,7 @@ struct OamDBusA {
 //-----------------------------------------------------------------------------
 
 struct OamDBusB {
-  void reset_to_cart();
+  void reset();
 
   /*_BUS_OAM_DB00n*/ Bus BUS_OAM_DB00n;
   /*_BUS_OAM_DB01n*/ Bus BUS_OAM_DB01n;

@@ -112,7 +112,7 @@ void run_mooneye_test(const std::string& prefix, const std::string& name) {
   load_blob(filename.c_str(), rom.data(), rom.size());
 
   MetroBoy gameboy;
-  gameboy.reset_to_cart(rom.data(), rom.size());
+  gameboy.reset(rom.data(), rom.size());
 
   uint8_t result = 0xFF;
   int phase = 0;

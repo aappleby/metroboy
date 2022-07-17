@@ -82,12 +82,12 @@ FieldInfo GateBoyCpu::fields[] = {
 
 //-----------------------------------------------------------------------------
 
-GBResult GateBoy::reset_to_poweron(bool fastboot) {
-  gb_state.reset_to_poweron();
-  cpu.reset_to_poweron();
-  mem.reset_to_poweron();
-  sys.reset_to_poweron();
-  pins.reset_to_poweron();
+GBResult GateBoy::poweron(bool fastboot) {
+  gb_state.poweron();
+  cpu.poweron();
+  mem.poweron();
+  sys.poweron();
+  pins.poweron();
   probes.reset();
  
   sys.fastboot = fastboot;
@@ -95,33 +95,26 @@ GBResult GateBoy::reset_to_poweron(bool fastboot) {
   sys.gb_phase_total = 0;
   sys.in_por = 1;
 
-  return GBResult::ok();
-}
-
-//-----------------------------------------------------------------------------
-
-GBResult GateBoy::reset_to_bootrom(const blob& cart_blob) {
-  reset_to_poweron(true);
-
-  while(1) {
-    next_phase(cart_blob);
-    if (sys.gb_phase_total == 87) {
-      break;
-    }
-  }
+  // These registers do not reset cleanly at poweron, so we're forcing them to a sane state.
+  gb_state.ch3.EFAR_WAVE_IDX0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  gb_state.ch3.ERUS_WAVE_IDX1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  gb_state.ch3.EFUZ_WAVE_IDX2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  gb_state.ch3.EXEL_WAVE_IDX3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  gb_state.ch3.EFAL_WAVE_IDX4.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+  gb_state.ch3.FETY_WAVE_LOOP.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
 
   return GBResult::ok();
 }
 
 //-----------------------------------------------------------------------------
 
-GBResult GateBoy::reset_to_cart(const blob& cart_blob) {
-  reset_to_bootrom(cart_blob);
-  gb_state.reset_to_cart();
-  cpu.reset_to_cart();
-  mem.reset_to_cart();
-  sys.reset_to_cart();
-  pins.reset_to_cart();
+GBResult GateBoy::reset() {
+  poweron(true);
+  gb_state.reset();
+  cpu.reset();
+  mem.reset();
+  sys.reset();
+  pins.reset();
   probes.reset();
 
   return GBResult::ok();
@@ -672,7 +665,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   tock_joypad_gates(reg_old);
   //tock_serial_gates(reg_old);
   tock_timer_gates(reg_old);
-  tock_bootrom_gates(reg_old);
+  tock_bootrom_gates(reg_old, mem.bootrom);
   tock_dma_gates(reg_old);
 
   /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg_new.sys_clk.AVET_AxCxExGx.out_new());

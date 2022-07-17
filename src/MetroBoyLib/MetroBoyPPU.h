@@ -8,7 +8,7 @@ struct LCD;
 //-----------------------------------------------------------------------------
 
 struct MetroBoyPPU {
-  void reset_to_cart();
+  void reset();
   void reset_to_bootrom();
 
   bool    read (uint16_t addr, uint8_t& out);

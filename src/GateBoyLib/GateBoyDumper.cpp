@@ -516,7 +516,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_slicep("NR34 ", &s.ch3.JEMO_NR34_FREQ08p, 5);
   d("CH3 OUT : %d\n", ch3_audio_out(s.ch3));
   d("\n");
-#if 0
+#if 1
   d.dump_slicep("CH3 FREQ     : ", &s.ch3.KOGA_NR33_FREQ00p, 11);
   d.dump_slicep("CH3 FREQ CNT : ", &s.ch3.KUTU_COUNT00, 11);
   d.dump_slicep("CH3 WAVE IDX : ", &s.ch3.EFAR_WAVE_IDX0, 5);

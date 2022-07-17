@@ -28,39 +28,19 @@ using std::min;
 
 //-----------------------------------------------------------------------------
 
-GBResult LogicBoy::reset_to_poweron(bool fastboot) {
+GBResult LogicBoy::poweron(bool fastboot) {
   assert(false);
 }
 
 //-----------------------------------------------------------------------------
 
-GBResult LogicBoy::reset_to_bootrom(const blob& cart_blob) {
-  // FIXME we need to apply the power on reset stuff here
+GBResult LogicBoy::reset() {
+  lb_state.reset();
+  cpu.reset();
+  mem.reset();
+  sys.reset();
 
-  /*
-  lb_state.reset_to_bootrom();
-  cpu.reset_to_bootrom();
-  mem.reset_to_bootrom();
-  sys.reset_to_bootrom();
-
-  pins.reset_to_bootrom();
-  pins = bit_purge(pins);
-
-  probes.reset_to_bootrom();
-  */
-  lb_bit_check();
-  return GBResult::ok();
-}
-
-//-----------------------------------------------------------------------------
-
-GBResult LogicBoy::reset_to_cart(const blob& cart_blob) {
-  lb_state.reset_to_cart();
-  cpu.reset_to_cart();
-  mem.reset_to_cart();
-  sys.reset_to_cart();
-
-  pins.reset_to_cart();
+  pins.reset();
   pins = bit_purge(pins);
 
   probes.reset();
@@ -515,7 +495,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (cpu_addr_new <= 0x00FF) {
     if (cpu_rd && !state_new.cpu_signals.TEPU_BOOT_BITn.state) {
-      state_new.cpu_dbus = DMG_ROM_blob[cpu_addr_new & 0xFF];
+      state_new.cpu_dbus = mem.bootrom[cpu_addr_new & 0xFF];
     }
   }
 

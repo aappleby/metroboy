@@ -229,7 +229,7 @@ void GateBoy::tock_timer_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void RegDIV::reset_to_cart() {
+void RegDIV::reset() {
   UKUP_DIV00p.state = 0b00011000;
   UFOR_DIV01p.state = 0b00011011;
   UNER_DIV02p.state = 0b00011000;
@@ -272,7 +272,7 @@ void RegDIV::force_set_div(uint16_t div) {
 
 //-----------------------------------------------------------------------------
 
-void RegTIMA::reset_to_cart() {
+void RegTIMA::reset() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
 
@@ -292,13 +292,13 @@ void RegTIMA::force_set_tima(uint8_t tima) {
 
 //-----------------------------------------------------------------------------
 
-void RegTMA::reset_to_cart() {
+void RegTMA::reset() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
 
-void RegTAC::reset_to_cart() {
+void RegTAC::reset() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 

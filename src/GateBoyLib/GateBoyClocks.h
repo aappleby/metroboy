@@ -6,7 +6,7 @@
 
 #pragma pack(push, 1)
 struct GateBoyClock {
-  void reset_to_cart();
+  void reset();
 
   //----------------------------------------
 

@@ -30,7 +30,12 @@ struct LogicBoy : public IGateBoy {
     return GBResult(BIT_DATA);
   }
 
-  GBResult load_raw_dump(BlobStream& bs) override        {
+  GBResult load_bootrom(const uint8_t* data, int size) {
+    memcpy(mem.bootrom, data, size);
+    return GBResult::ok();
+  }
+
+  GBResult load_raw_dump(BlobStream& bs) override {
     bool read_ok = true;
     read_ok &= bs.read(lb_state);
     read_ok &= bs.read(gb_state);
@@ -57,9 +62,8 @@ struct LogicBoy : public IGateBoy {
     return write_ok ? GBResult::ok() : Error::CORRUPT;;
   }
 
-  GBResult reset_to_poweron(bool fastboot) override;
-  GBResult reset_to_bootrom(const blob& cart_blob) override;
-  GBResult reset_to_cart   (const blob& cart_blob) override;
+  GBResult poweron(bool fastboot) override;
+  GBResult reset() override;
 
   GBResult peek(int addr) const override;
   GBResult poke(int addr, uint8_t data_in) override;

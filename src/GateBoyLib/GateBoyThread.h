@@ -72,9 +72,8 @@ struct GateBoyThread {
   void pause();
   void resume();
 
-  void reset_to_poweron(bool fastboot);
-  void reset_to_bootrom();
-  void reset_to_cart();
+  void poweron(bool fastboot);
+  void reset();
 
   void add_steps(int64_t steps);
   void run_to(uint64_t phase);
@@ -89,6 +88,7 @@ struct GateBoyThread {
 
   void load_cart_blob(blob& bs);
   void load_program(const char* source);
+  void load_bootrom(const char* source);
   void set_buttons(uint8_t buttons);
 
   const int REQ_PAUSE = 0b0001;

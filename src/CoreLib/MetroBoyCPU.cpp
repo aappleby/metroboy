@@ -56,13 +56,13 @@ FieldInfo MetroBoyCPU::fields[] = {
 /*
 void MetroBoyCPU::reset_to_poweron?() {
   memset(this, 0, sizeof(*this));
-  reg.op_next = DMG_ROM_bin[0];
+  reg.op_next = bootrom[0];
 }
 */
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyCPU::reset_to_cart() {
+void MetroBoyCPU::reset() {
   reg.bus_addr  = 0xff50;
   reg.bus_data  = 1;
   reg.bus_read  = 0;

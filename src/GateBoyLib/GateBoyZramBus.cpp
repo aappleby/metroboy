@@ -44,7 +44,7 @@ void tock_zram_gates(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t
 
 //-----------------------------------------------------------------------------
 
-void GateBoyZram::reset_to_cart() {
+void GateBoyZram::reset() {
 }
 
 //-----------------------------------------------------------------------------

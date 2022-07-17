@@ -2,7 +2,7 @@
 #include "CoreLib/Constants.h"
 #include <assert.h>
 
-void MetroBoyJoypad::reset_to_cart() {
+void MetroBoyJoypad::reset() {
   val = 0xFF;
   p1 = 0xCF; // FF00
 }

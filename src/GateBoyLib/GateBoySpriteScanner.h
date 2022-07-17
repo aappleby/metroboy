@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteScanner {
-  void reset_to_cart();
+  void reset();
 
   /*#p28.FETO*/ Gate FETO_SCAN_DONEp;
   /*#p29.AVAP*/ Gate AVAP_SCAN_DONE_tp_odd;
@@ -19,7 +19,7 @@ struct SpriteScanner {
 // Scan counter tracks which of the 40 sprites in OAM we're scanning.
 
 struct ScanCounter {
-  void reset_to_cart();
+  void reset();
 
   /*#p28.YFEL*/ DFF17 YFEL_SCAN0_odd;
   /*_p28.WEWY*/ DFF17 WEWY_SCAN1_odd;
@@ -33,7 +33,7 @@ struct ScanCounter {
 // Sprite index selects which store to write
 
 struct SpriteIndex {
-  void reset_to_cart();
+  void reset();
 
   /*_p30.XADU*/ DFF13 XADU_SPRITE_IDX0p_odd;
   /*_p30.XEDY*/ DFF13 XEDY_SPRITE_IDX1p_odd;
@@ -47,7 +47,7 @@ struct SpriteIndex {
 // Sprite counter tracks how many sprites have been selected for this line.
 
 struct SpriteCounter {
-  void reset_to_cart();
+  void reset();
 
   /*_p29.BESE*/ DFF17 BESE_SPRITE_COUNT0_odd; // AxxxExxx
   /*_p29.CUXY*/ DFF17 CUXY_SPRITE_COUNT1_odd; // AxxxExxx

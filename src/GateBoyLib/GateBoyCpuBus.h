@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpuSignals {
-  void reset_to_cart();
+  void reset();
 
   wire AJAS_CPU_RDn_old      () const;
   wire DYKY_CPU_WRn_old      () const;
@@ -62,7 +62,7 @@ struct GateBoyCpuSignals {
 //-----------------------------------------------------------------------------
 
 struct GateBoyCpuABus {
-  void reset_to_cart();
+  void reset();
   void set_addr(uint16_t bus_addr_new);
 
   //----------
@@ -191,7 +191,7 @@ struct GateBoyCpuABus {
 //---------------------------------------------------------------------------------------------------------------------
 
 struct GateBoyCpuDBus {
-  void reset_to_cart();
+  void reset();
   void set_data(bool OEp, uint8_t data);
 
   /*_BUS_CPU_D00p*/ Bus BUS_CPU_D00p;

@@ -32,8 +32,8 @@ struct GateBoyState {
 
   //----------------------------------------
 
-  void reset_to_poweron();
-  void reset_to_cart();
+  void poweron();
+  void reset();
 
   int64_t hash_regression();
   int64_t hash_all();
@@ -125,22 +125,14 @@ struct GateBoyState {
   OamLatchB      oam_latch_b;
   OamTempA       oam_temp_a;
   OamTempB       oam_temp_b;
-
   ExtDataLatch   ext_data_latch;
   ExtAddrLatch   ext_addr_latch;
-
   GateBoyMBC     ext_mbc;
-
   GateBoyZram    zram_bus;
-
-
   DmaControl dma_ctrl;
   RegDmaLo   dma_lo;
-  
-
   CpuInt  cpu_int;
   CpuAck  cpu_ack;
-
   JoyInt   joy_int;
   JoyLatch joy_latch;
 

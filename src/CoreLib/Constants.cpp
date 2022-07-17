@@ -200,14 +200,6 @@ uint8_t DMG_ROM_bin[] = {
   0xf5, 0x06, 0x19, 0x78, 0x86, 0x23, 0x05, 0x20, 0xfb, 0x86, 0x20, 0xfe, 0x3e, 0x01, 0xe0, 0x50
 };
 
-blob make_dmg_rom_blob() {
-  blob result(256);
-  memcpy(result.data(), DMG_ROM_bin, 256);
-  return result;
-}
-
-blob DMG_ROM_blob = make_dmg_rom_blob();
-
 //-----------------------------------------------------------------------------
 
 extern const uint32_t gb_colors[8] = {

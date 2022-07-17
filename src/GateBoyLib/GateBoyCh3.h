@@ -8,7 +8,7 @@ struct GateBoyState;
 struct GateBoyState;
 
 struct SpuChannel3 {
-  void reset_to_cart();
+  void reset();
 
   //----------
 
@@ -21,10 +21,10 @@ struct SpuChannel3 {
   /*_p18.GEMO*/ DFF20 GEMO_NR31_LEN4p;
   /*_p18.FORO*/ DFF20 FORO_NR31_LEN5p;
   /*_p18.FAVE*/ DFF20 FAVE_NR31_LEN6p;
-  /*_p18.FYRU*/ DFF20 FYRU_NR31_LEN7p;  
+  /*_p18.FYRU*/ DFF20 FYRU_NR31_LEN7p;
 
   /*_p16.HUKY*/ DFF9B HUKY_NR32_VOL0p;
-  /*_p16.HODY*/ DFF9B HODY_NR32_VOL1p;
+  /*_p16.HODY*/ DFF9B HODY_NR32_VOL1p; // 10
 
   /*_p16.KOGA*/ DFF9B KOGA_NR33_FREQ00p;
   /*_p16.JOVY*/ DFF9B JOVY_NR33_FREQ01p;
@@ -36,7 +36,7 @@ struct SpuChannel3 {
   /*_p16.KOGU*/ DFF9B KOGU_NR33_FREQ07p;
 
   /*_p16.JEMO*/ DFF9B JEMO_NR34_FREQ08p;
-  /*_p16.JETY*/ DFF9B JETY_NR34_FREQ09p;
+  /*_p16.JETY*/ DFF9B JETY_NR34_FREQ09p; // 20
   /*_p16.JACY*/ DFF9B JACY_NR34_FREQ10p;
   /*_p16.HOTO*/ DFF9B HOTO_NR34_LENENp;
   /*_p16.GAVU*/ DFF9B GAVU_NR34_TRIGp;
@@ -46,7 +46,7 @@ struct SpuChannel3 {
   /*_p18.FEXU*/ DFF17 FEXU_LEN_DONEp;
   /*#p16.GUGU*/ NandLatch GUGU_FREQ_GATE;
   /*_p18.HUNO*/ DFF17 HUNO_SAMPLE_CLKp;
-  /*_p18.FETY*/ DFF17 FETY_WAVE_LOOP;
+  /*_p18.FETY*/ DFF17 FETY_WAVE_LOOP; // 27
 
   /*_p16.GARA*/ DFF17    GARA_TRIG_D1;
   /*_p16.GYTA*/ DFF17    GYTA_TRIG_D2;
@@ -72,7 +72,7 @@ struct SpuChannel3 {
   /*_p18.ERUS*/ DFF17 ERUS_WAVE_IDX1;
   /*_p18.EFUZ*/ DFF17 EFUZ_WAVE_IDX2;
   /*_p18.EXEL*/ DFF17 EXEL_WAVE_IDX3;
-  /*_p18.EFAL*/ DFF17 EFAL_WAVE_IDX4;
+  /*_p18.EFAL*/ DFF17 EFAL_WAVE_IDX4; // 50
 
   // This is a pulse generator for wave ram control line 2/3
   /*_p17.BUSA*/ DFF17 BUSA_WAVE_CLK_D1;

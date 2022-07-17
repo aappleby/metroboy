@@ -38,7 +38,7 @@ static const uint8_t bootrom_logo[] = {
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyVRAM::reset_to_cart() {
+void MetroBoyVRAM::reset() {
   memset(ram, 0, sizeof(ram));
   memcpy(ram, bootrom_logo, 416);
 }

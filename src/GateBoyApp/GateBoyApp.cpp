@@ -80,14 +80,37 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
   // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
 
-  for (int i = 0; i < 16; i++) printf("0x%02x,\n", rand() % 256);
+  gb_thread->poweron(true);
+  /*
+  gb_thread->load_bootrom(R"(
+    0000:
+      nop
+      nop
+      nop
+      nop
+      nop
+      ld a, $80
+      ld ($FF26), a
+      nop
+      nop
+      nop
+      ld a, $00
+      ld ($FF26), a
+      nop
+      nop
+      nop
+      ld a, $80
+      ld ($FF26), a
+      nop
+      nop
+      nop
+      nop
+      jr -2
+  )");
+  */
 
-/*
 
-
-
-*/
-
+#if 0
   gb_thread->load_program(R"(
     0150:
       ld a, $00
@@ -159,6 +182,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
       jr -2
   )");
+
+#endif
 
   /*
   Name Addr 7654 3210 Function
@@ -267,7 +292,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //load_blob("tests/microtests/DMG/timer_tma_write_a.gb", cart);
 
   //gb_thread->load_cart_blob(cart);
-  //gb_thread->reset_to_cart();
+  //gb_thread->reset();
 #endif
 
   gb_thread->resume();
@@ -373,7 +398,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
         app_paused = false;
         gb_thread->resume();
       }
-      gb_thread->reset_to_cart(); break;
+      gb_thread->reset(); break;
     }
     case SDLK_d:    show_diff   = !show_diff; break;
     case SDLK_g:    show_golden = !show_golden; break;
@@ -423,7 +448,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
         blob rom;
         load_blob(event.drop.file, rom);
         gb_thread->load_cart_blob(rom);
-        gb_thread->reset_to_cart();
+        gb_thread->reset();
       }
       else if (filename.ends_with("dump")) {
         LOG_B("Loading raw dump from %s\n", filename.c_str());
@@ -664,31 +689,6 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
     temp_buf.resize(64);
     gb->get_flat_blob(gb_thread->get_cart(), pc, 64, temp_buf);
     assembler.disassemble(temp_buf.data(), 64, pc, pc, 16, d, /*collapse_nops*/ false);
-
-#if 0
-    const uint8_t* code = nullptr;
-    int code_size = 0;
-    int code_base = 0;
-  
-    if (!bit(state.cpu_signals.TEPU_BOOT_BITn.state)) {
-      code      = DMG_ROM_blob.data();
-      code_size = (int)DMG_ROM_blob.size();
-      code_base = ADDR_BOOT_ROM_BEGIN;
-    }
-    else if (pc >= 0x0000 && pc <= 0x7FFF) {
-      // FIXME needs to account for mbc1 mem mapping
-      code      = gb_thread->get_cart().data();
-      code_size = (int)gb_thread->get_cart().size();
-      code_base = ADDR_CART_ROM_BEGIN;
-    }
-    else if (pc >= 0xFF80 && pc <= 0xFFFE) {
-      code      = mem.zero_ram;
-      code_size = 127;
-      code_base = ADDR_ZEROPAGE_BEGIN;
-    }
-  
-    assembler.disassemble(code, code_size, code_base, pc, 16, d, /*collapse_nops*/ false);
-#endif
   }
   d("\n");
 
@@ -884,7 +884,7 @@ Step controls:
 
 
 
-  {
+  if (1) {
     static uint8_t buf[256*256];
     bool scroll = false;
     bool raw_sound = true;

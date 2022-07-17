@@ -4,7 +4,7 @@
 
 //-----------------------------------------------------------------------------
 
-void MetroBoySerial::reset_to_cart() {
+void MetroBoySerial::reset() {
   sb = 0x00; // FF01
   sc = 0x7E; // FF02
 }

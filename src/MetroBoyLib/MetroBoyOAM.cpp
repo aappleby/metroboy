@@ -6,7 +6,7 @@
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyOAM::reset_to_cart() {
+void MetroBoyOAM::reset() {
   memset(ram, 0, sizeof(ram));
 }
 

@@ -14,14 +14,13 @@ struct GateBoyTests {
   TestResults test_regs(const IGateBoy* proto);
   TestResults test_spu_regs(const IGateBoy* proto);
 
-  TestResults test_regression_cart     (const char* filename, int cycles, bool from_bootrom);
-  TestResults test_regression_dump     (const char* filename, int cycles);
+  TestResults test_regression_cart(const char* filename, int cycles);
+  TestResults test_regression_dump(const char* filename, int cycles);
 
-  //TestResults test_fastboot            (const GateBoy* proto, uint8_t mask);
-  //TestResults test_reset_to_bootrom    (const IGateBoy* proto, uint8_t mask);
-  TestResults test_reset_to_cart       (const IGateBoy* proto, uint8_t mask);
+  //TestResults test_fastboot(const GateBoy* proto, uint8_t mask);
+  //TestResults test_reset_to_bootrom(const IGateBoy* proto, uint8_t mask);
+  TestResults test_reset(const IGateBoy* proto, uint8_t mask);
 
-  TestResults test_init(const IGateBoy* proto);
   TestResults test_first_op(const IGateBoy* proto);
   TestResults test_bootrom(const IGateBoy* proto);
   TestResults test_clk(const IGateBoy* proto);

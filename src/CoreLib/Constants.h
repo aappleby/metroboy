@@ -2,7 +2,6 @@
 #include "CoreLib/Types.h"
 
 extern uint8_t DMG_ROM_bin[];
-extern blob DMG_ROM_blob;
 
 extern const char* op_strings[256];
 extern const char* op_strings2[256];

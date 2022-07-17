@@ -84,11 +84,11 @@ void GateBoy::tock_lcdc_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void SpriteDeltaY::reset_to_cart()    { memset(this, 0b00011010, sizeof(*this)); }
+void SpriteDeltaY::reset()    { memset(this, 0b00011010, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void PixCount::reset_to_cart() {
+void PixCount::reset() {
   XEHO_PX0p_odd.state = 0b00011011;
   SAVY_PX1p_odd.state = 0b00011011;
   XODU_PX2p_odd.state = 0b00011011;
@@ -101,19 +101,19 @@ void PixCount::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void BGScrollX::reset_to_cart()    { memset(this, 0b00011010, sizeof(*this)); }
+void BGScrollX::reset()    { memset(this, 0b00011010, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void BGScrollY::reset_to_cart()    { memset(this, 0b00011010, sizeof(*this)); }
+void BGScrollY::reset()    { memset(this, 0b00011010, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void SpritePix::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
+void SpritePix::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
 
 //-----------------------------------------------------------------------------
 
-void RegLCDC::reset_to_cart() {
+void RegLCDC::reset() {
   VYXE_LCDC_BGENp  .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
   XYLO_LCDC_SPENp  .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
   XYMO_LCDC_SPSIZEp.set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
@@ -126,19 +126,19 @@ void RegLCDC::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegStat::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
+void RegStat::reset()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void RegSCY::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
+void RegSCY::reset()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void RegSCX::reset_to_cart()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
+void RegSCX::reset()    { memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this)); }
 
 //-----------------------------------------------------------------------------
 
-void RegLY::reset_to_cart() {
+void RegLY::reset() {
   MUWY_LY0p_odd.state = 0b00011000;
   MYRO_LY1p_odd.state = 0b00011010;
   LEXA_LY2p_odd.state = 0b00011010;
@@ -151,7 +151,7 @@ void RegLY::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegLX::reset_to_cart() {
+void RegLX::reset() {
   SAXO_LX0p_odd.state = 0b00011000;
   TYPO_LX1p_odd.state = 0b00011011;
   VYZO_LX2p_odd.state = 0b00011000;
@@ -163,7 +163,7 @@ void RegLX::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegLYC::reset_to_cart() {
+void RegLYC::reset() {
   SYRY_LYC0p.set_state(0b00011011);
   VUCE_LYC1p.set_state(0b00011011);
   SEDY_LYC2p.set_state(0b00011011);
@@ -180,7 +180,7 @@ uint8_t RegLYC::get() const {
 
 //-----------------------------------------------------------------------------
 
-void RegBGP::reset_to_cart() {
+void RegBGP::reset() {
   PAVO_BGP_D0p.set_state(0b00011011);
   NUSY_BGP_D1p.set_state(0b00011011);
   PYLU_BGP_D2p.set_state(0b00011010);
@@ -193,7 +193,7 @@ void RegBGP::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegOBP0::reset_to_cart() {
+void RegOBP0::reset() {
   XUFU_OBP0_D0p.set_state(0b00011010);
   XUKY_OBP0_D1p.set_state(0b00011010);
   XOVA_OBP0_D2p.set_state(0b00011010);
@@ -206,7 +206,7 @@ void RegOBP0::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegOBP1::reset_to_cart() {
+void RegOBP1::reset() {
   MOXY_OBP1_D0p.set_state(0b00011010);
   LAWO_OBP1_D1p.set_state(0b00011010);
   MOSA_OBP1_D2p.set_state(0b00011010);
@@ -219,7 +219,7 @@ void RegOBP1::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegWY::reset_to_cart() {
+void RegWY::reset() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
@@ -238,7 +238,7 @@ int RegWY::get() const { return bit_pack_inv(*this); }
 
 //-----------------------------------------------------------------------------
 
-void RegWX::reset_to_cart() {
+void RegWX::reset() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, sizeof(*this));
 }
 
@@ -259,7 +259,7 @@ int RegWX::get() const {
 
 //-----------------------------------------------------------------------------
 
-void OamLatchA::reset_to_cart() {
+void OamLatchA::reset() {
   YDYV_OAM_LATCH_DA0n.state = 0b00011001;
   YCEB_OAM_LATCH_DA1n.state = 0b00011001;
   ZUCA_OAM_LATCH_DA2n.state = 0b00011001;
@@ -272,7 +272,7 @@ void OamLatchA::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void OamLatchB::reset_to_cart() {
+void OamLatchB::reset() {
   XYKY_OAM_LATCH_DB0n.state = 0b00011001;
   YRUM_OAM_LATCH_DB1n.state = 0b00011001;
   YSEX_OAM_LATCH_DB2n.state = 0b00011001;
@@ -285,35 +285,35 @@ void OamLatchB::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void OamTempA::reset_to_cart() {
+void OamTempA::reset() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
 
-void OamTempB::reset_to_cart() {
+void OamTempB::reset() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
 
-void TileTempA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void TileTempA::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void TileTempB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void TileTempB::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void SpritePixA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void SpritePixA::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void SpritePixB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void SpritePixB::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void WinMapX::reset_to_cart() {
+void WinMapX::reset() {
   WYKA_WIN_MAP_X0.state = BIT_OLD | BIT_DRIVEN;
   WODY_WIN_MAP_X1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   WOBO_WIN_MAP_X2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
@@ -323,7 +323,7 @@ void WinMapX::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void WinTileY::reset_to_cart() {
+void WinTileY::reset() {
   VYNO_WIN_TILE_Y0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   VUJO_WIN_TILE_Y1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   VYMU_WIN_TILE_Y2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
@@ -331,7 +331,7 @@ void WinTileY::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void WinMapY::reset_to_cart() {
+void WinMapY::reset() {
   TUFU_WIN_MAP_Y0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   TAXA_WIN_MAP_Y1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   TOZO_WIN_MAP_Y2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;

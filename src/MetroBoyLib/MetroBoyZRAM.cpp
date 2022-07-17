@@ -5,7 +5,7 @@
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyZRAM::reset_to_cart() {
+void MetroBoyZRAM::reset() {
   memset(ram, 0, 128);
 }
 

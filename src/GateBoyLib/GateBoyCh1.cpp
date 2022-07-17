@@ -23,7 +23,7 @@ int ch1_audio_out(const SpuChannel1& ch1) {
 }
 
 
-void SpuChannel1::reset_to_cart() {
+void SpuChannel1::reset() {
   BANY_NR10_SWEEP_SHIFT0p.state = 0x1a;
   ARAX_NR10_SWEEP_SHIFT1p.state = 0x1a;
   ANAZ_NR10_SWEEP_SHIFT2p.state = 0x1a;
@@ -79,11 +79,11 @@ void SpuChannel1::reset_to_cart() {
   EMUS_CH1_FREQ_CNT_08.state = 0x1b;
   EVAK_CH1_FREQ_CNT_09.state = 0x1b;
   COPU_CH1_FREQ_CNT_10.state =   0x1b;
-  BAZA_DBG_SWEEP_CLK.state = 0x18;
+  BAZA_DBG_SWEEP_CLK.state = 0x1A;
   BEXA_SWEEP_TRIGp.state = 0x1a;
-  CUPO_SWEEP_DELAY0p.state = 0x1b;
-  CYPU_SWEEP_DELAY1p.state = 0x1a;
-  CAXY_SWEEP_DELAY2p.state = 0x18;
+  CUPO_SWEEP_DELAY0p.state = 0x18;
+  CYPU_SWEEP_DELAY1p.state = 0x18;
+  CAXY_SWEEP_DELAY2p.state = 0x19;
   FABU_CH1_SHIFT00.state = 0x1b;
   JEFA_CH1_SHIFT01.state = 0x1a;
   GOGA_CH1_SHIFT02.state = 0x1a;
@@ -127,18 +127,18 @@ void SpuChannel1::reset_to_cart() {
   ESUT_PHASE_xBxDxFxH.state = 0x1a;
   EROS_PHASE_xxCDxxGH.state = 0x1b;
   DAPE_PHASE_xxxxEFGH.state = 0x18;
-  KOZY_ENV_TICKp.state = 0x1a;
-  KYNO_ENV_MAXp.state = 0x19;
   JOVA_ENV_DELAY0p.state = 0x1a;
   KENU_ENV_DELAY1p.state = 0x19;
   KERA_ENV_DELAY2p.state =   0x1b;
   
-  HEVO_CH1_ENV3p.state = 0x19;
-  HOKO_CH1_ENV2p.state = 0x19;
-  HEMY_CH1_ENV1p.state = 0x19;
-  HAFO_CH1_ENV0p.state = 0x19;
+  HAFO_CH1_ENV0p.state = 0x1a;
+  HEMY_CH1_ENV1p.state = 0x1a;
+  HOKO_CH1_ENV2p.state = 0x1a;
+  HEVO_CH1_ENV3p.state = 0x1a;
+  KOZY_ENV_TICKp.state = 0x18;
+  KYNO_ENV_MAXp.state = 0x19;
   
-  KALY_ENV_DELAY_CLK_64n.state = 0x19;
+  KALY_ENV_DELAY_CLK_64n.state = 0x1b;
   DUWO_RAW_BIT_SYNCp.state = 0x18;
   KEZU_ENV_ACTIVEn.state = 0x19;
 }

@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct VramABusLo {
-  void reset_to_cart();
+  void reset();
 
   /*_BUS_VRAM_A00n*/ Bus BUS_VRAM_A00n;
   /*_BUS_VRAM_A01n*/ Bus BUS_VRAM_A01n;
@@ -19,7 +19,7 @@ struct VramABusLo {
 //-----------------------------------------------------------------------------
 
 struct VramABusHi {
-  void reset_to_cart();
+  void reset();
 
   /*_BUS_VRAM_A08n*/ Bus BUS_VRAM_A08n;
   /*_BUS_VRAM_A09n*/ Bus BUS_VRAM_A09n;
@@ -31,7 +31,7 @@ struct VramABusHi {
 //-----------------------------------------------------------------------------
 
 struct VramDBus {
-  void reset_to_cart();
+  void reset();
 
   /*_BUS_VRAM_D00p*/ Bus BUS_VRAM_D00p;
   /*_BUS_VRAM_D01p*/ Bus BUS_VRAM_D01p;

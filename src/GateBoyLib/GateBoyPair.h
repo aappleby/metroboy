@@ -15,11 +15,11 @@ struct GateBoyPair : public IGateBoy {
   IGateBoy* clone() const override;
   int size_bytes() override;
   GBResult get_flags() const override;
+  GBResult load_bootrom(const uint8_t* data, int size) override;
   GBResult load_raw_dump(BlobStream& dump_in) override;
   GBResult save_raw_dump(BlobStream& dump_out) const override;
-  GBResult reset_to_poweron(bool fastboot) override;
-  GBResult reset_to_bootrom(const blob& cart_blob) override;
-  GBResult reset_to_cart   (const blob& cart_blob) override;
+  GBResult poweron(bool fastboot) override;
+  GBResult reset() override;
   GBResult peek(int addr) const override;
   GBResult poke(int addr, uint8_t data_in) override;
   GBResult dbg_req(uint16_t addr, uint8_t data, bool write) override;

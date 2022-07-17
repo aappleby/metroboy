@@ -94,7 +94,7 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
 
 //-----------------------------------------------------------------------------
 
-void RegDmaLo::reset_to_cart() {
+void RegDmaLo::reset() {
   NAKY_DMA_A00p_odd.state = 0b00011000;
   PYRO_DMA_A01p_odd.state = 0b00011010;
   NEFY_DMA_A02p_odd.state = 0b00011010;
@@ -107,13 +107,13 @@ void RegDmaLo::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void RegDmaHi::reset_to_cart() {
+void RegDmaHi::reset() {
   bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); // FIXME why does a test fail if this resets to 0?
 }
 
 //-----------------------------------------------------------------------------
 
-void DmaControl::reset_to_cart() {
+void DmaControl::reset() {
   LYXE_DMA_LATCHp.state      = 0b00011000;
   MYTE_DMA_DONE_odd.state    = 0b00011010;
   LUVY_DMA_TRIG_d0_odd.state = 0b00011000;

@@ -20,7 +20,7 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteDeltaY {
-  void reset_to_cart();
+  void reset();
 
   /*_p29.ERUC*/ Adder ERUC_YDIFF0;
   /*_p29.ENEF*/ Adder ENEF_YDIFF1;
@@ -36,7 +36,7 @@ struct SpriteDeltaY {
 // Pixel counter
 
 struct PixCount {
-  void reset_to_cart();
+  void reset();
 
   /*_p21.XEHO*/ DFF17 XEHO_PX0p_odd; // AxCxExGx
   /*_p21.SAVY*/ DFF17 SAVY_PX1p_odd; // AxCxExGx
@@ -51,7 +51,7 @@ struct PixCount {
 //-----------------------------------------------------------------------------
 
 struct BGScrollX {
-  void reset_to_cart();
+  void reset();
 
   Adder ATAD_TILE_X0;
   Adder BEHU_TILE_X1;
@@ -66,7 +66,7 @@ struct BGScrollX {
 //-----------------------------------------------------------------------------
 
 struct BGScrollY {
-  void reset_to_cart();
+  void reset();
 
   Adder FAFO_TILE_Y0;
   Adder EMUX_TILE_Y1;
@@ -81,7 +81,7 @@ struct BGScrollY {
 //-----------------------------------------------------------------------------
 
 struct SpritePix {
-  void reset_to_cart();
+  void reset();
 
   Gate PUTE_FLIP0p;
   Gate PELO_FLIP1p;
@@ -97,7 +97,7 @@ struct SpritePix {
 // FF40 LCDC
 
 struct RegLCDC {
-  void reset_to_cart();
+  void reset();
 
   /*#p23.VYXE*/ DFF9B VYXE_LCDC_BGENp;   // xxxxxxxH
   /*_p23.XYLO*/ DFF9B XYLO_LCDC_SPENp;   // xxxxxxxH
@@ -113,7 +113,7 @@ struct RegLCDC {
 // FF41 - STAT
 
 struct RegStat {
-  void reset_to_cart();
+  void reset();
 
   /*_p21.ROXE*/ DFF9B ROXE_STAT_HBI_ENp; // xxxxxxxH
   /*_p21.RUFO*/ DFF9B RUFO_STAT_VBI_ENp; // xxxxxxxH
@@ -125,7 +125,7 @@ struct RegStat {
 // FF42 SCY
 
 struct RegSCY {
-  void reset_to_cart();
+  void reset();
 
   /*_p23.GAVE*/ DFF9B GAVE_SCY0p;          // xxxxxxxH
   /*_p23.FYMO*/ DFF9B FYMO_SCY1p;          // xxxxxxxH
@@ -141,7 +141,7 @@ struct RegSCY {
 // FF43 SCX
 
 struct RegSCX {
-  void reset_to_cart();
+  void reset();
 
   /*_p23.DATY*/ DFF9B DATY_SCX0p;          // xxxxxxxH
   /*_p23.DUZU*/ DFF9B DUZU_SCX1p;          // xxxxxxxH
@@ -157,7 +157,7 @@ struct RegSCX {
 // FF44 LY
 
 struct RegLY {
-  void reset_to_cart();
+  void reset();
 
   /*#p21.MUWY*/ DFF17 MUWY_LY0p_odd;  // xxCxxxGx Ticks on G, reset on C
   /*#p21.MYRO*/ DFF17 MYRO_LY1p_odd;  // xxCxxxGx Ticks on G, reset on C
@@ -173,7 +173,7 @@ struct RegLY {
 // LCD x counter isn't exposed to CPU
 
 struct RegLX {
-  void reset_to_cart();
+  void reset();
 
   /*#p21.SAXO*/ DFF17 SAXO_LX0p_odd; // xxCxxxGx Ticks on C, reset on G
   /*#p21.TYPO*/ DFF17 TYPO_LX1p_odd; // xxCxxxGx Ticks on C, reset on G
@@ -188,7 +188,7 @@ struct RegLX {
 // FF45 LYC
 
 struct RegLYC {
-  void reset_to_cart();
+  void reset();
   uint8_t get() const;
 
   /*_p23.SYRY*/ DFF9B SYRY_LYC0p; // xxxxxxxH
@@ -205,7 +205,7 @@ struct RegLYC {
 // FF47 - BGP
 
 struct RegBGP {
-  void reset_to_cart();
+  void reset();
 
   /*#p36.PAVO*/ DFF8pB PAVO_BGP_D0p; // xxxxxxxH
   /*_p36.NUSY*/ DFF8pB NUSY_BGP_D1p; // xxxxxxxH
@@ -221,7 +221,7 @@ struct RegBGP {
 // FF48 - OBP0
 
 struct RegOBP0 {
-  void reset_to_cart();
+  void reset();
 
   /*_p36.XUFU*/ DFF8pB XUFU_OBP0_D0p; // xxxxxxxH
   /*_p36.XUKY*/ DFF8pB XUKY_OBP0_D1p; // xxxxxxxH
@@ -237,7 +237,7 @@ struct RegOBP0 {
 // FF49 - OBP1
 
 struct RegOBP1 {
-  void reset_to_cart();
+  void reset();
 
   /*_p36.MOXY*/ DFF8pB MOXY_OBP1_D0p; // xxxxxxxH
   /*_p36.LAWO*/ DFF8pB LAWO_OBP1_D1p; // xxxxxxxH
@@ -253,7 +253,7 @@ struct RegOBP1 {
 // FF4A - WY
 
 struct RegWY {
-  void reset_to_cart();
+  void reset();
 
   void set(uint8_t wy);
   int get() const;
@@ -272,7 +272,7 @@ struct RegWY {
 // FF4B - WX
 
 struct RegWX {
-  void reset_to_cart();
+  void reset();
 
   void set(uint8_t wx);
   int get() const;
@@ -290,7 +290,7 @@ struct RegWX {
 //-----------------------------------------------------------------------------
 
 struct OamLatchA {
-  void reset_to_cart();
+  void reset();
 
   /*#p29.YDYV*/ TpLatch YDYV_OAM_LATCH_DA0n; // xBxDxFxx // Proooobably all odd clocks?
   /*_p29.YCEB*/ TpLatch YCEB_OAM_LATCH_DA1n; // xBxDxFxx
@@ -305,7 +305,7 @@ struct OamLatchA {
 //-----------------------------------------------------------------------------
 
 struct OamLatchB {
-  void reset_to_cart();
+  void reset();
 
   /*#p31.XYKY*/ TpLatch XYKY_OAM_LATCH_DB0n; // xBxxxFxx // Proooobably all odd clocks?
   /*_p31.YRUM*/ TpLatch YRUM_OAM_LATCH_DB1n; // xBxxxFxx
@@ -321,7 +321,7 @@ struct OamLatchB {
 // oam byte 0, byte 2
 
 struct OamTempA {
-  void reset_to_cart();
+  void reset();
 
   /*#p29.XUSO*/ DFF8nB XUSO_OAM_DA0n; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
   /*_p29.XEGU*/ DFF8nB XEGU_OAM_DA1n; // AxxxExxx - sprite y bit 1, sprite tile index bit 1
@@ -337,7 +337,7 @@ struct OamTempA {
 // oam byte 1, byte 3
 
 struct OamTempB {
-  void reset_to_cart();
+  void reset();
 
   /*_p31.YLOR*/ DFF8nB YLOR_OAM_DB0n; // AxxxExxx - sprite x bit 0,
   /*_p31.ZYTY*/ DFF8nB ZYTY_OAM_DB1n; // AxxxExxx - sprite x bit 1,
@@ -352,7 +352,7 @@ struct OamTempB {
 //-----------------------------------------------------------------------------
 
 struct TileTempA {
-  void reset_to_cart();
+  void reset();
 
   /*_p32.LEGU*/ DFF8pB LEGU_TILE_DA0p;   // xBxDxFxH
   /*_p32.NUDU*/ DFF8pB NUDU_TILE_DA1p;   // xBxDxFxH
@@ -367,7 +367,7 @@ struct TileTempA {
 //-----------------------------------------------------------------------------
 
 struct TileTempB {
-  void reset_to_cart();
+  void reset();
 
   /*_p32.RAWU*/ DFF11 RAWU_TILE_DB0p;   // xBxDxFxH
   /*_p32.POZO*/ DFF11 POZO_TILE_DB1p;   // xBxDxFxH
@@ -382,7 +382,7 @@ struct TileTempB {
 //-----------------------------------------------------------------------------
 
 struct SpritePixA {
-  void reset_to_cart();
+  void reset();
 
   /*_p33.REWO*/ DFF8nB REWO_SPRITE_DA0p; // xBxDxFxH
   /*_p33.PEBA*/ DFF8nB PEBA_SPRITE_DA1p; // xBxDxFxH
@@ -397,7 +397,7 @@ struct SpritePixA {
 //-----------------------------------------------------------------------------
 
 struct SpritePixB {
-  void reset_to_cart();
+  void reset();
 
   /*_p33.PEFO*/ DFF8nB PEFO_SPRITE_DB0p; // xBxDxFxH
   /*_p33.ROKA*/ DFF8nB ROKA_SPRITE_DB1p; // xBxDxFxH
@@ -412,7 +412,7 @@ struct SpritePixB {
 //-----------------------------------------------------------------------------
 
 struct WinMapX {
-  void reset_to_cart();
+  void reset();
 
   /*_p27.WYKA*/ DFF17 WYKA_WIN_MAP_X0;   // AxCxExGx
   /*_p27.WODY*/ DFF17 WODY_WIN_MAP_X1;   // AxCxExGx
@@ -424,7 +424,7 @@ struct WinMapX {
 //-----------------------------------------------------------------------------
 
 struct WinTileY {
-  void reset_to_cart();
+  void reset();
 
   /*_p27.VYNO*/ DFF17 VYNO_WIN_TILE_Y0;  // AxCxExGh probably, but not enough data.
   /*_p27.VUJO*/ DFF17 VUJO_WIN_TILE_Y1;  // AxCxExGh probably, but not enough data.
@@ -434,7 +434,7 @@ struct WinTileY {
 //-----------------------------------------------------------------------------
 
 struct WinMapY {
-  void reset_to_cart();
+  void reset();
 
   /*_p27.TUFU*/ DFF17 TUFU_WIN_MAP_Y0;   // AxCxExGh probably, but not enough data.
   /*_p27.TAXA*/ DFF17 TAXA_WIN_MAP_Y1;   // AxCxExGh probably, but not enough data.

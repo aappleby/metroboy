@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct JoyInt {
-  void reset_to_cart();
+  void reset();
 
   /*_p02.BATU*/ DFF17 BATU_JP_GLITCH0;
   /*_p02.ACEF*/ DFF17 ACEF_JP_GLITCH1;
@@ -15,7 +15,7 @@ struct JoyInt {
 //-----------------------------------------------------------------------------
 
 struct RegJoy {
-  void reset_to_cart();
+  void reset();
 
   // Ignoring debug stuff for now
   ///*_p05.JUTE*/ DFF17 JUTE_DBG_D0;
@@ -31,7 +31,7 @@ struct RegJoy {
 //-----------------------------------------------------------------------------
 
 struct JoyLatch {
-  void reset_to_cart();
+  void reset();
 
   /*#p05.KEVU*/ TpLatch KEVU_JOYP_L0n;
   /*#p05.KAPA*/ TpLatch KAPA_JOYP_L1n;

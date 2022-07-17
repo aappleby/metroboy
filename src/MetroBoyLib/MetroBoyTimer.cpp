@@ -8,7 +8,7 @@ static const uint16_t masks[] = { 0x80, 0x02, 0x08, 0x20 };
 
 //-----------------------------------------------------------------------------
 
-void MetroBoyTimer::reset_to_cart() {
+void MetroBoyTimer::reset() {
   div  = 0xEAF2;
   tima = 0;
   tma  = 0;

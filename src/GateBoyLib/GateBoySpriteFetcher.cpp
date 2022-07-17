@@ -5,7 +5,7 @@
 
 //-----------------------------------------------------------------------------
 
-void SpriteFetchCounter::reset_to_cart() {
+void SpriteFetchCounter::reset() {
   TOXE_SFETCH_S0p_evn.state = 0b00011011;
   TULY_SFETCH_S1p_evn.state = 0b00011000;
   TESE_SFETCH_S2p_evn.state = 0b00011011;
@@ -13,7 +13,7 @@ void SpriteFetchCounter::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void SpriteFetchControl::reset_to_cart() {
+void SpriteFetchControl::reset() {
   WUTY_SFETCH_DONE_TRIGp_odd.state = 0b00011000;
   TEXY_SFETCHINGp_evn.state        = 0b00011000;
   TAKA_SFETCH_RUNNINGp_evn.state   = 0b00011000;

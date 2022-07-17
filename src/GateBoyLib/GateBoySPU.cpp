@@ -66,7 +66,7 @@ int spu_audio_out_l(const GateBoyState& reg_new) {
 
 //-----------------------------------------------------------------------------
 
-void GateBoySPU::reset_to_cart() {
+void GateBoySPU::reset() {
   CEMO_xBCDExxx.state   = BIT_OLD | BIT_DRIVEN;
   ATEP_AxxDExxH.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
   CERY_AxxDExxH.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
@@ -74,9 +74,9 @@ void GateBoySPU::reset_to_cart() {
   AVOK_xBCDExxx.state   = BIT_OLD | BIT_DRIVEN;
   AJER_AxxDExxH.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
   JESO_CLK_512K.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  BARA_CLK_512.state  = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
-  CARU_CLK_256.state  = BIT_OLD | BIT_DRIVEN | BIT_DATA;
-  BYLU_CLK_128.state  = BIT_OLD | BIT_DRIVEN;
+  BARA_CLK_512.state  = 0x1a;
+  CARU_CLK_256.state  = 0x1b;
+  BYLU_CLK_128.state  = 0x19;
 
   APEG_NR50_VOL_L0.state = 0x1b;
   BYGA_NR50_VOL_L1.state = 0x1b;

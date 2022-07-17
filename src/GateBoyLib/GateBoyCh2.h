@@ -5,7 +5,7 @@
 struct GateBoyState;
 
 struct SpuChannel2 {
-  void reset_to_cart();
+  void reset();
 
   //----------
   // FF16

@@ -4,7 +4,7 @@
 struct MetroBoyJoypad {
   MetroBoyJoypad() = default;
 
-  void reset_to_cart();
+  void reset();
 
   void tick(int phase_total, const Req& req, Ack& ack) const;
   void tock(int phase_total, const Req& req);

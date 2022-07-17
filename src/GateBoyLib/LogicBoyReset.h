@@ -4,23 +4,11 @@
 #if 0
 
 struct LogicBoyReset {
-  //void reset_to_poweron() {
-  //  memset(this, 0, sizeof(*this));
-  //}
+  void poweron() {
+    memset(this, 0, sizeof(*this));
+  }
 
-  //void reset_to_bootrom() {
-  //  TUBO_WAITINGp  = 0;
-  //  ASOL_POR_DONEn = 0;
-  //  AFER_SYS_RSTp  = 0;
-  //  SOTO_DBG_VRAMp = 0;
-  //
-  //  SIG_CPU_EXT_CLKGOOD = 1;
-  //  SIG_CPU_EXT_RESETp  = 0;
-  //  SIG_CPU_STARTp      = 0;
-  //  SIG_CPU_INT_RESETp  = 0;
-  //}
-
-  void reset_to_cart() {
+  void reset() {
     TUBO_WAITINGp  = 0;
     ASOL_POR_DONEn = 0;
     AFER_SYS_RSTp  = 0;

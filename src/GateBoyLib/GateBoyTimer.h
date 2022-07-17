@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct RegDIV {
-  void reset_to_cart();
+  void reset();
 
   void force_set_div(uint16_t div);
 
@@ -29,7 +29,7 @@ struct RegDIV {
 //-----------------------------------------------------------------------------
 
 struct RegTIMA {
-  void reset_to_cart();
+  void reset();
 
   void force_set_tima(uint8_t tima);
 
@@ -46,7 +46,7 @@ struct RegTIMA {
 //-----------------------------------------------------------------------------
 
 struct RegTMA {
-  void reset_to_cart();
+  void reset();
 
   /*_p03.SABU*/ DFF17 SABU_TMA0p; // xxxxxxxH
   /*_p03.NYKE*/ DFF17 NYKE_TMA1p; // xxxxxxxH
@@ -61,9 +61,7 @@ struct RegTMA {
 //-----------------------------------------------------------------------------
 
 struct RegTAC {
-  void reset_to_poweron();
-  void reset_to_bootrom();
-  void reset_to_cart();
+  void reset();
 
   /*_p03.SOPU*/ DFF17 SOPU_TAC0p; // xxxxxxxH
   /*_p03.SAMY*/ DFF17 SAMY_TAC1p; // xxxxxxxH

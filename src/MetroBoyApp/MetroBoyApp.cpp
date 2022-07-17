@@ -123,7 +123,7 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
   load_blob(filename.c_str(), rom.data(), rom.size());
 
   gb.reset_states();
-  gb->reset_to_cart(rom.data(), rom.size());
+  gb->reset(rom.data(), rom.size());
 
   rom_loaded = true;
   runmode = RUN_STEP;
@@ -156,7 +156,7 @@ void MetroBoyApp::app_update(dvec2 screen_size, double delta) {
 
     case SDLK_r: {
       gb.reset_states();
-      gb->reset_to_cart(rom.data(), rom.size());
+      gb->reset(rom.data(), rom.size());
       break;
     }
     case SDLK_F1: {
@@ -185,7 +185,7 @@ void MetroBoyApp::app_update(dvec2 screen_size, double delta) {
       load_blob(event.drop.file, rom.data(), rom.size());
 
       gb.reset_states();
-      gb->reset_to_cart(rom.data(), rom.size());
+      gb->reset(rom.data(), rom.size());
       rom_loaded = true;
       runmode = RUN_SYNC;
       SDL_free(event.drop.file);

@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct RegIF {
-  void reset_to_cart();
+  void reset();
 
   /*_p02.LOPE*/ DFF22 LOPE_FF0F_D0p;
   /*_p02.LALU*/ DFF22 LALU_FF0F_D1p;
@@ -17,7 +17,7 @@ struct RegIF {
 // This is technically in the CPU, but we're going to implement it here for now.
 
 struct RegIE {
-  void reset_to_cart();
+  void reset();
 
   DFF IE_D0;
   DFF IE_D1;
@@ -29,7 +29,7 @@ struct RegIE {
 //-----------------------------------------------------------------------------
 
 struct InterruptLatch {
-  void reset_to_cart();
+  void reset();
 
   /*_p02.MATY*/ TpLatch MATY_FF0F_L0p;
   /*_p02.MOPO*/ TpLatch MOPO_FF0F_L1p;
@@ -41,7 +41,7 @@ struct InterruptLatch {
 //-----------------------------------------------------------------------------
 
 struct CpuInt {
-  void reset_to_cart();
+  void reset();
 
   /*_SIG_CPU_INT_VBLANK*/ SigOut SIG_CPU_INT_VBLANK;    // bottom right port PORTB_03: <- P02.LOPE, vblank int
   /*_SIG_CPU_INT_STAT  */ SigOut SIG_CPU_INT_STAT  ;    // bottom right port PORTB_07: <- P02.LALU, stat int
@@ -53,7 +53,7 @@ struct CpuInt {
 //-----------------------------------------------------------------------------
 
 struct CpuAck {
-  void reset_to_cart();
+  void reset();
 
   /*_SIG_CPU_ACK_VBLANK*/ SigIn  SIG_CPU_ACK_VBLANK;    // bottom right port PORTB_01: -> P02.LETY, vblank int ack
   /*_SIG_CPU_ACK_STAT  */ SigIn  SIG_CPU_ACK_STAT  ;    // bottom right port PORTB_05: -> P02.LEJA, stat int ack
@@ -65,7 +65,7 @@ struct CpuAck {
 //-----------------------------------------------------------------------------
 
 struct InterruptControl {
-  void reset_to_cart();
+  void reset();
 
   // This is driven by what we think is a latch and it goes straight to the CPU - maybe there's a pull-down?
   /*_p02.AWOB*/ TpLatch AWOB_WAKE_CPU;

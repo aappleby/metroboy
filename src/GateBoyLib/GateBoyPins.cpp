@@ -4,27 +4,27 @@
 
 //-----------------------------------------------------------------------------
 
-void PinsControl::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x02); }
+void PinsControl::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x02); }
 
 //-----------------------------------------------------------------------------
 
-void PinsABusLo::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0xB2); }
+void PinsABusLo::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0xB2); }
 
 //-----------------------------------------------------------------------------
 
-void PinsABusHi::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x7F); }
+void PinsABusHi::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x7E); }
 
 //-----------------------------------------------------------------------------
 
-void PinsDBus::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_PULLED, 0x00); }
+void PinsDBus::reset()    { bit_init(*this, BIT_OLD | BIT_PULLED, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void PinsJoypad::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x30); }
+void PinsJoypad::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x30); }
 
 //-----------------------------------------------------------------------------
 
-void PinsSerial::reset_to_cart() {
+void PinsSerial::reset() {
   PIN_68_SCK. state = 0b00010100;
   PIN_69_SIN. state = 0b00011000;
   PIN_70_SOUT.state = 0b00011000;
@@ -32,7 +32,7 @@ void PinsSerial::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void PinsVramControl::reset_to_cart() {
+void PinsVramControl::reset() {
   PIN_43_VRAM_CSn.state = BIT_OLD | BIT_DRIVEN | 0;
   PIN_45_VRAM_OEn.state = BIT_OLD | BIT_DRIVEN | 1;
   PIN_49_VRAM_WRn.state = BIT_OLD | BIT_DRIVEN | 0;
@@ -40,7 +40,7 @@ void PinsVramControl::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void PinsVramABus::reset_to_cart() {
+void PinsVramABus::reset() {
   PIN_34_VRAM_A00.state = 0b00011001;
   PIN_35_VRAM_A01.state = 0b00011001;
   PIN_36_VRAM_A02.state = 0b00011001;
@@ -58,13 +58,13 @@ void PinsVramABus::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void PinsVramDBus::reset_to_cart() {
+void PinsVramDBus::reset() {
   memset(this, BIT_OLD | BIT_DRIVEN | BIT_DATA, sizeof(*this));
 }
 
 //-----------------------------------------------------------------------------
 
-void PinsSys::reset_to_cart() {
+void PinsSys::reset() {
   PIN_71_RST.state         = 0b00011000;
   PIN_73_CLK_DRIVE.state   = 0b00011000;
   PIN_74_CLK.CLK.state     = 0b00011000;
@@ -103,7 +103,7 @@ void PinsSys::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void PinsLCD::reset_to_cart() {
+void PinsLCD::reset() {
   PIN_50_LCD_DATA1.state    = 0b00011000;
   PIN_51_LCD_DATA0.state    = 0b00011000;
   PIN_54_LCD_HSYNC.state    = 0b00011001;
@@ -116,21 +116,21 @@ void PinsLCD::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void GateBoyPins::reset_to_poweron() {
+void GateBoyPins::poweron() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
   
-void GateBoyPins::reset_to_cart()    {
-  abus_lo.reset_to_cart();
-  abus_hi.reset_to_cart();
-  dbus.reset_to_cart();
-  vram_dbus.reset_to_cart();
-  vram_abus.reset_to_cart();
-  vram_ctrl.reset_to_cart();
-  lcd.reset_to_cart();
-  joy.reset_to_cart();
-  sys.reset_to_cart();
-  ctrl.reset_to_cart();
+void GateBoyPins::reset()    {
+  abus_lo.reset();
+  abus_hi.reset();
+  dbus.reset();
+  vram_dbus.reset();
+  vram_abus.reset();
+  vram_ctrl.reset();
+  lcd.reset();
+  joy.reset();
+  sys.reset();
+  ctrl.reset();
 }
 
 void GateBoyPins::commit() {

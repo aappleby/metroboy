@@ -255,7 +255,7 @@ void GateBoy::tock_serial_logic(bool cpu_wr_old, bool cpu_wr_new, uint16_t cpu_a
 
 //-----------------------------------------------------------------------------
 
-void GateBoySerial::reset_to_cart() {
+void GateBoySerial::reset() {
   ETAF_SER_RUN.state = 0b00011010;
   CULY_SER_DIR.state = 0b00011010;
   COTY_SER_CLK.state = 0b00011000;

@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 
 struct GateBoyWaveBus {
-  void reset_to_cart();
+  void reset();
 
 #if 0
   /*_BUS_WAVE_A00*/ Bus BUS_WAVE_A00;

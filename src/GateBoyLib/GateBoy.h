@@ -28,12 +28,12 @@ struct GateBoyCpu {
 
   static FieldInfo fields[];
 
-  void reset_to_poweron() {
+  void poweron() {
     memset(this, 0, sizeof(*this));
   }
 
-  void reset_to_cart() {
-    core.reset_to_cart();
+  void reset() {
+    core.reset();
     core.reg.bus_req_new.addr = 0xFF50;
     core.reg.bus_req_new.data = 1;
     core.reg.bus_req_new.read = 0;
@@ -51,8 +51,10 @@ struct GateBoyCpu {
 
 #pragma pack(push, 1)
 struct GateBoyMem {
-  void reset_to_poweron() {
+  void poweron() {
     memset(this, 0, sizeof(*this));
+
+    memcpy(bootrom, DMG_ROM_bin, 256);
 
     // The first thing the bootrom does is clear VRAM, so put some recognizable
     // pattern in vram so we can see it running.
@@ -64,9 +66,10 @@ struct GateBoyMem {
     memset(framebuffer, 4, sizeof(framebuffer));
   }
 
-  void reset_to_cart() {
+  void reset() {
     memset(this, 0, sizeof(*this));
 
+    memcpy(bootrom, DMG_ROM_bin, 256);
     memcpy(vid_ram, vram_boot, 8192);
     zero_ram[0x7A] = 0x39;
     zero_ram[0x7B] = 0x01;
@@ -74,6 +77,7 @@ struct GateBoyMem {
     memcpy(framebuffer, framebuffer_boot, 160*144);
   }
 
+  uint8_t  bootrom [256];
   uint8_t  vid_ram [8192];
   uint8_t  cart_ram[32768];
   uint8_t  int_ram [8192];
@@ -90,12 +94,12 @@ struct GateBoyMem {
 
 #pragma pack(push, 1)
 struct GateBoySys {
-  void reset_to_poweron() {
+  void poweron() {
     memset(this, 0, sizeof(*this));
     cpu_en = true;
   }
 
-  void reset_to_cart() {
+  void reset() {
     rst = false;
     t1 = false;
     t2 = false;
@@ -156,6 +160,11 @@ struct GateBoy  : public IGateBoy {
 
   //----------------------------------------
 
+  GBResult load_bootrom(const uint8_t* data, int size) {
+    memcpy(mem.bootrom, data, size);
+    return GBResult::ok();
+  }
+
   GBResult load_raw_dump(BlobStream& bs) override {
     bool read_ok = true;
     read_ok &= bs.read(gb_state);
@@ -181,9 +190,8 @@ struct GateBoy  : public IGateBoy {
     return write_ok ? GBResult::ok() : Error::CORRUPT;;
   }
 
-  GBResult reset_to_poweron(bool fastboot);
-  GBResult reset_to_bootrom(const blob& cart_blob) override;
-  GBResult reset_to_cart(const blob& cart_blob) override;
+  GBResult poweron(bool fastboot);
+  GBResult reset() override;
 
   GBResult peek(int addr) const override;
   GBResult poke(int addr, uint8_t data_in) override;
@@ -248,7 +256,7 @@ struct GateBoy  : public IGateBoy {
   void tock_serial_gates(const GateBoyState& reg_old);
   void tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FETCH_TRIGp);
   void tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
-  void tock_bootrom_gates(const GateBoyState& reg_old);
+  void tock_bootrom_gates(const GateBoyState& reg_old, const uint8_t* bootrom);
   void tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);
   void tock_spu_gates(const GateBoyState& reg_old);
 

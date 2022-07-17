@@ -694,7 +694,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
 
 //-----------------------------------------------------------------------------
 
-void WinControl::reset_to_cart() {
+void WinControl::reset() {
   NUKO_WX_MATCHp_odd.state       = 0b00011000;
   ROGE_WY_MATCHp_odd.state       = 0b00011000;
   PYNU_WIN_MODE_Ap_odd.state     = 0b00011000;
@@ -712,11 +712,11 @@ void WinControl::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void FineCount::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void FineCount::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void FineScroll::reset_to_cart() {
+void FineScroll::reset() {
   PUXA_SCX_FINE_MATCH_evn.state    = 0b00011000;
   NYZE_SCX_FINE_MATCH_odd.state    = 0b00011000;
   ROXY_FINE_SCROLL_DONEn_evn.state = 0b00011001;
@@ -724,26 +724,26 @@ void FineScroll::reset_to_cart() {
 
 //-----------------------------------------------------------------------------
 
-void MaskPipe::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
+void MaskPipe::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0xFF); }
 
 //-----------------------------------------------------------------------------
 
-void BgwPipeA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void BgwPipeA::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void BgwPipeB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void BgwPipeB::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void SprPipeA::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void SprPipeA::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void SprPipeB::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void SprPipeB::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------
 
-void PalPipe::reset_to_cart()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
+void PalPipe::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0x00); }
 
 //-----------------------------------------------------------------------------

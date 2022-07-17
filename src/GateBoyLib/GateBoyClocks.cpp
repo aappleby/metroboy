@@ -3,7 +3,7 @@
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/Gates.h"
 
-void GateBoyClock::reset_to_cart() {
+void GateBoyClock::reset() {
   ANOS_xBxDxFxH.state = 0b00011001;
   AVET_AxCxExGx.state = 0b00011000;
   

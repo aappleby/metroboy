@@ -6,7 +6,7 @@ const char* byte_to_bits(uint8_t b);
 
 //-----------------------------------------------------------------------------
 
-void MetroBoySPU::reset_to_cart() {
+void MetroBoySPU::reset() {
   *this = {0};
 
   nr10 = 0x80;
@@ -379,7 +379,7 @@ void MetroBoySPU::bus_write(const Req& req) {
   if (!sound_on) {
     if (req.addr == 0xFF26) {
       nr52 = (uint8_t)req.data_lo | 0b01110000;
-      if (nr52 & 0x80) reset_to_cart();
+      if (nr52 & 0x80) reset();
     }
     return;
   }

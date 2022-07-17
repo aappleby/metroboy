@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 
 struct SpriteFetchCounter {
-  void reset_to_cart();
+  void reset();
 
   /*#p29.TOXE*/ DFF17 TOXE_SFETCH_S0p_evn;          // ABxDxFxH Beginning of line, reset on A. During line, ticks and resets on odd.
   /*#p29.TULY*/ DFF17 TULY_SFETCH_S1p_evn;          // ABxDxFxH Beginning of line, reset on A. During line, ticks and resets on odd.
@@ -14,7 +14,7 @@ struct SpriteFetchCounter {
 //-----------------------------------------------------------------------------
 
 struct SpriteFetchControl {
-  void reset_to_cart();
+  void reset();
 
   /*_p29.WUTY*/ Gate WUTY_SFETCH_DONE_TRIGp_odd; // new used
   /*_p29.TEXY*/ Gate TEXY_SFETCHINGp_evn; // new used

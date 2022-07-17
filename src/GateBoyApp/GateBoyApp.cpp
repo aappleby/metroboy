@@ -80,7 +80,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
   // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
 
-  gb_thread->poweron(true);
+  gb_thread->reset();
   /*
   gb_thread->load_bootrom(R"(
     0000:

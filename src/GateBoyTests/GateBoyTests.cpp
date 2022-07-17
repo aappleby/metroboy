@@ -272,9 +272,7 @@ TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
   results += test_bootrom(proto);
   results += test_clk(proto);
   results += test_regs(proto);
-#ifdef TEST_AUDIO
   results += test_spu_regs(proto);
-#endif
   results += test_dma(proto);
 
   results += test_mem(proto);
@@ -426,6 +424,8 @@ TestResults GateBoyTests::test_regs(const IGateBoy* proto) {
 TestResults GateBoyTests::test_spu_regs(const IGateBoy* proto) {
   TEST_INIT();
 
+#ifdef TEST_AUDIO
+
   results += test_spu_reg(proto, "NR50", ADDR_NR50, 0b11111111);
   results += test_spu_reg(proto, "NR51", ADDR_NR51, 0b11111111);
   // since this controls power to the whole sound section, we have to test it as a regular reg
@@ -452,6 +452,8 @@ TestResults GateBoyTests::test_spu_regs(const IGateBoy* proto) {
   results += test_spu_reg(proto, "NR42", ADDR_NR42, 0b11111111);
   results += test_spu_reg(proto, "NR43", ADDR_NR43, 0b11111111);
   results += test_spu_reg(proto, "NR44", ADDR_NR44, 0b01000000);
+
+#endif
 
   TEST_DONE();
 }
@@ -1190,9 +1192,8 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
     EXPECT_CLK(clk.SIG_CPU_BOMA_xBCDEFGH.state, 0b01111111);
     EXPECT_CLK(clk.SIG_CPU_BOGA_Axxxxxxx.state, 0b10000000);
     
-    //EXPECT_CLK(clk.PIN_75_CLK_OUT.state,        0b11110000);
     // external signals are inverted
-    EXPECT_CLK(gb->get_pins().sys.PIN_75_CLK_OUT.state,        0b00001111);
+    EXPECT_CLK(gb->get_pins().sys.PIN_75_CLK_OUT.state, 0b00001111);
     
     gb->next_phase(dummy_cart);
   }
@@ -1231,9 +1232,10 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
 
     unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset();
-    gb->run_phases(cart_blob, 120);
+    gb->run_phases(cart_blob, 121);
 
-#if 0
+    // FIXME i broke this at some point...
+
     // Start checking each phase
     const char* CLK_WAVE = "11110000 11110000 11110000 11110000 11110000";
     const char* WRn_WAVE = "11111111 11110001 11111111 11111111 11111111";
@@ -1336,10 +1338,9 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
 
       gb->next_phase(cart_blob);
     }
-#endif
   }
 
-#if 1
+#if 0
   if (1) {
     LOG_B("Testing vram write external bus waves\n");
 
@@ -1468,7 +1469,7 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
   }
 #endif
 
-#if 1
+#if 0
   if (1) {
     LOG_B("Testing zram write external bus waves\n");
 
@@ -1733,10 +1734,15 @@ TestResults GateBoyTests::test_mem(const IGateBoy* proto, const char* tag, uint1
 
   auto test_cart = dummy_cart;
 
-  unique_ptr<IGateBoy> gb(proto->clone());
+  //unique_ptr<IGateBoy> gb(proto->clone());
+  
+  GateBoy* gb = new GateBoy();
   gb->reset();
+  gb->set_cpu_en(false);
+
 
   gb->dbg_write(test_cart, 0xFF50, 0x01); // disable bootrom
+  gb->dbg_write(test_cart, 0xFF40, 0x00); // disable video
   gb->dbg_write(test_cart, 0x0000, 0x0A); // enable mbc1 ram
 
   for (uint16_t addr = addr_start; addr < addr_end; addr += step) {
@@ -1760,9 +1766,9 @@ TestResults GateBoyTests::test_mem(const IGateBoy* proto, const char* tag, uint1
     }
 
     uint8_t data_rd = addr < 0x8000 ? test_cart[addr] : gb->peek(addr).unwrap();
-    //ASSERT_EQ(data_rd, data_wr, "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
+    ASSERT_EQ(data_rd, data_wr, "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
     data_rd = gb->dbg_read(test_cart, addr).unwrap();
-    //ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
+    ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
   }
 
   for (uint16_t addr = addr_start; addr < addr_end; addr += step) {
@@ -1786,9 +1792,9 @@ TestResults GateBoyTests::test_mem(const IGateBoy* proto, const char* tag, uint1
     }
 
     uint8_t data_rd = addr < 0x8000 ? test_cart[addr] : gb->peek(addr).unwrap();
-    //ASSERT_EQ(data_rd, data_wr, "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
+    ASSERT_EQ(data_rd, data_wr, "WRITE FAIL addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
     data_rd = gb->dbg_read(test_cart, addr).unwrap();
-    //ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
+    ASSERT_EQ(data_rd, data_wr, "READ FAIL  addr 0x%04x : wrote 0x%02x, read 0x%02x", addr, data_wr, data_rd);
   }
 
   TEST_DONE();

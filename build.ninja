@@ -8,7 +8,8 @@
 build_mode   = -DCONFIG_RELEASE -O3
 #build_mode   = -DCONFIG_FASTMODE -O3
 
-default_gpp      = g++ -g -MMD -std=gnu++2a -Wunused-variable -Werror
+#default_gpp      = g++ -g -MMD -std=gnu++2a -Wunused-variable -Werror
+default_gpp      = g++ -g -MMD -std=gnu++2a
 default_gcc      = gcc -g -MMD
 default_includes = -Isrc -Isrc/tree-sitter/lib/include -Isubmodules -Isubmodules/tree-sitter/lib/include
 global_libs      = -lSDL2

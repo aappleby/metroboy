@@ -140,9 +140,9 @@ void MetroBoySPU::tock(int phase_total, const Req& req) {
   // env
 
   if (env_tick) {
-    const bool s1_env_dir = (nr12 & 0b00001000) >> 3;
-    const bool s2_env_dir = (nr22 & 0b00001000) >> 3;
-    const bool s4_env_dir = (nr42 & 0b00001000) >> 3;
+    //const bool s1_env_dir = (nr12 & 0b00001000) >> 3;
+    //const bool s2_env_dir = (nr22 & 0b00001000) >> 3;
+    //const bool s4_env_dir = (nr42 & 0b00001000) >> 3;
 
     const uint8_t s1_env_period = (nr12 & 0b00000111) >> 0;
     const uint8_t s2_env_period = (nr22 & 0b00000111) >> 0;

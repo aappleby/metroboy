@@ -207,10 +207,11 @@ GBResult LogicBoy::run_to(const blob& cart_blob, int phase) {
 #define DELTA_ODD_old  ((phase_old & 1) == 0)
 
 void LogicBoy::tock_cpu() {
+
+#if 0
   auto phase_old = (sys.gb_phase_total - 1) & 7;
   auto phase_new = (sys.gb_phase_total - 0) & 7;
 
-#if 0
   cpu.cpu_data_latch &= lb_state.cpu_dbus;
   //cpu.imask_latch = lb_state.reg_ie;
 
@@ -296,7 +297,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // old signals
 
   LogicBoyState  state_old = lb_state;
-  auto phase_total_old = sys.gb_phase_total - 1;
+  //auto phase_total_old = sys.gb_phase_total - 1;
   int phase_old = int((sys.gb_phase_total - 1) & 7);
 
   wire nuko_wx_match_old = (uint8_t(~state_old.reg_wx) == state_old.pix_count_odd) && state_old.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state;
@@ -304,12 +305,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
 
   LogicBoyState& state_new = lb_state;
-  auto phase_total_new = sys.gb_phase_total - 0;
+  //auto phase_total_new = sys.gb_phase_total - 0;
   int phase_new = int((sys.gb_phase_total - 0) & 7);
 
   //----------------------------------------
 
-  const auto cpu_dbus_old = state_old.cpu_dbus;
+  //const auto cpu_dbus_old = state_old.cpu_dbus;
 
   // Data has to be driven on EFGH or we fail the wave tests
 
@@ -457,7 +458,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   int64_t phase_lcd_new = state_new.phase_lcd;
 
   int phase_frame_new = int(phase_lcd_new % (154 * 912));
-  int frame_index_new = int(phase_lcd_new / (154 * 912));
+  //int frame_index_new = int(phase_lcd_new / (154 * 912));
   int phase_lx_new = phase_frame_new % 912;
   int phase_ly_new = phase_frame_new / 912;
   bool first_line_new = phase_lcd_new < 912;
@@ -1406,7 +1407,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     const auto scx = ~state_new.reg_scx;
     const auto scy = ~state_new.reg_scy;
 
-    const auto sum_x = px + scx;
+    //const auto sum_x = px + scx;
     const auto sum_y = reg_ly_new + scy;
 
     if (state_new.phase_tfetch >= 4 && state_new.phase_tfetch <= 11) {
@@ -1661,7 +1662,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     // Rendering
 
     uint8_t sfetch_oam_oen_new =  !(state_new.phase_sfetch == 0 || state_new.phase_sfetch == 3);
-    uint8_t sfetch_oam_clk_new =  !(state_new.phase_sfetch >= 1 && state_new.phase_sfetch <= 3);
+    //uint8_t sfetch_oam_clk_new =  !(state_new.phase_sfetch >= 1 && state_new.phase_sfetch <= 3);
 
     if (!sfetch_oam_oen_new) {
       oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];

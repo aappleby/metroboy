@@ -110,13 +110,6 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   auto& abus_new = reg_new.cpu_abus;
   auto& dbus_old = reg_old.cpu_dbus;
 
-  /*_p01.ABOL*/ wire ABOL_CLKREQn  = not1(reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
-  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_newB());
-  /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
-  /*#p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
-  /*#p01.BUDE*/ wire BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
-  /*_p01.DOVA*/ wire DOVA_ABCDxxxx = not1(BUDE_xxxxEFGH);
-
   /*_p09.AGUZ*/ wire AGUZ_CPU_RDn = not1(reg_new.cpu_signals.TEDO_CPU_RDp.qp_new());
   /*_p10.BAFU*/ wire BAFU_CPU_WRn = not1(reg_new.cpu_signals.TAPU_CPU_WRp.qp_new());
   /*_p10.BOGY*/ wire BOGY_CPU_WRp = not1(BAFU_CPU_WRn);
@@ -127,14 +120,10 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*_p10.AFOB*/ wire AFOB_A01n = not1(abus_new.BUS_CPU_A01p.out_new());
   /*_p10.ABUB*/ wire ABUB_A02n = not1(abus_new.BUS_CPU_A02p.out_new());
   /*_p10.ACOL*/ wire ACOL_A03n = not1(abus_new.BUS_CPU_A03p.out_new());
-  /*#p10.ATUP*/ wire ATUP_A04n = not1(abus_new.BUS_CPU_A04p.out_new());
   /*#p10.BOXY*/ wire BOXY_A05n = not1(abus_new.BUS_CPU_A05p.out_new());
-  /*#p10.ASAD*/ wire ASAD_A06n = not1(abus_new.BUS_CPU_A06p.out_new());
-  /*#p10.AVUN*/ wire AVUN_A07n = not1(abus_new.BUS_CPU_A07p.out_new());
   /*_p10.DOSO*/ wire DOSO_A00p = not1(DYTE_A00n);
   /*_p10.DUPA*/ wire DUPA_A01p = not1(AFOB_A01n);
   /*_p10.DENO*/ wire DENO_A02p = not1(ABUB_A02n);
-  /*#p10.DUCE*/ wire DUCE_A03p = not1(ACOL_A03n);
 
   /*_p10.AWET*/ wire AWET_ADDR_XX2Xn = or4(abus_new.BUS_CPU_A07p.out_new(), abus_new.BUS_CPU_A06p.out_new(), BOXY_A05n, abus_new.BUS_CPU_A04p.out_new());
   /*_p07.BAKO*/ wire BAKO_ADDR_FFXXn = not1(abus_new.SYKE_ADDR_HIp_new());

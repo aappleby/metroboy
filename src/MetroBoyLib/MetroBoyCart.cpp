@@ -126,7 +126,7 @@ void MetroBoyCart::tick(int phase_total, const Req& req, Ack& ack) const {
 void MetroBoyCart::tock(int phase_total, const Req& req) {
   const int region = req.addr >> 13;
   const uint16_t ram_addr = req.addr & 0x1FFF;
-  const uint16_t rom_addr = req.addr & 0x7FFF;
+  //const uint16_t rom_addr = req.addr & 0x7FFF;
 
   if (MB_DELTA_GH && req.write) {
     if (region == 0) {

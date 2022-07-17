@@ -123,10 +123,6 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p10.ABUB*/ wire ABUB_A02n = not1(abus_new.BUS_CPU_A02p.out_new());
   /*_p10.ACOL*/ wire ACOL_A03n = not1(abus_new.BUS_CPU_A03p.out_new());
   /*#p10.ATUP*/ wire ATUP_A04n = not1(abus_new.BUS_CPU_A04p.out_new());
-  /*#p10.BOXY*/ wire BOXY_A05n = not1(abus_new.BUS_CPU_A05p.out_new());
-  /*#p10.ASAD*/ wire ASAD_A06n = not1(abus_new.BUS_CPU_A06p.out_new());
-  /*#p10.AVUN*/ wire AVUN_A07n = not1(abus_new.BUS_CPU_A07p.out_new());
-  /*_p07.TONA*/ wire TONA_A08n = not1(abus_new.BUS_CPU_A08p.out_new());
   /*_p10.DOSO*/ wire DOSO_A00p = not1(DYTE_A00n);
   /*_p10.DUPA*/ wire DUPA_A01p = not1(AFOB_A01n);
   /*_p10.DENO*/ wire DENO_A02p = not1(ABUB_A02n);
@@ -306,7 +302,6 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
     /*#p15.ETUK*/ wire ETUK_SAMPLE_CLKn_new = not1(ch2_new.GYKO_SAMPLE_CLKp.qp_new());
     /*#p15.DAVU*/ wire DAVU_SAMPLE_CLKp_new = not1(ETUK_SAMPLE_CLKn_new);
-    /*#p15.CULE*/ wire CULE_SAMPLE_CLKn_new = not1(DAVU_SAMPLE_CLKp_new);
     /*#p15.DUJU*/ wire DUJU_LOADn_new = nor2(DAVU_SAMPLE_CLKp_new, ch2_new.ELOX_TRIGp_d01.qp_new());
     /*#p15.COGU*/ wire COGU_LOADp_new = not1(DUJU_LOADn_new);
     /*#p15.EROG*/ wire EROG_LOADp_new = not1(DUJU_LOADn_new);

@@ -64,17 +64,6 @@ constexpr uint8_t bit_reverse(uint8_t b) {
    return b;
 }
 
-static const char* phase_names[] = {
-  "\002A_______\001",
-  "\003_B______\001",
-  "\002__C_____\001",
-  "\003___D____\001",
-  "\002____E___\001",
-  "\003_____F__\001",
-  "\002______G_\001",
-  "\003_______H\001",
-};
-
 constexpr wire gen_clk(int64_t phase, uint8_t mask) {
   if (phase < 0 || phase >> 7) debugbreak();
   return !!(bit_reverse(mask) & (1 << phase));

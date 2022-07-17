@@ -17,7 +17,7 @@ int ch4_audio_out(const SpuChannel4& ch4) {
 
   /*_p20.EZUL*/ wire EZUL_CH4_BIT_MUX = mux2p(DYRY_DBG, FEME_LFSR_CLKp_new, GAME_LFSR_OUT);
 
-  /*_p20.CEPY*/ wire CEPY_NR44_STOPn = not1(ch4.CUNY_NR44_LEN_ENp.qp_oldB());
+  ///*_p20.CEPY*/ wire CEPY_NR44_STOPn = not1(ch4.CUNY_NR44_LEN_ENp.qp_oldB());
   ///*_p20.COTE*/ wire COTE_DBG_CH4_MUTE = and2(CEPY_NR44_STOPn, EDEK_NR52_DBG_APUp);
   /*_p20.COTE*/ wire COTE_DBG_CH4_MUTE = 0;
   /*_p20.DATO*/ wire DATO_CH4_RAW_BIT  = or2(EZUL_CH4_BIT_MUX, COTE_DBG_CH4_MUTE);
@@ -134,14 +134,9 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p10.AFOB*/ wire AFOB_A01n = not1(abus_new.BUS_CPU_A01p.out_new());
   /*_p10.ABUB*/ wire ABUB_A02n = not1(abus_new.BUS_CPU_A02p.out_new());
   /*_p10.ACOL*/ wire ACOL_A03n = not1(abus_new.BUS_CPU_A03p.out_new());
-  /*#p10.ATUP*/ wire ATUP_A04n = not1(abus_new.BUS_CPU_A04p.out_new());
   /*#p10.BOXY*/ wire BOXY_A05n = not1(abus_new.BUS_CPU_A05p.out_new());
-  /*#p10.ASAD*/ wire ASAD_A06n = not1(abus_new.BUS_CPU_A06p.out_new());
-  /*#p10.AVUN*/ wire AVUN_A07n = not1(abus_new.BUS_CPU_A07p.out_new());
   /*_p10.DOSO*/ wire DOSO_A00p = not1(DYTE_A00n);
   /*_p10.DUPA*/ wire DUPA_A01p = not1(AFOB_A01n);
-  /*_p10.DENO*/ wire DENO_A02p = not1(ABUB_A02n);
-  /*#p10.DUCE*/ wire DUCE_A03p = not1(ACOL_A03n);
 
   /*_p10.AWET*/ wire AWET_ADDR_XX2Xn = or4(abus_new.BUS_CPU_A07p.out_new(), abus_new.BUS_CPU_A06p.out_new(), BOXY_A05n, abus_new.BUS_CPU_A04p.out_new());
   /*_p07.BAKO*/ wire BAKO_ADDR_FFXXn = not1(abus_new.SYKE_ADDR_HIp_new());

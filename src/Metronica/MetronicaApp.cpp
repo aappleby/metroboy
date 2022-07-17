@@ -79,7 +79,7 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
   while(*cursor) {
     MusicEvent event;
     const char* format = "0x%" SCNx64 " 0x%04x 0x%02x";
-    int blah = sscanf(cursor, format, &event.phase, &event.addr, &event.data);
+    sscanf(cursor, format, &event.phase, &event.addr, &event.data);
     //printf("0x%08x 0x%04x 0x%02x\n", event.phase, event.addr, event.data);
     while(*cursor != '\n' && *cursor != 0) cursor++;
     if (*cursor == '\n') cursor++;

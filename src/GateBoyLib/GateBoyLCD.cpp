@@ -9,7 +9,6 @@ void GateBoy::tock_lyc_gates(const GateBoyState& reg_old) {
   auto& reg_new = gb_state;
 
   /*#p21.TALU*/ wire TALU_xxCDEFxx = not1(reg_new.sys_clk.VENA_xxCDEFxx.qn_new());
-  /*#p21.SONO*/ wire SONO_ABxxxxGH = not1(TALU_xxCDEFxx);
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(reg_new.sys_rst.AFER_SYS_RSTp.qp_new(), reg_new.sys_rst.ASOL_POR_DONEn.qp_new());
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);

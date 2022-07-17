@@ -164,7 +164,7 @@ public:
       s4_out = 0;
     }
     else {
-      bool sound_on = (nr52 & 0x80);
+      //bool sound_on = (nr52 & 0x80);
       uint16_t spu_clock_ = (spu_clock + 1) & 0x3FFF;
       uint16_t clock_flip = (~spu_clock) & spu_clock_;
 
@@ -354,9 +354,9 @@ public:
       // env
 
       if (env_tick) {
-        bool s1_env_dir = (nr12 & 0b00001000) >> 3;
-        bool s2_env_dir = (nr22 & 0b00001000) >> 3;
-        bool s4_env_dir = (nr42 & 0b00001000) >> 3;
+        ///bool s1_env_dir = (nr12 & 0b00001000) >> 3;
+        ///bool s2_env_dir = (nr22 & 0b00001000) >> 3;
+        ///bool s4_env_dir = (nr42 & 0b00001000) >> 3;
 
         uint8_t s1_env_period = (nr12 & 0b00000111) >> 0;
         uint8_t s2_env_period = (nr22 & 0b00000111) >> 0;

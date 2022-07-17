@@ -485,11 +485,8 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   auto& state = gb_thread->gb->get_state();
   auto& sys = gb_thread->gb->get_sys();
   auto& pins = gb_thread->gb->get_pins();
-  auto& probes = gb_thread->gb->get_probes();
 
   StringDumper d;
-
-  float col_spacing = 220;
 
   grid_painter.render(view, screen_size);
 
@@ -773,8 +770,16 @@ Step controls:
 
   // Status bar under screen
 
-  double sim_ratio = 0.0;
-  double sim_time_smooth = 0.0;
+  static const char* phase_names[] = {
+    "\002A_______\001",
+    "\003_B______\001",
+    "\002__C_____\001",
+    "\003___D____\001",
+    "\002____E___\001",
+    "\003_____F__\001",
+    "\002______G_\001",
+    "\003_______H\001",
+  };
 
   d("Viewing sim %c, Sim clock %8.3f %s %s\n",
     show_gb_ab ? 'B' : 'A',

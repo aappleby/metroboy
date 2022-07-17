@@ -26,7 +26,6 @@ void GateBoy::tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_o
   /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(ZAXY_xBxDxFxH);
   /*#p01.ALET*/ wire ALET_xBxDxFxH = not1(ZEME_AxCxExGx);
   /*#p21.TALU*/ wire TALU_xxCDEFxx = not1(reg_new.sys_clk.VENA_xxCDEFxx.qn_new());
-  /*#p21.SONO*/ wire SONO_ABxxxxGH = not1(TALU_xxCDEFxx);
 
   /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n_odd_old = nand3(reg_old.fine_count_odd.RUBU_FINE_CNT2_odd.qp_old(), reg_old.fine_count_odd.ROGA_FINE_CNT1_odd.qp_old(), reg_old.fine_count_odd.RYKU_FINE_CNT0_odd.qp_old());
   /*_p27.PANY*/ wire PANY_WIN_FETCHn_old = nor2(reg_old.win_ctrl.NUKO_WX_MATCHp_odd.out_old(), ROZE_FINE_COUNT_7n_odd_old);

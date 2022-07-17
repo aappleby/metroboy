@@ -111,11 +111,6 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*_p01.COFU*/ wire COFU_CLK_256 = not1(BEZE_CLK_256);
   /*_p01.BUFY*/ wire BUFY_CLK_256 = not1(COFU_CLK_256);
 
-  /*_p01.APEF*/ wire APEF_CLK_128 = not1(reg_new.spu.BYLU_CLK_128.qp_new());
-  /*_p01.BULE*/ wire BULE_CLK_128 = mux2p(reg_new.spu.FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K, APEF_CLK_128);
-  /*_p01.BARU*/ wire BARU_CLK_128 = not1(BULE_CLK_128);
-  /*_p01.BYFE*/ wire BYFE_CLK_128 = not1(BARU_CLK_128);
-
   /*_p01.ABOL*/ wire ABOL_CLKREQn  = not1(reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
   /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_newB());
   /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
@@ -135,7 +130,6 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*_p10.ABUB*/ wire ABUB_A02n = not1(abus_new.BUS_CPU_A02p.out_new());
   /*_p10.ACOL*/ wire ACOL_A03n = not1(abus_new.BUS_CPU_A03p.out_new());
   /*#p10.ATUP*/ wire ATUP_A04n = not1(abus_new.BUS_CPU_A04p.out_new());
-  /*#p10.BOXY*/ wire BOXY_A05n = not1(abus_new.BUS_CPU_A05p.out_new());
   /*#p10.ASAD*/ wire ASAD_A06n = not1(abus_new.BUS_CPU_A06p.out_new());
   /*#p10.AVUN*/ wire AVUN_A07n = not1(abus_new.BUS_CPU_A07p.out_new());
   /*_p07.TONA*/ wire TONA_A08n = not1(abus_new.BUS_CPU_A08p.out_new());
@@ -295,7 +289,6 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   {
     /*#p18.HEMA*/ wire HEMA_SAMPLE_CLKn_new = not1(ch3_new.HUNO_SAMPLE_CLKp.qp_new());
     /*#p18.GASE*/ wire GASE_SAMPLE_CLKp_new = not1(HEMA_SAMPLE_CLKn_new);
-    /*#p18.DERO*/ wire DERO_SAMPLE_CLKn_new = not1(GASE_SAMPLE_CLKp_new);
 
     /*#p18.HERA*/ wire HERA_FREQ_RSTp_new = nor2(GASE_SAMPLE_CLKp_new, ch3_new.GARA_TRIG_D1.qp_new());
     /*_p18.KYKO*/ wire KYKO_FREQ_RSTn_new = not1(HERA_FREQ_RSTp_new);
@@ -354,7 +347,6 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   {
     /*#p18.HEMA*/ wire HEMA_SAMPLE_CLKn_old = not1(ch3_old.HUNO_SAMPLE_CLKp.qp_old());
     /*#p18.GASE*/ wire GASE_SAMPLE_CLKp_old = not1(HEMA_SAMPLE_CLKn_old);
-    /*#p18.DERO*/ wire DERO_SAMPLE_CLKn_old = not1(GASE_SAMPLE_CLKp_old);
 
     /*#p18.HEMA*/ wire HEMA_SAMPLE_CLKn_new = not1(ch3_new.HUNO_SAMPLE_CLKp.qp_new());
     /*#p18.GASE*/ wire GASE_SAMPLE_CLKp_new = not1(HEMA_SAMPLE_CLKn_new);

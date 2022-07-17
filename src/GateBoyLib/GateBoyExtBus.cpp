@@ -120,7 +120,7 @@ uint8_t GateBoy::read_flat_addr(const blob& cart_blob, int addr) const {
       if (mbc1_mode == 0) mbc1_ram_bank = 0;
       uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
       CHECK_P(mbc1_ram_addr < 32768);
-      return mem.cart_ram[mbc1_ram_addr];
+      return mbc1_ram_en ? mem.cart_ram[mbc1_ram_addr] : 0xFF;
     }
     else {
       return mem.cart_ram[addr & 0x1FFF];

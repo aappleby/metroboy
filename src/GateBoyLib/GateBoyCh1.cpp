@@ -181,13 +181,9 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p10.ABUB*/ wire ABUB_A02n = not1(abus_new.BUS_CPU_A02p.out_new());
   /*_p10.ACOL*/ wire ACOL_A03n = not1(abus_new.BUS_CPU_A03p.out_new());
   /*#p10.ATUP*/ wire ATUP_A04n = not1(abus_new.BUS_CPU_A04p.out_new());
-  /*#p10.BOXY*/ wire BOXY_A05n = not1(abus_new.BUS_CPU_A05p.out_new());
-  /*#p10.ASAD*/ wire ASAD_A06n = not1(abus_new.BUS_CPU_A06p.out_new());
-  /*#p10.AVUN*/ wire AVUN_A07n = not1(abus_new.BUS_CPU_A07p.out_new());
   /*_p10.DOSO*/ wire DOSO_A00p = not1(DYTE_A00n);
   /*_p10.DUPA*/ wire DUPA_A01p = not1(AFOB_A01n);
   /*_p10.DENO*/ wire DENO_A02p = not1(ABUB_A02n);
-  /*#p10.DUCE*/ wire DUCE_A03p = not1(ACOL_A03n);
 
   /*_p07.BAKO*/ wire BAKO_ADDR_FFXXn = not1(abus_new.SYKE_ADDR_HIp_new());
   /*_p10.ATEG*/ wire ATEG_ADDR_XX1Xn = or4(abus_new.BUS_CPU_A07p.out_new(), abus_new.BUS_CPU_A06p.out_new(), abus_new.BUS_CPU_A05p.out_new(), ATUP_A04n);
@@ -793,7 +789,6 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 
   // so this implies that NR12_DELAY* is DFFn?
-  /*#p13.KOMA*/ wire KOMA_ENV_OFFp_old = nor3(ch1_old.JUSA_NR12_PERIOD0p.qp_oldB(), ch1_old.JUZY_NR12_PERIOD1p.qp_oldB(), ch1_old.JOMA_NR12_PERIOD2p.qp_oldB());
   /*#p13.KOMA*/ wire KOMA_ENV_OFFp_new = nor3(ch1_new.JUSA_NR12_PERIOD0p.qp_newB(), ch1_new.JUZY_NR12_PERIOD1p.qp_newB(), ch1_new.JOMA_NR12_PERIOD2p.qp_newB());
 
 
@@ -1073,7 +1068,7 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_BUS_CPU_D06p*/ dbus_new.BUS_CPU_D06p.tri_bus(BYTU);
   }
 
-  /*#p13.COWE*/ wire COWE_BIT_OUTp = and2(ch1_new.CYTO_CH1_ACTIVEp.state & 1, ch1_new.DUWO_RAW_BIT_SYNCp.state & 1);
+  ///*#p13.COWE*/ wire COWE_BIT_OUTp = and2(ch1_new.CYTO_CH1_ACTIVEp.state & 1, ch1_new.DUWO_RAW_BIT_SYNCp.state & 1);
 }
 
 #endif

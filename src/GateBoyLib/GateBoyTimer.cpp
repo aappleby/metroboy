@@ -99,10 +99,6 @@ void GateBoy::tock_timer_gates(const GateBoyState& reg_old) {
   /*#p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
   /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
 
-  /*#p01.BUGO*/ wire BUGO_xBCDExxx = not1(AFEP_AxxxxFGH);
-  /*#p01.BATE*/ wire BATE_AxxxxxGH = nor3(BUGO_xBCDExxx, AROV_xxCDEFxx, ABOL_CLKREQn);
-  /*#p01.BASU*/ wire BASU_xBCDEFxx = not1(BATE_AxxxxxGH);
-  /*#p01.BUKE*/ wire BUKE_AxxxxxGH = not1(BASU_xBCDEFxx);
   /*#p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
   /*#p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
   /*#p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);

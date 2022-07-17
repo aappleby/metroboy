@@ -36,6 +36,7 @@
 #endif
 
 
+#if 0
 static const char* mealybug_tests[] = {
   "m3_window_timing",
   "m3_bgp_change",
@@ -65,7 +66,6 @@ static const char* screenshot_tests[] = {
   "sprite_0_a"
 };
 
-#if 0
 bool load_bmp(const std::string& prefix, const std::string& name, uint8_t* out_golden) {
   std::string golden_filename = prefix + "/" + name + ".bmp";
   SDL_Surface* golden_surface = SDL_LoadBMP(golden_filename.c_str());

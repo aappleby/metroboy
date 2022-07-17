@@ -1110,8 +1110,6 @@ void PlaitApp::draw_node_ports(PlaitNode* node) {
 
 //----------------------------------------
 
-static char buf[256];
-
 void PlaitApp::draw_node_text(PlaitNode* node) {
   dvec2 node_pos_new = node->get_pos_new();
   text_painter.add_text_at_simple(node->plait_cell->name(), float(node_pos_new.x), float(node_pos_new.y));

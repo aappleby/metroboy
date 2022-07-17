@@ -20,7 +20,6 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
   /*#p01.BUDE*/ wire BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
   /*_p01.UVYT*/ wire UVYT_ABCDxxxx = not1(BUDE_xxxxEFGH);
   /*_p04.MOPA*/ wire MOPA_xxxxEFGH = not1(UVYT_ABCDxxxx);
-  /*_p28.XYNY*/ wire XYNY_ABCDxxxx = not1(MOPA_xxxxEFGH);
 
   /*#p04.LAVY*/ wire LAVY_FF46_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.XEDA_FF46p_new());
   /*#p04.LORU*/ wire LORU_FF46_WRn_new = not1(LAVY_FF46_WRp_new);

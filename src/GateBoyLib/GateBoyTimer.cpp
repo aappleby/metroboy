@@ -11,10 +11,33 @@
 void GateBoy::tock_div_gates(const GateBoyState& reg_old) {
   GateBoyState& reg_new = gb_state;
 
+  /*_p01.ABOL*/ wire ABOL_CLKREQn  = not1(reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
+  /*#p01.AROV*/ wire AROV_xxCDEFxx = not1(reg_new.sys_clk.APUK_xxCDEFxx.qn_newB());
+  /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(reg_new.sys_clk.ALEF_xBCDExxx.qp_newB());
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_newB());
+
+  /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
+  /*#p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
+  /*#p01.BUDE*/ wire BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
+  /*#p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
+  /*#p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
+  /*#p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
+  /*#p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
+  /*#p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH); // BEKO+BAVY parallel
+  /*#p01.BEJA*/ wire BEJA_xxxxEFGH = nand4(BOLO_ABCDEFxx, BOLO_ABCDEFxx, BEKO_ABCDxxxx, BEKO_ABCDxxxx);
+  /*#p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
+  /*#p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
+  /*#p01.BAZE*/ wire BAZE_ABCDxxxx = not1(BELO_xxxxEFGH);
+  /*#p01.BUTO*/ wire BUTO_xBCDEFGH = nand3(AFEP_AxxxxFGH, ATYP_ABCDxxxx, BAZE_ABCDxxxx);
+  /*#p01.BELE*/ wire BELE_Axxxxxxx = not1(BUTO_xBCDEFGH);
+  /*#p01.BYJU*/ wire BYJU_Axxxxxxx = or2(BELE_Axxxxxxx, pins.sys.ATEZ_CLKBADp_new());
+  /*#p01.BALY*/ wire BALY_xBCDEFGH = not1(BYJU_Axxxxxxx);
+  /*_p01.BOGA*/ wire BOGA_Axxxxxxx = not1(BALY_xBCDEFGH);
+
   /*_p01.TAPE*/ wire TAPE_FF04_WRp_new = and4(reg_new.cpu_signals.TAPU_CPU_WRp.out_new(), reg_new.cpu_abus.RYFO_FF04_FF07p_new(), reg_new.cpu_abus.TOLA_A01n_new(), reg_new.cpu_abus.TOVY_A00n_new());
   /*_p01.UFOL*/ wire UFOL_DIV_RSTn_new = nor3(pins.sys.UCOB_CLKBADp_new(), pins.sys.PIN_71_RST.qp_int_new(), TAPE_FF04_WRp_new);
 
-  /*_p01.UKUP*/ reg_new.reg_div.UKUP_DIV00p.dff17(BOGA_Axxxxxxx_new(),                  UFOL_DIV_RSTn_new, reg_old.reg_div.UKUP_DIV00p.qn_old());
+  /*_p01.UKUP*/ reg_new.reg_div.UKUP_DIV00p.dff17(BOGA_Axxxxxxx,                    UFOL_DIV_RSTn_new, reg_old.reg_div.UKUP_DIV00p.qn_old());
   /*_p01.UFOR*/ reg_new.reg_div.UFOR_DIV01p.dff17(reg_new.reg_div.UKUP_DIV00p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.UFOR_DIV01p.qn_old());
   /*_p01.UNER*/ reg_new.reg_div.UNER_DIV02p.dff17(reg_new.reg_div.UFOR_DIV01p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.UNER_DIV02p.qn_old());
   /*#p01.TERO*/ reg_new.reg_div.TERO_DIV03p.dff17(reg_new.reg_div.UNER_DIV02p.qn_any(), UFOL_DIV_RSTn_new, reg_old.reg_div.TERO_DIV03p.qn_old());
@@ -65,30 +88,61 @@ void GateBoy::tock_div_gates(const GateBoyState& reg_old) {
 void GateBoy::tock_timer_gates(const GateBoyState& reg_old) {
   GateBoyState& reg_new = gb_state;
 
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(reg_new.sys_rst.AFER_SYS_RSTp.qp_new(), reg_new.sys_rst.ASOL_POR_DONEn.qp_new());
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
+
+  /*_p01.ABOL*/ wire ABOL_CLKREQn  = not1(reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
+  /*#p01.AROV*/ wire AROV_xxCDEFxx = not1(reg_new.sys_clk.APUK_xxCDEFxx.qn_newB());
+  /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(reg_new.sys_clk.ALEF_xBCDExxx.qp_newB());
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_newB());
+
+  /*#p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
+  /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
+
+  /*#p01.BUGO*/ wire BUGO_xBCDExxx = not1(AFEP_AxxxxFGH);
+  /*#p01.BATE*/ wire BATE_AxxxxxGH = nor3(BUGO_xBCDExxx, AROV_xxCDEFxx, ABOL_CLKREQn);
+  /*#p01.BASU*/ wire BASU_xBCDEFxx = not1(BATE_AxxxxxGH);
+  /*#p01.BUKE*/ wire BUKE_AxxxxxGH = not1(BASU_xBCDEFxx);
+  /*#p01.BERU*/ wire BERU_ABCDEFxx = not1(BAPY_xxxxxxGH);
+  /*#p01.BUFA*/ wire BUFA_xxxxxxGH = not1(BERU_ABCDEFxx);
+  /*#p01.BOLO*/ wire BOLO_ABCDEFxx = not1(BUFA_xxxxxxGH);
+  /*#p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
+  /*#p01.BUDE*/ wire BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
+  /*#p01.BEKO*/ wire BEKO_ABCDxxxx = not1(BUDE_xxxxEFGH); // BEKO+BAVY parallel
+  /*#p01.BEJA*/ wire BEJA_xxxxEFGH = nand4(BOLO_ABCDEFxx, BOLO_ABCDEFxx, BEKO_ABCDxxxx, BEKO_ABCDxxxx);
+  /*#p01.BANE*/ wire BANE_ABCDxxxx = not1(BEJA_xxxxEFGH);
+  /*#p01.BELO*/ wire BELO_xxxxEFGH = not1(BANE_ABCDxxxx);
+  /*#p01.BAZE*/ wire BAZE_ABCDxxxx = not1(BELO_xxxxEFGH);
+  /*#p01.BUTO*/ wire BUTO_xBCDEFGH = nand3(AFEP_AxxxxFGH, ATYP_ABCDxxxx, BAZE_ABCDxxxx);
+  /*#p01.BELE*/ wire BELE_Axxxxxxx = not1(BUTO_xBCDEFGH);
+  /*#p01.BYJU*/ wire BYJU_Axxxxxxx = or2(BELE_Axxxxxxx, pins.sys.ATEZ_CLKBADp_new());
+  /*#p01.BALY*/ wire BALY_xBCDEFGH = not1(BYJU_Axxxxxxx);
+  /*_p01.BOGA*/ wire BOGA_Axxxxxxx = not1(BALY_xBCDEFGH);
+
   /*_p03.TYJU*/ wire TYJU_FF06_WRn_new = nand4(reg_new.cpu_signals.TAPU_CPU_WRp.out_new(), reg_new.cpu_abus.RYFO_FF04_FF07p_new(), reg_new.cpu_abus.BUS_CPU_A01p.out_new(), reg_new.cpu_abus.TOVY_A00n_new());
-  /*_p03.SABU*/ reg_new.reg_tma.SABU_TMA0p.dff17(TYJU_FF06_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  /*_p03.NYKE*/ reg_new.reg_tma.NYKE_TMA1p.dff17(TYJU_FF06_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  /*_p03.MURU*/ reg_new.reg_tma.MURU_TMA2p.dff17(TYJU_FF06_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-  /*_p03.TYVA*/ reg_new.reg_tma.TYVA_TMA3p.dff17(TYJU_FF06_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p03.TYRU*/ reg_new.reg_tma.TYRU_TMA4p.dff17(TYJU_FF06_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p03.SUFY*/ reg_new.reg_tma.SUFY_TMA5p.dff17(TYJU_FF06_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p03.PETO*/ reg_new.reg_tma.PETO_TMA6p.dff17(TYJU_FF06_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-  /*_p03.SETA*/ reg_new.reg_tma.SETA_TMA7p.dff17(TYJU_FF06_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+  /*_p03.SABU*/ reg_new.reg_tma.SABU_TMA0p.dff17(TYJU_FF06_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+  /*_p03.NYKE*/ reg_new.reg_tma.NYKE_TMA1p.dff17(TYJU_FF06_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+  /*_p03.MURU*/ reg_new.reg_tma.MURU_TMA2p.dff17(TYJU_FF06_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+  /*_p03.TYVA*/ reg_new.reg_tma.TYVA_TMA3p.dff17(TYJU_FF06_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p03.TYRU*/ reg_new.reg_tma.TYRU_TMA4p.dff17(TYJU_FF06_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p03.SUFY*/ reg_new.reg_tma.SUFY_TMA5p.dff17(TYJU_FF06_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p03.PETO*/ reg_new.reg_tma.PETO_TMA6p.dff17(TYJU_FF06_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p03.SETA*/ reg_new.reg_tma.SETA_TMA7p.dff17(TYJU_FF06_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
   /*_p03.SARA*/ wire SARA_FF07_WRn_new = nand4(reg_new.cpu_signals.TAPU_CPU_WRp.out_new(), reg_new.cpu_abus.RYFO_FF04_FF07p_new(), reg_new.cpu_abus.BUS_CPU_A01p.out_new(), reg_new.cpu_abus.BUS_CPU_A00p.out_new());
-  /*_p03.SOPU*/ reg_new.reg_tac.SOPU_TAC0p.dff17(SARA_FF07_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  /*_p03.SAMY*/ reg_new.reg_tac.SAMY_TAC1p.dff17(SARA_FF07_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  /*_p03.SABO*/ reg_new.reg_tac.SABO_TAC2p.dff17(SARA_FF07_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+  /*_p03.SOPU*/ reg_new.reg_tac.SOPU_TAC0p.dff17(SARA_FF07_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+  /*_p03.SAMY*/ reg_new.reg_tac.SAMY_TAC1p.dff17(SARA_FF07_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+  /*_p03.SABO*/ reg_new.reg_tac.SABO_TAC2p.dff17(SARA_FF07_WRn_new, ALUR_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
 
   /*#p03.MERY*/ wire MERY_TIMER_OVERFLOWp_old = nor2(reg_old.reg_tima.NUGA_TIMA7p.qp_old(), reg_old.int_ctrl.NYDU_TIMA7p_DELAY.qn_old());
-  /*#p03.MOBA*/ reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp.dff17(BOGA_Axxxxxxx_new(), reg_new.sys_rst.ALUR_SYS_RSTn_new(), MERY_TIMER_OVERFLOWp_old);
+  /*#p03.MOBA*/ reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp.dff17(BOGA_Axxxxxxx, ALUR_SYS_RSTn, MERY_TIMER_OVERFLOWp_old);
 
   /*#p03.TOPE*/ wire TOPE_FF05_WRn_new        = nand4(reg_new.cpu_signals.TAPU_CPU_WRp.out_new(), reg_new.cpu_abus.RYFO_FF04_FF07p_new(), reg_new.cpu_abus.TOLA_A01n_new(), reg_new.cpu_abus.BUS_CPU_A00p.out_new());
   /*#p03.MUZU*/ wire MUZU_CPU_LOAD_TIMAn_new  = or2(reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new(), TOPE_FF05_WRn_new);
   /*#p03.MEKE*/ wire MEKE_TIMER_OVERFLOWn_new = not1(reg_new.int_ctrl.MOBA_TIMER_OVERFLOWp.qp_new());
-  /*#p03.MEXU*/ wire MEXU_TIMA_LOADp_new      = nand3(MUZU_CPU_LOAD_TIMAn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), MEKE_TIMER_OVERFLOWn_new);
+  /*#p03.MEXU*/ wire MEXU_TIMA_LOADp_new      = nand3(MUZU_CPU_LOAD_TIMAn_new, ALUR_SYS_RSTn, MEKE_TIMER_OVERFLOWn_new);
   /*#p03.MUGY*/ wire MUGY_TIMA_MAX_RSTn_new   = not1(MEXU_TIMA_LOADp_new);
-  /*#p03.NYDU*/ reg_new.int_ctrl.NYDU_TIMA7p_DELAY.dff17(BOGA_Axxxxxxx_new(), MUGY_TIMA_MAX_RSTn_new, reg_old.reg_tima.NUGA_TIMA7p.qp_old());
+  /*#p03.NYDU*/ reg_new.int_ctrl.NYDU_TIMA7p_DELAY.dff17(BOGA_Axxxxxxx, MUGY_TIMA_MAX_RSTn_new, reg_old.reg_tima.NUGA_TIMA7p.qp_old());
 
   /*#p03.UBOT*/ wire UBOT_DIV01n_new = not1(reg_new.reg_div.UFOR_DIV01p.qp_new());
   /*#p03.UVYR*/ wire UVYR_DIV03n_new = not1(reg_new.reg_div.TERO_DIV03p.qp_new());
@@ -109,14 +163,15 @@ void GateBoy::tock_timer_gates(const GateBoyState& reg_old) {
   /*#p03.REFU*/ wire REFU_TIMA_D6_new = mux2n(TOPE_FF05_WRn_new, reg_new.reg_tma.PETO_TMA6p.qp_new(), reg_new.cpu_dbus.BUS_CPU_D06p.out_new());
   /*#p03.RATO*/ wire RATO_TIMA_D7_new = mux2n(TOPE_FF05_WRn_new, reg_new.reg_tma.SETA_TMA7p.qp_new(), reg_new.cpu_dbus.BUS_CPU_D07p.out_new());
 
-  /*#p03.PUXY*/ wire PUXY_TIMA_D0_new = nor2(reg_new.sys_rst.MULO_SYS_RSTn_new(), ROKE_TIMA_D0_new);
-  /*#p03.NERO*/ wire NERO_TIMA_D1_new = nor2(reg_new.sys_rst.MULO_SYS_RSTn_new(), PETU_TIMA_D1_new);
-  /*#p03.NADA*/ wire NADA_TIMA_D2_new = nor2(reg_new.sys_rst.MULO_SYS_RSTn_new(), NYKU_TIMA_D2_new);
-  /*#p03.REPA*/ wire REPA_TIMA_D3_new = nor2(reg_new.sys_rst.MULO_SYS_RSTn_new(), SOCE_TIMA_D3_new);
-  /*#p03.ROLU*/ wire ROLU_TIMA_D4_new = nor2(reg_new.sys_rst.MULO_SYS_RSTn_new(), SALA_TIMA_D4_new);
-  /*#p03.RUGY*/ wire RUGY_TIMA_D5_new = nor2(reg_new.sys_rst.MULO_SYS_RSTn_new(), SYRU_TIMA_D5_new);
-  /*#p03.PYMA*/ wire PYMA_TIMA_D6_new = nor2(reg_new.sys_rst.MULO_SYS_RSTn_new(), REFU_TIMA_D6_new);
-  /*#p03.PAGU*/ wire PAGU_TIMA_D7_new = nor2(reg_new.sys_rst.MULO_SYS_RSTn_new(), RATO_TIMA_D7_new);
+  /*_p03.MULO*/ wire MULO_SYS_RSTn = not1(ALUR_SYS_RSTn);
+  /*#p03.PUXY*/ wire PUXY_TIMA_D0_new = nor2(MULO_SYS_RSTn, ROKE_TIMA_D0_new);
+  /*#p03.NERO*/ wire NERO_TIMA_D1_new = nor2(MULO_SYS_RSTn, PETU_TIMA_D1_new);
+  /*#p03.NADA*/ wire NADA_TIMA_D2_new = nor2(MULO_SYS_RSTn, NYKU_TIMA_D2_new);
+  /*#p03.REPA*/ wire REPA_TIMA_D3_new = nor2(MULO_SYS_RSTn, SOCE_TIMA_D3_new);
+  /*#p03.ROLU*/ wire ROLU_TIMA_D4_new = nor2(MULO_SYS_RSTn, SALA_TIMA_D4_new);
+  /*#p03.RUGY*/ wire RUGY_TIMA_D5_new = nor2(MULO_SYS_RSTn, SYRU_TIMA_D5_new);
+  /*#p03.PYMA*/ wire PYMA_TIMA_D6_new = nor2(MULO_SYS_RSTn, REFU_TIMA_D6_new);
+  /*#p03.PAGU*/ wire PAGU_TIMA_D7_new = nor2(MULO_SYS_RSTn, RATO_TIMA_D7_new);
 
   /*#p03.REGA*/ reg_new.reg_tima.REGA_TIMA0p.dff20(SOGU_TIMA_CLKn_new,                    MEXU_TIMA_LOADp_new, PUXY_TIMA_D0_new); // _Async_load, data must be _new_
   /*#p03.POVY*/ reg_new.reg_tima.POVY_TIMA1p.dff20(reg_new.reg_tima.REGA_TIMA0p.qp_any(), MEXU_TIMA_LOADp_new, NERO_TIMA_D1_new);

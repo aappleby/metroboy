@@ -266,16 +266,6 @@ struct GateBoy  : public IGateBoy {
 
   //----------------------------------------
 
-  /*#p01.BYJU*/ wire BYJU_Axxxxxxx_new() const { return or2(gb_state.sys_clk.BELE_Axxxxxxx_new(), pins.sys.ATEZ_CLKBADp_new()); }
-  /*#p01.BALY*/ wire BALY_xBCDEFGH_new() const { return not1(BYJU_Axxxxxxx_new()); }
-  /*_p01.BOGA*/ wire BOGA_Axxxxxxx_new() const { return not1(BALY_xBCDEFGH_new()); }
-
-  /*#p01.BUVU*/ wire BUVU_Axxxxxxx_new() const { return and2(BALY_xBCDEFGH_new(), gb_state.sys_clk.BUTY_CLKREQp_new()); }
-  /*#p01.BYXO*/ wire BYXO_xBCDEFGH_new() const { return not1(BUVU_Axxxxxxx_new()); }
-  /*#p01.BEDO*/ wire BEDO_Axxxxxxx_new() const { return not1(BYXO_xBCDEFGH_new()); }
-  /*#p01.BOWA*/ wire BOWA_xBCDEFGH_new() const { return not1(BEDO_Axxxxxxx_new()); }
-  /*#p01.BOMA*/ wire BOMA_xBCDEFGH_new() const { return not1(BOGA_Axxxxxxx_new()); }
-
   //-----------------------------------------------------------------------------
 
   GateBoyState gb_state;

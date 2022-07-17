@@ -165,6 +165,13 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   auto& dbus_new = reg_new.cpu_dbus;
   auto& abus_new = reg_new.cpu_abus;
 
+  /*_p01.ABOL*/ wire ABOL_CLKREQn  = not1(reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_newB());
+  /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
+  /*#p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
+  /*#p01.BUDE*/ wire BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
+  /*_p01.DOVA*/ wire DOVA_ABCDxxxx = not1(BUDE_xxxxEFGH);
+
   /*_p09.AGUZ*/ wire AGUZ_CPU_RDn = not1(reg_new.cpu_signals.TEDO_CPU_RDp.qp_new());
   /*_p10.BAFU*/ wire BAFU_CPU_WRn = not1(reg_new.cpu_signals.TAPU_CPU_WRp.qp_new());
   /*_p10.BOGY*/ wire BOGY_CPU_WRp = not1(BAFU_CPU_WRn);
@@ -199,16 +206,36 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*#p10.DECO*/ wire DECO_ADDR_FF13p = nor2(BANU_ADDR_FF1Xn, ETUF_ADDR_0011n);
   /*#p10.DUJA*/ wire DUJA_ADDR_FF14p = nor2(BANU_ADDR_FF1Xn, ESOT_ADDR_0100n);
 
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(reg_new.sys_rst.AFER_SYS_RSTp.qp_new(), reg_new.sys_rst.ASOL_POR_DONEn.qp_new());
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
+  /*_p09.HAPO*/ wire HAPO_SYS_RSTp = not1(ALUR_SYS_RSTn);
+  /*_p09.JYRO*/ wire JYRO_APU_RSTp =  or2(HAPO_SYS_RSTp, reg_new.spu.HADA_NR52_ALL_SOUND_ON.qn_new());
+  /*_p09.KUBY*/ wire KUBY_APU_RSTn = not1(JYRO_APU_RSTp);
+  /*_p09.KEBA*/ wire KEBA_APU_RSTp = not1(KUBY_APU_RSTn);
 
-  auto KEBA_APU_RSTp = reg_new.KEBA_APU_RSTp_new();
   auto AJER_AxxDExxH = reg_new.spu.AJER_AxxDExxH.qp_new();
-  auto DOVA_ABCDxxxx = reg_new.sys_clk.DOVA_ABCDxxxx();
+
   auto FERO_NR52_DBG_APUp = reg_new.spu.FERO_NR52_DBG_APUp.qn_any();
   auto SIG_IN_CPU_DBUS_FREE = reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_new();
 
-  auto BYFE_CLK_128 = reg_new.spu.BYFE_CLK_128n();
-  auto BUFY_CLK_256 = reg_new.spu.BUFY_CLK_256n();
-  auto HORU_CLK_512_new = reg_new.spu.HORU_CLK_512_new();
+  /*#p01.HAMA*/ wire HAMA_CLK_512K = not1(reg_new.spu.JESO_CLK_512K.qp_new());
+
+  /*_p01.BURE*/ wire BURE_CLK_512 = not1(reg_new.spu.BARA_CLK_512.qp_new());
+  /*#p01.FYNE*/ wire FYNE_CLK_512 = not1(BURE_CLK_512);
+  /*_p01.GALE*/ wire GALE_CLK_512 = mux2p(reg_new.spu.FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K, FYNE_CLK_512);
+  /*_p01.GEXY*/ wire GEXY_CLK_512 = not1(GALE_CLK_512);
+  /*_p01.HORU*/ wire HORU_CLK_512 = not1(GEXY_CLK_512);
+
+  /*_p01.CULO*/ wire CULO_CLK_256 = not1(reg_new.spu.CARU_CLK_256.qp_new());
+  /*_p01.BEZE*/ wire BEZE_CLK_256 = mux2p(reg_new.spu.FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K, CULO_CLK_256);
+  /*_p01.COFU*/ wire COFU_CLK_256 = not1(BEZE_CLK_256);
+  /*_p01.BUFY*/ wire BUFY_CLK_256 = not1(COFU_CLK_256);
+
+  /*_p01.APEF*/ wire APEF_CLK_128 = not1(reg_new.spu.BYLU_CLK_128.qp_new());
+  /*_p01.BULE*/ wire BULE_CLK_128 = mux2p(reg_new.spu.FERO_NR52_DBG_APUp.qp_newB(), HAMA_CLK_512K, APEF_CLK_128);
+  /*_p01.BARU*/ wire BARU_CLK_128 = not1(BULE_CLK_128);
+  /*_p01.BYFE*/ wire BYFE_CLK_128 = not1(BARU_CLK_128);
+
 
   /*#p09.DYFA*/ wire DYFA_xBCDExxx_new = not1(ch1_new.CALO_xBCDExxx.qn_new());
 
@@ -774,10 +801,10 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
     // When the delay expires, we generate one env tick.
 
     /*#p13.KOTE*/ wire KOTE_ENV_DELAY_DONEp_old = and3(ch1_old.KERA_ENV_DELAY2p.qp_old(), ch1_old.KENU_ENV_DELAY1p.qp_old(), ch1_old.JOVA_ENV_DELAY0p.qp_old());
-    /*#p13.KOZY*/ ch1_new.KOZY_ENV_TICKp.dff17_clk(HORU_CLK_512_new, KOTE_ENV_DELAY_DONEp_old);
+    /*#p13.KOZY*/ ch1_new.KOZY_ENV_TICKp.dff17_clk(HORU_CLK_512, KOTE_ENV_DELAY_DONEp_old);
 
     /*#p13.KURY*/ wire KURY_ENV_CLKn_new = not1(ch1_new.KOZY_ENV_TICKp.qp_new());
-    /*#p13.KUKU*/ wire KUKU_ENV_CLKp_new = nor2(HORU_CLK_512_new, KURY_ENV_CLKn_new);
+    /*#p13.KUKU*/ wire KUKU_ENV_CLKp_new = nor2(HORU_CLK_512, KURY_ENV_CLKn_new);
     /*#p13.KORO*/ wire KORO_ENV_CLK_RSTn_new = nor4(KUKU_ENV_CLKp_new, KOMA_ENV_OFFp_new, ch1_new.FEKU_CH1_TRIGp.qp_new(), KEBA_APU_RSTp);
 
     /*#p13.KOZY*/ ch1_new.KOZY_ENV_TICKp.dff17_rst(KORO_ENV_CLK_RSTn_new);

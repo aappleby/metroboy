@@ -17,7 +17,16 @@ wire GateBoyState::TEXO_ADDR_VRAMn_new() const {
 /*_p08.LEVO*/ wire GateBoyState::LEVO_ADDR_VRAMn_new() const { return not1(TEXO_ADDR_VRAMn_new()); }
 /*_p25.TUJA*/ wire GateBoyState::TUJA_CPU_VRAM_WRp_new () const { return and2(SOSE_ADDR_VRAMp_new(), cpu_signals.APOV_CPU_WRp.out_any()); }
 
-/*_p01.XODO*/ wire GateBoyState::XODO_VID_RSTp_new() const { return nand2(sys_rst.XEBE_SYS_RSTn_new(), reg_lcdc.XONA_LCDC_LCDENp.qp_newB()); }
+wire GateBoyState::XODO_VID_RSTp_new() const {
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(sys_rst.AFER_SYS_RSTp.qp_new(), sys_rst.ASOL_POR_DONEn.qp_new());
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
+  /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);
+  /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+  /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
+  /*_p01.XEBE*/ wire XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
+  /*_p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, reg_lcdc.XONA_LCDC_LCDENp.qp_newB());
+  return XODO_VID_RSTp;
+}
 /*_p01.XAPO*/ wire GateBoyState::XAPO_VID_RSTn_new() const { return not1(XODO_VID_RSTp_new()); }
 /*_p01.LYHA*/ wire GateBoyState::LYHA_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
 /*_p01.LYFE*/ wire GateBoyState::LYFE_VID_RSTn_new() const { return not1(LYHA_VID_RSTp_new()); }

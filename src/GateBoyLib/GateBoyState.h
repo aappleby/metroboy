@@ -67,18 +67,6 @@ struct GateBoyState {
   /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp_new() const;
   /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn_new() const;
 
-#ifdef SIM_AUDIO
-  
-  wire KEBA_APU_RSTp_new() const {
-    /*_p09.HAPO*/ wire HAPO_SYS_RSTp_new = not1(sys_rst.ALUR_SYS_RSTn_new());
-    /*_p09.JYRO*/ wire JYRO_APU_RSTp_new = or2(HAPO_SYS_RSTp_new, spu.HADA_NR52_ALL_SOUND_ON.qn_new());
-    /*_p09.KUBY*/ wire KUBY_APU_RSTn_new = not1(JYRO_APU_RSTp_new);
-    /*_p09.KEBA*/ wire KEBA_APU_RSTp_new = not1(KUBY_APU_RSTn_new);
-    return KEBA_APU_RSTp_new;
-  }
-
-#endif
-
   //----------------------------------------
 
   /*_SIG_VCC*/ SigIn SIG_VCC;

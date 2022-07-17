@@ -8,13 +8,16 @@ void GateBoy::tock_latches(const GateBoyState& reg_old) {
 {
   auto& reg_new = gb_state;
 
+  /*#p29.XUPY*/ wire XUPY_ABxxEFxx = not1(reg_new.sys_clk.WUVU_ABxxEFxx.qn_new());
+  /*#p28.AWOH*/ wire AWOH_xxCDxxGH = not1(XUPY_ABxxEFxx);
+
   /*#p21.XYVO*/ wire XYVO_y144p_old      = and2(reg_old.reg_ly.LOVU_LY4p_odd.qp_old(), reg_old.reg_ly.LAFO_LY7p_odd.qp_old()); // 128 + 16 = 144
   /*#p21.PURE*/ wire PURE_LINE_ENDn_old  = not1(reg_old.lcd.RUTU_LINE_ENDp_odd.qp_old());
   /*#p29.ALES*/ wire ALES_FRAME_ENDn_old = not1(XYVO_y144p_old);
   /*#p21.SELA*/ wire SELA_LINE_ENDp_old  = not1(PURE_LINE_ENDn_old);
   /*#p29.ABOV*/ wire ABOV_LINE_ENDp_old  = and2(SELA_LINE_ENDp_old, ALES_FRAME_ENDn_old);
-  /*#p29.CATU*/ reg_new.lcd.CATU_LINE_ENDp_odd.dff17(reg_new.sys_clk.XUPY_ABxxEFxx_new(), reg_new.ABEZ_VID_RSTn_new(), ABOV_LINE_ENDp_old);
-  /*#p28.ANEL*/ reg_new.lcd.ANEL_LINE_ENDp_odd.dff17(reg_new.sys_clk.AWOH_xxCDxxGH_new(), reg_new.ABEZ_VID_RSTn_new(), reg_old.lcd.CATU_LINE_ENDp_odd.qp_old());
+  /*#p29.CATU*/ reg_new.lcd.CATU_LINE_ENDp_odd.dff17(XUPY_ABxxEFxx, reg_new.ABEZ_VID_RSTn_new(), ABOV_LINE_ENDp_old);
+  /*#p28.ANEL*/ reg_new.lcd.ANEL_LINE_ENDp_odd.dff17(AWOH_xxCDxxGH, reg_new.ABEZ_VID_RSTn_new(), reg_old.lcd.CATU_LINE_ENDp_odd.qp_old());
 
   /*_p28.ABAF*/ wire ABAF_LINE_ENDn_odd_new = not1(reg_new.lcd.CATU_LINE_ENDp_odd.qp_new());
   /*_p28.BYHA*/ wire BYHA_LINE_RST_TRIGn_odd_new = or_and3(reg_new.lcd.ANEL_LINE_ENDp_odd.qp_new(), ABAF_LINE_ENDn_odd_new, reg_new.ABEZ_VID_RSTn_new()); // so if this is or_and, BYHA should go low on 910 and 911

@@ -4,8 +4,8 @@
 # enabled and what's not
 #-DSIM_AUDIO 
 
-build_mode   = -DCONFIG_DEBUG -O0
-#build_mode   = -DCONFIG_RELEASE -O3
+#build_mode   = -DCONFIG_DEBUG -O0
+build_mode   = -DCONFIG_RELEASE -O3
 #build_mode   = -DCONFIG_FASTMODE -O3
 
 default_gpp      = g++ -g -MMD -std=gnu++2a
@@ -195,11 +195,6 @@ build obj/GateBoyLib/Gates.o                : compile_cpp src/GateBoyLib/Gates.c
 build obj/GateBoyLib/LogicBoy.o             : compile_cpp src/GateBoyLib/LogicBoy.cpp
 build obj/GateBoyLib/LogicBoyState.o        : compile_cpp src/GateBoyLib/LogicBoyState.cpp
 build obj/GateBoyLib/Probe.o                : compile_cpp src/GateBoyLib/Probe.cpp
-build obj/GateBoyLib/Sch_ApuControl.o       : compile_cpp src/GateBoyLib/Sch_ApuControl.cpp
-build obj/GateBoyLib/Sch_Channel1.o         : compile_cpp src/GateBoyLib/Sch_Channel1.cpp
-build obj/GateBoyLib/Sch_Channel2.o         : compile_cpp src/GateBoyLib/Sch_Channel2.cpp
-build obj/GateBoyLib/Sch_Channel3.o         : compile_cpp src/GateBoyLib/Sch_Channel3.cpp
-build obj/GateBoyLib/Sch_Channel4.o         : compile_cpp src/GateBoyLib/Sch_Channel4.cpp
 build obj/GateBoyLib/Utils.o                : compile_cpp src/GateBoyLib/Utils.cpp
 
 build bin/GateBoyLib.a : lib $
@@ -238,11 +233,6 @@ build bin/GateBoyLib.a : lib $
   obj/GateBoyLib/LogicBoy.o $
   obj/GateBoyLib/LogicBoyState.o $
   obj/GateBoyLib/Probe.o $
-  obj/GateBoyLib/Sch_ApuControl.o $
-  obj/GateBoyLib/Sch_Channel1.o $
-  obj/GateBoyLib/Sch_Channel2.o $
-  obj/GateBoyLib/Sch_Channel3.o $
-  obj/GateBoyLib/Sch_Channel4.o $
   obj/GateBoyLib/Utils.o $
 
 ################################################################################

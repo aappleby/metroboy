@@ -45,14 +45,21 @@ void GateBoy::tock_lcdc_gates(const GateBoyState& reg_old) {
 
   /*_p23.WARU*/ wire WARU_FF40_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VOCA_FF40p_new());
   /*_p23.XUBO*/ wire XUBO_FF40_WRn_new = not1(WARU_FF40_WRp_new);
-  /*#p23.VYXE*/ reg_new.reg_lcdc.VYXE_LCDC_BGENp  .dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  /*_p23.XYLO*/ reg_new.reg_lcdc.XYLO_LCDC_SPENp  .dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  /*_p23.XYMO*/ reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-  /*_p23.XAFO*/ reg_new.reg_lcdc.XAFO_LCDC_BGMAPp .dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p23.WEXU*/ reg_new.reg_lcdc.WEXU_LCDC_BGTILEp.dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p23.WYMO*/ reg_new.reg_lcdc.WYMO_LCDC_WINENp .dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p23.WOKY*/ reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-  /*_p23.XONA*/ reg_new.reg_lcdc.XONA_LCDC_LCDENp. dff9b(XUBO_FF40_WRn_new, reg_new.sys_rst.XARE_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(reg_new.sys_rst.AFER_SYS_RSTp.qp_new(), reg_new.sys_rst.ASOL_POR_DONEn.qp_new());
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
+  /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);  /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+  /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
+  /*_p01.XARE*/ wire XARE_SYS_RSTn = not1(XORE_SYS_RSTp);
+
+  /*#p23.VYXE*/ reg_new.reg_lcdc.VYXE_LCDC_BGENp  .dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+  /*_p23.XYLO*/ reg_new.reg_lcdc.XYLO_LCDC_SPENp  .dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+  /*_p23.XYMO*/ reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+  /*_p23.XAFO*/ reg_new.reg_lcdc.XAFO_LCDC_BGMAPp .dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p23.WEXU*/ reg_new.reg_lcdc.WEXU_LCDC_BGTILEp.dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p23.WYMO*/ reg_new.reg_lcdc.WYMO_LCDC_WINENp .dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p23.WOKY*/ reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p23.XONA*/ reg_new.reg_lcdc.XONA_LCDC_LCDENp. dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
   /*_p23.VYRE*/ wire VYRE_FF40_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.VOCA_FF40p_new());
   /*_p23.WYCE*/ wire WYCE_FF40_RDn_new = not1(VYRE_FF40_RDp_new);

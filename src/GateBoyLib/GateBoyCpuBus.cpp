@@ -8,11 +8,14 @@
 void GateBoy::tock_bootrom_gates(const GateBoyState& reg_old) {
   GateBoyState& reg_new = gb_state;
 
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(reg_new.sys_rst.AFER_SYS_RSTp.qp_new(), reg_new.sys_rst.ASOL_POR_DONEn.qp_new());
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
+
   /*_p07.TUGE*/ wire TUGE_FF50_WRn_new = nand4(reg_new.cpu_signals.TAPU_CPU_WRp.out_new(), reg_new.cpu_abus.SYKE_ADDR_HIp_new(), reg_new.cpu_abus.TYRO_XX_0x0x0000p_new(), reg_new.cpu_abus.TUFA_XX_x1x1xxxxp_new());
   // FF50 - disable bootrom bit
 
   /*_p07.SATO*/ wire SATO_BOOT_BITn_old = or2(reg_old.cpu_dbus.BUS_CPU_D00p.out_old(), reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
-  /*_p07.TEPU*/ reg_new.cpu_signals.TEPU_BOOT_BITn.dff17(TUGE_FF50_WRn_new, reg_new.sys_rst.ALUR_SYS_RSTn_new(), SATO_BOOT_BITn_old);
+  /*_p07.TEPU*/ reg_new.cpu_signals.TEPU_BOOT_BITn.dff17(TUGE_FF50_WRn_new, ALUR_SYS_RSTn, SATO_BOOT_BITn_old);
 
   // BOOT -> CBD
   // this is kind of a hack

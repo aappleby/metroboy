@@ -30,10 +30,16 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*_p21.SEPA*/ wire SEPA_FF41_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VARY_FF41p_new());
   /*_p21.RYVE*/ wire RYVE_FF41_WRn_new = not1(SEPA_FF41_WRp_new);
 
-  /*_p21.ROXE*/ reg_new.reg_stat.ROXE_STAT_HBI_ENp.dff9b(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p21.RUFO*/ reg_new.reg_stat.RUFO_STAT_VBI_ENp.dff9b(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p21.REFE*/ reg_new.reg_stat.REFE_STAT_OAI_ENp.dff9b(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p21.RUGU*/ reg_new.reg_stat.RUGU_STAT_LYI_ENp.dff9b(RYVE_FF41_WRn_new, reg_new.sys_rst.WESY_SYS_RSTn_new(), reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(reg_new.sys_rst.AFER_SYS_RSTp.qp_new(), reg_new.sys_rst.ASOL_POR_DONEn.qp_new());
+  /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
+  /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);
+  /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
+  /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
+  /*_p01.WESY*/ wire WESY_SYS_RSTn = not1(XORE_SYS_RSTp);
+  /*_p21.ROXE*/ reg_new.reg_stat.ROXE_STAT_HBI_ENp.dff9b(RYVE_FF41_WRn_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p21.RUFO*/ reg_new.reg_stat.RUFO_STAT_VBI_ENp.dff9b(RYVE_FF41_WRn_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p21.REFE*/ reg_new.reg_stat.REFE_STAT_OAI_ENp.dff9b(RYVE_FF41_WRn_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p21.RUGU*/ reg_new.reg_stat.RUGU_STAT_LYI_ENp.dff9b(RYVE_FF41_WRn_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
 
   /*_p21.TOBE*/ wire TOBE_FF41_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.VARY_FF41p_new());
   /*_p21.VAVE*/ wire VAVE_FF41_RDn_new = not1(TOBE_FF41_RDp_new);
@@ -75,7 +81,6 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
 
   /*#p02.ASOK*/ wire ASOK_INT_JOYp_new = nand2(reg_new.joy_int.APUG_JP_GLITCH3.qp_new(), reg_new.joy_int.BATU_JP_GLITCH0.qp_new());
 
-  /*#p01.ALUR*/ wire ALUR_SYS_RSTn_new = not1(reg_new.sys_rst.AVOR_SYS_RSTp_new());
   /*_p07.REFA*/ wire REFA_FF0F_WRn_new = nand4(
     reg_new.cpu_signals.TAPU_CPU_WRp.out_new(),
     reg_new.cpu_abus.SYKE_ADDR_HIp_new(),
@@ -101,11 +106,11 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*_p02.SULO*/ wire SULO_INT3_WRn_new = or2(reg_new.cpu_dbus.BUS_CPU_D03p.out_new(), REFA_FF0F_WRn_new);
   /*_p02.SEME*/ wire SEME_INT4_WRn_new = or2(reg_new.cpu_dbus.BUS_CPU_D04p.out_new(), REFA_FF0F_WRn_new);
 
-  /*#p02.LYTA*/ wire LYTA_FF0F_RST0n_new = and3(MUXE_INT0_WRn_new, LETY_INT_VBL_ACKn_new,  ALUR_SYS_RSTn_new);
-  /*_p02.MOVU*/ wire MOVU_FF0F_RST1n_new = and3(NABE_INT1_WRn_new, LEJA_INT_STAT_ACKn_new, ALUR_SYS_RSTn_new);
-  /*_p02.PYGA*/ wire PYGA_FF0F_RST2n_new = and3(RAKE_INT2_WRn_new, LESA_INT_TIM_ACKn_new,  ALUR_SYS_RSTn_new);
-  /*_p02.TUNY*/ wire TUNY_FF0F_RST3n_new = and3(SULO_INT3_WRn_new, LUFE_INT_SER_ACKn_new,  ALUR_SYS_RSTn_new);
-  /*_p02.TYME*/ wire TYME_FF0F_RST4n_new = and3(SEME_INT4_WRn_new, LAMO_INT_JOY_ACKn_new,  ALUR_SYS_RSTn_new);
+  /*#p02.LYTA*/ wire LYTA_FF0F_RST0n_new = and3(MUXE_INT0_WRn_new, LETY_INT_VBL_ACKn_new,  ALUR_SYS_RSTn);
+  /*_p02.MOVU*/ wire MOVU_FF0F_RST1n_new = and3(NABE_INT1_WRn_new, LEJA_INT_STAT_ACKn_new, ALUR_SYS_RSTn);
+  /*_p02.PYGA*/ wire PYGA_FF0F_RST2n_new = and3(RAKE_INT2_WRn_new, LESA_INT_TIM_ACKn_new,  ALUR_SYS_RSTn);
+  /*_p02.TUNY*/ wire TUNY_FF0F_RST3n_new = and3(SULO_INT3_WRn_new, LUFE_INT_SER_ACKn_new,  ALUR_SYS_RSTn);
+  /*_p02.TYME*/ wire TYME_FF0F_RST4n_new = and3(SEME_INT4_WRn_new, LAMO_INT_JOY_ACKn_new,  ALUR_SYS_RSTn);
 
   /*_p02.LOPE*/ reg_new.reg_if.LOPE_FF0F_D0p.dff22(VYPU_INT_VBLANKp_new,                           MYZU_FF0F_SET0n, LYTA_FF0F_RST0n_new, reg_old.SIG_VCC.out_old());
   /*_p02.LALU*/ reg_new.reg_if.LALU_FF0F_D1p.dff22(VOTY_INT_STATp_new,                             MODY_FF0F_SET1n, MOVU_FF0F_RST1n_new, reg_old.SIG_VCC.out_old());

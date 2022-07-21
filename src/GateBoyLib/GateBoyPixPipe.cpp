@@ -33,7 +33,10 @@ void GateBoy::tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_o
   /*_p27.RENE*/ reg_new.win_ctrl.RENE_WIN_FETCHn_B_evn.dff17(ALET_xBxDxFxH,  reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.qp_old());
   /*_p27.RYFA*/ reg_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.dff17(SEGU_CLKPIPE_odd_new,            reg_new.XYMU_RENDERING_LATCHn.qn_new(), PANY_WIN_FETCHn_old);
 
-  /*_p23.WEKO*/ wire WEKO_FF4A_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VYGA_FF4Ap_new());
+  /*_p07.DYKY*/ wire DYKY_CPU_WRn_new = not1(reg_new.cpu_signals.TAPU_CPU_WRp.out_new());
+  /*_p07.CUPA*/ wire CUPA_CPU_WRp_new = not1(DYKY_CPU_WRn_new);
+
+  /*_p23.WEKO*/ wire WEKO_FF4A_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.VYGA_FF4Ap_new());
   /*_p23.VEFU*/ wire VEFU_FF4A_WRn_new = not1(WEKO_FF4A_WRp_new);
   /*_p23.NESO*/ reg_new.reg_wy.NESO_WY0p.dff9b(VEFU_FF4A_WRn_new, WALU_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
   /*_p23.NYRO*/ reg_new.reg_wy.NYRO_WY1p.dff9b(VEFU_FF4A_WRn_new, WALU_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
@@ -44,7 +47,7 @@ void GateBoy::tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_o
   /*_p23.NUKA*/ reg_new.reg_wy.NUKA_WY6p.dff9b(VEFU_FF4A_WRn_new, WALU_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
   /*_p23.NAFU*/ reg_new.reg_wy.NAFU_WY7p.dff9b(VEFU_FF4A_WRn_new, WALU_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
-  /*_p23.WUZA*/ wire WUZA_FF4B_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VUMY_FF4Bp_new());
+  /*_p23.WUZA*/ wire WUZA_FF4B_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.VUMY_FF4Bp_new());
   /*_p23.VOXU*/ wire VOXU_FF4B_WRn_new = not1(WUZA_FF4B_WRp_new);
   /*_p23.MYPA*/ reg_new.reg_wx.MYPA_WX0p.dff9b(VOXU_FF4B_WRn_new, WALU_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
   /*_p23.NOFE*/ reg_new.reg_wx.NOFE_WX1p.dff9b(VOXU_FF4B_WRn_new, WALU_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
@@ -86,7 +89,9 @@ void GateBoy::tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_o
   /*_p27.NOGY*/ wire NOGY_WX_MATCHn_odd_new  = nand5(NUFA_WX_MATCHp_odd_new, MYLO_WX_MATCH0p_odd_new, PUWU_WX_MATCH1p_odd_new, PUHO_WX_MATCH2p_odd_new, NYTU_WX_MATCH3p_odd_new);
   /*_p27.NUKO*/ reg_new.win_ctrl.NUKO_WX_MATCHp_odd  <<= not1(NOGY_WX_MATCHn_odd_new);
 
-  /*_p23.WAXU*/ wire WAXU_FF4A_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.VYGA_FF4Ap_new());
+  /*_p07.AJAS*/ wire AJAS_CPU_RDn_new = not1(reg_new.cpu_signals.TEDO_CPU_RDp.out_new());
+  /*_p07.ASOT*/ wire ASOT_CPU_RDp_new = not1(AJAS_CPU_RDn_new);
+  /*_p23.WAXU*/ wire WAXU_FF4A_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.VYGA_FF4Ap_new());
   /*_p23.VOMY*/ wire VOMY_FF4A_RDn_new = not1(WAXU_FF4A_RDp_new);
   /*#p23.PUNU*/ triwire PUNU_WY0_TO_CD0_new = tri6_nn(VOMY_FF4A_RDn_new, reg_new.reg_wy.NESO_WY0p.qn_newB());
   /*_p23.PODA*/ triwire PODA_WY1_TO_CD1_new = tri6_nn(VOMY_FF4A_RDn_new, reg_new.reg_wy.NYRO_WY1p.qn_newB());
@@ -106,7 +111,7 @@ void GateBoy::tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_o
   /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(POLO_WY6_TO_CD6_new);
   /*_BUS_CPU_D07p*/ reg_new.cpu_dbus.BUS_CPU_D07p.tri_bus(MERA_WY7_TO_CD7_new);
 
-  /*_p23.WYZE*/ wire WYZE_FF4B_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.VUMY_FF4Bp_new());
+  /*_p23.WYZE*/ wire WYZE_FF4B_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.VUMY_FF4Bp_new());
   /*_p23.VYCU*/ wire VYCU_FF4B_RDn_new = not1(WYZE_FF4B_RDp_new);
   /*#p23.LOVA*/ triwire LOVA_WX0_TO_CD0_new = tri6_nn(VYCU_FF4B_RDn_new, reg_new.reg_wx.MYPA_WX0p.qn_newB());
   /*_p23.MUKA*/ triwire MUKA_WX1_TO_CD1_new = tri6_nn(VYCU_FF4B_RDn_new, reg_new.reg_wx.NOFE_WX1p.qn_newB());
@@ -132,6 +137,9 @@ void GateBoy::tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_o
 void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_odd_new, wire NYXU_BFETCH_RSTn_new)
 {
   auto& reg_new = gb_state;
+
+  /*_p07.DYKY*/ wire DYKY_CPU_WRn_new = not1(reg_new.cpu_signals.TAPU_CPU_WRp.out_new());
+  /*_p07.CUPA*/ wire CUPA_CPU_WRp_new = not1(DYKY_CPU_WRn_new);
 
   /*_p24.LOBY*/ wire LOBY_RENDERINGn_new = not1(reg_new.XYMU_RENDERING_LATCHn.qn_new());
 
@@ -507,7 +515,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   //----------------------------------------
   // Pal reg read/write
 
-  /*_p36.VELY*/ wire VELY_FF47_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.WERA_FF47p_new());
+  /*_p36.VELY*/ wire VELY_FF47_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.WERA_FF47p_new());
   /*_p36.TEPO*/ wire TEPO_FF47_WRp_new = not1(VELY_FF47_WRp_new);
 
   /*#p36.PAVO*/ reg_new.reg_bgp.PAVO_BGP_D0p.dff8pB(TEPO_FF47_WRp_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
@@ -519,7 +527,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   /*_p36.MOGY*/ reg_new.reg_bgp.MOGY_BGP_D6p.dff8pB(TEPO_FF47_WRp_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
   /*_p36.MENA*/ reg_new.reg_bgp.MENA_BGP_D7p.dff8pB(TEPO_FF47_WRp_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
-  /*_p36.XOMA*/ wire XOMA_FF48_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.XAYO_FF48p_new());
+  /*_p36.XOMA*/ wire XOMA_FF48_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.XAYO_FF48p_new());
   /*_p36.XELO*/ wire XELO_FF48_WRn_new = not1(XOMA_FF48_WRp_new);
   /*_p36.XUFU*/ reg_new.reg_obp0.XUFU_OBP0_D0p.dff8pB(XELO_FF48_WRn_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
   /*_p36.XUKY*/ reg_new.reg_obp0.XUKY_OBP0_D1p.dff8pB(XELO_FF48_WRn_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
@@ -530,7 +538,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   /*_p36.XUPO*/ reg_new.reg_obp0.XUPO_OBP0_D6p.dff8pB(XELO_FF48_WRn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
   /*_p36.XANA*/ reg_new.reg_obp0.XANA_OBP0_D7p.dff8pB(XELO_FF48_WRn_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
-  /*_p36.MYXE*/ wire MYXE_FF49_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.TEGO_FF49p_new());
+  /*_p36.MYXE*/ wire MYXE_FF49_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.TEGO_FF49p_new());
   /*_p36.LEHO*/ wire LEHO_FF49_WRn_new = not1(MYXE_FF49_WRp_new);
   /*_p36.MOXY*/ reg_new.reg_obp1.MOXY_OBP1_D0p.dff8pB(LEHO_FF49_WRn_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
   /*_p36.LAWO*/ reg_new.reg_obp1.LAWO_OBP1_D1p.dff8pB(LEHO_FF49_WRn_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
@@ -541,7 +549,9 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   /*_p36.LEPU*/ reg_new.reg_obp1.LEPU_OBP1_D6p.dff8pB(LEHO_FF49_WRn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
   /*_p36.LUXO*/ reg_new.reg_obp1.LUXO_OBP1_D7p.dff8pB(LEHO_FF49_WRn_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
-  /*_p36.VUSO*/ wire VUSO_FF47_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.WERA_FF47p_new());
+  /*_p07.AJAS*/ wire AJAS_CPU_RDn_new = not1(reg_new.cpu_signals.TEDO_CPU_RDp.out_new());
+  /*_p07.ASOT*/ wire ASOT_CPU_RDp_new = not1(AJAS_CPU_RDn_new);
+  /*_p36.VUSO*/ wire VUSO_FF47_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.WERA_FF47p_new());
   /*_p36.TEPY*/ wire TEPY_FF47_RDn_new = not1(VUSO_FF47_RDp_new);
   /*#p36.RARO*/ triwire RARO_BGP0_TO_CD0_new = tri6_nn(TEPY_FF47_RDn_new, reg_new.reg_bgp.PAVO_BGP_D0p.qn_newB());
   /*_p36.PABA*/ triwire PABA_BGP1_TO_CD1_new = tri6_nn(TEPY_FF47_RDn_new, reg_new.reg_bgp.NUSY_BGP_D1p.qn_newB());
@@ -561,7 +571,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(LODY_BGP6_TO_CD6_new);
   /*_BUS_CPU_D07p*/ reg_new.cpu_dbus.BUS_CPU_D07p.tri_bus(LARY_BGP7_TO_CD7_new);
 
-  /*_p36.XUFY*/ wire XUFY_FF48_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.XAYO_FF48p_new());
+  /*_p36.XUFY*/ wire XUFY_FF48_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.XAYO_FF48p_new());
   /*_p36.XOZY*/ wire XOZY_FF48_RDn_new = not1(XUFY_FF48_RDp_new);
   /*#p36.XARY*/ triwire XARY_OBP00_TO_CD0_new = tri6_nn(XOZY_FF48_RDn_new, reg_new.reg_obp0.XUFU_OBP0_D0p.qn_newB());
   /*_p36.XOKE*/ triwire XOKE_OBP01_TO_CD1_new = tri6_nn(XOZY_FF48_RDn_new, reg_new.reg_obp0.XUKY_OBP0_D1p.qn_newB());
@@ -581,7 +591,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
   /*_BUS_CPU_D06p*/ reg_new.cpu_dbus.BUS_CPU_D06p.tri_bus(XAXA_OBP06_TO_CD6_new);
   /*_BUS_CPU_D07p*/ reg_new.cpu_dbus.BUS_CPU_D07p.tri_bus(XAWO_OBP07_TO_CD7_new);
 
-  /*_p36.MUMY*/ wire MUMY_FF49_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.TEGO_FF49p_new());
+  /*_p36.MUMY*/ wire MUMY_FF49_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.TEGO_FF49p_new());
   /*_p36.LOTE*/ wire LOTE_FF49_RDn_new = not1(MUMY_FF49_RDp_new);
   /*#p36.LAJU*/ triwire LAJU_OBP10_TO_CD0_new = tri6_nn(LOTE_FF49_RDn_new, reg_new.reg_obp1.MOXY_OBP1_D0p.qn_newB());
   /*_p36.LEPA*/ triwire LEPA_OBP11_TO_CD1_new = tri6_nn(LOTE_FF49_RDn_new, reg_new.reg_obp1.LAWO_OBP1_D1p.qn_newB());

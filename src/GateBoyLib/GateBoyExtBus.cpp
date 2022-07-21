@@ -166,7 +166,12 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
 {
   auto& reg_new = gb_state;
 
-  /*_p08.MOCA*/ wire MOCA_DBG_EXT_RD_new = nor2(reg_new.TEXO_ADDR_VRAMn_new(), pins.sys.UMUT_MODE_DBG1p_new());
+  /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(reg_new.cpu_abus.BUS_CPU_A13p.out_new(), reg_new.cpu_abus.BUS_CPU_A14p.out_new(), reg_new.cpu_abus.SORE_A15n_new());
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
+
+  probe("EXT_BUS", reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state);
+
+  /*_p08.MOCA*/ wire MOCA_DBG_EXT_RD_new = nor2(TEXO_ADDR_VRAMn_new, pins.sys.UMUT_MODE_DBG1p_new());
 
   /*#p04.LEBU*/ wire LEBU_DMA_A15n_new  = not1(reg_new.reg_dma.MARU_DMA_A15p.qp_newB());
   /*#p04.MUDA*/ wire MUDA_DMA_VRAMp_new = nor3(reg_new.reg_dma.PULA_DMA_A13p.qp_newB(), reg_new.reg_dma.POKU_DMA_A14p.qp_newB(), LEBU_DMA_A15n_new);
@@ -185,7 +190,8 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   }
 
   {
-    /*_p08.NEVY*/ wire NEVY_new = or2(reg_new.cpu_signals.MEXO_CPU_WRn_new(), MOCA_DBG_EXT_RD_new);
+    /*_p08.MEXO*/ wire MEXO_CPU_WRn_new = not1(reg_new.cpu_signals.APOV_CPU_WRp.out_new());
+    /*_p08.NEVY*/ wire NEVY_new = or2(MEXO_CPU_WRn_new, MOCA_DBG_EXT_RD_new);
     /*_p08.PUVA*/ wire PUVA_EXT_WRn_new = or2(NEVY_new, LUMA_DMA_CARTp_new);
     /*_p08.UVER*/ wire UVER_WR_A_new = nand2(PUVA_EXT_WRn_new, pins.sys.TOVA_MODE_DBG2n_new());
     /*_p08.USUF*/ wire USUF_WR_D_new = nor2 (PUVA_EXT_WRn_new, pins.sys.UNOR_MODE_DBG2p_new());
@@ -198,9 +204,12 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
     /*_PIN_80*/ pins.ctrl.PIN_80_CSn.pin_out(TYHO_CS_A_new, TYHO_CS_A_new);
   }
 
-  /*_p08.LOXO*/ wire LOXO_HOLDn_new = and_or3(pins.sys.MULE_MODE_DBG1n_new(), reg_new.TEXO_ADDR_VRAMn_new(), pins.sys.UMUT_MODE_DBG1p_new());
+  /*_p08.LOXO*/ wire LOXO_HOLDn_new = and_or3(pins.sys.MULE_MODE_DBG1n_new(), TEXO_ADDR_VRAMn_new, pins.sys.UMUT_MODE_DBG1p_new());
   /*_p08.LASY*/ wire LASY_HOLDp_new = not1(LOXO_HOLDn_new);
   /*_p08.MATE*/ wire MATE_HOLDn_new = not1(LASY_HOLDp_new);
+
+  probe("MATE_HOLDn_new", MATE_HOLDn_new & 1);
+
   /*_p08.ALOR*/ reg_new.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A00p.out_new());
   /*_p08.APUR*/ reg_new.ext_addr_latch.APUR_EXT_ADDR_LATCH_01p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A01p.out_new());
   /*_p08.ALYR*/ reg_new.ext_addr_latch.ALYR_EXT_ADDR_LATCH_02p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A02p.out_new());
@@ -292,13 +301,32 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   /*_p08.RULO*/ wire RULO_A15n_new = nor2 (TAZY_A15p_new, pins.sys.UNOR_MODE_DBG2p_new());
   /*_PIN_16*/ pins.abus_hi.PIN_16_A15.pin_out(SUZE_A15n_new, RULO_A15n_new);
 
+  probe("PIN_01_A00", (pins.abus_lo.PIN_01_A00.state ^ 1) & 1);
+  probe("PIN_02_A01", (pins.abus_lo.PIN_02_A01.state ^ 1) & 1);
+  probe("PIN_03_A02", (pins.abus_lo.PIN_03_A02.state ^ 1) & 1);
+  probe("PIN_04_A03", (pins.abus_lo.PIN_04_A03.state ^ 1) & 1);
+  probe("PIN_05_A04", (pins.abus_lo.PIN_05_A04.state ^ 1) & 1);
+  probe("PIN_06_A05", (pins.abus_lo.PIN_06_A05.state ^ 1) & 1);
+  probe("PIN_07_A06", (pins.abus_lo.PIN_07_A06.state ^ 1) & 1);
+  probe("PIN_08_A07", (pins.abus_lo.PIN_08_A07.state ^ 1) & 1);
+  probe("PIN_09_A08", (pins.abus_hi.PIN_09_A08.state ^ 1) & 1);
+  probe("PIN_10_A09", (pins.abus_hi.PIN_10_A09.state ^ 1) & 1);
+  probe("PIN_11_A10", (pins.abus_hi.PIN_11_A10.state ^ 1) & 1);
+  probe("PIN_12_A11", (pins.abus_hi.PIN_12_A11.state ^ 1) & 1);
+  probe("PIN_13_A12", (pins.abus_hi.PIN_13_A12.state ^ 1) & 1);
+  probe("PIN_14_A13", (pins.abus_hi.PIN_14_A13.state ^ 1) & 1);
+  probe("PIN_15_A14", (pins.abus_hi.PIN_15_A14.state ^ 1) & 1);
+  probe("PIN_16_A15", (pins.abus_hi.PIN_16_A15.state ^ 1) & 1);
+
+
   // FIXME So does this mean that if the CPU writes to the external bus during dma, that data_out
   // will actually end up in oam?
 
   /*_p08.LAGU*/ wire LAGU_new = and_or3(reg_new.cpu_signals.SIG_IN_CPU_RDp.out_new(), reg_new.LEVO_ADDR_VRAMn_new(), reg_new.cpu_signals.SIG_IN_CPU_WRp.out_new());
   /*_p08.LYWE*/ wire LYWE_new = not1(LAGU_new);
   /*_p08.MOTY*/ wire MOTY_CPU_EXT_RD_new = or2(MOCA_DBG_EXT_RD_new, LYWE_new);
-  /*_p08.RORU*/ wire RORU_CBD_TO_EPDn_new = mux2p(pins.sys.UNOR_MODE_DBG2p_new(), reg_new.cpu_signals.REDU_CPU_RDn_new(), MOTY_CPU_EXT_RD_new);
+  /*_p08.REDU*/ wire REDU_CPU_RDn_new = not1(reg_new.cpu_signals.TEDO_CPU_RDp.out_new());
+  /*_p08.RORU*/ wire RORU_CBD_TO_EPDn_new = mux2p(pins.sys.UNOR_MODE_DBG2p_new(), REDU_CPU_RDn_new, MOTY_CPU_EXT_RD_new);
   /*_p08.LULA*/ wire LULA_CBD_TO_EPDp_new = not1(RORU_CBD_TO_EPDn_new);
 
   /*_p25.RUXA*/ wire RUXA_new = nand2(reg_new.cpu_dbus.BUS_CPU_D00p.out_new(), LULA_CBD_TO_EPDp_new);
@@ -406,6 +434,15 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   /*_PIN_23*/ pins.dbus.PIN_23_D06.pin_io(LULA_CBD_TO_EPDp_new, RAFY_new, ROGY_new, EXT_rd_en, EXT_data_in6_new);
   /*_PIN_24*/ pins.dbus.PIN_24_D07.pin_io(LULA_CBD_TO_EPDp_new, RAVU_new, RYDA_new, EXT_rd_en, EXT_data_in7_new);
 
+  probe("PIN_17_D00", pins.dbus.PIN_17_D00.state);
+  probe("PIN_18_D01", pins.dbus.PIN_18_D01.state);
+  probe("PIN_19_D02", pins.dbus.PIN_19_D02.state);
+  probe("PIN_20_D03", pins.dbus.PIN_20_D03.state);
+  probe("PIN_21_D04", pins.dbus.PIN_21_D04.state);
+  probe("PIN_22_D05", pins.dbus.PIN_22_D05.state);
+  probe("PIN_23_D06", pins.dbus.PIN_23_D06.state);
+  probe("PIN_24_D07", pins.dbus.PIN_24_D07.state);
+
   //----------------------------------------
 
   reg_new.ext_mbc.MBC1_RAM_EN.hold();
@@ -475,7 +512,7 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
 
   //----------------------------------------
 
-  /*_p08.LAVO*/ wire LAVO_HOLDn_new = nand3(reg_new.cpu_signals.SIG_IN_CPU_RDp.out_new(), reg_new.TEXO_ADDR_VRAMn_new(), reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new());
+  /*_p08.LAVO*/ wire LAVO_HOLDn_new = nand3(reg_new.cpu_signals.SIG_IN_CPU_RDp.out_new(), TEXO_ADDR_VRAMn_new, reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.out_new());
 
   /*#p08.SOMA*/ reg_new.ext_data_latch.SOMA_EXT_DATA_LATCH_D0n.tp_latchn(LAVO_HOLDn_new, pins.dbus.PIN_17_D00.qp_int_new());
   /*_p08.RONY*/ reg_new.ext_data_latch.RONY_EXT_DATA_LATCH_D1n.tp_latchn(LAVO_HOLDn_new, pins.dbus.PIN_18_D01.qp_int_new());

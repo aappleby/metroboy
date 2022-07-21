@@ -1,0 +1,19 @@
+// clang-format off
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "build_all",
+      "command": "ninja",
+      "args": [
+      ],
+      "problemMatcher": "$gcc",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
+// clang-format on

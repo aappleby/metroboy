@@ -80,38 +80,6 @@ void GateBoyCpuSignals::reset() {
 
 //-----------------------------------------------------------------------------
 
-/*_p07.AJAS*/ wire GateBoyCpuSignals::AJAS_CPU_RDn_old() const { return not1(TEDO_CPU_RDp.out_old()); }
-/*_p07.DYKY*/ wire GateBoyCpuSignals::DYKY_CPU_WRn_old() const { return not1(TAPU_CPU_WRp.out_old()); }
-
-/*_p07.ASOT*/ wire GateBoyCpuSignals::ASOT_CPU_RDp_old() const { return not1(AJAS_CPU_RDn_old()); }
-/*_p07.CUPA*/ wire GateBoyCpuSignals::CUPA_CPU_WRp_old() const { return not1(DYKY_CPU_WRn_old()); }
-/*_p28.MYNU*/ wire GateBoyCpuSignals::MYNU_CPU_RDn_old() const { return nand2(ASOT_CPU_RDp_old(), CATY_LATCH_EXTp_old()); }
-/*_p28.LEKO*/ wire GateBoyCpuSignals::LEKO_CPU_RDp_old() const { return not1(MYNU_CPU_RDn_old()); }
-/*_p08.REDU*/ wire GateBoyCpuSignals::REDU_CPU_RDn_old() const { return not1(TEDO_CPU_RDp.out_old()); }
-/*_p08.MEXO*/ wire GateBoyCpuSignals::MEXO_CPU_WRn_old() const { return not1(APOV_CPU_WRp.out_old()); }
-
-/*_p04.DECY*/ wire GateBoyCpuSignals::DECY_LATCH_EXTn_old() const { return not1(SIG_IN_CPU_DBUS_FREE.out_old()); }
-/*_p04.CATY*/ wire GateBoyCpuSignals::CATY_LATCH_EXTp_old() const { return not1(DECY_LATCH_EXTn_old()); }
-/*#p28.BOFE*/ wire GateBoyCpuSignals::BOFE_LATCH_EXTn_old() const { return not1(CATY_LATCH_EXTp_old()); }
-
-//-----------------------------------------------------------------------------
-
-/*_p07.AJAS*/ wire GateBoyCpuSignals::AJAS_CPU_RDn_new() const { return not1(TEDO_CPU_RDp.out_new()); }
-/*_p07.DYKY*/ wire GateBoyCpuSignals::DYKY_CPU_WRn_new() const { return not1(TAPU_CPU_WRp.out_new()); }
-
-/*_p07.ASOT*/ wire GateBoyCpuSignals::ASOT_CPU_RDp_new() const { return not1(AJAS_CPU_RDn_new()); }
-/*_p07.CUPA*/ wire GateBoyCpuSignals::CUPA_CPU_WRp_new() const { return not1(DYKY_CPU_WRn_new()); }
-/*_p28.MYNU*/ wire GateBoyCpuSignals::MYNU_CPU_RDn_new() const { return nand2(ASOT_CPU_RDp_new(), CATY_LATCH_EXTp_new()); }
-/*_p28.LEKO*/ wire GateBoyCpuSignals::LEKO_CPU_RDp_new() const { return not1(MYNU_CPU_RDn_new()); }
-/*_p08.REDU*/ wire GateBoyCpuSignals::REDU_CPU_RDn_new() const { return not1(TEDO_CPU_RDp.out_new()); }
-/*_p08.MEXO*/ wire GateBoyCpuSignals::MEXO_CPU_WRn_new() const { return not1(APOV_CPU_WRp.out_new()); }
-
-/*_p04.DECY*/ wire GateBoyCpuSignals::DECY_LATCH_EXTn_new() const { return not1(SIG_IN_CPU_DBUS_FREE.out_new()); }
-/*_p04.CATY*/ wire GateBoyCpuSignals::CATY_LATCH_EXTp_new() const { return not1(DECY_LATCH_EXTn_new()); }
-/*#p28.BOFE*/ wire GateBoyCpuSignals::BOFE_LATCH_EXTn_new() const { return not1(CATY_LATCH_EXTp_new()); }
-
-//-----------------------------------------------------------------------------
-
 void GateBoyCpuABus::reset() {
   BUS_CPU_A00p.state = 0b00011000;
   BUS_CPU_A01p.state = 0b00011000;

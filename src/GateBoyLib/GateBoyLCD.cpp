@@ -17,6 +17,9 @@ void GateBoy::tock_lyc_gates(const GateBoyState& reg_old) {
   /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /*_p01.WESY*/ wire WESY_SYS_RSTn = not1(XORE_SYS_RSTp);
 
+  /*_p07.DYKY*/ wire DYKY_CPU_WRn_new = not1(reg_new.cpu_signals.TAPU_CPU_WRp.out_new());
+  /*_p07.CUPA*/ wire CUPA_CPU_WRp_new = not1(DYKY_CPU_WRn_new);
+
   {
     // Inverting ROPO's clock and making it store the new match instead of the old match fixes lcdon_to_stat2_a but breaks other things
     // Just making it store the new match doesn't break anything.
@@ -38,7 +41,7 @@ void GateBoy::tock_lyc_gates(const GateBoyState& reg_old) {
   }
 
   {
-    /*_p23.XUFA*/ wire XUFA_FF45_WRn_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.XAYU_FF45p_new());
+    /*_p23.XUFA*/ wire XUFA_FF45_WRn_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.XAYU_FF45p_new());
     /*_p23.WANE*/ wire WANE_FF45_WRp_new = not1(XUFA_FF45_WRn_new);
     /*_p23.SYRY*/ reg_new.reg_lyc.SYRY_LYC0p.dff9b(WANE_FF45_WRp_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
     /*_p23.VUCE*/ reg_new.reg_lyc.VUCE_LYC1p.dff9b(WANE_FF45_WRp_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
@@ -49,7 +52,9 @@ void GateBoy::tock_lyc_gates(const GateBoyState& reg_old) {
     /*_p23.VEVO*/ reg_new.reg_lyc.VEVO_LYC6p.dff9b(WANE_FF45_WRp_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
     /*_p23.RAHA*/ reg_new.reg_lyc.RAHA_LYC7p.dff9b(WANE_FF45_WRp_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
-    /*_p23.XYLY*/ wire XYLY_FF45_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.XAYU_FF45p_new());
+    /*_p07.AJAS*/ wire AJAS_CPU_RDn_new = not1(reg_new.cpu_signals.TEDO_CPU_RDp.out_new());
+    /*_p07.ASOT*/ wire ASOT_CPU_RDp_new = not1(AJAS_CPU_RDn_new);
+    /*_p23.XYLY*/ wire XYLY_FF45_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.XAYU_FF45p_new());
     /*_p23.WEKU*/ wire WEKU_FF45_RDn_new = not1(XYLY_FF45_RDp_new);
 
     /*#p23.RETU*/ triwire RETU_LYC0_TO_CD0_new = tri6_nn(WEKU_FF45_RDn_new, reg_new.reg_lyc.SYRY_LYC0p.qn_newB());
@@ -72,7 +77,7 @@ void GateBoy::tock_lyc_gates(const GateBoyState& reg_old) {
   }
 
   {
-    /*_p21.SEPA*/ wire SEPA_FF41_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VARY_FF41p_new());
+    /*_p21.SEPA*/ wire SEPA_FF41_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.VARY_FF41p_new());
     /*_p21.RYJU*/ wire RYJU_FF41_WRn_new = not1(SEPA_FF41_WRp_new);
     /*_p21.PAGO*/ wire PAGO_LYC_MATCH_RST_new = or2(WESY_SYS_RSTn, RYJU_FF41_WRn_new);
     /*_p21.RUPO*/ reg_new.int_ctrl.RUPO_LYC_MATCHn.nor_latch(PAGO_LYC_MATCH_RST_new, reg_new.int_ctrl.ROPO_LY_MATCH_SYNCp.qp_new());
@@ -165,7 +170,9 @@ void GateBoy::tock_lcd_gates(const GateBoyState& reg_old) {
   }
 
   {
-    /*_p23.WAFU*/ wire WAFU_FF44_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.XOGY_FF44p_new());
+    /*_p07.AJAS*/ wire AJAS_CPU_RDn_new = not1(reg_new.cpu_signals.TEDO_CPU_RDp.out_new());
+    /*_p07.ASOT*/ wire ASOT_CPU_RDp_new = not1(AJAS_CPU_RDn_new);
+    /*_p23.WAFU*/ wire WAFU_FF44_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.XOGY_FF44p_new());
     /*_p23.VARO*/ wire VARO_FF44_RDn_new = not1(WAFU_FF44_RDp_new);
 
     /*#p23.WURY*/ wire WURY_LY0n_new = not1(reg_new.reg_ly.MUWY_LY0p_odd.qp_new());

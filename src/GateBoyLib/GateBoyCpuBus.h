@@ -7,36 +7,6 @@
 struct GateBoyCpuSignals {
   void reset();
 
-  wire AJAS_CPU_RDn_old      () const;
-  wire DYKY_CPU_WRn_old      () const;
-
-  wire ASOT_CPU_RDp_old      () const;
-  wire CUPA_CPU_WRp_old      () const;
-  wire MYNU_CPU_RDn_old      () const;
-  wire LEKO_CPU_RDp_old      () const;
-  wire REDU_CPU_RDn_old      () const;
-  wire MEXO_CPU_WRn_old      () const;
-
-  wire DECY_LATCH_EXTn_old   () const;
-  wire CATY_LATCH_EXTp_old   () const;
-  wire BOFE_LATCH_EXTn_old   () const;
-
-  wire AJAS_CPU_RDn_new      () const;
-  wire DYKY_CPU_WRn_new      () const;
-
-  wire ASOT_CPU_RDp_new      () const;
-  wire CUPA_CPU_WRp_new      () const;
-  wire MYNU_CPU_RDn_new      () const;
-  wire LEKO_CPU_RDp_new      () const;
-  wire REDU_CPU_RDn_new      () const;
-  wire MEXO_CPU_WRn_new      () const;
-
-  wire DECY_LATCH_EXTn_new   () const;
-  wire CATY_LATCH_EXTp_new   () const;
-  wire BOFE_LATCH_EXTn_new   () const;
-
-  //----------------------------------------
-
   Gate ABUZ_EXT_RAM_CS_CLK;
 
   /*_SIG_IN_CPU_RDp     */  SigIn  SIG_IN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO

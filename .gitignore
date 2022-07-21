@@ -1,5 +1,4 @@
 .vs
-.vscode
 x64
 *.vcxproj.user
 *.vcxproj.filters

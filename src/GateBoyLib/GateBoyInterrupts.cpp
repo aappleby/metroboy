@@ -27,7 +27,11 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   reg_new.reg_ie.IE_D3.dff_r(FFFF_WRn_ext_new, ~pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
   reg_new.reg_ie.IE_D4.dff_r(FFFF_WRn_ext_new, ~pins.sys.PIN_71_RST.qp_int_new(), reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
 
-  /*_p21.SEPA*/ wire SEPA_FF41_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VARY_FF41p_new());
+
+  /*_p07.DYKY*/ wire DYKY_CPU_WRn_new = not1(reg_new.cpu_signals.TAPU_CPU_WRp.out_new());
+  /*_p07.CUPA*/ wire CUPA_CPU_WRp_new = not1(DYKY_CPU_WRn_new);
+
+  /*_p21.SEPA*/ wire SEPA_FF41_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.VARY_FF41p_new());
   /*_p21.RYVE*/ wire RYVE_FF41_WRn_new = not1(SEPA_FF41_WRp_new);
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(reg_new.sys_rst.AFER_SYS_RSTp.qp_new(), reg_new.sys_rst.ASOL_POR_DONEn.qp_new());
@@ -41,7 +45,9 @@ void GateBoy::tock_interrupts_gates(const GateBoyState& reg_old)
   /*_p21.REFE*/ reg_new.reg_stat.REFE_STAT_OAI_ENp.dff9b(RYVE_FF41_WRn_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
   /*_p21.RUGU*/ reg_new.reg_stat.RUGU_STAT_LYI_ENp.dff9b(RYVE_FF41_WRn_new, WESY_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
 
-  /*_p21.TOBE*/ wire TOBE_FF41_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.VARY_FF41p_new());
+  /*_p07.AJAS*/ wire AJAS_CPU_RDn_new = not1(reg_new.cpu_signals.TEDO_CPU_RDp.out_new());
+  /*_p07.ASOT*/ wire ASOT_CPU_RDp_new = not1(AJAS_CPU_RDn_new);
+  /*_p21.TOBE*/ wire TOBE_FF41_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.VARY_FF41p_new());
   /*_p21.VAVE*/ wire VAVE_FF41_RDn_new = not1(TOBE_FF41_RDp_new);
 
   /*#p21.PARU*/ wire PARU_VBLANKp_odd_new = not1(reg_new.lcd.POPU_VBLANKp_odd.qn_new());

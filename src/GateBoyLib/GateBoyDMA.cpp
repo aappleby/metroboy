@@ -21,7 +21,10 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
   /*_p01.UVYT*/ wire UVYT_ABCDxxxx = not1(BUDE_xxxxEFGH);
   /*_p04.MOPA*/ wire MOPA_xxxxEFGH = not1(UVYT_ABCDxxxx);
 
-  /*#p04.LAVY*/ wire LAVY_FF46_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.XEDA_FF46p_new());
+  /*_p07.DYKY*/ wire DYKY_CPU_WRn_new = not1(reg_new.cpu_signals.TAPU_CPU_WRp.out_new());
+  /*_p07.CUPA*/ wire CUPA_CPU_WRp_new = not1(DYKY_CPU_WRn_new);
+
+  /*#p04.LAVY*/ wire LAVY_FF46_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.XEDA_FF46p_new());
   /*#p04.LORU*/ wire LORU_FF46_WRn_new = not1(LAVY_FF46_WRp_new);
   /*#p04.NAFA*/ reg_new.reg_dma.NAFA_DMA_A08p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
   /*_p04.PYNE*/ reg_new.reg_dma.PYNE_DMA_A09p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
@@ -32,7 +35,9 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
   /*_p04.POKU*/ reg_new.reg_dma.POKU_DMA_A14p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
   /*_p04.MARU*/ reg_new.reg_dma.MARU_DMA_A15p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
-  /*#p04.LAVY*/ wire LAVY_FF46_WRp_old = and2(reg_old.cpu_signals.CUPA_CPU_WRp_old(), reg_old.cpu_abus.XEDA_FF46p_old());
+  /*_p07.DYKY*/ wire DYKY_CPU_WRn_old = not1(reg_old.cpu_signals.TAPU_CPU_WRp.out_old());
+  /*_p07.CUPA*/ wire CUPA_CPU_WRp_old = not1(DYKY_CPU_WRn_old);
+  /*#p04.LAVY*/ wire LAVY_FF46_WRp_old = and2(CUPA_CPU_WRp_old, reg_old.cpu_abus.XEDA_FF46p_old());
   /*#p04.LUPA*/ wire LUPA_DMA_TRIG_old = nor2(LAVY_FF46_WRp_old, reg_old.dma_ctrl.LYXE_DMA_LATCHp.qn_old());
   /*#p04.LENE*/ reg_new.dma_ctrl.LENE_DMA_TRIG_d4_odd.dff17(MOPA_xxxxEFGH, CUNU_SYS_RSTn, reg_old.dma_ctrl.LUVY_DMA_TRIG_d0_odd.qp_old());
   /*#p04.LUVY*/ reg_new.dma_ctrl.LUVY_DMA_TRIG_d0_odd.dff17(UVYT_ABCDxxxx, CUNU_SYS_RSTn, LUPA_DMA_TRIG_old);
@@ -69,7 +74,9 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
   /*_p04.NUTO*/ reg_new.dma_lo.NUTO_DMA_A06p_odd.dff17(reg_new.dma_lo.PYLO_DMA_A05p_odd.qn_new(), LAPA_DMA_RSTn_odd_new, reg_old.dma_lo.NUTO_DMA_A06p_odd.qn_old());
   /*_p04.MUGU*/ reg_new.dma_lo.MUGU_DMA_A07p_odd.dff17(reg_new.dma_lo.NUTO_DMA_A06p_odd.qn_new(), LAPA_DMA_RSTn_odd_new, reg_old.dma_lo.MUGU_DMA_A07p_odd.qn_old());
 
-  /*#p04.MOLU*/ wire MOLU_FF46_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.XEDA_FF46p_new());
+  /*_p07.AJAS*/ wire AJAS_CPU_RDn_new = not1(reg_new.cpu_signals.TEDO_CPU_RDp.out_new());
+  /*_p07.ASOT*/ wire ASOT_CPU_RDp_new = not1(AJAS_CPU_RDn_new);
+  /*#p04.MOLU*/ wire MOLU_FF46_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.XEDA_FF46p_new());
   /*#p04.NYGO*/ wire NYGO_FF46_RDn_new = not1(MOLU_FF46_RDp_new);
   /*#p04.PUSY*/ wire PUSY_FF46_RDp_new = not1(NYGO_FF46_RDn_new);
 

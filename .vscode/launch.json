@@ -1,0 +1,28 @@
+// clang-format off
+{
+  "configurations": [
+    {
+      "name": "MetroBoy",
+      "visualizerFile": "${workspaceFolder}/src/GateBoyLib/GateBoyaljkdslfk.natvis",
+      "preLaunchTask": "build_all",
+      "type": "cppdbg",
+      //"type": "cppvsdbg",
+      "request": "launch",
+      //"program": "${workspaceFolder}/bin/MetronicaApp",
+      //"program": "${workspaceFolder}/bin/MetroBoyApp",
+      "program": "${workspaceFolder}/bin/GateBoyApp",
+      //"program": "${workspaceFolder}/bin/GateBoyTests",
+      "cwd": "${workspaceFolder}",
+      "args": [],
+      "setupCommands": [
+        // Display content in STL containers pretty
+        { 
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
+// clang-format on

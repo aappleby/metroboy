@@ -43,7 +43,9 @@ SpriteDeltaY GateBoy::sub_sprite_y_gates() {
 void GateBoy::tock_lcdc_gates(const GateBoyState& reg_old) {
   auto& reg_new = gb_state;
 
-  /*_p23.WARU*/ wire WARU_FF40_WRp_new = and2(reg_new.cpu_signals.CUPA_CPU_WRp_new(), reg_new.cpu_abus.VOCA_FF40p_new());
+  /*_p07.DYKY*/ wire DYKY_CPU_WRn_new = not1(reg_new.cpu_signals.TAPU_CPU_WRp.out_new());
+  /*_p07.CUPA*/ wire CUPA_CPU_WRp_new = not1(DYKY_CPU_WRn_new);
+  /*_p23.WARU*/ wire WARU_FF40_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.VOCA_FF40p_new());
   /*_p23.XUBO*/ wire XUBO_FF40_WRn_new = not1(WARU_FF40_WRp_new);
 
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(reg_new.sys_rst.AFER_SYS_RSTp.qp_new(), reg_new.sys_rst.ASOL_POR_DONEn.qp_new());
@@ -61,7 +63,9 @@ void GateBoy::tock_lcdc_gates(const GateBoyState& reg_old) {
   /*_p23.WOKY*/ reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
   /*_p23.XONA*/ reg_new.reg_lcdc.XONA_LCDC_LCDENp. dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
-  /*_p23.VYRE*/ wire VYRE_FF40_RDp_new = and2(reg_new.cpu_signals.ASOT_CPU_RDp_new(), reg_new.cpu_abus.VOCA_FF40p_new());
+  /*_p07.AJAS*/ wire AJAS_CPU_RDn_new = not1(reg_new.cpu_signals.TEDO_CPU_RDp.out_new());
+  /*_p07.ASOT*/ wire ASOT_CPU_RDp_new = not1(AJAS_CPU_RDn_new);
+  /*_p23.VYRE*/ wire VYRE_FF40_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.VOCA_FF40p_new());
   /*_p23.WYCE*/ wire WYCE_FF40_RDn_new = not1(VYRE_FF40_RDp_new);
   /*#p23.WYPO*/ triwire WYPO_LCDC0_TO_CD0_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.VYXE_LCDC_BGENp.qn_newB());
   /*#p23.XERO*/ triwire XERO_LCDC1_TO_CD1_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XYLO_LCDC_SPENp.qn_newB());

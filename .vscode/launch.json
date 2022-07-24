@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "MetroBoy",
-      "visualizerFile": "${workspaceFolder}/src/GateBoyLib/GateBoyaljkdslfk.natvis",
+      //"visualizerFile": "${workspaceFolder}/src/GateBoyLib/GateBoy.natvis",
       "preLaunchTask": "build_all",
       "type": "cppdbg",
       //"type": "cppvsdbg",
@@ -14,6 +14,9 @@
       //"program": "${workspaceFolder}/bin/GateBoyTests",
       "cwd": "${workspaceFolder}",
       "args": [],
+      //"MIMode": "gdb",
+      //"miDebuggerPath": "/usr/bin/gdb"
+      /*
       "setupCommands": [
         // Display content in STL containers pretty
         { 
@@ -22,6 +25,7 @@
           "ignoreFailures": true
         }
       ]
+      */
     }
   ]
 }

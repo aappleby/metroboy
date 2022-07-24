@@ -21,6 +21,8 @@
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/LogicBoy.h"
 
+#include "glad/glad.h"
+
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
@@ -35,6 +37,91 @@ int main(int argc, char** argv) {
   int ret = app_host->app_main(argc, argv);
   delete app;
   return ret;
+
+
+
+
+#if 0
+  SDL_Window* window = NULL;
+  SDL_Surface* screenSurface = NULL;
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    fprintf(stderr, "could not initialize sdl2: %s\n", SDL_GetError());
+    return 1;
+  }
+
+  SDL_DisplayMode display_mode;
+  SDL_GetCurrentDisplayMode(0, &display_mode);
+
+  printf("display mode %d %d %d\n", display_mode.w, display_mode.h, display_mode.refresh_rate);
+
+  window = SDL_CreateWindow(
+                            "hello_sdl2",
+                            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                            640, 480,
+                            SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI
+                            );
+  if (window == NULL) {
+    fprintf(stderr, "could not create window: %s\n", SDL_GetError());
+    return 1;
+  }
+
+  SDL_GL_SetAttribute(
+  SDL_GL_CONTEXT_FLAGS,
+  SDL_GL_CONTEXT_DEBUG_FLAG
+  // | SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG  // doesn't work in wslg
+  // | SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG // doesn't work in wslg
+  );
+
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+  SDL_GLContext gl_context = SDL_GL_CreateContext((SDL_Window*)window);
+
+  printf("gl_context %p\n", gl_context);
+
+  gladLoadGLLoader(SDL_GL_GetProcAddress);
+
+  glViewport(0, 0, display_mode.w, display_mode.h);
+
+  glDisable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LEQUAL);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glClearColor(0.1f, 0.1f, 0.2f, 0.f);
+  glClearDepth(1.0);
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  //screenSurface = SDL_GetWindowSurface(window);
+  //SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+  //SDL_UpdateWindowSurface(window);
+
+  SDL_GL_SwapWindow((SDL_Window*)window);
+
+  SDL_Delay(2000);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+  return 0;
 }
 
 //-----------------------------------------------------------------------------

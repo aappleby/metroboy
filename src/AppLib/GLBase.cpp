@@ -8,6 +8,7 @@
 
 #include <map>
 
+/*
 std::map<uint32_t, const char*> messageMap = {
   {GL_DEBUG_SOURCE_API,               "API" },
   {GL_DEBUG_SOURCE_APPLICATION,       "APPLICATION" },
@@ -31,11 +32,12 @@ std::map<uint32_t, const char*> messageMap = {
   {GL_DEBUG_SEVERITY_MEDIUM,          "MEDIUM" },
   {GL_DEBUG_SEVERITY_LOW,             "LOW" },
   {GL_DEBUG_SEVERITY_NOTIFICATION,    "NOTIFICATION" },
-
 };
+*/
 
 //-----------------------------------------------------------------------------
 
+/*
 void APIENTRY debugOutput(GLenum source, GLenum type, GLuint id, GLenum severity,
                           GLsizei length, const GLchar* message, const GLvoid* userParam) {
 
@@ -57,6 +59,7 @@ void APIENTRY debugOutput(GLenum source, GLenum type, GLuint id, GLenum severity
     id,
     message);
 }
+*/
 
 //-----------------------------------------------------------------------------
 
@@ -64,13 +67,14 @@ void* init_gl(void* window) {
   LOG_G("GLBase::init_gl\n");
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,
-                      SDL_GL_CONTEXT_DEBUG_FLAG |
-                          SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG |
-                          SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+                      SDL_GL_CONTEXT_DEBUG_FLAG 
+                      //| SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG
+                      //| SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG
+                      );
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -83,10 +87,12 @@ void* init_gl(void* window) {
 
   gladLoadGLLoader(SDL_GL_GetProcAddress);
 
+  /*
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
   glDebugMessageCallback(debugOutput, nullptr);
+  */
 
   int ext_count = 0;
   glGetIntegerv(GL_NUM_EXTENSIONS, &ext_count);
@@ -114,7 +120,8 @@ void* init_gl(void* window) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glClearColor(0.1f, 0.1f, 0.2f, 0.f);
-  glClearDepthf(1.0);
+  //glClearDepthf(1.0);
+  glClearDepth(1.0);
 
   return (void*)gl_context;
 }
@@ -339,7 +346,8 @@ int create_shader(const char* name, const char* src) {
   LOG_B("Compiling %s\n", name);
 
   auto vert_srcs = {
-    "#version 450\n",
+    //"#version 450\n",
+    "#version 330\n"
     "precision highp float;\n",
     "precision highp int;\n",
     "precision highp usampler2D;\n",
@@ -362,7 +370,8 @@ int create_shader(const char* name, const char* src) {
   }
 
   auto frag_srcs = {
-    "#version 450\n",
+    //"#version 450\n",
+    "#version 330\n"
     "precision highp float;\n",
     "precision highp int;\n",
     "precision highp usampler2D;\n",

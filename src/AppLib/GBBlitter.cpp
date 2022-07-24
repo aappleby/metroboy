@@ -188,10 +188,14 @@ int decode_tile2(int tile_index, int tile_x, int tile_y) {
   int  flat_index    = tile_index * 16 + tile_y * 2;
   ivec4 packed_ivec4 = tiles[flat_index / 16];
   int   packed_tile  = packed_ivec4[(flat_index >> 2) & 3];
-  vec4  temp         = unpackUnorm4x8(uint(packed_tile)) * 255.0;
+  //vec4  temp         = unpackUnorm4x8(uint(packed_tile)) * 255.0;
+  int temp_x = (packed_tile >>  0) & 0xFF;
+  int temp_y = (packed_tile >>  8) & 0xFF;
+  int temp_z = (packed_tile >> 16) & 0xFF;
+  int temp_w = (packed_tile >> 24) & 0xFF;
 
-  int pix_a = ((tile_y & 1) == 0) ? int(temp[0]) : int(temp[2]);
-  int pix_b = ((tile_y & 1) == 0) ? int(temp[1]) : int(temp[3]);
+  int pix_a = ((tile_y & 1) == 0) ? int(temp_x) : int(temp_z);
+  int pix_b = ((tile_y & 1) == 0) ? int(temp_y) : int(temp_w);
 
   pix_a = (pix_a >> (7 - tile_x)) & 1;
   pix_b = (pix_b >> (7 - tile_x)) & 1;
@@ -244,8 +248,15 @@ void main() {
 
   ivec4 packed_map_ivec4 = maps[flat_map_index >> 4];
   int   packed_map_int   = packed_map_ivec4[(flat_map_index >> 2) & 3];
-  vec4  unpacked_map     = unpackUnorm4x8(uint(packed_map_int));
-  int  tile_index        = int(unpacked_map[flat_map_index & 3] * 255.0);
+  //vec4  unpacked_map     = unpackUnorm4x8(uint(packed_map_int));
+
+  ivec4 unpacked_map;
+  unpacked_map.x = (packed_map_int >>  0) & 0xFF;
+  unpacked_map.y = (packed_map_int >>  8) & 0xFF;
+  unpacked_map.z = (packed_map_int >> 16) & 0xFF;
+  unpacked_map.w = (packed_map_int >> 24) & 0xFF;
+
+  int  tile_index = unpacked_map[flat_map_index & 3];
 
   if (bool(alt_map) && (tile_index < 128)) tile_index += 256;
 
@@ -290,10 +301,14 @@ int decode_tile2(int tile_index, int tile_x, int tile_y) {
   int  flat_index    = tile_index * 16 + tile_y * 2;
   ivec4 packed_ivec4 = tiles[flat_index / 16];
   int   packed_tile  = packed_ivec4[(flat_index >> 2) & 3];
-  vec4  temp         = unpackUnorm4x8(uint(packed_tile)) * 255.0;
+  //vec4  temp         = unpackUnorm4x8(uint(packed_tile)) * 255.0;
+  int temp_x = (packed_tile >>  0) & 0xFF;
+  int temp_y = (packed_tile >>  8) & 0xFF;
+  int temp_z = (packed_tile >> 16) & 0xFF;
+  int temp_w = (packed_tile >> 24) & 0xFF;
 
-  int pix_a = ((tile_y & 1) == 0) ? int(temp[0]) : int(temp[2]);
-  int pix_b = ((tile_y & 1) == 0) ? int(temp[1]) : int(temp[3]);
+  int pix_a = ((tile_y & 1) == 0) ? int(temp_x) : int(temp_z);
+  int pix_b = ((tile_y & 1) == 0) ? int(temp_y) : int(temp_w);
 
   pix_a = (pix_a >> (7 - tile_x)) & 1;
   pix_b = (pix_b >> (7 - tile_x)) & 1;

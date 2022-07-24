@@ -22,3 +22,6 @@
 [submodule "verilator"]
 	path = submodules/verilator
 	url = https://github.com/verilator/verilator
+[submodule "submodules/gb-live32"]
+	path = submodules/gb-live32
+	url = https://github.com/Gekkio/gb-live32

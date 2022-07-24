@@ -371,16 +371,16 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 1
+#if 0
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140
 
-  //blob cart;
+  blob cart;
 
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
-  //load_blob("LinksAwakening.gb", cart);     // broken
+  load_blob("LinksAwakening.gb", cart);     // broken
   //load_blob("tetris.gb", cart);             // broken
   //load_blob("SML.gb", cart); // reboot loop
   //load_blob("pman.gb", cart); // title screen funkd up
@@ -388,8 +388,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //load_blob("tests/cpu_instrs/individual/10-bit ops.gb", cart);
   //load_blob("tests/microtests/DMG/timer_tma_write_a.gb", cart);
 
-  //gb_thread->load_cart_blob(cart);
-  //gb_thread->reset();
+  gb_thread->load_cart_blob(cart);
+  gb_thread->reset();
 #endif
 
   gb_thread->resume();

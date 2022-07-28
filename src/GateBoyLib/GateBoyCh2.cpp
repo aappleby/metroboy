@@ -51,10 +51,10 @@ void SpuChannel2::reset() {
   JANY_NR24_FREQ09p.state = 0x1a;
   JUPY_NR24_FREQ10p.state = 0x1a;
   DANE_CH2_ACTIVEp.state = 0x18;
-  JORE_ENV_DELAY0p.state = 0x1b;
-  JONA_ENV_DELAY1p.state = 0x1a;
-  JEVY_ENV_DELAY2p.state = 0x18;
-  JOPA_ENV_TICK.state = 0x18;
+  JORE_ENV_DELAY0p.state = 0x18;
+  JONA_ENV_DELAY1p.state = 0x19;
+  JEVY_ENV_DELAY2p.state = 0x1a;
+  JOPA_ENV_TICK.state = 0x1a;
   DONE_COUNT00.state = 0x1a;
   DYNU_COUNT01.state = 0x18;
   EZOF_COUNT02.state = 0x18;
@@ -85,7 +85,7 @@ void SpuChannel2::reset() {
   FENO_ENV_VOL0.state = 0x1a;
   HEPO_ENV_MAXp.state = 0x18;
   JEME_ENV_DONEp.state = 0x18;
-  JYNA_ENV_CLK64.state = 0x1b;
+  JYNA_ENV_CLK64.state = 0x18;
   CYRE_LEN_DONEp.state = 0x1a;
 }
 

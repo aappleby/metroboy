@@ -280,8 +280,21 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
                                             gb_state.ch4.GEVY_CH4_AMP_ENn());
 #endif
 
+    /*
+    if (spu_new.ANEV_NR51_RCH1_ENp.state & 1) mix += ch1_audio_out(reg_new.ch1);
+    if (spu_new.BOGU_NR51_RCH2_ENp.state & 1) mix += ch2_audio_out(reg_new.ch2);
+    if (spu_new.BAFO_NR51_RCH3_ENp.state & 1) mix += ch3_audio_out(reg_new.ch3);
+    if (spu_new.ATUF_NR51_RCH4_ENp.state & 1) mix += ch4_audio_out(reg_new.ch4);
+    */
+
     int l = spu_audio_out_l(gb_state);
     int r = spu_audio_out_r(gb_state);
+
+    mem.audio_1[(sys.gb_phase_total >> 9) & 0xFF] = ch1_audio_out(gb_state.ch1);
+    mem.audio_2[(sys.gb_phase_total >> 9) & 0xFF] = ch2_audio_out(gb_state.ch2);
+    mem.audio_3[(sys.gb_phase_total >> 9) & 0xFF] = ch3_audio_out(gb_state.ch3);
+    mem.audio_4[(sys.gb_phase_total >> 9) & 0xFF] = ch4_audio_out(gb_state.ch4);
+
     mem.audio_l[(sys.gb_phase_total >> 7) & 0xFF] = l;
     mem.audio_r[(sys.gb_phase_total >> 7) & 0xFF] = r;
 
@@ -586,6 +599,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //printf("EXT_addr_new = %d\n", EXT_addr_new & 1);
 
   /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
+
+  probe("SIG_IN_CPU_EXT_BUSp", reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state);
 
   /*_p07.UJYV*/ wire UJYV_CPU_RDn = not1(reg_new.cpu_signals.SIG_IN_CPU_RDp.out_new());
   /*_p07.TEDO*/ reg_new.cpu_signals.TEDO_CPU_RDp <<= not1(UJYV_CPU_RDn);

@@ -167,7 +167,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
   // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
 
-  gb_thread->reset();
+  //gb_thread->reset();
+
   /*
   gb_thread->load_bootrom(R"(
     0000:
@@ -989,10 +990,37 @@ Step controls:
 
     auto audio_l = gb->get_mem().audio_l;
     auto audio_r = gb->get_mem().audio_r;
+    auto audio_1 = gb->get_mem().audio_1;
+    auto audio_2 = gb->get_mem().audio_2;
+    auto audio_3 = gb->get_mem().audio_3;
+    auto audio_4 = gb->get_mem().audio_4;
+
+    auto plot = [&](const sample_t* audio, int smin, int smax, int dmin, int dmax) {
+      for (int i = 0; i < 255; i++) {
+        int y1, y2;
+
+        int x = gb->get_sys().gb_phase_total >> 9;
+
+        y1 = audio[(x + i + 1) & 0xFF];
+        y2 = audio[(x + i + 2) & 0xFF];
+
+        y1 = remap_clamp(y1, smin, smax, dmin, dmax);
+        y2 = remap_clamp(y2, smin, smax, dmin, dmax);
+
+        sort(y1, y2);
+        for (int y = y1; y <= y2; y++) buf[i + y * 256] = 0xFF;
+      }
+    };
 
     if (spu_buffer && !app_paused) {
       memset(buf, 0, 65536);
 
+      plot(audio_1, 15, 0,  0,   63);
+      plot(audio_2, 15, 0,  64, 127);
+      plot(audio_3, 15, 0, 128, 191);
+      plot(audio_4, 15, 0, 192, 255);
+
+      /*
       for (int i = 0; i < 255; i++) {
         int l1, l2, r1, r2;
 
@@ -1030,6 +1058,7 @@ Step controls:
         for (int y = l1; y <= l2; y++) buf[i + y * 256] = 0xFF;
         for (int y = r1; y <= r2; y++) buf[i + y * 256] = 0xFF;
       }
+      */
 
       update_texture_u8(wave_tex, 0x00, 0x00, 256, 256,  buf);
     }

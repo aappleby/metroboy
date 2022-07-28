@@ -1,4 +1,4 @@
-#include "GateBoySPU.h"
+  #include "GateBoySPU.h"
 
 #include "GateBoy.h"
 
@@ -100,11 +100,11 @@ HORY_LFSR_12.state = 0x18;
 HENO_LFSR_13.state = 0x18;
 HYRO_LFSR_14.state = 0x18;
 HEZU_LFSR_15.state = 0x18;
-ABEL_CLK_64.state = 0x1b;
-CUNA_ENV_DELAY0n.state = 0x1b;
-COFE_ENV_DELAY1n.state = 0x1a;
-DOGO_ENV_DELAY2n.state = 0x18;
-FOSY_ENV_CLKp.state = 0x18;
+ABEL_CLK_64.state = 0x18;
+CUNA_ENV_DELAY0n.state = 0x18;
+COFE_ENV_DELAY1n.state = 0x19;
+DOGO_ENV_DELAY2n.state = 0x1a;
+FOSY_ENV_CLKp.state = 0x1a;
 FYNO_ENV_MAXp.state = 0x18;
 FEKO_CH4_VOL0.state = 0x1a;
 FATY_CH4_VOL1.state = 0x1a;

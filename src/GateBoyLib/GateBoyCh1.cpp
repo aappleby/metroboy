@@ -31,14 +31,16 @@ void SpuChannel1::reset() {
   ADEK_NR10_SWEEP_PERIOD0p.state = 0x1a;
   BANA_NR10_SWEEP_PERIOD1p.state = 0x1a;
   BOTU_NR10_SWEEP_PERIOD2p.state = 0x1a;
-  CENA_NR11_DUTY0p.state = 0x1a;
-  DYCA_NR11_DUTY1p.state = 0x1b;
+
   BACY_NR11_LEN0.state = 0x1a;
   CAVY_NR11_LEN1.state = 0x18;
   BOVY_NR11_LEN2.state = 0x18;
   CUNO_NR11_LEN3.state = 0x18;
   CURA_NR11_LEN4.state = 0x18;
   ERAM_NR11_LEN5.state = 0x18;
+  CENA_NR11_DUTY0p.state = 0x1a;
+  DYCA_NR11_DUTY1p.state = 0x1b;
+
   JUSA_NR12_PERIOD0p.state = 0x1b;
   JUZY_NR12_PERIOD1p.state = 0x1b;
   JOMA_NR12_PERIOD2p.state = 0x1a;
@@ -47,10 +49,7 @@ void SpuChannel1::reset() {
   JAXO_NR12_VOL1p.state = 0x1b;
   JENA_NR12_VOL2p.state = 0x1b;
   JOPU_NR12_VOL3p.state = 0x1b;
-  BOKO_NR14_LENENp.state = 0x1a;
-  DUPE_NR14_TRIGp.state = 0x1a;
-  CYTO_CH1_ACTIVEp.state = 0x19;
-  EZEC_CH1_TRIGp.state = 0x18;
+
   HYKA_NR13_FREQ00.state = 0x19;
   JYKA_NR13_FREQ01.state = 0x18;
   HAVO_NR13_FREQ02.state = 0x18;
@@ -59,15 +58,38 @@ void SpuChannel1::reset() {
   HOLU_NR13_FREQ05.state = 0x18;
   HYXU_NR13_FREQ06.state = 0x19;
   HOPO_NR13_FREQ07.state = 0x19;
+
   DYGY_NR14_FREQ08.state = 0x19;
   EVAB_NR14_FREQ09.state = 0x19;
   AXAN_NR14_FREQ10.state = 0x19;
+  BOKO_NR14_LENENp.state = 0x1a;
+  DUPE_NR14_TRIGp.state = 0x1a;
+
+  JOVA_ENV_DELAY0p.state = 0x18;
+  KENU_ENV_DELAY1p.state = 0x19;
+  KERA_ENV_DELAY2p.state =   0x1b;
+
+  HAFO_CH1_ENV0p.state = 0x1a;
+  HEMY_CH1_ENV1p.state = 0x1a;
+  HOKO_CH1_ENV2p.state = 0x1a;
+  HEVO_CH1_ENV3p.state = 0x1a;
+
+  KOZY_ENV_TICKp.state = 0x1a;
+  KYNO_ENV_MAXp.state = 0x19;
+
+  CERO_CH1_LEN_DONE.state = 0x1a;
+  KALY_ENV_DELAY_CLK_64n.state = 0x18;
+  CYTO_CH1_ACTIVEp.state = 0x19;
+  EZEC_CH1_TRIGp.state = 0x18;
+ 
   CALO_xBCDExxx.state = 0x18;
+
   FEKU_CH1_TRIGp.state = 0x18;
   FARE_CH1_TRIGp.state = 0x18;
   FYTE_CH1_TRIGp.state = 0x18;
+
   BYTE_SHIFT_DONEp.state = 0x1b;
-  CERO_CH1_LEN_DONE.state = 0x1a;
+
   GAXE_CH1_FREQ_CNT_00.state = 0x19;
   HYFE_CH1_FREQ_CNT_01.state = 0x1a;
   JYTY_CH1_FREQ_CNT_02.state = 0x18;
@@ -79,11 +101,13 @@ void SpuChannel1::reset() {
   EMUS_CH1_FREQ_CNT_08.state = 0x1b;
   EVAK_CH1_FREQ_CNT_09.state = 0x1b;
   COPU_CH1_FREQ_CNT_10.state =   0x1b;
+
   BAZA_DBG_SWEEP_CLK.state = 0x1A;
   BEXA_SWEEP_TRIGp.state = 0x1a;
-  CUPO_SWEEP_DELAY0p.state = 0x18;
-  CYPU_SWEEP_DELAY1p.state = 0x18;
-  CAXY_SWEEP_DELAY2p.state = 0x19;
+  CUPO_SWEEP_DELAY0p.state = 0x1a;
+  CYPU_SWEEP_DELAY1p.state = 0x19;
+  CAXY_SWEEP_DELAY2p.state = 0x1a;
+
   FABU_CH1_SHIFT00.state = 0x1b;
   JEFA_CH1_SHIFT01.state = 0x1a;
   GOGA_CH1_SHIFT02.state = 0x1a;
@@ -95,6 +119,7 @@ void SpuChannel1::reset() {
   ELUX_CH1_SHIFT08.state = 0x1b;
   AGEZ_CH1_SHIFT09.state = 0x1b;
   BEKU_CH1_SHIFT10.state = 0x1b;
+
   GALO_SUM_A00.state = 0x1a;
   JODE_SUM_A01.state = 0x1a;
   KARE_SUM_A02.state = 0x1a;
@@ -106,6 +131,7 @@ void SpuChannel1::reset() {
   DEXE_SUM_A08.state = 0x1a;
   DOFY_SUM_A09.state = 0x1a;
   DOLY_SUM_A10.state = 0x1a;
+
   HORA_SUM_B00.state = 0x1a;
   HOPA_SUM_B01.state = 0x1a;
   HELE_SUM_B02.state = 0x1a;
@@ -117,28 +143,21 @@ void SpuChannel1::reset() {
   DEFA_SUM_B08.state = 0x1a;
   ETER_SUM_B09.state = 0x1a;
   DEVA_SUM_B10.state = 0x1a;
+
   FEMU_SHIFTINGn.state = 0x19;
+
   COPA_SHIFTCNT0.state = 0x19;
   CAJA_SHIFTCNT1.state = 0x1b;
   BYRA_SHIFTCNT2.state = 0x1b;
+
   FYFO_CH1_TRIGn.state = 0x19;
   COMY_SAMPLE_CLKp.state = 0x18;
   GEXU_FREQ_GATEn.state = 0x18;
+
   ESUT_PHASE_xBxDxFxH.state = 0x1a;
   EROS_PHASE_xxCDxxGH.state = 0x1b;
   DAPE_PHASE_xxxxEFGH.state = 0x18;
-  JOVA_ENV_DELAY0p.state = 0x1a;
-  KENU_ENV_DELAY1p.state = 0x19;
-  KERA_ENV_DELAY2p.state =   0x1b;
   
-  HAFO_CH1_ENV0p.state = 0x1a;
-  HEMY_CH1_ENV1p.state = 0x1a;
-  HOKO_CH1_ENV2p.state = 0x1a;
-  HEVO_CH1_ENV3p.state = 0x1a;
-  KOZY_ENV_TICKp.state = 0x18;
-  KYNO_ENV_MAXp.state = 0x19;
-  
-  KALY_ENV_DELAY_CLK_64n.state = 0x1b;
   DUWO_RAW_BIT_SYNCp.state = 0x18;
   KEZU_ENV_ACTIVEn.state = 0x19;
 }

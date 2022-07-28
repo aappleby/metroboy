@@ -169,8 +169,6 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(reg_new.cpu_abus.BUS_CPU_A13p.out_new(), reg_new.cpu_abus.BUS_CPU_A14p.out_new(), reg_new.cpu_abus.SORE_A15n_new());
   /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
 
-  probe("EXT_BUS", reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state);
-
   /*_p08.MOCA*/ wire MOCA_DBG_EXT_RD_new = nor2(TEXO_ADDR_VRAMn_new, pins.sys.UMUT_MODE_DBG1p_new());
 
   /*#p04.LEBU*/ wire LEBU_DMA_A15n_new  = not1(reg_new.reg_dma.MARU_DMA_A15p.qp_newB());
@@ -207,6 +205,9 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   /*_p08.LOXO*/ wire LOXO_HOLDn_new = and_or3(pins.sys.MULE_MODE_DBG1n_new(), TEXO_ADDR_VRAMn_new, pins.sys.UMUT_MODE_DBG1p_new());
   /*_p08.LASY*/ wire LASY_HOLDp_new = not1(LOXO_HOLDn_new);
   /*_p08.MATE*/ wire MATE_HOLDn_new = not1(LASY_HOLDp_new);
+
+  probe("MULE_MODE_DBG1n_new", pins.sys.MULE_MODE_DBG1n_new() & 1);
+  probe("UMUT_MODE_DBG1p_new", pins.sys.UMUT_MODE_DBG1p_new() & 1);
 
   probe("MATE_HOLDn_new", MATE_HOLDn_new & 1);
 
@@ -274,6 +275,29 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   /*_p08.LOSO*/ wire LOSO_new = nor2(MOJY_A12p_new, pins.sys.UNOR_MODE_DBG2p_new());
   /*_p08.LEVA*/ wire LEVA_new = nor2(MUCE_A13p_new, pins.sys.UNOR_MODE_DBG2p_new());
   /*_p08.PAHY*/ wire PAHY_new = nor2(PEGE_A14p_new, pins.sys.UNOR_MODE_DBG2p_new());
+
+#if 0
+
+    if (HOLDn) {
+      state = (Dp & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
+    }
+    else {
+      state = (state & BIT_DATA) | BIT_DRIVEN | BIT_NEW;
+    }
+
+
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any();
+
+  if (TEXO_ADDR_VRAMn_new) {
+    /*_p08.AMET*/ wire AMET_A00p_new = reg_new.cpu_abus.BUS_CPU_A00p.out_new();
+    /*_PIN_01*/   pins.abus_lo.PIN_01_A00.pin_out(!AMET_A00p_new, !AMET_A00p_new);
+  }
+  else {
+    /*_p08.AMET*/ wire AMET_A00p_new = reg_new.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.qp_new()
+    /*_PIN_01*/   pins.abus_lo.PIN_01_A00.pin_out(!AMET_A00p_new, !AMET_A00p_new);
+  }
+
+#endif
 
   /*_PIN_01*/ pins.abus_lo.PIN_01_A00.pin_out(KUPO_new, KOTY_new);
   /*_PIN_02*/ pins.abus_lo.PIN_02_A01.pin_out(CABA_new, COTU_new);

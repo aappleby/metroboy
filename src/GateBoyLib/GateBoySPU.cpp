@@ -74,9 +74,10 @@ void GateBoySPU::reset() {
   AVOK_xBCDExxx.state   = BIT_OLD | BIT_DRIVEN;
   AJER_AxxDExxH.state   = BIT_OLD | BIT_DRIVEN | BIT_CLOCK | BIT_DATA;
   JESO_CLK_512K.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
-  BARA_CLK_512.state  = 0x1a;
-  CARU_CLK_256.state  = 0x1b;
-  BYLU_CLK_128.state  = 0x19;
+  
+  BARA_CLK_512.state  = 0x1b;
+  CARU_CLK_256.state  = 0x19;
+  BYLU_CLK_128.state  = 0x18;
 
   APEG_NR50_VOL_L0.state = 0x1b;
   BYGA_NR50_VOL_L1.state = 0x1b;
@@ -194,10 +195,10 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   // Low-speed clocks are picked up from DIV
 
   /*_p01.COKE*/ wire COKE_AxxDExxH = not1(spu_new.AJER_AxxDExxH.qn_new());
-  ///*_p01.UMER*/ wire UMER_DIV10n_old = not1(reg_old.reg_div.TERU_DIV10p.qp_old());
+  /*_p01.UMER*/ wire UMER_DIV10n_old = not1(reg_old.reg_div.TERU_DIV10p.qp_old());
 
   // FIXME speed up spu clocks for debugging
-  wire UMER_DIV10n_old = not1(reg_old.reg_div.TULU_DIV07p.qp_old());
+  //wire UMER_DIV10n_old = not1(reg_old.reg_div.TULU_DIV07p.qp_old());
 
   /*_p01.ATUS*/ wire ATUS_APU_RSTn_new = not1(KEBA_APU_RSTp);
 

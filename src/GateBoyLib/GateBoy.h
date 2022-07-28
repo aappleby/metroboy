@@ -85,6 +85,10 @@ struct GateBoyMem {
   uint8_t  zero_ram[128];
   uint8_t  wave_ram[16];
   uint8_t  framebuffer[160*144];
+  sample_t audio_1[256];
+  sample_t audio_2[256];
+  sample_t audio_3[256];
+  sample_t audio_4[256];
   sample_t audio_l[256];
   sample_t audio_r[256];
 };

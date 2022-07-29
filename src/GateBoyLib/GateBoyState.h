@@ -47,13 +47,6 @@ struct GateBoyState {
 
   static FieldInfo fields[];
 
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new   () const;
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_new   () const;
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_new   () const;
-  /*_p08.LEVO*/ wire LEVO_ADDR_VRAMn_new   () const;
-  /*_p25.TUJA*/ wire TUJA_CPU_VRAM_WRp_new () const;
-
-  /*_p01.XODO*/ wire XODO_VID_RSTp_new() const;
   /*_p01.XAPO*/ wire XAPO_VID_RSTn_new() const;
   /*_p01.LYHA*/ wire LYHA_VID_RSTp_new() const;
   /*_p01.LYFE*/ wire LYFE_VID_RSTn_new() const;
@@ -64,7 +57,6 @@ struct GateBoyState {
   /*_p01.PYRY*/ wire PYRY_VID_RSTp_new() const;
   /*_p01.AMYG*/ wire AMYG_VID_RSTp_new() const;
 
-  /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp_new() const;
   /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn_new() const;
 
   //----------------------------------------

@@ -6,41 +6,7 @@
 
 //-----------------------------------------------------------------------------
 
-wire GateBoyState::TEXO_ADDR_VRAMn_new() const {
-  /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(cpu_abus.BUS_CPU_A13p.out_new(), cpu_abus.BUS_CPU_A14p.out_new(), cpu_abus.SORE_A15n_new());
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
-  return TEXO_ADDR_VRAMn_new;
-}
-
-wire GateBoyState::TEFA_ADDR_VRAMp_new() const {
-  /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(cpu_abus.BUS_CPU_A13p.out_new(), cpu_abus.BUS_CPU_A14p.out_new(), cpu_abus.SORE_A15n_new());
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_new = nor2(cpu_abus.SYRO_FE00_FFFF_new(), TEXO_ADDR_VRAMn_new);
-  return TEFA_ADDR_VRAMp_new;
-}
-
-wire GateBoyState::SOSE_ADDR_VRAMp_new() const {
-  /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(cpu_abus.BUS_CPU_A13p.out_new(), cpu_abus.BUS_CPU_A14p.out_new(), cpu_abus.SORE_A15n_new());
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_new = nor2(cpu_abus.SYRO_FE00_FFFF_new(), TEXO_ADDR_VRAMn_new);
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_new = and2(TEFA_ADDR_VRAMp_new, cpu_abus.BUS_CPU_A15p.out_any());
-  return SOSE_ADDR_VRAMp_new;
-}
-
-wire GateBoyState::LEVO_ADDR_VRAMn_new() const {
-  /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(cpu_abus.BUS_CPU_A13p.out_new(), cpu_abus.BUS_CPU_A14p.out_new(), cpu_abus.SORE_A15n_new());
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
-  /*_p08.LEVO*/ wire LEVO_ADDR_VRAMn_new = not1(TEXO_ADDR_VRAMn_new);
-  return LEVO_ADDR_VRAMn_new;
-}
-
-wire GateBoyState::TUJA_CPU_VRAM_WRp_new () const {
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_new = and2(TEFA_ADDR_VRAMp_new(), cpu_abus.BUS_CPU_A15p.out_any());
-  /*_p25.TUJA*/ wire TUJA_CPU_VRAM_WRp_new = and2(SOSE_ADDR_VRAMp_new, cpu_signals.APOV_CPU_WRp.out_any());
-  return TUJA_CPU_VRAM_WRp_new;
-}
-
-wire GateBoyState::XODO_VID_RSTp_new() const {
+wire GateBoyState::XAPO_VID_RSTn_new() const {
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp =  or2(sys_rst.AFER_SYS_RSTp.qp_new(), sys_rst.ASOL_POR_DONEn.qp_new());
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
   /*#p01.DULA*/ wire DULA_SYS_RSTp = not1(ALUR_SYS_RSTn);
@@ -48,33 +14,19 @@ wire GateBoyState::XODO_VID_RSTp_new() const {
   /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /*_p01.XEBE*/ wire XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
   /*_p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, reg_lcdc.XONA_LCDC_LCDENp.qp_newB());
-  return XODO_VID_RSTp;
-}
+  /*_p01.XAPO*/ wire XAPO_VID_RSTn_new = not1(XODO_VID_RSTp);
+  return XAPO_VID_RSTn_new;
 
-/*_p01.XAPO*/ wire GateBoyState::XAPO_VID_RSTn_new() const { return not1(XODO_VID_RSTp_new()); }
+}
 /*_p01.LYHA*/ wire GateBoyState::LYHA_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
-/*_p01.LYFE*/ wire GateBoyState::LYFE_VID_RSTn_new() const { return not1(LYHA_VID_RSTp_new()); }
 /*_p01.TOFU*/ wire GateBoyState::TOFU_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
 /*_p01.ROSY*/ wire GateBoyState::ROSY_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
 /*#p01.ATAR*/ wire GateBoyState::ATAR_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
-/*#p01.ABEZ*/ wire GateBoyState::ABEZ_VID_RSTn_new() const { return not1(ATAR_VID_RSTp_new()); }
 /*_p01.PYRY*/ wire GateBoyState::PYRY_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
 /*_p01.AMYG*/ wire GateBoyState::AMYG_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
 
-wire GateBoyState::TOLE_CPU_VRAM_RDp_new() const
-{
-  // Ignoring debug for now
-  ///*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp =  and2(SOSE_ADDR_VRAMp(), ABUZ_EXT_RAM_CS_CLK);
-  ///*#p25.TAVY*/ wire TAVY_MOEp         = not1(vram_bus.PIN_45_VRAM_OEn.qn_new());
-  ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
-  ///*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp = mux2p(TEFY_VRAM_MCSp, TUTO_DBG_VRAMp, TUCA_CPU_VRAM_RDp);
-
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_new = and2(TEFA_ADDR_VRAMp_new(), cpu_abus.BUS_CPU_A15p.out_any());
-  /*#p25.TUCA*/ wire TUCA_CPU_VRAM_RDp_new = nand2(SOSE_ADDR_VRAMp_new, cpu_signals.ABUZ_EXT_RAM_CS_CLK.out_new());
-  /*#p25.TOLE*/ wire TOLE_CPU_VRAM_RDp_new = not1(TUCA_CPU_VRAM_RDp_new);
-
-  return TOLE_CPU_VRAM_RDp_new;
-}
+/*_p01.LYFE*/ wire GateBoyState::LYFE_VID_RSTn_new() const { return not1(LYHA_VID_RSTp_new()); }
+/*#p01.ABEZ*/ wire GateBoyState::ABEZ_VID_RSTn_new() const { return not1(ATAR_VID_RSTp_new()); }
 
 wire GateBoyState::SALE_CPU_VRAM_WRn_new() const
 {
@@ -84,7 +36,10 @@ wire GateBoyState::SALE_CPU_VRAM_WRn_new() const
   ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
   ///*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = mux2p(TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
 
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_new = and2(TEFA_ADDR_VRAMp_new(), cpu_abus.BUS_CPU_A15p.out_any());
+  /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(cpu_abus.BUS_CPU_A13p.out_new(), cpu_abus.BUS_CPU_A14p.out_new(), cpu_abus.SORE_A15n_new());
+  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
+  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_new = nor2(cpu_abus.SYRO_FE00_FFFF_new(), TEXO_ADDR_VRAMn_new);
+  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_new = and2(TEFA_ADDR_VRAMp_new, cpu_abus.BUS_CPU_A15p.out_any());
   /*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn_new = and2(SOSE_ADDR_VRAMp_new, cpu_signals.SIG_IN_CPU_WRp.out_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
   /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn_new = not1(TEGU_CPU_VRAM_WRn_new);
 

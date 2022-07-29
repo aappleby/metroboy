@@ -526,7 +526,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   bit_mask(reg_new, uint8_t(~BIT_OLD));
   bit_mask(pins, uint8_t(~BIT_OLD));
 
-  bool EXT_cpu_latch_ext = 0;
 
   if (DELTA_HA_new) {
     reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr & 0x00FF);
@@ -557,50 +556,81 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // Something to do with ANUJ, maybe some interaction with the timer?
 
   // Setting SIG_IN_CPU_DBUS_FREE on CD breaks things
+
   if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
     if (cpu.core.reg.bus_req_new.read) {
-      EXT_cpu_latch_ext = 1;
+      /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(1);
     }
     else if (cpu.core.reg.bus_req_new.write) {
-      EXT_cpu_latch_ext = cpu.core.reg.bus_req_new.addr >= 0xFF10;
+      bool EXT_cpu_latch_ext = cpu.core.reg.bus_req_new.addr >= 0xFF10;
+      /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
     }
   }
-  /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(EXT_cpu_latch_ext);
+  else {
+    /*_SIG_IN_CPU_LATCH_EXT*/ reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.sig_in(0);
+  }
 
-  bool EXT_addr_new = (cpu.core.reg.bus_req_new.read || cpu.core.reg.bus_req_new.write);
   bool in_bootrom = bit0(~reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
-  bool addr_boot = (cpu.core.reg.bus_req_new.addr <= 0x00FF) && in_bootrom;
-  bool addr_vram = (cpu.core.reg.bus_req_new.addr >= 0x8000) && (cpu.core.reg.bus_req_new.addr <= 0x9FFF);
-  bool addr_high = (cpu.core.reg.bus_req_new.addr >= 0xFE00);
+
+  auto addr = cpu.core.reg.bus_req_new.addr;
+
+  bool addr_boot = (addr <= 0x00FF) && in_bootrom;
+  bool addr_rom  = (addr <= 0x7FFF) && !in_bootrom;
+  bool addr_vram = (addr >= 0x8000) && (addr <= 0x9FFF);
+  bool addr_cram = (addr >= 0xA000) && (addr <= 0xBFFF);
+  bool addr_eram = (addr >= 0xC000) && (addr <= 0xDFFF);
+  bool addr_high = (addr >= 0xFE00); // must be 0xFE00, 0xE000 and 0xFF10 fail tests
 
   bool EXT_cpu_rd;
   bool EXT_cpu_wr;
 
-
   if (DELTA_HA_new) {
     EXT_cpu_rd = 0;
     EXT_cpu_wr = 0;
-
-    if (addr_high) EXT_addr_new = false;
-    if (addr_boot) EXT_addr_new = false;
-    if (addr_vram) EXT_addr_new = false;
   }
   else {
     EXT_cpu_rd = cpu.core.reg.bus_req_new.read;
     EXT_cpu_wr = cpu.core.reg.bus_req_new.write;
-
-    if (addr_high) EXT_addr_new = false;
-    if (addr_boot) EXT_addr_new = false;
   }
 
-  /*_SIG_IN_CPU_RDp*/ reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
-  /*_SIG_IN_CPU_WRp*/ reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+  {
+    bool read_or_write = (cpu.core.reg.bus_req_new.read || cpu.core.reg.bus_req_new.write);
 
-  //printf("EXT_addr_new = %d\n", EXT_addr_new & 1);
+    if (addr_boot) {
+      /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(false);
+      /*_SIG_IN_CPU_RDp*/      reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
+      /*_SIG_IN_CPU_WRp*/      reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+    }
+    else if (addr_high) {
+      /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(false);
+      /*_SIG_IN_CPU_RDp*/      reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
+      /*_SIG_IN_CPU_WRp*/      reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+    }
+    else if (addr_vram) {
+      if (DELTA_HA_new) {
+        /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(false);
+        /*_SIG_IN_CPU_RDp*/      reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
+        /*_SIG_IN_CPU_WRp*/      reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+      }
+      else {
+        /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(read_or_write);
+        /*_SIG_IN_CPU_RDp*/      reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
+        /*_SIG_IN_CPU_WRp*/      reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+      }
+    }
+    else {
+      /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(read_or_write);
+      /*_SIG_IN_CPU_RDp*/      reg_new.cpu_signals.SIG_IN_CPU_RDp.sig_in(EXT_cpu_rd);
+      /*_SIG_IN_CPU_WRp*/      reg_new.cpu_signals.SIG_IN_CPU_WRp.sig_in(EXT_cpu_wr);
+    }
 
-  /*_SIG_IN_CPU_EXT_BUSp*/ reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.sig_in(EXT_addr_new);
+  }
 
   probe("SIG_IN_CPU_EXT_BUSp", reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state);
+
+
+
+  //printf("read_or_write = %d\n", read_or_write & 1);
 
   /*_p07.UJYV*/ wire UJYV_CPU_RDn = not1(reg_new.cpu_signals.SIG_IN_CPU_RDp.out_new());
   /*_p07.TEDO*/ reg_new.cpu_signals.TEDO_CPU_RDp <<= not1(UJYV_CPU_RDn);

@@ -1231,7 +1231,6 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     const char* RDn_WAVE = "00000000 01111111 00000000 00000000 00000000";
     const char* CSn_WAVE = "11111111 11000000 11111111 11111111 11111111";
 
-    /*
     const char* A00_WAVE = "11111111 11111111 10000000 01111111 11111111";
     const char* A01_WAVE = "10000000 01111111 11111111 11111111 11111111";
     const char* A02_WAVE = "11111111 10000000 01111111 11111111 11111111";
@@ -1249,9 +1248,9 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     const char* A13_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A14_WAVE = "00000000 01111111 00000000 00000000 00000000";
     const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
-    */
 
     // this is what we currently get but it's wrong
+    /*
     const char* A00_WAVE = "11111111 11111111 00000000 11111111 11111111";
     const char* A01_WAVE = "00000000 11111111 11111111 11111111 11111111";
     const char* A02_WAVE = "11111111 00000000 11111111 11111111 11111111";
@@ -1269,6 +1268,7 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     const char* A13_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A14_WAVE = "00000000 01111111 00000000 00000000 00000000";
     const char* A15_WAVE = "11000000 11111111 11000000 11000000 11111111";
+    */
 
 
     const char* D00_WAVE = "^^111111 ^1111111 ^^000000 ^^111111 ^^^^^^^^"; // Scope trace w/ extra pulldown resistor patched in so we can see when

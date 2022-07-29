@@ -1008,7 +1008,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p29.BEGO*/ reg_new.sprite_counter.BEGO_SPRITE_COUNT2_odd.dff17_any(reg_new.sprite_counter.CUXY_SPRITE_COUNT1_odd.qn_any(), AZYB_LINE_TRIGn, reg_new.sprite_counter.BEGO_SPRITE_COUNT2_odd.qn_any());
     /*_p29.DYBE*/ reg_new.sprite_counter.DYBE_SPRITE_COUNT3_odd.dff17_any(reg_new.sprite_counter.BEGO_SPRITE_COUNT2_odd.qn_any(), AZYB_LINE_TRIGn, reg_new.sprite_counter.DYBE_SPRITE_COUNT3_odd.qn_any());
 
-    /*_p28.ABAK*/ wire ABAK_LINE_RSTp = or2(reg_new.ATEJ_LINE_RST_TRIGp_odd.out_new(), reg_new.AMYG_VID_RSTp_new());
+    /*_p01.AMYG*/ wire AMYG_VID_RSTp_new = not1(reg_new.XAPO_VID_RSTn_new());
+    /*_p28.ABAK*/ wire ABAK_LINE_RSTp = or2(reg_new.ATEJ_LINE_RST_TRIGp_odd.out_new(), AMYG_VID_RSTp_new);
     /*_p28.BYVA*/ wire BYVA_LINE_RSTn = not1(ABAK_LINE_RSTp);
 
     //update_sprite_reset_flags(sfetch_control.WUTY_SFETCH_DONE_TRIGp, BYVA_LINE_RSTn, sprite_match_flags, sprite_reset_flags);

@@ -18,34 +18,13 @@ wire GateBoyState::XAPO_VID_RSTn_new() const {
   return XAPO_VID_RSTn_new;
 
 }
-/*_p01.LYHA*/ wire GateBoyState::LYHA_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
-/*_p01.TOFU*/ wire GateBoyState::TOFU_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
-/*_p01.ROSY*/ wire GateBoyState::ROSY_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
-/*#p01.ATAR*/ wire GateBoyState::ATAR_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
-/*_p01.PYRY*/ wire GateBoyState::PYRY_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
-/*_p01.AMYG*/ wire GateBoyState::AMYG_VID_RSTp_new() const { return not1(XAPO_VID_RSTn_new()); }
-
-/*_p01.LYFE*/ wire GateBoyState::LYFE_VID_RSTn_new() const { return not1(LYHA_VID_RSTp_new()); }
-/*#p01.ABEZ*/ wire GateBoyState::ABEZ_VID_RSTn_new() const { return not1(ATAR_VID_RSTp_new()); }
-
-wire GateBoyState::SALE_CPU_VRAM_WRn_new() const
-{
-  // Ignoring debug for now
-  ///*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn = nand2(SOSE_ADDR_VRAMp(), SIG_IN_CPU_WRp.qp_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
-  ///*#p25.TAVY*/ wire TAVY_MOEp         = not1(vram_bus.PIN_45_VRAM_OEn.qn_new());
-  ///*#p25.TEFY*/ wire TEFY_VRAM_MCSp    = not1(vram_bus.PIN_43_VRAM_CSn.qn_new());
-  ///*#p25.SALE*/ wire SALE_CPU_VRAM_WRn = mux2p(TUTO_DBG_VRAMp, TAVY_MOEp, TEGU_CPU_VRAM_WRn);
-
-  /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(cpu_abus.BUS_CPU_A13p.out_new(), cpu_abus.BUS_CPU_A14p.out_new(), cpu_abus.SORE_A15n_new());
-  /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
-  /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_new = nor2(cpu_abus.SYRO_FE00_FFFF_new(), TEXO_ADDR_VRAMn_new);
-  /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_new = and2(TEFA_ADDR_VRAMp_new, cpu_abus.BUS_CPU_A15p.out_any());
-  /*#p25.TEGU*/ wire TEGU_CPU_VRAM_WRn_new = and2(SOSE_ADDR_VRAMp_new, cpu_signals.SIG_IN_CPU_WRp.out_new());  // Schematic wrong, second input is SIG_IN_CPU_WRp
-  /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn_new = not1(TEGU_CPU_VRAM_WRn_new);
-
-  return SALE_CPU_VRAM_WRn_new;
-}
-
+wire GateBoyState::LYHA_VID_RSTp_new() const { /*_p01.LYHA*/ wire LYHA_VID_RSTp_new = not1(XAPO_VID_RSTn_new()); return LYHA_VID_RSTp_new; }
+wire GateBoyState::TOFU_VID_RSTp_new() const { /*_p01.TOFU*/ wire TOFU_VID_RSTp_new = not1(XAPO_VID_RSTn_new()); return TOFU_VID_RSTp_new; }
+wire GateBoyState::ROSY_VID_RSTp_new() const { /*_p01.ROSY*/ wire ROSY_VID_RSTp_new = not1(XAPO_VID_RSTn_new()); return ROSY_VID_RSTp_new; }
+wire GateBoyState::ATAR_VID_RSTp_new() const { /*#p01.ATAR*/ wire ATAR_VID_RSTp_new = not1(XAPO_VID_RSTn_new()); return ATAR_VID_RSTp_new; }
+wire GateBoyState::PYRY_VID_RSTp_new() const { /*_p01.PYRY*/ wire PYRY_VID_RSTp_new = not1(XAPO_VID_RSTn_new()); return PYRY_VID_RSTp_new; }
+wire GateBoyState::LYFE_VID_RSTn_new() const { /*_p01.LYFE*/ wire LYFE_VID_RSTn_new = not1(LYHA_VID_RSTp_new()); return LYFE_VID_RSTn_new; }
+wire GateBoyState::ABEZ_VID_RSTn_new() const { /*#p01.ABEZ*/ wire ABEZ_VID_RSTn_new = not1(ATAR_VID_RSTp_new()); return ABEZ_VID_RSTn_new; }
 
 //-----------------------------------------------------------------------------
 

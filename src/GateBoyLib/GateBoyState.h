@@ -55,9 +55,6 @@ struct GateBoyState {
   /*#p01.ATAR*/ wire ATAR_VID_RSTp_new() const;
   /*#p01.ABEZ*/ wire ABEZ_VID_RSTn_new() const;
   /*_p01.PYRY*/ wire PYRY_VID_RSTp_new() const;
-  /*_p01.AMYG*/ wire AMYG_VID_RSTp_new() const;
-
-  /*#p25.SALE*/ wire SALE_CPU_VRAM_WRn_new() const;
 
   //----------------------------------------
 

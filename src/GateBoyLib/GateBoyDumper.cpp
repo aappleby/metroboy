@@ -452,6 +452,8 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
 
   d("\n");
 
+#if 0
+
   d("===== CH1 =====\n");
   d.dump_slicep("NR10 ", &s.ch1.BANY_NR10_SWEEP_SHIFT0p, 8);
   d.dump_slicep("NR11 ", &s.ch1.BACY_NR11_LEN0, 8);
@@ -551,6 +553,8 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_slicep("CH4 DIV      : ", &s.ch4.JYCO_DIV0, 3);
   d.dump_slicep("CH4 VOL      : ", &s.ch4.FEKO_CH4_VOL0, 4);
   d("\n");
+#endif
+
 #endif
 
 #endif

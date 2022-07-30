@@ -547,11 +547,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire req_addr_hi   = (addr >= 0xFE00);
 
     reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = DELTA_DH_new && (read || (write && addr >= 0xFF10));
+    reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
 
     if (DELTA_HA_new) {
       wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot && !req_addr_vram);
 
-      reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr & 0x00FF);
       reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = 0;
       reg_new.cpu_signals.SIG_IN_CPU_WRp.state = 0;
       reg_new.cpu_signals.SIG_IN_CPU_RDp.state = 0;
@@ -559,7 +559,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     else {
       wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot);
 
-      reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
       reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
       reg_new.cpu_signals.SIG_IN_CPU_WRp.state = write;
       reg_new.cpu_signals.SIG_IN_CPU_RDp.state = read;
@@ -571,6 +570,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   probe("EXT_BUSp",  reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state & 1);
   probe("BUS_RDp",   reg_new.cpu_signals.SIG_IN_CPU_RDp.state & 1);
   probe("BUS_WRp",   reg_new.cpu_signals.SIG_IN_CPU_WRp.state & 1);
+
+  probe("BUS_A14", reg_new.cpu_abus.BUS_CPU_A14p.state & 1);
 
 #endif
 

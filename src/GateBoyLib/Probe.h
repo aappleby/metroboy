@@ -11,7 +11,7 @@ struct Probes {
 
   void dump(Dumper& d) const;
 
-  static const int channel_count = 32;
+  static const int channel_count = 48;
   static const int sample_count = 40;
 
   int  phase_cursor;

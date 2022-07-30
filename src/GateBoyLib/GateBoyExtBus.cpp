@@ -219,6 +219,7 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
     /*_p08.ATEV*/ reg_new.ext_addr_latch.ATEV_EXT_ADDR_LATCH_05p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A05p.out_new());
     /*_p08.AROS*/ reg_new.ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A06p.out_new());
     /*_p08.ARYM*/ reg_new.ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A07p.out_new());
+
     /*_p08.LUNO*/ reg_new.ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A08p.out_new());
     /*_p08.LYSA*/ reg_new.ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A09p.out_new());
     /*_p08.PATE*/ reg_new.ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A10p.out_new());
@@ -237,6 +238,7 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   /*_p08.ATOV*/ wire ATOV_A05p_new = mux2p(LUMA_DMA_CARTp_new, reg_new.dma_lo.PYLO_DMA_A05p_odd.qp_new(), reg_new.ext_addr_latch.ATEV_EXT_ADDR_LATCH_05p.qp_new());
   /*_p08.ATYR*/ wire ATYR_A06p_new = mux2p(LUMA_DMA_CARTp_new, reg_new.dma_lo.NUTO_DMA_A06p_odd.qp_new(), reg_new.ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.qp_new());
   /*#p08.ASUR*/ wire ASUR_A07p_new = mux2p(LUMA_DMA_CARTp_new, reg_new.dma_lo.MUGU_DMA_A07p_odd.qp_new(), reg_new.ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.qp_new());
+
   /*#p08.MANO*/ wire MANO_A08p_new = mux2p(LUMA_DMA_CARTp_new, reg_new.reg_dma.NAFA_DMA_A08p.qp_newB(),   reg_new.ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.qp_new());
   /*_p08.MASU*/ wire MASU_A09p_new = mux2p(LUMA_DMA_CARTp_new, reg_new.reg_dma.PYNE_DMA_A09p.qp_newB(),   reg_new.ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.qp_new());
   /*_p08.PAMY*/ wire PAMY_A10p_new = mux2p(LUMA_DMA_CARTp_new, reg_new.reg_dma.PARA_DMA_A10p.qp_newB(),   reg_new.ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.qp_new());
@@ -331,6 +333,13 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   // region 6 = iram
   // region 7 = eram
 
+#if 0
+    /*_PIN_80*/ PinOut PIN_80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
+    /*_PIN_79*/ PinOut PIN_79_RDn;      // RDn idles low, goes high on phase B for an external write
+    /*_PIN_78*/ PinOut PIN_78_WRn;      // WRn idles high, goes low during EFG if there's a write
+#endif
+
+
   auto RDn = bit0(pins.ctrl.PIN_79_RDn.qp_ext_new());
   auto CSn = bit0(pins.ctrl.PIN_80_CSn.qp_ext_new());
   auto WRn = bit0(pins.ctrl.PIN_78_WRn.qp_ext_new());
@@ -361,13 +370,6 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
     /*_p08.RYDA*/ wire RYDA_new = nor2 (reg_new.cpu_dbus.BUS_CPU_D07p.out_new(), RORU_CBD_TO_EPDn_new);
 
     //----------------------------------------
-
-#if 0
-    /*_PIN_80*/ PinOut PIN_80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
-    /*_PIN_79*/ PinOut PIN_79_RDn;      // RDn idles low, goes high on phase B for an external write
-    /*_PIN_78*/ PinOut PIN_78_WRn;      // WRn idles high, goes low during EFG if there's a write
-#endif
-
 
     bool EXT_rd_en = false;
     uint8_t data_in = 0xFF;

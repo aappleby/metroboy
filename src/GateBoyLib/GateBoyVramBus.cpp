@@ -451,6 +451,8 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*#p25.RYJE*/ wire RYJE_CBD_TO_VPDn_new  = not1(SAZO_CBD_TO_VPDp_new);
   /*#p25.REVO*/ wire REVO_CBD_TO_VPDp_new  = not1(RYJE_CBD_TO_VPDn_new);
 
+  probe("SAZO", SAZO_CBD_TO_VPDp_new & 1);
+
   //--------------------------------------------
   // Vram control pins
 

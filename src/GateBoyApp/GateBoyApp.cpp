@@ -205,6 +205,16 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
     jr -3
   )";
 
+  /*
+  const char* app = R"(
+  0150:
+    ld a, $55
+    ld hl, $8000
+    ld (hl), a
+    jr -3
+  )";
+  */
+
   gb_thread->load_program(app);
 
 

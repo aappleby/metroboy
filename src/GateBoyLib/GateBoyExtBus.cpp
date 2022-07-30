@@ -358,10 +358,17 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
 
     //----------------------------------------
 
+#if 0
+    /*_PIN_80*/ PinOut PIN_80_CSn;      // CS changes on phase C if addr in [A000,FDFF]
+    /*_PIN_79*/ PinOut PIN_79_RDn;      // RDn idles low, goes high on phase B for an external write
+    /*_PIN_78*/ PinOut PIN_78_WRn;      // WRn idles high, goes low during EFG if there's a write
+#endif
+
+
     bool EXT_rd_en = false;
     uint8_t data_in = 0xFF;
 
-    if (bit0(~pins.ctrl.PIN_79_RDn.qp_ext_new())) {
+    if (bit0(pins.ctrl.PIN_79_RDn.qp_ext_new()) == 0) {
 
       if (cart_has_mbc1(cart_blob)) {
         bool mbc1_mode   = bit0(reg_old.ext_mbc.MBC1_MODE.out_old());
@@ -430,6 +437,9 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
     /*_PIN_23*/ pins.dbus.PIN_23_D06.pin_io(LULA_CBD_TO_EPDp_new, RAFY_new, ROGY_new, EXT_rd_en, EXT_data_in6_new);
     /*_PIN_24*/ pins.dbus.PIN_24_D07.pin_io(LULA_CBD_TO_EPDp_new, RAVU_new, RYDA_new, EXT_rd_en, EXT_data_in7_new);
 
+    probe("PIN_78_WRn", ~pins.ctrl.PIN_78_WRn.state & 1);
+    probe("PIN_79_RDn", ~pins.ctrl.PIN_79_RDn.state & 1);
+    probe("PIN_80_CSn", ~pins.ctrl.PIN_80_CSn.state & 1);
     probe("PIN_17_D00", pins.dbus.PIN_17_D00.state);
     probe("PIN_18_D01", pins.dbus.PIN_18_D01.state);
     probe("PIN_19_D02", pins.dbus.PIN_19_D02.state);

@@ -536,8 +536,8 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     auto read  = cpu.core.reg.bus_req_new.read;
     auto write = cpu.core.reg.bus_req_new.write;
 
-    probe("read", read & 1);
-    probe("write", write & 1);
+    probe("cpu_read", read & 1);
+    probe("cpu_write", write & 1);
 
     wire req_addr_boot = (addr >= 0x0000) && (addr <= 0x00FF) && !(reg_old.cpu_signals.TEPU_BOOT_BITn.state & 1);
     wire req_addr_rom  = (addr >= 0x0000) && (addr <= 0x7FFF);
@@ -566,6 +566,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     }
 
   }
+
+  probe("DBUS_FREE", reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state & 1);
+  probe("EXT_BUSp",  reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state & 1);
+  probe("BUS_RDp",   reg_new.cpu_signals.SIG_IN_CPU_RDp.state & 1);
+  probe("BUS_WRp",   reg_new.cpu_signals.SIG_IN_CPU_WRp.state & 1);
+
 #endif
 
 

@@ -181,8 +181,8 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   /*_p08.LYWE*/ wire LYWE_new = not1(LAGU_new);
   /*_p08.MOTY*/ wire MOTY_CPU_EXT_RD_new = or2(MOCA_DBG_EXT_RD_new, LYWE_new);
   /*_p08.LOXO*/ wire LOXO_HOLDn_new = and_or3(pins.sys.MULE_MODE_DBG1n_new(), TEXO_ADDR_VRAMn_new, pins.sys.UMUT_MODE_DBG1p_new());
-  /*_p08.LASY*/ wire LASY_HOLDp_new = not1(LOXO_HOLDn_new);
-  /*_p08.MATE*/ wire MATE_HOLDn_new = not1(LASY_HOLDp_new);
+  /*#p08.LASY*/ wire LASY_HOLDp_new = not1(LOXO_HOLDn_new);
+  /*#p08.MATE*/ wire MATE_HOLDn_new = not1(LASY_HOLDp_new);
   /*_p08.TYMU*/ wire TYMU_EXT_RDn_new = nor2(LUMA_DMA_CARTp_new, MOTY_CPU_EXT_RD_new);
   /*_p08.MEXO*/ wire MEXO_CPU_WRn_new = not1(reg_new.cpu_signals.APOV_CPU_WRp.out_new());
   /*_p08.NEVY*/ wire NEVY_new = or2(MEXO_CPU_WRn_new, MOCA_DBG_EXT_RD_new);
@@ -212,7 +212,7 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
 
   {
     /*_p08.ALOR*/ reg_new.ext_addr_latch.ALOR_EXT_ADDR_LATCH_00p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A00p.out_new());
-    /*_p08.APUR*/ reg_new.ext_addr_latch.APUR_EXT_ADDR_LATCH_01p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A01p.out_new());
+    /*#p08.APUR*/ reg_new.ext_addr_latch.APUR_EXT_ADDR_LATCH_01p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A01p.out_new());
     /*_p08.ALYR*/ reg_new.ext_addr_latch.ALYR_EXT_ADDR_LATCH_02p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A02p.out_new());
     /*_p08.ARET*/ reg_new.ext_addr_latch.ARET_EXT_ADDR_LATCH_03p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A03p.out_new());
     /*_p08.AVYS*/ reg_new.ext_addr_latch.AVYS_EXT_ADDR_LATCH_04p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A04p.out_new());
@@ -220,8 +220,8 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
     /*_p08.AROS*/ reg_new.ext_addr_latch.AROS_EXT_ADDR_LATCH_06p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A06p.out_new());
     /*_p08.ARYM*/ reg_new.ext_addr_latch.ARYM_EXT_ADDR_LATCH_07p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A07p.out_new());
 
-    /*_p08.LUNO*/ reg_new.ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A08p.out_new());
-    /*_p08.LYSA*/ reg_new.ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A09p.out_new());
+    /*#p08.LUNO*/ reg_new.ext_addr_latch.LUNO_EXT_ADDR_LATCH_08p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A08p.out_new());
+    /*#p08.LYSA*/ reg_new.ext_addr_latch.LYSA_EXT_ADDR_LATCH_09p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A09p.out_new());
     /*_p08.PATE*/ reg_new.ext_addr_latch.PATE_EXT_ADDR_LATCH_10p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A10p.out_new());
     /*_p08.LUMY*/ reg_new.ext_addr_latch.LUMY_EXT_ADDR_LATCH_11p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A11p.out_new());
     /*_p08.LOBU*/ reg_new.ext_addr_latch.LOBU_EXT_ADDR_LATCH_12p.tp_latchn(MATE_HOLDn_new, reg_new.cpu_abus.BUS_CPU_A12p.out_new());

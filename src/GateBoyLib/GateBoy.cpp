@@ -426,6 +426,18 @@ void GateBoy::tock_cpu(const blob& cart_blob) {
   cpu.core.reg.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
 
   if (DELTA_AB_new) {
+    if (sys.cpu_en && !sys.in_por) {
+      cpu.core.execute((uint8_t)bit_pack(gb_state.reg_ie), cpu.core.reg.intf_latch);
+      cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
+
+      /*
+      // Dump writes to audio mem.
+      auto r = cpu.core.reg.bus_req_new;
+      if (r.write && r.addr >= 0xFF10 && r.addr <= 0xFF3F) {
+        printf("0x%08x 0x%04x 0x%02x\n", sys.gb_phase_total, r.addr, r.data);
+      }
+      */
+    }
   }
 
   if (DELTA_CD_new) {
@@ -473,9 +485,6 @@ void GateBoy::tock_cpu(const blob& cart_blob) {
     }
   }
 
-  if (DELTA_GH_new) {
-  }
-
   if (DELTA_HA_new) {
 
 
@@ -484,18 +493,6 @@ void GateBoy::tock_cpu(const blob& cart_blob) {
     }
 
 
-    if (sys.cpu_en && !sys.in_por) {
-      cpu.core.execute((uint8_t)bit_pack(gb_state.reg_ie), cpu.core.reg.intf_latch);
-      cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
-
-      /*
-      // Dump writes to audio mem.
-      auto r = cpu.core.reg.bus_req_new;
-      if (r.write && r.addr >= 0xFF10 && r.addr <= 0xFF3F) {
-        printf("0x%08x 0x%04x 0x%02x\n", sys.gb_phase_total, r.addr, r.data);
-      }
-      */
-    }
   }
 
 }
@@ -529,6 +526,39 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
 
 
+#if 0
+  // SIG_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
+  // SIG_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
+  
+  /*_p07.TUNA*/ wire TUNA_0000_FDFF_old = nand7(
+    reg_old.cpu_abus.BUS_CPU_A15p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A14p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A13p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A12p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A11p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A10p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A09p.out_old()
+  );
+  /*_p25.SYRO*/ wire SYRO_FE00_FFFF_old = not1(TUNA_0000_FDFF_old);
+
+  /*_p07.TULO*/ wire TULO_ADDR_BOOTROMp_old = nor8(
+    reg_old.cpu_abus.BUS_CPU_A15p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A14p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A13p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A12p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A11p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A10p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A09p.out_old(),
+    reg_old.cpu_abus.BUS_CPU_A08p.out_old()
+  );
+
+  /*_p07.TERA*/ wire TERA_BOOT_BITp_old  = not1(reg_old.cpu_signals.TEPU_BOOT_BITn.qp_old());
+  /*_p07.TUTU*/ wire TUTU_READ_BOOTROMp_old = and2(TERA_BOOT_BITp_old, TULO_ADDR_BOOTROMp_old);
+
+#endif
+
+  // SIG_IN_CPU_EXT_BUSp _must_ be high on xxCDEFGH, otherwise PIN_16_A15 would
+  // be high while reading 0x0000-0x7FFF
 
 #if 1
   {
@@ -547,18 +577,24 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire req_addr_hi   = (addr >= 0xFE00);
 
     reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = DELTA_DH_new && (read || (write && addr >= 0xFF10));
-    reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
 
     if (DELTA_HA_new) {
       wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot && !req_addr_vram);
-
-      reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = 0;
+      reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr & 0x00FF);
+      reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
       reg_new.cpu_signals.SIG_IN_CPU_WRp.state = 0;
       reg_new.cpu_signals.SIG_IN_CPU_RDp.state = 0;
     }
+    else if (DELTA_AB_new) {
+      wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot && !req_addr_vram);
+      reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
+      reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
+      reg_new.cpu_signals.SIG_IN_CPU_WRp.state = write;
+      reg_new.cpu_signals.SIG_IN_CPU_RDp.state = read;
+    }
     else {
       wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot);
-
+      reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
       reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
       reg_new.cpu_signals.SIG_IN_CPU_WRp.state = write;
       reg_new.cpu_signals.SIG_IN_CPU_RDp.state = read;

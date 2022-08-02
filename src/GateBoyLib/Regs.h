@@ -134,8 +134,7 @@ struct Gate : public BitBase {
     state = BIT_NEW | BIT_DRIVEN | bit0(state);
   }
 
-  void operator<<= (wire D) {
-    //check_unset(); // we use this in feeback loops, need better check...
+  void operator <<= (wire D) {
     state = BIT_NEW | BIT_DRIVEN | bit0(D);
   }
 };

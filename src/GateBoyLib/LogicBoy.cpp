@@ -1317,7 +1317,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (!state_old.XYMU_RENDERINGn) {
     if (state_old.phase_tfetch ==  2) state_new.tile_temp_b =  state_old.vram_dbus;
-    if (state_old.phase_tfetch ==  5) state_new.tile_temp_a =  state_old.vram_dbus;
+    if (state_old.phase_tfetch ==  6) state_new.tile_temp_a =  state_old.vram_dbus;
     if (state_old.phase_tfetch == 10) state_new.tile_temp_b =  state_old.vram_dbus;
   }
 

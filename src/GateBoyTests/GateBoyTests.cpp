@@ -22,7 +22,7 @@ using namespace std;
 
 const bool run_slow_tests = false;
 
-#define TEST_AUDIO
+//#define TEST_AUDIO
 //#define TEST_MOONEYE
 
 //#pragma optimize("", off)

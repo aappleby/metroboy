@@ -14,9 +14,8 @@
 
 GateBoyThread::GateBoyThread(IGateBoy* prototype) : gb(prototype)
 {
-  gb.reset_states();
+  gb.reset_history();
   cart_blob = Assembler::create_dummy_cart();
-  poweron(true);
 }
 
 //----------------------------------------
@@ -24,7 +23,6 @@ GateBoyThread::GateBoyThread(IGateBoy* prototype) : gb(prototype)
 void GateBoyThread::start() {
   CHECK_P(main == nullptr);
   main = new std::thread([this] { thread_main(); });
-  pause();
 }
 
 //----------------------------------------
@@ -61,14 +59,14 @@ void GateBoyThread::resume() {
 void GateBoyThread::poweron(bool fastboot) {
   CHECK_P(sim_paused());
   clear_steps();
-  gb.reset_states();
+  gb.reset_history();
   gb->poweron(fastboot);
 }
 
 void GateBoyThread::reset() {
   CHECK_P(sim_paused());
   clear_steps();
-  gb.reset_states();
+  gb.reset_history();
   gb->reset();
 }
 
@@ -160,7 +158,7 @@ void GateBoyThread::dump(Dumper& d) {
 
 void GateBoyThread::load_raw_dump(BlobStream& bs) {
   CHECK_P(sim_paused());
-  gb.reset_states();
+  gb.reset_history();
   clear_steps();
   gb->load_raw_dump(bs);
   cart_blob = bs.rest();
@@ -190,7 +188,6 @@ void GateBoyThread::load_program(const char* source) {
   Assembler as;
   as.assemble(source);
   cart_blob = as.link();
-  reset();
 }
 
 void GateBoyThread::load_bootrom(const char* source) {

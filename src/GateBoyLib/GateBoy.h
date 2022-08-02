@@ -143,6 +143,10 @@ struct GateBoy  : public IGateBoy {
 
   virtual ~GateBoy() {}
 
+  IGateBoy* get_a() override { return this; }
+  IGateBoy* get_b() override { return this; }
+  const char* get_id() const override { return "GateBoy"; }
+
   GateBoy* clone() const override {
     GateBoy* gb2 = new GateBoy();
     gb2->gb_state = gb_state;

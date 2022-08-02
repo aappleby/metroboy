@@ -451,8 +451,6 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
   /*#p25.RYJE*/ wire RYJE_CBD_TO_VPDn_new  = not1(SAZO_CBD_TO_VPDp_new);
   /*#p25.REVO*/ wire REVO_CBD_TO_VPDp_new  = not1(RYJE_CBD_TO_VPDn_new);
 
-  probe("SAZO", SAZO_CBD_TO_VPDp_new & 1);
-
   //--------------------------------------------
   // Vram control pins
 
@@ -474,10 +472,6 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FET
     /*_p25.SUDO*/ wire SUDO_MWRp_new = not1(reg_new.SIG_VCC.out_new()); // Ignoring debug stuff for now
 
     /*_p25.TUTO*/ wire TUTO_VRAM_DBGp_new = and2(pins.sys.UNOR_MODE_DBG2p_new(), reg_new.sys_rst.SOTO_DBG_VRAMp.qn_new());
-    /*#p08.TEVY*/ wire TEVY_ADDR_VRAMn_new = or3(reg_new.cpu_abus.BUS_CPU_A13p.out_new(), reg_new.cpu_abus.BUS_CPU_A14p.out_new(), reg_new.cpu_abus.SORE_A15n_new());
-    /*#p08.TEXO*/ wire TEXO_ADDR_VRAMn_new = and2(reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.out_any(), TEVY_ADDR_VRAMn_new);
-    /*#p25.TEFA*/ wire TEFA_ADDR_VRAMp_new = nor2(reg_new.cpu_abus.SYRO_FE00_FFFF_new(), TEXO_ADDR_VRAMn_new);
-    /*#p25.SOSE*/ wire SOSE_ADDR_VRAMp_new = and2(TEFA_ADDR_VRAMp_new, reg_new.cpu_abus.BUS_CPU_A15p.out_any());
     /*_p25.TUJA*/ wire TUJA_CPU_VRAM_WRp_new = and2(SOSE_ADDR_VRAMp_new, reg_new.cpu_signals.APOV_CPU_WRp.out_any());
 
     /*#p25.TYJY*/ wire TYJY_VRAM_WRp_new  = mux2p(TUTO_VRAM_DBGp_new, SUDO_MWRp_new, TUJA_CPU_VRAM_WRp_new);

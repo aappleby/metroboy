@@ -123,10 +123,10 @@ void GateBoyDumper::dump_tile_fetcher(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_clocks(const GateBoyState& s, Dumper& d) {
-  d.dump_bitp("AFUR_ABCDxxxx : ", s.sys_clk.AFUR_ABCDxxxx.get_state());
-  d.dump_bitp("ALEF_xBCDExxx : ", s.sys_clk.ALEF_xBCDExxx.get_state());
-  d.dump_bitp("APUK_xxCDEFxx : ", s.sys_clk.APUK_xxCDEFxx.get_state());
-  d.dump_bitp("ADYK_xxxDEFGx : ", s.sys_clk.ADYK_xxxDEFGx.get_state());
+  d.dump_bitp("AFUR_ABCDxxxx : ", s.sys_clk.AFUR_ABCDxxxx.state & 1);
+  d.dump_bitp("ALEF_xBCDExxx : ", s.sys_clk.ALEF_xBCDExxx.state & 1);
+  d.dump_bitp("APUK_xxCDEFxx : ", s.sys_clk.APUK_xxCDEFxx.state & 1);
+  d.dump_bitp("ADYK_xxxDEFGx : ", s.sys_clk.ADYK_xxxDEFGx.state & 1);
   d("\n");
   d.dump_bitp("WUVU_ABxxEFxx : ", s.sys_clk.WUVU_ABxxEFxx.state);
   d.dump_bitp("VENA_xxCDEFxx : ", s.sys_clk.VENA_xxCDEFxx.state);
@@ -224,6 +224,8 @@ void GateBoyDumper::dump_sprite_store(const GateBoyState& s, Dumper& d) {
   d.dump_flags  ("SPRITE STORE   : ", &s.sprite_store_flags_evn, sizeof(s.sprite_store_flags_evn));
   d.dump_slice2p("SPRITE INDEX   : ", &s.sprite_index.XADU_SPRITE_IDX0p_odd.state, 6);
   d.dump_slice2p("SPRITE COUNT   : ", &s.sprite_counter.BESE_SPRITE_COUNT0_odd, 4);
+  d("SPRITE IBUS    : %d\n", bit_pack(s.sprite_ibus));
+  d("SPRITE LBUS    : %d\n", bit_pack(s.sprite_lbus));
   d("\n");
   d("STORE0 I%02d L%02d X%03d\n", bit_pack_inv(s.store_i0), bit_pack_inv(s.store_l0), bit_pack_inv(s.store_x0));
   d("STORE1 I%02d L%02d X%03d\n", bit_pack_inv(s.store_i1), bit_pack_inv(s.store_l1), bit_pack_inv(s.store_x1));
@@ -365,17 +367,17 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_slice2p("FF40 LCDC  : ", &s.reg_lcdc.VYXE_LCDC_BGENp, 8);
   
   {
-    wire PARU_VBLANKp_odd = not1(s.lcd.POPU_VBLANKp_odd.qn_old());
-    wire SADU_STAT_MODE0n = nor2(s.XYMU_RENDERING_LATCHn.qn_old(), PARU_VBLANKp_odd);
-    wire XATY_STAT_MODE1n = nor2(s.ACYL_SCANNINGp_odd.out_old(), s.XYMU_RENDERING_LATCHn.qn_old());
+    wire PARU_VBLANKp_odd = not1(s.lcd.POPU_VBLANKp_odd.qn_any());
+    wire SADU_STAT_MODE0n = nor2(s.XYMU_RENDERING_LATCHn.qn_any(), PARU_VBLANKp_odd);
+    wire XATY_STAT_MODE1n = nor2(s.ACYL_SCANNINGp_odd.out_any(), s.XYMU_RENDERING_LATCHn.qn_any());
     wire STAT[8] = {
       SADU_STAT_MODE0n,
       XATY_STAT_MODE1n,
-      s.int_ctrl.RUPO_LYC_MATCHn.qp_old(),
-      s.reg_stat.ROXE_STAT_HBI_ENp.qn_oldB(),
-      s.reg_stat.RUFO_STAT_VBI_ENp.qn_oldB(),
-      s.reg_stat.REFE_STAT_OAI_ENp.qn_oldB(),
-      s.reg_stat.RUGU_STAT_LYI_ENp.qn_oldB(),
+      s.int_ctrl.RUPO_LYC_MATCHn.qp_any(),
+      s.reg_stat.ROXE_STAT_HBI_ENp.qn_any(),
+      s.reg_stat.RUFO_STAT_VBI_ENp.qn_any(),
+      s.reg_stat.REFE_STAT_OAI_ENp.qn_any(),
+      s.reg_stat.RUGU_STAT_LYI_ENp.qn_any(),
       0,
     };
   
@@ -384,9 +386,9 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
 
   d.dump_slice2p("FF42 SCY   : ", &s.reg_scy.GAVE_SCY0p, 8);
   d.dump_slice2p("FF43 SCX   : ", &s.reg_scx.DATY_SCX0p, 8);
-  d.dump_slice2n("FF47 BGP   : ", &s.reg_bgp.PAVO_BGP_D0p, 8);
-  d.dump_slice2n("FF48 OBP0  : ", &s.reg_obp0.XUFU_OBP0_D0p, 8);
-  d.dump_slice2n("FF49 OBP1  : ", &s.reg_obp1.MOXY_OBP1_D0p, 8);
+  d.dump_slice2p("FF47 BGP   : ", &s.reg_bgp.PAVO_BGP_D0p, 8);
+  d.dump_slice2p("FF48 OBP0  : ", &s.reg_obp0.XUFU_OBP0_D0p, 8);
+  d.dump_slice2p("FF49 OBP1  : ", &s.reg_obp1.MOXY_OBP1_D0p, 8);
   d.dump_slice2p("FF4A WY    : ", &s.reg_wy.NESO_WY0p, 8);
   d.dump_slice2p("FF4B WX    : ", &s.reg_wx.MYPA_WX0p, 8);
   d.dump_slice2p("WIN MAP X  : ", &s.win_x.map.WYKA_WIN_MAP_X0, 5);
@@ -428,6 +430,7 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
 }
 
 void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
+
 #ifdef SIM_AUDIO
 
   /*
@@ -556,6 +559,18 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
 #endif
 
 #endif
+
+#else
+
+  d("\n");
+  d("\n");
+  d("\n");
+  d("\n");
+  d("\n");
+  d("\n");
+  d("\n");
+  d("\n");
+
 
 #endif
 }

@@ -305,24 +305,6 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
   /*_p08.RULO*/ wire RULO_A15n_new = nor2 (TAZY_A15p_new, pins.sys.UNOR_MODE_DBG2p_new());
   /*_PIN_16*/ pins.abus_hi.PIN_16_A15.pin_out(SUZE_A15n_new, RULO_A15n_new);
 
-  probe("PIN_01_A00", (pins.abus_lo.PIN_01_A00.state ^ 1) & 1);
-  probe("PIN_02_A01", (pins.abus_lo.PIN_02_A01.state ^ 1) & 1);
-  probe("PIN_03_A02", (pins.abus_lo.PIN_03_A02.state ^ 1) & 1);
-  probe("PIN_04_A03", (pins.abus_lo.PIN_04_A03.state ^ 1) & 1);
-  probe("PIN_05_A04", (pins.abus_lo.PIN_05_A04.state ^ 1) & 1);
-  probe("PIN_06_A05", (pins.abus_lo.PIN_06_A05.state ^ 1) & 1);
-  probe("PIN_07_A06", (pins.abus_lo.PIN_07_A06.state ^ 1) & 1);
-  probe("PIN_08_A07", (pins.abus_lo.PIN_08_A07.state ^ 1) & 1);
-  probe("PIN_09_A08", (pins.abus_hi.PIN_09_A08.state ^ 1) & 1);
-  probe("PIN_10_A09", (pins.abus_hi.PIN_10_A09.state ^ 1) & 1);
-  probe("PIN_11_A10", (pins.abus_hi.PIN_11_A10.state ^ 1) & 1);
-  probe("PIN_12_A11", (pins.abus_hi.PIN_12_A11.state ^ 1) & 1);
-  probe("PIN_13_A12", (pins.abus_hi.PIN_13_A12.state ^ 1) & 1);
-  probe("PIN_14_A13", (pins.abus_hi.PIN_14_A13.state ^ 1) & 1);
-  probe("PIN_15_A14", (pins.abus_hi.PIN_15_A14.state ^ 1) & 1);
-  probe("PIN_16_A15", (pins.abus_hi.PIN_16_A15.state ^ 1) & 1);
-
-
   //----------------------------------------
   // region 0 = rom 0
   // region 1 = rom 0
@@ -442,18 +424,6 @@ void GateBoy::tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob)
     /*_PIN_22*/ pins.dbus.PIN_22_D05.pin_io(LULA_CBD_TO_EPDp_new, RYVO_new, TAMU_new, EXT_rd_en, EXT_data_in5_new);
     /*_PIN_23*/ pins.dbus.PIN_23_D06.pin_io(LULA_CBD_TO_EPDp_new, RAFY_new, ROGY_new, EXT_rd_en, EXT_data_in6_new);
     /*_PIN_24*/ pins.dbus.PIN_24_D07.pin_io(LULA_CBD_TO_EPDp_new, RAVU_new, RYDA_new, EXT_rd_en, EXT_data_in7_new);
-
-    probe("PIN_78_WRn", WRn & 1);
-    probe("PIN_79_RDn", RDn & 1);
-    probe("PIN_80_CSn", CSn & 1);
-    probe("PIN_17_D00", pins.dbus.PIN_17_D00.state);
-    probe("PIN_18_D01", pins.dbus.PIN_18_D01.state);
-    probe("PIN_19_D02", pins.dbus.PIN_19_D02.state);
-    probe("PIN_20_D03", pins.dbus.PIN_20_D03.state);
-    probe("PIN_21_D04", pins.dbus.PIN_21_D04.state);
-    probe("PIN_22_D05", pins.dbus.PIN_22_D05.state);
-    probe("PIN_23_D06", pins.dbus.PIN_23_D06.state);
-    probe("PIN_24_D07", pins.dbus.PIN_24_D07.state);
   }
 
   //----------------------------------------

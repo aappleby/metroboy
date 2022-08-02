@@ -11,7 +11,7 @@ struct GateBoyCpuSignals {
 
   /*_SIG_IN_CPU_RDp     */  SigIn  SIG_IN_CPU_RDp;           // top right port PORTA_00: -> LAGU, LAVO, TEDO
   /*_SIG_IN_CPU_WRp     */  SigIn  SIG_IN_CPU_WRp;           // top right port PORTA_01: -> TEGU, LAGU, AREV
-  /*_SIG_IN_CPU_EXT_BUSp*/  SigIn  SIG_IN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, APAP
+  /*_SIG_IN_CPU_EXT_BUSp*/  SigIn  SIG_IN_CPU_EXT_BUSp;      // top right port PORTA_06: -> TEXO, AGUT
   /*_SIG_IN_CPU_LATCH_EXT*/ SigIn  SIG_IN_CPU_DBUS_FREE;     // top left  port PORTD_06: -> ANUJ, DECY, LAVO, MUZU
 
   /*_SIG_CPU_UNOR_DBG*/  SigOut SIG_CPU_UNOR_DBG;      // top right port PORTA_02: <- P07.UNOR_MODE_DBG2

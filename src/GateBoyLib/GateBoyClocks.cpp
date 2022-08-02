@@ -7,10 +7,10 @@ void GateBoyClock::reset() {
   ANOS_xBxDxFxH.state = 0b00011001;
   AVET_AxCxExGx.state = 0b00011000;
   
-  AFUR_ABCDxxxx.set_state(0b00011001);
-  ALEF_xBCDExxx.set_state(0b00011011);
-  APUK_xxCDEFxx.set_state(0b00011001);
-  ADYK_xxxDEFGx.set_state(0b00011011);
+  AFUR_ABCDxxxx.set_stateB(0b00011000);
+  ALEF_xBCDExxx.set_stateB(0b00011010);
+  APUK_xxCDEFxx.set_stateB(0b00011000);
+  ADYK_xxxDEFGx.set_stateB(0b00011010);
 
   WUVU_ABxxEFxx.state = 0b00011000;
   VENA_xxCDEFxx.state = 0b00011010;

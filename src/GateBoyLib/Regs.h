@@ -277,8 +277,8 @@ struct DFF9B : private BitBase {
   using BitBase::qp_any;
   using BitBase::qn_any;
 
-  uint8_t get_state() const { return state; }
-  void set_state(uint8_t new_state) { state = new_state ^ 1; }
+  //uint8_t get_state() const { return state; }
+  //void set_state(uint8_t new_state) { state = new_state ^ 1; }
   void set_stateB(uint8_t new_state) { state = new_state; }
 
   wire qp_oldB() const { return qp_old(); }

@@ -12,6 +12,11 @@ struct GateBoyPair : public IGateBoy {
   GateBoyPair();
   GateBoyPair(GateBoy* gb1, LogicBoy* gb2);
 
+  IGateBoy* get_a() override;
+  IGateBoy* get_b() override;
+
+  const char* get_id() const override;
+
   IGateBoy* clone() const override;
   int size_bytes() override;
   GBResult get_flags() const override;
@@ -25,7 +30,6 @@ struct GateBoyPair : public IGateBoy {
   GBResult dbg_req(uint16_t addr, uint8_t data, bool write) override;
   GBResult dbg_read(const blob& cart_blob, int addr) override;
   GBResult dbg_write (const blob& cart_blob, int addr, uint8_t data_in) override;
-  GBResult dbg_flip() override;
 
   GBResult run_phases(const blob& cart_blob, int phase_count) override;
   GBResult next_phase(const blob& cart_blob) override;
@@ -41,9 +45,10 @@ struct GateBoyPair : public IGateBoy {
   const GateBoyPins&  get_pins() const override;
   const Probes&       get_probes() const override;
 
+  void get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const override;
+
   GateBoy* gb;
   LogicBoy* lb;
-  bool select_ab = true;
 
   GBResult check_results(GBResult r1, GBResult r2) const;
   bool check_sync() const;

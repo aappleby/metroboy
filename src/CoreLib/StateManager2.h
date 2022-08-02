@@ -21,7 +21,7 @@ struct StateStack {
   void push() { states.push_back(states.back()); }
   void pop()  { if (states.size() > 1) { states.pop_back(); } }
 
-  void reset_states() {
+  void reset_history() {
     states.resize(1);
   }
 
@@ -48,7 +48,7 @@ struct StatePointerStack {
   void push() { states.push_back(states.back()->clone()); }
   void pop()  { if (states.size() > 1) { delete states.back(); states.pop_back(); } }
 
-  void reset_states() {
+  void reset_history() {
     for (auto s : states) delete s;
     states.clear();
     states.push_back(prototype->clone());

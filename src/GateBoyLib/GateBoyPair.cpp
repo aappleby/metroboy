@@ -14,6 +14,12 @@ GateBoyPair::GateBoyPair() : gb(new GateBoy()), lb(new LogicBoy()) {}
 
 GateBoyPair::GateBoyPair(GateBoy* gb1, LogicBoy* gb2) : gb(gb1), lb(gb2) {}
 
+IGateBoy* GateBoyPair::get_a() { return gb; }
+IGateBoy* GateBoyPair::get_b() { return lb; }
+
+const char* GateBoyPair::get_id() const { return "GateBoyPair"; }
+
+
 IGateBoy* GateBoyPair::clone() const {
   return new GateBoyPair(gb->clone(), lb->clone());
 }
@@ -91,11 +97,6 @@ GBResult GateBoyPair::dbg_write (const blob& cart_blob, int addr, uint8_t data_i
   return check_results(r1, r2);
 }
 
-GBResult GateBoyPair::dbg_flip() {
-  select_ab = !select_ab;
-  return GBResult::ok();
-};
-
 GBResult GateBoyPair::run_phases(const blob& cart_blob, int phase_count) {
   GBResult r1 = gb->run_phases(cart_blob, phase_count);
   GBResult r2 = lb->run_phases(cart_blob, phase_count);
@@ -129,12 +130,16 @@ GBResult GateBoyPair::set_cpu_en(bool enabled) {
   return check_results(r1, r2);
 };
 
-const GateBoyCpu&   GateBoyPair::get_cpu() const    { return select_ab ? gb->get_cpu()    : lb->get_cpu();    }
-const GateBoyMem&   GateBoyPair::get_mem() const    { return select_ab ? gb->get_mem()    : lb->get_mem();    }
-const GateBoyState& GateBoyPair::get_state() const  { return select_ab ? gb->get_state()  : lb->get_state();  }
-const GateBoySys&   GateBoyPair::get_sys() const    { return select_ab ? gb->get_sys()    : lb->get_sys();    }
-const GateBoyPins&  GateBoyPair::get_pins() const   { return select_ab ? gb->get_pins()   : lb->get_pins();   }
-const Probes&       GateBoyPair::get_probes() const { return select_ab ? gb->get_probes() : lb->get_probes(); }
+const GateBoyCpu&   GateBoyPair::get_cpu() const    { return gb->get_cpu();    }
+const GateBoyMem&   GateBoyPair::get_mem() const    { return gb->get_mem();    }
+const GateBoyState& GateBoyPair::get_state() const  { return gb->get_state();  }
+const GateBoySys&   GateBoyPair::get_sys() const    { return gb->get_sys();    }
+const GateBoyPins&  GateBoyPair::get_pins() const   { return gb->get_pins();   }
+const Probes&       GateBoyPair::get_probes() const { return gb->get_probes(); }
+
+void GateBoyPair::get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const {
+  return gb->get_flat_blob(cart_blob, addr, size, out);
+}
 
 //-----------------------------------------------------------------------------
 
@@ -152,7 +157,6 @@ GBResult GateBoyPair::check_results(GBResult r1, GBResult r2) const {
 //-----------------------------------------------------------------------------
 
 bool GateBoyPair::check_sync() const {
-  /*
   const auto& state1 = gb->get_state();
   const auto& state2 = lb->get_state();
 
@@ -168,7 +172,6 @@ bool GateBoyPair::check_sync() const {
     LOG_R("Regression test pins mismatch @ phase %lld!\n", gb->get_sys().gb_phase_total);
     return false;
   }
-  */
 
   return true;
 }

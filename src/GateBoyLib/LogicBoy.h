@@ -12,6 +12,10 @@
 struct LogicBoy : public IGateBoy {
   virtual ~LogicBoy() {}
 
+  IGateBoy* get_a() override { return this; }
+  IGateBoy* get_b() override { return this; }
+  const char* get_id() const override { return "LogicBoy"; }
+
   LogicBoy* clone() const override {
     LogicBoy* result = new LogicBoy();
     result->lb_state = lb_state;
@@ -89,6 +93,9 @@ struct LogicBoy : public IGateBoy {
   const GateBoySys&   get_sys() const override    { return *(GateBoySys*)&sys; }
   const GateBoyPins&  get_pins() const override   { return pins; }
   const Probes&       get_probes() const override { return probes; }
+
+  void get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const override;
+  uint8_t read_flat_addr(const blob& cart_blob, int addr) const;
 
   //----------------------------------------
 

@@ -12,6 +12,11 @@ class IGateBoy {
 public:
   virtual ~IGateBoy() {}
 
+  virtual IGateBoy* get_a() = 0;
+  virtual IGateBoy* get_b() = 0;
+
+  virtual const char* get_id() const = 0;
+
   virtual GBResult poweron(bool fastboot) = 0;
   virtual GBResult reset() = 0;
 
@@ -30,7 +35,6 @@ public:
   virtual GBResult dbg_req  (uint16_t addr, uint8_t data, bool write) = 0;
   virtual GBResult dbg_read (const blob& cart_blob, int addr) = 0;
   virtual GBResult dbg_write(const blob& cart_blob, int addr, uint8_t data) = 0;
-  virtual GBResult dbg_flip () { return GBResult::ok(); }
 
   virtual GBResult run_phases(const blob& cart_blob, int phase_count) = 0;
   virtual GBResult next_phase(const blob& cart_blob) = 0;
@@ -46,5 +50,5 @@ public:
   virtual const GateBoyPins&  get_pins() const = 0;
   virtual const Probes&       get_probes() const = 0;
 
-  virtual void get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const {};
+  virtual void get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const = 0;
 };

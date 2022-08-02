@@ -97,12 +97,14 @@ GBResult GateBoy::poweron(bool fastboot) {
   sys.in_por = 1;
 
   // These registers do not reset cleanly at poweron, so we're forcing them to a sane state.
+#ifdef SIM_AUDIO
   gb_state.ch3.EFAR_WAVE_IDX0.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   gb_state.ch3.ERUS_WAVE_IDX1.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   gb_state.ch3.EFUZ_WAVE_IDX2.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   gb_state.ch3.EXEL_WAVE_IDX3.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   gb_state.ch3.EFAL_WAVE_IDX4.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
   gb_state.ch3.FETY_WAVE_LOOP.state = BIT_OLD | BIT_DRIVEN | BIT_CLOCK;
+#endif
 
   return GBResult::ok();
 }
@@ -281,6 +283,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
                                             gb_state.ch4.GEVY_CH4_AMP_ENn());
 #endif
 
+#ifdef SIM_AUDIO
     /*
     if (spu_new.ANEV_NR51_RCH1_ENp.state & 1) mix += ch1_audio_out(reg_new.ch1);
     if (spu_new.BOGU_NR51_RCH2_ENp.state & 1) mix += ch2_audio_out(reg_new.ch2);
@@ -300,6 +303,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
     mem.audio_r[(sys.gb_phase_total >> 7) & 0xFF] = r;
 
     audio_post(l, r);
+#endif
   }
 
   return GBResult::ok();
@@ -526,7 +530,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
 
 
-#if 0
+#if 1
   // SIG_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   // SIG_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
   
@@ -576,28 +580,28 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire req_addr_oam  = (addr >= 0xFE00) && (addr <= 0xFEFF);
     wire req_addr_hi   = (addr >= 0xFE00);
 
-    reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = DELTA_DH_new && (read || (write && addr >= 0xFF10));
+    reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DH_new && (read || (write && addr >= 0xFF10))) & 1) | BIT_DRIVEN | BIT_NEW;
 
     if (DELTA_HA_new) {
       wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot && !req_addr_vram);
       reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr & 0x00FF);
-      reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
-      reg_new.cpu_signals.SIG_IN_CPU_WRp.state = 0;
-      reg_new.cpu_signals.SIG_IN_CPU_RDp.state = 0;
+      reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new | BIT_DRIVEN | BIT_NEW;
+      reg_new.cpu_signals.SIG_IN_CPU_WRp.state = 0 | BIT_DRIVEN | BIT_NEW;
+      reg_new.cpu_signals.SIG_IN_CPU_RDp.state = 0 | BIT_DRIVEN | BIT_NEW;
     }
     else if (DELTA_AB_new) {
       wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot && !req_addr_vram);
       reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
-      reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
-      reg_new.cpu_signals.SIG_IN_CPU_WRp.state = write;
-      reg_new.cpu_signals.SIG_IN_CPU_RDp.state = read;
+      reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new | BIT_DRIVEN | BIT_NEW;
+      reg_new.cpu_signals.SIG_IN_CPU_WRp.state = write | BIT_DRIVEN | BIT_NEW;
+      reg_new.cpu_signals.SIG_IN_CPU_RDp.state = read | BIT_DRIVEN | BIT_NEW;
     }
     else {
       wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot);
       reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
-      reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
-      reg_new.cpu_signals.SIG_IN_CPU_WRp.state = write;
-      reg_new.cpu_signals.SIG_IN_CPU_RDp.state = read;
+      reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new | BIT_DRIVEN | BIT_NEW;
+      reg_new.cpu_signals.SIG_IN_CPU_WRp.state = write | BIT_DRIVEN | BIT_NEW;
+      reg_new.cpu_signals.SIG_IN_CPU_RDp.state = read | BIT_DRIVEN | BIT_NEW;
     }
 
   }
@@ -606,8 +610,6 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   probe("EXT_BUSp",  reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state & 1);
   probe("BUS_RDp",   reg_new.cpu_signals.SIG_IN_CPU_RDp.state & 1);
   probe("BUS_WRp",   reg_new.cpu_signals.SIG_IN_CPU_WRp.state & 1);
-
-  probe("BUS_A14", reg_new.cpu_abus.BUS_CPU_A14p.state & 1);
 
 #endif
 

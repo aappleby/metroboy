@@ -122,7 +122,7 @@ void MetroBoyApp::load_rom(const std::string& prefix, const std::string& name) {
   rom.resize(file_size(filename.c_str()));
   load_blob(filename.c_str(), rom.data(), rom.size());
 
-  gb.reset_states();
+  gb.reset_history();
   gb->reset(rom.data(), rom.size());
 
   rom_loaded = true;
@@ -155,7 +155,7 @@ void MetroBoyApp::app_update(dvec2 screen_size, double delta) {
     //case SDLK_DOWN:   stepsize = clamp_val(stepsize - 1, STEP_MIN, STEP_MAX); break;
 
     case SDLK_r: {
-      gb.reset_states();
+      gb.reset_history();
       gb->reset(rom.data(), rom.size());
       break;
     }
@@ -184,7 +184,7 @@ void MetroBoyApp::app_update(dvec2 screen_size, double delta) {
       rom.resize(file_size(event.drop.file));
       load_blob(event.drop.file, rom.data(), rom.size());
 
-      gb.reset_states();
+      gb.reset_history();
       gb->reset(rom.data(), rom.size());
       rom_loaded = true;
       runmode = RUN_SYNC;
@@ -212,12 +212,12 @@ void MetroBoyApp::app_update(dvec2 screen_size, double delta) {
   int64_t phase_begin = gb->phase_total;
 
   if (runmode == RUN_FAST) {
-    gb.reset_states();
+    gb.reset_history();
     gb->joy.set(~buttons);
     step_cycle(MCYCLES_PER_FRAME * 8);
   }
   else if (runmode == RUN_SYNC) {
-    gb.reset_states();
+    gb.reset_history();
     gb->joy.set(~buttons);
     sync_to_vblank();
 

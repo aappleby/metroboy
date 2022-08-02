@@ -129,6 +129,7 @@ struct GateBoyState {
 
   SpriteScanner    sprite_scanner;
   ScanCounter      scan_counter;
+  
   SpriteCounter    sprite_counter;
   SpriteIndex      sprite_index;
   SpriteMatchFlags sprite_match_flags_odd;

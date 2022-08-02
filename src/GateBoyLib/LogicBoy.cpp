@@ -142,6 +142,91 @@ GBResult LogicBoy::run_to(const blob& cart_blob, int phase) {
   return GBResult::ok();
 }
 
+void LogicBoy::get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const {
+  if (addr + size >= 0xFFFF) {
+    size = 0xFFFF - addr;
+  }
+
+  out.resize(size);
+  for (int i = 0; i < size; i++) {
+    out[i] = read_flat_addr(cart_blob, addr + i);
+  }
+}
+
+uint8_t LogicBoy::read_flat_addr(const blob& cart_blob, int addr) const {
+  if (!bit0(lb_state.cpu_signals.TEPU_BOOT_BITn.state) && addr >= 0x0000 && addr < 0x0100) {
+    return mem.bootrom[addr];
+  }
+  else if (addr >= 0x0000 && addr < 0x4000) {
+    return cart_blob[addr & 0x7FFF];
+
+    // FIXME why were we mucking with bank 0?
+    /*
+    if (cart_has_mbc1(cart_blob)) {
+      bool mbc1_mode   = bit(gb_state.ext_mbc.MBC1_MODE.out_old());
+      bool mbc1_ram_en = bit(gb_state.ext_mbc.MBC1_RAM_EN.out_old());
+      uint32_t mbc1_rom0_bank = mbc1_mode ? bit_pack(&gb_state.ext_mbc.MBC1_BANK5, 2) : 0;
+      uint32_t mbc1_rom0_addr = ((addr & 0x3FFF) | (mbc1_rom0_bank << 19)) & cart_rom_addr_mask(cart_blob);
+      CHECK_P(mbc1_rom0_addr < cart_blob.size());
+      return &cart_blob[mbc1_rom0_addr];
+    }
+    else {
+      return &cart_blob[addr & 0x7FFF];
+    }
+    */
+  }
+  else if (addr >= 0x4000 && addr < 0x8000) {
+    if (cart_has_mbc1(cart_blob)) {
+      uint32_t mbc1_rom1_bank = bit_pack(&lb_state.ext_mbc.MBC1_BANK0, 7);
+      if ((mbc1_rom1_bank & 0x1F) == 0) mbc1_rom1_bank |= 1;
+      uint32_t mbc1_rom1_addr = ((addr & 0x3FFF) | (mbc1_rom1_bank << 14)) & cart_rom_addr_mask(cart_blob);
+      CHECK_P(mbc1_rom1_addr < cart_blob.size());
+      return cart_blob[mbc1_rom1_addr];
+    }
+    else {
+      return cart_blob[addr & 0x7FFF];
+    }
+  }
+  else if (addr >= 0x8000 && addr < 0xA000) {
+    return mem.vid_ram[addr - 0x8000];
+  }
+  else if (addr >= 0xA000 && addr < 0xC000) {
+    if (cart_has_mbc1(cart_blob)) {
+      bool mbc1_mode   = bit0(lb_state.ext_mbc.MBC1_MODE.out_old());
+      bool mbc1_ram_en = bit0(lb_state.ext_mbc.MBC1_RAM_EN.out_old());
+      uint32_t mbc1_ram_bank = mbc1_mode ? bit_pack(&lb_state.ext_mbc.MBC1_BANK5, 2) : 0;
+      if (mbc1_mode == 0) mbc1_ram_bank = 0;
+      uint32_t mbc1_ram_addr = ((addr & 0x1FFF) | (mbc1_ram_bank << 13)) & cart_ram_addr_mask(cart_blob);
+      CHECK_P(mbc1_ram_addr < 32768);
+      return mbc1_ram_en ? mem.cart_ram[mbc1_ram_addr] : 0xFF;
+    }
+    else {
+      return mem.cart_ram[addr & 0x1FFF];
+    }
+  }
+  else if (addr >= 0xC000 && addr < 0xE000) {
+    return mem.int_ram[addr & 0x1FFF];
+  }
+  else if (addr >= 0xE000 && addr < 0xFE00) {
+    return mem.int_ram[addr & 0x1FFF];
+  }
+  else if (addr >= 0xFE00 && addr < 0xFF00) {
+    return mem.oam_ram[addr & 0x00FF];
+  }
+  else if (addr >= 0xFF30 && addr < 0xFF3F) {
+    return mem.wave_ram[addr & 0x000F];
+  }
+  else if (addr >= 0xFF80 && addr < 0xFFFF) {
+    return mem.zero_ram[addr & 0x007F];
+  }
+  else {
+    printf("read_flat_addr : bad addr 0x%08x @ phase %llu\n", addr, (long long unsigned int)sys.gb_phase_total);
+    //debugbreak();
+    return 0;
+  }
+}
+
+
 //------------------------------------------------------------------------------------------------------------------------
 
 #define PHASE_A_NEW (phase_new == 0)
@@ -297,11 +382,88 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   state_new.cpu_dbus = (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) && cpu.core.reg.bus_req_new.write ? cpu.core.reg.bus_req_new.data_lo : 0xFF; // must be pulled up or we fail regression
   state_new.cpu_abus = (DELTA_HA_new ? cpu.core.reg.bus_req_new.addr & 0x00FF : cpu.core.reg.bus_req_new.addr);
 
+
+
+
+
+
+
+
+
+#if 1
+  {
+    auto addr  = cpu.core.reg.bus_req_new.addr;
+    auto read  = cpu.core.reg.bus_req_new.read;
+    auto write = cpu.core.reg.bus_req_new.write;
+
+    probe("cpu_read", read & 1);
+    probe("cpu_write", write & 1);
+
+    wire req_addr_boot = (addr >= 0x0000) && (addr <= 0x00FF) && !(state_old.cpu_signals.TEPU_BOOT_BITn.state & 1);
+    wire req_addr_rom  = (addr >= 0x0000) && (addr <= 0x7FFF);
+    wire req_addr_vram = (addr >= 0x8000) && (addr <= 0x9FFF);
+    wire req_addr_ram  = (addr >= 0xA000) && (addr <= 0xFDFF);
+    wire req_addr_oam  = (addr >= 0xFE00) && (addr <= 0xFEFF);
+    wire req_addr_hi   = (addr >= 0xFE00);
+
+    state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DH_new && (read || (write && addr >= 0xFF10))) & 1);
+
+    if (DELTA_HA_new) {
+      wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot && !req_addr_vram);
+      //state_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr & 0x00FF);
+      state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
+      state_new.cpu_signals.SIG_IN_CPU_WRp.state = 0;
+      state_new.cpu_signals.SIG_IN_CPU_RDp.state = 0;
+    }
+    else if (DELTA_AB_new) {
+      wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot && !req_addr_vram);
+      //state_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
+      state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
+      state_new.cpu_signals.SIG_IN_CPU_WRp.state = write;
+      state_new.cpu_signals.SIG_IN_CPU_RDp.state = read;
+    }
+    else {
+      wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot);
+      //state_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
+      state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
+      state_new.cpu_signals.SIG_IN_CPU_WRp.state = write;
+      state_new.cpu_signals.SIG_IN_CPU_RDp.state = read;
+    }
+
+  }
+
+  probe("DBUS_FREE", state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state & 1);
+  probe("EXT_BUSp",  state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state & 1);
+  probe("BUS_RDp",   state_new.cpu_signals.SIG_IN_CPU_RDp.state & 1);
+  probe("BUS_WRp",   state_new.cpu_signals.SIG_IN_CPU_WRp.state & 1);
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
   wire req_addr_vram = (cpu.core.reg.bus_req_new.addr >= 0x8000) && (cpu.core.reg.bus_req_new.addr <= 0x9FFF);
   wire req_addr_ram  = (cpu.core.reg.bus_req_new.addr >= 0xA000) && (cpu.core.reg.bus_req_new.addr <= 0xFDFF);
   wire req_addr_oam  = (cpu.core.reg.bus_req_new.addr >= 0xFE00) && (cpu.core.reg.bus_req_new.addr <= 0xFEFF);
   wire req_addr_hi   = (cpu.core.reg.bus_req_new.addr >= 0xFE00);
   wire req_addr_lo   = (cpu.core.reg.bus_req_new.addr <= 0x00FF);
+  wire req_addr_boot = (cpu.core.reg.bus_req_new.addr >= 0x0000) && (cpu.core.reg.bus_req_new.addr <= 0x00FF) && !state_old.cpu_signals.TEPU_BOOT_BITn.state;
+
+  /*
+  wire ext_addr_new = (cpu.core.reg.bus_req_new.read || cpu.core.reg.bus_req_new.write) &&
+                            (( DELTA_HA_new && !req_addr_hi && !req_addr_boot && !req_addr_vram) ||
+                            (!DELTA_HA_new && !req_addr_hi && !req_addr_boot));
+  */
+  //state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
+  wire ext_addr_new = state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state;
 
   wire cpu_addr_oam_old  = (state_old.cpu_abus >= 0xFE00) && (state_old.cpu_abus <= 0xFEFF);
 
@@ -309,11 +471,48 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire cpu_addr_ram_new  = req_addr_ram && !DELTA_HA_new;
   wire cpu_addr_oam_new  = req_addr_oam && !DELTA_HA_new;
 
+  wire cpu_addr_bootrom_new = req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn.state;
+
   wire cpu_rd = cpu.core.reg.bus_req_new.read  && !DELTA_HA_new;
   wire cpu_wr = cpu.core.reg.bus_req_new.write && !DELTA_HA_new;
 
   const auto cpu_addr_new = state_new.cpu_abus;
   auto& cpu_dbus_new = state_new.cpu_dbus;
+
+  
+  {
+    //state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = DELTA_DH_new && cpu.core.reg.bus_req_new.read;
+    auto addr  = cpu.core.reg.bus_req_new.addr;
+    auto read  = cpu.core.reg.bus_req_new.read;
+    auto write = cpu.core.reg.bus_req_new.write;
+    state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DH_new && (read || (write && addr >= 0xFF10))) & 1);
+  }
+
+  state_new.cpu_signals.SIG_IN_CPU_WRp.state = cpu_wr;
+  state_new.cpu_signals.SIG_IN_CPU_RDp.state = cpu_rd;
+
+  if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF50) {
+    wire SATO_BOOT_BITn_old = bit(state_old.cpu_dbus, 0) || state_old.cpu_signals.TEPU_BOOT_BITn.state;
+    state_new.cpu_signals.TEPU_BOOT_BITn.state = SATO_BOOT_BITn_old;
+  }
+
+  // boot bit read
+
+  if (cpu_rd && cpu_addr_new == 0xFF50) {
+    state_new.cpu_dbus &= ~1;
+    state_new.cpu_dbus |= state_new.cpu_signals.TEPU_BOOT_BITn.state;
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   //----------------------------------------
   // Timer & DIV
@@ -362,6 +561,27 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   //----------------------------------------
 
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF00) {
@@ -382,20 +602,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF4A) state_new.reg_wy   = ~state_old.cpu_dbus;
   if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF4B) state_new.reg_wx   = ~state_old.cpu_dbus;
 
-  if (cpu_wr && DELTA_GH_new && cpu_addr_new == 0xFF50) {
-    wire SATO_BOOT_BITn_old = bit(state_old.cpu_dbus, 0) || state_old.cpu_signals.TEPU_BOOT_BITn.state;
-    state_new.cpu_signals.TEPU_BOOT_BITn.state = SATO_BOOT_BITn_old;
-  }
-
   if (cpu_wr && DELTA_GH_new && (cpu_addr_new >= 0xFF80) && (cpu_addr_new <= 0xFFFE)) mem.zero_ram[cpu_addr_new & 0x007F] = state_old.cpu_dbus;
-
-  wire req_addr_boot = (cpu.core.reg.bus_req_new.addr >= 0x0000) && (cpu.core.reg.bus_req_new.addr <= 0x00FF) && !state_new.cpu_signals.TEPU_BOOT_BITn.state;
-
-  wire ext_addr_new = (cpu.core.reg.bus_req_new.read || cpu.core.reg.bus_req_new.write) &&
-                            (( DELTA_HA_new && !req_addr_hi && !req_addr_boot && !req_addr_vram) ||
-                            (!DELTA_HA_new && !req_addr_hi && !req_addr_boot));
-
-  bool cpu_addr_bootrom_new = req_addr_lo && !state_new.cpu_signals.TEPU_BOOT_BITn.state;
 
   wire vid_rst_evn_old  =  bit(state_old.reg_lcdc, 7);
 
@@ -497,13 +704,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (cpu_rd && !state_new.cpu_signals.TEPU_BOOT_BITn.state) {
       state_new.cpu_dbus = mem.bootrom[cpu_addr_new & 0xFF];
     }
-  }
-
-  // boot bit read
-
-  if (cpu_rd && cpu_addr_new == 0xFF50) {
-    state_new.cpu_dbus &= ~1;
-    state_new.cpu_dbus |= state_new.cpu_signals.TEPU_BOOT_BITn.state;
   }
 
   //----------------------------------------
@@ -1117,7 +1317,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (!state_old.XYMU_RENDERINGn) {
     if (state_old.phase_tfetch ==  2) state_new.tile_temp_b =  state_old.vram_dbus;
-    if (state_old.phase_tfetch ==  6) state_new.tile_temp_a = ~state_old.vram_dbus;
+    if (state_old.phase_tfetch ==  5) state_new.tile_temp_a =  state_old.vram_dbus;
     if (state_old.phase_tfetch == 10) state_new.tile_temp_b =  state_old.vram_dbus;
   }
 
@@ -1158,8 +1358,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   if (!NYXU_BFETCH_RSTn_new) {
-    state_new.bgw_pipe_a = ~state_new.tile_temp_a;
-    state_new.bgw_pipe_b =  state_new.tile_temp_b;
+    state_new.bgw_pipe_a = state_new.tile_temp_a;
+    state_new.bgw_pipe_b = state_new.tile_temp_b;
   }
 
   uint8_t bgw_pix_a = bit(state_new.bgw_pipe_a, 7) && bgw_en_new;
@@ -2162,10 +2362,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.tfetch_control.LYRY_BFETCH_DONEp_odd.state = state_new.tfetch_counter_odd >= 5;
 
 
-    state_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new;
-    state_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = DELTA_DH_new && cpu.core.reg.bus_req_new.read;
-    state_new.cpu_signals.SIG_IN_CPU_WRp.state = cpu_wr;
-    state_new.cpu_signals.SIG_IN_CPU_RDp.state = cpu_rd;
     if (!vid_rst_evn_new) {
       if (DELTA_FG_new) {
         state_new.lcd.SYGU_LINE_STROBE.state = (reg_lx_old == 0) || (reg_lx_old == 7) || (reg_lx_old == 45) || (reg_lx_old == 83);
@@ -2288,7 +2484,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.flipped_sprite = state_new.vram_dbus;
     }
 
-    state_new.oam_ctrl.old_oam_clk.state = !state_new.oam_ctrl.SIG_OAM_CLKn.state; // Vestige of gate mode
+    state_new.oam_ctrl.old_oam_clk.state = state_new.oam_ctrl.SIG_OAM_CLKn.state; // Vestige of gate mode
     state_new.zram_bus.clk_old.state = gen_clk(phase_new, 0b00001110) && cpu_wr;
 
     state_new.cpu_ack = cpu.core.get_int_ack();
@@ -2310,10 +2506,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sys_clk.AVET_AxCxExGx.state = pins.sys.PIN_74_CLK.CLK.state; // dead signal
     state_new.sys_clk.ANOS_xBxDxFxH.state = !pins.sys.PIN_74_CLK.CLK.state; // dead signal
 
-    state_new.sys_clk.AFUR_ABCDxxxx.set_state(gen_clk(phase_new, 0b00001111)); // dead signal
-    state_new.sys_clk.ALEF_xBCDExxx.set_state(gen_clk(phase_new, 0b10000111)); // dead signal
-    state_new.sys_clk.APUK_xxCDEFxx.set_state(gen_clk(phase_new, 0b11000011)); // dead signal
-    state_new.sys_clk.ADYK_xxxDEFGx.set_state(gen_clk(phase_new, 0b11100001)); // dead signal
+    state_new.sys_clk.AFUR_ABCDxxxx.set_stateB(gen_clk(phase_new, 0b11110000)); // dead signal
+    state_new.sys_clk.ALEF_xBCDExxx.set_stateB(gen_clk(phase_new, 0b01111000)); // dead signal
+    state_new.sys_clk.APUK_xxCDEFxx.set_stateB(gen_clk(phase_new, 0b00111100)); // dead signal
+    state_new.sys_clk.ADYK_xxxDEFGx.set_stateB(gen_clk(phase_new, 0b00011110)); // dead signal
 
     pins.sys.PIN_75_CLK_OUT.state = gen_clk(phase_new, 0b00001111); // dead signal
 

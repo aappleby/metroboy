@@ -148,10 +148,11 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   wave_tex = create_texture_u8(256, 256, nullptr, false);
 
-  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  //gb_thread = new GateBoyThread(new GateBoy());
   //gb_thread = new GateBoyThread(new LogicBoy());
-  gb_thread = new GateBoyThread(new GateBoy());
-  gb_thread->start();
+
+  //gb_thread->poweron(true);
 
   // baBING
   // 0x000700c0 0xff26 0x80 // apu on
@@ -167,8 +168,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
   // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
 
-  //gb_thread->reset();
-
+#if 1
   /*
   gb_thread->load_bootrom(R"(
     0000:
@@ -215,8 +215,11 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   )";
   */
 
+  //gb_thread->poweron(true);
   gb_thread->load_program(app);
+  gb_thread->reset();
 
+#endif
 
 #if 0
   gb_thread->load_program(R"(
@@ -382,7 +385,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 0
+#if 1
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140
@@ -403,7 +406,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->reset();
 #endif
 
-  gb_thread->resume();
+  gb_thread->start();
 
   LOG_DEDENT();
   LOG_G("GateBoyApp::app_init() done\n");
@@ -513,7 +516,6 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
 
     case SDLK_t: {
       show_gb_ab = !show_gb_ab;
-      gb_thread->gb->dbg_flip();
       break;
     }
 
@@ -608,16 +610,15 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   gb_thread->pause();
 
-  //auto& gb = show_gb_ab ? gb_thread.gbp->gbb : gb_thread.gbp->gba;
-  auto gb = gb_thread->gb.state();
+  IGateBoy* gb = show_gb_ab ? gb_thread->gb.state()->get_a() : gb_thread->gb.state()->get_b();
 
   uint64_t phase_total = gb->get_sys().gb_phase_total;
 
-  auto& cpu = gb_thread->gb->get_cpu();
-  auto& mem = gb_thread->gb->get_mem();
-  auto& state = gb_thread->gb->get_state();
-  auto& sys = gb_thread->gb->get_sys();
-  auto& pins = gb_thread->gb->get_pins();
+  auto& cpu = gb->get_cpu();
+  auto& mem = gb->get_mem();
+  auto& state = gb->get_state();
+  auto& sys = gb->get_sys();
+  auto& pins = gb->get_pins();
 
   StringDumper d;
 
@@ -766,7 +767,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   //----------------------------------------
   // Column 4
 
-#if 0
+#if 1
   d("\002===== PPU =====\001\n");
   dumper.dump_ppu(state, d);
   d("\n");
@@ -889,8 +890,8 @@ Step controls:
     "\003_______H\001",
   };
 
-  d("Viewing sim %c, Sim clock %8.3f %s %s\n",
-    show_gb_ab ? 'B' : 'A',
+  d("Viewing sim %s, Sim clock %8.3f %s %s\n",
+    gb->get_id(),
     double(phase_total) / (4194304.0 * 2),
     phase_names[phase_total & 7],
     show_golden ? "GOLDEN IMAGE " : "");
@@ -980,17 +981,13 @@ Step controls:
   int row3 = 640;
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 0 ==========\001", col7, row1);
-  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, mem.vid_ram, 0, (int)!bit0(state.reg_lcdc.WEXU_LCDC_BGTILEp.get_state() ^ 1));
+  gb_blitter.blit_map   (view, screen_size, col7, row1 + 16,  1, mem.vid_ram, 0, (int)bit0(state.reg_lcdc.WEXU_LCDC_BGTILEp.state));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Map 1 ==========\001", col7, row2);
-  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, mem.vid_ram, 1, (int)!bit0(state.reg_lcdc.WEXU_LCDC_BGTILEp.get_state() ^ 1));
+  gb_blitter.blit_map   (view, screen_size, col7, row2 + 16, 1, mem.vid_ram, 1, (int)bit0(state.reg_lcdc.WEXU_LCDC_BGTILEp.state));
 
   text_painter.render_string(view, screen_size, "\002========== VRAM Tiles ==========\001", col7, row3);
   gb_blitter.blit_tiles (view, screen_size, col7, row3 + 16, 1, mem.vid_ram);
-
-  if (!app_paused) gb_thread->resume();
-
-
 
   if (1) {
     static uint8_t buf[256*256];
@@ -1079,14 +1076,12 @@ Step controls:
       32*29, 32, 256, 256);
   }
 
-
-
-
-
   frame_count++;
   frame_end = timestamp();
   frame_time = frame_end - frame_begin;
   frame_time_smooth = frame_time_smooth * 0.99 + frame_time * 0.01;
+
+  if (!app_paused) gb_thread->resume();
 }
 
 //------------------------------------------------------------------------------

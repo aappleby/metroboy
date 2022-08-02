@@ -168,14 +168,14 @@ void RegLX::reset() {
 //-----------------------------------------------------------------------------
 
 void RegLYC::reset() {
-  SYRY_LYC0p.set_state(0b00011011);
-  VUCE_LYC1p.set_state(0b00011011);
-  SEDY_LYC2p.set_state(0b00011011);
-  SALO_LYC3p.set_state(0b00011011);
-  SOTA_LYC4p.set_state(0b00011011);
-  VAFA_LYC5p.set_state(0b00011011);
-  VEVO_LYC6p.set_state(0b00011011);
-  RAHA_LYC7p.set_state(0b00011011);
+  SYRY_LYC0p.set_stateB(0b00011010);
+  VUCE_LYC1p.set_stateB(0b00011010);
+  SEDY_LYC2p.set_stateB(0b00011010);
+  SALO_LYC3p.set_stateB(0b00011010);
+  SOTA_LYC4p.set_stateB(0b00011010);
+  VAFA_LYC5p.set_stateB(0b00011010);
+  VEVO_LYC6p.set_stateB(0b00011010);
+  RAHA_LYC7p.set_stateB(0b00011010);
 }
 
 uint8_t RegLYC::get() const {
@@ -228,14 +228,14 @@ void RegWY::reset() {
 }
 
 void RegWY::set(uint8_t wy) {
-  NESO_WY0p.set_state(BIT_CLOCK | bit(~wy, 0));
-  NYRO_WY1p.set_state(BIT_CLOCK | bit(~wy, 1));
-  NAGA_WY2p.set_state(BIT_CLOCK | bit(~wy, 2));
-  MELA_WY3p.set_state(BIT_CLOCK | bit(~wy, 3));
-  NULO_WY4p.set_state(BIT_CLOCK | bit(~wy, 4));
-  NENE_WY5p.set_state(BIT_CLOCK | bit(~wy, 5));
-  NUKA_WY6p.set_state(BIT_CLOCK | bit(~wy, 6));
-  NAFU_WY7p.set_state(BIT_CLOCK | bit(~wy, 7));
+  NESO_WY0p.set_stateB(BIT_CLOCK | bit(wy, 0));
+  NYRO_WY1p.set_stateB(BIT_CLOCK | bit(wy, 1));
+  NAGA_WY2p.set_stateB(BIT_CLOCK | bit(wy, 2));
+  MELA_WY3p.set_stateB(BIT_CLOCK | bit(wy, 3));
+  NULO_WY4p.set_stateB(BIT_CLOCK | bit(wy, 4));
+  NENE_WY5p.set_stateB(BIT_CLOCK | bit(wy, 5));
+  NUKA_WY6p.set_stateB(BIT_CLOCK | bit(wy, 6));
+  NAFU_WY7p.set_stateB(BIT_CLOCK | bit(wy, 7));
 }
 
 int RegWY::get() const { return bit_pack_inv(*this); }
@@ -247,14 +247,14 @@ void RegWX::reset() {
 }
 
 void RegWX::set(uint8_t wx) {
-  MYPA_WX0p.set_state(BIT_CLOCK | bit(~wx, 0));
-  NOFE_WX1p.set_state(BIT_CLOCK | bit(~wx, 1));
-  NOKE_WX2p.set_state(BIT_CLOCK | bit(~wx, 2));
-  MEBY_WX3p.set_state(BIT_CLOCK | bit(~wx, 3));
-  MYPU_WX4p.set_state(BIT_CLOCK | bit(~wx, 4));
-  MYCE_WX5p.set_state(BIT_CLOCK | bit(~wx, 5));
-  MUVO_WX6p.set_state(BIT_CLOCK | bit(~wx, 6));
-  NUKU_WX7p.set_state(BIT_CLOCK | bit(~wx, 7));
+  MYPA_WX0p.set_stateB(BIT_CLOCK | bit(wx, 0));
+  NOFE_WX1p.set_stateB(BIT_CLOCK | bit(wx, 1));
+  NOKE_WX2p.set_stateB(BIT_CLOCK | bit(wx, 2));
+  MEBY_WX3p.set_stateB(BIT_CLOCK | bit(wx, 3));
+  MYPU_WX4p.set_stateB(BIT_CLOCK | bit(wx, 4));
+  MYCE_WX5p.set_stateB(BIT_CLOCK | bit(wx, 5));
+  MUVO_WX6p.set_stateB(BIT_CLOCK | bit(wx, 6));
+  NUKU_WX7p.set_stateB(BIT_CLOCK | bit(wx, 7));
 }
 
 int RegWX::get() const {

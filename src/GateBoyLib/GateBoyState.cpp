@@ -13,7 +13,7 @@ wire GateBoyState::XAPO_VID_RSTn_new() const {
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
   /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /*_p01.XEBE*/ wire XEBE_SYS_RSTn = not1(XORE_SYS_RSTp);
-  /*_p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, reg_lcdc.XONA_LCDC_LCDENp.qp_newB());
+  /*_p01.XODO*/ wire XODO_VID_RSTp = nand2(XEBE_SYS_RSTn, reg_lcdc.XONA_LCDC_LCDENp.qp_new());
   /*_p01.XAPO*/ wire XAPO_VID_RSTn_new = not1(XODO_VID_RSTp);
   return XAPO_VID_RSTn_new;
 

@@ -99,14 +99,14 @@ struct SpritePix {
 struct RegLCDC {
   void reset();
 
-  /*#p23.VYXE*/ DFF9B VYXE_LCDC_BGENp;   // xxxxxxxH
-  /*_p23.XYLO*/ DFF9B XYLO_LCDC_SPENp;   // xxxxxxxH
-  /*_p23.XYMO*/ DFF9B XYMO_LCDC_SPSIZEp; // xxxxxxxH
-  /*_p23.XAFO*/ DFF9B XAFO_LCDC_BGMAPp;  // xxxxxxxH
-  /*_p23.WEXU*/ DFF9B WEXU_LCDC_BGTILEp; // xxxxxxxH
-  /*_p23.WYMO*/ DFF9B WYMO_LCDC_WINENp;  // xxxxxxxH
-  /*_p23.WOKY*/ DFF9B WOKY_LCDC_WINMAPp; // xxxxxxxH
-  /*_p23.XONA*/ DFF9B XONA_LCDC_LCDENp;  // xxxxxxxH
+  /*#p23.VYXE*/ DFF9 VYXE_LCDC_BGENp;   // xxxxxxxH
+  /*_p23.XYLO*/ DFF9 XYLO_LCDC_SPENp;   // xxxxxxxH
+  /*_p23.XYMO*/ DFF9 XYMO_LCDC_SPSIZEp; // xxxxxxxH
+  /*_p23.XAFO*/ DFF9 XAFO_LCDC_BGMAPp;  // xxxxxxxH
+  /*_p23.WEXU*/ DFF9 WEXU_LCDC_BGTILEp; // xxxxxxxH
+  /*_p23.WYMO*/ DFF9 WYMO_LCDC_WINENp;  // xxxxxxxH
+  /*_p23.WOKY*/ DFF9 WOKY_LCDC_WINMAPp; // xxxxxxxH
+  /*_p23.XONA*/ DFF9 XONA_LCDC_LCDENp;  // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -115,10 +115,10 @@ struct RegLCDC {
 struct RegStat {
   void reset();
 
-  /*_p21.ROXE*/ DFF9B ROXE_STAT_HBI_ENp; // xxxxxxxH
-  /*_p21.RUFO*/ DFF9B RUFO_STAT_VBI_ENp; // xxxxxxxH
-  /*_p21.REFE*/ DFF9B REFE_STAT_OAI_ENp; // xxxxxxxH
-  /*_p21.RUGU*/ DFF9B RUGU_STAT_LYI_ENp; // xxxxxxxH
+  /*_p21.ROXE*/ DFF9 ROXE_STAT_HBI_ENp; // xxxxxxxH
+  /*_p21.RUFO*/ DFF9 RUFO_STAT_VBI_ENp; // xxxxxxxH
+  /*_p21.REFE*/ DFF9 REFE_STAT_OAI_ENp; // xxxxxxxH
+  /*_p21.RUGU*/ DFF9 RUGU_STAT_LYI_ENp; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -127,14 +127,14 @@ struct RegStat {
 struct RegSCY {
   void reset();
 
-  /*_p23.GAVE*/ DFF9B GAVE_SCY0p;          // xxxxxxxH
-  /*_p23.FYMO*/ DFF9B FYMO_SCY1p;          // xxxxxxxH
-  /*_p23.FEZU*/ DFF9B FEZU_SCY2p;          // xxxxxxxH
-  /*_p23.FUJO*/ DFF9B FUJO_SCY3p;          // xxxxxxxH
-  /*_p23.DEDE*/ DFF9B DEDE_SCY4p;          // xxxxxxxH
-  /*_p23.FOTY*/ DFF9B FOTY_SCY5p;          // xxxxxxxH
-  /*_p23.FOHA*/ DFF9B FOHA_SCY6p;          // xxxxxxxH
-  /*_p23.FUNY*/ DFF9B FUNY_SCY7p;          // xxxxxxxH
+  /*_p23.GAVE*/ DFF9 GAVE_SCY0p;          // xxxxxxxH
+  /*_p23.FYMO*/ DFF9 FYMO_SCY1p;          // xxxxxxxH
+  /*_p23.FEZU*/ DFF9 FEZU_SCY2p;          // xxxxxxxH
+  /*_p23.FUJO*/ DFF9 FUJO_SCY3p;          // xxxxxxxH
+  /*_p23.DEDE*/ DFF9 DEDE_SCY4p;          // xxxxxxxH
+  /*_p23.FOTY*/ DFF9 FOTY_SCY5p;          // xxxxxxxH
+  /*_p23.FOHA*/ DFF9 FOHA_SCY6p;          // xxxxxxxH
+  /*_p23.FUNY*/ DFF9 FUNY_SCY7p;          // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -143,14 +143,14 @@ struct RegSCY {
 struct RegSCX {
   void reset();
 
-  /*_p23.DATY*/ DFF9B DATY_SCX0p;          // xxxxxxxH
-  /*_p23.DUZU*/ DFF9B DUZU_SCX1p;          // xxxxxxxH
-  /*_p23.CYXU*/ DFF9B CYXU_SCX2p;          // xxxxxxxH
-  /*_p23.GUBO*/ DFF9B GUBO_SCX3p;          // xxxxxxxH
-  /*_p23.BEMY*/ DFF9B BEMY_SCX4p;          // xxxxxxxH
-  /*_p23.CUZY*/ DFF9B CUZY_SCX5p;          // xxxxxxxH
-  /*_p23.CABU*/ DFF9B CABU_SCX6p;          // xxxxxxxH
-  /*_p23.BAKE*/ DFF9B BAKE_SCX7p;          // xxxxxxxH
+  /*_p23.DATY*/ DFF9 DATY_SCX0p;          // xxxxxxxH
+  /*_p23.DUZU*/ DFF9 DUZU_SCX1p;          // xxxxxxxH
+  /*_p23.CYXU*/ DFF9 CYXU_SCX2p;          // xxxxxxxH
+  /*_p23.GUBO*/ DFF9 GUBO_SCX3p;          // xxxxxxxH
+  /*_p23.BEMY*/ DFF9 BEMY_SCX4p;          // xxxxxxxH
+  /*_p23.CUZY*/ DFF9 CUZY_SCX5p;          // xxxxxxxH
+  /*_p23.CABU*/ DFF9 CABU_SCX6p;          // xxxxxxxH
+  /*_p23.BAKE*/ DFF9 BAKE_SCX7p;          // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -191,14 +191,14 @@ struct RegLYC {
   void reset();
   uint8_t get() const;
 
-  /*_p23.SYRY*/ DFF9B SYRY_LYC0p; // xxxxxxxH
-  /*_p23.VUCE*/ DFF9B VUCE_LYC1p; // xxxxxxxH
-  /*_p23.SEDY*/ DFF9B SEDY_LYC2p; // xxxxxxxH
-  /*_p23.SALO*/ DFF9B SALO_LYC3p; // xxxxxxxH
-  /*_p23.SOTA*/ DFF9B SOTA_LYC4p; // xxxxxxxH
-  /*_p23.VAFA*/ DFF9B VAFA_LYC5p; // xxxxxxxH
-  /*_p23.VEVO*/ DFF9B VEVO_LYC6p; // xxxxxxxH
-  /*_p23.RAHA*/ DFF9B RAHA_LYC7p; // xxxxxxxH
+  /*_p23.SYRY*/ DFF9 SYRY_LYC0p; // xxxxxxxH
+  /*_p23.VUCE*/ DFF9 VUCE_LYC1p; // xxxxxxxH
+  /*_p23.SEDY*/ DFF9 SEDY_LYC2p; // xxxxxxxH
+  /*_p23.SALO*/ DFF9 SALO_LYC3p; // xxxxxxxH
+  /*_p23.SOTA*/ DFF9 SOTA_LYC4p; // xxxxxxxH
+  /*_p23.VAFA*/ DFF9 VAFA_LYC5p; // xxxxxxxH
+  /*_p23.VEVO*/ DFF9 VEVO_LYC6p; // xxxxxxxH
+  /*_p23.RAHA*/ DFF9 RAHA_LYC7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -207,14 +207,14 @@ struct RegLYC {
 struct RegBGP {
   void reset();
 
-  /*#p36.PAVO*/ DFF8pB PAVO_BGP_D0p; // xxxxxxxH
-  /*_p36.NUSY*/ DFF8pB NUSY_BGP_D1p; // xxxxxxxH
-  /*_p36.PYLU*/ DFF8pB PYLU_BGP_D2p; // xxxxxxxH
-  /*_p36.MAXY*/ DFF8pB MAXY_BGP_D3p; // xxxxxxxH
-  /*_p36.MUKE*/ DFF8pB MUKE_BGP_D4p; // xxxxxxxH
-  /*_p36.MORU*/ DFF8pB MORU_BGP_D5p; // xxxxxxxH
-  /*_p36.MOGY*/ DFF8pB MOGY_BGP_D6p; // xxxxxxxH
-  /*_p36.MENA*/ DFF8pB MENA_BGP_D7p; // xxxxxxxH
+  /*#p36.PAVO*/ DFF8 PAVO_BGP_D0p; // xxxxxxxH
+  /*_p36.NUSY*/ DFF8 NUSY_BGP_D1p; // xxxxxxxH
+  /*_p36.PYLU*/ DFF8 PYLU_BGP_D2p; // xxxxxxxH
+  /*_p36.MAXY*/ DFF8 MAXY_BGP_D3p; // xxxxxxxH
+  /*_p36.MUKE*/ DFF8 MUKE_BGP_D4p; // xxxxxxxH
+  /*_p36.MORU*/ DFF8 MORU_BGP_D5p; // xxxxxxxH
+  /*_p36.MOGY*/ DFF8 MOGY_BGP_D6p; // xxxxxxxH
+  /*_p36.MENA*/ DFF8 MENA_BGP_D7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -223,14 +223,14 @@ struct RegBGP {
 struct RegOBP0 {
   void reset();
 
-  /*_p36.XUFU*/ DFF8pB XUFU_OBP0_D0p; // xxxxxxxH
-  /*_p36.XUKY*/ DFF8pB XUKY_OBP0_D1p; // xxxxxxxH
-  /*_p36.XOVA*/ DFF8pB XOVA_OBP0_D2p; // xxxxxxxH
-  /*_p36.XALO*/ DFF8pB XALO_OBP0_D3p; // xxxxxxxH
-  /*_p36.XERU*/ DFF8pB XERU_OBP0_D4p; // xxxxxxxH
-  /*_p36.XYZE*/ DFF8pB XYZE_OBP0_D5p; // xxxxxxxH
-  /*_p36.XUPO*/ DFF8pB XUPO_OBP0_D6p; // xxxxxxxH
-  /*_p36.XANA*/ DFF8pB XANA_OBP0_D7p; // xxxxxxxH
+  /*_p36.XUFU*/ DFF8 XUFU_OBP0_D0p; // xxxxxxxH
+  /*_p36.XUKY*/ DFF8 XUKY_OBP0_D1p; // xxxxxxxH
+  /*_p36.XOVA*/ DFF8 XOVA_OBP0_D2p; // xxxxxxxH
+  /*_p36.XALO*/ DFF8 XALO_OBP0_D3p; // xxxxxxxH
+  /*_p36.XERU*/ DFF8 XERU_OBP0_D4p; // xxxxxxxH
+  /*_p36.XYZE*/ DFF8 XYZE_OBP0_D5p; // xxxxxxxH
+  /*_p36.XUPO*/ DFF8 XUPO_OBP0_D6p; // xxxxxxxH
+  /*_p36.XANA*/ DFF8 XANA_OBP0_D7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -239,14 +239,14 @@ struct RegOBP0 {
 struct RegOBP1 {
   void reset();
 
-  /*_p36.MOXY*/ DFF8pB MOXY_OBP1_D0p; // xxxxxxxH
-  /*_p36.LAWO*/ DFF8pB LAWO_OBP1_D1p; // xxxxxxxH
-  /*_p36.MOSA*/ DFF8pB MOSA_OBP1_D2p; // xxxxxxxH
-  /*_p36.LOSE*/ DFF8pB LOSE_OBP1_D3p; // xxxxxxxH
-  /*_p36.LUNE*/ DFF8pB LUNE_OBP1_D4p; // xxxxxxxH
-  /*_p36.LUGU*/ DFF8pB LUGU_OBP1_D5p; // xxxxxxxH
-  /*_p36.LEPU*/ DFF8pB LEPU_OBP1_D6p; // xxxxxxxH
-  /*_p36.LUXO*/ DFF8pB LUXO_OBP1_D7p; // xxxxxxxH
+  /*_p36.MOXY*/ DFF8 MOXY_OBP1_D0p; // xxxxxxxH
+  /*_p36.LAWO*/ DFF8 LAWO_OBP1_D1p; // xxxxxxxH
+  /*_p36.MOSA*/ DFF8 MOSA_OBP1_D2p; // xxxxxxxH
+  /*_p36.LOSE*/ DFF8 LOSE_OBP1_D3p; // xxxxxxxH
+  /*_p36.LUNE*/ DFF8 LUNE_OBP1_D4p; // xxxxxxxH
+  /*_p36.LUGU*/ DFF8 LUGU_OBP1_D5p; // xxxxxxxH
+  /*_p36.LEPU*/ DFF8 LEPU_OBP1_D6p; // xxxxxxxH
+  /*_p36.LUXO*/ DFF8 LUXO_OBP1_D7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -258,14 +258,14 @@ struct RegWY {
   void set(uint8_t wy);
   int get() const;
 
-  /*_p23.NESO*/ DFF9B NESO_WY0p; // xxxxxxxH
-  /*_p23.NYRO*/ DFF9B NYRO_WY1p; // xxxxxxxH
-  /*_p23.NAGA*/ DFF9B NAGA_WY2p; // xxxxxxxH
-  /*_p23.MELA*/ DFF9B MELA_WY3p; // xxxxxxxH
-  /*_p23.NULO*/ DFF9B NULO_WY4p; // xxxxxxxH
-  /*_p23.NENE*/ DFF9B NENE_WY5p; // xxxxxxxH
-  /*_p23.NUKA*/ DFF9B NUKA_WY6p; // xxxxxxxH
-  /*_p23.NAFU*/ DFF9B NAFU_WY7p; // xxxxxxxH
+  /*_p23.NESO*/ DFF9 NESO_WY0p; // xxxxxxxH
+  /*_p23.NYRO*/ DFF9 NYRO_WY1p; // xxxxxxxH
+  /*_p23.NAGA*/ DFF9 NAGA_WY2p; // xxxxxxxH
+  /*_p23.MELA*/ DFF9 MELA_WY3p; // xxxxxxxH
+  /*_p23.NULO*/ DFF9 NULO_WY4p; // xxxxxxxH
+  /*_p23.NENE*/ DFF9 NENE_WY5p; // xxxxxxxH
+  /*_p23.NUKA*/ DFF9 NUKA_WY6p; // xxxxxxxH
+  /*_p23.NAFU*/ DFF9 NAFU_WY7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -277,14 +277,14 @@ struct RegWX {
   void set(uint8_t wx);
   int get() const;
 
-  /*_p23.MYPA*/ DFF9B MYPA_WX0p; // xxxxxxxH
-  /*_p23.NOFE*/ DFF9B NOFE_WX1p; // xxxxxxxH
-  /*_p23.NOKE*/ DFF9B NOKE_WX2p; // xxxxxxxH
-  /*_p23.MEBY*/ DFF9B MEBY_WX3p; // xxxxxxxH
-  /*_p23.MYPU*/ DFF9B MYPU_WX4p; // xxxxxxxH
-  /*_p23.MYCE*/ DFF9B MYCE_WX5p; // xxxxxxxH
-  /*_p23.MUVO*/ DFF9B MUVO_WX6p; // xxxxxxxH
-  /*_p23.NUKU*/ DFF9B NUKU_WX7p; // xxxxxxxH
+  /*_p23.MYPA*/ DFF9 MYPA_WX0p; // xxxxxxxH
+  /*_p23.NOFE*/ DFF9 NOFE_WX1p; // xxxxxxxH
+  /*_p23.NOKE*/ DFF9 NOKE_WX2p; // xxxxxxxH
+  /*_p23.MEBY*/ DFF9 MEBY_WX3p; // xxxxxxxH
+  /*_p23.MYPU*/ DFF9 MYPU_WX4p; // xxxxxxxH
+  /*_p23.MYCE*/ DFF9 MYCE_WX5p; // xxxxxxxH
+  /*_p23.MUVO*/ DFF9 MUVO_WX6p; // xxxxxxxH
+  /*_p23.NUKU*/ DFF9 NUKU_WX7p; // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------
@@ -323,14 +323,14 @@ struct OamLatchB {
 struct OamTempA {
   void reset();
 
-  /*#p29.XUSO*/ DFF8nB XUSO_OAM_DA0n; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
-  /*_p29.XEGU*/ DFF8nB XEGU_OAM_DA1n; // AxxxExxx - sprite y bit 1, sprite tile index bit 1
-  /*_p29.YJEX*/ DFF8nB YJEX_OAM_DA2n; // AxxxExxx - sprite y bit 2, sprite tile index bit 2
-  /*_p29.XYJU*/ DFF8nB XYJU_OAM_DA3n; // AxxxExxx - sprite y bit 3, sprite tile index bit 3
-  /*_p29.YBOG*/ DFF8nB YBOG_OAM_DA4n; // AxxxExxx - sprite y bit 4, sprite tile index bit 4
-  /*_p29.WYSO*/ DFF8nB WYSO_OAM_DA5n; // AxxxExxx - sprite y bit 5, sprite tile index bit 5
-  /*_p29.XOTE*/ DFF8nB XOTE_OAM_DA6n; // AxxxExxx - sprite y bit 6, sprite tile index bit 6
-  /*_p29.YZAB*/ DFF8nB YZAB_OAM_DA7n; // AxxxExxx - sprite y bit 7, sprite tile index bit 7
+  /*#p29.XUSO*/ DFF8 XUSO_OAM_DA0n; // AxxxExxx - sprite y bit 0, sprite tile index bit 0
+  /*_p29.XEGU*/ DFF8 XEGU_OAM_DA1n; // AxxxExxx - sprite y bit 1, sprite tile index bit 1
+  /*_p29.YJEX*/ DFF8 YJEX_OAM_DA2n; // AxxxExxx - sprite y bit 2, sprite tile index bit 2
+  /*_p29.XYJU*/ DFF8 XYJU_OAM_DA3n; // AxxxExxx - sprite y bit 3, sprite tile index bit 3
+  /*_p29.YBOG*/ DFF8 YBOG_OAM_DA4n; // AxxxExxx - sprite y bit 4, sprite tile index bit 4
+  /*_p29.WYSO*/ DFF8 WYSO_OAM_DA5n; // AxxxExxx - sprite y bit 5, sprite tile index bit 5
+  /*_p29.XOTE*/ DFF8 XOTE_OAM_DA6n; // AxxxExxx - sprite y bit 6, sprite tile index bit 6
+  /*_p29.YZAB*/ DFF8 YZAB_OAM_DA7n; // AxxxExxx - sprite y bit 7, sprite tile index bit 7
 };
 
 //-----------------------------------------------------------------------------
@@ -339,14 +339,14 @@ struct OamTempA {
 struct OamTempB {
   void reset();
 
-  /*_p31.YLOR*/ DFF8nB YLOR_OAM_DB0n; // AxxxExxx - sprite x bit 0,
-  /*_p31.ZYTY*/ DFF8nB ZYTY_OAM_DB1n; // AxxxExxx - sprite x bit 1,
-  /*_p31.ZYVE*/ DFF8nB ZYVE_OAM_DB2n; // AxxxExxx - sprite x bit 2,
-  /*_p31.ZEZY*/ DFF8nB ZEZY_OAM_DB3n; // AxxxExxx - sprite x bit 3,
-  /*_p31.GOMO*/ DFF8nB GOMO_OAM_DB4n; // AxxxExxx - sprite x bit 4, sprite palette
-  /*_p31.BAXO*/ DFF8nB BAXO_OAM_DB5n; // AxxxExxx - sprite x bit 5, sprite x flip
-  /*_p31.YZOS*/ DFF8nB YZOS_OAM_DB6n; // AxxxExxx - sprite x bit 6, sprite y flip
-  /*_p31.DEPO*/ DFF8nB DEPO_OAM_DB7n; // AxxxExxx - sprite x bit 7, sprite priority
+  /*_p31.YLOR*/ DFF8 YLOR_OAM_DB0n; // AxxxExxx - sprite x bit 0,
+  /*_p31.ZYTY*/ DFF8 ZYTY_OAM_DB1n; // AxxxExxx - sprite x bit 1,
+  /*_p31.ZYVE*/ DFF8 ZYVE_OAM_DB2n; // AxxxExxx - sprite x bit 2,
+  /*_p31.ZEZY*/ DFF8 ZEZY_OAM_DB3n; // AxxxExxx - sprite x bit 3,
+  /*_p31.GOMO*/ DFF8 GOMO_OAM_DB4n; // AxxxExxx - sprite x bit 4, sprite palette
+  /*_p31.BAXO*/ DFF8 BAXO_OAM_DB5n; // AxxxExxx - sprite x bit 5, sprite x flip
+  /*_p31.YZOS*/ DFF8 YZOS_OAM_DB6n; // AxxxExxx - sprite x bit 6, sprite y flip
+  /*_p31.DEPO*/ DFF8 DEPO_OAM_DB7n; // AxxxExxx - sprite x bit 7, sprite priority
 };
 
 //-----------------------------------------------------------------------------
@@ -354,14 +354,14 @@ struct OamTempB {
 struct TileTempA {
   void reset();
 
-  /*_p32.LEGU*/ DFF8pB LEGU_TILE_DA0p;   // xBxDxFxH
-  /*_p32.NUDU*/ DFF8pB NUDU_TILE_DA1p;   // xBxDxFxH
-  /*_p32.MUKU*/ DFF8pB MUKU_TILE_DA2p;   // xBxDxFxH
-  /*_p32.LUZO*/ DFF8pB LUZO_TILE_DA3p;   // xBxDxFxH
-  /*_p32.MEGU*/ DFF8pB MEGU_TILE_DA4p;   // xBxDxFxH
-  /*_p32.MYJY*/ DFF8pB MYJY_TILE_DA5p;   // xBxDxFxH
-  /*_p32.NASA*/ DFF8pB NASA_TILE_DA6p;   // xBxDxFxH
-  /*_p32.NEFO*/ DFF8pB NEFO_TILE_DA7p;   // xBxDxFxH
+  /*_p32.LEGU*/ DFF8 LEGU_TILE_DA0p;   // xBxDxFxH
+  /*_p32.NUDU*/ DFF8 NUDU_TILE_DA1p;   // xBxDxFxH
+  /*_p32.MUKU*/ DFF8 MUKU_TILE_DA2p;   // xBxDxFxH
+  /*_p32.LUZO*/ DFF8 LUZO_TILE_DA3p;   // xBxDxFxH
+  /*_p32.MEGU*/ DFF8 MEGU_TILE_DA4p;   // xBxDxFxH
+  /*_p32.MYJY*/ DFF8 MYJY_TILE_DA5p;   // xBxDxFxH
+  /*_p32.NASA*/ DFF8 NASA_TILE_DA6p;   // xBxDxFxH
+  /*_p32.NEFO*/ DFF8 NEFO_TILE_DA7p;   // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------
@@ -384,14 +384,14 @@ struct TileTempB {
 struct SpritePixA {
   void reset();
 
-  /*_p33.REWO*/ DFF8nB REWO_SPRITE_DA0p; // xBxDxFxH
-  /*_p33.PEBA*/ DFF8nB PEBA_SPRITE_DA1p; // xBxDxFxH
-  /*_p33.MOFO*/ DFF8nB MOFO_SPRITE_DA2p; // xBxDxFxH
-  /*_p33.PUDU*/ DFF8nB PUDU_SPRITE_DA3p; // xBxDxFxH
-  /*_p33.SAJA*/ DFF8nB SAJA_SPRITE_DA4p; // xBxDxFxH
-  /*_p33.SUNY*/ DFF8nB SUNY_SPRITE_DA5p; // xBxDxFxH
-  /*_p33.SEMO*/ DFF8nB SEMO_SPRITE_DA6p; // xBxDxFxH
-  /*_p33.SEGA*/ DFF8nB SEGA_SPRITE_DA7p; // xBxDxFxH
+  /*_p33.REWO*/ DFF8 REWO_SPRITE_DA0p; // xBxDxFxH
+  /*_p33.PEBA*/ DFF8 PEBA_SPRITE_DA1p; // xBxDxFxH
+  /*_p33.MOFO*/ DFF8 MOFO_SPRITE_DA2p; // xBxDxFxH
+  /*_p33.PUDU*/ DFF8 PUDU_SPRITE_DA3p; // xBxDxFxH
+  /*_p33.SAJA*/ DFF8 SAJA_SPRITE_DA4p; // xBxDxFxH
+  /*_p33.SUNY*/ DFF8 SUNY_SPRITE_DA5p; // xBxDxFxH
+  /*_p33.SEMO*/ DFF8 SEMO_SPRITE_DA6p; // xBxDxFxH
+  /*_p33.SEGA*/ DFF8 SEGA_SPRITE_DA7p; // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------
@@ -399,14 +399,14 @@ struct SpritePixA {
 struct SpritePixB {
   void reset();
 
-  /*_p33.PEFO*/ DFF8nB PEFO_SPRITE_DB0p; // xBxDxFxH
-  /*_p33.ROKA*/ DFF8nB ROKA_SPRITE_DB1p; // xBxDxFxH
-  /*_p33.MYTU*/ DFF8nB MYTU_SPRITE_DB2p; // xBxDxFxH
-  /*_p33.RAMU*/ DFF8nB RAMU_SPRITE_DB3p; // xBxDxFxH
-  /*_p33.SELE*/ DFF8nB SELE_SPRITE_DB4p; // xBxDxFxH
-  /*_p33.SUTO*/ DFF8nB SUTO_SPRITE_DB5p; // xBxDxFxH
-  /*_p33.RAMA*/ DFF8nB RAMA_SPRITE_DB6p; // xBxDxFxH
-  /*_p33.RYDU*/ DFF8nB RYDU_SPRITE_DB7p; // xBxDxFxH
+  /*_p33.PEFO*/ DFF8 PEFO_SPRITE_DB0p; // xBxDxFxH
+  /*_p33.ROKA*/ DFF8 ROKA_SPRITE_DB1p; // xBxDxFxH
+  /*_p33.MYTU*/ DFF8 MYTU_SPRITE_DB2p; // xBxDxFxH
+  /*_p33.RAMU*/ DFF8 RAMU_SPRITE_DB3p; // xBxDxFxH
+  /*_p33.SELE*/ DFF8 SELE_SPRITE_DB4p; // xBxDxFxH
+  /*_p33.SUTO*/ DFF8 SUTO_SPRITE_DB5p; // xBxDxFxH
+  /*_p33.RAMA*/ DFF8 RAMA_SPRITE_DB6p; // xBxDxFxH
+  /*_p33.RYDU*/ DFF8 RYDU_SPRITE_DB7p; // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------

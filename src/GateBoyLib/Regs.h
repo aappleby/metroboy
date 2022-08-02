@@ -183,44 +183,7 @@ struct DFF : public BitBase {
 
 //-----------------------------------------------------------------------------
 // 8-rung register with no reset and dual outputs.
-
-// DFF8_01 |o------O | << CLKn
-// DFF8_02 |====O====| << Dp
-// DFF8_03 |  -----  |
-// DFF8_04 |O-------o| << CLKp
-// DFF8_05 |  -----  |
-// DFF8_06 |==     ==|
-// DFF8_07 |xxx-O-xxx| >> Qp
-// DFF8_08 |xxx-O-xxx| >> Qn or this rung can be empty
-
-struct DFF8nB : private BitBase {
-  void set_state(uint8_t new_state) { state = new_state ^ 1; }
-  void set_stateB(uint8_t new_state) { state = new_state; }
-
-  wire qp_oldB() const { return qp_old(); }
-  wire qn_oldB() const { return qn_old(); }
-
-  wire qp_anyB() const { return qp_any(); }
-  wire qn_anyB() const { return qn_any(); }
-
-  wire qp_newB() const { return qp_new(); }
-  wire qn_newB() const { return qn_new(); }
-
-  void dff8nB(wire CLKn, wire Dp) {
-    check_invalid();
-
-    wire clk_old = state & BIT_CLOCK;
-    wire clk_new = (CLKn << 1) & BIT_CLOCK;
-
-    wire d1 = (!clk_old && clk_new) ? Dp : state;
-
-    state = bit0(d1) | clk_new | BIT_NEW | BIT_DRIVEN;
-  }
-};
-
-//-----------------------------------------------------------------------------
-// Same w/ swapped clock inputs, not 100% positive this is correct but BGP has
-// to latch on the rising edge of the clock or m3_bgp_change is way off.
+// BGP has to latch on the rising edge of the clock or m3_bgp_change is way off.
 
 // DFF8_01 |o------O | << CLKp
 // DFF8_02 |====O====| << Dp
@@ -231,21 +194,11 @@ struct DFF8nB : private BitBase {
 // DFF8_07 |xxx-O-xxx| >> Qp
 // DFF8_08 |xxx-O-xxx| >> Qn (or this rung can be empty)
 
-struct DFF8pB : private BitBase {
+struct DFF8 : public BitBase {
 
   void set_state(uint8_t new_state) { state = new_state ^ 1; }
-  void set_stateB(uint8_t new_state) { state = new_state; }
 
-  wire qp_oldB() const { return qp_old(); }
-  wire qn_oldB() const { return qn_old(); }
-
-  wire qp_anyB() const { return qp_any(); }
-  wire qn_anyB() const { return qn_any(); }
-
-  wire qp_newB() const { return qp_new(); }
-  wire qn_newB() const { return qn_new(); }
-
-  void dff8pB(wire CLKp, wire Dp) {
+  void dff8(wire CLKp, wire Dp) {
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;
@@ -271,23 +224,11 @@ struct DFF8pB : private BitBase {
 // DFF9_08 |xxx-O-xxx| >> Qp
 // DFF9_09 |xxx-O-xxx| >> Qn
 
-struct DFF9B : private BitBase {
+struct DFF9 : public BitBase {
 
-  using BitBase::state;
-  using BitBase::qp_any;
-  using BitBase::qn_any;
+  void set_state(uint8_t new_state) { state = new_state; }
 
-  //uint8_t get_state() const { return state; }
-  //void set_state(uint8_t new_state) { state = new_state ^ 1; }
-  void set_stateB(uint8_t new_state) { state = new_state; }
-
-  wire qp_oldB() const { return qp_old(); }
-  wire qn_oldB() const { return qn_old(); }
-
-  wire qp_newB() const { return qp_new(); }
-  wire qn_newB() const { return qn_new(); }
-
-  void dff9b(wire CLKp, wire RSTn, wire Dp) {
+  void dff9(wire CLKp, wire RSTn, wire Dp) {
     check_invalid();
 
     wire clk_old = state & BIT_CLOCK;

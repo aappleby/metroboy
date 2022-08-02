@@ -13,10 +13,10 @@ struct GateBoyClock {
   /*_p01.ANOS*/ Gate ANOS_xBxDxFxH; // NAND latch deglitcher
   /*_p01.AVET*/ Gate AVET_AxCxExGx; // NAND latch deglitcher
 
-  /*_p01.AFUR*/ DFF9B AFUR_ABCDxxxx;
-  /*_p01.ALEF*/ DFF9B ALEF_xBCDExxx;
-  /*_p01.APUK*/ DFF9B APUK_xxCDEFxx;
-  /*_p01.ADYK*/ DFF9B ADYK_xxxDEFGx;
+  /*_p01.AFUR*/ DFF9 AFUR_ABCDxxxx;
+  /*_p01.ALEF*/ DFF9 ALEF_xBCDExxx;
+  /*_p01.APUK*/ DFF9 APUK_xxCDEFxx;
+  /*_p01.ADYK*/ DFF9 ADYK_xxxDEFGx;
 
   /*_p29.WUVU*/ DFF17 WUVU_ABxxEFxx;
   /*_p21.VENA*/ DFF17 VENA_xxCDEFxx;

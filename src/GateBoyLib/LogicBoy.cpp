@@ -2506,10 +2506,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sys_clk.AVET_AxCxExGx.state = pins.sys.PIN_74_CLK.CLK.state; // dead signal
     state_new.sys_clk.ANOS_xBxDxFxH.state = !pins.sys.PIN_74_CLK.CLK.state; // dead signal
 
-    state_new.sys_clk.AFUR_ABCDxxxx.set_stateB(gen_clk(phase_new, 0b11110000)); // dead signal
-    state_new.sys_clk.ALEF_xBCDExxx.set_stateB(gen_clk(phase_new, 0b01111000)); // dead signal
-    state_new.sys_clk.APUK_xxCDEFxx.set_stateB(gen_clk(phase_new, 0b00111100)); // dead signal
-    state_new.sys_clk.ADYK_xxxDEFGx.set_stateB(gen_clk(phase_new, 0b00011110)); // dead signal
+    state_new.sys_clk.AFUR_ABCDxxxx.set_state(gen_clk(phase_new, 0b11110000)); // dead signal
+    state_new.sys_clk.ALEF_xBCDExxx.set_state(gen_clk(phase_new, 0b01111000)); // dead signal
+    state_new.sys_clk.APUK_xxCDEFxx.set_state(gen_clk(phase_new, 0b00111100)); // dead signal
+    state_new.sys_clk.ADYK_xxxDEFGx.set_state(gen_clk(phase_new, 0b00011110)); // dead signal
 
     pins.sys.PIN_75_CLK_OUT.state = gen_clk(phase_new, 0b00001111); // dead signal
 

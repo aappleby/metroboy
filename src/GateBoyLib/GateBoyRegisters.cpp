@@ -17,14 +17,14 @@ SpriteDeltaY GateBoy::sub_sprite_y_gates() {
   /*_p29.FEMO*/ wire FEMO_LY6n = not1(reg_new.reg_ly.MATO_LY6p_odd.qp_new());
   /*_p29.GUSU*/ wire GUSU_LY7n = not1(reg_new.reg_ly.LAFO_LY7p_odd.qp_new());
 
-  /*_p29.ERUC*/ Adder ERUC_YDIFF0 = add3(EBOS_LY0n, reg_new.oam_temp_a.XUSO_OAM_DA0n.qn_newB(), reg_new.SIG_GND.out_new());
-  /*_p29.ENEF*/ Adder ENEF_YDIFF1 = add3(DASA_LY1n, reg_new.oam_temp_a.XEGU_OAM_DA1n.qn_newB(), ERUC_YDIFF0.carry);
-  /*_p29.FECO*/ Adder FECO_YDIFF2 = add3(FUKY_LY2n, reg_new.oam_temp_a.YJEX_OAM_DA2n.qn_newB(), ENEF_YDIFF1.carry);
-  /*_p29.GYKY*/ Adder GYKY_YDIFF3 = add3(FUVE_LY3n, reg_new.oam_temp_a.XYJU_OAM_DA3n.qn_newB(), FECO_YDIFF2.carry);
-  /*_p29.GOPU*/ Adder GOPU_YDIFF4 = add3(FEPU_LY4n, reg_new.oam_temp_a.YBOG_OAM_DA4n.qn_newB(), GYKY_YDIFF3.carry);
-  /*_p29.FUWA*/ Adder FUWA_YDIFF5 = add3(FOFA_LY5n, reg_new.oam_temp_a.WYSO_OAM_DA5n.qn_newB(), GOPU_YDIFF4.carry);
-  /*_p29.GOJU*/ Adder GOJU_YDIFF6 = add3(FEMO_LY6n, reg_new.oam_temp_a.XOTE_OAM_DA6n.qn_newB(), FUWA_YDIFF5.carry);
-  /*_p29.WUHU*/ Adder WUHU_YDIFF7 = add3(GUSU_LY7n, reg_new.oam_temp_a.YZAB_OAM_DA7n.qn_newB(), GOJU_YDIFF6.carry);
+  /*_p29.ERUC*/ Adder ERUC_YDIFF0 = add3(EBOS_LY0n, reg_new.oam_temp_a.XUSO_OAM_DA0n.qn_new(), reg_new.SIG_GND.out_new());
+  /*_p29.ENEF*/ Adder ENEF_YDIFF1 = add3(DASA_LY1n, reg_new.oam_temp_a.XEGU_OAM_DA1n.qn_new(), ERUC_YDIFF0.carry);
+  /*_p29.FECO*/ Adder FECO_YDIFF2 = add3(FUKY_LY2n, reg_new.oam_temp_a.YJEX_OAM_DA2n.qn_new(), ENEF_YDIFF1.carry);
+  /*_p29.GYKY*/ Adder GYKY_YDIFF3 = add3(FUVE_LY3n, reg_new.oam_temp_a.XYJU_OAM_DA3n.qn_new(), FECO_YDIFF2.carry);
+  /*_p29.GOPU*/ Adder GOPU_YDIFF4 = add3(FEPU_LY4n, reg_new.oam_temp_a.YBOG_OAM_DA4n.qn_new(), GYKY_YDIFF3.carry);
+  /*_p29.FUWA*/ Adder FUWA_YDIFF5 = add3(FOFA_LY5n, reg_new.oam_temp_a.WYSO_OAM_DA5n.qn_new(), GOPU_YDIFF4.carry);
+  /*_p29.GOJU*/ Adder GOJU_YDIFF6 = add3(FEMO_LY6n, reg_new.oam_temp_a.XOTE_OAM_DA6n.qn_new(), FUWA_YDIFF5.carry);
+  /*_p29.WUHU*/ Adder WUHU_YDIFF7 = add3(GUSU_LY7n, reg_new.oam_temp_a.YZAB_OAM_DA7n.qn_new(), GOJU_YDIFF6.carry);
 
   return {
     ERUC_YDIFF0,
@@ -54,27 +54,27 @@ void GateBoy::tock_lcdc_gates(const GateBoyState& reg_old) {
   /*#p01.XORE*/ wire XORE_SYS_RSTp = not1(CUNU_SYS_RSTn);
   /*_p01.XARE*/ wire XARE_SYS_RSTn = not1(XORE_SYS_RSTp);
 
-  /*#p23.VYXE*/ reg_new.reg_lcdc.VYXE_LCDC_BGENp  .dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  /*_p23.XYLO*/ reg_new.reg_lcdc.XYLO_LCDC_SPENp  .dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  /*_p23.XYMO*/ reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-  /*_p23.XAFO*/ reg_new.reg_lcdc.XAFO_LCDC_BGMAPp .dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p23.WEXU*/ reg_new.reg_lcdc.WEXU_LCDC_BGTILEp.dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p23.WYMO*/ reg_new.reg_lcdc.WYMO_LCDC_WINENp .dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p23.WOKY*/ reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-  /*_p23.XONA*/ reg_new.reg_lcdc.XONA_LCDC_LCDENp. dff9b(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+  /*#p23.VYXE*/ reg_new.reg_lcdc.VYXE_LCDC_BGENp  .dff9(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+  /*_p23.XYLO*/ reg_new.reg_lcdc.XYLO_LCDC_SPENp  .dff9(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+  /*_p23.XYMO*/ reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.dff9(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+  /*_p23.XAFO*/ reg_new.reg_lcdc.XAFO_LCDC_BGMAPp .dff9(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p23.WEXU*/ reg_new.reg_lcdc.WEXU_LCDC_BGTILEp.dff9(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p23.WYMO*/ reg_new.reg_lcdc.WYMO_LCDC_WINENp .dff9(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p23.WOKY*/ reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.dff9(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p23.XONA*/ reg_new.reg_lcdc.XONA_LCDC_LCDENp. dff9(XUBO_FF40_WRn_new, XARE_SYS_RSTn, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
   /*_p07.AJAS*/ wire AJAS_CPU_RDn_new = not1(reg_new.cpu_signals.TEDO_CPU_RDp.out_new());
   /*_p07.ASOT*/ wire ASOT_CPU_RDp_new = not1(AJAS_CPU_RDn_new);
   /*_p23.VYRE*/ wire VYRE_FF40_RDp_new = and2(ASOT_CPU_RDp_new, reg_new.cpu_abus.VOCA_FF40p_new());
   /*_p23.WYCE*/ wire WYCE_FF40_RDn_new = not1(VYRE_FF40_RDp_new);
-  /*#p23.WYPO*/ triwire WYPO_LCDC0_TO_CD0_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.VYXE_LCDC_BGENp.qn_newB());
-  /*#p23.XERO*/ triwire XERO_LCDC1_TO_CD1_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XYLO_LCDC_SPENp.qn_newB());
-  /*_p23.WYJU*/ triwire WYJU_LCDC2_TO_CD2_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.qn_newB());
-  /*_p23.WUKA*/ triwire WUKA_LCDC3_TO_CD3_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XAFO_LCDC_BGMAPp.qn_newB());
-  /*_p23.VOKE*/ triwire VOKE_LCDC4_TO_CD4_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WEXU_LCDC_BGTILEp.qn_newB());
-  /*_p23.VATO*/ triwire VATO_LCDC5_TO_CD5_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WYMO_LCDC_WINENp.qn_newB());
-  /*#p23.VAHA*/ triwire VAHA_LCDC6_TO_CD6_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.qn_newB());
-  /*#p23.XEBU*/ triwire XEBU_LCDC7_TO_CD7_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XONA_LCDC_LCDENp.qn_newB());
+  /*#p23.WYPO*/ triwire WYPO_LCDC0_TO_CD0_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.VYXE_LCDC_BGENp.qn_new());
+  /*#p23.XERO*/ triwire XERO_LCDC1_TO_CD1_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XYLO_LCDC_SPENp.qn_new());
+  /*_p23.WYJU*/ triwire WYJU_LCDC2_TO_CD2_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XYMO_LCDC_SPSIZEp.qn_new());
+  /*_p23.WUKA*/ triwire WUKA_LCDC3_TO_CD3_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XAFO_LCDC_BGMAPp.qn_new());
+  /*_p23.VOKE*/ triwire VOKE_LCDC4_TO_CD4_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WEXU_LCDC_BGTILEp.qn_new());
+  /*_p23.VATO*/ triwire VATO_LCDC5_TO_CD5_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WYMO_LCDC_WINENp.qn_new());
+  /*#p23.VAHA*/ triwire VAHA_LCDC6_TO_CD6_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.WOKY_LCDC_WINMAPp.qn_new());
+  /*#p23.XEBU*/ triwire XEBU_LCDC7_TO_CD7_new = tri6_nn(WYCE_FF40_RDn_new, reg_new.reg_lcdc.XONA_LCDC_LCDENp.qn_new());
 
   /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(WYPO_LCDC0_TO_CD0_new);
   /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(XERO_LCDC1_TO_CD1_new);
@@ -118,14 +118,14 @@ void SpritePix::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0); }
 //-----------------------------------------------------------------------------
 
 void RegLCDC::reset() {
-  VYXE_LCDC_BGENp  .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
-  XYLO_LCDC_SPENp  .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
-  XYMO_LCDC_SPSIZEp.set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
-  XAFO_LCDC_BGMAPp .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
-  WEXU_LCDC_BGTILEp.set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
-  WYMO_LCDC_WINENp .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
-  WOKY_LCDC_WINMAPp.set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
-  XONA_LCDC_LCDENp .set_stateB(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
+  VYXE_LCDC_BGENp  .set_state(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
+  XYLO_LCDC_SPENp  .set_state(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  XYMO_LCDC_SPSIZEp.set_state(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  XAFO_LCDC_BGMAPp .set_state(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  WEXU_LCDC_BGTILEp.set_state(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
+  WYMO_LCDC_WINENp .set_state(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  WOKY_LCDC_WINMAPp.set_state(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 0);
+  XONA_LCDC_LCDENp .set_state(BIT_OLD | BIT_DRIVEN | BIT_CLOCK | 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -168,14 +168,14 @@ void RegLX::reset() {
 //-----------------------------------------------------------------------------
 
 void RegLYC::reset() {
-  SYRY_LYC0p.set_stateB(0b00011010);
-  VUCE_LYC1p.set_stateB(0b00011010);
-  SEDY_LYC2p.set_stateB(0b00011010);
-  SALO_LYC3p.set_stateB(0b00011010);
-  SOTA_LYC4p.set_stateB(0b00011010);
-  VAFA_LYC5p.set_stateB(0b00011010);
-  VEVO_LYC6p.set_stateB(0b00011010);
-  RAHA_LYC7p.set_stateB(0b00011010);
+  SYRY_LYC0p.set_state(0b00011010);
+  VUCE_LYC1p.set_state(0b00011010);
+  SEDY_LYC2p.set_state(0b00011010);
+  SALO_LYC3p.set_state(0b00011010);
+  SOTA_LYC4p.set_state(0b00011010);
+  VAFA_LYC5p.set_state(0b00011010);
+  VEVO_LYC6p.set_state(0b00011010);
+  RAHA_LYC7p.set_state(0b00011010);
 }
 
 uint8_t RegLYC::get() const {
@@ -228,14 +228,14 @@ void RegWY::reset() {
 }
 
 void RegWY::set(uint8_t wy) {
-  NESO_WY0p.set_stateB(BIT_CLOCK | bit(wy, 0));
-  NYRO_WY1p.set_stateB(BIT_CLOCK | bit(wy, 1));
-  NAGA_WY2p.set_stateB(BIT_CLOCK | bit(wy, 2));
-  MELA_WY3p.set_stateB(BIT_CLOCK | bit(wy, 3));
-  NULO_WY4p.set_stateB(BIT_CLOCK | bit(wy, 4));
-  NENE_WY5p.set_stateB(BIT_CLOCK | bit(wy, 5));
-  NUKA_WY6p.set_stateB(BIT_CLOCK | bit(wy, 6));
-  NAFU_WY7p.set_stateB(BIT_CLOCK | bit(wy, 7));
+  NESO_WY0p.set_state(BIT_CLOCK | bit(wy, 0));
+  NYRO_WY1p.set_state(BIT_CLOCK | bit(wy, 1));
+  NAGA_WY2p.set_state(BIT_CLOCK | bit(wy, 2));
+  MELA_WY3p.set_state(BIT_CLOCK | bit(wy, 3));
+  NULO_WY4p.set_state(BIT_CLOCK | bit(wy, 4));
+  NENE_WY5p.set_state(BIT_CLOCK | bit(wy, 5));
+  NUKA_WY6p.set_state(BIT_CLOCK | bit(wy, 6));
+  NAFU_WY7p.set_state(BIT_CLOCK | bit(wy, 7));
 }
 
 int RegWY::get() const { return bit_pack_inv(*this); }
@@ -247,14 +247,14 @@ void RegWX::reset() {
 }
 
 void RegWX::set(uint8_t wx) {
-  MYPA_WX0p.set_stateB(BIT_CLOCK | bit(wx, 0));
-  NOFE_WX1p.set_stateB(BIT_CLOCK | bit(wx, 1));
-  NOKE_WX2p.set_stateB(BIT_CLOCK | bit(wx, 2));
-  MEBY_WX3p.set_stateB(BIT_CLOCK | bit(wx, 3));
-  MYPU_WX4p.set_stateB(BIT_CLOCK | bit(wx, 4));
-  MYCE_WX5p.set_stateB(BIT_CLOCK | bit(wx, 5));
-  MUVO_WX6p.set_stateB(BIT_CLOCK | bit(wx, 6));
-  NUKU_WX7p.set_stateB(BIT_CLOCK | bit(wx, 7));
+  MYPA_WX0p.set_state(BIT_CLOCK | bit(wx, 0));
+  NOFE_WX1p.set_state(BIT_CLOCK | bit(wx, 1));
+  NOKE_WX2p.set_state(BIT_CLOCK | bit(wx, 2));
+  MEBY_WX3p.set_state(BIT_CLOCK | bit(wx, 3));
+  MYPU_WX4p.set_state(BIT_CLOCK | bit(wx, 4));
+  MYCE_WX5p.set_state(BIT_CLOCK | bit(wx, 5));
+  MUVO_WX6p.set_state(BIT_CLOCK | bit(wx, 6));
+  NUKU_WX7p.set_state(BIT_CLOCK | bit(wx, 7));
 }
 
 int RegWX::get() const {

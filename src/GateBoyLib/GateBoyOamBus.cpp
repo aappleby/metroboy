@@ -16,14 +16,14 @@ void GateBoy::oam_latch_to_temp_a_gates(const GateBoyState& reg_old, wire COTA_O
 
   // Must be dff8nB not p or sprites in zelda break
 
-  /*#p29.XUSO*/ reg_new.oam_temp_a.XUSO_OAM_DA0n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
-  /*_p29.XEGU*/ reg_new.oam_temp_a.XEGU_OAM_DA1n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.YCEB_OAM_LATCH_DA1n.qp_old());
-  /*_p29.YJEX*/ reg_new.oam_temp_a.YJEX_OAM_DA2n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.ZUCA_OAM_LATCH_DA2n.qp_old());
-  /*_p29.XYJU*/ reg_new.oam_temp_a.XYJU_OAM_DA3n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.WONE_OAM_LATCH_DA3n.qp_old());
-  /*_p29.YBOG*/ reg_new.oam_temp_a.YBOG_OAM_DA4n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.ZAXE_OAM_LATCH_DA4n.qp_old());
-  /*_p29.WYSO*/ reg_new.oam_temp_a.WYSO_OAM_DA5n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.XAFU_OAM_LATCH_DA5n.qp_old());
-  /*_p29.XOTE*/ reg_new.oam_temp_a.XOTE_OAM_DA6n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.YSES_OAM_LATCH_DA6n.qp_old());
-  /*_p29.YZAB*/ reg_new.oam_temp_a.YZAB_OAM_DA7n.dff8nB(YWOK_OAM_CLKp, reg_old.oam_latch_a.ZECA_OAM_LATCH_DA7n.qp_old());
+  /*#p29.XUSO*/ reg_new.oam_temp_a.XUSO_OAM_DA0n.dff8(YWOK_OAM_CLKp, reg_old.oam_latch_a.YDYV_OAM_LATCH_DA0n.qp_old());
+  /*_p29.XEGU*/ reg_new.oam_temp_a.XEGU_OAM_DA1n.dff8(YWOK_OAM_CLKp, reg_old.oam_latch_a.YCEB_OAM_LATCH_DA1n.qp_old());
+  /*_p29.YJEX*/ reg_new.oam_temp_a.YJEX_OAM_DA2n.dff8(YWOK_OAM_CLKp, reg_old.oam_latch_a.ZUCA_OAM_LATCH_DA2n.qp_old());
+  /*_p29.XYJU*/ reg_new.oam_temp_a.XYJU_OAM_DA3n.dff8(YWOK_OAM_CLKp, reg_old.oam_latch_a.WONE_OAM_LATCH_DA3n.qp_old());
+  /*_p29.YBOG*/ reg_new.oam_temp_a.YBOG_OAM_DA4n.dff8(YWOK_OAM_CLKp, reg_old.oam_latch_a.ZAXE_OAM_LATCH_DA4n.qp_old());
+  /*_p29.WYSO*/ reg_new.oam_temp_a.WYSO_OAM_DA5n.dff8(YWOK_OAM_CLKp, reg_old.oam_latch_a.XAFU_OAM_LATCH_DA5n.qp_old());
+  /*_p29.XOTE*/ reg_new.oam_temp_a.XOTE_OAM_DA6n.dff8(YWOK_OAM_CLKp, reg_old.oam_latch_a.YSES_OAM_LATCH_DA6n.qp_old());
+  /*_p29.YZAB*/ reg_new.oam_temp_a.YZAB_OAM_DA7n.dff8(YWOK_OAM_CLKp, reg_old.oam_latch_a.ZECA_OAM_LATCH_DA7n.qp_old());
 }
 
 void GateBoy::oam_latch_to_temp_b_gates(const GateBoyState& reg_old, wire COTA_OAM_CLKn)
@@ -34,14 +34,14 @@ void GateBoy::oam_latch_to_temp_b_gates(const GateBoyState& reg_old, wire COTA_O
 
   // Must be dff8nB not p or sprites in zelda break
 
-  /*_p31.YLOR*/ reg_new.oam_temp_b.YLOR_OAM_DB0n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.XYKY_OAM_LATCH_DB0n.qp_old());
-  /*_p31.ZYTY*/ reg_new.oam_temp_b.ZYTY_OAM_DB1n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.YRUM_OAM_LATCH_DB1n.qp_old());
-  /*_p31.ZYVE*/ reg_new.oam_temp_b.ZYVE_OAM_DB2n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.YSEX_OAM_LATCH_DB2n.qp_old());
-  /*_p31.ZEZY*/ reg_new.oam_temp_b.ZEZY_OAM_DB3n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.YVEL_OAM_LATCH_DB3n.qp_old());
-  /*_p31.GOMO*/ reg_new.oam_temp_b.GOMO_OAM_DB4n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.WYNO_OAM_LATCH_DB4n.qp_old());
-  /*_p31.BAXO*/ reg_new.oam_temp_b.BAXO_OAM_DB5n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.CYRA_OAM_LATCH_DB5n.qp_old());
-  /*_p31.YZOS*/ reg_new.oam_temp_b.YZOS_OAM_DB6n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.ZUVE_OAM_LATCH_DB6n.qp_old());
-  /*_p31.DEPO*/ reg_new.oam_temp_b.DEPO_OAM_DB7n.dff8nB(XEGA_OAM_CLKp, reg_old.oam_latch_b.ECED_OAM_LATCH_DB7n.qp_old());
+  /*_p31.YLOR*/ reg_new.oam_temp_b.YLOR_OAM_DB0n.dff8(XEGA_OAM_CLKp, reg_old.oam_latch_b.XYKY_OAM_LATCH_DB0n.qp_old());
+  /*_p31.ZYTY*/ reg_new.oam_temp_b.ZYTY_OAM_DB1n.dff8(XEGA_OAM_CLKp, reg_old.oam_latch_b.YRUM_OAM_LATCH_DB1n.qp_old());
+  /*_p31.ZYVE*/ reg_new.oam_temp_b.ZYVE_OAM_DB2n.dff8(XEGA_OAM_CLKp, reg_old.oam_latch_b.YSEX_OAM_LATCH_DB2n.qp_old());
+  /*_p31.ZEZY*/ reg_new.oam_temp_b.ZEZY_OAM_DB3n.dff8(XEGA_OAM_CLKp, reg_old.oam_latch_b.YVEL_OAM_LATCH_DB3n.qp_old());
+  /*_p31.GOMO*/ reg_new.oam_temp_b.GOMO_OAM_DB4n.dff8(XEGA_OAM_CLKp, reg_old.oam_latch_b.WYNO_OAM_LATCH_DB4n.qp_old());
+  /*_p31.BAXO*/ reg_new.oam_temp_b.BAXO_OAM_DB5n.dff8(XEGA_OAM_CLKp, reg_old.oam_latch_b.CYRA_OAM_LATCH_DB5n.qp_old());
+  /*_p31.YZOS*/ reg_new.oam_temp_b.YZOS_OAM_DB6n.dff8(XEGA_OAM_CLKp, reg_old.oam_latch_b.ZUVE_OAM_LATCH_DB6n.qp_old());
+  /*_p31.DEPO*/ reg_new.oam_temp_b.DEPO_OAM_DB7n.dff8(XEGA_OAM_CLKp, reg_old.oam_latch_b.ECED_OAM_LATCH_DB7n.qp_old());
 }
 
 //-----------------------------------------------------------------------------
@@ -141,7 +141,7 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   // cpu to oam data bus
 
   /*_p01.ABOL*/ wire ABOL_CLKREQn  = not1(reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
-  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_newB());
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_new());
   /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
   /*#p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
   /*#p01.BUDE*/ wire BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
@@ -208,8 +208,8 @@ void GateBoy::tock_oam_bus_gates(const GateBoyState& reg_old)
   /*_p25.TUBE*/ wire TUBE_EXT_D6p_new = not1(pins.dbus.PIN_23_D06.qp_int_new());
   /*_p25.SYZO*/ wire SYZO_EXT_D7p_new = not1(pins.dbus.PIN_24_D07.qp_int_new());
 
-  /*#p04.LEBU*/ wire LEBU_DMA_A15n_new  = not1(reg_new.reg_dma.MARU_DMA_A15p.qp_newB());
-  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp_new = nor3(reg_new.reg_dma.PULA_DMA_A13p.qp_newB(), reg_new.reg_dma.POKU_DMA_A14p.qp_newB(), LEBU_DMA_A15n_new);
+  /*#p04.LEBU*/ wire LEBU_DMA_A15n_new  = not1(reg_new.reg_dma.MARU_DMA_A15p.qp_new());
+  /*#p04.MUDA*/ wire MUDA_DMA_VRAMp_new = nor3(reg_new.reg_dma.PULA_DMA_A13p.qp_new(), reg_new.reg_dma.POKU_DMA_A14p.qp_new(), LEBU_DMA_A15n_new);
   /*_p04.LOGO*/ wire LOGO_DMA_VRAMn_new = not1(MUDA_DMA_VRAMp_new);
   /*_p04.MORY*/ wire MORY_DMA_CARTn_new = nand2(reg_new.MATU_DMA_RUNNINGp_odd.qp_new(), LOGO_DMA_VRAMn_new);
   /*_p04.LUMA*/ wire LUMA_DMA_CARTp_new = not1(MORY_DMA_CARTn_new);

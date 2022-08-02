@@ -21,14 +21,14 @@ struct RegDmaLo {
 struct RegDmaHi {
   void reset();
 
-  /*#p04.NAFA*/ DFF8nB NAFA_DMA_A08p;      // xxxxxxxH
-  /*_p04.PYNE*/ DFF8nB PYNE_DMA_A09p;      // xxxxxxxH
-  /*_p04.PARA*/ DFF8nB PARA_DMA_A10p;      // xxxxxxxH
-  /*_p04.NYDO*/ DFF8nB NYDO_DMA_A11p;      // xxxxxxxH
-  /*_p04.NYGY*/ DFF8nB NYGY_DMA_A12p;      // xxxxxxxH
-  /*_p04.PULA*/ DFF8nB PULA_DMA_A13p;      // xxxxxxxH
-  /*_p04.POKU*/ DFF8nB POKU_DMA_A14p;      // xxxxxxxH
-  /*_p04.MARU*/ DFF8nB MARU_DMA_A15p;      // xxxxxxxH
+  /*#p04.NAFA*/ DFF8 NAFA_DMA_A08p;      // xxxxxxxH
+  /*_p04.PYNE*/ DFF8 PYNE_DMA_A09p;      // xxxxxxxH
+  /*_p04.PARA*/ DFF8 PARA_DMA_A10p;      // xxxxxxxH
+  /*_p04.NYDO*/ DFF8 NYDO_DMA_A11p;      // xxxxxxxH
+  /*_p04.NYGY*/ DFF8 NYGY_DMA_A12p;      // xxxxxxxH
+  /*_p04.PULA*/ DFF8 PULA_DMA_A13p;      // xxxxxxxH
+  /*_p04.POKU*/ DFF8 POKU_DMA_A14p;      // xxxxxxxH
+  /*_p04.MARU*/ DFF8 MARU_DMA_A15p;      // xxxxxxxH
 };
 
 //-----------------------------------------------------------------------------

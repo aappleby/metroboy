@@ -14,7 +14,7 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
   /*#p01.CUNU*/ wire CUNU_SYS_RSTn = not1(DULA_SYS_RSTp);
 
   /*_p01.ABOL*/ wire ABOL_CLKREQn  = not1(reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
-  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_newB());
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_new());
   /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);
   /*#p01.BYRY*/ wire BYRY_ABCDxxxx = not1(BELU_xxxxEFGH);
   /*#p01.BUDE*/ wire BUDE_xxxxEFGH = not1(BYRY_ABCDxxxx);
@@ -26,14 +26,14 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
 
   /*#p04.LAVY*/ wire LAVY_FF46_WRp_new = and2(CUPA_CPU_WRp_new, reg_new.cpu_abus.XEDA_FF46p_new());
   /*#p04.LORU*/ wire LORU_FF46_WRn_new = not1(LAVY_FF46_WRp_new);
-  /*#p04.NAFA*/ reg_new.reg_dma.NAFA_DMA_A08p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
-  /*_p04.PYNE*/ reg_new.reg_dma.PYNE_DMA_A09p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
-  /*_p04.PARA*/ reg_new.reg_dma.PARA_DMA_A10p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
-  /*_p04.NYDO*/ reg_new.reg_dma.NYDO_DMA_A11p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
-  /*_p04.NYGY*/ reg_new.reg_dma.NYGY_DMA_A12p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
-  /*_p04.PULA*/ reg_new.reg_dma.PULA_DMA_A13p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
-  /*_p04.POKU*/ reg_new.reg_dma.POKU_DMA_A14p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
-  /*_p04.MARU*/ reg_new.reg_dma.MARU_DMA_A15p.dff8nB(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
+  /*#p04.NAFA*/ reg_new.reg_dma.NAFA_DMA_A08p.dff8(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D00p.out_old());
+  /*_p04.PYNE*/ reg_new.reg_dma.PYNE_DMA_A09p.dff8(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D01p.out_old());
+  /*_p04.PARA*/ reg_new.reg_dma.PARA_DMA_A10p.dff8(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D02p.out_old());
+  /*_p04.NYDO*/ reg_new.reg_dma.NYDO_DMA_A11p.dff8(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D03p.out_old());
+  /*_p04.NYGY*/ reg_new.reg_dma.NYGY_DMA_A12p.dff8(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D04p.out_old());
+  /*_p04.PULA*/ reg_new.reg_dma.PULA_DMA_A13p.dff8(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D05p.out_old());
+  /*_p04.POKU*/ reg_new.reg_dma.POKU_DMA_A14p.dff8(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D06p.out_old());
+  /*_p04.MARU*/ reg_new.reg_dma.MARU_DMA_A15p.dff8(LORU_FF46_WRn_new, reg_old.cpu_dbus.BUS_CPU_D07p.out_old());
 
   /*_p07.DYKY*/ wire DYKY_CPU_WRn_old = not1(reg_old.cpu_signals.TAPU_CPU_WRp.out_old());
   /*_p07.CUPA*/ wire CUPA_CPU_WRp_old = not1(DYKY_CPU_WRn_old);
@@ -80,14 +80,14 @@ void GateBoy::tock_dma_gates(const GateBoyState& reg_old) {
   /*#p04.NYGO*/ wire NYGO_FF46_RDn_new = not1(MOLU_FF46_RDp_new);
   /*#p04.PUSY*/ wire PUSY_FF46_RDp_new = not1(NYGO_FF46_RDn_new);
 
-  /*#p04.POLY*/ triwire POLY_DMA0_TO_CD0_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NAFA_DMA_A08p.qn_newB());
-  /*_p04.ROFO*/ triwire ROFO_DMA1_TO_CD1_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PYNE_DMA_A09p.qn_newB());
-  /*_p04.REMA*/ triwire REMA_DMA2_TO_CD2_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PARA_DMA_A10p.qn_newB());
-  /*_p04.PANE*/ triwire PANE_DMA3_TO_CD3_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NYDO_DMA_A11p.qn_newB());
-  /*_p04.PARE*/ triwire PARE_DMA4_TO_CD4_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NYGY_DMA_A12p.qn_newB());
-  /*_p04.RALY*/ triwire RALY_DMA5_TO_CD5_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PULA_DMA_A13p.qn_newB());
-  /*_p04.RESU*/ triwire RESU_DMA6_TO_CD6_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.POKU_DMA_A14p.qn_newB());
-  /*_p04.NUVY*/ triwire NUVY_DMA7_TO_CD7_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.MARU_DMA_A15p.qn_newB());
+  /*#p04.POLY*/ triwire POLY_DMA0_TO_CD0_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NAFA_DMA_A08p.qn_new());
+  /*_p04.ROFO*/ triwire ROFO_DMA1_TO_CD1_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PYNE_DMA_A09p.qn_new());
+  /*_p04.REMA*/ triwire REMA_DMA2_TO_CD2_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PARA_DMA_A10p.qn_new());
+  /*_p04.PANE*/ triwire PANE_DMA3_TO_CD3_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NYDO_DMA_A11p.qn_new());
+  /*_p04.PARE*/ triwire PARE_DMA4_TO_CD4_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.NYGY_DMA_A12p.qn_new());
+  /*_p04.RALY*/ triwire RALY_DMA5_TO_CD5_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.PULA_DMA_A13p.qn_new());
+  /*_p04.RESU*/ triwire RESU_DMA6_TO_CD6_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.POKU_DMA_A14p.qn_new());
+  /*_p04.NUVY*/ triwire NUVY_DMA7_TO_CD7_new = tri6_pn(PUSY_FF46_RDp_new, reg_new.reg_dma.MARU_DMA_A15p.qn_new());
 
   /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(POLY_DMA0_TO_CD0_new);
   /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(ROFO_DMA1_TO_CD1_new);

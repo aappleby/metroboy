@@ -7,10 +7,10 @@ void GateBoyClock::reset() {
   ANOS_xBxDxFxH.state = 0b00011001;
   AVET_AxCxExGx.state = 0b00011000;
   
-  AFUR_ABCDxxxx.set_stateB(0b00011000);
-  ALEF_xBCDExxx.set_stateB(0b00011010);
-  APUK_xxCDEFxx.set_stateB(0b00011000);
-  ADYK_xxxDEFGx.set_stateB(0b00011010);
+  AFUR_ABCDxxxx.set_state(0b00011000);
+  ALEF_xBCDExxx.set_state(0b00011010);
+  APUK_xxCDEFxx.set_state(0b00011000);
+  ADYK_xxxDEFGx.set_state(0b00011010);
 
   WUVU_ABxxEFxx.state = 0b00011000;
   VENA_xxCDEFxx.state = 0b00011010;
@@ -43,17 +43,17 @@ void GateBoy::tock_clocks_gates(const GateBoyState& reg_old) {
   /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg_new.sys_clk.AVET_AxCxExGx.out_new());
   /*_p01.ATAN*/ wire ATAN_AxCxExGx = not1(ATAL_xBxDxFxH); // cell not marked on die but it's next to ATAL
 
-  /*_p01.AFUR*/ reg_new.sys_clk.AFUR_ABCDxxxx.dff9b(ATAN_AxCxExGx, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ADYK_xxxDEFGx.qn_oldB());
-  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_xBCDExxx.dff9b(ATAL_xBxDxFxH, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_ABCDxxxx.qp_oldB());
-  /*_p01.APUK*/ reg_new.sys_clk.APUK_xxCDEFxx.dff9b(ATAN_AxCxExGx, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ALEF_xBCDExxx.qp_oldB());
-  /*_p01.ADYK*/ reg_new.sys_clk.ADYK_xxxDEFGx.dff9b(ATAL_xBxDxFxH, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.APUK_xxCDEFxx.qp_oldB());
+  /*_p01.AFUR*/ reg_new.sys_clk.AFUR_ABCDxxxx.dff9(ATAN_AxCxExGx, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ADYK_xxxDEFGx.qn_old());
+  /*_p01.ALEF*/ reg_new.sys_clk.ALEF_xBCDExxx.dff9(ATAL_xBxDxFxH, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.AFUR_ABCDxxxx.qp_old());
+  /*_p01.APUK*/ reg_new.sys_clk.APUK_xxCDEFxx.dff9(ATAN_AxCxExGx, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.ALEF_xBCDExxx.qp_old());
+  /*_p01.ADYK*/ reg_new.sys_clk.ADYK_xxxDEFGx.dff9(ATAL_xBxDxFxH, pins.sys.UPOJ_MODE_PRODn_new(), reg_old.sys_clk.APUK_xxCDEFxx.qp_old());
 
   /*_p01.ABOL*/ wire ABOL_CLKREQn  = not1(reg_new.sys_clk.SIG_CPU_CLKREQ.out_new());
   /*#p01.BUTY*/ wire BUTY_CLKREQp = not1(ABOL_CLKREQn);
 
-  /*#p01.AROV*/ wire AROV_xxCDEFxx = not1(reg_new.sys_clk.APUK_xxCDEFxx.qn_newB());
-  /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(reg_new.sys_clk.ALEF_xBCDExxx.qp_newB());
-  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_newB());
+  /*#p01.AROV*/ wire AROV_xxCDEFxx = not1(reg_new.sys_clk.APUK_xxCDEFxx.qn_new());
+  /*#p01.AFEP*/ wire AFEP_AxxxxFGH = not1(reg_new.sys_clk.ALEF_xBCDExxx.qp_new());
+  /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_new());
 
   /*#p01.BAPY*/ wire BAPY_xxxxxxGH = nor3(ABOL_CLKREQn, AROV_xxCDEFxx, ATYP_ABCDxxxx);
   /*#p01.BELU*/ wire BELU_xxxxEFGH = nor2(ATYP_ABCDxxxx, ABOL_CLKREQn);

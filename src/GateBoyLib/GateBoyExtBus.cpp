@@ -535,7 +535,7 @@ void ExtDataLatch::reset() {
 //-----------------------------------------------------------------------------
 
 void ExtAddrLatch::reset() {
-  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x014D);
+  bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x004D);
 }
 
 //-----------------------------------------------------------------------------

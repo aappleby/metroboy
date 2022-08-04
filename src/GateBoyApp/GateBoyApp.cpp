@@ -148,11 +148,11 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   wave_tex = create_texture_u8(256, 256, nullptr, false);
 
-  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
-  //gb_thread = new GateBoyThread(new GateBoy());
+  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  gb_thread = new GateBoyThread(new GateBoy());
   //gb_thread = new GateBoyThread(new LogicBoy());
 
-  //gb_thread->poweron(true);
+  gb_thread->poweron(true);
 
   // baBING
   // 0x000700c0 0xff26 0x80 // apu on
@@ -168,7 +168,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
   // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
 
-#if 1
+#if 0
   /*
   gb_thread->load_bootrom(R"(
     0000:
@@ -385,7 +385,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 1
+#if 0
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140

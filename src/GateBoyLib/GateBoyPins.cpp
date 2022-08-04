@@ -12,7 +12,7 @@ void PinsABusLo::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0xB2); }
 
 //-----------------------------------------------------------------------------
 
-void PinsABusHi::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x7E); }
+void PinsABusHi::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x7F); }
 
 //-----------------------------------------------------------------------------
 

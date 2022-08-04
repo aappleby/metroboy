@@ -30,8 +30,8 @@ struct LogicBoyState {
   Result<uint8_t, Error> peek(int addr) const;
   Result<uint8_t, Error> poke(int addr, uint8_t data_in);
 
-  void to_gb_state(GateBoyState& dst, int64_t phase_total) const;
-  void from_gb_state(const GateBoyState& src, int64_t phase_total);
+  void to_gb_state(GateBoyState& dst) const;
+  void from_gb_state(const GateBoyState& src);
 
   uint8_t  reg_joy;  // 0xFF00
   uint8_t  reg_sb; // 0xFF01

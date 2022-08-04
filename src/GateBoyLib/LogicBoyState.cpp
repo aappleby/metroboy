@@ -14,7 +14,7 @@ void LogicBoyState::reset() {
   memset(this, 0, sizeof(*this));
   GateBoyState gb_state;
   gb_state.reset();
-  from_gb_state(gb_state, 0);
+  from_gb_state(gb_state);
 
   phase_lcd = 140329;
   phase_tfetch = 10;
@@ -119,7 +119,7 @@ GBResult LogicBoyState::poke(int addr, uint8_t data_in) {
 
 //-----------------------------------------------------------------------------
 
-void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
+void LogicBoyState::to_gb_state(GateBoyState& dst) const {
   const LogicBoyState& src = *this;
 
   dst.SIG_VCC.state = 1;
@@ -265,7 +265,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst, int64_t phase_total) const {
 
 //-----------------------------------------------------------------------------
 
-void LogicBoyState::from_gb_state(const GateBoyState& src, int64_t phase_total) {
+void LogicBoyState::from_gb_state(const GateBoyState& src) {
   LogicBoyState& dst = *this;
   
   dst.reg_joy = bit_pack(src.reg_joy);

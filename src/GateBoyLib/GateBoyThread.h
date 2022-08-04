@@ -126,7 +126,8 @@ private:
 
   double   sim_time = 0;
   double   old_sim_time = 0;
-  uint64_t old_phase_total = 0;
+  uint64_t prev_phase_total = 0;
+  uint64_t next_phase_total = 0;
   double   phase_rate_smooth = 0;
 
 };

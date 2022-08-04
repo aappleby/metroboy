@@ -87,44 +87,12 @@ public:
   void reset();
   void dump(Dumper& d) const;
 
-  /*
-  void latch_op(uint8_t _op) {
-    if (op_state == 0) {
-      op_addr = _bus_addr;
-      op_next = _op;
-    }
-  }
-
-  void check_int(uint8_t _imask, uint8_t _intf) {
-    if (op_state == 0) {
-      if ((_imask & _intf) && ime) {
-        op_next = 0xF4; // fake opcode
-        ime = false;
-        ime_delay = false;
-      }
-    }
-    int_ack = 0;
-    ime = ime_delay; // must be after int check, before op execution
-  }
-  */
-
   void execute(uint8_t _imask, uint8_t _intf) {
     if      (reg.op_next == 0xF4) execute_int(_imask, _intf);   // INT
     else if (reg.op_next == 0x76) execute_halt(_imask, _intf);  // HALT
     else if (reg.op_next == 0xCB) execute_cb();                 // CB
     else                          execute_op();
   }
-
-  /*
-  void update_halt(uint8_t _imask, uint8_t _intf_halt_latch) {
-    if (op_next == 0x76 && (_imask & _intf_halt_latch)) op_state_ = 0;
-  }
-
-  void latch_bus_data(uint8_t _data) {
-    if (_bus_read) in = _data;
-    op_state = op_state_;
-  }
-  */
 
   //----------------------------------------
 
@@ -159,13 +127,6 @@ public:
     hash = mix(hash ^ (uint8_t)reg.bus_write);
     return hash;
   }
-
-  /*
-  uint16_t get_bus_addr()  const { return _bus_addr; }
-  uint8_t  get_bus_data()  const { return _bus_data; }
-  uint8_t  get_bus_read()  const { return _bus_read; }
-  uint8_t  get_bus_write() const { return _bus_write; }
-  */
 
   //----------------------------------------
 

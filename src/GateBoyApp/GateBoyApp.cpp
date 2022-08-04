@@ -148,8 +148,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   wave_tex = create_texture_u8(256, 256, nullptr, false);
 
-  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
-  //gb_thread = new GateBoyThread(new GateBoy());
+  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  gb_thread = new GateBoyThread(new GateBoy());
   //gb_thread = new GateBoyThread(new LogicBoy());
 
   //gb_thread->poweron(true);
@@ -479,12 +479,23 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
 
     // Run to end of bootrom
     case SDLK_b: {
+      gb_thread->clear_steps();
+      gb_thread->add_steps(46880727);
       if (app_paused) {
         app_paused = false;
         gb_thread->resume();
       }
+      break;
+    }
+
+    case SDLK_n: {
+      //49582312
       gb_thread->clear_steps();
-      gb_thread->add_steps(46880727);
+      gb_thread->run_to(49582312 - 1);
+      if (app_paused) {
+        app_paused = false;
+        gb_thread->resume();
+      }
       break;
     }
 
@@ -612,7 +623,8 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   IGateBoy* gb = show_gb_ab ? gb_thread->gb.state()->get_a() : gb_thread->gb.state()->get_b();
 
-  uint64_t phase_total = gb->get_sys().gb_phase_total;
+  uint64_t phase_total_old = gb->get_sys().gb_phase_total_old;
+  uint64_t phase_total_new = gb->get_sys().gb_phase_total_new;
 
   auto& cpu = gb->get_cpu();
   auto& mem = gb->get_mem();
@@ -641,14 +653,16 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   d("\002===== HASHES =====\001\n");
   {
-    d("phase    %lld\n",      gb->get_sys().gb_phase_total);
-    d("cpu      0x%016llx\n", gb->get_cpu().core.get_hash());
-    d("vid_ram  0x%016llx\n", hash_blob(gb->get_mem().vid_ram,     sizeof(gb->get_mem().vid_ram)));
-    d("cart_ram 0x%016llx\n", hash_blob(gb->get_mem().cart_ram,    sizeof(gb->get_mem().cart_ram)));
-    d("int_ram  0x%016llx\n", hash_blob(gb->get_mem().int_ram,     sizeof(gb->get_mem().int_ram)));
-    d("oam_ram  0x%016llx\n", hash_blob(gb->get_mem().oam_ram,     sizeof(gb->get_mem().oam_ram)));
-    d("zero_ram 0x%016llx\n", hash_blob(gb->get_mem().zero_ram,    sizeof(gb->get_mem().zero_ram)));
-    d("framebuf 0x%016llx\n", hash_blob(gb->get_mem().framebuffer, sizeof(gb->get_mem().framebuffer)));
+    d("phase old %lld\n",      gb->get_sys().gb_phase_total_old);
+    d("phase new %lld\n",      gb->get_sys().gb_phase_total_new);
+
+    d("cpu       0x%016llx\n", gb->get_cpu().core.get_hash());
+    d("vid_ram   0x%016llx\n", hash_blob(gb->get_mem().vid_ram,     sizeof(gb->get_mem().vid_ram)));
+    d("cart_ram  0x%016llx\n", hash_blob(gb->get_mem().cart_ram,    sizeof(gb->get_mem().cart_ram)));
+    d("int_ram   0x%016llx\n", hash_blob(gb->get_mem().int_ram,     sizeof(gb->get_mem().int_ram)));
+    d("oam_ram   0x%016llx\n", hash_blob(gb->get_mem().oam_ram,     sizeof(gb->get_mem().oam_ram)));
+    d("zero_ram  0x%016llx\n", hash_blob(gb->get_mem().zero_ram,    sizeof(gb->get_mem().zero_ram)));
+    d("framebuf  0x%016llx\n", hash_blob(gb->get_mem().framebuffer, sizeof(gb->get_mem().framebuffer)));
   }
   d("\n");
 
@@ -892,8 +906,8 @@ Step controls:
 
   d("Viewing sim %s, Sim clock %8.3f %s %s\n",
     gb->get_id(),
-    double(phase_total) / (4194304.0 * 2),
-    phase_names[phase_total & 7],
+    double(phase_total_old) / (4194304.0 * 2),
+    phase_names[phase_total_old & 7],
     show_golden ? "GOLDEN IMAGE " : "");
 
   d("%c %c %c %c %c %c %c %c",
@@ -1006,7 +1020,7 @@ Step controls:
       for (int i = 0; i < 255; i++) {
         int y1, y2;
 
-        int x = gb->get_sys().gb_phase_total >> 9;
+        int x = gb->get_sys().gb_phase_total_old >> 9;
 
         y1 = audio[(x + i + 1) & 0xFF];
         y2 = audio[(x + i + 2) & 0xFF];

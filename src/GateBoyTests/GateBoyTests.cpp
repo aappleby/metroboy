@@ -1114,7 +1114,7 @@ TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filen
   bool pass = (result_c == 0x01) && (timeout > 0);
 
   if (pass) {
-    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, gb->get_sys().gb_phase_total);
+    if (verbose) LOG_G("%4d %4d %4d %4d PASS @ %d\n", result_a, result_b, (result_a - result_b), result_c, gb->get_sys().gb_phase_total_old);
     results.test_pass++;
     return results;
   }
@@ -1126,7 +1126,7 @@ TestResults GateBoyTests::run_microtest(const IGateBoy* proto, const char* filen
     else if (result_a != result_b) reason = "FAIL";
     else if (result_c == 0xFF)     reason = "FAIL";
 
-    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gb->get_sys().gb_phase_total);
+    LOG_R("%4d %4d %4d %4d %s @ %d\n", result_a, result_b, (result_a - result_b), result_c, reason, gb->get_sys().gb_phase_total_old);
     results.test_fail++;
     return results;
   }
@@ -1161,7 +1161,7 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
 
 
   for (int i = 0; i < 32; i++) {
-    int phase = gb->get_sys().gb_phase_total & 7;
+    int phase = gb->get_sys().gb_phase_total_old & 7;
     auto& clk = gb->get_state().sys_clk;
     EXPECT_CLK(clk.AFUR_ABCDxxxx.state, (uint8_t)0b11110000);
     EXPECT_CLK(clk.ALEF_xBCDExxx.state, (uint8_t)0b01111000);

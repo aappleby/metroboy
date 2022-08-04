@@ -142,7 +142,7 @@ uint8_t GateBoy::read_flat_addr(const blob& cart_blob, int addr) const {
     return mem.zero_ram[addr & 0x007F];
   }
   else {
-    printf("read_flat_addr : bad addr 0x%08x @ phase %llu\n", addr, (long long unsigned int)sys.gb_phase_total);
+    printf("read_flat_addr : bad addr 0x%08x @ phase old %llu\n", addr, (long long unsigned int)sys.gb_phase_total_old);
     //debugbreak();
     return 0;
   }

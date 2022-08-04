@@ -110,7 +110,7 @@ GBResult GateBoyPair::next_phase(const blob& cart_blob) {
 }
 
 GBResult GateBoyPair::run_to(const blob& cart_blob, int phase) {
-  while(get_sys().gb_phase_total < phase) {
+  while(get_sys().gb_phase_total_old < phase) {
     next_phase(cart_blob);
   }
   return GBResult::ok();
@@ -161,7 +161,7 @@ bool GateBoyPair::check_sync() const {
   const auto& state2 = lb->get_state();
 
   if (state1.diff(state2, 0x01)) {
-    LOG_R("Regression test state mismatch @ phase %lld!\n", gb->get_sys().gb_phase_total);
+    LOG_R("Regression test state mismatch @ phase old %lld!\n", gb->get_sys().gb_phase_total_old);
     return false;
   }
 
@@ -169,7 +169,7 @@ bool GateBoyPair::check_sync() const {
   const auto& pins2 = lb->get_pins();
     
   if (!bit_cmp(pins1, pins2, 0x01)) {
-    LOG_R("Regression test pins mismatch @ phase %lld!\n", gb->get_sys().gb_phase_total);
+    LOG_R("Regression test pins mismatch @ phase_old %lld!\n", gb->get_sys().gb_phase_total_old);
     return false;
   }
 

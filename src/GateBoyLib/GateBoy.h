@@ -114,7 +114,8 @@ struct GateBoySys {
     in_por = false;
     fastboot = true;
     buttons = 0;
-    gb_phase_total = 46880727;
+    gb_phase_total_old = 46880727;
+    gb_phase_total_new = 46880728;
   }
 
   // External signals
@@ -128,7 +129,8 @@ struct GateBoySys {
   uint8_t  in_por = 0;
   uint8_t  fastboot = 0;
   uint8_t  buttons = 0;
-  uint64_t gb_phase_total = 0;
+  uint64_t gb_phase_total_old = 0;
+  uint64_t gb_phase_total_new = 0;
 };
 #pragma pack(pop)
 

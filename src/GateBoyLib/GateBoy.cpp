@@ -12,18 +12,18 @@
 //-----------------------------------------------------------------------------
 
 // AB CD EF GH
-#define DELTA_EVEN_new  ((sys.gb_phase_total & 1) == 1)
+#define DELTA_EVEN_new ((sys.gb_phase_total_old & 1) == 0)
 // HA BC DE FG
-#define DELTA_ODD_new  ((sys.gb_phase_total & 1) == 0)
+#define DELTA_ODD_new  ((sys.gb_phase_total_old & 1) == 1)
 
-#define DELTA_AB_new   ((sys.gb_phase_total & 7) == 1)
-#define DELTA_BC_new   ((sys.gb_phase_total & 7) == 2)
-#define DELTA_CD_new   ((sys.gb_phase_total & 7) == 3)
-#define DELTA_DE_new   ((sys.gb_phase_total & 7) == 4)
-#define DELTA_EF_new   ((sys.gb_phase_total & 7) == 5)
-#define DELTA_FG_new   ((sys.gb_phase_total & 7) == 6)
-#define DELTA_GH_new   ((sys.gb_phase_total & 7) == 7)
-#define DELTA_HA_new   ((sys.gb_phase_total & 7) == 0)
+#define DELTA_AB_new   ((sys.gb_phase_total_old & 7) == 0)
+#define DELTA_BC_new   ((sys.gb_phase_total_old & 7) == 1)
+#define DELTA_CD_new   ((sys.gb_phase_total_old & 7) == 2)
+#define DELTA_DE_new   ((sys.gb_phase_total_old & 7) == 3)
+#define DELTA_EF_new   ((sys.gb_phase_total_old & 7) == 4)
+#define DELTA_FG_new   ((sys.gb_phase_total_old & 7) == 5)
+#define DELTA_GH_new   ((sys.gb_phase_total_old & 7) == 6)
+#define DELTA_HA_new   ((sys.gb_phase_total_old & 7) == 7)
 #define DELTA_DH_new   (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new)
 
 #define CHECK_ODD(A)  CHECK_P(DELTA_ODD_new  || ((reg_old.A.state & 1) == (reg_new.A.state & 1)))
@@ -93,7 +93,8 @@ GBResult GateBoy::poweron(bool fastboot) {
  
   sys.fastboot = fastboot;
   sys.rst = 1;
-  sys.gb_phase_total = 0;
+  sys.gb_phase_total_old = 0;
+  sys.gb_phase_total_new = 1;
   sys.in_por = 1;
 
   // These registers do not reset cleanly at poweron, so we're forcing them to a sane state.
@@ -212,33 +213,33 @@ GBResult GateBoy::run_phases(const blob& cart_blob, int phase_count) {
 GBResult GateBoy::next_phase(const blob& cart_blob) {
   //LOG_G("GateBoy::next_phase()\n");
 
-  sys.gb_phase_total++;
+  sys.gb_phase_total_new = sys.gb_phase_total_old + 1;
 
-  if (sys.gb_phase_total == 7) {
+  if (sys.gb_phase_total_new == 7) {
     // Release reset, start clock, and sync with phase
     sys.rst = 0;
     sys.clk_en = 1;
     sys.clk_good = 1;
   }
 
-  if (sys.gb_phase_total == 9) {
+  if (sys.gb_phase_total_new == 9) {
     CHECK_P(bit0(gb_state.sys_clk.AFUR_ABCDxxxx.qp_old()));
     CHECK_N(bit0(gb_state.sys_clk.ALEF_xBCDExxx.qp_old()));
     CHECK_N(bit0(gb_state.sys_clk.APUK_xxCDEFxx.qp_old()));
     CHECK_N(bit0(gb_state.sys_clk.ADYK_xxxDEFGx.qp_old()));
   }
 
-  if (sys.gb_phase_total == 65) {
+  if (sys.gb_phase_total_new == 65) {
     // Wait for SIG_CPU_START
     CHECK_P(gb_state.sys_rst.SIG_CPU_STARTp.out_old());
   }
 
-  if (sys.gb_phase_total == 80) {
+  if (sys.gb_phase_total_new == 80) {
     // Fetch the first instruction in the bootrom
     dbg_req(0x0000, 0, 0);
   }
 
-  if (sys.gb_phase_total == 88) {
+  if (sys.gb_phase_total_new == 88) {
     // We're ready to go, release the CPU so it can start running the bootrom.
 
     sys.clk_req = 1;
@@ -251,7 +252,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
     }
   }
 
-  probes.begin_pass(sys.gb_phase_total & 7);
+  probes.begin_pass(sys.gb_phase_total_new & 7);
   tock_cpu(cart_blob);
   tock_gates(cart_blob);
   probes.end_pass();
@@ -275,7 +276,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
 
   update_framebuffer();
 
-  if ((sys.gb_phase_total & 7) == 0) {
+  if ((sys.gb_phase_total_new & 7) == 0) {
 #if 0
     /*_p10.TACE*/ wire TACE_AMP_ENn =  and4(gb_state.ch1.HOCA_CH1_AMP_ENn_new(),
                                             gb_state.ch2.FUTE_CH2_AMP_ENn_new(),
@@ -306,13 +307,15 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
 #endif
   }
 
+  sys.gb_phase_total_old = sys.gb_phase_total_new;
+
   return GBResult::ok();
 }
 
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::run_to(const blob& cart_blob, int phase) {
-  while(get_sys().gb_phase_total < phase) {
+  while(get_sys().gb_phase_total_old < phase) {
     next_phase(cart_blob);
   }
   return GBResult::ok();
@@ -648,7 +651,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire EXT_sys_t2 = bit0(~sys.t2);
     wire EXT_sys_t1 = bit0(~sys.t1);
 
-    wire EXT_clkin = (sys.gb_phase_total & 1) && sys.clk_en;
+    wire EXT_clkin = (sys.gb_phase_total_new & 1) && sys.clk_en;
     wire EXT_clkgood = bit0(~sys.clk_good);
 
     /*_PIN_74*/ pins.sys.PIN_74_CLK.pin_clk(EXT_clkin, EXT_clkgood);

@@ -79,8 +79,9 @@ void GateBoyDumper::dump_sys(const GateBoySys& s, Dumper& d) {
   };
 
 #if 1
-  d             ("phase_total  : %lld\n",    s.gb_phase_total);
-  d             ("phase        : %s\n", phases[s.gb_phase_total & 7]);
+  d             ("phase old    : %lld\n",    s.gb_phase_total_old);
+  d             ("phase new    : %lld\n",    s.gb_phase_total_new);
+  d             ("phase        : %s\n", phases[s.gb_phase_total_old & 7]);
   d             ("sys_rst      : %d\n", s.rst);
   d             ("sys_t1       : %d\n", s.t1);
   d             ("sys_t2       : %d\n", s.t2);

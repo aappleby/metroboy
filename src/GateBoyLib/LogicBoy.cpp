@@ -305,159 +305,8 @@ uint8_t LogicBoy::read_flat_addr(const blob& cart_blob, int addr) const {
 
 void LogicBoy::tock_cpu() {
 
-#if 0
-  auto phase_old = (sys.gb_phase_total_old & 7);
-  auto phase_new = (sys.gb_phase_total_new & 7);
+  //printf("lb %d %d %d\n", (int)sys.gb_phase_total_old, (int)sys.gb_phase_total_new, lb_state.cpu_dbus);
 
-  cpu.cpu_data_latch &= lb_state.cpu_dbus;
-  //cpu.imask_latch = lb_state.reg_ie;
-
-  if (DELTA_HA_new) {
-    debugbreak();
-    //cpu.core.update_halt(cpu.imask_latch, cpu.intf_halt_latch);
-    //if (cpu.core.op == 0x76 && (cpu.imask_latch & cpu.intf_halt_latch)) cpu.core.state_ = 0;
-    //cpu.intf_halt_latch = 0;
-  }
-
-  // +ha -ab -bc -cd -de -ef -fg -gh
-  if (DELTA_HA_new) {
-    // this one latches funny, some hardware bug
-    if (get_bit(lb_state.reg_if, 2)) cpu.halt_latch |= INT_TIMER_MASK;
-  }
-
-  // -ha +ab -bc
-  if (DELTA_AB_new) {
-    if (sys.cpu_en) {
-      //cpu.core.tock_ab(cpu.imask_latch, cpu.intf_latch, cpu.cpu_data_latch);
-
-      // FIXME ONCE GATEBOY CPU IS CLEANED UP
-      debugbreak();
-      cpu.core.state = cpu.core.state_;
-
-      if (cpu.core._bus_read) cpu.core.in = cpu.cpu_data_latch;
-
-      if (cpu.core.state == 0) {
-        cpu.core.op_addr = cpu.core._bus_addr;
-        cpu.core.op = cpu.cpu_data_latch;
-
-        if ((cpu.imask_latch & cpu.intf_latch) && cpu.core.ime) {
-          cpu.core.op = 0xF4; // fake opcode
-          cpu.core.ime = false;
-          cpu.core.ime_delay = false;
-        }
-      }
-
-      cpu.core.int_ack = 0;
-      cpu.core.ime = cpu.core.ime_delay; // must be after int check, before op execution
-
-      // #define HALT (op == 0x76)
-
-      if      (cpu.core.op == 0xF4 /*INT*/ ) cpu.core.execute_int(cpu.imask_latch, cpu.intf_latch);
-      else if (cpu.core.op == 0x76 /*HALT*/) cpu.core.execute_halt(cpu.imask_latch, cpu.intf_latch);
-      else if (cpu.core.op == 0xCB /*CB*/  ) cpu.core.execute_cb();
-      else                                   cpu.core.execute_op();
-
-    }
-  }
-
-  if (DELTA_AB_new) {
-    if (sys.cpu_en) {
-      cpu.bus_req_new = cpu.core.get_bus_req();
-      //cpu.bus_req_new.addr = cpu.core.get_bus_addr();
-      //cpu.bus_req_new.data = cpu.core.get_bus_data();
-      //cpu.bus_req_new.read = cpu.core.get_bus_read();
-      //cpu.bus_req_new.write = cpu.core.get_bus_write();
-    }
-  }
-
-  // -bc +cd +de -ef -fg -gh -ha -ab
-  if (DELTA_DE_new) {
-    if (get_bit(lb_state.reg_if, 0)) cpu.halt_latch |= INT_VBLANK_MASK;
-    if (get_bit(lb_state.reg_if, 1)) cpu.halt_latch |= INT_STAT_MASK;
-    if (get_bit(lb_state.reg_if, 3)) cpu.halt_latch |= INT_SERIAL_MASK;
-    if (get_bit(lb_state.reg_if, 4)) cpu.halt_latch |= INT_JOYPAD_MASK;
-  }
-
-  // -ha -ab -bc -cd -de -ef +fg +gh
-  if (DELTA_GH_new) cpu.cpu_data_latch = 0xFF;
-
-  // +ha -ab -bc -cd -de -ef -fg +gh
-  if (DELTA_GH_new) cpu.intf_latch = lb_state.reg_if;
-#endif
-
-
-  //===========================================================================
-  //===========================================================================
-  // CPU update
-
-
-#if 1
-  cpu.core.reg.cpu_data_latch &= (uint8_t)lb_state.cpu_dbus;
-
-  if (DELTA_AB) {
-  }
-
-  if (DELTA_BC) {
-    // -AB +BC +CD -DE
-    if (bit(lb_state.reg_if, 0)) cpu.core.reg.halt_latch |= INT_VBLANK_MASK;
-    if (bit(lb_state.reg_if, 1)) cpu.core.reg.halt_latch |= INT_STAT_MASK;
-    if (bit(lb_state.reg_if, 3)) cpu.core.reg.halt_latch |= INT_SERIAL_MASK;
-    if (bit(lb_state.reg_if, 4)) cpu.core.reg.halt_latch |= INT_JOYPAD_MASK;
-    if (cpu.core.reg.op_next == 0x76 && (bit_pack(lb_state.reg_ie) & cpu.core.reg.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
-    cpu.core.reg.halt_latch = 0; // +BC +CD +DE +EF +FG
-  }
-
-  if (DELTA_CD) {
-  }
-
-  if (DELTA_DE) {
-    // -CD +DE +EF +FG
-    if (cpu.core.reg.op_state == 0) {
-      cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
-      cpu.core.reg.op_next = (uint8_t)lb_state.cpu_dbus;
-    }
-  }
-
-  if (DELTA_EF) {
-    cpu.core.reg.cpu_data_latch = 0xFF; // -DE +EF
-  }
-
-  if (DELTA_FG) {
-
-    cpu.core.reg.intf_latch = lb_state.reg_if; // -EF +FG +GH -HA
-    if (bit(lb_state.reg_if, 2)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug    
-
-
-    if (sys.cpu_en) {
-      if (cpu.core.reg.op_state == 0) {
-        if ((lb_state.reg_ie & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
-          cpu.core.reg.op_next = 0xF4; // fake opcode
-          cpu.core.reg.ime = false;
-          cpu.core.reg.ime_delay = false;
-        }
-      }
-      cpu.core.reg.int_ack = 0;
-      cpu.core.reg.ime = cpu.core.reg.ime_delay; // must be after int check, before op execution
-    }
-  }
-
-  if (DELTA_GH) {
-  }
-
-  if (DELTA_HA) {
-    if (cpu.core.reg.bus_read) cpu.core.reg.data_in = cpu.core.reg.cpu_data_latch; // -FG +GH +HA -AB
-
-
-    if (sys.cpu_en) {
-      cpu.core.execute(lb_state.reg_ie, cpu.core.reg.intf_latch);
-      cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
-    }
-  }
-#endif
-
-
-
-#if 0
   // SigOut SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
   // SigOut SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
   //
@@ -472,11 +321,11 @@ void LogicBoy::tock_cpu() {
 
   // There doesn't seem to be a good config for halt_latch that works with the latch always latching...
 
-  cpu.core.reg.cpu_data_latch &= (uint8_t)bit_pack(lb_state.cpu_dbus);
+  cpu.core.reg.cpu_data_latch &= (uint8_t)lb_state.cpu_dbus;
 
   if (DELTA_AB) {
     if (sys.cpu_en && !sys.in_por) {
-      cpu.core.execute((uint8_t)bit_pack(lb_state.reg_ie), cpu.core.reg.intf_latch);
+      cpu.core.execute(lb_state.reg_ie, cpu.core.reg.intf_latch);
       cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
 
       /*
@@ -494,23 +343,22 @@ void LogicBoy::tock_cpu() {
 
   if (DELTA_CD) {
     // -AB +BC +CD -DE
-    if (bit0(lb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.core.reg.halt_latch |= INT_VBLANK_MASK;
-    if (bit0(lb_state.reg_if.LALU_FF0F_D1p.state)) cpu.core.reg.halt_latch |= INT_STAT_MASK;
-    if (bit0(lb_state.reg_if.UBUL_FF0F_D3p.state)) cpu.core.reg.halt_latch |= INT_SERIAL_MASK;
-    if (bit0(lb_state.reg_if.ULAK_FF0F_D4p.state)) cpu.core.reg.halt_latch |= INT_JOYPAD_MASK;
-    if (cpu.core.reg.op_next == 0x76 && (bit_pack(lb_state.reg_ie) & cpu.core.reg.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
+    if (bit(lb_state.reg_if, 0)) cpu.core.reg.halt_latch |= INT_VBLANK_MASK;
+    if (bit(lb_state.reg_if, 1)) cpu.core.reg.halt_latch |= INT_STAT_MASK;
+    if (bit(lb_state.reg_if, 3)) cpu.core.reg.halt_latch |= INT_SERIAL_MASK;
+    if (bit(lb_state.reg_if, 4)) cpu.core.reg.halt_latch |= INT_JOYPAD_MASK;
+    if (cpu.core.reg.op_next == 0x76 && (lb_state.reg_ie & cpu.core.reg.halt_latch)) cpu.core.reg.op_state = 0; // +BC +CD +DE +EF +FG
     cpu.core.reg.halt_latch = 0; // +BC +CD +DE +EF +FG
   }
 
   if (DELTA_DE) {
   }
 
-
   if (DELTA_EF) {
     // -CD +DE +EF +FG
     if (cpu.core.reg.op_state == 0) {
       cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
-      cpu.core.reg.op_next = (uint8_t)bit_pack(lb_state.cpu_dbus);
+      cpu.core.reg.op_next = lb_state.cpu_dbus;
     }
   }
 
@@ -519,14 +367,12 @@ void LogicBoy::tock_cpu() {
   }
 
   if (DELTA_GH) {
-
-    cpu.core.reg.intf_latch = (uint8_t)bit_pack(lb_state.reg_if); // -EF +FG +GH -HA
-    if (bit0(lb_state.reg_if.NYBO_FF0F_D2p.state)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
-
+    cpu.core.reg.intf_latch = lb_state.reg_if; // -EF +FG +GH -HA
+    if (bit(lb_state.reg_if, 2)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug    
 
     if (sys.cpu_en && !sys.in_por) {
       if (cpu.core.reg.op_state == 0) {
-        if ((bit_pack(lb_state.reg_ie) & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
+        if ((lb_state.reg_ie & cpu.core.reg.intf_latch) && cpu.core.reg.ime) {
           cpu.core.reg.op_next = 0xF4; // fake opcode
           cpu.core.reg.ime = false;
           cpu.core.reg.ime_delay = false;
@@ -538,16 +384,10 @@ void LogicBoy::tock_cpu() {
   }
 
   if (DELTA_HA) {
-
-
     if (cpu.core.reg.bus_read) {
       cpu.core.reg.data_in = cpu.core.reg.cpu_data_latch; // -FG +GH +HA -AB
     }
-
-
   }
-#endif
-
 }
 
 

@@ -157,18 +157,32 @@ GBResult GateBoyPair::check_results(GBResult r1, GBResult r2) const {
 //-----------------------------------------------------------------------------
 
 bool GateBoyPair::check_sync() const {
-  const auto& state1 = gb->get_state();
-  const auto& state2 = lb->get_state();
+  //printf("%d %d %d %d %d\n", sizeof(GateBoyCpu), sizeof(GateBoyMem), sizeof(GateBoyState), sizeof(GateBoySys), sizeof(GateBoyPins));
 
-  if (state1.diff(state2, 0x01)) {
+  if (!diff_blobs(&gb->get_cpu(), &lb->get_cpu(), sizeof(GateBoyCpu), 0xFF, nullptr)) {
+    LOG_R("Regression test cpu mismatch @ phase old %lld!\n", gb->get_sys().gb_phase_total_old);
+    return false;
+  }
+
+  // probably don't need to diff mem, but eh - we're already slow in regression test mode
+  /*
+  if (!diff_blobs(&gb->get_mem(), &lb->get_mem(), sizeof(GateBoyMem), 0xFF, nullptr)) {
+    LOG_R("Regression test mem mismatch @ phase old %lld!\n", gb->get_sys().gb_phase_total_old);
+    return false;
+  }
+  */
+
+  if (gb->get_state().diff(lb->get_state(), 0x01)) {
     LOG_R("Regression test state mismatch @ phase old %lld!\n", gb->get_sys().gb_phase_total_old);
     return false;
   }
 
-  const auto& pins1 = gb->get_pins();
-  const auto& pins2 = lb->get_pins();
-    
-  if (!bit_cmp(pins1, pins2, 0x01)) {
+  if (!diff_blobs(&gb->get_sys(), &lb->get_sys(), sizeof(GateBoySys), 0xFF, nullptr)) {
+    LOG_R("Regression test cpu mismatch @ phase old %lld!\n", gb->get_sys().gb_phase_total_old);
+    return false;
+  }
+
+  if (!bit_cmp(gb->get_pins(), lb->get_pins(), 0x01)) {
     LOG_R("Regression test pins mismatch @ phase_old %lld!\n", gb->get_sys().gb_phase_total_old);
     return false;
   }

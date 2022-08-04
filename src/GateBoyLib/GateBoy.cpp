@@ -11,24 +11,25 @@
 
 //-----------------------------------------------------------------------------
 
-// AB CD EF GH
-#define DELTA_EVEN_new ((sys.gb_phase_total_old & 1) == 0)
-// HA BC DE FG
-#define DELTA_ODD_new  ((sys.gb_phase_total_old & 1) == 1)
+#define DELTA_EVEN ((sys.gb_phase_total_old & 1) == 0 && (sys.gb_phase_total_new & 1) == 1)
+#define DELTA_ODD  ((sys.gb_phase_total_old & 1) == 1 && (sys.gb_phase_total_new & 1) == 0)
 
-#define DELTA_AB_new   ((sys.gb_phase_total_old & 7) == 0)
-#define DELTA_BC_new   ((sys.gb_phase_total_old & 7) == 1)
-#define DELTA_CD_new   ((sys.gb_phase_total_old & 7) == 2)
-#define DELTA_DE_new   ((sys.gb_phase_total_old & 7) == 3)
-#define DELTA_EF_new   ((sys.gb_phase_total_old & 7) == 4)
-#define DELTA_FG_new   ((sys.gb_phase_total_old & 7) == 5)
-#define DELTA_GH_new   ((sys.gb_phase_total_old & 7) == 6)
-#define DELTA_HA_new   ((sys.gb_phase_total_old & 7) == 7)
-#define DELTA_DH_new   (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new)
+#define DELTA_AB   ((sys.gb_phase_total_old & 7) == 0 && (sys.gb_phase_total_new & 7) == 1)
+#define DELTA_BC   ((sys.gb_phase_total_old & 7) == 1 && (sys.gb_phase_total_new & 7) == 2)
+#define DELTA_CD   ((sys.gb_phase_total_old & 7) == 2 && (sys.gb_phase_total_new & 7) == 3)
+#define DELTA_DE   ((sys.gb_phase_total_old & 7) == 3 && (sys.gb_phase_total_new & 7) == 4)
+#define DELTA_EF   ((sys.gb_phase_total_old & 7) == 4 && (sys.gb_phase_total_new & 7) == 5)
+#define DELTA_FG   ((sys.gb_phase_total_old & 7) == 5 && (sys.gb_phase_total_new & 7) == 6)
+#define DELTA_GH   ((sys.gb_phase_total_old & 7) == 6 && (sys.gb_phase_total_new & 7) == 7)
+#define DELTA_HA   ((sys.gb_phase_total_old & 7) == 7 && (sys.gb_phase_total_new & 7) == 0)
 
-#define CHECK_ODD(A)  CHECK_P(DELTA_ODD_new  || ((reg_old.A.state & 1) == (reg_new.A.state & 1)))
-#define CHECK_EVEN(A) CHECK_P(DELTA_EVEN_new || ((reg_old.A.state & 1) == (reg_new.A.state & 1)))
+#define DELTA_AD   (DELTA_AB || DELTA_BC || DELTA_CD)
 
+#define DELTA_AC   (DELTA_AB || DELTA_BC)
+#define DELTA_EG   (DELTA_EF || DELTA_FG)
+#define DELTA_HD   (DELTA_HA || DELTA_AB || DELTA_BC || DELTA_CD)
+#define DELTA_DH   (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH)
+#define DELTA_DG   (DELTA_DE || DELTA_EF || DELTA_FG)
 
 //-----------------------------------------------------------------------------
 
@@ -416,6 +417,8 @@ void GateBoy::update_framebuffer() {
 
 void GateBoy::tock_cpu(const blob& cart_blob) {
 
+  //printf("gb %d %d %d\n", (int)sys.gb_phase_total_old, (int)sys.gb_phase_total_new, bit_pack(gb_state.cpu_dbus));
+
   // SigOut SIG_CPU_BOWA_Axxxxxxx; // top left port PORTD_01: <- this is the "put address on bus" clock
   // SigOut SIG_CPU_BEDO_xBCDEFGH; // top left port PORTD_02: <-
   //
@@ -432,7 +435,7 @@ void GateBoy::tock_cpu(const blob& cart_blob) {
 
   cpu.core.reg.cpu_data_latch &= (uint8_t)bit_pack(gb_state.cpu_dbus);
 
-  if (DELTA_AB_new) {
+  if (DELTA_AB) {
     if (sys.cpu_en && !sys.in_por) {
       cpu.core.execute((uint8_t)bit_pack(gb_state.reg_ie), cpu.core.reg.intf_latch);
       cpu.core.reg.bus_req_new = cpu.core.get_bus_req();
@@ -447,7 +450,10 @@ void GateBoy::tock_cpu(const blob& cart_blob) {
     }
   }
 
-  if (DELTA_CD_new) {
+  if (DELTA_BC) {
+  }
+
+  if (DELTA_CD) {
     // -AB +BC +CD -DE
     if (bit0(gb_state.reg_if.LOPE_FF0F_D0p.state)) cpu.core.reg.halt_latch |= INT_VBLANK_MASK;
     if (bit0(gb_state.reg_if.LALU_FF0F_D1p.state)) cpu.core.reg.halt_latch |= INT_STAT_MASK;
@@ -457,11 +463,10 @@ void GateBoy::tock_cpu(const blob& cart_blob) {
     cpu.core.reg.halt_latch = 0; // +BC +CD +DE +EF +FG
   }
 
-  if (DELTA_CD_new) {
+  if (DELTA_DE) {
   }
 
-
-  if (DELTA_EF_new) {
+  if (DELTA_EF) {
     // -CD +DE +EF +FG
     if (cpu.core.reg.op_state == 0) {
       cpu.core.reg.op_addr = cpu.core.reg.bus_addr;
@@ -469,15 +474,13 @@ void GateBoy::tock_cpu(const blob& cart_blob) {
     }
   }
 
-  if (DELTA_FG_new) {
+  if (DELTA_FG) {
     cpu.core.reg.cpu_data_latch = 0xFF; // -DE +EF
   }
 
-  if (DELTA_GH_new) {
-
+  if (DELTA_GH) {
     cpu.core.reg.intf_latch = (uint8_t)bit_pack(gb_state.reg_if); // -EF +FG +GH -HA
     if (bit0(gb_state.reg_if.NYBO_FF0F_D2p.state)) cpu.core.reg.halt_latch |= INT_TIMER_MASK; // +FG +GH -HA : this one latches funny, some hardware bug
-
 
     if (sys.cpu_en && !sys.in_por) {
       if (cpu.core.reg.op_state == 0) {
@@ -492,17 +495,29 @@ void GateBoy::tock_cpu(const blob& cart_blob) {
     }
   }
 
-  if (DELTA_HA_new) {
-
-
+  if (DELTA_HA) {
     if (cpu.core.reg.bus_read) {
       cpu.core.reg.data_in = cpu.core.reg.cpu_data_latch; // -FG +GH +HA -AB
     }
-
-
   }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //-----------------------------------------------------------------------------
 
@@ -513,7 +528,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   memset(&gb_state.cpu_abus,  BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_abus));
   memset(&gb_state.cpu_dbus,  BIT_NEW | BIT_PULLED | 1, sizeof(gb_state.cpu_dbus));
 
-  if (DELTA_DE_new || DELTA_EF_new || DELTA_FG_new || DELTA_GH_new) {
+  if (DELTA_DE || DELTA_EF || DELTA_FG || DELTA_GH) {
     // Data has to be driven on EFGH or we fail the wave tests
     gb_state.cpu_dbus.set_data(cpu.core.reg.bus_req_new.write, cpu.core.reg.bus_req_new.data_lo);
   }
@@ -583,16 +598,16 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     wire req_addr_oam  = (addr >= 0xFE00) && (addr <= 0xFEFF);
     wire req_addr_hi   = (addr >= 0xFE00);
 
-    reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DH_new && (read || (write && addr >= 0xFF10))) & 1) | BIT_DRIVEN | BIT_NEW;
+    reg_new.cpu_signals.SIG_IN_CPU_DBUS_FREE.state = ((DELTA_DH && (read || (write && addr >= 0xFF10))) & 1) | BIT_DRIVEN | BIT_NEW;
 
-    if (DELTA_HA_new) {
+    if (DELTA_HA) {
       wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot && !req_addr_vram);
       reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr & 0x00FF);
       reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new | BIT_DRIVEN | BIT_NEW;
       reg_new.cpu_signals.SIG_IN_CPU_WRp.state = 0 | BIT_DRIVEN | BIT_NEW;
       reg_new.cpu_signals.SIG_IN_CPU_RDp.state = 0 | BIT_DRIVEN | BIT_NEW;
     }
-    else if (DELTA_AB_new) {
+    else if (DELTA_AB) {
       wire ext_addr_new = (read || write) && (!req_addr_hi && !req_addr_boot && !req_addr_vram);
       reg_new.cpu_abus.set_addr(cpu.core.reg.bus_req_new.addr);
       reg_new.cpu_signals.SIG_IN_CPU_EXT_BUSp.state = ext_addr_new | BIT_DRIVEN | BIT_NEW;

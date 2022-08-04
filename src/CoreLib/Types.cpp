@@ -69,6 +69,8 @@ double timestamp() {
 //-----------------------------------------------------------------------------
 
 void print_field_at(int offset, const FieldInfo* fields) {
+  if (fields == nullptr) return;
+
   const FieldInfo* field = nullptr;
   int min_delta = 1000000;
 

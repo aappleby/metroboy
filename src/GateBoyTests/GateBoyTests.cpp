@@ -71,8 +71,8 @@ int main(int argc, char** argv) {
 
     const auto proto = make_unique<LogicBoy>();
     //results += t.test_reset_to_bootrom(proto.get(), 0x01); // OK
-    results += t.test_reset   (proto.get(), 0x01); // OK
-    results += t.test_generic         (proto.get());
+    results += t.test_reset(proto.get(), 0x01); // OK
+    results += t.test_generic(proto.get());
 
     LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
     LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);

@@ -148,8 +148,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   wave_tex = create_texture_u8(256, 256, nullptr, false);
 
-  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
-  gb_thread = new GateBoyThread(new GateBoy());
+  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  //gb_thread = new GateBoyThread(new GateBoy());
   //gb_thread = new GateBoyThread(new LogicBoy());
 
   //gb_thread->poweron(true);
@@ -489,9 +489,8 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     }
 
     case SDLK_n: {
-      //49582312
       gb_thread->clear_steps();
-      gb_thread->run_to(49582312 - 1);
+      gb_thread->add_steps(52231120 - 46880727);
       if (app_paused) {
         app_paused = false;
         gb_thread->resume();

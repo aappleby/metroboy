@@ -133,7 +133,7 @@ void GateBoyThread::dump(Dumper& d) {
 
   next_phase_total = gb->get_sys().gb_phase_total_old;
 
-  d("State count A  : %d\n", gb.state_count());
+  d("State count   : %d\n", gb.state_count());
   d("State size    : %d K\n", gb.state_size_bytes() / 1024);
   //d("BGB cycle     : 0x%08x\n",  (gb->phase_total / 4) - 0x10000);
   d("Sim clock     : %f\n",      double(next_phase_total) / (4194304.0 * 2));

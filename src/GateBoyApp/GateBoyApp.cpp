@@ -392,10 +392,10 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
   blob cart;
 
-  load_blob("tests/microtests/DMG/sprite4_0_b.gb", cart);
+  //load_blob("tests/microtests/DMG/sprite4_0_b.gb", cart);
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
-  //load_blob("LinksAwakening.gb", cart);     // broken
+  load_blob("LinksAwakening.gb", cart);     // broken
   //load_blob("tetris.gb", cart);             // broken
   //load_blob("SML.gb", cart); // reboot loop
   //load_blob("pman.gb", cart); // title screen funkd up
@@ -652,11 +652,9 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   //----------------------------------------
   // Column 1
 
+  /*
   d("\002===== HASHES =====\001\n");
   {
-    d("phase old %lld\n",      gb->get_sys().gb_phase_total_old);
-    d("phase new %lld\n",      gb->get_sys().gb_phase_total_new);
-
     d("cpu       0x%016llx\n", gb->get_cpu().core.get_hash());
     d("vid_ram   0x%016llx\n", hash_blob(gb->get_mem().vid_ram,     sizeof(gb->get_mem().vid_ram)));
     d("cart_ram  0x%016llx\n", hash_blob(gb->get_mem().cart_ram,    sizeof(gb->get_mem().cart_ram)));
@@ -666,6 +664,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
     d("framebuf  0x%016llx\n", hash_blob(gb->get_mem().framebuffer, sizeof(gb->get_mem().framebuffer)));
   }
   d("\n");
+  */
 
   d("\002===== Thread =====\001\n");
   gb_thread->dump(d);

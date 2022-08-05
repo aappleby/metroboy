@@ -58,6 +58,7 @@ constexpr bool config_use_flags   = config_debug || config_release;
 constexpr bool config_check_flags = config_debug;
 
 // In debug builds we check that tock_slow() is idempotent.
-constexpr bool config_idempotence  = config_debug;
+//constexpr bool config_idempotence  = config_debug;
+constexpr bool config_idempotence  = false;
 
 static_assert((config_check_flags && config_use_flags) || !config_check_flags, "Bad config_use/check_flags");

@@ -154,7 +154,7 @@ GBResult GateBoy::poke(int addr, uint8_t data_in) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
-  //CHECK_P((sys.gb_phase_total & 7) == 0);
+  CHECK_P((sys.gb_phase_total_old & 7) == 7);
 
   cpu.core.reg.bus_req_new.addr = addr;
   cpu.core.reg.bus_req_new.data = data;
@@ -167,7 +167,7 @@ GBResult GateBoy::dbg_req(uint16_t addr, uint8_t data, bool write) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_read(const blob& cart_blob, int addr) {
-  //CHECK_P((sys.gb_phase_total & 7) == 7);
+  CHECK_P((sys.gb_phase_total_old & 7) == 7);
 
   Req old_req = cpu.core.reg.bus_req_new;
   bool old_cpu_en = sys.cpu_en;
@@ -185,7 +185,7 @@ GBResult GateBoy::dbg_read(const blob& cart_blob, int addr) {
 //-----------------------------------------------------------------------------
 
 GBResult GateBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data) {
-  //CHECK_P((sys.gb_phase_total & 7) == 7);
+  CHECK_P((sys.gb_phase_total_old & 7) == 7);
 
   Req old_req = cpu.core.reg.bus_req_new;
   bool old_cpu_en = sys.cpu_en;

@@ -33,12 +33,14 @@ int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
 
+  LOG_G("GateBoyTests::main()\n");
+
   if (config_fastmode) {
     LOG_R("Don't run tests in fast mode!\n");
     return 0;
   }
 
-  if (1) {
+  if (0) {
     TestResults results;
     GateBoyTests a;
 
@@ -64,13 +66,12 @@ int main(int argc, char** argv) {
     }
   }
 
-  if (0) {
-    LOG_B("========== LogicBoy non-regression tests ==========\n");
+  if (1) {
+    LOG_B("========== LogicBoy tests ==========\n");
     TestResults results;
     GateBoyTests t;
 
     const auto proto = make_unique<LogicBoy>();
-    //results += t.test_reset_to_bootrom(proto.get(), 0x01); // OK
     results += t.test_reset(proto.get(), 0x01); // OK
     results += t.test_generic(proto.get());
 
@@ -91,7 +92,7 @@ int main(int argc, char** argv) {
   }
 
   if (0) {
-    LOG_B("========== LogicBoy regression tests ==========\n");
+    LOG_B("========== GateBoy vs LogicBoy regression tests ==========\n");
     TestResults results;
     GateBoyTests t;
 
@@ -259,7 +260,7 @@ TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
   TEST_INIT();
 
   results += test_first_op(proto);
-  results += test_bootrom(proto);
+  //results += test_bootrom(proto);
   results += test_clk(proto);
   results += test_regs(proto);
   results += test_spu_regs(proto);

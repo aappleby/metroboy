@@ -424,9 +424,9 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("PUXA_FINE_MATCH_A      : ", s.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state);
   d.dump_bitp("NYZE_FINE_MATCH_B      : ", s.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state);
   d.dump_bitp("ROXY_FINE_SCROLL_DONEn : ", s.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state);
-
   d.dump_bitp("WODU_HBLANKp_odd       : ", s.WODU_HBLANK_GATEp_odd.state);
   d.dump_bitp("VOGA_HBLANKp_evn       : ", s.VOGA_HBLANKp_evn.state);
+  d.dump_bitp("FEPO_STORE_MATCHp_odd  : ", s.FEPO_STORE_MATCHp_odd.state);
   d("\n");
 }
 

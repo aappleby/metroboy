@@ -148,11 +148,11 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   wave_tex = create_texture_u8(256, 256, nullptr, false);
 
-  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
-  gb_thread = new GateBoyThread(new GateBoy());
+  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  //gb_thread = new GateBoyThread(new GateBoy());
   //gb_thread = new GateBoyThread(new LogicBoy());
 
-  gb_thread->poweron(true);
+  //gb_thread->poweron(true);
 
   // baBING
   // 0x000700c0 0xff26 0x80 // apu on
@@ -385,16 +385,17 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 0
+#if 1
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140
 
   blob cart;
 
+  load_blob("tests/microtests/DMG/sprite4_0_b.gb", cart);
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
-  load_blob("LinksAwakening.gb", cart);     // broken
+  //load_blob("LinksAwakening.gb", cart);     // broken
   //load_blob("tetris.gb", cart);             // broken
   //load_blob("SML.gb", cart); // reboot loop
   //load_blob("pman.gb", cart); // title screen funkd up
@@ -490,7 +491,8 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
 
     case SDLK_n: {
       gb_thread->clear_steps();
-      gb_thread->add_steps(52231120 - 46880727);
+      //gb_thread->add_steps(52231120 - 46880727);
+      gb_thread->add_steps(46883477 - 46880727 - 1);
       if (app_paused) {
         app_paused = false;
         gb_thread->resume();

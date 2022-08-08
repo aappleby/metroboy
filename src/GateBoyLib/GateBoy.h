@@ -264,7 +264,7 @@ struct GateBoy  : public IGateBoy {
   void tock_ext_gates(const GateBoyState& reg_old, const blob& cart_blob);
   void tock_oam_bus_gates(const GateBoyState& reg_old);
   void tock_serial_gates(const GateBoyState& reg_old);
-  void tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FETCH_TRIGp);
+  void tock_vram_bus_gates(const GateBoyState& reg_old, wire TEVO_WIN_FETCH_TRIGp_old, wire TEVO_WIN_FETCH_TRIGp_new);
   void tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIPE_evn, wire NYXU_BFETCH_RSTn);
   void tock_bootrom_gates(const GateBoyState& reg_old, const uint8_t* bootrom);
   void tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_evn, wire REPU_VBLANKp);

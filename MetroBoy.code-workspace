@@ -8,7 +8,9 @@
 		"files.associations": {
 			"ratio": "cpp",
 			"semaphore": "cpp",
-			"*.tcc": "cpp"
+			"*.tcc": "cpp",
+			"cstdlib": "cpp",
+			"mutex": "cpp"
 		}
 	}
 }

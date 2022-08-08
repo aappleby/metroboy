@@ -98,9 +98,11 @@ GBResult GateBoyPair::dbg_write (const blob& cart_blob, int addr, uint8_t data_i
 }
 
 GBResult GateBoyPair::run_phases(const blob& cart_blob, int phase_count) {
-  GBResult r1 = gb->run_phases(cart_blob, phase_count);
-  GBResult r2 = lb->run_phases(cart_blob, phase_count);
-  return check_results(r1, r2);
+  GBResult res = GBResult::ok();
+  for (int i = 0; i < phase_count; i++) {
+    res &= next_phase(cart_blob);
+  }
+  return res;
 }
 
 GBResult GateBoyPair::next_phase(const blob& cart_blob) {
@@ -159,12 +161,10 @@ GBResult GateBoyPair::check_results(GBResult r1, GBResult r2) const {
 bool GateBoyPair::check_sync() const {
   //printf("%d %d %d %d %d\n", sizeof(GateBoyCpu), sizeof(GateBoyMem), sizeof(GateBoyState), sizeof(GateBoySys), sizeof(GateBoyPins));
 
-  /*
   if (!diff_blobs(&gb->get_cpu(), &lb->get_cpu(), sizeof(GateBoyCpu), 0xFF, nullptr)) {
     LOG_R("Regression test cpu mismatch @ phase old %lld!\n", gb->get_sys().gb_phase_total_old);
     return false;
   }
-  */
 
   // probably don't need to diff mem, but eh - we're already slow in regression test mode
   /*
@@ -179,19 +179,15 @@ bool GateBoyPair::check_sync() const {
     return false;
   }
 
-  /*
   if (!diff_blobs(&gb->get_sys(), &lb->get_sys(), sizeof(GateBoySys), 0xFF, nullptr)) {
     LOG_R("Regression test cpu mismatch @ phase old %lld!\n", gb->get_sys().gb_phase_total_old);
     return false;
   }
-  */
 
-  /*
   if (!bit_cmp(gb->get_pins(), lb->get_pins(), 0x01)) {
     LOG_R("Regression test pins mismatch @ phase_old %lld!\n", gb->get_sys().gb_phase_total_old);
     return false;
   }
-  */
 
   return true;
 }

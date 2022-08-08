@@ -1171,14 +1171,22 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   /*_p27.LYZU*/ reg_new.tfetch_control.LYZU_BFETCH_S0p_D1.dff17(ALET_xBxDxFxH, reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_old.tfetch_counter.LAXU_BFETCH_S0p_odd.qp_old());
 
-  /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_evn = nor2(reg_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.qn_new(), reg_new.win_ctrl.RENE_WIN_FETCHn_B_evn.qp_new());
-  /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_xxx = nand2(SYLO_WIN_HITn_odd_new, reg_new.win_ctrl.SOVY_WIN_HITp_evn.qp_new());
-  /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne_xxx = not1(TUXY_WIN_FIRST_TILEne_xxx);
-  /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp_xxx = or3(SEKO_WIN_FETCH_TRIGp_evn, SUZU_WIN_FIRST_TILEne_xxx, TAVE_PRELOAD_DONE_TRIGp_xxx_new); // Schematic wrong, this is OR
+  /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_old = nor2(reg_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.qn_old(), reg_old.win_ctrl.RENE_WIN_FETCHn_B_evn.qp_old());
+  /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_old = nand2(SYLO_WIN_HITn_odd_old, reg_old.win_ctrl.SOVY_WIN_HITp_evn.qp_old());
+  /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne_old = not1(TUXY_WIN_FIRST_TILEne_old);
+  /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn_old = not1(reg_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_old());
+  /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn_old = nand4(reg_old.XYMU_RENDERING_LATCHn.qn_old(), ROMO_PRELOAD_DONEn_evn_old, reg_old.tfetch_control.NYKA_FETCH_DONEp_evn.qp_old(), reg_old.tfetch_control.PORY_FETCH_DONEp_odd.qp_old());
+  /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp_old = not1(SUVU_PRELOAD_DONE_TRIGn_old);
+  /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old, SUZU_WIN_FIRST_TILEne_old, TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
+
+  /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_evn_new = nor2(reg_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.qn_new(), reg_new.win_ctrl.RENE_WIN_FETCHn_B_evn.qp_new());
+  /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_xxx_new = nand2(SYLO_WIN_HITn_odd_new, reg_new.win_ctrl.SOVY_WIN_HITp_evn.qp_new());
+  /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne_xxx_new = not1(TUXY_WIN_FIRST_TILEne_xxx_new);
+  /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp_xxx_new = or3(SEKO_WIN_FETCH_TRIGp_evn_new, SUZU_WIN_FIRST_TILEne_xxx_new, TAVE_PRELOAD_DONE_TRIGp_xxx_new); // Schematic wrong, this is OR
   ///*#p27.NUNY*/ wire NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
   ///*_p27.NYFO*/ wire NYFO_WIN_MODE_tn_odd = not1(NUNY_WIN_MODE_TRIGp);
   ///*_p27.MOSU*/ wire MOSU_WIN_MODE_tp_odd = not1(NYFO_WIN_MODE_tn_odd);
-  /*_p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(reg_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), MOSU_WIN_MODE_tp_odd, TEVO_WIN_FETCH_TRIGp_xxx);
+  /*_p27.NYXU*/ wire NYXU_BFETCH_RSTn = nor3(reg_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.out_new(), MOSU_WIN_MODE_tp_odd, TEVO_WIN_FETCH_TRIGp_xxx_new);
 
   for (int feedback = 0; feedback < 2; feedback++) {
     /*_p27.MOCE*/ wire MOCE_BFETCH_DONEn = nand3(reg_new.tfetch_counter.LAXU_BFETCH_S0p_odd.qp_any(), reg_new.tfetch_counter.NYVA_BFETCH_S2p_odd.qp_any(), NYXU_BFETCH_RSTn);
@@ -1202,7 +1210,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   //----------------------------------------
   // Fine match counter
 
-  /*#p27.PASO*/ wire PASO_FINE_RST = nor2(PAHA_RENDERINGn, TEVO_WIN_FETCH_TRIGp_xxx);
+  /*#p27.PASO*/ wire PASO_FINE_RST = nor2(PAHA_RENDERINGn, TEVO_WIN_FETCH_TRIGp_xxx_new);
 
   /*#p27.ROZE*/ uint8_t ROZE_FINE_COUNT_7n_odd = nand3(reg_new.fine_count_odd.RUBU_FINE_CNT2_odd.qp_any(), reg_new.fine_count_odd.ROGA_FINE_CNT1_odd.qp_any(), reg_new.fine_count_odd.RYKU_FINE_CNT0_odd.qp_any());
   /*#p27.PECU*/ uint8_t PECU_FINE_CLK_odd = nand2(ROXO_CLKPIPE_evn_new, ROZE_FINE_COUNT_7n_odd);
@@ -1242,7 +1250,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   // Memory buses
 
   tock_ext_gates(reg_old, cart_blob);
-  tock_vram_bus_gates(reg_old, TEVO_WIN_FETCH_TRIGp_xxx);
+  tock_vram_bus_gates(reg_old, TEVO_WIN_FETCH_TRIGp_old, TEVO_WIN_FETCH_TRIGp_xxx_new);
   tock_oam_bus_gates(reg_old);
   tock_zram_gates(reg_old, reg_new, mem.zero_ram);
 

@@ -148,244 +148,39 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   wave_tex = create_texture_u8(256, 256, nullptr, false);
 
-  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  auto gb = new GateBoy();
+  auto lb = new LogicBoy();
+  auto pair = new GateBoyPair(gb, lb);
+  gb_thread = new GateBoyThread(pair);
   //gb_thread = new GateBoyThread(new GateBoy());
   //gb_thread = new GateBoyThread(new LogicBoy());
 
   //gb_thread->poweron(true);
+  gb_thread->reset();
 
-  // baBING
-  // 0x000700c0 0xff26 0x80 // apu on
-  // 0x00070108 0xff25 0xf3 // left en 0b1111 right en 0b0011
-  // 0x00070128 0xff24 0x77 // l vol 7 r vol 7
-
-  // 0x000700d0 0xff11 0x80 // ch1 duty 0b10
-  // 0x000700f8 0xff12 0xf3 // ch1 vol 15 env- period 3
-
-  // 0x02150f98 0xff13 0x83 // ch1      freq lo 0b10000011
-  // 0x02150fc0 0xff14 0x87 // ch1 trig freq hi 0b0000011110000011
-
-  // 0x021fc700 0xff13 0xc1 // ch1      freq lo 0b11000001
-  // 0x021fc728 0xff14 0x87 // ch1 trig freq hi 0b0000011111000001
+  BlobStream bs;
+  ::load_blob("mismatch_8_74205.dump", bs.b);
+  gb_thread->load_raw_dump(bs);
 
 #if 0
-  /*
-  gb_thread->load_bootrom(R"(
-    0000:
-      nop
-      nop
-      nop
-      nop
-      nop
-      ld a, $80
-      ld ($FF26), a
-      nop
-      nop
-      nop
-      ld a, $00
-      ld ($FF26), a
-      nop
-      nop
-      nop
-      ld a, $80
-      ld ($FF26), a
-      nop
-      nop
-      nop
-      nop
-      jr -2
-  )");
-  */
-
   const char* app = R"(
   0150:
-    ld a, $55
-    ld hl, $c003
-    ld (hl), a
-    jr -3
+    jr -2
   )";
-
-  /*
-  const char* app = R"(
-  0150:
-    ld a, $55
-    ld hl, $8000
-    ld (hl), a
-    jr -3
-  )";
-  */
 
   //gb_thread->poweron(true);
   gb_thread->load_program(app);
   gb_thread->reset();
 
-#endif
-
-#if 0
-  gb_thread->load_program(R"(
-    0150:
-      ld a, $00
-      ld ($FF26), a
-      ld a, $80
-      ld ($FF26), a
-      ld a, $FF
-      ld ($FF25), a
-      ld a, $77
-      ld ($FF24), a
-
-      ld a, $00
-      ld ($FF10), a
-      ld a, $80
-      ld ($FF11), a
-      ld a, $F0
-      ld ($FF12), a
-      ld a, $33
-      ld ($FF13), a
-      ld a, $86
-
-      ld ($FF14), a
-      ld a, $80
-      ld ($FF16), a
-      ld a, $F0
-      ld ($FF17), a
-      ld a, $C0
-      ld ($FF18), a
-      ld a, $87
-      ld ($FF19), a
-
-      ld a, $F8
-      ld ($FF30), a
-      ld ($FF31), a
-      ld ($FF32), a
-      ld ($FF33), a
-      ld ($FF34), a
-      ld ($FF35), a
-      ld ($FF36), a
-
-      ld a, $8F
-      ld ($FF39), a
-      ld ($FF3A), a
-      ld ($FF3B), a
-      ld ($FF3C), a
-      ld ($FF3D), a
-      ld ($FF3E), a
-      ld ($FF3F), a
-
-      ld a, $80
-      ld ($FF1A), a
-      ld a, $00
-      ld ($FF1B), a
-      ld a, $40
-      ld ($FF1C), a
-      ld a, $00
-      ld ($FF1D), a
-      ld a, $87
-      ld ($FF1E), a
-
-      ld a, $00
-      ld ($FF20), a
-      ld a, $20
-      ld ($FF21), a
-      ld a, $20
-      ld ($FF22), a
-      ld a, $80
-      ld ($FF23), a
-
-      jr -2
-  )");
-
-#endif
-
-  /*
-  Name Addr 7654 3210 Function
-  -----------------------------------------------------------------
-        Square 1
-  NR10 FF10 -PPP NSSS Sweep period, negate, shift
-  NR11 FF11 DDLL LLLL Duty, Length load (64-L)
-  NR12 FF12 VVVV APPP Starting volume, Envelope add mode, period
-  NR13 FF13 FFFF FFFF Frequency LSB
-  NR14 FF14 TL-- -FFF Trigger, Length enable, Frequency MSB
-
-        Square 2
-      FF15 ---- ---- Not used
-  NR21 FF16 DDLL LLLL Duty, Length load (64-L)
-  NR22 FF17 VVVV APPP Starting volume, Envelope add mode, period
-  NR23 FF18 FFFF FFFF Frequency LSB
-  NR24 FF19 TL-- -FFF Trigger, Length enable, Frequency MSB
-
-        Wave
-  NR30 FF1A E--- ---- DAC power
-  NR31 FF1B LLLL LLLL Length load (256-L)
-  NR32 FF1C -VV- ---- Volume code (00=0%, 01=100%, 10=50%, 11=25%)
-  NR33 FF1D FFFF FFFF Frequency LSB
-  NR34 FF1E TL-- -FFF Trigger, Length enable, Frequency MSB
-
-        Noise
-      FF1F ---- ---- Not used
-  NR41 FF20 --LL LLLL Length load (64-L)
-  NR42 FF21 VVVV APPP Starting volume, Envelope add mode, period
-  NR43 FF22 SSSS WDDD Clock shift, Width mode of LFSR, Divisor code
-  NR44 FF23 TL-- ---- Trigger, Length enable
-
-        Control/Status
-  NR50 FF24 ALLL BRRR Vin L enable, Left vol, Vin R enable, Right vol
-  NR51 FF25 NW21 NW21 Left enables, Right enables
-  NR52 FF26 P--- NW21 Power control/status, Channel length statuses
-
-        Not used
-      FF27 ---- ----
-      .... ---- ----
-      FF2F ---- ----
-
-        Wave Table
-      FF30 0000 1111 Samples 0 and 1
-      ....
-      FF3F 0000 1111 Samples 30 and 31
-  */
-
-
-
-#if 0
-  // test_fuzz_reg failed at 1871:0268 - write 0xe5 to 0xff40
   {
-    gb_thread->gb->set_cpu_en(false);
-
-    auto gb = gb_thread->gb.state();
-    auto addr = ADDR_LCDC;
-    auto& dummy_cart = gb_thread->get_cart();
-
-
-    uint32_t r = xorshift32(1);
-
-    for (int i = 0; i < 203; i++) {
-      r = xorshift32(r);
-      //if (r & 1) {
-      if ((r % 100) >= 90) {
-        r = xorshift32(r);
-        auto res = gb->dbg_write(dummy_cart, addr, uint8_t(r));
-        if (res.is_err()) printf("%d\n", i);
-      }
-      else {
-        auto res = gb->dbg_read(dummy_cart, addr);
-        if (res.is_err()) printf("%d\n", i);
-      }
-    }
-
-    r = xorshift32(r);
-    if (r & 1) {
-      r = xorshift32(r);
-      auto res = gb->dbg_req((uint16_t)addr, uint8_t(r), 1);
-    }
-    else {
-      gb->dbg_req((uint16_t)addr, 0, 0);
-    }
+    auto gb = (GateBoyPair*)gb_thread->gb.state();
+    gb->run_phases(gb_thread->get_cart(), 504);
+    gb->dbg_write(gb_thread->get_cart(), 0xFF46, 0x80);
   }
 
-  gb_thread->run_to(1707 - 2);
-
 #endif
 
-#if 1
+#if 0
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140
@@ -795,9 +590,11 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   d("\n");
 #endif
 
+  /*
   d("\002===== SPU =====\001\n");
   dumper.dump_spu(state, d);
   d("\n");
+  */
 
 #if 0
   d("\002===== Serial =====\001\n");

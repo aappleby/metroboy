@@ -49,7 +49,7 @@ inline void set_bit(T& t, int c, bool x) {
 uint32_t swap(uint32_t x);
 uint64_t swap(uint64_t x);
 
-constexpr uint32_t xorshift32(uint32_t x)
+constexpr uint32_t xorshift32(uint32_t& x)
 {
   x ^= x << 13;
   x ^= x >> 17;

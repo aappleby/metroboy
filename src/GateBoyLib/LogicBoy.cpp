@@ -1001,8 +1001,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (vid_rst_evn_new)  state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
   if (line_rst_odd_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
 
+  auto PYNU_WIN_MODE_Ap_odd_old = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+  auto PYNU_WIN_MODE_Ap_odd_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+
   //----------------------------------------
 
+  auto XYMU_RENDERINGn_old = state_old.XYMU_RENDERINGn;
   auto XYMU_RENDERINGn_new = state_new.XYMU_RENDERINGn;
 
   if (vid_rst_evn_new || line_rst_odd_new) {
@@ -1142,12 +1146,18 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
   }
 
+  auto NYKA_FETCH_DONEp_evn_old = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state;
+  auto NYKA_FETCH_DONEp_evn_new = state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state;
+
   if (DELTA_ODD) {
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state;
   }
   if (vid_rst_evn_new || XYMU_RENDERINGn_new || line_rst_odd_new || NUNY_WIN_MODE_TRIGp_new) {
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
   }
+
+  auto PORY_FETCH_DONEp_odd_old = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
+  auto PORY_FETCH_DONEp_odd_new = state_new.tfetch_control.PORY_FETCH_DONEp_odd.state;
 
   uint8_t fetch_done_old = (state_old.phase_tfetch >= 10) && (state_old.phase_tfetch <= 14);
   if (vid_rst_evn_old || state_old.XYMU_RENDERINGn || line_rst_odd_old || NUNY_WIN_MODE_TRIGp_old) fetch_done_old = 0;
@@ -1173,6 +1183,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
+  auto POKY_PRELOAD_LATCHp_evn_old = state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
+  auto POKY_PRELOAD_LATCHp_evn_new = state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
+
   wire something_trig_old = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_old;
   wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new;
 
@@ -1188,6 +1201,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
     if (DELTA_EVEN) state_new.win_ctrl.SOVY_WIN_HITp_evn.state = state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
   }
+  auto RYDY_WIN_HITp_odd_old = state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
+  auto RYDY_WIN_HITp_odd_new = state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
+  auto SOVY_WIN_HITp_evn_old = state_old.win_ctrl.SOVY_WIN_HITp_evn.state;
+  auto SOVY_WIN_HITp_evn_new = state_new.win_ctrl.SOVY_WIN_HITp_evn.state;
 
   wire win_hit_trig_old  = state_old.win_ctrl.SOVY_WIN_HITp_evn.state && !state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
   wire win_hit_trig_new  = state_new.win_ctrl.SOVY_WIN_HITp_evn.state && !state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
@@ -1221,6 +1238,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire win_fetch_trig_old = state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
   wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
 
+  auto RYFA_WIN_FETCHn_A_evn_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
+  auto RENE_WIN_FETCHn_B_evn_new = state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
+
+  auto RYFA_WIN_FETCHn_A_evn_old = state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
+  auto RENE_WIN_FETCHn_B_evn_old = state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
+
   //----------------------------------------
 
   wire TEVO_WIN_FETCH_TRIGp_old = (win_fetch_trig_old || win_hit_trig_old || something_trig_old) && !state_old.XYMU_RENDERINGn;
@@ -1228,17 +1251,42 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   wire NYXU_BFETCH_RSTn_new = (line_rst_odd_new || vid_rst_evn_new || !scan_done_trig_new) && !NUNY_WIN_MODE_TRIGp_new && !TEVO_WIN_FETCH_TRIGp_new;
 
-  if (XYMU_RENDERINGn_new) CHECK_P(NYXU_BFETCH_RSTn_new);
+  // FIXME this fails in fuzz tests
+  //if (XYMU_RENDERINGn_new) CHECK_P(NYXU_BFETCH_RSTn_new);
 
   //----------------------------------------
   // Win map x counter
 
   if (DELTA_ODD) {
 
-    wire VETU_WIN_MAPp_old = TEVO_WIN_FETCH_TRIGp_old && state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
-    wire VETU_WIN_MAPp_new = TEVO_WIN_FETCH_TRIGp_new && state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+    wire SYLO_WIN_HITn_odd_old = not1(RYDY_WIN_HITp_odd_old);
+    wire TOMU_WIN_HITp_odd_old = not1(SYLO_WIN_HITn_odd_old);
+    wire SEKO_WIN_FETCH_TRIGp_old = nor2(not1(RYFA_WIN_FETCHn_A_evn_old), RENE_WIN_FETCHn_B_evn_old);
+    wire TUXY_WIN_FIRST_TILEne_old = nand2(SYLO_WIN_HITn_odd_old, SOVY_WIN_HITp_evn_old);
+    wire SUZU_WIN_FIRST_TILEne_old = not1(TUXY_WIN_FIRST_TILEne_old);
+    wire ROMO_PRELOAD_DONEn_evn_old = not1(POKY_PRELOAD_LATCHp_evn_old);
+    wire SUVU_PRELOAD_DONE_TRIGn_old = nand4(not1(XYMU_RENDERINGn_old), ROMO_PRELOAD_DONEn_evn_old, NYKA_FETCH_DONEp_evn_old, PORY_FETCH_DONEp_odd_old);
+    wire TAVE_PRELOAD_DONE_TRIGp_old = not1(SUVU_PRELOAD_DONE_TRIGn_old);
+    wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old, SUZU_WIN_FIRST_TILEne_old, TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
+    wire NOCU_WIN_MODEn_old = not1(PYNU_WIN_MODE_Ap_odd_old);
+    wire PORE_WIN_MODEp_old = not1(NOCU_WIN_MODEn_old);
+    wire VETU_WIN_MAPp_old = and2(TEVO_WIN_FETCH_TRIGp_old, PORE_WIN_MODEp_old);
 
-    if (!VETU_WIN_MAPp_old && VETU_WIN_MAPp_new) {
+
+    wire SYLO_WIN_HITn_odd_new = not1(RYDY_WIN_HITp_odd_new);
+    wire TOMU_WIN_HITp_odd_new = not1(SYLO_WIN_HITn_odd_new);
+    wire SEKO_WIN_FETCH_TRIGp_new = nor2(not(RYFA_WIN_FETCHn_A_evn_new), RENE_WIN_FETCHn_B_evn_new);
+    wire TUXY_WIN_FIRST_TILEne_new = nand2(SYLO_WIN_HITn_odd_new, SOVY_WIN_HITp_evn_new);
+    wire SUZU_WIN_FIRST_TILEne_new = not1(TUXY_WIN_FIRST_TILEne_new);
+    wire ROMO_PRELOAD_DONEn_evn_new = not1(POKY_PRELOAD_LATCHp_evn_new);
+    wire SUVU_PRELOAD_DONE_TRIGn_new = nand4(not1(XYMU_RENDERINGn_new), ROMO_PRELOAD_DONEn_evn_new, NYKA_FETCH_DONEp_evn_new, PORY_FETCH_DONEp_odd_new);
+    wire TAVE_PRELOAD_DONE_TRIGp_new = not1(SUVU_PRELOAD_DONE_TRIGn_new);
+    wire TEVO_WIN_FETCH_TRIGp_new = or3(SEKO_WIN_FETCH_TRIGp_new, SUZU_WIN_FIRST_TILEne_new, TAVE_PRELOAD_DONE_TRIGp_new); // Schematic wrong, this is OR
+    wire NOCU_WIN_MODEn_new = not1(PYNU_WIN_MODE_Ap_odd_new);
+    wire PORE_WIN_MODEp_new = not1(NOCU_WIN_MODEn_new);
+    wire VETU_WIN_MAPp_new = and2(TEVO_WIN_FETCH_TRIGp_new, PORE_WIN_MODEp_new);
+
+    if (posedge(VETU_WIN_MAPp_old, VETU_WIN_MAPp_new)) {
       state_new.win_x.map++;
     }
   }

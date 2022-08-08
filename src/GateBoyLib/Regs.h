@@ -523,7 +523,7 @@ struct Bus : public BitBase {
     check_new();
 
     // if both the new and old state are both driven, that's a bus collision.
-    DCHECK_N((t.state & TRI_DRIVEN) && (state & BIT_DRIVEN));
+    CHECK_N((t.state & TRI_DRIVEN) && (state & BIT_DRIVEN));
 
     if (t.state & TRI_DRIVEN) state = t.state;
   }
@@ -563,11 +563,11 @@ struct PinIO : public PinBase {
     else {
       if (bit0(int_LO)) {
         // shootthrough, this is bad
-        DCHECK_P(false);
+        CHECK_P(false);
       }
       else {
         // hi-z, can be driven externally
-        DCHECK_N(bit0(int_PUn)); // must not be floating
+        CHECK_N(bit0(int_PUn)); // must not be floating
 
         // this is the _internal_ bit, so if this is pulled high externally it should read 0 internally.
         // i think...
@@ -578,13 +578,13 @@ struct PinIO : public PinBase {
     }
 
     if (bit0(ext_OEp)) {
-      DCHECK_N(state & BIT_DRIVEN);
+      CHECK_N(state & BIT_DRIVEN);
       // External bit is inverted when crossing the pin
       state = BIT_NEW | BIT_DRIVEN | bit0(~ext_Dp);
     }
 
-    DCHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
-    DCHECK_P(bool(state & BIT_NEW));
+    CHECK_P(bool(state & BIT_DRIVEN) != bool(state & BIT_PULLED));
+    CHECK_P(bool(state & BIT_NEW));
   }
 };
 

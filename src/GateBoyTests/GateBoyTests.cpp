@@ -322,7 +322,7 @@ void GateBoyTests::save_fuzz_dump(const IGateBoy* proto, int rep_j, int rep_i) {
   gb->set_cpu_en(false);
 
   for (int i = 0; i <= rep_i; i++) {
-    uint16_t addr = 0xFF00 + (xorshift32(r) & 0xFF);
+    uint16_t addr = 0xFE00 + (xorshift32(r) & 0x1FF);
 
     if (addr == 0xFF0F) addr = 0x8000;
     if (addr == 0xFF46) addr = 0x8000; // dma causes mismatches due to bus collisions
@@ -366,7 +366,7 @@ TestResults GateBoyTests::test_fuzz_reg2(const IGateBoy* proto, int reps) {
     gb->set_cpu_en(false);
 
     for (int i = 0; i < 100000; i++) {
-      uint16_t addr = 0xFF00 + (xorshift32(r) & 0xFF);
+      uint16_t addr = 0xFE00 + (xorshift32(r) & 0x1FF);
 
       if (addr == 0xFF0F) addr = 0x8000;
       if (addr == 0xFF46) addr = 0x8000; // dma causes mismatches due to bus collisions

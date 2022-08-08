@@ -1934,8 +1934,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (MATU_DMA_RUNNINGp_odd_new) {
     if (DELTA_DH) mem.oam_ram[state_new.dma_lo] = dma_addr_vram_new ? state_new.vram_dbus : cart_dbus;
-    oam_dbus_a = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
-    oam_dbus_b = dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
+    oam_dbus_a &= dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
+    oam_dbus_b &= dma_addr_vram_new ? ~state_new.vram_dbus : ~cart_dbus;
   }
   else if (besu_scan_donen_odd_new && !vid_rst_evn_new) {
     // Scanning
@@ -1967,28 +1967,28 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_HA) {
     }
     if (DELTA_AB) {
-      oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-      oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+      oam_dbus_a &= ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      oam_dbus_b &= ~mem.oam_ram[((scan_counter_new << 2)) |  1];
     }
     if (DELTA_BC) {
-      oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-      oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+      oam_dbus_a &= ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      oam_dbus_b &= ~mem.oam_ram[((scan_counter_new << 2)) |  1];
     }
     if (DELTA_CD) {
       if (cpu_addr_oam_new && cpu.core.reg.bus_req_new.read) {
-        oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-        oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+        oam_dbus_a &= ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+        oam_dbus_b &= ~mem.oam_ram[((scan_counter_new << 2)) |  1];
       }
     }
     if (DELTA_DE) {
     }
     if (DELTA_EF) {
-      oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-      oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+      oam_dbus_a &= ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      oam_dbus_b &= ~mem.oam_ram[((scan_counter_new << 2)) |  1];
     }
     if (DELTA_FG) {
-      oam_dbus_a = ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
-      oam_dbus_b = ~mem.oam_ram[((scan_counter_new << 2)) |  1];
+      oam_dbus_a &= ~mem.oam_ram[((scan_counter_new << 2)) & ~1];
+      oam_dbus_b &= ~mem.oam_ram[((scan_counter_new << 2)) |  1];
     }
     if (DELTA_GH) {
     }
@@ -2000,12 +2000,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     //uint8_t sfetch_oam_clk_new =  !(state_new.phase_sfetch >= 1 && state_new.phase_sfetch <= 3);
 
     if (!sfetch_oam_oen_new) {
-      oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
-      oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
+      oam_dbus_a &= ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
+      oam_dbus_b &= ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
     }
-    else if (cpu_addr_oam_new && (!cpu.core.reg.bus_req_new.read || DELTA_AD)) {
-      oam_dbus_a = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
-      oam_dbus_b = ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
+    //else if (cpu_addr_oam_new && (!cpu.core.reg.bus_req_new.read || DELTA_AD)) {
+    else if (cpu_addr_oam_new && cpu.core.reg.bus_req_new.read) {
+      oam_dbus_a &= ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) & ~1];
+      oam_dbus_b &= ~mem.oam_ram[(((state_new.sprite_ibus << 2) | 0b11)) |  1];
     }
 
 
@@ -2019,8 +2020,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     if (DELTA_HD) {
       if (cpu.core.reg.bus_req_new.read && !DELTA_HA) {
-        oam_dbus_a = ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
-        oam_dbus_b = ~mem.oam_ram[(cpu_addr_new & 0xFF) |  1];
+        oam_dbus_a &= ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
+        oam_dbus_b &= ~mem.oam_ram[(cpu_addr_new & 0xFF) |  1];
         state_new.oam_latch_a = ~mem.oam_ram[(cpu_addr_new & 0xFF) & ~1];
         state_new.oam_latch_b = ~mem.oam_ram[(cpu_addr_new & 0xFF) |  1];
       }
@@ -2035,15 +2036,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       }
 
       if (cpu_wr) {
-        oam_dbus_a = ~state_new.cpu_dbus;
-        oam_dbus_b = ~state_new.cpu_dbus;
+        oam_dbus_a &= ~state_new.cpu_dbus;
+        oam_dbus_b &= ~state_new.cpu_dbus;
       }
     }
   }
   else {
     // Idle
-    oam_dbus_a = ~state_new.cpu_dbus;
-    oam_dbus_b = ~state_new.cpu_dbus;
+    oam_dbus_a &= ~state_new.cpu_dbus;
+    oam_dbus_b &= ~state_new.cpu_dbus;
   }
 
   //----------------------------------------

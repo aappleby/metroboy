@@ -272,8 +272,7 @@ struct GateBoy  : public IGateBoy {
 
   void tock_latches(const GateBoyState& reg_old);
 
-  void update_sprite_store_flags_gates(SpriteCounter& sprite_counter, wire DYTY_COUNT_CLKp, SpriteStoreFlags& sprite_store_flags);
-  void store_sprite_gates(const GateBoyState& reg_old, SpriteStoreFlags& sprite_store_flags_old, SpriteStoreFlags& sprite_store_flags_new, SpriteResetFlags& sprite_reset_flags, wire BYVA_LINE_RSTn, OamTempB& oam_temp_b_old);
+  void store_sprite_gates(const GateBoyState& reg_old, SpriteCounter& sprite_counter, SpriteResetFlags& sprite_reset_flags, wire BYVA_LINE_RSTn, OamTempB& oam_temp_b_old, wire DYTY_COUNT_CLKp);
   void get_sprite_match_flags_gates(wire AROR_MATCH_ENp, SpriteMatchFlags& sprite_get_flag);
   void sprite_match_to_bus_gates(SpriteMatchFlags& sprite_get_flag);
   void sprite_scan_to_bus_gates(SpriteDeltaY delta, NorLatch XYMU_RENDERINGn, Gate FEPO_STORE_MATCHp);

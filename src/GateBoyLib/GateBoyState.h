@@ -134,7 +134,6 @@ struct GateBoyState {
   SpriteIndex      sprite_index;
   SpriteMatchFlags sprite_match_flags_odd;
   SpriteResetFlags sprite_reset_flags_odd;
-  SpriteStoreFlags sprite_store_flags_evn;
 
   SpriteIBus sprite_ibus;
   SpriteLBus sprite_lbus;

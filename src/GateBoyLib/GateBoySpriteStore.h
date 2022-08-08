@@ -61,23 +61,6 @@ struct SpriteResetFlags {
 };
 
 //-----------------------------------------------------------------------------
-
-struct SpriteStoreFlags {
-  void reset();
-
-  /*_p29.DYHU*/ Gate DYHU_STORE0_CLKn;
-  /*_p29.BUCO*/ Gate BUCO_STORE1_CLKn;
-  /*_p29.GYFO*/ Gate GYFO_STORE2_CLKn;
-  /*_p29.GUSA*/ Gate GUSA_STORE3_CLKn;
-  /*_p29.DUKE*/ Gate DUKE_STORE4_CLKn;
-  /*_p29.BEDE*/ Gate BEDE_STORE5_CLKn;
-  /*_p29.WEKA*/ Gate WEKA_STORE6_CLKn;
-  /*_p29.GYVO*/ Gate GYVO_STORE7_CLKn;
-  /*_p29.BUKA*/ Gate BUKA_STORE8_CLKn;
-  /*_p29.DECU*/ Gate DECU_STORE9_CLKn;
-};
-
-//-----------------------------------------------------------------------------
 // All 10 of the sprite stores
 
 // STORE_I - xBxxxFxx

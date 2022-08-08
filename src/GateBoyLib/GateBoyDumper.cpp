@@ -219,10 +219,8 @@ void GateBoyDumper::dump_sprite_store(const GateBoyState& s, Dumper& d) {
 
   //SpriteMatchFlags sprite_match_flags;
   //SpriteResetFlags sprite_reset_flags;
-  //SpriteStoreFlags sprite_store_flags;
   d.dump_flags  ("SPRITE MATCH   : ", &s.sprite_match_flags_odd, sizeof(s.sprite_match_flags_odd));
   d.dump_flags  ("SPRITE RESET   : ", &s.sprite_reset_flags_odd, sizeof(s.sprite_reset_flags_odd));
-  d.dump_flags  ("SPRITE STORE   : ", &s.sprite_store_flags_evn, sizeof(s.sprite_store_flags_evn));
   d.dump_slice2p("SPRITE INDEX   : ", &s.sprite_index.XADU_SPRITE_IDX0p_odd.state, 6);
   d.dump_slice2p("SPRITE COUNT   : ", &s.sprite_counter.BESE_SPRITE_COUNT0_odd, 4);
   d("SPRITE IBUS    : %d\n", bit_pack(s.sprite_ibus));

@@ -159,7 +159,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->reset();
 
   BlobStream bs;
-  ::load_blob("mismatch_1_2309.dump", bs.b);
+  ::load_blob("mismatch_1_30127.dump", bs.b);
   gb_thread->load_raw_dump(bs);
 
 #if 0

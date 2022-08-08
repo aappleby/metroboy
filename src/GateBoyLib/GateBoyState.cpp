@@ -115,7 +115,6 @@ void GateBoyState::reset() {
   sprite_index.reset();
   sprite_match_flags_odd.reset();
   sprite_reset_flags_odd.reset();
-  sprite_store_flags_evn.reset();
   sprite_ibus.reset();
   sprite_lbus.reset();
   store_i0.reset();
@@ -506,7 +505,6 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, FEPO_STORE_MATCHp_odd),
   DECLARE_FIELD(GateBoyState, sprite_match_flags_odd),
   DECLARE_FIELD(GateBoyState, sprite_reset_flags_odd),
-  DECLARE_FIELD(GateBoyState, sprite_store_flags_evn),
 
   DECLARE_FIELD(GateBoyState, sprite_scanner.FETO_SCAN_DONEp),
   DECLARE_FIELD(GateBoyState, sprite_scanner.AVAP_SCAN_DONE_tp_odd),

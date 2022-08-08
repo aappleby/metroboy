@@ -1065,16 +1065,25 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   //----------------------------------------
 
+#if 0
+  WOTA_SCAN_MATCH_Yn = nand6(GACE_SPRITE_DELTA4, GUVU_SPRITE_DELTA5, GYDA_SPRITE_DELTA6, GEWY_SPRITE_DELTA7, sprite_delta_y.WUHU_YDIFF7.carry, GOVU_SPSIZE_MATCH);
+  GESE_SCAN_MATCH_Yp = not1(WOTA_SCAN_MATCH_Yn);
+
+  CEMY_STORE0_CLKp = or(!XOCE_xBCxxFGx, !CENO_SCAN_DONEn_odd, !GESE_SCAN_MATCH_Yp, DEZO_STORE0_SELn);
+  YSOK_STORE0_I1p.dff8(CEMY_STORE0_CLKp, BUS_SPR_I1);
+
+#endif
+
   if (vid_rst_evn_new) {
     state_new.sprite_counter = 0;
     state_new.sprite_store_flags = 0;
-    memset(&state_new.store_x0, 0xFF, 10);
+    memset(state_new.store_x, 0xFF, 10);
     state_new.sprite_scanner.DEZY_INC_COUNTn_odd.state = 0;
   }
   else if (line_rst_odd_new) {
     state_new.sprite_counter = 0;
     state_new.sprite_store_flags = 0;
-    memset(&state_new.store_x0, 0xFF, 10);
+    memset(state_new.store_x, 0xFF, 10);
   }
   else {
     int sy = (int)state_new.oam_temp_a - 16;
@@ -1101,19 +1110,24 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
 
     if (DELTA_CD || DELTA_GH) {
-      if (sprite_hit && state_new.sprite_counter < 10) {
-        (&state_new.store_i0)[state_new.sprite_counter] = state_old.sprite_ibus ^ 0b111111;
-        (&state_new.store_l0)[state_new.sprite_counter] = state_old.sprite_lbus ^ 0b1111;
-      }
-    }
-
-    if (DELTA_CD || DELTA_GH) {
       if (state_new.sprite_store_flags && state_new.sprite_counter < 10) {
-        (&state_new.store_x0)[state_new.sprite_counter] = state_new.oam_temp_b;
+        state_new.store_x[state_new.sprite_counter] = state_new.oam_temp_b;
       }
       state_new.sprite_store_flags = 0;
     }
   }
+
+  if (DELTA_CD || DELTA_GH) {
+    int sy = (int)state_new.oam_temp_a - 16;
+    int sprite_height = spr_size_new ? 8 : 16;
+    wire sprite_hit = (reg_ly_new >= sy) && (reg_ly_new < sy + sprite_height) && ceno_scan_donen_odd_old;
+
+    if (sprite_hit && state_new.sprite_counter < 10) {
+      state_new.store_i[state_new.sprite_counter] = state_old.sprite_ibus ^ 0b111111;
+      state_new.store_l[state_new.sprite_counter] = state_old.sprite_lbus ^ 0b1111;
+    }
+  }
+
 
   //----------------------------------------
   // sprite_reset_flags <- old.sprite_match_flags
@@ -1443,16 +1457,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     s.sprite_lbus = 0x0F;
 
     if (spr_en_new) {
-      if      (state_new.pix_count_odd == s.store_x0) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x001;  s.sprite_ibus = s.store_i0 ^ 0x3F;  s.sprite_lbus = s.store_l0 ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x1) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x002;  s.sprite_ibus = s.store_i1 ^ 0x3F;  s.sprite_lbus = s.store_l1 ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x2) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x004;  s.sprite_ibus = s.store_i2 ^ 0x3F;  s.sprite_lbus = s.store_l2 ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x3) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x008;  s.sprite_ibus = s.store_i3 ^ 0x3F;  s.sprite_lbus = s.store_l3 ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x4) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x010;  s.sprite_ibus = s.store_i4 ^ 0x3F;  s.sprite_lbus = s.store_l4 ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x5) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x020;  s.sprite_ibus = s.store_i5 ^ 0x3F;  s.sprite_lbus = s.store_l5 ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x6) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x040;  s.sprite_ibus = s.store_i6 ^ 0x3F;  s.sprite_lbus = s.store_l6 ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x7) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x080;  s.sprite_ibus = s.store_i7 ^ 0x3F;  s.sprite_lbus = s.store_l7 ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x8) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x100;  s.sprite_ibus = s.store_i8 ^ 0x3F;  s.sprite_lbus = s.store_l8 ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x9) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x200;  s.sprite_ibus = s.store_i9 ^ 0x3F;  s.sprite_lbus = s.store_l9 ^ 0x0F; }
+      if      (state_new.pix_count_odd == s.store_x[0]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x001;  s.sprite_ibus = s.store_i[0] ^ 0x3F;  s.sprite_lbus = s.store_l[0] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[1]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x002;  s.sprite_ibus = s.store_i[1] ^ 0x3F;  s.sprite_lbus = s.store_l[1] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[2]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x004;  s.sprite_ibus = s.store_i[2] ^ 0x3F;  s.sprite_lbus = s.store_l[2] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[3]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x008;  s.sprite_ibus = s.store_i[3] ^ 0x3F;  s.sprite_lbus = s.store_l[3] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[4]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x010;  s.sprite_ibus = s.store_i[4] ^ 0x3F;  s.sprite_lbus = s.store_l[4] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[5]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x020;  s.sprite_ibus = s.store_i[5] ^ 0x3F;  s.sprite_lbus = s.store_l[5] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[6]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x040;  s.sprite_ibus = s.store_i[6] ^ 0x3F;  s.sprite_lbus = s.store_l[6] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[7]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x080;  s.sprite_ibus = s.store_i[7] ^ 0x3F;  s.sprite_lbus = s.store_l[7] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[8]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x100;  s.sprite_ibus = s.store_i[8] ^ 0x3F;  s.sprite_lbus = s.store_l[8] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[9]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x200;  s.sprite_ibus = s.store_i[9] ^ 0x3F;  s.sprite_lbus = s.store_l[9] ^ 0x0F; }
     }
 
     if (!state_new.FEPO_STORE_MATCHp_odd) {

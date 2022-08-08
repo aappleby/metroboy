@@ -1053,10 +1053,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p29.EXUQ*/ reg_new.sprite_reset_flags_odd.EXUQ_STORE8_RSTp.dff17(reg_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.FOXA_SPRITE8_GETp.out_old());
     /*_p29.FONO*/ reg_new.sprite_reset_flags_odd.FONO_STORE9_RSTp.dff17(reg_new.sfetch_control.WUTY_SFETCH_DONE_TRIGp_odd.out_new(), BYVA_LINE_RSTn, reg_old.sprite_match_flags_odd.GUZE_SPRITE9_GETp.out_old());
 
-    SpriteStoreFlags sprite_store_flags_old = reg_old.sprite_store_flags_evn;
-
-    update_sprite_store_flags_gates(reg_new.sprite_counter, DYTY_COUNT_CLKp_evn, reg_new.sprite_store_flags_evn);
-    store_sprite_gates(reg_old, sprite_store_flags_old, reg_new.sprite_store_flags_evn, reg_new.sprite_reset_flags_odd, BYVA_LINE_RSTn, oam_temp_b_old);
+    store_sprite_gates(reg_old, reg_new.sprite_counter, reg_new.sprite_reset_flags_odd, BYVA_LINE_RSTn, oam_temp_b_old, DYTY_COUNT_CLKp_evn);
   }
 
   //----------------------------------------

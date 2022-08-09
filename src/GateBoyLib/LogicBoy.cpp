@@ -1231,6 +1231,28 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire clkpipe_posedge_evn_new = DELTA_EVEN && clkpipe_gate;
   wire clkpipe_negedge_odd_new = DELTA_ODD && clkpipe_gate;
 
+#if 0
+  {
+    wire SACU_CLKPIPE_old = or6(
+      state_old.win_ctrl.RYDY_WIN_HITp_odd.state,
+      !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state,
+      state_old.FEPO_STORE_MATCHp_odd,
+      hblank_old,
+      DELTA_EVEN,
+      state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state // FIXME need new but it's computed below
+    );
+
+    wire SACU_CLKPIPE_new = or6(
+      state_new.win_ctrl.RYDY_WIN_HITp_odd.state,
+      !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state,
+      state_new.FEPO_STORE_MATCHp_odd,
+      hblank_new,
+      DELTA_ODD,
+      state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state // FIXME need new but it's computed below
+    );
+  }
+#endif
+
   //----------------------------------------
   // PYCO
 

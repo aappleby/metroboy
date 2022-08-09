@@ -159,7 +159,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->reset();
 
   BlobStream bs;
-  ::load_blob("mismatch_1_30127.dump", bs.b);
+  ::load_blob("gateboy.raw.dump", bs.b);
   gb_thread->load_raw_dump(bs);
 
 #if 0
@@ -190,10 +190,10 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //load_blob("tests/microtests/DMG/sprite4_0_b.gb", cart);
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
-  load_blob("LinksAwakening.gb", cart);     // broken
-  //load_blob("tetris.gb", cart);             // broken
-  //load_blob("SML.gb", cart); // reboot loop
-  //load_blob("pman.gb", cart); // title screen funkd up
+  //load_blob("LinksAwakening.gb", cart);
+  //load_blob("tetris.gb", cart);
+  //load_blob("SML.gb", cart);
+  load_blob("pman.gb", cart);
   //load_blob("tests/instr_timing.gb", cart);
   //load_blob("tests/cpu_instrs/individual/10-bit ops.gb", cart);
   //load_blob("tests/microtests/DMG/timer_tma_write_a.gb", cart);
@@ -287,7 +287,7 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
     case SDLK_n: {
       gb_thread->clear_steps();
       //gb_thread->add_steps(52231120 - 46880727);
-      gb_thread->add_steps(46883477 - 46880727 - 1);
+      gb_thread->add_steps(185482600 - 46880727 - 1);
       if (app_paused) {
         app_paused = false;
         gb_thread->resume();
@@ -730,7 +730,7 @@ Step controls:
 
     if (fb_y >= 0 && fb_y < 144) {
       for (int x = 0; x < 160; x++) {
-        uint32_t c = (x == fb_x) ? 0x77FFFFFF : 0x2200FFFF;
+        uint32_t c = (x == fb_x) ? 0x22FF0000 : 0x2200FFFF;
         overlay[x + fb_y * 160] = c; //0xFF000000 | (b << 16) | (g << 8) | (r << 0);
       }
     }

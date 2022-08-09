@@ -1231,11 +1231,48 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire clkpipe_posedge_evn_new = DELTA_EVEN && clkpipe_gate;
   wire clkpipe_negedge_odd_new = DELTA_ODD && clkpipe_gate;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // TEH LOOP
+  // TEH LOOP
+  // TEH LOOP
+  // TEH LOOP
+  // TEH LOOP
+  // TEH LOOP
+  // TEH LOOP
+  // TEH LOOP
+
 #if 0
   {
     wire SACU_CLKPIPE_old = or6(
-      state_old.win_ctrl.RYDY_WIN_HITp_odd.state,
-      !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state,
+      RYDY_WIN_HITp_odd_old,
+      !POKY_PRELOAD_LATCHp_evn_old,
       state_old.FEPO_STORE_MATCHp_odd,
       hblank_old,
       DELTA_EVEN,
@@ -1243,8 +1280,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     );
 
     wire SACU_CLKPIPE_new = or6(
-      state_new.win_ctrl.RYDY_WIN_HITp_odd.state,
-      !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state,
+      RYDY_WIN_HITp_odd_new,
+      !POKY_PRELOAD_LATCHp_evn_new,
       state_new.FEPO_STORE_MATCHp_odd,
       hblank_new,
       DELTA_ODD,
@@ -1252,12 +1289,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     );
   }
 #endif
-
-  //----------------------------------------
-  // PYCO
-
-  if (clkpipe_posedge_evn_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
-  if (vid_rst_evn_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = 0;
 
   //----------------------------------------
   // RYFA/RENE
@@ -1271,19 +1302,119 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (DELTA_EVEN)  state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state; 
   }
 
-  wire win_fetch_trig_old = state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
-  wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
-
   auto RYFA_WIN_FETCHn_A_evn_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
   auto RENE_WIN_FETCHn_B_evn_new = state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
 
   auto RYFA_WIN_FETCHn_A_evn_old = state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
   auto RENE_WIN_FETCHn_B_evn_old = state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
 
-  //----------------------------------------
+  wire win_fetch_trig_old = state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
+  wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
 
   wire TEVO_WIN_FETCH_TRIGp_old = (win_fetch_trig_old || win_hit_trig_old || something_trig_old) && !state_old.XYMU_RENDERINGn;
   wire TEVO_WIN_FETCH_TRIGp_new = (win_fetch_trig_new || win_hit_trig_new || something_trig_new) && !XYMU_RENDERINGn_new;
+
+  //----------------------------------------
+  // Fine match ROXY/NYZE/PUXA
+
+  if (vid_rst_evn_new || line_rst_odd_new || XYMU_RENDERINGn_new) {
+    state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state = 1;
+    state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = 0;
+    state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = 0;
+    state_new.fine_count_odd = 0;
+  }
+  else {
+    if (clkpipe_negedge_odd_new && state_new.fine_count_odd < 7) state_new.fine_count_odd++;
+    if (TEVO_WIN_FETCH_TRIGp_new) state_new.fine_count_odd = 0;
+
+    if (clkpipe_posedge_evn_new) {
+      wire fine_match = state_old.fine_count_odd == (~state_old.reg_scx & 0b111);
+      state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state && fine_match;
+    }
+
+    if (DELTA_ODD) {
+      state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state;
+    }
+
+
+    if (state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state && !state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state) {
+      state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state = 0;
+    }
+  }
+
+  //----------------------------------------
+  // pix count
+
+  if (vid_rst_evn_new || line_rst_odd_new) {
+    state_new.pix_count_odd = 0;
+  }
+
+  if (clkpipe_negedge_odd_new && !state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) {
+    state_new.pix_count_odd++;
+  }
+
+  state_new.FEPO_STORE_MATCHp_odd = 0;
+  if (!XYMU_RENDERINGn_new && !ceno_scan_donen_odd_new && spr_en_new) {
+    if      (state_new.pix_count_odd == state_new.store_x[0]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+    else if (state_new.pix_count_odd == state_new.store_x[1]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+    else if (state_new.pix_count_odd == state_new.store_x[2]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+    else if (state_new.pix_count_odd == state_new.store_x[3]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+    else if (state_new.pix_count_odd == state_new.store_x[4]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+    else if (state_new.pix_count_odd == state_new.store_x[5]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+    else if (state_new.pix_count_odd == state_new.store_x[6]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+    else if (state_new.pix_count_odd == state_new.store_x[7]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+    else if (state_new.pix_count_odd == state_new.store_x[8]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+    else if (state_new.pix_count_odd == state_new.store_x[9]) { state_new.FEPO_STORE_MATCHp_odd = 1; }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //----------------------------------------
+  // PYCO
+
+  if (clkpipe_posedge_evn_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
+  if (vid_rst_evn_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = 0;
+
 
   wire NYXU_BFETCH_RSTn_new = (line_rst_odd_new || vid_rst_evn_new || !scan_done_trig_new) && !NUNY_WIN_MODE_TRIGp_new && !TEVO_WIN_FETCH_TRIGp_new;
 
@@ -1347,6 +1478,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.win_y.map = 0;
   }
 
+
+
   //----------------------------------------
   // TAKA - only old used
 
@@ -1354,72 +1487,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (sfetch_done_trig_new) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
   if (!XYMU_RENDERINGn_new && !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new) state_new.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state = 0;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //----------------------------------------
-  // Fine match ROXY/NYZE/PUXA
-
-  if (vid_rst_evn_new || line_rst_odd_new || XYMU_RENDERINGn_new) {
-    state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state = 1;
-    state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = 0;
-    state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = 0;
-    state_new.fine_count_odd = 0;
-  }
-  else {
-    if (clkpipe_negedge_odd_new && state_new.fine_count_odd < 7) state_new.fine_count_odd++;
-    if (TEVO_WIN_FETCH_TRIGp_new) state_new.fine_count_odd = 0;
-
-    if (clkpipe_posedge_evn_new) {
-      wire fine_match = state_old.fine_count_odd == (~state_old.reg_scx & 0b111);
-      state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state && fine_match;
-    }
-
-    if (DELTA_ODD) {
-      state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state;
-    }
-
-
-    if (state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state && !state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state) {
-      state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state = 0;
-    }
-  }
-
-  //----------------------------------------
-  // pix count
-
-  if (vid_rst_evn_new || line_rst_odd_new) {
-    state_new.pix_count_odd = 0;
-  }
-
-  if (clkpipe_negedge_odd_new && !state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state) {
-    state_new.pix_count_odd++;
-  }
 
   //----------------------------------------
   // Window match
@@ -1464,14 +1531,15 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
+
+
+
   if (XYMU_RENDERINGn_new || ceno_scan_donen_odd_new) {
-    state_new.FEPO_STORE_MATCHp_odd = 0;
     state_new.sprite_ibus = state_new.sprite_index;
     state_new.sprite_lbus = (~reg_ly_new + state_new.oam_temp_a) & 0b00001111;
     state_new.sprite_match_flags = 0;
   }
   else {
-    state_new.FEPO_STORE_MATCHp_odd = 0;
     auto& s = state_new;
 
     s.sprite_match_flags = 0;
@@ -1479,16 +1547,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     s.sprite_lbus = 0x0F;
 
     if (spr_en_new) {
-      if      (state_new.pix_count_odd == s.store_x[0]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x001;  s.sprite_ibus = s.store_i[0] ^ 0x3F;  s.sprite_lbus = s.store_l[0] ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x[1]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x002;  s.sprite_ibus = s.store_i[1] ^ 0x3F;  s.sprite_lbus = s.store_l[1] ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x[2]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x004;  s.sprite_ibus = s.store_i[2] ^ 0x3F;  s.sprite_lbus = s.store_l[2] ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x[3]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x008;  s.sprite_ibus = s.store_i[3] ^ 0x3F;  s.sprite_lbus = s.store_l[3] ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x[4]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x010;  s.sprite_ibus = s.store_i[4] ^ 0x3F;  s.sprite_lbus = s.store_l[4] ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x[5]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x020;  s.sprite_ibus = s.store_i[5] ^ 0x3F;  s.sprite_lbus = s.store_l[5] ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x[6]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x040;  s.sprite_ibus = s.store_i[6] ^ 0x3F;  s.sprite_lbus = s.store_l[6] ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x[7]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x080;  s.sprite_ibus = s.store_i[7] ^ 0x3F;  s.sprite_lbus = s.store_l[7] ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x[8]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x100;  s.sprite_ibus = s.store_i[8] ^ 0x3F;  s.sprite_lbus = s.store_l[8] ^ 0x0F; }
-      else if (state_new.pix_count_odd == s.store_x[9]) { state_new.FEPO_STORE_MATCHp_odd = 1;  s.sprite_match_flags = 0x200;  s.sprite_ibus = s.store_i[9] ^ 0x3F;  s.sprite_lbus = s.store_l[9] ^ 0x0F; }
+      if      (state_new.pix_count_odd == s.store_x[0]) { s.sprite_match_flags = 0x001;  s.sprite_ibus = s.store_i[0] ^ 0x3F;  s.sprite_lbus = s.store_l[0] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[1]) { s.sprite_match_flags = 0x002;  s.sprite_ibus = s.store_i[1] ^ 0x3F;  s.sprite_lbus = s.store_l[1] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[2]) { s.sprite_match_flags = 0x004;  s.sprite_ibus = s.store_i[2] ^ 0x3F;  s.sprite_lbus = s.store_l[2] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[3]) { s.sprite_match_flags = 0x008;  s.sprite_ibus = s.store_i[3] ^ 0x3F;  s.sprite_lbus = s.store_l[3] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[4]) { s.sprite_match_flags = 0x010;  s.sprite_ibus = s.store_i[4] ^ 0x3F;  s.sprite_lbus = s.store_l[4] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[5]) { s.sprite_match_flags = 0x020;  s.sprite_ibus = s.store_i[5] ^ 0x3F;  s.sprite_lbus = s.store_l[5] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[6]) { s.sprite_match_flags = 0x040;  s.sprite_ibus = s.store_i[6] ^ 0x3F;  s.sprite_lbus = s.store_l[6] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[7]) { s.sprite_match_flags = 0x080;  s.sprite_ibus = s.store_i[7] ^ 0x3F;  s.sprite_lbus = s.store_l[7] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[8]) { s.sprite_match_flags = 0x100;  s.sprite_ibus = s.store_i[8] ^ 0x3F;  s.sprite_lbus = s.store_l[8] ^ 0x0F; }
+      else if (state_new.pix_count_odd == s.store_x[9]) { s.sprite_match_flags = 0x200;  s.sprite_ibus = s.store_i[9] ^ 0x3F;  s.sprite_lbus = s.store_l[9] ^ 0x0F; }
     }
 
     if (!state_new.FEPO_STORE_MATCHp_odd) {

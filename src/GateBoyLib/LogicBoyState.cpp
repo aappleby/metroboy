@@ -155,7 +155,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst) const {
   bit_unpack(dst.ACYL_SCANNINGp_odd, bit_pack(src.ACYL_SCANNINGp_odd));
   bit_unpack(dst.WODU_HBLANK_GATEp_odd, bit_pack(src.WODU_HBLANKp_odd));
   bit_unpack(dst.ATEJ_LINE_RST_TRIGp_odd, bit_pack(src.ATEJ_LINE_RSTp_odd));
-  bit_unpack(dst.FEPO_STORE_MATCHp_odd, bit_pack(src.FEPO_STORE_MATCHp_odd));
+  bit_unpack(dst.FEPO_STORE_MATCHp_odd, bit_pack(src.FEPO_STORE_MATCHp));
   bit_unpack(dst.cpu_signals, bit_pack(src.cpu_signals));
   bit_unpack(dst.cpu_abus, src.cpu_abus);
   bit_unpack(dst.cpu_dbus, src.cpu_dbus);
@@ -299,7 +299,7 @@ void LogicBoyState::from_gb_state(const GateBoyState& src) {
   dst.ACYL_SCANNINGp_odd = bit_pack(src.ACYL_SCANNINGp_odd);
   dst.WODU_HBLANKp_odd = bit_pack(src.WODU_HBLANK_GATEp_odd);
   dst.ATEJ_LINE_RSTp_odd = bit_pack(src.ATEJ_LINE_RST_TRIGp_odd);
-  dst.FEPO_STORE_MATCHp_odd = bit_pack(src.FEPO_STORE_MATCHp_odd);
+  dst.FEPO_STORE_MATCHp = bit_pack(src.FEPO_STORE_MATCHp_odd);
   dst.cpu_signals = bit_purge(src.cpu_signals);
   dst.cpu_abus = bit_pack(src.cpu_abus);
   dst.cpu_dbus = bit_pack(src.cpu_dbus);

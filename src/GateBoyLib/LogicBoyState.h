@@ -66,7 +66,7 @@ struct LogicBoyState {
   /*#p28.ACYL*/ uint8_t ACYL_SCANNINGp_odd;
   /*#p21.WODU*/ uint8_t WODU_HBLANKp_odd;
   /*_p28.ATEJ*/ uint8_t ATEJ_LINE_RSTp_odd;
-  /*_p29.FEPO*/ uint8_t FEPO_STORE_MATCHp_odd;
+  /*_p29.FEPO*/ uint8_t FEPO_STORE_MATCHp;
 
   GateBoyCpuSignals cpu_signals;
   uint16_t cpu_abus;

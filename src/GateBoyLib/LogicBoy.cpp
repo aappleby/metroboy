@@ -1057,44 +1057,90 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // PYNU
 
-  if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 1;
-  if (!win_en_new)  state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
-  if (vid_rst_evn_new)  state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
-  if (line_rst_odd_new) state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state = 0;
+  if (!win_en_new)      state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state = 0;
+  if (vid_rst_evn_new)  state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state = 0;
+  if (line_rst_odd_new) state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state = 0;
+  if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state = 1;
 
-  auto PYNU_WIN_MODE_Ap_odd_old = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
-  auto PYNU_WIN_MODE_Ap_odd_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
 
-  if (state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state) {
-    uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
-    uint8_t win_y_new = win_y_old + 1;
 
-    state_new.win_y.tile = win_y_new & 0b111;
-    state_new.win_y.map  = win_y_new >> 3;
+
+  if (XYMU_RENDERINGn_new) {
+
+    if (state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state) {
+      uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
+      uint8_t win_y_new = win_y_old + 1;
+
+      state_new.win_y.tile = win_y_new & 0b111;
+      state_new.win_y.map  = win_y_new >> 3;
+    }
+
+    if (vid_rst_evn_new || vblank_new) {
+      state_new.win_y.tile = 0;
+      state_new.win_y.map = 0;
+    }
+  }
+  else {
+
+    if (DELTA_EVEN) {
+      if (state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state) {
+        uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
+        uint8_t win_y_new = win_y_old + 1;
+
+        state_new.win_y.tile = win_y_new & 0b111;
+        state_new.win_y.map  = win_y_new >> 3;
+      }
+
+      if (vblank_new) {
+        state_new.win_y.tile = 0;
+        state_new.win_y.map = 0;
+      }
+    }
+    else if (DELTA_ODD) {
+      if (state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state) {
+        uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
+        uint8_t win_y_new = win_y_old + 1;
+
+        state_new.win_y.tile = win_y_new & 0b111;
+        state_new.win_y.map  = win_y_new >> 3;
+      }
+
+      if (vblank_new) {
+        state_new.win_y.tile = 0;
+        state_new.win_y.map = 0;
+      }
+    }
   }
 
-  if (vid_rst_evn_new || vblank_new) {
-    state_new.win_y.tile = 0;
-    state_new.win_y.map = 0;
-  }
 
   //----------------------------------------
   // NOPA
 
-  if (vid_rst_evn_new) {
-    state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
+  if (XYMU_RENDERINGn_new) {
+    if (vid_rst_evn_new) {
+      state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
+    }
+    else if (DELTA_EVEN) {
+      state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state;
+    }
   }
   else if (DELTA_EVEN) {
     if (line_rst_odd_new && !XYMU_RENDERINGn_new) {
       state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = 0;
     }
     else {
-      state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state;
+      state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state = state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state;
     }
   }
+  else if (DELTA_ODD) {
+  }
 
-  wire NUNY_WIN_MODE_TRIGp_old = (state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_old.win_ctrl.NOPA_WIN_MODE_Bp_evn.state);
-  wire NUNY_WIN_MODE_TRIGp_new = (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state);
+
+  auto PYNU_WIN_MODE_Ap_odd_old = state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state;
+  auto PYNU_WIN_MODE_Ap_odd_new = state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state;
+
+  wire NUNY_WIN_MODE_TRIGp_old = (state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_old.win_ctrl.NOPA_WIN_MODE_Bp_evn.state);
+  wire NUNY_WIN_MODE_TRIGp_new = (state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state);
 
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
@@ -1219,28 +1265,22 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
       state_new.win_ctrl.SOVY_WIN_HITp.state = 0;
     }
-    else {
-      if (NUNY_WIN_MODE_TRIGp_new) state_new.win_ctrl.RYDY_WIN_HITp.state = 1;
-      if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
-      if (DELTA_EVEN) state_new.win_ctrl.SOVY_WIN_HITp.state = state_old.win_ctrl.RYDY_WIN_HITp.state;
-    }
   }
   else if (DELTA_EVEN) {
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.phase_tfetch >= 10;
 
     if (state_old.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-      //printf("%d\n", state_old.phase_tfetch);
       state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
     }
 
-    if (NUNY_WIN_MODE_TRIGp_new) state_new.win_ctrl.RYDY_WIN_HITp.state = !line_rst_odd_new;
+    if (state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state) state_new.win_ctrl.RYDY_WIN_HITp.state = !line_rst_odd_new;
     if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
     state_new.win_ctrl.SOVY_WIN_HITp.state = state_old.win_ctrl.RYDY_WIN_HITp.state;
   }
   else if (DELTA_ODD) {
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state;
 
-    if (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state) {
+    if (state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state) {
       state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
       state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
     }
@@ -1861,7 +1901,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     if (state_new.phase_tfetch >= 4 && state_new.phase_tfetch <= 11) {
       const auto hilo = state_new.phase_tfetch >= 8;
-      const auto tile_y = (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state ? state_new.win_y.tile : (sum_y & 0b111));
+      const auto tile_y = (state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state ? state_new.win_y.tile : (sum_y & 0b111));
       const auto map_y = state_new.tile_temp_b;
       const auto map = !bit(state_new.tile_temp_b, 7) && bgw_tile_new;
 
@@ -1870,7 +1910,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       bit_cat(state_new.vram_abus,  4, 11, map_y);
       bit_cat(state_new.vram_abus, 12, 12, map);
     }
-    else if (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state) {
+    else if (state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state) {
       bit_cat(state_new.vram_abus,  0,  4, state_new.win_x.map);
       bit_cat(state_new.vram_abus,  5,  9, state_new.win_y.map);
       bit_cat(state_new.vram_abus, 10, 10, ~win_map_new);

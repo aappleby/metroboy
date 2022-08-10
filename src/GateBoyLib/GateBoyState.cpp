@@ -556,7 +556,7 @@ FieldInfo GateBoyState::fields[] = {
   
   DECLARE_FIELD(GateBoyState, win_ctrl.NUKO_WX_MATCHp_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.ROGE_WY_MATCHp_odd),
-  DECLARE_FIELD(GateBoyState, win_ctrl.PYNU_WIN_MODE_Ap_odd),
+  DECLARE_FIELD(GateBoyState, win_ctrl.PYNU_WIN_MODE_LATCHp),
   DECLARE_FIELD(GateBoyState, win_ctrl.PUKU_WIN_HITn_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.RYDY_WIN_HITp),
   DECLARE_FIELD(GateBoyState, win_ctrl.SOVY_WIN_HITp),

@@ -707,7 +707,7 @@ void GateBoy::tock_pix_pipes_gates(const GateBoyState& reg_old, wire SACU_CLKPIP
 void WinControl::reset() {
   NUKO_WX_MATCHp_odd.state       = 0b00011000;
   ROGE_WY_MATCHp_odd.state       = 0b00011000;
-  PYNU_WIN_MODE_Ap_odd.state     = 0b00011000;
+  PYNU_WIN_MODE_LATCHp.state     = 0b00011000;
   PUKU_WIN_HITn_odd.state        = 0b00011001;
   RYDY_WIN_HITp.state        = 0b00011000;
   SOVY_WIN_HITp.state        = 0b00011010;

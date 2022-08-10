@@ -8,7 +8,7 @@ struct WinControl {
 
   /*_p27.NUKO*/ Gate NUKO_WX_MATCHp_odd; // old used
   /*_p27.ROGE*/ Gate ROGE_WY_MATCHp_odd; // old used
-  /*_p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_odd;      // AxxxxxGx
+  /*_p27.PYNU*/ NorLatch PYNU_WIN_MODE_LATCHp;      // AxxxxxGx
   /*_p27.PUKU*/ Gate PUKU_WIN_HITn_odd;             // xxCxxxGx
   /*_p27.RYDY*/ Gate RYDY_WIN_HITp;             // xxCxxxGx
   /*_p27.SOVY*/ DFF17 SOVY_WIN_HITp;            // xxxDxxxH

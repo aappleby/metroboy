@@ -16,7 +16,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire /*TEVO_WIN_F
   memset(&reg_new.vram_abus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.vram_abus));
   memset(&reg_new.vram_dbus, BIT_NEW | BIT_PULLED | 1, sizeof(reg_new.vram_dbus));
 
-  /*#p27.NOCU*/ wire NOCU_WIN_MODEn_new = not1(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new());
+  /*#p27.NOCU*/ wire NOCU_WIN_MODEn_new = not1(reg_new.win_ctrl.PYNU_WIN_MODE_LATCHp.qp_new());
   /*_p27.PORE*/ wire PORE_WIN_MODEp_new = not1(NOCU_WIN_MODEn_new);
   /*_p26.AXAD*/ wire AXAD_WIN_MODEn_new = not1(PORE_WIN_MODEp_new);
 
@@ -256,7 +256,7 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire /*TEVO_WIN_F
     /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn_old = nand4(reg_old.XYMU_RENDERING_LATCHn.qn_old(), ROMO_PRELOAD_DONEn_evn_old, reg_old.tfetch_control.NYKA_FETCH_DONEp_evn.qp_old(), reg_old.tfetch_control.PORY_FETCH_DONEp_odd.qp_old());
     /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp_old = not1(SUVU_PRELOAD_DONE_TRIGn_old);
     /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old, SUZU_WIN_FIRST_TILEne_old, TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
-    /*#p27.NOCU*/ wire NOCU_WIN_MODEn_old = not1(reg_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_old());
+    /*#p27.NOCU*/ wire NOCU_WIN_MODEn_old = not1(reg_old.win_ctrl.PYNU_WIN_MODE_LATCHp.qp_old());
     /*_p27.PORE*/ wire PORE_WIN_MODEp_old = not1(NOCU_WIN_MODEn_old);
     /*_p27.VETU*/ wire VETU_WIN_MAPp_old = and2(TEVO_WIN_FETCH_TRIGp_old, PORE_WIN_MODEp_old);
 

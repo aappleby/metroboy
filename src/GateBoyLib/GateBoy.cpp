@@ -905,12 +905,12 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*#p27.MYVO*/ wire MYVO_AxCxExGx = not1(ALET_xBxDxFxH);
 
   /*_p27.NUNU*/ reg_new.win_ctrl.NUNU_WIN_MATCHp_odd.dff17 (MEHE_AxCxExGx, reg_new.XAPO_VID_RSTn_new(), reg_old.win_ctrl.PYCO_WIN_MATCHp_evn.qp_old());
-  /*_p27.NOPA*/ reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.dff17(ALET_xBxDxFxH, reg_new.XAPO_VID_RSTn_new(), reg_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_old());
+  /*_p27.NOPA*/ reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.dff17(ALET_xBxDxFxH, reg_new.XAPO_VID_RSTn_new(), reg_old.win_ctrl.PYNU_WIN_MODE_LATCHp.qp_old());
 
   /*#p27.XOFO*/ wire XOFO_WIN_RSTp = nand3(reg_new.reg_lcdc.WYMO_LCDC_WINENp.qp_new(), XAHY_LINE_RSTn_odd_new, reg_new.XAPO_VID_RSTn_new());
-  /*_p27.PYNU*/ reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.nor_latch(reg_new.win_ctrl.NUNU_WIN_MATCHp_odd.qp_new(), XOFO_WIN_RSTp);
+  /*_p27.PYNU*/ reg_new.win_ctrl.PYNU_WIN_MODE_LATCHp.nor_latch(reg_new.win_ctrl.NUNU_WIN_MATCHp_odd.qp_new(), XOFO_WIN_RSTp);
 
-  /*#p27.NUNY*/ uint8_t NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
+  /*#p27.NUNY*/ uint8_t NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_LATCHp.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
   /*_p27.NYFO*/ wire NYFO_WIN_MODE_tn_odd = not1(NUNY_WIN_MODE_TRIGp_odd);
   /*_p27.MOSU*/ wire MOSU_WIN_MODE_tp_odd = not1(NYFO_WIN_MODE_tn_odd);
   /*_p24.NAFY*/ wire NAFY_WIN_MODE_tn_odd = nor2(MOSU_WIN_MODE_tp_odd, LOBY_RENDERINGn);
@@ -919,7 +919,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p24.PORY*/ reg_new.tfetch_control.PORY_FETCH_DONEp_odd.dff17(MYVO_AxCxExGx, NAFY_WIN_MODE_tn_odd,                    reg_old.tfetch_control.NYKA_FETCH_DONEp_evn.qp_old());
   /*_p24.NYKA*/ reg_new.tfetch_control.NYKA_FETCH_DONEp_evn.dff17(ALET_xBxDxFxH, NAFY_WIN_MODE_tn_odd,                    reg_old.tfetch_control.LYRY_BFETCH_DONEp_odd.out_old());
 
-  /*#p27.NUNY*/ NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
+  /*#p27.NUNY*/ NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_LATCHp.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
   /*_p27.RYDY*/ reg_new.win_ctrl.RYDY_WIN_HITp <<= nor3(reg_new.win_ctrl.PUKU_WIN_HITn_odd.out_mid(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new(), reg_new.PYRY_VID_RSTp_new());
   /*_p27.PUKU*/ reg_new.win_ctrl.PUKU_WIN_HITn_odd <<= nor2(reg_new.win_ctrl.RYDY_WIN_HITp.out_mid(), NUNY_WIN_MODE_TRIGp_odd);
   /*_p27.RYDY*/ reg_new.win_ctrl.RYDY_WIN_HITp <<= nor3(reg_new.win_ctrl.PUKU_WIN_HITn_odd.out_mid(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new(), reg_new.PYRY_VID_RSTp_new());

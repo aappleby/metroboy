@@ -1045,17 +1045,18 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // NUNU
 
-  if (vid_rst_evn_new) {
-    state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = 0;
+  if (XYMU_RENDERINGn_new) {
+    if (vid_rst_evn_new) state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = 0;
+  }
+  else if (DELTA_EVEN) {
+
   }
   else if (DELTA_ODD) {
     state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state = state_old.win_ctrl.PYCO_WIN_MATCHp_evn.state;
   }
-  else if (DELTA_EVEN) {
-  }
 
   //----------------------------------------
-  // PYNU
+  // PYNU latch
 
   if (!win_en_new)      state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state = 0;
   if (vid_rst_evn_new)  state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state = 0;
@@ -1063,55 +1064,18 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   if (state_new.win_ctrl.NUNU_WIN_MATCHp_odd.state) state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state = 1;
 
 
+  if (state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state) {
+    uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
+    uint8_t win_y_new = win_y_old + 1;
 
-
-  if (XYMU_RENDERINGn_new) {
-
-    if (state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state) {
-      uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
-      uint8_t win_y_new = win_y_old + 1;
-
-      state_new.win_y.tile = win_y_new & 0b111;
-      state_new.win_y.map  = win_y_new >> 3;
-    }
-
-    if (vid_rst_evn_new || vblank_new) {
-      state_new.win_y.tile = 0;
-      state_new.win_y.map = 0;
-    }
-  }
-  else {
-
-    if (DELTA_EVEN) {
-      if (state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state) {
-        uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
-        uint8_t win_y_new = win_y_old + 1;
-
-        state_new.win_y.tile = win_y_new & 0b111;
-        state_new.win_y.map  = win_y_new >> 3;
-      }
-
-      if (vblank_new) {
-        state_new.win_y.tile = 0;
-        state_new.win_y.map = 0;
-      }
-    }
-    else if (DELTA_ODD) {
-      if (state_old.win_ctrl.PYNU_WIN_MODE_LATCHp.state && !state_new.win_ctrl.PYNU_WIN_MODE_LATCHp.state) {
-        uint8_t win_y_old = state_old.win_y.tile | (state_old.win_y.map << 3);
-        uint8_t win_y_new = win_y_old + 1;
-
-        state_new.win_y.tile = win_y_new & 0b111;
-        state_new.win_y.map  = win_y_new >> 3;
-      }
-
-      if (vblank_new) {
-        state_new.win_y.tile = 0;
-        state_new.win_y.map = 0;
-      }
-    }
+    state_new.win_y.tile = win_y_new & 0b111;
+    state_new.win_y.map  = win_y_new >> 3;
   }
 
+  if (vblank_new) {
+    state_new.win_y.tile = 0;
+    state_new.win_y.map = 0;
+  }
 
   //----------------------------------------
   // NOPA

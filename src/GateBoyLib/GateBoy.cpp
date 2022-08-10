@@ -696,7 +696,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
   //----------------------------------------
 
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_old = not1(reg_old.win_ctrl.RYDY_WIN_HITp_odd.out_old());
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_old = not1(reg_old.win_ctrl.RYDY_WIN_HITp.out_old());
   /*#p24.TOMU*/ wire TOMU_WIN_HITp_odd_old = not1(SYLO_WIN_HITn_odd_old);
 
   wire EXT_vcc = 1;
@@ -920,10 +920,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p24.NYKA*/ reg_new.tfetch_control.NYKA_FETCH_DONEp_evn.dff17(ALET_xBxDxFxH, NAFY_WIN_MODE_tn_odd,                    reg_old.tfetch_control.LYRY_BFETCH_DONEp_odd.out_old());
 
   /*#p27.NUNY*/ NUNY_WIN_MODE_TRIGp_odd = and2(reg_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.qp_new(), reg_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.qn_new());
-  /*_p27.RYDY*/ reg_new.win_ctrl.RYDY_WIN_HITp_odd <<= nor3(reg_new.win_ctrl.PUKU_WIN_HITn_odd.out_mid(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new(), reg_new.PYRY_VID_RSTp_new());
-  /*_p27.PUKU*/ reg_new.win_ctrl.PUKU_WIN_HITn_odd <<= nor2(reg_new.win_ctrl.RYDY_WIN_HITp_odd.out_mid(), NUNY_WIN_MODE_TRIGp_odd);
-  /*_p27.RYDY*/ reg_new.win_ctrl.RYDY_WIN_HITp_odd <<= nor3(reg_new.win_ctrl.PUKU_WIN_HITn_odd.out_mid(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new(), reg_new.PYRY_VID_RSTp_new());
-  /*_p27.PUKU*/ reg_new.win_ctrl.PUKU_WIN_HITn_odd <<= nor2(reg_new.win_ctrl.RYDY_WIN_HITp_odd.out_mid(), NUNY_WIN_MODE_TRIGp_odd);
+  /*_p27.RYDY*/ reg_new.win_ctrl.RYDY_WIN_HITp <<= nor3(reg_new.win_ctrl.PUKU_WIN_HITn_odd.out_mid(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new(), reg_new.PYRY_VID_RSTp_new());
+  /*_p27.PUKU*/ reg_new.win_ctrl.PUKU_WIN_HITn_odd <<= nor2(reg_new.win_ctrl.RYDY_WIN_HITp.out_mid(), NUNY_WIN_MODE_TRIGp_odd);
+  /*_p27.RYDY*/ reg_new.win_ctrl.RYDY_WIN_HITp <<= nor3(reg_new.win_ctrl.PUKU_WIN_HITn_odd.out_mid(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new(), reg_new.PYRY_VID_RSTp_new());
+  /*_p27.PUKU*/ reg_new.win_ctrl.PUKU_WIN_HITn_odd <<= nor2(reg_new.win_ctrl.RYDY_WIN_HITp.out_mid(), NUNY_WIN_MODE_TRIGp_odd);
 
 
 
@@ -942,9 +942,9 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   /*_p24.POKY*/ reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.nor_latch(reg_new.tfetch_control.PYGO_FETCH_DONEp_evn.qp_new(), LOBY_RENDERINGn);
 
 
-  /*_p27.SOVY*/ reg_new.win_ctrl.SOVY_WIN_HITp_evn.dff17(ALET_xBxDxFxH, reg_new.XAPO_VID_RSTn_new(), reg_old.win_ctrl.RYDY_WIN_HITp_odd.out_old());
+  /*_p27.SOVY*/ reg_new.win_ctrl.SOVY_WIN_HITp_evn.dff17(ALET_xBxDxFxH, reg_new.XAPO_VID_RSTn_new(), reg_old.win_ctrl.RYDY_WIN_HITp.out_old());
 
-  /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_new = not1(reg_new.win_ctrl.RYDY_WIN_HITp_odd.out_new());
+  /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_new = not1(reg_new.win_ctrl.RYDY_WIN_HITp.out_new());
   /*#p24.TOMU*/ wire TOMU_WIN_HITp_odd_new = not1(SYLO_WIN_HITn_odd_new);
   /*#p24.SOCY*/ wire SOCY_WIN_HITn_odd_new = not1(TOMU_WIN_HITp_odd_new);
 
@@ -1069,7 +1069,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*_p27.SUHA*/ wire SUHA_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.DATY_SCX0p.qp_old(), reg_old.fine_count_odd.RYKU_FINE_CNT0_odd.qp_old());
     /*_p27.SYBY*/ wire SYBY_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.DUZU_SCX1p.qp_old(), reg_old.fine_count_odd.ROGA_FINE_CNT1_odd.qp_old());
     /*_p27.SOZU*/ wire SOZU_SCX_FINE_MATCHp_old_odd = xnor2(reg_old.reg_scx.CYXU_SCX2p.qp_old(), reg_old.fine_count_odd.RUBU_FINE_CNT2_odd.qp_old());
-    /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn_old_odd = nand4(reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.qp_old(), SUHA_SCX_FINE_MATCHp_old_odd, SYBY_SCX_FINE_MATCHp_old_odd, SOZU_SCX_FINE_MATCHp_old_odd);
+    /*#p27.RONE*/ wire RONE_SCX_FINE_MATCHn_old_odd = nand4(reg_old.fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_old(), SUHA_SCX_FINE_MATCHp_old_odd, SYBY_SCX_FINE_MATCHp_old_odd, SOZU_SCX_FINE_MATCHp_old_odd);
     /*#p27.POHU*/ wire POHU_SCX_FINE_MATCHp_old_odd = not1(RONE_SCX_FINE_MATCHn_old_odd);
 
     /*_p29.CEHA*/ wire CEHA_SCANNINGp_odd  = not1(reg_new.sprite_scanner.CENO_SCAN_DONEn_odd.qn_new());
@@ -1083,11 +1083,11 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p27.NYZE*/ reg_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.dff17_any(MOXE_AxCxExGx, reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_old.fine_scroll.PUXA_SCX_FINE_MATCH_evn.qp_old());
 
     /*#p27.POVA*/ wire POVA_FINE_MATCH_TRIGp_evn = and2(reg_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.qp_any(), reg_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.qn_any());
-    /*#p27.ROXY*/ reg_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.nor_latch(PAHA_RENDERINGn, POVA_FINE_MATCH_TRIGp_evn);
+    /*#p27.ROXY*/ reg_new.fine_scroll.ROXY_FINE_SCROLL_DONEn.nor_latch(PAHA_RENDERINGn, POVA_FINE_MATCH_TRIGp_evn);
 
     // SACU high on ACEG, gated high
 
-    /*#p24.SACU*/ wire SACU_CLKPIPE_odd_new = or2(SEGU_CLKPIPE_odd_new, reg_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.qp_any());
+    /*#p24.SACU*/ wire SACU_CLKPIPE_odd_new = or2(SEGU_CLKPIPE_odd_new, reg_new.fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_any());
 
     // Pixel counter, has carry lookahead because this can increment every tcycle
     /*_p21.RYBO*/ wire RYBO_old = xor2(reg_old.pix_count.XEHO_PX0p_odd.qp_any(), reg_old.pix_count.SAVY_PX1p_odd.qp_any()); // XOR layout 1, feet facing gnd, this should def be regular xor
@@ -1145,7 +1145,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 
 
 
-  /*#p24.SACU*/ wire SACU_CLKPIPE_odd_new = or2(SEGU_CLKPIPE_odd_new, reg_new.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.qp_new());
+  /*#p24.SACU*/ wire SACU_CLKPIPE_odd_new = or2(SEGU_CLKPIPE_odd_new, reg_new.fine_scroll.ROXY_FINE_SCROLL_DONEn.qp_new());
 
   /*_p24.PAHO*/ reg_new.lcd.PAHO_X8_SYNC.dff17(ROXO_CLKPIPE_evn_new, reg_new.XYMU_RENDERING_LATCHn.qn_new(), XYDO_PX3p_old.qp_old());
 

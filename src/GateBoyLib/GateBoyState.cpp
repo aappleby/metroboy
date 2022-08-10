@@ -558,7 +558,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, win_ctrl.ROGE_WY_MATCHp_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.PYNU_WIN_MODE_Ap_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.PUKU_WIN_HITn_odd),
-  DECLARE_FIELD(GateBoyState, win_ctrl.RYDY_WIN_HITp_odd),
+  DECLARE_FIELD(GateBoyState, win_ctrl.RYDY_WIN_HITp),
   DECLARE_FIELD(GateBoyState, win_ctrl.SOVY_WIN_HITp_evn),
   DECLARE_FIELD(GateBoyState, win_ctrl.NOPA_WIN_MODE_Bp_evn),
   DECLARE_FIELD(GateBoyState, win_ctrl.PYCO_WIN_MATCHp_evn),
@@ -572,7 +572,7 @@ FieldInfo GateBoyState::fields[] = {
   
   DECLARE_FIELD(GateBoyState, fine_scroll.PUXA_SCX_FINE_MATCH_evn),
   DECLARE_FIELD(GateBoyState, fine_scroll.NYZE_SCX_FINE_MATCH_odd),
-  DECLARE_FIELD(GateBoyState, fine_scroll.ROXY_FINE_SCROLL_DONEn_evn),
+  DECLARE_FIELD(GateBoyState, fine_scroll.ROXY_FINE_SCROLL_DONEn),
 
   DECLARE_FIELD(GateBoyState, pix_count),
   DECLARE_FIELD(GateBoyState, mask_pipe),

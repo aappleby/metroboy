@@ -709,7 +709,7 @@ void WinControl::reset() {
   ROGE_WY_MATCHp_odd.state       = 0b00011000;
   PYNU_WIN_MODE_Ap_odd.state     = 0b00011000;
   PUKU_WIN_HITn_odd.state        = 0b00011001;
-  RYDY_WIN_HITp_odd.state        = 0b00011000;
+  RYDY_WIN_HITp.state        = 0b00011000;
   SOVY_WIN_HITp_evn.state        = 0b00011010;
   NOPA_WIN_MODE_Bp_evn.state     = 0b00011010;
   PYCO_WIN_MATCHp_evn.state      = 0b00011000;
@@ -729,7 +729,7 @@ void FineCount::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN | BIT_CLOCK, 0
 void FineScroll::reset() {
   PUXA_SCX_FINE_MATCH_evn.state    = 0b00011000;
   NYZE_SCX_FINE_MATCH_odd.state    = 0b00011000;
-  ROXY_FINE_SCROLL_DONEn_evn.state = 0b00011001;
+  ROXY_FINE_SCROLL_DONEn.state = 0b00011001;
 }
 
 //-----------------------------------------------------------------------------

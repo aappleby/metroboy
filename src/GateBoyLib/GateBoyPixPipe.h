@@ -10,7 +10,7 @@ struct WinControl {
   /*_p27.ROGE*/ Gate ROGE_WY_MATCHp_odd; // old used
   /*_p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_odd;      // AxxxxxGx
   /*_p27.PUKU*/ Gate PUKU_WIN_HITn_odd;             // xxCxxxGx
-  /*_p27.RYDY*/ Gate RYDY_WIN_HITp_odd;             // xxCxxxGx
+  /*_p27.RYDY*/ Gate RYDY_WIN_HITp;             // xxCxxxGx
   /*_p27.SOVY*/ DFF17 SOVY_WIN_HITp_evn;            // xxxDxxxH
   /*_p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp_evn;         // xBxDxFxH
   /*_p27.PYCO*/ DFF17 PYCO_WIN_MATCHp_evn;          // xxxDxxxH
@@ -36,7 +36,7 @@ struct FineScroll {
 
   /*#p27.PUXA*/ DFF17 PUXA_SCX_FINE_MATCH_evn;        // xxxxxFxH
   /*#p27.NYZE*/ DFF17 NYZE_SCX_FINE_MATCH_odd;        // AxxxxxGx
-  /*#p27.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn_evn;    // xBxDxFxH
+  /*#p27.ROXY*/ NorLatch ROXY_FINE_SCROLL_DONEn;    // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------

@@ -1235,6 +1235,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   wire SOCY_WIN_HITn_old = not1(state_old.win_ctrl.RYDY_WIN_HITp.state);
   wire ROXY_FINE_SCROLL_DONEn_old = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn.state;
+  auto pix_count_old = state_old.pix_count_odd;
 
 
 
@@ -1281,10 +1282,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // SO, it is guaranteed safe to use the old values of FEPO/WODU/SOCY to compute CLKPIPE
 
   wire clkpipe_gate =
-    !state_old.win_ctrl.RYDY_WIN_HITp.state &&  // if i change this to new it breaks
-    state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state &&
-    !state_old.FEPO_STORE_MATCHp &&
-    (state_old.pix_count_odd != 167);
+    !RYDY_WIN_HITp_old &&  // if i change this to new it breaks
+    POKY_PRELOAD_LATCHp_new &&
+    !FEPO_STORE_MATCHp_old &&
+    (pix_count_old != 167);
 
   // TYFA_CLKPIPE = or(!SOCY_WIN_HITn, !POKY_PRELOAD_LATCHp, FEPO_STORE_MATCHp, WODU_HBLANK, MYVO_AxCxExGx);
   // RYFA_WIN_FETCHnn = dff17(TYFA_CLKPIPE, PANY_WIN_FETCHn);

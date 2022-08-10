@@ -1247,6 +1247,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire ROXY_FINE_SCROLL_DONEn_old = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn.state;
   auto pix_count_old = state_old.pix_count;
 
+  wire POHU_SCX_FINE_MATCHp_old = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn.state && (state_old.fine_count_odd == (~state_old.reg_scx & 0b111));
+
 
 
 
@@ -1278,18 +1280,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // TEH LOOP
   // TEH LOOP
   // TEH LOOP
-
-  // VYBO_CLKPIPE    = nor3(FEPO_STORE_MATCHp, WODU_HBLANK, MYVO_AxCxExGx);
-  // TYFA_CLKPIPE    = and3(SOCY_WIN_HITn, POKY_PRELOAD_LATCHp, VYBO_CLKPIPE);
-  // SEGU_CLKPIPE    = not1(TYFA_CLKPIPE);
-  // SACU_CLKPIPE    = or2(SEGU_CLKPIPE, ROXY_FINE_SCROLL_DONEn);
-  // RYFA_WIN_FETCHn = dff17(SEGU_CLKPIPE, PANY_WIN_FETCHn);
-
-  bool ROXY_FINE_SCROLL_DONEn_new = ROXY_FINE_SCROLL_DONEn_old;
-  int pix_count_new = state_old.pix_count;
-  bool FEPO_STORE_MATCHp_new = FEPO_STORE_MATCHp_old;
-
-  wire clkpipe_gate = !RYDY_WIN_HITp_old && POKY_PRELOAD_LATCHp_new && !FEPO_STORE_MATCHp_old && (pix_count_old != 167);
 
   //--------------------------------------------------------------------------------
 
@@ -1300,47 +1290,32 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = 0;
     state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = 0;
     state_new.fine_count_odd = 0;
-    ROXY_FINE_SCROLL_DONEn_new = 1;
     if (vid_rst_evn_new || line_rst_odd_new) state_new.pix_count = 0;
-    pix_count_new = state_new.pix_count;
     state_new.FEPO_STORE_MATCHp = 0;
-    FEPO_STORE_MATCHp_new = state_new.FEPO_STORE_MATCHp;
+    if (vid_rst_evn_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = 0;
+
+    if (vid_rst_evn_new || line_rst_odd_new || !win_en_new) {
+      state_new.win_x.map = 0;
+    }
   }
 
   //--------------------------------------------------------------------------------
 
   else if (DELTA_ODD) {
-    wire TYFA_CLKPIPE_old = or5(RYDY_WIN_HITp_old, !POKY_PRELOAD_LATCHp_old, FEPO_STORE_MATCHp_old, WODU_HBLANK_old, DELTA_EVEN);
-    wire SACU_CLKPIPE_old = or6(RYDY_WIN_HITp_old, !POKY_PRELOAD_LATCHp_old, FEPO_STORE_MATCHp_old, WODU_HBLANK_old, DELTA_EVEN, ROXY_FINE_SCROLL_DONEn_old);
 
-    wire TYFA_CLKPIPE_new = 1;
-    wire SACU_CLKPIPE_new = 1;
-
-    if (posedge(TYFA_CLKPIPE_old, TYFA_CLKPIPE_new)) {
+    if (!RYDY_WIN_HITp_old && POKY_PRELOAD_LATCHp_old && !FEPO_STORE_MATCHp_old && !WODU_HBLANK_old) {
       state_new.win_ctrl.RYFA_WIN_FETCHn_A.state = !nuko_wx_match_old && state_old.fine_count_odd == 7;
       if (state_new.fine_count_odd < 7) state_new.fine_count_odd++;
+      if (!ROXY_FINE_SCROLL_DONEn_old) state_new.pix_count++;
     }
 
-    wire SEKO_WIN_FETCH_TRIG_new = and2(state_new.win_ctrl.RYFA_WIN_FETCHn_A.state, !state_new.win_ctrl.RENE_WIN_FETCHn_B.state);
-    wire SUZU_WIN_HIT_TRIG_new   = and2(not1(state_new.win_ctrl.RYDY_WIN_HITp.state), state_new.win_ctrl.SOVY_WIN_HITp.state);
+    wire SEKO_WIN_FETCH_TRIG_new     = and2(!state_new.win_ctrl.RENE_WIN_FETCHn_B.state,         state_new.win_ctrl.RYFA_WIN_FETCHn_A.state);
+    wire SUZU_WIN_HIT_TRIG_new       = and2(!state_new.win_ctrl.RYDY_WIN_HITp.state,             state_new.win_ctrl.SOVY_WIN_HITp.state);
+    wire TAVE_PRELOAD_DONE_TRIGp_new = and2(state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state, state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) && !POKY_PRELOAD_LATCHp_new;
 
-    // wire TEVO_WIN_FETCH_TRIGp  = or3(SEKO_WIN_FETCH_TRIG_new, SUZU_WIN_HIT_TRIG_new, and(ROMO_PRELOAD_DONEn, NYKA_FETCH_DONEp, PORY_FETCH_DONEp));
-    // wire PASO_FINE_RST = !TEVO_WIN_FETCH_TRIGp;
+    if (SEKO_WIN_FETCH_TRIG_new || SUZU_WIN_HIT_TRIG_new || TAVE_PRELOAD_DONE_TRIGp_new) state_new.fine_count_odd = 0;
 
-    wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B.state;
-    if (win_fetch_trig_new || win_hit_trig_new || something_trig_new) state_new.fine_count_odd = 0;
-
-    state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state;
-
-    if (state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state && !state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state) {
-      state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn.state = 0;
-    }
-
-    ROXY_FINE_SCROLL_DONEn_new = state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn.state;
-
-    if (posedge(SACU_CLKPIPE_old, SACU_CLKPIPE_new)) {
-      state_new.pix_count++;
-    }
+    state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state = state_old.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state;
 
     state_new.FEPO_STORE_MATCHp = 0;
     if (!ceno_scan_donen_odd_new && spr_en_new) {
@@ -1355,121 +1330,30 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       else if (state_new.pix_count == state_new.store_x[8]) { state_new.FEPO_STORE_MATCHp = 1; }
       else if (state_new.pix_count == state_new.store_x[9]) { state_new.FEPO_STORE_MATCHp = 1; }
     }
-    FEPO_STORE_MATCHp_new = state_new.FEPO_STORE_MATCHp;
-  }
-
-  //--------------------------------------------------------------------------------
-
-  else if (DELTA_EVEN) {
-    state_new.win_ctrl.RENE_WIN_FETCHn_B.state = state_new.win_ctrl.RYFA_WIN_FETCHn_A.state;
-
-    wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B.state;
-    wire TEVO_WIN_FETCH_TRIGp_new = (win_fetch_trig_new || win_hit_trig_new || something_trig_new) && !XYMU_RENDERINGn_new;
-    if (TEVO_WIN_FETCH_TRIGp_new) state_new.fine_count_odd = 0;
-
-    if (clkpipe_gate) {
-      wire fine_match = state_old.fine_count_odd == (~state_old.reg_scx & 0b111);
-      state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn.state && fine_match;
-    }
-
-    if (state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state && !state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state) {
-      state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn.state = 0;
-    }
-
-    ROXY_FINE_SCROLL_DONEn_new = state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn.state;
-
-    if (vid_rst_evn_new || line_rst_odd_new) {
-      state_new.pix_count = 0;
-    }
-
-    CHECK_P(FEPO_STORE_MATCHp_old == FEPO_STORE_MATCHp_new);
-  }
-
-  //--------------------------------------------------------------------------------
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  pix_count_new = state_new.pix_count;
-
-  bool WODU_HBLANK_new = !FEPO_STORE_MATCHp_new && (pix_count_new & 167) == 167; // FEPO _must_ be new or we get a mismatch
-
-  wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B.state;
-  wire TEVO_WIN_FETCH_TRIGp_new = (win_fetch_trig_new || win_hit_trig_new || something_trig_new) && !XYMU_RENDERINGn_new;
-
-  auto RYFA_WIN_FETCHn_A_evn_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A.state;
-  auto RENE_WIN_FETCHn_B_evn_new = state_new.win_ctrl.RENE_WIN_FETCHn_B.state;
-
-  //----------------------------------------
-  // PYCO
-
-  if (DELTA_EVEN && clkpipe_gate) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
-  if (vid_rst_evn_new) state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = 0;
-
-
-  wire NYXU_BFETCH_RSTn_new = (line_rst_odd_new || vid_rst_evn_new || !scan_done_trig_new) && !NUNY_WIN_MODE_TRIGp_new && !TEVO_WIN_FETCH_TRIGp_new;
-
-  // FIXME this fails in fuzz tests
-  //if (XYMU_RENDERINGn_new) CHECK_P(NYXU_BFETCH_RSTn_new);
-
-  //----------------------------------------
-  // Win map x counter
-
-  if (DELTA_ODD) {
-
-    wire SYLO_WIN_HITn_odd_old = not1(RYDY_WIN_HITp_old);
-    wire TOMU_WIN_HITp_odd_old = not1(SYLO_WIN_HITn_odd_old);
-    wire SEKO_WIN_FETCH_TRIGp_old = nor2(not1(RYFA_WIN_FETCHn_A_evn_old), RENE_WIN_FETCHn_B_evn_old);
-    wire TUXY_WIN_FIRST_TILEne_old = nand2(SYLO_WIN_HITn_odd_old, SOVY_WIN_HITp_evn_old);
+    wire SEKO_WIN_FETCH_TRIGp_old = and2(RYFA_WIN_FETCHn_A_evn_old, !RENE_WIN_FETCHn_B_evn_old);
+    wire TUXY_WIN_FIRST_TILEne_old = or2(RYDY_WIN_HITp_old, !SOVY_WIN_HITp_evn_old);
     wire SUZU_WIN_FIRST_TILEne_old = not1(TUXY_WIN_FIRST_TILEne_old);
     wire ROMO_PRELOAD_DONEn_evn_old = not1(POKY_PRELOAD_LATCHp_old);
     wire SUVU_PRELOAD_DONE_TRIGn_old = nand4(not1(XYMU_RENDERINGn_old), ROMO_PRELOAD_DONEn_evn_old, NYKA_FETCH_DONEp_evn_old, PORY_FETCH_DONEp_odd_old);
-    wire TAVE_PRELOAD_DONE_TRIGp_old = not1(SUVU_PRELOAD_DONE_TRIGn_old);
-    wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old, SUZU_WIN_FIRST_TILEne_old, TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
-    wire NOCU_WIN_MODEn_old = not1(PYNU_WIN_MODE_Ap_odd_old);
-    wire PORE_WIN_MODEp_old = not1(NOCU_WIN_MODEn_old);
-    wire VETU_WIN_MAPp_old = and2(TEVO_WIN_FETCH_TRIGp_old, PORE_WIN_MODEp_old);
+    
+    wire TEVO_WIN_FETCH_TRIGp_old = or3(
+      SEKO_WIN_FETCH_TRIGp_old,
+      SUZU_WIN_FIRST_TILEne_old,
+      not1(SUVU_PRELOAD_DONE_TRIGn_old)
+    );
+    
+    wire VETU_WIN_MAPp_old = and2(TEVO_WIN_FETCH_TRIGp_old, PYNU_WIN_MODE_Ap_odd_old);
 
 
-    wire SYLO_WIN_HITn_new = not1(RYDY_WIN_HITp_new);
-    wire TOMU_WIN_HITp_new = not1(SYLO_WIN_HITn_new);
-    wire SEKO_WIN_FETCH_TRIGp_new = nor2(not(RYFA_WIN_FETCHn_A_evn_new), RENE_WIN_FETCHn_B_evn_new);
-    wire TUXY_WIN_FIRST_TILEne_new = nand2(SYLO_WIN_HITn_new, SOVY_WIN_HITp_evn_new);
+    wire SEKO_WIN_FETCH_TRIGp_new = and2(state_new.win_ctrl.RYFA_WIN_FETCHn_A.state, !state_new.win_ctrl.RENE_WIN_FETCHn_B.state);
+    wire TUXY_WIN_FIRST_TILEne_new = or2(RYDY_WIN_HITp_new, !SOVY_WIN_HITp_evn_new);
     wire SUZU_WIN_FIRST_TILEne_new = not1(TUXY_WIN_FIRST_TILEne_new);
     wire ROMO_PRELOAD_DONEn_evn_new = not1(POKY_PRELOAD_LATCHp_new);
     wire SUVU_PRELOAD_DONE_TRIGn_new = nand4(not1(XYMU_RENDERINGn_new), ROMO_PRELOAD_DONEn_evn_new, NYKA_FETCH_DONEp_evn_new, PORY_FETCH_DONEp_odd_new);
-    wire TAVE_PRELOAD_DONE_TRIGp_new = not1(SUVU_PRELOAD_DONE_TRIGn_new);
-    wire TEVO_WIN_FETCH_TRIGp_new = or3(SEKO_WIN_FETCH_TRIGp_new, SUZU_WIN_FIRST_TILEne_new, TAVE_PRELOAD_DONE_TRIGp_new); // Schematic wrong, this is OR
+    wire TEVO_WIN_FETCH_TRIGp_new = or3(SEKO_WIN_FETCH_TRIGp_new, SUZU_WIN_FIRST_TILEne_new, TAVE_PRELOAD_DONE_TRIGp_new);
     wire NOCU_WIN_MODEn_new = not1(PYNU_WIN_MODE_Ap_odd_new);
     wire PORE_WIN_MODEp_new = not1(NOCU_WIN_MODEn_new);
     wire VETU_WIN_MAPp_new = and2(TEVO_WIN_FETCH_TRIGp_new, PORE_WIN_MODEp_new);
@@ -1479,9 +1363,78 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  if (vid_rst_evn_new || line_rst_odd_new || !win_en_new) {
-    state_new.win_x.map = 0;
+  //--------------------------------------------------------------------------------
+
+  else if (DELTA_EVEN) {
+    state_new.win_ctrl.RENE_WIN_FETCHn_B.state = state_old.win_ctrl.RYFA_WIN_FETCHn_A.state;
+
+    if (win_hit_trig_new || something_trig_new) {
+      state_new.fine_count_odd = 0;
+    }
+
+    if (!RYDY_WIN_HITp_old && POKY_PRELOAD_LATCHp_new && !FEPO_STORE_MATCHp_old && (pix_count_old != 167)) {
+      state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state = POHU_SCX_FINE_MATCHp_old; 
+      state_new.win_ctrl.PYCO_WIN_MATCHp_evn.state = nuko_wx_match_old;
+    }
+
+    if (!state_new.fine_scroll.NYZE_SCX_FINE_MATCH_odd.state && state_new.fine_scroll.PUXA_SCX_FINE_MATCH_evn.state) {
+      state_new.fine_scroll.ROXY_FINE_SCROLL_DONEn.state = 0;
+    }
   }
+
+  //--------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  wire clkpipe_gate = !RYDY_WIN_HITp_old && POKY_PRELOAD_LATCHp_new && !FEPO_STORE_MATCHp_old && (pix_count_old != 167);
+
+
+  bool WODU_HBLANK_new = !state_new.FEPO_STORE_MATCHp && (state_new.pix_count & 167) == 167; // FEPO _must_ be new or we get a mismatch
+  wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B.state;
+  wire TEVO_WIN_FETCH_TRIGp_new = (win_fetch_trig_new || win_hit_trig_new || something_trig_new) && !XYMU_RENDERINGn_new;
+  auto RYFA_WIN_FETCHn_A_evn_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A.state;
+  auto RENE_WIN_FETCHn_B_evn_new = state_new.win_ctrl.RENE_WIN_FETCHn_B.state;
+  wire NYXU_BFETCH_RSTn_new = (line_rst_odd_new || vid_rst_evn_new || !scan_done_trig_new) && !NUNY_WIN_MODE_TRIGp_new && !TEVO_WIN_FETCH_TRIGp_new;
 
   //----------------------------------------
   // Win map y counter - increments when we _leave_ window mode, fails fuzz test if we only update on odd

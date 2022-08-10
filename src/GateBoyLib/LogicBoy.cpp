@@ -1197,8 +1197,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  auto POKY_PRELOAD_LATCHp_evn_old = state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
-  auto POKY_PRELOAD_LATCHp_evn_new = state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
+  auto POKY_PRELOAD_LATCHp_old = state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
+  auto POKY_PRELOAD_LATCHp_new = state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
 
   wire something_trig_old = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_old;
   wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new;
@@ -1215,7 +1215,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp_odd.state = 0;
     if (DELTA_EVEN) state_new.win_ctrl.SOVY_WIN_HITp_evn.state = state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
   }
-  auto RYDY_WIN_HITp_odd_old = state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
+  auto RYDY_WIN_HITp_old = state_old.win_ctrl.RYDY_WIN_HITp_odd.state;
   auto RYDY_WIN_HITp_odd_new = state_new.win_ctrl.RYDY_WIN_HITp_odd.state;
   auto SOVY_WIN_HITp_evn_old = state_old.win_ctrl.SOVY_WIN_HITp_evn.state;
   auto SOVY_WIN_HITp_evn_new = state_new.win_ctrl.SOVY_WIN_HITp_evn.state;
@@ -1229,10 +1229,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire win_fetch_trig_old = state_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_old.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
   wire TEVO_WIN_FETCH_TRIGp_old = (win_fetch_trig_old || win_hit_trig_old || something_trig_old) && !state_old.XYMU_RENDERINGn;
 
-  bool wodu_hblank_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count_odd & 167) == 167;
+  bool WODU_HBLANK_old = !state_old.FEPO_STORE_MATCHp && (state_old.pix_count_odd & 167) == 167;
 
+  wire FEPO_STORE_MATCHp_old = state_old.FEPO_STORE_MATCHp;
 
-
+  wire SYLO_WIN_HITn_old = not1(state_old.win_ctrl.RYDY_WIN_HITp_odd.state);
+  wire TOMU_WIN_HITp_old = not1(SYLO_WIN_HITn_old);
+  wire SOCY_WIN_HITn_old = not1(TOMU_WIN_HITp_old);
 
 
 
@@ -1265,15 +1268,23 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // TEH LOOP
   // TEH LOOP
   // TEH LOOP
+
+  // VYBO_CLKPIPE = nor3(FEPO_STORE_MATCHp, WODU_HBLANK, MYVO_AxCxExGx);
+  // TYFA_CLKPIPE = and3(SOCY_WIN_HITn, POKY_PRELOAD_LATCHp, VYBO_CLKPIPE);
+  // SEGU_CLKPIPE = not1(TYFA_CLKPIPE);
+  // SACU_CLKPIPE = or2(SEGU_CLKPIPE, ROXY_FINE_SCROLL_DONEn);
+  // RYFA_WIN_FETCHnn = dff17(SEGU_CLKPIPE, PANY_WIN_FETCHn);
 
   wire SACU_CLKPIPE_old = or6(
-    RYDY_WIN_HITp_odd_old,
-    !POKY_PRELOAD_LATCHp_evn_old,
+    RYDY_WIN_HITp_old,
+    !POKY_PRELOAD_LATCHp_old,
     state_old.FEPO_STORE_MATCHp,
-    wodu_hblank_old,
+    WODU_HBLANK_old,
     DELTA_EVEN,
     state_old.fine_scroll.ROXY_FINE_SCROLL_DONEn_evn.state // FIXME need new but it's computed below
   );
+
+   wire TYFA_CLKPIPE_old = or5(!SOCY_WIN_HITn_old, !POKY_PRELOAD_LATCHp_old, FEPO_STORE_MATCHp_old, WODU_HBLANK_old, DELTA_EVEN);
 
   // CLKPIPE is an even clock, it can only go high on even deltas. FEPO/WODU/SOCY are odd signals, they stay constant during even deltas.
   // SO, it is guaranteed safe to use the old values of FEPO/WODU/SOCY to compute CLKPIPE
@@ -1289,13 +1300,19 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = 0;
   }
   else {
-    if (DELTA_ODD && clkpipe_gate) state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = !nuko_wx_match_old && state_old.fine_count_odd == 7;
-    if (DELTA_EVEN)              state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state; 
+    // TYFA_CLKPIPE = or(!SOCY_WIN_HITn, !POKY_PRELOAD_LATCHp, FEPO_STORE_MATCHp, WODU_HBLANK, MYVO_AxCxExGx);
+    // RYFA_WIN_FETCHnn = dff17(TYFA_CLKPIPE, PANY_WIN_FETCHn);
+    
+    if (DELTA_ODD) {
+      if (clkpipe_gate) {
+        state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state = !nuko_wx_match_old && state_old.fine_count_odd == 7;
+      }
+    }
+    if (DELTA_EVEN)                state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state; 
   }
 
   auto RYFA_WIN_FETCHn_A_evn_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state;
   auto RENE_WIN_FETCHn_B_evn_new = state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
-
 
   wire win_fetch_trig_new = state_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.state && !state_new.win_ctrl.RENE_WIN_FETCHn_B_evn.state;
   wire TEVO_WIN_FETCH_TRIGp_new = (win_fetch_trig_new || win_hit_trig_new || something_trig_new) && !XYMU_RENDERINGn_new;
@@ -1353,18 +1370,24 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     else if (state_new.pix_count_odd == state_new.store_x[9]) { state_new.FEPO_STORE_MATCHp = 1; }
   }
 
-  bool wodu_hblank_new = !state_new.FEPO_STORE_MATCHp && (state_new.pix_count_odd & 167) == 167; // FEPO _must_ be new or we get a mismatch
+  bool WODU_HBLANK_new = !state_new.FEPO_STORE_MATCHp && (state_new.pix_count_odd & 167) == 167; // FEPO _must_ be new or we get a mismatch
 
-  auto FEPO_STORE_MATCHp_odd_new = state_new.FEPO_STORE_MATCHp;
+  auto FEPO_STORE_MATCHp_new = state_new.FEPO_STORE_MATCHp;
 
   wire SACU_CLKPIPE_new = or6(
     RYDY_WIN_HITp_odd_new,
-    !POKY_PRELOAD_LATCHp_evn_new,
-    FEPO_STORE_MATCHp_odd_new,
-    wodu_hblank_new,
+    !POKY_PRELOAD_LATCHp_new,
+    FEPO_STORE_MATCHp_new,
+    WODU_HBLANK_new,
     DELTA_ODD,
     ROXY_FINE_SCROLL_DONEn_evn_new
   );
+
+  wire SYLO_WIN_HITn_new = not1(state_new.win_ctrl.RYDY_WIN_HITp_odd.state);
+  wire TOMU_WIN_HITp_new = not1(SYLO_WIN_HITn_new);
+  wire SOCY_WIN_HITn_new = not1(TOMU_WIN_HITp_new);
+
+   wire TYFA_CLKPIPE_new = or5(!SOCY_WIN_HITn_new, !POKY_PRELOAD_LATCHp_new, FEPO_STORE_MATCHp_new, WODU_HBLANK_new, DELTA_ODD);
 
   // SACU _never_ negedge during DELTA_EVEN
   // SACU _never_ posedge during DELTA_ODD
@@ -1426,12 +1449,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
   if (DELTA_ODD) {
 
-    wire SYLO_WIN_HITn_odd_old = not1(RYDY_WIN_HITp_odd_old);
+    wire SYLO_WIN_HITn_odd_old = not1(RYDY_WIN_HITp_old);
     wire TOMU_WIN_HITp_odd_old = not1(SYLO_WIN_HITn_odd_old);
     wire SEKO_WIN_FETCH_TRIGp_old = nor2(not1(RYFA_WIN_FETCHn_A_evn_old), RENE_WIN_FETCHn_B_evn_old);
     wire TUXY_WIN_FIRST_TILEne_old = nand2(SYLO_WIN_HITn_odd_old, SOVY_WIN_HITp_evn_old);
     wire SUZU_WIN_FIRST_TILEne_old = not1(TUXY_WIN_FIRST_TILEne_old);
-    wire ROMO_PRELOAD_DONEn_evn_old = not1(POKY_PRELOAD_LATCHp_evn_old);
+    wire ROMO_PRELOAD_DONEn_evn_old = not1(POKY_PRELOAD_LATCHp_old);
     wire SUVU_PRELOAD_DONE_TRIGn_old = nand4(not1(XYMU_RENDERINGn_old), ROMO_PRELOAD_DONEn_evn_old, NYKA_FETCH_DONEp_evn_old, PORY_FETCH_DONEp_odd_old);
     wire TAVE_PRELOAD_DONE_TRIGp_old = not1(SUVU_PRELOAD_DONE_TRIGn_old);
     wire TEVO_WIN_FETCH_TRIGp_old = or3(SEKO_WIN_FETCH_TRIGp_old, SUZU_WIN_FIRST_TILEne_old, TAVE_PRELOAD_DONE_TRIGp_old); // Schematic wrong, this is OR
@@ -1445,7 +1468,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     wire SEKO_WIN_FETCH_TRIGp_new = nor2(not(RYFA_WIN_FETCHn_A_evn_new), RENE_WIN_FETCHn_B_evn_new);
     wire TUXY_WIN_FIRST_TILEne_new = nand2(SYLO_WIN_HITn_odd_new, SOVY_WIN_HITp_evn_new);
     wire SUZU_WIN_FIRST_TILEne_new = not1(TUXY_WIN_FIRST_TILEne_new);
-    wire ROMO_PRELOAD_DONEn_evn_new = not1(POKY_PRELOAD_LATCHp_evn_new);
+    wire ROMO_PRELOAD_DONEn_evn_new = not1(POKY_PRELOAD_LATCHp_new);
     wire SUVU_PRELOAD_DONE_TRIGn_new = nand4(not1(XYMU_RENDERINGn_new), ROMO_PRELOAD_DONEn_evn_new, NYKA_FETCH_DONEp_evn_new, PORY_FETCH_DONEp_odd_new);
     wire TAVE_PRELOAD_DONE_TRIGp_new = not1(SUVU_PRELOAD_DONE_TRIGn_new);
     wire TEVO_WIN_FETCH_TRIGp_new = or3(SEKO_WIN_FETCH_TRIGp_new, SUZU_WIN_FIRST_TILEne_new, TAVE_PRELOAD_DONE_TRIGp_new); // Schematic wrong, this is OR
@@ -2217,7 +2240,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire int_ser_old = 0;
 
   bool int_stat_new = 0;
-  if (!bit(pack_stat, 0) && wodu_hblank_new && !vblank_new) int_stat_new = 1;
+  if (!bit(pack_stat, 0) && WODU_HBLANK_new && !vblank_new) int_stat_new = 1;
   if (!bit(pack_stat, 1) && vblank_new) int_stat_new = 1;
   if (!bit(pack_stat, 2) && !vblank_new && state_new.lcd.RUTU_LINE_ENDp_odd.state) int_stat_new = 1;
   if (!bit(pack_stat, 3) && state_new.int_ctrl.ROPO_LY_MATCH_SYNCp.state) int_stat_new = 1;
@@ -2637,7 +2660,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.lcd.RAVO_LD1n.state = RAVO_LD1n;
     state_new.sprite_scanner.AVAP_SCAN_DONE_tp_odd.state = !vid_rst_evn_new && !line_rst_odd_new && scan_done_trig_new;
     state_new.sfetch_control.TEXY_SFETCHINGp_evn.state = ((state_new.phase_sfetch >= 4) && (state_new.phase_sfetch < 12) && !vid_rst_evn_old && !state_old.XYMU_RENDERINGn);
-    state_new.WODU_HBLANKp_odd = wodu_hblank_new;
+    state_new.WODU_HBLANKp_odd = WODU_HBLANK_new;
     state_new.ACYL_SCANNINGp_odd = (!MATU_DMA_RUNNINGp_odd_new && besu_scan_donen_odd_new && !vid_rst_evn_new);
     state_new.ATEJ_LINE_RSTp_odd = line_rst_odd_new || vid_rst_evn_new;
     state_new.cpu_signals.SIG_CPU_BOOTp.state = 0;

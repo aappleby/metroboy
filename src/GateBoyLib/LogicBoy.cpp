@@ -712,7 +712,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // LX, LY, lcd flags
 
-  int64_t phase_lcd_old = state_new.phase_lcd;
+  int64_t phase_lcd_old = state_old.phase_lcd;
   bool first_line_old = phase_lcd_old < 912;
 
   int phase_frame_old = int(phase_lcd_old % (154 * 912));
@@ -738,7 +738,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   int64_t phase_lcd_new = state_new.phase_lcd;
 
   int phase_frame_new = int(phase_lcd_new % (154 * 912));
-  //int frame_index_new = int(phase_lcd_new / (154 * 912));
   int phase_lx_new = phase_frame_new % 912;
   int phase_ly_new = phase_frame_new / 912;
   bool first_line_new = phase_lcd_new < 912;
@@ -787,8 +786,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   }
 
   //----------------------------------------
+  // Serial
+
   //tock_serial_logic();
-  //tock_timer_logic();
 
   //----------------------------------------
   // bootrom read
@@ -811,7 +811,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     auto& dma_lo = state_new.dma_lo;
     auto& dma_hi = state_new.reg_dma;
 
-    if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF46) dma_hi  = ~state_old.cpu_dbus;
+    if (cpu_wr && DELTA_GH && cpu_addr_new == 0xFF46) dma_hi = ~state_old.cpu_dbus;
     if (cpu_rd && cpu_addr_new == 0xFF46) state_new.cpu_dbus = ~dma_hi;
 
     if (DELTA_HA) {
@@ -975,59 +975,52 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   //----------------------------------------
   // SOBU/SUDA
 
-  if (DELTA_EVEN) {
+  if (vid_rst_evn_new) {
+    state_new.phase_sfetch = 1;
+  }
+  else if (line_rst_odd_new) {
+    state_new.phase_sfetch = 0;
+  }
+  else if (DELTA_EVEN) {
     state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state =
       state_old.FEPO_STORE_MATCHp &&
       !state_old.win_ctrl.RYDY_WIN_HITp.state &&
       (state_old.phase_tfetch >= 10) &&
       !state_old.sfetch_control.TAKA_SFETCH_RUNNINGp_evn.state;
+
+    state_new.phase_sfetch++;
+    if (!state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state && state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state) {
+      state_new.phase_sfetch = 0;
+    }
   }
   else if (DELTA_ODD) {
+    state_new.phase_sfetch++;
     state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state = state_old.sfetch_control.SOBU_SFETCH_REQp_evn.state;
   }
 
-  //----------------------------------------
-
-  if (XYMU_RENDERINGn_new) {
-    if (vid_rst_evn_new) {
-      state_new.phase_sfetch = 1;
-    }
-    else if (line_rst_odd_new) {
-      state_new.phase_sfetch = 0;
-    }
-    else if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) {
-      state_new.phase_sfetch = 0;
-    }
-    else {
-      state_new.phase_sfetch++;
-    }
-  }
-  else if (DELTA_EVEN) {
-    if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) {
-      state_new.phase_sfetch = 0;
-    }
-    else {
-      state_new.phase_sfetch++;
-    }
-  }
-  else if (DELTA_ODD) {
-    if (state_new.sfetch_control.SOBU_SFETCH_REQp_evn.state && !state_new.sfetch_control.SUDA_SFETCH_REQp_odd.state) {
-      state_new.phase_sfetch = 0;
-    }
-    else {
-      state_new.phase_sfetch++;
-    }
-
-  }
-
-  state_new.sfetch_counter_evn = state_new.phase_sfetch > 10 ? 5 : uint8_t(state_new.phase_sfetch / 2);
 
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
-
   // There are three clocks combined into one here, and the logic does not untangle nicely. :P
 
   {
@@ -1049,18 +1042,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-
-
-
-
-
-
-
-
-
   //----------------------------------------
-
-
 
   if (vid_rst_evn_new) {
     state_new.sprite_counter = 0;
@@ -1089,10 +1071,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
         state_new.store_x[state_new.sprite_counter] = state_new.oam_temp_b;
       }
       state_new.sprite_store_flags = 0;
-
-      int sy = (int)state_new.oam_temp_a - 16;
-      int sprite_height = spr_size_new ? 8 : 16;
-      wire sprite_hit = (reg_ly_new >= sy) && (reg_ly_new < sy + sprite_height) && ceno_scan_donen_odd_old;
 
       if (sprite_hit && state_new.sprite_counter < 10) {
         state_new.store_i[state_new.sprite_counter] = state_old.sprite_ibus ^ 0b111111;
@@ -1168,19 +1146,26 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //----------------------------------------
   // sprite_reset_flags <- old.sprite_match_flags
 
-  uint8_t sfetch_done_trig_old = state_old.phase_sfetch == 11;
-  if (vid_rst_evn_old || line_rst_odd_old || state_old.XYMU_RENDERINGn) sfetch_done_trig_old = 0;
+  uint8_t sfetch_done_trig_new;
 
-  uint8_t sfetch_done_trig_new = state_new.phase_sfetch == 11;
-  if (vid_rst_evn_new || line_rst_odd_new || XYMU_RENDERINGn_new) sfetch_done_trig_new = 0;
-
-  if (!sfetch_done_trig_old && sfetch_done_trig_new) state_new.sprite_reset_flags = state_old.sprite_match_flags;
-  if (vid_rst_evn_new || line_rst_odd_new) state_new.sprite_reset_flags = 0;
-
-  if (state_new.sprite_reset_flags) {
-    int sprite_reset_index = __builtin_ctz(state_new.sprite_reset_flags);
-    state_new.store_x[sprite_reset_index] = 0xFF;
+  if (XYMU_RENDERINGn_new) {
+    sfetch_done_trig_new = 0;
+    if (vid_rst_evn_new || line_rst_odd_new) state_new.sprite_reset_flags = 0;
   }
+  else {
+    uint8_t sfetch_done_trig_old = state_old.phase_sfetch == 11;
+    if (vid_rst_evn_old || line_rst_odd_old || state_old.XYMU_RENDERINGn) sfetch_done_trig_old = 0;
+
+    sfetch_done_trig_new = state_new.phase_sfetch == 11;
+    if (!sfetch_done_trig_old && sfetch_done_trig_new) state_new.sprite_reset_flags = state_old.sprite_match_flags;
+
+    if (state_new.sprite_reset_flags) {
+      int sprite_reset_index = __builtin_ctz(state_new.sprite_reset_flags);
+      state_new.store_x[sprite_reset_index] = 0xFF;
+    }
+
+  }
+
 
   //----------------------------------------
 
@@ -2367,7 +2352,11 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   //===========================================================================
   // These are all dead (unused) signals that are only needed for regression tests
 
+
   if (!config_fastmode) {
+    state_new.sfetch_counter_evn = state_new.phase_sfetch / 2;
+    if (state_new.phase_sfetch > 10) state_new.sfetch_counter_evn = 5;
+
     if (DELTA_ODD) {
       state_new.sfetch_control.TYFO_SFETCH_S0p_D1_odd.state = state_old.phase_sfetch > 10 ? bit(5, 0) : bit(state_old.phase_sfetch / 2, 0);
     }

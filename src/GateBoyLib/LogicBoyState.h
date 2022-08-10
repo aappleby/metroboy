@@ -156,7 +156,7 @@ struct LogicBoyState {
   uint8_t sprite_pix_a;
   uint8_t sprite_pix_b;
 
-  uint8_t pix_count_odd;
+  uint8_t pix_count;
   uint8_t mask_pipe;
   uint8_t bgw_pipe_a;
   uint8_t bgw_pipe_b;

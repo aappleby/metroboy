@@ -30,8 +30,8 @@ void GateBoy::tock_window_gates(const GateBoyState& reg_old, wire SEGU_CLKPIPE_o
   /*#p27.ROZE*/ wire ROZE_FINE_COUNT_7n_odd_old = nand3(reg_old.fine_count_odd.RUBU_FINE_CNT2_odd.qp_old(), reg_old.fine_count_odd.ROGA_FINE_CNT1_odd.qp_old(), reg_old.fine_count_odd.RYKU_FINE_CNT0_odd.qp_old());
   /*_p27.PANY*/ wire PANY_WIN_FETCHn_old = nor2(reg_old.win_ctrl.NUKO_WX_MATCHp_odd.out_old(), ROZE_FINE_COUNT_7n_odd_old);
 
-  /*_p27.RENE*/ reg_new.win_ctrl.RENE_WIN_FETCHn_B_evn.dff17(ALET_xBxDxFxH,  reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.qp_old());
-  /*_p27.RYFA*/ reg_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.dff17(SEGU_CLKPIPE_odd_new,            reg_new.XYMU_RENDERING_LATCHn.qn_new(), PANY_WIN_FETCHn_old);
+  /*_p27.RENE*/ reg_new.win_ctrl.RENE_WIN_FETCHn_B.dff17(ALET_xBxDxFxH,  reg_new.XYMU_RENDERING_LATCHn.qn_new(), reg_old.win_ctrl.RYFA_WIN_FETCHn_A.qp_old());
+  /*_p27.RYFA*/ reg_new.win_ctrl.RYFA_WIN_FETCHn_A.dff17(SEGU_CLKPIPE_odd_new,            reg_new.XYMU_RENDERING_LATCHn.qn_new(), PANY_WIN_FETCHn_old);
 
   /*_p07.DYKY*/ wire DYKY_CPU_WRn_new = not1(reg_new.cpu_signals.TAPU_CPU_WRp.out_new());
   /*_p07.CUPA*/ wire CUPA_CPU_WRp_new = not1(DYKY_CPU_WRn_new);
@@ -710,14 +710,14 @@ void WinControl::reset() {
   PYNU_WIN_MODE_Ap_odd.state     = 0b00011000;
   PUKU_WIN_HITn_odd.state        = 0b00011001;
   RYDY_WIN_HITp.state        = 0b00011000;
-  SOVY_WIN_HITp_evn.state        = 0b00011010;
+  SOVY_WIN_HITp.state        = 0b00011010;
   NOPA_WIN_MODE_Bp_evn.state     = 0b00011010;
   PYCO_WIN_MATCHp_evn.state      = 0b00011000;
   NUNU_WIN_MATCHp_odd.state      = 0b00011000;
   REJO_WY_MATCH_LATCHp_odd.state = 0b00011000;
   SARY_WY_MATCHp_odd.state       = 0b00011000;
-  RYFA_WIN_FETCHn_A_evn.state    = 0b00011010;
-  RENE_WIN_FETCHn_B_evn.state    = 0b00011010;
+  RYFA_WIN_FETCHn_A.state    = 0b00011010;
+  RENE_WIN_FETCHn_B.state    = 0b00011010;
 }
 
 //-----------------------------------------------------------------------------

@@ -11,14 +11,14 @@ struct WinControl {
   /*_p27.PYNU*/ NorLatch PYNU_WIN_MODE_Ap_odd;      // AxxxxxGx
   /*_p27.PUKU*/ Gate PUKU_WIN_HITn_odd;             // xxCxxxGx
   /*_p27.RYDY*/ Gate RYDY_WIN_HITp;             // xxCxxxGx
-  /*_p27.SOVY*/ DFF17 SOVY_WIN_HITp_evn;            // xxxDxxxH
+  /*_p27.SOVY*/ DFF17 SOVY_WIN_HITp;            // xxxDxxxH
   /*_p27.NOPA*/ DFF17 NOPA_WIN_MODE_Bp_evn;         // xBxDxFxH
   /*_p27.PYCO*/ DFF17 PYCO_WIN_MATCHp_evn;          // xxxDxxxH
   /*_p27.NUNU*/ DFF17 NUNU_WIN_MATCHp_odd;          // xxxxExGx
   /*_p27.REJO*/ NorLatch REJO_WY_MATCH_LATCHp_odd;  // xxCxxxxx
   /*_p27.SARY*/ DFF17 SARY_WY_MATCHp_odd;           // xxCxxxxx
-  /*_p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A_evn;        // AxCxExGx
-  /*_p27.RENE*/ DFF17 RENE_WIN_FETCHn_B_evn;        // xBxDxFxH
+  /*_p27.RYFA*/ DFF17 RYFA_WIN_FETCHn_A;        // AxCxExGx
+  /*_p27.RENE*/ DFF17 RENE_WIN_FETCHn_B;        // xBxDxFxH
 };
 
 //-----------------------------------------------------------------------------

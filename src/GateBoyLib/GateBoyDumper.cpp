@@ -408,14 +408,14 @@ void GateBoyDumper::dump_ppu(const GateBoyState& s, Dumper& d) {
   d.dump_bitp("PYNU_WIN_MODE_Ap       : ", s.win_ctrl.PYNU_WIN_MODE_Ap_odd.state);
   d.dump_bitp("PUKU_WIN_HITn          : ", s.win_ctrl.PUKU_WIN_HITn_odd.state);
   d.dump_bitp("RYDY_WIN_HITp          : ", s.win_ctrl.RYDY_WIN_HITp.state);
-  d.dump_bitp("SOVY_WIN_FIRST_TILE_B  : ", s.win_ctrl.SOVY_WIN_HITp_evn.state);
+  d.dump_bitp("SOVY_WIN_FIRST_TILE_B  : ", s.win_ctrl.SOVY_WIN_HITp.state);
   d.dump_bitp("NOPA_WIN_MODE_B        : ", s.win_ctrl.NOPA_WIN_MODE_Bp_evn.state);
   d.dump_bitp("PYCO_WX_MATCH_A        : ", s.win_ctrl.PYCO_WIN_MATCHp_evn.state);
   d.dump_bitp("NUNU_WX_MATCH_B        : ", s.win_ctrl.NUNU_WIN_MATCHp_odd.state);
   d.dump_bitp("REJO_WY_MATCH_LATCH    : ", s.win_ctrl.REJO_WY_MATCH_LATCHp_odd.state);
   d.dump_bitp("SARY_WY_MATCH          : ", s.win_ctrl.SARY_WY_MATCHp_odd.state);
-  d.dump_bitp("RYFA_FETCHn_A          : ", s.win_ctrl.RYFA_WIN_FETCHn_A_evn.state);
-  d.dump_bitp("RENE_FETCHn_B          : ", s.win_ctrl.RENE_WIN_FETCHn_B_evn.state);
+  d.dump_bitp("RYFA_FETCHn_A          : ", s.win_ctrl.RYFA_WIN_FETCHn_A.state);
+  d.dump_bitp("RENE_FETCHn_B          : ", s.win_ctrl.RENE_WIN_FETCHn_B.state);
   d.dump_bitp("RYKU_FINE_CNT0         : ", s.fine_count_odd.RYKU_FINE_CNT0_odd.state);
   d.dump_bitp("ROGA_FINE_CNT1         : ", s.fine_count_odd.ROGA_FINE_CNT1_odd.state);
   d.dump_bitp("RUBU_FINE_CNT2         : ", s.fine_count_odd.RUBU_FINE_CNT2_odd.state);

@@ -559,14 +559,14 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, win_ctrl.PYNU_WIN_MODE_Ap_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.PUKU_WIN_HITn_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.RYDY_WIN_HITp),
-  DECLARE_FIELD(GateBoyState, win_ctrl.SOVY_WIN_HITp_evn),
+  DECLARE_FIELD(GateBoyState, win_ctrl.SOVY_WIN_HITp),
   DECLARE_FIELD(GateBoyState, win_ctrl.NOPA_WIN_MODE_Bp_evn),
   DECLARE_FIELD(GateBoyState, win_ctrl.PYCO_WIN_MATCHp_evn),
   DECLARE_FIELD(GateBoyState, win_ctrl.NUNU_WIN_MATCHp_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.REJO_WY_MATCH_LATCHp_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.SARY_WY_MATCHp_odd),
-  DECLARE_FIELD(GateBoyState, win_ctrl.RYFA_WIN_FETCHn_A_evn),
-  DECLARE_FIELD(GateBoyState, win_ctrl.RENE_WIN_FETCHn_B_evn),
+  DECLARE_FIELD(GateBoyState, win_ctrl.RYFA_WIN_FETCHn_A),
+  DECLARE_FIELD(GateBoyState, win_ctrl.RENE_WIN_FETCHn_B),
 
   DECLARE_FIELD(GateBoyState, fine_count_odd),
   

@@ -249,8 +249,8 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire /*TEVO_WIN_F
 
     /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_old = not1(reg_old.win_ctrl.RYDY_WIN_HITp.out_old());
     /*#p24.TOMU*/ wire TOMU_WIN_HITp_odd_old = not1(SYLO_WIN_HITn_odd_old);
-    /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_old = nor2(reg_old.win_ctrl.RYFA_WIN_FETCHn_A_evn.qn_old(), reg_old.win_ctrl.RENE_WIN_FETCHn_B_evn.qp_old());
-    /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_old = nand2(SYLO_WIN_HITn_odd_old, reg_old.win_ctrl.SOVY_WIN_HITp_evn.qp_old());
+    /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_old = nor2(reg_old.win_ctrl.RYFA_WIN_FETCHn_A.qn_old(), reg_old.win_ctrl.RENE_WIN_FETCHn_B.qp_old());
+    /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_old = nand2(SYLO_WIN_HITn_odd_old, reg_old.win_ctrl.SOVY_WIN_HITp.qp_old());
     /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne_old = not1(TUXY_WIN_FIRST_TILEne_old);
     /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn_old = not1(reg_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_old());
     /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn_old = nand4(reg_old.XYMU_RENDERING_LATCHn.qn_old(), ROMO_PRELOAD_DONEn_evn_old, reg_old.tfetch_control.NYKA_FETCH_DONEp_evn.qp_old(), reg_old.tfetch_control.PORY_FETCH_DONEp_odd.qp_old());
@@ -265,9 +265,9 @@ void GateBoy::tock_vram_bus_gates(const GateBoyState& reg_old, wire /*TEVO_WIN_F
     /*_p27.ROMO*/ wire ROMO_PRELOAD_DONEn_evn_new = not1(reg_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.qp_new());
     /*_p27.SUVU*/ wire SUVU_PRELOAD_DONE_TRIGn_xxx_new = nand4(reg_new.XYMU_RENDERING_LATCHn.qn_new(), ROMO_PRELOAD_DONEn_evn_new, reg_new.tfetch_control.NYKA_FETCH_DONEp_evn.qp_new(), reg_new.tfetch_control.PORY_FETCH_DONEp_odd.qp_new());
     /*_p27.TAVE*/ wire TAVE_PRELOAD_DONE_TRIGp_xxx_new = not1(SUVU_PRELOAD_DONE_TRIGn_xxx_new);
-    /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_evn_new = nor2(reg_new.win_ctrl.RYFA_WIN_FETCHn_A_evn.qn_new(), reg_new.win_ctrl.RENE_WIN_FETCHn_B_evn.qp_new());
+    /*_p27.SEKO*/ wire SEKO_WIN_FETCH_TRIGp_evn_new = nor2(reg_new.win_ctrl.RYFA_WIN_FETCHn_A.qn_new(), reg_new.win_ctrl.RENE_WIN_FETCHn_B.qp_new());
     /*#p27.SYLO*/ wire SYLO_WIN_HITn_odd_new = not1(reg_new.win_ctrl.RYDY_WIN_HITp.out_new());
-    /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_xxx_new = nand2(SYLO_WIN_HITn_odd_new, reg_new.win_ctrl.SOVY_WIN_HITp_evn.qp_new());
+    /*_p27.TUXY*/ wire TUXY_WIN_FIRST_TILEne_xxx_new = nand2(SYLO_WIN_HITn_odd_new, reg_new.win_ctrl.SOVY_WIN_HITp.qp_new());
     /*_p27.SUZU*/ wire SUZU_WIN_FIRST_TILEne_xxx_new = not1(TUXY_WIN_FIRST_TILEne_xxx_new);
     /*_p27.TEVO*/ wire TEVO_WIN_FETCH_TRIGp_new = or3(SEKO_WIN_FETCH_TRIGp_evn_new, SUZU_WIN_FIRST_TILEne_xxx_new, TAVE_PRELOAD_DONE_TRIGp_xxx_new); // Schematic wrong, this is OR
     /*_p27.VETU*/ wire VETU_WIN_MAPp_new = and2(TEVO_WIN_FETCH_TRIGp_new, PORE_WIN_MODEp_new);

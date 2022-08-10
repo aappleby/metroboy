@@ -1093,8 +1093,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     }
   }
 
-  wire NUNY_WIN_MODE_TRIGp_old = state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_old.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
-  wire NUNY_WIN_MODE_TRIGp_new = state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state;
+  wire NUNY_WIN_MODE_TRIGp_old = (state_old.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_old.win_ctrl.NOPA_WIN_MODE_Bp_evn.state);
+  wire NUNY_WIN_MODE_TRIGp_new = (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state);
 
   //----------------------------------------
   // OAM latch from last cycle gets moved into temp registers.
@@ -1210,52 +1210,44 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   // NYKA / PORY
   // pory can be set on the phase after phase_tfetch gets reset to 0 by nyxu, so we can't use phase_tfetch to drive it?
 
-  if (DELTA_EVEN) {
-    state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.phase_tfetch >= 10;
-  }
-  if (vid_rst_evn_new || XYMU_RENDERINGn_new || line_rst_odd_new || NUNY_WIN_MODE_TRIGp_new) {
+  if (XYMU_RENDERINGn_new) {
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
-  }
-
-  auto NYKA_FETCH_DONEp_evn_old = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state;
-  auto NYKA_FETCH_DONEp_evn_new = state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state;
-
-  if (DELTA_ODD) {
-    state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state;
-  }
-  if (vid_rst_evn_new || XYMU_RENDERINGn_new || line_rst_odd_new || NUNY_WIN_MODE_TRIGp_new) {
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
+    state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
+  }
+  else if (DELTA_EVEN) {
+    state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.phase_tfetch >= 10;
+
+    if (state_old.tfetch_control.PORY_FETCH_DONEp_odd.state) {
+      //printf("%d\n", state_old.phase_tfetch);
+      state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
+    }
+  }
+  else if (DELTA_ODD) {
+    state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state;
+
+    if (state_new.win_ctrl.PYNU_WIN_MODE_Ap_odd.state && !state_new.win_ctrl.NOPA_WIN_MODE_Bp_evn.state) {
+      state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
+      state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
+    }
   }
 
-  auto PORY_FETCH_DONEp_odd_old = state_old.tfetch_control.PORY_FETCH_DONEp_odd.state;
-  auto PORY_FETCH_DONEp_odd_new = state_new.tfetch_control.PORY_FETCH_DONEp_odd.state;
+
+
+
+
+
+
+
+  auto POKY_PRELOAD_LATCHp_old = state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
+  auto POKY_PRELOAD_LATCHp_new = state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
+
 
   uint8_t fetch_done_old = (state_old.phase_tfetch >= 10) && (state_old.phase_tfetch <= 14);
   if (vid_rst_evn_old || state_old.XYMU_RENDERINGn || line_rst_odd_old || NUNY_WIN_MODE_TRIGp_old) fetch_done_old = 0;
 
   uint8_t fetch_done_new = (state_old.phase_tfetch >= 11) && (state_old.phase_tfetch <= 15);
   if (vid_rst_evn_new || XYMU_RENDERINGn_new || line_rst_odd_new || NUNY_WIN_MODE_TRIGp_new) fetch_done_new = 0;
-
-  //----------------------------------------
-  // POKY
-
-  if (vid_rst_evn_new) {
-    state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
-  }
-  else if (XYMU_RENDERINGn_new) {
-    state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
-  }
-  else {
-    if (DELTA_EVEN) {
-      if (state_old.tfetch_control.PORY_FETCH_DONEp_odd.state) {
-        //printf("%d\n", state_old.phase_tfetch);
-        state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
-      }
-    }
-  }
-
-  auto POKY_PRELOAD_LATCHp_old = state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
-  auto POKY_PRELOAD_LATCHp_new = state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state;
 
   wire something_trig_old = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_old;
   wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new;

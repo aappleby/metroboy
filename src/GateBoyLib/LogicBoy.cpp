@@ -1214,6 +1214,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
     state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 0;
+
+    if (vid_rst_evn_new) {
+      state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
+      state_new.win_ctrl.SOVY_WIN_HITp.state = 0;
+    }
+    else {
+      if (NUNY_WIN_MODE_TRIGp_new) state_new.win_ctrl.RYDY_WIN_HITp.state = 1;
+      if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
+      if (DELTA_EVEN) state_new.win_ctrl.SOVY_WIN_HITp.state = state_old.win_ctrl.RYDY_WIN_HITp.state;
+    }
   }
   else if (DELTA_EVEN) {
     state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = state_old.phase_tfetch >= 10;
@@ -1222,6 +1232,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       //printf("%d\n", state_old.phase_tfetch);
       state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state = 1;
     }
+
+    if (NUNY_WIN_MODE_TRIGp_new) state_new.win_ctrl.RYDY_WIN_HITp.state = !line_rst_odd_new;
+    if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
+    state_new.win_ctrl.SOVY_WIN_HITp.state = state_old.win_ctrl.RYDY_WIN_HITp.state;
   }
   else if (DELTA_ODD) {
     state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = state_old.tfetch_control.NYKA_FETCH_DONEp_evn.state;
@@ -1230,7 +1244,16 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.tfetch_control.NYKA_FETCH_DONEp_evn.state = 0;
       state_new.tfetch_control.PORY_FETCH_DONEp_odd.state = 0;
     }
+
+    if (NUNY_WIN_MODE_TRIGp_new) state_new.win_ctrl.RYDY_WIN_HITp.state = 1;
+    if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
   }
+
+
+
+
+
+
 
 
 
@@ -1252,29 +1275,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
   wire something_trig_old = !state_old.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_old;
   wire something_trig_new = !state_new.tfetch_control.POKY_PRELOAD_LATCHp_evn.state && fetch_done_new;
 
-  //----------------------------------------
-  // RYDY/SOVY
-
-  if (XYMU_RENDERINGn_new) {
-    if (vid_rst_evn_new) {
-      state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
-      state_new.win_ctrl.SOVY_WIN_HITp.state = 0;
-    }
-    else {
-      if (NUNY_WIN_MODE_TRIGp_new) state_new.win_ctrl.RYDY_WIN_HITp.state = 1;
-      if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
-      if (DELTA_EVEN) state_new.win_ctrl.SOVY_WIN_HITp.state = state_old.win_ctrl.RYDY_WIN_HITp.state;
-    }
-  }
-  else if (DELTA_EVEN) {
-    if (NUNY_WIN_MODE_TRIGp_new) state_new.win_ctrl.RYDY_WIN_HITp.state = !line_rst_odd_new;
-    if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
-    state_new.win_ctrl.SOVY_WIN_HITp.state = state_old.win_ctrl.RYDY_WIN_HITp.state;
-  }
-  else if (DELTA_ODD) {
-    if (NUNY_WIN_MODE_TRIGp_new) state_new.win_ctrl.RYDY_WIN_HITp.state = 1;
-    if (state_new.tfetch_control.PORY_FETCH_DONEp_odd.state) state_new.win_ctrl.RYDY_WIN_HITp.state = 0;
-  }
 
 
 

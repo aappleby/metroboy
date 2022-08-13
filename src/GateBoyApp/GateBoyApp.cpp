@@ -26,12 +26,6 @@
 //-----------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-#ifdef _MSC_VER
-  SetPriorityClass(GetCurrentProcess(), 0x00000080);
-#endif
-
-  printf("%d %d\n", (int)sizeof(GateBoyState), (int)sizeof(LogicBoyState));
-
   App* app = new GateBoyApp();
   AppHost* app_host = new AppHost(app);
   int ret = app_host->app_main(argc, argv);

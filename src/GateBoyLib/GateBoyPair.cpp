@@ -139,7 +139,7 @@ const GateBoySys&   GateBoyPair::get_sys() const    { return gb->get_sys();    }
 const GateBoyPins&  GateBoyPair::get_pins() const   { return gb->get_pins();   }
 const Probes&       GateBoyPair::get_probes() const { return gb->get_probes(); }
 
-void GateBoyPair::get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const {
+void GateBoyPair::get_flat_blob(const blob& cart_blob, int addr, int size, uint8_t* out) const {
   return gb->get_flat_blob(cart_blob, addr, size, out);
 }
 

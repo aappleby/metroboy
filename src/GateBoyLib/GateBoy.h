@@ -229,7 +229,7 @@ struct GateBoy  : public IGateBoy {
   const GateBoyPins&  get_pins() const override   { return pins; }
   const Probes&       get_probes() const override { return probes; }
 
-  void get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const override;
+  void get_flat_blob(const blob& cart_blob, int addr, int size, uint8_t* out) const override;
   uint8_t read_flat_addr(const blob& cart_blob, int addr) const;
 
   //----------------------------------------

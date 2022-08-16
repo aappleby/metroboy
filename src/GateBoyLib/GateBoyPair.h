@@ -45,7 +45,7 @@ struct GateBoyPair : public IGateBoy {
   const GateBoyPins&  get_pins() const override;
   const Probes&       get_probes() const override;
 
-  void get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const override;
+  void get_flat_blob(const blob& cart_blob, int addr, int size, uint8_t *out) const override;
 
   GateBoy* gb;
   LogicBoy* lb;

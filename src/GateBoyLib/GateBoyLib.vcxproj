@@ -51,11 +51,6 @@
     <ClCompile Include="GateBoyLCD.cpp" />
     <ClCompile Include="GateBoySpriteStore.cpp" />
     <ClCompile Include="Regs.cpp" />
-    <ClCompile Include="Sch_ApuControl.cpp" />
-    <ClCompile Include="Sch_Channel1.cpp" />
-    <ClCompile Include="Sch_Channel2.cpp" />
-    <ClCompile Include="Sch_Channel3.cpp" />
-    <ClCompile Include="Sch_Channel4.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -77,11 +72,6 @@
     <ClInclude Include="Probe.h" />
     <ClInclude Include="GateBoyLCD.h" />
     <ClInclude Include="Regs.h" />
-    <ClInclude Include="Sch_ApuControl.h" />
-    <ClInclude Include="Sch_Channel1.h" />
-    <ClInclude Include="Sch_Channel2.h" />
-    <ClInclude Include="Sch_Channel3.h" />
-    <ClInclude Include="Sch_Channel4.h" />
     <ClInclude Include="GateBoyClocks.h" />
     <ClInclude Include="GateBoyDMA.h" />
     <ClInclude Include="GateBoyExtBus.h" />
@@ -163,7 +153,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules</AdditionalIncludeDirectories>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <SDLCheck>false</SDLCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -184,7 +174,7 @@
       <PreprocessorDefinitions>CONFIG_RELEASE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <SDLCheck>false</SDLCheck>
@@ -205,7 +195,7 @@
       <PreprocessorDefinitions>CONFIG_REGRESSION;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <SDLCheck>false</SDLCheck>
@@ -227,7 +217,7 @@
       <PreprocessorDefinitions>CONFIG_FASTMODE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <SDLCheck>false</SDLCheck>

@@ -154,12 +154,11 @@ GBResult LogicBoy::dbg_write(const blob& cart_blob, int addr, uint8_t data_in) {
 
 //------------------------------------------------------------------------------------------------------------------------
 
-void LogicBoy::get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const {
+void LogicBoy::get_flat_blob(const blob& cart_blob, int addr, int size, uint8_t* out) const {
   if (addr + size >= 0xFFFF) {
     size = 0xFFFF - addr;
   }
 
-  out.resize(size);
   for (int i = 0; i < size; i++) {
     out[i] = read_flat_addr(cart_blob, addr + i);
   }

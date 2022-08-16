@@ -50,5 +50,5 @@ public:
   virtual const GateBoyPins&  get_pins() const = 0;
   virtual const Probes&       get_probes() const = 0;
 
-  virtual void get_flat_blob(const blob& cart_blob, int addr, int size, blob& out) const = 0;
+  virtual void get_flat_blob(const blob& cart_blob, int addr, int size, uint8_t* out) const = 0;
 };

@@ -38,6 +38,8 @@ private:
 
   GateBoyThread* gb_thread;
 
+  GateBoy temp_gb;
+
   GridPainter grid_painter;
   TextPainter text_painter;
   DumpPainter dump_painter;

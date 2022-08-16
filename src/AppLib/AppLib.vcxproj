@@ -19,10 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\glad\glad.h" />
+    <ClInclude Include="..\..\submodules\glad\glad.h" />
+    <ClInclude Include="..\..\submodules\imgui\imconfig.h" />
+    <ClInclude Include="..\..\submodules\imgui\imgui.h" />
+    <ClInclude Include="..\..\submodules\imgui\imgui_internal.h" />
+    <ClInclude Include="..\..\submodules\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\..\submodules\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\..\submodules\imgui\imstb_truetype.h" />
     <ClInclude Include="..\glad\khrplatform.h" />
-    <ClInclude Include="..\imgui\imconfig.h" />
-    <ClInclude Include="..\imgui\imgui.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="AppHost.h" />
     <ClInclude Include="Audio.h" />
@@ -39,12 +43,12 @@
     <ClInclude Include="Viewport.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\glad\glad.c" />
-    <ClCompile Include="..\imgui\imgui.cpp" />
-    <ClCompile Include="..\imgui\imgui_demo.cpp" />
-    <ClCompile Include="..\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\imgui\imgui_tables.cpp" />
-    <ClCompile Include="..\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\submodules\glad\glad.c" />
+    <ClCompile Include="..\..\submodules\imgui\imgui.cpp" />
+    <ClCompile Include="..\..\submodules\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\submodules\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\submodules\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\submodules\imgui\imgui_widgets.cpp" />
     <ClCompile Include="AppHost.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="Blitter.cpp" />
@@ -120,7 +124,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules;$(SolutionDir)/submodules/glad</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <SDLCheck>false</SDLCheck>
@@ -141,7 +145,7 @@
       <PreprocessorDefinitions>CONFIG_RELEASE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules;$(SolutionDir)/submodules/glad</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -162,7 +166,7 @@
       <PreprocessorDefinitions>CONFIG_REGRESSION;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules;$(SolutionDir)/submodules/glad</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -183,7 +187,7 @@
       <PreprocessorDefinitions>CONFIG_FASTMODE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)/src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/src;$(SolutionDir)/submodules;$(SolutionDir)/submodules/glad</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>

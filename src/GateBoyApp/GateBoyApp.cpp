@@ -21,7 +21,7 @@
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/LogicBoy.h"
 
-#include "glad/glad.h"
+//#include "glad/glad.h"
 
 //-----------------------------------------------------------------------------
 
@@ -401,18 +401,44 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   gb_thread->pause();
 
-  IGateBoy* gb = show_gb_ab ? gb_thread->gb.state()->get_a() : gb_thread->gb.state()->get_b();
+  IGateBoy* gb2 = show_gb_ab ? gb_thread->gb.state()->get_a() : gb_thread->gb.state()->get_b();
 
-  uint64_t phase_total_old = gb->get_sys().gb_phase_total_old;
-  uint64_t phase_total_new = gb->get_sys().gb_phase_total_new;
+  uint64_t phase_total_old = gb2->get_sys().gb_phase_total_old;
+  uint64_t phase_total_new = gb2->get_sys().gb_phase_total_new;
 
-  auto& cpu = gb->get_cpu();
-  auto& mem = gb->get_mem();
-  auto& state = gb->get_state();
-  auto& sys = gb->get_sys();
-  auto& pins = gb->get_pins();
+  temp_gb.cpu = gb2->get_cpu();
+  temp_gb.mem = gb2->get_mem();
+  temp_gb.gb_state = gb2->get_state();
+  temp_gb.sys = gb2->get_sys();
+  temp_gb.pins = gb2->get_pins();
+
+  auto& cpu = temp_gb.cpu;
+  auto& mem = temp_gb.mem;
+  auto& state = temp_gb.gb_state;
+  auto& sys = temp_gb.sys;
+  auto& pins = temp_gb.pins;
+
+  blob& cart = gb_thread->get_cart();
+
+  int pc = cpu.core.get_op_addr();
+  uint8_t disasm_buf[64];
+  gb2->get_flat_blob(cart, pc, 64, disasm_buf);
+
+  int sp = cpu.core.get_sp();
+  uint8_t stack_buf[8];
+  gb2->get_flat_blob(gb_thread->get_cart(), sp, 8, stack_buf);
+
+  Probes temp_probes = gb2->get_probes();
+  auto gb_id = gb2->get_id();
 
   StringDumper d;
+  d("\002===== Thread =====\001\n");
+  gb_thread->dump(d);
+
+  if (!app_paused) gb_thread->resume();
+
+
+
 
   grid_painter.render(view, screen_size);
 
@@ -445,8 +471,6 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   d("\n");
   */
 
-  d("\002===== Thread =====\001\n");
-  gb_thread->dump(d);
 
   double fps = 1.0f / delta;
   static double smooth_fps = 0.0;
@@ -470,16 +494,15 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   cpu.core.dump(d);
   d("\n");
 
+  /*
   d("\002===== STACK =====\001\n");
   {
-    int sp = gb->get_cpu().core.get_sp();
-    gb->get_flat_blob(gb_thread->get_cart(), sp, 8, temp_buf);
-    uint16_t* t = (uint16_t*)temp_buf.data();
     for (auto i = 0; i < temp_buf.size(); i += 2) {
       d("0x%04x: 0x%04x\n", sp + i, t[i / 2]);
     }
   }
   d("\n");
+  */
 
   d("\002===== Pins =====\001\n");
   dumper.dump_pins(pins, d);
@@ -588,18 +611,14 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   d("\002========== Disassembly ==========\001\n");
   {
-    int pc = gb->get_cpu().core.get_op_addr();
-
-    temp_buf.resize(64);
-    gb->get_flat_blob(gb_thread->get_cart(), pc, 64, temp_buf);
-    assembler.disassemble(temp_buf.data(), 64, pc, pc, 16, d, /*collapse_nops*/ false);
+    assembler.disassemble(disasm_buf, 64, pc, pc, 16, d, /*collapse_nops*/ false);
   }
   d("\n");
 
 
   // Probe dump
   d("\002========== Debug Probes ==========\001\n");
-  gb->get_probes().dump(d);
+  temp_probes.dump(d);
   d("\n");
 
 
@@ -686,7 +705,7 @@ Step controls:
   };
 
   d("Viewing sim %s, Sim clock %8.3f %s %s\n",
-    gb->get_id(),
+    gb_id,
     double(phase_total_old) / (4194304.0 * 2),
     phase_names[phase_total_old & 7],
     show_golden ? "GOLDEN IMAGE " : "");
@@ -725,10 +744,10 @@ Step controls:
 
   // Draw flat memory view
 
-  if (gb_thread->get_cart().data())
+  if (cart.data())
   {
     text_painter.render_string(view, screen_size, "\002========== Flat memory view ==========\001", col6, 768);
-    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, gb_thread->get_cart().data());
+    update_texture_u8(ram_tex, 0x00, 0x00, 256, 128, cart.data());
     update_texture_u8(ram_tex, 0x00, 0x80, 256, 32,  mem.vid_ram);
     update_texture_u8(ram_tex, 0x00, 0xA0, 256, 32,  mem.cart_ram);
     update_texture_u8(ram_tex, 0x00, 0xC0, 256, 32,  mem.int_ram);
@@ -790,18 +809,18 @@ Step controls:
     bool raw_sound = true;
     int offset = scroll ? spu_write_cursor : 0;
 
-    auto audio_l = gb->get_mem().audio_l;
-    auto audio_r = gb->get_mem().audio_r;
-    auto audio_1 = gb->get_mem().audio_1;
-    auto audio_2 = gb->get_mem().audio_2;
-    auto audio_3 = gb->get_mem().audio_3;
-    auto audio_4 = gb->get_mem().audio_4;
+    auto audio_l = mem.audio_l;
+    auto audio_r = mem.audio_r;
+    auto audio_1 = mem.audio_1;
+    auto audio_2 = mem.audio_2;
+    auto audio_3 = mem.audio_3;
+    auto audio_4 = mem.audio_4;
 
     auto plot = [&](const sample_t* audio, int smin, int smax, int dmin, int dmax) {
       for (int i = 0; i < 255; i++) {
         int y1, y2;
 
-        int x = int(gb->get_sys().gb_phase_total_old >> 9);
+        int x = int(sys.gb_phase_total_old >> 9);
 
         y1 = audio[(x + i + 1) & 0xFF];
         y2 = audio[(x + i + 2) & 0xFF];
@@ -875,8 +894,6 @@ Step controls:
   frame_end = timestamp();
   frame_time = frame_end - frame_begin;
   frame_time_smooth = frame_time_smooth * 0.99 + frame_time * 0.01;
-
-  if (!app_paused) gb_thread->resume();
 }
 
 //------------------------------------------------------------------------------

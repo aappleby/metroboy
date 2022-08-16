@@ -15,6 +15,7 @@
 #include <math.h>
 
 #ifdef _MSC_VER
+#pragma warning(disable:4996) // unsafe sprintf
 #include <windows.h>
 #endif
 

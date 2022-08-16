@@ -5,6 +5,24 @@
     {
       "type": "shell",
       "label": "build_all",
+      "windows": {
+        "command": "ninja -f build.windows.ninja",
+        "problemMatcher": "$msCompile",
+      },
+      "linux": {
+        "command": "ninja",
+        "problemMatcher": "$gcc",
+      },
+      "args": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    /*
+    {
+      "type": "shell",
+      "label": "build_all",
       "command": "ninja",
       "args": [
       ],
@@ -14,6 +32,7 @@
         "isDefault": true
       }
     }
+    */
   ]
 }
 // clang-format on

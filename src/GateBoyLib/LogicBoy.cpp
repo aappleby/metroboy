@@ -38,7 +38,7 @@ using std::min;
 
 GBResult LogicBoy::poweron(bool fastboot) {
   assert(false);
-  return Error::CORRUPT;
+  return Error::MISMATCH;
 }
 
 //-----------------------------------------------------------------------------
@@ -1162,12 +1162,10 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       if (sfetch_done_new) state_new.sprite_reset_flags = state_old.sprite_match_flags;
 
       if (state_new.sprite_reset_flags) {
-#ifdef __GNUC__
-        int sprite_reset_index = 31 -__builtin_clz(state_new.sprite_reset_flags);
-#endif
-
 #ifdef _MSC_VER
         int sprite_reset_index = 31 -__lzcnt(state_new.sprite_reset_flags);
+#else
+        int sprite_reset_index = 31 -__builtin_clz(state_new.sprite_reset_flags);
 #endif
         state_new.store_x[sprite_reset_index] = 0xFF;
       }

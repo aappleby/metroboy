@@ -4,7 +4,7 @@
 
 #ifdef SIM_AUDIO
 
-int ch2_audio_out(const SpuChannel2& ch2) {
+sample_t ch2_audio_out(const SpuChannel2& ch2) {
 
   /*#p15.CYSE*/ wire CYSE_CH2_OUTp = and2(ch2.DANE_CH2_ACTIVEp.qp_any(), ch2.DOME_CH2_OUTp.qp_any());
   ///*_p09.EDEK*/ wire EDEK_NR52_DBG_APUp = not1(reg_new.spu.FERO_NR52_DBG_APUp.qn_any());

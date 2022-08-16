@@ -90,4 +90,4 @@ struct SpuChannel3 {
   /*_p17.BEPA*/ DFF9 BEPA_SAMPLE7p;
 };
 
-int ch3_audio_out(const SpuChannel3& ch3);
+sample_t ch3_audio_out(const SpuChannel3& ch3);

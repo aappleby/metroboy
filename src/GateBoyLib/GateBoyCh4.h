@@ -99,4 +99,4 @@ struct SpuChannel4 {
   /*#p20.EROX*/ NorLatch EROX_ENV_RUNNINGn;
 };
 
-int ch4_audio_out(const SpuChannel4& ch4);
+sample_t ch4_audio_out(const SpuChannel4& ch4);

@@ -166,28 +166,14 @@ struct LogicBoyState {
 
   LCDControl lcd;
 
-  //NR10 reg_NR10;
-  //NR11 reg_NR11;
-  //NR12 reg_NR12;
-  //NR14 reg_NR14;
-
-  //NR21 reg_NR21;
-  //NR22 reg_NR22;
-  //NR24 reg_NR24;
-
-  //NR30 reg_NR30;
-  //NR31 reg_NR31;
-  //NR32 reg_NR32;
-  //NR34 reg_NR34;
-
-  //NR41 reg_NR41;
-  //NR42 reg_NR42;
-  //NR43 reg_NR43;
-  //NR44 reg_NR44;
-
-  //NR50 reg_NR50;
-  //NR51 reg_NR51;
-  //NR52 reg_NR52;
+#ifdef SIM_AUDIO
+  //GateBoySPU  spu;
+  //SpuChannel1 ch1;
+  //SpuChannel2 ch2;
+  //SpuChannel3 ch3;
+  //SpuChannel4 ch4;
+  //GateBoyWaveBus wave_dbus;
+#endif
 
   // new stuff that doesn't translate to GBState
 

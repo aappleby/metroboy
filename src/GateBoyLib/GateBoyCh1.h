@@ -163,4 +163,4 @@ struct SpuChannel1 {
   /*#p13.KEZU*/ NorLatch KEZU_ENV_ACTIVEn;
 };
 
-int ch1_audio_out(const SpuChannel1& reg_new);
+sample_t ch1_audio_out(const SpuChannel1& reg_new);

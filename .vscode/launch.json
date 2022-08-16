@@ -2,31 +2,66 @@
 {
   "configurations": [
     {
-      "name": "MetroBoy",
-      //"visualizerFile": "${workspaceFolder}/src/GateBoyLib/GateBoy.natvis",
+      "name": "GateBoyApp W32",
+      "request": "launch",
+      "type": "cppvsdbg",
+      "program": "${workspaceFolder}/bin/GateBoyApp.exe",  
+      "preLaunchTask": "build_all",
+      "args": [],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",      
+    },
+    /*
+    {
+      "name": "GateBoyTests W32",
+      "request": "launch",
+      "type": "cppvsdbg",
+      "program": "${workspaceFolder}/bin/GateBoyTests.exe",  
+      "preLaunchTask": "build_all",
+      "args": [],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",      
+    },
+    {
+      "name": "GateBoyApp LIN",
       "preLaunchTask": "build_all",
       "type": "cppdbg",
-      //"type": "cppvsdbg",
       "request": "launch",
-      //"program": "${workspaceFolder}/bin/MetronicaApp",
-      //"program": "${workspaceFolder}/bin/MetroBoyApp",
       "program": "${workspaceFolder}/bin/GateBoyApp",
-      //"program": "${workspaceFolder}/bin/GateBoyTests",
       "cwd": "${workspaceFolder}",
       "args": [],
-      //"MIMode": "gdb",
-      //"miDebuggerPath": "/usr/bin/gdb"
-      /*
-      "setupCommands": [
-        // Display content in STL containers pretty
-        { 
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
-      */
+    },
+    {
+      "name": "MetroBoy",
+      "preLaunchTask": "build_all",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/GateBoyApp",
+      "cwd": "${workspaceFolder}",
+      "args": [],
     }
+    */
   ]
 }
 // clang-format on
+
+
+
+
+/*
+  //"visualizerFile": "${workspaceFolder}/src/GateBoyLib/GateBoy.natvis",
+  "setupCommands": [
+  // Display content in STL containers pretty
+  {
+    "description": "Enable pretty-printing for gdb",
+    "text": "-enable-pretty-printing",
+    "ignoreFailures": true
+  }
+]
+*/

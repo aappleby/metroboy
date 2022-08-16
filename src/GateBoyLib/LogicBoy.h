@@ -19,7 +19,7 @@ struct LogicBoy : public IGateBoy {
   LogicBoy* clone() const override {
     LogicBoy* result = new LogicBoy();
     result->lb_state = lb_state;
-    result->gb_state = gb_state;
+    //result->gb_state = gb_state;
     result->cpu = cpu;
     result->mem = mem;
     result->sys = sys;
@@ -42,7 +42,7 @@ struct LogicBoy : public IGateBoy {
   GBResult load_raw_dump(BlobStream& bs) override {
     bool read_ok = true;
     read_ok &= bs.read(lb_state);
-    read_ok &= bs.read(gb_state);
+    //read_ok &= bs.read(gb_state);
     read_ok &= bs.read(cpu);
     read_ok &= bs.read(mem);
     read_ok &= bs.read(sys);
@@ -57,7 +57,7 @@ struct LogicBoy : public IGateBoy {
   GBResult save_raw_dump(BlobStream& bs) const override {
     bool write_ok = true;
     write_ok &= bs.write(lb_state);
-    write_ok &= bs.write(gb_state);
+    //write_ok &= bs.write(gb_state);
     write_ok &= bs.write(cpu);
     write_ok &= bs.write(mem);
     write_ok &= bs.write(sys);
@@ -89,7 +89,12 @@ struct LogicBoy : public IGateBoy {
 
   const GateBoyCpu&   get_cpu() const override    { return *(GateBoyCpu*)&cpu; }
   const GateBoyMem&   get_mem() const override    { return mem; }
-  const GateBoyState& get_state() const override  { lb_state.to_gb_state(const_cast<GateBoyState&>(gb_state)); return gb_state; }
+  
+  const GateBoyState& get_state() const override  {
+    lb_state.to_gb_state(const_cast<GateBoyState&>(temp_gb_state));
+    return temp_gb_state;
+  }
+  
   const GateBoySys&   get_sys() const override    { return *(GateBoySys*)&sys; }
   const GateBoyPins&  get_pins() const override   { return pins; }
   const Probes&       get_probes() const override { return probes; }
@@ -118,12 +123,13 @@ struct LogicBoy : public IGateBoy {
   //-----------------------------------------------------------------------------
 
   LogicBoyState lb_state;
-  GateBoyState  gb_state;
   GateBoyCpu    cpu;
   GateBoyMem    mem;
   GateBoySys    sys;
   GateBoyPins   pins;
   Probes        probes;
+
+  GateBoyState  temp_gb_state;
 
   //static FieldInfo fields[];
 };

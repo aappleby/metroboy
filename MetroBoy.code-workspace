@@ -11,6 +11,10 @@
 			"*.tcc": "cpp",
 			"cstdlib": "cpp",
 			"mutex": "cpp"
+		},
+		"terminal.integrated.env.windows": {
+		},
+		"terminal.integrated.env.linux": {
 		}
 	}
 }

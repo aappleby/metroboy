@@ -21,9 +21,9 @@ void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new);
 void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram);
 void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new);
 
-int spu_audio_out_r(const GateBoyState& reg_new) {
+sample_t spu_audio_out_r(const GateBoyState& reg_new) {
   auto& spu_new = reg_new.spu;
-  int mix = 0;
+  sample_t mix = 0;
 
   if (spu_new.ANEV_NR51_RCH1_ENp.state & 1) mix += ch1_audio_out(reg_new.ch1);
   if (spu_new.BOGU_NR51_RCH2_ENp.state & 1) mix += ch2_audio_out(reg_new.ch2);
@@ -31,34 +31,28 @@ int spu_audio_out_r(const GateBoyState& reg_new) {
   if (spu_new.ATUF_NR51_RCH4_ENp.state & 1) mix += ch4_audio_out(reg_new.ch4);
 
 
-  int vol_r = ((spu_new.BYRE_NR50_VOL_R0.state & 1) << 0) |
-              ((spu_new.BUMO_NR50_VOL_R1.state & 1) << 1) |
-              ((spu_new.COZU_NR50_VOL_R2.state & 1) << 2);
+  sample_t vol_r = ((spu_new.BYRE_NR50_VOL_R0.state & 1) << 0) |
+                   ((spu_new.BUMO_NR50_VOL_R1.state & 1) << 1) |
+                   ((spu_new.COZU_NR50_VOL_R2.state & 1) << 2);
   vol_r += 1;
 
-  auto result = mix * vol_r;
-
-  static int rmax = 0;
-  if (result > rmax) {
-    rmax = result;
-    printf("rmax %d\n", rmax);
-  }
+  sample_t result = mix * vol_r;
 
   return result;
 }
 
-int spu_audio_out_l(const GateBoyState& reg_new) {
+sample_t spu_audio_out_l(const GateBoyState& reg_new) {
   auto& spu_new = reg_new.spu;
-  int mix = 0;
+  sample_t mix = 0;
 
   if (spu_new.BUME_NR51_LCH1_ENp.state & 1) mix += ch1_audio_out(reg_new.ch1);
   if (spu_new.BOFA_NR51_LCH2_ENp.state & 1) mix += ch2_audio_out(reg_new.ch2);
   if (spu_new.BEFO_NR51_LCH3_ENp.state & 1) mix += ch3_audio_out(reg_new.ch3);
   if (spu_new.BEPU_NR51_LCH4_ENp.state & 1) mix += ch4_audio_out(reg_new.ch4);
 
-  int vol_l = ((spu_new.APEG_NR50_VOL_L0.state & 1) << 0) |
-              ((spu_new.BYGA_NR50_VOL_L1.state & 1) << 1) |
-              ((spu_new.AGER_NR50_VOL_L2.state & 1) << 2);
+  sample_t vol_l = ((spu_new.APEG_NR50_VOL_L0.state & 1) << 0) |
+                   ((spu_new.BYGA_NR50_VOL_L1.state & 1) << 1) |
+                   ((spu_new.AGER_NR50_VOL_L2.state & 1) << 2);
   vol_l += 1;
 
   return mix * vol_l;

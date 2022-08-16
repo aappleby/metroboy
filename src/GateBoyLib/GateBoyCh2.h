@@ -98,4 +98,4 @@ struct SpuChannel2 {
   /*#p15.GYKO*/ DFF17     GYKO_SAMPLE_CLKp;
 };
 
-int ch2_audio_out(const SpuChannel2& ch2);
+sample_t ch2_audio_out(const SpuChannel2& ch2);

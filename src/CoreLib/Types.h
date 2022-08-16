@@ -17,7 +17,9 @@ typedef int64_t LARGE_INTEGER;
 #endif
 
 #ifdef _MSC_VER
+
 #define debugbreak() __debugbreak()
+
 #endif
 
 //------------------------------------------------------------------------------

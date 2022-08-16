@@ -9,7 +9,7 @@
 build_mode = /O2 /D CONFIG_RELEASE /D NDEBUG /D _CRT_SECURE_NO_WARNINGS
 #build_mode = /D CONFIG_RELEASE /D _CRT_SECURE_NO_WARNINGS
 
-default_gpp = CL.exe /nologo /std:c++20 /EHsc /Z7 /showIncludes /W4 /WX /diagnostics:caret /fp:fast /arch:AVX2
+default_gpp = CL.exe /nologo /std:c++20 /EHsc /showIncludes /W4 /WX /diagnostics:caret /fp:fast /arch:AVX2 /sdl- /Gm- /GS-
 default_gcc = CL.exe /nologo /std:c17 /showIncludes
 
 default_includes = /Isrc /Isubmodules /Isubmodules/glad /Isrc/tree-sitter/lib/include /Isubmodules/tree-sitter/lib/include
@@ -25,8 +25,10 @@ rule compile_c
   command = ${default_gcc} ${build_mode} ${default_includes} ${includes} /c ${in} /Fo"${out}"
   deps = msvc
 
+#rule link
+#  command = link.exe /NOLOGO /MACHINE:X64 /INCREMENTAL:NO /DEBUG /PDB:"${out}.pdb" /OUT:"${out}" ${global_libs} ${in}
 rule link
-  command = link.exe /NOLOGO /MACHINE:X64 /INCREMENTAL:NO /DEBUG /PDB:"${out}.pdb" /OUT:"${out}" ${global_libs} ${in}
+  command = link.exe /NOLOGO /MACHINE:X64 /INCREMENTAL:NO /OUT:"${out}" ${global_libs} ${in}
 
 rule lib
   command = Lib.exe /NOLOGO /MACHINE:X64 /OUT:"${out}" ${in}

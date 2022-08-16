@@ -4,7 +4,7 @@
 
 #ifdef SIM_AUDIO
 
-int ch3_audio_out(const SpuChannel3& ch3) {
+sample_t ch3_audio_out(const SpuChannel3& ch3) {
 
   /*#p17.DATE*/ wire DATE_WAVE_PLAY_D0 = mux2n(ch3.EFAR_WAVE_IDX0.qp_any(), ch3.CYFO_SAMPLE0p.qn_any(), ch3.CUVO_SAMPLE4p.qn_any());
   /*#p17.DAZY*/ wire DAZY_WAVE_PLAY_D1 = mux2n(ch3.EFAR_WAVE_IDX0.qp_any(), ch3.CESY_SAMPLE1p.qn_any(), ch3.CEVO_SAMPLE5p.qn_any());
@@ -457,7 +457,7 @@ void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
       if (!bit(ALER_WAVE_CSn)) {
         if (!bit(AMYT_WAVE_WRn)) {
-          wave_ram[wave_addr] = bit_pack(reg_old.cpu_dbus);
+          wave_ram[wave_addr] = (uint8_t)bit_pack(reg_old.cpu_dbus);
         }
         if (!bit(ATOK_WAVE_OEn)) {
           uint8_t data = wave_ram[wave_addr];

@@ -216,8 +216,8 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
       if (music[music_cursor].phase == i) {
         auto& m = music[music_cursor];
         //printf("0x%08lx 0x%04x 0x%02x\n", m.phase, m.addr, m.data);
-        req.addr = uint16_t(m.addr);
-        req.data = uint16_t(m.data);
+        req.addr = (uint16_t)m.addr;
+        req.data = (uint16_t)m.data;
         req.read = 0;
         req.write = 1;
         music_cursor++;
@@ -227,7 +227,7 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
       spu.tock(int(i), req);
 
       if ((i & 7) == 0) {
-        spu2.tick(false, req.addr, uint8_t(req.data), req.write);
+        spu2.tick(false, req.addr, (uint8_t)req.data, req.write);
         spu2.tock_out();
 
         auto l = spu2.out_l;

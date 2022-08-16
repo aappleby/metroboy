@@ -38,6 +38,7 @@ using std::min;
 
 GBResult LogicBoy::poweron(bool fastboot) {
   assert(false);
+  return Error::CORRUPT;
 }
 
 //-----------------------------------------------------------------------------
@@ -1161,7 +1162,13 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       if (sfetch_done_new) state_new.sprite_reset_flags = state_old.sprite_match_flags;
 
       if (state_new.sprite_reset_flags) {
-        int sprite_reset_index = __builtin_ctz(state_new.sprite_reset_flags);
+#ifdef __GNUC__
+        int sprite_reset_index = 31 -__builtin_clz(state_new.sprite_reset_flags);
+#endif
+
+#ifdef _MSC_VER
+        int sprite_reset_index = 31 -__lzcnt(state_new.sprite_reset_flags);
+#endif
         state_new.store_x[sprite_reset_index] = 0xFF;
       }
 
@@ -2343,7 +2350,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
   if (!config_fastmode) {
-    state_new.sfetch_counter_evn = state_new.phase_sfetch / 2;
+    state_new.sfetch_counter_evn = uint8_t(state_new.phase_sfetch / 2);
     if (state_new.phase_sfetch > 10) state_new.sfetch_counter_evn = 5;
 
     if (DELTA_ODD) {

@@ -340,7 +340,7 @@ void GateBoyState::commit() {
       }
 
       if (bad_bit) {
-        print_field_at(i, GateBoyState::fields);
+        print_field_at(int(i), GateBoyState::fields);
         printf("\n");
       }
 

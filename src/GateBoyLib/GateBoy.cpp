@@ -803,7 +803,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
       // 32 + 4 + 2 + 1 = 39
       /*#p28.FETO*/ reg_new.sprite_scanner.FETO_SCAN_DONEp <<= and4(reg_new.scan_counter.YFEL_SCAN0_odd.qp_mid(), reg_new.scan_counter.WEWY_SCAN1_odd.qp_mid(), reg_new.scan_counter.GOSO_SCAN2_odd.qp_mid(), reg_new.scan_counter.FONY_SCAN5_odd.qp_mid());
 
-      /*#p29.XUPY*/ wire XUPY_ABxxEFxx = not1(reg_new.sys_clk.WUVU_ABxxEFxx.qn_new());
+      ///*#p29.XUPY*/ wire XUPY_ABxxEFxx = not1(reg_new.sys_clk.WUVU_ABxxEFxx.qn_new());
       /*#p28.GAVA*/ wire GAVA_SCAN_CLOCKp_odd = or2(reg_new.sprite_scanner.FETO_SCAN_DONEp.out_new(), XUPY_ABxxEFxx);
 
       /*#p28.YFEL*/ reg_new.scan_counter.YFEL_SCAN0_odd.dff17_any(GAVA_SCAN_CLOCKp_odd,                         ANOM_LINE_RSTn_odd_new, reg_old.scan_counter.YFEL_SCAN0_odd.qn_any());
@@ -1007,10 +1007,10 @@ void GateBoy::tock_gates(const blob& cart_blob) {
   SpriteDeltaY sprite_delta_y = sub_sprite_y_gates();
 
   {
-    /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg_new.sys_clk.AVET_AxCxExGx.out_new());
-    /*_p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
-    /*_p01.ZAXY*/ wire ZAXY_xBxDxFxH = not1(AZOF_AxCxExGx);
-    /*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(ZAXY_xBxDxFxH);
+    ///*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(reg_new.sys_clk.AVET_AxCxExGx.out_new());
+    ///*_p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
+    ///*_p01.ZAXY*/ wire ZAXY_xBxDxFxH = not1(AZOF_AxCxExGx);
+    ///*#p01.ZEME*/ wire ZEME_AxCxExGx = not1(ZAXY_xBxDxFxH);
 
     /*_p29.GACE*/ wire GACE_SPRITE_DELTA4 = not1(sprite_delta_y.GOPU_YDIFF4.sum);
     /*_p29.GUVU*/ wire GUVU_SPRITE_DELTA5 = not1(sprite_delta_y.FUWA_YDIFF5.sum);

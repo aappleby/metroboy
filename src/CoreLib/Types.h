@@ -16,6 +16,10 @@
 typedef int64_t LARGE_INTEGER;
 #endif
 
+#ifdef _MSC_VER
+#define debugbreak() __debugbreak()
+#endif
+
 //------------------------------------------------------------------------------
 
 //#ifdef _MSC_VER
@@ -35,7 +39,7 @@ typedef const uint8_t wire;
 //typedef uint8_t wire;
 struct triwire { wire state; };
 
-__attribute__((always_inline)) inline wire bit0(uint32_t w) { return wire(w & 1); }
+/*__attribute__((always_inline))*/ inline wire bit0(uint32_t w) { return wire(w & 1); }
 inline wire bit(uint32_t w, int i) { return wire((w >> i) & 1); }
 inline wire bit(int w, int i) { return wire((w >> i) & 1); }
 inline wire bit(int w) { return wire(w & 1); }

@@ -122,7 +122,7 @@ void audio_callback(void* userdata, Uint8* stream, int len) {
       int32_t s = src[i] * 128;
       if (s >  32767) s =  32767;
       if (s < -32767) s = -32767;
-      dst[i] = s;
+      dst[i] = (sample_t)s;
     }
     audio_queue_in.put(src);
   }

@@ -38,9 +38,6 @@ int main(int argc, char** argv) {
   delete app;
   return ret;
 
-
-
-
 #if 0
   SDL_Window* window = NULL;
   SDL_Surface* screenSurface = NULL;
@@ -108,20 +105,6 @@ int main(int argc, char** argv) {
   SDL_DestroyWindow(window);
   SDL_Quit();
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-  return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -821,7 +804,7 @@ Step controls:
       for (int i = 0; i < 255; i++) {
         int y1, y2;
 
-        int x = gb->get_sys().gb_phase_total_old >> 9;
+        int x = int(gb->get_sys().gb_phase_total_old >> 9);
 
         y1 = audio[(x + i + 1) & 0xFF];
         y2 = audio[(x + i + 2) & 0xFF];

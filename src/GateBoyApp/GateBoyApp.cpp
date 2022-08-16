@@ -385,6 +385,32 @@ void GateBoyApp::app_update(dvec2 screen_size, double delta) {
 
   //----------------------------------------
 
+  {
+    IGateBoy* gb2 = show_gb_ab ? gb_thread->gb.state()->get_a() : gb_thread->gb.state()->get_b();
+
+    temp_gb.cpu = gb2->get_cpu();
+    temp_gb.mem = gb2->get_mem();
+    temp_gb.gb_state = gb2->get_state();
+    temp_gb.sys = gb2->get_sys();
+    temp_gb.pins = gb2->get_pins();
+
+    blob& cart = gb_thread->get_cart();
+
+    int pc = temp_gb.cpu.core.get_op_addr();
+    gb2->get_flat_blob(cart, pc, 64, disasm_buf);
+
+    int sp = temp_gb.cpu.core.get_sp();
+    gb2->get_flat_blob(gb_thread->get_cart(), sp, 8, stack_buf);
+
+    temp_probes = gb2->get_probes();
+    temp_gb_id = gb2->get_id();
+
+    d.clear();
+    d("\002===== Thread =====\001\n");
+    gb_thread->dump(d);
+  }
+
+
   if (!app_paused) gb_thread->resume();
 }
 
@@ -397,21 +423,6 @@ double ease(double a, double b, double delta);
 void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   (void)delta;
 
-  auto& view = view_control.view_smooth_snap;
-
-  gb_thread->pause();
-
-  IGateBoy* gb2 = show_gb_ab ? gb_thread->gb.state()->get_a() : gb_thread->gb.state()->get_b();
-
-  uint64_t phase_total_old = gb2->get_sys().gb_phase_total_old;
-  uint64_t phase_total_new = gb2->get_sys().gb_phase_total_new;
-
-  temp_gb.cpu = gb2->get_cpu();
-  temp_gb.mem = gb2->get_mem();
-  temp_gb.gb_state = gb2->get_state();
-  temp_gb.sys = gb2->get_sys();
-  temp_gb.pins = gb2->get_pins();
-
   auto& cpu = temp_gb.cpu;
   auto& mem = temp_gb.mem;
   auto& state = temp_gb.gb_state;
@@ -420,25 +431,10 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   blob& cart = gb_thread->get_cart();
 
-  int pc = cpu.core.get_op_addr();
-  uint8_t disasm_buf[64];
-  gb2->get_flat_blob(cart, pc, 64, disasm_buf);
+  auto& view = view_control.view_smooth_snap;
 
-  int sp = cpu.core.get_sp();
-  uint8_t stack_buf[8];
-  gb2->get_flat_blob(gb_thread->get_cart(), sp, 8, stack_buf);
-
-  Probes temp_probes = gb2->get_probes();
-  auto gb_id = gb2->get_id();
-
-  StringDumper d;
-  d("\002===== Thread =====\001\n");
-  gb_thread->dump(d);
-
-  if (!app_paused) gb_thread->resume();
-
-
-
+  uint64_t phase_total_old = sys.gb_phase_total_old;
+  uint64_t phase_total_new = sys.gb_phase_total_new;
 
   grid_painter.render(view, screen_size);
 
@@ -611,6 +607,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
 
   d("\002========== Disassembly ==========\001\n");
   {
+    auto pc = cpu.core.get_op_addr();
     assembler.disassemble(disasm_buf, 64, pc, pc, 16, d, /*collapse_nops*/ false);
   }
   d("\n");
@@ -705,7 +702,7 @@ Step controls:
   };
 
   d("Viewing sim %s, Sim clock %8.3f %s %s\n",
-    gb_id,
+    temp_gb_id,
     double(phase_total_old) / (4194304.0 * 2),
     phase_names[phase_total_old & 7],
     show_golden ? "GOLDEN IMAGE " : "");

@@ -3,6 +3,7 @@
 #include "CoreLib/Assembler.h"
 #include "CoreLib/StateManager2.h"
 #include "CoreLib/SmoothTimer.h"
+#include "CoreLib/Debug.h" // for StringDumper
 
 #include "AppLib/App.h"
 #include "AppLib/GridPainter.h"
@@ -72,5 +73,12 @@ private:
   int wave_tex;
 
   Assembler assembler;
+  
+  
   blob temp_buf;
+  Probes temp_probes;
+  const char* temp_gb_id = nullptr;
+  StringDumper d;
+  uint8_t disasm_buf[64];
+  uint8_t stack_buf[8];
 };

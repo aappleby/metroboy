@@ -197,6 +197,13 @@ wire GateBoyCpuABus::SYKE_ADDR_HIp_new() const {
   return SYKE_ADDR_HIp_new;
 }
 
+/*_p07.TUNA*/ wire GateBoyCpuABus::TUNA_0000_FDFF_any() const { return nand7(BUS_CPU_A15p.out_any(), BUS_CPU_A14p.out_any(), BUS_CPU_A13p.out_any(), BUS_CPU_A12p.out_any(), BUS_CPU_A11p.out_any(), BUS_CPU_A10p.out_any(), BUS_CPU_A09p.out_any()); }
+wire GateBoyCpuABus::SYKE_ADDR_HIp_any() const {
+  /*_p07.TONA*/ wire TONA_A08n = not1(BUS_CPU_A08p.out_any());
+  /*#p07.SYKE*/ wire SYKE_ADDR_HIp_new = nor2(TUNA_0000_FDFF_any(), TONA_A08n);
+  return SYKE_ADDR_HIp_new;
+}
+
 /*#p07.SOHA*/ wire GateBoyCpuABus::SOHA_ADDR_HIn_new() const { return not1(SYKE_ADDR_HIp_new()); }
 
 /*_p22.XALY*/ wire GateBoyCpuABus::XALY_0x00xxxx_new  () const { return nor3(BUS_CPU_A07p.out_new(), BUS_CPU_A05p.out_new(), BUS_CPU_A04p.out_new()); }

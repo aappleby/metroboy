@@ -11,6 +11,9 @@
 #include "GateBoyLib/GateBoyCh4.h"
 
 struct GateBoyState;
+struct GateBoyCpuABus;
+struct GateBoyCpuDBus;
+struct GateBoyWaveBus;
 
 //==============================================================================
 //             TOP
@@ -75,3 +78,40 @@ struct GateBoySPU {
 void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram);
 sample_t spu_audio_out_r(const GateBoyState& reg_new);
 sample_t spu_audio_out_l(const GateBoyState& reg_new);
+
+void tick_spu_fast(
+  const GateBoyCpuABus& cpu_abus_new,
+  const GateBoyCpuDBus& cpu_dbus_old,
+  const GateBoySPU& spu_old,
+  const SpuChannel1& ch1_old,
+  const SpuChannel2& ch2_old,
+  const SpuChannel3& ch3_old,
+  const SpuChannel4& ch4_old,
+
+  GateBoyCpuDBus& cpu_dbus_new,
+  GateBoyWaveBus& wave_dbus_new,
+  GateBoySPU& spu_new,
+  SpuChannel1& ch1_new,
+  SpuChannel2& ch2_new,
+  SpuChannel3& ch3_new,
+  SpuChannel4& ch4_new,
+
+  wire SIG_CPU_CLKREQ,
+  wire SIG_IN_CPU_DBUS_FREE,
+  wire SIG_CPU_UNOR_DBG_old,
+  wire TERU_DIV10p_old,
+
+  wire AFER_SYS_RSTp,
+  wire ASOL_POR_DONEn,
+
+  wire AVET_AxCxExGx,
+  wire AFUR_ABCDxxxx_qn,
+
+  wire TEDO_CPU_RDp,
+  wire TAPU_CPU_WRp,
+
+  uint8_t* wave_ram
+);
+
+sample_t spu_audio_out_r_fast(const GateBoyState& reg_new);
+sample_t spu_audio_out_l_fast(const GateBoyState& reg_new);

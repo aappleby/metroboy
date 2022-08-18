@@ -131,8 +131,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   wave_tex = create_texture_u8(256, 256, nullptr, false);
 
-  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
-  gb_thread = new GateBoyThread(new GateBoy());
+  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  //gb_thread = new GateBoyThread(new GateBoy());
   //gb_thread = new GateBoyThread(new LogicBoy());
 
   //gb_thread->poweron(true);
@@ -436,7 +436,11 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   uint64_t phase_total_old = sys.gb_phase_total_old;
   uint64_t phase_total_new = sys.gb_phase_total_new;
 
+  //gb_thread->pause();
+
   grid_painter.render(view, screen_size);
+
+  //if (!app_paused) gb_thread->resume();
 
   const int row1 = 4;
 

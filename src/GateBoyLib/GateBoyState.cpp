@@ -292,25 +292,6 @@ GBResult GateBoyState::poke(int addr, uint8_t data_in) {
 //-----------------------------------------------------------------------------
 
 void GateBoyState::commit() {
-#if 0
-  static bool dumped = false;
-  if (!dumped) {
-    for (int i = 0; i < sizeof(GateBoyState); i++) {
-      printf("@%04x ", i);
-      print_field_at(i, GateBoyState::fields);
-      printf("\n");
-    }
-    /*
-    for (int i = 0; i < 1024; i++) {
-      auto f = GateBoyState::fields[i];
-      if (f.name == nullptr) break;
-      printf("%d %s 0x%04x %d\n", i, f.name, f.offset, f.size);
-    }
-    */
-    dumped = true;
-  }
-#endif
-
   if (!config_check_flags && !config_use_flags) return;
 
   uint8_t* cursor = (uint8_t*)this;

@@ -113,7 +113,6 @@ struct GateBoyThread {
 
   void run_sync();
   void run_normal();
-  void run_regression();
   void panic();
 
 private:

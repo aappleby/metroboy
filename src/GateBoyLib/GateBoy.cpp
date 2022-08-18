@@ -293,16 +293,16 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
     if (spu_new.ATUF_NR51_RCH4_ENp.state & 1) mix += ch4_audio_out(reg_new.ch4);
     */
 
-    int l = spu_audio_out_l(gb_state);
-    int r = spu_audio_out_r(gb_state);
+    sample_t l = spu_audio_out_l(gb_state);
+    sample_t r = spu_audio_out_r(gb_state);
 
-    mem.audio_1[(sys.gb_phase_total >> 9) & 0xFF] = ch1_audio_out(gb_state.ch1);
-    mem.audio_2[(sys.gb_phase_total >> 9) & 0xFF] = ch2_audio_out(gb_state.ch2);
-    mem.audio_3[(sys.gb_phase_total >> 9) & 0xFF] = ch3_audio_out(gb_state.ch3);
-    mem.audio_4[(sys.gb_phase_total >> 9) & 0xFF] = ch4_audio_out(gb_state.ch4);
+    mem.audio_1[(sys.gb_phase_total_old >> 9) & 0xFF] = ch1_audio_out(gb_state.ch1);
+    mem.audio_2[(sys.gb_phase_total_old >> 9) & 0xFF] = ch2_audio_out(gb_state.ch2);
+    mem.audio_3[(sys.gb_phase_total_old >> 9) & 0xFF] = ch3_audio_out(gb_state.ch3);
+    mem.audio_4[(sys.gb_phase_total_old >> 9) & 0xFF] = ch4_audio_out(gb_state.ch4);
 
-    mem.audio_l[(sys.gb_phase_total >> 7) & 0xFF] = l;
-    mem.audio_r[(sys.gb_phase_total >> 7) & 0xFF] = r;
+    mem.audio_l[(sys.gb_phase_total_old >> 7) & 0xFF] = l;
+    mem.audio_r[(sys.gb_phase_total_old >> 7) & 0xFF] = r;
 
     audio_post(l, r);
 #endif

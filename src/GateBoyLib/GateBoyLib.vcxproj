@@ -20,6 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GateBoy.cpp" />
+    <ClCompile Include="GateBoyCh1.cpp" />
+    <ClCompile Include="GateBoyCh2.cpp" />
+    <ClCompile Include="GateBoyCh3.cpp" />
+    <ClCompile Include="GateBoyCh4.cpp" />
     <ClCompile Include="GateBoyClocks.cpp" />
     <ClCompile Include="GateBoyCpuBus.cpp" />
     <ClCompile Include="GateBoyDMA.cpp" />
@@ -33,6 +37,7 @@
     <ClCompile Include="GateBoyPins.cpp" />
     <ClCompile Include="GateBoyReset.cpp" />
     <ClCompile Include="GateBoyState.cpp" />
+    <ClCompile Include="GateBoyWaveBus.cpp" />
     <ClCompile Include="LogicBoyState.cpp" />
     <ClCompile Include="GateBoyPixPipe.cpp" />
     <ClCompile Include="GateBoyRegisters.cpp" />
@@ -55,10 +60,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GateBoy.h" />
+    <ClInclude Include="GateBoyCh1.h" />
+    <ClInclude Include="GateBoyCh2.h" />
+    <ClInclude Include="GateBoyCh3.h" />
+    <ClInclude Include="GateBoyCh4.h" />
     <ClInclude Include="GateBoyCpuBus.h" />
     <ClInclude Include="GateBoyDumper.h" />
     <ClInclude Include="GateBoyPins.h" />
     <ClInclude Include="GateBoyState.h" />
+    <ClInclude Include="GateBoyWaveBus.h" />
     <ClInclude Include="IGateBoy.h" />
     <ClInclude Include="LogicBoyReset.h" />
     <ClInclude Include="LogicBoyState.h" />

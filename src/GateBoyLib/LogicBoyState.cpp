@@ -242,24 +242,13 @@ void LogicBoyState::to_gb_state(GateBoyState& dst) const {
   bit_unpack(dst.spr_pipe_b, src.spr_pipe_b);
   bit_unpack(dst.pal_pipe, src.pal_pipe);
   bit_unpack(dst.lcd, bit_pack(src.lcd));
-  //bit_unpack(dst.reg_NR10, src.reg_NR10);
-  //bit_unpack(dst.reg_NR11, src.reg_NR11);
-  //bit_unpack(dst.reg_NR12, src.reg_NR12);
-  //bit_unpack(dst.reg_NR14, src.reg_NR14);
-  //bit_unpack(dst.reg_NR21, src.reg_NR21);
-  //bit_unpack(dst.reg_NR22, src.reg_NR22);
-  //bit_unpack(dst.reg_NR24, src.reg_NR24);
-  //bit_unpack(dst.reg_NR30, src.reg_NR30);
-  //bit_unpack(dst.reg_NR31, src.reg_NR31);
-  //bit_unpack(dst.reg_NR32, src.reg_NR32);
-  //bit_unpack(dst.reg_NR34, src.reg_NR34);
-  //bit_unpack(dst.reg_NR41, src.reg_NR41);
-  //bit_unpack(dst.reg_NR42, src.reg_NR42);
-  //bit_unpack(dst.reg_NR43, src.reg_NR43);
-  //bit_unpack(dst.reg_NR44, src.reg_NR44);
-  //bit_unpack(dst.reg_NR50, src.reg_NR50);
-  //bit_unpack(dst.reg_NR51, src.reg_NR51);
-  //bit_unpack(dst.reg_NR52, src.reg_NR52);
+
+  dst.ch1 = src.ch1;
+  dst.ch2 = src.ch2;
+  dst.ch3 = src.ch3;
+  dst.ch4 = src.ch4;
+  dst.spu = src.spu;
+  dst.wave_dbus = src.wave_dbus;
 }
 
 //-----------------------------------------------------------------------------
@@ -388,24 +377,13 @@ void LogicBoyState::from_gb_state(const GateBoyState& src) {
   dst.spr_pipe_b = bit_pack(src.spr_pipe_b);
   dst.pal_pipe = bit_pack(src.pal_pipe);
   dst.lcd = bit_purge(src.lcd);
-  //dst.reg_NR10 = bit_purge(src.reg_NR10);
-  //dst.reg_NR11 = bit_purge(src.reg_NR11);
-  //dst.reg_NR12 = bit_purge(src.reg_NR12);
-  //dst.reg_NR14 = bit_purge(src.reg_NR14);
-  //dst.reg_NR21 = bit_purge(src.reg_NR21);
-  //dst.reg_NR22 = bit_purge(src.reg_NR22);
-  //dst.reg_NR24 = bit_purge(src.reg_NR24);
-  //dst.reg_NR30 = bit_purge(src.reg_NR30);
-  //dst.reg_NR31 = bit_purge(src.reg_NR31);
-  //dst.reg_NR32 = bit_purge(src.reg_NR32);
-  //dst.reg_NR34 = bit_purge(src.reg_NR34);
-  //dst.reg_NR41 = bit_purge(src.reg_NR41);
-  //dst.reg_NR42 = bit_purge(src.reg_NR42);
-  //dst.reg_NR43 = bit_purge(src.reg_NR43);
-  //dst.reg_NR44 = bit_purge(src.reg_NR44);
-  //dst.reg_NR50 = bit_purge(src.reg_NR50);
-  //dst.reg_NR51 = bit_purge(src.reg_NR51);
-  //dst.reg_NR52 = bit_purge(src.reg_NR52);
+
+  dst.ch1 = src.ch1;
+  dst.ch2 = src.ch2;
+  dst.ch3 = src.ch3;
+  dst.ch4 = src.ch4;
+  dst.spu = src.spu;
+  dst.wave_dbus = src.wave_dbus;
 }
 
 //-----------------------------------------------------------------------------

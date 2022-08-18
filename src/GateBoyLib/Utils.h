@@ -157,6 +157,12 @@ void bit_mask(T& a, uint8_t mask) {
   for (auto i = 0; i < sizeof(T); i++) dst[i] &= mask;
 }
 
+template<typename T>
+void bit_set(T& a, uint8_t mask) {
+  auto dst = (uint8_t*)&a;
+  for (auto i = 0; i < sizeof(T); i++) dst[i] |= mask;
+}
+
 //-----------------------------------------------------------------------------
 
 template<typename T>

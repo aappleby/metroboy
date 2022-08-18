@@ -731,3 +731,47 @@ struct TpLatch : public BitBase {
 };
 
 //-----------------------------------------------------------------------------
+
+template<typename T>
+void commit_regs(T& t) {
+  if (!config_check_flags && !config_use_flags) return;
+
+  uint8_t* cursor = (uint8_t*)&t;
+  bool bad_bits = false;
+  for (size_t i = 0; i < sizeof(T); i++) {
+    uint8_t s = *cursor;
+    if (config_check_flags) {
+      auto drive_flags = s & (BIT_DRIVEN | BIT_PULLED);
+
+      bool bad_bit = false;
+
+      if (drive_flags == (BIT_DRIVEN | BIT_PULLED)) {
+        LOG_Y("Bit %d both driven and pulled up! ", i);
+        bad_bit = true;
+      }
+
+      if (drive_flags == 0) {
+        LOG_Y("Bit %d floating! ", i);
+        bad_bit = true;
+      }
+
+      auto oldnew_flags = s & (BIT_OLD | BIT_NEW);
+
+      if (oldnew_flags != BIT_NEW) {
+        LOG_Y("Bit %d not dirty after sim pass! ", i);
+        bad_bit = true;
+      }
+
+      if (bad_bit) {
+        printf("\n");
+      }
+
+      bad_bits |= bad_bit;
+    }
+
+    *cursor++ = (s & 0b00001111) | BIT_OLD;
+  }
+  CHECK_N(bad_bits);
+}
+
+//-----------------------------------------------------------------------------

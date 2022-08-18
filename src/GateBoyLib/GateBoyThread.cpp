@@ -10,6 +10,25 @@
 #include <thread>
 #include <atomic>
 
+#include <Windows.h>
+
+#ifdef _MSC_VER
+void dump_thread_times() {
+  uint64_t creation_time;
+  uint64_t exit_time;
+  uint64_t kernel_time;
+  uint64_t user_time;
+  GetThreadTimes(
+    GetCurrentThread(),
+    (LPFILETIME)&creation_time,
+    (LPFILETIME)&exit_time,
+    (LPFILETIME)&kernel_time,
+    (LPFILETIME)&user_time);
+
+  printf("times c %09lld e %09lld k %09lld u %09lld\n", creation_time, exit_time, kernel_time, user_time);
+}
+#endif
+
 //------------------------------------------------------------------------------
 
 GateBoyThread::GateBoyThread(IGateBoy* prototype) : gb(prototype)
@@ -269,6 +288,10 @@ void GateBoyThread::run_steps() {
 void GateBoyThread::next_phase() {
   if (gb->get_sys().gb_phase_total_old % 10000 == 0) {
     gb.push();
+
+#ifdef _MSC_VER
+    //dump_thread_times();
+#endif
   }
 
   gb->next_phase(cart_blob);
@@ -284,37 +307,6 @@ void GateBoyThread::run_sync() {
 void GateBoyThread::run_normal() {
   while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
     next_phase();
-  }
-}
-
-//------------------------------------------------------------------------------
-
-void GateBoyThread::run_regression() {
-  /*
-  auto& gba = gbp->gba;
-  auto& gbb = gbp->gbb;
-
-  while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    gba.next_phase(cart_blob);
-    gbb.next_phase(cart_blob);
-
-    uint64_t hash_a_new = gba.hash_regression();
-    uint64_t hash_b_new = gbb.hash_regression();
-
-    if (hash_a_new != hash_b_new) {
-      LOG_R("Regression test mismatch @ phase %lld!\n", gba.sys.phase_total);
-      gba.gb_state.diff(gbb.gb_state, 0x01);
-      step_count = 0;
-      return;
-    }
-
-    step_count--;
-  }
-  */
-
-  while ((step_count != 0) && sync.test_none(REQ_PAUSE | REQ_EXIT)) {
-    gb->next_phase(cart_blob);
-    step_count--;
   }
 }
 

@@ -59,6 +59,9 @@ struct GateBoyCpuABus {
   wire TUNA_0000_FDFF_old    () const;
   wire SYKE_ADDR_HIp_old     () const;
 
+  wire TUNA_0000_FDFF_any    () const;
+  wire SYKE_ADDR_HIp_any     () const;
+
   wire XALY_0x00xxxx_old     () const;
   wire SARE_XX00_XX07p_old   () const;
   wire RYFO_FF04_FF07p_old   () const;

@@ -2751,6 +2751,68 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     state_new.sys_clk.VENA_xxCDEFxx.state = !vid_rst_evn_new && gen_clk(phase_new, 0b00111100); // dead signal
   }
 
+  {
+    GateBoyCpuABus temp_abus_new;
+    bit_unpack(temp_abus_new, state_new.cpu_abus);
+
+    GateBoyCpuDBus temp_dbus_old;
+    bit_unpack(temp_dbus_old, state_old.cpu_dbus);
+
+    GateBoyCpuDBus temp_dbus_new;
+    bit_unpack(temp_dbus_new, state_new.cpu_dbus);
+
+    bit_mask(state_new.spu, uint8_t(~BIT_OLD));
+    bit_mask(state_new.ch1, uint8_t(~BIT_OLD));
+    bit_mask(state_new.ch2, uint8_t(~BIT_OLD));
+    bit_mask(state_new.ch3, uint8_t(~BIT_OLD));
+    bit_mask(state_new.ch4, uint8_t(~BIT_OLD));
+
+    bit_set(temp_dbus_new, BIT_NEW | BIT_PULLED);
+
+    tick_spu_fast(
+      temp_abus_new,
+      temp_dbus_old,
+      state_old.spu,
+      state_old.ch1,
+      state_old.ch2,
+      state_old.ch3,
+      state_old.ch4,
+
+      temp_dbus_new,
+      state_new.wave_dbus,
+      state_new.spu,
+      state_new.ch1,
+      state_new.ch2,
+      state_new.ch3,
+      state_new.ch4,
+
+      state_old.sys_clk.SIG_CPU_CLKREQ.qp_any(),
+      state_old.cpu_signals.SIG_IN_CPU_DBUS_FREE.qp_any(),
+      state_old.cpu_signals.SIG_CPU_UNOR_DBG.qp_any(),
+      bit(state_old.reg_div, 10),
+
+      state_new.sys_rst.AFER_SYS_RSTp.qp_any(),
+      state_new.sys_rst.ASOL_POR_DONEn.qp_any(),
+      
+      state_new.sys_clk.AVET_AxCxExGx.out_any(),
+      state_new.sys_clk.AFUR_ABCDxxxx.qn_any(),
+      
+      
+      state_new.cpu_signals.TEDO_CPU_RDp.qp_any(),
+      state_new.cpu_signals.TAPU_CPU_WRp.qp_any(),
+
+      mem.wave_ram
+    );
+
+    commit_regs(lb_state.spu);
+    commit_regs(lb_state.ch1);
+    commit_regs(lb_state.ch2);
+    commit_regs(lb_state.ch3);
+    commit_regs(lb_state.ch4);
+    commit_regs(lb_state.wave_dbus);
+  }
+
+
   if (config_debug) {
     lb_bit_check();
   }

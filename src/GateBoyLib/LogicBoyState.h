@@ -20,6 +20,7 @@
 #include "GateBoyLib/GateBoyZramBus.h"
 #include "GateBoyLib/GateBoyCpuBus.h"
 #include "GateBoyLib/GateBoySPU.h"
+#include "GateBoyLib/GateBoyWaveBus.h"
 #include "GateBoyLib/GateBoyPins.h"
 
 struct GateBoyState;
@@ -167,12 +168,12 @@ struct LogicBoyState {
   LCDControl lcd;
 
 #ifdef SIM_AUDIO
-  //GateBoySPU  spu;
-  //SpuChannel1 ch1;
-  //SpuChannel2 ch2;
-  //SpuChannel3 ch3;
-  //SpuChannel4 ch4;
-  //GateBoyWaveBus wave_dbus;
+  GateBoySPU  spu;
+  SpuChannel1 ch1;
+  SpuChannel2 ch2;
+  SpuChannel3 ch3;
+  SpuChannel4 ch4;
+  GateBoyWaveBus wave_dbus;
 #endif
 
   // new stuff that doesn't translate to GBState

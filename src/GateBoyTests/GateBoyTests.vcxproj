@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\AppLib\Audio.cpp" />
     <ClCompile Include="GateBoyTests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\AppLib\Audio.h" />
     <ClInclude Include="GateBoyTests.h" />
   </ItemGroup>
   <ItemGroup>

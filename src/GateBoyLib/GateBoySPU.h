@@ -82,6 +82,7 @@ sample_t spu_audio_out_l(const GateBoyState& reg_new);
 void tick_spu_fast(
   const GateBoyCpuABus& cpu_abus_new,
   const GateBoyCpuDBus& cpu_dbus_old,
+  const GateBoyWaveBus& wave_dbus_old,
   const GateBoySPU& spu_old,
   const SpuChannel1& ch1_old,
   const SpuChannel2& ch2_old,
@@ -106,6 +107,8 @@ void tick_spu_fast(
 
   wire AVET_AxCxExGx,
   wire AFUR_ABCDxxxx_qn,
+  wire ALEF_xBCDExxx,
+  wire APUK_xxCDEFxx_qn,
 
   wire TEDO_CPU_RDp,
   wire TAPU_CPU_WRp,

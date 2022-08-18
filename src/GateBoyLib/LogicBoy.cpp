@@ -2772,6 +2772,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     tick_spu_fast(
       temp_abus_new,
       temp_dbus_old,
+      state_old.wave_dbus,
       state_old.spu,
       state_old.ch1,
       state_old.ch2,
@@ -2796,7 +2797,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       
       state_new.sys_clk.AVET_AxCxExGx.out_any(),
       state_new.sys_clk.AFUR_ABCDxxxx.qn_any(),
-      
+      state_new.sys_clk.ALEF_xBCDExxx.qp_any(),
+      state_new.sys_clk.APUK_xxCDEFxx.qn_any(),
       
       state_new.cpu_signals.TEDO_CPU_RDp.qp_any(),
       state_new.cpu_signals.TAPU_CPU_WRp.qp_any(),

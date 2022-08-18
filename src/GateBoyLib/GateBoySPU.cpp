@@ -40,9 +40,76 @@ void tick_ch1_fast(
   wire SIG_IN_CPU_DBUS_FREE
 );
 
-void tick_ch2_fast(const GateBoyState& reg_old, GateBoyState& reg_new);
-void tick_ch3_fast(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram);
-void tick_ch4_fast(const GateBoyState& reg_old, GateBoyState& reg_new);
+void tick_ch2_fast(
+  const GateBoyCpuDBus& cpu_dbus_old,
+  const GateBoySPU& spu_old,
+  const SpuChannel2& ch2_old,
+  const GateBoyCpuABus& cpu_abus_new,
+
+  GateBoyCpuDBus& cpu_dbus_new,
+  GateBoySPU& spu_new,
+  SpuChannel2& ch2_new,
+
+  wire AFER_SYS_RSTp,
+  wire ASOL_POR_DONEn,
+  wire SIG_CPU_CLKREQ,
+  wire AFUR_ABCDxxxx_qn,
+  wire TEDO_CPU_RDp,
+  wire TAPU_CPU_WRp,
+  wire SIG_IN_CPU_DBUS_FREE
+);
+
+void tick_ch3_fast(
+  const GateBoyCpuDBus& cpu_dbus_old,
+  const GateBoySPU& spu_old,
+  const SpuChannel3& ch3_old,
+  const GateBoyWaveBus& wave_dbus_old,
+  const GateBoyCpuABus& cpu_abus_new,
+
+  GateBoyCpuDBus& cpu_dbus_new,
+  GateBoySPU& spu_new,
+  SpuChannel3& ch3_new,
+  GateBoyWaveBus& wave_dbus_new,
+
+  wire AFER_SYS_RSTp,
+  wire ASOL_POR_DONEn,
+  wire SIG_CPU_CLKREQ,
+  wire AVET_AxCxExGx,
+  wire AFUR_ABCDxxxx_qn,
+  wire APUK_xxCDEFxx_qn,
+  wire ALEF_xBCDExxx,
+  wire TEDO_CPU_RDp,
+  wire TAPU_CPU_WRp,
+  wire SIG_IN_CPU_DBUS_FREE,
+
+  uint8_t* wave_ram
+);
+
+void tick_ch4_fast(
+  const GateBoyCpuDBus& cpu_dbus_old,
+  const GateBoySPU& spu_old,
+  const SpuChannel4& ch4_old,
+  const GateBoyWaveBus& wave_dbus_old,
+  const GateBoyCpuABus& cpu_abus_new,
+
+  GateBoyCpuDBus& cpu_dbus_new,
+  GateBoySPU& spu_new,
+  SpuChannel4& ch4_new,
+  GateBoyWaveBus& wave_dbus_new,
+
+  wire AFER_SYS_RSTp,
+  wire ASOL_POR_DONEn,
+  wire SIG_CPU_CLKREQ,
+  wire AVET_AxCxExGx,
+  wire AFUR_ABCDxxxx_qn,
+  wire APUK_xxCDEFxx_qn,
+  wire ALEF_xBCDExxx,
+  wire TEDO_CPU_RDp,
+  wire TAPU_CPU_WRp,
+  wire SIG_IN_CPU_DBUS_FREE,
+
+  uint8_t* wave_ram
+);
 
 sample_t spu_audio_out_r(const GateBoyState& reg_new) {
   auto& spu_new = reg_new.spu;
@@ -236,9 +303,6 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
   /*_p01.ATYK*/ spu_new.ATYK_AxxDExxH.dff17(ARYF_AxCxExGx, BOPO_APU_RSTn_new, spu_old.ATYK_AxxDExxH.qn_old());
   /*_p15.ATEP*/ spu_new.ATEP_AxxDExxH.dff17(AZEG_AxCxExGx, BUWE_APU_RSTn_new, spu_old.ATEP_AxxDExxH.qn_old());
   /*_p09.AJER*/ spu_new.AJER_AxxDExxH.dff17(APUV_AxCxExGx, ATYV_APU_RSTn_new, spu_old.AJER_AxxDExxH.qn_old());
-
-  /*#p01.BATA*/ wire BATA_xBCxxFGx = not1(reg_new.spu.AJER_AxxDExxH.qp_new());
-  /*#p09.CALO*/ reg_new.ch1.CALO_xBCDExxx.dff17(BATA_xBCxxFGx, AGUR_APU_RSTn_new, reg_old.ch1.CALO_xBCDExxx.qn_old());
 
   /*_p01.AVOK*/ spu_new.AVOK_xBCDExxx.dff17(spu_new.ATYK_AxxDExxH.qn_new(),  BOPO_APU_RSTn_new, spu_old.AVOK_xBCDExxx.qn_old());
   /*_p01.BAVU*/ wire BAVU_AxxxxFGH = not1(reg_new.spu.AVOK_xBCDExxx.qp_new());
@@ -450,6 +514,7 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 void tick_spu_fast(
   const GateBoyCpuABus& cpu_abus_new,
   const GateBoyCpuDBus& cpu_dbus_old,
+  const GateBoyWaveBus& wave_dbus_old,
   const GateBoySPU& spu_old,
   const SpuChannel1& ch1_old,
   const SpuChannel2& ch2_old,
@@ -474,6 +539,8 @@ void tick_spu_fast(
 
   wire AVET_AxCxExGx,
   wire AFUR_ABCDxxxx_qn,
+  wire ALEF_xBCDExxx,
+  wire APUK_xxCDEFxx_qn,
 
   wire TEDO_CPU_RDp,
   wire TAPU_CPU_WRp,
@@ -549,9 +616,6 @@ void tick_spu_fast(
   /*_p15.ATEP*/ spu_new.ATEP_AxxDExxH.dff17(AZEG_AxCxExGx, BUWE_APU_RSTn_new, spu_old.ATEP_AxxDExxH.qn_any());
   /*_p09.AJER*/ spu_new.AJER_AxxDExxH.dff17(APUV_AxCxExGx, ATYV_APU_RSTn_new, spu_old.AJER_AxxDExxH.qn_any());
 
-  /*#p01.BATA*/ wire BATA_xBCxxFGx = not1(spu_new.AJER_AxxDExxH.qn_any());
-  /*#p09.CALO*/ ch1_new.CALO_xBCDExxx.dff17(BATA_xBCxxFGx, AGUR_APU_RSTn_new, ch1_old.CALO_xBCDExxx.qn_any());
-
   /*_p01.AVOK*/ spu_new.AVOK_xBCDExxx.dff17(spu_new.ATYK_AxxDExxH.qn_any(), BOPO_APU_RSTn_new, spu_old.AVOK_xBCDExxx.qn_any());
   /*_p01.BAVU*/ wire BAVU_AxxxxFGH = not1(spu_new.AVOK_xBCDExxx.qp_any());
   /*_p01.JESO*/ spu_new.JESO_CLK_512K.dff17(BAVU_AxxxxFGH, KAME_APU_RSTn_new, spu_old.JESO_CLK_512K.qn_any());
@@ -599,13 +663,76 @@ void tick_spu_fast(
     SIG_IN_CPU_DBUS_FREE
   );
 
+  tick_ch2_fast(
+    cpu_dbus_old,
+    spu_old,
+    ch2_old,
+    cpu_abus_new,
 
-  /*
-  tick_ch1_fast(_reg_old, _reg_new);
-  tick_ch2_fast(_reg_old, _reg_new);
-  tick_ch3_fast(_reg_old, _reg_new, wave_ram);
-  tick_ch4_fast(_reg_old, _reg_new);
-  */
+    cpu_dbus_new,
+    spu_new,
+    ch2_new,
+
+    AFER_SYS_RSTp,
+    ASOL_POR_DONEn,
+    SIG_CPU_CLKREQ,
+    AFUR_ABCDxxxx_qn,
+    TEDO_CPU_RDp,
+    TAPU_CPU_WRp,
+    SIG_IN_CPU_DBUS_FREE
+  );
+
+  tick_ch3_fast(
+    cpu_dbus_old,
+    spu_old,
+    ch3_old,
+    wave_dbus_old,
+    cpu_abus_new,
+
+    cpu_dbus_new,
+    spu_new,
+    ch3_new,
+    wave_dbus_new,
+
+    AFER_SYS_RSTp,
+    ASOL_POR_DONEn,
+    SIG_CPU_CLKREQ,
+    AVET_AxCxExGx,
+    AFUR_ABCDxxxx_qn,
+    APUK_xxCDEFxx_qn,
+    ALEF_xBCDExxx,
+    TEDO_CPU_RDp,
+    TAPU_CPU_WRp,
+    SIG_IN_CPU_DBUS_FREE,
+
+    wave_ram
+  );
+
+  tick_ch4_fast(
+    cpu_dbus_old,
+    spu_old,
+    ch4_old,
+    wave_dbus_old,
+
+    cpu_abus_new,
+    cpu_dbus_new,
+    spu_new,
+    ch4_new,
+    wave_dbus_new,
+
+    AFER_SYS_RSTp,
+    ASOL_POR_DONEn,
+    SIG_CPU_CLKREQ,
+    AVET_AxCxExGx,
+    AFUR_ABCDxxxx_qn,
+    APUK_xxCDEFxx_qn,
+    ALEF_xBCDExxx,
+    TEDO_CPU_RDp,
+    TAPU_CPU_WRp,
+    SIG_IN_CPU_DBUS_FREE,
+
+    wave_ram
+  );
 
   {
     /*_p10.CAFY*/ wire CAFY_ADDR_FF24p = nor2(BEZY_ADDR_FF2Xn, DATU_ADDR_0100n);

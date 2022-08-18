@@ -252,6 +252,10 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   /*_p01.BYFE*/ wire BYFE_CLK_128 = not1(BARU_CLK_128);
 
 
+  /*#p09.AGUR*/ wire AGUR_APU_RSTn_new = not1(KEBA_APU_RSTp);
+  /*#p01.BATA*/ wire BATA_xBCxxFGx = not1(reg_new.spu.AJER_AxxDExxH.qp_new());
+  /*#p09.CALO*/ reg_new.ch1.CALO_xBCDExxx.dff17(BATA_xBCxxFGx, AGUR_APU_RSTn_new, reg_old.ch1.CALO_xBCDExxx.qn_old());
+
   /*#p09.DYFA*/ wire DYFA_xBCDExxx_new = not1(ch1_new.CALO_xBCDExxx.qn_new());
 
   //----------
@@ -282,7 +286,6 @@ void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     /*#p11.CENU*/ wire CENU_NR10_WRp = and2(BOGY_CPU_WRp, DYVA_ADDR_FF10p);
     /*#p11.CENU*/ wire CENU_NR10_WRn = not1(CENU_NR10_WRp);
-    /*#p09.AGUR*/ wire AGUR_APU_RSTn_new = not1(KEBA_APU_RSTp);
     /*#p11.BANY*/ ch1_new.BANY_NR10_SWEEP_SHIFT0p .dff9(CENU_NR10_WRn, AGUR_APU_RSTn_new, dbus_old.BUS_CPU_D00p.qp_old());
     /*#p11.ARAX*/ ch1_new.ARAX_NR10_SWEEP_SHIFT1p .dff9(CENU_NR10_WRn, AGUR_APU_RSTn_new, dbus_old.BUS_CPU_D01p.qp_old());
     /*#p11.ANAZ*/ ch1_new.ANAZ_NR10_SWEEP_SHIFT2p .dff9(CENU_NR10_WRn, AGUR_APU_RSTn_new, dbus_old.BUS_CPU_D02p.qp_old());
@@ -1097,6 +1100,9 @@ void tick_ch1_fast(
   /*_p01.BYFE*/ wire BYFE_CLK_128 = not1(BARU_CLK_128);
 
 
+  /*#p09.AGUR*/ wire AGUR_APU_RSTn_new = not1(KEBA_APU_RSTp);
+  /*#p01.BATA*/ wire BATA_xBCxxFGx = not1(AJER_AxxDExxH);
+  /*#p09.CALO*/ ch1_new.CALO_xBCDExxx.dff17(BATA_xBCxxFGx, AGUR_APU_RSTn_new, ch1_old.CALO_xBCDExxx.qn_any());
   /*#p09.DYFA*/ wire DYFA_xBCDExxx_new = not1(ch1_new.CALO_xBCDExxx.qn_any());
 
   //----------
@@ -1127,7 +1133,6 @@ void tick_ch1_fast(
   {
     /*#p11.CENU*/ wire CENU_NR10_WRp = and2(BOGY_CPU_WRp, DYVA_ADDR_FF10p);
     /*#p11.CENU*/ wire CENU_NR10_WRn = not1(CENU_NR10_WRp);
-    /*#p09.AGUR*/ wire AGUR_APU_RSTn_new = not1(KEBA_APU_RSTp);
     /*#p11.BANY*/ ch1_new.BANY_NR10_SWEEP_SHIFT0p .dff9(CENU_NR10_WRn, AGUR_APU_RSTn_new, cpu_dbus_old.BUS_CPU_D00p.qp_any());
     /*#p11.ARAX*/ ch1_new.ARAX_NR10_SWEEP_SHIFT1p .dff9(CENU_NR10_WRn, AGUR_APU_RSTn_new, cpu_dbus_old.BUS_CPU_D01p.qp_any());
     /*#p11.ANAZ*/ ch1_new.ANAZ_NR10_SWEEP_SHIFT2p .dff9(CENU_NR10_WRn, AGUR_APU_RSTn_new, cpu_dbus_old.BUS_CPU_D02p.qp_any());

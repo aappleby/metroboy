@@ -117,15 +117,6 @@ void tick_spu_fast(
 
 
 
-  /*_p09.JYRO*/ wire JYRO_APU_RSTp = or2(HAPO_SYS_RSTp, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any());
-  /*_p09.KUBY*/ wire KUBY_APU_RSTn = not1(JYRO_APU_RSTp);
-  /*_p09.KEBA*/ wire KEBA_APU_RSTp = not1(KUBY_APU_RSTn);
-  /*_p09.KEPY*/ wire KEPY_APU_RSTn = not1(JYRO_APU_RSTp);
-
-  /*#p09.ETUC*/ wire ETUC_NR52_WRp = and2(BOGY_CPU_WRp, DOXY_ADDR_FF26p);
-  /*#p09.FOKU*/ wire FOKU_NR52_WRn = not1(ETUC_NR52_WRp);
-  /*#p09.EFOP*/ wire EFOP_NR52_DBG_APUp_old = and2(cpu_dbus_old.BUS_CPU_D04p.out_any(), SIG_CPU_UNOR_DBG_old);
-  /*#p09.FERO*/ spu_new.FERO_NR52_DBG_APUp.dff9(FOKU_NR52_WRn, !apu_rst, EFOP_NR52_DBG_APUp_old);
 
 
   //----------
@@ -142,8 +133,7 @@ void tick_spu_fast(
 
 
   /*#p15.BUFO*/ wire BUFO = not1(spu_new.ATEP_AxxDExxH.qp_any());
-  /*#p15.BYHO*/ wire BYHO_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*#p15.CEMO*/ spu_new.CEMO_xBCDExxx.dff17(BUFO, BYHO_APU_RSTn_new, spu_old.CEMO_xBCDExxx.qn_any());
+  /*#p15.CEMO*/ spu_new.CEMO_xBCDExxx.dff17(BUFO, !apu_rst, spu_old.CEMO_xBCDExxx.qn_any());
 
   //----------
   // Low-speed clocks are picked up from DIV
@@ -154,12 +144,11 @@ void tick_spu_fast(
   // FIXME speed up spu clocks for debugging
   //wire UMER_DIV10n_old = not1(reg_old.reg_div.TULU_DIV07p.qp_any());
 
-  /*_p01.ATUS*/ wire ATUS_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*_p01.BARA*/ spu_new.BARA_CLK_512.dff17(COKE_AxxDExxH, ATUS_APU_RSTn_new, UMER_DIV10n_old);
+  /*_p01.BARA*/ spu_new.BARA_CLK_512.dff17(COKE_AxxDExxH, !apu_rst, UMER_DIV10n_old);
   /*_p01.BURE*/ wire BURE_CLK_512_new = not1(spu_new.BARA_CLK_512.qp_any());
 
-  /*_p01.CARU*/ spu_new.CARU_CLK_256.dff17(BURE_CLK_512_new, ATUS_APU_RSTn_new, spu_old.CARU_CLK_256.qn_any());
-  /*_p01.BYLU*/ spu_new.BYLU_CLK_128.dff17(spu_new.CARU_CLK_256.qn_any(), ATUS_APU_RSTn_new, spu_old.BYLU_CLK_128.qn_any());
+  /*_p01.CARU*/ spu_new.CARU_CLK_256.dff17(BURE_CLK_512_new, !apu_rst, spu_old.CARU_CLK_256.qn_any());
+  /*_p01.BYLU*/ spu_new.BYLU_CLK_128.dff17(spu_new.CARU_CLK_256.qn_any(), !apu_rst, spu_old.BYLU_CLK_128.qn_any());
 
 
   tick_ch1_fast(
@@ -278,12 +267,16 @@ void tick_spu_fast(
     bit_unpack(&spu_new.APEG_NR50_VOL_L0, 8, 0);
     bit_unpack(&spu_new.ANEV_NR51_RCH1_ENp, 8, 0);
     spu_new.BOWY_NR52_DBG_SWEEP.state = 0;
+    spu_new.FERO_NR52_DBG_APUp.state = 0;
   }
   else {
     if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
       if (addr == 0xFF24) bit_unpack(&spu_new.APEG_NR50_VOL_L0, 8, dbus_old);
       if (addr == 0xFF25) bit_unpack(&spu_new.ANEV_NR51_RCH1_ENp, 8, dbus_old);
-      if (addr == 0xFF26) spu_new.BOWY_NR52_DBG_SWEEP.state = bit(dbus_old, 5);
+      if (addr == 0xFF26) {
+        spu_new.FERO_NR52_DBG_APUp.state = bit(and2(cpu_dbus_old.BUS_CPU_D04p.out_any(), SIG_CPU_UNOR_DBG_old));
+        spu_new.BOWY_NR52_DBG_SWEEP.state = bit(dbus_old, 5);
+      }
     }
   }
 

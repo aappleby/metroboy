@@ -186,7 +186,7 @@ void tick_ch4_fast(
     /*_p20.ESEP*/ ch4_new.ESEP_FREQ_13.dff17(ch4_new.DERE_FREQ_12.qn_any(), ~KEBA_APU_RSTp, ch4_old.ESEP_FREQ_13.qn_any());
 
     if (bit(KEBA_APU_RSTp)) {
-    //ch4_new.CEXO_FREQ_00.state = dff17(CARY_FREQ_CLK,                 ~KEBA_APU_RSTp, ch4_old.CEXO_FREQ_00.qn_any());
+    ch4_new.CEXO_FREQ_00.state = BIT_NEW | BIT_CLOCK; //ch4_new.CEXO_FREQ_00.state = dff17(CARY_FREQ_CLK,                 ~KEBA_APU_RSTp, ch4_old.CEXO_FREQ_00.qn_any());
     ch4_new.DEKO_FREQ_01.state = BIT_NEW | BIT_CLOCK;
     ch4_new.EZEF_FREQ_02.state = BIT_NEW | BIT_CLOCK;
     ch4_new.EPOR_FREQ_03.state = BIT_NEW | BIT_CLOCK;

@@ -102,23 +102,12 @@ void tick_spu_fast(
   /*_p15.ATEP*/ spu_new.ATEP_AxxDExxH.dff17(not1(AVET_AxCxExGx), !apu_rst, spu_old.ATEP_AxxDExxH.qn_any());
   /*_p09.AJER*/ spu_new.AJER_AxxDExxH.dff17(not1(AVET_AxCxExGx), !apu_rst, spu_old.AJER_AxxDExxH.qn_any());
 
-  /*#p01.AVOK*/ spu_new.AVOK_xBCDExxx.dff17(spu_new.ATYK_AxxDExxH.qn_any(), !apu_rst, spu_old.AVOK_xBCDExxx.qn_any());
-  /*#p01.BAVU*/ wire BAVU_AxxxxFGH = not1(spu_new.AVOK_xBCDExxx.qp_any());
-  /*#p01.JESO*/ spu_new.JESO_CLK_512K.dff17(BAVU_AxxxxFGH, !apu_rst, spu_old.JESO_CLK_512K.qn_any());
-
-
-  /*#p15.BUFO*/ wire BUFO = not1(spu_new.ATEP_AxxDExxH.qp_any());
-  /*#p15.CEMO*/ spu_new.CEMO_xBCDExxx.dff17(BUFO, !apu_rst, spu_old.CEMO_xBCDExxx.qn_any());
-
-  //----------
-  // Low-speed clocks are picked up from DIV
-
-  /*_p01.COKE*/ wire COKE_AxxDExxH = not1(spu_new.AJER_AxxDExxH.qn_any());
-
-
-  /*_p01.BARA*/ spu_new.BARA_CLK_512.dff17(COKE_AxxDExxH,                  !apu_rst, not1(TERU_DIV10p_old));
-  /*_p01.CARU*/ spu_new.CARU_CLK_256.dff17(~spu_new.BARA_CLK_512.qp_any(), !apu_rst, spu_old.CARU_CLK_256.qn_any());
-  /*_p01.BYLU*/ spu_new.BYLU_CLK_128.dff17(~spu_new.CARU_CLK_256.qp_any(), !apu_rst, spu_old.BYLU_CLK_128.qn_any());
+  /*#p01.AVOK*/ spu_new.AVOK_xBCDExxx.dff17( spu_new.ATYK_AxxDExxH.qn_any(), !apu_rst, spu_old.AVOK_xBCDExxx.qn_any());
+  /*#p01.JESO*/ spu_new.JESO_CLK_512K.dff17(~spu_new.AVOK_xBCDExxx.qp_any(), !apu_rst, spu_old.JESO_CLK_512K.qn_any());
+  /*#p15.CEMO*/ spu_new.CEMO_xBCDExxx.dff17(~spu_new.ATEP_AxxDExxH.qp_any(), !apu_rst, spu_old.CEMO_xBCDExxx.qn_any());
+  /*_p01.BARA*/ spu_new.BARA_CLK_512 .dff17( spu_new.AJER_AxxDExxH.qp_any(), !apu_rst, not1(TERU_DIV10p_old));
+  /*_p01.CARU*/ spu_new.CARU_CLK_256 .dff17(~spu_new.BARA_CLK_512.qp_any(),  !apu_rst, spu_old.CARU_CLK_256.qn_any());
+  /*_p01.BYLU*/ spu_new.BYLU_CLK_128 .dff17( spu_new.CARU_CLK_256.qn_any(),  !apu_rst, spu_old.BYLU_CLK_128.qn_any());
 
 
   tick_ch1_fast(

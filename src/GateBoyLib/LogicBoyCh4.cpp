@@ -185,36 +185,28 @@ void tick_ch4_fast(
     /*_p20.ESEP*/ ch4_new.ESEP_FREQ_13.dff17(ch4_new.DERE_FREQ_12.qn_any(), ~KEBA_APU_RSTp, ch4_old.ESEP_FREQ_13.qn_any());
   }
 
-  /*#p20.EMOF*/ wire EMOF_LFSR_CLK_MUX_7 = nor3(ch4_new.GOGO_NR43_FREQ2p.qn_any(), ch4_new.FYTO_NR43_FREQ1p.qn_any(), ch4_new.FETA_NR43_FREQ0p.qn_any());
-  /*#p20.ELAR*/ wire ELAR_LFSR_CLK_MUX_6 = nor3(ch4_new.GOGO_NR43_FREQ2p.qn_any(), ch4_new.FYTO_NR43_FREQ1p.qn_any(), ch4_new.FETA_NR43_FREQ0p.qp_any());
-  /*#p20.DUDU*/ wire DUDU_LFSR_CLK_MUX_5 = nor3(ch4_new.GOGO_NR43_FREQ2p.qn_any(), ch4_new.FYTO_NR43_FREQ1p.qp_any(), ch4_new.FETA_NR43_FREQ0p.qn_any());
-  /*#p20.ETAT*/ wire ETAT_LFSR_CLK_MUX_4 = nor3(ch4_new.GOGO_NR43_FREQ2p.qn_any(), ch4_new.FYTO_NR43_FREQ1p.qp_any(), ch4_new.FETA_NR43_FREQ0p.qp_any());
-  /*#p20.FURA*/ wire FURA_LFSR_CLK_MUX_3 = nor3(ch4_new.GOGO_NR43_FREQ2p.qp_any(), ch4_new.FYTO_NR43_FREQ1p.qn_any(), ch4_new.FETA_NR43_FREQ0p.qn_any());
-  /*#p20.ETAR*/ wire ETAR_LFSR_CLK_MUX_2 = nor3(ch4_new.GOGO_NR43_FREQ2p.qp_any(), ch4_new.FYTO_NR43_FREQ1p.qn_any(), ch4_new.FETA_NR43_FREQ0p.qp_any());
-  /*#p20.EVER*/ wire EVER_LFSR_CLK_MUX_1 = nor3(ch4_new.GOGO_NR43_FREQ2p.qp_any(), ch4_new.FYTO_NR43_FREQ1p.qp_any(), ch4_new.FETA_NR43_FREQ0p.qn_any());
-  /*#p20.ETOV*/ wire ETOV_LFSR_CLK_MUX_0 = nor3(ch4_new.GOGO_NR43_FREQ2p.qp_any(), ch4_new.FYTO_NR43_FREQ1p.qp_any(), ch4_new.FETA_NR43_FREQ0p.qp_any());
+  /*#p20.FEME*/ uint8_t FEME_LFSR_CLKp_new = 0;
 
-  /*_p20.ETYR*/ wire ETYR_LFSR_CLK_MUX_A = amux6(
-    ch4_new.ESEP_FREQ_13.qp_any(), DUDU_LFSR_CLK_MUX_5,
-    ch4_new.DERE_FREQ_12.qp_any(), ETAT_LFSR_CLK_MUX_4,
-    ch4_new.DOTA_FREQ_11.qp_any(), FURA_LFSR_CLK_MUX_3,
-    ch4_new.ERUT_FREQ_10.qp_any(), ETAR_LFSR_CLK_MUX_2,
-    ch4_new.DETE_FREQ_09.qp_any(), EVER_LFSR_CLK_MUX_1,
-    ch4_new.DOSE_FREQ_08.qp_any(), ETOV_LFSR_CLK_MUX_0);
+  int freq_mux = bit_pack(&ch4_new.FETA_NR43_FREQ0p, 4);
 
-  /*_p20.ELYX*/ wire ELYX_LFSR_CLK_MUX_B = amux4(
-    ch4_new.DEMO_FREQ_07.qp_any(), EMOF_LFSR_CLK_MUX_7,
-    ch4_new.DOKE_FREQ_06.qp_any(), ELAR_LFSR_CLK_MUX_6,
-    ch4_new.DALE_FREQ_05.qp_any(), DUDU_LFSR_CLK_MUX_5,
-    ch4_new.DURE_FREQ_04.qp_any(), ETAT_LFSR_CLK_MUX_4);
-
-  /*_p20.DARY*/ wire DARY_LFSR_CLK_MUX_C = amux4(
-    ch4_new.EPOR_FREQ_03.qp_any(), FURA_LFSR_CLK_MUX_3,
-    ch4_new.EZEF_FREQ_02.qp_any(), ETAR_LFSR_CLK_MUX_2,
-    ch4_new.DEKO_FREQ_01.qp_any(), EVER_LFSR_CLK_MUX_1,
-    ch4_new.CEXO_FREQ_00.qp_any(), ETOV_LFSR_CLK_MUX_0);
-
-  /*_p20.ERYF*/ wire ERYF_LFSR_CLK_MUX_D = or2(ELYX_LFSR_CLK_MUX_B, DARY_LFSR_CLK_MUX_C);
+  switch(freq_mux) {
+  case 0:  FEME_LFSR_CLKp_new = ch4_new.CEXO_FREQ_00.qp_any(); break;
+  case 1:  FEME_LFSR_CLKp_new = ch4_new.DEKO_FREQ_01.qp_any(); break;
+  case 2:  FEME_LFSR_CLKp_new = ch4_new.EZEF_FREQ_02.qp_any(); break;
+  case 3:  FEME_LFSR_CLKp_new = ch4_new.EPOR_FREQ_03.qp_any(); break;
+  case 4:  FEME_LFSR_CLKp_new = ch4_new.DURE_FREQ_04.qp_any(); break;
+  case 5:  FEME_LFSR_CLKp_new = ch4_new.DALE_FREQ_05.qp_any(); break;
+  case 6:  FEME_LFSR_CLKp_new = ch4_new.DOKE_FREQ_06.qp_any(); break;
+  case 7:  FEME_LFSR_CLKp_new = ch4_new.DEMO_FREQ_07.qp_any(); break;
+  case 8:  FEME_LFSR_CLKp_new = ch4_new.DOSE_FREQ_08.qp_any(); break;
+  case 9:  FEME_LFSR_CLKp_new = ch4_new.DETE_FREQ_09.qp_any(); break;
+  case 10: FEME_LFSR_CLKp_new = ch4_new.ERUT_FREQ_10.qp_any(); break;
+  case 11: FEME_LFSR_CLKp_new = ch4_new.DOTA_FREQ_11.qp_any(); break;
+  case 12: FEME_LFSR_CLKp_new = ch4_new.DERE_FREQ_12.qp_any(); break;
+  case 13: FEME_LFSR_CLKp_new = ch4_new.ESEP_FREQ_13.qp_any(); break;
+  case 14: FEME_LFSR_CLKp_new = 0; break;
+  case 15: FEME_LFSR_CLKp_new = 0; break;
+  }
 
 
   {
@@ -224,18 +216,13 @@ void tick_ch4_fast(
     /*#p19.DOTU*/ wire DOTU_FF20_WRb = not1(CAZE_FF20_WRn);
     /*#p19.EPEK*/ wire EPEK_FF20_WRc = not1(CAZE_FF20_WRn);
 
-    // using FUGO_old to break the loop
-
-    /*#p19.DODA*/ wire DODA_LEN_CLKn = nor3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
-    /*#p19.CUWA*/ wire CUWA_LEN_CLKa = not1(DODA_LEN_CLKn);
+    /*#p19.CUWA*/ wire CUWA_LEN_CLKa = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
 
     /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20(CUWA_LEN_CLKa,                    DOTU_FF20_WRb, cpu_dbus_new.BUS_CPU_D00p.qp_any());
     /*#p19.FAVY*/ ch4_new.FAVY_NR41_LEN1p.dff20(ch4_new.DANO_NR41_LEN0p.qp_any(), DOTU_FF20_WRb, cpu_dbus_new.BUS_CPU_D01p.qp_any());
     /*#p19.DENA*/ ch4_new.DENA_NR41_LEN2p.dff20(ch4_new.FAVY_NR41_LEN1p.qp_any(), DOTU_FF20_WRb, cpu_dbus_new.BUS_CPU_D02p.qp_any());
     /*#p19.CEDO*/ ch4_new.CEDO_NR41_LEN3p.dff20(ch4_new.DENA_NR41_LEN2p.qp_any(), DOTU_FF20_WRb, cpu_dbus_new.BUS_CPU_D03p.qp_any());
-
-    /*#p19.DOPU*/ wire DOPU_NR41_LEN3p = not1(ch4_new.CEDO_NR41_LEN3p.qn_any());
-    /*#p19.FYLO*/ ch4_new.FYLO_NR41_LEN4p.dff20(DOPU_NR41_LEN3p, EPEK_FF20_WRc, cpu_dbus_new.BUS_CPU_D04p.qp_any());
+    /*#p19.FYLO*/ ch4_new.FYLO_NR41_LEN4p.dff20(ch4_new.CEDO_NR41_LEN3p.qp_any(), EPEK_FF20_WRc, cpu_dbus_new.BUS_CPU_D04p.qp_any());
     /*#p19.EDOP*/ ch4_new.EDOP_NR41_LEN5p.dff20(ch4_new.FYLO_NR41_LEN4p.qp_any(), EPEK_FF20_WRc, cpu_dbus_new.BUS_CPU_D05p.qp_any());
 
     /*#p19.GAPY*/ wire GAPY_LEN_DONE_RSTn = nor3(FURU_FF20_WRa, KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
@@ -256,9 +243,15 @@ void tick_ch4_fast(
 
 
   {
-    /*#p20.EFOT*/ wire EFOT_CH4_STOPp = and2(ch4_new.CUNY_NR44_LEN_ENp.qp_any(), ch4_new.FUGO_CH4_LEN_DONEp.qp_any());
-    /*#p20.FEGY*/ wire FEGY_CH4_STOPp = or3(KEBA_APU_RSTp, EFOT_CH4_STOPp, GEVY_CH4_AMP_ENn);
-    /*#p20.GENA*/ ch4_new.GENA_CH4_ACTIVEp.nor_latch(ch4_new.GONE_CH4_TRIGp.qp_any(), FEGY_CH4_STOPp);
+   
+    if (bit(ch4_new.GONE_CH4_TRIGp.qp_any())) {
+      ch4_new.GENA_CH4_ACTIVEp.state = 1;
+    }
+
+    wire EFOT_CH4_STOPp = and2(ch4_new.CUNY_NR44_LEN_ENp.qp_any(), ch4_new.FUGO_CH4_LEN_DONEp.qp_any());
+    if (bit(or3(KEBA_APU_RSTp, EFOT_CH4_STOPp, GEVY_CH4_AMP_ENn))) {
+      ch4_new.GENA_CH4_ACTIVEp.state = 0;
+    }
   }
 
   {
@@ -280,7 +273,6 @@ void tick_ch4_fast(
   // The actual LFSR
 
   {
-    /*#p20.FEME*/ wire FEME_LFSR_CLKp_new = mux2p(ch4_new.GAFO_NR43_FREQ3p.qp_any(), ETYR_LFSR_CLK_MUX_A, ERYF_LFSR_CLK_MUX_D);
     /*#p20.HURA*/ wire HURA_LFSR_IN_old = xnor2(ch4_old.HEZU_LFSR_15.qp_any(), ch4_old.HYRO_LFSR_14.qp_any());
 
     if (or2(ch4_new.GONE_CH4_TRIGp.qp_any(), KEBA_APU_RSTp) & 1) {

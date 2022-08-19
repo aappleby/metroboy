@@ -151,9 +151,22 @@ void tick_ch4_fast(
   /*#p19.FOXE*/ wire FOXE_FF23_WRn = nand2(BOGY_CPU_WRp, CUGE_ADDR_FF23p);
   /*#p20.GUZY*/ wire GUZY_NR44_TRIG_RST = nor2(KEBA_APU_RSTp, ch4_new.GYSU_CH4_TRIG.qp_any());
 
-  /*#p19.CABE*/ wire CABE_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*#p19.CUNY*/ ch4_new.CUNY_NR44_LEN_ENp.dff9(!(addr == 0xFF23 && TAPU_CPU_WRp), CABE_APU_RSTn_new, cpu_dbus_old.BUS_CPU_D06p.qp_any());
-  /*#p19.HOGA*/ ch4_new.HOGA_NR44_TRIGp  .dff9(!(addr == 0xFF23 && TAPU_CPU_WRp), GUZY_NR44_TRIG_RST, cpu_dbus_old.BUS_CPU_D07p.qp_any());
+  
+  if (DELTA_GH && SIG_IN_CPU_WRp) {
+    if (addr == 0xFF23) {
+      ch4_new.CUNY_NR44_LEN_ENp.state = cpu_dbus_old.BUS_CPU_D06p.qp_any();
+      ch4_new.HOGA_NR44_TRIGp.state = cpu_dbus_old.BUS_CPU_D07p.qp_any();
+    }
+  }
+
+  if (bit(KEBA_APU_RSTp)) {
+    ch4_new.CUNY_NR44_LEN_ENp.state = 0;
+  }
+
+  if (bit(~GUZY_NR44_TRIG_RST)) {
+    ch4_new.HOGA_NR44_TRIGp.state = 0;
+  }
+
 
   /*#p20.GUNY*/ wire GUNY_FREQ_GATE_RSTn_new = nor2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
 

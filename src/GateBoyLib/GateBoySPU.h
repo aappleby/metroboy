@@ -80,6 +80,8 @@ sample_t spu_audio_out_r(const GateBoyState& reg_new);
 sample_t spu_audio_out_l(const GateBoyState& reg_new);
 
 void tick_spu_fast(
+  uint64_t phase_new,
+
   const GateBoyCpuABus& cpu_abus_new,
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoyWaveBus& wave_dbus_old,

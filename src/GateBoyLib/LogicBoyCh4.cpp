@@ -36,6 +36,8 @@ sample_t ch4_audio_out_fast(const SpuChannel4& ch4) {
 //------------------------------------------------------------------------------
 
 void tick_ch4_fast(
+  uint64_t phase_new,
+
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoySPU& spu_old,
   const SpuChannel4& ch4_old,
@@ -166,8 +168,7 @@ void tick_ch4_fast(
 
 
   {
-
-    /*#p20.CARY*/ wire CARY_FREQ_CLK = and2(BAVU_CLK_1M, ch4_new.GARY_FREQ_GATEp.qp_any());
+    /*#p20.CARY*/ wire CARY_FREQ_CLK = and2(not1(spu_new.AVOK_xBCDExxx.qp_any()), ch4_new.GARY_FREQ_GATEp.qp_any());
 
     /*#p20.CEXO*/ ch4_new.CEXO_FREQ_00.dff17(CARY_FREQ_CLK,                 ~KEBA_APU_RSTp, ch4_old.CEXO_FREQ_00.qn_any());
     /*_p20.DEKO*/ ch4_new.DEKO_FREQ_01.dff17(ch4_new.CEXO_FREQ_00.qn_any(), ~KEBA_APU_RSTp, ch4_old.DEKO_FREQ_01.qn_any());
@@ -183,6 +184,23 @@ void tick_ch4_fast(
     /*_p20.DOTA*/ ch4_new.DOTA_FREQ_11.dff17(ch4_new.ERUT_FREQ_10.qn_any(), ~KEBA_APU_RSTp, ch4_old.DOTA_FREQ_11.qn_any());
     /*_p20.DERE*/ ch4_new.DERE_FREQ_12.dff17(ch4_new.DOTA_FREQ_11.qn_any(), ~KEBA_APU_RSTp, ch4_old.DERE_FREQ_12.qn_any());
     /*_p20.ESEP*/ ch4_new.ESEP_FREQ_13.dff17(ch4_new.DERE_FREQ_12.qn_any(), ~KEBA_APU_RSTp, ch4_old.ESEP_FREQ_13.qn_any());
+
+    if (bit(KEBA_APU_RSTp)) {
+    //ch4_new.CEXO_FREQ_00.state = dff17(CARY_FREQ_CLK,                 ~KEBA_APU_RSTp, ch4_old.CEXO_FREQ_00.qn_any());
+    ch4_new.DEKO_FREQ_01.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.EZEF_FREQ_02.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.EPOR_FREQ_03.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.DURE_FREQ_04.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.DALE_FREQ_05.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.DOKE_FREQ_06.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.DEMO_FREQ_07.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.DOSE_FREQ_08.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.DETE_FREQ_09.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.ERUT_FREQ_10.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.DOTA_FREQ_11.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.DERE_FREQ_12.state = BIT_NEW | BIT_CLOCK;
+    ch4_new.ESEP_FREQ_13.state = BIT_NEW | BIT_CLOCK;
+    }
   }
 
   /*#p20.FEME*/ uint8_t FEME_LFSR_CLKp_new = 0;

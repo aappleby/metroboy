@@ -24,6 +24,8 @@ sample_t ch2_audio_out_fast(const SpuChannel2& ch2) {
 // Channel 2 Tick
 
 void tick_ch2_fast(
+  uint64_t phase_new,
+
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoySPU& spu_old,
   const SpuChannel2& ch2_old,

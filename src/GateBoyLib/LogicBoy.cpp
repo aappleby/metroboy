@@ -2778,6 +2778,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
 
     tick_spu_fast(
+      sys.gb_phase_total_new & 7,
+
       temp_abus_new,
       temp_dbus_old,
       state_old.wave_dbus,

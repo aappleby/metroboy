@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  if (0) {
+  if (1) {
     LOG_B("========== GateBoy vs LogicBoy regression tests ==========\n");
     TestResults results;
     GateBoyTests t;

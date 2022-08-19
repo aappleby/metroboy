@@ -222,30 +222,25 @@ void tick_ch4_fast(
 
 
   {
-    /*#p19.CAZE*/ wire CAZE_FF20_WRn = nand2(BOGY_CPU_WRp, addr == 0xFF20);
-    /*#p19.FURU*/ wire FURU_FF20_WRa = not1(CAZE_FF20_WRn);
-    /*#p19.DOTU*/ wire DOTU_FF20_WRb = not1(CAZE_FF20_WRn);
-    /*#p19.EPEK*/ wire EPEK_FF20_WRc = not1(CAZE_FF20_WRn);
-
     /*#p19.CUWA*/ wire CUWA_LEN_CLKa = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
 
-    /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20(CUWA_LEN_CLKa,                    DOTU_FF20_WRb, cpu_dbus_new.BUS_CPU_D00p.qp_any());
-    /*#p19.FAVY*/ ch4_new.FAVY_NR41_LEN1p.dff20(ch4_new.DANO_NR41_LEN0p.qp_any(), DOTU_FF20_WRb, cpu_dbus_new.BUS_CPU_D01p.qp_any());
-    /*#p19.DENA*/ ch4_new.DENA_NR41_LEN2p.dff20(ch4_new.FAVY_NR41_LEN1p.qp_any(), DOTU_FF20_WRb, cpu_dbus_new.BUS_CPU_D02p.qp_any());
-    /*#p19.CEDO*/ ch4_new.CEDO_NR41_LEN3p.dff20(ch4_new.DENA_NR41_LEN2p.qp_any(), DOTU_FF20_WRb, cpu_dbus_new.BUS_CPU_D03p.qp_any());
-    /*#p19.FYLO*/ ch4_new.FYLO_NR41_LEN4p.dff20(ch4_new.CEDO_NR41_LEN3p.qp_any(), EPEK_FF20_WRc, cpu_dbus_new.BUS_CPU_D04p.qp_any());
-    /*#p19.EDOP*/ ch4_new.EDOP_NR41_LEN5p.dff20(ch4_new.FYLO_NR41_LEN4p.qp_any(), EPEK_FF20_WRc, cpu_dbus_new.BUS_CPU_D05p.qp_any());
+    /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20(CUWA_LEN_CLKa,                    and2(BOGY_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D00p.qp_any());
+    /*#p19.FAVY*/ ch4_new.FAVY_NR41_LEN1p.dff20(ch4_new.DANO_NR41_LEN0p.qp_any(), and2(BOGY_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D01p.qp_any());
+    /*#p19.DENA*/ ch4_new.DENA_NR41_LEN2p.dff20(ch4_new.FAVY_NR41_LEN1p.qp_any(), and2(BOGY_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D02p.qp_any());
+    /*#p19.CEDO*/ ch4_new.CEDO_NR41_LEN3p.dff20(ch4_new.DENA_NR41_LEN2p.qp_any(), and2(BOGY_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D03p.qp_any());
+    /*#p19.FYLO*/ ch4_new.FYLO_NR41_LEN4p.dff20(ch4_new.CEDO_NR41_LEN3p.qp_any(), and2(BOGY_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D04p.qp_any());
+    /*#p19.EDOP*/ ch4_new.EDOP_NR41_LEN5p.dff20(ch4_new.FYLO_NR41_LEN4p.qp_any(), and2(BOGY_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D05p.qp_any());
 
     if (DELTA_DE && SIG_IN_CPU_WRp && addr == 0xFF20) {
     }
 
-    /*#p19.GAPY*/ wire GAPY_LEN_DONE_RSTn = nor3(FURU_FF20_WRa, KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
+    /*#p19.GAPY*/ wire GAPY_LEN_DONE_RSTn = nor3(and2(BOGY_CPU_WRp, addr == 0xFF20), KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
     /*#p19.FUGO*/ ch4_new.FUGO_CH4_LEN_DONEp.dff17(ch4_new.EDOP_NR41_LEN5p.qn_any(), GAPY_LEN_DONE_RSTn, ch4_old.FUGO_CH4_LEN_DONEp.qn_any());
 
     /*#p19.DODA*/ wire DODA_LEN_CLKn2 = nor3(ch4_new.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
     /*#p19.CUWA*/ wire CUWA_LEN_CLKa2 = not1(DODA_LEN_CLKn2);
 
-    /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20_any(CUWA_LEN_CLKa2, DOTU_FF20_WRb, cpu_dbus_new.BUS_CPU_D00p.qp_any());
+    /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20_any(CUWA_LEN_CLKa2, and2(BOGY_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D00p.qp_any());
   }
 
   /*#p20.GEVY*/ wire GEVY_CH4_AMP_ENn = nor5(

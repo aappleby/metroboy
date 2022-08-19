@@ -104,7 +104,25 @@ void tick_spu_fast(
   /*#p01.AVOR*/ wire AVOR_SYS_RSTp = or2(AFER_SYS_RSTp, ASOL_POR_DONEn);
   /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
   /*_p09.HAPO*/ wire HAPO_SYS_RSTp = not1(ALUR_SYS_RSTn);
-  /*#p09.HADA*/ spu_new.HADA_NR52_ALL_SOUND_ON.dff17(HAWU_NR52_WRn, nor2(AFER_SYS_RSTp, ASOL_POR_DONEn), cpu_dbus_old.BUS_CPU_D07p.out_any()); // Since this bit controls APU_RESET*, it is reset by SYS_RESET.
+  
+
+
+  if (bit(or2(AFER_SYS_RSTp, ASOL_POR_DONEn))) {
+    spu_new.HADA_NR52_ALL_SOUND_ON.state = 0;
+  }
+  else {
+    if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
+      if (addr == 0xFF26) {
+        spu_new.HADA_NR52_ALL_SOUND_ON.state = cpu_dbus_old.BUS_CPU_D07p.out_any();
+      }
+    }
+  }
+
+
+
+
+
+
 
   /*_p09.JYRO*/ wire apu_rst = bit(or3(AFER_SYS_RSTp, ASOL_POR_DONEn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any()));
 

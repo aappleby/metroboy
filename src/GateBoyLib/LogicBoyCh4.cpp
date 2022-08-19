@@ -359,14 +359,18 @@ void tick_ch4_fast(
 
 
   {
-    /*#p20.EMET*/ wire EMET_ENV_STOP_RSTn = nor2(ch4_new.GONE_CH4_TRIGp.qp_any(), KEBA_APU_RSTp);
+    if (bit(ch4_old.GEKY_NR42_ENV_DIRp.qp_any())) {
+      /*#p20.DUBO*/ wire DUBO_ENV_TOPp_old = and4(ch4_old.FEKO_CH4_VOL0.qp_any(), ch4_old.FATY_CH4_VOL1.qp_any(), ch4_old.FERU_CH4_VOL2.qp_any(), ch4_old.FYRO_CH4_VOL3.qp_any());
+      /*#p20.FYNO*/ ch4_new.FYNO_ENV_MAXp.dff17(ch4_new.FOSY_ENV_CLKp.qp_any(), 1, DUBO_ENV_TOPp_old);
+    } else {
+      /*#p20.DARO*/ wire DARO_ENV_BOTp_old = nor4(ch4_old.FEKO_CH4_VOL0.qp_any(), ch4_old.FATY_CH4_VOL1.qp_any(), ch4_old.FERU_CH4_VOL2.qp_any(), ch4_old.FYRO_CH4_VOL3.qp_any());
+      /*#p20.FYNO*/ ch4_new.FYNO_ENV_MAXp.dff17(ch4_new.FOSY_ENV_CLKp.qp_any(), 1, DARO_ENV_BOTp_old);
+    }
 
-    /*#p20.DARO*/ wire DARO_ENV_BOTp_old = nor5(ch4_old.GEKY_NR42_ENV_DIRp.qp_any(), ch4_old.FEKO_CH4_VOL0.qp_any(), ch4_old.FATY_CH4_VOL1.qp_any(), ch4_old.FERU_CH4_VOL2.qp_any(), ch4_old.FYRO_CH4_VOL3.qp_any());
-    /*#p20.CUTY*/ wire CUTY_ENV_TOPn_old = nand5(ch4_old.GEKY_NR42_ENV_DIRp.qp_any(), ch4_old.FEKO_CH4_VOL0.qp_any(), ch4_old.FATY_CH4_VOL1.qp_any(), ch4_old.FERU_CH4_VOL2.qp_any(), ch4_old.FYRO_CH4_VOL3.qp_any());
-    /*#p20.DUBO*/ wire DUBO_ENV_TOPp_old = not1(CUTY_ENV_TOPn_old);
-    /*#p20.EVUR*/ wire EVUR_ENV_MAXp_old = or2(DARO_ENV_BOTp_old, DUBO_ENV_TOPp_old);
 
-    /*#p20.FYNO*/ ch4_new.FYNO_ENV_MAXp.dff17(ch4_new.FOSY_ENV_CLKp.qp_any(), EMET_ENV_STOP_RSTn, EVUR_ENV_MAXp_old);
+    if (bit(or2(ch4_new.GONE_CH4_TRIGp.qp_any(), KEBA_APU_RSTp))) {
+      ch4_new.FYNO_ENV_MAXp.state &= ~1;
+    }
   }
 
 
@@ -406,10 +410,8 @@ void tick_ch4_fast(
   if (addr == 0xFF21 && TEDO_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8));
   if (addr == 0xFF22 && TEDO_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.JARE_NR43_DIV0p, 8));
 
-  {
-    /*#p19.BYLO*/ wire BYLO_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*#p19.BARE*/ wire BARE_FF23_RDn = nand2(CUGE_ADDR_FF23p, BYLO_CPU_RDp);
-    /*#p19.CURY*/ triwire CURY = tri6_nn(BARE_FF23_RDn, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
+  if (addr == 0xFF23 && TEDO_CPU_RDp) {
+    /*#p19.CURY*/ triwire CURY = tri6_nn(0, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
     /*_BUS_CPU_D06p*/ cpu_dbus_new.BUS_CPU_D06p.tri_bus(CURY);
   }
 

@@ -377,22 +377,40 @@ void tick_ch4_fast(
 
 
 
-  {
+  if (bit(ch4_new.GEKY_NR42_ENV_DIRp.qp_any())) {
     /*#p20.ENUR*/ wire ENUR_ENV_STARTp = or2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
     /*#p20.EROX*/ ch4_new.EROX_ENV_RUNNINGn.nor_latch(ch4_new.FYNO_ENV_MAXp.qp_any(), ENUR_ENV_STARTp);
 
     /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(ch4_new.EMOK_NR42_ENV_TIMER0p.qp_any(), ch4_new.ETYJ_NR42_ENV_TIMER1p.qp_any(), ch4_new.EZYK_NR42_ENV_TIMER2p.qp_any());
     /*#p20.FELO*/ wire FELO_ENV_CLK = or3(ch4_new.FOSY_ENV_CLKp.qp_any(), FOWA_ENV_OFFp_new, ch4_new.EROX_ENV_RUNNINGn.qp_any());
-    /*#p20.FOLE*/ wire FOLE_VOL_CLK0n = amux2(ch4_new.GEKY_NR42_ENV_DIRp.qp_any(), FELO_ENV_CLK, FELO_ENV_CLK, ch4_new.GEKY_NR42_ENV_DIRp.qn_any());
+    /*#p20.FOLE*/ wire FOLE_VOL_CLK0n = amux2(1, FELO_ENV_CLK, FELO_ENV_CLK, ch4_new.GEKY_NR42_ENV_DIRp.qn_any());
     /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FOLE_VOL_CLK0n, ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_ENV0p.qp_any());
 
-    /*#p20.ETEF*/ wire ETEF_VOL_CLK1n = amux2(ch4_new.GEKY_NR42_ENV_DIRp.qp_any(), ch4_new.FEKO_CH4_VOL0.qp_any(), ch4_new.FEKO_CH4_VOL0.qn_any(), ch4_new.GEKY_NR42_ENV_DIRp.qn_any());
+    /*#p20.ETEF*/ wire ETEF_VOL_CLK1n = amux2(1, ch4_new.FEKO_CH4_VOL0.qp_any(), ch4_new.FEKO_CH4_VOL0.qn_any(), ch4_new.GEKY_NR42_ENV_DIRp.qn_any());
     /*#p20.FATY*/ ch4_new.FATY_CH4_VOL1.dff20(ETEF_VOL_CLK1n, ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOKY_NR42_ENV1p.qp_any());
 
-    /*#p20.EDYF*/ wire EDYF_VOL_CLK2n = amux2(ch4_new.GEKY_NR42_ENV_DIRp.qp_any(), ch4_new.FATY_CH4_VOL1.qp_any(), ch4_new.FATY_CH4_VOL1.qn_any(), ch4_new.GEKY_NR42_ENV_DIRp.qn_any());
+    /*#p20.EDYF*/ wire EDYF_VOL_CLK2n = amux2(1, ch4_new.FATY_CH4_VOL1.qp_any(), ch4_new.FATY_CH4_VOL1.qn_any(), ch4_new.GEKY_NR42_ENV_DIRp.qn_any());
     /*#p20.FERU*/ ch4_new.FERU_CH4_VOL2.dff20(EDYF_VOL_CLK2n, ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOZO_NR42_ENV2p.qp_any());
 
-    /*#p20.ELAF*/ wire ELAF_VOL_CLK3n = amux2(ch4_new.GEKY_NR42_ENV_DIRp.qp_any(), ch4_new.FERU_CH4_VOL2.qp_any(), ch4_new.FERU_CH4_VOL2.qn_any(), ch4_new.GEKY_NR42_ENV_DIRp.qn_any());
+    /*#p20.ELAF*/ wire ELAF_VOL_CLK3n = amux2(1, ch4_new.FERU_CH4_VOL2.qp_any(), ch4_new.FERU_CH4_VOL2.qn_any(), ch4_new.GEKY_NR42_ENV_DIRp.qn_any());
+    /*#p20.FYRO*/ ch4_new.FYRO_CH4_VOL3.dff20(ELAF_VOL_CLK3n, ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GEDU_NR42_ENV3p.qp_any());
+  }
+  else {
+    /*#p20.ENUR*/ wire ENUR_ENV_STARTp = or2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
+    /*#p20.EROX*/ ch4_new.EROX_ENV_RUNNINGn.nor_latch(ch4_new.FYNO_ENV_MAXp.qp_any(), ENUR_ENV_STARTp);
+
+    /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(ch4_new.EMOK_NR42_ENV_TIMER0p.qp_any(), ch4_new.ETYJ_NR42_ENV_TIMER1p.qp_any(), ch4_new.EZYK_NR42_ENV_TIMER2p.qp_any());
+    /*#p20.FELO*/ wire FELO_ENV_CLK = or3(ch4_new.FOSY_ENV_CLKp.qp_any(), FOWA_ENV_OFFp_new, ch4_new.EROX_ENV_RUNNINGn.qp_any());
+    /*#p20.FOLE*/ wire FOLE_VOL_CLK0n = FELO_ENV_CLK;
+    /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FOLE_VOL_CLK0n, ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_ENV0p.qp_any());
+
+    /*#p20.ETEF*/ wire ETEF_VOL_CLK1n = ch4_new.FEKO_CH4_VOL0.qn_any();
+    /*#p20.FATY*/ ch4_new.FATY_CH4_VOL1.dff20(ETEF_VOL_CLK1n, ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOKY_NR42_ENV1p.qp_any());
+
+    /*#p20.EDYF*/ wire EDYF_VOL_CLK2n = ch4_new.FATY_CH4_VOL1.qn_any();
+    /*#p20.FERU*/ ch4_new.FERU_CH4_VOL2.dff20(EDYF_VOL_CLK2n, ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOZO_NR42_ENV2p.qp_any());
+
+    /*#p20.ELAF*/ wire ELAF_VOL_CLK3n = ch4_new.FERU_CH4_VOL2.qn_any();
     /*#p20.FYRO*/ ch4_new.FYRO_CH4_VOL3.dff20(ELAF_VOL_CLK3n, ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GEDU_NR42_ENV3p.qp_any());
   }
 

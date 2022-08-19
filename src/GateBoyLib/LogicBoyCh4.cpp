@@ -77,7 +77,7 @@ void tick_ch4_fast(
 {
   auto addr = bit_pack(cpu_abus_new);
   auto dbus_old = bit_pack(cpu_dbus_old);
-  auto apu_rst = bit(or3(AFER_SYS_RSTp, ASOL_POR_DONEn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any()));
+  bool apu_rst = bit(or3(AFER_SYS_RSTp, ASOL_POR_DONEn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any()));
 
   /*#p01.BUDE*/ wire BUDE_xxxxEFGH = and2(AFUR_ABCDxxxx_qn, SIG_CPU_CLKREQ);
   /*_p01.DOVA*/ wire DOVA_ABCDxxxx = not1(BUDE_xxxxEFGH);
@@ -100,7 +100,7 @@ void tick_ch4_fast(
   /*_p01.BARU*/ wire BARU_CLK_128 = not1(BULE_CLK_128);
   /*_p01.BYFE*/ wire BYFE_CLK_128 = not1(BARU_CLK_128);
 
-  auto nr42 = bit_pack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8);
+  auto nr42 = bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 8);
   auto nr43 = bit_pack(&ch4_new.JARE_NR43_DIV0p, 8);
 
   if (apu_rst) {
@@ -139,7 +139,7 @@ void tick_ch4_fast(
     }
   }
 
-  bit_unpack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8, nr42);
+  bit_unpack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 8, nr42);
   bit_unpack(&ch4_new.JARE_NR43_DIV0p,       8, nr43);
 
   wire GUNY_FREQ_GATE_RSTn_new = nor2(apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any());
@@ -357,61 +357,50 @@ void tick_ch4_fast(
   //----------
   // Env
 
+  auto env_timer_old = bit_pack(&ch4_old.CUNA_ENV_TIMER0n, 3) ^ 7;
+  auto env_delay_new = bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 3);
+
   {
-    // Generates a 1 usec pulse when the env timer hits 111
 
-    auto env_delay_old = bit_pack(&ch4_old.CUNA_ENV_DELAY0n, 3) ^ 7;
-    auto env_timer = bit_pack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 3);
+    ch4_new.FOSY_ENV_CLKp.dff17_clk(HORU_CLK_512, env_timer_old != 7);
 
-    /*#p20.EJEX*/ wire EJEX_ENV_TIMER_MAX_old = or3(ch4_old.DOGO_ENV_DELAY2n.qp_any(), ch4_old.COFE_ENV_DELAY1n.qp_any(), ch4_old.CUNA_ENV_DELAY0n.qp_any());
-    /*#p20.FOSY*/ ch4_new.FOSY_ENV_CLKp.dff17_clk(HORU_CLK_512, env_delay_old != 7);
-
-    /*#p20.GEXE*/ wire GEXE_ENV_PULSEn_new = not1(ch4_new.FOSY_ENV_CLKp.qp_any());
-    /*#p20.HURY*/ wire HURY_ENV_PULSE_RSTp_new = nor2(HORU_CLK_512, GEXE_ENV_PULSEn_new);
-    /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = env_timer == 0;
-    /*#p20.GOPA*/ wire GOPA_ENV_PULSE_RSTn_new = nor4(HURY_ENV_PULSE_RSTp_new, FOWA_ENV_OFFp_new, ch4_new.GONE_CH4_TRIGp.qp_any(), apu_rst);
-    /*#p20.FOSY*/ ch4_new.FOSY_ENV_CLKp.dff17_rst(GOPA_ENV_PULSE_RSTn_new);
+    if (bit(and2(~HORU_CLK_512, ch4_new.FOSY_ENV_CLKp.qp_any())) || (env_delay_new == 0) || bit(ch4_new.GONE_CH4_TRIGp.qp_any()) || apu_rst) {
+      ch4_new.FOSY_ENV_CLKp.state &= ~1;
+    }
   }
 
   {
-    /*#p20.ALOP*/ wire ALOP_CLK_128 = not1(BYFE_CLK_128);
-    /*#p20.BOKY*/ wire BOKY_APU_RSTn_new = not1(apu_rst);
-    /*#p20.ABEL*/ ch4_new.ABEL_CLK_64.dff17(ALOP_CLK_128, BOKY_APU_RSTn_new, ch4_old.ABEL_CLK_64.qn_any());
-    /*#p20.BAWA*/ wire BAWA_CLK_64_new = not1(ch4_new.ABEL_CLK_64.qp_any());
-    /*#p20.BUXO*/ wire BUXO_CLK_64_new = not1(BAWA_CLK_64_new);
+    /*#p20.ABEL*/ ch4_new.ABEL_CLK_64.dff17(not1(BYFE_CLK_128), !apu_rst, ch4_old.ABEL_CLK_64.qn_any());
 
-    /*#p20.ENEC*/ wire ENEC_ENV_TIMER_LOADn_new = nor2(ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.FOSY_ENV_CLKp.qp_any());
-    /*#p20.DAPY*/ wire DAPY_ENV_TIMER_LOADp_new = not1(ENEC_ENV_TIMER_LOADn_new);
+    /*#p20.DAPY*/ wire DAPY_ENV_TIMER_LOADp_new = or2(ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.FOSY_ENV_CLKp.qp_any());
 
-    /*#p20.CUNA*/ ch4_new.CUNA_ENV_DELAY0n.dff20(BUXO_CLK_64_new,                   DAPY_ENV_TIMER_LOADp_new, ch4_new.EMOK_NR42_ENV_TIMER0p.qn_any());
-    /*#p20.COFE*/ ch4_new.COFE_ENV_DELAY1n.dff20(ch4_new.CUNA_ENV_DELAY0n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.ETYJ_NR42_ENV_TIMER1p.qn_any());
-    /*#p20.DOGO*/ ch4_new.DOGO_ENV_DELAY2n.dff20(ch4_new.COFE_ENV_DELAY1n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.EZYK_NR42_ENV_TIMER2p.qn_any());
+    /*#p20.CUNA*/ ch4_new.CUNA_ENV_TIMER0n.dff20(ch4_new.ABEL_CLK_64.qp_any(),      DAPY_ENV_TIMER_LOADp_new, ch4_new.EMOK_NR42_ENV_DELAY0p.qn_any());
+    /*#p20.COFE*/ ch4_new.COFE_ENV_TIMER1n.dff20(ch4_new.CUNA_ENV_TIMER0n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.ETYJ_NR42_ENV_DELAY1p.qn_any());
+    /*#p20.DOGO*/ ch4_new.DOGO_ENV_TIMER2n.dff20(ch4_new.COFE_ENV_TIMER1n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.EZYK_NR42_ENV_DELAY2p.qn_any());
   }
 
 
   {
-    auto env_old = bit_pack(&ch4_old.FEKO_CH4_VOL0, 4);
-
+    auto vol_old = bit_pack(&ch4_old.FEKO_CH4_VOL0, 4);
 
     if (bit(ch4_old.GEKY_NR42_ENV_DIRp.qp_any())) {
-      ch4_new.FYNO_ENV_MAXp.dff17(ch4_new.FOSY_ENV_CLKp.qp_any(), 1, env_old == 15);
+      ch4_new.FYNO_VOL_MAXp.dff17(ch4_new.FOSY_ENV_CLKp.qp_any(), 1, vol_old == 15);
     } else {
-      ch4_new.FYNO_ENV_MAXp.dff17(ch4_new.FOSY_ENV_CLKp.qp_any(), 1, env_old == 0);
+      ch4_new.FYNO_VOL_MAXp.dff17(ch4_new.FOSY_ENV_CLKp.qp_any(), 1, vol_old == 0);
     }
 
 
     if (bit(or2(ch4_new.GONE_CH4_TRIGp.qp_any(), apu_rst))) {
-      ch4_new.FYNO_ENV_MAXp.state &= ~1;
+      ch4_new.FYNO_VOL_MAXp.state &= ~1;
     }
   }
 
 
 
 
-  /*#p20.ENUR*/ wire ENUR_ENV_STARTp = or2(apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any());
-  /*#p20.EROX*/ ch4_new.EROX_ENV_RUNNINGn.nor_latch(ch4_new.FYNO_ENV_MAXp.qp_any(), ENUR_ENV_STARTp);
+  /*#p20.EROX*/ ch4_new.EROX_ENV_RUNNINGn.nor_latch(ch4_new.FYNO_VOL_MAXp.qp_any(), or2(apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any()));
 
-  /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(ch4_new.EMOK_NR42_ENV_TIMER0p.qp_any(), ch4_new.ETYJ_NR42_ENV_TIMER1p.qp_any(), ch4_new.EZYK_NR42_ENV_TIMER2p.qp_any());
+  /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = env_delay_new == 0;
   /*#p20.FELO*/ wire FELO_ENV_CLK = or3(ch4_new.FOSY_ENV_CLKp.qp_any(), FOWA_ENV_OFFp_new, ch4_new.EROX_ENV_RUNNINGn.qp_any());
 
   if (bit(ch4_new.GEKY_NR42_ENV_DIRp.qp_any())) {
@@ -427,18 +416,7 @@ void tick_ch4_fast(
     /*#p20.FYRO*/ ch4_new.FYRO_CH4_VOL3.dff20(ch4_new.FERU_CH4_VOL2.qn_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GEDU_NR42_ENV3p.qp_any());
   }
 
-
-#if 0
-  /*#p20.COSA*/ wire COSA_CPU_RDp = not1(reg_new.cpu_signals.AGUZ_CPU_RDn());
-  /*_p09.EDEK*/ wire EDEK_NR52_DBG_APUp = not1(reg_new.spu.FERO_NR52_DBG_APUp.qn_any());
-  /*#p20.DYRY*/ wire DYRY_DBG = and2(ch4_new.CUNY_NR44_LEN_ENp.qn_any(), EDEK_NR52_DBG_APUp);
-  /*_p20.COMO*/ wire COMO_DBG = and2(DYRY_DBG, COSA_CPU_RDp);
-  /*_p20.BAGU*/ wire BAGU_DBG = nand2(CUGE_ADDR_FF23p, COMO_DBG);
-  /*_p20.BEFA*/ wire BEFA_DBG = not1(CARY_FREQ_CLK);
-  /*_p20.ATEL*/ triwire ATEL = tri6_nn(BAGU_DBG, BEFA_DBG); // goes to data bus D0
-#endif
-
-  if (addr == 0xFF21 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8));
+  if (addr == 0xFF21 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 8));
   if (addr == 0xFF22 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.JARE_NR43_DIV0p, 8));
 
   if (addr == 0xFF23 && SIG_IN_CPU_RDp) {

@@ -6,9 +6,9 @@ struct GateBoyState;
 
 struct SpuChannel4 {
   void reset() {
-    EMOK_NR42_ENV_TIMER0p.state = 0x1a;
-    ETYJ_NR42_ENV_TIMER1p.state = 0x1a;
-    EZYK_NR42_ENV_TIMER2p.state = 0x1a;
+    EMOK_NR42_ENV_DELAY0p.state = 0x1a;
+    ETYJ_NR42_ENV_DELAY1p.state = 0x1a;
+    EZYK_NR42_ENV_DELAY2p.state = 0x1a;
     GEKY_NR42_ENV_DIRp.state = 0x1a;
     GARU_NR42_ENV0p.state = 0x1a;
     GOKY_NR42_ENV1p.state = 0x1a;
@@ -73,11 +73,11 @@ struct SpuChannel4 {
     HYRO_LFSR_14.state = 0x18;
     HEZU_LFSR_15.state = 0x18;
     ABEL_CLK_64.state = 0x18;
-    CUNA_ENV_DELAY0n.state = 0x18;
-    COFE_ENV_DELAY1n.state = 0x19;
-    DOGO_ENV_DELAY2n.state = 0x1a;
+    CUNA_ENV_TIMER0n.state = 0x18;
+    COFE_ENV_TIMER1n.state = 0x19;
+    DOGO_ENV_TIMER2n.state = 0x1a;
     FOSY_ENV_CLKp.state = 0x1a;
-    FYNO_ENV_MAXp.state = 0x18;
+    FYNO_VOL_MAXp.state = 0x18;
     FEKO_CH4_VOL0.state = 0x1a;
     FATY_CH4_VOL1.state = 0x1a;
     FERU_CH4_VOL2.state = 0x1a;
@@ -93,9 +93,9 @@ struct SpuChannel4 {
   /*#p19.FYLO*/ DFF20 FYLO_NR41_LEN4p;
   /*_p19.EDOP*/ DFF20 EDOP_NR41_LEN5p;
 
-  /*_p19.EMOK*/ DFF9 EMOK_NR42_ENV_TIMER0p;
-  /*_p19.ETYJ*/ DFF9 ETYJ_NR42_ENV_TIMER1p;
-  /*_p19.EZYK*/ DFF9 EZYK_NR42_ENV_TIMER2p;
+  /*_p19.EMOK*/ DFF9 EMOK_NR42_ENV_DELAY0p;
+  /*_p19.ETYJ*/ DFF9 ETYJ_NR42_ENV_DELAY1p;
+  /*_p19.EZYK*/ DFF9 EZYK_NR42_ENV_DELAY2p;
   /*_p19.GEKY*/ DFF9 GEKY_NR42_ENV_DIRp;
   /*_p19.GARU*/ DFF9 GARU_NR42_ENV0p; // 10
   /*_p19.GOKY*/ DFF9 GOKY_NR42_ENV1p;
@@ -165,11 +165,11 @@ struct SpuChannel4 {
   /*#p20.GARY*/ DFF17 GARY_FREQ_GATEp;
 
   /*#p20.ABEL*/ DFF17 ABEL_CLK_64;
-  /*#p20.CUNA*/ DFF20 CUNA_ENV_DELAY0n;
-  /*#p20.COFE*/ DFF20 COFE_ENV_DELAY1n;
-  /*#p20.DOGO*/ DFF20 DOGO_ENV_DELAY2n;
+  /*#p20.CUNA*/ DFF20 CUNA_ENV_TIMER0n;
+  /*#p20.COFE*/ DFF20 COFE_ENV_TIMER1n;
+  /*#p20.DOGO*/ DFF20 DOGO_ENV_TIMER2n;
   /*#p20.FOSY*/ DFF17 FOSY_ENV_CLKp;
-  /*#p20.FYNO*/ DFF17 FYNO_ENV_MAXp;
+  /*#p20.FYNO*/ DFF17 FYNO_VOL_MAXp;
   /*#p20.FEKO*/ DFF20 FEKO_CH4_VOL0;
   /*#p20.FATY*/ DFF20 FATY_CH4_VOL1;
   /*#p20.FERU*/ DFF20 FERU_CH4_VOL2;

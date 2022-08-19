@@ -100,9 +100,9 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     
     /*#p19.FEXO*/ wire FEXO_APU_RSTn_new = not1(KEBA_APU_RSTp);
 
-    /*_p19.EMOK*/ reg_new.ch4.EMOK_NR42_ENV_TIMER0p.dff9(DYKE_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
-    /*_p19.ETYJ*/ reg_new.ch4.ETYJ_NR42_ENV_TIMER1p.dff9(DYKE_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D01p.qp_old());
-    /*_p19.EZYK*/ reg_new.ch4.EZYK_NR42_ENV_TIMER2p.dff9(DYKE_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D02p.qp_old());
+    /*_p19.EMOK*/ reg_new.ch4.EMOK_NR42_ENV_DELAY0p.dff9(DYKE_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D00p.qp_old());
+    /*_p19.ETYJ*/ reg_new.ch4.ETYJ_NR42_ENV_DELAY1p.dff9(DYKE_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D01p.qp_old());
+    /*_p19.EZYK*/ reg_new.ch4.EZYK_NR42_ENV_DELAY2p.dff9(DYKE_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D02p.qp_old());
     /*_p19.GEKY*/ reg_new.ch4.GEKY_NR42_ENV_DIRp   .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D03p.qp_old());
     /*_p19.GARU*/ reg_new.ch4.GARU_NR42_ENV0p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D04p.qp_old());
     /*_p19.GOKY*/ reg_new.ch4.GOKY_NR42_ENV1p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
@@ -342,12 +342,12 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     // Generates a 1 usec pulse when the env timer hits 111
 
-    /*#p20.EJEX*/ wire EJEX_ENV_TIMER_MAX_old = or3(reg_old.ch4.DOGO_ENV_DELAY2n.qp_old(), reg_old.ch4.COFE_ENV_DELAY1n.qp_old(), reg_old.ch4.CUNA_ENV_DELAY0n.qp_old());
+    /*#p20.EJEX*/ wire EJEX_ENV_TIMER_MAX_old = or3(reg_old.ch4.DOGO_ENV_TIMER2n.qp_old(), reg_old.ch4.COFE_ENV_TIMER1n.qp_old(), reg_old.ch4.CUNA_ENV_TIMER0n.qp_old());
     /*#p20.FOSY*/ reg_new.ch4.FOSY_ENV_CLKp.dff17_clk(HORU_CLK_512, EJEX_ENV_TIMER_MAX_old);
 
     /*#p20.GEXE*/ wire GEXE_ENV_PULSEn_new  = not1(reg_new.ch4.FOSY_ENV_CLKp.qp_new());
     /*#p20.HURY*/ wire HURY_ENV_PULSE_RSTp_new = nor2(HORU_CLK_512, GEXE_ENV_PULSEn_new);
-    /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(reg_new.ch4.EMOK_NR42_ENV_TIMER0p.qp_new(), reg_new.ch4.ETYJ_NR42_ENV_TIMER1p.qp_new(), reg_new.ch4.EZYK_NR42_ENV_TIMER2p.qp_new());
+    /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(reg_new.ch4.EMOK_NR42_ENV_DELAY0p.qp_new(), reg_new.ch4.ETYJ_NR42_ENV_DELAY1p.qp_new(), reg_new.ch4.EZYK_NR42_ENV_DELAY2p.qp_new());
     /*#p20.GOPA*/ wire GOPA_ENV_PULSE_RSTn_new = nor4(HURY_ENV_PULSE_RSTp_new, FOWA_ENV_OFFp_new, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), KEBA_APU_RSTp);
     /*#p20.FOSY*/ reg_new.ch4.FOSY_ENV_CLKp.dff17_rst(GOPA_ENV_PULSE_RSTn_new);
   }
@@ -362,9 +362,9 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p20.ENEC*/ wire ENEC_ENV_TIMER_LOADn_new = nor2(reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.FOSY_ENV_CLKp.qp_new());
     /*#p20.DAPY*/ wire DAPY_ENV_TIMER_LOADp_new  = not1(ENEC_ENV_TIMER_LOADn_new);
 
-    /*#p20.CUNA*/ reg_new.ch4.CUNA_ENV_DELAY0n.dff20(BUXO_CLK_64_new,                       DAPY_ENV_TIMER_LOADp_new, reg_new.ch4.EMOK_NR42_ENV_TIMER0p.qn_new());
-    /*#p20.COFE*/ reg_new.ch4.COFE_ENV_DELAY1n.dff20(reg_new.ch4.CUNA_ENV_DELAY0n.qp_new(), DAPY_ENV_TIMER_LOADp_new, reg_new.ch4.ETYJ_NR42_ENV_TIMER1p.qn_new());
-    /*#p20.DOGO*/ reg_new.ch4.DOGO_ENV_DELAY2n.dff20(reg_new.ch4.COFE_ENV_DELAY1n.qp_new(), DAPY_ENV_TIMER_LOADp_new, reg_new.ch4.EZYK_NR42_ENV_TIMER2p.qn_new());
+    /*#p20.CUNA*/ reg_new.ch4.CUNA_ENV_TIMER0n.dff20(BUXO_CLK_64_new,                       DAPY_ENV_TIMER_LOADp_new, reg_new.ch4.EMOK_NR42_ENV_DELAY0p.qn_new());
+    /*#p20.COFE*/ reg_new.ch4.COFE_ENV_TIMER1n.dff20(reg_new.ch4.CUNA_ENV_TIMER0n.qp_new(), DAPY_ENV_TIMER_LOADp_new, reg_new.ch4.ETYJ_NR42_ENV_DELAY1p.qn_new());
+    /*#p20.DOGO*/ reg_new.ch4.DOGO_ENV_TIMER2n.dff20(reg_new.ch4.COFE_ENV_TIMER1n.qp_new(), DAPY_ENV_TIMER_LOADp_new, reg_new.ch4.EZYK_NR42_ENV_DELAY2p.qn_new());
   }
 
 
@@ -376,7 +376,7 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p20.DUBO*/ wire DUBO_ENV_TOPp_old = not1(CUTY_ENV_TOPn_old);
     /*#p20.EVUR*/ wire EVUR_ENV_MAXp_old  = or2(DARO_ENV_BOTp_old, DUBO_ENV_TOPp_old);
 
-    /*#p20.FYNO*/ reg_new.ch4.FYNO_ENV_MAXp.dff17(reg_new.ch4.FOSY_ENV_CLKp.qp_new(), EMET_ENV_STOP_RSTn, EVUR_ENV_MAXp_old);
+    /*#p20.FYNO*/ reg_new.ch4.FYNO_VOL_MAXp.dff17(reg_new.ch4.FOSY_ENV_CLKp.qp_new(), EMET_ENV_STOP_RSTn, EVUR_ENV_MAXp_old);
   }
 
 
@@ -385,9 +385,9 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   {
     /*#p20.ENUR*/ wire ENUR_ENV_STARTp = or2(KEBA_APU_RSTp, reg_new.ch4.GONE_CH4_TRIGp.qp_new());
-    /*#p20.EROX*/ reg_new.ch4.EROX_ENV_RUNNINGn.nor_latch(reg_new.ch4.FYNO_ENV_MAXp.qp_new(), ENUR_ENV_STARTp);
+    /*#p20.EROX*/ reg_new.ch4.EROX_ENV_RUNNINGn.nor_latch(reg_new.ch4.FYNO_VOL_MAXp.qp_new(), ENUR_ENV_STARTp);
 
-    /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(reg_new.ch4.EMOK_NR42_ENV_TIMER0p.qp_new(), reg_new.ch4.ETYJ_NR42_ENV_TIMER1p.qp_new(), reg_new.ch4.EZYK_NR42_ENV_TIMER2p.qp_new());
+    /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(reg_new.ch4.EMOK_NR42_ENV_DELAY0p.qp_new(), reg_new.ch4.ETYJ_NR42_ENV_DELAY1p.qp_new(), reg_new.ch4.EZYK_NR42_ENV_DELAY2p.qp_new());
     /*#p20.FELO*/ wire FELO_ENV_CLK  = or3(reg_new.ch4.FOSY_ENV_CLKp.qp_new(), FOWA_ENV_OFFp_new, reg_new.ch4.EROX_ENV_RUNNINGn.qp_new());
     /*#p20.FOLE*/ wire FOLE_VOL_CLK0n = amux2(reg_new.ch4.GEKY_NR42_ENV_DIRp.qp_new(), FELO_ENV_CLK,               FELO_ENV_CLK,               reg_new.ch4.GEKY_NR42_ENV_DIRp.qn_new());
     /*#p20.FEKO*/ reg_new.ch4.FEKO_CH4_VOL0.dff20(FOLE_VOL_CLK0n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GARU_NR42_ENV0p.qp_new());
@@ -420,9 +420,9 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p19.BOXE*/ wire BOXE_FF21_RDn = or2(BOFY_FF21n, AGUZ_CPU_RDn);
     /*#p19.HASU*/ wire HASU_FF21_RDn = or2(GONY_FF21n, AGUZ_CPU_RDn);
 
-    /*#p19.DEMY*/ triwire DEMY = tri6_nn(BOXE_FF21_RDn, reg_new.ch4.EMOK_NR42_ENV_TIMER0p.qn_new());
-    /*#p19.COCE*/ triwire COCE = tri6_nn(BOXE_FF21_RDn, reg_new.ch4.ETYJ_NR42_ENV_TIMER1p.qn_new());
-    /*#p19.CUZU*/ triwire CUZU = tri6_nn(BOXE_FF21_RDn, reg_new.ch4.EZYK_NR42_ENV_TIMER2p.qn_new());
+    /*#p19.DEMY*/ triwire DEMY = tri6_nn(BOXE_FF21_RDn, reg_new.ch4.EMOK_NR42_ENV_DELAY0p.qn_new());
+    /*#p19.COCE*/ triwire COCE = tri6_nn(BOXE_FF21_RDn, reg_new.ch4.ETYJ_NR42_ENV_DELAY1p.qn_new());
+    /*#p19.CUZU*/ triwire CUZU = tri6_nn(BOXE_FF21_RDn, reg_new.ch4.EZYK_NR42_ENV_DELAY2p.qn_new());
     /*#p19.GOME*/ triwire GOME = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GEKY_NR42_ENV_DIRp   .qn_new());
     /*#p19.HEDA*/ triwire HEDA = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GARU_NR42_ENV0p      .qn_new());
     /*#p19.GODU*/ triwire GODU = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GOKY_NR42_ENV1p      .qn_new());

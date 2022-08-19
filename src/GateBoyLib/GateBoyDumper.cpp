@@ -544,7 +544,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
 
   d("===== CH4 =====\n");
   d.dump_slicep("NR41 ", &s.ch4.DANO_NR41_LEN0p, 6);
-  d.dump_slicep("NR42 ", &s.ch4.EMOK_NR42_ENV_TIMER0p, 8);
+  d.dump_slicep("NR42 ", &s.ch4.EMOK_NR42_ENV_DELAY0p, 8);
   d.dump_slicep("NR43 ", &s.ch4.JARE_NR43_DIV0p, 8);
   d.dump_slicep("NR44 ", &s.ch4.CUNY_NR44_LEN_ENp, 2);
   d("CH4 OUT : %d\n", ch4_audio_out(s.ch4));

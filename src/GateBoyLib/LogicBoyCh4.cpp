@@ -176,51 +176,17 @@ void tick_ch4_fast(
 
 
 
-  {
-    if (DELTA_EF) {
+  auto freq = bit_pack(&ch4_new.CEXO_FREQ_00, 14);
 
-      if (bit(ch4_new.GARY_FREQ_GATEp.qp_any())) {
-        auto freq = bit_pack(&ch4_new.CEXO_FREQ_00, 14);
-        freq++;
-        bit_unpack(&ch4_new.CEXO_FREQ_00, 14, freq);
-      }
-    }
-
-    /*
-    wire CARY_FREQ_CLK = and2(not1(spu_new.AVOK_xBCDExxx.qp_any()), ch4_new.GARY_FREQ_GATEp.qp_any());
-    ch4_new.CEXO_FREQ_00.dff17(CARY_FREQ_CLK,                 1, ch4_old.CEXO_FREQ_00.qn_any());
-    ch4_new.DEKO_FREQ_01.dff17(ch4_new.CEXO_FREQ_00.qn_any(), 1, ch4_old.DEKO_FREQ_01.qn_any());
-    ch4_new.EZEF_FREQ_02.dff17(ch4_new.DEKO_FREQ_01.qn_any(), 1, ch4_old.EZEF_FREQ_02.qn_any());
-    ch4_new.EPOR_FREQ_03.dff17(ch4_new.EZEF_FREQ_02.qn_any(), 1, ch4_old.EPOR_FREQ_03.qn_any());
-    ch4_new.DURE_FREQ_04.dff17(ch4_new.EPOR_FREQ_03.qn_any(), 1, ch4_old.DURE_FREQ_04.qn_any());
-    ch4_new.DALE_FREQ_05.dff17(ch4_new.DURE_FREQ_04.qn_any(), 1, ch4_old.DALE_FREQ_05.qn_any());
-    ch4_new.DOKE_FREQ_06.dff17(ch4_new.DALE_FREQ_05.qn_any(), 1, ch4_old.DOKE_FREQ_06.qn_any());
-    ch4_new.DEMO_FREQ_07.dff17(ch4_new.DOKE_FREQ_06.qn_any(), 1, ch4_old.DEMO_FREQ_07.qn_any());
-    ch4_new.DOSE_FREQ_08.dff17(ch4_new.DEMO_FREQ_07.qn_any(), 1, ch4_old.DOSE_FREQ_08.qn_any());
-    ch4_new.DETE_FREQ_09.dff17(ch4_new.DOSE_FREQ_08.qn_any(), 1, ch4_old.DETE_FREQ_09.qn_any());
-    ch4_new.ERUT_FREQ_10.dff17(ch4_new.DETE_FREQ_09.qn_any(), 1, ch4_old.ERUT_FREQ_10.qn_any());
-    ch4_new.DOTA_FREQ_11.dff17(ch4_new.ERUT_FREQ_10.qn_any(), 1, ch4_old.DOTA_FREQ_11.qn_any());
-    ch4_new.DERE_FREQ_12.dff17(ch4_new.DOTA_FREQ_11.qn_any(), 1, ch4_old.DERE_FREQ_12.qn_any());
-    ch4_new.ESEP_FREQ_13.dff17(ch4_new.DERE_FREQ_12.qn_any(), 1, ch4_old.ESEP_FREQ_13.qn_any());
-    */
-
-    if (bit(KEBA_APU_RSTp)) {
-      ch4_new.CEXO_FREQ_00.state = BIT_CLOCK;
-      ch4_new.DEKO_FREQ_01.state = BIT_CLOCK;
-      ch4_new.EZEF_FREQ_02.state = BIT_CLOCK;
-      ch4_new.EPOR_FREQ_03.state = BIT_CLOCK;
-      ch4_new.DURE_FREQ_04.state = BIT_CLOCK;
-      ch4_new.DALE_FREQ_05.state = BIT_CLOCK;
-      ch4_new.DOKE_FREQ_06.state = BIT_CLOCK;
-      ch4_new.DEMO_FREQ_07.state = BIT_CLOCK;
-      ch4_new.DOSE_FREQ_08.state = BIT_CLOCK;
-      ch4_new.DETE_FREQ_09.state = BIT_CLOCK;
-      ch4_new.ERUT_FREQ_10.state = BIT_CLOCK;
-      ch4_new.DOTA_FREQ_11.state = BIT_CLOCK;
-      ch4_new.DERE_FREQ_12.state = BIT_CLOCK;
-      ch4_new.ESEP_FREQ_13.state = BIT_CLOCK;
-    }
+  if (DELTA_EF && bit(ch4_new.GARY_FREQ_GATEp.qp_any())) {
+    freq++;
   }
+
+  if (bit(KEBA_APU_RSTp)) {
+    freq = 0;
+  }
+
+  bit_unpack(&ch4_new.CEXO_FREQ_00, 14, freq);
 
   /*#p20.FEME*/ uint8_t FEME_LFSR_CLKp_new = 0;
 

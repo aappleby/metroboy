@@ -312,40 +312,26 @@ void tick_ch4_fast(
       }
       */
 
-
-      if (bit(ch4_old.JAMY_NR43_MODEp.qp_any())) {
-        /*#p20.JOTO*/ ch4_new.JOTO_LFSR_00.dff17(not1(lfsr_clk_new), 1, bit(HURA_LFSR_IN_old));
-        /*#p20.KOMU*/ ch4_new.KOMU_LFSR_01.dff17(lfsr_clk_new,       1, ch4_old.JOTO_LFSR_00.qp_any());
-        /*#p20.KETU*/ ch4_new.KETU_LFSR_02.dff17(lfsr_clk_new,       1, ch4_old.KOMU_LFSR_01.qp_any());
-        /*#p20.KUTA*/ ch4_new.KUTA_LFSR_03.dff17(lfsr_clk_new,       1, ch4_old.KETU_LFSR_02.qp_any());
-        /*#p20.KUZY*/ ch4_new.KUZY_LFSR_04.dff17(lfsr_clk_new,       1, ch4_old.KUTA_LFSR_03.qp_any());
-        /*#p20.KYWY*/ ch4_new.KYWY_LFSR_05.dff17(lfsr_clk_new,       1, ch4_old.KUZY_LFSR_04.qp_any());
-        /*#p20.JAJU*/ ch4_new.JAJU_LFSR_06.dff17(lfsr_clk_new,       1, ch4_old.KYWY_LFSR_05.qp_any());
-        /*#p20.HAPE*/ ch4_new.HAPE_LFSR_07.dff17(lfsr_clk_new,       1, ch4_old.JAJU_LFSR_06.qp_any());
-        /*#p20.JUXE*/ ch4_new.JUXE_LFSR_08.dff17(lfsr_clk_new,       1, ch4_old.HAPE_LFSR_07.qp_any());
-
-        /*#p20.JEPE*/ ch4_new.JEPE_LFSR_09.dff17(lfsr_clk_new,       1, ch4_old.JOTO_LFSR_00.qp_any());
-      }
-      else {
-        /*#p20.JOTO*/ ch4_new.JOTO_LFSR_00.dff17(not1(lfsr_clk_new), 1, bit(HURA_LFSR_IN_old));
-        /*#p20.KOMU*/ ch4_new.KOMU_LFSR_01.dff17(lfsr_clk_new,       1, ch4_old.JOTO_LFSR_00.qp_any());
-        /*#p20.KETU*/ ch4_new.KETU_LFSR_02.dff17(lfsr_clk_new,       1, ch4_old.KOMU_LFSR_01.qp_any());
-        /*#p20.KUTA*/ ch4_new.KUTA_LFSR_03.dff17(lfsr_clk_new,       1, ch4_old.KETU_LFSR_02.qp_any());
-        /*#p20.KUZY*/ ch4_new.KUZY_LFSR_04.dff17(lfsr_clk_new,       1, ch4_old.KUTA_LFSR_03.qp_any());
-        /*#p20.KYWY*/ ch4_new.KYWY_LFSR_05.dff17(lfsr_clk_new,       1, ch4_old.KUZY_LFSR_04.qp_any());
-        /*#p20.JAJU*/ ch4_new.JAJU_LFSR_06.dff17(lfsr_clk_new,       1, ch4_old.KYWY_LFSR_05.qp_any());
-        /*#p20.HAPE*/ ch4_new.HAPE_LFSR_07.dff17(lfsr_clk_new,       1, ch4_old.JAJU_LFSR_06.qp_any());
-        /*#p20.JUXE*/ ch4_new.JUXE_LFSR_08.dff17(lfsr_clk_new,       1, ch4_old.HAPE_LFSR_07.qp_any());
-        /*#p20.JEPE*/ ch4_new.JEPE_LFSR_09.dff17(lfsr_clk_new,       1, ch4_old.JUXE_LFSR_08.qp_any());
+      if (negedge(lfsr_clk_old, lfsr_clk_new)) {
+        ch4_new.JOTO_LFSR_00.state = HURA_LFSR_IN_old;
       }
 
       if (posedge(lfsr_clk_old, lfsr_clk_new)) {
-        ch4_new.JAVO_LFSR_10.state = ch4_old.JEPE_LFSR_09.state;
-        ch4_new.HEPA_LFSR_11.state = ch4_old.JAVO_LFSR_10.state;
-        ch4_new.HORY_LFSR_12.state = ch4_old.HEPA_LFSR_11.state;
-        ch4_new.HENO_LFSR_13.state = ch4_old.HORY_LFSR_12.state;
-        ch4_new.HYRO_LFSR_14.state = ch4_old.HENO_LFSR_13.state;
-        ch4_new.HEZU_LFSR_15.state = ch4_old.HYRO_LFSR_14.state;
+        ch4_new.KOMU_LFSR_01.state = bit(lfsr, 0);
+        ch4_new.KETU_LFSR_02.state = bit(lfsr, 1);
+        ch4_new.KUTA_LFSR_03.state = bit(lfsr, 2);
+        ch4_new.KUZY_LFSR_04.state = bit(lfsr, 3);
+        ch4_new.KYWY_LFSR_05.state = bit(lfsr, 4);
+        ch4_new.JAJU_LFSR_06.state = bit(lfsr, 5);
+        ch4_new.HAPE_LFSR_07.state = bit(lfsr, 6);
+        ch4_new.JUXE_LFSR_08.state = bit(lfsr, 7);
+        ch4_new.JEPE_LFSR_09.state = bit(ch4_old.JAMY_NR43_MODEp.qp_any()) ? bit(lfsr, 0) : bit(lfsr, 8);
+        ch4_new.JAVO_LFSR_10.state = bit(lfsr, 9);
+        ch4_new.HEPA_LFSR_11.state = bit(lfsr, 10);
+        ch4_new.HORY_LFSR_12.state = bit(lfsr, 11);
+        ch4_new.HENO_LFSR_13.state = bit(lfsr, 12);
+        ch4_new.HYRO_LFSR_14.state = bit(lfsr, 13);
+        ch4_new.HEZU_LFSR_15.state = bit(lfsr, 14);
       }
     }
 

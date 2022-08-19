@@ -122,11 +122,6 @@ void tick_ch4_fast(
     }
   }
   else {
-    if (DELTA_GH && SIG_IN_CPU_WRp) {
-      if (addr == 0xFF21) nr42 = dbus_old;
-      if (addr == 0xFF22) nr43 = dbus_old;
-    }
-
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 1, ch4_old.HOGA_NR44_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
     ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GONE_CH4_TRIGp.qp_any());
@@ -135,6 +130,8 @@ void tick_ch4_fast(
     ch4_new.HAZO_CH4_TRIGn.nor_latch(ch4_new.GORA_CH4_TRIGp.qp_any(), ch4_new.GYSU_CH4_TRIG.qp_any());
 
     if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
+      if (addr == 0xFF21) nr42 = dbus_old;
+      if (addr == 0xFF22) nr43 = dbus_old;
       if (addr == 0xFF23) {
         ch4_new.CUNY_NR44_LEN_ENp.state = cpu_dbus_old.BUS_CPU_D06p.qp_any();
         ch4_new.HOGA_NR44_TRIGp.state = cpu_dbus_old.BUS_CPU_D07p.qp_any();
@@ -405,10 +402,10 @@ void tick_ch4_fast(
   /*_p20.ATEL*/ triwire ATEL = tri6_nn(BAGU_DBG, BEFA_DBG); // goes to data bus D0
 #endif
 
-  if (addr == 0xFF21 && TEDO_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8));
-  if (addr == 0xFF22 && TEDO_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.JARE_NR43_DIV0p, 8));
+  if (addr == 0xFF21 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8));
+  if (addr == 0xFF22 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.JARE_NR43_DIV0p, 8));
 
-  if (addr == 0xFF23 && TEDO_CPU_RDp) {
+  if (addr == 0xFF23 && SIG_IN_CPU_RDp) {
     /*#p19.CURY*/ triwire CURY = tri6_nn(0, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
     /*_BUS_CPU_D06p*/ cpu_dbus_new.BUS_CPU_D06p.tri_bus(CURY);
   }

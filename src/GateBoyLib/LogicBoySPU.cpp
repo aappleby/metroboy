@@ -69,43 +69,10 @@ void tick_spu_fast(
   uint8_t* wave_ram
 )
 {
- 
   auto addr = bit_pack(cpu_abus_new);
   auto dbus_old = bit_pack(cpu_dbus_old);
 
-  /*_p09.AGUZ*/ wire AGUZ_CPU_RDn = not1(TEDO_CPU_RDp);
-  /*_p10.BAFU*/ wire BAFU_CPU_WRn = not1(TAPU_CPU_WRp);
-  /*_p10.BOGY*/ wire BOGY_CPU_WRp = not1(BAFU_CPU_WRn);
-
   memset(&wave_dbus_new, BIT_NEW | BIT_PULLED | 1, sizeof(wave_dbus_new));
-
-  /*_p10.DYTE*/ wire DYTE_A00n = not1(cpu_abus_new.BUS_CPU_A00p.out_any());
-  /*_p10.AFOB*/ wire AFOB_A01n = not1(cpu_abus_new.BUS_CPU_A01p.out_any());
-  /*_p10.ABUB*/ wire ABUB_A02n = not1(cpu_abus_new.BUS_CPU_A02p.out_any());
-  /*_p10.ACOL*/ wire ACOL_A03n = not1(cpu_abus_new.BUS_CPU_A03p.out_any());
-  /*#p10.BOXY*/ wire BOXY_A05n = not1(cpu_abus_new.BUS_CPU_A05p.out_any());
-  /*_p10.DOSO*/ wire DOSO_A00p = not1(DYTE_A00n);
-  /*_p10.DUPA*/ wire DUPA_A01p = not1(AFOB_A01n);
-  /*_p10.DENO*/ wire DENO_A02p = not1(ABUB_A02n);
-
-  /*_p10.AWET*/ wire AWET_ADDR_XX2Xn = or4(cpu_abus_new.BUS_CPU_A07p.out_any(), cpu_abus_new.BUS_CPU_A06p.out_any(), BOXY_A05n, cpu_abus_new.BUS_CPU_A04p.out_any());
-  /*_p07.BAKO*/ wire BAKO_ADDR_FFXXn = not1(cpu_abus_new.SYKE_ADDR_HIp_any());
-  /*_p10.BEZY*/ wire BEZY_ADDR_FF2Xn = or2(AWET_ADDR_XX2Xn, BAKO_ADDR_FFXXn);
-  /*_p10.CONA*/ wire CONA_ADDR_FF2Xp = not1(BEZY_ADDR_FF2Xn);
-
-  /*_p10.DATU*/ wire DATU_ADDR_0100n = nand4(ACOL_A03n, DENO_A02p, AFOB_A01n, DYTE_A00n);
-  /*_p10.DURA*/ wire DURA_ADDR_0101n = nand4(ACOL_A03n, DENO_A02p, AFOB_A01n, DOSO_A00p);
-  /*#p10.EKAG*/ wire EKAG_ADDR_0110p =  and4(ACOL_A03n, DENO_A02p, DUPA_A01p, DYTE_A00n);
-
-  // The APU reset register _must_ be ticked first.
-
-  /*#p10.DOXY*/ wire DOXY_ADDR_FF26p = and2(CONA_ADDR_FF2Xp, EKAG_ADDR_0110p); // was this wrong on the schematic?
-  /*#p09.HAWU*/ wire HAWU_NR52_WRn = nand2(DOXY_ADDR_FF26p, BOGY_CPU_WRp);
-  /*#p01.AVOR*/ wire AVOR_SYS_RSTp = or2(AFER_SYS_RSTp, ASOL_POR_DONEn);
-  /*#p01.ALUR*/ wire ALUR_SYS_RSTn = not1(AVOR_SYS_RSTp);
-  /*_p09.HAPO*/ wire HAPO_SYS_RSTp = not1(ALUR_SYS_RSTn);
-  
-
 
   if (bit(or2(AFER_SYS_RSTp, ASOL_POR_DONEn))) {
     spu_new.HADA_NR52_ALL_SOUND_ON.state = 0;
@@ -118,13 +85,7 @@ void tick_spu_fast(
     }
   }
 
-
-
-
-
-
-
-  /*_p09.JYRO*/ wire apu_rst = bit(or3(AFER_SYS_RSTp, ASOL_POR_DONEn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any()));
+  bool apu_rst = bit(or3(AFER_SYS_RSTp, ASOL_POR_DONEn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any()));
 
   if (apu_rst) {
     spu_phase_new = -1;
@@ -132,10 +93,6 @@ void tick_spu_fast(
   else {
     spu_phase_new++;
   }
-
-
-
-
 
   //----------
   // SPU clock dividers
@@ -157,16 +114,11 @@ void tick_spu_fast(
   // Low-speed clocks are picked up from DIV
 
   /*_p01.COKE*/ wire COKE_AxxDExxH = not1(spu_new.AJER_AxxDExxH.qn_any());
-  /*_p01.UMER*/ wire UMER_DIV10n_old = not1(TERU_DIV10p_old);
 
-  // FIXME speed up spu clocks for debugging
-  //wire UMER_DIV10n_old = not1(reg_old.reg_div.TULU_DIV07p.qp_any());
 
-  /*_p01.BARA*/ spu_new.BARA_CLK_512.dff17(COKE_AxxDExxH, !apu_rst, UMER_DIV10n_old);
-  /*_p01.BURE*/ wire BURE_CLK_512_new = not1(spu_new.BARA_CLK_512.qp_any());
-
-  /*_p01.CARU*/ spu_new.CARU_CLK_256.dff17(BURE_CLK_512_new, !apu_rst, spu_old.CARU_CLK_256.qn_any());
-  /*_p01.BYLU*/ spu_new.BYLU_CLK_128.dff17(spu_new.CARU_CLK_256.qn_any(), !apu_rst, spu_old.BYLU_CLK_128.qn_any());
+  /*_p01.BARA*/ spu_new.BARA_CLK_512.dff17(COKE_AxxDExxH,                  !apu_rst, not1(TERU_DIV10p_old));
+  /*_p01.CARU*/ spu_new.CARU_CLK_256.dff17(~spu_new.BARA_CLK_512.qp_any(), !apu_rst, spu_old.CARU_CLK_256.qn_any());
+  /*_p01.BYLU*/ spu_new.BYLU_CLK_128.dff17(~spu_new.CARU_CLK_256.qp_any(), !apu_rst, spu_old.BYLU_CLK_128.qn_any());
 
 
   tick_ch1_fast(

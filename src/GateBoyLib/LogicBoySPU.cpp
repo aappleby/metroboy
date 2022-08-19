@@ -275,54 +275,16 @@ void tick_spu_fast(
   );
 
   if (apu_rst) {
+    bit_unpack(&spu_new.APEG_NR50_VOL_L0, 8, 0);
+    bit_unpack(&spu_new.ANEV_NR51_RCH1_ENp, 8, 0);
+    spu_new.BOWY_NR52_DBG_SWEEP.state = 0;
   }
   else {
     if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
+      if (addr == 0xFF24) bit_unpack(&spu_new.APEG_NR50_VOL_L0, 8, dbus_old);
+      if (addr == 0xFF25) bit_unpack(&spu_new.ANEV_NR51_RCH1_ENp, 8, dbus_old);
+      if (addr == 0xFF26) spu_new.BOWY_NR52_DBG_SWEEP.state = bit(dbus_old, 5);
     }
-  }
-
-  {
-    /*_p10.CAFY*/ wire CAFY_ADDR_FF24p = nor2(BEZY_ADDR_FF2Xn, DATU_ADDR_0100n);
-    /*_p09.BOSU*/ wire BOSU_NR50_WRn = nand2(CAFY_ADDR_FF24p, BOGY_CPU_WRp);
-    /*_p09.BAXY*/ wire BAXY_NR50_WRp = not1(BOSU_NR50_WRn);
-    /*_p09.BOWE*/ wire BOWE_NR50_WRp = not1(BOSU_NR50_WRn);
-    /*_p09.BUBU*/ wire BUBU_NR50_WRn = not1(BAXY_NR50_WRp);
-    /*_p09.ATAF*/ wire ATAF_NR50_WRn = not1(BOWE_NR50_WRp);
-
-    /*_p09.APEG*/ spu_new.APEG_NR50_VOL_L0  .dff9(ATAF_NR50_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D00p.out_any());
-    /*_p09.BYGA*/ spu_new.BYGA_NR50_VOL_L1  .dff9(ATAF_NR50_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D01p.out_any());
-    /*_p09.AGER*/ spu_new.AGER_NR50_VOL_L2  .dff9(ATAF_NR50_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D02p.out_any());
-    /*_p09.APOS*/ spu_new.APOS_NR50_VIN_TO_L.dff9(ATAF_NR50_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D03p.out_any());
-    /*_p09.BYRE*/ spu_new.BYRE_NR50_VOL_R0  .dff9(BUBU_NR50_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D04p.out_any());
-    /*_p09.BUMO*/ spu_new.BUMO_NR50_VOL_R1  .dff9(BUBU_NR50_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D05p.out_any());
-    /*_p09.COZU*/ spu_new.COZU_NR50_VOL_R2  .dff9(BUBU_NR50_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D06p.out_any());
-    /*_p09.BEDU*/ spu_new.BEDU_NR50_VIN_TO_R.dff9(BUBU_NR50_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D07p.out_any());
-  }
-
-  {
-    // The die trace for NR51 has the clkp/clkn backwards compared to the other dff9s.
-
-    /*_p10.CORA*/ wire CORA_ADDR_FF25p = nor2(BEZY_ADDR_FF2Xn, DURA_ADDR_0101n);
-    /*#p09.BUPO*/ wire BUPO_NR51_WRn = nand2(CORA_ADDR_FF25p, BOGY_CPU_WRp);
-    /*#p09.BONO*/ wire BONO_NR51_WRp = not1(BUPO_NR51_WRn);
-    /*#p09.BYFA*/ wire BYFA_NR51_WRp = not1(BUPO_NR51_WRn);
-    /*#p09.BONO*/ wire BONO_NR51_WRn = not1(BONO_NR51_WRp);
-    /*#p09.BYFA*/ wire BYFA_NR51_WRn = not1(BYFA_NR51_WRp);
-
-    /*_p09.ANEV*/ spu_new.ANEV_NR51_RCH1_ENp.dff9(BONO_NR51_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D00p.out_any());
-    /*_p09.BOGU*/ spu_new.BOGU_NR51_RCH2_ENp.dff9(BONO_NR51_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D01p.out_any());
-    /*_p09.BAFO*/ spu_new.BAFO_NR51_RCH3_ENp.dff9(BONO_NR51_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D02p.out_any());
-    /*_p09.ATUF*/ spu_new.ATUF_NR51_RCH4_ENp.dff9(BONO_NR51_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D03p.out_any());
-    /*_p09.BUME*/ spu_new.BUME_NR51_LCH1_ENp.dff9(BYFA_NR51_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D04p.out_any());
-    /*_p09.BOFA*/ spu_new.BOFA_NR51_LCH2_ENp.dff9(BYFA_NR51_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D05p.out_any());
-    /*_p09.BEFO*/ spu_new.BEFO_NR51_LCH3_ENp.dff9(BYFA_NR51_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D06p.out_any());
-    /*_p09.BEPU*/ spu_new.BEPU_NR51_LCH4_ENp.dff9(BYFA_NR51_WRn, !apu_rst, cpu_dbus_old.BUS_CPU_D07p.out_any());
-  }
-
-  {
-    ///*#p10.DOXY*/ wire DOXY_ADDR_FF26p = and2(CONA_ADDR_FF2Xp, EKAG_ADDR_0110p); // was this wrong on the schematic?
-    /*#p09.BOPY*/ wire BOPY_NR52_WRn = nand2(BOGY_CPU_WRp, DOXY_ADDR_FF26p);
-    /*#p09.BOWY*/ spu_new.BOWY_NR52_DBG_SWEEP.dff17(BOPY_NR52_WRn, KEPY_APU_RSTn, cpu_dbus_old.BUS_CPU_D05p.out_any());
   }
 
   {

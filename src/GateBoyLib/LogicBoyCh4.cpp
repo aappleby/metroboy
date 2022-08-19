@@ -159,12 +159,12 @@ void tick_ch4_fast(
 
   if (bit(KEBA_APU_RSTp)) {
     ch4_new.CUNY_NR44_LEN_ENp.state = 0;
-  }
-
-  if (bit(~nor2(KEBA_APU_RSTp, ch4_new.GYSU_CH4_TRIG.qp_any()))) {
     ch4_new.HOGA_NR44_TRIGp.state = 0;
   }
 
+  if (bit(ch4_new.GYSU_CH4_TRIG.qp_any())) {
+    ch4_new.HOGA_NR44_TRIGp.state = 0;
+  }
 
   /*#p20.GUNY*/ wire GUNY_FREQ_GATE_RSTn_new = nor2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
 

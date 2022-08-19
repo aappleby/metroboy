@@ -29,6 +29,7 @@ int spu_audio_out_l(GateBoyState& reg_new) {
 
 void tick_spu_fast(
   uint64_t phase_new,
+  uint64_t& apu_phase_new,
 
   const GateBoyCpuABus& cpu_abus_new,
   const GateBoyCpuDBus& cpu_dbus_old,
@@ -172,6 +173,8 @@ void tick_spu_fast(
 
   tick_ch1_fast(
     phase_new,
+    apu_phase_new,
+
     cpu_dbus_old,
     spu_old,
     ch1_old,
@@ -196,6 +199,8 @@ void tick_spu_fast(
 
   tick_ch2_fast(
     phase_new,
+    apu_phase_new,
+
     cpu_dbus_old,
     spu_old,
     ch2_old,
@@ -218,6 +223,8 @@ void tick_spu_fast(
 
   tick_ch3_fast(
     phase_new,
+    apu_phase_new,
+
     cpu_dbus_old,
     spu_old,
     ch3_old,
@@ -247,6 +254,8 @@ void tick_spu_fast(
 
   tick_ch4_fast(
     phase_new,
+    apu_phase_new,
+
     cpu_dbus_old,
     spu_old,
     ch4_old,
@@ -290,7 +299,6 @@ void tick_spu_fast(
   {
     if (addr == 0xFF24 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.APEG_NR50_VOL_L0, 8));
     if (addr == 0xFF25 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.ANEV_NR51_RCH1_ENp, 8));
-    
     if (addr == 0xFF26 && SIG_IN_CPU_RDp) {
       auto dbus_new = pack(
         ch1_new.CYTO_CH1_ACTIVEp.qp_any(),

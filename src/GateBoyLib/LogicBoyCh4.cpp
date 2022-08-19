@@ -46,6 +46,7 @@ sample_t ch4_audio_out_fast(const SpuChannel4& ch4) {
 
 void tick_ch4_fast(
   uint64_t phase_new,
+  uint64_t apu_phase_new,
 
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoySPU& spu_old,

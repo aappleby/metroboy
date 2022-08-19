@@ -74,14 +74,12 @@ void tick_spu_fast(
 
   memset(&wave_dbus_new, BIT_NEW | BIT_PULLED | 1, sizeof(wave_dbus_new));
 
-  if (bit(or2(AFER_SYS_RSTp, ASOL_POR_DONEn))) {
+  if (bit(AFER_SYS_RSTp) || bit(ASOL_POR_DONEn)) {
     spu_new.HADA_NR52_ALL_SOUND_ON.state = 0;
   }
   else {
     if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
-      if (addr == 0xFF26) {
-        spu_new.HADA_NR52_ALL_SOUND_ON.state = cpu_dbus_old.BUS_CPU_D07p.out_any();
-      }
+      if (addr == 0xFF26) spu_new.HADA_NR52_ALL_SOUND_ON.state = cpu_dbus_old.BUS_CPU_D07p.out_any();
     }
   }
 
@@ -239,21 +237,19 @@ void tick_spu_fast(
     }
   }
 
-  {
-    if (addr == 0xFF24 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.APEG_NR50_VOL_L0, 8));
-    if (addr == 0xFF25 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.ANEV_NR51_RCH1_ENp, 8));
-    if (addr == 0xFF26 && SIG_IN_CPU_RDp) {
-      auto dbus_new = pack(
-        ch1_new.CYTO_CH1_ACTIVEp.qp_any(),
-        ch2_new.DANE_CH2_ACTIVEp.qp_any(),
-        ch3_new.DAVO_CH3_ACTIVEp.qp_any(),
-        ch4_new.GENA_CH4_ACTIVEp.qp_any(),
-        1, 1, 1,
-        spu_new.HADA_NR52_ALL_SOUND_ON.qp_any()
-      );
+  if (addr == 0xFF24 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.APEG_NR50_VOL_L0, 8));
+  if (addr == 0xFF25 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.ANEV_NR51_RCH1_ENp, 8));
+  if (addr == 0xFF26 && SIG_IN_CPU_RDp) {
+    auto dbus_new = pack(
+      ch1_new.CYTO_CH1_ACTIVEp.qp_any(),
+      ch2_new.DANE_CH2_ACTIVEp.qp_any(),
+      ch3_new.DAVO_CH3_ACTIVEp.qp_any(),
+      ch4_new.GENA_CH4_ACTIVEp.qp_any(),
+      1, 1, 1,
+      spu_new.HADA_NR52_ALL_SOUND_ON.qp_any()
+    );
 
-      bit_unpack(&cpu_dbus_new, 8, dbus_new);
-    }
+    bit_unpack(&cpu_dbus_new, 8, dbus_new);
   }
 }
 

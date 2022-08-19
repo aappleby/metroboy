@@ -396,12 +396,15 @@ void tick_ch4_fast(
   }
 
 
+  if (bit(ch4_new.FYNO_VOL_MAXp.qp_any())) {
+    ch4_new.EROX_ENV_RUNNINGn.state = 1;
+  }
+  if (bit(or2(apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any()))) {
+    ch4_new.EROX_ENV_RUNNINGn.state = 0;
+  }
 
 
-  /*#p20.EROX*/ ch4_new.EROX_ENV_RUNNINGn.nor_latch(ch4_new.FYNO_VOL_MAXp.qp_any(), or2(apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any()));
-
-  /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = env_delay_new == 0;
-  /*#p20.FELO*/ wire FELO_ENV_CLK = or3(ch4_new.FOSY_ENV_CLKp.qp_any(), FOWA_ENV_OFFp_new, ch4_new.EROX_ENV_RUNNINGn.qp_any());
+  /*#p20.FELO*/ wire FELO_ENV_CLK = or3(ch4_new.FOSY_ENV_CLKp.qp_any(), env_delay_new == 0, ch4_new.EROX_ENV_RUNNINGn.qp_any());
 
   if (bit(ch4_new.GEKY_NR42_ENV_DIRp.qp_any())) {
     /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FELO_ENV_CLK,                   ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_ENV0p.qp_any());

@@ -2818,12 +2818,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     state_new.cpu_dbus = (uint8_t)bit_pack(temp_dbus_new);
 
-    commit_regs(lb_state.spu);
-    commit_regs(lb_state.ch1);
-    commit_regs(lb_state.ch2);
-    commit_regs(lb_state.ch3);
-    commit_regs(lb_state.ch4);
-    commit_regs(lb_state.wave_dbus);
+    //commit_regs(lb_state.spu);
+    //commit_regs(lb_state.ch1);
+    //commit_regs(lb_state.ch2);
+    //commit_regs(lb_state.ch3);
+    //commit_regs(lb_state.ch4);
+    //commit_regs(lb_state.wave_dbus);
   }
 
 

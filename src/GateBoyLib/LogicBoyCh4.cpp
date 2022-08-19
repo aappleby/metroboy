@@ -4,6 +4,15 @@
 
 #ifdef SIM_AUDIO
 
+#define DELTA_AB (phase_new == 1)
+#define DELTA_BC (phase_new == 2)
+#define DELTA_CD (phase_new == 3)
+#define DELTA_DE (phase_new == 4)
+#define DELTA_EF (phase_new == 5)
+#define DELTA_FG (phase_new == 6)
+#define DELTA_GH (phase_new == 7)
+#define DELTA_HA (phase_new == 0)
+
 sample_t ch4_audio_out_fast(const SpuChannel4& ch4) {
 
   ///*_p09.EDEK*/ wire EDEK_NR52_DBG_APUp = not1(reg_new.spu.FERO_NR52_DBG_APUp.qn_any());
@@ -168,38 +177,41 @@ void tick_ch4_fast(
 
 
   {
+    if (DELTA_EF) {
+    }
+
     /*#p20.CARY*/ wire CARY_FREQ_CLK = and2(not1(spu_new.AVOK_xBCDExxx.qp_any()), ch4_new.GARY_FREQ_GATEp.qp_any());
 
-    /*#p20.CEXO*/ ch4_new.CEXO_FREQ_00.dff17(CARY_FREQ_CLK,                 ~KEBA_APU_RSTp, ch4_old.CEXO_FREQ_00.qn_any());
-    /*_p20.DEKO*/ ch4_new.DEKO_FREQ_01.dff17(ch4_new.CEXO_FREQ_00.qn_any(), ~KEBA_APU_RSTp, ch4_old.DEKO_FREQ_01.qn_any());
-    /*_p20.EZEF*/ ch4_new.EZEF_FREQ_02.dff17(ch4_new.DEKO_FREQ_01.qn_any(), ~KEBA_APU_RSTp, ch4_old.EZEF_FREQ_02.qn_any());
-    /*_p20.EPOR*/ ch4_new.EPOR_FREQ_03.dff17(ch4_new.EZEF_FREQ_02.qn_any(), ~KEBA_APU_RSTp, ch4_old.EPOR_FREQ_03.qn_any());
-    /*_p20.DURE*/ ch4_new.DURE_FREQ_04.dff17(ch4_new.EPOR_FREQ_03.qn_any(), ~KEBA_APU_RSTp, ch4_old.DURE_FREQ_04.qn_any());
-    /*_p20.DALE*/ ch4_new.DALE_FREQ_05.dff17(ch4_new.DURE_FREQ_04.qn_any(), ~KEBA_APU_RSTp, ch4_old.DALE_FREQ_05.qn_any());
-    /*_p20.DOKE*/ ch4_new.DOKE_FREQ_06.dff17(ch4_new.DALE_FREQ_05.qn_any(), ~KEBA_APU_RSTp, ch4_old.DOKE_FREQ_06.qn_any());
-    /*_p20.DEMO*/ ch4_new.DEMO_FREQ_07.dff17(ch4_new.DOKE_FREQ_06.qn_any(), ~KEBA_APU_RSTp, ch4_old.DEMO_FREQ_07.qn_any());
-    /*_p20.DOSE*/ ch4_new.DOSE_FREQ_08.dff17(ch4_new.DEMO_FREQ_07.qn_any(), ~KEBA_APU_RSTp, ch4_old.DOSE_FREQ_08.qn_any());
-    /*_p20.DETE*/ ch4_new.DETE_FREQ_09.dff17(ch4_new.DOSE_FREQ_08.qn_any(), ~KEBA_APU_RSTp, ch4_old.DETE_FREQ_09.qn_any());
-    /*_p20.ERUT*/ ch4_new.ERUT_FREQ_10.dff17(ch4_new.DETE_FREQ_09.qn_any(), ~KEBA_APU_RSTp, ch4_old.ERUT_FREQ_10.qn_any());
-    /*_p20.DOTA*/ ch4_new.DOTA_FREQ_11.dff17(ch4_new.ERUT_FREQ_10.qn_any(), ~KEBA_APU_RSTp, ch4_old.DOTA_FREQ_11.qn_any());
-    /*_p20.DERE*/ ch4_new.DERE_FREQ_12.dff17(ch4_new.DOTA_FREQ_11.qn_any(), ~KEBA_APU_RSTp, ch4_old.DERE_FREQ_12.qn_any());
-    /*_p20.ESEP*/ ch4_new.ESEP_FREQ_13.dff17(ch4_new.DERE_FREQ_12.qn_any(), ~KEBA_APU_RSTp, ch4_old.ESEP_FREQ_13.qn_any());
+    /*#p20.CEXO*/ ch4_new.CEXO_FREQ_00.dff17(CARY_FREQ_CLK,                 1, ch4_old.CEXO_FREQ_00.qn_any());
+    /*_p20.DEKO*/ ch4_new.DEKO_FREQ_01.dff17(ch4_new.CEXO_FREQ_00.qn_any(), 1, ch4_old.DEKO_FREQ_01.qn_any());
+    /*_p20.EZEF*/ ch4_new.EZEF_FREQ_02.dff17(ch4_new.DEKO_FREQ_01.qn_any(), 1, ch4_old.EZEF_FREQ_02.qn_any());
+    /*_p20.EPOR*/ ch4_new.EPOR_FREQ_03.dff17(ch4_new.EZEF_FREQ_02.qn_any(), 1, ch4_old.EPOR_FREQ_03.qn_any());
+    /*_p20.DURE*/ ch4_new.DURE_FREQ_04.dff17(ch4_new.EPOR_FREQ_03.qn_any(), 1, ch4_old.DURE_FREQ_04.qn_any());
+    /*_p20.DALE*/ ch4_new.DALE_FREQ_05.dff17(ch4_new.DURE_FREQ_04.qn_any(), 1, ch4_old.DALE_FREQ_05.qn_any());
+    /*_p20.DOKE*/ ch4_new.DOKE_FREQ_06.dff17(ch4_new.DALE_FREQ_05.qn_any(), 1, ch4_old.DOKE_FREQ_06.qn_any());
+    /*_p20.DEMO*/ ch4_new.DEMO_FREQ_07.dff17(ch4_new.DOKE_FREQ_06.qn_any(), 1, ch4_old.DEMO_FREQ_07.qn_any());
+    /*_p20.DOSE*/ ch4_new.DOSE_FREQ_08.dff17(ch4_new.DEMO_FREQ_07.qn_any(), 1, ch4_old.DOSE_FREQ_08.qn_any());
+    /*_p20.DETE*/ ch4_new.DETE_FREQ_09.dff17(ch4_new.DOSE_FREQ_08.qn_any(), 1, ch4_old.DETE_FREQ_09.qn_any());
+    /*_p20.ERUT*/ ch4_new.ERUT_FREQ_10.dff17(ch4_new.DETE_FREQ_09.qn_any(), 1, ch4_old.ERUT_FREQ_10.qn_any());
+    /*_p20.DOTA*/ ch4_new.DOTA_FREQ_11.dff17(ch4_new.ERUT_FREQ_10.qn_any(), 1, ch4_old.DOTA_FREQ_11.qn_any());
+    /*_p20.DERE*/ ch4_new.DERE_FREQ_12.dff17(ch4_new.DOTA_FREQ_11.qn_any(), 1, ch4_old.DERE_FREQ_12.qn_any());
+    /*_p20.ESEP*/ ch4_new.ESEP_FREQ_13.dff17(ch4_new.DERE_FREQ_12.qn_any(), 1, ch4_old.ESEP_FREQ_13.qn_any());
 
     if (bit(KEBA_APU_RSTp)) {
-    ch4_new.CEXO_FREQ_00.state = BIT_NEW | BIT_CLOCK; //ch4_new.CEXO_FREQ_00.state = dff17(CARY_FREQ_CLK,                 ~KEBA_APU_RSTp, ch4_old.CEXO_FREQ_00.qn_any());
-    ch4_new.DEKO_FREQ_01.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.EZEF_FREQ_02.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.EPOR_FREQ_03.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.DURE_FREQ_04.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.DALE_FREQ_05.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.DOKE_FREQ_06.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.DEMO_FREQ_07.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.DOSE_FREQ_08.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.DETE_FREQ_09.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.ERUT_FREQ_10.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.DOTA_FREQ_11.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.DERE_FREQ_12.state = BIT_NEW | BIT_CLOCK;
-    ch4_new.ESEP_FREQ_13.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.CEXO_FREQ_00.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.DEKO_FREQ_01.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.EZEF_FREQ_02.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.EPOR_FREQ_03.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.DURE_FREQ_04.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.DALE_FREQ_05.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.DOKE_FREQ_06.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.DEMO_FREQ_07.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.DOSE_FREQ_08.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.DETE_FREQ_09.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.ERUT_FREQ_10.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.DOTA_FREQ_11.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.DERE_FREQ_12.state = BIT_NEW | BIT_CLOCK;
+      ch4_new.ESEP_FREQ_13.state = BIT_NEW | BIT_CLOCK;
     }
   }
 

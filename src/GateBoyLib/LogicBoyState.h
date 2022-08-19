@@ -168,7 +168,7 @@ struct LogicBoyState {
   LCDControl lcd;
 
 #ifdef SIM_AUDIO
-  uint64_t apu_phase_new;
+  int64_t apu_phase_new;
   GateBoySPU  spu;
   SpuChannel1 ch1;
   SpuChannel2 ch2;

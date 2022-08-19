@@ -86,7 +86,7 @@ sample_t spu_audio_out_l(const GateBoyState& reg_new);
 
 void tick_spu_fast(
   uint64_t phase_new,
-  uint64_t& apu_phase_new,
+  int64_t& spu_phase_new,
 
   const GateBoyCpuABus& cpu_abus_new,
   const GateBoyCpuDBus& cpu_dbus_old,
@@ -128,7 +128,7 @@ void tick_spu_fast(
 
 void tick_ch1_fast(
   uint64_t phase_new,
-  uint64_t apu_phase_new,
+  int64_t spu_phase_new,
 
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoySPU& spu_old,
@@ -152,7 +152,7 @@ void tick_ch1_fast(
 
 void tick_ch2_fast(
   uint64_t phase_new,
-  uint64_t apu_phase_new,
+  int64_t spu_phase_new,
 
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoySPU& spu_old,
@@ -176,7 +176,7 @@ void tick_ch2_fast(
 
 void tick_ch3_fast(
   uint64_t phase_new,
-  uint64_t apu_phase_new,
+  int64_t spu_phase_new,
 
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoySPU& spu_old,
@@ -207,7 +207,7 @@ void tick_ch3_fast(
 
 void tick_ch4_fast(
   uint64_t phase_new,
-  uint64_t apu_phase_new,
+  int64_t spu_phase_new,
 
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoySPU& spu_old,

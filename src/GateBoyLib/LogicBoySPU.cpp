@@ -29,7 +29,7 @@ int spu_audio_out_l(GateBoyState& reg_new) {
 
 void tick_spu_fast(
   uint64_t phase_new,
-  uint64_t& apu_phase_new,
+  int64_t& spu_phase_new,
 
   const GateBoyCpuABus& cpu_abus_new,
   const GateBoyCpuDBus& cpu_dbus_old,
@@ -108,6 +108,15 @@ void tick_spu_fast(
 
   /*_p09.JYRO*/ wire apu_rst = bit(or3(AFER_SYS_RSTp, ASOL_POR_DONEn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any()));
 
+  if (apu_rst) {
+    spu_phase_new = -1;
+  }
+  else {
+    spu_phase_new++;
+  }
+
+
+
   /*_p09.JYRO*/ wire JYRO_APU_RSTp = or2(HAPO_SYS_RSTp, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any());
   /*_p09.KUBY*/ wire KUBY_APU_RSTn = not1(JYRO_APU_RSTp);
   /*_p09.KEBA*/ wire KEBA_APU_RSTp = not1(KUBY_APU_RSTn);
@@ -122,30 +131,14 @@ void tick_spu_fast(
   //----------
   // SPU clock dividers
 
-  /*_p01.BOPO*/ wire BOPO_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*_p09.KAME*/ wire KAME_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*_p01.BELA*/ wire BELA_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*_p09.ATYV*/ wire ATYV_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*#p09.AGUR*/ wire AGUR_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*#p15.BUWE*/ wire BUWE_APU_RSTn_new = not1(KEBA_APU_RSTp);
+  /*_p01.CERY*/ spu_new.CERY_AxxDExxH.dff17(not1(AVET_AxCxExGx), !apu_rst, spu_old.CERY_AxxDExxH.qn_any());
+  /*_p01.ATYK*/ spu_new.ATYK_AxxDExxH.dff17(not1(AVET_AxCxExGx), !apu_rst, spu_old.ATYK_AxxDExxH.qn_any());
+  /*_p15.ATEP*/ spu_new.ATEP_AxxDExxH.dff17(not1(AVET_AxCxExGx), !apu_rst, spu_old.ATEP_AxxDExxH.qn_any());
+  /*_p09.AJER*/ spu_new.AJER_AxxDExxH.dff17(not1(AVET_AxCxExGx), !apu_rst, spu_old.AJER_AxxDExxH.qn_any());
 
-  /*_p01.ATAL*/ wire ATAL_xBxDxFxH = not1(AVET_AxCxExGx);
-  /*_p01.AZOF*/ wire AZOF_AxCxExGx = not1(ATAL_xBxDxFxH);
-  /*_p01.ATAG*/ wire ATAG_AxCxExGx = not1(AZOF_AxCxExGx);
-  /*_p01.AMUK*/ wire AMUK_xBxDxFxH = not1(ATAG_AxCxExGx);
-  /*_p15.AZEG*/ wire AZEG_AxCxExGx = not1(AMUK_xBxDxFxH);
-  /*_p01.APUV*/ wire APUV_AxCxExGx = not1(AMUK_xBxDxFxH);
-  /*_p01.CYBO*/ wire CYBO_AxCxExGx = not1(AMUK_xBxDxFxH);
-  /*_p01.ARYF*/ wire ARYF_AxCxExGx = not1(AMUK_xBxDxFxH);
-
-  /*_p01.CERY*/ spu_new.CERY_AxxDExxH.dff17(CYBO_AxCxExGx, !apu_rst, spu_old.CERY_AxxDExxH.qn_any());
-  /*_p01.ATYK*/ spu_new.ATYK_AxxDExxH.dff17(ARYF_AxCxExGx, !apu_rst, spu_old.ATYK_AxxDExxH.qn_any());
-  /*_p15.ATEP*/ spu_new.ATEP_AxxDExxH.dff17(AZEG_AxCxExGx, !apu_rst, spu_old.ATEP_AxxDExxH.qn_any());
-  /*_p09.AJER*/ spu_new.AJER_AxxDExxH.dff17(APUV_AxCxExGx, !apu_rst, spu_old.AJER_AxxDExxH.qn_any());
-
-  /*_p01.AVOK*/ spu_new.AVOK_xBCDExxx.dff17(spu_new.ATYK_AxxDExxH.qn_any(), BOPO_APU_RSTn_new, spu_old.AVOK_xBCDExxx.qn_any());
-  /*_p01.BAVU*/ wire BAVU_AxxxxFGH = not1(spu_new.AVOK_xBCDExxx.qp_any());
-  /*_p01.JESO*/ spu_new.JESO_CLK_512K.dff17(BAVU_AxxxxFGH, KAME_APU_RSTn_new, spu_old.JESO_CLK_512K.qn_any());
+  /*#p01.AVOK*/ spu_new.AVOK_xBCDExxx.dff17(spu_new.ATYK_AxxDExxH.qn_any(), !apu_rst, spu_old.AVOK_xBCDExxx.qn_any());
+  /*#p01.BAVU*/ wire BAVU_AxxxxFGH = not1(spu_new.AVOK_xBCDExxx.qp_any());
+  /*#p01.JESO*/ spu_new.JESO_CLK_512K.dff17(BAVU_AxxxxFGH, !apu_rst, spu_old.JESO_CLK_512K.qn_any());
 
 
   /*#p15.BUFO*/ wire BUFO = not1(spu_new.ATEP_AxxDExxH.qp_any());
@@ -162,8 +155,6 @@ void tick_spu_fast(
   //wire UMER_DIV10n_old = not1(reg_old.reg_div.TULU_DIV07p.qp_any());
 
   /*_p01.ATUS*/ wire ATUS_APU_RSTn_new = not1(KEBA_APU_RSTp);
-
-
   /*_p01.BARA*/ spu_new.BARA_CLK_512.dff17(COKE_AxxDExxH, ATUS_APU_RSTn_new, UMER_DIV10n_old);
   /*_p01.BURE*/ wire BURE_CLK_512_new = not1(spu_new.BARA_CLK_512.qp_any());
 
@@ -173,7 +164,7 @@ void tick_spu_fast(
 
   tick_ch1_fast(
     phase_new,
-    apu_phase_new,
+    spu_phase_new,
 
     cpu_dbus_old,
     spu_old,
@@ -199,7 +190,7 @@ void tick_spu_fast(
 
   tick_ch2_fast(
     phase_new,
-    apu_phase_new,
+    spu_phase_new,
 
     cpu_dbus_old,
     spu_old,
@@ -223,7 +214,7 @@ void tick_spu_fast(
 
   tick_ch3_fast(
     phase_new,
-    apu_phase_new,
+    spu_phase_new,
 
     cpu_dbus_old,
     spu_old,
@@ -254,7 +245,7 @@ void tick_spu_fast(
 
   tick_ch4_fast(
     phase_new,
-    apu_phase_new,
+    spu_phase_new,
 
     cpu_dbus_old,
     spu_old,

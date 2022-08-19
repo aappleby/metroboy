@@ -19,6 +19,8 @@ void LogicBoyState::reset() {
   phase_lcd = 140329;
   phase_tfetch = 10;
   phase_sfetch = 10;
+
+  apu_phase_new = -1;
 }
 
 //-----------------------------------------------------------------------------

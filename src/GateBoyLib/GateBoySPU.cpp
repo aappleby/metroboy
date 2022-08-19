@@ -170,7 +170,7 @@ void tick_spu(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_
 
   /*_p01.AVOK*/ spu_new.AVOK_xBCDExxx.dff17(spu_new.ATYK_AxxDExxH.qn_new(),  BOPO_APU_RSTn_new, spu_old.AVOK_xBCDExxx.qn_old());
   /*_p01.BAVU*/ wire BAVU_AxxxxFGH = not1(reg_new.spu.AVOK_xBCDExxx.qp_new());
-  /*_p01.JESO*/ spu_new.JESO_CLK_512K.dff17(BAVU_AxxxxFGH, KAME_APU_RSTn_new, spu_old.JESO_CLK_512K.qn_old());
+  /*#p01.JESO*/ spu_new.JESO_CLK_512K.dff17(BAVU_AxxxxFGH, KAME_APU_RSTn_new, spu_old.JESO_CLK_512K.qn_old());
 
 
   /*#p15.BUFO*/ wire BUFO = not1(spu_new.ATEP_AxxDExxH.qp_new());

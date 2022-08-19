@@ -314,16 +314,14 @@ void tick_spu_fast(
     if (addr == 0xFF25 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.ANEV_NR51_RCH1_ENp, 8));
     
     if (addr == 0xFF26 && SIG_IN_CPU_RDp) {
-      uint8_t dbus_new = 0;
-
-      dbus_new |= bit(ch1_new.CYTO_CH1_ACTIVEp.qp_any()) << 0;
-      dbus_new |= bit(ch2_new.DANE_CH2_ACTIVEp.qp_any()) << 1;
-      dbus_new |= bit(ch3_new.DAVO_CH3_ACTIVEp.qp_any()) << 2;
-      dbus_new |= bit(ch4_new.GENA_CH4_ACTIVEp.qp_any()) << 3;
-      dbus_new |= 1 << 4;
-      dbus_new |= 1 << 5;
-      dbus_new |= 1 << 6;
-      dbus_new |= bit(spu_new.HADA_NR52_ALL_SOUND_ON.qp_any()) << 7;
+      auto dbus_new = pack(
+        ch1_new.CYTO_CH1_ACTIVEp.qp_any(),
+        ch2_new.DANE_CH2_ACTIVEp.qp_any(),
+        ch3_new.DAVO_CH3_ACTIVEp.qp_any(),
+        ch4_new.GENA_CH4_ACTIVEp.qp_any(),
+        1, 1, 1,
+        spu_new.HADA_NR52_ALL_SOUND_ON.qp_any()
+      );
 
       bit_unpack(&cpu_dbus_new, 8, dbus_new);
     }

@@ -325,12 +325,6 @@ void tick_ch4_fast(
         /*#p20.JUXE*/ ch4_new.JUXE_LFSR_08.dff17(lfsr_clk_new,       1, ch4_old.HAPE_LFSR_07.qp_any());
 
         /*#p20.JEPE*/ ch4_new.JEPE_LFSR_09.dff17(lfsr_clk_new,       1, ch4_old.JOTO_LFSR_00.qp_any());
-        /*#p20.JAVO*/ ch4_new.JAVO_LFSR_10.dff17(lfsr_clk_new,       1, ch4_old.JEPE_LFSR_09.qp_any());
-        /*#p20.HEPA*/ ch4_new.HEPA_LFSR_11.dff17(lfsr_clk_new,       1, ch4_old.JAVO_LFSR_10.qp_any());
-        /*#p20.HORY*/ ch4_new.HORY_LFSR_12.dff17(lfsr_clk_new,       1, ch4_old.HEPA_LFSR_11.qp_any());
-        /*#p20.HENO*/ ch4_new.HENO_LFSR_13.dff17(lfsr_clk_new,       1, ch4_old.HORY_LFSR_12.qp_any());
-        /*#p20.HYRO*/ ch4_new.HYRO_LFSR_14.dff17(lfsr_clk_new,       1, ch4_old.HENO_LFSR_13.qp_any());
-        /*#p20.HEZU*/ ch4_new.HEZU_LFSR_15.dff17(lfsr_clk_new,       1, ch4_old.HYRO_LFSR_14.qp_any());
       }
       else {
         /*#p20.JOTO*/ ch4_new.JOTO_LFSR_00.dff17(not1(lfsr_clk_new), 1, bit(HURA_LFSR_IN_old));
@@ -343,12 +337,15 @@ void tick_ch4_fast(
         /*#p20.HAPE*/ ch4_new.HAPE_LFSR_07.dff17(lfsr_clk_new,       1, ch4_old.JAJU_LFSR_06.qp_any());
         /*#p20.JUXE*/ ch4_new.JUXE_LFSR_08.dff17(lfsr_clk_new,       1, ch4_old.HAPE_LFSR_07.qp_any());
         /*#p20.JEPE*/ ch4_new.JEPE_LFSR_09.dff17(lfsr_clk_new,       1, ch4_old.JUXE_LFSR_08.qp_any());
-        /*#p20.JAVO*/ ch4_new.JAVO_LFSR_10.dff17(lfsr_clk_new,       1, ch4_old.JEPE_LFSR_09.qp_any());
-        /*#p20.HEPA*/ ch4_new.HEPA_LFSR_11.dff17(lfsr_clk_new,       1, ch4_old.JAVO_LFSR_10.qp_any());
-        /*#p20.HORY*/ ch4_new.HORY_LFSR_12.dff17(lfsr_clk_new,       1, ch4_old.HEPA_LFSR_11.qp_any());
-        /*#p20.HENO*/ ch4_new.HENO_LFSR_13.dff17(lfsr_clk_new,       1, ch4_old.HORY_LFSR_12.qp_any());
-        /*#p20.HYRO*/ ch4_new.HYRO_LFSR_14.dff17(lfsr_clk_new,       1, ch4_old.HENO_LFSR_13.qp_any());
-        /*#p20.HEZU*/ ch4_new.HEZU_LFSR_15.dff17(lfsr_clk_new,       1, ch4_old.HYRO_LFSR_14.qp_any());
+      }
+
+      if (posedge(lfsr_clk_old, lfsr_clk_new)) {
+        ch4_new.JAVO_LFSR_10.state = ch4_old.JEPE_LFSR_09.state;
+        ch4_new.HEPA_LFSR_11.state = ch4_old.JAVO_LFSR_10.state;
+        ch4_new.HORY_LFSR_12.state = ch4_old.HEPA_LFSR_11.state;
+        ch4_new.HENO_LFSR_13.state = ch4_old.HORY_LFSR_12.state;
+        ch4_new.HYRO_LFSR_14.state = ch4_old.HENO_LFSR_13.state;
+        ch4_new.HEZU_LFSR_15.state = ch4_old.HYRO_LFSR_14.state;
       }
     }
 
@@ -424,7 +421,6 @@ void tick_ch4_fast(
     if (addr == 0xFF22) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.JARE_NR43_DIV0p, 8));
     if (addr == 0xFF23) cpu_dbus_new.BUS_CPU_D06p.state = ch4_new.CUNY_NR44_LEN_ENp.qp_any();
   }
-
 }
 
 #endif

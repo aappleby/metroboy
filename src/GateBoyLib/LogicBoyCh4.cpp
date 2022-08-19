@@ -103,14 +103,12 @@ void tick_ch4_fast(
   /*_p01.BARU*/ wire BARU_CLK_128 = not1(BULE_CLK_128);
   /*_p01.BYFE*/ wire BYFE_CLK_128 = not1(BARU_CLK_128);
 
-  if (DELTA_GH && SIG_IN_CPU_WRp) {
-    if (addr == 0xFF21) bit_unpack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8, dbus_old);
-    if (addr == 0xFF22) bit_unpack(&ch4_new.JARE_NR43_DIV0p,       8, dbus_old);
-  }
+  auto nr42 = bit_pack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8);
+  auto nr43 = bit_pack(&ch4_new.JARE_NR43_DIV0p, 8);
 
   if (bit(KEBA_APU_RSTp)) {
-    bit_unpack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8, 0);
-    bit_unpack(&ch4_new.JARE_NR43_DIV0p,       8, 0);
+    nr42 = 0;
+    nr43 = 0;
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 0, ch4_old.HOGA_NR44_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
     ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GONE_CH4_TRIGp.qp_any());
@@ -124,6 +122,11 @@ void tick_ch4_fast(
     }
   }
   else {
+    if (DELTA_GH && SIG_IN_CPU_WRp) {
+      if (addr == 0xFF21) nr42 = dbus_old;
+      if (addr == 0xFF22) nr43 = dbus_old;
+    }
+
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 1, ch4_old.HOGA_NR44_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
     ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GONE_CH4_TRIGp.qp_any());
@@ -141,6 +144,9 @@ void tick_ch4_fast(
       ch4_new.HOGA_NR44_TRIGp.state = 0;
     }
   }
+
+  bit_unpack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8, nr42);
+  bit_unpack(&ch4_new.JARE_NR43_DIV0p,       8, nr43);
 
   wire GUNY_FREQ_GATE_RSTn_new = nor2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
 
@@ -214,7 +220,7 @@ void tick_ch4_fast(
     /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20_any(CUWA_LEN_CLKa2, and2(BOGY_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D00p.qp_any());
   }
 
-  /*#p20.GEVY*/ wire GEVY_CH4_AMP_ENn = nor5(
+  wire GEVY_CH4_AMP_ENn = nor5(
     ch4_new.GEKY_NR42_ENV_DIRp.qp_any(),
     ch4_new.GARU_NR42_ENV0p.qp_any(),
     ch4_new.GOKY_NR42_ENV1p.qp_any(),

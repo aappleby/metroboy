@@ -350,8 +350,10 @@ void tick_ch4_fast(
   {
     // Generates a 1 usec pulse when the env timer hits 111
 
+    auto env_delay_old = bit_pack(&ch4_old.CUNA_ENV_DELAY0n, 3) ^ 7;
+
     /*#p20.EJEX*/ wire EJEX_ENV_TIMER_MAX_old = or3(ch4_old.DOGO_ENV_DELAY2n.qp_any(), ch4_old.COFE_ENV_DELAY1n.qp_any(), ch4_old.CUNA_ENV_DELAY0n.qp_any());
-    /*#p20.FOSY*/ ch4_new.FOSY_ENV_CLKp.dff17_clk(HORU_CLK_512, EJEX_ENV_TIMER_MAX_old);
+    /*#p20.FOSY*/ ch4_new.FOSY_ENV_CLKp.dff17_clk(HORU_CLK_512, env_delay_old != 7);
 
     /*#p20.GEXE*/ wire GEXE_ENV_PULSEn_new = not1(ch4_new.FOSY_ENV_CLKp.qp_any());
     /*#p20.HURY*/ wire HURY_ENV_PULSE_RSTp_new = nor2(HORU_CLK_512, GEXE_ENV_PULSEn_new);

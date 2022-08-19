@@ -131,17 +131,24 @@ void tick_ch4_fast(
     bit_unpack(&ch4_new.JARE_NR43_DIV0p,       8, 0);
   }
 
-  /*#p20.GYSU*/ ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, ~KEBA_APU_RSTp, ch4_old.HOGA_NR44_TRIGp.qp_any());
+  if (bit(KEBA_APU_RSTp)) {
+    ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 0, ch4_old.HOGA_NR44_TRIGp.qp_any());
+    ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
+    ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GONE_CH4_TRIGp.qp_any());
+    ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GORA_CH4_TRIGp.qp_any());
+    ch4_new.GONE_CH4_TRIGp.dff17_rst(0);
+    ch4_new.HAZO_CH4_TRIGn.nor_latch(1, ch4_new.GYSU_CH4_TRIG.qp_any());
+  }
+  else {
+    ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 1, ch4_old.HOGA_NR44_TRIGp.qp_any());
+    ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
+    ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GONE_CH4_TRIGp.qp_any());
+    ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GORA_CH4_TRIGp.qp_any());
+    wire FALE_RESET_LATCHn = not1(ch4_new.GORA_CH4_TRIGp.qp_any());
+    ch4_new.GONE_CH4_TRIGp.dff17_rst(FALE_RESET_LATCHn);
+    ch4_new.HAZO_CH4_TRIGn.nor_latch(not1(FALE_RESET_LATCHn), ch4_new.GYSU_CH4_TRIG.qp_any());
+  }
 
-  /*#p20.GONE*/ ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
-  /*#p20.GORA*/ ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, ~KEBA_APU_RSTp, ch4_old.GONE_CH4_TRIGp.qp_any());
-  /*#p20.GATY*/ ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, ~KEBA_APU_RSTp, ch4_old.GORA_CH4_TRIGp.qp_any());
-
-  /*#p20.FALE*/ wire FALE_RESET_LATCHn = nor2(KEBA_APU_RSTp, ch4_new.GORA_CH4_TRIGp.qp_any());
-  /*#p20.GONE*/ ch4_new.GONE_CH4_TRIGp.dff17_rst(FALE_RESET_LATCHn);
-
-  /*#p20.HELU*/ wire HELU_RESET_LATCHp = not1(FALE_RESET_LATCHn);
-  /*#p20.HAZO*/ ch4_new.HAZO_CH4_TRIGn.nor_latch(HELU_RESET_LATCHp, ch4_new.GYSU_CH4_TRIG.qp_any());
 
   if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
     if (addr == 0xFF23) {

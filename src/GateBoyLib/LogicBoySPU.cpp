@@ -16,6 +16,15 @@ int spu_audio_out_l(GateBoyState& reg_new) {
 
 #ifdef SIM_AUDIO
 
+#define DELTA_AB (phase_new == 1)
+#define DELTA_BC (phase_new == 2)
+#define DELTA_CD (phase_new == 3)
+#define DELTA_DE (phase_new == 4)
+#define DELTA_EF (phase_new == 5)
+#define DELTA_FG (phase_new == 6)
+#define DELTA_GH (phase_new == 7)
+#define DELTA_HA (phase_new == 0)
+
 //------------------------------------------------------------------------------
 
 void tick_spu_fast(
@@ -264,6 +273,13 @@ void tick_spu_fast(
 
     wave_ram
   );
+
+  if (apu_rst) {
+  }
+  else {
+    if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
+    }
+  }
 
   {
     /*_p10.CAFY*/ wire CAFY_ADDR_FF24p = nor2(BEZY_ADDR_FF2Xn, DATU_ADDR_0100n);

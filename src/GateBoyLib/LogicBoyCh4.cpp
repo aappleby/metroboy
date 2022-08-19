@@ -76,11 +76,11 @@ void tick_ch4_fast(
 {
   auto addr = bit_pack(cpu_abus_new);
   auto dbus_old = bit_pack(cpu_dbus_old);
+  auto apu_rst = bit(or3(AFER_SYS_RSTp, ASOL_POR_DONEn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any()));
 
   /*#p01.BUDE*/ wire BUDE_xxxxEFGH = and2(AFUR_ABCDxxxx_qn, SIG_CPU_CLKREQ);
   /*_p01.DOVA*/ wire DOVA_ABCDxxxx = not1(BUDE_xxxxEFGH);
 
-  /*_p09.KEBA*/ wire KEBA_APU_RSTp = or3(AFER_SYS_RSTp, ASOL_POR_DONEn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any());
 
   /*#p01.HAMA*/ wire HAMA_CLK_512K = not1(spu_new.JESO_CLK_512K.qp_any());
   /*_p01.BURE*/ wire BURE_CLK_512 = not1(spu_new.BARA_CLK_512.qp_any());
@@ -102,7 +102,7 @@ void tick_ch4_fast(
   auto nr42 = bit_pack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8);
   auto nr43 = bit_pack(&ch4_new.JARE_NR43_DIV0p, 8);
 
-  if (bit(KEBA_APU_RSTp)) {
+  if (apu_rst) {
     nr42 = 0;
     nr43 = 0;
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 0, ch4_old.HOGA_NR44_TRIGp.qp_any());
@@ -141,7 +141,7 @@ void tick_ch4_fast(
   bit_unpack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8, nr42);
   bit_unpack(&ch4_new.JARE_NR43_DIV0p,       8, nr43);
 
-  wire GUNY_FREQ_GATE_RSTn_new = nor2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
+  wire GUNY_FREQ_GATE_RSTn_new = nor2(apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any());
 
   auto div_old = bit_pack(&ch4_old.JYCO_DIV0, 3);
 
@@ -162,7 +162,7 @@ void tick_ch4_fast(
     freq++;
   }
 
-  if (bit(KEBA_APU_RSTp)) {
+  if (apu_rst) {
     freq = 0;
   }
 
@@ -205,7 +205,7 @@ void tick_ch4_fast(
     if (DELTA_DE && SIG_IN_CPU_WRp && addr == 0xFF20) {
     }
 
-    /*#p19.GAPY*/ wire GAPY_LEN_DONE_RSTn = nor3(and2(TAPU_CPU_WRp, addr == 0xFF20), KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
+    /*#p19.GAPY*/ wire GAPY_LEN_DONE_RSTn = nor3(and2(TAPU_CPU_WRp, addr == 0xFF20), apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any());
     /*#p19.FUGO*/ ch4_new.FUGO_CH4_LEN_DONEp.dff17(ch4_new.EDOP_NR41_LEN5p.qn_any(), GAPY_LEN_DONE_RSTn, ch4_old.FUGO_CH4_LEN_DONEp.qn_any());
 
     wire CUWA_LEN_CLKa2 = or3(ch4_new.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
@@ -228,13 +228,13 @@ void tick_ch4_fast(
     }
 
     wire EFOT_CH4_STOPp = and2(ch4_new.CUNY_NR44_LEN_ENp.qp_any(), ch4_new.FUGO_CH4_LEN_DONEp.qp_any());
-    if (bit(or3(KEBA_APU_RSTp, EFOT_CH4_STOPp, GEVY_CH4_AMP_ENn))) {
+    if (bit(or3(apu_rst, EFOT_CH4_STOPp, GEVY_CH4_AMP_ENn))) {
       ch4_new.GENA_CH4_ACTIVEp.state = 0;
     }
   }
 
   {
-    /*#p20.JERY*/ ch4_new.JERY_DIV_GATE.nand_latch(nor2(GEVY_CH4_AMP_ENn, KEBA_APU_RSTp), not1(ch4_new.GATY_CH4_TRIGp.qp_any()));
+    /*#p20.JERY*/ ch4_new.JERY_DIV_GATE.nand_latch(nor2(GEVY_CH4_AMP_ENn, apu_rst), not1(ch4_new.GATY_CH4_TRIGp.qp_any()));
   }
 
   {
@@ -253,7 +253,7 @@ void tick_ch4_fast(
   {
     /*#p20.HURA*/ wire HURA_LFSR_IN_old = xnor2(ch4_old.HEZU_LFSR_15.qp_any(), ch4_old.HYRO_LFSR_14.qp_any());
 
-    if (or2(ch4_new.GONE_CH4_TRIGp.qp_any(), KEBA_APU_RSTp) & 1) {
+    if (or2(ch4_new.GONE_CH4_TRIGp.qp_any(), apu_rst) & 1) {
       /*#p20.JOTO*/ ch4_new.JOTO_LFSR_00.dff17(not1(FEME_LFSR_CLKp_new), 0, HURA_LFSR_IN_old);
       /*#p20.KOMU*/ ch4_new.KOMU_LFSR_01.dff17(FEME_LFSR_CLKp_new,       0, ch4_old.JOTO_LFSR_00.qp_any());
       /*#p20.KETU*/ ch4_new.KETU_LFSR_02.dff17(FEME_LFSR_CLKp_new,       0, ch4_old.KOMU_LFSR_01.qp_any());
@@ -329,13 +329,13 @@ void tick_ch4_fast(
     /*#p20.GEXE*/ wire GEXE_ENV_PULSEn_new = not1(ch4_new.FOSY_ENV_CLKp.qp_any());
     /*#p20.HURY*/ wire HURY_ENV_PULSE_RSTp_new = nor2(HORU_CLK_512, GEXE_ENV_PULSEn_new);
     /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(ch4_new.EMOK_NR42_ENV_TIMER0p.qp_any(), ch4_new.ETYJ_NR42_ENV_TIMER1p.qp_any(), ch4_new.EZYK_NR42_ENV_TIMER2p.qp_any());
-    /*#p20.GOPA*/ wire GOPA_ENV_PULSE_RSTn_new = nor4(HURY_ENV_PULSE_RSTp_new, FOWA_ENV_OFFp_new, ch4_new.GONE_CH4_TRIGp.qp_any(), KEBA_APU_RSTp);
+    /*#p20.GOPA*/ wire GOPA_ENV_PULSE_RSTn_new = nor4(HURY_ENV_PULSE_RSTp_new, FOWA_ENV_OFFp_new, ch4_new.GONE_CH4_TRIGp.qp_any(), apu_rst);
     /*#p20.FOSY*/ ch4_new.FOSY_ENV_CLKp.dff17_rst(GOPA_ENV_PULSE_RSTn_new);
   }
 
   {
     /*#p20.ALOP*/ wire ALOP_CLK_128 = not1(BYFE_CLK_128);
-    /*#p20.BOKY*/ wire BOKY_APU_RSTn_new = not1(KEBA_APU_RSTp);
+    /*#p20.BOKY*/ wire BOKY_APU_RSTn_new = not1(apu_rst);
     /*#p20.ABEL*/ ch4_new.ABEL_CLK_64.dff17(ALOP_CLK_128, BOKY_APU_RSTn_new, ch4_old.ABEL_CLK_64.qn_any());
     /*#p20.BAWA*/ wire BAWA_CLK_64_new = not1(ch4_new.ABEL_CLK_64.qp_any());
     /*#p20.BUXO*/ wire BUXO_CLK_64_new = not1(BAWA_CLK_64_new);
@@ -360,7 +360,7 @@ void tick_ch4_fast(
     }
 
 
-    if (bit(or2(ch4_new.GONE_CH4_TRIGp.qp_any(), KEBA_APU_RSTp))) {
+    if (bit(or2(ch4_new.GONE_CH4_TRIGp.qp_any(), apu_rst))) {
       ch4_new.FYNO_ENV_MAXp.state &= ~1;
     }
   }
@@ -368,7 +368,7 @@ void tick_ch4_fast(
 
 
 
-  /*#p20.ENUR*/ wire ENUR_ENV_STARTp = or2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
+  /*#p20.ENUR*/ wire ENUR_ENV_STARTp = or2(apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any());
   /*#p20.EROX*/ ch4_new.EROX_ENV_RUNNINGn.nor_latch(ch4_new.FYNO_ENV_MAXp.qp_any(), ENUR_ENV_STARTp);
 
   /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(ch4_new.EMOK_NR42_ENV_TIMER0p.qp_any(), ch4_new.ETYJ_NR42_ENV_TIMER1p.qp_any(), ch4_new.EZYK_NR42_ENV_TIMER2p.qp_any());

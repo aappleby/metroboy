@@ -2776,10 +2776,12 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     bit_mask(state_new.ch3, uint8_t(~BIT_OLD));
     bit_mask(state_new.ch4, uint8_t(~BIT_OLD));
 
-
     tick_spu_fast(
       sys.gb_phase_total_new,
       state_new.apu_phase_new,
+
+      state_old.reg_div,
+      state_new.reg_div,
 
       temp_abus_new,
       temp_dbus_old,

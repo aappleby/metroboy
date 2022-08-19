@@ -31,6 +31,9 @@ void tick_spu_fast(
   uint64_t phase_new,
   int64_t& spu_phase_new,
 
+  uint16_t div_old,
+  uint16_t div_new,
+
   const GateBoyCpuABus& cpu_abus_new,
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoyWaveBus& wave_dbus_old,
@@ -103,9 +106,30 @@ void tick_spu_fast(
   /*#p01.AVOK*/ spu_new.AVOK_xBCDExxx.dff17( spu_new.ATYK_AxxDExxH.qn_any(), !apu_rst, spu_old.AVOK_xBCDExxx.qn_any());
   /*#p01.JESO*/ spu_new.JESO_CLK_512K.dff17(~spu_new.AVOK_xBCDExxx.qp_any(), !apu_rst, spu_old.JESO_CLK_512K.qn_any());
   /*#p15.CEMO*/ spu_new.CEMO_xBCDExxx.dff17(~spu_new.ATEP_AxxDExxH.qp_any(), !apu_rst, spu_old.CEMO_xBCDExxx.qn_any());
-  /*_p01.BARA*/ spu_new.BARA_CLK_512 .dff17( spu_new.AJER_AxxDExxH.qp_any(), !apu_rst, not1(TERU_DIV10p_old));
+
+
+  if (DELTA_CD || DELTA_GH) {
+    spu_new.BARA_CLK_512.state = not1(TERU_DIV10p_old);
+  }
+  if (apu_rst) {
+    spu_new.BARA_CLK_512.state = 0;
+  }
+
+
   /*_p01.CARU*/ spu_new.CARU_CLK_256 .dff17(~spu_new.BARA_CLK_512.qp_any(),  !apu_rst, spu_old.CARU_CLK_256.qn_any());
   /*_p01.BYLU*/ spu_new.BYLU_CLK_128 .dff17( spu_new.CARU_CLK_256.qn_any(),  !apu_rst, spu_old.BYLU_CLK_128.qn_any());
+
+
+
+  /*
+  auto edge_512_a = posedge(bit(spu_old.BARA_CLK_512.state), bit(spu_new.BARA_CLK_512.state));
+  auto edge_512_b = posedge(bit(div_old, 11), bit(div_new, 11)) && !apu_rst;
+
+
+  if (edge_512_a) {
+    printf("0x%08llx %d \n", spu_phase_new, apu_rst);
+  }
+  */
 
 
   tick_ch1_fast(

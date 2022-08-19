@@ -88,6 +88,9 @@ void tick_spu_fast(
   uint64_t phase_new,
   int64_t& spu_phase_new,
 
+  uint16_t div_old,
+  uint16_t div_new,
+
   const GateBoyCpuABus& cpu_abus_new,
   const GateBoyCpuDBus& cpu_dbus_old,
   const GateBoyWaveBus& wave_dbus_old,

@@ -310,81 +310,23 @@ void tick_spu_fast(
   }
 
   {
-    /*_p10.CAFY*/ wire CAFY_ADDR_FF24p = nor2(BEZY_ADDR_FF2Xn, DATU_ADDR_0100n);
-    /*_p09.BYMA*/ wire BYMA_ADDR_FF24n = not1(CAFY_ADDR_FF24p);
-    /*_p09.BEFU*/ wire BEFU_NR50_RDp = nor2(AGUZ_CPU_RDn, BYMA_ADDR_FF24n);
-    /*_p09.ADAK*/ wire ADAK_NR50_RDn = not1(BEFU_NR50_RDp);
-
-    /*_p09.AKOD*/ triwire AKOD_D00 = tri6_nn(ADAK_NR50_RDn, spu_new.APEG_NR50_VOL_L0.qn_any());
-    /*_p09.AWED*/ triwire AWED_D01 = tri6_nn(ADAK_NR50_RDn, spu_new.BYGA_NR50_VOL_L1.qn_any());
-    /*_p09.AVUD*/ triwire AVUD_D02 = tri6_nn(ADAK_NR50_RDn, spu_new.AGER_NR50_VOL_L2.qn_any());
-    /*_p09.AXEM*/ triwire AXEM_D03 = tri6_nn(ADAK_NR50_RDn, spu_new.APOS_NR50_VIN_TO_L.qn_any());
-    /*_p09.AMAD*/ triwire AMAD_D04 = tri6_nn(ADAK_NR50_RDn, spu_new.BYRE_NR50_VOL_R0.qn_any());
-    /*_p09.ARUX*/ triwire ARUX_D05 = tri6_nn(ADAK_NR50_RDn, spu_new.BUMO_NR50_VOL_R1.qn_any());
-    /*_p09.BOCY*/ triwire BOCY_D06 = tri6_nn(ADAK_NR50_RDn, spu_new.COZU_NR50_VOL_R2.qn_any());
-    /*_p09.ATUM*/ triwire ATUR_D07 = tri6_nn(ADAK_NR50_RDn, spu_new.BEDU_NR50_VIN_TO_R.qn_any());
-
-    /*_BUS_CPU_D00p*/ cpu_dbus_new.BUS_CPU_D00p.tri_bus(AKOD_D00);
-    /*_BUS_CPU_D01p*/ cpu_dbus_new.BUS_CPU_D01p.tri_bus(AWED_D01);
-    /*_BUS_CPU_D02p*/ cpu_dbus_new.BUS_CPU_D02p.tri_bus(AVUD_D02);
-    /*_BUS_CPU_D03p*/ cpu_dbus_new.BUS_CPU_D03p.tri_bus(AXEM_D03);
-    /*_BUS_CPU_D04p*/ cpu_dbus_new.BUS_CPU_D04p.tri_bus(AMAD_D04);
-    /*_BUS_CPU_D05p*/ cpu_dbus_new.BUS_CPU_D05p.tri_bus(ARUX_D05);
-    /*_BUS_CPU_D06p*/ cpu_dbus_new.BUS_CPU_D06p.tri_bus(BOCY_D06);
-    /*_BUS_CPU_D07p*/ cpu_dbus_new.BUS_CPU_D07p.tri_bus(ATUR_D07);
-  }
-
-  {
+    if (addr == 0xFF24 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.APEG_NR50_VOL_L0, 8));
     if (addr == 0xFF25 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.ANEV_NR51_RCH1_ENp, 8));
     
-    /*
     if (addr == 0xFF26 && SIG_IN_CPU_RDp) {
-      //bit_unpack(cpu_dbus_new, bit_pack(&spu_new.ANEV_NR51_RCH1_ENp, 8));
       uint8_t dbus_new = 0;
 
       dbus_new |= bit(ch1_new.CYTO_CH1_ACTIVEp.qp_any()) << 0;
       dbus_new |= bit(ch2_new.DANE_CH2_ACTIVEp.qp_any()) << 1;
-      dbus_new |= bit(ch3_new.DAVO_CH3_ACTIVEp.qn_any()) << 2;
+      dbus_new |= bit(ch3_new.DAVO_CH3_ACTIVEp.qp_any()) << 2;
       dbus_new |= bit(ch4_new.GENA_CH4_ACTIVEp.qp_any()) << 3;
       dbus_new |= 1 << 4;
       dbus_new |= 1 << 5;
       dbus_new |= 1 << 6;
       dbus_new |= bit(spu_new.HADA_NR52_ALL_SOUND_ON.qp_any()) << 7;
+
+      bit_unpack(&cpu_dbus_new, 8, dbus_new);
     }
-    */
-  }
-
-  {
-    /*_p09.CURU*/ wire CURU_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*_p09.KYDU*/ wire KYDU_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*_p09.KAZO*/ wire KAZO_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*_p09.CETO*/ wire CETO_CPU_RDp = not1(AGUZ_CPU_RDn);
-    /*_p09.GAXO*/ wire GAXO_CPU_RDp = not1(AGUZ_CPU_RDn);
-
-    ///*#p10.DOXY*/ wire DOXY_ADDR_FF26p = and2(CONA_ADDR_FF2Xp, EKAG_ADDR_0110p); // was this wrong on the schematic?
-    /*#p09.DOLE*/ wire DOLE_NR52_RDn = nand2(DOXY_ADDR_FF26p, CETO_CPU_RDp);
-    /*#p09.DURU*/ wire DURU_NR52_RDn = nand2(DOXY_ADDR_FF26p, CURU_CPU_RDp);
-    /*#p09.FEWA*/ wire FEWA_NR52_RDn = nand2(DOXY_ADDR_FF26p, GAXO_CPU_RDp);
-    /*#p09.KAMU*/ wire KAMU_NR52_RDn = nand2(DOXY_ADDR_FF26p, KAZO_CPU_RDp);
-    /*#p09.JURE*/ wire JURE_NR52_RDn = nand2(KYDU_CPU_RDp, DOXY_ADDR_FF26p);
-
-    /*#p13.CARA*/ wire CARA_CH1_ACTIVEn = not1(ch1_new.CYTO_CH1_ACTIVEp.qp_any());
-    /*#p15.DEFU*/ wire DEFU_CH2_ACTIVEn = not1(ch2_new.DANE_CH2_ACTIVEp.qp_any());
-    /*#p18.COKA*/ wire COKA_CH3_ACTIVEp = not1(ch3_new.DAVO_CH3_ACTIVEp.qn_any());
-    /*#p18.ERED*/ wire ERED_CH3_ACTIVEn = not1(COKA_CH3_ACTIVEp);
-    /*#p20.JUWA*/ wire JUWA_CH4_ACTIVEn = not1(ch4_new.GENA_CH4_ACTIVEp.qp_any());
-
-    /*#p09.COTO*/ triwire COTO_D0 = tri6_nn(DOLE_NR52_RDn, CARA_CH1_ACTIVEn);
-    /*#p09.EFUS*/ triwire EFUS_D1 = tri6_nn(DURU_NR52_RDn, DEFU_CH2_ACTIVEn);
-    /*_p09.FATE*/ triwire FATE_D2 = tri6_nn(FEWA_NR52_RDn, ERED_CH3_ACTIVEn);
-    /*_p09.KOGE*/ triwire KOGE_D3 = tri6_nn(KAMU_NR52_RDn, JUWA_CH4_ACTIVEn);
-    /*_p09.HOPE*/ triwire HOPE_D7 = tri6_nn(JURE_NR52_RDn, spu_new.HADA_NR52_ALL_SOUND_ON.qn_any());
-
-    /*_BUS_CPU_D00p*/ cpu_dbus_new.BUS_CPU_D00p.tri_bus(COTO_D0);
-    /*_BUS_CPU_D01p*/ cpu_dbus_new.BUS_CPU_D01p.tri_bus(EFUS_D1);
-    /*_BUS_CPU_D02p*/ cpu_dbus_new.BUS_CPU_D02p.tri_bus(FATE_D2);
-    /*_BUS_CPU_D03p*/ cpu_dbus_new.BUS_CPU_D03p.tri_bus(KOGE_D3);
-    /*_BUS_CPU_D07p*/ cpu_dbus_new.BUS_CPU_D07p.tri_bus(HOPE_D7);
   }
 }
 

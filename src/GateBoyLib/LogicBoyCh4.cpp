@@ -219,8 +219,7 @@ void tick_ch4_fast(
 
 
   {
-    /*#p10.DANU*/ wire DANU_ADDR_FF20p = nor2(DONA_ADDR_0000n, BEZY_ADDR_FF2Xn);
-    /*#p19.CAZE*/ wire CAZE_FF20_WRn = nand2(BOGY_CPU_WRp, DANU_ADDR_FF20p);
+    /*#p19.CAZE*/ wire CAZE_FF20_WRn = nand2(BOGY_CPU_WRp, addr == 0xFF20);
     /*#p19.FURU*/ wire FURU_FF20_WRa = not1(CAZE_FF20_WRn);
     /*#p19.DOTU*/ wire DOTU_FF20_WRb = not1(CAZE_FF20_WRn);
     /*#p19.EPEK*/ wire EPEK_FF20_WRc = not1(CAZE_FF20_WRn);

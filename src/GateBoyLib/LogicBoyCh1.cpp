@@ -96,23 +96,9 @@ void tick_ch1_fast(
 
   auto FERO_NR52_DBG_APUp = spu_new.FERO_NR52_DBG_APUp.qn_any();
 
-  /*#p01.HAMA*/ wire HAMA_CLK_512K = not1(spu_new.JESO_CLK_512K.qp_any());
-
-  /*_p01.BURE*/ wire BURE_CLK_512 = not1(spu_new.BARA_CLK_512.qp_any());
-  /*#p01.FYNE*/ wire FYNE_CLK_512 = not1(BURE_CLK_512);
-  /*_p01.GALE*/ wire GALE_CLK_512 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, FYNE_CLK_512);
-  /*_p01.GEXY*/ wire GEXY_CLK_512 = not1(GALE_CLK_512);
-  /*_p01.HORU*/ wire HORU_CLK_512 = not1(GEXY_CLK_512);
-
-  /*_p01.CULO*/ wire CULO_CLK_256 = not1(spu_new.CARU_CLK_256.qp_any());
-  /*_p01.BEZE*/ wire BEZE_CLK_256 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, CULO_CLK_256);
-  /*_p01.COFU*/ wire COFU_CLK_256 = not1(BEZE_CLK_256);
-  /*_p01.BUFY*/ wire BUFY_CLK_256 = not1(COFU_CLK_256);
-
-  /*_p01.APEF*/ wire APEF_CLK_128 = not1(spu_new.BYLU_CLK_128.qp_any());
-  /*_p01.BULE*/ wire BULE_CLK_128 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, APEF_CLK_128);
-  /*_p01.BARU*/ wire BARU_CLK_128 = not1(BULE_CLK_128);
-  /*_p01.BYFE*/ wire BYFE_CLK_128 = not1(BARU_CLK_128);
+  /*_p01.HORU*/ wire HORU_CLK_512 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), not1(spu_new.JESO_CLK_512K.qp_any()), spu_new.BARA_CLK_512.qp_any());
+  /*_p01.BUFY*/ wire BUFY_CLK_256 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), not1(spu_new.JESO_CLK_512K.qp_any()), not1(spu_new.CARU_CLK_256.qp_any()));
+  /*_p01.BYFE*/ wire BYFE_CLK_128 = not1(spu_new.BYLU_CLK_128.qp_any());
 
 
   /*#p09.AGUR*/ wire AGUR_APU_RSTn_new = not1(KEBA_APU_RSTp);
@@ -536,9 +522,10 @@ void tick_ch1_fast(
     /*#p13.KOZY*/ ch1_new.KOZY_ENV_TICKp.dff17_rst(KORO_ENV_CLK_RSTn_new);
   }
 
-  /*#p13.JONE*/ wire JONE_CLK_128p = not1(BYFE_CLK_128);
   /*#p13.KADO*/ wire KADO_APU_RSTn_new = not1(KEBA_APU_RSTp);
-  /*#p13.KALY*/ ch1_new.KALY_ENV_DELAY_CLK_64n.dff17(JONE_CLK_128p, KADO_APU_RSTn_new, ch1_old.KALY_ENV_DELAY_CLK_64n.qn_any());
+
+  /*#p13.KALY*/ ch1_new.KALY_ENV_DELAY_CLK_64n.dff17(not1(BYFE_CLK_128), KADO_APU_RSTn_new, ch1_old.KALY_ENV_DELAY_CLK_64n.qn_any());
+
   /*#p13.KERE*/ wire KERE_ENV_DELAY_CLK_64p = not1(ch1_new.KALY_ENV_DELAY_CLK_64n.qp_any());
   /*#p13.JOLA*/ wire JOLA_ENV_DELAY_CLK_64n = not1(KERE_ENV_DELAY_CLK_64p);
 

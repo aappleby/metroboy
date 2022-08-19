@@ -137,16 +137,16 @@ void tick_ch4_fast(
     ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GONE_CH4_TRIGp.qp_any());
     ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GORA_CH4_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_rst(0);
-    ch4_new.HAZO_CH4_TRIGn.nor_latch(1, ch4_new.GYSU_CH4_TRIG.qp_any());
+    ch4_new.HAZO_CH4_TRIGn.nor_latch(1, 0);
   }
   else {
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 1, ch4_old.HOGA_NR44_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
     ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GONE_CH4_TRIGp.qp_any());
     ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GORA_CH4_TRIGp.qp_any());
-    wire FALE_RESET_LATCHn = not1(ch4_new.GORA_CH4_TRIGp.qp_any());
-    ch4_new.GONE_CH4_TRIGp.dff17_rst(FALE_RESET_LATCHn);
-    ch4_new.HAZO_CH4_TRIGn.nor_latch(not1(FALE_RESET_LATCHn), ch4_new.GYSU_CH4_TRIG.qp_any());
+    ch4_new.GONE_CH4_TRIGp.dff17_rst(~ch4_new.GORA_CH4_TRIGp.qp_any());
+
+    ch4_new.HAZO_CH4_TRIGn.nor_latch(ch4_new.GORA_CH4_TRIGp.qp_any(), ch4_new.GYSU_CH4_TRIG.qp_any());
   }
 
 

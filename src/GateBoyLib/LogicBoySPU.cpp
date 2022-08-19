@@ -16,14 +16,14 @@ int spu_audio_out_l(GateBoyState& reg_new) {
 
 #ifdef SIM_AUDIO
 
-#define DELTA_AB (phase_new == 1)
-#define DELTA_BC (phase_new == 2)
-#define DELTA_CD (phase_new == 3)
-#define DELTA_DE (phase_new == 4)
-#define DELTA_EF (phase_new == 5)
-#define DELTA_FG (phase_new == 6)
-#define DELTA_GH (phase_new == 7)
-#define DELTA_HA (phase_new == 0)
+#define DELTA_AB ((phase_new & 7) == 1)
+#define DELTA_BC ((phase_new & 7) == 2)
+#define DELTA_CD ((phase_new & 7) == 3)
+#define DELTA_DE ((phase_new & 7) == 4)
+#define DELTA_EF ((phase_new & 7) == 5)
+#define DELTA_FG ((phase_new & 7) == 6)
+#define DELTA_GH ((phase_new & 7) == 7)
+#define DELTA_HA ((phase_new & 7) == 0)
 
 //------------------------------------------------------------------------------
 

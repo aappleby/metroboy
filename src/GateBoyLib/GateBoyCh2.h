@@ -5,7 +5,72 @@
 struct GateBoyState;
 
 struct SpuChannel2 {
-  void reset();
+  void reset() {
+    ERYC_NR21_LEN0.state = 0x1a;
+    CERA_NR21_LEN1.state = 0x18;
+    CONU_NR21_LEN2.state = 0x18;
+    CAME_NR21_LEN3.state = 0x18;
+    BUVA_NR21_LEN4.state = 0x18;
+    AKYD_NR21_LEN5.state = 0x18;
+    BERA_NR21_DUTY0.state = 0x1a;
+    BAMY_NR21_DUTY1.state = 0x1a;
+    HYFU_NR22_P0p.state = 0x1a;
+    HORE_NR22_P1p.state = 0x1a;
+    HAVA_NR22_P2p.state = 0x1a;
+    FORE_NR22_ADDp.state = 0x1a;
+    GATA_NR22_V0p.state = 0x1a;
+    GUFE_NR22_V1p.state = 0x1a;
+    GURA_NR22_V2p.state = 0x1a;
+    GAGE_NR22_V3p.state = 0x1a;
+    FOFE_NR23_FREQ00p.state = 0x1a;
+    FOVA_NR23_FREQ01p.state = 0x1a;
+    FEDY_NR23_FREQ02p.state = 0x1a;
+    FOME_NR23_FREQ03p.state = 0x1a;
+    FORA_NR23_FREQ04p.state = 0x1a;
+    GODA_NR23_FREQ05p.state = 0x1a;
+    GUMY_NR23_FREQ06p.state = 0x1a;
+    GUPU_NR23_FREQ07p.state = 0x1a;
+    JEFU_NR24_FREQ08p.state = 0x1a;
+    JANY_NR24_FREQ09p.state = 0x1a;
+    JUPY_NR24_FREQ10p.state = 0x1a;
+    DANE_CH2_ACTIVEp.state = 0x18;
+    JORE_ENV_DELAY0p.state = 0x18;
+    JONA_ENV_DELAY1p.state = 0x19;
+    JEVY_ENV_DELAY2p.state = 0x1a;
+    JOPA_ENV_TICK.state = 0x1a;
+    DONE_COUNT00.state = 0x1a;
+    DYNU_COUNT01.state = 0x18;
+    EZOF_COUNT02.state = 0x18;
+    CYVO_COUNT03.state = 0x18;
+    FUXO_COUNT04.state = 0x18;
+    GANO_COUNT05.state = 0x18;
+    GOCA_COUNT06.state = 0x18;
+    GANE_COUNT07.state = 0x18;
+    HEVY_COUNT08.state = 0x18;
+    HEPU_COUNT09.state = 0x18;
+    HERO_COUNT10.state = 0x18;
+    DOME_CH2_OUTp.state = 0x18;
+    ELOX_TRIGp_d01.state = 0x18;
+    CAZA_TRIGp_d17.state = 0x18;
+    EMER_NR24_LENENp.state = 0x1a;
+    DOPE_TRIGp_d00.state = 0x18;
+    DALA_TRIGp_d00.state = 0x19;
+    ETAP_NR24_TRIGp.state = 0x1a;
+    DORY_TRIGp_d09.state = 0x18;
+    GYKO_SAMPLE_CLKp.state = 0x1a;
+    CANO_PHASE0.state = 0x1a;
+    CAGY_PHASE1.state = 0x1a;
+    DYVE_PHASE2.state = 0x1a;
+    BUTA_FREQ_GATEp.state = 0x19;
+    FENA_ENV_VOL3.state = 0x1a;
+    FOMY_ENV_VOL2.state = 0x1a;
+    FETE_ENV_VOL1.state = 0x1a;
+    FENO_ENV_VOL0.state = 0x1a;
+    HEPO_ENV_MAXp.state = 0x18;
+    JEME_ENV_DONEp.state = 0x18;
+    JYNA_ENV_CLK64.state = 0x18;
+    CYRE_LEN_DONEp.state = 0x1a;
+  }
 
   //----------
   // FF16

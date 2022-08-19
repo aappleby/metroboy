@@ -8,7 +8,72 @@ struct GateBoyState;
 struct GateBoyState;
 
 struct SpuChannel3 {
-  void reset();
+  void reset() {
+    KOGA_NR33_FREQ00p.state = 0x1a;
+    JOVY_NR33_FREQ01p.state = 0x1a;
+    JAXA_NR33_FREQ02p.state = 0x1a;
+    JEFE_NR33_FREQ03p.state = 0x1a;
+    JYPO_NR33_FREQ04p.state = 0x1a;
+    JOVE_NR33_FREQ05p.state = 0x1a;
+    KANA_NR33_FREQ06p.state = 0x1a;
+    KOGU_NR33_FREQ07p.state = 0x1a;
+    JEMO_NR34_FREQ08p.state = 0x1a;
+    JETY_NR34_FREQ09p.state = 0x1a;
+    JACY_NR34_FREQ10p.state = 0x1a;
+    HOTO_NR34_LENENp.state = 0x1a;
+    GAVU_NR34_TRIGp.state = 0x1a;
+    DAVO_CH3_ACTIVEp.state = 0x1a;
+    GOFY_CH3_TRIGn.state = 0x19;
+    FOZU_CH3_ACTIVEp.state = 0x18;
+    GUXE_NR30_AMP_ENp.state = 0x1a;
+    GEVO_NR31_LEN0p.state = 0x1a;
+    FORY_NR31_LEN1p.state = 0x18;
+    GATU_NR31_LEN2p.state = 0x18;
+    GAPO_NR31_LEN3p.state = 0x18;
+    GEMO_NR31_LEN4p.state = 0x18;
+    FORO_NR31_LEN5p.state = 0x18;
+    FAVE_NR31_LEN6p.state = 0x18;
+    FYRU_NR31_LEN7p.state = 0x18;
+    FEXU_LEN_DONEp.state = 0x1a;
+    HUKY_NR32_VOL0p.state = 0x1a;
+    HODY_NR32_VOL1p.state = 0x1a;
+    GARA_TRIG_D1.state = 0x18;
+    GYTA_TRIG_D2.state = 0x18;
+    GYRA_TRIG_D3.state = 0x1a;
+    KUTU_COUNT00.state = 0x1b;
+    KUPE_COUNT01.state = 0x1a;
+    KUNU_COUNT02.state = 0x18;
+    KEMU_COUNT03.state = 0x18;
+    KYGU_COUNT04.state = 0x18;
+    KEPA_COUNT05.state = 0x18;
+    KAFO_COUNT06.state = 0x18;
+    KENO_COUNT07.state = 0x18;
+    KEJU_COUNT08.state = 0x18;
+    KEZA_COUNT09.state = 0x18;
+    JAPU_COUNT10.state = 0x18;
+    HUNO_SAMPLE_CLKp.state = 0x1a;
+    EFAR_WAVE_IDX0.state = 0x1a;
+    ERUS_WAVE_IDX1.state = 0x1a;
+    EFUZ_WAVE_IDX2.state = 0x1a;
+    EXEL_WAVE_IDX3.state = 0x1a;
+    EFAL_WAVE_IDX4.state = 0x1a;
+    FETY_WAVE_LOOP.state = 0x1a;
+    CYFO_SAMPLE0p.state = 0x1a;
+    CESY_SAMPLE1p.state = 0x1a;
+    BUDY_SAMPLE2p.state = 0x1a;
+    BEGU_SAMPLE3p.state = 0x1a;
+    CUVO_SAMPLE4p.state = 0x1a;
+    CEVO_SAMPLE5p.state = 0x1a;
+    BORA_SAMPLE6p.state = 0x1a;
+    BEPA_SAMPLE7p.state = 0x1a;
+    FOBA_CH3_TRIGp.state = 0x18;
+    GUGU_FREQ_GATE.state = 0x19;
+    BUSA_WAVE_CLK_D1.state = 0x18;
+    BANO_WAVE_CLK_D2.state = 0x1a;
+    AZUS_WAVE_CLK_D3.state = 0x18;
+    AZET_WAVE_CLK_D4.state = 0x1a;
+  }
+
 
   //----------
 

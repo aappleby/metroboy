@@ -38,6 +38,11 @@
     <ClCompile Include="GateBoyReset.cpp" />
     <ClCompile Include="GateBoyState.cpp" />
     <ClCompile Include="GateBoyWaveBus.cpp" />
+    <ClCompile Include="LogicBoyCh1.cpp" />
+    <ClCompile Include="LogicBoyCh2.cpp" />
+    <ClCompile Include="LogicBoyCh3.cpp" />
+    <ClCompile Include="LogicBoyCh4.cpp" />
+    <ClCompile Include="LogicBoySPU.cpp" />
     <ClCompile Include="LogicBoyState.cpp" />
     <ClCompile Include="GateBoyPixPipe.cpp" />
     <ClCompile Include="GateBoyRegisters.cpp" />

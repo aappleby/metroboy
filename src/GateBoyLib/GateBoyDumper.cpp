@@ -454,7 +454,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
 
   d("\n");
 
-#if 0
+#if 1
 
   d("===== CH1 =====\n");
   d.dump_slicep("NR10 ", &s.ch1.BANY_NR10_SWEEP_SHIFT0p, 8);

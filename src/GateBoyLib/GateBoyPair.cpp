@@ -159,7 +159,14 @@ GBResult GateBoyPair::check_results(GBResult r1, GBResult r2) const {
 //-----------------------------------------------------------------------------
 
 bool GateBoyPair::check_sync() const {
-  //printf("%d %d %d %d %d\n", sizeof(GateBoyCpu), sizeof(GateBoyMem), sizeof(GateBoyState), sizeof(GateBoySys), sizeof(GateBoyPins));
+  /*
+  printf("%d %d %d %d %d\n",
+    (int)sizeof(GateBoyCpu),
+    (int)sizeof(GateBoyMem),
+    (int)sizeof(GateBoyState),
+    (int)sizeof(GateBoySys),
+    (int)sizeof(GateBoyPins));
+  */
 
   if (!diff_blobs(&gb->get_cpu(), &lb->get_cpu(), sizeof(GateBoyCpu), 0xFF, nullptr)) {
     LOG_R("Regression test cpu mismatch @ phase old %lld!\n", gb->get_sys().gb_phase_total_old);

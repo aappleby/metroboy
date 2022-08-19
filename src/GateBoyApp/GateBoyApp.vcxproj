@@ -37,9 +37,6 @@
     <ClInclude Include="GateBoyApp.h" />
     <ClInclude Include="TraceViewer.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\build.ninja" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

@@ -144,7 +144,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   gb_thread->load_raw_dump(bs);
   */
 
-#if 1
+#if 0
   const char* app = R"(
   0150:
     jr -2
@@ -164,7 +164,7 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 
 #endif
 
-#if 0
+#if 1
   // oh is about 125 seconds
   // gejmboj also around 120
   // pocket around 140
@@ -174,16 +174,19 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   //load_blob("tests/microtests/DMG/sprite4_0_b.gb", cart);
   //load_blob("tests/microtests/DMG/line_153_lyc0_int_inc_sled.gb", cart);
   //load_blob("tests/microtests/DMG/oam_read_l0_d.gb", cart);
-  //load_blob("LinksAwakening.gb", cart);
+  load_blob("LinksAwakening.gb", cart);
   //load_blob("tetris.gb", cart);
   //load_blob("SML.gb", cart);
-  load_blob("pman.gb", cart);
+  //load_blob("pman.gb", cart);
   //load_blob("tests/instr_timing.gb", cart);
   //load_blob("tests/cpu_instrs/individual/10-bit ops.gb", cart);
   //load_blob("tests/microtests/DMG/timer_tma_write_a.gb", cart);
 
   gb_thread->load_cart_blob(cart);
   gb_thread->reset();
+
+  //gb_thread->run_to(49582984);
+
 #endif
 
   gb_thread->start();
@@ -583,7 +586,7 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   //----------------------------------------
   // Column 4
 
-#if 1
+#if 0
   d("\002===== PPU =====\001\n");
   dumper.dump_ppu(state, d);
   d("\n");
@@ -597,11 +600,9 @@ void GateBoyApp::app_render_frame(dvec2 screen_size, double delta) {
   d("\n");
 #endif
 
-  /*
   d("\002===== SPU =====\001\n");
   dumper.dump_spu(state, d);
   d("\n");
-  */
 
 #if 0
   d("\002===== Serial =====\001\n");

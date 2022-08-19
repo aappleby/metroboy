@@ -72,6 +72,14 @@ GBResult LogicBoy::next_phase(const blob& cart_blob) {
   tock_cpu();
   tock_logic(cart_blob);
   sys.gb_phase_total_old = sys.gb_phase_total_new;
+
+#ifdef SIM_AUDIO
+    mem.audio_1[(sys.gb_phase_total_old >> 9) & 0xFF] = ch1_audio_out(lb_state.ch1);
+    mem.audio_2[(sys.gb_phase_total_old >> 9) & 0xFF] = ch2_audio_out(lb_state.ch2);
+    mem.audio_3[(sys.gb_phase_total_old >> 9) & 0xFF] = ch3_audio_out(lb_state.ch3);
+    mem.audio_4[(sys.gb_phase_total_old >> 9) & 0xFF] = ch4_audio_out(lb_state.ch4);
+#endif
+
   return GBResult::ok();
 }
 
@@ -2760,6 +2768,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
     GateBoyCpuDBus temp_dbus_new;
     bit_unpack(temp_dbus_new, state_new.cpu_dbus);
+    bit_set(temp_dbus_new, BIT_NEW | BIT_PULLED);
 
     bit_mask(state_new.spu, uint8_t(~BIT_OLD));
     bit_mask(state_new.ch1, uint8_t(~BIT_OLD));
@@ -2767,7 +2776,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     bit_mask(state_new.ch3, uint8_t(~BIT_OLD));
     bit_mask(state_new.ch4, uint8_t(~BIT_OLD));
 
-    bit_set(temp_dbus_new, BIT_NEW | BIT_PULLED);
 
     tick_spu_fast(
       temp_abus_new,
@@ -2805,6 +2813,8 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
       mem.wave_ram
     );
+
+    state_new.cpu_dbus = (uint8_t)bit_pack(temp_dbus_new);
 
     commit_regs(lb_state.spu);
     commit_regs(lb_state.ch1);

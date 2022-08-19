@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  if (1) {
+  if (0) {
     LOG_B("========== GateBoy vs LogicBoy regression tests ==========\n");
     TestResults results;
     GateBoyTests t;
@@ -153,7 +153,8 @@ int main(int argc, char** argv) {
     results += t.test_fuzz_reg(proto.get(), ADDR_IE  , reps);
     */
 
-    results += t.test_fuzz_reg2(proto.get(), reps * 10);
+    //results += t.test_fuzz_reg2(proto.get(), reps * 10);
+    results += t.test_fuzz_spu(proto.get(), reps * 10);
 
     LOG_G("%s: %6d expect pass\n", __FUNCTION__, results.expect_pass);
     LOG_R("%s: %6d expect fail\n", __FUNCTION__, results.expect_fail);
@@ -380,6 +381,42 @@ TestResults GateBoyTests::test_fuzz_reg2(const IGateBoy* proto, int reps) {
         auto res1 = gb->next_phase(dummy_cart);
         if (res1.is_err()) {
           LOG_R("\ntest_fuzz_reg failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, data, addr);
+          LOG_R("Saving dump before mismatch...\n");
+          save_fuzz_dump(proto, j, i);
+          LOG_R("Dump saved @ %04d:%04d\n", j, i);
+          TEST_FAIL();
+        }
+      }
+    }
+
+    LOG_B(".");
+    fflush(stdout);
+  }
+  LOG_B("\n");
+
+  TEST_DONE();
+}
+
+TestResults GateBoyTests::test_fuzz_spu(const IGateBoy* proto, int reps) {
+  TEST_INIT();
+
+  for (int j = 0; j < reps; j++) {
+    uint32_t r = j;
+    for (int k = 0; k < 10; k++) xorshift32(r);
+
+    unique_ptr<IGateBoy> gb(proto->clone());
+    gb->reset();
+    gb->set_cpu_en(false);
+
+    for (int i = 0; i < 100000; i++) {
+      uint16_t addr = 0xFF10 + (xorshift32(r) % 23);
+      uint8_t data = uint8_t(xorshift32(r));
+
+      gb->dbg_req(addr, data, 1);
+      for (int phase = 0; phase < 8; phase++) {
+        auto res1 = gb->next_phase(dummy_cart);
+        if (res1.is_err()) {
+          LOG_R("\test_fuzz_spu failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, data, addr);
           LOG_R("Saving dump before mismatch...\n");
           save_fuzz_dump(proto, j, i);
           LOG_R("Dump saved @ %04d:%04d\n", j, i);

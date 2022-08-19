@@ -419,12 +419,10 @@ void tick_ch4_fast(
     /*#p20.FYRO*/ ch4_new.FYRO_CH4_VOL3.dff20(ch4_new.FERU_CH4_VOL2.qn_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GEDU_NR42_ENV3p.qp_any());
   }
 
-  if (addr == 0xFF21 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 8));
-  if (addr == 0xFF22 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.JARE_NR43_DIV0p, 8));
-
-  if (addr == 0xFF23 && SIG_IN_CPU_RDp) {
-    /*#p19.CURY*/ triwire CURY = tri6_nn(0, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
-    /*_BUS_CPU_D06p*/ cpu_dbus_new.BUS_CPU_D06p.tri_bus(CURY);
+  if (SIG_IN_CPU_RDp) {
+    if (addr == 0xFF21) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 8));
+    if (addr == 0xFF22) bit_unpack(cpu_dbus_new, bit_pack(&ch4_new.JARE_NR43_DIV0p, 8));
+    if (addr == 0xFF23) cpu_dbus_new.BUS_CPU_D06p.state = ch4_new.CUNY_NR44_LEN_ENp.qp_any();
   }
 
 }

@@ -111,14 +111,17 @@ void tick_ch4_fast(
   if (bit(KEBA_APU_RSTp)) {
     bit_unpack(&ch4_new.EMOK_NR42_ENV_TIMER0p, 8, 0);
     bit_unpack(&ch4_new.JARE_NR43_DIV0p,       8, 0);
-  }
-
-  if (bit(KEBA_APU_RSTp)) {
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 0, ch4_old.HOGA_NR44_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
     ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GONE_CH4_TRIGp.qp_any());
     ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GORA_CH4_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_rst(0);
+    ch4_new.HAZO_CH4_TRIGn.nor_latch(1, 0);
+    ch4_new.CUNY_NR44_LEN_ENp.state = 0;
+    ch4_new.HOGA_NR44_TRIGp.state = 0;
+    if (bit(ch4_new.GYSU_CH4_TRIG.qp_any())) {
+      ch4_new.HOGA_NR44_TRIGp.state = 0;
+    }
   }
   else {
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 1, ch4_old.HOGA_NR44_TRIGp.qp_any());
@@ -126,38 +129,25 @@ void tick_ch4_fast(
     ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GONE_CH4_TRIGp.qp_any());
     ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GORA_CH4_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_rst(~ch4_new.GORA_CH4_TRIGp.qp_any());
-  }
-
-  if (bit(KEBA_APU_RSTp)) {
-    ch4_new.HAZO_CH4_TRIGn.nor_latch(1, 0);
-  }
-  else {
     ch4_new.HAZO_CH4_TRIGn.nor_latch(ch4_new.GORA_CH4_TRIGp.qp_any(), ch4_new.GYSU_CH4_TRIG.qp_any());
-  }
 
-
-  if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
-    if (addr == 0xFF23) {
-      ch4_new.CUNY_NR44_LEN_ENp.state = cpu_dbus_old.BUS_CPU_D06p.qp_any();
-      ch4_new.HOGA_NR44_TRIGp.state = cpu_dbus_old.BUS_CPU_D07p.qp_any();
+    if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
+      if (addr == 0xFF23) {
+        ch4_new.CUNY_NR44_LEN_ENp.state = cpu_dbus_old.BUS_CPU_D06p.qp_any();
+        ch4_new.HOGA_NR44_TRIGp.state = cpu_dbus_old.BUS_CPU_D07p.qp_any();
+      }
+    }
+    if (bit(ch4_new.GYSU_CH4_TRIG.qp_any())) {
+      ch4_new.HOGA_NR44_TRIGp.state = 0;
     }
   }
 
-  if (bit(KEBA_APU_RSTp)) {
-    ch4_new.CUNY_NR44_LEN_ENp.state = 0;
-    ch4_new.HOGA_NR44_TRIGp.state = 0;
-  }
-
-  if (bit(ch4_new.GYSU_CH4_TRIG.qp_any())) {
-    ch4_new.HOGA_NR44_TRIGp.state = 0;
-  }
-
-  /*#p20.GUNY*/ wire GUNY_FREQ_GATE_RSTn_new = nor2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
+  wire GUNY_FREQ_GATE_RSTn_new = nor2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
 
   auto div_old = bit_pack(&ch4_old.JYCO_DIV0, 3);
 
   if (DELTA_AB) {
-    /*#p20.GARY*/ ch4_new.GARY_FREQ_GATEp.state = div_old == 7;
+    ch4_new.GARY_FREQ_GATEp.state = div_old == 7;
   }
 
   if (!bit(GUNY_FREQ_GATE_RSTn_new)) {

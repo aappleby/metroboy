@@ -237,8 +237,7 @@ void tick_ch4_fast(
     /*#p19.GAPY*/ wire GAPY_LEN_DONE_RSTn = nor3(and2(BOGY_CPU_WRp, addr == 0xFF20), KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
     /*#p19.FUGO*/ ch4_new.FUGO_CH4_LEN_DONEp.dff17(ch4_new.EDOP_NR41_LEN5p.qn_any(), GAPY_LEN_DONE_RSTn, ch4_old.FUGO_CH4_LEN_DONEp.qn_any());
 
-    /*#p19.DODA*/ wire DODA_LEN_CLKn2 = nor3(ch4_new.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
-    /*#p19.CUWA*/ wire CUWA_LEN_CLKa2 = not1(DODA_LEN_CLKn2);
+    wire CUWA_LEN_CLKa2 = or3(ch4_new.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
 
     /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20_any(CUWA_LEN_CLKa2, and2(BOGY_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D00p.qp_any());
   }

@@ -714,7 +714,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
     /*#p01.ADAR*/ wire ADAR_ABCxxxxH = not1(reg_new.sys_clk.ADYK_xxxDEFGx.qp_new());
     /*#p01.ATYP*/ wire ATYP_ABCDxxxx = not1(reg_new.sys_clk.AFUR_ABCDxxxx.qn_new());
     /*#p01.AFAS*/ wire AFAS_xxxxEFGx = nor2(ADAR_ABCxxxxH, ATYP_ABCDxxxx);
-    /*_p01.AREV*/ wire AREV_CPU_WRn = nand2(reg_old.cpu_signals.SIG_IN_CPU_WRp.out_old(), AFAS_xxxxEFGx);
+    /*_p01.AREV*/ wire AREV_CPU_WRn = nand2(reg_new.cpu_signals.SIG_IN_CPU_WRp.out_new(), AFAS_xxxxEFGx);
     /*_p01.APOV*/ reg_new.cpu_signals.APOV_CPU_WRp <<= not1(AREV_CPU_WRn);
     /*_p07.UBAL*/ wire UBAL_CPU_WRn = not1(reg_new.cpu_signals.APOV_CPU_WRp.out_new());
     /*_p07.TAPU*/ reg_new.cpu_signals.TAPU_CPU_WRp <<= not1(UBAL_CPU_WRn); // xxxxEFGx

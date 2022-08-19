@@ -167,11 +167,15 @@ void tick_ch4_fast(
 
   /*#p20.GUNY*/ wire GUNY_FREQ_GATE_RSTn_new = nor2(KEBA_APU_RSTp, ch4_new.GONE_CH4_TRIGp.qp_any());
 
-  /*#p20.HYNO*/ wire HYNO_DIV_MAX_old = and3(ch4_old.JYFU_DIV2.qp_any(), ch4_old.JYRE_DIV1.qp_any(), ch4_old.JYCO_DIV0.qp_any()); // Die may be wrong, this has to be an AND
+  auto div_old = bit_pack(&ch4_old.JYCO_DIV0, 3);
 
-  /*_p01.BAVU*/ wire BAVU_CLK_1M = not1(spu_new.AVOK_xBCDExxx.qp_any());
-  /*#p20.GYBA*/ wire GYBA_CLK_1M = not1(BAVU_CLK_1M);
-  /*#p20.GARY*/ ch4_new.GARY_FREQ_GATEp.dff17(GYBA_CLK_1M, GUNY_FREQ_GATE_RSTn_new, HYNO_DIV_MAX_old);
+  if (DELTA_AB) {
+    /*#p20.GARY*/ ch4_new.GARY_FREQ_GATEp.state = div_old == 7;
+  }
+
+  if (!bit(GUNY_FREQ_GATE_RSTn_new)) {
+    ch4_new.GARY_FREQ_GATEp.state = 0;
+  }
 
 
 

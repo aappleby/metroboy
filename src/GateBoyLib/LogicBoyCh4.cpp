@@ -143,16 +143,7 @@ void tick_ch4_fast(
   /*#p20.HELU*/ wire HELU_RESET_LATCHp = not1(FALE_RESET_LATCHn);
   /*#p20.HAZO*/ ch4_new.HAZO_CH4_TRIGn.nor_latch(HELU_RESET_LATCHp, ch4_new.GYSU_CH4_TRIG.qp_any());
 
-
-  // This goes to all the CHN_LENENp registers...why?
-  /*#p10.CUGE*/ wire CUGE_ADDR_FF23p = nor2(DUFE_ADDR_0011n, BEZY_ADDR_FF2Xn);
-  /*_p16.ANUJ*/ wire ANUJ_CPU_WR_WEIRD = and2(SIG_IN_CPU_DBUS_FREE, BOGY_CPU_WRp);
-  /*#p19.DULU*/ wire DULU_FF23_WRn = nand2(ANUJ_CPU_WR_WEIRD, CUGE_ADDR_FF23p);
-  /*#p19.FOXE*/ wire FOXE_FF23_WRn = nand2(BOGY_CPU_WRp, CUGE_ADDR_FF23p);
-  /*#p20.GUZY*/ wire GUZY_NR44_TRIG_RST = nor2(KEBA_APU_RSTp, ch4_new.GYSU_CH4_TRIG.qp_any());
-
-  
-  if (DELTA_GH && SIG_IN_CPU_WRp) {
+  if (DELTA_GH && SIG_IN_CPU_WRp && SIG_IN_CPU_DBUS_FREE) {
     if (addr == 0xFF23) {
       ch4_new.CUNY_NR44_LEN_ENp.state = cpu_dbus_old.BUS_CPU_D06p.qp_any();
       ch4_new.HOGA_NR44_TRIGp.state = cpu_dbus_old.BUS_CPU_D07p.qp_any();
@@ -163,7 +154,7 @@ void tick_ch4_fast(
     ch4_new.CUNY_NR44_LEN_ENp.state = 0;
   }
 
-  if (bit(~GUZY_NR44_TRIG_RST)) {
+  if (bit(~nor2(KEBA_APU_RSTp, ch4_new.GYSU_CH4_TRIG.qp_any()))) {
     ch4_new.HOGA_NR44_TRIGp.state = 0;
   }
 

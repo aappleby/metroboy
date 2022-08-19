@@ -84,21 +84,10 @@ void tick_ch4_fast(
 
 
   /*#p01.HAMA*/ wire HAMA_CLK_512K = not1(spu_new.JESO_CLK_512K.qp_any());
-  /*_p01.BURE*/ wire BURE_CLK_512 = not1(spu_new.BARA_CLK_512.qp_any());
-  /*#p01.FYNE*/ wire FYNE_CLK_512 = not1(BURE_CLK_512);
-  /*_p01.GALE*/ wire GALE_CLK_512 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, FYNE_CLK_512);
-  /*_p01.GEXY*/ wire GEXY_CLK_512 = not1(GALE_CLK_512);
-  /*_p01.HORU*/ wire HORU_CLK_512 = not1(GEXY_CLK_512);
 
-  /*_p01.CULO*/ wire CULO_CLK_256 = not1(spu_new.CARU_CLK_256.qp_any());
-  /*_p01.BEZE*/ wire BEZE_CLK_256 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, CULO_CLK_256);
-  /*_p01.COFU*/ wire COFU_CLK_256 = not1(BEZE_CLK_256);
-  /*_p01.BUFY*/ wire BUFY_CLK_256 = not1(COFU_CLK_256);
-
-  /*_p01.APEF*/ wire APEF_CLK_128 = not1(spu_new.BYLU_CLK_128.qp_any());
-  /*_p01.BULE*/ wire BULE_CLK_128 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, APEF_CLK_128);
-  /*_p01.BARU*/ wire BARU_CLK_128 = not1(BULE_CLK_128);
-  /*_p01.BYFE*/ wire BYFE_CLK_128 = not1(BARU_CLK_128);
+  /*_p01.HORU*/ wire HORU_CLK_512 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, spu_new.BARA_CLK_512.qp_any());
+  /*_p01.BUFY*/ wire BUFY_CLK_256 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, not1(spu_new.CARU_CLK_256.qp_any()));
+  /*_p01.BYFE*/ wire BYFE_CLK_128 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, not1(spu_new.BYLU_CLK_128.qp_any()));
 
   auto nr42 = bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 8);
   auto nr43 = bit_pack(&ch4_new.JARE_NR43_DIV0p, 8);
@@ -156,19 +145,23 @@ void tick_ch4_fast(
 
 
 
-
-  auto freq = bit_pack(&ch4_new.CEXO_FREQ_00, 14);
+  auto freq_old = bit_pack(&ch4_old.CEXO_FREQ_00, 14);
+  auto freq_new = bit_pack(&ch4_new.CEXO_FREQ_00, 14);
 
   if (DELTA_EF && bit(ch4_new.GARY_FREQ_GATEp.qp_any())) {
-    freq++;
+    freq_new++;
   }
 
   if (apu_rst) {
-    freq = 0;
+    freq_new = 0;
   }
 
-  bit_unpack(&ch4_new.CEXO_FREQ_00, 14, freq);
+  bit_unpack(&ch4_new.CEXO_FREQ_00, 14, freq_new);
 
+  auto freq_mux_old = bit_pack(&ch4_old.FETA_NR43_FREQ0p, 4);
+  auto freq_mux_new = bit_pack(&ch4_new.FETA_NR43_FREQ0p, 4);
+
+  /*
   uint8_t lfsr_clk_old = 0;
   switch(bit_pack(&ch4_old.FETA_NR43_FREQ0p, 4)) {
   case 0:  lfsr_clk_old = ch4_old.CEXO_FREQ_00.qp_any(); break;
@@ -188,7 +181,12 @@ void tick_ch4_fast(
   case 14: lfsr_clk_old = 0; break;
   case 15: lfsr_clk_old = 0; break;
   }
+  */
+  
+  auto lfsr_clk_old = bit(freq_old, freq_mux_old);
 
+
+  /*
   uint8_t lfsr_clk_new = 0;
   switch(bit_pack(&ch4_new.FETA_NR43_FREQ0p, 4)) {
   case 0:  lfsr_clk_new = ch4_new.CEXO_FREQ_00.qp_any(); break;
@@ -208,6 +206,8 @@ void tick_ch4_fast(
   case 14: lfsr_clk_new = 0; break;
   case 15: lfsr_clk_new = 0; break;
   }
+  */
+  auto lfsr_clk_new = bit(freq_new, freq_mux_new);
 
 
   {

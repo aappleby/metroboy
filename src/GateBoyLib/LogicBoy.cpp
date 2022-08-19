@@ -2809,7 +2809,9 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
       state_new.sys_clk.AFUR_ABCDxxxx.qn_any(),
       state_new.sys_clk.ALEF_xBCDExxx.qp_any(),
       state_new.sys_clk.APUK_xxCDEFxx.qn_any(),
-      
+
+      bit(state_new.cpu_signals.SIG_IN_CPU_RDp),
+      bit(state_new.cpu_signals.SIG_IN_CPU_WRp),
       state_new.cpu_signals.TEDO_CPU_RDp.qp_any(),
       state_new.cpu_signals.TAPU_CPU_WRp.qp_any(),
 

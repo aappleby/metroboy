@@ -16,104 +16,6 @@ int spu_audio_out_l(GateBoyState& reg_new) {
 
 #ifdef SIM_AUDIO
 
-void tick_ch1_fast(
-  uint64_t phase_new,
-
-  const GateBoyCpuDBus& cpu_dbus_old,
-  const GateBoySPU& spu_old,
-  const SpuChannel1& ch1_old,
-  const GateBoyCpuABus& cpu_abus_new,
-
-  GateBoyCpuDBus& cpu_dbus_new,
-  GateBoySPU& spu_new,
-  SpuChannel1& ch1_new,
-
-  wire AFER_SYS_RSTp,
-  wire ASOL_POR_DONEn,
-  wire SIG_CPU_CLKREQ,
-  wire AFUR_ABCDxxxx_qn,
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp,
-  wire SIG_IN_CPU_DBUS_FREE
-);
-
-void tick_ch2_fast(
-  uint64_t phase_new,
-
-  const GateBoyCpuDBus& cpu_dbus_old,
-  const GateBoySPU& spu_old,
-  const SpuChannel2& ch2_old,
-  const GateBoyCpuABus& cpu_abus_new,
-
-  GateBoyCpuDBus& cpu_dbus_new,
-  GateBoySPU& spu_new,
-  SpuChannel2& ch2_new,
-
-  wire AFER_SYS_RSTp,
-  wire ASOL_POR_DONEn,
-  wire SIG_CPU_CLKREQ,
-  wire AFUR_ABCDxxxx_qn,
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp,
-  wire SIG_IN_CPU_DBUS_FREE
-);
-
-void tick_ch3_fast(
-  uint64_t phase_new,
-
-  const GateBoyCpuDBus& cpu_dbus_old,
-  const GateBoySPU& spu_old,
-  const SpuChannel3& ch3_old,
-  const GateBoyWaveBus& wave_dbus_old,
-  const GateBoyCpuABus& cpu_abus_new,
-
-  GateBoyCpuDBus& cpu_dbus_new,
-  GateBoySPU& spu_new,
-  SpuChannel3& ch3_new,
-  GateBoyWaveBus& wave_dbus_new,
-
-  wire AFER_SYS_RSTp,
-  wire ASOL_POR_DONEn,
-  wire SIG_CPU_CLKREQ,
-  wire AVET_AxCxExGx,
-  wire AFUR_ABCDxxxx_qn,
-  wire APUK_xxCDEFxx_qn,
-  wire ALEF_xBCDExxx,
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp,
-  wire SIG_IN_CPU_DBUS_FREE,
-
-  uint8_t* wave_ram
-);
-
-void tick_ch4_fast(
-  uint64_t phase_new,
-
-  const GateBoyCpuDBus& cpu_dbus_old,
-  const GateBoySPU& spu_old,
-  const SpuChannel4& ch4_old,
-  const GateBoyWaveBus& wave_dbus_old,
-  const GateBoyCpuABus& cpu_abus_new,
-
-  GateBoyCpuDBus& cpu_dbus_new,
-  GateBoySPU& spu_new,
-  SpuChannel4& ch4_new,
-  GateBoyWaveBus& wave_dbus_new,
-
-  wire AFER_SYS_RSTp,
-  wire ASOL_POR_DONEn,
-  wire SIG_CPU_CLKREQ,
-  wire AVET_AxCxExGx,
-  wire AFUR_ABCDxxxx_qn,
-  wire APUK_xxCDEFxx_qn,
-  wire ALEF_xBCDExxx,
-  wire TEDO_CPU_RDp,
-  wire TAPU_CPU_WRp,
-  wire SIG_IN_CPU_DBUS_FREE,
-
-  uint8_t* wave_ram
-);
-
 //------------------------------------------------------------------------------
 
 void tick_spu_fast(
@@ -149,6 +51,8 @@ void tick_spu_fast(
   wire ALEF_xBCDExxx,
   wire APUK_xxCDEFxx_qn,
 
+  wire SIG_IN_CPU_RDp,
+  wire SIG_IN_CPU_WRp,
   wire TEDO_CPU_RDp,
   wire TAPU_CPU_WRp,
 
@@ -267,8 +171,12 @@ void tick_spu_fast(
     ASOL_POR_DONEn,
     SIG_CPU_CLKREQ,
     AFUR_ABCDxxxx_qn,
+
+    SIG_IN_CPU_RDp,
+    SIG_IN_CPU_WRp,
     TEDO_CPU_RDp,
     TAPU_CPU_WRp,
+
     SIG_IN_CPU_DBUS_FREE
   );
 
@@ -287,6 +195,8 @@ void tick_spu_fast(
     ASOL_POR_DONEn,
     SIG_CPU_CLKREQ,
     AFUR_ABCDxxxx_qn,
+    SIG_IN_CPU_RDp,
+    SIG_IN_CPU_WRp,
     TEDO_CPU_RDp,
     TAPU_CPU_WRp,
     SIG_IN_CPU_DBUS_FREE
@@ -312,6 +222,8 @@ void tick_spu_fast(
     AFUR_ABCDxxxx_qn,
     APUK_xxCDEFxx_qn,
     ALEF_xBCDExxx,
+    SIG_IN_CPU_RDp,
+    SIG_IN_CPU_WRp,
     TEDO_CPU_RDp,
     TAPU_CPU_WRp,
     SIG_IN_CPU_DBUS_FREE,
@@ -339,6 +251,8 @@ void tick_spu_fast(
     AFUR_ABCDxxxx_qn,
     APUK_xxCDEFxx_qn,
     ALEF_xBCDExxx,
+    SIG_IN_CPU_RDp,
+    SIG_IN_CPU_WRp,
     TEDO_CPU_RDp,
     TAPU_CPU_WRp,
     SIG_IN_CPU_DBUS_FREE,

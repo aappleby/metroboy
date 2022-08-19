@@ -55,6 +55,8 @@ void tick_ch3_fast(
   wire AFUR_ABCDxxxx_qn,
   wire APUK_xxCDEFxx_qn,
   wire ALEF_xBCDExxx,
+  wire SIG_IN_CPU_RDp,
+  wire SIG_IN_CPU_WRp,
   wire TEDO_CPU_RDp,
   wire TAPU_CPU_WRp,
   wire SIG_IN_CPU_DBUS_FREE,

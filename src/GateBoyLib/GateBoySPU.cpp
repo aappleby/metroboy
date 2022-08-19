@@ -16,12 +16,6 @@ int spu_audio_out_l(GateBoyState& reg_new) {
 
 #ifdef SIM_AUDIO
 
-void tick_ch1(const GateBoyState& reg_old, GateBoyState& reg_new);
-void tick_ch2(const GateBoyState& reg_old, GateBoyState& reg_new);
-void tick_ch3(const GateBoyState& reg_old, GateBoyState& reg_new, uint8_t* wave_ram);
-void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new);
-
-
 sample_t spu_audio_out_r(const GateBoyState& reg_new) {
   auto& spu_new = reg_new.spu;
   sample_t mix = 0;

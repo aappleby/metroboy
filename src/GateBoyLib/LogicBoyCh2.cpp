@@ -39,6 +39,8 @@ void tick_ch2_fast(
   wire ASOL_POR_DONEn,
   wire SIG_CPU_CLKREQ,
   wire AFUR_ABCDxxxx_qn,
+  wire SIG_IN_CPU_RDp,
+  wire SIG_IN_CPU_WRp,
   wire TEDO_CPU_RDp,
   wire TAPU_CPU_WRp,
   wire SIG_IN_CPU_DBUS_FREE

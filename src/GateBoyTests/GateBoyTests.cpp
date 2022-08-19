@@ -411,12 +411,18 @@ TestResults GateBoyTests::test_fuzz_spu(const IGateBoy* proto, int reps) {
     for (int i = 0; i < 100000; i++) {
       uint16_t addr = 0xFF10 + (xorshift32(r) % 23);
       uint8_t data = uint8_t(xorshift32(r));
+      bool write = xorshift32(r) & 1;
 
-      gb->dbg_req(addr, data, 1);
+      gb->dbg_req(addr, data, write);
       for (int phase = 0; phase < 8; phase++) {
         auto res1 = gb->next_phase(dummy_cart);
         if (res1.is_err()) {
-          LOG_R("\test_fuzz_spu failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, data, addr);
+          if (write) {
+            LOG_R("\test_fuzz_spu failed at %04d:%04d - write 0x%02x to 0x%04x\n", j, i, data, addr);
+          }
+          else {
+            LOG_R("\test_fuzz_spu failed at %04d:%04d - read 0x%04x\n", j, i, addr);
+          }
           LOG_R("Saving dump before mismatch...\n");
           save_fuzz_dump(proto, j, i);
           LOG_R("Dump saved @ %04d:%04d\n", j, i);

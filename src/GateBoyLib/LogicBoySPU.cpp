@@ -60,6 +60,9 @@ void tick_spu_fast(
 )
 {
  
+  auto addr = bit_pack(cpu_abus_new);
+  auto dbus_old = bit_pack(cpu_dbus_old);
+
   /*_p09.AGUZ*/ wire AGUZ_CPU_RDn = not1(TEDO_CPU_RDp);
   /*_p10.BAFU*/ wire BAFU_CPU_WRn = not1(TAPU_CPU_WRp);
   /*_p10.BOGY*/ wire BOGY_CPU_WRp = not1(BAFU_CPU_WRn);
@@ -332,28 +335,23 @@ void tick_spu_fast(
   }
 
   {
-    /*_p10.CORA*/ wire CORA_ADDR_FF25p = nor2(BEZY_ADDR_FF2Xn, DURA_ADDR_0101n);
-    /*_p09.GEPA*/ wire GEPA_ADDR_FF25n = not1(CORA_ADDR_FF25p);
-    /*_p09.HEFA*/ wire HEFA_NR51_RDp = nor2(GEPA_ADDR_FF25n, AGUZ_CPU_RDn); // outline wrong color in die
-    /*_p09.GUMU*/ wire GUMU_NR51_RDn = not1(HEFA_NR51_RDp);
+    if (addr == 0xFF25 && SIG_IN_CPU_RDp) bit_unpack(cpu_dbus_new, bit_pack(&spu_new.ANEV_NR51_RCH1_ENp, 8));
+    
+    /*
+    if (addr == 0xFF26 && SIG_IN_CPU_RDp) {
+      //bit_unpack(cpu_dbus_new, bit_pack(&spu_new.ANEV_NR51_RCH1_ENp, 8));
+      uint8_t dbus_new = 0;
 
-    /*_p09.BUZU*/ triwire BUZU_D0 = tri6_nn(GUMU_NR51_RDn, spu_new.ANEV_NR51_RCH1_ENp.qn_any());
-    /*_p09.CAPU*/ triwire CAPU_D1 = tri6_nn(GUMU_NR51_RDn, spu_new.BOGU_NR51_RCH2_ENp.qn_any());
-    /*_p09.CAGA*/ triwire CAGA_D2 = tri6_nn(GUMU_NR51_RDn, spu_new.BAFO_NR51_RCH3_ENp.qn_any());
-    /*_p09.BOCA*/ triwire BOCA_D3 = tri6_nn(GUMU_NR51_RDn, spu_new.ATUF_NR51_RCH4_ENp.qn_any());
-    /*_p09.CAVU*/ triwire CAVU_D4 = tri6_nn(GUMU_NR51_RDn, spu_new.BUME_NR51_LCH1_ENp.qn_any());
-    /*_p09.CUDU*/ triwire CUDU_D5 = tri6_nn(GUMU_NR51_RDn, spu_new.BOFA_NR51_LCH2_ENp.qn_any());
-    /*_p09.CADA*/ triwire CADA_D6 = tri6_nn(GUMU_NR51_RDn, spu_new.BEFO_NR51_LCH3_ENp.qn_any());
-    /*_p09.CERE*/ triwire CERE_D7 = tri6_nn(GUMU_NR51_RDn, spu_new.BEPU_NR51_LCH4_ENp.qn_any());
-
-    /*_BUS_CPU_D00p*/ cpu_dbus_new.BUS_CPU_D00p.tri_bus(BUZU_D0);
-    /*_BUS_CPU_D01p*/ cpu_dbus_new.BUS_CPU_D01p.tri_bus(CAPU_D1);
-    /*_BUS_CPU_D02p*/ cpu_dbus_new.BUS_CPU_D02p.tri_bus(CAGA_D2);
-    /*_BUS_CPU_D03p*/ cpu_dbus_new.BUS_CPU_D03p.tri_bus(BOCA_D3);
-    /*_BUS_CPU_D04p*/ cpu_dbus_new.BUS_CPU_D04p.tri_bus(CAVU_D4);
-    /*_BUS_CPU_D05p*/ cpu_dbus_new.BUS_CPU_D05p.tri_bus(CUDU_D5);
-    /*_BUS_CPU_D06p*/ cpu_dbus_new.BUS_CPU_D06p.tri_bus(CADA_D6);
-    /*_BUS_CPU_D07p*/ cpu_dbus_new.BUS_CPU_D07p.tri_bus(CERE_D7);
+      dbus_new |= bit(ch1_new.CYTO_CH1_ACTIVEp.qp_any()) << 0;
+      dbus_new |= bit(ch2_new.DANE_CH2_ACTIVEp.qp_any()) << 1;
+      dbus_new |= bit(ch3_new.DAVO_CH3_ACTIVEp.qn_any()) << 2;
+      dbus_new |= bit(ch4_new.GENA_CH4_ACTIVEp.qp_any()) << 3;
+      dbus_new |= 1 << 4;
+      dbus_new |= 1 << 5;
+      dbus_new |= 1 << 6;
+      dbus_new |= bit(spu_new.HADA_NR52_ALL_SOUND_ON.qp_any()) << 7;
+    }
+    */
   }
 
   {

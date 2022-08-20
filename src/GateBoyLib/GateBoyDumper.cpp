@@ -552,7 +552,7 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
 #if 1
   d.dump_slicep("CH4 FREQ     : ", &s.ch4.CEXO_FREQ_00, 14);
   d.dump_slicep("CH4 LFSR     : ", &s.ch4.JOTO_LFSR_00, 16);
-  d.dump_slicep("CH4 DIV      : ", &s.ch4.JYCO_DIV0, 3);
+  d.dump_slicep("CH4 DIV      : ", &s.ch4.JYCO_FREQ_DELAY0, 3);
   d.dump_slicep("CH4 VOL      : ", &s.ch4.FEKO_CH4_VOL0, 4);
   d("\n");
 #endif

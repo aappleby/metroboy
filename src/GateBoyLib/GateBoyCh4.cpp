@@ -162,7 +162,7 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
   /*#p20.GUNY*/ wire GUNY_FREQ_GATE_RSTn_new = nor2(KEBA_APU_RSTp, reg_new.ch4.GONE_CH4_TRIGp.qp_new());
   
-  /*#p20.HYNO*/ wire HYNO_DIV_MAX_old = and3(reg_old.ch4.JYFU_DIV2.qp_old(), reg_old.ch4.JYRE_DIV1.qp_old(), reg_old.ch4.JYCO_DIV0.qp_old()); // Die may be wrong, this has to be an AND
+  /*#p20.HYNO*/ wire HYNO_DIV_MAX_old = and3(reg_old.ch4.JYFU_FREQ_DELAY2.qp_old(), reg_old.ch4.JYRE_FREQ_DELAY1.qp_old(), reg_old.ch4.JYCO_FREQ_DELAY0.qp_old()); // Die may be wrong, this has to be an AND
   
   /*_p01.BAVU*/ wire BAVU_CLK_1M = not1(reg_new.spu.AVOK_xBCDExxx.qp_new());
   /*#p20.GYBA*/ wire GYBA_CLK_1M = not1(BAVU_CLK_1M);
@@ -281,20 +281,20 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
   {
     /*#p20.HERY*/ wire HERY_DIV_GATE1n = nor2(GEVY_CH4_AMP_ENn, KEBA_APU_RSTp);
     /*#p20.HAPU*/ wire HAPU_CH4_TRIGn = not1(reg_new.ch4.GATY_CH4_TRIGp.qp_new());
-    /*#p20.JERY*/ reg_new.ch4.JERY_DIV_GATE.nand_latch(HERY_DIV_GATE1n, HAPU_CH4_TRIGn);
+    /*#p20.JERY*/ reg_new.ch4.JERY_FREQ_GATE.nand_latch(HERY_DIV_GATE1n, HAPU_CH4_TRIGn);
   }
 
   {
-    /*#p20.KYKU*/ wire KYKU_DIV_CLKb  = or2(reg_new.ch4.JERY_DIV_GATE.qp_new(), reg_new.spu.JESO_CLK_512K.qp_new());
+    /*#p20.KYKU*/ wire KYKU_DIV_CLKb  = or2(reg_new.ch4.JERY_FREQ_GATE.qp_new(), reg_new.spu.JESO_CLK_512K.qp_new());
     /*#p20.KONY*/ wire KONY_DIV_CLKn  = not1(KYKU_DIV_CLKb);
     /*#p20.KANU*/ wire KANU_DIV_CLKa  = not1(KONY_DIV_CLKn);
 
     /*#p20.GOFU*/ wire GOFU_DIV_LOADn = nor2(reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GARY_FREQ_GATEp.qp_new());
     /*#p20.HUCE*/ wire HUCE_DIV_LOADp  = not1(GOFU_DIV_LOADn);
 
-    /*#p20.JYCO*/ reg_new.ch4.JYCO_DIV0.dff20(KANU_DIV_CLKa,                  HUCE_DIV_LOADp, reg_new.ch4.JARE_NR43_DIV0p.qn_new());
-    /*#p20.JYRE*/ reg_new.ch4.JYRE_DIV1.dff20(reg_new.ch4.JYCO_DIV0.qp_new(), HUCE_DIV_LOADp, reg_new.ch4.JERO_NR43_DIV1p.qn_new());
-    /*_p20.JYFU*/ reg_new.ch4.JYFU_DIV2.dff20(reg_new.ch4.JYRE_DIV1.qp_new(), HUCE_DIV_LOADp, reg_new.ch4.JAKY_NR43_DIV2p.qn_new());
+    /*#p20.JYCO*/ reg_new.ch4.JYCO_FREQ_DELAY0.dff20(KANU_DIV_CLKa,                  HUCE_DIV_LOADp, reg_new.ch4.JARE_NR43_DIV0p.qn_new());
+    /*#p20.JYRE*/ reg_new.ch4.JYRE_FREQ_DELAY1.dff20(reg_new.ch4.JYCO_FREQ_DELAY0.qp_new(), HUCE_DIV_LOADp, reg_new.ch4.JERO_NR43_DIV1p.qn_new());
+    /*_p20.JYFU*/ reg_new.ch4.JYFU_FREQ_DELAY2.dff20(reg_new.ch4.JYRE_FREQ_DELAY1.qp_new(), HUCE_DIV_LOADp, reg_new.ch4.JAKY_NR43_DIV2p.qn_new());
   }
 
 

@@ -401,17 +401,41 @@ TestResults GateBoyTests::test_fuzz_spu(const IGateBoy* proto, int reps) {
   TEST_INIT();
 
   for (int j = 0; j < reps; j++) {
-    uint32_t r = j;
+    uint32_t r = j ^ 12345678;
     for (int k = 0; k < 10; k++) xorshift32(r);
 
     unique_ptr<IGateBoy> gb(proto->clone());
     gb->reset();
     gb->set_cpu_en(false);
 
+    bool spu_on = true;
+
     for (int i = 0; i < 100000; i++) {
-      uint16_t addr = 0xFF10 + (xorshift32(r) % 23);
-      uint8_t data = uint8_t(xorshift32(r));
-      bool write = xorshift32(r) & 1;
+      uint16_t addr = 0;
+      uint8_t data = 0;
+      bool write = 0;
+
+      if (!spu_on) {
+        //printf("%10d turning apu back on\n", i);
+        addr = 0xFF26;
+        data = 0x80;
+        write = 1;
+        spu_on = true;
+      }
+      else if ((xorshift32(r) % 1000) == 0) {
+        //printf("%10d turning apu off\n", i);
+        addr = 0xFF26;
+        data = 0x00;
+        write = 1;
+        spu_on = false;
+      }
+      else {
+        //addr = 0xFF10 + (xorshift32(r) % 23); // includes NR52
+        addr = 0xFF10 + (xorshift32(r) % 22); // no NR52
+        data = uint8_t(xorshift32(r));
+        write = xorshift32(r) & 1;
+        if (addr == 0xFF26) debugbreak();
+      }
 
       gb->dbg_req(addr, data, write);
       for (int phase = 0; phase < 8; phase++) {

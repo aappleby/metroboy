@@ -44,7 +44,7 @@ sample_t ch4_audio_out_fast(const SpuChannel4& ch4) {
 
 //------------------------------------------------------------------------------
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 void tick_ch4_fast(
   uint64_t phase_new,
   int64_t spu_phase_new,
@@ -138,19 +138,15 @@ void tick_ch4_fast(
   bit_unpack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 8, nr42);
   bit_unpack(&ch4_new.JARE_NR43_DIV0p,       8, nr43);
 
-  wire GUNY_FREQ_GATE_RSTn_new = nor2(apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any());
-
-  auto div_old = bit_pack(&ch4_old.JYCO_DIV0, 3);
+  auto freq_delay_old = bit_pack(&ch4_old.JYCO_FREQ_DELAY0, 3);
 
   if (DELTA_AB) {
-    ch4_new.GARY_FREQ_GATEp.state = div_old == 7;
+    ch4_new.GARY_FREQ_GATEp.state = freq_delay_old == 7;
   }
 
-  if (!bit(GUNY_FREQ_GATE_RSTn_new)) {
+  if (!bit(nor2(apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any()))) {
     ch4_new.GARY_FREQ_GATEp.state = 0;
   }
-
-
 
   auto freq_old = bit_pack(&ch4_old.CEXO_FREQ_00, 14);
   auto freq_new = bit_pack(&ch4_new.CEXO_FREQ_00, 14);
@@ -173,17 +169,42 @@ void tick_ch4_fast(
 
 
   {
-    /*#p19.CUWA*/ wire CUWA_LEN_CLKa = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
+    // fugo old cycle break 
+    /*#p19.CUWA*/ wire CUWA_LEN_CLKa_old = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_old.CUNY_NR44_LEN_ENp.qn_any());
+    /*#p19.CUWA*/ wire CUWA_LEN_CLKa_new = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
 
-    /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20(CUWA_LEN_CLKa,                    and2(TAPU_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D00p.qp_any());
-    /*#p19.FAVY*/ ch4_new.FAVY_NR41_LEN1p.dff20(ch4_new.DANO_NR41_LEN0p.qp_any(), and2(TAPU_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D01p.qp_any());
-    /*#p19.DENA*/ ch4_new.DENA_NR41_LEN2p.dff20(ch4_new.FAVY_NR41_LEN1p.qp_any(), and2(TAPU_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D02p.qp_any());
-    /*#p19.CEDO*/ ch4_new.CEDO_NR41_LEN3p.dff20(ch4_new.DENA_NR41_LEN2p.qp_any(), and2(TAPU_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D03p.qp_any());
-    /*#p19.FYLO*/ ch4_new.FYLO_NR41_LEN4p.dff20(ch4_new.CEDO_NR41_LEN3p.qp_any(), and2(TAPU_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D04p.qp_any());
-    /*#p19.EDOP*/ ch4_new.EDOP_NR41_LEN5p.dff20(ch4_new.FYLO_NR41_LEN4p.qp_any(), and2(TAPU_CPU_WRp, addr == 0xFF20), cpu_dbus_new.BUS_CPU_D05p.qp_any());
-
-    if (DELTA_DE && SIG_IN_CPU_WRp && addr == 0xFF20) {
+    /*
+    auto len_old = bit_pack(&ch4_new.DANO_NR41_LEN0p, 6);
+    if (negedge(CUWA_LEN_CLKa_old, CUWA_LEN_CLKa_new)) {
+      len_old++;
     }
+    if (bit(TAPU_CPU_WRp) && (addr == 0xFF20)) {
+      len_old = dbus_old;
+    }
+    bit_unpack(&ch4_new.DANO_NR41_LEN0p, 6, len_old);
+    */
+
+    if (bit(and2(TAPU_CPU_WRp, addr == 0xFF20))) {
+      /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20(CUWA_LEN_CLKa_new,                1, cpu_dbus_new.BUS_CPU_D00p.qp_any());
+      /*#p19.FAVY*/ ch4_new.FAVY_NR41_LEN1p.dff20(ch4_new.DANO_NR41_LEN0p.qp_any(), 1, cpu_dbus_new.BUS_CPU_D01p.qp_any());
+      /*#p19.DENA*/ ch4_new.DENA_NR41_LEN2p.dff20(ch4_new.FAVY_NR41_LEN1p.qp_any(), 1, cpu_dbus_new.BUS_CPU_D02p.qp_any());
+      /*#p19.CEDO*/ ch4_new.CEDO_NR41_LEN3p.dff20(ch4_new.DENA_NR41_LEN2p.qp_any(), 1, cpu_dbus_new.BUS_CPU_D03p.qp_any());
+      /*#p19.FYLO*/ ch4_new.FYLO_NR41_LEN4p.dff20(ch4_new.CEDO_NR41_LEN3p.qp_any(), 1, cpu_dbus_new.BUS_CPU_D04p.qp_any());
+      /*#p19.EDOP*/ ch4_new.EDOP_NR41_LEN5p.dff20(ch4_new.FYLO_NR41_LEN4p.qp_any(), 1, cpu_dbus_new.BUS_CPU_D05p.qp_any());
+    }
+    else {
+      /*#p19.DANO*/ ch4_new.DANO_NR41_LEN0p.dff20(CUWA_LEN_CLKa_new,                0, 0);
+      /*#p19.FAVY*/ ch4_new.FAVY_NR41_LEN1p.dff20(ch4_new.DANO_NR41_LEN0p.qp_any(), 0, 0);
+      /*#p19.DENA*/ ch4_new.DENA_NR41_LEN2p.dff20(ch4_new.FAVY_NR41_LEN1p.qp_any(), 0, 0);
+      /*#p19.CEDO*/ ch4_new.CEDO_NR41_LEN3p.dff20(ch4_new.DENA_NR41_LEN2p.qp_any(), 0, 0);
+      /*#p19.FYLO*/ ch4_new.FYLO_NR41_LEN4p.dff20(ch4_new.CEDO_NR41_LEN3p.qp_any(), 0, 0);
+      /*#p19.EDOP*/ ch4_new.EDOP_NR41_LEN5p.dff20(ch4_new.FYLO_NR41_LEN4p.qp_any(), 0, 0);
+    }
+
+
+
+
+
 
     /*#p19.GAPY*/ wire GAPY_LEN_DONE_RSTn = nor3(and2(TAPU_CPU_WRp, addr == 0xFF20), apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any());
     /*#p19.FUGO*/ ch4_new.FUGO_CH4_LEN_DONEp.dff17(ch4_new.EDOP_NR41_LEN5p.qn_any(), GAPY_LEN_DONE_RSTn, ch4_old.FUGO_CH4_LEN_DONEp.qn_any());
@@ -217,16 +238,16 @@ void tick_ch4_fast(
   }
 
   {
-    /*#p20.JERY*/ ch4_new.JERY_DIV_GATE.nand_latch(nor2(GEVY_CH4_AMP_ENn, apu_rst), not1(ch4_new.GATY_CH4_TRIGp.qp_any()));
+    /*#p20.JERY*/ ch4_new.JERY_FREQ_GATE.nand_latch(nor2(GEVY_CH4_AMP_ENn, apu_rst), not1(ch4_new.GATY_CH4_TRIGp.qp_any()));
   }
 
   {
-    /*#p20.KANU*/ wire KANU_DIV_CLKa = or2(ch4_new.JERY_DIV_GATE.qp_any(), spu_new.JESO_CLK_512K.qp_any());
+    /*#p20.KANU*/ wire KANU_DIV_CLKa = or2(ch4_new.JERY_FREQ_GATE.qp_any(), spu_new.JESO_CLK_512K.qp_any());
     /*#p20.HUCE*/ wire HUCE_DIV_LOADp = or2(ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARY_FREQ_GATEp.qp_any());
 
-    /*#p20.JYCO*/ ch4_new.JYCO_DIV0.dff20(KANU_DIV_CLKa,              HUCE_DIV_LOADp, ch4_new.JARE_NR43_DIV0p.qn_any());
-    /*#p20.JYRE*/ ch4_new.JYRE_DIV1.dff20(ch4_new.JYCO_DIV0.qp_any(), HUCE_DIV_LOADp, ch4_new.JERO_NR43_DIV1p.qn_any());
-    /*_p20.JYFU*/ ch4_new.JYFU_DIV2.dff20(ch4_new.JYRE_DIV1.qp_any(), HUCE_DIV_LOADp, ch4_new.JAKY_NR43_DIV2p.qn_any());
+    /*#p20.JYCO*/ ch4_new.JYCO_FREQ_DELAY0.dff20(KANU_DIV_CLKa,              HUCE_DIV_LOADp, ch4_new.JARE_NR43_DIV0p.qn_any());
+    /*#p20.JYRE*/ ch4_new.JYRE_FREQ_DELAY1.dff20(ch4_new.JYCO_FREQ_DELAY0.qp_any(), HUCE_DIV_LOADp, ch4_new.JERO_NR43_DIV1p.qn_any());
+    /*_p20.JYFU*/ ch4_new.JYFU_FREQ_DELAY2.dff20(ch4_new.JYRE_FREQ_DELAY1.qp_any(), HUCE_DIV_LOADp, ch4_new.JAKY_NR43_DIV2p.qn_any());
   }
 
 
@@ -258,19 +279,16 @@ void tick_ch4_fast(
   }
 
   {
+    if (negedge(clk64_old, clk64_new)) {
+      auto timer = bit_pack(&ch4_new.CUNA_ENV_TIMER0n, 3);
+      timer++;
+      bit_unpack(&ch4_new.CUNA_ENV_TIMER0n, 3, timer);
+    }
 
-    /*#p20.DAPY*/ wire DAPY_ENV_TIMER_LOADp_new = or2(ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.FOSY_ENV_CLKp.qp_any());
-
-    ch4_new.CUNA_ENV_TIMER0n.dff20(ch4_new.ABEL_CLK_64.qp_any(),      DAPY_ENV_TIMER_LOADp_new, ch4_new.EMOK_NR42_ENV_DELAY0p.qn_any());
-    ch4_new.COFE_ENV_TIMER1n.dff20(ch4_new.CUNA_ENV_TIMER0n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.ETYJ_NR42_ENV_DELAY1p.qn_any());
-    ch4_new.DOGO_ENV_TIMER2n.dff20(ch4_new.COFE_ENV_TIMER1n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.EZYK_NR42_ENV_DELAY2p.qn_any());
-
-
-    if (bit(DAPY_ENV_TIMER_LOADp_new)) {
+    if (bit(or2(ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.FOSY_ENV_CLKp.qp_any()))) {
       auto delay = bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 3);
       bit_unpack(&ch4_new.CUNA_ENV_TIMER0n, 3, ~delay);
     }
-
   }
 
 

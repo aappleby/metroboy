@@ -37,10 +37,10 @@ struct SpuChannel4 {
     HOGA_NR44_TRIGp.state = 0x1a;
     GYSU_CH4_TRIG.state = 0x18;
     HAZO_CH4_TRIGn.state = 0x19;
-    JERY_DIV_GATE.state = 0x19;
-    JYCO_DIV0.state = 0x1a;
-    JYRE_DIV1.state = 0x18;
-    JYFU_DIV2.state = 0x18;
+    JERY_FREQ_GATE.state = 0x19;
+    JYCO_FREQ_DELAY0.state = 0x1a;
+    JYRE_FREQ_DELAY1.state = 0x18;
+    JYFU_FREQ_DELAY2.state = 0x18;
     GARY_FREQ_GATEp.state = 0x18;
     CEXO_FREQ_00.state = 0x18;
     DEKO_FREQ_01.state = 0x1a;
@@ -158,10 +158,10 @@ struct SpuChannel4 {
   /*#p20.GYSU*/ DFF17 GYSU_CH4_TRIG;
 
   /*#p20.HAZO*/ NorLatch HAZO_CH4_TRIGn; // 60
-  /*#p20.JERY*/ NandLatch JERY_DIV_GATE;
-  /*#p20.JYCO*/ DFF20 JYCO_DIV0;
-  /*#p20.JYRE*/ DFF20 JYRE_DIV1;
-  /*#p20.JYFU*/ DFF20 JYFU_DIV2;
+  /*#p20.JERY*/ NandLatch JERY_FREQ_GATE;
+  /*#p20.JYCO*/ DFF20 JYCO_FREQ_DELAY0;
+  /*#p20.JYRE*/ DFF20 JYRE_FREQ_DELAY1;
+  /*#p20.JYFU*/ DFF20 JYFU_FREQ_DELAY2;
   /*#p20.GARY*/ DFF17 GARY_FREQ_GATEp;
 
   /*#p20.ABEL*/ DFF17 ABEL_CLK_64;

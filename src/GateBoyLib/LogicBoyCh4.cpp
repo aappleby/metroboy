@@ -161,52 +161,7 @@ void tick_ch4_fast(
   auto freq_mux_old = bit_pack(&ch4_old.FETA_NR43_FREQ0p, 4);
   auto freq_mux_new = bit_pack(&ch4_new.FETA_NR43_FREQ0p, 4);
 
-  /*
-  uint8_t lfsr_clk_old = 0;
-  switch(bit_pack(&ch4_old.FETA_NR43_FREQ0p, 4)) {
-  case 0:  lfsr_clk_old = ch4_old.CEXO_FREQ_00.qp_any(); break;
-  case 1:  lfsr_clk_old = ch4_old.DEKO_FREQ_01.qp_any(); break;
-  case 2:  lfsr_clk_old = ch4_old.EZEF_FREQ_02.qp_any(); break;
-  case 3:  lfsr_clk_old = ch4_old.EPOR_FREQ_03.qp_any(); break;
-  case 4:  lfsr_clk_old = ch4_old.DURE_FREQ_04.qp_any(); break;
-  case 5:  lfsr_clk_old = ch4_old.DALE_FREQ_05.qp_any(); break;
-  case 6:  lfsr_clk_old = ch4_old.DOKE_FREQ_06.qp_any(); break;
-  case 7:  lfsr_clk_old = ch4_old.DEMO_FREQ_07.qp_any(); break;
-  case 8:  lfsr_clk_old = ch4_old.DOSE_FREQ_08.qp_any(); break;
-  case 9:  lfsr_clk_old = ch4_old.DETE_FREQ_09.qp_any(); break;
-  case 10: lfsr_clk_old = ch4_old.ERUT_FREQ_10.qp_any(); break;
-  case 11: lfsr_clk_old = ch4_old.DOTA_FREQ_11.qp_any(); break;
-  case 12: lfsr_clk_old = ch4_old.DERE_FREQ_12.qp_any(); break;
-  case 13: lfsr_clk_old = ch4_old.ESEP_FREQ_13.qp_any(); break;
-  case 14: lfsr_clk_old = 0; break;
-  case 15: lfsr_clk_old = 0; break;
-  }
-  */
-  
   auto lfsr_clk_old = bit(freq_old, freq_mux_old);
-
-
-  /*
-  uint8_t lfsr_clk_new = 0;
-  switch(bit_pack(&ch4_new.FETA_NR43_FREQ0p, 4)) {
-  case 0:  lfsr_clk_new = ch4_new.CEXO_FREQ_00.qp_any(); break;
-  case 1:  lfsr_clk_new = ch4_new.DEKO_FREQ_01.qp_any(); break;
-  case 2:  lfsr_clk_new = ch4_new.EZEF_FREQ_02.qp_any(); break;
-  case 3:  lfsr_clk_new = ch4_new.EPOR_FREQ_03.qp_any(); break;
-  case 4:  lfsr_clk_new = ch4_new.DURE_FREQ_04.qp_any(); break;
-  case 5:  lfsr_clk_new = ch4_new.DALE_FREQ_05.qp_any(); break;
-  case 6:  lfsr_clk_new = ch4_new.DOKE_FREQ_06.qp_any(); break;
-  case 7:  lfsr_clk_new = ch4_new.DEMO_FREQ_07.qp_any(); break;
-  case 8:  lfsr_clk_new = ch4_new.DOSE_FREQ_08.qp_any(); break;
-  case 9:  lfsr_clk_new = ch4_new.DETE_FREQ_09.qp_any(); break;
-  case 10: lfsr_clk_new = ch4_new.ERUT_FREQ_10.qp_any(); break;
-  case 11: lfsr_clk_new = ch4_new.DOTA_FREQ_11.qp_any(); break;
-  case 12: lfsr_clk_new = ch4_new.DERE_FREQ_12.qp_any(); break;
-  case 13: lfsr_clk_new = ch4_new.ESEP_FREQ_13.qp_any(); break;
-  case 14: lfsr_clk_new = 0; break;
-  case 15: lfsr_clk_new = 0; break;
-  }
-  */
   auto lfsr_clk_new = bit(freq_new, freq_mux_new);
 
 
@@ -283,15 +238,13 @@ void tick_ch4_fast(
   // Env
 
   auto env_timer_old = bit_pack(&ch4_old.CUNA_ENV_TIMER0n, 3) ^ 7;
+  auto env_delay_old = bit_pack(&ch4_old.EMOK_NR42_ENV_DELAY0p, 3);
   auto env_delay_new = bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 3);
 
-  {
+  ch4_new.FOSY_ENV_CLKp.dff17_clk(HORU_CLK_512, env_timer_old != 7);
 
-    ch4_new.FOSY_ENV_CLKp.dff17_clk(HORU_CLK_512, env_timer_old != 7);
-
-    if (bit(and2(~HORU_CLK_512, ch4_new.FOSY_ENV_CLKp.qp_any())) || (env_delay_new == 0) || bit(ch4_new.GONE_CH4_TRIGp.qp_any()) || apu_rst) {
-      ch4_new.FOSY_ENV_CLKp.state &= ~1;
-    }
+  if (bit(and2(~HORU_CLK_512, ch4_new.FOSY_ENV_CLKp.qp_any())) || (env_delay_new == 0) || bit(ch4_new.GONE_CH4_TRIGp.qp_any()) || apu_rst) {
+    ch4_new.FOSY_ENV_CLKp.state &= ~1;
   }
 
   {
@@ -329,16 +282,17 @@ void tick_ch4_fast(
   }
 
 
-  /*#p20.FELO*/ wire FELO_ENV_CLK = or3(ch4_new.FOSY_ENV_CLKp.qp_any(), env_delay_new == 0, ch4_new.EROX_ENV_RUNNINGn.qp_any());
+  /*#p20.FELO*/ wire FELO_ENV_CLK_old = or3(ch4_old.FOSY_ENV_CLKp.qp_any(), env_delay_old == 0, ch4_old.EROX_ENV_RUNNINGn.qp_any());
+  /*#p20.FELO*/ wire FELO_ENV_CLK_new = or3(ch4_new.FOSY_ENV_CLKp.qp_any(), env_delay_new == 0, ch4_new.EROX_ENV_RUNNINGn.qp_any());
 
   if (bit(ch4_new.GEKY_NR42_ENV_DIRp.qp_any())) {
-    /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FELO_ENV_CLK,                   ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_ENV0p.qp_any());
+    /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FELO_ENV_CLK_new,               ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_ENV0p.qp_any());
     /*#p20.FATY*/ ch4_new.FATY_CH4_VOL1.dff20(ch4_new.FEKO_CH4_VOL0.qp_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOKY_NR42_ENV1p.qp_any());
     /*#p20.FERU*/ ch4_new.FERU_CH4_VOL2.dff20(ch4_new.FATY_CH4_VOL1.qp_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOZO_NR42_ENV2p.qp_any());
     /*#p20.FYRO*/ ch4_new.FYRO_CH4_VOL3.dff20(ch4_new.FERU_CH4_VOL2.qp_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GEDU_NR42_ENV3p.qp_any());
   }
   else {
-    /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FELO_ENV_CLK,                   ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_ENV0p.qp_any());
+    /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FELO_ENV_CLK_new,               ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_ENV0p.qp_any());
     /*#p20.FATY*/ ch4_new.FATY_CH4_VOL1.dff20(ch4_new.FEKO_CH4_VOL0.qn_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOKY_NR42_ENV1p.qp_any());
     /*#p20.FERU*/ ch4_new.FERU_CH4_VOL2.dff20(ch4_new.FATY_CH4_VOL1.qn_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOZO_NR42_ENV2p.qp_any());
     /*#p20.FYRO*/ ch4_new.FYRO_CH4_VOL3.dff20(ch4_new.FERU_CH4_VOL2.qn_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GEDU_NR42_ENV3p.qp_any());

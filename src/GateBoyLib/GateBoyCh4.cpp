@@ -104,10 +104,10 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*_p19.ETYJ*/ reg_new.ch4.ETYJ_NR42_ENV_DELAY1p.dff9(DYKE_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D01p.qp_old());
     /*_p19.EZYK*/ reg_new.ch4.EZYK_NR42_ENV_DELAY2p.dff9(DYKE_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D02p.qp_old());
     /*_p19.GEKY*/ reg_new.ch4.GEKY_NR42_ENV_DIRp   .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D03p.qp_old());
-    /*_p19.GARU*/ reg_new.ch4.GARU_NR42_ENV0p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D04p.qp_old());
-    /*_p19.GOKY*/ reg_new.ch4.GOKY_NR42_ENV1p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
-    /*_p19.GOZO*/ reg_new.ch4.GOZO_NR42_ENV2p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D06p.qp_old());
-    /*_p19.GEDU*/ reg_new.ch4.GEDU_NR42_ENV3p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D07p.qp_old());
+    /*_p19.GARU*/ reg_new.ch4.GARU_NR42_VOL0p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D04p.qp_old());
+    /*_p19.GOKY*/ reg_new.ch4.GOKY_NR42_VOL1p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D05p.qp_old());
+    /*_p19.GOZO*/ reg_new.ch4.GOZO_NR42_VOL2p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D06p.qp_old());
+    /*_p19.GEDU*/ reg_new.ch4.GEDU_NR42_VOL3p      .dff9(FUPA_FF21_WRn, FEXO_APU_RSTn_new, reg_old.cpu_dbus.BUS_CPU_D07p.qp_old());
   }
 
   {
@@ -266,10 +266,10 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
 
 
   /*#p20.GEVY*/ wire GEVY_CH4_AMP_ENn = nor5(reg_new.ch4.GEKY_NR42_ENV_DIRp.qp_new(),
-                                             reg_new.ch4.GARU_NR42_ENV0p.qp_new(),
-                                             reg_new.ch4.GOKY_NR42_ENV1p.qp_new(),
-                                             reg_new.ch4.GOZO_NR42_ENV2p.qp_new(),
-                                             reg_new.ch4.GEDU_NR42_ENV3p.qp_new());
+                                             reg_new.ch4.GARU_NR42_VOL0p.qp_new(),
+                                             reg_new.ch4.GOKY_NR42_VOL1p.qp_new(),
+                                             reg_new.ch4.GOZO_NR42_VOL2p.qp_new(),
+                                             reg_new.ch4.GEDU_NR42_VOL3p.qp_new());
 
 
   {
@@ -390,16 +390,16 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p20.FOWA*/ wire FOWA_ENV_OFFp_new = nor3(reg_new.ch4.EMOK_NR42_ENV_DELAY0p.qp_new(), reg_new.ch4.ETYJ_NR42_ENV_DELAY1p.qp_new(), reg_new.ch4.EZYK_NR42_ENV_DELAY2p.qp_new());
     /*#p20.FELO*/ wire FELO_ENV_CLK  = or3(reg_new.ch4.FOSY_ENV_CLKp.qp_new(), FOWA_ENV_OFFp_new, reg_new.ch4.EROX_ENV_RUNNINGn.qp_new());
     /*#p20.FOLE*/ wire FOLE_VOL_CLK0n = amux2(reg_new.ch4.GEKY_NR42_ENV_DIRp.qp_new(), FELO_ENV_CLK,               FELO_ENV_CLK,               reg_new.ch4.GEKY_NR42_ENV_DIRp.qn_new());
-    /*#p20.FEKO*/ reg_new.ch4.FEKO_CH4_VOL0.dff20(FOLE_VOL_CLK0n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GARU_NR42_ENV0p.qp_new());
+    /*#p20.FEKO*/ reg_new.ch4.FEKO_CH4_VOL0.dff20(FOLE_VOL_CLK0n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GARU_NR42_VOL0p.qp_new());
 
     /*#p20.ETEF*/ wire ETEF_VOL_CLK1n = amux2(reg_new.ch4.GEKY_NR42_ENV_DIRp.qp_new(), reg_new.ch4.FEKO_CH4_VOL0.qp_new(), reg_new.ch4.FEKO_CH4_VOL0.qn_new(), reg_new.ch4.GEKY_NR42_ENV_DIRp.qn_new());
-    /*#p20.FATY*/ reg_new.ch4.FATY_CH4_VOL1.dff20(ETEF_VOL_CLK1n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GOKY_NR42_ENV1p.qp_new());
+    /*#p20.FATY*/ reg_new.ch4.FATY_CH4_VOL1.dff20(ETEF_VOL_CLK1n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GOKY_NR42_VOL1p.qp_new());
 
     /*#p20.EDYF*/ wire EDYF_VOL_CLK2n = amux2(reg_new.ch4.GEKY_NR42_ENV_DIRp.qp_new(), reg_new.ch4.FATY_CH4_VOL1.qp_new(), reg_new.ch4.FATY_CH4_VOL1.qn_new(), reg_new.ch4.GEKY_NR42_ENV_DIRp.qn_new());
-    /*#p20.FERU*/ reg_new.ch4.FERU_CH4_VOL2.dff20(EDYF_VOL_CLK2n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GOZO_NR42_ENV2p.qp_new());
+    /*#p20.FERU*/ reg_new.ch4.FERU_CH4_VOL2.dff20(EDYF_VOL_CLK2n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GOZO_NR42_VOL2p.qp_new());
 
     /*#p20.ELAF*/ wire ELAF_VOL_CLK3n = amux2(reg_new.ch4.GEKY_NR42_ENV_DIRp.qp_new(), reg_new.ch4.FERU_CH4_VOL2.qp_new(), reg_new.ch4.FERU_CH4_VOL2.qn_new(), reg_new.ch4.GEKY_NR42_ENV_DIRp.qn_new());
-    /*#p20.FYRO*/ reg_new.ch4.FYRO_CH4_VOL3.dff20(ELAF_VOL_CLK3n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GEDU_NR42_ENV3p.qp_new());
+    /*#p20.FYRO*/ reg_new.ch4.FYRO_CH4_VOL3.dff20(ELAF_VOL_CLK3n, reg_new.ch4.GONE_CH4_TRIGp.qp_new(), reg_new.ch4.GEDU_NR42_VOL3p.qp_new());
   }
 
 
@@ -424,10 +424,10 @@ void tick_ch4(const GateBoyState& reg_old, GateBoyState& reg_new) {
     /*#p19.COCE*/ triwire COCE = tri6_nn(BOXE_FF21_RDn, reg_new.ch4.ETYJ_NR42_ENV_DELAY1p.qn_new());
     /*#p19.CUZU*/ triwire CUZU = tri6_nn(BOXE_FF21_RDn, reg_new.ch4.EZYK_NR42_ENV_DELAY2p.qn_new());
     /*#p19.GOME*/ triwire GOME = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GEKY_NR42_ENV_DIRp   .qn_new());
-    /*#p19.HEDA*/ triwire HEDA = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GARU_NR42_ENV0p      .qn_new());
-    /*#p19.GODU*/ triwire GODU = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GOKY_NR42_ENV1p      .qn_new());
-    /*#p19.HOGE*/ triwire HOGE = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GOZO_NR42_ENV2p      .qn_new());
-    /*#p19.HACU*/ triwire HACU = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GEDU_NR42_ENV3p      .qn_new());
+    /*#p19.HEDA*/ triwire HEDA = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GARU_NR42_VOL0p      .qn_new());
+    /*#p19.GODU*/ triwire GODU = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GOKY_NR42_VOL1p      .qn_new());
+    /*#p19.HOGE*/ triwire HOGE = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GOZO_NR42_VOL2p      .qn_new());
+    /*#p19.HACU*/ triwire HACU = tri6_nn(HASU_FF21_RDn, reg_new.ch4.GEDU_NR42_VOL3p      .qn_new());
 
     /*_BUS_CPU_D00p*/ reg_new.cpu_dbus.BUS_CPU_D00p.tri_bus(DEMY);
     /*_BUS_CPU_D01p*/ reg_new.cpu_dbus.BUS_CPU_D01p.tri_bus(COCE);

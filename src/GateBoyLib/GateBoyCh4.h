@@ -10,10 +10,10 @@ struct SpuChannel4 {
     ETYJ_NR42_ENV_DELAY1p.state = 0x1a;
     EZYK_NR42_ENV_DELAY2p.state = 0x1a;
     GEKY_NR42_ENV_DIRp.state = 0x1a;
-    GARU_NR42_ENV0p.state = 0x1a;
-    GOKY_NR42_ENV1p.state = 0x1a;
-    GOZO_NR42_ENV2p.state = 0x1a;
-    GEDU_NR42_ENV3p.state = 0x1a;
+    GARU_NR42_VOL0p.state = 0x1a;
+    GOKY_NR42_VOL1p.state = 0x1a;
+    GOZO_NR42_VOL2p.state = 0x1a;
+    GEDU_NR42_VOL3p.state = 0x1a;
     JARE_NR43_DIV0p.state = 0x1a;
     JERO_NR43_DIV1p.state = 0x1a;
     JAKY_NR43_DIV2p.state = 0x1a;
@@ -97,10 +97,10 @@ struct SpuChannel4 {
   /*_p19.ETYJ*/ DFF9 ETYJ_NR42_ENV_DELAY1p;
   /*_p19.EZYK*/ DFF9 EZYK_NR42_ENV_DELAY2p;
   /*_p19.GEKY*/ DFF9 GEKY_NR42_ENV_DIRp;
-  /*_p19.GARU*/ DFF9 GARU_NR42_ENV0p; // 10
-  /*_p19.GOKY*/ DFF9 GOKY_NR42_ENV1p;
-  /*_p19.GOZO*/ DFF9 GOZO_NR42_ENV2p;
-  /*_p19.GEDU*/ DFF9 GEDU_NR42_ENV3p;
+  /*_p19.GARU*/ DFF9 GARU_NR42_VOL0p; // 10
+  /*_p19.GOKY*/ DFF9 GOKY_NR42_VOL1p;
+  /*_p19.GOZO*/ DFF9 GOZO_NR42_VOL2p;
+  /*_p19.GEDU*/ DFF9 GEDU_NR42_VOL3p;
 
   /*_p19.JARE*/ DFF9 JARE_NR43_DIV0p;
   /*_p19.JERO*/ DFF9 JERO_NR43_DIV1p;

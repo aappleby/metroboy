@@ -401,6 +401,9 @@ TestResults GateBoyTests::test_fuzz_spu(const IGateBoy* proto, int reps) {
   TEST_INIT();
 
   for (int j = 0; j < reps; j++) {
+    LOG_B(".");
+    fflush(stdout);
+
     uint32_t r = j ^ 12345678;
     for (int k = 0; k < 10; k++) xorshift32(r);
 
@@ -454,9 +457,6 @@ TestResults GateBoyTests::test_fuzz_spu(const IGateBoy* proto, int reps) {
         }
       }
     }
-
-    LOG_B(".");
-    fflush(stdout);
   }
   LOG_B("\n");
 

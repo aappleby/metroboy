@@ -268,29 +268,15 @@ void tick_ch4_fast(
   //----------
   // The actual LFSR
 
-  {
-    /*#p20.HURA*/ wire HURA_LFSR_IN_old = xnor2(ch4_old.HEZU_LFSR_15.qp_any(), ch4_old.HYRO_LFSR_14.qp_any());
+  auto lfsr = bit_pack(&ch4_new.JOTO_LFSR_00, 16);
 
-    if (or2(ch4_new.GONE_CH4_TRIGp.qp_any(), apu_rst) & 1) {
-      bit_unpack(&ch4_new.JOTO_LFSR_00, 16, 0);
-    } else {
-
-      auto lfsr = bit_pack(&ch4_new.JOTO_LFSR_00, 16);
-
-      if (negedge(lfsr_clk_old, lfsr_clk_new)) {
-        ch4_new.JOTO_LFSR_00.state = HURA_LFSR_IN_old;
-      }
-
-      if (bit(ch4_old.JAMY_NR43_MODEp.qp_any())) {
-        lfsr &= ~0x100;
-        lfsr |= bit(lfsr, 0) << 8;
-      }
-
-      if (posedge(lfsr_clk_old, lfsr_clk_new)) {
-        bit_unpack(&ch4_new.KOMU_LFSR_01, 15, lfsr);
-      }
-    }
-
+  if (or2(ch4_new.GONE_CH4_TRIGp.qp_any(), apu_rst) & 1) {
+    bit_unpack(&ch4_new.JOTO_LFSR_00, 16, 0);
+  } else if (negedge(lfsr_clk_old, lfsr_clk_new)) {
+    ch4_new.JOTO_LFSR_00.state = xnor2(ch4_old.HEZU_LFSR_15.qp_any(), ch4_old.HYRO_LFSR_14.qp_any());
+  } else if (posedge(lfsr_clk_old, lfsr_clk_new)) {
+    if (bit(ch4_old.JAMY_NR43_MODEp.qp_any())) lfsr = (lfsr & ~0x100) | (bit(lfsr, 0) << 8);
+    bit_unpack(&ch4_new.KOMU_LFSR_01, 15, lfsr);
   }
 
   //----------

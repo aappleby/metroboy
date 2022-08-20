@@ -285,8 +285,11 @@ void tick_ch4_fast(
   }
 
 
-  /*#p20.FELO*/ wire FELO_ENV_CLK_old = or3(ch4_old.FOSY_ENV_CLKp.qp_any(), env_delay_old == 0, ch4_old.EROX_ENV_RUNNINGn.qp_any());
-  /*#p20.FELO*/ wire FELO_ENV_CLK_new = or3(ch4_new.FOSY_ENV_CLKp.qp_any(), env_delay_new == 0, ch4_new.EROX_ENV_RUNNINGn.qp_any());
+  /*#p20.FELO*/ wire FELO_ENV_CLK_old = bit(or3(ch4_old.FOSY_ENV_CLKp.qp_any(), env_delay_old == 0, ch4_old.EROX_ENV_RUNNINGn.qp_any()));
+  /*#p20.FELO*/ wire FELO_ENV_CLK_new = bit(or3(ch4_new.FOSY_ENV_CLKp.qp_any(), env_delay_new == 0, ch4_new.EROX_ENV_RUNNINGn.qp_any()));
+
+  auto vol_old = bit_pack(&ch4_new.FEKO_CH4_VOL0, 4);
+  auto vol_new = vol_old;
 
   if (bit(ch4_new.GEKY_NR42_ENV_DIRp.qp_any())) {
     /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FELO_ENV_CLK_new,               ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_VOL0p.qp_any());

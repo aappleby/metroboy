@@ -44,6 +44,7 @@ sample_t ch4_audio_out_fast(const SpuChannel4& ch4) {
 
 //------------------------------------------------------------------------------
 
+#pragma optimize("", off)
 void tick_ch4_fast(
   uint64_t phase_new,
   int64_t spu_phase_new,
@@ -88,6 +89,12 @@ void tick_ch4_fast(
   /*_p01.HORU*/ wire HORU_CLK_512 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, spu_new.BARA_CLK_512.qp_any());
   /*_p01.BUFY*/ wire BUFY_CLK_256 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, not1(spu_new.CARU_CLK_256.qp_any()));
   /*_p01.BYFE*/ wire BYFE_CLK_128 = mux2p(spu_new.FERO_NR52_DBG_APUp.qp_any(), HAMA_CLK_512K, not1(spu_new.BYLU_CLK_128.qp_any()));
+
+  /*#p20.ABEL*/ ch4_new.ABEL_CLK_64.dff17(not1(BYFE_CLK_128), !apu_rst, ch4_old.ABEL_CLK_64.qn_any());
+
+  auto clk64_old = bit(ch4_old.ABEL_CLK_64.state);
+  auto clk64_new = bit(ch4_new.ABEL_CLK_64.state);
+
 
   auto nr42 = bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 8);
   auto nr43 = bit_pack(&ch4_new.JARE_NR43_DIV0p, 8);
@@ -251,13 +258,19 @@ void tick_ch4_fast(
   }
 
   {
-    /*#p20.ABEL*/ ch4_new.ABEL_CLK_64.dff17(not1(BYFE_CLK_128), !apu_rst, ch4_old.ABEL_CLK_64.qn_any());
 
     /*#p20.DAPY*/ wire DAPY_ENV_TIMER_LOADp_new = or2(ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.FOSY_ENV_CLKp.qp_any());
 
-    /*#p20.CUNA*/ ch4_new.CUNA_ENV_TIMER0n.dff20(ch4_new.ABEL_CLK_64.qp_any(),      DAPY_ENV_TIMER_LOADp_new, ch4_new.EMOK_NR42_ENV_DELAY0p.qn_any());
-    /*#p20.COFE*/ ch4_new.COFE_ENV_TIMER1n.dff20(ch4_new.CUNA_ENV_TIMER0n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.ETYJ_NR42_ENV_DELAY1p.qn_any());
-    /*#p20.DOGO*/ ch4_new.DOGO_ENV_TIMER2n.dff20(ch4_new.COFE_ENV_TIMER1n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.EZYK_NR42_ENV_DELAY2p.qn_any());
+    ch4_new.CUNA_ENV_TIMER0n.dff20(ch4_new.ABEL_CLK_64.qp_any(),      DAPY_ENV_TIMER_LOADp_new, ch4_new.EMOK_NR42_ENV_DELAY0p.qn_any());
+    ch4_new.COFE_ENV_TIMER1n.dff20(ch4_new.CUNA_ENV_TIMER0n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.ETYJ_NR42_ENV_DELAY1p.qn_any());
+    ch4_new.DOGO_ENV_TIMER2n.dff20(ch4_new.COFE_ENV_TIMER1n.qp_any(), DAPY_ENV_TIMER_LOADp_new, ch4_new.EZYK_NR42_ENV_DELAY2p.qn_any());
+
+
+    if (bit(DAPY_ENV_TIMER_LOADp_new)) {
+      auto delay = bit_pack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 3);
+      bit_unpack(&ch4_new.CUNA_ENV_TIMER0n, 3, ~delay);
+    }
+
   }
 
 
@@ -288,14 +301,16 @@ void tick_ch4_fast(
   /*#p20.FELO*/ wire FELO_ENV_CLK_old = bit(or3(ch4_old.FOSY_ENV_CLKp.qp_any(), env_delay_old == 0, ch4_old.EROX_ENV_RUNNINGn.qp_any()));
   /*#p20.FELO*/ wire FELO_ENV_CLK_new = bit(or3(ch4_new.FOSY_ENV_CLKp.qp_any(), env_delay_new == 0, ch4_new.EROX_ENV_RUNNINGn.qp_any()));
 
-  auto vol_old = bit_pack(&ch4_new.FEKO_CH4_VOL0, 4);
-  auto vol_new = vol_old;
+  // If GEKY_NR42_ENV_DIRp changes while the env clock is running, the volume can end up in a weird state...
+
+  // This is a race condition - GEKY and FELO change at the same time, and the resulting state is indeterminate.
 
   if (bit(ch4_new.GEKY_NR42_ENV_DIRp.qp_any())) {
     /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FELO_ENV_CLK_new,               ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_VOL0p.qp_any());
     /*#p20.FATY*/ ch4_new.FATY_CH4_VOL1.dff20(ch4_new.FEKO_CH4_VOL0.qp_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOKY_NR42_VOL1p.qp_any());
     /*#p20.FERU*/ ch4_new.FERU_CH4_VOL2.dff20(ch4_new.FATY_CH4_VOL1.qp_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GOZO_NR42_VOL2p.qp_any());
     /*#p20.FYRO*/ ch4_new.FYRO_CH4_VOL3.dff20(ch4_new.FERU_CH4_VOL2.qp_any(), ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GEDU_NR42_VOL3p.qp_any());
+
   }
   else {
     /*#p20.FEKO*/ ch4_new.FEKO_CH4_VOL0.dff20(FELO_ENV_CLK_new,               ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARU_NR42_VOL0p.qp_any());

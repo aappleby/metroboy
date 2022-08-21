@@ -112,12 +112,9 @@ void tick_ch4_fast(
     ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GONE_CH4_TRIGp.qp_any());
     ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GORA_CH4_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_rst(0);
-    ch4_new.HAZO_CH4_TRIGn.nor_latch(1, 0);
+    ch4_new.HAZO_CH4_TRIGn.state = 1;
     ch4_new.CUNY_NR44_LEN_ENp.state = 0;
     ch4_new.HOGA_NR44_TRIGp.state = 0;
-    if (bit(ch4_new.GYSU_CH4_TRIG.qp_any())) {
-      ch4_new.HOGA_NR44_TRIGp.state = 0;
-    }
   }
   else {
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 1, ch4_old.HOGA_NR44_TRIGp.qp_any());
@@ -135,9 +132,10 @@ void tick_ch4_fast(
         ch4_new.HOGA_NR44_TRIGp.state = cpu_dbus_old.BUS_CPU_D07p.qp_any();
       }
     }
-    if (bit(ch4_new.GYSU_CH4_TRIG.qp_any())) {
-      ch4_new.HOGA_NR44_TRIGp.state = 0;
-    }
+  }
+
+  if (bit(ch4_new.GYSU_CH4_TRIG.qp_any())) {
+    ch4_new.HOGA_NR44_TRIGp.state = 0;
   }
 
   bit_unpack(&ch4_new.EMOK_NR42_ENV_DELAY0p, 8, nr42);
@@ -183,41 +181,42 @@ void tick_ch4_fast(
 
 
 
-  // fugo old cycle break 
-  /*#p19.CUWA*/ wire CUWA_LEN_CLKa_old = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256_old, ch4_old.CUNY_NR44_LEN_ENp.qn_any());
-  /*#p19.CUWA*/ wire CUWA_LEN_CLKa_new = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256_new, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
-
   auto len_old = bit_pack(&ch4_new.DANO_NR41_LEN0p, 6);
+  auto len_new = len_old;
 
-  auto len_new1 = len_old;
+  // fugo old cycle break 
+  wire CUWA_LEN_CLKa_old = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256_old, ch4_old.CUNY_NR44_LEN_ENp.qn_any());
+  wire CUWA_LEN_CLKa_new = or3(ch4_old.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256_new, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
+
   if (negedge(CUWA_LEN_CLKa_old, CUWA_LEN_CLKa_new)) {
-    // ticks on 2-3 and 6-7
-    //printf("%d\n", int(phase_new & 7));
-    len_new1 = (len_new1 + 1) % 64;
+    len_new = (len_new + 1) % 64;
   }
 
   if (bit(and2(TAPU_CPU_WRp, addr == 0xFF20))) {
-    len_new1 = dbus_new & 63;
+    len_new = dbus_new & 63;
   }
 
-  /*#p19.GAPY*/ wire GAPY_LEN_DONE_RSTn = nor3(and2(TAPU_CPU_WRp, addr == 0xFF20), apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any());
-  /*#p19.FUGO*/ ch4_new.FUGO_CH4_LEN_DONEp.dff17(~bit(len_new1, 5), GAPY_LEN_DONE_RSTn, ch4_old.FUGO_CH4_LEN_DONEp.qn_any());
-
+  wire GAPY_LEN_DONE_RSTn = nor3(and2(TAPU_CPU_WRp, addr == 0xFF20), apu_rst, ch4_new.GONE_CH4_TRIGp.qp_any());
+  ch4_new.FUGO_CH4_LEN_DONEp.dff17(~bit(len_new, 5), GAPY_LEN_DONE_RSTn, ch4_old.FUGO_CH4_LEN_DONEp.qn_any());
 
   wire CUWA_LEN_CLKa2_new = or3(ch4_new.FUGO_CH4_LEN_DONEp.qp_any(), BUFY_CLK_256_new, ch4_new.CUNY_NR44_LEN_ENp.qn_any());
 
+  auto len_new_bak = len_new;
 
   if (negedge(CUWA_LEN_CLKa_new, CUWA_LEN_CLKa2_new)) {
-    // ticks on 2-3 and 6-7
-    //printf("%d\n", int(phase_new & 7));
-    len_new1 = (len_new1 + 1) % 64;
+    len_new = (len_new + 1) % 64;
   }
 
   if (bit(and2(TAPU_CPU_WRp, addr == 0xFF20))) {
-    len_new1 = dbus_new & 63;
+    len_new = dbus_new & 63;
   }
 
-  bit_unpack(&ch4_new.DANO_NR41_LEN0p, 6, len_new1);
+  if (len_new_bak != len_new) {
+    //printf("?");
+  }
+
+
+  bit_unpack(&ch4_new.DANO_NR41_LEN0p, 6, len_new);
 
 
 
@@ -254,7 +253,7 @@ void tick_ch4_fast(
     /*#p20.KANU*/ wire KANU_DIV_CLKa = or2(ch4_new.JERY_FREQ_GATE.qp_any(), spu_new.JESO_CLK_512K.qp_any());
     /*#p20.HUCE*/ wire HUCE_DIV_LOADp = or2(ch4_new.GONE_CH4_TRIGp.qp_any(), ch4_new.GARY_FREQ_GATEp.qp_any());
 
-    /*#p20.JYCO*/ ch4_new.JYCO_FREQ_DELAY0.dff20(KANU_DIV_CLKa,              HUCE_DIV_LOADp, ch4_new.JARE_NR43_DIV0p.qn_any());
+    /*#p20.JYCO*/ ch4_new.JYCO_FREQ_DELAY0.dff20(KANU_DIV_CLKa,                     HUCE_DIV_LOADp, ch4_new.JARE_NR43_DIV0p.qn_any());
     /*#p20.JYRE*/ ch4_new.JYRE_FREQ_DELAY1.dff20(ch4_new.JYCO_FREQ_DELAY0.qp_any(), HUCE_DIV_LOADp, ch4_new.JERO_NR43_DIV1p.qn_any());
     /*_p20.JYFU*/ ch4_new.JYFU_FREQ_DELAY2.dff20(ch4_new.JYRE_FREQ_DELAY1.qp_any(), HUCE_DIV_LOADp, ch4_new.JAKY_NR43_DIV2p.qn_any());
   }

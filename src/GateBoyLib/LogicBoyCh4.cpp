@@ -85,9 +85,9 @@ void tick_ch4_fast(
   /*_p01.DOVA*/ wire DOVA_ABCDxxxx = not1(BUDE_xxxxEFGH);
 
 
-  /*#p01.HAMA*/ wire HAMA_CLK_512K = not1(spu_new.JESO_CLK_512K.qp_any());
+  wire HAMA_CLK_512K_old = not1(spu_old.JESO_CLK_512K.qp_any());
+  wire HAMA_CLK_512K_new = not1(spu_new.JESO_CLK_512K.qp_any());
 
-  wire HORU_CLK_512_old = spu_old.BARA_CLK_512.qp_any();
   wire BUFY_CLK_256_old = not1(spu_old.CARU_CLK_256.qp_any());
   wire BYFE_CLK_128_old = not1(spu_old.BYLU_CLK_128.qp_any());
 
@@ -108,9 +108,9 @@ void tick_ch4_fast(
     nr42 = 0;
     nr43 = 0;
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 0, ch4_old.HOGA_NR44_TRIGp.qp_any());
-    ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
-    ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GONE_CH4_TRIGp.qp_any());
-    ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, 0, ch4_old.GORA_CH4_TRIGp.qp_any());
+    ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K_new, ch4_old.HAZO_CH4_TRIGn.qn_any());
+    ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K_new, 0, ch4_old.GONE_CH4_TRIGp.qp_any());
+    ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K_new, 0, ch4_old.GORA_CH4_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_rst(0);
     ch4_new.HAZO_CH4_TRIGn.state = 1;
     ch4_new.CUNY_NR44_LEN_ENp.state = 0;
@@ -118,9 +118,9 @@ void tick_ch4_fast(
   }
   else {
     ch4_new.GYSU_CH4_TRIG.dff17(DOVA_ABCDxxxx, 1, ch4_old.HOGA_NR44_TRIGp.qp_any());
-    ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K, ch4_old.HAZO_CH4_TRIGn.qn_any());
-    ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GONE_CH4_TRIGp.qp_any());
-    ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K, 1, ch4_old.GORA_CH4_TRIGp.qp_any());
+    ch4_new.GONE_CH4_TRIGp.dff17_clk(HAMA_CLK_512K_new, ch4_old.HAZO_CH4_TRIGn.qn_any());
+    ch4_new.GORA_CH4_TRIGp.dff17(HAMA_CLK_512K_new, 1, ch4_old.GONE_CH4_TRIGp.qp_any());
+    ch4_new.GATY_CH4_TRIGp.dff17(HAMA_CLK_512K_new, 1, ch4_old.GORA_CH4_TRIGp.qp_any());
     ch4_new.GONE_CH4_TRIGp.dff17_rst(~ch4_new.GORA_CH4_TRIGp.qp_any());
     ch4_new.HAZO_CH4_TRIGn.nor_latch(ch4_new.GORA_CH4_TRIGp.qp_any(), ch4_new.GYSU_CH4_TRIG.qp_any());
 

@@ -20,7 +20,11 @@ constexpr uint16_t samples_per_buffer = samples_per_channel * 2;
 sample_t* spu_buffer = nullptr;
 uint16_t spu_write_cursor = 0;
 
-bool play_audio = false;
+bool play_audio = true;
+//bool play_audio = false;
+
+//const float master_volume = 100;
+const float master_volume = 10;
 
 //-----------------------------------------------------------------------------
 
@@ -119,9 +123,22 @@ void audio_callback(void* userdata, Uint8* stream, int len) {
 
   if (src) {
     for (int i = 0; i < samples_per_buffer; i++) {
-      int32_t s = src[i] * 128;
-      if (s >  32767) s =  32767;
-      if (s < -32767) s = -32767;
+      float s = src[i] * master_volume;
+
+      static double max = -1;
+      if (s > max) {
+        max = s;
+        //printf("amax %f\n", max);
+      }
+
+      static double min = 1;
+      if (s < min) {
+        min = s;
+        //printf("amin %f\n", min);
+      }
+
+      if (s >  32767) { printf("!"); s =  32767; }
+      if (s < -32767) { printf("?"); s = -32767; }
       dst[i] = (sample_t)s;
     }
     audio_queue_in.put(src);
@@ -174,6 +191,24 @@ void audio_stop() {
 void audio_post(sample_t in_l_i, sample_t in_r_i) {
   if (!spu_buffer) return;
 
+#if 0
+  {
+    auto s = in_l_i;
+
+    static double max = -1.0e100;
+    if (s > max) {
+      max = s;
+      printf("max %f\n", max);
+    }
+
+    static double min = +1.0e100;
+    if (s < min) {
+      min = s;
+      printf("min %f\n", min);
+    }
+  }
+#endif
+
   static uint32_t in_l_accum = 0;
   static uint32_t in_r_accum = 0;
   static int sample_count = 0;
@@ -217,22 +252,11 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
     static BiquadLP lo_r2(10000.0 / 48000.0);
     static BiquadLP lo_r3(10000.0 / 48000.0);
 
-    out_l = lo_l3(lo_l2(lo_l1(out_l)));
-    out_r = lo_r3(lo_r2(lo_r1(out_r)));
+    //out_l = lo_l1(out_l);
+    //out_r = lo_r1(out_r);
 
-    // The low pass causes overshoot so clamp the signal.
-
-    static double max = -1;
-    if (out_l > max) {
-      max = out_l;
-      printf("max %f\n", max);
-    }
-
-    static double min = 1;
-    if (out_l < min) {
-      min = out_l;
-      printf("min %f\n", min);
-    }
+    //out_l = lo_l3(lo_l2(lo_l1(out_l)));
+    //out_r = lo_r3(lo_r2(lo_r1(out_r)));
 
     if (spu_buffer) {
       spu_buffer[spu_write_cursor++] = int16_t(out_l);

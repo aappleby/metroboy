@@ -26,7 +26,7 @@
 
 uint64_t phases_per_second = 114 * 154 * 60 * 8; // 8426880
 //uint64_t phases_per_second_adapt = phases_per_second;
-const uint64_t gb_phase_total = 46880719;
+const uint64_t gb_phase_total = 46880727;
 
 //-----------------------------------------------------------------------------
 
@@ -55,7 +55,6 @@ struct MusicEvent {
 std::vector<MusicEvent> music;
 int music_cursor = 0;
 
-MetroBoySPU spu;
 MetroBoySPU2 spu2;
 
 void MetronicaApp::app_init(int screen_w, int screen_h) {
@@ -80,7 +79,7 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
     MusicEvent event;
     const char* format = "0x%" SCNx64 " 0x%04x 0x%02x";
     sscanf(cursor, format, &event.phase, &event.addr, &event.data);
-    //printf("0x%08x 0x%04x 0x%02x\n", event.phase, event.addr, event.data);
+    //printf("%d 0x%04x 0x%02x\n", event.phase, event.addr, event.data);
     while(*cursor != '\n' && *cursor != 0) cursor++;
     if (*cursor == '\n') cursor++;
     music.push_back(event);
@@ -88,8 +87,6 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
   // sentinel
   music.push_back({uint64_t(-1), 0, 0});
   
-  spu.reset();
-
   view_control.init(screen_size);
 
   grid_painter.init(65536, 65536);
@@ -113,14 +110,12 @@ void MetronicaApp::app_close() {
 
 //-----------------------------------------------------------------------------
 
-bool loud = false;
-
 void MetronicaApp::app_update(dvec2 screen_size, double delta) {
   (void)delta;
 
   frame_begin = timestamp();
 
-  if (frame_count < 5) {
+  if (frame_count < 30) {
     counter_start = SDL_GetPerformanceCounter();
     counter_per_second = SDL_GetPerformanceFrequency();
     counter_old = counter_start;
@@ -141,11 +136,7 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
     }
   }
 
-  //printf("phase delta  %d\n", int(phase_new - phase_old));
-  //printf("queue %d counter delta %ld\n", audio_queue_size(), counter_new - counter_old);
-
   SDL_Event event;
-
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_MOUSEMOTION) {
       if (event.motion.state & SDL_BUTTON_LMASK) {
@@ -173,49 +164,22 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
     }
   }
 
-  //----------------------------------------
-  // Button input
-
-  uint8_t buttons = 0;
-  if (keyboard_state[SDL_SCANCODE_L])      buttons |= 0x01; // RIGHT
-  if (keyboard_state[SDL_SCANCODE_J])      buttons |= 0x02; // LEFT
-  if (keyboard_state[SDL_SCANCODE_I])      buttons |= 0x04; // UP
-  if (keyboard_state[SDL_SCANCODE_K])      buttons |= 0x08; // DOWN
-
-  if (keyboard_state[SDL_SCANCODE_KP_6])   buttons |= 0x01; // RIGHT
-  if (keyboard_state[SDL_SCANCODE_KP_4])   buttons |= 0x02; // LEFT
-  if (keyboard_state[SDL_SCANCODE_KP_8])   buttons |= 0x04; // UP
-  if (keyboard_state[SDL_SCANCODE_KP_2])   buttons |= 0x08; // DOWN
-
-  if (keyboard_state[SDL_SCANCODE_X])      buttons |= 0x10; // A
-  if (keyboard_state[SDL_SCANCODE_Z])      buttons |= 0x20; // B
-  if (keyboard_state[SDL_SCANCODE_RSHIFT]) buttons |= 0x40; // SELECT
-  if (keyboard_state[SDL_SCANCODE_RETURN]) buttons |= 0x80; // START
-
   view_control.update(delta);
 
   //----------------------------------------
   // Run sim
 
-  //printf("%d\n", int(phase_new - phase_old));
-
   if (!app_paused) {
     for (auto i = phase_old; i < phase_new; i++) {
       Req req;
-      Ack ack;
 
       req.addr = 0x0000;
       req.data = 0;
       req.read = 0;
       req.write = 0;
 
-      ack.addr = 0x0000;
-      ack.data = 0;
-      ack.read = 0;
-
       if (music[music_cursor].phase == i) {
         auto& m = music[music_cursor];
-        //printf("0x%08lx 0x%04x 0x%02x\n", m.phase, m.addr, m.data);
         req.addr = (uint16_t)m.addr;
         req.data = (uint16_t)m.data;
         req.read = 0;
@@ -223,34 +187,18 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
         music_cursor++;
       }
 
-      spu.tick(int(i), req, ack);
-      spu.tock(int(i), req);
-
       if ((i & 7) == 0) {
         spu2.tick(false, req.addr, (uint8_t)req.data, req.write);
         spu2.tock_out();
-
-        auto l = spu2.out_l;
-        auto r = spu2.out_r;
-
-        static int max = 0;
-        if (l > max) {
-          max = l;
-          printf("%d\n", max);
-        }
-        if (r > max) {
-          max = r;
-          printf("%d\n", max);
-        }
-        audio_post(l, r);
+        audio_post(spu2.out_l, spu2.out_r);
       }
     }
   }
+
+  fflush(stdout);
 }
 
 //-----------------------------------------------------------------------------
-
-//extern sample_t spu_buffer[];
 
 uint8_t buf[256*256];
 
@@ -274,24 +222,24 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
 
   {
     StringDumper d;
-    spu.dump(d);
-    text_painter.render_string(view, screen_size, d.s, 256, 512);
-  }
-
-  {
-    StringDumper d;
     spu2.dump(d);
-    text_painter.render_string(view, screen_size, d.s, 512, 512);
+    text_painter.render_string(view, screen_size, d.s, 512, 256);
   }
 
   if (spu_buffer && !app_paused) {
     for (int i = 0; i < 65536; i++) {
       buf[i] = buf[i] >> 1;
     }
+
     for (int i = 0; i < 255; i++) {
       int x = i;
-      int y1 = 64 - (spu_buffer[2 * i + 0] * 64) / 16383;
-      int y2 = 64 - (spu_buffer[2 * i + 2] * 64) / 16383;
+
+      double y1 = spu_buffer[2 * i + 0];
+      double y2 = spu_buffer[2 * i + 2];
+
+      y1 = remap_clamp<double>(y1, -240, 240, 127, 0);
+      y2 = remap_clamp<double>(y2, -240, 240, 127, 0);
+
       if (y1 > y2) {
         auto t = y1;
         y1 = y2;
@@ -304,8 +252,13 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
 
     for (int i = 0; i < 255; i++) {
       int x = i;
-      int y1 = 192 - (spu_buffer[2 * i + 1] * 64) / 16383;
-      int y2 = 192 - (spu_buffer[2 * i + 3] * 64) / 16383;
+
+      int y1 = spu_buffer[2 * i + 1];
+      int y2 = spu_buffer[2 * i + 3];
+
+      y1 = remap_clamp<double>(y1, -240, 240, 255, 128);
+      y2 = remap_clamp<double>(y2, -240, 240, 255, 128);
+
       if (y1 > y2) {
         auto t = y1;
         y1 = y2;

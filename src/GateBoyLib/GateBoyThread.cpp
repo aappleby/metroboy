@@ -10,9 +10,8 @@
 #include <thread>
 #include <atomic>
 
-#include <Windows.h>
-
 #ifdef _MSC_VER
+#include <Windows.h>
 void dump_thread_times() {
   uint64_t creation_time;
   uint64_t exit_time;

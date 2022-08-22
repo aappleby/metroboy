@@ -541,37 +541,32 @@ void MetroBoySPU::dump(Dumper& d) const {
 
   const char* bar = "===============";
 
-  uint8_t s1_volume = (nr12 & 0x08) ? s1_env_volume : 15 ^ s1_env_volume;
-  d("s1 vol %s\n", bar + (15 - s1_volume));
-
-  uint8_t s2_volume = (nr22 & 0x08) ? s2_env_volume : 15 ^ s2_env_volume;
-  d("s2 vol %s\n", bar + (15 - s2_volume));
-
-  uint8_t s3_volume = 0;
+  uint8_t s3_env_volume = 0;
   switch ((nr32 & 0b01100000) >> 5) {
-  case 0: s3_volume = 0; break;
-  case 1: s3_volume = 15; break;
-  case 2: s3_volume = 7; break;
-  case 3: s3_volume = 3; break;
-  }
-  d("s3 vol %s\n", bar + (15 - s3_volume));
-
-  uint8_t s4_volume = (nr42 & 0x08) ? s4_env_volume : 15 ^ s4_env_volume;
-  d("s4 vol %s\n", bar + (15 - s4_volume));
-
-  /*
-  char buf[33];
-  for (int i = 0; i < 16; i++) {
-    uint8_t a = (s3_wave[i] & 0x0F) >> 0;
-    uint8_t b = (s3_wave[i] & 0xF0) >> 4;
-
-    buf[2 * i + 0] = 'A' + a;
-    buf[2 * i + 1] = 'A' + b;
+  case 0: s3_env_volume = 0;  break;
+  case 1: s3_env_volume = 15; break;
+  case 2: s3_env_volume = 7;  break;
+  case 3: s3_env_volume = 3;  break;
   }
 
-  buf[32] = 0;
-  d("[%s]\n", buf);
-  */
+  d("s1 vol %s\n", bar + 15 - s1_env_volume);
+  d("s2 vol %s\n", bar + 15 - s2_env_volume);
+  d("s3 vol %s\n", bar + 15 - s3_env_volume);
+  d("s4 vol %s\n", bar + 15 - s4_env_volume);
+
+  if (1) {
+    char buf[33];
+    for (int i = 0; i < 16; i++) {
+      uint8_t a = (s3_wave[i] & 0x0F) >> 0;
+      uint8_t b = (s3_wave[i] & 0xF0) >> 4;
+
+      buf[2 * i + 0] = a > 9 ? 'A' + a - 10 : '0' + a;
+      buf[2 * i + 1] = b > 9 ? 'B' + b - 10 : '0' + b;
+    }
+
+    buf[32] = 0;
+    d("[%s]\n", buf);
+  }
 }
 
 //-----------------------------------------------------------------------------

@@ -1,4 +1,3 @@
-// clang-format off
 {
   "configurations": [
     {
@@ -14,44 +13,35 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",      
     },
-    /*
-    {
-      "name": "GateBoyTests W32",
-      "request": "launch",
-      "type": "cppvsdbg",
-      "program": "${workspaceFolder}/bin/GateBoyTests.exe",  
-      "preLaunchTask": "build_all",
-      "args": [],
-      "stopAtEntry": true,
-      "cwd": "${workspaceFolder}",
-      "environment": [],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",      
-    },
     {
       "name": "GateBoyApp LIN",
       "preLaunchTask": "build_all",
-      "type": "cppdbg",
       "request": "launch",
+      "type": "cppdbg",
       "program": "${workspaceFolder}/bin/GateBoyApp",
       "cwd": "${workspaceFolder}",
       "args": [],
     },
     {
-      "name": "MetroBoy",
+      "name": "GateBoyTests LIN",
       "preLaunchTask": "build_all",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/GateBoyApp",
+      "program": "${workspaceFolder}/bin/GateBoyTests",
       "cwd": "${workspaceFolder}",
       "args": [],
-    }
-    */
+    },
+    {
+      "name": "MetronicaApp LIN",
+      "preLaunchTask": "build_all",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/MetronicaApp",
+      "cwd": "${workspaceFolder}",
+      "args": [],
+    },
   ]
 }
-// clang-format on
-
-
 
 
 /*

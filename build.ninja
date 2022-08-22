@@ -12,7 +12,7 @@ build_mode   = -DCONFIG_DEBUG -O0
 default_gpp      = g++ -g -MMD -std=gnu++2a
 default_gcc      = gcc -g -MMD
 default_includes = -Isrc -Isrc/tree-sitter/lib/include -Isubmodules -Isubmodules/tree-sitter/lib/include
-global_libs      = -lSDL2
+global_libs      = -lSDL2 -ldl -lpthread
 
 ################################################################################
 

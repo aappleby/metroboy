@@ -14,6 +14,7 @@ build DMG/800-ppu-latch-scx.gb : compile_and_link 800-ppu-latch-scx.s
 build DMG/801-ppu-latch-scy.gb : compile_and_link 801-ppu-latch-scy.s
 build DMG/802-ppu-latch-tileselect.gb : compile_and_link 802-ppu-latch-tileselect.s
 build DMG/803-ppu-latch-bgdisplay.gb : compile_and_link 803-ppu-latch-bgdisplay.s
+build DMG/audio_testbench.gb : compile_and_link audio_testbench.s
 build DMG/cpu_bus_1.gb : compile_and_link cpu_bus_1.s
 build DMG/div_inc_timing_a.gb : compile_and_link div_inc_timing_a.s
 build DMG/div_inc_timing_b.gb : compile_and_link div_inc_timing_b.s

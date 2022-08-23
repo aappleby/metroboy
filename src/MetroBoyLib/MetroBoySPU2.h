@@ -21,6 +21,10 @@ public:
   uint8_t ack_data;
   bool ack_valid;
 
+  bool posedge_bit(int t_old, int t_new, int b) {
+    return posedge(bit(t_old, b), bit(t_new, b));
+  }
+
   //----------------------------------------
 
   void tock_out() {
@@ -47,13 +51,23 @@ public:
     auto s3_vol   = b2(nr32, 5);
 
     if (s1_running) {
-      s1_duty = s1_duty ? s1_duty * 2 : 1;
-      s1_out = (s1_phase < s1_duty) * s1_env_vol;
+      switch(s1_duty) {
+        case 0: s1_out = b1(0b10000000, s1_phase); break;
+        case 1: s1_out = b1(0b10000001, s1_phase); break;
+        case 2: s1_out = b1(0b11100001, s1_phase); break;
+        case 3: s1_out = b1(0b01111110, s1_phase); break;
+      }
+      s1_out *= s1_env_vol;
     }
 
     if (s2_running) {
-      s2_duty = s2_duty ? s2_duty * 2 : 1;
-      s2_out = (s2_phase < s2_duty) * s2_env_vol;
+      switch(s2_duty) {
+        case 0: s2_out = b1(0b10000000, s2_phase); break;
+        case 1: s2_out = b1(0b10000001, s2_phase); break;
+        case 2: s2_out = b1(0b11100001, s2_phase); break;
+        case 3: s2_out = b1(0b01111110, s2_phase); break;
+      }
+      s2_out *= s2_env_vol;
     }
 
     if (s3_running && s3_power) {
@@ -69,7 +83,8 @@ public:
     }
 
     if (s4_running) {
-      s4_out = b1(s4_lfsr, 15) * s4_env_vol;
+      //s4_out = b1(s4_lfsr, 15) * s4_env_vol;
+      s4_out = b1(s4_lfsr, 0) * s4_env_vol;
     }
 
     //----------
@@ -87,8 +102,8 @@ public:
     if (bit(nr51, 6)) out_l = out_l + s3_out;
     if (bit(nr51, 7)) out_l = out_l + s4_out;
 
-    uint8_t volume_r = b3(nr50, 0);
-    uint8_t volume_l = b3(nr50, 4);
+    uint8_t volume_r = b3(nr50, 0) + 1;
+    uint8_t volume_l = b3(nr50, 4) + 1;
 
     out_r = out_r * volume_r;
     out_l = out_l * volume_l;
@@ -133,7 +148,7 @@ public:
 
     spu_clock = 0;
 
-    s1_running = 1;
+    s1_running = 0;
     s2_running = 0;
     s3_running = 0;
     s4_running = 0;
@@ -227,14 +242,19 @@ public:
       s1_freq_timer = s1_sweep_timer_init ? s1_sweep_freq : s1_freq_timer_init;
     }
 
+    //----------
+    // s2 clock
+
     s2_freq_timer = (s2_freq_timer + 1) & 0x7FF;
     if (s2_freq_timer == 0) {
       s2_phase = (s2_phase + 1) & 7;
       s2_freq_timer = s2_freq_timer_init;
     }
 
+    //----------
+    // s3 clock - we run this twice because this is ticking at 1 mhz
+
     for (int i = 0; i < 2; i++) {
-      // s3 clock - we run this twice because this is ticking at 1 mhz
       s3_freq_timer = (s3_freq_timer + 1) & 0x7FF;
       if (s3_freq_timer == 0) {
         s3_phase = (s3_phase + 1) & 31;
@@ -242,14 +262,32 @@ public:
       }
     }
 
-    if (posedge(bit(spu_clock_old, s4_shift), bit(spu_clock_new, s4_shift))) {
+    //----------
+    // lfsr
+
+    if (posedge_bit(spu_clock_old, spu_clock_new, s4_shift + 1)) {
       if (s4_freq_timer) {
         s4_freq_timer--;
       }
       else {
-        auto lfsr_bit = bit(s4_lfsr, 14) ^ bit(s4_lfsr, 15);
-        if (s4_mode) s4_lfsr = (s4_lfsr & 0xFEFF) | (lfsr_bit << 8);
-        s4_lfsr = (s4_lfsr << 1) | lfsr_bit;
+        bool new_bit = b1(s4_lfsr, 0) ^ b1(s4_lfsr, 1);
+        s4_lfsr >>= 1;
+
+        auto mask = s4_mode ? 0b0100000001000000 : 0b0100000000000000;
+
+        s4_lfsr &= ~mask;
+        s4_lfsr |= new_bit ? mask : 0;
+
+        /*
+        auto new_bit = bit(s4_lfsr, 14) ^ bit(s4_lfsr, 15);
+        s4_lfsr <<= 1;
+        if (s4_mode) {
+          s4_lfsr = (s4_lfsr & 0xFEFF) | (new_bit << 8);
+        }
+        else {
+          s4_lfsr |= new_bit ? 0b00000001 : 0b00000000;
+        }
+        */
         s4_freq_timer = s4_freq_timer_init;
       }
     }
@@ -358,7 +396,7 @@ public:
     bool s3_trigger = we && addr == 0xFF1E && (data & 0x80);
     bool s4_trigger = we && addr == 0xFF23 && (data & 0x80);
 
-    if (s1_trigger && s1_env_vol_init) {
+    if (s1_trigger && (s1_env_vol_init || s1_env_add)) {
       s1_running     = 1;
       s1_len_timer   = s1_len_timer_init;
       s1_sweep_timer = s1_sweep_timer_init;
@@ -369,7 +407,7 @@ public:
       s1_phase       = 0;
     }
 
-    if (s2_trigger && s2_env_vol_init) {
+    if (s2_trigger && (s2_env_vol_init || s2_env_add)) {
       s2_running    = 1;
       s2_len_timer  = s2_len_timer_init;
       s2_env_vol    = s2_env_vol_init;
@@ -385,7 +423,7 @@ public:
       s3_phase      = 0;
     }
 
-    if (s4_trigger && s4_env_vol_init) {
+    if (s4_trigger && (s4_env_vol_init || s4_env_add)) {
       s4_running    = 1;
       s4_len_timer  = s4_len_timer_init;
       s4_env_vol    = s4_env_vol_init;
@@ -418,7 +456,7 @@ public:
 
         case 0xFF20: {
           nr41 = data | 0b11000000;
-          printf("nr41 0x%02x len %d\n", nr41, 64 - b6(nr41, 0));
+          printf("nr41 0x%02x len 64 - %d\n", nr41, b6(nr41, 0));
           break;
         }
         case 0xFF21: {
@@ -518,8 +556,8 @@ public:
 
     char buf[33];
     for (int i = 0; i < 16; i++) {
-      uint8_t a = (s3_wave[i] & 0x0F) >> 0;
-      uint8_t b = (s3_wave[i] & 0xF0) >> 4;
+      uint8_t a = b4(s3_wave[i], 4);
+      uint8_t b = b4(s3_wave[i], 0);
 
       buf[2 * i + 0] = a > 9 ? 'A' + a - 10 : '0' + a;
       buf[2 * i + 1] = b > 9 ? 'B' + b - 10 : '0' + b;

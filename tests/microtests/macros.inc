@@ -13,6 +13,11 @@
   jr nz, -
 .endm
 
+.macro load_hi ARGS addr data
+  ld a, data
+  ld (addr), a
+.endm
+
 //-------------------------------------------------------------------------------
 // Cycle counter helper. Returns a value that increments every cycle in A.
 

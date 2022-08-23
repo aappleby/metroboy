@@ -69,6 +69,7 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
 
   blob music_blob;
   load_blob("audio_test.txt", music_blob);
+  //load_blob("audio_testbench.txt", music_blob);
 
   printf("Music blob size %d\n", (int)music_blob.size());
   music_blob.push_back(0);
@@ -178,7 +179,7 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
       req.read = 0;
       req.write = 0;
 
-      if (music[music_cursor].phase == i) {
+      while (music[music_cursor].phase == i) {
         auto& m = music[music_cursor];
         req.addr = (uint16_t)m.addr;
         req.data = (uint16_t)m.data;
@@ -226,19 +227,21 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
     text_painter.render_string(view, screen_size, d.s, 512, 256);
   }
 
-  if (spu_buffer && !app_paused) {
+  if (!app_paused) {
     for (int i = 0; i < 65536; i++) {
       buf[i] = buf[i] >> 1;
     }
 
+    constexpr double gibbs = 1.089489872236;
+    constexpr double max_possible = 240 * gibbs;
+
     for (int i = 0; i < 255; i++) {
-      int x = i;
+      auto cursor = spu_ring_cursor + 2 * i;
+      double y1 = spu_ring_buffer[(cursor + 0) & 0x1FF];
+      double y2 = spu_ring_buffer[(cursor + 2) & 0x1FF];
 
-      double y1 = spu_buffer[2 * i + 0];
-      double y2 = spu_buffer[2 * i + 2];
-
-      y1 = remap_clamp<double>(y1, -240, 240, 127, 0);
-      y2 = remap_clamp<double>(y2, -240, 240, 127, 0);
+      y1 = remap_clamp<double>(y1, -max_possible, max_possible, 127, 0);
+      y2 = remap_clamp<double>(y2, -max_possible, max_possible, 127, 0);
 
       if (y1 > y2) {
         auto t = y1;
@@ -246,18 +249,17 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
         y2 = t;
       }
       for (int y = y1; y <= y2; y++) {
-        buf[x + y * 256] = 0xFF;
+        buf[i + y * 256] = 0xFF;
       }
     }
 
     for (int i = 0; i < 255; i++) {
-      int x = i;
+      auto cursor = spu_ring_cursor + 2 * i;
+      double y1 = spu_ring_buffer[(cursor + 1) & 0x1FF];
+      double y2 = spu_ring_buffer[(cursor + 3) & 0x1FF];
 
-      int y1 = spu_buffer[2 * i + 1];
-      int y2 = spu_buffer[2 * i + 3];
-
-      y1 = remap_clamp<double>(y1, -240, 240, 255, 128);
-      y2 = remap_clamp<double>(y2, -240, 240, 255, 128);
+      y1 = remap_clamp<double>(y1, -max_possible, max_possible, 255, 128);
+      y2 = remap_clamp<double>(y2, -max_possible, max_possible, 255, 128);
 
       if (y1 > y2) {
         auto t = y1;
@@ -265,9 +267,10 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
         y2 = t;
       }
       for (int y = y1; y <= y2; y++) {
-        buf[x + y * 256] = 0xFF;
+        buf[i + y * 256] = 0xFF;
       }
     }
+
     update_texture_u8(ram_tex, 0x00, 0x00, 256, 256,  buf);
   }
 

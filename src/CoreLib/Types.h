@@ -479,6 +479,13 @@ T remap_clamp(T x, T a1, T a2, T b1, T b2) {
 }
 
 template<typename T>
+T clamp(T x, T a, T b) {
+  if (x < a) x = a;
+  if (x > b) x = b;
+  return x;
+}
+
+template<typename T>
 T remap_wrap(T x, T a1, T a2, T b1, T b2) {
   double y = (double(x) - double(a1)) / (double(a2) - double(a1));
   y = fmod(double(y), 1.0);

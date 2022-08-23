@@ -803,7 +803,6 @@ Step controls:
     static uint8_t buf[256*256];
     bool scroll = false;
     bool raw_sound = true;
-    int offset = scroll ? spu_write_cursor : 0;
 
     auto audio_l = mem.audio_l;
     auto audio_r = mem.audio_r;
@@ -829,7 +828,7 @@ Step controls:
       }
     };
 
-    if (spu_buffer && !app_paused) {
+    if (!app_paused) {
       memset(buf, 0, 65536);
 
       plot(audio_1, 15, 0,  0,   63);
@@ -839,6 +838,7 @@ Step controls:
 
       /*
       for (int i = 0; i < 255; i++) {
+        int offset = scroll ? (i + spu_ring_cursor) & 0xFF : i;
         int l1, l2, r1, r2;
 
         if (raw_sound) {
@@ -853,10 +853,10 @@ Step controls:
           r2 = remap_clamp(r2,   0, 511, 255, 128);
         }
         else {
-          l1 = spu_buffer[(2 * i + 0 + offset) & 0x1FF];
-          r1 = spu_buffer[(2 * i + 1 + offset) & 0x1FF];
-          l2 = spu_buffer[(2 * i + 2 + offset) & 0x1FF];
-          r2 = spu_buffer[(2 * i + 3 + offset) & 0x1FF];
+          l1 = spu_ring_buffer[(2 * offset + 0) & 0x1FF];
+          r1 = spu_ring_buffer[(2 * offset + 1) & 0x1FF];
+          l2 = spu_ring_buffer[(2 * offset + 2) & 0x1FF];
+          r2 = spu_ring_buffer[(2 * offset + 3) & 0x1FF];
 
           l1 = remap_clamp(l1, -256, 255, 127,   0);
           l2 = remap_clamp(l2, -256, 255, 127,   0);

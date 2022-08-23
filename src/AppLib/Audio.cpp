@@ -17,14 +17,15 @@ SDL_AudioDeviceID dev;
 
 constexpr uint16_t samples_per_channel = 256;
 constexpr uint16_t samples_per_buffer = samples_per_channel * 2;
-sample_t* spu_buffer = nullptr;
-uint16_t spu_write_cursor = 0;
+
+sample_t spu_ring_buffer[samples_per_buffer];
+uint16_t spu_ring_cursor = 0;
 
 bool play_audio = true;
 //bool play_audio = false;
 
 //const float master_volume = 100;
-const float master_volume = 10;
+const float master_volume = 3000;
 
 //-----------------------------------------------------------------------------
 
@@ -60,7 +61,8 @@ struct AudioQueue {
   void close() {
     std::unique_lock<std::mutex> lock(mut);
     closed = true;
-    for (auto a : queue) delete [] a;
+    // FIXME is this ok? how do we want to handle if the sdl buf is in the queue?
+    //for (auto a : queue) delete [] a;
     queue.clear();
     cv.notify_all();
   }
@@ -117,32 +119,10 @@ struct BiquadLP {
 
 void audio_callback(void* userdata, Uint8* stream, int len) {
   if (!dev) return;
-
-  sample_t* src = audio_queue_out.get();
   sample_t* dst = (sample_t*)stream;
-
-  if (src) {
-    for (int i = 0; i < samples_per_buffer; i++) {
-      float s = src[i] * master_volume;
-
-      static double max = -1;
-      if (s > max) {
-        max = s;
-        //printf("amax %f\n", max);
-      }
-
-      static double min = 1;
-      if (s < min) {
-        min = s;
-        //printf("amin %f\n", min);
-      }
-
-      if (s >  32767) { printf("!"); s =  32767; }
-      if (s < -32767) { printf("?"); s = -32767; }
-      dst[i] = (sample_t)s;
-    }
-    audio_queue_in.put(src);
-  }
+  audio_queue_in.put(dst);
+  sample_t* src = audio_queue_out.get();
+  if (src && (dst != src)) printf("??? ");
 }
 
 //-------------------------------------
@@ -163,14 +143,8 @@ void audio_init() {
     dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
   }
 
-  for (int i = 0; i < 3; i++) {
-    auto buf = new sample_t[samples_per_buffer];
-    memset(buf, 0, samples_per_buffer * sizeof(sample_t));
-    audio_queue_in.put(buf);
-  }
-
-  spu_buffer = audio_queue_in.get();
-  spu_write_cursor = 0;
+  memset(spu_ring_buffer, 0, sizeof(spu_ring_buffer));
+  spu_ring_cursor = 0;
 
   if (dev) SDL_PauseAudioDevice(dev, 0);
 }
@@ -181,34 +155,12 @@ void audio_stop() {
   LOG_G("audio_stop()\n");
   audio_queue_in.close();
   audio_queue_out.close();
-  delete [] spu_buffer;
-  spu_buffer = nullptr;
   if (dev) SDL_CloseAudioDevice(dev);
 }
 
 //-------------------------------------
 
 void audio_post(sample_t in_l_i, sample_t in_r_i) {
-  if (!spu_buffer) return;
-
-#if 0
-  {
-    auto s = in_l_i;
-
-    static double max = -1.0e100;
-    if (s > max) {
-      max = s;
-      printf("max %f\n", max);
-    }
-
-    static double min = +1.0e100;
-    if (s < min) {
-      min = s;
-      printf("min %f\n", min);
-    }
-  }
-#endif
-
   static uint32_t in_l_accum = 0;
   static uint32_t in_r_accum = 0;
   static int sample_count = 0;
@@ -244,31 +196,43 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
     out_r -= highpass_r;
 
     // adjustable low pass to remove aliasing
-    static BiquadLP lo_l1(10000.0 / 48000.0);
-    static BiquadLP lo_l2(10000.0 / 48000.0);
-    static BiquadLP lo_l3(10000.0 / 48000.0);
 
-    static BiquadLP lo_r1(10000.0 / 48000.0);
-    static BiquadLP lo_r2(10000.0 / 48000.0);
-    static BiquadLP lo_r3(10000.0 / 48000.0);
+    /*
+    static BiquadLP lo_l1(15000.0 / 48000.0);
+    static BiquadLP lo_r1(15000.0 / 48000.0);
 
-    //out_l = lo_l1(out_l);
-    //out_r = lo_r1(out_r);
+    out_l = lo_l1(out_l);
+    out_r = lo_r1(out_r);
+    */
 
-    //out_l = lo_l3(lo_l2(lo_l1(out_l)));
-    //out_r = lo_r3(lo_r2(lo_r1(out_r)));
+    static BiquadLP lo_l1(16000.0 / 48000.0);
+    static BiquadLP lo_l2(16000.0 / 48000.0);
+    static BiquadLP lo_l3(16000.0 / 48000.0);
 
-    if (spu_buffer) {
-      spu_buffer[spu_write_cursor++] = int16_t(out_l);
-      spu_buffer[spu_write_cursor++] = int16_t(out_r);
-    }
+    static BiquadLP lo_r1(16000.0 / 48000.0);
+    static BiquadLP lo_r2(16000.0 / 48000.0);
+    static BiquadLP lo_r3(16000.0 / 48000.0);
 
-    if (spu_write_cursor == samples_per_buffer) {
+    out_l = lo_l3(lo_l2(lo_l1(out_l)));
+    out_r = lo_r3(lo_r2(lo_r1(out_r)));
+
+    spu_ring_buffer[spu_ring_cursor++] = int16_t(out_l);
+    spu_ring_buffer[spu_ring_cursor++] = int16_t(out_r);
+
+    if (spu_ring_cursor == samples_per_buffer) {
       if (dev) {
-        audio_queue_out.put(spu_buffer);
-        spu_buffer = audio_queue_in.get();
+        auto temp = audio_queue_in.get();
+        for (int i = 0; i < samples_per_buffer; i++) {
+          // Audio range is 0-480, or -240-240 after removing DC bias. Low-pass filtering can cause
+          // overshoot due to ringing, so account for that when rescaling so we don't clip.
+          constexpr double gibbs = 1.089489872236;
+          constexpr double max_possible = 240 * gibbs;
+
+          temp[i] = remap_clamp<double>(spu_ring_buffer[i], -max_possible, max_possible, -master_volume, master_volume);
+        }
+        audio_queue_out.put(temp);
       }
-      spu_write_cursor = 0;
+      spu_ring_cursor = 0;
     }
   }
 }

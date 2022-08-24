@@ -25,7 +25,7 @@ bool play_audio = true;
 //bool play_audio = false;
 
 //const float master_volume = 100;
-const float master_volume = 3000;
+const float master_volume = 30000;
 
 //-----------------------------------------------------------------------------
 
@@ -197,14 +197,13 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
 
     // adjustable low pass to remove aliasing
 
-    /*
-    static BiquadLP lo_l1(15000.0 / 48000.0);
-    static BiquadLP lo_r1(15000.0 / 48000.0);
+    static BiquadLP lo_l1(16000.0 / 48000.0);
+    static BiquadLP lo_r1(16000.0 / 48000.0);
 
     out_l = lo_l1(out_l);
     out_r = lo_r1(out_r);
-    */
 
+    /*
     static BiquadLP lo_l1(16000.0 / 48000.0);
     static BiquadLP lo_l2(16000.0 / 48000.0);
     static BiquadLP lo_l3(16000.0 / 48000.0);
@@ -215,6 +214,7 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
 
     out_l = lo_l3(lo_l2(lo_l1(out_l)));
     out_r = lo_r3(lo_r2(lo_r1(out_r)));
+    */
 
     spu_ring_buffer[spu_ring_cursor++] = int16_t(out_l);
     spu_ring_buffer[spu_ring_cursor++] = int16_t(out_r);

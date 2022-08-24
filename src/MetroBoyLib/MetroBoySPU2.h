@@ -12,28 +12,84 @@ public:
     return posedge(b1(t_old, b), b1(t_new, b));
   }
 
-  //----------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
 
-  void tick(logic<1> reset, logic<16> addr, logic<8> data, logic<1> we) {
+  void tick(logic<1> reset, logic<16> addr, logic<8> data_in, logic<1> read, logic<1> write) {
     if (reset) {
       memset(this, 0, sizeof(*this));
       return;
     }
 
-    spu_clock_old = spu_clock_new;
-    spu_clock_new = spu_clock_new + 1;
+    //----------------------------------------
+    // Reg read
 
-    logic<1> sweep_tick  = posedge_bit(spu_clock_old, spu_clock_new, 12);
-    logic<1> length_tick = posedge_bit(spu_clock_old, spu_clock_new, 11);
-    logic<1> env_tick    = posedge_bit(spu_clock_old, spu_clock_new, 13);
+    if (read) {
+      switch (addr) {
+        case 0xFF10: data_out = cat(b1(1), s1_sweep_timer_init, s1_sweep_dir, s1_sweep_shift); break;
+        case 0xFF11: data_out = cat(s1_duty, s1_len_timer_init); break;
+        case 0xFF12: data_out = cat(s1_env_vol_init, s1_env_add, s1_env_timer_init); break;
+        case 0xFF13: data_out = b8(s1_freq_timer_init, 0); break;
+        case 0xFF14: data_out = cat(s1_trig, s1_len_en, b3(-1), b3(s1_freq_timer_init, 8)); break;
+
+          //----------
+
+        case 0xFF16: data_out = cat(s2_duty, s2_len_timer_init); break;
+        case 0xFF17: data_out = cat(s2_env_vol_init, s2_env_add, s2_env_timer_init); break;
+        case 0xFF18: data_out = b8(s2_freq_timer_init, 0); break;
+        case 0xFF19: data_out = cat(s2_trig, s2_len_en, b3(-1), b3(s2_freq_timer_init, 8)); break;
+
+          //----------
+
+        case 0xFF1A: data_out = cat(s3_power, b7(-1)); break;
+        case 0xFF1B: data_out = s3_len_timer_init; break;
+        case 0xFF1C:
+          switch (s3_volume_shift) {
+            case 0: data_out = 0b01000000; break;
+            case 1: data_out = 0b10000000; break;
+            case 2: data_out = 0b11000000; break;
+            case 4: data_out = 0b00000000; break;
+          }
+          break;
+        case 0xFF1D: data_out = b8(s3_freq_timer_init, 0); break;
+        case 0xFF1E: data_out = cat(s3_trig, s3_len_en, b3(-1), b3(s3_freq_timer_init, 8)); break;
+
+          //----------
+
+        case 0xFF20: data_out = cat(b2(-1), s4_len_timer_init); break;
+        case 0xFF21: data_out = cat(s4_env_vol_init, s4_env_add, s4_env_timer_init); break;
+        case 0xFF22: data_out = cat(s4_shift, s4_mode, s4_freq_timer_init); break;
+        case 0xFF23: data_out = cat(s4_trig, s4_len_en, b6(-1)); break;
+
+          //----------
+
+        case 0xFF24: data_out = cat(b1(0), volume_l, b1(0), volume_r); break;
+        case 0xFF25: data_out = cat(mix_l4, mix_l3, mix_l2, mix_l1, mix_r4, mix_r3, mix_r2, mix_r1); break;
+        case 0xFF26: data_out = cat(spu_power, b7(0)); break;
+      }
+    }
+
+    //----------------------------------------
+
+    logic<16> spu_clock_new = spu_clock_old + 1;
+    logic<16> spu_tick = (~spu_clock_old) & (spu_clock_new);
+
+    logic<1> sweep_tick  = b1(spu_tick, 12);
+    logic<1> length_tick = b1(spu_tick, 11);
+    logic<1> env_tick    = b1(spu_tick, 13);
 
     //----------
     // s1 clock
 
-    s1_freq_timer = s1_freq_timer + 1;
-    if (s1_freq_timer == 0) {
+    if (s1_freq_timer == s1_freq_timer.max) {
       s1_phase = s1_phase + 1;
-      s1_freq_timer = s1_sweep_timer_init ? s1_sweep_freq : s1_freq_timer_init;
+      s1_freq_timer = s1_sweep_timer_init ? s1_sweep_freq : s1_freq_timer_init;      
+    }
+    else {
+      s1_freq_timer = s1_freq_timer + 1;
     }
 
     //----------
@@ -55,7 +111,7 @@ public:
     // s1 length
 
     if (length_tick && s1_running && s1_len_en) {
-      if (s1_len_timer == 63) {
+      if (s1_len_timer == s1_len_timer.max) {
         s1_len_timer = 0;
         s1_running = 0;
       }
@@ -81,17 +137,19 @@ public:
     //----------
     // s2 clock
 
-    s2_freq_timer = s2_freq_timer + 1;
-    if (s2_freq_timer == 0) {
+    if (s2_freq_timer == s2_freq_timer.max) {
       s2_phase = s2_phase + 1;
       s2_freq_timer = s2_freq_timer_init;
+    }
+    else {
+      s2_freq_timer = s2_freq_timer + 1;
     }
 
     //----------
     // s2 length
 
     if (length_tick && s2_running && s2_len_en) {
-      if (s2_len_timer == 63) {
+      if (s2_len_timer == s2_len_timer.max) {
         s2_len_timer = 0;
         s2_running = 0;
       }
@@ -118,10 +176,12 @@ public:
     // s3 clock - we run this twice because s3's timer ticks at 2 mhz
 
     for (int i = 0; i < 2; i++) {
-      s3_freq_timer = s3_freq_timer + 1;
-      if (s3_freq_timer == 0) {
+      if (s3_freq_timer == s3_freq_timer.max) {
         s3_phase = s3_phase + 1;
         s3_freq_timer = s3_freq_timer_init;
+      }
+      else {
+        s3_freq_timer = s3_freq_timer + 1;
       }
     }
 
@@ -129,7 +189,7 @@ public:
     // s3 length
 
     if (length_tick && s3_running && s3_len_en) {
-      if (s3_len_timer == 255) {
+      if (s3_len_timer == s3_len_timer.max) {
         s3_len_timer = 0;
         s3_running = 0;
       }
@@ -160,7 +220,7 @@ public:
     // s4 length
 
     if (length_tick && s4_running && s4_len_en) {
-      if (s4_len_timer == 63) {
+      if (s4_len_timer == s4_len_timer.max) {
         s4_len_timer = 0;
         s4_running = 0;
       }
@@ -229,61 +289,61 @@ public:
     //----------
     // Register writes
 
-    if (we && addr >= 0xFF10 && addr <= 0xFF26) {
+    if (write && addr >= 0xFF10 && addr <= 0xFF26) {
       switch (addr) {
         case 0xFF10:
-          s1_sweep_shift      = b3(data, 0);
-          s1_sweep_dir        = b1(data, 3);
-          s1_sweep_timer_init = b3(data, 4);
+          s1_sweep_shift      = b3(data_in, 0);
+          s1_sweep_dir        = b1(data_in, 3);
+          s1_sweep_timer_init = b3(data_in, 4);
           break;
         case 0xFF11:
-          s1_len_timer_init = b6(data, 0);
-          s1_duty           = b2(data, 6);
+          s1_len_timer_init = b6(data_in, 0);
+          s1_duty           = b2(data_in, 6);
           break;
         case 0xFF12:
-          s1_env_timer_init = b3(data, 0);
-          s1_env_add        = b1(data, 3);
-          s1_env_vol_init   = b4(data, 4);
+          s1_env_timer_init = b3(data_in, 0);
+          s1_env_add        = b1(data_in, 3);
+          s1_env_vol_init   = b4(data_in, 4);
           break;
         case 0xFF13:
-          s1_freq_timer_init = cat(b3(s1_freq_timer_init, 8), data);
+          s1_freq_timer_init = cat(b3(s1_freq_timer_init, 8), data_in);
           break;
         case 0xFF14:
-          s1_freq_timer_init = cat(b3(data, 0), b8(s1_freq_timer_init, 0));
-          s1_len_en          = b1(data, 6);
-          s1_trig            = b1(data, 7);
+          s1_freq_timer_init = cat(b3(data_in, 0), b8(s1_freq_timer_init, 0));
+          s1_len_en          = b1(data_in, 6);
+          s1_trig            = b1(data_in, 7);
           break;
 
           //----------
 
         case 0xFF16:
-          s2_len_timer_init = b6(data, 0);
-          s2_duty           = b2(data, 6);
+          s2_len_timer_init = b6(data_in, 0);
+          s2_duty           = b2(data_in, 6);
           break;
         case 0xFF17:
-          s2_env_timer_init = b3(data, 0);
-          s2_env_add        = b1(data, 3);
-          s2_env_vol_init   = b4(data, 4);
+          s2_env_timer_init = b3(data_in, 0);
+          s2_env_add        = b1(data_in, 3);
+          s2_env_vol_init   = b4(data_in, 4);
           break;
         case 0xFF18:
-          s2_freq_timer_init = cat(b3(s2_freq_timer_init, 8), data);
+          s2_freq_timer_init = cat(b3(s2_freq_timer_init, 8), data_in);
           break;
         case 0xFF19:
-          s2_freq_timer_init = cat(b3(data, 0), b8(s2_freq_timer_init, 0));
-          s2_len_en          = b1(data, 6);
-          s2_trig            = b1(data, 7);
+          s2_freq_timer_init = cat(b3(data_in, 0), b8(s2_freq_timer_init, 0));
+          s2_len_en          = b1(data_in, 6);
+          s2_trig            = b1(data_in, 7);
           break;
 
           //----------
 
         case 0xFF1A:
-          s3_power = b1(data, 7);
+          s3_power = b1(data_in, 7);
           break;
         case 0xFF1B:
-          s3_len_timer_init = b8(data, 0);
+          s3_len_timer_init = b8(data_in, 0);
           break;
         case 0xFF1C:
-          switch (b2(data, 5)) {
+          switch (b2(data_in, 5)) {
             case 0: s3_volume_shift = 4; break;
             case 1: s3_volume_shift = 0; break;
             case 2: s3_volume_shift = 1; break;
@@ -291,52 +351,52 @@ public:
           }
           break;
         case 0xFF1D:
-          s3_freq_timer_init = cat(b3(s3_freq_timer_init, 8), data);
+          s3_freq_timer_init = cat(b3(s3_freq_timer_init, 8), data_in);
           break;
         case 0xFF1E:
-          s3_freq_timer_init = cat(b3(data, 0), b8(s3_freq_timer_init, 0));
-          s3_len_en          = b1(data, 6);
-          s3_trig            = b1(data, 7);
+          s3_freq_timer_init = cat(b3(data_in, 0), b8(s3_freq_timer_init, 0));
+          s3_len_en          = b1(data_in, 6);
+          s3_trig            = b1(data_in, 7);
           break;
 
           //----------
 
         case 0xFF20:
-          s4_len_timer_init = b6(data, 0);
+          s4_len_timer_init = b6(data_in, 0);
           break;
         case 0xFF21:
-          s4_env_timer_init = b3(data, 0);
-          s4_env_add        = b1(data, 3);
-          s4_env_vol_init   = b4(data, 4);
+          s4_env_timer_init = b3(data_in, 0);
+          s4_env_add        = b1(data_in, 3);
+          s4_env_vol_init   = b4(data_in, 4);
           break;
         case 0xFF22:
-          s4_freq_timer_init = b3(data, 0);
-          s4_mode            = b1(data, 3);
-          s4_shift           = b4(data, 4);
+          s4_freq_timer_init = b3(data_in, 0);
+          s4_mode            = b1(data_in, 3);
+          s4_shift           = b4(data_in, 4);
           break;
         case 0xFF23:
-          s4_len_en = b1(data, 6);
-          s4_trig   = b1(data, 7);
+          s4_len_en = b1(data_in, 6);
+          s4_trig   = b1(data_in, 7);
           break;
 
           //----------
 
         case 0xFF24:
-          volume_r = b3(data, 0) + 1;
-          volume_l = b3(data, 4) + 1;
+          volume_r = b3(data_in, 0) + 1;
+          volume_l = b3(data_in, 4) + 1;
           break;
         case 0xFF25:
-          mix_r1 = bit(data, 0);
-          mix_r2 = bit(data, 1);
-          mix_r3 = bit(data, 2);
-          mix_r4 = bit(data, 3);
-          mix_l1 = bit(data, 4);
-          mix_l2 = bit(data, 5);
-          mix_l3 = bit(data, 6);
-          mix_l4 = bit(data, 7);
+          mix_r1 = bit(data_in, 0);
+          mix_r2 = bit(data_in, 1);
+          mix_r3 = bit(data_in, 2);
+          mix_r4 = bit(data_in, 3);
+          mix_l1 = bit(data_in, 4);
+          mix_l2 = bit(data_in, 5);
+          mix_l3 = bit(data_in, 6);
+          mix_l4 = bit(data_in, 7);
           break;
         case 0xFF26:
-          spu_power = b1(data, 7);
+          spu_power = b1(data_in, 7);
           break;
       }
     }
@@ -344,11 +404,17 @@ public:
     //----------
     // Wavetable writes
 
-    if (we && addr >= 0xFF30 && addr <= 0xFF3F) {
-      s3_wave[addr & 0xF] = data;
+    if (write && addr >= 0xFF30 && addr <= 0xFF3F) {
+      s3_wave[addr & 0xF] = data_in;
     }
+
+    spu_clock_old = spu_clock_new;
   }
 
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   //-----------------------------------------------------------------------------
 
   void tock_out() {
@@ -397,6 +463,10 @@ public:
     out_r = out_r * volume_r;
   }
 
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   //-----------------------------------------------------------------------------
 
   void dump(Dumper& d) const {
@@ -458,11 +528,17 @@ public:
     d("[%s]\n", buf);
   }
 
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
+
 //private:
 
   logic<16> spu_clock_old;
-  logic<16> spu_clock_new;
 
+  logic<8>  data_out;
   logic<9>  out_r;
   logic<9>  out_l;
 

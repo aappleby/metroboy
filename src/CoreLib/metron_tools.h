@@ -129,6 +129,7 @@ class logic {
 
   BASE x = 0;
   static const BASE mask = BASE(~0ull) >> ((sizeof(BASE) * 8) - WIDTH);
+  static const BASE max = BASE(~0ull) >> ((sizeof(BASE) * 8) - WIDTH);
 
   //----------
   // Logics can be constructed and assigned from their base type or other logics

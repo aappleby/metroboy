@@ -63,7 +63,7 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
   LOG_G("MetronicaApp::app_init()\n");
   LOG_INDENT();
 
-  spu2.tick(true, 0, 0, 0);
+  spu2.tick(true, 0, 0, 0, 0);
 
   audio_init();
 
@@ -171,7 +171,7 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
   // Run sim
 
   if (!app_paused) {
-    for (auto i = phase_old; i < phase_new; i++) {
+    for (auto i = phase_old; i < phase_new; i += 8) {
       Req req;
 
       req.addr = 0x0000;
@@ -179,7 +179,7 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
       req.read = 0;
       req.write = 0;
 
-      while (music[music_cursor].phase == i) {
+      while (music[music_cursor].phase <= i) {
         auto& m = music[music_cursor];
         req.addr = (uint16_t)m.addr;
         req.data = (uint16_t)m.data;
@@ -188,11 +188,9 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
         music_cursor++;
       }
 
-      if ((i & 7) == 0) {
-        spu2.tick(false, req.addr, (uint8_t)req.data, req.write);
-        spu2.tock_out();
-        audio_post(spu2.out_l, spu2.out_r);
-      }
+      spu2.tick(false, req.addr, (uint8_t)req.data, req.read, req.write);
+      spu2.tock_out();
+      audio_post(spu2.out_l, spu2.out_r);
     }
   }
 
@@ -228,9 +226,7 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
   }
 
   if (!app_paused) {
-    for (int i = 0; i < 65536; i++) {
-      buf[i] = buf[i] >> 1;
-    }
+    memset(buf, 0, sizeof(buf));
 
     constexpr double gibbs = 1.089489872236;
     constexpr double max_possible = 240 * gibbs;

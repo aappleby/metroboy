@@ -50,13 +50,13 @@ private:
 
   bool app_paused = false;
 
-  uint64_t counter_start;
-  uint64_t counter_per_second;
-  uint64_t counter_old;
-  uint64_t counter_new;
-  uint64_t time_bucket;
-  uint64_t phase_old;
-  uint64_t phase_new;
+  uint64_t counter_start = 0;
+  uint64_t counter_per_second = 0;
+  uint64_t counter_old = 0;
+  uint64_t counter_new = 0;
+  uint64_t time_bucket = 0;
+  uint64_t phase_old = 0;
+  uint64_t phase_new = 0;
 
   int ram_tex;
 };

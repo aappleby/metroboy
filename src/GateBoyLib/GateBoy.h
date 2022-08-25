@@ -285,12 +285,12 @@ struct GateBoy  : public IGateBoy {
 
   //-----------------------------------------------------------------------------
 
-  GateBoyState gb_state;
-  GateBoyCpu   cpu;
-  GateBoyMem   mem;
-  GateBoySys   sys;
-  GateBoyPins  pins;
-  Probes       probes;
+  GateBoyState gb_state = {};
+  GateBoyCpu   cpu = {};
+  GateBoyMem   mem = {};
+  GateBoySys   sys = {};
+  GateBoyPins  pins = {};
+  Probes       probes = {};
 
   bool first_tick = true;
 };

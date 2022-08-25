@@ -35,7 +35,6 @@ private:
   //int cell_w = 6;
   //int cell_h = 10;
 
-  uint32_t masks[16];
-  uint32_t shifts[16];
-
+  uint32_t masks[16] = {0};
+  uint32_t shifts[16] = {0};
 };

@@ -28,7 +28,7 @@ inline void log_set_color(uint32_t color) {
 
 inline void log_prefix() {
   timespec ts;
-  timespec_get(&ts, TIME_UTC);
+  (void)timespec_get(&ts, TIME_UTC);
   uint64_t now = ts.tv_sec * 1000000000ull + ts.tv_nsec;
 
   static uint64_t time_origin = 0;

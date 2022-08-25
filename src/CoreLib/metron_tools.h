@@ -230,7 +230,7 @@ struct bitslice {
     int lo = LO;
     if (hi > WIDTH - 1) hi = WIDTH - 1;
 
-    const DST mask = DST(-1ll) >> ((sizeof(DST) * 8) - (hi - lo + 1));
+    const DST mask = (~DST(0)) >> ((sizeof(DST) * 8) - (hi - lo + 1));
     self = DST((self & ~(mask << LO)) | ((x & mask) << LO));
   }
 };
@@ -531,7 +531,7 @@ void parse_hex(const char* src_filename, void* dst_data, int dst_size);
 // 'end' is INCLUSIVE
 
 inline void readmemh(const char* path, void* mem, int begin, int end) {
-  memset(mem, 0, end - begin + 1ull);
+  memset(mem, 0, end - begin + 1);
   parse_hex(path, (uint8_t*)mem + begin, end - begin + 1);
 }
 

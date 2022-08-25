@@ -40,39 +40,39 @@ struct CpuState {
   uint8_t  intf_latch = 0;
   uint8_t  halt_latch = 0;
 
-  uint16_t bus_addr;
-  uint8_t  bus_data;
-  uint8_t  bus_read;
-  uint8_t  bus_write;
+  uint16_t bus_addr = 0;
+  uint8_t  bus_data = 0;
+  uint8_t  bus_read = 0;
+  uint8_t  bus_write = 0;
 
-  uint16_t op_addr;
-  uint8_t  op_prev;
-  uint8_t  op_next;
-  uint8_t  op_cb;
-  int      op_state;
-  uint8_t  data_in;
+  uint16_t op_addr = 0;
+  uint8_t  op_prev = 0;
+  uint8_t  op_next = 0;
+  uint8_t  op_cb = 0;
+  int      op_state = 0;
+  uint8_t  data_in = 0;
 
-  bool     ime, ime_delay;
-  uint8_t  int_addr;
-  uint8_t  int_ack;
+  bool     ime = 0, ime_delay = 0;
+  uint8_t  int_addr = 0;
+  uint8_t  int_ack = 0;
 
-  uint8_t  alu_f;
-  uint8_t  alu_o;
+  uint8_t  alu_f = 0;
+  uint8_t  alu_o = 0;
 
 #pragma warning(push)
 #pragma warning(disable : 4201)
 #pragma warning(disable : 26495)
 
   // right "addr" bus           low side     high side
-  union { uint16_t pc; struct { uint8_t pcl; uint8_t pch; }; };
-  union { uint16_t sp; struct { uint8_t spl; uint8_t sph; }; };
-  union { uint16_t xy; struct { uint8_t xyl; uint8_t xyh; }; };
+  union { uint16_t pc = 0; struct { uint8_t pcl; uint8_t pch; }; };
+  union { uint16_t sp = 0; struct { uint8_t spl; uint8_t sph; }; };
+  union { uint16_t xy = 0; struct { uint8_t xyl; uint8_t xyh; }; };
 
   // left "data" bus            low side     high side
-  union { uint16_t bc; struct { uint8_t   c; uint8_t   b; }; };
-  union { uint16_t de; struct { uint8_t   e; uint8_t   d; }; };
-  union { uint16_t hl; struct { uint8_t   l; uint8_t   h; }; };
-  union { uint16_t af; struct { uint8_t   f; uint8_t   a; }; };
+  union { uint16_t bc = 0; struct { uint8_t   c; uint8_t   b; }; };
+  union { uint16_t de = 0; struct { uint8_t   e; uint8_t   d; }; };
+  union { uint16_t hl = 0; struct { uint8_t   l; uint8_t   h; }; };
+  union { uint16_t af = 0; struct { uint8_t   f; uint8_t   a; }; };
 
 #pragma warning(pop)
 };

@@ -74,7 +74,7 @@ public:
   float*    text_data_f32 = 0;
 
   int fg_pal = 1;
-  uint32_t palette[256];
+  uint32_t palette[256] = {0};
 
   TextUniforms text_uniforms = {};
 };

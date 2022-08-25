@@ -78,13 +78,15 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
   const char* cursor = (const char*)music_blob.data();
 
   while(*cursor) {
-    MusicEvent event;
+    MusicEvent event = {};
     const char* format = "0x%" SCNx64 " 0x%04x 0x%02x";
-    sscanf(cursor, format, &event.phase, &event.addr, &event.data);
+    int converted = sscanf(cursor, format, &event.phase, &event.addr, &event.data);
     //printf("%d 0x%04x 0x%02x\n", event.phase, event.addr, event.data);
     while(*cursor != '\n' && *cursor != 0) cursor++;
     if (*cursor == '\n') cursor++;
-    music.push_back(event);
+    if (converted == 3) {
+      music.push_back(event);
+    }
   }
   // sentinel
   music.push_back({uint64_t(-1), 0, 0});
@@ -212,7 +214,7 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
   }
 
   for (int i = 0; i < music.size(); i++) {
-    auto e = music[i];
+    MusicEvent e = music[i];
     text_painter.dprintf("%02x", e.data);
 
     auto phase_delta = e.phase - phase_new;

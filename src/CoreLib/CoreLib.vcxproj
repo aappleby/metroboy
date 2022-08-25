@@ -42,6 +42,10 @@
     <ClInclude Include="Types.h" />
     <ClInclude Include="MetroBoyCPU.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\build.ninja" />
+    <None Include="..\..\build.windows.ninja" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

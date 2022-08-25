@@ -128,8 +128,8 @@ class logic {
   typedef typename bitsize_to_basetype<WIDTH>::signed_type SBASE;
 
   BASE x = 0;
-  static const BASE mask = BASE(~0ull) >> ((sizeof(BASE) * 8) - WIDTH);
-  static const BASE max = BASE(~0ull) >> ((sizeof(BASE) * 8) - WIDTH);
+  static const BASE mask = BASE(~BASE(0)) >> ((sizeof(BASE) * 8) - WIDTH);
+  static const BASE max = BASE(~BASE(0)) >> ((sizeof(BASE) * 8) - WIDTH);
 
   //----------
   // Logics can be constructed and assigned from their base type or other logics
@@ -168,7 +168,7 @@ class logic {
 
   template <int M>
   logic& operator=(const logic<M>& y) {
-    set(y.x);
+    set(BASE(y.x));
     return *this;
   }
 

@@ -1,5 +1,6 @@
 #include "Metronica/MetronicaApp.h"
 
+
 #include "AppLib/AppHost.h"
 #include "AppLib/Audio.h"
 #include "AppLib/GLBase.h"
@@ -233,11 +234,11 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
 
     for (int i = 0; i < 255; i++) {
       auto cursor = spu_ring_cursor + 2 * i;
-      double y1 = spu_ring_buffer[(cursor + 0) & 0x1FF];
-      double y2 = spu_ring_buffer[(cursor + 2) & 0x1FF];
+      int y1 = spu_ring_buffer[(cursor + 0) & 0x1FF];
+      int y2 = spu_ring_buffer[(cursor + 2) & 0x1FF];
 
-      y1 = remap_clamp<double>(y1, -max_possible, max_possible, 127, 0);
-      y2 = remap_clamp<double>(y2, -max_possible, max_possible, 127, 0);
+      y1 = (int)remap_clamp<double>(y1, -max_possible, max_possible, 127, 0);
+      y2 = (int)remap_clamp<double>(y2, -max_possible, max_possible, 127, 0);
 
       if (y1 > y2) {
         auto t = y1;
@@ -251,11 +252,11 @@ void MetronicaApp::app_render_frame(dvec2 screen_size, double /*delta*/) {
 
     for (int i = 0; i < 255; i++) {
       auto cursor = spu_ring_cursor + 2 * i;
-      double y1 = spu_ring_buffer[(cursor + 1) & 0x1FF];
-      double y2 = spu_ring_buffer[(cursor + 3) & 0x1FF];
+      int y1 = spu_ring_buffer[(cursor + 1) & 0x1FF];
+      int y2 = spu_ring_buffer[(cursor + 3) & 0x1FF];
 
-      y1 = remap_clamp<double>(y1, -max_possible, max_possible, 255, 128);
-      y2 = remap_clamp<double>(y2, -max_possible, max_possible, 255, 128);
+      y1 = (int)remap_clamp<double>(y1, -max_possible, max_possible, 255, 128);
+      y2 = (int)remap_clamp<double>(y2, -max_possible, max_possible, 255, 128);
 
       if (y1 > y2) {
         auto t = y1;

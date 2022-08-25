@@ -228,7 +228,7 @@ void audio_post(sample_t in_l_i, sample_t in_r_i) {
           constexpr double gibbs = 1.089489872236;
           constexpr double max_possible = 240 * gibbs;
 
-          temp[i] = remap_clamp<double>(spu_ring_buffer[i], -max_possible, max_possible, -master_volume, master_volume);
+          temp[i] = (sample_t)remap_clamp<double>(spu_ring_buffer[i], -max_possible, max_possible, -master_volume, master_volume);
         }
         audio_queue_out.put(temp);
       }

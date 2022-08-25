@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\CoreLib\metron_tools.cpp" />
     <ClCompile Include="GateBoy.cpp" />
     <ClCompile Include="GateBoyCh1.cpp" />
     <ClCompile Include="GateBoyCh2.cpp" />
@@ -64,6 +65,7 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\CoreLib\metron_tools.h" />
     <ClInclude Include="GateBoy.h" />
     <ClInclude Include="GateBoyCh1.h" />
     <ClInclude Include="GateBoyCh2.h" />
@@ -109,6 +111,9 @@
   <ItemGroup>
     <Text Include="Traces.txt" />
     <Text Include="_junk.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\CoreLib\metron_tools.sv" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -449,8 +449,8 @@ void GateBoyDumper::dump_spu(const GateBoyState& s, Dumper& d) {
   d.dump_slicep("NR50 ", &s.spu.APEG_NR50_VOL_L0, 8);
   d.dump_slicep("NR51 ", &s.spu.ANEV_NR51_RCH1_ENp, 8);
   d.dump_slicep("NR52 ", &s.spu.FERO_NR52_DBG_APUp, 3);
-  d("SPU OUT L : %d\n", spu_audio_out_l(s));
-  d("SPU OUT R : %d\n", spu_audio_out_r(s));
+  //d("SPU OUT L : %d\n", spu_audio_out_l(s));
+  //d("SPU OUT R : %d\n", spu_audio_out_r(s));
 
   d("\n");
 

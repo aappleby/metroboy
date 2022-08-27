@@ -25,7 +25,7 @@ bool play_audio = true;
 //bool play_audio = false;
 
 //const float master_volume = 100;
-const float master_volume = 30000;
+const float master_volume = 3000;
 
 //-----------------------------------------------------------------------------
 

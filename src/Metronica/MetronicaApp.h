@@ -34,11 +34,11 @@ private:
 
   const uint8_t* keyboard_state = nullptr;
 
-  GridPainter grid_painter;
-  TextPainter text_painter;
-  DumpPainter dump_painter;
-  GBBlitter   gb_blitter;
-  Blitter     blitter;
+  GridPainter grid_painter = {};
+  TextPainter text_painter = {};
+  DumpPainter dump_painter = {};
+  GBBlitter   gb_blitter = {};
+  Blitter     blitter = {};
 
   int frame_count = 0;
   int replay_cursor = 0;
@@ -58,5 +58,5 @@ private:
   uint64_t phase_old = 0;
   uint64_t phase_new = 0;
 
-  int ram_tex;
+  int ram_tex = 0;
 };

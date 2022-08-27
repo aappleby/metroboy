@@ -286,13 +286,6 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
 #endif
 
 #ifdef SIM_AUDIO
-    /*
-    if (spu_new.ANEV_NR51_RCH1_ENp.state & 1) mix += ch1_audio_out(reg_new.ch1);
-    if (spu_new.BOGU_NR51_RCH2_ENp.state & 1) mix += ch2_audio_out(reg_new.ch2);
-    if (spu_new.BAFO_NR51_RCH3_ENp.state & 1) mix += ch3_audio_out(reg_new.ch3);
-    if (spu_new.ATUF_NR51_RCH4_ENp.state & 1) mix += ch4_audio_out(reg_new.ch4);
-    */
-
     sample_t l = spu_audio_out_l(gb_state);
     sample_t r = spu_audio_out_r(gb_state);
 

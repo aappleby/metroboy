@@ -201,7 +201,7 @@ public:
     //----------
     // s4 lfsr
 
-    if (posedge_bit(spu_clock_old, spu_clock_new, s4_shift + 1)) {
+    if (posedge(bit(spu_clock_old, s4_shift + 1), bit(spu_clock_new, s4_shift + 1))) {
       if (s4_freq_timer) {
         s4_freq_timer = s4_freq_timer - 1;
       }

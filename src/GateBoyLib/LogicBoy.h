@@ -7,6 +7,11 @@
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/Utils.h"
 
+sample_t ch1_audio_out_fast(const SpuChannel1& ch3);
+sample_t ch2_audio_out_fast(const SpuChannel2& ch3);
+sample_t ch3_audio_out_fast(const SpuChannel3& ch3);
+sample_t ch4_audio_out_fast(const SpuChannel4& ch3);
+
 //-----------------------------------------------------------------------------
 
 struct LogicBoy : public IGateBoy {
@@ -122,14 +127,14 @@ struct LogicBoy : public IGateBoy {
 
   //-----------------------------------------------------------------------------
 
-  LogicBoyState lb_state;
-  GateBoyCpu    cpu;
-  GateBoyMem    mem;
-  GateBoySys    sys;
-  GateBoyPins   pins;
-  Probes        probes;
+  LogicBoyState lb_state = {};
+  GateBoyCpu    cpu = {};
+  GateBoyMem    mem = {};
+  GateBoySys    sys = {};
+  GateBoyPins   pins = {};
+  Probes        probes = {};
 
-  GateBoyState  temp_gb_state;
+  GateBoyState  temp_gb_state = {};
 
   //static FieldInfo fields[];
 };

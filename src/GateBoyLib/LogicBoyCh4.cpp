@@ -19,7 +19,7 @@ sample_t ch4_audio_out_fast(const SpuChannel4& ch4) {
   ///*_p20.DYRY*/ wire DYRY_DBG = and2(ch4.CUNY_NR44_LEN_ENp.qp_old(), EDEK_NR52_DBG_APUp);
   /*_p20.DYRY*/ wire DYRY_DBG = 0;
 
-  /*_p20.GAME*/ wire GAME_LFSR_OUT = and2(ch4.GENA_CH4_ACTIVEp.qp_old(), ch4.HEZU_LFSR_15.qp_old());
+  /*_p20.GAME*/ wire GAME_LFSR_OUT = and2(ch4.GENA_CH4_ACTIVEp.qp_any(), ch4.HEZU_LFSR_15.qp_any());
 
   // ignoring debug thing on the audio out here
   wire FEME_LFSR_CLKp_new = 0;
@@ -31,10 +31,10 @@ sample_t ch4_audio_out_fast(const SpuChannel4& ch4) {
   /*_p20.COTE*/ wire COTE_DBG_CH4_MUTE = 0;
   /*_p20.DATO*/ wire DATO_CH4_RAW_BIT = or2(EZUL_CH4_BIT_MUX, COTE_DBG_CH4_MUTE);
 
-  /*#p20.AKOF*/ wire AKOF_CH4_DAC0 = and2(ch4.FEKO_CH4_VOL0.qp_old(), DATO_CH4_RAW_BIT);
-  /*#p20.BYZY*/ wire BYZY_CH4_DAC1 = and2(ch4.FATY_CH4_VOL1.qp_old(), DATO_CH4_RAW_BIT);
-  /*#p20.APYR*/ wire APYR_CH4_DAC2 = and2(ch4.FERU_CH4_VOL2.qp_old(), DATO_CH4_RAW_BIT);
-  /*#p20.BOZA*/ wire BOZA_CH4_DAC3 = and2(ch4.FYRO_CH4_VOL3.qp_old(), DATO_CH4_RAW_BIT);
+  /*#p20.AKOF*/ wire AKOF_CH4_DAC0 = and2(ch4.FEKO_CH4_VOL0.qp_any(), DATO_CH4_RAW_BIT);
+  /*#p20.BYZY*/ wire BYZY_CH4_DAC1 = and2(ch4.FATY_CH4_VOL1.qp_any(), DATO_CH4_RAW_BIT);
+  /*#p20.APYR*/ wire APYR_CH4_DAC2 = and2(ch4.FERU_CH4_VOL2.qp_any(), DATO_CH4_RAW_BIT);
+  /*#p20.BOZA*/ wire BOZA_CH4_DAC3 = and2(ch4.FYRO_CH4_VOL3.qp_any(), DATO_CH4_RAW_BIT);
 
   return ((AKOF_CH4_DAC0 & 1) << 0) |
     ((BYZY_CH4_DAC1 & 1) << 1) |

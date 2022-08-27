@@ -74,10 +74,10 @@ GBResult LogicBoy::next_phase(const blob& cart_blob) {
   sys.gb_phase_total_old = sys.gb_phase_total_new;
 
 #ifdef SIM_AUDIO
-    mem.audio_1[(sys.gb_phase_total_old >> 9) & 0xFF] = ch1_audio_out(lb_state.ch1);
-    mem.audio_2[(sys.gb_phase_total_old >> 9) & 0xFF] = ch2_audio_out(lb_state.ch2);
-    mem.audio_3[(sys.gb_phase_total_old >> 9) & 0xFF] = ch3_audio_out(lb_state.ch3);
-    mem.audio_4[(sys.gb_phase_total_old >> 9) & 0xFF] = ch4_audio_out(lb_state.ch4);
+    mem.audio_1[(sys.gb_phase_total_old >> 9) & 0xFF] = ch1_audio_out_fast(lb_state.ch1);
+    mem.audio_2[(sys.gb_phase_total_old >> 9) & 0xFF] = ch2_audio_out_fast(lb_state.ch2);
+    mem.audio_3[(sys.gb_phase_total_old >> 9) & 0xFF] = ch3_audio_out_fast(lb_state.ch3);
+    mem.audio_4[(sys.gb_phase_total_old >> 9) & 0xFF] = ch4_audio_out_fast(lb_state.ch4);
 #endif
 
   return GBResult::ok();
@@ -2822,13 +2822,6 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     );
 
     state_new.cpu_dbus = (uint8_t)bit_pack(temp_dbus_new);
-
-    //commit_regs(lb_state.spu);
-    //commit_regs(lb_state.ch1);
-    //commit_regs(lb_state.ch2);
-    //commit_regs(lb_state.ch3);
-    //commit_regs(lb_state.ch4);
-    //commit_regs(lb_state.wave_dbus);
   }
 
 

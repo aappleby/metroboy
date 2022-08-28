@@ -40,6 +40,15 @@
       "cwd": "${workspaceFolder}",
       "args": [],
     },
+    {
+      "name": "MetronicaApp W32",
+      "preLaunchTask": "build_all",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/MetronicaApp.exe",
+      "cwd": "${workspaceFolder}",
+      "args": [],
+    },
   ]
 }
 

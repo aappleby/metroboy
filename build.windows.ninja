@@ -12,7 +12,7 @@ build_mode = /D CONFIG_DEBUG /D _CRT_SECURE_NO_WARNINGS
 
 # $(IntDir)vc$(PlatformToolsetVersion).pdb
 
-default_gpp = CL.exe /nologo /std:c++20 /EHsc /showIncludes /W4 /WX /diagnostics:caret /fp:fast /arch:AVX2 /sdl- /Gm- /GS- /Zi /DEBUG /FS
+default_gpp = CL.exe /nologo /std:c++latest /EHsc /showIncludes /W4 /WX /diagnostics:caret /fp:fast /arch:AVX2 /sdl- /Gm- /GS- /Z7 /DEBUG /FS /GL
 default_gcc = CL.exe /nologo /std:c17 /showIncludes
 
 default_includes = /Isrc /Isubmodules /Isubmodules/glad /Isrc/tree-sitter/lib/include /Isubmodules/tree-sitter/lib/include
@@ -21,7 +21,7 @@ global_libs      = src/SDL2.lib
 ################################################################################
 
 rule compile_cpp
-  command = ${default_gpp} ${build_mode} ${default_includes} ${includes} /c ${in} /Fo"${out}" /Fd"${out}.pdb"
+  command = ${default_gpp} ${build_mode} ${default_includes} ${includes} /c ${in} /Fo"${out}"
   deps = msvc
 
 rule compile_c
@@ -31,7 +31,7 @@ rule compile_c
 #rule link
 #  command = link.exe /DEBUG /NOLOGO /MACHINE:X64 /INCREMENTAL:NO /DEBUG /PDB:"${out}.pdb" /OUT:"${out}" ${global_libs} ${in}
 rule link
-  command = link.exe /DEBUG /NOLOGO /MACHINE:X64 /INCREMENTAL:NO /OUT:"${out}" ${global_libs} ${in}
+  command = link.exe /DEBUG /NOLOGO /MACHINE:X64 /INCREMENTAL:NO /LTCG /OUT:"${out}" ${global_libs} ${in}
 
 rule lib
   command = Lib.exe /NOLOGO /MACHINE:X64 /OUT:"${out}" ${in}

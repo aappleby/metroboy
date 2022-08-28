@@ -60,6 +60,12 @@
     <Text Include="..\..\audio_test.txt" />
     <Text Include="..\..\audio_testbench.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MetronicaApp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MetronicaApp.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -8,10 +8,6 @@
 class MetroBoySPU2 {
 public:
 
-  logic<1> posedge_bit(int t_old, int t_new, int b) {
-    return posedge(b1(t_old, b), b1(t_new, b));
-  }
-
   //-----------------------------------------------------------------------------
   //-----------------------------------------------------------------------------
   //-----------------------------------------------------------------------------
@@ -35,14 +31,10 @@ public:
         case 0xFF13: data_out = b8(s1_freq_timer_init, 0); break;
         case 0xFF14: data_out = cat(s1_trig, s1_len_en, b3(-1), b3(s1_freq_timer_init, 8)); break;
 
-          //----------
-
         case 0xFF16: data_out = cat(s2_duty, s2_len_timer_init); break;
         case 0xFF17: data_out = cat(s2_env_vol_init, s2_env_add, s2_env_timer_init); break;
         case 0xFF18: data_out = b8(s2_freq_timer_init, 0); break;
         case 0xFF19: data_out = cat(s2_trig, s2_len_en, b3(-1), b3(s2_freq_timer_init, 8)); break;
-
-          //----------
 
         case 0xFF1A: data_out = cat(s3_power, b7(-1)); break;
         case 0xFF1B: data_out = s3_len_timer_init; break;
@@ -57,14 +49,10 @@ public:
         case 0xFF1D: data_out = b8(s3_freq_timer_init, 0); break;
         case 0xFF1E: data_out = cat(s3_trig, s3_len_en, b3(-1), b3(s3_freq_timer_init, 8)); break;
 
-          //----------
-
         case 0xFF20: data_out = cat(b2(-1), s4_len_timer_init); break;
         case 0xFF21: data_out = cat(s4_env_vol_init, s4_env_add, s4_env_timer_init); break;
         case 0xFF22: data_out = cat(s4_shift, s4_mode, s4_freq_timer_init); break;
         case 0xFF23: data_out = cat(s4_trig, s4_len_en, b6(-1)); break;
-
-          //----------
 
         case 0xFF24: data_out = cat(b1(0), volume_l, b1(0), volume_r); break;
         case 0xFF25: data_out = cat(mix_l4, mix_l3, mix_l2, mix_l1, mix_r4, mix_r3, mix_r2, mix_r1); break;

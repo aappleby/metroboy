@@ -11,7 +11,7 @@
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/LogicBoy.h"
 #include "GateBoyLib/Utils.h"
-#include "MetroBoyLib/MetroBoySPU.h"
+//#include "MetroBoyLib/MetroBoySPU.h"
 #include "MetroBoyLib/MetroBoySPU2.h"
 
 #define SDL_MAIN_HANDLED

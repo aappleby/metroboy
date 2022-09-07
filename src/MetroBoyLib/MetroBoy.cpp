@@ -30,7 +30,7 @@ void MetroBoy::reset(uint8_t* new_rom, size_t new_rom_size) {
   cart.reset();
   ppu.reset();
   oam.reset();
-  spu.reset();
+  //spu.reset();
   timer.reset();
   vram.reset();
   joy.reset();
@@ -104,7 +104,7 @@ void MetroBoy::next_phase() {
     serial.tick(phase_total, ibus_req, ibus_ack);
     joy.tick(phase_total, ibus_req, ibus_ack);
     zram.  tick(phase_total, ibus_req, ibus_ack);
-    spu.   tick(phase_total, ibus_req, ibus_ack);
+    //spu.   tick(phase_total, ibus_req, ibus_ack);
     boot.  tick(phase_total, ibus_req, ibus_ack);
     timer. tick(phase_total, ibus_req, ibus_ack);
     dma.   tick(phase_total, ibus_req, ibus_ack);
@@ -162,7 +162,7 @@ void MetroBoy::next_phase() {
   joy.tock(phase_total, ibus_req);
   boot.  tock(phase_total, ibus_req);
   zram.  tock(phase_total, ibus_req);
-  spu.   tock(phase_total, ibus_req);
+  //spu.   tock(phase_total, ibus_req);
   ppu.   tock(phase_total, ibus_req, vbus_ack, obus_ack);
   dma.   tock(phase_total, ibus_req);
   cart.  tock(phase_total, ebus_req);

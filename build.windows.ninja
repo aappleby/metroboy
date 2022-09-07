@@ -6,9 +6,9 @@
 
 # not having NDEBUG turns assert()s on
 
-#build_mode = /O2 /D CONFIG_RELEASE /D NDEBUG /D _CRT_SECURE_NO_WARNINGS
+build_mode = /O2 /D CONFIG_RELEASE /D NDEBUG /D _CRT_SECURE_NO_WARNINGS
 #build_mode = /D CONFIG_RELEASE /D _CRT_SECURE_NO_WARNINGS
-build_mode = /D CONFIG_DEBUG /D _CRT_SECURE_NO_WARNINGS
+#build_mode = /D CONFIG_DEBUG /D _CRT_SECURE_NO_WARNINGS
 
 # $(IntDir)vc$(PlatformToolsetVersion).pdb
 
@@ -298,7 +298,6 @@ build obj/MetroBoyJoypad.o     : compile_cpp src/MetroBoyLib/MetroBoyJoypad.cpp
 build obj/MetroBoyOAM.o        : compile_cpp src/MetroBoyLib/MetroBoyOAM.cpp
 build obj/MetroBoyPPU.o        : compile_cpp src/MetroBoyLib/MetroBoyPPU.cpp
 build obj/MetroBoySerial.o     : compile_cpp src/MetroBoyLib/MetroBoySerial.cpp
-build obj/MetroBoySPU.o        : compile_cpp src/MetroBoyLib/MetroBoySPU.cpp
 build obj/MetroBoyTimer.o      : compile_cpp src/MetroBoyLib/MetroBoyTimer.cpp
 build obj/MetroBoyVRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyVRAM.cpp
 build obj/MetroBoyZRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyZRAM.cpp
@@ -313,7 +312,6 @@ build bin/MetroBoyLib.a : lib $
   obj/MetroBoyOAM.o $
   obj/MetroBoyPPU.o $
   obj/MetroBoySerial.o $
-  obj/MetroBoySPU.o $
   obj/MetroBoyTimer.o $
   obj/MetroBoyVRAM.o $
   obj/MetroBoyZRAM.o

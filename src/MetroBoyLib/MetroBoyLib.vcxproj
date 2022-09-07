@@ -28,7 +28,7 @@
     <ClCompile Include="MetroBoyOAM.cpp" />
     <ClCompile Include="MetroBoyPPU.cpp" />
     <ClCompile Include="MetroBoySerial.cpp" />
-    <ClCompile Include="MetroBoySPU.cpp" />
+    <ClCompile Include="MetroBoySPU2.cpp" />
     <ClCompile Include="MetroBoyTimer.cpp" />
     <ClCompile Include="MetroBoyVRAM.cpp" />
     <ClCompile Include="MetroBoyZRAM.cpp" />
@@ -43,7 +43,7 @@
     <ClInclude Include="MetroBoyOAM.h" />
     <ClInclude Include="MetroBoyPPU.h" />
     <ClInclude Include="MetroBoySerial.h" />
-    <ClInclude Include="MetroBoySPU.h" />
+    <ClInclude Include="MetroBoySPU2.h" />
     <ClInclude Include="MetroBoyTimer.h" />
     <ClInclude Include="MetroBoyVRAM.h" />
     <ClInclude Include="MetroBoyZRAM.h" />

@@ -41,7 +41,6 @@ struct GateBoyState {
   GBResult peek(int addr) const;
   GBResult poke(int addr, uint8_t data_in);
 
-  void commit();
   void check_state_old_and_driven_or_pulled();
   bool diff(const GateBoyState& gbb, uint8_t mask) const;
 

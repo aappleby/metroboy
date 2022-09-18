@@ -258,16 +258,16 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
   tock_gates(cart_blob);
   probes.end_pass();
 
-  gb_state.commit();
-  pins.commit();
+  commit_regs(gb_state);
+  commit_regs(pins);
 
   if (config_idempotence) {
     //printf("idempotence?\n");
     auto gb_state_old = gb_state;
 
     tock_gates(cart_blob);
-    gb_state.commit();
-    pins.commit();
+    commit_regs(gb_state);
+    commit_regs(pins);
 
     if (gb_state.diff(gb_state_old, 0xFF)) {
       LOG_R("idempotence fail!\n");

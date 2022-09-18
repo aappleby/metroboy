@@ -125,8 +125,8 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   keyboard_state = SDL_GetKeyboardState(nullptr);
   wave_tex = create_texture_u8(256, 256, nullptr, false);
 
-  gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
-  //gb_thread = new GateBoyThread(new GateBoy());
+  //gb_thread = new GateBoyThread(new GateBoyPair(new GateBoy(), new LogicBoy()));
+  gb_thread = new GateBoyThread(new GateBoy());
   //gb_thread = new GateBoyThread(new LogicBoy());
 
   //gb_thread->poweron(true);

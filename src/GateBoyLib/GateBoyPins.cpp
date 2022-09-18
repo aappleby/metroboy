@@ -133,37 +133,4 @@ void GateBoyPins::reset()    {
   ctrl.reset();
 }
 
-void GateBoyPins::commit() {
-  if (!config_check_flags && !config_use_flags) return;
-
-  uint8_t* cursor = (uint8_t*)this;
-  bool bad_bits = false;
-  for (size_t i = 0; i < sizeof(*this); i++) {
-    uint8_t s = *cursor;
-    if (config_check_flags) {
-      auto drive_flags = s & (BIT_DRIVEN | BIT_PULLED);
-
-      if (drive_flags == (BIT_DRIVEN | BIT_PULLED)) {
-        LOG_Y("Bit %d both driven and pulled up!\n", i);
-        bad_bits = true;
-      }
-
-      if (drive_flags == 0) {
-        LOG_Y("Bit %d floating!\n", i);
-        bad_bits = true;
-      }
-
-      auto oldnew_flags = s & (BIT_OLD | BIT_NEW);
-
-      if (oldnew_flags != BIT_NEW) {
-        LOG_Y("Bit %d not dirty after sim pass!\n", i);
-        bad_bits = true;
-      }
-    }
-
-    *cursor++ = (s & 0b00001111) | BIT_OLD;
-  }
-  CHECK_N(bad_bits);
-}
-
 //-----------------------------------------------------------------------------

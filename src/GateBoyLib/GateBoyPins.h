@@ -199,7 +199,6 @@ struct GateBoyPins {
 
   void poweron();
   void reset();
-  void commit();
 };
 
 //-----------------------------------------------------------------------------

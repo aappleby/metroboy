@@ -1,3 +1,231 @@
+Have you heard of "Synchronous Programming"? It's a programming paradigm first sketched out in the 1980's that "makes the same abstraction for programming languages as the synchronous abstraction in digital circuits". To put this in more practical terms, synchronous languages let you describe systems where a bunch of stuff happens "simultaneously", while also giving you tools to ensure that those simultaneous actions don't collide (so to speak) with each other. When writing programs that need to deal with exactly this sort of "lots of things happening simultaneously" environment (industrial machinery seems to come up often), synchronous languages can provide cleaner and sometimes provably-correct implementations. Some synchronous languages also include facilities for translating their source code into a form that can be run on FPGAs or etched into chips, meaning that your industrial machine controller might not need a CPU at all - it could "run" your control program directly from the logic circuits it generates.
+
+Research into sychronous programming seems to have peaked from the late 1990s to the early 2000s, and then gradually fallen into obscurity. Some of the languages mentioned in Wikipedia have been lost or abandoned, a few of the research groups seem to be defunct, and Google searches don't turn up any lively forums. There is one project that seems to be active and progressing - http://www.averest.org/#about_quartz - but in general it seems that synchronous programming didn't catch on. Since the original publications technology has produced CPUs with hundreds of cores, server farms with thousands of CPUs, cheap FPGAs supported by open-source design tools, and a renewed interest in proving the correctness of distributed and/or parallel programs using tools like TLA+. I think Synchronous Programming is due for a reboot.
+ 
+# What do you mean by a "reboot"?
+
+The ideas of synchronous programming are sound and made sense at the time, and the languages that grew from the initial research (Esterel, Lustre, Signal) are totally reasonable and not too painful to understand. I think one of the reasons that synchronous programming didn't become popular is that it didn't generalize the idea far enough - the languages wanted to embody certain ideas about what "synchronous programming" is, and in doing so they give the impression that synchronous programming is something you can _only_ do in a synchronous language. And that's not at all correct - if you've ever written any form of state machine or dealt with any sort of atomic transaction, then you've already done some synchronous programming even if you didn't know the name for it at the time.
+
+Around the same time that the first papers on synchronous programming were being written, Leslie Lamport wrote "The Temporal Logic of Actions" - it's a pretty dense research paper if you're not used to formal logic (I am not), but it lays out a framework for proving the correctness of concurrent systems - these could be threads in a process, nodes in a distributed system, or logic gates in a CPU.
+
+
+
+
+You probably are already familiar with "functional programming" and "imperative programming", and if you've browsed through Wikipedia you've probably heard of a few more.
+
+One progrmaming paradigm that you might not have heard of is "Synchronous Programming". Synchronous programming was first sketched out in the 1980s as a software equivalent of the "every register changes simultaneously" paradigm in synchronous logic circuits. Synchronous programming is still around today, but in a reduced fashion. Some of the languages and organizations mentioned on Wikipedia aren't around anymore, and as a programming paradigm it's hardly commonplace.
+
+Now that many-core processors are ubiquitous and FPGAs with open-source toolchains are available for a few bucks, I think the obscurity of synchronous programming is a shame.
+
+I think part of the reason that SP didn't become more popular is that the initial research focused too tightly on _how_ to do SP (in the form of new languages with new and somewhat unfamiliar semantics), at the expense of defining clearly _what_ synchronous programming is.
+
+
+I'd like to propose a "reboot" of Synchronous Programming, and in honor of Leslie Lamport's work "The Temporal Logic of Actions", I think we should call it "Temporal Programming".
+
+There's no reason we can't just define a programming paradigm that matches TLA
+
+
+Lamport's papers on temporal logic are quite dense, and I'll be totally honest - I'm not very good at formal logic. Because of this, I've tried to focus on the simplest possible definitions that might be worth calling "Temporal Programming".
+
+Pure temporal programs transform old states into new states using pure functions.
+
+
+https://lamport.azurewebsites.net/pubs/lamport-actions.pdf
+
+
+
+
+Temporal programming is a "reboot" of Synchronous Programming
+
+
+
+
+"The Semantics of Pure Esterel"
+   important, read this
+   It seems like Esterel is still trying to jam some imperative semantics in there with "awaiting S" or whatev.
+
+A lot of my best ideas started out sounding really dumb.
+
+## On Esterel/Lustre/Signal/Argus/Ceu
+   Blah blah blah
+
+ - Esterel
+   - esterel-eda.com is defunct
+   - http://www.esterel-technologies.com/ is defunct
+   - Ansys bought Esterel 10 years ago but it doesn't appear on their website?
+      - search may just be broken
+   - They appear to sell SCADE
+   - http://www.tni-valiosys.com/ defunct
+
+ - Lustre
+   - "The Lustre Language" http://homepage.cs.uiowa.edu/~tinelli/classes/181/Spring10/Notes/03-lustre.pdf
+   - is scade defunct too?
+   - "order does not matter" but there's no old/new split
+   - "Previous operator 'pre'"
+   - "Not suitable for complex data types manupulation"
+
+
+ - Signal
+   - "Implementation of the data-flow synchronous language Signal"
+      - can reference past values of a signal with $
+      - stuff like "X := U default V" defines a merge of two event streams, which is out of scope for TP
+      - individual signals have a "clock" defining when they are present/absent
+   - http://www.irisa.fr/espresso/home_html/ defunct
+   - http://polychrony.inria.fr/
+   - https://www-verimag.imag.fr/Synchron.html defunct
+   - http://polychrony.inria.fr/Download/download.php how old is this stuff
+   - "The Synchronous Programming Language SIGNAL" 2004
+
+
+ - Blech
+   blech-lang.org
+   "The software is not ready for production use. It has neither been developed nor tested for a specific use case."
+   "Blech is no longer under active development at Bosch Research"
+
+ - Averest / Quartz
+   - Lots of examples http://www.averest.org/#documentation_Quartz_examples
+   - http://www.averest.org/examples/Quartz/EmbeddedSystems/CruiseControl/CruiseControl.html
+       - this is probably a good example of implicit state in the pc
+   - "Averest is the result of still ongoing research efforts of the chair on embedded systems at the department of computer science of the university of Kaiserslautern"
+
+
+
+
+
+"Globally asynchronous locally synchronous"
+    - https://en.wikipedia.org/wiki/Globally_asynchronous_locally_synchronous
+
+"UNIFICATION OF SYNCHRONOUS AND ASYNCHRONOUS MODELS FOR PARALLEL PROGRAMMING LANGUAGES A Thesis" 1989
+   - https://web.archive.org/web/20050324021405/http://ece.purdue.edu/~hankd/CARP/XPC/paper.html
+
+ChucK
+   - "advance time by 120 ms"
+
+
+
+
+
+Github search counts
+   - Lustre 58 repos (but there are other overloads)
+   - Esterel 4 repos
+   - Signal - too overloaded
+   - Blech - 8 from 2 users
+   - Quartz - too overloaded
+   - Statecharts - 53
+   - SyncCharts - 0
+   - JavaScript - 349576
+   - 
+
+
+"Structured Synchronous Reactive Programming"
+
+
+
+"Your definition of temporal programming is going to waste instructions recomputing things that haven't changed"
+   Yes and no. The trivial implementation wastes cycles, a "smart" compiler could save cycles.
+   But "smart" may not actually be necessary. Simple TP runs fast enough for basic realtime tasks.
+
+
+"The Synchronous Languages 12 Years Later"
+   - "Microsteps"?
+   - 
+
+"Blech, Imperative Synchronous Programming!"
+   - 
+
+
+- "Another look at real-time programming"
+   - where can I find this?
+   - doesn't seem to be available
+
+- defunct https://lphrc.org/
+
+ - Ceu
+    - http://www.ceu-lang.org/chico/ceu_tecs17_pre.pdf
+    - "CEU´ uses an event-triggered notion of time"
+    - "await" etc
+    - loops
+
+"The Synchronous Hypothesis and Synchronous Languages"
+ - 
+
+
+"Behavioral Specification of a Circuit using SyncCharts: a Case Study"
+   encoding using three-value logic levels and avoiding 0000 outputs
+
+"Semantics of SyncCharts"
+   "A simple trigger is said to be satisfied when the associated signal is present"
+
+"Behavioral Specification of a Circuit using SyncCharts"
+
+SyncCharts and some of the other languages try and do _too_much_
+
+
+
+
+ 
+
+
+
+ Sensitivity lists are an optimization
+
+ "Semantics of SyncCharts"
+   - 
+
+
+
+Synchronous programming seems like trying to cram the synchronous abstraction into an imperative or functional language
+
+The farther you get from pure temporal, the more work it is to translate to hardware
+
+
+
+
+http://www.averest.org/examples/Quartz/EmbeddedSystems/Elevator.html
+   There is _implicit_ state in the position of the program counter!
+   There's still an imaginary chef
+   hell there's an explicit loop :P
+
+In some ways, we can see Esterel and Lustre as two examples of doing temporal programming "inside" imperative/functional programming
+
+
+
+
+Argus
+   Pretty old, has atomic actions, but not globally synchronous?
+Averest/Quartz
+   Presentation in 2021
+   "pause" keyword but no old/new
+   "the ordering of microsteps in a macrostep does not matter"
+   "Dynamic scheduling of micro steps" - eh, I don't like that
+      well yeah you have to do that because you're not distinguishing old and new
+      they patch around it with next(x)
+
+
+
+
+Some of the existing synchronous languages are "weird"
+   Quartz has a _lot_ of new kinds of statements
+      even the presentation shows a "how not to do it" example
+
+
+
+struct TapePlayer {
+   bool locked = false;
+   bool playing = false;
+
+   void update(bool play, bool stop, bool lock, bool unlock) {
+      if (locked && unlock) @locked = false;
+      if (lock) @locked = true;
+      if (!@locked) {
+         if (play) @playing = true;
+         if (stop) @playing = false;
+      }
+   }
+}
+
+
+
 # Time is a programming paradigm
 
 
@@ -484,3 +712,72 @@ However,
  printf("a = %d, b = %d\n", a, b);
 
 will not compile - in order to evaulate a' we need to know b', and in order to evaluate b' we need to know a'.
+
+
+
+
+
+
+
+
+
+
+
+struct FDIV2 {
+   bool c;
+   void update() {
+      @c = !c;
+   }
+}
+
+struct Fibonacci {
+   int a = 1;
+   int b = 1;
+   void update() {
+      @a = b;
+      @b = a + b;
+   }
+}
+
+struct Switch {
+   bool s = false;
+   void update(bool on, bool off) {
+
+   }
+}
+
+struct Counter {
+   int c;
+   void update(bool reset, bool x) {
+      @c = reset ? 0 : c + x;
+   }
+}
+
+struct Stopwatch {
+   int count = 0;
+   int time = 0;  
+   bool running = 0;
+   bool frozen = 0;
+   void update(bool on_off, bool reset, bool freeze) {
+      @running = running ^ @on_off;
+      @frozen = frozen ^ @freeze;
+      @count = @reset ? 0 : @running ? count + 1 : count;
+      @time = @frozen ? time : @count;
+   }
+}
+
+
+
+struct TapePlayer {
+   bool locked = false;
+   bool playing = false;
+
+   void update(bool play, bool stop, bool lock, bool unlock) {
+      if (locked && unlock) @locked = false;
+      if (lock) @locked = true;
+      if (!@locked) {
+         if (play) @playing = true;
+         if (stop) @playing = false;
+      }
+   }
+}

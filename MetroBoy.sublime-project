@@ -1,8 +1,14 @@
 {
-	"folders":
+	/*"folders":
 	[
 		{
 			"path": "."
 		}
-	]
+	]*/
+	"folders":
+	[
+		{
+			"path": "C:\\Users\\aappl\\OneDrive\\Desktop\\opentitan"
+		}
+	],
 }

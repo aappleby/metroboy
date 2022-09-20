@@ -29,9 +29,7 @@ and I can run this program for 5 "ticks" and then generate an output as follows:
 Program p;
 int output = p.tick(0).tick(1).tick(2).tick(3).tick(4).tock(17);
 
-This example could be expressed equivalently in Javascript, Python, or just about any mainstream language. If you're familiar with some computer science you might recognize that it almost exactly matches the definition of a Mealy state machine - our finite set of states contains all 2^32 32-bit integers, "tick" is our transition function, and "tock" is our output function.
-
-With a small modification this example could also be expressed equivalently in Verilog, which does _not_ in general follow the execution semantics of C++:
+This example could be expressed equivalently in Javascript, Python, or just about any other mainstream language. If you're familiar with some computer science you might recognize that it almost exactly matches the definition of a Mealy state machine - our "set of states" is 32-bit integers, "tick" is our transition function, and "tock" is our output function. With a small modification this example could also be expressed equivalently in Verilog, which does _not_ in general follow the execution semantics of C++:
 
 module Program {
    input logic clock,

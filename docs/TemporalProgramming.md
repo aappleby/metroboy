@@ -6,7 +6,64 @@ Research into sychronous programming seems to have peaked from the late 1990s to
 
 The ideas of synchronous programming are sound and made sense at the time, and the languages that grew from the initial research (Esterel, Lustre, Signal) are totally reasonable and not too painful to understand. I think one of the reasons that synchronous programming didn't become popular is that it didn't generalize the idea far enough - the languages wanted to embody certain ideas about what "synchronous programming" is, and in doing so they give the impression that synchronous programming is something you can _only_ do in a synchronous language. And that's not at all correct - if you've ever written any form of state machine or dealt with any sort of atomic transaction, then you've already done some synchronous programming even if you didn't know the name for it at the time.
 
-Around the same time that the first papers on synchronous programming were being written, Leslie Lamport wrote "The Temporal Logic of Actions" - it's a pretty dense research paper if you're not used to formal logic (I am not), but it lays out a framework for proving the correctness of concurrent systems - these could be threads in a process, nodes in a distributed system, or logic gates in a CPU.
+Around the same time that the first papers on synchronous programming were being written, Leslie Lamport wrote "The Temporal Logic of Actions" - it's a pretty dense research paper if you're not used to formal logic (I am not), but it lays out a framework for proving the correctness of concurrent systems - these could be threads in a process, nodes in a distributed system, or logic gates in a CPU. His later works defined the languages TLA+ and PlusCal, which allowed those proofs to be expressed in something more like a programming language.
+
+At the core of Lamport's temporal logic is a very simple model of computation - programs move through time in discrete steps by computing "new" state from "old" state. We can state that a bit more formally as the simple recurrence "x' = f(x)", where "x" represents the _old_ state of the program, "x prime" represents the _new_ state of the program, and "f" is a pure function that computes the entire new state from the old state. While TLA+ is not itself a programming language, it still allows developers to test properties of real-world programs by representing them as collections of atomic changes to global state (the contents of the 'f'), writing provable statements about the program's behavior (things like "x.foo will never exceed 10"), and then proving or disproving those statements for all possible sequences of states using the formal methods of temporal logic (complicated).
+
+Actually writing a program that "moves through time in discrete steps" is not particularly difficult. In pseudocode we can express this as something like "loop_forever { state = compute(state); }", where "state" is the "entire state of our application" object. At first glance this is a terribly inefficient way to write a program, but it's interesting - the model places no real requirements on the host language other than "evaluate a function" and "keep track of states". There's no stack, no garbage collection, no locks or synchronization required to "run" a model in this form. Of course we also have no inputs or outputs to our program, but we can fix that pretty easily. Here's a trivial example in C++:
+
+struct Program {
+   int state = 0;
+
+   Program tick(int some_input) {
+      return { state + some_input };
+   }
+
+   int tock(int some_other_input) {
+      return (state + some_other_input) % 5;
+   }
+}
+
+and I can run this program for 5 "ticks" and then generate an output as follows:
+
+Program p;
+int output = p.tick(0).tick(1).tick(2).tick(3).tick(4).tock(17);
+
+This example could be expressed equivalently in Javascript, Python, or just about any mainstream language. If you're familiar with some computer science you might recognize that it almost exactly matches the definition of a Mealy state machine - our finite set of states contains all 2^32 32-bit integers, "tick" is our transition function, and "tock" is our output function.
+
+With a small modification this example could also be expressed equivalently in Verilog, which does _not_ in general follow the execution semantics of C++:
+
+module Program {
+   input logic clock,
+   input int some_input,
+   input int some_other_input,
+   output int some_output
+};
+
+  always_ff(@posedge clock) begin
+   state <= state + some_input;
+  end
+
+  always_comb begin
+    some_output = (state + some_other_input) % 5;
+  end
+
+endmodule
+
+Note that this example modifies "state" in place using the "<=" operator, which is Verilog's way of saying "all assignments using '<=' happen simultaneously and atomically at the end of the current simulation step" - if we had more state variables assigned with '<=', they would all change simultaneously and the atomic-ness of our program would be preserved.
+
+Now for a bit of a conceptual leap - The simple model of computation used in Lamport's "Temporal Logic of Actions" _is_ a programming paradigm. It's the programming paradigm that hardware developers and folks who write code for FPGAs all day think in by default. It's the reason why software developers find Verilog and VHDL so incomprehensible at first. It's the paradigm that a lot of us use every day, but we're so familiar with it in the context of solving "small" problems that we don't really have a word for it when talking about "large" programs. In honor of Leslie Lamport's work on temporal logic, I propose we call it "Temporal Programming".
+
+
+
+
+
+
+
+
+
+
+
 
 
 

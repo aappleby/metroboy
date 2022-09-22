@@ -1,6 +1,6 @@
-Have you heard of "Synchronous Programming"? It's a programming paradigm first sketched out in the 1980's that "makes the same abstraction for programming languages as the synchronous abstraction in digital circuits". To put this in more practical terms, synchronous languages let you describe systems where a bunch of stuff happens "simultaneously", while also giving you tools to ensure that those simultaneous actions don't collide (so to speak) with each other. When writing programs that need to deal with exactly this sort of "lots of things happening simultaneously" environment (industrial machinery seems to come up often), synchronous languages can provide cleaner and sometimes provably-correct implementations. Some synchronous languages also include facilities for translating their source code into a form that can be run on FPGAs or etched into chips, meaning that your industrial machine controller might not need a CPU at all - it could "run" your control program directly from the logic circuits it generates.
+Have you heard of "Synchronous Programming"? It's a programming paradigm first sketched out in the 1980's that "makes the same abstraction for programming languages as the synchronous abstraction in digital circuits". To put this in more practical terms, synchronous languages let you describe systems where a bunch of stuff happens "simultaneously", while also giving you tools to ensure that those simultaneous actions don't collide (so to speak) with each other. When writing programs that need to deal with exactly this sort of "lots of things happening simultaneously" environment (industrial machinery seems to come up often), synchronous languages can provide cleaner and (in some cases) provably-correct implementations. Some synchronous languages also include facilities for translating their source code into a form that can be run on FPGAs or etched into chips, meaning that your industrial machine controller might not need a CPU at all - it could "run" your control program directly from the logic circuits it generates.
 
-Research into sychronous programming seems to have peaked from the late 1990s to the early 2000s, and then gradually fallen into obscurity. Some of the languages mentioned in Wikipedia have been lost or abandoned, a few of the research groups seem to be defunct, and Google searches don't turn up any lively forums. There is one project that seems to be active and progressing - http://www.averest.org/#about_quartz - but in general it seems that synchronous programming didn't catch on. Since the original publications technology has produced CPUs with hundreds of cores, server farms with thousands of CPUs, cheap FPGAs supported by open-source design tools, and a renewed interest in proving the correctness of distributed and/or parallel programs using tools like TLA+. I think Synchronous Programming is due for a reboot.
+Research into sychronous programming seems to have peaked from the late 1990s to the early 2000s, and then gradually fallen into obscurity. Some of the languages mentioned in Wikipedia have been lost or abandoned, a few of the research groups seem to be defunct, and Google searches don't turn up any lively forums. There is one project that seems to be active and progressing - http://www.averest.org/#about_quartz - but in general it seems that synchronous programming didn't catch on. Since the original publications, modern technology has produced CPUs with hundreds of cores, server farms with thousands of CPUs, cheap FPGAs supported by open-source design tools, and a renewed interest in proving the correctness of distributed and/or parallel programs using tools like TLA+. I think Synchronous Programming is due for a reboot.
  
 # What do you mean by a "reboot"?
 
@@ -8,61 +8,111 @@ The ideas of synchronous programming are sound and made sense at the time, and t
 
 Around the same time that the first papers on synchronous programming were being written, Leslie Lamport wrote "The Temporal Logic of Actions" - it's a pretty dense research paper if you're not used to formal logic (I am not), but it lays out a framework for proving the correctness of concurrent systems - these could be threads in a process, nodes in a distributed system, or logic gates in a CPU. His later works defined the languages TLA+ and PlusCal, which allowed those proofs to be expressed in something more like a programming language.
 
-At the core of Lamport's temporal logic is a very simple model of computation - programs move through time in discrete steps by computing "new" state from "old" state. We can state that a bit more formally as the simple recurrence "x' = f(x)", where "x" represents the _old_ state of the program, "x prime" represents the _new_ state of the program, and "f" is a pure function that computes the entire new state from the old state. While TLA+ is not itself a programming language, it still allows developers to test properties of real-world programs by representing them as collections of atomic changes to global state (the contents of the 'f'), writing provable statements about the program's behavior (things like "x.foo will never exceed 10"), and then proving or disproving those statements for all possible sequences of states using the formal methods of temporal logic (complicated).
+At the core of Lamport's temporal logic is a very simple model of computation - programs move through time in discrete steps by computing "new" state from "old" state. We can state that a bit more formally as the simple recurrence "x' = f(x)", where "x" represents the _old_ state of the program, "x'" represents the _new_ state of the program, and "f" is a pure function that computes the entire new state from the old state. While TLA+ is not itself a programming language, it still allows developers to test properties of real-world programs by representing them as collections of atomic changes to global state (the contents of the 'f'), writing provable statements about the program's behavior (things like "x.foo will never exceed 10"), and then proving or disproving those statements for all possible sequences of states using the formal methods of temporal logic (complicated).
 
-Actually writing a program that "moves through time in discrete steps" is not particularly difficult. In pseudocode we can express this as something like "loop_forever { state = compute(state); }", where "state" is the "entire state of our application" object. At first glance this is a terribly inefficient way to write a program, but it's interesting - the model places no real requirements on the host language other than "evaluate a function" and "keep track of states". There's no stack, no garbage collection, no locks or synchronization required to "run" a model in this form. Of course we also have no inputs or outputs to our program, but we can fix that pretty easily. Here's a trivial example in C++:
+Examples of "x' = f(x)"-style programs abound - synchronous logic circuits, state machines, transactions - and actually writing a program that "moves through time in discrete steps" is not particularly difficult. Here's a trivial example in C++: 
 
 struct Program {
-   int state = 0;
+   int count = 0;
+};
 
-   Program tick(int some_input) {
-      return { state + some_input };
-   }
+Program tick(Program old_p) {
+   Program new_p;
+   new_p.count = old_p.count + 1;
+   return new_p;
+}
 
-   int tock(int some_other_input) {
-      return (state + some_other_input) % 5;
+void main() {
+   Program p;
+   for (int i = 0; i < 10; i++) {
+      p = tick(p);
+      printf("Output %d\n", p.count);
    }
 }
 
-and I can run this program for 5 "ticks" and then generate an output as follows:
+At first glance, "constantly overwrite your entire state" seems like a terribly inefficient way to write a program, but it's interesting - this example could be expressed equivalently in Javascript, Python, or just about any other mainstream language. In fact, the "x' = f(x)" model places no real requirements on the host language other than "evaluate functions" and "change state atomically". We can write the same thing in Verilog, which does _not_ in general follow the execution semantics of C++ despite the similarities in syntax:
 
-Program p;
-int output = p.tick(0).tick(1).tick(2).tick(3).tick(4).tock(17);
+module Program(input logic clock);
+  int count;
+  initial count = 0;
 
-This example could be expressed equivalently in Javascript, Python, or just about any other mainstream language. If you're familiar with some computer science you might recognize that it almost exactly matches the definition of a Mealy state machine - our "set of states" is 32-bit integers, "tick" is our transition function, and "tock" is our output function. With a small modification this example could also be expressed equivalently in Verilog, which does _not_ in general follow the execution semantics of C++:
-
-module Program {
-   input logic clock,
-   input int some_input,
-   input int some_other_input,
-   output int some_output
-};
-
-  always_ff(@posedge clock) begin
-   state <= state + some_input;
+  always_ff(@posedge clock) begin : tick
+    count <= count + 1;
   end
-
-  always_comb begin
-    some_output = (state + some_other_input) % 5;
-  end
-
 endmodule
 
-Note that this example modifies "state" in place using the "<=" operator, which is Verilog's way of saying "all assignments using '<=' happen simultaneously and atomically at the end of the current simulation step" - if we had more state variables assigned with '<=', they would all change simultaneously and the atomic-ness of our program would be preserved.
+This example modifies state in place instead of overwriting the whole Program object, but in Verilog doing so is guaranteed to be atomic - the '<=' operator is defined such that the right hand sides of all '<=' expressions are assigned to the left hand sides simultaneously and atomically at the end of the current simulation step. 
 
-Now for a bit of a conceptual leap - The simple model of computation used in Lamport's "Temporal Logic of Actions" _is_ a programming paradigm. It's the programming paradigm that hardware developers and folks who write code for FPGAs all day think in by default. It's the reason why software developers find Verilog and VHDL so incomprehensible at first. It's the paradigm that a lot of us use every day, but we're so familiar with it in the context of solving "small" problems that we don't really have a word for it when talking about "large" programs. In honor of Leslie Lamport's work on temporal logic, I propose we call it "Temporal Programming".
+Now for a bit of a conceptual leap - This model of computation as used in Lamport's "Temporal Logic of Actions" _is_ a programming paradigm. It's not a complicated one, but it's distinctly different from the "state changes incrementally" style of imperative programming and the "state doesn't change" style of functional programming. You can also think of it as a reformulation of Synchronous Programming - one that focuses on "all state changes simultaneously" instead of "lots of things happen simultaneously".
 
+It's also not at all new - it's the programming paradigm that folks who write code for FPGAs all day think in by default. It's also a paradigm that most software developers _don't_ think in by default, which is part of why Verilog and VHDL can seem so incomprehensible at first. It's a paradigm that a lot of us use every day, but we're so implicitly familiar with it our different sub-areas of programming that we don't really have a word for it at a global level.
 
-
-
-
-
+In honor of Leslie Lamport's work on temporal logic, I propose we call it "Temporal Programming".
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# That seems too simple to call a "paradigm", shouldn't there be more _stuff_ to it?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Even if our host language has no '<=' operator, as long as we do some bookkeeping to ensure that our "tick" function _behaves_ atomically we don't really have to overwrite everything each tick.
+Back in C++, we don't have to _literally_ write "p = tick(p)" - we can update the program state in place via "p.tick()" as long as it _behaves_ atomically.
+
+struct Program {
+   int count = 0;
+
+   void tick() {
+      count = count + 1;
+   }
+};
 
 
 

@@ -80,16 +80,22 @@ int main(int argc, char** argv) {
   PlaitApp* app = new PlaitApp();
   (void)app;
 
+  LOG_B("Loading gameboy.die_db.json\n");
+  app->die_db.clear();
+  app->die_db.load_json("gameboy.die_db.json");
+
+#if 0
   LOG_B("Parsing gateboy source\n");
   app->die_db.clear();
   app->die_db.parse_dir("src\\GateBoyLib");
   //app->die_db.save_json("gameboy.die_db.json");
+#endif
   LOG_B("Total cells %d\n", (int)app->die_db.cell_map.size());
   LOG_B("Total edges %d\n", (int)app->die_db.traces.size());
   LOG_B("Done\n");
 
 
-#if 0
+#if 1
   LOG_B("Loading gameboy.plait.json\n");
   nlohmann::json jroot;
   std::ifstream("gameboy.plait.json") >> jroot;
@@ -104,11 +110,11 @@ int main(int argc, char** argv) {
   LOG_B("Total nodes %zd\n", total_nodes);
   LOG_B("Total edges %zd\n", app->plait.traces.size());
   LOG_B("Done\n");
+#endif
 
   AppHost* app_host = new AppHost(app);
   ret = app_host->app_main(argc, argv);
   delete app;
-#endif
 
   return ret;
 }

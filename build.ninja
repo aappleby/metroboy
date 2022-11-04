@@ -4,9 +4,9 @@
 # enabled and what's not
 #-DSIM_AUDIO 
 
-build_mode   = -DCONFIG_DEBUG -O0
+#build_mode   = -DCONFIG_DEBUG -O0
 #build_mode   = -DCONFIG_RELEASE -O3
-#build_mode   = -DCONFIG_FASTMODE -O3
+build_mode   = -DCONFIG_FASTMODE -O3
 
 #default_gpp      = g++ -g -MMD -std=gnu++2a -Wunused-variable -Werror
 default_gpp      = g++ -g -MMD -std=gnu++2a
@@ -260,7 +260,6 @@ build obj/MetroBoyJoypad.o     : compile_cpp src/MetroBoyLib/MetroBoyJoypad.cpp
 build obj/MetroBoyOAM.o        : compile_cpp src/MetroBoyLib/MetroBoyOAM.cpp
 build obj/MetroBoyPPU.o        : compile_cpp src/MetroBoyLib/MetroBoyPPU.cpp
 build obj/MetroBoySerial.o     : compile_cpp src/MetroBoyLib/MetroBoySerial.cpp
-build obj/MetroBoySPU.o        : compile_cpp src/MetroBoyLib/MetroBoySPU.cpp
 build obj/MetroBoyTimer.o      : compile_cpp src/MetroBoyLib/MetroBoyTimer.cpp
 build obj/MetroBoyVRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyVRAM.cpp
 build obj/MetroBoyZRAM.o       : compile_cpp src/MetroBoyLib/MetroBoyZRAM.cpp
@@ -275,10 +274,14 @@ build bin/MetroBoyLib.a : lib $
   obj/MetroBoyOAM.o $
   obj/MetroBoyPPU.o $
   obj/MetroBoySerial.o $
-  obj/MetroBoySPU.o $
   obj/MetroBoyTimer.o $
   obj/MetroBoyVRAM.o $
   obj/MetroBoyZRAM.o $
+
+
+
+#build obj/MetroBoySPU.o        : compile_cpp src/MetroBoyLib/MetroBoySPU.cpp
+  #obj/MetroBoySPU.o $
 
 ################################################################################
 # Other libs

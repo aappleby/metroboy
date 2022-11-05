@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
   }
 
 
-  if (1) {
+  if (0) {
     TestResults results;
     GateBoyTests t;
     const auto proto = make_unique<GateBoyPair>(new GateBoy(), new LogicBoy());

@@ -1,5 +1,6 @@
 {
   "configurations": [
+    /*
     {
       "name": "GateBoyApp W32",
       "request": "launch",
@@ -13,6 +14,7 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",      
     },
+    */
     {
       "name": "GateBoyApp LIN",
       "preLaunchTask": "build_all",

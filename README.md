@@ -1,12 +1,6 @@
-# This repo is the home of MetroBoy, GateBoy, LogicBoy, Metron, and Plait.... (yes, rather too many projects for one repo but they're very tightly interconnected)
+# This repo is the home of MetroBoy, GateBoy, LogicBoy, and Plait.... (yes, rather too many projects for one repo but they're very tightly interconnected)
 
-Update Dec 2021 - I've merged the "LogicBoy" branch into master. LogicBoy is a translation of GateBoy into more standard C++ idioms, while maintaining bit-identical behavior with the reference GateBoy model. It currently runs at 60+ fps instead of 6 fps in "fast" mode, with a few more optimization passes still left to go.
-
-A rewritten version of the "Metron" C++ to Verilog translator is now in this repo, currently unfinished. It's built on top of TreeSitter instead of LLVM, which is far easier to use though it seems to have a few bugs. Once it is able to translate LogicBoy into working Verilog, I'll publish a bit more about it.
-
-Plait is also getting rewritten to use TreeSitter, it's currently broken.
-
-Eventually I'll probably write a "Nortem" tool to translate Verilog back to C++, if I can figure out how TreeSitter grammars work sufficiently.
+Update Dec 2021 - I've merged the "LogicBoy" branch into master. LogicBoy is a translation of GateBoy into more standard C++ idioms, while maintaining bit-identical behavior with the reference GateBoy model. It currently runs at 60+ fps instead of 6 fps in "fast" mode, with a few more optimization passes still left to go. Plait is also getting rewritten to use TreeSitter, it's currently broken.
 
 ## GateBoy
 
@@ -96,5 +90,3 @@ MetroBoy will be rewritten so that its externally visible behavior exactly match
 ## That's a lot of stuff. What's the overarching point of all this, anyhow?
 
 GateBoy, LogicBoy, and MetroBoy exist to give me a starting point for working on Metron, which is my long-term project to build a set of programming tools that can bridge between the C/C++ universe used by software and the Verilog/VHDL universe used by hardware. Eventually there will be a single codebase that, using some custom tools, can be translated directly to C++ and run on a PC or that can be translated to SystemVerilog and run on a FPGA.
-
-

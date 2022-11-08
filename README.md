@@ -6,7 +6,7 @@ Update Dec 2021 - I've merged the "LogicBoy" branch into master. LogicBoy is a t
 
 ![GateBoy screenshot](images/gateboy.png "GateBoy screenshot")
 
-GateBoy is a **gate-level simulation** of the original Game Boy hardware that was [**reverse-engineered from die shots of the original DMG-01 chip**](https://siliconpr0n.org/map/nintendo/dmg-cpu-b/mz_mit20x/#x=9744&y=8000&z=3). It includes all the standard cells on the chip, minus the audio (too slow). It does not currently simulate the CPU at the gate level - it's made of custom logic and is a bit too blurry for me to decipher. GateBoy's CPU is instead my current best guess at how it might be implemented given the constraints implied by the rest of the chip.
+GateBoy is a **gate-level simulation** of the original Game Boy hardware that was [**reverse-engineered from die shots of the original DMG-01 chip**](https://siliconpr0n.org/map/nintendo/dmg-cpu-b/mz_mit20x/#x=9744&y=8000&z=3). It includes all the standard cells on the chip but not the CPU - it's made of custom logic and is a bit too blurry for me to decipher. GateBoy's CPU is instead my current best guess at how it might be implemented given the constraints implied by the rest of the chip.
 
 Precompiled builds with test ROMS and Plait data are here - https://github.com/aappleby/MetroBoy/releases/tag/GateBoy_v0.1.1
 

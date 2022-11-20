@@ -1,0 +1,51 @@
+top left port
+
+yellow -> M1            SIG_CPU_6;             -> LEXY -> unconnected pad on bottom side
+ cyan   <- CLK_N         SIG_CPU_BOWA_Axxxxxxx  <- this is the "put address on bus" clock
+ cyan   <- CLK_P         SIG_CPU_BEDO_xBCDEFGH  <-
+ cyan   <- PHI_P         SIG_CPU_BEKO_ABCDxxxx  <- this is the "reset for next cycle" clock
+ cyan   <- PHI_N         SIG_CPU_BUDE_xxxxEFGH  <- this is the "put write data on bus" clock
+?cyan   <- WRITEBACK_N   SIG_CPU_BOLO_ABCDEFxx  <-
+?cyan   <- WRITEBACK_P   SIG_IN_CPU_DBUS_FREE   -> ANUJ, DECY, LAVO, MUZU. GB and Gekkio disagree on the direction of this pin.
+?cyan   <- WRITEBACK_EXT SIG_CPU_BUKE_AxxxxxGH  <- this is probably the "latch bus data" clock
+ cyan   <- MCLK_PULSE_N  SIG_CPU_BOMA_xBCDEFGH  <- These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
+ cyan   <- MCLK_PULSE_P  SIG_CPU_BOGA_Axxxxxxx  <- These two clocks are the only ones that run before SIG_CPU_READYp is asserted.
+
+top middle port
+
+ yellow -> CPUCLK_EN   SIG_CPU_CLKREQ         -> ABOL, TUBO
+ cyan   <- RESET_SYNC  SIG_CPU_INT_RESETp     <- P01.AFER , reset related state
+ cyan   <- RESET_ASYNC SIG_CPU_EXT_RESETp     <- PIN_71_RST directly connected to the pad
+ yellow -> SYSCLK_EN   SIG_CPU_EXT_CLKGOOD    <- chip.CLKIN_A top wire on PAD_XI,   SIG_CPU_EXT_CLKGOOD should be CLK_EN instead, Gekkio's right
+ cyan   <- RESET_ACK   SIG_CPU_STARTp         <- P01.CPU_RESET
+
+top right port
+
+ cyan   <- NMI                            <- to unconnected pad on top side
+ yellow -> RD       SIG_IN_CPU_RDp        -> LAGU, LAVO, TEDO
+ yellow -> WR       SIG_IN_CPU_WRp        -> TEGU, LAGU, AREV
+ cyan   <- TEST_T1  SIG_CPU_UNOR_DBG      <- P07.UNOR_MODE_DBG2
+ cyan   <- FExxFFxx SIG_CPU_ADDR_HIp      <- P25.SYRO_FE00_FFFFp
+ cyan   <- BOOT_EN  SIG_CPU_BOOTp         <- P07.READ_BOOTROM tutu?
+ cyan   <- TEST_T2  SIG_CPU_UMUT_DBG      <- P07.UMUT_MODE_DBG1
+ yellow -> MEMRQ    SIG_IN_CPU_EXT_BUSp   -> TEXO, AGUT
+
+memrq = decoder.addr_valid and ((not boot_en and not fexx_ffxx) or (test_t2 and not fexx_ffxx));
+
+bottom
+address bus
+WAKE
+
+
+
+
+xurg_inst: entity work.ssdff
+port map (
+  clk => decoder.m1,
+  en => writeback,
+  *res => cpuclk_shdn,
+  *d => decoder.op_cb_s0xx,
+  q => xurg
+);
+
+is XURG driving WRITEBACK_P/SIG_IN_CPU_DBUS_FREE?

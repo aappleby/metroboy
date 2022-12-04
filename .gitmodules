@@ -25,3 +25,6 @@
 [submodule "submodules/gb-live32"]
 	path = submodules/gb-live32
 	url = https://github.com/Gekkio/gb-live32
+[submodule "submodules/MetroLib"]
+	path = submodules/MetroLib
+	url = https://github.com/aappleby/MetroLib

@@ -1,6 +1,9 @@
 #pragma once
 #include "CoreLib/Types.h"
 
+struct Req;
+struct Ack;
+
 //-----------------------------------------------------------------------------
 
 struct MetroBoyBootrom {

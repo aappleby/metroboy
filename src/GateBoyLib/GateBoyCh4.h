@@ -1,8 +1,12 @@
+#pragma once
+#include "AudioLib/Audio.h"
+
+struct SpuChannel4;
+sample_t ch4_audio_out(const SpuChannel4& ch4);
+
 //==============================================================================
 //             CHANNEL 4
 //==============================================================================
-
-struct GateBoyState;
 
 struct SpuChannel4 {
   void reset() {
@@ -177,5 +181,3 @@ struct SpuChannel4 {
 
   /*#p20.EROX*/ NorLatch EROX_ENV_RUNNINGn;
 };
-
-sample_t ch4_audio_out(const SpuChannel4& ch4);

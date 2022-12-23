@@ -1,4 +1,8 @@
 #pragma once
+#include "AudioLib/Audio.h"
+
+struct SpuChannel1;
+sample_t ch1_audio_out(const SpuChannel1& reg_new);
 
 //==============================================================================
 //             CHANNEL 1
@@ -197,9 +201,9 @@ struct SpuChannel1 {
 
   //----------
 
-  /*_p13.JOVA*/ DFF20 JOVA_ENV_DELAY0p; 
+  /*_p13.JOVA*/ DFF20 JOVA_ENV_DELAY0p;
   /*_p13.KENU*/ DFF20 KENU_ENV_DELAY1p;
-  /*_p13.KERA*/ DFF20 KERA_ENV_DELAY2p;  
+  /*_p13.KERA*/ DFF20 KERA_ENV_DELAY2p;
 
   /*_p13.HAFO*/ DFF20 HAFO_CH1_ENV0p;
   /*_p13.HEMY*/ DFF20 HEMY_CH1_ENV1p; // 40
@@ -237,7 +241,7 @@ struct SpuChannel1 {
   /*_p11.EKOV*/ DFF20 EKOV_CH1_FREQ_CNT_07;
   /*_p11.EMUS*/ DFF20 EMUS_CH1_FREQ_CNT_08;
   /*_p11.EVAK*/ DFF20 EVAK_CH1_FREQ_CNT_09;
-  /*_p11.COPU*/ DFF20 COPU_CH1_FREQ_CNT_10;  
+  /*_p11.COPU*/ DFF20 COPU_CH1_FREQ_CNT_10;
 
   /*#p09.BAZA*/ DFF17 BAZA_DBG_SWEEP_CLK;
   /*_p13.BEXA*/ DFF17 BEXA_SWEEP_TRIGp;
@@ -299,5 +303,3 @@ struct SpuChannel1 {
   /*_p13.DUWO*/ DFF17 DUWO_RAW_BIT_SYNCp;
   /*#p13.KEZU*/ NorLatch KEZU_ENV_ACTIVEn;
 };
-
-sample_t ch1_audio_out(const SpuChannel1& reg_new);

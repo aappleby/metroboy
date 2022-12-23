@@ -1,5 +1,28 @@
 #pragma once
-#include "CoreLib/Types.h"
+#include <stdint.h>
+
+#include "CoreLib/Check.h"
+#include "CoreLib/Utils.h"
+#include "GateBoyLib/GateBoyConfig.h"
+
+typedef const uint8_t wire;
+struct triwire { wire state; };
+
+/*__attribute__((always_inline))*/ inline wire bit0(uint32_t w) { return wire(w & 1); }
+inline wire bit(uint32_t w, int i) { return wire((w >> i) & 1); }
+inline wire bit(int w, int i) { return wire((w >> i) & 1); }
+inline wire bit(int w) { return wire(w & 1); }
+
+template<typename T>
+inline void set_bit(T& t, int c, bool x) {
+  t &= ~(1 << c);
+  t |=  (x << c);
+}
+
+constexpr wire gen_clk(int64_t phase, uint8_t mask) {
+  if (phase < 0 || phase >> 7) debugbreak();
+  return !!(bit_reverse(mask) & (1 << phase));
+}
 
 //-----------------------------------------------------------------------------
 

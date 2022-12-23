@@ -1,8 +1,9 @@
 #pragma once
 
 #include "CoreLib/File.h"
-#include "CoreLib/MetroBoyCPU.h"
-#include "CoreLib/Constants.h"
+#include "CoreLib/Result.h"
+#include "GameboyLib/MetroBoyCPU.h"
+#include "GameboyLib/Constants.h"
 #include "CoreLib/Log.h"
 
 #include "GateBoyLib/IGateBoy.h"
@@ -215,7 +216,7 @@ struct GateBoy  : public IGateBoy {
   GBResult run_to(const blob& cart_blob, int phase) override;
 
   GBResult set_buttons(uint8_t buttons) override { sys.buttons = buttons; return GBResult::ok(); }
- 
+
   GBResult set_cpu_en(bool enabled) override {
     sys.cpu_en = enabled;
     return GBResult::ok();
@@ -296,4 +297,3 @@ struct GateBoy  : public IGateBoy {
 };
 
 //-----------------------------------------------------------------------------
-

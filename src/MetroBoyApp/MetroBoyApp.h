@@ -1,11 +1,10 @@
 #pragma once
 
-#include "CoreLib/StateManager2.h"
+#include "CoreLib/StateStack.h"
 #include "CoreLib/File.h"
-#include "CoreLib/SmoothTimer.h"
 #include "AppLib/App.h"
 #include "AppLib/GridPainter.h"
-#include "AppLib/GBBlitter.h"
+#include "GameboyLib/GBBlitter.h"
 #include "AppLib/DumpPainter.h"
 #include "AppLib/Blitter.h"
 #include "AppLib/GridPainter.h"

@@ -2,6 +2,10 @@
 #include "CoreLib/Constants.h"
 #include <assert.h>
 
+#include "CoreLib/Dumper.h"
+#include "GameboyLib/Constants.h"
+#include "GameboyLib/MetroBoyCPU.h"
+
 void MetroBoyJoypad::reset() {
   val = 0xFF;
   p1 = 0xCF; // FF00

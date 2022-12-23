@@ -9,7 +9,7 @@
 #include "AppLib/Blitter.h"
 #include "AppLib/Viewport.h"
 
-#include "CoreLib/Debug.h"
+//#include "CoreLib/Debug.h"
 
 #include "Plait/Plait.h"
 #include "Plait/CellDB.h"

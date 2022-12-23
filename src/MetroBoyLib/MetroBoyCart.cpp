@@ -1,9 +1,9 @@
 #include "MetroBoyLib/MetroBoyCart.h"
 
+#include "GameboyLib/MetroBoyCPU.h"
+#include "GameboyLib/Constants.h"
+
 #include <assert.h>
-
-#include "CoreLib/Constants.h"
-
 #include <string.h>
 
 // 0 0x0000 - 8k rom

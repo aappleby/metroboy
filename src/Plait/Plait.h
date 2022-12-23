@@ -4,6 +4,7 @@
 #include "Plait/CellDB.h"
 #include "glm/glm/glm.hpp"
 #include "json/single_include/nlohmann/json.hpp"
+#include "CoreLib/Utils.h"
 
 #include <vector>
 #include <iostream>

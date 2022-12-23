@@ -2,6 +2,10 @@
 #include "CoreLib/Constants.h"
 #include <assert.h>
 
+#include "CoreLib/Dumper.h"
+#include "GameboyLib/MetroBoyCPU.h"
+#include "GameboyLib/Constants.h"
+
 // Passes mooneye timer tests
 
 static const uint16_t masks[] = { 0x80, 0x02, 0x08, 0x20 };

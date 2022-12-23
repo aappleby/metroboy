@@ -1,6 +1,8 @@
 /// plait_noparse
 #pragma once
 
+#include "CoreLib/Result.h"
+
 #include "GateBoyLib/GateBoyTimer.h"
 #include "GateBoyLib/GateBoyLCD.h"
 #include "GateBoyLib/GateBoyDMA.h"
@@ -78,7 +80,7 @@ struct LogicBoyState {
 
   uint16_t vram_abus = 0;
   uint8_t vram_dbus = 0;
-                
+
   OamControl oam_ctrl;
   uint8_t  oam_abus = 0;
   uint8_t  oam_dbus_a = 0;
@@ -87,7 +89,7 @@ struct LogicBoyState {
   uint8_t  oam_latch_b = 0;
   uint8_t  oam_temp_a = 0;
   uint8_t  oam_temp_b = 0;
-                 
+
   uint8_t ext_data_latch = 0;
   uint16_t ext_addr_latch = 0;
 
@@ -96,7 +98,7 @@ struct LogicBoyState {
 
   DmaControl dma_ctrl;
   uint8_t dma_lo = 0;
-  
+
 
   uint8_t cpu_int = 0;
   uint8_t cpu_ack = 0;

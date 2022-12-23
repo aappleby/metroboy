@@ -1,20 +1,22 @@
 #pragma once
+
+#include "Regs.h"
 #include "CoreLib/Types.h"
 
 //-----------------------------------------------------------------------------
 
-inline bool posedge(wire a, wire b) {
+inline bool posedge(bool a, bool b) {
   return !bit0(a) && bit0(b);
 }
 
-inline bool negedge(wire a, wire b) {
+inline bool negedge(bool a, bool b) {
   return bit0(a) && !bit0(b);
 }
 
 //-----------------------------------------------------------------------------
 
 inline void combine_hash(uint64_t& a, uint64_t b) {
-  a = swap((a ^ b) * 0xff51afd7ed558ccd);
+  a = byteswap((a ^ b) * 0xff51afd7ed558ccd);
 }
 
 uint64_t hash_all_bits(const void* key, const int len, uint64_t seed);
@@ -22,11 +24,11 @@ uint64_t hash_low_bit(const void* key, const int len, uint64_t seed);
 
 //-----------------------------------------------------------------------------
 
-inline uint8_t pack(wire a, wire b) {
+inline uint8_t pack(bool a, bool b) {
   return (bit0(a) << 0) | (bit0(b) << 1);
 }
 
-inline uint8_t pack(wire a, wire b, wire c, wire d) {
+inline uint8_t pack(bool a, bool b, bool c, bool d) {
   return (bit0(a) << 0) | (bit0(b) << 1) | (bit0(c) << 2) | (bit0(d) << 3);
 }
 
@@ -124,29 +126,6 @@ inline void bit_cat(T& dst, int bit_min, int bit_max, uint32_t src) {
   int mask = (1 << (bit_max + 1)) - (1 << bit_min);
 
   dst = T((dst & ~mask) | ((src << bit_min) & mask));
-}
-
-//-----------------------------------------------------------------------------
-
-template<typename T>
-bool bit_cmp(const T& a, const T& b, uint8_t mask = 0xFF, FieldInfo* field_info = nullptr) {
-  const uint8_t* pa = (const uint8_t*)&a;
-  const uint8_t* pb = (const uint8_t*)&b;
-  bool result = true;
-  for (size_t i = 0; i < sizeof(T); i++) {
-    auto ba = pa[i] & mask;
-    auto bb = pb[i] & mask;
-    if (ba != bb) {
-      LOG_R("bit_cmp mismatch at offset %3d - 0x%02x 0x%02x, mask 0x%02x",  (int)i, ba, bb, mask);
-      if (field_info) {
-        LOG_R(" : ");
-        print_field_at((int)i, field_info);
-      }
-      LOG_R("\n");
-      result = false;
-    }
-  }
-  return result;
 }
 
 //-----------------------------------------------------------------------------

@@ -4,9 +4,13 @@
 
 #include <deque>
 #include <string>
+#include <span>
 
-#include "CoreLib/Types.h"
+#include "CoreLib/Check.h"
+#include "CoreLib/Blobs.h"
 #include "TreeSymbols.h"
+
+typedef std::span<const char> cspan;
 
 //-----------------------------------------------------------------------------
 

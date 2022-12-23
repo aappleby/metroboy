@@ -1,22 +1,22 @@
 #include "Plait/PlaitApp.h"
-#include "AppLib/GLBase.h"
 
 #include "AppLib/AppHost.h"
 #include "AppLib/DummyApp.h"
 #include "AppLib/GLBase.h"
-
+#include "AppLib/GLBase.h"
+#include "CoreLib/Constants.h"
+#include "CoreLib/Utils.h"
+#include "imgui/imgui.h"
 #include "Plait/CellDB.h"
 
-#include "imgui/imgui.h"
-
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <regex>
-#include <deque>
 #include <algorithm>
+#include <deque>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <regex>
 #include <sstream>
+#include <string>
 
 #pragma warning(disable:4996)
 
@@ -54,7 +54,7 @@ static std::map<ToolMode, std::string> tool_to_string = {
   {ToolMode::DELETE_NODE,     "DELETE_NODE"},
   {ToolMode::LINK_NODE,       "LINK_NODE"},
 
-  {ToolMode::PAN_VIEW,        "PAN_VIEW"}, 
+  {ToolMode::PAN_VIEW,        "PAN_VIEW"},
   {ToolMode::MENU_OPTION,     "MENU_OPTION"},
 };
 
@@ -1496,12 +1496,12 @@ Edge colors:
 Flip-flop node input ports placement:
   | Clock              Non-inverting output |
   | Set (optional)                          |
-  | Reset (optional)   Inverting output     |          
+  | Reset (optional)   Inverting output     |
   | Data                                    |
 
 Flip-flop data input ports _must_ be connected to an _old_ node.
 
-========== Controls ========== 
+========== Controls ==========
 
 Click+drag the background grid to pan the view, mousewheel to zoom the view
 
@@ -1701,7 +1701,7 @@ void PlaitApp::app_render_ui(dvec2 screen_size, double delta) {
     */
 
     //static char node_tag[128];
-    
+
     //ImGui::InputText("tag", node_tag, IM_ARRAYSIZE(node_tag));
 
     /*

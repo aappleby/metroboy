@@ -3,11 +3,11 @@
 #include "GateBoyLib/Utils.h"
 
 #include "CoreLib/Constants.h"
-#include "CoreLib/Debug.h" // for StringDumper
+#include "CoreLib/Dumper.h" // for StringDumper
 #include "CoreLib/Tests.h"
 
 #include "AppLib/AppHost.h"
-#include "AppLib/Audio.h"
+#include "AudioLib/Audio.h"
 #include "AppLib/GLBase.h"
 
 #define SDL_MAIN_HANDLED

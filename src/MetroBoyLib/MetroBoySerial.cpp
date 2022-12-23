@@ -2,6 +2,9 @@
 #include "CoreLib/Constants.h"
 #include <assert.h>
 
+#include "GameboyLib/Constants.h"
+#include "GameboyLib/MetroBoyCPU.h"
+
 //-----------------------------------------------------------------------------
 
 void MetroBoySerial::reset() {

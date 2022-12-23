@@ -1,5 +1,10 @@
 #pragma once
-#include "CoreLib/Types.h"
+
+#include <stdint.h>
+
+struct Req;
+struct Ack;
+struct Dumper;
 
 struct MetroBoyInterrupts {
   MetroBoyInterrupts() = default;

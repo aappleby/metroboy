@@ -1,4 +1,4 @@
-#include "CoreLib/Assembler.h"
+#include "GameboyLib/Assembler.h"
 #include "MetroBoyLib/MetroBoy.h"
 
 #include <string>

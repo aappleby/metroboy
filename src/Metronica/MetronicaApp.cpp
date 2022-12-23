@@ -2,10 +2,10 @@
 
 
 #include "AppLib/AppHost.h"
-#include "AppLib/Audio.h"
+#include "AudioLib/Audio.h"
 #include "AppLib/GLBase.h"
 #include "CoreLib/Constants.h"
-#include "CoreLib/Debug.h" // for StringDumper
+#include "CoreLib/Dumper.h" // for StringDumper
 #include "CoreLib/Tests.h"
 #include "GateBoyLib/GateBoyDumper.h"
 #include "GateBoyLib/GateBoyState.h"
@@ -90,13 +90,13 @@ void MetronicaApp::app_init(int screen_w, int screen_h) {
   }
   // sentinel
   music.push_back({uint64_t(-1), 0, 0});
-  
+
   view_control.init(screen_size);
 
   grid_painter.init(65536, 65536);
   text_painter.init();
-  dump_painter.init_ascii();
-  gb_blitter.init();
+  //dump_painter.init_ascii();
+  //gb_blitter.init();
   blitter.init();
 
   ram_tex = create_texture_u8(256, 256, nullptr, false);
@@ -193,7 +193,7 @@ void MetronicaApp::app_update(dvec2 screen_size, double delta) {
 
       spu2.tick(false, req.addr, (uint8_t)req.data, req.read, req.write);
       spu2.tock_out();
-      audio_post(spu2.out_l, spu2.out_r);
+      audio_post(input_hz, spu2.out_l, spu2.out_r);
     }
   }
 

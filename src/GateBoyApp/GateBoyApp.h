@@ -1,15 +1,14 @@
 #pragma once
 
-#include "CoreLib/Assembler.h"
-#include "CoreLib/StateManager2.h"
-#include "CoreLib/SmoothTimer.h"
-#include "CoreLib/Debug.h" // for StringDumper
+#include "GameboyLib/Assembler.h"
+#include "CoreLib/StateStack.h"
+#include "CoreLib/Dumper.h" // for StringDumper
 
 #include "AppLib/App.h"
 #include "AppLib/GridPainter.h"
 #include "AppLib/TextPainter.h"
 #include "AppLib/DumpPainter.h"
-#include "AppLib/GBBlitter.h"
+#include "GameboyLib/GBBlitter.h"
 #include "AppLib/Blitter.h"
 
 #include "GateBoyLib/GateBoy.h"
@@ -73,8 +72,8 @@ private:
   int wave_tex;
 
   Assembler assembler;
-  
-  
+
+
   blob temp_buf;
   Probes temp_probes;
   const char* temp_gb_id = nullptr;

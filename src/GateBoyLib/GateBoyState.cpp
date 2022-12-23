@@ -2,7 +2,12 @@
 
 #include "GateBoyLib/Utils.h"
 #include "CoreLib/Constants.h"
+#include "CoreLib/Result.h"
 #include "GateBoyLib/Gates.h"
+#include "GameboyLib/Constants.h"
+
+
+#include <cstring>
 
 //-----------------------------------------------------------------------------
 
@@ -74,7 +79,7 @@ void GateBoyState::reset() {
   reg_ie.reset();
   sys_rst.reset();
   sys_clk.reset();
-  
+
   VOGA_HBLANKp_evn.state = 0b00011011;
   XYMU_RENDERING_LATCHn.state = 0b00011001;
   MATU_DMA_RUNNINGp_odd.state = 0b00011000;
@@ -197,7 +202,7 @@ int64_t GateBoyState::hash_all() {
 
 GBResult GateBoyState::peek(int addr) const {
   switch(addr) {
-  case ADDR_P1  : break; 
+  case ADDR_P1  : break;
   case ADDR_SB  : break;
   case ADDR_SC  : break;
   case ADDR_DIV : return GBResult((uint8_t)bit_pack(reg_div) >> 6);
@@ -245,7 +250,7 @@ GBResult GateBoyState::peek(int addr) const {
 
 GBResult GateBoyState::poke(int addr, uint8_t data_in) {
   switch(addr) {
-  case ADDR_P1  : break; 
+  case ADDR_P1  : break;
   case ADDR_SB  : break;
   case ADDR_SC  : break;
   case ADDR_DIV : break;
@@ -489,7 +494,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, win_x.map),
   DECLARE_FIELD(GateBoyState, win_y.tile),
   DECLARE_FIELD(GateBoyState, win_y.map),
-  
+
   DECLARE_FIELD(GateBoyState, win_ctrl.NUKO_WX_MATCHp_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.ROGE_WY_MATCHp_odd),
   DECLARE_FIELD(GateBoyState, win_ctrl.PYNU_WIN_MODE_LATCHp),
@@ -505,7 +510,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, win_ctrl.RENE_WIN_FETCHn_B),
 
   DECLARE_FIELD(GateBoyState, fine_count_odd),
-  
+
   DECLARE_FIELD(GateBoyState, fine_scroll.PUXA_SCX_FINE_MATCH_evn),
   DECLARE_FIELD(GateBoyState, fine_scroll.NYZE_SCX_FINE_MATCH_odd),
   DECLARE_FIELD(GateBoyState, fine_scroll.ROXY_FINE_SCROLL_DONEn),
@@ -536,7 +541,7 @@ FieldInfo GateBoyState::fields[] = {
   DECLARE_FIELD(GateBoyState, ch4),
   DECLARE_FIELD(GateBoyState, wave_dbus),
 #endif
-  
+
 
   END_FIELDS()
 };

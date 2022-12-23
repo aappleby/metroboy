@@ -62,3 +62,8 @@ constexpr bool config_idempotence  = config_debug;
 //constexpr bool config_idempotence  = false;
 
 static_assert((config_check_flags && config_use_flags) || !config_check_flags, "Bad config_use/check_flags");
+
+//-----------------------------------------------------------------------------
+// Audio config
+
+constexpr int64_t input_hz = 154 * 114 * 60;

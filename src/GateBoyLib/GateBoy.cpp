@@ -2,9 +2,11 @@
 #include <memory.h>
 #include <stdio.h>
 
-#include "AppLib/Audio.h"
-#include "CoreLib/Constants.h"
+#include "AudioLib/Audio.h"
+#include "GameboyLib/Constants.h"
 #include "CoreLib/Tests.h"
+#include "CoreLib/Result.h"
+
 #include "GateBoyLib/Probe.h"
 #include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/Gates.h"
@@ -91,7 +93,7 @@ GBResult GateBoy::poweron(bool fastboot) {
   sys.poweron();
   pins.poweron();
   probes.reset();
- 
+
   sys.fastboot = fastboot;
   sys.rst = 1;
   sys.gb_phase_total_old = 0;
@@ -297,7 +299,7 @@ GBResult GateBoy::next_phase(const blob& cart_blob) {
     mem.audio_l[(sys.gb_phase_total_old >> 7) & 0xFF] = l;
     mem.audio_r[(sys.gb_phase_total_old >> 7) & 0xFF] = r;
 
-    audio_post(l, r);
+    audio_post(input_hz, l, r);
 #endif
   }
 
@@ -544,7 +546,7 @@ void GateBoy::tock_gates(const blob& cart_blob) {
 #if 1
   // SIG_CPU_BOOTp;         // top right port PORTA_04: <- P07.READ_BOOTROM tutu?
   // SIG_CPU_ADDR_HIp;      // top right port PORTA_03: <- P25.SYRO_FE00_FFFFp
-  
+
   /*_p07.TUNA*/ wire TUNA_0000_FDFF_old = nand7(
     reg_old.cpu_abus.BUS_CPU_A15p.out_old(),
     reg_old.cpu_abus.BUS_CPU_A14p.out_old(),

@@ -1,8 +1,12 @@
+#pragma once
+#include "AudioLib/Audio.h"
+
+struct SpuChannel2;
+sample_t ch2_audio_out(const SpuChannel2& ch2);
+
 //==============================================================================
 //             CHANNEL 2
 //==============================================================================
-
-struct GateBoyState;
 
 struct SpuChannel2 {
   void reset() {
@@ -119,7 +123,7 @@ struct SpuChannel2 {
 
   //----------
 
-  DFF20 DONE_COUNT00; 
+  DFF20 DONE_COUNT00;
   DFF20 DYNU_COUNT01; //o30
   DFF20 EZOF_COUNT02;
   DFF20 CYVO_COUNT03;
@@ -162,5 +166,3 @@ struct SpuChannel2 {
   /*#p15.DOME*/ DFF17     DOME_CH2_OUTp;
   /*#p15.GYKO*/ DFF17     GYKO_SAMPLE_CLKp;
 };
-
-sample_t ch2_audio_out(const SpuChannel2& ch2);

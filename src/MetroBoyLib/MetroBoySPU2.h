@@ -1,5 +1,5 @@
 #pragma once
-#include "CoreLib/metron_tools.h"
+#include "LogicLib/metron_tools.h"
 
 //------------------------------------------------------------------------------
 
@@ -218,7 +218,7 @@ public:
 
       if (s1_freq_timer == 0b11111111111) {
         s1_phase = s1_phase + 1;
-        s1_freq_timer = s1_sweep_timer_init ? s1_sweep_freq : s1_freq_timer_init;      
+        s1_freq_timer = s1_sweep_timer_init ? s1_sweep_freq : s1_freq_timer_init;
       }
       else {
         s1_freq_timer = s1_freq_timer + 1;

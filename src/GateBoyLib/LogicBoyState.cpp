@@ -1,8 +1,11 @@
 #include "GateBoyLib/LogicBoyState.h"
-#include "GateBoyLib/GateBoyState.h"
 
+#include "GateBoyLib/GateBoyState.h"
 #include "GateBoyLib/Utils.h"
 #include "CoreLib/Constants.h"
+#include "GameboyLib/Constants.h"
+
+#include <cstring>
 
 #pragma warning(disable:4244) // conversion from uint32_t to uint8_t
 
@@ -27,7 +30,7 @@ void LogicBoyState::reset() {
 
 GBResult LogicBoyState::peek(int addr) const {
   switch(addr) {
-  case ADDR_P1  : break; 
+  case ADDR_P1  : break;
   case ADDR_SB  : break;
   case ADDR_SC  : break;
   case ADDR_DIV : return GBResult(uint8_t(reg_div >> 6));
@@ -75,7 +78,7 @@ GBResult LogicBoyState::peek(int addr) const {
 
 GBResult LogicBoyState::poke(int addr, uint8_t data_in) {
   switch(addr) {
-  case ADDR_P1  : break; 
+  case ADDR_P1  : break;
   case ADDR_SB  : break;
   case ADDR_SC  : break;
   case ADDR_DIV : break;
@@ -257,7 +260,7 @@ void LogicBoyState::to_gb_state(GateBoyState& dst) const {
 
 void LogicBoyState::from_gb_state(const GateBoyState& src) {
   LogicBoyState& dst = *this;
-  
+
   dst.reg_joy = bit_pack(src.reg_joy);
   //dst.reg_sb = bit_pack(src.reg_sb);
   //dst.reg_sc = bit_pack(src.reg_sc);
@@ -308,7 +311,7 @@ void LogicBoyState::from_gb_state(const GateBoyState& src) {
   dst.oam_temp_b = ~bit_pack(src.oam_temp_b);
   dst.ext_data_latch = bit_pack(src.ext_data_latch);
   dst.ext_addr_latch = bit_pack(src.ext_addr_latch);
-  
+
   dst.ext_mbc = bit_purge(src.ext_mbc);
   dst.zram_bus = bit_purge(src.zram_bus);
   dst.dma_ctrl = bit_purge(src.dma_ctrl);

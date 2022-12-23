@@ -1,5 +1,11 @@
 #pragma once
-#include "CoreLib/Types.h"
+
+#include <stdint.h>
+#include <stddef.h>
+
+struct Dumper;
+struct Req;
+struct Ack;
 
 //-----------------------------------------------------------------------------
 

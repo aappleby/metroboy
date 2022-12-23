@@ -1,6 +1,8 @@
 #include "MetroBoyLib/MetroBoyPPU.h"
 
-#include "CoreLib/Constants.h"
+#include "GameboyLib/MetroBoyCPU.h"
+#include "GameboyLib/Constants.h"
+
 #include <assert.h>
 
 extern const uint32_t gb_colors[];

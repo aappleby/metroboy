@@ -1,10 +1,11 @@
 #include "MetroBoyApp/MetroBoyApp.h"
 
 #include "AppLib/AppHost.h"
-#include "AppLib/Audio.h"
+#include "AudioLib/Audio.h"
 #include "AppLib/GLBase.h"
-#include "CoreLib/Debug.h"
+//#include "CoreLib/Debug.h"
 #include "CoreLib/Log.h"
+#include "GameboyLib/Constants.h"
 
 //-----------------------------------------------------------------------------
 

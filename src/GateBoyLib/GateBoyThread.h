@@ -1,8 +1,8 @@
 #pragma once
 
-#include "CoreLib/Assembler.h"
+#include "GameboyLib/Assembler.h"
 #include "CoreLib/Types.h"
-#include "CoreLib/StateManager2.h"
+#include "CoreLib/StateStack.h"
 #include "CoreLib/File.h"
 
 #include "GateBoyLib/GateBoyPair.h"
@@ -21,7 +21,7 @@ struct AtomicFlags {
     flags |= mask;
     cond.notify_all();
   }
-  
+
   void clear(int mask) {
     flags &= ~mask;
     cond.notify_all();

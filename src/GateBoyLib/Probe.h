@@ -1,6 +1,8 @@
 #pragma once
 #include "CoreLib/Types.h"
 
+struct Dumper;
+
 struct Probes {
   Probes();
   void reset();
@@ -21,4 +23,4 @@ struct Probes {
   int  phase_tags[sample_count];
 };
 
-void probe(const char* signal_name, wire s);
+void probe(const char* signal_name, bool s);

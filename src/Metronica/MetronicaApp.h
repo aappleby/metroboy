@@ -1,18 +1,18 @@
 #pragma once
 
-#include "CoreLib/Assembler.h"
-#include "CoreLib/StateManager2.h"
-#include "CoreLib/SmoothTimer.h"
+//#include "CoreLib/Assembler.h"
+//#include "CoreLib/StateManager2.h"
+//#include "CoreLib/SmoothTimer.h"
 
 #include "AppLib/App.h"
 #include "AppLib/GridPainter.h"
 #include "AppLib/TextPainter.h"
 #include "AppLib/DumpPainter.h"
-#include "AppLib/GBBlitter.h"
+//#include "AppLib/GBBlitter.h"
 #include "AppLib/Blitter.h"
 
-#include "GateBoyLib/GateBoy.h"
-#include "GateBoyLib/GateBoyThread.h"
+//#include "GateBoyLib/GateBoy.h"
+//#include "GateBoyLib/GateBoyThread.h"
 
 class MetronicaApp : public App {
 public:
@@ -36,8 +36,6 @@ private:
 
   GridPainter grid_painter = {};
   TextPainter text_painter = {};
-  DumpPainter dump_painter = {};
-  GBBlitter   gb_blitter = {};
   Blitter     blitter = {};
 
   int frame_count = 0;

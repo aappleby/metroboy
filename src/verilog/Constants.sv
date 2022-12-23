@@ -18,7 +18,6 @@ parameter uint16_t MODEL_AGS = 1;
 
 parameter input_hz = 154 * 114 * 60;
 parameter output_hz = 48000;
-parameter samples_per_frame = output_hz / 60;
 
 //-----------------------------------------------------------------------------
 // Timing config

@@ -1,11 +1,12 @@
+#pragma once
+#include "AudioLib/Audio.h"
 
-struct GateBoyState;
+struct SpuChannel3;
+sample_t ch3_audio_out(const SpuChannel3& ch3);
 
 //==============================================================================
 //             CHANNEL 3
 //==============================================================================
-
-struct GateBoyState;
 
 struct SpuChannel3 {
   void reset() {
@@ -154,5 +155,3 @@ struct SpuChannel3 {
   /*_p17.BORA*/ DFF9 BORA_SAMPLE6p;
   /*_p17.BEPA*/ DFF9 BEPA_SAMPLE7p;
 };
-
-sample_t ch3_audio_out(const SpuChannel3& ch3);

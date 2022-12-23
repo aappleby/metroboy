@@ -2,6 +2,8 @@
 
 #include "GateBoyLib/Gates.h"
 
+#include <cstring>
+
 //-----------------------------------------------------------------------------
 
 void PinsControl::reset()    { bit_init(*this, BIT_OLD | BIT_DRIVEN, 0x02); }
@@ -119,7 +121,7 @@ void PinsLCD::reset() {
 void GateBoyPins::poweron() {
   memset(this, BIT_OLD | BIT_DRIVEN, sizeof(*this));
 }
-  
+
 void GateBoyPins::reset()    {
   abus_lo.reset();
   abus_hi.reset();

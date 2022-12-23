@@ -1,5 +1,8 @@
 #include "MetroBoyLib/MetroBoyDMA.h"
-#include "CoreLib/Constants.h"
+
+#include "GameboyLib/MetroBoyCPU.h"
+#include "GameboyLib/Constants.h"
+
 #include <assert.h>
 #include <stdio.h>
 

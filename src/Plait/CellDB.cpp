@@ -1,6 +1,7 @@
 #include "Plait/CellDB.h"
-#include "CoreLib/Debug.h"
+#include "CoreLib/Dumper.h"
 #include "CoreLib/Log.h"
+#include "CoreLib/Utils.h"
 #include "Plait/PTree.h"
 
 #include <map>
@@ -193,7 +194,7 @@ void DieCell::sanity_check() const {
   DCHECK_N(tag.empty());
   DCHECK_N(gate.empty());
   DCHECK_N(name.empty());
-  
+
   //CHECK_N(args.empty()); // we don't necessarily want to save the raw arg string to the db...
 
   if (cell_type == DieCellType::PIN_IN) {
@@ -418,7 +419,7 @@ std::string clean_line(const char* line) {
 
   return result;
 }
-  
+
 string name_to_tag(const string& name) {
   static regex rx_match_tag(R"(^(BUS_.*|PIN_\d{2}|SIG_.*|EXT_.*|[A-Z]{4}))");
   smatch match;
@@ -427,7 +428,7 @@ string name_to_tag(const string& name) {
   }
   else {
     CHECK_P(false);
-    return "";  
+    return "";
   }
 }
 
@@ -473,7 +474,7 @@ bool DieDB::parse_dir(const std::string& path) {
   LOG_B("Parsing took %f msec\n", (parse_end - parse_begin) * 1000.0);
 
   ConsoleDumper dumper;
-  for (auto& [tag, cell] : cell_map) {  
+  for (auto& [tag, cell] : cell_map) {
     CHECK_N(cell->flag.empty());
     CHECK_N(cell->tag.empty());
     CHECK_N(cell->name.empty());
@@ -519,7 +520,7 @@ bool DieDB::parse_dir(const std::string& path) {
       // Split the argument up by '.' delimiters.
       const auto& arg = args[iarg];
       vector<string> parts = split_path(arg);
-      
+
       // Skip any leading path parts that aren't a tag: foo.bar.baz.TAGG.qp -> TAGG.qp
       static regex rx_match_tag(R"(^(BUS_|PIN_|SIG_|EXT_|[A-Z]{4}))");
       while (!regex_search(parts.front(), rx_match_tag)) parts.erase(parts.begin());
@@ -593,7 +594,7 @@ std::string argument_to_identifier(PNode node, const char* src) {
     if (!prefix.is_identifier()) {
       prefix = prefix.get_field(field_field);
     }
-    
+
 		auto suffix = node.get_field(field_field).body(src);
     return trim_name(suffix);
 	}
@@ -786,7 +787,7 @@ bool DieDB::parse_source(const std::string& source_path) {
       LOG_R("Skipping\n");
       return false;
     }
-    
+
     PNode node = tag_node.next();
     if (node.is_null()) continue;
 
@@ -875,7 +876,7 @@ bool DieDB::parse_source(const std::string& source_path) {
 
 
         //cell->set_gate(rhs.get_field(field_function).body(src));
-        // 
+        //
         //func.dump(src);
         auto func_args = node.arglist();
       }

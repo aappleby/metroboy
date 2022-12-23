@@ -1,5 +1,8 @@
 #pragma once
-#include "CoreLib/Types.h"
+
+struct Req;
+struct Ack;
+struct Dumper;
 
 //-----------------------------------------------------------------------------
 
@@ -9,7 +12,7 @@ struct MetroBoyDMA {
   void tock(int phase_total, const Req& req);
   void dump(Dumper& dump) const;
 
-  uint16_t addr = 0xFFFF;
+  int addr = 0xFFFF;
 
   /*_p04.LYXE*/ bool DMA_WR_LATCH = 0;
   /*_p04.LUVY*/ bool DMA_RUN_TRIG_d0 = 0;

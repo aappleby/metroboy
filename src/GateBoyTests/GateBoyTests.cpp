@@ -1,6 +1,6 @@
 #include "GateBoyTests/GateBoyTests.h"
 
-#include "CoreLib/Assembler.h"
+#include "GameboyLib/Assembler.h"
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/LogicBoy.h"
 #include "GateBoyLib/Utils.h"
@@ -216,7 +216,7 @@ TestResults GateBoyTests::test_regression_dump(const char* filename, int cycles)
 
   auto gb = make_unique<GateBoyPair>();
   gb->load_raw_dump(bs);
-  
+
   blob cart_blob = bs.rest();
 
   for (int i = 0; i < cycles; i++) {
@@ -253,7 +253,7 @@ TestResults GateBoyTests::test_generic(const IGateBoy* proto) {
   if (run_slow_tests) {
     results += test_micro_int_vblank(proto);
   }
- 
+
   results += test_micro_int_stat(proto);
   results += test_micro_int_timer(proto);
   results += test_micro_int_serial(proto);
@@ -375,7 +375,7 @@ TestResults GateBoyTests::test_fuzz_reg2(const IGateBoy* proto, int reps) {
       if (addr == 0xFF50) addr = 0x8000; // bootrom bit causes mismatches, but it shouldn't be writable...
 
       uint8_t data = uint8_t(xorshift32(r));
-        
+
       gb->dbg_req(addr, data, 1);
       for (int phase = 0; phase < 8; phase++) {
         auto res1 = gb->next_phase(dummy_cart);
@@ -1305,10 +1305,10 @@ TestResults GateBoyTests::test_clk(const IGateBoy* proto) {
     EXPECT_CLK(clk.SIG_CPU_BUKE_AxxxxxGH.state, 0b10000011);
     EXPECT_CLK(clk.SIG_CPU_BOMA_xBCDEFGH.state, 0b01111111);
     EXPECT_CLK(clk.SIG_CPU_BOGA_Axxxxxxx.state, 0b10000000);
-    
+
     // external signals are inverted
     EXPECT_CLK(gb->get_pins().sys.PIN_75_CLK_OUT.state, 0b00001111);
-    
+
     gb->next_phase(dummy_cart);
   }
 
@@ -1489,7 +1489,7 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     const char* A05_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A06_WAVE = "11111111 11111111 11111111 11111111 11111111";
     const char* A07_WAVE = "00000000 00000000 00000000 00000000 00000000";
-    
+
     const char* A08_WAVE = "01111111 00000000 01111111 01111111 00000000";
     const char* A09_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A10_WAVE = "00000000 00000000 00000000 00000000 00000000";
@@ -1662,7 +1662,7 @@ TestResults GateBoyTests::test_ext_bus(const IGateBoy* proto) {
     const char* A05_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A06_WAVE = "11111111 11111111 11111111 11111111 11111111";
     const char* A07_WAVE = "00000000 00000000 00000000 00000000 00000000";
-    
+
     const char* A08_WAVE = "01111111 00000000 01111111 01111111 00000000";
     const char* A09_WAVE = "00000000 00000000 00000000 00000000 00000000";
     const char* A10_WAVE = "00000000 00000000 00000000 00000000 00000000";
@@ -1812,9 +1812,9 @@ TestResults GateBoyTests::test_dma(const IGateBoy* proto, uint16_t src) {
 
   unique_ptr<IGateBoy> gb(proto->clone());
   gb->reset();
-  
+
   gb->set_cpu_en(false);
-  
+
   gb->dbg_write(test_cart, ADDR_LCDC, 0);
   gb->dbg_write(test_cart, 0x0000, 0x0A); // enable mbc1 ram
 
@@ -1852,7 +1852,7 @@ TestResults GateBoyTests::test_mem(const IGateBoy* proto, const char* tag, uint1
   auto test_cart = dummy_cart;
 
   unique_ptr<IGateBoy> gb(proto->clone());
-  
+
   gb->reset();
   gb->set_cpu_en(false);
 

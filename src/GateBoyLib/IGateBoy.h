@@ -1,5 +1,6 @@
 #pragma once
-#include "CoreLib/Types.h"
+#include "CoreLib/Blobs.h"
+#include "CoreLib/Result.h"
 
 struct GateBoyCpu;
 struct GateBoyMem;
@@ -7,6 +8,7 @@ struct GateBoyState;
 struct GateBoySys;
 struct GateBoyPins;
 struct Probes;
+struct BlobStream;
 
 class IGateBoy {
 public:

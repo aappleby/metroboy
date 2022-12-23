@@ -1,8 +1,11 @@
 #pragma once
 
+#include "AudioLib/Audio.h"
+#include "GameboyLib/MetroBoyCPU.h"
+
 #include "GateBoyLib/IGateBoy.h"
-#include "CoreLib/MetroBoyCPU.h"
 #include "CoreLib/Constants.h"
+#include "CoreLib/Result.h"
 #include "GateBoyLib/LogicBoyState.h"
 #include "GateBoyLib/GateBoy.h"
 #include "GateBoyLib/Utils.h"
@@ -94,12 +97,12 @@ struct LogicBoy : public IGateBoy {
 
   const GateBoyCpu&   get_cpu() const override    { return *(GateBoyCpu*)&cpu; }
   const GateBoyMem&   get_mem() const override    { return mem; }
-  
+
   const GateBoyState& get_state() const override  {
     lb_state.to_gb_state(const_cast<GateBoyState&>(temp_gb_state));
     return temp_gb_state;
   }
-  
+
   const GateBoySys&   get_sys() const override    { return *(GateBoySys*)&sys; }
   const GateBoyPins&  get_pins() const override   { return pins; }
   const Probes&       get_probes() const override { return probes; }

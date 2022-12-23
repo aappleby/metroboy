@@ -1,6 +1,7 @@
 #pragma once
 
-#include "CoreLib/Types.h"
+#include "CoreLib/Dumper.h"
+#include "CoreLib/Check.h"
 #include "CoreLib/Log.h"
 #include <string>
 #include <vector>

@@ -35,8 +35,6 @@ int plat_mkdir(const char* path, int mode) {
   return mkdir(path, mode);
 }
 
-void debugbreak() { raise(SIGTRAP); }
-
 void dprintf(const char* format, ...) {
   static char buffer[256];
   va_list args;
@@ -44,15 +42,6 @@ void dprintf(const char* format, ...) {
   vprintf(format, args);
   va_end(args);
 }
-
-/*
-  {
-    std::string cwd;
-    cwd.resize(FILENAME_MAX);
-    getcwd(cwd.data(),FILENAME_MAX);
-    LOG_R("cwd %s\n", cwd);
-  }
-*/
 
 #endif
 
@@ -65,8 +54,6 @@ void dprintf(const char* format, ...) {
 
 #pragma warning(disable : 4996)  // unsafe fopen
 
-void debugbreak() { __debugbreak(); }
-
 int plat_mkdir(const char* path, int mode) { return _mkdir(path); }
 
 void dprintf(const char* format, ...) {
@@ -78,19 +65,11 @@ void dprintf(const char* format, ...) {
   OutputDebugString(buffer);
 }
 
-/*
-  {
-    std::string cwd;
-    cwd.resize(FILENAME_MAX);
-    getcwd(cwd.data(),FILENAME_MAX);
-    LOG_R("cwd %s\n", cwd);
-  }
-*/
-
 #endif
 
 //------------------------------------------------------------------------------
 
+#if 0
 bool operator<(const TSNode& a, const TSNode& b) {
   if (a.context[0] < b.context[0]) return true;
   if (a.context[0] > b.context[0]) return false;
@@ -151,6 +130,8 @@ struct MtModLibrary;
 struct MtNode;
 struct MtIterator;
 
-typedef std::vector<uint8_t> blob;
+//typedef std::vector<uint8_t> blob;
+
+#endif
 
 //------------------------------------------------------------------------------

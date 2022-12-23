@@ -1,5 +1,10 @@
 #pragma once
 
+#include "CoreLib/Result.h"
+#include "CoreLib/FieldInfo.h"
+
+#include "GateBoyLib/GateBoyConfig.h"
+
 #include "GateBoyLib/GateBoyTimer.h"
 #include "GateBoyLib/GateBoyLCD.h"
 #include "GateBoyLib/GateBoyDMA.h"
@@ -59,7 +64,7 @@ struct GateBoyState {
 
   /*_SIG_VCC*/ SigIn SIG_VCC;
   /*_SIG_GND*/ SigIn SIG_GND;
-  
+
   RegJoy  reg_joy;  // 0xFF00
   //RegSB   reg_sb;   // 0xFF01
   //RegSC   reg_sc;   // 0xFF02
@@ -104,7 +109,7 @@ struct GateBoyState {
 
   struct { VramABusLo lo; VramABusHi hi; } vram_abus;
   VramDBus       vram_dbus;
-                
+
   OamControl     oam_ctrl;
   OamABus        oam_abus;
   OamDBusA       oam_dbus_a;
@@ -128,7 +133,7 @@ struct GateBoyState {
 
   SpriteScanner    sprite_scanner;
   ScanCounter      scan_counter;
-  
+
   SpriteCounter    sprite_counter;
   SpriteIndex      sprite_index;
   SpriteMatchFlags sprite_match_flags_odd;

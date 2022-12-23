@@ -1,4 +1,8 @@
 #include "MetroBoyLib/MetroBoyBootrom.h"
+
+#include "GameboyLib/MetroBoyCPU.h"
+#include "GameboyLib/Constants.h"
+
 #include "CoreLib/Constants.h"
 #include <assert.h>
 

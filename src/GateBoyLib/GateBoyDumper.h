@@ -1,6 +1,6 @@
 #pragma once
-#include "CoreLib/Types.h"
 
+struct Dumper;
 struct GateBoySys;
 struct GateBoyState;
 struct GateBoyPins;

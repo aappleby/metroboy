@@ -4,6 +4,7 @@
 
 #ifndef SIM_AUDIO
 
+/*
 int spu_audio_out_r(GateBoyState& reg_new) {
   return 0;
 }
@@ -11,6 +12,7 @@ int spu_audio_out_r(GateBoyState& reg_new) {
 int spu_audio_out_l(GateBoyState& reg_new) {
   return 0;
 }
+*/
 
 #endif
 

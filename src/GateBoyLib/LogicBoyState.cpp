@@ -23,7 +23,9 @@ void LogicBoyState::reset() {
   phase_tfetch = 10;
   phase_sfetch = 10;
 
+#ifdef SIM_AUDIO
   apu_phase_new = -1;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -248,12 +250,14 @@ void LogicBoyState::to_gb_state(GateBoyState& dst) const {
   bit_unpack(dst.pal_pipe, src.pal_pipe);
   bit_unpack(dst.lcd, bit_pack(src.lcd));
 
+#ifdef SIM_AUDIO
   dst.ch1 = src.ch1;
   dst.ch2 = src.ch2;
   dst.ch3 = src.ch3;
   dst.ch4 = src.ch4;
   dst.spu = src.spu;
   dst.wave_dbus = src.wave_dbus;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -383,12 +387,14 @@ void LogicBoyState::from_gb_state(const GateBoyState& src) {
   dst.pal_pipe = bit_pack(src.pal_pipe);
   dst.lcd = bit_purge(src.lcd);
 
+#ifdef SIM_AUDIO
   dst.ch1 = src.ch1;
   dst.ch2 = src.ch2;
   dst.ch3 = src.ch3;
   dst.ch4 = src.ch4;
   dst.spu = src.spu;
   dst.wave_dbus = src.wave_dbus;
+#endif
 }
 
 //-----------------------------------------------------------------------------

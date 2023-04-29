@@ -2770,6 +2770,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
     bit_unpack(temp_dbus_new, state_new.cpu_dbus);
     bit_set(temp_dbus_new, BIT_NEW | BIT_PULLED);
 
+#ifdef SIM_AUDIO
     bit_mask(state_new.spu, uint8_t(~BIT_OLD));
     bit_mask(state_new.ch1, uint8_t(~BIT_OLD));
     bit_mask(state_new.ch2, uint8_t(~BIT_OLD));
@@ -2820,6 +2821,7 @@ void LogicBoy::tock_logic(const blob& cart_blob) {
 
       mem.wave_ram
     );
+#endif
 
     state_new.cpu_dbus = (uint8_t)bit_pack(temp_dbus_new);
   }

@@ -109,7 +109,9 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
   LOG_G("GateBoyApp::app_init()\n");
   LOG_INDENT();
 
+#ifdef SIM_AUDIO
   audio_init();
+#endif
 
   view_control.init(screen_size);
 
@@ -192,9 +194,17 @@ void GateBoyApp::app_init(int screen_w, int screen_h) {
 //-----------------------------------------------------------------------------
 
 void GateBoyApp::app_close() {
+  LOG_B("Stopping gb thread\n");
   gb_thread->stop();
+  LOG_B("Deleting gb thread\n");
   delete gb_thread;
   gb_thread = nullptr;
+
+#ifdef SIM_AUDIO
+  audio_stop();
+#endif
+
+  LOG_B("app_close() done\n");
 }
 
 //-----------------------------------------------------------------------------

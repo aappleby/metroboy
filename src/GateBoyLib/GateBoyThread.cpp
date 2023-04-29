@@ -54,6 +54,7 @@ void GateBoyThread::stop() {
 
   LOG_B("Gateboy thread stopped\n");
   delete main;
+  LOG_B("Main deleted, exiting\n");
 }
 
 //----------------------------------------

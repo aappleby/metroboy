@@ -1,0 +1,30 @@
+[submodule "imgui"]
+	path = submodules/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "glm"]
+	path = submodules/glm
+	url = https://github.com/g-truc/glm
+[submodule "json"]
+	path = submodules/json
+	url = https://github.com/nlohmann/json
+[submodule "SDL"]
+	path = submodules/SDL
+	url = https://github.com/libsdl-org/SDL
+[submodule "src/tree-sitter"]
+	path = submodules/tree-sitter
+	url = https://github.com/tree-sitter/tree-sitter
+[submodule "src/tree-sitter-cpp"]
+	path = submodules/tree-sitter-cpp
+	url = https://github.com/tree-sitter/tree-sitter-cpp
+[submodule "riscv-simple-sv"]
+	path = riscv-simple-sv
+	url = https://github.com/tilk/riscv-simple-sv
+[submodule "verilator"]
+	path = submodules/verilator
+	url = https://github.com/verilator/verilator
+[submodule "submodules/gb-live32"]
+	path = submodules/gb-live32
+	url = https://github.com/Gekkio/gb-live32
+[submodule "submodules/MetroLib"]
+	path = submodules/MetroLib
+	url = https://github.com/aappleby/MetroLib
